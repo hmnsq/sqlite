@@ -52,34 +52,34 @@
 ** as the number of elements in the array.  The virtual table steps through
 ** the array, element by element.
 */
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
-#include "sqliteInt.h"
-#if defined(_WIN32) || defined(__RTP__) || defined(_WRS_KERNEL)
-  struct iovec {
-    void *iov_base;
+#𐡄𐡍 !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+#ضمن "sqliteInt.h"
+#𐡄𐡍 defined(_WIN32) || defined(__RTP__) || defined(_WRS_KERNEL)
+  بنية iovec {
+    فراغ *iov_base;
     size_t iov_len;
   };
-#else
+#وإلا
 # include <sys/uio.h>
 #endif
 
 /*
 ** Names of allowed datatypes
 */
-static const char *azCarrayType[] = {
+ساكن ثابت حرف *azCarrayType[] = {
   "int32", "int64", "double", "char*", "struct iovec"
 };
 
 /*
 ** Structure used to hold the sqlite3_carray_bind() information
 */
-typedef struct carray_bind carray_bind;
-struct carray_bind {
-  void *aData;                /* The data */
-  int nData;                  /* Number of elements */
-  int mFlags;                 /* Control flags */
-  void (*xDel)(void*);        /* Destructor for aData */
-  void *pDel;                 /* Alternative argument to xDel() */
+تعريفنوع بنية carray_bind carray_bind;
+بنية carray_bind {
+  فراغ *aData;                /* The data */
+  صحيح nData;                  /* Number of elements */
+  صحيح mFlags;                 /* Control flags */
+  فراغ (*xDel)(فراغ*);        /* Destructor for aData */
+  فراغ *pDel;                 /* Alternative argument to xDel() */
 };
 
 
@@ -87,13 +87,13 @@ struct carray_bind {
 ** serve as the underlying representation of a cursor that scans
 ** over rows of the result
 */
-typedef struct carray_cursor carray_cursor;
-struct carray_cursor {
+تعريفنوع بنية carray_cursor carray_cursor;
+بنية carray_cursor {
   sqlite3_vtab_cursor base;  /* Base class - must be first */
   sqlite3_int64 iRowid;      /* The rowid */
-  void *pPtr;                /* Pointer to the array of values */
+  فراغ *pPtr;                /* Pointer to the array of values */
   sqlite3_int64 iCnt;        /* Number of integers in the array */
-  unsigned char eType;       /* One of the CARRAY_type values */
+  unsigned حرف eType;       /* One of the CARRAY_type values */
 };
 
 /*
@@ -109,15 +109,15 @@ struct carray_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against carray will look like.
 */
-static int carrayConnect(
+ساكن صحيح carrayConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  فراغ *pAux,
+  صحيح argc, ثابت حرف *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  حرف **pzErr
 ){
   sqlite3_vtab *pNew;
-  int rc;
+  صحيح rc;
 
 /* Column numbers */
 #define CARRAY_COLUMN_VALUE   0
@@ -127,177 +127,177 @@ static int carrayConnect(
 
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(value,pointer hidden,count hidden,ctype hidden)");
-  if( rc==SQLITE_OK ){
-    pNew = *ppVtab = sqlite3_malloc( sizeof(*pNew) );
-    if( pNew==0 ) return SQLITE_NOMEM;
-    memset(pNew, 0, sizeof(*pNew));
+  𐡄𐡍( rc==SQLITE_OK ){
+    pNew = *ppVtab = sqlite3_malloc( حجم(*pNew) );
+    𐡄𐡍( pNew==0 ) أرجع SQLITE_NOMEM;
+    memset(pNew, 0, حجم(*pNew));
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** This method is the destructor for carray_cursor objects.
 */
-static int carrayDisconnect(sqlite3_vtab *pVtab){
+ساكن صحيح carrayDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Constructor for a new carray_cursor object.
 */
-static int carrayOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+ساكن صحيح carrayOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   carray_cursor *pCur;
-  pCur = sqlite3_malloc( sizeof(*pCur) );
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(*pCur));
+  pCur = sqlite3_malloc( حجم(*pCur) );
+  𐡄𐡍( pCur==0 ) أرجع SQLITE_NOMEM;
+  memset(pCur, 0, حجم(*pCur));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Destructor for a carray_cursor.
 */
-static int carrayClose(sqlite3_vtab_cursor *cur){
+ساكن صحيح carrayClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 
 /*
 ** Advance a carray_cursor to its next row of output.
 */
-static int carrayNext(sqlite3_vtab_cursor *cur){
+ساكن صحيح carrayNext(sqlite3_vtab_cursor *cur){
   carray_cursor *pCur = (carray_cursor*)cur;
   pCur->iRowid++;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return values of columns for the row at which the carray_cursor
 ** is currently pointing.
 */
-static int carrayColumn(
+ساكن صحيح carrayColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int i                       /* Which column to return */
+  صحيح i                       /* Which column to return */
 ){
   carray_cursor *pCur = (carray_cursor*)cur;
   sqlite3_int64 x = 0;
-  switch( i ){
-    case CARRAY_COLUMN_POINTER:   return SQLITE_OK;
-    case CARRAY_COLUMN_COUNT:     x = pCur->iCnt;   break;
-    case CARRAY_COLUMN_CTYPE: {
+  بدل( i ){
+    حالة CARRAY_COLUMN_POINTER:   أرجع SQLITE_OK;
+    حالة CARRAY_COLUMN_COUNT:     x = pCur->iCnt;   اكسر;
+    حالة CARRAY_COLUMN_CTYPE: {
       sqlite3_result_text(ctx, azCarrayType[pCur->eType], -1, SQLITE_STATIC);
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    default: {
-      switch( pCur->eType ){
-        case CARRAY_INT32: {
-          int *p = (int*)pCur->pPtr;
+    افتراضي: {
+      بدل( pCur->eType ){
+        حالة CARRAY_INT32: {
+          صحيح *p = (صحيح*)pCur->pPtr;
           sqlite3_result_int(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          أرجع SQLITE_OK;
         }
-        case CARRAY_INT64: {
+        حالة CARRAY_INT64: {
           sqlite3_int64 *p = (sqlite3_int64*)pCur->pPtr;
           sqlite3_result_int64(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          أرجع SQLITE_OK;
         }
-        case CARRAY_DOUBLE: {
-          double *p = (double*)pCur->pPtr;
+        حالة CARRAY_DOUBLE: {
+          مزدوج *p = (مزدوج*)pCur->pPtr;
           sqlite3_result_double(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          أرجع SQLITE_OK;
         }
-        case CARRAY_TEXT: {
-          const char **p = (const char**)pCur->pPtr;
+        حالة CARRAY_TEXT: {
+          ثابت حرف **p = (ثابت حرف**)pCur->pPtr;
           sqlite3_result_text(ctx, p[pCur->iRowid-1], -1, SQLITE_TRANSIENT);
-          return SQLITE_OK;
+          أرجع SQLITE_OK;
         }
-        default: {
-          const struct iovec *p = (struct iovec*)pCur->pPtr;
-          assert( pCur->eType==CARRAY_BLOB );
+        افتراضي: {
+          ثابت بنية iovec *p = (بنية iovec*)pCur->pPtr;
+          أكد( pCur->eType==CARRAY_BLOB );
           p += pCur->iRowid-1;
-          if( p->iov_len>0x7fffffff ){
+          𐡄𐡍( p->iov_len>0x7fffffff ){
             sqlite3_result_error_toobig(ctx);
-            return SQLITE_TOOBIG;
-          }else{
-            sqlite3_result_blob(ctx, p->iov_base, (int)p->iov_len,
+            أرجع SQLITE_TOOBIG;
+          }وإلا{
+            sqlite3_result_blob(ctx, p->iov_base, (صحيح)p->iov_len,
                                  SQLITE_TRANSIENT);
           }
-          return SQLITE_OK;
+          أرجع SQLITE_OK;
         }
       }
     }
   }
   sqlite3_result_int64(ctx, x);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int carrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ساكن صحيح carrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   carray_cursor *pCur = (carray_cursor*)cur;
   *pRowid = pCur->iRowid;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int carrayEof(sqlite3_vtab_cursor *cur){
+ساكن صحيح carrayEof(sqlite3_vtab_cursor *cur){
   carray_cursor *pCur = (carray_cursor*)cur;
-  return pCur->iRowid>pCur->iCnt;
+  أرجع pCur->iRowid>pCur->iCnt;
 }
 
 /*
 ** This method is called to "rewind" the carray_cursor object back
 ** to the first row of output.
 */
-static int carrayFilter(
+ساكن صحيح carrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحيح idxNum, ثابت حرف *idxStr,
+  صحيح argc, sqlite3_value **argv
 ){
   carray_cursor *pCur = (carray_cursor *)pVtabCursor;
   pCur->pPtr = 0;
   pCur->iCnt = 0;
-  switch( idxNum ){
-    case 1: {
+  بدل( idxNum ){
+    حالة 1: {
       carray_bind *pBind = sqlite3_value_pointer(argv[0], "carray-bind");
-      if( pBind==0 ) break;
+      𐡄𐡍( pBind==0 ) اكسر;
       pCur->pPtr = pBind->aData;
       pCur->iCnt = pBind->nData;
       pCur->eType = pBind->mFlags & 0x07;
-      break;
+      اكسر;
     }
-    case 2:
-    case 3: {
+    حالة 2:
+    حالة 3: {
       pCur->pPtr = sqlite3_value_pointer(argv[0], "carray");
       pCur->iCnt = pCur->pPtr ? sqlite3_value_int64(argv[1]) : 0;
-      if( idxNum<3 ){
+      𐡄𐡍( idxNum<3 ){
         pCur->eType = CARRAY_INT32;
-      }else{
-        unsigned char i;
-        const char *zType = (const char*)sqlite3_value_text(argv[2]);
-        for(i=0; i<sizeof(azCarrayType)/sizeof(azCarrayType[0]); i++){
-          if( sqlite3_stricmp(zType, azCarrayType[i])==0 ) break;
+      }وإلا{
+        unsigned حرف i;
+        ثابت حرف *zType = (ثابت حرف*)sqlite3_value_text(argv[2]);
+        لكل(i=0; i<حجم(azCarrayType)/حجم(azCarrayType[0]); i++){
+          𐡄𐡍( sqlite3_stricmp(zType, azCarrayType[i])==0 ) اكسر;
         }
-        if( i>=sizeof(azCarrayType)/sizeof(azCarrayType[0]) ){
+        𐡄𐡍( i>=حجم(azCarrayType)/حجم(azCarrayType[0]) ){
           pVtabCursor->pVtab->zErrMsg = sqlite3_mprintf(
             "unknown datatype: %Q", zType);
-          return SQLITE_ERROR;
-        }else{
+          أرجع SQLITE_ERROR;
+        }وإلا{
           pCur->eType = i;
         }
       }
-      break;
+      اكسر;
     }
   }
   pCur->iRowid = 1;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -320,71 +320,71 @@ static int carrayFilter(
 **
 ** idxNum is 0 otherwise and carray becomes an empty table.
 */
-static int carrayBestIndex(
+ساكن صحيح carrayBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
-  int i;                 /* Loop over constraints */
-  int ptrIdx = -1;       /* Index of the pointer= constraint, or -1 if none */
-  int cntIdx = -1;       /* Index of the count= constraint, or -1 if none */
-  int ctypeIdx = -1;     /* Index of the ctype= constraint, or -1 if none */
+  صحيح i;                 /* Loop over constraints */
+  صحيح ptrIdx = -1;       /* Index of the pointer= constraint, or -1 if none */
+  صحيح cntIdx = -1;       /* Index of the count= constraint, or -1 if none */
+  صحيح ctypeIdx = -1;     /* Index of the ctype= constraint, or -1 if none */
   unsigned seen = 0;     /* Bitmask of == constrainted columns */
 
-  const struct sqlite3_index_constraint *pConstraint;
+  ثابت بنية sqlite3_index_constraint *pConstraint;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->iColumn>=0 ) seen |= 1 << pConstraint->iColumn;
-    if( pConstraint->usable==0 ) continue;
-    switch( pConstraint->iColumn ){
-      case CARRAY_COLUMN_POINTER:
+  لكل(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    𐡄𐡍( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) استمر;
+    𐡄𐡍( pConstraint->iColumn>=0 ) seen |= 1 << pConstraint->iColumn;
+    𐡄𐡍( pConstraint->usable==0 ) استمر;
+    بدل( pConstraint->iColumn ){
+      حالة CARRAY_COLUMN_POINTER:
         ptrIdx = i;
-        break;
-      case CARRAY_COLUMN_COUNT:
+        اكسر;
+      حالة CARRAY_COLUMN_COUNT:
         cntIdx = i;
-        break;
-      case CARRAY_COLUMN_CTYPE:
+        اكسر;
+      حالة CARRAY_COLUMN_CTYPE:
         ctypeIdx = i;
-        break;
+        اكسر;
     }
   }
-  if( ptrIdx>=0 ){
+  𐡄𐡍( ptrIdx>=0 ){
     pIdxInfo->aConstraintUsage[ptrIdx].argvIndex = 1;
     pIdxInfo->aConstraintUsage[ptrIdx].omit = 1;
-    pIdxInfo->estimatedCost = (double)1;
+    pIdxInfo->estimatedCost = (مزدوج)1;
     pIdxInfo->estimatedRows = 100;
     pIdxInfo->idxNum = 1;
-    if( cntIdx>=0 ){
+    𐡄𐡍( cntIdx>=0 ){
       pIdxInfo->aConstraintUsage[cntIdx].argvIndex = 2;
       pIdxInfo->aConstraintUsage[cntIdx].omit = 1;
       pIdxInfo->idxNum = 2;
-      if( ctypeIdx>=0 ){
+      𐡄𐡍( ctypeIdx>=0 ){
         pIdxInfo->aConstraintUsage[ctypeIdx].argvIndex = 3;
         pIdxInfo->aConstraintUsage[ctypeIdx].omit = 1;
         pIdxInfo->idxNum = 3;
-      }else if( seen & (1<<CARRAY_COLUMN_CTYPE) ){
+      }وإلا 𐡄𐡍( seen & (1<<CARRAY_COLUMN_CTYPE) ){
         /* In a three-argument carray(), we need to know the value of all
         ** three arguments */
-        return SQLITE_CONSTRAINT;
+        أرجع SQLITE_CONSTRAINT;
       }
-    }else if( seen & (1<<CARRAY_COLUMN_COUNT) ){
+    }وإلا 𐡄𐡍( seen & (1<<CARRAY_COLUMN_COUNT) ){
       /* In a two-argument carray(), we need to know the value of both
       ** arguments */
-      return SQLITE_CONSTRAINT;
+      أرجع SQLITE_CONSTRAINT;
     }
-  }else{
-    pIdxInfo->estimatedCost = (double)2147483647;
+  }وإلا{
+    pIdxInfo->estimatedCost = (مزدوج)2147483647;
     pIdxInfo->estimatedRows = 2147483647;
     pIdxInfo->idxNum = 0;
   }
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** This following structure defines all the methods for the 
 ** carray virtual table.
 */
-static sqlite3_module carrayModule = {
+ساكن sqlite3_module carrayModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   carrayConnect,             /* xConnect */
@@ -415,9 +415,9 @@ static sqlite3_module carrayModule = {
 /*
 ** Destructor for the carray_bind object
 */
-static void carrayBindDel(void *pPtr){
+ساكن فراغ carrayBindDel(فراغ *pPtr){
   carray_bind *p = (carray_bind*)pPtr;
-  if( p->xDel!=SQLITE_STATIC ){
+  𐡄𐡍( p->xDel!=SQLITE_STATIC ){
     p->xDel(p->pDel);
   }
   sqlite3_free(p);
@@ -438,104 +438,104 @@ static void carrayBindDel(void *pPtr){
 ** The destructor is called pDestroy if pDestroy!=NULL, or against
 ** aData if pDestroy==NULL.
 */
-SQLITE_API int sqlite3_carray_bind_v2(
+SQLITE_API صحيح sqlite3_carray_bind_v2(
   sqlite3_stmt *pStmt,
-  int idx,
-  void *aData,
-  int nData,
-  int mFlags,
-  void (*xDestroy)(void*),
-  void *pDestroy
+  صحيح idx,
+  فراغ *aData,
+  صحيح nData,
+  صحيح mFlags,
+  فراغ (*xDestroy)(فراغ*),
+  فراغ *pDestroy
 ){
   carray_bind *pNew = 0;
-  int i;
-  int rc = SQLITE_OK;
+  صحيح i;
+  صحيح rc = SQLITE_OK;
   
   /* Ensure that the mFlags value is acceptable. */
-  assert( CARRAY_INT32==0 && CARRAY_INT64==1 && CARRAY_DOUBLE==2 );
-  assert( CARRAY_TEXT==3 && CARRAY_BLOB==4 );
-  if( mFlags<CARRAY_INT32 || mFlags>CARRAY_BLOB ){
+  أكد( CARRAY_INT32==0 && CARRAY_INT64==1 && CARRAY_DOUBLE==2 );
+  أكد( CARRAY_TEXT==3 && CARRAY_BLOB==4 );
+  𐡄𐡍( mFlags<CARRAY_INT32 || mFlags>CARRAY_BLOB ){
     rc = SQLITE_ERROR;
-    goto carray_bind_error;
+    اذهب carray_bind_error;
   }
 
-  pNew = sqlite3_malloc64(sizeof(*pNew));
-  if( pNew==0 ){
+  pNew = sqlite3_malloc64(حجم(*pNew));
+  𐡄𐡍( pNew==0 ){
     rc = SQLITE_NOMEM;
-    goto carray_bind_error;
+    اذهب carray_bind_error;
   }
 
   pNew->nData = nData;
   pNew->mFlags = mFlags;
-  if( xDestroy==SQLITE_TRANSIENT ){
+  𐡄𐡍( xDestroy==SQLITE_TRANSIENT ){
     sqlite3_int64 sz = nData;
-    switch( mFlags ){
-      case CARRAY_INT32:   sz *= 4;                     break;
-      case CARRAY_INT64:   sz *= 8;                     break;
-      case CARRAY_DOUBLE:  sz *= 8;                     break;
-      case CARRAY_TEXT:    sz *= sizeof(char*);         break;
-      default:             sz *= sizeof(struct iovec);  break;
+    بدل( mFlags ){
+      حالة CARRAY_INT32:   sz *= 4;                     اكسر;
+      حالة CARRAY_INT64:   sz *= 8;                     اكسر;
+      حالة CARRAY_DOUBLE:  sz *= 8;                     اكسر;
+      حالة CARRAY_TEXT:    sz *= حجم(حرف*);         اكسر;
+      افتراضي:             sz *= حجم(بنية iovec);  اكسر;
     }
-    if( mFlags==CARRAY_TEXT ){
-      for(i=0; i<nData; i++){
-        const char *z = ((char**)aData)[i];
-        if( z ) sz += strlen(z) + 1;
+    𐡄𐡍( mFlags==CARRAY_TEXT ){
+      لكل(i=0; i<nData; i++){
+        ثابت حرف *z = ((حرف**)aData)[i];
+        𐡄𐡍( z ) sz += strlen(z) + 1;
       }
-    }else if( mFlags==CARRAY_BLOB ){
-      for(i=0; i<nData; i++){
-        sz += ((struct iovec*)aData)[i].iov_len;
+    }وإلا 𐡄𐡍( mFlags==CARRAY_BLOB ){
+      لكل(i=0; i<nData; i++){
+        sz += ((بنية iovec*)aData)[i].iov_len;
       }
     } 
 
     pNew->aData = sqlite3_malloc64( sz>0 ? sz : 1 );
-    if( pNew->aData==0 ){
+    𐡄𐡍( pNew->aData==0 ){
       rc = SQLITE_NOMEM;
-      goto carray_bind_error;
+      اذهب carray_bind_error;
     }
 
-    if( mFlags==CARRAY_TEXT ){
-      char **az = (char**)pNew->aData;
-      char *z = (char*)&az[nData];
-      for(i=0; i<nData; i++){
-        const char *zData = ((char**)aData)[i];
+    𐡄𐡍( mFlags==CARRAY_TEXT ){
+      حرف **az = (حرف**)pNew->aData;
+      حرف *z = (حرف*)&az[nData];
+      لكل(i=0; i<nData; i++){
+        ثابت حرف *zData = ((حرف**)aData)[i];
         sqlite3_int64 n;
-        if( zData==0 ){
+        𐡄𐡍( zData==0 ){
           az[i] = 0;
-          continue;
+          استمر;
         }
         az[i] = z;
         n = strlen(zData);
         memcpy(z, zData, n+1);
         z += n+1;
       }
-    }else if( mFlags==CARRAY_BLOB ){
-      struct iovec *p = (struct iovec*)pNew->aData;
-      unsigned char *z = (unsigned char*)&p[nData];
-      for(i=0; i<nData; i++){
-        size_t n = ((struct iovec*)aData)[i].iov_len;
+    }وإلا 𐡄𐡍( mFlags==CARRAY_BLOB ){
+      بنية iovec *p = (بنية iovec*)pNew->aData;
+      unsigned حرف *z = (unsigned حرف*)&p[nData];
+      لكل(i=0; i<nData; i++){
+        size_t n = ((بنية iovec*)aData)[i].iov_len;
         p[i].iov_len = n;
         p[i].iov_base = z;
         z += n;
-        memcpy(p[i].iov_base, ((struct iovec*)aData)[i].iov_base, n);
+        memcpy(p[i].iov_base, ((بنية iovec*)aData)[i].iov_base, n);
       }
-    }else if( sz>0 ){
+    }وإلا 𐡄𐡍( sz>0 ){
       memcpy(pNew->aData, aData, sz);
     }
     pNew->xDel = sqlite3_free;
     pNew->pDel = pNew->aData;
-  }else{
+  }وإلا{
     pNew->aData = aData;
     pNew->xDel = xDestroy;
     pNew->pDel = pDestroy;
   }
-  return sqlite3_bind_pointer(pStmt, idx, pNew, "carray-bind", carrayBindDel);
+  أرجع sqlite3_bind_pointer(pStmt, idx, pNew, "carray-bind", carrayBindDel);
  
  carray_bind_error:
-  if( xDestroy!=SQLITE_STATIC && xDestroy!=SQLITE_TRANSIENT ){
+  𐡄𐡍( xDestroy!=SQLITE_STATIC && xDestroy!=SQLITE_TRANSIENT ){
     xDestroy(pDestroy);
   }
   sqlite3_free(pNew);
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -543,22 +543,22 @@ SQLITE_API int sqlite3_carray_bind_v2(
 ** version of CARRAY().  Same as sqlite3_carray_bind_v2() with the
 ** pDestroy parameter set to NULL.
 */
-SQLITE_API int sqlite3_carray_bind(
+SQLITE_API صحيح sqlite3_carray_bind(
   sqlite3_stmt *pStmt,
-  int idx,
-  void *aData,
-  int nData,
-  int mFlags,
-  void (*xDestroy)(void*)
+  صحيح idx,
+  فراغ *aData,
+  صحيح nData,
+  صحيح mFlags,
+  فراغ (*xDestroy)(فراغ*)
 ){
-  return sqlite3_carray_bind_v2(pStmt,idx,aData,nData,mFlags,xDestroy,aData);
+  أرجع sqlite3_carray_bind_v2(pStmt,idx,aData,nData,mFlags,xDestroy,aData);
 }
 
 /*
 ** Invoke this routine to register the carray() function.
 */
 Module *sqlite3CarrayRegister(sqlite3 *db){
-  return sqlite3VtabCreateModule(db, "carray", &carrayModule, 0, 0);
+  أرجع sqlite3VtabCreateModule(db, "carray", &carrayModule, 0, 0);
 }
 
 #endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY) */
