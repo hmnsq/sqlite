@@ -13,15 +13,15 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ <stdlib.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 
-typedef struct echo_vtab echo_vtab;
-typedef struct echo_cursor echo_cursor;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ echo_vtab echo_vtab;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ echo_cursor echo_cursor;
 
 /*
 ** The test module defined in this file uses four global Tcl variables to
@@ -69,37 +69,37 @@ typedef struct echo_cursor echo_cursor;
 ** Member variable aCol[] contains copies of the column names of the real
 ** table.
 */
-struct echo_vtab {
+ಸಂರಚನಾ echo_vtab {
   sqlite3_vtab base;
   Tcl_Interp *interp;     /* Tcl interpreter containing debug variables */
   sqlite3 *db;            /* Database connection */
 
-  int isPattern;
-  int inTransaction;      /* True if within a transaction */
-  char *zThis;            /* Name of the echo table */
-  char *zTableName;       /* Name of the real table */
-  char *zLogName;         /* Name of the log table */
-  int nCol;               /* Number of columns in the real table */
-  int *aIndex;            /* Array of size nCol. True if column has an index */
-  char **aCol;            /* Array of size nCol. Column names */
+  ಪೂರ್ಣಾಙ್ಕ isPattern;
+  ಪೂರ್ಣಾಙ್ಕ inTransaction;      /* True if within a transaction */
+  ವರ್ಣ *zThis;            /* Name of the echo table */
+  ವರ್ಣ *zTableName;       /* Name of the real table */
+  ವರ್ಣ *zLogName;         /* Name of the log table */
+  ಪೂರ್ಣಾಙ್ಕ nCol;               /* Number of columns in the real table */
+  ಪೂರ್ಣಾಙ್ಕ *aIndex;            /* Array of size nCol. True if column has an index */
+  ವರ್ಣ **aCol;            /* Array of size nCol. Column names */
 };
 
 /* An echo cursor object */
-struct echo_cursor {
+ಸಂರಚನಾ echo_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;
 };
 
-static int simulateVtabError(echo_vtab *p, const char *zMethod){
-  const char *zErr;
-  char zVarname[128];
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ simulateVtabError(echo_vtab *p, ಧ್ರುವ ವರ್ಣ *zMethod){
+  ಧ್ರುವ ವರ್ಣ *zErr;
+  ವರ್ಣ zVarname[128];
   zVarname[127] = '\0';
   sqlite3_snprintf(127, zVarname, "echo_module_fail(%s,%s)", zMethod, p->zTableName);
   zErr = Tcl_GetVar(p->interp, zVarname, TCL_GLOBAL_ONLY);
-  if( zErr ){
-    p->base.zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", zErr);
+  ಯದಿ( zErr ){
+    p->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("echo-vtab-error: %s", zErr);
   }
-  return (zErr!=0);
+  ಪ್ರತ್ಯಾಗಮ (zErr!=0);
 }
 
 /*
@@ -115,28 +115,28 @@ static int simulateVtabError(echo_vtab *p, const char *zMethod){
 **     [pqr]   becomes   pqr
 **     `mno`   becomes   mno
 */
-static void dequoteString(char *z){
-  int quote;
-  int i, j;
-  if( z==0 ) return;
+ಸ್ಥಿರ ಶೂನ್ಯ dequoteString(ವರ್ಣ *z){
+  ಪೂರ್ಣಾಙ್ಕ quote;
+  ಪೂರ್ಣಾಙ್ಕ i, j;
+  ಯದಿ( z==0 ) ಪ್ರತ್ಯಾಗಮ;
   quote = z[0];
-  switch( quote ){
-    case '\'':  break;
-    case '"':   break;
-    case '`':   break;                /* For MySQL compatibility */
-    case '[':   quote = ']';  break;  /* For MS SqlServer compatibility */
-    default:    return;
+  ವಿಕಲ್ಪ( quote ){
+    ಪಕ್ಷ '\'':  ಭಙ್ಗ;
+    ಪಕ್ಷ '"':   ಭಙ್ಗ;
+    ಪಕ್ಷ '`':   ಭಙ್ಗ;                /* For MySQL compatibility */
+    ಪಕ್ಷ '[':   quote = ']';  ಭಙ್ಗ;  /* For MS SqlServer compatibility */
+    ಸ್ವಭಾವ:    ಪ್ರತ್ಯಾಗಮ;
   }
-  for(i=1, j=0; z[i]; i++){
-    if( z[i]==quote ){
-      if( z[i+1]==quote ){
+  ಪ್ರತಿ(i=1, j=0; z[i]; i++){
+    ಯದಿ( z[i]==quote ){
+      ಯದಿ( z[i+1]==quote ){
         z[j++] = quote;
         i++;
-      }else{
+      }ಅನ್ಯಥಾ{
         z[j++] = 0;
-        break;
+        ಭಙ್ಗ;
       }
-    }else{
+    }ಅನ್ಯಥಾ{
       z[j++] = z[i];
     }
   }
@@ -152,64 +152,64 @@ static void dequoteString(char *z){
 ** nCol column names. The caller is responsible for calling sqlite3_free
 ** on *paCol.
 */
-static int getColumnNames(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ getColumnNames(
   sqlite3 *db, 
-  const char *zTab,
-  char ***paCol, 
-  int *pnCol
+  ಧ್ರುವ ವರ್ಣ *zTab,
+  ವರ್ಣ ***paCol, 
+  ಪೂರ್ಣಾಙ್ಕ *pnCol
 ){
-  char **aCol = 0;
-  char *zSql;
+  ವರ್ಣ **aCol = 0;
+  ವರ್ಣ *zSql;
   sqlite3_stmt *pStmt = 0;
-  int rc = SQLITE_OK;
-  int nCol = 0;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ nCol = 0;
 
   /* Prepare the statement "SELECT * FROM <tbl>". The column names
   ** of the result set of the compiled SELECT will be the same as
   ** the column names of table <tbl>.
   */
   zSql = sqlite3_mprintf("SELECT * FROM %Q", zTab);
-  if( !zSql ){
+  ಯದಿ( !zSql ){
     rc = SQLITE_NOMEM;
-    goto out;
+    ಗಚ್ಛ out;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3_free(zSql);
 
-  if( rc==SQLITE_OK ){
-    int ii;
-    int nBytes;
-    char *zSpace;
-    nCol = sqlite3_column_count(pStmt);
+  ಯದಿ( rc==SQLITE_OK ){
+    ಪೂರ್ಣಾಙ್ಕ ii;
+    ಪೂರ್ಣಾಙ್ಕ nBytes;
+    ವರ್ಣ *zSpace;
+    nCol = sqlite3_column_ಎಣಿಕೆ(pStmt);
 
     /* Figure out how much space to allocate for the array of column names 
     ** (including space for the strings themselves). Then allocate it.
     */
-    nBytes = sizeof(char *) * nCol;
-    for(ii=0; ii<nCol; ii++){
-      const char *zName = sqlite3_column_name(pStmt, ii);
-      if( !zName ){
+    nBytes = ಪರಿಮಾಣ(ವರ್ಣ *) * nCol;
+    ಪ್ರತಿ(ii=0; ii<nCol; ii++){
+      ಧ್ರುವ ವರ್ಣ *zName = sqlite3_column_name(pStmt, ii);
+      ಯದಿ( !zName ){
         rc = SQLITE_NOMEM;
-        goto out;
+        ಗಚ್ಛ out;
       }
-      nBytes += (int)strlen(zName)+1;
+      nBytes += (ಪೂರ್ಣಾಙ್ಕ)strlen(zName)+1;
     }
-    aCol = (char **)sqlite3MallocZero(nBytes);
-    if( !aCol ){
+    aCol = (ವರ್ಣ **)sqlite3MallocZero(nBytes);
+    ಯದಿ( !aCol ){
       rc = SQLITE_NOMEM;
-      goto out;
+      ಗಚ್ಛ out;
     }
 
     /* Copy the column names into the allocated space and set up the
     ** pointers in the aCol[] array.
     */
-    zSpace = (char *)(&aCol[nCol]);
-    for(ii=0; ii<nCol; ii++){
+    zSpace = (ವರ್ಣ *)(&aCol[nCol]);
+    ಪ್ರತಿ(ii=0; ii<nCol; ii++){
       aCol[ii] = zSpace;
       sqlite3_snprintf(nBytes, zSpace, "%s", sqlite3_column_name(pStmt,ii));
-      zSpace += (int)strlen(zSpace) + 1;
+      zSpace += (ಪೂರ್ಣಾಙ್ಕ)strlen(zSpace) + 1;
     }
-    assert( (zSpace-nBytes)==(char *)aCol );
+    ಪ್ರತಿಜ್ಞಾ( (zSpace-nBytes)==(ವರ್ಣ *)aCol );
   }
 
   *paCol = aCol;
@@ -217,7 +217,7 @@ static int getColumnNames(
 
 out:
   sqlite3_finalize(pStmt);
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -232,29 +232,29 @@ out:
 ** See comments associated with the member variable aIndex above 
 ** "struct echo_vtab" for details of the contents of the array.
 */
-static int getIndexArray(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ getIndexArray(
   sqlite3 *db,             /* Database connection */
-  const char *zTab,        /* Name of table in database db */
-  int nCol,
-  int **paIndex
+  ಧ್ರುವ ವರ್ಣ *zTab,        /* Name of table in database db */
+  ಪೂರ್ಣಾಙ್ಕ nCol,
+  ಪೂರ್ಣಾಙ್ಕ **paIndex
 ){
   sqlite3_stmt *pStmt = 0;
-  int *aIndex = 0;
-  int rc;
-  char *zSql;
+  ಪೂರ್ಣಾಙ್ಕ *aIndex = 0;
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ವರ್ಣ *zSql;
 
   /* Allocate space for the index array */
-  aIndex = (int *)sqlite3MallocZero(sizeof(int) * nCol);
-  if( !aIndex ){
+  aIndex = (ಪೂರ್ಣಾಙ್ಕ *)sqlite3MallocZero(ಪರಿಮಾಣ(ಪೂರ್ಣಾಙ್ಕ) * nCol);
+  ಯದಿ( !aIndex ){
     rc = SQLITE_NOMEM;
-    goto get_index_array_out;
+    ಗಚ್ಛ get_index_array_out;
   }
 
   /* Compile an sqlite pragma to loop through all indices on table zTab */
   zSql = sqlite3_mprintf("PRAGMA index_list(%s)", zTab);
-  if( !zSql ){
+  ಯದಿ( !zSql ){
     rc = SQLITE_NOMEM;
-    goto get_index_array_out;
+    ಗಚ್ಛ get_index_array_out;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3_free(zSql);
@@ -262,52 +262,52 @@ static int getIndexArray(
   /* For each index, figure out the left-most column and set the 
   ** corresponding entry in aIndex[] to 1.
   */
-  while( pStmt && sqlite3_step(pStmt)==SQLITE_ROW ){
-    const char *zIdx = (const char *)sqlite3_column_text(pStmt, 1);
+  ಯಾವತ್( pStmt && sqlite3_step(pStmt)==SQLITE_ROW ){
+    ಧ್ರುವ ವರ್ಣ *zIdx = (ಧ್ರುವ ವರ್ಣ *)sqlite3_column_text(pStmt, 1);
     sqlite3_stmt *pStmt2 = 0;
-    if( zIdx==0 ) continue;
+    ಯದಿ( zIdx==0 ) ಅನುವರ್ತ;
     zSql = sqlite3_mprintf("PRAGMA index_info(%s)", zIdx);
-    if( !zSql ){
+    ಯದಿ( !zSql ){
       rc = SQLITE_NOMEM;
-      goto get_index_array_out;
+      ಗಚ್ಛ get_index_array_out;
     }
     rc = sqlite3_prepare(db, zSql, -1, &pStmt2, 0);
     sqlite3_free(zSql);
-    if( pStmt2 && sqlite3_step(pStmt2)==SQLITE_ROW ){
-      int cid = sqlite3_column_int(pStmt2, 1);
-      assert( cid>=0 && cid<nCol );
+    ಯದಿ( pStmt2 && sqlite3_step(pStmt2)==SQLITE_ROW ){
+      ಪೂರ್ಣಾಙ್ಕ cid = sqlite3_column_int(pStmt2, 1);
+      ಪ್ರತಿಜ್ಞಾ( cid>=0 && cid<nCol );
       aIndex[cid] = 1;
     }
-    if( pStmt2 ){
+    ಯದಿ( pStmt2 ){
       rc = sqlite3_finalize(pStmt2);
     }
-    if( rc!=SQLITE_OK ){
-      goto get_index_array_out;
+    ಯದಿ( rc!=SQLITE_OK ){
+      ಗಚ್ಛ get_index_array_out;
     }
   }
 
 
 get_index_array_out:
-  if( pStmt ){
-    int rc2 = sqlite3_finalize(pStmt);
-    if( rc==SQLITE_OK ){
+  ಯದಿ( pStmt ){
+    ಪೂರ್ಣಾಙ್ಕ rc2 = sqlite3_finalize(pStmt);
+    ಯದಿ( rc==SQLITE_OK ){
       rc = rc2;
     }
   }
-  if( rc!=SQLITE_OK ){
+  ಯದಿ( rc!=SQLITE_OK ){
     sqlite3_free(aIndex);
     aIndex = 0;
   }
   *paIndex = aIndex;
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
 ** Global Tcl variable $echo_module is a list. This routine appends
 ** the string element zArg to that list in interpreter interp.
 */
-static void appendToEchoModule(Tcl_Interp *interp, const char *zArg){
-  int flags = (TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
+ಸ್ಥಿರ ಶೂನ್ಯ appendToEchoModule(Tcl_Interp *interp, ಧ್ರುವ ವರ್ಣ *zArg){
+  ಪೂರ್ಣಾಙ್ಕ flags = (TCL_APPEND_ಮೌಲ್ಯ | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
   Tcl_SetVar(interp, "echo_module", (zArg?zArg:""), flags);
 }
 
@@ -328,50 +328,50 @@ static void appendToEchoModule(Tcl_Interp *interp, const char *zArg){
 ** Hence, the virtual table should have exactly the same column names and 
 ** types as the real table.
 */
-static int echoDeclareVtab(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoDeclareVtab(
   echo_vtab *pVtab, 
   sqlite3 *db 
 ){
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
 
-  if( pVtab->zTableName ){
+  ಯದಿ( pVtab->zTableName ){
     sqlite3_stmt *pStmt = 0;
     rc = sqlite3_prepare(db, 
         "SELECT sql FROM sqlite_schema WHERE type = 'table' AND name = ?",
         -1, &pStmt, 0);
-    if( rc==SQLITE_OK ){
+    ಯದಿ( rc==SQLITE_OK ){
       sqlite3_bind_text(pStmt, 1, pVtab->zTableName, -1, 0);
-      if( sqlite3_step(pStmt)==SQLITE_ROW ){
-        int rc2;
-        const char *zCreateTable = (const char *)sqlite3_column_text(pStmt, 0);
+      ಯದಿ( sqlite3_step(pStmt)==SQLITE_ROW ){
+        ಪೂರ್ಣಾಙ್ಕ rc2;
+        ಧ್ರುವ ವರ್ಣ *zCreateTable = (ಧ್ರುವ ವರ್ಣ *)sqlite3_column_text(pStmt, 0);
         rc = sqlite3_declare_vtab(db, zCreateTable);
         rc2 = sqlite3_finalize(pStmt);
-        if( rc==SQLITE_OK ){
+        ಯದಿ( rc==SQLITE_OK ){
           rc = rc2;
         }
-      } else {
+      } ಅನ್ಯಥಾ {
         rc = sqlite3_finalize(pStmt);
-        if( rc==SQLITE_OK ){ 
+        ಯದಿ( rc==SQLITE_OK ){ 
           rc = SQLITE_ERROR;
         }
       }
-      if( rc==SQLITE_OK ){
+      ಯದಿ( rc==SQLITE_OK ){
         rc = getColumnNames(db, pVtab->zTableName, &pVtab->aCol, &pVtab->nCol);
       }
-      if( rc==SQLITE_OK ){
+      ಯದಿ( rc==SQLITE_OK ){
         rc = getIndexArray(db, pVtab->zTableName, pVtab->nCol, &pVtab->aIndex);
       }
     }
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
 ** This function frees all runtime structures associated with the virtual
 ** table pVtab.
 */
-static int echoDestructor(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoDestructor(sqlite3_vtab *pVtab){
   echo_vtab *p = (echo_vtab*)pVtab;
   sqlite3_free(p->aIndex);
   sqlite3_free(p->aCol);
@@ -379,11 +379,11 @@ static int echoDestructor(sqlite3_vtab *pVtab){
   sqlite3_free(p->zTableName);
   sqlite3_free(p->zLogName);
   sqlite3_free(p);
-  return 0;
+  ಪ್ರತ್ಯಾಗಮ 0;
 }
 
-typedef struct EchoModule EchoModule;
-struct EchoModule {
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ EchoModule EchoModule;
+ಸಂರಚನಾ EchoModule {
   Tcl_Interp *interp;
   sqlite3 *db;
 };
@@ -393,50 +393,50 @@ struct EchoModule {
 ** to allocate the required in-memory structures for a newly connected
 ** virtual table.
 */
-static int echoConstructor(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoConstructor(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಙ್ಕ argc, ಧ್ರುವ ವರ್ಣ *ಧ್ರುವ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ವರ್ಣ **pzErr
 ){
-  int rc;
-  int i;
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಪೂರ್ಣಾಙ್ಕ i;
   echo_vtab *pVtab;
 
   /* Allocate the sqlite3_vtab/echo_vtab structure itself */
-  pVtab = sqlite3MallocZero( sizeof(*pVtab) );
-  if( !pVtab ){
-    return SQLITE_NOMEM;
+  pVtab = sqlite3MallocZero( ಪರಿಮಾಣ(*pVtab) );
+  ಯದಿ( !pVtab ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
   }
   pVtab->interp = ((EchoModule *)pAux)->interp;
   pVtab->db = db;
 
   /* Allocate echo_vtab.zThis */
   pVtab->zThis = sqlite3_mprintf("%s", argv[2]);
-  if( !pVtab->zThis ){
+  ಯದಿ( !pVtab->zThis ){
     echoDestructor((sqlite3_vtab *)pVtab);
-    return SQLITE_NOMEM;
+    ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
   }
 
   /* Allocate echo_vtab.zTableName */
-  if( argc>3 ){
+  ಯದಿ( argc>3 ){
     pVtab->zTableName = sqlite3_mprintf("%s", argv[3]);
     dequoteString(pVtab->zTableName);
-    if( pVtab->zTableName && pVtab->zTableName[0]=='*' ){
-      char *z = sqlite3_mprintf("%s%s", argv[2], &(pVtab->zTableName[1]));
+    ಯದಿ( pVtab->zTableName && pVtab->zTableName[0]=='*' ){
+      ವರ್ಣ *z = sqlite3_mprintf("%s%s", argv[2], &(pVtab->zTableName[1]));
       sqlite3_free(pVtab->zTableName);
       pVtab->zTableName = z;
       pVtab->isPattern = 1;
     }
-    if( !pVtab->zTableName ){
+    ಯದಿ( !pVtab->zTableName ){
       echoDestructor((sqlite3_vtab *)pVtab);
-      return SQLITE_NOMEM;
+      ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
     }
   }
 
   /* Log the arguments to this function to Tcl var ::echo_module */
-  for(i=0; i<argc; i++){
+  ಪ್ರತಿ(i=0; i<argc; i++){
     appendToEchoModule(pVtab->interp, argv[i]);
   }
 
@@ -445,27 +445,27 @@ static int echoConstructor(
   ** return an error code.
   */
   rc = echoDeclareVtab(pVtab, db);
-  if( rc!=SQLITE_OK ){
+  ಯದಿ( rc!=SQLITE_OK ){
     echoDestructor((sqlite3_vtab *)pVtab);
-    return rc;
+    ಪ್ರತ್ಯಾಗಮ rc;
   }
 
   /* Success. Set *ppVtab and return */
   *ppVtab = &pVtab->base;
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /* 
 ** Echo virtual table module xCreate method.
 */
-static int echoCreate(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoCreate(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಙ್ಕ argc, ಧ್ರುವ ವರ್ಣ *ಧ್ರುವ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ವರ್ಣ **pzErr
 ){
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
   appendToEchoModule(((EchoModule *)pAux)->interp, "xCreate");
   rc = echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
 
@@ -479,164 +479,164 @@ static int echoCreate(
   ** Note: The main point of this is to test that we can drop tables
   ** from within an xDestroy method call.
   */
-  if( rc==SQLITE_OK && argc==5 ){
-    char *zSql;
+  ಯದಿ( rc==SQLITE_OK && argc==5 ){
+    ವರ್ಣ *zSql;
     echo_vtab *pVtab = *(echo_vtab **)ppVtab;
     pVtab->zLogName = sqlite3_mprintf("%s", argv[4]);
     zSql = sqlite3_mprintf("CREATE TABLE %Q(logmsg)", pVtab->zLogName);
     rc = sqlite3_exec(db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
-    if( rc!=SQLITE_OK ){
+    ಯದಿ( rc!=SQLITE_OK ){
       *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
     }
   }
 
-  if( *ppVtab && rc!=SQLITE_OK ){
+  ಯದಿ( *ppVtab && rc!=SQLITE_OK ){
     echoDestructor(*ppVtab);
     *ppVtab = 0;
   }
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     (*(echo_vtab**)ppVtab)->inTransaction = 1;
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /* 
 ** Echo virtual table module xConnect method.
 */
-static int echoConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಙ್ಕ argc, ಧ್ರುವ ವರ್ಣ *ಧ್ರುವ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ವರ್ಣ **pzErr
 ){
   appendToEchoModule(((EchoModule *)pAux)->interp, "xConnect");
-  return echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
+  ಪ್ರತ್ಯಾಗಮ echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
 }
 
 /* 
 ** Echo virtual table module xDisconnect method.
 */
-static int echoDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoDisconnect(sqlite3_vtab *pVtab){
   appendToEchoModule(((echo_vtab *)pVtab)->interp, "xDisconnect");
-  return echoDestructor(pVtab);
+  ಪ್ರತ್ಯಾಗಮ echoDestructor(pVtab);
 }
 
 /* 
 ** Echo virtual table module xDestroy method.
 */
-static int echoDestroy(sqlite3_vtab *pVtab){
-  int rc = SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoDestroy(sqlite3_vtab *pVtab){
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
   echo_vtab *p = (echo_vtab *)pVtab;
   appendToEchoModule(((echo_vtab *)pVtab)->interp, "xDestroy");
 
   /* Drop the "log" table, if one exists (see echoCreate() for details) */
-  if( p && p->zLogName ){
-    char *zSql;
+  ಯದಿ( p && p->zLogName ){
+    ವರ್ಣ *zSql;
     zSql = sqlite3_mprintf("DROP TABLE %Q", p->zLogName);
     rc = sqlite3_exec(p->db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     rc = echoDestructor(pVtab);
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /* 
 ** Echo virtual table module xOpen method.
 */
-static int echoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   echo_cursor *pCur;
-  if( simulateVtabError((echo_vtab *)pVTab, "xOpen") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError((echo_vtab *)pVTab, "xOpen") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
-  pCur = sqlite3MallocZero(sizeof(echo_cursor));
+  pCur = sqlite3MallocZero(ಪರಿಮಾಣ(echo_cursor));
   *ppCursor = (sqlite3_vtab_cursor *)pCur;
-  return (pCur ? SQLITE_OK : SQLITE_NOMEM);
+  ಪ್ರತ್ಯಾಗಮ (pCur ? SQLITE_OK : SQLITE_NOMEM);
 }
 
 /* 
 ** Echo virtual table module xClose method.
 */
-static int echoClose(sqlite3_vtab_cursor *cur){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoClose(sqlite3_vtab_cursor *cur){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   echo_cursor *pCur = (echo_cursor *)cur;
   sqlite3_stmt *pStmt = pCur->pStmt;
   pCur->pStmt = 0;
   sqlite3_free(pCur);
   rc = sqlite3_finalize(pStmt);
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
 ** Return non-zero if the cursor does not currently point to a valid record
 ** (i.e if the scan has finished), or zero otherwise.
 */
-static int echoEof(sqlite3_vtab_cursor *cur){
-  return (((echo_cursor *)cur)->pStmt ? 0 : 1);
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoEof(sqlite3_vtab_cursor *cur){
+  ಪ್ರತ್ಯಾಗಮ (((echo_cursor *)cur)->pStmt ? 0 : 1);
 }
 
 /* 
 ** Echo virtual table module xNext method.
 */
-static int echoNext(sqlite3_vtab_cursor *cur){
-  int rc = SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoNext(sqlite3_vtab_cursor *cur){
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
   echo_cursor *pCur = (echo_cursor *)cur;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xNext") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError((echo_vtab *)(cur->pVtab), "xNext") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
-  if( pCur->pStmt ){
+  ಯದಿ( pCur->pStmt ){
     rc = sqlite3_step(pCur->pStmt);
-    if( rc==SQLITE_ROW ){
+    ಯದಿ( rc==SQLITE_ROW ){
       rc = SQLITE_OK;
-    }else{
+    }ಅನ್ಯಥಾ{
       rc = sqlite3_finalize(pCur->pStmt);
       pCur->pStmt = 0;
     }
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /* 
 ** Echo virtual table module xColumn method.
 */
-static int echoColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
-  int iCol = i + 1;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ಪೂರ್ಣಾಙ್ಕ i){
+  ಪೂರ್ಣಾಙ್ಕ iCol = i + 1;
   sqlite3_stmt *pStmt = ((echo_cursor *)cur)->pStmt;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xColumn") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError((echo_vtab *)(cur->pVtab), "xColumn") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
-  if( !pStmt ){
+  ಯದಿ( !pStmt ){
     sqlite3_result_null(ctx);
-  }else{
-    assert( sqlite3_data_count(pStmt)>iCol );
-    sqlite3_result_value(ctx, sqlite3_column_value(pStmt, iCol));
+  }ಅನ್ಯಥಾ{
+    ಪ್ರತಿಜ್ಞಾ( sqlite3_data_ಎಣಿಕೆ(pStmt)>iCol );
+    sqlite3_result_ಮೌಲ್ಯ(ctx, sqlite3_column_ಮೌಲ್ಯ(pStmt, iCol));
   }
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /* 
 ** Echo virtual table module xRowid method.
 */
-static int echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   sqlite3_stmt *pStmt = ((echo_cursor *)cur)->pStmt;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xRowid") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError((echo_vtab *)(cur->pVtab), "xRowid") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   *pRowid = sqlite3_column_int64(pStmt, 0);
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
@@ -648,42 +648,42 @@ static int echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** In echoFilter(), code assert()s that the supplied idxNum value is
 ** indeed the hash of the supplied idxStr.
 */
-static int hashString(const char *zString){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ hashString(ಧ್ರುವ ವರ್ಣ *zString){
   u32 val = 0;
-  int ii;
-  for(ii=0; zString[ii]; ii++){
-    val = (val << 3) + (int)zString[ii];
+  ಪೂರ್ಣಾಙ್ಕ ii;
+  ಪ್ರತಿ(ii=0; zString[ii]; ii++){
+    val = (val << 3) + (ಪೂರ್ಣಾಙ್ಕ)zString[ii];
   }
-  return (int)(val&0x7fffffff);
+  ಪ್ರತ್ಯಾಗಮ (ಪೂರ್ಣಾಙ್ಕ)(val&0x7fffffff);
 }
 
 /* 
 ** Echo virtual table module xFilter method.
 */
-static int echoFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಙ್ಕ idx_ಅಂಕೆ, ಧ್ರುವ ವರ್ಣ *idxStr,
+  ಪೂರ್ಣಾಙ್ಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
-  int rc;
-  int i;
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಪೂರ್ಣಾಙ್ಕ i;
 
   echo_cursor *pCur = (echo_cursor *)pVtabCursor;
   echo_vtab *pVtab = (echo_vtab *)pVtabCursor->pVtab;
   sqlite3 *db = pVtab->db;
 
-  if( simulateVtabError(pVtab, "xFilter") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xFilter") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   /* Check that idxNum matches idxStr */
-  assert( idxNum==hashString(idxStr) );
+  ಪ್ರತಿಜ್ಞಾ( idx_ಅಂಕೆ==hashString(idxStr) );
 
   /* Log arguments to the ::echo_module Tcl variable */
   appendToEchoModule(pVtab->interp, "xFilter");
   appendToEchoModule(pVtab->interp, idxStr);
-  for(i=0; i<argc; i++){
-    appendToEchoModule(pVtab->interp, (const char*)sqlite3_value_text(argv[i]));
+  ಪ್ರತಿ(i=0; i<argc; i++){
+    appendToEchoModule(pVtab->interp, (ಧ್ರುವ ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(argv[i]));
   }
 
   sqlite3_finalize(pCur->pStmt);
@@ -693,17 +693,17 @@ static int echoFilter(
   ** runtime parameters passed to this function to it.
   */
   rc = sqlite3_prepare(db, idxStr, -1, &pCur->pStmt, 0);
-  assert( pCur->pStmt || rc!=SQLITE_OK );
-  for(i=0; rc==SQLITE_OK && i<argc; i++){
-    rc = sqlite3_bind_value(pCur->pStmt, i+1, argv[i]);
+  ಪ್ರತಿಜ್ಞಾ( pCur->pStmt || rc!=SQLITE_OK );
+  ಪ್ರತಿ(i=0; rc==SQLITE_OK && i<argc; i++){
+    rc = sqlite3_bind_ಮೌಲ್ಯ(pCur->pStmt, i+1, argv[i]);
   }
 
   /* If everything was successful, advance to the first row of the scan */
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     rc = echoNext(pVtabCursor);
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 
@@ -720,28 +720,28 @@ static int echoFilter(
 ** If the third argument, doFree, is true, then sqlite3_free() is
 ** also called to free the buffer pointed to by zAppend.
 */
-static void string_concat(char **pzStr, char *zAppend, int doFree, int *pRc){
-  char *zIn = *pzStr;
-  if( !zAppend && doFree && *pRc==SQLITE_OK ){
+ಸ್ಥಿರ ಶೂನ್ಯ string_concat(ವರ್ಣ **pzStr, ವರ್ಣ *zAppend, ಪೂರ್ಣಾಙ್ಕ doFree, ಪೂರ್ಣಾಙ್ಕ *pRc){
+  ವರ್ಣ *zIn = *pzStr;
+  ಯದಿ( !zAppend && doFree && *pRc==SQLITE_OK ){
     *pRc = SQLITE_NOMEM;
   }
-  if( *pRc!=SQLITE_OK ){
+  ಯದಿ( *pRc!=SQLITE_OK ){
     sqlite3_free(zIn);
     zIn = 0;
-  }else{
-    if( zIn ){
-      char *zTemp = zIn;
+  }ಅನ್ಯಥಾ{
+    ಯದಿ( zIn ){
+      ವರ್ಣ *zTemp = zIn;
       zIn = sqlite3_mprintf("%s%s", zIn, zAppend);
       sqlite3_free(zTemp);
-    }else{
+    }ಅನ್ಯಥಾ{
       zIn = sqlite3_mprintf("%s", zAppend);
     }
-    if( !zIn ){
+    ಯದಿ( !zIn ){
       *pRc = SQLITE_NOMEM;
     }
   }
   *pzStr = zIn;
-  if( doFree ){
+  ಯದಿ( doFree ){
     sqlite3_free(zAppend);
   }
 }
@@ -756,22 +756,22 @@ static void string_concat(char **pzStr, char *zAppend, int doFree, int *pRc){
 ** (select all columns). Or, for version 3.10.0 and greater, the list of
 ** columns identified by the pIdxInfo->colUsed mask.
 */
-static char *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
-  char *zRet = 0;
-  if( sqlite3_libversion_number()<3010000 ){
+ಸ್ಥಿರ ವರ್ಣ *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
+  ವರ್ಣ *zRet = 0;
+  ಯದಿ( sqlite3_libversion_ಸಂಖ್ಯೆ()<3010000 ){
     zRet = sqlite3_mprintf(", *");
-  }else{
-    int i;
-    for(i=0; i<pTab->nCol; i++){
-      if( pIdxInfo->colUsed & ((sqlite3_uint64)1 << (i>=63 ? 63 : i)) ){
+  }ಅನ್ಯಥಾ{
+    ಪೂರ್ಣಾಙ್ಕ i;
+    ಪ್ರತಿ(i=0; i<pTab->nCol; i++){
+      ಯದಿ( pIdxInfo->colUsed & ((sqlite3_uint64)1 << (i>=63 ? 63 : i)) ){
         zRet = sqlite3_mprintf("%z, %s", zRet, pTab->aCol[i]);
-      }else{
+      }ಅನ್ಯಥಾ{
         zRet = sqlite3_mprintf("%z, NULL", zRet);
       }
-      if( !zRet ) break;
+      ಯದಿ( !zRet ) ಭಙ್ಗ;
     }
   }
-  return zRet;
+  ಪ್ರತ್ಯಾಗಮ zRet;
 }
 
 /*
@@ -796,29 +796,29 @@ static char *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
 ** where the <where-clause> and <order-by-clause> are determined
 ** by the contents of the structure pointed to by the pIdxInfo argument.
 */
-static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
-  char *zQuery = 0;
-  char *zCol = 0;
-  char *zNew;
-  int nArg = 0;
-  const char *zSep = "WHERE";
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  ಪೂರ್ಣಾಙ್ಕ ii;
+  ವರ್ಣ *zQuery = 0;
+  ವರ್ಣ *zCol = 0;
+  ವರ್ಣ *zNew;
+  ಪೂರ್ಣಾಙ್ಕ nArg = 0;
+  ಧ್ರುವ ವರ್ಣ *zSep = "WHERE";
   echo_vtab *pVtab = (echo_vtab *)tab;
   sqlite3_stmt *pStmt = 0;
   Tcl_Interp *interp = pVtab->interp;
 
-  int nRow = 0;
-  int useIdx = 0;
-  int rc = SQLITE_OK;
-  int useCost = 0;
-  double cost = 0;
-  int isIgnoreUsable = 0;
-  if( Tcl_GetVar(interp, "echo_module_ignore_usable", TCL_GLOBAL_ONLY) ){
+  ಪೂರ್ಣಾಙ್ಕ nRow = 0;
+  ಪೂರ್ಣಾಙ್ಕ useIdx = 0;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ useCost = 0;
+  ದ್ವಿಗುಣ cost = 0;
+  ಪೂರ್ಣಾಙ್ಕ isIgnoreUsable = 0;
+  ಯದಿ( Tcl_GetVar(interp, "echo_module_ignore_usable", TCL_GLOBAL_ONLY) ){
     isIgnoreUsable = 1;
   }
 
-  if( simulateVtabError(pVtab, "xBestIndex") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xBestIndex") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   /* Determine the number of rows in the table and store this value in local
@@ -826,59 +826,59 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** rows in the table for a linear scan, or the log (base 2) of the 
   ** number of rows if the proposed scan uses an index.  
   */
-  if( Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY) ){
+  ಯದಿ( Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY) ){
     cost = atof(Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY));
     useCost = 1;
-  } else {
+  } ಅನ್ಯಥಾ {
     zQuery = sqlite3_mprintf("SELECT count(*) FROM %Q", pVtab->zTableName);
-    if( !zQuery ){
-      return SQLITE_NOMEM;
+    ಯದಿ( !zQuery ){
+      ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
     }
     rc = sqlite3_prepare(pVtab->db, zQuery, -1, &pStmt, 0);
     sqlite3_free(zQuery);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    ಯದಿ( rc!=SQLITE_OK ){
+      ಪ್ರತ್ಯಾಗಮ rc;
     }
     sqlite3_step(pStmt);
     nRow = sqlite3_column_int(pStmt, 0);
     rc = sqlite3_finalize(pStmt);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    ಯದಿ( rc!=SQLITE_OK ){
+      ಪ್ರತ್ಯಾಗಮ rc;
     }
   }
 
   zCol = echoSelectList(pVtab, pIdxInfo);
-  if( !zCol ) return SQLITE_NOMEM;
+  ಯದಿ( !zCol ) ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
   zQuery = sqlite3_mprintf("SELECT rowid%z FROM %Q", zCol, pVtab->zTableName);
-  if( !zQuery ) return SQLITE_NOMEM;
+  ಯದಿ( !zQuery ) ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    const struct sqlite3_index_constraint *pConstraint;
-    struct sqlite3_index_constraint_usage *pUsage;
-    int iCol;
+  ಪ್ರತಿ(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ಧ್ರುವ ಸಂರಚನಾ sqlite3_index_constraint *pConstraint;
+    ಸಂರಚನಾ sqlite3_index_constraint_usage *pUsage;
+    ಪೂರ್ಣಾಙ್ಕ iCol;
 
     pConstraint = &pIdxInfo->aConstraint[ii];
     pUsage = &pIdxInfo->aConstraintUsage[ii];
 
-    if( !isIgnoreUsable && !pConstraint->usable ) continue;
+    ಯದಿ( !isIgnoreUsable && !pConstraint->usable ) ಅನುವರ್ತ;
 
     iCol = pConstraint->iColumn;
-    if( iCol<0 || pVtab->aIndex[iCol] ){
-      char *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
-      char *zOp = 0;
+    ಯದಿ( iCol<0 || pVtab->aIndex[iCol] ){
+      ವರ್ಣ *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
+      ವರ್ಣ *zOp = 0;
       useIdx = 1;
-      switch( pConstraint->op ){
-        case SQLITE_INDEX_CONSTRAINT_EQ:
-          zOp = "="; break;
-        case SQLITE_INDEX_CONSTRAINT_LT:
-          zOp = "<"; break;
-        case SQLITE_INDEX_CONSTRAINT_GT:
-          zOp = ">"; break;
-        case SQLITE_INDEX_CONSTRAINT_LE:
-          zOp = "<="; break;
-        case SQLITE_INDEX_CONSTRAINT_GE:
-          zOp = ">="; break;
-        case SQLITE_INDEX_CONSTRAINT_MATCH:
+      ವಿಕಲ್ಪ( pConstraint->op ){
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_EQ:
+          zOp = "="; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LT:
+          zOp = "<"; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GT:
+          zOp = ">"; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LE:
+          zOp = "<="; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GE:
+          zOp = ">="; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_MATCH:
           /* Purposely translate the MATCH operator into a LIKE, which
           ** will be used by the next block of code to construct a new
           ** query.  It should also be noted here that the next block
@@ -886,19 +886,19 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
           ** in upper-case to trigger the special MATCH handling (i.e.
           ** wrapping the bound parameter with literal '%'s).
           */
-          zOp = "LIKE"; break;
-        case SQLITE_INDEX_CONSTRAINT_LIKE:
-          zOp = "like"; break;
-        case SQLITE_INDEX_CONSTRAINT_GLOB:
-          zOp = "glob"; break;
-        case SQLITE_INDEX_CONSTRAINT_REGEXP:
-          zOp = "regexp"; break;
+          zOp = "LIKE"; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LIKE:
+          zOp = "like"; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GLOB:
+          zOp = "glob"; ಭಙ್ಗ;
+        ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_REGEXP:
+          zOp = "regexp"; ಭಙ್ಗ;
       }
-      if( zOp ){
-        if( zOp[0]=='L' ){
+      ಯದಿ( zOp ){
+        ಯದಿ( zOp[0]=='L' ){
           zNew = sqlite3_mprintf(" %s %s LIKE (SELECT '%%'||?||'%%')", 
               zSep, zNewCol);
-        } else {
+        } ಅನ್ಯಥಾ {
           zNew = sqlite3_mprintf(" %s %s %s ?", zSep, zNewCol, zOp);
         }
         string_concat(&zQuery, zNew, 1, &rc);
@@ -913,12 +913,12 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** on a column that this virtual table has an index for, then consume 
   ** the ORDER BY clause.
   */
-  if( pIdxInfo->nOrderBy==1 && (
+  ಯದಿ( pIdxInfo->nOrderBy==1 && (
         pIdxInfo->aOrderBy->iColumn<0 ||
         pVtab->aIndex[pIdxInfo->aOrderBy->iColumn]) ){
-    int iCol = pIdxInfo->aOrderBy->iColumn;
-    char *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
-    char *zDir = pIdxInfo->aOrderBy->desc?"DESC":"ASC";
+    ಪೂರ್ಣಾಙ್ಕ iCol = pIdxInfo->aOrderBy->iColumn;
+    ವರ್ಣ *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
+    ವರ್ಣ *zDir = pIdxInfo->aOrderBy->desc?"DESC":"ASC";
     zNew = sqlite3_mprintf(" ORDER BY %s %s", zNewCol, zDir);
     string_concat(&zQuery, zNew, 1, &rc);
     pIdxInfo->orderByConsumed = 1;
@@ -927,25 +927,25 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   appendToEchoModule(pVtab->interp, "xBestIndex");;
   appendToEchoModule(pVtab->interp, zQuery);
 
-  if( !zQuery ){
-    return rc;
+  ಯದಿ( !zQuery ){
+    ಪ್ರತ್ಯಾಗಮ rc;
   }
-  pIdxInfo->idxNum = hashString(zQuery);
+  pIdxInfo->idx_ಅಂಕೆ = hashString(zQuery);
   pIdxInfo->idxStr = zQuery;
   pIdxInfo->needToFreeIdxStr = 1;
-  if( useCost ){
+  ಯದಿ( useCost ){
     pIdxInfo->estimatedCost = cost;
-  }else if( useIdx ){
+  }ಅನ್ಯಥಾ ಯದಿ( useIdx ){
     /* Approximation of log2(nRow). */
-    for( ii=0; ii<(sizeof(int)*8)-1; ii++ ){
-      if( nRow & (1<<ii) ){
-        pIdxInfo->estimatedCost = (double)ii;
+    ಪ್ರತಿ( ii=0; ii<(ಪರಿಮಾಣ(ಪೂರ್ಣಾಙ್ಕ)*8)-1; ii++ ){
+      ಯದಿ( nRow & (1<<ii) ){
+        pIdxInfo->estimatedCost = (ದ್ವಿಗುಣ)ii;
       }
     }
-  }else{
-    pIdxInfo->estimatedCost = (double)nRow;
+  }ಅನ್ಯಥಾ{
+    pIdxInfo->estimatedCost = (ದ್ವಿಗುಣ)nRow;
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -962,49 +962,49 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **    NULL       INTEGER    (nCol args)    INSERT (incl. rowid value)
 **
 */
-int echoUpdate(
+ಪೂರ್ಣಾಙ್ಕ echoUpdate(
   sqlite3_vtab *tab, 
-  int nData, 
-  sqlite3_value **apData, 
+  ಪೂರ್ಣಾಙ್ಕ nData, 
+  sqlite3_ಮೌಲ್ಯ **apData, 
   sqlite_int64 *pRowid
 ){
   echo_vtab *pVtab = (echo_vtab *)tab;
   sqlite3 *db = pVtab->db;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
 
   sqlite3_stmt *pStmt = 0;
-  char *z = 0;               /* SQL statement to execute */
-  int bindArgZero = 0;       /* True to bind apData[0] to sql var no. nData */
-  int bindArgOne = 0;        /* True to bind apData[1] to sql var no. 1 */
-  int i;                     /* Counter variable used by for loops */
+  ವರ್ಣ *z = 0;               /* SQL statement to execute */
+  ಪೂರ್ಣಾಙ್ಕ bindArgZero = 0;       /* True to bind apData[0] to sql var no. nData */
+  ಪೂರ್ಣಾಙ್ಕ bindArgOne = 0;        /* True to bind apData[1] to sql var no. 1 */
+  ಪೂರ್ಣಾಙ್ಕ i;                     /* Counter variable used by for loops */
 
-  assert( nData==pVtab->nCol+2 || nData==1 );
+  ಪ್ರತಿಜ್ಞಾ( nData==pVtab->nCol+2 || nData==1 );
 
   /* Ticket #3083 - make sure we always start a transaction prior to
   ** making any changes to a virtual table */
-  assert( pVtab->inTransaction );
+  ಪ್ರತಿಜ್ಞಾ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xUpdate") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xUpdate") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   /* If apData[0] is an integer and nData>1 then do an UPDATE */
-  if( nData>1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
-    char *zSep = " SET";
+  ಯದಿ( nData>1 && sqlite3_ಮೌಲ್ಯ_type(apData[0])==SQLITE_INTEGER ){
+    ವರ್ಣ *zSep = " SET";
     z = sqlite3_mprintf("UPDATE %Q", pVtab->zTableName);
-    if( !z ){
+    ಯದಿ( !z ){
       rc = SQLITE_NOMEM;
     }
 
-    bindArgOne = (apData[1] && sqlite3_value_type(apData[1])==SQLITE_INTEGER);
+    bindArgOne = (apData[1] && sqlite3_ಮೌಲ್ಯ_type(apData[1])==SQLITE_INTEGER);
     bindArgZero = 1;
 
-    if( bindArgOne ){
+    ಯದಿ( bindArgOne ){
        string_concat(&z, " SET rowid=?1 ", 0, &rc);
        zSep = ",";
     }
-    for(i=2; i<nData; i++){
-      if( apData[i]==0 ) continue;
+    ಪ್ರತಿ(i=2; i<nData; i++){
+      ಯದಿ( apData[i]==0 ) ಅನುವರ್ತ;
       string_concat(&z, sqlite3_mprintf(
           "%s %Q=?%d", zSep, pVtab->aCol[i-2], i), 1, &rc);
       zSep = ",";
@@ -1013,81 +1013,81 @@ int echoUpdate(
   }
 
   /* If apData[0] is an integer and nData==1 then do a DELETE */
-  else if( nData==1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
+  ಅನ್ಯಥಾ ಯದಿ( nData==1 && sqlite3_ಮೌಲ್ಯ_type(apData[0])==SQLITE_INTEGER ){
     z = sqlite3_mprintf("DELETE FROM %Q WHERE rowid = ?1", pVtab->zTableName);
-    if( !z ){
+    ಯದಿ( !z ){
       rc = SQLITE_NOMEM;
     }
     bindArgZero = 1;
   }
 
   /* If the first argument is NULL and there are more than two args, INSERT */
-  else if( nData>2 && sqlite3_value_type(apData[0])==SQLITE_NULL ){
-    int ii;
-    char *zInsert = 0;
-    char *zValues = 0;
+  ಅನ್ಯಥಾ ಯದಿ( nData>2 && sqlite3_ಮೌಲ್ಯ_type(apData[0])==SQLITE_NULL ){
+    ಪೂರ್ಣಾಙ್ಕ ii;
+    ವರ್ಣ *z_ಸೇರಿಸು = 0;
+    ವರ್ಣ *z_ಮೌಲ್ಯಗಳು = 0;
   
-    zInsert = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
-    if( !zInsert ){
+    z_ಸೇರಿಸು = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
+    ಯದಿ( !z_ಸೇರಿಸು ){
       rc = SQLITE_NOMEM;
     }
-    if( sqlite3_value_type(apData[1])==SQLITE_INTEGER ){
+    ಯದಿ( sqlite3_ಮೌಲ್ಯ_type(apData[1])==SQLITE_INTEGER ){
       bindArgOne = 1;
-      zValues = sqlite3_mprintf("?");
-      string_concat(&zInsert, "rowid", 0, &rc);
+      z_ಮೌಲ್ಯಗಳು = sqlite3_mprintf("?");
+      string_concat(&z_ಸೇರಿಸು, "rowid", 0, &rc);
     }
 
-    assert((pVtab->nCol+2)==nData);
-    for(ii=2; ii<nData; ii++){
-      string_concat(&zInsert, 
-          sqlite3_mprintf("%s%Q", zValues?", ":"", pVtab->aCol[ii-2]), 1, &rc);
-      string_concat(&zValues, 
-          sqlite3_mprintf("%s?%d", zValues?", ":"", ii), 1, &rc);
+    ಪ್ರತಿಜ್ಞಾ((pVtab->nCol+2)==nData);
+    ಪ್ರತಿ(ii=2; ii<nData; ii++){
+      string_concat(&z_ಸೇರಿಸು, 
+          sqlite3_mprintf("%s%Q", z_ಮೌಲ್ಯಗಳು?", ":"", pVtab->aCol[ii-2]), 1, &rc);
+      string_concat(&z_ಮೌಲ್ಯಗಳು, 
+          sqlite3_mprintf("%s?%d", z_ಮೌಲ್ಯಗಳು?", ":"", ii), 1, &rc);
     }
 
-    string_concat(&z, zInsert, 1, &rc);
+    string_concat(&z, z_ಸೇರಿಸು, 1, &rc);
     string_concat(&z, ") VALUES(", 0, &rc);
-    string_concat(&z, zValues, 1, &rc);
+    string_concat(&z, z_ಮೌಲ್ಯಗಳು, 1, &rc);
     string_concat(&z, ")", 0, &rc);
   }
 
   /* Anything else is an error */
-  else{
-    assert(0);
-    return SQLITE_ERROR;
+  ಅನ್ಯಥಾ{
+    ಪ್ರತಿಜ್ಞಾ(0);
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     rc = sqlite3_prepare(db, z, -1, &pStmt, 0);
   }
-  assert( rc!=SQLITE_OK || pStmt );
+  ಪ್ರತಿಜ್ಞಾ( rc!=SQLITE_OK || pStmt );
   sqlite3_free(z);
-  if( rc==SQLITE_OK ) {
-    if( bindArgZero ){
-      sqlite3_bind_value(pStmt, nData, apData[0]);
+  ಯದಿ( rc==SQLITE_OK ) {
+    ಯದಿ( bindArgZero ){
+      sqlite3_bind_ಮೌಲ್ಯ(pStmt, nData, apData[0]);
     }
-    if( bindArgOne ){
-      sqlite3_bind_value(pStmt, 1, apData[1]);
+    ಯದಿ( bindArgOne ){
+      sqlite3_bind_ಮೌಲ್ಯ(pStmt, 1, apData[1]);
     }
-    for(i=2; i<nData && rc==SQLITE_OK; i++){
-      if( apData[i] ) rc = sqlite3_bind_value(pStmt, i, apData[i]);
+    ಪ್ರತಿ(i=2; i<nData && rc==SQLITE_OK; i++){
+      ಯದಿ( apData[i] ) rc = sqlite3_bind_ಮೌಲ್ಯ(pStmt, i, apData[i]);
     }
-    if( rc==SQLITE_OK ){
+    ಯದಿ( rc==SQLITE_OK ){
       sqlite3_step(pStmt);
       rc = sqlite3_finalize(pStmt);
-    }else{
+    }ಅನ್ಯಥಾ{
       sqlite3_finalize(pStmt);
     }
   }
 
-  if( pRowid && rc==SQLITE_OK ){
-    *pRowid = sqlite3_last_insert_rowid(db);
+  ಯದಿ( pRowid && rc==SQLITE_OK ){
+    *pRowid = sqlite3_last_ಸೇರಿಸು_rowid(db);
   }
-  if( rc!=SQLITE_OK ){
-    tab->zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
+  ಯದಿ( rc!=SQLITE_OK ){
+    tab->z_Err_ಸಂದೇಶ = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -1095,104 +1095,104 @@ int echoUpdate(
 ** virtual tables. Do nothing other than add the name of the callback
 ** to the $::echo_module Tcl variable.
 */
-static int echoTransactionCall(sqlite3_vtab *tab, const char *zCall){
-  char *z;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoTransactionCall(sqlite3_vtab *tab, ಧ್ರುವ ವರ್ಣ *zCall){
+  ವರ್ಣ *z;
   echo_vtab *pVtab = (echo_vtab *)tab;
   z = sqlite3_mprintf("echo(%s)", pVtab->zTableName);
-  if( z==0 ) return SQLITE_NOMEM;
+  ಯದಿ( z==0 ) ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
   appendToEchoModule(pVtab->interp, zCall);
   appendToEchoModule(pVtab->interp, z);
   sqlite3_free(z);
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
-static int echoBegin(sqlite3_vtab *tab){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoBegin(sqlite3_vtab *tab){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   echo_vtab *pVtab = (echo_vtab *)tab;
   Tcl_Interp *interp = pVtab->interp;
-  const char *zVal; 
+  ಧ್ರುವ ವರ್ಣ *zVal; 
 
   /* Ticket #3083 - do not start a transaction if we are already in
   ** a transaction */
-  assert( !pVtab->inTransaction );
+  ಪ್ರತಿಜ್ಞಾ( !pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xBegin") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xBegin") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   rc = echoTransactionCall(tab, "xBegin");
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     /* Check if the $::echo_module_begin_fail variable is defined. If it is,
     ** and it is set to the name of the real table underlying this virtual
     ** echo module table, then cause this xSync operation to fail.
     */
     zVal = Tcl_GetVar(interp, "echo_module_begin_fail", TCL_GLOBAL_ONLY);
-    if( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
+    ಯದಿ( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
       rc = SQLITE_ERROR;
     }
   }
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     pVtab->inTransaction = 1;
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
-static int echoSync(sqlite3_vtab *tab){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoSync(sqlite3_vtab *tab){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   echo_vtab *pVtab = (echo_vtab *)tab;
   Tcl_Interp *interp = pVtab->interp;
-  const char *zVal; 
+  ಧ್ರುವ ವರ್ಣ *zVal; 
 
   /* Ticket #3083 - Only call xSync if we have previously started a
   ** transaction */
-  assert( pVtab->inTransaction );
+  ಪ್ರತಿಜ್ಞಾ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xSync") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xSync") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   rc = echoTransactionCall(tab, "xSync");
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     /* Check if the $::echo_module_sync_fail variable is defined. If it is,
     ** and it is set to the name of the real table underlying this virtual
     ** echo module table, then cause this xSync operation to fail.
     */
     zVal = Tcl_GetVar(interp, "echo_module_sync_fail", TCL_GLOBAL_ONLY);
-    if( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
+    ಯದಿ( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
       rc = -1;
     }
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
-static int echoCommit(sqlite3_vtab *tab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoCommit(sqlite3_vtab *tab){
   echo_vtab *pVtab = (echo_vtab*)tab;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ rc;
 
   /* Ticket #3083 - Only call xCommit if we have previously started
   ** a transaction */
-  assert( pVtab->inTransaction );
+  ಪ್ರತಿಜ್ಞಾ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xCommit") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(pVtab, "xCommit") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
   sqlite3BeginBenignMalloc();
   rc = echoTransactionCall(tab, "xCommit");
   sqlite3EndBenignMalloc();
   pVtab->inTransaction = 0;
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
-static int echoRollback(sqlite3_vtab *tab){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoRollback(sqlite3_vtab *tab){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   echo_vtab *pVtab = (echo_vtab*)tab;
 
   /* Ticket #3083 - Only call xRollback if we have previously started
   ** a transaction */
-  assert( pVtab->inTransaction );
+  ಪ್ರತಿಜ್ಞಾ( pVtab->inTransaction );
 
   rc = echoTransactionCall(tab, "xRollback");
   pVtab->inTransaction = 0;
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -1200,25 +1200,25 @@ static int echoRollback(sqlite3_vtab *tab){
 ** all arguments to the ::echo_glob_overload procedure of TCL
 ** and return the result of that procedure as a string.
 */
-static void overloadedGlobFunction(
+ಸ್ಥಿರ ಶೂನ್ಯ overloadedGlobFunction(
   sqlite3_context *pContext,
-  int nArg,
-  sqlite3_value **apArg
+  ಪೂರ್ಣಾಙ್ಕ nArg,
+  sqlite3_ಮೌಲ್ಯ **apArg
 ){
   Tcl_Interp *interp = sqlite3_user_data(pContext);
   Tcl_DString str;
-  int i;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ i;
+  ಪೂರ್ಣಾಙ್ಕ rc;
   Tcl_DStringInit(&str);
   Tcl_DStringAppendElement(&str, "::echo_glob_overload");
-  for(i=0; i<nArg; i++){
-    Tcl_DStringAppendElement(&str, (char*)sqlite3_value_text(apArg[i]));
+  ಪ್ರತಿ(i=0; i<nArg; i++){
+    Tcl_DStringAppendElement(&str, (ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(apArg[i]));
   }
-  rc = Tcl_Eval(interp, Tcl_DStringValue(&str));
+  rc = Tcl_Eval(interp, Tcl_DString_ಮೌಲ್ಯ(&str));
   Tcl_DStringFree(&str);
-  if( rc ){
+  ಯದಿ( rc ){
     sqlite3_result_error(pContext, Tcl_GetStringResult(interp), -1);
-  }else{
+  }ಅನ್ಯಥಾ{
     sqlite3_result_text(pContext, Tcl_GetStringResult(interp),
                         -1, SQLITE_TRANSIENT);
   }
@@ -1233,67 +1233,67 @@ static void overloadedGlobFunction(
 ** do so if the function is named "glob", and a TCL command named
 ** ::echo_glob_overload exists.
 */
-static int echoFindFunction(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoFindFunction(
   sqlite3_vtab *vtab,
-  int nArg,
-  const char *zFuncName,
-  void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),
-  void **ppArg
+  ಪೂರ್ಣಾಙ್ಕ nArg,
+  ಧ್ರುವ ವರ್ಣ *zFuncName,
+  ಶೂನ್ಯ (**pxFunc)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+  ಶೂನ್ಯ **ppArg
 ){
   echo_vtab *pVtab = (echo_vtab *)vtab;
   Tcl_Interp *interp = pVtab->interp;
   Tcl_CmdInfo info;
-  if( strcmp(zFuncName,"glob")!=0 ){
-    return 0;
+  ಯದಿ( strcmp(zFuncName,"glob")!=0 ){
+    ಪ್ರತ್ಯಾಗಮ 0;
   }
-  if( Tcl_GetCommandInfo(interp, "::echo_glob_overload", &info)==0 ){
-    return 0;
+  ಯದಿ( Tcl_GetCommandInfo(interp, "::echo_glob_overload", &info)==0 ){
+    ಪ್ರತ್ಯಾಗಮ 0;
   }
   *pxFunc = overloadedGlobFunction;
   *ppArg = interp;
-  return 1;
+  ಪ್ರತ್ಯಾಗಮ 1;
 }
 
-static int echoRename(sqlite3_vtab *vtab, const char *zNewName){
-  int rc = SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoRename(sqlite3_vtab *vtab, ಧ್ರುವ ವರ್ಣ *zNewName){
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
   echo_vtab *p = (echo_vtab *)vtab;
 
-  if( simulateVtabError(p, "xRename") ){
-    return SQLITE_ERROR;
+  ಯದಿ( simulateVtabError(p, "xRename") ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
-  if( p->isPattern ){
-    int nThis = (int)strlen(p->zThis);
-    char *zSql = sqlite3_mprintf("ALTER TABLE %s RENAME TO %s%s", 
+  ಯದಿ( p->isPattern ){
+    ಪೂರ್ಣಾಙ್ಕ nThis = (ಪೂರ್ಣಾಙ್ಕ)strlen(p->zThis);
+    ವರ್ಣ *zSql = sqlite3_mprintf("ALTER TABLE %s RENAME TO %s%s", 
         p->zTableName, zNewName, &p->zTableName[nThis]
     );
     rc = sqlite3_exec(p->db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
-static int echoSavepoint(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoSavepoint(sqlite3_vtab *pVTab, ಪೂರ್ಣಾಙ್ಕ iSavepoint){
+  ಪ್ರತಿಜ್ಞಾ( pVTab );
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int echoRelease(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoRelease(sqlite3_vtab *pVTab, ಪೂರ್ಣಾಙ್ಕ iSavepoint){
+  ಪ್ರತಿಜ್ಞಾ( pVTab );
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int echoRollbackTo(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ echoRollbackTo(sqlite3_vtab *pVTab, ಪೂರ್ಣಾಙ್ಕ iSavepoint){
+  ಪ್ರತಿಜ್ಞಾ( pVTab );
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that merely "echos" the contents of another
 ** table (like an SQL VIEW).
 */
-static sqlite3_module echoModule = {
+ಸ್ಥಿರ sqlite3_module echoModule = {
   1,                         /* iVersion */
   echoCreate,
   echoConnect,
@@ -1321,7 +1321,7 @@ static sqlite3_module echoModule = {
   0                          /* xIntegrity */
 };
 
-static sqlite3_module echoModuleV2 = {
+ಸ್ಥಿರ sqlite3_module echoModuleV2 = {
   2,                         /* iVersion */
   echoCreate,
   echoConnect,
@@ -1352,10 +1352,10 @@ static sqlite3_module echoModuleV2 = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern const char *sqlite3ErrName(int);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ getDbPointer(Tcl_Interp *interp, ಧ್ರುವ ವರ್ಣ *zA, sqlite3 **ppDb);
+ಬಾಹ್ಯ ಧ್ರುವ ವರ್ಣ *sqlite3ErrName(ಪೂರ್ಣಾಙ್ಕ);
 
-static void moduleDestroy(void *p){
+ಸ್ಥಿರ ಶೂನ್ಯ moduleDestroy(ಶೂನ್ಯ *p){
   EchoModule *pMod = (EchoModule*)p;
   sqlite3_create_function(pMod->db, "function_that_does_not_exist_0982ma98",
                           SQLITE_ANY, 1, 0, 0, 0, 0);
@@ -1365,41 +1365,41 @@ static void moduleDestroy(void *p){
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_echo_module(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI register_echo_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಙ್ಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ rc;
   sqlite3 *db;
   EchoModule *pMod;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ಯದಿ( objc!=2 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "DB");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ಯದಿ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
 
   /* Virtual table module "echo" */
-  pMod = sqlite3_malloc(sizeof(EchoModule));
+  pMod = sqlite3_malloc(ಪರಿಮಾಣ(EchoModule));
   pMod->interp = interp;
   pMod->db = db;
   rc = sqlite3_create_module_v2(
-      db, "echo", &echoModule, (void*)pMod, moduleDestroy
+      db, "echo", &echoModule, (ಶೂನ್ಯ*)pMod, moduleDestroy
   );
 
   /* Virtual table module "echo_v2" */
-  if( rc==SQLITE_OK ){
-    pMod = sqlite3_malloc(sizeof(EchoModule));
+  ಯದಿ( rc==SQLITE_OK ){
+    pMod = sqlite3_malloc(ಪರಿಮಾಣ(EchoModule));
     pMod->interp = interp;
     pMod->db = db;
     rc = sqlite3_create_module_v2(db, "echo_v2", 
-        &echoModuleV2, (void*)pMod, moduleDestroy
+        &echoModuleV2, (ಶೂನ್ಯ*)pMod, moduleDestroy
     );
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-  return TCL_OK;
+  Tcl_SetResult(interp, (ವರ್ಣ *)sqlite3ErrName(rc), TCL_STATIC);
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 /*
@@ -1407,25 +1407,25 @@ static int SQLITE_TCLAPI register_echo_module(
 **
 ** sqlite3_declare_vtab DB SQL
 */
-static int SQLITE_TCLAPI declare_vtab(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI declare_vtab(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಙ್ಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  int rc;
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB SQL");
-    return TCL_ERROR;
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಯದಿ( objc!=3 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "DB SQL");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ಯದಿ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   rc = sqlite3_declare_vtab(db, Tcl_GetString(objv[2]));
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3_errmsg(db), TCL_VOLATILE);
-    return TCL_ERROR;
+  ಯದಿ( rc!=SQLITE_OK ){
+    Tcl_SetResult(interp, (ವರ್ಣ *)sqlite3_errmsg(db), TCL_VOLATILE);
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 #endif /* ifndef SQLITE_OMIT_VIRTUALTABLE */
@@ -1433,21 +1433,21 @@ static int SQLITE_TCLAPI declare_vtab(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest8_Init(Tcl_Interp *interp){
+ಪೂರ್ಣಾಙ್ಕ Sqlitetest8_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+  ಸ್ಥಿರ ಸಂರಚನಾ {
+     ವರ್ಣ *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ಶೂನ್ಯ *clientData;
   } aObjCmd[] = {
      { "register_echo_module",       register_echo_module, 0 },
      { "sqlite3_declare_vtab",       declare_vtab, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ಪೂರ್ಣಾಙ್ಕ i;
+  ಪ್ರತಿ(i=0; i<ಪರಿಮಾಣ(aObjCmd)/ಪರಿಮಾಣ(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }

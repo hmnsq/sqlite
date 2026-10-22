@@ -34,7 +34,7 @@
 ** start of a transaction, and is thus usually less than a few thousand,
 ** but can be as large as 2 billion for a really big database.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
 /* Size of the Bitvec structure in bytes. */
 #define BITVEC_SZ        512
@@ -42,7 +42,7 @@
 /* Round the union size down to the nearest pointer boundary, since that's how
 ** it will be aligned within the Bitvec struct. */
 #define BITVEC_USIZE \
-    (((BITVEC_SZ-(3*sizeof(u32)))/sizeof(Bitvec*))*sizeof(Bitvec*))
+    (((BITVEC_SZ-(3*ಪರಿಮಾಣ(u32)))/ಪರಿಮಾಣ(Bitvec*))*ಪರಿಮಾಣ(Bitvec*))
 
 /* Type of the array "element" for the bitmap representation.
 ** Should be a power of 2, and ideally, evenly divide into BITVEC_USIZE.
@@ -52,12 +52,12 @@
 /* Size, in bits, of the bitmap element. */
 #define BITVEC_SZELEM    8
 /* Number of elements in a bitmap array. */
-#define BITVEC_NELEM     (BITVEC_USIZE/sizeof(BITVEC_TELEM))
+#define BITVEC_NELEM     (BITVEC_USIZE/ಪರಿಮಾಣ(BITVEC_TELEM))
 /* Number of bits in the bitmap array. */
 #define BITVEC_NBIT      (BITVEC_NELEM*BITVEC_SZELEM)
 
 /* Number of u32 values in hash table. */
-#define BITVEC_NINT      (BITVEC_USIZE/sizeof(u32))
+#define BITVEC_NINT      (BITVEC_USIZE/ಪರಿಮಾಣ(u32))
 /* Maximum number of entries in hash table before
 ** sub-dividing and re-hashing. */
 #define BITVEC_MXHASH    (BITVEC_NINT/2)
@@ -67,7 +67,7 @@
 ** no fewer collisions than the no-op *1. */
 #define BITVEC_HASH(X)   (((X)*1)%BITVEC_NINT)
 
-#define BITVEC_NPTR      ((u32)(BITVEC_USIZE/sizeof(Bitvec *)))
+#define BITVEC_NPTR      ((u32)(BITVEC_USIZE/ಪರಿಮಾಣ(Bitvec *)))
 
 
 /*
@@ -91,16 +91,16 @@
 ** N*iDivisor+1 and (N+1)*iDivisor.  Each subbitmap is normalized
 ** to hold deal with values between 1 and iDivisor.
 */
-struct Bitvec {
+ಸಂರಚನಾ Bitvec {
   u32 iSize;      /* Maximum bit index.  Max iSize is 4,294,967,296. */
   u32 nSet;       /* Number of bits that are set - only valid for aHash
                   ** element.  Max is BITVEC_NINT.  For BITVEC_SZ of 512,
                   ** this would be 125. */
-  u32 iDivisor;   /* Number of bits handled by each apSub[] entry. */
+  u32 i_ಭಾಜಕ;   /* Number of bits handled by each apSub[] entry. */
                   /* Should >=0 for apSub element. */
                   /* Max iDivisor is max(u32) / BITVEC_NPTR + 1.  */
                   /* For a BITVEC_SZ of 512, this would be 34,359,739. */
-  union {
+  ಸಙ್ಘ {
     BITVEC_TELEM aBitmap[BITVEC_NELEM];    /* Bitmap representation */
     u32 aHash[BITVEC_NINT];      /* Hash table representation */
     Bitvec *apSub[BITVEC_NPTR];  /* Recursive representation */
@@ -115,12 +115,12 @@ struct Bitvec {
 */
 Bitvec *sqlite3BitvecCreate(u32 iSize){
   Bitvec *p;
-  assert( sizeof(*p)==BITVEC_SZ );
-  p = sqlite3MallocZero( sizeof(*p) );
-  if( p ){
+  ಪ್ರತಿಜ್ಞಾ( ಪರಿಮಾಣ(*p)==BITVEC_SZ );
+  p = sqlite3MallocZero( ಪರಿಮಾಣ(*p) );
+  ಯದಿ( p ){
     p->iSize = iSize;
   }
-  return p;
+  ಪ್ರತ್ಯಾಗಮ p;
 }
 
 /*
@@ -128,31 +128,31 @@ Bitvec *sqlite3BitvecCreate(u32 iSize){
 ** If p is NULL (if the bitmap has not been created) or if
 ** i is out of range, then return false.
 */
-int sqlite3BitvecTestNotNull(Bitvec *p, u32 i){
-  assert( p!=0 );
+ಪೂರ್ಣಾಙ್ಕ sqlite3BitvecTestNotNull(Bitvec *p, u32 i){
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
   i--;
-  if( i>=p->iSize ) return 0;
-  while( p->iDivisor ){
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
+  ಯದಿ( i>=p->iSize ) ಪ್ರತ್ಯಾಗಮ 0;
+  ಯಾವತ್( p->i_ಭಾಜಕ ){
+    u32 bin = i/p->i_ಭಾಜಕ;
+    i = i%p->i_ಭಾಜಕ;
     p = p->u.apSub[bin];
-    if (!p) {
-      return 0;
+    ಯದಿ (!p) {
+      ಪ್ರತ್ಯಾಗಮ 0;
     }
   }
-  if( p->iSize<=BITVEC_NBIT ){
-    return (p->u.aBitmap[i/BITVEC_SZELEM] & (1<<(i&(BITVEC_SZELEM-1))))!=0;
-  } else{
+  ಯದಿ( p->iSize<=BITVEC_NBIT ){
+    ಪ್ರತ್ಯಾಗಮ (p->u.aBitmap[i/BITVEC_SZELEM] & (1<<(i&(BITVEC_SZELEM-1))))!=0;
+  } ಅನ್ಯಥಾ{
     u32 h = BITVEC_HASH(i++);
-    while( p->u.aHash[h] ){
-      if( p->u.aHash[h]==i ) return 1;
+    ಯಾವತ್( p->u.aHash[h] ){
+      ಯದಿ( p->u.aHash[h]==i ) ಪ್ರತ್ಯಾಗಮ 1;
       h = (h+1) % BITVEC_NINT;
     }
-    return 0;
+    ಪ್ರತ್ಯಾಗಮ 0;
   }
 }
-int sqlite3BitvecTest(Bitvec *p, u32 i){
-  return p!=0 && sqlite3BitvecTestNotNull(p,i);
+ಪೂರ್ಣಾಙ್ಕ sqlite3BitvecTest(Bitvec *p, u32 i){
+  ಪ್ರತ್ಯಾಗಮ p!=0 && sqlite3BitvecTestNotNull(p,i);
 }
 
 /*
@@ -167,71 +167,71 @@ int sqlite3BitvecTest(Bitvec *p, u32 i){
 ** and that the value for "i" is within range of the Bitvec object.
 ** Otherwise the behavior is undefined.
 */
-int sqlite3BitvecSet(Bitvec *p, u32 i){
+ಪೂರ್ಣಾಙ್ಕ sqlite3BitvecSet(Bitvec *p, u32 i){
   u32 h;
-  if( p==0 ) return SQLITE_OK;
-  assert( i>0 );
-  assert( i<=p->iSize );
+  ಯದಿ( p==0 ) ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
+  ಪ್ರತಿಜ್ಞಾ( i>0 );
+  ಪ್ರತಿಜ್ಞಾ( i<=p->iSize );
   i--;
-  while((p->iSize > BITVEC_NBIT) && p->iDivisor) {
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
-    if( p->u.apSub[bin]==0 ){
-      p->u.apSub[bin] = sqlite3BitvecCreate( p->iDivisor );
-      if( p->u.apSub[bin]==0 ) return SQLITE_NOMEM_BKPT;
+  ಯಾವತ್((p->iSize > BITVEC_NBIT) && p->i_ಭಾಜಕ) {
+    u32 bin = i/p->i_ಭಾಜಕ;
+    i = i%p->i_ಭಾಜಕ;
+    ಯದಿ( p->u.apSub[bin]==0 ){
+      p->u.apSub[bin] = sqlite3BitvecCreate( p->i_ಭಾಜಕ );
+      ಯದಿ( p->u.apSub[bin]==0 ) ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM_BKPT;
     }
     p = p->u.apSub[bin];
   }
-  if( p->iSize<=BITVEC_NBIT ){
+  ಯದಿ( p->iSize<=BITVEC_NBIT ){
     p->u.aBitmap[i/BITVEC_SZELEM] |= 1 << (i&(BITVEC_SZELEM-1));
-    return SQLITE_OK;
+    ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
   }
   h = BITVEC_HASH(i++);
   /* if there wasn't a hash collision, and this doesn't */
   /* completely fill the hash, then just add it without */
   /* worrying about sub-dividing and re-hashing. */
-  if( !p->u.aHash[h] ){
-    if (p->nSet<(BITVEC_NINT-1)) {
-      goto bitvec_set_end;
-    } else {
-      goto bitvec_set_rehash;
+  ಯದಿ( !p->u.aHash[h] ){
+    ಯದಿ (p->nSet<(BITVEC_NINT-1)) {
+      ಗಚ್ಛ bitvec_set_end;
+    } ಅನ್ಯಥಾ {
+      ಗಚ್ಛ bitvec_set_rehash;
     }
   }
   /* there was a collision, check to see if it's already */
   /* in hash, if not, try to find a spot for it */
-  do {
-    if( p->u.aHash[h]==i ) return SQLITE_OK;
+  ಕುರು {
+    ಯದಿ( p->u.aHash[h]==i ) ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
     h++;
-    if( h>=BITVEC_NINT ) h = 0;
-  } while( p->u.aHash[h] );
+    ಯದಿ( h>=BITVEC_NINT ) h = 0;
+  } ಯಾವತ್( p->u.aHash[h] );
   /* we didn't find it in the hash.  h points to the first */
   /* available free spot. check to see if this is going to */
   /* make our hash too "full".  */
 bitvec_set_rehash:
-  if( p->nSet>=BITVEC_MXHASH ){
-    unsigned int j;
-    int rc;
-    u32 *aiValues = sqlite3StackAllocRaw(0, sizeof(p->u.aHash));
-    if( aiValues==0 ){
-      return SQLITE_NOMEM_BKPT;
-    }else{
-      memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
-      memset(p->u.apSub, 0, sizeof(p->u.apSub));
-      p->iDivisor = p->iSize/BITVEC_NPTR;
-      if( (p->iSize%BITVEC_NPTR)!=0 ) p->iDivisor++;
-      if( p->iDivisor<BITVEC_NBIT ) p->iDivisor = BITVEC_NBIT;
+  ಯದಿ( p->nSet>=BITVEC_MXHASH ){
+    unsigned ಪೂರ್ಣಾಙ್ಕ j;
+    ಪೂರ್ಣಾಙ್ಕ rc;
+    u32 *ai_ಮೌಲ್ಯಗಳು = sqlite3_ರಾಶಿ_Alloc_Raw(0, ಪರಿಮಾಣ(p->u.aHash));
+    ಯದಿ( ai_ಮೌಲ್ಯಗಳು==0 ){
+      ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM_BKPT;
+    }ಅನ್ಯಥಾ{
+      memcpy(ai_ಮೌಲ್ಯಗಳು, p->u.aHash, ಪರಿಮಾಣ(p->u.aHash));
+      memset(p->u.apSub, 0, ಪರಿಮಾಣ(p->u.apSub));
+      p->i_ಭಾಜಕ = p->iSize/BITVEC_NPTR;
+      ಯದಿ( (p->iSize%BITVEC_NPTR)!=0 ) p->i_ಭಾಜಕ++;
+      ಯದಿ( p->i_ಭಾಜಕ<BITVEC_NBIT ) p->i_ಭಾಜಕ = BITVEC_NBIT;
       rc = sqlite3BitvecSet(p, i);
-      for(j=0; j<BITVEC_NINT; j++){
-        if( aiValues[j] ) rc |= sqlite3BitvecSet(p, aiValues[j]);
+      ಪ್ರತಿ(j=0; j<BITVEC_NINT; j++){
+        ಯದಿ( ai_ಮೌಲ್ಯಗಳು[j] ) rc |= sqlite3BitvecSet(p, ai_ಮೌಲ್ಯಗಳು[j]);
       }
-      sqlite3StackFree(0, aiValues);
-      return rc;
+      sqlite3_ರಾಶಿ_Free(0, ai_ಮೌಲ್ಯಗಳು);
+      ಪ್ರತ್ಯಾಗಮ rc;
     }
   }
 bitvec_set_end:
   p->nSet++;
   p->u.aHash[h] = i;
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
@@ -240,35 +240,35 @@ bitvec_set_end:
 ** pBuf must be a pointer to at least BITVEC_SZ bytes of temporary storage
 ** that BitvecClear can use to rebuilt its hash table.
 */
-void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
-  if( p==0 ) return;
-  assert( i>0 );
+ಶೂನ್ಯ sqlite3BitvecClear(Bitvec *p, u32 i, ಶೂನ್ಯ *pBuf){
+  ಯದಿ( p==0 ) ಪ್ರತ್ಯಾಗಮ;
+  ಪ್ರತಿಜ್ಞಾ( i>0 );
   i--;
-  while( p->iDivisor ){
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
+  ಯಾವತ್( p->i_ಭಾಜಕ ){
+    u32 bin = i/p->i_ಭಾಜಕ;
+    i = i%p->i_ಭಾಜಕ;
     p = p->u.apSub[bin];
-    if (!p) {
-      return;
+    ಯದಿ (!p) {
+      ಪ್ರತ್ಯಾಗಮ;
     }
   }
-  if( p->iSize<=BITVEC_NBIT ){
+  ಯದಿ( p->iSize<=BITVEC_NBIT ){
     p->u.aBitmap[i/BITVEC_SZELEM] &= ~(BITVEC_TELEM)(1<<(i&(BITVEC_SZELEM-1)));
-  }else{
-    unsigned int j;
-    u32 *aiValues = pBuf;
-    memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
-    memset(p->u.aHash, 0, sizeof(p->u.aHash));
+  }ಅನ್ಯಥಾ{
+    unsigned ಪೂರ್ಣಾಙ್ಕ j;
+    u32 *ai_ಮೌಲ್ಯಗಳು = pBuf;
+    memcpy(ai_ಮೌಲ್ಯಗಳು, p->u.aHash, ಪರಿಮಾಣ(p->u.aHash));
+    memset(p->u.aHash, 0, ಪರಿಮಾಣ(p->u.aHash));
     p->nSet = 0;
-    for(j=0; j<BITVEC_NINT; j++){
-      if( aiValues[j] && aiValues[j]!=(i+1) ){
-        u32 h = BITVEC_HASH(aiValues[j]-1);
+    ಪ್ರತಿ(j=0; j<BITVEC_NINT; j++){
+      ಯದಿ( ai_ಮೌಲ್ಯಗಳು[j] && ai_ಮೌಲ್ಯಗಳು[j]!=(i+1) ){
+        u32 h = BITVEC_HASH(ai_ಮೌಲ್ಯಗಳು[j]-1);
         p->nSet++;
-        while( p->u.aHash[h] ){
+        ಯಾವತ್( p->u.aHash[h] ){
           h++;
-          if( h>=BITVEC_NINT ) h = 0;
+          ಯದಿ( h>=BITVEC_NINT ) h = 0;
         }
-        p->u.aHash[h] = aiValues[j];
+        p->u.aHash[h] = ai_ಮೌಲ್ಯಗಳು[j];
       }
     }
   }
@@ -277,11 +277,11 @@ void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
 /*
 ** Destroy a bitmap object.  Reclaim all memory used.
 */
-void sqlite3BitvecDestroy(Bitvec *p){
-  if( p==0 ) return;
-  if( p->iDivisor ){
-    unsigned int i;
-    for(i=0; i<BITVEC_NPTR; i++){
+ಶೂನ್ಯ sqlite3BitvecDestroy(Bitvec *p){
+  ಯದಿ( p==0 ) ಪ್ರತ್ಯಾಗಮ;
+  ಯದಿ( p->i_ಭಾಜಕ ){
+    unsigned ಪೂರ್ಣಾಙ್ಕ i;
+    ಪ್ರತಿ(i=0; i<BITVEC_NPTR; i++){
       sqlite3BitvecDestroy(p->u.apSub[i]);
     }
   }
@@ -293,7 +293,7 @@ void sqlite3BitvecDestroy(Bitvec *p){
 ** was created.
 */
 u32 sqlite3BitvecSize(Bitvec *p){
-  return p->iSize;
+  ಪ್ರತ್ಯಾಗಮ p->iSize;
 }
 
 #ifdef SQLITE_DEBUG
@@ -307,37 +307,37 @@ u32 sqlite3BitvecSize(Bitvec *p){
 **
 ** For some Bitvec p and see a recursive view of the Bitvec's content.
 */
-static void showBitvec(Bitvec *p, int n, unsigned x){
-  int i;
-  if( p==0 ){
+ಸ್ಥಿರ ಶೂನ್ಯ showBitvec(Bitvec *p, ಪೂರ್ಣಾಙ್ಕ n, unsigned x){
+  ಪೂರ್ಣಾಙ್ಕ i;
+  ಯದಿ( p==0 ){
     printf("NULL\n");
-    return;
+    ಪ್ರತ್ಯಾಗಮ;
   }
   printf("Bitvec 0x%p iSize=%u", p, p->iSize);
-  if( p->iSize<=BITVEC_NBIT ){
+  ಯದಿ( p->iSize<=BITVEC_NBIT ){
     printf(" bitmap\n");
     printf("%*s   bits:", n, "");
-    for(i=1; i<=BITVEC_NBIT; i++){
-      if( sqlite3BitvecTest(p,i) ) printf(" %u", x+(unsigned)i);
+    ಪ್ರತಿ(i=1; i<=BITVEC_NBIT; i++){
+      ಯದಿ( sqlite3BitvecTest(p,i) ) printf(" %u", x+(unsigned)i);
     }
     printf("\n");
-  }else if( p->iDivisor==0 ){
+  }ಅನ್ಯಥಾ ಯದಿ( p->i_ಭಾಜಕ==0 ){
     printf(" hash with %u entries\n", p->nSet);
     printf("%*s   bits:", n, "");
-    for(i=0; i<BITVEC_NINT; i++){
-      if( p->u.aHash[i] ) printf(" %u", x+(unsigned)p->u.aHash[i]);
+    ಪ್ರತಿ(i=0; i<BITVEC_NINT; i++){
+      ಯದಿ( p->u.aHash[i] ) printf(" %u", x+(unsigned)p->u.aHash[i]);
     }
     printf("\n");
-  }else{
-    printf(" sub-bitvec with iDivisor=%u\n", p->iDivisor);
-    for(i=0; i<BITVEC_NPTR; i++){
-      if( p->u.apSub[i]==0 ) continue;
+  }ಅನ್ಯಥಾ{
+    printf(" sub-bitvec with iDivisor=%u\n", p->i_ಭಾಜಕ);
+    ಪ್ರತಿ(i=0; i<BITVEC_NPTR; i++){
+      ಯದಿ( p->u.apSub[i]==0 ) ಅನುವರ್ತ;
       printf("%*s   apSub[%d]=", n, "", i);
-      showBitvec(p->u.apSub[i], n+4, i*p->iDivisor);
+      showBitvec(p->u.apSub[i], n+4, i*p->i_ಭಾಜಕ);
     }
   }
 }
-void sqlite3ShowBitvec(Bitvec *p){
+ಶೂನ್ಯ sqlite3ShowBitvec(Bitvec *p){
   showBitvec(p, 0, 0);
 }
 #endif
@@ -391,24 +391,24 @@ void sqlite3ShowBitvec(Bitvec *p){
 ** sz is the size of the Bitvec.  Or if sz is negative, make the size
 ** 2*(unsigned)(-sz) and disabled the linear vector check.
 */
-int sqlite3BitvecBuiltinTest(int sz, int *aOp){
+ಪೂರ್ಣಾಙ್ಕ sqlite3BitvecBuiltinTest(ಪೂರ್ಣಾಙ್ಕ sz, ಪೂರ್ಣಾಙ್ಕ *aOp){
   Bitvec *pBitvec = 0;
-  unsigned char *pV = 0;
-  int rc = -1;
-  int i, nx, pc, op;
-  void *pTmpSpace;
+  unsigned ವರ್ಣ *pV = 0;
+  ಪೂರ್ಣಾಙ್ಕ rc = -1;
+  ಪೂರ್ಣಾಙ್ಕ i, nx, pc, op;
+  ಶೂನ್ಯ *pTmpSpace;
 
   /* Allocate the Bitvec to be tested and a linear array of
   ** bits to act as the reference */
-  if( sz<=0 ){
+  ಯದಿ( sz<=0 ){
     pBitvec = sqlite3BitvecCreate( 2*(unsigned)(-sz) );
     pV = 0;
-  }else{
+  }ಅನ್ಯಥಾ{
     pBitvec = sqlite3BitvecCreate( sz );
     pV = sqlite3MallocZero( (7+(i64)sz)/8 + 1 );
   }
   pTmpSpace = sqlite3_malloc64(BITVEC_SZ);
-  if( pBitvec==0 || pTmpSpace==0 || (pV==0 && sz>0) ) goto bitvec_end;
+  ಯದಿ( pBitvec==0 || pTmpSpace==0 || (pV==0 && sz>0) ) ಗಚ್ಛ bitvec_end;
 
   /* NULL pBitvec tests */
   sqlite3BitvecSet(0, 1);
@@ -416,52 +416,52 @@ int sqlite3BitvecBuiltinTest(int sz, int *aOp){
 
   /* Run the program */
   pc = i = 0;
-  while( (op = aOp[pc])!=0 ){
-    if( op>=6 ){
+  ಯಾವತ್( (op = aOp[pc])!=0 ){
+    ಯದಿ( op>=6 ){
 #ifdef SQLITE_DEBUG
-      if( op==6 ){
+      ಯದಿ( op==6 ){
         sqlite3ShowBitvec(pBitvec);
-      }else if( op==7 ){
+      }ಅನ್ಯಥಾ ಯದಿ( op==7 ){
         printf("BITVEC_SZ     = %d (%d by sizeof)\n",
-               BITVEC_SZ, (int)sizeof(Bitvec));
-        printf("BITVEC_USIZE  = %d\n", (int)BITVEC_USIZE);
-        printf("BITVEC_NELEM  = %d\n", (int)BITVEC_NELEM);
-        printf("BITVEC_NBIT   = %d\n", (int)BITVEC_NBIT);
-        printf("BITVEC_NINT   = %d\n", (int)BITVEC_NINT);
-        printf("BITVEC_MXHASH = %d\n", (int)BITVEC_MXHASH);
-        printf("BITVEC_NPTR   = %d\n", (int)BITVEC_NPTR);
+               BITVEC_SZ, (ಪೂರ್ಣಾಙ್ಕ)ಪರಿಮಾಣ(Bitvec));
+        printf("BITVEC_USIZE  = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_USIZE);
+        printf("BITVEC_NELEM  = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_NELEM);
+        printf("BITVEC_NBIT   = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_NBIT);
+        printf("BITVEC_NINT   = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_NINT);
+        printf("BITVEC_MXHASH = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_MXHASH);
+        printf("BITVEC_NPTR   = %d\n", (ಪೂರ್ಣಾಙ್ಕ)BITVEC_NPTR);
       }
 #endif
       pc++;
-      continue;
+      ಅನುವರ್ತ;
     }
-    switch( op ){
-      case 1:
-      case 2:
-      case 5: {
+    ವಿಕಲ್ಪ( op ){
+      ಪಕ್ಷ 1:
+      ಪಕ್ಷ 2:
+      ಪಕ್ಷ 5: {
         nx = 4;
         i = aOp[pc+2] - 1;
         aOp[pc+2] += aOp[pc+3];
-        break;
+        ಭಙ್ಗ;
       }
-      case 3:
-      case 4:
-      default: {
+      ಪಕ್ಷ 3:
+      ಪಕ್ಷ 4:
+      ಸ್ವಭಾವ: {
         nx = 2;
-        sqlite3_randomness(sizeof(i), &i);
-        break;
+        sqlite3_randomness(ಪರಿಮಾಣ(i), &i);
+        ಭಙ್ಗ;
       }
     }
-    if( (--aOp[pc+1]) > 0 ) nx = 0;
+    ಯದಿ( (--aOp[pc+1]) > 0 ) nx = 0;
     pc += nx;
     i = (i & 0x7fffffff)%sz;
-    if( (op & 1)!=0 ){
-      if( pV ) SETBIT(pV, (i+1));
-      if( op!=5 ){
-        if( sqlite3BitvecSet(pBitvec, i+1) ) goto bitvec_end;
+    ಯದಿ( (op & 1)!=0 ){
+      ಯದಿ( pV ) SETBIT(pV, (i+1));
+      ಯದಿ( op!=5 ){
+        ಯದಿ( sqlite3BitvecSet(pBitvec, i+1) ) ಗಚ್ಛ bitvec_end;
       }
-    }else{
-      if( pV ) CLEARBIT(pV, (i+1));
+    }ಅನ್ಯಥಾ{
+      ಯದಿ( pV ) CLEARBIT(pV, (i+1));
       sqlite3BitvecClear(pBitvec, i+1, pTmpSpace);
     }
   }
@@ -471,17 +471,17 @@ int sqlite3BitvecBuiltinTest(int sz, int *aOp){
   ** match (rc==0).  Change rc to non-zero if a discrepancy
   ** is found.
   */
-  if( pV ){
+  ಯದಿ( pV ){
     rc = sqlite3BitvecTest(0,0) + sqlite3BitvecTest(pBitvec, sz+1)
             + sqlite3BitvecTest(pBitvec, 0)
             + (sqlite3BitvecSize(pBitvec) - sz);
-    for(i=1; i<=sz; i++){
-      if( (TESTBIT(pV,i))!=sqlite3BitvecTest(pBitvec,i) ){
+    ಪ್ರತಿ(i=1; i<=sz; i++){
+      ಯದಿ( (TESTBIT(pV,i))!=sqlite3BitvecTest(pBitvec,i) ){
         rc = i;
-        break;
+        ಭಙ್ಗ;
       }
     }
-  }else{
+  }ಅನ್ಯಥಾ{
     rc = 0;
   }
 
@@ -490,6 +490,6 @@ bitvec_end:
   sqlite3_free(pTmpSpace);
   sqlite3_free(pV);
   sqlite3BitvecDestroy(pBitvec);
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 #endif /* SQLITE_UNTESTABLE */

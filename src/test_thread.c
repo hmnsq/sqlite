@@ -15,26 +15,26 @@
 ** multiple threads. Right now this only works on unix.
 */
 
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
 
-#if SQLITE_THREADSAFE
+#ಯದಿ SQLITE_THREADSAFE
 
-#include <errno.h>
+#ಅನ್ತರ್ಭಾವ <errno.h>
 
-#if !defined(_MSC_VER)
-#include <unistd.h>
+#ಯದಿ !defined(_MSC_VER)
+#ಅನ್ತರ್ಭಾವ <unistd.h>
 #endif
 
 /*
 ** One of these is allocated for each thread created by [sqlthread spawn].
 */
-typedef struct SqlThread SqlThread;
-struct SqlThread {
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ SqlThread SqlThread;
+ಸಂರಚನಾ SqlThread {
   Tcl_ThreadId parent;     /* Thread id of parent thread */
   Tcl_Interp *interp;      /* Parent interpreter */
-  char *zScript;           /* The script to execute. */
-  char *zVarname;          /* Varname in parent script */
+  ವರ್ಣ *zScript;           /* The script to execute. */
+  ವರ್ಣ *zVarname;          /* Varname in parent script */
 };
 
 /*
@@ -44,60 +44,60 @@ struct SqlThread {
 ** error is handled by Tcl_BackgroundError(). If no error occurs,
 ** the result is simply discarded.
 */
-typedef struct EvalEvent EvalEvent;
-struct EvalEvent {
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ EvalEvent EvalEvent;
+ಸಂರಚನಾ EvalEvent {
   Tcl_Event base;          /* Base class of type Tcl_Event */
-  char *zScript;           /* The script to execute. */
+  ವರ್ಣ *zScript;           /* The script to execute. */
   Tcl_Interp *interp;      /* The interpreter to execute it in. */
 };
 
-static Tcl_ObjCmdProc sqlthread_proc;
-static Tcl_ObjCmdProc clock_seconds_proc;
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
-static Tcl_ObjCmdProc blocking_step_proc;
-static Tcl_ObjCmdProc blocking_prepare_v2_proc;
+ಸ್ಥಿರ Tcl_ObjCmdProc sqlthread_proc;
+ಸ್ಥಿರ Tcl_ObjCmdProc clock_seconds_proc;
+#ಯದಿ SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+ಸ್ಥಿರ Tcl_ObjCmdProc blocking_step_proc;
+ಸ್ಥಿರ Tcl_ObjCmdProc blocking_prepare_v2_proc;
 #endif
-int Sqlitetest1_Init(Tcl_Interp *);
-int Sqlite3_Init(Tcl_Interp *);
+ಪೂರ್ಣಾಙ್ಕ Sqlitetest1_Init(Tcl_Interp *);
+ಪೂರ್ಣಾಙ್ಕ Sqlite3_Init(Tcl_Interp *);
 
 /* Functions from main.c */
-extern const char *sqlite3ErrName(int);
+ಬಾಹ್ಯ ಧ್ರುವ ವರ್ಣ *sqlite3ErrName(ಪೂರ್ಣಾಙ್ಕ);
 
 /* Functions from test1.c */
-extern void *sqlite3TestTextToPtr(const char *);
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
-extern int sqlite3TestMakePointerStr(Tcl_Interp *, char *, void *);
-extern int sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, int);
+ಬಾಹ್ಯ ಶೂನ್ಯ *sqlite3TestTextToPtr(ಧ್ರುವ ವರ್ಣ *);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ getDbPointer(Tcl_Interp *, ಧ್ರುವ ವರ್ಣ *, sqlite3 **);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ sqlite3TestMakePointerStr(Tcl_Interp *, ವರ್ಣ *, ಶೂನ್ಯ *);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, ಪೂರ್ಣಾಙ್ಕ);
 
 /*
 ** Handler for events of type EvalEvent.
 */
-static int SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, int flags){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, ಪೂರ್ಣಾಙ್ಕ flags){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   EvalEvent *p = (EvalEvent *)evPtr;
   rc = Tcl_Eval(p->interp, p->zScript);
-  if( rc!=TCL_OK ){
+  ಯದಿ( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
   }
   UNUSED_PARAMETER(flags);
-  return 1;
+  ಪ್ರತ್ಯಾಗಮ 1;
 }
 
 /*
 ** Register an EvalEvent to evaluate the script pScript in the
 ** parent interpreter/thread of SqlThread p.
 */
-static void postToParent(SqlThread *p, Tcl_Obj *pScript){
+ಸ್ಥಿರ ಶೂನ್ಯ postToParent(SqlThread *p, Tcl_Obj *pScript){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  ವರ್ಣ *z_ಸಂದೇಶ;
+  Tcl_Size n_ಸಂದೇಶ;
 
-  zMsg = Tcl_GetStringFromObj(pScript, &nMsg); 
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_ಸಂದೇಶ = Tcl_GetStringFromObj(pScript, &n_ಸಂದೇಶ); 
+  pEvent = (EvalEvent *)ckalloc(ಪರಿಮಾಣ(EvalEvent)+n_ಸಂದೇಶ+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
-  pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  pEvent->zScript = (ವರ್ಣ *)&pEvent[1];
+  memcpy(pEvent->zScript, z_ಸಂದೇಶ, n_ಸಂದೇಶ+1);
   pEvent->interp = p->interp;
 
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
@@ -107,21 +107,21 @@ static void postToParent(SqlThread *p, Tcl_Obj *pScript){
 /*
 ** The main function for threads created with [sqlthread spawn].
 */
-static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
+ಸ್ಥಿರ Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_Interp *interp;
   Tcl_Obj *pRes;
   Tcl_Obj *pList;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ rc;
   SqlThread *p = (SqlThread *)pSqlThread;
-  extern int Sqlitetest_mutex_Init(Tcl_Interp*);
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ Sqlitetest_mutex_Init(Tcl_Interp*);
 
   interp = Tcl_CreateInterp();
   Tcl_CreateObjCommand(interp, "clock_seconds", clock_seconds_proc, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlthread", sqlthread_proc, pSqlThread, 0);
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#ಯದಿ SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
   Tcl_CreateObjCommand(interp, "sqlite3_blocking_step", blocking_step_proc,0,0);
   Tcl_CreateObjCommand(interp, 
-      "sqlite3_blocking_prepare_v2", blocking_prepare_v2_proc, (void *)1, 0);
+      "sqlite3_blocking_prepare_v2", blocking_prepare_v2_proc, (ಶೂನ್ಯ *)1, 0);
   Tcl_CreateObjCommand(interp, 
       "sqlite3_nonblocking_prepare_v2", blocking_prepare_v2_proc, 0, 0);
 #endif
@@ -132,14 +132,14 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   rc = Tcl_Eval(interp, p->zScript);
   pRes = Tcl_GetObjResult(interp);
   pList = Tcl_NewObj();
-  Tcl_IncrRefCount(pList);
-  Tcl_IncrRefCount(pRes);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pList);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pRes);
 
-  if( rc!=TCL_OK ){
+  ಯದಿ( rc!=TCL_OK ){
     Tcl_ListObjAppendElement(interp, pList, Tcl_NewStringObj("error", -1));
     Tcl_ListObjAppendElement(interp, pList, pRes);
     postToParent(p, pList);
-    Tcl_DecrRefCount(pList);
+    Tcl_Decr_Ref_ಎಣಿಕೆ(pList);
     pList = Tcl_NewObj();
   }
 
@@ -148,11 +148,11 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_ListObjAppendElement(interp, pList, pRes);
   postToParent(p, pList);
 
-  ckfree((void *)p);
-  Tcl_DecrRefCount(pList);
-  Tcl_DecrRefCount(pRes);
+  ckfree((ಶೂನ್ಯ *)p);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pList);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pRes);
   Tcl_DeleteInterp(interp);
-  while( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
+  ಯಾವತ್( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
   Tcl_ExitThread(0);
   TCL_THREAD_CREATE_RETURN;
 }
@@ -167,46 +167,46 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
 **
 **     The caller can wait for the script to terminate using [vwait VARNAME].
 */
-static int SQLITE_TCLAPI sqlthread_spawn(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI sqlthread_spawn(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId x;
   SqlThread *pNew;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ rc;
 
-  Tcl_Size nVarname; char *zVarname;
-  Tcl_Size nScript; char *zScript;
+  Tcl_Size nVarname; ವರ್ಣ *zVarname;
+  Tcl_Size nScript; ವರ್ಣ *zScript;
 
   /* Parameters for thread creation */
-  const int nStack = TCL_THREAD_STACK_DEFAULT;
-  const int flags = TCL_THREAD_NOFLAGS;
+  ಧ್ರುವ ಪೂರ್ಣಾಙ್ಕ n_ರಾಶಿ = TCL_THREAD_ರಾಶಿ_DEFAULT;
+  ಧ್ರುವ ಪೂರ್ಣಾಙ್ಕ flags = TCL_THREAD_NOFLAGS;
 
-  assert(objc==4);
+  ಪ್ರತಿಜ್ಞಾ(objc==4);
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
 
   zVarname = Tcl_GetStringFromObj(objv[2], &nVarname);
   zScript = Tcl_GetStringFromObj(objv[3], &nScript);
 
-  pNew = (SqlThread *)ckalloc(sizeof(SqlThread)+nVarname+nScript+2);
-  pNew->zVarname = (char *)&pNew[1];
-  pNew->zScript = (char *)&pNew->zVarname[nVarname+1];
+  pNew = (SqlThread *)ckalloc(ಪರಿಮಾಣ(SqlThread)+nVarname+nScript+2);
+  pNew->zVarname = (ವರ್ಣ *)&pNew[1];
+  pNew->zScript = (ವರ್ಣ *)&pNew->zVarname[nVarname+1];
   memcpy(pNew->zVarname, zVarname, nVarname+1);
   memcpy(pNew->zScript, zScript, nScript+1);
   pNew->parent = Tcl_GetCurrentThread();
   pNew->interp = interp;
 
-  rc = Tcl_CreateThread(&x, tclScriptThread, (void *)pNew, nStack, flags);
-  if( rc!=TCL_OK ){
-    Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", NULL);
-    ckfree((char *)pNew);
-    return TCL_ERROR;
+  rc = Tcl_CreateThread(&x, tclScriptThread, (ಶೂನ್ಯ *)pNew, n_ರಾಶಿ, flags);
+  ಯದಿ( rc!=TCL_OK ){
+    Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", ರಿಕ್ತ);
+    ckfree((ವರ್ಣ *)pNew);
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 /*
@@ -220,43 +220,43 @@ static int SQLITE_TCLAPI sqlthread_spawn(
 **
 **     NOTE: At the moment, this doesn't work. FIXME.
 */
-static int SQLITE_TCLAPI sqlthread_parent(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI sqlthread_parent(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  ವರ್ಣ *z_ಸಂದೇಶ;
+  Tcl_Size n_ಸಂದೇಶ;
   SqlThread *p = (SqlThread *)clientData;
 
-  assert(objc==3);
+  ಪ್ರತಿಜ್ಞಾ(objc==3);
   UNUSED_PARAMETER(objc);
 
-  if( p==0 ){
-    Tcl_AppendResult(interp, "no parent thread", NULL);
-    return TCL_ERROR;
+  ಯದಿ( p==0 ){
+    Tcl_AppendResult(interp, "no parent thread", ರಿಕ್ತ);
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
-  zMsg = Tcl_GetStringFromObj(objv[2], &nMsg);
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_ಸಂದೇಶ = Tcl_GetStringFromObj(objv[2], &n_ಸಂದೇಶ);
+  pEvent = (EvalEvent *)ckalloc(ಪರಿಮಾಣ(EvalEvent)+n_ಸಂದೇಶ+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
-  pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  pEvent->zScript = (ವರ್ಣ *)&pEvent[1];
+  memcpy(pEvent->zScript, z_ಸಂದೇಶ, n_ಸಂದೇಶ+1);
   pEvent->interp = p->interp;
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
   Tcl_ThreadAlert(p->parent);
 
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
-static int xBusy(void *pArg, int nBusy){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ xBusy(ಶೂನ್ಯ *pArg, ಪೂರ್ಣಾಙ್ಕ nBusy){
   UNUSED_PARAMETER(pArg);
   UNUSED_PARAMETER(nBusy);
   sqlite3_sleep(50);
-  return 1;             /* Try again... */
+  ಪ್ರತ್ಯಾಗಮ 1;             /* Try again... */
 }
 
 /*
@@ -265,18 +265,18 @@ static int xBusy(void *pArg, int nBusy){
 **     Open a database handle and return the string representation of
 **     the pointer value.
 */
-static int SQLITE_TCLAPI sqlthread_open(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI sqlthread_open(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sqlite3TestMakePointerStr(Tcl_Interp *interp, char *zPtr, void *p);
+  ಪೂರ್ಣಾಙ್ಕ sqlite3TestMakePointerStr(Tcl_Interp *interp, ವರ್ಣ *zPtr, ಶೂನ್ಯ *p);
 
-  const char *zFilename;
+  ಧ್ರುವ ವರ್ಣ *zFilename;
   sqlite3 *db;
-  char zBuf[100];
-  extern int Md5_Register(sqlite3*,char**,const sqlite3_api_routines*);
+  ವರ್ಣ zBuf[100];
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ Md5_Register(sqlite3*,ವರ್ಣ**,ಧ್ರುವ sqlite3_api_routines*);
 
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
@@ -286,10 +286,10 @@ static int SQLITE_TCLAPI sqlthread_open(
   Md5_Register(db, 0, 0);
   sqlite3_busy_handler(db, xBusy, 0);
   
-  if( sqlite3TestMakePointerStr(interp, zBuf, db) ) return TCL_ERROR;
-  Tcl_AppendResult(interp, zBuf, NULL);
+  ಯದಿ( sqlite3TestMakePointerStr(interp, zBuf, db) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
+  Tcl_AppendResult(interp, zBuf, ರಿಕ್ತ);
 
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 
@@ -299,10 +299,10 @@ static int SQLITE_TCLAPI sqlthread_open(
 **     Return the current thread-id (Tcl_GetCurrentThread()) cast to
 **     an integer.
 */
-static int SQLITE_TCLAPI sqlthread_id(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI sqlthread_id(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId id = Tcl_GetCurrentThread();
@@ -310,24 +310,24 @@ static int SQLITE_TCLAPI sqlthread_id(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 
 /*
 ** Dispatch routine for the sub-commands of [sqlthread].
 */
-static int SQLITE_TCLAPI sqlthread_proc(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI sqlthread_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct SubCommand {
-    char *zName;
+  ಸಂರಚನಾ SubCommand {
+    ವರ್ಣ *zName;
     Tcl_ObjCmdProc *xProc;
-    int nArg;
-    char *zUsage;
+    ಪೂರ್ಣಾಙ್ಕ nArg;
+    ವರ್ಣ *zUsage;
   } aSub[] = {
     {"parent", sqlthread_parent, 1, "SCRIPT"},
     {"spawn",  sqlthread_spawn,  2, "VARNAME SCRIPT"},
@@ -335,27 +335,27 @@ static int SQLITE_TCLAPI sqlthread_proc(
     {"id",     sqlthread_id,     0, ""},
     {0, 0, 0}
   };
-  struct SubCommand *pSub;
-  int rc;
-  int iIndex;
+  ಸಂರಚನಾ SubCommand *pSub;
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಪೂರ್ಣಾಙ್ಕ iIndex;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
-    return TCL_ERROR;
+  ಯದಿ( objc<2 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "SUB-COMMAND");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(
-      interp, objv[1], aSub, sizeof(aSub[0]), "sub-command", 0, &iIndex
+      interp, objv[1], aSub, ಪರಿಮಾಣ(aSub[0]), "sub-command", 0, &iIndex
   );
-  if( rc!=TCL_OK ) return rc;
+  ಯದಿ( rc!=TCL_OK ) ಪ್ರತ್ಯಾಗಮ rc;
   pSub = &aSub[iIndex];
 
-  if( objc<(pSub->nArg+2) ){
-    Tcl_WrongNumArgs(interp, 2, objv, pSub->zUsage);
-    return TCL_ERROR;
+  ಯದಿ( objc<(pSub->nArg+2) ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 2, objv, pSub->zUsage);
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
-  return pSub->xProc(clientData, interp, objc, objv);
+  ಪ್ರತ್ಯಾಗಮ pSub->xProc(clientData, interp, objc, objv);
 }
 
 /*
@@ -365,10 +365,10 @@ static int SQLITE_TCLAPI sqlthread_proc(
 ** implemented as a script in Tcl 8.5, it is not usually available to
 ** testfixture.
 */ 
-static int SQLITE_TCLAPI clock_seconds_proc(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI clock_seconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -377,17 +377,17 @@ static int SQLITE_TCLAPI clock_seconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 /*
 ** The [clock_milliseconds] command. This is more or less the same as the
 ** regular tcl [clock milliseconds]. 
 */ 
-static int SQLITE_TCLAPI clock_milliseconds_proc(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI clock_milliseconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -398,7 +398,7 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 /*************************************************************************
@@ -414,19 +414,19 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
 ** should be considered if these functions are to be extended (i.e. to 
 ** support windows) in the future.
 */ 
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#ಯದಿ SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
 
 /* BEGIN_SQLITE_BLOCKING_STEP */
 /* This example uses the pthreads API */
-#include <pthread.h>
+#ಅನ್ತರ್ಭಾವ <pthread.h>
 
 /*
 ** A pointer to an instance of this structure is passed as the user-context
 ** pointer when registering for an unlock-notify callback.
 */
-typedef struct UnlockNotification UnlockNotification;
-struct UnlockNotification {
-  int fired;                         /* True after unlock event has occurred */
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ UnlockNotification UnlockNotification;
+ಸಂರಚನಾ UnlockNotification {
+  ಪೂರ್ಣಾಙ್ಕ fired;                         /* True after unlock event has occurred */
   pthread_cond_t cond;               /* Condition variable to wait on */
   pthread_mutex_t mutex;             /* Mutex to protect structure */
 };
@@ -434,9 +434,9 @@ struct UnlockNotification {
 /*
 ** This function is an unlock-notify callback registered with SQLite.
 */
-static void unlock_notify_cb(void **apArg, int nArg){
-  int i;
-  for(i=0; i<nArg; i++){
+ಸ್ಥಿರ ಶೂನ್ಯ unlock_notify_cb(ಶೂನ್ಯ **apArg, ಪೂರ್ಣಾಙ್ಕ nArg){
+  ಪೂರ್ಣಾಙ್ಕ i;
+  ಪ್ರತಿ(i=0; i<nArg; i++){
     UnlockNotification *p = (UnlockNotification *)apArg[i];
     pthread_mutex_lock(&p->mutex);
     p->fired = 1;
@@ -459,8 +459,8 @@ static void unlock_notify_cb(void **apArg, int nArg){
 ** this case the caller should not retry the operation and should roll 
 ** back the current transaction (if any).
 */
-static int wait_for_unlock_notify(sqlite3 *db){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ wait_for_unlock_notify(sqlite3 *db){
+  ಪೂರ್ಣಾಙ್ಕ rc;
   UnlockNotification un;
 
   /* Initialize the UnlockNotification structure. */
@@ -469,8 +469,8 @@ static int wait_for_unlock_notify(sqlite3 *db){
   pthread_cond_init(&un.cond, 0);
 
   /* Register for an unlock-notify callback. */
-  rc = sqlite3_unlock_notify(db, unlock_notify_cb, (void *)&un);
-  assert( rc==SQLITE_LOCKED || rc==SQLITE_OK );
+  rc = sqlite3_unlock_notify(db, unlock_notify_cb, (ಶೂನ್ಯ *)&un);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_LOCKED || rc==SQLITE_OK );
 
   /* The call to sqlite3_unlock_notify() always returns either SQLITE_LOCKED 
   ** or SQLITE_OK. 
@@ -480,9 +480,9 @@ static int wait_for_unlock_notify(sqlite3 *db){
   ** that the current transaction can be rolled back. Otherwise, block
   ** until the unlock-notify callback is invoked, then return SQLITE_OK.
   */
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     pthread_mutex_lock(&un.mutex);
-    if( !un.fired ){
+    ಯದಿ( !un.fired ){
       pthread_cond_wait(&un.cond, &un.mutex);
     }
     pthread_mutex_unlock(&un.mutex);
@@ -492,7 +492,7 @@ static int wait_for_unlock_notify(sqlite3 *db){
   pthread_cond_destroy(&un.cond);
   pthread_mutex_destroy(&un.mutex);
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -506,14 +506,14 @@ static int wait_for_unlock_notify(sqlite3 *db){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_step(sqlite3_stmt *pStmt){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
+ಪೂರ್ಣಾಙ್ಕ sqlite3_blocking_step(sqlite3_stmt *pStmt){
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಯಾವತ್( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
     rc = wait_for_unlock_notify(sqlite3_db_handle(pStmt));
-    if( rc!=SQLITE_OK ) break;
+    ಯದಿ( rc!=SQLITE_OK ) ಭಙ್ಗ;
     sqlite3_reset(pStmt);
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /*
@@ -527,19 +527,19 @@ int sqlite3_blocking_step(sqlite3_stmt *pStmt){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_prepare_v2(
+ಪೂರ್ಣಾಙ್ಕ sqlite3_blocking_prepare_v2(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nSql,                 /* Length of zSql in bytes. */
+  ಧ್ರುವ ವರ್ಣ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಙ್ಕ nSql,                 /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pz           /* OUT: End of parsed string */
+  ಧ್ರುವ ವರ್ಣ **pz           /* OUT: End of parsed string */
 ){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಯಾವತ್( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
     rc = wait_for_unlock_notify(db);
-    if( rc!=SQLITE_OK ) break;
+    ಯದಿ( rc!=SQLITE_OK ) ಭಙ್ಗ;
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 /* END_SQLITE_BLOCKING_STEP */
 
@@ -548,81 +548,81 @@ int sqlite3_blocking_prepare_v2(
 **
 ** Advance the statement to the next row.
 */
-static int SQLITE_TCLAPI blocking_step_proc(
-  void * clientData,
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI blocking_step_proc(
+  ಶೂನ್ಯ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
 
   sqlite3_stmt *pStmt;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ rc;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
-    return TCL_ERROR;
+  ಯದಿ( objc!=2 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "STMT");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
   pStmt = (sqlite3_stmt*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   rc = sqlite3_blocking_step(pStmt);
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), 0);
-  return TCL_OK;
+  Tcl_SetResult(interp, (ವರ್ಣ *)sqlite3ErrName(rc), 0);
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 /*
 ** Usage: sqlite3_blocking_prepare_v2 DB sql bytes ?tailvar?
 ** Usage: sqlite3_nonblocking_prepare_v2 DB sql bytes ?tailvar?
 */
-static int SQLITE_TCLAPI blocking_prepare_v2_proc(
-  void * clientData,
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI blocking_prepare_v2_proc(
+  ಶೂನ್ಯ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಙ್ಕ objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  const char *zSql;
-  int bytes;
-  const char *zTail = 0;
+  ಧ್ರುವ ವರ್ಣ *zSql;
+  ಪೂರ್ಣಾಙ್ಕ bytes;
+  ಧ್ರುವ ವರ್ಣ *zTail = 0;
   sqlite3_stmt *pStmt = 0;
-  char zBuf[50];
-  int rc;
-  int isBlocking = !(clientData==0);
+  ವರ್ಣ zBuf[50];
+  ಪೂರ್ಣಾಙ್ಕ rc;
+  ಪೂರ್ಣಾಙ್ಕ isBlocking = !(clientData==0);
 
-  if( objc!=5 && objc!=4 ){
+  ಯದಿ( objc!=5 && objc!=4 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"", 
        Tcl_GetString(objv[0]), " DB sql bytes tailvar", 0);
-    return TCL_ERROR;
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ಯದಿ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   zSql = Tcl_GetString(objv[2]);
-  if( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) return TCL_ERROR;
+  ಯದಿ( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
 
-  if( isBlocking ){
+  ಯದಿ( isBlocking ){
     rc = sqlite3_blocking_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
-  }else{
+  }ಅನ್ಯಥಾ{
     rc = sqlite3_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
   }
 
-  assert(rc==SQLITE_OK || pStmt==0);
-  if( zTail && objc>=5 ){
-    if( bytes>=0 ){
+  ಪ್ರತಿಜ್ಞಾ(rc==SQLITE_OK || pStmt==0);
+  ಯದಿ( zTail && objc>=5 ){
+    ಯದಿ( bytes>=0 ){
       bytes = bytes - (zTail-zSql);
     }
     Tcl_ObjSetVar2(interp, objv[4], 0, Tcl_NewStringObj(zTail, bytes), 0);
   }
-  if( rc!=SQLITE_OK ){
-    assert( pStmt==0 );
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "%s ", (char *)sqlite3ErrName(rc));
-    Tcl_AppendResult(interp, zBuf, sqlite3_errmsg(db), NULL);
-    return TCL_ERROR;
+  ಯದಿ( rc!=SQLITE_OK ){
+    ಪ್ರತಿಜ್ಞಾ( pStmt==0 );
+    sqlite3_snprintf(ಪರಿಮಾಣ(zBuf), zBuf, "%s ", (ವರ್ಣ *)sqlite3ErrName(rc));
+    Tcl_AppendResult(interp, zBuf, sqlite3_errmsg(db), ರಿಕ್ತ);
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
-  if( pStmt ){
-    if( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) return TCL_ERROR;
-    Tcl_AppendResult(interp, zBuf, NULL);
+  ಯದಿ( pStmt ){
+    ಯದಿ( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
+    Tcl_AppendResult(interp, zBuf, ರಿಕ್ತ);
   }
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 #endif /* SQLITE_OS_UNIX && SQLITE_ENABLE_UNLOCK_NOTIFY */
@@ -633,31 +633,31 @@ static int SQLITE_TCLAPI blocking_prepare_v2_proc(
 /*
 ** Register commands with the TCL interpreter.
 */
-int SqlitetestThread_Init(Tcl_Interp *interp){
-  struct TclCmd {
-    int (*xProc)(void*, Tcl_Interp*, int, Tcl_Obj*const*);
-    const char *zName;
-    int iCtx;
+ಪೂರ್ಣಾಙ್ಕ SqlitetestThread_Init(Tcl_Interp *interp){
+  ಸಂರಚನಾ TclCmd {
+    ಪೂರ್ಣಾಙ್ಕ (*xProc)(ಶೂನ್ಯ*, Tcl_Interp*, ಪೂರ್ಣಾಙ್ಕ, Tcl_Obj*ಧ್ರುವ*);
+    ಧ್ರುವ ವರ್ಣ *zName;
+    ಪೂರ್ಣಾಙ್ಕ iCtx;
   } aCmd[] = {
     { sqlthread_proc,           "sqlthread",                      0 },
     { clock_seconds_proc,       "clock_second",                   0 },
     { clock_milliseconds_proc,  "clock_milliseconds",             0 },
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#ಯದಿ SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
     { blocking_step_proc,       "sqlite3_blocking_step",          0 },
     { blocking_prepare_v2_proc, "sqlite3_blocking_prepare_v2",    1 },
     { blocking_prepare_v2_proc, "sqlite3_nonblocking_prepare_v2", 0 },
 #endif
   };
-  int ii;
+  ಪೂರ್ಣಾಙ್ಕ ii;
 
-  for(ii=0; ii<sizeof(aCmd)/sizeof(aCmd[0]); ii++){
-    void *p = SQLITE_INT_TO_PTR(aCmd[ii].iCtx);
+  ಪ್ರತಿ(ii=0; ii<ಪರಿಮಾಣ(aCmd)/ಪರಿಮಾಣ(aCmd[0]); ii++){
+    ಶೂನ್ಯ *p = SQLITE_INT_TO_PTR(aCmd[ii].iCtx);
     Tcl_CreateObjCommand(interp, aCmd[ii].zName, aCmd[ii].xProc, p, 0);
   }
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
-#else
-int SqlitetestThread_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#ಅನ್ಯಥಾ
+ಪೂರ್ಣಾಙ್ಕ SqlitetestThread_Init(Tcl_Interp *interp){
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 #endif

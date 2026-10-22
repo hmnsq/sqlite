@@ -15,13 +15,13 @@
 ** Random numbers are used by some of the database backends in order
 ** to generate random integer keys for tables or random filenames.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
 
 /* All threads share a single random number generator.
 ** This structure is the current state of the generator.
 */
-static SQLITE_WSD struct sqlite3PrngType {
+ಸ್ಥಿರ SQLITE_WSD ಸಂರಚನಾ sqlite3PrngType {
   u32 s[16];                 /* 64 bytes of chacha20 state */
   u8 out[64];                /* Output bytes */
   u8 n;                      /* Output bytes remaining */
@@ -36,11 +36,11 @@ static SQLITE_WSD struct sqlite3PrngType {
     c += d, b ^= c, b = ROTL(b,12), \
     a += b, d ^= a, d = ROTL(d, 8), \
     c += d, b ^= c, b = ROTL(b, 7))
-static void chacha_block(u32 *out, const u32 *in){
-  int i;
+ಸ್ಥಿರ ಶೂನ್ಯ chacha_block(u32 *out, ಧ್ರುವ u32 *in){
+  ಪೂರ್ಣಾಙ್ಕ i;
   u32 x[16];
   memcpy(x, in, 64);
-  for(i=0; i<10; i++){
+  ಪ್ರತಿ(i=0; i<10; i++){
     QR(x[0], x[4], x[ 8], x[12]);
     QR(x[1], x[5], x[ 9], x[13]);
     QR(x[2], x[6], x[10], x[14]);
@@ -50,14 +50,14 @@ static void chacha_block(u32 *out, const u32 *in){
     QR(x[2], x[7], x[ 8], x[13]);
     QR(x[3], x[4], x[ 9], x[14]);
   }
-  for(i=0; i<16; i++) out[i] = x[i]+in[i];
+  ಪ್ರತಿ(i=0; i<16; i++) out[i] = x[i]+in[i];
 }
 
 /*
 ** Return N random bytes.
 */
-void sqlite3_randomness(int N, void *pBuf){
-  unsigned char *zBuf = pBuf;
+ಶೂನ್ಯ sqlite3_randomness(ಪೂರ್ಣಾಙ್ಕ N, ಶೂನ್ಯ *pBuf){
+  unsigned ವರ್ಣ *zBuf = pBuf;
 
   /* The "wsdPrng" macro will resolve to the pseudo-random number generator
   ** state vector.  If writable static data is unsupported on the target,
@@ -66,58 +66,58 @@ void sqlite3_randomness(int N, void *pBuf){
   ** to the "sqlite3Prng" state vector declared above.
   */
 #ifdef SQLITE_OMIT_WSD
-  struct sqlite3PrngType *p = &GLOBAL(struct sqlite3PrngType, sqlite3Prng);
+  ಸಂರಚನಾ sqlite3PrngType *p = &GLOBAL(ಸಂರಚನಾ sqlite3PrngType, sqlite3Prng);
 # define wsdPrng p[0]
-#else
+#ಅನ್ಯಥಾ
 # define wsdPrng sqlite3Prng
 #endif
 
-#if SQLITE_THREADSAFE
+#ಯದಿ SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
 #endif
 
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return;
+  ಯದಿ( sqlite3_initialize() ) ಪ್ರತ್ಯಾಗಮ;
 #endif
 
-#if SQLITE_THREADSAFE
+#ಯದಿ SQLITE_THREADSAFE
   mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_PRNG);
 #endif
 
   sqlite3_mutex_enter(mutex);
-  if( N<=0 || pBuf==0 ){
+  ಯದಿ( N<=0 || pBuf==0 ){
     wsdPrng.s[0] = 0;
     sqlite3_mutex_leave(mutex);
-    return;
+    ಪ್ರತ್ಯಾಗಮ;
   }
 
   /* Initialize the state of the random number generator once,
   ** the first time this routine is called.
   */
-  if( wsdPrng.s[0]==0 ){
+  ಯದಿ( wsdPrng.s[0]==0 ){
     sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-    static const u32 chacha20_init[] = {
+    ಸ್ಥಿರ ಧ್ರುವ u32 chacha20_init[] = {
       0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
     };
     memcpy(&wsdPrng.s[0], chacha20_init, 16);
-    if( NEVER(pVfs==0) ){
+    ಯದಿ( NEVER(pVfs==0) ){
       memset(&wsdPrng.s[4], 0, 44);
-    }else{
-      sqlite3OsRandomness(pVfs, 44, (char*)&wsdPrng.s[4]);
+    }ಅನ್ಯಥಾ{
+      sqlite3OsRandomness(pVfs, 44, (ವರ್ಣ*)&wsdPrng.s[4]);
     }
     wsdPrng.s[15] = wsdPrng.s[12];
     wsdPrng.s[12] = 0;
     wsdPrng.n = 0;
   }
 
-  assert( N>0 );
-  while( 1 /* exit by break */ ){
-    if( N<=wsdPrng.n ){
+  ಪ್ರತಿಜ್ಞಾ( N>0 );
+  ಯಾವತ್( 1 /* exit by break */ ){
+    ಯದಿ( N<=wsdPrng.n ){
       memcpy(zBuf, &wsdPrng.out[wsdPrng.n-N], N);
       wsdPrng.n -= N;
-      break;
+      ಭಙ್ಗ;
     }
-    if( wsdPrng.n>0 ){
+    ಯದಿ( wsdPrng.n>0 ){
       memcpy(zBuf, wsdPrng.out, wsdPrng.n);
       N -= wsdPrng.n;
       zBuf += wsdPrng.n;
@@ -139,19 +139,19 @@ void sqlite3_randomness(int N, void *pBuf){
 ** The sqlite3_test_control() interface calls these routines to
 ** control the PRNG.
 */
-static SQLITE_WSD struct sqlite3PrngType sqlite3SavedPrng;
-void sqlite3PrngSaveState(void){
+ಸ್ಥಿರ SQLITE_WSD ಸಂರಚನಾ sqlite3PrngType sqlite3SavedPrng;
+ಶೂನ್ಯ sqlite3PrngSaveState(ಶೂನ್ಯ){
   memcpy(
-    &GLOBAL(struct sqlite3PrngType, sqlite3SavedPrng),
-    &GLOBAL(struct sqlite3PrngType, sqlite3Prng),
-    sizeof(sqlite3Prng)
+    &GLOBAL(ಸಂರಚನಾ sqlite3PrngType, sqlite3SavedPrng),
+    &GLOBAL(ಸಂರಚನಾ sqlite3PrngType, sqlite3Prng),
+    ಪರಿಮಾಣ(sqlite3Prng)
   );
 }
-void sqlite3PrngRestoreState(void){
+ಶೂನ್ಯ sqlite3PrngRestoreState(ಶೂನ್ಯ){
   memcpy(
-    &GLOBAL(struct sqlite3PrngType, sqlite3Prng),
-    &GLOBAL(struct sqlite3PrngType, sqlite3SavedPrng),
-    sizeof(sqlite3Prng)
+    &GLOBAL(ಸಂರಚನಾ sqlite3PrngType, sqlite3Prng),
+    &GLOBAL(ಸಂರಚನಾ sqlite3PrngType, sqlite3SavedPrng),
+    ಪರಿಮಾಣ(sqlite3Prng)
   );
 }
 #endif /* SQLITE_UNTESTABLE */

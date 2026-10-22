@@ -17,7 +17,7 @@
 */
 #ifndef SQLITE3EXT_H
 #define SQLITE3EXT_H
-#include "sqlite3.h"
+#ಅನ್ತರ್ಭಾವ "sqlite3.h"
 
 /*
 ** The following structure holds pointers to all of the SQLite API
@@ -29,366 +29,366 @@
 ** versions of SQLite will not be able to load each other's shared
 ** libraries!
 */
-struct sqlite3_api_routines {
-  void * (*aggregate_context)(sqlite3_context*,int nBytes);
-  int  (*aggregate_count)(sqlite3_context*);
-  int  (*bind_blob)(sqlite3_stmt*,int,const void*,int n,void(*)(void*));
-  int  (*bind_double)(sqlite3_stmt*,int,double);
-  int  (*bind_int)(sqlite3_stmt*,int,int);
-  int  (*bind_int64)(sqlite3_stmt*,int,sqlite_int64);
-  int  (*bind_null)(sqlite3_stmt*,int);
-  int  (*bind_parameter_count)(sqlite3_stmt*);
-  int  (*bind_parameter_index)(sqlite3_stmt*,const char*zName);
-  const char * (*bind_parameter_name)(sqlite3_stmt*,int);
-  int  (*bind_text)(sqlite3_stmt*,int,const char*,int n,void(*)(void*));
-  int  (*bind_text16)(sqlite3_stmt*,int,const void*,int,void(*)(void*));
-  int  (*bind_value)(sqlite3_stmt*,int,const sqlite3_value*);
-  int  (*busy_handler)(sqlite3*,int(*)(void*,int),void*);
-  int  (*busy_timeout)(sqlite3*,int ms);
-  int  (*changes)(sqlite3*);
-  int  (*close)(sqlite3*);
-  int  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                           int eTextRep,const char*));
-  int  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                             int eTextRep,const void*));
-  const void * (*column_blob)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes16)(sqlite3_stmt*,int iCol);
-  int  (*column_count)(sqlite3_stmt*pStmt);
-  const char * (*column_database_name)(sqlite3_stmt*,int);
-  const void * (*column_database_name16)(sqlite3_stmt*,int);
-  const char * (*column_decltype)(sqlite3_stmt*,int i);
-  const void * (*column_decltype16)(sqlite3_stmt*,int);
-  double  (*column_double)(sqlite3_stmt*,int iCol);
-  int  (*column_int)(sqlite3_stmt*,int iCol);
-  sqlite_int64  (*column_int64)(sqlite3_stmt*,int iCol);
-  const char * (*column_name)(sqlite3_stmt*,int);
-  const void * (*column_name16)(sqlite3_stmt*,int);
-  const char * (*column_origin_name)(sqlite3_stmt*,int);
-  const void * (*column_origin_name16)(sqlite3_stmt*,int);
-  const char * (*column_table_name)(sqlite3_stmt*,int);
-  const void * (*column_table_name16)(sqlite3_stmt*,int);
-  const unsigned char * (*column_text)(sqlite3_stmt*,int iCol);
-  const void * (*column_text16)(sqlite3_stmt*,int iCol);
-  int  (*column_type)(sqlite3_stmt*,int iCol);
-  sqlite3_value* (*column_value)(sqlite3_stmt*,int iCol);
-  void * (*commit_hook)(sqlite3*,int(*)(void*),void*);
-  int  (*complete)(const char*sql);
-  int  (*complete16)(const void*sql);
-  int  (*create_collation)(sqlite3*,const char*,int,void*,
-                           int(*)(void*,int,const void*,int,const void*));
-  int  (*create_collation16)(sqlite3*,const void*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*));
-  int  (*create_function)(sqlite3*,const char*,int,int,void*,
-                          void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                          void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-                          void (*xFinal)(sqlite3_context*));
-  int  (*create_function16)(sqlite3*,const void*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xFinal)(sqlite3_context*));
-  int (*create_module)(sqlite3*,const char*,const sqlite3_module*,void*);
-  int  (*data_count)(sqlite3_stmt*pStmt);
+ಸಂರಚನಾ sqlite3_api_routines {
+  ಶೂನ್ಯ * (*aggregate_context)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ nBytes);
+  ಪೂರ್ಣಾಙ್ಕ  (*aggregate_ಎಣಿಕೆ)(sqlite3_context*);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_blob)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ n,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_double)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ದ್ವಿಗುಣ);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_int)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_int64)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,sqlite_int64);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_null)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_parameter_ಎಣಿಕೆ)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_parameter_index)(sqlite3_stmt*,ಧ್ರುವ ವರ್ಣ*zName);
+  ಧ್ರುವ ವರ್ಣ * (*bind_parameter_name)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_text)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ n,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_text16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*bind_ಮೌಲ್ಯ)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*busy_handler)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*busy_timeout)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ ms);
+  ಪೂರ್ಣಾಙ್ಕ  (*changes)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ  (*close)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ  (*collation_needed)(sqlite3*,ಶೂನ್ಯ*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*,sqlite3*,
+                           ಪೂರ್ಣಾಙ್ಕ eTextRep,ಧ್ರುವ ವರ್ಣ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*collation_needed16)(sqlite3*,ಶೂನ್ಯ*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*,sqlite3*,
+                             ಪೂರ್ಣಾಙ್ಕ eTextRep,ಧ್ರುವ ಶೂನ್ಯ*));
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_blob)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಪೂರ್ಣಾಙ್ಕ  (*column_bytes)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಪೂರ್ಣಾಙ್ಕ  (*column_bytes16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಪೂರ್ಣಾಙ್ಕ  (*column_ಎಣಿಕೆ)(sqlite3_stmt*pStmt);
+  ಧ್ರುವ ವರ್ಣ * (*column_database_name)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_database_name16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ * (*column_decltype)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ i);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_decltype16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ದ್ವಿಗುಣ  (*column_double)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಪೂರ್ಣಾಙ್ಕ  (*column_int)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  sqlite_int64  (*column_int64)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಧ್ರುವ ವರ್ಣ * (*column_name)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_name16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ * (*column_origin_name)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_origin_name16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ * (*column_table_name)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_table_name16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ unsigned ವರ್ಣ * (*column_text)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಧ್ರುವ ಶೂನ್ಯ * (*column_text16)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಪೂರ್ಣಾಙ್ಕ  (*column_type)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  sqlite3_ಮೌಲ್ಯ* (*column_ಮೌಲ್ಯ)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ iCol);
+  ಶೂನ್ಯ * (*commit_hook)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*complete)(ಧ್ರುವ ವರ್ಣ*sql);
+  ಪೂರ್ಣಾಙ್ಕ  (*complete16)(ಧ್ರುವ ಶೂನ್ಯ*sql);
+  ಪೂರ್ಣಾಙ್ಕ  (*create_collation)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                           ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*create_collation16)(sqlite3*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                             ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ  (*create_function)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                          ಶೂನ್ಯ (*xFunc)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                          ಶೂನ್ಯ (*xStep)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                          ಶೂನ್ಯ (*xFinal)(sqlite3_context*));
+  ಪೂರ್ಣಾಙ್ಕ  (*create_function16)(sqlite3*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                            ಶೂನ್ಯ (*xFunc)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ (*xStep)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ (*xFinal)(sqlite3_context*));
+  ಪೂರ್ಣಾಙ್ಕ (*create_module)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ sqlite3_module*,ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*data_ಎಣಿಕೆ)(sqlite3_stmt*pStmt);
   sqlite3 * (*db_handle)(sqlite3_stmt*);
-  int (*declare_vtab)(sqlite3*,const char*);
-  int  (*enable_shared_cache)(int);
-  int  (*errcode)(sqlite3*db);
-  const char * (*errmsg)(sqlite3*);
-  const void * (*errmsg16)(sqlite3*);
-  int  (*exec)(sqlite3*,const char*,sqlite3_callback,void*,char**);
-  int  (*expired)(sqlite3_stmt*);
-  int  (*finalize)(sqlite3_stmt*pStmt);
-  void  (*free)(void*);
-  void  (*free_table)(char**result);
-  int  (*get_autocommit)(sqlite3*);
-  void * (*get_auxdata)(sqlite3_context*,int);
-  int  (*get_table)(sqlite3*,const char*,char***,int*,int*,char**);
-  int  (*global_recover)(void);
-  void  (*interruptx)(sqlite3*);
-  sqlite_int64  (*last_insert_rowid)(sqlite3*);
-  const char * (*libversion)(void);
-  int  (*libversion_number)(void);
-  void *(*malloc)(int);
-  char *(SQLITE_CDECL*mprintf)(const char*,...);
-  int  (*open)(const char*,sqlite3**);
-  int  (*open16)(const void*,sqlite3**);
-  int  (*prepare)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int  (*prepare16)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  void * (*profile)(sqlite3*,void(*)(void*,const char*,sqlite_uint64),void*);
-  void  (*progress_handler)(sqlite3*,int,int(*)(void*),void*);
-  void *(*realloc)(void*,int);
-  int  (*reset)(sqlite3_stmt*pStmt);
-  void  (*result_blob)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_double)(sqlite3_context*,double);
-  void  (*result_error)(sqlite3_context*,const char*,int);
-  void  (*result_error16)(sqlite3_context*,const void*,int);
-  void  (*result_int)(sqlite3_context*,int);
-  void  (*result_int64)(sqlite3_context*,sqlite_int64);
-  void  (*result_null)(sqlite3_context*);
-  void  (*result_text)(sqlite3_context*,const char*,int,void(*)(void*));
-  void  (*result_text16)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16be)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16le)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_value)(sqlite3_context*,sqlite3_value*);
-  void *(*rollback_hook)(sqlite3*,void(*)(void*),void*);
-  int  (*set_authorizer)(sqlite3*,int(*)(void*,int,const char*,const char*,
-                         const char*,const char*),void*);
-  void  (*set_auxdata)(sqlite3_context*,int,void*,void (*)(void*));
-  char *(SQLITE_CDECL*xsnprintf)(int,char*,const char*,...);
-  int  (*step)(sqlite3_stmt*);
-  int  (*table_column_metadata)(sqlite3*,const char*,const char*,const char*,
-                                char const**,char const**,int*,int*,int*);
-  void  (*thread_cleanup)(void);
-  int  (*total_changes)(sqlite3*);
-  void * (*trace)(sqlite3*,void(*xTrace)(void*,const char*),void*);
-  int  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
-  void * (*update_hook)(sqlite3*,void(*)(void*,int ,char const*,char const*,
-                                         sqlite_int64),void*);
-  void * (*user_data)(sqlite3_context*);
-  const void * (*value_blob)(sqlite3_value*);
-  int  (*value_bytes)(sqlite3_value*);
-  int  (*value_bytes16)(sqlite3_value*);
-  double  (*value_double)(sqlite3_value*);
-  int  (*value_int)(sqlite3_value*);
-  sqlite_int64  (*value_int64)(sqlite3_value*);
-  int  (*value_numeric_type)(sqlite3_value*);
-  const unsigned char * (*value_text)(sqlite3_value*);
-  const void * (*value_text16)(sqlite3_value*);
-  const void * (*value_text16be)(sqlite3_value*);
-  const void * (*value_text16le)(sqlite3_value*);
-  int  (*value_type)(sqlite3_value*);
-  char *(*vmprintf)(const char*,va_list);
+  ಪೂರ್ಣಾಙ್ಕ (*declare_vtab)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*enable_shared_cache)(ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*errcode)(sqlite3*db);
+  ಧ್ರುವ ವರ್ಣ * (*errmsg)(sqlite3*);
+  ಧ್ರುವ ಶೂನ್ಯ * (*errmsg16)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ  (*exec)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,sqlite3_callback,ಶೂನ್ಯ*,ವರ್ಣ**);
+  ಪೂರ್ಣಾಙ್ಕ  (*expired)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ  (*finalize)(sqlite3_stmt*pStmt);
+  ಶೂನ್ಯ  (*ಮುಕ್ತ)(ಶೂನ್ಯ*);
+  ಶೂನ್ಯ  (*free_table)(ವರ್ಣ**result);
+  ಪೂರ್ಣಾಙ್ಕ  (*get_autocommit)(sqlite3*);
+  ಶೂನ್ಯ * (*get_auxdata)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*get_table)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ವರ್ಣ***,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*,ವರ್ಣ**);
+  ಪೂರ್ಣಾಙ್ಕ  (*global_recover)(ಶೂನ್ಯ);
+  ಶೂನ್ಯ  (*interruptx)(sqlite3*);
+  sqlite_int64  (*last_ಸೇರಿಸು_rowid)(sqlite3*);
+  ಧ್ರುವ ವರ್ಣ * (*libversion)(ಶೂನ್ಯ);
+  ಪೂರ್ಣಾಙ್ಕ  (*libversion_ಸಂಖ್ಯೆ)(ಶೂನ್ಯ);
+  ಶೂನ್ಯ *(*malloc)(ಪೂರ್ಣಾಙ್ಕ);
+  ವರ್ಣ *(SQLITE_CDECL*mprintf)(ಧ್ರುವ ವರ್ಣ*,...);
+  ಪೂರ್ಣಾಙ್ಕ  (*open)(ಧ್ರುವ ವರ್ಣ*,sqlite3**);
+  ಪೂರ್ಣಾಙ್ಕ  (*open16)(ಧ್ರುವ ಶೂನ್ಯ*,sqlite3**);
+  ಪೂರ್ಣಾಙ್ಕ  (*prepare)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_stmt**,ಧ್ರುವ ವರ್ಣ**);
+  ಪೂರ್ಣಾಙ್ಕ  (*prepare16)(sqlite3*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_stmt**,ಧ್ರುವ ಶೂನ್ಯ**);
+  ಶೂನ್ಯ * (*profile)(sqlite3*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*,ಧ್ರುವ ವರ್ಣ*,sqlite_uint64),ಶೂನ್ಯ*);
+  ಶೂನ್ಯ  (*progress_handler)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+  ಶೂನ್ಯ *(*realloc)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ  (*reset)(sqlite3_stmt*pStmt);
+  ಶೂನ್ಯ  (*result_blob)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ  (*result_double)(sqlite3_context*,ದ್ವಿಗುಣ);
+  ಶೂನ್ಯ  (*result_error)(sqlite3_context*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ  (*result_error16)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ  (*result_int)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ  (*result_int64)(sqlite3_context*,sqlite_int64);
+  ಶೂನ್ಯ  (*result_null)(sqlite3_context*);
+  ಶೂನ್ಯ  (*result_text)(sqlite3_context*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ  (*result_text16)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ  (*result_text16be)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ  (*result_text16le)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ  (*result_ಮೌಲ್ಯ)(sqlite3_context*,sqlite3_ಮೌಲ್ಯ*);
+  ಶೂನ್ಯ *(*rollback_hook)(sqlite3*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*set_authorizer)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,
+                         ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*),ಶೂನ್ಯ*);
+  ಶೂನ್ಯ  (*set_auxdata)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,ಶೂನ್ಯ (*)(ಶೂನ್ಯ*));
+  ವರ್ಣ *(SQLITE_CDECL*xsnprintf)(ಪೂರ್ಣಾಙ್ಕ,ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,...);
+  ಪೂರ್ಣಾಙ್ಕ  (*step)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ  (*table_column_metadata)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,
+                                ವರ್ಣ ಧ್ರುವ**,ವರ್ಣ ಧ್ರುವ**,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*);
+  ಶೂನ್ಯ  (*thread_cleanup)(ಶೂನ್ಯ);
+  ಪೂರ್ಣಾಙ್ಕ  (*total_changes)(sqlite3*);
+  ಶೂನ್ಯ * (*trace)(sqlite3*,ಶೂನ್ಯ(*xTrace)(ಶೂನ್ಯ*,ಧ್ರುವ ವರ್ಣ*),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
+  ಶೂನ್ಯ * (*update_hook)(sqlite3*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ ,ವರ್ಣ ಧ್ರುವ*,ವರ್ಣ ಧ್ರುವ*,
+                                         sqlite_int64),ಶೂನ್ಯ*);
+  ಶೂನ್ಯ * (*user_data)(sqlite3_context*);
+  ಧ್ರುವ ಶೂನ್ಯ * (*ಮೌಲ್ಯ_blob)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*ಮೌಲ್ಯ_bytes)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*ಮೌಲ್ಯ_bytes16)(sqlite3_ಮೌಲ್ಯ*);
+  ದ್ವಿಗುಣ  (*ಮೌಲ್ಯ_double)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*ಮೌಲ್ಯ_int)(sqlite3_ಮೌಲ್ಯ*);
+  sqlite_int64  (*ಮೌಲ್ಯ_int64)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*ಮೌಲ್ಯ_numeric_type)(sqlite3_ಮೌಲ್ಯ*);
+  ಧ್ರುವ unsigned ವರ್ಣ * (*ಮೌಲ್ಯ_text)(sqlite3_ಮೌಲ್ಯ*);
+  ಧ್ರುವ ಶೂನ್ಯ * (*ಮೌಲ್ಯ_text16)(sqlite3_ಮೌಲ್ಯ*);
+  ಧ್ರುವ ಶೂನ್ಯ * (*ಮೌಲ್ಯ_text16be)(sqlite3_ಮೌಲ್ಯ*);
+  ಧ್ರುವ ಶೂನ್ಯ * (*ಮೌಲ್ಯ_text16le)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ  (*ಮೌಲ್ಯ_type)(sqlite3_ಮೌಲ್ಯ*);
+  ವರ್ಣ *(*vmprintf)(ಧ್ರುವ ವರ್ಣ*,va_list);
   /* Added ??? */
-  int (*overload_function)(sqlite3*, const char *zFuncName, int nArg);
+  ಪೂರ್ಣಾಙ್ಕ (*overload_function)(sqlite3*, ಧ್ರುವ ವರ್ಣ *zFuncName, ಪೂರ್ಣಾಙ್ಕ nArg);
   /* Added by 3.3.13 */
-  int (*prepare_v2)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int (*prepare16_v2)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  int (*clear_bindings)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*prepare_v2)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_stmt**,ಧ್ರುವ ವರ್ಣ**);
+  ಪೂರ್ಣಾಙ್ಕ (*prepare16_v2)(sqlite3*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_stmt**,ಧ್ರುವ ಶೂನ್ಯ**);
+  ಪೂರ್ಣಾಙ್ಕ (*clear_bindings)(sqlite3_stmt*);
   /* Added by 3.4.1 */
-  int (*create_module_v2)(sqlite3*,const char*,const sqlite3_module*,void*,
-                          void (*xDestroy)(void *));
+  ಪೂರ್ಣಾಙ್ಕ (*create_module_v2)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ sqlite3_module*,ಶೂನ್ಯ*,
+                          ಶೂನ್ಯ (*xDestroy)(ಶೂನ್ಯ *));
   /* Added by 3.5.0 */
-  int (*bind_zeroblob)(sqlite3_stmt*,int,int);
-  int (*blob_bytes)(sqlite3_blob*);
-  int (*blob_close)(sqlite3_blob*);
-  int (*blob_open)(sqlite3*,const char*,const char*,const char*,sqlite3_int64,
-                   int,sqlite3_blob**);
-  int (*blob_read)(sqlite3_blob*,void*,int,int);
-  int (*blob_write)(sqlite3_blob*,const void*,int,int);
-  int (*create_collation_v2)(sqlite3*,const char*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*),
-                             void(*)(void*));
-  int (*file_control)(sqlite3*,const char*,int,void*);
-  sqlite3_int64 (*memory_highwater)(int);
-  sqlite3_int64 (*memory_used)(void);
-  sqlite3_mutex *(*mutex_alloc)(int);
-  void (*mutex_enter)(sqlite3_mutex*);
-  void (*mutex_free)(sqlite3_mutex*);
-  void (*mutex_leave)(sqlite3_mutex*);
-  int (*mutex_try)(sqlite3_mutex*);
-  int (*open_v2)(const char*,sqlite3**,int,const char*);
-  int (*release_memory)(int);
-  void (*result_error_nomem)(sqlite3_context*);
-  void (*result_error_toobig)(sqlite3_context*);
-  int (*sleep)(int);
-  void (*soft_heap_limit)(int);
-  sqlite3_vfs *(*vfs_find)(const char*);
-  int (*vfs_register)(sqlite3_vfs*,int);
-  int (*vfs_unregister)(sqlite3_vfs*);
-  int (*xthreadsafe)(void);
-  void (*result_zeroblob)(sqlite3_context*,int);
-  void (*result_error_code)(sqlite3_context*,int);
-  int (SQLITE_CDECL*test_control)(int, ...);
-  void (*randomness)(int,void*);
+  ಪೂರ್ಣಾಙ್ಕ (*bind_zeroblob)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_bytes)(sqlite3_blob*);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_close)(sqlite3_blob*);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_open)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,sqlite3_int64,
+                   ಪೂರ್ಣಾಙ್ಕ,sqlite3_blob**);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_read)(sqlite3_blob*,ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_write)(sqlite3_blob*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*create_collation_v2)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                             ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*),
+                             ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ (*file_control)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*);
+  sqlite3_int64 (*memory_highwater)(ಪೂರ್ಣಾಙ್ಕ);
+  sqlite3_int64 (*memory_used)(ಶೂನ್ಯ);
+  sqlite3_mutex *(*mutex_alloc)(ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ (*mutex_enter)(sqlite3_mutex*);
+  ಶೂನ್ಯ (*mutex_free)(sqlite3_mutex*);
+  ಶೂನ್ಯ (*mutex_leave)(sqlite3_mutex*);
+  ಪೂರ್ಣಾಙ್ಕ (*mutex_try)(sqlite3_mutex*);
+  ಪೂರ್ಣಾಙ್ಕ (*open_v2)(ಧ್ರುವ ವರ್ಣ*,sqlite3**,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*release_memory)(ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ (*result_error_nomem)(sqlite3_context*);
+  ಶೂನ್ಯ (*result_error_toobig)(sqlite3_context*);
+  ಪೂರ್ಣಾಙ್ಕ (*sleep)(ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ (*soft_heap_limit)(ಪೂರ್ಣಾಙ್ಕ);
+  sqlite3_vfs *(*vfs_find)(ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*vfs_register)(sqlite3_vfs*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*vfs_unregister)(sqlite3_vfs*);
+  ಪೂರ್ಣಾಙ್ಕ (*xthreadsafe)(ಶೂನ್ಯ);
+  ಶೂನ್ಯ (*result_zeroblob)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ (*result_error_code)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (SQLITE_CDECL*test_control)(ಪೂರ್ಣಾಙ್ಕ, ...);
+  ಶೂನ್ಯ (*randomness)(ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*);
   sqlite3 *(*context_db_handle)(sqlite3_context*);
-  int (*extended_result_codes)(sqlite3*,int);
-  int (*limit)(sqlite3*,int,int);
+  ಪೂರ್ಣಾಙ್ಕ (*extended_result_codes)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*limit)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
   sqlite3_stmt *(*next_stmt)(sqlite3*,sqlite3_stmt*);
-  const char *(*sql)(sqlite3_stmt*);
-  int (*status)(int,int*,int*,int);
-  int (*backup_finish)(sqlite3_backup*);
-  sqlite3_backup *(*backup_init)(sqlite3*,const char*,sqlite3*,const char*);
-  int (*backup_pagecount)(sqlite3_backup*);
-  int (*backup_remaining)(sqlite3_backup*);
-  int (*backup_step)(sqlite3_backup*,int);
-  const char *(*compileoption_get)(int);
-  int (*compileoption_used)(const char*);
-  int (*create_function_v2)(sqlite3*,const char*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xFinal)(sqlite3_context*),
-                            void(*xDestroy)(void*));
-  int (SQLITE_CDECL*db_config)(sqlite3*,int,...);
+  ಧ್ರುವ ವರ್ಣ *(*sql)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*status)(ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*backup_finish)(sqlite3_backup*);
+  sqlite3_backup *(*backup_init)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*backup_pagecount)(sqlite3_backup*);
+  ಪೂರ್ಣಾಙ್ಕ (*backup_remaining)(sqlite3_backup*);
+  ಪೂರ್ಣಾಙ್ಕ (*backup_step)(sqlite3_backup*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ *(*compileoption_get)(ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*compileoption_used)(ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*create_function_v2)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                            ಶೂನ್ಯ (*xFunc)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ (*xStep)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ (*xFinal)(sqlite3_context*),
+                            ಶೂನ್ಯ(*xDestroy)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ (SQLITE_CDECL*db_config)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,...);
   sqlite3_mutex *(*db_mutex)(sqlite3*);
-  int (*db_status)(sqlite3*,int,int*,int*,int);
-  int (*extended_errcode)(sqlite3*);
-  void (SQLITE_CDECL*log)(int,const char*,...);
+  ಪೂರ್ಣಾಙ್ಕ (*db_status)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*extended_errcode)(sqlite3*);
+  ಶೂನ್ಯ (SQLITE_CDECL*log)(ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*,...);
   sqlite3_int64 (*soft_heap_limit64)(sqlite3_int64);
-  const char *(*sourceid)(void);
-  int (*stmt_status)(sqlite3_stmt*,int,int);
-  int (*strnicmp)(const char*,const char*,int);
-  int (*unlock_notify)(sqlite3*,void(*)(void**,int),void*);
-  int (*wal_autocheckpoint)(sqlite3*,int);
-  int (*wal_checkpoint)(sqlite3*,const char*);
-  void *(*wal_hook)(sqlite3*,int(*)(void*,sqlite3*,const char*,int),void*);
-  int (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
-  int (SQLITE_CDECL*vtab_config)(sqlite3*,int op,...);
-  int (*vtab_on_conflict)(sqlite3*);
+  ಧ್ರುವ ವರ್ಣ *(*sourceid)(ಶೂನ್ಯ);
+  ಪೂರ್ಣಾಙ್ಕ (*stmt_status)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*strnicmp)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*unlock_notify)(sqlite3*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ**,ಪೂರ್ಣಾಙ್ಕ),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ (*wal_autocheckpoint)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*wal_checkpoint)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಶೂನ್ಯ *(*wal_hook)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ),ಶೂನ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
+  ಪೂರ್ಣಾಙ್ಕ (SQLITE_CDECL*vtab_config)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ op,...);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_on_conflict)(sqlite3*);
   /* Version 3.7.16 and later */
-  int (*close_v2)(sqlite3*);
-  const char *(*db_filename)(sqlite3*,const char*);
-  int (*db_readonly)(sqlite3*,const char*);
-  int (*db_release_memory)(sqlite3*);
-  const char *(*errstr)(int);
-  int (*stmt_busy)(sqlite3_stmt*);
-  int (*stmt_readonly)(sqlite3_stmt*);
-  int (*stricmp)(const char*,const char*);
-  int (*uri_boolean)(const char*,const char*,int);
-  sqlite3_int64 (*uri_int64)(const char*,const char*,sqlite3_int64);
-  const char *(*uri_parameter)(const char*,const char*);
-  char *(*xvsnprintf)(int,char*,const char*,va_list);
-  int (*wal_checkpoint_v2)(sqlite3*,const char*,int,int*,int*);
+  ಪೂರ್ಣಾಙ್ಕ (*close_v2)(sqlite3*);
+  ಧ್ರುವ ವರ್ಣ *(*db_filename)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*db_readonly)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*db_release_memory)(sqlite3*);
+  ಧ್ರುವ ವರ್ಣ *(*errstr)(ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*stmt_busy)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*stmt_readonly)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*stricmp)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*uri_boolean)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ);
+  sqlite3_int64 (*uri_int64)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,sqlite3_int64);
+  ಧ್ರುವ ವರ್ಣ *(*uri_parameter)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*);
+  ವರ್ಣ *(*xvsnprintf)(ಪೂರ್ಣಾಙ್ಕ,ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,va_list);
+  ಪೂರ್ಣಾಙ್ಕ (*wal_checkpoint_v2)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ*,ಪೂರ್ಣಾಙ್ಕ*);
   /* Version 3.8.7 and later */
-  int (*auto_extension)(void(*)(void));
-  int (*bind_blob64)(sqlite3_stmt*,int,const void*,sqlite3_uint64,
-                     void(*)(void*));
-  int (*bind_text64)(sqlite3_stmt*,int,const char*,sqlite3_uint64,
-                      void(*)(void*),unsigned char);
-  int (*cancel_auto_extension)(void(*)(void));
-  int (*load_extension)(sqlite3*,const char*,const char*,char**);
-  void *(*malloc64)(sqlite3_uint64);
-  sqlite3_uint64 (*msize)(void*);
-  void *(*realloc64)(void*,sqlite3_uint64);
-  void (*reset_auto_extension)(void);
-  void (*result_blob64)(sqlite3_context*,const void*,sqlite3_uint64,
-                        void(*)(void*));
-  void (*result_text64)(sqlite3_context*,const char*,sqlite3_uint64,
-                         void(*)(void*), unsigned char);
-  int (*strglob)(const char*,const char*);
+  ಪೂರ್ಣಾಙ್ಕ (*auto_extension)(ಶೂನ್ಯ(*)(ಶೂನ್ಯ));
+  ಪೂರ್ಣಾಙ್ಕ (*bind_blob64)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ಶೂನ್ಯ*,sqlite3_uint64,
+                     ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ (*bind_text64)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*,sqlite3_uint64,
+                      ಶೂನ್ಯ(*)(ಶೂನ್ಯ*),unsigned ವರ್ಣ);
+  ಪೂರ್ಣಾಙ್ಕ (*cancel_auto_extension)(ಶೂನ್ಯ(*)(ಶೂನ್ಯ));
+  ಪೂರ್ಣಾಙ್ಕ (*load_extension)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ವರ್ಣ**);
+  ಶೂನ್ಯ *(*malloc64)(sqlite3_uint64);
+  sqlite3_uint64 (*msize)(ಶೂನ್ಯ*);
+  ಶೂನ್ಯ *(*realloc64)(ಶೂನ್ಯ*,sqlite3_uint64);
+  ಶೂನ್ಯ (*reset_auto_extension)(ಶೂನ್ಯ);
+  ಶೂನ್ಯ (*result_blob64)(sqlite3_context*,ಧ್ರುವ ಶೂನ್ಯ*,sqlite3_uint64,
+                        ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ (*result_text64)(sqlite3_context*,ಧ್ರುವ ವರ್ಣ*,sqlite3_uint64,
+                         ಶೂನ್ಯ(*)(ಶೂನ್ಯ*), unsigned ವರ್ಣ);
+  ಪೂರ್ಣಾಙ್ಕ (*strglob)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*);
   /* Version 3.8.11 and later */
-  sqlite3_value *(*value_dup)(const sqlite3_value*);
-  void (*value_free)(sqlite3_value*);
-  int (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
-  int (*bind_zeroblob64)(sqlite3_stmt*, int, sqlite3_uint64);
+  sqlite3_ಮೌಲ್ಯ *(*ಮೌಲ್ಯ_dup)(ಧ್ರುವ sqlite3_ಮೌಲ್ಯ*);
+  ಶೂನ್ಯ (*ಮೌಲ್ಯ_free)(sqlite3_ಮೌಲ್ಯ*);
+  ಪೂರ್ಣಾಙ್ಕ (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
+  ಪೂರ್ಣಾಙ್ಕ (*bind_zeroblob64)(sqlite3_stmt*, ಪೂರ್ಣಾಙ್ಕ, sqlite3_uint64);
   /* Version 3.9.0 and later */
-  unsigned int (*value_subtype)(sqlite3_value*);
-  void (*result_subtype)(sqlite3_context*,unsigned int);
+  unsigned ಪೂರ್ಣಾಙ್ಕ (*ಮೌಲ್ಯ_subtype)(sqlite3_ಮೌಲ್ಯ*);
+  ಶೂನ್ಯ (*result_subtype)(sqlite3_context*,unsigned ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.10.0 and later */
-  int (*status64)(int,sqlite3_int64*,sqlite3_int64*,int);
-  int (*strlike)(const char*,const char*,unsigned int);
-  int (*db_cacheflush)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ (*status64)(ಪೂರ್ಣಾಙ್ಕ,sqlite3_int64*,sqlite3_int64*,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*strlike)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,unsigned ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*db_cacheflush)(sqlite3*);
   /* Version 3.12.0 and later */
-  int (*system_errno)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ (*system_errno)(sqlite3*);
   /* Version 3.14.0 and later */
-  int (*trace_v2)(sqlite3*,unsigned,int(*)(unsigned,void*,void*,void*),void*);
-  char *(*expanded_sql)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*trace_v2)(sqlite3*,unsigned,ಪೂರ್ಣಾಙ್ಕ(*)(unsigned,ಶೂನ್ಯ*,ಶೂನ್ಯ*,ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+  ವರ್ಣ *(*expanded_sql)(sqlite3_stmt*);
   /* Version 3.18.0 and later */
-  void (*set_last_insert_rowid)(sqlite3*,sqlite3_int64);
+  ಶೂನ್ಯ (*set_last_ಸೇರಿಸು_rowid)(sqlite3*,sqlite3_int64);
   /* Version 3.20.0 and later */
-  int (*prepare_v3)(sqlite3*,const char*,int,unsigned int,
-                    sqlite3_stmt**,const char**);
-  int (*prepare16_v3)(sqlite3*,const void*,int,unsigned int,
-                      sqlite3_stmt**,const void**);
-  int (*bind_pointer)(sqlite3_stmt*,int,void*,const char*,void(*)(void*));
-  void (*result_pointer)(sqlite3_context*,void*,const char*,void(*)(void*));
-  void *(*value_pointer)(sqlite3_value*,const char*);
-  int (*vtab_nochange)(sqlite3_context*);
-  int (*value_nochange)(sqlite3_value*);
-  const char *(*vtab_collation)(sqlite3_index_info*,int);
+  ಪೂರ್ಣಾಙ್ಕ (*prepare_v3)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,unsigned ಪೂರ್ಣಾಙ್ಕ,
+                    sqlite3_stmt**,ಧ್ರುವ ವರ್ಣ**);
+  ಪೂರ್ಣಾಙ್ಕ (*prepare16_v3)(sqlite3*,ಧ್ರುವ ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,unsigned ಪೂರ್ಣಾಙ್ಕ,
+                      sqlite3_stmt**,ಧ್ರುವ ಶೂನ್ಯ**);
+  ಪೂರ್ಣಾಙ್ಕ (*bind_pointer)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,ಧ್ರುವ ವರ್ಣ*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ (*result_pointer)(sqlite3_context*,ಶೂನ್ಯ*,ಧ್ರುವ ವರ್ಣ*,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಶೂನ್ಯ *(*ಮೌಲ್ಯ_pointer)(sqlite3_ಮೌಲ್ಯ*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_nochange)(sqlite3_context*);
+  ಪೂರ್ಣಾಙ್ಕ (*ಮೌಲ್ಯ_nochange)(sqlite3_ಮೌಲ್ಯ*);
+  ಧ್ರುವ ವರ್ಣ *(*vtab_collation)(sqlite3_index_info*,ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.24.0 and later */
-  int (*keyword_count)(void);
-  int (*keyword_name)(int,const char**,int*);
-  int (*keyword_check)(const char*,int);
+  ಪೂರ್ಣಾಙ್ಕ (*keyword_ಎಣಿಕೆ)(ಶೂನ್ಯ);
+  ಪೂರ್ಣಾಙ್ಕ (*keyword_name)(ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ**,ಪೂರ್ಣಾಙ್ಕ*);
+  ಪೂರ್ಣಾಙ್ಕ (*keyword_check)(ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ);
   sqlite3_str *(*str_new)(sqlite3*);
-  char *(*str_finish)(sqlite3_str*);
-  void (SQLITE_CDECL*str_appendf)(sqlite3_str*, const char *zFormat, ...);
-  void (*str_vappendf)(sqlite3_str*, const char *zFormat, va_list);
-  void (*str_append)(sqlite3_str*, const char *zIn, int N);
-  void (*str_appendall)(sqlite3_str*, const char *zIn);
-  void (*str_appendchar)(sqlite3_str*, int N, char C);
-  void (*str_reset)(sqlite3_str*);
-  int (*str_errcode)(sqlite3_str*);
-  int (*str_length)(sqlite3_str*);
-  char *(*str_value)(sqlite3_str*);
+  ವರ್ಣ *(*str_finish)(sqlite3_str*);
+  ಶೂನ್ಯ (SQLITE_CDECL*str_appendf)(sqlite3_str*, ಧ್ರುವ ವರ್ಣ *zFormat, ...);
+  ಶೂನ್ಯ (*str_vappendf)(sqlite3_str*, ಧ್ರುವ ವರ್ಣ *zFormat, va_list);
+  ಶೂನ್ಯ (*str_append)(sqlite3_str*, ಧ್ರುವ ವರ್ಣ *zIn, ಪೂರ್ಣಾಙ್ಕ N);
+  ಶೂನ್ಯ (*str_appendall)(sqlite3_str*, ಧ್ರುವ ವರ್ಣ *zIn);
+  ಶೂನ್ಯ (*str_appendchar)(sqlite3_str*, ಪೂರ್ಣಾಙ್ಕ N, ವರ್ಣ C);
+  ಶೂನ್ಯ (*str_reset)(sqlite3_str*);
+  ಪೂರ್ಣಾಙ್ಕ (*str_errcode)(sqlite3_str*);
+  ಪೂರ್ಣಾಙ್ಕ (*str_length)(sqlite3_str*);
+  ವರ್ಣ *(*str_ಮೌಲ್ಯ)(sqlite3_str*);
   /* Version 3.25.0 and later */
-  int (*create_window_function)(sqlite3*,const char*,int,int,void*,
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xFinal)(sqlite3_context*),
-                            void (*xValue)(sqlite3_context*),
-                            void (*xInv)(sqlite3_context*,int,sqlite3_value**),
-                            void(*xDestroy)(void*));
+  ಪೂರ್ಣಾಙ್ಕ (*create_window_function)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,
+                            ಶೂನ್ಯ (*xStep)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ (*xFinal)(sqlite3_context*),
+                            ಶೂನ್ಯ (*x_ಮೌಲ್ಯ)(sqlite3_context*),
+                            ಶೂನ್ಯ (*xInv)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),
+                            ಶೂನ್ಯ(*xDestroy)(ಶೂನ್ಯ*));
   /* Version 3.26.0 and later */
-  const char *(*normalized_sql)(sqlite3_stmt*);
+  ಧ್ರುವ ವರ್ಣ *(*normalized_sql)(sqlite3_stmt*);
   /* Version 3.28.0 and later */
-  int (*stmt_isexplain)(sqlite3_stmt*);
-  int (*value_frombind)(sqlite3_value*);
+  ಪೂರ್ಣಾಙ್ಕ (*stmt_isexplain)(sqlite3_stmt*);
+  ಪೂರ್ಣಾಙ್ಕ (*ಮೌಲ್ಯ_frombind)(sqlite3_ಮೌಲ್ಯ*);
   /* Version 3.30.0 and later */
-  int (*drop_modules)(sqlite3*,const char**);
+  ಪೂರ್ಣಾಙ್ಕ (*drop_modules)(sqlite3*,ಧ್ರುವ ವರ್ಣ**);
   /* Version 3.31.0 and later */
   sqlite3_int64 (*hard_heap_limit64)(sqlite3_int64);
-  const char *(*uri_key)(const char*,int);
-  const char *(*filename_database)(const char*);
-  const char *(*filename_journal)(const char*);
-  const char *(*filename_wal)(const char*);
+  ಧ್ರುವ ವರ್ಣ *(*uri_ಕೀಲಿ)(ಧ್ರುವ ವರ್ಣ*,ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ *(*filename_database)(ಧ್ರುವ ವರ್ಣ*);
+  ಧ್ರುವ ವರ್ಣ *(*filename_journal)(ಧ್ರುವ ವರ್ಣ*);
+  ಧ್ರುವ ವರ್ಣ *(*filename_wal)(ಧ್ರುವ ವರ್ಣ*);
   /* Version 3.32.0 and later */
-  const char *(*create_filename)(const char*,const char*,const char*,
-                           int,const char**);
-  void (*free_filename)(const char*);
-  sqlite3_file *(*database_file_object)(const char*);
+  ಧ್ರುವ ವರ್ಣ *(*create_filename)(ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,ಧ್ರುವ ವರ್ಣ*,
+                           ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ**);
+  ಶೂನ್ಯ (*free_filename)(ಧ್ರುವ ವರ್ಣ*);
+  sqlite3_file *(*database_file_object)(ಧ್ರುವ ವರ್ಣ*);
   /* Version 3.34.0 and later */
-  int (*txn_state)(sqlite3*,const char*);
+  ಪೂರ್ಣಾಙ್ಕ (*txn_state)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
   /* Version 3.36.1 and later */
   sqlite3_int64 (*changes64)(sqlite3*);
   sqlite3_int64 (*total_changes64)(sqlite3*);
   /* Version 3.37.0 and later */
-  int (*autovacuum_pages)(sqlite3*,
-     unsigned int(*)(void*,const char*,unsigned int,unsigned int,unsigned int),
-     void*, void(*)(void*));
+  ಪೂರ್ಣಾಙ್ಕ (*autovacuum_pages)(sqlite3*,
+     unsigned ಪೂರ್ಣಾಙ್ಕ(*)(ಶೂನ್ಯ*,ಧ್ರುವ ವರ್ಣ*,unsigned ಪೂರ್ಣಾಙ್ಕ,unsigned ಪೂರ್ಣಾಙ್ಕ,unsigned ಪೂರ್ಣಾಙ್ಕ),
+     ಶೂನ್ಯ*, ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
   /* Version 3.38.0 and later */
-  int (*error_offset)(sqlite3*);
-  int (*vtab_rhs_value)(sqlite3_index_info*,int,sqlite3_value**);
-  int (*vtab_distinct)(sqlite3_index_info*);
-  int (*vtab_in)(sqlite3_index_info*,int,int);
-  int (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
-  int (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
+  ಪೂರ್ಣಾಙ್ಕ (*error_offset)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_rhs_ಮೌಲ್ಯ)(sqlite3_index_info*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_distinct)(sqlite3_index_info*);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_in)(sqlite3_index_info*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_in_first)(sqlite3_ಮೌಲ್ಯ*,sqlite3_ಮೌಲ್ಯ**);
+  ಪೂರ್ಣಾಙ್ಕ (*vtab_in_next)(sqlite3_ಮೌಲ್ಯ*,sqlite3_ಮೌಲ್ಯ**);
   /* Version 3.39.0 and later */
-  int (*deserialize)(sqlite3*,const char*,unsigned char*,
+  ಪೂರ್ಣಾಙ್ಕ (*deserialize)(sqlite3*,ಧ್ರುವ ವರ್ಣ*,unsigned ವರ್ಣ*,
                      sqlite3_int64,sqlite3_int64,unsigned);
-  unsigned char *(*serialize)(sqlite3*,const char *,sqlite3_int64*,
-                              unsigned int);
-  const char *(*db_name)(sqlite3*,int);
+  unsigned ವರ್ಣ *(*serialize)(sqlite3*,ಧ್ರುವ ವರ್ಣ *,sqlite3_int64*,
+                              unsigned ಪೂರ್ಣಾಙ್ಕ);
+  ಧ್ರುವ ವರ್ಣ *(*db_name)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.40.0 and later */
-  int (*value_encoding)(sqlite3_value*);
+  ಪೂರ್ಣಾಙ್ಕ (*ಮೌಲ್ಯ_encoding)(sqlite3_ಮೌಲ್ಯ*);
   /* Version 3.41.0 and later */
-  int (*is_interrupted)(sqlite3*);
+  ಪೂರ್ಣಾಙ್ಕ (*is_interrupted)(sqlite3*);
   /* Version 3.43.0 and later */
-  int (*stmt_explain)(sqlite3_stmt*,int);
+  ಪೂರ್ಣಾಙ್ಕ (*stmt_explain)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.44.0 and later */
-  void *(*get_clientdata)(sqlite3*,const char*);
-  int (*set_clientdata)(sqlite3*, const char*, void*, void(*)(void*));
+  ಶೂನ್ಯ *(*get_clientdata)(sqlite3*,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*set_clientdata)(sqlite3*, ಧ್ರುವ ವರ್ಣ*, ಶೂನ್ಯ*, ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
   /* Version 3.50.0 and later */
-  int (*setlk_timeout)(sqlite3*,int,int);
+  ಪೂರ್ಣಾಙ್ಕ (*setlk_timeout)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.51.0 and later */
-  int (*set_errmsg)(sqlite3*,int,const char*);
-  int (*db_status64)(sqlite3*,int,sqlite3_int64*,sqlite3_int64*,int);
+  ಪೂರ್ಣಾಙ್ಕ (*set_errmsg)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,ಧ್ರುವ ವರ್ಣ*);
+  ಪೂರ್ಣಾಙ್ಕ (*db_status64)(sqlite3*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_int64*,sqlite3_int64*,ಪೂರ್ಣಾಙ್ಕ);
   /* Version 3.52.0 and later */
-  void (*str_truncate)(sqlite3_str*,int);
-  void (*str_free)(sqlite3_str*);
-  int (*carray_bind)(sqlite3_stmt*,int,void*,int,int,void(*)(void*));
-  int (*carray_bind_v2)(sqlite3_stmt*,int,void*,int,int,void(*)(void*),void*);
+  ಶೂನ್ಯ (*str_truncate)(sqlite3_str*,ಪೂರ್ಣಾಙ್ಕ);
+  ಶೂನ್ಯ (*str_free)(sqlite3_str*);
+  ಪೂರ್ಣಾಙ್ಕ (*carray_bind)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+  ಪೂರ್ಣಾಙ್ಕ (*carray_bind_v2)(sqlite3_stmt*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ(*)(ಶೂನ್ಯ*),ಶೂನ್ಯ*);
   /* Version 3.54.0 and later */
-  sqlite3_int64 (*incomplete)(const char*);
-  void (*result_str)(sqlite3_context*,sqlite3_str*,int);
+  sqlite3_int64 (*incomplete)(ಧ್ರುವ ವರ್ಣ*);
+  ಶೂನ್ಯ (*result_str)(sqlite3_context*,sqlite3_str*,ಪೂರ್ಣಾಙ್ಕ);
 };
 
 /*
 ** This is the function signature used for all extension entry points.  It
 ** is also defined in the file "loadext.c".
 */
-typedef int (*sqlite3_loadext_entry)(
+ಪ್ರಕಾರನಿರ್ದೇಶ ಪೂರ್ಣಾಙ್ಕ (*sqlite3_loadext_entry)(
   sqlite3 *db,                       /* Handle to the database. */
-  char **pzErrMsg,                   /* Used to set error string on failure. */
-  const sqlite3_api_routines *pThunk /* Extension API function pointers. */
+  ವರ್ಣ **pz_Err_ಸಂದೇಶ,                   /* Used to set error string on failure. */
+  ಧ್ರುವ sqlite3_api_routines *pThunk /* Extension API function pointers. */
 );
 
 /*
@@ -402,22 +402,22 @@ typedef int (*sqlite3_loadext_entry)(
 ** the API.  So the redefinition macros are only valid if the
 ** SQLITE_CORE macros is undefined.
 */
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ಯದಿ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
 #define sqlite3_aggregate_context      sqlite3_api->aggregate_context
 #ifndef SQLITE_OMIT_DEPRECATED
-#define sqlite3_aggregate_count        sqlite3_api->aggregate_count
+#define sqlite3_aggregate_ಎಣಿಕೆ        sqlite3_api->aggregate_ಎಣಿಕೆ
 #endif
 #define sqlite3_bind_blob              sqlite3_api->bind_blob
 #define sqlite3_bind_double            sqlite3_api->bind_double
 #define sqlite3_bind_int               sqlite3_api->bind_int
 #define sqlite3_bind_int64             sqlite3_api->bind_int64
 #define sqlite3_bind_null              sqlite3_api->bind_null
-#define sqlite3_bind_parameter_count   sqlite3_api->bind_parameter_count
+#define sqlite3_bind_parameter_ಎಣಿಕೆ   sqlite3_api->bind_parameter_ಎಣಿಕೆ
 #define sqlite3_bind_parameter_index   sqlite3_api->bind_parameter_index
 #define sqlite3_bind_parameter_name    sqlite3_api->bind_parameter_name
 #define sqlite3_bind_text              sqlite3_api->bind_text
 #define sqlite3_bind_text16            sqlite3_api->bind_text16
-#define sqlite3_bind_value             sqlite3_api->bind_value
+#define sqlite3_bind_ಮೌಲ್ಯ             sqlite3_api->bind_ಮೌಲ್ಯ
 #define sqlite3_busy_handler           sqlite3_api->busy_handler
 #define sqlite3_busy_timeout           sqlite3_api->busy_timeout
 #define sqlite3_changes                sqlite3_api->changes
@@ -427,7 +427,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_column_blob            sqlite3_api->column_blob
 #define sqlite3_column_bytes           sqlite3_api->column_bytes
 #define sqlite3_column_bytes16         sqlite3_api->column_bytes16
-#define sqlite3_column_count           sqlite3_api->column_count
+#define sqlite3_column_ಎಣಿಕೆ           sqlite3_api->column_ಎಣಿಕೆ
 #define sqlite3_column_database_name   sqlite3_api->column_database_name
 #define sqlite3_column_database_name16 sqlite3_api->column_database_name16
 #define sqlite3_column_decltype        sqlite3_api->column_decltype
@@ -444,7 +444,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_column_text            sqlite3_api->column_text
 #define sqlite3_column_text16          sqlite3_api->column_text16
 #define sqlite3_column_type            sqlite3_api->column_type
-#define sqlite3_column_value           sqlite3_api->column_value
+#define sqlite3_column_ಮೌಲ್ಯ           sqlite3_api->column_ಮೌಲ್ಯ
 #define sqlite3_commit_hook            sqlite3_api->commit_hook
 #define sqlite3_complete               sqlite3_api->complete
 #define sqlite3_complete16             sqlite3_api->complete16
@@ -454,7 +454,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_create_function16      sqlite3_api->create_function16
 #define sqlite3_create_module          sqlite3_api->create_module
 #define sqlite3_create_module_v2       sqlite3_api->create_module_v2
-#define sqlite3_data_count             sqlite3_api->data_count
+#define sqlite3_data_ಎಣಿಕೆ             sqlite3_api->data_ಎಣಿಕೆ
 #define sqlite3_db_handle              sqlite3_api->db_handle
 #define sqlite3_declare_vtab           sqlite3_api->declare_vtab
 #define sqlite3_enable_shared_cache    sqlite3_api->enable_shared_cache
@@ -466,7 +466,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_expired                sqlite3_api->expired
 #endif
 #define sqlite3_finalize               sqlite3_api->finalize
-#define sqlite3_free                   sqlite3_api->free
+#define sqlite3_free                   sqlite3_api->ಮುಕ್ತ
 #define sqlite3_free_table             sqlite3_api->free_table
 #define sqlite3_get_autocommit         sqlite3_api->get_autocommit
 #define sqlite3_get_auxdata            sqlite3_api->get_auxdata
@@ -475,9 +475,9 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_global_recover         sqlite3_api->global_recover
 #endif
 #define sqlite3_interrupt              sqlite3_api->interruptx
-#define sqlite3_last_insert_rowid      sqlite3_api->last_insert_rowid
+#define sqlite3_last_ಸೇರಿಸು_rowid      sqlite3_api->last_ಸೇರಿಸು_rowid
 #define sqlite3_libversion             sqlite3_api->libversion
-#define sqlite3_libversion_number      sqlite3_api->libversion_number
+#define sqlite3_libversion_ಸಂಖ್ಯೆ      sqlite3_api->libversion_ಸಂಖ್ಯೆ
 #define sqlite3_malloc                 sqlite3_api->malloc
 #define sqlite3_mprintf                sqlite3_api->mprintf
 #define sqlite3_open                   sqlite3_api->open
@@ -501,7 +501,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_text16          sqlite3_api->result_text16
 #define sqlite3_result_text16be        sqlite3_api->result_text16be
 #define sqlite3_result_text16le        sqlite3_api->result_text16le
-#define sqlite3_result_value           sqlite3_api->result_value
+#define sqlite3_result_ಮೌಲ್ಯ           sqlite3_api->result_ಮೌಲ್ಯ
 #define sqlite3_rollback_hook          sqlite3_api->rollback_hook
 #define sqlite3_set_authorizer         sqlite3_api->set_authorizer
 #define sqlite3_set_auxdata            sqlite3_api->set_auxdata
@@ -516,18 +516,18 @@ typedef int (*sqlite3_loadext_entry)(
 #endif
 #define sqlite3_update_hook            sqlite3_api->update_hook
 #define sqlite3_user_data              sqlite3_api->user_data
-#define sqlite3_value_blob             sqlite3_api->value_blob
-#define sqlite3_value_bytes            sqlite3_api->value_bytes
-#define sqlite3_value_bytes16          sqlite3_api->value_bytes16
-#define sqlite3_value_double           sqlite3_api->value_double
-#define sqlite3_value_int              sqlite3_api->value_int
-#define sqlite3_value_int64            sqlite3_api->value_int64
-#define sqlite3_value_numeric_type     sqlite3_api->value_numeric_type
-#define sqlite3_value_text             sqlite3_api->value_text
-#define sqlite3_value_text16           sqlite3_api->value_text16
-#define sqlite3_value_text16be         sqlite3_api->value_text16be
-#define sqlite3_value_text16le         sqlite3_api->value_text16le
-#define sqlite3_value_type             sqlite3_api->value_type
+#define sqlite3_ಮೌಲ್ಯ_blob             sqlite3_api->ಮೌಲ್ಯ_blob
+#define sqlite3_ಮೌಲ್ಯ_bytes            sqlite3_api->ಮೌಲ್ಯ_bytes
+#define sqlite3_ಮೌಲ್ಯ_bytes16          sqlite3_api->ಮೌಲ್ಯ_bytes16
+#define sqlite3_ಮೌಲ್ಯ_double           sqlite3_api->ಮೌಲ್ಯ_double
+#define sqlite3_ಮೌಲ್ಯ_int              sqlite3_api->ಮೌಲ್ಯ_int
+#define sqlite3_ಮೌಲ್ಯ_int64            sqlite3_api->ಮೌಲ್ಯ_int64
+#define sqlite3_ಮೌಲ್ಯ_numeric_type     sqlite3_api->ಮೌಲ್ಯ_numeric_type
+#define sqlite3_ಮೌಲ್ಯ_text             sqlite3_api->ಮೌಲ್ಯ_text
+#define sqlite3_ಮೌಲ್ಯ_text16           sqlite3_api->ಮೌಲ್ಯ_text16
+#define sqlite3_ಮೌಲ್ಯ_text16be         sqlite3_api->ಮೌಲ್ಯ_text16be
+#define sqlite3_ಮೌಲ್ಯ_text16le         sqlite3_api->ಮೌಲ್ಯ_text16le
+#define sqlite3_ಮೌಲ್ಯ_type             sqlite3_api->ಮೌಲ್ಯ_type
 #define sqlite3_vmprintf               sqlite3_api->vmprintf
 #define sqlite3_vsnprintf              sqlite3_api->xvsnprintf
 #define sqlite3_overload_function      sqlite3_api->overload_function
@@ -621,12 +621,12 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_text64          sqlite3_api->result_text64
 #define sqlite3_strglob                sqlite3_api->strglob
 /* Version 3.8.11 and later */
-#define sqlite3_value_dup              sqlite3_api->value_dup
-#define sqlite3_value_free             sqlite3_api->value_free
+#define sqlite3_ಮೌಲ್ಯ_dup              sqlite3_api->ಮೌಲ್ಯ_dup
+#define sqlite3_ಮೌಲ್ಯ_free             sqlite3_api->ಮೌಲ್ಯ_free
 #define sqlite3_result_zeroblob64      sqlite3_api->result_zeroblob64
 #define sqlite3_bind_zeroblob64        sqlite3_api->bind_zeroblob64
 /* Version 3.9.0 and later */
-#define sqlite3_value_subtype          sqlite3_api->value_subtype
+#define sqlite3_ಮೌಲ್ಯ_subtype          sqlite3_api->ಮೌಲ್ಯ_subtype
 #define sqlite3_result_subtype         sqlite3_api->result_subtype
 /* Version 3.10.0 and later */
 #define sqlite3_status64               sqlite3_api->status64
@@ -638,19 +638,19 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_trace_v2               sqlite3_api->trace_v2
 #define sqlite3_expanded_sql           sqlite3_api->expanded_sql
 /* Version 3.18.0 and later */
-#define sqlite3_set_last_insert_rowid  sqlite3_api->set_last_insert_rowid
+#define sqlite3_set_last_ಸೇರಿಸು_rowid  sqlite3_api->set_last_ಸೇರಿಸು_rowid
 /* Version 3.20.0 and later */
 #define sqlite3_prepare_v3             sqlite3_api->prepare_v3
 #define sqlite3_prepare16_v3           sqlite3_api->prepare16_v3
 #define sqlite3_bind_pointer           sqlite3_api->bind_pointer
 #define sqlite3_result_pointer         sqlite3_api->result_pointer
-#define sqlite3_value_pointer          sqlite3_api->value_pointer
+#define sqlite3_ಮೌಲ್ಯ_pointer          sqlite3_api->ಮೌಲ್ಯ_pointer
 /* Version 3.22.0 and later */
 #define sqlite3_vtab_nochange          sqlite3_api->vtab_nochange
-#define sqlite3_value_nochange         sqlite3_api->value_nochange
+#define sqlite3_ಮೌಲ್ಯ_nochange         sqlite3_api->ಮೌಲ್ಯ_nochange
 #define sqlite3_vtab_collation         sqlite3_api->vtab_collation
 /* Version 3.24.0 and later */
-#define sqlite3_keyword_count          sqlite3_api->keyword_count
+#define sqlite3_keyword_ಎಣಿಕೆ          sqlite3_api->keyword_ಎಣಿಕೆ
 #define sqlite3_keyword_name           sqlite3_api->keyword_name
 #define sqlite3_keyword_check          sqlite3_api->keyword_check
 #define sqlite3_str_new                sqlite3_api->str_new
@@ -663,19 +663,19 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_str_reset              sqlite3_api->str_reset
 #define sqlite3_str_errcode            sqlite3_api->str_errcode
 #define sqlite3_str_length             sqlite3_api->str_length
-#define sqlite3_str_value              sqlite3_api->str_value
+#define sqlite3_str_ಮೌಲ್ಯ              sqlite3_api->str_ಮೌಲ್ಯ
 /* Version 3.25.0 and later */
 #define sqlite3_create_window_function sqlite3_api->create_window_function
 /* Version 3.26.0 and later */
 #define sqlite3_normalized_sql         sqlite3_api->normalized_sql
 /* Version 3.28.0 and later */
 #define sqlite3_stmt_isexplain         sqlite3_api->stmt_isexplain
-#define sqlite3_value_frombind         sqlite3_api->value_frombind
+#define sqlite3_ಮೌಲ್ಯ_frombind         sqlite3_api->ಮೌಲ್ಯ_frombind
 /* Version 3.30.0 and later */
 #define sqlite3_drop_modules           sqlite3_api->drop_modules
 /* Version 3.31.0 and later */
 #define sqlite3_hard_heap_limit64      sqlite3_api->hard_heap_limit64
-#define sqlite3_uri_key                sqlite3_api->uri_key
+#define sqlite3_uri_ಕೀಲಿ                sqlite3_api->uri_ಕೀಲಿ
 #define sqlite3_filename_database      sqlite3_api->filename_database
 #define sqlite3_filename_journal       sqlite3_api->filename_journal
 #define sqlite3_filename_wal           sqlite3_api->filename_wal
@@ -692,7 +692,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_autovacuum_pages       sqlite3_api->autovacuum_pages
 /* Version 3.38.0 and later */
 #define sqlite3_error_offset           sqlite3_api->error_offset
-#define sqlite3_vtab_rhs_value         sqlite3_api->vtab_rhs_value
+#define sqlite3_vtab_rhs_ಮೌಲ್ಯ         sqlite3_api->vtab_rhs_ಮೌಲ್ಯ
 #define sqlite3_vtab_distinct          sqlite3_api->vtab_distinct
 #define sqlite3_vtab_in                sqlite3_api->vtab_in
 #define sqlite3_vtab_in_first          sqlite3_api->vtab_in_first
@@ -704,7 +704,7 @@ typedef int (*sqlite3_loadext_entry)(
 #endif
 #define sqlite3_db_name                sqlite3_api->db_name
 /* Version 3.40.0 and later */
-#define sqlite3_value_encoding         sqlite3_api->value_encoding
+#define sqlite3_ಮೌಲ್ಯ_encoding         sqlite3_api->ಮೌಲ್ಯ_encoding
 /* Version 3.41.0 and later */
 #define sqlite3_is_interrupted         sqlite3_api->is_interrupted
 /* Version 3.43.0 and later */
@@ -727,18 +727,18 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_str             sqlite3_api->result_str
 #endif /* !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION) */
 
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ಯದಿ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
   /* This case when the file really is being compiled as a loadable 
   ** extension */
-# define SQLITE_EXTENSION_INIT1     const sqlite3_api_routines *sqlite3_api=0;
+# define SQLITE_EXTENSION_INIT1     ಧ್ರುವ sqlite3_api_routines *sqlite3_api=0;
 # define SQLITE_EXTENSION_INIT2(v)  sqlite3_api=v;
 # define SQLITE_EXTENSION_INIT3     \
-    extern const sqlite3_api_routines *sqlite3_api;
-#else
+    ಬಾಹ್ಯ ಧ್ರುವ sqlite3_api_routines *sqlite3_api;
+#ಅನ್ಯಥಾ
   /* This case when the file is being statically linked into the 
   ** application */
 # define SQLITE_EXTENSION_INIT1     /*no-op*/
-# define SQLITE_EXTENSION_INIT2(v)  (void)v; /* unused parameter */
+# define SQLITE_EXTENSION_INIT2(v)  (ಶೂನ್ಯ)v; /* unused parameter */
 # define SQLITE_EXTENSION_INIT3     /*no-op*/
 #endif
 

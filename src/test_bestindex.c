@@ -92,21 +92,21 @@
 */
 
 
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 
 
-typedef struct tcl_vtab tcl_vtab;
-typedef struct tcl_cursor tcl_cursor;
-typedef struct TestFindFunction TestFindFunction;
-typedef struct TestVtabContext TestVtabContext;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ tcl_vtab tcl_vtab;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ tcl_cursor tcl_cursor;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ TestFindFunction TestFindFunction;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ TestVtabContext TestVtabContext;
 
 /* 
 ** A fs virtual-table object 
 */
-struct tcl_vtab {
+ಸಂರಚನಾ tcl_vtab {
   sqlite3_vtab base;
   Tcl_Interp *interp;
   Tcl_Obj *pCmd;
@@ -115,18 +115,18 @@ struct tcl_vtab {
 };
 
 /* A tcl cursor object */
-struct tcl_cursor {
+ಸಂರಚನಾ tcl_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;            /* Read data from here */
 };
 
-struct TestFindFunction {
+ಸಂರಚನಾ TestFindFunction {
   tcl_vtab *pTab;
-  const char *zName;
+  ಧ್ರುವ ವರ್ಣ *zName;
   TestFindFunction *pNext;
 };
 
-struct TestVtabContext {
+ಸಂರಚನಾ TestVtabContext {
   Tcl_Interp *interp;
   Tcl_Obj *pDefault;
 };
@@ -134,29 +134,29 @@ struct TestVtabContext {
 /*
 ** Dequote string z in place.
 */
-static void tclDequote(char *z){
-  char q = z[0];
+ಸ್ಥಿರ ಶೂನ್ಯ tclDequote(ವರ್ಣ *z){
+  ವರ್ಣ q = z[0];
 
   /* Set stack variable q to the close-quote character */
-  if( q=='[' || q=='\'' || q=='"' || q=='`' ){
-    int iIn = 1;
-    int iOut = 0;
-    if( q=='[' ) q = ']';  
+  ಯದಿ( q=='[' || q=='\'' || q=='"' || q=='`' ){
+    ಪೂರ್ಣಾಙ್ಕ iIn = 1;
+    ಪೂರ್ಣಾಙ್ಕ iOut = 0;
+    ಯದಿ( q=='[' ) q = ']';  
 
-    while( ALWAYS(z[iIn]) ){
-      if( z[iIn]==q ){
-        if( z[iIn+1]!=q ){
+    ಯಾವತ್( ALWAYS(z[iIn]) ){
+      ಯದಿ( z[iIn]==q ){
+        ಯದಿ( z[iIn+1]!=q ){
           /* Character iIn was the close quote. */
           iIn++;
-          break;
-        }else{
+          ಭಙ್ಗ;
+        }ಅನ್ಯಥಾ{
           /* Character iIn and iIn+1 form an escaped quote character. Skip
           ** the input cursor past both and copy a single quote character 
           ** to the output buffer. */
           iIn += 2;
           z[iOut++] = q;
         }
-      }else{
+      }ಅನ್ಯಥಾ{
         z[iOut++] = z[iIn++];
       }
     }
@@ -176,187 +176,187 @@ static void tclDequote(char *z){
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int tclConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಙ್ಕ argc, ಧ್ರುವ ವರ್ಣ *ಧ್ರುವ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ವರ್ಣ **pzErr
 ){
   TestVtabContext *pCtx = (TestVtabContext*)pAux;
   Tcl_Interp *interp = pCtx->interp;
   tcl_vtab *pTab = 0;
-  char *zCmd = 0;
+  ವರ್ಣ *zCmd = 0;
   Tcl_Obj *pScript = 0;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
 
-  if( argc!=4 && (argc!=3 || pCtx->pDefault==0) ){
+  ಯದಿ( argc!=4 && (argc!=3 || pCtx->pDefault==0) ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    ಪ್ರತ್ಯಾಗಮ SQLITE_ERROR;
   }
 
-  if( argc==4 ){
+  ಯದಿ( argc==4 ){
     zCmd = sqlite3_malloc64(strlen(argv[3])+1);
   }
-  pTab = (tcl_vtab*)sqlite3_malloc64(sizeof(tcl_vtab));
-  if( (zCmd || argc==3) && pTab ){
-    memset(pTab, 0, sizeof(tcl_vtab));
+  pTab = (tcl_vtab*)sqlite3_malloc64(ಪರಿಮಾಣ(tcl_vtab));
+  ಯದಿ( (zCmd || argc==3) && pTab ){
+    memset(pTab, 0, ಪರಿಮಾಣ(tcl_vtab));
 
-    if( zCmd ){
+    ಯದಿ( zCmd ){
       memcpy(zCmd, argv[3], strlen(argv[3])+1);
       tclDequote(zCmd);
       pTab->pCmd = Tcl_NewStringObj(zCmd, -1);
-    }else{
+    }ಅನ್ಯಥಾ{
       pTab->pCmd = Tcl_DuplicateObj(pCtx->pDefault);
     }
 
     pTab->interp = interp;
     pTab->db = db;
-    Tcl_IncrRefCount(pTab->pCmd);
+    Tcl_Incr_Ref_ಎಣಿಕೆ(pTab->pCmd);
 
     pScript = Tcl_DuplicateObj(pTab->pCmd);
-    Tcl_IncrRefCount(pScript);
+    Tcl_Incr_Ref_ಎಣಿಕೆ(pScript);
     Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("xConnect", -1));
 
     rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-    if( rc!=TCL_OK ){
+    ಯದಿ( rc!=TCL_OK ){
       *pzErr = sqlite3_mprintf("%s", Tcl_GetStringResult(interp));
-      if( sqlite3_stricmp(*pzErr, "database schema has changed")==0 ){
+      ಯದಿ( sqlite3_stricmp(*pzErr, "database schema has changed")==0 ){
         rc = SQLITE_SCHEMA;
-      }else{
+      }ಅನ್ಯಥಾ{
         rc = SQLITE_ERROR;
       }
-    }else{
+    }ಅನ್ಯಥಾ{
       rc = sqlite3_declare_vtab(db, Tcl_GetStringResult(interp));
-      if( rc!=SQLITE_OK ){
+      ಯದಿ( rc!=SQLITE_OK ){
         *pzErr = sqlite3_mprintf("declare_vtab: %s", sqlite3_errmsg(db));
       }
     }
 
-    if( rc!=SQLITE_OK ){
+    ಯದಿ( rc!=SQLITE_OK ){
       sqlite3_free(pTab);
       pTab = 0;
     }
-  }else{
+  }ಅನ್ಯಥಾ{
     rc = SQLITE_NOMEM;
   }
 
   sqlite3_free(zCmd);
   *ppVtab = pTab ? &pTab->base : 0;
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
 /* The xDisconnect and xDestroy methods are also the same */
-static int tclDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclDisconnect(sqlite3_vtab *pVtab){
   tcl_vtab *pTab = (tcl_vtab*)pVtab;
-  while( pTab->pFindFunctionList ){
+  ಯಾವತ್( pTab->pFindFunctionList ){
     TestFindFunction *p = pTab->pFindFunctionList;
     pTab->pFindFunctionList = p->pNext;
     sqlite3_free(p);
   }
-  Tcl_DecrRefCount(pTab->pCmd);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pTab->pCmd);
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
 ** Open a new tcl cursor.
 */
-static int tclOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   tcl_cursor *pCur;
-  pCur = sqlite3_malloc(sizeof(tcl_cursor));
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(tcl_cursor));
+  pCur = sqlite3_malloc(ಪರಿಮಾಣ(tcl_cursor));
+  ಯದಿ( pCur==0 ) ಪ್ರತ್ಯಾಗಮ SQLITE_NOMEM;
+  memset(pCur, 0, ಪರಿಮಾಣ(tcl_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
 ** Close a tcl cursor.
 */
-static int tclClose(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclClose(sqlite3_vtab_cursor *cur){
   tcl_cursor *pCur = (tcl_cursor *)cur;
-  if( pCur ){
+  ಯದಿ( pCur ){
     sqlite3_finalize(pCur->pStmt);
     sqlite3_free(pCur);
   }
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int tclNext(sqlite3_vtab_cursor *pVtabCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclNext(sqlite3_vtab_cursor *pVtabCursor){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
-  if( pCsr->pStmt ){
+  ಯದಿ( pCsr->pStmt ){
     tcl_vtab *pTab = (tcl_vtab*)(pVtabCursor->pVtab);
-    int rc = sqlite3_step(pCsr->pStmt);
-    if( rc!=SQLITE_ROW ){
-      const char *zErr;
+    ಪೂರ್ಣಾಙ್ಕ rc = sqlite3_step(pCsr->pStmt);
+    ಯದಿ( rc!=SQLITE_ROW ){
+      ಧ್ರುವ ವರ್ಣ *zErr;
       rc = sqlite3_finalize(pCsr->pStmt);
       pCsr->pStmt = 0;
-      if( rc!=SQLITE_OK ){
+      ಯದಿ( rc!=SQLITE_OK ){
         zErr = sqlite3_errmsg(pTab->db);
-        pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
+        pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
       }
     }
   }
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int tclFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಙ್ಕ idx_ಅಂಕೆ, ಧ್ರುವ ವರ್ಣ *idxStr,
+  ಪೂರ್ಣಾಙ್ಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
   tcl_vtab *pTab = (tcl_vtab*)(pVtabCursor->pVtab);
   Tcl_Interp *interp = pTab->interp;
   Tcl_Obj *pScript;
   Tcl_Obj *pArg;
-  int ii;
-  int rc;
+  ಪೂರ್ಣಾಙ್ಕ ii;
+  ಪೂರ್ಣಾಙ್ಕ rc;
 
   pScript = Tcl_DuplicateObj(pTab->pCmd);
-  Tcl_IncrRefCount(pScript);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pScript);
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("xFilter", -1));
-  Tcl_ListObjAppendElement(interp, pScript, Tcl_NewIntObj(idxNum));
+  Tcl_ListObjAppendElement(interp, pScript, Tcl_NewIntObj(idx_ಅಂಕೆ));
   Tcl_ListObjAppendElement(
       interp, pScript, Tcl_NewStringObj(idxStr ? idxStr : "", -1)
   );
 
   pArg = Tcl_NewObj();
-  Tcl_IncrRefCount(pArg);
-  for(ii=0; ii<argc; ii++){
-    const char *zVal = (const char*)sqlite3_value_text(argv[ii]);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pArg);
+  ಪ್ರತಿ(ii=0; ii<argc; ii++){
+    ಧ್ರುವ ವರ್ಣ *zVal = (ಧ್ರುವ ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(argv[ii]);
     Tcl_Obj *pVal;
-    if( zVal==0 ){
-      sqlite3_value *pMem;
+    ಯದಿ( zVal==0 ){
+      sqlite3_ಮೌಲ್ಯ *pMem;
       pVal = Tcl_NewObj();
-      for(rc=sqlite3_vtab_in_first(argv[ii], &pMem); 
+      ಪ್ರತಿ(rc=sqlite3_vtab_in_first(argv[ii], &pMem); 
           rc==SQLITE_OK && pMem;
           rc=sqlite3_vtab_in_next(argv[ii], &pMem)
       ){
         Tcl_Obj *pVal2 = 0;
-        zVal = (const char*)sqlite3_value_text(pMem);
-        if( zVal ){
+        zVal = (ಧ್ರುವ ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(pMem);
+        ಯದಿ( zVal ){
           pVal2 = Tcl_NewStringObj(zVal, -1);
-        }else{
+        }ಅನ್ಯಥಾ{
           pVal2 = Tcl_NewObj();
         }
         Tcl_ListObjAppendElement(interp, pVal, pVal2);
       }
-    }else{
+    }ಅನ್ಯಥಾ{
       pVal = Tcl_NewStringObj(zVal, -1);
     }
     Tcl_ListObjAppendElement(interp, pArg, pVal);
   }
   Tcl_ListObjAppendElement(interp, pScript, pArg);
-  Tcl_DecrRefCount(pArg);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pArg);
 
   rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-  if( rc!=TCL_OK ){
-    const char *zErr = Tcl_GetStringResult(interp);
+  ಯದಿ( rc!=TCL_OK ){
+    ಧ್ರುವ ವರ್ಣ *zErr = Tcl_GetStringResult(interp);
     rc = SQLITE_ERROR;
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-  }else{
+    pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
+  }ಅನ್ಯಥಾ{
     /* Analyze the scripts return value. The return value should be a tcl 
     ** list object with an even number of elements. The first element of each
     ** pair must be one of:
@@ -367,109 +367,109 @@ static int tclFilter(
     Tcl_Obj **apElem = 0;
     Tcl_Size nElem;
     rc = Tcl_ListObjGetElements(interp, pRes, &nElem, &apElem);
-    if( rc!=TCL_OK ){
-      const char *zErr = Tcl_GetStringResult(interp);
+    ಯದಿ( rc!=TCL_OK ){
+      ಧ್ರುವ ವರ್ಣ *zErr = Tcl_GetStringResult(interp);
       rc = SQLITE_ERROR;
-      pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-    }else{
-      for(ii=0; rc==SQLITE_OK && ii<(int)nElem; ii+=2){
-        const char *zCmd = Tcl_GetString(apElem[ii]);
+      pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
+    }ಅನ್ಯಥಾ{
+      ಪ್ರತಿ(ii=0; rc==SQLITE_OK && ii<(ಪೂರ್ಣಾಙ್ಕ)nElem; ii+=2){
+        ಧ್ರುವ ವರ್ಣ *zCmd = Tcl_GetString(apElem[ii]);
         Tcl_Obj *p = apElem[ii+1];
-        if( sqlite3_stricmp("sql", zCmd)==0 ){
-          const char *zSql = Tcl_GetString(p);
+        ಯದಿ( sqlite3_stricmp("sql", zCmd)==0 ){
+          ಧ್ರುವ ವರ್ಣ *zSql = Tcl_GetString(p);
           rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
-          if( rc!=SQLITE_OK ){
-            const char *zErr = sqlite3_errmsg(pTab->db);
-            pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zErr);
+          ಯದಿ( rc!=SQLITE_OK ){
+            ಧ್ರುವ ವರ್ಣ *zErr = sqlite3_errmsg(pTab->db);
+            pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("unexpected: %s", zErr);
           }
-        }else{
+        }ಅನ್ಯಥಾ{
           rc = SQLITE_ERROR;
-          pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zCmd);
+          pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("unexpected: %s", zCmd);
         }
       }
     }
   }
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     rc = tclNext(pVtabCursor);
   }
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
-static int tclColumn(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclColumn(
   sqlite3_vtab_cursor *pVtabCursor, 
   sqlite3_context *ctx, 
-  int i
+  ಪೂರ್ಣಾಙ್ಕ i
 ){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
-  sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, i+1));
-  return SQLITE_OK;
+  sqlite3_result_ಮೌಲ್ಯ(ctx, sqlite3_column_ಮೌಲ್ಯ(pCsr->pStmt, i+1));
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int tclRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *pRowid){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
   *pRowid = sqlite3_column_int64(pCsr->pStmt, 0);
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
-static int tclEof(sqlite3_vtab_cursor *pVtabCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclEof(sqlite3_vtab_cursor *pVtabCursor){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
-  return (pCsr->pStmt==0);
+  ಪ್ರತ್ಯಾಗಮ (pCsr->pStmt==0);
 }
 
-static void testBestIndexObjConstraints(
+ಸ್ಥಿರ ಶೂನ್ಯ testBestIndexObjConstraints(
   Tcl_Interp *interp, 
   sqlite3_index_info *pIdxInfo
 ){
-  int ii;
+  ಪೂರ್ಣಾಙ್ಕ ii;
   Tcl_Obj *pRes = Tcl_NewObj();
-  Tcl_IncrRefCount(pRes);
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pRes);
+  ಪ್ರತಿ(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ಸಂರಚನಾ sqlite3_index_constraint ಧ್ರುವ *pCons = &pIdxInfo->aConstraint[ii];
     Tcl_Obj *pElem = Tcl_NewObj();
-    const char *zOp = 0;
+    ಧ್ರುವ ವರ್ಣ *zOp = 0;
 
-    Tcl_IncrRefCount(pElem);
+    Tcl_Incr_Ref_ಎಣಿಕೆ(pElem);
 
-    switch( pCons->op ){
-      case SQLITE_INDEX_CONSTRAINT_EQ:
-        zOp = "eq"; break;
-      case SQLITE_INDEX_CONSTRAINT_GT:
-        zOp = "gt"; break;
-      case SQLITE_INDEX_CONSTRAINT_LE:
-        zOp = "le"; break;
-      case SQLITE_INDEX_CONSTRAINT_LT:
-        zOp = "lt"; break;
-      case SQLITE_INDEX_CONSTRAINT_GE:
-        zOp = "ge"; break;
-      case SQLITE_INDEX_CONSTRAINT_MATCH:
-        zOp = "match"; break;
-      case SQLITE_INDEX_CONSTRAINT_LIKE:
-        zOp = "like"; break;
-      case SQLITE_INDEX_CONSTRAINT_GLOB:
-        zOp = "glob"; break;
-      case SQLITE_INDEX_CONSTRAINT_REGEXP:
-        zOp = "regexp"; break;
-      case SQLITE_INDEX_CONSTRAINT_NE:
-        zOp = "ne"; break;
-      case SQLITE_INDEX_CONSTRAINT_ISNOT:
-        zOp = "isnot"; break;
-      case SQLITE_INDEX_CONSTRAINT_ISNOTNULL:
-        zOp = "isnotnull"; break;
-      case SQLITE_INDEX_CONSTRAINT_ISNULL:
-        zOp = "isnull"; break;
-      case SQLITE_INDEX_CONSTRAINT_IS:
-        zOp = "is"; break;
-      case SQLITE_INDEX_CONSTRAINT_LIMIT:
-        zOp = "limit"; break;
-      case SQLITE_INDEX_CONSTRAINT_OFFSET:
-        zOp = "offset"; break;
+    ವಿಕಲ್ಪ( pCons->op ){
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_EQ:
+        zOp = "eq"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GT:
+        zOp = "gt"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LE:
+        zOp = "le"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LT:
+        zOp = "lt"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GE:
+        zOp = "ge"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_MATCH:
+        zOp = "match"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LIKE:
+        zOp = "like"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_GLOB:
+        zOp = "glob"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_REGEXP:
+        zOp = "regexp"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_NE:
+        zOp = "ne"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_ISNOT:
+        zOp = "isnot"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_ISNOTNULL:
+        zOp = "isnotnull"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_ISNULL:
+        zOp = "isnull"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_IS:
+        zOp = "is"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_LIMIT:
+        zOp = "limit"; ಭಙ್ಗ;
+      ಪಕ್ಷ SQLITE_INDEX_CONSTRAINT_OFFSET:
+        zOp = "offset"; ಭಙ್ಗ;
     }
 
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj("op", -1));
-    if( zOp ){
+    ಯದಿ( zOp ){
       Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj(zOp, -1));
-    }else{
+    }ಅನ್ಯಥಾ{
       Tcl_ListObjAppendElement(0, pElem, Tcl_NewIntObj(pCons->op));
     }
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj("column", -1));
@@ -478,24 +478,24 @@ static void testBestIndexObjConstraints(
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewIntObj(pCons->usable));
 
     Tcl_ListObjAppendElement(0, pRes, pElem);
-    Tcl_DecrRefCount(pElem);
+    Tcl_Decr_Ref_ಎಣಿಕೆ(pElem);
   }
 
   Tcl_SetObjResult(interp, pRes);
-  Tcl_DecrRefCount(pRes);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pRes);
 }
 
-static void testBestIndexObjOrderby(
+ಸ್ಥಿರ ಶೂನ್ಯ testBestIndexObjOrderby(
   Tcl_Interp *interp, 
   sqlite3_index_info *pIdxInfo
 ){
-  int ii;
+  ಪೂರ್ಣಾಙ್ಕ ii;
   Tcl_Obj *pRes = Tcl_NewObj();
-  Tcl_IncrRefCount(pRes);
-  for(ii=0; ii<pIdxInfo->nOrderBy; ii++){
-    struct sqlite3_index_orderby const *pOrder = &pIdxInfo->aOrderBy[ii];
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pRes);
+  ಪ್ರತಿ(ii=0; ii<pIdxInfo->nOrderBy; ii++){
+    ಸಂರಚನಾ sqlite3_index_orderby ಧ್ರುವ *pOrder = &pIdxInfo->aOrderBy[ii];
     Tcl_Obj *pElem = Tcl_NewObj();
-    Tcl_IncrRefCount(pElem);
+    Tcl_Incr_Ref_ಎಣಿಕೆ(pElem);
 
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj("column", -1));
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewIntObj(pOrder->iColumn));
@@ -503,11 +503,11 @@ static void testBestIndexObjOrderby(
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewIntObj(pOrder->desc));
 
     Tcl_ListObjAppendElement(0, pRes, pElem);
-    Tcl_DecrRefCount(pElem);
+    Tcl_Decr_Ref_ಎಣಿಕೆ(pElem);
   }
 
   Tcl_SetObjResult(interp, pRes);
-  Tcl_DecrRefCount(pRes);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pRes);
 }
 
 /*
@@ -528,13 +528,13 @@ static void testBestIndexObjOrderby(
 **    $hdl rhs_value IDX ?DEFAULT?
 **      Wrapper around sqlite3_vtab_rhs_value().
 */
-static int SQLITE_TCLAPI testBestIndexObj(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI testBestIndexObj(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಙ್ಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  const char *azSub[] = {
+  ಧ್ರುವ ವರ್ಣ *azSub[] = {
     "constraints",                /* 0 */
     "orderby",                    /* 1 */
     "mask",                       /* 2 */
@@ -544,125 +544,125 @@ static int SQLITE_TCLAPI testBestIndexObj(
     "collation",                  /* 6 */
     0
   };
-  int ii;
+  ಪೂರ್ಣಾಙ್ಕ ii;
   sqlite3_index_info *pIdxInfo = (sqlite3_index_info*)clientData;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
-    return TCL_ERROR;
+  ಯದಿ( objc<2 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "SUB-COMMAND");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], azSub, "sub-command", 0, &ii) ){
-    return TCL_ERROR;
-  }
-
-  if( ii<4 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
-  }
-  if( ii==4 && objc!=4 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "INDEX BOOLEAN");
-    return TCL_ERROR;
-  }
-  if( ii==5 && objc!=3 && objc!=4 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "INDEX ?DEFAULT?");
-    return TCL_ERROR;
+  ಯದಿ( Tcl_GetIndexFromObj(interp, objv[1], azSub, "sub-command", 0, &ii) ){
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
 
-  switch( ii ){
-    case 0: assert( sqlite3_stricmp(azSub[ii], "constraints")==0 );
+  ಯದಿ( ii<4 && objc!=2 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 2, objv, "");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
+  }
+  ಯದಿ( ii==4 && objc!=4 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 2, objv, "INDEX BOOLEAN");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
+  }
+  ಯದಿ( ii==5 && objc!=3 && objc!=4 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 2, objv, "INDEX ?DEFAULT?");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
+  }
+
+  ವಿಕಲ್ಪ( ii ){
+    ಪಕ್ಷ 0: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "constraints")==0 );
       testBestIndexObjConstraints(interp, pIdxInfo);
-      break;
+      ಭಙ್ಗ;
 
-    case 1: assert( sqlite3_stricmp(azSub[ii], "orderby")==0 );
+    ಪಕ್ಷ 1: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "orderby")==0 );
       testBestIndexObjOrderby(interp, pIdxInfo);
-      break;
+      ಭಙ್ಗ;
 
-    case 2: assert( sqlite3_stricmp(azSub[ii], "mask")==0 );
+    ಪಕ್ಷ 2: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "mask")==0 );
       Tcl_SetObjResult(interp, Tcl_NewWideIntObj(pIdxInfo->colUsed));
-      break;
+      ಭಙ್ಗ;
 
-    case 3: assert( sqlite3_stricmp(azSub[ii], "distinct")==0 ); {
-      int bDistinct = sqlite3_vtab_distinct(pIdxInfo);
+    ಪಕ್ಷ 3: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "distinct")==0 ); {
+      ಪೂರ್ಣಾಙ್ಕ bDistinct = sqlite3_vtab_distinct(pIdxInfo);
       Tcl_SetObjResult(interp, Tcl_NewIntObj(bDistinct));
-      break;
+      ಭಙ್ಗ;
     }
 
-    case 4: assert( sqlite3_stricmp(azSub[ii], "in")==0 ); {
-      int iCons;
-      int bHandle;
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) 
+    ಪಕ್ಷ 4: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "in")==0 ); {
+      ಪೂರ್ಣಾಙ್ಕ iCons;
+      ಪೂರ್ಣಾಙ್ಕ bHandle;
+      ಯದಿ( Tcl_GetIntFromObj(interp, objv[2], &iCons) 
        || Tcl_GetBooleanFromObj(interp, objv[3], &bHandle) 
       ){
-        return TCL_ERROR;
+        ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
       }
       Tcl_SetObjResult(interp, 
           Tcl_NewIntObj(sqlite3_vtab_in(pIdxInfo, iCons, bHandle))
       );
-      break;
+      ಭಙ್ಗ;
     }
 
-    case 5: assert( sqlite3_stricmp(azSub[ii], "rhs_value")==0 ); {
-      int iCons = 0;
-      int rc;
-      sqlite3_value *pVal = 0;
-      const char *zVal = "";
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
-        return TCL_ERROR;
+    ಪಕ್ಷ 5: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "rhs_value")==0 ); {
+      ಪೂರ್ಣಾಙ್ಕ iCons = 0;
+      ಪೂರ್ಣಾಙ್ಕ rc;
+      sqlite3_ಮೌಲ್ಯ *pVal = 0;
+      ಧ್ರುವ ವರ್ಣ *zVal = "";
+      ಯದಿ( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
+        ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
       }
-      rc = sqlite3_vtab_rhs_value(pIdxInfo, iCons, &pVal);
-      if( rc!=SQLITE_OK && rc!=SQLITE_NOTFOUND ){
-        Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-        return TCL_ERROR;
+      rc = sqlite3_vtab_rhs_ಮೌಲ್ಯ(pIdxInfo, iCons, &pVal);
+      ಯದಿ( rc!=SQLITE_OK && rc!=SQLITE_NOTFOUND ){
+        Tcl_SetResult(interp, (ವರ್ಣ *)sqlite3ErrName(rc), TCL_VOLATILE);
+        ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
       }
-      if( pVal ){
-        zVal = (const char*)sqlite3_value_text(pVal);
-      }else if( objc==4 ){
+      ಯದಿ( pVal ){
+        zVal = (ಧ್ರುವ ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(pVal);
+      }ಅನ್ಯಥಾ ಯದಿ( objc==4 ){
         zVal = Tcl_GetString(objv[3]);
       }
       Tcl_SetObjResult(interp, Tcl_NewStringObj(zVal, -1));
-      break;
+      ಭಙ್ಗ;
     }
 
-    case 6: assert( sqlite3_stricmp(azSub[ii], "collation")==0 ); {
-      int iCons = 0;
-      const char *zColl = "";
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
-        return TCL_ERROR;
+    ಪಕ್ಷ 6: ಪ್ರತಿಜ್ಞಾ( sqlite3_stricmp(azSub[ii], "collation")==0 ); {
+      ಪೂರ್ಣಾಙ್ಕ iCons = 0;
+      ಧ್ರುವ ವರ್ಣ *zColl = "";
+      ಯದಿ( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
+        ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
       }
       zColl = sqlite3_vtab_collation(pIdxInfo, iCons);
       Tcl_SetObjResult(interp, Tcl_NewStringObj(zColl, -1));
-      break;
+      ಭಙ್ಗ;
     }
   }
 
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
-static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
 
-  static int iNext = 43;
-  char zHdl[24];
+  ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ iNext = 43;
+  ವರ್ಣ zHdl[24];
   Tcl_Obj *pScript;
 
   pScript = Tcl_DuplicateObj(pTab->pCmd);
-  Tcl_IncrRefCount(pScript);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pScript);
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("xBestIndex", -1));
 
-  sqlite3_snprintf(sizeof(zHdl), zHdl, "bestindex%d", iNext++);
+  sqlite3_snprintf(ಪರಿಮಾಣ(zHdl), zHdl, "bestindex%d", iNext++);
   Tcl_CreateObjCommand(interp, zHdl, testBestIndexObj, pIdxInfo, 0);
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj(zHdl, -1));
   rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
   Tcl_DeleteCommand(interp, zHdl);
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pScript);
 
-  if( rc!=TCL_OK ){
-    const char *zErr = Tcl_GetStringResult(interp);
+  ಯದಿ( rc!=TCL_OK ){
+    ಧ್ರುವ ವರ್ಣ *zErr = Tcl_GetStringResult(interp);
     rc = SQLITE_ERROR;
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-  }else{
+    pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
+  }ಅನ್ಯಥಾ{
     /* Analyze the scripts return value. The return value should be a tcl 
     ** list object with an even number of elements. The first element of each
     ** pair must be one of:
@@ -679,183 +679,183 @@ static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     Tcl_Obj **apElem = 0;
     Tcl_Size nElem;
     rc = Tcl_ListObjGetElements(interp, pRes, &nElem, &apElem);
-    if( rc!=TCL_OK ){
-      const char *zErr = Tcl_GetStringResult(interp);
+    ಯದಿ( rc!=TCL_OK ){
+      ಧ್ರುವ ವರ್ಣ *zErr = Tcl_GetStringResult(interp);
       rc = SQLITE_ERROR;
-      pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-    }else{
-      int ii;
-      int iArgv = 1;
-      for(ii=0; rc==SQLITE_OK && ii<(int)nElem; ii+=2){
-        const char *zCmd = Tcl_GetString(apElem[ii]);
+      pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
+    }ಅನ್ಯಥಾ{
+      ಪೂರ್ಣಾಙ್ಕ ii;
+      ಪೂರ್ಣಾಙ್ಕ iArgv = 1;
+      ಪ್ರತಿ(ii=0; rc==SQLITE_OK && ii<(ಪೂರ್ಣಾಙ್ಕ)nElem; ii+=2){
+        ಧ್ರುವ ವರ್ಣ *zCmd = Tcl_GetString(apElem[ii]);
         Tcl_Obj *p = apElem[ii+1];
-        if( sqlite3_stricmp("cost", zCmd)==0 ){
+        ಯದಿ( sqlite3_stricmp("cost", zCmd)==0 ){
           rc = Tcl_GetDoubleFromObj(interp, p, &pIdxInfo->estimatedCost);
-        }else
-        if( sqlite3_stricmp("orderby", zCmd)==0 ){
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("orderby", zCmd)==0 ){
           rc = Tcl_GetIntFromObj(interp, p, &pIdxInfo->orderByConsumed);
-        }else
-        if( sqlite3_stricmp("idxnum", zCmd)==0 ){
-          rc = Tcl_GetIntFromObj(interp, p, &pIdxInfo->idxNum);
-        }else
-        if( sqlite3_stricmp("idxstr", zCmd)==0 ){
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("idxnum", zCmd)==0 ){
+          rc = Tcl_GetIntFromObj(interp, p, &pIdxInfo->idx_ಅಂಕೆ);
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("idxstr", zCmd)==0 ){
           sqlite3_free(pIdxInfo->idxStr);
           pIdxInfo->idxStr = sqlite3_mprintf("%s", Tcl_GetString(p));
           pIdxInfo->needToFreeIdxStr = 1;
-        }else
-        if( sqlite3_stricmp("rows", zCmd)==0 ){
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("rows", zCmd)==0 ){
           Tcl_WideInt x = 0;
           rc = Tcl_GetWideIntFromObj(interp, p, &x);
           pIdxInfo->estimatedRows = (tRowcnt)x;
-        }else
-        if( sqlite3_stricmp("use", zCmd)==0 
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("use", zCmd)==0 
          || sqlite3_stricmp("omit", zCmd)==0 
         ){
-          int iCons;
+          ಪೂರ್ಣಾಙ್ಕ iCons;
           rc = Tcl_GetIntFromObj(interp, p, &iCons);
-          if( rc==SQLITE_OK ){
-            if( iCons<0 || iCons>=pIdxInfo->nConstraint ){
+          ಯದಿ( rc==SQLITE_OK ){
+            ಯದಿ( iCons<0 || iCons>=pIdxInfo->nConstraint ){
               rc = SQLITE_ERROR;
-              pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %d", iCons);
-            }else{
-              int bOmit = (zCmd[0]=='o' || zCmd[0]=='O');
+              pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("unexpected: %d", iCons);
+            }ಅನ್ಯಥಾ{
+              ಪೂರ್ಣಾಙ್ಕ bOmit = (zCmd[0]=='o' || zCmd[0]=='O');
               pIdxInfo->aConstraintUsage[iCons].argvIndex = iArgv++;
               pIdxInfo->aConstraintUsage[iCons].omit = bOmit;
             }
           }
-        }else
-        if( sqlite3_stricmp("constraint", zCmd)==0 ){
+        }ಅನ್ಯಥಾ
+        ಯದಿ( sqlite3_stricmp("constraint", zCmd)==0 ){
           rc = SQLITE_CONSTRAINT;
-          pTab->base.zErrMsg = sqlite3_mprintf("%s", Tcl_GetString(p));
-        }else{
+          pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", Tcl_GetString(p));
+        }ಅನ್ಯಥಾ{
           rc = SQLITE_ERROR;
-          pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zCmd);
+          pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("unexpected: %s", zCmd);
         }
-        if( rc!=SQLITE_OK && pTab->base.zErrMsg==0 ){
-          const char *zErr = Tcl_GetStringResult(interp);
-          pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
+        ಯದಿ( rc!=SQLITE_OK && pTab->base.z_Err_ಸಂದೇಶ==0 ){
+          ಧ್ರುವ ವರ್ಣ *zErr = Tcl_GetStringResult(interp);
+          pTab->base.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", zErr);
         }
       }
     }
   }
 
-  return rc;
+  ಪ್ರತ್ಯಾಗಮ rc;
 }
 
-static void tclFunction(sqlite3_context *pCtx, int nArg, sqlite3_value **apArg){
+ಸ್ಥಿರ ಶೂನ್ಯ tclFunction(sqlite3_context *pCtx, ಪೂರ್ಣಾಙ್ಕ nArg, sqlite3_ಮೌಲ್ಯ **apArg){
   TestFindFunction *p = (TestFindFunction*)sqlite3_user_data(pCtx);
   Tcl_Interp *interp = p->pTab->interp;
   Tcl_Obj *pScript = 0;
   Tcl_Obj *pRet = 0;
-  int ii;
+  ಪೂರ್ಣಾಙ್ಕ ii;
 
   pScript = Tcl_DuplicateObj(p->pTab->pCmd);
-  Tcl_IncrRefCount(pScript);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pScript);
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("function", -1));
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj(p->zName, -1));
 
-  for(ii=0; ii<nArg; ii++){
-    const char *zArg = (const char*)sqlite3_value_text(apArg[ii]);
+  ಪ್ರತಿ(ii=0; ii<nArg; ii++){
+    ಧ್ರುವ ವರ್ಣ *zArg = (ಧ್ರುವ ವರ್ಣ*)sqlite3_ಮೌಲ್ಯ_text(apArg[ii]);
     Tcl_ListObjAppendElement(interp, pScript,
         (zArg ? Tcl_NewStringObj(zArg, -1) : Tcl_NewObj())
     );
   }
   Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pScript);
 
   pRet = Tcl_GetObjResult(interp);
   sqlite3_result_text(pCtx, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
 }
 
-static int tclFindFunction(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclFindFunction(
   sqlite3_vtab *tab, 
-  int nArg, 
-  const char *zName,
-  void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),   /* OUT */
-  void **ppArg                                             /* OUT */
+  ಪೂರ್ಣಾಙ್ಕ nArg, 
+  ಧ್ರುವ ವರ್ಣ *zName,
+  ಶೂನ್ಯ (**pxFunc)(sqlite3_context*,ಪೂರ್ಣಾಙ್ಕ,sqlite3_ಮೌಲ್ಯ**),   /* OUT */
+  ಶೂನ್ಯ **ppArg                                             /* OUT */
 ){
-  int iRet = 0;
+  ಪೂರ್ಣಾಙ್ಕ iRet = 0;
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp;
   Tcl_Obj *pScript = 0;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = SQLITE_OK;
 
   pScript = Tcl_DuplicateObj(pTab->pCmd);
-  Tcl_IncrRefCount(pScript);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pScript);
   Tcl_ListObjAppendElement(
       interp, pScript, Tcl_NewStringObj("xFindFunction", -1)
   );
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewIntObj(nArg));
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj(zName, -1));
   rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pScript);
 
-  if( rc==SQLITE_OK ){
+  ಯದಿ( rc==SQLITE_OK ){
     Tcl_Obj *pObj = Tcl_GetObjResult(interp);
 
-    if( Tcl_GetIntFromObj(interp, pObj, &iRet) ){
+    ಯದಿ( Tcl_GetIntFromObj(interp, pObj, &iRet) ){
       rc = SQLITE_ERROR;
-    }else if( iRet>0 ){
+    }ಅನ್ಯಥಾ ಯದಿ( iRet>0 ){
       sqlite3_int64 nName = strlen(zName);
-      sqlite3_int64 nByte = nName + 1 + sizeof(TestFindFunction);
+      sqlite3_int64 nByte = nName + 1 + ಪರಿಮಾಣ(TestFindFunction);
       TestFindFunction *pNew = 0;
 
       pNew = (TestFindFunction*)sqlite3_malloc64(nByte);
-      if( pNew==0 ){
+      ಯದಿ( pNew==0 ){
         iRet = 0;
-      }else{
+      }ಅನ್ಯಥಾ{
         memset(pNew, 0, nByte);
-        pNew->zName = (const char*)&pNew[1];
-        memcpy((char*)pNew->zName, zName, nName);
+        pNew->zName = (ಧ್ರುವ ವರ್ಣ*)&pNew[1];
+        memcpy((ವರ್ಣ*)pNew->zName, zName, nName);
         pNew->pTab = pTab;
         pNew->pNext = pTab->pFindFunctionList;
         pTab->pFindFunctionList = pNew;
-        *ppArg = (void*)pNew;
+        *ppArg = (ಶೂನ್ಯ*)pNew;
         *pxFunc = tclFunction;
       }
     }
   }
 
-  return iRet;
+  ಪ್ರತ್ಯಾಗಮ iRet;
 }
 
-static int tclUpdate(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ tclUpdate(
   sqlite3_vtab *tab, 
-  int nArg, 
-  sqlite3_value **apVal, 
+  ಪೂರ್ಣಾಙ್ಕ nArg, 
+  sqlite3_ಮೌಲ್ಯ **apVal, 
   sqlite3_int64 *piRowid
 ){
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp; 
   Tcl_Obj *pEval = Tcl_DuplicateObj(pTab->pCmd);
-  int rc = TCL_OK;
+  ಪೂರ್ಣಾಙ್ಕ rc = TCL_OK;
 
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_ಎಣಿಕೆ(pEval);
   Tcl_ListObjAppendElement(interp, pEval, Tcl_NewStringObj("xUpdate",-1));
 
   rc = Tcl_EvalObjEx(interp, pEval, TCL_EVAL_GLOBAL);
-  Tcl_DecrRefCount(pEval);
+  Tcl_Decr_Ref_ಎಣಿಕೆ(pEval);
 
-  if( rc==TCL_OK ){
+  ಯದಿ( rc==TCL_OK ){
     Tcl_Obj *pRes = Tcl_GetObjResult(interp);
     Tcl_WideInt v;
     rc = Tcl_GetWideIntFromObj(interp, pRes, &v);
     *piRowid = (sqlite3_int64)v;
   }
 
-  if( rc!=TCL_OK ){
-    tab->zErrMsg = sqlite3_mprintf("%s", Tcl_GetStringResult(pTab->interp));
-    return rc;
+  ಯದಿ( rc!=TCL_OK ){
+    tab->z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", Tcl_GetStringResult(pTab->interp));
+    ಪ್ರತ್ಯಾಗಮ rc;
   }
 
-  return SQLITE_OK;
+  ಪ್ರತ್ಯಾಗಮ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that provides read-only access to a
 ** Tcl global variable namespace.
 */
-static sqlite3_module tclModule = {
+ಸ್ಥಿರ sqlite3_module tclModule = {
   0,                         /* iVersion */
   tclConnect,
   tclConnect,
@@ -882,7 +882,7 @@ static sqlite3_module tclModule = {
   0,                           /* xShadowName */
   0                            /* xIntegrity */
 };
-static sqlite3_module tclModuleUpdate = {
+ಸ್ಥಿರ sqlite3_module tclModuleUpdate = {
   0,                         /* iVersion */
   tclConnect,
   tclConnect,
@@ -913,12 +913,12 @@ static sqlite3_module tclModuleUpdate = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಙ್ಕ getDbPointer(Tcl_Interp *interp, ಧ್ರುವ ವರ್ಣ *zA, sqlite3 **ppDb);
 
-static void delTestVtabCtx(void *p){
+ಸ್ಥಿರ ಶೂನ್ಯ delTestVtabCtx(ಶೂನ್ಯ *p){
   TestVtabContext *pCtx = (TestVtabContext*)p;
-  if( pCtx->pDefault ){
-    Tcl_DecrRefCount(pCtx->pDefault);
+  ಯದಿ( pCtx->pDefault ){
+    Tcl_Decr_Ref_ಎಣಿಕೆ(pCtx->pDefault);
   }
   ckfree(pCtx);
 }
@@ -926,34 +926,34 @@ static void delTestVtabCtx(void *p){
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_tcl_module(
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ SQLITE_TCLAPI register_tcl_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಙ್ಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ?DEFAULT-CMD?");
-    return TCL_ERROR;
+  ಯದಿ( objc!=2 && objc!=3 ){
+    Tcl_Wrong_ಅಂಕೆ_Args(interp, 1, objv, "DB ?DEFAULT-CMD?");
+    ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ಯದಿ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ಪ್ರತ್ಯಾಗಮ TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   {
     sqlite3_module *pMod = &tclModule;
-    TestVtabContext *pCtx = (TestVtabContext*)ckalloc(sizeof(TestVtabContext));
+    TestVtabContext *pCtx = (TestVtabContext*)ckalloc(ಪರಿಮಾಣ(TestVtabContext));
     pCtx->interp = interp;
     pCtx->pDefault = 0;
-    if( objc==3 ){
+    ಯದಿ( objc==3 ){
       pCtx->pDefault = objv[2];
-      Tcl_IncrRefCount(pCtx->pDefault);
+      Tcl_Incr_Ref_ಎಣಿಕೆ(pCtx->pDefault);
     }
 
-    if( objc==3 ){ pMod = &tclModuleUpdate; }
-    sqlite3_create_module_v2(db, "tcl", pMod, (void*)pCtx, delTestVtabCtx);
+    ಯದಿ( objc==3 ){ pMod = &tclModuleUpdate; }
+    sqlite3_create_module_v2(db, "tcl", pMod, (ಶೂನ್ಯ*)pCtx, delTestVtabCtx);
   }
 #endif
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }
 
 #endif
@@ -962,20 +962,20 @@ static int SQLITE_TCLAPI register_tcl_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetesttcl_Init(Tcl_Interp *interp){
+ಪೂರ್ಣಾಙ್ಕ Sqlitetesttcl_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+  ಸ್ಥಿರ ಸಂರಚನಾ {
+     ವರ್ಣ *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ಶೂನ್ಯ *clientData;
   } aObjCmd[] = {
      { "register_tcl_module",   register_tcl_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ಪೂರ್ಣಾಙ್ಕ i;
+  ಪ್ರತಿ(i=0; i<ಪರಿಮಾಣ(aObjCmd)/ಪರಿಮಾಣ(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  ಪ್ರತ್ಯಾಗಮ TCL_OK;
 }

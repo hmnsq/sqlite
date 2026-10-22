@@ -16,7 +16,7 @@
 ** separating it out, the code will be automatically omitted from
 ** static links that do not use it.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 #ifndef SQLITE_OMIT_COMPLETE
 
 /*
@@ -24,10 +24,10 @@
 */
 #ifndef SQLITE_AMALGAMATION
 #ifdef SQLITE_ASCII
-#define IdChar(C)  ((sqlite3CtypeMap[(unsigned char)C]&0x46)!=0)
+#define IdChar(C)  ((sqlite3CtypeMap[(unsigned ವರ್ಣ)C]&0x46)!=0)
 #endif
 #ifdef SQLITE_EBCDIC
-extern const char sqlite3IsEbcdicIdChar[];
+ಬಾಹ್ಯ ಧ್ರುವ ವರ್ಣ sqlite3IsEbcdicIdChar[];
 #define IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
 #endif
 #endif /* SQLITE_AMALGAMATION */
@@ -141,17 +141,17 @@ extern const char sqlite3IsEbcdicIdChar[];
 ** to recognize the end of a trigger can be omitted.  All we have to do
 ** is look for a semicolon that is not part of an string or comment.
 */
-sqlite3_int64 sqlite3_incomplete(const char *zSql){
+sqlite3_int64 sqlite3_incomplete(ಧ್ರುವ ವರ್ಣ *zSql){
   u8 state = 0;   /* Current state, using numbers defined in header comment */
   u8 token;       /* Value of the next token */
   u8 pending = 0; /* unmatched structure character */
-  int nParen = 0; /* Nested parentheses */
+  ಪೂರ್ಣಾಙ್ಕ nParen = 0; /* Nested parentheses */
 
 #ifndef SQLITE_OMIT_TRIGGER
   /* A complex statement machine used to detect the end of a CREATE TRIGGER
   ** statement.  This is the normal case.
   */
-  static const u8 trans[8][8] = {
+  ಸ್ಥಿರ ಧ್ರುವ u8 trans[8][8] = {
                      /* Token:                                                */
      /* State:       **  SEMI  WS  OTHER  EXPLAIN  CREATE  TEMP  TRIGGER  END */
      /* 0 NOTHING: */ {    1,  0,     2,       3,      4,    2,       2,   2, },
@@ -163,11 +163,11 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
      /* 6    SEMI: */ {    6,  6,     5,       5,      5,    5,       5,   7, },
      /* 7     END: */ {    1,  7,     5,       5,      5,    5,       5,   5, },
   };
-#else
+#ಅನ್ಯಥಾ
   /* If triggers are not supported by this compile then the statement machine
   ** used to detect the end of a statement is much simpler
   */
-  static const u8 trans[3][3] = {
+  ಸ್ಥಿರ ಧ್ರುವ u8 trans[3][3] = {
                      /* Token:           */
      /* State:       **  SEMI  WS  OTHER */
      /* 0 NOTHING: */ {    1,  0,     2, },
@@ -176,7 +176,7 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
   };
 #endif /* SQLITE_OMIT_TRIGGER */
   /* Mapping state number to yy value for the return */
-  static const u8 statemap[8] = {
+  ಸ್ಥಿರ ಧ್ರುವ u8 statemap[8] = {
      /* 0 NOTHING */ 0,
      /* 1 START   */ 0,
      /* 2 NORMAL  */ 1,
@@ -188,159 +188,159 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
   };
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ಯದಿ( zSql==0 ){
+    ಪ್ರತ್ಯಾಗಮ SQLITE_MISUSE_BKPT;
   }
 #endif
 
-  while( *zSql ){
-    switch( *zSql ){
-      case ';': {  /* A semicolon */
+  ಯಾವತ್( *zSql ){
+    ವಿಕಲ್ಪ( *zSql ){
+      ಪಕ್ಷ ';': {  /* A semicolon */
         token = tkSEMI;
-        break;
+        ಭಙ್ಗ;
       }
-      case ' ':
-      case '\r':
-      case '\t':
-      case '\n':
-      case '\f': {  /* White space is ignored */
+      ಪಕ್ಷ ' ':
+      ಪಕ್ಷ '\r':
+      ಪಕ್ಷ '\t':
+      ಪಕ್ಷ '\n':
+      ಪಕ್ಷ '\f': {  /* White space is ignored */
         token = tkWS;
-        break;
+        ಭಙ್ಗ;
       }
-      case '/': {   /* C-style comments */
-        if( zSql[1]!='*' ){
+      ಪಕ್ಷ '/': {   /* C-style comments */
+        ಯದಿ( zSql[1]!='*' ){
           token = tkOTHER;
-          break;
+          ಭಙ್ಗ;
         }
         zSql += 2;
-        while( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
-        if( zSql[0]==0 ){
+        ಯಾವತ್( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
+        ಯದಿ( zSql[0]==0 ){
           pending = '/';
-          goto incomplete_finish;
+          ಗಚ್ಛ incomplete_finish;
         }
         zSql++;
         token = tkWS;
-        break;
+        ಭಙ್ಗ;
       }
-      case '-': {   /* SQL-style comments from "--" to end of line */
-        if( zSql[1]!='-' ){
+      ಪಕ್ಷ '-': {   /* SQL-style comments from "--" to end of line */
+        ಯದಿ( zSql[1]!='-' ){
           token = tkOTHER;
-          break;
+          ಭಙ್ಗ;
         }
-        while( *zSql && *zSql!='\n' ){ zSql++; }
-        if( *zSql==0 ){
+        ಯಾವತ್( *zSql && *zSql!='\n' ){ zSql++; }
+        ಯದಿ( *zSql==0 ){
           pending = '-';
-          goto incomplete_finish;
+          ಗಚ್ಛ incomplete_finish;
         }
         token = tkWS;
-        break;
+        ಭಙ್ಗ;
       }
-      case '[': {   /* Microsoft-style identifiers in [...] */
+      ಪಕ್ಷ '[': {   /* Microsoft-style identifiers in [...] */
         zSql++;
-        while( *zSql && *zSql!=']' ){ zSql++; }
-        if( *zSql==0 ){
+        ಯಾವತ್( *zSql && *zSql!=']' ){ zSql++; }
+        ಯದಿ( *zSql==0 ){
           pending = ']';
-          goto incomplete_finish;
+          ಗಚ್ಛ incomplete_finish;
         }
         token = tkOTHER;
-        break;
+        ಭಙ್ಗ;
       }
-      case '`':     /* Grave-accent quoted symbols used by MySQL */
-      case '"':     /* single- and double-quoted strings */
-      case '\'': {
-        int c = *zSql;
+      ಪಕ್ಷ '`':     /* Grave-accent quoted symbols used by MySQL */
+      ಪಕ್ಷ '"':     /* single- and double-quoted strings */
+      ಪಕ್ಷ '\'': {
+        ಪೂರ್ಣಾಙ್ಕ c = *zSql;
         zSql++;
-        while( *zSql && *zSql!=c ){ zSql++; }
-        if( *zSql==0 ){
+        ಯಾವತ್( *zSql && *zSql!=c ){ zSql++; }
+        ಯದಿ( *zSql==0 ){
           pending = c;
-          goto incomplete_finish;
+          ಗಚ್ಛ incomplete_finish;
         }
         token = tkOTHER;
-        break;
+        ಭಙ್ಗ;
       }
-      case '(': {
+      ಪಕ್ಷ '(': {
         nParen++;
         token = tkOTHER;
-        break;
+        ಭಙ್ಗ;
       }
-      case ')': {
+      ಪಕ್ಷ ')': {
         nParen--;
         token = tkOTHER;
-        break;
+        ಭಙ್ಗ;
       }
-      default: {
+      ಸ್ವಭಾವ: {
 #ifdef SQLITE_EBCDIC
-        unsigned char c;
+        unsigned ವರ್ಣ c;
 #endif
-        if( IdChar((u8)*zSql) ){
+        ಯದಿ( IdChar((u8)*zSql) ){
           /* Keywords and unquoted identifiers */
-          int nId;
-          for(nId=1; IdChar(zSql[nId]); nId++){}
+          ಪೂರ್ಣಾಙ್ಕ nId;
+          ಪ್ರತಿ(nId=1; IdChar(zSql[nId]); nId++){}
 #ifdef SQLITE_OMIT_TRIGGER
           token = tkOTHER;
-#else
-          switch( *zSql ){
-            case 'c': case 'C': {
-              if( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
+#ಅನ್ಯಥಾ
+          ವಿಕಲ್ಪ( *zSql ){
+            ಪಕ್ಷ 'c': ಪಕ್ಷ 'C': {
+              ಯದಿ( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
                 token = tkCREATE;
-              }else{
+              }ಅನ್ಯಥಾ{
                 token = tkOTHER;
               }
-              break;
+              ಭಙ್ಗ;
             }
-            case 't': case 'T': {
-              if( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
+            ಪಕ್ಷ 't': ಪಕ್ಷ 'T': {
+              ಯದಿ( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
                 token = tkTRIGGER;
-              }else if( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
+              }ಅನ್ಯಥಾ ಯದಿ( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
                 token = tkTEMP;
-              }else if( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
+              }ಅನ್ಯಥಾ ಯದಿ( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
                 token = tkTEMP;
-              }else{
+              }ಅನ್ಯಥಾ{
                 token = tkOTHER;
               }
-              break;
+              ಭಙ್ಗ;
             }
-            case 'e':  case 'E': {
-              if( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
+            ಪಕ್ಷ 'e':  ಪಕ್ಷ 'E': {
+              ಯದಿ( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
                 token = tkEND;
-              }else
+              }ಅನ್ಯಥಾ
 #ifndef SQLITE_OMIT_EXPLAIN
-              if( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
+              ಯದಿ( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
                 token = tkEXPLAIN;
-              }else
+              }ಅನ್ಯಥಾ
 #endif
               {
                 token = tkOTHER;
               }
-              break;
+              ಭಙ್ಗ;
             }
-            default: {
+            ಸ್ವಭಾವ: {
               token = tkOTHER;
-              break;
+              ಭಙ್ಗ;
             }
           }
 #endif /* SQLITE_OMIT_TRIGGER */
           zSql += nId-1;
-        }else{
+        }ಅನ್ಯಥಾ{
           /* Operators and special symbols */
           token = tkOTHER;
         }
-        break;
+        ಭಙ್ಗ;
       }
     }
     state = trans[state][token];
     zSql++;
   }
 incomplete_finish:
-  if( state==0 && pending==0 ) return SQLITE_EMPTY;
-  if( state==1 ) nParen = 0;
-  return (i64)((((u64)nParen)<<32) |
+  ಯದಿ( state==0 && pending==0 ) ಪ್ರತ್ಯಾಗಮ SQLITE_EMPTY;
+  ಯದಿ( state==1 ) nParen = 0;
+  ಪ್ರತ್ಯಾಗಮ (i64)((((u64)nParen)<<32) |
                ((u64)pending<<16) |
                ((u64)statemap[state]<<8) |
                (state>1 || pending!=0));
 }
-int sqlite3_complete(const char *zSql){
-  return sqlite3_incomplete(zSql)==0;
+ಪೂರ್ಣಾಙ್ಕ sqlite3_complete(ಧ್ರುವ ವರ್ಣ *zSql){
+  ಪ್ರತ್ಯಾಗಮ sqlite3_incomplete(zSql)==0;
 }
 
 #ifndef SQLITE_OMIT_UTF16
@@ -349,25 +349,25 @@ int sqlite3_complete(const char *zSql){
 ** above, except that the parameter is required to be UTF-16 encoded, not
 ** UTF-8.
 */
-int sqlite3_complete16(const void *zSql){
-  sqlite3_value *pVal;
-  char const *zSql8;
-  int rc;
+ಪೂರ್ಣಾಙ್ಕ sqlite3_complete16(ಧ್ರುವ ಶೂನ್ಯ *zSql){
+  sqlite3_ಮೌಲ್ಯ *pVal;
+  ವರ್ಣ ಧ್ರುವ *zSql8;
+  ಪೂರ್ಣಾಙ್ಕ rc;
 
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
+  ಯದಿ( rc ) ಪ್ರತ್ಯಾಗಮ rc;
 #endif
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
-  zSql8 = sqlite3ValueText(pVal, SQLITE_UTF8);
-  if( zSql8 ){
+  pVal = sqlite3_ಮೌಲ್ಯ_New(0);
+  sqlite3_ಮೌಲ್ಯ_Set_Str(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
+  zSql8 = sqlite3_ಮೌಲ್ಯ_Text(pVal, SQLITE_UTF8);
+  ಯದಿ( zSql8 ){
     rc = sqlite3_incomplete(zSql8)==0;
-  }else{
+  }ಅನ್ಯಥಾ{
     rc = SQLITE_NOMEM_BKPT;
   }
-  sqlite3ValueFree(pVal);
-  return rc & 0xff;
+  sqlite3_ಮೌಲ್ಯ_Free(pVal);
+  ಪ್ರತ್ಯಾಗಮ rc & 0xff;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_COMPLETE */

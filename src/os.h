@@ -24,7 +24,7 @@
 ** Attempt to automatically detect the operating system and setup the
 ** necessary pre-processor macros for it.
 */
-#include "os_setup.h"
+#ಅನ್ತರ್ಭಾವ "os_setup.h"
 
 /* If the SET_FULLSYNC macro is not defined above, then make it
 ** a no-op
@@ -158,7 +158,7 @@
 */
 #ifdef SQLITE_OMIT_WSD
 # define PENDING_BYTE     (0x40000000)
-#else
+#ಅನ್ಯಥಾ
 # define PENDING_BYTE      sqlite3PendingByte
 #endif
 #define RESERVED_BYTE     (PENDING_BYTE+1)
@@ -168,58 +168,58 @@
 /*
 ** Wrapper around OS specific sqlite3_os_init() function.
 */
-int sqlite3OsInit(void);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsInit(ಶೂನ್ಯ);
 
 /* 
 ** Functions for accessing sqlite3_file methods 
 */
-void sqlite3OsClose(sqlite3_file*);
-int sqlite3OsRead(sqlite3_file*, void*, int amt, i64 offset);
-int sqlite3OsWrite(sqlite3_file*, const void*, int amt, i64 offset);
-int sqlite3OsTruncate(sqlite3_file*, i64 size);
-int sqlite3OsSync(sqlite3_file*, int);
-int sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
-int sqlite3OsLock(sqlite3_file*, int);
-int sqlite3OsUnlock(sqlite3_file*, int);
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut);
-int sqlite3OsFileControl(sqlite3_file*,int,void*);
-void sqlite3OsFileControlHint(sqlite3_file*,int,void*);
+ಶೂನ್ಯ sqlite3OsClose(sqlite3_file*);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsRead(sqlite3_file*, ಶೂನ್ಯ*, ಪೂರ್ಣಾಙ್ಕ amt, i64 offset);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsWrite(sqlite3_file*, ಧ್ರುವ ಶೂನ್ಯ*, ಪೂರ್ಣಾಙ್ಕ amt, i64 offset);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsTruncate(sqlite3_file*, i64 size);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsSync(sqlite3_file*, ಪೂರ್ಣಾಙ್ಕ);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsLock(sqlite3_file*, ಪೂರ್ಣಾಙ್ಕ);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsUnlock(sqlite3_file*, ಪೂರ್ಣಾಙ್ಕ);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsCheckReservedLock(sqlite3_file *id, ಪೂರ್ಣಾಙ್ಕ *pResOut);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsFileControl(sqlite3_file*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3OsFileControlHint(sqlite3_file*,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ*);
 #define SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
-int sqlite3OsSectorSize(sqlite3_file *id);
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsSectorSize(sqlite3_file *id);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsDeviceCharacteristics(sqlite3_file *id);
 #ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmMap(sqlite3_file *,int,int,int,void volatile **);
-int sqlite3OsShmLock(sqlite3_file *id, int, int, int);
-void sqlite3OsShmBarrier(sqlite3_file *id);
-int sqlite3OsShmUnmap(sqlite3_file *id, int);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsShmMap(sqlite3_file *,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ,ಶೂನ್ಯ ಚಞ್ಚಲ **);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsShmLock(sqlite3_file *id, ಪೂರ್ಣಾಙ್ಕ, ಪೂರ್ಣಾಙ್ಕ, ಪೂರ್ಣಾಙ್ಕ);
+ಶೂನ್ಯ sqlite3OsShmBarrier(sqlite3_file *id);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsShmUnmap(sqlite3_file *id, ಪೂರ್ಣಾಙ್ಕ);
 #endif /* SQLITE_OMIT_WAL */
-int sqlite3OsFetch(sqlite3_file *id, i64, int, void **);
-int sqlite3OsUnfetch(sqlite3_file *, i64, void *);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsFetch(sqlite3_file *id, i64, ಪೂರ್ಣಾಙ್ಕ, ಶೂನ್ಯ **);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsUnfetch(sqlite3_file *, i64, ಶೂನ್ಯ *);
 
 
 /* 
 ** Functions for accessing sqlite3_vfs methods 
 */
-int sqlite3OsOpen(sqlite3_vfs *, const char *, sqlite3_file*, int, int *);
-int sqlite3OsDelete(sqlite3_vfs *, const char *, int);
-int sqlite3OsAccess(sqlite3_vfs *, const char *, int, int *pResOut);
-int sqlite3OsFullPathname(sqlite3_vfs *, const char *, int, char *);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsOpen(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *, sqlite3_file*, ಪೂರ್ಣಾಙ್ಕ, ಪೂರ್ಣಾಙ್ಕ *);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsDelete(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *, ಪೂರ್ಣಾಙ್ಕ);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsAccess(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *, ಪೂರ್ಣಾಙ್ಕ, ಪೂರ್ಣಾಙ್ಕ *pResOut);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsFullPathname(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *, ಪೂರ್ಣಾಙ್ಕ, ವರ್ಣ *);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *, const char *);
-void sqlite3OsDlError(sqlite3_vfs *, int, char *);
-void (*sqlite3OsDlSym(sqlite3_vfs *, void *, const char *))(void);
-void sqlite3OsDlClose(sqlite3_vfs *, void *);
+ಶೂನ್ಯ *sqlite3OsDlOpen(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *);
+ಶೂನ್ಯ sqlite3OsDlError(sqlite3_vfs *, ಪೂರ್ಣಾಙ್ಕ, ವರ್ಣ *);
+ಶೂನ್ಯ (*sqlite3OsDlSym(sqlite3_vfs *, ಶೂನ್ಯ *, ಧ್ರುವ ವರ್ಣ *))(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3OsDlClose(sqlite3_vfs *, ಶೂನ್ಯ *);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *, int, char *);
-int sqlite3OsSleep(sqlite3_vfs *, int);
-int sqlite3OsGetLastError(sqlite3_vfs*);
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsRandomness(sqlite3_vfs *, ಪೂರ್ಣಾಙ್ಕ, ವರ್ಣ *);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsSleep(sqlite3_vfs *, ಪೂರ್ಣಾಙ್ಕ);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsGetLastError(sqlite3_vfs*);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
 
 /*
 ** Convenience functions for opening and closing files using 
 ** sqlite3_malloc() to obtain space for the file-handle structure.
 */
-int sqlite3OsOpenMalloc(sqlite3_vfs *, const char *, sqlite3_file **, int,int*);
-void sqlite3OsCloseFree(sqlite3_file *);
+ಪೂರ್ಣಾಙ್ಕ sqlite3OsOpenMalloc(sqlite3_vfs *, ಧ್ರುವ ವರ್ಣ *, sqlite3_file **, ಪೂರ್ಣಾಙ್ಕ,ಪೂರ್ಣಾಙ್ಕ*);
+ಶೂನ್ಯ sqlite3OsCloseFree(sqlite3_file *);
 
 #endif /* _SQLITE_OS_H_ */
