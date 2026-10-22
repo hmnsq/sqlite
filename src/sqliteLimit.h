@@ -42,8 +42,8 @@
 #ifndef SQLITE_MAX_ALLOCATION_SIZE
 # define SQLITE_MAX_ALLOCATION_SIZE  2147483391
 #endif
-#if SQLITE_MAX_ALLOCATION_SIZE>2147483391
-# error Maximum size for SQLITE_MAX_ALLOCATION_SIZE is 2147483391
+#إذا SQLITE_MAX_ALLOCATION_SIZE>2147483391
+# error Maximum size لكل SQLITE_MAX_ALLOCATION_SIZE is 2147483391
 #endif
 
 /*
@@ -69,9 +69,9 @@
 ** since must also store the primary key at the end.  Hence the
 ** column count for Index is u16 instead of i16.
 */
-#if !defined(SQLITE_MAX_COLUMN)
+#إذا !defined(SQLITE_MAX_COLUMN)
 # define SQLITE_MAX_COLUMN 2000
-#elif SQLITE_MAX_COLUMN>32767
+#وإلاإذا SQLITE_MAX_COLUMN>32767
 # error SQLITE_MAX_COLUMN may not exceed 32767
 #endif
 
@@ -98,8 +98,8 @@
 ** A value of 0 for this compile-time option causes all expression
 ** depth limiting code to be omitted.
 */
-#ifndef SQLITE_MAX_EXPR_DEPTH
-# define SQLITE_MAX_EXPR_DEPTH 1000
+#ifndef SQLITE_MAX_تعبير_DEPTH
+# define SQLITE_MAX_تعبير_DEPTH 1000
 #endif
 
 /*
@@ -186,8 +186,8 @@
 ** structure.  But otherwise, we believe that the number can be as large
 ** as a signed 32-bit integer can hold.
 */
-#ifndef SQLITE_MAX_VARIABLE_NUMBER
-# define SQLITE_MAX_VARIABLE_NUMBER 32766
+#ifndef SQLITE_MAX_VARIABLE_رقم
+# define SQLITE_MAX_VARIABLE_رقم 32766
 #endif
 
 /* Maximum page size.  The upper bound on this value is 65536.  This a limit
@@ -213,7 +213,7 @@
 #ifndef SQLITE_DEFAULT_PAGE_SIZE
 # define SQLITE_DEFAULT_PAGE_SIZE 4096
 #endif
-#if SQLITE_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
+#إذا SQLITE_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
 # undef SQLITE_DEFAULT_PAGE_SIZE
 # define SQLITE_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
 #endif
@@ -228,11 +228,11 @@
 #ifndef SQLITE_MAX_DEFAULT_PAGE_SIZE
 # define SQLITE_MAX_DEFAULT_PAGE_SIZE 8192
 #endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
+#إذا SQLITE_MAX_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
 # undef SQLITE_MAX_DEFAULT_PAGE_SIZE
 # define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
 #endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE<SQLITE_DEFAULT_PAGE_SIZE
+#إذا SQLITE_MAX_DEFAULT_PAGE_SIZE<SQLITE_DEFAULT_PAGE_SIZE
 # undef SQLITE_MAX_DEFAULT_PAGE_SIZE
 # define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_DEFAULT_PAGE_SIZE
 #endif
@@ -245,8 +245,8 @@
 ** This value can be lowered (or raised) at run-time using the
 ** max_page_count macro.
 */
-#ifndef SQLITE_MAX_PAGE_COUNT
-# define SQLITE_MAX_PAGE_COUNT 0xfffffffe /* 4294967294 */
+#ifndef SQLITE_MAX_PAGE_عدد
+# define SQLITE_MAX_PAGE_عدد 0xfffffffe /* 4294967294 */
 #endif
 
 /*

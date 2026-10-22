@@ -15,26 +15,26 @@
 ** multiple threads. Right now this only works on unix.
 */
 
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ضمن "sqliteInt.h"
+#ضمن "tclsqlite.h"
 
-#if SQLITE_THREADSAFE
+#إذا SQLITE_THREADSAFE
 
-#include <errno.h>
+#ضمن <errno.h>
 
-#if !defined(_MSC_VER)
-#include <unistd.h>
+#إذا !defined(_MSC_VER)
+#ضمن <unistd.h>
 #endif
 
 /*
 ** One of these is allocated for each thread created by [sqlthread spawn].
 */
-typedef struct SqlThread SqlThread;
-struct SqlThread {
+تعريفنوع بنية SqlThread SqlThread;
+بنية SqlThread {
   Tcl_ThreadId parent;     /* Thread id of parent thread */
   Tcl_Interp *interp;      /* Parent interpreter */
-  char *zScript;           /* The script to execute. */
-  char *zVarname;          /* Varname in parent script */
+  حرف *zScript;           /* The script to execute. */
+  حرف *zVarname;          /* Varname in parent script */
 };
 
 /*
@@ -44,60 +44,60 @@ struct SqlThread {
 ** error is handled by Tcl_BackgroundError(). If no error occurs,
 ** the result is simply discarded.
 */
-typedef struct EvalEvent EvalEvent;
-struct EvalEvent {
+تعريفنوع بنية EvalEvent EvalEvent;
+بنية EvalEvent {
   Tcl_Event base;          /* Base class of type Tcl_Event */
-  char *zScript;           /* The script to execute. */
+  حرف *zScript;           /* The script to execute. */
   Tcl_Interp *interp;      /* The interpreter to execute it in. */
 };
 
-static Tcl_ObjCmdProc sqlthread_proc;
-static Tcl_ObjCmdProc clock_seconds_proc;
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
-static Tcl_ObjCmdProc blocking_step_proc;
-static Tcl_ObjCmdProc blocking_prepare_v2_proc;
+ساكن Tcl_ObjCmdProc sqlthread_proc;
+ساكن Tcl_ObjCmdProc clock_seconds_proc;
+#إذا SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+ساكن Tcl_ObjCmdProc blocking_step_proc;
+ساكن Tcl_ObjCmdProc blocking_prepare_v2_proc;
 #endif
-int Sqlitetest1_Init(Tcl_Interp *);
-int Sqlite3_Init(Tcl_Interp *);
+صحيح Sqlitetest1_Init(Tcl_Interp *);
+صحيح Sqlite3_Init(Tcl_Interp *);
 
 /* Functions from main.c */
-extern const char *sqlite3ErrName(int);
+خارجي ثابت حرف *sqlite3ErrName(صحيح);
 
 /* Functions from test1.c */
-extern void *sqlite3TestTextToPtr(const char *);
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
-extern int sqlite3TestMakePointerStr(Tcl_Interp *, char *, void *);
-extern int sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, int);
+خارجي فراغ *sqlite3TestTextToPtr(ثابت حرف *);
+خارجي صحيح getDbPointer(Tcl_Interp *, ثابت حرف *, sqlite3 **);
+خارجي صحيح sqlite3TestMakePointerStr(Tcl_Interp *, حرف *, فراغ *);
+خارجي صحيح sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, صحيح);
 
 /*
 ** Handler for events of type EvalEvent.
 */
-static int SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, int flags){
-  int rc;
+ساكن صحيح SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, صحيح flags){
+  صحيح rc;
   EvalEvent *p = (EvalEvent *)evPtr;
   rc = Tcl_Eval(p->interp, p->zScript);
-  if( rc!=TCL_OK ){
+  إذا( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
   }
   UNUSED_PARAMETER(flags);
-  return 1;
+  أرجع 1;
 }
 
 /*
 ** Register an EvalEvent to evaluate the script pScript in the
 ** parent interpreter/thread of SqlThread p.
 */
-static void postToParent(SqlThread *p, Tcl_Obj *pScript){
+ساكن فراغ postToParent(SqlThread *p, Tcl_Obj *pScript){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  حرف *z_رسالة;
+  Tcl_Size n_رسالة;
 
-  zMsg = Tcl_GetStringFromObj(pScript, &nMsg); 
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_رسالة = Tcl_GetStringFromObj(pScript, &n_رسالة); 
+  pEvent = (EvalEvent *)ckalloc(حجم(EvalEvent)+n_رسالة+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
-  pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  pEvent->zScript = (حرف *)&pEvent[1];
+  memcpy(pEvent->zScript, z_رسالة, n_رسالة+1);
   pEvent->interp = p->interp;
 
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
@@ -107,21 +107,21 @@ static void postToParent(SqlThread *p, Tcl_Obj *pScript){
 /*
 ** The main function for threads created with [sqlthread spawn].
 */
-static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
+ساكن Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_Interp *interp;
   Tcl_Obj *pRes;
   Tcl_Obj *pList;
-  int rc;
+  صحيح rc;
   SqlThread *p = (SqlThread *)pSqlThread;
-  extern int Sqlitetest_mutex_Init(Tcl_Interp*);
+  خارجي صحيح Sqlitetest_mutex_Init(Tcl_Interp*);
 
   interp = Tcl_CreateInterp();
   Tcl_CreateObjCommand(interp, "clock_seconds", clock_seconds_proc, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlthread", sqlthread_proc, pSqlThread, 0);
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#إذا SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
   Tcl_CreateObjCommand(interp, "sqlite3_blocking_step", blocking_step_proc,0,0);
   Tcl_CreateObjCommand(interp, 
-      "sqlite3_blocking_prepare_v2", blocking_prepare_v2_proc, (void *)1, 0);
+      "sqlite3_blocking_prepare_v2", blocking_prepare_v2_proc, (فراغ *)1, 0);
   Tcl_CreateObjCommand(interp, 
       "sqlite3_nonblocking_prepare_v2", blocking_prepare_v2_proc, 0, 0);
 #endif
@@ -132,14 +132,14 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   rc = Tcl_Eval(interp, p->zScript);
   pRes = Tcl_GetObjResult(interp);
   pList = Tcl_NewObj();
-  Tcl_IncrRefCount(pList);
-  Tcl_IncrRefCount(pRes);
+  Tcl_Incr_Ref_عدد(pList);
+  Tcl_Incr_Ref_عدد(pRes);
 
-  if( rc!=TCL_OK ){
+  إذا( rc!=TCL_OK ){
     Tcl_ListObjAppendElement(interp, pList, Tcl_NewStringObj("error", -1));
     Tcl_ListObjAppendElement(interp, pList, pRes);
     postToParent(p, pList);
-    Tcl_DecrRefCount(pList);
+    Tcl_Decr_Ref_عدد(pList);
     pList = Tcl_NewObj();
   }
 
@@ -148,11 +148,11 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_ListObjAppendElement(interp, pList, pRes);
   postToParent(p, pList);
 
-  ckfree((void *)p);
-  Tcl_DecrRefCount(pList);
-  Tcl_DecrRefCount(pRes);
+  ckfree((فراغ *)p);
+  Tcl_Decr_Ref_عدد(pList);
+  Tcl_Decr_Ref_عدد(pRes);
   Tcl_DeleteInterp(interp);
-  while( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
+  طالما( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
   Tcl_ExitThread(0);
   TCL_THREAD_CREATE_RETURN;
 }
@@ -167,46 +167,46 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
 **
 **     The caller can wait for the script to terminate using [vwait VARNAME].
 */
-static int SQLITE_TCLAPI sqlthread_spawn(
+ساكن صحيح SQLITE_TCLAPI sqlthread_spawn(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId x;
   SqlThread *pNew;
-  int rc;
+  صحيح rc;
 
-  Tcl_Size nVarname; char *zVarname;
-  Tcl_Size nScript; char *zScript;
+  Tcl_Size nVarname; حرف *zVarname;
+  Tcl_Size nScript; حرف *zScript;
 
   /* Parameters for thread creation */
-  const int nStack = TCL_THREAD_STACK_DEFAULT;
-  const int flags = TCL_THREAD_NOFLAGS;
+  ثابت صحيح n_مكدس = TCL_THREAD_مكدس_DEFAULT;
+  ثابت صحيح flags = TCL_THREAD_NOFLAGS;
 
-  assert(objc==4);
+  أكد(objc==4);
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
 
   zVarname = Tcl_GetStringFromObj(objv[2], &nVarname);
   zScript = Tcl_GetStringFromObj(objv[3], &nScript);
 
-  pNew = (SqlThread *)ckalloc(sizeof(SqlThread)+nVarname+nScript+2);
-  pNew->zVarname = (char *)&pNew[1];
-  pNew->zScript = (char *)&pNew->zVarname[nVarname+1];
+  pNew = (SqlThread *)ckalloc(حجم(SqlThread)+nVarname+nScript+2);
+  pNew->zVarname = (حرف *)&pNew[1];
+  pNew->zScript = (حرف *)&pNew->zVarname[nVarname+1];
   memcpy(pNew->zVarname, zVarname, nVarname+1);
   memcpy(pNew->zScript, zScript, nScript+1);
   pNew->parent = Tcl_GetCurrentThread();
   pNew->interp = interp;
 
-  rc = Tcl_CreateThread(&x, tclScriptThread, (void *)pNew, nStack, flags);
-  if( rc!=TCL_OK ){
-    Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", NULL);
-    ckfree((char *)pNew);
-    return TCL_ERROR;
+  rc = Tcl_CreateThread(&x, tclScriptThread, (فراغ *)pNew, n_مكدس, flags);
+  إذا( rc!=TCL_OK ){
+    Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", عدم);
+    ckfree((حرف *)pNew);
+    أرجع TCL_ERROR;
   }
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
@@ -220,43 +220,43 @@ static int SQLITE_TCLAPI sqlthread_spawn(
 **
 **     NOTE: At the moment, this doesn't work. FIXME.
 */
-static int SQLITE_TCLAPI sqlthread_parent(
+ساكن صحيح SQLITE_TCLAPI sqlthread_parent(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  حرف *z_رسالة;
+  Tcl_Size n_رسالة;
   SqlThread *p = (SqlThread *)clientData;
 
-  assert(objc==3);
+  أكد(objc==3);
   UNUSED_PARAMETER(objc);
 
-  if( p==0 ){
-    Tcl_AppendResult(interp, "no parent thread", NULL);
-    return TCL_ERROR;
+  إذا( p==0 ){
+    Tcl_AppendResult(interp, "no parent thread", عدم);
+    أرجع TCL_ERROR;
   }
 
-  zMsg = Tcl_GetStringFromObj(objv[2], &nMsg);
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_رسالة = Tcl_GetStringFromObj(objv[2], &n_رسالة);
+  pEvent = (EvalEvent *)ckalloc(حجم(EvalEvent)+n_رسالة+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
-  pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  pEvent->zScript = (حرف *)&pEvent[1];
+  memcpy(pEvent->zScript, z_رسالة, n_رسالة+1);
   pEvent->interp = p->interp;
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
   Tcl_ThreadAlert(p->parent);
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-static int xBusy(void *pArg, int nBusy){
+ساكن صحيح xBusy(فراغ *pArg, صحيح nBusy){
   UNUSED_PARAMETER(pArg);
   UNUSED_PARAMETER(nBusy);
   sqlite3_sleep(50);
-  return 1;             /* Try again... */
+  أرجع 1;             /* Try again... */
 }
 
 /*
@@ -265,18 +265,18 @@ static int xBusy(void *pArg, int nBusy){
 **     Open a database handle and return the string representation of
 **     the pointer value.
 */
-static int SQLITE_TCLAPI sqlthread_open(
+ساكن صحيح SQLITE_TCLAPI sqlthread_open(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sqlite3TestMakePointerStr(Tcl_Interp *interp, char *zPtr, void *p);
+  صحيح sqlite3TestMakePointerStr(Tcl_Interp *interp, حرف *zPtr, فراغ *p);
 
-  const char *zFilename;
+  ثابت حرف *zFilename;
   sqlite3 *db;
-  char zBuf[100];
-  extern int Md5_Register(sqlite3*,char**,const sqlite3_api_routines*);
+  حرف zBuf[100];
+  خارجي صحيح Md5_Register(sqlite3*,حرف**,ثابت sqlite3_api_routines*);
 
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
@@ -286,10 +286,10 @@ static int SQLITE_TCLAPI sqlthread_open(
   Md5_Register(db, 0, 0);
   sqlite3_busy_handler(db, xBusy, 0);
   
-  if( sqlite3TestMakePointerStr(interp, zBuf, db) ) return TCL_ERROR;
-  Tcl_AppendResult(interp, zBuf, NULL);
+  إذا( sqlite3TestMakePointerStr(interp, zBuf, db) ) أرجع TCL_ERROR;
+  Tcl_AppendResult(interp, zBuf, عدم);
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 
@@ -299,10 +299,10 @@ static int SQLITE_TCLAPI sqlthread_open(
 **     Return the current thread-id (Tcl_GetCurrentThread()) cast to
 **     an integer.
 */
-static int SQLITE_TCLAPI sqlthread_id(
+ساكن صحيح SQLITE_TCLAPI sqlthread_id(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId id = Tcl_GetCurrentThread();
@@ -310,24 +310,24 @@ static int SQLITE_TCLAPI sqlthread_id(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 
 /*
 ** Dispatch routine for the sub-commands of [sqlthread].
 */
-static int SQLITE_TCLAPI sqlthread_proc(
+ساكن صحيح SQLITE_TCLAPI sqlthread_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct SubCommand {
-    char *zName;
+  بنية SubCommand {
+    حرف *zName;
     Tcl_ObjCmdProc *xProc;
-    int nArg;
-    char *zUsage;
+    صحيح nArg;
+    حرف *zUsage;
   } aSub[] = {
     {"parent", sqlthread_parent, 1, "SCRIPT"},
     {"spawn",  sqlthread_spawn,  2, "VARNAME SCRIPT"},
@@ -335,27 +335,27 @@ static int SQLITE_TCLAPI sqlthread_proc(
     {"id",     sqlthread_id,     0, ""},
     {0, 0, 0}
   };
-  struct SubCommand *pSub;
-  int rc;
-  int iIndex;
+  بنية SubCommand *pSub;
+  صحيح rc;
+  صحيح iIndex;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
-    return TCL_ERROR;
+  إذا( objc<2 ){
+    Tcl_Wrong_رقم_وسائط(interp, 1, objv, "SUB-COMMAND");
+    أرجع TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(
-      interp, objv[1], aSub, sizeof(aSub[0]), "sub-command", 0, &iIndex
+      interp, objv[1], aSub, حجم(aSub[0]), "sub-command", 0, &iIndex
   );
-  if( rc!=TCL_OK ) return rc;
+  إذا( rc!=TCL_OK ) أرجع rc;
   pSub = &aSub[iIndex];
 
-  if( objc<(pSub->nArg+2) ){
-    Tcl_WrongNumArgs(interp, 2, objv, pSub->zUsage);
-    return TCL_ERROR;
+  إذا( objc<(pSub->nArg+2) ){
+    Tcl_Wrong_رقم_وسائط(interp, 2, objv, pSub->zUsage);
+    أرجع TCL_ERROR;
   }
 
-  return pSub->xProc(clientData, interp, objc, objv);
+  أرجع pSub->xProc(clientData, interp, objc, objv);
 }
 
 /*
@@ -365,10 +365,10 @@ static int SQLITE_TCLAPI sqlthread_proc(
 ** implemented as a script in Tcl 8.5, it is not usually available to
 ** testfixture.
 */ 
-static int SQLITE_TCLAPI clock_seconds_proc(
+ساكن صحيح SQLITE_TCLAPI clock_seconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -377,17 +377,17 @@ static int SQLITE_TCLAPI clock_seconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
 ** The [clock_milliseconds] command. This is more or less the same as the
 ** regular tcl [clock milliseconds]. 
 */ 
-static int SQLITE_TCLAPI clock_milliseconds_proc(
+ساكن صحيح SQLITE_TCLAPI clock_milliseconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -398,7 +398,7 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*************************************************************************
@@ -414,19 +414,19 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
 ** should be considered if these functions are to be extended (i.e. to 
 ** support windows) in the future.
 */ 
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#إذا SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
 
 /* BEGIN_SQLITE_BLOCKING_STEP */
 /* This example uses the pthreads API */
-#include <pthread.h>
+#ضمن <pthread.h>
 
 /*
 ** A pointer to an instance of this structure is passed as the user-context
 ** pointer when registering for an unlock-notify callback.
 */
-typedef struct UnlockNotification UnlockNotification;
-struct UnlockNotification {
-  int fired;                         /* True after unlock event has occurred */
+تعريفنوع بنية UnlockNotification UnlockNotification;
+بنية UnlockNotification {
+  صحيح fired;                         /* True after unlock event has occurred */
   pthread_cond_t cond;               /* Condition variable to wait on */
   pthread_mutex_t mutex;             /* Mutex to protect structure */
 };
@@ -434,9 +434,9 @@ struct UnlockNotification {
 /*
 ** This function is an unlock-notify callback registered with SQLite.
 */
-static void unlock_notify_cb(void **apArg, int nArg){
-  int i;
-  for(i=0; i<nArg; i++){
+ساكن فراغ unlock_notify_cb(فراغ **apArg, صحيح nArg){
+  صحيح i;
+  لكل(i=0; i<nArg; i++){
     UnlockNotification *p = (UnlockNotification *)apArg[i];
     pthread_mutex_lock(&p->mutex);
     p->fired = 1;
@@ -459,8 +459,8 @@ static void unlock_notify_cb(void **apArg, int nArg){
 ** this case the caller should not retry the operation and should roll 
 ** back the current transaction (if any).
 */
-static int wait_for_unlock_notify(sqlite3 *db){
-  int rc;
+ساكن صحيح wait_for_unlock_notify(sqlite3 *db){
+  صحيح rc;
   UnlockNotification un;
 
   /* Initialize the UnlockNotification structure. */
@@ -469,8 +469,8 @@ static int wait_for_unlock_notify(sqlite3 *db){
   pthread_cond_init(&un.cond, 0);
 
   /* Register for an unlock-notify callback. */
-  rc = sqlite3_unlock_notify(db, unlock_notify_cb, (void *)&un);
-  assert( rc==SQLITE_LOCKED || rc==SQLITE_OK );
+  rc = sqlite3_unlock_notify(db, unlock_notify_cb, (فراغ *)&un);
+  أكد( rc==SQLITE_LOCKED || rc==SQLITE_OK );
 
   /* The call to sqlite3_unlock_notify() always returns either SQLITE_LOCKED 
   ** or SQLITE_OK. 
@@ -480,9 +480,9 @@ static int wait_for_unlock_notify(sqlite3 *db){
   ** that the current transaction can be rolled back. Otherwise, block
   ** until the unlock-notify callback is invoked, then return SQLITE_OK.
   */
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     pthread_mutex_lock(&un.mutex);
-    if( !un.fired ){
+    إذا( !un.fired ){
       pthread_cond_wait(&un.cond, &un.mutex);
     }
     pthread_mutex_unlock(&un.mutex);
@@ -492,7 +492,7 @@ static int wait_for_unlock_notify(sqlite3 *db){
   pthread_cond_destroy(&un.cond);
   pthread_mutex_destroy(&un.mutex);
 
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -506,14 +506,14 @@ static int wait_for_unlock_notify(sqlite3 *db){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_step(sqlite3_stmt *pStmt){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
+صحيح sqlite3_blocking_step(sqlite3_stmt *pStmt){
+  صحيح rc;
+  طالما( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
     rc = wait_for_unlock_notify(sqlite3_db_handle(pStmt));
-    if( rc!=SQLITE_OK ) break;
+    إذا( rc!=SQLITE_OK ) اكسر;
     sqlite3_reset(pStmt);
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -527,19 +527,19 @@ int sqlite3_blocking_step(sqlite3_stmt *pStmt){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_prepare_v2(
+صحيح sqlite3_blocking_prepare_v2(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nSql,                 /* Length of zSql in bytes. */
+  ثابت حرف *zSql,         /* UTF-8 encoded SQL statement. */
+  صحيح nSql,                 /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pz           /* OUT: End of parsed string */
+  ثابت حرف **pz           /* OUT: End of parsed string */
 ){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
+  صحيح rc;
+  طالما( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
     rc = wait_for_unlock_notify(db);
-    if( rc!=SQLITE_OK ) break;
+    إذا( rc!=SQLITE_OK ) اكسر;
   }
-  return rc;
+  أرجع rc;
 }
 /* END_SQLITE_BLOCKING_STEP */
 
@@ -548,81 +548,81 @@ int sqlite3_blocking_prepare_v2(
 **
 ** Advance the statement to the next row.
 */
-static int SQLITE_TCLAPI blocking_step_proc(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI blocking_step_proc(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
 
   sqlite3_stmt *pStmt;
-  int rc;
+  صحيح rc;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_رقم_وسائط(interp, 1, objv, "STMT");
+    أرجع TCL_ERROR;
   }
 
   pStmt = (sqlite3_stmt*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   rc = sqlite3_blocking_step(pStmt);
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), 0);
-  return TCL_OK;
+  Tcl_SetResult(interp, (حرف *)sqlite3ErrName(rc), 0);
+  أرجع TCL_OK;
 }
 
 /*
 ** Usage: sqlite3_blocking_prepare_v2 DB sql bytes ?tailvar?
 ** Usage: sqlite3_nonblocking_prepare_v2 DB sql bytes ?tailvar?
 */
-static int SQLITE_TCLAPI blocking_prepare_v2_proc(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI blocking_prepare_v2_proc(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  const char *zSql;
-  int bytes;
-  const char *zTail = 0;
+  ثابت حرف *zSql;
+  صحيح bytes;
+  ثابت حرف *zTail = 0;
   sqlite3_stmt *pStmt = 0;
-  char zBuf[50];
-  int rc;
-  int isBlocking = !(clientData==0);
+  حرف zBuf[50];
+  صحيح rc;
+  صحيح isBlocking = !(clientData==0);
 
-  if( objc!=5 && objc!=4 ){
+  إذا( objc!=5 && objc!=4 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"", 
        Tcl_GetString(objv[0]), " DB sql bytes tailvar", 0);
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  إذا( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) أرجع TCL_ERROR;
   zSql = Tcl_GetString(objv[2]);
-  if( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) return TCL_ERROR;
+  إذا( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) أرجع TCL_ERROR;
 
-  if( isBlocking ){
+  إذا( isBlocking ){
     rc = sqlite3_blocking_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
-  }else{
+  }وإلا{
     rc = sqlite3_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
   }
 
-  assert(rc==SQLITE_OK || pStmt==0);
-  if( zTail && objc>=5 ){
-    if( bytes>=0 ){
+  أكد(rc==SQLITE_OK || pStmt==0);
+  إذا( zTail && objc>=5 ){
+    إذا( bytes>=0 ){
       bytes = bytes - (zTail-zSql);
     }
     Tcl_ObjSetVar2(interp, objv[4], 0, Tcl_NewStringObj(zTail, bytes), 0);
   }
-  if( rc!=SQLITE_OK ){
-    assert( pStmt==0 );
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "%s ", (char *)sqlite3ErrName(rc));
-    Tcl_AppendResult(interp, zBuf, sqlite3_errmsg(db), NULL);
-    return TCL_ERROR;
+  إذا( rc!=SQLITE_OK ){
+    أكد( pStmt==0 );
+    sqlite3_snprintf(حجم(zBuf), zBuf, "%s ", (حرف *)sqlite3ErrName(rc));
+    Tcl_AppendResult(interp, zBuf, sqlite3_errmsg(db), عدم);
+    أرجع TCL_ERROR;
   }
 
-  if( pStmt ){
-    if( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) return TCL_ERROR;
-    Tcl_AppendResult(interp, zBuf, NULL);
+  إذا( pStmt ){
+    إذا( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) أرجع TCL_ERROR;
+    Tcl_AppendResult(interp, zBuf, عدم);
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 #endif /* SQLITE_OS_UNIX && SQLITE_ENABLE_UNLOCK_NOTIFY */
@@ -633,31 +633,31 @@ static int SQLITE_TCLAPI blocking_prepare_v2_proc(
 /*
 ** Register commands with the TCL interpreter.
 */
-int SqlitetestThread_Init(Tcl_Interp *interp){
-  struct TclCmd {
-    int (*xProc)(void*, Tcl_Interp*, int, Tcl_Obj*const*);
-    const char *zName;
-    int iCtx;
+صحيح SqlitetestThread_Init(Tcl_Interp *interp){
+  بنية TclCmd {
+    صحيح (*xProc)(فراغ*, Tcl_Interp*, صحيح, Tcl_Obj*ثابت*);
+    ثابت حرف *zName;
+    صحيح iCtx;
   } aCmd[] = {
     { sqlthread_proc,           "sqlthread",                      0 },
     { clock_seconds_proc,       "clock_second",                   0 },
     { clock_milliseconds_proc,  "clock_milliseconds",             0 },
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#إذا SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
     { blocking_step_proc,       "sqlite3_blocking_step",          0 },
     { blocking_prepare_v2_proc, "sqlite3_blocking_prepare_v2",    1 },
     { blocking_prepare_v2_proc, "sqlite3_nonblocking_prepare_v2", 0 },
 #endif
   };
-  int ii;
+  صحيح ii;
 
-  for(ii=0; ii<sizeof(aCmd)/sizeof(aCmd[0]); ii++){
-    void *p = SQLITE_INT_TO_PTR(aCmd[ii].iCtx);
+  لكل(ii=0; ii<حجم(aCmd)/حجم(aCmd[0]); ii++){
+    فراغ *p = SQLITE_INT_TO_PTR(aCmd[ii].iCtx);
     Tcl_CreateObjCommand(interp, aCmd[ii].zName, aCmd[ii].xProc, p, 0);
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }
-#else
-int SqlitetestThread_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#وإلا
+صحيح SqlitetestThread_Init(Tcl_Interp *interp){
+  أرجع TCL_OK;
 }
 #endif
