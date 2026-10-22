@@ -67,20 +67,20 @@
 ** Setting the auth function to NULL disables this hook.  The default
 ** setting of the auth function is NULL.
 */
-int sqlite3_set_authorizer(
+цео sqlite3_set_authorizer(
   sqlite3 *db,
-  int (*xAuth)(void*,int,const char*,const char*,const char*,const char*),
+  цео (*xAuth)(void*,цео,const char*,const char*,const char*,const char*),
   void *pArg
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) ) врати SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->xAuth = (sqlite3_xauth)xAuth;
   db->pAuthArg = pArg;
   sqlite3ExpirePreparedStatements(db, 1);
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -101,27 +101,27 @@ static void sqliteAuthBadReturnCode(Parse *pParse){
 ** to an SQL NULL expression. Otherwise, if pExpr is NULL, then SQLITE_IGNORE
 ** is treated as SQLITE_DENY. In this case an error is left in pParse.
 */
-int sqlite3AuthReadCol(
+цео sqlite3AuthReadCol(
   Parse *pParse,                  /* The parser context */
   const char *zTab,               /* Table name */
   const char *zCol,               /* Column name */
-  int iDb                         /* Index of containing database. */
+  цео iDb                         /* Index of containing database. */
 ){
   sqlite3 *db = pParse->db;          /* Database handle */
   char *zDb = db->aDb[iDb].zDbSName; /* Schema name of attached database */
-  int rc;                            /* Auth callback return code */
+  цео rc;                            /* Auth callback return code */
 
-  if( db->init.busy ) return SQLITE_OK;
+  ако( db->init.busy ) врати SQLITE_OK;
   rc = db->xAuth(db->pAuthArg, SQLITE_READ, zTab,zCol,zDb,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
+  ако( rc==SQLITE_DENY ){
     char *z = sqlite3_mprintf("%s.%s", zTab, zCol);
-    if( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
+    ако( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
     sqlite3ErrorMsg(pParse, "access to %z is prohibited", z);
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
+  }инако ако( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
     sqliteAuthBadReturnCode(pParse);
   }
-  return rc;
+  врати rc;
 }
 
 /*
@@ -141,45 +141,45 @@ void sqlite3AuthRead(
 ){
   Table *pTab = 0;      /* The table being read */
   const char *zCol;     /* Name of the column of the table */
-  int iSrc;             /* Index in pTabList->a[] of table being read */
-  int iDb;              /* The index of the database the expression refers to */
-  int iCol;             /* Index of column in table */
+  цео iSrc;             /* Index in pTabList->a[] of table being read */
+  цео iDb;              /* The index of the database the expression refers to */
+  цео iCol;             /* Index of column in table */
 
   assert( pExpr->op==TK_COLUMN || pExpr->op==TK_TRIGGER );
   assert( !IN_RENAME_OBJECT );
   assert( pParse->db->xAuth!=0 );
   iDb = sqlite3SchemaToIndex(pParse->db, pSchema);
-  if( iDb<0 ){
+  ако( iDb<0 ){
     /* An attempt to read a column out of a subquery or other
     ** temporary table. */
-    return;
+    врати;
   }
 
-  if( pExpr->op==TK_TRIGGER ){
+  ако( pExpr->op==TK_TRIGGER ){
     pTab = pParse->pTriggerTab;
-  }else{
+  }инако{
     assert( pTabList );
-    for(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
-      if( pExpr->iTable==pTabList->a[iSrc].iCursor ){
+    за(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
+      ако( pExpr->iTable==pTabList->a[iSrc].iCursor ){
         pTab = pTabList->a[iSrc].pSTab;
         break;
       }
     }
   }
   iCol = pExpr->iColumn;
-  if( pTab==0 ) return;
+  ако( pTab==0 ) врати;
 
-  if( iCol>=0 ){
+  ако( iCol>=0 ){
     assert( iCol<pTab->nCol );
     zCol = pTab->aCol[iCol].zCnName;
-  }else if( pTab->iPKey>=0 ){
+  }инако ако( pTab->iPKey>=0 ){
     assert( pTab->iPKey<pTab->nCol );
     zCol = pTab->aCol[pTab->iPKey].zCnName;
-  }else{
+  }инако{
     zCol = "ROWID";
   }
   assert( iDb>=0 && iDb<pParse->db->nDb );
-  if( SQLITE_IGNORE==sqlite3AuthReadCol(pParse, pTab->zName, zCol, iDb) ){
+  ако( SQLITE_IGNORE==sqlite3AuthReadCol(pParse, pTab->zName, zCol, iDb) ){
     pExpr->op = TK_NULL;
   }
 }
@@ -196,22 +196,22 @@ void sqlite3AuthRead(
 ** as a result) in the uncommon case where an authorization check is
 ** actually needed.
 */
-static int SQLITE_NOINLINE realAuthCheck(
+static цео SQLITE_NOINLINE realAuthCheck(
   Parse *pParse,
-  int code,
+  цео code,
   const char *zArg1,
   const char *zArg2,
   const char *zArg3
 ){
   sqlite3 *db = pParse->db;
-  int rc;
+  цео rc;
 
   /* Don't do any authorization checks if the database is initializing
   ** or if the parser is being invoked from within sqlite3_declare_vtab.
   */
   assert( !IN_RENAME_OBJECT || db->xAuth==0 );
-  if( IN_SPECIAL_PARSE ){
-    return SQLITE_OK;
+  ако( IN_SPECIAL_PARSE ){
+    врати SQLITE_OK;
   }
 
   /* EVIDENCE-OF: R-43249-19882 The third through sixth parameters to the
@@ -226,26 +226,26 @@ static int SQLITE_NOINLINE realAuthCheck(
   testcase( pParse->zAuthContext==0 );
 
   rc = db->xAuth(db->pAuthArg,code,zArg1,zArg2,zArg3,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
+  ако( rc==SQLITE_DENY ){
     sqlite3ErrorMsg(pParse, "not authorized");
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
+  }инако ако( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
     rc = SQLITE_DENY;
     sqliteAuthBadReturnCode(pParse);
   }
-  return rc;
+  врати rc;
 }
-int sqlite3AuthCheck(
+цео sqlite3AuthCheck(
   Parse *pParse,
-  int code,
+  цео code,
   const char *zArg1,
   const char *zArg2,
   const char *zArg3
 ){
-  if( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
-    return realAuthCheck(pParse,code,zArg1,zArg2,zArg3);
-  }else{
-    return SQLITE_OK;
+  ако( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
+    врати realAuthCheck(pParse,code,zArg1,zArg2,zArg3);
+  }инако{
+    врати SQLITE_OK;
   }
 }
 
@@ -270,7 +270,7 @@ void sqlite3AuthContextPush(
 ** by sqlite3AuthContextPush
 */
 void sqlite3AuthContextPop(AuthContext *pContext){
-  if( pContext->pParse ){
+  ако( pContext->pParse ){
     pContext->pParse->zAuthContext = pContext->zAuthContext;
     pContext->pParse = 0;
   }

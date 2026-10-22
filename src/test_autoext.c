@@ -22,7 +22,7 @@ SQLITE_EXTENSION_INIT1
 */
 static void sqrFunc(
   sqlite3_context *context,
-  int argc,
+  цео argc,
   sqlite3_value **argv
 ){
   double r = sqlite3_value_double(argv[0]);
@@ -32,14 +32,14 @@ static void sqrFunc(
 /*
 ** This is the entry point to register the extension for the sqr() function.
 */
-static int sqr_init(
+static цео sqr_init(
   sqlite3 *db, 
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
   sqlite3_create_function(db, "sqr", 1, SQLITE_ANY, 0, sqrFunc, 0, 0);
-  return 0;
+  врати 0;
 }
 
 /*
@@ -47,7 +47,7 @@ static int sqr_init(
 */
 static void cubeFunc(
   sqlite3_context *context,
-  int argc,
+  цео argc,
   sqlite3_value **argv
 ){
   double r = sqlite3_value_double(argv[0]);
@@ -57,20 +57,20 @@ static void cubeFunc(
 /*
 ** This is the entry point to register the extension for the cube() function.
 */
-static int cube_init(
+static цео cube_init(
   sqlite3 *db, 
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
   sqlite3_create_function(db, "cube", 1, SQLITE_ANY, 0, cubeFunc, 0, 0);
-  return 0;
+  врати 0;
 }
 
 /*
 ** This is a broken extension entry point
 */
-static int broken_init(
+static цео broken_init(
   sqlite3 *db, 
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
@@ -79,7 +79,7 @@ static int broken_init(
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken autoext!");
   *pzErrMsg = zErr;
-  return 1;
+  врати 1;
 }
 
 /*
@@ -87,15 +87,15 @@ static int broken_init(
 **
 ** Register the "sqr" extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtSqrObjCmd(
+static цео SQLITE_TCLAPI autoExtSqrObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))sqr_init);
+  цео rc = sqlite3_auto_extension((void(*)(void))sqr_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -103,15 +103,15 @@ static int SQLITE_TCLAPI autoExtSqrObjCmd(
 **
 ** Unregister the "sqr" extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
+static цео SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))sqr_init);
+  цео rc = sqlite3_cancel_auto_extension((void(*)(void))sqr_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -119,15 +119,15 @@ static int SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
 **
 ** Register the "cube" extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtCubeObjCmd(
+static цео SQLITE_TCLAPI autoExtCubeObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))cube_init);
+  цео rc = sqlite3_auto_extension((void(*)(void))cube_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -135,15 +135,15 @@ static int SQLITE_TCLAPI autoExtCubeObjCmd(
 **
 ** Unregister the "cube" extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
+static цео SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))cube_init);
+  цео rc = sqlite3_cancel_auto_extension((void(*)(void))cube_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -151,15 +151,15 @@ static int SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
 **
 ** Register the broken extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtBrokenObjCmd(
+static цео SQLITE_TCLAPI autoExtBrokenObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))broken_init);
+  цео rc = sqlite3_auto_extension((void(*)(void))broken_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 /*
@@ -167,15 +167,15 @@ static int SQLITE_TCLAPI autoExtBrokenObjCmd(
 **
 ** Unregister the broken extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
+static цео SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))broken_init);
+  цео rc = sqlite3_cancel_auto_extension((void(*)(void))broken_init);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
@@ -186,21 +186,21 @@ static int SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
 **
 ** Reset all auto-extensions
 */
-static int SQLITE_TCLAPI resetAutoExtObjCmd(
+static цео SQLITE_TCLAPI resetAutoExtObjCmd(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_reset_auto_extension();
-  return SQLITE_OK;
+  врати SQLITE_OK;
 }
 
 
 /*
 ** This procedure registers the TCL procs defined in this file.
 */
-int Sqlitetest_autoext_Init(Tcl_Interp *interp){
+цео Sqlitetest_autoext_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
   Tcl_CreateObjCommand(interp, "sqlite3_auto_extension_sqr",
           autoExtSqrObjCmd, 0, 0);
@@ -217,5 +217,5 @@ int Sqlitetest_autoext_Init(Tcl_Interp *interp){
 #endif
   Tcl_CreateObjCommand(interp, "sqlite3_reset_auto_extension",
           resetAutoExtObjCmd, 0, 0);
-  return TCL_OK;
+  врати TCL_OK;
 }

@@ -27,9 +27,9 @@
 ** of the number of times it has been invoked.
 */
 struct SuperlockBusy {
-  int (*xBusy)(void*,int);        /* Pointer to busy-handler function */
+  цео (*xBusy)(void*,цео);        /* Pointer to busy-handler function */
   void *pBusyArg;                 /* First arg to pass to xBusy */
-  int nBusy;                      /* Number of times xBusy has been invoked */
+  цео nBusy;                      /* Number of times xBusy has been invoked */
 };
 typedef struct SuperlockBusy SuperlockBusy;
 
@@ -40,7 +40,7 @@ typedef struct SuperlockBusy SuperlockBusy;
 */
 struct Superlock {
   sqlite3 *db;                    /* Database handle used to lock db */
-  int bWal;                       /* True if db is a WAL database */
+  цео bWal;                       /* True if db is a WAL database */
 };
 typedef struct Superlock Superlock;
 
@@ -49,10 +49,10 @@ typedef struct Superlock Superlock;
 ** SuperlockBusy structure. Invoke the busy-handler function encapsulated
 ** by the structure and return the result.
 */
-static int superlockBusyHandler(void *pCtx, int UNUSED){
+static цео superlockBusyHandler(void *pCtx, цео UNUSED){
   SuperlockBusy *pBusy = (SuperlockBusy *)pCtx;
-  if( pBusy->xBusy==0 ) return 0;
-  return pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
+  ако( pBusy->xBusy==0 ) врати 0;
+  врати pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
 }
 
 /*
@@ -64,22 +64,22 @@ static int superlockBusyHandler(void *pCtx, int UNUSED){
 ** If an error occurs, return an SQLite error code. The value of *pbWal
 ** is undefined in this case.
 */
-static int superlockIsWal(Superlock *pLock){
-  int rc;                         /* Return Code */
+static цео superlockIsWal(Superlock *pLock){
+  цео rc;                         /* Return Code */
   sqlite3_stmt *pStmt;            /* Compiled PRAGMA journal_mode statement */
 
   rc = sqlite3_prepare(pLock->db, "PRAGMA main.journal_mode", -1, &pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  ако( rc!=SQLITE_OK ) врати rc;
 
   pLock->bWal = 0;
-  if( SQLITE_ROW==sqlite3_step(pStmt) ){
+  ако( SQLITE_ROW==sqlite3_step(pStmt) ){
     const char *zMode = (const char *)sqlite3_column_text(pStmt, 0);
-    if( zMode && strlen(zMode)==3 && sqlite3_strnicmp("wal", zMode, 3)==0 ){
+    ако( zMode && strlen(zMode)==3 && sqlite3_strnicmp("wal", zMode, 3)==0 ){
       pLock->bWal = 1;
     }
   }
 
-  return sqlite3_finalize(pStmt);
+  врати sqlite3_finalize(pStmt);
 }
 
 /*
@@ -88,41 +88,41 @@ static int superlockIsWal(Superlock *pLock){
 ** the busy-handler until either it is obtained or the busy-handler
 ** callback returns 0.
 */
-static int superlockShmLock(
+static цео superlockShmLock(
   sqlite3_file *fd,               /* Database file handle */
-  int idx,                        /* Offset of shm-lock to obtain */
-  int nByte,                      /* Number of consective bytes to lock */
+  цео idx,                        /* Offset of shm-lock to obtain */
+  цео nByte,                      /* Number of consective bytes to lock */
   SuperlockBusy *pBusy            /* Busy-handler wrapper object */
 ){
-  int rc;
-  int (*xShmLock)(sqlite3_file*, int, int, int) = fd->pMethods->xShmLock;
+  цео rc;
+  цео (*xShmLock)(sqlite3_file*, цео, цео, цео) = fd->pMethods->xShmLock;
   do {
     rc = xShmLock(fd, idx, nByte, SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE);
-  }while( rc==SQLITE_BUSY && superlockBusyHandler((void *)pBusy, 0) );
-  return rc;
+  }док( rc==SQLITE_BUSY && superlockBusyHandler((void *)pBusy, 0) );
+  врати rc;
 }
 
 /*
 ** Obtain the extra locks on the database file required for WAL databases.
 ** Invoke the supplied busy-handler as required.
 */
-static int superlockWalLock(
+static цео superlockWalLock(
   sqlite3 *db,                    /* Database handle open on WAL database */
   SuperlockBusy *pBusy            /* Busy handler wrapper object */
 ){
-  int rc;                         /* Return code */
+  цео rc;                         /* Return code */
   sqlite3_file *fd = 0;           /* Main database file handle */
   void volatile *p = 0;           /* Pointer to first page of shared memory */
 
   /* Obtain a pointer to the sqlite3_file object open on the main db file. */
   rc = sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-  if( rc!=SQLITE_OK ) return rc;
+  ако( rc!=SQLITE_OK ) врати rc;
 
   /* Obtain the "recovery" lock. Normally, this lock is only obtained by
   ** clients running database recovery.  
   */
   rc = superlockShmLock(fd, 2, 1, pBusy);
-  if( rc!=SQLITE_OK ) return rc;
+  ако( rc!=SQLITE_OK ) врати rc;
 
   /* Zero the start of the first shared-memory page. This means that any
   ** clients that open read or write transactions from this point on will
@@ -132,7 +132,7 @@ static int superlockWalLock(
   ** same reason.
   */
   rc = fd->pMethods->xShmMap(fd, 0, 32*1024, 1, &p);
-  if( rc!=SQLITE_OK ) return rc;
+  ако( rc!=SQLITE_OK ) врати rc;
   memset((void *)p, 0, 32);
 
   /* Obtain exclusive locks on all the "read-lock" slots. Once these locks
@@ -140,7 +140,7 @@ static int superlockWalLock(
   ** checkpointer clients.
   */
   rc = superlockShmLock(fd, 3, SQLITE_SHM_NLOCK-3, pBusy);
-  return rc;
+  врати rc;
 }
 
 /*
@@ -150,12 +150,12 @@ static int superlockWalLock(
 */
 void sqlite3demo_superunlock(void *pLock){
   Superlock *p = (Superlock *)pLock;
-  if( p->bWal ){
-    int rc;                         /* Return code */
-    int flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
+  ако( p->bWal ){
+    цео rc;                         /* Return code */
+    цео flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
     sqlite3_file *fd = 0;
     rc = sqlite3_file_control(p->db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       fd->pMethods->xShmLock(fd, 2, 1, flags);
       fd->pMethods->xShmLock(fd, 3, SQLITE_SHM_NLOCK-3, flags);
     }
@@ -179,19 +179,19 @@ void sqlite3demo_superunlock(void *pLock){
 ** until either the lock can be obtained or the busy-handler function returns
 ** 0 (indicating "give up").
 */
-int sqlite3demo_superlock(
+цео sqlite3demo_superlock(
   const char *zPath,              /* Path to database file to lock */
   const char *zVfs,               /* VFS to use to access database file */
-  int (*xBusy)(void*,int),        /* Busy handler callback */
+  цео (*xBusy)(void*,цео),        /* Busy handler callback */
   void *pBusyArg,                 /* Context arg for busy handler */
   void **ppLock                   /* OUT: Context to pass to superunlock() */
 ){
   SuperlockBusy busy = {0, 0, 0}; /* Busy handler wrapper object */
-  int rc;                         /* Return code */
+  цео rc;                         /* Return code */
   Superlock *pLock;
 
   pLock = sqlite3_malloc(sizeof(Superlock));
-  if( !pLock ) return SQLITE_NOMEM;
+  ако( !pLock ) врати SQLITE_NOMEM;
   memset(pLock, 0, sizeof(Superlock));
 
   /* Open a database handle on the file to superlock. */
@@ -212,7 +212,7 @@ int sqlite3demo_superlock(
   ** this call to sqlite3demo_superlock(), including any made during the
   ** "BEGIN EXCLUSIVE".
   */
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     busy.xBusy = xBusy;
     busy.pBusyArg = pBusyArg;
     sqlite3_busy_handler(pLock->db, superlockBusyHandler, (void *)&busy);
@@ -228,23 +228,23 @@ int sqlite3demo_superlock(
   ** to drop the WAL read and write locks currently held. Otherwise, the
   ** new WAL locks may conflict with the old.
   */
-  if( rc==SQLITE_OK ){
-    if( SQLITE_OK==(rc = superlockIsWal(pLock)) && pLock->bWal ){
+  ако( rc==SQLITE_OK ){
+    ако( SQLITE_OK==(rc = superlockIsWal(pLock)) && pLock->bWal ){
       rc = sqlite3_exec(pLock->db, "COMMIT", 0, 0, 0);
-      if( rc==SQLITE_OK ){
+      ако( rc==SQLITE_OK ){
         rc = superlockWalLock(pLock->db, &busy);
       }
     }
   }
 
-  if( rc!=SQLITE_OK ){
+  ако( rc!=SQLITE_OK ){
     sqlite3demo_superunlock(pLock);
     *ppLock = 0;
-  }else{
+  }инако{
     *ppLock = pLock;
   }
 
-  return rc;
+  врати rc;
 }
 
 /*
@@ -268,24 +268,24 @@ static void SQLITE_TCLAPI superunlock_del(ClientData cd){
   sqlite3demo_superunlock((void *)cd);
 }
 
-static int SQLITE_TCLAPI superunlock_cmd(
+static цео SQLITE_TCLAPI superunlock_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=1 ){
+  ако( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    врати TCL_ERROR;
   }
   Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
-  return TCL_OK;
+  врати TCL_OK;
 }
 
-static int superlock_busy(void *pCtx, int nBusy){
+static цео superlock_busy(void *pCtx, цео nBusy){
   InterpAndScript *p = (InterpAndScript *)pCtx;
   Tcl_Obj *pEval;                 /* Script to evaluate */
-  int iVal = 0;                   /* Value to return */
+  цео iVal = 0;                   /* Value to return */
 
   pEval = Tcl_DuplicateObj(p->pScript);
   Tcl_IncrRefCount(pEval);
@@ -294,38 +294,38 @@ static int superlock_busy(void *pCtx, int nBusy){
   Tcl_GetIntFromObj(p->interp, Tcl_GetObjResult(p->interp), &iVal);
   Tcl_DecrRefCount(pEval);
 
-  return iVal;
+  врати iVal;
 }
 
 /*
 ** Tclcmd: sqlite3demo_superlock CMDNAME PATH VFS BUSY-HANDLER-SCRIPT
 */
-static int SQLITE_TCLAPI superlock_cmd(
+static цео SQLITE_TCLAPI superlock_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  цео objc,
   Tcl_Obj *CONST objv[]
 ){
   void *pLock;                    /* Lock context */
   char *zPath;
   char *zVfs = 0;
   InterpAndScript busy = {0, 0};
-  int (*xBusy)(void*,int) = 0;    /* Busy handler callback */
-  int rc;                         /* Return code from sqlite3demo_superlock() */
+  цео (*xBusy)(void*,цео) = 0;    /* Busy handler callback */
+  цео rc;                         /* Return code from sqlite3demo_superlock() */
 
-  if( objc<3 || objc>5 ){
+  ако( objc<3 || objc>5 ){
     Tcl_WrongNumArgs(
         interp, 1, objv, "CMDNAME PATH ?VFS? ?BUSY-HANDLER-SCRIPT?");
-    return TCL_ERROR;
+    врати TCL_ERROR;
   }
 
   zPath = Tcl_GetString(objv[2]);
 
-  if( objc>3 ){
+  ако( objc>3 ){
     zVfs = Tcl_GetString(objv[3]);
-    if( strlen(zVfs)==0 ) zVfs = 0;
+    ако( strlen(zVfs)==0 ) zVfs = 0;
   }
-  if( objc>4 ){
+  ако( objc>4 ){
     busy.interp = interp;
     busy.pScript = objv[4];
     xBusy = superlock_busy;
@@ -335,22 +335,22 @@ static int SQLITE_TCLAPI superlock_cmd(
   assert( rc==SQLITE_OK || pLock==0 );
   assert( rc!=SQLITE_OK || pLock!=0 );
 
-  if( rc!=SQLITE_OK ){
-    extern const char *sqlite3ErrStr(int);
+  ако( rc!=SQLITE_OK ){
+    extern const char *sqlite3ErrStr(цео);
     Tcl_ResetResult(interp);
     Tcl_AppendResult(interp, sqlite3ErrStr(rc), NULL);
-    return TCL_ERROR;
+    врати TCL_ERROR;
   }
 
   Tcl_CreateObjCommand(
       interp, Tcl_GetString(objv[1]), superunlock_cmd, pLock, superunlock_del
   );
   Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  врати TCL_OK;
 }
 
-int SqliteSuperlock_Init(Tcl_Interp *interp){
+цео SqliteSuperlock_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3demo_superlock", superlock_cmd, 0, 0);
-  return TCL_OK;
+  врати TCL_OK;
 }
 #endif

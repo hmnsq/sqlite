@@ -29,15 +29,15 @@
 ** are necessary under two conditions:  (1) Debug builds and (2) using
 ** home-grown mutexes.  Encapsulate these conditions into a single #define.
 */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
+#ако defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
 # define SQLITE_MUTEX_NREF 1
-#else
+#инако
 # define SQLITE_MUTEX_NREF 0
 #endif
 
-#if GCC_VERSION>0
+#ако GCC_VERSION>0
 # define ALIGN128 __attribute__((aligned(128)))
-#else
+#инако
 # define ALIGN128
 #endif
 
@@ -47,21 +47,21 @@
 */
 struct sqlite3_mutex {
   pthread_mutex_t mutex;     /* Mutex controlling the lock */
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
-  int id;                    /* Mutex type */
+#ако SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+  цео id;                    /* Mutex type */
 #endif
-#if SQLITE_MUTEX_NREF
-  volatile int nRef;         /* Number of entrances */
+#ако SQLITE_MUTEX_NREF
+  volatile цео nRef;         /* Number of entrances */
   volatile pthread_t owner;  /* Thread that is within this mutex */
-  int trace;                 /* True to trace changes */
+  цео trace;                 /* True to trace changes */
 #endif
 };
-#if SQLITE_MUTEX_NREF
+#ако SQLITE_MUTEX_NREF
 # define SQLITE3_MUTEX_INITIALIZER(id) \
      {PTHREAD_MUTEX_INITIALIZER,id,0,(pthread_t)0,0}
 #elif defined(SQLITE_ENABLE_API_ARMOR)
 # define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER, id }
-#else
+#инако
 #define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER }
 #endif
 
@@ -81,12 +81,12 @@ struct sqlite3_mutex {
 ** make sure no assert() statements are evaluated and hence these
 ** routines are never called.
 */
-#if !defined(NDEBUG) || defined(SQLITE_DEBUG)
-static int pthreadMutexHeld(sqlite3_mutex *p){
-  return (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
+#ако !defined(NDEBUG) || defined(SQLITE_DEBUG)
+static цео pthreadMutexHeld(sqlite3_mutex *p){
+  врати (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
 }
-static int pthreadMutexNotheld(sqlite3_mutex *p){
-  return p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
+static цео pthreadMutexNotheld(sqlite3_mutex *p){
+  врати p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
 }
 #endif
 
@@ -96,7 +96,7 @@ static int pthreadMutexNotheld(sqlite3_mutex *p){
 ** where SQLite is compiled without mutexes.
 */
 void sqlite3MemoryBarrier(void){
-#if defined(SQLITE_MEMORY_BARRIER)
+#ако defined(SQLITE_MEMORY_BARRIER)
   SQLITE_MEMORY_BARRIER;
 #elif defined(__GNUC__) && GCC_VERSION>=4001000
   __sync_synchronize();
@@ -106,8 +106,8 @@ void sqlite3MemoryBarrier(void){
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int pthreadMutexInit(void){ return SQLITE_OK; }
-static int pthreadMutexEnd(void){ return SQLITE_OK; }
+static цео pthreadMutexInit(void){ врати SQLITE_OK; }
+static цео pthreadMutexEnd(void){ врати SQLITE_OK; }
 
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
@@ -157,7 +157,7 @@ static int pthreadMutexEnd(void){ return SQLITE_OK; }
 ** mutex types, the same mutex is returned on every call that has
 ** the same type number.
 */
-static sqlite3_mutex *pthreadMutexAlloc(int iType){
+static sqlite3_mutex *pthreadMutexAlloc(цео iType){
   /* Static mutexes - those with IDs of 2 or more...
   **
   ** The ALIGN128 macro attempts to force 128-byte alignment on mutexes,
@@ -188,12 +188,12 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
   switch( iType ){
     case SQLITE_MUTEX_RECURSIVE: {
       p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+      ако( p ){
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
         /* If recursive mutexes are not available, we will have to
         ** build our own.  See below. */
         pthread_mutex_init(&p->mutex, 0);
-#else
+#инако
         /* Use a recursive mutex if it is available */
         pthread_mutexattr_t recursiveAttr;
         pthread_mutexattr_init(&recursiveAttr);
@@ -201,7 +201,7 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
         pthread_mutex_init(&p->mutex, &recursiveAttr);
         pthread_mutexattr_destroy(&recursiveAttr);
 #endif
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#ако SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_RECURSIVE;
 #endif
       }
@@ -209,9 +209,9 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
     }
     case SQLITE_MUTEX_FAST: {
       p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+      ако( p ){
         pthread_mutex_init(&p->mutex, 0);
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#ако SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_FAST;
 #endif
       }
@@ -219,19 +219,19 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
     }
     default: {
 #ifdef SQLITE_ENABLE_API_ARMOR
-      if( iType-2<0 || iType-2>=ArraySize(aMutex) ){
+      ако( iType-2<0 || iType-2>=ArraySize(aMutex) ){
         (void)SQLITE_MISUSE_BKPT;
-        return 0;
+        врати 0;
       }
 #endif
       p = &aMutex[iType-2].m;
       break;
     }
   }
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#ако SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
   assert( p==0 || p->id==iType );
 #endif
-  return p;
+  врати p;
 }
 
 
@@ -243,14 +243,14 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
 static void pthreadMutexFree(sqlite3_mutex *p){
   assert( p->nRef==0 );
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
+  ако( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
 #endif
   {
     pthread_mutex_destroy(&p->mutex);
     sqlite3_free(p);
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  else{
+  инако{
     (void)SQLITE_MISUSE_BKPT;
   }
 #endif
@@ -283,20 +283,20 @@ static void pthreadMutexEnter(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    ако( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
-    }else{
+    }инако{
       pthread_mutex_lock(&p->mutex);
       assert( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
     }
   }
-#else
+#инако
   /* Use the built-in recursive mutexes if they are available.
   */
   pthread_mutex_lock(&p->mutex);
-#if SQLITE_MUTEX_NREF
+#ако SQLITE_MUTEX_NREF
   assert( p->nRef>0 || p->owner==0 );
   p->owner = pthread_self();
   p->nRef++;
@@ -304,13 +304,13 @@ static void pthreadMutexEnter(sqlite3_mutex *p){
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  ако( p->trace ){
     printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
 }
-static int pthreadMutexTry(sqlite3_mutex *p){
-  int rc;
+static цео pthreadMutexTry(sqlite3_mutex *p){
+  цео rc;
   assert( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
 
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
@@ -326,38 +326,38 @@ static int pthreadMutexTry(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    ако( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
       rc = SQLITE_OK;
-    }else if( pthread_mutex_trylock(&p->mutex)==0 ){
+    }инако ако( pthread_mutex_trylock(&p->mutex)==0 ){
       assert( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
       rc = SQLITE_OK;
-    }else{
+    }инако{
       rc = SQLITE_BUSY;
     }
   }
-#else
+#инако
   /* Use the built-in recursive mutexes if they are available.
   */
-  if( pthread_mutex_trylock(&p->mutex)==0 ){
-#if SQLITE_MUTEX_NREF
+  ако( pthread_mutex_trylock(&p->mutex)==0 ){
+#ако SQLITE_MUTEX_NREF
     p->owner = pthread_self();
     p->nRef++;
 #endif
     rc = SQLITE_OK;
-  }else{
+  }инако{
     rc = SQLITE_BUSY;
   }
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( rc==SQLITE_OK && p->trace ){
+  ако( rc==SQLITE_OK && p->trace ){
     printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
-  return rc;
+  врати rc;
 }
 
 /*
@@ -368,22 +368,22 @@ static int pthreadMutexTry(sqlite3_mutex *p){
 */
 static void pthreadMutexLeave(sqlite3_mutex *p){
   assert( pthreadMutexHeld(p) );
-#if SQLITE_MUTEX_NREF
+#ако SQLITE_MUTEX_NREF
   p->nRef--;
-  if( p->nRef==0 ) p->owner = 0;
+  ако( p->nRef==0 ) p->owner = 0;
 #endif
   assert( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
 
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
-  if( p->nRef==0 ){
+  ако( p->nRef==0 ){
     pthread_mutex_unlock(&p->mutex);
   }
-#else
+#инако
   pthread_mutex_unlock(&p->mutex);
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  ако( p->trace ){
     printf("leave mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
@@ -401,13 +401,13 @@ sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
 #ifdef SQLITE_DEBUG
     pthreadMutexHeld,
     pthreadMutexNotheld
-#else
+#инако
     0,
     0
 #endif
   };
 
-  return &sMutex;
+  врати &sMutex;
 }
 
 #endif /* SQLITE_MUTEX_PTHREADS */
