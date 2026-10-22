@@ -17,7 +17,7 @@
 #ifndef SQLITE_WAL_H
 #define SQLITE_WAL_H
 
-#include "sqliteInt.h"
+#অন্তর্ভাব "sqliteInt.h"
 
 /* Macros for extracting appropriate sync flags for either transaction
 ** commits (WAL_SYNC_FLAGS(X)) or for checkpoint ops (CKPT_SYNC_FLAGS(X)):
@@ -46,21 +46,21 @@
 # define sqlite3WalFindFrame(x,y,z)              0
 # define sqlite3WalFile(x)                       0
 # undef SQLITE_USE_SEH
-#else
+#অন্যথা
 
 #define WAL_SAVEPOINT_NDATA 4
 
 /* Connection to a write-ahead log (WAL) file. 
 ** There is one object of this type for each pager. 
 */
-typedef struct Wal Wal;
+প্রকারলেখ কাঠামো Wal Wal;
 
 /* Open and close a connection to a write-ahead log. */
-int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, int, i64, Wal**);
-int sqlite3WalClose(Wal *pWal, sqlite3*, int sync_flags, int, u8 *);
+পূর্ণসংখ্যা sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, ধ্রুবক অক্ষর *, পূর্ণসংখ্যা, i64, Wal**);
+পূর্ণসংখ্যা sqlite3WalClose(Wal *pWal, sqlite3*, পূর্ণসংখ্যা sync_flags, পূর্ণসংখ্যা, u8 *);
 
 /* Set the limiting size of a WAL file. */
-void sqlite3WalLimit(Wal*, i64);
+শূন্য sqlite3WalLimit(Wal*, i64);
 
 /* Used by readers to open (lock) and close (unlock) a snapshot.  A 
 ** snapshot is like a read-transaction.  It is the state of the database
@@ -69,46 +69,46 @@ void sqlite3WalLimit(Wal*, i64);
 ** write to or checkpoint the WAL.  sqlite3WalCloseSnapshot() closes the
 ** transaction and releases the lock.
 */
-int sqlite3WalBeginReadTransaction(Wal *pWal, int *);
-void sqlite3WalEndReadTransaction(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalBeginReadTransaction(Wal *pWal, পূর্ণসংখ্যা *);
+শূন্য sqlite3WalEndReadTransaction(Wal *pWal);
 
 /* Read a page from the write-ahead log, if it is present. */
-int sqlite3WalFindFrame(Wal *, Pgno, u32 *);
-int sqlite3WalReadFrame(Wal *, u32, int, u8 *);
+পূর্ণসংখ্যা sqlite3WalFindFrame(Wal *, Pgno, u32 *);
+পূর্ণসংখ্যা sqlite3WalReadFrame(Wal *, u32, পূর্ণসংখ্যা, u8 *);
 
 /* If the WAL is not empty, return the size of the database. */
 Pgno sqlite3WalDbsize(Wal *pWal);
 
 /* Obtain or release the WRITER lock. */
-int sqlite3WalBeginWriteTransaction(Wal *pWal);
-int sqlite3WalEndWriteTransaction(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalBeginWriteTransaction(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalEndWriteTransaction(Wal *pWal);
 
 /* Undo any frames written (but not committed) to the log */
-int sqlite3WalUndo(Wal *pWal, int (*xUndo)(void *, Pgno), void *pUndoCtx);
+পূর্ণসংখ্যা sqlite3WalUndo(Wal *pWal, পূর্ণসংখ্যা (*xUndo)(শূন্য *, Pgno), শূন্য *pUndoCtx);
 
 /* Return an integer that records the current (uncommitted) write
 ** position in the WAL */
-void sqlite3WalSavepoint(Wal *pWal, u32 *aWalData);
+শূন্য sqlite3WalSavepoint(Wal *pWal, u32 *a_Wal_তথ্য);
 
 /* Move the write position of the WAL back to iFrame.  Called in
 ** response to a ROLLBACK TO command. */
-int sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
+পূর্ণসংখ্যা sqlite3WalSavepointUndo(Wal *pWal, u32 *a_Wal_তথ্য);
 
 /* Write a frame or frames to the log. */
-int sqlite3WalFrames(Wal *pWal, int, PgHdr *, Pgno, int, int);
+পূর্ণসংখ্যা sqlite3WalFrames(Wal *pWal, পূর্ণসংখ্যা, PgHdr *, Pgno, পূর্ণসংখ্যা, পূর্ণসংখ্যা);
 
 /* Copy pages from the log to the database file */ 
-int sqlite3WalCheckpoint(
+পূর্ণসংখ্যা sqlite3WalCheckpoint(
   Wal *pWal,                      /* Write-ahead log connection */
   sqlite3 *db,                    /* Check this handle's interrupt flag */
-  int eMode,                      /* One of PASSIVE, FULL and RESTART */
-  int (*xBusy)(void*),            /* Function to call when busy */
-  void *pBusyArg,                 /* Context argument for xBusyHandler */
-  int sync_flags,                 /* Flags to sync db file with (or 0) */
-  int nBuf,                       /* Size of buffer nBuf */
+  পূর্ণসংখ্যা eMode,                      /* One of PASSIVE, FULL and RESTART */
+  পূর্ণসংখ্যা (*xBusy)(শূন্য*),            /* Function to call when busy */
+  শূন্য *pBusyArg,                 /* Context argument for xBusyHandler */
+  পূর্ণসংখ্যা sync_flags,                 /* Flags to sync db file with (or 0) */
+  পূর্ণসংখ্যা nBuf,                       /* Size of buffer nBuf */
   u8 *zBuf,                       /* Temporary buffer to use */
-  int *pnLog,                     /* OUT: Number of frames in WAL */
-  int *pnCkpt                     /* OUT: Number of backfilled frames in WAL */
+  পূর্ণসংখ্যা *pnLog,                     /* OUT: Number of frames in WAL */
+  পূর্ণসংখ্যা *pnCkpt                     /* OUT: Number of backfilled frames in WAL */
 );
 
 /* Return the value to pass to a sqlite3_wal_hook callback, the
@@ -116,48 +116,48 @@ int sqlite3WalCheckpoint(
 ** sqlite3WalCallback() was called.  If no commits have occurred since
 ** the last call, then return 0.
 */
-int sqlite3WalCallback(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalCallback(Wal *pWal);
 
 /* Tell the wal layer that an EXCLUSIVE lock has been obtained (or released)
 ** by the pager layer on the database file.
 */
-int sqlite3WalExclusiveMode(Wal *pWal, int op);
+পূর্ণসংখ্যা sqlite3WalExclusiveMode(Wal *pWal, পূর্ণসংখ্যা op);
 
 /* Return true if the argument is non-NULL and the WAL module is using
 ** heap-memory for the wal-index. Otherwise, if the argument is NULL or the
 ** WAL module is using shared-memory, return false. 
 */
-int sqlite3WalHeapMemory(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalHeapMemory(Wal *pWal);
 
 #ifdef SQLITE_ENABLE_SNAPSHOT
-int sqlite3WalSnapshotGet(Wal *pWal, sqlite3_snapshot **ppSnapshot);
-void sqlite3WalSnapshotOpen(Wal *pWal, sqlite3_snapshot *pSnapshot);
-int sqlite3WalSnapshotRecover(Wal *pWal);
-int sqlite3WalSnapshotCheck(Wal *pWal, sqlite3_snapshot *pSnapshot);
-void sqlite3WalSnapshotUnlock(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalSnapshotGet(Wal *pWal, sqlite3_snapshot **ppSnapshot);
+শূন্য sqlite3WalSnapshotOpen(Wal *pWal, sqlite3_snapshot *pSnapshot);
+পূর্ণসংখ্যা sqlite3WalSnapshotRecover(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalSnapshotCheck(Wal *pWal, sqlite3_snapshot *pSnapshot);
+শূন্য sqlite3WalSnapshotUnlock(Wal *pWal);
 #endif
 
 #ifdef SQLITE_ENABLE_ZIPVFS
 /* If the WAL file is not empty, return the number of bytes of content
 ** stored in each frame (i.e. the db page-size when the WAL was created).
 */
-int sqlite3WalFramesize(Wal *pWal);
+পূর্ণসংখ্যা sqlite3WalFramesize(Wal *pWal);
 #endif
 
 /* Return the sqlite3_file object for the WAL file */
 sqlite3_file *sqlite3WalFile(Wal *pWal);
 
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-int sqlite3WalWriteLock(Wal *pWal, int bLock);
-void sqlite3WalDb(Wal *pWal, sqlite3 *db);
+পূর্ণসংখ্যা sqlite3WalWriteLock(Wal *pWal, পূর্ণসংখ্যা bLock);
+শূন্য sqlite3WalDb(Wal *pWal, sqlite3 *db);
 #endif
 
 #ifdef SQLITE_USE_SEH
-int sqlite3WalSystemErrno(Wal*);
+পূর্ণসংখ্যা sqlite3WalSystemErrno(Wal*);
 #endif
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
-  void sqlite3WalStat(Wal*,sqlite3_str*);
+#যদি defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+  শূন্য sqlite3WalStat(Wal*,sqlite3_str*);
 #endif
 
 #endif /* ifndef SQLITE_OMIT_WAL */

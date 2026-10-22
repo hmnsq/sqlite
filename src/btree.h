@@ -36,19 +36,19 @@
 /*
 ** Forward declarations of structure
 */
-typedef struct Btree Btree;
-typedef struct BtCursor BtCursor;
-typedef struct BtShared BtShared;
-typedef struct BtreePayload BtreePayload;
+প্রকারলেখ কাঠামো Btree Btree;
+প্রকারলেখ কাঠামো BtCursor BtCursor;
+প্রকারলেখ কাঠামো BtShared BtShared;
+প্রকারলেখ কাঠামো BtreePayload BtreePayload;
 
 
-int sqlite3BtreeOpen(
+পূর্ণসংখ্যা sqlite3BtreeOpen(
   sqlite3_vfs *pVfs,       /* VFS to use with this b-tree */
-  const char *zFilename,   /* Name of database file to open */
+  ধ্রুবক অক্ষর *zFilename,   /* Name of database file to open */
   sqlite3 *db,             /* Associated database connection */
   Btree **ppBtree,         /* Return open Btree* here */
-  int flags,               /* Flags */
-  int vfsFlags             /* Flags passed through to VFS open */
+  পূর্ণসংখ্যা flags,               /* Flags */
+  পূর্ণসংখ্যা vfsFlags             /* Flags passed through to VFS open */
 );
 
 /* The flags parameter to sqlite3BtreeOpen can be the bitwise or of the
@@ -62,52 +62,52 @@ int sqlite3BtreeOpen(
 #define BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
 #define BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
 
-int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetCacheSize(Btree*,int);
-int sqlite3BtreeSetSpillSize(Btree*,int);
-#if SQLITE_MAX_MMAP_SIZE>0
-  int sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
+পূর্ণসংখ্যা sqlite3BtreeClose(Btree*);
+পূর্ণসংখ্যা sqlite3_Btree_Set_Cache_আকার(Btree*,পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3_Btree_Set_Spill_আকার(Btree*,পূর্ণসংখ্যা);
+#যদি SQLITE_MAX_MMAP_আকার>0
+  পূর্ণসংখ্যা sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
 #endif
-int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
-int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
-int sqlite3BtreeGetPageSize(Btree*);
-Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
+পূর্ণসংখ্যা sqlite3BtreeSetPagerFlags(Btree*,unsigned);
+পূর্ণসংখ্যা sqlite3_Btree_Set_Page_আকার(Btree *p, পূর্ণসংখ্যা nPagesize, পূর্ণসংখ্যা nReserve, পূর্ণসংখ্যা eFix);
+পূর্ণসংখ্যা sqlite3_Btree_Get_Page_আকার(Btree*);
+Pgno sqlite3_Btree_Max_Page_গুনতি(Btree*,Pgno);
 Pgno sqlite3BtreeLastPage(Btree*);
-int sqlite3BtreeSecureDelete(Btree*,int);
-int sqlite3BtreeGetRequestedReserve(Btree*);
-int sqlite3BtreeGetReserveNoMutex(Btree *p);
-int sqlite3BtreeSetAutoVacuum(Btree *, int);
-int sqlite3BtreeGetAutoVacuum(Btree *);
-int sqlite3BtreeBeginTrans(Btree*,int,int*);
-int sqlite3BtreeCommitPhaseOne(Btree*, const char*);
-int sqlite3BtreeCommitPhaseTwo(Btree*, int);
-int sqlite3BtreeCommit(Btree*);
-int sqlite3BtreeRollback(Btree*,int,int);
-int sqlite3BtreeBeginStmt(Btree*,int);
-int sqlite3BtreeCreateTable(Btree*, Pgno*, int flags);
-int sqlite3BtreeTxnState(Btree*);
-int sqlite3BtreeIsInBackup(Btree*);
+পূর্ণসংখ্যা sqlite3BtreeSecureDelete(Btree*,পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3BtreeGetRequestedReserve(Btree*);
+পূর্ণসংখ্যা sqlite3BtreeGetReserveNoMutex(Btree *p);
+পূর্ণসংখ্যা sqlite3BtreeSetAutoVacuum(Btree *, পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3BtreeGetAutoVacuum(Btree *);
+পূর্ণসংখ্যা sqlite3BtreeBeginTrans(Btree*,পূর্ণসংখ্যা,পূর্ণসংখ্যা*);
+পূর্ণসংখ্যা sqlite3BtreeCommitPhaseOne(Btree*, ধ্রুবক অক্ষর*);
+পূর্ণসংখ্যা sqlite3BtreeCommitPhaseTwo(Btree*, পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3BtreeCommit(Btree*);
+পূর্ণসংখ্যা sqlite3BtreeRollback(Btree*,পূর্ণসংখ্যা,পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3BtreeBeginStmt(Btree*,পূর্ণসংখ্যা);
+পূর্ণসংখ্যা sqlite3BtreeCreateTable(Btree*, Pgno*, পূর্ণসংখ্যা flags);
+পূর্ণসংখ্যা sqlite3BtreeTxnState(Btree*);
+পূর্ণসংখ্যা sqlite3BtreeIsInBackup(Btree*);
 
-void *sqlite3BtreeSchema(Btree *, int, void(*)(void *));
-int sqlite3BtreeSchemaLocked(Btree *pBtree);
+শূন্য *sqlite3BtreeSchema(Btree *, পূর্ণসংখ্যা, শূন্য(*)(শূন্য *));
+পূর্ণসংখ্যা sqlite3BtreeSchemaLocked(Btree *pBtree);
 #ifndef SQLITE_OMIT_SHARED_CACHE
-int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);
+পূর্ণসংখ্যা sqlite3BtreeLockTable(Btree *pBtree, পূর্ণসংখ্যা iTab, u8 isWriteLock);
 #endif
 
 /* Savepoints are named, nestable SQL transactions mostly implemented */ 
 /* in vdbe.c and pager.c See https://sqlite.org/lang_savepoint.html */
-int sqlite3BtreeSavepoint(Btree *, int, int);
+পূর্ণসংখ্যা sqlite3BtreeSavepoint(Btree *, পূর্ণসংখ্যা, পূর্ণসংখ্যা);
 
 /* "Checkpoint" only refers to WAL. See https://sqlite.org/wal.html#ckpt */
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);  
+  পূর্ণসংখ্যা sqlite3BtreeCheckpoint(Btree*, পূর্ণসংখ্যা, পূর্ণসংখ্যা *, পূর্ণসংখ্যা *);  
 #endif
 
-const char *sqlite3BtreeGetFilename(Btree *);
-const char *sqlite3BtreeGetJournalname(Btree *);
-int sqlite3BtreeCopyFile(Btree*, Btree*);
+ধ্রুবক অক্ষর *sqlite3BtreeGetFilename(Btree *);
+ধ্রুবক অক্ষর *sqlite3BtreeGetJournalname(Btree *);
+পূর্ণসংখ্যা sqlite3BtreeCopyFile(Btree*, Btree*);
 
-int sqlite3BtreeIncrVacuum(Btree *);
+পূর্ণসংখ্যা sqlite3BtreeIncrVacuum(Btree *);
 
 /* The flags parameter to sqlite3BtreeCreateTable can be the bitwise OR
 ** of the flags shown below.
@@ -122,15 +122,15 @@ int sqlite3BtreeIncrVacuum(Btree *);
 #define BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
 #define BTREE_BLOBKEY    2    /* Table has keys only - no data */
 
-int sqlite3BtreeDropTable(Btree*, int, int*);
-int sqlite3BtreeClearTable(Btree*, int, i64*);
-int sqlite3BtreeClearTableOfCursor(BtCursor*);
-int sqlite3BtreeTripAllCursors(Btree*, int, int);
+পূর্ণসংখ্যা sqlite3BtreeDropTable(Btree*, পূর্ণসংখ্যা, পূর্ণসংখ্যা*);
+পূর্ণসংখ্যা sqlite3BtreeClearTable(Btree*, পূর্ণসংখ্যা, i64*);
+পূর্ণসংখ্যা sqlite3BtreeClearTableOfCursor(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeTripAllCursors(Btree*, পূর্ণসংখ্যা, পূর্ণসংখ্যা);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+শূন্য sqlite3BtreeGetMeta(Btree *pBtree, পূর্ণসংখ্যা idx, u32 *p_মান);
+পূর্ণসংখ্যা sqlite3BtreeUpdateMeta(Btree*, পূর্ণসংখ্যা idx, u32 মান);
 
-int sqlite3BtreeNewDb(Btree *p);
+পূর্ণসংখ্যা sqlite3BtreeNewDb(Btree *p);
 
 /*
 ** The second parameter to sqlite3BtreeGetMeta or sqlite3BtreeUpdateMeta
@@ -149,16 +149,16 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the header value access routines since its access pattern is the same.
 ** Call it a "virtual meta value".
 */
-#define BTREE_FREE_PAGE_COUNT     0
+#define BTREE_FREE_PAGE_গুনতি     0
 #define BTREE_SCHEMA_VERSION      1
 #define BTREE_FILE_FORMAT         2
-#define BTREE_DEFAULT_CACHE_SIZE  3
-#define BTREE_LARGEST_ROOT_PAGE   4
+#define BTREE_DEFAULT_CACHE_আকার  3
+#define BTREE_LARGEST_মূল_PAGE   4
 #define BTREE_TEXT_ENCODING       5
 #define BTREE_USER_VERSION        6
 #define BTREE_INCR_VACUUM         7
 #define BTREE_APPLICATION_ID      8
-#define BTREE_DATA_VERSION        15  /* A virtual meta-value */
+#define BTREE_তথ্য_VERSION        15  /* A virtual meta-value */
 
 /*
 ** Kinds of hints that can be passed into the sqlite3BtreeCursorHint()
@@ -238,42 +238,42 @@ int sqlite3BtreeNewDb(Btree *p);
 #define BTREE_WRCSR     0x00000004     /* read-write cursor */
 #define BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
 
-int sqlite3BtreeCursor(
+পূর্ণসংখ্যা sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
   Pgno iTable,                         /* Index of root page */
-  int wrFlag,                          /* 1 for writing.  0 for read-only */
-  struct KeyInfo*,                     /* First argument to compare function */
+  পূর্ণসংখ্যা wrFlag,                          /* 1 for writing.  0 for read-only */
+  কাঠামো চাবি_Info*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
-BtCursor *sqlite3BtreeFakeValidCursor(void);
-int sqlite3BtreeCursorSize(void);
+BtCursor *sqlite3BtreeFakeValidCursor(শূন্য);
+পূর্ণসংখ্যা sqlite3_Btree_Cursor_আকার(শূন্য);
 #ifdef SQLITE_DEBUG
-int sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
 #endif
-void sqlite3BtreeCursorZero(BtCursor*);
-void sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
+শূন্য sqlite3BtreeCursorZero(BtCursor*);
+শূন্য sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
 #ifdef SQLITE_ENABLE_CURSOR_HINTS
-void sqlite3BtreeCursorHint(BtCursor*, int, ...);
+শূন্য sqlite3BtreeCursorHint(BtCursor*, পূর্ণসংখ্যা, ...);
  #ifdef SQLITE_DEBUG
  BtCursor *sqlite3BtreeCursorHintTblCsr(BtCursor*);
  #endif
 #endif
 
-int sqlite3BtreeCloseCursor(BtCursor*);
-int sqlite3BtreeTableMoveto(
+পূর্ণসংখ্যা sqlite3BtreeCloseCursor(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeTableMoveto(
   BtCursor*,
-  i64 intKey,
-  int bias,
-  int *pRes
+  i64 int_চাবি,
+  পূর্ণসংখ্যা bias,
+  পূর্ণসংখ্যা *pRes
 );
-int sqlite3BtreeIndexMoveto(
+পূর্ণসংখ্যা sqlite3_Btree_সূচক_Moveto(
   BtCursor*,
-  UnpackedRecord *pUnKey,
-  int *pRes
+  UnpackedRecord *p_Un_চাবি,
+  পূর্ণসংখ্যা *pRes
 );
-int sqlite3BtreeCursorHasMoved(BtCursor*);
-int sqlite3BtreeCursorRestore(BtCursor*, int*);
-int sqlite3BtreeDelete(BtCursor*, u8 flags);
+পূর্ণসংখ্যা sqlite3BtreeCursorHasMoved(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeCursorRestore(BtCursor*, পূর্ণসংখ্যা*);
+পূর্ণসংখ্যা sqlite3BtreeDelete(BtCursor*, u8 flags);
 
 /* Allowed flags for sqlite3BtreeDelete() and sqlite3BtreeInsert() */
 #define BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
@@ -314,82 +314,82 @@ int sqlite3BtreeDelete(BtCursor*, u8 flags);
 ** organized and understandable, and it also helps the resulting code to
 ** run a little faster by using fewer registers for parameter passing.
 */
-struct BtreePayload {
-  const void *pKey;       /* Key content for indexes.  NULL for tables */
-  sqlite3_int64 nKey;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
-  const void *pData;      /* Data for tables. */
-  sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
+কাঠামো BtreePayload {
+  ধ্রুবক শূন্য *p_চাবি;       /* Key content for indexes.  NULL for tables */
+  sqlite3_int64 n_চাবি;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
+  ধ্রুবক শূন্য *p_তথ্য;      /* Data for tables. */
+  sqlite3_মান *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
-  int nData;              /* Size of pData.  0 if none. */
-  int nZero;              /* Extra zero data appended after pData,nData */
+  পূর্ণসংখ্যা n_তথ্য;              /* Size of pData.  0 if none. */
+  পূর্ণসংখ্যা nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
-                       int flags, int seekResult);
-int sqlite3BtreeFirst(BtCursor*, int *pRes);
-int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
-int sqlite3BtreeLast(BtCursor*, int *pRes);
-int sqlite3BtreeNext(BtCursor*, int flags);
-int sqlite3BtreeEof(BtCursor*);
-int sqlite3BtreePrevious(BtCursor*, int flags);
-i64 sqlite3BtreeIntegerKey(BtCursor*);
-void sqlite3BtreeCursorPin(BtCursor*);
-void sqlite3BtreeCursorUnpin(BtCursor*);
+পূর্ণসংখ্যা sqlite3_Btree_ঢোকাও(BtCursor*, ধ্রুবক BtreePayload *pPayload,
+                       পূর্ণসংখ্যা flags, পূর্ণসংখ্যা seek_ফলাফল);
+পূর্ণসংখ্যা sqlite3BtreeFirst(BtCursor*, পূর্ণসংখ্যা *pRes);
+পূর্ণসংখ্যা sqlite3BtreeIsEmpty(BtCursor *pCur, পূর্ণসংখ্যা *pRes);
+পূর্ণসংখ্যা sqlite3BtreeLast(BtCursor*, পূর্ণসংখ্যা *pRes);
+পূর্ণসংখ্যা sqlite3_Btree_পরবর্তী(BtCursor*, পূর্ণসংখ্যা flags);
+পূর্ণসংখ্যা sqlite3BtreeEof(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreePrevious(BtCursor*, পূর্ণসংখ্যা flags);
+i64 sqlite3_Btree_Integer_চাবি(BtCursor*);
+শূন্য sqlite3BtreeCursorPin(BtCursor*);
+শূন্য sqlite3BtreeCursorUnpin(BtCursor*);
 i64 sqlite3BtreeOffset(BtCursor*);
-int sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
-const void *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
-u32 sqlite3BtreePayloadSize(BtCursor*);
-sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, শূন্য*);
+ধ্রুবক শূন্য *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
+u32 sqlite3_Btree_Payload_আকার(BtCursor*);
+sqlite3_int64 sqlite3_Btree_Max_Record_আকার(BtCursor*);
 
-int sqlite3BtreeIntegrityCheck(
+পূর্ণসংখ্যা sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
-  Pgno *aRoot,  /* An array of root pages numbers for individual trees */
-  sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
-  int mxErr,    /* Stop reporting errors after this many */
-  int *pnErr,   /* OUT: Write number of errors seen to this variable */
-  char **pzOut  /* OUT: Write the error message string here */
+  Pgno *a_মূল,  /* An array of root pages numbers for individual trees */
+  sqlite3_মান *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
+  পূর্ণসংখ্যা n_মূল,    /* Number of entries in aRoot[] */
+  পূর্ণসংখ্যা mxErr,    /* Stop reporting errors after this many */
+  পূর্ণসংখ্যা *pnErr,   /* OUT: Write number of errors seen to this variable */
+  অক্ষর **pzOut  /* OUT: Write the error message string here */
 );
-struct Pager *sqlite3BtreePager(Btree*);
-i64 sqlite3BtreeRowCountEst(BtCursor*);
+কাঠামো Pager *sqlite3BtreePager(Btree*);
+i64 sqlite3_Btree_Row_গুনতি_Est(BtCursor*);
 
 #ifndef SQLITE_OMIT_INCRBLOB
-int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
-int sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
-void sqlite3BtreeIncrblobCursor(BtCursor *);
+পূর্ণসংখ্যা sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, শূন্য*);
+পূর্ণসংখ্যা sqlite3_Btree_Put_তথ্য(BtCursor*, u32 offset, u32 amt, শূন্য*);
+শূন্য sqlite3BtreeIncrblobCursor(BtCursor *);
 #endif
-void sqlite3BtreeClearCursor(BtCursor *);
-int sqlite3BtreeSetVersion(Btree *pBt, int iVersion);
-int sqlite3BtreeCursorHasHint(BtCursor*, unsigned int mask);
-int sqlite3BtreeIsReadonly(Btree *pBt);
-int sqlite3HeaderSizeBtree(void);
+শূন্য sqlite3BtreeClearCursor(BtCursor *);
+পূর্ণসংখ্যা sqlite3BtreeSetVersion(Btree *pBt, পূর্ণসংখ্যা iVersion);
+পূর্ণসংখ্যা sqlite3BtreeCursorHasHint(BtCursor*, unsigned পূর্ণসংখ্যা mask);
+পূর্ণসংখ্যা sqlite3BtreeIsReadonly(Btree *pBt);
+পূর্ণসংখ্যা sqlite3_Header_আকার_Btree(শূন্য);
 
 #ifdef SQLITE_DEBUG
-sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
-#else
-# define sqlite3BtreeSeekCount(X) 0
+sqlite3_uint64 sqlite3_Btree_Seek_গুনতি(Btree*);
+#অন্যথা
+# define sqlite3_Btree_Seek_গুনতি(X) 0
 #endif
 
 #ifndef NDEBUG
-int sqlite3BtreeCursorIsValid(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeCursorIsValid(BtCursor*);
 #endif
-int sqlite3BtreeCursorIsValidNN(BtCursor*);
+পূর্ণসংখ্যা sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+পূর্ণসংখ্যা sqlite3_Btree_গুনতি(sqlite3*, BtCursor*, i64*);
 
 #ifdef SQLITE_TEST
-int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
-void sqlite3BtreeCursorList(Btree*);
+পূর্ণসংখ্যা sqlite3BtreeCursorInfo(BtCursor*, পূর্ণসংখ্যা*, পূর্ণসংখ্যা);
+শূন্য sqlite3BtreeCursorList(Btree*);
 #endif
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);
+  পূর্ণসংখ্যা sqlite3BtreeCheckpoint(Btree*, পূর্ণসংখ্যা, পূর্ণসংখ্যা *, পূর্ণসংখ্যা *);
 #endif
 
-int sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
+পূর্ণসংখ্যা sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
 
-void sqlite3BtreeClearCache(Btree*);
+শূন্য sqlite3BtreeClearCache(Btree*);
 
 /*
 ** If we are not using shared cache, then there is no need to
@@ -397,30 +397,30 @@ void sqlite3BtreeClearCache(Btree*);
 ** Enter and Leave procedures no-ops.
 */
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3BtreeEnter(Btree*);
-  void sqlite3BtreeEnterAll(sqlite3*);
-  int sqlite3BtreeSharable(Btree*);
-  void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
-#else
+  শূন্য sqlite3BtreeEnter(Btree*);
+  শূন্য sqlite3BtreeEnterAll(sqlite3*);
+  পূর্ণসংখ্যা sqlite3BtreeSharable(Btree*);
+  শূন্য sqlite3BtreeEnterCursor(BtCursor*);
+  পূর্ণসংখ্যা sqlite3_Btree_Connection_গুনতি(Btree*);
+#অন্যথা
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
 # define sqlite3BtreeEnterCursor(X)
-# define sqlite3BtreeConnectionCount(X) 1
+# define sqlite3_Btree_Connection_গুনতি(X) 1
 #endif
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
-  void sqlite3BtreeLeave(Btree*);
-  void sqlite3BtreeLeaveCursor(BtCursor*);
-  void sqlite3BtreeLeaveAll(sqlite3*);
+#যদি !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
+  শূন্য sqlite3BtreeLeave(Btree*);
+  শূন্য sqlite3BtreeLeaveCursor(BtCursor*);
+  শূন্য sqlite3BtreeLeaveAll(sqlite3*);
 #ifndef NDEBUG
   /* These routines are used inside assert() statements only. */
-  int sqlite3BtreeHoldsMutex(Btree*);
-  int sqlite3BtreeHoldsAllMutexes(sqlite3*);
-  int sqlite3SchemaMutexHeld(sqlite3*,int,Schema*);
+  পূর্ণসংখ্যা sqlite3BtreeHoldsMutex(Btree*);
+  পূর্ণসংখ্যা sqlite3BtreeHoldsAllMutexes(sqlite3*);
+  পূর্ণসংখ্যা sqlite3SchemaMutexHeld(sqlite3*,পূর্ণসংখ্যা,Schema*);
 #endif
-#else
+#অন্যথা
 
 # define sqlite3BtreeLeave(X)
 # define sqlite3BtreeLeaveCursor(X)

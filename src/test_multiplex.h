@@ -43,11 +43,11 @@
 **   allowed to be used for a multiplex file set.
 */
 #define MULTIPLEX_CTRL_ENABLE          214014
-#define MULTIPLEX_CTRL_SET_CHUNK_SIZE  214015
+#define MULTIPLEX_CTRL_SET_CHUNK_আকার  214015
 #define MULTIPLEX_CTRL_SET_MAX_CHUNKS  214016
 
 #ifdef __cplusplus
-extern "C" {
+বাহ্যিক "C" {
 #endif
 
 /*
@@ -79,7 +79,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefault);
+বাহ্যিক পূর্ণসংখ্যা sqlite3_multiplex_initialize(ধ্রুবক অক্ষর *zOrigVfsName, পূর্ণসংখ্যা makeDefault);
 
 /*
 ** CAPI: Shutdown the multiplex system - sqlite3_multiplex_shutdown()
@@ -90,7 +90,7 @@ extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefaul
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining multiplex groups.
 */
-extern int sqlite3_multiplex_shutdown(int eForce);
+বাহ্যিক পূর্ণসংখ্যা sqlite3_multiplex_shutdown(পূর্ণসংখ্যা eForce);
 
 #ifdef __cplusplus
 }  /* End of the 'extern "C"' block */

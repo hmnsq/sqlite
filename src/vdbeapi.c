@@ -13,9 +13,9 @@
 ** This file contains code use to implement APIs that are part of the
 ** VDBE.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
-#include "opcodes.h"
+#অন্তর্ভাব "sqliteInt.h"
+#অন্তর্ভাব "vdbeInt.h"
+#অন্তর্ভাব "opcodes.h"
 
 #ifndef SQLITE_OMIT_DEPRECATED
 /*
@@ -26,15 +26,15 @@
 ** collating sequences are registered or if an authorizer function is
 ** added or changed.
 */
-int sqlite3_expired(sqlite3_stmt *pStmt){
-  int iRet = 1;
-  if( pStmt ){
+পূর্ণসংখ্যা sqlite3_expired(sqlite3_stmt *pStmt){
+  পূর্ণসংখ্যা iRet = 1;
+  যদি( pStmt ){
     Vdbe *p = (Vdbe*)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     iRet = p->expired;
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return iRet;
+  ফেরত iRet;
 }
 #endif
 
@@ -43,20 +43,20 @@ int sqlite3_expired(sqlite3_stmt *pStmt){
 ** an error and return true if it has been finalized (or is otherwise
 ** invalid).  Return false if it is ok.
 */
-static int vdbeSafety(Vdbe *p){
-  if( p->db==0 ){
+স্থির পূর্ণসংখ্যা vdbeSafety(Vdbe *p){
+  যদি( p->db==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with finalized prepared statement");
-    return 1;
-  }else{
-    return 0;
+    ফেরত 1;
+  }অন্যথা{
+    ফেরত 0;
   }
 }
-static int vdbeSafetyNotNull(Vdbe *p){
-  if( p==0 ){
+স্থির পূর্ণসংখ্যা vdbeSafetyNotNull(Vdbe *p){
+  যদি( p==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with NULL prepared statement");
-    return 1;
-  }else{
-    return vdbeSafety(p);
+    ফেরত 1;
+  }অন্যথা{
+    ফেরত vdbeSafety(p);
   }
 }
 
@@ -65,21 +65,21 @@ static int vdbeSafetyNotNull(Vdbe *p){
 ** Invoke the profile callback.  This routine is only called if we already
 ** know that the profile callback is defined and needs to be invoked.
 */
-static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
+স্থির SQLITE_NOINLINE শূন্য invokeProfileCallback(sqlite3 *db, Vdbe *p){
   sqlite3_int64 iNow;
   sqlite3_int64 iElapse;
-  assert( p->startTime>0 );
-  assert( db->init.busy==0 );
-  assert( p->zSql!=0 );
+  প্রতিজ্ঞা( p->startTime>0 );
+  প্রতিজ্ঞা( db->init.busy==0 );
+  প্রতিজ্ঞা( p->zSql!=0 );
   sqlite3OsCurrentTimeInt64(db->pVfs, &iNow);
   iElapse = (iNow - p->startTime)*1000000;
 #ifndef SQLITE_OMIT_DEPRECATED
-  if( db->xProfile ){
+  যদি( db->xProfile ){
     db->xProfile(db->pProfileArg, p->zSql, iElapse);
   }
 #endif
-  if( db->mTrace & SQLITE_TRACE_PROFILE ){
-    db->trace.xV2(SQLITE_TRACE_PROFILE, db->pTraceArg, p, (void*)&iElapse);
+  যদি( db->mTrace & SQLITE_TRACE_PROFILE ){
+    db->trace.xV2(SQLITE_TRACE_PROFILE, db->pTraceArg, p, (শূন্য*)&iElapse);
   }
   p->startTime = 0;
 }
@@ -88,8 +88,8 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** is needed, and it invokes the callback if it is needed.
 */
 # define checkProfileCallback(DB,P) \
-   if( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
-#else
+   যদি( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
+#অন্যথা
 # define checkProfileCallback(DB,P)  /*no-op*/
 #endif
 
@@ -102,25 +102,25 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_finalize(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+পূর্ণসংখ্যা sqlite3_finalize(sqlite3_stmt *pStmt){
+  পূর্ণসংখ্যা rc;
+  যদি( pStmt==0 ){
     /* IMPLEMENTATION-OF: R-57228-12904 Invoking sqlite3_finalize() on a NULL
     ** pointer is a harmless no-op. */
     rc = SQLITE_OK;
-  }else{
+  }অন্যথা{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
-    if( vdbeSafety(v) ) return SQLITE_MISUSE_BKPT;
+    যদি( vdbeSafety(v) ) ফেরত SQLITE_MISUSE_BKPT;
     sqlite3_mutex_enter(db->mutex);
     checkProfileCallback(db, v);
-    assert( v->eVdbeState>=VDBE_READY_STATE );
+    প্রতিজ্ঞা( v->eVdbeState>=VDBE_READY_STATE );
     rc = sqlite3VdbeReset(v);
     sqlite3VdbeDelete(v);
     rc = sqlite3ApiExit(db, rc);
     sqlite3LeaveMutexAndCloseZombie(db);
   }
-  return rc;
+  ফেরত rc;
 }
 
 /*
@@ -131,59 +131,59 @@ int sqlite3_finalize(sqlite3_stmt *pStmt){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_reset(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+পূর্ণসংখ্যা sqlite3_reset(sqlite3_stmt *pStmt){
+  পূর্ণসংখ্যা rc;
+  যদি( pStmt==0 ){
     rc = SQLITE_OK;
-  }else{
+  }অন্যথা{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
     sqlite3_mutex_enter(db->mutex);
     checkProfileCallback(db, v);
     rc = sqlite3VdbeReset(v);
     sqlite3VdbeRewind(v);
-    assert( (rc & (db->errMask))==rc );
+    প্রতিজ্ঞা( (rc & (db->errMask))==rc );
     rc = sqlite3ApiExit(db, rc);
     sqlite3_mutex_leave(db->mutex);
   }
-  return rc;
+  ফেরত rc;
 }
 
 /*
 ** Set all the parameters in the compiled SQL statement to NULL.
 */
-int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
-  int i;
-  int rc = SQLITE_OK;
+পূর্ণসংখ্যা sqlite3_clear_bindings(sqlite3_stmt *pStmt){
+  পূর্ণসংখ্যা i;
+  পূর্ণসংখ্যা rc = SQLITE_OK;
   Vdbe *p = (Vdbe*)pStmt;
   u32 maskSmallInt = 0;  /* Bitmask of bindings with value 0 or 1 */
-#if SQLITE_THREADSAFE
+#যদি SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
 #endif
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( pStmt==0 ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
 #endif
-#if SQLITE_THREADSAFE
+#যদি SQLITE_THREADSAFE
   mutex = p->db->mutex;
 #endif
 
   sqlite3_mutex_enter(mutex);
-  for(i=0; i<p->nVar; i++){
+  জন্য(i=0; i<p->nVar; i++){
     Mem *pVar = &p->aVar[i];
-    if( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
+    যদি( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
       maskSmallInt |= i>=31 ? 0x80000000 : ((u32)1)<<i;
     }
     sqlite3VdbeMemRelease(pVar);
     pVar->flags = MEM_Null;
   }
-  assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
-  if( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
+  প্রতিজ্ঞা( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
+  যদি( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
     p->expired = 1;
   }
   sqlite3_mutex_leave(mutex);
-  return rc;
+  ফেরত rc;
 }
 
 
@@ -191,71 +191,71 @@ int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
 ** The following routines extract information from a Mem or sqlite3_value
 ** structure.
 */
-const void *sqlite3_value_blob(sqlite3_value *pVal){
+ধ্রুবক শূন্য *sqlite3_মান_blob(sqlite3_মান *pVal){
   Mem *p = (Mem*)pVal;
-  if( p->flags & (MEM_Blob|MEM_Str) ){
-    if( ExpandBlob(p)!=SQLITE_OK ){
-      assert( p->flags==MEM_Null && p->z==0 );
-      return 0;
+  যদি( p->flags & (MEM_Blob|MEM_Str) ){
+    যদি( ExpandBlob(p)!=SQLITE_OK ){
+      প্রতিজ্ঞা( p->flags==MEM_Null && p->z==0 );
+      ফেরত 0;
     }
     p->flags |= MEM_Blob;
-    return p->n ? p->z : 0;
-  }else{
-    return sqlite3_value_text(pVal);
+    ফেরত p->n ? p->z : 0;
+  }অন্যথা{
+    ফেরত sqlite3_মান_text(pVal);
   }
 }
-int sqlite3_value_bytes(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF8);
+পূর্ণসংখ্যা sqlite3_মান_bytes(sqlite3_মান *pVal){
+  ফেরত sqlite3_মান_Bytes(pVal, SQLITE_UTF8);
 }
-int sqlite3_value_bytes16(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
+পূর্ণসংখ্যা sqlite3_মান_bytes16(sqlite3_মান *pVal){
+  ফেরত sqlite3_মান_Bytes(pVal, SQLITE_UTF16NATIVE);
 }
-double sqlite3_value_double(sqlite3_value *pVal){
-  return sqlite3VdbeRealValue((Mem*)pVal);
+দ্বিগুণ sqlite3_মান_double(sqlite3_মান *pVal){
+  ফেরত sqlite3_Vdbe_Real_মান((Mem*)pVal);
 }
-int sqlite3_value_int(sqlite3_value *pVal){
-  return (int)sqlite3VdbeIntValue((Mem*)pVal);
+পূর্ণসংখ্যা sqlite3_মান_int(sqlite3_মান *pVal){
+  ফেরত (পূর্ণসংখ্যা)sqlite3_Vdbe_Int_মান((Mem*)pVal);
 }
-sqlite_int64 sqlite3_value_int64(sqlite3_value *pVal){
-  return sqlite3VdbeIntValue((Mem*)pVal);
+sqlite_int64 sqlite3_মান_int64(sqlite3_মান *pVal){
+  ফেরত sqlite3_Vdbe_Int_মান((Mem*)pVal);
 }
-unsigned int sqlite3_value_subtype(sqlite3_value *pVal){
+unsigned পূর্ণসংখ্যা sqlite3_মান_subtype(sqlite3_মান *pVal){
   Mem *pMem = (Mem*)pVal;
-  return ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
+  ফেরত ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
 }
-void *sqlite3_value_pointer(sqlite3_value *pVal, const char *zPType){
+শূন্য *sqlite3_মান_pointer(sqlite3_মান *pVal, ধ্রুবক অক্ষর *zPType){
   Mem *p = (Mem*)pVal;
-  if( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
+  যদি( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype)
    && zPType!=0
    && p->eSubtype=='p'
    && strcmp(p->u.zPType, zPType)==0
   ){
-    return (void*)p->z;
-  }else{
-    return 0;
+    ফেরত (শূন্য*)p->z;
+  }অন্যথা{
+    ফেরত 0;
   }
 }
-const unsigned char *sqlite3_value_text(sqlite3_value *pVal){
-  return (const unsigned char *)sqlite3ValueText(pVal, SQLITE_UTF8);
+ধ্রুবক unsigned অক্ষর *sqlite3_মান_text(sqlite3_মান *pVal){
+  ফেরত (ধ্রুবক unsigned অক্ষর *)sqlite3_মান_Text(pVal, SQLITE_UTF8);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_value_text16(sqlite3_value* pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
+ধ্রুবক শূন্য *sqlite3_মান_text16(sqlite3_মান* pVal){
+  ফেরত sqlite3_মান_Text(pVal, SQLITE_UTF16NATIVE);
 }
-const void *sqlite3_value_text16be(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16BE);
+ধ্রুবক শূন্য *sqlite3_মান_text16be(sqlite3_মান *pVal){
+  ফেরত sqlite3_মান_Text(pVal, SQLITE_UTF16BE);
 }
-const void *sqlite3_value_text16le(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16LE);
+ধ্রুবক শূন্য *sqlite3_মান_text16le(sqlite3_মান *pVal){
+  ফেরত sqlite3_মান_Text(pVal, SQLITE_UTF16LE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 /* EVIDENCE-OF: R-12793-43283 Every value in SQLite has one of five
 ** fundamental datatypes: 64-bit signed integer 64-bit IEEE floating
 ** point number string BLOB NULL
 */
-int sqlite3_value_type(sqlite3_value* pVal){
-  static const u8 aType[] = {
+পূর্ণসংখ্যা sqlite3_মান_type(sqlite3_মান* pVal){
+  স্থির ধ্রুবক u8 aType[] = {
      SQLITE_BLOB,     /* 0x00 (not possible) */
      SQLITE_NULL,     /* 0x01 NULL */
      SQLITE_TEXT,     /* 0x02 TEXT */
@@ -323,65 +323,65 @@ int sqlite3_value_type(sqlite3_value* pVal){
   };
 #ifdef SQLITE_DEBUG
   {
-    int eType = SQLITE_BLOB;
-    if( pVal->flags & MEM_Null ){
+    পূর্ণসংখ্যা eType = SQLITE_BLOB;
+    যদি( pVal->flags & MEM_Null ){
       eType = SQLITE_NULL;
-    }else if( pVal->flags & (MEM_Real|MEM_IntReal) ){
+    }অন্যথা যদি( pVal->flags & (MEM_Real|MEM_IntReal) ){
       eType = SQLITE_FLOAT;
-    }else if( pVal->flags & MEM_Int ){
+    }অন্যথা যদি( pVal->flags & MEM_Int ){
       eType = SQLITE_INTEGER;
-    }else if( pVal->flags & MEM_Str ){
+    }অন্যথা যদি( pVal->flags & MEM_Str ){
       eType = SQLITE_TEXT;
     }
-    assert( eType == aType[pVal->flags&MEM_AffMask] );
+    প্রতিজ্ঞা( eType == aType[pVal->flags&MEM_AffMask] );
   }
 #endif
-  return aType[pVal->flags&MEM_AffMask];
+  ফেরত aType[pVal->flags&MEM_AffMask];
 }
-int sqlite3_value_encoding(sqlite3_value *pVal){
-  return pVal->enc;
+পূর্ণসংখ্যা sqlite3_মান_encoding(sqlite3_মান *pVal){
+  ফেরত pVal->enc;
 }
 
 /* Return true if a parameter to xUpdate represents an unchanged column */
-int sqlite3_value_nochange(sqlite3_value *pVal){
-  return (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
+পূর্ণসংখ্যা sqlite3_মান_nochange(sqlite3_মান *pVal){
+  ফেরত (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
 }
 
 /* Return true if a parameter value originated from an sqlite3_bind() */
-int sqlite3_value_frombind(sqlite3_value *pVal){
-  return (pVal->flags&MEM_FromBind)!=0;
+পূর্ণসংখ্যা sqlite3_মান_frombind(sqlite3_মান *pVal){
+  ফেরত (pVal->flags&MEM_FromBind)!=0;
 }
 
 /* Make a copy of an sqlite3_value object
 */
-sqlite3_value *sqlite3_value_dup(const sqlite3_value *pOrig){
-  sqlite3_value *pNew;
-  if( pOrig==0 ) return 0;
-  pNew = sqlite3_malloc( sizeof(*pNew) );
-  if( pNew==0 ) return 0;
-  memset(pNew, 0, sizeof(*pNew));
+sqlite3_মান *sqlite3_মান_dup(ধ্রুবক sqlite3_মান *pOrig){
+  sqlite3_মান *pNew;
+  যদি( pOrig==0 ) ফেরত 0;
+  pNew = sqlite3_malloc( আকার(*pNew) );
+  যদি( pNew==0 ) ফেরত 0;
+  memset(pNew, 0, আকার(*pNew));
   memcpy(pNew, pOrig, MEMCELLSIZE);
   pNew->flags &= ~MEM_Dyn;
   pNew->db = 0;
-  if( pNew->flags&(MEM_Str|MEM_Blob) ){
+  যদি( pNew->flags&(MEM_Str|MEM_Blob) ){
     pNew->flags &= ~(MEM_Static|MEM_Dyn);
     pNew->flags |= MEM_Ephem;
-    if( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
-      sqlite3ValueFree(pNew);
+    যদি( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
+      sqlite3_মান_Free(pNew);
       pNew = 0;
     }
-  }else if( pNew->flags & MEM_Null ){
+  }অন্যথা যদি( pNew->flags & MEM_Null ){
     /* Do not duplicate pointer values */
     pNew->flags &= ~(MEM_Term|MEM_Subtype);
   }
-  return pNew;
+  ফেরত pNew;
 }
 
 /* Destroy an sqlite3_value object previously obtained from
 ** sqlite3_value_dup().
 */
-void sqlite3_value_free(sqlite3_value *pOld){
-  sqlite3ValueFree(pOld);
+শূন্য sqlite3_মান_free(sqlite3_মান *pOld){
+  sqlite3_মান_Free(pOld);
 }
  
 
@@ -399,334 +399,334 @@ void sqlite3_value_free(sqlite3_value *pOld){
 ** function X() on value P if P is not going to be used and need to
 ** be destroyed.
 */
-static void setResultStrOrError(
+স্থির শূন্য set_ফলাফল_Str_Or_Error(
   sqlite3_context *pCtx,  /* Function context */
-  const char *z,          /* String pointer */
-  int n,                  /* Bytes in string, or negative */
+  ধ্রুবক অক্ষর *z,          /* String pointer */
+  পূর্ণসংখ্যা n,                  /* Bytes in string, or negative */
   u8 enc,                 /* Encoding of z.  0 for BLOBs */
-  void (*xDel)(void*)     /* Destructor function */
+  শূন্য (*xDel)(শূন্য*)     /* Destructor function */
 ){
   Mem *pOut = pCtx->pOut;
-  int rc;
-  if( enc==SQLITE_UTF8 ){
+  পূর্ণসংখ্যা rc;
+  যদি( enc==SQLITE_UTF8 ){
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
-  }else if( enc==SQLITE_UTF8_ZT ){
+  }অন্যথা যদি( enc==SQLITE_UTF8_ZT ){
     /* It is usually considered improper to assert() on an input. However,
     ** the following assert() is checking for inputs that are documented
     ** to result in undefined behavior. */
-    assert( z==0
+    প্রতিজ্ঞা( z==0
          || n<0 
-         || n>pOut->db->aLimit[SQLITE_LIMIT_LENGTH]
+         || n>pOut->db->aLimit[SQLITE_LIMIT_দৈর্ঘ্য]
          || z[n]==0
     );
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
     pOut->flags |= MEM_Term;
-  }else{
+  }অন্যথা{
     rc = sqlite3VdbeMemSetStr(pOut, z, n, enc, xDel);
   }
-  if( rc ){
-    if( rc==SQLITE_TOOBIG ){
-      sqlite3_result_error_toobig(pCtx);
-    }else{
+  যদি( rc ){
+    যদি( rc==SQLITE_TOOBIG ){
+      sqlite3_ফলাফল_error_toobig(pCtx);
+    }অন্যথা{
       /* The only errors possible from sqlite3VdbeMemSetStr are
       ** SQLITE_TOOBIG and SQLITE_NOMEM */
-      assert( rc==SQLITE_NOMEM );
-      sqlite3_result_error_nomem(pCtx);
+      প্রতিজ্ঞা( rc==SQLITE_NOMEM );
+      sqlite3_ফলাফল_error_nomem(pCtx);
     }
-    return;
+    ফেরত;
   }
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
-    sqlite3_result_error_toobig(pCtx);
+  যদি( sqlite3VdbeMemTooBig(pOut) ){
+    sqlite3_ফলাফল_error_toobig(pCtx);
   }
 }
-static int invokeValueDestructor(
-  const void *p,             /* Value to destroy */
-  void (*xDel)(void*),       /* The destructor */
+স্থির পূর্ণসংখ্যা invoke_মান_Destructor(
+  ধ্রুবক শূন্য *p,             /* Value to destroy */
+  শূন্য (*xDel)(শূন্য*),       /* The destructor */
   sqlite3_context *pCtx      /* Set a SQLITE_TOOBIG error if not NULL */
 ){
-  assert( xDel!=SQLITE_DYNAMIC );
-  if( xDel==0 ){
+  প্রতিজ্ঞা( xDel!=SQLITE_DYNAMIC );
+  যদি( xDel==0 ){
     /* noop */
-  }else if( xDel==SQLITE_TRANSIENT ){
+  }অন্যথা যদি( xDel==SQLITE_TRANSIENT ){
     /* noop */
-  }else{
-    xDel((void*)p);
+  }অন্যথা{
+    xDel((শূন্য*)p);
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx!=0 ){
-    sqlite3_result_error_toobig(pCtx);
+  যদি( pCtx!=0 ){
+    sqlite3_ফলাফল_error_toobig(pCtx);
   }
-#else
-  assert( pCtx!=0 );
-  sqlite3_result_error_toobig(pCtx);
+#অন্যথা
+  প্রতিজ্ঞা( pCtx!=0 );
+  sqlite3_ফলাফল_error_toobig(pCtx);
 #endif
-  return SQLITE_TOOBIG;
+  ফেরত SQLITE_TOOBIG;
 }
-void sqlite3_result_blob(
+শূন্য sqlite3_ফলাফল_blob(
   sqlite3_context *pCtx,
-  const void *z,
-  int n,
-  void (*xDel)(void *)
+  ধ্রুবক শূন্য *z,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 || n<0 ){
-    invokeValueDestructor(z, xDel, pCtx);
-    return;
+  যদি( pCtx==0 || n<0 ){
+    invoke_মান_Destructor(z, xDel, pCtx);
+    ফেরত;
   }
 #endif
-  assert( n>=0 );
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  setResultStrOrError(pCtx, z, n, 0, xDel);
+  প্রতিজ্ঞা( n>=0 );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  set_ফলাফল_Str_Or_Error(pCtx, z, n, 0, xDel);
 }
-void sqlite3_result_blob64(
+শূন্য sqlite3_ফলাফল_blob64(
   sqlite3_context *pCtx,
-  const void *z,
+  ধ্রুবক শূন্য *z,
   sqlite3_uint64 n,
-  void (*xDel)(void *)
+  শূন্য (*xDel)(শূন্য *)
 ){
-  assert( xDel!=SQLITE_DYNAMIC );
+  প্রতিজ্ঞা( xDel!=SQLITE_DYNAMIC );
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
-    invokeValueDestructor(z, xDel, 0);
-    return;
+  যদি( pCtx==0 ){
+    invoke_মান_Destructor(z, xDel, 0);
+    ফেরত;
   }
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( n>0x7fffffff ){
-    (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, 0, xDel);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  যদি( n>0x7fffffff ){
+    (শূন্য)invoke_মান_Destructor(z, xDel, pCtx);
+  }অন্যথা{
+    set_ফলাফল_Str_Or_Error(pCtx, z, (পূর্ণসংখ্যা)n, 0, xDel);
   }
 }
-void sqlite3_result_double(sqlite3_context *pCtx, double rVal){
+শূন্য sqlite3_ফলাফল_double(sqlite3_context *pCtx, দ্বিগুণ rVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetDouble(pCtx->pOut, rVal);
 }
-void sqlite3_result_error(sqlite3_context *pCtx, const char *z, int n){
+শূন্য sqlite3_ফলাফল_error(sqlite3_context *pCtx, ধ্রুবক অক্ষর *z, পূর্ণসংখ্যা n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF8, SQLITE_TRANSIENT);
 }
 #ifndef SQLITE_OMIT_UTF16
-void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, int n){
+শূন্য sqlite3_ফলাফল_error16(sqlite3_context *pCtx, ধ্রুবক শূন্য *z, পূর্ণসংখ্যা n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF16NATIVE, SQLITE_TRANSIENT);
 }
 #endif
-void sqlite3_result_int(sqlite3_context *pCtx, int iVal){
+শূন্য sqlite3_ফলাফল_int(sqlite3_context *pCtx, পূর্ণসংখ্যা iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, (i64)iVal);
 }
-void sqlite3_result_int64(sqlite3_context *pCtx, i64 iVal){
+শূন্য sqlite3_ফলাফল_int64(sqlite3_context *pCtx, i64 iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, iVal);
 }
-void sqlite3_result_null(sqlite3_context *pCtx){
+শূন্য sqlite3_ফলাফল_null(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
 }
-void sqlite3_result_pointer(
+শূন্য sqlite3_ফলাফল_pointer(
   sqlite3_context *pCtx,
-  void *pPtr,
-  const char *zPType,
-  void (*xDestructor)(void*)
+  শূন্য *pPtr,
+  ধ্রুবক অক্ষর *zPType,
+  শূন্য (*xDestructor)(শূন্য*)
 ){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
-    invokeValueDestructor(pPtr, xDestructor, 0);
-    return;
+  যদি( pCtx==0 ){
+    invoke_মান_Destructor(pPtr, xDestructor, 0);
+    ফেরত;
   }
 #endif
   pOut = pCtx->pOut;
-  assert( sqlite3_mutex_held(pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pOut->db->mutex) );
   sqlite3VdbeMemRelease(pOut);
   pOut->flags = MEM_Null;
   sqlite3VdbeMemSetPointer(pOut, pPtr, zPType, xDestructor);
 }
-void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
+শূন্য sqlite3_ফলাফল_subtype(sqlite3_context *pCtx, unsigned পূর্ণসংখ্যা eSubtype){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-#if defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
-  if( pCtx->pFunc!=0
-   && (pCtx->pFunc->funcFlags & SQLITE_RESULT_SUBTYPE)==0
+#যদি defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
+  যদি( pCtx->pFunc!=0
+   && (pCtx->pFunc->funcFlags & SQLITE_ফলাফল_SUBTYPE)==0
   ){
-    char zErr[200];
-    sqlite3_snprintf(sizeof(zErr), zErr,
+    অক্ষর zErr[200];
+    sqlite3_snprintf(আকার(zErr), zErr,
                      "misuse of sqlite3_result_subtype() by %s()", 
                      pCtx->pFunc->zName);
-    sqlite3_result_error(pCtx, zErr, -1);
-    return;
+    sqlite3_ফলাফল_error(pCtx, zErr, -1);
+    ফেরত;
   }
 #endif /* SQLITE_STRICT_SUBTYPE */
   pOut = pCtx->pOut;
-  assert( sqlite3_mutex_held(pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pOut->db->mutex) );
   pOut->eSubtype = eSubtype & 0xff;
   pOut->flags |= MEM_Subtype;
 }
-void sqlite3_result_text(
+শূন্য sqlite3_ফলাফল_text(
   sqlite3_context *pCtx,
-  const char *z,
-  int n,
-  void (*xDel)(void *)
+  ধ্রুবক অক্ষর *z,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
-    invokeValueDestructor(z, xDel, 0);
-    return;
+  যদি( pCtx==0 ){
+    invoke_মান_Destructor(z, xDel, 0);
+    ফেরত;
   }
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  setResultStrOrError(pCtx, z, n, SQLITE_UTF8, xDel);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  set_ফলাফল_Str_Or_Error(pCtx, z, n, SQLITE_UTF8, xDel);
 }
-void sqlite3_result_text64(
+শূন্য sqlite3_ফলাফল_text64(
   sqlite3_context *pCtx,
-  const char *z,
+  ধ্রুবক অক্ষর *z,
   sqlite3_uint64 n,
-  void (*xDel)(void *),
-  unsigned char enc
+  শূন্য (*xDel)(শূন্য *),
+  unsigned অক্ষর enc
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
-    invokeValueDestructor(z, xDel, 0);
-    return;
+  যদি( pCtx==0 ){
+    invoke_মান_Destructor(z, xDel, 0);
+    ফেরত;
   }
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( xDel!=SQLITE_DYNAMIC );
+  যদি( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    যদি( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
     n &= ~(u64)1;
   }
-  if( n>0x7fffffff ){
-    (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, enc, xDel);
+  যদি( n>0x7fffffff ){
+    (শূন্য)invoke_মান_Destructor(z, xDel, pCtx);
+  }অন্যথা{
+    set_ফলাফল_Str_Or_Error(pCtx, z, (পূর্ণসংখ্যা)n, enc, xDel);
     sqlite3VdbeMemZeroTerminateIfAble(pCtx->pOut);
   }
 }
 #ifndef SQLITE_OMIT_UTF16
-void sqlite3_result_text16(
+শূন্য sqlite3_ফলাফল_text16(
   sqlite3_context *pCtx,
-  const void *z,
-  int n,
-  void (*xDel)(void *)
+  ধ্রুবক শূন্য *z,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য *)
 ){
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  setResultStrOrError(pCtx, z, n & ~(u64)1, SQLITE_UTF16NATIVE, xDel);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  set_ফলাফল_Str_Or_Error(pCtx, z, n & ~(u64)1, SQLITE_UTF16NATIVE, xDel);
 }
-void sqlite3_result_text16be(
+শূন্য sqlite3_ফলাফল_text16be(
   sqlite3_context *pCtx,
-  const void *z,
-  int n,
-  void (*xDel)(void *)
+  ধ্রুবক শূন্য *z,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য *)
 ){
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  setResultStrOrError(pCtx, z, n & ~(u64)1, SQLITE_UTF16BE, xDel);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  set_ফলাফল_Str_Or_Error(pCtx, z, n & ~(u64)1, SQLITE_UTF16BE, xDel);
 }
-void sqlite3_result_text16le(
+শূন্য sqlite3_ফলাফল_text16le(
   sqlite3_context *pCtx,
-  const void *z,
-  int n,
-  void (*xDel)(void *)
+  ধ্রুবক শূন্য *z,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য *)
 ){
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  setResultStrOrError(pCtx, z, n & ~(u64)1, SQLITE_UTF16LE, xDel);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  set_ফলাফল_Str_Or_Error(pCtx, z, n & ~(u64)1, SQLITE_UTF16LE, xDel);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-void sqlite3_result_value(sqlite3_context *pCtx, sqlite3_value *pValue){
+শূন্য sqlite3_ফলাফল_মান(sqlite3_context *pCtx, sqlite3_মান *p_মান){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pValue==0 ){
-    sqlite3_result_null(pCtx);
-    return;
+  যদি( pCtx==0 ) ফেরত;
+  যদি( p_মান==0 ){
+    sqlite3_ফলাফল_null(pCtx);
+    ফেরত;
   }
 #endif
   pOut = pCtx->pOut;
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  sqlite3VdbeMemCopy(pOut, pValue);
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  sqlite3VdbeMemCopy(pOut, p_মান);
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
-    sqlite3_result_error_toobig(pCtx);
+  যদি( sqlite3VdbeMemTooBig(pOut) ){
+    sqlite3_ফলাফল_error_toobig(pCtx);
   }
 }
-void sqlite3_result_zeroblob(sqlite3_context *pCtx, int n){
-  sqlite3_result_zeroblob64(pCtx, n>0 ? n : 0);
+শূন্য sqlite3_ফলাফল_zeroblob(sqlite3_context *pCtx, পূর্ণসংখ্যা n){
+  sqlite3_ফলাফল_zeroblob64(pCtx, n>0 ? n : 0);
 }
-int sqlite3_result_zeroblob64(sqlite3_context *pCtx, u64 n){
+পূর্ণসংখ্যা sqlite3_ফলাফল_zeroblob64(sqlite3_context *pCtx, u64 n){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return SQLITE_MISUSE_BKPT;
+  যদি( pCtx==0 ) ফেরত SQLITE_MISUSE_BKPT;
 #endif
   pOut = pCtx->pOut;
-  assert( sqlite3_mutex_held(pOut->db->mutex) );
-  if( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_LENGTH] ){
-    sqlite3_result_error_toobig(pCtx);
-    return SQLITE_TOOBIG;
+  প্রতিজ্ঞা( sqlite3_mutex_held(pOut->db->mutex) );
+  যদি( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_দৈর্ঘ্য] ){
+    sqlite3_ফলাফল_error_toobig(pCtx);
+    ফেরত SQLITE_TOOBIG;
   }
 #ifndef SQLITE_OMIT_INCRBLOB
-  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
-  return SQLITE_OK;
-#else
-  return sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
+  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (পূর্ণসংখ্যা)n);
+  ফেরত SQLITE_OK;
+#অন্যথা
+  ফেরত sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (পূর্ণসংখ্যা)n);
 #endif
 }
-void sqlite3_result_error_code(sqlite3_context *pCtx, int errCode){
+শূন্য sqlite3_ফলাফল_error_code(sqlite3_context *pCtx, পূর্ণসংখ্যা errCode){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
   pCtx->isError = errCode ? errCode : -1;
 #ifdef SQLITE_DEBUG
-  if( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
+  যদি( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
 #endif
-  if( pCtx->pOut->flags & MEM_Null ){
-    setResultStrOrError(pCtx, sqlite3ErrStr(errCode), -1, SQLITE_UTF8,
+  যদি( pCtx->pOut->flags & MEM_Null ){
+    set_ফলাফল_Str_Or_Error(pCtx, sqlite3ErrStr(errCode), -1, SQLITE_UTF8,
                         SQLITE_STATIC);
   }
 }
 
 /* Cause the SQL function to raise an SQLITE_TOOBIG error. */
-void sqlite3_result_error_toobig(sqlite3_context *pCtx){
+শূন্য sqlite3_ফলাফল_error_toobig(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_TOOBIG;
   sqlite3VdbeMemSetStr(pCtx->pOut, "string or blob too big", -1,
                        SQLITE_UTF8, SQLITE_STATIC);
 }
 
 /* Cause the SQL function to raise an SQLITE_NOMEM error. */
-void sqlite3_result_error_nomem(sqlite3_context *pCtx){
+শূন্য sqlite3_ফলাফল_error_nomem(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
   pCtx->isError = SQLITE_NOMEM_BKPT;
   sqlite3OomFault(pCtx->pOut->db);
@@ -752,40 +752,40 @@ void sqlite3_result_error_nomem(sqlite3_context *pCtx){
 **    SQLITE_FINISH    Like SQLITE_XFER except that the pStr is also
 **                     freed using sqlite3_str_free().
 */
-void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
+শূন্য sqlite3_ফলাফল_str(sqlite3_context *pCtx, sqlite3_str *pStr, পূর্ণসংখ্যা eOwn){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pStr==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
+  যদি( pStr==0 ) ফেরত;
 #endif
   testcase( pStr==(sqlite3_str*)&sqlite3OomStr );
-  if( pStr->accError==0 ){
-    if( pStr->nChar==0 ){
-      setResultStrOrError(pCtx, "", 0, SQLITE_UTF8_ZT, SQLITE_STATIC);
+  যদি( pStr->accError==0 ){
+    যদি( pStr->nChar==0 ){
+      set_ফলাফল_Str_Or_Error(pCtx, "", 0, SQLITE_UTF8_ZT, SQLITE_STATIC);
       sqlite3_str_reset(pStr);
-    }else{
-      const char *zText = sqlite3_str_value(pStr);
+    }অন্যথা{
+      ধ্রুবক অক্ষর *zText = sqlite3_str_মান(pStr);
       /* Only internal code has the ability to capture a pointer to
       ** an sqlite3_str object that uses static buffer.  And none of
       ** those internal use cases every invoke the sqlite3_result_str()
       ** interface on a static-buffer sqlite3_str.  Should this change
       ** in the future, the following assert() will let us know. */
-      assert( isMalloced(pStr) );
-      if( eOwn==SQLITE_COPY ){
-        setResultStrOrError(pCtx, zText, pStr->nChar, 
+      প্রতিজ্ঞা( isMalloced(pStr) );
+      যদি( eOwn==SQLITE_COPY ){
+        set_ফলাফল_Str_Or_Error(pCtx, zText, pStr->nChar, 
                             SQLITE_UTF8, SQLITE_TRANSIENT);
-      }else{
-        setResultStrOrError(pCtx, zText, pStr->nChar,
+      }অন্যথা{
+        set_ফলাফল_Str_Or_Error(pCtx, zText, pStr->nChar,
                             SQLITE_UTF8_ZT, SQLITE_DYNAMIC);
         sqlite3StrAccumInit(pStr, pStr->db, 0, 0, pStr->mxAlloc);
       }
     }
-  }else if( pStr->accError==SQLITE_NOMEM ){
-    sqlite3_result_error_nomem(pCtx);
-  }else{
-    assert( pStr->accError==SQLITE_TOOBIG );
-    sqlite3_result_error_toobig(pCtx);
+  }অন্যথা যদি( pStr->accError==SQLITE_NOMEM ){
+    sqlite3_ফলাফল_error_nomem(pCtx);
+  }অন্যথা{
+    প্রতিজ্ঞা( pStr->accError==SQLITE_TOOBIG );
+    sqlite3_ফলাফল_error_toobig(pCtx);
   }
-  if( eOwn==SQLITE_FINISH ){
+  যদি( eOwn==SQLITE_FINISH ){
     sqlite3_str_free(pStr);
   }
 }
@@ -795,9 +795,9 @@ void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
 ** a MEM_IntReal value.  See the SQLITE_TESTCTRL_RESULT_INTREAL
 ** test-control.
 */
-void sqlite3ResultIntReal(sqlite3_context *pCtx){
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( pCtx->pOut->flags & MEM_Int ){
+শূন্য sqlite3_ফলাফল_Int_Real(sqlite3_context *pCtx){
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  যদি( pCtx->pOut->flags & MEM_Int ){
     pCtx->pOut->flags &= ~MEM_Int;
     pCtx->pOut->flags |= MEM_IntReal;
   }
@@ -809,26 +809,26 @@ void sqlite3ResultIntReal(sqlite3_context *pCtx){
 ** This function is called after a transaction has been committed. It
 ** invokes callbacks registered with sqlite3_wal_hook() as required.
 */
-static int doWalCallbacks(sqlite3 *db){
-  int rc = SQLITE_OK;
+স্থির পূর্ণসংখ্যা doWalCallbacks(sqlite3 *db){
+  পূর্ণসংখ্যা rc = SQLITE_OK;
 #ifndef SQLITE_OMIT_WAL
-  int i;
-  for(i=0; i<db->nDb; i++){
+  পূর্ণসংখ্যা i;
+  জন্য(i=0; i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt ){
-      int nEntry;
+    যদি( pBt ){
+      পূর্ণসংখ্যা nEntry;
       sqlite3BtreeEnter(pBt);
       nEntry = sqlite3PagerWalCallback(sqlite3BtreePager(pBt));
       sqlite3BtreeLeave(pBt);
-      if( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
+      যদি( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
         rc = db->xWalCallback(db->pWalArg, db, db->aDb[i].zDbSName, nEntry);
       }
     }
   }
-#else
+#অন্যথা
   UNUSED_PARAMETER(db);
 #endif
-  return rc;
+  ফেরত rc;
 }
 
 
@@ -841,19 +841,19 @@ static int doWalCallbacks(sqlite3 *db){
 ** schema change has occurred.  That detail is handled by the
 ** outer sqlite3_step() wrapper procedure.
 */
-static int sqlite3Step(Vdbe *p){
+স্থির পূর্ণসংখ্যা sqlite3Step(Vdbe *p){
   sqlite3 *db;
-  int rc;
+  পূর্ণসংখ্যা rc;
 
-  assert(p);
+  প্রতিজ্ঞা(p);
   db = p->db;
-  if( p->eVdbeState!=VDBE_RUN_STATE ){
+  যদি( p->eVdbeState!=VDBE_RUN_STATE ){
     restart_step:
-    if( p->eVdbeState==VDBE_READY_STATE ){
-      if( p->expired ){
+    যদি( p->eVdbeState==VDBE_READY_STATE ){
+      যদি( p->expired ){
         p->rc = SQLITE_SCHEMA;
         rc = SQLITE_ERROR;
-        if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+        যদি( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
           /* If this statement was prepared using saved SQL and an
           ** error has occurred, then return the error code in p->rc to the
           ** caller. Set the error code in the database handle to the same
@@ -861,38 +861,38 @@ static int sqlite3Step(Vdbe *p){
           */
           rc = sqlite3VdbeTransferError(p);
         }
-        goto end_of_step;
+        যাও end_of_step;
       }
 
       /* If there are no other statements currently running, then
       ** reset the interrupt flag.  This prevents a call to sqlite3_interrupt
       ** from interrupting a statement that has not yet started.
       */
-      if( db->nVdbeActive==0 ){
+      যদি( db->nVdbeActive==0 ){
         AtomicStore(&db->u1.isInterrupted, 0);
       }
 
-      assert( db->nVdbeWrite>0 || db->autoCommit==0
+      প্রতিজ্ঞা( db->nVdbeWrite>0 || db->autoCommit==0
           || ((db->nDeferredCons + db->nDeferredImmCons)==0)
       );
 
 #ifndef SQLITE_OMIT_TRACE
-      if( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
+      যদি( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
           && !db->init.busy && p->zSql ){
         sqlite3OsCurrentTimeInt64(db->pVfs, &p->startTime);
-      }else{
-        assert( p->startTime==0 );
+      }অন্যথা{
+        প্রতিজ্ঞা( p->startTime==0 );
       }
 #endif
 
       db->nVdbeActive++;
-      if( p->readOnly==0 ) db->nVdbeWrite++;
-      if( p->bIsReader ) db->nVdbeRead++;
+      যদি( p->readOnly==0 ) db->nVdbeWrite++;
+      যদি( p->bIsReader ) db->nVdbeRead++;
       p->pc = 0;
       p->eVdbeState = VDBE_RUN_STATE;
-    }else
+    }অন্যথা
 
-    if( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
+    যদি( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
       /* We used to require that sqlite3_reset() be called before retrying
       ** sqlite3_step() after any error or after SQLITE_DONE.  But beginning
       ** with version 3.7.0, we changed this so that sqlite3_reset() would
@@ -910,16 +910,16 @@ static int sqlite3Step(Vdbe *p){
       ** or SQLITE_BUSY error.
       */
 #ifdef SQLITE_OMIT_AUTORESET
-      if( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
+      যদি( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
         sqlite3_reset((sqlite3_stmt*)p);
-      }else{
-        return SQLITE_MISUSE_BKPT;
+      }অন্যথা{
+        ফেরত SQLITE_MISUSE_BKPT;
       }
-#else
+#অন্যথা
       sqlite3_reset((sqlite3_stmt*)p);
 #endif
-      assert( p->eVdbeState==VDBE_READY_STATE );
-      goto restart_step;
+      প্রতিজ্ঞা( p->eVdbeState==VDBE_READY_STATE );
+      যাও restart_step;
     }
   }
 
@@ -927,9 +927,9 @@ static int sqlite3Step(Vdbe *p){
   p->rcApp = SQLITE_OK;
 #endif
 #ifndef SQLITE_OMIT_EXPLAIN
-  if( p->explain ){
+  যদি( p->explain ){
     rc = sqlite3VdbeList(p);
-  }else
+  }অন্যথা
 #endif /* SQLITE_OMIT_EXPLAIN */
   {
     db->nVdbeExec++;
@@ -937,24 +937,24 @@ static int sqlite3Step(Vdbe *p){
     db->nVdbeExec--;
   }
 
-  if( rc==SQLITE_ROW ){
-    assert( p->rc==SQLITE_OK );
-    assert( db->mallocFailed==0 );
+  যদি( rc==SQLITE_ROW ){
+    প্রতিজ্ঞা( p->rc==SQLITE_OK );
+    প্রতিজ্ঞা( db->mallocFailed==0 );
     db->errCode = SQLITE_ROW;
-    return SQLITE_ROW;
-  }else{
+    ফেরত SQLITE_ROW;
+  }অন্যথা{
 #ifndef SQLITE_OMIT_TRACE
     /* If the statement completed successfully, invoke the profile callback */
     checkProfileCallback(db, p);
 #endif
-    p->pResultRow = 0;
-    if( rc==SQLITE_DONE && db->autoCommit ){
-      assert( p->rc==SQLITE_OK );
+    p->p_ফলাফল_Row = 0;
+    যদি( rc==SQLITE_DONE && db->autoCommit ){
+      প্রতিজ্ঞা( p->rc==SQLITE_OK );
       p->rc = doWalCallbacks(db);
-      if( p->rc!=SQLITE_OK ){
+      যদি( p->rc!=SQLITE_OK ){
         rc = SQLITE_ERROR;
       }
-    }else if( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+    }অন্যথা যদি( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
       /* If this statement was prepared using saved SQL and an
       ** error has occurred, then return the error code in p->rc to the
       ** caller. Set the error code in the database handle to the same value.
@@ -964,18 +964,18 @@ static int sqlite3Step(Vdbe *p){
   }
 
   db->errCode = rc;
-  if( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
+  যদি( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
     p->rc = SQLITE_NOMEM_BKPT;
-    if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
+    যদি( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
   }
 end_of_step:
   /* There are only a limited number of result codes allowed from the
   ** statements prepared using the legacy sqlite3_prepare() interface */
-  assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0
+  প্রতিজ্ঞা( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0
        || rc==SQLITE_ROW  || rc==SQLITE_DONE   || rc==SQLITE_ERROR
        || (rc&0xff)==SQLITE_BUSY || rc==SQLITE_MISUSE
   );
-  return (rc&db->errMask);
+  ফেরত (rc&db->errMask);
 }
 
 /*
@@ -983,22 +983,22 @@ end_of_step:
 ** sqlite3Step() to do most of the work.  If a schema error occurs,
 ** call sqlite3Reprepare() and try again.
 */
-int sqlite3_step(sqlite3_stmt *pStmt){
-  int rc = SQLITE_OK;      /* Result from sqlite3Step() */
+পূর্ণসংখ্যা sqlite3_step(sqlite3_stmt *pStmt){
+  পূর্ণসংখ্যা rc = SQLITE_OK;      /* Result from sqlite3Step() */
   Vdbe *v = (Vdbe*)pStmt;  /* the prepared statement */
-  int cnt = 0;             /* Counter to prevent infinite loop of reprepares */
+  পূর্ণসংখ্যা cnt = 0;             /* Counter to prevent infinite loop of reprepares */
   sqlite3 *db;             /* The database connection */
 
-  if( vdbeSafetyNotNull(v) ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( vdbeSafetyNotNull(v) ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
   db = v->db;
   sqlite3_mutex_enter(db->mutex);
-  while( (rc = sqlite3Step(v))==SQLITE_SCHEMA
+  যখন( (rc = sqlite3Step(v))==SQLITE_SCHEMA
          && cnt++ < SQLITE_MAX_SCHEMA_RETRY ){
-    int savedPc = v->pc;
+    পূর্ণসংখ্যা savedPc = v->pc;
     rc = sqlite3Reprepare(v);
-    if( rc!=SQLITE_OK ){
+    যদি( rc!=SQLITE_OK ){
       /* This case occurs after failing to recompile an sql statement.
       ** The error message from the SQL compiler has already been loaded
       ** into the database handle. This block copies the error message
@@ -1007,29 +1007,29 @@ int sqlite3_step(sqlite3_stmt *pStmt){
       ** finalized or reset the parser error message is available via
       ** sqlite3_errmsg() and sqlite3_errcode().
       */
-      const char *zErr = (const char *)sqlite3_value_text(db->pErr);
-      sqlite3DbFree(db, v->zErrMsg);
-      if( !db->mallocFailed ){
-        v->zErrMsg = sqlite3DbStrDup(db, zErr);
+      ধ্রুবক অক্ষর *zErr = (ধ্রুবক অক্ষর *)sqlite3_মান_text(db->pErr);
+      sqlite3DbFree(db, v->z_Err_বার্তা);
+      যদি( !db->mallocFailed ){
+        v->z_Err_বার্তা = sqlite3DbStrDup(db, zErr);
         v->rc = rc = sqlite3ApiExit(db, rc);
-      } else {
-        v->zErrMsg = 0;
+      } অন্যথা {
+        v->z_Err_বার্তা = 0;
         v->rc = rc = SQLITE_NOMEM_BKPT;
       }
-      break;
+      বিরতি;
     }
     sqlite3_reset(pStmt);
-    if( savedPc>=0 ){
+    যদি( savedPc>=0 ){
       /* Setting minWriteFileFormat to 254 is a signal to the OP_Init and
       ** OP_Trace opcodes to *not* perform SQLITE_TRACE_STMT because it has
       ** already been done once on a prior invocation that failed due to
       ** SQLITE_SCHEMA.   tag-20220401a  */
       v->minWriteFileFormat = 254;
     }
-    assert( v->expired==0 );
+    প্রতিজ্ঞা( v->expired==0 );
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  ফেরত rc;
 }
 
 
@@ -1037,12 +1037,12 @@ int sqlite3_step(sqlite3_stmt *pStmt){
 ** Extract the user data from a sqlite3_context structure and return a
 ** pointer to it.
 */
-void *sqlite3_user_data(sqlite3_context *p){
+শূন্য *sqlite3_user_তথ্য(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
+  যদি( p==0 ) ফেরত 0;
 #endif
-  assert( p && p->pFunc );
-  return p->pFunc->pUserData;
+  প্রতিজ্ঞা( p && p->pFunc );
+  ফেরত p->pFunc->p_User_তথ্য;
 }
 
 /*
@@ -1057,11 +1057,11 @@ void *sqlite3_user_data(sqlite3_context *p){
 */
 sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
-  assert( p && p->pOut );
+  যদি( p==0 ) ফেরত 0;
+#অন্যথা
+  প্রতিজ্ঞা( p && p->pOut );
 #endif
-  return p->pOut->db;
+  ফেরত p->pOut->db;
 }
 
 /*
@@ -1078,13 +1078,13 @@ sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 ** performance by substituting a NULL result, or some other light-weight
 ** value, as a signal to the xUpdate routine that the column is unchanged.
 */
-int sqlite3_vtab_nochange(sqlite3_context *p){
+পূর্ণসংখ্যা sqlite3_vtab_nochange(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
-  assert( p );
+  যদি( p==0 ) ফেরত 0;
+#অন্যথা
+  প্রতিজ্ঞা( p );
 #endif
-  return sqlite3_value_nochange(p->pOut);
+  ফেরত sqlite3_মান_nochange(p->pOut);
 }
 
 /*
@@ -1094,7 +1094,7 @@ int sqlite3_vtab_nochange(sqlite3_context *p){
 ** preceded by activation of IN processing via sqlite3_vtab_int() do not
 ** try to access a fake ValueList object inserted by a hostile extension.
 */
-void sqlite3VdbeValueListFree(void *pToDelete){
+শূন্য sqlite3_Vdbe_মান_List_Free(শূন্য *pToDelete){
   sqlite3_free(pToDelete);
 }
 
@@ -1102,71 +1102,71 @@ void sqlite3VdbeValueListFree(void *pToDelete){
 ** Implementation of sqlite3_vtab_in_first() (if bNext==0) and
 ** sqlite3_vtab_in_next() (if bNext!=0).
 */
-static int valueFromValueList(
-  sqlite3_value *pVal,        /* Pointer to the ValueList object */
-  sqlite3_value **ppOut,      /* Store the next value from the list here */
-  int bNext                   /* 1 for _next(). 0 for _first() */
+স্থির পূর্ণসংখ্যা মান_From_মান_List(
+  sqlite3_মান *pVal,        /* Pointer to the ValueList object */
+  sqlite3_মান **ppOut,      /* Store the next value from the list here */
+  পূর্ণসংখ্যা b_পরবর্তী                   /* 1 for _next(). 0 for _first() */
 ){
-  int rc;
-  ValueList *pRhs;
+  পূর্ণসংখ্যা rc;
+  মান_List *pRhs;
 
   *ppOut = 0;
-  if( pVal==0 ) return SQLITE_MISUSE_BKPT;
-  if( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3VdbeValueListFree ){
-    return SQLITE_ERROR;
-  }else{
-    assert( (pVal->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
+  যদি( pVal==0 ) ফেরত SQLITE_MISUSE_BKPT;
+  যদি( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3_Vdbe_মান_List_Free ){
+    ফেরত SQLITE_ERROR;
+  }অন্যথা{
+    প্রতিজ্ঞা( (pVal->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype) );
-    assert( pVal->eSubtype=='p' );
-    assert( pVal->u.zPType!=0 && strcmp(pVal->u.zPType,"ValueList")==0 );
-    pRhs = (ValueList*)pVal->z;
+    প্রতিজ্ঞা( pVal->eSubtype=='p' );
+    প্রতিজ্ঞা( pVal->u.zPType!=0 && strcmp(pVal->u.zPType,"ValueList")==0 );
+    pRhs = (মান_List*)pVal->z;
   }
-  if( bNext ){
-    rc = sqlite3BtreeNext(pRhs->pCsr, 0);
-  }else{
-    int dummy = 0;
+  যদি( b_পরবর্তী ){
+    rc = sqlite3_Btree_পরবর্তী(pRhs->pCsr, 0);
+  }অন্যথা{
+    পূর্ণসংখ্যা dummy = 0;
     rc = sqlite3BtreeFirst(pRhs->pCsr, &dummy);
-    assert( rc==SQLITE_OK || sqlite3BtreeEof(pRhs->pCsr) );
-    if( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
+    প্রতিজ্ঞা( rc==SQLITE_OK || sqlite3BtreeEof(pRhs->pCsr) );
+    যদি( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
   }
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     u32 sz;       /* Size of current row in bytes */
     Mem sMem;     /* Raw content of current row */
-    memset(&sMem, 0, sizeof(sMem));
-    sz = sqlite3BtreePayloadSize(pRhs->pCsr);
+    memset(&sMem, 0, আকার(sMem));
+    sz = sqlite3_Btree_Payload_আকার(pRhs->pCsr);
     rc = sqlite3VdbeMemFromBtreeZeroOffset(pRhs->pCsr,sz,&sMem);
-    if( rc==SQLITE_OK ){
+    যদি( rc==SQLITE_OK ){
       u8 *zBuf = (u8*)sMem.z;
       u32 iSerial;
-      sqlite3_value *pOut = pRhs->pOut;
-      int iOff = 1 + getVarint32(&zBuf[1], iSerial);
+      sqlite3_মান *pOut = pRhs->pOut;
+      পূর্ণসংখ্যা iOff = 1 + getVarint32(&zBuf[1], iSerial);
       sqlite3VdbeSerialGet(&zBuf[iOff], iSerial, pOut);
       pOut->enc = ENC(pOut->db);
-      if( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
+      যদি( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
         rc = SQLITE_NOMEM;
-      }else{
+      }অন্যথা{
         *ppOut = pOut;
       }
     }
     sqlite3VdbeMemRelease(&sMem);
   }
-  return rc;
+  ফেরত rc;
 }
 
 /*
 ** Set the iterator value pVal to point to the first value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_first(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 0);
+পূর্ণসংখ্যা sqlite3_vtab_in_first(sqlite3_মান *pVal, sqlite3_মান **ppOut){
+  ফেরত মান_From_মান_List(pVal, ppOut, 0);
 }
 
 /*
 ** Set the iterator value pVal to point to the next value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 1);
+পূর্ণসংখ্যা sqlite3_vtab_in_পরবর্তী(sqlite3_মান *pVal, sqlite3_মান **ppOut){
+  ফেরত মান_From_মান_List(pVal, ppOut, 1);
 }
 
 /*
@@ -1177,40 +1177,40 @@ int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
 ** the time returned is always the time of the first call.
 */
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context *p){
-  int rc;
+  পূর্ণসংখ্যা rc;
 #ifndef SQLITE_ENABLE_STAT4
   sqlite3_int64 *piTime = &p->pVdbe->iCurrentTime;
-  assert( p->pVdbe!=0 );
-#else
+  প্রতিজ্ঞা( p->pVdbe!=0 );
+#অন্যথা
   sqlite3_int64 iTime = 0;
   sqlite3_int64 *piTime = p->pVdbe!=0 ? &p->pVdbe->iCurrentTime : &iTime;
 #endif
-  if( *piTime==0 ){
+  যদি( *piTime==0 ){
     rc = sqlite3OsCurrentTimeInt64(p->pOut->db->pVfs, piTime);
-    if( rc ) *piTime = 0;
+    যদি( rc ) *piTime = 0;
   }
-  return *piTime;
+  ফেরত *piTime;
 }
 
 /*
 ** Create a new aggregate context for p and return a pointer to
 ** its pMem->z element.
 */
-static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
+স্থির SQLITE_NOINLINE শূন্য *createAggContext(sqlite3_context *p, পূর্ণসংখ্যা nByte){
   Mem *pMem = p->pMem;
-  assert( (pMem->flags & MEM_Agg)==0 );
-  if( nByte<=0 ){
+  প্রতিজ্ঞা( (pMem->flags & MEM_Agg)==0 );
+  যদি( nByte<=0 ){
     sqlite3VdbeMemSetNull(pMem);
     pMem->z = 0;
-  }else{
+  }অন্যথা{
     sqlite3VdbeMemClearAndResize(pMem, nByte);
     pMem->flags = MEM_Agg;
     pMem->u.pDef = p->pFunc;
-    if( pMem->z ){
+    যদি( pMem->z ){
       memset(pMem->z, 0, nByte);
     }
   }
-  return (void*)pMem->z;
+  ফেরত (শূন্য*)pMem->z;
 }
 
 /*
@@ -1218,14 +1218,14 @@ static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
 ** context is allocated on the first call.  Subsequent calls return the
 ** same context that was returned on prior calls.
 */
-void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
-  assert( p && p->pFunc && p->pFunc->xFinalize );
-  assert( sqlite3_mutex_held(p->pOut->db->mutex) );
+শূন্য *sqlite3_aggregate_context(sqlite3_context *p, পূর্ণসংখ্যা nByte){
+  প্রতিজ্ঞা( p && p->pFunc && p->pFunc->xFinalize );
+  প্রতিজ্ঞা( sqlite3_mutex_held(p->pOut->db->mutex) );
   testcase( nByte<0 );
-  if( (p->pMem->flags & MEM_Agg)==0 ){
-    return createAggContext(p, nByte);
-  }else{
-    return (void*)p->pMem->z;
+  যদি( (p->pMem->flags & MEM_Agg)==0 ){
+    ফেরত createAggContext(p, nByte);
+  }অন্যথা{
+    ফেরত (শূন্য*)p->pMem->z;
   }
 }
 
@@ -1239,24 +1239,24 @@ void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
 ** auxiliary data pointers that is available to all functions within a
 ** single prepared statement.  The iArg values must match.
 */
-void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
-  AuxData *pAuxData;
+শূন্য *sqlite3_get_auxdata(sqlite3_context *pCtx, পূর্ণসংখ্যা iArg){
+  Aux_তথ্য *p_Aux_তথ্য;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return 0;
+  যদি( pCtx==0 ) ফেরত 0;
 #endif
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-#if SQLITE_ENABLE_STAT4
-  if( pCtx->pVdbe==0 ) return 0;
-#else
-  assert( pCtx->pVdbe!=0 );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+#যদি SQLITE_ENABLE_STAT4
+  যদি( pCtx->pVdbe==0 ) ফেরত 0;
+#অন্যথা
+  প্রতিজ্ঞা( pCtx->pVdbe!=0 );
 #endif
-  for(pAuxData=pCtx->pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if(  pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
-      return pAuxData->pAux;
+  জন্য(p_Aux_তথ্য=pCtx->pVdbe->p_Aux_তথ্য; p_Aux_তথ্য; p_Aux_তথ্য=p_Aux_তথ্য->p_পরবর্তী_Aux){
+    যদি(  p_Aux_তথ্য->iAuxArg==iArg && (p_Aux_তথ্য->iAuxOp==pCtx->iOp || iArg<0) ){
+      ফেরত p_Aux_তথ্য->pAux;
     }
   }
-  return 0;
+  ফেরত 0;
 }
 
 /*
@@ -1270,49 +1270,49 @@ void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
 ** to all functions within the current prepared statement using iArg as an
 ** access code.
 */
-void sqlite3_set_auxdata(
+শূন্য sqlite3_set_auxdata(
   sqlite3_context *pCtx,
-  int iArg,
-  void *pAux,
-  void (*xDelete)(void*)
+  পূর্ণসংখ্যা iArg,
+  শূন্য *pAux,
+  শূন্য (*xDelete)(শূন্য*)
 ){
-  AuxData *pAuxData;
+  Aux_তথ্য *p_Aux_তথ্য;
   Vdbe *pVdbe;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  যদি( pCtx==0 ) ফেরত;
 #endif
   pVdbe= pCtx->pVdbe;
-  assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
+  প্রতিজ্ঞা( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
 #ifdef SQLITE_ENABLE_STAT4
-  if( pVdbe==0 ) goto failed;
-#else
-  assert( pVdbe!=0 );
+  যদি( pVdbe==0 ) যাও failed;
+#অন্যথা
+  প্রতিজ্ঞা( pVdbe!=0 );
 #endif
 
-  for(pAuxData=pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if( pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
-      break;
+  জন্য(p_Aux_তথ্য=pVdbe->p_Aux_তথ্য; p_Aux_তথ্য; p_Aux_তথ্য=p_Aux_তথ্য->p_পরবর্তী_Aux){
+    যদি( p_Aux_তথ্য->iAuxArg==iArg && (p_Aux_তথ্য->iAuxOp==pCtx->iOp || iArg<0) ){
+      বিরতি;
     }
   }
-  if( pAuxData==0 ){
-    pAuxData = sqlite3DbMallocZero(pVdbe->db, sizeof(AuxData));
-    if( !pAuxData ) goto failed;
-    pAuxData->iAuxOp = pCtx->iOp;
-    pAuxData->iAuxArg = iArg;
-    pAuxData->pNextAux = pVdbe->pAuxData;
-    pVdbe->pAuxData = pAuxData;
-    if( pCtx->isError==0 ) pCtx->isError = -1;
-  }else if( pAuxData->xDeleteAux ){
-    pAuxData->xDeleteAux(pAuxData->pAux);
+  যদি( p_Aux_তথ্য==0 ){
+    p_Aux_তথ্য = sqlite3DbMallocZero(pVdbe->db, আকার(Aux_তথ্য));
+    যদি( !p_Aux_তথ্য ) যাও failed;
+    p_Aux_তথ্য->iAuxOp = pCtx->iOp;
+    p_Aux_তথ্য->iAuxArg = iArg;
+    p_Aux_তথ্য->p_পরবর্তী_Aux = pVdbe->p_Aux_তথ্য;
+    pVdbe->p_Aux_তথ্য = p_Aux_তথ্য;
+    যদি( pCtx->isError==0 ) pCtx->isError = -1;
+  }অন্যথা যদি( p_Aux_তথ্য->xDeleteAux ){
+    p_Aux_তথ্য->xDeleteAux(p_Aux_তথ্য->pAux);
   }
 
-  pAuxData->pAux = pAux;
-  pAuxData->xDeleteAux = xDelete;
-  return;
+  p_Aux_তথ্য->pAux = pAux;
+  p_Aux_তথ্য->xDeleteAux = xDelete;
+  ফেরত;
 
 failed:
-  if( xDelete ){
+  যদি( xDelete ){
     xDelete(pAux);
   }
 }
@@ -1327,35 +1327,35 @@ failed:
 ** implementations should keep their own counts within their aggregate
 ** context.
 */
-int sqlite3_aggregate_count(sqlite3_context *p){
-  assert( p && p->pMem && p->pFunc && p->pFunc->xFinalize );
-  return p->pMem->n;
+পূর্ণসংখ্যা sqlite3_aggregate_গুনতি(sqlite3_context *p){
+  প্রতিজ্ঞা( p && p->pMem && p->pFunc && p->pFunc->xFinalize );
+  ফেরত p->pMem->n;
 }
 #endif
 
 /*
 ** Return the number of columns in the result set for the statement pStmt.
 */
-int sqlite3_column_count(sqlite3_stmt *pStmt){
+পূর্ণসংখ্যা sqlite3_column_গুনতি(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return 0;
-  return pVm->nResColumn;
+  যদি( pVm==0 ) ফেরত 0;
+  ফেরত pVm->nResColumn;
 }
 
 /*
 ** Return the number of values available from the current row of the
 ** currently executing statement pStmt.
 */
-int sqlite3_data_count(sqlite3_stmt *pStmt){
+পূর্ণসংখ্যা sqlite3_তথ্য_গুনতি(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 || pVm->pResultRow==0 ) return 0;
-  return pVm->nResColumn;
+  যদি( pVm==0 || pVm->p_ফলাফল_Row==0 ) ফেরত 0;
+  ফেরত pVm->nResColumn;
 }
 
 /*
 ** Return a pointer to static memory containing an SQL NULL value.
 */
-static const Mem *columnNullValue(void){
+স্থির ধ্রুবক Mem *column_Null_মান(শূন্য){
   /* Even though the Mem structure contains an element
   ** of type i64, on certain architectures (x86) with certain compiler
   ** switches (-Os), gcc may align this Mem object on a 4-byte boundary
@@ -1365,29 +1365,29 @@ static const Mem *columnNullValue(void){
   ** these assert()s from failing, when building with SQLITE_DEBUG defined
   ** using gcc, we force nullMem to be 8-byte aligned using the magical
   ** __attribute__((aligned(8))) macro.  */
-  static const Mem nullMem
-#if defined(SQLITE_DEBUG) && defined(__GNUC__)
+  স্থির ধ্রুবক Mem nullMem
+#যদি defined(SQLITE_DEBUG) && defined(__GNUC__)
     __attribute__((aligned(8)))
 #endif
     = {
         /* .u          = */ {0},
-        /* .z          = */ (char*)0,
-        /* .n          = */ (int)0,
+        /* .z          = */ (অক্ষর*)0,
+        /* .n          = */ (পূর্ণসংখ্যা)0,
         /* .flags      = */ (u16)MEM_Null,
         /* .enc        = */ (u8)0,
         /* .eSubtype   = */ (u8)0,
         /* .db         = */ (sqlite3*)0,
-        /* .szMalloc   = */ (int)0,
+        /* .szMalloc   = */ (পূর্ণসংখ্যা)0,
         /* .uTemp      = */ (u32)0,
-        /* .zMalloc    = */ (char*)0,
-        /* .xDel       = */ (void(*)(void*))0,
+        /* .zMalloc    = */ (অক্ষর*)0,
+        /* .xDel       = */ (শূন্য(*)(শূন্য*))0,
 #ifdef SQLITE_DEBUG
         /* .pScopyFrom = */ (Mem*)0,
         /* .mScopyFlags= */ 0,
         /* .bScopy     = */ 0,
 #endif
       };
-  return &nullMem;
+  ফেরত &nullMem;
 }
 
 /*
@@ -1396,21 +1396,21 @@ static const Mem *columnNullValue(void){
 ** If iCol is not valid, return a pointer to a Mem which has a value
 ** of NULL.
 */
-static Mem *columnMem(sqlite3_stmt *pStmt, int i){
+স্থির Mem *columnMem(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
   Vdbe *pVm;
   Mem *pOut;
 
   pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return (Mem*)columnNullValue();
-  assert( pVm->db );
+  যদি( pVm==0 ) ফেরত (Mem*)column_Null_মান();
+  প্রতিজ্ঞা( pVm->db );
   sqlite3_mutex_enter(pVm->db->mutex);
-  if( pVm->pResultRow!=0 && i<pVm->nResColumn && i>=0 ){
-    pOut = &pVm->pResultRow[i];
-  }else{
+  যদি( pVm->p_ফলাফল_Row!=0 && i<pVm->nResColumn && i>=0 ){
+    pOut = &pVm->p_ফলাফল_Row[i];
+  }অন্যথা{
     sqlite3Error(pVm->db, SQLITE_RANGE);
-    pOut = (Mem*)columnNullValue();
+    pOut = (Mem*)column_Null_মান();
   }
-  return pOut;
+  ফেরত pOut;
 }
 
 /*
@@ -1431,7 +1431,7 @@ static Mem *columnMem(sqlite3_stmt *pStmt, int i){
 **     sqlite3_column_bytes16()
 **     sqlite3_column_blob()
 */
-static void columnMallocFailure(sqlite3_stmt *pStmt)
+স্থির শূন্য columnMallocFailure(sqlite3_stmt *pStmt)
 {
   /* If malloc() failed during an encoding conversion within an
   ** sqlite3_column_XXX API, then set the return code of the statement to
@@ -1439,9 +1439,9 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
   ** and _finalize() will return NOMEM.
   */
   Vdbe *p = (Vdbe *)pStmt;
-  if( p ){
-    assert( p->db!=0 );
-    assert( sqlite3_mutex_held(p->db->mutex) );
+  যদি( p ){
+    প্রতিজ্ঞা( p->db!=0 );
+    প্রতিজ্ঞা( sqlite3_mutex_held(p->db->mutex) );
     p->rc = sqlite3ApiExit(p->db, p->rc);
     sqlite3_mutex_leave(p->db->mutex);
   }
@@ -1451,76 +1451,76 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
 ** The following routines are used to access elements of the current row
 ** in the result set.
 */
-const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
-  const void *val;
-  val = sqlite3_value_blob( columnMem(pStmt,i) );
+ধ্রুবক শূন্য *sqlite3_column_blob(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  ধ্রুবক শূন্য *val;
+  val = sqlite3_মান_blob( columnMem(pStmt,i) );
   /* Even though there is no encoding conversion, value_blob() might
   ** need to call malloc() to expand the result of a zeroblob()
   ** expression.
   */
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-int sqlite3_column_bytes(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes( columnMem(pStmt,i) );
+পূর্ণসংখ্যা sqlite3_column_bytes(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  পূর্ণসংখ্যা val = sqlite3_মান_bytes( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-int sqlite3_column_bytes16(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes16( columnMem(pStmt,i) );
+পূর্ণসংখ্যা sqlite3_column_bytes16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  পূর্ণসংখ্যা val = sqlite3_মান_bytes16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-double sqlite3_column_double(sqlite3_stmt *pStmt, int i){
-  double val = sqlite3_value_double( columnMem(pStmt,i) );
+দ্বিগুণ sqlite3_column_double(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  দ্বিগুণ val = sqlite3_মান_double( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-int sqlite3_column_int(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_int( columnMem(pStmt,i) );
+পূর্ণসংখ্যা sqlite3_column_int(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  পূর্ণসংখ্যা val = sqlite3_মান_int( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, int i){
-  sqlite_int64 val = sqlite3_value_int64( columnMem(pStmt,i) );
+sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  sqlite_int64 val = sqlite3_মান_int64( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, int i){
-  const unsigned char *val = sqlite3_value_text( columnMem(pStmt,i) );
+ধ্রুবক unsigned অক্ষর *sqlite3_column_text(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  ধ্রুবক unsigned অক্ষর *val = sqlite3_মান_text( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
-sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, int i){
+sqlite3_মান *sqlite3_column_মান(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
   Mem *pOut = columnMem(pStmt, i);
-  if( pOut->flags&MEM_Static ){
+  যদি( pOut->flags&MEM_Static ){
     pOut->flags &= ~MEM_Static;
     pOut->flags |= MEM_Ephem;
   }
   columnMallocFailure(pStmt);
-  return (sqlite3_value *)pOut;
+  ফেরত (sqlite3_মান *)pOut;
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_text16(sqlite3_stmt *pStmt, int i){
-  const void *val = sqlite3_value_text16( columnMem(pStmt,i) );
+ধ্রুবক শূন্য *sqlite3_column_text16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  ধ্রুবক শূন্য *val = sqlite3_মান_text16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ফেরত val;
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_column_type(sqlite3_stmt *pStmt, int i){
-  int iType = sqlite3_value_type( columnMem(pStmt,i) );
+পূর্ণসংখ্যা sqlite3_column_type(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  পূর্ণসংখ্যা iType = sqlite3_মান_type( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return iType;
+  ফেরত iType;
 }
 
 /*
 ** Column names appropriate for EXPLAIN or EXPLAIN QUERY PLAN.
 */
-static const char * const azExplainColNames8[] = {
+স্থির ধ্রুবক অক্ষর * ধ্রুবক azExplainColNames8[] = {
    "addr", "opcode", "p1", "p2", "p3", "p4", "p5", "comment",  /* EXPLAIN */
    "id", "parent", "notused", "detail"                         /* EQP */
 };
-static const u16 azExplainColNames16data[] = {
+স্থির ধ্রুবক u16 azExplainColNames16data[] = {
   /*   0 */  'a', 'd', 'd', 'r',                0,
   /*   5 */  'o', 'p', 'c', 'o', 'd', 'e',      0,
   /*  12 */  'p', '1',                          0, 
@@ -1534,7 +1534,7 @@ static const u16 azExplainColNames16data[] = {
   /*  45 */  'n', 'o', 't', 'u', 's', 'e', 'd', 0,
   /*  53 */  'd', 'e', 't', 'a', 'i', 'l',      0
 };
-static const u8 iExplainColNames16[] = {
+স্থির ধ্রুবক u8 iExplainColNames16[] = {
   0, 5, 12, 15, 18, 21, 24, 27,
   35, 38, 45, 53
 };
@@ -1555,77 +1555,77 @@ static const u8 iExplainColNames16[] = {
 ** If the result is not a simple column reference (if it is an expression
 ** or a constant) then useTypes 2, 3, and 4 return NULL.
 */
-static const void *columnName(
+স্থির ধ্রুবক শূন্য *columnName(
   sqlite3_stmt *pStmt,     /* The statement */
-  int N,                   /* Which column to get the name for */
-  int useUtf16,            /* True to return the name as UTF16 */
-  int useType              /* What type of name */
+  পূর্ণসংখ্যা N,                   /* Which column to get the name for */
+  পূর্ণসংখ্যা useUtf16,            /* True to return the name as UTF16 */
+  পূর্ণসংখ্যা useType              /* What type of name */
 ){
-  const void *ret;
+  ধ্রুবক শূন্য *ret;
   Vdbe *p;
-  int n;
+  পূর্ণসংখ্যা n;
   sqlite3 *db;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  যদি( pStmt==0 ){
+    (শূন্য)SQLITE_MISUSE_BKPT;
+    ফেরত 0;
   }
 #endif
-  if( N<0 ) return 0;
+  যদি( N<0 ) ফেরত 0;
   ret = 0;
   p = (Vdbe *)pStmt;
   db = p->db;
-  assert( db!=0 );
+  প্রতিজ্ঞা( db!=0 );
   sqlite3_mutex_enter(db->mutex);
 
-  if( p->explain ){
-    if( useType>0 ) goto columnName_end;
+  যদি( p->explain ){
+    যদি( useType>0 ) যাও columnName_end;
     n = p->explain==1 ? 8 : 4;
-    if( N>=n ) goto columnName_end;
-    if( useUtf16 ){
-      int i = iExplainColNames16[N + 8*p->explain - 8];
-      ret = (void*)&azExplainColNames16data[i];
-    }else{
-      ret = (void*)azExplainColNames8[N + 8*p->explain - 8];
+    যদি( N>=n ) যাও columnName_end;
+    যদি( useUtf16 ){
+      পূর্ণসংখ্যা i = iExplainColNames16[N + 8*p->explain - 8];
+      ret = (শূন্য*)&azExplainColNames16data[i];
+    }অন্যথা{
+      ret = (শূন্য*)azExplainColNames8[N + 8*p->explain - 8];
     }
-    goto columnName_end;
+    যাও columnName_end;
   }
   n = p->nResColumn;
-  if( N<n ){
+  যদি( N<n ){
     u8 prior_mallocFailed = db->mallocFailed;
     N += useType*n;
 #ifndef SQLITE_OMIT_UTF16
-    if( useUtf16 ){
-      ret = sqlite3_value_text16((sqlite3_value*)&p->aColName[N]);
-    }else
+    যদি( useUtf16 ){
+      ret = sqlite3_মান_text16((sqlite3_মান*)&p->aColName[N]);
+    }অন্যথা
 #endif
     {
-      ret = sqlite3_value_text((sqlite3_value*)&p->aColName[N]);
+      ret = sqlite3_মান_text((sqlite3_মান*)&p->aColName[N]);
     }
     /* A malloc may have failed inside of the _text() call. If this
     ** is the case, clear the mallocFailed flag and return NULL.
     */
-    assert( db->mallocFailed==0 || db->mallocFailed==1 );
-    if( db->mallocFailed > prior_mallocFailed ){
+    প্রতিজ্ঞা( db->mallocFailed==0 || db->mallocFailed==1 );
+    যদি( db->mallocFailed > prior_mallocFailed ){
       sqlite3OomClear(db);
       ret = 0;
     }
   }
 columnName_end:
   sqlite3_mutex_leave(db->mutex);
-  return ret;
+  ফেরত ret;
 }
 
 /*
 ** Return the name of the Nth column of the result set returned by SQL
 ** statement pStmt.
 */
-const char *sqlite3_column_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_NAME);
+ধ্রুবক অক্ষর *sqlite3_column_name(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 0, COLNAME_NAME);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_NAME);
+ধ্রুবক শূন্য *sqlite3_column_name16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 1, COLNAME_NAME);
 }
 #endif
 
@@ -1633,7 +1633,7 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Constraint:  If you have ENABLE_COLUMN_METADATA then you must
 ** not define OMIT_DECLTYPE.
 */
-#if defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
+#যদি defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
 # error "Must not define both SQLITE_OMIT_DECLTYPE \
          and SQLITE_ENABLE_COLUMN_METADATA"
 #endif
@@ -1643,12 +1643,12 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Return the column declaration type (if applicable) of the 'i'th column
 ** of the result set of SQL statement pStmt.
 */
-const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DECLTYPE);
+ধ্রুবক অক্ষর *sqlite3_column_decltype(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 0, COLNAME_DECLTYPE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DECLTYPE);
+ধ্রুবক শূন্য *sqlite3_column_decltype16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 1, COLNAME_DECLTYPE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_DECLTYPE */
@@ -1659,12 +1659,12 @@ const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_database_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DATABASE);
+ধ্রুবক অক্ষর *sqlite3_column_database_name(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 0, COLNAME_DATABASE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DATABASE);
+ধ্রুবক শূন্য *sqlite3_column_database_name16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 1, COLNAME_DATABASE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1673,12 +1673,12 @@ const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_table_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_TABLE);
+ধ্রুবক অক্ষর *sqlite3_column_table_name(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 0, COLNAME_TABLE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_TABLE);
+ধ্রুবক শূন্য *sqlite3_column_table_name16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 1, COLNAME_TABLE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1687,12 +1687,12 @@ const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_origin_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_COLUMN);
+ধ্রুবক অক্ষর *sqlite3_column_origin_name(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 0, COLNAME_COLUMN);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_COLUMN);
+ধ্রুবক শূন্য *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, পূর্ণসংখ্যা N){
+  ফেরত columnName(pStmt, N, 1, COLNAME_COLUMN);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_ENABLE_COLUMN_METADATA */
@@ -1724,23 +1724,23 @@ const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
 ** An assert() is normally added after vdbeUnbind() to help static analyzers
 ** realize this.
 */
-static int vdbeUnbind(Vdbe *p, unsigned int i){
+স্থির পূর্ণসংখ্যা vdbeUnbind(Vdbe *p, unsigned পূর্ণসংখ্যা i){
   Mem *pVar;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( vdbeSafetyNotNull(p) ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  যদি( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    ফেরত SQLITE_MISUSE_BKPT;
   }
-  if( i>=(unsigned int)p->nVar ){
+  যদি( i>=(unsigned পূর্ণসংখ্যা)p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    ফেরত SQLITE_RANGE;
   }
 
   pVar = &p->aVar[i];
@@ -1754,12 +1754,12 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   ** as if there had been a schema change, on the first sqlite3_step() call
   ** following any change to the bindings of that parameter.
   */
-  assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
-  assert( (p->expmask & p->smimask)==p->smimask );
-  if( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
+  প্রতিজ্ঞা( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
+  প্রতিজ্ঞা( (p->expmask & p->smimask)==p->smimask );
+  যদি( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
     /* If the p->smimask bit is also set, then only expire the statement if
     ** the value being clobbered was integer value 0 or 1. */
-    if( (p->smimask==0) 
+    যদি( (p->smimask==0) 
      || (p->smimask & (i>=31 ? 0x80000000 : (u32)1<<i))==0 
      || ((pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1)
     ){
@@ -1771,281 +1771,281 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   pVar->flags = MEM_Null;
   p->db->errCode = SQLITE_OK;
 
-  return SQLITE_OK;
+  ফেরত SQLITE_OK;
 }
 
 /*
 ** Bind a text or BLOB value.
 */
-static int bindText(
+স্থির পূর্ণসংখ্যা bindText(
   sqlite3_stmt *pStmt,   /* The statement to bind against */
-  int i,                 /* Index of the parameter to bind */
-  const void *zData,     /* Pointer to the data to be bound */
-  i64 nData,             /* Number of bytes of data to be bound */
-  void (*xDel)(void*),   /* Destructor for the data */
+  পূর্ণসংখ্যা i,                 /* Index of the parameter to bind */
+  ধ্রুবক শূন্য *z_তথ্য,     /* Pointer to the data to be bound */
+  i64 n_তথ্য,             /* Number of bytes of data to be bound */
+  শূন্য (*xDel)(শূন্য*),   /* Destructor for the data */
   u8 encoding            /* Encoding for the data */
 ){
   Vdbe *p = (Vdbe *)pStmt;
   Mem *pVar;
-  int rc;
+  পূর্ণসংখ্যা rc;
 
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
-    assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
-    if( zData!=0 ){
+  যদি( rc==SQLITE_OK ){
+    প্রতিজ্ঞা( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
+    যদি( z_তথ্য!=0 ){
       pVar = &p->aVar[i-1];
-      if( encoding==SQLITE_UTF8 ){
-        rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
-      }else if( encoding==SQLITE_UTF8_ZT ){
+      যদি( encoding==SQLITE_UTF8 ){
+        rc = sqlite3VdbeMemSetText(pVar, z_তথ্য, n_তথ্য, xDel);
+      }অন্যথা যদি( encoding==SQLITE_UTF8_ZT ){
         /* It is usually consider improper to assert() on an input.
         ** However, the following assert() is checking for inputs
         ** that are documented to result in undefined behavior. */
-        assert( zData==0
-             || nData<0 
-             || nData>pVar->db->aLimit[SQLITE_LIMIT_LENGTH]
-             || ((u8*)zData)[nData]==0
+        প্রতিজ্ঞা( z_তথ্য==0
+             || n_তথ্য<0 
+             || n_তথ্য>pVar->db->aLimit[SQLITE_LIMIT_দৈর্ঘ্য]
+             || ((u8*)z_তথ্য)[n_তথ্য]==0
         );
-        rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
+        rc = sqlite3VdbeMemSetText(pVar, z_তথ্য, n_তথ্য, xDel);
         pVar->flags |= MEM_Term;
-      }else{
-        rc = sqlite3VdbeMemSetStr(pVar, zData, nData, encoding, xDel);
-        if( encoding==0 ) pVar->enc = ENC(p->db);
+      }অন্যথা{
+        rc = sqlite3VdbeMemSetStr(pVar, z_তথ্য, n_তথ্য, encoding, xDel);
+        যদি( encoding==0 ) pVar->enc = ENC(p->db);
       }
-      if( rc==SQLITE_OK && encoding!=0 ){
+      যদি( rc==SQLITE_OK && encoding!=0 ){
         rc = sqlite3VdbeChangeEncoding(pVar, ENC(p->db));
       }
-      if( rc ){
+      যদি( rc ){
         sqlite3Error(p->db, rc);
         rc = sqlite3ApiExit(p->db, rc);
       }
     }
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
-    xDel((void*)zData);
+  }অন্যথা যদি( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
+    xDel((শূন্য*)z_তথ্য);
   }
-  return rc;
+  ফেরত rc;
 }
 
 
 /*
 ** Bind a blob value to an SQL statement variable.
 */
-int sqlite3_bind_blob(
+পূর্ণসংখ্যা sqlite3_bind_blob(
   sqlite3_stmt *pStmt,
-  int i,
-  const void *zData,
-  int nData,
-  void (*xDel)(void*)
+  পূর্ণসংখ্যা i,
+  ধ্রুবক শূন্য *z_তথ্য,
+  পূর্ণসংখ্যা n_তথ্য,
+  শূন্য (*xDel)(শূন্য*)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( nData<0 ) return SQLITE_MISUSE_BKPT;
+  যদি( n_তথ্য<0 ) ফেরত SQLITE_MISUSE_BKPT;
 #endif
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  ফেরত bindText(pStmt, i, z_তথ্য, n_তথ্য, xDel, 0);
 }
-int sqlite3_bind_blob64(
+পূর্ণসংখ্যা sqlite3_bind_blob64(
   sqlite3_stmt *pStmt,
-  int i,
-  const void *zData,
-  sqlite3_uint64 nData,
-  void (*xDel)(void*)
+  পূর্ণসংখ্যা i,
+  ধ্রুবক শূন্য *z_তথ্য,
+  sqlite3_uint64 n_তথ্য,
+  শূন্য (*xDel)(শূন্য*)
 ){
-  assert( xDel!=SQLITE_DYNAMIC );
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  প্রতিজ্ঞা( xDel!=SQLITE_DYNAMIC );
+  ফেরত bindText(pStmt, i, z_তথ্য, n_তথ্য, xDel, 0);
 }
-int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
-  int rc;
+পূর্ণসংখ্যা sqlite3_bind_double(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i, দ্বিগুণ r_মান){
+  পূর্ণসংখ্যা rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
-    assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
-    sqlite3VdbeMemSetDouble(&p->aVar[i-1], rValue);
+  যদি( rc==SQLITE_OK ){
+    প্রতিজ্ঞা( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
+    sqlite3VdbeMemSetDouble(&p->aVar[i-1], r_মান);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ফেরত rc;
 }
-int sqlite3_bind_int(sqlite3_stmt *p, int i, int iValue){
-  return sqlite3_bind_int64(p, i, (i64)iValue);
+পূর্ণসংখ্যা sqlite3_bind_int(sqlite3_stmt *p, পূর্ণসংখ্যা i, পূর্ণসংখ্যা i_মান){
+  ফেরত sqlite3_bind_int64(p, i, (i64)i_মান);
 }
-int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
+পূর্ণসংখ্যা sqlite3_bind_int64(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i, sqlite_int64 i_মান){
   Mem *pVar;
   Vdbe *p = (Vdbe*)pStmt;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( vdbeSafetyNotNull(p) ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  যদি( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    ফেরত SQLITE_MISUSE_BKPT;
   }
-  if( i<=0 || (--i)>=p->nVar ){
+  যদি( i<=0 || (--i)>=p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    ফেরত SQLITE_RANGE;
   }
   pVar = &p->aVar[i];
-  if( p->expmask!=0 ){
+  যদি( p->expmask!=0 ){
     u32 expireMask = i>=32 ? 0x80000000 : (u32)1 << i;
-    assert( (p->expmask & p->smimask)==p->smimask );
-    if( (p->expmask & expireMask)!=0 ){
-      if( (p->smimask & expireMask)!=0 ){
+    প্রতিজ্ঞা( (p->expmask & p->smimask)==p->smimask );
+    যদি( (p->expmask & expireMask)!=0 ){
+      যদি( (p->smimask & expireMask)!=0 ){
         /* If the smimask bit is set, only expire the prepared statement
         ** if the value is changing to or from (0,1) and something else */
-        int sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
-        int sm2 = iValue>=0 && iValue<=1;
-        if( sm1!=sm2 ){
+        পূর্ণসংখ্যা sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
+        পূর্ণসংখ্যা sm2 = i_মান>=0 && i_মান<=1;
+        যদি( sm1!=sm2 ){
           p->expired = 1;
         }
-      }else if( (pVar->flags & MEM_Int)==0 || iValue!=pVar->u.i ){
+      }অন্যথা যদি( (pVar->flags & MEM_Int)==0 || i_মান!=pVar->u.i ){
         /* Always expire if the smimask bit is clear */
         p->expired = 1;
       }
     }
   }
-  sqlite3VdbeMemSetInt64(pVar, iValue);
+  sqlite3VdbeMemSetInt64(pVar, i_মান);
   sqlite3_mutex_leave(p->db->mutex);
-  return SQLITE_OK;
+  ফেরত SQLITE_OK;
 }
-int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
-  int rc;
+পূর্ণসংখ্যা sqlite3_bind_null(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
+  পূর্ণসংখ্যা rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
-    assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
+  যদি( rc==SQLITE_OK ){
+    প্রতিজ্ঞা( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ফেরত rc;
 }
-int sqlite3_bind_pointer(
+পূর্ণসংখ্যা sqlite3_bind_pointer(
   sqlite3_stmt *pStmt,
-  int i,
-  void *pPtr,
-  const char *zPTtype,
-  void (*xDestructor)(void*)
+  পূর্ণসংখ্যা i,
+  শূন্য *pPtr,
+  ধ্রুবক অক্ষর *zPTtype,
+  শূন্য (*xDestructor)(শূন্য*)
 ){
-  int rc;
+  পূর্ণসংখ্যা rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
-    assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
+  যদি( rc==SQLITE_OK ){
+    প্রতিজ্ঞা( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3VdbeMemSetPointer(&p->aVar[i-1], pPtr, zPTtype, xDestructor);
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDestructor ){
+  }অন্যথা যদি( xDestructor ){
     xDestructor(pPtr);
   }
-  return rc;
+  ফেরত rc;
 }
-int sqlite3_bind_text(
+পূর্ণসংখ্যা sqlite3_bind_text(
   sqlite3_stmt *pStmt,
-  int i,
-  const char *zData,
-  int nData,
-  void (*xDel)(void*)
+  পূর্ণসংখ্যা i,
+  ধ্রুবক অক্ষর *z_তথ্য,
+  পূর্ণসংখ্যা n_তথ্য,
+  শূন্য (*xDel)(শূন্য*)
 ){
-  return bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
+  ফেরত bindText(pStmt, i, z_তথ্য, n_তথ্য, xDel, SQLITE_UTF8);
 }
-int sqlite3_bind_text64(
+পূর্ণসংখ্যা sqlite3_bind_text64(
   sqlite3_stmt *pStmt,
-  int i,
-  const char *zData,
-  sqlite3_uint64 nData,
-  void (*xDel)(void*),
-  unsigned char enc
+  পূর্ণসংখ্যা i,
+  ধ্রুবক অক্ষর *z_তথ্য,
+  sqlite3_uint64 n_তথ্য,
+  শূন্য (*xDel)(শূন্য*),
+  unsigned অক্ষর enc
 ){
-  assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
-    nData &= ~(u64)1;
+  প্রতিজ্ঞা( xDel!=SQLITE_DYNAMIC );
+  যদি( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    যদি( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+    n_তথ্য &= ~(u64)1;
   }
-  return bindText(pStmt, i, zData, nData, xDel, enc);
+  ফেরত bindText(pStmt, i, z_তথ্য, n_তথ্য, xDel, enc);
 }
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3_bind_text16(
+পূর্ণসংখ্যা sqlite3_bind_text16(
   sqlite3_stmt *pStmt,
-  int i,
-  const void *zData,
-  int n,
-  void (*xDel)(void*)
+  পূর্ণসংখ্যা i,
+  ধ্রুবক শূন্য *z_তথ্য,
+  পূর্ণসংখ্যা n,
+  শূন্য (*xDel)(শূন্য*)
 ){
-  return bindText(pStmt, i, zData, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
+  ফেরত bindText(pStmt, i, z_তথ্য, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
-  int rc;
-  switch( sqlite3_value_type((sqlite3_value*)pValue) ){
-    case SQLITE_INTEGER: {
-      rc = sqlite3_bind_int64(pStmt, i, pValue->u.i);
-      break;
+পূর্ণসংখ্যা sqlite3_bind_মান(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i, ধ্রুবক sqlite3_মান *p_মান){
+  পূর্ণসংখ্যা rc;
+  নির্বাচন( sqlite3_মান_type((sqlite3_মান*)p_মান) ){
+    ক্ষেত্র SQLITE_INTEGER: {
+      rc = sqlite3_bind_int64(pStmt, i, p_মান->u.i);
+      বিরতি;
     }
-    case SQLITE_FLOAT: {
-      assert( pValue->flags & (MEM_Real|MEM_IntReal) );
+    ক্ষেত্র SQLITE_FLOAT: {
+      প্রতিজ্ঞা( p_মান->flags & (MEM_Real|MEM_IntReal) );
       rc = sqlite3_bind_double(pStmt, i,
-          (pValue->flags & MEM_Real) ? pValue->u.r : (double)pValue->u.i
+          (p_মান->flags & MEM_Real) ? p_মান->u.r : (দ্বিগুণ)p_মান->u.i
       );
-      break;
+      বিরতি;
     }
-    case SQLITE_BLOB: {
-      if( pValue->flags & MEM_Zero ){
-        rc = sqlite3_bind_zeroblob(pStmt, i, pValue->u.nZero);
-      }else{
-        rc = sqlite3_bind_blob(pStmt, i, pValue->z, pValue->n,SQLITE_TRANSIENT);
+    ক্ষেত্র SQLITE_BLOB: {
+      যদি( p_মান->flags & MEM_Zero ){
+        rc = sqlite3_bind_zeroblob(pStmt, i, p_মান->u.nZero);
+      }অন্যথা{
+        rc = sqlite3_bind_blob(pStmt, i, p_মান->z, p_মান->n,SQLITE_TRANSIENT);
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_TEXT: {
-      rc = bindText(pStmt,i,  pValue->z, pValue->n, SQLITE_TRANSIENT,
-                              pValue->enc);
-      break;
+    ক্ষেত্র SQLITE_TEXT: {
+      rc = bindText(pStmt,i,  p_মান->z, p_মান->n, SQLITE_TRANSIENT,
+                              p_মান->enc);
+      বিরতি;
     }
-    default: {
+    পূর্বনির্ধারিত: {
       rc = sqlite3_bind_null(pStmt, i);
-      break;
+      বিরতি;
     }
   }
-  return rc;
+  ফেরত rc;
 }
-int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
-  int rc;
+পূর্ণসংখ্যা sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i, পূর্ণসংখ্যা n){
+  পূর্ণসংখ্যা rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
-    assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
+  যদি( rc==SQLITE_OK ){
+    প্রতিজ্ঞা( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
 #ifndef SQLITE_OMIT_INCRBLOB
     sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
-#else
+#অন্যথা
     rc = sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
 #endif
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ফেরত rc;
 }
-int sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, int i, sqlite3_uint64 n){
-  int rc;
+পূর্ণসংখ্যা sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i, sqlite3_uint64 n){
+  পূর্ণসংখ্যা rc;
   Vdbe *p = (Vdbe *)pStmt;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  যদি( p==0 ) ফেরত SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(p->db->mutex);
-  if( n>(u64)p->db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  যদি( n>(u64)p->db->aLimit[SQLITE_LIMIT_দৈর্ঘ্য] ){
     rc = SQLITE_TOOBIG;
-  }else{
-    assert( (n & 0x7FFFFFFF)==n );
+  }অন্যথা{
+    প্রতিজ্ঞা( (n & 0x7FFFFFFF)==n );
     rc = sqlite3_bind_zeroblob(pStmt, i, n);
   }
   rc = sqlite3ApiExit(p->db, rc);
   sqlite3_mutex_leave(p->db->mutex);
-  return rc;
+  ফেরত rc;
 }
 
 /*
 ** Return the number of wildcards that can be potentially bound to.
 ** This routine is added to support DBD::SQLite. 
 */
-int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
+পূর্ণসংখ্যা sqlite3_bind_parameter_গুনতি(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  return p ? p->nVar : 0;
+  ফেরত p ? p->nVar : 0;
 }
 
 /*
@@ -2054,10 +2054,10 @@ int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
 **
 ** The result is always UTF-8.
 */
-const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
+ধ্রুবক অক্ষর *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, পূর্ণসংখ্যা i){
   Vdbe *p = (Vdbe*)pStmt;
-  if( p==0 ) return 0;
-  return sqlite3VListNumToName(p->pVList, i);
+  যদি( p==0 ) ফেরত 0;
+  ফেরত sqlite3_VList_অঙ্ক_To_Name(p->pVList, i);
 }
 
 /*
@@ -2065,29 +2065,29 @@ const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
 ** with that name.  If there is no variable with the given name,
 ** return 0.
 */
-int sqlite3VdbeParameterIndex(Vdbe *p, const char *zName, int nName){
-  if( p==0 || zName==0 ) return 0;
-  return sqlite3VListNameToNum(p->pVList, zName, nName);
+পূর্ণসংখ্যা sqlite3_Vdbe_Parameter_সূচক(Vdbe *p, ধ্রুবক অক্ষর *zName, পূর্ণসংখ্যা nName){
+  যদি( p==0 || zName==0 ) ফেরত 0;
+  ফেরত sqlite3_VList_Name_To_অঙ্ক(p->pVList, zName, nName);
 }
-int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
-  return sqlite3VdbeParameterIndex((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
+পূর্ণসংখ্যা sqlite3_bind_parameter_সূচক(sqlite3_stmt *pStmt, ধ্রুবক অক্ষর *zName){
+  ফেরত sqlite3_Vdbe_Parameter_সূচক((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
 }
 
 /*
 ** Transfer all bindings from the first statement over to the second.
 */
-int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+পূর্ণসংখ্যা sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  int i;
-  assert( pTo->db==pFrom->db );
-  assert( pTo->nVar==pFrom->nVar );
+  পূর্ণসংখ্যা i;
+  প্রতিজ্ঞা( pTo->db==pFrom->db );
+  প্রতিজ্ঞা( pTo->nVar==pFrom->nVar );
   sqlite3_mutex_enter(pTo->db->mutex);
-  for(i=0; i<pFrom->nVar; i++){
+  জন্য(i=0; i<pFrom->nVar; i++){
     sqlite3VdbeMemMove(&pTo->aVar[i], &pFrom->aVar[i]);
   }
   sqlite3_mutex_leave(pTo->db->mutex);
-  return SQLITE_OK;
+  ফেরত SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -2103,21 +2103,21 @@ int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** an SQLITE_ERROR is returned.  Nothing else can go wrong, so otherwise
 ** SQLITE_OK is returned.
 */
-int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+পূর্ণসংখ্যা sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  if( pFrom->nVar!=pTo->nVar ){
-    return SQLITE_ERROR;
+  যদি( pFrom->nVar!=pTo->nVar ){
+    ফেরত SQLITE_ERROR;
   }
-  assert( (pTo->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pTo->expmask==0 );
-  if( pTo->expmask ){
+  প্রতিজ্ঞা( (pTo->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pTo->expmask==0 );
+  যদি( pTo->expmask ){
     pTo->expired = 1;
   }
-  assert( (pFrom->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pFrom->expmask==0 );
-  if( pFrom->expmask ){
+  প্রতিজ্ঞা( (pFrom->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pFrom->expmask==0 );
+  যদি( pFrom->expmask ){
     pFrom->expired = 1;
   }
-  return sqlite3TransferBindings(pFromStmt, pToStmt);
+  ফেরত sqlite3TransferBindings(pFromStmt, pToStmt);
 }
 #endif
 
@@ -2128,72 +2128,72 @@ int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** the statement in the first place.
 */
 sqlite3 *sqlite3_db_handle(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->db : 0;
+  ফেরত pStmt ? ((Vdbe*)pStmt)->db : 0;
 }
 
 /*
 ** Return true if the prepared statement is guaranteed to not modify the
 ** database.
 */
-int sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
+পূর্ণসংখ্যা sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
+  ফেরত pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
 }
 
 /*
 ** Return 1 if the statement is an EXPLAIN and return 2 if the
 ** statement is an EXPLAIN QUERY PLAN
 */
-int sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->explain : 0;
+পূর্ণসংখ্যা sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
+  ফেরত pStmt ? ((Vdbe*)pStmt)->explain : 0;
 }
 
 /*
 ** Set the explain mode for a statement.
 */
-int sqlite3_stmt_explain(sqlite3_stmt *pStmt, int eMode){
+পূর্ণসংখ্যা sqlite3_stmt_explain(sqlite3_stmt *pStmt, পূর্ণসংখ্যা eMode){
   Vdbe *v = (Vdbe*)pStmt;
-  int rc;
+  পূর্ণসংখ্যা rc;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ) return SQLITE_MISUSE_BKPT;
+  যদি( pStmt==0 ) ফেরত SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(v->db->mutex);
-  if( ((int)v->explain)==eMode ){
+  যদি( ((পূর্ণসংখ্যা)v->explain)==eMode ){
     rc = SQLITE_OK;
-  }else if( eMode<0 || eMode>2 ){
+  }অন্যথা যদি( eMode<0 || eMode>2 ){
     rc = SQLITE_ERROR;
-  }else if( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
+  }অন্যথা যদি( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
     rc = SQLITE_ERROR;
-  }else if( v->eVdbeState!=VDBE_READY_STATE ){
+  }অন্যথা যদি( v->eVdbeState!=VDBE_READY_STATE ){
     rc = SQLITE_BUSY;
-  }else if( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
+  }অন্যথা যদি( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
     /* No reprepare necessary */
     v->explain = eMode;
     rc = SQLITE_OK;
-  }else{
-    int savedMode = v->explain;
+  }অন্যথা{
+    পূর্ণসংখ্যা savedMode = v->explain;
     v->explain = eMode;
     rc = sqlite3Reprepare(v);
-    if( rc ){
+    যদি( rc ){
       v->explain = savedMode;
-    }else{
+    }অন্যথা{
       v->haveEqpOps = eMode==2;
     }
   }
-  if( v->explain ){
+  যদি( v->explain ){
     v->nResColumn = 12 - 4*v->explain;
-  }else{
+  }অন্যথা{
     v->nResColumn = v->nResAlloc;
   }
   sqlite3_mutex_leave(v->db->mutex);
-  return rc;
+  ফেরত rc;
 }
 
 /*
 ** Return true if the prepared statement is in need of being reset.
 */
-int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
+পূর্ণসংখ্যা sqlite3_stmt_busy(sqlite3_stmt *pStmt){
   Vdbe *v = (Vdbe*)pStmt;
-  return v!=0 && v->eVdbeState==VDBE_RUN_STATE;
+  ফেরত v!=0 && v->eVdbeState==VDBE_RUN_STATE;
 }
 
 /*
@@ -2202,62 +2202,62 @@ int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
 ** prepared statement for the database connection.  Return NULL if there
 ** are no more.
 */
-sqlite3_stmt *sqlite3_next_stmt(sqlite3 *pDb, sqlite3_stmt *pStmt){
-  sqlite3_stmt *pNext;
+sqlite3_stmt *sqlite3_পরবর্তী_stmt(sqlite3 *pDb, sqlite3_stmt *pStmt){
+  sqlite3_stmt *p_পরবর্তী;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(pDb) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  যদি( !sqlite3SafetyCheckOk(pDb) ){
+    (শূন্য)SQLITE_MISUSE_BKPT;
+    ফেরত 0;
   }
 #endif
   sqlite3_mutex_enter(pDb->mutex);
-  if( pStmt==0 ){
-    pNext = (sqlite3_stmt*)pDb->pVdbe;
-  }else{
-    pNext = (sqlite3_stmt*)((Vdbe*)pStmt)->pVNext;
+  যদি( pStmt==0 ){
+    p_পরবর্তী = (sqlite3_stmt*)pDb->pVdbe;
+  }অন্যথা{
+    p_পরবর্তী = (sqlite3_stmt*)((Vdbe*)pStmt)->pVNext;
   }
   sqlite3_mutex_leave(pDb->mutex);
-  return pNext;
+  ফেরত p_পরবর্তী;
 }
 
 /*
 ** Return the value of a status counter for a prepared statement
 */
-int sqlite3_stmt_status(sqlite3_stmt *pStmt, int op, int resetFlag){
+পূর্ণসংখ্যা sqlite3_stmt_status(sqlite3_stmt *pStmt, পূর্ণসংখ্যা op, পূর্ণসংখ্যা resetFlag){
   Vdbe *pVdbe = (Vdbe*)pStmt;
   u32 v;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !pStmt
-   || (op!=SQLITE_STMTSTATUS_MEMUSED && (op<0||op>=ArraySize(pVdbe->aCounter)))
+  যদি( !pStmt
+   || (op!=SQLITE_STMTSTATUS_MEMUSED && (op<0||op>=Array_আকার(pVdbe->a_গণক)))
   ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    (শূন্য)SQLITE_MISUSE_BKPT;
+    ফেরত 0;
   }
 #endif
-  if( op==SQLITE_STMTSTATUS_MEMUSED ){
+  যদি( op==SQLITE_STMTSTATUS_MEMUSED ){
     sqlite3 *db = pVdbe->db;
     sqlite3_mutex_enter(db->mutex);
     v = 0;
-    db->pnBytesFreed = (int*)&v;
-    assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
+    db->pnBytesFreed = (পূর্ণসংখ্যা*)&v;
+    প্রতিজ্ঞা( db->lookaside.pEnd==db->lookaside.pTrueEnd );
     db->lookaside.pEnd = db->lookaside.pStart;
     sqlite3VdbeDelete(pVdbe);
     db->pnBytesFreed = 0;
     db->lookaside.pEnd = db->lookaside.pTrueEnd;
     sqlite3_mutex_leave(db->mutex);
-  }else{
-    v = pVdbe->aCounter[op];
-    if( resetFlag ) pVdbe->aCounter[op] = 0;
+  }অন্যথা{
+    v = pVdbe->a_গণক[op];
+    যদি( resetFlag ) pVdbe->a_গণক[op] = 0;
   }
-  return (int)v;
+  ফেরত (পূর্ণসংখ্যা)v;
 }
 
 /*
 ** Return the SQL associated with a prepared statement
 */
-const char *sqlite3_sql(sqlite3_stmt *pStmt){
+ধ্রুবক অক্ষর *sqlite3_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  return p ? p->zSql : 0;
+  ফেরত p ? p->zSql : 0;
 }
 
 /*
@@ -2269,19 +2269,19 @@ const char *sqlite3_sql(sqlite3_stmt *pStmt){
 ** The SQLITE_TRACE_SIZE_LIMIT puts an upper bound on the size of
 ** expanded bound parameters.
 */
-char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
+অক্ষর *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 #ifdef SQLITE_OMIT_TRACE
-  return 0;
-#else
-  char *z = 0;
-  const char *zSql = sqlite3_sql(pStmt);
-  if( zSql ){
+  ফেরত 0;
+#অন্যথা
+  অক্ষর *z = 0;
+  ধ্রুবক অক্ষর *zSql = sqlite3_sql(pStmt);
+  যদি( zSql ){
     Vdbe *p = (Vdbe *)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     z = sqlite3VdbeExpandSql(p, zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return z;
+  ফেরত z;
 #endif
 }
 
@@ -2289,15 +2289,15 @@ char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 /*
 ** Return the normalized SQL associated with a prepared statement.
 */
-const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
+ধ্রুবক অক্ষর *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  if( p==0 ) return 0;
-  if( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
+  যদি( p==0 ) ফেরত 0;
+  যদি( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
     sqlite3_mutex_enter(p->db->mutex);
     p->zNormSql = sqlite3Normalize(p, p->zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return p->zNormSql;
+  ফেরত p->zNormSql;
 }
 #endif /* SQLITE_ENABLE_NORMALIZE */
 
@@ -2307,113 +2307,113 @@ const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
 ** record in nKey/pKey. Return a pointer to the new UnpackedRecord structure
 ** if successful, or a NULL pointer if an OOM error is encountered.
 */
-static UnpackedRecord *vdbeUnpackRecord(
-  KeyInfo *pKeyInfo,
-  int nKey,
-  const void *pKey
+স্থির UnpackedRecord *vdbeUnpackRecord(
+  চাবি_Info *p_চাবি_Info,
+  পূর্ণসংখ্যা n_চাবি,
+  ধ্রুবক শূন্য *p_চাবি
 ){
   UnpackedRecord *pRet;           /* Return value */
 
-  pRet = sqlite3VdbeAllocUnpackedRecord(pKeyInfo);
-  if( pRet ){
-    memset(pRet->aMem, 0, sizeof(Mem)*(pKeyInfo->nKeyField+1));
-    sqlite3VdbeRecordUnpack(nKey, pKey, pRet);
+  pRet = sqlite3VdbeAllocUnpackedRecord(p_চাবি_Info);
+  যদি( pRet ){
+    memset(pRet->aMem, 0, আকার(Mem)*(p_চাবি_Info->n_চাবি_Field+1));
+    sqlite3VdbeRecordUnpack(n_চাবি, p_চাবি, pRet);
   }
-  return pRet;
+  ফেরত pRet;
 }
 
 /*
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or deleted.
 */
-int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+পূর্ণসংখ্যা sqlite3_preupdate_old(sqlite3 *db, পূর্ণসংখ্যা iIdx, sqlite3_মান **pp_মান){
   PreUpdate *p;
   Mem *pMem;
-  int rc = SQLITE_OK;
-  int iStore = 0;
+  পূর্ণসংখ্যা rc = SQLITE_OK;
+  পূর্ণসংখ্যা iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( db==0 || pp_মান==0 ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
   /* Test that this call is being made from within an SQLITE_DELETE or
   ** SQLITE_UPDATE pre-update callback, and that iIdx is within range. */
-  if( !p || p->op==SQLITE_INSERT ){
+  যদি( !p || p->op==SQLITE_ঢোকাও ){
     rc = SQLITE_MISUSE_BKPT;
-    goto preupdate_old_out;
+    যাও preupdate_old_out;
   }
-  if( p->pPk ){
-    iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
+  যদি( p->pPk ){
+    iStore = sqlite3_Table_Column_To_সূচক(p->pPk, iIdx);
+  }অন্যথা যদি( iIdx >= p->pTab->nCol ){
     rc = SQLITE_MISUSE_BKPT;
-    goto preupdate_old_out;
-  }else{
+    যাও preupdate_old_out;
+  }অন্যথা{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  যদি( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
-    goto preupdate_old_out;
+    যাও preupdate_old_out;
   }
 
-  if( iIdx==p->pTab->iPKey ){
-    *ppValue = pMem = &p->oldipk;
+  যদি( iIdx==p->pTab->iPKey ){
+    *pp_মান = pMem = &p->oldipk;
     sqlite3VdbeMemSetInt64(pMem, p->iKey1);
-  }else{
+  }অন্যথা{
 
     /* If the old.* record has not yet been loaded into memory, do so now. */
-    if( p->pUnpacked==0 ){
+    যদি( p->pUnpacked==0 ){
       u32 nRec;
       u8 *aRec;
 
-      assert( p->pCsr->eCurType==CURTYPE_BTREE );
-      nRec = sqlite3BtreePayloadSize(p->pCsr->uc.pCursor);
+      প্রতিজ্ঞা( p->pCsr->eCurType==CURTYPE_BTREE );
+      nRec = sqlite3_Btree_Payload_আকার(p->pCsr->uc.pCursor);
       aRec = sqlite3DbMallocRaw(db, (u64)nRec+8);
-      if( !aRec ) goto preupdate_old_out;
+      যদি( !aRec ) যাও preupdate_old_out;
       rc = sqlite3BtreePayload(p->pCsr->uc.pCursor, 0, nRec, aRec);
-      if( rc==SQLITE_OK ){
+      যদি( rc==SQLITE_OK ){
         memset(aRec+nRec, 0, 8);
         p->pUnpacked = vdbeUnpackRecord(p->pKeyinfo, nRec, aRec);
-        if( !p->pUnpacked ) rc = SQLITE_NOMEM;
+        যদি( !p->pUnpacked ) rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ){
+      যদি( rc!=SQLITE_OK ){
         sqlite3DbFree(db, aRec);
-        goto preupdate_old_out;
+        যাও preupdate_old_out;
       }
       p->aRecord = aRec;
     }
 
-    pMem = *ppValue = &p->pUnpacked->aMem[iStore];
-    if( iStore>=p->pUnpacked->nField ){
+    pMem = *pp_মান = &p->pUnpacked->aMem[iStore];
+    যদি( iStore>=p->pUnpacked->nField ){
       /* This occurs when the table has been extended using ALTER TABLE
       ** ADD COLUMN. The value to return is the default value of the column. */
       Column *pCol = &p->pTab->aCol[iIdx];
-      if( pCol->iDflt>0 ){
-        if( p->apDflt==0 ){
-          int nByte;
-          assert( sizeof(sqlite3_value*)*UMXV(p->pTab->nCol) < 0x7fffffff );
-          nByte = sizeof(sqlite3_value*)*p->pTab->nCol;
-          p->apDflt = (sqlite3_value**)sqlite3DbMallocZero(db, nByte);
-          if( p->apDflt==0 ) goto preupdate_old_out;
+      যদি( pCol->iDflt>0 ){
+        যদি( p->apDflt==0 ){
+          পূর্ণসংখ্যা nByte;
+          প্রতিজ্ঞা( আকার(sqlite3_মান*)*UMXV(p->pTab->nCol) < 0x7fffffff );
+          nByte = আকার(sqlite3_মান*)*p->pTab->nCol;
+          p->apDflt = (sqlite3_মান**)sqlite3DbMallocZero(db, nByte);
+          যদি( p->apDflt==0 ) যাও preupdate_old_out;
         }
-        if( p->apDflt[iIdx]==0 ){
-          sqlite3_value *pVal = 0;
-          Expr *pDflt;
-          assert( p->pTab!=0 && IsOrdinaryTable(p->pTab) );
-          pDflt = p->pTab->u.tab.pDfltList->a[pCol->iDflt-1].pExpr;
-          rc = sqlite3ValueFromExpr(db, pDflt, ENC(db), pCol->affinity, &pVal);
-          if( rc==SQLITE_OK && pVal==0 ){
+        যদি( p->apDflt[iIdx]==0 ){
+          sqlite3_মান *pVal = 0;
+          রাশিমালা *pDflt;
+          প্রতিজ্ঞা( p->pTab!=0 && IsOrdinaryTable(p->pTab) );
+          pDflt = p->pTab->u.tab.pDfltList->a[pCol->iDflt-1].p_রাশিমালা;
+          rc = sqlite3_মান_From_রাশিমালা(db, pDflt, ENC(db), pCol->affinity, &pVal);
+          যদি( rc==SQLITE_OK && pVal==0 ){
             rc = SQLITE_CORRUPT_BKPT;
           }
           p->apDflt[iIdx] = pVal;
         }
-        *ppValue = p->apDflt[iIdx];
-      }else{
-        *ppValue = (sqlite3_value *)columnNullValue();
+        *pp_মান = p->apDflt[iIdx];
+      }অন্যথা{
+        *pp_মান = (sqlite3_মান *)column_Null_মান();
       }
-    }else if( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
-      if( pMem->flags & (MEM_Int|MEM_IntReal) ){
+    }অন্যথা যদি( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
+      যদি( pMem->flags & (MEM_Int|MEM_IntReal) ){
         testcase( pMem->flags & MEM_Int );
         testcase( pMem->flags & MEM_IntReal );
         sqlite3VdbeMemRealify(pMem);
@@ -2423,7 +2423,7 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 
  preupdate_old_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  ফেরত sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2432,14 +2432,14 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 ** This function is called from within a pre-update callback to retrieve
 ** the number of columns in the row being updated, deleted or inserted.
 */
-int sqlite3_preupdate_count(sqlite3 *db){
+পূর্ণসংখ্যা sqlite3_preupdate_গুনতি(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#অন্যথা
   p = db->pPreUpdate;
 #endif
-  return (p ? p->pKeyinfo->nKeyField : 0);
+  ফেরত (p ? p->pKeyinfo->n_চাবি_Field : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2455,14 +2455,14 @@ int sqlite3_preupdate_count(sqlite3 *db){
 ** For the purposes of the previous paragraph, a foreign key CASCADE, SET NULL
 ** or SET DEFAULT action is considered a trigger.
 */
-int sqlite3_preupdate_depth(sqlite3 *db){
+পূর্ণসংখ্যা sqlite3_preupdate_depth(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#অন্যথা
   p = db->pPreUpdate;
 #endif
-  return (p ? p->v->nFrame : 0);
+  ফেরত (p ? p->v->nFrame : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2471,14 +2471,14 @@ int sqlite3_preupdate_depth(sqlite3 *db){
 ** This function is designed to be called from within a pre-update callback
 ** only.
 */
-int sqlite3_preupdate_blobwrite(sqlite3 *db){
+পূর্ণসংখ্যা sqlite3_preupdate_blobwrite(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#অন্যথা
   p = db->pPreUpdate;
 #endif
-  return (p ? p->iBlobWrite : -1);
+  ফেরত (p ? p->iBlobWrite : -1);
 }
 #endif
 
@@ -2487,92 +2487,92 @@ int sqlite3_preupdate_blobwrite(sqlite3 *db){
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or inserted.
 */
-int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+পূর্ণসংখ্যা sqlite3_preupdate_new(sqlite3 *db, পূর্ণসংখ্যা iIdx, sqlite3_মান **pp_মান){
   PreUpdate *p;
-  int rc = SQLITE_OK;
+  পূর্ণসংখ্যা rc = SQLITE_OK;
   Mem *pMem;
-  int iStore = 0;
+  পূর্ণসংখ্যা iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  যদি( db==0 || pp_মান==0 ){
+    ফেরত SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
-  if( !p || p->op==SQLITE_DELETE ){
+  যদি( !p || p->op==SQLITE_DELETE ){
     rc = SQLITE_MISUSE_BKPT;
-    goto preupdate_new_out;
+    যাও preupdate_new_out;
   }
-  if( p->pPk && p->op!=SQLITE_UPDATE ){
-    iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
-    return SQLITE_MISUSE_BKPT;
-  }else{
+  যদি( p->pPk && p->op!=SQLITE_UPDATE ){
+    iStore = sqlite3_Table_Column_To_সূচক(p->pPk, iIdx);
+  }অন্যথা যদি( iIdx >= p->pTab->nCol ){
+    ফেরত SQLITE_MISUSE_BKPT;
+  }অন্যথা{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
 
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  যদি( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
-    goto preupdate_new_out;
+    যাও preupdate_new_out;
   }
 
-  if( p->op==SQLITE_INSERT ){
+  যদি( p->op==SQLITE_ঢোকাও ){
     /* For an INSERT, memory cell p->iNewReg contains the serialized record
     ** that is being inserted. Deserialize it. */
     UnpackedRecord *pUnpack = p->pNewUnpacked;
-    if( !pUnpack ){
-      Mem *pData = &p->v->aMem[p->iNewReg];
-      rc = ExpandBlob(pData);
-      if( rc!=SQLITE_OK ) goto preupdate_new_out;
-      pUnpack = vdbeUnpackRecord(p->pKeyinfo, pData->n, pData->z);
-      if( !pUnpack ){
+    যদি( !pUnpack ){
+      Mem *p_তথ্য = &p->v->aMem[p->iNewReg];
+      rc = ExpandBlob(p_তথ্য);
+      যদি( rc!=SQLITE_OK ) যাও preupdate_new_out;
+      pUnpack = vdbeUnpackRecord(p->pKeyinfo, p_তথ্য->n, p_তথ্য->z);
+      যদি( !pUnpack ){
         rc = SQLITE_NOMEM;
-        goto preupdate_new_out;
+        যাও preupdate_new_out;
       }
       p->pNewUnpacked = pUnpack;
     }
     pMem = &pUnpack->aMem[iStore];
-    if( iIdx==p->pTab->iPKey ){
+    যদি( iIdx==p->pTab->iPKey ){
       sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-    }else if( iStore>=pUnpack->nField ){
-      pMem = (sqlite3_value *)columnNullValue();
-    }else if( (p->pTab->aCol)
+    }অন্যথা যদি( iStore>=pUnpack->nField ){
+      pMem = (sqlite3_মান *)column_Null_মান();
+    }অন্যথা যদি( (p->pTab->aCol)
            && (p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL)
            && (pMem->flags & (MEM_Int|MEM_IntReal))
     ){
       sqlite3VdbeMemRealify(pMem);
     }
-  }else{
+  }অন্যথা{
     /* For an UPDATE, memory cell (p->iNewReg+1+iStore) contains the required
     ** value. Make a copy of the cell contents and return a pointer to it.
     ** It is not safe to return a pointer to the memory cell itself as the
     ** caller may modify the value text encoding.
     */
-    assert( p->op==SQLITE_UPDATE );
-    if( !p->aNew ){
-      assert( sizeof(Mem)*UMXV(p->pCsr->nField) < 0x7fffffff );
-      p->aNew = (Mem *)sqlite3DbMallocZero(db, sizeof(Mem)*p->pCsr->nField);
-      if( !p->aNew ){
+    প্রতিজ্ঞা( p->op==SQLITE_UPDATE );
+    যদি( !p->aNew ){
+      প্রতিজ্ঞা( আকার(Mem)*UMXV(p->pCsr->nField) < 0x7fffffff );
+      p->aNew = (Mem *)sqlite3DbMallocZero(db, আকার(Mem)*p->pCsr->nField);
+      যদি( !p->aNew ){
         rc = SQLITE_NOMEM;
-        goto preupdate_new_out;
+        যাও preupdate_new_out;
       }
     }
-    assert( iStore>=0 && iStore<p->pCsr->nField );
+    প্রতিজ্ঞা( iStore>=0 && iStore<p->pCsr->nField );
     pMem = &p->aNew[iStore];
-    if( pMem->flags==0 ){
-      if( iIdx==p->pTab->iPKey ){
+    যদি( pMem->flags==0 ){
+      যদি( iIdx==p->pTab->iPKey ){
         sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-      }else{
+      }অন্যথা{
         rc = sqlite3VdbeMemCopy(pMem, &p->v->aMem[p->iNewReg+1+iStore]);
-        if( rc!=SQLITE_OK ) goto preupdate_new_out;
+        যদি( rc!=SQLITE_OK ) যাও preupdate_new_out;
       }
     }
   }
-  *ppValue = pMem;
+  *pp_মান = pMem;
 
  preupdate_new_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  ফেরত sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2580,141 +2580,141 @@ int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus_v2(
+পূর্ণসংখ্যা sqlite3_stmt_scanstatus_v2(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
-  int flags,
-  void *pOut                      /* OUT: Write the answer here */
+  পূর্ণসংখ্যা iScan,                      /* Index of loop to report on */
+  পূর্ণসংখ্যা iScanStatusOp,              /* Which metric to return */
+  পূর্ণসংখ্যা flags,
+  শূন্য *pOut                      /* OUT: Write the answer here */
 ){
   Vdbe *p = (Vdbe*)pStmt;
   VdbeOp *aOp;
-  int nOp;
+  পূর্ণসংখ্যা nOp;
   ScanStatus *pScan = 0;
-  int idx;
+  পূর্ণসংখ্যা idx;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 || pOut==0
+  যদি( p==0 || pOut==0
       || iScanStatusOp<SQLITE_SCANSTAT_NLOOP
       || iScanStatusOp>SQLITE_SCANSTAT_NCYCLE ){
-    return 1;
+    ফেরত 1;
   }
 #endif
   aOp = p->aOp;
   nOp = p->nOp;
-  if( p->pFrame ){
+  যদি( p->pFrame ){
     VdbeFrame *pFrame;
-    for(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
+    জন্য(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
     aOp = pFrame->aOp;
     nOp = pFrame->nOp;
   }
 
-  if( iScan<0 ){
-    int ii;
-    if( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
+  যদি( iScan<0 ){
+    পূর্ণসংখ্যা ii;
+    যদি( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
       i64 res = 0;
-      for(ii=0; ii<nOp; ii++){
+      জন্য(ii=0; ii<nOp; ii++){
         res += aOp[ii].nCycle;
       }
       *(i64*)pOut = res;
-      return 0;
+      ফেরত 0;
     }
-    return 1;
+    ফেরত 1;
   }
-  if( flags & SQLITE_SCANSTAT_COMPLEX ){
+  যদি( flags & SQLITE_SCANSTAT_COMPLEX ){
     idx = iScan;
-  }else{
+  }অন্যথা{
     /* If the COMPLEX flag is clear, then this function must ignore any
     ** ScanStatus structures with ScanStatus.addrLoop set to 0. */
-    for(idx=0; idx<p->nScan; idx++){
+    জন্য(idx=0; idx<p->nScan; idx++){
       pScan = &p->aScan[idx];
-      if( pScan->zName ){
+      যদি( pScan->zName ){
         iScan--;
-        if( iScan<0 ) break;
+        যদি( iScan<0 ) বিরতি;
       }
     }
   }
-  if( idx>=p->nScan ) return 1;
-  assert( pScan==0 || pScan==&p->aScan[idx] );
+  যদি( idx>=p->nScan ) ফেরত 1;
+  প্রতিজ্ঞা( pScan==0 || pScan==&p->aScan[idx] );
   pScan = &p->aScan[idx];
 
-  switch( iScanStatusOp ){
-    case SQLITE_SCANSTAT_NLOOP: {
-      if( pScan->addrLoop>0 ){
+  নির্বাচন( iScanStatusOp ){
+    ক্ষেত্র SQLITE_SCANSTAT_NLOOP: {
+      যদি( pScan->addrLoop>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrLoop].nExec;
-      }else{
+      }অন্যথা{
         *(sqlite3_int64*)pOut = -1;
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_NVISIT: {
-      if( pScan->addrVisit>0 ){
+    ক্ষেত্র SQLITE_SCANSTAT_NVISIT: {
+      যদি( pScan->addrVisit>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrVisit].nExec;
-      }else{
+      }অন্যথা{
         *(sqlite3_int64*)pOut = -1;
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_EST: {
-      double r = 1.0;
+    ক্ষেত্র SQLITE_SCANSTAT_EST: {
+      দ্বিগুণ r = 1.0;
       LogEst x = pScan->nEst;
-      while( x<100 ){
+      যখন( x<100 ){
         x += 10;
         r *= 0.5;
       }
-      *(double*)pOut = r*sqlite3LogEstToInt(x);
-      break;
+      *(দ্বিগুণ*)pOut = r*sqlite3LogEstToInt(x);
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_NAME: {
-      *(const char**)pOut = pScan->zName;
-      break;
+    ক্ষেত্র SQLITE_SCANSTAT_NAME: {
+      *(ধ্রুবক অক্ষর**)pOut = pScan->zName;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_EXPLAIN: {
-      if( pScan->addrExplain ){
-        *(const char**)pOut = aOp[ pScan->addrExplain ].p4.z;
-      }else{
-        *(const char**)pOut = 0;
+    ক্ষেত্র SQLITE_SCANSTAT_EXPLAIN: {
+      যদি( pScan->addrExplain ){
+        *(ধ্রুবক অক্ষর**)pOut = aOp[ pScan->addrExplain ].p4.z;
+      }অন্যথা{
+        *(ধ্রুবক অক্ষর**)pOut = 0;
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_SELECTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p1;
-      }else{
-        *(int*)pOut = -1;
+    ক্ষেত্র SQLITE_SCANSTAT_SELECTID: {
+      যদি( pScan->addrExplain ){
+        *(পূর্ণসংখ্যা*)pOut = aOp[ pScan->addrExplain ].p1;
+      }অন্যথা{
+        *(পূর্ণসংখ্যা*)pOut = -1;
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_PARENTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p2;
-      }else{
-        *(int*)pOut = -1;
+    ক্ষেত্র SQLITE_SCANSTAT_PARENTID: {
+      যদি( pScan->addrExplain ){
+        *(পূর্ণসংখ্যা*)pOut = aOp[ pScan->addrExplain ].p2;
+      }অন্যথা{
+        *(পূর্ণসংখ্যা*)pOut = -1;
       }
-      break;
+      বিরতি;
     }
-    case SQLITE_SCANSTAT_NCYCLE: {
+    ক্ষেত্র SQLITE_SCANSTAT_NCYCLE: {
       i64 res = 0;
-      if( pScan->aAddrRange[0]==0 ){
+      যদি( pScan->aAddrRange[0]==0 ){
         res = -1;
-      }else{
-        int ii;
-        for(ii=0; ii<ArraySize(pScan->aAddrRange); ii+=2){
-          int iIns = pScan->aAddrRange[ii];
-          int iEnd = pScan->aAddrRange[ii+1];
-          if( iIns==0 ) break;
-          if( iIns>0 ){
-            while( iIns<=iEnd ){
+      }অন্যথা{
+        পূর্ণসংখ্যা ii;
+        জন্য(ii=0; ii<Array_আকার(pScan->aAddrRange); ii+=2){
+          পূর্ণসংখ্যা iIns = pScan->aAddrRange[ii];
+          পূর্ণসংখ্যা iEnd = pScan->aAddrRange[ii+1];
+          যদি( iIns==0 ) বিরতি;
+          যদি( iIns>0 ){
+            যখন( iIns<=iEnd ){
               res += aOp[iIns].nCycle;
               iIns++;
             }
-          }else{
-            int iOp;
-            for(iOp=0; iOp<nOp; iOp++){
+          }অন্যথা{
+            পূর্ণসংখ্যা iOp;
+            জন্য(iOp=0; iOp<nOp; iOp++){
               Op *pOp = &aOp[iOp];
-              if( pOp->p1!=iEnd ) continue;
-              if( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
-                continue;
+              যদি( pOp->p1!=iEnd ) চালু;
+              যদি( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
+                চালু;
               }
               res += aOp[iOp].nCycle;
             }
@@ -2722,34 +2722,34 @@ int sqlite3_stmt_scanstatus_v2(
         }
       }
       *(i64*)pOut = res;
-      break;
+      বিরতি;
     }
-    default: {
-      return 1;
+    পূর্বনির্ধারিত: {
+      ফেরত 1;
     }
   }
-  return 0;
+  ফেরত 0;
 }
 
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus(
+পূর্ণসংখ্যা sqlite3_stmt_scanstatus(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
-  void *pOut                      /* OUT: Write the answer here */
+  পূর্ণসংখ্যা iScan,                      /* Index of loop to report on */
+  পূর্ণসংখ্যা iScanStatusOp,              /* Which metric to return */
+  শূন্য *pOut                      /* OUT: Write the answer here */
 ){
-  return sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
+  ফেরত sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
 }
 
 /*
 ** Zero all counters associated with the sqlite3_stmt_scanstatus() data.
 */
-void sqlite3_stmt_scanstatus_reset(sqlite3_stmt *pStmt){
+শূন্য sqlite3_stmt_scanstatus_reset(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  int ii;
-  for(ii=0; p!=0 && ii<p->nOp; ii++){
+  পূর্ণসংখ্যা ii;
+  জন্য(ii=0; p!=0 && ii<p->nOp; ii++){
     Op *pOp = &p->aOp[ii];
     pOp->nExec = 0;
     pOp->nCycle = 0;

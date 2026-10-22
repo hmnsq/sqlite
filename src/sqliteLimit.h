@@ -20,10 +20,10 @@
 ** The hard limit is the ability of a 32-bit signed integer
 ** to count the size: 2^31-1 or 2147483647.
 */
-#ifndef SQLITE_MAX_LENGTH
-# define SQLITE_MAX_LENGTH 1000000000
+#ifndef SQLITE_MAX_দৈর্ঘ্য
+# define SQLITE_MAX_দৈর্ঘ্য 1000000000
 #endif
-#define SQLITE_MIN_LENGTH 30   /* Minimum value for the length limit */
+#define SQLITE_MIN_দৈর্ঘ্য 30   /* Minimum value for the length limit */
 
 /*
 ** Maximum size of any single memory allocation.
@@ -39,11 +39,11 @@
 ** or even smaller would be reasonable upper bounds on the size of a memory
 ** allocations for most applications.
 */
-#ifndef SQLITE_MAX_ALLOCATION_SIZE
-# define SQLITE_MAX_ALLOCATION_SIZE  2147483391
+#ifndef SQLITE_MAX_ALLOCATION_আকার
+# define SQLITE_MAX_ALLOCATION_আকার  2147483391
 #endif
-#if SQLITE_MAX_ALLOCATION_SIZE>2147483391
-# error Maximum size for SQLITE_MAX_ALLOCATION_SIZE is 2147483391
+#যদি SQLITE_MAX_ALLOCATION_আকার>2147483391
+# error Maximum আকার_2 জন্য SQLITE_MAX_ALLOCATION_আকার is 2147483391
 #endif
 
 /*
@@ -69,9 +69,9 @@
 ** since must also store the primary key at the end.  Hence the
 ** column count for Index is u16 instead of i16.
 */
-#if !defined(SQLITE_MAX_COLUMN)
+#যদি !defined(SQLITE_MAX_COLUMN)
 # define SQLITE_MAX_COLUMN 2000
-#elif SQLITE_MAX_COLUMN>32767
+#নতুবা_যদি SQLITE_MAX_COLUMN>32767
 # error SQLITE_MAX_COLUMN may not exceed 32767
 #endif
 
@@ -85,8 +85,8 @@
 ** The hard limit is the largest possible 32-bit signed integer less
 ** 1024, or 2147482624.
 */
-#ifndef SQLITE_MAX_SQL_LENGTH
-# define SQLITE_MAX_SQL_LENGTH 1000000000
+#ifndef SQLITE_MAX_SQL_দৈর্ঘ্য
+# define SQLITE_MAX_SQL_দৈর্ঘ্য 1000000000
 #endif
 
 /*
@@ -98,8 +98,8 @@
 ** A value of 0 for this compile-time option causes all expression
 ** depth limiting code to be omitted.
 */
-#ifndef SQLITE_MAX_EXPR_DEPTH
-# define SQLITE_MAX_EXPR_DEPTH 1000
+#ifndef SQLITE_MAX_রাশিমালা_DEPTH
+# define SQLITE_MAX_রাশিমালা_DEPTH 1000
 #endif
 
 /*
@@ -157,8 +157,8 @@
 ** IMPLEMENTATION-OF: R-48205-43578 The default suggested cache size can be
 ** altered using the SQLITE_DEFAULT_CACHE_SIZE compile-time options.
 */
-#ifndef SQLITE_DEFAULT_CACHE_SIZE
-# define SQLITE_DEFAULT_CACHE_SIZE  -2000
+#ifndef SQLITE_DEFAULT_CACHE_আকার
+# define SQLITE_DEFAULT_CACHE_আকার  -2000
 #endif
 
 /*
@@ -186,8 +186,8 @@
 ** structure.  But otherwise, we believe that the number can be as large
 ** as a signed 32-bit integer can hold.
 */
-#ifndef SQLITE_MAX_VARIABLE_NUMBER
-# define SQLITE_MAX_VARIABLE_NUMBER 32766
+#ifndef SQLITE_MAX_VARIABLE_সংখ্যা
+# define SQLITE_MAX_VARIABLE_সংখ্যা 32766
 #endif
 
 /* Maximum page size.  The upper bound on this value is 65536.  This a limit
@@ -201,21 +201,21 @@
 ** compiled with the default page-size limit will not be able to rollback
 ** the aborted transaction. This could lead to database corruption.
 */
-#ifdef SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_MAX_PAGE_SIZE
+#ifdef SQLITE_MAX_PAGE_আকার
+# undef SQLITE_MAX_PAGE_আকার
 #endif
-#define SQLITE_MAX_PAGE_SIZE 65536
+#define SQLITE_MAX_PAGE_আকার 65536
 
 
 /*
 ** The default size of a database page.
 */
-#ifndef SQLITE_DEFAULT_PAGE_SIZE
-# define SQLITE_DEFAULT_PAGE_SIZE 4096
+#ifndef SQLITE_DEFAULT_PAGE_আকার
+# define SQLITE_DEFAULT_PAGE_আকার 4096
 #endif
-#if SQLITE_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_DEFAULT_PAGE_SIZE
-# define SQLITE_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
+#যদি SQLITE_DEFAULT_PAGE_আকার>SQLITE_MAX_PAGE_আকার
+# undef SQLITE_DEFAULT_PAGE_আকার
+# define SQLITE_DEFAULT_PAGE_আকার SQLITE_MAX_PAGE_আকার
 #endif
 
 /*
@@ -225,16 +225,16 @@
 ** SQLite may choose a larger value. This constant is the maximum value
 ** SQLite will choose on its own.
 */
-#ifndef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE 8192
+#ifndef SQLITE_MAX_DEFAULT_PAGE_আকার
+# define SQLITE_MAX_DEFAULT_PAGE_আকার 8192
 #endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
+#যদি SQLITE_MAX_DEFAULT_PAGE_আকার>SQLITE_MAX_PAGE_আকার
+# undef SQLITE_MAX_DEFAULT_PAGE_আকার
+# define SQLITE_MAX_DEFAULT_PAGE_আকার SQLITE_MAX_PAGE_আকার
 #endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE<SQLITE_DEFAULT_PAGE_SIZE
-# undef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_DEFAULT_PAGE_SIZE
+#যদি SQLITE_MAX_DEFAULT_PAGE_আকার<SQLITE_DEFAULT_PAGE_আকার
+# undef SQLITE_MAX_DEFAULT_PAGE_আকার
+# define SQLITE_MAX_DEFAULT_PAGE_আকার SQLITE_DEFAULT_PAGE_আকার
 #endif
 
 
@@ -245,16 +245,16 @@
 ** This value can be lowered (or raised) at run-time using the
 ** max_page_count macro.
 */
-#ifndef SQLITE_MAX_PAGE_COUNT
-# define SQLITE_MAX_PAGE_COUNT 0xfffffffe /* 4294967294 */
+#ifndef SQLITE_MAX_PAGE_গুনতি
+# define SQLITE_MAX_PAGE_গুনতি 0xfffffffe /* 4294967294 */
 #endif
 
 /*
 ** Maximum length (in bytes) of the pattern in a LIKE or GLOB
 ** operator.
 */
-#ifndef SQLITE_MAX_LIKE_PATTERN_LENGTH
-# define SQLITE_MAX_LIKE_PATTERN_LENGTH 50000
+#ifndef SQLITE_MAX_LIKE_PATTERN_দৈর্ঘ্য
+# define SQLITE_MAX_LIKE_PATTERN_দৈর্ঘ্য 50000
 #endif
 
 /*

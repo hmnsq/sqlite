@@ -11,19 +11,19 @@
 *************************************************************************
 **
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#অন্তর্ভাব "sqliteInt.h"
+#অন্তর্ভাব "tclsqlite.h"
+#অন্তর্ভাব <stdlib.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <assert.h>
 #ifndef SQLITE_OMIT_INCRBLOB
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+বাহ্যিক ধ্রুবক অক্ষর *sqlite3ErrName(পূর্ণসংখ্যা);
 
 /* From test1.c: */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern void *sqlite3TestTextToPtr(const char *z);
+বাহ্যিক পূর্ণসংখ্যা getDbPointer(Tcl_Interp *interp, ধ্রুবক অক্ষর *zA, sqlite3 **ppDb);
+বাহ্যিক শূন্য *sqlite3TestTextToPtr(ধ্রুবক অক্ষর *z);
 
 /*
 ** Attempt to extract a blob handle (type sqlite3_blob*) from the Tcl
@@ -37,46 +37,46 @@ extern void *sqlite3TestTextToPtr(const char *z);
 ** command (see tclsqlite.c). Otherwise, it is assumed to be a pointer 
 ** encoded using the ptrToText() routine or similar.
 */
-static int blobHandleFromObj(
+স্থির পূর্ণসংখ্যা blobHandleFromObj(
   Tcl_Interp *interp, 
   Tcl_Obj *pObj,
   sqlite3_blob **ppBlob
 ){
-  char *z;
-  Tcl_Size n;
+  অক্ষর *z;
+  Tcl_আকার n;
 
   z = Tcl_GetStringFromObj(pObj, &n);
-  if( n==0 ){
+  যদি( n==0 ){
     *ppBlob = 0;
-  }else if( n>9 && 0==memcmp("incrblob_", z, 9) ){
-    int notUsed;
+  }অন্যথা যদি( n>9 && 0==memcmp("incrblob_", z, 9) ){
+    পূর্ণসংখ্যা notUsed;
     Tcl_Channel channel;
-    ClientData instanceData;
+    Client_তথ্য instance_তথ্য;
     
     channel = Tcl_GetChannel(interp, z, &notUsed);
-    if( !channel ) return TCL_ERROR;
+    যদি( !channel ) ফেরত TCL_ERROR;
 
     Tcl_Flush(channel);
     Tcl_Seek(channel, 0, SEEK_SET);
 
-    instanceData = Tcl_GetChannelInstanceData(channel);
-    *ppBlob = *((sqlite3_blob **)instanceData);
-  }else{
+    instance_তথ্য = Tcl_Get_Channel_Instance_তথ্য(channel);
+    *ppBlob = *((sqlite3_blob **)instance_তথ্য);
+  }অন্যথা{
     *ppBlob = (sqlite3_blob*)sqlite3TestTextToPtr(z);
   }
 
-  return TCL_OK;
+  ফেরত TCL_OK;
 }
 
 /*
 ** Like Tcl_GetString(), except that if the string is 0 bytes in size, a
 ** NULL Pointer is returned.
 */
-static char *blobStringFromObj(Tcl_Obj *pObj){
-  Tcl_Size n;
-  char *z;
+স্থির অক্ষর *blobStringFromObj(Tcl_Obj *pObj){
+  Tcl_আকার n;
+  অক্ষর *z;
   z = Tcl_GetStringFromObj(pObj, &n);
-  return (n ? z : 0);
+  ফেরত (n ? z : 0);
 }
 
 /*
@@ -84,104 +84,104 @@ static char *blobStringFromObj(Tcl_Obj *pObj){
 **
 ** Tcl test harness for the sqlite3_blob_open() function.
 */
-static int SQLITE_TCLAPI test_blob_open(
-  ClientData clientData,          /* Not used */
+স্থির পূর্ণসংখ্যা SQLITE_TCLAPI test_blob_open(
+  Client_তথ্য client_তথ্য,          /* Not used */
   Tcl_Interp *interp,             /* Calling TCL interpreter */
-  int objc,                       /* Number of arguments */
+  পূর্ণসংখ্যা objc,                       /* Number of arguments */
   Tcl_Obj *CONST objv[]           /* Command arguments */
 ){
   sqlite3 *db;
-  const char *zDb;
-  const char *zTable;
-  const char *zColumn;
+  ধ্রুবক অক্ষর *zDb;
+  ধ্রুবক অক্ষর *zTable;
+  ধ্রুবক অক্ষর *zColumn;
   Tcl_WideInt iRowid;
-  int flags;
-  const char *zVarname;
-  Tcl_Size nVarname;
+  পূর্ণসংখ্যা flags;
+  ধ্রুবক অক্ষর *zVarname;
+  Tcl_আকার nVarname;
 
   sqlite3_blob *pBlob = (sqlite3_blob*)&flags;   /* Non-zero initialization */
-  int rc;
+  পূর্ণসংখ্যা rc;
 
-  if( objc!=8 ){
-    const char *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
-    Tcl_WrongNumArgs(interp, 1, objv, zUsage);
-    return TCL_ERROR;
+  যদি( objc!=8 ){
+    ধ্রুবক অক্ষর *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, zUsage);
+    ফেরত TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  যদি( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ফেরত TCL_ERROR;
   zDb = Tcl_GetString(objv[2]);
   zTable = blobStringFromObj(objv[3]);
   zColumn = Tcl_GetString(objv[4]);
-  if( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[6], &flags) ) return TCL_ERROR;
+  যদি( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) ফেরত TCL_ERROR;
+  যদি( Tcl_GetIntFromObj(interp, objv[6], &flags) ) ফেরত TCL_ERROR;
   zVarname = Tcl_GetStringFromObj(objv[7], &nVarname);
 
-  if( nVarname>0 ){
+  যদি( nVarname>0 ){
     rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, &pBlob);
     Tcl_SetVar(interp, zVarname, sqlite3TestPtrToText(pBlob), 0);
-  }else{
+  }অন্যথা{
     rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, 0);
   }
 
-  if( rc==SQLITE_OK ){
-    Tcl_ResetResult(interp);
-  }else{
-    Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-    return TCL_ERROR;
+  যদি( rc==SQLITE_OK ){
+    Tcl_Reset_ফলাফল(interp);
+  }অন্যথা{
+    Tcl_Set_ফলাফল(interp, (অক্ষর*)sqlite3ErrName(rc), TCL_VOLATILE);
+    ফেরত TCL_ERROR;
   }
-  return TCL_OK;
+  ফেরত TCL_OK;
 }
 
 
 /*
 ** sqlite3_blob_close  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_close(
-  ClientData clientData, /* Not used */
+স্থির পূর্ণসংখ্যা SQLITE_TCLAPI test_blob_close(
+  Client_তথ্য client_তথ্য, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  পূর্ণসংখ্যা objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int rc;
+  পূর্ণসংখ্যা rc;
   
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+  যদি( objc!=2 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "HANDLE");
+    ফেরত TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
+  যদি( blobHandleFromObj(interp, objv[1], &pBlob) ) ফেরত TCL_ERROR;
   rc = sqlite3_blob_close(pBlob);
 
-  if( rc ){
-    Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-  }else{
-    Tcl_ResetResult(interp);
+  যদি( rc ){
+    Tcl_Set_ফলাফল(interp, (অক্ষর*)sqlite3ErrName(rc), TCL_VOLATILE);
+  }অন্যথা{
+    Tcl_Reset_ফলাফল(interp);
   }
-  return TCL_OK;
+  ফেরত TCL_OK;
 }
 
 /*
 ** sqlite3_blob_bytes  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_bytes(
-  ClientData clientData, /* Not used */
+স্থির পূর্ণসংখ্যা SQLITE_TCLAPI test_blob_bytes(
+  Client_তথ্য client_তথ্য, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  পূর্ণসংখ্যা objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
+  পূর্ণসংখ্যা nByte;
   
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+  যদি( objc!=2 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "HANDLE");
+    ফেরত TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
+  যদি( blobHandleFromObj(interp, objv[1], &pBlob) ) ফেরত TCL_ERROR;
   nByte = sqlite3_blob_bytes(pBlob);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nByte));
+  Tcl_Set_Obj_ফলাফল(interp, Tcl_NewIntObj(nByte));
 
-  return TCL_OK;
+  ফেরত TCL_OK;
 }
 
 /*
@@ -199,46 +199,46 @@ static int SQLITE_TCLAPI test_blob_bytes(
 **   text representation of the returned error code (i.e. "SQLITE_NOMEM")
 **   and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_read(
-  ClientData clientData, /* Not used */
+স্থির পূর্ণসংখ্যা SQLITE_TCLAPI test_blob_read(
+  Client_তথ্য client_তথ্য, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  পূর্ণসংখ্যা objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
-  int iOffset;
-  unsigned char *zBuf = 0;
-  int rc;
+  পূর্ণসংখ্যা nByte;
+  পূর্ণসংখ্যা iOffset;
+  unsigned অক্ষর *zBuf = 0;
+  পূর্ণসংখ্যা rc;
   
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "CHANNEL OFFSET N");
-    return TCL_ERROR;
+  যদি( objc!=4 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "CHANNEL OFFSET N");
+    ফেরত TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset)
+  যদি( blobHandleFromObj(interp, objv[1], &pBlob) ) ফেরত TCL_ERROR;
+  যদি( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset)
    || TCL_OK!=Tcl_GetIntFromObj(interp, objv[3], &nByte)
   ){ 
-    return TCL_ERROR;
+    ফেরত TCL_ERROR;
   }
 
-  if( nByte>0 ){
-    zBuf = (unsigned char *)Tcl_AttemptAlloc(nByte);
-    if( zBuf==0 ){
-      Tcl_AppendResult(interp, "out of memory in " __FILE__, NULL);
-      return TCL_ERROR;
+  যদি( nByte>0 ){
+    zBuf = (unsigned অক্ষর *)Tcl_AttemptAlloc(nByte);
+    যদি( zBuf==0 ){
+      Tcl_Append_ফলাফল(interp, "out of memory in " __FILE__, ফাঁকা);
+      ফেরত TCL_ERROR;
     }
   }
   rc = sqlite3_blob_read(pBlob, zBuf, nByte, iOffset);
-  if( rc==SQLITE_OK ){
-    Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(zBuf, nByte));
-  }else{
-    Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  যদি( rc==SQLITE_OK ){
+    Tcl_Set_Obj_ফলাফল(interp, Tcl_NewByteArrayObj(zBuf, nByte));
+  }অন্যথা{
+    Tcl_Set_ফলাফল(interp, (অক্ষর *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
-  Tcl_Free((char *)zBuf);
+  Tcl_Free((অক্ষর *)zBuf);
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  ফেরত (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
 
 /*
@@ -255,51 +255,51 @@ static int SQLITE_TCLAPI test_blob_read(
 **   result is set to the text representation of the returned error code 
 **   (i.e. "SQLITE_NOMEM") and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_write(
-  ClientData clientData, /* Not used */
+স্থির পূর্ণসংখ্যা SQLITE_TCLAPI test_blob_write(
+  Client_তথ্য client_তথ্য, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  পূর্ণসংখ্যা objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int iOffset;
-  int rc;
+  পূর্ণসংখ্যা iOffset;
+  পূর্ণসংখ্যা rc;
 
-  unsigned char *zBuf;
-  Tcl_Size nBuf;
-  int n;
+  unsigned অক্ষর *zBuf;
+  Tcl_আকার nBuf;
+  পূর্ণসংখ্যা n;
   
-  if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
-    return TCL_ERROR;
+  যদি( objc!=4 && objc!=5 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
+    ফেরত TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset) ){ 
-    return TCL_ERROR;
+  যদি( blobHandleFromObj(interp, objv[1], &pBlob) ) ফেরত TCL_ERROR;
+  যদি( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset) ){ 
+    ফেরত TCL_ERROR;
   }
 
   zBuf = Tcl_GetByteArrayFromObj(objv[3], &nBuf);
-  n = (int)(nBuf & 0x7fffffff);
-  if( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
-    return TCL_ERROR;
+  n = (পূর্ণসংখ্যা)(nBuf & 0x7fffffff);
+  যদি( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
+    ফেরত TCL_ERROR;
   }
   rc = sqlite3_blob_write(pBlob, zBuf, n, iOffset);
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  যদি( rc!=SQLITE_OK ){
+    Tcl_Set_ফলাফল(interp, (অক্ষর *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  ফেরত (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
 #endif /* SQLITE_OMIT_INCRBLOB */
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_blob_Init(Tcl_Interp *interp){
+পূর্ণসংখ্যা Sqlitetest_blob_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_INCRBLOB
-  static struct {
-     char *zName;
+  স্থির কাঠামো {
+     অক্ষর *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "sqlite3_blob_open",            test_blob_open        },
@@ -308,10 +308,10 @@ int Sqlitetest_blob_Init(Tcl_Interp *interp){
      { "sqlite3_blob_read",            test_blob_read        },
      { "sqlite3_blob_write",           test_blob_write       },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  পূর্ণসংখ্যা i;
+  জন্য(i=0; i<আকার(aObjCmd)/আকার(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 #endif /* SQLITE_OMIT_INCRBLOB */
-  return TCL_OK;
+  ফেরত TCL_OK;
 }

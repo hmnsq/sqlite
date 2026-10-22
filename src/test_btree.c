@@ -13,8 +13,8 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "btreeInt.h"
-#include "tclsqlite.h"
+#অন্তর্ভাব "btreeInt.h"
+#অন্তর্ভাব "tclsqlite.h"
 
 /*
 ** Usage: sqlite3_shared_cache_report
@@ -22,38 +22,38 @@
 ** Return a list of file that are shared and the number of
 ** references to each file.
 */
-int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
-  void * clientData,
+পূর্ণসংখ্যা SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
+  শূন্য * client_তথ্য,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণসংখ্যা objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  extern BtShared *sqlite3SharedCacheList;
+  বাহ্যিক BtShared *sqlite3SharedCacheList;
   BtShared *pBt;
   Tcl_Obj *pRet = Tcl_NewObj();
-  for(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->pNext){
-    const char *zFile = sqlite3PagerFilename(pBt->pPager, 1);
+  জন্য(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->p_পরবর্তী){
+    ধ্রুবক অক্ষর *zFile = sqlite3PagerFilename(pBt->pPager, 1);
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(zFile, -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(pBt->nRef));
   }
-  Tcl_SetObjResult(interp, pRet);
+  Tcl_Set_Obj_ফলাফল(interp, pRet);
 #endif
-  return TCL_OK;
+  ফেরত TCL_OK;
 }
 
 /*
 ** Print debugging information about all cursors to standard output.
 */
-void sqlite3BtreeCursorList(Btree *p){
+শূন্য sqlite3BtreeCursorList(Btree *p){
 #ifdef SQLITE_DEBUG
   BtCursor *pCur;
   BtShared *pBt = p->pBt;
-  for(pCur=pBt->pCursor; pCur; pCur=pCur->pNext){
+  জন্য(pCur=pBt->pCursor; pCur; pCur=pCur->p_পরবর্তী){
     MemPage *pPage = pCur->apPage[pCur->iPage];
-    char *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
+    অক্ষর *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
     sqlite3DebugPrintf("CURSOR %p rooted at %4d(%s) currently at %d.%d%s\n",
-       pCur, pCur->pgnoRoot, zMode,
+       pCur, pCur->pgno_মূল, zMode,
        pPage ? pPage->pgno : 0, pCur->aiIdx[pCur->iPage],
        (pCur->eState==CURSOR_VALID) ? "" : " eof"
     );
