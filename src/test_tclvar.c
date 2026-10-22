@@ -51,19 +51,19 @@
 #define TCLVAR_VALUE_REGEXP 'r'
 #define TCLVAR_VALUE_LIKE   'l'
 
-typedef struct tclvar_vtab tclvar_vtab;
-typedef struct tclvar_cursor tclvar_cursor;
+typedef sa_nracanaa tclvar_vtab tclvar_vtab;
+typedef sa_nracanaa tclvar_cursor tclvar_cursor;
 
 /* 
 ** A tclvar virtual-table object 
 */
-struct tclvar_vtab {
+sa_nracanaa tclvar_vtab {
   sqlite3_vtab base;
   Tcl_Interp *interp;
 };
 
 /* A tclvar cursor object */
-struct tclvar_cursor {
+sa_nracanaa tclvar_cursor {
   sqlite3_vtab_cursor base;
 
   Tcl_Obj *pList1;     /* Result of [info vars ?pattern?] */
@@ -73,70 +73,70 @@ struct tclvar_cursor {
 };
 
 /* Methods for the tclvar module */
-static int tclvarConnect(
+static puur_naa_nka tclvarConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  puur_naa_nka argc, const var_na *const*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  var_na **pzErr
 ){
   tclvar_vtab *pVtab;
-  static const char zSchema[] = 
+  static const var_na zSchema[] = 
      "CREATE TABLE x("
      "  name TEXT,"                       /* Base name */
      "  arrayname TEXT,"                  /* Array index */
      "  value TEXT,"                      /* Value */
      "  fullname TEXT PRIMARY KEY"        /* base(index) name */
      ") WITHOUT ROWID";
-  pVtab = sqlite3MallocZero( sizeof(*pVtab) );
-  if( pVtab==0 ) return SQLITE_NOMEM;
+  pVtab = sqlite3MallocZero( parimaa_na(*pVtab) );
+  ᯀᯮᯝ( pVtab==0 ) ᯀᯮᯞ SQLITE_NOMEM;
   *ppVtab = &pVtab->base;
   pVtab->interp = (Tcl_Interp *)pAux;
   sqlite3_declare_vtab(db, zSchema);
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int tclvarDisconnect(sqlite3_vtab *pVtab){
+static puur_naa_nka tclvarDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new tclvar cursor.
 */
-static int tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static puur_naa_nka tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   tclvar_cursor *pCur;
-  pCur = sqlite3MallocZero(sizeof(tclvar_cursor));
+  pCur = sqlite3MallocZero(parimaa_na(tclvar_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 
 /*
 ** Close a tclvar cursor.
 */
-static int tclvarClose(sqlite3_vtab_cursor *cur){
+static puur_naa_nka tclvarClose(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
-  if( pCur->pList1 ){
+  ᯀᯮᯝ( pCur->pList1 ){
     Tcl_DecrRefCount(pCur->pList1);
   }
-  if( pCur->pList2 ){
+  ᯀᯮᯝ( pCur->pList2 ){
     Tcl_DecrRefCount(pCur->pList2);
   }
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 
 /*
 ** Returns 1 if data is ready, or 0 if not.
 */
-static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
+static puur_naa_nka next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
   Tcl_Obj *p;
 
-  if( pObj ){
-    if( !pCur->pList2 ){
+  ᯀᯮᯝ( pObj ){
+    ᯀᯮᯝ( !pCur->pList2 ){
       p = Tcl_NewStringObj("array names", -1);
       Tcl_IncrRefCount(p);
       Tcl_ListObjAppendElement(0, p, pObj);
@@ -145,75 +145,75 @@ static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
       pCur->pList2 = Tcl_GetObjResult(interp);
       Tcl_IncrRefCount(pCur->pList2);
       assert( pCur->i2==0 );
-    }else{
+    }ᯀᯮᯝᯂᯪ{
       Tcl_Size n = 0;
       pCur->i2++;
       Tcl_ListObjLength(0, pCur->pList2, &n);
-      if( pCur->i2>=n ){
+      ᯀᯮᯝ( pCur->i2>=n ){
         Tcl_DecrRefCount(pCur->pList2);
         pCur->pList2 = 0;
         pCur->i2 = 0;
-        return 0;
+        ᯀᯮᯞ 0;
       }
     }
   }
 
-  return 1;
+  ᯀᯮᯞ 1;
 }
 
-static int tclvarNext(sqlite3_vtab_cursor *cur){
+static puur_naa_nka tclvarNext(sqlite3_vtab_cursor *cur){
   Tcl_Obj *pObj;
   Tcl_Size n = 0;
-  int ok = 0;
+  puur_naa_nka ok = 0;
 
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
   Tcl_Interp *interp = ((tclvar_vtab *)(cur->pVtab))->interp;
 
   Tcl_ListObjLength(0, pCur->pList1, &n);
-  while( !ok && pCur->i1<n ){
+  ᯀᯬᯝ( !ok && pCur->i1<n ){
     Tcl_ListObjIndex(0, pCur->pList1, pCur->i1, &pObj);
     ok = next2(interp, pCur, pObj);
-    if( !ok ){
+    ᯀᯮᯝ( !ok ){
       pCur->i1++;
     }
   }
 
-  return 0;
+  ᯀᯮᯞ 0;
 }
 
-static int tclvarFilter(
+static puur_naa_nka tclvarFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  puur_naa_nka idxNum, const var_na *idxStr,
+  puur_naa_nka argc, sqlite3_value **argv
 ){
   tclvar_cursor *pCur = (tclvar_cursor *)pVtabCursor;
   Tcl_Interp *interp = ((tclvar_vtab *)(pVtabCursor->pVtab))->interp;
   Tcl_Obj *p = Tcl_NewStringObj("tclvar_filter_cmd", -1);
 
-  const char *zEq = "";
-  const char *zMatch = "";
-  const char *zGlob = "";
-  const char *zRegexp = "";
-  const char *zLike = "";
-  int i;
+  const var_na *zEq = "";
+  const var_na *zMatch = "";
+  const var_na *zGlob = "";
+  const var_na *zRegexp = "";
+  const var_na *zLike = "";
+  puur_naa_nka i;
 
   for(i=0; idxStr[i]; i++){
     switch( idxStr[i] ){
-      case TCLVAR_NAME_EQ:
-        zEq = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_NAME_MATCH:
-        zMatch = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_GLOB:
-        zGlob = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_REGEXP:
-        zRegexp = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_LIKE:
-        zLike = (const char*)sqlite3_value_text(argv[i]);
-        break;
+      pak_sa TCLVAR_NAME_EQ:
+        zEq = (const var_na*)sqlite3_value_text(argv[i]);
+        bha_nga;
+      pak_sa TCLVAR_NAME_MATCH:
+        zMatch = (const var_na*)sqlite3_value_text(argv[i]);
+        bha_nga;
+      pak_sa TCLVAR_VALUE_GLOB:
+        zGlob = (const var_na*)sqlite3_value_text(argv[i]);
+        bha_nga;
+      pak_sa TCLVAR_VALUE_REGEXP:
+        zRegexp = (const var_na*)sqlite3_value_text(argv[i]);
+        bha_nga;
+      pak_sa TCLVAR_VALUE_LIKE:
+        zLike = (const var_na*)sqlite3_value_text(argv[i]);
+        bha_nga;
       default:
         assert( 0 );
     }
@@ -227,10 +227,10 @@ static int tclvarFilter(
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zLike, -1));
 
   Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
-  if( pCur->pList1 ){
+  ᯀᯮᯝ( pCur->pList1 ){
     Tcl_DecrRefCount(pCur->pList1);
   }
-  if( pCur->pList2 ){
+  ᯀᯮᯝ( pCur->pList2 ){
     Tcl_DecrRefCount(pCur->pList2);
     pCur->pList2 = 0;
   }
@@ -240,59 +240,59 @@ static int tclvarFilter(
   Tcl_IncrRefCount(pCur->pList1);
 
   Tcl_DecrRefCount(p);
-  return tclvarNext(pVtabCursor);
+  ᯀᯮᯞ tclvarNext(pVtabCursor);
 }
 
-static int tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static puur_naa_nka tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, puur_naa_nka i){
   Tcl_Obj *p1;
   Tcl_Obj *p2;
-  const char *z1; 
-  const char *z2 = "";
+  const var_na *z1; 
+  const var_na *z2 = "";
   tclvar_cursor *pCur = (tclvar_cursor*)cur;
   Tcl_Interp *interp = ((tclvar_vtab *)cur->pVtab)->interp;
 
   Tcl_ListObjIndex(interp, pCur->pList1, pCur->i1, &p1);
   Tcl_ListObjIndex(interp, pCur->pList2, pCur->i2, &p2);
   z1 = Tcl_GetString(p1);
-  if( p2 ){
+  ᯀᯮᯝ( p2 ){
     z2 = Tcl_GetString(p2);
   }
   switch (i) {
-    case 0: {
+    pak_sa 0: {
       sqlite3_result_text(ctx, z1, -1, SQLITE_TRANSIENT);
-      break;
+      bha_nga;
     }
-    case 1: {
+    pak_sa 1: {
       sqlite3_result_text(ctx, z2, -1, SQLITE_TRANSIENT);
-      break;
+      bha_nga;
     }
-    case 2: {
+    pak_sa 2: {
       Tcl_Obj *pVal = Tcl_GetVar2Ex(interp, z1, *z2?z2:0, TCL_GLOBAL_ONLY);
       sqlite3_result_text(ctx, Tcl_GetString(pVal), -1, SQLITE_TRANSIENT);
-      break;
+      bha_nga;
     }
-    case 3: {
-      char *z3;
-      if( p2 ){
+    pak_sa 3: {
+      var_na *z3;
+      ᯀᯮᯝ( p2 ){
         z3 = sqlite3_mprintf("%s(%s)", z1, z2);
         sqlite3_result_text(ctx, z3, -1, sqlite3_free);
-      }else{
+      }ᯀᯮᯝᯂᯪ{
         sqlite3_result_text(ctx, z1, -1, SQLITE_TRANSIENT);
       }
-      break;
+      bha_nga;
     }
   }
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 
-static int tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static puur_naa_nka tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 
-static int tclvarEof(sqlite3_vtab_cursor *cur){
+static puur_naa_nka tclvarEof(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor*)cur;
-  return (pCur->pList2?0:1);
+  ᯀᯮᯞ (pCur->pList2?0:1);
 }
 
 /*
@@ -303,32 +303,32 @@ static int tclvarEof(sqlite3_vtab_cursor *cur){
 ** There is guaranteed to be enough room in the buffer pointed to by zStr
 ** for the new character and nul-terminator.
 */
-static int tclvarAddToIdxstr(char *zStr, char x){
-  int i;
+static puur_naa_nka tclvarAddToIdxstr(var_na *zStr, var_na x){
+  puur_naa_nka i;
   for(i=0; zStr[i]; i++){
-    if( zStr[i]==x ) return 1;
+    ᯀᯮᯝ( zStr[i]==x ) ᯀᯮᯞ 1;
   }
   zStr[i] = x;
   zStr[i+1] = '\0';
-  return 0;
+  ᯀᯮᯞ 0;
 }
 
 /*
 ** Return true if variable $::tclvar_set_omit exists and is set to true.
 ** False otherwise.
 */
-static int tclvarSetOmit(Tcl_Interp *interp){
-  int rc;
-  int res = 0;
+static puur_naa_nka tclvarSetOmit(Tcl_Interp *interp){
+  puur_naa_nka rc;
+  puur_naa_nka res = 0;
   Tcl_Obj *pRes;
   rc = Tcl_Eval(interp,
     "expr {[info exists ::tclvar_set_omit] && $::tclvar_set_omit}"
   );
-  if( rc==TCL_OK ){
+  ᯀᯮᯝ( rc==TCL_OK ){
     pRes = Tcl_GetObjResult(interp);
     rc = Tcl_GetBooleanFromObj(0, pRes, &res);
   }
-  return (rc==TCL_OK && res);
+  ᯀᯮᯞ (rc==TCL_OK && res);
 }
 
 /*
@@ -344,56 +344,56 @@ static int tclvarSetOmit(Tcl_Interp *interp){
 ** For each constraint present, the corresponding TCLVAR_XXX character is
 ** appended to the idxStr value. 
 */
-static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+static puur_naa_nka tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  int ii;
-  char *zStr = sqlite3_malloc(32);
-  int iStr = 0;
+  puur_naa_nka ii;
+  var_na *zStr = sqlite3_malloc(32);
+  puur_naa_nka iStr = 0;
 
-  if( zStr==0 ) return SQLITE_NOMEM;
+  ᯀᯮᯝ( zStr==0 ) ᯀᯮᯞ SQLITE_NOMEM;
   zStr[0] = '\0';
 
   for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
-    struct sqlite3_index_constraint_usage *pUsage;
+    sa_nracanaa sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
+    sa_nracanaa sqlite3_index_constraint_usage *pUsage;
     
     pUsage = &pIdxInfo->aConstraintUsage[ii];
-    if( pCons->usable ){
+    ᯀᯮᯝ( pCons->usable ){
       /* name = ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_EQ && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_EQ) ){
+      ᯀᯮᯝ( pCons->op==SQLITE_INDEX_CONSTRAINT_EQ && pCons->iColumn==0 ){
+        ᯀᯮᯝ( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_EQ) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = 0;
         }
       }
 
       /* name MATCH ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_MATCH && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_MATCH) ){
+      ᯀᯮᯝ( pCons->op==SQLITE_INDEX_CONSTRAINT_MATCH && pCons->iColumn==0 ){
+        ᯀᯮᯝ( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_MATCH) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = 1;
         }
       }
 
       /* value GLOB ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
+      ᯀᯮᯝ( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
+        ᯀᯮᯝ( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
       }
 
       /* value REGEXP ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
+      ᯀᯮᯝ( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
+        ᯀᯮᯝ( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
       }
 
       /* value LIKE ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
+      ᯀᯮᯝ( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
+        ᯀᯮᯝ( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
@@ -403,59 +403,59 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   pIdxInfo->idxStr = zStr;
   pIdxInfo->needToFreeIdxStr = 1;
 
-  return SQLITE_OK;
+  ᯀᯮᯞ SQLITE_OK;
 }
 
 /*
 ** Invoked for any UPDATE, INSERT, or DELETE against a tclvar table
 */
-static int tclvarUpdate(
+static puur_naa_nka tclvarUpdate(
   sqlite3_vtab *tab,
-  int argc,
+  puur_naa_nka argc,
   sqlite3_value **argv,
   sqlite_int64 *pRowid
 ){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  if( argc==1 ){
+  ᯀᯮᯝ( argc==1 ){
     /* A DELETE operation.  The variable to be deleted is stored in argv[0] */
-    const char *zVar = (const char*)sqlite3_value_text(argv[0]);
+    const var_na *zVar = (const var_na*)sqlite3_value_text(argv[0]);
     Tcl_UnsetVar(pTab->interp, zVar, TCL_GLOBAL_ONLY);
-    return SQLITE_OK;
+    ᯀᯮᯞ SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
+  ᯀᯮᯝ( sqlite3_value_type(argv[0])==SQLITE_NULL ){
     /* An INSERT operation */
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
-    const char *zName;
-    if( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
+    const var_na *zValue = (const var_na*)sqlite3_value_text(argv[4]);
+    const var_na *zName;
+    ᯀᯮᯝ( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
       tab->zErrMsg = sqlite3_mprintf("the 'fullname' column must be TEXT");
-      return SQLITE_ERROR;
+      ᯀᯮᯞ SQLITE_ERROR;
     }
-    zName = (const char*)sqlite3_value_text(argv[5]);
-    if( zValue ){
+    zName = (const var_na*)sqlite3_value_text(argv[5]);
+    ᯀᯮᯝ( zValue ){
       Tcl_SetVar(pTab->interp, zName, zValue, TCL_GLOBAL_ONLY);
-    }else{
+    }ᯀᯮᯝᯂᯪ{
       Tcl_UnsetVar(pTab->interp, zName, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    ᯀᯮᯞ SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT
+  ᯀᯮᯝ( sqlite3_value_type(argv[0])==SQLITE_TEXT
    && sqlite3_value_type(argv[1])==SQLITE_TEXT
   ){
     /* An UPDATE operation */
-    const char *zOldName = (const char*)sqlite3_value_text(argv[0]);
-    const char *zNewName = (const char*)sqlite3_value_text(argv[1]);
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
+    const var_na *zOldName = (const var_na*)sqlite3_value_text(argv[0]);
+    const var_na *zNewName = (const var_na*)sqlite3_value_text(argv[1]);
+    const var_na *zValue = (const var_na*)sqlite3_value_text(argv[4]);
 
-    if( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
+    ᯀᯮᯝ( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
       Tcl_UnsetVar(pTab->interp, zOldName, TCL_GLOBAL_ONLY);
     }
-    if( zValue!=0 ){
+    ᯀᯮᯝ( zValue!=0 ){
       Tcl_SetVar(pTab->interp, zNewName, zValue, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    ᯀᯮᯞ SQLITE_OK;
   }
   tab->zErrMsg = sqlite3_mprintf("prohibited TCL variable change");
-  return SQLITE_ERROR;
+  ᯀᯮᯞ SQLITE_ERROR;
 }
 
 /*
@@ -493,24 +493,24 @@ static sqlite3_module tclvarModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern puur_naa_nka getDbPointer(Tcl_Interp *interp, const var_na *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_tclvar_module(
+static puur_naa_nka SQLITE_TCLAPI register_tclvar_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  puur_naa_nka objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int rc = TCL_OK;
+  puur_naa_nka rc = TCL_OK;
   sqlite3 *db;
-  if( objc!=2 ){
+  ᯀᯮᯝ( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+    ᯀᯮᯞ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ᯀᯮᯝ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ᯀᯮᯞ TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "tclvar", &tclvarModule, (void*)interp);
   rc = Tcl_Eval(interp, 
@@ -535,7 +535,7 @@ static int SQLITE_TCLAPI register_tclvar_module(
       "}\n"
   );
 #endif
-  return rc;
+  ᯀᯮᯞ rc;
 }
 
 #endif
@@ -544,20 +544,20 @@ static int SQLITE_TCLAPI register_tclvar_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetesttclvar_Init(Tcl_Interp *interp){
+puur_naa_nka Sqlitetesttclvar_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+  static sa_nracanaa {
+     var_na *zName;
      Tcl_ObjCmdProc *xProc;
      void *clientData;
   } aObjCmd[] = {
      { "register_tclvar_module",   register_tclvar_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  puur_naa_nka i;
+  for(i=0; i<parimaa_na(aObjCmd)/parimaa_na(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  ᯀᯮᯞ TCL_OK;
 }
