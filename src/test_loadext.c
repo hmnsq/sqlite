@@ -11,38 +11,38 @@
 *************************************************************************
 ** Test extension for testing the sqlite3_load_extension() function.
 */
-#include <string.h>
-#include "sqlite3ext.h"
+#ضمن <string.h>
+#ضمن "sqlite3ext.h"
 SQLITE_EXTENSION_INIT1
 
 /*
 ** The half() SQL function returns half of its input value.
 */
-static void halfFunc(
+ساكن فراغ halfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_بەها **argv
 ){
-  sqlite3_result_double(context, 0.5*sqlite3_value_double(argv[0]));
+  sqlite3_result_double(context, 0.5*sqlite3_بەها_double(argv[0]));
 }
 
 /*
 ** SQL functions to call the sqlite3_status function and return results.
 */
-static void statusFunc(
+ساكن فراغ statusFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_بەها **argv
 ){
-  int op = 0, mx, cur, resetFlag, rc;
-  if( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
-    op = sqlite3_value_int(argv[0]);
-  }else if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    int i;
-    const char *zName;
-    static const struct {
-      const char *zName;
-      int op;
+  صحيح op = 0, mx, cur, resetFlag, rc;
+  إذا( sqlite3_بەها_type(argv[0])==SQLITE_INTEGER ){
+    op = sqlite3_بەها_int(argv[0]);
+  }وإلا إذا( sqlite3_بەها_type(argv[0])==SQLITE_TEXT ){
+    صحيح i;
+    ثابت حرف *zName;
+    ساكن ثابت بنية {
+      ثابت حرف *zName;
+      صحيح op;
     } aOp[] = {
       { "MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
       { "PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
@@ -51,39 +51,39 @@ static void statusFunc(
       { "SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
       { "MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
     };
-    int nOp = sizeof(aOp)/sizeof(aOp[0]);
-    zName = (const char*)sqlite3_value_text(argv[0]);
-    for(i=0; i<nOp; i++){
-      if( strcmp(aOp[i].zName, zName)==0 ){
+    صحيح nOp = حجم(aOp)/حجم(aOp[0]);
+    zName = (ثابت حرف*)sqlite3_بەها_text(argv[0]);
+    لكل(i=0; i<nOp; i++){
+      إذا( strcmp(aOp[i].zName, zName)==0 ){
         op = aOp[i].op;
-        break;
+        اكسر;
       }
     }
-    if( i>=nOp ){
-      char *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
-      sqlite3_result_error(context, zMsg, -1);
-      sqlite3_free(zMsg);
-      return;
+    إذا( i>=nOp ){
+      حرف *z_پەیام = sqlite3_mprintf("unknown status property: %s", zName);
+      sqlite3_result_error(context, z_پەیام, -1);
+      sqlite3_free(z_پەیام);
+      أرجع;
     }
-  }else{
+  }وإلا{
     sqlite3_result_error(context, "unknown status type", -1);
-    return;
+    أرجع;
   }
-  if( argc==2 ){
-    resetFlag = sqlite3_value_int(argv[1]);
-  }else{
+  إذا( argc==2 ){
+    resetFlag = sqlite3_بەها_int(argv[1]);
+  }وإلا{
     resetFlag = 0;
   }
   rc = sqlite3_status(op, &cur, &mx, resetFlag);
-  if( rc!=SQLITE_OK ){
-    char *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
-    sqlite3_result_error(context, zMsg, -1);
-    sqlite3_free(zMsg);
-    return;
+  إذا( rc!=SQLITE_OK ){
+    حرف *z_پەیام = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
+    sqlite3_result_error(context, z_پەیام, -1);
+    sqlite3_free(z_پەیام);
+    أرجع;
   } 
-  if( argc==2 ){
+  إذا( argc==2 ){
     sqlite3_result_int(context, mx);
-  }else{
+  }وإلا{
     sqlite3_result_int(context, cur);
   }
 }
@@ -94,19 +94,19 @@ static void statusFunc(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testloadext_init(
+صحيح testloadext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  حرف **pz_Err_پەیام, 
+  ثابت sqlite3_api_routines *pApi
 ){
-  int nErr = 0;
+  صحيح nErr = 0;
   SQLITE_EXTENSION_INIT2(pApi);
   nErr |= sqlite3_create_function(db, "half", 1, SQLITE_ANY, 0, halfFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 1, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 2, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
-  return nErr ? SQLITE_ERROR : SQLITE_OK;
+  أرجع nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 /*
@@ -115,14 +115,14 @@ int testloadext_init(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testbrokenext_init(
+صحيح testbrokenext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  حرف **pz_Err_پەیام, 
+  ثابت sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  حرف *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken!");
-  *pzErrMsg = zErr;
-  return 1;
+  *pz_Err_پەیام = zErr;
+  أرجع 1;
 }
