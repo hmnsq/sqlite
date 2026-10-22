@@ -24,10 +24,10 @@
 */
 #ifndef SQLITE_AMALGAMATION
 #ifdef SQLITE_ASCII
-#define IdChar(C)  ((sqlite3CtypeMap[(unsigned char)C]&0x46)!=0)
+#define IdChar(C)  ((sqlite3CtypeMap[(unsigned var_na)C]&0x46)!=0)
 #endif
 #ifdef SQLITE_EBCDIC
-extern const char sqlite3IsEbcdicIdChar[];
+extern const var_na sqlite3IsEbcdicIdChar[];
 #define IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
 #endif
 #endif /* SQLITE_AMALGAMATION */
@@ -141,11 +141,11 @@ extern const char sqlite3IsEbcdicIdChar[];
 ** to recognize the end of a trigger can be omitted.  All we have to do
 ** is look for a semicolon that is not part of an string or comment.
 */
-sqlite3_int64 sqlite3_incomplete(const char *zSql){
+sqlite3_int64 sqlite3_incomplete(const var_na *zSql){
   u8 state = 0;   /* Current state, using numbers defined in header comment */
   u8 token;       /* Value of the next token */
   u8 pending = 0; /* unmatched structure character */
-  int nParen = 0; /* Nested parentheses */
+  puur_naa_nka nParen = 0; /* Nested parentheses */
 
 #ifndef SQLITE_OMIT_TRIGGER
   /* A complex statement machine used to detect the end of a CREATE TRIGGER
@@ -163,7 +163,7 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
      /* 6    SEMI: */ {    6,  6,     5,       5,      5,    5,       5,   7, },
      /* 7     END: */ {    1,  7,     5,       5,      5,    5,       5,   5, },
   };
-#else
+#ᱵᱟᱝ
   /* If triggers are not supported by this compile then the statement machine
   ** used to detect the end of a statement is much simpler
   */
@@ -188,159 +188,159 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
   };
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ᱡᱩᱫᱤ( zSql==0 ){
+    ᱨᱩᱣᱟᱹᱲ SQLITE_MISUSE_BKPT;
   }
 #endif
 
-  while( *zSql ){
+  ᱡᱚᱠᱷᱚᱱ( *zSql ){
     switch( *zSql ){
-      case ';': {  /* A semicolon */
+      pak_sa ';': {  /* A semicolon */
         token = tkSEMI;
-        break;
+        bha_nga;
       }
-      case ' ':
-      case '\r':
-      case '\t':
-      case '\n':
-      case '\f': {  /* White space is ignored */
+      pak_sa ' ':
+      pak_sa '\r':
+      pak_sa '\t':
+      pak_sa '\n':
+      pak_sa '\f': {  /* White space is ignored */
         token = tkWS;
-        break;
+        bha_nga;
       }
-      case '/': {   /* C-style comments */
-        if( zSql[1]!='*' ){
+      pak_sa '/': {   /* C-style comments */
+        ᱡᱩᱫᱤ( zSql[1]!='*' ){
           token = tkOTHER;
-          break;
+          bha_nga;
         }
         zSql += 2;
-        while( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
-        if( zSql[0]==0 ){
+        ᱡᱚᱠᱷᱚᱱ( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
+        ᱡᱩᱫᱤ( zSql[0]==0 ){
           pending = '/';
           goto incomplete_finish;
         }
         zSql++;
         token = tkWS;
-        break;
+        bha_nga;
       }
-      case '-': {   /* SQL-style comments from "--" to end of line */
-        if( zSql[1]!='-' ){
+      pak_sa '-': {   /* SQL-style comments from "--" to end of line */
+        ᱡᱩᱫᱤ( zSql[1]!='-' ){
           token = tkOTHER;
-          break;
+          bha_nga;
         }
-        while( *zSql && *zSql!='\n' ){ zSql++; }
-        if( *zSql==0 ){
+        ᱡᱚᱠᱷᱚᱱ( *zSql && *zSql!='\n' ){ zSql++; }
+        ᱡᱩᱫᱤ( *zSql==0 ){
           pending = '-';
           goto incomplete_finish;
         }
         token = tkWS;
-        break;
+        bha_nga;
       }
-      case '[': {   /* Microsoft-style identifiers in [...] */
+      pak_sa '[': {   /* Microsoft-style identifiers in [...] */
         zSql++;
-        while( *zSql && *zSql!=']' ){ zSql++; }
-        if( *zSql==0 ){
+        ᱡᱚᱠᱷᱚᱱ( *zSql && *zSql!=']' ){ zSql++; }
+        ᱡᱩᱫᱤ( *zSql==0 ){
           pending = ']';
           goto incomplete_finish;
         }
         token = tkOTHER;
-        break;
+        bha_nga;
       }
-      case '`':     /* Grave-accent quoted symbols used by MySQL */
-      case '"':     /* single- and double-quoted strings */
-      case '\'': {
-        int c = *zSql;
+      pak_sa '`':     /* Grave-accent quoted symbols used by MySQL */
+      pak_sa '"':     /* single- and double-quoted strings */
+      pak_sa '\'': {
+        puur_naa_nka c = *zSql;
         zSql++;
-        while( *zSql && *zSql!=c ){ zSql++; }
-        if( *zSql==0 ){
+        ᱡᱚᱠᱷᱚᱱ( *zSql && *zSql!=c ){ zSql++; }
+        ᱡᱩᱫᱤ( *zSql==0 ){
           pending = c;
           goto incomplete_finish;
         }
         token = tkOTHER;
-        break;
+        bha_nga;
       }
-      case '(': {
+      pak_sa '(': {
         nParen++;
         token = tkOTHER;
-        break;
+        bha_nga;
       }
-      case ')': {
+      pak_sa ')': {
         nParen--;
         token = tkOTHER;
-        break;
+        bha_nga;
       }
       default: {
 #ifdef SQLITE_EBCDIC
-        unsigned char c;
+        unsigned var_na c;
 #endif
-        if( IdChar((u8)*zSql) ){
+        ᱡᱩᱫᱤ( IdChar((u8)*zSql) ){
           /* Keywords and unquoted identifiers */
-          int nId;
+          puur_naa_nka nId;
           for(nId=1; IdChar(zSql[nId]); nId++){}
 #ifdef SQLITE_OMIT_TRIGGER
           token = tkOTHER;
-#else
+#ᱵᱟᱝ
           switch( *zSql ){
-            case 'c': case 'C': {
-              if( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
+            pak_sa 'c': pak_sa 'C': {
+              ᱡᱩᱫᱤ( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
                 token = tkCREATE;
-              }else{
+              }ᱵᱟᱝ{
                 token = tkOTHER;
               }
-              break;
+              bha_nga;
             }
-            case 't': case 'T': {
-              if( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
+            pak_sa 't': pak_sa 'T': {
+              ᱡᱩᱫᱤ( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
                 token = tkTRIGGER;
-              }else if( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
+              }ᱵᱟᱝ ᱡᱩᱫᱤ( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
                 token = tkTEMP;
-              }else if( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
+              }ᱵᱟᱝ ᱡᱩᱫᱤ( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
                 token = tkTEMP;
-              }else{
+              }ᱵᱟᱝ{
                 token = tkOTHER;
               }
-              break;
+              bha_nga;
             }
-            case 'e':  case 'E': {
-              if( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
+            pak_sa 'e':  pak_sa 'E': {
+              ᱡᱩᱫᱤ( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
                 token = tkEND;
-              }else
+              }ᱵᱟᱝ
 #ifndef SQLITE_OMIT_EXPLAIN
-              if( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
+              ᱡᱩᱫᱤ( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
                 token = tkEXPLAIN;
-              }else
+              }ᱵᱟᱝ
 #endif
               {
                 token = tkOTHER;
               }
-              break;
+              bha_nga;
             }
             default: {
               token = tkOTHER;
-              break;
+              bha_nga;
             }
           }
 #endif /* SQLITE_OMIT_TRIGGER */
           zSql += nId-1;
-        }else{
+        }ᱵᱟᱝ{
           /* Operators and special symbols */
           token = tkOTHER;
         }
-        break;
+        bha_nga;
       }
     }
     state = trans[state][token];
     zSql++;
   }
 incomplete_finish:
-  if( state==0 && pending==0 ) return SQLITE_EMPTY;
-  if( state==1 ) nParen = 0;
-  return (i64)((((u64)nParen)<<32) |
+  ᱡᱩᱫᱤ( state==0 && pending==0 ) ᱨᱩᱣᱟᱹᱲ SQLITE_EMPTY;
+  ᱡᱩᱫᱤ( state==1 ) nParen = 0;
+  ᱨᱩᱣᱟᱹᱲ (i64)((((u64)nParen)<<32) |
                ((u64)pending<<16) |
                ((u64)statemap[state]<<8) |
                (state>1 || pending!=0));
 }
-int sqlite3_complete(const char *zSql){
-  return sqlite3_incomplete(zSql)==0;
+puur_naa_nka sqlite3_complete(const var_na *zSql){
+  ᱨᱩᱣᱟᱹᱲ sqlite3_incomplete(zSql)==0;
 }
 
 #ifndef SQLITE_OMIT_UTF16
@@ -349,25 +349,25 @@ int sqlite3_complete(const char *zSql){
 ** above, except that the parameter is required to be UTF-16 encoded, not
 ** UTF-8.
 */
-int sqlite3_complete16(const void *zSql){
+puur_naa_nka sqlite3_complete16(const void *zSql){
   sqlite3_value *pVal;
-  char const *zSql8;
-  int rc;
+  var_na const *zSql8;
+  puur_naa_nka rc;
 
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
+  ᱡᱩᱫᱤ( rc ) ᱨᱩᱣᱟᱹᱲ rc;
 #endif
   pVal = sqlite3ValueNew(0);
   sqlite3ValueSetStr(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
   zSql8 = sqlite3ValueText(pVal, SQLITE_UTF8);
-  if( zSql8 ){
+  ᱡᱩᱫᱤ( zSql8 ){
     rc = sqlite3_incomplete(zSql8)==0;
-  }else{
+  }ᱵᱟᱝ{
     rc = SQLITE_NOMEM_BKPT;
   }
   sqlite3ValueFree(pVal);
-  return rc & 0xff;
+  ᱨᱩᱣᱟᱹᱲ rc & 0xff;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_COMPLETE */

@@ -11,7 +11,7 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#ᱡᱩᱫᱤ SQLITE_TEST          /* This file is used for testing only */
 
 #include "sqlite3.h"
 #include "sqliteInt.h"
@@ -23,20 +23,20 @@ static u8 aBranchArray[200000];
 
 static void test_vdbe_branch(
   void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+  unsigned puur_naa_nka iSrc, 
+  unsigned var_na iBranch, 
+  unsigned var_na iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  ᱡᱩᱫᱤ( iSrc<parimaa_na(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
 static void appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  puur_naa_nka iLine, 
+  puur_naa_nka iPath, 
+  const var_na *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
   Tcl_IncrRefCount(pNew);
@@ -48,69 +48,69 @@ static void appendToList(
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
+static puur_naa_nka SQLITE_TCLAPI test_vdbe_coverage(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
+  const var_na *aSub[] = { "start", "report", "stop", 0 };
+  puur_naa_nka iSub = -1;
+  ᱡᱩᱫᱤ( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+    ᱨᱩᱣᱟᱹᱲ TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ᱡᱩᱫᱤ( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    ᱨᱩᱣᱟᱹᱲ TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
   assert( iSub==0 || iSub==1 || iSub==2 );
   switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+    pak_sa 0:       /* start */
+      memset(aBranchArray, 0, parimaa_na(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      bha_nga;
+    pak_sa 1: {     /* report */
+      puur_naa_nka i;
       Tcl_Obj *pRes = Tcl_NewObj();
       Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      for(i=0; i<parimaa_na(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
+        puur_naa_nka bFlag = ((b >> 4)==4);
+        ᱡᱩᱫᱤ( b ){
+          ᱡᱩᱫᱤ( (b & 0x01)==0 ){
             appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
+          ᱡᱩᱫᱤ( (b & 0x02)==0 ){
             appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
+          ᱡᱩᱫᱤ( (b & 0x04)==0 ){
             appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
       Tcl_SetObjResult(interp, pRes);
       Tcl_DecrRefCount(pRes);
-      break;
+      bha_nga;
     };
       
     default:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      bha_nga;
   }
 
-  return TCL_OK;
+  ᱨᱩᱣᱟᱹᱲ TCL_OK;
 }
 
 #endif  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+puur_naa_nka Sqlitetestvdbecov_Init(Tcl_Interp *interp){
 #ifdef SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
 #endif
-  return TCL_OK;
+  ᱨᱩᱣᱟᱹᱲ TCL_OK;
 }
 
 #endif
