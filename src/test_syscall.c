@@ -81,51 +81,51 @@
 #include <string.h>
 #include <assert.h>
 
-#if SQLITE_OS_UNIX
+#ако SQLITE_OS_UNIX
 
 /* From main.c */
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(цяло);
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <errno.h>
 
 static struct TestSyscallGlobal {
-  int bPersist;                   /* 1 for persistent errors, 0 for transient */
-  int nCount;                     /* Fail after this many more calls */
-  int nFail;                      /* Number of failures that have occurred */
-  int pgsz;
+  цяло bPersist;                   /* 1 for persistent errors, 0 for transient */
+  цяло nCount;                     /* Fail after this many more calls */
+  цяло nFail;                      /* Number of failures that have occurred */
+  цяло pgsz;
   sqlite3_syscall_ptr orig_getpagesize;
 } gSyscall = { 0, 0, 0, 0, 0 };
 
-static int ts_open(const char *, int, int);
-static int ts_close(int fd);
-static int ts_access(const char *zPath, int mode);
+static цяло ts_open(const char *, цяло, цяло);
+static цяло ts_close(цяло fd);
+static цяло ts_access(const char *zPath, цяло mode);
 static char *ts_getcwd(char *zPath, size_t nPath);
-static int ts_stat(const char *zPath, struct stat *p);
-static int ts_fstat(int fd, struct stat *p);
-static int ts_ftruncate(int fd, off_t n);
-static int ts_fcntl(int fd, int cmd, ... );
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf);
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off);
+static цяло ts_stat(const char *zPath, struct stat *p);
+static цяло ts_fstat(цяло fd, struct stat *p);
+static цяло ts_ftruncate(цяло fd, off_t n);
+static цяло ts_fcntl(цяло fd, цяло cmd, ... );
+static ssize_t ts_read(цяло fd, void *aBuf, size_t nBuf);
+static ssize_t ts_pread(цяло fd, void *aBuf, size_t nBuf, off_t off);
 /* Note:  pread64() and pwrite64() actually use off64_t as the type on their
 ** last parameter.  But that datatype is not defined on many systems 
 ** (ex: Mac, OpenBSD).  So substitute a likely equivalent: sqlite3_uint64 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf);
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off);
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static int ts_fchmod(int fd, mode_t mode);
-static int ts_fallocate(int fd, off_t off, off_t len);
-static void *ts_mmap(void *, size_t, int, int, int, off_t);
-static void *ts_mremap(void*, size_t, size_t, int, ...);
+static ssize_t ts_pread64(цяло fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static ssize_t ts_write(цяло fd, const void *aBuf, size_t nBuf);
+static ssize_t ts_pwrite(цяло fd, const void *aBuf, size_t nBuf, off_t off);
+static ssize_t ts_pwrite64(цяло fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static цяло ts_fchmod(цяло fd, mode_t mode);
+static цяло ts_fallocate(цяло fd, off_t off, off_t len);
+static void *ts_mmap(void *, size_t, цяло, цяло, цяло, off_t);
+static void *ts_mremap(void*, size_t, size_t, цяло, ...);
 
 struct TestSyscallArray {
   const char *zName;
   sqlite3_syscall_ptr xTest;
   sqlite3_syscall_ptr xOrig;
-  int default_errno;              /* Default value for errno following errors */
-  int custom_errno;               /* Current value for errno if error */
+  цяло default_errno;              /* Default value for errno following errors */
+  цяло custom_errno;               /* Current value for errno if error */
 } aSyscall[] = {
   /*  0 */ { "open",      (sqlite3_syscall_ptr)ts_open,      0, EACCES, 0 },
   /*  1 */ { "close",     (sqlite3_syscall_ptr)ts_close,     0, 0, 0 },
@@ -148,39 +148,39 @@ struct TestSyscallArray {
            { 0, 0, 0, 0, 0 }
 };
 
-#define orig_open      ((int(*)(const char *, int, int))aSyscall[0].xOrig)
-#define orig_close     ((int(*)(int))aSyscall[1].xOrig)
-#define orig_access    ((int(*)(const char*,int))aSyscall[2].xOrig)
+#define orig_open      ((цяло(*)(const char *, цяло, цяло))aSyscall[0].xOrig)
+#define orig_close     ((цяло(*)(цяло))aSyscall[1].xOrig)
+#define orig_access    ((цяло(*)(const char*,цяло))aSyscall[2].xOrig)
 #define orig_getcwd    ((char*(*)(char*,size_t))aSyscall[3].xOrig)
-#define orig_stat      ((int(*)(const char*,struct stat*))aSyscall[4].xOrig)
-#define orig_fstat     ((int(*)(int,struct stat*))aSyscall[5].xOrig)
-#define orig_ftruncate ((int(*)(int,off_t))aSyscall[6].xOrig)
-#define orig_fcntl     ((int(*)(int,int,...))aSyscall[7].xOrig)
-#define orig_read      ((ssize_t(*)(int,void*,size_t))aSyscall[8].xOrig)
-#define orig_pread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].xOrig)
-#define orig_pread64   ((ssize_t(*)(int,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
-#define orig_write     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].xOrig)
-#define orig_pwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#define orig_stat      ((цяло(*)(const char*,struct stat*))aSyscall[4].xOrig)
+#define orig_fstat     ((цяло(*)(цяло,struct stat*))aSyscall[5].xOrig)
+#define orig_ftruncate ((цяло(*)(цяло,off_t))aSyscall[6].xOrig)
+#define orig_fcntl     ((цяло(*)(цяло,цяло,...))aSyscall[7].xOrig)
+#define orig_read      ((ssize_t(*)(цяло,void*,size_t))aSyscall[8].xOrig)
+#define orig_pread     ((ssize_t(*)(цяло,void*,size_t,off_t))aSyscall[9].xOrig)
+#define orig_pread64   ((ssize_t(*)(цяло,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
+#define orig_write     ((ssize_t(*)(цяло,const void*,size_t))aSyscall[11].xOrig)
+#define orig_pwrite    ((ssize_t(*)(цяло,const void*,size_t,off_t))\
                        aSyscall[12].xOrig)
-#define orig_pwrite64  ((ssize_t(*)(int,const void*,size_t,sqlite3_uint64))\
+#define orig_pwrite64  ((ssize_t(*)(цяло,const void*,size_t,sqlite3_uint64))\
                        aSyscall[13].xOrig)
-#define orig_fchmod    ((int(*)(int,mode_t))aSyscall[14].xOrig)
-#define orig_fallocate ((int(*)(int,off_t,off_t))aSyscall[15].xOrig)
-#define orig_mmap      ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[16].xOrig)
-#define orig_mremap    ((void*(*)(void*,size_t,size_t,int,...))aSyscall[17].xOrig)
+#define orig_fchmod    ((цяло(*)(цяло,mode_t))aSyscall[14].xOrig)
+#define orig_fallocate ((цяло(*)(цяло,off_t,off_t))aSyscall[15].xOrig)
+#define orig_mmap      ((void*(*)(void*,size_t,цяло,цяло,цяло,off_t))aSyscall[16].xOrig)
+#define orig_mremap    ((void*(*)(void*,size_t,size_t,цяло,...))aSyscall[17].xOrig)
 
 /*
 ** This function is called exactly once from within each invocation of a
 ** system call wrapper in this file. It returns 1 if the function should
 ** fail, or 0 if it should succeed.
 */
-static int tsIsFail(void){
+static цяло tsIsFail(void){
   gSyscall.nCount--;
-  if( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
+  ако( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
     gSyscall.nFail++;
-    return 1;
+    върни 1;
   }
-  return 0;
+  върни 0;
 }
 
 /*
@@ -191,190 +191,190 @@ static int tsIsFail(void){
 ** to if the named system call fails. The exception is "fallocate". See 
 ** comments above the implementation of ts_fallocate() for details.
 */
-static int tsErrno(const char *zFunc){
-  int i;
+static цяло tsErrno(const char *zFunc){
+  цяло i;
   size_t nFunc = strlen(zFunc);
-  for(i=0; aSyscall[i].zName; i++){
-    if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-    if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
-    return aSyscall[i].custom_errno;
+  за(i=0; aSyscall[i].zName; i++){
+    ако( strlen(aSyscall[i].zName)!=nFunc ) continue;
+    ако( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    върни aSyscall[i].custom_errno;
   }
 
   assert(0);
-  return 0;
+  върни 0;
 }
 
 /*
 ** A wrapper around tsIsFail(). If tsIsFail() returns non-zero, set the
 ** value of errno before returning.
 */
-static int tsIsFailErrno(const char *zFunc){
-  if( tsIsFail() ){
+static цяло tsIsFailErrno(const char *zFunc){
+  ако( tsIsFail() ){
     errno = tsErrno(zFunc);
-    return 1;
+    върни 1;
   }
-  return 0;
+  върни 0;
 }
 
 /*
 ** A wrapper around open().
 */
-static int ts_open(const char *zFile, int flags, int mode){
-  if( tsIsFailErrno("open") ){
-    return -1;
+static цяло ts_open(const char *zFile, цяло flags, цяло mode){
+  ако( tsIsFailErrno("open") ){
+    върни -1;
   }
-  return orig_open(zFile, flags, mode);
+  върни orig_open(zFile, flags, mode);
 }
 
 /*
 ** A wrapper around close().
 */
-static int ts_close(int fd){
-  if( tsIsFail() ){
+static цяло ts_close(цяло fd){
+  ако( tsIsFail() ){
     /* Even if simulating an error, close the original file-descriptor. 
     ** This is to stop the test process from running out of file-descriptors
     ** when running a long test. If a call to close() appears to fail, SQLite
     ** never attempts to use the file-descriptor afterwards (or even to close
     ** it a second time).  */
     orig_close(fd);
-    return -1;
+    върни -1;
   }
-  return orig_close(fd);
+  върни orig_close(fd);
 }
 
 /*
 ** A wrapper around access().
 */
-static int ts_access(const char *zPath, int mode){
-  if( tsIsFail() ){
-    return -1;
+static цяло ts_access(const char *zPath, цяло mode){
+  ако( tsIsFail() ){
+    върни -1;
   }
-  return orig_access(zPath, mode);
+  върни orig_access(zPath, mode);
 }
 
 /*
 ** A wrapper around getcwd().
 */
 static char *ts_getcwd(char *zPath, size_t nPath){
-  if( tsIsFail() ){
-    return NULL;
+  ако( tsIsFail() ){
+    върни NULL;
   }
-  return orig_getcwd(zPath, nPath);
+  върни orig_getcwd(zPath, nPath);
 }
 
 /*
 ** A wrapper around stat().
 */
-static int ts_stat(const char *zPath, struct stat *p){
-  if( tsIsFail() ){
-    return -1;
+static цяло ts_stat(const char *zPath, struct stat *p){
+  ако( tsIsFail() ){
+    върни -1;
   }
-  return orig_stat(zPath, p);
+  върни orig_stat(zPath, p);
 }
 
 /*
 ** A wrapper around fstat().
 */
-static int ts_fstat(int fd, struct stat *p){
-  if( tsIsFailErrno("fstat") ){
-    return -1;
+static цяло ts_fstat(цяло fd, struct stat *p){
+  ако( tsIsFailErrno("fstat") ){
+    върни -1;
   }
-  return orig_fstat(fd, p);
+  върни orig_fstat(fd, p);
 }
 
 /*
 ** A wrapper around ftruncate().
 */
-static int ts_ftruncate(int fd, off_t n){
-  if( tsIsFailErrno("ftruncate") ){
-    return -1;
+static цяло ts_ftruncate(цяло fd, off_t n){
+  ако( tsIsFailErrno("ftruncate") ){
+    върни -1;
   }
-  return orig_ftruncate(fd, n);
+  върни orig_ftruncate(fd, n);
 }
 
 /*
 ** A wrapper around fcntl().
 */
-static int ts_fcntl(int fd, int cmd, ... ){
+static цяло ts_fcntl(цяло fd, цяло cmd, ... ){
   va_list ap;
   void *pArg;
-  if( tsIsFailErrno("fcntl") ){
-    return -1;
+  ако( tsIsFailErrno("fcntl") ){
+    върни -1;
   }
   va_start(ap, cmd);
   pArg = va_arg(ap, void *);
-  return orig_fcntl(fd, cmd, pArg);
+  върни orig_fcntl(fd, cmd, pArg);
 }
 
 /*
 ** A wrapper around read().
 */
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("read") ){
-    return -1;
+static ssize_t ts_read(цяло fd, void *aBuf, size_t nBuf){
+  ако( tsIsFailErrno("read") ){
+    върни -1;
   }
-  return orig_read(fd, aBuf, nBuf);
+  върни orig_read(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pread().
 */
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pread") ){
-    return -1;
+static ssize_t ts_pread(цяло fd, void *aBuf, size_t nBuf, off_t off){
+  ако( tsIsFailErrno("pread") ){
+    върни -1;
   }
-  return orig_pread(fd, aBuf, nBuf, off);
+  върни orig_pread(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pread64().
 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pread64") ){
-    return -1;
+static ssize_t ts_pread64(цяло fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  ако( tsIsFailErrno("pread64") ){
+    върни -1;
   }
-  return orig_pread64(fd, aBuf, nBuf, off);
+  върни orig_pread64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around write().
 */
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("write") ){
-    if( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
-    return -1;
+static ssize_t ts_write(цяло fd, const void *aBuf, size_t nBuf){
+  ако( tsIsFailErrno("write") ){
+    ако( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
+    върни -1;
   }
-  return orig_write(fd, aBuf, nBuf);
+  върни orig_write(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pwrite().
 */
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pwrite") ){
-    return -1;
+static ssize_t ts_pwrite(цяло fd, const void *aBuf, size_t nBuf, off_t off){
+  ако( tsIsFailErrno("pwrite") ){
+    върни -1;
   }
-  return orig_pwrite(fd, aBuf, nBuf, off);
+  върни orig_pwrite(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pwrite64().
 */
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pwrite64") ){
-    return -1;
+static ssize_t ts_pwrite64(цяло fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  ако( tsIsFailErrno("pwrite64") ){
+    върни -1;
   }
-  return orig_pwrite64(fd, aBuf, nBuf, off);
+  върни orig_pwrite64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around fchmod().
 */
-static int ts_fchmod(int fd, mode_t mode){
-  if( tsIsFail() ){
-    return -1;
+static цяло ts_fchmod(цяло fd, mode_t mode){
+  ако( tsIsFail() ){
+    върни -1;
   }
-  return orig_fchmod(fd, mode);
+  върни orig_fchmod(fd, mode);
 }
 
 /*
@@ -386,30 +386,30 @@ static int ts_fchmod(int fd, mode_t mode){
 **   posix_fallocate() returns  zero on success, or an error number on
 **   failure. Note that errno is not set.
 */
-static int ts_fallocate(int fd, off_t off, off_t len){
-  if( tsIsFail() ){
-    return tsErrno("fallocate");
+static цяло ts_fallocate(цяло fd, off_t off, off_t len){
+  ако( tsIsFail() ){
+    върни tsErrno("fallocate");
   }
-  return orig_fallocate(fd, off, len);
+  върни orig_fallocate(fd, off, len);
 }
 
 static void *ts_mmap(
   void *pAddr, 
   size_t nByte, 
-  int prot, 
-  int flags, 
-  int fd, 
+  цяло prot, 
+  цяло flags, 
+  цяло fd, 
   off_t iOff
 ){
-  if( tsIsFailErrno("mmap") ){
-    return MAP_FAILED;
+  ако( tsIsFailErrno("mmap") ){
+    върни MAP_FAILED;
   }
-  return orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
+  върни orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
 }
 
-static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
-  if( tsIsFailErrno("mremap") ){
-    return MAP_FAILED;
+static void *ts_mremap(void *a, size_t b, size_t c, цяло d, ...){
+  ако( tsIsFailErrno("mremap") ){
+    върни MAP_FAILED;
   }
   /* mremap() may be called with 4 or 5 arguments (when MREMAP_FIXED) is
   ** set. But SQLite only ever calls the 4 argument form, and attempting to
@@ -418,147 +418,147 @@ static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
 #ifdef MREMAP_FIXED
   assert( (d & MREMAP_FIXED)==0 );
 #endif
-  return orig_mremap(a, b, c, d);
+  върни orig_mremap(a, b, c, d);
 }
 
-static int SQLITE_TCLAPI test_syscall_install(
+static цяло SQLITE_TCLAPI test_syscall_install(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   Tcl_Size nElem;
-  int i;
+  цяло i;
   Tcl_Obj **apElem;
 
-  if( objc!=3 ){
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL-LIST");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-    return TCL_ERROR;
+  ако( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+    върни TCL_ERROR;
   }
   pVfs = sqlite3_vfs_find(0);
 
-  for(i=0; i<(int)nElem; i++){
-    int iCall;
-    int rc = Tcl_GetIndexFromObjStruct(interp, 
+  за(i=0; i<(цяло)nElem; i++){
+    цяло iCall;
+    цяло rc = Tcl_GetIndexFromObjStruct(interp, 
         apElem[i], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
     );
-    if( rc ) return rc;
-    if( aSyscall[iCall].xOrig==0 ){
+    ако( rc ) върни rc;
+    ако( aSyscall[iCall].xOrig==0 ){
       aSyscall[iCall].xOrig = pVfs->xGetSystemCall(pVfs, aSyscall[iCall].zName);
       pVfs->xSetSystemCall(pVfs, aSyscall[iCall].zName, aSyscall[iCall].xTest);
     }
     aSyscall[iCall].custom_errno = aSyscall[iCall].default_errno;
   }
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_uninstall(
+static цяло SQLITE_TCLAPI test_syscall_uninstall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
+  цяло i;
 
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  for(i=0; aSyscall[i].zName; i++){
-    if( aSyscall[i].xOrig ){
+  за(i=0; aSyscall[i].zName; i++){
+    ако( aSyscall[i].xOrig ){
       pVfs->xSetSystemCall(pVfs, aSyscall[i].zName, 0);
       aSyscall[i].xOrig = 0;
     }
   }
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_reset(
+static цяло SQLITE_TCLAPI test_syscall_reset(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
-  int rc;
+  цяло i;
+  цяло rc;
 
-  if( objc!=2 && objc!=3 ){
+  ако( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  if( objc==2 ){
+  ако( objc==2 ){
     rc = pVfs->xSetSystemCall(pVfs, 0, 0);
-    for(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
-  }else{
+    за(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
+  }иначе{
     Tcl_Size nFunc;
     char *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
     rc = pVfs->xSetSystemCall(pVfs, Tcl_GetString(objv[2]), 0);
-    for(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
-      if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-      if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    за(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
+      ако( strlen(aSyscall[i].zName)!=nFunc ) continue;
+      ако( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
       aSyscall[i].xOrig = 0;
     }
   }
-  if( rc!=SQLITE_OK ){
+  ако( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_exists(
+static цяло SQLITE_TCLAPI test_syscall_exists(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   sqlite3_syscall_ptr x;
 
-  if( objc!=3 ){
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   x = pVfs->xGetSystemCall(pVfs, Tcl_GetString(objv[2]));
 
   Tcl_SetObjResult(interp, Tcl_NewBooleanObj(x!=0));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_fault(
+static цяло SQLITE_TCLAPI test_syscall_fault(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nCount = 0;
-  int bPersist = 0;
+  цяло nCount = 0;
+  цяло bPersist = 0;
 
-  if( objc!=2 && objc!=4 ){
+  ако( objc!=2 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "?COUNT PERSIST?");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( objc==4 ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &nCount)
+  ако( objc==4 ){
+    ако( Tcl_GetIntFromObj(interp, objv[2], &nCount)
      || Tcl_GetBooleanFromObj(interp, objv[3], &bPersist)
     ){
-      return TCL_ERROR;
+      върни TCL_ERROR;
     }
   }
 
@@ -566,22 +566,22 @@ static int SQLITE_TCLAPI test_syscall_fault(
   gSyscall.nCount = nCount;
   gSyscall.bPersist = bPersist;
   gSyscall.nFail = 0;
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_errno(
+static цяло SQLITE_TCLAPI test_syscall_errno(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iCall;
-  int iErrno;
-  int rc;
+  цяло iCall;
+  цяло iErrno;
+  цяло rc;
 
   struct Errno {
     const char *z;
-    int i;
+    цяло i;
   } aErrno[] = {
     { "EACCES",    EACCES },
     { "EINTR",     EINTR },
@@ -597,43 +597,43 @@ static int SQLITE_TCLAPI test_syscall_errno(
     { 0, 0 }
   };
 
-  if( objc!=4 ){
+  ако( objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL ERRNO");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(interp, 
       objv[2], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
   );
-  if( rc!=TCL_OK ) return rc;
+  ако( rc!=TCL_OK ) върни rc;
   rc = Tcl_GetIndexFromObjStruct(interp, 
       objv[3], aErrno, sizeof(aErrno[0]), "errno", 0, &iErrno
   );
-  if( rc!=TCL_OK ) return rc;
+  ако( rc!=TCL_OK ) върни rc;
 
   aSyscall[iCall].custom_errno = aErrno[iErrno].i;
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_list(
+static цяло SQLITE_TCLAPI test_syscall_list(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zSys;
   sqlite3_vfs *pVfs; 
   Tcl_Obj *pList;
 
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   pList = Tcl_NewObj();
   Tcl_IncrRefCount(pList);
-  for(zSys = pVfs->xNextSystemCall(pVfs, 0); 
+  за(zSys = pVfs->xNextSystemCall(pVfs, 0); 
       zSys!=0;
       zSys = pVfs->xNextSystemCall(pVfs, zSys)
   ){
@@ -642,55 +642,55 @@ static int SQLITE_TCLAPI test_syscall_list(
 
   Tcl_SetObjResult(interp, pList);
   Tcl_DecrRefCount(pList);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_defaultvfs(
+static цяло SQLITE_TCLAPI test_syscall_defaultvfs(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
 
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(pVfs->zName, -1));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int ts_getpagesize(void){
-  return gSyscall.pgsz;
+static цяло ts_getpagesize(void){
+  върни gSyscall.pgsz;
 }
 
-static int SQLITE_TCLAPI test_syscall_pagesize(
+static цяло SQLITE_TCLAPI test_syscall_pagesize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-  int pgsz;
-  if( objc!=3 ){
+  цяло pgsz;
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "PGSZ");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
-    return TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
+    върни TCL_ERROR;
   }
 
-  if( pgsz<0 ){
-    if( gSyscall.orig_getpagesize ){
+  ако( pgsz<0 ){
+    ако( gSyscall.orig_getpagesize ){
       pVfs->xSetSystemCall(pVfs, "getpagesize", gSyscall.orig_getpagesize);
     }
-  }else{
-    if( pgsz<512 || (pgsz & (pgsz-1)) ){
+  }иначе{
+    ако( pgsz<512 || (pgsz & (pgsz-1)) ){
       Tcl_AppendResult(interp, "pgsz out of range", NULL);
-      return TCL_ERROR;
+      върни TCL_ERROR;
     }
     gSyscall.orig_getpagesize = pVfs->xGetSystemCall(pVfs, "getpagesize");
     gSyscall.pgsz = pgsz;
@@ -699,13 +699,13 @@ static int SQLITE_TCLAPI test_syscall_pagesize(
     );
   }
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall(
+static цяло SQLITE_TCLAPI test_syscall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   struct SyscallCmd {
@@ -723,42 +723,42 @@ static int SQLITE_TCLAPI test_syscall(
     { "pagesize",   test_syscall_pagesize },
     { 0, 0 }
   };
-  int iCmd;
-  int rc;
+  цяло iCmd;
+  цяло rc;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
 
-  if( objc<2 ){
+  ако( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
-  if( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
+  ако( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
     Tcl_AppendResult(interp, "VFS does not support xSetSystemCall", NULL);
     rc = TCL_ERROR;
-  }else{
+  }иначе{
     rc = Tcl_GetIndexFromObjStruct(interp, 
         objv[1], aCmd, sizeof(aCmd[0]), "sub-command", 0, &iCmd
     );
   }
-  if( rc!=TCL_OK ) return rc;
-  return aCmd[iCmd].xCmd(clientData, interp, objc, objv);
+  ако( rc!=TCL_OK ) върни rc;
+  върни aCmd[iCmd].xCmd(clientData, interp, objc, objv);
 }
 
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
+цяло SqlitetestSyscall_Init(Tcl_Interp *interp){
   struct SyscallCmd {
     const char *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "test_syscall",     test_syscall},
   };
-  int i;
+  цяло i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  за(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xCmd, 0, 0);
   }
-  return TCL_OK;
+  върни TCL_OK;
 }
-#else
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#иначе
+цяло SqlitetestSyscall_Init(Tcl_Interp *interp){
+  върни TCL_OK;
 }
 #endif

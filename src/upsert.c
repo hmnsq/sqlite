@@ -28,10 +28,10 @@ static void SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
     sqlite3DbFree(db, p->pToFree);
     sqlite3DbFree(db, p);
     p = pNext;
-  }while( p );
+  }докато( p );
 }
 void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
-  if( p ) upsertDelete(db, p);
+  ако( p ) upsertDelete(db, p);
 }
 
 
@@ -39,8 +39,8 @@ void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
 ** Duplicate an Upsert object.
 */
 Upsert *sqlite3UpsertDup(sqlite3 *db, Upsert *p){
-  if( p==0 ) return 0;
-  return sqlite3UpsertNew(db,
+  ако( p==0 ) върни 0;
+  върни sqlite3UpsertNew(db,
            sqlite3ExprListDup(db, p->pUpsertTarget, 0),
            sqlite3ExprDup(db, p->pUpsertTargetWhere, 0),
            sqlite3ExprListDup(db, p->pUpsertSet, 0),
@@ -62,14 +62,14 @@ Upsert *sqlite3UpsertNew(
 ){
   Upsert *pNew;
   pNew = sqlite3DbMallocZero(db, sizeof(Upsert));
-  if( pNew==0 ){
+  ако( pNew==0 ){
     sqlite3ExprListDelete(db, pTarget);
     sqlite3ExprDelete(db, pTargetWhere);
     sqlite3ExprListDelete(db, pSet);
     sqlite3ExprDelete(db, pWhere);
     sqlite3UpsertDelete(db, pNext);
-    return 0;
-  }else{
+    върни 0;
+  }иначе{
     pNew->pUpsertTarget = pTarget;
     pNew->pUpsertTargetWhere = pTargetWhere;
     pNew->pUpsertSet = pSet;
@@ -77,7 +77,7 @@ Upsert *sqlite3UpsertNew(
     pNew->isDoUpdate = pSet!=0;
     pNew->pNextUpsert = pNext;
   }
-  return pNew;
+  върни pNew;
 }
 
 /*
@@ -87,21 +87,21 @@ Upsert *sqlite3UpsertNew(
 ** Return SQLITE_OK if everything works, or an error code is something
 ** is wrong.
 */
-int sqlite3UpsertAnalyzeTarget(
+цяло sqlite3UpsertAnalyzeTarget(
   Parse *pParse,     /* The parsing context */
   SrcList *pTabList, /* Table into which we are inserting */
   Upsert *pUpsert,   /* The ON CONFLICT clauses */
   Upsert *pAll       /* Complete list of all ON CONFLICT clauses */
 ){
   Table *pTab;            /* That table into which we are inserting */
-  int rc;                 /* Result code */
-  int iCursor;            /* Cursor used by pTab */
+  цяло rc;                 /* Result code */
+  цяло iCursor;            /* Cursor used by pTab */
   Index *pIdx;            /* One of the indexes of pTab */
   ExprList *pTarget;      /* The conflict-target clause */
   Expr *pTerm;            /* One term of the conflict-target clause */
   NameContext sNC;        /* Context for resolving symbolic names */
   Expr sCol[2];           /* Index column converted into an Expr */
-  int nClause = 0;        /* Counter of ON CONFLICT clauses */
+  цяло nClause = 0;        /* Counter of ON CONFLICT clauses */
 
   assert( pTabList->nSrc==1 );
   assert( pTabList->a[0].pSTab!=0 );
@@ -115,18 +115,18 @@ int sqlite3UpsertAnalyzeTarget(
   memset(&sNC, 0, sizeof(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  for(; pUpsert && pUpsert->pUpsertTarget;
+  за(; pUpsert && pUpsert->pUpsertTarget;
         pUpsert=pUpsert->pNextUpsert, nClause++){
     rc = sqlite3ResolveExprListNames(&sNC, pUpsert->pUpsertTarget);
-    if( rc ) return rc;
+    ако( rc ) върни rc;
     rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertTargetWhere);
-    if( rc ) return rc;
+    ако( rc ) върни rc;
   
     /* Check to see if the conflict target matches the rowid. */  
     pTab = pTabList->a[0].pSTab;
     pTarget = pUpsert->pUpsertTarget;
     iCursor = pTabList->a[0].iCursor;
-    if( HasRowid(pTab) 
+    ако( HasRowid(pTab) 
      && pTarget->nExpr==1
      && (pTerm = pTarget->a[0].pExpr)->op==TK_COLUMN
      && pTerm->iColumn==XN_ROWID
@@ -149,52 +149,52 @@ int sqlite3UpsertAnalyzeTarget(
     sCol[1].iTable = pTabList->a[0].iCursor;
   
     /* Check for matches against other indexes */
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      int ii, jj, nn;
-      if( !IsUniqueIndex(pIdx) ) continue;
-      if( pTarget->nExpr!=pIdx->nKeyCol ) continue;
-      if( pIdx->pPartIdxWhere ){
-        if( pUpsert->pUpsertTargetWhere==0 ) continue;
-        if( sqlite3ExprCompare(pParse, pUpsert->pUpsertTargetWhere,
+    за(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      цяло ii, jj, nn;
+      ако( !IsUniqueIndex(pIdx) ) continue;
+      ако( pTarget->nExpr!=pIdx->nKeyCol ) continue;
+      ако( pIdx->pPartIdxWhere ){
+        ако( pUpsert->pUpsertTargetWhere==0 ) continue;
+        ако( sqlite3ExprCompare(pParse, pUpsert->pUpsertTargetWhere,
                                pIdx->pPartIdxWhere, iCursor)!=0 ){
           continue;
         }
       }
       nn = pIdx->nKeyCol;
-      for(ii=0; ii<nn; ii++){
+      за(ii=0; ii<nn; ii++){
         Expr *pExpr;
         sCol[0].u.zToken = (char*)pIdx->azColl[ii];
-        if( pIdx->aiColumn[ii]==XN_EXPR ){
+        ако( pIdx->aiColumn[ii]==XN_EXPR ){
           assert( pIdx->aColExpr!=0 );
           assert( pIdx->aColExpr->nExpr>ii );
           assert( pIdx->bHasExpr );
           pExpr = pIdx->aColExpr->a[ii].pExpr;
-          if( pExpr->op!=TK_COLLATE ){
+          ако( pExpr->op!=TK_COLLATE ){
             sCol[0].pLeft = pExpr;
             pExpr = &sCol[0];
           }
-        }else{
+        }иначе{
           sCol[0].pLeft = &sCol[1];
           sCol[1].iColumn = pIdx->aiColumn[ii];
           pExpr = &sCol[0];
         }
-        for(jj=0; jj<nn; jj++){
-          if( sqlite3ExprCompare(0,pTarget->a[jj].pExpr,pExpr,iCursor)<2 ){
+        за(jj=0; jj<nn; jj++){
+          ако( sqlite3ExprCompare(0,pTarget->a[jj].pExpr,pExpr,iCursor)<2 ){
             break;  /* Column ii of the index matches column jj of target */
           }
         }
-        if( jj>=nn ){
+        ако( jj>=nn ){
           /* The target contains no match for column jj of the index */
           break;
         }
       }
-      if( ii<nn ){
+      ако( ii<nn ){
         /* Column ii of the index did not match any term of the conflict target.
         ** Continue the search with the next index. */
         continue;
       }
       pUpsert->pUpsertIdx = pIdx;
-      if( sqlite3UpsertOfIndex(pAll,pIdx)!=pUpsert ){
+      ако( sqlite3UpsertOfIndex(pAll,pIdx)!=pUpsert ){
         /* Really this should be an error.  The isDup ON CONFLICT clause will
         ** never fire.  But this problem was not discovered until three years
         ** after multi-CONFLICT upsert was added, and so we silently ignore
@@ -204,19 +204,19 @@ int sqlite3UpsertAnalyzeTarget(
       }
       break;
     }
-    if( pUpsert->pUpsertIdx==0 ){
+    ако( pUpsert->pUpsertIdx==0 ){
       char zWhich[16];
-      if( nClause==0 && pUpsert->pNextUpsert==0 ){
+      ако( nClause==0 && pUpsert->pNextUpsert==0 ){
         zWhich[0] = 0;
-      }else{
+      }иначе{
         sqlite3_snprintf(sizeof(zWhich),zWhich,"%r ", nClause+1);
       }
       sqlite3ErrorMsg(pParse, "%sON CONFLICT clause does not match any "
                               "PRIMARY KEY or UNIQUE constraint", zWhich);
-      return SQLITE_ERROR;
+      върни SQLITE_ERROR;
     }
   }
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -224,18 +224,18 @@ int sqlite3UpsertAnalyzeTarget(
 ** conflict target, or if pUpsert is followed by another ON CONFLICT
 ** clause that targets the INTEGER PRIMARY KEY.
 */
-int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
+цяло sqlite3UpsertNextIsIPK(Upsert *pUpsert){
   Upsert *pNext;
-  if( NEVER(pUpsert==0) ) return 0;
+  ако( NEVER(pUpsert==0) ) върни 0;
   pNext = pUpsert->pNextUpsert;
-  while( 1 /*exit-by-return*/ ){
-    if( pNext==0 ) return 1;
-    if( pNext->pUpsertTarget==0 ) return 1;
-    if( pNext->pUpsertIdx==0 ) return 1;
-    if( !pNext->isDup ) return 0;
+  докато( 1 /*exit-by-return*/ ){
+    ако( pNext==0 ) върни 1;
+    ако( pNext->pUpsertTarget==0 ) върни 1;
+    ако( pNext->pUpsertIdx==0 ) върни 1;
+    ако( !pNext->isDup ) върни 0;
     pNext = pNext->pNextUpsert;
   }
-  return 0;
+  върни 0;
 }
 
 /*
@@ -245,14 +245,14 @@ int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
 ** any ON CONFLICT clause, return NULL.
 */
 Upsert *sqlite3UpsertOfIndex(Upsert *pUpsert, Index *pIdx){
-  while(
+  докато(
       pUpsert
    && pUpsert->pUpsertTarget!=0
    && pUpsert->pUpsertIdx!=pIdx
   ){
      pUpsert = pUpsert->pNextUpsert;
   }
-  return pUpsert;
+  върни pUpsert;
 }
 
 /*
@@ -269,13 +269,13 @@ void sqlite3UpsertDoUpdate(
   Upsert *pUpsert,      /* The ON CONFLICT clause for the upsert */
   Table *pTab,          /* The table being updated */
   Index *pIdx,          /* The UNIQUE constraint that failed */
-  int iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
+  цяло iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
 ){
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
   SrcList *pSrc;            /* FROM clause for the UPDATE */
-  int iDataCur;
-  int i;
+  цяло iDataCur;
+  цяло i;
   Upsert *pTop = pUpsert;
 
   assert( v!=0 );
@@ -283,20 +283,20 @@ void sqlite3UpsertDoUpdate(
   iDataCur = pUpsert->iDataCur;
   pUpsert = sqlite3UpsertOfIndex(pTop, pIdx);
   VdbeNoopComment((v, "Begin DO UPDATE of UPSERT"));
-  if( pIdx && iCur!=iDataCur ){
-    if( HasRowid(pTab) ){
-      int regRowid = sqlite3GetTempReg(pParse);
+  ако( pIdx && iCur!=iDataCur ){
+    ако( HasRowid(pTab) ){
+      цяло regRowid = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp2(v, OP_IdxRowid, iCur, regRowid);
       sqlite3VdbeAddOp3(v, OP_SeekRowid, iDataCur, 0, regRowid);
       VdbeCoverage(v);
       sqlite3ReleaseTempReg(pParse, regRowid);
-    }else{
+    }иначе{
       Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-      int nPk = pPk->nKeyCol;
-      int iPk = pParse->nMem+1;
+      цяло nPk = pPk->nKeyCol;
+      цяло iPk = pParse->nMem+1;
       pParse->nMem += nPk;
-      for(i=0; i<nPk; i++){
-        int k;
+      за(i=0; i<nPk; i++){
+        цяло k;
         assert( pPk->aiColumn[i]>=0 );
         k = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
         sqlite3VdbeAddOp3(v, OP_Column, iCur, k, iPk+i);
@@ -316,9 +316,9 @@ void sqlite3UpsertDoUpdate(
   ** So we have to make a copy before passing it down into sqlite3Update() */
   pSrc = sqlite3SrcListDup(db, pTop->pUpsertSrc, 0);
   /* excluded.* columns of type REAL need to be converted to a hard real */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
-      int iStorage = pTop->regData + sqlite3TableColumnToStorage(pTab, i);
+  за(i=0; i<pTab->nCol; i++){
+    ако( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
+      цяло iStorage = pTop->regData + sqlite3TableColumnToStorage(pTab, i);
       sqlite3VdbeAddOp1(v, OP_RealAffinity, iStorage);
     }
   }

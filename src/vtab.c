@@ -25,7 +25,7 @@ struct VtabCtx {
   VTable *pVTable;    /* The virtual table being constructed */
   Table *pTab;        /* The Table object to which the virtual table belongs */
   VtabCtx *pPrior;    /* Parent context (if any) */
-  int bDeclared;      /* True after sqlite3_declare_vtab() is called */
+  цяло bDeclared;      /* True after sqlite3_declare_vtab() is called */
 };
 
 /*
@@ -46,15 +46,15 @@ Module *sqlite3VtabCreateModule(
   Module *pMod;
   Module *pDel;
   char *zCopy;
-  if( pModule==0 ){
+  ако( pModule==0 ){
     zCopy = (char*)zName;
     pMod = 0;
-  }else{
-    int nName = sqlite3Strlen30(zName);
+  }иначе{
+    цяло nName = sqlite3Strlen30(zName);
     pMod = (Module *)sqlite3Malloc(sizeof(Module) + nName + 1);
-    if( pMod==0 ){
+    ако( pMod==0 ){
       sqlite3OomFault(db);
-      return 0;
+      върни 0;
     }
     zCopy = (char *)(&pMod[1]);
     memcpy(zCopy, zName, nName+1);
@@ -66,17 +66,17 @@ Module *sqlite3VtabCreateModule(
     pMod->nRefModule = 1;
   }
   pDel = (Module *)sqlite3HashInsert(&db->aModule,zCopy,(void*)pMod);
-  if( pDel ){
-    if( pDel==pMod ){
+  ако( pDel ){
+    ако( pDel==pMod ){
       sqlite3OomFault(db);
       sqlite3DbFree(db, pDel);
       pMod = 0;
-    }else{
+    }иначе{
       sqlite3VtabEponymousTableClear(db, pDel);
       sqlite3VtabModuleUnref(db, pDel);
     }
   }
-  return pMod;
+  върни pMod;
 }
 
 /*
@@ -84,43 +84,43 @@ Module *sqlite3VtabCreateModule(
 ** This function implements the sqlite3_create_module() and
 ** sqlite3_create_module_v2() interfaces.
 */
-static int createModule(
+static цяло createModule(
   sqlite3 *db,                    /* Database in which module is registered */
   const char *zName,              /* Name assigned to this module */
   const sqlite3_module *pModule,  /* The definition of the module */
   void *pAux,                     /* Context pointer for xCreate/xConnect */
   void (*xDestroy)(void *)        /* Module destructor function */
 ){
-  int rc = SQLITE_OK;
+  цяло rc = SQLITE_OK;
 
   sqlite3_mutex_enter(db->mutex);
   (void)sqlite3VtabCreateModule(db, zName, pModule, pAux, xDestroy);
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && xDestroy ) xDestroy(pAux);
+  ако( rc!=SQLITE_OK && xDestroy ) xDestroy(pAux);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  върни rc;
 }
 
 
 /*
 ** External API function used to create a new virtual-table module.
 */
-int sqlite3_create_module(
+цяло sqlite3_create_module(
   sqlite3 *db,                    /* Database in which module is registered */
   const char *zName,              /* Name assigned to this module */
   const sqlite3_module *pModule,  /* The definition of the module */
   void *pAux                      /* Context pointer for xCreate/xConnect */
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) || zName==0 ) върни SQLITE_MISUSE_BKPT;
 #endif
-  return createModule(db, zName, pModule, pAux, 0);
+  върни createModule(db, zName, pModule, pAux, 0);
 }
 
 /*
 ** External API function used to create a new virtual-table module.
 */
-int sqlite3_create_module_v2(
+цяло sqlite3_create_module_v2(
   sqlite3 *db,                    /* Database in which module is registered */
   const char *zName,              /* Name assigned to this module */
   const sqlite3_module *pModule,  /* The definition of the module */
@@ -128,33 +128,33 @@ int sqlite3_create_module_v2(
   void (*xDestroy)(void *)        /* Module destructor function */
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) || zName==0 ) върни SQLITE_MISUSE_BKPT;
 #endif
-  return createModule(db, zName, pModule, pAux, xDestroy);
+  върни createModule(db, zName, pModule, pAux, xDestroy);
 }
 
 /*
 ** External API to drop all virtual-table modules, except those named
 ** on the azNames list.
 */
-int sqlite3_drop_modules(sqlite3 *db, const char** azNames){
+цяло sqlite3_drop_modules(sqlite3 *db, const char** azNames){
   HashElem *pThis, *pNext;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) ) върни SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  for(pThis=sqliteHashFirst(&db->aModule); pThis; pThis=pNext){
+  за(pThis=sqliteHashFirst(&db->aModule); pThis; pThis=pNext){
     Module *pMod = (Module*)sqliteHashData(pThis);
     pNext = sqliteHashNext(pThis);
-    if( azNames ){
-      int ii;
-      for(ii=0; azNames[ii]!=0 && strcmp(azNames[ii],pMod->zName)!=0; ii++){}
-      if( azNames[ii]!=0 ) continue;
+    ако( azNames ){
+      цяло ii;
+      за(ii=0; azNames[ii]!=0 && strcmp(azNames[ii],pMod->zName)!=0; ii++){}
+      ако( azNames[ii]!=0 ) continue;
     }
     createModule(db, pMod->zName, 0, 0, 0);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -164,8 +164,8 @@ int sqlite3_drop_modules(sqlite3 *db, const char** azNames){
 void sqlite3VtabModuleUnref(sqlite3 *db, Module *pMod){
   assert( pMod->nRefModule>0 );
   pMod->nRefModule--;
-  if( pMod->nRefModule==0 ){
-    if( pMod->xDestroy ){
+  ако( pMod->nRefModule==0 ){
+    ако( pMod->xDestroy ){
       pMod->xDestroy(pMod->pAux);
     }
     assert( pMod->pEpoTab==0 );
@@ -194,8 +194,8 @@ void sqlite3VtabLock(VTable *pVTab){
 VTable *sqlite3GetVTable(sqlite3 *db, Table *pTab){
   VTable *pVtab;
   assert( IsVirtual(pTab) );
-  for(pVtab=pTab->u.vtab.p; pVtab && pVtab->db!=db; pVtab=pVtab->pNext);
-  return pVtab;
+  за(pVtab=pTab->u.vtab.p; pVtab && pVtab->db!=db; pVtab=pVtab->pNext);
+  върни pVtab;
 }
 
 /*
@@ -211,9 +211,9 @@ void sqlite3VtabUnlock(VTable *pVTab){
        || db->eOpenState==SQLITE_STATE_ZOMBIE );
 
   pVTab->nRef--;
-  if( pVTab->nRef==0 ){
+  ако( pVTab->nRef==0 ){
     sqlite3_vtab *p = pVTab->pVtab;
-    if( p ){
+    ако( p ){
       p->pModule->xDisconnect(p);
     }
     sqlite3VtabModuleUnref(pVTab->db, pVTab->pMod);
@@ -244,15 +244,15 @@ static VTable *vtabDisconnectAll(sqlite3 *db, Table *p){
   */
   assert( db==0 || sqlite3SchemaMutexHeld(db, 0, p->pSchema) );
 
-  while( pVTable ){
+  докато( pVTable ){
     sqlite3 *db2 = pVTable->db;
     VTable *pNext = pVTable->pNext;
     assert( db2 );
-    if( db2==db ){
+    ако( db2==db ){
       pRet = pVTable;
       p->u.vtab.p = pRet;
       pRet->pNext = 0;
-    }else{
+    }иначе{
       pVTable->pNext = db2->pDisconnect;
       db2->pDisconnect = pVTable;
     }
@@ -260,7 +260,7 @@ static VTable *vtabDisconnectAll(sqlite3 *db, Table *p){
   }
 
   assert( !db || pRet );
-  return pRet;
+  върни pRet;
 }
 
 /*
@@ -278,8 +278,8 @@ void sqlite3VtabDisconnect(sqlite3 *db, Table *p){
   assert( sqlite3BtreeHoldsAllMutexes(db) );
   assert( sqlite3_mutex_held(db->mutex) );
 
-  for(ppVTab=&p->u.vtab.p; *ppVTab; ppVTab=&(*ppVTab)->pNext){
-    if( (*ppVTab)->db==db  ){
+  за(ppVTab=&p->u.vtab.p; *ppVTab; ppVTab=&(*ppVTab)->pNext){
+    ако( (*ppVTab)->db==db  ){
       VTable *pVTab = *ppVTab;
       *ppVTab = pVTab->pNext;
       sqlite3VtabUnlock(pVTab);
@@ -315,13 +315,13 @@ void sqlite3VtabUnlockList(sqlite3 *db){
   assert( sqlite3BtreeHoldsAllMutexes(db) );
   assert( sqlite3_mutex_held(db->mutex) );
 
-  if( p ){
+  ако( p ){
     db->pDisconnect = 0;
     do {
       VTable *pNext = p->pNext;
       sqlite3VtabUnlock(p);
       p = pNext;
-    }while( p );
+    }докато( p );
   }
 }
 
@@ -342,11 +342,11 @@ void sqlite3VtabUnlockList(sqlite3 *db){
 void sqlite3VtabClear(sqlite3 *db, Table *p){
   assert( IsVirtual(p) );
   assert( db!=0 );
-  if( db->pnBytesFreed==0 ) vtabDisconnectAll(0, p);
-  if( p->u.vtab.azArg ){
-    int i;
-    for(i=0; i<p->u.vtab.nArg; i++){
-      if( i!=1 ) sqlite3DbFree(db, p->u.vtab.azArg[i]);
+  ако( db->pnBytesFreed==0 ) vtabDisconnectAll(0, p);
+  ако( p->u.vtab.azArg ){
+    цяло i;
+    за(i=0; i<p->u.vtab.nArg; i++){
+      ако( i!=1 ) sqlite3DbFree(db, p->u.vtab.azArg[i]);
     }
     sqlite3DbFree(db, p->u.vtab.azArg);
   }
@@ -365,14 +365,14 @@ static void addModuleArgument(Parse *pParse, Table *pTable, char *zArg){
 
   assert( IsVirtual(pTable) );
   nBytes = sizeof(char *)*(2+pTable->u.vtab.nArg);
-  if( pTable->u.vtab.nArg+3>=db->aLimit[SQLITE_LIMIT_COLUMN] ){
+  ако( pTable->u.vtab.nArg+3>=db->aLimit[SQLITE_LIMIT_COLUMN] ){
     sqlite3ErrorMsg(pParse, "too many columns on %s", pTable->zName);
   }
   azModuleArg = sqlite3DbRealloc(db, pTable->u.vtab.azArg, nBytes);
-  if( azModuleArg==0 ){
+  ако( azModuleArg==0 ){
     sqlite3DbFree(db, zArg);
-  }else{
-    int i = pTable->u.vtab.nArg++;
+  }иначе{
+    цяло i = pTable->u.vtab.nArg++;
     azModuleArg[i] = zArg;
     azModuleArg[i+1] = 0;
     pTable->u.vtab.azArg = azModuleArg;
@@ -389,14 +389,14 @@ void sqlite3VtabBeginParse(
   Token *pName1,        /* Name of new table, or database name */
   Token *pName2,        /* Name of new table or NULL */
   Token *pModuleName,   /* Name of the module for the virtual table */
-  int ifNotExists       /* No error if the table already exists */
+  цяло ifNotExists       /* No error if the table already exists */
 ){
   Table *pTable;        /* The new virtual table */
   sqlite3 *db;          /* Database connection */
 
   sqlite3StartTable(pParse, pName1, pName2, 0, 0, 1, ifNotExists);
   pTable = pParse->pNewTable;
-  if( pTable==0 ) return;
+  ако( pTable==0 ) върни;
   assert( 0==pTable->pIndex );
   pTable->eTabType = TABTYP_VTAB;
 
@@ -409,7 +409,7 @@ void sqlite3VtabBeginParse(
   assert( (pParse->sNameToken.z==pName2->z && pName2->z!=0)
        || (pParse->sNameToken.z==pName1->z && pName2->z==0)
   );
-  pParse->sNameToken.n = (int)(
+  pParse->sNameToken.n = (цяло)(
       &pModuleName->z[pModuleName->n] - pParse->sNameToken.z
   );
 
@@ -419,8 +419,8 @@ void sqlite3VtabBeginParse(
   ** sqlite_schema table, has already been made by sqlite3StartTable().
   ** The second call, to obtain permission to create the table, is made now.
   */
-  if( pTable->u.vtab.azArg ){
-    int iDb = sqlite3SchemaToIndex(db, pTable->pSchema);
+  ако( pTable->u.vtab.azArg ){
+    цяло iDb = sqlite3SchemaToIndex(db, pTable->pSchema);
     assert( iDb>=0 ); /* The database the table is being created in */
     sqlite3AuthCheck(pParse, SQLITE_CREATE_VTABLE, pTable->zName,
             pTable->u.vtab.azArg[0], pParse->db->aDb[iDb].zDbSName);
@@ -434,9 +434,9 @@ void sqlite3VtabBeginParse(
 ** virtual table currently under construction in pParse->pTable.
 */
 static void addArgumentToVtab(Parse *pParse){
-  if( pParse->sArg.z && pParse->pNewTable ){
+  ако( pParse->sArg.z && pParse->pNewTable ){
     const char *z = (const char*)pParse->sArg.z;
-    int n = pParse->sArg.n;
+    цяло n = pParse->sArg.n;
     sqlite3 *db = pParse->db;
     addModuleArgument(pParse, pParse->pNewTable, sqlite3DbStrNDup(db, z, n));
   }
@@ -450,11 +450,11 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
   Table *pTab = pParse->pNewTable;  /* The table being constructed */
   sqlite3 *db = pParse->db;         /* The database connection */
 
-  if( pTab==0 ) return;
+  ако( pTab==0 ) върни;
   assert( IsVirtual(pTab) );
   addArgumentToVtab(pParse);
   pParse->sArg.z = 0;
-  if( pTab->u.vtab.nArg<1 ) return;
+  ако( pTab->u.vtab.nArg<1 ) върни;
 
   /* If the CREATE VIRTUAL TABLE statement is being entered for the
   ** first time (in other words if the virtual table is actually being
@@ -462,18 +462,18 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
   ** do additional initialization work and store the statement text
   ** in the sqlite_schema table.
   */
-  if( !db->init.busy ){
+  ако( !db->init.busy ){
     char *zStmt;
     char *zWhere;
-    int iDb;
-    int iReg;
+    цяло iDb;
+    цяло iReg;
     Vdbe *v;
 
     sqlite3MayAbort(pParse);
 
     /* Compute the complete text of the CREATE VIRTUAL TABLE statement */
-    if( pEnd ){
-      pParse->sNameToken.n = (int)(pEnd->z - pParse->sNameToken.z) + pEnd->n;
+    ако( pEnd ){
+      pParse->sNameToken.n = (цяло)(pEnd->z - pParse->sNameToken.z) + pEnd->n;
     }
     zStmt = sqlite3MPrintf(db, "CREATE VIRTUAL TABLE %T", &pParse->sNameToken);
 
@@ -508,7 +508,7 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
     iReg = ++pParse->nMem;
     sqlite3VdbeLoadString(v, iReg, pTab->zName);
     sqlite3VdbeAddOp2(v, OP_VCreate, iDb, iReg);
-  }else{
+  }иначе{
     /* If we are rereading the sqlite_schema table create the in-memory
     ** record of the table. */
     Table *pOld;
@@ -517,10 +517,10 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
     assert( zName!=0 );
     sqlite3MarkAllShadowTablesOf(db, pTab);
     pOld = sqlite3HashInsert(&pSchema->tblHash, zName, pTab);
-    if( pOld ){
+    ако( pOld ){
       sqlite3OomFault(db);
       assert( pTab==pOld );  /* Malloc must have failed inside HashInsert() */
-      return;
+      върни;
     }
     pParse->pNewTable = 0;
   }
@@ -542,12 +542,12 @@ void sqlite3VtabArgInit(Parse *pParse){
 */
 void sqlite3VtabArgExtend(Parse *pParse, Token *p){
   Token *pArg = &pParse->sArg;
-  if( pArg->z==0 ){
+  ако( pArg->z==0 ){
     pArg->z = p->z;
     pArg->n = p->n;
-  }else{
+  }иначе{
     assert(pArg->z <= p->z);
-    pArg->n = (int)(&p->z[p->n] - pArg->z);
+    pArg->n = (цяло)(&p->z[p->n] - pArg->z);
   }
 }
 
@@ -556,46 +556,46 @@ void sqlite3VtabArgExtend(Parse *pParse, Token *p){
 ** pointer to the function to invoke is passed as the fourth parameter
 ** to this procedure.
 */
-static int vtabCallConstructor(
+static цяло vtabCallConstructor(
   sqlite3 *db,
   Table *pTab,
   Module *pMod,
-  int (*xConstruct)(sqlite3*,void*,int,const char*const*,sqlite3_vtab**,char**),
+  цяло (*xConstruct)(sqlite3*,void*,цяло,const char*const*,sqlite3_vtab**,char**),
   char **pzErr
 ){
   VtabCtx sCtx;
   VTable *pVTable;
-  int rc;
+  цяло rc;
   const char *const*azArg;
-  int nArg = pTab->u.vtab.nArg;
+  цяло nArg = pTab->u.vtab.nArg;
   char *zErr = 0;
   char *zModuleName;
-  int iDb;
+  цяло iDb;
   VtabCtx *pCtx;
 
   assert( IsVirtual(pTab) );
   azArg = (const char *const*)pTab->u.vtab.azArg;
 
   /* Check that the virtual-table is not already being initialized */
-  for(pCtx=db->pVtabCtx; pCtx; pCtx=pCtx->pPrior){
-    if( pCtx->pTab==pTab ){
+  за(pCtx=db->pVtabCtx; pCtx; pCtx=pCtx->pPrior){
+    ако( pCtx->pTab==pTab ){
       *pzErr = sqlite3MPrintf(db,
           "vtable constructor called recursively: %s", pTab->zName
       );
-      return SQLITE_LOCKED;
+      върни SQLITE_LOCKED;
     }
   }
 
   zModuleName = sqlite3DbStrDup(db, pTab->zName);
-  if( !zModuleName ){
-    return SQLITE_NOMEM_BKPT;
+  ако( !zModuleName ){
+    върни SQLITE_NOMEM_BKPT;
   }
 
   pVTable = sqlite3MallocZero(sizeof(VTable));
-  if( !pVTable ){
+  ако( !pVTable ){
     sqlite3OomFault(db);
     sqlite3DbFree(db, zModuleName);
-    return SQLITE_NOMEM_BKPT;
+    върни SQLITE_NOMEM_BKPT;
   }
   pVTable->db = db;
   pVTable->pMod = pMod;
@@ -618,31 +618,31 @@ static int vtabCallConstructor(
   assert( pTab->nTabRef>1 || rc!=SQLITE_OK );
   sqlite3DeleteTable(db, pTab);
   db->pVtabCtx = sCtx.pPrior;
-  if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+  ако( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
   assert( sCtx.pTab==pTab );
 
-  if( SQLITE_OK!=rc ){
-    if( zErr==0 ){
+  ако( SQLITE_OK!=rc ){
+    ако( zErr==0 ){
       *pzErr = sqlite3MPrintf(db, "vtable constructor failed: %s", zModuleName);
-    }else {
+    }иначе {
       *pzErr = sqlite3MPrintf(db, "%s", zErr);
       sqlite3_free(zErr);
     }
     sqlite3DbFree(db, pVTable);
-  }else if( ALWAYS(pVTable->pVtab) ){
+  }иначе ако( ALWAYS(pVTable->pVtab) ){
     /* Justification of ALWAYS():  A correct vtab constructor must allocate
     ** the sqlite3_vtab object if successful.  */
     memset(pVTable->pVtab, 0, sizeof(pVTable->pVtab[0]));
     pVTable->pVtab->pModule = pMod->pModule;
     pMod->nRefModule++;
     pVTable->nRef = 1;
-    if( sCtx.bDeclared==0 ){
+    ако( sCtx.bDeclared==0 ){
       const char *zFormat = "vtable constructor did not declare schema: %s";
       *pzErr = sqlite3MPrintf(db, zFormat, zModuleName);
       sqlite3VtabUnlock(pVTable);
       rc = SQLITE_ERROR;
-    }else{
-      int iCol;
+    }иначе{
+      цяло iCol;
       u16 oooHidden = 0;
       /* If everything went according to plan, link the new VTable structure
       ** into the linked list headed by pTab->u.vtab.p. Then loop through the
@@ -652,33 +652,33 @@ static int vtabCallConstructor(
       pVTable->pNext = pTab->u.vtab.p;
       pTab->u.vtab.p = pVTable;
 
-      for(iCol=0; iCol<pTab->nCol; iCol++){
+      за(iCol=0; iCol<pTab->nCol; iCol++){
         char *zType = sqlite3ColumnType(&pTab->aCol[iCol], "");
-        int nType;
-        int i = 0;
+        цяло nType;
+        цяло i = 0;
         nType = sqlite3Strlen30(zType);
-        for(i=0; i<nType; i++){
-          if( 0==sqlite3StrNICmp("hidden", &zType[i], 6)
+        за(i=0; i<nType; i++){
+          ако( 0==sqlite3StrNICmp("hidden", &zType[i], 6)
            && (i==0 || zType[i-1]==' ')
            && (zType[i+6]=='\0' || zType[i+6]==' ')
           ){
             break;
           }
         }
-        if( i<nType ){
-          int j;
-          int nDel = 6 + (zType[i+6] ? 1 : 0);
-          for(j=i; (j+nDel)<=nType; j++){
+        ако( i<nType ){
+          цяло j;
+          цяло nDel = 6 + (zType[i+6] ? 1 : 0);
+          за(j=i; (j+nDel)<=nType; j++){
             zType[j] = zType[j+nDel];
           }
-          if( zType[i]=='\0' && i>0 ){
+          ако( zType[i]=='\0' && i>0 ){
             assert(zType[i-1]==' ');
             zType[i-1] = '\0';
           }
           pTab->aCol[iCol].colFlags |= COLFLAG_HIDDEN;
           pTab->tabFlags |= TF_HasHidden;
           oooHidden = TF_OOOHidden;
-        }else{
+        }иначе{
           pTab->tabFlags |= oooHidden;
         }
       }
@@ -686,7 +686,7 @@ static int vtabCallConstructor(
   }
 
   sqlite3DbFree(db, zModuleName);
-  return rc;
+  върни rc;
 }
 
 /*
@@ -696,61 +696,61 @@ static int vtabCallConstructor(
 **
 ** This call is a no-op if table pTab is not a virtual table.
 */
-int sqlite3VtabCallConnect(Parse *pParse, Table *pTab){
+цяло sqlite3VtabCallConnect(Parse *pParse, Table *pTab){
   sqlite3 *db = pParse->db;
   const char *zMod;
   Module *pMod;
-  int rc;
+  цяло rc;
 
   assert( pTab );
   assert( IsVirtual(pTab) );
-  if( sqlite3GetVTable(db, pTab) ){
-    return SQLITE_OK;
+  ако( sqlite3GetVTable(db, pTab) ){
+    върни SQLITE_OK;
   }
 
   /* Locate the required virtual table module */
   zMod = pTab->u.vtab.azArg[0];
   pMod = (Module*)sqlite3HashFind(&db->aModule, zMod);
 
-  if( !pMod ){
+  ако( !pMod ){
     const char *zModule = pTab->u.vtab.azArg[0];
     sqlite3ErrorMsg(pParse, "no such module: %s", zModule);
     rc = SQLITE_ERROR;
-  }else{
+  }иначе{
     char *zErr = 0;
     rc = vtabCallConstructor(db, pTab, pMod, pMod->pModule->xConnect, &zErr);
-    if( rc!=SQLITE_OK ){
+    ако( rc!=SQLITE_OK ){
       sqlite3ErrorMsg(pParse, "%s", zErr);
       pParse->rc = rc;
-    }else{
+    }иначе{
       sqlite3MarkAllShadowTablesOf(db, pTab);
     }
     sqlite3DbFree(db, zErr);
   }
 
-  return rc;
+  върни rc;
 }
 /*
 ** Grow the db->aVTrans[] array so that there is room for at least one
 ** more v-table. Return SQLITE_NOMEM if a malloc fails, or SQLITE_OK otherwise.
 */
-static int growVTrans(sqlite3 *db){
-  const int ARRAY_INCR = 5;
+static цяло growVTrans(sqlite3 *db){
+  const цяло ARRAY_INCR = 5;
 
   /* Grow the sqlite3.aVTrans array if required */
-  if( (db->nVTrans%ARRAY_INCR)==0 ){
+  ако( (db->nVTrans%ARRAY_INCR)==0 ){
     VTable **aVTrans;
     sqlite3_int64 nBytes = sizeof(sqlite3_vtab*)*
                                  ((sqlite3_int64)db->nVTrans + ARRAY_INCR);
     aVTrans = sqlite3DbRealloc(db, (void *)db->aVTrans, nBytes);
-    if( !aVTrans ){
-      return SQLITE_NOMEM_BKPT;
+    ако( !aVTrans ){
+      върни SQLITE_NOMEM_BKPT;
     }
     memset(&aVTrans[db->nVTrans], 0, sizeof(sqlite3_vtab *)*ARRAY_INCR);
     db->aVTrans = aVTrans;
   }
 
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -771,8 +771,8 @@ static void addToVTrans(sqlite3 *db, VTable *pVTab){
 ** description of the error and an SQLITE_XXX error code is returned.
 ** In this case the caller must call sqlite3DbFree(db, ) on *pzErr.
 */
-int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
-  int rc = SQLITE_OK;
+цяло sqlite3VtabCallCreate(sqlite3 *db, цяло iDb, const char *zTab, char **pzErr){
+  цяло rc = SQLITE_OK;
   Table *pTab;
   Module *pMod;
   const char *zMod;
@@ -788,33 +788,33 @@ int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
   ** invoke it now. If the module has not been registered, return an
   ** error. Otherwise, do nothing.
   */
-  if( pMod==0 || pMod->pModule->xCreate==0 || pMod->pModule->xDestroy==0 ){
+  ако( pMod==0 || pMod->pModule->xCreate==0 || pMod->pModule->xDestroy==0 ){
     *pzErr = sqlite3MPrintf(db, "no such module: %s", zMod);
     rc = SQLITE_ERROR;
-  }else{
+  }иначе{
     rc = vtabCallConstructor(db, pTab, pMod, pMod->pModule->xCreate, pzErr);
   }
 
   /* Justification of ALWAYS():  The xConstructor method is required to
   ** create a valid sqlite3_vtab if it returns SQLITE_OK. */
-  if( rc==SQLITE_OK && ALWAYS(sqlite3GetVTable(db, pTab)) ){
+  ако( rc==SQLITE_OK && ALWAYS(sqlite3GetVTable(db, pTab)) ){
     rc = growVTrans(db);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       VTable *pVTab = sqlite3GetVTable(db, pTab);
       const sqlite3_module *pModule = pMod->pModule;
-      int iSvpt = db->nStatement + db->nSavepoint;
+      цяло iSvpt = db->nStatement + db->nSavepoint;
       addToVTrans(db, pVTab);
       /* As in sqlite3VtabBegin(): open the current savepoint on the new
       ** table, so that a ROLLBACK TO that undoes the CREATE also invokes
       ** its xRollbackTo method. */
-      if( iSvpt && pModule->iVersion>=2 && pModule->xSavepoint ){
+      ако( iSvpt && pModule->iVersion>=2 && pModule->xSavepoint ){
         pVTab->iSavepoint = iSvpt;
         rc = pModule->xSavepoint(pVTab->pVtab, iSvpt-1);
       }
     }
   }
 
-  return rc;
+  върни rc;
 }
 
 /*
@@ -822,19 +822,19 @@ int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
 ** valid to call this function from within the xCreate() or xConnect() of a
 ** virtual table module.
 */
-int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
+цяло sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   VtabCtx *pCtx;
-  int rc = SQLITE_OK;
+  цяло rc = SQLITE_OK;
   Table *pTab;
   Parse sParse;
-  int initBusy;
-  int i;
+  цяло initBusy;
+  цяло i;
   const unsigned char *z;
   static const u8 aKeyword[] = { TK_CREATE, TK_TABLE, 0 };
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zCreateTable==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) || zCreateTable==0 ){
+    върни SQLITE_MISUSE_BKPT;
   }
 #endif
 
@@ -843,23 +843,23 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   ** sqlite3_declare_vtab() is being misused.
   */
   z = (const unsigned char*)zCreateTable;
-  for(i=0; aKeyword[i]; i++){
-    int tokenType = 0;
+  за(i=0; aKeyword[i]; i++){
+    цяло tokenType = 0;
     do{
       z += sqlite3GetToken(z, &tokenType);
-    }while( tokenType==TK_SPACE || tokenType==TK_COMMENT );
-    if( tokenType!=aKeyword[i] ){
+    }докато( tokenType==TK_SPACE || tokenType==TK_COMMENT );
+    ако( tokenType!=aKeyword[i] ){
       sqlite3ErrorWithMsg(db, SQLITE_ERROR, "syntax error");
-      return SQLITE_ERROR;
+      върни SQLITE_ERROR;
     }
   }
  
   sqlite3_mutex_enter(db->mutex);
   pCtx = db->pVtabCtx;
-  if( !pCtx || pCtx->bDeclared ){
+  ако( !pCtx || pCtx->bDeclared ){
     sqlite3Error(db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(db->mutex);
-    return SQLITE_MISUSE_BKPT;
+    върни SQLITE_MISUSE_BKPT;
   }
 
   pTab = pCtx->pTab;
@@ -875,12 +875,12 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   initBusy = db->init.busy;
   db->init.busy = 0;
   sParse.nQueryLoop = 1;
-  if( SQLITE_OK==sqlite3RunParser(&sParse, zCreateTable) ){
+  ако( SQLITE_OK==sqlite3RunParser(&sParse, zCreateTable) ){
     assert( sParse.pNewTable!=0 );
     assert( !db->mallocFailed );
     assert( IsOrdinaryTable(sParse.pNewTable) );
     assert( sParse.zErrMsg==0 );
-    if( !pTab->aCol ){
+    ако( !pTab->aCol ){
       Table *pNew = sParse.pNewTable;
       Index *pIdx;
       pTab->aCol = pNew->aCol;
@@ -892,7 +892,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
       pNew->aCol = 0;
       assert( pTab->pIndex==0 );
       assert( HasRowid(pNew) || sqlite3PrimaryKeyIndex(pNew)!=0 );
-      if( !HasRowid(pNew)
+      ако( !HasRowid(pNew)
        && pCtx->pVTable->pMod->pModule->xUpdate!=0
        && sqlite3PrimaryKeyIndex(pNew)->nKeyCol!=1
       ){
@@ -901,7 +901,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
         rc = SQLITE_ERROR;
       }
       pIdx = pNew->pIndex;
-      if( pIdx ){
+      ако( pIdx ){
         assert( pIdx->pNext==0 );
         pTab->pIndex = pIdx;
         pNew->pIndex = 0;
@@ -909,7 +909,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
       }
     }
     pCtx->bDeclared = 1;
-  }else{
+  }иначе{
     sqlite3ErrorWithMsg(db, SQLITE_ERROR,
           (sParse.zErrMsg ? "%s" : 0), sParse.zErrMsg);
     sqlite3DbFree(db, sParse.zErrMsg);
@@ -917,7 +917,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   }
   sParse.eParseMode = PARSE_MODE_NORMAL;
 
-  if( sParse.pVdbe ){
+  ако( sParse.pVdbe ){
     sqlite3VdbeFinalize(sParse.pVdbe);
   }
   sqlite3DeleteTable(db, sParse.pNewTable);
@@ -927,7 +927,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
   assert( (rc&0xff)==rc );
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  върни rc;
 }
 
 /*
@@ -937,31 +937,31 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
 **
 ** This call is a no-op if zTab is not a virtual table.
 */
-int sqlite3VtabCallDestroy(sqlite3 *db, int iDb, const char *zTab){
-  int rc = SQLITE_OK;
+цяло sqlite3VtabCallDestroy(sqlite3 *db, цяло iDb, const char *zTab){
+  цяло rc = SQLITE_OK;
   Table *pTab;
 
   pTab = sqlite3FindTable(db, zTab, db->aDb[iDb].zDbSName);
-  if( ALWAYS(pTab!=0)
+  ако( ALWAYS(pTab!=0)
    && ALWAYS(IsVirtual(pTab))
    && ALWAYS(pTab->u.vtab.p!=0)
   ){
     VTable *p;
-    int (*xDestroy)(sqlite3_vtab *);
-    for(p=pTab->u.vtab.p; p; p=p->pNext){
+    цяло (*xDestroy)(sqlite3_vtab *);
+    за(p=pTab->u.vtab.p; p; p=p->pNext){
       assert( p->pVtab );
-      if( p->pVtab->nRef>0 ){
-        return SQLITE_LOCKED;
+      ако( p->pVtab->nRef>0 ){
+        върни SQLITE_LOCKED;
       }
     }
     p = vtabDisconnectAll(db, pTab);
     xDestroy = p->pMod->pModule->xDestroy;
-    if( xDestroy==0 ) xDestroy = p->pMod->pModule->xDisconnect;
+    ако( xDestroy==0 ) xDestroy = p->pMod->pModule->xDisconnect;
     assert( xDestroy!=0 );
     pTab->nTabRef++;
     rc = xDestroy(p->pVtab);
     /* Remove the sqlite3_vtab* from the aVTrans[] array, if applicable */
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       assert( pTab->u.vtab.p==p && p->pNext==0 );
       p->pVtab = 0;
       pTab->u.vtab.p = 0;
@@ -970,7 +970,7 @@ int sqlite3VtabCallDestroy(sqlite3 *db, int iDb, const char *zTab){
     sqlite3DeleteTable(db, pTab);
   }
 
-  return rc;
+  върни rc;
 }
 
 /*
@@ -981,18 +981,18 @@ int sqlite3VtabCallDestroy(sqlite3 *db, int iDb, const char *zTab){
 **
 ** The array is cleared after invoking the callbacks.
 */
-static void callFinaliser(sqlite3 *db, int offset){
-  int i;
-  if( db->aVTrans ){
+static void callFinaliser(sqlite3 *db, цяло offset){
+  цяло i;
+  ако( db->aVTrans ){
     VTable **aVTrans = db->aVTrans;
     db->aVTrans = 0;
-    for(i=0; i<db->nVTrans; i++){
+    за(i=0; i<db->nVTrans; i++){
       VTable *pVTab = aVTrans[i];
       sqlite3_vtab *p = pVTab->pVtab;
-      if( p ){
-        int (*x)(sqlite3_vtab *);
-        x = *(int (**)(sqlite3_vtab *))((char *)p->pModule + offset);
-        if( x ) x(p);
+      ако( p ){
+        цяло (*x)(sqlite3_vtab *);
+        x = *(цяло (**)(sqlite3_vtab *))((char *)p->pModule + offset);
+        ако( x ) x(p);
       }
       pVTab->iSavepoint = 0;
       sqlite3VtabUnlock(pVTab);
@@ -1009,40 +1009,40 @@ static void callFinaliser(sqlite3 *db, int offset){
 **
 ** If an error message is available, leave it in p->zErrMsg.
 */
-int sqlite3VtabSync(sqlite3 *db, Vdbe *p){
-  int i;
-  int rc = SQLITE_OK;
+цяло sqlite3VtabSync(sqlite3 *db, Vdbe *p){
+  цяло i;
+  цяло rc = SQLITE_OK;
   VTable **aVTrans = db->aVTrans;
 
   db->aVTrans = 0;
-  for(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
-    int (*x)(sqlite3_vtab *);
+  за(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
+    цяло (*x)(sqlite3_vtab *);
     sqlite3_vtab *pVtab = aVTrans[i]->pVtab;
-    if( pVtab && (x = pVtab->pModule->xSync)!=0 ){
+    ако( pVtab && (x = pVtab->pModule->xSync)!=0 ){
       rc = x(pVtab);
       sqlite3VtabImportErrmsg(p, pVtab);
     }
   }
   db->aVTrans = aVTrans;
-  return rc;
+  върни rc;
 }
 
 /*
 ** Invoke the xRollback method of all virtual tables in the
 ** sqlite3.aVTrans array. Then clear the array itself.
 */
-int sqlite3VtabRollback(sqlite3 *db){
+цяло sqlite3VtabRollback(sqlite3 *db){
   callFinaliser(db, offsetof(sqlite3_module,xRollback));
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
 ** Invoke the xCommit method of all virtual tables in the
 ** sqlite3.aVTrans array. Then clear the array itself.
 */
-int sqlite3VtabCommit(sqlite3 *db){
+цяло sqlite3VtabCommit(sqlite3 *db){
   callFinaliser(db, offsetof(sqlite3_module,xCommit));
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -1053,8 +1053,8 @@ int sqlite3VtabCommit(sqlite3 *db){
 ** If the xBegin call is successful, place the sqlite3_vtab pointer
 ** in the sqlite3.aVTrans array.
 */
-int sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
-  int rc = SQLITE_OK;
+цяло sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
+  цяло rc = SQLITE_OK;
   const sqlite3_module *pModule;
 
   /* Special case: If db->aVTrans is NULL and db->nVTrans is greater
@@ -1062,40 +1062,40 @@ int sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
   ** virtual module xSync() callback. It is illegal to write to
   ** virtual module tables in this case, so return SQLITE_LOCKED.
   */
-  if( sqlite3VtabInSync(db) ){
-    return SQLITE_LOCKED;
+  ако( sqlite3VtabInSync(db) ){
+    върни SQLITE_LOCKED;
   }
-  if( !pVTab ){
-    return SQLITE_OK;
+  ако( !pVTab ){
+    върни SQLITE_OK;
   }
   pModule = pVTab->pVtab->pModule;
 
-  if( pModule->xBegin ){
-    int i;
+  ако( pModule->xBegin ){
+    цяло i;
 
     /* If pVtab is already in the aVTrans array, return early */
-    for(i=0; i<db->nVTrans; i++){
-      if( db->aVTrans[i]==pVTab ){
-        return SQLITE_OK;
+    за(i=0; i<db->nVTrans; i++){
+      ако( db->aVTrans[i]==pVTab ){
+        върни SQLITE_OK;
       }
     }
 
     /* Invoke the xBegin method. If successful, add the vtab to the
     ** sqlite3.aVTrans[] array. */
     rc = growVTrans(db);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       rc = pModule->xBegin(pVTab->pVtab);
-      if( rc==SQLITE_OK ){
-        int iSvpt = db->nStatement + db->nSavepoint;
+      ако( rc==SQLITE_OK ){
+        цяло iSvpt = db->nStatement + db->nSavepoint;
         addToVTrans(db, pVTab);
-        if( iSvpt && pModule->xSavepoint ){
+        ако( iSvpt && pModule->xSavepoint ){
           pVTab->iSavepoint = iSvpt;
           rc = pModule->xSavepoint(pVTab->pVtab, iSvpt-1);
         }
       }
     }
   }
-  return rc;
+  върни rc;
 }
 
 /*
@@ -1113,18 +1113,18 @@ int sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
 ** function immediately. If all calls to virtual table methods are successful,
 ** SQLITE_OK is returned.
 */
-int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
-  int rc = SQLITE_OK;
+цяло sqlite3VtabSavepoint(sqlite3 *db, цяло op, цяло iSavepoint){
+  цяло rc = SQLITE_OK;
 
   assert( op==SAVEPOINT_RELEASE||op==SAVEPOINT_ROLLBACK||op==SAVEPOINT_BEGIN );
   assert( iSavepoint>=-1 );
-  if( db->aVTrans ){
-    int i;
-    for(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
+  ако( db->aVTrans ){
+    цяло i;
+    за(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
       VTable *pVTab = db->aVTrans[i];
       const sqlite3_module *pMod = pVTab->pMod->pModule;
-      if( pVTab->pVtab && pMod->iVersion>=2 ){
-        int (*xMethod)(sqlite3_vtab *, int);
+      ако( pVTab->pVtab && pMod->iVersion>=2 ){
+        цяло (*xMethod)(sqlite3_vtab *, цяло);
         sqlite3VtabLock(pVTab);
         switch( op ){
           case SAVEPOINT_BEGIN:
@@ -1138,7 +1138,7 @@ int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
             xMethod = pMod->xRelease;
             break;
         }
-        if( xMethod && pVTab->iSavepoint>iSavepoint ){
+        ако( xMethod && pVTab->iSavepoint>iSavepoint ){
           u64 savedFlags = (db->flags & SQLITE_Defensive);
           db->flags &= ~(u64)SQLITE_Defensive;
           rc = xMethod(pVTab->pVtab, iSavepoint);
@@ -1148,7 +1148,7 @@ int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
       }
     }
   }
-  return rc;
+  върни rc;
 }
 
 /*
@@ -1167,29 +1167,29 @@ int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
 FuncDef *sqlite3VtabOverloadFunction(
   sqlite3 *db,    /* Database connection for reporting malloc problems */
   FuncDef *pDef,  /* Function to possibly overload */
-  int nArg,       /* Number of arguments to the function */
+  цяло nArg,       /* Number of arguments to the function */
   Expr *pExpr     /* First argument to the function */
 ){
   Table *pTab;
   sqlite3_vtab *pVtab;
   sqlite3_module *pMod;
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**) = 0;
+  void (*xSFunc)(sqlite3_context*,цяло,sqlite3_value**) = 0;
   void *pArg = 0;
   FuncDef *pNew;
-  int rc = 0;
+  цяло rc = 0;
 
   /* Check to see the left operand is a column in a virtual table */
-  if( NEVER(pExpr==0) ) return pDef;
-  if( pExpr->op!=TK_COLUMN ) return pDef;
+  ако( NEVER(pExpr==0) ) върни pDef;
+  ако( pExpr->op!=TK_COLUMN ) върни pDef;
   assert( ExprUseYTab(pExpr) );
   pTab = pExpr->y.pTab;
-  if( NEVER(pTab==0) ) return pDef;
-  if( !IsVirtual(pTab) ) return pDef;
+  ако( NEVER(pTab==0) ) върни pDef;
+  ако( !IsVirtual(pTab) ) върни pDef;
   pVtab = sqlite3GetVTable(db, pTab)->pVtab;
   assert( pVtab!=0 );
   assert( pVtab->pModule!=0 );
   pMod = (sqlite3_module *)pVtab->pModule;
-  if( pMod->xFindFunction==0 ) return pDef;
+  ако( pMod->xFindFunction==0 ) върни pDef;
 
   /* Call the xFindFunction method on the virtual table implementation
   ** to see if the implementation wants to overload this function.
@@ -1200,24 +1200,24 @@ FuncDef *sqlite3VtabOverloadFunction(
   */
 #ifdef SQLITE_DEBUG
   {
-    int i;
-    for(i=0; pDef->zName[i]; i++){
+    цяло i;
+    за(i=0; pDef->zName[i]; i++){
       unsigned char x = (unsigned char)pDef->zName[i];
       assert( x==sqlite3UpperToLower[x] );
     }
   }
 #endif
   rc = pMod->xFindFunction(pVtab, nArg, pDef->zName, &xSFunc, &pArg);
-  if( rc==0 ){
-    return pDef;
+  ако( rc==0 ){
+    върни pDef;
   }
 
   /* Create a new ephemeral function definition for the overloaded
   ** function */
   pNew = sqlite3DbMallocZero(db, sizeof(*pNew)
                              + sqlite3Strlen30(pDef->zName) + 1);
-  if( pNew==0 ){
-    return pDef;
+  ако( pNew==0 ){
+    върни pDef;
   }
   *pNew = *pDef;
   pNew->zName = (const char*)&pNew[1];
@@ -1225,7 +1225,7 @@ FuncDef *sqlite3VtabOverloadFunction(
   pNew->xSFunc = xSFunc;
   pNew->pUserData = pArg;
   pNew->funcFlags |= SQLITE_FUNC_EPHEM;
-  return pNew;
+  върни pNew;
 }
 
 /*
@@ -1236,19 +1236,19 @@ FuncDef *sqlite3VtabOverloadFunction(
 */
 void sqlite3VtabMakeWritable(Parse *pParse, Table *pTab){
   Parse *pToplevel = sqlite3ParseToplevel(pParse);
-  int i, n;
+  цяло i, n;
   Table **apVtabLock;
 
   assert( IsVirtual(pTab) );
-  for(i=0; i<pToplevel->nVtabLock; i++){
-    if( pTab==pToplevel->apVtabLock[i] ) return;
+  за(i=0; i<pToplevel->nVtabLock; i++){
+    ако( pTab==pToplevel->apVtabLock[i] ) върни;
   }
   n = (pToplevel->nVtabLock+1)*sizeof(pToplevel->apVtabLock[0]);
   apVtabLock = sqlite3Realloc(pToplevel->apVtabLock, n);
-  if( apVtabLock ){
+  ако( apVtabLock ){
     pToplevel->apVtabLock = apVtabLock;
     pToplevel->apVtabLock[pToplevel->nVtabLock++] = pTab;
-  }else{
+  }иначе{
     sqlite3OomFault(pToplevel->db);
   }
 }
@@ -1268,20 +1268,20 @@ void sqlite3VtabMakeWritable(Parse *pParse, Table *pTab){
 ** Any virtual table module for which xConnect and xCreate are the same
 ** method can have an eponymous virtual table instance.
 */
-int sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
+цяло sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
   const sqlite3_module *pModule = pMod->pModule;
   Table *pTab;
   char *zErr = 0;
-  int rc;
+  цяло rc;
   sqlite3 *db = pParse->db;
-  if( pMod->pEpoTab ) return 1;
-  if( pModule->xCreate!=0 && pModule->xCreate!=pModule->xConnect ) return 0;
+  ако( pMod->pEpoTab ) върни 1;
+  ако( pModule->xCreate!=0 && pModule->xCreate!=pModule->xConnect ) върни 0;
   pTab = sqlite3DbMallocZero(db, sizeof(Table));
-  if( pTab==0 ) return 0;
+  ако( pTab==0 ) върни 0;
   pTab->zName = sqlite3DbStrDup(db, pMod->zName);
-  if( pTab->zName==0 ){
+  ако( pTab->zName==0 ){
     sqlite3DbFree(db, pTab);
-    return 0;
+    върни 0;
   }
   pMod->pEpoTab = pTab;
   pTab->nTabRef = 1;
@@ -1296,13 +1296,13 @@ int sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
   db->nSchemaLock++;
   rc = vtabCallConstructor(db, pTab, pMod, pModule->xConnect, &zErr);
   db->nSchemaLock--;
-  if( rc ){
+  ако( rc ){
     sqlite3ErrorMsg(pParse, "%s", zErr);
     pParse->rc = rc;
     sqlite3DbFree(db, zErr);
     sqlite3VtabEponymousTableClear(db, pMod);
   }
-  return 1;
+  върни 1;
 }
 
 /*
@@ -1311,7 +1311,7 @@ int sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
 */
 void sqlite3VtabEponymousTableClear(sqlite3 *db, Module *pMod){
   Table *pTab = pMod->pEpoTab;
-  if( pTab!=0 ){
+  ако( pTab!=0 ){
     /* Mark the table as Ephemeral prior to deleting it, so that the
     ** sqlite3DeleteTable() routine will know that it is not stored in
     ** the schema. */
@@ -1327,7 +1327,7 @@ void sqlite3VtabEponymousTableClear(sqlite3 *db, Module *pMod){
 */
 void sqlite3VtabEponymousTableClearAll(sqlite3 *db){
   HashElem *pElem;
-  for(pElem=sqliteHashFirst(&db->aModule); pElem; pElem=sqliteHashNext(pElem)){
+  за(pElem=sqliteHashFirst(&db->aModule); pElem; pElem=sqliteHashNext(pElem)){
     sqlite3VtabEponymousTableClear(db, (Module*)sqliteHashData(pElem));
   }
 }
@@ -1339,17 +1339,17 @@ void sqlite3VtabEponymousTableClearAll(sqlite3 *db){
 ** The results of this routine are undefined unless it is called from
 ** within an xUpdate method.
 */
-int sqlite3_vtab_on_conflict(sqlite3 *db){
+цяло sqlite3_vtab_on_conflict(sqlite3 *db){
   static const unsigned char aMap[] = {
     SQLITE_ROLLBACK, SQLITE_ABORT, SQLITE_FAIL, SQLITE_IGNORE, SQLITE_REPLACE
   };
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) ) върни SQLITE_MISUSE_BKPT;
 #endif
   assert( OE_Rollback==1 && OE_Abort==2 && OE_Fail==3 );
   assert( OE_Ignore==4 && OE_Replace==5 );
   assert( db->vtabOnConflict>=1 && db->vtabOnConflict<=5 );
-  return (int)aMap[db->vtabOnConflict-1];
+  върни (цяло)aMap[db->vtabOnConflict-1];
 }
 
 /*
@@ -1357,24 +1357,24 @@ int sqlite3_vtab_on_conflict(sqlite3 *db){
 ** the SQLite core with additional information about the behavior
 ** of the virtual table being implemented.
 */
-int sqlite3_vtab_config(sqlite3 *db, int op, ...){
+цяло sqlite3_vtab_config(sqlite3 *db, цяло op, ...){
   va_list ap;
-  int rc = SQLITE_OK;
+  цяло rc = SQLITE_OK;
   VtabCtx *p;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  ако( !sqlite3SafetyCheckOk(db) ) върни SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   p = db->pVtabCtx;
-  if( !p ){
+  ако( !p ){
     rc = SQLITE_MISUSE_BKPT;
-  }else{
+  }иначе{
     assert( p->pTab==0 || IsVirtual(p->pTab) );
     va_start(ap, op);
     switch( op ){
       case SQLITE_VTAB_CONSTRAINT_SUPPORT: {
-        p->pVTable->bConstraint = (u8)va_arg(ap, int);
+        p->pVTable->bConstraint = (u8)va_arg(ap, цяло);
         break;
       }
       case SQLITE_VTAB_INNOCUOUS: {
@@ -1397,9 +1397,9 @@ int sqlite3_vtab_config(sqlite3 *db, int op, ...){
     va_end(ap);
   }
 
-  if( rc!=SQLITE_OK ) sqlite3Error(db, rc);
+  ако( rc!=SQLITE_OK ) sqlite3Error(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  върни rc;
 }
 
 #endif /* SQLITE_OMIT_VIRTUALTABLE */

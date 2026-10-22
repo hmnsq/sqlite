@@ -34,7 +34,7 @@
 /*
 ** For an build without mutexes, no-op the mutex calls.
 */
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
+#ако defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
 #define sqlite3_mutex_alloc(X)    ((sqlite3_mutex*)8)
 #define sqlite3_mutex_free(X)
 #define sqlite3_mutex_enter(X)
@@ -48,7 +48,7 @@
 #ifdef _WIN32
 # include <windows.h>
 # include <io.h>
-#else
+#иначе
 # include <unistd.h>
 #endif
 
@@ -102,8 +102,8 @@ struct quotaFile {
   char *zFilename;                /* Name of this file */
   quotaGroup *pGroup;             /* Quota group to which this file belongs */
   sqlite3_int64 iSize;            /* Current size of this file */
-  int nRef;                       /* Number of times this file is open */
-  int deleteOnClose;              /* True to delete this file when it closes */
+  цяло nRef;                       /* Number of times this file is open */
+  цяло deleteOnClose;              /* True to delete this file when it closes */
   quotaFile *pNext, **ppPrev;     /* Linked list of files in the same group */
 };
 
@@ -167,7 +167,7 @@ static struct {
 
   /* True when this shim as been initialized.
   */
-  int isInitialized;
+  цяло isInitialized;
 
   /* For run-time access any of the other global data structures in this
   ** shim, the following mutex must be held.
@@ -190,14 +190,14 @@ static void quotaLeave(void){ sqlite3_mutex_leave(gQuota.pMutex); }
 
 /* Count the number of open files in a quotaGroup
 */
-static int quotaGroupOpenFileCount(quotaGroup *pGroup){
-  int N = 0;
+static цяло quotaGroupOpenFileCount(quotaGroup *pGroup){
+  цяло N = 0;
   quotaFile *pFile = pGroup->pFiles;
-  while( pFile ){
-    if( pFile->nRef ) N++;
+  докато( pFile ){
+    ако( pFile->nRef ) N++;
     pFile = pFile->pNext;
   }
-  return N;
+  върни N;
 }
 
 /* Remove a file from a quota group.
@@ -206,7 +206,7 @@ static void quotaRemoveFile(quotaFile *pFile){
   quotaGroup *pGroup = pFile->pGroup;
   pGroup->iSize -= pFile->iSize;
   *pFile->ppPrev = pFile->pNext;
-  if( pFile->pNext ) pFile->pNext->ppPrev = pFile->ppPrev;
+  ако( pFile->pNext ) pFile->pNext->ppPrev = pFile->ppPrev;
   sqlite3_free(pFile);
 }
 
@@ -214,7 +214,7 @@ static void quotaRemoveFile(quotaFile *pFile){
 ** all files will be closed when this routine is called.
 */
 static void quotaRemoveAllFiles(quotaGroup *pGroup){
-  while( pGroup->pFiles ){
+  докато( pGroup->pFiles ){
     assert( pGroup->pFiles->nRef==0 );
     quotaRemoveFile(pGroup->pFiles);
   }
@@ -225,11 +225,11 @@ static void quotaRemoveAllFiles(quotaGroup *pGroup){
 ** zero, then destroy the quotaGroup.
 */
 static void quotaGroupDeref(quotaGroup *pGroup){
-  if( pGroup->iLimit==0 && quotaGroupOpenFileCount(pGroup)==0 ){
+  ако( pGroup->iLimit==0 && quotaGroupOpenFileCount(pGroup)==0 ){
     quotaRemoveAllFiles(pGroup);
     *pGroup->ppPrev = pGroup->pNext;
-    if( pGroup->pNext ) pGroup->pNext->ppPrev = pGroup->ppPrev;
-    if( pGroup->xDestroy ) pGroup->xDestroy(pGroup->pArg);
+    ако( pGroup->pNext ) pGroup->pNext->ppPrev = pGroup->ppPrev;
+    ако( pGroup->xDestroy ) pGroup->xDestroy(pGroup->pArg);
     sqlite3_free(pGroup);
   }
 }
@@ -251,72 +251,72 @@ static void quotaGroupDeref(quotaGroup *pGroup){
 **     /          Matches "/" or "\\"
 **
 */
-static int quotaStrglob(const char *zGlob, const char *z){
-  int c, c2, cx;
-  int invert;
-  int seen;
+static цяло quotaStrglob(const char *zGlob, const char *z){
+  цяло c, c2, cx;
+  цяло invert;
+  цяло seen;
 
-  while( (c = (*(zGlob++)))!=0 ){
-    if( c=='*' ){
-      while( (c=(*(zGlob++))) == '*' || c=='?' ){
-        if( c=='?' && (*(z++))==0 ) return 0;
+  докато( (c = (*(zGlob++)))!=0 ){
+    ако( c=='*' ){
+      докато( (c=(*(zGlob++))) == '*' || c=='?' ){
+        ако( c=='?' && (*(z++))==0 ) върни 0;
       }
-      if( c==0 ){
-        return 1;
-      }else if( c=='[' ){
-        while( *z && quotaStrglob(zGlob-1,z)==0 ){
+      ако( c==0 ){
+        върни 1;
+      }иначе ако( c=='[' ){
+        докато( *z && quotaStrglob(zGlob-1,z)==0 ){
           z++;
         }
-        return (*z)!=0;
+        върни (*z)!=0;
       }
       cx = (c=='/') ? '\\' : c;
-      while( (c2 = (*(z++)))!=0 ){
-        while( c2!=c && c2!=cx ){
+      докато( (c2 = (*(z++)))!=0 ){
+        докато( c2!=c && c2!=cx ){
           c2 = *(z++);
-          if( c2==0 ) return 0;
+          ако( c2==0 ) върни 0;
         }
-        if( quotaStrglob(zGlob,z) ) return 1;
+        ако( quotaStrglob(zGlob,z) ) върни 1;
       }
-      return 0;
-    }else if( c=='?' ){
-      if( (*(z++))==0 ) return 0;
-    }else if( c=='[' ){
-      int prior_c = 0;
+      върни 0;
+    }иначе ако( c=='?' ){
+      ако( (*(z++))==0 ) върни 0;
+    }иначе ако( c=='[' ){
+      цяло prior_c = 0;
       seen = 0;
       invert = 0;
       c = *(z++);
-      if( c==0 ) return 0;
+      ако( c==0 ) върни 0;
       c2 = *(zGlob++);
-      if( c2=='^' ){
+      ако( c2=='^' ){
         invert = 1;
         c2 = *(zGlob++);
       }
-      if( c2==']' ){
-        if( c==']' ) seen = 1;
+      ако( c2==']' ){
+        ако( c==']' ) seen = 1;
         c2 = *(zGlob++);
       }
-      while( c2 && c2!=']' ){
-        if( c2=='-' && zGlob[0]!=']' && zGlob[0]!=0 && prior_c>0 ){
+      докато( c2 && c2!=']' ){
+        ако( c2=='-' && zGlob[0]!=']' && zGlob[0]!=0 && prior_c>0 ){
           c2 = *(zGlob++);
-          if( c>=prior_c && c<=c2 ) seen = 1;
+          ако( c>=prior_c && c<=c2 ) seen = 1;
           prior_c = 0;
-        }else{
-          if( c==c2 ){
+        }иначе{
+          ако( c==c2 ){
             seen = 1;
           }
           prior_c = c2;
         }
         c2 = *(zGlob++);
       }
-      if( c2==0 || (seen ^ invert)==0 ) return 0;
-    }else if( c=='/' ){
-      if( z[0]!='/' && z[0]!='\\' ) return 0;
+      ако( c2==0 || (seen ^ invert)==0 ) върни 0;
+    }иначе ако( c=='/' ){
+      ако( z[0]!='/' && z[0]!='\\' ) върни 0;
       z++;
-    }else{
-      if( c!=(*(z++)) ) return 0;
+    }иначе{
+      ако( c!=(*(z++)) ) върни 0;
     }
   }
-  return *z==0;
+  върни *z==0;
 }
 
 
@@ -326,9 +326,9 @@ static int quotaStrglob(const char *zGlob, const char *z){
 */
 static quotaGroup *quotaGroupFind(const char *zFilename){
   quotaGroup *p;
-  for(p=gQuota.pGroup; p && quotaStrglob(p->zPattern, zFilename)==0;
+  за(p=gQuota.pGroup; p && quotaStrglob(p->zPattern, zFilename)==0;
       p=p->pNext){}
-  return p;
+  върни p;
 }
 
 /* Translate an sqlite3_file* that is really a quotaConn* into
@@ -336,7 +336,7 @@ static quotaGroup *quotaGroupFind(const char *zFilename){
 */
 static sqlite3_file *quotaSubOpen(sqlite3_file *pConn){
   quotaConn *p = (quotaConn*)pConn;
-  return (sqlite3_file*)&p[1];
+  върни (sqlite3_file*)&p[1];
 }
 
 /* Find a file in a quota group and return a pointer to that file.
@@ -345,27 +345,27 @@ static sqlite3_file *quotaSubOpen(sqlite3_file *pConn){
 static quotaFile *quotaFindFile(
   quotaGroup *pGroup,     /* Group in which to look for the file */
   const char *zName,      /* Full pathname of the file */
-  int createFlag          /* Try to create the file if not found */
+  цяло createFlag          /* Try to create the file if not found */
 ){
   quotaFile *pFile = pGroup->pFiles;
-  while( pFile && strcmp(pFile->zFilename, zName)!=0 ){
+  докато( pFile && strcmp(pFile->zFilename, zName)!=0 ){
     pFile = pFile->pNext;
   }
-  if( pFile==0 && createFlag ){
-    int nName = (int)(strlen(zName) & 0x3fffffff);
+  ако( pFile==0 && createFlag ){
+    цяло nName = (цяло)(strlen(zName) & 0x3fffffff);
     pFile = (quotaFile *)sqlite3_malloc( sizeof(*pFile) + nName + 1 );
-    if( pFile ){
+    ако( pFile ){
       memset(pFile, 0, sizeof(*pFile));
       pFile->zFilename = (char*)&pFile[1];
       memcpy(pFile->zFilename, zName, nName+1);
       pFile->pNext = pGroup->pFiles;
-      if( pGroup->pFiles ) pGroup->pFiles->ppPrev = &pFile->pNext;
+      ако( pGroup->pFiles ) pGroup->pFiles->ppPrev = &pFile->pNext;
       pFile->ppPrev = &pGroup->pFiles;
       pGroup->pFiles = pFile;
       pFile->pGroup = pGroup;
     }
   }
-  return pFile;
+  върни pFile;
 }
 /*
 ** Translate UTF8 to MBCS for use in fopen() calls.  Return a pointer to the
@@ -375,28 +375,28 @@ static quotaFile *quotaFindFile(
 static char *quota_utf8_to_mbcs(const char *zUtf8){
 #ifdef _WIN32
   size_t n;          /* Bytes in zUtf8 */
-  int nWide;         /* number of UTF-16 characters */
-  int nMbcs;         /* Bytes of MBCS */
+  цяло nWide;         /* number of UTF-16 characters */
+  цяло nMbcs;         /* Bytes of MBCS */
   LPWSTR zTmpWide;   /* The UTF16 text */
   char *zMbcs;       /* The MBCS text */
-  int codepage;      /* Code page used by fopen() */
+  цяло codepage;      /* Code page used by fopen() */
 
   n = strlen(zUtf8);
   nWide = MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, NULL, 0);
-  if( nWide==0 ) return 0;
+  ако( nWide==0 ) върни 0;
   zTmpWide = (LPWSTR)sqlite3_malloc( (nWide+1)*sizeof(zTmpWide[0]) );
-  if( zTmpWide==0 ) return 0;
+  ако( zTmpWide==0 ) върни 0;
   MultiByteToWideChar(CP_UTF8, 0, zUtf8, -1, zTmpWide, nWide);
   codepage = AreFileApisANSI() ? CP_ACP : CP_OEMCP;
   nMbcs = WideCharToMultiByte(codepage, 0, zTmpWide, nWide, 0, 0, 0, 0);
   zMbcs = nMbcs ? (char*)sqlite3_malloc( nMbcs+1 ) : 0;
-  if( zMbcs ){
+  ако( zMbcs ){
     WideCharToMultiByte(codepage, 0, zTmpWide, nWide, zMbcs, nMbcs, 0, 0);
   }
   sqlite3_free(zTmpWide);
-  return zMbcs;
-#else
-  return (char*)zUtf8;  /* No-op on unix */
+  върни zMbcs;
+#иначе
+  върни (char*)zUtf8;  /* No-op on unix */
 #endif
 }
 
@@ -406,7 +406,7 @@ static char *quota_utf8_to_mbcs(const char *zUtf8){
 static void quota_mbcs_free(char *zOld){
 #ifdef _WIN32
   sqlite3_free(zOld);
-#else
+#иначе
   /* No-op on unix */
 #endif
 }
@@ -419,14 +419,14 @@ static void quota_mbcs_free(char *zOld){
 ** simply links the new file into the appropriate quota group if it is a
 ** file that needs to be tracked.
 */
-static int quotaOpen(
+static цяло quotaOpen(
   sqlite3_vfs *pVfs,          /* The quota VFS */
   const char *zName,          /* Name of file to be opened */
   sqlite3_file *pConn,        /* Fill in this file descriptor */
-  int flags,                  /* Flags to control the opening */
-  int *pOutFlags              /* Flags showing results of opening */
+  цяло flags,                  /* Flags to control the opening */
+  цяло *pOutFlags              /* Flags showing results of opening */
 ){
-  int rc;                                    /* Result code */
+  цяло rc;                                    /* Result code */
   quotaConn *pQuotaOpen;                     /* The new quota file descriptor */
   quotaFile *pFile;                          /* Corresponding quotaFile obj */
   quotaGroup *pGroup;                        /* The group file belongs to */
@@ -436,8 +436,8 @@ static int quotaOpen(
   /* If the file is not a main database file or a WAL, then use the
   ** normal xOpen method.
   */
-  if( (flags & (SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_WAL))==0 ){
-    return pOrigVfs->xOpen(pOrigVfs, zName, pConn, flags, pOutFlags);
+  ако( (flags & (SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_WAL))==0 ){
+    върни pOrigVfs->xOpen(pOrigVfs, zName, pConn, flags, pOutFlags);
   }
 
   /* If the name of the file does not match any quota group, then
@@ -445,33 +445,33 @@ static int quotaOpen(
   */
   quotaEnter();
   pGroup = quotaGroupFind(zName);
-  if( pGroup==0 ){
+  ако( pGroup==0 ){
     rc = pOrigVfs->xOpen(pOrigVfs, zName, pConn, flags, pOutFlags);
-  }else{
+  }иначе{
     /* If we get to this point, it means the file needs to be quota tracked.
     */
     pQuotaOpen = (quotaConn*)pConn;
     pSubOpen = quotaSubOpen(pConn);
     rc = pOrigVfs->xOpen(pOrigVfs, zName, pSubOpen, flags, pOutFlags);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       pFile = quotaFindFile(pGroup, zName, 1);
-      if( pFile==0 ){
+      ако( pFile==0 ){
         quotaLeave();
         pSubOpen->pMethods->xClose(pSubOpen);
-        return SQLITE_NOMEM;
+        върни SQLITE_NOMEM;
       }
       pFile->deleteOnClose = (flags & SQLITE_OPEN_DELETEONCLOSE)!=0;
       pFile->nRef++;
       pQuotaOpen->pFile = pFile;
-      if( pSubOpen->pMethods->iVersion==1 ){
+      ако( pSubOpen->pMethods->iVersion==1 ){
         pQuotaOpen->base.pMethods = &gQuota.sIoMethodsV1;
-      }else{
+      }иначе{
         pQuotaOpen->base.pMethods = &gQuota.sIoMethodsV2;
       }
     }
   }
   quotaLeave();
-  return rc;
+  върни rc;
 }
 
 /*
@@ -481,12 +481,12 @@ static int quotaOpen(
 ** the size of the quota group accordingly.  And remove the file from
 ** the set of files in the quota group.
 */
-static int quotaDelete(
+static цяло quotaDelete(
   sqlite3_vfs *pVfs,          /* The quota VFS */
   const char *zName,          /* Name of file to be deleted */
-  int syncDir                 /* Do a directory sync after deleting */
+  цяло syncDir                 /* Do a directory sync after deleting */
 ){
-  int rc;                                    /* Result code */
+  цяло rc;                                    /* Result code */
   quotaFile *pFile;                          /* Files in the quota */
   quotaGroup *pGroup;                        /* The group file belongs to */
   sqlite3_vfs *pOrigVfs = gQuota.pOrigVfs;   /* Real VFS */
@@ -497,15 +497,15 @@ static int quotaDelete(
   /* If the file just deleted is a member of a quota group, then remove
   ** it from that quota group.
   */
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     quotaEnter();
     pGroup = quotaGroupFind(zName);
-    if( pGroup ){
+    ако( pGroup ){
       pFile = quotaFindFile(pGroup, zName, 0);
-      if( pFile ){
-        if( pFile->nRef ){
+      ако( pFile ){
+        ако( pFile->nRef ){
           pFile->deleteOnClose = 1;
-        }else{
+        }иначе{
           quotaRemoveFile(pFile);
           quotaGroupDeref(pGroup);
         }
@@ -513,7 +513,7 @@ static int quotaDelete(
     }
     quotaLeave();
   }
-  return rc;
+  върни rc;
 }
 
 
@@ -523,47 +523,47 @@ static int quotaDelete(
 ** also have to unlink the quotaConn from the quotaFile and quotaGroup.
 ** The quotaFile and/or quotaGroup are freed if they are no longer in use.
 */
-static int quotaClose(sqlite3_file *pConn){
+static цяло quotaClose(sqlite3_file *pConn){
   quotaConn *p = (quotaConn*)pConn;
   quotaFile *pFile = p->pFile;
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  int rc;
+  цяло rc;
   rc = pSubOpen->pMethods->xClose(pSubOpen);
   quotaEnter();
   pFile->nRef--;
-  if( pFile->nRef==0 ){
+  ако( pFile->nRef==0 ){
     quotaGroup *pGroup = pFile->pGroup;
-    if( pFile->deleteOnClose ){
+    ако( pFile->deleteOnClose ){
       gQuota.pOrigVfs->xDelete(gQuota.pOrigVfs, pFile->zFilename, 0);
       quotaRemoveFile(pFile);
     }
     quotaGroupDeref(pGroup);
   }
   quotaLeave();
-  return rc;
+  върни rc;
 }
 
 /* Pass xRead requests directory thru to the original VFS without
 ** further processing.
 */
-static int quotaRead(
+static цяло quotaRead(
   sqlite3_file *pConn,
   void *pBuf,
-  int iAmt,
+  цяло iAmt,
   sqlite3_int64 iOfst
 ){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xRead(pSubOpen, pBuf, iAmt, iOfst);
+  върни pSubOpen->pMethods->xRead(pSubOpen, pBuf, iAmt, iOfst);
 }
 
 /* Check xWrite requests to see if they expand the file.  If they do,
 ** the perform a quota check before passing them through to the
 ** original VFS.
 */
-static int quotaWrite(
+static цяло quotaWrite(
   sqlite3_file *pConn,
   const void *pBuf,
-  int iAmt,
+  цяло iAmt,
   sqlite3_int64 iOfst
 ){
   quotaConn *p = (quotaConn*)pConn;
@@ -573,37 +573,37 @@ static int quotaWrite(
   quotaFile *pFile = p->pFile;
   sqlite3_int64 szNew;
 
-  if( pFile->iSize<iEnd ){
+  ако( pFile->iSize<iEnd ){
     pGroup = pFile->pGroup;
     quotaEnter();
     szNew = pGroup->iSize - pFile->iSize + iEnd;
-    if( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
-      if( pGroup->xCallback ){
+    ако( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
+      ако( pGroup->xCallback ){
         pGroup->xCallback(pFile->zFilename, &pGroup->iLimit, szNew,
                           pGroup->pArg);
       }
-      if( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
+      ако( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
         quotaLeave();
-        return SQLITE_FULL;
+        върни SQLITE_FULL;
       }
     }
     pGroup->iSize = szNew;
     pFile->iSize = iEnd;
     quotaLeave();
   }
-  return pSubOpen->pMethods->xWrite(pSubOpen, pBuf, iAmt, iOfst);
+  върни pSubOpen->pMethods->xWrite(pSubOpen, pBuf, iAmt, iOfst);
 }
 
 /* Pass xTruncate requests thru to the original VFS.  If the
 ** success, update the file size.
 */
-static int quotaTruncate(sqlite3_file *pConn, sqlite3_int64 size){
+static цяло quotaTruncate(sqlite3_file *pConn, sqlite3_int64 size){
   quotaConn *p = (quotaConn*)pConn;
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  int rc = pSubOpen->pMethods->xTruncate(pSubOpen, size);
+  цяло rc = pSubOpen->pMethods->xTruncate(pSubOpen, size);
   quotaFile *pFile = p->pFile;
   quotaGroup *pGroup;
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     quotaEnter();
     pGroup = pFile->pGroup;
     pGroup->iSize -= pFile->iSize;
@@ -611,29 +611,29 @@ static int quotaTruncate(sqlite3_file *pConn, sqlite3_int64 size){
     pGroup->iSize += size;
     quotaLeave();
   }
-  return rc;
+  върни rc;
 }
 
 /* Pass xSync requests through to the original VFS without change
 */
-static int quotaSync(sqlite3_file *pConn, int flags){
+static цяло quotaSync(sqlite3_file *pConn, цяло flags){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xSync(pSubOpen, flags);
+  върни pSubOpen->pMethods->xSync(pSubOpen, flags);
 }
 
 /* Pass xFileSize requests through to the original VFS but then
 ** update the quotaGroup with the new size before returning.
 */
-static int quotaFileSize(sqlite3_file *pConn, sqlite3_int64 *pSize){
+static цяло quotaFileSize(sqlite3_file *pConn, sqlite3_int64 *pSize){
   quotaConn *p = (quotaConn*)pConn;
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
   quotaFile *pFile = p->pFile;
   quotaGroup *pGroup;
   sqlite3_int64 sz;
-  int rc;
+  цяло rc;
 
   rc = pSubOpen->pMethods->xFileSize(pSubOpen, &sz);
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     quotaEnter();
     pGroup = pFile->pGroup;
     pGroup->iSize -= pFile->iSize;
@@ -642,80 +642,80 @@ static int quotaFileSize(sqlite3_file *pConn, sqlite3_int64 *pSize){
     quotaLeave();
     *pSize = sz;
   }
-  return rc;
+  върни rc;
 }
 
 /* Pass xLock requests through to the original VFS unchanged.
 */
-static int quotaLock(sqlite3_file *pConn, int lock){
+static цяло quotaLock(sqlite3_file *pConn, цяло lock){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xLock(pSubOpen, lock);
+  върни pSubOpen->pMethods->xLock(pSubOpen, lock);
 }
 
 /* Pass xUnlock requests through to the original VFS unchanged.
 */
-static int quotaUnlock(sqlite3_file *pConn, int lock){
+static цяло quotaUnlock(sqlite3_file *pConn, цяло lock){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xUnlock(pSubOpen, lock);
+  върни pSubOpen->pMethods->xUnlock(pSubOpen, lock);
 }
 
 /* Pass xCheckReservedLock requests through to the original VFS unchanged.
 */
-static int quotaCheckReservedLock(sqlite3_file *pConn, int *pResOut){
+static цяло quotaCheckReservedLock(sqlite3_file *pConn, цяло *pResOut){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xCheckReservedLock(pSubOpen, pResOut);
+  върни pSubOpen->pMethods->xCheckReservedLock(pSubOpen, pResOut);
 }
 
 /* Pass xFileControl requests through to the original VFS unchanged.
 */
-static int quotaFileControl(sqlite3_file *pConn, int op, void *pArg){
+static цяло quotaFileControl(sqlite3_file *pConn, цяло op, void *pArg){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  int rc = pSubOpen->pMethods->xFileControl(pSubOpen, op, pArg);
-#if defined(SQLITE_FCNTL_VFSNAME)
-  if( op==SQLITE_FCNTL_VFSNAME && rc==SQLITE_OK ){
+  цяло rc = pSubOpen->pMethods->xFileControl(pSubOpen, op, pArg);
+#ако defined(SQLITE_FCNTL_VFSNAME)
+  ако( op==SQLITE_FCNTL_VFSNAME && rc==SQLITE_OK ){
     *(char**)pArg = sqlite3_mprintf("quota/%z", *(char**)pArg);
   }
 #endif
-  return rc;
+  върни rc;
 }
 
 /* Pass xSectorSize requests through to the original VFS unchanged.
 */
-static int quotaSectorSize(sqlite3_file *pConn){
+static цяло quotaSectorSize(sqlite3_file *pConn){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xSectorSize(pSubOpen);
+  върни pSubOpen->pMethods->xSectorSize(pSubOpen);
 }
 
 /* Pass xDeviceCharacteristics requests through to the original VFS unchanged.
 */
-static int quotaDeviceCharacteristics(sqlite3_file *pConn){
+static цяло quotaDeviceCharacteristics(sqlite3_file *pConn){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xDeviceCharacteristics(pSubOpen);
+  върни pSubOpen->pMethods->xDeviceCharacteristics(pSubOpen);
 }
 
 /* Pass xShmMap requests through to the original VFS unchanged.
 */
-static int quotaShmMap(
+static цяло quotaShmMap(
   sqlite3_file *pConn,            /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int szRegion,                   /* Size of regions */
-  int bExtend,                    /* True to extend file if necessary */
+  цяло iRegion,                    /* Region to retrieve */
+  цяло szRegion,                   /* Size of regions */
+  цяло bExtend,                    /* True to extend file if necessary */
   void volatile **pp              /* OUT: Mapped memory */
 ){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xShmMap(pSubOpen, iRegion, szRegion, bExtend, pp);
+  върни pSubOpen->pMethods->xShmMap(pSubOpen, iRegion, szRegion, bExtend, pp);
 }
 
 /* Pass xShmLock requests through to the original VFS unchanged.
 */
-static int quotaShmLock(
+static цяло quotaShmLock(
   sqlite3_file *pConn,       /* Database file holding the shared memory */
-  int ofst,                  /* First lock to acquire or release */
-  int n,                     /* Number of locks to acquire or release */
-  int flags                  /* What to do with the lock */
+  цяло ofst,                  /* First lock to acquire or release */
+  цяло n,                     /* Number of locks to acquire or release */
+  цяло flags                  /* What to do with the lock */
 ){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xShmLock(pSubOpen, ofst, n, flags);
+  върни pSubOpen->pMethods->xShmLock(pSubOpen, ofst, n, flags);
 }
 
 /* Pass xShmBarrier requests through to the original VFS unchanged.
@@ -727,9 +727,9 @@ static void quotaShmBarrier(sqlite3_file *pConn){
 
 /* Pass xShmUnmap requests through to the original VFS unchanged.
 */
-static int quotaShmUnmap(sqlite3_file *pConn, int deleteFlag){
+static цяло quotaShmUnmap(sqlite3_file *pConn, цяло deleteFlag){
   sqlite3_file *pSubOpen = quotaSubOpen(pConn);
-  return pSubOpen->pMethods->xShmUnmap(pSubOpen, deleteFlag);
+  върни pSubOpen->pMethods->xShmUnmap(pSubOpen, deleteFlag);
 }
 
 /************************** Public Interfaces *****************************/
@@ -744,15 +744,15 @@ static int quotaShmUnmap(sqlite3_file *pConn, int deleteFlag){
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-int sqlite3_quota_initialize(const char *zOrigVfsName, int makeDefault){
+цяло sqlite3_quota_initialize(const char *zOrigVfsName, цяло makeDefault){
   sqlite3_vfs *pOrigVfs;
-  if( gQuota.isInitialized ) return SQLITE_MISUSE;
+  ако( gQuota.isInitialized ) върни SQLITE_MISUSE;
   pOrigVfs = sqlite3_vfs_find(zOrigVfsName);
-  if( pOrigVfs==0 ) return SQLITE_ERROR;
+  ако( pOrigVfs==0 ) върни SQLITE_ERROR;
   assert( pOrigVfs!=&gQuota.sThisVfs );
   gQuota.pMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-  if( !gQuota.pMutex ){
-    return SQLITE_NOMEM;
+  ако( !gQuota.pMutex ){
+    върни SQLITE_NOMEM;
   }
   gQuota.isInitialized = 1;
   gQuota.pOrigVfs = pOrigVfs;
@@ -781,7 +781,7 @@ int sqlite3_quota_initialize(const char *zOrigVfsName, int makeDefault){
   gQuota.sIoMethodsV2.xShmBarrier = quotaShmBarrier;
   gQuota.sIoMethodsV2.xShmUnmap = quotaShmUnmap;
   sqlite3_vfs_register(&gQuota.sThisVfs, makeDefault);
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -793,13 +793,13 @@ int sqlite3_quota_initialize(const char *zOrigVfsName, int makeDefault){
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining quota groups.
 */
-int sqlite3_quota_shutdown(void){
+цяло sqlite3_quota_shutdown(void){
   quotaGroup *pGroup;
-  if( gQuota.isInitialized==0 ) return SQLITE_MISUSE;
-  for(pGroup=gQuota.pGroup; pGroup; pGroup=pGroup->pNext){
-    if( quotaGroupOpenFileCount(pGroup)>0 ) return SQLITE_MISUSE;
+  ако( gQuota.isInitialized==0 ) върни SQLITE_MISUSE;
+  за(pGroup=gQuota.pGroup; pGroup; pGroup=pGroup->pNext){
+    ако( quotaGroupOpenFileCount(pGroup)>0 ) върни SQLITE_MISUSE;
   }
-  while( gQuota.pGroup ){
+  докато( gQuota.pGroup ){
     pGroup = gQuota.pGroup;
     gQuota.pGroup = pGroup->pNext;
     pGroup->iLimit = 0;
@@ -810,7 +810,7 @@ int sqlite3_quota_shutdown(void){
   sqlite3_mutex_free(gQuota.pMutex);
   sqlite3_vfs_unregister(&gQuota.sThisVfs);
   memset(&gQuota, 0, sizeof(gQuota));
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -833,7 +833,7 @@ int sqlite3_quota_shutdown(void){
 ** quota group.  Creating a quota group does not affect database connections
 ** that are already open.
 */
-int sqlite3_quota_set(
+цяло sqlite3_quota_set(
   const char *zPattern,           /* The filename pattern */
   sqlite3_int64 iLimit,           /* New quota to set for this quota group */
   void (*xCallback)(              /* Callback invoked when going over quota */
@@ -848,84 +848,84 @@ int sqlite3_quota_set(
   quotaGroup *pGroup;
   quotaEnter();
   pGroup = gQuota.pGroup;
-  while( pGroup && strcmp(pGroup->zPattern, zPattern)!=0 ){
+  докато( pGroup && strcmp(pGroup->zPattern, zPattern)!=0 ){
     pGroup = pGroup->pNext;
   }
-  if( pGroup==0 ){
-    int nPattern = (int)(strlen(zPattern) & 0x3fffffff);
-    if( iLimit<=0 ){
+  ако( pGroup==0 ){
+    цяло nPattern = (цяло)(strlen(zPattern) & 0x3fffffff);
+    ако( iLimit<=0 ){
       quotaLeave();
-      return SQLITE_OK;
+      върни SQLITE_OK;
     }
     pGroup = (quotaGroup *)sqlite3_malloc( sizeof(*pGroup) + nPattern + 1 );
-    if( pGroup==0 ){
+    ако( pGroup==0 ){
       quotaLeave();
-      return SQLITE_NOMEM;
+      върни SQLITE_NOMEM;
     }
     memset(pGroup, 0, sizeof(*pGroup));
     pGroup->zPattern = (char*)&pGroup[1];
     memcpy((char *)pGroup->zPattern, zPattern, nPattern+1);
-    if( gQuota.pGroup ) gQuota.pGroup->ppPrev = &pGroup->pNext;
+    ако( gQuota.pGroup ) gQuota.pGroup->ppPrev = &pGroup->pNext;
     pGroup->pNext = gQuota.pGroup;
     pGroup->ppPrev = &gQuota.pGroup;
     gQuota.pGroup = pGroup;
   }
   pGroup->iLimit = iLimit;
   pGroup->xCallback = xCallback;
-  if( pGroup->xDestroy && pGroup->pArg!=pArg ){
+  ако( pGroup->xDestroy && pGroup->pArg!=pArg ){
     pGroup->xDestroy(pGroup->pArg);
   }
   pGroup->pArg = pArg;
   pGroup->xDestroy = xDestroy;
   quotaGroupDeref(pGroup);
   quotaLeave();
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
 ** Bring the named file under quota management.  Or if it is already under
 ** management, update its size.
 */
-int sqlite3_quota_file(const char *zFilename){
+цяло sqlite3_quota_file(const char *zFilename){
   char *zFull = 0;
   sqlite3_file *fd;
-  int rc;
-  int outFlags = 0;
+  цяло rc;
+  цяло outFlags = 0;
   sqlite3_int64 iSize;
-  int nAlloc = gQuota.sThisVfs.szOsFile + gQuota.sThisVfs.mxPathname+2;
+  цяло nAlloc = gQuota.sThisVfs.szOsFile + gQuota.sThisVfs.mxPathname+2;
 
   /* Allocate space for a file-handle and the full path for file zFilename */
   fd = (sqlite3_file *)sqlite3_malloc(nAlloc);
-  if( fd==0 ){
+  ако( fd==0 ){
     rc = SQLITE_NOMEM;
-  }else{
+  }иначе{
     zFull = &((char *)fd)[gQuota.sThisVfs.szOsFile];
     rc = gQuota.pOrigVfs->xFullPathname(gQuota.pOrigVfs, zFilename,
         gQuota.sThisVfs.mxPathname+1, zFull);
   }
 
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     zFull[strlen(zFull)+1] = '\0';
     rc = quotaOpen(&gQuota.sThisVfs, zFull, fd,
                    SQLITE_OPEN_READONLY | SQLITE_OPEN_MAIN_DB, &outFlags);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       fd->pMethods->xFileSize(fd, &iSize);
       fd->pMethods->xClose(fd);
-    }else if( rc==SQLITE_CANTOPEN ){
+    }иначе ако( rc==SQLITE_CANTOPEN ){
       quotaGroup *pGroup;
       quotaFile *pFile;
       quotaEnter();
       pGroup = quotaGroupFind(zFull);
-      if( pGroup ){
+      ако( pGroup ){
         pFile = quotaFindFile(pGroup, zFull, 0);
-        if( pFile ) quotaRemoveFile(pFile);
+        ако( pFile ) quotaRemoveFile(pFile);
       }
       quotaLeave();
     }
   }
 
   sqlite3_free(fd);
-  return rc;
+  върни rc;
 }
 
 /*
@@ -935,27 +935,27 @@ quota_FILE *sqlite3_quota_fopen(const char *zFilename, const char *zMode){
   quota_FILE *p = 0;
   char *zFull = 0;
   char *zFullTranslated = 0;
-  int rc;
+  цяло rc;
   quotaGroup *pGroup;
   quotaFile *pFile;
 
   zFull = (char*)sqlite3_malloc(gQuota.sThisVfs.mxPathname + 1);
-  if( zFull==0 ) return 0;
+  ако( zFull==0 ) върни 0;
   rc = gQuota.pOrigVfs->xFullPathname(gQuota.pOrigVfs, zFilename,
                                       gQuota.sThisVfs.mxPathname+1, zFull);
-  if( rc ) goto quota_fopen_error;
+  ако( rc ) goto quota_fopen_error;
   p = (quota_FILE*)sqlite3_malloc(sizeof(*p));
-  if( p==0 ) goto quota_fopen_error;
+  ако( p==0 ) goto quota_fopen_error;
   memset(p, 0, sizeof(*p));
   zFullTranslated = quota_utf8_to_mbcs(zFull);
-  if( zFullTranslated==0 ) goto quota_fopen_error;
+  ако( zFullTranslated==0 ) goto quota_fopen_error;
   p->f = fopen(zFullTranslated, zMode);
-  if( p->f==0 ) goto quota_fopen_error;
+  ако( p->f==0 ) goto quota_fopen_error;
   quotaEnter();
   pGroup = quotaGroupFind(zFull);
-  if( pGroup ){
+  ако( pGroup ){
     pFile = quotaFindFile(pGroup, zFull, 1);
-    if( pFile==0 ){
+    ако( pFile==0 ){
       quotaLeave();
       goto quota_fopen_error;
     }
@@ -967,14 +967,14 @@ quota_FILE *sqlite3_quota_fopen(const char *zFilename, const char *zMode){
 #ifdef _WIN32
   p->zMbcsName = zFullTranslated;
 #endif
-  return p;
+  върни p;
 
 quota_fopen_error:
   quota_mbcs_free(zFullTranslated);
   sqlite3_free(zFull);
-  if( p && p->f ) fclose(p->f);
+  ако( p && p->f ) fclose(p->f);
   sqlite3_free(p);
-  return 0;
+  върни 0;
 }
 
 /*
@@ -986,7 +986,7 @@ size_t sqlite3_quota_fread(
   size_t nmemb,          /* Number of elements to read */
   quota_FILE *p          /* Read from this quota_FILE object */
 ){
-  return fread(pBuf, size, nmemb, p->f);
+  върни fread(pBuf, size, nmemb, p->f);
 }
 
 /*
@@ -1008,16 +1008,16 @@ size_t sqlite3_quota_fwrite(
   iOfst = ftell(p->f);
   iEnd = iOfst + size*nmemb;
   pFile = p->pFile;
-  if( pFile && pFile->iSize<iEnd ){
+  ако( pFile && pFile->iSize<iEnd ){
     quotaGroup *pGroup = pFile->pGroup;
     quotaEnter();
     szNew = pGroup->iSize - pFile->iSize + iEnd;
-    if( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
-      if( pGroup->xCallback ){
+    ако( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
+      ако( pGroup->xCallback ){
         pGroup->xCallback(pFile->zFilename, &pGroup->iLimit, szNew,
                           pGroup->pArg);
       }
-      if( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
+      ако( szNew>pGroup->iLimit && pGroup->iLimit>0 ){
         iEnd = pGroup->iLimit - pGroup->iSize + pFile->iSize;
         nmemb = (size_t)((iEnd - iOfst)/size);
         iEnd = iOfst + size*nmemb;
@@ -1027,39 +1027,39 @@ size_t sqlite3_quota_fwrite(
     pGroup->iSize = szNew;
     pFile->iSize = iEnd;
     quotaLeave();
-  }else{
+  }иначе{
     pFile = 0;
   }
   rc = fwrite(pBuf, size, nmemb, p->f);
 
   /* If the write was incomplete, adjust the file size and group size
   ** downward */
-  if( rc<nmemb && pFile ){
+  ако( rc<nmemb && pFile ){
     size_t nWritten = rc;
     sqlite3_int64 iNewEnd = iOfst + size*nWritten;
-    if( iNewEnd<iEnd ) iNewEnd = iEnd;
+    ако( iNewEnd<iEnd ) iNewEnd = iEnd;
     quotaEnter();
     pFile->pGroup->iSize += iNewEnd - pFile->iSize;
     pFile->iSize = iNewEnd;
     quotaLeave();
   }
-  return rc;
+  върни rc;
 }
 
 /*
 ** Close an open quota_FILE stream.
 */
-int sqlite3_quota_fclose(quota_FILE *p){
-  int rc;
+цяло sqlite3_quota_fclose(quota_FILE *p){
+  цяло rc;
   quotaFile *pFile;
   rc = fclose(p->f);
   pFile = p->pFile;
-  if( pFile ){
+  ако( pFile ){
     quotaEnter();
     pFile->nRef--;
-    if( pFile->nRef==0 ){
+    ако( pFile->nRef==0 ){
       quotaGroup *pGroup = pFile->pGroup;
-      if( pFile->deleteOnClose ){
+      ако( pFile->deleteOnClose ){
         gQuota.pOrigVfs->xDelete(gQuota.pOrigVfs, pFile->zFilename, 0);
         quotaRemoveFile(pFile);
       }
@@ -1071,30 +1071,30 @@ int sqlite3_quota_fclose(quota_FILE *p){
   quota_mbcs_free(p->zMbcsName);
 #endif
   sqlite3_free(p);
-  return rc;
+  върни rc;
 }
 
 /*
 ** Flush memory buffers for a quota_FILE to disk.
 */
-int sqlite3_quota_fflush(quota_FILE *p, int doFsync){
-  int rc;
+цяло sqlite3_quota_fflush(quota_FILE *p, цяло doFsync){
+  цяло rc;
   rc = fflush(p->f);
-  if( rc==0 && doFsync ){
+  ако( rc==0 && doFsync ){
 #ifdef _WIN32
     rc = _commit(_fileno(p->f));
-#else
+#иначе
     rc = fsync(fileno(p->f));
 #endif
   }
-  return rc!=0;
+  върни rc!=0;
 }
 
 /*
 ** Seek on a quota_FILE stream.
 */
-int sqlite3_quota_fseek(quota_FILE *p, long offset, int whence){
-  return fseek(p->f, offset, whence);
+цяло sqlite3_quota_fseek(quota_FILE *p, long offset, цяло whence){
+  върни fseek(p->f, offset, whence);
 }
 
 /*
@@ -1108,28 +1108,28 @@ void sqlite3_quota_rewind(quota_FILE *p){
 ** Tell the current location of a quota_FILE stream.
 */
 long sqlite3_quota_ftell(quota_FILE *p){
-  return ftell(p->f);
+  върни ftell(p->f);
 }
 
 /*
 ** Test the error indicator for the given file.
 */
-int sqlite3_quota_ferror(quota_FILE *p){
-  return ferror(p->f);
+цяло sqlite3_quota_ferror(quota_FILE *p){
+  върни ferror(p->f);
 }
 
 /*
 ** Truncate a file to szNew bytes.
 */
-int sqlite3_quota_ftruncate(quota_FILE *p, sqlite3_int64 szNew){
+цяло sqlite3_quota_ftruncate(quota_FILE *p, sqlite3_int64 szNew){
   quotaFile *pFile = p->pFile;
-  int rc;
-  if( (pFile = p->pFile)!=0 && pFile->iSize<szNew ){
+  цяло rc;
+  ако( (pFile = p->pFile)!=0 && pFile->iSize<szNew ){
     quotaGroup *pGroup;
-    if( pFile->iSize<szNew ){
+    ако( pFile->iSize<szNew ){
       /* This routine cannot be used to extend a file that is under
       ** quota management.  Only true truncation is allowed. */
-      return -1;
+      върни -1;
     }
     pGroup = pFile->pGroup;
     quotaEnter();
@@ -1137,24 +1137,24 @@ int sqlite3_quota_ftruncate(quota_FILE *p, sqlite3_int64 szNew){
     quotaLeave();
   }
 #ifdef _WIN32
-#  if defined(__MSVCRT__) && defined(SQLITE_TEST)
+#  ако defined(__MSVCRT__) && defined(SQLITE_TEST)
      /* _chsize_s() is missing from MingW (as of 2012-11-06).  Use
      ** _chsize() as a work-around for testing purposes. */
      rc = _chsize(_fileno(p->f), (long)szNew);
-#  else
+#  иначе
      rc = _chsize_s(_fileno(p->f), szNew);
 #  endif
-#else
+#иначе
   rc = ftruncate(fileno(p->f), szNew);
 #endif
-  if( pFile && rc==0 ){
+  ако( pFile && rc==0 ){
     quotaGroup *pGroup = pFile->pGroup;
     quotaEnter();
     pGroup->iSize += szNew - pFile->iSize;
     pFile->iSize = szNew;
     quotaLeave();
   }
-  return rc;
+  върни rc;
 }
 
 /*
@@ -1162,17 +1162,17 @@ int sqlite3_quota_ftruncate(quota_FILE *p, sqlite3_int64 szNew){
 ** seconds size 1970.  Write the result into *pTime.  Return 0 on
 ** success and non-zero on any kind of error.
 */
-int sqlite3_quota_file_mtime(quota_FILE *p, time_t *pTime){
-  int rc;
+цяло sqlite3_quota_file_mtime(quota_FILE *p, time_t *pTime){
+  цяло rc;
 #ifdef _WIN32
   struct _stati64 buf;
   rc = _stati64(p->zMbcsName, &buf);
-#else
+#иначе
   struct stat buf;
   rc = fstat(fileno(p->f), &buf);
 #endif
-  if( rc==0 ) *pTime = buf.st_mtime;
-  return rc;
+  ако( rc==0 ) *pTime = buf.st_mtime;
+  върни rc;
 }
 
 /*
@@ -1180,22 +1180,22 @@ int sqlite3_quota_file_mtime(quota_FILE *p, time_t *pTime){
 ** system.
 */
 sqlite3_int64 sqlite3_quota_file_truesize(quota_FILE *p){
-  int rc;
+  цяло rc;
 #ifdef _WIN32
   struct _stati64 buf;
   rc = _stati64(p->zMbcsName, &buf);
-#else
+#иначе
   struct stat buf;
   rc = fstat(fileno(p->f), &buf);
 #endif
-  return rc==0 ? buf.st_size : -1;
+  върни rc==0 ? buf.st_size : -1;
 }
 
 /*
 ** Return the size of the file, as it is known to the quota subsystem.
 */
 sqlite3_int64 sqlite3_quota_file_size(quota_FILE *p){
-  return p->pFile ? p->pFile->iSize : -1;
+  върни p->pFile ? p->pFile->iSize : -1;
 }
 
 /*
@@ -1205,59 +1205,59 @@ sqlite3_int64 sqlite3_quota_file_size(quota_FILE *p){
 long sqlite3_quota_file_available(quota_FILE *p){
   FILE* f = p->f;
   long pos1, pos2;
-  int rc;
+  цяло rc;
   pos1 = ftell(f);
-  if ( pos1 < 0 ) return -1;
+  ако ( pos1 < 0 ) върни -1;
   rc = fseek(f, 0, SEEK_END);
-  if ( rc != 0 ) return -1;
+  ако ( rc != 0 ) върни -1;
   pos2 = ftell(f);
-  if ( pos2 < 0 ) return -1;
+  ако ( pos2 < 0 ) върни -1;
   rc = fseek(f, pos1, SEEK_SET);
-  if ( rc != 0 ) return -1;
-  return pos2 - pos1;
+  ако ( rc != 0 ) върни -1;
+  върни pos2 - pos1;
 }
 
 /*
 ** Remove a managed file.  Update quotas accordingly.
 */
-int sqlite3_quota_remove(const char *zFilename){
+цяло sqlite3_quota_remove(const char *zFilename){
   char *zFull;            /* Full pathname for zFilename */
   size_t nFull;           /* Number of bytes in zFilename */
-  int rc;                 /* Result code */
+  цяло rc;                 /* Result code */
   quotaGroup *pGroup;     /* Group containing zFilename */
   quotaFile *pFile;       /* A file in the group */
   quotaFile *pNextFile;   /* next file in the group */
-  int diff;               /* Difference between filenames */
+  цяло diff;               /* Difference between filenames */
   char c;                 /* First character past end of pattern */
 
   zFull = (char*)sqlite3_malloc(gQuota.sThisVfs.mxPathname + 1);
-  if( zFull==0 ) return SQLITE_NOMEM;
+  ако( zFull==0 ) върни SQLITE_NOMEM;
   rc = gQuota.pOrigVfs->xFullPathname(gQuota.pOrigVfs, zFilename,
                                       gQuota.sThisVfs.mxPathname+1, zFull);
-  if( rc ){
+  ако( rc ){
     sqlite3_free(zFull);
-    return rc;
+    върни rc;
   }
 
   /* Figure out the length of the full pathname.  If the name ends with
   ** / (or \ on windows) then remove the trailing /.
   */
   nFull = strlen(zFull);
-  if( nFull>0 && (zFull[nFull-1]=='/' || zFull[nFull-1]=='\\') ){
+  ако( nFull>0 && (zFull[nFull-1]=='/' || zFull[nFull-1]=='\\') ){
     nFull--;
     zFull[nFull] = 0;
   }
 
   quotaEnter();
   pGroup = quotaGroupFind(zFull);
-  if( pGroup ){
-    for(pFile=pGroup->pFiles; pFile && rc==SQLITE_OK; pFile=pNextFile){
+  ако( pGroup ){
+    за(pFile=pGroup->pFiles; pFile && rc==SQLITE_OK; pFile=pNextFile){
       pNextFile = pFile->pNext;
       diff = strncmp(zFull, pFile->zFilename, nFull);
-      if( diff==0 && ((c = pFile->zFilename[nFull])==0 || c=='/' || c=='\\') ){
-        if( pFile->nRef ){
+      ако( diff==0 && ((c = pFile->zFilename[nFull])==0 || c=='/' || c=='\\') ){
+        ако( pFile->nRef ){
           pFile->deleteOnClose = 1;
-        }else{
+        }иначе{
           rc = gQuota.pOrigVfs->xDelete(gQuota.pOrigVfs, pFile->zFilename, 0);
           quotaRemoveFile(pFile);
           quotaGroupDeref(pGroup);
@@ -1267,7 +1267,7 @@ int sqlite3_quota_remove(const char *zFilename){
   }
   quotaLeave();
   sqlite3_free(zFull);
-  return rc;
+  върни rc;
 }
 
 /***************************** Test Code ***********************************/
@@ -1283,7 +1283,7 @@ struct TclQuotaCallback {
   Tcl_Obj *pScript;      /* Script to be run */
 };
 
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(цяло);
 
 
 /*
@@ -1298,16 +1298,16 @@ static void tclQuotaCallback(
   TclQuotaCallback *p;            /* Callback script object */
   Tcl_Obj *pEval;                 /* Script to evaluate */
   Tcl_Obj *pVarname;              /* Name of variable to pass as 2nd arg */
-  unsigned int rnd;               /* Random part of pVarname */
-  int rc;                         /* Tcl error code */
+  unsigned цяло rnd;               /* Random part of pVarname */
+  цяло rc;                         /* Tcl error code */
 
   p = (TclQuotaCallback *)pArg;
-  if( p==0 ) return;
+  ако( p==0 ) върни;
 
   pVarname = Tcl_NewStringObj("::piLimit_", -1);
   Tcl_IncrRefCount(pVarname);
   sqlite3_randomness(sizeof(rnd), (void *)&rnd);
-  Tcl_AppendObjToObj(pVarname, Tcl_NewIntObj((int)(rnd&0x7FFFFFFF)));
+  Tcl_AppendObjToObj(pVarname, Tcl_NewIntObj((цяло)(rnd&0x7FFFFFFF)));
   Tcl_ObjSetVar2(p->interp, pVarname, 0, Tcl_NewWideIntObj(*piLimit), 0);
 
   pEval = Tcl_DuplicateObj(p->pScript);
@@ -1317,7 +1317,7 @@ static void tclQuotaCallback(
   Tcl_ListObjAppendElement(0, pEval, Tcl_NewWideIntObj(iSize));
   rc = Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
 
-  if( rc==TCL_OK ){
+  ако( rc==TCL_OK ){
     Tcl_WideInt x;
     Tcl_Obj *pLimit = Tcl_ObjGetVar2(p->interp, pVarname, 0, 0);
     rc = Tcl_GetWideIntFromObj(p->interp, pLimit, &x);
@@ -1327,7 +1327,7 @@ static void tclQuotaCallback(
 
   Tcl_DecrRefCount(pEval);
   Tcl_DecrRefCount(pVarname);
-  if( rc!=TCL_OK ) Tcl_BackgroundError(p->interp);
+  ако( rc!=TCL_OK ) Tcl_BackgroundError(p->interp);
 }
 
 /*
@@ -1335,7 +1335,7 @@ static void tclQuotaCallback(
 */
 static void tclCallbackDestructor(void *pObj){
   TclQuotaCallback *p = (TclQuotaCallback*)pObj;
-  if( p ){
+  ако( p ){
     Tcl_DecrRefCount(p->pScript);
     sqlite3_free((char *)p);
   }
@@ -1344,89 +1344,89 @@ static void tclCallbackDestructor(void *pObj){
 /*
 ** tclcmd: sqlite3_quota_initialize NAME MAKEDEFAULT
 */
-static int SQLITE_TCLAPI test_quota_initialize(
+static цяло SQLITE_TCLAPI test_quota_initialize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zName;              /* Name of new quota VFS */
-  int makeDefault;                /* True to make the new VFS the default */
-  int rc;                         /* Value returned by quota_initialize() */
+  цяло makeDefault;                /* True to make the new VFS the default */
+  цяло rc;                         /* Value returned by quota_initialize() */
 
   /* Process arguments */
-  if( objc!=3 ){
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "NAME MAKEDEFAULT");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zName = Tcl_GetString(objv[1]);
-  if( Tcl_GetBooleanFromObj(interp, objv[2], &makeDefault) ) return TCL_ERROR;
-  if( zName[0]=='\0' ) zName = 0;
+  ако( Tcl_GetBooleanFromObj(interp, objv[2], &makeDefault) ) върни TCL_ERROR;
+  ако( zName[0]=='\0' ) zName = 0;
 
   /* Call sqlite3_quota_initialize() */
   rc = sqlite3_quota_initialize(zName, makeDefault);
   Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_shutdown
 */
-static int SQLITE_TCLAPI test_quota_shutdown(
+static цяло SQLITE_TCLAPI test_quota_shutdown(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;                         /* Value returned by quota_shutdown() */
+  цяло rc;                         /* Value returned by quota_shutdown() */
 
-  if( objc!=1 ){
+  ако( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
   /* Call sqlite3_quota_shutdown() */
   rc = sqlite3_quota_shutdown();
   Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_set PATTERN LIMIT SCRIPT
 */
-static int SQLITE_TCLAPI test_quota_set(
+static цяло SQLITE_TCLAPI test_quota_set(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zPattern;           /* File pattern to configure */
   Tcl_WideInt iLimit;             /* Initial quota in bytes */
   Tcl_Obj *pScript;               /* Tcl script to invoke to increase quota */
-  int rc;                         /* Value returned by quota_set() */
+  цяло rc;                         /* Value returned by quota_set() */
   TclQuotaCallback *p;            /* Callback object */
   Tcl_Size nScript;               /* Length of callback script */
   void (*xDestroy)(void*);        /* Optional destructor for pArg */
   void (*xCallback)(const char *, sqlite3_int64 *, sqlite3_int64, void *);
 
   /* Process arguments */
-  if( objc!=4 ){
+  ако( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "PATTERN LIMIT SCRIPT");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zPattern = Tcl_GetString(objv[1]);
-  if( Tcl_GetWideIntFromObj(interp, objv[2], &iLimit) ) return TCL_ERROR;
+  ако( Tcl_GetWideIntFromObj(interp, objv[2], &iLimit) ) върни TCL_ERROR;
   pScript = objv[3];
   Tcl_GetStringFromObj(pScript, &nScript);
 
-  if( nScript>0 ){
+  ако( nScript>0 ){
     /* Allocate a TclQuotaCallback object */
     p = (TclQuotaCallback *)sqlite3_malloc(sizeof(TclQuotaCallback));
-    if( !p ){
+    ако( !p ){
       Tcl_SetResult(interp, (char *)"SQLITE_NOMEM", TCL_STATIC);
-      return TCL_OK;
+      върни TCL_OK;
     }
     memset(p, 0, sizeof(TclQuotaCallback));
     p->interp = interp;
@@ -1434,7 +1434,7 @@ static int SQLITE_TCLAPI test_quota_set(
     p->pScript = pScript;
     xDestroy = tclCallbackDestructor;
     xCallback = tclQuotaCallback;
-  }else{
+  }иначе{
     p = 0;
     xDestroy = 0;
     xCallback = 0;
@@ -1444,25 +1444,25 @@ static int SQLITE_TCLAPI test_quota_set(
   rc = sqlite3_quota_set(zPattern, iLimit, xCallback, (void*)p, xDestroy);
 
   Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_file FILENAME
 */
-static int SQLITE_TCLAPI test_quota_file(
+static цяло SQLITE_TCLAPI test_quota_file(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zFilename;          /* File pattern to configure */
-  int rc;                         /* Value returned by quota_file() */
+  цяло rc;                         /* Value returned by quota_file() */
 
   /* Process arguments */
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
 
@@ -1470,16 +1470,16 @@ static int SQLITE_TCLAPI test_quota_file(
   rc = sqlite3_quota_file(zFilename);
 
   Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd:  sqlite3_quota_dump
 */
-static int SQLITE_TCLAPI test_quota_dump(
+static цяло SQLITE_TCLAPI test_quota_dump(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Obj *pResult;
@@ -1490,7 +1490,7 @@ static int SQLITE_TCLAPI test_quota_dump(
 
   pResult = Tcl_NewObj();
   quotaEnter();
-  for(pGroup=gQuota.pGroup; pGroup; pGroup=pGroup->pNext){
+  за(pGroup=gQuota.pGroup; pGroup; pGroup=pGroup->pNext){
     pGroupTerm = Tcl_NewObj();
     Tcl_ListObjAppendElement(interp, pGroupTerm,
           Tcl_NewStringObj(pGroup->zPattern, -1));
@@ -1498,12 +1498,12 @@ static int SQLITE_TCLAPI test_quota_dump(
           Tcl_NewWideIntObj(pGroup->iLimit));
     Tcl_ListObjAppendElement(interp, pGroupTerm,
           Tcl_NewWideIntObj(pGroup->iSize));
-    for(pFile=pGroup->pFiles; pFile; pFile=pFile->pNext){
-      int i;
+    за(pFile=pGroup->pFiles; pFile; pFile=pFile->pNext){
+      цяло i;
       char zTemp[1000];
       pFileTerm = Tcl_NewObj();
       sqlite3_snprintf(sizeof(zTemp), zTemp, "%s", pFile->zFilename);
-      for(i=0; zTemp[i]; i++){ if( zTemp[i]=='\\' ) zTemp[i] = '/'; }
+      за(i=0; zTemp[i]; i++){ ако( zTemp[i]=='\\' ) zTemp[i] = '/'; }
       Tcl_ListObjAppendElement(interp, pFileTerm,
             Tcl_NewStringObj(zTemp, -1));
       Tcl_ListObjAppendElement(interp, pFileTerm,
@@ -1518,7 +1518,7 @@ static int SQLITE_TCLAPI test_quota_dump(
   }
   quotaLeave();
   Tcl_SetObjResult(interp, pResult);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /* Defined in test1.c */
@@ -1528,10 +1528,10 @@ extern const char *sqlite3TestPtrToText(void*);
 /*
 ** tclcmd: sqlite3_quota_fopen FILENAME MODE
 */
-static int SQLITE_TCLAPI test_quota_fopen(
+static цяло SQLITE_TCLAPI test_quota_fopen(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zFilename;          /* File pattern to configure */
@@ -1539,314 +1539,314 @@ static int SQLITE_TCLAPI test_quota_fopen(
   quota_FILE *p;                  /* Open string object */
 
   /* Process arguments */
-  if( objc!=3 ){
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "FILENAME MODE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
   zMode = Tcl_GetString(objv[2]);
   p = sqlite3_quota_fopen(zFilename, zMode);
   Tcl_SetResult(interp, (char*)sqlite3TestPtrToText(p), TCL_VOLATILE);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_fread HANDLE SIZE NELEM
 */
-static int SQLITE_TCLAPI test_quota_fread(
+static цяло SQLITE_TCLAPI test_quota_fread(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   char *zBuf;
-  int sz;
-  int nElem;
+  цяло sz;
+  цяло nElem;
   size_t got;
 
-  if( objc!=4 ){
+  ако( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE NELEM");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
-  if( Tcl_GetIntFromObj(interp, objv[2], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &nElem) ) return TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[2], &sz) ) върни TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[3], &nElem) ) върни TCL_ERROR;
   zBuf = (char*)sqlite3_malloc( sz*nElem + 1 );
-  if( zBuf==0 ){
+  ако( zBuf==0 ){
     Tcl_SetResult(interp, "out of memory", TCL_STATIC);
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   got = sqlite3_quota_fread(zBuf, sz, nElem, p);
   zBuf[got*sz] = 0;
   Tcl_SetResult(interp, zBuf, TCL_VOLATILE);
   sqlite3_free(zBuf);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_fwrite HANDLE SIZE NELEM CONTENT
 */
-static int SQLITE_TCLAPI test_quota_fwrite(
+static цяло SQLITE_TCLAPI test_quota_fwrite(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   char *zBuf;
-  int sz;
-  int nElem;
+  цяло sz;
+  цяло nElem;
   size_t got;
 
-  if( objc!=5 ){
+  ако( objc!=5 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE NELEM CONTENT");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
-  if( Tcl_GetIntFromObj(interp, objv[2], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &nElem) ) return TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[2], &sz) ) върни TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[3], &nElem) ) върни TCL_ERROR;
   zBuf = Tcl_GetString(objv[4]);
   got = sqlite3_quota_fwrite(zBuf, sz, nElem, p);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(got));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_fclose HANDLE
 */
-static int SQLITE_TCLAPI test_quota_fclose(
+static цяло SQLITE_TCLAPI test_quota_fclose(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
-  int rc;
+  цяло rc;
 
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   rc = sqlite3_quota_fclose(p);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_fflush HANDLE ?HARDSYNC?
 */
-static int SQLITE_TCLAPI test_quota_fflush(
+static цяло SQLITE_TCLAPI test_quota_fflush(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
-  int rc;
-  int doSync = 0;
+  цяло rc;
+  цяло doSync = 0;
 
-  if( objc!=2 && objc!=3 ){
+  ако( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE ?HARDSYNC?");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
-  if( objc==3 ){
-    if( Tcl_GetBooleanFromObj(interp, objv[2], &doSync) ) return TCL_ERROR;
+  ако( objc==3 ){
+    ако( Tcl_GetBooleanFromObj(interp, objv[2], &doSync) ) върни TCL_ERROR;
   }
   rc = sqlite3_quota_fflush(p, doSync);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_fseek HANDLE OFFSET WHENCE
 */
-static int SQLITE_TCLAPI test_quota_fseek(
+static цяло SQLITE_TCLAPI test_quota_fseek(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
-  int ofst;
+  цяло ofst;
   const char *zWhence;
-  int whence;
-  int rc;
+  цяло whence;
+  цяло rc;
 
-  if( objc!=4 ){
+  ако( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET WHENCE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
-  if( Tcl_GetIntFromObj(interp, objv[2], &ofst) ) return TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[2], &ofst) ) върни TCL_ERROR;
   zWhence = Tcl_GetString(objv[3]);
-  if( strcmp(zWhence, "SEEK_SET")==0 ){
+  ако( strcmp(zWhence, "SEEK_SET")==0 ){
     whence = SEEK_SET;
-  }else if( strcmp(zWhence, "SEEK_CUR")==0 ){
+  }иначе ако( strcmp(zWhence, "SEEK_CUR")==0 ){
     whence = SEEK_CUR;
-  }else if( strcmp(zWhence, "SEEK_END")==0 ){
+  }иначе ако( strcmp(zWhence, "SEEK_END")==0 ){
     whence = SEEK_END;
-  }else{
+  }иначе{
     Tcl_AppendResult(interp,
            "WHENCE should be SEEK_SET, SEEK_CUR, or SEEK_END", (char*)0);
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   rc = sqlite3_quota_fseek(p, ofst, whence);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_rewind HANDLE
 */
-static int SQLITE_TCLAPI test_quota_rewind(
+static цяло SQLITE_TCLAPI test_quota_rewind(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   sqlite3_quota_rewind(p);
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_ftell HANDLE
 */
-static int SQLITE_TCLAPI test_quota_ftell(
+static цяло SQLITE_TCLAPI test_quota_ftell(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   sqlite3_int64 x;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   x = sqlite3_quota_ftell(p);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(x));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_ftruncate HANDLE SIZE
 */
-static int SQLITE_TCLAPI test_quota_ftruncate(
+static цяло SQLITE_TCLAPI test_quota_ftruncate(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   sqlite3_int64 x;
   Tcl_WideInt w;
-  int rc;
-  if( objc!=3 ){
+  цяло rc;
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
-  if( Tcl_GetWideIntFromObj(interp, objv[2], &w) ) return TCL_ERROR;
+  ако( Tcl_GetWideIntFromObj(interp, objv[2], &w) ) върни TCL_ERROR;
   x = (sqlite3_int64)w;
   rc = sqlite3_quota_ftruncate(p, x);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_file_size HANDLE
 */
-static int SQLITE_TCLAPI test_quota_file_size(
+static цяло SQLITE_TCLAPI test_quota_file_size(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   sqlite3_int64 x;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   x = sqlite3_quota_file_size(p);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(x));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_file_truesize HANDLE
 */
-static int SQLITE_TCLAPI test_quota_file_truesize(
+static цяло SQLITE_TCLAPI test_quota_file_truesize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   sqlite3_int64 x;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   x = sqlite3_quota_file_truesize(p);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(x));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_quota_file_mtime HANDLE
 */
-static int SQLITE_TCLAPI test_quota_file_mtime(
+static цяло SQLITE_TCLAPI test_quota_file_mtime(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   time_t t;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   t = 0;
   sqlite3_quota_file_mtime(p, &t);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(t));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 
 /*
 ** tclcmd: sqlite3_quota_remove FILENAME
 */
-static int SQLITE_TCLAPI test_quota_remove(
+static цяло SQLITE_TCLAPI test_quota_remove(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zFilename;          /* File pattern to configure */
-  int rc;
-  if( objc!=2 ){
+  цяло rc;
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
   rc = sqlite3_quota_remove(zFilename);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -1855,24 +1855,24 @@ static int SQLITE_TCLAPI test_quota_remove(
 ** Test the glob pattern matching.  Return 1 if TEXT matches PATTERN
 ** and return 0 if it does not.
 */
-static int SQLITE_TCLAPI test_quota_glob(
+static цяло SQLITE_TCLAPI test_quota_glob(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zPattern;          /* The glob pattern */
   const char *zText;             /* Text to compare against the pattern */
-  int rc;
-  if( objc!=3 ){
+  цяло rc;
+  ако( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "PATTERN TEXT");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   zPattern = Tcl_GetString(objv[1]);
   zText = Tcl_GetString(objv[2]);
   rc = quotaStrglob(zPattern, zText);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -1881,22 +1881,22 @@ static int SQLITE_TCLAPI test_quota_glob(
 ** Return the number of bytes from the current file point to the end of
 ** the file.
 */
-static int SQLITE_TCLAPI test_quota_file_available(
+static цяло SQLITE_TCLAPI test_quota_file_available(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
   sqlite3_int64 x;
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   x = sqlite3_quota_file_available(p);
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(x));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -1904,22 +1904,22 @@ static int SQLITE_TCLAPI test_quota_file_available(
 **
 ** Return true if the file handle is in the error state.
 */
-static int SQLITE_TCLAPI test_quota_ferror(
+static цяло SQLITE_TCLAPI test_quota_ferror(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  цяло objc,
   Tcl_Obj *CONST objv[]
 ){
   quota_FILE *p;
-  int x;
-  if( objc!=2 ){
+  цяло x;
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   x = sqlite3_quota_ferror(p);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(x));
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -1927,7 +1927,7 @@ static int SQLITE_TCLAPI test_quota_ferror(
 ** module.  This should be the only procedure visible from outside
 ** of this module.
 */
-int Sqlitequota_Init(Tcl_Interp *interp){
+цяло Sqlitequota_Init(Tcl_Interp *interp){
   static struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
@@ -1954,12 +1954,12 @@ int Sqlitequota_Init(Tcl_Interp *interp){
     { "sqlite3_quota_file_available",test_quota_file_available },
     { "sqlite3_quota_ferror",        test_quota_ferror },
   };
-  int i;
+  цяло i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  за(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 #endif

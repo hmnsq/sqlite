@@ -44,14 +44,14 @@
 //
 %syntax_error {
   UNUSED_PARAMETER(yymajor);  /* Silence some compiler warnings */
-  if( TOKEN.z[0] ){
+  ако( TOKEN.z[0] ){
     parserSyntaxError(pParse, &TOKEN);
-  }else{
+  }иначе{
     sqlite3ErrorMsg(pParse, "incomplete input");
   }
 }
 %stack_overflow {
-  if( pParse->nErr==0 ) sqlite3ErrorMsg(pParse, "Recursion limit");
+  ако( pParse->nErr==0 ) sqlite3ErrorMsg(pParse, "Recursion limit");
 }
 
 // The name of the generated procedure that implements the parser
@@ -114,9 +114,9 @@
 **
 ** Then the "b" IdList records the list "a,b,c".
 */
-struct TrigEvent { int a; IdList * b; };
+struct TrigEvent { цяло a; IdList * b; };
 
-struct FrameBound     { int eType; Expr *pExpr; };
+struct FrameBound     { цяло eType; Expr *pExpr; };
 
 /*
 ** Generate a syntax error
@@ -139,7 +139,7 @@ static void disableLookaside(Parse *pParse){
   DisableLookaside;
 }
 
-#if !defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) \
+#ако !defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) \
  && defined(SQLITE_UDL_CAPABLE_PARSER)
 /*
 ** Issue an error message if an ORDER BY or LIMIT clause occurs on an
@@ -150,9 +150,9 @@ static void updateDeleteLimitError(
   ExprList *pOrderBy,
   Expr *pLimit
 ){
-  if( pOrderBy ){
+  ако( pOrderBy ){
     sqlite3ErrorMsg(pParse, "syntax error near \"ORDER BY\"");
-  }else{
+  }иначе{
     sqlite3ErrorMsg(pParse, "syntax error near \"LIMIT\"");
   }
   sqlite3ExprListDelete(pParse->db, pOrderBy);
@@ -170,8 +170,8 @@ ecmd ::= SEMI.
 ecmd ::= cmdx SEMI.
 %ifndef SQLITE_OMIT_EXPLAIN
 ecmd ::= explain cmdx SEMI.       {NEVER-REDUCE}
-explain ::= EXPLAIN.              { if( pParse->pReprepare==0 ) pParse->explain = 1; }
-explain ::= EXPLAIN QUERY PLAN.   { if( pParse->pReprepare==0 ) pParse->explain = 2; }
+explain ::= EXPLAIN.              { ако( pParse->pReprepare==0 ) pParse->explain = 1; }
+explain ::= EXPLAIN QUERY PLAN.   { ако( pParse->pReprepare==0 ) pParse->explain = 2; }
 %endif  SQLITE_OMIT_EXPLAIN
 cmdx ::= cmd.           { sqlite3FinishCoding(pParse); }
 
@@ -182,7 +182,7 @@ cmd ::= BEGIN transtype(Y) trans_opt.  {sqlite3BeginTransaction(pParse, Y);}
 trans_opt ::= .
 trans_opt ::= TRANSACTION.
 trans_opt ::= TRANSACTION nm.
-%type transtype {int}
+%type transtype {цяло}
 transtype(A) ::= .             {A = TK_DEFERRED;}
 transtype(A) ::= DEFERRED(X).  {A = @X; /*A-overwrites-X*/}
 transtype(A) ::= IMMEDIATE(X). {A = @X; /*A-overwrites-X*/}
@@ -212,10 +212,10 @@ createkw(A) ::= CREATE(A).  {
   disableLookaside(pParse);
 }
 
-%type ifnotexists {int}
+%type ifnotexists {цяло}
 ifnotexists(A) ::= .              {A = 0;}
 ifnotexists(A) ::= IF NOT EXISTS. {A = 1;}
-%type temp {int}
+%type temp {цяло}
 %ifndef SQLITE_OMIT_TEMPDB
 temp(A) ::= TEMP.  {A = pParse->db->init.busy==0;}
 %endif  SQLITE_OMIT_TEMPDB
@@ -233,17 +233,17 @@ table_option_set(A) ::= .    {A = 0;}
 table_option_set(A) ::= table_option(A).
 table_option_set(A) ::= table_option_set(X) COMMA table_option(Y). {A = X|Y;}
 table_option(A) ::= WITHOUT nm(X). {
-  if( X.n==5 && sqlite3_strnicmp(X.z,"rowid",5)==0 ){
+  ако( X.n==5 && sqlite3_strnicmp(X.z,"rowid",5)==0 ){
     A = TF_WithoutRowid | TF_NoVisibleRowid;
-  }else{
+  }иначе{
     A = 0;
     sqlite3ErrorMsg(pParse, "unknown table option: %.*s", X.n, X.z);
   }
 }
 table_option(A) ::= nm(X). {
-  if( X.n==6 && sqlite3_strnicmp(X.z,"strict",6)==0 ){
+  ако( X.n==6 && sqlite3_strnicmp(X.z,"strict",6)==0 ){
     A = TF_Strict;
-  }else{
+  }иначе{
     A = 0;
     sqlite3ErrorMsg(pParse, "unknown table option: %.*s", X.n, X.z);
   }
@@ -347,14 +347,14 @@ nm(A) ::= STRING(A).
 typetoken(A) ::= .   {A.n = 0; A.z = 0;}
 typetoken(A) ::= typename(A).
 typetoken(A) ::= typename(A) LP signed RP(Y). {
-  A.n = (int)(&Y.z[Y.n] - A.z);
+  A.n = (цяло)(&Y.z[Y.n] - A.z);
 }
 typetoken(A) ::= typename(A) LP signed COMMA signed RP(Y). {
-  A.n = (int)(&Y.z[Y.n] - A.z);
+  A.n = (цяло)(&Y.z[Y.n] - A.z);
 }
 %type typename {Token}
 typename(A) ::= ids(A).
-typename(A) ::= typename(A) ids(Y). {A.n=Y.n+(int)(Y.z-A.z);}
+typename(A) ::= typename(A) ids(Y). {A.n=Y.n+(цяло)(Y.z-A.z);}
 signed ::= plus_num.
 signed ::= minus_num.
 
@@ -399,7 +399,7 @@ ccons ::= DEFAULT MINUS(A) scantok(Z) term(X). {
 }
 ccons ::= DEFAULT scantok id(X).       {
   Expr *p = tokenExpr(pParse, TK_STRING, X);
-  if( p ){
+  ако( p ){
     sqlite3ExprIdToTrueFalse(p);
     testcase( p->op==TK_TRUEFALSE && sqlite3ExprTruthValue(p) );
   }
@@ -426,7 +426,7 @@ generated ::= LP expr(E) RP.          {sqlite3AddGenerated(pParse,E,0);}
 generated ::= LP expr(E) RP ID(TYPE). {sqlite3AddGenerated(pParse,E,&TYPE);}
 
 // The optional AUTOINCREMENT keyword
-%type autoinc {int}
+%type autoinc {цяло}
 autoinc(X) ::= .          {X = 0;}
 autoinc(X) ::= AUTOINCR.  {X = 1;}
 
@@ -435,24 +435,24 @@ autoinc(X) ::= AUTOINCR.  {X = 1;}
 // or immediate and which determine what action to take if a ref-integ
 // check fails.
 //
-%type refargs {int}
+%type refargs {цяло}
 refargs(A) ::= .                  { A = OE_None*0x0101; /* EV: R-19803-45884 */}
 refargs(A) ::= refargs(A) refarg(Y). { A = (A & ~Y.mask) | Y.value; }
-%type refarg {struct {int value; int mask;}}
+%type refarg {struct {цяло value; цяло mask;}}
 refarg(A) ::= MATCH nm.              { A.value = 0;     A.mask = 0x000000; }
 refarg(A) ::= ON INSERT refact.      { A.value = 0;     A.mask = 0x000000; }
 refarg(A) ::= ON DELETE refact(X).   { A.value = X;     A.mask = 0x0000ff; }
 refarg(A) ::= ON UPDATE refact(X).   { A.value = X<<8;  A.mask = 0x00ff00; }
-%type refact {int}
+%type refact {цяло}
 refact(A) ::= SET NULL.              { A = OE_SetNull;  /* EV: R-33326-45252 */}
 refact(A) ::= SET DEFAULT.           { A = OE_SetDflt;  /* EV: R-33326-45252 */}
 refact(A) ::= CASCADE.               { A = OE_Cascade;  /* EV: R-33326-45252 */}
 refact(A) ::= RESTRICT.              { A = OE_Restrict; /* EV: R-33326-45252 */}
 refact(A) ::= NO ACTION.             { A = OE_None;     /* EV: R-33326-45252 */}
-%type defer_subclause {int}
+%type defer_subclause {цяло}
 defer_subclause(A) ::= NOT DEFERRABLE init_deferred_pred_opt.     {A = 0;}
 defer_subclause(A) ::= DEFERRABLE init_deferred_pred_opt(X).      {A = X;}
-%type init_deferred_pred_opt {int}
+%type init_deferred_pred_opt {цяло}
 init_deferred_pred_opt(A) ::= .                       {A = 0;}
 init_deferred_pred_opt(A) ::= INITIALLY DEFERRED.     {A = 1;}
 init_deferred_pred_opt(A) ::= INITIALLY IMMEDIATE.    {A = 0;}
@@ -476,16 +476,16 @@ tcons ::= FOREIGN KEY LP eidlist(FA) RP
     sqlite3CreateForeignKey(pParse, FA, &T, TA, R);
     sqlite3DeferForeignKey(pParse, D);
 }
-%type defer_subclause_opt {int}
+%type defer_subclause_opt {цяло}
 defer_subclause_opt(A) ::= .                    {A = 0;}
 defer_subclause_opt(A) ::= defer_subclause(A).
 
 // The following is a non-standard extension that allows us to declare the
 // default behavior when there is a constraint conflict.
 //
-%type onconf {int}
-%type orconf {int}
-%type resolvetype {int}
+%type onconf {цяло}
+%type orconf {цяло}
+%type resolvetype {цяло}
 onconf(A) ::= .                              {A = OE_Default;}
 onconf(A) ::= ON CONFLICT resolvetype(X).    {A = X;}
 orconf(A) ::= .                              {A = OE_Default;}
@@ -499,7 +499,7 @@ resolvetype(A) ::= REPLACE.                  {A = OE_Replace;}
 cmd ::= DROP TABLE ifexists(E) fullname(X). {
   sqlite3DropTable(pParse, X, 0, E);
 }
-%type ifexists {int}
+%type ifexists {цяло}
 ifexists(A) ::= IF EXISTS.   {A = 1;}
 ifexists(A) ::= .            {A = 0;}
 
@@ -519,7 +519,7 @@ cmd ::= DROP VIEW ifexists(E) fullname(X). {
 //
 cmd ::= select(X).  {
   SelectDest dest = {SRT_Output, 0, 0, 0, 0, 0, 0};
-  if( (pParse->db->mDbFlags & DBFLAG_EncodingFixed)!=0
+  ако( (pParse->db->mDbFlags & DBFLAG_EncodingFixed)!=0
    || sqlite3ReadSchema(pParse)==SQLITE_OK
   ){
     sqlite3Select(pParse, X, &dest);
@@ -542,24 +542,24 @@ cmd ::= select(X).  {
   */
   static void parserDoubleLinkSelect(Parse *pParse, Select *p){
     assert( p!=0 );
-    if( p->pPrior ){
+    ако( p->pPrior ){
       Select *pNext = 0, *pLoop = p;
-      int mxSelect, cnt = 1;
-      while(1){
+      цяло mxSelect, cnt = 1;
+      докато(1){
         pLoop->pNext = pNext;
         pLoop->selFlags |= SF_Compound;
         pNext = pLoop;
         pLoop = pLoop->pPrior;
-        if( pLoop==0 ) break;
+        ако( pLoop==0 ) break;
         cnt++;        
-        if( pLoop->pOrderBy || pLoop->pLimit ){
+        ако( pLoop->pOrderBy || pLoop->pLimit ){
           sqlite3ErrorMsg(pParse,"%s clause should come after %s not before",
              pLoop->pOrderBy!=0 ? "ORDER BY" : "LIMIT",
              sqlite3SelectOpName(pNext->op));
           break;
         }
       }
-      if( (p->selFlags & (SF_MultiValue|SF_Values))==0
+      ако( (p->selFlags & (SF_MultiValue|SF_Values))==0
        && (mxSelect = pParse->db->aLimit[SQLITE_LIMIT_COMPOUND_SELECT])>0
        && cnt>mxSelect
       ){
@@ -572,13 +572,13 @@ cmd ::= select(X).  {
   ** object describing the query for which the WITH clause is a prefix.
   */
   static Select *attachWithToSelect(Parse *pParse, Select *pSelect, With *pWith){
-    if( pSelect ){
+    ако( pSelect ){
       pSelect->pWith = pWith;
       parserDoubleLinkSelect(pParse, pSelect);
-    }else{
+    }иначе{
       sqlite3WithDelete(pParse->db, pWith);
     }
-    return pSelect;
+    върни pSelect;
   }
 
   /* Memory allocator for parser stack resizing.  This is a thin wrapper around
@@ -591,8 +591,8 @@ cmd ::= select(X).  {
     Parse *pParse             /* Parsing context */
   ){
     void *p = sqlite3FaultSim(700) ? 0 : sqlite3_realloc(pOld, newSize);
-    if( p==0 ) sqlite3OomFault(pParse->db);
-    return p;
+    ако( p==0 ) sqlite3OomFault(pParse->db);
+    върни p;
   }
   static void parserStackFree(void *pOld, Parse *pParse){
     (void)pParse;
@@ -600,8 +600,8 @@ cmd ::= select(X).  {
   }
 
   /* Return an integer that is the maximum allowed stack size */
-  static int parserStackSizeLimit(Parse *pParse){
-    return pParse->db->aLimit[SQLITE_LIMIT_PARSER_DEPTH];
+  static цяло parserStackSizeLimit(Parse *pParse){
+    върни pParse->db->aLimit[SQLITE_LIMIT_PARSER_DEPTH];
   }
 }
 
@@ -613,7 +613,7 @@ select(A) ::= WITH RECURSIVE wqlist(W) selectnowith(X).
 %endif /* SQLITE_OMIT_CTE */
 select(A) ::= selectnowith(A). {
   Select *p = A;
-  if( p ){
+  ако( p ){
     parserDoubleLinkSelect(pParse, p);
   }
 }
@@ -623,7 +623,7 @@ selectnowith(A) ::= oneselect(A).
 selectnowith(A) ::= selectnowith(A) multiselect_op(Y) oneselect(Z).  {
   Select *pRhs = Z;
   Select *pLhs = A;
-  if( pRhs && pRhs->pPrior ){
+  ако( pRhs && pRhs->pPrior ){
     SrcList *pFrom;
     Token x;
     x.n = 0;
@@ -631,18 +631,18 @@ selectnowith(A) ::= selectnowith(A) multiselect_op(Y) oneselect(Z).  {
     pFrom = sqlite3SrcListAppendFromTerm(pParse,0,0,0,&x,pRhs,0);
     pRhs = sqlite3SelectNew(pParse,0,pFrom,0,0,0,0,0,0);
   }
-  if( pRhs ){
+  ако( pRhs ){
     pRhs->op = (u8)Y;
     pRhs->pPrior = pLhs;
-    if( ALWAYS(pLhs) ) pLhs->selFlags &= ~(u32)SF_MultiValue;
+    ако( ALWAYS(pLhs) ) pLhs->selFlags &= ~(u32)SF_MultiValue;
     pRhs->selFlags &= ~(u32)SF_MultiValue;
-    if( Y!=TK_ALL ) pParse->hasCompound = 1;
-  }else{
+    ако( Y!=TK_ALL ) pParse->hasCompound = 1;
+  }иначе{
     sqlite3SelectDelete(pParse->db, pLhs);
   }
   A = pRhs;
 }
-%type multiselect_op {int}
+%type multiselect_op {цяло}
 multiselect_op(A) ::= UNION(OP).             {A = @OP; /*A-overwrites-OP*/}
 multiselect_op(A) ::= UNION ALL.             {A = TK_ALL;}
 multiselect_op(A) ::= EXCEPT|INTERSECT(OP).  {A = @OP; /*A-overwrites-OP*/}
@@ -658,9 +658,9 @@ oneselect(A) ::= SELECT distinct(D) selcollist(W) from(X) where_opt(Y)
                  groupby_opt(P) having_opt(Q) window_clause(R)
                  orderby_opt(Z) limit_opt(L). {
   A = sqlite3SelectNew(pParse,W,X,Y,P,Q,Z,D,L);
-  if( A ){
+  ако( A ){
     A->pWinDefn = R;
-  }else{
+  }иначе{
     sqlite3WindowListDelete(pParse->db, R);
   }
 }
@@ -693,7 +693,7 @@ mvalues(A) ::= mvalues(A) COMMA LP nexprlist(Y) RP. {
 // The "distinct" nonterminal is true (1) if the DISTINCT keyword is
 // present and false (0) if it is not.
 //
-%type distinct {int}
+%type distinct {цяло}
 distinct(A) ::= DISTINCT.   {A = SF_Distinct;}
 distinct(A) ::= ALL.        {A = SF_All;}
 distinct(A) ::= .           {A = 0;}
@@ -711,18 +711,18 @@ sclp(A) ::= selcollist(A) COMMA.
 sclp(A) ::= .                                {A = 0;}
 selcollist(A) ::= sclp(A) scanpt(B) expr(X) scanpt(Z) as(Y).     {
    A = sqlite3ExprListAppend(pParse, A, X);
-   if( Y.n>0 ) sqlite3ExprListSetName(pParse, A, &Y, 1);
+   ако( Y.n>0 ) sqlite3ExprListSetName(pParse, A, &Y, 1);
    sqlite3ExprListSetSpan(pParse,A,B,Z);
 }
 selcollist(A) ::= sclp(A) scanpt STAR(X). {
   Expr *p = sqlite3Expr(pParse->db, TK_ASTERISK, 0);
-  sqlite3ExprSetErrorOffset(p, (int)(X.z - pParse->zTail));
+  sqlite3ExprSetErrorOffset(p, (цяло)(X.z - pParse->zTail));
   A = sqlite3ExprListAppend(pParse, A, p);
 }
 selcollist(A) ::= sclp(A) scanpt nm(X) DOT STAR(Y). {
   Expr *pRight, *pLeft, *pDot;
   pRight = sqlite3PExpr(pParse, TK_ASTERISK, 0, 0);
-  sqlite3ExprSetErrorOffset(pRight, (int)(Y.z - pParse->zTail));
+  sqlite3ExprSetErrorOffset(pRight, (цяло)(Y.z - pParse->zTail));
   pLeft = tokenExpr(pParse, TK_ID, X);
   pDot = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight);
   A = sqlite3ExprListAppend(pParse,A, pDot);
@@ -756,7 +756,7 @@ from(A) ::= FROM seltablist(X). {
 // in a SELECT statement.  "stl_prefix" is a prefix of this list.
 //
 stl_prefix(A) ::= seltablist(A) joinop(Y).    {
-   if( ALWAYS(A && A->nSrc>0) ) A->a[A->nSrc-1].fg.jointype = (u8)Y;
+   ако( ALWAYS(A && A->nSrc>0) ) A->a[A->nSrc-1].fg.jointype = (u8)Y;
 }
 stl_prefix(A) ::= .                           {A = 0;}
 seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) as(Z) on_using(N). {
@@ -775,36 +775,36 @@ seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) LP exprlist(E) RP as(Z) on_using(N
     A = sqlite3SrcListAppendFromTerm(pParse,A,0,0,&Z,S,&N);
   }
   seltablist(A) ::= stl_prefix(A) LP seltablist(F) RP as(Z) on_using(N). {
-    if( A==0 && Z.n==0 && N.pOn==0 && N.pUsing==0 ){
+    ако( A==0 && Z.n==0 && N.pOn==0 && N.pUsing==0 ){
       A = F;
-    }else if( ALWAYS(F!=0) && F->nSrc==1 ){
+    }иначе ако( ALWAYS(F!=0) && F->nSrc==1 ){
       A = sqlite3SrcListAppendFromTerm(pParse,A,0,0,&Z,0,&N);
-      if( A ){
+      ако( A ){
         SrcItem *pNew = &A->a[A->nSrc-1];
         SrcItem *pOld = F->a;
         assert( pOld->fg.fixedSchema==0 );
         pNew->zName = pOld->zName;
         pOld->zName = 0;
         assert( pOld->fg.fixedSchema==0 );
-        if( pOld->fg.isSubquery ){
+        ако( pOld->fg.isSubquery ){
           pNew->fg.isSubquery = 1;
           pNew->u4.pSubq = pOld->u4.pSubq;
           pOld->u4.pSubq = 0;
           pOld->fg.isSubquery = 0;
           assert( pNew->u4.pSubq!=0 && pNew->u4.pSubq->pSelect!=0 );
-          if( (pNew->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0 ){
+          ако( (pNew->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0 ){
             pNew->fg.isNestedFrom = 1;
           }
-        }else{
+        }иначе{
           pNew->u4.zDatabase = pOld->u4.zDatabase;
           pOld->u4.zDatabase = 0;
         }
-        if( pOld->fg.isTabFunc ){
+        ако( pOld->fg.isTabFunc ){
           pNew->u1.pFuncArg = pOld->u1.pFuncArg;
           pOld->u1.pFuncArg = 0;
           pOld->fg.isTabFunc = 0;
           pNew->fg.isTabFunc = 1;
-        }else if( pOld->fg.isIndexedBy ){
+        }иначе ако( pOld->fg.isIndexedBy ){
           pNew->u1.zIndexedBy = pOld->u1.zIndexedBy;
           pOld->u1.zIndexedBy = 0;
           pOld->fg.isIndexedBy = 0;
@@ -813,7 +813,7 @@ seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) LP exprlist(E) RP as(Z) on_using(N
         pNew->fg.notIndexed = pOld->fg.notIndexed;
       }
       sqlite3SrcListDelete(pParse->db, F);
-    }else{
+    }иначе{
       Select *pSubquery;
       sqlite3SrcListShiftJoinType(pParse,F);
       pSubquery = sqlite3SelectNew(pParse,0,F,0,0,0,0,SF_NestedFrom,0);
@@ -830,46 +830,46 @@ dbnm(A) ::= DOT nm(X). {A = X;}
 %destructor fullname {sqlite3SrcListDelete(pParse->db, $$);}
 fullname(A) ::= nm(X).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
+  ако( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
 }
 fullname(A) ::= nm(X) DOT nm(Y). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
+  ако( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
 }
 
 %type xfullname {SrcList*}
 %destructor xfullname {sqlite3SrcListDelete(pParse->db, $$);}
 xfullname(A) ::= nm(X).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
+  ако( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
 }
 xfullname(A) ::= nm(X) DOT nm(Y). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
+  ако( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
 }
 xfullname(A) ::= nm(X) AS nm(Z).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( A ){
-    if( IN_RENAME_OBJECT ){
+  ако( A ){
+    ако( IN_RENAME_OBJECT ){
       sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
-    }else{
+    }иначе{
       A->a[0].zAlias = sqlite3NameFromToken(pParse->db, &Z);
     }
   }
 }
 xfullname(A) ::= nm(X) DOT nm(Y) AS nm(Z). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( A ){
-    if( IN_RENAME_OBJECT ){
+  ако( A ){
+    ако( IN_RENAME_OBJECT ){
       sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
-    }else{
+    }иначе{
       A->a[0].zAlias = sqlite3NameFromToken(pParse->db, &Z);
     }
   }
 }
 
 
-%type joinop {int}
+%type joinop {цяло}
 joinop(X) ::= COMMA|JOIN.              { X = JT_INNER; }
 joinop(X) ::= JOIN_KW(A) JOIN.
                   {X = sqlite3JoinType(pParse,&A,0,0);  /*X-overwrites-A*/}
@@ -939,13 +939,13 @@ sortlist(A) ::= expr(Y) sortorder(Z) nulls(X). {
   sqlite3ExprListSetSortOrder(A,Z,X);
 }
 
-%type sortorder {int}
+%type sortorder {цяло}
 
 sortorder(A) ::= ASC.           {A = SQLITE_SO_ASC;}
 sortorder(A) ::= DESC.          {A = SQLITE_SO_DESC;}
 sortorder(A) ::= .              {A = SQLITE_SO_UNDEFINED;}
 
-%type nulls {int}
+%type nulls {цяло}
 nulls(A) ::= NULLS FIRST.       {A = SQLITE_SO_ASC;}
 nulls(A) ::= NULLS LAST.        {A = SQLITE_SO_DESC;}
 nulls(A) ::= .                  {A = SQLITE_SO_UNDEFINED;}
@@ -980,12 +980,12 @@ limit_opt(A) ::= LIMIT expr(X) COMMA expr(Y).
 
 /////////////////////////// The DELETE statement /////////////////////////////
 //
-%if SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
+%ако SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
 cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W)
         orderby_opt(O) limit_opt(L). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
 #ifndef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( O || L ){
+  ако( O || L ){
     updateDeleteLimitError(pParse,O,L);
     O = 0;
     L = 0;
@@ -993,7 +993,7 @@ cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W)
 #endif
   sqlite3DeleteFrom(pParse,X,W,O,L);
 }
-%else
+%иначе
 cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
   sqlite3DeleteFrom(pParse,X,W,0,0);
@@ -1016,13 +1016,13 @@ where_opt_ret(A) ::= WHERE expr(X) RETURNING selcollist(Y).
 
 ////////////////////////// The UPDATE command ////////////////////////////////
 //
-%if SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
+%ако SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
 cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
         where_opt_ret(W) orderby_opt(O) limit_opt(L).  {
   sqlite3SrcListIndexedBy(pParse, X, &I);
-  if( F ){
+  ако( F ){
     SrcList *pFromClause = F;
-    if( pFromClause->nSrc>1 ){
+    ако( pFromClause->nSrc>1 ){
       Select *pSubquery;
       Token as;
       pSubquery = sqlite3SelectNew(pParse,0,pFromClause,0,0,0,0,SF_NestedFrom,0);
@@ -1034,7 +1034,7 @@ cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
   }
   sqlite3ExprListCheckLength(pParse,Y,"set list"); 
 #ifndef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( O || L ){
+  ако( O || L ){
     updateDeleteLimitError(pParse,O,L);
     O = 0;
     L = 0;
@@ -1042,14 +1042,14 @@ cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
 #endif
   sqlite3Update(pParse,X,Y,W,R,O,L,0);
 }
-%else
+%иначе
 cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
         where_opt_ret(W). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
   sqlite3ExprListCheckLength(pParse,Y,"set list"); 
-  if( F ){
+  ако( F ){
     SrcList *pFromClause = F;
-    if( pFromClause->nSrc>1 ){
+    ако( pFromClause->nSrc>1 ){
       Select *pSubquery;
       Token as;
       pSubquery = sqlite3SelectNew(pParse,0,pFromClause,0,0,0,0,SF_NestedFrom,0);
@@ -1116,7 +1116,7 @@ upsert(A) ::= ON CONFLICT DO UPDATE SET setlist(Z) where_opt(W) returning.
 returning ::= RETURNING selcollist(X).  {sqlite3AddReturning(pParse,X);}
 returning ::= .
 
-%type insert_cmd {int}
+%type insert_cmd {цяло}
 insert_cmd(A) ::= INSERT orconf(R).   {A = R;}
 insert_cmd(A) ::= REPLACE.            {A = OE_Replace;}
 
@@ -1143,9 +1143,9 @@ idlist(A) ::= nm(Y).
 %include {
 
   /* Construct a new Expr object from a single token */
-  static Expr *tokenExpr(Parse *pParse, int op, Token t){
+  static Expr *tokenExpr(Parse *pParse, цяло op, Token t){
     Expr *p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr)+t.n+1);
-    if( p ){
+    ако( p ){
       /* memset(p, 0, sizeof(Expr)); */
       p->op = (u8)op;
       p->affExpr = 0;
@@ -1162,18 +1162,18 @@ idlist(A) ::= nm(Y).
       p->u.zToken = (char*)&p[1];
       memcpy(p->u.zToken, t.z, t.n);
       p->u.zToken[t.n] = 0;
-      p->w.iOfst = (int)(t.z - pParse->zTail);
-      if( sqlite3Isquote(p->u.zToken[0]) ){
+      p->w.iOfst = (цяло)(t.z - pParse->zTail);
+      ако( sqlite3Isquote(p->u.zToken[0]) ){
         sqlite3DequoteExpr(p);
       }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ако SQLITE_MAX_EXPR_DEPTH>0
       p->nHeight = 1;
 #endif  
-      if( IN_RENAME_OBJECT ){
-        return (Expr*)sqlite3RenameTokenMap(pParse, (void*)p, &t);
+      ако( IN_RENAME_OBJECT ){
+        върни (Expr*)sqlite3RenameTokenMap(pParse, (void*)p, &t);
       }
     }
-    return p;
+    върни p;
   }
 
 }
@@ -1191,7 +1191,7 @@ expr(A) ::= nm(X) DOT nm(Y) DOT nm(Z). {
   Expr *temp2 = tokenExpr(pParse,TK_ID,Y);
   Expr *temp3 = tokenExpr(pParse,TK_ID,Z);
   Expr *temp4 = sqlite3PExpr(pParse, TK_DOT, temp2, temp3);
-  if( IN_RENAME_OBJECT ){
+  ако( IN_RENAME_OBJECT ){
     sqlite3RenameTokenRemap(pParse, 0, temp1);
   }
   A = sqlite3PExpr(pParse, TK_DOT, temp1, temp4);
@@ -1199,31 +1199,31 @@ expr(A) ::= nm(X) DOT nm(Y) DOT nm(Z). {
 term(A) ::= NULL|FLOAT|BLOB(X). {A=tokenExpr(pParse,@X,X); /*A-overwrites-X*/}
 term(A) ::= STRING(X).          {A=tokenExpr(pParse,@X,X); /*A-overwrites-X*/}
 term(A) ::= INTEGER(X). {
-  int iValue;
-  if( sqlite3GetInt32(X.z, &iValue)==0 ){
+  цяло iValue;
+  ако( sqlite3GetInt32(X.z, &iValue)==0 ){
     A = sqlite3ExprAlloc(pParse->db, TK_INTEGER, &X, 0);
-  }else{
+  }иначе{
     A = sqlite3ExprInt32(pParse->db, iValue);
   }
-  if( A ) A->w.iOfst = (int)(X.z - pParse->zTail);
+  ако( A ) A->w.iOfst = (цяло)(X.z - pParse->zTail);
 }
 expr(A) ::= VARIABLE(X).     {
-  if( !(X.z[0]=='#' && sqlite3Isdigit(X.z[1])) ){
+  ако( !(X.z[0]=='#' && sqlite3Isdigit(X.z[1])) ){
     u32 n = X.n;
     A = tokenExpr(pParse, TK_VARIABLE, X);
     sqlite3ExprAssignVarNumber(pParse, A, n);
-  }else{
+  }иначе{
     /* When doing a nested parse, one can include terms in an expression
     ** that look like this:   #1 #2 ...  These terms refer to registers
     ** in the virtual machine.  #N is the N-th register. */
     Token t = X; /*A-overwrites-X*/
     assert( t.n>=2 );
-    if( pParse->nested==0 ){
+    ако( pParse->nested==0 ){
       parserSyntaxError(pParse, &t);
       A = 0;
-    }else{
+    }иначе{
       A = sqlite3PExpr(pParse, TK_REGISTER, 0, 0);
-      if( A ) sqlite3GetInt32(&t.z[1], &A->iTable);
+      ако( A ) sqlite3GetInt32(&t.z[1], &A->iTable);
     }
   }
 }
@@ -1271,36 +1271,36 @@ expr(A) ::= idj(X) LP STAR RP. {
   static Expr *sqlite3ExprAddOrderedsetFunction(
     Parse *pParse,         /* Parsing context */
     Token *pFuncname,      /* Name of the function */
-    int isDistinct,        /* DISTINCT or ALL qualifier */
+    цяло isDistinct,        /* DISTINCT or ALL qualifier */
     ExprList *pOrig,       /* Arguments to the function */
     Expr *pOrderby         /* Expression in the ORDER BY clause */                
   ){
     ExprList *p;           /* Modified argument list */
     Expr *pExpr;           /* Final result */
     p = sqlite3ExprListAppend(pParse, 0, pOrderby);
-    if( pOrig ){
-      int i;
-      for(i=0; i<pOrig->nExpr; i++){
+    ако( pOrig ){
+      цяло i;
+      за(i=0; i<pOrig->nExpr; i++){
         p = sqlite3ExprListAppend(pParse, p, pOrig->a[i].pExpr);
         pOrig->a[i].pExpr = 0;
       }
       sqlite3ExprListDelete(pParse->db, pOrig);
     }
     pExpr = sqlite3ExprFunction(pParse, p, pFuncname, 0);
-    if( pParse->nErr==0 ){
+    ако( pParse->nErr==0 ){
       FuncDef *pDef;
       u8 enc = ENC(pParse->db);
       assert( pExpr!=0 );  /* Because otherwise pParse->nErr would not be zero */
       assert( p!=0 );      /* Because otherwise pParse->nErr would not be zero */
       pDef = sqlite3FindFunction(pParse->db, pExpr->u.zToken, -2, enc, 0);
-      if( pDef==0 || (pDef->funcFlags & SQLITE_SELFORDER1)==0 ){
+      ако( pDef==0 || (pDef->funcFlags & SQLITE_SELFORDER1)==0 ){
         sqlite3ErrorMsg(pParse, "%#T() is not an ordered-set aggregate", pExpr);
-      }else if( isDistinct==SF_Distinct ){
+      }иначе ако( isDistinct==SF_Distinct ){
         sqlite3ErrorMsg(pParse, "DISTINCT not allowed on ordered-set aggregate %T()",
                         pFuncname);
       }
     }
-    return pExpr;
+    върни pExpr;
   }
 }
 expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY expr(E) RP. {
@@ -1339,14 +1339,14 @@ term(A) ::= CTIME_KW(OP). {
 expr(A) ::= LP nexprlist(X) COMMA expr(Y) RP. {
   ExprList *pList = sqlite3ExprListAppend(pParse, X, Y);
   A = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
-  if( A ){
-    int i;
+  ако( A ){
+    цяло i;
     A->x.pList = pList;
-    for(i=0; i<pList->nExpr; i++){
+    за(i=0; i<pList->nExpr; i++){
       assert( pList->a[i].pExpr!=0 );
       A->flags |= pList->a[i].pExpr->flags & EP_Propagate;
     }
-  }else{
+  }иначе{
     sqlite3ExprListDelete(pParse->db, pList);
   }
 }
@@ -1368,24 +1368,24 @@ likeop(A) ::= LIKE_KW|MATCH(A).
 likeop(A) ::= NOT LIKE_KW|MATCH(X). {A=X; A.n|=0x80000000; /*A-overwrite-X*/}
 expr(A) ::= expr(A) likeop(OP) expr(Y).  [LIKE_KW]  {
   ExprList *pList;
-  int bNot = OP.n & 0x80000000;
+  цяло bNot = OP.n & 0x80000000;
   OP.n &= 0x7fffffff;
   pList = sqlite3ExprListAppend(pParse,0, Y);
   pList = sqlite3ExprListAppend(pParse,pList, A);
   A = sqlite3ExprFunction(pParse, pList, &OP, 0);
-  if( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
-  if( A ) A->flags |= EP_InfixFunc;
+  ако( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  ако( A ) A->flags |= EP_InfixFunc;
 }
 expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
   ExprList *pList;
-  int bNot = OP.n & 0x80000000;
+  цяло bNot = OP.n & 0x80000000;
   OP.n &= 0x7fffffff;
   pList = sqlite3ExprListAppend(pParse,0, Y);
   pList = sqlite3ExprListAppend(pParse,pList, A);
   pList = sqlite3ExprListAppend(pParse,pList, E);
   A = sqlite3ExprFunction(pParse, pList, &OP, 0);
-  if( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
-  if( A ) A->flags |= EP_InfixFunc;
+  ако( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  ако( A ) A->flags |= EP_InfixFunc;
 }
 
 %include {
@@ -1393,13 +1393,13 @@ expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
   ** to TK_TRUEFALSE, if possible */
   static Expr *sqlite3PExprIsNull(
     Parse *pParse,  /* Parsing context */
-    int op,         /* TK_ISNULL or TK_NOTNULL */
+    цяло op,         /* TK_ISNULL or TK_NOTNULL */
     Expr *pLeft     /* Operand */
   ){
     Expr *p = pLeft;
     assert( op==TK_ISNULL || op==TK_NOTNULL );
     assert( pLeft!=0 );
-    while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+    докато( p->op==TK_UPLUS || p->op==TK_UMINUS ){
       p = p->pLeft;
       assert( p!=0 );
     }
@@ -1410,27 +1410,27 @@ expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
       case TK_BLOB: 
         sqlite3ExprDeferredDelete(pParse, pLeft);
         p = sqlite3ExprInt32(pParse->db, op==TK_NOTNULL);
-        if( p ) p->op2 = 1;
-        return p;
+        ако( p ) p->op2 = 1;
+        върни p;
       default:
         break;
     }
-    return sqlite3PExpr(pParse, op, pLeft, 0);
+    върни sqlite3PExpr(pParse, op, pLeft, 0);
   }
 
   /* Create a TK_IS or TK_ISNOT operator, perhaps optimized to
   ** TK_ISNULL or TK_NOTNULL or TK_TRUEFALSE. */
   static Expr *sqlite3PExprIs(
     Parse *pParse,  /* Parsing context */
-    int op,         /* TK_IS or TK_ISNOT */
+    цяло op,         /* TK_IS or TK_ISNOT */
     Expr *pLeft,    /* Left operand */
     Expr *pRight    /* Right operand */
   ){
-    if( pRight && pRight->op==TK_NULL ){
+    ако( pRight && pRight->op==TK_NULL ){
       sqlite3ExprDeferredDelete(pParse, pRight);
-      return sqlite3PExprIsNull(pParse, op==TK_IS ? TK_ISNULL : TK_NOTNULL, pLeft);
+      върни sqlite3PExprIsNull(pParse, op==TK_IS ? TK_ISNULL : TK_NOTNULL, pLeft);
     }
-    return sqlite3PExpr(pParse, op, pLeft, pRight);
+    върни sqlite3PExpr(pParse, op, pLeft, pRight);
   }
 }
 
@@ -1462,10 +1462,10 @@ expr(A) ::= PLUS|MINUS(B) expr(X). [BITNOT] {
   u8 op = @B + (TK_UPLUS-TK_PLUS);
   assert( TK_UPLUS>TK_PLUS );
   assert( TK_UMINUS == TK_MINUS + (TK_UPLUS - TK_PLUS) );
-  if( p && p->op==TK_UPLUS ){
+  ако( p && p->op==TK_UPLUS ){
     p->op = op;
     A = p;
-  }else{
+  }иначе{
     A = sqlite3PExpr(pParse, op, p, 0);
     /*A-overwrites-B*/
   }
@@ -1477,27 +1477,27 @@ expr(A) ::= expr(B) PTR(C) expr(D). {
   A = sqlite3ExprFunction(pParse, pList, &C, 0);
 }
 
-%type between_op {int}
+%type between_op {цяло}
 between_op(A) ::= BETWEEN.     {A = 0;}
 between_op(A) ::= NOT BETWEEN. {A = 1;}
 expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
   ExprList *pList = sqlite3ExprListAppend(pParse,0, X);
   pList = sqlite3ExprListAppend(pParse,pList, Y);
   A = sqlite3PExpr(pParse, TK_BETWEEN, A, 0);
-  if( A ){
+  ако( A ){
     A->x.pList = pList;
     sqlite3ExprSetHeightAndFlags(pParse, A);
-  }else{
+  }иначе{
     sqlite3ExprListDelete(pParse->db, pList);
   } 
-  if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  ако( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
 }
 %ifndef SQLITE_OMIT_SUBQUERY
-  %type in_op {int}
+  %type in_op {цяло}
   in_op(A) ::= IN.      {A = 0;}
   in_op(A) ::= NOT IN.  {A = 1;}
   expr(A) ::= expr(A) in_op(N) LP exprlist(Y) RP. [IN] {
-    if( Y==0 ){
+    ако( Y==0 ){
       /* Expressions of the form
       **
       **      expr1 IN ()
@@ -1511,16 +1511,16 @@ expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
       ** of the whole query.
       */
       Expr *pB = sqlite3Expr(pParse->db, TK_STRING, N ? "true" : "false");
-      if( pB ) sqlite3ExprIdToTrueFalse(pB);
-      if( !ExprHasProperty(A, EP_HasFunc) ){
+      ако( pB ) sqlite3ExprIdToTrueFalse(pB);
+      ако( !ExprHasProperty(A, EP_HasFunc) ){
         sqlite3ExprUnmapAndDelete(pParse, A);
         A = pB;
-      }else{
+      }иначе{
         A = sqlite3PExpr(pParse, N ? TK_OR : TK_AND, pB, A);
       }
-    }else{
+    }иначе{
       Expr *pRHS = Y->a[0].pExpr;
-      if( Y->nExpr==1
+      ако( Y->nExpr==1
        && sqlite3ExprIsConstant(pParse,pRHS)
        && pRHS->op!=TK_COLLATE
        && A->op!=TK_VECTOR
@@ -1529,28 +1529,28 @@ expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
         sqlite3ExprListDelete(pParse->db, Y);
         pRHS = sqlite3PExpr(pParse, TK_UPLUS, pRHS, 0);
         A = sqlite3PExpr(pParse, TK_EQ, A, pRHS);
-      }else if( Y->nExpr==1 && pRHS->op==TK_SELECT ){
+      }иначе ако( Y->nExpr==1 && pRHS->op==TK_SELECT ){
         A = sqlite3PExpr(pParse, TK_IN, A, 0);
         sqlite3PExprAddSelect(pParse, A, pRHS->x.pSelect);
         pRHS->x.pSelect = 0;
         sqlite3ExprListDelete(pParse->db, Y);
-      }else{
+      }иначе{
         A = sqlite3PExpr(pParse, TK_IN, A, 0);
-        if( A==0 ){
+        ако( A==0 ){
           sqlite3ExprListDelete(pParse->db, Y);
-        }else if( A->pLeft->op==TK_VECTOR ){
-          int nExpr = A->pLeft->x.pList->nExpr;
+        }иначе ако( A->pLeft->op==TK_VECTOR ){
+          цяло nExpr = A->pLeft->x.pList->nExpr;
           Select *pSelectRHS = sqlite3ExprListToValues(pParse, nExpr, Y);
-          if( pSelectRHS ){
+          ако( pSelectRHS ){
             parserDoubleLinkSelect(pParse, pSelectRHS);
             sqlite3PExprAddSelect(pParse, A, pSelectRHS);
           }
-        }else{
+        }иначе{
           A->x.pList = Y;
           sqlite3ExprSetHeightAndFlags(pParse, A);
         }
       }
-      if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+      ако( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
     }
   }
   expr(A) ::= LP select(X) RP. {
@@ -1560,15 +1560,15 @@ expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
   expr(A) ::= expr(A) in_op(N) LP select(Y) RP.  [IN] {
     A = sqlite3PExpr(pParse, TK_IN, A, 0);
     sqlite3PExprAddSelect(pParse, A, Y);
-    if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+    ако( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
   }
   expr(A) ::= expr(A) in_op(N) nm(Y) dbnm(Z) paren_exprlist(E). [IN] {
     SrcList *pSrc = sqlite3SrcListAppend(pParse, 0,&Y,&Z);
     Select *pSelect = sqlite3SelectNew(pParse, 0,pSrc,0,0,0,0,0,0);
-    if( E )  sqlite3SrcListFuncArgs(pParse, pSelect ? pSrc : 0, E);
+    ако( E )  sqlite3SrcListFuncArgs(pParse, pSelect ? pSrc : 0, E);
     A = sqlite3PExpr(pParse, TK_IN, A, 0);
     sqlite3PExprAddSelect(pParse, A, pSelect);
-    if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+    ако( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
   }
   expr(A) ::= EXISTS LP select(Y) RP. {
     Expr *p;
@@ -1580,10 +1580,10 @@ expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
 /* CASE expressions */
 expr(A) ::= CASE case_operand(X) case_exprlist(Y) case_else(Z) END. {
   A = sqlite3PExpr(pParse, TK_CASE, X, 0);
-  if( A ){
+  ако( A ){
     A->x.pList = Z ? sqlite3ExprListAppend(pParse,Y,Z) : Y;
     sqlite3ExprSetHeightAndFlags(pParse, A);
-  }else{
+  }иначе{
     sqlite3ExprListDelete(pParse->db, Y);
     sqlite3ExprDelete(pParse->db, Z);
   }
@@ -1636,12 +1636,12 @@ cmd ::= createkw(S) uniqueflag(U) INDEX ifnotexists(NE) nm(X) dbnm(D)
   sqlite3CreateIndex(pParse, &X, &D, 
                      sqlite3SrcListAppend(pParse,0,&Y,0), Z, U,
                       &S, W, SQLITE_SO_ASC, NE, SQLITE_IDXTYPE_APPDEF);
-  if( IN_RENAME_OBJECT && pParse->pNewIndex ){
+  ако( IN_RENAME_OBJECT && pParse->pNewIndex ){
     sqlite3RenameTokenMap(pParse, pParse->pNewIndex->zName, &Y);
   }
 }
 
-%type uniqueflag {int}
+%type uniqueflag {цяло}
 uniqueflag(A) ::= UNIQUE.  {A = OE_Abort;}
 uniqueflag(A) ::= .        {A = OE_None;}
 
@@ -1676,18 +1676,18 @@ uniqueflag(A) ::= .        {A = OE_None;}
     Parse *pParse,
     ExprList *pPrior,
     Token *pIdToken,
-    int hasCollate,
-    int sortOrder
+    цяло hasCollate,
+    цяло sortOrder
   ){
     ExprList *p = sqlite3ExprListAppend(pParse, pPrior, 0);
-    if( (hasCollate || sortOrder!=SQLITE_SO_UNDEFINED)
+    ако( (hasCollate || sortOrder!=SQLITE_SO_UNDEFINED)
         && pParse->db->init.busy==0
     ){
       sqlite3ErrorMsg(pParse, "syntax error after column name \"%.*s\"",
                          pIdToken->n, pIdToken->z);
     }
     sqlite3ExprListSetName(pParse, p, pIdToken, 1);
-    return p;
+    върни p;
   }
 } // end %include
 
@@ -1700,7 +1700,7 @@ eidlist(A) ::= nm(Y) collate(C) sortorder(Z). {
   A = parserAddExprIdListTerm(pParse, 0, &Y, C, Z); /*A-overwrites-Y*/
 }
 
-%type collate {int}
+%type collate {цяло}
 collate(C) ::= .              {C = 0;}
 collate(C) ::= COLLATE ids.   {C = 1;}
 
@@ -1711,7 +1711,7 @@ cmd ::= DROP INDEX ifexists(E) fullname(X).   {sqlite3DropIndex(pParse, X, E);}
 
 ///////////////////////////// The VACUUM command /////////////////////////////
 //
-%if !SQLITE_OMIT_VACUUM && !SQLITE_OMIT_ATTACH
+%ако !SQLITE_OMIT_VACUUM && !SQLITE_OMIT_ATTACH
 %type vinto {Expr*}
 %destructor vinto {sqlite3ExprDelete(pParse->db, $$);}
 cmd ::= VACUUM vinto(Y).                {sqlite3Vacuum(pParse,0,Y);}
@@ -1748,7 +1748,7 @@ minus_num(A) ::= MINUS number(X).     {A = X;}
 cmd ::= createkw trigger_decl(A) BEGIN trigger_cmd_list(S) END(Z). {
   Token all;
   all.z = A.z;
-  all.n = (int)(Z.z - A.z) + Z.n;
+  all.n = (цяло)(Z.z - A.z) + Z.n;
   sqlite3FinishTrigger(pParse, S, &all);
 }
 
@@ -1763,7 +1763,7 @@ trigger_decl(A) ::= temp(T) TRIGGER ifnotexists(NOERR) nm(B) dbnm(Z)
 #endif
 }
 
-%type trigger_time {int}
+%type trigger_time {цяло}
 trigger_time(A) ::= BEFORE|AFTER(X).  { A = @X; /*A-overwrites-X*/ }
 trigger_time(A) ::= INSTEAD OF.  { A = TK_INSTEAD;}
 trigger_time(A) ::= .            { A = TK_BEFORE; }
@@ -1833,19 +1833,19 @@ trigger_cmd(A) ::= scanpt(B) select(X) scanpt(E).
 // The special RAISE expression that may occur in trigger programs
 expr(A) ::= RAISE LP IGNORE RP.  {
   A = sqlite3PExpr(pParse, TK_RAISE, 0, 0); 
-  if( A ){
+  ако( A ){
     A->affExpr = OE_Ignore;
   }
 }
 expr(A) ::= RAISE LP raisetype(T) COMMA expr(Z) RP.  {
   A = sqlite3PExpr(pParse, TK_RAISE, Z, 0);
-  if( A ) {
+  ако( A ) {
     A->affExpr = (char)T;
   }
 }
 %endif  !SQLITE_OMIT_TRIGGER
 
-%type raisetype {int}
+%type raisetype {цяло}
 raisetype(A) ::= ROLLBACK.  {A = OE_Rollback;}
 raisetype(A) ::= ABORT.     {A = OE_Abort;}
 raisetype(A) ::= FAIL.      {A = OE_Fail;}
@@ -1899,7 +1899,7 @@ cmd ::= ALTER TABLE fullname(X) RENAME TO nm(Z). {
 // that sqlite3AlterBeginAddColumn() is called before parsing the various
 // constraints and so on (carglist) attached to the new column definition.
 cmd ::= alter_add(Y) carglist. {
-  Y.n = (int)(pParse->sLastToken.z-Y.z) + pParse->sLastToken.n;
+  Y.n = (цяло)(pParse->sLastToken.z-Y.z) + pParse->sLastToken.n;
   sqlite3AlterFinishAddColumn(pParse, &Y);
 }
 alter_add(A) ::= ALTER TABLE fullname(X) ADD kwcolumn_opt nm(Y) typetoken(Z). {
@@ -2006,7 +2006,7 @@ windowdefn_list(A) ::= windowdefn_list(Y) COMMA windowdefn(Z). {
 %type windowdefn {Window*}
 %destructor windowdefn {sqlite3WindowDelete(pParse->db, $$);}
 windowdefn(A) ::= nm(X) AS LP window(Y) RP. {
-  if( ALWAYS(Y) ){
+  ако( ALWAYS(Y) ){
     Y->zName = sqlite3DbStrNDup(pParse->db, X.z, X.n);
   }
   A = Y;
@@ -2030,7 +2030,7 @@ windowdefn(A) ::= nm(X) AS LP window(Y) RP. {
 %type filter_over {Window*}
 %destructor filter_over {sqlite3WindowDelete(pParse->db, $$);}
 
-%type range_or_rows {int}
+%type range_or_rows {цяло}
 
 %type frame_bound {struct FrameBound}
 %destructor frame_bound {sqlite3ExprDelete(pParse->db, $$.pExpr);}
@@ -2093,9 +2093,9 @@ frame_exclude(A) ::= GROUP|TIES(X).  {A = @X; /*A-overwrites-X*/}
 window_clause(A) ::= WINDOW windowdefn_list(B). { A = B; }
 
 filter_over(A) ::= filter_clause(F) over_clause(O). {
-  if( O ){
+  ако( O ){
     O->pFilter = F;
-  }else{
+  }иначе{
     sqlite3ExprDelete(pParse->db, F);
   }
   A = O;
@@ -2105,10 +2105,10 @@ filter_over(A) ::= over_clause(O). {
 }
 filter_over(A) ::= filter_clause(F). {
   A = (Window*)sqlite3DbMallocZero(pParse->db, sizeof(Window));
-  if( A ){
+  ако( A ){
     A->eFrmType = TK_FILTER;
     A->pFilter = F;
-  }else{
+  }иначе{
     sqlite3ExprDelete(pParse->db, F);
   }
 }
@@ -2119,7 +2119,7 @@ over_clause(A) ::= OVER LP window(Z) RP. {
 }
 over_clause(A) ::= OVER nm(Z). {
   A = (Window*)sqlite3DbMallocZero(pParse->db, sizeof(Window));
-  if( A ){
+  ако( A ){
     A->zName = sqlite3DbStrNDup(pParse->db, Z.z, Z.n);
   }
 }
@@ -2161,7 +2161,7 @@ term(A) ::= QNUMBER(X). {
 ** appear after this line.
 */
 %include {
-#if TK_SPAN>255
+#ако TK_SPAN>255
 # error too many tokens in the grammar
 #endif
 }

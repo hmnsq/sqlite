@@ -130,37 +130,37 @@ typedef struct PgHdr DbPage;
 */
 
 /* Open and close a Pager connection. */ 
-int sqlite3PagerOpen(
+цяло sqlite3PagerOpen(
   sqlite3_vfs*,
   Pager **ppPager,
   const char*,
-  int,
-  int,
-  int,
+  цяло,
+  цяло,
+  цяло,
   void(*)(DbPage*)
 );
-int sqlite3PagerClose(Pager *pPager, sqlite3*);
-int sqlite3PagerReadFileheader(Pager*, int, unsigned char*);
+цяло sqlite3PagerClose(Pager *pPager, sqlite3*);
+цяло sqlite3PagerReadFileheader(Pager*, цяло, unsigned char*);
 
 /* Functions used to configure a Pager object. */
-void sqlite3PagerSetBusyHandler(Pager*, int(*)(void *), void *);
-int sqlite3PagerSetPagesize(Pager*, u32*, int);
+void sqlite3PagerSetBusyHandler(Pager*, цяло(*)(void *), void *);
+цяло sqlite3PagerSetPagesize(Pager*, u32*, цяло);
 Pgno sqlite3PagerMaxPageCount(Pager*, Pgno);
-void sqlite3PagerSetCachesize(Pager*, int);
-int sqlite3PagerSetSpillsize(Pager*, int);
+void sqlite3PagerSetCachesize(Pager*, цяло);
+цяло sqlite3PagerSetSpillsize(Pager*, цяло);
 void sqlite3PagerSetMmapLimit(Pager *, sqlite3_int64);
 void sqlite3PagerShrink(Pager*);
 void sqlite3PagerSetFlags(Pager*,unsigned);
-int sqlite3PagerLockingMode(Pager *, int);
-int sqlite3PagerSetJournalMode(Pager *, int);
-int sqlite3PagerGetJournalMode(Pager*);
-int sqlite3PagerOkToChangeJournalMode(Pager*);
+цяло sqlite3PagerLockingMode(Pager *, цяло);
+цяло sqlite3PagerSetJournalMode(Pager *, цяло);
+цяло sqlite3PagerGetJournalMode(Pager*);
+цяло sqlite3PagerOkToChangeJournalMode(Pager*);
 i64 sqlite3PagerJournalSizeLimit(Pager *, i64);
 sqlite3_backup **sqlite3PagerBackupPtr(Pager*);
-int sqlite3PagerFlush(Pager*);
+цяло sqlite3PagerFlush(Pager*);
 
 /* Functions used to obtain and release page references. */ 
-int sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, int clrFlag);
+цяло sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, цяло clrFlag);
 DbPage *sqlite3PagerLookup(Pager *pPager, Pgno pgno);
 void sqlite3PagerRef(DbPage*);
 void sqlite3PagerUnref(DbPage*);
@@ -168,73 +168,73 @@ void sqlite3PagerUnrefNotNull(DbPage*);
 void sqlite3PagerUnrefPageOne(DbPage*);
 
 /* Operations on page references. */
-int sqlite3PagerWrite(DbPage*);
+цяло sqlite3PagerWrite(DbPage*);
 void sqlite3PagerDontWrite(DbPage*);
-int sqlite3PagerMovepage(Pager*,DbPage*,Pgno,int);
-int sqlite3PagerPageRefcount(DbPage*);
+цяло sqlite3PagerMovepage(Pager*,DbPage*,Pgno,цяло);
+цяло sqlite3PagerPageRefcount(DbPage*);
 void *sqlite3PagerGetData(DbPage *); 
 void *sqlite3PagerGetExtra(DbPage *); 
 
 /* Functions used to manage pager transactions and savepoints. */
-void sqlite3PagerPagecount(Pager*, int*);
-int sqlite3PagerBegin(Pager*, int exFlag, int);
-int sqlite3PagerCommitPhaseOne(Pager*,const char *zSuper, int);
-int sqlite3PagerExclusiveLock(Pager*);
-int sqlite3PagerSync(Pager *pPager, const char *zSuper);
-int sqlite3PagerCommitPhaseTwo(Pager*);
-int sqlite3PagerRollback(Pager*);
-int sqlite3PagerOpenSavepoint(Pager *pPager, int n);
-int sqlite3PagerSavepoint(Pager *pPager, int op, int iSavepoint);
-int sqlite3PagerSharedLock(Pager *pPager);
+void sqlite3PagerPagecount(Pager*, цяло*);
+цяло sqlite3PagerBegin(Pager*, цяло exFlag, цяло);
+цяло sqlite3PagerCommitPhaseOne(Pager*,const char *zSuper, цяло);
+цяло sqlite3PagerExclusiveLock(Pager*);
+цяло sqlite3PagerSync(Pager *pPager, const char *zSuper);
+цяло sqlite3PagerCommitPhaseTwo(Pager*);
+цяло sqlite3PagerRollback(Pager*);
+цяло sqlite3PagerOpenSavepoint(Pager *pPager, цяло n);
+цяло sqlite3PagerSavepoint(Pager *pPager, цяло op, цяло iSavepoint);
+цяло sqlite3PagerSharedLock(Pager *pPager);
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, int, int*, int*);
-  int sqlite3PagerWalSupported(Pager *pPager);
-  int sqlite3PagerWalCallback(Pager *pPager);
-  int sqlite3PagerOpenWal(Pager *pPager, int *pisOpen);
-  int sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
+  цяло sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, цяло, цяло*, цяло*);
+  цяло sqlite3PagerWalSupported(Pager *pPager);
+  цяло sqlite3PagerWalCallback(Pager *pPager);
+  цяло sqlite3PagerOpenWal(Pager *pPager, цяло *pisOpen);
+  цяло sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
 # ifdef SQLITE_ENABLE_SNAPSHOT
-  int sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
-  int sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
-  int sqlite3PagerSnapshotRecover(Pager *pPager);
-  int sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
+  цяло sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
+  цяло sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
+  цяло sqlite3PagerSnapshotRecover(Pager *pPager);
+  цяло sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
   void sqlite3PagerSnapshotUnlock(Pager *pPager);
 # endif
 #endif
 
-#if !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
-  int sqlite3PagerWalWriteLock(Pager*, int);
+#ако !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+  цяло sqlite3PagerWalWriteLock(Pager*, цяло);
   void sqlite3PagerWalDb(Pager*, sqlite3*);
-#else
+#иначе
 # define sqlite3PagerWalWriteLock(y,z) SQLITE_OK
 # define sqlite3PagerWalDb(x,y)
 #endif
 
 #ifdef SQLITE_DIRECT_OVERFLOW_READ
-  int sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
+  цяло sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
 #endif
 
 #ifdef SQLITE_ENABLE_ZIPVFS
-  int sqlite3PagerWalFramesize(Pager *pPager);
+  цяло sqlite3PagerWalFramesize(Pager *pPager);
 #endif
 
 /* Functions used to query pager state and configuration. */
 u8 sqlite3PagerIsreadonly(Pager*);
 u32 sqlite3PagerDataVersion(Pager*);
 #ifdef SQLITE_DEBUG
-  int sqlite3PagerRefcount(Pager*);
+  цяло sqlite3PagerRefcount(Pager*);
 #endif
-int sqlite3PagerMemUsed(Pager*);
-const char *sqlite3PagerFilename(const Pager*, int);
+цяло sqlite3PagerMemUsed(Pager*);
+const char *sqlite3PagerFilename(const Pager*, цяло);
 sqlite3_vfs *sqlite3PagerVfs(Pager*);
 sqlite3_file *sqlite3PagerFile(Pager*);
 sqlite3_file *sqlite3PagerJrnlFile(Pager*);
 const char *sqlite3PagerJournalname(Pager*);
 void *sqlite3PagerTempSpace(Pager*);
-int sqlite3PagerIsMemdb(Pager*);
-void sqlite3PagerCacheStat(Pager *, int, int, u64*);
+цяло sqlite3PagerIsMemdb(Pager*);
+void sqlite3PagerCacheStat(Pager *, цяло, цяло, u64*);
 void sqlite3PagerClearCache(Pager*);
-int sqlite3SectorSize(sqlite3_file *);
+цяло sqlite3SectorSize(sqlite3_file *);
 
 /* Functions used to truncate the database file. */
 void sqlite3PagerTruncateImage(Pager*,Pgno);
@@ -242,25 +242,25 @@ void sqlite3PagerTruncateImage(Pager*,Pgno);
 void sqlite3PagerRekey(DbPage*, Pgno, u16);
 
 /* Functions to support testing and debugging. */
-#if !defined(NDEBUG) || defined(SQLITE_TEST)
+#ако !defined(NDEBUG) || defined(SQLITE_TEST)
   Pgno sqlite3PagerPagenumber(DbPage*);
-  int sqlite3PagerIswriteable(DbPage*);
+  цяло sqlite3PagerIswriteable(DbPage*);
 #endif
 #ifdef SQLITE_TEST
-  int *sqlite3PagerStats(Pager*);
+  цяло *sqlite3PagerStats(Pager*);
   void sqlite3PagerRefdump(Pager*);
   void disable_simulated_io_errors(void);
   void enable_simulated_io_errors(void);
-#else
+#иначе
 # define disable_simulated_io_errors()
 # define enable_simulated_io_errors()
 #endif
 
-#if defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
-int sqlite3PagerWalSystemErrno(Pager*);
+#ако defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
+цяло sqlite3PagerWalSystemErrno(Pager*);
 #endif
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#ако defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
   void sqlite3PagerWalStat(Pager*,sqlite3_str*);
 #endif
 

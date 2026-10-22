@@ -19,10 +19,10 @@
 #ifndef SQLITE_OMIT_INCRBLOB
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(цяло);
 
 /* From test1.c: */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern цяло getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
 extern void *sqlite3TestTextToPtr(const char *z);
 
 /*
@@ -37,7 +37,7 @@ extern void *sqlite3TestTextToPtr(const char *z);
 ** command (see tclsqlite.c). Otherwise, it is assumed to be a pointer 
 ** encoded using the ptrToText() routine or similar.
 */
-static int blobHandleFromObj(
+static цяло blobHandleFromObj(
   Tcl_Interp *interp, 
   Tcl_Obj *pObj,
   sqlite3_blob **ppBlob
@@ -46,26 +46,26 @@ static int blobHandleFromObj(
   Tcl_Size n;
 
   z = Tcl_GetStringFromObj(pObj, &n);
-  if( n==0 ){
+  ако( n==0 ){
     *ppBlob = 0;
-  }else if( n>9 && 0==memcmp("incrblob_", z, 9) ){
-    int notUsed;
+  }иначе ако( n>9 && 0==memcmp("incrblob_", z, 9) ){
+    цяло notUsed;
     Tcl_Channel channel;
     ClientData instanceData;
     
     channel = Tcl_GetChannel(interp, z, &notUsed);
-    if( !channel ) return TCL_ERROR;
+    ако( !channel ) върни TCL_ERROR;
 
     Tcl_Flush(channel);
     Tcl_Seek(channel, 0, SEEK_SET);
 
     instanceData = Tcl_GetChannelInstanceData(channel);
     *ppBlob = *((sqlite3_blob **)instanceData);
-  }else{
+  }иначе{
     *ppBlob = (sqlite3_blob*)sqlite3TestTextToPtr(z);
   }
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -76,7 +76,7 @@ static char *blobStringFromObj(Tcl_Obj *pObj){
   Tcl_Size n;
   char *z;
   z = Tcl_GetStringFromObj(pObj, &n);
-  return (n ? z : 0);
+  върни (n ? z : 0);
 }
 
 /*
@@ -84,10 +84,10 @@ static char *blobStringFromObj(Tcl_Obj *pObj){
 **
 ** Tcl test harness for the sqlite3_blob_open() function.
 */
-static int SQLITE_TCLAPI test_blob_open(
+static цяло SQLITE_TCLAPI test_blob_open(
   ClientData clientData,          /* Not used */
   Tcl_Interp *interp,             /* Calling TCL interpreter */
-  int objc,                       /* Number of arguments */
+  цяло objc,                       /* Number of arguments */
   Tcl_Obj *CONST objv[]           /* Command arguments */
 ){
   sqlite3 *db;
@@ -95,93 +95,93 @@ static int SQLITE_TCLAPI test_blob_open(
   const char *zTable;
   const char *zColumn;
   Tcl_WideInt iRowid;
-  int flags;
+  цяло flags;
   const char *zVarname;
   Tcl_Size nVarname;
 
   sqlite3_blob *pBlob = (sqlite3_blob*)&flags;   /* Non-zero initialization */
-  int rc;
+  цяло rc;
 
-  if( objc!=8 ){
+  ако( objc!=8 ){
     const char *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
     Tcl_WrongNumArgs(interp, 1, objv, zUsage);
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ако( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) върни TCL_ERROR;
   zDb = Tcl_GetString(objv[2]);
   zTable = blobStringFromObj(objv[3]);
   zColumn = Tcl_GetString(objv[4]);
-  if( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[6], &flags) ) return TCL_ERROR;
+  ако( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) върни TCL_ERROR;
+  ако( Tcl_GetIntFromObj(interp, objv[6], &flags) ) върни TCL_ERROR;
   zVarname = Tcl_GetStringFromObj(objv[7], &nVarname);
 
-  if( nVarname>0 ){
+  ако( nVarname>0 ){
     rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, &pBlob);
     Tcl_SetVar(interp, zVarname, sqlite3TestPtrToText(pBlob), 0);
-  }else{
+  }иначе{
     rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, 0);
   }
 
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     Tcl_ResetResult(interp);
-  }else{
+  }иначе{
     Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 
 /*
 ** sqlite3_blob_close  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_close(
+static цяло SQLITE_TCLAPI test_blob_close(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  цяло objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int rc;
+  цяло rc;
   
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
+  ако( blobHandleFromObj(interp, objv[1], &pBlob) ) върни TCL_ERROR;
   rc = sqlite3_blob_close(pBlob);
 
-  if( rc ){
+  ако( rc ){
     Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-  }else{
+  }иначе{
     Tcl_ResetResult(interp);
   }
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
 ** sqlite3_blob_bytes  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_bytes(
+static цяло SQLITE_TCLAPI test_blob_bytes(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  цяло objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
+  цяло nByte;
   
-  if( objc!=2 ){
+  ако( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
+  ако( blobHandleFromObj(interp, objv[1], &pBlob) ) върни TCL_ERROR;
   nByte = sqlite3_blob_bytes(pBlob);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(nByte));
 
-  return TCL_OK;
+  върни TCL_OK;
 }
 
 /*
@@ -199,46 +199,46 @@ static int SQLITE_TCLAPI test_blob_bytes(
 **   text representation of the returned error code (i.e. "SQLITE_NOMEM")
 **   and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_read(
+static цяло SQLITE_TCLAPI test_blob_read(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  цяло objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
-  int iOffset;
+  цяло nByte;
+  цяло iOffset;
   unsigned char *zBuf = 0;
-  int rc;
+  цяло rc;
   
-  if( objc!=4 ){
+  ако( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "CHANNEL OFFSET N");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset)
+  ако( blobHandleFromObj(interp, objv[1], &pBlob) ) върни TCL_ERROR;
+  ако( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset)
    || TCL_OK!=Tcl_GetIntFromObj(interp, objv[3], &nByte)
   ){ 
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( nByte>0 ){
+  ако( nByte>0 ){
     zBuf = (unsigned char *)Tcl_AttemptAlloc(nByte);
-    if( zBuf==0 ){
+    ако( zBuf==0 ){
       Tcl_AppendResult(interp, "out of memory in " __FILE__, NULL);
-      return TCL_ERROR;
+      върни TCL_ERROR;
     }
   }
   rc = sqlite3_blob_read(pBlob, zBuf, nByte, iOffset);
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(zBuf, nByte));
-  }else{
+  }иначе{
     Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
   Tcl_Free((char *)zBuf);
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  върни (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
 
 /*
@@ -255,48 +255,48 @@ static int SQLITE_TCLAPI test_blob_read(
 **   result is set to the text representation of the returned error code 
 **   (i.e. "SQLITE_NOMEM") and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_write(
+static цяло SQLITE_TCLAPI test_blob_write(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  цяло objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int iOffset;
-  int rc;
+  цяло iOffset;
+  цяло rc;
 
   unsigned char *zBuf;
   Tcl_Size nBuf;
-  int n;
+  цяло n;
   
-  if( objc!=4 && objc!=5 ){
+  ако( objc!=4 && objc!=5 ){
     Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
-    return TCL_ERROR;
+    върни TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset) ){ 
-    return TCL_ERROR;
+  ако( blobHandleFromObj(interp, objv[1], &pBlob) ) върни TCL_ERROR;
+  ако( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset) ){ 
+    върни TCL_ERROR;
   }
 
   zBuf = Tcl_GetByteArrayFromObj(objv[3], &nBuf);
-  n = (int)(nBuf & 0x7fffffff);
-  if( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
-    return TCL_ERROR;
+  n = (цяло)(nBuf & 0x7fffffff);
+  ако( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
+    върни TCL_ERROR;
   }
   rc = sqlite3_blob_write(pBlob, zBuf, n, iOffset);
-  if( rc!=SQLITE_OK ){
+  ако( rc!=SQLITE_OK ){
     Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  върни (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
 #endif /* SQLITE_OMIT_INCRBLOB */
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_blob_Init(Tcl_Interp *interp){
+цяло Sqlitetest_blob_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_INCRBLOB
   static struct {
      char *zName;
@@ -308,10 +308,10 @@ int Sqlitetest_blob_Init(Tcl_Interp *interp){
      { "sqlite3_blob_read",            test_blob_read        },
      { "sqlite3_blob_write",           test_blob_write       },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  цяло i;
+  за(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 #endif /* SQLITE_OMIT_INCRBLOB */
-  return TCL_OK;
+  върни TCL_OK;
 }

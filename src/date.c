@@ -55,7 +55,7 @@
 ** So declare a substitute.  The substitute function itself is
 ** defined in "os_win.c".
 */
-#if !defined(SQLITE_OMIT_LOCALTIME) && defined(_WIN32_WCE) && \
+#ако !defined(SQLITE_OMIT_LOCALTIME) && defined(_WIN32_WCE) && \
     (!defined(SQLITE_MSVC_LOCALTIME_API) || !SQLITE_MSVC_LOCALTIME_API)
 struct tm *__cdecl localtime(const time_t *);
 #endif
@@ -66,9 +66,9 @@ struct tm *__cdecl localtime(const time_t *);
 typedef struct DateTime DateTime;
 struct DateTime {
   sqlite3_int64 iJD;  /* The julian day number times 86400000 */
-  int Y, M, D;        /* Year, month, and day */
-  int h, m;           /* Hour and minutes */
-  int tz;             /* Timezone offset in minutes */
+  цяло Y, M, D;        /* Year, month, and day */
+  цяло h, m;           /* Hour and minutes */
+  цяло tz;             /* Timezone offset in minutes */
   double s;           /* Seconds */
   char validJD;       /* True (1) if iJD is valid */
   char validYMD;      /* True (1) if Y,M,D are valid */
@@ -109,42 +109,42 @@ struct DateTime {
 **
 ** The function returns the number of successful conversions.
 */
-static int getDigits(const char *zDate, const char *zFormat, ...){
+static цяло getDigits(const char *zDate, const char *zFormat, ...){
   /* The aMx[] array translates the 3rd character of each format
   ** spec into a max size:    a   b   c   d   e      f */
   static const u16 aMx[] = { 12, 14, 24, 31, 59, 14712 };
   va_list ap;
-  int cnt = 0;
+  цяло cnt = 0;
   char nextC;
   va_start(ap, zFormat);
   do{
     char N = zFormat[0] - '0';
     char min = zFormat[1] - '0';
-    int val = 0;
+    цяло val = 0;
     u16 max;
 
     assert( zFormat[2]>='a' && zFormat[2]<='f' );
     max = aMx[zFormat[2] - 'a'];
     nextC = zFormat[3];
     val = 0;
-    while( N-- ){
-      if( !sqlite3Isdigit(*zDate) ){
+    докато( N-- ){
+      ако( !sqlite3Isdigit(*zDate) ){
         goto end_getDigits;
       }
       val = val*10 + *zDate - '0';
       zDate++;
     }
-    if( val<(int)min || val>(int)max || (nextC!=0 && nextC!=*zDate) ){
+    ако( val<(цяло)min || val>(цяло)max || (nextC!=0 && nextC!=*zDate) ){
       goto end_getDigits;
     }
-    *va_arg(ap,int*) = val;
+    *va_arg(ap,цяло*) = val;
     zDate++;
     cnt++;
     zFormat += 4;
-  }while( nextC );
+  }докато( nextC );
 end_getDigits:
   va_end(ap);
-  return cnt;
+  върни cnt;
 }
 
 /*
@@ -163,38 +163,38 @@ end_getDigits:
 **
 ** A missing specifier is not considered an error.
 */
-static int parseTimezone(const char *zDate, DateTime *p){
-  int sgn = 0;
-  int nHr, nMn;
-  int c;
-  while( sqlite3Isspace(*zDate) ){ zDate++; }
+static цяло parseTimezone(const char *zDate, DateTime *p){
+  цяло sgn = 0;
+  цяло nHr, nMn;
+  цяло c;
+  докато( sqlite3Isspace(*zDate) ){ zDate++; }
   p->tz = 0;
   c = *zDate;
-  if( c=='-' ){
+  ако( c=='-' ){
     sgn = -1;
-  }else if( c=='+' ){
+  }иначе ако( c=='+' ){
     sgn = +1;
-  }else if( c=='Z' || c=='z' ){
+  }иначе ако( c=='Z' || c=='z' ){
     zDate++;
     p->isLocal = 0;
     p->isUtc = 1;
     goto zulu_time;
-  }else{
-    return c!=0;
+  }иначе{
+    върни c!=0;
   }
   zDate++;
-  if( getDigits(zDate, "20b:20e", &nHr, &nMn)!=2 ){
-    return 1;
+  ако( getDigits(zDate, "20b:20e", &nHr, &nMn)!=2 ){
+    върни 1;
   }
   zDate += 5;
   p->tz = sgn*(nMn + nHr*60);
-  if( p->tz==0 ){   /* Forum post 2025-09-17T10:12:14z */
+  ако( p->tz==0 ){   /* Forum post 2025-09-17T10:12:14z */
     p->isLocal = 0;
     p->isUtc = 1;
   }
 zulu_time:
-  while( sqlite3Isspace(*zDate) ){ zDate++; }
-  return *zDate!=0;
+  докато( sqlite3Isspace(*zDate) ){ zDate++; }
+  върни *zDate!=0;
 }
 
 /*
@@ -204,23 +204,23 @@ zulu_time:
 **
 ** Return 1 if there is a parsing error and 0 on success.
 */
-static int parseHhMmSs(const char *zDate, DateTime *p){
-  int h, m, s;
+static цяло parseHhMmSs(const char *zDate, DateTime *p){
+  цяло h, m, s;
   double ms = 0.0;
-  if( getDigits(zDate, "20c:20e", &h, &m)!=2 ){
-    return 1;
+  ако( getDigits(zDate, "20c:20e", &h, &m)!=2 ){
+    върни 1;
   }
   zDate += 5;
-  if( *zDate==':' ){
+  ако( *zDate==':' ){
     zDate++;
-    if( getDigits(zDate, "20e", &s)!=1 ){
-      return 1;
+    ако( getDigits(zDate, "20e", &s)!=1 ){
+      върни 1;
     }
     zDate += 2;
-    if( *zDate=='.' && sqlite3Isdigit(zDate[1]) ){
+    ако( *zDate=='.' && sqlite3Isdigit(zDate[1]) ){
       double rScale = 1.0;
       zDate++;
-      while( sqlite3Isdigit(*zDate) ){
+      докато( sqlite3Isdigit(*zDate) ){
         ms = ms*10.0 + *zDate - '0';
         rScale *= 10.0;
         zDate++;
@@ -228,20 +228,20 @@ static int parseHhMmSs(const char *zDate, DateTime *p){
       ms /= rScale;
       /* Truncate to avoid problems with sub-milliseconds
       ** rounding. https://sqlite.org/forum/forumpost/766a2c9231 */
-      if( ms>0.999 ) ms = 0.999;
+      ако( ms>0.999 ) ms = 0.999;
     }
-  }else{
+  }иначе{
     s = 0;
   }
-  if( h==24 && (m!=0 || s!=0 || ms!=0.0) ) return 1;
+  ако( h==24 && (m!=0 || s!=0 || ms!=0.0) ) върни 1;
   p->validJD = 0;
   p->rawS = 0;
   p->validHMS = 1;
   p->h = h;
   p->m = m;
   p->s = s + ms;
-  if( parseTimezone(zDate, p) ) return 1;
-  return 0;
+  ако( parseTimezone(zDate, p) ) върни 1;
+  върни 0;
 }
 
 /*
@@ -259,27 +259,27 @@ static void datetimeError(DateTime *p){
 ** Reference:  Meeus page 61
 */
 static void computeJD(DateTime *p){
-  int Y, M, D, A, B, X1, X2;
+  цяло Y, M, D, A, B, X1, X2;
 
-  if( p->validJD ) return;
-  if( p->validYMD ){
+  ако( p->validJD ) върни;
+  ако( p->validYMD ){
     Y = p->Y;
     M = p->M;
     D = p->D;
-  }else{
+  }иначе{
     Y = 2000;  /* If no YMD specified, assume 2000-Jan-01 */
     M = 1;
     D = 1;
-    if( p->validHMS && p->h==24 ){
+    ако( p->validHMS && p->h==24 ){
       p->h = 0;
       D = 2;
     }
   }
-  if( Y<-4713 || Y>9999 || p->rawS ){
+  ако( Y<-4713 || Y>9999 || p->rawS ){
     datetimeError(p);
-    return;
+    върни;
   }
-  if( M<=2 ){
+  ако( M<=2 ){
     Y--;
     M += 12;
   }
@@ -289,9 +289,9 @@ static void computeJD(DateTime *p){
   X2 = 306001*(M+1)/10000;
   p->iJD = (sqlite3_int64)((X1 + X2 + D + B - 1524.5 ) * 86400000);
   p->validJD = 1;
-  if( p->validHMS ){
+  ако( p->validHMS ){
     p->iJD += p->h*3600000 + p->m*60000 + (sqlite3_int64)(p->s*1000 + 0.5);
-    if( p->tz ){
+    ако( p->tz ){
       p->iJD -= p->tz*60000;
       p->validYMD = 0;
       p->validHMS = 0;
@@ -305,15 +305,15 @@ static void computeJD(DateTime *p){
 /*
 ** Return the number of dates in a specific month.
 */
-static int daysOfMonth(int Y, int M){
-  if( (1<<M) & 0x15aa ){
-    return 31;
-  }else if( M!=2 ){
-    return 30;
-  }else if( Y%4==0 && (Y%100!=0 || Y%400==0) ){
-    return 29;
-  }else{
-    return 28;
+static цяло daysOfMonth(цяло Y, цяло M){
+  ако( (1<<M) & 0x15aa ){
+    върни 31;
+  }иначе ако( M!=2 ){
+    върни 30;
+  }иначе ако( Y%4==0 && (Y%100!=0 || Y%400==0) ){
+    върни 29;
+  }иначе{
+    върни 28;
   }
 }
 
@@ -324,7 +324,7 @@ static int daysOfMonth(int Y, int M){
 ** date back to the end of the month.
 */
 static void computeFloor(DateTime *p){
-  int mxD;         /* Maximum day number for the current month */
+  цяло mxD;         /* Maximum day number for the current month */
   assert( p->validYMD || p->isError );
   assert( p->D>=0 && p->D<=32 );
   assert( p->M>=0 && p->M<=12 );
@@ -344,39 +344,39 @@ static void computeFloor(DateTime *p){
 ** on success and 1 if the input string is not a well-formed
 ** date.
 */
-static int parseYyyyMmDd(const char *zDate, DateTime *p){
-  int Y, M, D, neg;
+static цяло parseYyyyMmDd(const char *zDate, DateTime *p){
+  цяло Y, M, D, neg;
 
-  if( zDate[0]=='-' ){
+  ако( zDate[0]=='-' ){
     zDate++;
     neg = 1;
-  }else{
+  }иначе{
     neg = 0;
   }
-  if( getDigits(zDate, "40f-21a-21d", &Y, &M, &D)!=3 ){
-    return 1;
+  ако( getDigits(zDate, "40f-21a-21d", &Y, &M, &D)!=3 ){
+    върни 1;
   }
-  if( neg ) Y = -Y;
+  ако( neg ) Y = -Y;
   zDate += 10;
-  while( sqlite3Isspace(*zDate) || 'T'==*(u8*)zDate ){ zDate++; }
-  if( parseHhMmSs(zDate, p)==0 ){
-    if( p->h==24 ){
-      int mxD = daysOfMonth(Y,M);
+  докато( sqlite3Isspace(*zDate) || 'T'==*(u8*)zDate ){ zDate++; }
+  ако( parseHhMmSs(zDate, p)==0 ){
+    ако( p->h==24 ){
+      цяло mxD = daysOfMonth(Y,M);
       p->h = 0;
       D++;
-      if( D>mxD ){
+      ако( D>mxD ){
         D -= mxD;
         M++;
-        if( M>12 ){
+        ако( M>12 ){
           M = 1;
           Y++;
         }
       }
     }
-  }else if( *zDate==0 ){
+  }иначе ако( *zDate==0 ){
     p->validHMS = 0;
-  }else{
-    return 1;
+  }иначе{
+    върни 1;
   }
   p->validJD = 0;
   p->validYMD = 1;
@@ -384,10 +384,10 @@ static int parseYyyyMmDd(const char *zDate, DateTime *p){
   p->M = M;
   p->D = D;
   computeFloor(p);
-  if( p->tz ){
+  ако( p->tz ){
     computeJD(p);
   }
-  return 0;
+  върни 0;
 }
 
 
@@ -398,16 +398,16 @@ static void clearYMD_HMS_TZ(DateTime *p);  /* Forward declaration */
 **
 ** Return the number of errors.
 */
-static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
+static цяло setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
   p->iJD = sqlite3StmtCurrentTime(context);
-  if( p->iJD>0 ){
+  ако( p->iJD>0 ){
     p->validJD = 1;
     p->isUtc = 1;
     p->isLocal = 0;
     clearYMD_HMS_TZ(p);
-    return 0;
-  }else{
-    return 1;
+    върни 0;
+  }иначе{
+    върни 1;
   }
 }
 
@@ -420,7 +420,7 @@ static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
 static void setRawDateNumber(DateTime *p, double r){
   p->s = r;
   p->rawS = 1;
-  if( r>=0.0 && r<5373484.5 ){
+  ако( r>=0.0 && r<5373484.5 ){
     p->iJD = (sqlite3_int64)(r*86400000.0 + 0.5);
     p->validJD = 1;
   }
@@ -442,28 +442,28 @@ static void setRawDateNumber(DateTime *p, double r){
 ** as there is a time string.  The time string can be omitted as long
 ** as there is a year and date.
 */
-static int parseDateOrTime(
+static цяло parseDateOrTime(
   sqlite3_context *context, 
   const char *zDate, 
   DateTime *p
 ){
   double r;
-  if( parseYyyyMmDd(zDate,p)==0 ){
-    return 0;
-  }else if( parseHhMmSs(zDate, p)==0 ){
-    return 0;
-  }else if( sqlite3StrICmp(zDate,"now")==0 && sqlite3NotPureFunc(context) ){
-    return setDateTimeToCurrent(context, p);
-  }else if( sqlite3AtoF(zDate, &r)>0 ){
+  ако( parseYyyyMmDd(zDate,p)==0 ){
+    върни 0;
+  }иначе ако( parseHhMmSs(zDate, p)==0 ){
+    върни 0;
+  }иначе ако( sqlite3StrICmp(zDate,"now")==0 && sqlite3NotPureFunc(context) ){
+    върни setDateTimeToCurrent(context, p);
+  }иначе ако( sqlite3AtoF(zDate, &r)>0 ){
     setRawDateNumber(p, r);
-    return 0;
-  }else if( (sqlite3StrICmp(zDate,"subsec")==0
+    върни 0;
+  }иначе ако( (sqlite3StrICmp(zDate,"subsec")==0
              || sqlite3StrICmp(zDate,"subsecond")==0)
            && sqlite3NotPureFunc(context) ){
     p->useSubsec = 1;
-    return setDateTimeToCurrent(context, p);
+    върни setDateTimeToCurrent(context, p);
   }
-  return 1;
+  върни 1;
 }
 
 /* The julian day number for 9999-12-31 23:59:59.999 is 5373484.4999999.
@@ -480,32 +480,32 @@ static int parseDateOrTime(
 **
 ** The input is the JulianDay times 86400000.
 */
-static int validJulianDay(sqlite3_int64 iJD){
-  return iJD>=0 && iJD<=INT_464269060799999;
+static цяло validJulianDay(sqlite3_int64 iJD){
+  върни iJD>=0 && iJD<=INT_464269060799999;
 }
 
 /*
 ** Compute the Year, Month, and Day from the julian day number.
 */
 static void computeYMD(DateTime *p){
-  int Z, alpha, A, B, C, D, E, X1;
-  if( p->validYMD ) return;
-  if( !p->validJD ){
+  цяло Z, alpha, A, B, C, D, E, X1;
+  ако( p->validYMD ) върни;
+  ако( !p->validJD ){
     p->Y = 2000;
     p->M = 1;
     p->D = 1;
-  }else if( !validJulianDay(p->iJD) ){
+  }иначе ако( !validJulianDay(p->iJD) ){
     datetimeError(p);
-    return;
-  }else{
-    Z = (int)((p->iJD + 43200000)/86400000);
-    alpha = (int)((Z + 32044.75)/36524.25) - 52;
+    върни;
+  }иначе{
+    Z = (цяло)((p->iJD + 43200000)/86400000);
+    alpha = (цяло)((Z + 32044.75)/36524.25) - 52;
     A = Z + 1 + alpha - ((alpha+100)/4) + 25;
     B = A + 1524;
-    C = (int)((B - 122.1)/365.25);
+    C = (цяло)((B - 122.1)/365.25);
     D = (36525*(C&32767))/100;
-    E = (int)((B-D)/30.6001);
-    X1 = (int)(30.6001*E);
+    E = (цяло)((B-D)/30.6001);
+    X1 = (цяло)(30.6001*E);
     p->D = B - D - X1;
     p->M = E<14 ? E-1 : E-13;
     p->Y = p->M>2 ? C - 4716 : C - 4715;
@@ -517,10 +517,10 @@ static void computeYMD(DateTime *p){
 ** Compute the Hour, Minute, and Seconds from the julian day number.
 */
 static void computeHMS(DateTime *p){
-  int day_ms, day_min; /* milliseconds, minutes into the day */
-  if( p->validHMS ) return;
+  цяло day_ms, day_min; /* milliseconds, minutes into the day */
+  ако( p->validHMS ) върни;
   computeJD(p);
-  day_ms = (int)((p->iJD + 43200000) % 86400000);
+  day_ms = (цяло)((p->iJD + 43200000) % 86400000);
   p->s = (day_ms % 60000)/1000.0;
   day_min = day_ms/60000;
   p->m = day_min % 60;
@@ -559,7 +559,7 @@ static void clearYMD_HMS_TZ(DateTime *p){
 ** already, check for an MSVC build environment that provides 
 ** localtime_s().
 */
-#if !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S \
+#ако !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S \
     && defined(_MSC_VER) && defined(_CRT_INSECURE_DEPRECATE)
 #undef  HAVE_LOCALTIME_S
 #define HAVE_LOCALTIME_S 1
@@ -580,48 +580,48 @@ static void clearYMD_HMS_TZ(DateTime *p){
 ** library function localtime_r() is used to assist in the calculation of
 ** local time.
 */
-static int osLocaltime(time_t *t, struct tm *pTm){
-  int rc;
-#if !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S
+static цяло osLocaltime(time_t *t, struct tm *pTm){
+  цяло rc;
+#ако !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S
   struct tm *pX;
-#if SQLITE_THREADSAFE>0
+#ако SQLITE_THREADSAFE>0
   sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
   sqlite3_mutex_enter(mutex);
   pX = localtime(t);
 #ifndef SQLITE_UNTESTABLE
-  if( sqlite3GlobalConfig.bLocaltimeFault ){
-    if( sqlite3GlobalConfig.xAltLocaltime!=0
+  ако( sqlite3GlobalConfig.bLocaltimeFault ){
+    ако( sqlite3GlobalConfig.xAltLocaltime!=0
      && 0==sqlite3GlobalConfig.xAltLocaltime((const void*)t,(void*)pTm)
     ){
       pX = pTm;
-    }else{
+    }иначе{
       pX = 0;
     }
   }
 #endif
-  if( pX ) *pTm = *pX;
-#if SQLITE_THREADSAFE>0
+  ако( pX ) *pTm = *pX;
+#ако SQLITE_THREADSAFE>0
   sqlite3_mutex_leave(mutex);
 #endif
   rc = pX==0;
-#else
+#иначе
 #ifndef SQLITE_UNTESTABLE
-  if( sqlite3GlobalConfig.bLocaltimeFault ){
-    if( sqlite3GlobalConfig.xAltLocaltime!=0 ){
-      return sqlite3GlobalConfig.xAltLocaltime((const void*)t,(void*)pTm);
-    }else{
-      return 1;
+  ако( sqlite3GlobalConfig.bLocaltimeFault ){
+    ако( sqlite3GlobalConfig.xAltLocaltime!=0 ){
+      върни sqlite3GlobalConfig.xAltLocaltime((const void*)t,(void*)pTm);
+    }иначе{
+      върни 1;
     }
   }
 #endif
-#if HAVE_LOCALTIME_R
+#ако HAVE_LOCALTIME_R
   rc = localtime_r(t, pTm)==0;
-#else
+#иначе
   rc = localtime_s(pTm, t);
 #endif /* HAVE_LOCALTIME_R */
 #endif /* HAVE_LOCALTIME_R || HAVE_LOCALTIME_S */
-  return rc;
+  върни rc;
 }
 #endif /* SQLITE_OMIT_LOCALTIME */
 
@@ -630,19 +630,19 @@ static int osLocaltime(time_t *t, struct tm *pTm){
 /*
 ** Assuming the input DateTime is UTC, move it to its localtime equivalent.
 */
-static int toLocaltime(
+static цяло toLocaltime(
   DateTime *p,                   /* Date at which to calculate offset */
   sqlite3_context *pCtx          /* Write error here if one occurs */
 ){
   time_t t;
   struct tm sLocal;
-  int iYearDiff;
+  цяло iYearDiff;
 
   /* Initialize the contents of sLocal to avoid a compiler warning. */
   memset(&sLocal, 0, sizeof(sLocal));
 
   computeJD(p);
-  if( p->iJD<2108667600*(i64)100000 /* 1970-01-01 */
+  ако( p->iJD<2108667600*(i64)100000 /* 1970-01-01 */
    || p->iJD>2130141456*(i64)100000 /* 2038-01-18 */
   ){
     /* EVIDENCE-OF: R-55269-29598 The localtime_r() C function normally only
@@ -657,13 +657,13 @@ static int toLocaltime(
     x.validJD = 0;
     computeJD(&x);
     t = (time_t)(x.iJD/1000 -  21086676*(i64)10000);
-  }else{
+  }иначе{
     iYearDiff = 0;
     t = (time_t)(p->iJD/1000 -  21086676*(i64)10000);
   }
-  if( osLocaltime(&t, &sLocal) ){
+  ако( osLocaltime(&t, &sLocal) ){
     sqlite3_result_error(pCtx, "local time unavailable", -1);
-    return SQLITE_ERROR;
+    върни SQLITE_ERROR;
   }
   p->Y = sLocal.tm_year + 1900 - iYearDiff;
   p->M = sLocal.tm_mon + 1;
@@ -677,7 +677,7 @@ static int toLocaltime(
   p->rawS = 0;
   p->tz = 0;
   p->isError = 0;
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 #endif /* SQLITE_OMIT_LOCALTIME */
 
@@ -709,9 +709,9 @@ static const struct {
 ** appropriately.
 */
 static void autoAdjustDate(DateTime *p){
-  if( !p->rawS || p->validJD ){
+  ако( !p->rawS || p->validJD ){
     p->rawS = 0;
-  }else if( p->s>=-21086676*(i64)10000        /* -4713-11-24 12:00:00 */
+  }иначе ако( p->s>=-21086676*(i64)10000        /* -4713-11-24 12:00:00 */
          && p->s<=(25340230*(i64)10000)+799   /*  9999-12-31 23:59:59 */
   ){
     double r = p->s*1000.0 + 210866760000000.0;
@@ -752,14 +752,14 @@ static void autoAdjustDate(DateTime *p){
 ** to context pCtx. If the error is an unrecognized modifier, no error is
 ** written to pCtx.
 */
-static int parseModifier(
+static цяло parseModifier(
   sqlite3_context *pCtx,      /* Function context */
   const char *z,              /* The text of the modifier */
-  int n,                      /* Length of zMod in bytes */
+  цяло n,                      /* Length of zMod in bytes */
   DateTime *p,                /* The date/time value to be modified */
-  int idx                     /* Parameter index of the modifier */
+  цяло idx                     /* Parameter index of the modifier */
 ){
-  int rc = 1;
+  цяло rc = 1;
   double r;
   switch(sqlite3UpperToLower[(u8)z[0]] ){
     case 'a': {
@@ -769,8 +769,8 @@ static int parseModifier(
       ** If rawS is available, then interpret as a julian day number, or
       ** a unix timestamp, depending on its magnitude.
       */
-      if( sqlite3_stricmp(z, "auto")==0 ){
-        if( idx>1 ) return 1; /* IMP: R-33611-57934 */
+      ако( sqlite3_stricmp(z, "auto")==0 ){
+        ако( idx>1 ) върни 1; /* IMP: R-33611-57934 */
         autoAdjustDate(p);
         rc = 0;
       }
@@ -784,7 +784,7 @@ static int parseModifier(
       ** month.  As this is the default action, this modifier is really
       ** a no-op that is only included for symmetry.  See "floor".
       */
-      if( sqlite3_stricmp(z, "ceiling")==0 ){
+      ако( sqlite3_stricmp(z, "ceiling")==0 ){
         computeJD(p);
         clearYMD_HMS_TZ(p);
         rc = 0;
@@ -801,10 +801,10 @@ static int parseModifier(
       ** Move the date forwards to the last millisecond of the current
       ** day, month or year.
       */
-      if( sqlite3_strnicmp(z, "end of ", 7)!=0 ){
+      ако( sqlite3_strnicmp(z, "end of ", 7)!=0 ){
         break;
       }        
-      if( !p->validJD && !p->validYMD && !p->validHMS ) break;
+      ако( !p->validJD && !p->validYMD && !p->validHMS ) break;
       z += 7;
       computeYMD(p);
       p->validHMS = 1;
@@ -814,10 +814,10 @@ static int parseModifier(
       p->rawS = 0;
       p->tz = 0;
       p->validJD = 0;
-      if( sqlite3_stricmp(z,"month")==0 ){
+      ако( sqlite3_stricmp(z,"month")==0 ){
         p->D = 1;
         p->M++;
-        if( p->M>12 ){
+        ако( p->M>12 ){
           p->Y++;
           p->M = 1;
         }
@@ -826,11 +826,11 @@ static int parseModifier(
         p->iJD -= (p->nFloor+1)*86400000;
         clearYMD_HMS_TZ(p);
         rc = 0;
-      }else if( sqlite3_stricmp(z,"year")==0 ){
+      }иначе ако( sqlite3_stricmp(z,"year")==0 ){
         p->M = 12;
         p->D = 31;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"day")==0 ){
+      }иначе ако( sqlite3_stricmp(z,"day")==0 ){
         rc = 0;
       }
       break;
@@ -842,7 +842,7 @@ static int parseModifier(
       ** Resolve day-of-month overflow by rolling back to the end of the
       ** previous month.
       */
-      if( sqlite3_stricmp(z, "floor")==0 ){
+      ако( sqlite3_stricmp(z, "floor")==0 ){
         computeJD(p);
         p->iJD -= p->nFloor*86400000;
         clearYMD_HMS_TZ(p);
@@ -859,9 +859,9 @@ static int parseModifier(
       ** value in the allowed range of julian day numbers understood by
       ** SQLite (0..5373484.5) then the result will be NULL.
       */
-      if( sqlite3_stricmp(z, "julianday")==0 ){
-        if( idx>1 ) return 1;  /* IMP: R-31176-64601 */
-        if( p->validJD && p->rawS ){
+      ако( sqlite3_stricmp(z, "julianday")==0 ){
+        ако( idx>1 ) върни 1;  /* IMP: R-31176-64601 */
+        ако( p->validJD && p->rawS ){
           rc = 0;
           p->rawS = 0;
         }
@@ -875,7 +875,7 @@ static int parseModifier(
       ** Assuming the current time value is UTC (a.k.a. GMT), shift it to
       ** show local time.
       */
-      if( sqlite3_stricmp(z, "localtime")==0 && sqlite3NotPureFunc(pCtx) ){
+      ако( sqlite3_stricmp(z, "localtime")==0 && sqlite3NotPureFunc(pCtx) ){
         rc = p->isLocal ? SQLITE_OK : toLocaltime(p, pCtx);
         p->isUtc = 0;
         p->isLocal = 1;
@@ -890,10 +890,10 @@ static int parseModifier(
       ** Treat the current value of p->s as the number of
       ** seconds since 1970.  Convert to a real julian day number.
       */
-      if( sqlite3_stricmp(z, "unixepoch")==0 && p->rawS ){
-        if( idx>1 ) return 1;  /* IMP: R-49255-55373 */
+      ако( sqlite3_stricmp(z, "unixepoch")==0 && p->rawS ){
+        ако( idx>1 ) върни 1;  /* IMP: R-49255-55373 */
         r = p->s*1000.0 + 210866760000000.0;
-        if( r>=0.0 && r<464269060800000.0 ){
+        ако( r>=0.0 && r<464269060800000.0 ){
           clearYMD_HMS_TZ(p);
           p->iJD = (sqlite3_int64)(r + 0.5);
           p->validJD = 1;
@@ -902,11 +902,11 @@ static int parseModifier(
         }
       }
 #ifndef SQLITE_OMIT_LOCALTIME
-      else if( sqlite3_stricmp(z, "utc")==0 && sqlite3NotPureFunc(pCtx) ){
-        if( p->isUtc==0 ){
+      иначе ако( sqlite3_stricmp(z, "utc")==0 && sqlite3NotPureFunc(pCtx) ){
+        ако( p->isUtc==0 ){
           i64 iOrigJD;              /* Original localtime */
           i64 iGuess;               /* Guess at the corresponding utc time */
-          int cnt = 0;              /* Safety to prevent infinite loop */
+          цяло cnt = 0;              /* Safety to prevent infinite loop */
           i64 iErr;                 /* Guess is off by this much */
 
           computeJD(p);
@@ -919,10 +919,10 @@ static int parseModifier(
             new.iJD = iGuess;
             new.validJD = 1;
             rc = toLocaltime(&new, pCtx);
-            if( rc ) return rc;
+            ако( rc ) върни rc;
             computeJD(&new);
             iErr = new.iJD - iOrigJD;
-          }while( iErr && cnt++<3 );
+          }докато( iErr && cnt++<3 );
           memset(p, 0, sizeof(*p));
           p->iJD = iGuess;
           p->validJD = 1;
@@ -944,10 +944,10 @@ static int parseModifier(
       ** where 0==Sunday, 1==Monday, and so forth.  If the date is already
       ** on the appropriate weekday, this is a no-op.
       */
-      if( sqlite3_strnicmp(z, "weekday ", 8)==0
+      ако( sqlite3_strnicmp(z, "weekday ", 8)==0
        && sqlite3AtoF(&z[8], &r)>0
        && r>=-6.0 && r<=6.0
-       && sqlite3RealSameAsInt(r,(i64)(n=(int)r))
+       && sqlite3RealSameAsInt(r,(i64)(n=(цяло)r))
       ){
         sqlite3_int64 Z;
         computeYMD_HMS(p);
@@ -955,11 +955,11 @@ static int parseModifier(
         p->validJD = 0;
         computeJD(p);
         Z = ((p->iJD + 129600000)/86400000) % 7;
-        if( n<0 ) n = -n;
-        if( Z!=n ){
-          if( Z>n ) Z -= 7;
+        ако( n<0 ) n = -n;
+        ако( Z!=n ){
+          ако( Z>n ) Z -= 7;
           p->iJD += (n - Z)*86400000;
-          if( strchr(z+8,'-')!=0 ) p->iJD -= 7*86400000;
+          ако( strchr(z+8,'-')!=0 ) p->iJD -= 7*86400000;
         }
         clearYMD_HMS_TZ(p);
         rc = 0;
@@ -981,8 +981,8 @@ static int parseModifier(
       ** Show subsecond precision in the output of datetime() and
       ** unixepoch() and strftime('%s').
       */
-      if( sqlite3_strnicmp(z, "start of ", 9)!=0 ){
-        if( sqlite3_stricmp(z, "subsec")==0
+      ако( sqlite3_strnicmp(z, "start of ", 9)!=0 ){
+        ако( sqlite3_stricmp(z, "subsec")==0
          || sqlite3_stricmp(z, "subsecond")==0
         ){
           p->useSubsec = 1;
@@ -990,7 +990,7 @@ static int parseModifier(
         }
         break;
       }        
-      if( !p->validJD && !p->validYMD && !p->validHMS ) break;
+      ако( !p->validJD && !p->validYMD && !p->validHMS ) break;
       z += 9;
       computeYMD(p);
       p->validHMS = 1;
@@ -999,14 +999,14 @@ static int parseModifier(
       p->rawS = 0;
       p->tz = 0;
       p->validJD = 0;
-      if( sqlite3_stricmp(z,"month")==0 ){
+      ако( sqlite3_stricmp(z,"month")==0 ){
         p->D = 1;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"year")==0 ){
+      }иначе ако( sqlite3_stricmp(z,"year")==0 ){
         p->M = 1;
         p->D = 1;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"day")==0 ){
+      }иначе ако( sqlite3_stricmp(z,"day")==0 ){
         rc = 0;
       }
       break;
@@ -1024,50 +1024,50 @@ static int parseModifier(
     case '8':
     case '9': {
       double rRounder;
-      int i, rx;
-      int Y,M,D,h,m,x;
+      цяло i, rx;
+      цяло Y,M,D,h,m,x;
       const char *z2 = z;
       char *zCopy;
       sqlite3 *db = sqlite3_context_db_handle(pCtx);
       char z0 = z[0];
-      for(n=1; z[n]; n++){
-        if( z[n]==':' ) break;
-        if( sqlite3Isspace(z[n]) ) break;
-        if( z[n]=='-' ){
-          if( n==5 && getDigits(&z[1], "40f", &Y)==1 ) break;
-          if( n==6 && getDigits(&z[1], "50f", &Y)==1 ) break;
+      за(n=1; z[n]; n++){
+        ако( z[n]==':' ) break;
+        ако( sqlite3Isspace(z[n]) ) break;
+        ако( z[n]=='-' ){
+          ако( n==5 && getDigits(&z[1], "40f", &Y)==1 ) break;
+          ако( n==6 && getDigits(&z[1], "50f", &Y)==1 ) break;
         }
       }
       zCopy = sqlite3DbStrNDup(db, z, n);
-      if( zCopy==0 ) break;
+      ако( zCopy==0 ) break;
       rx = sqlite3AtoF(zCopy, &r)<=0;
       sqlite3DbFree(db, zCopy);
-      if( rx ){
+      ако( rx ){
         assert( rc==1 );
         break;
       }
-      if( z[n]=='-' ){
+      ако( z[n]=='-' ){
         /* A modifier of the form (+|-)YYYY-MM-DD adds or subtracts the
         ** specified number of years, months, and days.  MM is limited to
         ** the range 0-11 and DD is limited to 0-30.
         */
-        if( z0!='+' && z0!='-' ) break;  /* Must start with +/- */
-        if( n==5 ){
-          if( getDigits(&z[1], "40f-20a-20d", &Y, &M, &D)!=3 ) break;
-        }else{
+        ако( z0!='+' && z0!='-' ) break;  /* Must start with +/- */
+        ако( n==5 ){
+          ако( getDigits(&z[1], "40f-20a-20d", &Y, &M, &D)!=3 ) break;
+        }иначе{
           assert( n==6 );
-          if( getDigits(&z[1], "50f-20a-20d", &Y, &M, &D)!=3 ) break;
+          ако( getDigits(&z[1], "50f-20a-20d", &Y, &M, &D)!=3 ) break;
           z++;
         }
-        if( M>=12 ) break;                   /* M range 0..11 */
-        if( D>=31 ) break;                   /* D range 0..30 */
+        ако( M>=12 ) break;                   /* M range 0..11 */
+        ако( D>=31 ) break;                   /* D range 0..30 */
         computeYMD_HMS(p);
         p->validJD = 0;
-        if( z0=='-' ){
+        ако( z0=='-' ){
           p->Y -= Y;
           p->M -= M;
           D = -D;
-        }else{
+        }иначе{
           p->Y += Y;
           p->M += M;
         }
@@ -1079,20 +1079,20 @@ static int parseModifier(
         p->validHMS = 0;
         p->validYMD = 0;
         p->iJD += (i64)D*86400000;
-        if( z[11]==0 ){
+        ако( z[11]==0 ){
           rc = 0;
           break;
         }
-        if( sqlite3Isspace(z[11])
+        ако( sqlite3Isspace(z[11])
          && getDigits(&z[12], "20c:20e", &h, &m)==2
         ){
           z2 = &z[12];
           n = 2;
-        }else{
+        }иначе{
           break;
         }
       }
-      if( z2[n]==':' ){
+      ако( z2[n]==':' ){
         /* A modifier of the form (+|-)HH:MM:SS.FFF adds (or subtracts) the
         ** specified number of hours, minutes, seconds, and fractional seconds
         ** to the time.  The ".FFF" may be omitted.  The ":SS.FFF" may be
@@ -1101,14 +1101,14 @@ static int parseModifier(
 
         DateTime tx;
         sqlite3_int64 day;
-        if( !sqlite3Isdigit(*z2) ) z2++;
+        ако( !sqlite3Isdigit(*z2) ) z2++;
         memset(&tx, 0, sizeof(tx));
-        if( parseHhMmSs(z2, &tx) ) break;
+        ако( parseHhMmSs(z2, &tx) ) break;
         computeJD(&tx);
         tx.iJD -= 43200000;
         day = tx.iJD/86400000;
         tx.iJD -= day*86400000;
-        if( z0=='-' ) tx.iJD = -tx.iJD;
+        ако( z0=='-' ) tx.iJD = -tx.iJD;
         computeJD(p);
         clearYMD_HMS_TZ(p);
         p->iJD += tx.iJD;
@@ -1119,16 +1119,16 @@ static int parseModifier(
       /* If control reaches this point, it means the transformation is
       ** one of the forms like "+NNN days".  */
       z += n;
-      while( sqlite3Isspace(*z) ) z++;
+      докато( sqlite3Isspace(*z) ) z++;
       n = sqlite3Strlen30(z);
-      if( n<3 || n>10 ) break;
-      if( sqlite3UpperToLower[(u8)z[n-1]]=='s' ) n--;
+      ако( n<3 || n>10 ) break;
+      ако( sqlite3UpperToLower[(u8)z[n-1]]=='s' ) n--;
       computeJD(p);
       assert( rc==1 );
       rRounder = r<0 ? -0.5 : +0.5;
       p->nFloor = 0;
-      for(i=0; i<ArraySize(aXformType); i++){
-        if( aXformType[i].nName==n
+      за(i=0; i<ArraySize(aXformType); i++){
+        ако( aXformType[i].nName==n
          && sqlite3_strnicmp(aXformType[i].zName, z, n)==0
          && r>-aXformType[i].rLimit && r<aXformType[i].rLimit
         ){
@@ -1136,24 +1136,24 @@ static int parseModifier(
             case 4: { /* Special processing to add months */
               assert( strcmp(aXformType[4].zName,"month")==0 );
               computeYMD_HMS(p);
-              p->M += (int)r;
+              p->M += (цяло)r;
               x = p->M>0 ? (p->M-1)/12 : (p->M-12)/12;
               p->Y += x;
               p->M -= x*12;
               computeFloor(p);
               p->validJD = 0;
-              r -= (int)r;
+              r -= (цяло)r;
               break;
             }
             case 5: { /* Special processing to add years */
-              int y = (int)r;
+              цяло y = (цяло)r;
               assert( strcmp(aXformType[5].zName,"year")==0 );
               computeYMD_HMS(p);
               assert( p->M>=0 && p->M<=12 );
               p->Y += y;
               computeFloor(p);
               p->validJD = 0;
-              r -= (int)r;
+              r -= (цяло)r;
               break;
             }
           }
@@ -1170,7 +1170,7 @@ static int parseModifier(
       break;
     }
   }
-  return rc;
+  върни rc;
 }
 
 /*
@@ -1182,43 +1182,43 @@ static int parseModifier(
 ** If there are zero parameters (if even argv[0] is undefined)
 ** then assume a default value of "now" for argv[0].
 */
-static int isDate(
+static цяло isDate(
   sqlite3_context *context, 
-  int argc, 
+  цяло argc, 
   sqlite3_value **argv, 
   DateTime *p
 ){
-  int i, n;
+  цяло i, n;
   const unsigned char *z;
-  int eType;
+  цяло eType;
   memset(p, 0, sizeof(*p));
-  if( argc==0 ){
-    if( !sqlite3NotPureFunc(context) ) return 1;
-    return setDateTimeToCurrent(context, p);
+  ако( argc==0 ){
+    ако( !sqlite3NotPureFunc(context) ) върни 1;
+    върни setDateTimeToCurrent(context, p);
   }
-  if( (eType = sqlite3_value_type(argv[0]))==SQLITE_FLOAT
+  ако( (eType = sqlite3_value_type(argv[0]))==SQLITE_FLOAT
                    || eType==SQLITE_INTEGER ){
     setRawDateNumber(p, sqlite3_value_double(argv[0]));
-  }else{
+  }иначе{
     z = sqlite3_value_text(argv[0]);
-    if( !z || parseDateOrTime(context, (char*)z, p) ){
-      return 1;
+    ако( !z || parseDateOrTime(context, (char*)z, p) ){
+      върни 1;
     }
   }
-  for(i=1; i<argc; i++){
+  за(i=1; i<argc; i++){
     z = sqlite3_value_text(argv[i]);
     n = sqlite3_value_bytes(argv[i]);
-    if( z==0 || parseModifier(context, (char*)z, n, p, i) ) return 1;
+    ако( z==0 || parseModifier(context, (char*)z, n, p, i) ) върни 1;
   }
   computeJD(p);
-  if( p->isError || !validJulianDay(p->iJD) ) return 1;
-  if( argc==1 && p->validYMD && p->D>28 ){
+  ако( p->isError || !validJulianDay(p->iJD) ) върни 1;
+  ако( argc==1 && p->validYMD && p->D>28 ){
     /* Make sure a YYYY-MM-DD is normalized.
     ** Example: 2023-02-31 -> 2023-03-03 */
     assert( p->validJD );
     p->validYMD = 0;  
   }
-  return 0;
+  върни 0;
 }
 
 
@@ -1234,11 +1234,11 @@ static int isDate(
 */
 static void juliandayFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
+  ако( isDate(context, argc, argv, &x)==0 ){
     computeJD(&x);
     sqlite3_result_double(context, x.iJD/86400000.0);
   }
@@ -1252,15 +1252,15 @@ static void juliandayFunc(
 */
 static void unixepochFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
+  ако( isDate(context, argc, argv, &x)==0 ){
     computeJD(&x);
-    if( x.useSubsec ){
+    ако( x.useSubsec ){
       sqlite3_result_double(context, (x.iJD - 21086676*(i64)10000000)/1000.0);
-    }else{
+    }иначе{
       sqlite3_result_int64(context, x.iJD/1000 - 21086676*(i64)10000);
     }
   }
@@ -1273,16 +1273,16 @@ static void unixepochFunc(
 */
 static void datetimeFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int Y, s, n;
+  ако( isDate(context, argc, argv, &x)==0 ){
+    цяло Y, s, n;
     char zBuf[32];
     computeYMD_HMS(&x);
     Y = x.Y;
-    if( Y<0 ) Y = -Y;
+    ако( Y<0 ) Y = -Y;
     zBuf[1] = '0' + (Y/1000)%10;
     zBuf[2] = '0' + (Y/100)%10;
     zBuf[3] = '0' + (Y/10)%10;
@@ -1300,8 +1300,8 @@ static void datetimeFunc(
     zBuf[15] = '0' + (x.m/10)%10;
     zBuf[16] = '0' + (x.m)%10;
     zBuf[17] = ':';
-    if( x.useSubsec ){
-      s = (int)(1000.0*x.s + 0.5);
+    ако( x.useSubsec ){
+      s = (цяло)(1000.0*x.s + 0.5);
       zBuf[18] = '0' + (s/10000)%10;
       zBuf[19] = '0' + (s/1000)%10;
       zBuf[20] = '.';
@@ -1310,17 +1310,17 @@ static void datetimeFunc(
       zBuf[23] = '0' + (s)%10;
       zBuf[24] = 0;
       n = 24;
-    }else{
-      s = (int)x.s;
+    }иначе{
+      s = (цяло)x.s;
       zBuf[18] = '0' + (s/10)%10;
       zBuf[19] = '0' + (s)%10;
       zBuf[20] = 0;
       n = 20;
     }
-    if( x.Y<0 ){
+    ако( x.Y<0 ){
       zBuf[0] = '-';
       sqlite3_result_text(context, zBuf, n, SQLITE_TRANSIENT);
-    }else{
+    }иначе{
       sqlite3_result_text(context, &zBuf[1], n-1, SQLITE_TRANSIENT);
     }
   }
@@ -1333,12 +1333,12 @@ static void datetimeFunc(
 */
 static void timeFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int s, n;
+  ако( isDate(context, argc, argv, &x)==0 ){
+    цяло s, n;
     char zBuf[16];
     computeHMS(&x);
     zBuf[0] = '0' + (x.h/10)%10;
@@ -1347,8 +1347,8 @@ static void timeFunc(
     zBuf[3] = '0' + (x.m/10)%10;
     zBuf[4] = '0' + (x.m)%10;
     zBuf[5] = ':';
-    if( x.useSubsec ){
-      s = (int)(1000.0*x.s + 0.5);
+    ако( x.useSubsec ){
+      s = (цяло)(1000.0*x.s + 0.5);
       zBuf[6] = '0' + (s/10000)%10;
       zBuf[7] = '0' + (s/1000)%10;
       zBuf[8] = '.';
@@ -1357,8 +1357,8 @@ static void timeFunc(
       zBuf[11] = '0' + (s)%10;
       zBuf[12] = 0;
       n = 12;
-    }else{
-      s = (int)x.s;
+    }иначе{
+      s = (цяло)x.s;
       zBuf[6] = '0' + (s/10)%10;
       zBuf[7] = '0' + (s)%10;
       zBuf[8] = 0;
@@ -1375,16 +1375,16 @@ static void timeFunc(
 */
 static void dateFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int Y;
+  ако( isDate(context, argc, argv, &x)==0 ){
+    цяло Y;
     char zBuf[16];
     computeYMD(&x);
     Y = x.Y;
-    if( Y<0 ) Y = -Y;
+    ако( Y<0 ) Y = -Y;
     zBuf[1] = '0' + (Y/1000)%10;
     zBuf[2] = '0' + (Y/100)%10;
     zBuf[3] = '0' + (Y/10)%10;
@@ -1396,10 +1396,10 @@ static void dateFunc(
     zBuf[9] = '0' + (x.D/10)%10;
     zBuf[10] = '0' + (x.D)%10;
     zBuf[11] = 0;
-    if( x.Y<0 ){
+    ако( x.Y<0 ){
       zBuf[0] = '-';
       sqlite3_result_text(context, zBuf, 11, SQLITE_TRANSIENT);
-    }else{
+    }иначе{
       sqlite3_result_text(context, &zBuf[1], 10, SQLITE_TRANSIENT);
     }
   }
@@ -1414,7 +1414,7 @@ static void dateFunc(
 **   Jan01 = 0,  Jan02 = 1, ..., Jan31 = 30, Feb01 = 31, ...
 **   Dec31 = 364 or 365.
 */
-static int daysAfterJan01(DateTime *pDate){
+static цяло daysAfterJan01(DateTime *pDate){
   DateTime jan01 = *pDate;
   assert( jan01.validYMD );
   assert( jan01.validHMS );
@@ -1423,7 +1423,7 @@ static int daysAfterJan01(DateTime *pDate){
   jan01.M = 1;
   jan01.D = 1;
   computeJD(&jan01);
-  return (int)((pDate->iJD-jan01.iJD+43200000)/86400000);
+  върни (цяло)((pDate->iJD-jan01.iJD+43200000)/86400000);
 }
 
 /*
@@ -1434,9 +1434,9 @@ static int daysAfterJan01(DateTime *pDate){
 **
 **   0=Monday, 1=Tuesday, 2=Wednesday, ..., 6=Sunday.
 */
-static int daysAfterMonday(DateTime *pDate){
+static цяло daysAfterMonday(DateTime *pDate){
   assert( pDate->validJD );
-  return (int)((pDate->iJD+43200000)/86400000) % 7;
+  върни (цяло)((pDate->iJD+43200000)/86400000) % 7;
 }
 
 /*
@@ -1447,9 +1447,9 @@ static int daysAfterMonday(DateTime *pDate){
 **
 **   0=Sunday, 1=Monday, 2=Tuesday, ..., 6=Saturday
 */
-static int daysAfterSunday(DateTime *pDate){
+static цяло daysAfterSunday(DateTime *pDate){
   assert( pDate->validJD );
-  return (int)((pDate->iJD+129600000)/86400000) % 7;
+  върни (цяло)((pDate->iJD+129600000)/86400000) % 7;
 }
 
 /*
@@ -1487,7 +1487,7 @@ static int daysAfterSunday(DateTime *pDate){
 */
 static void strftimeFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
@@ -1497,18 +1497,18 @@ static void strftimeFunc(
   sqlite3_str *pRes;
 
 
-  if( argc==0 ) return;
+  ако( argc==0 ) върни;
   zFmt = (const char*)sqlite3_value_text(argv[0]);
-  if( zFmt==0 || isDate(context, argc-1, argv+1, &x) ) return;
+  ако( zFmt==0 || isDate(context, argc-1, argv+1, &x) ) върни;
   db = sqlite3_context_db_handle(context);
   pRes = sqlite3_str_new(db);
 
   computeJD(&x);
   computeYMD_HMS(&x);
-  for(i=j=0; zFmt[i]; i++){
+  за(i=j=0; zFmt[i]; i++){
     char cf;
-    if( zFmt[i]!='%' ) continue;
-    if( j<i ) sqlite3_str_append(pRes, zFmt+j, (int)(i-j));
+    ако( zFmt[i]!='%' ) continue;
+    ако( j<i ) sqlite3_str_append(pRes, zFmt+j, (цяло)(i-j));
     i++;
     j = i + 1;
     cf = zFmt[i];
@@ -1520,7 +1520,7 @@ static void strftimeFunc(
       }
       case 'f': {  /* Fractional seconds.  (Non-standard) */
         double s = x.s;
-        if( NEVER(s>59.999) ) s = 59.999;
+        ако( NEVER(s>59.999) ) s = 59.999;
         sqlite3_str_appendf(pRes, "%06.3f", s);
         break;
       }
@@ -1536,9 +1536,9 @@ static void strftimeFunc(
         y.iJD += (3 - daysAfterMonday(&x))*86400000;
         y.validYMD = 0;
         computeYMD(&y);
-        if( cf=='g' ){
+        ако( cf=='g' ){
           sqlite3_str_appendf(pRes, "%02d", y.Y%100);
-        }else{
+        }иначе{
           sqlite3_str_appendf(pRes, "%04d", y.Y);
         }
         break;
@@ -1550,9 +1550,9 @@ static void strftimeFunc(
       }
       case 'I': /* Fall thru */
       case 'l': {
-        int h = x.h;
-        if( h>12 ) h -= 12;
-        if( h==0 ) h = 12;
+        цяло h = x.h;
+        ако( h>12 ) h -= 12;
+        ако( h==0 ) h = 12;
         sqlite3_str_appendf(pRes, cf=='I' ? "%02d" : "%2d", h);
         break;
       }
@@ -1574,9 +1574,9 @@ static void strftimeFunc(
       }
       case 'p': /* Fall thru */
       case 'P': {
-        if( x.h>=12 ){
+        ако( x.h>=12 ){
           sqlite3_str_append(pRes, cf=='p' ? "PM" : "pm", 2);
-        }else{
+        }иначе{
           sqlite3_str_append(pRes, cf=='p' ? "AM" : "am", 2);
         }
         break;
@@ -1586,27 +1586,27 @@ static void strftimeFunc(
         break;
       }
       case 's': {
-        if( x.useSubsec ){
+        ако( x.useSubsec ){
           sqlite3_str_appendf(pRes,"%.3f",
                 (x.iJD - 21086676*(i64)10000000)/1000.0);
-        }else{
+        }иначе{
           i64 iS = (i64)(x.iJD/1000 - 21086676*(i64)10000);
           sqlite3_str_appendf(pRes,"%lld",iS);
         }
         break;
       }
       case 'S': {
-        sqlite3_str_appendf(pRes,"%02d",(int)x.s);
+        sqlite3_str_appendf(pRes,"%02d",(цяло)x.s);
         break;
       }
       case 'T': {
-        sqlite3_str_appendf(pRes,"%02d:%02d:%02d", x.h, x.m, (int)x.s);
+        sqlite3_str_appendf(pRes,"%02d:%02d:%02d", x.h, x.m, (цяло)x.s);
         break;
       }
       case 'u':    /* Day of week.  1 to 7.  Monday==1, Sunday==7 */
       case 'w': {  /* Day of week.  0 to 6.  Sunday==0, Monday==1 */
         char c = (char)daysAfterSunday(&x) + '0';
-        if( c=='0' && cf=='u' ) c = '7';
+        ако( c=='0' && cf=='u' ) c = '7';
         sqlite3_str_appendchar(pRes, 1, c);
         break;
       }
@@ -1640,11 +1640,11 @@ static void strftimeFunc(
       }
       default: {
         sqlite3_str_free(pRes);
-        return;
+        върни;
       }
     }
   }
-  if( j<i ) sqlite3_str_append(pRes, zFmt+j, (int)(i-j));
+  ако( j<i ) sqlite3_str_append(pRes, zFmt+j, (цяло)(i-j));
   sqlite3_result_str(context, pRes, SQLITE_FINISH);
 }
 
@@ -1655,7 +1655,7 @@ static void strftimeFunc(
 */
 static void ctimeFunc(
   sqlite3_context *context,
-  int NotUsed,
+  цяло NotUsed,
   sqlite3_value **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -1669,7 +1669,7 @@ static void ctimeFunc(
 */
 static void cdateFunc(
   sqlite3_context *context,
-  int NotUsed,
+  цяло NotUsed,
   sqlite3_value **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -1695,44 +1695,44 @@ static void cdateFunc(
 */
 static void timediffFunc(
   sqlite3_context *context,
-  int NotUsed1,
+  цяло NotUsed1,
   sqlite3_value **argv
 ){
   char sign;
-  int Y, M;
+  цяло Y, M;
   DateTime d1, d2;
   sqlite3_str sRes;
   UNUSED_PARAMETER(NotUsed1);
-  if( isDate(context, 1, &argv[0], &d1) ) return;
-  if( isDate(context, 1, &argv[1], &d2) ) return;
+  ако( isDate(context, 1, &argv[0], &d1) ) върни;
+  ако( isDate(context, 1, &argv[1], &d2) ) върни;
   computeYMD_HMS(&d1);
   computeYMD_HMS(&d2);
-  if( d1.iJD>=d2.iJD ){
+  ако( d1.iJD>=d2.iJD ){
     sign = '+';
     Y = d1.Y - d2.Y;
-    if( Y ){
+    ако( Y ){
       d2.Y = d1.Y;
       d2.validJD = 0;
       computeJD(&d2);
     }
     M = d1.M - d2.M;
-    if( M<0 ){
+    ако( M<0 ){
       Y--;
       M += 12;
     }
-    if( M!=0 ){
+    ако( M!=0 ){
       d2.M = d1.M;
       d2.validJD = 0;
       computeJD(&d2);
     }
-    while( d1.iJD<d2.iJD ){
+    докато( d1.iJD<d2.iJD ){
       M--;
-      if( M<0 ){
+      ако( M<0 ){
         M = 11;
         Y--;
       }
       d2.M--;
-      if( d2.M<1 ){
+      ако( d2.M<1 ){
         d2.M = 12;
         d2.Y--;
       }
@@ -1741,32 +1741,32 @@ static void timediffFunc(
     }
     d1.iJD -= d2.iJD;
     d1.iJD += (u64)1486995408 * (u64)100000;
-  }else /* d1<d2 */{
+  }иначе /* d1<d2 */{
     sign = '-';
     Y = d2.Y - d1.Y;
-    if( Y ){
+    ако( Y ){
       d2.Y = d1.Y;
       d2.validJD = 0;
       computeJD(&d2);
     }
     M = d2.M - d1.M;
-    if( M<0 ){
+    ако( M<0 ){
       Y--;
       M += 12;
     }
-    if( M!=0 ){
+    ако( M!=0 ){
       d2.M = d1.M;
       d2.validJD = 0;
       computeJD(&d2);
     }
-    while( d1.iJD>d2.iJD ){
+    докато( d1.iJD>d2.iJD ){
       M--;
-      if( M<0 ){
+      ако( M<0 ){
         M = 11;
         Y--;
       }
       d2.M++;
-      if( d2.M>12 ){
+      ако( d2.M>12 ){
         d2.M = 1;
         d2.Y++;
       }
@@ -1792,7 +1792,7 @@ static void timediffFunc(
 */
 static void ctimestampFunc(
   sqlite3_context *context,
-  int NotUsed,
+  цяло NotUsed,
   sqlite3_value **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -1814,7 +1814,7 @@ static void ctimestampFunc(
 */
 static void currentTimeFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   time_t t;
@@ -1828,24 +1828,24 @@ static void currentTimeFunc(
   UNUSED_PARAMETER(argv);
 
   iT = sqlite3StmtCurrentTime(context);
-  if( iT<=0 ) return;
+  ако( iT<=0 ) върни;
   t = iT/1000 - 10000*(sqlite3_int64)21086676;
-#if HAVE_GMTIME_R
+#ако HAVE_GMTIME_R
   pTm = gmtime_r(&t, &sNow);
-#else
+#иначе
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
   pTm = gmtime(&t);
-  if( pTm ) memcpy(&sNow, pTm, sizeof(sNow));
+  ако( pTm ) memcpy(&sNow, pTm, sizeof(sNow));
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
 #endif
-  if( pTm ){
+  ако( pTm ){
     strftime(zBuf, 20, zFormat, &sNow);
     sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
   }
 }
 #endif
 
-#if !defined(SQLITE_OMIT_DATETIME_FUNCS) && defined(SQLITE_DEBUG)
+#ако !defined(SQLITE_OMIT_DATETIME_FUNCS) && defined(SQLITE_DEBUG)
 /*
 **   datedebug(...)
 **
@@ -1854,11 +1854,11 @@ static void currentTimeFunc(
 */
 static void datedebugFunc(
   sqlite3_context *context,
-  int argc,
+  цяло argc,
   sqlite3_value **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
+  ако( isDate(context, argc, argv, &x)==0 ){
     char *zJson;
     zJson = sqlite3_mprintf(
       "{iJD:%lld,Y:%d,M:%d,D:%d,h:%d,m:%d,tz:%d,"
@@ -1896,7 +1896,7 @@ void sqlite3RegisterDateTimeFunctions(void){
     DFUNCTION(current_time,      0, 0, 0, ctimeFunc     ),
     DFUNCTION(current_timestamp, 0, 0, 0, ctimestampFunc),
     DFUNCTION(current_date,      0, 0, 0, cdateFunc     ),
-#else
+#иначе
     STR_FUNCTION(current_time,      0, "%H:%M:%S",          0, currentTimeFunc),
     STR_FUNCTION(current_date,      0, "%Y-%m-%d",          0, currentTimeFunc),
     STR_FUNCTION(current_timestamp, 0, "%Y-%m-%d %H:%M:%S", 0, currentTimeFunc),

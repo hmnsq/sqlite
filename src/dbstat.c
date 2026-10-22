@@ -22,7 +22,7 @@
 */
 
 #include "sqliteInt.h"   /* Requires access to internal data structures */
-#if (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
+#ако (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
     && !defined(SQLITE_OMIT_VIRTUALTABLE)
 
 /*
@@ -90,28 +90,28 @@ typedef struct StatCell StatCell;
 
 /* Size information for a single cell within a btree page */
 struct StatCell {
-  int nLocal;                     /* Bytes of local payload */
+  цяло nLocal;                     /* Bytes of local payload */
   u32 iChildPg;                   /* Child node (or 0 if this is a leaf) */
-  int nOvfl;                      /* Entries in aOvfl[] */
+  цяло nOvfl;                      /* Entries in aOvfl[] */
   u32 *aOvfl;                     /* Array of overflow page numbers */
-  int nLastOvfl;                  /* Bytes of payload on final overflow page */
-  int iOvfl;                      /* Iterates through aOvfl[] */
+  цяло nLastOvfl;                  /* Bytes of payload on final overflow page */
+  цяло iOvfl;                      /* Iterates through aOvfl[] */
 };
 
 /* Size information for a single btree page */
 struct StatPage {
   u32 iPgno;                      /* Page number */
   u8 *aPg;                        /* Page buffer from sqlite3_malloc() */
-  int iCell;                      /* Current cell */
+  цяло iCell;                      /* Current cell */
   char *zPath;                    /* Path to this page */
 
   /* Variables populated by statDecodePage(): */
   u8 flags;                       /* Copy of flags byte */
-  int nCell;                      /* Number of cells on page */
-  int nUnused;                    /* Number of unused bytes on page */
+  цяло nCell;                      /* Number of cells on page */
+  цяло nUnused;                    /* Number of unused bytes on page */
   StatCell *aCell;                /* Array of parsed cells */
   u32 iRightChildPg;              /* Right-child page number (or 0) */
-  int nMxPayload;                 /* Largest payload of any cell on the page */
+  цяло nMxPayload;                 /* Largest payload of any cell on the page */
 };
 
 /* The cursor for scanning the dbstat virtual table */
@@ -120,19 +120,19 @@ struct StatCursor {
   sqlite3_stmt *pStmt;            /* Iterates through set of root pages */
   u8 isEof;                       /* After pStmt has returned SQLITE_DONE */
   u8 isAgg;                       /* Aggregate results for each table */
-  int iDb;                        /* Schema used for this query */
+  цяло iDb;                        /* Schema used for this query */
 
   StatPage aPage[32];             /* Pages in path to current page */
-  int iPage;                      /* Current entry in aPage[] */
+  цяло iPage;                      /* Current entry in aPage[] */
 
   /* Values to return. */
   u32 iPageno;                    /* Value of 'pageno' column */
   char *zName;                    /* Value of 'name' column */
   char *zPath;                    /* Value of 'path' column */
   char *zPagetype;                /* Value of 'pagetype' column */
-  int nPage;                      /* Number of pages in current btree */
-  int nCell;                      /* Value of 'ncell' column */
-  int nMxPayload;                 /* Value of 'mx_payload' column */
+  цяло nPage;                      /* Number of pages in current btree */
+  цяло nCell;                      /* Value of 'ncell' column */
+  цяло nMxPayload;                 /* Value of 'mx_payload' column */
   i64 nUnused;                    /* Value of 'unused' column */
   i64 nPayload;                   /* Value of 'payload' column */
   i64 iOffset;                    /* Value of 'pgOffset' column */
@@ -143,7 +143,7 @@ struct StatCursor {
 struct StatTable {
   sqlite3_vtab base;              /* base class.  MUST BE FIRST! */
   sqlite3 *db;                    /* Database connection that owns this vtab */
-  int iDb;                        /* Index of database to analyze */
+  цяло iDb;                        /* Index of database to analyze */
 };
 
 #ifndef get2byte
@@ -153,53 +153,53 @@ struct StatTable {
 /*
 ** Connect to or create a new DBSTAT virtual table.
 */
-static int statConnect(
+static цяло statConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  цяло argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
   StatTable *pTab = 0;
-  int rc = SQLITE_OK;
-  int iDb;
+  цяло rc = SQLITE_OK;
+  цяло iDb;
   (void)pAux;
 
-  if( argc>=4 ){
+  ако( argc>=4 ){
     Token nm;
     sqlite3TokenInit(&nm, (char*)argv[3]);
     iDb = sqlite3FindDb(db, &nm);
-    if( iDb<0 ){
+    ако( iDb<0 ){
       *pzErr = sqlite3_mprintf("no such database: %s", argv[3]);
-      return SQLITE_ERROR;
+      върни SQLITE_ERROR;
     }
-  }else{
+  }иначе{
     iDb = 0;
   }
   sqlite3_vtab_config(db, SQLITE_VTAB_DIRECTONLY);
   rc = sqlite3_declare_vtab(db, zDbstatSchema);
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     pTab = (StatTable *)sqlite3_malloc64(sizeof(StatTable));
-    if( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
+    ако( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
   }
 
   assert( rc==SQLITE_OK || pTab==0 );
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     memset(pTab, 0, sizeof(StatTable));
     pTab->db = db;
     pTab->iDb = iDb;
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  върни rc;
 }
 
 /*
 ** Disconnect from or destroy the DBSTAT virtual table.
 */
-static int statDisconnect(sqlite3_vtab *pVtab){
+static цяло statDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -212,11 +212,11 @@ static int statDisconnect(sqlite3_vtab *pVtab){
 **      0x04           There is an aggregate=? term in the WHERE clause
 **      0x08           Output should be ordered by name and path
 */
-static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int i;
-  int iSchema = -1;
-  int iName = -1;
-  int iAgg = -1;
+static цяло statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  цяло i;
+  цяло iSchema = -1;
+  цяло iName = -1;
+  цяло iAgg = -1;
   (void)tab;
 
   /* Look for a valid schema=? constraint.  If found, change the idxNum to
@@ -224,11 +224,11 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** lower the cost estimate to encourage the constrained version to be
   ** used.
   */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    if( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pIdxInfo->aConstraint[i].usable==0 ){
+  за(i=0; i<pIdxInfo->nConstraint; i++){
+    ако( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
+    ако( pIdxInfo->aConstraint[i].usable==0 ){
       /* Force DBSTAT table should always be the right-most table in a join */
-      return SQLITE_CONSTRAINT;
+      върни SQLITE_CONSTRAINT;
     }
     switch( pIdxInfo->aConstraint[i].iColumn ){
       case 0: {    /* name */
@@ -246,16 +246,16 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     }
   }
   i = 0;
-  if( iSchema>=0 ){
+  ако( iSchema>=0 ){
     pIdxInfo->aConstraintUsage[iSchema].argvIndex = ++i;
     pIdxInfo->aConstraintUsage[iSchema].omit = 1;
     pIdxInfo->idxNum |= 0x01;
   }
-  if( iName>=0 ){
+  ако( iName>=0 ){
     pIdxInfo->aConstraintUsage[iName].argvIndex = ++i;
     pIdxInfo->idxNum |= 0x02;
   }
-  if( iAgg>=0 ){
+  ако( iAgg>=0 ){
     pIdxInfo->aConstraintUsage[iAgg].argvIndex = ++i;
     pIdxInfo->idxNum |= 0x04;
   }
@@ -265,7 +265,7 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** If this will satisfy the client, set the orderByConsumed flag so that 
   ** SQLite does not do an external sort.
   */
-  if( ( pIdxInfo->nOrderBy==1
+  ако( ( pIdxInfo->nOrderBy==1
      && pIdxInfo->aOrderBy[0].iColumn==0
      && pIdxInfo->aOrderBy[0].desc==0
      ) ||
@@ -281,33 +281,33 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   }
   pIdxInfo->idxFlags |= SQLITE_INDEX_SCAN_HEX;
 
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
 ** Open a new DBSTAT cursor.
 */
-static int statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static цяло statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   StatTable *pTab = (StatTable *)pVTab;
   StatCursor *pCsr;
 
   pCsr = (StatCursor *)sqlite3_malloc64(sizeof(StatCursor));
-  if( pCsr==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
+  ако( pCsr==0 ){
+    върни SQLITE_NOMEM_BKPT;
+  }иначе{
     memset(pCsr, 0, sizeof(StatCursor));
     pCsr->base.pVtab = pVTab;
     pCsr->iDb = pTab->iDb;
   }
 
   *ppCursor = (sqlite3_vtab_cursor *)pCsr;
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 static void statClearCells(StatPage *p){
-  int i;
-  if( p->aCell ){
-    for(i=0; i<p->nCell; i++){
+  цяло i;
+  ако( p->aCell ){
+    за(i=0; i<p->nCell; i++){
       sqlite3_free(p->aCell[i].aOvfl);
     }
     sqlite3_free(p->aCell);
@@ -325,12 +325,12 @@ static void statClearPage(StatPage *p){
 }
 
 static void statResetCsr(StatCursor *pCsr){
-  int i;
+  цяло i;
   /* In some circumstances, specifically if an OOM has occurred, the call
   ** to sqlite3_reset() may cause the pager to be reset (emptied). It is
   ** important that statClearPage() is called to free any page refs before
   ** this happens. dbsqlfuzz 9ed3e4e3816219d3509d711636c38542bf3f40b1. */
-  for(i=0; i<ArraySize(pCsr->aPage); i++){
+  за(i=0; i<ArraySize(pCsr->aPage); i++){
     statClearPage(&pCsr->aPage[i]);
     sqlite3_free(pCsr->aPage[i].aPg);
     pCsr->aPage[i].aPg = 0;
@@ -355,12 +355,12 @@ static void statResetCounts(StatCursor *pCsr){
 /*
 ** Close a DBSTAT cursor.
 */
-static int statClose(sqlite3_vtab_cursor *pCursor){
+static цяло statClose(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -368,125 +368,125 @@ static int statClose(sqlite3_vtab_cursor *pCursor){
 ** content (payload) stored on that page.  That is to say, compute the
 ** number of bytes of content not found on overflow pages.
 */
-static int getLocalPayload(
-  int nUsable,                    /* Usable bytes per page */
+static цяло getLocalPayload(
+  цяло nUsable,                    /* Usable bytes per page */
   u8 flags,                       /* Page flags */
-  int nTotal                      /* Total record (payload) size */
+  цяло nTotal                      /* Total record (payload) size */
 ){
-  int nLocal;
-  int nMinLocal;
-  int nMaxLocal;
+  цяло nLocal;
+  цяло nMinLocal;
+  цяло nMaxLocal;
  
-  if( flags==0x0D ){              /* Table leaf node */
+  ако( flags==0x0D ){              /* Table leaf node */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = nUsable - 35;
-  }else{                          /* Index interior and leaf nodes */
+  }иначе{                          /* Index interior and leaf nodes */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = (nUsable - 12) * 64 / 255 - 23;
   }
 
   nLocal = nMinLocal + (nTotal - nMinLocal) % (nUsable - 4);
-  if( nLocal>nMaxLocal ) nLocal = nMinLocal;
-  return nLocal;
+  ако( nLocal>nMaxLocal ) nLocal = nMinLocal;
+  върни nLocal;
 }
 
 /* Populate the StatPage object with information about the all
 ** cells found on the page currently under analysis.
 */
-static int statDecodePage(Btree *pBt, StatPage *p){
-  int nUnused;
-  int iOff;
-  int nHdr;
-  int isLeaf;
-  int szPage;
+static цяло statDecodePage(Btree *pBt, StatPage *p){
+  цяло nUnused;
+  цяло iOff;
+  цяло nHdr;
+  цяло isLeaf;
+  цяло szPage;
 
   u8 *aData = p->aPg;
   u8 *aHdr = &aData[p->iPgno==1 ? 100 : 0];
 
   p->flags = aHdr[0];
-  if( p->flags==0x0A || p->flags==0x0D ){
+  ако( p->flags==0x0A || p->flags==0x0D ){
     isLeaf = 1;
     nHdr = 8;
-  }else if( p->flags==0x05 || p->flags==0x02 ){
+  }иначе ако( p->flags==0x05 || p->flags==0x02 ){
     isLeaf = 0;
     nHdr = 12;
-  }else{
+  }иначе{
     goto statPageIsCorrupt;
   }
-  if( p->iPgno==1 ) nHdr += 100;
+  ако( p->iPgno==1 ) nHdr += 100;
   p->nCell = get2byte(&aHdr[3]);
   p->nMxPayload = 0;
   szPage = sqlite3BtreeGetPageSize(pBt);
 
   nUnused = get2byte(&aHdr[5]) - nHdr - 2*p->nCell;
-  nUnused += (int)aHdr[7];
+  nUnused += (цяло)aHdr[7];
   iOff = get2byte(&aHdr[1]);
-  while( iOff ){
-    int iNext;
-    if( iOff>=szPage ) goto statPageIsCorrupt;
+  докато( iOff ){
+    цяло iNext;
+    ако( iOff>=szPage ) goto statPageIsCorrupt;
     nUnused += get2byte(&aData[iOff+2]);
     iNext = get2byte(&aData[iOff]);
-    if( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
+    ако( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
     iOff = iNext;
   }
   p->nUnused = nUnused;
   p->iRightChildPg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
 
-  if( p->nCell ){
-    int i;                        /* Used to iterate through cells */
-    int nUsable;                  /* Usable bytes per page */
+  ако( p->nCell ){
+    цяло i;                        /* Used to iterate through cells */
+    цяло nUsable;                  /* Usable bytes per page */
 
     sqlite3BtreeEnter(pBt);
     nUsable = szPage - sqlite3BtreeGetReserveNoMutex(pBt);
     sqlite3BtreeLeave(pBt);
     p->aCell = sqlite3_malloc64((p->nCell+1) * sizeof(StatCell));
-    if( p->aCell==0 ) return SQLITE_NOMEM_BKPT;
+    ако( p->aCell==0 ) върни SQLITE_NOMEM_BKPT;
     memset(p->aCell, 0, (p->nCell+1) * sizeof(StatCell));
 
-    for(i=0; i<p->nCell; i++){
+    за(i=0; i<p->nCell; i++){
       StatCell *pCell = &p->aCell[i];
 
       iOff = get2byte(&aData[nHdr+i*2]);
-      if( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
-      if( !isLeaf ){
+      ако( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
+      ако( !isLeaf ){
         pCell->iChildPg = sqlite3Get4byte(&aData[iOff]);
         iOff += 4;
       }
-      if( p->flags==0x05 ){
+      ако( p->flags==0x05 ){
         /* A table interior node. nPayload==0. */
-      }else{
+      }иначе{
         u32 nPayload;             /* Bytes of payload total (local+overflow) */
-        int nLocal;               /* Bytes of payload stored locally */
+        цяло nLocal;               /* Bytes of payload stored locally */
         iOff += getVarint32(&aData[iOff], nPayload);
-        if( p->flags==0x0D ){
+        ако( p->flags==0x0D ){
           u64 dummy;
           iOff += sqlite3GetVarint(&aData[iOff], &dummy);
         }
-        if( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
+        ако( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
         nLocal = getLocalPayload(nUsable, p->flags, nPayload);
-        if( nLocal<0 ) goto statPageIsCorrupt;
+        ако( nLocal<0 ) goto statPageIsCorrupt;
         pCell->nLocal = nLocal;
         assert( nPayload>=(u32)nLocal );
         assert( nLocal<=(nUsable-35) );
-        if( nPayload>(u32)nLocal ){
-          int j;
-          int nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
-          if( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
+        ако( nPayload>(u32)nLocal ){
+          цяло j;
+          цяло nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
+          ако( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
             goto statPageIsCorrupt;
           }
           pCell->nLastOvfl = (nPayload-nLocal) - (nOvfl-1) * (nUsable-4);
           pCell->nOvfl = nOvfl;
           pCell->aOvfl = sqlite3_malloc64(sizeof(u32)*nOvfl);
-          if( pCell->aOvfl==0 ) return SQLITE_NOMEM_BKPT;
+          ако( pCell->aOvfl==0 ) върни SQLITE_NOMEM_BKPT;
           pCell->aOvfl[0] = sqlite3Get4byte(&aData[iOff+nLocal]);
-          for(j=1; j<nOvfl; j++){
-            int rc;
+          за(j=1; j<nOvfl; j++){
+            цяло rc;
             u32 iPrev = pCell->aOvfl[j-1];
             DbPage *pPg = 0;
             rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPrev, &pPg, 0);
-            if( rc!=SQLITE_OK ){
+            ако( rc!=SQLITE_OK ){
               assert( pPg==0 );
-              return rc;
+              върни rc;
             } 
             pCell->aOvfl[j] = sqlite3Get4byte(sqlite3PagerGetData(pPg));
             sqlite3PagerUnref(pPg);
@@ -496,12 +496,12 @@ static int statDecodePage(Btree *pBt, StatPage *p){
     }
   }
 
-  return SQLITE_OK;
+  върни SQLITE_OK;
 
 statPageIsCorrupt:
   p->flags = 0;
   statClearCells(p);
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
@@ -520,10 +520,10 @@ static void statSizeAndOffset(StatCursor *pCsr){
   */
   fd = sqlite3PagerFile(pPager);
   x[0] = pCsr->iPageno;
-  if( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
+  ако( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
     pCsr->iOffset = x[0];
     pCsr->szPage += x[1];
-  }else{
+  }иначе{
     /* Not ZIPVFS: The default page size and offset */
     pCsr->szPage += sqlite3BtreeGetPageSize(pBt);
     pCsr->iOffset = (i64)pCsr->szPage * (pCsr->iPageno - 1);
@@ -535,31 +535,31 @@ static void statSizeAndOffset(StatCursor *pCsr){
 ** to page object pPg. Allocate the buffer if necessary. Return SQLITE_OK
 ** if successful, or an SQLite error code otherwise.
 */
-static int statGetPage(
+static цяло statGetPage(
   Btree *pBt,                     /* Load page from this b-tree */
   u32 iPg,                        /* Page number to load */
   StatPage *pPg                   /* Load page into this object */
 ){
-  int pgsz = sqlite3BtreeGetPageSize(pBt);
+  цяло pgsz = sqlite3BtreeGetPageSize(pBt);
   DbPage *pDbPage = 0;
-  int rc;
+  цяло rc;
 
-  if( pPg->aPg==0 ){
+  ако( pPg->aPg==0 ){
     pPg->aPg = (u8*)sqlite3_malloc(pgsz + DBSTAT_PAGE_PADDING_BYTES);
-    if( pPg->aPg==0 ){
-      return SQLITE_NOMEM_BKPT;
+    ако( pPg->aPg==0 ){
+      върни SQLITE_NOMEM_BKPT;
     }
     memset(&pPg->aPg[pgsz], 0, DBSTAT_PAGE_PADDING_BYTES);
   }
 
   rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPg, &pDbPage, 0);
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     const u8 *a = sqlite3PagerGetData(pDbPage);
     memcpy(pPg->aPg, a, pgsz);
     sqlite3PagerUnref(pDbPage);
   }
 
-  return rc;
+  върни rc;
 }
 
 /*
@@ -567,9 +567,9 @@ static int statGetPage(
 ** entry will be the next page, but in aggregated mode (pCsr->isAgg!=0),
 ** the next entry is the next btree.
 */
-static int statNext(sqlite3_vtab_cursor *pCursor){
-  int rc;
-  int nPayload;
+static цяло statNext(sqlite3_vtab_cursor *pCursor){
+  цяло rc;
+  цяло nPayload;
   char *z;
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable *)pCursor->pVtab;
@@ -580,40 +580,40 @@ static int statNext(sqlite3_vtab_cursor *pCursor){
   pCsr->zPath = 0;
 
 statNextRestart:
-  if( pCsr->iPage<0 ){
+  ако( pCsr->iPage<0 ){
     /* Start measuring space on the next btree */
     statResetCounts(pCsr);
     rc = sqlite3_step(pCsr->pStmt);
-    if( rc==SQLITE_ROW ){
-      int nPage;
+    ако( rc==SQLITE_ROW ){
+      цяло nPage;
       u32 iRoot = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
       sqlite3PagerPagecount(pPager, &nPage);
-      if( nPage==0 ){
+      ако( nPage==0 ){
         pCsr->isEof = 1;
-        return sqlite3_reset(pCsr->pStmt);
+        върни sqlite3_reset(pCsr->pStmt);
       }
       rc = statGetPage(pBt, iRoot, &pCsr->aPage[0]);
       pCsr->aPage[0].iPgno = iRoot;
       pCsr->aPage[0].iCell = 0;
-      if( !pCsr->isAgg ){
+      ако( !pCsr->isAgg ){
         pCsr->aPage[0].zPath = z = sqlite3_mprintf("/");
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ако( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       pCsr->iPage = 0;
       pCsr->nPage = 1;
-    }else{
+    }иначе{
       pCsr->isEof = 1;
-      return sqlite3_reset(pCsr->pStmt);
+      върни sqlite3_reset(pCsr->pStmt);
     }
-  }else{
+  }иначе{
     /* Continue analyzing the btree previously started */
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    if( !pCsr->isAgg ) statResetCounts(pCsr);
-    while( p->iCell<p->nCell ){
+    ако( !pCsr->isAgg ) statResetCounts(pCsr);
+    докато( p->iCell<p->nCell ){
       StatCell *pCell = &p->aCell[p->iCell];
-      while( pCell->iOvfl<pCell->nOvfl ){
-        int nUsable;
-        int iOvfl = pCell->iOvfl;
+      докато( pCell->iOvfl<pCell->nOvfl ){
+        цяло nUsable;
+        цяло iOvfl = pCell->iOvfl;
         sqlite3BtreeEnter(pBt);
         nUsable = sqlite3BtreeGetPageSize(pBt) - 
                         sqlite3BtreeGetReserveNoMutex(pBt);
@@ -621,54 +621,54 @@ statNextRestart:
         pCsr->nPage++;
         pCsr->iPageno = pCell->aOvfl[iOvfl];
         statSizeAndOffset(pCsr);
-        if( pCell->iOvfl<pCell->nOvfl-1 ){
+        ако( pCell->iOvfl<pCell->nOvfl-1 ){
           pCsr->nPayload += nUsable - 4;
-        }else{
+        }иначе{
           pCsr->nPayload += pCell->nLastOvfl;
           pCsr->nUnused += nUsable - 4 - pCell->nLastOvfl;
         }
         pCell->iOvfl++;
-        if( !pCsr->isAgg ){
+        ако( !pCsr->isAgg ){
           pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
           pCsr->zPagetype = "overflow";
           pCsr->zPath = z = sqlite3_mprintf(
               "%s%.3x+%.6x", p->zPath, p->iCell, iOvfl
           );
-          return z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
+          върни z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
         }
       }
-      if( p->iRightChildPg ) break;
+      ако( p->iRightChildPg ) break;
       p->iCell++;
     }
 
-    if( !p->iRightChildPg || p->iCell>p->nCell ){
+    ако( !p->iRightChildPg || p->iCell>p->nCell ){
       statClearPage(p);
       pCsr->iPage--;
-      if( pCsr->isAgg && pCsr->iPage<0 ){
+      ако( pCsr->isAgg && pCsr->iPage<0 ){
         /* label-statNext-done:  When computing aggregate space usage over
         ** an entire btree, this is the exit point from this function */
-        return SQLITE_OK;
+        върни SQLITE_OK;
       }
       goto statNextRestart; /* Tail recursion */
     }
     pCsr->iPage++;
-    if( pCsr->iPage>=ArraySize(pCsr->aPage) ){
+    ако( pCsr->iPage>=ArraySize(pCsr->aPage) ){
       statResetCsr(pCsr);
-      return SQLITE_CORRUPT_BKPT;
+      върни SQLITE_CORRUPT_BKPT;
     }
     assert( p==&pCsr->aPage[pCsr->iPage-1] );
 
-    if( p->iCell==p->nCell ){
+    ако( p->iCell==p->nCell ){
       p[1].iPgno = p->iRightChildPg;
-    }else{
+    }иначе{
       p[1].iPgno = p->aCell[p->iCell].iChildPg;
     }
     rc = statGetPage(pBt, p[1].iPgno, &p[1]);
     pCsr->nPage++;
     p[1].iCell = 0;
-    if( !pCsr->isAgg ){
+    ако( !pCsr->isAgg ){
       p[1].zPath = z = sqlite3_mprintf("%s%.3x/", p->zPath, p->iCell);
-      if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+      ако( z==0 ) rc = SQLITE_NOMEM_BKPT;
     }
     p->iCell++;
   }
@@ -677,14 +677,14 @@ statNextRestart:
   /* Populate the StatCursor fields with the values to be returned
   ** by the xColumn() and xRowid() methods.
   */
-  if( rc==SQLITE_OK ){
-    int i;
+  ако( rc==SQLITE_OK ){
+    цяло i;
     StatPage *p = &pCsr->aPage[pCsr->iPage];
     pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
     pCsr->iPageno = p->iPgno;
 
     rc = statDecodePage(pBt, p);
-    if( rc==SQLITE_OK ){
+    ако( rc==SQLITE_OK ){
       statSizeAndOffset(pCsr);
 
       switch( p->flags ){
@@ -702,13 +702,13 @@ statNextRestart:
       }
       pCsr->nCell += p->nCell;
       pCsr->nUnused += p->nUnused;
-      if( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
-      if( !pCsr->isAgg ){
+      ако( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
+      ако( !pCsr->isAgg ){
         pCsr->zPath = z = sqlite3_mprintf("%s", p->zPath);
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ако( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       nPayload = 0;
-      for(i=0; i<p->nCell; i++){
+      за(i=0; i<p->nCell; i++){
         nPayload += p->aCell[i].nLocal;
       }
       pCsr->nPayload += nPayload;
@@ -716,33 +716,33 @@ statNextRestart:
       /* If computing aggregate space usage by btree, continue with the
       ** next page.  The loop will exit via the return at label-statNext-done
       */
-      if( pCsr->isAgg ) goto statNextRestart;
+      ако( pCsr->isAgg ) goto statNextRestart;
     }
   }
 
-  return rc;
+  върни rc;
 }
 
-static int statEof(sqlite3_vtab_cursor *pCursor){
+static цяло statEof(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  return pCsr->isEof;
+  върни pCsr->isEof;
 }
 
 /* Initialize a cursor according to the query plan idxNum using the
 ** arguments in argv[0].  See statBestIndex() for a description of the
 ** meaning of the bits in idxNum.
 */
-static int statFilter(
+static цяло statFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  цяло idxNum, const char *idxStr,
+  цяло argc, sqlite3_value **argv
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable*)(pCursor->pVtab);
   sqlite3_str *pSql;      /* Query of btrees to analyze */
   char *zSql;             /* String value of pSql */
-  int iArg = 0;           /* Count of argv[] parameters used so far */
-  int rc = SQLITE_OK;     /* Result of this operation */
+  цяло iArg = 0;           /* Count of argv[] parameters used so far */
+  цяло rc = SQLITE_OK;     /* Result of this operation */
   const char *zName = 0;  /* Only provide analysis of this table */
   (void)argc;
   (void)idxStr;
@@ -750,26 +750,26 @@ static int statFilter(
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
-  if( idxNum & 0x01 ){
+  ако( idxNum & 0x01 ){
     /* schema=? constraint is present.  Get its value */
     const char *zDbase = (const char*)sqlite3_value_text(argv[iArg++]);
     pCsr->iDb = sqlite3FindDbName(pTab->db, zDbase);
-    if( pCsr->iDb<0 ){
+    ако( pCsr->iDb<0 ){
       pCsr->iDb = 0;
       pCsr->isEof = 1;
-      return SQLITE_OK;
+      върни SQLITE_OK;
     }
-  }else{
+  }иначе{
     pCsr->iDb = pTab->iDb;
   }
-  if( idxNum & 0x02 ){
+  ако( idxNum & 0x02 ){
     /* name=? constraint is present */
     zName = (const char*)sqlite3_value_text(argv[iArg++]);
   }
-  if( idxNum & 0x04 ){
+  ако( idxNum & 0x04 ){
     /* aggregate=? constraint is present */
     pCsr->isAgg = sqlite3_value_double(argv[iArg++])!=0.0;
-  }else{
+  }иначе{
     pCsr->isAgg = 0;
   }
   pSql = sqlite3_str_new(pTab->db);
@@ -780,31 +780,31 @@ static int statFilter(
         "SELECT name,rootpage,type"
         " FROM \"%w\".sqlite_schema WHERE rootpage!=0)",
       pTab->db->aDb[pCsr->iDb].zDbSName);
-  if( zName ){
+  ако( zName ){
     sqlite3_str_appendf(pSql, "WHERE name=%Q", zName);
   }
-  if( idxNum & 0x08 ){
+  ако( idxNum & 0x08 ){
     sqlite3_str_appendf(pSql, " ORDER BY name");
   }
   zSql = sqlite3_str_finish(pSql);
-  if( zSql==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
+  ако( zSql==0 ){
+    върни SQLITE_NOMEM_BKPT;
+  }иначе{
     rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  ако( rc==SQLITE_OK ){
     pCsr->iPage = -1;
     rc = statNext(pCursor);
   }
-  return rc;
+  върни rc;
 }
 
-static int statColumn(
+static цяло statColumn(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
-  int i
+  цяло i
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   switch( i ){
@@ -812,19 +812,19 @@ static int statColumn(
       sqlite3_result_text(ctx, pCsr->zName, -1, SQLITE_TRANSIENT);
       break;
     case 1:            /* path */
-      if( !pCsr->isAgg ){
+      ако( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPath, -1, SQLITE_TRANSIENT);
       }
       break;
     case 2:            /* pageno */
-      if( pCsr->isAgg ){
+      ако( pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->nPage);
-      }else{
+      }иначе{
         sqlite3_result_int64(ctx, pCsr->iPageno);
       }
       break;
     case 3:            /* pagetype */
-      if( !pCsr->isAgg ){
+      ако( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPagetype, -1, SQLITE_STATIC);
       }
       break;
@@ -841,7 +841,7 @@ static int statColumn(
       sqlite3_result_int64(ctx, pCsr->nMxPayload);
       break;
     case 8:            /* pgoffset */
-      if( !pCsr->isAgg ){
+      ако( !pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->iOffset);
       }
       break;
@@ -850,7 +850,7 @@ static int statColumn(
       break;
     case 10: {         /* schema */
       sqlite3 *db = sqlite3_context_db_handle(ctx);
-      int iDb = pCsr->iDb;
+      цяло iDb = pCsr->iDb;
       sqlite3_result_text(ctx, db->aDb[iDb].zDbSName, -1, SQLITE_STATIC);
       break;
     }
@@ -859,19 +859,19 @@ static int statColumn(
       break;
     }
   }
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
-static int statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+static цяло statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   StatCursor *pCsr = (StatCursor *)pCursor;
   *pRowid = pCsr->iPageno;
-  return SQLITE_OK;
+  върни SQLITE_OK;
 }
 
 /*
 ** Invoke this routine to register the "dbstat" virtual table module
 */
-int sqlite3DbstatRegister(sqlite3 *db){
+цяло sqlite3DbstatRegister(sqlite3 *db){
   static sqlite3_module dbstat_module = {
     0,                            /* iVersion */
     statConnect,                  /* xCreate */
@@ -899,8 +899,8 @@ int sqlite3DbstatRegister(sqlite3 *db){
     0,                            /* xShadowName */
     0                             /* xIntegrity */
   };
-  return sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
+  върни sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
 }
 #elif defined(SQLITE_ENABLE_DBSTAT_VTAB)
-int sqlite3DbstatRegister(sqlite3 *db){ return SQLITE_OK; }
+цяло sqlite3DbstatRegister(sqlite3 *db){ върни SQLITE_OK; }
 #endif /* SQLITE_ENABLE_DBSTAT_VTAB */

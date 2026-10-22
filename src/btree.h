@@ -42,13 +42,13 @@ typedef struct BtShared BtShared;
 typedef struct BtreePayload BtreePayload;
 
 
-int sqlite3BtreeOpen(
+цяло sqlite3BtreeOpen(
   sqlite3_vfs *pVfs,       /* VFS to use with this b-tree */
   const char *zFilename,   /* Name of database file to open */
   sqlite3 *db,             /* Associated database connection */
   Btree **ppBtree,         /* Return open Btree* here */
-  int flags,               /* Flags */
-  int vfsFlags             /* Flags passed through to VFS open */
+  цяло flags,               /* Flags */
+  цяло vfsFlags             /* Flags passed through to VFS open */
 );
 
 /* The flags parameter to sqlite3BtreeOpen can be the bitwise or of the
@@ -62,52 +62,52 @@ int sqlite3BtreeOpen(
 #define BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
 #define BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
 
-int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetCacheSize(Btree*,int);
-int sqlite3BtreeSetSpillSize(Btree*,int);
-#if SQLITE_MAX_MMAP_SIZE>0
-  int sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
+цяло sqlite3BtreeClose(Btree*);
+цяло sqlite3BtreeSetCacheSize(Btree*,цяло);
+цяло sqlite3BtreeSetSpillSize(Btree*,цяло);
+#ако SQLITE_MAX_MMAP_SIZE>0
+  цяло sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
 #endif
-int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
-int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
-int sqlite3BtreeGetPageSize(Btree*);
+цяло sqlite3BtreeSetPagerFlags(Btree*,unsigned);
+цяло sqlite3BtreeSetPageSize(Btree *p, цяло nPagesize, цяло nReserve, цяло eFix);
+цяло sqlite3BtreeGetPageSize(Btree*);
 Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
 Pgno sqlite3BtreeLastPage(Btree*);
-int sqlite3BtreeSecureDelete(Btree*,int);
-int sqlite3BtreeGetRequestedReserve(Btree*);
-int sqlite3BtreeGetReserveNoMutex(Btree *p);
-int sqlite3BtreeSetAutoVacuum(Btree *, int);
-int sqlite3BtreeGetAutoVacuum(Btree *);
-int sqlite3BtreeBeginTrans(Btree*,int,int*);
-int sqlite3BtreeCommitPhaseOne(Btree*, const char*);
-int sqlite3BtreeCommitPhaseTwo(Btree*, int);
-int sqlite3BtreeCommit(Btree*);
-int sqlite3BtreeRollback(Btree*,int,int);
-int sqlite3BtreeBeginStmt(Btree*,int);
-int sqlite3BtreeCreateTable(Btree*, Pgno*, int flags);
-int sqlite3BtreeTxnState(Btree*);
-int sqlite3BtreeIsInBackup(Btree*);
+цяло sqlite3BtreeSecureDelete(Btree*,цяло);
+цяло sqlite3BtreeGetRequestedReserve(Btree*);
+цяло sqlite3BtreeGetReserveNoMutex(Btree *p);
+цяло sqlite3BtreeSetAutoVacuum(Btree *, цяло);
+цяло sqlite3BtreeGetAutoVacuum(Btree *);
+цяло sqlite3BtreeBeginTrans(Btree*,цяло,цяло*);
+цяло sqlite3BtreeCommitPhaseOne(Btree*, const char*);
+цяло sqlite3BtreeCommitPhaseTwo(Btree*, цяло);
+цяло sqlite3BtreeCommit(Btree*);
+цяло sqlite3BtreeRollback(Btree*,цяло,цяло);
+цяло sqlite3BtreeBeginStmt(Btree*,цяло);
+цяло sqlite3BtreeCreateTable(Btree*, Pgno*, цяло flags);
+цяло sqlite3BtreeTxnState(Btree*);
+цяло sqlite3BtreeIsInBackup(Btree*);
 
-void *sqlite3BtreeSchema(Btree *, int, void(*)(void *));
-int sqlite3BtreeSchemaLocked(Btree *pBtree);
+void *sqlite3BtreeSchema(Btree *, цяло, void(*)(void *));
+цяло sqlite3BtreeSchemaLocked(Btree *pBtree);
 #ifndef SQLITE_OMIT_SHARED_CACHE
-int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);
+цяло sqlite3BtreeLockTable(Btree *pBtree, цяло iTab, u8 isWriteLock);
 #endif
 
 /* Savepoints are named, nestable SQL transactions mostly implemented */ 
 /* in vdbe.c and pager.c See https://sqlite.org/lang_savepoint.html */
-int sqlite3BtreeSavepoint(Btree *, int, int);
+цяло sqlite3BtreeSavepoint(Btree *, цяло, цяло);
 
 /* "Checkpoint" only refers to WAL. See https://sqlite.org/wal.html#ckpt */
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);  
+  цяло sqlite3BtreeCheckpoint(Btree*, цяло, цяло *, цяло *);  
 #endif
 
 const char *sqlite3BtreeGetFilename(Btree *);
 const char *sqlite3BtreeGetJournalname(Btree *);
-int sqlite3BtreeCopyFile(Btree*, Btree*);
+цяло sqlite3BtreeCopyFile(Btree*, Btree*);
 
-int sqlite3BtreeIncrVacuum(Btree *);
+цяло sqlite3BtreeIncrVacuum(Btree *);
 
 /* The flags parameter to sqlite3BtreeCreateTable can be the bitwise OR
 ** of the flags shown below.
@@ -122,15 +122,15 @@ int sqlite3BtreeIncrVacuum(Btree *);
 #define BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
 #define BTREE_BLOBKEY    2    /* Table has keys only - no data */
 
-int sqlite3BtreeDropTable(Btree*, int, int*);
-int sqlite3BtreeClearTable(Btree*, int, i64*);
-int sqlite3BtreeClearTableOfCursor(BtCursor*);
-int sqlite3BtreeTripAllCursors(Btree*, int, int);
+цяло sqlite3BtreeDropTable(Btree*, цяло, цяло*);
+цяло sqlite3BtreeClearTable(Btree*, цяло, i64*);
+цяло sqlite3BtreeClearTableOfCursor(BtCursor*);
+цяло sqlite3BtreeTripAllCursors(Btree*, цяло, цяло);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+void sqlite3BtreeGetMeta(Btree *pBtree, цяло idx, u32 *pValue);
+цяло sqlite3BtreeUpdateMeta(Btree*, цяло idx, u32 value);
 
-int sqlite3BtreeNewDb(Btree *p);
+цяло sqlite3BtreeNewDb(Btree *p);
 
 /*
 ** The second parameter to sqlite3BtreeGetMeta or sqlite3BtreeUpdateMeta
@@ -238,42 +238,42 @@ int sqlite3BtreeNewDb(Btree *p);
 #define BTREE_WRCSR     0x00000004     /* read-write cursor */
 #define BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
 
-int sqlite3BtreeCursor(
+цяло sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
   Pgno iTable,                         /* Index of root page */
-  int wrFlag,                          /* 1 for writing.  0 for read-only */
+  цяло wrFlag,                          /* 1 for writing.  0 for read-only */
   struct KeyInfo*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
 BtCursor *sqlite3BtreeFakeValidCursor(void);
-int sqlite3BtreeCursorSize(void);
+цяло sqlite3BtreeCursorSize(void);
 #ifdef SQLITE_DEBUG
-int sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
+цяло sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
 #endif
 void sqlite3BtreeCursorZero(BtCursor*);
 void sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
 #ifdef SQLITE_ENABLE_CURSOR_HINTS
-void sqlite3BtreeCursorHint(BtCursor*, int, ...);
+void sqlite3BtreeCursorHint(BtCursor*, цяло, ...);
  #ifdef SQLITE_DEBUG
  BtCursor *sqlite3BtreeCursorHintTblCsr(BtCursor*);
  #endif
 #endif
 
-int sqlite3BtreeCloseCursor(BtCursor*);
-int sqlite3BtreeTableMoveto(
+цяло sqlite3BtreeCloseCursor(BtCursor*);
+цяло sqlite3BtreeTableMoveto(
   BtCursor*,
   i64 intKey,
-  int bias,
-  int *pRes
+  цяло bias,
+  цяло *pRes
 );
-int sqlite3BtreeIndexMoveto(
+цяло sqlite3BtreeIndexMoveto(
   BtCursor*,
   UnpackedRecord *pUnKey,
-  int *pRes
+  цяло *pRes
 );
-int sqlite3BtreeCursorHasMoved(BtCursor*);
-int sqlite3BtreeCursorRestore(BtCursor*, int*);
-int sqlite3BtreeDelete(BtCursor*, u8 flags);
+цяло sqlite3BtreeCursorHasMoved(BtCursor*);
+цяло sqlite3BtreeCursorRestore(BtCursor*, цяло*);
+цяло sqlite3BtreeDelete(BtCursor*, u8 flags);
 
 /* Allowed flags for sqlite3BtreeDelete() and sqlite3BtreeInsert() */
 #define BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
@@ -320,74 +320,74 @@ struct BtreePayload {
   const void *pData;      /* Data for tables. */
   sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
-  int nData;              /* Size of pData.  0 if none. */
-  int nZero;              /* Extra zero data appended after pData,nData */
+  цяло nData;              /* Size of pData.  0 if none. */
+  цяло nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
-                       int flags, int seekResult);
-int sqlite3BtreeFirst(BtCursor*, int *pRes);
-int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
-int sqlite3BtreeLast(BtCursor*, int *pRes);
-int sqlite3BtreeNext(BtCursor*, int flags);
-int sqlite3BtreeEof(BtCursor*);
-int sqlite3BtreePrevious(BtCursor*, int flags);
+цяло sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
+                       цяло flags, цяло seekResult);
+цяло sqlite3BtreeFirst(BtCursor*, цяло *pRes);
+цяло sqlite3BtreeIsEmpty(BtCursor *pCur, цяло *pRes);
+цяло sqlite3BtreeLast(BtCursor*, цяло *pRes);
+цяло sqlite3BtreeNext(BtCursor*, цяло flags);
+цяло sqlite3BtreeEof(BtCursor*);
+цяло sqlite3BtreePrevious(BtCursor*, цяло flags);
 i64 sqlite3BtreeIntegerKey(BtCursor*);
 void sqlite3BtreeCursorPin(BtCursor*);
 void sqlite3BtreeCursorUnpin(BtCursor*);
 i64 sqlite3BtreeOffset(BtCursor*);
-int sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
+цяло sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
 const void *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
 u32 sqlite3BtreePayloadSize(BtCursor*);
 sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
 
-int sqlite3BtreeIntegrityCheck(
+цяло sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
   Pgno *aRoot,  /* An array of root pages numbers for individual trees */
   sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
-  int mxErr,    /* Stop reporting errors after this many */
-  int *pnErr,   /* OUT: Write number of errors seen to this variable */
+  цяло nRoot,    /* Number of entries in aRoot[] */
+  цяло mxErr,    /* Stop reporting errors after this many */
+  цяло *pnErr,   /* OUT: Write number of errors seen to this variable */
   char **pzOut  /* OUT: Write the error message string here */
 );
 struct Pager *sqlite3BtreePager(Btree*);
 i64 sqlite3BtreeRowCountEst(BtCursor*);
 
 #ifndef SQLITE_OMIT_INCRBLOB
-int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
-int sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
+цяло sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
+цяло sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
 void sqlite3BtreeIncrblobCursor(BtCursor *);
 #endif
 void sqlite3BtreeClearCursor(BtCursor *);
-int sqlite3BtreeSetVersion(Btree *pBt, int iVersion);
-int sqlite3BtreeCursorHasHint(BtCursor*, unsigned int mask);
-int sqlite3BtreeIsReadonly(Btree *pBt);
-int sqlite3HeaderSizeBtree(void);
+цяло sqlite3BtreeSetVersion(Btree *pBt, цяло iVersion);
+цяло sqlite3BtreeCursorHasHint(BtCursor*, unsigned цяло mask);
+цяло sqlite3BtreeIsReadonly(Btree *pBt);
+цяло sqlite3HeaderSizeBtree(void);
 
 #ifdef SQLITE_DEBUG
 sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
-#else
+#иначе
 # define sqlite3BtreeSeekCount(X) 0
 #endif
 
 #ifndef NDEBUG
-int sqlite3BtreeCursorIsValid(BtCursor*);
+цяло sqlite3BtreeCursorIsValid(BtCursor*);
 #endif
-int sqlite3BtreeCursorIsValidNN(BtCursor*);
+цяло sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+цяло sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
 
 #ifdef SQLITE_TEST
-int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
+цяло sqlite3BtreeCursorInfo(BtCursor*, цяло*, цяло);
 void sqlite3BtreeCursorList(Btree*);
 #endif
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);
+  цяло sqlite3BtreeCheckpoint(Btree*, цяло, цяло *, цяло *);
 #endif
 
-int sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
+цяло sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
 
 void sqlite3BtreeClearCache(Btree*);
 
@@ -399,10 +399,10 @@ void sqlite3BtreeClearCache(Btree*);
 #ifndef SQLITE_OMIT_SHARED_CACHE
   void sqlite3BtreeEnter(Btree*);
   void sqlite3BtreeEnterAll(sqlite3*);
-  int sqlite3BtreeSharable(Btree*);
+  цяло sqlite3BtreeSharable(Btree*);
   void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
-#else
+  цяло sqlite3BtreeConnectionCount(Btree*);
+#иначе
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
@@ -410,17 +410,17 @@ void sqlite3BtreeClearCache(Btree*);
 # define sqlite3BtreeConnectionCount(X) 1
 #endif
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
+#ако !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
   void sqlite3BtreeLeave(Btree*);
   void sqlite3BtreeLeaveCursor(BtCursor*);
   void sqlite3BtreeLeaveAll(sqlite3*);
 #ifndef NDEBUG
   /* These routines are used inside assert() statements only. */
-  int sqlite3BtreeHoldsMutex(Btree*);
-  int sqlite3BtreeHoldsAllMutexes(sqlite3*);
-  int sqlite3SchemaMutexHeld(sqlite3*,int,Schema*);
+  цяло sqlite3BtreeHoldsMutex(Btree*);
+  цяло sqlite3BtreeHoldsAllMutexes(sqlite3*);
+  цяло sqlite3SchemaMutexHeld(sqlite3*,цяло,Schema*);
 #endif
-#else
+#иначе
 
 # define sqlite3BtreeLeave(X)
 # define sqlite3BtreeLeaveCursor(X)

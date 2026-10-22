@@ -22,7 +22,7 @@
 
 /* Work around a bug in older Microsoft compilers
 ** Forum post 2026-04-10T06:33:11z */
-#if !defined(INFINITY) && defined(_MSC_VER)
+#ако !defined(INFINITY) && defined(_MSC_VER)
 # define INFINITY HUGE_VAL
 #endif
 
@@ -48,9 +48,9 @@
 ** breaking, the codes should not be changed or reused.
 */
 #ifndef SQLITE_UNTESTABLE
-int sqlite3FaultSim(int iTest){
-  int (*xCallback)(int) = sqlite3GlobalConfig.xTestCallback;
-  return xCallback ? xCallback(iTest) : SQLITE_OK;
+цяло sqlite3FaultSim(цяло iTest){
+  цяло (*xCallback)(цяло) = sqlite3GlobalConfig.xTestCallback;
+  върни xCallback ? xCallback(iTest) : SQLITE_OK;
 }
 #endif
 
@@ -61,17 +61,17 @@ int sqlite3FaultSim(int iTest){
 ** Use the math library isnan() function if compiled with SQLITE_HAVE_ISNAN.
 ** Otherwise, we have our own implementation that works on most systems.
 */
-int sqlite3IsNaN(double x){
-  int rc;   /* The value return */
-#if !SQLITE_HAVE_ISNAN && !HAVE_ISNAN
+цяло sqlite3IsNaN(double x){
+  цяло rc;   /* The value return */
+#ако !SQLITE_HAVE_ISNAN && !HAVE_ISNAN
   u64 y;
   memcpy(&y,&x,sizeof(y));
   rc = IsNaN(y);
-#else
+#иначе
   rc = isnan(x);
 #endif /* HAVE_ISNAN */
   testcase( rc );
-  return rc;
+  върни rc;
 }
 #endif /* SQLITE_OMIT_FLOATING_POINT */
 
@@ -79,12 +79,12 @@ int sqlite3IsNaN(double x){
 /*
 ** Return true if the floating point value is NaN or +Inf or -Inf.
 */
-int sqlite3IsOverflow(double x){
-  int rc;   /* The value return */
+цяло sqlite3IsOverflow(double x){
+  цяло rc;   /* The value return */
   u64 y;
   memcpy(&y,&x,sizeof(y));
   rc = IsOvfl(y);
-  return rc;
+  върни rc;
 }
 #endif /* SQLITE_OMIT_FLOATING_POINT */
 
@@ -96,9 +96,9 @@ int sqlite3IsOverflow(double x){
 ** than the actual length of the string.  For very long strings (greater
 ** than 1GiB) the value returned might be less than the true string length.
 */
-int sqlite3Strlen30(const char *z){
-  if( z==0 ) return 0;
-  return 0x3fffffff & (int)strlen(z);
+цяло sqlite3Strlen30(const char *z){
+  ако( z==0 ) върни 0;
+  върни 0x3fffffff & (цяло)strlen(z);
 }
 
 /*
@@ -109,13 +109,13 @@ int sqlite3Strlen30(const char *z){
 ** the column name if and only if the COLFLAG_HASTYPE flag is set.
 */
 char *sqlite3ColumnType(Column *pCol, char *zDflt){
-  if( pCol->colFlags & COLFLAG_HASTYPE ){
-    return pCol->zCnName + strlen(pCol->zCnName) + 1;
-  }else if( pCol->eCType ){
+  ако( pCol->colFlags & COLFLAG_HASTYPE ){
+    върни pCol->zCnName + strlen(pCol->zCnName) + 1;
+  }иначе ако( pCol->eCType ){
     assert( pCol->eCType<=SQLITE_N_STDTYPE );
-    return (char*)sqlite3StdType[pCol->eCType-1];
-  }else{
-    return zDflt;
+    върни (char*)sqlite3StdType[pCol->eCType-1];
+  }иначе{
+    върни zDflt;
   }
 }
 
@@ -124,8 +124,8 @@ char *sqlite3ColumnType(Column *pCol, char *zDflt){
 ** a separate routine to avoid unnecessary register saves on entry to
 ** sqlite3Error().
 */
-static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
+static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, цяло err_code){
+  ако( db->pErr ) sqlite3ValueSetNull(db->pErr);
   sqlite3SystemError(db, err_code);
 }
 
@@ -134,12 +134,12 @@ static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
 ** Also set iSysErrno (by calling sqlite3System) if the err_code indicates
 ** that would be appropriate.
 */
-void sqlite3Error(sqlite3 *db, int err_code){
+void sqlite3Error(sqlite3 *db, цяло err_code){
   assert( db!=0 );
   db->errCode = err_code;
-  if( err_code || db->pErr ){
+  ако( err_code || db->pErr ){
     sqlite3ErrorFinish(db, err_code);
-  }else{
+  }иначе{
     db->errByteOffset = -1;
   }
 }
@@ -152,34 +152,34 @@ void sqlite3ErrorClear(sqlite3 *db){
   assert( db!=0 );
   db->errCode = SQLITE_OK;
   db->errByteOffset = -1;
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
+  ако( db->pErr ) sqlite3ValueSetNull(db->pErr);
 }
 
 /*
 ** Load the sqlite3.iSysErrno field if that is an appropriate thing
 ** to do based on the SQLite error code in rc.
 */
-void sqlite3SystemError(sqlite3 *db, int rc){
-  if( rc==SQLITE_IOERR_NOMEM ) return;
-#if defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
-  if( rc==SQLITE_IOERR_IN_PAGE ){
-    int ii;
-    int iErr;
+void sqlite3SystemError(sqlite3 *db, цяло rc){
+  ако( rc==SQLITE_IOERR_NOMEM ) върни;
+#ако defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
+  ако( rc==SQLITE_IOERR_IN_PAGE ){
+    цяло ii;
+    цяло iErr;
     sqlite3BtreeEnterAll(db);
-    for(ii=0; ii<db->nDb; ii++){
-      if( db->aDb[ii].pBt ){
+    за(ii=0; ii<db->nDb; ii++){
+      ако( db->aDb[ii].pBt ){
         iErr = sqlite3PagerWalSystemErrno(sqlite3BtreePager(db->aDb[ii].pBt));
-        if( iErr ){
+        ако( iErr ){
           db->iSysErrno = iErr;
         }
       }
     }
     sqlite3BtreeLeaveAll(db);
-    return;
+    върни;
   }
 #endif
   rc &= 0xff;
-  if( rc==SQLITE_CANTOPEN || rc==SQLITE_IOERR ){
+  ако( rc==SQLITE_CANTOPEN || rc==SQLITE_IOERR ){
     db->iSysErrno = sqlite3OsGetLastError(db->pVfs);
   }
 }
@@ -196,13 +196,13 @@ void sqlite3SystemError(sqlite3 *db, int rc){
 ** should be called with err_code set to SQLITE_OK and zFormat set
 ** to NULL.
 */
-void sqlite3ErrorWithMsg(sqlite3 *db, int err_code, const char *zFormat, ...){
+void sqlite3ErrorWithMsg(sqlite3 *db, цяло err_code, const char *zFormat, ...){
   assert( db!=0 );
   db->errCode = err_code;
   sqlite3SystemError(db, err_code);
-  if( zFormat==0 ){
+  ако( zFormat==0 ){
     sqlite3Error(db, err_code);
-  }else if( db->pErr || (db->pErr = sqlite3ValueNew(db))!=0 ){
+  }иначе ако( db->pErr || (db->pErr = sqlite3ValueNew(db))!=0 ){
     char *z;
     va_list ap;
     va_start(ap, zFormat);
@@ -217,16 +217,16 @@ void sqlite3ErrorWithMsg(sqlite3 *db, int err_code, const char *zFormat, ...){
 */
 void sqlite3ProgressCheck(Parse *p){
   sqlite3 *db = p->db;
-  if( AtomicLoad(&db->u1.isInterrupted) ){
+  ако( AtomicLoad(&db->u1.isInterrupted) ){
     p->nErr++;
     p->rc = SQLITE_INTERRUPT;
   }
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  if( db->xProgress ){
-    if( p->rc==SQLITE_INTERRUPT ){
+  ако( db->xProgress ){
+    ако( p->rc==SQLITE_INTERRUPT ){
       p->nProgressSteps = 0;
-    }else if( (++p->nProgressSteps)>=db->nProgressOps ){
-      if( db->xProgress(db->pProgressArg) ){
+    }иначе ако( (++p->nProgressSteps)>=db->nProgressOps ){
+      ако( db->xProgress(db->pProgressArg) ){
         p->nErr++;
         p->rc = SQLITE_INTERRUPT;
       }
@@ -256,14 +256,14 @@ void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...){
   va_start(ap, zFormat);
   zMsg = sqlite3VMPrintf(db, zFormat, ap);
   va_end(ap);
-  if( db->errByteOffset<-1 ) db->errByteOffset = -1;
-  if( db->suppressErr ){
+  ако( db->errByteOffset<-1 ) db->errByteOffset = -1;
+  ако( db->suppressErr ){
     sqlite3DbFree(db, zMsg);
-    if( db->mallocFailed ){
+    ако( db->mallocFailed ){
       pParse->nErr++;
       pParse->rc = SQLITE_NOMEM;
     }
-  }else{
+  }иначе{
     pParse->nErr++;
     sqlite3DbFree(db, pParse->zErrMsg);
     pParse->zErrMsg = zMsg;
@@ -277,12 +277,12 @@ void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...){
 ** error code errCode to that parser if the parser has not already
 ** encountered some other kind of error.
 */
-int sqlite3ErrorToParser(sqlite3 *db, int errCode){
+цяло sqlite3ErrorToParser(sqlite3 *db, цяло errCode){
   Parse *pParse;
-  if( db==0 || (pParse = db->pParse)==0 ) return errCode;
+  ако( db==0 || (pParse = db->pParse)==0 ) върни errCode;
   pParse->rc = errCode;
   pParse->nErr++;
-  return errCode;
+  върни errCode;
 }
 
 /*
@@ -304,21 +304,21 @@ int sqlite3ErrorToParser(sqlite3 *db, int errCode){
 */
 void sqlite3Dequote(char *z){
   char quote;
-  int i, j;
-  if( z==0 ) return;
+  цяло i, j;
+  ако( z==0 ) върни;
   quote = z[0];
-  if( !sqlite3Isquote(quote) ) return;
-  if( quote=='[' ) quote = ']';
-  for(i=1, j=0;; i++){
+  ако( !sqlite3Isquote(quote) ) върни;
+  ако( quote=='[' ) quote = ']';
+  за(i=1, j=0;; i++){
     assert( z[i] );
-    if( z[i]==quote ){
-      if( z[i+1]==quote ){
+    ако( z[i]==quote ){
+      ако( z[i+1]==quote ){
         z[j++] = quote;
         i++;
-      }else{
+      }иначе{
         break;
       }
-    }else{
+    }иначе{
       z[j++] = z[i];
     }
   }
@@ -338,31 +338,31 @@ void sqlite3DequoteExpr(Expr *p){
 */
 void sqlite3DequoteNumber(Parse *pParse, Expr *p){
   assert( p!=0 || pParse->db->mallocFailed );
-  if( p ){
+  ако( p ){
     const char *pIn = p->u.zToken;
     char *pOut = p->u.zToken;
-    int bHex = (pIn[0]=='0' && (pIn[1]=='x' || pIn[1]=='X'));
-    int iValue;
+    цяло bHex = (pIn[0]=='0' && (pIn[1]=='x' || pIn[1]=='X'));
+    цяло iValue;
     assert( p->op==TK_QNUMBER );
     p->op = TK_INTEGER;
     do {
-      if( *pIn!=SQLITE_DIGIT_SEPARATOR ){
+      ако( *pIn!=SQLITE_DIGIT_SEPARATOR ){
         *pOut++ = *pIn;
-        if( *pIn=='e' || *pIn=='E' || *pIn=='.' ) p->op = TK_FLOAT;
-      }else{
-        if( (bHex==0 && (!sqlite3Isdigit(pIn[-1]) || !sqlite3Isdigit(pIn[1])))
+        ако( *pIn=='e' || *pIn=='E' || *pIn=='.' ) p->op = TK_FLOAT;
+      }иначе{
+        ако( (bHex==0 && (!sqlite3Isdigit(pIn[-1]) || !sqlite3Isdigit(pIn[1])))
          || (bHex==1 && (!sqlite3Isxdigit(pIn[-1]) || !sqlite3Isxdigit(pIn[1])))
         ){
           sqlite3ErrorMsg(pParse, "unrecognized token: \"%s\"", p->u.zToken);
         }
       }
-    }while( *pIn++ );
-    if( bHex ) p->op = TK_INTEGER;
+    }докато( *pIn++ );
+    ако( bHex ) p->op = TK_INTEGER;
 
     /* tag-20240227-a: If after dequoting, the number is an integer that
     ** fits in 32 bits, then it must be converted into EP_IntValue.  Other
     ** parts of the code expect this.  See also tag-20240227-b. */
-    if( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &iValue) ){
+    ако( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &iValue) ){
       p->u.iValue = iValue;
       p->flags |= EP_IntValue;
     }
@@ -381,11 +381,11 @@ void sqlite3DequoteNumber(Parse *pParse, Expr *p){
 ** is always a no-op.
 */
 void sqlite3DequoteToken(Token *p){
-  unsigned int i;
-  if( p->n<2 ) return;
-  if( !sqlite3Isquote(p->z[0]) ) return;
-  for(i=1; i<p->n-1; i++){
-    if( sqlite3Isquote(p->z[i]) ) return;
+  unsigned цяло i;
+  ако( p->n<2 ) върни;
+  ако( !sqlite3Isquote(p->z[0]) ) върни;
+  за(i=1; i<p->n-1; i++){
+    ако( sqlite3Isquote(p->z[i]) ) върни;
   }
   p->n -= 2;
   p->z++;
@@ -412,44 +412,44 @@ void sqlite3TokenInit(Token *p, char *z){
 ** case-independent fashion, using the same definition of "case
 ** independence" that SQLite uses internally when comparing identifiers.
 */
-int sqlite3_stricmp(const char *zLeft, const char *zRight){
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
-    return 1;
+цяло sqlite3_stricmp(const char *zLeft, const char *zRight){
+  ако( zLeft==0 ){
+    върни zRight ? -1 : 0;
+  }иначе ако( zRight==0 ){
+    върни 1;
   }
-  return sqlite3StrICmp(zLeft, zRight);
+  върни sqlite3StrICmp(zLeft, zRight);
 }
-int sqlite3StrICmp(const char *zLeft, const char *zRight){
+цяло sqlite3StrICmp(const char *zLeft, const char *zRight){
   unsigned char *a, *b;
-  int c, x;
+  цяло c, x;
   a = (unsigned char *)zLeft;
   b = (unsigned char *)zRight;
-  for(;;){
+  за(;;){
     c = *a;
     x = *b;
-    if( c==x ){
-      if( c==0 ) break;
-    }else{
-      c = (int)UpperToLower[c] - (int)UpperToLower[x];
-      if( c ) break;
+    ако( c==x ){
+      ако( c==0 ) break;
+    }иначе{
+      c = (цяло)UpperToLower[c] - (цяло)UpperToLower[x];
+      ако( c ) break;
     }
     a++;
     b++;
   }
-  return c;
+  върни c;
 }
-int sqlite3_strnicmp(const char *zLeft, const char *zRight, int N){
+цяло sqlite3_strnicmp(const char *zLeft, const char *zRight, цяло N){
   register unsigned char *a, *b;
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
-    return 1;
+  ако( zLeft==0 ){
+    върни zRight ? -1 : 0;
+  }иначе ако( zRight==0 ){
+    върни 1;
   }
   a = (unsigned char *)zLeft;
   b = (unsigned char *)zRight;
-  while( N-- > 0 && *a!=0 && UpperToLower[*a]==UpperToLower[*b]){ a++; b++; }
-  return N<0 ? 0 : UpperToLower[*a] - UpperToLower[*b];
+  докато( N-- > 0 && *a!=0 && UpperToLower[*a]==UpperToLower[*b]){ a++; b++; }
+  върни N<0 ? 0 : UpperToLower[*a] - UpperToLower[*b];
 }
 
 /*
@@ -457,15 +457,15 @@ int sqlite3_strnicmp(const char *zLeft, const char *zRight, int N){
 */
 u8 sqlite3StrIHash(const char *z){
   u8 h = 0;
-  if( z==0 ) return 0;
-  while( z[0] ){
+  ако( z==0 ) върни 0;
+  докато( z[0] ){
     h += UpperToLower[(unsigned char)z[0]];
     z++;
   }
-  return h;
+  върни h;
 }
 
-#if !defined(SQLITE_DISABLE_INTRINSIC)               \
+#ако !defined(SQLITE_DISABLE_INTRINSIC)               \
   && (defined(__GNUC__) || defined(__clang__))       \
   && (defined(__x86_64__) || defined(__aarch64__) || \
       (defined(__riscv) && defined(__riscv_xlen) && (__riscv_xlen>32)))
@@ -478,14 +478,14 @@ u8 sqlite3StrIHash(const char *z){
 ** 64 bits.
 */
 static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
-#if defined(SQLITE_USE_UINT128)
+#ако defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   *pLo = (u64)r;
-  return (u64)(r>>64);
+  върни (u64)(r>>64);
 #elif defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
   *pLo = a*b;
-  return __umulh(a, b);
-#else
+  върни __umulh(a, b);
+#иначе
   u64 a0 = (u32)a;
   u64 a1 = a >> 32;
   u64 b0 = (u32)b;
@@ -496,7 +496,7 @@ static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
   u64 a1b0 = a1 * b0;
   u64 t = (a0b0 >> 32) + (u32)a0b1 + (u32)a1b0;
   *pLo = (a0b0 & UINT64_C(0xffffffff)) | (t << 32);
-  return a1b1 + (a0b1>>32) + (a1b0>>32) + (t>>32);
+  върни a1b1 + (a0b1>>32) + (a1b0>>32) + (t>>32);
 #endif
 }
 
@@ -512,20 +512,20 @@ static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
 ** The lower 64 bits of A*B are discarded.
 */
 static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
-#if defined(SQLITE_USE_UINT128)
+#ако defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   r += ((__uint128_t)aLo * b) >> 32;
   *pLo = (r>>32)&0xffffffff;
-  return r>>64;
+  върни r>>64;
 #elif defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
   u64 r1_hi = __umulh(a,b);
   u64 r1_lo = a*b;
   u64 r2 = (__umulh((u64)aLo,b)<<32) + ((aLo*b)>>32);
   u64 t = r1_lo + r2;
-  if( t<r1_lo ) r1_hi++;
+  ако( t<r1_lo ) r1_hi++;
   *pLo = t>>32;
-  return r1_hi;
-#else
+  върни r1_hi;
+#иначе
   u64 x2 = a>>32;
   u64 x1 = a&0xffffffff;
   u64 x0 = aLo;
@@ -546,7 +546,7 @@ static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
   r2 += r1>>32;
   r3 += r2>>32;
   *pLo = r2&0xffffffff;
-  return (r4<<32) + r3;
+  върни (r4<<32) + r3;
 #endif
 }
 
@@ -589,7 +589,7 @@ static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
 ** The constant tables aBase[], aScale[], and aScaleLo[] are generated
 ** by the C program at ../tool/mkfptab.c run with the --round option.
 */
-static u64 powerOfTen(int p, u32 *pLo){
+static u64 powerOfTen(цяло p, u32 *pLo){
   static const u64 aBase[] = {
     UINT64_C(0x8000000000000000), /*  0: 1.0e+0 << 63 */
     UINT64_C(0xa000000000000000), /*  1: 1.0e+1 << 60 */
@@ -647,7 +647,7 @@ static u64 powerOfTen(int p, u32 *pLo){
     UINT64_C(0xc3b8358109e84f07), /* 24: 1.0e+297 >> 923 */
     UINT64_C(0x9e19db92b4e31ba9), /* 25: 1.0e+324 >> 1013 */
   };
-  static const unsigned int aScaleLo[] = {
+  static const unsigned цяло aScaleLo[] = {
     0x205b896d, /*  0: 1.0e-351 << 1229 */
     0x52064cad, /*  1: 1.0e-324 << 1140 */
     0xaf2af2b8, /*  2: 1.0e-297 << 1050 */
@@ -675,41 +675,41 @@ static u64 powerOfTen(int p, u32 *pLo){
     0x0a862f81, /* 24: 1.0e+297 >> 923 */
     0x6c07a2c2, /* 25: 1.0e+324 >> 1013 */
   };
-  int g, n;
+  цяло g, n;
   u64 s, x;
   u32 lo;
 
   assert( p>=POWERSOF10_FIRST && p<=POWERSOF10_LAST );
-  if( p<0 ){
-    if( p==(-1) ){
+  ако( p<0 ){
+    ако( p==(-1) ){
       *pLo = aScaleLo[13];
-      return aScale[13];
+      върни aScale[13];
     }
     g = p/27;
     n = p%27;
-    if( n ){
+    ако( n ){
       g--;
       n += 27;
     }
-  }else if( p<27 ){
+  }иначе ако( p<27 ){
     *pLo = 0;
-    return aBase[p];
-  }else{
+    върни aBase[p];
+  }иначе{
     g = p/27;
     n = p%27;
   }
   s = aScale[g+13];
-  if( n==0 ){
+  ако( n==0 ){
     *pLo = aScaleLo[g+13];
-    return s;
+    върни s;
   }
   x = sqlite3Multiply160(s,aScaleLo[g+13],aBase[n],&lo);
-  if( (U64_BIT(63) & x)==0 ){
+  ако( (U64_BIT(63) & x)==0 ){
     x  = x<<1 | ((lo>>31)&1);
     lo = (lo<<1) | 1;
   }
   *pLo = lo;
-  return x;
+  върни x;
 }
 
 /*
@@ -730,25 +730,25 @@ static u64 powerOfTen(int p, u32 *pLo){
 ** for division so that rounding of negative numbers happens in the
 ** right direction.
 */
-static int pwr10to2(int p){ return (p*108853) >> 15; }
-static int pwr2to10(int p){ return (p*78913) >> 18; }
+static цяло pwr10to2(цяло p){ върни (p*108853) >> 15; }
+static цяло pwr2to10(цяло p){ върни (p*78913) >> 18; }
 
 /*
 ** Count leading zeros for a 64-bit unsigned integer.
 */
-static int countLeadingZeros(u64 m){
-#if (defined(__GNUC__) || defined(__clang__)) \
+static цяло countLeadingZeros(u64 m){
+#ако (defined(__GNUC__) || defined(__clang__)) \
     && !defined(SQLITE_DISABLE_INTRINSIC)
-  return __builtin_clzll(m);
-#else
-  int n = 0;
-  if( m <= 0x00000000ffffffffULL) { n += 32; m <<= 32; }
-  if( m <= 0x0000ffffffffffffULL) { n += 16; m <<= 16; }
-  if( m <= 0x00ffffffffffffffULL) { n += 8;  m <<= 8;  }
-  if( m <= 0x0fffffffffffffffULL) { n += 4;  m <<= 4;  }
-  if( m <= 0x3fffffffffffffffULL) { n += 2;  m <<= 2;  }
-  if( m <= 0x7fffffffffffffffULL) { n += 1;            }
-  return n;
+  върни __builtin_clzll(m);
+#иначе
+  цяло n = 0;
+  ако( m <= 0x00000000ffffffffULL) { n += 32; m <<= 32; }
+  ако( m <= 0x0000ffffffffffffULL) { n += 16; m <<= 16; }
+  ако( m <= 0x00ffffffffffffffULL) { n += 8;  m <<= 8;  }
+  ако( m <= 0x0fffffffffffffffULL) { n += 4;  m <<= 4;  }
+  ако( m <= 0x3fffffffffffffffULL) { n += 2;  m <<= 2;  }
+  ако( m <= 0x7fffffffffffffffULL) { n += 1;            }
+  върни n;
 #endif
 }
 
@@ -760,8 +760,8 @@ static int countLeadingZeros(u64 m){
 ** The input m is required to have its highest bit set.  In other words,
 ** m should be left-shifted, and e decremented, to maximize the value of m.
 */
-static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
-  int p;
+static void sqlite3Fp2Convert10(u64 m, цяло e, цяло n, u64 *pD, цяло *pP){
+  цяло p;
   u64 h, d1;
   u32 d2;
   assert( n>=1 && n<=18 );
@@ -769,10 +769,10 @@ static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
   h = sqlite3Multiply128(m, powerOfTen(p,&d2), &d1);
   assert( -(e + pwr10to2(p) + 2) >= 0  );
   assert( -(e + pwr10to2(p) + 1) <= 63 );
-  if( n==18 ){
+  ако( n==18 ){
     h >>= -(e + pwr10to2(p) + 2);
     *pD = (h + ((h<<1)&2))>>1;
-  }else{
+  }иначе{
     *pD = h >> -(e + pwr10to2(p) + 1);
   }
   *pP = -p;
@@ -784,23 +784,23 @@ static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
 ** The (current) algorithm is adapted from the work of Ross Cox at
 ** https://github.com/rsc/fpfmt
 */
-static double sqlite3Fp10Convert2(u64 d, int p){
-  int b, lp, e, adj, s;
+static double sqlite3Fp10Convert2(u64 d, цяло p){
+  цяло b, lp, e, adj, s;
   u32 pwr10l, mid1;
   u64 pwr10h, x, hi, lo, sticky, u, m;
   double r;
-  if( p<POWERSOF10_FIRST ) return 0.0;
-  if( p>POWERSOF10_LAST ) return (double)INFINITY;
+  ако( p<POWERSOF10_FIRST ) върни 0.0;
+  ако( p>POWERSOF10_LAST ) върни (double)INFINITY;
   b = 64 - countLeadingZeros(d);
   lp = pwr10to2(p);
   e = 53 - b - lp;
-  if( e > 1074 ){
-    if( e>=1130 ) return 0.0;
+  ако( e > 1074 ){
+    ако( e>=1130 ) върни 0.0;
     e = 1074;
   }
   s = -(e-(64-b) + lp + 3);
   pwr10h = powerOfTen(p, &pwr10l);
-  if( pwr10l!=0 ){
+  ако( pwr10l!=0 ){
     pwr10h++;
     pwr10l = ~pwr10l;
   }
@@ -808,24 +808,24 @@ static double sqlite3Fp10Convert2(u64 d, int p){
   hi = sqlite3Multiply128(x,pwr10h,&lo);
   mid1 = lo>>32;
   sticky = 1;
-  if( (hi & (U64_BIT(s)-1))==0 ) {
+  ако( (hi & (U64_BIT(s)-1))==0 ) {
     u32 mid2 = sqlite3Multiply128(x,((u64)pwr10l)<<32,&lo)>>32;
     sticky = (mid1-mid2 > 1);
     hi -= mid1 < mid2;
   }
   u = (hi>>s) | sticky;
   adj = (u >= U64_BIT(55)-2);
-  if( adj ){
+  ако( adj ){
     u = (u>>adj) | (u&1);
     e -= adj;
   }
   m = (u + 1 + ((u>>2)&1)) >> 2;
-  if( e<=(-972) ) return (double)INFINITY;
-  if((m & U64_BIT(52)) != 0){
+  ако( e<=(-972) ) върни (double)INFINITY;
+  ако((m & U64_BIT(52)) != 0){
     m = (m & ~U64_BIT(52)) | ((u64)(1075-e)<<52);
   }
   memcpy(&r,&m,8);
-  return r;
+  върни r;
 }
 
 /*
@@ -875,121 +875,121 @@ static double sqlite3Fp10Convert2(u64 d, int p){
 ** by the 23rd significant digit, which this routine ignores. It is not
 ** possible to do better without some kind of BigNum.
 */
-int sqlite3AtoF(const char *zIn, double *pResult){
+цяло sqlite3AtoF(const char *zIn, double *pResult){
 #ifndef SQLITE_OMIT_FLOATING_POINT
   const unsigned char *z = (const unsigned char*)zIn;
-  int neg = 0;       /* True for a negative value */
+  цяло neg = 0;       /* True for a negative value */
   u64 s = 0;         /* mantissa */
-  int d = 0;         /* Value is s * pow(10,d) */
-  int mState = 0;    /* 1: digit seen 2: fp 4: hard-zero */
+  цяло d = 0;         /* Value is s * pow(10,d) */
+  цяло mState = 0;    /* 1: digit seen 2: fp 4: hard-zero */
   unsigned v;        /* Value of a single digit */
 
   start_of_text:
-  if( (v = (unsigned)z[0] - '0')<10 ){
+  ако( (v = (unsigned)z[0] - '0')<10 ){
     parse_integer_part:
     mState = 1;
     s = v;
     z++;
-    while( (v = (unsigned)z[0] - '0')<10 ){
+    докато( (v = (unsigned)z[0] - '0')<10 ){
       s = s*10 + v;
       z++;
-      if( s>=(LARGEST_UINT64-9)/10 ){
+      ако( s>=(LARGEST_UINT64-9)/10 ){
         mState = 9;
-        while( sqlite3Isdigit(z[0]) ){ z++; d++; }
+        докато( sqlite3Isdigit(z[0]) ){ z++; d++; }
         break;
       }
     }
-  }else if( z[0]=='-' ){
+  }иначе ако( z[0]=='-' ){
     neg = 1;
     z++;
-    if( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
-  }else if( z[0]=='+' ){
+    ако( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
+  }иначе ако( z[0]=='+' ){
     z++;
-    if( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
-  }else if( sqlite3Isspace(z[0]) ){
-    do{ z++; }while( sqlite3Isspace(z[0]) );
+    ако( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
+  }иначе ако( sqlite3Isspace(z[0]) ){
+    do{ z++; }докато( sqlite3Isspace(z[0]) );
     goto start_of_text;
-  }else{
+  }иначе{
     s = 0;
   }
 
   /* if decimal point is present */
-  if( *z=='.' ){
+  ако( *z=='.' ){
     z++;
-    if( sqlite3Isdigit(z[0]) ){
+    ако( sqlite3Isdigit(z[0]) ){
       mState |= 1;
       do{
-        if( s<(LARGEST_UINT64-9)/10 ){
+        ако( s<(LARGEST_UINT64-9)/10 ){
           s = s*10 + z[0] - '0';
           d--;
-        }else{
+        }иначе{
           mState = 11;
         }
-      }while( sqlite3Isdigit(*++z) );
-    }else if( mState==0 ){
+      }докато( sqlite3Isdigit(*++z) );
+    }иначе ако( mState==0 ){
       *pResult = 0.0;
-      return 0;
+      върни 0;
     }
     mState |= 2;
-  }else if( mState==0 ){
+  }иначе ако( mState==0 ){
     *pResult = 0.0;
-    return 0;
+    върни 0;
   }
 
   /* if exponent is present */
-  if( *z=='e' || *z=='E' ){
-    int esign;
+  ако( *z=='e' || *z=='E' ){
+    цяло esign;
     z++;
  
     /* get sign of exponent */
-    if( *z=='-' ){
+    ако( *z=='-' ){
       esign = -1;
       z++;
-    }else{
+    }иначе{
       esign = +1;
-      if( *z=='+' ){
+      ако( *z=='+' ){
         z++;
       }
     }
     /* copy digits to exponent */
-    if( (v = (unsigned)z[0] - '0')<10 ){
-      int exp = v;
+    ако( (v = (unsigned)z[0] - '0')<10 ){
+      цяло exp = v;
       z++;
       mState |= 2;
-      while( (v = (unsigned)z[0] - '0')<10 ){
+      докато( (v = (unsigned)z[0] - '0')<10 ){
         exp = exp<10000 ? (exp*10 + v) : 10000;
         z++;
       }
       d += esign*exp;
-    }else{
+    }иначе{
       z--;  /* Leave z[0] at 'e' or '+' or '-',
             ** so that the return is 0 or -1 */
     }
   }
 
   /* Convert s*pow(10,d) into real */
-  if( s==0 ){
+  ако( s==0 ){
     *pResult = 0.0;
     mState |= 4;
-  }else{
+  }иначе{
     *pResult = sqlite3Fp10Convert2(s,d);
   }
-  if( neg ) *pResult = -*pResult;
+  ако( neg ) *pResult = -*pResult;
   assert( !sqlite3IsNaN(*pResult) );
 
   /* return true if number and no extra non-whitespace characters after */
-  if( z[0]==0 ){
-    return mState;
+  ако( z[0]==0 ){
+    върни mState;
   }
-  if( sqlite3Isspace(z[0]) ){
-    do{ z++; }while( sqlite3Isspace(*z) );
-    if( z[0]==0 ){
-      return mState;
+  ако( sqlite3Isspace(z[0]) ){
+    do{ z++; }докато( sqlite3Isspace(*z) );
+    ако( z[0]==0 ){
+      върни mState;
     }
   }
-  return 0xfffffff0 | mState;
-#else
-  return sqlite3Atoi64(zIn, pResult, strlen(zIn), SQLITE_UTF8)==0;
+  върни 0xfffffff0 | mState;
+#иначе
+  върни sqlite3Atoi64(zIn, pResult, strlen(zIn), SQLITE_UTF8)==0;
 #endif /* SQLITE_OMIT_FLOATING_POINT */
 }
 
@@ -999,7 +999,7 @@ int sqlite3AtoF(const char *zIn, double *pResult){
 */
 static const union {
   char a[201];
-  short int forceAlignment;
+  short цяло forceAlignment;
 } sqlite3DigitPairs = {
   "00010203040506070809"
   "10111213141516171819"
@@ -1016,7 +1016,7 @@ static const union {
 /*
 ** ARMv6, ARMv7, PPC32 are known to not support hardware u64 division.
 */
-#if (defined(__arm__) && !defined(__aarch64__)) || \
+#ако (defined(__arm__) && !defined(__aarch64__)) || \
     (defined(__ppc__) && !defined(__ppc64__))
 # define SQLITE_AVOID_U64_DIVIDE 1
 #endif
@@ -1035,14 +1035,14 @@ static const union {
 ** instead.  It is slower on platforms that have hardware u64 division,
 ** but much faster on platforms that do not.
 */
-static int sqlite3UInt64ToText(u64 v, char *zOut){
+static цяло sqlite3UInt64ToText(u64 v, char *zOut){
   u32 x32, kk;
-  int i;
+  цяло i;
   zOut[SQLITE_U64_DIGITS] = 0;
   i = SQLITE_U64_DIGITS;
   assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[0]) );
   assert( TWO_BYTE_ALIGNMENT(zOut) );
-  while( (v>>32)!=0 ){
+  докато( (v>>32)!=0 ){
     u32 y, x0, x1, y0, y1;
     x32 = v % 100000000;
     v   = v / 100000000;
@@ -1060,7 +1060,7 @@ static int sqlite3UInt64ToText(u64 v, char *zOut){
     *(u16*)(&zOut[i+6]) = *(u16*)&sqlite3DigitPairs.a[y0*2];
   }
   x32 = v;
-  while( x32>=10 ){
+  докато( x32>=10 ){
     kk  = x32 % 100;
     x32 = x32 / 100;
     assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk*2]) );
@@ -1069,11 +1069,11 @@ static int sqlite3UInt64ToText(u64 v, char *zOut){
     assert( TWO_BYTE_ALIGNMENT(&zOut[i]) );
     *(u16*)(&zOut[i]) = *(u16*)&sqlite3DigitPairs.a[kk*2];
   }
-  if( x32 ){
+  ако( x32 ){
     assert( i>0 );
     zOut[--i] = x32 + '0';
   }
-  return i;
+  върни i;
 }
 #endif /* defined(SQLITE_AVOID_U64_DIVIDE) */
 
@@ -1085,42 +1085,42 @@ static int sqlite3UInt64ToText(u64 v, char *zOut){
 **
 ** The caller must ensure that zOut[] is at least 21 bytes in size.
 */
-int sqlite3Int64ToText(i64 v, char *zOut){
-  int i;
+цяло sqlite3Int64ToText(i64 v, char *zOut){
+  цяло i;
   u64 x;
   union {
     char a[SQLITE_U64_DIGITS+1];
     u16 forceAlignment;
   } u;
-  if( v>0 ){
+  ако( v>0 ){
     x = v;
-  }else if( v==0 ){
+  }иначе ако( v==0 ){
     zOut[0] = '0';
     zOut[1] = 0;
-    return 1;
-  }else{
+    върни 1;
+  }иначе{
     x = (v==SMALLEST_INT64) ? ((u64)1)<<63 : (u64)-v;
   }
 #ifdef SQLITE_AVOID_U64_DIVIDE
   i = sqlite3UInt64ToText(x, u.a);
-#else
+#иначе
   i = sizeof(u.a)-1;
   u.a[i] = 0;
-  while( x>=10 ){
-    int kk = (x%100)*2;
+  докато( x>=10 ){
+    цяло kk = (x%100)*2;
     assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk]) );
     assert( TWO_BYTE_ALIGNMENT(&u.a[i-2]) );
     *(u16*)(&u.a[i-2]) = *(u16*)&sqlite3DigitPairs.a[kk];
     i -= 2;
     x /= 100;
   }
-  if( x ){
+  ако( x ){
     u.a[--i] = x + '0';
   }
 #endif /* SQLITE_AVOID_U64_DIVIDE */
-  if( v<0 ) u.a[--i] = '-';
+  ако( v<0 ) u.a[--i] = '-';
   memcpy(zOut, &u.a[i], sizeof(u.a)-i);
-  return sizeof(u.a)-1-i;
+  върни sizeof(u.a)-1-i;
 }
 
 /*
@@ -1137,21 +1137,21 @@ int sqlite3Int64ToText(i64 v, char *zOut){
 **
 ** will return -8.
 */
-static int compare2pow63(const char *zNum, int incr){
-  int c = 0;
-  int i;
+static цяло compare2pow63(const char *zNum, цяло incr){
+  цяло c = 0;
+  цяло i;
                     /* 012345678901234567 */
   const char *pow63 = "922337203685477580";
-  for(i=0; c==0 && i<18; i++){
+  за(i=0; c==0 && i<18; i++){
     c = (zNum[i*incr]-pow63[i])*10;
   }
-  if( c==0 ){
+  ако( c==0 ){
     c = zNum[18*incr] - '8';
     testcase( c==(-1) );
     testcase( c==0 );
     testcase( c==(+1) );
   }
-  return c;
+  върни c;
 }
 
 /*
@@ -1170,92 +1170,92 @@ static int compare2pow63(const char *zNum, int incr){
 ** The string is not necessarily zero-terminated.  The encoding is
 ** given by enc.
 */
-int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
-  int incr;
+цяло sqlite3Atoi64(const char *zNum, i64 *pNum, цяло length, u8 enc){
+  цяло incr;
   u64 u = 0;
-  int neg = 0; /* assume positive */
-  int i, j;
-  unsigned int c = 0;
-  int nonNum = 0;  /* True if input contains UTF16 with high byte non-zero */
-  int rc;          /* Baseline return code */
+  цяло neg = 0; /* assume positive */
+  цяло i, j;
+  unsigned цяло c = 0;
+  цяло nonNum = 0;  /* True if input contains UTF16 with high byte non-zero */
+  цяло rc;          /* Baseline return code */
   const char *zStart;
   const char *zEnd = zNum + length;
   assert( enc==SQLITE_UTF8 || enc==SQLITE_UTF16LE || enc==SQLITE_UTF16BE );
-  if( enc==SQLITE_UTF8 ){
+  ако( enc==SQLITE_UTF8 ){
     incr = 1;
-  }else{
+  }иначе{
     incr = 2;
     length &= ~1;
     assert( SQLITE_UTF16LE==2 && SQLITE_UTF16BE==3 );
-    for(i=3-enc; i<length && zNum[i]==0; i+=2){}
+    за(i=3-enc; i<length && zNum[i]==0; i+=2){}
     nonNum = i<length;
     zEnd = &zNum[i^1];
     zNum += (enc&1);
   }
-  while( zNum<zEnd && sqlite3Isspace(*zNum) ) zNum+=incr;
-  if( zNum<zEnd ){
-    if( *zNum=='-' ){
+  докато( zNum<zEnd && sqlite3Isspace(*zNum) ) zNum+=incr;
+  ако( zNum<zEnd ){
+    ако( *zNum=='-' ){
       neg = 1;
       zNum+=incr;
-    }else if( *zNum=='+' ){
+    }иначе ако( *zNum=='+' ){
       zNum+=incr;
     }
   }
   zStart = zNum;
-  while( zNum<zEnd && zNum[0]=='0' ){ zNum+=incr; } /* Skip leading zeros. */
-  for(i=0; &zNum[i]<zEnd && (c=(unsigned)zNum[i]-'0')<=9; i+=incr){
+  докато( zNum<zEnd && zNum[0]=='0' ){ zNum+=incr; } /* Skip leading zeros. */
+  за(i=0; &zNum[i]<zEnd && (c=(unsigned)zNum[i]-'0')<=9; i+=incr){
     u = u*10 + c;
   }
   testcase( i==18*incr );
   testcase( i==19*incr );
   testcase( i==20*incr );
-  if( u>LARGEST_INT64 ){
+  ако( u>LARGEST_INT64 ){
     /* This test and assignment is needed only to suppress UB warnings
     ** from clang and -fsanitize=undefined.  This test and assignment make
     ** the code a little larger and slower, and no harm comes from omitting
     ** them, but we must appease the undefined-behavior pharisees. */
     *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
-  }else if( neg ){
+  }иначе ако( neg ){
     *pNum = -(i64)u;
-  }else{
+  }иначе{
     *pNum = (i64)u;
   }
   rc = 0;
-  if( i==0 && zStart==zNum ){    /* No digits */
+  ако( i==0 && zStart==zNum ){    /* No digits */
     rc = -1;
-  }else if( nonNum ){            /* UTF16 with high-order bytes non-zero */
+  }иначе ако( nonNum ){            /* UTF16 with high-order bytes non-zero */
     rc = 1;
-  }else if( &zNum[i]<zEnd ){     /* Extra bytes at the end */
-    int jj = i;
+  }иначе ако( &zNum[i]<zEnd ){     /* Extra bytes at the end */
+    цяло jj = i;
     do{
-      if( !sqlite3Isspace(zNum[jj]) ){
+      ако( !sqlite3Isspace(zNum[jj]) ){
         rc = 1;          /* Extra non-space text after the integer */
         break;
       }
       jj += incr;
-    }while( &zNum[jj]<zEnd );
+    }докато( &zNum[jj]<zEnd );
   }
-  if( i<19*incr ){
+  ако( i<19*incr ){
     /* Less than 19 digits, so we know that it fits in 64 bits */
     assert( u<=LARGEST_INT64 );
-    return rc;
-  }else{
+    върни rc;
+  }иначе{
     /* zNum is a 19-digit numbers.  Compare it against 9223372036854775808. */
     j = i>19*incr ? 1 : compare2pow63(zNum, incr);
-    if( j<0 ){
+    ако( j<0 ){
       /* zNum is less than 9223372036854775808 so it fits */
       assert( u<=LARGEST_INT64 );
-      return rc;
-    }else{
+      върни rc;
+    }иначе{
       *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
-      if( j>0 ){
+      ако( j>0 ){
         /* zNum is greater than 9223372036854775808 so it overflows */
-        return 2;
-      }else{
+        върни 2;
+      }иначе{
         /* zNum is exactly 9223372036854775808.  Fits if negative.  The
         ** special case 2 overflow if positive */
         assert( u-1==LARGEST_INT64 );
-        return neg ? rc : 3;
+        върни neg ? rc : 3;
       }
     }
   }
@@ -1273,27 +1273,27 @@ int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
 **     2    Integer too large for a 64-bit signed integer or is malformed
 **     3    Special case of 9223372036854775808
 */
-int sqlite3DecOrHexToI64(const char *z, i64 *pOut){
+цяло sqlite3DecOrHexToI64(const char *z, i64 *pOut){
 #ifndef SQLITE_OMIT_HEX_INTEGER
-  if( z[0]=='0'
+  ако( z[0]=='0'
    && (z[1]=='x' || z[1]=='X')
   ){
     u64 u = 0;
-    int i, k;
-    for(i=2; z[i]=='0'; i++){}
-    for(k=i; sqlite3Isxdigit(z[k]); k++){
+    цяло i, k;
+    за(i=2; z[i]=='0'; i++){}
+    за(k=i; sqlite3Isxdigit(z[k]); k++){
       u = u*16 + sqlite3HexToInt(z[k]);
     }
     memcpy(pOut, &u, 8);
-    if( k-i>16 ) return 2;
-    if( z[k]!=0 ) return 1;
-    return 0;
-  }else
+    ако( k-i>16 ) върни 2;
+    ако( z[k]!=0 ) върни 1;
+    върни 0;
+  }иначе
 #endif /* SQLITE_OMIT_HEX_INTEGER */
   {
-    int n = (int)(0x3fffffff&strspn(z,"+- \n\t0123456789"));
-    if( z[n] ) n++;
-    return sqlite3Atoi64(z, pOut, n, SQLITE_UTF8);
+    цяло n = (цяло)(0x3fffffff&strspn(z,"+- \n\t0123456789"));
+    ако( z[n] ) n++;
+    върни sqlite3Atoi64(z, pOut, n, SQLITE_UTF8);
   }
 }
 
@@ -1307,38 +1307,38 @@ int sqlite3DecOrHexToI64(const char *z, i64 *pOut){
 ** This is different from sqlite3Atoi64() which requires the
 ** input number to be zero-terminated.
 */
-int sqlite3GetInt32(const char *zNum, int *pValue){
+цяло sqlite3GetInt32(const char *zNum, цяло *pValue){
   sqlite_int64 v = 0;
-  int i, c;
-  int neg = 0;
-  if( zNum[0]=='-' ){
+  цяло i, c;
+  цяло neg = 0;
+  ако( zNum[0]=='-' ){
     neg = 1;
     zNum++;
-  }else if( zNum[0]=='+' ){
+  }иначе ако( zNum[0]=='+' ){
     zNum++;
   }
 #ifndef SQLITE_OMIT_HEX_INTEGER
-  else if( zNum[0]=='0'
+  иначе ако( zNum[0]=='0'
         && (zNum[1]=='x' || zNum[1]=='X')
         && sqlite3Isxdigit(zNum[2])
   ){
     u32 u = 0;
     zNum += 2;
-    while( zNum[0]=='0' ) zNum++;
-    for(i=0; i<8 && sqlite3Isxdigit(zNum[i]); i++){
+    докато( zNum[0]=='0' ) zNum++;
+    за(i=0; i<8 && sqlite3Isxdigit(zNum[i]); i++){
       u = u*16 + sqlite3HexToInt(zNum[i]);
     }
-    if( (u&0x80000000)==0 && sqlite3Isxdigit(zNum[i])==0 ){
+    ако( (u&0x80000000)==0 && sqlite3Isxdigit(zNum[i])==0 ){
       memcpy(pValue, &u, 4);
-      return 1;
-    }else{
-      return 0;
+      върни 1;
+    }иначе{
+      върни 0;
     }
   }
 #endif
-  if( !sqlite3Isdigit(zNum[0]) ) return 0;
-  while( zNum[0]=='0' ) zNum++;
-  for(i=0; i<11 && (c = zNum[i] - '0')>=0 && c<=9; i++){
+  ако( !sqlite3Isdigit(zNum[0]) ) върни 0;
+  докато( zNum[0]=='0' ) zNum++;
+  за(i=0; i<11 && (c = zNum[i] - '0')>=0 && c<=9; i++){
     v = v*10 + c;
   }
 
@@ -1348,28 +1348,28 @@ int sqlite3GetInt32(const char *zNum, int *pValue){
   **     2^31 -> 2147483648
   */
   testcase( i==10 );
-  if( i>10 ){
-    return 0;
+  ако( i>10 ){
+    върни 0;
   }
   testcase( v-neg==2147483647 );
-  if( v-neg>2147483647 ){
-    return 0;
+  ако( v-neg>2147483647 ){
+    върни 0;
   }
-  if( neg ){
+  ако( neg ){
     v = -v;
   }
-  *pValue = (int)v;
-  return 1;
+  *pValue = (цяло)v;
+  върни 1;
 }
 
 /*
 ** Return a 32-bit integer value extracted from a string.  If the
 ** string is not an integer, just return 0.
 */
-int sqlite3Atoi(const char *z){
-  int x = 0;
+цяло sqlite3Atoi(const char *z){
+  цяло x = 0;
   sqlite3GetInt32(z, &x);
-  return x;
+  върни x;
 }
 
 /*
@@ -1391,11 +1391,11 @@ int sqlite3Atoi(const char *z){
 ** into the middle of p->zBuf[].  There are p->n significant digits.
 ** The p->z[] array is *not* zero-terminated.
 */
-void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
-  int i;               /* Index into zBuf[] where to put next character */
-  int n;               /* Number of digits */
+void sqlite3FpDecode(FpDecode *p, double r, цяло iRound, цяло mxRound){
+  цяло i;               /* Index into zBuf[] where to put next character */
+  цяло n;               /* Number of digits */
   u64 v;               /* mantissa */
-  int e, exp = 0;      /* Base-2 and base-10 exponent */
+  цяло e, exp = 0;      /* Base-2 and base-10 exponent */
   char *zBuf;          /* Local alias for p->zBuf */
   char *z;             /* Local alias for p->z */
 
@@ -1405,33 +1405,33 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
 
   /* Convert negative numbers to positive.  Deal with Infinity, 0.0, and
   ** NaN. */
-  if( r<0.0 ){
+  ако( r<0.0 ){
     p->sign = '-';
     r = -r;
-  }else if( r==0.0 ){
+  }иначе ако( r==0.0 ){
     p->sign = '+';
     p->n = 1;
     p->iDP = 1;
     p->z = "0";
-    return;
-  }else{
+    върни;
+  }иначе{
     p->sign = '+';
   }
   memcpy(&v,&r,8);
   e = (v>>52)&0x7ff;
-  if( e==0x7ff ){
+  ако( e==0x7ff ){
     p->isSpecial = 1 + (v!=0x7ff0000000000000LL);
     p->n = 0;
     p->iDP = 0;
     p->z = p->zBuf;
-    return;
+    върни;
   }
   v &= 0x000fffffffffffffULL;
-  if( e==0 ){
-    int nn = countLeadingZeros(v);
+  ако( e==0 ){
+    цяло nn = countLeadingZeros(v);
     v <<= nn;
     e = -1074 - nn;
-  }else{
+  }иначе{
     v = (v<<11) | U64_BIT(63);
     e -= 1086;
   }
@@ -1445,10 +1445,10 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
   zBuf = p->zBuf;
 #ifdef SQLITE_AVOID_U64_DIVIDE
   i = sqlite3UInt64ToText(v, zBuf);
-#else
+#иначе
   i = SQLITE_U64_DIGITS;
-  while( v>=10 ){
-    int kk = (v%100)*2;
+  докато( v>=10 ){
+    цяло kk = (v%100)*2;
     assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk]) );
     assert( TWO_BYTE_ALIGNMENT(&zBuf[i]) );
     assert( i-2>=0 );
@@ -1456,7 +1456,7 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
     i -= 2;
     v /= 100;
   }
-  if( v ){
+  ако( v ){
     assert( v<10 );
     assert( i>0 );
     zBuf[--i] = v + '0';
@@ -1467,9 +1467,9 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
   assert( n>0 );
   assert( n<=SQLITE_U64_DIGITS );
   p->iDP = n + exp;
-  if( iRound<=0 ){
+  ако( iRound<=0 ){
     iRound = p->iDP - iRound;
-    if( iRound==0 && zBuf[i]>='5' ){
+    ако( iRound==0 && zBuf[i]>='5' ){
       iRound = 1;
       zBuf[--i] = '0';
       n++;
@@ -1477,61 +1477,61 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
     }
   }
   z = &zBuf[i];  /* z points to the first digit */
-  if( iRound>0 && (iRound<n || n>mxRound) ){
-    if( iRound>mxRound ) iRound = mxRound;
-    if( iRound==17 ){
+  ако( iRound>0 && (iRound<n || n>mxRound) ){
+    ако( iRound>mxRound ) iRound = mxRound;
+    ако( iRound==17 ){
       /* If the precision is exactly 17, which only happens with the "!"
       ** flag (ex: "%!.17g") then try to reduce the precision if that
       ** yields text that will round-trip to the original floating-point.
       ** value.  Thus, for exaple, 49.47 will render as 49.47, rather than
       ** as 49.469999999999999. */
-      if( z[15]=='9' && z[14]=='9' ){
-        int jj, kk;
+      ако( z[15]=='9' && z[14]=='9' ){
+        цяло jj, kk;
         u64 v2;
-        for(jj=14; jj>0 && z[jj-1]=='9'; jj--){}
-        if( jj==0 ){
+        за(jj=14; jj>0 && z[jj-1]=='9'; jj--){}
+        ако( jj==0 ){
           v2 = 1;
-        }else{
+        }иначе{
           v2 = z[0] - '0';
-          for(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
+          за(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
           v2++;
         }
-        if( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
+        ако( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
           iRound = jj+1;
         }
-      }else if( p->iDP>=n || (z[15]=='0' && z[14]=='0' && z[13]=='0') ){
-        int jj, kk;
+      }иначе ако( p->iDP>=n || (z[15]=='0' && z[14]=='0' && z[13]=='0') ){
+        цяло jj, kk;
         u64 v2;
         assert( z[0]!='0' );
-        for(jj=13; z[jj-1]=='0'; jj--){}
+        за(jj=13; z[jj-1]=='0'; jj--){}
         v2 = z[0] - '0';
-        for(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
-        if( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
+        за(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
+        ако( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
           iRound = jj+1;
         }
       }
     }
     n = iRound;
-    if( z[iRound]>='5' ){
-      int j = iRound-1;
-      while( 1 /*exit-by-break*/ ){
+    ако( z[iRound]>='5' ){
+      цяло j = iRound-1;
+      докато( 1 /*exit-by-break*/ ){
         z[j]++;
-        if( z[j]<='9' ) break;
+        ако( z[j]<='9' ) break;
         z[j] = '0';
-        if( j==0 ){
+        ако( j==0 ){
           z--;
           z[0] = '1';
           n++;
           p->iDP++;
           break;
-        }else{
+        }иначе{
           j--;
         }
       }
     }
   }
   assert( n>0 );
-  while( z[n-1]=='0' ){
+  докато( z[n-1]=='0' ){
     n--;
     assert( n>0 );
   }
@@ -1545,16 +1545,16 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
 **
 ** Only decimal notation is accepted.
 */
-int sqlite3GetUInt32(const char *z, u32 *pI){
+цяло sqlite3GetUInt32(const char *z, u32 *pI){
   u64 v = 0;
-  int i;
-  for(i=0; sqlite3Isdigit(z[i]); i++){
+  цяло i;
+  за(i=0; sqlite3Isdigit(z[i]); i++){
     v = v*10 + z[i] - '0';
-    if( v>4294967295LL ){ *pI = 0; return 0; }
+    ако( v>4294967295LL ){ *pI = 0; върни 0; }
   }
-  if( i==0 || z[i]!=0 ){ *pI = 0; return 0; }
+  ако( i==0 || z[i]!=0 ){ *pI = 0; върни 0; }
   *pI = (u32)v;
-  return 1;
+  върни 1;
 }
 
 /*
@@ -1586,41 +1586,41 @@ int sqlite3GetUInt32(const char *z, u32 *pI){
 ** bit clear.  Except, if we get to the 9th byte, it stores the full
 ** 8 bits and is the last byte.
 */
-static int SQLITE_NOINLINE putVarint64(unsigned char *p, u64 v){
-  int i, j, n;
+static цяло SQLITE_NOINLINE putVarint64(unsigned char *p, u64 v){
+  цяло i, j, n;
   u8 buf[10];
-  if( v & (((u64)0xff000000)<<32) ){
+  ако( v & (((u64)0xff000000)<<32) ){
     p[8] = (u8)v;
     v >>= 8;
-    for(i=7; i>=0; i--){
+    за(i=7; i>=0; i--){
       p[i] = (u8)((v & 0x7f) | 0x80);
       v >>= 7;
     }
-    return 9;
+    върни 9;
   }   
   n = 0;
   do{
     buf[n++] = (u8)((v & 0x7f) | 0x80);
     v >>= 7;
-  }while( v!=0 );
+  }докато( v!=0 );
   buf[0] &= 0x7f;
   assert( n<=9 );
-  for(i=0, j=n-1; j>=0; j--, i++){
+  за(i=0, j=n-1; j>=0; j--, i++){
     p[i] = buf[j];
   }
-  return n;
+  върни n;
 }
-int sqlite3PutVarint(unsigned char *p, u64 v){
-  if( v<=0x7f ){
+цяло sqlite3PutVarint(unsigned char *p, u64 v){
+  ако( v<=0x7f ){
     p[0] = v&0x7f;
-    return 1;
+    върни 1;
   }
-  if( v<=0x3fff ){
+  ако( v<=0x3fff ){
     p[0] = ((v>>7)&0x7f)|0x80;
     p[1] = v&0x7f;
-    return 2;
+    върни 2;
   }
-  return putVarint64(p,v);
+  върни putVarint64(p,v);
 }
 
 /*
@@ -1630,37 +1630,37 @@ int sqlite3PutVarint(unsigned char *p, u64 v){
 u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
   u64 iKey = p[0];
   const u8 *pStart = p;
-  if( iKey>=0x80 ){
+  ако( iKey>=0x80 ){
     u8 x;
     iKey = (iKey<<7) ^ (x = *++p);
-    if( x>=0x80 ){
+    ако( x>=0x80 ){
       iKey = (iKey<<7) ^ (x = *++p);
-      if( x>=0x80 ){
+      ако( x>=0x80 ){
         iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
-        if( x>=0x80 ){
+        ако( x>=0x80 ){
           iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-          if( x>=0x80 ){
+          ако( x>=0x80 ){
             iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-            if( x>=0x80 ){
+            ако( x>=0x80 ){
               iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-              if( x>=0x80 ){
+              ако( x>=0x80 ){
                 iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-                if( x>=0x80 ){
+                ако( x>=0x80 ){
                   iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
-      }else{
+      }иначе{
         iKey ^= 0x204000;
       }
-    }else{
+    }иначе{
       iKey ^= 0x4000;
     }
   }
   *v = iKey;
-  return (u8)(p - pStart) + 1;
+  върни (u8)(p - pStart) + 1;
 }
 
 /*
@@ -1670,36 +1670,36 @@ u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
 */
 i64 sqlite3VarintValue(const unsigned char *p){
   u64 iKey = p[0];
-  if( iKey>=0x80 ){
+  ако( iKey>=0x80 ){
     u8 x;
     iKey = (iKey<<7) ^ (x = *++p);
-    if( x>=0x80 ){
+    ако( x>=0x80 ){
       iKey = (iKey<<7) ^ (x = *++p);
-      if( x>=0x80 ){
+      ако( x>=0x80 ){
         iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
-        if( x>=0x80 ){
+        ако( x>=0x80 ){
           iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-          if( x>=0x80 ){
+          ако( x>=0x80 ){
             iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-            if( x>=0x80 ){
+            ако( x>=0x80 ){
               iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-              if( x>=0x80 ){
+              ако( x>=0x80 ){
                 iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-                if( x>=0x80 ){
+                ако( x>=0x80 ){
                   iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
-      }else{
+      }иначе{
         iKey ^= 0x204000;
       }
-    }else{
+    }иначе{
       iKey ^= 0x4000;
     }
   }
-  return *(i64*)&iKey;
+  върни *(i64*)&iKey;
 }
 
 /*
@@ -1721,35 +1721,35 @@ u8 sqlite3GetVarint32(const unsigned char *p, u32 *v){
   ** the getVarint32() macro */
   assert( (p[0] & 0x80)!=0 );
 
-  if( (p[1] & 0x80)==0 ){
+  ако( (p[1] & 0x80)==0 ){
     /* This is the two-byte case */
     *v = ((p[0]&0x7f)<<7) | p[1];
-    return 2;
+    върни 2;
   }
-  if( (p[2] & 0x80)==0 ){
+  ако( (p[2] & 0x80)==0 ){
     /* This is the three-byte case */
     *v = ((p[0]&0x7f)<<14) | ((p[1]&0x7f)<<7) | p[2];
-    return 3;
+    върни 3;
   }
   /* four or more bytes */
   n = sqlite3GetVarint(p, &v64);
   assert( n>3 && n<=9 );
-  if( (v64 & SQLITE_MAX_U32)!=v64 ){
+  ако( (v64 & SQLITE_MAX_U32)!=v64 ){
     *v = 0xffffffff;
-  }else{
+  }иначе{
     *v = (u32)v64;
   }
-  return n;
+  върни n;
 }
 
 /*
 ** Return the number of bytes that will be needed to store the given
 ** 64-bit integer.
 */
-int sqlite3VarintLen(u64 v){
-  int i;
-  for(i=1; (v >>= 7)!=0; i++){ assert( i<10 ); }
-  return i;
+цяло sqlite3VarintLen(u64 v){
+  цяло i;
+  за(i=1; (v >>= 7)!=0; i++){ assert( i<10 ); }
+  върни i;
 }
 
 
@@ -1757,29 +1757,29 @@ int sqlite3VarintLen(u64 v){
 ** Read an unsigned 32-bit integer from an unaligned big-endian array of bytes.
 */
 u32 sqlite3Get4byte(const u8 *p){
-#if SQLITE_BYTEORDER==4321
+#ако SQLITE_BYTEORDER==4321
   u32 x;
   memcpy(&x,p,4);
-  return x;
+  върни x;
 #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
   u32 x;
   memcpy(&x,p,4);
-  return __builtin_bswap32(x);
+  върни __builtin_bswap32(x);
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
   u32 x;
   memcpy(&x,p,4);
-  return _byteswap_ulong(x);
-#else
+  върни _byteswap_ulong(x);
+#иначе
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   testcase( p[0]&0x80 );
-  return ((unsigned)p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
+  върни ((unsigned)p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
 #endif
 }
 
 /* Write an unsigned 32-bit integer into an unaligned big-endian array of bytes.
 */
 void sqlite3Put4byte(unsigned char *p, u32 v){
-#if SQLITE_BYTEORDER==4321
+#ако SQLITE_BYTEORDER==4321
   memcpy(p,&v,4);
 #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
   u32 x = __builtin_bswap32(v);
@@ -1787,7 +1787,7 @@ void sqlite3Put4byte(unsigned char *p, u32 v){
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
   u32 x = _byteswap_ulong(v);
   memcpy(p,&x,4);
-#else
+#иначе
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   p[0] = (u8)(v>>24);
   p[1] = (u8)(v>>16);
@@ -1800,22 +1800,22 @@ void sqlite3Put4byte(unsigned char *p, u32 v){
 ** Read an unsigned 64-bit integer from an unaligned big-endian byte array.
 */
 SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8 *p){
-#if SQLITE_BYTEORDER==4321
+#ако SQLITE_BYTEORDER==4321
   u64 x;
   memcpy(&x,p,8);
-  return x;
+  върни x;
 #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
   u64 x;
   memcpy(&x,p,8);
-  return __builtin_bswap64(x);
+  върни __builtin_bswap64(x);
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
   u64 x;
   memcpy(&x,p,8);
-  return _byteswap_uint64(x);
-#else
+  върни _byteswap_uint64(x);
+#иначе
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   testcase( p[0]&0x80 );
-  return (u64)(
+  върни (u64)(
     (((u64)p[0]) << 56) +
     (((u64)p[1]) << 48) +
     (((u64)p[2]) << 40) +
@@ -1828,23 +1828,23 @@ SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8 *p){
 #endif
 }
 
-#if SQLITE_BYTEORDER!=4321  /* Only used for little-endian machines */
+#ако SQLITE_BYTEORDER!=4321  /* Only used for little-endian machines */
 /*
 ** Byte-swap a 64-bit unsigned integer.
 */
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64 x){
-#if SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
-  return __builtin_bswap64(x);
+#ако SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
+  върни __builtin_bswap64(x);
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
-  return _byteswap_uint64(x);
-#else
+  върни _byteswap_uint64(x);
+#иначе
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   x = (x << 32) | (x >> 32);
   x = ((x & UINT64_C(0x0000ffff0000ffff)) << 16) |
       ((x & UINT64_C(0xffff0000ffff0000)) >> 16);
   x = ((x & UINT64_C(0x00ff00ff00ff00ff)) <<  8) |
       ((x & UINT64_C(0xff00ff00ff00ff00)) >>  8);
-  return x;
+  върни x;
 #endif
 }
 #endif /* SQLITE_BYTEORDER!=4321 */
@@ -1854,7 +1854,7 @@ SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64 x){
 ** This routine only works if h really is a valid hexadecimal
 ** character:  0..9a..fA..F
 */
-u8 sqlite3HexToInt(int h){
+u8 sqlite3HexToInt(цяло h){
   assert( (h>='0' && h<='9') ||  (h>='a' && h<='f') ||  (h>='A' && h<='F') );
 #ifdef SQLITE_ASCII
   h += 9*(1&(h>>6));
@@ -1862,29 +1862,29 @@ u8 sqlite3HexToInt(int h){
 #ifdef SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
 #endif
-  return (u8)(h & 0xf);
+  върни (u8)(h & 0xf);
 }
 
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
+#ако !defined(SQLITE_OMIT_BLOB_LITERAL)
 /*
 ** Convert a BLOB literal of the form "x'hhhhhh'" into its binary
 ** value.  Return a pointer to its binary value.  Space to hold the
 ** binary value has been obtained from malloc and must be freed by
 ** the calling routine.
 */
-void *sqlite3HexToBlob(sqlite3 *db, const char *z, int n){
+void *sqlite3HexToBlob(sqlite3 *db, const char *z, цяло n){
   char *zBlob;
-  int i;
+  цяло i;
 
   zBlob = (char *)sqlite3DbMallocRawNN(db, n/2 + 1);
   n--;
-  if( zBlob ){
-    for(i=0; i<n; i+=2){
+  ако( zBlob ){
+    за(i=0; i<n; i+=2){
       zBlob[i/2] = (sqlite3HexToInt(z[i])<<4) | sqlite3HexToInt(z[i+1]);
     }
     zBlob[i/2] = 0;
   }
-  return zBlob;
+  върни zBlob;
 }
 #endif /* !SQLITE_OMIT_BLOB_LITERAL */
 
@@ -1914,34 +1914,34 @@ static void logBadConnection(const char *zType){
 ** open properly and is not fit for general use but which can be
 ** used as an argument to sqlite3_errmsg() or sqlite3_close().
 */
-int sqlite3SafetyCheckOk(sqlite3 *db){
+цяло sqlite3SafetyCheckOk(sqlite3 *db){
   u8 eOpenState;
-  if( db==0 ){
+  ако( db==0 ){
     logBadConnection("NULL");
-    return 0;
+    върни 0;
   }
   eOpenState = db->eOpenState;
-  if( eOpenState!=SQLITE_STATE_OPEN ){
-    if( sqlite3SafetyCheckSickOrOk(db) ){
+  ако( eOpenState!=SQLITE_STATE_OPEN ){
+    ако( sqlite3SafetyCheckSickOrOk(db) ){
       testcase( sqlite3GlobalConfig.xLog!=0 );
       logBadConnection("unopened");
     }
-    return 0;
-  }else{
-    return 1;
+    върни 0;
+  }иначе{
+    върни 1;
   }
 }
-int sqlite3SafetyCheckSickOrOk(sqlite3 *db){
+цяло sqlite3SafetyCheckSickOrOk(sqlite3 *db){
   u8 eOpenState;
   eOpenState = db->eOpenState;
-  if( eOpenState!=SQLITE_STATE_SICK &&
+  ако( eOpenState!=SQLITE_STATE_SICK &&
       eOpenState!=SQLITE_STATE_OPEN &&
       eOpenState!=SQLITE_STATE_BUSY ){
     testcase( sqlite3GlobalConfig.xLog!=0 );
     logBadConnection("invalid");
-    return 0;
-  }else{
-    return 1;
+    върни 0;
+  }иначе{
+    върни 1;
   }
 }
 
@@ -1951,60 +1951,60 @@ int sqlite3SafetyCheckSickOrOk(sqlite3 *db){
 ** Return 0 on success.  Or if the operation would have resulted in an
 ** overflow, leave *pA unchanged and return 1.
 */
-int sqlite3AddInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_add_overflow(*pA, iB, pA);
-#else
+цяло sqlite3AddInt64(i64 *pA, i64 iB){
+#ако GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
+  върни __builtin_add_overflow(*pA, iB, pA);
+#иначе
   i64 iA = *pA;
   testcase( iA==0 ); testcase( iA==1 );
   testcase( iB==-1 ); testcase( iB==0 );
-  if( iB>=0 ){
+  ако( iB>=0 ){
     testcase( iA>0 && LARGEST_INT64 - iA == iB );
     testcase( iA>0 && LARGEST_INT64 - iA == iB - 1 );
-    if( iA>0 && LARGEST_INT64 - iA < iB ) return 1;
-  }else{
+    ако( iA>0 && LARGEST_INT64 - iA < iB ) върни 1;
+  }иначе{
     testcase( iA<0 && -(iA + LARGEST_INT64) == iB + 1 );
     testcase( iA<0 && -(iA + LARGEST_INT64) == iB + 2 );
-    if( iA<0 && -(iA + LARGEST_INT64) > iB + 1 ) return 1;
+    ако( iA<0 && -(iA + LARGEST_INT64) > iB + 1 ) върни 1;
   }
   *pA += iB;
-  return 0;
+  върни 0;
 #endif
 }
-int sqlite3SubInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_sub_overflow(*pA, iB, pA);
-#else
+цяло sqlite3SubInt64(i64 *pA, i64 iB){
+#ако GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
+  върни __builtin_sub_overflow(*pA, iB, pA);
+#иначе
   testcase( iB==SMALLEST_INT64+1 );
-  if( iB==SMALLEST_INT64 ){
+  ако( iB==SMALLEST_INT64 ){
     testcase( (*pA)==(-1) ); testcase( (*pA)==0 );
-    if( (*pA)>=0 ) return 1;
+    ако( (*pA)>=0 ) върни 1;
     *pA -= iB;
-    return 0;
-  }else{
-    return sqlite3AddInt64(pA, -iB);
+    върни 0;
+  }иначе{
+    върни sqlite3AddInt64(pA, -iB);
   }
 #endif
 }
-int sqlite3MulInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_mul_overflow(*pA, iB, pA);
-#else
+цяло sqlite3MulInt64(i64 *pA, i64 iB){
+#ако GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
+  върни __builtin_mul_overflow(*pA, iB, pA);
+#иначе
   i64 iA = *pA;
-  if( iB>0 ){
-    if( iA>LARGEST_INT64/iB ) return 1;
-    if( iA<SMALLEST_INT64/iB ) return 1;
-  }else if( iB<0 ){
-    if( iA>0 ){
-      if( iB<SMALLEST_INT64/iA ) return 1;
-    }else if( iA<0 ){
-      if( iB==SMALLEST_INT64 ) return 1;
-      if( iA==SMALLEST_INT64 ) return 1;
-      if( -iA>LARGEST_INT64/-iB ) return 1;
+  ако( iB>0 ){
+    ако( iA>LARGEST_INT64/iB ) върни 1;
+    ако( iA<SMALLEST_INT64/iB ) върни 1;
+  }иначе ако( iB<0 ){
+    ако( iA>0 ){
+      ако( iB<SMALLEST_INT64/iA ) върни 1;
+    }иначе ако( iA<0 ){
+      ако( iB==SMALLEST_INT64 ) върни 1;
+      ако( iA==SMALLEST_INT64 ) върни 1;
+      ако( -iA>LARGEST_INT64/-iB ) върни 1;
     }
   }
   *pA = iA*iB;
-  return 0;
+  върни 0;
 #endif
 }
 
@@ -2012,10 +2012,10 @@ int sqlite3MulInt64(i64 *pA, i64 iB){
 ** Compute the absolute value of a 32-bit signed integer, if possible.  Or
 ** if the integer has a value of -2147483648, return +2147483647
 */
-int sqlite3AbsInt32(int x){
-  if( x>=0 ) return x;
-  if( x==(int)0x80000000 ) return 0x7fffffff;
-  return -x;
+цяло sqlite3AbsInt32(цяло x){
+  ако( x>=0 ) върни x;
+  ако( x==(цяло)0x80000000 ) върни 0x7fffffff;
+  върни -x;
 }
 
 #ifdef SQLITE_ENABLE_8_3_NAMES
@@ -2037,14 +2037,14 @@ int sqlite3AbsInt32(int x){
 **     test.db-mj7f3319fa =>   test.9fa
 */
 void sqlite3FileSuffix3(const char *zBaseFilename, char *z){
-#if SQLITE_ENABLE_8_3_NAMES<2
-  if( sqlite3_uri_boolean(zBaseFilename, "8_3_names", 0) )
+#ако SQLITE_ENABLE_8_3_NAMES<2
+  ако( sqlite3_uri_boolean(zBaseFilename, "8_3_names", 0) )
 #endif
   {
-    int i, sz;
+    цяло i, sz;
     sz = sqlite3Strlen30(z);
-    for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-    if( z[i]=='.' && ALWAYS(sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
+    за(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
+    ако( z[i]=='.' && ALWAYS(sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
   }
 }
 #endif
@@ -2067,14 +2067,14 @@ LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
       3, 3, 3, 3, 3, 3,              /* 19-24 */
       2, 2, 2, 2, 2, 2, 2,           /* 25-31 */
   };
-  if( a>=b ){
-    if( a>b+49 ) return a;
-    if( a>b+31 ) return a+1;
-    return a+x[a-b];
-  }else{
-    if( b>a+49 ) return b;
-    if( b>a+31 ) return b+1;
-    return b+x[b-a];
+  ако( a>=b ){
+    ако( a>b+49 ) върни a;
+    ако( a>b+31 ) върни a+1;
+    върни a+x[a-b];
+  }иначе{
+    ако( b>a+49 ) върни b;
+    ако( b>a+31 ) върни b+1;
+    върни b+x[b-a];
   }
 }
 
@@ -2085,20 +2085,20 @@ LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
 LogEst sqlite3LogEst(u64 x){
   static LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
   LogEst y = 40;
-  if( x<8 ){
-    if( x<2 ) return 0;
-    while( x<8 ){  y -= 10; x <<= 1; }
-  }else{
-#if GCC_VERSION>=5004000
-    int i = 60 - __builtin_clzll(x);
+  ако( x<8 ){
+    ако( x<2 ) върни 0;
+    докато( x<8 ){  y -= 10; x <<= 1; }
+  }иначе{
+#ако GCC_VERSION>=5004000
+    цяло i = 60 - __builtin_clzll(x);
     y += i*10;
     x >>= i;
-#else
-    while( x>255 ){ y += 40; x >>= 4; }  /*OPTIMIZATION-IF-TRUE*/
-    while( x>15 ){  y += 10; x >>= 1; }
+#иначе
+    докато( x>255 ){ y += 40; x >>= 4; }  /*OPTIMIZATION-IF-TRUE*/
+    докато( x>15 ){  y += 10; x >>= 1; }
 #endif
   }
-  return a[x&7] + y - 10;
+  върни a[x&7] + y - 10;
 }
 
 /*
@@ -2109,11 +2109,11 @@ LogEst sqlite3LogEstFromDouble(double x){
   u64 a;
   LogEst e;
   assert( sizeof(x)==8 && sizeof(a)==8 );
-  if( x<=1 ) return 0;
-  if( x<=2000000000 ) return sqlite3LogEst((u64)x);
+  ако( x<=1 ) върни 0;
+  ако( x<=2000000000 ) върни sqlite3LogEst((u64)x);
   memcpy(&a, &x, 8);
   e = (a>>52) - 1022;
-  return e*10;
+  върни e*10;
 }
 
 /*
@@ -2123,10 +2123,10 @@ u64 sqlite3LogEstToInt(LogEst x){
   u64 n;
   n = x%10;
   x /= 10;
-  if( n>=5 ) n -= 2;
-  else if( n>=1 ) n -= 1;
-  if( x>60 ) return (u64)LARGEST_INT64;
-  return x>=3 ? (n+8)<<(x-3) : (n+8)>>(3-x);
+  ако( n>=5 ) n -= 2;
+  иначе ако( n>=1 ) n -= 1;
+  ако( x>60 ) върни (u64)LARGEST_INT64;
+  върни x>=3 ? (n+8)<<(x-3) : (n+8)>>(3-x);
 }
 
 /*
@@ -2169,21 +2169,21 @@ VList *sqlite3VListAdd(
   sqlite3 *db,           /* The database connection used for malloc() */
   VList *pIn,            /* The input VList.  Might be NULL */
   const char *zName,     /* Name of symbol to add */
-  int nName,             /* Bytes of text in zName */
-  int iVal               /* Value to associate with zName */
+  цяло nName,             /* Bytes of text in zName */
+  цяло iVal               /* Value to associate with zName */
 ){
-  int nInt;              /* number of sizeof(int) objects needed for zName */
+  цяло nInt;              /* number of sizeof(int) objects needed for zName */
   char *z;               /* Pointer to where zName will be stored */
-  int i;                 /* Index in pIn[] where zName is stored */
+  цяло i;                 /* Index in pIn[] where zName is stored */
 
   nInt = nName/4 + 3;
   assert( pIn==0 || pIn[0]>=3 );  /* Verify ok to add new elements */
-  if( pIn==0 || pIn[1]+nInt > pIn[0] ){
+  ако( pIn==0 || pIn[1]+nInt > pIn[0] ){
     /* Enlarge the allocation */
     sqlite3_int64 nAlloc = (pIn ? 2*(sqlite3_int64)pIn[0] : 10) + nInt;
-    VList *pOut = sqlite3DbRealloc(db, pIn, nAlloc*sizeof(int));
-    if( pOut==0 ) return pIn;
-    if( pIn==0 ) pOut[1] = 2;
+    VList *pOut = sqlite3DbRealloc(db, pIn, nAlloc*sizeof(цяло));
+    ако( pOut==0 ) върни pIn;
+    ако( pIn==0 ) pOut[1] = 2;
     pIn = pOut;
     pIn[0] = nAlloc;
   }
@@ -2195,7 +2195,7 @@ VList *sqlite3VListAdd(
   assert( pIn[1]<=pIn[0] );
   memcpy(z, zName, nName);
   z[nName] = 0;
-  return pIn;
+  върни pIn;
 }
 
 /*
@@ -2203,31 +2203,31 @@ VList *sqlite3VListAdd(
 ** has the value iVal.  Or return a NULL if there is no such variable in
 ** the list
 */
-const char *sqlite3VListNumToName(VList *pIn, int iVal){
-  int i, mx;
-  if( pIn==0 ) return 0;
+const char *sqlite3VListNumToName(VList *pIn, цяло iVal){
+  цяло i, mx;
+  ако( pIn==0 ) върни 0;
   mx = pIn[1];
   i = 2;
   do{
-    if( pIn[i]==iVal ) return (char*)&pIn[i+2];
+    ако( pIn[i]==iVal ) върни (char*)&pIn[i+2];
     i += pIn[i+1];
-  }while( i<mx );
-  return 0;
+  }докато( i<mx );
+  върни 0;
 }
 
 /*
 ** Return the number of the variable named zName, if it is in VList.
 ** or return 0 if there is no such variable.
 */
-int sqlite3VListNameToNum(VList *pIn, const char *zName, int nName){
-  int i, mx;
-  if( pIn==0 ) return 0;
+цяло sqlite3VListNameToNum(VList *pIn, const char *zName, цяло nName){
+  цяло i, mx;
+  ако( pIn==0 ) върни 0;
   mx = pIn[1];
   i = 2;
   do{
     const char *z = (const char*)&pIn[i+2];
-    if( strncmp(z,zName,nName)==0 && z[nName]==0 ) return pIn[i];
+    ако( strncmp(z,zName,nName)==0 && z[nName]==0 ) върни pIn[i];
     i += pIn[i+1];
-  }while( i<mx );
-  return 0;
+  }докато( i<mx );
+  върни 0;
 }

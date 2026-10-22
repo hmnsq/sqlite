@@ -44,10 +44,10 @@
 ** same way as SQLite does when in 8.3 filenames mode.
 */
 static void sqlite3Delete83Name(char *z){
-  int i, sz;
-  sz = (int)strlen(z);
-  for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-  if( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
+  цяло i, sz;
+  sz = (цяло)strlen(z);
+  за(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
+  ако( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
 }
 
 /*
@@ -57,55 +57,55 @@ static void sqlite3Delete83Name(char *z){
 **
 ** If an error occurs, non-zero is returned. Or, if no error occurs, zero.
 */
-static int sqlite3DeleteUnlinkIfExists(
+static цяло sqlite3DeleteUnlinkIfExists(
   sqlite3_vfs *pVfs,
   const char *zFile, 
-  int *pbExists
+  цяло *pbExists
 ){
-  int rc = SQLITE_ERROR;
+  цяло rc = SQLITE_ERROR;
 #ifdef SQLITE_OS_WIN
-  if( pVfs ){
-    if( pbExists ) *pbExists = 1;
+  ако( pVfs ){
+    ако( pbExists ) *pbExists = 1;
     rc = pVfs->xDelete(pVfs, zFile, 0);
-    if( rc==SQLITE_IOERR_DELETE_NOENT ){
-      if( pbExists ) *pbExists = 0;
+    ако( rc==SQLITE_IOERR_DELETE_NOENT ){
+      ако( pbExists ) *pbExists = 0;
       rc = SQLITE_OK;
     }
   }
-#else
+#иначе
   assert( pVfs==0 );
   rc = access(zFile, F_OK);
-  if( rc ){
-    if( errno==ENOENT ){ 
-      if( pbExists ) *pbExists = 0;
+  ако( rc ){
+    ако( errno==ENOENT ){ 
+      ако( pbExists ) *pbExists = 0;
       rc = SQLITE_OK; 
     }
-  }else{
-    if( pbExists ) *pbExists = 1;
+  }иначе{
+    ако( pbExists ) *pbExists = 1;
     rc = unlink(zFile);
   }
 #endif
-  return rc;
+  върни rc;
 }
 
 /*
 ** Delete the database file identified by the string argument passed to this
 ** function. The string must contain a filename, not an SQLite URI.
 */
-SQLITE_API int sqlite3_delete_database(
+SQLITE_API цяло sqlite3_delete_database(
   const char *zFile               /* File to delete */
 ){
   char *zBuf;                     /* Buffer to sprintf() filenames to */
-  int nBuf;                       /* Size of buffer in bytes */
-  int rc = 0;                     /* System error code */
-  int i;                          /* Iterate through azFmt[] and aMFile[] */
+  цяло nBuf;                       /* Size of buffer in bytes */
+  цяло rc = 0;                     /* System error code */
+  цяло i;                          /* Iterate through azFmt[] and aMFile[] */
 
   const char *azFmt[] = { "%s", "%s-journal", "%s-wal", "%s-shm" };
 
   struct MFile {
     const char *zFmt;
-    int iOffset;
-    int b83;
+    цяло iOffset;
+    цяло b83;
   } aMFile[] = {
     { "%s%03d",         0,   0 },
     { "%s-journal%03d", 0,   0 },
@@ -117,40 +117,40 @@ SQLITE_API int sqlite3_delete_database(
 
 #ifdef SQLITE_OS_WIN
   sqlite3_vfs *pVfs = sqlite3_vfs_find("win32");
-#else
+#иначе
   sqlite3_vfs *pVfs = 0;
 #endif
 
   /* Allocate a buffer large enough for any of the files that need to be
   ** deleted.  */
-  nBuf = (int)strlen(zFile) + 100;
+  nBuf = (цяло)strlen(zFile) + 100;
   zBuf = (char*)sqlite3_malloc(nBuf);
-  if( zBuf==0 ) return SQLITE_NOMEM;
+  ако( zBuf==0 ) върни SQLITE_NOMEM;
 
   /* Delete both the regular and 8.3 filenames versions of the database,
   ** journal, wal and shm files.  */
-  for(i=0; rc==0 && i<sizeof(azFmt)/sizeof(azFmt[0]); i++){
+  за(i=0; rc==0 && i<sizeof(azFmt)/sizeof(azFmt[0]); i++){
     sqlite3_snprintf(nBuf, zBuf, azFmt[i], zFile);
     rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
-    if( rc==0 && i!=0 ){
+    ако( rc==0 && i!=0 ){
       sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
     }
   }
 
   /* Delete any multiplexor files */
-  for(i=0; rc==0 && i<sizeof(aMFile)/sizeof(aMFile[0]); i++){
+  за(i=0; rc==0 && i<sizeof(aMFile)/sizeof(aMFile[0]); i++){
     struct MFile *p = &aMFile[i];
-    int iChunk;
-    for(iChunk=1; iChunk<=MX_CHUNK_NUMBER; iChunk++){
-      int bExists;
+    цяло iChunk;
+    за(iChunk=1; iChunk<=MX_CHUNK_NUMBER; iChunk++){
+      цяло bExists;
       sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->iOffset);
-      if( p->b83 ) sqlite3Delete83Name(zBuf);
+      ако( p->b83 ) sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, &bExists);
-      if( bExists==0 || rc!=0 ) break;
+      ако( bExists==0 || rc!=0 ) break;
     }
   }
 
   sqlite3_free(zBuf);
-  return (rc ? SQLITE_ERROR : SQLITE_OK);
+  върни (rc ? SQLITE_ERROR : SQLITE_OK);
 }
