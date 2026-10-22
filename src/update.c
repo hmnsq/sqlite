@@ -22,9 +22,9 @@ static void updateVirtualTable(
   Table *pTab,         /* The virtual table */
   ExprList *pChanges,  /* The columns to change in the UPDATE statement */
   Expr *pRowidExpr,    /* Expression used to recompute the rowid */
-  int *aXRef,          /* Mapping from columns of pTab to entries in pChanges */
+  정수 *aXRef,          /* Mapping from columns of pTab to entries in pChanges */
   Expr *pWhere,        /* WHERE clause of the UPDATE statement */
-  int onError          /* ON CONFLICT strategy */
+  정수 onError          /* ON CONFLICT strategy */
 );
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
 
@@ -70,25 +70,25 @@ static SQLITE_NOINLINE void columnDefaultUncommonCase(
   sqlite3ValueFromExpr(sqlite3VdbeDb(v),
                        sqlite3ColumnExprAuth(pTab,pCol,pParse), enc,
                        pCol->affinity, &pValue);
-  if( pValue ){
+  만약( pValue ){
     sqlite3VdbeAppendP4(v, pValue, P4_MEM);
   }
 }
 void sqlite3ColumnDefault(
   Vdbe *v,          /* Byte code under construction */
   Table *pTab,      /* The table */
-  int i,            /* Which column of the table */
-  int iReg          /* Register in which results are stored */
+  정수 i,            /* Which column of the table */
+  정수 iReg          /* Register in which results are stored */
 ){
   Column *pCol;
   assert( pTab!=0 );
   assert( pTab->nCol>i );
   pCol = &pTab->aCol[i];
-  if( pCol->iDflt ){
+  만약( pCol->iDflt ){
     columnDefaultUncommonCase(v,pTab,pCol);
   }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-  if( pCol->affinity==SQLITE_AFF_REAL ){
+  만약( pCol->affinity==SQLITE_AFF_REAL ){
     sqlite3VdbeAddOp1(v, OP_RealAffinity, iReg);
   }
 #endif
@@ -105,21 +105,21 @@ void sqlite3ColumnDefault(
 ** being updated.  chngRowid will be true if the rowid of the table is
 ** being updated.
 */
-static int indexColumnIsBeingUpdated(
+static 정수 indexColumnIsBeingUpdated(
   Index *pIdx,      /* The index to check */
-  int iCol,         /* Which column of the index to check */
-  int *aXRef,       /* aXRef[j]>=0 if column j is being updated */
-  int chngRowid     /* true if the rowid is being updated */
+  정수 iCol,         /* Which column of the index to check */
+  정수 *aXRef,       /* aXRef[j]>=0 if column j is being updated */
+  정수 chngRowid     /* true if the rowid is being updated */
 ){
   i16 iIdxCol = pIdx->aiColumn[iCol];
   assert( iIdxCol!=XN_ROWID ); /* Cannot index rowid */
-  if( iIdxCol>=0 ){
-    return aXRef[iIdxCol]>=0;
+  만약( iIdxCol>=0 ){
+    반환 aXRef[iIdxCol]>=0;
   }
   assert( iIdxCol==XN_EXPR );
   assert( pIdx->aColExpr!=0 );
   assert( pIdx->aColExpr->a[iCol].pExpr!=0 );
-  return sqlite3ExprReferencesUpdatedColumn(pIdx->aColExpr->a[iCol].pExpr,
+  반환 sqlite3ExprReferencesUpdatedColumn(pIdx->aColExpr->a[iCol].pExpr,
                                             aXRef,chngRowid);
 }
 
@@ -135,13 +135,13 @@ static int indexColumnIsBeingUpdated(
 ** being updated.  chngRowid will be true if the rowid of the table is
 ** being updated.
 */
-static int indexWhereClauseMightChange(
+static 정수 indexWhereClauseMightChange(
   Index *pIdx,      /* The index to check */
-  int *aXRef,       /* aXRef[j]>=0 if column j is being updated */
-  int chngRowid     /* true if the rowid is being updated */
+  정수 *aXRef,       /* aXRef[j]>=0 if column j is being updated */
+  정수 chngRowid     /* true if the rowid is being updated */
 ){
-  if( pIdx->pPartIdxWhere==0 ) return 0;
-  return sqlite3ExprReferencesUpdatedColumn(pIdx->pPartIdxWhere,
+  만약( pIdx->pPartIdxWhere==0 ) 반환 0;
+  반환 sqlite3ExprReferencesUpdatedColumn(pIdx->pPartIdxWhere,
                                             aXRef, chngRowid);
 }
 
@@ -151,10 +151,10 @@ static int indexWhereClauseMightChange(
 ** expression to be a TK_COLUMN reading column iCol of the first
 ** table in the source-list (pSrc->a[0]).
 */
-static Expr *exprRowColumn(Parse *pParse, int iCol){
+static Expr *exprRowColumn(Parse *pParse, 정수 iCol){
   Expr *pRet = sqlite3PExpr(pParse, TK_ROW, 0, 0);
-  if( pRet ) pRet->iColumn = iCol+1;
-  return pRet;
+  만약( pRet ) pRet->iColumn = iCol+1;
+  반환 pRet;
 }
 
 /*
@@ -197,7 +197,7 @@ static Expr *exprRowColumn(Parse *pParse, int iCol){
 */
 static void updateFromSelect(
   Parse *pParse,                  /* Parse context */
-  int iEph,                       /* Cursor for open eph. table */
+  정수 iEph,                       /* Cursor for open eph. table */
   Index *pPk,                     /* PK if table 0 is WITHOUT ROWID */
   ExprList *pChanges,             /* List of expressions to return */
   SrcList *pTabList,              /* List of tables to select from */
@@ -205,7 +205,7 @@ static void updateFromSelect(
   ExprList *pOrderBy,             /* ORDER BY clause */
   Expr *pLimit                    /* LIMIT clause */
 ){
-  int i;
+  정수 i;
   SelectDest dest;
   Select *pSelect = 0;
   ExprList *pList = 0;
@@ -216,16 +216,16 @@ static void updateFromSelect(
   Table *pTab = pTabList->a[0].pSTab;
   SrcList *pSrc;
   Expr *pWhere2;
-  int eDest;
+  정수 eDest;
 
 #ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( pOrderBy && pLimit==0 ) {
+  만약( pOrderBy && pLimit==0 ) {
     sqlite3ErrorMsg(pParse, "ORDER BY without LIMIT on UPDATE");
-    return;
+    반환;
   }
   pOrderBy2 = sqlite3ExprListDup(db, pOrderBy, 0);
   pLimit2 = sqlite3ExprDup(db, pLimit, 0);
-#else
+#아니면
   UNUSED_PARAMETER(pOrderBy);
   UNUSED_PARAMETER(pLimit);
 #endif
@@ -234,40 +234,40 @@ static void updateFromSelect(
   pWhere2 = sqlite3ExprDup(db, pWhere, 0);
 
   assert( pTabList->nSrc>1 );
-  if( pSrc ){
+  만약( pSrc ){
     assert( pSrc->a[0].fg.notCte );
     pSrc->a[0].iCursor = -1;
     pSrc->a[0].pSTab->nTabRef--;
     pSrc->a[0].pSTab = 0;
   }
-  if( pPk ){
-    for(i=0; i<pPk->nKeyCol; i++){
+  만약( pPk ){
+    위해(i=0; i<pPk->nKeyCol; i++){
       Expr *pNew = exprRowColumn(pParse, pPk->aiColumn[i]);
 #ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-      if( pLimit ){
+      만약( pLimit ){
         pGrp = sqlite3ExprListAppend(pParse, pGrp, sqlite3ExprDup(db, pNew, 0));
       }
 #endif
       pList = sqlite3ExprListAppend(pParse, pList, pNew);
     }
     eDest = IsVirtual(pTab) ? SRT_Table : SRT_Upfrom;
-  }else if( IsView(pTab) ){
-    for(i=0; i<pTab->nCol; i++){
+  }아니면 만약( IsView(pTab) ){
+    위해(i=0; i<pTab->nCol; i++){
       pList = sqlite3ExprListAppend(pParse, pList, exprRowColumn(pParse, i));
     }
     eDest = SRT_Table;
-  }else{
+  }아니면{
     eDest = IsVirtual(pTab) ? SRT_Table : SRT_Upfrom;
     pList = sqlite3ExprListAppend(pParse, 0, sqlite3PExpr(pParse,TK_ROW,0,0));
 #ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-    if( pLimit ){
+    만약( pLimit ){
       pGrp = sqlite3ExprListAppend(pParse, 0, sqlite3PExpr(pParse,TK_ROW,0,0));
     }
 #endif
   }
   assert( pChanges!=0 || pParse->db->mallocFailed );
-  if( pChanges ){
-    for(i=0; i<pChanges->nExpr; i++){
+  만약( pChanges ){
+    위해(i=0; i<pChanges->nExpr; i++){
       pList = sqlite3ExprListAppend(pParse, pList,
           sqlite3ExprDup(db, pChanges->a[i].pExpr, 0)
       );
@@ -277,7 +277,7 @@ static void updateFromSelect(
       pSrc, pWhere2, pGrp, 0, pOrderBy2,
       SF_UFSrcCheck|SF_IncludeHidden|SF_UpdateFrom, pLimit2
   );
-  if( pSelect ) pSelect->selFlags |= SF_OrderByReqd;
+  만약( pSelect ) pSelect->selFlags |= SF_OrderByReqd;
   sqlite3SelectDestInit(&dest, eDest, iEph);
   dest.iSDParm2 = (pPk ? pPk->nKeyCol : -1);
   sqlite3Select(pParse, pSelect, &dest);
@@ -298,26 +298,26 @@ void sqlite3Update(
   SrcList *pTabList,     /* The table in which we should change things */
   ExprList *pChanges,    /* Things to be changed */
   Expr *pWhere,          /* The WHERE clause.  May be null */
-  int onError,           /* How to handle constraint errors */
+  정수 onError,           /* How to handle constraint errors */
   ExprList *pOrderBy,    /* ORDER BY clause. May be null */
   Expr *pLimit,          /* LIMIT clause. May be null */
   Upsert *pUpsert        /* ON CONFLICT clause, or null */
 ){
-  int i, j, k;           /* Loop counters */
+  정수 i, j, k;           /* Loop counters */
   Table *pTab;           /* The table to be updated */
-  int addrTop = 0;       /* VDBE instruction address of the start of the loop */
+  정수 addrTop = 0;       /* VDBE instruction address of the start of the loop */
   WhereInfo *pWInfo = 0; /* Information about the WHERE clause */
   Vdbe *v;               /* The virtual database engine */
   Index *pIdx;           /* For looping over indices */
   Index *pPk;            /* The PRIMARY KEY index for WITHOUT ROWID tables */
-  int nIdx;              /* Number of indices that need updating */
-  int nAllIdx;           /* Total number of indexes */
-  int iBaseCur;          /* Base cursor number */
-  int iDataCur;          /* Cursor for the canonical data btree */
-  int iIdxCur;           /* Cursor for the first index */
+  정수 nIdx;              /* Number of indices that need updating */
+  정수 nAllIdx;           /* Total number of indexes */
+  정수 iBaseCur;          /* Base cursor number */
+  정수 iDataCur;          /* Cursor for the canonical data btree */
+  정수 iIdxCur;           /* Cursor for the first index */
   sqlite3 *db;           /* The database structure */
-  int *aRegIdx = 0;      /* Registers for to each index and the main table */
-  int *aXRef = 0;        /* aXRef[i] is the index in pChanges->a[] of the
+  정수 *aRegIdx = 0;      /* Registers for to each index and the main table */
+  정수 *aXRef = 0;        /* aXRef[i] is the index in pChanges->a[] of the
                          ** an expression for the i-th column of the table.
                          ** aXRef[i]==-1 if the i-th column is not changed. */
   u8 *aToOpen;           /* 1 for tables and indices to be opened */
@@ -325,45 +325,45 @@ void sqlite3Update(
   u8 chngRowid;          /* Rowid changed in a normal table */
   u8 chngKey;            /* Either chngPk or chngRowid */
   Expr *pRowidExpr = 0;  /* Expression defining the new record number */
-  int iRowidExpr = -1;   /* Index of "rowid=" (or IPK) assignment in pChanges */
+  정수 iRowidExpr = -1;   /* Index of "rowid=" (or IPK) assignment in pChanges */
   AuthContext sContext;  /* The authorization context */
   NameContext sNC;       /* The name-context to resolve expressions in */
-  int iDb;               /* Database containing the table being updated */
-  int eOnePass;          /* ONEPASS_XXX value from where.c */
-  int hasFK;             /* True if foreign key processing is required */
-  int labelBreak;        /* Jump here to break out of UPDATE loop */
-  int labelContinue;     /* Jump here to continue next step of UPDATE loop */
-  int flags;             /* Flags for sqlite3WhereBegin() */
+  정수 iDb;               /* Database containing the table being updated */
+  정수 eOnePass;          /* ONEPASS_XXX value from where.c */
+  정수 hasFK;             /* True if foreign key processing is required */
+  정수 labelBreak;        /* Jump here to break out of UPDATE loop */
+  정수 labelContinue;     /* Jump here to continue next step of UPDATE loop */
+  정수 flags;             /* Flags for sqlite3WhereBegin() */
 
 #ifndef SQLITE_OMIT_TRIGGER
-  int isView;            /* True when updating a view (INSTEAD OF trigger) */
+  정수 isView;            /* True when updating a view (INSTEAD OF trigger) */
   Trigger *pTrigger;     /* List of triggers on pTab, if required */
-  int tmask;             /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  정수 tmask;             /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
 #endif
-  int newmask;           /* Mask of NEW.* columns accessed by BEFORE triggers */
-  int iEph = 0;          /* Ephemeral table holding all primary key values */
-  int nKey = 0;          /* Number of elements in regKey for WITHOUT ROWID */
-  int aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
-  int addrOpen = 0;      /* Address of OP_OpenEphemeral */
-  int iPk = 0;           /* First of nPk cells holding PRIMARY KEY value */
+  정수 newmask;           /* Mask of NEW.* columns accessed by BEFORE triggers */
+  정수 iEph = 0;          /* Ephemeral table holding all primary key values */
+  정수 nKey = 0;          /* Number of elements in regKey for WITHOUT ROWID */
+  정수 aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
+  정수 addrOpen = 0;      /* Address of OP_OpenEphemeral */
+  정수 iPk = 0;           /* First of nPk cells holding PRIMARY KEY value */
   i16 nPk = 0;           /* Number of components of the PRIMARY KEY */
-  int bReplace = 0;      /* True if REPLACE conflict resolution might happen */
-  int bFinishSeek = 1;   /* The OP_FinishSeek opcode is needed */
-  int nChangeFrom = 0;   /* If there is a FROM, pChanges->nExpr, else 0 */
+  정수 bReplace = 0;      /* True if REPLACE conflict resolution might happen */
+  정수 bFinishSeek = 1;   /* The OP_FinishSeek opcode is needed */
+  정수 nChangeFrom = 0;   /* If there is a FROM, pChanges->nExpr, else 0 */
 
   /* Register Allocations */
-  int regRowCount = 0;   /* A count of rows changed */
-  int regOldRowid = 0;   /* The old rowid */
-  int regNewRowid = 0;   /* The new rowid */
-  int regNew = 0;        /* Content of the NEW.* table in triggers */
-  int regOld = 0;        /* Content of OLD.* table in triggers */
-  int regRowSet = 0;     /* Rowset of rows to be updated */
-  int regKey = 0;        /* composite PRIMARY KEY value */
+  정수 regRowCount = 0;   /* A count of rows changed */
+  정수 regOldRowid = 0;   /* The old rowid */
+  정수 regNewRowid = 0;   /* The new rowid */
+  정수 regNew = 0;        /* Content of the NEW.* table in triggers */
+  정수 regOld = 0;        /* Content of OLD.* table in triggers */
+  정수 regRowSet = 0;     /* Rowset of rows to be updated */
+  정수 regKey = 0;        /* composite PRIMARY KEY value */
 
   memset(&sContext, 0, sizeof(sContext));
   db = pParse->db;
   assert( db->pParse==pParse );
-  if( pParse->nErr ){
+  만약( pParse->nErr ){
     goto update_cleanup;
   }
   assert( db->mallocFailed==0 );
@@ -371,7 +371,7 @@ void sqlite3Update(
   /* Locate the table which we want to update.
   */
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 ) goto update_cleanup;
+  만약( pTab==0 ) goto update_cleanup;
   iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
 
   /* Figure out if we have any triggers and if the table being
@@ -381,7 +381,7 @@ void sqlite3Update(
   pTrigger = sqlite3TriggersExist(pParse, pTab, TK_UPDATE, pChanges, &tmask);
   isView = IsView(pTab);
   assert( pTrigger || tmask==0 );
-#else
+#아니면
 # define pTrigger 0
 # define isView 0
 # define tmask 0
@@ -391,8 +391,8 @@ void sqlite3Update(
 # define isView 0
 #endif
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
+#만약 TREETRACE_ENABLED
+  만약( sqlite3TreeTrace & 0x10000 ){
     sqlite3TreeViewLine(0, "In sqlite3Update() at %s:%d", __FILE__, __LINE__);
     sqlite3TreeViewUpdate(pParse->pWith, pTabList, pChanges, pWhere,
                           onError, pOrderBy, pLimit, pUpsert, pTrigger);
@@ -407,7 +407,7 @@ void sqlite3Update(
   assert( nChangeFrom==0 || pUpsert==0 );
 
 #ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( !isView && nChangeFrom==0 ){
+  만약( !isView && nChangeFrom==0 ){
     pWhere = sqlite3LimitWhere(
         pParse, pTabList, pWhere, pOrderBy, pLimit, "UPDATE"
     );
@@ -416,10 +416,10 @@ void sqlite3Update(
   }
 #endif
 
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
+  만약( sqlite3ViewGetColumnNames(pParse, pTab) ){
     goto update_cleanup;
   }
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+  만약( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
     goto update_cleanup;
   }
 
@@ -432,13 +432,13 @@ void sqlite3Update(
   iIdxCur = iDataCur+1;
   pPk = HasRowid(pTab) ? 0 : sqlite3PrimaryKeyIndex(pTab);
   testcase( pPk!=0 && pPk!=pTab->pIndex );
-  for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
-    if( pPk==pIdx ){
+  위해(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
+    만약( pPk==pIdx ){
       iDataCur = pParse->nTab;
     }
     pParse->nTab++;
   }
-  if( pUpsert ){
+  만약( pUpsert ){
     /* On an UPSERT, reuse the same cursors already opened by INSERT */
     iDataCur = pUpsert->iDataCur;
     iIdxCur = pUpsert->iIdxCur;
@@ -449,13 +449,13 @@ void sqlite3Update(
   /* Allocate space for aXRef[], aRegIdx[], and aToOpen[].
   ** Initialize aXRef[] and aToOpen[] to their default values.
   */
-  aXRef = sqlite3DbMallocRawNN(db, sizeof(int) * (pTab->nCol+nIdx+1) + nIdx+2 );
-  if( aXRef==0 ) goto update_cleanup;
+  aXRef = sqlite3DbMallocRawNN(db, sizeof(정수) * (pTab->nCol+nIdx+1) + nIdx+2 );
+  만약( aXRef==0 ) goto update_cleanup;
   aRegIdx = aXRef+pTab->nCol;
   aToOpen = (u8*)(aRegIdx+nIdx+1);
   memset(aToOpen, 1, nIdx+1);
   aToOpen[nIdx+1] = 0;
-  for(i=0; i<pTab->nCol; i++) aXRef[i] = -1;
+  위해(i=0; i<pTab->nCol; i++) aXRef[i] = -1;
 
   /* Initialize the name-context */
   memset(&sNC, 0, sizeof(sNC));
@@ -466,7 +466,7 @@ void sqlite3Update(
 
   /* Begin generating code. */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ) goto update_cleanup;
+  만약( v==0 ) goto update_cleanup;
 
   /* Resolve the column names in all the expressions of the
   ** of the UPDATE statement.  Also find the column index
@@ -475,23 +475,23 @@ void sqlite3Update(
   ** that column.
   */
   chngRowid = chngPk = 0;
-  for(i=0; i<pChanges->nExpr; i++){
+  위해(i=0; i<pChanges->nExpr; i++){
     /* If this is an UPDATE with a FROM clause, do not resolve expressions
     ** here. The call to sqlite3Select() below will do that. */
-    if( nChangeFrom==0 && sqlite3ResolveExprNames(&sNC, pChanges->a[i].pExpr) ){
+    만약( nChangeFrom==0 && sqlite3ResolveExprNames(&sNC, pChanges->a[i].pExpr) ){
       goto update_cleanup;
     }
     j = sqlite3ColumnIndex(pTab, pChanges->a[i].zEName);
-    if( j>=0 ){
-      if( j==pTab->iPKey ){
+    만약( j>=0 ){
+      만약( j==pTab->iPKey ){
         chngRowid = 1;
         pRowidExpr = pChanges->a[i].pExpr;
         iRowidExpr = i;
-      }else if( pPk && (pTab->aCol[j].colFlags & COLFLAG_PRIMKEY)!=0 ){
+      }아니면 만약( pPk && (pTab->aCol[j].colFlags & COLFLAG_PRIMKEY)!=0 ){
         chngPk = 1;
       }
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-      else if( pTab->aCol[j].colFlags & COLFLAG_GENERATED ){
+      아니면 만약( pTab->aCol[j].colFlags & COLFLAG_GENERATED ){
         testcase( pTab->aCol[j].colFlags & COLFLAG_VIRTUAL );
         testcase( pTab->aCol[j].colFlags & COLFLAG_STORED );
         sqlite3ErrorMsg(pParse,
@@ -501,13 +501,13 @@ void sqlite3Update(
       }
 #endif
       aXRef[j] = i;
-    }else{
-      if( pPk==0 && sqlite3IsRowid(pChanges->a[i].zEName) ){
+    }아니면{
+      만약( pPk==0 && sqlite3IsRowid(pChanges->a[i].zEName) ){
         j = -1;
         chngRowid = 1;
         pRowidExpr = pChanges->a[i].pExpr;
         iRowidExpr = i;
-      }else{
+      }아니면{
         sqlite3ErrorMsg(pParse, "no such column: %s", pChanges->a[i].zEName);
         pParse->checkSchema = 1;
         goto update_cleanup;
@@ -515,16 +515,16 @@ void sqlite3Update(
     }
 #ifndef SQLITE_OMIT_AUTHORIZATION
     {
-      int rc;
+      정수 rc;
       rc = sqlite3AuthCheck(pParse, SQLITE_UPDATE, pTab->zName,
                             j<0 ? "ROWID" : pTab->aCol[j].zCnName,
                             db->aDb[iDb].zDbSName);
-      if( rc!=SQLITE_OK ){
-        if( rc==SQLITE_DENY ){
+      만약( rc!=SQLITE_OK ){
+        만약( rc==SQLITE_DENY ){
           goto update_cleanup;
-        }else if( j<0 || j==pTab->iPKey ){
+        }아니면 만약( j<0 || j==pTab->iPKey ){
           chngRowid = 0;
-        }else{
+        }아니면{
           aXRef[j] = -1;
         }
       }
@@ -544,16 +544,16 @@ void sqlite3Update(
   ** set to any non-negative number.  We use 99999 so that the value is
   ** obvious when looking at aXRef[] in a symbolic debugger.
   */
-  if( pTab->tabFlags & TF_HasGenerated ){
-    int bProgress;
+  만약( pTab->tabFlags & TF_HasGenerated ){
+    정수 bProgress;
     testcase( pTab->tabFlags & TF_HasVirtual );
     testcase( pTab->tabFlags & TF_HasStored );
     do{
       bProgress = 0;
-      for(i=0; i<pTab->nCol; i++){
-        if( aXRef[i]>=0 ) continue;
-        if( (pTab->aCol[i].colFlags & COLFLAG_GENERATED)==0 ) continue;
-        if( sqlite3ExprReferencesUpdatedColumn(
+      위해(i=0; i<pTab->nCol; i++){
+        만약( aXRef[i]>=0 ) continue;
+        만약( (pTab->aCol[i].colFlags & COLFLAG_GENERATED)==0 ) continue;
+        만약( sqlite3ExprReferencesUpdatedColumn(
                 sqlite3ColumnExpr(pTab, &pTab->aCol[i]),
                  aXRef, chngRowid)
         ){
@@ -561,7 +561,7 @@ void sqlite3Update(
           bProgress = 1;
         }
       }
-    }while( bProgress );
+    }동안( bProgress );
   }
 #endif
 
@@ -578,42 +578,42 @@ void sqlite3Update(
   ** being updated.  Fill in aRegIdx[] with a register number that will hold
   ** the key for accessing each index.
   */
-  if( onError==OE_Replace ) bReplace = 1;
-  for(nAllIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nAllIdx++){
-    int reg;
-    if( chngKey || hasFK>1 || pIdx==pPk
+  만약( onError==OE_Replace ) bReplace = 1;
+  위해(nAllIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nAllIdx++){
+    정수 reg;
+    만약( chngKey || hasFK>1 || pIdx==pPk
      || indexWhereClauseMightChange(pIdx,aXRef,chngRowid)
     ){
       reg = ++pParse->nMem;
       pParse->nMem += pIdx->nColumn;
-    }else{
+    }아니면{
       reg = 0;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( indexColumnIsBeingUpdated(pIdx, i, aXRef, chngRowid) ){
+      위해(i=0; i<pIdx->nKeyCol; i++){
+        만약( indexColumnIsBeingUpdated(pIdx, i, aXRef, chngRowid) ){
           reg = ++pParse->nMem;
           pParse->nMem += pIdx->nColumn;
-          if( onError==OE_Default && pIdx->onError==OE_Replace ){
+          만약( onError==OE_Default && pIdx->onError==OE_Replace ){
             bReplace = 1;
           }
           break;
         }
       }
     }
-    if( reg==0 ) aToOpen[nAllIdx+1] = 0;
+    만약( reg==0 ) aToOpen[nAllIdx+1] = 0;
     aRegIdx[nAllIdx] = reg;
   }
   aRegIdx[nAllIdx] = ++pParse->nMem;  /* Register storing the table record */
-  if( bReplace ){
+  만약( bReplace ){
     /* If REPLACE conflict resolution might be invoked, open cursors on all
     ** indexes in case they are needed to delete records.  */
     memset(aToOpen, 1, nIdx+1);
   }
 
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  만약( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
   sqlite3BeginWriteOperation(pParse, pTrigger || hasFK, iDb);
 
   /* Allocate required registers. */
-  if( !IsVirtual(pTab) ){
+  만약( !IsVirtual(pTab) ){
     /* For now, regRowSet and aRegIdx[nAllIdx] share the same register.
     ** If regRowSet turns out to be needed, then aRegIdx[nAllIdx] will be
     ** reallocated.  aRegIdx[nAllIdx] is the register in which the main
@@ -622,11 +622,11 @@ void sqlite3Update(
     assert( aRegIdx[nAllIdx]==pParse->nMem );
     regRowSet = aRegIdx[nAllIdx];
     regOldRowid = regNewRowid = ++pParse->nMem;
-    if( chngPk || pTrigger || hasFK ){
+    만약( chngPk || pTrigger || hasFK ){
       regOld = pParse->nMem + 1;
       pParse->nMem += pTab->nCol;
     }
-    if( chngKey || pTrigger || hasFK ){
+    만약( chngKey || pTrigger || hasFK ){
       regNewRowid = ++pParse->nMem;
     }
     regNew = pParse->nMem + 1;
@@ -634,15 +634,15 @@ void sqlite3Update(
   }
 
   /* Start the view context. */
-  if( isView ){
+  만약( isView ){
     sqlite3AuthContextPush(pParse, &sContext, pTab->zName);
   }
 
   /* If we are trying to update a view, realize that view into
   ** an ephemeral table.
   */
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-  if( nChangeFrom==0 && isView ){
+#만약 !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+  만약( nChangeFrom==0 && isView ){
     sqlite3MaterializeView(pParse, pTab,
         pWhere, pOrderBy, pLimit, iDataCur
     );
@@ -654,13 +654,13 @@ void sqlite3Update(
   /* Resolve the column names in all the expressions in the
   ** WHERE clause.
   */
-  if( nChangeFrom==0 && sqlite3ResolveExprNames(&sNC, pWhere) ){
+  만약( nChangeFrom==0 && sqlite3ResolveExprNames(&sNC, pWhere) ){
     goto update_cleanup;
   }
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   /* Virtual tables must be handled separately */
-  if( IsVirtual(pTab) ){
+  만약( IsVirtual(pTab) ){
     updateVirtualTable(pParse, pTabList, pTab, pChanges, pRowidExpr, aXRef,
                        pWhere, onError);
     goto update_cleanup;
@@ -672,7 +672,7 @@ void sqlite3Update(
 
   /* Not an UPSERT.  Normal processing.  Begin by
   ** initialize the count of updated rows */
-  if( (db->flags&SQLITE_CountRows)!=0
+  만약( (db->flags&SQLITE_CountRows)!=0
    && !pParse->pTriggerTab
    && !pParse->nested
    && !pParse->bReturning
@@ -682,47 +682,47 @@ void sqlite3Update(
     sqlite3VdbeAddOp2(v, OP_Integer, 0, regRowCount);
   }
 
-  if( nChangeFrom==0 && HasRowid(pTab) ){
+  만약( nChangeFrom==0 && HasRowid(pTab) ){
     sqlite3VdbeAddOp3(v, OP_Null, 0, regRowSet, regOldRowid);
     iEph = pParse->nTab++;
     addrOpen = sqlite3VdbeAddOp3(v, OP_OpenEphemeral, iEph, 0, regRowSet);
-  }else{
+  }아니면{
     assert( pPk!=0 || HasRowid(pTab) );
     nPk = pPk ? pPk->nKeyCol : 0;
     iPk = pParse->nMem+1;
     pParse->nMem += nPk;
     pParse->nMem += nChangeFrom;
     regKey = ++pParse->nMem;
-    if( pUpsert==0 ){
-      int nEphCol = nPk + nChangeFrom + (isView ? pTab->nCol : 0);
+    만약( pUpsert==0 ){
+      정수 nEphCol = nPk + nChangeFrom + (isView ? pTab->nCol : 0);
       iEph = pParse->nTab++;
-      if( pPk ) sqlite3VdbeAddOp3(v, OP_Null, 0, iPk, iPk+nPk-1);
+      만약( pPk ) sqlite3VdbeAddOp3(v, OP_Null, 0, iPk, iPk+nPk-1);
       addrOpen = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iEph, nEphCol);
-      if( pPk ){
+      만약( pPk ){
         KeyInfo *pKeyInfo = sqlite3KeyInfoOfIndex(pParse, pPk);
-        if( pKeyInfo ){
+        만약( pKeyInfo ){
           pKeyInfo->nAllField = nEphCol;
           sqlite3VdbeAppendP4(v, pKeyInfo, P4_KEYINFO);
         }
       }
-      if( nChangeFrom ){
+      만약( nChangeFrom ){
         updateFromSelect(
             pParse, iEph, pPk, pChanges, pTabList, pWhere, pOrderBy, pLimit
         );
 #ifndef SQLITE_OMIT_SUBQUERY
-        if( isView ) iDataCur = iEph;
+        만약( isView ) iDataCur = iEph;
 #endif
       }
     }
   }
 
-  if( nChangeFrom ){
+  만약( nChangeFrom ){
     sqlite3MultiWrite(pParse);
     eOnePass = ONEPASS_OFF;
     nKey = nPk;
     regKey = iPk;
-  }else{
-    if( pUpsert ){
+  }아니면{
+    만약( pUpsert ){
       /* If this is an UPSERT, then all cursors have already been opened by
       ** the outer INSERT and the data cursor should be pointing at the row
       ** that is to be updated.  So bypass the code that searches for the
@@ -732,7 +732,7 @@ void sqlite3Update(
       eOnePass = ONEPASS_SINGLE;
       sqlite3ExprIfFalse(pParse, pWhere, labelBreak, SQLITE_JUMPIFNULL);
       bFinishSeek = 0;
-    }else{
+    }아니면{
       /* Begin the database scan.
       **
       ** Do not consider a single-pass strategy for a multi-row update if
@@ -745,7 +745,7 @@ void sqlite3Update(
       **   (5) There are subqueries in the WHERE clause
       */
       flags = WHERE_ONEPASS_DESIRED;
-      if( !pParse->nested
+      만약( !pParse->nested
        && !pTrigger
        && !hasFK
        && !chngKey
@@ -755,7 +755,7 @@ void sqlite3Update(
         flags |= WHERE_ONEPASS_MULTIROW;
       }
       pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere,0,0,0,flags,iIdxCur);
-      if( pWInfo==0 ) goto update_cleanup;
+      만약( pWInfo==0 ) goto update_cleanup;
 
       /* A one-pass strategy that might update more than one row may not
       ** be used if any column of the index used for the scan is being
@@ -769,11 +769,11 @@ void sqlite3Update(
       ** updated.  */
       eOnePass = sqlite3WhereOkOnePass(pWInfo, aiCurOnePass);
       bFinishSeek = sqlite3WhereUsesDeferredSeek(pWInfo);
-      if( eOnePass!=ONEPASS_SINGLE ){
+      만약( eOnePass!=ONEPASS_SINGLE ){
         sqlite3MultiWrite(pParse);
-        if( eOnePass==ONEPASS_MULTI ){
-          int iCur = aiCurOnePass[1];
-          if( iCur>=0 && iCur!=iDataCur && aToOpen[iCur-iBaseCur] ){
+        만약( eOnePass==ONEPASS_MULTI ){
+          정수 iCur = aiCurOnePass[1];
+          만약( iCur>=0 && iCur!=iDataCur && aToOpen[iCur-iBaseCur] ){
             eOnePass = ONEPASS_OFF;
           }
           assert( iCur!=iDataCur || !HasRowid(pTab) );
@@ -781,33 +781,33 @@ void sqlite3Update(
       }
     }
 
-    if( HasRowid(pTab) ){
+    만약( HasRowid(pTab) ){
       /* Read the rowid of the current row of the WHERE scan. In ONEPASS_OFF
       ** mode, write the rowid into the FIFO. In either of the one-pass modes,
       ** leave it in register regOldRowid.  */
       sqlite3VdbeAddOp2(v, OP_Rowid, iDataCur, regOldRowid);
-      if( eOnePass==ONEPASS_OFF ){
+      만약( eOnePass==ONEPASS_OFF ){
         aRegIdx[nAllIdx] = ++pParse->nMem;
         sqlite3VdbeAddOp3(v, OP_Insert, iEph, regRowSet, regOldRowid);
-      }else{
-        if( ALWAYS(addrOpen) ) sqlite3VdbeChangeToNoop(v, addrOpen);
+      }아니면{
+        만약( ALWAYS(addrOpen) ) sqlite3VdbeChangeToNoop(v, addrOpen);
       }
-    }else{
+    }아니면{
       /* Read the PK of the current row into an array of registers. In
       ** ONEPASS_OFF mode, serialize the array into a record and store it in
       ** the ephemeral table. Or, in ONEPASS_SINGLE or MULTI mode, change
       ** the OP_OpenEphemeral instruction to a Noop (the ephemeral table
       ** is not required) and leave the PK fields in the array of registers.  */
-      for(i=0; i<nPk; i++){
+      위해(i=0; i<nPk; i++){
         assert( pPk->aiColumn[i]>=0 );
         sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur,
                                         pPk->aiColumn[i], iPk+i);
       }
-      if( eOnePass ){
-        if( addrOpen ) sqlite3VdbeChangeToNoop(v, addrOpen);
+      만약( eOnePass ){
+        만약( addrOpen ) sqlite3VdbeChangeToNoop(v, addrOpen);
         nKey = nPk;
         regKey = iPk;
-      }else{
+      }아니면{
         sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, regKey,
                           sqlite3IndexAffinityStr(db, pPk), nPk);
         sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iEph, regKey, iPk, nPk);
@@ -815,35 +815,35 @@ void sqlite3Update(
     }
   }
 
-  if( pUpsert==0 ){
-    if( nChangeFrom==0 && eOnePass!=ONEPASS_MULTI ){
+  만약( pUpsert==0 ){
+    만약( nChangeFrom==0 && eOnePass!=ONEPASS_MULTI ){
       sqlite3WhereEnd(pWInfo);
     }
 
-    if( !isView ){
-      int addrOnce = 0;
-      int iNotUsed1 = 0;
-      int iNotUsed2 = 0;
+    만약( !isView ){
+      정수 addrOnce = 0;
+      정수 iNotUsed1 = 0;
+      정수 iNotUsed2 = 0;
 
       /* Open every index that needs updating. */
-      if( eOnePass!=ONEPASS_OFF ){
-        if( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iBaseCur] = 0;
-        if( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iBaseCur] = 0;
+      만약( eOnePass!=ONEPASS_OFF ){
+        만약( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iBaseCur] = 0;
+        만약( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iBaseCur] = 0;
       }
 
-      if( eOnePass==ONEPASS_MULTI && (nIdx-(aiCurOnePass[1]>=0))>0 ){
+      만약( eOnePass==ONEPASS_MULTI && (nIdx-(aiCurOnePass[1]>=0))>0 ){
         addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
       }
       sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, 0, iBaseCur,
                                  aToOpen, &iNotUsed1, &iNotUsed2);
-      if( addrOnce ){
+      만약( addrOnce ){
         sqlite3VdbeJumpHereOrPopInst(v, addrOnce);
       }
     }
 
     /* Top of the update loop */
-    if( eOnePass!=ONEPASS_OFF ){
-      if( aiCurOnePass[0]!=iDataCur
+    만약( eOnePass!=ONEPASS_OFF ){
+      만약( aiCurOnePass[0]!=iDataCur
        && aiCurOnePass[1]!=iDataCur
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
        && !isView
@@ -853,38 +853,38 @@ void sqlite3Update(
         sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, labelBreak, regKey,nKey);
         VdbeCoverage(v);
       }
-      if( eOnePass!=ONEPASS_SINGLE ){
+      만약( eOnePass!=ONEPASS_SINGLE ){
         labelContinue = sqlite3VdbeMakeLabel(pParse);
       }
       sqlite3VdbeAddOp2(v, OP_IsNull, pPk ? regKey : regOldRowid, labelBreak);
       VdbeCoverageIf(v, pPk==0);
       VdbeCoverageIf(v, pPk!=0);
-    }else if( pPk || nChangeFrom ){
+    }아니면 만약( pPk || nChangeFrom ){
       labelContinue = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeAddOp2(v, OP_Rewind, iEph, labelBreak); VdbeCoverage(v);
       addrTop = sqlite3VdbeCurrentAddr(v);
-      if( nChangeFrom ){
-        if( !isView ){
-          if( pPk ){
-            for(i=0; i<nPk; i++){
+      만약( nChangeFrom ){
+        만약( !isView ){
+          만약( pPk ){
+            위해(i=0; i<nPk; i++){
               sqlite3VdbeAddOp3(v, OP_Column, iEph, i, iPk+i);
             }
             sqlite3VdbeAddOp4Int(
                 v, OP_NotFound, iDataCur, labelContinue, iPk, nPk
             ); VdbeCoverage(v);
-          }else{
+          }아니면{
             sqlite3VdbeAddOp2(v, OP_Rowid, iEph, regOldRowid);
             sqlite3VdbeAddOp3(
                 v, OP_NotExists, iDataCur, labelContinue, regOldRowid
             ); VdbeCoverage(v);
           }
         }
-      }else{
+      }아니면{
         sqlite3VdbeAddOp2(v, OP_RowData, iEph, regKey);
         sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, labelContinue, regKey,0);
         VdbeCoverage(v);
       }
-    }else{
+    }아니면{
       sqlite3VdbeAddOp2(v, OP_Rewind, iEph, labelBreak); VdbeCoverage(v);
       labelContinue = sqlite3VdbeMakeLabel(pParse);
       addrTop = sqlite3VdbeAddOp2(v, OP_Rowid, iEph, regOldRowid);
@@ -899,11 +899,11 @@ void sqlite3Update(
   ** then regNewRowid is the same register as regOldRowid, which is
   ** already populated.  */
   assert( chngKey || pTrigger || hasFK || regOldRowid==regNewRowid );
-  if( chngRowid ){
+  만약( chngRowid ){
     assert( iRowidExpr>=0 );
-    if( nChangeFrom==0 ){
+    만약( nChangeFrom==0 ){
       sqlite3ExprCode(pParse, pRowidExpr, regNewRowid);
-    }else{
+    }아니면{
       sqlite3VdbeAddOp3(v, OP_Column, iEph, iRowidExpr, regNewRowid);
     }
     sqlite3VdbeAddOp1(v, OP_MustBeInt, regNewRowid); VdbeCoverage(v);
@@ -912,27 +912,27 @@ void sqlite3Update(
 
   /* Compute the old pre-UPDATE content of the row being changed, if that
   ** information is needed */
-  if( chngPk || hasFK || pTrigger ){
+  만약( chngPk || hasFK || pTrigger ){
     u32 oldmask = (hasFK ? sqlite3FkOldmask(pParse, pTab) : 0);
     oldmask |= sqlite3TriggerColmask(pParse,
         pTrigger, pChanges, 0, TRIGGER_BEFORE|TRIGGER_AFTER, pTab, onError
     );
-    for(i=0; i<pTab->nCol; i++){
+    위해(i=0; i<pTab->nCol; i++){
       u32 colFlags = pTab->aCol[i].colFlags;
       k = sqlite3TableColumnToStorage(pTab, i) + regOld;
-      if( oldmask==0xffffffff
+      만약( oldmask==0xffffffff
        || (i<32 && (oldmask & MASKBIT32(i))!=0)
        || (colFlags & COLFLAG_PRIMKEY)!=0
       ){
         testcase(  oldmask!=0xffffffff && i==31 );
         sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, i, k);
-      }else{
+      }아니면{
         sqlite3VdbeAddOp2(v, OP_Null, 0, k);
       }
     }
-    if( chngRowid==0 && pPk==0 ){
+    만약( chngRowid==0 && pPk==0 ){
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-      if( isView ) sqlite3VdbeAddOp2(v, OP_Null, 0, regOldRowid);
+      만약( isView ) sqlite3VdbeAddOp2(v, OP_Null, 0, regOldRowid);
 #endif
       sqlite3VdbeAddOp2(v, OP_Copy, regOldRowid, regNewRowid);
     }
@@ -954,22 +954,22 @@ void sqlite3Update(
   newmask = sqlite3TriggerColmask(
       pParse, pTrigger, pChanges, 1, TRIGGER_BEFORE, pTab, onError
   );
-  for(i=0, k=regNew; i<pTab->nCol; i++, k++){
-    if( i==pTab->iPKey ){
+  위해(i=0, k=regNew; i<pTab->nCol; i++, k++){
+    만약( i==pTab->iPKey ){
       sqlite3VdbeAddOp2(v, OP_Null, 0, k);
-    }else if( (pTab->aCol[i].colFlags & COLFLAG_GENERATED)!=0 ){
-      if( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL ) k--;
-    }else{
+    }아니면 만약( (pTab->aCol[i].colFlags & COLFLAG_GENERATED)!=0 ){
+      만약( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL ) k--;
+    }아니면{
       j = aXRef[i];
-      if( j>=0 ){
-        if( nChangeFrom ){
-          int nOff = (isView ? pTab->nCol : nPk);
+      만약( j>=0 ){
+        만약( nChangeFrom ){
+          정수 nOff = (isView ? pTab->nCol : nPk);
           assert( eOnePass==ONEPASS_OFF );
           sqlite3VdbeAddOp3(v, OP_Column, iEph, nOff+j, k);
-        }else{
+        }아니면{
           sqlite3ExprCode(pParse, pChanges->a[j].pExpr, k);
         }
-      }else if( 0==(tmask&TRIGGER_BEFORE) || i>31 || (newmask & MASKBIT32(i)) ){
+      }아니면 만약( 0==(tmask&TRIGGER_BEFORE) || i>31 || (newmask & MASKBIT32(i)) ){
         /* This branch loads the value of a column that will not be changed
         ** into a register. This is done if there are no BEFORE triggers, or
         ** if there are one or more BEFORE triggers that use this value via
@@ -979,13 +979,13 @@ void sqlite3Update(
         testcase( i==32 );
         sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, i, k);
         bFinishSeek = 0;
-      }else{
+      }아니면{
         sqlite3VdbeAddOp2(v, OP_Null, 0, k);
       }
     }
   }
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  if( pTab->tabFlags & TF_HasGenerated ){
+  만약( pTab->tabFlags & TF_HasGenerated ){
     testcase( pTab->tabFlags & TF_HasVirtual );
     testcase( pTab->tabFlags & TF_HasStored );
     sqlite3ComputeGeneratedColumns(pParse, regNew, pTab);
@@ -995,22 +995,22 @@ void sqlite3Update(
   /* Fire any BEFORE UPDATE triggers. This happens before constraints are
   ** verified. One could argue that this is wrong.
   */
-  if( tmask&TRIGGER_BEFORE ){
+  만약( tmask&TRIGGER_BEFORE ){
     sqlite3TableAffinity(v, pTab, regNew);
     sqlite3CodeRowTrigger(pParse, pTrigger, TK_UPDATE, pChanges,
         TRIGGER_BEFORE, pTab, regOldRowid, onError, labelContinue);
 
-    if( !isView ){
+    만약( !isView ){
       /* The row-trigger may have deleted the row being updated. In this
       ** case, jump to the next row. No updates or AFTER triggers are
       ** required. This behavior - what happens when the row being updated
       ** is deleted or renamed by a BEFORE trigger - is left undefined in the
       ** documentation.
       */
-      if( pPk ){
+      만약( pPk ){
         sqlite3VdbeAddOp4Int(v, OP_NotFound,iDataCur,labelContinue,regKey,nKey);
         VdbeCoverage(v);
-      }else{
+      }아니면{
         sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, labelContinue,regOldRowid);
         VdbeCoverage(v);
       }
@@ -1024,15 +1024,15 @@ void sqlite3Update(
       ** BEFORE trigger runs.  See test case trigger1-18.0 (added 2018-04-26)
       ** for an example.
       */
-      for(i=0, k=regNew; i<pTab->nCol; i++, k++){
-        if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
-          if( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL ) k--;
-        }else if( aXRef[i]<0 && i!=pTab->iPKey ){
+      위해(i=0, k=regNew; i<pTab->nCol; i++, k++){
+        만약( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
+          만약( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL ) k--;
+        }아니면 만약( aXRef[i]<0 && i!=pTab->iPKey ){
           sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, i, k);
         }
       }
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-      if( pTab->tabFlags & TF_HasGenerated ){
+      만약( pTab->tabFlags & TF_HasGenerated ){
         testcase( pTab->tabFlags & TF_HasVirtual );
         testcase( pTab->tabFlags & TF_HasStored );
         sqlite3ComputeGeneratedColumns(pParse, regNew, pTab);
@@ -1041,7 +1041,7 @@ void sqlite3Update(
     }
   }
 
-  if( !isView ){
+  만약( !isView ){
     /* Do constraint checks. */
     assert( regOldRowid>0 );
     sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, iDataCur, iIdxCur,
@@ -1051,17 +1051,17 @@ void sqlite3Update(
     /* If REPLACE conflict handling may have been used, or if the PK of the
     ** row is changing, then the GenerateConstraintChecks() above may have
     ** moved cursor iDataCur. Reseek it. */
-    if( bReplace || chngKey ){
-      if( pPk ){
+    만약( bReplace || chngKey ){
+      만약( pPk ){
         sqlite3VdbeAddOp4Int(v, OP_NotFound,iDataCur,labelContinue,regKey,nKey);
-      }else{
+      }아니면{
         sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, labelContinue,regOldRowid);
       }
       VdbeCoverage(v);
     }
 
     /* Do FK constraint checks. */
-    if( hasFK ){
+    만약( hasFK ){
       sqlite3FkCheck(pParse, pTab, regOldRowid, 0, aXRef, chngKey);
     }
 
@@ -1073,7 +1073,7 @@ void sqlite3Update(
     ** no OP_Column opcodes since the OP_DeferredSeek was issued.  But
     ** we want to avoid the OP_FinishSeek if possible, as running it
     ** costs CPU cycles. */
-    if( bFinishSeek ){
+    만약( bFinishSeek ){
       sqlite3VdbeAddOp1(v, OP_FinishSeek, iDataCur);
     }
 
@@ -1092,20 +1092,20 @@ void sqlite3Update(
         OPFLAG_ISUPDATE | ((hasFK>1 || chngKey) ? 0 : OPFLAG_ISNOOP),
         regNewRowid
     );
-    if( eOnePass==ONEPASS_MULTI ){
+    만약( eOnePass==ONEPASS_MULTI ){
       assert( hasFK==0 && chngKey==0 );
       sqlite3VdbeChangeP5(v, OPFLAG_SAVEPOSITION);
     }
-    if( !pParse->nested ){
+    만약( !pParse->nested ){
       sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
     }
-#else
-    if( hasFK>1 || chngKey ){
+#아니면
+    만약( hasFK>1 || chngKey ){
       sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, 0);
     }
 #endif
 
-    if( hasFK ){
+    만약( hasFK ){
       sqlite3FkCheck(pParse, pTab, 0, regNewRowid, aXRef, chngKey);
     }
 
@@ -1119,18 +1119,18 @@ void sqlite3Update(
     /* Do any ON CASCADE, SET NULL or SET DEFAULT operations required to
     ** handle rows (possibly in other tables) that refer via a foreign key
     ** to the row just updated. */
-    if( hasFK ){
+    만약( hasFK ){
       sqlite3FkActions(pParse, pTab, pChanges, regOldRowid, aXRef, chngKey);
     }
   }
 
   /* Increment the row counter
   */
-  if( regRowCount ){
+  만약( regRowCount ){
     sqlite3VdbeAddOp2(v, OP_AddImm, regRowCount, 1);
   }
 
-  if( pTrigger ){
+  만약( pTrigger ){
     sqlite3CodeRowTrigger(pParse, pTrigger, TK_UPDATE, pChanges,
         TRIGGER_AFTER, pTab, regOldRowid, onError, labelContinue);
   }
@@ -1138,12 +1138,12 @@ void sqlite3Update(
   /* Repeat the above with the next record to be updated, until
   ** all record selected by the WHERE clause have been updated.
   */
-  if( eOnePass==ONEPASS_SINGLE ){
+  만약( eOnePass==ONEPASS_SINGLE ){
     /* Nothing to do at end-of-loop for a single-pass */
-  }else if( eOnePass==ONEPASS_MULTI ){
+  }아니면 만약( eOnePass==ONEPASS_MULTI ){
     sqlite3VdbeResolveLabel(v, labelContinue);
     sqlite3WhereEnd(pWInfo);
-  }else{
+  }아니면{
     sqlite3VdbeResolveLabel(v, labelContinue);
     sqlite3VdbeAddOp2(v, OP_Next, iEph, addrTop); VdbeCoverage(v);
   }
@@ -1153,7 +1153,7 @@ void sqlite3Update(
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 && pUpsert==0 ){
+  만약( pParse->nested==0 && pParse->pTriggerTab==0 && pUpsert==0 ){
     sqlite3AutoincrementEnd(pParse);
   }
 
@@ -1161,7 +1161,7 @@ void sqlite3Update(
   ** Return the number of rows that were changed, if we are tracking
   ** that information.
   */
-  if( regRowCount ){
+  만약( regRowCount ){
     sqlite3CodeChangeCount(v, regRowCount, "rows updated");
   }
 
@@ -1171,11 +1171,11 @@ update_cleanup:
   sqlite3SrcListDelete(db, pTabList);
   sqlite3ExprListDelete(db, pChanges);
   sqlite3ExprDelete(db, pWhere);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
+#만약 defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
   sqlite3ExprListDelete(db, pOrderBy);
   sqlite3ExprDelete(db, pLimit);
 #endif
-  return;
+  반환;
 }
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
@@ -1215,24 +1215,24 @@ static void updateVirtualTable(
   Table *pTab,         /* The virtual table */
   ExprList *pChanges,  /* The columns to change in the UPDATE statement */
   Expr *pRowid,        /* Expression used to recompute the rowid */
-  int *aXRef,          /* Mapping from columns of pTab to entries in pChanges */
+  정수 *aXRef,          /* Mapping from columns of pTab to entries in pChanges */
   Expr *pWhere,        /* WHERE clause of the UPDATE statement */
-  int onError          /* ON CONFLICT strategy */
+  정수 onError          /* ON CONFLICT strategy */
 ){
   Vdbe *v = pParse->pVdbe;  /* Virtual machine under construction */
-  int ephemTab;             /* Table holding the result of the SELECT */
-  int i;                    /* Loop counter */
+  정수 ephemTab;             /* Table holding the result of the SELECT */
+  정수 i;                    /* Loop counter */
   sqlite3 *db = pParse->db; /* Database connection */
   const char *pVTab = (const char*)sqlite3GetVTable(db, pTab);
   WhereInfo *pWInfo = 0;
-  int nArg = 2 + pTab->nCol;      /* Number of arguments to VUpdate */
-  int regArg;                     /* First register in VUpdate arg array */
-  int regRec;                     /* Register in which to assemble record */
-  int regRowid;                   /* Register for ephemeral table rowid */
-  int iCsr = pSrc->a[0].iCursor;  /* Cursor used for virtual table scan */
-  int aDummy[2];                  /* Unused arg for sqlite3WhereOkOnePass() */
-  int eOnePass;                   /* True to use onepass strategy */
-  int addr;                       /* Address of OP_OpenEphemeral */
+  정수 nArg = 2 + pTab->nCol;      /* Number of arguments to VUpdate */
+  정수 regArg;                     /* First register in VUpdate arg array */
+  정수 regRec;                     /* Register in which to assemble record */
+  정수 regRowid;                   /* Register for ephemeral table rowid */
+  정수 iCsr = pSrc->a[0].iCursor;  /* Cursor used for virtual table scan */
+  정수 aDummy[2];                  /* Unused arg for sqlite3WhereOkOnePass() */
+  정수 eOnePass;                   /* True to use onepass strategy */
+  정수 addr;                       /* Address of OP_OpenEphemeral */
 
   /* Allocate nArg registers in which to gather the arguments for VUpdate. Then
   ** create and open the ephemeral table in which the records created from
@@ -1242,38 +1242,38 @@ static void updateVirtualTable(
   addr= sqlite3VdbeAddOp2(v, OP_OpenEphemeral, ephemTab, nArg);
   regArg = pParse->nMem + 1;
   pParse->nMem += nArg;
-  if( pSrc->nSrc>1 ){
+  만약( pSrc->nSrc>1 ){
     Index *pPk = 0;
     Expr *pRow;
     ExprList *pList;
-    if( HasRowid(pTab) ){
-      if( pRowid ){
+    만약( HasRowid(pTab) ){
+      만약( pRowid ){
         pRow = sqlite3ExprDup(db, pRowid, 0);
-      }else{
+      }아니면{
         pRow = sqlite3PExpr(pParse, TK_ROW, 0, 0);
       }
-    }else{
+    }아니면{
       i16 iPk;      /* PRIMARY KEY column */
       pPk = sqlite3PrimaryKeyIndex(pTab);
       assert( pPk!=0 );
       assert( pPk->nKeyCol==1 );
       iPk = pPk->aiColumn[0];
-      if( aXRef[iPk]>=0 ){
+      만약( aXRef[iPk]>=0 ){
         pRow = sqlite3ExprDup(db, pChanges->a[aXRef[iPk]].pExpr, 0);
-      }else{
+      }아니면{
         pRow = exprRowColumn(pParse, iPk);
       }
     }
     pList = sqlite3ExprListAppend(pParse, 0, pRow);
 
-    for(i=0; i<pTab->nCol; i++){
-      if( aXRef[i]>=0 ){
+    위해(i=0; i<pTab->nCol; i++){
+      만약( aXRef[i]>=0 ){
         pList = sqlite3ExprListAppend(pParse, pList,
           sqlite3ExprDup(db, pChanges->a[aXRef[i]].pExpr, 0)
         );
-      }else{
+      }아니면{
         Expr *pRowExpr = exprRowColumn(pParse, i);
-        if( pRowExpr ) pRowExpr->op2 = OPFLAG_NOCHNG;
+        만약( pRowExpr ) pRowExpr->op2 = OPFLAG_NOCHNG;
         pList = sqlite3ExprListAppend(pParse, pList, pRowExpr);
       }
     }
@@ -1281,7 +1281,7 @@ static void updateVirtualTable(
     updateFromSelect(pParse, ephemTab, pPk, pList, pSrc, pWhere, 0, 0);
     sqlite3ExprListDelete(db, pList);
     eOnePass = ONEPASS_OFF;
-  }else{
+  }아니면{
     regRec = ++pParse->nMem;
     regRowid = ++pParse->nMem;
 
@@ -1289,26 +1289,26 @@ static void updateVirtualTable(
     pWInfo = sqlite3WhereBegin(
         pParse, pSrc, pWhere, 0, 0, 0, WHERE_ONEPASS_DESIRED, 0
     );
-    if( pWInfo==0 ) return;
+    만약( pWInfo==0 ) 반환;
 
     /* Populate the argument registers. */
-    for(i=0; i<pTab->nCol; i++){
+    위해(i=0; i<pTab->nCol; i++){
       assert( (pTab->aCol[i].colFlags & COLFLAG_GENERATED)==0 );
-      if( aXRef[i]>=0 ){
+      만약( aXRef[i]>=0 ){
         sqlite3ExprCode(pParse, pChanges->a[aXRef[i]].pExpr, regArg+2+i);
-      }else{
+      }아니면{
         sqlite3VdbeAddOp3(v, OP_VColumn, iCsr, i, regArg+2+i);
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG);/* For sqlite3_vtab_nochange() */
       }
     }
-    if( HasRowid(pTab) ){
+    만약( HasRowid(pTab) ){
       sqlite3VdbeAddOp2(v, OP_Rowid, iCsr, regArg);
-      if( pRowid ){
+      만약( pRowid ){
         sqlite3ExprCode(pParse, pRowid, regArg+1);
-      }else{
+      }아니면{
         sqlite3VdbeAddOp2(v, OP_Rowid, iCsr, regArg+1);
       }
-    }else{
+    }아니면{
       Index *pPk;   /* PRIMARY KEY index */
       i16 iPk;      /* PRIMARY KEY column */
       pPk = sqlite3PrimaryKeyIndex(pTab);
@@ -1324,17 +1324,17 @@ static void updateVirtualTable(
     /* There is no ONEPASS_MULTI on virtual tables */
     assert( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
 
-    if( eOnePass ){
+    만약( eOnePass ){
       /* If using the onepass strategy, no-op out the OP_OpenEphemeral coded
       ** above. */
       sqlite3VdbeChangeToNoop(v, addr);
       sqlite3VdbeAddOp1(v, OP_Close, iCsr);
-    }else{
+    }아니면{
       /* Create a record from the argument register contents and insert it into
       ** the ephemeral table. */
       sqlite3MultiWrite(pParse);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regArg, nArg, regRec);
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_ENABLE_NULL_TRIM)
+#만약 defined(SQLITE_DEBUG) && !defined(SQLITE_ENABLE_NULL_TRIM)
       /* Signal an assert() within OP_MakeRecord that it is allowed to
       ** accept no-change records with serial_type 10 */
       sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
@@ -1345,9 +1345,9 @@ static void updateVirtualTable(
   }
 
 
-  if( eOnePass==ONEPASS_OFF ){
+  만약( eOnePass==ONEPASS_OFF ){
     /* End the virtual table scan */
-    if( pSrc->nSrc==1 ){
+    만약( pSrc->nSrc==1 ){
       sqlite3WhereEnd(pWInfo);
     }
 
@@ -1356,7 +1356,7 @@ static void updateVirtualTable(
 
     /* Extract arguments from the current row of the ephemeral table and
     ** invoke the VUpdate method.  */
-    for(i=0; i<nArg; i++){
+    위해(i=0; i<nArg; i++){
       sqlite3VdbeAddOp3(v, OP_Column, ephemTab, i, regArg+i);
     }
   }
@@ -1367,11 +1367,11 @@ static void updateVirtualTable(
 
   /* End of the ephemeral table scan. Or, if using the onepass strategy,
   ** jump to here if the scan visited zero rows. */
-  if( eOnePass==ONEPASS_OFF ){
+  만약( eOnePass==ONEPASS_OFF ){
     sqlite3VdbeAddOp2(v, OP_Next, ephemTab, addr+1); VdbeCoverage(v);
     sqlite3VdbeJumpHere(v, addr);
     sqlite3VdbeAddOp2(v, OP_Close, ephemTab, 0);
-  }else{
+  }아니면{
     sqlite3WhereEnd(pWInfo);
   }
 }

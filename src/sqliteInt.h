@@ -108,14 +108,14 @@
 ** so the GCC_VERSION macro will be set to a correct non-zero value even
 ** when compiling with clang.
 */
-#if defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
+#만약 defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
 # define GCC_VERSION (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
-#else
+#아니면
 # define GCC_VERSION 0
 #endif
-#if defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
+#만약 defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
 # define MSVC_VERSION _MSC_VER
-#else
+#아니면
 # define MSVC_VERSION 0
 #endif
 
@@ -124,31 +124,31 @@
 ** is associated with Visual Studio 2013 or higher.
 */
 #ifndef SQLITE_HAVE_C99_MATH_FUNCS
-# if MSVC_VERSION==0 || MSVC_VERSION>=1800
+# 만약 MSVC_VERSION==0 || MSVC_VERSION>=1800
 #  define SQLITE_HAVE_C99_MATH_FUNCS (1)
-# else
+# 아니면
 #  define SQLITE_HAVE_C99_MATH_FUNCS (0)
 # endif
 #endif
 
 /* Needed for various definitions... */
-#if defined(__GNUC__) && !defined(_GNU_SOURCE)
+#만약 defined(__GNUC__) && !defined(_GNU_SOURCE)
 # define _GNU_SOURCE
 #endif
 
-#if defined(__OpenBSD__) && !defined(_BSD_SOURCE)
+#만약 defined(__OpenBSD__) && !defined(_BSD_SOURCE)
 # define _BSD_SOURCE
 #endif
 
 /*
 ** Macro to disable warnings about missing "break" at the end of a "case".
 */
-#if defined(__has_attribute)
-#  if __has_attribute(fallthrough)
+#만약 defined(__has_attribute)
+#  만약 __has_attribute(fallthrough)
 #    define deliberate_fall_through __attribute__((fallthrough));
 #  endif
 #endif
-#if !defined(deliberate_fall_through)
+#만약 !defined(deliberate_fall_through)
 #  define deliberate_fall_through
 #endif
 
@@ -166,7 +166,7 @@
 ** defined; otherwise, detection of conditions specific to MinGW will be
 ** disabled.
 */
-#if defined(_HAVE_MINGW_H)
+#만약 defined(_HAVE_MINGW_H)
 # include "mingw.h"
 #elif defined(_HAVE__MINGW_H)
 # include "_mingw.h"
@@ -177,7 +177,7 @@
 ** define is required to maintain binary compatibility with the MSVC runtime
 ** library in use (e.g. for Windows XP).
 */
-#if !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
+#만약 !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
     defined(_WIN32) && !defined(_WIN64) && \
     defined(__MINGW_MAJOR_VERSION) && __MINGW_MAJOR_VERSION >= 4 && \
     defined(__MSVCRT__)
@@ -210,7 +210,7 @@
 ** Include the configuration header output by 'configure' if we're using the
 ** autoconf-based build
 */
-#if defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
+#만약 defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
 #include "sqlite_cfg.h"
 #define SQLITECONFIG_H 1
 #endif
@@ -218,7 +218,7 @@
 #include "sqliteLimit.h"
 
 /* Disable nuisance warnings on Borland compilers */
-#if defined(__BORLANDC__)
+#만약 defined(__BORLANDC__)
 #pragma warn -rch /* unreachable code */
 #pragma warn -ccc /* Condition is always true or false */
 #pragma warn -aus /* Assigned value is never used */
@@ -233,11 +233,11 @@
 #ifndef __has_extension
 # define __has_extension(x) 0     /* compatibility with non-clang compilers */
 #endif
-#if GCC_VERSION>=4007000 || __has_extension(c_atomic)
+#만약 GCC_VERSION>=4007000 || __has_extension(c_atomic)
 # define SQLITE_ATOMIC_INTRINSICS 1
 # define AtomicLoad(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
 # define AtomicStore(PTR,VAL)  __atomic_store_n((PTR),(VAL),__ATOMIC_RELAXED)
-#else
+#아니면
 # define SQLITE_ATOMIC_INTRINSICS 0
 # define AtomicLoad(PTR)       (*(PTR))
 # define AtomicStore(PTR,VAL)  (*(PTR) = (VAL))
@@ -267,18 +267,18 @@
 ** So we have to define the macros in different ways depending on the
 ** compiler.
 */
-#if defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
+#만약 defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
 # define SQLITE_INT_TO_PTR(X)  ((void*)(intptr_t)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(intptr_t)(X))
+# define SQLITE_PTR_TO_INT(X)  ((정수)(intptr_t)(X))
 #elif defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
 # define SQLITE_INT_TO_PTR(X)  ((void*)(__PTRDIFF_TYPE__)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(__PTRDIFF_TYPE__)(X))
+# define SQLITE_PTR_TO_INT(X)  ((정수)(__PTRDIFF_TYPE__)(X))
 #elif !defined(__GNUC__)       /* Works for compilers other than LLVM */
 # define SQLITE_INT_TO_PTR(X)  ((void*)&((char*)0)[X])
-# define SQLITE_PTR_TO_INT(X)  ((int)(((char*)X)-(char*)0))
-#else                          /* Generates a warning - but it always works */
+# define SQLITE_PTR_TO_INT(X)  ((정수)(((char*)X)-(char*)0))
+#아니면                          /* Generates a warning - but it always works */
 # define SQLITE_INT_TO_PTR(X)  ((void*)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(X))
+# define SQLITE_PTR_TO_INT(X)  ((정수)(X))
 #endif
 
 /*
@@ -294,7 +294,7 @@
 **    SQLITE_USES_INLINE      Set to 1 or 0 according to whether or not
 **                            inline functions are supported.
 */
-#if defined(SQLITE_DISABLE_INLINE)
+#만약 defined(SQLITE_DISABLE_INLINE)
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
@@ -309,13 +309,13 @@
 #  define SQLITE_INLINE      __forceinline
 #  define SQLITE_OPT_INLINE  __forceinline
 #  define SQLITE_USES_INLINE 1
-#else
+#아니면
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
 #  define SQLITE_USES_INLINE 0
 #endif
-#if defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
+#만약 defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
 # undef SQLITE_INLINE
 # define SQLITE_INLINE
 # undef SQLITE_OPT_INLINE
@@ -323,7 +323,7 @@
 # undef SQLITE_USES_INLINE
 # define SQLITE_USES_INLINE 0
 #endif
-#if !defined(SQLITE_AMALGAMATION)
+#만약 !defined(SQLITE_AMALGAMATION)
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
 #endif
@@ -333,15 +333,15 @@
 ** compiling with an appropriate version of MSVC unless prevented by
 ** the SQLITE_DISABLE_INTRINSIC define.
 */
-#if !defined(SQLITE_DISABLE_INTRINSIC)
-#  if defined(_MSC_VER) && _MSC_VER>=1400
-#    if !defined(_WIN32_WCE)
+#만약 !defined(SQLITE_DISABLE_INTRINSIC)
+#  만약 defined(_MSC_VER) && _MSC_VER>=1400
+#    만약 !defined(_WIN32_WCE)
 #      include <intrin.h>
 #      pragma intrinsic(_byteswap_ushort)
 #      pragma intrinsic(_byteswap_ulong)
 #      pragma intrinsic(_byteswap_uint64)
 #      pragma intrinsic(_ReadWriteBarrier)
-#    else
+#    아니면
 #      include <cmnintrin.h>
 #    endif
 #  endif
@@ -351,9 +351,9 @@
 ** Enable SQLITE_USE_SEH by default on MSVC builds.  Only omit
 ** SEH support if the -DSQLITE_OMIT_SEH option is given.
 */
-#if defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
+#만약 defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
 # define SQLITE_USE_SEH 1
-#else
+#아니면
 # undef SQLITE_USE_SEH
 #endif
 
@@ -361,10 +361,10 @@
 ** Enable SQLITE_DIRECT_OVERFLOW_READ, unless the build explicitly
 ** disables it using -DSQLITE_DIRECT_OVERFLOW_READ=0
 */
-#if defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
+#만약 defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
   /* Disable if -DSQLITE_DIRECT_OVERFLOW_READ=0 */
 # undef SQLITE_DIRECT_OVERFLOW_READ
-#else
+#아니면
   /* In all other cases, enable */
 # define SQLITE_DIRECT_OVERFLOW_READ 1
 #endif
@@ -386,10 +386,10 @@
 ** logic is partially replicated in ctime.c. If it is updated here, it should
 ** also be updated there.
 */
-#if !defined(SQLITE_THREADSAFE)
-# if defined(THREADSAFE)
+#만약 !defined(SQLITE_THREADSAFE)
+# 만약 defined(THREADSAFE)
 #   define SQLITE_THREADSAFE THREADSAFE
-# else
+# 아니면
 #   define SQLITE_THREADSAFE 1 /* IMP: R-07272-22309 */
 # endif
 #endif
@@ -407,7 +407,7 @@
 ** default unless SQLite is compiled with SQLITE_DEFAULT_MEMSTATUS=0 in
 ** which case memory allocation statistics are disabled by default.
 */
-#if !defined(SQLITE_DEFAULT_MEMSTATUS)
+#만약 !defined(SQLITE_DEFAULT_MEMSTATUS)
 # define SQLITE_DEFAULT_MEMSTATUS 1
 #endif
 
@@ -428,7 +428,7 @@
 ** If none of the above are defined, then set SQLITE_SYSTEM_MALLOC as
 ** the default.
 */
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#만약 defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)>1
@@ -437,7 +437,7 @@
  SQLITE_SYSTEM_MALLOC, SQLITE_WIN32_MALLOC, SQLITE_MEMDEBUG,\
  SQLITE_ZERO_MALLOC"
 #endif
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#만약 defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)==0
@@ -448,7 +448,7 @@
 ** If SQLITE_MALLOC_SOFT_LIMIT is not zero, then try to keep the
 ** sizes of memory allocations below this value where possible.
 */
-#if !defined(SQLITE_MALLOC_SOFT_LIMIT)
+#만약 !defined(SQLITE_MALLOC_SOFT_LIMIT)
 # define SQLITE_MALLOC_SOFT_LIMIT 1024
 #endif
 
@@ -458,7 +458,7 @@
 ** But _XOPEN_SOURCE define causes problems for Mac OS X, so omit
 ** it.
 */
-#if !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
+#만약 !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
 #  define _XOPEN_SOURCE 600
 #endif
 
@@ -473,17 +473,17 @@
 ** is set.  Thus NDEBUG becomes an opt-in rather than an opt-out
 ** feature.
 */
-#if !defined(NDEBUG) && !defined(SQLITE_DEBUG)
+#만약 !defined(NDEBUG) && !defined(SQLITE_DEBUG)
 # define NDEBUG 1
 #endif
-#if defined(NDEBUG) && defined(SQLITE_DEBUG)
+#만약 defined(NDEBUG) && defined(SQLITE_DEBUG)
 # undef NDEBUG
 #endif
 
 /*
 ** Enable SQLITE_ENABLE_EXPLAIN_COMMENTS if SQLITE_DEBUG is turned on.
 */
-#if !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
+#만약 !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
 # define SQLITE_ENABLE_EXPLAIN_COMMENTS 1
 #endif
 
@@ -500,14 +500,14 @@
 ** where multiple cases go to the same block of code, testcase()
 ** can insure that all cases are evaluated.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#만약 defined(SQLITE_MUTATION_TEST)
 # define testcase(X)
 #elif defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 # ifndef SQLITE_AMALGAMATION
-    extern unsigned int sqlite3CoverageCounter;
+    extern unsigned 정수 sqlite3CoverageCounter;
 # endif
-# define testcase(X)  if( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
-#else
+# define testcase(X)  만약( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
+#아니면
 # define testcase(X)
 #endif
 
@@ -516,9 +516,9 @@
 ** other bits of code that are needed to support the arguments
 ** within testcase() and assert() macros.
 */
-#if !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
+#만약 !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
 # define TESTONLY(X)  X
-#else
+#아니면
 # define TESTONLY(X)
 #endif
 
@@ -532,7 +532,7 @@
 */
 #ifndef NDEBUG
 # define VVA_ONLY(X)  X
-#else
+#아니면
 # define VVA_ONLY(X)
 #endif
 
@@ -540,7 +540,7 @@
 ** Disable ALWAYS() and NEVER() (make them pass-throughs) for coverage
 ** and mutation testing
 */
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
+#만약 defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
 # define SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS  1
 #endif
 
@@ -559,13 +559,13 @@
 ** be true and false so that the unreachable code they specify will
 ** not be counted as untested code.
 */
-#if defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
+#만약 defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
 # define ALWAYS(X)      (1)
 # define NEVER(X)       (0)
 #elif !defined(NDEBUG)
 # define ALWAYS(X)      ((X)?1:(assert(0),0))
 # define NEVER(X)       ((X)?(assert(0),1):0)
-#else
+#아니면
 # define ALWAYS(X)      (X)
 # define NEVER(X)       (X)
 #endif
@@ -577,10 +577,10 @@
 **
 ** The following macros mark these optimizations conditionals.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#만약 defined(SQLITE_MUTATION_TEST)
 # define OK_IF_ALWAYS_TRUE(X)  (1)
 # define OK_IF_ALWAYS_FALSE(X) (0)
-#else
+#아니면
 # define OK_IF_ALWAYS_TRUE(X)  (X)
 # define OK_IF_ALWAYS_FALSE(X) (X)
 #endif
@@ -592,23 +592,23 @@
 ** during a normal build.  The following macro can be used to disable tests
 ** that are always false except when SQLITE_TEST_REALLOC_STRESS is set.
 */
-#if defined(SQLITE_TEST_REALLOC_STRESS)
+#만약 defined(SQLITE_TEST_REALLOC_STRESS)
 # define ONLY_IF_REALLOC_STRESS(X)  (X)
 #elif !defined(NDEBUG)
 # define ONLY_IF_REALLOC_STRESS(X)  ((X)?(assert(0),1):0)
-#else
+#아니면
 # define ONLY_IF_REALLOC_STRESS(X)  (0)
 #endif
 
 /*
 ** Declarations used for tracing the operating system interfaces.
 */
-#if defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
+#만약 defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
-  extern int sqlite3OSTrace;
-# define OSTRACE(X)          if( sqlite3OSTrace ) sqlite3DebugPrintf X
+  extern 정수 sqlite3OSTrace;
+# define OSTRACE(X)          만약( sqlite3OSTrace ) sqlite3DebugPrintf X
 # define SQLITE_HAVE_OS_TRACE
-#else
+#아니면
 # define OSTRACE(X)
 # undef  SQLITE_HAVE_OS_TRACE
 #endif
@@ -619,10 +619,10 @@
 ** OSTRACE is enabled), and by several "test*.c" files (which are
 ** compiled using SQLITE_TEST).
 */
-#if defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
+#만약 defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
 # define SQLITE_NEED_ERR_NAME
-#else
+#아니면
 # undef  SQLITE_NEED_ERR_NAME
 #endif
 
@@ -636,7 +636,7 @@
 /*
 ** SQLITE_OMIT_VIRTUALTABLE implies SQLITE_OMIT_ALTERTABLE
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
+#만약 defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
 # define SQLITE_OMIT_ALTERTABLE
 #endif
 
@@ -677,7 +677,7 @@
 */
 #ifdef SQLITE_INLINE_MEMCPY
 # define memcpy(D,S,N) {char*xxd=(char*)(D);const char*xxs=(const char*)(S);\
-                        int xxn=(N);while(xxn-->0)*(xxd++)=*(xxs++);}
+                        정수 xxn=(N);동안(xxn-->0)*(xxd++)=*(xxs++);}
 #endif
 
 /*
@@ -709,7 +709,7 @@
 */
 #ifdef SQLITE_OMIT_TEMPDB
 #define OMIT_TEMPDB 1
-#else
+#아니면
 #define OMIT_TEMPDB 0
 #endif
 
@@ -745,7 +745,7 @@
 ** SQLITE_TEMP_STORE is set to 3 (never use temporary files), set it
 ** to zero.
 */
-#if SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
+#만약 SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
 # undef SQLITE_MAX_WORKER_THREADS
 # define SQLITE_MAX_WORKER_THREADS 0
 #endif
@@ -755,7 +755,7 @@
 #ifndef SQLITE_DEFAULT_WORKER_THREADS
 # define SQLITE_DEFAULT_WORKER_THREADS 0
 #endif
-#if SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
+#만약 SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
 # undef SQLITE_MAX_WORKER_THREADS
 # define SQLITE_MAX_WORKER_THREADS SQLITE_DEFAULT_WORKER_THREADS
 #endif
@@ -785,7 +785,7 @@
 ** SQLITE_ENABLE_BATCH_ATOMIC_WRITE are not compatible with one another.
 ** You must choose one or the other (or neither) but not both.
 */
-#if defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#만약 defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
 #error Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
 #endif
 
@@ -808,9 +808,9 @@
 ** Work around C99 "flex-array" syntax for pre-C99 compilers, so as
 ** to avoid complaints from -fsanitize=strict-bounds.
 */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#만약 defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 # define FLEXARRAY
-#else
+#아니면
 # define FLEXARRAY 1
 #endif
 
@@ -833,9 +833,9 @@
 ** Check to see if this machine uses EBCDIC.  (Yes, believe it or
 ** not, there are still machines out there that use EBCDIC.)
 */
-#if 'A' == '\301'
+#만약 'A' == '\301'
 # define SQLITE_EBCDIC 1
-#else
+#아니면
 # define SQLITE_ASCII 1
 #endif
 
@@ -849,35 +849,35 @@
 #ifndef UINT32_TYPE
 # ifdef HAVE_UINT32_T
 #  define UINT32_TYPE uint32_t
-# else
-#  define UINT32_TYPE unsigned int
+# 아니면
+#  define UINT32_TYPE unsigned 정수
 # endif
 #endif
 #ifndef UINT16_TYPE
 # ifdef HAVE_UINT16_T
 #  define UINT16_TYPE uint16_t
-# else
-#  define UINT16_TYPE unsigned short int
+# 아니면
+#  define UINT16_TYPE unsigned short 정수
 # endif
 #endif
 #ifndef INT16_TYPE
 # ifdef HAVE_INT16_T
 #  define INT16_TYPE int16_t
-# else
-#  define INT16_TYPE short int
+# 아니면
+#  define INT16_TYPE short 정수
 # endif
 #endif
 #ifndef UINT8_TYPE
 # ifdef HAVE_UINT8_T
 #  define UINT8_TYPE uint8_t
-# else
+# 아니면
 #  define UINT8_TYPE unsigned char
 # endif
 #endif
 #ifndef INT8_TYPE
 # ifdef HAVE_INT8_T
 #  define INT8_TYPE int8_t
-# else
+# 아니면
 #  define INT8_TYPE signed char
 # endif
 #endif
@@ -939,25 +939,25 @@ typedef INT16_TYPE LogEst;
 ** Set the SQLITE_PTRSIZE macro to the number of bytes in a pointer
 */
 #ifndef SQLITE_PTRSIZE
-# if defined(__SIZEOF_POINTER__)
+# 만약 defined(__SIZEOF_POINTER__)
 #   define SQLITE_PTRSIZE __SIZEOF_POINTER__
 # elif defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
        defined(_M_ARM)   || defined(__arm__)    || defined(__x86)   ||    \
       (defined(__APPLE__) && defined(__ppc__)) ||                         \
       (defined(__TOS_AIX__) && !defined(__64BIT__))
 #   define SQLITE_PTRSIZE 4
-# else
+# 아니면
 #   define SQLITE_PTRSIZE 8
 # endif
 #endif
 
 /* The uptr type is an unsigned integer large enough to hold a pointer
 */
-#if defined(HAVE_STDINT_H)
+#만약 defined(HAVE_STDINT_H)
   typedef uintptr_t uptr;
 #elif SQLITE_PTRSIZE==4
   typedef u32 uptr;
-#else
+#아니면
   typedef u64 uptr;
 #endif
 
@@ -1017,7 +1017,7 @@ typedef INT16_TYPE LogEst;
 ** respectively.
 */
 #ifndef SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
-# if defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
+# 만약 defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
 #   define SQLITE_BYTEORDER 4321
 # elif defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__
 #   define SQLITE_BYTEORDER 1234
@@ -1030,11 +1030,11 @@ typedef INT16_TYPE LogEst;
 #   define SQLITE_BYTEORDER 1234
 # elif defined(sparc)   || defined(__ARMEB__)     || defined(__AARCH64EB__)
 #   define SQLITE_BYTEORDER 4321
-# else
+# 아니면
 #   define SQLITE_BYTEORDER 0
 # endif
 #endif
-#if SQLITE_BYTEORDER==4321
+#만약 SQLITE_BYTEORDER==4321
 # define SQLITE_BIGENDIAN    1
 # define SQLITE_LITTLEENDIAN 0
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16BE
@@ -1042,11 +1042,11 @@ typedef INT16_TYPE LogEst;
 # define SQLITE_BIGENDIAN    0
 # define SQLITE_LITTLEENDIAN 1
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16LE
-#else
+#아니면
 # ifdef SQLITE_AMALGAMATION
-  const int sqlite3one = 1;
-# else
-  extern const int sqlite3one;
+  const 정수 sqlite3one = 1;
+# 아니면
+  extern const 정수 sqlite3one;
 # endif
 # define SQLITE_BIGENDIAN    (*(char *)(&sqlite3one)==0)
 # define SQLITE_LITTLEENDIAN (*(char *)(&sqlite3one)==1)
@@ -1081,9 +1081,9 @@ typedef INT16_TYPE LogEst;
 ** size is 8.
 */
 #define ROUND8(x)     (((x)+7)&~7)
-#if SQLITE_PTRSIZE==8
+#만약 SQLITE_PTRSIZE==8
 # define ROUND8P(x)   (x)
-#else
+#아니면
 # define ROUND8P(x)   (((x)+7)&~7)
 #endif
 
@@ -1103,7 +1103,7 @@ typedef INT16_TYPE LogEst;
 */
 #ifdef SQLITE_4_BYTE_ALIGNED_MALLOC
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&3)==0)
-#else
+#아니면
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&7)==0)
 #endif
 #define TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
@@ -1111,7 +1111,7 @@ typedef INT16_TYPE LogEst;
 /*
 ** Disable MMAP on platforms where it is known to not work
 */
-#if defined(__OpenBSD__) || defined(__QNXNTO__)
+#만약 defined(__OpenBSD__) || defined(__QNXNTO__)
 # undef SQLITE_MAX_MMAP_SIZE
 # define SQLITE_MAX_MMAP_SIZE 0
 #endif
@@ -1123,14 +1123,14 @@ typedef INT16_TYPE LogEst;
 # include <TargetConditionals.h>
 #endif
 #ifndef SQLITE_MAX_MMAP_SIZE
-# if defined(__linux__) \
+# 만약 defined(__linux__) \
   || defined(_WIN32) \
   || (defined(__APPLE__) && defined(__MACH__)) \
   || defined(__sun) \
   || defined(__FreeBSD__) \
   || defined(__DragonFly__)
 #   define SQLITE_MAX_MMAP_SIZE 0x7fff0000  /* 2147418112 */
-# else
+# 아니면
 #   define SQLITE_MAX_MMAP_SIZE 0
 # endif
 #endif
@@ -1143,7 +1143,7 @@ typedef INT16_TYPE LogEst;
 #ifndef SQLITE_DEFAULT_MMAP_SIZE
 # define SQLITE_DEFAULT_MMAP_SIZE 0
 #endif
-#if SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
+#만약 SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
 # undef SQLITE_DEFAULT_MMAP_SIZE
 # define SQLITE_DEFAULT_MMAP_SIZE SQLITE_MAX_MMAP_SIZE
 #endif
@@ -1152,18 +1152,18 @@ typedef INT16_TYPE LogEst;
 ** TREETRACE_ENABLED will be either 1 or 0 depending on whether or not
 ** the Abstract Syntax Tree tracing logic is turned on.
 */
-#if !defined(SQLITE_AMALGAMATION)
+#만약 !defined(SQLITE_AMALGAMATION)
 extern u32 sqlite3TreeTrace;
 #endif
-#if defined(SQLITE_DEBUG) \
+#만약 defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_SELECTTRACE) \
                              || defined(SQLITE_ENABLE_TREETRACE))
 # define TREETRACE_ENABLED 1
 # define TREETRACE(K,P,S,X)  \
-  if(sqlite3TreeTrace&(K))   \
+  만약(sqlite3TreeTrace&(K))   \
     sqlite3DebugPrintf("%u/%d/%p: ",(S)->selId,(P)->addrExplain,(S)),\
     sqlite3DebugPrintf X
-#else
+#아니면
 # define TREETRACE(K,P,S,X)
 # define TREETRACE_ENABLED 0
 #endif
@@ -1198,11 +1198,11 @@ extern u32 sqlite3TreeTrace;
 ** Macros for "wheretrace"
 */
 extern u32 sqlite3WhereTrace;
-#if defined(SQLITE_DEBUG) \
+#만약 defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_WHERETRACE))
-# define WHERETRACE(K,X)  if(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
+# define WHERETRACE(K,X)  만약(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
 # define WHERETRACE_ENABLED 1
-#else
+#아니면
 # define WHERETRACE(K,X)
 #endif
 
@@ -1251,9 +1251,9 @@ extern u32 sqlite3WhereTrace;
 */
 typedef struct BusyHandler BusyHandler;
 struct BusyHandler {
-  int (*xBusyHandler)(void *,int);  /* The busy callback */
+  정수 (*xBusyHandler)(void *,정수);  /* The busy callback */
   void *pBusyArg;                   /* First arg to busy callback */
-  int nBusy;                        /* Incremented with each busy call */
+  정수 nBusy;                        /* Incremented with each busy call */
 };
 
 /*
@@ -1294,7 +1294,7 @@ struct BusyHandler {
 ** A convenience macro that returns the number of elements in
 ** an array.
 */
-#define ArraySize(X)    ((int)(sizeof(X)/sizeof(X[0])))
+#define ArraySize(X)    ((정수)(sizeof(X)/sizeof(X[0])))
 
 /*
 ** Determine if the argument is a power of two
@@ -1329,9 +1329,9 @@ struct BusyHandler {
   #define SQLITE_WSD const
   #define GLOBAL(t,v) (*(t*)sqlite3_wsd_find((void*)&(v), sizeof(v)))
   #define sqlite3GlobalConfig GLOBAL(struct Sqlite3Config, sqlite3Config)
-  int sqlite3_wsd_init(int N, int J);
-  void *sqlite3_wsd_find(void *K, int L);
-#else
+  정수 sqlite3_wsd_init(정수 N, 정수 J);
+  void *sqlite3_wsd_find(void *K, 정수 L);
+#아니면
   #define SQLITE_WSD
   #define GLOBAL(t,v) v
   #define sqlite3GlobalConfig sqlite3Config
@@ -1431,22 +1431,22 @@ typedef struct With With;
 */
 #ifdef SQLITE_BITMASK_TYPE
   typedef SQLITE_BITMASK_TYPE Bitmask;
-#else
+#아니면
   typedef u64 Bitmask;
 #endif
 
 /*
 ** The number of bits in a Bitmask.  "BMS" means "BitMask Size".
 */
-#define BMS  ((int)(sizeof(Bitmask)*8))
+#define BMS  ((정수)(sizeof(Bitmask)*8))
 
 /*
 ** A bit in a Bitmask
 */
 #define MASKBIT(n)    (((Bitmask)1)<<(n))
 #define MASKBIT64(n)  (((u64)1)<<(n))
-#define MASKBIT32(n)  (((unsigned int)1)<<(n))
-#define SMASKBIT32(n) ((n)<=31?((unsigned int)1)<<(n):0)
+#define MASKBIT32(n)  (((unsigned 정수)1)<<(n))
+#define SMASKBIT32(n) ((n)<=31?((unsigned 정수)1)<<(n):0)
 #define ALLBITS       ((Bitmask)-1)
 #define TOPBIT        (((Bitmask)1)<<(BMS-1))
 
@@ -1456,7 +1456,7 @@ typedef struct With With;
 ** on the sqlite3VListAdd() routine for more information.  A VList is really
 ** just an array of integers.
 */
-typedef int VList;
+typedef 정수 VList;
 
 /*
 ** Defer sourcing vdbe.h and btree.h until after the "u8" and
@@ -1534,8 +1534,8 @@ struct Db {
 ** For a TEMP Schema, only the connection mutex is required.
 */
 struct Schema {
-  int schema_cookie;   /* Database schema version number for this file */
-  int iGeneration;     /* Generation counter.  Incremented with each change */
+  정수 schema_cookie;   /* Database schema version number for this file */
+  정수 iGeneration;     /* Generation counter.  Incremented with each change */
   Hash tblHash;        /* All tables indexed by name */
   Hash idxHash;        /* All (named) indices indexed by name */
   Hash trigHash;       /* All triggers indexed by name */
@@ -1544,7 +1544,7 @@ struct Schema {
   u8 file_format;      /* Schema format version for this file */
   u8 enc;              /* Text encoding used by this database */
   u16 schemaFlags;     /* Flags associated with this schema */
-  int cache_size;      /* Number of pages to use in the cache */
+  정수 cache_size;      /* Number of pages to use in the cache */
 };
 
 /*
@@ -1651,7 +1651,7 @@ struct LookasideSlot {
 /* Size of the smaller allocations in two-size lookaside */
 #ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #  define LOOKASIDE_SMALL           0
-#else
+#아니면
 #  define LOOKASIDE_SMALL         128
 #endif
 
@@ -1672,7 +1672,7 @@ struct FuncDefHash {
 /*
 ** typedef for the authorization callback function.
 */
-typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
+typedef 정수 (*sqlite3_xauth)(void*,정수,const char*,const char*,const char*,
                              const char*);
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -1681,7 +1681,7 @@ typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
 */
 #define SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
 #define SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
-#else
+#아니면
 #define SQLITE_TRACE_LEGACY          0
 #define SQLITE_TRACE_XPROFILE        0
 #endif /* SQLITE_OMIT_DEPRECATED */
@@ -1702,17 +1702,17 @@ struct sqlite3 {
   CollSeq *pDfltColl;           /* BINARY collseq for the database encoding */
   sqlite3_mutex *mutex;         /* Connection mutex */
   Db *aDb;                      /* All backends */
-  int nDb;                      /* Number of backends currently in use */
+  정수 nDb;                      /* Number of backends currently in use */
   u32 mDbFlags;                 /* flags recording internal state */
   u64 flags;                    /* flags settable by pragmas. See below */
   i64 lastRowid;                /* ROWID of most recent insert (see above) */
   i64 szMmap;                   /* Default mmap_size setting */
   u32 nSchemaLock;              /* Do not reset the schema when non-zero */
-  unsigned int openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
-  int errCode;                  /* Most recent error code (SQLITE_*) */
-  int errByteOffset;            /* Byte offset of error in SQL statement */
-  int errMask;                  /* & result codes with this before returning */
-  int iSysErrno;                /* Errno value from last system error */
+  unsigned 정수 openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
+  정수 errCode;                  /* Most recent error code (SQLITE_*) */
+  정수 errByteOffset;            /* Byte offset of error in SQL statement */
+  정수 errMask;                  /* & result codes with this before returning */
+  정수 iSysErrno;                /* Errno value from last system error */
   u8 enc;                       /* Text encoding */
   u8 autoCommit;                /* The auto-commit flag. */
   u8 temp_store;                /* 1: file 2: memory 0: default */
@@ -1728,12 +1728,12 @@ struct sqlite3 {
   u8 nSqlExec;                  /* Number of pending OP_SqlExec opcodes */
   u8 eOpenState;                /* Current condition of the connection */
   u8 nFpDigit;                  /* Significant digits to keep on double->text */
-  int nextPagesize;             /* Pagesize after VACUUM if >0 */
+  정수 nextPagesize;             /* Pagesize after VACUUM if >0 */
   i64 nChange;                  /* Value returned by sqlite3_changes() */
   i64 nTotalChange;             /* Value returned by sqlite3_total_changes() */
   u32 dbOptFlags;               /* Flags to enable/disable optimizations */
-  int aLimit[SQLITE_N_LIMIT];   /* Limits */
-  int nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
+  정수 aLimit[SQLITE_N_LIMIT];   /* Limits */
+  정수 nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
   struct sqlite3InitInfo {      /* Information used during initialization */
     Pgno newTnum;               /* Rootpage of table being initialized */
     u8 iDb;                     /* Which db file is being initialized */
@@ -1743,16 +1743,16 @@ struct sqlite3 {
     unsigned reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
     const char **azInit;        /* "type", "name", and "tbl_name" columns */
   } init;
-  int nVdbeActive;              /* Number of VDBEs currently running */
-  int nVdbeRead;                /* Number of active VDBEs that read or write */
-  int nVdbeWrite;               /* Number of active VDBEs that read and write */
-  int nVdbeExec;                /* Number of nested calls to VdbeExec() */
-  int nVDestroy;                /* Number of active OP_VDestroy operations */
-  int nExtension;               /* Number of loaded extensions */
+  정수 nVdbeActive;              /* Number of VDBEs currently running */
+  정수 nVdbeRead;                /* Number of active VDBEs that read or write */
+  정수 nVdbeWrite;               /* Number of active VDBEs that read and write */
+  정수 nVdbeExec;                /* Number of nested calls to VdbeExec() */
+  정수 nVDestroy;                /* Number of active OP_VDestroy operations */
+  정수 nExtension;               /* Number of loaded extensions */
   void **aExtension;            /* Array of shared library handles */
   union {
     void (*xLegacy)(void*,const char*);   /* mTrace==SQLITE_TRACE_LEGACY */
-    int (*xV2)(u32,void*,void*,void*);    /* All other mTrace values */
+    정수 (*xV2)(u32,void*,void*,void*);    /* All other mTrace values */
   } trace;
   void *pTraceArg;                        /* Argument to the trace function */
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -1760,32 +1760,32 @@ struct sqlite3 {
   void *pProfileArg;                        /* Argument to profile function */
 #endif
   void *pCommitArg;                 /* Argument to xCommitCallback() */
-  int (*xCommitCallback)(void*);    /* Invoked at every commit. */
+  정수 (*xCommitCallback)(void*);    /* Invoked at every commit. */
   void *pRollbackArg;               /* Argument to xRollbackCallback() */
   void (*xRollbackCallback)(void*); /* Invoked at every commit. */
   void *pUpdateArg;
-  void (*xUpdateCallback)(void*,int, const char*,const char*,sqlite_int64);
+  void (*xUpdateCallback)(void*,정수, const char*,const char*,sqlite_int64);
   void *pAutovacPagesArg;           /* Client argument to autovac_pages */
   void (*xAutovacDestr)(void*);     /* Destructor for pAutovacPAgesArg */
-  unsigned int (*xAutovacPages)(void*,const char*,u32,u32,u32);
+  unsigned 정수 (*xAutovacPages)(void*,const char*,u32,u32,u32);
   Parse *pParse;                /* Current parse */
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
   void *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
   void (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
-    void*,sqlite3*,int,char const*,char const*,sqlite3_int64,sqlite3_int64
+    void*,sqlite3*,정수,char const*,char const*,sqlite3_int64,sqlite3_int64
   );
   PreUpdate *pPreUpdate;        /* Context for active pre-update callback */
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 #ifndef SQLITE_OMIT_WAL
-  int (*xWalCallback)(void *, sqlite3 *, const char *, int);
+  정수 (*xWalCallback)(void *, sqlite3 *, const char *, 정수);
   void *pWalArg;
 #endif
-  void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*);
-  void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*);
+  void(*xCollNeeded)(void*,sqlite3*,정수 eTextRep,const char*);
+  void(*xCollNeeded16)(void*,sqlite3*,정수 eTextRep,const void*);
   void *pCollNeededArg;
   sqlite3_value *pErr;          /* Most recent error message */
   union {
-    volatile int isInterrupted; /* True if sqlite3_interrupt has been called */
+    volatile 정수 isInterrupted; /* True if sqlite3_interrupt has been called */
     double notUsed1;            /* Spacer */
   } u1;
   Lookaside lookaside;          /* Lookaside malloc configuration */
@@ -1794,12 +1794,12 @@ struct sqlite3 {
   void *pAuthArg;               /* 1st argument to the access auth function */
 #endif
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  int (*xProgress)(void *);     /* The progress callback */
+  정수 (*xProgress)(void *);     /* The progress callback */
   void *pProgressArg;           /* Argument to the progress callback */
   unsigned nProgressOps;        /* Number of opcodes for progress callback */
 #endif
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVTrans;                  /* Allocated size of aVTrans */
+  정수 nVTrans;                  /* Allocated size of aVTrans */
   Hash aModule;                 /* populated by sqlite3_create_module() */
   VtabCtx *pVtabCtx;            /* Context for active vtab connect/create */
   VTable **aVTrans;             /* Virtual tables with open transactions */
@@ -1810,17 +1810,17 @@ struct sqlite3 {
   BusyHandler busyHandler;      /* Busy callback */
   Db aDbStatic[2];              /* Static space for the 2 default backends */
   Savepoint *pSavepoint;        /* List of active savepoints */
-  int nAnalysisLimit;           /* Number of index rows to ANALYZE */
-  int busyTimeout;              /* Busy handler timeout, in msec */
+  정수 nAnalysisLimit;           /* Number of index rows to ANALYZE */
+  정수 busyTimeout;              /* Busy handler timeout, in msec */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  int setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
-  int setlkFlags;               /* Flags passed to setlk_timeout() */
+  정수 setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
+  정수 setlkFlags;               /* Flags passed to setlk_timeout() */
 #endif
-  int nSavepoint;               /* Number of non-transaction savepoints */
-  int nStatement;               /* Number of nested statement-transactions  */
+  정수 nSavepoint;               /* Number of non-transaction savepoints */
+  정수 nStatement;               /* Number of nested statement-transactions  */
   i64 nDeferredCons;            /* Net deferred constraints this transaction. */
   i64 nDeferredImmCons;         /* Net deferred immediate constraints */
-  int *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
+  정수 *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
   DbClientData *pDbData;        /* sqlite3_set_clientdata() content */
   u64 nSpill;                   /* TEMP content spilled to disk */
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
@@ -1837,7 +1837,7 @@ struct sqlite3 {
   sqlite3 *pBlockingConnection; /* Connection that caused SQLITE_LOCKED */
   sqlite3 *pUnlockConnection;           /* Connection to watch for unlock */
   void *pUnlockArg;                     /* Argument to xUnlockNotify */
-  void (*xUnlockNotify)(void **, int);  /* Unlock notify callback */
+  void (*xUnlockNotify)(void **, 정수);  /* Unlock notify callback */
   sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
 #endif
 };
@@ -2007,10 +2007,10 @@ struct FuncDef {
   u32 funcFlags;       /* Some combination of SQLITE_FUNC_* */
   void *pUserData;     /* User data parameter */
   FuncDef *pNext;      /* Next function with same name */
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**); /* func or agg-step */
+  void (*xSFunc)(sqlite3_context*,정수,sqlite3_value**); /* func or agg-step */
   void (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
   void (*xValue)(sqlite3_context*);                     /* Current agg value */
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**); /* inverse agg-step */
+  void (*xInverse)(sqlite3_context*,정수,sqlite3_value**); /* inverse agg-step */
   const char *zName;   /* SQL name of the function. */
   union {
     FuncDef *pHash;      /* Next with a different name but the same hash */
@@ -2033,7 +2033,7 @@ struct FuncDef {
 ** is invoked and the FuncDestructor structure freed.
 */
 struct FuncDestructor {
-  int nRef;
+  정수 nRef;
   void (*xDestroy)(void *);
   void *pUserData;
 };
@@ -2248,7 +2248,7 @@ struct Savepoint {
 struct Module {
   const sqlite3_module *pModule;       /* Callback pointers */
   const char *zName;                   /* Name passed to create_module() */
-  int nRefModule;                      /* Number of pointers to this object */
+  정수 nRefModule;                      /* Number of pointers to this object */
   void *pAux;                          /* pAux passed to create_module() */
   void (*xDestroy)(void *);            /* Module destructor function */
   Table *pEpoTab;                      /* Eponymous table for this module */
@@ -2340,7 +2340,7 @@ struct CollSeq {
   char *zName;          /* Name of the collating sequence, UTF-8 encoded */
   u8 enc;               /* Text encoding handled by xCmp() */
   void *pUser;          /* First argument to xCmp() */
-  int (*xCmp)(void*,int, const void*, int, const void*);
+  정수 (*xCmp)(void*,정수, const void*, 정수, const void*);
   void (*xDel)(void*);  /* Destructor for pUser */
 };
 
@@ -2441,11 +2441,11 @@ struct VTable {
   sqlite3 *db;              /* Database connection associated with this table */
   Module *pMod;             /* Pointer to module implementation */
   sqlite3_vtab *pVtab;      /* Pointer to vtab instance */
-  int nRef;                 /* Number of pointers to this structure */
+  정수 nRef;                 /* Number of pointers to this structure */
   u8 bConstraint;           /* True if constraints are supported */
   u8 bAllSchemas;           /* True if might use any attached schema */
   u8 eVtabRisk;             /* Riskiness of allowing hacker access */
-  int iSavepoint;           /* Depth of the SAVEPOINT stack */
+  정수 iSavepoint;           /* Depth of the SAVEPOINT stack */
   VTable *pNext;            /* Next in linked list (see above) */
 };
 
@@ -2481,7 +2481,7 @@ struct Table {
   u8 eTabType;         /* 0: normal, 1: virtual, 2: view */
   union {
     struct {             /* Used by ordinary tables: */
-      int addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
+      정수 addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
       FKey *pFKey;         /* Linked list of all foreign keys in this table */
       ExprList *pDfltList; /* DEFAULT clauses on various columns.
                            ** Or the AS clause for generated columns. */
@@ -2490,7 +2490,7 @@ struct Table {
       Select *pSelect;     /* View definition */
     } view;
     struct {             /* Used by virtual tables only: */
-      int nArg;            /* Number of arguments to the module */
+      정수 nArg;            /* Number of arguments to the module */
       char **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
       VTable *p;           /* List of VTable objects. */
     } vtab;
@@ -2554,7 +2554,7 @@ struct Table {
 #  define IsVirtual(X)      ((X)->eTabType==TABTYP_VTAB)
 #  define ExprIsVtab(X)  \
    ((X)->op==TK_COLUMN && (X)->y.pTab->eTabType==TABTYP_VTAB)
-#else
+#아니면
 #  define IsVirtual(X)      0
 #  define ExprIsVtab(X)     0
 #endif
@@ -2565,13 +2565,13 @@ struct Table {
 ** always false unless SQLITE_ENABLE_HIDDEN_COLUMNS is defined.  The
 ** IsHiddenColumn() macro is general purpose.
 */
-#if defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
+#만약 defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
 #  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
 #  define IsOrdinaryHiddenColumn(X) (((X)->colFlags & COLFLAG_HIDDEN)!=0)
 #elif !defined(SQLITE_OMIT_VIRTUALTABLE)
 #  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
 #  define IsOrdinaryHiddenColumn(X) 0
-#else
+#아니면
 #  define IsHiddenColumn(X)         0
 #  define IsOrdinaryHiddenColumn(X) 0
 #endif
@@ -2586,7 +2586,7 @@ struct Table {
 */
 #ifndef SQLITE_ALLOW_ROWID_IN_VIEW
 # define ViewCanHaveRowid     0
-#else
+#아니면
 # define ViewCanHaveRowid     (sqlite3Config.mNoVisibleRowid==0)
 #endif
 
@@ -2624,13 +2624,13 @@ struct FKey {
   char *zTo;        /* Name of table that the key points to (aka: Parent) */
   FKey *pNextTo;    /* Next with the same zTo. Next child of zTo. */
   FKey *pPrevTo;    /* Previous with the same zTo */
-  int nCol;         /* Number of columns in this key */
+  정수 nCol;         /* Number of columns in this key */
   /* EV: R-30323-21917 */
   u8 isDeferred;       /* True if constraint checking is deferred till COMMIT */
   u8 aAction[2];        /* ON DELETE and ON UPDATE actions, respectively */
   Trigger *apTrigger[2];/* Triggers for aAction[] actions */
   struct sColMap {      /* Mapping of columns in pFrom to columns in zTo */
-    int iFrom;            /* Index of column in pFrom */
+    정수 iFrom;            /* Index of column in pFrom */
     char *zCol;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
   } aCol[FLEXARRAY];      /* One entry for each of nCol columns */
 };
@@ -2715,9 +2715,9 @@ struct KeyInfo {
 #define SZ_KEYINFO(N)  (offsetof(KeyInfo,aColl) + (N)*sizeof(CollSeq*))
 
 /* The size of a bare KeyInfo with no aColl[] entries */
-#if FLEXARRAY+1 > 1
+#만약 FLEXARRAY+1 > 1
 # define SZ_KEYINFO_0   offsetof(KeyInfo,aColl)
-#else
+#아니면
 # define SZ_KEYINFO_0   sizeof(KeyInfo)
 #endif
 
@@ -2768,7 +2768,7 @@ struct UnpackedRecord {
     char *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
     i64 i;              /* Cache of aMem[0].u.i for vdbeRecordCompareInt() */
   } u;
-  int n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
+  정수 n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
   u16 nField;         /* Number of entries in apMem[] */
   i8 default_rc;      /* Comparison result if keys are equal */
   u8 errCode;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
@@ -2854,9 +2854,9 @@ struct Index {
   unsigned bHasExpr:1;     /* Index contains an expression, either a literal
                            ** expression, or a reference to a VIRTUAL column */
 #ifdef SQLITE_ENABLE_STAT4
-  int nSample;             /* Number of elements in aSample[] */
-  int mxSample;            /* Number of slots allocated to aSample[] */
-  int nSampleCol;          /* Size of IndexSample.anEq[] and so on */
+  정수 nSample;             /* Number of elements in aSample[] */
+  정수 mxSample;            /* Number of slots allocated to aSample[] */
+  정수 nSampleCol;          /* Size of IndexSample.anEq[] and so on */
   tRowcnt *aAvgEq;         /* Average nEq values for keys not in aSample */
   IndexSample *aSample;    /* Samples of the left-most key */
   tRowcnt *aiRowEst;       /* Non-logarithmic stat1 data for this index */
@@ -2892,7 +2892,7 @@ struct Index {
 */
 struct IndexSample {
   void *p;          /* Pointer to sampled record */
-  int n;            /* Size of record in bytes */
+  정수 n;            /* Size of record in bytes */
   tRowcnt *anEq;    /* Est. number of rows where the key equals this sample */
   tRowcnt *anLt;    /* Est. number of rows where key is less than this sample */
   tRowcnt *anDLt;   /* Est. number of distinct keys less than this sample */
@@ -2916,7 +2916,7 @@ struct IndexSample {
 */
 struct Token {
   const char *z;     /* Text of the token.  Not NULL-terminated! */
-  unsigned int n;    /* Number of characters in this token */
+  unsigned 정수 n;    /* Number of characters in this token */
 };
 
 /*
@@ -2938,32 +2938,32 @@ struct AggInfo {
   u8 useSortingIdx;       /* In direct mode, reference the sorting index rather
                           ** than the source table */
   u32 nSortingColumn;     /* Number of columns in the sorting index */
-  int sortingIdx;         /* Cursor number of the sorting index */
-  int sortingIdxPTab;     /* Cursor number of pseudo-table */
-  int iFirstReg;          /* First register in range for aCol[] and aFunc[] */
+  정수 sortingIdx;         /* Cursor number of the sorting index */
+  정수 sortingIdxPTab;     /* Cursor number of pseudo-table */
+  정수 iFirstReg;          /* First register in range for aCol[] and aFunc[] */
   ExprList *pGroupBy;     /* The group by clause */
   struct AggInfo_col {    /* For each column used in source tables */
     Table *pTab;             /* Source table */
     Expr *pCExpr;            /* The original expression */
-    int iTable;              /* Cursor number of the source table */
-    int iColumn;             /* Column number within the source table */
-    int iSorterColumn;       /* Column number in the sorting index */
+    정수 iTable;              /* Cursor number of the source table */
+    정수 iColumn;             /* Column number within the source table */
+    정수 iSorterColumn;       /* Column number in the sorting index */
   } *aCol;
-  int nColumn;            /* Number of used entries in aCol[] */
-  int nAccumulator;       /* Number of columns that show through to the output.
+  정수 nColumn;            /* Number of used entries in aCol[] */
+  정수 nAccumulator;       /* Number of columns that show through to the output.
                           ** Additional columns are used only as parameters to
                           ** aggregate functions */
   struct AggInfo_func {   /* For each aggregate function */
     Expr *pFExpr;            /* Expression encoding the function */
     FuncDef *pFunc;          /* The aggregate function implementation */
-    int iDistinct;           /* Ephemeral table used to enforce DISTINCT */
-    int iDistAddr;           /* Address of OP_OpenEphemeral */
-    int iOBTab;              /* Ephemeral table to implement ORDER BY */
+    정수 iDistinct;           /* Ephemeral table used to enforce DISTINCT */
+    정수 iDistAddr;           /* Address of OP_OpenEphemeral */
+    정수 iOBTab;              /* Ephemeral table to implement ORDER BY */
     u8 bOBPayload;           /* iOBTab has payload columns separate from key */
     u8 bOBUnique;            /* Enforce uniqueness on iOBTab keys */
     u8 bUseSubtype;          /* Transfer subtype info through sorter */
   } *aFunc;
-  int nFunc;              /* Number of entries in aFunc[] */
+  정수 nFunc;              /* Number of entries in aFunc[] */
   u32 selId;              /* Select to which this AggInfo belongs */
 #ifdef SQLITE_DEBUG
   Select *pSelect;        /* SELECT statement that this AggInfo supports */
@@ -2981,7 +2981,7 @@ struct AggInfo {
 #define AggInfoColumnReg(A,I)  (assert((A)->iFirstReg),(A)->iFirstReg+(I))
 #define AggInfoFuncReg(A,I)    \
                       (assert((A)->iFirstReg),(A)->iFirstReg+(A)->nColumn+(I))
-#else
+#아니면
 #define AggInfoColumnReg(A,I)  ((A)->iFirstReg+(I))
 #define AggInfoFuncReg(A,I)    \
                       ((A)->iFirstReg+(A)->nColumn+(I))
@@ -2997,10 +2997,10 @@ struct AggInfo {
 ** to have prepared statements with over 32766 variables, and for them
 ** the option is available (at compile-time).
 */
-#if SQLITE_MAX_VARIABLE_NUMBER<32767
+#만약 SQLITE_MAX_VARIABLE_NUMBER<32767
 typedef i16 ynVar;
-#else
-typedef int ynVar;
+#아니면
+typedef 정수 ynVar;
 #endif
 
 /*
@@ -3079,7 +3079,7 @@ struct Expr {
   u32 flags;             /* Various flags.  EP_* See below */
   union {
     char *zToken;          /* Token value. Zero terminated and dequoted */
-    int iValue;            /* Non-negative integer value if EP_IntValue */
+    정수 iValue;            /* Non-negative integer value if EP_IntValue */
   } u;
 
   /* If the EP_TokenOnly flag is set in the Expr.flags mask, then no
@@ -3099,10 +3099,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int nHeight;           /* Height of the tree headed by this node */
+#만약 SQLITE_MAX_EXPR_DEPTH>0
+  정수 nHeight;           /* Height of the tree headed by this node */
 #endif
-  int iTable;            /* TK_COLUMN: cursor number of table holding column
+  정수 iTable;            /* TK_COLUMN: cursor number of table holding column
                          ** TK_REGISTER: register number
                          ** TK_TRIGGER: 1 -> new, 0 -> old
                          ** EP_Unlikely:  134217728 times likelihood
@@ -3114,18 +3114,18 @@ struct Expr {
                          ** TK_SELECT_COLUMN: column of the result vector */
   i16 iAgg;              /* Which entry in pAggInfo->aCol[] or ->aFunc[] */
   union {
-    int iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
-    int iOfst;             /* else: start of token from start of statement */
+    정수 iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
+    정수 iOfst;             /* else: start of token from start of statement */
   } w;
   AggInfo *pAggInfo;     /* Used by TK_AGG_COLUMN and TK_AGG_FUNCTION */
   union {
     Table *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
                            ** for a column of an index on an expression */
     Window *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
-    int nReg;              /* TK_NULLS: Number of registers to NULL out */
+    정수 nReg;              /* TK_NULLS: Number of registers to NULL out */
     struct {               /* TK_IN, TK_SELECT, and TK_EXISTS */
-      int iAddr;             /* Subroutine entry address */
-      int regReturn;         /* Register used to hold return address */
+      정수 iAddr;             /* Subroutine entry address */
+      정수 regReturn;         /* Register used to hold return address */
     } sub;
   } y;
 };
@@ -3211,7 +3211,7 @@ struct Expr {
 # define ExprSetVVAProperty(E,P)   (E)->vvaFlags|=(P)
 # define ExprHasVVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
 # define ExprClearVVAProperties(E) (E)->vvaFlags = 0
-#else
+#아니면
 # define ExprSetVVAProperty(E,P)
 # define ExprHasVVAProperty(E,P)   0
 # define ExprClearVVAProperties(E)
@@ -3238,7 +3238,7 @@ struct Expr {
 */
 #ifdef SQLITE_OMIT_WINDOWFUNC
 # define IsWindowFunc(p) 0
-#else
+#아니면
 # define IsWindowFunc(p) ( \
     ExprHasProperty((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
  )
@@ -3267,8 +3267,8 @@ struct Expr {
 **                     expression.
 */
 struct ExprList {
-  int nExpr;             /* Number of expressions on the list */
-  int nAlloc;            /* Number of a[] slots allocated */
+  정수 nExpr;             /* Number of expressions on the list */
+  정수 nAlloc;            /* Number of a[] slots allocated */
   struct ExprList_item { /* For each expression in the list */
     Expr *pExpr;            /* The parse tree for this expression */
     char *zEName;           /* Token associated with this expression */
@@ -3289,7 +3289,7 @@ struct ExprList {
         u16 iOrderByCol;      /* For ORDER BY, column number in result set */
         u16 iAlias;           /* Index into Parse.aAlias[] for zName */
       } x;
-      int iConstExprReg;   /* Register in which Expr value is cached. Used only
+      정수 iConstExprReg;   /* Register in which Expr value is cached. Used only
                            ** by Parse.pConstExpr */
     } u;
   } a[FLEXARRAY];          /* One slot for each expression in the list */
@@ -3324,7 +3324,7 @@ struct ExprList {
 ** If "a" is the k-th column of table "t", then IdList.a[0].idx==k.
 */
 struct IdList {
-  int nId;         /* Number of identifiers on the list */
+  정수 nId;         /* Number of identifiers on the list */
   struct IdList_item {
     char *zName;      /* Name of the identifier */
   } a[FLEXARRAY];
@@ -3346,9 +3346,9 @@ struct IdList {
 */
 struct Subquery {
   Select *pSelect;  /* A SELECT statement used in place of a table name */
-  int addrFillSub;  /* Address of subroutine to initialize a subquery */
-  int regReturn;    /* Register holding return address of addrFillSub */
-  int regResult;    /* Registers holding results of a co-routine */
+  정수 addrFillSub;  /* Address of subroutine to initialize a subquery */
+  정수 regReturn;    /* Register holding return address of addrFillSub */
+  정수 regResult;    /* Registers holding results of a co-routine */
 };
 
 /*
@@ -3414,7 +3414,7 @@ struct SrcItem {
     unsigned hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
     unsigned fromExists :1;    /* Comes from WHERE EXISTS(...) */
   } fg;
-  int iCursor;      /* The VDBE cursor number used to access this table */
+  정수 iCursor;      /* The VDBE cursor number used to access this table */
   Bitmask colUsed;  /* Bit N set if column N used. Details above for N>62 */
   union {
     char *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
@@ -3453,7 +3453,7 @@ struct OnOrUsing {
 **
 */
 struct SrcList {
-  int nSrc;             /* Number of tables or subqueries in the FROM clause */
+  정수 nSrc;             /* Number of tables or subqueries in the FROM clause */
   u32 nAlloc;           /* Number of entries allocated in a[] below */
   SrcItem a[FLEXARRAY]; /* One entry for each identifier on the list */
 };
@@ -3540,12 +3540,12 @@ struct NameContext {
     ExprList *pEList;    /* Optional list of result-set columns */
     AggInfo *pAggInfo;   /* Information about aggregates at this level */
     Upsert *pUpsert;     /* ON CONFLICT clause information from an upsert */
-    int iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
+    정수 iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
   } uNC;
   NameContext *pNext;  /* Next outer name context.  NULL for outermost */
-  int nRef;            /* Number of names resolved by this context */
-  int nNcErr;          /* Number of errors encountered while resolving names */
-  int ncFlags;         /* Zero or more NC_* flags defined below */
+  정수 nRef;            /* Number of names resolved by this context */
+  정수 nNcErr;          /* Number of errors encountered while resolving names */
+  정수 ncFlags;         /* Zero or more NC_* flags defined below */
   u32 nNestedSelect;   /* Number of nested selects using this NC */
   Select *pWinSelect;  /* SELECT statement for any window functions */
 };
@@ -3615,9 +3615,9 @@ struct Upsert {
   ** statement and will be freed by INSERT processing. */
   Index *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
   SrcList *pUpsertSrc;      /* Table to be updated */
-  int regData;              /* First register holding array of VALUES */
-  int iDataCur;             /* Index of the data cursor */
-  int iIdxCur;              /* Index of the first index cursor */
+  정수 regData;              /* First register holding array of VALUES */
+  정수 iDataCur;             /* Index of the data cursor */
+  정수 iIdxCur;              /* Index of the first index cursor */
 };
 
 /*
@@ -3628,7 +3628,7 @@ struct Select {
   u8 op;                 /* One of: TK_UNION TK_ALL TK_INTERSECT TK_EXCEPT */
   LogEst nSelectRow;     /* Estimated number of result rows */
   u32 selFlags;          /* Various SF_* values */
-  int iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
+  정수 iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
   u32 selId;             /* Unique identifier number for this SELECT */
   ExprList *pEList;      /* The fields of the result */
   SrcList *pSrc;         /* The FROM clause */
@@ -3790,10 +3790,10 @@ struct Select {
 */
 struct SelectDest {
   u8 eDest;            /* How to dispose of the results.  One of SRT_* above. */
-  int iSDParm;         /* A parameter used by the eDest disposal method */
-  int iSDParm2;        /* A second parameter for the eDest disposal method */
-  int iSdst;           /* Base register where results are written */
-  int nSdst;           /* Number of registers allocated */
+  정수 iSDParm;         /* A parameter used by the eDest disposal method */
+  정수 iSDParm2;        /* A second parameter for the eDest disposal method */
+  정수 iSdst;           /* Base register where results are written */
+  정수 nSdst;           /* Number of registers allocated */
   char *zAffSdst;      /* Affinity used for SRT_Set */
   ExprList *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
 };
@@ -3810,8 +3810,8 @@ struct SelectDest {
 struct AutoincInfo {
   AutoincInfo *pNext;   /* Next info block in a list of them all */
   Table *pTab;          /* Table this info block refers to */
-  int iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
-  int regCtr;           /* Memory register holding the rowid counter */
+  정수 iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
+  정수 regCtr;           /* Memory register holding the rowid counter */
 };
 
 /*
@@ -3836,22 +3836,22 @@ struct TriggerPrg {
   Trigger *pTrigger;      /* Trigger this program was coded from */
   TriggerPrg *pNext;      /* Next entry in Parse.pTriggerPrg list */
   SubProgram *pProgram;   /* Program implementing pTrigger/orconf */
-  int orconf;             /* Default ON CONFLICT policy */
+  정수 orconf;             /* Default ON CONFLICT policy */
   u32 aColmask[2];        /* Masks of old.*, new.* columns accessed */
 };
 
 /*
 ** The yDbMask datatype for the bitmask of all attached databases.
 */
-#if SQLITE_MAX_ATTACHED>30
+#만약 SQLITE_MAX_ATTACHED>30
   typedef unsigned char yDbMask[(SQLITE_MAX_ATTACHED+9)/8];
 # define DbMaskTest(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
 # define DbMaskZero(M)      memset((M),0,sizeof(M))
 # define DbMaskSet(M,I)     (M)[(I)/8]|=(1<<((I)&7))
 # define DbMaskAllZero(M)   sqlite3DbMaskAllZero(M)
 # define DbMaskNonZero(M)   (sqlite3DbMaskAllZero(M)==0)
-#else
-  typedef unsigned int yDbMask;
+#아니면
+  typedef unsigned 정수 yDbMask;
 # define DbMaskTest(M,I)    (((M)&(((yDbMask)1)<<(I)))!=0)
 # define DbMaskZero(M)      ((M)=0)
 # define DbMaskSet(M,I)     ((M)|=(((yDbMask)1)<<(I)))
@@ -3871,9 +3871,9 @@ struct TriggerPrg {
 */
 struct IndexedExpr {
   Expr *pExpr;            /* The expression contained in the index */
-  int iDataCur;           /* The data cursor associated with the index */
-  int iIdxCur;            /* The index cursor */
-  int iIdxCol;            /* The index column that contains value of pExpr */
+  정수 iDataCur;           /* The data cursor associated with the index */
+  정수 iIdxCur;            /* The index cursor */
+  정수 iIdxCol;            /* The index column that contains value of pExpr */
   u8 bMaybeNullRow;       /* True if we need an OP_IfNullRow check */
   u8 aff;                 /* Affinity of the pExpr expression */
   IndexedExpr *pIENext;   /* Next in a list of all indexed expressions */
@@ -3920,7 +3920,7 @@ struct Parse {
   sqlite3 *db;         /* The main database structure */
   char *zErrMsg;       /* An error message */
   Vdbe *pVdbe;         /* An engine for executing database bytecode */
-  int rc;              /* Return code from execution */
+  정수 rc;              /* Return code from execution */
   LogEst nQueryLoop;   /* Est number of iterations of a query (10*log2(N)) */
   u8 nested;           /* Number of nested calls to the parser/code generator */
   u8 nTempReg;         /* Number of temporary registers in aTempReg[] */
@@ -3931,7 +3931,7 @@ struct Parse {
   u8 mSubrtnSig;       /* mini Bloom filter on available SubrtnSig.selId */
   u8 eTriggerOp;       /* TK_UPDATE, TK_INSERT or TK_DELETE */
   u8 eOrconf;          /* Default ON CONFLICT policy for trigger steps */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#만약 defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
   u8 earlyCleanup;     /* OOM inside sqlite3ParserAddCleanup() */
 #endif
 #ifdef SQLITE_DEBUG
@@ -3949,30 +3949,30 @@ struct Parse {
   bft okConstFactor:1; /* OK to factor out constants */
   bft checkSchema :1;  /* Causes schema cookie check after an error */
   bft usesAinc :1;     /* True if pAinc is valid */
-  int nRangeReg;       /* Size of the temporary register block */
-  int iRangeReg;       /* First register in temporary register block */
-  int nErr;            /* Number of errors seen */
-  int nTab;            /* Number of previously allocated VDBE cursors */
-  int nMem;            /* Number of memory cells used so far */
-  int szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
-  int iSelfTab;        /* Table associated with an index on expr, or negative
+  정수 nRangeReg;       /* Size of the temporary register block */
+  정수 iRangeReg;       /* First register in temporary register block */
+  정수 nErr;            /* Number of errors seen */
+  정수 nTab;            /* Number of previously allocated VDBE cursors */
+  정수 nMem;            /* Number of memory cells used so far */
+  정수 szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
+  정수 iSelfTab;        /* Table associated with an index on expr, or negative
                        ** of the base register during check-constraint eval */
-  int nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
-  int nLabel;          /* The *negative* of the number of labels used */
-  int nLabelAlloc;     /* Number of slots in aLabel */
-  int *aLabel;         /* Space to hold the labels */
+  정수 nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
+  정수 nLabel;          /* The *negative* of the number of labels used */
+  정수 nLabelAlloc;     /* Number of slots in aLabel */
+  정수 *aLabel;         /* Space to hold the labels */
   ExprList *pConstExpr;/* Constant expressions */
   IndexedExpr *pIdxEpr;/* List of expressions used by active indexes */
   IndexedExpr *pIdxPartExpr; /* Exprs constrained by index WHERE clauses */
   yDbMask writeMask;   /* Start a write transaction on these databases */
   yDbMask cookieMask;  /* Bitmask of schema verified databases */
-  int nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
-  int nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
+  정수 nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
+  정수 nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
   u32 nProgressSteps;  /* xProgress steps taken during sqlite3_prepare() */
 #endif
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  int nTableLock;        /* Number of locks in aTableLock */
+  정수 nTableLock;        /* Number of locks in aTableLock */
 #endif
   Parse *pToplevel;    /* Parse structure for main program (or NULL) */
   Table *pTriggerTab;  /* Table triggers are being coded for */
@@ -3987,16 +3987,16 @@ struct Parse {
   ** determined by offsetof(Parse,aTempReg).
   **************************************************************************/
 
-  int aTempReg[8];        /* Holding area for temporary registers */
+  정수 aTempReg[8];        /* Holding area for temporary registers */
   Parse *pOuterParse;     /* Outer Parse object when nested */
   Token sNameToken;       /* Token with unqualified schema object name */
   u32 oldmask;            /* Mask of old.* columns referenced */
   u32 newmask;            /* Mask of new.* columns referenced */
   union {
     struct {  /* These fields available when isCreate is true */
-      int addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
-      int regRowid;         /* Register holding rowid of CREATE TABLE entry */
-      int regRoot;          /* Register holding root page for new objects */
+      정수 addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
+      정수 regRowid;         /* Register holding rowid of CREATE TABLE entry */
+      정수 regRoot;          /* Register holding root page for new objects */
       Token constraintName; /* Name of the constraint currently being parsed */
     } cr;
     struct {  /* These fields available to all other statements */
@@ -4025,10 +4025,10 @@ struct Parse {
   u8 explain;               /* True if the EXPLAIN flag is found on the query */
   u8 eParseMode;            /* PARSE_MODE_XXX constant */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVtabLock;            /* Number of virtual tables to lock */
+  정수 nVtabLock;            /* Number of virtual tables to lock */
 #endif
-  int nHeight;              /* Expression tree height of current sub-select */
-  int addrExplain;          /* Address of current OP_Explain opcode */
+  정수 nHeight;              /* Expression tree height of current sub-select */
+  정수 addrExplain;          /* Address of current OP_Explain opcode */
   VList *pVList;            /* Mapping between variable names and numbers */
   Vdbe *pReprepare;         /* VM being reprepared (sqlite3Reprepare()) */
   const char *zTail;        /* All SQL text past the last semicolon parsed */
@@ -4069,19 +4069,19 @@ struct Parse {
 */
 #ifdef SQLITE_OMIT_VIRTUALTABLE
   #define IN_DECLARE_VTAB 0
-#else
+#아니면
   #define IN_DECLARE_VTAB (pParse->eParseMode==PARSE_MODE_DECLARE_VTAB)
 #endif
 
-#if defined(SQLITE_OMIT_ALTERTABLE)
+#만약 defined(SQLITE_OMIT_ALTERTABLE)
   #define IN_RENAME_OBJECT 0
-#else
+#아니면
   #define IN_RENAME_OBJECT (pParse->eParseMode>=PARSE_MODE_RENAME)
 #endif
 
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
+#만약 defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
   #define IN_SPECIAL_PARSE 0
-#else
+#아니면
   #define IN_SPECIAL_PARSE (pParse->eParseMode!=PARSE_MODE_NORMAL)
 #endif
 
@@ -4235,9 +4235,9 @@ struct Returning {
   ExprList *pReturnEL;  /* List of expressions to return */
   Trigger retTrig;      /* The transient trigger that implements RETURNING */
   TriggerStep retTStep; /* The trigger step */
-  int iRetCur;          /* Transient table holding RETURNING results */
-  int nRetCol;          /* Number of in pReturnEL after expansion */
-  int iRetReg;          /* Register array for holding a row of RETURNING */
+  정수 iRetCur;          /* Transient table holding RETURNING results */
+  정수 nRetCol;          /* Number of in pReturnEL after expansion */
+  정수 iRetReg;          /* Register array for holding a row of RETURNING */
   char zName[40];       /* Name of trigger: "sqlite_returning_%p" */
 };
 
@@ -4290,8 +4290,8 @@ struct RCStr {
 typedef struct {
   sqlite3 *db;        /* The database being initialized */
   char **pzErrMsg;    /* Error message stored here */
-  int iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
-  int rc;             /* Result code stored here */
+  정수 iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
+  정수 rc;             /* Result code stored here */
   u32 mInitFlags;     /* Flags controlling error messages */
   u32 nInitRow;       /* Number of rows processed */
   Pgno mxPage;        /* Maximum page number.  0 for no limit. */
@@ -4318,7 +4318,7 @@ typedef struct {
 #define SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
 #ifdef SQLITE_DEBUG
 # define Tuning(X)  (sqlite3Config.aTune[(X)-1])
-#else
+#아니면
 # define Tuning(X)  0
 #endif
 
@@ -4328,7 +4328,7 @@ typedef struct {
 ** This structure also contains some state information.
 */
 struct Sqlite3Config {
-  int bMemstat;                     /* True to enable memory status */
+  정수 bMemstat;                     /* True to enable memory status */
   u8 bCoreMutex;                    /* True to enable core mutexing */
   u8 bFullMutex;                    /* True to enable full mutexing */
   u8 bOpenUri;                      /* True to interpret filenames as URIs */
@@ -4338,38 +4338,38 @@ struct Sqlite3Config {
 #ifdef SQLITE_DEBUG
   u8 bJsonSelfcheck;                /* Double-check JSON parsing */
 #endif
-  int mxStrlen;                     /* Maximum string length */
-  int neverCorrupt;                 /* Database is always well-formed */
-  int szLookaside;                  /* Default lookaside buffer size */
-  int nLookaside;                   /* Default lookaside buffer count */
-  int nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
+  정수 mxStrlen;                     /* Maximum string length */
+  정수 neverCorrupt;                 /* Database is always well-formed */
+  정수 szLookaside;                  /* Default lookaside buffer size */
+  정수 nLookaside;                   /* Default lookaside buffer count */
+  정수 nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
   sqlite3_mem_methods m;            /* Low-level memory allocation interface */
   sqlite3_mutex_methods mutex;      /* Low-level mutex interface */
   sqlite3_pcache_methods2 pcache2;  /* Low-level page-cache interface */
   void *pHeap;                      /* Heap storage space */
-  int nHeap;                        /* Size of pHeap[] */
-  int mnReq, mxReq;                 /* Min and max heap requests sizes */
+  정수 nHeap;                        /* Size of pHeap[] */
+  정수 mnReq, mxReq;                 /* Min and max heap requests sizes */
   sqlite3_int64 szMmap;             /* mmap() space per open file */
   sqlite3_int64 mxMmap;             /* Maximum value for szMmap */
   void *pPage;                      /* Page cache memory */
-  int szPage;                       /* Size of each page in pPage[] */
-  int nPage;                        /* Number of pages in pPage[] */
-  int mxParserStack;                /* maximum depth of the parser stack */
-  int sharedCacheEnabled;           /* true if shared-cache mode enabled */
+  정수 szPage;                       /* Size of each page in pPage[] */
+  정수 nPage;                        /* Number of pages in pPage[] */
+  정수 mxParserStack;                /* maximum depth of the parser stack */
+  정수 sharedCacheEnabled;           /* true if shared-cache mode enabled */
   u32 szPma;                        /* Maximum Sorter PMA size */
   /* The above might be initialized to non-zero.  The following need to always
   ** initially be zero, however. */
-  int isInit;                       /* True after initialization has finished */
-  int inProgress;                   /* True while initialization in progress */
-  int isMutexInit;                  /* True after mutexes are initialized */
-  int isMallocInit;                 /* True after malloc is initialized */
-  int isPCacheInit;                 /* True after malloc is initialized */
-  int nRefInitMutex;                /* Number of users of pInitMutex */
+  정수 isInit;                       /* True after initialization has finished */
+  정수 inProgress;                   /* True while initialization in progress */
+  정수 isMutexInit;                  /* True after mutexes are initialized */
+  정수 isMallocInit;                 /* True after malloc is initialized */
+  정수 isPCacheInit;                 /* True after malloc is initialized */
+  정수 nRefInitMutex;                /* Number of users of pInitMutex */
   sqlite3_mutex *pInitMutex;        /* Mutex used by sqlite3_initialize() */
-  void (*xLog)(void*,int,const char*); /* Function for logging */
+  void (*xLog)(void*,정수,const char*); /* Function for logging */
   void *pLogArg;                       /* First argument to xLog() */
 #ifdef SQLITE_ENABLE_SQLLOG
-  void(*xSqllog)(void*,sqlite3*,const char*, int);
+  void(*xSqllog)(void*,sqlite3*,const char*, 정수);
   void *pSqllogArg;
 #endif
 #ifdef SQLITE_VDBE_COVERAGE
@@ -4383,18 +4383,18 @@ struct Sqlite3Config {
   sqlite3_int64 mxMemdbSize;        /* Default max memdb size */
 #endif
 #ifndef SQLITE_UNTESTABLE
-  int (*xTestCallback)(int);        /* Invoked by sqlite3FaultSim() */
+  정수 (*xTestCallback)(정수);        /* Invoked by sqlite3FaultSim() */
 #endif
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
   u32 mNoVisibleRowid;              /* TF_NoVisibleRowid if the ROWID_IN_VIEW
                                     ** feature is disabled.  0 if rowids can
                                     ** occur in views. */
 #endif
-  int bLocaltimeFault;              /* True to fail localtime() calls */
-  int (*xAltLocaltime)(const void*,void*); /* Alternative localtime() routine */
-  int iOnceResetThreshold;          /* When to reset OP_Once counters */
+  정수 bLocaltimeFault;              /* True to fail localtime() calls */
+  정수 (*xAltLocaltime)(const void*,void*); /* Alternative localtime() routine */
+  정수 iOnceResetThreshold;          /* When to reset OP_Once counters */
   u32 szSorterRef;                  /* Min size in bytes to use sorter-refs */
-  unsigned int iPrngSeed;           /* Alternative fixed seed for the PRNG */
+  unsigned 정수 iPrngSeed;           /* Alternative fixed seed for the PRNG */
   /* vvvv--- must be last ---vvv */
 #ifdef SQLITE_DEBUG
   sqlite3_int64 aTune[SQLITE_NTUNE]; /* Tuning parameters */
@@ -4424,21 +4424,21 @@ struct Sqlite3Config {
 */
 struct Walker {
   Parse *pParse;                            /* Parser context.  */
-  int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
-  int (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
+  정수 (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
+  정수 (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
   void (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
-  int walkerDepth;                          /* Number of subqueries */
+  정수 walkerDepth;                          /* Number of subqueries */
   u16 eCode;                                /* A small processing code */
   u16 mWFlags;                              /* Use-dependent flags */
   union {                                   /* Extra data for callback */
     NameContext *pNC;                         /* Naming context */
-    int n;                                    /* A counter */
-    int iCur;                                 /* A cursor number */
-    int sz;                                   /* String literal length */
+    정수 n;                                    /* A counter */
+    정수 iCur;                                 /* A cursor number */
+    정수 sz;                                   /* String literal length */
     SrcList *pSrcList;                        /* FROM clause */
     struct CCurHint *pCCurHint;               /* Used by codeCursorHint() */
     struct RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
-    int *aiCol;                               /* array of column indexes */
+    정수 *aiCol;                               /* array of column indexes */
     struct IdxCover *pIdxCover;               /* Check for index coverage */
     ExprList *pGroupBy;                       /* GROUP BY clause */
     Select *pSelect;                          /* HAVING to WHERE clause ctx */
@@ -4470,16 +4470,16 @@ struct DbFixer {
 };
 
 /* Forward declarations */
-int sqlite3WalkExpr(Walker*, Expr*);
-int sqlite3WalkExprNN(Walker*, Expr*);
-int sqlite3WalkExprList(Walker*, ExprList*);
-int sqlite3WalkSelect(Walker*, Select*);
-int sqlite3WalkSelectExpr(Walker*, Select*);
-int sqlite3WalkSelectFrom(Walker*, Select*);
-int sqlite3ExprWalkNoop(Walker*, Expr*);
-int sqlite3SelectWalkNoop(Walker*, Select*);
-int sqlite3SelectWalkFail(Walker*, Select*);
-int sqlite3WalkerDepthIncrease(Walker*,Select*);
+정수 sqlite3WalkExpr(Walker*, Expr*);
+정수 sqlite3WalkExprNN(Walker*, Expr*);
+정수 sqlite3WalkExprList(Walker*, ExprList*);
+정수 sqlite3WalkSelect(Walker*, Select*);
+정수 sqlite3WalkSelectExpr(Walker*, Select*);
+정수 sqlite3WalkSelectFrom(Walker*, Select*);
+정수 sqlite3ExprWalkNoop(Walker*, Expr*);
+정수 sqlite3SelectWalkNoop(Walker*, Select*);
+정수 sqlite3SelectWalkFail(Walker*, Select*);
+정수 sqlite3WalkerDepthIncrease(Walker*,Select*);
 void sqlite3WalkerDepthDecrease(Walker*,Select*);
 void sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
 
@@ -4489,7 +4489,7 @@ void sqlite3SelectWalkAssert2(Walker*, Select*);
 
 #ifndef SQLITE_OMIT_CTE
 void sqlite3SelectPopWith(Walker*, Select*);
-#else
+#아니면
 # define sqlite3SelectPopWith 0
 #endif
 
@@ -4525,8 +4525,8 @@ struct Cte {
 ** one or more CTEs (common table expressions).
 */
 struct With {
-  int nCte;               /* Number of CTEs in the WITH clause */
-  int bView;              /* Belongs to the outermost Select of a view */
+  정수 nCte;               /* Number of CTEs in the WITH clause */
+  정수 bView;              /* Belongs to the outermost Select of a view */
   With *pOuter;           /* Containing WITH clause, or NULL */
   Cte a[FLEXARRAY];       /* For each CTE in the WITH clause.... */
 };
@@ -4547,10 +4547,10 @@ struct With {
 ** until the end of code generation.
 */
 struct CteUse {
-  int nUse;              /* Number of users of this CTE */
-  int addrM9e;           /* Start of subroutine to compute materialization */
-  int regRtn;            /* Return address register for addrM9e subroutine */
-  int iCur;              /* Ephemeral table holding the materialization */
+  정수 nUse;              /* Number of users of this CTE */
+  정수 addrM9e;           /* Start of subroutine to compute materialization */
+  정수 regRtn;            /* Return address register for addrM9e subroutine */
+  정수 iCur;              /* Ephemeral table holding the materialization */
   LogEst nRowEst;        /* Estimated number of rows in the table */
   u8 eM10d;              /* The MATERIALIZED flag */
 };
@@ -4576,7 +4576,7 @@ struct DbClientData {
 ** data structures on sqlite3DebugPrintf() using a tree-like view.
 */
 struct TreeView {
-  int iLevel;             /* Which level of the tree we are on */
+  정수 iLevel;             /* Which level of the tree we are on */
   u8  bLine[100];         /* Draw vertical in column i if bLine[i] is true */
 };
 #endif /* SQLITE_DEBUG */
@@ -4620,18 +4620,18 @@ struct Window {
   Window *pNextWin;       /* Next window function belonging to this SELECT */
   Expr *pFilter;          /* The FILTER expression */
   FuncDef *pWFunc;        /* The function */
-  int iEphCsr;            /* Partition buffer or Peer buffer */
-  int regAccum;           /* Accumulator */
-  int regResult;          /* Interim result */
-  int csrApp;             /* Function cursor (used by min/max) */
-  int regApp;             /* Function register (also used by min/max) */
-  int regPart;            /* Array of registers for PARTITION BY values */
+  정수 iEphCsr;            /* Partition buffer or Peer buffer */
+  정수 regAccum;           /* Accumulator */
+  정수 regResult;          /* Interim result */
+  정수 csrApp;             /* Function cursor (used by min/max) */
+  정수 regApp;             /* Function register (also used by min/max) */
+  정수 regPart;            /* Array of registers for PARTITION BY values */
   Expr *pOwner;           /* Expression object this window is attached to */
-  int nBufferCol;         /* Number of columns in buffer table */
-  int iArgCol;            /* Offset of first argument for this function */
-  int regOne;             /* Register containing constant value 1 */
-  int regStartRowid;
-  int regEndRowid;
+  정수 nBufferCol;         /* Number of columns in buffer table */
+  정수 iArgCol;            /* Offset of first argument for this function */
+  정수 regOne;             /* Register containing constant value 1 */
+  정수 regStartRowid;
+  정수 regEndRowid;
   u8 bExprArgs;           /* Defer evaluation of window function arguments
                           ** due to the SQLITE_SUBTYPE flag */
 };
@@ -4643,20 +4643,20 @@ void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal);
 void sqlite3WindowDelete(sqlite3*, Window*);
 void sqlite3WindowUnlinkFromSelect(Window*);
 void sqlite3WindowListDelete(sqlite3 *db, Window *p);
-Window *sqlite3WindowAlloc(Parse*, int, int, Expr*, int , Expr*, u8);
+Window *sqlite3WindowAlloc(Parse*, 정수, 정수, Expr*, 정수 , Expr*, u8);
 void sqlite3WindowAttach(Parse*, Expr*, Window*);
 void sqlite3WindowLink(Select *pSel, Window *pWin);
-int sqlite3WindowCompare(const Parse*, const Window*, const Window*, int);
+정수 sqlite3WindowCompare(const Parse*, const Window*, const Window*, 정수);
 void sqlite3WindowCodeInit(Parse*, Select*);
-void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, int, int);
-int sqlite3WindowRewrite(Parse*, Select*);
+void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, 정수, 정수);
+정수 sqlite3WindowRewrite(Parse*, Select*);
 void sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
 Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p);
 Window *sqlite3WindowListDup(sqlite3 *db, Window *p);
 void sqlite3WindowFunctions(void);
 void sqlite3WindowChain(Parse*, Window*, Window*);
 Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
-#else
+#아니면
 # define sqlite3WindowDelete(a,b)
 # define sqlite3WindowFunctions()
 # define sqlite3WindowAttach(a,b,c)
@@ -4718,8 +4718,8 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** So the (0x80-1) constant is used for substr() and length().
 */
 #define SQLITE_SKIP_UTF8(zIn) {                        \
-  if( (*(zIn++))>=0xc0 ){                              \
-    while( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
+  만약( (*(zIn++))>=0xc0 ){                              \
+    동안( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
   }                                                    \
 }
 
@@ -4730,33 +4730,33 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** using sqlite3_log().  The routines also provide a convenient place
 ** to set a debugger breakpoint.
 */
-int sqlite3ReportError(int iErr, int lineno, const char *zType);
-int sqlite3CorruptError(int);
-int sqlite3MisuseError(int);
-int sqlite3CantopenError(int);
+정수 sqlite3ReportError(정수 iErr, 정수 lineno, const char *zType);
+정수 sqlite3CorruptError(정수);
+정수 sqlite3MisuseError(정수);
+정수 sqlite3CantopenError(정수);
 #define SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
 #define SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
 #define SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
 #ifdef SQLITE_DEBUG
-  int sqlite3NomemError(int);
-  int sqlite3IoerrnomemError(int);
+  정수 sqlite3NomemError(정수);
+  정수 sqlite3IoerrnomemError(정수);
 # define SQLITE_NOMEM_BKPT sqlite3NomemError(__LINE__)
 # define SQLITE_IOERR_NOMEM_BKPT sqlite3IoerrnomemError(__LINE__)
-#else
+#아니면
 # define SQLITE_NOMEM_BKPT SQLITE_NOMEM
 # define SQLITE_IOERR_NOMEM_BKPT SQLITE_IOERR_NOMEM
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
-  int sqlite3CorruptPgnoError(int,Pgno);
+#만약 defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
+  정수 sqlite3CorruptPgnoError(정수,Pgno);
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptPgnoError(__LINE__,(P))
-#else
+#아니면
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptError(__LINE__)
 #endif
 
 /*
 ** FTS3 and FTS4 both require virtual table support
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE)
+#만약 defined(SQLITE_OMIT_VIRTUALTABLE)
 # undef SQLITE_ENABLE_FTS3
 # undef SQLITE_ENABLE_FTS4
 #endif
@@ -4766,7 +4766,7 @@ int sqlite3CantopenError(int);
 ** SQLITE_ENABLE_FTS3 macro.  But to avoid confusion we also call
 ** the SQLITE_ENABLE_FTS4 macro to serve as an alias for SQLITE_ENABLE_FTS3.
 */
-#if defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
+#만약 defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
 # define SQLITE_ENABLE_FTS3 1
 #endif
 
@@ -4786,7 +4786,7 @@ int sqlite3CantopenError(int);
 # define sqlite3Isquote(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x80)
 # define sqlite3JsonId1(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x42)
 # define sqlite3JsonId2(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x46)
-#else
+#아니면
 # define sqlite3Toupper(x)   toupper((unsigned char)(x))
 # define sqlite3Isspace(x)   isspace((unsigned char)(x))
 # define sqlite3Isalnum(x)   isalnum((unsigned char)(x))
@@ -4798,18 +4798,18 @@ int sqlite3CantopenError(int);
 # define sqlite3JsonId1(x)   (sqlite3IsIdChar(x)&&(x)<'0')
 # define sqlite3JsonId2(x)   sqlite3IsIdChar(x)
 #endif
-int sqlite3IsIdChar(u8);
+정수 sqlite3IsIdChar(u8);
 
 /*
 ** Internal function prototypes
 */
-int sqlite3StrICmp(const char*,const char*);
-int sqlite3Strlen30(const char*);
+정수 sqlite3StrICmp(const char*,const char*);
+정수 sqlite3Strlen30(const char*);
 #define sqlite3Strlen30NN(C) (strlen(C)&0x3fffffff)
 char *sqlite3ColumnType(Column*,char*);
 #define sqlite3StrNICmp sqlite3_strnicmp
 
-int sqlite3MallocInit(void);
+정수 sqlite3MallocInit(void);
 void sqlite3MallocEnd(void);
 void *sqlite3Malloc(u64);
 void *sqlite3MallocZero(u64);
@@ -4825,15 +4825,15 @@ void *sqlite3DbRealloc(sqlite3 *, void *, u64);
 void sqlite3DbFree(sqlite3*, void*);
 void sqlite3DbFreeNN(sqlite3*, void*);
 void sqlite3DbNNFreeNN(sqlite3*, void*);
-int sqlite3MallocSize(const void*);
-int sqlite3DbMallocSize(sqlite3*, const void*);
-void *sqlite3PageMalloc(int);
+정수 sqlite3MallocSize(const void*);
+정수 sqlite3DbMallocSize(sqlite3*, const void*);
+void *sqlite3PageMalloc(정수);
 void sqlite3PageFree(void*);
 void sqlite3MemSetDefault(void);
 #ifndef SQLITE_UNTESTABLE
 void sqlite3BenignMallocHooks(void (*)(void), void (*)(void));
 #endif
-int sqlite3HeapNearlyFull(void);
+정수 sqlite3HeapNearlyFull(void);
 
 /*
 ** On systems with ample stack space and that support alloca(), make
@@ -4848,7 +4848,7 @@ int sqlite3HeapNearlyFull(void);
 # define sqlite3StackAllocRawNN(D,N) alloca(N)
 # define sqlite3StackFree(D,P)
 # define sqlite3StackFreeNN(D,P)
-#else
+#아니면
 # define sqlite3StackAllocRaw(D,N)   sqlite3DbMallocRaw(D,N)
 # define sqlite3StackAllocRawNN(D,N) sqlite3DbMallocRawNN(D,N)
 # define sqlite3StackFree(D,P)       sqlite3DbFree(D,P)
@@ -4870,21 +4870,21 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
 #ifndef SQLITE_MUTEX_OMIT
   sqlite3_mutex_methods const *sqlite3DefaultMutex(void);
   sqlite3_mutex_methods const *sqlite3NoopMutex(void);
-  sqlite3_mutex *sqlite3MutexAlloc(int);
-  int sqlite3MutexInit(void);
-  int sqlite3MutexEnd(void);
+  sqlite3_mutex *sqlite3MutexAlloc(정수);
+  정수 sqlite3MutexInit(void);
+  정수 sqlite3MutexEnd(void);
 #endif
-#if !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
+#만약 !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
   void sqlite3MemoryBarrier(void);
-#else
+#아니면
 # define sqlite3MemoryBarrier()
 #endif
 
-sqlite3_int64 sqlite3StatusValue(int);
-void sqlite3StatusUp(int, int);
-void sqlite3StatusDown(int, int);
-void sqlite3StatusHighwater(int, int);
-int sqlite3LookasideUsed(sqlite3*,int*);
+sqlite3_int64 sqlite3StatusValue(정수);
+void sqlite3StatusUp(정수, 정수);
+void sqlite3StatusDown(정수, 정수);
+void sqlite3StatusHighwater(정수, 정수);
+정수 sqlite3LookasideUsed(sqlite3*,정수*);
 
 /* Access to mutexes used by sqlite3_status() */
 sqlite3_mutex *sqlite3Pcache1Mutex(void);
@@ -4903,9 +4903,9 @@ sqlite3_mutex *sqlite3MallocMutex(void);
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
 #endif
 
-#if defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
+#만약 defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
 void sqlite3MutexWarnOnContention(sqlite3_mutex*);
-#else
+#아니면
 # define sqlite3MutexWarnOnContention(x)
 #endif
 
@@ -4914,9 +4914,9 @@ void sqlite3MutexWarnOnContention(sqlite3_mutex*);
 # define MAN754 ((((u64)1)<<52)-1)
 # define IsNaN(X) (((X)&EXP754)==EXP754 && ((X)&MAN754)!=0)
 # define IsOvfl(X) (((X)&EXP754)==EXP754)
-  int sqlite3IsNaN(double);
-  int sqlite3IsOverflow(double);
-#else
+  정수 sqlite3IsNaN(double);
+  정수 sqlite3IsOverflow(double);
+#아니면
 # define IsNaN(X)             0
 # define sqlite3IsNaN(X)      0
 # define sqlite3IsOVerflow(X) 0
@@ -4927,8 +4927,8 @@ void sqlite3MutexWarnOnContention(sqlite3_mutex*);
 ** functions arguments that are the parameters to the printf() function.
 */
 struct PrintfArguments {
-  int nArg;                /* Total number of arguments */
-  int nUsed;               /* Number of arguments used so far */
+  정수 nArg;                /* Total number of arguments */
+  정수 nUsed;               /* Number of arguments used so far */
   sqlite3_value **apArg;   /* The argument values */
 };
 
@@ -4942,45 +4942,45 @@ struct PrintfArguments {
 ** value into an approximate decimal representation.
 */
 struct FpDecode {
-  int n;                           /* Significant digits in the decode */
-  int iDP;                         /* Location of the decimal point */
+  정수 n;                           /* Significant digits in the decode */
+  정수 iDP;                         /* Location of the decimal point */
   char *z;                         /* Start of significant digits */
   char zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
   char sign;                       /* '+' or '-' */
   char isSpecial;                  /* 1: Infinity  2: NaN */
 };
 
-void sqlite3FpDecode(FpDecode*,double,int,int);
+void sqlite3FpDecode(FpDecode*,double,정수,정수);
 char *sqlite3MPrintf(sqlite3*,const char*, ...);
 char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+#만약 defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
   void sqlite3DebugPrintf(const char*, ...);
 #endif
-#if defined(SQLITE_TEST)
+#만약 defined(SQLITE_TEST)
   void *sqlite3TestTextToPtr(const char*);
   const char *sqlite3TestPtrToText(void*);
 #endif
 
-#if defined(SQLITE_DEBUG)
+#만약 defined(SQLITE_DEBUG)
   void sqlite3TreeViewLine(TreeView*, const char *zFormat, ...);
   void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);
   void sqlite3TreeViewBareExprList(TreeView*, const ExprList*, const char*);
   void sqlite3TreeViewExprList(TreeView*, const ExprList*, u8, const char*);
   void sqlite3TreeViewBareIdList(TreeView*, const IdList*, const char*);
   void sqlite3TreeViewIdList(TreeView*, const IdList*, u8, const char*);
-  void sqlite3TreeViewColumnList(TreeView*, const Column*, int, u8);
+  void sqlite3TreeViewColumnList(TreeView*, const Column*, 정수, u8);
   void sqlite3TreeViewSrcList(TreeView*, const SrcList*);
   void sqlite3TreeViewSelect(TreeView*, const Select*, u8);
   void sqlite3TreeViewWith(TreeView*, const With*, u8);
   void sqlite3TreeViewUpsert(TreeView*, const Upsert*, u8);
-#if TREETRACE_ENABLED
+#만약 TREETRACE_ENABLED
   void sqlite3TreeViewDelete(const With*, const SrcList*, const Expr*,
                              const ExprList*,const Expr*, const Trigger*);
   void sqlite3TreeViewInsert(const With*, const SrcList*,
                              const IdList*, const Select*, const ExprList*,
-                             int, const Upsert*, const Trigger*);
+                             정수, const Upsert*, const Trigger*);
   void sqlite3TreeViewUpdate(const With*, const SrcList*, const ExprList*,
-                             const Expr*, int, const ExprList*, const Expr*,
+                             const Expr*, 정수, const ExprList*, const Expr*,
                              const Upsert*, const Trigger*);
 #endif
 #ifndef SQLITE_OMIT_TRIGGER
@@ -5014,64 +5014,64 @@ char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
 void sqlite3SetString(char **, sqlite3*, const char*);
 void sqlite3ProgressCheck(Parse*);
 void sqlite3ErrorMsg(Parse*, const char*, ...);
-int sqlite3ErrorToParser(sqlite3*,int);
+정수 sqlite3ErrorToParser(sqlite3*,정수);
 void sqlite3Dequote(char*);
 void sqlite3DequoteExpr(Expr*);
 void sqlite3DequoteToken(Token*);
 void sqlite3DequoteNumber(Parse*, Expr*);
 void sqlite3TokenInit(Token*,char*);
-int sqlite3KeywordCode(const unsigned char*, int);
-int sqlite3RunParser(Parse*, const char*);
+정수 sqlite3KeywordCode(const unsigned char*, 정수);
+정수 sqlite3RunParser(Parse*, const char*);
 void sqlite3FinishCoding(Parse*);
-int sqlite3GetTempReg(Parse*);
-void sqlite3ReleaseTempReg(Parse*,int);
-int sqlite3GetTempRange(Parse*,int);
-void sqlite3ReleaseTempRange(Parse*,int,int);
+정수 sqlite3GetTempReg(Parse*);
+void sqlite3ReleaseTempReg(Parse*,정수);
+정수 sqlite3GetTempRange(Parse*,정수);
+void sqlite3ReleaseTempRange(Parse*,정수,정수);
 void sqlite3ClearTempRegCache(Parse*);
-void sqlite3TouchRegister(Parse*,int);
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
-int sqlite3FirstAvailableRegister(Parse*,int);
+void sqlite3TouchRegister(Parse*,정수);
+#만약 defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+정수 sqlite3FirstAvailableRegister(Parse*,정수);
 #endif
 #ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse*,int,int);
+정수 sqlite3NoTempsInRange(Parse*,정수,정수);
 #endif
-Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);
-Expr *sqlite3Expr(sqlite3*,int,const char*);
-Expr *sqlite3ExprInt32(sqlite3*,int);
+Expr *sqlite3ExprAlloc(sqlite3*,정수,const Token*,정수);
+Expr *sqlite3Expr(sqlite3*,정수,const char*);
+Expr *sqlite3ExprInt32(sqlite3*,정수);
 void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);
-Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*);
+Expr *sqlite3PExpr(Parse*, 정수, Expr*, Expr*);
 void sqlite3PExprAddSelect(Parse*, Expr*, Select*);
 Expr *sqlite3ExprAnd(Parse*,Expr*, Expr*);
 Expr *sqlite3ExprSimplifiedAndOr(Expr*);
-Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, int);
+Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, 정수);
 void sqlite3ExprAddFunctionOrderBy(Parse*,Expr*,ExprList*);
 void sqlite3ExprOrderByAggregateError(Parse*,Expr*);
 void sqlite3ExprFunctionUsable(Parse*,const Expr*,const FuncDef*);
 void sqlite3ExprAssignVarNumber(Parse*, Expr*, u32);
 void sqlite3ExprDelete(sqlite3*, Expr*);
 void sqlite3ExprDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprDeferredDelete(Parse*, Expr*);
+정수 sqlite3ExprDeferredDelete(Parse*, Expr*);
 void sqlite3ExprUnmapAndDelete(Parse*, Expr*);
 ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);
 ExprList *sqlite3ExprListAppendVector(Parse*,ExprList*,IdList*,Expr*);
-Select *sqlite3ExprListToValues(Parse*, int, ExprList*);
-void sqlite3ExprListSetSortOrder(ExprList*,int,int);
-void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,int);
+Select *sqlite3ExprListToValues(Parse*, 정수, ExprList*);
+void sqlite3ExprListSetSortOrder(ExprList*,정수,정수);
+void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,정수);
 void sqlite3ExprListSetSpan(Parse*,ExprList*,const char*,const char*);
 void sqlite3ExprListDelete(sqlite3*, ExprList*);
 void sqlite3ExprListDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprCanReturnSubtype(Parse*,Expr*);
+정수 sqlite3ExprCanReturnSubtype(Parse*,Expr*);
 u32 sqlite3ExprListFlags(const ExprList*);
-int sqlite3IndexHasDuplicateRootPage(Index*);
-int sqlite3Init(sqlite3*, char**);
-int sqlite3InitCallback(void*, int, char**, char**);
-int sqlite3InitOne(sqlite3*, int, char**, u32);
-void sqlite3Pragma(Parse*,Token*,Token*,Token*,int);
+정수 sqlite3IndexHasDuplicateRootPage(Index*);
+정수 sqlite3Init(sqlite3*, char**);
+정수 sqlite3InitCallback(void*, 정수, char**, char**);
+정수 sqlite3InitOne(sqlite3*, 정수, char**, u32);
+void sqlite3Pragma(Parse*,Token*,Token*,Token*,정수);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 Module *sqlite3PragmaVtabRegister(sqlite3*,const char *zName);
 #endif
 void sqlite3ResetAllSchemasOfConnection(sqlite3*);
-void sqlite3ResetOneSchema(sqlite3*,int);
+void sqlite3ResetOneSchema(sqlite3*,정수);
 void sqlite3CollapseDatabaseArray(sqlite3*);
 void sqlite3CommitInternalChanges(sqlite3*);
 void sqlite3ColumnSetExpr(Parse*,Table*,Column*,Expr*);
@@ -5081,169 +5081,169 @@ void sqlite3ColumnSetColl(sqlite3*,Column*,const char*zColl);
 const char *sqlite3ColumnColl(Column*);
 void sqlite3DeleteColumnNames(sqlite3*,Table*);
 void sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
-int sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
+정수 sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
 void sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,char);
 Table *sqlite3ResultSetOfSelect(Parse*,Select*,char);
-void sqlite3OpenSchemaTable(Parse *, int);
+void sqlite3OpenSchemaTable(Parse *, 정수);
 Index *sqlite3PrimaryKeyIndex(Table*);
-int sqlite3TableColumnToIndex(Index*, int);
+정수 sqlite3TableColumnToIndex(Index*, 정수);
 #ifdef SQLITE_OMIT_GENERATED_COLUMNS
 # define sqlite3TableColumnToStorage(T,X) (X)  /* No-op pass-through */
 # define sqlite3StorageColumnToTable(T,X) (X)  /* No-op pass-through */
-#else
+#아니면
   i16 sqlite3TableColumnToStorage(Table*, i16);
   i16 sqlite3StorageColumnToTable(Table*, i16);
 #endif
-void sqlite3StartTable(Parse*,Token*,Token*,int,int,int,int);
-#if SQLITE_ENABLE_HIDDEN_COLUMNS
+void sqlite3StartTable(Parse*,Token*,Token*,정수,정수,정수,정수);
+#만약 SQLITE_ENABLE_HIDDEN_COLUMNS
   void sqlite3ColumnPropertiesFromName(Table*, Column*);
-#else
+#아니면
 # define sqlite3ColumnPropertiesFromName(T,C) /* no-op */
 #endif
 void sqlite3AddColumn(Parse*,Token,Token);
-void sqlite3AddNotNull(Parse*, int);
-void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
+void sqlite3AddNotNull(Parse*, 정수);
+void sqlite3AddPrimaryKey(Parse*, ExprList*, 정수, 정수, 정수);
 void sqlite3AddCheckConstraint(Parse*, Expr*, const char*, const char*);
 void sqlite3AddDefaultValue(Parse*,Expr*,const char*,const char*);
 void sqlite3AddCollateType(Parse*, Token*);
 void sqlite3AddGenerated(Parse*,Expr*,Token*);
 void sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
 void sqlite3AddReturning(Parse*,ExprList*);
-int sqlite3ParseUri(const char*,const char*,unsigned int*,
+정수 sqlite3ParseUri(const char*,const char*,unsigned 정수*,
                     sqlite3_vfs**,char**,char **);
 #define sqlite3CodecQueryParameters(A,B,C) 0
 Btree *sqlite3DbNameToBtree(sqlite3*,const char*);
 
 #ifdef SQLITE_UNTESTABLE
 # define sqlite3FaultSim(X) SQLITE_OK
-#else
-  int sqlite3FaultSim(int);
+#아니면
+  정수 sqlite3FaultSim(정수);
 #endif
 
 Bitvec *sqlite3BitvecCreate(u32);
-int sqlite3BitvecTest(Bitvec*, u32);
-int sqlite3BitvecTestNotNull(Bitvec*, u32);
-int sqlite3BitvecSet(Bitvec*, u32);
+정수 sqlite3BitvecTest(Bitvec*, u32);
+정수 sqlite3BitvecTestNotNull(Bitvec*, u32);
+정수 sqlite3BitvecSet(Bitvec*, u32);
 void sqlite3BitvecClear(Bitvec*, u32, void*);
 void sqlite3BitvecDestroy(Bitvec*);
 u32 sqlite3BitvecSize(Bitvec*);
 #ifndef SQLITE_UNTESTABLE
-int sqlite3BitvecBuiltinTest(int,int*);
+정수 sqlite3BitvecBuiltinTest(정수,정수*);
 #endif
 
 RowSet *sqlite3RowSetInit(sqlite3*);
 void sqlite3RowSetDelete(void*);
 void sqlite3RowSetClear(void*);
 void sqlite3RowSetInsert(RowSet*, i64);
-int sqlite3RowSetTest(RowSet*, int iBatch, i64);
-int sqlite3RowSetNext(RowSet*, i64*);
+정수 sqlite3RowSetTest(RowSet*, 정수 iBatch, i64);
+정수 sqlite3RowSetNext(RowSet*, i64*);
 
-void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,int,int);
+void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,정수,정수);
 
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-  int sqlite3ViewGetColumnNames(Parse*,Table*);
-#else
+#만약 !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+  정수 sqlite3ViewGetColumnNames(Parse*,Table*);
+#아니면
 # define sqlite3ViewGetColumnNames(A,B) 0
 #endif
 
-#if SQLITE_MAX_ATTACHED>30
-  int sqlite3DbMaskAllZero(yDbMask);
+#만약 SQLITE_MAX_ATTACHED>30
+  정수 sqlite3DbMaskAllZero(yDbMask);
 #endif
-void sqlite3DropTable(Parse*, SrcList*, int, int);
-void sqlite3CodeDropTable(Parse*, Table*, int, int);
+void sqlite3DropTable(Parse*, SrcList*, 정수, 정수);
+void sqlite3CodeDropTable(Parse*, Table*, 정수, 정수);
 void sqlite3DeleteTable(sqlite3*, Table*);
 void sqlite3DeleteTableGeneric(sqlite3*, void*);
 void sqlite3FreeIndex(sqlite3*, Index*);
 #ifndef SQLITE_OMIT_AUTOINCREMENT
   void sqlite3AutoincrementBegin(Parse *pParse);
   void sqlite3AutoincrementEnd(Parse *pParse);
-#else
+#아니면
 # define sqlite3AutoincrementBegin(X)
 # define sqlite3AutoincrementEnd(X)
 #endif
-void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
+void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, 정수, Upsert*);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  void sqlite3ComputeGeneratedColumns(Parse*, int, Table*);
+  void sqlite3ComputeGeneratedColumns(Parse*, 정수, Table*);
 #endif
-void *sqlite3ArrayAllocate(sqlite3*,void*,int,int*,int*);
+void *sqlite3ArrayAllocate(sqlite3*,void*,정수,정수*,정수*);
 IdList *sqlite3IdListAppend(Parse*, IdList*, Token*);
-int sqlite3IdListIndex(IdList*,const char*);
-SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, int, int);
+정수 sqlite3IdListIndex(IdList*,const char*);
+SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, 정수, 정수);
 SrcList *sqlite3SrcListAppendList(Parse *pParse, SrcList *p1, SrcList *p2);
 SrcList *sqlite3SrcListAppend(Parse*, SrcList*, Token*, Token*);
 void sqlite3SubqueryDelete(sqlite3*,Subquery*);
 Select *sqlite3SubqueryDetach(sqlite3*,SrcItem*);
-int sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, int);
+정수 sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, 정수);
 SrcList *sqlite3SrcListAppendFromTerm(Parse*, SrcList*, Token*, Token*,
                                       Token*, Select*, OnOrUsing*);
 void sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
 void sqlite3SrcListFuncArgs(Parse*, SrcList*, ExprList*);
-int sqlite3IndexedByLookup(Parse *, SrcItem *);
+정수 sqlite3IndexedByLookup(Parse *, SrcItem *);
 void sqlite3SrcListShiftJoinType(Parse*,SrcList*);
 void sqlite3SrcListAssignCursors(Parse*, SrcList*);
 void sqlite3IdListDelete(sqlite3*, IdList*);
 void sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
 void sqlite3SrcListDelete(sqlite3*, SrcList*);
-Index *sqlite3AllocateIndexObject(sqlite3*,int,int,char**);
-int sqlite3IndexBloomable(const Index*,int);
-void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,int,Token*,
-                          Expr*, int, int, u8);
-void sqlite3DropIndex(Parse*, SrcList*, int);
-int sqlite3Select(Parse*, Select*, SelectDest*);
+Index *sqlite3AllocateIndexObject(sqlite3*,정수,정수,char**);
+정수 sqlite3IndexBloomable(const Index*,정수);
+void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,정수,Token*,
+                          Expr*, 정수, 정수, u8);
+void sqlite3DropIndex(Parse*, SrcList*, 정수);
+정수 sqlite3Select(Parse*, Select*, SelectDest*);
 Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,
                          Expr*,ExprList*,u32,Expr*);
 void sqlite3SelectDelete(sqlite3*, Select*);
 void sqlite3SelectDeleteGeneric(sqlite3*,void*);
 void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
 Table *sqlite3SrcListLookup(Parse*, SrcList*);
-int sqlite3IsReadOnly(Parse*, Table*, Trigger*);
-void sqlite3OpenTable(Parse*, int iCur, int iDb, Table*, int);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
+정수 sqlite3IsReadOnly(Parse*, Table*, Trigger*);
+void sqlite3OpenTable(Parse*, 정수 iCur, 정수 iDb, Table*, 정수);
+#만약 defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
 Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,char*);
 #endif
-void sqlite3CodeChangeCount(Vdbe*,int,const char*);
+void sqlite3CodeChangeCount(Vdbe*,정수,const char*);
 void sqlite3DeleteFrom(Parse*, SrcList*, Expr*, ExprList*, Expr*);
-void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,int,ExprList*,Expr*,
+void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,정수,ExprList*,Expr*,
                    Upsert*);
 WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,
-                             ExprList*,Select*,u16,int);
+                             ExprList*,Select*,u16,정수);
 void sqlite3WhereEnd(WhereInfo*);
 LogEst sqlite3WhereOutputRowCount(WhereInfo*);
-int sqlite3WhereIsDistinct(WhereInfo*);
-int sqlite3WhereIsOrdered(WhereInfo*);
-int sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
+정수 sqlite3WhereIsDistinct(WhereInfo*);
+정수 sqlite3WhereIsOrdered(WhereInfo*);
+정수 sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
 void sqlite3WhereMinMaxOptEarlyOut(Vdbe*,WhereInfo*);
-int sqlite3WhereIsSorted(WhereInfo*);
-int sqlite3WhereContinueLabel(WhereInfo*);
-int sqlite3WhereBreakLabel(WhereInfo*);
-int sqlite3WhereOkOnePass(WhereInfo*, int*);
+정수 sqlite3WhereIsSorted(WhereInfo*);
+정수 sqlite3WhereContinueLabel(WhereInfo*);
+정수 sqlite3WhereBreakLabel(WhereInfo*);
+정수 sqlite3WhereOkOnePass(WhereInfo*, 정수*);
 #define ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
 #define ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
 #define ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
-int sqlite3WhereUsesDeferredSeek(WhereInfo*);
-void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, int, int, int);
-int sqlite3ExprCodeGetColumn(Parse*, Table*, int, int, int, u8);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, int, int, int);
-void sqlite3ExprCodeMove(Parse*, int, int, int);
-void sqlite3ExprToRegister(Expr *pExpr, int iReg);
-void sqlite3ExprCode(Parse*, Expr*, int);
+정수 sqlite3WhereUsesDeferredSeek(WhereInfo*);
+void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, 정수, 정수, 정수);
+정수 sqlite3ExprCodeGetColumn(Parse*, Table*, 정수, 정수, 정수, u8);
+void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, 정수, 정수, 정수);
+void sqlite3ExprCodeMove(Parse*, 정수, 정수, 정수);
+void sqlite3ExprToRegister(Expr *pExpr, 정수 iReg);
+void sqlite3ExprCode(Parse*, Expr*, 정수);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, int);
+void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, 정수);
 #endif
-void sqlite3ExprCodeCopy(Parse*, Expr*, int);
-void sqlite3ExprCodeFactorable(Parse*, Expr*, int);
-int sqlite3ExprCodeRunJustOnce(Parse*, Expr*, int);
-void sqlite3ExprNullRegisterRange(Parse*, int, int);
-int sqlite3ExprCodeTemp(Parse*, Expr*, int*);
-int sqlite3ExprCodeTarget(Parse*, Expr*, int);
-int sqlite3ExprCodeExprList(Parse*, ExprList*, int, int, u8);
+void sqlite3ExprCodeCopy(Parse*, Expr*, 정수);
+void sqlite3ExprCodeFactorable(Parse*, Expr*, 정수);
+정수 sqlite3ExprCodeRunJustOnce(Parse*, Expr*, 정수);
+void sqlite3ExprNullRegisterRange(Parse*, 정수, 정수);
+정수 sqlite3ExprCodeTemp(Parse*, Expr*, 정수*);
+정수 sqlite3ExprCodeTarget(Parse*, Expr*, 정수);
+정수 sqlite3ExprCodeExprList(Parse*, ExprList*, 정수, 정수, u8);
 #define SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
 #define SQLITE_ECEL_FACTOR   0x02  /* Factor out constant terms */
 #define SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
 #define SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
-void sqlite3ExprIfTrue(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalse(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalseDup(Parse*, Expr*, int, int);
+void sqlite3ExprIfTrue(Parse*, Expr*, 정수, 정수);
+void sqlite3ExprIfFalse(Parse*, Expr*, 정수, 정수);
+void sqlite3ExprIfFalseDup(Parse*, Expr*, 정수, 정수);
 Table *sqlite3FindTable(sqlite3*,const char*, const char*);
 #define LOCATE_VIEW    0x01
 #define LOCATE_NOERR   0x02
@@ -5251,113 +5251,113 @@ Table *sqlite3LocateTable(Parse*,u32 flags,const char*, const char*);
 const char *sqlite3PreferredTableName(const char*);
 Table *sqlite3LocateTableItem(Parse*,u32 flags,SrcItem *);
 Index *sqlite3FindIndex(sqlite3*,const char*, const char*);
-void sqlite3UnlinkAndDeleteTable(sqlite3*,int,const char*);
-void sqlite3UnlinkAndDeleteIndex(sqlite3*,int,const char*);
+void sqlite3UnlinkAndDeleteTable(sqlite3*,정수,const char*);
+void sqlite3UnlinkAndDeleteIndex(sqlite3*,정수,const char*);
 void sqlite3Vacuum(Parse*,Token*,Expr*);
-int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_value*);
+정수 sqlite3RunVacuum(char**, sqlite3*, 정수, sqlite3_value*);
 char *sqlite3NameFromToken(sqlite3*, const Token*);
-int sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprCompareSkip(Expr*,Expr*,int);
-int sqlite3ExprListCompare(const ExprList*,const ExprList*, int);
-int sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprImpliesNonNullRow(Expr*,int,int);
+정수 sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, 정수);
+정수 sqlite3ExprCompareSkip(Expr*,Expr*,정수);
+정수 sqlite3ExprListCompare(const ExprList*,const ExprList*, 정수);
+정수 sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, 정수);
+정수 sqlite3ExprImpliesNonNullRow(Expr*,정수,정수);
 void sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
 void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);
 void sqlite3ExprAnalyzeAggList(NameContext*,ExprList*);
-int sqlite3ExprCoveredByIndex(Expr*, int iCur, Index *pIdx);
-int sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
+정수 sqlite3ExprCoveredByIndex(Expr*, 정수 iCur, Index *pIdx);
+정수 sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
 Vdbe *sqlite3GetVdbe(Parse*);
 #ifndef SQLITE_UNTESTABLE
 void sqlite3PrngSaveState(void);
 void sqlite3PrngRestoreState(void);
 #endif
-void sqlite3RollbackAll(sqlite3*,int);
-void sqlite3CodeVerifySchema(Parse*, int);
+void sqlite3RollbackAll(sqlite3*,정수);
+void sqlite3CodeVerifySchema(Parse*, 정수);
 void sqlite3CodeVerifyNamedSchema(Parse*, const char *zDb);
-void sqlite3BeginTransaction(Parse*, int);
-void sqlite3EndTransaction(Parse*,int);
-void sqlite3Savepoint(Parse*, int, Token*);
+void sqlite3BeginTransaction(Parse*, 정수);
+void sqlite3EndTransaction(Parse*,정수);
+void sqlite3Savepoint(Parse*, 정수, Token*);
 void sqlite3CloseSavepoints(sqlite3 *);
 void sqlite3LeaveMutexAndCloseZombie(sqlite3*);
 u32 sqlite3IsTrueOrFalse(const char*);
-int sqlite3ExprIdToTrueFalse(Expr*);
-int sqlite3ExprTruthValue(const Expr*);
-int sqlite3ExprIsConstant(Parse*,Expr*);
-int sqlite3ExprIsConstantOrFunction(Expr*, u8);
-int sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
-int sqlite3ExprIsTableConstant(Expr*,int,int);
-int sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,int,int);
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs);
-int sqlite3ExprContainsSubquery(Expr*);
-int sqlite3ExprIsInteger(const Expr*, int*, Parse*, int);
-int sqlite3ExprCanBeNull(const Expr*);
-int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
-int sqlite3ExprIsLikeOperator(const Expr*);
-int sqlite3IsRowid(const char*);
+정수 sqlite3ExprIdToTrueFalse(Expr*);
+정수 sqlite3ExprTruthValue(const Expr*);
+정수 sqlite3ExprIsConstant(Parse*,Expr*);
+정수 sqlite3ExprIsConstantOrFunction(Expr*, u8);
+정수 sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
+정수 sqlite3ExprIsTableConstant(Expr*,정수,정수);
+정수 sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,정수,정수);
+정수 sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, 정수 bNoIs);
+정수 sqlite3ExprContainsSubquery(Expr*);
+정수 sqlite3ExprIsInteger(const Expr*, 정수*, Parse*, 정수);
+정수 sqlite3ExprCanBeNull(const Expr*);
+정수 sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
+정수 sqlite3ExprIsLikeOperator(const Expr*);
+정수 sqlite3IsRowid(const char*);
 const char *sqlite3RowidAlias(Table *pTab);
 void sqlite3GenerateRowDelete(
-    Parse*,Table*,Trigger*,int,int,int,i16,u8,u8,u8,int);
-void sqlite3GenerateRowIndexDelete(Parse*, Table*, int, int, int*, int);
-int sqlite3GenerateIndexKey(Parse*, Index*, int, int, int, int*,Index*,int);
-void sqlite3ResolvePartIdxLabel(Parse*,int);
-int sqlite3ExprReferencesUpdatedColumn(Expr*,int*,int);
-void sqlite3GenerateConstraintChecks(Parse*,Table*,int*,int,int,int,int,
-                                     u8,u8,int,int*,int*,Upsert*);
+    Parse*,Table*,Trigger*,정수,정수,정수,i16,u8,u8,u8,정수);
+void sqlite3GenerateRowIndexDelete(Parse*, Table*, 정수, 정수, 정수*, 정수);
+정수 sqlite3GenerateIndexKey(Parse*, Index*, 정수, 정수, 정수, 정수*,Index*,정수);
+void sqlite3ResolvePartIdxLabel(Parse*,정수);
+정수 sqlite3ExprReferencesUpdatedColumn(Expr*,정수*,정수);
+void sqlite3GenerateConstraintChecks(Parse*,Table*,정수*,정수,정수,정수,정수,
+                                     u8,u8,정수,정수*,정수*,Upsert*);
 #ifdef SQLITE_ENABLE_NULL_TRIM
   void sqlite3SetMakeRecordP5(Vdbe*,Table*);
-#else
+#아니면
 # define sqlite3SetMakeRecordP5(A,B)
 #endif
-void sqlite3CompleteInsertion(Parse*,Table*,int,int,int,int*,int,int,int);
-int sqlite3OpenTableAndIndices(Parse*, Table*, int, u8, int, u8*, int*, int*);
-void sqlite3BeginWriteOperation(Parse*, int, int);
+void sqlite3CompleteInsertion(Parse*,Table*,정수,정수,정수,정수*,정수,정수,정수);
+정수 sqlite3OpenTableAndIndices(Parse*, Table*, 정수, u8, 정수, u8*, 정수*, 정수*);
+void sqlite3BeginWriteOperation(Parse*, 정수, 정수);
 void sqlite3MultiWrite(Parse*);
 void sqlite3MayAbort(Parse*);
-void sqlite3HaltConstraint(Parse*, int, int, char*, i8, u8);
-void sqlite3UniqueConstraint(Parse*, int, Index*);
-void sqlite3RowidConstraint(Parse*, int, Table*);
-Expr *sqlite3ExprDup(sqlite3*,const Expr*,int);
-ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,int);
-SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,int);
+void sqlite3HaltConstraint(Parse*, 정수, 정수, char*, i8, u8);
+void sqlite3UniqueConstraint(Parse*, 정수, Index*);
+void sqlite3RowidConstraint(Parse*, 정수, Table*);
+Expr *sqlite3ExprDup(sqlite3*,const Expr*,정수);
+ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,정수);
+SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,정수);
 IdList *sqlite3IdListDup(sqlite3*,const IdList*);
-Select *sqlite3SelectDup(sqlite3*,const Select*,int);
-FuncDef *sqlite3FunctionSearch(int,const char*);
-void sqlite3InsertBuiltinFuncs(FuncDef*,int);
-FuncDef *sqlite3FindFunction(sqlite3*,const char*,int,u8,u8);
-void sqlite3QuoteValue(StrAccum*,sqlite3_value*,int);
-int sqlite3AppendOneUtf8Character(char*, u32);
+Select *sqlite3SelectDup(sqlite3*,const Select*,정수);
+FuncDef *sqlite3FunctionSearch(정수,const char*);
+void sqlite3InsertBuiltinFuncs(FuncDef*,정수);
+FuncDef *sqlite3FindFunction(sqlite3*,const char*,정수,u8,u8);
+void sqlite3QuoteValue(StrAccum*,sqlite3_value*,정수);
+정수 sqlite3AppendOneUtf8Character(char*, u32);
 void sqlite3RegisterBuiltinFunctions(void);
 void sqlite3RegisterDateTimeFunctions(void);
 void sqlite3RegisterJsonFunctions(void);
 void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3*);
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+#만약 !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
   Module *sqlite3JsonVtabRegister(sqlite3*,const char*);
 #endif
-int sqlite3SafetyCheckOk(sqlite3*);
-int sqlite3SafetyCheckSickOrOk(sqlite3*);
-void sqlite3ChangeCookie(Parse*, int);
+정수 sqlite3SafetyCheckOk(sqlite3*);
+정수 sqlite3SafetyCheckSickOrOk(sqlite3*);
+void sqlite3ChangeCookie(Parse*, 정수);
 With *sqlite3WithDup(sqlite3 *db, With *p);
 
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+#만약 !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
   Module *sqlite3CarrayRegister(sqlite3*);
 #endif
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
+#만약 !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,정수);
 #endif
 
 #ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3BeginTrigger(Parse*, Token*,Token*,int,int,IdList*,SrcList*,
-                           Expr*,int, int);
+  void sqlite3BeginTrigger(Parse*, Token*,Token*,정수,정수,IdList*,SrcList*,
+                           Expr*,정수, 정수);
   void sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
-  void sqlite3DropTrigger(Parse*, SrcList*, int);
+  void sqlite3DropTrigger(Parse*, SrcList*, 정수);
   void sqlite3DropTriggerPtr(Parse*, Trigger*);
-  Trigger *sqlite3TriggersExist(Parse *, Table*, int, ExprList*, int *pMask);
+  Trigger *sqlite3TriggersExist(Parse *, Table*, 정수, ExprList*, 정수 *pMask);
   Trigger *sqlite3TriggerList(Parse *, Table *);
-  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, ExprList*, int, Table *,
-                            int, int, int);
-  void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, int, int, int);
-  void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);
+  void sqlite3CodeRowTrigger(Parse*, Trigger *, 정수, ExprList*, 정수, Table *,
+                            정수, 정수, 정수);
+  void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, 정수, 정수, 정수);
+  void sqliteViewTriggers(Parse*, Table*, Expr*, 정수, ExprList*);
   void sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
   TriggerStep *sqlite3TriggerSelectStep(sqlite3*,Select*,
                                         const char*,const char*);
@@ -5369,11 +5369,11 @@ void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
   TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, Expr*,
                                         const char*,const char*);
   void sqlite3DeleteTrigger(sqlite3*, Trigger*);
-  void sqlite3UnlinkAndDeleteTrigger(sqlite3*,int,const char*);
-  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,int,int,Table*,int);
+  void sqlite3UnlinkAndDeleteTrigger(sqlite3*,정수,const char*);
+  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,정수,정수,Table*,정수);
 # define sqlite3ParseToplevel(p) ((p)->pToplevel ? (p)->pToplevel : (p))
 # define sqlite3IsToplevel(p) ((p)->pToplevel==0)
-#else
+#아니면
 # define sqlite3TriggersExist(B,C,D,E,F) 0
 # define sqlite3DeleteTrigger(A,B)
 # define sqlite3DropTriggerPtr(A,B)
@@ -5386,64 +5386,64 @@ void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
 # define sqlite3TriggerColmask(A,B,C,D,E,F,G) 0
 #endif
 
-int sqlite3JoinType(Parse*, Token*, Token*, Token*);
-int sqlite3ColumnIndex(Table *pTab, const char *zCol);
-void sqlite3SrcItemColumnUsed(SrcItem*,int);
-void sqlite3SetJoinExpr(Expr*,int,u32);
-void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, int);
-void sqlite3DeferForeignKey(Parse*, int);
+정수 sqlite3JoinType(Parse*, Token*, Token*, Token*);
+정수 sqlite3ColumnIndex(Table *pTab, const char *zCol);
+void sqlite3SrcItemColumnUsed(SrcItem*,정수);
+void sqlite3SetJoinExpr(Expr*,정수,u32);
+void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, 정수);
+void sqlite3DeferForeignKey(Parse*, 정수);
 #ifndef SQLITE_OMIT_AUTHORIZATION
   void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);
-  int sqlite3AuthCheck(Parse*,int, const char*, const char*, const char*);
+  정수 sqlite3AuthCheck(Parse*,정수, const char*, const char*, const char*);
   void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
   void sqlite3AuthContextPop(AuthContext*);
-  int sqlite3AuthReadCol(Parse*, const char *, const char *, int);
-#else
+  정수 sqlite3AuthReadCol(Parse*, const char *, const char *, 정수);
+#아니면
 # define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
 # define sqlite3AuthContextPush(a,b,c)
 # define sqlite3AuthContextPop(a)  ((void)(a))
 #endif
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName);
+정수 sqlite3DbIsNamed(sqlite3 *db, 정수 iDb, const char *zName);
 void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);
 void sqlite3Detach(Parse*, Expr*);
-void sqlite3FixInit(DbFixer*, Parse*, int, const char*, const Token*);
-int sqlite3FixSrcList(DbFixer*, SrcList*);
-int sqlite3FixSelect(DbFixer*, Select*);
-int sqlite3FixExpr(DbFixer*, Expr*);
-int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
+void sqlite3FixInit(DbFixer*, Parse*, 정수, const char*, const Token*);
+정수 sqlite3FixSrcList(DbFixer*, SrcList*);
+정수 sqlite3FixSelect(DbFixer*, Select*);
+정수 sqlite3FixExpr(DbFixer*, Expr*);
+정수 sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
 
-int sqlite3RealSameAsInt(double,sqlite3_int64);
+정수 sqlite3RealSameAsInt(double,sqlite3_int64);
 i64 sqlite3RealToI64(double);
-int sqlite3Int64ToText(i64,char*);
-int sqlite3AtoF(const char *z, double*);
-int sqlite3GetInt32(const char *, int*);
-int sqlite3GetUInt32(const char*, u32*);
-int sqlite3Atoi(const char*);
+정수 sqlite3Int64ToText(i64,char*);
+정수 sqlite3AtoF(const char *z, double*);
+정수 sqlite3GetInt32(const char *, 정수*);
+정수 sqlite3GetUInt32(const char*, u32*);
+정수 sqlite3Atoi(const char*);
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3Utf16ByteLen(const void *pData, int nByte, int nChar);
+정수 sqlite3Utf16ByteLen(const void *pData, 정수 nByte, 정수 nChar);
 #endif
-int sqlite3Utf8CharLen(const char *pData, int nByte);
+정수 sqlite3Utf8CharLen(const char *pData, 정수 nByte);
 u32 sqlite3Utf8Read(const u8**);
-int sqlite3Utf8ReadLimited(const u8*, int, u32*);
+정수 sqlite3Utf8ReadLimited(const u8*, 정수, u32*);
 LogEst sqlite3LogEst(u64);
 LogEst sqlite3LogEstAdd(LogEst,LogEst);
 LogEst sqlite3LogEstFromDouble(double);
 u64 sqlite3LogEstToInt(LogEst);
-VList *sqlite3VListAdd(sqlite3*,VList*,const char*,int,int);
-const char *sqlite3VListNumToName(VList*,int);
-int sqlite3VListNameToNum(VList*,const char*,int);
+VList *sqlite3VListAdd(sqlite3*,VList*,const char*,정수,정수);
+const char *sqlite3VListNumToName(VList*,정수);
+정수 sqlite3VListNameToNum(VList*,const char*,정수);
 
 /*
 ** Routines to read and write variable-length integers.  These used to
 ** be defined locally, but now we use the varint routines in the util.c
 ** file.
 */
-int sqlite3PutVarint(unsigned char*, u64);
+정수 sqlite3PutVarint(unsigned char*, u64);
 u8 sqlite3GetVarint(const unsigned char *, u64 *);
 i64 sqlite3VarintValue(const unsigned char*);
 u8 sqlite3GetVarint32(const unsigned char *, u32 *);
-int sqlite3VarintLen(u64 v);
+정수 sqlite3VarintLen(u64 v);
 
 /*
 ** The common case is for a varint to be a single byte.  They following
@@ -5453,83 +5453,83 @@ int sqlite3VarintLen(u64 v);
 #define getVarint32(A,B)  \
   (u8)((*(A)<(u8)0x80)?((B)=(u32)*(A)),1:sqlite3GetVarint32((A),(u32 *)&(B)))
 #define getVarint32NR(A,B) \
-  B=(u32)*(A);if(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
+  B=(u32)*(A);만약(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
 #define putVarint32(A,B)  \
   (u8)(((u32)(B)<(u32)0x80)?(*(A)=(unsigned char)(B)),1:\
   sqlite3PutVarint((A),(B)))
 
 const char *sqlite3IndexAffinityStr(sqlite3*, Index*);
 char *sqlite3TableAffinityStr(sqlite3*,const Table*);
-void sqlite3TableAffinity(Vdbe*, Table*, int);
+void sqlite3TableAffinity(Vdbe*, Table*, 정수);
 char sqlite3CompareAffinity(const Expr *pExpr, char aff2);
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
-char sqlite3TableColumnAffinity(const Table*,int);
+정수 sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
+char sqlite3TableColumnAffinity(const Table*,정수);
 char sqlite3ExprAffinity(const Expr *pExpr);
-int sqlite3ExprDataType(const Expr *pExpr);
-int sqlite3Atoi64(const char*, i64*, int, u8);
-int sqlite3DecOrHexToI64(const char*, i64*);
-void sqlite3ErrorWithMsg(sqlite3*, int, const char*,...);
-void sqlite3Error(sqlite3*,int);
+정수 sqlite3ExprDataType(const Expr *pExpr);
+정수 sqlite3Atoi64(const char*, i64*, 정수, u8);
+정수 sqlite3DecOrHexToI64(const char*, i64*);
+void sqlite3ErrorWithMsg(sqlite3*, 정수, const char*,...);
+void sqlite3Error(sqlite3*,정수);
 void sqlite3ErrorClear(sqlite3*);
-void sqlite3SystemError(sqlite3*,int);
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
-void *sqlite3HexToBlob(sqlite3*, const char *z, int n);
+void sqlite3SystemError(sqlite3*,정수);
+#만약 !defined(SQLITE_OMIT_BLOB_LITERAL)
+void *sqlite3HexToBlob(sqlite3*, const char *z, 정수 n);
 #endif
-u8 sqlite3HexToInt(int h);
-int sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
+u8 sqlite3HexToInt(정수 h);
+정수 sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
 
-#if defined(SQLITE_NEED_ERR_NAME)
-const char *sqlite3ErrName(int);
+#만약 defined(SQLITE_NEED_ERR_NAME)
+const char *sqlite3ErrName(정수);
 #endif
 
 #ifndef SQLITE_OMIT_DESERIALIZE
-int sqlite3MemdbInit(void);
-int sqlite3IsMemdb(const sqlite3_vfs*);
-#else
+정수 sqlite3MemdbInit(void);
+정수 sqlite3IsMemdb(const sqlite3_vfs*);
+#아니면
 # define sqlite3IsMemdb(X) 0
 #endif
 
-const char *sqlite3ErrStr(int);
-int sqlite3ReadSchema(Parse *pParse);
-CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,int);
-int sqlite3BinaryCompare(void*,int,const void*,int,const void*);
-#if SQLITE_USES_INLINE
-static SQLITE_INLINE int sqlite3IsBinary(const CollSeq *p){
+const char *sqlite3ErrStr(정수);
+정수 sqlite3ReadSchema(Parse *pParse);
+CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,정수);
+정수 sqlite3BinaryCompare(void*,정수,const void*,정수,const void*);
+#만약 SQLITE_USES_INLINE
+static SQLITE_INLINE 정수 sqlite3IsBinary(const CollSeq *p){
   assert( p==0 || p->xCmp!=sqlite3BinaryCompare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  반환 p==0 || p->xCmp==sqlite3BinaryCompare;
 }
-#else
-int sqlite3IsBinary(const CollSeq*);
+#아니면
+정수 sqlite3IsBinary(const CollSeq*);
 #endif
 CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char*zName);
 void sqlite3SetTextEncoding(sqlite3 *db, u8);
 CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr);
 CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr);
-int sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
-Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, int);
+정수 sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
+Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, 정수);
 Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);
 Expr *sqlite3ExprSkipCollate(Expr*);
 Expr *sqlite3ExprSkipCollateAndLikely(Expr*);
-int sqlite3CheckCollSeq(Parse *, CollSeq *);
-int sqlite3WritableSchema(sqlite3*);
-int sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
+정수 sqlite3CheckCollSeq(Parse *, CollSeq *);
+정수 sqlite3WritableSchema(sqlite3*);
+정수 sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
 void sqlite3VdbeSetChanges(sqlite3 *, i64);
-int sqlite3AddInt64(i64*,i64);
-int sqlite3SubInt64(i64*,i64);
-int sqlite3MulInt64(i64*,i64);
-int sqlite3AbsInt32(int);
+정수 sqlite3AddInt64(i64*,i64);
+정수 sqlite3SubInt64(i64*,i64);
+정수 sqlite3MulInt64(i64*,i64);
+정수 sqlite3AbsInt32(정수);
 #ifdef SQLITE_ENABLE_8_3_NAMES
 void sqlite3FileSuffix3(const char*, char*);
-#else
+#아니면
 # define sqlite3FileSuffix3(X,Y)
 #endif
 u8 sqlite3GetBoolean(const char *z,u8);
 
 const void *sqlite3ValueText(sqlite3_value*, u8);
-int sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
-int sqlite3ValueBytes(sqlite3_value*, u8);
-void sqlite3ValueSetStr(sqlite3_value*, int, const void *,u8,
+정수 sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
+정수 sqlite3ValueBytes(sqlite3_value*, u8);
+void sqlite3ValueSetStr(sqlite3_value*, 정수, const void *,u8,
                         void(*)(void*));
 void sqlite3ValueSetNull(sqlite3_value*);
 void sqlite3ValueFree(sqlite3_value*);
@@ -5538,9 +5538,9 @@ void sqlite3ResultIntReal(sqlite3_context*);
 #endif
 sqlite3_value *sqlite3ValueNew(sqlite3 *);
 #ifndef SQLITE_OMIT_UTF16
-char *sqlite3Utf16to8(sqlite3 *, const void*, int, u8);
+char *sqlite3Utf16to8(sqlite3 *, const void*, 정수, u8);
 #endif
-int sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
+정수 sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
 void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
 #ifndef SQLITE_AMALGAMATION
 extern const unsigned char sqlite3OpcodeProperty[];
@@ -5557,13 +5557,13 @@ extern SQLITE_WSD struct Sqlite3Config sqlite3Config;
 extern FuncDefHash sqlite3BuiltinFunctions;
 extern const sqlite3_str sqlite3OomStr;
 #ifndef SQLITE_OMIT_WSD
-extern int sqlite3PendingByte;
+extern 정수 sqlite3PendingByte;
 #endif
 #endif /* SQLITE_AMALGAMATION */
 #ifdef VDBE_PROFILE
 extern sqlite3_uint64 sqlite3NProfileCnt;
 #endif
-void sqlite3RootPageMoved(sqlite3*, int, Pgno, Pgno);
+void sqlite3RootPageMoved(sqlite3*, 정수, Pgno, Pgno);
 void sqlite3Reindex(Parse*, Token*, Token*);
 void sqlite3AlterFunctions(void);
 void sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
@@ -5575,33 +5575,33 @@ void sqlite3AlterAddConstraint(
   Token *pFirst,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
   const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
+  정수 nExpr,               /* Size of pExpr in bytes */
   Expr *pExpr              /* The parsed CHECK expression */
 );
 void sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
-i64 sqlite3GetToken(const unsigned char *, int *);
+i64 sqlite3GetToken(const unsigned char *, 정수 *);
 void sqlite3NestedParse(Parse*, const char*, ...);
-void sqlite3ExpirePreparedStatements(sqlite3*, int);
-void sqlite3CodeRhsOfIN(Parse*, Expr*, int, int);
-int sqlite3CodeSubselect(Parse*, Expr*);
+void sqlite3ExpirePreparedStatements(sqlite3*, 정수);
+void sqlite3CodeRhsOfIN(Parse*, Expr*, 정수, 정수);
+정수 sqlite3CodeSubselect(Parse*, Expr*);
 void sqlite3SelectPrep(Parse*, Select*, NameContext*);
-int sqlite3ExpandSubquery(Parse*, SrcItem*);
+정수 sqlite3ExpandSubquery(Parse*, SrcItem*);
 void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p);
-int sqlite3MatchEName(
+정수 sqlite3MatchEName(
   const struct ExprList_item*,
   const char*,
   const char*,
   const char*,
-  int*
+  정수*
 );
 Bitmask sqlite3ExprColUsed(Expr*);
 u8 sqlite3StrIHash(const char*);
-int sqlite3ResolveExprNames(NameContext*, Expr*);
-int sqlite3ResolveExprListNames(NameContext*, ExprList*);
+정수 sqlite3ResolveExprNames(NameContext*, Expr*);
+정수 sqlite3ResolveExprListNames(NameContext*, ExprList*);
 void sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
-int sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);
-int sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
-void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
+정수 sqlite3ResolveSelfReference(Parse*,Table*,정수,Expr*,ExprList*);
+정수 sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
+void sqlite3ColumnDefault(Vdbe *, Table *, 정수, 정수);
 void sqlite3AlterFinishAddColumn(Parse *, Token *);
 void sqlite3AlterBeginAddColumn(Parse *, SrcList *);
 void sqlite3AlterDropColumn(Parse*, SrcList*, const Token*);
@@ -5612,54 +5612,54 @@ void sqlite3RenameExprlistUnmap(Parse*, ExprList*);
 CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, const char*);
 char sqlite3AffinityType(const char*, Column*);
 void sqlite3Analyze(Parse*, Token*, Token*);
-int sqlite3InvokeBusyHandler(BusyHandler*);
-int sqlite3FindDb(sqlite3*, Token*);
-int sqlite3FindDbName(sqlite3 *, const char *);
-int sqlite3AnalysisLoad(sqlite3*,int iDB);
+정수 sqlite3InvokeBusyHandler(BusyHandler*);
+정수 sqlite3FindDb(sqlite3*, Token*);
+정수 sqlite3FindDbName(sqlite3 *, const char *);
+정수 sqlite3AnalysisLoad(sqlite3*,정수 iDB);
 void sqlite3DeleteIndexSamples(sqlite3*,Index*);
 void sqlite3DefaultRowEst(Index*);
-void sqlite3RegisterLikeFunctions(sqlite3*, int);
-int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);
+void sqlite3RegisterLikeFunctions(sqlite3*, 정수);
+정수 sqlite3IsLikeFunction(sqlite3*,Expr*,정수*,char*);
 void sqlite3SchemaClear(void *);
 Schema *sqlite3SchemaGet(sqlite3 *, Btree *);
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *);
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,int,int);
+정수 sqlite3SchemaToIndex(sqlite3 *db, Schema *);
+KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,정수,정수);
 void sqlite3KeyInfoUnref(KeyInfo*);
 KeyInfo *sqlite3KeyInfoRef(KeyInfo*);
 KeyInfo *sqlite3KeyInfoOfIndex(Parse*, Index*);
-KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, int, int);
-const char *sqlite3SelectOpName(int);
-int sqlite3HasExplicitNulls(Parse*, ExprList*);
+KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, 정수, 정수);
+const char *sqlite3SelectOpName(정수);
+정수 sqlite3HasExplicitNulls(Parse*, ExprList*);
 
 #ifdef SQLITE_DEBUG
-int sqlite3KeyInfoIsWriteable(KeyInfo*);
+정수 sqlite3KeyInfoIsWriteable(KeyInfo*);
 #endif
-int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+정수 sqlite3CreateFunc(sqlite3 *, const char *, 정수, 정수, void *,
+  void (*)(sqlite3_context*,정수,sqlite3_value **),
+  void (*)(sqlite3_context*,정수,sqlite3_value **),
   void (*)(sqlite3_context*),
   void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+  void (*)(sqlite3_context*,정수,sqlite3_value **),
   FuncDestructor *pDestructor
 );
 void sqlite3NoopDestructor(void*);
 void *sqlite3OomFault(sqlite3*);
 void sqlite3OomClear(sqlite3*);
-int sqlite3ApiExit(sqlite3 *db, int);
-int sqlite3OpenTempDatabase(Parse *);
+정수 sqlite3ApiExit(sqlite3 *db, 정수);
+정수 sqlite3OpenTempDatabase(Parse *);
 
 char *sqlite3RCStrRef(char*);
 void sqlite3RCStrUnref(void*);
 char *sqlite3RCStrNew(u64);
 char *sqlite3RCStrResize(char*,u64);
 
-void sqlite3StrAccumInit(StrAccum*, sqlite3*, char*, int, int);
-int sqlite3StrAccumEnlarge(StrAccum*, i64);
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
+void sqlite3StrAccumInit(StrAccum*, sqlite3*, char*, 정수, 정수);
+정수 sqlite3StrAccumEnlarge(StrAccum*, i64);
+정수 sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
 char *sqlite3StrAccumFinish(StrAccum*);
 void sqlite3StrAccumSetError(StrAccum*, u8);
-void sqlite3SelectDestInit(SelectDest*,int,int);
-Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);
+void sqlite3SelectDestInit(SelectDest*,정수,정수);
+Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, 정수, 정수);
 void sqlite3RecordErrorByteOffset(sqlite3*,const char*);
 void sqlite3RecordErrorOffsetOfExpr(sqlite3*,const Expr*);
 
@@ -5667,18 +5667,18 @@ void sqlite3BackupRestart(sqlite3_backup *);
 void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
 
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3ExprCheckIN(Parse*, Expr*);
-#else
+정수 sqlite3ExprCheckIN(Parse*, Expr*);
+#아니면
 # define sqlite3ExprCheckIN(x,y) SQLITE_OK
 #endif
 
 #ifdef SQLITE_ENABLE_STAT4
-int sqlite3Stat4ProbeSetValue(
-    Parse*,Index*,UnpackedRecord**,Expr*,int,int,int*);
-int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
+정수 sqlite3Stat4ProbeSetValue(
+    Parse*,Index*,UnpackedRecord**,Expr*,정수,정수,정수*);
+정수 sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
 void sqlite3Stat4ProbeFree(UnpackedRecord*);
-int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_value**);
-char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
+정수 sqlite3Stat4Column(sqlite3*, const void*, 정수, 정수, sqlite3_value**);
+char sqlite3IndexColumnAffinity(sqlite3*, Index*, 정수);
 #endif
 
 /*
@@ -5688,27 +5688,27 @@ char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
   void *sqlite3ParserAlloc(void*(*)(u64), Parse*);
   void sqlite3ParserFree(void*, void(*)(void*));
 #endif
-void sqlite3Parser(void*, int, Token);
-int sqlite3ParserFallback(int);
+void sqlite3Parser(void*, 정수, Token);
+정수 sqlite3ParserFallback(정수);
 #ifdef YYTRACKMAXSTACKDEPTH
-  int sqlite3ParserStackPeak(void*);
+  정수 sqlite3ParserStackPeak(void*);
 #endif
 
 void sqlite3AutoLoadExtensions(sqlite3*);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
   void sqlite3CloseExtensions(sqlite3*);
-#else
+#아니면
 # define sqlite3CloseExtensions(X)
 #endif
 
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3TableLock(Parse *, int, Pgno, u8, const char *);
-#else
+  void sqlite3TableLock(Parse *, 정수, Pgno, u8, const char *);
+#아니면
   #define sqlite3TableLock(v,w,x,y,z)
 #endif
 
 #ifdef SQLITE_TEST
-  int sqlite3Utf8To8(unsigned char*);
+  정수 sqlite3Utf8To8(unsigned char*);
 #endif
 
 #ifdef SQLITE_OMIT_VIRTUALTABLE
@@ -5723,17 +5723,17 @@ void sqlite3AutoLoadExtensions(sqlite3*);
 #  define sqlite3VtabUnlockList(X)
 #  define sqlite3VtabSavepoint(X, Y, Z) SQLITE_OK
 #  define sqlite3GetVTable(X,Y)  ((VTable*)0)
-#else
+#아니면
    void sqlite3VtabClear(sqlite3 *db, Table*);
    void sqlite3VtabDisconnect(sqlite3 *db, Table *p);
-   int sqlite3VtabSync(sqlite3 *db, Vdbe*);
-   int sqlite3VtabRollback(sqlite3 *db);
-   int sqlite3VtabCommit(sqlite3 *db);
+   정수 sqlite3VtabSync(sqlite3 *db, Vdbe*);
+   정수 sqlite3VtabRollback(sqlite3 *db);
+   정수 sqlite3VtabCommit(sqlite3 *db);
    void sqlite3VtabLock(VTable *);
    void sqlite3VtabUnlock(VTable *);
    void sqlite3VtabModuleUnref(sqlite3*,Module*);
    void sqlite3VtabUnlockList(sqlite3*);
-   int sqlite3VtabSavepoint(sqlite3 *, int, int);
+   정수 sqlite3VtabSavepoint(sqlite3 *, 정수, 정수);
    void sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
    VTable *sqlite3GetVTable(sqlite3*, Table*);
    Module *sqlite3VtabCreateModule(
@@ -5745,50 +5745,50 @@ void sqlite3AutoLoadExtensions(sqlite3*);
    );
 #  define sqlite3VtabInSync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
 #endif
-int sqlite3ReadOnlyShadowTables(sqlite3 *db);
+정수 sqlite3ReadOnlyShadowTables(sqlite3 *db);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int sqlite3ShadowTableName(sqlite3 *db, const char *zName);
-  int sqlite3IsShadowTableOf(sqlite3*,Table*,const char*);
+  정수 sqlite3ShadowTableName(sqlite3 *db, const char *zName);
+  정수 sqlite3IsShadowTableOf(sqlite3*,Table*,const char*);
   void sqlite3MarkAllShadowTablesOf(sqlite3*, Table*);
   void sqlite3VtabEponymousTableClearAll(sqlite3*);
-#else
+#아니면
 # define sqlite3ShadowTableName(A,B) 0
 # define sqlite3IsShadowTableOf(A,B,C) 0
 # define sqlite3MarkAllShadowTablesOf(A,B)
 # define sqlite3VtabEponymousTableClearAll(X)
 #endif
-int sqlite3VtabEponymousTableInit(Parse*,Module*);
+정수 sqlite3VtabEponymousTableInit(Parse*,Module*);
 void sqlite3VtabEponymousTableClear(sqlite3*,Module*);
 void sqlite3VtabMakeWritable(Parse*,Table*);
-void sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, int);
+void sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, 정수);
 void sqlite3VtabFinishParse(Parse*, Token*);
 void sqlite3VtabArgInit(Parse*);
 void sqlite3VtabArgExtend(Parse*, Token*);
-int sqlite3VtabCallCreate(sqlite3*, int, const char *, char **);
-int sqlite3VtabCallConnect(Parse*, Table*);
-int sqlite3VtabCallDestroy(sqlite3*, int, const char *);
-int sqlite3VtabBegin(sqlite3 *, VTable *);
+정수 sqlite3VtabCallCreate(sqlite3*, 정수, const char *, char **);
+정수 sqlite3VtabCallConnect(Parse*, Table*);
+정수 sqlite3VtabCallDestroy(sqlite3*, 정수, const char *);
+정수 sqlite3VtabBegin(sqlite3 *, VTable *);
 
-FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);
+FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, 정수 nArg, Expr*);
 void sqlite3VtabUsesAllSchemas(Parse*);
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context*);
-int sqlite3VdbeParameterIndex(Vdbe*, const char*, int);
-int sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
+정수 sqlite3VdbeParameterIndex(Vdbe*, const char*, 정수);
+정수 sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
 void sqlite3ParseObjectInit(Parse*,sqlite3*);
 void sqlite3ParseObjectReset(Parse*);
 void *sqlite3ParserAddCleanup(Parse*,void(*)(sqlite3*,void*),void*);
 #ifdef SQLITE_ENABLE_NORMALIZE
 char *sqlite3Normalize(Vdbe*, const char*);
 #endif
-int sqlite3Reprepare(Vdbe*);
+정수 sqlite3Reprepare(Vdbe*);
 void sqlite3ExprListCheckLength(Parse*, ExprList*, const char*);
 CollSeq *sqlite3ExprCompareCollSeq(Parse*,const Expr*);
 CollSeq *sqlite3BinaryCompareCollSeq(Parse *, const Expr*, const Expr*);
-int sqlite3TempInMemory(const sqlite3*);
-const char *sqlite3JournalModename(int);
+정수 sqlite3TempInMemory(const sqlite3*);
+const char *sqlite3JournalModename(정수);
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3Checkpoint(sqlite3*, int, int, int*, int*);
-  int sqlite3WalDefaultHook(void*,sqlite3*,const char*,int);
+  정수 sqlite3Checkpoint(sqlite3*, 정수, 정수, 정수*, 정수*);
+  정수 sqlite3WalDefaultHook(void*,sqlite3*,const char*,정수);
 #endif
 #ifndef SQLITE_OMIT_CTE
   Cte *sqlite3CteNew(Parse*,Token*,ExprList*,Select*,u8);
@@ -5797,7 +5797,7 @@ const char *sqlite3JournalModename(int);
   void sqlite3WithDelete(sqlite3*,With*);
   void sqlite3WithDeleteGeneric(sqlite3*,void*);
   With *sqlite3WithPush(Parse*, With*, u8);
-#else
+#아니면
 # define sqlite3CteNew(P,T,E,S)   ((void*)0)
 # define sqlite3CteDelete(D,C)
 # define sqlite3CteWithAdd(P,W,C) ((void*)0)
@@ -5808,11 +5808,11 @@ const char *sqlite3JournalModename(int);
   Upsert *sqlite3UpsertNew(sqlite3*,ExprList*,Expr*,ExprList*,Expr*,Upsert*);
   void sqlite3UpsertDelete(sqlite3*,Upsert*);
   Upsert *sqlite3UpsertDup(sqlite3*,Upsert*);
-  int sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
-  void sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,int);
+  정수 sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
+  void sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,정수);
   Upsert *sqlite3UpsertOfIndex(Upsert*,Index*);
-  int sqlite3UpsertNextIsIPK(Upsert*);
-#else
+  정수 sqlite3UpsertNextIsIPK(Upsert*);
+#아니면
 #define sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
 #define sqlite3UpsertDelete(x,y)
 #define sqlite3UpsertDup(x,y)         ((Upsert*)0)
@@ -5828,15 +5828,15 @@ const char *sqlite3JournalModename(int);
 ** this case foreign keys are parsed, but no other functionality is
 ** provided (enforcement of FK constraints requires the triggers sub-system).
 */
-#if !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
-  void sqlite3FkCheck(Parse*, Table*, int, int, int*, int);
+#만약 !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
+  void sqlite3FkCheck(Parse*, Table*, 정수, 정수, 정수*, 정수);
   void sqlite3FkDropTable(Parse*, SrcList *, Table*);
-  void sqlite3FkActions(Parse*, Table*, ExprList*, int, int*, int);
-  int sqlite3FkRequired(Parse*, Table*, int*, int);
+  void sqlite3FkActions(Parse*, Table*, ExprList*, 정수, 정수*, 정수);
+  정수 sqlite3FkRequired(Parse*, Table*, 정수*, 정수);
   u32 sqlite3FkOldmask(Parse*, Table*);
   FKey *sqlite3FkReferences(Table *);
-  void sqlite3FkClearTriggerCache(sqlite3*,int);
-#else
+  void sqlite3FkClearTriggerCache(sqlite3*,정수);
+#아니면
   #define sqlite3FkActions(a,b,c,d,e,f)
   #define sqlite3FkCheck(a,b,c,d,e,f)
   #define sqlite3FkDropTable(a,b,c)
@@ -5847,8 +5847,8 @@ const char *sqlite3JournalModename(int);
 #endif
 #ifndef SQLITE_OMIT_FOREIGN_KEY
   void sqlite3FkDelete(sqlite3 *, Table*);
-  int sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,int**);
-#else
+  정수 sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,정수**);
+#아니면
   #define sqlite3FkDelete(a,b)
   #define sqlite3FkLocateIndex(a,b,c,d,e)
 #endif
@@ -5868,7 +5868,7 @@ const char *sqlite3JournalModename(int);
 #ifndef SQLITE_UNTESTABLE
   void sqlite3BeginBenignMalloc(void);
   void sqlite3EndBenignMalloc(void);
-#else
+#아니면
   #define sqlite3BeginBenignMalloc()
   #define sqlite3EndBenignMalloc()
 #endif
@@ -5887,31 +5887,31 @@ const char *sqlite3JournalModename(int);
 #define IN_INDEX_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
 #define IN_INDEX_MEMBERSHIP  0x0002  /* IN operator used for membership test */
 #define IN_INDEX_LOOP        0x0004  /* IN operator used as a loop */
-int sqlite3FindInIndex(Parse *, Expr *, u32, int*, int*, int*);
+정수 sqlite3FindInIndex(Parse *, Expr *, u32, 정수*, 정수*, 정수*);
 
-int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
-int sqlite3JournalSize(sqlite3_vfs *);
-#if defined(SQLITE_ENABLE_ATOMIC_WRITE) \
+정수 sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, 정수, 정수);
+정수 sqlite3JournalSize(sqlite3_vfs *);
+#만약 defined(SQLITE_ENABLE_ATOMIC_WRITE) \
  || defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-  int sqlite3JournalCreate(sqlite3_file *);
+  정수 sqlite3JournalCreate(sqlite3_file *);
 #endif
 
-int sqlite3JournalIsInMemory(sqlite3_file *p);
+정수 sqlite3JournalIsInMemory(sqlite3_file *p);
 void sqlite3MemJournalOpen(sqlite3_file *);
 
 void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int sqlite3SelectExprHeight(const Select *);
-  int sqlite3ExprCheckHeight(Parse*, int);
-#else
+#만약 SQLITE_MAX_EXPR_DEPTH>0
+  정수 sqlite3SelectExprHeight(const Select *);
+  정수 sqlite3ExprCheckHeight(Parse*, 정수);
+#아니면
   #define sqlite3SelectExprHeight(x) 0
   #define sqlite3ExprCheckHeight(x,y)
 #endif
-void sqlite3ExprSetErrorOffset(Expr*,int);
+void sqlite3ExprSetErrorOffset(Expr*,정수);
 
 u32 sqlite3Get4byte(const u8*);
 SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8*);
-#if SQLITE_BYTEORDER!=4321
+#만약 SQLITE_BYTEORDER!=4321
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64);
 #endif
 void sqlite3Put4byte(u8*, u32);
@@ -5920,7 +5920,7 @@ void sqlite3Put4byte(u8*, u32);
   void sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
   void sqlite3ConnectionUnlocked(sqlite3 *db);
   void sqlite3ConnectionClosed(sqlite3 *db);
-#else
+#아니면
   #define sqlite3ConnectionBlocked(x,y)
   #define sqlite3ConnectionUnlocked(x)
   #define sqlite3ConnectionClosed(x)
@@ -5929,8 +5929,8 @@ void sqlite3Put4byte(u8*, u32);
 #ifdef SQLITE_DEBUG
   void sqlite3ParserTrace(FILE*, char *);
 #endif
-#if defined(YYCOVERAGE)
-  int sqlite3ParserCoverage(FILE*);
+#만약 defined(YYCOVERAGE)
+  정수 sqlite3ParserCoverage(FILE*);
 #endif
 
 /*
@@ -5939,10 +5939,10 @@ void sqlite3Put4byte(u8*, u32);
 ** print I/O tracing messages.
 */
 #ifdef SQLITE_ENABLE_IOTRACE
-# define IOTRACE(A)  if( sqlite3IoTrace ){ sqlite3IoTrace A; }
+# define IOTRACE(A)  만약( sqlite3IoTrace ){ sqlite3IoTrace A; }
   void sqlite3VdbeIOTraceSql(Vdbe*);
 SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
-#else
+#아니면
 # define IOTRACE(A)
 # define sqlite3VdbeIOTraceSql(X)
 #endif
@@ -5977,9 +5977,9 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 */
 #ifdef SQLITE_MEMDEBUG
   void sqlite3MemdebugSetType(void*,u8);
-  int sqlite3MemdebugHasType(const void*,u8);
-  int sqlite3MemdebugNoType(const void*,u8);
-#else
+  정수 sqlite3MemdebugHasType(const void*,u8);
+  정수 sqlite3MemdebugNoType(const void*,u8);
+#아니면
 # define sqlite3MemdebugSetType(X,Y)  /* no-op */
 # define sqlite3MemdebugHasType(X,Y)  1
 # define sqlite3MemdebugNoType(X,Y)   1
@@ -5991,33 +5991,33 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 /*
 ** Threading interface
 */
-#if SQLITE_MAX_WORKER_THREADS>0
-int sqlite3ThreadCreate(SQLiteThread**,void*(*)(void*),void*);
-int sqlite3ThreadJoin(SQLiteThread*, void**);
+#만약 SQLITE_MAX_WORKER_THREADS>0
+정수 sqlite3ThreadCreate(SQLiteThread**,void*(*)(void*),void*);
+정수 sqlite3ThreadJoin(SQLiteThread*, void**);
 #endif
 
-#if defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbpageRegister(sqlite3*);
+#만약 defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
+정수 sqlite3DbpageRegister(sqlite3*);
 #endif
-#if defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbstatRegister(sqlite3*);
+#만약 defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
+정수 sqlite3DbstatRegister(sqlite3*);
 #endif
 
-int sqlite3ExprVectorSize(const Expr *pExpr);
-int sqlite3ExprIsVector(const Expr *pExpr);
-Expr *sqlite3VectorFieldSubexpr(Expr*, int);
-Expr *sqlite3ExprForVectorField(Parse*,Expr*,int,int);
+정수 sqlite3ExprVectorSize(const Expr *pExpr);
+정수 sqlite3ExprIsVector(const Expr *pExpr);
+Expr *sqlite3VectorFieldSubexpr(Expr*, 정수);
+Expr *sqlite3ExprForVectorField(Parse*,Expr*,정수,정수);
 void sqlite3VectorErrorMsg(Parse*, Expr*);
 
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-const char **sqlite3CompileOptions(int *pnOpt);
+const char **sqlite3CompileOptions(정수 *pnOpt);
 #endif
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void);
+#만약 SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+정수 sqlite3KvvfsInit(void);
 #endif
 
-#if defined(VDBE_PROFILE) \
+#만약 defined(VDBE_PROFILE) \
  || defined(SQLITE_PERFORMANCE_TRACE) \
  || defined(SQLITE_ENABLE_STMT_SCANSTATUS)
 sqlite3_uint64 sqlite3Hwtime(void);
@@ -6025,7 +6025,7 @@ sqlite3_uint64 sqlite3Hwtime(void);
 
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
 # define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_StmtScanStatus)
-#else
+#아니면
 # define IS_STMT_SCANSTATUS(db) 0
 #endif
 

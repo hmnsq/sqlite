@@ -108,7 +108,7 @@ static SQLITE_WSD struct Mem3Global {
   /*
   ** True if we are evaluating an out-of-memory callback.
   */
-  int alarmBusy;
+  정수 alarmBusy;
   
   /*
   ** Mutex to control access to the memory allocation subsystem.
@@ -148,12 +148,12 @@ static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
   u32 next = mem3.aPool[i].u.list.next;
   u32 prev = mem3.aPool[i].u.list.prev;
   assert( sqlite3_mutex_held(mem3.mutex) );
-  if( prev==0 ){
+  만약( prev==0 ){
     *pRoot = next;
-  }else{
+  }아니면{
     mem3.aPool[prev].u.list.next = next;
   }
-  if( next ){
+  만약( next ){
     mem3.aPool[next].u.list.prev = prev;
   }
   mem3.aPool[i].u.list.next = 0;
@@ -172,9 +172,9 @@ static void memsys3Unlink(u32 i){
   size = mem3.aPool[i-1].u.hdr.size4x/4;
   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
   assert( size>=2 );
-  if( size <= MX_SMALL ){
+  만약( size <= MX_SMALL ){
     memsys3UnlinkFromList(i, &mem3.aiSmall[size-2]);
-  }else{
+  }아니면{
     hash = size % N_HASH;
     memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
   }
@@ -188,7 +188,7 @@ static void memsys3LinkIntoList(u32 i, u32 *pRoot){
   assert( sqlite3_mutex_held(mem3.mutex) );
   mem3.aPool[i].u.list.next = *pRoot;
   mem3.aPool[i].u.list.prev = 0;
-  if( *pRoot ){
+  만약( *pRoot ){
     mem3.aPool[*pRoot].u.list.prev = i;
   }
   *pRoot = i;
@@ -206,9 +206,9 @@ static void memsys3Link(u32 i){
   size = mem3.aPool[i-1].u.hdr.size4x/4;
   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
   assert( size>=2 );
-  if( size <= MX_SMALL ){
+  만약( size <= MX_SMALL ){
     memsys3LinkIntoList(i, &mem3.aiSmall[size-2]);
-  }else{
+  }아니면{
     hash = size % N_HASH;
     memsys3LinkIntoList(i, &mem3.aiHash[hash]);
   }
@@ -220,7 +220,7 @@ static void memsys3Link(u32 i){
 ** sqlite3GlobalConfig.bMemStat is true.
 */
 static void memsys3Enter(void){
-  if( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
+  만약( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
     mem3.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
   sqlite3_mutex_enter(mem3.mutex);
@@ -232,8 +232,8 @@ static void memsys3Leave(void){
 /*
 ** Called when we are unable to satisfy an allocation of nBytes.
 */
-static void memsys3OutOfMemory(int nByte){
-  if( !mem3.alarmBusy ){
+static void memsys3OutOfMemory(정수 nByte){
+  만약( !mem3.alarmBusy ){
     mem3.alarmBusy = 1;
     assert( sqlite3_mutex_held(mem3.mutex) );
     sqlite3_mutex_leave(mem3.mutex);
@@ -259,7 +259,7 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
   mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&2);
   mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;
   mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;
-  return &mem3.aPool[i];
+  반환 &mem3.aPool[i];
 }
 
 /*
@@ -270,14 +270,14 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
 static void *memsys3FromKeyBlk(u32 nBlock){
   assert( sqlite3_mutex_held(mem3.mutex) );
   assert( mem3.szKeyBlk>=nBlock );
-  if( nBlock>=mem3.szKeyBlk-1 ){
+  만약( nBlock>=mem3.szKeyBlk-1 ){
     /* Use the entire key chunk */
     void *p = memsys3Checkout(mem3.iKeyBlk, mem3.szKeyBlk);
     mem3.iKeyBlk = 0;
     mem3.szKeyBlk = 0;
     mem3.mnKeyBlk = 0;
-    return p;
-  }else{
+    반환 p;
+  }아니면{
     /* Split the key block.  Return the tail. */
     u32 newi, x;
     newi = mem3.iKeyBlk + mem3.szKeyBlk - nBlock;
@@ -289,10 +289,10 @@ static void *memsys3FromKeyBlk(u32 nBlock){
     mem3.aPool[newi-1].u.hdr.prevSize = mem3.szKeyBlk;
     x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
     mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-    if( mem3.szKeyBlk < mem3.mnKeyBlk ){
+    만약( mem3.szKeyBlk < mem3.mnKeyBlk ){
       mem3.mnKeyBlk = mem3.szKeyBlk;
     }
-    return (void*)&mem3.aPool[newi];
+    반환 (void*)&mem3.aPool[newi];
   }
 }
 
@@ -316,15 +316,15 @@ static void memsys3Merge(u32 *pRoot){
   u32 iNext, prev, size, i, x;
 
   assert( sqlite3_mutex_held(mem3.mutex) );
-  for(i=*pRoot; i>0; i=iNext){
+  위해(i=*pRoot; i>0; i=iNext){
     iNext = mem3.aPool[i].u.list.next;
     size = mem3.aPool[i-1].u.hdr.size4x;
     assert( (size&1)==0 );
-    if( (size&2)==0 ){
+    만약( (size&2)==0 ){
       memsys3UnlinkFromList(i, pRoot);
       assert( i > mem3.aPool[i-1].u.hdr.prevSize );
       prev = i - mem3.aPool[i-1].u.hdr.prevSize;
-      if( prev==iNext ){
+      만약( prev==iNext ){
         iNext = mem3.aPool[prev].u.list.next;
       }
       memsys3Unlink(prev);
@@ -334,10 +334,10 @@ static void memsys3Merge(u32 *pRoot){
       mem3.aPool[prev+size-1].u.hdr.prevSize = size;
       memsys3Link(prev);
       i = prev;
-    }else{
+    }아니면{
       size /= 4;
     }
-    if( size>mem3.szKeyBlk ){
+    만약( size>mem3.szKeyBlk ){
       mem3.iKeyBlk = i;
       mem3.szKeyBlk = size;
     }
@@ -351,16 +351,16 @@ static void memsys3Merge(u32 *pRoot){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void *memsys3MallocUnsafe(int nByte){
+static void *memsys3MallocUnsafe(정수 nByte){
   u32 i;
   u32 nBlock;
   u32 toFree;
 
   assert( sqlite3_mutex_held(mem3.mutex) );
   assert( sizeof(Mem3Block)==8 );
-  if( nByte<=12 ){
+  만약( nByte<=12 ){
     nBlock = 2;
-  }else{
+  }아니면{
     nBlock = (nByte + 11)/8;
   }
   assert( nBlock>=2 );
@@ -370,18 +370,18 @@ static void *memsys3MallocUnsafe(int nByte){
   ** chunk table or in the large chunk hash table.  This is
   ** successful most of the time (about 9 times out of 10).
   */
-  if( nBlock <= MX_SMALL ){
+  만약( nBlock <= MX_SMALL ){
     i = mem3.aiSmall[nBlock-2];
-    if( i>0 ){
+    만약( i>0 ){
       memsys3UnlinkFromList(i, &mem3.aiSmall[nBlock-2]);
-      return memsys3Checkout(i, nBlock);
+      반환 memsys3Checkout(i, nBlock);
     }
-  }else{
-    int hash = nBlock % N_HASH;
-    for(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.next){
-      if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
+  }아니면{
+    정수 hash = nBlock % N_HASH;
+    위해(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.next){
+      만약( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
         memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
-        return memsys3Checkout(i, nBlock);
+        반환 memsys3Checkout(i, nBlock);
       }
     }
   }
@@ -390,8 +390,8 @@ static void *memsys3MallocUnsafe(int nByte){
   ** Try to satisfy the allocation by carving a piece off of the end
   ** of the key chunk.  This step usually works if step 1 fails.
   */
-  if( mem3.szKeyBlk>=nBlock ){
-    return memsys3FromKeyBlk(nBlock);
+  만약( mem3.szKeyBlk>=nBlock ){
+    반환 memsys3FromKeyBlk(nBlock);
   }
 
 
@@ -402,29 +402,29 @@ static void *memsys3MallocUnsafe(int nByte){
   ** of the end of the key chunk.  This step happens very
   ** rarely (we hope!)
   */
-  for(toFree=nBlock*16; toFree<(mem3.nPool*16); toFree *= 2){
+  위해(toFree=nBlock*16; toFree<(mem3.nPool*16); toFree *= 2){
     memsys3OutOfMemory(toFree);
-    if( mem3.iKeyBlk ){
+    만약( mem3.iKeyBlk ){
       memsys3Link(mem3.iKeyBlk);
       mem3.iKeyBlk = 0;
       mem3.szKeyBlk = 0;
     }
-    for(i=0; i<N_HASH; i++){
+    위해(i=0; i<N_HASH; i++){
       memsys3Merge(&mem3.aiHash[i]);
     }
-    for(i=0; i<MX_SMALL-1; i++){
+    위해(i=0; i<MX_SMALL-1; i++){
       memsys3Merge(&mem3.aiSmall[i]);
     }
-    if( mem3.szKeyBlk ){
+    만약( mem3.szKeyBlk ){
       memsys3Unlink(mem3.iKeyBlk);
-      if( mem3.szKeyBlk>=nBlock ){
-        return memsys3FromKeyBlk(nBlock);
+      만약( mem3.szKeyBlk>=nBlock ){
+        반환 memsys3FromKeyBlk(nBlock);
       }
     }
   }
 
   /* If none of the above worked, then we fail. */
-  return 0;
+  반환 0;
 }
 
 /*
@@ -435,7 +435,7 @@ static void *memsys3MallocUnsafe(int nByte){
 */
 static void memsys3FreeUnsafe(void *pOld){
   Mem3Block *p = (Mem3Block*)pOld;
-  int i;
+  정수 i;
   u32 size, x;
   assert( sqlite3_mutex_held(mem3.mutex) );
   assert( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
@@ -449,8 +449,8 @@ static void memsys3FreeUnsafe(void *pOld){
   memsys3Link(i);
 
   /* Try to expand the key using the newly freed chunk */
-  if( mem3.iKeyBlk ){
-    while( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
+  만약( mem3.iKeyBlk ){
+    동안( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
       size = mem3.aPool[mem3.iKeyBlk-1].u.hdr.prevSize;
       mem3.iKeyBlk -= size;
       mem3.szKeyBlk += size;
@@ -460,7 +460,7 @@ static void memsys3FreeUnsafe(void *pOld){
       mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
     }
     x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    while( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
+    동안( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
       memsys3Unlink(mem3.iKeyBlk+mem3.szKeyBlk);
       mem3.szKeyBlk += mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x/4;
       mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
@@ -474,35 +474,35 @@ static void memsys3FreeUnsafe(void *pOld){
 ** size returned omits the 8-byte header overhead.  This only
 ** works for chunks that are currently checked out.
 */
-static int memsys3Size(void *p){
+static 정수 memsys3Size(void *p){
   Mem3Block *pBlock;
   assert( p!=0 );
   pBlock = (Mem3Block*)p;
   assert( (pBlock[-1].u.hdr.size4x&1)!=0 );
-  return (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
+  반환 (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int memsys3Roundup(int n){
-  if( n<=12 ){
-    return 12;
-  }else{
-    return ((n+11)&~7) - 4;
+static 정수 memsys3Roundup(정수 n){
+  만약( n<=12 ){
+    반환 12;
+  }아니면{
+    반환 ((n+11)&~7) - 4;
   }
 }
 
 /*
 ** Allocate nBytes of memory.
 */
-static void *memsys3Malloc(int nBytes){
+static void *memsys3Malloc(정수 nBytes){
   sqlite3_int64 *p;
   assert( nBytes>0 );          /* malloc.c filters out 0 byte requests */
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);
   memsys3Leave();
-  return (void*)p; 
+  반환 (void*)p; 
 }
 
 /*
@@ -518,41 +518,41 @@ static void memsys3Free(void *pPrior){
 /*
 ** Change the size of an existing memory allocation
 */
-static void *memsys3Realloc(void *pPrior, int nBytes){
-  int nOld;
+static void *memsys3Realloc(void *pPrior, 정수 nBytes){
+  정수 nOld;
   void *p;
-  if( pPrior==0 ){
-    return sqlite3_malloc(nBytes);
+  만약( pPrior==0 ){
+    반환 sqlite3_malloc(nBytes);
   }
-  if( nBytes<=0 ){
+  만약( nBytes<=0 ){
     sqlite3_free(pPrior);
-    return 0;
+    반환 0;
   }
   nOld = memsys3Size(pPrior);
-  if( nBytes<=nOld && nBytes>=nOld-128 ){
-    return pPrior;
+  만약( nBytes<=nOld && nBytes>=nOld-128 ){
+    반환 pPrior;
   }
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);
-  if( p ){
-    if( nOld<nBytes ){
+  만약( p ){
+    만약( nOld<nBytes ){
       memcpy(p, pPrior, nOld);
-    }else{
+    }아니면{
       memcpy(p, pPrior, nBytes);
     }
     memsys3FreeUnsafe(pPrior);
   }
   memsys3Leave();
-  return p;
+  반환 p;
 }
 
 /*
 ** Initialize this module.
 */
-static int memsys3Init(void *NotUsed){
+static 정수 memsys3Init(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
-  if( !sqlite3GlobalConfig.pHeap ){
-    return SQLITE_ERROR;
+  만약( !sqlite3GlobalConfig.pHeap ){
+    반환 SQLITE_ERROR;
   }
 
   /* Store a pointer to the memory block in global structure mem3. */
@@ -568,7 +568,7 @@ static int memsys3Init(void *NotUsed){
   mem3.aPool[mem3.nPool].u.hdr.prevSize = mem3.nPool;
   mem3.aPool[mem3.nPool].u.hdr.size4x = 1;
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -577,7 +577,7 @@ static int memsys3Init(void *NotUsed){
 static void memsys3Shutdown(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   mem3.mutex = 0;
-  return;
+  반환;
 }
 
 
@@ -591,55 +591,55 @@ void sqlite3Memsys3Dump(const char *zFilename){
   FILE *out;
   u32 i, j;
   u32 size;
-  if( zFilename==0 || zFilename[0]==0 ){
+  만약( zFilename==0 || zFilename[0]==0 ){
     out = stdout;
-  }else{
+  }아니면{
     out = fopen(zFilename, "w");
-    if( out==0 ){
+    만약( out==0 ){
       fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                       zFilename);
-      return;
+      반환;
     }
   }
   memsys3Enter();
   fprintf(out, "CHUNKS:\n");
-  for(i=1; i<=mem3.nPool; i+=size/4){
+  위해(i=1; i<=mem3.nPool; i+=size/4){
     size = mem3.aPool[i-1].u.hdr.size4x;
-    if( size/4<=1 ){
+    만약( size/4<=1 ){
       fprintf(out, "%p size error\n", &mem3.aPool[i]);
       assert( 0 );
       break;
     }
-    if( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
+    만약( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
       fprintf(out, "%p tail size does not match\n", &mem3.aPool[i]);
       assert( 0 );
       break;
     }
-    if( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
+    만약( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
       fprintf(out, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
       assert( 0 );
       break;
     }
-    if( size&1 ){
+    만약( size&1 ){
       fprintf(out, "%p %6d bytes checked out\n", &mem3.aPool[i], (size/4)*8-8);
-    }else{
+    }아니면{
       fprintf(out, "%p %6d bytes free%s\n", &mem3.aPool[i], (size/4)*8-8,
                   i==mem3.iKeyBlk ? " **key**" : "");
     }
   }
-  for(i=0; i<MX_SMALL-1; i++){
-    if( mem3.aiSmall[i]==0 ) continue;
+  위해(i=0; i<MX_SMALL-1; i++){
+    만약( mem3.aiSmall[i]==0 ) continue;
     fprintf(out, "small(%2d):", i);
-    for(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.next){
+    위해(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.next){
       fprintf(out, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
     fprintf(out, "\n"); 
   }
-  for(i=0; i<N_HASH; i++){
-    if( mem3.aiHash[i]==0 ) continue;
+  위해(i=0; i<N_HASH; i++){
+    만약( mem3.aiHash[i]==0 ) continue;
     fprintf(out, "hash(%2d):", i);
-    for(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.next){
+    위해(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.next){
       fprintf(out, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
@@ -649,12 +649,12 @@ void sqlite3Memsys3Dump(const char *zFilename){
   fprintf(out, "nowUsed=%d\n", mem3.nPool*8 - mem3.szKeyBlk*8);
   fprintf(out, "mxUsed=%d\n", mem3.nPool*8 - mem3.mnKeyBlk*8);
   sqlite3_mutex_leave(mem3.mutex);
-  if( out==stdout ){
+  만약( out==stdout ){
     fflush(stdout);
-  }else{
+  }아니면{
     fclose(out);
   }
-#else
+#아니면
   UNUSED_PARAMETER(zFilename);
 #endif
 }
@@ -681,7 +681,7 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys3(void){
      memsys3Shutdown,
      0
   };
-  return &mempoolMethods;
+  반환 &mempoolMethods;
 }
 
 #endif /* SQLITE_ENABLE_MEMSYS3 */

@@ -27,56 +27,56 @@
 ** argument to xCallback().  If xCallback=NULL then no callback
 ** is invoked, even for queries.
 */
-int sqlite3_exec(
+정수 sqlite3_exec(
   sqlite3 *db,                /* The database on which the SQL executes */
   const char *zSql,           /* The SQL to be executed */
   sqlite3_callback xCallback, /* Invoke this callback routine */
   void *pArg,                 /* First argument to xCallback() */
   char **pzErrMsg             /* Write error messages here */
 ){
-  int rc = SQLITE_OK;         /* Return code */
+  정수 rc = SQLITE_OK;         /* Return code */
   const char *zLeftover;      /* Tail of unprocessed SQL */
   sqlite3_stmt *pStmt = 0;    /* The current SQL statement */
   char **azCols = 0;          /* Names of result columns */
-  int callbackIsInit;         /* True if callback data is initialized */
+  정수 callbackIsInit;         /* True if callback data is initialized */
 
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-  if( zSql==0 ) zSql = "";
+  만약( !sqlite3SafetyCheckOk(db) ) 반환 SQLITE_MISUSE_BKPT;
+  만약( zSql==0 ) zSql = "";
 
   sqlite3_mutex_enter(db->mutex);
   sqlite3Error(db, SQLITE_OK);
-  while( rc==SQLITE_OK && zSql[0] ){
-    int nCol = 0;
+  동안( rc==SQLITE_OK && zSql[0] ){
+    정수 nCol = 0;
     char **azVals = 0;
 
     pStmt = 0;
     rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
     assert( rc==SQLITE_OK || pStmt==0 );
-    if( rc!=SQLITE_OK ){
+    만약( rc!=SQLITE_OK ){
       continue;
     }
-    if( !pStmt ){
+    만약( !pStmt ){
       /* this happens for a comment or white-space */
       zSql = zLeftover;
       continue;
     }
     callbackIsInit = 0;
 
-    while( 1 ){
-      int i;
+    동안( 1 ){
+      정수 i;
       rc = sqlite3_step(pStmt);
 
       /* Invoke the callback function if required */
-      if( xCallback && (SQLITE_ROW==rc || 
+      만약( xCallback && (SQLITE_ROW==rc || 
           (SQLITE_DONE==rc && !callbackIsInit
                            && db->flags&SQLITE_NullCallback)) ){
-        if( !callbackIsInit ){
+        만약( !callbackIsInit ){
           nCol = sqlite3_column_count(pStmt);
           azCols = sqlite3DbMallocRaw(db, (2*nCol+1)*sizeof(const char*));
-          if( azCols==0 ){
+          만약( azCols==0 ){
             goto exec_out;
           }
-          for(i=0; i<nCol; i++){
+          위해(i=0; i<nCol; i++){
             azCols[i] = (char *)sqlite3_column_name(pStmt, i);
             /* sqlite3VdbeSetColName() installs column names as UTF8
             ** strings so there is no way for sqlite3_column_name() to fail. */
@@ -84,18 +84,18 @@ int sqlite3_exec(
           }
           callbackIsInit = 1;
         }
-        if( rc==SQLITE_ROW ){
+        만약( rc==SQLITE_ROW ){
           azVals = &azCols[nCol];
-          for(i=0; i<nCol; i++){
+          위해(i=0; i<nCol; i++){
             azVals[i] = (char *)sqlite3_column_text(pStmt, i);
-            if( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
+            만약( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
               sqlite3OomFault(db);
               goto exec_out;
             }
           }
           azVals[i] = 0;
         }
-        if( xCallback(pArg, nCol, azVals, azCols) ){
+        만약( xCallback(pArg, nCol, azVals, azCols) ){
           /* EVIDENCE-OF: R-38229-40159 If the callback function to
           ** sqlite3_exec() returns non-zero, then sqlite3_exec() will
           ** return SQLITE_ABORT. */
@@ -107,11 +107,11 @@ int sqlite3_exec(
         }
       }
 
-      if( rc!=SQLITE_ROW ){
+      만약( rc!=SQLITE_ROW ){
         rc = sqlite3VdbeFinalize((Vdbe *)pStmt);
         pStmt = 0;
         zSql = zLeftover;
-        while( sqlite3Isspace(zSql[0]) ) zSql++;
+        동안( sqlite3Isspace(zSql[0]) ) zSql++;
         break;
       }
     }
@@ -121,21 +121,21 @@ int sqlite3_exec(
   }
 
 exec_out:
-  if( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
+  만약( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
   sqlite3DbFree(db, azCols);
 
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && pzErrMsg ){
+  만약( rc!=SQLITE_OK && pzErrMsg ){
     *pzErrMsg = sqlite3DbStrDup(0, sqlite3_errmsg(db));
-    if( *pzErrMsg==0 ){
+    만약( *pzErrMsg==0 ){
       rc = SQLITE_NOMEM_BKPT;
       sqlite3Error(db, SQLITE_NOMEM);
     }
-  }else if( pzErrMsg ){
+  }아니면 만약( pzErrMsg ){
     *pzErrMsg = 0;
   }
 
   assert( (rc&db->errMask)==rc );
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  반환 rc;
 }

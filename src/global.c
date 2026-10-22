@@ -172,13 +172,13 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** SQLITE_ALLOW_COVERING_INDEX_SCAN compile-time option, or is "on" if
 ** that compile-time option is omitted.
 */
-#if !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
+#만약 !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
 # define SQLITE_ALLOW_COVERING_INDEX_SCAN 1
-#else
-# if !SQLITE_ALLOW_COVERING_INDEX_SCAN 
+#아니면
+# 만약 !SQLITE_ALLOW_COVERING_INDEX_SCAN 
 #   error "Compile-time disabling of covering index scan using the\
  -DSQLITE_ALLOW_COVERING_INDEX_SCAN=0 option is deprecated.\
- Contact SQLite developers if this is a problem for you, and\
+ Contact SQLite developers 만약 this is a problem 위해 you, and\
  delete this #error macro to continue with your build."
 # endif
 #endif
@@ -218,7 +218,7 @@ const unsigned char sqlite3CtypeMap[256] = {
 #ifndef SQLITE_DEFAULT_LOOKASIDE
 # ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,100  /* 120KB of memory */
-# else
+# 아니면
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,40   /* 48KB of memory */
 # endif
 #endif
@@ -318,7 +318,7 @@ const sqlite3_str sqlite3OomStr = {
    0, 0, 0, 0, 0, SQLITE_NOMEM, 0
 };
 
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#만약 defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 /*
 ** Counter used for coverage testing.  Does not come into play for
 ** release builds.
@@ -327,7 +327,7 @@ const sqlite3_str sqlite3OomStr = {
 ** result in TSAN warnings.  But as the variable does not exist in
 ** release builds, that should not be a concern.
 */
-unsigned int sqlite3CoverageCounter;
+unsigned 정수 sqlite3CoverageCounter;
 #endif /* SQLITE_COVERAGE_TEST || SQLITE_DEBUG */
 
 #ifdef VDBE_PROFILE
@@ -357,7 +357,7 @@ sqlite3_uint64 sqlite3NProfileCnt = 0;
 ** and incorrect behavior.
 */
 #ifndef SQLITE_OMIT_WSD
-int sqlite3PendingByte = 0x40000000;
+정수 sqlite3PendingByte = 0x40000000;
 #endif
 
 /*

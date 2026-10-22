@@ -31,7 +31,7 @@ typedef struct TabResult {
   u32 nRow;          /* Number of rows in the result */
   u32 nColumn;       /* Number of columns in the result */
   u32 nData;         /* Slots used in azResult[].  (nRow+1)*nColumn */
-  int rc;            /* Return code from sqlite3_exec() */
+  정수 rc;            /* Return code from sqlite3_exec() */
 } TabResult;
 
 /*
@@ -39,68 +39,68 @@ typedef struct TabResult {
 ** is to fill in the TabResult structure appropriately, allocating new
 ** memory as necessary.
 */
-static int sqlite3_get_table_cb(void *pArg, int nCol, char **argv, char **colv){
+static 정수 sqlite3_get_table_cb(void *pArg, 정수 nCol, char **argv, char **colv){
   TabResult *p = (TabResult*)pArg;  /* Result accumulator */
-  int need;                         /* Slots needed in p->azResult[] */
-  int i;                            /* Loop counter */
+  정수 need;                         /* Slots needed in p->azResult[] */
+  정수 i;                            /* Loop counter */
   char *z;                          /* A single column of result */
 
   /* Make sure there is enough space in p->azResult to hold everything
   ** we need to remember from this invocation of the callback.
   */
-  if( p->nRow==0 && argv!=0 ){
+  만약( p->nRow==0 && argv!=0 ){
     need = nCol*2;
-  }else{
+  }아니면{
     need = nCol;
   }
-  if( p->nData + need > p->nAlloc ){
+  만약( p->nData + need > p->nAlloc ){
     char **azNew;
     p->nAlloc = p->nAlloc*2 + need;
     azNew = sqlite3Realloc( p->azResult, sizeof(char*)*p->nAlloc );
-    if( azNew==0 ) goto malloc_failed;
+    만약( azNew==0 ) goto malloc_failed;
     p->azResult = azNew;
   }
 
   /* If this is the first row, then generate an extra row containing
   ** the names of all columns.
   */
-  if( p->nRow==0 ){
+  만약( p->nRow==0 ){
     p->nColumn = nCol;
-    for(i=0; i<nCol; i++){
+    위해(i=0; i<nCol; i++){
       z = sqlite3_mprintf("%s", colv[i]);
-      if( z==0 ) goto malloc_failed;
+      만약( z==0 ) goto malloc_failed;
       p->azResult[p->nData++] = z;
     }
-  }else if( (int)p->nColumn!=nCol ){
+  }아니면 만약( (정수)p->nColumn!=nCol ){
     sqlite3_free(p->zErrMsg);
     p->zErrMsg = sqlite3_mprintf(
        "sqlite3_get_table() called with two or more incompatible queries"
     );
     p->rc = SQLITE_ERROR;
-    return 1;
+    반환 1;
   }
 
   /* Copy over the row data
   */
-  if( argv!=0 ){
-    for(i=0; i<nCol; i++){
-      if( argv[i]==0 ){
+  만약( argv!=0 ){
+    위해(i=0; i<nCol; i++){
+      만약( argv[i]==0 ){
         z = 0;
-      }else{
-        int n = sqlite3Strlen30(argv[i])+1;
+      }아니면{
+        정수 n = sqlite3Strlen30(argv[i])+1;
         z = sqlite3_malloc64( n );
-        if( z==0 ) goto malloc_failed;
+        만약( z==0 ) goto malloc_failed;
         memcpy(z, argv[i], n);
       }
       p->azResult[p->nData++] = z;
     }
     p->nRow++;
   }
-  return 0;
+  반환 0;
 
 malloc_failed:
   p->rc = SQLITE_NOMEM_BKPT;
-  return 1;
+  반환 1;
 }
 
 /*
@@ -113,24 +113,24 @@ malloc_failed:
 ** Instead, the entire table should be passed to sqlite3_free_table() when
 ** the calling procedure is finished using it.
 */
-int sqlite3_get_table(
+정수 sqlite3_get_table(
   sqlite3 *db,                /* The database on which the SQL executes */
   const char *zSql,           /* The SQL to be executed */
   char ***pazResult,          /* Write the result table here */
-  int *pnRow,                 /* Write the number of rows in the result here */
-  int *pnColumn,              /* Write the number of columns of result here */
+  정수 *pnRow,                 /* Write the number of rows in the result here */
+  정수 *pnColumn,              /* Write the number of columns of result here */
   char **pzErrMsg             /* Write error messages here */
 ){
-  int rc;
+  정수 rc;
   TabResult res;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pazResult==0 ) return SQLITE_MISUSE_BKPT;
+  만약( !sqlite3SafetyCheckOk(db) || pazResult==0 ) 반환 SQLITE_MISUSE_BKPT;
 #endif
   *pazResult = 0;
-  if( pnColumn ) *pnColumn = 0;
-  if( pnRow ) *pnRow = 0;
-  if( pzErrMsg ) *pzErrMsg = 0;
+  만약( pnColumn ) *pnColumn = 0;
+  만약( pnRow ) *pnRow = 0;
+  만약( pzErrMsg ) *pzErrMsg = 0;
   res.zErrMsg = 0;
   res.nRow = 0;
   res.nColumn = 0;
@@ -138,45 +138,45 @@ int sqlite3_get_table(
   res.nAlloc = 20;
   res.rc = SQLITE_OK;
   res.azResult = sqlite3_malloc64(sizeof(char*)*res.nAlloc );
-  if( res.azResult==0 ){
+  만약( res.azResult==0 ){
      db->errCode = SQLITE_NOMEM;
-     return SQLITE_NOMEM_BKPT;
+     반환 SQLITE_NOMEM_BKPT;
   }
   res.azResult[0] = 0;
   rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pzErrMsg);
   assert( sizeof(res.azResult[0])>= sizeof(res.nData) );
   res.azResult[0] = SQLITE_INT_TO_PTR(res.nData);
-  if( (rc&0xff)==SQLITE_ABORT ){
+  만약( (rc&0xff)==SQLITE_ABORT ){
     sqlite3_free_table(&res.azResult[1]);
-    if( res.zErrMsg ){
-      if( pzErrMsg ){
+    만약( res.zErrMsg ){
+      만약( pzErrMsg ){
         sqlite3_free(*pzErrMsg);
         *pzErrMsg = sqlite3_mprintf("%s",res.zErrMsg);
       }
       sqlite3_free(res.zErrMsg);
     }
     db->errCode = res.rc;  /* Assume 32-bit assignment is atomic */
-    return res.rc;
+    반환 res.rc;
   }
   sqlite3_free(res.zErrMsg);
-  if( rc!=SQLITE_OK ){
+  만약( rc!=SQLITE_OK ){
     sqlite3_free_table(&res.azResult[1]);
-    return rc;
+    반환 rc;
   }
-  if( res.nAlloc>res.nData ){
+  만약( res.nAlloc>res.nData ){
     char **azNew;
     azNew = sqlite3Realloc( res.azResult, sizeof(char*)*res.nData );
-    if( azNew==0 ){
+    만약( azNew==0 ){
       sqlite3_free_table(&res.azResult[1]);
       db->errCode = SQLITE_NOMEM;
-      return SQLITE_NOMEM_BKPT;
+      반환 SQLITE_NOMEM_BKPT;
     }
     res.azResult = azNew;
   }
   *pazResult = &res.azResult[1];
-  if( pnColumn ) *pnColumn = res.nColumn;
-  if( pnRow ) *pnRow = res.nRow;
-  return rc;
+  만약( pnColumn ) *pnColumn = res.nColumn;
+  만약( pnRow ) *pnRow = res.nRow;
+  반환 rc;
 }
 
 /*
@@ -185,12 +185,12 @@ int sqlite3_get_table(
 void sqlite3_free_table(
   char **azResult            /* Result returned from sqlite3_get_table() */
 ){
-  if( azResult ){
-    int i, n;
+  만약( azResult ){
+    정수 i, n;
     azResult--;
     assert( azResult!=0 );
     n = SQLITE_PTR_TO_INT(azResult[0]);
-    for(i=1; i<n; i++){ if( azResult[i] ) sqlite3_free(azResult[i]); }
+    위해(i=1; i<n; i++){ 만약( azResult[i] ) sqlite3_free(azResult[i]); }
     sqlite3_free(azResult);
   }
 }

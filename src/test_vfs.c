@@ -24,7 +24,7 @@
 **   -mxpathname INTEGER        (Value for sqlite3_vfs.mxPathname)
 **   -iversion   INTEGER        (Value for sqlite3_vfs.iVersion)
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#만약 SQLITE_TEST          /* This file is used for testing only */
 
 #include "sqlite3.h"
 #include "sqliteInt.h"
@@ -64,9 +64,9 @@ struct TestvfsFd {
 
 typedef struct TestFaultInject TestFaultInject;
 struct TestFaultInject {
-  int iCnt;                       /* Remaining calls before fault injection */
-  int eFault;                     /* A FAULT_INJECT_* value */
-  int nFail;                      /* Number of faults injected */
+  정수 iCnt;                       /* Remaining calls before fault injection */
+  정수 eFault;                     /* A FAULT_INJECT_* value */
+  정수 nFail;                      /* Number of faults injected */
 };
 
 /*
@@ -81,26 +81,26 @@ struct Testvfs {
   Tcl_Interp *interp;             /* Interpreter to run script in */
   Tcl_Obj *pScript;               /* Script to execute */
   TestvfsBuffer *pBuffer;         /* List of shared buffers */
-  int isNoshm;
-  int isFullshm;
+  정수 isNoshm;
+  정수 isFullshm;
 
-  int mask;                       /* Mask controlling [script] and [ioerr] */
+  정수 mask;                       /* Mask controlling [script] and [ioerr] */
 
   TestFaultInject ioerr_err;
   TestFaultInject full_err;
   TestFaultInject cantopen_err;
 
-#if 0
-  int iIoerrCnt;
-  int ioerr;
-  int nIoerrFail;
-  int iFullCnt;
-  int fullerr;
-  int nFullFail;
+#만약 0
+  정수 iIoerrCnt;
+  정수 ioerr;
+  정수 nIoerrFail;
+  정수 iFullCnt;
+  정수 fullerr;
+  정수 nFullFail;
 #endif
 
-  int iDevchar;
-  int iSectorsize;
+  정수 iDevchar;
+  정수 iSectorsize;
 };
 
 /*
@@ -144,7 +144,7 @@ struct Testvfs {
 */
 struct TestvfsBuffer {
   char *zFile;                    /* Associated file name */
-  int pgsz;                       /* Page size */
+  정수 pgsz;                       /* Page size */
   u8 *aPage[TESTVFS_MAX_PAGES];   /* Array of ckalloc'd pages */
   TestvfsFd *pFile;               /* List of open handles */
   TestvfsBuffer *pNext;           /* Next in linked list of all buffers */
@@ -159,44 +159,44 @@ struct TestvfsBuffer {
 /*
 ** Method declarations for TestvfsFile.
 */
-static int tvfsClose(sqlite3_file*);
-static int tvfsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tvfsWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int tvfsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tvfsSync(sqlite3_file*, int flags);
-static int tvfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tvfsLock(sqlite3_file*, int);
-static int tvfsUnlock(sqlite3_file*, int);
-static int tvfsCheckReservedLock(sqlite3_file*, int *);
-static int tvfsFileControl(sqlite3_file*, int op, void *pArg);
-static int tvfsSectorSize(sqlite3_file*);
-static int tvfsDeviceCharacteristics(sqlite3_file*);
+static 정수 tvfsClose(sqlite3_file*);
+static 정수 tvfsRead(sqlite3_file*, void*, 정수 iAmt, sqlite3_int64 iOfst);
+static 정수 tvfsWrite(sqlite3_file*,const void*,정수 iAmt, sqlite3_int64 iOfst);
+static 정수 tvfsTruncate(sqlite3_file*, sqlite3_int64 size);
+static 정수 tvfsSync(sqlite3_file*, 정수 flags);
+static 정수 tvfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+static 정수 tvfsLock(sqlite3_file*, 정수);
+static 정수 tvfsUnlock(sqlite3_file*, 정수);
+static 정수 tvfsCheckReservedLock(sqlite3_file*, 정수 *);
+static 정수 tvfsFileControl(sqlite3_file*, 정수 op, void *pArg);
+static 정수 tvfsSectorSize(sqlite3_file*);
+static 정수 tvfsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tvfs_vfs.
 */
-static int tvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int tvfsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int tvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int tvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+static 정수 tvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, 정수 , 정수 *);
+static 정수 tvfsDelete(sqlite3_vfs*, const char *zName, 정수 syncDir);
+static 정수 tvfsAccess(sqlite3_vfs*, const char *zName, 정수 flags, 정수 *);
+static 정수 tvfsFullPathname(sqlite3_vfs*, const char *zName, 정수, char *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 static void *tvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void tvfsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+static void tvfsDlError(sqlite3_vfs*, 정수 nByte, char *zErrMsg);
 static void (*tvfsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
 static void tvfsDlClose(sqlite3_vfs*, void*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int tvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int tvfsSleep(sqlite3_vfs*, int microseconds);
-static int tvfsCurrentTime(sqlite3_vfs*, double*);
+static 정수 tvfsRandomness(sqlite3_vfs*, 정수 nByte, char *zOut);
+static 정수 tvfsSleep(sqlite3_vfs*, 정수 microseconds);
+static 정수 tvfsCurrentTime(sqlite3_vfs*, double*);
 
-static int tvfsShmOpen(sqlite3_file*);
-static int tvfsShmLock(sqlite3_file*, int , int, int);
-static int tvfsShmMap(sqlite3_file*,int,int,int, void volatile **);
+static 정수 tvfsShmOpen(sqlite3_file*);
+static 정수 tvfsShmLock(sqlite3_file*, 정수 , 정수, 정수);
+static 정수 tvfsShmMap(sqlite3_file*,정수,정수,정수, void volatile **);
 static void tvfsShmBarrier(sqlite3_file*);
-static int tvfsShmUnmap(sqlite3_file*, int);
+static 정수 tvfsShmUnmap(sqlite3_file*, 정수);
 
-static int tvfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
-static int tvfsUnfetch(sqlite3_file*, sqlite3_int64, void*);
+static 정수 tvfsFetch(sqlite3_file*, sqlite3_int64, 정수, void**);
+static 정수 tvfsUnfetch(sqlite3_file*, sqlite3_int64, void*);
 
 static sqlite3_io_methods tvfs_io_methods = {
   3,                              /* iVersion */
@@ -220,9 +220,9 @@ static sqlite3_io_methods tvfs_io_methods = {
   tvfsUnfetch
 };
 
-static int tvfsResultCode(Testvfs *p, int *pRc){
+static 정수 tvfsResultCode(Testvfs *p, 정수 *pRc){
   struct errcode {
-    int eCode;
+    정수 eCode;
     const char *zCode;
   } aCode[] = {
     { SQLITE_OK,       "SQLITE_OK"     },
@@ -237,41 +237,41 @@ static int tvfsResultCode(Testvfs *p, int *pRc){
   };
 
   const char *z;
-  int i;
+  정수 i;
 
   z = Tcl_GetStringResult(p->interp);
-  for(i=0; i<ArraySize(aCode); i++){
-    if( 0==strcmp(z, aCode[i].zCode) ){
+  위해(i=0; i<ArraySize(aCode); i++){
+    만약( 0==strcmp(z, aCode[i].zCode) ){
       *pRc = aCode[i].eCode;
-      return 1;
+      반환 1;
     }
   }
 
-  return 0;
+  반환 0;
 }
 
-static int tvfsInjectFault(TestFaultInject *p){
-  int ret = 0;
-  if( p->eFault ){
+static 정수 tvfsInjectFault(TestFaultInject *p){
+  정수 ret = 0;
+  만약( p->eFault ){
     p->iCnt--;
-    if( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
+    만약( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
       ret = 1;
       p->nFail++;
     }
   }
-  return ret;
+  반환 ret;
 }
 
 
-static int tvfsInjectIoerr(Testvfs *p){
-  return tvfsInjectFault(&p->ioerr_err);
+static 정수 tvfsInjectIoerr(Testvfs *p){
+  반환 tvfsInjectFault(&p->ioerr_err);
 }
 
-static int tvfsInjectFullerr(Testvfs *p){
-  return tvfsInjectFault(&p->full_err);
+static 정수 tvfsInjectFullerr(Testvfs *p){
+  반환 tvfsInjectFault(&p->full_err);
 }
-static int tvfsInjectCantopenerr(Testvfs *p){
-  return tvfsInjectFault(&p->cantopen_err);
+static 정수 tvfsInjectCantopenerr(Testvfs *p){
+  반환 tvfsInjectFault(&p->cantopen_err);
 }
 
 
@@ -283,7 +283,7 @@ static void tvfsExecTcl(
   Tcl_Obj *arg3,
   Tcl_Obj *arg4
 ){
-  int rc;                         /* Return code from Tcl_EvalObj() */
+  정수 rc;                         /* Return code from Tcl_EvalObj() */
   Tcl_Obj *pEval;
   assert( p->pScript );
 
@@ -295,13 +295,13 @@ static void tvfsExecTcl(
   pEval = Tcl_DuplicateObj(p->pScript);
   Tcl_IncrRefCount(p->pScript);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewStringObj(zMethod, -1));
-  if( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
-  if( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
-  if( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
-  if( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
+  만약( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
+  만약( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
+  만약( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
+  만약( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
 
   rc = Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
-  if( rc!=TCL_OK ){
+  만약( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
     Tcl_ResetResult(p->interp);
   }
@@ -311,122 +311,122 @@ static void tvfsExecTcl(
 /*
 ** Close an tvfs-file.
 */
-static int tvfsClose(sqlite3_file *pFile){
+static 정수 tvfsClose(sqlite3_file *pFile){
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd = pTestfile->pFd;
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_CLOSE_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_CLOSE_MASK ){
     tvfsExecTcl(p, "xClose", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
   }
 
-  if( pFd->pShmId ){
+  만약( pFd->pShmId ){
     Tcl_DecrRefCount(pFd->pShmId);
     pFd->pShmId = 0;
   }
-  if( pFile->pMethods ){
+  만약( pFile->pMethods ){
     ckfree((char *)pFile->pMethods);
   }
   sqlite3OsClose(pFd->pReal);
   ckfree((char *)pFd);
   pTestfile->pFd = 0;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Read data from an tvfs-file.
 */
-static int tvfsRead(
+static 정수 tvfsRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  정수 iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_READ_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_READ_MASK ){
     tvfsExecTcl(p, "xRead", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_READ_MASK && tvfsInjectIoerr(p) ){
+  만약( rc==SQLITE_OK && p->mask&TESTVFS_READ_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = sqlite3OsRead(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Write data to an tvfs-file.
 */
-static int tvfsWrite(
+static 정수 tvfsWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  정수 iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_WRITE_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_WRITE_MASK ){
     tvfsExecTcl(p, "xWrite", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 
         Tcl_NewWideIntObj(iOfst), Tcl_NewIntObj(iAmt)
     );
     tvfsResultCode(p, &rc);
-    if( rc<0 ) return SQLITE_OK;
+    만약( rc<0 ) 반환 SQLITE_OK;
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
+  만약( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
     rc = SQLITE_FULL;
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_WRITE_MASK && tvfsInjectIoerr(p) ){
+  만약( rc==SQLITE_OK && p->mask&TESTVFS_WRITE_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
   
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = sqlite3OsWrite(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Truncate an tvfs-file.
 */
-static int tvfsTruncate(sqlite3_file *pFile, sqlite_int64 size){
-  int rc = SQLITE_OK;
+static 정수 tvfsTruncate(sqlite3_file *pFile, sqlite_int64 size){
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_TRUNCATE_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_TRUNCATE_MASK ){
     tvfsExecTcl(p, "xTruncate", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
   
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = sqlite3OsTruncate(pFd->pReal, size);
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Sync an tvfs-file.
 */
-static int tvfsSync(sqlite3_file *pFile, int flags){
-  int rc = SQLITE_OK;
+static 정수 tvfsSync(sqlite3_file *pFile, 정수 flags){
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_SYNC_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SYNC_MASK ){
     char *zFlags = 0;
 
     switch( flags ){
@@ -453,161 +453,161 @@ static int tvfsSync(sqlite3_file *pFile, int flags){
     tvfsResultCode(p, &rc);
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_FULL;
+  만약( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_FULL;
 
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = sqlite3OsSync(pFd->pReal, flags);
   }
 
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Return the current file-size of an tvfs-file.
 */
-static int tvfsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static 정수 tvfsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   TestvfsFd *p = tvfsGetFd(pFile);
-  return sqlite3OsFileSize(p->pReal, pSize);
+  반환 sqlite3OsFileSize(p->pReal, pSize);
 }
 
 /*
 ** Lock an tvfs-file.
 */
-static int tvfsLock(sqlite3_file *pFile, int eLock){
+static 정수 tvfsLock(sqlite3_file *pFile, 정수 eLock){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_LOCK_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_LOCK_MASK ){
     char zLock[30];
     sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
     tvfsExecTcl(p, "xLock", Tcl_NewStringObj(pFd->zFilename, -1), 
                    Tcl_NewStringObj(zLock, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_LOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_LOCK;
+  만약( p->mask&TESTVFS_LOCK_MASK && tvfsInjectIoerr(p) ){
+    반환 SQLITE_IOERR_LOCK;
   }
-  return sqlite3OsLock(pFd->pReal, eLock);
+  반환 sqlite3OsLock(pFd->pReal, eLock);
 }
 
 /*
 ** Unlock an tvfs-file.
 */
-static int tvfsUnlock(sqlite3_file *pFile, int eLock){
+static 정수 tvfsUnlock(sqlite3_file *pFile, 정수 eLock){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_UNLOCK_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_UNLOCK_MASK ){
     char zLock[30];
     sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
     tvfsExecTcl(p, "xUnlock", Tcl_NewStringObj(pFd->zFilename, -1), 
                    Tcl_NewStringObj(zLock, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_UNLOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_UNLOCK;
+  만약( p->mask&TESTVFS_UNLOCK_MASK && tvfsInjectIoerr(p) ){
+    반환 SQLITE_IOERR_UNLOCK;
   }
-  return sqlite3OsUnlock(pFd->pReal, eLock);
+  반환 sqlite3OsUnlock(pFd->pReal, eLock);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an tvfs-file.
 */
-static int tvfsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static 정수 tvfsCheckReservedLock(sqlite3_file *pFile, 정수 *pResOut){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_CKLOCK_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_CKLOCK_MASK ){
     tvfsExecTcl(p, "xCheckReservedLock", Tcl_NewStringObj(pFd->zFilename, -1),
                    0, 0, 0);
   }
-  return sqlite3OsCheckReservedLock(pFd->pReal, pResOut);
+  반환 sqlite3OsCheckReservedLock(pFd->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an tvfs-file.
 */
-static int tvfsFileControl(sqlite3_file *pFile, int op, void *pArg){
+static 정수 tvfsFileControl(sqlite3_file *pFile, 정수 op, void *pArg){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( op==SQLITE_FCNTL_PRAGMA ){
+  만약( op==SQLITE_FCNTL_PRAGMA ){
     char **argv = (char**)pArg;
-    if( sqlite3_stricmp(argv[1],"error")==0 ){
-      int rc = SQLITE_ERROR;
-      if( argv[2] ){
+    만약( sqlite3_stricmp(argv[1],"error")==0 ){
+      정수 rc = SQLITE_ERROR;
+      만약( argv[2] ){
         const char *z = argv[2];
-        int x = atoi(z);
-        if( x ){
+        정수 x = atoi(z);
+        만약( x ){
           rc = x;
-          while( sqlite3Isdigit(z[0]) ){ z++; }
-          while( sqlite3Isspace(z[0]) ){ z++; }
+          동안( sqlite3Isdigit(z[0]) ){ z++; }
+          동안( sqlite3Isspace(z[0]) ){ z++; }
         }
-        if( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
+        만약( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
       }
-      return rc;
+      반환 rc;
     }
-    if( sqlite3_stricmp(argv[1], "filename")==0 ){
+    만약( sqlite3_stricmp(argv[1], "filename")==0 ){
       argv[0] = sqlite3_mprintf("%s", pFd->zFilename);
-      return SQLITE_OK;
+      반환 SQLITE_OK;
     }
   }
-  if( p->pScript && (p->mask&TESTVFS_FCNTL_MASK) ){
+  만약( p->pScript && (p->mask&TESTVFS_FCNTL_MASK) ){
     struct Fcntl {
-      int iFnctl;
+      정수 iFnctl;
       const char *zFnctl;
     } aF[] = {
       { SQLITE_FCNTL_BEGIN_ATOMIC_WRITE, "BEGIN_ATOMIC_WRITE" },
       { SQLITE_FCNTL_COMMIT_ATOMIC_WRITE, "COMMIT_ATOMIC_WRITE" },
       { SQLITE_FCNTL_ZIPVFS, "ZIPVFS" },
     };
-    int i;
-    for(i=0; i<sizeof(aF)/sizeof(aF[0]); i++){
-      if( op==aF[i].iFnctl ) break;
+    정수 i;
+    위해(i=0; i<sizeof(aF)/sizeof(aF[0]); i++){
+      만약( op==aF[i].iFnctl ) break;
     }
-    if( i<sizeof(aF)/sizeof(aF[0]) ){
-      int rc = 0;
+    만약( i<sizeof(aF)/sizeof(aF[0]) ){
+      정수 rc = 0;
       tvfsExecTcl(p, "xFileControl", 
           Tcl_NewStringObj(pFd->zFilename, -1), 
           Tcl_NewStringObj(aF[i].zFnctl, -1),
           0, 0
       );
       tvfsResultCode(p, &rc);
-      if( rc ) return (rc<0 ? SQLITE_OK : rc);
+      만약( rc ) 반환 (rc<0 ? SQLITE_OK : rc);
     }
   }
-  return sqlite3OsFileControl(pFd->pReal, op, pArg);
+  반환 sqlite3OsFileControl(pFd->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an tvfs-file.
 */
-static int tvfsSectorSize(sqlite3_file *pFile){
+static 정수 tvfsSectorSize(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iSectorsize>=0 ){
-    return p->iSectorsize;
+  만약( p->iSectorsize>=0 ){
+    반환 p->iSectorsize;
   }
-  return sqlite3OsSectorSize(pFd->pReal);
+  반환 sqlite3OsSectorSize(pFd->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an tvfs-file.
 */
-static int tvfsDeviceCharacteristics(sqlite3_file *pFile){
+static 정수 tvfsDeviceCharacteristics(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iDevchar>=0 ){
-    return p->iDevchar;
+  만약( p->iDevchar>=0 ){
+    반환 p->iDevchar;
   }
-  return sqlite3OsDeviceCharacteristics(pFd->pReal);
+  반환 sqlite3OsDeviceCharacteristics(pFd->pReal);
 }
 
 /*
 ** Open an tvfs file handle.
 */
-static int tvfsOpen(
+static 정수 tvfsOpen(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  정수 flags,
+  정수 *pOutFlags
 ){
-  int rc;
+  정수 rc;
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd;
   Tcl_Obj *pId = 0;
@@ -633,12 +633,12 @@ static int tvfsOpen(
   ** script is used as the connection name.
   */
   Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
     Tcl_IncrRefCount(pArg);
-    if( flags&SQLITE_OPEN_MAIN_DB ){
+    만약( flags&SQLITE_OPEN_MAIN_DB ){
       const char *z = &zName[strlen(zName)+1];
-      while( *z ){
+      동안( *z ){
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
         z += strlen(z) + 1;
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
@@ -647,18 +647,18 @@ static int tvfsOpen(
     }
     tvfsExecTcl(p, "xOpen", Tcl_NewStringObj(pFd->zFilename, -1), pArg, 0, 0);
     Tcl_DecrRefCount(pArg);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
+    만약( tvfsResultCode(p, &rc) ){
+      만약( rc!=SQLITE_OK ) 반환 rc;
+    }아니면{
       pId = Tcl_GetObjResult(p->interp);
     }
   }
 
-  if( (p->mask&TESTVFS_OPEN_MASK) &&  tvfsInjectIoerr(p) ) return SQLITE_IOERR;
-  if( tvfsInjectCantopenerr(p) ) return SQLITE_CANTOPEN;
-  if( tvfsInjectFullerr(p) ) return SQLITE_FULL;
+  만약( (p->mask&TESTVFS_OPEN_MASK) &&  tvfsInjectIoerr(p) ) 반환 SQLITE_IOERR;
+  만약( tvfsInjectCantopenerr(p) ) 반환 SQLITE_CANTOPEN;
+  만약( tvfsInjectFullerr(p) ) 반환 SQLITE_FULL;
 
-  if( !pId ){
+  만약( !pId ){
     pId = Tcl_NewStringObj("anon", -1);
   }
   Tcl_IncrRefCount(pId);
@@ -666,23 +666,23 @@ static int tvfsOpen(
   Tcl_ResetResult(p->interp);
 
   rc = sqlite3OsOpen(PARENTVFS(pVfs), zName, pFd->pReal, flags, pOutFlags);
-  if( pFd->pReal->pMethods ){
+  만약( pFd->pReal->pMethods ){
     sqlite3_io_methods *pMethods;
-    int nByte;
+    정수 nByte;
 
-    if( pVfs->iVersion>1 ){
+    만약( pVfs->iVersion>1 ){
       nByte = sizeof(sqlite3_io_methods);
-    }else{
+    }아니면{
       nByte = offsetof(sqlite3_io_methods, xShmMap);
     }
 
     pMethods = (sqlite3_io_methods *)ckalloc(nByte);
     memcpy(pMethods, &tvfs_io_methods, nByte);
     pMethods->iVersion = pFd->pReal->pMethods->iVersion;
-    if( pMethods->iVersion>pVfs->iVersion ){
+    만약( pMethods->iVersion>pVfs->iVersion ){
       pMethods->iVersion = pVfs->iVersion;
     }
-    if( pVfs->iVersion>1 && ((Testvfs *)pVfs->pAppData)->isNoshm ){
+    만약( pVfs->iVersion>1 && ((Testvfs *)pVfs->pAppData)->isNoshm ){
       pMethods->xShmUnmap = 0;
       pMethods->xShmLock = 0;
       pMethods->xShmBarrier = 0;
@@ -691,7 +691,7 @@ static int tvfsOpen(
     pFile->pMethods = pMethods;
   }
 
-  return rc;
+  반환 rc;
 }
 
 /*
@@ -699,52 +699,52 @@ static int tvfsOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int tvfsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
+static 정수 tvfsDelete(sqlite3_vfs *pVfs, const char *zPath, 정수 dirSync){
+  정수 rc = SQLITE_OK;
   Testvfs *p = (Testvfs *)pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_DELETE_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_DELETE_MASK ){
     tvfsExecTcl(p, "xDelete", 
         Tcl_NewStringObj(zPath, -1), Tcl_NewIntObj(dirSync), 0, 0
     );
     tvfsResultCode(p, &rc);
   }
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = sqlite3OsDelete(PARENTVFS(pVfs), zPath, dirSync);
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int tvfsAccess(
+static 정수 tvfsAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
-  int flags, 
-  int *pResOut
+  정수 flags, 
+  정수 *pResOut
 ){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_ACCESS_MASK ){
-    int rc;
+  만약( p->pScript && p->mask&TESTVFS_ACCESS_MASK ){
+    정수 rc;
     char *zArg = 0;
-    if( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
-    if( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
-    if( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
+    만약( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
+    만약( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
+    만약( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
     tvfsExecTcl(p, "xAccess", 
         Tcl_NewStringObj(zPath, -1), Tcl_NewStringObj(zArg, -1), 0, 0
     );
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
+    만약( tvfsResultCode(p, &rc) ){
+      만약( rc!=SQLITE_OK ) 반환 rc;
+    }아니면{
       Tcl_Interp *interp = p->interp;
-      if( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_GetObjResult(interp), pResOut) ){
-        return SQLITE_OK;
+      만약( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_GetObjResult(interp), pResOut) ){
+        반환 SQLITE_OK;
       }
     }
   }
-  return sqlite3OsAccess(PARENTVFS(pVfs), zPath, flags, pResOut);
+  반환 sqlite3OsAccess(PARENTVFS(pVfs), zPath, flags, pResOut);
 }
 
 /*
@@ -752,21 +752,21 @@ static int tvfsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int tvfsFullPathname(
+static 정수 tvfsFullPathname(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
-  int nOut, 
+  정수 nOut, 
   char *zOut
 ){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_FULLPATHNAME_MASK ){
-    int rc;
+  만약( p->pScript && p->mask&TESTVFS_FULLPATHNAME_MASK ){
+    정수 rc;
     tvfsExecTcl(p, "xFullPathname", Tcl_NewStringObj(zPath, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+    만약( tvfsResultCode(p, &rc) ){
+      만약( rc!=SQLITE_OK ) 반환 rc;
     }
   }
-  return sqlite3OsFullPathname(PARENTVFS(pVfs), zPath, nOut, zOut);
+  반환 sqlite3OsFullPathname(PARENTVFS(pVfs), zPath, nOut, zOut);
 }
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
@@ -774,7 +774,7 @@ static int tvfsFullPathname(
 ** Open the dynamic library located at zPath and return a handle.
 */
 static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(PARENTVFS(pVfs), zPath);
+  반환 sqlite3OsDlOpen(PARENTVFS(pVfs), zPath);
 }
 
 /*
@@ -782,7 +782,7 @@ static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void tvfsDlError(sqlite3_vfs *pVfs, 정수 nByte, char *zErrMsg){
   sqlite3OsDlError(PARENTVFS(pVfs), nByte, zErrMsg);
 }
 
@@ -790,7 +790,7 @@ static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
 static void (*tvfsDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
+  반환 sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
 }
 
 /*
@@ -805,32 +805,32 @@ static void tvfsDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int tvfsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(PARENTVFS(pVfs), nByte, zBufOut);
+static 정수 tvfsRandomness(sqlite3_vfs *pVfs, 정수 nByte, char *zBufOut){
+  반환 sqlite3OsRandomness(PARENTVFS(pVfs), nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int tvfsSleep(sqlite3_vfs *pVfs, int nMicro){
+static 정수 tvfsSleep(sqlite3_vfs *pVfs, 정수 nMicro){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && (p->mask&TESTVFS_SLEEP_MASK) ){
+  만약( p->pScript && (p->mask&TESTVFS_SLEEP_MASK) ){
     tvfsExecTcl(p, "xSleep", Tcl_NewIntObj(nMicro), 0, 0, 0);
   }
-  return sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
+  반환 sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int tvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return PARENTVFS(pVfs)->xCurrentTime(PARENTVFS(pVfs), pTimeOut);
+static 정수 tvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+  반환 PARENTVFS(pVfs)->xCurrentTime(PARENTVFS(pVfs), pTimeOut);
 }
 
-static int tvfsShmOpen(sqlite3_file *pFile){
+static 정수 tvfsShmOpen(sqlite3_file *pFile){
   Testvfs *p;
-  int rc = SQLITE_OK;             /* Return code */
+  정수 rc = SQLITE_OK;             /* Return code */
   TestvfsBuffer *pBuffer;         /* Buffer to open connection to */
   TestvfsFd *pFd;                 /* The testvfs file structure */
 
@@ -844,25 +844,25 @@ static int tvfsShmOpen(sqlite3_file *pFile){
   **   SCRIPT xShmOpen FILENAME
   */
   Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_SHMOPEN_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SHMOPEN_MASK ){
     tvfsExecTcl(p, "xShmOpen", Tcl_NewStringObj(pFd->zFilename, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+    만약( tvfsResultCode(p, &rc) ){
+      만약( rc!=SQLITE_OK ) 반환 rc;
     }
   }
 
   assert( rc==SQLITE_OK );
-  if( p->mask&TESTVFS_SHMOPEN_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR;
+  만약( p->mask&TESTVFS_SHMOPEN_MASK && tvfsInjectIoerr(p) ){
+    반환 SQLITE_IOERR;
   }
 
   /* Search for a TestvfsBuffer. Create a new one if required. */
-  for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-    if( 0==strcmp(pFd->zFilename, pBuffer->zFile) ) break;
+  위해(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
+    만약( 0==strcmp(pFd->zFilename, pBuffer->zFile) ) break;
   }
-  if( !pBuffer ){
-    int szName = (int)strlen(pFd->zFilename);
-    int nByte = sizeof(TestvfsBuffer) + szName + 1;
+  만약( !pBuffer ){
+    정수 szName = (정수)strlen(pFd->zFilename);
+    정수 nByte = sizeof(TestvfsBuffer) + szName + 1;
     pBuffer = (TestvfsBuffer *)ckalloc(nByte);
     memset(pBuffer, 0, nByte);
     pBuffer->zFile = (char *)&pBuffer[1];
@@ -875,42 +875,42 @@ static int tvfsShmOpen(sqlite3_file *pFile){
   pFd->pNext = pBuffer->pFile;
   pBuffer->pFile = pFd;
   pFd->pShm = pBuffer;
-  return rc;
+  반환 rc;
 }
 
-static void tvfsAllocPage(TestvfsBuffer *p, int iPage, int pgsz){
+static void tvfsAllocPage(TestvfsBuffer *p, 정수 iPage, 정수 pgsz){
   assert( iPage<TESTVFS_MAX_PAGES );
-  if( p->aPage[iPage]==0 ){
+  만약( p->aPage[iPage]==0 ){
     p->aPage[iPage] = (u8 *)ckalloc(pgsz);
     memset(p->aPage[iPage], 0, pgsz);
     p->pgsz = pgsz;
   }
 }
 
-static int tvfsShmMap(
+static 정수 tvfsShmMap(
   sqlite3_file *pFile,            /* Handle open on database file */
-  int iPage,                      /* Page to retrieve */
-  int pgsz,                       /* Size of pages */
-  int isWrite,                    /* True to extend file if necessary */
+  정수 iPage,                      /* Page to retrieve */
+  정수 pgsz,                       /* Size of pages */
+  정수 isWrite,                    /* True to extend file if necessary */
   void volatile **pp              /* OUT: Mapped memory */
 ){
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
 
-  if( p->isFullshm ){
+  만약( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmMap(pReal, iPage, pgsz, isWrite, pp);
+    반환 pReal->pMethods->xShmMap(pReal, iPage, pgsz, isWrite, pp);
   }
 
-  if( 0==pFd->pShm ){
+  만약( 0==pFd->pShm ){
     rc = tvfsShmOpen(pFile);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    만약( rc!=SQLITE_OK ){
+      반환 rc;
     }
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
     Tcl_IncrRefCount(pArg);
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(iPage));
@@ -922,50 +922,50 @@ static int tvfsShmMap(
     tvfsResultCode(p, &rc);
     Tcl_DecrRefCount(pArg);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
+  만약( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK && isWrite && !pFd->pShm->aPage[iPage] ){
+  만약( rc==SQLITE_OK && isWrite && !pFd->pShm->aPage[iPage] ){
     tvfsAllocPage(pFd->pShm, iPage, pgsz);
   }
-  if( rc==SQLITE_OK || rc==SQLITE_READONLY ){
+  만약( rc==SQLITE_OK || rc==SQLITE_READONLY ){
     *pp = (void volatile *)pFd->pShm->aPage[iPage];
   }
 
-  return rc;
+  반환 rc;
 }
 
 
-static int tvfsShmLock(
+static 정수 tvfsShmLock(
   sqlite3_file *pFile,
-  int ofst,
-  int n,
-  int flags
+  정수 ofst,
+  정수 n,
+  정수 flags
 ){
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
-  int nLock;
+  정수 nLock;
   char zLock[80];
 
-  if( p->isFullshm ){
+  만약( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmLock(pReal, ofst, n, flags);
+    반환 pReal->pMethods->xShmLock(pReal, ofst, n, flags);
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMLOCK_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SHMLOCK_MASK ){
     sqlite3_snprintf(sizeof(zLock), zLock, "%d %d", ofst, n);
-    nLock = (int)strlen(zLock);
-    if( flags & SQLITE_SHM_LOCK ){
+    nLock = (정수)strlen(zLock);
+    만약( flags & SQLITE_SHM_LOCK ){
       strcpy(&zLock[nLock], " lock");
-    }else{
+    }아니면{
       strcpy(&zLock[nLock], " unlock");
     }
-    nLock += (int)strlen(&zLock[nLock]);
-    if( flags & SQLITE_SHM_SHARED ){
+    nLock += (정수)strlen(&zLock[nLock]);
+    만약( flags & SQLITE_SHM_SHARED ){
       strcpy(&zLock[nLock], " shared");
-    }else{
+    }아니면{
       strcpy(&zLock[nLock], " exclusive");
     }
     tvfsExecTcl(p, "xShmLock", 
@@ -975,116 +975,116 @@ static int tvfsShmLock(
     tvfsResultCode(p, &rc);
   }
 
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMLOCK_MASK && tvfsInjectIoerr(p) ){
+  만약( rc==SQLITE_OK && p->mask&TESTVFS_SHMLOCK_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK ){
-    int isLock = (flags & SQLITE_SHM_LOCK);
-    int isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
+  만약( rc==SQLITE_OK ){
+    정수 isLock = (flags & SQLITE_SHM_LOCK);
+    정수 isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
     u32 mask = (((1<<n)-1) << ofst);
-    if( isLock ){
+    만약( isLock ){
       TestvfsFd *p2;
-      for(p2=pFd->pShm->pFile; p2; p2=p2->pNext){
-        if( p2==pFd ) continue;
-        if( (p2->excllock&mask) || (isExcl && p2->sharedlock&mask) ){
+      위해(p2=pFd->pShm->pFile; p2; p2=p2->pNext){
+        만약( p2==pFd ) continue;
+        만약( (p2->excllock&mask) || (isExcl && p2->sharedlock&mask) ){
           rc = SQLITE_BUSY;
           break;
         }
       }
-      if( rc==SQLITE_OK ){
-        if( isExcl )  pFd->excllock |= mask;
-        if( !isExcl ) pFd->sharedlock |= mask;
+      만약( rc==SQLITE_OK ){
+        만약( isExcl )  pFd->excllock |= mask;
+        만약( !isExcl ) pFd->sharedlock |= mask;
       }
-    }else{
-      if( isExcl )  pFd->excllock &= (~mask);
-      if( !isExcl ) pFd->sharedlock &= (~mask);
+    }아니면{
+      만약( isExcl )  pFd->excllock &= (~mask);
+      만약( !isExcl ) pFd->sharedlock &= (~mask);
     }
   }
 
-  return rc;
+  반환 rc;
 }
 
 static void tvfsShmBarrier(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
 
-  if( p->pScript && p->mask&TESTVFS_SHMBARRIER_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SHMBARRIER_MASK ){
     const char *z = pFd->pShm ? pFd->pShm->zFile : "";
     tvfsExecTcl(p, "xShmBarrier", Tcl_NewStringObj(z, -1), pFd->pShmId, 0, 0);
   }
 
-  if( p->isFullshm ){
+  만약( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
     pReal->pMethods->xShmBarrier(pReal);
-    return;
+    반환;
   }
 }
 
-static int tvfsShmUnmap(
+static 정수 tvfsShmUnmap(
   sqlite3_file *pFile,
-  int deleteFlag
+  정수 deleteFlag
 ){
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
   TestvfsBuffer *pBuffer = pFd->pShm;
   TestvfsFd **ppFd;
 
-  if( p->isFullshm ){
+  만약( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmUnmap(pReal, deleteFlag);
+    반환 pReal->pMethods->xShmUnmap(pReal, deleteFlag);
   }
 
-  if( !pBuffer ) return SQLITE_OK;
+  만약( !pBuffer ) 반환 SQLITE_OK;
   assert( pFd->pShmId && pFd->pShm );
 
-  if( p->pScript && p->mask&TESTVFS_SHMCLOSE_MASK ){
+  만약( p->pScript && p->mask&TESTVFS_SHMCLOSE_MASK ){
     tvfsExecTcl(p, "xShmUnmap", 
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
 
-  for(ppFd=&pBuffer->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->pNext));
+  위해(ppFd=&pBuffer->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->pNext));
   assert( (*ppFd)==pFd );
   *ppFd = pFd->pNext;
   pFd->pNext = 0;
 
-  if( pBuffer->pFile==0 ){
-    int i;
+  만약( pBuffer->pFile==0 ){
+    정수 i;
     TestvfsBuffer **pp;
-    for(pp=&p->pBuffer; *pp!=pBuffer; pp=&((*pp)->pNext));
+    위해(pp=&p->pBuffer; *pp!=pBuffer; pp=&((*pp)->pNext));
     *pp = (*pp)->pNext;
-    for(i=0; pBuffer->aPage[i]; i++){
+    위해(i=0; pBuffer->aPage[i]; i++){
       ckfree((char *)pBuffer->aPage[i]);
     }
     ckfree((char *)pBuffer);
   }
   pFd->pShm = 0;
 
-  return rc;
+  반환 rc;
 }
 
-static int tvfsFetch(
+static 정수 tvfsFetch(
     sqlite3_file *pFile, 
     sqlite3_int64 iOfst, 
-    int iAmt, 
+    정수 iAmt, 
     void **pp
 ){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
+  반환 sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
 }
 
-static int tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *p){
+static 정수 tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *p){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsUnfetch(pFd->pReal, iOfst, p);
+  반환 sqlite3OsUnfetch(pFd->pReal, iOfst, p);
 }
 
-static int SQLITE_TCLAPI testvfs_obj_cmd(
+static 정수 SQLITE_TCLAPI testvfs_obj_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  정수 objc,
   Tcl_Obj *CONST objv[]
 ){
   Testvfs *p = (Testvfs *)cd;
@@ -1108,67 +1108,67 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     { "sectorsize",  CMD_SECTORSIZE  },
     { 0, 0 }
   };
-  int i;
+  정수 i;
   
-  if( objc<2 ){
+  만약( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUBCOMMAND ...");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObjStruct(
+  만약( Tcl_GetIndexFromObjStruct(
         interp, objv[1], aSubcmd, sizeof(aSubcmd[0]), "subcommand", 0, &i) 
   ){
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
   Tcl_ResetResult(interp);
 
   switch( aSubcmd[i].eCmd ){
     case CMD_SHM: {
       Tcl_Obj *pObj;
-      int rc;
+      정수 rc;
       TestvfsBuffer *pBuffer;
       char *zName;
-      if( objc!=3 && objc!=4 ){
+      만약( objc!=3 && objc!=4 ){
         Tcl_WrongNumArgs(interp, 2, objv, "FILE ?VALUE?");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
       zName = ckalloc(p->pParent->mxPathname);
       rc = p->pParent->xFullPathname(
           p->pParent, Tcl_GetString(objv[2]), 
           p->pParent->mxPathname, zName
       );
-      if( rc!=SQLITE_OK ){
+      만약( rc!=SQLITE_OK ){
         Tcl_AppendResult(interp, "failed to get full path: ",
                          Tcl_GetString(objv[2]), NULL);
         ckfree(zName);
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
-      for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-        if( 0==strcmp(pBuffer->zFile, zName) ) break;
+      위해(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
+        만약( 0==strcmp(pBuffer->zFile, zName) ) break;
       }
       ckfree(zName);
-      if( !pBuffer ){
+      만약( !pBuffer ){
         Tcl_AppendResult(interp, "no such file: ", Tcl_GetString(objv[2]), NULL);
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
-      if( objc==4 ){
+      만약( objc==4 ){
         Tcl_Size n;
         u8 *a = Tcl_GetByteArrayFromObj(objv[3], &n);
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
-        for(i=0; i*pgsz<(int)n; i++){
-          int nByte = pgsz;
+        정수 pgsz = pBuffer->pgsz;
+        만약( pgsz==0 ) pgsz = 65536;
+        위해(i=0; i*pgsz<(정수)n; i++){
+          정수 nByte = pgsz;
           tvfsAllocPage(pBuffer, i, pgsz);
-          if( n-i*pgsz<pgsz ){
-            nByte = (int)n;
+          만약( n-i*pgsz<pgsz ){
+            nByte = (정수)n;
           }
           memcpy(pBuffer->aPage[i], &a[i*pgsz], nByte);
         }
       }
 
       pObj = Tcl_NewObj();
-      for(i=0; pBuffer->aPage[i]; i++){
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
+      위해(i=0; pBuffer->aPage[i]; i++){
+        정수 pgsz = pBuffer->pgsz;
+        만약( pgsz==0 ) pgsz = 65536;
         Tcl_AppendObjToObj(pObj, Tcl_NewByteArrayObj(pBuffer->aPage[i], pgsz));
       }
       Tcl_SetObjResult(interp, pObj);
@@ -1182,7 +1182,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     case CMD_FILTER: {
       static struct VfsMethod {
         char *zName;
-        int mask;
+        정수 mask;
       } vfsmethod [] = {
         { "xShmOpen",           TESTVFS_SHMOPEN_MASK },
         { "xShmLock",           TESTVFS_SHMLOCK_MASK },
@@ -1206,27 +1206,27 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       };
       Tcl_Obj **apElem = 0;
       Tcl_Size nElem = 0;
-      int mask = 0;
-      if( objc!=3 ){
+      정수 mask = 0;
+      만약( objc!=3 ){
         Tcl_WrongNumArgs(interp, 2, objv, "LIST");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
-      if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-        return TCL_ERROR;
+      만약( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+        반환 TCL_ERROR;
       }
       Tcl_ResetResult(interp);
-      for(i=0; i<(int)nElem; i++){
-        int iMethod;
+      위해(i=0; i<(정수)nElem; i++){
+        정수 iMethod;
         char *zElem = Tcl_GetString(apElem[i]);
-        for(iMethod=0; iMethod<ArraySize(vfsmethod); iMethod++){
-          if( strcmp(zElem, vfsmethod[iMethod].zName)==0 ){
+        위해(iMethod=0; iMethod<ArraySize(vfsmethod); iMethod++){
+          만약( strcmp(zElem, vfsmethod[iMethod].zName)==0 ){
             mask |= vfsmethod[iMethod].mask;
             break;
           }
         }
-        if( iMethod==ArraySize(vfsmethod) ){
+        만약( iMethod==ArraySize(vfsmethod) ){
           Tcl_AppendResult(interp, "unknown method: ", zElem, NULL);
-          return TCL_ERROR;
+          반환 TCL_ERROR;
         }
       }
       p->mask = mask;
@@ -1240,24 +1240,24 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     **  occur.
     */
     case CMD_SCRIPT: {
-      if( objc==3 ){
+      만약( objc==3 ){
         Tcl_Size nByte;
-        if( p->pScript ){
+        만약( p->pScript ){
           Tcl_DecrRefCount(p->pScript);
           p->pScript = 0;
         }
         Tcl_GetStringFromObj(objv[2], &nByte);
-        if( nByte>0 ){
+        만약( nByte>0 ){
           p->pScript = Tcl_DuplicateObj(objv[2]);
           Tcl_IncrRefCount(p->pScript);
         }
-      }else if( objc!=2 ){
+      }아니면 만약( objc!=2 ){
         Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
 
       Tcl_ResetResult(interp);
-      if( p->pScript ) Tcl_SetObjResult(interp, p->pScript);
+      만약( p->pScript ) Tcl_SetObjResult(interp, p->pScript);
 
       break;
     }
@@ -1271,7 +1271,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     case CMD_IOERR:
     case CMD_FULLERR: {
       TestFaultInject *pTest = 0;
-      int iRet;
+      정수 iRet;
 
       switch( aSubcmd[i].eCmd ){
         case CMD_IOERR: pTest = &p->ioerr_err; break;
@@ -1284,18 +1284,18 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       pTest->eFault = 0;
       pTest->iCnt = 0;
 
-      if( objc==4 ){
-        int iCnt, iPersist;
-        if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
+      만약( objc==4 ){
+        정수 iCnt, iPersist;
+        만약( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
          || TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[3], &iPersist)
         ){
-          return TCL_ERROR;
+          반환 TCL_ERROR;
         }
         pTest->eFault = iPersist?FAULT_INJECT_PERSISTENT:FAULT_INJECT_TRANSIENT;
         pTest->iCnt = iCnt;
-      }else if( objc!=2 ){
+      }아니면 만약( objc!=2 ){
         Tcl_WrongNumArgs(interp, 2, objv, "?CNT PERSIST?");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
       Tcl_SetObjResult(interp, Tcl_NewIntObj(iRet));
       break;
@@ -1309,7 +1309,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     case CMD_DEVCHAR: {
       struct DeviceFlag {
         char *zName;
-        int iValue;
+        정수 iValue;
       } aFlag[] = {
         { "default",               -1 },
         { "atomic",                SQLITE_IOCAP_ATOMIC                },
@@ -1329,32 +1329,32 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
         { 0, 0 }
       };
       Tcl_Obj *pRet;
-      int iFlag;
+      정수 iFlag;
 
-      if( objc>3 ){
+      만약( objc>3 ){
         Tcl_WrongNumArgs(interp, 2, objv, "?ATTR-LIST?");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
-      if( objc==3 ){
-        int j;
-        int iNew = 0;
+      만약( objc==3 ){
+        정수 j;
+        정수 iNew = 0;
         Tcl_Obj **flags = 0;
         Tcl_Size nFlags = 0;
 
-        if( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
-          return TCL_ERROR;
+        만약( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
+          반환 TCL_ERROR;
         }
 
-        for(j=0; j<(int)nFlags; j++){
-          int idx = 0;
-          if( Tcl_GetIndexFromObjStruct(interp, flags[j], aFlag, 
+        위해(j=0; j<(정수)nFlags; j++){
+          정수 idx = 0;
+          만약( Tcl_GetIndexFromObjStruct(interp, flags[j], aFlag, 
                 sizeof(aFlag[0]), "flag", 0, &idx) 
           ){
-            return TCL_ERROR;
+            반환 TCL_ERROR;
           }
-          if( aFlag[idx].iValue<0 && nFlags>1 ){
+          만약( aFlag[idx].iValue<0 && nFlags>1 ){
             Tcl_AppendResult(interp, "bad flags: ", Tcl_GetString(objv[2]), NULL);
-            return TCL_ERROR;
+            반환 TCL_ERROR;
           }
           iNew |= aFlag[idx].iValue;
         }
@@ -1363,8 +1363,8 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       }
 
       pRet = Tcl_NewObj();
-      for(iFlag=0; iFlag<sizeof(aFlag)/sizeof(aFlag[0]); iFlag++){
-        if( p->iDevchar & aFlag[iFlag].iValue ){
+      위해(iFlag=0; iFlag<sizeof(aFlag)/sizeof(aFlag[0]); iFlag++){
+        만약( p->iDevchar & aFlag[iFlag].iValue ){
           Tcl_ListObjAppendElement(
               interp, pRet, Tcl_NewStringObj(aFlag[iFlag].zName, -1)
           );
@@ -1376,14 +1376,14 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     }
 
     case CMD_SECTORSIZE: {
-      if( objc>3 ){
+      만약( objc>3 ){
         Tcl_WrongNumArgs(interp, 2, objv, "?VALUE?");
-        return TCL_ERROR;
+        반환 TCL_ERROR;
       }
-      if( objc==3 ){
-        int iNew = 0;
-        if( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
-          return TCL_ERROR;
+      만약( objc==3 ){
+        정수 iNew = 0;
+        만약( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
+          반환 TCL_ERROR;
         }
         p->iSectorsize = iNew;
       }
@@ -1392,12 +1392,12 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     }
   }
 
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
 static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
   Testvfs *p = (Testvfs *)cd;
-  if( p->pScript ) Tcl_DecrRefCount(p->pScript);
+  만약( p->pScript ) Tcl_DecrRefCount(p->pScript);
   sqlite3_vfs_unregister(p->pVfs);
   memset(p->pVfs, 0, sizeof(sqlite3_vfs));
   ckfree((char *)p->pVfs);
@@ -1440,10 +1440,10 @@ static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
 **
 ** where LOCK is of the form "OFFSET NBYTE lock/unlock shared/exclusive"
 */
-static int SQLITE_TCLAPI testvfs_cmd(
+static 정수 SQLITE_TCLAPI testvfs_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  정수 objc,
   Tcl_Obj *CONST objv[]
 ){
   static sqlite3_vfs tvfs_vfs = {
@@ -1462,7 +1462,7 @@ static int SQLITE_TCLAPI testvfs_cmd(
     tvfsDlError,                  /* xDlError */
     tvfsDlSym,                    /* xDlSym */
     tvfsDlClose,                  /* xDlClose */
-#else
+#아니면
     0,                            /* xDlOpen */
     0,                            /* xDlError */
     0,                            /* xDlSym */
@@ -1481,65 +1481,65 @@ static int SQLITE_TCLAPI testvfs_cmd(
   Testvfs *p;                     /* New object */
   sqlite3_vfs *pVfs;              /* New VFS */
   char *zVfs;
-  int nByte;                      /* Bytes of space to allocate at p */
+  정수 nByte;                      /* Bytes of space to allocate at p */
 
-  int i;
-  int isNoshm = 0;                /* True if -noshm is passed */
-  int isFullshm = 0;              /* True if -fullshm is passed */
-  int isDefault = 0;              /* True if -default is passed */
-  int szOsFile = 0;               /* Value passed to -szosfile */
-  int mxPathname = -1;            /* Value passed to -mxpathname */
-  int iVersion = 3;               /* Value passed to -iversion */
+  정수 i;
+  정수 isNoshm = 0;                /* True if -noshm is passed */
+  정수 isFullshm = 0;              /* True if -fullshm is passed */
+  정수 isDefault = 0;              /* True if -default is passed */
+  정수 szOsFile = 0;               /* Value passed to -szosfile */
+  정수 mxPathname = -1;            /* Value passed to -mxpathname */
+  정수 iVersion = 3;               /* Value passed to -iversion */
 
-  if( objc<2 || 0!=(objc%2) ) goto bad_args;
-  for(i=2; i<objc; i += 2){
+  만약( objc<2 || 0!=(objc%2) ) goto bad_args;
+  위해(i=2; i<objc; i += 2){
     Tcl_Size nSwitch;
     char *zSwitch;
     zSwitch = Tcl_GetStringFromObj(objv[i], &nSwitch); 
 
-    if( nSwitch>2 && 0==strncmp("-noshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
-        return TCL_ERROR;
+    만약( nSwitch>2 && 0==strncmp("-noshm", zSwitch, nSwitch) ){
+      만약( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
+        반환 TCL_ERROR;
       }
-      if( isNoshm ) isFullshm = 0;
+      만약( isNoshm ) isFullshm = 0;
     }
-    else if( nSwitch>2 && 0==strncmp("-default", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
-        return TCL_ERROR;
-      }
-    }
-    else if( nSwitch>2 && 0==strncmp("-szosfile", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
-        return TCL_ERROR;
+    아니면 만약( nSwitch>2 && 0==strncmp("-default", zSwitch, nSwitch) ){
+      만약( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
+        반환 TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-mxpathname", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
-        return TCL_ERROR;
+    아니면 만약( nSwitch>2 && 0==strncmp("-szosfile", zSwitch, nSwitch) ){
+      만약( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
+        반환 TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-iversion", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &iVersion) ){
-        return TCL_ERROR;
+    아니면 만약( nSwitch>2 && 0==strncmp("-mxpathname", zSwitch, nSwitch) ){
+      만약( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
+        반환 TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-fullshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
-        return TCL_ERROR;
+    아니면 만약( nSwitch>2 && 0==strncmp("-iversion", zSwitch, nSwitch) ){
+      만약( Tcl_GetIntFromObj(interp, objv[i+1], &iVersion) ){
+        반환 TCL_ERROR;
       }
-      if( isFullshm ) isNoshm = 0;
     }
-    else{
+    아니면 만약( nSwitch>2 && 0==strncmp("-fullshm", zSwitch, nSwitch) ){
+      만약( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
+        반환 TCL_ERROR;
+      }
+      만약( isFullshm ) isNoshm = 0;
+    }
+    아니면{
       goto bad_args;
     }
   }
 
-  if( szOsFile<sizeof(TestvfsFile) ){
+  만약( szOsFile<sizeof(TestvfsFile) ){
     szOsFile = sizeof(TestvfsFile);
   }
 
   zVfs = Tcl_GetString(objv[1]);
-  nByte = sizeof(Testvfs) + (int)strlen(zVfs)+1;
+  nByte = sizeof(Testvfs) + (정수)strlen(zVfs)+1;
   p = (Testvfs *)ckalloc(nByte);
   memset(p, 0, nByte);
   p->iDevchar = -1;
@@ -1564,7 +1564,7 @@ static int SQLITE_TCLAPI testvfs_cmd(
   pVfs->iVersion = iVersion;
   pVfs->zName = p->zName;
   pVfs->mxPathname = p->pParent->mxPathname;
-  if( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
+  만약( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
     pVfs->mxPathname = mxPathname;
   }
   pVfs->szOsFile = szOsFile;
@@ -1575,123 +1575,123 @@ static int SQLITE_TCLAPI testvfs_cmd(
 
   sqlite3_vfs_register(pVfs, isDefault);
 
-  return TCL_OK;
+  반환 TCL_OK;
 
  bad_args:
   Tcl_WrongNumArgs(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
-  return TCL_ERROR;
+  반환 TCL_ERROR;
 }
 
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern const char *sqlite3ErrName(int);
+extern 정수 getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern const char *sqlite3ErrName(정수);
 
 /*
 ** tclcmd: vfs_shmlock DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N
 */
-static int SQLITE_TCLAPI test_vfs_shmlock(
+static 정수 SQLITE_TCLAPI test_vfs_shmlock(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  정수 objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *azArg1[] = {"shared", "exclusive", 0};
   const char *azArg2[] = {"lock", "unlock", 0};
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   const char *zDbname = 0;
-  int iArg1 = 0;
-  int iArg2 = 0;
-  int iOffset = 0;
-  int n = 0;
+  정수 iArg1 = 0;
+  정수 iArg2 = 0;
+  정수 iOffset = 0;
+  정수 n = 0;
   sqlite3_file *pFd;
 
-  if( objc!=7 ){
+  만약( objc!=7 ){
     Tcl_WrongNumArgs(interp, 1, objv, 
         "DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N"
     );
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
+  만약( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
    || Tcl_GetIndexFromObj(interp, objv[3], azArg1, "ARG", 0, &iArg1) 
    || Tcl_GetIndexFromObj(interp, objv[4], azArg2, "ARG", 0, &iArg2) 
    || Tcl_GetIntFromObj(interp, objv[5], &iOffset)
    || Tcl_GetIntFromObj(interp, objv[6], &n)
   ){
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  만약( pFd==0 ){
+    반환 TCL_ERROR;
   }
   rc = pFd->pMethods->xShmLock(pFd, iOffset, n, 
       (iArg1==0 ? SQLITE_SHM_SHARED : SQLITE_SHM_EXCLUSIVE)
     | (iArg2==0 ? SQLITE_SHM_LOCK : SQLITE_SHM_UNLOCK)
   );
   Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_vfs_set_readmark(
+static 정수 SQLITE_TCLAPI test_vfs_set_readmark(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  정수 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
   const char *zDbname = 0;
-  int iSlot = 0;
-  int iVal = -1;
+  정수 iSlot = 0;
+  정수 iVal = -1;
   sqlite3_file *pFd;
   void volatile *pShm = 0;
   u32 *aShm;
-  int iOff;
+  정수 iOff;
 
-  if( objc!=4 && objc!=5 ){
+  만약( objc!=4 && objc!=5 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
+  만약( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
    || Tcl_GetIntFromObj(interp, objv[3], &iSlot)
    || (objc==5 && Tcl_GetIntFromObj(interp, objv[4], &iVal))
   ){
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  만약( pFd==0 ){
+    반환 TCL_ERROR;
   }
   rc = pFd->pMethods->xShmMap(pFd, 0, 32*1024, 0, &pShm);
-  if( rc!=SQLITE_OK ){
+  만약( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
-  if( pShm==0 ){
+  만약( pShm==0 ){
     Tcl_AppendResult(interp, "*-shm is not yet mapped", NULL);
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
   aShm = (u32*)pShm;
   iOff = 12*2+1+iSlot;
 
-  if( objc==5 ){
+  만약( objc==5 ){
     aShm[iOff] = iVal;
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(aShm[iOff]));
 
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-int Sqlitetestvfs_Init(Tcl_Interp *interp){
+정수 Sqlitetestvfs_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "testvfs", testvfs_cmd, 0, 0);
   Tcl_CreateObjCommand(interp, "vfs_shmlock", test_vfs_shmlock, 0, 0);
   Tcl_CreateObjCommand(interp, "vfs_set_readmark", test_vfs_set_readmark, 0, 0);
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
 #endif

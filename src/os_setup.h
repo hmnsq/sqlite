@@ -35,18 +35,18 @@
 ** must provide its own VFS implementation together with sqlite3_os_init()
 ** and sqlite3_os_end() routines.
 */
-#if SQLITE_OS_KV+1<=1  && SQLITE_OS_OTHER+1<=1 &&  \
+#만약 SQLITE_OS_KV+1<=1  && SQLITE_OS_OTHER+1<=1 &&  \
     SQLITE_OS_WIN+1<=1 && SQLITE_OS_UNIX+1<=1 
-#  if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || \
+#  만약 defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || \
           defined(__MINGW32__) || defined(__BORLANDC__)
 #    define SQLITE_OS_WIN 1
 #    define SQLITE_OS_UNIX 0
-#  else
+#  아니면
 #    define SQLITE_OS_WIN 0
 #    define SQLITE_OS_UNIX 1
 #  endif
 #endif
-#if SQLITE_OS_OTHER+1>1
+#만약 SQLITE_OS_OTHER+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_UNIX
@@ -54,7 +54,7 @@
 #  undef SQLITE_OS_WIN
 #  define SQLITE_OS_WIN 0
 #endif
-#if SQLITE_OS_KV+1>1
+#만약 SQLITE_OS_KV+1>1
 #  undef SQLITE_OS_OTHER
 #  define SQLITE_OS_OTHER 0
 #  undef SQLITE_OS_UNIX
@@ -70,7 +70,7 @@
 #  define SQLITE_OMIT_SHARED_CACHE 1
 #  define SQLITE_OMIT_AUTOINIT 1
 #endif
-#if SQLITE_OS_UNIX+1>1
+#만약 SQLITE_OS_UNIX+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_OTHER
@@ -78,7 +78,7 @@
 #  undef SQLITE_OS_WIN
 #  define SQLITE_OS_WIN 0
 #endif
-#if SQLITE_OS_WIN+1>1
+#만약 SQLITE_OS_WIN+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_OTHER

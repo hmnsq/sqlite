@@ -42,13 +42,13 @@ struct PCache {
   PgHdr *pDirty, *pDirtyTail;         /* List of dirty pages in LRU order */
   PgHdr *pSynced;                     /* Last synced page in dirty page list */
   i64 nRefSum;                        /* Sum of ref counts over all pages */
-  int szCache;                        /* Configured cache size */
-  int szSpill;                        /* Size before spilling occurs */
-  int szPage;                         /* Size of every page in this cache */
-  int szExtra;                        /* Size of extra space for each page */
+  정수 szCache;                        /* Configured cache size */
+  정수 szSpill;                        /* Size before spilling occurs */
+  정수 szPage;                         /* Size of every page in this cache */
+  정수 szExtra;                        /* Size of extra space for each page */
   u8 bPurgeable;                      /* True if pages are on backing store */
   u8 eCreate;                         /* eCreate value for for xFetch() */
-  int (*xStress)(void*,PgHdr*);       /* Call to try make a page clean */
+  정수 (*xStress)(void*,PgHdr*);       /* Call to try make a page clean */
   void *pStress;                      /* Argument to xStress */
   sqlite3_pcache *pCache;             /* Pluggable cache module */
 };
@@ -62,42 +62,42 @@ struct PCache {
 ** When sqlite3PcacheTrace is 2, a dump of the pcache showing all cache entries
 ** is displayed for many operations, resulting in a lot of output.
 */
-#if defined(SQLITE_DEBUG) && 0
-  int sqlite3PcacheTrace = 2;       /* 0: off  1: simple  2: cache dumps */
-  int sqlite3PcacheMxDump = 9999;   /* Max cache entries for pcacheDump() */
-# define pcacheTrace(X) if(sqlite3PcacheTrace){sqlite3DebugPrintf X;}
-  static void pcachePageTrace(int i, sqlite3_pcache_page *pLower){
+#만약 defined(SQLITE_DEBUG) && 0
+  정수 sqlite3PcacheTrace = 2;       /* 0: off  1: simple  2: cache dumps */
+  정수 sqlite3PcacheMxDump = 9999;   /* Max cache entries for pcacheDump() */
+# define pcacheTrace(X) 만약(sqlite3PcacheTrace){sqlite3DebugPrintf X;}
+  static void pcachePageTrace(정수 i, sqlite3_pcache_page *pLower){
     PgHdr *pPg;
     unsigned char *a;
-    int j;
-    if( pLower==0 ){
+    정수 j;
+    만약( pLower==0 ){
       printf("%3d: NULL\n", i);
-    }else{
+    }아니면{
       pPg = (PgHdr*)pLower->pExtra;
       printf("%3d: nRef %2lld flgs %02x data ", i, pPg->nRef, pPg->flags);
       a = (unsigned char *)pLower->pBuf;
-      for(j=0; j<12; j++) printf("%02x", a[j]);
+      위해(j=0; j<12; j++) printf("%02x", a[j]);
       printf(" ptr %p\n", pPg);
     }
   }
   static void pcacheDump(PCache *pCache){
-    int N;
-    int i;
+    정수 N;
+    정수 i;
     sqlite3_pcache_page *pLower;
   
-    if( sqlite3PcacheTrace<2 ) return;
-    if( pCache->pCache==0 ) return;
+    만약( sqlite3PcacheTrace<2 ) 반환;
+    만약( pCache->pCache==0 ) 반환;
     N = sqlite3PcachePagecount(pCache);
-    if( N>sqlite3PcacheMxDump ) N = sqlite3PcacheMxDump;
-    for(i=1; i<=N; i++){
+    만약( N>sqlite3PcacheMxDump ) N = sqlite3PcacheMxDump;
+    위해(i=1; i<=N; i++){
        pLower = sqlite3GlobalConfig.pcache2.xFetch(pCache->pCache, i, 0);
        pcachePageTrace(i, pLower);
-       if( pLower && ((PgHdr*)pLower)->pPage==0 ){
+       만약( pLower && ((PgHdr*)pLower)->pPage==0 ){
          sqlite3GlobalConfig.pcache2.xUnpin(pCache->pCache, pLower, 0);
        }
     }
   }
-#else
+#아니면
 # define pcacheTrace(X)
 # define pcachePageTrace(PGNO, X)
 # define pcacheDump(X)
@@ -107,22 +107,22 @@ struct PCache {
 ** Return 1 if pPg is on the dirty list for pCache.  Return 0 if not.
 ** This routine runs inside of assert() statements only.
 */
-#if defined(SQLITE_ENABLE_EXPENSIVE_ASSERT)
-static int pageOnDirtyList(PCache *pCache, PgHdr *pPg){
+#만약 defined(SQLITE_ENABLE_EXPENSIVE_ASSERT)
+static 정수 pageOnDirtyList(PCache *pCache, PgHdr *pPg){
   PgHdr *p;
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
-    if( p==pPg ) return 1;
+  위해(p=pCache->pDirty; p; p=p->pDirtyNext){
+    만약( p==pPg ) 반환 1;
   }
-  return 0;
+  반환 0;
 }
-static int pageNotOnDirtyList(PCache *pCache, PgHdr *pPg){
+static 정수 pageNotOnDirtyList(PCache *pCache, PgHdr *pPg){
   PgHdr *p;
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
-    if( p==pPg ) return 0;
+  위해(p=pCache->pDirty; p; p=p->pDirtyNext){
+    만약( p==pPg ) 반환 0;
   }
-  return 1;
+  반환 1;
 }
-#else
+#아니면
 # define pageOnDirtyList(A,B)    1
 # define pageNotOnDirtyList(A,B) 1
 #endif
@@ -137,16 +137,16 @@ static int pageNotOnDirtyList(PCache *pCache, PgHdr *pPg){
 **          assert( sqlite3PcachePageSanity(pPg) );
 */
 #ifdef SQLITE_DEBUG
-int sqlite3PcachePageSanity(PgHdr *pPg){
+정수 sqlite3PcachePageSanity(PgHdr *pPg){
   PCache *pCache;
   assert( pPg!=0 );
   assert( pPg->pgno>0 || pPg->pPager==0 );    /* Page number is 1 or more */
   pCache = pPg->pCache;
   assert( pCache!=0 );      /* Every page has an associated PCache */
-  if( pPg->flags & PGHDR_CLEAN ){
+  만약( pPg->flags & PGHDR_CLEAN ){
     assert( (pPg->flags & PGHDR_DIRTY)==0 );/* Cannot be both CLEAN and DIRTY */
     assert( pageNotOnDirtyList(pCache, pPg) );/* CLEAN pages not on dirtylist */
-  }else{
+  }아니면{
     assert( (pPg->flags & PGHDR_DIRTY)!=0 );/* If not CLEAN must be DIRTY */
     assert( pPg->pDirtyNext==0 || pPg->pDirtyNext->pDirtyPrev==pPg );
     assert( pPg->pDirtyPrev==0 || pPg->pDirtyPrev->pDirtyNext==pPg );
@@ -154,7 +154,7 @@ int sqlite3PcachePageSanity(PgHdr *pPg){
     assert( pageOnDirtyList(pCache, pPg) );
   }
   /* WRITEABLE pages must also be DIRTY */
-  if( pPg->flags & PGHDR_WRITEABLE ){
+  만약( pPg->flags & PGHDR_WRITEABLE ){
     assert( pPg->flags & PGHDR_DIRTY );     /* WRITEABLE implies DIRTY */
   }
   /* NEED_SYNC can be set independently of WRITEABLE.  This can happen,
@@ -174,7 +174,7 @@ int sqlite3PcachePageSanity(PgHdr *pPg){
   ** must be journalled and synced before any of those pages can be safely
   ** written.
   */
-  return 1;
+  반환 1;
 }
 #endif /* SQLITE_DEBUG */
 
@@ -198,24 +198,24 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
   pcacheTrace(("%p.DIRTYLIST.%s %d\n", p,
                 addRemove==1 ? "REMOVE" : addRemove==2 ? "ADD" : "FRONT",
                 pPage->pgno));
-  if( addRemove & PCACHE_DIRTYLIST_REMOVE ){
+  만약( addRemove & PCACHE_DIRTYLIST_REMOVE ){
     assert( pPage->pDirtyNext || pPage==p->pDirtyTail );
     assert( pPage->pDirtyPrev || pPage==p->pDirty );
   
     /* Update the PCache1.pSynced variable if necessary. */
-    if( p->pSynced==pPage ){
+    만약( p->pSynced==pPage ){
       p->pSynced = pPage->pDirtyPrev;
     }
   
-    if( pPage->pDirtyNext ){
+    만약( pPage->pDirtyNext ){
       pPage->pDirtyNext->pDirtyPrev = pPage->pDirtyPrev;
-    }else{
+    }아니면{
       assert( pPage==p->pDirtyTail );
       p->pDirtyTail = pPage->pDirtyPrev;
     }
-    if( pPage->pDirtyPrev ){
+    만약( pPage->pDirtyPrev ){
       pPage->pDirtyPrev->pDirtyNext = pPage->pDirtyNext;
-    }else{
+    }아니면{
       /* If there are now no dirty pages in the cache, set eCreate to 2. 
       ** This is an optimization that allows sqlite3PcacheFetch() to skip
       ** searching for a dirty page to eject from the cache when it might
@@ -223,21 +223,21 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
       assert( pPage==p->pDirty );
       p->pDirty = pPage->pDirtyNext;
       assert( p->bPurgeable || p->eCreate==2 );
-      if( p->pDirty==0 ){         /*OPTIMIZATION-IF-TRUE*/
+      만약( p->pDirty==0 ){         /*OPTIMIZATION-IF-TRUE*/
         assert( p->bPurgeable==0 || p->eCreate==1 );
         p->eCreate = 2;
       }
     }
   }
-  if( addRemove & PCACHE_DIRTYLIST_ADD ){
+  만약( addRemove & PCACHE_DIRTYLIST_ADD ){
     pPage->pDirtyPrev = 0;
     pPage->pDirtyNext = p->pDirty;
-    if( pPage->pDirtyNext ){
+    만약( pPage->pDirtyNext ){
       assert( pPage->pDirtyNext->pDirtyPrev==0 );
       pPage->pDirtyNext->pDirtyPrev = pPage;
-    }else{
+    }아니면{
       p->pDirtyTail = pPage;
-      if( p->bPurgeable ){
+      만약( p->bPurgeable ){
         assert( p->eCreate==2 );
         p->eCreate = 1;
       }
@@ -249,7 +249,7 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
     ** optimization, as if pSynced points to a page with the NEED_SYNC
     ** flag set sqlite3PcacheFetchStress() searches through all newer 
     ** entries of the dirty-list for a page with NEED_SYNC clear anyway.  */
-    if( !p->pSynced 
+    만약( !p->pSynced 
      && 0==(pPage->flags&PGHDR_NEED_SYNC)   /*OPTIMIZATION-IF-FALSE*/
     ){
       p->pSynced = pPage;
@@ -263,7 +263,7 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
 ** being used for an in-memory database, this function is a no-op.
 */
 static void pcacheUnpin(PgHdr *p){
-  if( p->pCache->bPurgeable ){
+  만약( p->pCache->bPurgeable ){
     pcacheTrace(("%p.UNPIN %d\n", p->pCache, p->pgno));
     sqlite3GlobalConfig.pcache2.xUnpin(p->pCache->pCache, p->pPage, 0);
     pcacheDump(p->pCache);
@@ -274,20 +274,20 @@ static void pcacheUnpin(PgHdr *p){
 ** Compute the number of pages of cache requested.   p->szCache is the
 ** cache size requested by the "PRAGMA cache_size" statement.
 */
-static int numberOfCachePages(PCache *p){
-  if( p->szCache>=0 ){
+static 정수 numberOfCachePages(PCache *p){
+  만약( p->szCache>=0 ){
     /* IMPLEMENTATION-OF: R-42059-47211 If the argument N is positive then the
     ** suggested cache size is set to N. */
-    return p->szCache;
-  }else{
+    반환 p->szCache;
+  }아니면{
     i64 n;
     /* IMPLEMENTATION-OF: R-59858-46238 If the argument N is negative, then the
     ** number of cache pages is adjusted to be a number of pages that would
     ** use approximately abs(N*1024) bytes of memory based on the current
     ** page size. */
     n = ((-1024*(i64)p->szCache)/(p->szPage+p->szExtra));
-    if( n>1000000000 ) n = 1000000000;
-    return (int)n;
+    만약( n>1000000000 ) n = 1000000000;
+    반환 (정수)n;
   }
 }
 
@@ -296,18 +296,18 @@ static int numberOfCachePages(PCache *p){
 ** Initialize and shutdown the page cache subsystem. Neither of these 
 ** functions are threadsafe.
 */
-int sqlite3PcacheInitialize(void){
-  if( sqlite3GlobalConfig.pcache2.xInit==0 ){
+정수 sqlite3PcacheInitialize(void){
+  만약( sqlite3GlobalConfig.pcache2.xInit==0 ){
     /* IMPLEMENTATION-OF: R-26801-64137 If the xInit() method is NULL, then the
     ** built-in default page cache is used instead of the application defined
     ** page cache. */
     sqlite3PCacheSetDefault();
     assert( sqlite3GlobalConfig.pcache2.xInit!=0 );
   }
-  return sqlite3GlobalConfig.pcache2.xInit(sqlite3GlobalConfig.pcache2.pArg);
+  반환 sqlite3GlobalConfig.pcache2.xInit(sqlite3GlobalConfig.pcache2.pArg);
 }
 void sqlite3PcacheShutdown(void){
-  if( sqlite3GlobalConfig.pcache2.xShutdown ){
+  만약( sqlite3GlobalConfig.pcache2.xShutdown ){
     /* IMPLEMENTATION-OF: R-26000-56589 The xShutdown() method may be NULL. */
     sqlite3GlobalConfig.pcache2.xShutdown(sqlite3GlobalConfig.pcache2.pArg);
   }
@@ -316,7 +316,7 @@ void sqlite3PcacheShutdown(void){
 /*
 ** Return the size in bytes of a PCache object.
 */
-int sqlite3PcacheSize(void){ return sizeof(PCache); }
+정수 sqlite3PcacheSize(void){ 반환 sizeof(PCache); }
 
 /*
 ** Create a new PCache object. Storage space to hold the object
@@ -330,11 +330,11 @@ int sqlite3PcacheSize(void){ return sizeof(PCache); }
 ** to this module, the extra space really ends up being the MemPage
 ** structure in the pager.
 */
-int sqlite3PcacheOpen(
-  int szPage,                  /* Size of every page */
-  int szExtra,                 /* Extra space associated with each page */
-  int bPurgeable,              /* True if pages are on backing store */
-  int (*xStress)(void*,PgHdr*),/* Call to try to make pages clean */
+정수 sqlite3PcacheOpen(
+  정수 szPage,                  /* Size of every page */
+  정수 szExtra,                 /* Extra space associated with each page */
+  정수 bPurgeable,              /* True if pages are on backing store */
+  정수 (*xStress)(void*,PgHdr*),/* Call to try to make pages clean */
   void *pStress,               /* Argument to xStress */
   PCache *p                    /* Preallocated space for the PCache */
 ){
@@ -349,31 +349,31 @@ int sqlite3PcacheOpen(
   p->szCache = 100;
   p->szSpill = 1;
   pcacheTrace(("%p.OPEN szPage %d bPurgeable %d\n",p,szPage,bPurgeable));
-  return sqlite3PcacheSetPageSize(p, szPage);
+  반환 sqlite3PcacheSetPageSize(p, szPage);
 }
 
 /*
 ** Change the page size for PCache object. The caller must ensure that there
 ** are no outstanding page references when this function is called.
 */
-int sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
+정수 sqlite3PcacheSetPageSize(PCache *pCache, 정수 szPage){
   assert( pCache->nRefSum==0 && pCache->pDirty==0 );
-  if( pCache->szPage ){
+  만약( pCache->szPage ){
     sqlite3_pcache *pNew;
     pNew = sqlite3GlobalConfig.pcache2.xCreate(
                 szPage, pCache->szExtra + ROUND8(sizeof(PgHdr)),
                 pCache->bPurgeable
     );
-    if( pNew==0 ) return SQLITE_NOMEM_BKPT;
+    만약( pNew==0 ) 반환 SQLITE_NOMEM_BKPT;
     sqlite3GlobalConfig.pcache2.xCachesize(pNew, numberOfCachePages(pCache));
-    if( pCache->pCache ){
+    만약( pCache->pCache ){
       sqlite3GlobalConfig.pcache2.xDestroy(pCache->pCache);
     }
     pCache->pCache = pNew;
     pCache->szPage = szPage;
     pcacheTrace(("%p.PAGESIZE %d\n",pCache,szPage));
   }
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -403,9 +403,9 @@ int sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
 sqlite3_pcache_page *sqlite3PcacheFetch(
   PCache *pCache,       /* Obtain the page from this cache */
   Pgno pgno,            /* Page number to obtain */
-  int createFlag        /* If true, create page if it does not exist already */
+  정수 createFlag        /* If true, create page if it does not exist already */
 ){
-  int eCreate;
+  정수 eCreate;
   sqlite3_pcache_page *pRes;
 
   assert( pCache!=0 );
@@ -428,7 +428,7 @@ sqlite3_pcache_page *sqlite3PcacheFetch(
   pcacheTrace(("%p.FETCH %d%s (result: %p) ",pCache,pgno,
                createFlag?" create":"",pRes));
   pcachePageTrace(pgno, pRes);
-  return pRes;
+  반환 pRes;
 }
 
 /*
@@ -442,15 +442,15 @@ sqlite3_pcache_page *sqlite3PcacheFetch(
 **
 ** This routine should be invoked only after sqlite3PcacheFetch() fails.
 */
-int sqlite3PcacheFetchStress(
+정수 sqlite3PcacheFetchStress(
   PCache *pCache,                 /* Obtain the page from this cache */
   Pgno pgno,                      /* Page number to obtain */
   sqlite3_pcache_page **ppPage    /* Write result here */
 ){
   PgHdr *pPg;
-  if( pCache->eCreate==2 ) return 0;
+  만약( pCache->eCreate==2 ) 반환 0;
 
-  if( sqlite3PcachePagecount(pCache)>pCache->szSpill ){
+  만약( sqlite3PcachePagecount(pCache)>pCache->szSpill ){
     /* Find a dirty page to write-out and recycle. First try to find a 
     ** page that does not require a journal-sync (one with PGHDR_NEED_SYNC
     ** cleared), but if that is not possible settle for any other 
@@ -460,16 +460,16 @@ int sqlite3PcacheFetchStress(
     ** flag is currently referenced, then the following may leave pSynced
     ** set incorrectly (pointing to other than the LRU page with NEED_SYNC
     ** cleared). This is Ok, as pSynced is just an optimization.  */
-    for(pPg=pCache->pSynced; 
+    위해(pPg=pCache->pSynced; 
         pPg && (pPg->nRef || (pPg->flags&PGHDR_NEED_SYNC)); 
         pPg=pPg->pDirtyPrev
     );
     pCache->pSynced = pPg;
-    if( !pPg ){
-      for(pPg=pCache->pDirtyTail; pPg && pPg->nRef; pPg=pPg->pDirtyPrev);
+    만약( !pPg ){
+      위해(pPg=pCache->pDirtyTail; pPg && pPg->nRef; pPg=pPg->pDirtyPrev);
     }
-    if( pPg ){
-      int rc;
+    만약( pPg ){
+      정수 rc;
 #ifdef SQLITE_LOG_CACHE_SPILL
       sqlite3_log(SQLITE_FULL, 
                   "spill page %d making room for %d - cache used: %d/%d",
@@ -480,13 +480,13 @@ int sqlite3PcacheFetchStress(
       pcacheTrace(("%p.SPILL %d\n",pCache,pPg->pgno));
       rc = pCache->xStress(pCache->pStress, pPg);
       pcacheDump(pCache);
-      if( rc!=SQLITE_OK && rc!=SQLITE_BUSY ){
-        return rc;
+      만약( rc!=SQLITE_OK && rc!=SQLITE_BUSY ){
+        반환 rc;
       }
     }
   }
   *ppPage = sqlite3GlobalConfig.pcache2.xFetch(pCache->pCache, pgno, 2);
-  return *ppPage==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
+  반환 *ppPage==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
 }
 
 /*
@@ -516,7 +516,7 @@ static SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
   pPgHdr->pCache = pCache;
   pPgHdr->pgno = pgno;
   pPgHdr->flags = PGHDR_CLEAN;
-  return sqlite3PcacheFetchFinish(pCache,pgno,pPage);
+  반환 sqlite3PcacheFetchFinish(pCache,pgno,pPage);
 }
 
 /*
@@ -535,13 +535,13 @@ PgHdr *sqlite3PcacheFetchFinish(
   assert( pPage!=0 );
   pPgHdr = (PgHdr *)pPage->pExtra;
 
-  if( !pPgHdr->pPage ){
-    return pcacheFetchFinishWithInit(pCache, pgno, pPage);
+  만약( !pPgHdr->pPage ){
+    반환 pcacheFetchFinishWithInit(pCache, pgno, pPage);
   }
   pCache->nRefSum++;
   pPgHdr->nRef++;
   assert( sqlite3PcachePageSanity(pPgHdr) );
-  return pPgHdr;
+  반환 pPgHdr;
 }
 
 /*
@@ -551,10 +551,10 @@ PgHdr *sqlite3PcacheFetchFinish(
 void SQLITE_NOINLINE sqlite3PcacheRelease(PgHdr *p){
   assert( p->nRef>0 );
   p->pCache->nRefSum--;
-  if( (--p->nRef)==0 ){
-    if( p->flags&PGHDR_CLEAN ){
+  만약( (--p->nRef)==0 ){
+    만약( p->flags&PGHDR_CLEAN ){
       pcacheUnpin(p);
-    }else{
+    }아니면{
       pcacheManageDirtyList(p, PCACHE_DIRTYLIST_FRONT);
       assert( sqlite3PcachePageSanity(p) );
     }
@@ -579,7 +579,7 @@ void sqlite3PcacheRef(PgHdr *p){
 void sqlite3PcacheDrop(PgHdr *p){
   assert( p->nRef==1 );
   assert( sqlite3PcachePageSanity(p) );
-  if( p->flags&PGHDR_DIRTY ){
+  만약( p->flags&PGHDR_DIRTY ){
     pcacheManageDirtyList(p, PCACHE_DIRTYLIST_REMOVE);
   }
   p->pCache->nRefSum--;
@@ -593,9 +593,9 @@ void sqlite3PcacheDrop(PgHdr *p){
 void sqlite3PcacheMakeDirty(PgHdr *p){
   assert( p->nRef>0 );
   assert( sqlite3PcachePageSanity(p) );
-  if( p->flags & (PGHDR_CLEAN|PGHDR_DONT_WRITE) ){    /*OPTIMIZATION-IF-FALSE*/
+  만약( p->flags & (PGHDR_CLEAN|PGHDR_DONT_WRITE) ){    /*OPTIMIZATION-IF-FALSE*/
     p->flags &= ~PGHDR_DONT_WRITE;
-    if( p->flags & PGHDR_CLEAN ){
+    만약( p->flags & PGHDR_CLEAN ){
       p->flags ^= (PGHDR_DIRTY|PGHDR_CLEAN);
       pcacheTrace(("%p.DIRTY %d\n",p->pCache,p->pgno));
       assert( (p->flags & (PGHDR_DIRTY|PGHDR_CLEAN))==PGHDR_DIRTY );
@@ -619,7 +619,7 @@ void sqlite3PcacheMakeClean(PgHdr *p){
   p->flags |= PGHDR_CLEAN;
   pcacheTrace(("%p.CLEAN %d\n",p->pCache,p->pgno));
   assert( sqlite3PcachePageSanity(p) );
-  if( p->nRef==0 ){
+  만약( p->nRef==0 ){
     pcacheUnpin(p);
   }
 }
@@ -630,7 +630,7 @@ void sqlite3PcacheMakeClean(PgHdr *p){
 void sqlite3PcacheCleanAll(PCache *pCache){
   PgHdr *p;
   pcacheTrace(("%p.CLEAN-ALL\n",pCache));
-  while( (p = pCache->pDirty)!=0 ){
+  동안( (p = pCache->pDirty)!=0 ){
     sqlite3PcacheMakeClean(p);
   }
 }
@@ -641,7 +641,7 @@ void sqlite3PcacheCleanAll(PCache *pCache){
 void sqlite3PcacheClearWritable(PCache *pCache){
   PgHdr *p;
   pcacheTrace(("%p.CLEAR-WRITEABLE\n",pCache));
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
+  위해(p=pCache->pDirty; p; p=p->pDirtyNext){
     p->flags &= ~(PGHDR_NEED_SYNC|PGHDR_WRITEABLE);
   }
   pCache->pSynced = pCache->pDirtyTail;
@@ -652,7 +652,7 @@ void sqlite3PcacheClearWritable(PCache *pCache){
 */
 void sqlite3PcacheClearSyncFlags(PCache *pCache){
   PgHdr *p;
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
+  위해(p=pCache->pDirty; p; p=p->pDirtyNext){
     p->flags &= ~PGHDR_NEED_SYNC;
   }
   pCache->pSynced = pCache->pDirtyTail;
@@ -669,7 +669,7 @@ void sqlite3PcacheMove(PgHdr *p, Pgno newPgno){
   assert( sqlite3PcachePageSanity(p) );
   pcacheTrace(("%p.MOVE %d -> %d\n",pCache,p->pgno,newPgno));
   pOther = sqlite3GlobalConfig.pcache2.xFetch(pCache->pCache, newPgno, 0);
-  if( pOther ){
+  만약( pOther ){
     PgHdr *pXPage = (PgHdr*)pOther->pExtra;
     assert( pXPage->nRef==0 );
     pXPage->nRef++;
@@ -678,7 +678,7 @@ void sqlite3PcacheMove(PgHdr *p, Pgno newPgno){
   }
   sqlite3GlobalConfig.pcache2.xRekey(pCache->pCache, p->pPage, p->pgno,newPgno);
   p->pgno = newPgno;
-  if( (p->flags&PGHDR_DIRTY) && (p->flags&PGHDR_NEED_SYNC) ){
+  만약( (p->flags&PGHDR_DIRTY) && (p->flags&PGHDR_NEED_SYNC) ){
     pcacheManageDirtyList(p, PCACHE_DIRTYLIST_FRONT);
     assert( sqlite3PcachePageSanity(p) );
   }
@@ -694,26 +694,26 @@ void sqlite3PcacheMove(PgHdr *p, Pgno newPgno){
 ** the page object is not dropped.
 */
 void sqlite3PcacheTruncate(PCache *pCache, Pgno pgno){
-  if( pCache->pCache ){
+  만약( pCache->pCache ){
     PgHdr *p;
     PgHdr *pNext;
     pcacheTrace(("%p.TRUNCATE %d\n",pCache,pgno));
-    for(p=pCache->pDirty; p; p=pNext){
+    위해(p=pCache->pDirty; p; p=pNext){
       pNext = p->pDirtyNext;
       /* This routine never gets call with a positive pgno except right
       ** after sqlite3PcacheCleanAll().  So if there are dirty pages,
       ** it must be that pgno==0.
       */
       assert( p->pgno>0 );
-      if( p->pgno>pgno ){
+      만약( p->pgno>pgno ){
         assert( p->flags&PGHDR_DIRTY );
         sqlite3PcacheMakeClean(p);
       }
     }
-    if( pgno==0 && pCache->nRefSum ){
+    만약( pgno==0 && pCache->nRefSum ){
       sqlite3_pcache_page *pPage1;
       pPage1 = sqlite3GlobalConfig.pcache2.xFetch(pCache->pCache,1,0);
-      if( ALWAYS(pPage1) ){  /* Page 1 is always available in cache, because
+      만약( ALWAYS(pPage1) ){  /* Page 1 is always available in cache, because
                              ** pCache->nRefSum>0 */
         memset(pPage1->pBuf, 0, pCache->szPage);
         pgno = 1;
@@ -747,26 +747,26 @@ static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
   PgHdr result, *pTail;
   pTail = &result;
   assert( pA!=0 && pB!=0 );
-  for(;;){
-    if( pA->pgno<pB->pgno ){
+  위해(;;){
+    만약( pA->pgno<pB->pgno ){
       pTail->pDirty = pA;
       pTail = pA;
       pA = pA->pDirty;
-      if( pA==0 ){
+      만약( pA==0 ){
         pTail->pDirty = pB;
         break;
       }
-    }else{
+    }아니면{
       pTail->pDirty = pB;
       pTail = pB;
       pB = pB->pDirty;
-      if( pB==0 ){
+      만약( pB==0 ){
         pTail->pDirty = pA;
         break;
       }
     }
   }
-  return result.pDirty;
+  반환 result.pDirty;
 }
 
 /*
@@ -782,22 +782,22 @@ static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
 #define N_SORT_BUCKET  32
 static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
   PgHdr *a[N_SORT_BUCKET], *p;
-  int i;
+  정수 i;
   memset(a, 0, sizeof(a));
-  while( pIn ){
+  동안( pIn ){
     p = pIn;
     pIn = p->pDirty;
     p->pDirty = 0;
-    for(i=0; ALWAYS(i<N_SORT_BUCKET-1); i++){
-      if( a[i]==0 ){
+    위해(i=0; ALWAYS(i<N_SORT_BUCKET-1); i++){
+      만약( a[i]==0 ){
         a[i] = p;
         break;
-      }else{
+      }아니면{
         p = pcacheMergeDirtyList(a[i], p);
         a[i] = 0;
       }
     }
-    if( NEVER(i==N_SORT_BUCKET-1) ){
+    만약( NEVER(i==N_SORT_BUCKET-1) ){
       /* To get here, there need to be 2^(N_SORT_BUCKET) elements in
       ** the input list.  But that is impossible.
       */
@@ -805,11 +805,11 @@ static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
     }
   }
   p = a[0];
-  for(i=1; i<N_SORT_BUCKET; i++){
-    if( a[i]==0 ) continue;
+  위해(i=1; i<N_SORT_BUCKET; i++){
+    만약( a[i]==0 ) continue;
     p = p ? pcacheMergeDirtyList(p, a[i]) : a[i];
   }
-  return p;
+  반환 p;
 }
 
 /*
@@ -817,10 +817,10 @@ static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
 */
 PgHdr *sqlite3PcacheDirtyList(PCache *pCache){
   PgHdr *p;
-  for(p=pCache->pDirty; p; p=p->pDirtyNext){
+  위해(p=pCache->pDirty; p; p=p->pDirtyNext){
     p->pDirty = p->pDirtyNext;
   }
-  return pcacheSortDirtyList(pCache->pDirty);
+  반환 pcacheSortDirtyList(pCache->pDirty);
 }
 
 /* 
@@ -830,37 +830,37 @@ PgHdr *sqlite3PcacheDirtyList(PCache *pCache){
 ** reference count for all pages.
 */
 i64 sqlite3PcacheRefCount(PCache *pCache){
-  return pCache->nRefSum;
+  반환 pCache->nRefSum;
 }
 
 /*
 ** Return the number of references to the page supplied as an argument.
 */
 i64 sqlite3PcachePageRefcount(PgHdr *p){
-  return p->nRef;
+  반환 p->nRef;
 }
 
 /* 
 ** Return the total number of pages in the cache.
 */
-int sqlite3PcachePagecount(PCache *pCache){
+정수 sqlite3PcachePagecount(PCache *pCache){
   assert( pCache->pCache!=0 );
-  return sqlite3GlobalConfig.pcache2.xPagecount(pCache->pCache);
+  반환 sqlite3GlobalConfig.pcache2.xPagecount(pCache->pCache);
 }
 
 #ifdef SQLITE_TEST
 /*
 ** Get the suggested cache-size value.
 */
-int sqlite3PcacheGetCachesize(PCache *pCache){
-  return numberOfCachePages(pCache);
+정수 sqlite3PcacheGetCachesize(PCache *pCache){
+  반환 numberOfCachePages(pCache);
 }
 #endif
 
 /*
 ** Set the suggested cache-size value.
 */
-void sqlite3PcacheSetCachesize(PCache *pCache, int mxPage){
+void sqlite3PcacheSetCachesize(PCache *pCache, 정수 mxPage){
   assert( pCache->pCache!=0 );
   pCache->szCache = mxPage;
   sqlite3GlobalConfig.pcache2.xCachesize(pCache->pCache,
@@ -872,18 +872,18 @@ void sqlite3PcacheSetCachesize(PCache *pCache, int mxPage){
 ** argument is zero.  Return the effective cache-spill size, which will
 ** be the larger of the szSpill and szCache.
 */
-int sqlite3PcacheSetSpillsize(PCache *p, int mxPage){
-  int res;
+정수 sqlite3PcacheSetSpillsize(PCache *p, 정수 mxPage){
+  정수 res;
   assert( p->pCache!=0 );
-  if( mxPage ){
-    if( mxPage<0 ){
-      mxPage = (int)((-1024*(i64)mxPage)/(p->szPage+p->szExtra));
+  만약( mxPage ){
+    만약( mxPage<0 ){
+      mxPage = (정수)((-1024*(i64)mxPage)/(p->szPage+p->szExtra));
     }
     p->szSpill = mxPage;
   }
   res = numberOfCachePages(p);
-  if( res<p->szSpill ) res = p->szSpill; 
-  return res;
+  만약( res<p->szSpill ) res = p->szSpill; 
+  반환 res;
 }
 
 /*
@@ -898,30 +898,30 @@ void sqlite3PcacheShrink(PCache *pCache){
 ** Return the size of the header added by this middleware layer
 ** in the page-cache hierarchy.
 */
-int sqlite3HeaderSizePcache(void){ return ROUND8(sizeof(PgHdr)); }
+정수 sqlite3HeaderSizePcache(void){ 반환 ROUND8(sizeof(PgHdr)); }
 
 /*
 ** Return the number of dirty pages currently in the cache, as a percentage
 ** of the configured cache size.
 */
-int sqlite3PCachePercentDirty(PCache *pCache){
+정수 sqlite3PCachePercentDirty(PCache *pCache){
   PgHdr *pDirty;
-  int nDirty = 0;
-  int nCache = numberOfCachePages(pCache);
-  for(pDirty=pCache->pDirty; pDirty; pDirty=pDirty->pDirtyNext) nDirty++;
-  return nCache ? (int)(((i64)nDirty * 100) / nCache) : 0;
+  정수 nDirty = 0;
+  정수 nCache = numberOfCachePages(pCache);
+  위해(pDirty=pCache->pDirty; pDirty; pDirty=pDirty->pDirtyNext) nDirty++;
+  반환 nCache ? (정수)(((i64)nDirty * 100) / nCache) : 0;
 }
 
 #ifdef SQLITE_DIRECT_OVERFLOW_READ
 /* 
 ** Return true if there are one or more dirty pages in the cache. Else false.
 */
-int sqlite3PCacheIsDirty(PCache *pCache){
-  return (pCache->pDirty!=0);
+정수 sqlite3PCacheIsDirty(PCache *pCache){
+  반환 (pCache->pDirty!=0);
 }
 #endif
 
-#if defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
+#만약 defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
 /*
 ** For all dirty pages currently in the cache, invoke the specified
 ** callback. This is only used if the SQLITE_CHECK_PAGES macro is
@@ -929,7 +929,7 @@ int sqlite3PCacheIsDirty(PCache *pCache){
 */
 void sqlite3PcacheIterateDirty(PCache *pCache, void (*xIter)(PgHdr *)){
   PgHdr *pDirty;
-  for(pDirty=pCache->pDirty; pDirty; pDirty=pDirty->pDirtyNext){
+  위해(pDirty=pCache->pDirty; pDirty; pDirty=pDirty->pDirtyNext){
     xIter(pDirty);
   }
 }

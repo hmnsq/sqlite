@@ -93,7 +93,7 @@
 **
 **     c) The journal file is deleted using xDelete.
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#만약 SQLITE_TEST          /* This file is used for testing only */
 
 #include "sqlite3.h"
 #include "sqliteInt.h"
@@ -112,15 +112,15 @@ typedef struct jt_file jt_file;
 struct jt_file {
   sqlite3_file base;
   const char *zName;       /* Name of open file */
-  int flags;               /* Flags the file was opened with */
+  정수 flags;               /* Flags the file was opened with */
 
   /* The following are only used by database file file handles */
-  int eLock;               /* Current lock held on the file */
+  정수 eLock;               /* Current lock held on the file */
   u32 nPage;               /* Size of file in pages when transaction started */
   u32 nPagesize;           /* Page size when transaction started */
   Bitvec *pWritable;       /* Bitvec of pages that may be written to the file */
   u32 *aCksum;             /* Checksum for first nPage pages */
-  int nSync;               /* Number of times journal file has been synced */
+  정수 nSync;               /* Number of times journal file has been synced */
 
   /* Only used by journal file-handles */
   sqlite3_int64 iMaxOff;   /* Maximum offset written to this transaction */
@@ -132,35 +132,35 @@ struct jt_file {
 /*
 ** Method declarations for jt_file.
 */
-static int jtClose(sqlite3_file*);
-static int jtRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int jtWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int jtTruncate(sqlite3_file*, sqlite3_int64 size);
-static int jtSync(sqlite3_file*, int flags);
-static int jtFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int jtLock(sqlite3_file*, int);
-static int jtUnlock(sqlite3_file*, int);
-static int jtCheckReservedLock(sqlite3_file*, int *);
-static int jtFileControl(sqlite3_file*, int op, void *pArg);
-static int jtSectorSize(sqlite3_file*);
-static int jtDeviceCharacteristics(sqlite3_file*);
+static 정수 jtClose(sqlite3_file*);
+static 정수 jtRead(sqlite3_file*, void*, 정수 iAmt, sqlite3_int64 iOfst);
+static 정수 jtWrite(sqlite3_file*,const void*,정수 iAmt, sqlite3_int64 iOfst);
+static 정수 jtTruncate(sqlite3_file*, sqlite3_int64 size);
+static 정수 jtSync(sqlite3_file*, 정수 flags);
+static 정수 jtFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+static 정수 jtLock(sqlite3_file*, 정수);
+static 정수 jtUnlock(sqlite3_file*, 정수);
+static 정수 jtCheckReservedLock(sqlite3_file*, 정수 *);
+static 정수 jtFileControl(sqlite3_file*, 정수 op, void *pArg);
+static 정수 jtSectorSize(sqlite3_file*);
+static 정수 jtDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for jt_vfs.
 */
-static int jtOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int jtDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int jtAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int jtFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+static 정수 jtOpen(sqlite3_vfs*, const char *, sqlite3_file*, 정수 , 정수 *);
+static 정수 jtDelete(sqlite3_vfs*, const char *zName, 정수 syncDir);
+static 정수 jtAccess(sqlite3_vfs*, const char *zName, 정수 flags, 정수 *);
+static 정수 jtFullPathname(sqlite3_vfs*, const char *zName, 정수, char *zOut);
 static void *jtDlOpen(sqlite3_vfs*, const char *zFilename);
-static void jtDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+static void jtDlError(sqlite3_vfs*, 정수 nByte, char *zErrMsg);
 static void (*jtDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
 static void jtDlClose(sqlite3_vfs*, void*);
-static int jtRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int jtSleep(sqlite3_vfs*, int microseconds);
-static int jtCurrentTime(sqlite3_vfs*, double*);
-static int jtCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
-static int jtGetLastError(sqlite3_vfs*, int, char*);
+static 정수 jtRandomness(sqlite3_vfs*, 정수 nByte, char *zOut);
+static 정수 jtSleep(sqlite3_vfs*, 정수 microseconds);
+static 정수 jtCurrentTime(sqlite3_vfs*, double*);
+static 정수 jtCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+static 정수 jtGetLastError(sqlite3_vfs*, 정수, char*);
 
 static sqlite3_vfs jt_vfs = {
   2,                             /* iVersion */
@@ -217,15 +217,15 @@ static void leaveJtMutex(void){
   sqlite3_mutex_leave(sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_PRNG));
 }
 
-extern int sqlite3_io_error_pending;
-extern int sqlite3_io_error_hit;
-static void stop_ioerr_simulation(int *piSave, int *piSave2){
+extern 정수 sqlite3_io_error_pending;
+extern 정수 sqlite3_io_error_hit;
+static void stop_ioerr_simulation(정수 *piSave, 정수 *piSave2){
   *piSave = sqlite3_io_error_pending;
   *piSave2 = sqlite3_io_error_hit;
   sqlite3_io_error_pending = -1;
   sqlite3_io_error_hit = 0;
 }
-static void start_ioerr_simulation(int iSave, int iSave2){
+static void start_ioerr_simulation(정수 iSave, 정수 iSave2){
   sqlite3_io_error_pending = iSave;
   sqlite3_io_error_hit = iSave2;
 }
@@ -246,32 +246,32 @@ static void closeTransaction(jt_file *p){
 /*
 ** Close an jt-file.
 */
-static int jtClose(sqlite3_file *pFile){
+static 정수 jtClose(sqlite3_file *pFile){
   jt_file **pp;
   jt_file *p = (jt_file *)pFile;
 
   closeTransaction(p);
   enterJtMutex();
-  if( p->zName ){
-    for(pp=&g.pList; *pp!=p; pp=&(*pp)->pNext);
+  만약( p->zName ){
+    위해(pp=&g.pList; *pp!=p; pp=&(*pp)->pNext);
     *pp = p->pNext;
   }
   leaveJtMutex();
   sqlite3OsClose(p->pReal);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Read data from an jt-file.
 */
-static int jtRead(
+static 정수 jtRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  정수 iAmt, 
   sqlite_int64 iOfst
 ){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
+  반환 sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
@@ -289,13 +289,13 @@ static int jtRead(
 **   c) There is currently a reserved lock on the file. This 
 **      condition is waived if the noLock argument is non-zero.
 **/
-static jt_file *locateDatabaseHandle(const char *zJournal, int noLock){
+static jt_file *locateDatabaseHandle(const char *zJournal, 정수 noLock){
   jt_file *pMain = 0;
   enterJtMutex();
-  for(pMain=g.pList; pMain; pMain=pMain->pNext){
-    int nName = (int)(strlen(zJournal) - strlen("-journal"));
-    if( (pMain->flags&SQLITE_OPEN_MAIN_DB)
-     && ((int)strlen(pMain->zName)==nName)
+  위해(pMain=g.pList; pMain; pMain=pMain->pNext){
+    정수 nName = (정수)(strlen(zJournal) - strlen("-journal"));
+    만약( (pMain->flags&SQLITE_OPEN_MAIN_DB)
+     && ((정수)strlen(pMain->zName)==nName)
      && 0==memcmp(pMain->zName, zJournal, nName)
      && ((pMain->eLock>=SQLITE_LOCK_RESERVED) || noLock)
     ){
@@ -303,7 +303,7 @@ static jt_file *locateDatabaseHandle(const char *zJournal, int noLock){
     }
   }
   leaveJtMutex();
-  return pMain;
+  반환 pMain;
 }
 
 /*
@@ -312,20 +312,20 @@ static jt_file *locateDatabaseHandle(const char *zJournal, int noLock){
 ** integer and return its value.
 */
 static u32 decodeUint32(const unsigned char *z){
-  return (z[0]<<24) + (z[1]<<16) + (z[2]<<8) + z[3];
+  반환 (z[0]<<24) + (z[1]<<16) + (z[2]<<8) + z[3];
 }
 
 /*
 ** Calculate a checksum from the buffer of length n bytes pointed to
 ** by parameter z.
 */
-static u32 genCksum(const unsigned char *z, int n){
-  int i;
+static u32 genCksum(const unsigned char *z, 정수 n){
+  정수 i;
   u32 cksum = 0;
-  for(i=0; i<n; i++){
+  위해(i=0; i<n; i++){
     cksum = cksum + z[i] + (cksum<<3);
   }
-  return cksum;
+  반환 cksum;
 }
 
 /*
@@ -337,7 +337,7 @@ static u32 genCksum(const unsigned char *z, int n){
 ** SQLITE_OK is returned if the journal-header is successfully 
 ** decoded. Otherwise, SQLITE_ERROR.
 */
-static int decodeJournalHdr(
+static 정수 decodeJournalHdr(
   const unsigned char *zBuf,         /* Input: 28 byte journal header */
   u32 *pnRec,                        /* Out: Number of journalled records */
   u32 *pnPage,                       /* Out: Original database page count */
@@ -345,22 +345,22 @@ static int decodeJournalHdr(
   u32 *pnPagesize                    /* Out: Page size in bytes */
 ){
   unsigned char aMagic[] = { 0xd9, 0xd5, 0x05, 0xf9, 0x20, 0xa1, 0x63, 0xd7 };
-  if( memcmp(aMagic, zBuf, 8) ) return SQLITE_ERROR;
-  if( pnRec ) *pnRec = decodeUint32(&zBuf[8]);
-  if( pnPage ) *pnPage = decodeUint32(&zBuf[16]);
-  if( pnSector ) *pnSector = decodeUint32(&zBuf[20]);
-  if( pnPagesize ) *pnPagesize = decodeUint32(&zBuf[24]);
-  return SQLITE_OK;
+  만약( memcmp(aMagic, zBuf, 8) ) 반환 SQLITE_ERROR;
+  만약( pnRec ) *pnRec = decodeUint32(&zBuf[8]);
+  만약( pnPage ) *pnPage = decodeUint32(&zBuf[16]);
+  만약( pnSector ) *pnSector = decodeUint32(&zBuf[20]);
+  만약( pnPagesize ) *pnPagesize = decodeUint32(&zBuf[24]);
+  반환 SQLITE_OK;
 }
 
 /*
 ** This function is called when a new transaction is opened, just after
 ** the first journal-header is written to the journal file.
 */
-static int openTransaction(jt_file *pMain, jt_file *pJournal){
+static 정수 openTransaction(jt_file *pMain, jt_file *pJournal){
   unsigned char *aData;
   sqlite3_file *p = pMain->pReal;
-  int rc = SQLITE_OK;
+  정수 rc = SQLITE_OK;
 
   closeTransaction(pMain);
   aData = sqlite3_malloc(pMain->nPagesize);
@@ -368,12 +368,12 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
   pMain->aCksum = sqlite3_malloc(sizeof(u32) * (pMain->nPage + 1));
   pJournal->iMaxOff = 0;
 
-  if( !pMain->pWritable || !pMain->aCksum || !aData ){
+  만약( !pMain->pWritable || !pMain->aCksum || !aData ){
     rc = SQLITE_IOERR_NOMEM;
-  }else if( pMain->nPage>0 ){
+  }아니면 만약( pMain->nPage>0 ){
     u32 iTrunk;
-    int iSave;
-    int iSave2;
+    정수 iSave;
+    정수 iSave2;
 
     stop_ioerr_simulation(&iSave, &iSave2);
 
@@ -381,23 +381,23 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
     ** leaf to the jt_file.pWritable bitvec.
     */
     rc = sqlite3OsRead(p, aData, pMain->nPagesize, 0);
-    if( rc==SQLITE_OK ){
+    만약( rc==SQLITE_OK ){
       u32 nDbsize = decodeUint32(&aData[28]);
-      if( nDbsize>0 && memcmp(&aData[24], &aData[92], 4)==0 ){
+      만약( nDbsize>0 && memcmp(&aData[24], &aData[92], 4)==0 ){
         u32 iPg;
-        for(iPg=nDbsize+1; iPg<=pMain->nPage; iPg++){
+        위해(iPg=nDbsize+1; iPg<=pMain->nPage; iPg++){
           sqlite3BitvecSet(pMain->pWritable, iPg);
         }
       }
     }
     iTrunk = decodeUint32(&aData[32]);
-    while( rc==SQLITE_OK && iTrunk>0 ){
+    동안( rc==SQLITE_OK && iTrunk>0 ){
       u32 nLeaf;
       u32 iLeaf;
       sqlite3_int64 iOff = (i64)(iTrunk-1)*pMain->nPagesize;
       rc = sqlite3OsRead(p, aData, pMain->nPagesize, iOff);
       nLeaf = decodeUint32(&aData[4]);
-      for(iLeaf=0; rc==SQLITE_OK && iLeaf<nLeaf; iLeaf++){
+      위해(iLeaf=0; rc==SQLITE_OK && iLeaf<nLeaf; iLeaf++){
         u32 pgno = decodeUint32(&aData[8+4*iLeaf]);
         sqlite3BitvecSet(pMain->pWritable, pgno);
       }
@@ -405,14 +405,14 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
     }
 
     /* Calculate and store a checksum for each page in the database file. */
-    if( rc==SQLITE_OK ){
-      int ii;
-      for(ii=0; rc==SQLITE_OK && ii<(int)pMain->nPage; ii++){
+    만약( rc==SQLITE_OK ){
+      정수 ii;
+      위해(ii=0; rc==SQLITE_OK && ii<(정수)pMain->nPage; ii++){
         i64 iOff = (i64)(pMain->nPagesize) * (i64)ii;
-        if( iOff==PENDING_BYTE ) continue;
+        만약( iOff==PENDING_BYTE ) continue;
         rc = sqlite3OsRead(pMain->pReal, aData, pMain->nPagesize, iOff);
         pMain->aCksum[ii] = genCksum(aData, pMain->nPagesize);
-        if( ii+1==(int)pMain->nPage && rc==SQLITE_IOERR_SHORT_READ ){
+        만약( ii+1==(정수)pMain->nPage && rc==SQLITE_IOERR_SHORT_READ ){
           rc = SQLITE_OK;
         }
       }
@@ -422,7 +422,7 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
   }
 
   sqlite3_free(aData);
-  return rc;
+  반환 rc;
 }
 
 /*
@@ -430,44 +430,44 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
 ** This function reads the journal file and adds the page number for each
 ** page in the journal to the Bitvec object passed as the second argument.
 */
-static int readJournalFile(jt_file *p, jt_file *pMain){
-  int rc = SQLITE_OK;
+static 정수 readJournalFile(jt_file *p, jt_file *pMain){
+  정수 rc = SQLITE_OK;
   unsigned char zBuf[28];
   sqlite3_file *pReal = p->pReal;
   sqlite3_int64 iOff = 0;
   sqlite3_int64 iSize = p->iMaxOff;
   unsigned char *aPage;
-  int iSave;
-  int iSave2;
+  정수 iSave;
+  정수 iSave2;
 
   aPage = sqlite3_malloc(pMain->nPagesize);
-  if( !aPage ){
-    return SQLITE_IOERR_NOMEM;
+  만약( !aPage ){
+    반환 SQLITE_IOERR_NOMEM;
   }
 
   stop_ioerr_simulation(&iSave, &iSave2);
 
-  while( rc==SQLITE_OK && iOff<iSize ){
+  동안( rc==SQLITE_OK && iOff<iSize ){
     u32 nRec, nPage, nSector, nPagesize;
     u32 ii;
 
     /* Read and decode the next journal-header from the journal file. */
     rc = sqlite3OsRead(pReal, zBuf, 28, iOff);
-    if( rc!=SQLITE_OK 
+    만약( rc!=SQLITE_OK 
      || decodeJournalHdr(zBuf, &nRec, &nPage, &nSector, &nPagesize) 
     ){
       goto finish_rjf;
     }
     iOff += nSector;
 
-    if( nRec==0 ){
+    만약( nRec==0 ){
       /* A trick. There might be another journal-header immediately 
       ** following this one. In this case, 0 records means 0 records, 
       ** not "read until the end of the file". See also ticket #2565.
       */
-      if( iSize>=(iOff+nSector) ){
+      만약( iSize>=(iOff+nSector) ){
         rc = sqlite3OsRead(pReal, zBuf, 28, iOff);
-        if( rc!=SQLITE_OK || 0==decodeJournalHdr(zBuf, 0, 0, 0, 0) ){
+        만약( rc!=SQLITE_OK || 0==decodeJournalHdr(zBuf, 0, 0, 0, 0) ){
           continue;
         }
       }
@@ -475,15 +475,15 @@ static int readJournalFile(jt_file *p, jt_file *pMain){
     }
 
     /* Read all the records that follow the journal-header just read. */
-    for(ii=0; rc==SQLITE_OK && ii<nRec && iOff<iSize; ii++){
+    위해(ii=0; rc==SQLITE_OK && ii<nRec && iOff<iSize; ii++){
       u32 pgno;
       rc = sqlite3OsRead(pReal, zBuf, 4, iOff);
-      if( rc==SQLITE_OK ){
+      만약( rc==SQLITE_OK ){
         pgno = decodeUint32(zBuf);
-        if( pgno>0 && pgno<=pMain->nPage ){
-          if( 0==sqlite3BitvecTest(pMain->pWritable, pgno) ){
+        만약( pgno>0 && pgno<=pMain->nPage ){
+          만약( 0==sqlite3BitvecTest(pMain->pWritable, pgno) ){
             rc = sqlite3OsRead(pReal, aPage, pMain->nPagesize, iOff+4);
-            if( rc==SQLITE_OK ){
+            만약( rc==SQLITE_OK ){
               u32 cksum = genCksum(aPage, pMain->nPagesize);
               assert( cksum==pMain->aCksum[pgno-1] );
             }
@@ -500,50 +500,50 @@ static int readJournalFile(jt_file *p, jt_file *pMain){
 finish_rjf:
   start_ioerr_simulation(iSave, iSave2);
   sqlite3_free(aPage);
-  if( rc==SQLITE_IOERR_SHORT_READ ){
+  만약( rc==SQLITE_IOERR_SHORT_READ ){
     rc = SQLITE_OK;
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Write data to an jt-file.
 */
-static int jtWrite(
+static 정수 jtWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  정수 iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc;
+  정수 rc;
   jt_file *p = (jt_file *)pFile;
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    if( iOfst==0 ){
+  만약( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    만약( iOfst==0 ){
       jt_file *pMain = locateDatabaseHandle(p->zName, 0);
       assert( pMain );
   
-      if( iAmt==28 ){
+      만약( iAmt==28 ){
         /* Zeroing the first journal-file header. This is the end of a
         ** transaction. */
         closeTransaction(pMain);
-      }else if( iAmt!=12 ){
+      }아니면 만약( iAmt!=12 ){
         /* Writing the first journal header to a journal file. This happens
         ** when a transaction is first started.  */
         u8 *z = (u8 *)zBuf;
         pMain->nPage = decodeUint32(&z[16]);
         pMain->nPagesize = decodeUint32(&z[24]);
-        if( SQLITE_OK!=(rc=openTransaction(pMain, p)) ){
-          return rc;
+        만약( SQLITE_OK!=(rc=openTransaction(pMain, p)) ){
+          반환 rc;
         }
       }
     }
-    if( p->iMaxOff<(iOfst + iAmt) ){
+    만약( p->iMaxOff<(iOfst + iAmt) ){
       p->iMaxOff = iOfst + iAmt;
     }
   }
 
-  if( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
-    if( iAmt<(int)p->nPagesize 
+  만약( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
+    만약( iAmt<(정수)p->nPagesize 
      && p->nPagesize%iAmt==0 
      && iOfst>=(PENDING_BYTE+512) 
      && iOfst+iAmt<=PENDING_BYTE+p->nPagesize
@@ -553,9 +553,9 @@ static int jtWrite(
       ** it needs to fill in the non-locking-region part of the original
       ** pending-byte page.
       */
-    }else{
+    }아니면{
       u32 pgno = (u32)(iOfst/p->nPagesize + 1);
-      assert( (iAmt==1||iAmt==(int)p->nPagesize) &&
+      assert( (iAmt==1||iAmt==(정수)p->nPagesize) &&
               ((iOfst+iAmt)%p->nPagesize)==0 );
       /* The following assert() statements may fail if this layer is used
       ** with a connection in "PRAGMA synchronous=off" mode. If they
@@ -566,42 +566,42 @@ static int jtWrite(
   }
 
   rc = sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
-  if( (p->flags&SQLITE_OPEN_MAIN_JOURNAL) && iAmt==12 ){
+  만약( (p->flags&SQLITE_OPEN_MAIN_JOURNAL) && iAmt==12 ){
     jt_file *pMain = locateDatabaseHandle(p->zName, 0);
-    int rc2 = readJournalFile(p, pMain);
-    if( rc==SQLITE_OK ) rc = rc2;
+    정수 rc2 = readJournalFile(p, pMain);
+    만약( rc==SQLITE_OK ) rc = rc2;
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Truncate an jt-file.
 */
-static int jtTruncate(sqlite3_file *pFile, sqlite_int64 size){
+static 정수 jtTruncate(sqlite3_file *pFile, sqlite_int64 size){
   jt_file *p = (jt_file *)pFile;
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL && size==0 ){
+  만약( p->flags&SQLITE_OPEN_MAIN_JOURNAL && size==0 ){
     /* Truncating a journal file. This is the end of a transaction. */
     jt_file *pMain = locateDatabaseHandle(p->zName, 0);
     closeTransaction(pMain);
   }
-  if( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
+  만약( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
     u32 pgno;
     u32 locking_page = (u32)(PENDING_BYTE/p->nPagesize+1);
-    for(pgno=(u32)(size/p->nPagesize+1); pgno<=p->nPage; pgno++){
+    위해(pgno=(u32)(size/p->nPagesize+1); pgno<=p->nPage; pgno++){
       assert( pgno==locking_page || sqlite3BitvecTest(p->pWritable, pgno) );
     }
   }
-  return sqlite3OsTruncate(p->pReal, size);
+  반환 sqlite3OsTruncate(p->pReal, size);
 }
 
 /*
 ** Sync an jt-file.
 */
-static int jtSync(sqlite3_file *pFile, int flags){
+static 정수 jtSync(sqlite3_file *pFile, 정수 flags){
   jt_file *p = (jt_file *)pFile;
 
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    int rc;
+  만약( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    정수 rc;
     jt_file *pMain;                   /* The associated database file */
 
     /* The journal file is being synced. At this point, we inspect the 
@@ -612,102 +612,102 @@ static int jtSync(sqlite3_file *pFile, int flags){
     pMain = locateDatabaseHandle(p->zName, 0);
 
     /* Set the bitvec values */
-    if( pMain && pMain->pWritable ){
+    만약( pMain && pMain->pWritable ){
       pMain->nSync++;
       rc = readJournalFile(p, pMain);
-      if( rc!=SQLITE_OK ){
-        return rc;
+      만약( rc!=SQLITE_OK ){
+        반환 rc;
       }
     }
   }
 
-  return sqlite3OsSync(p->pReal, flags);
+  반환 sqlite3OsSync(p->pReal, flags);
 }
 
 /*
 ** Return the current file-size of an jt-file.
 */
-static int jtFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static 정수 jtFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsFileSize(p->pReal, pSize);
+  반환 sqlite3OsFileSize(p->pReal, pSize);
 }
 
 /*
 ** Lock an jt-file.
 */
-static int jtLock(sqlite3_file *pFile, int eLock){
-  int rc;
+static 정수 jtLock(sqlite3_file *pFile, 정수 eLock){
+  정수 rc;
   jt_file *p = (jt_file *)pFile;
   rc = sqlite3OsLock(p->pReal, eLock);
-  if( rc==SQLITE_OK && eLock>p->eLock ){
+  만약( rc==SQLITE_OK && eLock>p->eLock ){
     p->eLock = eLock;
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Unlock an jt-file.
 */
-static int jtUnlock(sqlite3_file *pFile, int eLock){
-  int rc;
+static 정수 jtUnlock(sqlite3_file *pFile, 정수 eLock){
+  정수 rc;
   jt_file *p = (jt_file *)pFile;
   rc = sqlite3OsUnlock(p->pReal, eLock);
-  if( rc==SQLITE_OK && eLock<p->eLock ){
+  만약( rc==SQLITE_OK && eLock<p->eLock ){
     p->eLock = eLock;
   }
-  return rc;
+  반환 rc;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an jt-file.
 */
-static int jtCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static 정수 jtCheckReservedLock(sqlite3_file *pFile, 정수 *pResOut){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsCheckReservedLock(p->pReal, pResOut);
+  반환 sqlite3OsCheckReservedLock(p->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an jt-file.
 */
-static int jtFileControl(sqlite3_file *pFile, int op, void *pArg){
+static 정수 jtFileControl(sqlite3_file *pFile, 정수 op, void *pArg){
   jt_file *p = (jt_file *)pFile;
-  return p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
+  반환 p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an jt-file.
 */
-static int jtSectorSize(sqlite3_file *pFile){
+static 정수 jtSectorSize(sqlite3_file *pFile){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsSectorSize(p->pReal);
+  반환 sqlite3OsSectorSize(p->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an jt-file.
 */
-static int jtDeviceCharacteristics(sqlite3_file *pFile){
+static 정수 jtDeviceCharacteristics(sqlite3_file *pFile){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsDeviceCharacteristics(p->pReal);
+  반환 sqlite3OsDeviceCharacteristics(p->pReal);
 }
 
 /*
 ** Open an jt file handle.
 */
-static int jtOpen(
+static 정수 jtOpen(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  정수 flags,
+  정수 *pOutFlags
 ){
-  int rc;
+  정수 rc;
   jt_file *p = (jt_file *)pFile;
   pFile->pMethods = 0;
   p->pReal = (sqlite3_file *)&p[1];
   p->pReal->pMethods = 0;
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
   assert( rc==SQLITE_OK || p->pReal->pMethods==0 );
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     pFile->pMethods = &jt_io_methods;
     p->eLock = 0;
     p->zName = zName;
@@ -716,13 +716,13 @@ static int jtOpen(
     p->pWritable = 0;
     p->aCksum = 0;
     enterJtMutex();
-    if( zName ){
+    만약( zName ){
       p->pNext = g.pList;
       g.pList = p;
     }
     leaveJtMutex();
   }
-  return rc;
+  반환 rc;
 }
 
 /*
@@ -730,30 +730,30 @@ static int jtOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int jtDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int nPath = (int)strlen(zPath);
-  if( nPath>8 && 0==strcmp("-journal", &zPath[nPath-8]) ){
+static 정수 jtDelete(sqlite3_vfs *pVfs, const char *zPath, 정수 dirSync){
+  정수 nPath = (정수)strlen(zPath);
+  만약( nPath>8 && 0==strcmp("-journal", &zPath[nPath-8]) ){
     /* Deleting a journal file. The end of a transaction. */
     jt_file *pMain = locateDatabaseHandle(zPath, 0);
-    if( pMain ){
+    만약( pMain ){
       closeTransaction(pMain);
     }
   }
 
-  return sqlite3OsDelete(g.pVfs, zPath, dirSync);
+  반환 sqlite3OsDelete(g.pVfs, zPath, dirSync);
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int jtAccess(
+static 정수 jtAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
-  int flags, 
-  int *pResOut
+  정수 flags, 
+  정수 *pResOut
 ){
-  return sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
+  반환 sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
 }
 
 /*
@@ -761,20 +761,20 @@ static int jtAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (JT_MAX_PATHNAME+1) bytes.
 */
-static int jtFullPathname(
+static 정수 jtFullPathname(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
-  int nOut, 
+  정수 nOut, 
   char *zOut
 ){
-  return sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
+  반환 sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
 static void *jtDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return g.pVfs->xDlOpen(g.pVfs, zPath);
+  반환 g.pVfs->xDlOpen(g.pVfs, zPath);
 }
 
 /*
@@ -782,7 +782,7 @@ static void *jtDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void jtDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void jtDlError(sqlite3_vfs *pVfs, 정수 nByte, char *zErrMsg){
   g.pVfs->xDlError(g.pVfs, nByte, zErrMsg);
 }
 
@@ -790,7 +790,7 @@ static void jtDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
 static void (*jtDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return g.pVfs->xDlSym(g.pVfs, p, zSym);
+  반환 g.pVfs->xDlSym(g.pVfs, p, zSym);
 }
 
 /*
@@ -804,33 +804,33 @@ static void jtDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int jtRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
+static 정수 jtRandomness(sqlite3_vfs *pVfs, 정수 nByte, char *zBufOut){
+  반환 sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int jtSleep(sqlite3_vfs *pVfs, int nMicro){
-  return sqlite3OsSleep(g.pVfs, nMicro);
+static 정수 jtSleep(sqlite3_vfs *pVfs, 정수 nMicro){
+  반환 sqlite3OsSleep(g.pVfs, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int jtCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
+static 정수 jtCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+  반환 g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
 }
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int jtCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  return g.pVfs->xCurrentTimeInt64(g.pVfs, pTimeOut);
+static 정수 jtCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
+  반환 g.pVfs->xCurrentTimeInt64(g.pVfs, pTimeOut);
 }
 
-static int jtGetLastError(sqlite3_vfs *pVfs, int n, char *z){
-  return g.pVfs->xGetLastError(g.pVfs, n, z);
+static 정수 jtGetLastError(sqlite3_vfs *pVfs, 정수 n, char *z){
+  반환 g.pVfs->xGetLastError(g.pVfs, n, z);
 }
 
 /**************************************************************************
@@ -844,19 +844,19 @@ static int jtGetLastError(sqlite3_vfs *pVfs, int n, char *z){
 ** true, then the jt VFS is installed as non-default. In this case it
 ** is available via its name, "jt".
 */
-int jt_register(char *zWrap, int isDefault){
+정수 jt_register(char *zWrap, 정수 isDefault){
   g.pVfs = sqlite3_vfs_find(zWrap);
-  if( g.pVfs==0 ){
-    return SQLITE_ERROR;
+  만약( g.pVfs==0 ){
+    반환 SQLITE_ERROR;
   }
   jt_vfs.szOsFile = sizeof(jt_file) + g.pVfs->szOsFile;
-  if( g.pVfs->iVersion==1 ){
+  만약( g.pVfs->iVersion==1 ){
     jt_vfs.iVersion = 1;
-  }else if( g.pVfs->xCurrentTimeInt64==0 ){
+  }아니면 만약( g.pVfs->xCurrentTimeInt64==0 ){
     jt_vfs.xCurrentTimeInt64 = 0;
   }
   sqlite3_vfs_register(&jt_vfs, isDefault);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*

@@ -47,7 +47,7 @@ static SQLITE_WSD struct BenignMallocHooks {
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#아니면
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
 #endif
@@ -73,13 +73,13 @@ void sqlite3BenignMallocHooks(
 */
 void sqlite3BeginBenignMalloc(void){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  만약( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
 void sqlite3EndBenignMalloc(void){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
+  만약( wsdHooks.xBenignEnd ){
     wsdHooks.xBenignEnd();
   }
 }

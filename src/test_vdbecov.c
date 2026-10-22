@@ -11,7 +11,7 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#만약 SQLITE_TEST          /* This file is used for testing only */
 
 #include "sqlite3.h"
 #include "sqliteInt.h"
@@ -23,19 +23,19 @@ static u8 aBranchArray[200000];
 
 static void test_vdbe_branch(
   void *pCtx, 
-  unsigned int iSrc, 
+  unsigned 정수 iSrc, 
   unsigned char iBranch, 
   unsigned char iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  만약( iSrc<sizeof(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
 static void appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
+  정수 iLine, 
+  정수 iPath, 
   const char *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
@@ -48,21 +48,21 @@ static void appendToList(
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
+static 정수 SQLITE_TCLAPI test_vdbe_coverage(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  정수 objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
+  정수 iSub = -1;
+  만약( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  만약( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    반환 TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
@@ -73,20 +73,20 @@ static int SQLITE_TCLAPI test_vdbe_coverage(
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
       break;
     case 1: {     /* report */
-      int i;
+      정수 i;
       Tcl_Obj *pRes = Tcl_NewObj();
       Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      위해(i=0; i<sizeof(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
+        정수 bFlag = ((b >> 4)==4);
+        만약( b ){
+          만약( (b & 0x01)==0 ){
             appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
+          만약( (b & 0x02)==0 ){
             appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
+          만약( (b & 0x04)==0 ){
             appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
@@ -101,16 +101,16 @@ static int SQLITE_TCLAPI test_vdbe_coverage(
       break;
   }
 
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
 #endif  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+정수 Sqlitetestvdbecov_Init(Tcl_Interp *interp){
 #ifdef SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
 #endif
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
 #endif

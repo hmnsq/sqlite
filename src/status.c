@@ -19,9 +19,9 @@
 /*
 ** Variables in which to record status information.
 */
-#if SQLITE_PTRSIZE>4
+#만약 SQLITE_PTRSIZE>4
 typedef sqlite3_int64 sqlite3StatValueType;
-#else
+#아니면
 typedef u32 sqlite3StatValueType;
 #endif
 typedef struct sqlite3StatType sqlite3StatType;
@@ -57,7 +57,7 @@ static const char statMutex[] = {
 #ifdef SQLITE_OMIT_WSD
 # define wsdStatInit  sqlite3StatType *x = &GLOBAL(sqlite3StatType,sqlite3Stat)
 # define wsdStat x[0]
-#else
+#아니면
 # define wsdStatInit
 # define wsdStat sqlite3Stat
 #endif
@@ -66,13 +66,13 @@ static const char statMutex[] = {
 ** Return the current value of a status parameter.  The caller must
 ** be holding the appropriate mutex.
 */
-sqlite3_int64 sqlite3StatusValue(int op){
+sqlite3_int64 sqlite3StatusValue(정수 op){
   wsdStatInit;
   assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  return wsdStat.nowValue[op];
+  반환 wsdStat.nowValue[op];
 }
 
 /*
@@ -86,18 +86,18 @@ sqlite3_int64 sqlite3StatusValue(int op){
 ** The StatusDown() routine lowers the current value by N.  The highwater
 ** mark is unchanged.  N must be non-negative for StatusDown().
 */
-void sqlite3StatusUp(int op, int N){
+void sqlite3StatusUp(정수 op, 정수 N){
   wsdStatInit;
   assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
   wsdStat.nowValue[op] += N;
-  if( wsdStat.nowValue[op]>wsdStat.mxValue[op] ){
+  만약( wsdStat.nowValue[op]>wsdStat.mxValue[op] ){
     wsdStat.mxValue[op] = wsdStat.nowValue[op];
   }
 }
-void sqlite3StatusDown(int op, int N){
+void sqlite3StatusDown(정수 op, 정수 N){
   wsdStatInit;
   assert( N>=0 );
   assert( op>=0 && op<ArraySize(statMutex) );
@@ -111,7 +111,7 @@ void sqlite3StatusDown(int op, int N){
 ** Adjust the highwater mark if necessary.
 ** The caller must hold the appropriate mutex.
 */
-void sqlite3StatusHighwater(int op, int X){
+void sqlite3StatusHighwater(정수 op, 정수 X){
   sqlite3StatValueType newValue;
   wsdStatInit;
   assert( X>=0 );
@@ -123,7 +123,7 @@ void sqlite3StatusHighwater(int op, int X){
   assert( op==SQLITE_STATUS_MALLOC_SIZE
           || op==SQLITE_STATUS_PAGECACHE_SIZE
           || op==SQLITE_STATUS_PARSER_STACK );
-  if( newValue>wsdStat.mxValue[op] ){
+  만약( newValue>wsdStat.mxValue[op] ){
     wsdStat.mxValue[op] = newValue;
   }
 }
@@ -131,43 +131,43 @@ void sqlite3StatusHighwater(int op, int X){
 /*
 ** Query status information.
 */
-int sqlite3_status64(
-  int op,
+정수 sqlite3_status64(
+  정수 op,
   sqlite3_int64 *pCurrent,
   sqlite3_int64 *pHighwater,
-  int resetFlag
+  정수 resetFlag
 ){
   sqlite3_mutex *pMutex;
   wsdStatInit;
-  if( op<0 || op>=ArraySize(wsdStat.nowValue) ){
-    return SQLITE_MISUSE_BKPT;
+  만약( op<0 || op>=ArraySize(wsdStat.nowValue) ){
+    반환 SQLITE_MISUSE_BKPT;
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCurrent==0 || pHighwater==0 ) return SQLITE_MISUSE_BKPT;
+  만약( pCurrent==0 || pHighwater==0 ) 반환 SQLITE_MISUSE_BKPT;
 #endif
   pMutex = statMutex[op] ? sqlite3Pcache1Mutex() : sqlite3MallocMutex();
   sqlite3_mutex_enter(pMutex);
   *pCurrent = wsdStat.nowValue[op];
   *pHighwater = wsdStat.mxValue[op];
-  if( resetFlag ){
+  만약( resetFlag ){
     wsdStat.mxValue[op] = wsdStat.nowValue[op];
   }
   sqlite3_mutex_leave(pMutex);
   (void)pMutex;  /* Prevent warning when SQLITE_THREADSAFE=0 */
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
-int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetFlag){
+정수 sqlite3_status(정수 op, 정수 *pCurrent, 정수 *pHighwater, 정수 resetFlag){
   sqlite3_int64 iCur = 0, iHwtr = 0;
-  int rc;
+  정수 rc;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCurrent==0 || pHighwater==0 ) return SQLITE_MISUSE_BKPT;
+  만약( pCurrent==0 || pHighwater==0 ) 반환 SQLITE_MISUSE_BKPT;
 #endif
   rc = sqlite3_status64(op, &iCur, &iHwtr, resetFlag);
-  if( rc==0 ){
-    *pCurrent = (int)iCur;
-    *pHighwater = (int)iHwtr;
+  만약( rc==0 ){
+    *pCurrent = (정수)iCur;
+    *pHighwater = (정수)iHwtr;
   }
-  return rc;
+  반환 rc;
 }
 
 /*
@@ -175,17 +175,17 @@ int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetFlag){
 */
 static u32 countLookasideSlots(LookasideSlot *p){
   u32 cnt = 0;
-  while( p ){
+  동안( p ){
     p = p->pNext;
     cnt++;
   }
-  return cnt;
+  반환 cnt;
 }
 
 /*
 ** Count the number of slots of lookaside memory that are outstanding
 */
-int sqlite3LookasideUsed(sqlite3 *db, int *pHighwater){
+정수 sqlite3LookasideUsed(sqlite3 *db, 정수 *pHighwater){
   u32 nInit = countLookasideSlots(db->lookaside.pInit);
   u32 nFree = countLookasideSlots(db->lookaside.pFree);
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
@@ -193,44 +193,44 @@ int sqlite3LookasideUsed(sqlite3 *db, int *pHighwater){
   nFree += countLookasideSlots(db->lookaside.pSmallFree);
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
   assert( db->lookaside.nSlot >= nInit+nFree );
-  if( pHighwater ) *pHighwater = (int)(db->lookaside.nSlot - nInit);
-  return (int)(db->lookaside.nSlot - (nInit+nFree));
+  만약( pHighwater ) *pHighwater = (정수)(db->lookaside.nSlot - nInit);
+  반환 (정수)(db->lookaside.nSlot - (nInit+nFree));
 }
 
 /*
 ** Query status information for a single database connection
 */
-int sqlite3_db_status64(
+정수 sqlite3_db_status64(
   sqlite3 *db,             /* The database connection whose status is desired */
-  int op,                  /* Status verb */
+  정수 op,                  /* Status verb */
   sqlite3_int64 *pCurrent, /* Write current value here */
   sqlite3_int64 *pHighwtr, /* Write high-water mark here */
-  int resetFlag            /* Reset high-water mark if true */
+  정수 resetFlag            /* Reset high-water mark if true */
 ){
-  int rc = SQLITE_OK;   /* Return code */
+  정수 rc = SQLITE_OK;   /* Return code */
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
-    return SQLITE_MISUSE_BKPT;
+  만약( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
+    반환 SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   switch( op ){
     case SQLITE_DBSTATUS_LOOKASIDE_USED: {
-      int H = 0;
+      정수 H = 0;
       *pCurrent = sqlite3LookasideUsed(db, &H);
       *pHighwtr = H;
-      if( resetFlag ){
+      만약( resetFlag ){
         LookasideSlot *p = db->lookaside.pFree;
-        if( p ){
-          while( p->pNext ) p = p->pNext;
+        만약( p ){
+          동안( p->pNext ) p = p->pNext;
           p->pNext = db->lookaside.pInit;
           db->lookaside.pInit = db->lookaside.pFree;
           db->lookaside.pFree = 0;
         }
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
         p = db->lookaside.pSmallFree;
-        if( p ){
-          while( p->pNext ) p = p->pNext;
+        만약( p ){
+          동안( p->pNext ) p = p->pNext;
           p->pNext = db->lookaside.pSmallInit;
           db->lookaside.pSmallInit = db->lookaside.pSmallFree;
           db->lookaside.pSmallFree = 0;
@@ -250,7 +250,7 @@ int sqlite3_db_status64(
       assert( (op-SQLITE_DBSTATUS_LOOKASIDE_HIT)<3 );
       *pCurrent = 0;
       *pHighwtr = db->lookaside.anStat[op-SQLITE_DBSTATUS_LOOKASIDE_HIT];
-      if( resetFlag ){
+      만약( resetFlag ){
         db->lookaside.anStat[op - SQLITE_DBSTATUS_LOOKASIDE_HIT] = 0;
       }
       break;
@@ -264,14 +264,14 @@ int sqlite3_db_status64(
     case SQLITE_DBSTATUS_CACHE_USED_SHARED:
     case SQLITE_DBSTATUS_CACHE_USED: {
       sqlite3_int64 totalUsed = 0;
-      int i;
+      정수 i;
       sqlite3BtreeEnterAll(db);
-      for(i=0; i<db->nDb; i++){
+      위해(i=0; i<db->nDb; i++){
         Btree *pBt = db->aDb[i].pBt;
-        if( pBt ){
+        만약( pBt ){
           Pager *pPager = sqlite3BtreePager(pBt);
-          int nByte = sqlite3PagerMemUsed(pPager);
-          if( op==SQLITE_DBSTATUS_CACHE_USED_SHARED ){
+          정수 nByte = sqlite3PagerMemUsed(pPager);
+          만약( op==SQLITE_DBSTATUS_CACHE_USED_SHARED ){
             nByte = nByte / sqlite3BtreeConnectionCount(pBt);
           }
           totalUsed += nByte;
@@ -289,16 +289,16 @@ int sqlite3_db_status64(
     ** databases.  *pHighwtr is set to zero.
     */
     case SQLITE_DBSTATUS_SCHEMA_USED: {
-      int i;          /* Used to iterate through schemas */
-      int nByte = 0;  /* Used to accumulate return value */
+      정수 i;          /* Used to iterate through schemas */
+      정수 nByte = 0;  /* Used to accumulate return value */
 
       sqlite3BtreeEnterAll(db);
       db->pnBytesFreed = &nByte;
       assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
       db->lookaside.pEnd = db->lookaside.pStart;
-      for(i=0; i<db->nDb; i++){
+      위해(i=0; i<db->nDb; i++){
         Schema *pSchema = db->aDb[i].pSchema;
-        if( ALWAYS(pSchema!=0) ){
+        만약( ALWAYS(pSchema!=0) ){
           HashElem *p;
 
           nByte += sqlite3GlobalConfig.m.xRoundup(sizeof(HashElem)) * (
@@ -312,10 +312,10 @@ int sqlite3_db_status64(
           nByte += sqlite3_msize(pSchema->idxHash.ht);
           nByte += sqlite3_msize(pSchema->fkeyHash.ht);
 
-          for(p=sqliteHashFirst(&pSchema->trigHash); p; p=sqliteHashNext(p)){
+          위해(p=sqliteHashFirst(&pSchema->trigHash); p; p=sqliteHashNext(p)){
             sqlite3DeleteTrigger(db, (Trigger*)sqliteHashData(p));
           }
-          for(p=sqliteHashFirst(&pSchema->tblHash); p; p=sqliteHashNext(p)){
+          위해(p=sqliteHashFirst(&pSchema->tblHash); p; p=sqliteHashNext(p)){
             sqlite3DeleteTable(db, (Table *)sqliteHashData(p));
           }
         }
@@ -336,12 +336,12 @@ int sqlite3_db_status64(
     */
     case SQLITE_DBSTATUS_STMT_USED: {
       struct Vdbe *pVdbe;         /* Used to iterate through VMs */
-      int nByte = 0;              /* Used to accumulate return value */
+      정수 nByte = 0;              /* Used to accumulate return value */
 
       db->pnBytesFreed = &nByte;
       assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
       db->lookaside.pEnd = db->lookaside.pStart;
-      for(pVdbe=db->pVdbe; pVdbe; pVdbe=pVdbe->pVNext){
+      위해(pVdbe=db->pVdbe; pVdbe; pVdbe=pVdbe->pVNext){
         sqlite3VdbeDelete(pVdbe);
       }
       db->lookaside.pEnd = db->lookaside.pTrueEnd;
@@ -364,13 +364,13 @@ int sqlite3_db_status64(
     case SQLITE_DBSTATUS_CACHE_HIT:
     case SQLITE_DBSTATUS_CACHE_MISS:
     case SQLITE_DBSTATUS_CACHE_WRITE:{
-      int i;
+      정수 i;
       u64 nRet = 0;
       assert( SQLITE_DBSTATUS_CACHE_MISS==SQLITE_DBSTATUS_CACHE_HIT+1 );
       assert( SQLITE_DBSTATUS_CACHE_WRITE==SQLITE_DBSTATUS_CACHE_HIT+2 );
 
-      for(i=0; i<db->nDb; i++){
-        if( db->aDb[i].pBt ){
+      위해(i=0; i<db->nDb; i++){
+        만약( db->aDb[i].pBt ){
           Pager *pPager = sqlite3BtreePager(db->aDb[i].pBt);
           sqlite3PagerCacheStat(pPager, op, resetFlag, &nRet);
         }
@@ -389,14 +389,14 @@ int sqlite3_db_status64(
     */
     case SQLITE_DBSTATUS_TEMPBUF_SPILL: {
       u64 nRet = 0;
-      if( db->aDb[1].pBt ){
+      만약( db->aDb[1].pBt ){
         Pager *pPager = sqlite3BtreePager(db->aDb[1].pBt);
         sqlite3PagerCacheStat(pPager, SQLITE_DBSTATUS_CACHE_WRITE,
                               resetFlag, &nRet);
         nRet *= sqlite3BtreeGetPageSize(db->aDb[1].pBt);
       }
       nRet += db->nSpill;
-      if( resetFlag ) db->nSpill = 0;
+      만약( resetFlag ) db->nSpill = 0;
       *pHighwtr = 0;
       *pCurrent = nRet;
       break;
@@ -417,30 +417,30 @@ int sqlite3_db_status64(
     }
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  반환 rc;
 }
 
 /*
 ** 32-bit variant of sqlite3_db_status64()
 */
-int sqlite3_db_status(
+정수 sqlite3_db_status(
   sqlite3 *db,             /* The database connection whose status is desired */
-  int op,                  /* Status verb */
-  int *pCurrent,           /* Write current value here */
-  int *pHighwtr,           /* Write high-water mark here */
-  int resetFlag            /* Reset high-water mark if true */
+  정수 op,                  /* Status verb */
+  정수 *pCurrent,           /* Write current value here */
+  정수 *pHighwtr,           /* Write high-water mark here */
+  정수 resetFlag            /* Reset high-water mark if true */
 ){
   sqlite3_int64 C = 0, H = 0;
-  int rc;
+  정수 rc;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
-    return SQLITE_MISUSE_BKPT;
+  만약( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
+    반환 SQLITE_MISUSE_BKPT;
   }
 #endif
   rc = sqlite3_db_status64(db, op, &C, &H, resetFlag);
-  if( rc==0 ){
+  만약( rc==0 ){
     *pCurrent = C & 0x7fffffff;
     *pHighwtr = H & 0x7fffffff;
   }
-  return rc;
+  반환 rc;
 }

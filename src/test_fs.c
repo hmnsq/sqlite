@@ -69,10 +69,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#if !defined(_WIN32) || defined(__MSVCRT__)
+#만약 !defined(_WIN32) || defined(__MSVCRT__)
 # include <unistd.h>
 # include <dirent.h>
-#else
+#아니면
 # include "windirent.h"
 # ifndef S_ISREG
 #  define S_ISREG(mode) (((mode) & S_IFMT) == S_IFREG)
@@ -99,8 +99,8 @@ struct fs_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;
   char *zBuf;
-  int nBuf;
-  int nAlloc;
+  정수 nBuf;
+  정수 nAlloc;
 };
 
 /*************************************************************************
@@ -131,36 +131,36 @@ struct FsdirCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsdirConnect(
+static 정수 fsdirConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  정수 argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
   FsdirVtab *pTab;
 
-  if( argc!=3 ){
+  만약( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    반환 SQLITE_ERROR;
   }
 
   pTab = (FsdirVtab *)sqlite3_malloc(sizeof(FsdirVtab));
-  if( !pTab ) return SQLITE_NOMEM;
+  만약( !pTab ) 반환 SQLITE_NOMEM;
   memset(pTab, 0, sizeof(FsdirVtab));
 
   *ppVtab = &pTab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(dir, name);");
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fsdirDisconnect(sqlite3_vtab *pVtab){
+static 정수 fsdirDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -168,14 +168,14 @@ static int fsdirDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+static 정수 fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  정수 ii;
 
   pIdxInfo->estimatedCost = 1000000000.0;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
+  위해(ii=0; ii<pIdxInfo->nConstraint; ii++){
     struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
+    만약( p->iColumn==0 && p->usable && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
       struct sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 1;
@@ -186,7 +186,7 @@ static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     }
   }
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -194,67 +194,67 @@ static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fsdir cursor.
 */
-static int fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static 정수 fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FsdirCsr *pCur;
   /* Allocate an extra 256 bytes because it is undefined how big dirent.d_name
   ** is and we need enough space.  Linux provides plenty already, but
   ** Solaris only provides one byte. */
   pCur = (FsdirCsr*)sqlite3_malloc(sizeof(FsdirCsr)+256);
-  if( pCur==0 ) return SQLITE_NOMEM;
+  만약( pCur==0 ) 반환 SQLITE_NOMEM;
   memset(pCur, 0, sizeof(FsdirCsr));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Close a fsdir cursor.
 */
-static int fsdirClose(sqlite3_vtab_cursor *cur){
+static 정수 fsdirClose(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCur = (FsdirCsr*)cur;
-  if( pCur->pDir ) closedir(pCur->pDir);
+  만약( pCur->pDir ) closedir(pCur->pDir);
   sqlite3_free(pCur->zDir);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fsdirNext(sqlite3_vtab_cursor *cur){
+static 정수 fsdirNext(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
 
-  if( pCsr->pDir ){
+  만약( pCsr->pDir ){
     pCsr->pEntry = readdir(pCsr->pDir);
-    if( pCsr->pEntry==0 ){
+    만약( pCsr->pEntry==0 ){
       closedir(pCsr->pDir);
       pCsr->pDir = 0;
     }
     pCsr->iRowid++;
   }
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fsdirFilter(
+static 정수 fsdirFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  정수 idxNum, const char *idxStr,
+  정수 argc, sqlite3_value **argv
 ){
   FsdirCsr *pCsr = (FsdirCsr*)pVtabCursor;
   const char *zDir;
-  int nDir;
+  정수 nDir;
 
 
-  if( idxNum!=1 || argc!=1 ){
-    return SQLITE_ERROR;
+  만약( idxNum!=1 || argc!=1 ){
+    반환 SQLITE_ERROR;
   }
 
   pCsr->iRowid = 0;
   sqlite3_free(pCsr->zDir);
-  if( pCsr->pDir ){
+  만약( pCsr->pDir ){
     closedir(pCsr->pDir);
     pCsr->pDir = 0;
   }
@@ -262,25 +262,25 @@ static int fsdirFilter(
   zDir = (const char*)sqlite3_value_text(argv[0]);
   nDir = sqlite3_value_bytes(argv[0]);
   pCsr->zDir = sqlite3_malloc(nDir+1);
-  if( pCsr->zDir==0 ) return SQLITE_NOMEM;
+  만약( pCsr->zDir==0 ) 반환 SQLITE_NOMEM;
   memcpy(pCsr->zDir, zDir, nDir+1);
 
   pCsr->pDir = opendir(pCsr->zDir);
-  return fsdirNext(pVtabCursor); 
+  반환 fsdirNext(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fsdirEof(sqlite3_vtab_cursor *cur){
+static 정수 fsdirEof(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
-  return pCsr->pDir==0;
+  반환 pCsr->pDir==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static 정수 fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, 정수 i){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
   switch( i ){
     case 0: /* dir */
@@ -295,16 +295,16 @@ static int fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
       assert( 0 );
   }
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static 정수 fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
   *pRowid = pCsr->iRowid;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /*
 ** End of fsdir implementation.
@@ -323,7 +323,7 @@ struct FstreeVtab {
 struct FstreeCsr {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;            /* Statement to list paths */
-  int fd;                         /* File descriptor open on current path */
+  정수 fd;                         /* File descriptor open on current path */
 };
 
 /*
@@ -337,37 +337,37 @@ struct FstreeCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fstreeConnect(
+static 정수 fstreeConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  정수 argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
   FstreeVtab *pTab;
 
-  if( argc!=3 ){
+  만약( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    반환 SQLITE_ERROR;
   }
 
   pTab = (FstreeVtab *)sqlite3_malloc(sizeof(FstreeVtab));
-  if( !pTab ) return SQLITE_NOMEM;
+  만약( !pTab ) 반환 SQLITE_NOMEM;
   memset(pTab, 0, sizeof(FstreeVtab));
   pTab->db = db;
 
   *ppVtab = &pTab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(path, size, data);");
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fstreeDisconnect(sqlite3_vtab *pVtab){
+static 정수 fstreeDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -375,12 +375,12 @@ static int fstreeDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+static 정수 fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  정수 ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
+  위해(ii=0; ii<pIdxInfo->nConstraint; ii++){
     struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && (
+    만약( p->iColumn==0 && p->usable && (
           p->op==SQLITE_INDEX_CONSTRAINT_GLOB
        || p->op==SQLITE_INDEX_CONSTRAINT_LIKE
        || p->op==SQLITE_INDEX_CONSTRAINT_EQ
@@ -390,12 +390,12 @@ static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
       pIdxInfo->idxNum = p->op;
       pUsage->argvIndex = 1;
       pIdxInfo->estimatedCost = 100000.0;
-      return SQLITE_OK;
+      반환 SQLITE_OK;
     }
   }
 
   pIdxInfo->estimatedCost = 1000000000.0;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -403,18 +403,18 @@ static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fstree cursor.
 */
-static int fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static 정수 fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FstreeCsr *pCur;
   pCur = (FstreeCsr*)sqlite3_malloc(sizeof(FstreeCsr));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  만약( pCur==0 ) 반환 SQLITE_NOMEM;
   memset(pCur, 0, sizeof(FstreeCsr));
   pCur->fd = -1;
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 static void fstreeCloseFd(FstreeCsr *pCsr){
-  if( pCsr->fd>=0 ){
+  만약( pCsr->fd>=0 ){
     close(pCsr->fd);
     pCsr->fd = -1;
   }
@@ -423,45 +423,45 @@ static void fstreeCloseFd(FstreeCsr *pCsr){
 /*
 ** Close a fstree cursor.
 */
-static int fstreeClose(sqlite3_vtab_cursor *cur){
+static 정수 fstreeClose(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
   sqlite3_finalize(pCsr->pStmt);
   fstreeCloseFd(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fstreeNext(sqlite3_vtab_cursor *cur){
+static 정수 fstreeNext(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  int rc;
+  정수 rc;
 
   fstreeCloseFd(pCsr);
   rc = sqlite3_step(pCsr->pStmt);
-  if( rc!=SQLITE_ROW ){
+  만약( rc!=SQLITE_ROW ){
     rc = sqlite3_finalize(pCsr->pStmt);
     pCsr->pStmt = 0;
-  }else{
+  }아니면{
     rc = SQLITE_OK;
     pCsr->fd = open((const char*)sqlite3_column_text(pCsr->pStmt, 0), O_RDONLY);
   }
 
-  return rc;
+  반환 rc;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fstreeFilter(
+static 정수 fstreeFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  정수 idxNum, const char *idxStr,
+  정수 argc, sqlite3_value **argv
 ){
   FstreeCsr *pCsr = (FstreeCsr*)pVtabCursor;
   FstreeVtab *pTab = (FstreeVtab*)(pCsr->base.pVtab);
-  int rc;
+  정수 rc;
   const char *zSql = 
 "WITH r(d) AS ("
 "  SELECT CASE WHEN dir=?2 THEN ?3 ELSE dir END || '/' || name "
@@ -471,23 +471,23 @@ static int fstreeFilter(
 ") SELECT d FROM r;";
 
   char *zRoot;
-  int nRoot;
+  정수 nRoot;
   char *zPrefix;
-  int nPrefix;
+  정수 nPrefix;
   const char *zDir;
-  int nDir;
+  정수 nDir;
   char aWild[2] = { '\0', '\0' };
 
 #ifdef _WIN32
   const char *zDrive = getenv("fstreeDrive");
-  if( zDrive==0 ){
+  만약( zDrive==0 ){
     zDrive = getenv("SystemDrive");
   }
   zRoot = sqlite3_mprintf("%s%c", zDrive, '/');
   nRoot = sqlite3Strlen30(zRoot);
   zPrefix = sqlite3_mprintf("%s", zDrive);
   nPrefix = sqlite3Strlen30(zPrefix);
-#else
+#아니면
   zRoot = "/";
   nRoot = 1;
   zPrefix = "";
@@ -501,9 +501,9 @@ static int fstreeFilter(
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  만약( rc!=SQLITE_OK ) 반환 rc;
 
-  if( idxNum ){
+  만약( idxNum ){
     const char *zQuery = (const char*)sqlite3_value_text(argv[0]);
     switch( idxNum ){
       case SQLITE_INDEX_CONSTRAINT_GLOB:
@@ -516,16 +516,16 @@ static int fstreeFilter(
         break;
     }
 
-    if( sqlite3_strnicmp(zQuery, zPrefix, nPrefix)==0 ){
-      int i;
-      for(i=nPrefix; zQuery[i]; i++){
-        if( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) break;
-        if( zQuery[i]=='/' ) nDir = i;
+    만약( sqlite3_strnicmp(zQuery, zPrefix, nPrefix)==0 ){
+      정수 i;
+      위해(i=nPrefix; zQuery[i]; i++){
+        만약( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) break;
+        만약( zQuery[i]=='/' ) nDir = i;
       }
       zDir = zQuery;
     }
   }
-  if( nDir==0 ) nDir = 1;
+  만약( nDir==0 ) nDir = 1;
 
   sqlite3_bind_text(pCsr->pStmt, 1, zDir, nDir, SQLITE_TRANSIENT);
   sqlite3_bind_text(pCsr->pStmt, 2, zRoot, nRoot, SQLITE_TRANSIENT);
@@ -536,38 +536,38 @@ static int fstreeFilter(
   sqlite3_free(zRoot);
 #endif
 
-  return fstreeNext(pVtabCursor); 
+  반환 fstreeNext(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fstreeEof(sqlite3_vtab_cursor *cur){
+static 정수 fstreeEof(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  return pCsr->pStmt==0;
+  반환 pCsr->pStmt==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static 정수 fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, 정수 i){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  if( i==0 ){      /* path */
+  만약( i==0 ){      /* path */
     sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, 0));
-  }else{
+  }아니면{
     struct stat sBuf;
     fstat(pCsr->fd, &sBuf);
 
-    if( S_ISREG(sBuf.st_mode) ){
-      if( i==1 ){
+    만약( S_ISREG(sBuf.st_mode) ){
+      만약( i==1 ){
         sqlite3_result_int64(ctx, sBuf.st_size);
-      }else{
-        int nRead;
+      }아니면{
+        정수 nRead;
         char *aBuf = sqlite3_malloc(sBuf.st_mode+1);
-        if( !aBuf ) return SQLITE_NOMEM;
+        만약( !aBuf ) 반환 SQLITE_NOMEM;
         nRead = read(pCsr->fd, aBuf, sBuf.st_mode);
-        if( nRead!=sBuf.st_mode ){
-          return SQLITE_IOERR;
+        만약( nRead!=sBuf.st_mode ){
+          반환 SQLITE_IOERR;
         }
         sqlite3_result_blob(ctx, aBuf, nRead, SQLITE_TRANSIENT);
         sqlite3_free(aBuf);
@@ -575,15 +575,15 @@ static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
     }
   }
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static 정수 fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /*
 ** End of fstree implementation.
@@ -603,27 +603,27 @@ static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsConnect(
+static 정수 fsConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  정수 argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
   fs_vtab *pVtab;
-  int nByte;
+  정수 nByte;
   const char *zTbl;
   const char *zDb = argv[1];
 
-  if( argc!=4 ){
+  만약( argc!=4 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    반환 SQLITE_ERROR;
   }
   zTbl = argv[3];
 
-  nByte = sizeof(fs_vtab) + (int)strlen(zTbl) + 1 + (int)strlen(zDb) + 1;
+  nByte = sizeof(fs_vtab) + (정수)strlen(zTbl) + 1 + (정수)strlen(zDb) + 1;
   pVtab = (fs_vtab *)sqlite3MallocZero( nByte );
-  if( !pVtab ) return SQLITE_NOMEM;
+  만약( !pVtab ) 반환 SQLITE_NOMEM;
 
   pVtab->zTbl = (char *)&pVtab[1];
   pVtab->zDb = &pVtab->zTbl[strlen(zTbl)+1];
@@ -633,138 +633,138 @@ static int fsConnect(
   *ppVtab = &pVtab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE x(path TEXT, data TEXT)");
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int fsDisconnect(sqlite3_vtab *pVtab){
+static 정수 fsDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new fs cursor.
 */
-static int fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static 정수 fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   fs_cursor *pCur;
   pCur = sqlite3MallocZero(sizeof(fs_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Close a fs cursor.
 */
-static int fsClose(sqlite3_vtab_cursor *cur){
+static 정수 fsClose(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
   sqlite3_finalize(pCur->pStmt);
   sqlite3_free(pCur->zBuf);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
-static int fsNext(sqlite3_vtab_cursor *cur){
+static 정수 fsNext(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
-  int rc;
+  정수 rc;
 
   rc = sqlite3_step(pCur->pStmt);
-  if( rc==SQLITE_ROW || rc==SQLITE_DONE ) rc = SQLITE_OK;
+  만약( rc==SQLITE_ROW || rc==SQLITE_DONE ) rc = SQLITE_OK;
 
-  return rc;
+  반환 rc;
 }
 
-static int fsFilter(
+static 정수 fsFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  정수 idxNum, const char *idxStr,
+  정수 argc, sqlite3_value **argv
 ){
-  int rc;
+  정수 rc;
   fs_cursor *pCur = (fs_cursor *)pVtabCursor;
   fs_vtab *p = (fs_vtab *)(pVtabCursor->pVtab);
 
   assert( (idxNum==0 && argc==0) || (idxNum==1 && argc==1) );
-  if( idxNum==1 ){
+  만약( idxNum==1 ){
     char *zStmt = sqlite3_mprintf(
         "SELECT * FROM %Q.%Q WHERE rowid=?", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+    만약( !zStmt ) 반환 SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
-    if( rc==SQLITE_OK ){
+    만약( rc==SQLITE_OK ){
       sqlite3_bind_value(pCur->pStmt, 1, argv[0]);
     }
-  }else{
+  }아니면{
     char *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+    만약( !zStmt ) 반환 SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
   }
 
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     rc = fsNext(pVtabCursor); 
   }
-  return rc;
+  반환 rc;
 }
 
-static int fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static 정수 fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, 정수 i){
   fs_cursor *pCur = (fs_cursor*)cur;
 
   assert( i==0 || i==1 || i==2 );
-  if( i==0 ){
+  만약( i==0 ){
     sqlite3_result_value(ctx, sqlite3_column_value(pCur->pStmt, 0));
-  }else{
+  }아니면{
     const char *zFile = (const char *)sqlite3_column_text(pCur->pStmt, 1);
     struct stat sbuf;
-    int fd;
+    정수 fd;
 
-    int n;
+    정수 n;
     fd = open(zFile, O_RDONLY);
-    if( fd<0 ) return SQLITE_IOERR;
+    만약( fd<0 ) 반환 SQLITE_IOERR;
     fstat(fd, &sbuf);
 
-    if( sbuf.st_size>=pCur->nAlloc ){
+    만약( sbuf.st_size>=pCur->nAlloc ){
       sqlite3_int64 nNew = sbuf.st_size*2;
       char *zNew;
-      if( nNew<1024 ) nNew = 1024;
+      만약( nNew<1024 ) nNew = 1024;
 
       zNew = sqlite3Realloc(pCur->zBuf, nNew);
-      if( zNew==0 ){
+      만약( zNew==0 ){
         close(fd);
-        return SQLITE_NOMEM;
+        반환 SQLITE_NOMEM;
       }
       pCur->zBuf = zNew;
       pCur->nAlloc = nNew;
     }
 
-    n = (int)read(fd, pCur->zBuf, sbuf.st_size);
+    n = (정수)read(fd, pCur->zBuf, sbuf.st_size);
     close(fd);
-    if( n!=sbuf.st_size ) return SQLITE_ERROR;
+    만약( n!=sbuf.st_size ) 반환 SQLITE_ERROR;
     pCur->nBuf = sbuf.st_size;
     pCur->zBuf[pCur->nBuf] = '\0';
 
     sqlite3_result_text(ctx, pCur->zBuf, -1, SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
-static int fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static 정수 fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   fs_cursor *pCur = (fs_cursor*)cur;
   *pRowid = sqlite3_column_int64(pCur->pStmt, 0);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
-static int fsEof(sqlite3_vtab_cursor *cur){
+static 정수 fsEof(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor*)cur;
-  return (sqlite3_data_count(pCur->pStmt)==0);
+  반환 (sqlite3_data_count(pCur->pStmt)==0);
 }
 
-static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+static 정수 fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  정수 ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
+  위해(ii=0; ii<pIdxInfo->nConstraint; ii++){
     struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
-    if( pCons->iColumn<0 && pCons->usable
+    만약( pCons->iColumn<0 && pCons->usable
            && pCons->op==SQLITE_INDEX_CONSTRAINT_EQ ){
       struct sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
@@ -776,7 +776,7 @@ static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     }
   }
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
@@ -870,29 +870,29 @@ static sqlite3_module fstreeModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern 정수 getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_fs_module(
+static 정수 SQLITE_TCLAPI register_fs_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 ){
+  만약( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  만약( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) 반환 TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "fs", &fsModule, (void *)interp);
   sqlite3_create_module(db, "fsdir", &fsdirModule, 0);
   sqlite3_create_module(db, "fstree", &fstreeModule, 0);
 #endif
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
 #endif
@@ -901,7 +901,7 @@ static int SQLITE_TCLAPI register_fs_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestfs_Init(Tcl_Interp *interp){
+정수 Sqlitetestfs_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   static struct {
      char *zName;
@@ -910,11 +910,11 @@ int Sqlitetestfs_Init(Tcl_Interp *interp){
   } aObjCmd[] = {
      { "register_fs_module",   register_fs_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  정수 i;
+  위해(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  반환 TCL_OK;
 }

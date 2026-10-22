@@ -41,7 +41,7 @@ void sqlite3HashClear(Hash *pH){
   sqlite3_free(pH->ht);
   pH->ht = 0;
   pH->htsize = 0;
-  while( elem ){
+  동안( elem ){
     HashElem *next_elem = elem->next;
     sqlite3_free(elem);
     elem = next_elem;
@@ -52,9 +52,9 @@ void sqlite3HashClear(Hash *pH){
 /*
 ** The hashing function.
 */
-static unsigned int strHash(const char *z){
-  unsigned int h = 0;
-  while( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
+static unsigned 정수 strHash(const char *z){
+  unsigned 정수 h = 0;
+  동안( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
     /* Knuth multiplicative hashing.  (Sorting & Searching, p. 510).
     ** 0x9e3779b1 is 2654435761 which is the closest prime number to
     ** (2**32)*golden_ratio, where golden_ratio = (sqrt(5) - 1)/2.
@@ -64,12 +64,12 @@ static unsigned int strHash(const char *z){
     */
 #ifdef SQLITE_EBCDIC
     h += 0xbf & (unsigned char)*(z++);
-#else
+#아니면
     h += 0xdf & (unsigned char)*(z++);
 #endif
     h *= 0x9e3779b1;
   }
-  return h;
+  반환 h;
 }
 
 
@@ -82,22 +82,22 @@ static void insertElement(
   HashElem *pNew         /* The element to be inserted */
 ){
   HashElem *pHead;       /* First element already in pEntry */
-  if( pEntry ){
+  만약( pEntry ){
     pHead = pEntry->count ? pEntry->chain : 0;
     pEntry->count++;
     pEntry->chain = pNew;
-  }else{
+  }아니면{
     pHead = 0;
   }
-  if( pHead ){
+  만약( pHead ){
     pNew->next = pHead;
     pNew->prev = pHead->prev;
-    if( pHead->prev ){ pHead->prev->next = pNew; }
-    else             { pH->first = pNew; }
+    만약( pHead->prev ){ pHead->prev->next = pNew; }
+    아니면             { pH->first = pNew; }
     pHead->prev = pNew;
-  }else{
+  }아니면{
     pNew->next = pH->first;
-    if( pH->first ){ pH->first->prev = pNew; }
+    만약( pH->first ){ pH->first->prev = pNew; }
     pNew->prev = 0;
     pH->first = pNew;
   }
@@ -110,15 +110,15 @@ static void insertElement(
 ** if the new size is the same as the prior size.
 ** Return TRUE if the resize occurs and false if not.
 */
-static int rehash(Hash *pH, unsigned int new_size){
+static 정수 rehash(Hash *pH, unsigned 정수 new_size){
   struct _ht *new_ht;            /* The new hash table */
   HashElem *elem, *next_elem;    /* For looping over existing elements */
 
-#if SQLITE_MALLOC_SOFT_LIMIT>0
-  if( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
+#만약 SQLITE_MALLOC_SOFT_LIMIT>0
+  만약( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
     new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(struct _ht);
   }
-  if( new_size==pH->htsize ) return 0;
+  만약( new_size==pH->htsize ) 반환 0;
 #endif
 
   /* The inability to allocates space for a larger hash table is
@@ -133,16 +133,16 @@ static int rehash(Hash *pH, unsigned int new_size){
   new_ht = (struct _ht *)sqlite3Malloc( new_size*sizeof(struct _ht) );
   sqlite3EndBenignMalloc();
 
-  if( new_ht==0 ) return 0;
+  만약( new_ht==0 ) 반환 0;
   sqlite3_free(pH->ht);
   pH->ht = new_ht;
   pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(struct _ht);
   memset(new_ht, 0, new_size*sizeof(struct _ht));
-  for(elem=pH->first, pH->first=0; elem; elem = next_elem){
+  위해(elem=pH->first, pH->first=0; elem; elem = next_elem){
     next_elem = elem->next;
     insertElement(pH, &new_ht[elem->h % new_size], elem);
   }
-  return 1;
+  반환 1;
 }
 
 /* This function (for internal use only) locates an element in an
@@ -153,33 +153,33 @@ static int rehash(Hash *pH, unsigned int new_size){
 static HashElem *findElementWithHash(
   const Hash *pH,     /* The pH to be searched */
   const char *pKey,   /* The key we are searching for */
-  unsigned int *pHash /* Write the hash value here */
+  unsigned 정수 *pHash /* Write the hash value here */
 ){
   HashElem *elem;                /* Used to loop thru the element list */
-  unsigned int count;            /* Number of elements left to test */
-  unsigned int h;                /* The computed hash */
+  unsigned 정수 count;            /* Number of elements left to test */
+  unsigned 정수 h;                /* The computed hash */
   static HashElem nullElement = { 0, 0, 0, 0, 0 };
 
   h = strHash(pKey);
-  if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
+  만약( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
     struct _ht *pEntry;
     pEntry = &pH->ht[h % pH->htsize];
     elem = pEntry->chain;
     count = pEntry->count;
-  }else{
+  }아니면{
     elem = pH->first;
     count = pH->count;
   }
-  if( pHash ) *pHash = h;
-  while( count ){
+  만약( pHash ) *pHash = h;
+  동안( count ){
     assert( elem!=0 );
-    if( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
-      return elem;
+    만약( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
+      반환 elem;
     }
     elem = elem->next;
     count--;
   }
-  return &nullElement;
+  반환 &nullElement;
 }
 
 /* Remove a single entry from the hash table given a pointer to that
@@ -190,17 +190,17 @@ static void removeElement(
   HashElem *elem    /* The element to be removed from the pH */
 ){
   struct _ht *pEntry;
-  if( elem->prev ){
+  만약( elem->prev ){
     elem->prev->next = elem->next; 
-  }else{
+  }아니면{
     pH->first = elem->next;
   }
-  if( elem->next ){
+  만약( elem->next ){
     elem->next->prev = elem->prev;
   }
-  if( pH->ht ){
+  만약( pH->ht ){
     pEntry = &pH->ht[elem->h % pH->htsize];
-    if( pEntry->chain==elem ){
+    만약( pEntry->chain==elem ){
       pEntry->chain = elem->next;
     }
     assert( pEntry->count>0 );
@@ -208,7 +208,7 @@ static void removeElement(
   }
   sqlite3_free( elem );
   pH->count--;
-  if( pH->count==0 ){
+  만약( pH->count==0 ){
     assert( pH->first==0 );
     assert( pH->count==0 );
     sqlite3HashClear(pH);
@@ -222,7 +222,7 @@ static void removeElement(
 void *sqlite3HashFind(const Hash *pH, const char *pKey){
   assert( pH!=0 );
   assert( pKey!=0 );
-  return findElementWithHash(pH, pKey, 0)->data;
+  반환 findElementWithHash(pH, pKey, 0)->data;
 }
 
 /* Insert an element into the hash table pH.  The key is pKey
@@ -240,34 +240,34 @@ void *sqlite3HashFind(const Hash *pH, const char *pKey){
 ** element corresponding to "key" is removed from the hash table.
 */
 void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
-  unsigned int h;       /* the hash of the key modulo hash table size */
+  unsigned 정수 h;       /* the hash of the key modulo hash table size */
   HashElem *elem;       /* Used to loop thru the element list */
   HashElem *new_elem;   /* New element added to the pH */
 
   assert( pH!=0 );
   assert( pKey!=0 );
   elem = findElementWithHash(pH,pKey,&h);
-  if( elem->data ){
+  만약( elem->data ){
     void *old_data = elem->data;
-    if( data==0 ){
+    만약( data==0 ){
       removeElement(pH,elem);
-    }else{
+    }아니면{
       elem->data = data;
       elem->pKey = pKey;
     }
-    return old_data;
+    반환 old_data;
   }
-  if( data==0 ) return 0;
+  만약( data==0 ) 반환 0;
   new_elem = (HashElem*)sqlite3Malloc( sizeof(HashElem) );
-  if( new_elem==0 ) return data;
+  만약( new_elem==0 ) 반환 data;
   new_elem->pKey = pKey;
   new_elem->h = h;
   new_elem->data = data;
   pH->count++;
-  if( pH->count>=5 && pH->count > 2*pH->htsize ){
+  만약( pH->count>=5 && pH->count > 2*pH->htsize ){
     rehash(pH, pH->count*3);
   }
   insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
-  return 0;
+  반환 0;
 }
 

@@ -34,56 +34,56 @@ static struct Wrapped {
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  정수 mem_init;              /* True if mem subsystem is initialized */
+  정수 mem_fail;              /* True to fail mem subsystem initialization */
+  정수 mutex_init;            /* True if mutex subsystem is initialized */
+  정수 mutex_fail;            /* True to fail mutex subsystem initialization */
+  정수 pcache_init;           /* True if pcache subsystem is initialized */
+  정수 pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+static 정수 wrMemInit(void *pAppData){
+  정수 rc;
+  만약( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }아니면{
     rc = wrapped.mem.xInit(wrapped.mem.pAppData);
   }
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  반환 rc;
 }
 static void wrMemShutdown(void *pAppData){
   wrapped.mem.xShutdown(wrapped.mem.pAppData);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
+static void *wrMemMalloc(정수 n)           {반환 wrapped.mem.xMalloc(n);}
 static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+static void *wrMemRealloc(void *p, 정수 n) {반환 wrapped.mem.xRealloc(p, n);}
+static 정수 wrMemSize(void *p)             {반환 wrapped.mem.xSize(p);}
+static 정수 wrMemRoundup(정수 n)            {반환 wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+static 정수 wrMutexInit(void){
+  정수 rc;
+  만약( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }아니면{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  반환 rc;
 }
-static int wrMutexEnd(void){
+static 정수 wrMutexEnd(void){
   wrapped.mutex.xMutexEnd();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+static sqlite3_mutex *wrMutexAlloc(정수 e){
+  반환 wrapped.mutex.xMutexAlloc(e);
 }
 static void wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
@@ -91,51 +91,51 @@ static void wrMutexFree(sqlite3_mutex *p){
 static void wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+static 정수 wrMutexTry(sqlite3_mutex *p){
+  반환 wrapped.mutex.xMutexTry(p);
 }
 static void wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+static 정수 wrMutexHeld(sqlite3_mutex *p){
+  반환 wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+static 정수 wrMutexNotheld(sqlite3_mutex *p){
+  반환 wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+static 정수 wrPCacheInit(void *pArg){
+  정수 rc;
+  만약( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }아니면{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  만약( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  반환 rc;
 }
 static void wrPCacheShutdown(void *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+static sqlite3_pcache *wrPCacheCreate(정수 a, 정수 b, 정수 c){
+  반환 wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+static void wrPCacheCachesize(sqlite3_pcache *p, 정수 n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+static 정수 wrPCachePagecount(sqlite3_pcache *p){
+  반환 wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, 정수 b){
+  반환 wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, 정수 b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
 static void wrPCacheRekey(
@@ -184,94 +184,94 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
+static 정수 SQLITE_TCLAPI init_wrapper_install(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  정수 i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
+  위해(i=1; i<objc; i++){
     char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+    만약( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }아니면 만약( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }아니면 만약( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
+    }아니면{
       Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+      반환 TCL_ERROR;
     }
   }
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
+static 정수 SQLITE_TCLAPI init_wrapper_uninstall(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  만약( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
+static 정수 SQLITE_TCLAPI init_wrapper_clear(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  만약( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
+static 정수 SQLITE_TCLAPI init_wrapper_query(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
+  만약( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  만약( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  만약( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  만약( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  반환 TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
+정수 Sqlitetest_init_Init(Tcl_Interp *interp){
   static struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  정수 i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  위해(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  반환 TCL_OK;
 }

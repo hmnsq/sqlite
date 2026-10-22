@@ -73,10 +73,10 @@ struct tclvar_cursor {
 };
 
 /* Methods for the tclvar module */
-static int tclvarConnect(
+static 정수 tclvarConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  정수 argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
@@ -89,54 +89,54 @@ static int tclvarConnect(
      "  fullname TEXT PRIMARY KEY"        /* base(index) name */
      ") WITHOUT ROWID";
   pVtab = sqlite3MallocZero( sizeof(*pVtab) );
-  if( pVtab==0 ) return SQLITE_NOMEM;
+  만약( pVtab==0 ) 반환 SQLITE_NOMEM;
   *ppVtab = &pVtab->base;
   pVtab->interp = (Tcl_Interp *)pAux;
   sqlite3_declare_vtab(db, zSchema);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int tclvarDisconnect(sqlite3_vtab *pVtab){
+static 정수 tclvarDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new tclvar cursor.
 */
-static int tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static 정수 tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   tclvar_cursor *pCur;
   pCur = sqlite3MallocZero(sizeof(tclvar_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Close a tclvar cursor.
 */
-static int tclvarClose(sqlite3_vtab_cursor *cur){
+static 정수 tclvarClose(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
-  if( pCur->pList1 ){
+  만약( pCur->pList1 ){
     Tcl_DecrRefCount(pCur->pList1);
   }
-  if( pCur->pList2 ){
+  만약( pCur->pList2 ){
     Tcl_DecrRefCount(pCur->pList2);
   }
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Returns 1 if data is ready, or 0 if not.
 */
-static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
+static 정수 next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
   Tcl_Obj *p;
 
-  if( pObj ){
-    if( !pCur->pList2 ){
+  만약( pObj ){
+    만약( !pCur->pList2 ){
       p = Tcl_NewStringObj("array names", -1);
       Tcl_IncrRefCount(p);
       Tcl_ListObjAppendElement(0, p, pObj);
@@ -145,46 +145,46 @@ static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
       pCur->pList2 = Tcl_GetObjResult(interp);
       Tcl_IncrRefCount(pCur->pList2);
       assert( pCur->i2==0 );
-    }else{
+    }아니면{
       Tcl_Size n = 0;
       pCur->i2++;
       Tcl_ListObjLength(0, pCur->pList2, &n);
-      if( pCur->i2>=n ){
+      만약( pCur->i2>=n ){
         Tcl_DecrRefCount(pCur->pList2);
         pCur->pList2 = 0;
         pCur->i2 = 0;
-        return 0;
+        반환 0;
       }
     }
   }
 
-  return 1;
+  반환 1;
 }
 
-static int tclvarNext(sqlite3_vtab_cursor *cur){
+static 정수 tclvarNext(sqlite3_vtab_cursor *cur){
   Tcl_Obj *pObj;
   Tcl_Size n = 0;
-  int ok = 0;
+  정수 ok = 0;
 
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
   Tcl_Interp *interp = ((tclvar_vtab *)(cur->pVtab))->interp;
 
   Tcl_ListObjLength(0, pCur->pList1, &n);
-  while( !ok && pCur->i1<n ){
+  동안( !ok && pCur->i1<n ){
     Tcl_ListObjIndex(0, pCur->pList1, pCur->i1, &pObj);
     ok = next2(interp, pCur, pObj);
-    if( !ok ){
+    만약( !ok ){
       pCur->i1++;
     }
   }
 
-  return 0;
+  반환 0;
 }
 
-static int tclvarFilter(
+static 정수 tclvarFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  정수 idxNum, const char *idxStr,
+  정수 argc, sqlite3_value **argv
 ){
   tclvar_cursor *pCur = (tclvar_cursor *)pVtabCursor;
   Tcl_Interp *interp = ((tclvar_vtab *)(pVtabCursor->pVtab))->interp;
@@ -195,9 +195,9 @@ static int tclvarFilter(
   const char *zGlob = "";
   const char *zRegexp = "";
   const char *zLike = "";
-  int i;
+  정수 i;
 
-  for(i=0; idxStr[i]; i++){
+  위해(i=0; idxStr[i]; i++){
     switch( idxStr[i] ){
       case TCLVAR_NAME_EQ:
         zEq = (const char*)sqlite3_value_text(argv[i]);
@@ -227,10 +227,10 @@ static int tclvarFilter(
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zLike, -1));
 
   Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
-  if( pCur->pList1 ){
+  만약( pCur->pList1 ){
     Tcl_DecrRefCount(pCur->pList1);
   }
-  if( pCur->pList2 ){
+  만약( pCur->pList2 ){
     Tcl_DecrRefCount(pCur->pList2);
     pCur->pList2 = 0;
   }
@@ -240,10 +240,10 @@ static int tclvarFilter(
   Tcl_IncrRefCount(pCur->pList1);
 
   Tcl_DecrRefCount(p);
-  return tclvarNext(pVtabCursor);
+  반환 tclvarNext(pVtabCursor);
 }
 
-static int tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static 정수 tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, 정수 i){
   Tcl_Obj *p1;
   Tcl_Obj *p2;
   const char *z1; 
@@ -254,7 +254,7 @@ static int tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   Tcl_ListObjIndex(interp, pCur->pList1, pCur->i1, &p1);
   Tcl_ListObjIndex(interp, pCur->pList2, pCur->i2, &p2);
   z1 = Tcl_GetString(p1);
-  if( p2 ){
+  만약( p2 ){
     z2 = Tcl_GetString(p2);
   }
   switch (i) {
@@ -273,26 +273,26 @@ static int tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
     }
     case 3: {
       char *z3;
-      if( p2 ){
+      만약( p2 ){
         z3 = sqlite3_mprintf("%s(%s)", z1, z2);
         sqlite3_result_text(ctx, z3, -1, sqlite3_free);
-      }else{
+      }아니면{
         sqlite3_result_text(ctx, z1, -1, SQLITE_TRANSIENT);
       }
       break;
     }
   }
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
-static int tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static 정수 tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
-static int tclvarEof(sqlite3_vtab_cursor *cur){
+static 정수 tclvarEof(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor*)cur;
-  return (pCur->pList2?0:1);
+  반환 (pCur->pList2?0:1);
 }
 
 /*
@@ -303,32 +303,32 @@ static int tclvarEof(sqlite3_vtab_cursor *cur){
 ** There is guaranteed to be enough room in the buffer pointed to by zStr
 ** for the new character and nul-terminator.
 */
-static int tclvarAddToIdxstr(char *zStr, char x){
-  int i;
-  for(i=0; zStr[i]; i++){
-    if( zStr[i]==x ) return 1;
+static 정수 tclvarAddToIdxstr(char *zStr, char x){
+  정수 i;
+  위해(i=0; zStr[i]; i++){
+    만약( zStr[i]==x ) 반환 1;
   }
   zStr[i] = x;
   zStr[i+1] = '\0';
-  return 0;
+  반환 0;
 }
 
 /*
 ** Return true if variable $::tclvar_set_omit exists and is set to true.
 ** False otherwise.
 */
-static int tclvarSetOmit(Tcl_Interp *interp){
-  int rc;
-  int res = 0;
+static 정수 tclvarSetOmit(Tcl_Interp *interp){
+  정수 rc;
+  정수 res = 0;
   Tcl_Obj *pRes;
   rc = Tcl_Eval(interp,
     "expr {[info exists ::tclvar_set_omit] && $::tclvar_set_omit}"
   );
-  if( rc==TCL_OK ){
+  만약( rc==TCL_OK ){
     pRes = Tcl_GetObjResult(interp);
     rc = Tcl_GetBooleanFromObj(0, pRes, &res);
   }
-  return (rc==TCL_OK && res);
+  반환 (rc==TCL_OK && res);
 }
 
 /*
@@ -344,56 +344,56 @@ static int tclvarSetOmit(Tcl_Interp *interp){
 ** For each constraint present, the corresponding TCLVAR_XXX character is
 ** appended to the idxStr value. 
 */
-static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+static 정수 tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  int ii;
+  정수 ii;
   char *zStr = sqlite3_malloc(32);
-  int iStr = 0;
+  정수 iStr = 0;
 
-  if( zStr==0 ) return SQLITE_NOMEM;
+  만약( zStr==0 ) 반환 SQLITE_NOMEM;
   zStr[0] = '\0';
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
+  위해(ii=0; ii<pIdxInfo->nConstraint; ii++){
     struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
     struct sqlite3_index_constraint_usage *pUsage;
     
     pUsage = &pIdxInfo->aConstraintUsage[ii];
-    if( pCons->usable ){
+    만약( pCons->usable ){
       /* name = ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_EQ && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_EQ) ){
+      만약( pCons->op==SQLITE_INDEX_CONSTRAINT_EQ && pCons->iColumn==0 ){
+        만약( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_EQ) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = 0;
         }
       }
 
       /* name MATCH ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_MATCH && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_MATCH) ){
+      만약( pCons->op==SQLITE_INDEX_CONSTRAINT_MATCH && pCons->iColumn==0 ){
+        만약( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_MATCH) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = 1;
         }
       }
 
       /* value GLOB ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
+      만약( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
+        만약( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
       }
 
       /* value REGEXP ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
+      만약( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
+        만약( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
       }
 
       /* value LIKE ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
+      만약( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
+        만약( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
@@ -403,42 +403,42 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   pIdxInfo->idxStr = zStr;
   pIdxInfo->needToFreeIdxStr = 1;
 
-  return SQLITE_OK;
+  반환 SQLITE_OK;
 }
 
 /*
 ** Invoked for any UPDATE, INSERT, or DELETE against a tclvar table
 */
-static int tclvarUpdate(
+static 정수 tclvarUpdate(
   sqlite3_vtab *tab,
-  int argc,
+  정수 argc,
   sqlite3_value **argv,
   sqlite_int64 *pRowid
 ){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  if( argc==1 ){
+  만약( argc==1 ){
     /* A DELETE operation.  The variable to be deleted is stored in argv[0] */
     const char *zVar = (const char*)sqlite3_value_text(argv[0]);
     Tcl_UnsetVar(pTab->interp, zVar, TCL_GLOBAL_ONLY);
-    return SQLITE_OK;
+    반환 SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
+  만약( sqlite3_value_type(argv[0])==SQLITE_NULL ){
     /* An INSERT operation */
     const char *zValue = (const char*)sqlite3_value_text(argv[4]);
     const char *zName;
-    if( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
+    만약( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
       tab->zErrMsg = sqlite3_mprintf("the 'fullname' column must be TEXT");
-      return SQLITE_ERROR;
+      반환 SQLITE_ERROR;
     }
     zName = (const char*)sqlite3_value_text(argv[5]);
-    if( zValue ){
+    만약( zValue ){
       Tcl_SetVar(pTab->interp, zName, zValue, TCL_GLOBAL_ONLY);
-    }else{
+    }아니면{
       Tcl_UnsetVar(pTab->interp, zName, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    반환 SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT
+  만약( sqlite3_value_type(argv[0])==SQLITE_TEXT
    && sqlite3_value_type(argv[1])==SQLITE_TEXT
   ){
     /* An UPDATE operation */
@@ -446,16 +446,16 @@ static int tclvarUpdate(
     const char *zNewName = (const char*)sqlite3_value_text(argv[1]);
     const char *zValue = (const char*)sqlite3_value_text(argv[4]);
 
-    if( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
+    만약( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
       Tcl_UnsetVar(pTab->interp, zOldName, TCL_GLOBAL_ONLY);
     }
-    if( zValue!=0 ){
+    만약( zValue!=0 ){
       Tcl_SetVar(pTab->interp, zNewName, zValue, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    반환 SQLITE_OK;
   }
   tab->zErrMsg = sqlite3_mprintf("prohibited TCL variable change");
-  return SQLITE_ERROR;
+  반환 SQLITE_ERROR;
 }
 
 /*
@@ -493,24 +493,24 @@ static sqlite3_module tclvarModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern 정수 getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_tclvar_module(
+static 정수 SQLITE_TCLAPI register_tclvar_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  정수 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int rc = TCL_OK;
+  정수 rc = TCL_OK;
   sqlite3 *db;
-  if( objc!=2 ){
+  만약( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+    반환 TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  만약( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) 반환 TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "tclvar", &tclvarModule, (void*)interp);
   rc = Tcl_Eval(interp, 
@@ -535,7 +535,7 @@ static int SQLITE_TCLAPI register_tclvar_module(
       "}\n"
   );
 #endif
-  return rc;
+  반환 rc;
 }
 
 #endif
@@ -544,7 +544,7 @@ static int SQLITE_TCLAPI register_tclvar_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetesttclvar_Init(Tcl_Interp *interp){
+정수 Sqlitetesttclvar_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   static struct {
      char *zName;
@@ -553,11 +553,11 @@ int Sqlitetesttclvar_Init(Tcl_Interp *interp){
   } aObjCmd[] = {
      { "register_tclvar_module",   register_tclvar_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  정수 i;
+  위해(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  반환 TCL_OK;
 }
