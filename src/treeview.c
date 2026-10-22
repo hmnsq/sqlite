@@ -17,34 +17,34 @@
 ** The interfaces in this file is only available when compiling
 ** with SQLITE_DEBUG.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 #ifdef SQLITE_DEBUG
 
 /*
 ** Add a new subitem to the tree.  The moreToFollow flag indicates that this
 ** is not the last item in the tree.
 */
-static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
-  TreeView *p = *pp;
-  if( p==0 ){
-    *pp = p = sqlite3_malloc64( sizeof(*p) );
-    if( p==0 ) return;
-    memset(p, 0, sizeof(*p));
-  }else{
+ساكن فراغ sqlite3_شجرة_View_ادفع(شجرة_View **pp, u8 moreToFollow){
+  شجرة_View *p = *pp;
+  إذا( p==0 ){
+    *pp = p = sqlite3_malloc64( حجم(*p) );
+    إذا( p==0 ) أرجع;
+    memset(p, 0, حجم(*p));
+  }وإلا{
     p->iLevel++;
   }
-  assert( moreToFollow==0 || moreToFollow==1 );
-  if( p->iLevel<(int)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
+  أكد( moreToFollow==0 || moreToFollow==1 );
+  إذا( p->iLevel<(صحيح)حجم(p->b_سطر) ) p->b_سطر[p->iLevel] = moreToFollow;
 }
 
 /*
 ** Finished with one layer of the tree
 */
-static void sqlite3TreeViewPop(TreeView **pp){
-  TreeView *p = *pp;
-  if( p==0 ) return;
+ساكن فراغ sqlite3_شجرة_View_اسحب(شجرة_View **pp){
+  شجرة_View *p = *pp;
+  إذا( p==0 ) أرجع;
   p->iLevel--;
-  if( p->iLevel<0 ){
+  إذا( p->iLevel<0 ){
     sqlite3_free(p);
     *pp = 0;
   }
@@ -54,23 +54,23 @@ static void sqlite3TreeViewPop(TreeView **pp){
 ** Generate a single line of output for the tree, with a prefix that contains
 ** all the appropriate tree lines
 */
-void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
+فراغ sqlite3_شجرة_View_سطر(شجرة_View *p, ثابت حرف *zFormat, ...){
   va_list ap;
-  int i;
+  صحيح i;
   StrAccum acc;
-  char zBuf[1000];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  if( p ){
-    for(i=0; i<p->iLevel && i<(int)sizeof(p->bLine)-1; i++){
-      sqlite3_str_append(&acc, p->bLine[i] ? "|   " : "    ", 4);
+  حرف zBuf[1000];
+  sqlite3StrAccumInit(&acc, 0, zBuf, حجم(zBuf), 0);
+  إذا( p ){
+    لكل(i=0; i<p->iLevel && i<(صحيح)حجم(p->b_سطر)-1; i++){
+      sqlite3_str_append(&acc, p->b_سطر[i] ? "|   " : "    ", 4);
     }
-    sqlite3_str_append(&acc, p->bLine[i] ? "|-- " : "'-- ", 4);
+    sqlite3_str_append(&acc, p->b_سطر[i] ? "|-- " : "'-- ", 4);
   }
-  if( zFormat!=0 ){
+  إذا( zFormat!=0 ){
     va_start(ap, zFormat);
     sqlite3_str_vappendf(&acc, zFormat, ap);
     va_end(ap);
-    assert( acc.nChar>0 || acc.accError );
+    أكد( acc.nChar>0 || acc.accError );
     sqlite3_str_append(&acc, "\n", 1);
   }
   sqlite3StrAccumFinish(&acc);
@@ -81,334 +81,334 @@ void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
 /*
 ** Shorthand for starting a new tree item that consists of a single label
 */
-static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
-  sqlite3TreeViewPush(&p, moreFollows);
-  sqlite3TreeViewLine(p, "%s", zLabel);
+ساكن فراغ sqlite3_شجرة_View_Item(شجرة_View *p, ثابت حرف *zLabel,u8 moreFollows){
+  sqlite3_شجرة_View_ادفع(&p, moreFollows);
+  sqlite3_شجرة_View_سطر(p, "%s", zLabel);
 }
 
 /*
 ** Show a list of Column objects in tree format.
 */
-void sqlite3TreeViewColumnList(
-  TreeView *pView,
-  const Column *aCol,
-  int nCol,
+فراغ sqlite3_شجرة_View_Column_List(
+  شجرة_View *pView,
+  ثابت Column *aCol,
+  صحيح nCol,
   u8 moreToFollow
 ){
-  int i;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewLine(pView, "COLUMNS");
-  for(i=0; i<nCol; i++){
+  صحيح i;
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  sqlite3_شجرة_View_سطر(pView, "COLUMNS");
+  لكل(i=0; i<nCol; i++){
     u16 flg = aCol[i].colFlags;
-    int colMoreToFollow = i<(nCol - 1);
-    sqlite3TreeViewPush(&pView, colMoreToFollow);
-    sqlite3TreeViewLine(pView, 0);
+    صحيح colMoreToFollow = i<(nCol - 1);
+    sqlite3_شجرة_View_ادفع(&pView, colMoreToFollow);
+    sqlite3_شجرة_View_سطر(pView, 0);
     printf(" %s", aCol[i].zCnName);
-    switch( aCol[i].eCType ){
-      case COLTYPE_ANY:      printf(" ANY");        break;
-      case COLTYPE_BLOB:     printf(" BLOB");       break;
-      case COLTYPE_INT:      printf(" INT");        break;
-      case COLTYPE_INTEGER:  printf(" INTEGER");    break;
-      case COLTYPE_REAL:     printf(" REAL");       break;
-      case COLTYPE_TEXT:     printf(" TEXT");       break;
-      case COLTYPE_CUSTOM: {
-        if( flg & COLFLAG_HASTYPE ){
-          const char *z = aCol[i].zCnName;
+    بدل( aCol[i].eCType ){
+      حالة COLTYPE_ANY:      printf(" ANY");        اكسر;
+      حالة COLTYPE_BLOB:     printf(" BLOB");       اكسر;
+      حالة COLTYPE_INT:      printf(" INT");        اكسر;
+      حالة COLTYPE_INTEGER:  printf(" INTEGER");    اكسر;
+      حالة COLTYPE_REAL:     printf(" REAL");       اكسر;
+      حالة COLTYPE_TEXT:     printf(" TEXT");       اكسر;
+      حالة COLTYPE_CUSTOM: {
+        إذا( flg & COLFLAG_HASTYPE ){
+          ثابت حرف *z = aCol[i].zCnName;
           z += strlen(z)+1;
           printf(" X-%s", z);
-          break;
+          اكسر;
         }
       }
     }
-    if( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
-    if( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
+    إذا( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
+    إذا( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
 #ifdef COLFLAG_NOEXPAND
-    if( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
+    إذا( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
 #endif
-    if( flg ) printf(" flags=%04x", flg);
+    إذا( flg ) printf(" flags=%04x", flg);
     printf("\n");      
     fflush(stdout);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
 /*
 ** Generate a human-readable description of a WITH clause.
 */
-void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
-  int i;
-  if( pWith==0 ) return;
-  if( pWith->nCte==0 ) return;
-  if( pWith->pOuter ){
-    sqlite3TreeViewLine(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
-  }else{
-    sqlite3TreeViewLine(pView, "WITH (0x%p)", pWith);
+فراغ sqlite3_شجرة_View_With(شجرة_View *pView, ثابت With *pWith, u8 moreToFollow){
+  صحيح i;
+  إذا( pWith==0 ) أرجع;
+  إذا( pWith->nCte==0 ) أرجع;
+  إذا( pWith->pOuter ){
+    sqlite3_شجرة_View_سطر(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
+  }وإلا{
+    sqlite3_شجرة_View_سطر(pView, "WITH (0x%p)", pWith);
   }
-  if( pWith->nCte>0 ){
-    sqlite3TreeViewPush(&pView, moreToFollow);
-    for(i=0; i<pWith->nCte; i++){
+  إذا( pWith->nCte>0 ){
+    sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+    لكل(i=0; i<pWith->nCte; i++){
       StrAccum x;
-      char zLine[1000];
-      const struct Cte *pCte = &pWith->a[i];
-      sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+      حرف z_سطر[1000];
+      ثابت بنية Cte *pCte = &pWith->a[i];
+      sqlite3StrAccumInit(&x, 0, z_سطر, حجم(z_سطر), 0);
       sqlite3_str_appendf(&x, "%s", pCte->zName);
-      if( pCte->pCols && pCte->pCols->nExpr>0 ){
-        char cSep = '(';
-        int j;
-        for(j=0; j<pCte->pCols->nExpr; j++){
+      إذا( pCte->pCols && pCte->pCols->n_تعبير>0 ){
+        حرف cSep = '(';
+        صحيح j;
+        لكل(j=0; j<pCte->pCols->n_تعبير; j++){
           sqlite3_str_appendf(&x, "%c%s", cSep, pCte->pCols->a[j].zEName);
           cSep = ',';
         }
         sqlite3_str_appendf(&x, ")");
       }
-      if( pCte->eM10d!=M10d_Any ){
+      إذا( pCte->eM10d!=M10d_Any ){
         sqlite3_str_appendf(&x, " %sMATERIALIZED", 
            pCte->eM10d==M10d_No ? "NOT " : "");
       }
-      if( pCte->pUse ){
+      إذا( pCte->pUse ){
         sqlite3_str_appendf(&x, " (pUse=0x%p, nUse=%d)", pCte->pUse,
                  pCte->pUse->nUse);
       }
       sqlite3StrAccumFinish(&x);
-      sqlite3TreeViewItem(pView, zLine, i<pWith->nCte-1);
-      sqlite3TreeViewSelect(pView, pCte->pSelect, 0);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_Item(pView, z_سطر, i<pWith->nCte-1);
+      sqlite3_شجرة_View_Select(pView, pCte->pSelect, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a SrcList object.
 */
-void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
-  int i;
-  if( pSrc==0 ) return;
-  for(i=0; i<pSrc->nSrc; i++){
-    const SrcItem *pItem = &pSrc->a[i];
+فراغ sqlite3_شجرة_View_Src_List(شجرة_View *pView, ثابت SrcList *pSrc){
+  صحيح i;
+  إذا( pSrc==0 ) أرجع;
+  لكل(i=0; i<pSrc->nSrc; i++){
+    ثابت SrcItem *pItem = &pSrc->a[i];
     StrAccum x;
-    int n = 0;
-    char zLine[1000];
-    sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+    صحيح n = 0;
+    حرف z_سطر[1000];
+    sqlite3StrAccumInit(&x, 0, z_سطر, حجم(z_سطر), 0);
     x.printfFlags |= SQLITE_PRINTF_INTERNAL;
     sqlite3_str_appendf(&x, "{%d:*} %!S", pItem->iCursor, pItem);
-    if( pItem->pSTab ){
+    إذا( pItem->pSTab ){
       sqlite3_str_appendf(&x, " tab=%Q nCol=%d ptr=%p used=%llx%s",
            pItem->pSTab->zName, pItem->pSTab->nCol, pItem->pSTab, 
            pItem->colUsed,
            pItem->fg.rowidUsed ? "+rowid" : "");
     }
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
+    إذا( (pItem->fg.jointype & (JT_يسار|JT_يمين))==(JT_يسار|JT_يمين) ){
       sqlite3_str_appendf(&x, " FULL-OUTER-JOIN");
-    }else if( pItem->fg.jointype & JT_LEFT ){
+    }وإلا إذا( pItem->fg.jointype & JT_يسار ){
       sqlite3_str_appendf(&x, " LEFT-JOIN");
-    }else if( pItem->fg.jointype & JT_RIGHT ){
+    }وإلا إذا( pItem->fg.jointype & JT_يمين ){
       sqlite3_str_appendf(&x, " RIGHT-JOIN");
-    }else if( pItem->fg.jointype & JT_CROSS ){
+    }وإلا إذا( pItem->fg.jointype & JT_CROSS ){
       sqlite3_str_appendf(&x, " CROSS-JOIN");
     }
-    if( pItem->fg.jointype & JT_LTORJ ){
+    إذا( pItem->fg.jointype & JT_LTORJ ){
       sqlite3_str_appendf(&x, " LTORJ");
     }
-    if( pItem->fg.fromDDL ){
+    إذا( pItem->fg.fromDDL ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( pItem->fg.isCte ){
-      static const char *aMat[] = {",MAT", "", ",NO-MAT"};
+    إذا( pItem->fg.isCte ){
+      ساكن ثابت حرف *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);
     }
-    if( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
+    إذا( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
       sqlite3_str_appendf(&x, " isOn");
     }
-    if( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
-    if( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
-    if( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
-    if( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
-    if( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
-    if( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
-    if( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
-    if( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
-    if( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
+    إذا( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
+    إذا( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
+    إذا( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
+    إذا( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
+    إذا( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
+    إذا( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
+    إذا( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
+    إذا( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
+    إذا( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
 
     sqlite3StrAccumFinish(&x);
-    sqlite3TreeViewItem(pView, zLine, i<pSrc->nSrc-1);
+    sqlite3_شجرة_View_Item(pView, z_سطر, i<pSrc->nSrc-1);
     n = 0;
-    if( pItem->fg.isSubquery ) n++;
-    if( pItem->fg.isTabFunc ) n++;
-    if( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
-    if( pItem->fg.isUsing ){
-      sqlite3TreeViewIdList(pView, pItem->u3.pUsing, (--n)>0, "USING");
-    }else if( pItem->u3.pOn!=0 ){
-      sqlite3TreeViewItem(pView, "ON", (--n)>0);
-      sqlite3TreeViewExpr(pView, pItem->u3.pOn, 0);
-      sqlite3TreeViewPop(&pView);
+    إذا( pItem->fg.isSubquery ) n++;
+    إذا( pItem->fg.isTabFunc ) n++;
+    إذا( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
+    إذا( pItem->fg.isUsing ){
+      sqlite3_شجرة_View_Id_List(pView, pItem->u3.pUsing, (--n)>0, "USING");
+    }وإلا إذا( pItem->u3.pOn!=0 ){
+      sqlite3_شجرة_View_Item(pView, "ON", (--n)>0);
+      sqlite3_شجرة_View_تعبير(pView, pItem->u3.pOn, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    if( pItem->fg.isSubquery ){
-      assert( n==1 );
-      if( pItem->pSTab ){
+    إذا( pItem->fg.isSubquery ){
+      أكد( n==1 );
+      إذا( pItem->pSTab ){
         Table *pTab = pItem->pSTab;
-        sqlite3TreeViewColumnList(pView, pTab->aCol, pTab->nCol, 1);
+        sqlite3_شجرة_View_Column_List(pView, pTab->aCol, pTab->nCol, 1);
       }
-      assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-      sqlite3TreeViewSelect(pView, pItem->u4.pSubq->pSelect, 0);
+      أكد( (صحيح)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+      sqlite3_شجرة_View_Select(pView, pItem->u4.pSubq->pSelect, 0);
     }
-    if( pItem->fg.isTabFunc ){
-      sqlite3TreeViewExprList(pView, pItem->u1.pFuncArg, 0, "func-args:");
+    إذا( pItem->fg.isTabFunc ){
+      sqlite3_شجرة_View_تعبير_List(pView, pItem->u1.pFuncArg, 0, "func-args:");
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a Select object.
 */
-void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
-  int n = 0;
-  int cnt = 0;
-  if( p==0 ){
-    sqlite3TreeViewLine(pView, "nil-SELECT");
-    return;
+فراغ sqlite3_شجرة_View_Select(شجرة_View *pView, ثابت Select *p, u8 moreToFollow){
+  صحيح n = 0;
+  صحيح cnt = 0;
+  إذا( p==0 ){
+    sqlite3_شجرة_View_سطر(pView, "nil-SELECT");
+    أرجع;
   } 
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( p->pWith ){
-    sqlite3TreeViewWith(pView, p->pWith, 1);
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  إذا( p->pWith ){
+    sqlite3_شجرة_View_With(pView, p->pWith, 1);
     cnt = 1;
-    sqlite3TreeViewPush(&pView, 1);
+    sqlite3_شجرة_View_ادفع(&pView, 1);
   }
-  do{
-    if( p->selFlags & SF_WhereBegin ){
-      sqlite3TreeViewLine(pView, "sqlite3WhereBegin()");
-    }else{
-      sqlite3TreeViewLine(pView,
+  افعل{
+    إذا( p->selFlags & SF_WhereBegin ){
+      sqlite3_شجرة_View_سطر(pView, "sqlite3WhereBegin()");
+    }وإلا{
+      sqlite3_شجرة_View_سطر(pView,
         "SELECT%s%s (%u/%p) selFlags=0x%x nSelectRow=%d",
         ((p->selFlags & SF_Distinct) ? " DISTINCT" : ""),
         ((p->selFlags & SF_Aggregate) ? " agg_flag" : ""),
         p->selId, p, p->selFlags,
-        (int)p->nSelectRow
+        (صحيح)p->nSelectRow
       );
     }
-    if( cnt++ ) sqlite3TreeViewPop(&pView);
-    if( p->pPrior ){
+    إذا( cnt++ ) sqlite3_شجرة_View_اسحب(&pView);
+    إذا( p->pPrior ){
       n = 1000;
-    }else{
+    }وإلا{
       n = 0;
-      if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
-      if( p->pWhere ) n++;
-      if( p->pGroupBy ) n++;
-      if( p->pHaving ) n++;
-      if( p->pOrderBy ) n++;
-      if( p->pLimit ) n++;
+      إذا( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
+      إذا( p->pWhere ) n++;
+      إذا( p->pGroupBy ) n++;
+      إذا( p->pHaving ) n++;
+      إذا( p->pOrderBy ) n++;
+      إذا( p->pLimit ) n++;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( p->pWin ) n++;
-      if( p->pWinDefn ) n++;
+      إذا( p->pWin ) n++;
+      إذا( p->pWinDefn ) n++;
 #endif
     }
-    if( p->pEList ){
-      sqlite3TreeViewExprList(pView, p->pEList, n>0, "result-set");
+    إذا( p->pEList ){
+      sqlite3_شجرة_View_تعبير_List(pView, p->pEList, n>0, "result-set");
     }
     n--;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ){
+    إذا( p->pWin ){
       Window *pX;
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "window-functions");
-      for(pX=p->pWin; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWinFunc(pView, pX, pX->pNextWin!=0);
+      sqlite3_شجرة_View_ادفع(&pView, (n--)>0);
+      sqlite3_شجرة_View_سطر(pView, "window-functions");
+      لكل(pX=p->pWin; pX; pX=pX->pNextWin){
+        sqlite3_شجرة_View_Win_Func(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
 #endif
-    if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "FROM");
-      sqlite3TreeViewSrcList(pView, p->pSrc);
-      sqlite3TreeViewPop(&pView);
+    إذا( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
+      sqlite3_شجرة_View_ادفع(&pView, (n--)>0);
+      sqlite3_شجرة_View_سطر(pView, "FROM");
+      sqlite3_شجرة_View_Src_List(pView, p->pSrc);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    if( p->pWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    إذا( p->pWhere ){
+      sqlite3_شجرة_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_شجرة_View_تعبير(pView, p->pWhere, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    if( p->pGroupBy ){
-      sqlite3TreeViewExprList(pView, p->pGroupBy, (n--)>0, "GROUPBY");
+    إذا( p->pGroupBy ){
+      sqlite3_شجرة_View_تعبير_List(pView, p->pGroupBy, (n--)>0, "GROUPBY");
     }
-    if( p->pHaving ){
-      sqlite3TreeViewItem(pView, "HAVING", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pHaving, 0);
-      sqlite3TreeViewPop(&pView);
+    إذا( p->pHaving ){
+      sqlite3_شجرة_View_Item(pView, "HAVING", (n--)>0);
+      sqlite3_شجرة_View_تعبير(pView, p->pHaving, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWinDefn ){
+    إذا( p->pWinDefn ){
       Window *pX;
-      sqlite3TreeViewItem(pView, "WINDOW", (n--)>0);
-      for(pX=p->pWinDefn; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWindow(pView, pX, pX->pNextWin!=0);
+      sqlite3_شجرة_View_Item(pView, "WINDOW", (n--)>0);
+      لكل(pX=p->pWinDefn; pX; pX=pX->pNextWin){
+        sqlite3_شجرة_View_Window(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
 #endif
-    if( p->pOrderBy ){
-      sqlite3TreeViewExprList(pView, p->pOrderBy, (n--)>0, "ORDERBY");
+    إذا( p->pOrderBy ){
+      sqlite3_شجرة_View_تعبير_List(pView, p->pOrderBy, (n--)>0, "ORDERBY");
     }
-    if( p->pLimit ){
-      sqlite3TreeViewItem(pView, "LIMIT", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pLimit->pLeft, p->pLimit->pRight!=0);
-      if( p->pLimit->pRight ){
-        sqlite3TreeViewItem(pView, "OFFSET", 0);
-        sqlite3TreeViewExpr(pView, p->pLimit->pRight, 0);
-        sqlite3TreeViewPop(&pView);
+    إذا( p->pLimit ){
+      sqlite3_شجرة_View_Item(pView, "LIMIT", (n--)>0);
+      sqlite3_شجرة_View_تعبير(pView, p->pLimit->p_يسار, p->pLimit->p_يمين!=0);
+      إذا( p->pLimit->p_يمين ){
+        sqlite3_شجرة_View_Item(pView, "OFFSET", 0);
+        sqlite3_شجرة_View_تعبير(pView, p->pLimit->p_يمين, 0);
+        sqlite3_شجرة_View_اسحب(&pView);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    if( p->pPrior ){
-      const char *zOp = "UNION";
-      switch( p->op ){
-        case TK_ALL:         zOp = "UNION ALL";  break;
-        case TK_INTERSECT:   zOp = "INTERSECT";  break;
-        case TK_EXCEPT:      zOp = "EXCEPT";     break;
+    إذا( p->pPrior ){
+      ثابت حرف *zOp = "UNION";
+      بدل( p->op ){
+        حالة TK_ALL:         zOp = "UNION ALL";  اكسر;
+        حالة TK_INTERSECT:   zOp = "INTERSECT";  اكسر;
+        حالة TK_EXCEPT:      zOp = "EXCEPT";     اكسر;
       }
-      sqlite3TreeViewItem(pView, zOp, 1);
+      sqlite3_شجرة_View_Item(pView, zOp, 1);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  sqlite3TreeViewPop(&pView);
+  }طالما( p!=0 );
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a description of starting or stopping bounds
 */
-void sqlite3TreeViewBound(
-  TreeView *pView,        /* View context */
+فراغ sqlite3_شجرة_View_Bound(
+  شجرة_View *pView,        /* View context */
   u8 eBound,              /* UNBOUNDED, CURRENT, PRECEDING, FOLLOWING */
-  Expr *pExpr,            /* Value for PRECEDING or FOLLOWING */
+  تعبير *p_تعبير,            /* Value for PRECEDING or FOLLOWING */
   u8 moreToFollow         /* True if more to follow */
 ){
-  switch( eBound ){
-    case TK_UNBOUNDED: {
-      sqlite3TreeViewItem(pView, "UNBOUNDED", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+  بدل( eBound ){
+    حالة TK_UNBOUNDED: {
+      sqlite3_شجرة_View_Item(pView, "UNBOUNDED", moreToFollow);
+      sqlite3_شجرة_View_اسحب(&pView);
+      اكسر;
     }
-    case TK_CURRENT: {
-      sqlite3TreeViewItem(pView, "CURRENT", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+    حالة TK_CURRENT: {
+      sqlite3_شجرة_View_Item(pView, "CURRENT", moreToFollow);
+      sqlite3_شجرة_View_اسحب(&pView);
+      اكسر;
     }
-    case TK_PRECEDING: {
-      sqlite3TreeViewItem(pView, "PRECEDING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    حالة TK_PRECEDING: {
+      sqlite3_شجرة_View_Item(pView, "PRECEDING", moreToFollow);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
+      اكسر;
     }
-    case TK_FOLLOWING: {
-      sqlite3TreeViewItem(pView, "FOLLOWING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    حالة TK_FOLLOWING: {
+      sqlite3_شجرة_View_Item(pView, "FOLLOWING", moreToFollow);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
+      اكسر;
     }
   }
 }
@@ -418,66 +418,66 @@ void sqlite3TreeViewBound(
 /*
 ** Generate a human-readable explanation for a Window object
 */
-void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
-  int nElement = 0;
-  if( pWin==0 ) return;
-  if( pWin->pFilter ){
-    sqlite3TreeViewItem(pView, "FILTER", 1);
-    sqlite3TreeViewExpr(pView, pWin->pFilter, 0);
-    sqlite3TreeViewPop(&pView);
-    if( pWin->eFrmType==TK_FILTER ) return;
+فراغ sqlite3_شجرة_View_Window(شجرة_View *pView, ثابت Window *pWin, u8 more){
+  صحيح nElement = 0;
+  إذا( pWin==0 ) أرجع;
+  إذا( pWin->pFilter ){
+    sqlite3_شجرة_View_Item(pView, "FILTER", 1);
+    sqlite3_شجرة_View_تعبير(pView, pWin->pFilter, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
+    إذا( pWin->eFrmType==TK_FILTER ) أرجع;
   }
-  sqlite3TreeViewPush(&pView, more);
-  if( pWin->zName ){
-    sqlite3TreeViewLine(pView, "OVER %s (%p)", pWin->zName, pWin);
-  }else{
-    sqlite3TreeViewLine(pView, "OVER (%p)", pWin);
+  sqlite3_شجرة_View_ادفع(&pView, more);
+  إذا( pWin->zName ){
+    sqlite3_شجرة_View_سطر(pView, "OVER %s (%p)", pWin->zName, pWin);
+  }وإلا{
+    sqlite3_شجرة_View_سطر(pView, "OVER (%p)", pWin);
   }
-  if( pWin->zBase )    nElement++;
-  if( pWin->pOrderBy ) nElement++;
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
-  if( pWin->eExclude ) nElement++;
-  if( pWin->zBase ){
-    sqlite3TreeViewPush(&pView, (--nElement)>0);
-    sqlite3TreeViewLine(pView, "window: %s", pWin->zBase);
-    sqlite3TreeViewPop(&pView);
+  إذا( pWin->zBase )    nElement++;
+  إذا( pWin->pOrderBy ) nElement++;
+  إذا( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
+  إذا( pWin->eExclude ) nElement++;
+  إذا( pWin->zBase ){
+    sqlite3_شجرة_View_ادفع(&pView, (--nElement)>0);
+    sqlite3_شجرة_View_سطر(pView, "window: %s", pWin->zBase);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pWin->pPartition ){
-    sqlite3TreeViewExprList(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
+  إذا( pWin->pPartition ){
+    sqlite3_شجرة_View_تعبير_List(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
   }
-  if( pWin->pOrderBy ){
-    sqlite3TreeViewExprList(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
+  إذا( pWin->pOrderBy ){
+    sqlite3_شجرة_View_تعبير_List(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
   }
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
-    char zBuf[30];
-    const char *zFrmType = "ROWS";
-    if( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
-    if( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%s%s",zFrmType,
+  إذا( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
+    حرف zBuf[30];
+    ثابت حرف *zFrmType = "ROWS";
+    إذا( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
+    إذا( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
+    sqlite3_snprintf(حجم(zBuf),zBuf,"%s%s",zFrmType,
         pWin->bImplicitFrame ? " (implied)" : "");
-    sqlite3TreeViewItem(pView, zBuf, (--nElement)>0);
-    sqlite3TreeViewBound(pView, pWin->eStart, pWin->pStart, 1);
-    sqlite3TreeViewBound(pView, pWin->eEnd, pWin->pEnd, 0);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_Item(pView, zBuf, (--nElement)>0);
+    sqlite3_شجرة_View_Bound(pView, pWin->eStart, pWin->pStart, 1);
+    sqlite3_شجرة_View_Bound(pView, pWin->eEnd, pWin->pEnd, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pWin->eExclude ){
-    char zBuf[30];
-    const char *zExclude;
-    switch( pWin->eExclude ){
-      case TK_NO:      zExclude = "NO OTHERS";   break;
-      case TK_CURRENT: zExclude = "CURRENT ROW"; break;
-      case TK_GROUP:   zExclude = "GROUP";       break;
-      case TK_TIES:    zExclude = "TIES";        break;
-      default:
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
+  إذا( pWin->eExclude ){
+    حرف zBuf[30];
+    ثابت حرف *zExclude;
+    بدل( pWin->eExclude ){
+      حالة TK_NO:      zExclude = "NO OTHERS";   اكسر;
+      حالة TK_CURRENT: zExclude = "CURRENT ROW"; اكسر;
+      حالة TK_GROUP:   zExclude = "GROUP";       اكسر;
+      حالة TK_TIES:    zExclude = "TIES";        اكسر;
+      افتراضي:
+        sqlite3_snprintf(حجم(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
         zExclude = zBuf;
-        break;
+        اكسر;
     }
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewLine(pView, "EXCLUDE %s", zExclude);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_ادفع(&pView, 0);
+    sqlite3_شجرة_View_سطر(pView, "EXCLUDE %s", zExclude);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
@@ -485,298 +485,298 @@ void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
 /*
 ** Generate a human-readable explanation for a Window Function object
 */
-void sqlite3TreeViewWinFunc(TreeView *pView, const Window *pWin, u8 more){
-  if( pWin==0 ) return;
-  sqlite3TreeViewPush(&pView, more);
-  sqlite3TreeViewLine(pView, "WINFUNC %s(%d)",
+فراغ sqlite3_شجرة_View_Win_Func(شجرة_View *pView, ثابت Window *pWin, u8 more){
+  إذا( pWin==0 ) أرجع;
+  sqlite3_شجرة_View_ادفع(&pView, more);
+  sqlite3_شجرة_View_سطر(pView, "WINFUNC %s(%d)",
                        pWin->pWFunc->zName, pWin->pWFunc->nArg);
-  sqlite3TreeViewWindow(pView, pWin, 0);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_Window(pView, pWin, 0);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Generate a human-readable explanation of an expression tree.
 */
-void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
-  const char *zBinOp = 0;   /* Binary operator */
-  const char *zUniOp = 0;   /* Unary operator */
-  char zFlgs[200];
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( pExpr==0 ){
-    sqlite3TreeViewLine(pView, "nil");
-    sqlite3TreeViewPop(&pView);
-    return;
+فراغ sqlite3_شجرة_View_تعبير(شجرة_View *pView, ثابت تعبير *p_تعبير, u8 moreToFollow){
+  ثابت حرف *zBinOp = 0;   /* Binary operator */
+  ثابت حرف *zUniOp = 0;   /* Unary operator */
+  حرف zFlgs[200];
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  إذا( p_تعبير==0 ){
+    sqlite3_شجرة_View_سطر(pView, "nil");
+    sqlite3_شجرة_View_اسحب(&pView);
+    أرجع;
   }
-  if( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
+  إذا( p_تعبير->flags || p_تعبير->aff_تعبير || p_تعبير->vvaFlags || p_تعبير->pAggInfo ){
     StrAccum x;
-    sqlite3StrAccumInit(&x, 0, zFlgs, sizeof(zFlgs), 0);
+    sqlite3StrAccumInit(&x, 0, zFlgs, حجم(zFlgs), 0);
     sqlite3_str_appendf(&x, " fg.af=%x.%c",
-      pExpr->flags, pExpr->affExpr ? pExpr->affExpr : 'n');
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
-      sqlite3_str_appendf(&x, " outer.iJoin=%d", pExpr->w.iJoin);
+      p_تعبير->flags, p_تعبير->aff_تعبير ? p_تعبير->aff_تعبير : 'n');
+    إذا( تعبير_Has_Property(p_تعبير, EP_OuterON) ){
+      sqlite3_str_appendf(&x, " outer.iJoin=%d", p_تعبير->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_InnerON) ){
-      sqlite3_str_appendf(&x, " inner.iJoin=%d", pExpr->w.iJoin);
+    إذا( تعبير_Has_Property(p_تعبير, EP_InnerON) ){
+      sqlite3_str_appendf(&x, " inner.iJoin=%d", p_تعبير->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_FromDDL) ){
+    إذا( تعبير_Has_Property(p_تعبير, EP_FromDDL) ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( ExprHasVVAProperty(pExpr, EP_Immutable) ){
+    إذا( تعبير_Has_VVAProperty(p_تعبير, EP_Immutable) ){
       sqlite3_str_appendf(&x, " IMMUTABLE");
     }
-    if( pExpr->pAggInfo!=0 ){
-      sqlite3_str_appendf(&x, " agg-column[%d]", pExpr->iAgg);
+    إذا( p_تعبير->pAggInfo!=0 ){
+      sqlite3_str_appendf(&x, " agg-column[%d]", p_تعبير->iAgg);
     }
     sqlite3StrAccumFinish(&x);
-  }else{
+  }وإلا{
     zFlgs[0] = 0;
   }
-  switch( pExpr->op ){
-    case TK_AGG_COLUMN: {
-      sqlite3TreeViewLine(pView, "AGG{%d:%d}%s",
-            pExpr->iTable, pExpr->iColumn, zFlgs);
-      break;
+  بدل( p_تعبير->op ){
+    حالة TK_AGG_COLUMN: {
+      sqlite3_شجرة_View_سطر(pView, "AGG{%d:%d}%s",
+            p_تعبير->iTable, p_تعبير->iColumn, zFlgs);
+      اكسر;
     }
-    case TK_COLUMN: {
-      if( pExpr->iTable<0 ){
+    حالة TK_COLUMN: {
+      إذا( p_تعبير->iTable<0 ){
         /* This only happens when coding check constraints */
-        char zOp2[16];
-        if( pExpr->op2 ){
-          sqlite3_snprintf(sizeof(zOp2),zOp2," op2=0x%02x",pExpr->op2);
-        }else{
+        حرف zOp2[16];
+        إذا( p_تعبير->op2 ){
+          sqlite3_snprintf(حجم(zOp2),zOp2," op2=0x%02x",p_تعبير->op2);
+        }وإلا{
           zOp2[0] = 0;
         }
-        sqlite3TreeViewLine(pView, "COLUMN(%d)%s%s",
-                                    pExpr->iColumn, zFlgs, zOp2);
-      }else{
-        assert( ExprUseYTab(pExpr) );
-        sqlite3TreeViewLine(pView, "{%d:%d} pTab=%p%s",
-                        pExpr->iTable, pExpr->iColumn,
-                        pExpr->y.pTab, zFlgs);
+        sqlite3_شجرة_View_سطر(pView, "COLUMN(%d)%s%s",
+                                    p_تعبير->iColumn, zFlgs, zOp2);
+      }وإلا{
+        أكد( تعبير_Use_YTab(p_تعبير) );
+        sqlite3_شجرة_View_سطر(pView, "{%d:%d} pTab=%p%s",
+                        p_تعبير->iTable, p_تعبير->iColumn,
+                        p_تعبير->y.pTab, zFlgs);
       }
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
-        sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+      إذا( تعبير_Has_Property(p_تعبير, EP_FixedCol) ){
+        sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
       }
-      break;
+      اكسر;
     }
-    case TK_INTEGER: {
-      if( pExpr->flags & EP_IntValue ){
-        sqlite3TreeViewLine(pView, "%d", pExpr->u.iValue);
-      }else{
-        sqlite3TreeViewLine(pView, "%s", pExpr->u.zToken);
+    حالة TK_INTEGER: {
+      إذا( p_تعبير->flags & EP_Int_قيمة ){
+        sqlite3_شجرة_View_سطر(pView, "%d", p_تعبير->u.i_قيمة);
+      }وإلا{
+        sqlite3_شجرة_View_سطر(pView, "%s", p_تعبير->u.zToken);
       }
-      break;
+      اكسر;
     }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    حالة TK_FLOAT: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"%s", p_تعبير->u.zToken);
+      اكسر;
     }
 #endif
-    case TK_STRING: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%Q", pExpr->u.zToken);
-      break;
+    حالة TK_STRING: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"%Q", p_تعبير->u.zToken);
+      اكسر;
     }
-    case TK_NULL: {
-      sqlite3TreeViewLine(pView,"NULL");
-      break;
+    حالة TK_NULL: {
+      sqlite3_شجرة_View_سطر(pView,"NULL");
+      اكسر;
     }
-    case TK_TRUEFALSE: {
-      sqlite3TreeViewLine(pView,"%s%s",
-         sqlite3ExprTruthValue(pExpr) ? "TRUE" : "FALSE", zFlgs);
-      break;
+    حالة TK_TRUEFALSE: {
+      sqlite3_شجرة_View_سطر(pView,"%s%s",
+         sqlite3_تعبير_Truth_قيمة(p_تعبير) ? "TRUE" : "FALSE", zFlgs);
+      اكسر;
     }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    حالة TK_BLOB: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"%s", p_تعبير->u.zToken);
+      اكسر;
     }
 #endif
-    case TK_VARIABLE: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"VARIABLE(%s,%d)",
-                          pExpr->u.zToken, pExpr->iColumn);
-      break;
+    حالة TK_VARIABLE: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"VARIABLE(%s,%d)",
+                          p_تعبير->u.zToken, p_تعبير->iColumn);
+      اكسر;
     }
-    case TK_REGISTER: {
-      sqlite3TreeViewLine(pView,"REGISTER(%d)", pExpr->iTable);
-      break;
+    حالة TK_REGISTER: {
+      sqlite3_شجرة_View_سطر(pView,"REGISTER(%d)", p_تعبير->iTable);
+      اكسر;
     }
-    case TK_ID: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"ID \"%w\"", pExpr->u.zToken);
-      break;
+    حالة TK_ID: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"ID \"%w\"", p_تعبير->u.zToken);
+      اكسر;
     }
-    case TK_ASTERISK: {
-      sqlite3TreeViewLine(pView,"ASKTERISK");
-      break;
+    حالة TK_ASTERISK: {
+      sqlite3_شجرة_View_سطر(pView,"ASKTERISK");
+      اكسر;
     }
 #ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+    حالة TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"CAST %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView,"CAST %Q", p_تعبير->u.zToken);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
+      اكسر;
     }
 #endif /* SQLITE_OMIT_CAST */
-    case TK_LT:      zBinOp = "LT";     break;
-    case TK_LE:      zBinOp = "LE";     break;
-    case TK_GT:      zBinOp = "GT";     break;
-    case TK_GE:      zBinOp = "GE";     break;
-    case TK_NE:      zBinOp = "NE";     break;
-    case TK_EQ:      zBinOp = "EQ";     break;
-    case TK_IS:      zBinOp = "IS";     break;
-    case TK_ISNOT:   zBinOp = "ISNOT";  break;
-    case TK_AND:     zBinOp = "AND";    break;
-    case TK_OR:      zBinOp = "OR";     break;
-    case TK_PLUS:    zBinOp = "ADD";    break;
-    case TK_STAR:    zBinOp = "MUL";    break;
-    case TK_MINUS:   zBinOp = "SUB";    break;
-    case TK_REM:     zBinOp = "REM";    break;
-    case TK_BITAND:  zBinOp = "BITAND"; break;
-    case TK_BITOR:   zBinOp = "BITOR";  break;
-    case TK_SLASH:   zBinOp = "DIV";    break;
-    case TK_LSHIFT:  zBinOp = "LSHIFT"; break;
-    case TK_RSHIFT:  zBinOp = "RSHIFT"; break;
-    case TK_CONCAT:  zBinOp = "CONCAT"; break;
-    case TK_DOT:     zBinOp = "DOT";    break;
-    case TK_LIMIT:   zBinOp = "LIMIT";  break;
+    حالة TK_LT:      zBinOp = "LT";     اكسر;
+    حالة TK_LE:      zBinOp = "LE";     اكسر;
+    حالة TK_GT:      zBinOp = "GT";     اكسر;
+    حالة TK_GE:      zBinOp = "GE";     اكسر;
+    حالة TK_NE:      zBinOp = "NE";     اكسر;
+    حالة TK_EQ:      zBinOp = "EQ";     اكسر;
+    حالة TK_IS:      zBinOp = "IS";     اكسر;
+    حالة TK_ISNOT:   zBinOp = "ISNOT";  اكسر;
+    حالة TK_AND:     zBinOp = "AND";    اكسر;
+    حالة TK_OR:      zBinOp = "OR";     اكسر;
+    حالة TK_PLUS:    zBinOp = "ADD";    اكسر;
+    حالة TK_STAR:    zBinOp = "MUL";    اكسر;
+    حالة TK_MINUS:   zBinOp = "SUB";    اكسر;
+    حالة TK_REM:     zBinOp = "REM";    اكسر;
+    حالة TK_BITAND:  zBinOp = "BITAND"; اكسر;
+    حالة TK_BITOR:   zBinOp = "BITOR";  اكسر;
+    حالة TK_SLASH:   zBinOp = "DIV";    اكسر;
+    حالة TK_LSHIFT:  zBinOp = "LSHIFT"; اكسر;
+    حالة TK_RSHIFT:  zBinOp = "RSHIFT"; اكسر;
+    حالة TK_CONCAT:  zBinOp = "CONCAT"; اكسر;
+    حالة TK_DOT:     zBinOp = "DOT";    اكسر;
+    حالة TK_LIMIT:   zBinOp = "LIMIT";  اكسر;
 
-    case TK_UMINUS:  zUniOp = "UMINUS"; break;
-    case TK_UPLUS:   zUniOp = "UPLUS";  break;
-    case TK_BITNOT:  zUniOp = "BITNOT"; break;
-    case TK_NOT:     zUniOp = "NOT";    break;
-    case TK_ISNULL:  zUniOp = "ISNULL"; break;
-    case TK_NOTNULL: zUniOp = "NOTNULL"; break;
+    حالة TK_UMINUS:  zUniOp = "UMINUS"; اكسر;
+    حالة TK_UPLUS:   zUniOp = "UPLUS";  اكسر;
+    حالة TK_BITNOT:  zUniOp = "BITNOT"; اكسر;
+    حالة TK_NOT:     zUniOp = "NOT";    اكسر;
+    حالة TK_ISNULL:  zUniOp = "ISNULL"; اكسر;
+    حالة TK_NOTNULL: zUniOp = "NOTNULL"; اكسر;
 
-    case TK_TRUTH: {
-      int x;
-      const char *azOp[] = {
+    حالة TK_TRUTH: {
+      صحيح x;
+      ثابت حرف *azOp[] = {
          "IS-FALSE", "IS-TRUE", "IS-NOT-FALSE", "IS-NOT-TRUE"
       };
-      assert( pExpr->op2==TK_IS || pExpr->op2==TK_ISNOT );
-      assert( pExpr->pRight );
-      assert( sqlite3ExprSkipCollateAndLikely(pExpr->pRight)->op
+      أكد( p_تعبير->op2==TK_IS || p_تعبير->op2==TK_ISNOT );
+      أكد( p_تعبير->p_يمين );
+      أكد( sqlite3_تعبير_Skip_Collate_And_Likely(p_تعبير->p_يمين)->op
                   == TK_TRUEFALSE );
-      x = (pExpr->op2==TK_ISNOT)*2 + sqlite3ExprTruthValue(pExpr->pRight);
+      x = (p_تعبير->op2==TK_ISNOT)*2 + sqlite3_تعبير_Truth_قيمة(p_تعبير->p_يمين);
       zUniOp = azOp[x];
-      break;
+      اكسر;
     }
 
-    case TK_SPAN: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "SPAN %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    حالة TK_SPAN: {
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView, "SPAN %Q", p_تعبير->u.zToken);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
+      اكسر;
     }
 
-    case TK_COLLATE: {
+    حالة TK_COLLATE: {
       /* COLLATE operators without the EP_Collate flag are intended to
       ** emulate collation associated with a table column.  These show
       ** up in the treeview output as "SOFT-COLLATE".  Explicit COLLATE
       ** operators that appear in the original SQL always have the
       ** EP_Collate bit set and appear in treeview output as just "COLLATE" */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "%sCOLLATE %Q%s",
-        !ExprHasProperty(pExpr, EP_Collate) ? "SOFT-" : "",
-        pExpr->u.zToken, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView, "%sCOLLATE %Q%s",
+        !تعبير_Has_Property(p_تعبير, EP_Collate) ? "SOFT-" : "",
+        p_تعبير->u.zToken, zFlgs);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
+      اكسر;
     }
 
-    case TK_AGG_FUNCTION:
-    case TK_FUNCTION: {
-      ExprList *pFarg;       /* List of function arguments */
+    حالة TK_AGG_FUNCTION:
+    حالة TK_FUNCTION: {
+      تعبير_List *pFarg;       /* List of function arguments */
       Window *pWin;
-      if( ExprHasProperty(pExpr, EP_TokenOnly) ){
+      إذا( تعبير_Has_Property(p_تعبير, EP_TokenOnly) ){
         pFarg = 0;
         pWin = 0;
-      }else{
-        assert( ExprUseXList(pExpr) );
-        pFarg = pExpr->x.pList;
+      }وإلا{
+        أكد( تعبير_Use_XList(p_تعبير) );
+        pFarg = p_تعبير->x.pList;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        pWin = IsWindowFunc(pExpr) ? pExpr->y.pWin : 0;
-#else
+        pWin = IsWindowFunc(p_تعبير) ? p_تعبير->y.pWin : 0;
+#وإلا
         pWin = 0;
 #endif 
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->op==TK_AGG_FUNCTION ){
-        sqlite3TreeViewLine(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
-                             pExpr->op2, pExpr->u.zToken, zFlgs,
-                             pExpr->pAggInfo ? pExpr->pAggInfo->selId : 0,
-                             pExpr->iAgg, pExpr->pAggInfo);
-      }else if( pExpr->op2!=0 ){
-        const char *zOp2;
-        char zBuf[8];
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"0x%02x",pExpr->op2);
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      إذا( p_تعبير->op==TK_AGG_FUNCTION ){
+        sqlite3_شجرة_View_سطر(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
+                             p_تعبير->op2, p_تعبير->u.zToken, zFlgs,
+                             p_تعبير->pAggInfo ? p_تعبير->pAggInfo->selId : 0,
+                             p_تعبير->iAgg, p_تعبير->pAggInfo);
+      }وإلا إذا( p_تعبير->op2!=0 ){
+        ثابت حرف *zOp2;
+        حرف zBuf[8];
+        sqlite3_snprintf(حجم(zBuf),zBuf,"0x%02x",p_تعبير->op2);
         zOp2 = zBuf;
-        if( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
-        if( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
-        if( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
-        if( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s op2=%s",
-                            pExpr->u.zToken, zFlgs, zOp2);
-      }else{
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s", pExpr->u.zToken, zFlgs);
+        إذا( p_تعبير->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
+        إذا( p_تعبير->op2==NC_Idx_تعبير ) zOp2 = "NC_IdxExpr";
+        إذا( p_تعبير->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
+        إذا( p_تعبير->op2==NC_GenCol ) zOp2 = "NC_GenCol";
+        sqlite3_شجرة_View_سطر(pView, "FUNCTION %Q%s op2=%s",
+                            p_تعبير->u.zToken, zFlgs, zOp2);
+      }وإلا{
+        sqlite3_شجرة_View_سطر(pView, "FUNCTION %Q%s", p_تعبير->u.zToken, zFlgs);
       }
-      if( pFarg ){
-        sqlite3TreeViewExprList(pView, pFarg, pWin!=0 || pExpr->pLeft, 0);
-        if( pExpr->pLeft ){
-          Expr *pOB = pExpr->pLeft;
-          assert( pOB->op==TK_ORDER );
-          assert( ExprUseXList(pOB) );
-          sqlite3TreeViewExprList(pView, pOB->x.pList, pWin!=0, "ORDERBY");
+      إذا( pFarg ){
+        sqlite3_شجرة_View_تعبير_List(pView, pFarg, pWin!=0 || p_تعبير->p_يسار, 0);
+        إذا( p_تعبير->p_يسار ){
+          تعبير *pOB = p_تعبير->p_يسار;
+          أكد( pOB->op==TK_ORDER );
+          أكد( تعبير_Use_XList(pOB) );
+          sqlite3_شجرة_View_تعبير_List(pView, pOB->x.pList, pWin!=0, "ORDERBY");
         }
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pWin ){
-        sqlite3TreeViewWindow(pView, pWin, 0);
+      إذا( pWin ){
+        sqlite3_شجرة_View_Window(pView, pWin, 0);
       }
 #endif
-      break;
+      اكسر;
     }
-    case TK_ORDER: {
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, "ORDERBY");
-      break;
+    حالة TK_ORDER: {
+      sqlite3_شجرة_View_تعبير_List(pView, p_تعبير->x.pList, 0, "ORDERBY");
+      اكسر;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "EXISTS-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    حالة TK_EXISTS: {
+      أكد( تعبير_Use_XSelect(p_تعبير) );
+      sqlite3_شجرة_View_سطر(pView, "EXISTS-expr flags=0x%x", p_تعبير->flags);
+      sqlite3_شجرة_View_Select(pView, p_تعبير->x.pSelect, 0);
+      اكسر;
     }
-    case TK_SELECT: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "subquery-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    حالة TK_SELECT: {
+      أكد( تعبير_Use_XSelect(p_تعبير) );
+      sqlite3_شجرة_View_سطر(pView, "subquery-expr flags=0x%x", p_تعبير->flags);
+      sqlite3_شجرة_View_Select(pView, p_تعبير->x.pSelect, 0);
+      اكسر;
     }
-    case TK_IN: {
+    حالة TK_IN: {
       sqlite3_str *pStr = sqlite3_str_new(0);
-      char *z;
-      sqlite3_str_appendf(pStr, "IN flags=0x%x", pExpr->flags);
-      if( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      حرف *z;
+      sqlite3_str_appendf(pStr, "IN flags=0x%x", p_تعبير->flags);
+      إذا( p_تعبير->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",p_تعبير->iTable);
+      إذا( تعبير_Has_Property(p_تعبير, EP_Subrtn) ){
         sqlite3_str_appendf(pStr, " subrtn(%d,%d)",
-            pExpr->y.sub.regReturn, pExpr->y.sub.iAddr);
+            p_تعبير->y.sub.regReturn, p_تعبير->y.sub.iAddr);
       }
       z = sqlite3_str_finish(pStr);
-      sqlite3TreeViewLine(pView, z);
+      sqlite3_شجرة_View_سطر(pView, z);
       sqlite3_free(z);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      if( ExprUseXSelect(pExpr) ){
-        sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      }else{
-        sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 1);
+      إذا( تعبير_Use_XSelect(p_تعبير) ){
+        sqlite3_شجرة_View_Select(pView, p_تعبير->x.pSelect, 0);
+      }وإلا{
+        sqlite3_شجرة_View_تعبير_List(pView, p_تعبير->x.pList, 0, 0);
       }
-      break;
+      اكسر;
     }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -791,20 +791,20 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
-      const Expr *pX, *pY, *pZ;
-      pX = pExpr->pLeft;
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr==2 );
-      pY = pExpr->x.pList->a[0].pExpr;
-      pZ = pExpr->x.pList->a[1].pExpr;
-      sqlite3TreeViewLine(pView, "BETWEEN%s", zFlgs);
-      sqlite3TreeViewExpr(pView, pX, 1);
-      sqlite3TreeViewExpr(pView, pY, 1);
-      sqlite3TreeViewExpr(pView, pZ, 0);
-      break;
+    حالة TK_BETWEEN: {
+      ثابت تعبير *pX, *pY, *pZ;
+      pX = p_تعبير->p_يسار;
+      أكد( تعبير_Use_XList(p_تعبير) );
+      أكد( p_تعبير->x.pList->n_تعبير==2 );
+      pY = p_تعبير->x.pList->a[0].p_تعبير;
+      pZ = p_تعبير->x.pList->a[1].p_تعبير;
+      sqlite3_شجرة_View_سطر(pView, "BETWEEN%s", zFlgs);
+      sqlite3_شجرة_View_تعبير(pView, pX, 1);
+      sqlite3_شجرة_View_تعبير(pView, pY, 1);
+      sqlite3_شجرة_View_تعبير(pView, pZ, 0);
+      اكسر;
     }
-    case TK_TRIGGER: {
+    حالة TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -812,426 +812,426 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       ** is set to the column of the pseudo-table to read, or to -1 to
       ** read the rowid field.
       */
-      sqlite3TreeViewLine(pView, "%s(%d)", 
-          pExpr->iTable ? "NEW" : "OLD", pExpr->iColumn);
-      break;
+      sqlite3_شجرة_View_سطر(pView, "%s(%d)", 
+          p_تعبير->iTable ? "NEW" : "OLD", p_تعبير->iColumn);
+      اكسر;
     }
-    case TK_CASE: {
-      sqlite3TreeViewLine(pView, "CASE");
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
-      break;
+    حالة TK_CASE: {
+      sqlite3_شجرة_View_سطر(pView, "CASE");
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 1);
+      أكد( تعبير_Use_XList(p_تعبير) );
+      sqlite3_شجرة_View_تعبير_List(pView, p_تعبير->x.pList, 0, 0);
+      اكسر;
     }
 #ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
-      const char *zType = "unk";
-      switch( pExpr->affExpr ){
-        case OE_Rollback:   zType = "rollback";  break;
-        case OE_Abort:      zType = "abort";     break;
-        case OE_Fail:       zType = "fail";      break;
-        case OE_Ignore:     zType = "ignore";    break;
+    حالة TK_RAISE: {
+      ثابت حرف *zType = "unk";
+      بدل( p_تعبير->aff_تعبير ){
+        حالة OE_Rollback:   zType = "rollback";  اكسر;
+        حالة OE_Abort:      zType = "abort";     اكسر;
+        حالة OE_Fail:       zType = "fail";      اكسر;
+        حالة OE_Ignore:     zType = "ignore";    اكسر;
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "RAISE %s", zType);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+      sqlite3_شجرة_View_سطر(pView, "RAISE %s", zType);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
+      اكسر;
     }
 #endif
-    case TK_MATCH: {
-      sqlite3TreeViewLine(pView, "MATCH {%d:%d}%s",
-                          pExpr->iTable, pExpr->iColumn, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-      break;
+    حالة TK_MATCH: {
+      sqlite3_شجرة_View_سطر(pView, "MATCH {%d:%d}%s",
+                          p_تعبير->iTable, p_تعبير->iColumn, zFlgs);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يمين, 0);
+      اكسر;
     }
-    case TK_VECTOR: {
-      char *z = sqlite3_mprintf("VECTOR%s",zFlgs);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewBareExprList(pView, pExpr->x.pList, z);
+    حالة TK_VECTOR: {
+      حرف *z = sqlite3_mprintf("VECTOR%s",zFlgs);
+      أكد( تعبير_Use_XList(p_تعبير) );
+      sqlite3_شجرة_View_Bare_تعبير_List(pView, p_تعبير->x.pList, z);
       sqlite3_free(z);
-      break;
+      اكسر;
     }
-    case TK_SELECT_COLUMN: {
-      sqlite3TreeViewLine(pView, "SELECT-COLUMN %d of [0..%d]%s",
-              pExpr->iColumn, pExpr->iTable-1,
-              pExpr->pRight==pExpr->pLeft ? " (SELECT-owner)" : "");
-      assert( ExprUseXSelect(pExpr->pLeft) );
-      sqlite3TreeViewSelect(pView, pExpr->pLeft->x.pSelect, 0);
-      break;
+    حالة TK_SELECT_COLUMN: {
+      sqlite3_شجرة_View_سطر(pView, "SELECT-COLUMN %d of [0..%d]%s",
+              p_تعبير->iColumn, p_تعبير->iTable-1,
+              p_تعبير->p_يمين==p_تعبير->p_يسار ? " (SELECT-owner)" : "");
+      أكد( تعبير_Use_XSelect(p_تعبير->p_يسار) );
+      sqlite3_شجرة_View_Select(pView, p_تعبير->p_يسار->x.pSelect, 0);
+      اكسر;
     }
-    case TK_IF_NULL_ROW: {
-      sqlite3TreeViewLine(pView, "IF-NULL-ROW %d", pExpr->iTable);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    حالة TK_IF_NULL_ROW: {
+      sqlite3_شجرة_View_سطر(pView, "IF-NULL-ROW %d", p_تعبير->iTable);
+      sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
+      اكسر;
     }
-    case TK_ERROR: {
-      Expr tmp;
-      sqlite3TreeViewLine(pView, "ERROR");
-      tmp = *pExpr;
-      tmp.op = pExpr->op2;
-      sqlite3TreeViewExpr(pView, &tmp, 0);
-      break;
+    حالة TK_ERROR: {
+      تعبير tmp;
+      sqlite3_شجرة_View_سطر(pView, "ERROR");
+      tmp = *p_تعبير;
+      tmp.op = p_تعبير->op2;
+      sqlite3_شجرة_View_تعبير(pView, &tmp, 0);
+      اكسر;
     }
-    case TK_ROW: {
-      if( pExpr->iColumn<=0 ){
-        sqlite3TreeViewLine(pView, "First FROM table rowid");
-      }else{
-        sqlite3TreeViewLine(pView, "First FROM table column %d",
-            pExpr->iColumn-1);
+    حالة TK_ROW: {
+      إذا( p_تعبير->iColumn<=0 ){
+        sqlite3_شجرة_View_سطر(pView, "First FROM table rowid");
+      }وإلا{
+        sqlite3_شجرة_View_سطر(pView, "First FROM table column %d",
+            p_تعبير->iColumn-1);
       }
-      break;
+      اكسر;
     }
-    default: {
-      sqlite3TreeViewLine(pView, "op=%d", pExpr->op);
-      break;
+    افتراضي: {
+      sqlite3_شجرة_View_سطر(pView, "op=%d", p_تعبير->op);
+      اكسر;
     }
   }
-  if( zBinOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zBinOp, zFlgs);
-    sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-    sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-  }else if( zUniOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zUniOp, zFlgs);
-   sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+  إذا( zBinOp ){
+    sqlite3_شجرة_View_سطر(pView, "%s%s", zBinOp, zFlgs);
+    sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 1);
+    sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يمين, 0);
+  }وإلا إذا( zUniOp ){
+    sqlite3_شجرة_View_سطر(pView, "%s%s", zUniOp, zFlgs);
+   sqlite3_شجرة_View_تعبير(pView, p_تعبير->p_يسار, 0);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
 
 /*
 ** Generate a human-readable explanation of an expression list.
 */
-void sqlite3TreeViewBareExprList(
-  TreeView *pView,
-  const ExprList *pList,
-  const char *zLabel
+فراغ sqlite3_شجرة_View_Bare_تعبير_List(
+  شجرة_View *pView,
+  ثابت تعبير_List *pList,
+  ثابت حرف *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nExpr; i++){
-      int j = pList->a[i].u.x.iOrderByCol;
+  إذا( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  إذا( pList==0 ){
+    sqlite3_شجرة_View_سطر(pView, "%s (empty)", zLabel);
+  }وإلا{
+    صحيح i;
+    sqlite3_شجرة_View_سطر(pView, "%s", zLabel);
+    لكل(i=0; i<pList->n_تعبير; i++){
+      صحيح j = pList->a[i].u.x.iOrderByCol;
       u8 sortFlags = pList->a[i].fg.sortFlags;
-      char *zName = pList->a[i].zEName;
-      int moreToFollow = i<pList->nExpr - 1;
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPush(&pView, moreToFollow);
+      حرف *zName = pList->a[i].zEName;
+      صحيح moreToFollow = i<pList->n_تعبير - 1;
+      إذا( j || zName || sortFlags ){
+        sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
         moreToFollow = 0;
-        sqlite3TreeViewLine(pView, 0);
-        if( zName ){
-          switch( pList->a[i].fg.eEName ){
-            default:
+        sqlite3_شجرة_View_سطر(pView, 0);
+        إذا( zName ){
+          بدل( pList->a[i].fg.eEName ){
+            افتراضي:
               fprintf(stdout, "AS %s ", zName);
-              break;
-            case ENAME_TAB:
+              اكسر;
+            حالة ENAME_TAB:
               fprintf(stdout, "TABLE-ALIAS-NAME(\"%s\") ", zName);
-              if( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
-              if( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
-              if( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
-              break;
-            case ENAME_SPAN:
+              إذا( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
+              إذا( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
+              إذا( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
+              اكسر;
+            حالة ENAME_SPAN:
               fprintf(stdout, "SPAN(\"%s\") ", zName);
-              break;
+              اكسر;
           }
         }
-        if( j ){
+        إذا( j ){
           fprintf(stdout, "iOrderByCol=%d ", j);
         }
-        if( sortFlags & KEYINFO_ORDER_DESC ){
+        إذا( sortFlags & KEYINFO_ORDER_DESC ){
           fprintf(stdout, "DESC ");
-        }else if( sortFlags & KEYINFO_ORDER_BIGNULL ){
+        }وإلا إذا( sortFlags & KEYINFO_ORDER_BIGNULL ){
           fprintf(stdout, "NULLS-LAST");
         }
         fprintf(stdout, "\n");
         fflush(stdout);
       }
-      sqlite3TreeViewExpr(pView, pList->a[i].pExpr, moreToFollow);
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_تعبير(pView, pList->a[i].p_تعبير, moreToFollow);
+      إذا( j || zName || sortFlags ){
+        sqlite3_شجرة_View_اسحب(&pView);
       }
     }
   }
 }
-void sqlite3TreeViewExprList(
-  TreeView *pView,
-  const ExprList *pList,
+فراغ sqlite3_شجرة_View_تعبير_List(
+  شجرة_View *pView,
+  ثابت تعبير_List *pList,
   u8 moreToFollow,
-  const char *zLabel
+  ثابت حرف *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareExprList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  sqlite3_شجرة_View_Bare_تعبير_List(pView, pList, zLabel);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of an id-list.
 */
-void sqlite3TreeViewBareIdList(
-  TreeView *pView,
-  const IdList *pList,
-  const char *zLabel
+فراغ sqlite3_شجرة_View_Bare_Id_List(
+  شجرة_View *pView,
+  ثابت IdList *pList,
+  ثابت حرف *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nId; i++){
-      char *zName = pList->a[i].zName;
-      int moreToFollow = i<pList->nId - 1;
-      if( zName==0 ) zName = "(null)";
-      sqlite3TreeViewPush(&pView, moreToFollow);
-      sqlite3TreeViewLine(pView, 0);
+  إذا( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  إذا( pList==0 ){
+    sqlite3_شجرة_View_سطر(pView, "%s (empty)", zLabel);
+  }وإلا{
+    صحيح i;
+    sqlite3_شجرة_View_سطر(pView, "%s", zLabel);
+    لكل(i=0; i<pList->nId; i++){
+      حرف *zName = pList->a[i].zName;
+      صحيح moreToFollow = i<pList->nId - 1;
+      إذا( zName==0 ) zName = "(null)";
+      sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+      sqlite3_شجرة_View_سطر(pView, 0);
       fprintf(stdout, "%s\n", zName);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
   }
 }
-void sqlite3TreeViewIdList(
-  TreeView *pView,
-  const IdList *pList,
+فراغ sqlite3_شجرة_View_Id_List(
+  شجرة_View *pView,
+  ثابت IdList *pList,
   u8 moreToFollow,
-  const char *zLabel
+  ثابت حرف *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareIdList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  sqlite3_شجرة_View_Bare_Id_List(pView, pList, zLabel);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of a list of Upsert objects
 */
-void sqlite3TreeViewUpsert(
-  TreeView *pView,
-  const Upsert *pUpsert,
+فراغ sqlite3_شجرة_View_Upsert(
+  شجرة_View *pView,
+  ثابت Upsert *pUpsert,
   u8 moreToFollow
 ){
-  if( pUpsert==0 ) return;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  while( pUpsert ){
-    int n;
-    sqlite3TreeViewPush(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
-    sqlite3TreeViewLine(pView, "ON CONFLICT DO %s", 
+  إذا( pUpsert==0 ) أرجع;
+  sqlite3_شجرة_View_ادفع(&pView, moreToFollow);
+  طالما( pUpsert ){
+    صحيح n;
+    sqlite3_شجرة_View_ادفع(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
+    sqlite3_شجرة_View_سطر(pView, "ON CONFLICT DO %s", 
          pUpsert->isDoUpdate ? "UPDATE" : "NOTHING");
     n = (pUpsert->pUpsertSet!=0) + (pUpsert->pUpsertWhere!=0);
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
-    if( pUpsert->pUpsertWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, pUpsert->pUpsertWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_تعبير_List(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
+    sqlite3_شجرة_View_تعبير_List(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
+    إذا( pUpsert->pUpsertWhere ){
+      sqlite3_شجرة_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_شجرة_View_تعبير(pView, pUpsert->pUpsertWhere, 0);
+      sqlite3_شجرة_View_اسحب(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_اسحب(&pView);
     pUpsert = pUpsert->pNextUpsert;
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 
-#if TREETRACE_ENABLED
+#إذا TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an DELETE statement.
 */
-void sqlite3TreeViewDelete(
-  const With *pWith,
-  const SrcList *pTabList,
-  const Expr *pWhere,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Trigger *pTrigger
+فراغ sqlite3_شجرة_View_Delete(
+  ثابت With *pWith,
+  ثابت SrcList *pTabList,
+  ثابت تعبير *pWhere,
+  ثابت تعبير_List *pOrderBy,
+  ثابت تعبير *pLimit,
+  ثابت Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "DELETE");
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  صحيح n = 0;
+  شجرة_View *pView = 0;
+  sqlite3_شجرة_View_ادفع(&pView, 0);
+  sqlite3_شجرة_View_سطر(pView, "DELETE");
+  إذا( pWith ) n++;
+  إذا( pTabList ) n++;
+  إذا( pWhere ) n++;
+  إذا( pOrderBy ) n++;
+  إذا( pLimit ) n++;
+  إذا( pTrigger ) n++;
+  إذا( pWith ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_With(pView, pWith, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  إذا( pTabList ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "FROM");
+    sqlite3_شجرة_View_Src_List(pView, pTabList);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pWhere ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "WHERE");
+    sqlite3_شجرة_View_تعبير(pView, pWhere, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  إذا( pOrderBy ){
+    sqlite3_شجرة_View_تعبير_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pLimit ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "LIMIT");
+    sqlite3_شجرة_View_تعبير(pView, pLimit, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  إذا( pTrigger ){
+    sqlite3_شجرة_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#إذا TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an INSERT statement.
 */
-void sqlite3TreeViewInsert(
-  const With *pWith,
-  const SrcList *pTabList,
-  const IdList *pColumnList,
-  const Select *pSelect,
-  const ExprList *pExprList,
-  int onError,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+فراغ sqlite3_شجرة_View_أدرج(
+  ثابت With *pWith,
+  ثابت SrcList *pTabList,
+  ثابت IdList *pColumnList,
+  ثابت Select *pSelect,
+  ثابت تعبير_List *p_تعبير_List,
+  صحيح onError,
+  ثابت Upsert *pUpsert,
+  ثابت Trigger *pTrigger
 ){
-  TreeView *pView = 0;
-  int n = 0;
-  const char *zLabel = "INSERT";
-  switch( onError ){
-    case OE_Replace:  zLabel = "REPLACE";             break;
-    case OE_Ignore:   zLabel = "INSERT OR IGNORE";    break;
-    case OE_Rollback: zLabel = "INSERT OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "INSERT OR ABORT";     break;
-    case OE_Fail:     zLabel = "INSERT OR FAIL";      break;
+  شجرة_View *pView = 0;
+  صحيح n = 0;
+  ثابت حرف *zLabel = "INSERT";
+  بدل( onError ){
+    حالة OE_Replace:  zLabel = "REPLACE";             اكسر;
+    حالة OE_Ignore:   zLabel = "INSERT OR IGNORE";    اكسر;
+    حالة OE_Rollback: zLabel = "INSERT OR ROLLBACK";  اكسر;
+    حالة OE_Abort:    zLabel = "INSERT OR ABORT";     اكسر;
+    حالة OE_Fail:     zLabel = "INSERT OR FAIL";      اكسر;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pColumnList ) n++;
-  if( pSelect ) n++;
-  if( pExprList ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_ادفع(&pView, 0);
+  sqlite3_شجرة_View_سطر(pView, zLabel);
+  إذا( pWith ) n++;
+  إذا( pTabList ) n++;
+  إذا( pColumnList ) n++;
+  إذا( pSelect ) n++;
+  إذا( p_تعبير_List ) n++;
+  إذا( pUpsert ) n++;
+  إذا( pTrigger ) n++;
+  إذا( pWith ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_With(pView, pWith, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "INTO");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  إذا( pTabList ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "INTO");
+    sqlite3_شجرة_View_Src_List(pView, pTabList);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pColumnList ){
-    sqlite3TreeViewIdList(pView, pColumnList, (--n)>0, "COLUMNS");
+  إذا( pColumnList ){
+    sqlite3_شجرة_View_Id_List(pView, pColumnList, (--n)>0, "COLUMNS");
   }
-  if( pSelect ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "DATA-SOURCE");
-    sqlite3TreeViewSelect(pView, pSelect, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pSelect ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "DATA-SOURCE");
+    sqlite3_شجرة_View_Select(pView, pSelect, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pExprList ){
-    sqlite3TreeViewExprList(pView, pExprList, (--n)>0, "VALUES");
+  إذا( p_تعبير_List ){
+    sqlite3_شجرة_View_تعبير_List(pView, p_تعبير_List, (--n)>0, "VALUES");
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pUpsert ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "UPSERT");
+    sqlite3_شجرة_View_Upsert(pView, pUpsert, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  إذا( pTrigger ){
+    sqlite3_شجرة_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#إذا TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an UPDATE statement.
 */
-void sqlite3TreeViewUpdate(
-  const With *pWith,
-  const SrcList *pTabList,
-  const ExprList *pChanges,
-  const Expr *pWhere,
-  int onError,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+فراغ sqlite3_شجرة_View_Update(
+  ثابت With *pWith,
+  ثابت SrcList *pTabList,
+  ثابت تعبير_List *pChanges,
+  ثابت تعبير *pWhere,
+  صحيح onError,
+  ثابت تعبير_List *pOrderBy,
+  ثابت تعبير *pLimit,
+  ثابت Upsert *pUpsert,
+  ثابت Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  const char *zLabel = "UPDATE";
-  switch( onError ){
-    case OE_Replace:  zLabel = "UPDATE OR REPLACE";   break;
-    case OE_Ignore:   zLabel = "UPDATE OR IGNORE";    break;
-    case OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "UPDATE OR ABORT";     break;
-    case OE_Fail:     zLabel = "UPDATE OR FAIL";      break;
+  صحيح n = 0;
+  شجرة_View *pView = 0;
+  ثابت حرف *zLabel = "UPDATE";
+  بدل( onError ){
+    حالة OE_Replace:  zLabel = "UPDATE OR REPLACE";   اكسر;
+    حالة OE_Ignore:   zLabel = "UPDATE OR IGNORE";    اكسر;
+    حالة OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  اكسر;
+    حالة OE_Abort:    zLabel = "UPDATE OR ABORT";     اكسر;
+    حالة OE_Fail:     zLabel = "UPDATE OR FAIL";      اكسر;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pChanges ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_ادفع(&pView, 0);
+  sqlite3_شجرة_View_سطر(pView, zLabel);
+  إذا( pWith ) n++;
+  إذا( pTabList ) n++;
+  إذا( pChanges ) n++;
+  إذا( pWhere ) n++;
+  إذا( pOrderBy ) n++;
+  إذا( pLimit ) n++;
+  إذا( pUpsert ) n++;
+  إذا( pTrigger ) n++;
+  إذا( pWith ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_With(pView, pWith, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  إذا( pTabList ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "FROM");
+    sqlite3_شجرة_View_Src_List(pView, pTabList);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pChanges ){
-    sqlite3TreeViewExprList(pView, pChanges, (--n)>0, "SET");
+  إذا( pChanges ){
+    sqlite3_شجرة_View_تعبير_List(pView, pChanges, (--n)>0, "SET");
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pWhere ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "WHERE");
+    sqlite3_شجرة_View_تعبير(pView, pWhere, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  إذا( pOrderBy ){
+    sqlite3_شجرة_View_تعبير_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pLimit ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "LIMIT");
+    sqlite3_شجرة_View_تعبير(pView, pLimit, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  إذا( pUpsert ){
+    sqlite3_شجرة_View_ادفع(&pView, (--n)>0);
+    sqlite3_شجرة_View_سطر(pView, "UPSERT");
+    sqlite3_شجرة_View_Upsert(pView, pUpsert, 0);
+    sqlite3_شجرة_View_اسحب(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  إذا( pTrigger ){
+    sqlite3_شجرة_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
@@ -1239,50 +1239,50 @@ void sqlite3TreeViewUpdate(
 /*
 ** Show a human-readable graph of a TriggerStep
 */
-void sqlite3TreeViewTriggerStep(
-  TreeView *pView,
-  const TriggerStep *pStep,
+فراغ sqlite3_شجرة_View_Trigger_Step(
+  شجرة_View *pView,
+  ثابت TriggerStep *pStep,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pStep==0 ) return;
-  sqlite3TreeViewPush(&pView, 
+  صحيح cnt = 0;
+  إذا( pStep==0 ) أرجع;
+  sqlite3_شجرة_View_ادفع(&pView, 
       moreToFollow || (showFullList && pStep->pNext!=0));
-  do{
-    if( cnt++ && pStep->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  افعل{
+    إذا( cnt++ && pStep->pNext==0 ){
+      sqlite3_شجرة_View_اسحب(&pView);
+      sqlite3_شجرة_View_ادفع(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
-  }while( showFullList && (pStep = pStep->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_سطر(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
+  }طالما( showFullList && (pStep = pStep->pNext)!=0 );
+  sqlite3_شجرة_View_اسحب(&pView);
 }
   
 /*
 ** Show a human-readable graph of a Trigger
 */
-void sqlite3TreeViewTrigger(
-  TreeView *pView,
-  const Trigger *pTrigger,
+فراغ sqlite3_شجرة_View_Trigger(
+  شجرة_View *pView,
+  ثابت Trigger *pTrigger,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pTrigger==0 ) return;
-  sqlite3TreeViewPush(&pView,
+  صحيح cnt = 0;
+  إذا( pTrigger==0 ) أرجع;
+  sqlite3_شجرة_View_ادفع(&pView,
      moreToFollow || (showFullList && pTrigger->pNext!=0));
-  do{
-    if( cnt++ && pTrigger->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  افعل{
+    إذا( cnt++ && pTrigger->pNext==0 ){
+      sqlite3_شجرة_View_اسحب(&pView);
+      sqlite3_شجرة_View_ادفع(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "TRIGGER %s", pTrigger->zName);
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewTriggerStep(pView, pTrigger->step_list, 0, 1);
-    sqlite3TreeViewPop(&pView);
-  }while( showFullList && (pTrigger = pTrigger->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_شجرة_View_سطر(pView, "TRIGGER %s", pTrigger->zName);
+    sqlite3_شجرة_View_ادفع(&pView, 0);
+    sqlite3_شجرة_View_Trigger_Step(pView, pTrigger->step_list, 0, 1);
+    sqlite3_شجرة_View_اسحب(&pView);
+  }طالما( showFullList && (pTrigger = pTrigger->pNext)!=0 );
+  sqlite3_شجرة_View_اسحب(&pView);
 }
 #endif /* SQLITE_OMIT_TRIGGER */
   
@@ -1301,32 +1301,32 @@ void sqlite3TreeViewTrigger(
 **
 **     sqlite3ShowWhereTerm() in where.c
 */
-void sqlite3ShowExpr(const Expr *p){ sqlite3TreeViewExpr(0,p,0); }
-void sqlite3ShowExprList(const ExprList *p){ sqlite3TreeViewExprList(0,p,0,0);}
-void sqlite3ShowIdList(const IdList *p){ sqlite3TreeViewIdList(0,p,0,0); }
-void sqlite3ShowSrcList(const SrcList *p){
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "SRCLIST");
-  sqlite3TreeViewSrcList(pView,p);
-  sqlite3TreeViewPop(&pView);
+فراغ sqlite3_Show_تعبير(ثابت تعبير *p){ sqlite3_شجرة_View_تعبير(0,p,0); }
+فراغ sqlite3_Show_تعبير_List(ثابت تعبير_List *p){ sqlite3_شجرة_View_تعبير_List(0,p,0,0);}
+فراغ sqlite3ShowIdList(ثابت IdList *p){ sqlite3_شجرة_View_Id_List(0,p,0,0); }
+فراغ sqlite3ShowSrcList(ثابت SrcList *p){
+  شجرة_View *pView = 0;
+  sqlite3_شجرة_View_ادفع(&pView, 0);
+  sqlite3_شجرة_View_سطر(pView, "SRCLIST");
+  sqlite3_شجرة_View_Src_List(pView,p);
+  sqlite3_شجرة_View_اسحب(&pView);
 }
-void sqlite3ShowSelect(const Select *p){ sqlite3TreeViewSelect(0,p,0); }
-void sqlite3ShowWith(const With *p){ sqlite3TreeViewWith(0,p,0); }
-void sqlite3ShowUpsert(const Upsert *p){ sqlite3TreeViewUpsert(0,p,0); }
+فراغ sqlite3ShowSelect(ثابت Select *p){ sqlite3_شجرة_View_Select(0,p,0); }
+فراغ sqlite3ShowWith(ثابت With *p){ sqlite3_شجرة_View_With(0,p,0); }
+فراغ sqlite3ShowUpsert(ثابت Upsert *p){ sqlite3_شجرة_View_Upsert(0,p,0); }
 #ifndef SQLITE_OMIT_TRIGGER
-void sqlite3ShowTriggerStep(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,0);
+فراغ sqlite3ShowTriggerStep(ثابت TriggerStep *p){
+  sqlite3_شجرة_View_Trigger_Step(0,p,0,0);
 }
-void sqlite3ShowTriggerStepList(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,1);
+فراغ sqlite3ShowTriggerStepList(ثابت TriggerStep *p){
+  sqlite3_شجرة_View_Trigger_Step(0,p,0,1);
 }
-void sqlite3ShowTrigger(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,0); }
-void sqlite3ShowTriggerList(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,1);}
+فراغ sqlite3ShowTrigger(ثابت Trigger *p){ sqlite3_شجرة_View_Trigger(0,p,0,0); }
+فراغ sqlite3ShowTriggerList(ثابت Trigger *p){ sqlite3_شجرة_View_Trigger(0,p,0,1);}
 #endif
 #ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3ShowWindow(const Window *p){ sqlite3TreeViewWindow(0,p,0); }
-void sqlite3ShowWinFunc(const Window *p){ sqlite3TreeViewWinFunc(0,p,0); }
+فراغ sqlite3ShowWindow(ثابت Window *p){ sqlite3_شجرة_View_Window(0,p,0); }
+فراغ sqlite3ShowWinFunc(ثابت Window *p){ sqlite3_شجرة_View_Win_Func(0,p,0); }
 #endif
 
 #endif /* SQLITE_DEBUG */
