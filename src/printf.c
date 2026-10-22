@@ -9,7 +9,7 @@
 ** library, though the implementation here has enhancements to support
 ** SQLite.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** Conversion types fall into various categories as defined by the
@@ -43,20 +43,20 @@
 /*
 ** An "etByte" is an 8-bit unsigned value.
 */
-typedef unsigned char etByte;
+تعريفنوع unsigned حرف etByte;
 
 /*
 ** Each builtin conversion character (ex: the 'd' in "%d") is described
 ** by an instance of the following structure
 */
-typedef struct et_info {   /* Information about each format field */
-  char fmttype;            /* The format field code letter */
+تعريفنوع بنية et_info {   /* Information about each format field */
+  حرف fmttype;            /* The format field code letter */
   etByte base;             /* The base for radix conversion */
   etByte flags;            /* One or more of FLAG_ constants below */
   etByte type;             /* Conversion paradigm */
   etByte charset;          /* Offset into aDigits[] of the digits string */
   etByte prefix;           /* Offset into aPrefix[] of the prefix string */
-  char iNxt;               /* Next with same hash, or 0 for end of chain */
+  حرف iNxt;               /* Next with same hash, or 0 for end of chain */
 } et_info;
 
 /*
@@ -72,7 +72,7 @@ typedef struct et_info {   /* Information about each format field */
 ** The order of the entries in fmtinfo[] and the hash chain was entered
 ** manually, but based on the output of the following TCL script:
 */
-#if 0  /*****  Beginning of script ******/
+#אם 0  /*****  Beginning of script ******/
 foreach c {d s g z q Q w c o u x X f e E G i n % p T S r J j} {
   scan $c %c x
   set n($c) $x
@@ -82,19 +82,19 @@ puts "count: $mx"
 
 set mx 25
 puts "*********** mx=$mx ************"
-for {set r 0} {$r<$mx} {incr r} {
+עבור {set r 0} {$r<$mx} {incr r} {
   puts -nonewline [format %2d: $r]
   foreach c [array names n] {
-    if {($n($c))%$mx==$r} {puts -nonewline " $c"}
+    אם {($n($c))%$mx==$r} {puts -nonewline " $c"}
   }
   puts ""
 }
 #endif /***** End of script ********/
 
-static const char aDigits[] = "0123456789ABCDEF0123456789abcdef";
-static const char aHex[]    = "0123456789abcdef";
-static const char aPrefix[] = "-x0\000X0";
-static const et_info fmtinfo[25] = {
+ساكن ثابت حرف aDigits[] = "0123456789ABCDEF0123456789abcdef";
+ساكن ثابت حرف aHex[]    = "0123456789abcdef";
+ساكن ثابت حرف aPrefix[] = "-x0\000X0";
+ساكن ثابت et_info fmtinfo[25] = {
   /*  0 */  {  'd', 10, 1, etDECIMAL,    0,  0,  0 },
   /*  1 */  {  'e',  0, 1, etEXP,        30, 0,  0 },
   /*  2 */  {  'f',  0, 1, etFLOAT,      0,  0,  0 },
@@ -131,27 +131,27 @@ static const et_info fmtinfo[25] = {
 /*
 ** Set the StrAccum object to an error mode.
 */
-void sqlite3StrAccumSetError(StrAccum *p, u8 eError){
-  assert( eError==SQLITE_NOMEM || eError==SQLITE_TOOBIG );
+فراغ sqlite3StrAccumSetError(StrAccum *p, u8 eError){
+  أكد( eError==SQLITE_NOMEM || eError==SQLITE_TOOBIG );
   p->accError = eError;
-  if( p->mxAlloc ) sqlite3_str_reset(p);
-  if( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
+  אם( p->mxAlloc ) sqlite3_str_reset(p);
+  אם( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
 }
 
 /*
 ** Extra argument values from a PrintfArguments object
 */
-static sqlite3_int64 getIntArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return sqlite3_value_int64(p->apArg[p->nUsed++]);
+ساكن sqlite3_int64 getIntArg(PrintfArguments *p){
+  אם( p->nArg<=p->nUsed ) החזר 0;
+  החזר sqlite3_value_int64(p->apArg[p->nUsed++]);
 }
-static double getDoubleArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0.0;
-  return sqlite3_value_double(p->apArg[p->nUsed++]);
+ساكن مزدوج getDoubleArg(PrintfArguments *p){
+  אם( p->nArg<=p->nUsed ) החזר 0.0;
+  החזר sqlite3_value_double(p->apArg[p->nUsed++]);
 }
-static char *getTextArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
+ساكن حرف *getTextArg(PrintfArguments *p){
+  אם( p->nArg<=p->nUsed ) החזר 0;
+  החזר (حرف*)sqlite3_value_text(p->apArg[p->nUsed++]);
 }
 
 /*
@@ -163,18 +163,18 @@ static char *getTextArg(PrintfArguments *p){
 ** SQL from requesting large allocations using the precision or width
 ** field of the printf() function.
 */
-static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
-  char *z;
-  if( pAccum->accError ) return 0;
-  if( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
+ساكن حرف *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
+  حرف *z;
+  אם( pAccum->accError ) החזר 0;
+  אם( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
     sqlite3StrAccumSetError(pAccum, SQLITE_TOOBIG);
-    return 0;
+    החזר 0;
   }
   z = sqlite3_malloc(n);
-  if( z==0 ){
+  אם( z==0 ){
     sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
   }
-  return z;
+  החזר z;
 }
 
 /*
@@ -191,32 +191,32 @@ static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
 ** the minimum of SQLITE_PRINTF_PRECISION_LIMIT and 100 million.
 */
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-# if SQLITE_PRINTF_PRECISION_LIMIT<100000000
+# אם SQLITE_PRINTF_PRECISION_LIMIT<100000000
 #   define SQLITE_FP_PRECISION_LIMIT SQLITE_PRINTF_PRECISION_LIMIT
-# else
+# אחרת
 #   define SQLITE_FP_PRECISION_LIMIT 100000000
 # endif
-#else
+#אחרת
 # define SQLITE_FP_PRECISION_LIMIT 100000000
 #endif
 
 /* Forward reference */
-static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N);
-static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c);
+ساكن فراغ sqlite3StrAppend64(sqlite3_str *p, ثابت حرف *z, i64 N);
+ساكن فراغ sqlite3StrAppendchar64(sqlite3_str *p, i64 N, حرف c);
 
 /*
 ** Render a string given by "fmt" into the StrAccum object.
 */
-void sqlite3_str_vappendf(
+فراغ sqlite3_str_vappendf(
   sqlite3_str *pAccum,       /* Accumulate results here */
-  const char *fmt,           /* Format string */
+  ثابت حرف *fmt,           /* Format string */
   va_list ap                 /* arguments */
 ){
-  int c;                     /* Next character in the format string */
-  char *bufpt;               /* Pointer to the conversion buffer */
+  صحيح c;                     /* Next character in the format string */
+  حرف *bufpt;               /* Pointer to the conversion buffer */
   i64 precision;             /* Precision of the current field */
   i64 length;                /* Length of the field */
-  int idx;                   /* A general purpose loop counter */
+  صحيح idx;                   /* A general purpose loop counter */
   i64 width;                 /* Width of the current field */
   etByte flag_leftjustify;   /* True if "-" flag is present */
   etByte flag_prefix;        /* '+' or ' ' or 0 for prefix */
@@ -228,49 +228,49 @@ void sqlite3_str_vappendf(
   etByte cThousand;          /* Thousands separator for %d and %u */
   etByte xtype = etINVALID;  /* Conversion paradigm */
   u8 bArgList;               /* True for SQLITE_PRINTF_SQLFUNC */
-  char prefix;               /* Prefix character.  "+" or "-" or " " or '\0'. */
+  حرف prefix;               /* Prefix character.  "+" or "-" or " " or '\0'. */
   sqlite_uint64 longvalue;   /* Value for integer types */
-  double realvalue;          /* Value for real types */
-  const et_info *infop;      /* Pointer to the appropriate info structure */
-  char *zOut;                /* Rendering buffer */
-  int nOut;                  /* Size of the rendering buffer */
-  char *zExtra = 0;          /* Malloced memory used by some conversion */
-  int exp, e2;               /* exponent of real numbers */
+  مزدوج realvalue;          /* Value for real types */
+  ثابت et_info *infop;      /* Pointer to the appropriate info structure */
+  حرف *zOut;                /* Rendering buffer */
+  صحيح nOut;                  /* Size of the rendering buffer */
+  حرف *zExtra = 0;          /* Malloced memory used by some conversion */
+  صحيح exp, e2;               /* exponent of real numbers */
   etByte flag_dp;            /* True if decimal point should be shown */
   etByte flag_rtz;           /* True if trailing zeros should be removed */
 
   PrintfArguments *pArgList = 0; /* Arguments for SQLITE_PRINTF_SQLFUNC */
-  char buf[etBUFSIZE];       /* Conversion buffer */
+  حرف buf[etBUFSIZE];       /* Conversion buffer */
 
   /* pAccum never starts out with an empty buffer that was obtained from 
   ** malloc().  This precondition is required by the mprintf("%z...")
   ** optimization. */
-  assert( pAccum->nChar>0 || (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
+  أكد( pAccum->nChar>0 || (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
 
   bufpt = 0;
-  if( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
+  אם( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
     pArgList = va_arg(ap, PrintfArguments*);
     bArgList = 1;
-  }else{
+  }אחרת{
     bArgList = 0;
   }
-  for(; (c=(*fmt))!=0; ++fmt){
-    if( c!='%' ){
-      bufpt = (char *)fmt;
-#if HAVE_STRCHRNUL
+  עבור(; (c=(*fmt))!=0; ++fmt){
+    אם( c!='%' ){
+      bufpt = (حرف *)fmt;
+#אם HAVE_STRCHRNUL
       fmt = strchrnul(fmt, '%');
-#else
+#אחרת
       fmt = strchr(fmt, '%');
-      if( fmt==0 ){
+      אם( fmt==0 ){
         fmt = bufpt + strlen(bufpt);
       }
 #endif
       sqlite3StrAppend64(pAccum, bufpt, fmt - bufpt);
-      if( *fmt==0 ) break;
+      אם( *fmt==0 ) اكسر;
     }
-    if( (c=(*++fmt))==0 ){
+    אם( (c=(*++fmt))==0 ){
       sqlite3_str_append(pAccum, "%", 1);
-      break;
+      اكسر;
     }
     /* Find out what flags are present */
     flag_leftjustify = flag_prefix = cThousand =
@@ -279,82 +279,82 @@ void sqlite3_str_vappendf(
     width = 0;
     flag_long = 0;
     precision = -1;
-    do{
-      switch( c ){
-        case '-':   flag_leftjustify = 1;     break;
-        case '+':   flag_prefix = '+';        break;
-        case ' ':   flag_prefix = ' ';        break;
-        case '#':   flag_alternateform = 1;   break;
-        case '!':   flag_altform2 = 1;        break;
-        case '0':   flag_zeropad = 1;         break;
-        case ',':   cThousand = ',';          break;
-        default:    done = 1;                 break;
-        case 'l': {
+    עשה{
+      بدل( c ){
+        حالة '-':   flag_leftjustify = 1;     اكسر;
+        حالة '+':   flag_prefix = '+';        اكسر;
+        حالة ' ':   flag_prefix = ' ';        اكسر;
+        حالة '#':   flag_alternateform = 1;   اكسر;
+        حالة '!':   flag_altform2 = 1;        اكسر;
+        حالة '0':   flag_zeropad = 1;         اكسر;
+        حالة ',':   cThousand = ',';          اكسر;
+        افتراضي:    done = 1;                 اكسر;
+        حالة 'l': {
           flag_long = 1;
           c = *++fmt;
-          if( c=='l' ){
+          אם( c=='l' ){
             c = *++fmt;
             flag_long = 2;
           }
           done = 1;
-          break;
+          اكسر;
         }
-        case '1': case '2': case '3': case '4': case '5':
-        case '6': case '7': case '8': case '9': {
+        حالة '1': حالة '2': حالة '3': حالة '4': حالة '5':
+        حالة '6': حالة '7': حالة '8': حالة '9': {
           unsigned wx = c - '0';
-          while( (c = *++fmt)>='0' && c<='9' ){
+          כלעוד( (c = *++fmt)>='0' && c<='9' ){
             wx = wx*10 + c - '0';
           }
           testcase( wx>0x7fffffff );
           width = wx & 0x7fffffff;
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          אם( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c!='.' && c!='l' ){
+          אם( c!='.' && c!='l' ){
             done = 1;
-          }else{
+          }אחרת{
             fmt--;
           }
-          break;
+          اكسر;
         }
-        case '*': {
-          if( bArgList ){
-            width = (int)getIntArg(pArgList);
-          }else{
-            width = va_arg(ap,int);
+        حالة '*': {
+          אם( bArgList ){
+            width = (صحيح)getIntArg(pArgList);
+          }אחרת{
+            width = va_arg(ap,صحيح);
           }
-          if( width<0 ){
+          אם( width<0 ){
             flag_leftjustify = 1;
             width = width >= -2147483647 ? -width : 0;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          אם( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( (c = fmt[1])!='.' && c!='l' ){
+          אם( (c = fmt[1])!='.' && c!='l' ){
             c = *++fmt;
             done = 1;
           }
-          break;
+          اكسر;
         }
-        case '.': {
+        حالة '.': {
           c = *++fmt;
-          if( c=='*' ){
-            if( bArgList ){
-              precision = (int)getIntArg(pArgList);
-            }else{
-              precision = va_arg(ap,int);
+          אם( c=='*' ){
+            אם( bArgList ){
+              precision = (صحيح)getIntArg(pArgList);
+            }אחרת{
+              precision = va_arg(ap,صحيح);
             }
-            if( precision<0 ){
+            אם( precision<0 ){
               precision = precision >= -2147483647 ? -precision : -1;
             }
             c = *++fmt;
-          }else{
+          }אחרת{
             unsigned px = 0;
-            while( c>='0' && c<='9' ){
+            כלעוד( c>='0' && c<='9' ){
               px = px*10 + c - '0';
               c = *++fmt;
             }
@@ -362,19 +362,19 @@ void sqlite3_str_vappendf(
             precision = px & 0x7fffffff;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
+          אם( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
             precision = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c=='l' ){
+          אם( c=='l' ){
             --fmt;
-          }else{
+          }אחרת{
             done = 1;
           }
-          break;
+          اكسر;
         }
       }
-    }while( !done && (c=(*++fmt))!=0 );
+    }כלעוד( !done && (c=(*++fmt))!=0 );
 
     /* Fetch the info entry for the field */
 #ifdef SQLITE_EBCDIC
@@ -382,23 +382,23 @@ void sqlite3_str_vappendf(
     ** a linear search of the table */
     infop = &fmtinfo[0];
     xtype = etINVALID;
-    for(idx=0; idx<ArraySize(fmtinfo); idx++){
-      if( c==fmtinfo[idx].fmttype ){
+    עבור(idx=0; idx<ArraySize(fmtinfo); idx++){
+      אם( c==fmtinfo[idx].fmttype ){
         infop = &fmtinfo[idx];
         xtype = infop->type;
-        break;
+        اكسر;
       }
     }
-#else
+#אחרת
     /* Fast hash-table lookup */
-    assert( ArraySize(fmtinfo)==25 );
+    أكد( ArraySize(fmtinfo)==25 );
     idx = ((unsigned)c) % 25;
-    if( fmtinfo[idx].fmttype==c
+    אם( fmtinfo[idx].fmttype==c
      || fmtinfo[idx = fmtinfo[idx].iNxt].fmttype==c
     ){
       infop = &fmtinfo[idx];
       xtype = infop->type;
-    }else{
+    }אחרת{
       infop = &fmtinfo[0];
       xtype = etINVALID;
     }
@@ -421,183 +421,183 @@ void sqlite3_str_vappendf(
     **   xtype                       The class of the conversion.
     **   infop                       Pointer to the appropriate info struct.
     */
-    assert( width>=0 );
-    assert( precision>=(-1) );
-    switch( xtype ){
-      case etPOINTER:
-        flag_long = sizeof(char*)==sizeof(i64) ? 2 :
-                     sizeof(char*)==sizeof(long int) ? 1 : 0;
+    أكد( width>=0 );
+    أكد( precision>=(-1) );
+    بدل( xtype ){
+      حالة etPOINTER:
+        flag_long = حجم(حرف*)==حجم(i64) ? 2 :
+                     حجم(حرف*)==حجم(long صحيح) ? 1 : 0;
         /* no break */ deliberate_fall_through
-      case etORDINAL:
-      case etRADIX:      
+      حالة etORDINAL:
+      حالة etRADIX:      
         cThousand = 0;
         /* no break */ deliberate_fall_through
-      case etDECIMAL:
-        if( infop->flags & FLAG_SIGNED ){
+      حالة etDECIMAL:
+        אם( infop->flags & FLAG_SIGNED ){
           i64 v;
-          if( bArgList ){
+          אם( bArgList ){
             v = getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
+          }אחרת אם( flag_long ){
+            אם( flag_long==2 ){
               v = va_arg(ap,i64) ;
-            }else{
-              v = va_arg(ap,long int);
+            }אחרת{
+              v = va_arg(ap,long صحيح);
             }
-          }else{
-            v = va_arg(ap,int);
+          }אחרת{
+            v = va_arg(ap,صحيح);
           }
-          if( v<0 ){
+          אם( v<0 ){
             testcase( v==SMALLEST_INT64 );
             testcase( v==(-1) );
             longvalue = ~v;
             longvalue++;
             prefix = '-';
-          }else{
+          }אחרת{
             longvalue = v;
             prefix = flag_prefix;
           }
-        }else{
-          if( bArgList ){
+        }אחרת{
+          אם( bArgList ){
             longvalue = (u64)getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
+          }אחרת אם( flag_long ){
+            אם( flag_long==2 ){
               longvalue = va_arg(ap,u64);
-            }else{
-              longvalue = va_arg(ap,unsigned long int);
+            }אחרת{
+              longvalue = va_arg(ap,unsigned long صحيح);
             }
-          }else{
-            longvalue = va_arg(ap,unsigned int);
+          }אחרת{
+            longvalue = va_arg(ap,unsigned صحيح);
           }
           prefix = 0;
         }
 
-#if WHERETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
+#אם WHERETRACE_ENABLED
+        אם( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
 #endif
-#if TREETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
+#אם TREETRACE_ENABLED
+        אם( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
 #endif
 
-        if( longvalue==0 ) flag_alternateform = 0;
-        if( flag_zeropad && precision<width-(prefix!=0) ){
+        אם( longvalue==0 ) flag_alternateform = 0;
+        אם( flag_zeropad && precision<width-(prefix!=0) ){
           precision = width-(prefix!=0);
         }
-        if( precision<etBUFSIZE-10-etBUFSIZE/3 ){
+        אם( precision<etBUFSIZE-10-etBUFSIZE/3 ){
           nOut = etBUFSIZE;
           zOut = buf;
-        }else{
+        }אחרת{
           u64 n;
           n = (u64)precision + 10;
-          if( cThousand ) n += precision/3;
+          אם( cThousand ) n += precision/3;
           zOut = zExtra = printfTempBuf(pAccum, n);
-          if( zOut==0 ) return;
-          nOut = (int)n;
+          אם( zOut==0 ) החזר;
+          nOut = (صحيح)n;
         }
         bufpt = &zOut[nOut-1];
-        if( xtype==etORDINAL ){
-          static const char zOrd[] = "thstndrd";
-          int x = (int)(longvalue % 10);
-          if( x>=4 || (longvalue/10)%10==1 ){
+        אם( xtype==etORDINAL ){
+          ساكن ثابت حرف zOrd[] = "thstndrd";
+          صحيح x = (صحيح)(longvalue % 10);
+          אם( x>=4 || (longvalue/10)%10==1 ){
             x = 0;
           }
           *(--bufpt) = zOrd[x*2+1];
           *(--bufpt) = zOrd[x*2];
         }
         {
-          const char *cset = &aDigits[infop->charset];
+          ثابت حرف *cset = &aDigits[infop->charset];
           u8 base = infop->base;
-          do{                                           /* Convert to ascii */
+          עשה{                                           /* Convert to ascii */
             *(--bufpt) = cset[longvalue%base];
             longvalue = longvalue/base;
-          }while( longvalue>0 );
+          }כלעוד( longvalue>0 );
         }
         length = &zOut[nOut-1] - bufpt;
-        if( precision>length ){                         /* zero pad */
+        אם( precision>length ){                         /* zero pad */
           i64 nn = precision-length;
           bufpt -= nn;
           memset(bufpt,'0',nn);
           length = precision;
         }
-        if( cThousand ){
+        אם( cThousand ){
           i64 nn = (length - 1)/3;  /* Number of "," to insert */
           i64 ix = (length - 1)%3 + 1;
-          int ii;
+          صحيح ii;
           bufpt -= nn;
-          for(ii=0; nn>0; ii++){
+          עבור(ii=0; nn>0; ii++){
             bufpt[ii] = bufpt[ii+nn];
             ix--;
-            if( ix==0 ){
+            אם( ix==0 ){
               bufpt[++ii] = cThousand;
               nn--;
               ix = 3;
             }
           }
         }
-        if( prefix ) *(--bufpt) = prefix;               /* Add sign */
-        if( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
-          const char *pre;
-          char x;
+        אם( prefix ) *(--bufpt) = prefix;               /* Add sign */
+        אם( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
+          ثابت حرف *pre;
+          حرف x;
           pre = &aPrefix[infop->prefix];
-          for(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
+          עבור(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
         }
         length = &zOut[nOut-1] - bufpt;
-        break;
-      case etFLOAT:
-      case etEXP:
-      case etGENERIC: {
+        اكسر;
+      حالة etFLOAT:
+      حالة etEXP:
+      حالة etGENERIC: {
         FpDecode s;
-        int iRound;
-        int j;
+        صحيح iRound;
+        صحيح j;
         i64 szBufNeeded;       /* Size needed to hold the output */
 
-        if( bArgList ){
+        אם( bArgList ){
           realvalue = getDoubleArg(pArgList);
-        }else{
-          realvalue = va_arg(ap,double);
+        }אחרת{
+          realvalue = va_arg(ap,مزدوج);
         }
-        if( precision<0 ) precision = 6;         /* Set default precision */
-        if( precision>SQLITE_FP_PRECISION_LIMIT ){
+        אם( precision<0 ) precision = 6;         /* Set default precision */
+        אם( precision>SQLITE_FP_PRECISION_LIMIT ){
           precision = SQLITE_FP_PRECISION_LIMIT;
         }
-        if( xtype==etFLOAT ){
+        אם( xtype==etFLOAT ){
           iRound = -precision;
-        }else if( xtype==etGENERIC ){
-          if( precision==0 ) precision = 1;
+        }אחרת אם( xtype==etGENERIC ){
+          אם( precision==0 ) precision = 1;
           iRound = precision;
-        }else{
+        }אחרת{
           iRound = precision+1;
         }
         sqlite3FpDecode(&s, realvalue, iRound, flag_altform2 ? 20 : 16);
-        if( s.isSpecial ){
-          if( s.isSpecial==2 ){
-            if( flag_zeropad ){
+        אם( s.isSpecial ){
+          אם( s.isSpecial==2 ){
+            אם( flag_zeropad ){
               bufpt = "null";
               length = 4;
-            }else{
+            }אחרת{
               bufpt = "NaN";
               length = 3;
             }
-            break;
-          }else if( flag_zeropad ){
+            اكسر;
+          }אחרת אם( flag_zeropad ){
             s.z[0] = '9';
             s.iDP = 1000;
             s.n = 1;
-          }else{
+          }אחרת{
             memcpy(buf, "-Inf", 5);
             bufpt = buf;
-            if( s.sign=='-' ){
+            אם( s.sign=='-' ){
               /* no-op */
-            }else if( flag_prefix ){
+            }אחרת אם( flag_prefix ){
               buf[0] = flag_prefix;
-            }else{
+            }אחרת{
               bufpt++;
             }
             length = strlen(bufpt);
-            break;
+            اكسر;
           }
         }
-        if( s.sign=='-' ){
-          if( flag_alternateform
+        אם( s.sign=='-' ){
+          אם( flag_alternateform
            && !flag_prefix
            && xtype==etFLOAT
            && s.iDP<=iRound
@@ -609,10 +609,10 @@ void sqlite3_str_vappendf(
             **   *  The format is %f
             */
             prefix = 0;
-          }else{
+          }אחרת{
             prefix = '-';
           }
-        }else{
+        }אחרת{
           prefix = flag_prefix;
         }
 
@@ -622,210 +622,210 @@ void sqlite3_str_vappendf(
         ** If the field type is etGENERIC, then convert to either etEXP
         ** or etFLOAT, as appropriate.
         */
-        if( xtype==etGENERIC ){
-          assert( precision>0 );
+        אם( xtype==etGENERIC ){
+          أكد( precision>0 );
           precision--;
           flag_rtz = !flag_alternateform;
-          if( exp<-4 || exp>precision ){
+          אם( exp<-4 || exp>precision ){
             xtype = etEXP;
-          }else{
+          }אחרת{
             precision = precision - exp;
             xtype = etFLOAT;
           }
-        }else{
+        }אחרת{
           flag_rtz = flag_altform2;
         }
-        if( xtype==etEXP ){
+        אם( xtype==etEXP ){
           e2 = 0;
-        }else{
+        }אחרת{
           e2 = s.iDP - 1;
         }
 
         szBufNeeded = MAX(e2,0)+(i64)precision+(i64)width+10;
-        if( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
-        if( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
-          if( pAccum->mxAlloc==0 && pAccum->accError==0 ){
+        אם( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
+        אם( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
+          אם( pAccum->mxAlloc==0 && pAccum->accError==0 ){
             /* Unable to allocate space in pAccum, perhaps because it
             ** is coming from sqlite3_snprintf() or similar.  We'll have
             ** to render into temporary space and the memcpy() it over. */
             bufpt = sqlite3_malloc64(szBufNeeded);
-            if( bufpt==0 ){
+            אם( bufpt==0 ){
               sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
-              return;
+              החזר;
             }
             zExtra = bufpt;
-          }else if( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
+          }אחרת אם( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
             width = length = 0;
-            break;
-          }else{
+            اكسر;
+          }אחרת{
             bufpt = pAccum->zText + pAccum->nChar;
           }
-        }else{
+        }אחרת{
           bufpt = pAccum->zText + pAccum->nChar;
         }
         zOut = bufpt;
 
         flag_dp = (precision>0 ?1:0) | flag_alternateform | flag_altform2;
         /* The sign in front of the number */
-        if( prefix ){
+        אם( prefix ){
           *(bufpt++) = prefix;
         }
         /* Digits prior to the decimal point */
         j = 0;
-        assert( s.n>0 );
-        if( e2<0 ){
+        أكد( s.n>0 );
+        אם( e2<0 ){
           *(bufpt++) = '0';
-        }else if( cThousand ){
-          for(; e2>=0; e2--){
+        }אחרת אם( cThousand ){
+          עבור(; e2>=0; e2--){
             *(bufpt++) = j<s.n ? s.z[j++] : '0';
-            if( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
+            אם( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
           }
-        }else{
+        }אחרת{
           j = e2+1;
-          if( j>s.n ) j = s.n;
+          אם( j>s.n ) j = s.n;
           memcpy(bufpt, s.z, j);
           bufpt += j;
           e2 -= j;
-          if( e2>=0 ){
+          אם( e2>=0 ){
             memset(bufpt, '0', e2+1);
             bufpt += e2+1;
             e2 = -1;
           }
         }
         /* The decimal point */
-        if( flag_dp ){
+        אם( flag_dp ){
           *(bufpt++) = '.';
         }
         /* "0" digits after the decimal point but before the first
         ** significant digit of the number */
-        if( e2<(-1) && precision>0 ){
-          int nn = -1-e2;
-          if( nn>precision ) nn = precision;
+        אם( e2<(-1) && precision>0 ){
+          صحيح nn = -1-e2;
+          אם( nn>precision ) nn = precision;
           memset(bufpt, '0', nn);
           bufpt += nn;
           precision -= nn;
         }
         /* Significant digits after the decimal point */
-        if( precision>0 ){
-          int nn = s.n - j;
-          if( NEVER(nn>precision) ) nn = precision;
-          if( nn>0 ){
+        אם( precision>0 ){
+          صحيح nn = s.n - j;
+          אם( NEVER(nn>precision) ) nn = precision;
+          אם( nn>0 ){
             memcpy(bufpt, s.z+j, nn);
             bufpt += nn;
             precision -= nn;
           }
-          if( precision>0 && !flag_rtz ){
+          אם( precision>0 && !flag_rtz ){
             memset(bufpt, '0', precision);
             bufpt += precision;
           }
         }
         /* Remove trailing zeros and the "." if no digits follow the "." */
-        if( flag_rtz && flag_dp ){
-          while( bufpt[-1]=='0' ) *(--bufpt) = 0;
-          assert( bufpt>zOut );
-          if( bufpt[-1]=='.' ){
-            if( flag_altform2 ){
+        אם( flag_rtz && flag_dp ){
+          כלעוד( bufpt[-1]=='0' ) *(--bufpt) = 0;
+          أكد( bufpt>zOut );
+          אם( bufpt[-1]=='.' ){
+            אם( flag_altform2 ){
               *(bufpt++) = '0';
-            }else{
+            }אחרת{
               *(--bufpt) = 0;
             }
           }
         }
         /* Add the "eNNN" suffix */
-        if( xtype==etEXP ){
+        אם( xtype==etEXP ){
           exp = s.iDP - 1;
           *(bufpt++) = aDigits[infop->charset];
-          if( exp<0 ){
+          אם( exp<0 ){
             *(bufpt++) = '-'; exp = -exp;
-          }else{
+          }אחרת{
             *(bufpt++) = '+';
           }
-          if( exp>=100 ){
-            *(bufpt++) = (char)((exp/100)+'0');        /* 100's digit */
+          אם( exp>=100 ){
+            *(bufpt++) = (حرف)((exp/100)+'0');        /* 100's digit */
             exp %= 100;
           }
-          *(bufpt++) = (char)(exp/10+'0');             /* 10's digit */
-          *(bufpt++) = (char)(exp%10+'0');             /* 1's digit */
+          *(bufpt++) = (حرف)(exp/10+'0');             /* 10's digit */
+          *(bufpt++) = (حرف)(exp%10+'0');             /* 1's digit */
         }
 
         length = bufpt - zOut;
-        assert( length <= szBufNeeded );
-        if( length<width ){
+        أكد( length <= szBufNeeded );
+        אם( length<width ){
           i64 nPad = width - length;
-          if( flag_leftjustify ){
+          אם( flag_leftjustify ){
             memset(bufpt, ' ', nPad);
-          }else if( !flag_zeropad ){
+          }אחרת אם( !flag_zeropad ){
             memmove(zOut+nPad, zOut, length);
             memset(zOut, ' ', nPad);
-          }else{
-            int adj = prefix!=0;
+          }אחרת{
+            صحيح adj = prefix!=0;
             memmove(zOut+nPad+adj, zOut+adj, length-adj);
             memset(zOut+adj, '0', nPad);
           }
           length = width;
         }
 
-        if( zExtra==0 ){
+        אם( zExtra==0 ){
           /* The result is being rendered directory into pAccum.  This
           ** is the common and fast case */
-          assert( pAccum->nChar + length < SMXV(pAccum->nChar) );
+          أكد( pAccum->nChar + length < SMXV(pAccum->nChar) );
           pAccum->nChar += length;
           zOut[length] = 0;
-          continue;
-        }else{
+          استمر;
+        }אחרת{
           /* We were unable to render directly into pAccum because we
           ** couldn't allocate sufficient memory.  We need to memcpy()
           ** the rendering (or some prefix thereof) into the output
           ** buffer. */
           bufpt[0] = 0;
           bufpt = zExtra;
-          break;
+          اكسر;
         }
       }
-      case etSIZE:
-        if( !bArgList ){
-          *(va_arg(ap,int*)) = pAccum->nChar;
+      حالة etSIZE:
+        אם( !bArgList ){
+          *(va_arg(ap,صحيح*)) = pAccum->nChar;
         }
         length = width = 0;
-        break;
-      case etPERCENT:
+        اكسر;
+      حالة etPERCENT:
         buf[0] = '%';
         bufpt = buf;
         length = 1;
-        break;
-      case etCHARX:
-        if( bArgList ){
+        اكسر;
+      حالة etCHARX:
+        אם( bArgList ){
           bufpt = getTextArg(pArgList);
           length = 1;
-          if( bufpt ){
+          אם( bufpt ){
             buf[0] = c = *(bufpt++);
-            if( (c&0xc0)==0xc0 ){
-              while( length<4 && (bufpt[0]&0xc0)==0x80 ){
+            אם( (c&0xc0)==0xc0 ){
+              כלעוד( length<4 && (bufpt[0]&0xc0)==0x80 ){
                 buf[length++] = *(bufpt++);
               }
             }
-          }else{
+          }אחרת{
             buf[0] = 0;
           }
-        }else{
-          unsigned int ch = va_arg(ap,unsigned int);
+        }אחרת{
+          unsigned صحيح ch = va_arg(ap,unsigned صحيح);
           length = sqlite3AppendOneUtf8Character(buf, ch);
         }
-        if( precision>1 ){
+        אם( precision>1 ){
           i64 nPrior = 1;
           width -= precision-1;
-          if( width>1 && !flag_leftjustify ){
+          אם( width>1 && !flag_leftjustify ){
             sqlite3StrAppendchar64(pAccum, width-1, ' ');
             width = 0;
           }
           sqlite3StrAppend64(pAccum, buf, length);
           precision--;
-          while( precision > 1 ){
+          כלעוד( precision > 1 ){
             i64 nCopyBytes;
-            if( nPrior > precision-1 ) nPrior = precision - 1;
+            אם( nPrior > precision-1 ) nPrior = precision - 1;
             nCopyBytes = length*nPrior;
-            if( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
-              break;
+            אם( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
+              اكسر;
             }
             sqlite3_str_append(pAccum,
                  &pAccum->zText[pAccum->nChar-nCopyBytes], nCopyBytes);
@@ -835,19 +835,19 @@ void sqlite3_str_vappendf(
         }
         bufpt = buf;
         flag_altform2 = 1;
-        goto adjust_width_for_utf8;
-      case etSTRING:
-      case etDYNSTRING:
-        if( bArgList ){
+        اذهب adjust_width_for_utf8;
+      حالة etSTRING:
+      حالة etDYNSTRING:
+        אם( bArgList ){
           bufpt = getTextArg(pArgList);
           xtype = etSTRING;
-        }else{
-          bufpt = va_arg(ap,char*);
+        }אחרת{
+          bufpt = va_arg(ap,حرف*);
         }
-        if( bufpt==0 ){
+        אם( bufpt==0 ){
           bufpt = "";
-        }else if( xtype==etDYNSTRING ){
-          if( pAccum->nChar==0
+        }אחרת אם( xtype==etDYNSTRING ){
+          אם( pAccum->nChar==0
            && pAccum->mxAlloc
            && width==0
            && precision<0
@@ -856,103 +856,103 @@ void sqlite3_str_vappendf(
             /* Special optimization for sqlite3_mprintf("%z..."):
             ** Extend an existing memory allocation rather than creating
             ** a new one. */
-            assert( (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
+            أكد( (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
             pAccum->zText = bufpt;
             pAccum->nAlloc = sqlite3DbMallocSize(pAccum->db, bufpt);
-            pAccum->nChar = 0x7fffffff & (int)strlen(bufpt);
+            pAccum->nChar = 0x7fffffff & (صحيح)strlen(bufpt);
             pAccum->printfFlags |= SQLITE_PRINTF_MALLOCED;
             length = 0;
-            break;
+            اكسر;
           }
           zExtra = bufpt;
         }
-        if( precision>=0 ){
-          if( flag_altform2 ){
+        אם( precision>=0 ){
+          אם( flag_altform2 ){
             /* Set length to the number of bytes needed in order to display
             ** precision characters */
-            unsigned char *z = (unsigned char*)bufpt;
-            while( precision-- > 0 && z[0] ){
+            unsigned حرف *z = (unsigned حرف*)bufpt;
+            כלעוד( precision-- > 0 && z[0] ){
               SQLITE_SKIP_UTF8(z);
             }
-            length = z - (unsigned char*)bufpt;
-          }else{
-            for(length=0; length<precision && bufpt[length]; length++){}
+            length = z - (unsigned حرف*)bufpt;
+          }אחרת{
+            עבור(length=0; length<precision && bufpt[length]; length++){}
           }
-        }else{
+        }אחרת{
           length = strlen(bufpt);
         }
       adjust_width_for_utf8:
-        if( flag_altform2 && width>0 ){
+        אם( flag_altform2 && width>0 ){
           /* Adjust width to account for extra bytes in UTF-8 characters */
           i64 ii = length - 1;
-          while( ii>=0 ) if( (bufpt[ii--] & 0xc0)==0x80 ) width++;
+          כלעוד( ii>=0 ) אם( (bufpt[ii--] & 0xc0)==0x80 ) width++;
         }
-        break;
-      case etESCAPE_j:           /* %j: JSON string literal w/o "..." */
-      case etESCAPE_J: {         /* %J: Generate a JSON string literal */
-        char *escarg;
+        اكسر;
+      حالة etESCAPE_j:           /* %j: JSON string literal w/o "..." */
+      حالة etESCAPE_J: {         /* %J: Generate a JSON string literal */
+        حرف *escarg;
         i64 i, j, px, iStart;
-        unsigned char ch;
+        unsigned حرف ch;
 
-        if( bArgList ){
+        אם( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
-          escarg = va_arg(ap,char*);
+        }אחרת{
+          escarg = va_arg(ap,حرف*);
         }
         iStart = sqlite3_str_length(pAccum);
-        if( escarg==0 ){
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
-        }else{
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+        אם( escarg==0 ){
+          אם( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
+        }אחרת{
+          אם( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
           px = precision;
           testcase( px==0 );
-          if( px<0 ){
+          אם( px<0 ){
             px = 0x7fffffff;
-          }else if( flag_altform2 ){
+          }אחרת אם( flag_altform2 ){
             /* Convert precision from code-points to bytes */
-            for(i=0; i<px && escarg[i]; i++){
-              if( (escarg[i]&0xc0)==0x80 ) px++;
+            עבור(i=0; i<px && escarg[i]; i++){
+              אם( (escarg[i]&0xc0)==0x80 ) px++;
             }
-            if( i==px ){
-              while( (escarg[px]&0xc0)==0x80 ) px++;
+            אם( i==px ){
+              כלעוד( (escarg[px]&0xc0)==0x80 ) px++;
             }
           }
-          for(i=j=0; i<px; i++){
-            if( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
-              if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          עבור(i=j=0; i<px; i++){
+            אם( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
+              אם( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
               j = i+1;
-              if( ch==0 ) break;
+              אם( ch==0 ) اكسر;
               sqlite3_str_appendchar(pAccum, 1, '\\');
-              if( ch>0x1f ){
+              אם( ch>0x1f ){
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else if( ((1u<<ch)&0x3700)!=0 ){
+              }אחרת אם( ((1u<<ch)&0x3700)!=0 ){
                 ch = "btn?fr"[ch-8];
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else{
+              }אחרת{
                 sqlite3_str_append(pAccum, "u00", 3);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch>>4]);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch&0xf]);
               }
             }
           }
-          if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+          אם( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          אם( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
         }
-        if( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
+        אם( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
           sqlite3_int64 n = sqlite3_str_length(pAccum) - iStart;
           sqlite3_int64 len = n;
-          char *zz;
-          if( flag_altform2 && n>0 ){
+          حرف *zz;
+          אם( flag_altform2 && n>0 ){
             zz = sqlite3_str_value(pAccum);
-            for(i=iStart; zz[i]; i++){
-              if( (zz[i]&0xc0)==0x80 ) len--;
+            עבור(i=iStart; zz[i]; i++){
+              אם( (zz[i]&0xc0)==0x80 ) len--;
             }
           }
-          if( width>len ){
+          אם( width>len ){
             sqlite3_int64 sp = width-len;
-            assert( sp>0 && sp<0x7fffffff );
-            sqlite3StrAppendchar64(pAccum, (int)sp, ' ');
-            if( !flag_leftjustify
+            أكد( sp>0 && sp<0x7fffffff );
+            sqlite3StrAppendchar64(pAccum, (صحيح)sp, ' ');
+            אם( !flag_leftjustify
              && n>0
              && sqlite3_str_errcode(pAccum)==0
             ){
@@ -963,31 +963,31 @@ void sqlite3_str_vappendf(
             }
           }
         }
-        continue;
+        استمر;
       }
-      case etESCAPE_q:          /* %q: Escape ' characters */
-      case etESCAPE_Q:          /* %Q: Escape ' and enclose in '...' */
-      case etESCAPE_w: {        /* %w: Escape " characters */
+      حالة etESCAPE_q:          /* %q: Escape ' characters */
+      حالة etESCAPE_Q:          /* %Q: Escape ' and enclose in '...' */
+      حالة etESCAPE_w: {        /* %w: Escape " characters */
         i64 i, j, k, n;
-        int needQuote = 0;
-        char ch;
-        char *escarg;
-        char q;
+        صحيح needQuote = 0;
+        حرف ch;
+        حرف *escarg;
+        حرف q;
 
-        if( bArgList ){
+        אם( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
-          escarg = va_arg(ap,char*);
+        }אחרת{
+          escarg = va_arg(ap,حرف*);
         }
-        if( escarg==0 ){
+        אם( escarg==0 ){
           escarg = (xtype==etESCAPE_Q ? "NULL" : "(NULL)");
-        }else if( xtype==etESCAPE_Q ){
+        }אחרת אם( xtype==etESCAPE_Q ){
           needQuote = 1;
         }
-        if( xtype==etESCAPE_w ){
+        אם( xtype==etESCAPE_w ){
           q = '"';
           flag_alternateform = 0;
-        }else{
+        }אחרת{
           q = '\'';
         }
         /* For %q, %Q, and %w, the precision is the number of bytes (or
@@ -996,61 +996,61 @@ void sqlite3_str_vappendf(
         ** of output characters may be larger than the precision.
         */
         k = precision;
-        for(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
-          if( ch==q )  n++;
-          if( flag_altform2 && (ch&0xc0)==0xc0 ){
-            while( (escarg[i+1]&0xc0)==0x80 ){ i++; }
+        עבור(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
+          אם( ch==q )  n++;
+          אם( flag_altform2 && (ch&0xc0)==0xc0 ){
+            כלעוד( (escarg[i+1]&0xc0)==0x80 ){ i++; }
           }
         }
-        if( flag_alternateform ){
+        אם( flag_alternateform ){
           /* For %#q, do unistr()-style backslash escapes for
           ** all control characters, and for backslash itself.
           ** For %#Q, do the same but only if there is at least
           ** one control character. */
           i64 nBack = 0;
           i64 nCtrl = 0;
-          for(k=0; k<i; k++){
-            if( escarg[k]=='\\' ){
+          עבור(k=0; k<i; k++){
+            אם( escarg[k]=='\\' ){
               nBack++;
-            }else if( ((u8*)escarg)[k]<=0x1f ){
+            }אחרת אם( ((u8*)escarg)[k]<=0x1f ){
               nCtrl++;
             }
           }
-          if( nCtrl || xtype==etESCAPE_q ){
+          אם( nCtrl || xtype==etESCAPE_q ){
             n += nBack + 5*nCtrl;
-            if( xtype==etESCAPE_Q ){
+            אם( xtype==etESCAPE_Q ){
               n += 10;
               needQuote = 2;
             }
-          }else{
+          }אחרת{
             flag_alternateform = 0;
           }
         }
         n += i + 3;
-        if( n>etBUFSIZE ){
+        אם( n>etBUFSIZE ){
           bufpt = zExtra = printfTempBuf(pAccum, n);
-          if( bufpt==0 ) return;
-        }else{
+          אם( bufpt==0 ) החזר;
+        }אחרת{
           bufpt = buf;
         }
         j = 0;
-        if( needQuote ){
-          if( needQuote==2 ){
+        אם( needQuote ){
+          אם( needQuote==2 ){
             memcpy(&bufpt[j], "unistr('", 8);
             j += 8;
-          }else{
+          }אחרת{
             bufpt[j++] = '\'';
           }
         }
         k = i;
-        if( flag_alternateform ){
-          for(i=0; i<k; i++){
+        אם( flag_alternateform ){
+          עבור(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ){
+            אם( ch==q ){
               bufpt[j++] = ch;
-            }else if( ch=='\\' ){
+            }אחרת אם( ch=='\\' ){
               bufpt[j++] = '\\';
-            }else if( ((unsigned char)ch)<=0x1f ){
+            }אחרת אם( ((unsigned حرف)ch)<=0x1f ){
               bufpt[j-1] = '\\';
               bufpt[j++] = 'u';
               bufpt[j++] = '0';
@@ -1059,50 +1059,50 @@ void sqlite3_str_vappendf(
               bufpt[j++] = aHex[ch&0xf];
             }
           }
-        }else{
-          for(i=0; i<k; i++){
+        }אחרת{
+          עבור(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ) bufpt[j++] = ch;
+            אם( ch==q ) bufpt[j++] = ch;
           }
         }
-        if( needQuote ){
+        אם( needQuote ){
           bufpt[j++] = '\'';
-          if( needQuote==2 ) bufpt[j++] = ')';
+          אם( needQuote==2 ) bufpt[j++] = ')';
         }
         bufpt[j] = 0;
         length = j;
-        goto adjust_width_for_utf8;
+        اذهب adjust_width_for_utf8;
       }
-      case etTOKEN: {
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
-        if( flag_alternateform ){
+      حالة etTOKEN: {
+        אם( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) החזר;
+        אם( flag_alternateform ){
           /* %#T means an Expr pointer that uses Expr.u.zToken */
           Expr *pExpr = va_arg(ap,Expr*);
-          if( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
-            sqlite3_str_appendall(pAccum, (const char*)pExpr->u.zToken);
+          אם( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
+            sqlite3_str_appendall(pAccum, (ثابت حرف*)pExpr->u.zToken);
             sqlite3RecordErrorOffsetOfExpr(pAccum->db, pExpr);
           }
-        }else{
+        }אחרת{
           /* %T means a Token pointer */
           Token *pToken = va_arg(ap, Token*);
-          assert( bArgList==0 );
-          if( pToken && pToken->n ){
-            sqlite3_str_append(pAccum, (const char*)pToken->z, pToken->n);
+          أكد( bArgList==0 );
+          אם( pToken && pToken->n ){
+            sqlite3_str_append(pAccum, (ثابت حرف*)pToken->z, pToken->n);
             sqlite3RecordErrorByteOffset(pAccum->db, pToken->z);
           }
         }
         length = width = 0;
-        break;
+        اكسر;
       }
-      case etSRCITEM: {
+      حالة etSRCITEM: {
         SrcItem *pItem;
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
+        אם( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) החזר;
         pItem = va_arg(ap, SrcItem*);
-        assert( bArgList==0 );
-        if( pItem->zAlias && !flag_altform2 ){
+        أكد( bArgList==0 );
+        אם( pItem->zAlias && !flag_altform2 ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( pItem->zName ){
-          if( pItem->fg.fixedSchema==0
+        }אחרת אם( pItem->zName ){
+          אם( pItem->fg.fixedSchema==0
            && pItem->fg.isSubquery==0
            && pItem->u4.zDatabase!=0
           ){
@@ -1110,27 +1110,27 @@ void sqlite3_str_vappendf(
             sqlite3_str_append(pAccum, ".", 1);
           }
           sqlite3_str_appendall(pAccum, pItem->zName);
-        }else if( pItem->zAlias ){
+        }אחרת אם( pItem->zAlias ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
+        }אחרת אם( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
           Select *pSel = pItem->u4.pSubq->pSelect;
-          assert( pSel!=0 ); 
-          if( pSel->selFlags & SF_NestedFrom ){
+          أكد( pSel!=0 ); 
+          אם( pSel->selFlags & SF_NestedFrom ){
             sqlite3_str_appendf(pAccum, "(join-%u)", pSel->selId);
-          }else if( pSel->selFlags & SF_MultiValue ){
-            assert( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
+          }אחרת אם( pSel->selFlags & SF_MultiValue ){
+            أكد( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
             sqlite3_str_appendf(pAccum, "%u-ROW VALUES CLAUSE",
                                 pItem->u1.nRow);
-          }else{
+          }אחרת{
             sqlite3_str_appendf(pAccum, "(subquery-%u)", pSel->selId);
           }
         }
         length = width = 0;
-        break;
+        اكسر;
       }
-      default: {
-        assert( xtype==etINVALID );
-        return;
+      افتراضي: {
+        أكد( xtype==etINVALID );
+        החזר;
       }
     }/* End switch over the format type */
     /*
@@ -1142,15 +1142,15 @@ void sqlite3_str_vappendf(
     ** then the values have been translated prior to reaching this point.
     */
     width -= length;
-    if( width>0 ){
-      if( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    אם( width>0 ){
+      אם( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
       sqlite3StrAppend64(pAccum, bufpt, length);
-      if( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
-    }else{
+      אם( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    }אחרת{
       sqlite3StrAppend64(pAccum, bufpt, length);
     }
 
-    if( zExtra ){
+    אם( zExtra ){
       sqlite3DbFree(pAccum->db, zExtra);
       zExtra = 0;
     }
@@ -1164,20 +1164,20 @@ void sqlite3_str_vappendf(
 ** byte offset recorded, try to compute the error byte offset for
 ** z and set the error byte offset in db.
 */
-void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
-  const Parse *pParse;
-  const char *zText;
-  const char *zEnd;
-  assert( z!=0 );
-  if( NEVER(db==0) ) return;
-  if( db->errByteOffset!=(-2) ) return;
+فراغ sqlite3RecordErrorByteOffset(sqlite3 *db, ثابت حرف *z){
+  ثابت Parse *pParse;
+  ثابت حرف *zText;
+  ثابت حرف *zEnd;
+  أكد( z!=0 );
+  אם( NEVER(db==0) ) החזר;
+  אם( db->errByteOffset!=(-2) ) החזר;
   pParse = db->pParse;
-  if( NEVER(pParse==0) ) return;
+  אם( NEVER(pParse==0) ) החזר;
   zText =pParse->zTail;
-  if( NEVER(zText==0) ) return;
+  אם( NEVER(zText==0) ) החזר;
   zEnd = &zText[strlen(zText)];
-  if( SQLITE_WITHIN(z,zText,zEnd) ){
-    db->errByteOffset = (int)(z-zText);
+  אם( SQLITE_WITHIN(z,zText,zEnd) ){
+    db->errByteOffset = (صحيح)(z-zText);
   }
 }
 
@@ -1185,17 +1185,17 @@ void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
 ** If pExpr has a byte offset for the start of a token, record that as
 ** as the error offset.
 */
-void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
-  while( pExpr ){
-    if( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) return;
-    if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
+فراغ sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, ثابت Expr *pExpr){
+  כלעוד( pExpr ){
+    אם( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) החזר;
+    אם( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
       pExpr = pExpr->pLeft;
-    }else{
-      break;
+    }אחרת{
+      اكسر;
     }
   }
-  if( pExpr==0 ) return;
-  if( ExprHasProperty(pExpr, EP_FromDDL) ) return;
+  אם( pExpr==0 ) החזר;
+  אם( ExprHasProperty(pExpr, EP_FromDDL) ) החזר;
   db->errByteOffset = pExpr->w.iOfst;
 }
 
@@ -1206,76 +1206,76 @@ void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
 ** Return the number of bytes of text that StrAccum is able to accept
 ** after the attempted enlargement.  The value returned might be zero.
 */
-int sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
-  char *zNew;
-  assert( p->nChar+N >= p->nAlloc ); /* Only called if really needed */
-  if( p->accError ){
+صحيح sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
+  حرف *zNew;
+  أكد( p->nChar+N >= p->nAlloc ); /* Only called if really needed */
+  אם( p->accError ){
     testcase(p->accError==SQLITE_TOOBIG);
     testcase(p->accError==SQLITE_NOMEM);
-    return 0;
+    החזר 0;
   }
-  if( p->mxAlloc==0 ){
+  אם( p->mxAlloc==0 ){
     sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-    return p->nAlloc - p->nChar - 1;
-  }else{
-    char *zOld = isMalloced(p) ? p->zText : 0;
+    החזר p->nAlloc - p->nChar - 1;
+  }אחרת{
+    حرف *zOld = isMalloced(p) ? p->zText : 0;
     i64 szNew = p->nChar + N + 1;
-    if( szNew+p->nChar<=p->mxAlloc ){
+    אם( szNew+p->nChar<=p->mxAlloc ){
       /* Force exponential buffer size growth as long as it does not overflow,
       ** to avoid having to call this routine too often */
       szNew += p->nChar;
     }
-    if( szNew > p->mxAlloc ){
+    אם( szNew > p->mxAlloc ){
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-      return 0;
-    }else{
-      p->nAlloc = (int)szNew;
+      החזר 0;
+    }אחרת{
+      p->nAlloc = (صحيح)szNew;
     }
-    if( p->db ){
+    אם( p->db ){
       zNew = sqlite3DbRealloc(p->db, zOld, p->nAlloc);
-    }else{
+    }אחרת{
       zNew = sqlite3Realloc(zOld, p->nAlloc);
     }
-    if( zNew ){
-      assert( p->zText!=0 || p->nChar==0 );
-      if( !isMalloced(p) && p->nChar>0 ) memcpy(zNew, p->zText, p->nChar);
+    אם( zNew ){
+      أكد( p->zText!=0 || p->nChar==0 );
+      אם( !isMalloced(p) && p->nChar>0 ) memcpy(zNew, p->zText, p->nChar);
       p->zText = zNew;
       p->nAlloc = sqlite3DbMallocSize(p->db, zNew);
       p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-    }else{
+    }אחרת{
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_NOMEM);
-      return 0;
+      החזר 0;
     }
   }
-  assert( N>=0 && N<=0x7fffffff );
-  return (int)N;
+  أكد( N>=0 && N<=0x7fffffff );
+  החזר (صحيح)N;
 }
 
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
-  if( N + p->nChar >= p->nAlloc ){
+صحيح sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
+  אם( N + p->nChar >= p->nAlloc ){
     sqlite3StrAccumEnlarge(p, N);
   }
-  return p->accError;
+  החזר p->accError;
 }
 
 /*
 ** Append N copies of character c to the given string buffer.
 */
-void sqlite3_str_appendchar(sqlite3_str *p, int N, char c){
+فراغ sqlite3_str_appendchar(sqlite3_str *p, صحيح N, حرف c){
   testcase( p->nChar + (i64)N > 0x7fffffff );
-  if( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  אם( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    החזר;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  כלעוד( (N--)>0 ) p->zText[p->nChar++] = c;
 }
-static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
+ساكن فراغ sqlite3StrAppendchar64(sqlite3_str *p, i64 N, حرف c){
   testcase( p->nChar + N > 0x7fffffff );
-  if( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  אם( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    החזר;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  כלעוד( (N--)>0 ) p->zText[p->nChar++] = c;
 }
 
 /*
@@ -1286,10 +1286,10 @@ static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
 ** work (enlarging the buffer) using tail recursion, so that the
 ** sqlite3_str_append() routine can use fast calling semantics.
 */
-static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
+ساكن فراغ SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, ثابت حرف *z, صحيح N){
   N = sqlite3StrAccumEnlarge(p, N);
-  assert( z!=0 || N==0 );
-  if( N>0 ){
+  أكد( z!=0 || N==0 );
+  אם( N>0 ){
     memcpy(&p->zText[p->nChar], z, N);
     p->nChar += N;
   }
@@ -1299,28 +1299,28 @@ static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
 ** Append N bytes of text from z to the StrAccum object.  Increase the
 ** size of the memory allocation for StrAccum if necessary.
 */
-void sqlite3_str_append(sqlite3_str *p, const char *z, int N){
-  assert( z!=0 || N==0 );
-  assert( p->zText!=0 || p->nChar==0 || p->accError );
-  assert( N>=0 );
-  assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= p->nAlloc ){
+فراغ sqlite3_str_append(sqlite3_str *p, ثابت حرف *z, صحيح N){
+  أكد( z!=0 || N==0 );
+  أكد( p->zText!=0 || p->nChar==0 || p->accError );
+  أكد( N>=0 );
+  أكد( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
+  אם( p->nChar+N >= p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
-    assert( p->zText );
+  }אחרת אם( N ){
+    أكد( p->zText );
     p->nChar += N;
     memcpy(&p->zText[p->nChar-N], z, N);
   }
 }
-static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N){
-  assert( z!=0 || N==0 );
-  assert( p->zText!=0 || p->nChar==0 || p->accError );
-  assert( N>=0 );
-  assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= (i64)p->nAlloc ){
+ساكن فراغ sqlite3StrAppend64(sqlite3_str *p, ثابت حرف *z, i64 N){
+  أكد( z!=0 || N==0 );
+  أكد( p->zText!=0 || p->nChar==0 || p->accError );
+  أكد( N>=0 );
+  أكد( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
+  אם( p->nChar+N >= (i64)p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
-    assert( p->zText );
+  }אחרת אם( N ){
+    أكد( p->zText );
     p->nChar += N;
     memcpy(&p->zText[p->nChar-N], z, N);
   }
@@ -1330,7 +1330,7 @@ static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N){
 /*
 ** Append the complete text of zero-terminated string z[] to the p string.
 */
-void sqlite3_str_appendall(sqlite3_str *p, const char *z){
+فراغ sqlite3_str_appendall(sqlite3_str *p, ثابت حرف *z){
   sqlite3_str_append(p, z, sqlite3Strlen30(z));
 }
 
@@ -1340,76 +1340,76 @@ void sqlite3_str_appendall(sqlite3_str *p, const char *z){
 ** Return a pointer to the resulting string.  Return a NULL
 ** pointer if any kind of error was encountered.
 */
-static SQLITE_NOINLINE char *strAccumFinishRealloc(StrAccum *p){
-  char *zText;
-  assert( p->mxAlloc>0 && !isMalloced(p) );
+ساكن SQLITE_NOINLINE حرف *strAccumFinishRealloc(StrAccum *p){
+  حرف *zText;
+  أكد( p->mxAlloc>0 && !isMalloced(p) );
   zText = sqlite3DbMallocRaw(p->db, 1+(u64)p->nChar );
-  if( zText ){
+  אם( zText ){
     memcpy(zText, p->zText, p->nChar+1);
     p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-  }else{
+  }אחרת{
     sqlite3StrAccumSetError(p, SQLITE_NOMEM);
   }
   p->zText = zText;
-  return zText;
+  החזר zText;
 }
-char *sqlite3StrAccumFinish(StrAccum *p){
-  if( p->zText ){
+حرف *sqlite3StrAccumFinish(StrAccum *p){
+  אם( p->zText ){
     p->zText[p->nChar] = 0;
-    if( p->mxAlloc>0 && !isMalloced(p) ){
-      return strAccumFinishRealloc(p);
+    אם( p->mxAlloc>0 && !isMalloced(p) ){
+      החזר strAccumFinishRealloc(p);
     }
   }
-  return p->zText;
+  החזר p->zText;
 }
 
 /* Finalize a string created using sqlite3_str_new().
 */
-char *sqlite3_str_finish(sqlite3_str *p){
-  char *z;
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+حرف *sqlite3_str_finish(sqlite3_str *p){
+  حرف *z;
+  אם( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     z = sqlite3StrAccumFinish(p);
     sqlite3_free(p);
-  }else{
+  }אחרת{
     z = 0;
   }
-  return z;
+  החזר z;
 }
 
 /* Return any error code associated with p */
-int sqlite3_str_errcode(sqlite3_str *p){
-  return p ? p->accError : SQLITE_NOMEM;
+صحيح sqlite3_str_errcode(sqlite3_str *p){
+  החזר p ? p->accError : SQLITE_NOMEM;
 }
 
 /* Return the current length of p in bytes */
-int sqlite3_str_length(sqlite3_str *p){
-  return p ? p->nChar : 0;
+صحيح sqlite3_str_length(sqlite3_str *p){
+  החזר p ? p->nChar : 0;
 }
 
 /* Truncate the text of the string to be no more than N bytes. */
-void sqlite3_str_truncate(sqlite3_str *p, int N){
-  if( p!=0 && N>=0 && (u32)N<p->nChar ){
+فراغ sqlite3_str_truncate(sqlite3_str *p, صحيح N){
+  אם( p!=0 && N>=0 && (u32)N<p->nChar ){
     p->nChar = N;
     p->zText[p->nChar] = 0;
   }
 }
 
 /* Return the current value for p */
-char *sqlite3_str_value(sqlite3_str *p){
-  if( p==0 || p->nChar==0 ) return 0;
+حرف *sqlite3_str_value(sqlite3_str *p){
+  אם( p==0 || p->nChar==0 ) החזר 0;
   p->zText[p->nChar] = 0;
-  return p->zText;
+  החזר p->zText;
 }
 
 /*
 ** Reset an StrAccum string.  Reclaim all malloced memory.
 */
-void sqlite3_str_reset(StrAccum *p){
-  if( isMalloced(p) ){
+فراغ sqlite3_str_reset(StrAccum *p){
+  אם( isMalloced(p) ){
     sqlite3DbFree(p->db, p->zText);
     p->printfFlags &= ~SQLITE_PRINTF_MALLOCED;
-  }else if( p==(sqlite3_str*)&sqlite3OomStr ){
-    return;
+  }אחרת אם( p==(sqlite3_str*)&sqlite3OomStr ){
+    החזר;
   }
   p->nAlloc = 0;
   p->nChar = 0;
@@ -1420,8 +1420,8 @@ void sqlite3_str_reset(StrAccum *p){
 ** Destroy a dynamically allocate sqlite3_str object and all
 ** of its content, all in one call.
 */
-void sqlite3_str_free(sqlite3_str *p){
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+فراغ sqlite3_str_free(sqlite3_str *p){
+  אם( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     sqlite3_str_reset(p);
     sqlite3_free(p);
   }
@@ -1441,7 +1441,7 @@ void sqlite3_str_free(sqlite3_str *p){
 ** mx:    Maximum number of bytes to accumulate.  If mx==0 then no memory
 **        allocations will ever occur.
 */
-void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
+فراغ sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, حرف *zBase, صحيح n, صحيح mx){
   p->zText = zBase;
   p->db = db;
   p->nAlloc = n;
@@ -1453,87 +1453,87 @@ void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
 
 /* Allocate and initialize a new dynamic string object */
 sqlite3_str *sqlite3_str_new(sqlite3 *db){
-  sqlite3_str *p = sqlite3_malloc64(sizeof(*p));
-  if( p ){
+  sqlite3_str *p = sqlite3_malloc64(حجم(*p));
+  אם( p ){
     sqlite3StrAccumInit(p, 0, 0, 0,
             db ? db->aLimit[SQLITE_LIMIT_LENGTH] : SQLITE_MAX_LENGTH);
-  }else{
+  }אחרת{
     p = (sqlite3_str*)&sqlite3OomStr;
   }
-  return p;
+  החזר p;
 }
 
 /*
 ** Print into memory obtained from sqliteMalloc().  Use the internal
 ** %-conversion extensions.
 */
-char *sqlite3VMPrintf(sqlite3 *db, const char *zFormat, va_list ap){
-  char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+حرف *sqlite3VMPrintf(sqlite3 *db, ثابت حرف *zFormat, va_list ap){
+  حرف *z;
+  حرف zBase[SQLITE_PRINT_BUF_SIZE];
   StrAccum acc;
-  assert( db!=0 );
-  sqlite3StrAccumInit(&acc, db, zBase, sizeof(zBase),
+  أكد( db!=0 );
+  sqlite3StrAccumInit(&acc, db, zBase, حجم(zBase),
                       db->aLimit[SQLITE_LIMIT_LENGTH]);
   acc.printfFlags = SQLITE_PRINTF_INTERNAL;
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  if( acc.accError==SQLITE_NOMEM ){
+  אם( acc.accError==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
-  return z;
+  החזר z;
 }
 
 /*
 ** Print into memory obtained from sqliteMalloc().  Use the internal
 ** %-conversion extensions.
 */
-char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...){
+حرف *sqlite3MPrintf(sqlite3 *db, ثابت حرف *zFormat, ...){
   va_list ap;
-  char *z;
+  حرف *z;
   va_start(ap, zFormat);
   z = sqlite3VMPrintf(db, zFormat, ap);
   va_end(ap);
-  return z;
+  החזר z;
 }
 
 /*
 ** Print into memory obtained from sqlite3_malloc().  Omit the internal
 ** %-conversion extensions.
 */
-char *sqlite3_vmprintf(const char *zFormat, va_list ap){
-  char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+حرف *sqlite3_vmprintf(ثابت حرف *zFormat, va_list ap){
+  حرف *z;
+  حرف zBase[SQLITE_PRINT_BUF_SIZE];
   StrAccum acc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR  
-  if( zFormat==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  אם( zFormat==0 ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    החזר 0;
   }
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  אם( sqlite3_initialize() ) החזר 0;
 #endif
-  sqlite3StrAccumInit(&acc, 0, zBase, sizeof(zBase), SQLITE_MAX_LENGTH);
+  sqlite3StrAccumInit(&acc, 0, zBase, حجم(zBase), SQLITE_MAX_LENGTH);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  return z;
+  החזר z;
 }
 
 /*
 ** Print into memory obtained from sqlite3_malloc()().  Omit the internal
 ** %-conversion extensions.
 */
-char *sqlite3_mprintf(const char *zFormat, ...){
+حرف *sqlite3_mprintf(ثابت حرف *zFormat, ...){
   va_list ap;
-  char *z;
+  حرف *z;
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  אם( sqlite3_initialize() ) החזר 0;
 #endif
   va_start(ap, zFormat);
   z = sqlite3_vmprintf(zFormat, ap);
   va_end(ap);
-  return z;
+  החזר z;
 }
 
 /*
@@ -1549,30 +1549,30 @@ char *sqlite3_mprintf(const char *zFormat, ...){
 **
 ** sqlite3_vsnprintf() is the varargs version.
 */
-char *sqlite3_vsnprintf(int n, char *zBuf, const char *zFormat, va_list ap){
+حرف *sqlite3_vsnprintf(صحيح n, حرف *zBuf, ثابت حرف *zFormat, va_list ap){
   StrAccum acc;
-  if( n<=0 ) return zBuf;
+  אם( n<=0 ) החזר zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
-    (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+  אם( zBuf==0 || zFormat==0 ) {
+    (فراغ)SQLITE_MISUSE_BKPT;
+    אם( zBuf ) zBuf[0] = 0;
+    החזר zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  החזר zBuf;
 }
-char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
+حرف *sqlite3_snprintf(صحيح n, حرف *zBuf, ثابت حرف *zFormat, ...){
   StrAccum acc;
   va_list ap;
-  if( n<=0 ) return zBuf;
+  אם( n<=0 ) החזר zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
-    (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+  אם( zBuf==0 || zFormat==0 ) {
+    (فراغ)SQLITE_MISUSE_BKPT;
+    אם( zBuf ) zBuf[0] = 0;
+    החזר zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
@@ -1580,15 +1580,15 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
   sqlite3_str_vappendf(&acc, zFormat, ap);
   va_end(ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  החזר zBuf;
 }
 
 /* Maximum size of an sqlite3_log() message. */
-#if defined(SQLITE_MAX_LOG_MESSAGE) 
+#אם defined(SQLITE_MAX_LOG_MESSAGE) 
   /* Leave the definition as supplied */
-#elif SQLITE_PRINT_BUF_SIZE*10>10000
+#وإلاإذا SQLITE_PRINT_BUF_SIZE*10>10000
 # define SQLITE_MAX_LOG_MESSAGE 10000
-#else
+#אחרת
 # define SQLITE_MAX_LOG_MESSAGE (SQLITE_PRINT_BUF_SIZE*10)
 #endif
 
@@ -1606,11 +1606,11 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** Care must be taken that any sqlite3_log() calls that occur while the
 ** memory mutex is held do not use these mechanisms.
 */
-static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
+ساكن فراغ renderLogMsg(صحيح iErrCode, ثابت حرف *zFormat, va_list ap){
   StrAccum acc;                          /* String accumulator */
-  char zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
+  حرف zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
 
-  sqlite3StrAccumInit(&acc, 0, zMsg, sizeof(zMsg), 0);
+  sqlite3StrAccumInit(&acc, 0, zMsg, حجم(zMsg), 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   sqlite3GlobalConfig.xLog(sqlite3GlobalConfig.pLogArg, iErrCode,
                            sqlite3StrAccumFinish(&acc));
@@ -1619,36 +1619,36 @@ static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
 /*
 ** Format and write a message to the log if logging is enabled.
 */
-void sqlite3_log(int iErrCode, const char *zFormat, ...){
+فراغ sqlite3_log(صحيح iErrCode, ثابت حرف *zFormat, ...){
   va_list ap;                             /* Vararg list */
-  if( sqlite3GlobalConfig.xLog ){
+  אם( sqlite3GlobalConfig.xLog ){
     va_start(ap, zFormat);
     renderLogMsg(iErrCode, zFormat, ap);
     va_end(ap);
   }
 }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+#אם defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
 /*
 ** A version of printf() that understands %lld.  Used for debugging.
 ** The printf() built into some versions of windows does not understand %lld
 ** and segfaults if you give it a long long int.
 */
-void sqlite3DebugPrintf(const char *zFormat, ...){
+فراغ sqlite3DebugPrintf(ثابت حرف *zFormat, ...){
   va_list ap;
   StrAccum acc;
-  char zBuf[SQLITE_PRINT_BUF_SIZE*10];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
+  حرف zBuf[SQLITE_PRINT_BUF_SIZE*10];
+  sqlite3StrAccumInit(&acc, 0, zBuf, حجم(zBuf), 0);
   va_start(ap,zFormat);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   va_end(ap);
   sqlite3StrAccumFinish(&acc);
 #ifdef SQLITE_OS_TRACE_PROC
   {
-    extern void SQLITE_OS_TRACE_PROC(const char *zBuf, int nBuf);
-    SQLITE_OS_TRACE_PROC(zBuf, sizeof(zBuf));
+    خارجي فراغ SQLITE_OS_TRACE_PROC(ثابت حرف *zBuf, صحيح nBuf);
+    SQLITE_OS_TRACE_PROC(zBuf, حجم(zBuf));
   }
-#else
+#אחרת
   fprintf(stdout,"%s", zBuf);
   fflush(stdout);
 #endif
@@ -1660,7 +1660,7 @@ void sqlite3DebugPrintf(const char *zFormat, ...){
 ** variable-argument wrapper around sqlite3_str_vappendf(). The bFlags argument
 ** can contain the bit SQLITE_PRINTF_INTERNAL enable internal formats.
 */
-void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...){
+فراغ sqlite3_str_appendf(StrAccum *p, ثابت حرف *zFormat, ...){
   va_list ap;
   va_start(ap,zFormat);
   sqlite3_str_vappendf(p, zFormat, ap);
@@ -1677,26 +1677,26 @@ void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...){
 **
 ** The input parameter is returned.
 */
-char *sqlite3RCStrRef(char *z){
+حرف *sqlite3RCStrRef(حرف *z){
   RCStr *p = (RCStr*)z;
-  assert( p!=0 );
+  أكد( p!=0 );
   p--;
   p->nRCRef++;
-  return z;
+  החזר z;
 }
 
 /*
 ** Decrease the reference count by one.  Free the string when the
 ** reference count reaches zero.
 */
-void sqlite3RCStrUnref(void *z){
+فراغ sqlite3RCStrUnref(فراغ *z){
   RCStr *p = (RCStr*)z;
-  assert( p!=0 );
+  أكد( p!=0 );
   p--;
-  assert( p->nRCRef>0 );
-  if( p->nRCRef>=2 ){
+  أكد( p->nRCRef>0 );
+  אם( p->nRCRef>=2 ){
     p->nRCRef--;
-  }else{
+  }אחרת{
     sqlite3_free(p);
   }
 }
@@ -1710,28 +1710,28 @@ void sqlite3RCStrUnref(void *z){
 **
 ** This routine returns 0 on an OOM.
 */
-char *sqlite3RCStrNew(u64 N){
-  RCStr *p = sqlite3_malloc64( N + sizeof(*p) + 1 );
-  if( p==0 ) return 0;
+حرف *sqlite3RCStrNew(u64 N){
+  RCStr *p = sqlite3_malloc64( N + حجم(*p) + 1 );
+  אם( p==0 ) החזר 0;
   p->nRCRef = 1;
-  return (char*)&p[1];
+  החזר (حرف*)&p[1];
 }
 
 /*
 ** Change the size of the string so that it is able to hold N bytes.
 ** The string might be reallocated, so return the new allocation.
 */
-char *sqlite3RCStrResize(char *z, u64 N){
+حرف *sqlite3RCStrResize(حرف *z, u64 N){
   RCStr *p = (RCStr*)z;
   RCStr *pNew;
-  assert( p!=0 );
+  أكد( p!=0 );
   p--;
-  assert( p->nRCRef==1 );
-  pNew = sqlite3_realloc64(p, N+sizeof(RCStr)+1);
-  if( pNew==0 ){
+  أكد( p->nRCRef==1 );
+  pNew = sqlite3_realloc64(p, N+حجم(RCStr)+1);
+  אם( pNew==0 ){
     sqlite3_free(p);
-    return 0;
-  }else{
-    return (char*)&pNew[1];
+    החזר 0;
+  }אחרת{
+    החזר (حرف*)&pNew[1];
   }
 }
