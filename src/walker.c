@@ -17,28 +17,28 @@
 #include <string.h>
 
 
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
+#ប្រសិនបើ !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** Walk all expressions linked into the list of Window objects passed
 ** as the second argument.
 */
-static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
+static ចំនួនគត់ walkWindowList(Walker *pWalker, Window *pList, ចំនួនគត់ bOneOnly){
   Window *pWin;
-  for(pWin=pList; pWin; pWin=pWin->pNextWin){
-    int rc;
+  សម្រាប់(pWin=pList; pWin; pWin=pWin->pNextWin){
+    ចំនួនគត់ rc;
     rc = sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-    if( rc ) return WRC_Abort;
+    ប្រសិនបើ( rc ) ត្រឡប់ WRC_Abort;
     rc = sqlite3WalkExprList(pWalker, pWin->pPartition);
-    if( rc ) return WRC_Abort;
+    ប្រសិនបើ( rc ) ត្រឡប់ WRC_Abort;
     rc = sqlite3WalkExpr(pWalker, pWin->pFilter);
-    if( rc ) return WRC_Abort;
+    ប្រសិនបើ( rc ) ត្រឡប់ WRC_Abort;
     rc = sqlite3WalkExpr(pWalker, pWin->pStart);
-    if( rc ) return WRC_Abort;
+    ប្រសិនបើ( rc ) ត្រឡប់ WRC_Abort;
     rc = sqlite3WalkExpr(pWalker, pWin->pEnd);
-    if( rc ) return WRC_Abort;
-    if( bOneOnly ) break;
+    ប្រសិនបើ( rc ) ត្រឡប់ WRC_Abort;
+    ប្រសិនបើ( bOneOnly ) bha_nga;
   }
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 #endif
 
@@ -61,57 +61,57 @@ static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
 ** The return value from this routine is WRC_Abort to abandon the tree walk
 ** and WRC_Continue to continue.
 */
-SQLITE_NOINLINE int sqlite3WalkExprNN(Walker *pWalker, Expr *pExpr){
-  int rc;
+SQLITE_NOINLINE ចំនួនគត់ sqlite3WalkExprNN(Walker *pWalker, Expr *pExpr){
+  ចំនួនគត់ rc;
   testcase( ExprHasProperty(pExpr, EP_TokenOnly) );
   testcase( ExprHasProperty(pExpr, EP_Reduced) );
-  while(1){
+  ខណៈពេល(1){
     rc = pWalker->xExprCallback(pWalker, pExpr);
-    if( rc ) return rc & WRC_Abort;
-    if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
+    ប្រសិនបើ( rc ) ត្រឡប់ rc & WRC_Abort;
+    ប្រសិនបើ( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
       assert( pExpr->x.pList==0 || pExpr->pRight==0 );
-      if( pExpr->pLeft && sqlite3WalkExprNN(pWalker, pExpr->pLeft) ){
-        return WRC_Abort;
+      ប្រសិនបើ( pExpr->pLeft && sqlite3WalkExprNN(pWalker, pExpr->pLeft) ){
+        ត្រឡប់ WRC_Abort;
       }
-      if( pExpr->pRight ){
+      ប្រសិនបើ( pExpr->pRight ){
         assert( !ExprHasProperty(pExpr, EP_WinFunc) );
         pExpr = pExpr->pRight;
         continue;
-      }else if( ExprUseXSelect(pExpr) ){
+      }បើមិនដូច្នេះ ប្រសិនបើ( ExprUseXSelect(pExpr) ){
         assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        if( sqlite3WalkSelect(pWalker, pExpr->x.pSelect) ) return WRC_Abort;
-      }else{
-        if( pExpr->x.pList ){
-          if( sqlite3WalkExprList(pWalker, pExpr->x.pList) ) return WRC_Abort;
+        ប្រសិនបើ( sqlite3WalkSelect(pWalker, pExpr->x.pSelect) ) ត្រឡប់ WRC_Abort;
+      }បើមិនដូច្នេះ{
+        ប្រសិនបើ( pExpr->x.pList ){
+          ប្រសិនបើ( sqlite3WalkExprList(pWalker, pExpr->x.pList) ) ត្រឡប់ WRC_Abort;
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        if( ExprHasProperty(pExpr, EP_WinFunc) ){
-          if( walkWindowList(pWalker, pExpr->y.pWin, 1) ) return WRC_Abort;
+        ប្រសិនបើ( ExprHasProperty(pExpr, EP_WinFunc) ){
+          ប្រសិនបើ( walkWindowList(pWalker, pExpr->y.pWin, 1) ) ត្រឡប់ WRC_Abort;
         }
 #endif
       }
     }
-    break;
+    bha_nga;
   }
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
-int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){
-  return pExpr ? sqlite3WalkExprNN(pWalker,pExpr) : WRC_Continue;
+ចំនួនគត់ sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){
+  ត្រឡប់ pExpr ? sqlite3WalkExprNN(pWalker,pExpr) : WRC_Continue;
 }
 
 /*
 ** Call sqlite3WalkExpr() for every expression in list p or until
 ** an abort request is seen.
 */
-int sqlite3WalkExprList(Walker *pWalker, ExprList *p){
-  int i;
-  struct ExprList_item *pItem;
-  if( p ){
-    for(i=p->nExpr, pItem=p->a; i>0; i--, pItem++){
-      if( sqlite3WalkExpr(pWalker, pItem->pExpr) ) return WRC_Abort;
+ចំនួនគត់ sqlite3WalkExprList(Walker *pWalker, ExprList *p){
+  ចំនួនគត់ i;
+  sa_nracanaa ExprList_item *pItem;
+  ប្រសិនបើ( p ){
+    សម្រាប់(i=p->nExpr, pItem=p->a; i>0; i--, pItem++){
+      ប្រសិនបើ( sqlite3WalkExpr(pWalker, pItem->pExpr) ) ត្រឡប់ WRC_Abort;
     }
   }
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 
 /*
@@ -130,17 +130,17 @@ void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
 ** any expr callbacks and SELECT callbacks that come from subqueries.
 ** Return WRC_Abort or WRC_Continue.
 */
-int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
-  if( sqlite3WalkExprList(pWalker, p->pEList) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pWhere) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pGroupBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pHaving) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pOrderBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pLimit) ) return WRC_Abort;
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
-  if( p->pWinDefn ){
+ចំនួនគត់ sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
+  ប្រសិនបើ( sqlite3WalkExprList(pWalker, p->pEList) ) ត្រឡប់ WRC_Abort;
+  ប្រសិនបើ( sqlite3WalkExpr(pWalker, p->pWhere) ) ត្រឡប់ WRC_Abort;
+  ប្រសិនបើ( sqlite3WalkExprList(pWalker, p->pGroupBy) ) ត្រឡប់ WRC_Abort;
+  ប្រសិនបើ( sqlite3WalkExpr(pWalker, p->pHaving) ) ត្រឡប់ WRC_Abort;
+  ប្រសិនបើ( sqlite3WalkExprList(pWalker, p->pOrderBy) ) ត្រឡប់ WRC_Abort;
+  ប្រសិនបើ( sqlite3WalkExpr(pWalker, p->pLimit) ) ត្រឡប់ WRC_Abort;
+#ប្រសិនបើ !defined(SQLITE_OMIT_WINDOWFUNC)
+  ប្រសិនបើ( p->pWinDefn ){
     Parse *pParse;
-    if( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
+    ប្រសិនបើ( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
      || ((pParse = pWalker->pParse)!=0 && IN_RENAME_OBJECT)
 #ifndef SQLITE_OMIT_CTE
      || pWalker->xSelectCallback2==sqlite3SelectPopWith
@@ -148,12 +148,12 @@ int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
     ){
       /* The following may return WRC_Abort if there are unresolvable
       ** symbols (e.g. a table that does not exist) in a window definition. */
-      int rc = walkWindowList(pWalker, p->pWinDefn, 0);
-      return rc;
+      ចំនួនគត់ rc = walkWindowList(pWalker, p->pWinDefn, 0);
+      ត្រឡប់ rc;
     }
   }
 #endif
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 
 /*
@@ -163,27 +163,27 @@ int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
 ** and on any subqueries further down in the tree.  Return 
 ** WRC_Abort or WRC_Continue;
 */
-int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
+ចំនួនគត់ sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
   SrcList *pSrc;
-  int i;
+  ចំនួនគត់ i;
   SrcItem *pItem;
 
   pSrc = p->pSrc;
-  if( ALWAYS(pSrc) ){
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery
+  ប្រសិនបើ( ALWAYS(pSrc) ){
+    សម្រាប់(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
+      ប្រសិនបើ( pItem->fg.isSubquery
        && sqlite3WalkSelect(pWalker, pItem->u4.pSubq->pSelect)
       ){
-        return WRC_Abort;
+        ត្រឡប់ WRC_Abort;
       }
-      if( pItem->fg.isTabFunc
+      ប្រសិនបើ( pItem->fg.isTabFunc
        && sqlite3WalkExprList(pWalker, pItem->u1.pFuncArg)
       ){
-        return WRC_Abort;
+        ត្រឡប់ WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 
 /*
@@ -203,33 +203,33 @@ int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
 ** If the Walker does not have an xSelectCallback() then this routine
 ** is a no-op returning WRC_Continue.
 */
-int sqlite3WalkSelect(Walker *pWalker, Select *p){
-  int rc;
-  if( p==0 ) return WRC_Continue;
-  if( pWalker->xSelectCallback==0 ) return WRC_Continue;
+ចំនួនគត់ sqlite3WalkSelect(Walker *pWalker, Select *p){
+  ចំនួនគត់ rc;
+  ប្រសិនបើ( p==0 ) ត្រឡប់ WRC_Continue;
+  ប្រសិនបើ( pWalker->xSelectCallback==0 ) ត្រឡប់ WRC_Continue;
   do{
     rc = pWalker->xSelectCallback(pWalker, p);
-    if( rc ) return rc & WRC_Abort;
-    if( sqlite3WalkSelectExpr(pWalker, p)
+    ប្រសិនបើ( rc ) ត្រឡប់ rc & WRC_Abort;
+    ប្រសិនបើ( sqlite3WalkSelectExpr(pWalker, p)
      || sqlite3WalkSelectFrom(pWalker, p)
     ){
-      return WRC_Abort;
+      ត្រឡប់ WRC_Abort;
     }
-    if( pWalker->xSelectCallback2 ){
+    ប្រសិនបើ( pWalker->xSelectCallback2 ){
       pWalker->xSelectCallback2(pWalker, p);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  return WRC_Continue;
+  }ខណៈពេល( p!=0 );
+  ត្រឡប់ WRC_Continue;
 }
 
 /* Increase the walkerDepth when entering a subquery, and
 ** decrease when leaving the subquery.
 */
-int sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
+ចំនួនគត់ sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
   pWalker->walkerDepth++;
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
@@ -246,16 +246,16 @@ void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
 ** Walker.xSelectCallback is set to do something useful for every 
 ** subquery in the parser tree.
 */
-int sqlite3ExprWalkNoop(Walker *NotUsed, Expr *NotUsed2){
+ចំនួនគត់ sqlite3ExprWalkNoop(Walker *NotUsed, Expr *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }
 
 /*
 ** No-op routine for the parse-tree walker for SELECT statements.
 ** subquery in the parser tree.
 */
-int sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
+ចំនួនគត់ sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  ត្រឡប់ WRC_Continue;
 }

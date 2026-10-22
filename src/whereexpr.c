@@ -20,7 +20,7 @@
 #include "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+static void exprAnalyze(SrcList*, WhereClause*, ចំនួនគត់);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
@@ -57,29 +57,29 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
+static ចំនួនគត់ whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
   WhereTerm *pTerm;
-  int idx;
+  ចំនួនគត់ idx;
   testcase( wtFlags & TERM_VIRTUAL );
-  if( pWC->nTerm>=pWC->nSlot ){
+  ប្រសិនបើ( pWC->nTerm>=pWC->nSlot ){
     WhereTerm *pOld = pWC->a;
     sqlite3 *db = pWC->pWInfo->pParse->db;
-    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, sizeof(pWC->a[0])*pWC->nSlot*2 );
-    if( pWC->a==0 ){
-      if( wtFlags & TERM_DYNAMIC ){
+    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, parimaa_na(pWC->a[0])*pWC->nSlot*2 );
+    ប្រសិនបើ( pWC->a==0 ){
+      ប្រសិនបើ( wtFlags & TERM_DYNAMIC ){
         sqlite3ExprDelete(db, p);
       }
       pWC->a = pOld;
-      return 0;
+      ត្រឡប់ 0;
     }
-    memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
+    memcpy(pWC->a, pOld, parimaa_na(pWC->a[0])*pWC->nTerm);
     pWC->nSlot = pWC->nSlot*2;
   }
   pTerm = &pWC->a[idx = pWC->nTerm++];
-  if( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
-  if( p && ExprHasProperty(p, EP_Unlikely) ){
+  ប្រសិនបើ( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
+  ប្រសិនបើ( p && ExprHasProperty(p, EP_Unlikely) ){
     pTerm->truthProb = sqlite3LogEst(p->iTable) - 270;
-  }else{
+  }បើមិនដូច្នេះ{
     pTerm->truthProb = 1;
   }
   pTerm->pExpr = sqlite3ExprSkipCollateAndLikely(p);
@@ -87,8 +87,8 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
   pTerm->pWC = pWC;
   pTerm->iParent = -1;
   memset(&pTerm->eOperator, 0,
-         sizeof(WhereTerm) - offsetof(WhereTerm,eOperator));
-  return idx;
+         parimaa_na(WhereTerm) - offsetof(WhereTerm,eOperator));
+  ត្រឡប់ idx;
 }
 
 /*
@@ -96,7 +96,7 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
+static ចំនួនគត់ allowedOp(ចំនួនគត់ op){
   assert( TK_GT>TK_EQ && TK_GT<TK_GE );
   assert( TK_LT>TK_EQ && TK_LT<TK_GE );
   assert( TK_LE>TK_EQ && TK_LE<TK_GE );
@@ -104,9 +104,9 @@ static int allowedOp(int op){
   assert( TK_IN<TK_EQ );
   assert( TK_IS<TK_EQ );
   assert( TK_ISNULL<TK_EQ );
-  if( op>TK_GE ) return 0;
-  if( op>=TK_EQ ) return 1;
-  return op==TK_IN || op==TK_ISNULL || op==TK_IS;
+  ប្រសិនបើ( op>TK_GE ) ត្រឡប់ 0;
+  ប្រសិនបើ( op>=TK_EQ ) ត្រឡប់ 1;
+  ត្រឡប់ op==TK_IN || op==TK_ISNULL || op==TK_IS;
 }
 
 /*
@@ -114,7 +114,7 @@ static int allowedOp(int op){
 ** are converted into "Y op X".
 */
 static u16 exprCommute(Parse *pParse, Expr *pExpr){
-  if( pExpr->pLeft->op==TK_VECTOR
+  ប្រសិនបើ( pExpr->pLeft->op==TK_VECTOR
    || pExpr->pRight->op==TK_VECTOR
    || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
       sqlite3BinaryCompareCollSeq(pParse, pExpr->pRight, pExpr->pLeft)
@@ -122,7 +122,7 @@ static u16 exprCommute(Parse *pParse, Expr *pExpr){
     pExpr->flags ^= EP_Commuted;
   }
   SWAP(Expr*,pExpr->pRight,pExpr->pLeft);
-  if( pExpr->op>=TK_GT ){
+  ប្រសិនបើ( pExpr->op>=TK_GT ){
     assert( TK_LT==TK_GT+2 );
     assert( TK_GE==TK_LE+2 );
     assert( TK_GT>TK_EQ );
@@ -130,23 +130,23 @@ static u16 exprCommute(Parse *pParse, Expr *pExpr){
     assert( pExpr->op>=TK_GT && pExpr->op<=TK_GE );
     pExpr->op = ((pExpr->op-TK_GT)^2)+TK_GT;
   }
-  return 0;
+  ត្រឡប់ 0;
 }
 
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+static u16 operatorMask(ចំនួនគត់ op){
   u16 c;
   assert( allowedOp(op) );
-  if( op>=TK_EQ ){
+  ប្រសិនបើ( op>=TK_EQ ){
     assert( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
     c = (u16)(WO_EQ<<(op-TK_EQ));
-  }else if( op==TK_IN ){
+  }បើមិនដូច្នេះ ប្រសិនបើ( op==TK_IN ){
     c = WO_IN;
-  }else if( op==TK_ISNULL ){
+  }បើមិនដូច្នេះ ប្រសិនបើ( op==TK_ISNULL ){
     c = WO_ISNULL;
-  }else{
+  }បើមិនដូច្នេះ{
     assert( op==TK_IS );
     c = WO_IS;
   }
@@ -158,7 +158,7 @@ static u16 operatorMask(int op){
   assert( op!=TK_GT || c==WO_GT );
   assert( op!=TK_GE || c==WO_GE );
   assert( op!=TK_IS || c==WO_IS );
-  return c;
+  ត្រឡប់ c;
 }
 
 
@@ -175,29 +175,29 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+static ចំនួនគត់ isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
   Expr *pExpr,      /* Test this expression */
   Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
-  int *pisComplete, /* True if the only wildcard is % in the last character */
-  int *pnoCase      /* True if uppercase is equivalent to lowercase */
+  ចំនួនគត់ *pisComplete, /* True if the only wildcard is % in the last character */
+  ចំនួនគត់ *pnoCase      /* True if uppercase is equivalent to lowercase */
 ){
   const u8 *z = 0;           /* String on RHS of LIKE operator */
   Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */
   ExprList *pList;           /* List of operands to the LIKE operator */
   u8 c;                      /* One character in z[] */
-  int cnt;                   /* Number of non-wildcard prefix characters */
+  ចំនួនគត់ cnt;                   /* Number of non-wildcard prefix characters */
   u8 wc[4];                  /* Wildcard characters */
   sqlite3 *db = pParse->db;  /* Database connection */
   sqlite3_value *pVal = 0;
-  int op;                    /* Opcode of pRight */
-  int rc;                    /* Result code to return */
+  ចំនួនគត់ op;                    /* Opcode of pRight */
+  ចំនួនគត់ rc;                    /* Result code to return */
 
-  if( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (char*)wc) ){
-    return 0;
+  ប្រសិនបើ( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (var_na*)wc) ){
+    ត្រឡប់ 0;
   }
 #ifdef SQLITE_EBCDIC
-  if( *pnoCase ) return 0;
+  ប្រសិនបើ( *pnoCase ) ត្រឡប់ 0;
 #endif
   assert( ExprUseXList(pExpr) );
   pList = pExpr->x.pList;
@@ -205,20 +205,20 @@ static int isLikeOrGlob(
 
   pRight = sqlite3ExprSkipCollate(pList->a[0].pExpr);
   op = pRight->op;
-  if( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  ប្រសិនបើ( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *pReprepare = pParse->pReprepare;
-    int iCol = pRight->iColumn;
+    ចំនួនគត់ iCol = pRight->iColumn;
     pVal = sqlite3VdbeGetBoundValue(pReprepare, iCol, SQLITE_AFF_BLOB);
-    if( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
+    ប្រសិនបើ( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
       z = sqlite3_value_text(pVal);
     }
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iCol, 0);
     assert( pRight->op==TK_VARIABLE || pRight->op==TK_REGISTER );
-  }else if( op==TK_STRING ){
+  }បើមិនដូច្នេះ ប្រសិនបើ( op==TK_STRING ){
     assert( !ExprHasProperty(pRight, EP_IntValue) );
      z = (u8*)pRight->u.zToken;
   }
-  if( z ){
+  ប្រសិនបើ( z ){
     /* Count the number of prefix bytes prior to the first wildcard,
     ** U+fffd character, or malformed utf-8. If the underlying database
     ** has a UTF16LE encoding, then only consider ASCII characters.  Note that
@@ -226,19 +226,19 @@ static int isLikeOrGlob(
     ** code, but the database engine itself might be processing content using a
     ** different encoding. */
     cnt = 0;
-    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
+    ខណៈពេល( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
       cnt++;
-      if( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
+      ប្រសិនបើ( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
         cnt++;
-      }else if( c>=0x80 ){
+      }បើមិនដូច្នេះ ប្រសិនបើ( c>=0x80 ){
         const u8 *z2 = z+cnt-1;
-        if( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
+        ប្រសិនបើ( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
          || ENC(db)==SQLITE_UTF16LE 
         ){
           cnt--;
-          break;
-        }else{
-          cnt = (int)(z2-z);
+          bha_nga;
+        }បើមិនដូច្នេះ{
+          cnt = (ចំនួនគត់)(z2-z);
         }
       }
     }
@@ -251,22 +251,22 @@ static int isLikeOrGlob(
     ** range search. The third is because the caller assumes that the pattern
     ** consists of at least one character after all escapes have been
     ** removed.  */
-    if( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
+    ប្រសិនបើ( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
       Expr *pPrefix;
 
       /* A "complete" match if the pattern ends with "*" or "%" */
       *pisComplete = c==wc[0] && z[cnt+1]==0 && ENC(db)!=SQLITE_UTF16LE;
 
       /* Get the pattern prefix.  Remove all escapes from the prefix. */
-      pPrefix = sqlite3Expr(db, TK_STRING, (char*)z);
-      if( pPrefix ){
-        int iFrom, iTo;
-        char *zNew;
+      pPrefix = sqlite3Expr(db, TK_STRING, (var_na*)z);
+      ប្រសិនបើ( pPrefix ){
+        ចំនួនគត់ iFrom, iTo;
+        var_na *zNew;
         assert( !ExprHasProperty(pPrefix, EP_IntValue) );
         zNew = pPrefix->u.zToken;
         zNew[cnt] = 0;
-        for(iFrom=iTo=0; iFrom<cnt; iFrom++){
-          if( zNew[iFrom]==wc[3] ) iFrom++;
+        សម្រាប់(iFrom=iTo=0; iFrom<cnt; iFrom++){
+          ប្រសិនបើ( zNew[iFrom]==wc[3] ) iFrom++;
           zNew[iTo++] = zNew[iFrom];
         }
         zNew[iTo] = 0;
@@ -285,29 +285,29 @@ static int isLikeOrGlob(
         **    2019-06-14 https://sqlite.org/src/info/ce8717f0885af975
         **    2019-09-03 https://sqlite.org/src/info/0f0428096f17252a
         */
-        if( pLeft->op!=TK_COLUMN
+        ប្រសិនបើ( pLeft->op!=TK_COLUMN
          || sqlite3ExprAffinity(pLeft)!=SQLITE_AFF_TEXT
          || (ALWAYS( ExprUseYTab(pLeft) )
              && ALWAYS(pLeft->y.pTab)
              && IsVirtual(pLeft->y.pTab))  /* Might be numeric */
         ){
-          int isNum;
-          double rDummy;
+          ចំនួនគត់ isNum;
+          dviguu_na rDummy;
           assert( zNew[iTo]==0 );
           isNum = sqlite3AtoF(zNew, &rDummy);
-          if( isNum<=0 ){
-            if( iTo==1 && zNew[0]=='-' ){
+          ប្រសិនបើ( isNum<=0 ){
+            ប្រសិនបើ( iTo==1 && zNew[0]=='-' ){
               isNum = +1;
-            }else{
+            }បើមិនដូច្នេះ{
               zNew[iTo-1]++;
               isNum = sqlite3AtoF(zNew, &rDummy);
               zNew[iTo-1]--;
             }
           }
-          if( isNum>0 ){
+          ប្រសិនបើ( isNum>0 ){
             sqlite3ExprDelete(db, pPrefix);
             sqlite3ValueFree(pVal);
-            return 0;
+            ត្រឡប់ 0;
           }
         }
       }
@@ -315,31 +315,31 @@ static int isLikeOrGlob(
 
       /* If the RHS pattern is a bound parameter, make arrangements to
       ** reprepare the statement when that parameter is rebound */
-      if( op==TK_VARIABLE ){
+      ប្រសិនបើ( op==TK_VARIABLE ){
         Vdbe *v = pParse->pVdbe;
         sqlite3VdbeReprepareOnBind(v, pRight->iColumn, 0);
         assert( !ExprHasProperty(pRight, EP_IntValue) );
-        if( *pisComplete && pRight->u.zToken[1] ){
+        ប្រសិនបើ( *pisComplete && pRight->u.zToken[1] ){
           /* If the rhs of the LIKE expression is a variable, and the current
           ** value of the variable means there is no need to invoke the LIKE
           ** function, then no OP_Variable will be added to the program.
           ** This causes problems for the sqlite3_bind_parameter_name()
           ** API. To work around them, add a dummy OP_Variable here.
           */
-          int r1 = sqlite3GetTempReg(pParse);
+          ចំនួនគត់ r1 = sqlite3GetTempReg(pParse);
           sqlite3ExprCodeTarget(pParse, pRight, r1);
           sqlite3VdbeChangeP3(v, sqlite3VdbeCurrentAddr(v)-1, 0);
           sqlite3ReleaseTempReg(pParse, r1);
         }
       }
-    }else{
+    }បើមិនដូច្នេះ{
       z = 0;
     }
   }
 
   rc = (z!=0);
   sqlite3ValueFree(pVal);
-  return rc;
+  ត្រឡប់ rc;
 }
 #endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
@@ -350,25 +350,25 @@ static int isLikeOrGlob(
 **
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
-int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
-    const char *zOp;
-    unsigned char eOp;
+ចំនួនគត់ sqlite3ExprIsLikeOperator(const Expr *pExpr){
+  static const sa_nracanaa {
+    const var_na *zOp;
+    unsigned var_na eOp;
   } aOp[] = {
     { "match",  SQLITE_INDEX_CONSTRAINT_MATCH },
     { "glob",   SQLITE_INDEX_CONSTRAINT_GLOB },
     { "like",   SQLITE_INDEX_CONSTRAINT_LIKE },
     { "regexp", SQLITE_INDEX_CONSTRAINT_REGEXP }
   };
-  int i;
+  ចំនួនគត់ i;
   assert( pExpr->op==TK_FUNCTION );
   assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  for(i=0; i<ArraySize(aOp); i++){
-    if( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
-      return aOp[i].eOp;
+  សម្រាប់(i=0; i<ArraySize(aOp); i++){
+    ប្រសិនបើ( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
+      ត្រឡប់ aOp[i].eOp;
     }
   }
-  return 0;
+  ត្រឡប់ 0;
 }
 
 
@@ -399,22 +399,22 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+static ចំនួនគត់ isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
   Expr *pExpr,                    /* Test this expression */
-  unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
+  unsigned var_na *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
   Expr **ppLeft,                  /* Column expression to left of MATCH/op2 */
   Expr **ppRight                  /* Expression to left of MATCH/op2 */
 ){
-  if( pExpr->op==TK_FUNCTION ){
+  ប្រសិនបើ( pExpr->op==TK_FUNCTION ){
     ExprList *pList;
     Expr *pCol;                     /* Column reference */
-    int i;
+    ចំនួនគត់ i;
 
     assert( ExprUseXList(pExpr) );
     pList = pExpr->x.pList;
-    if( pList==0 || pList->nExpr!=2 ){
-      return 0;
+    ប្រសិនបើ( pList==0 || pList->nExpr!=2 ){
+      ត្រឡប់ 0;
     }
 
     /* Built-in operators MATCH, GLOB, LIKE, and REGEXP attach to a
@@ -426,11 +426,11 @@ static int isAuxiliaryVtabOperator(
     */
     pCol = pList->a[1].pExpr;
     assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
+    ប្រសិនបើ( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
       *peOp2 = i;
       *ppRight = pList->a[0].pExpr;
       *ppLeft = pCol;
-      return 1;
+      ត្រឡប់ 1;
     }
 
     /* We can also match against the first column of overloaded
@@ -446,55 +446,55 @@ static int isAuxiliaryVtabOperator(
     pCol = pList->a[0].pExpr;
     assert( pCol->op!=TK_COLUMN || ExprUseYTab(pCol) );
     assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) ){
+    ប្រសិនបើ( ExprIsVtab(pCol) ){
       sqlite3_vtab *pVtab;
       sqlite3_module *pMod;
-      void (*xNotUsed)(sqlite3_context*,int,sqlite3_value**);
+      void (*xNotUsed)(sqlite3_context*,ចំនួនគត់,sqlite3_value**);
       void *pNotUsed;
       pVtab = sqlite3GetVTable(db, pCol->y.pTab)->pVtab;
       assert( pVtab!=0 );
       assert( pVtab->pModule!=0 );
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       pMod = (sqlite3_module *)pVtab->pModule;
-      if( pMod->xFindFunction!=0 ){
+      ប្រសិនបើ( pMod->xFindFunction!=0 ){
         i = pMod->xFindFunction(pVtab,2, pExpr->u.zToken, &xNotUsed, &pNotUsed);
-        if( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
+        ប្រសិនបើ( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
           *peOp2 = i;
           *ppRight = pList->a[1].pExpr;
           *ppLeft = pCol;
-          return 1;
+          ត្រឡប់ 1;
         }
       }
     }
-  }else if( pExpr->op>=TK_EQ ){
+  }បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op>=TK_EQ ){
     /* Comparison operators are a common case.  Save a few comparisons for
     ** that common case by terminating early. */
     assert( TK_NE < TK_EQ );
     assert( TK_ISNOT < TK_EQ );
     assert( TK_NOTNULL < TK_EQ );
-    return 0;
-  }else if( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
-    int res = 0;
+    ត្រឡប់ 0;
+  }បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
+    ចំនួនគត់ res = 0;
     Expr *pLeft = pExpr->pLeft;
     Expr *pRight = pExpr->pRight;
     assert( pLeft->op!=TK_COLUMN || (ExprUseYTab(pLeft) && pLeft->y.pTab!=0) );
-    if( ExprIsVtab(pLeft) ){
+    ប្រសិនបើ( ExprIsVtab(pLeft) ){
       res++;
     }
     assert( pRight==0 || pRight->op!=TK_COLUMN
             || (ExprUseYTab(pRight) && pRight->y.pTab!=0) );
-    if( pRight && ExprIsVtab(pRight) ){
+    ប្រសិនបើ( pRight && ExprIsVtab(pRight) ){
       res++;
       SWAP(Expr*, pLeft, pRight);
     }
     *ppLeft = pLeft;
     *ppRight = pRight;
-    if( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
-    if( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
-    if( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
-    return res;
+    ប្រសិនបើ( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
+    ប្រសិនបើ( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
+    ប្រសិនបើ( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
+    ត្រឡប់ res;
   }
-  return 0;
+  ត្រឡប់ 0;
 }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
 
@@ -503,7 +503,7 @@ static int isAuxiliaryVtabOperator(
 ** a join, then transfer the appropriate markings over to derived.
 */
 static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
-  if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
+  ប្រសិនបើ( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
     pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
     pDerived->w.iJoin = pBase->w.iJoin;
   }
@@ -512,7 +512,7 @@ static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
+static void markTermAsChild(WhereClause *pWC, ចំនួនគត់ iChild, ចំនួនគត់ iParent){
   pWC->a[iChild].iParent = iParent;
   pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
   assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
@@ -526,14 +526,14 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
-  if( pTerm->eOperator!=WO_AND ){
-    return N==0 ? pTerm : 0;
+static WhereTerm *whereNthSubterm(WhereTerm *pTerm, ចំនួនគត់ N){
+  ប្រសិនបើ( pTerm->eOperator!=WO_AND ){
+    ត្រឡប់ N==0 ? pTerm : 0;
   }
-  if( N<pTerm->u.pAndInfo->wc.nTerm ){
-    return &pTerm->u.pAndInfo->wc.a[N];
+  ប្រសិនបើ( N<pTerm->u.pAndInfo->wc.nTerm ){
+    ត្រឡប់ &pTerm->u.pAndInfo->wc.a[N];
   }
-  return 0;
+  ត្រឡប់ 0;
 }
 
 /*
@@ -565,43 +565,43 @@ static void whereCombineDisjuncts(
   u16 eOp = pOne->eOperator | pTwo->eOperator;
   sqlite3 *db;           /* Database connection (for malloc) */
   Expr *pNew;            /* New virtual expression */
-  int op;                /* Operator for the combined expression */
-  int idxNew;            /* Index in pWC of the next virtual term */
+  ចំនួនគត់ op;                /* Operator for the combined expression */
+  ចំនួនគត់ idxNew;            /* Index in pWC of the next virtual term */
   Expr *pA, *pB;         /* Expressions associated with pOne and pTwo */
 
-  if( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) return;
-  if( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
-   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) return;
+  ប្រសិនបើ( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) ត្រឡប់;
+  ប្រសិនបើ( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) ត្រឡប់;
+  ប្រសិនបើ( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) ត្រឡប់;
+  ប្រសិនបើ( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
+   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) ត្រឡប់;
   pA = pOne->pExpr;
   pB = pTwo->pExpr;
   assert( pA->pLeft!=0 && pA->pRight!=0 );
   assert( pB->pLeft!=0 && pB->pRight!=0 );
-  if( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  return;
-  if( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) return;
-  if( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
-    return;
+  ប្រសិនបើ( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  ត្រឡប់;
+  ប្រសិនបើ( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) ត្រឡប់;
+  ប្រសិនបើ( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
+    ត្រឡប់;
   }
   /* If we reach this point, it means the two subterms can be combined */
-  if( (eOp & (eOp-1))!=0 ){
-    if( eOp & (WO_LT|WO_LE) ){
+  ប្រសិនបើ( (eOp & (eOp-1))!=0 ){
+    ប្រសិនបើ( eOp & (WO_LT|WO_LE) ){
       eOp = WO_LE;
-    }else{
+    }បើមិនដូច្នេះ{
       assert( eOp & (WO_GT|WO_GE) );
       eOp = WO_GE;
     }
   }
   db = pWC->pWInfo->pParse->db;
   pNew = sqlite3ExprDup(db, pA, 0);
-  if( pNew==0 ) return;
-  for(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
+  ប្រសិនបើ( pNew==0 ) ត្រឡប់;
+  សម្រាប់(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
   pNew->op = op;
   idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
   exprAnalyze(pSrc, pWC, idxNew);
 }
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#ប្រសិនបើ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Analyze a term that consists of two or more OR-connected
 ** subterms.  So in:
@@ -692,14 +692,14 @@ static void whereCombineDisjuncts(
 static void exprAnalyzeOrTerm(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
-  int idxTerm               /* Index of the OR-term to be analyzed */
+  ចំនួនគត់ idxTerm               /* Index of the OR-term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo;        /* WHERE clause processing context */
   Parse *pParse = pWInfo->pParse;         /* Parser context */
   sqlite3 *db = pParse->db;               /* Database connection */
   WhereTerm *pTerm = &pWC->a[idxTerm];    /* The term to be analyzed */
   Expr *pExpr = pTerm->pExpr;             /* The expression of the term */
-  int i;                                  /* Loop counters */
+  ចំនួនគត់ i;                                  /* Loop counters */
   WhereClause *pOrWc;       /* Breakup of pTerm into subterms */
   WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */
   WhereOrInfo *pOrInfo;     /* Additional information associated with pTerm */
@@ -713,15 +713,15 @@ static void exprAnalyzeOrTerm(
   */
   assert( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
   assert( pExpr->op==TK_OR );
-  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
-  if( pOrInfo==0 ) return;
+  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, parimaa_na(*pOrInfo));
+  ប្រសិនបើ( pOrInfo==0 ) ត្រឡប់;
   pTerm->wtFlags |= TERM_ORINFO;
   pOrWc = &pOrInfo->wc;
-  memset(pOrWc->aStatic, 0, sizeof(pOrWc->aStatic));
+  memset(pOrWc->aStatic, 0, parimaa_na(pOrWc->aStatic));
   sqlite3WhereClauseInit(pOrWc, pWInfo);
   sqlite3WhereSplit(pOrWc, pExpr, TK_OR);
   sqlite3WhereExprAnalyze(pSrc, pOrWc);
-  if( db->mallocFailed ) return;
+  ប្រសិនបើ( db->mallocFailed ) ត្រឡប់;
   assert( pOrWc->nTerm>=2 );
 
   /*
@@ -729,31 +729,31 @@ static void exprAnalyzeOrTerm(
   */
   indexable = ~(Bitmask)0;
   chngToIN = ~(Bitmask)0;
-  for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
-    if( (pOrTerm->eOperator & WO_SINGLE)==0 ){
+  សម្រាប់(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
+    ប្រសិនបើ( (pOrTerm->eOperator & WO_SINGLE)==0 ){
       WhereAndInfo *pAndInfo;
       assert( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
       chngToIN = 0;
-      pAndInfo = sqlite3DbMallocRawNN(db, sizeof(*pAndInfo));
-      if( pAndInfo ){
+      pAndInfo = sqlite3DbMallocRawNN(db, parimaa_na(*pAndInfo));
+      ប្រសិនបើ( pAndInfo ){
         WhereClause *pAndWC;
         WhereTerm *pAndTerm;
-        int j;
+        ចំនួនគត់ j;
         Bitmask b = 0;
         pOrTerm->u.pAndInfo = pAndInfo;
         pOrTerm->wtFlags |= TERM_ANDINFO;
         pOrTerm->eOperator = WO_AND;
         pOrTerm->leftCursor = -1;
         pAndWC = &pAndInfo->wc;
-        memset(pAndWC->aStatic, 0, sizeof(pAndWC->aStatic));
+        memset(pAndWC->aStatic, 0, parimaa_na(pAndWC->aStatic));
         sqlite3WhereClauseInit(pAndWC, pWC->pWInfo);
         sqlite3WhereSplit(pAndWC, pOrTerm->pExpr, TK_AND);
         sqlite3WhereExprAnalyze(pSrc, pAndWC);
         pAndWC->pOuter = pWC;
-        if( !db->mallocFailed ){
-          for(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
+        ប្រសិនបើ( !db->mallocFailed ){
+          សម្រាប់(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
             assert( pAndTerm->pExpr );
-            if( allowedOp(pAndTerm->pExpr->op)
+            ប្រសិនបើ( allowedOp(pAndTerm->pExpr->op)
              || pAndTerm->eOperator==WO_AUX
             ){
               b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->leftCursor);
@@ -762,20 +762,20 @@ static void exprAnalyzeOrTerm(
         }
         indexable &= b;
       }
-    }else if( pOrTerm->wtFlags & TERM_COPIED ){
+    }បើមិនដូច្នេះ ប្រសិនបើ( pOrTerm->wtFlags & TERM_COPIED ){
       /* Skip this term for now.  We revisit it when we process the
       ** corresponding TERM_VIRTUAL term */
-    }else{
+    }បើមិនដូច្នេះ{
       Bitmask b;
       b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->leftCursor);
-      if( pOrTerm->wtFlags & TERM_VIRTUAL ){
+      ប្រសិនបើ( pOrTerm->wtFlags & TERM_VIRTUAL ){
         WhereTerm *pOther = &pOrWc->a[pOrTerm->iParent];
         b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->leftCursor);
       }
       indexable &= b;
-      if( (pOrTerm->eOperator & WO_EQ)==0 ){
+      ប្រសិនបើ( (pOrTerm->eOperator & WO_EQ)==0 ){
         chngToIN = 0;
-      }else{
+      }បើមិនដូច្នេះ{
         chngToIN &= b;
       }
     }
@@ -788,19 +788,19 @@ static void exprAnalyzeOrTerm(
   pOrInfo->indexable = indexable;
   pTerm->eOperator = WO_OR;
   pTerm->leftCursor = -1;
-  if( indexable ){
+  ប្រសិនបើ( indexable ){
     pWC->hasOr = 1;
   }
 
   /* For a two-way OR, attempt to implementation case 2.
   */
-  if( indexable && pOrWc->nTerm==2 ){
-    int iOne = 0;
+  ប្រសិនបើ( indexable && pOrWc->nTerm==2 ){
+    ចំនួនគត់ iOne = 0;
     WhereTerm *pOne;
-    while( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
-      int iTwo = 0;
+    ខណៈពេល( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
+      ចំនួនគត់ iTwo = 0;
       WhereTerm *pTwo;
-      while( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
+      ខណៈពេល( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
         whereCombineDisjuncts(pSrc, pWC, pOne, pTwo);
       }
     }
@@ -827,11 +827,11 @@ static void exprAnalyzeOrTerm(
   ** Note that terms of the form "table.column1=table.column2" (the
   ** same table on both sizes of the ==) cannot be optimized.
   */
-  if( chngToIN ){
-    int okToChngToIN = 0;     /* True if the conversion to IN is valid */
-    int iColumn = -1;         /* Column index on lhs of IN operator */
-    int iCursor = -1;         /* Table cursor common to all terms */
-    int j = 0;                /* Loop counter */
+  ប្រសិនបើ( chngToIN ){
+    ចំនួនគត់ okToChngToIN = 0;     /* True if the conversion to IN is valid */
+    ចំនួនគត់ iColumn = -1;         /* Column index on lhs of IN operator */
+    ចំនួនគត់ iCursor = -1;         /* Table cursor common to all terms */
+    ចំនួនគត់ j = 0;                /* Loop counter */
 
     /* Search for a table and column that appears on one side or the
     ** other of the == operator in every subterm.  That table and column
@@ -839,19 +839,19 @@ static void exprAnalyzeOrTerm(
     ** such table and column.  Set okToChngToIN if an appropriate table
     ** and column is found but leave okToChngToIN false if not found.
     */
-    for(j=0; j<2 && !okToChngToIN; j++){
+    សម្រាប់(j=0; j<2 && !okToChngToIN; j++){
       Expr *pLeft = 0;
       pOrTerm = pOrWc->a;
-      for(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
+      សម្រាប់(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
         assert( pOrTerm->eOperator & WO_EQ );
         pOrTerm->wtFlags &= ~TERM_OK;
-        if( pOrTerm->leftCursor==iCursor ){
+        ប្រសិនបើ( pOrTerm->leftCursor==iCursor ){
           /* This is the 2-bit case and we are on the second iteration and
           ** current term is from the first iteration.  So skip this term. */
           assert( j==1 );
           continue;
         }
-        if( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
+        ប្រសិនបើ( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
                                             pOrTerm->leftCursor))==0 ){
           /* This term must be of the form t1.a==t2.b where t2 is in the
           ** chngToIN set but t1 is not.  This term will be either preceded
@@ -866,41 +866,41 @@ static void exprAnalyzeOrTerm(
         iColumn = pOrTerm->u.x.leftColumn;
         iCursor = pOrTerm->leftCursor;
         pLeft = pOrTerm->pExpr->pLeft;
-        break;
+        bha_nga;
       }
-      if( i<0 ){
+      ប្រសិនបើ( i<0 ){
         /* No candidate table+column was found.  This can only occur
         ** on the second iteration */
         assert( j==1 );
         assert( IsPowerOfTwo(chngToIN) );
         assert( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
-        break;
+        bha_nga;
       }
       testcase( j==1 );
 
       /* We have found a candidate table and column.  Check to see if that
       ** table and column is common to every term in the OR clause */
       okToChngToIN = 1;
-      for(; i>=0 && okToChngToIN; i--, pOrTerm++){
+      សម្រាប់(; i>=0 && okToChngToIN; i--, pOrTerm++){
         assert( pOrTerm->eOperator & WO_EQ );
         assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        if( pOrTerm->leftCursor!=iCursor ){
+        ប្រសិនបើ( pOrTerm->leftCursor!=iCursor ){
           pOrTerm->wtFlags &= ~TERM_OK;
-        }else if( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
+        }បើមិនដូច្នេះ ប្រសិនបើ( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
                && sqlite3ExprCompare(pParse, pOrTerm->pExpr->pLeft, pLeft, -1)
         )){
           okToChngToIN = 0;
-        }else{
-          int affLeft, affRight;
+        }បើមិនដូច្នេះ{
+          ចំនួនគត់ affLeft, affRight;
           /* If the right-hand side is also a column, then the affinities
           ** of both right and left sides must be such that no type
           ** conversions are required on the right.  (Ticket #2249)
           */
           affRight = sqlite3ExprAffinity(pOrTerm->pExpr->pRight);
           affLeft = sqlite3ExprAffinity(pOrTerm->pExpr->pLeft);
-          if( affRight!=0 && affRight!=affLeft ){
+          ប្រសិនបើ( affRight!=0 && affRight!=affLeft ){
             okToChngToIN = 0;
-          }else{
+          }បើមិនដូច្នេះ{
             pOrTerm->wtFlags |= TERM_OK;
           }
         }
@@ -917,16 +917,16 @@ static void exprAnalyzeOrTerm(
     ** subterms of the OR are compatible.  Omit the construction of the
     ** new IN operator if there are any collating sequence mismatches.
     */
-    if( okToChngToIN ){
+    ប្រសិនបើ( okToChngToIN ){
       Expr *pDup;            /* A transient duplicate expression */
       ExprList *pList = 0;   /* The RHS of the IN operator */
       Expr *pLeft = 0;       /* The LHS of the IN operator */
       CollSeq *pCollSeq = 0; /* Collating sequence to use */
       Expr *pNew;            /* The complete IN operator */
 
-      for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
+      សម្រាប់(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
         Expr *pThis;
-        if( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
+        ប្រសិនបើ( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
         assert( pOrTerm->eOperator & WO_EQ );
         assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
         assert( pOrTerm->leftCursor==iCursor );
@@ -934,24 +934,24 @@ static void exprAnalyzeOrTerm(
         pThis = pOrTerm->pExpr;
         pDup = sqlite3ExprDup(db, pThis->pRight, 0);
         pList = sqlite3ExprListAppend(pWInfo->pParse, pList, pDup);
-        if( pLeft==0 ){
+        ប្រសិនបើ( pLeft==0 ){
           pLeft = pThis->pLeft;
           pCollSeq = sqlite3ExprCompareCollSeq(pParse, pThis);
-        }else{
+        }បើមិនដូច្នេះ{
           assert( 0==sqlite3ExprCompare(pParse, 
                         sqlite3ExprSkipCollate(pThis->pLeft),
                         sqlite3ExprSkipCollate(pLeft), -1) );
-          if( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
+          ប្រសិនបើ( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
             pLeft = 0;  /* Collating sequence mismatch */
-            break;
+            bha_nga;
           }
         }
       }
-      if( pLeft==0 ){
+      ប្រសិនបើ( pLeft==0 ){
         pNew = 0;  /* Collating sequence mismatch */
-      }else{
+      }បើមិនដូច្នេះ{
         pDup = sqlite3ExprDup(db, pLeft, 0);
-        if( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
+        ប្រសិនបើ( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
          && pCollSeq!=0
         ){
           assert( pCollSeq->zName!=0 );
@@ -959,8 +959,8 @@ static void exprAnalyzeOrTerm(
         }
         pNew = sqlite3PExpr(pParse, TK_IN, pDup, 0);
       }
-      if( pNew ){
-        int idxNew;
+      ប្រសិនបើ( pNew ){
+        ចំនួនគត់ idxNew;
         transferJoinMarkings(pNew, pExpr);
         assert( ExprUseXList(pNew) );
         pNew->x.pList = pList;
@@ -969,7 +969,7 @@ static void exprAnalyzeOrTerm(
         exprAnalyze(pSrc, pWC, idxNew);
         /* pTerm = &pWC->a[idxTerm]; // would be needed if pTerm where reused */
         markTermAsChild(pWC, idxNew, idxTerm);
-      }else{
+      }បើមិនដូច្នេះ{
         sqlite3ExprListDelete(db, pList);
       }
     }
@@ -993,29 +993,29 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
-  char aff1, aff2;
-  if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
-  if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) return 0;        /* (3) */
+static ចំនួនគត់ termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
+  var_na aff1, aff2;
+  ប្រសិនបើ( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) ត្រឡប់ 0;  /* (1) */
+  ប្រសិនបើ( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) ត្រឡប់ 0;                 /* (2) */
+  ប្រសិនបើ( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) ត្រឡប់ 0;        /* (3) */
   assert( pSrc!=0 );
-  if( pExpr->op==TK_IS
+  ប្រសិនបើ( pExpr->op==TK_IS
    && pSrc->nSrc>=2
    && (pSrc->a[0].fg.jointype & JT_LTORJ)!=0
   ){
-    return 0;                                                          /* (4) */
+    ត្រឡប់ 0;                                                          /* (4) */
   }
   aff1 = sqlite3ExprAffinity(pExpr->pLeft);
   aff2 = sqlite3ExprAffinity(pExpr->pRight);
-  if( aff1!=aff2
+  ប្រសិនបើ( aff1!=aff2
    && (!sqlite3IsNumericAffinity(aff1) || !sqlite3IsNumericAffinity(aff2))
   ){
-    return 0;                                                          /* (5) */
+    ត្រឡប់ 0;                                                          /* (5) */
   }
-  if( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
-    return 0;                                                          /* (6) */
+  ប្រសិនបើ( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
+    ត្រឡប់ 0;                                                          /* (6) */
   }
-  return 1;
+  ត្រឡប់ 1;
 }
 
 /*
@@ -1025,30 +1025,30 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 */
 static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
   Bitmask mask = 0;
-  while( pS ){
+  ខណៈពេល( pS ){
     SrcList *pSrc = pS->pSrc;
     mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pEList);
     mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pGroupBy);
     mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pOrderBy);
     mask |= sqlite3WhereExprUsage(pMaskSet, pS->pWhere);
     mask |= sqlite3WhereExprUsage(pMaskSet, pS->pHaving);
-    if( ALWAYS(pSrc!=0) ){
-      int i;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
+    ប្រសិនបើ( ALWAYS(pSrc!=0) ){
+      ចំនួនគត់ i;
+      សម្រាប់(i=0; i<pSrc->nSrc; i++){
+        ប្រសិនបើ( pSrc->a[i].fg.isSubquery ){
           mask |= exprSelectUsage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
         }
-        if( pSrc->a[i].fg.isUsing==0 ){
+        ប្រសិនបើ( pSrc->a[i].fg.isUsing==0 ){
           mask |= sqlite3WhereExprUsage(pMaskSet, pSrc->a[i].u3.pOn);
         }
-        if( pSrc->a[i].fg.isTabFunc ){
+        ប្រសិនបើ( pSrc->a[i].fg.isTabFunc ){
           mask |= sqlite3WhereExprListUsage(pMaskSet, pSrc->a[i].u1.pFuncArg);
         }
       }
     }
     pS = pS->pPrior;
   }
-  return mask;
+  ត្រឡប់ mask;
 }
 
 /*
@@ -1064,41 +1064,41 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+static SQLITE_NOINLINE ចំនួនគត់ exprMightBeIndexed2(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor and column here */
+  ចំនួនគត់ *aiCurCol,         /* Write the referenced table cursor and column here */
   Expr *pExpr,           /* An operand of a comparison operator */
-  int j                  /* Start looking with the j-th pFrom entry */
+  ចំនួនគត់ j                  /* Start looking with the j-th pFrom entry */
 ){
   Index *pIdx;
-  int i;
-  int iCur;
+  ចំនួនគត់ i;
+  ចំនួនគត់ iCur;
   do{
     iCur = pFrom->a[j].iCursor;
-    for(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr==0 ) continue;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( pIdx->aiColumn[i]!=XN_EXPR ) continue;
+    សម្រាប់(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      ប្រសិនបើ( pIdx->aColExpr==0 ) continue;
+      សម្រាប់(i=0; i<pIdx->nKeyCol; i++){
+        ប្រសិនបើ( pIdx->aiColumn[i]!=XN_EXPR ) continue;
         assert( pIdx->bHasExpr );
-        if( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
+        ប្រសិនបើ( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
          && !sqlite3ExprIsConstant(0,pIdx->aColExpr->a[i].pExpr)
         ){
           aiCurCol[0] = iCur;
           aiCurCol[1] = XN_EXPR;
-          return 1;
+          ត្រឡប់ 1;
         }
       }
     }
-  }while( ++j < pFrom->nSrc );
-  return 0;
+  }ខណៈពេល( ++j < pFrom->nSrc );
+  ត្រឡប់ 0;
 }
-static int exprMightBeIndexed(
+static ចំនួនគត់ exprMightBeIndexed(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor & column here */
+  ចំនួនគត់ *aiCurCol,         /* Write the referenced table cursor & column here */
   Expr *pExpr,           /* An operand of a comparison operator */
-  int op                 /* The specific comparison operator */
+  ចំនួនគត់ op                 /* The specific comparison operator */
 ){
-  int i;
+  ចំនួនគត់ i;
 
   /* If this expression is a vector to the left or right of a
   ** inequality constraint (>, <, >= or <=), perform the processing
@@ -1106,26 +1106,26 @@ static int exprMightBeIndexed(
   assert( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
   assert( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
   assert( op<=TK_GE );
-  if( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
+  ប្រសិនបើ( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
     assert( ExprUseXList(pExpr) );
     pExpr = pExpr->x.pList->a[0].pExpr;
   }
 
-  if( pExpr->op==TK_COLUMN ){
+  ប្រសិនបើ( pExpr->op==TK_COLUMN ){
     aiCurCol[0] = pExpr->iTable;
     aiCurCol[1] = pExpr->iColumn;
-    return 1;
+    ត្រឡប់ 1;
   }
 
-  for(i=0; i<pFrom->nSrc; i++){
+  សម្រាប់(i=0; i<pFrom->nSrc; i++){
     Index *pIdx;
-    for(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr ){
-        return exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
+    សម្រាប់(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      ប្រសិនបើ( pIdx->aColExpr ){
+        ត្រឡប់ exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
       }
     }
   }
-  return 0;
+  ត្រឡប់ 0;
 }
 
 
@@ -1150,7 +1150,7 @@ static int exprMightBeIndexed(
 static void exprAnalyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
-  int idxTerm               /* Index of the term to be analyzed */
+  ចំនួនគត់ idxTerm               /* Index of the term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo; /* WHERE clause processing context */
   WhereTerm *pTerm;                /* The term to be analyzed */
@@ -1160,16 +1160,16 @@ static void exprAnalyze(
   Bitmask prereqAll;               /* Prerequisites of pExpr */
   Bitmask extraRight = 0;          /* Extra dependencies on LEFT JOIN */
   Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
-  int isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
-  int noCase = 0;                  /* uppercase equivalent to lowercase */
-  int op;                          /* Top-level operator.  pExpr->op */
+  ចំនួនគត់ isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
+  ចំនួនគត់ noCase = 0;                  /* uppercase equivalent to lowercase */
+  ចំនួនគត់ op;                          /* Top-level operator.  pExpr->op */
   Parse *pParse = pWInfo->pParse;  /* Parsing context */
   sqlite3 *db = pParse->db;        /* Database connection */
-  unsigned char eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
-  int nLeft;                       /* Number of elements on left side vector */
+  unsigned var_na eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
+  ចំនួនគត់ nLeft;                       /* Number of elements on left side vector */
 
-  if( db->mallocFailed ){
-    return;
+  ប្រសិនបើ( db->mallocFailed ){
+    ត្រឡប់;
   }
   assert( pWC->nTerm > idxTerm );
   pTerm = &pWC->a[idxTerm];
@@ -1184,43 +1184,43 @@ exprAnalyze_restart:
   pMaskSet->bVarSelect = 0;
   prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);
   op = pExpr->op;
-  if( op==TK_IN ){
+  ប្រសិនបើ( op==TK_IN ){
     assert( pExpr->pRight==0 );
-    if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-    if( ExprUseXSelect(pExpr) ){
+    ប្រសិនបើ( sqlite3ExprCheckIN(pParse, pExpr) ) ត្រឡប់;
+    ប្រសិនបើ( ExprUseXSelect(pExpr) ){
       pTerm->prereqRight = exprSelectUsage(pMaskSet, pExpr->x.pSelect);
-    }else{
+    }បើមិនដូច្នេះ{
       pTerm->prereqRight = sqlite3WhereExprListUsage(pMaskSet, pExpr->x.pList);
     }
     prereqAll = prereqLeft | pTerm->prereqRight;
-  }else{
+  }បើមិនដូច្នេះ{
     pTerm->prereqRight = sqlite3WhereExprUsage(pMaskSet, pExpr->pRight);
-    if( pExpr->pLeft==0
+    ប្រសិនបើ( pExpr->pLeft==0
      || ExprHasProperty(pExpr, EP_xIsSelect|EP_IfNullRow)
      || pExpr->x.pList!=0
     ){
       prereqAll = sqlite3WhereExprUsageNN(pMaskSet, pExpr);
-    }else{
+    }បើមិនដូច្នេះ{
       prereqAll = prereqLeft | pTerm->prereqRight;
     }
   }
-  if( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
+  ប្រសិនបើ( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
 
 #ifdef SQLITE_DEBUG
-  if( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
+  ប្រសិនបើ( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
     printf("\n*** Incorrect prereqAll computed for:\n");
     sqlite3TreeViewExpr(0,pExpr,0);
     assert( 0 );
   }
 #endif
 
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
+  ប្រសិនបើ( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
     Bitmask x = sqlite3WhereGetMask(pMaskSet, pExpr->w.iJoin);
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+    ប្រសិនបើ( ExprHasProperty(pExpr, EP_OuterON) ){
       prereqAll |= x;
       extraRight = x-1;  /* ON clause terms may not be used with an index
                          ** on left table of a LEFT JOIN.  Ticket #3015 */
-    }else if( (prereqAll>>1)>=x ){
+    }បើមិនដូច្នេះ ប្រសិនបើ( (prereqAll>>1)>=x ){
       ExprClearProperty(pExpr, EP_InnerON);
     }
   }
@@ -1228,27 +1228,27 @@ exprAnalyze_restart:
   pTerm->leftCursor = -1;
   pTerm->iParent = -1;
   pTerm->eOperator = 0;
-  if( allowedOp(op) ){
-    int aiCurCol[2];
+  ប្រសិនបើ( allowedOp(op) ){
+    ចំនួនគត់ aiCurCol[2];
     Expr *pLeft = sqlite3ExprSkipCollate(pExpr->pLeft);
     Expr *pRight = sqlite3ExprSkipCollate(pExpr->pRight);
     u16 opMask = (pTerm->prereqRight & prereqLeft)==0 ? WO_ALL : WO_EQUIV;
 
-    if( pTerm->u.x.iField>0 ){
+    ប្រសិនបើ( pTerm->u.x.iField>0 ){
       assert( op==TK_IN );
       assert( pLeft->op==TK_VECTOR );
       assert( ExprUseXList(pLeft) );
       pLeft = pLeft->x.pList->a[pTerm->u.x.iField-1].pExpr;
     }
 
-    if( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
+    ប្រសិនបើ( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
       pTerm->leftCursor = aiCurCol[0];
       assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
       pTerm->u.x.leftColumn = aiCurCol[1];
       pTerm->eOperator = operatorMask(op) & opMask;
     }
-    if( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
-    if( pRight
+    ប្រសិនបើ( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
+    ប្រសិនបើ( pRight
      && exprMightBeIndexed(pSrc, aiCurCol, pRight, op)
      && !ExprHasProperty(pRight, EP_FixedCol)
     ){
@@ -1256,26 +1256,26 @@ exprAnalyze_restart:
       Expr *pDup;
       u16 eExtraOp = 0;        /* Extra bits for pNew->eOperator */
       assert( pTerm->u.x.iField==0 );
-      if( pTerm->leftCursor>=0 ){
-        int idxNew;
+      ប្រសិនបើ( pTerm->leftCursor>=0 ){
+        ចំនួនគត់ idxNew;
         pDup = sqlite3ExprDup(db, pExpr, 0);
-        if( db->mallocFailed ){
+        ប្រសិនបើ( db->mallocFailed ){
           sqlite3ExprDelete(db, pDup);
-          return;
+          ត្រឡប់;
         }
         idxNew = whereClauseInsert(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
-        if( idxNew==0 ) return;
+        ប្រសិនបើ( idxNew==0 ) ត្រឡប់;
         pNew = &pWC->a[idxNew];
         markTermAsChild(pWC, idxNew, idxTerm);
-        if( op==TK_IS ) pNew->wtFlags |= TERM_IS;
+        ប្រសិនបើ( op==TK_IS ) pNew->wtFlags |= TERM_IS;
         pTerm = &pWC->a[idxTerm];
         pTerm->wtFlags |= TERM_COPIED;
         assert( pWInfo->pTabList!=0 );
-        if( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
+        ប្រសិនបើ( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
           pTerm->eOperator |= WO_EQUIV;
           eExtraOp = WO_EQUIV;
         }
-      }else{
+      }បើមិនដូច្នេះ{
         pDup = pExpr;
         pNew = pTerm;
       }
@@ -1287,8 +1287,8 @@ exprAnalyze_restart:
       pNew->prereqRight = prereqLeft | extraRight;
       pNew->prereqAll = prereqAll;
       pNew->eOperator = (operatorMask(pDup->op) + eExtraOp) & opMask;
-    }else
-    if( op==TK_ISNULL
+    }បើមិនដូច្នេះ
+    ប្រសិនបើ( op==TK_ISNULL
      && !ExprHasProperty(pExpr,EP_OuterON)
      && 0==sqlite3ExprCanBeNull(pLeft)
     ){
@@ -1317,18 +1317,18 @@ exprAnalyze_restart:
   ** skipped.  Or, if the children are satisfied by an index, the original
   ** BETWEEN term is skipped.
   */
-  else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
+  បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
     ExprList *pList;
-    int i;
+    ចំនួនគត់ i;
     static const u8 ops[] = {TK_GE, TK_LE};
     assert( ExprUseXList(pExpr) );
     pList = pExpr->x.pList;
     assert( pList!=0 );
     assert( pList->nExpr==2 );
     assert( pWC->a[idxTerm].nChild==0 );
-    for(i=0; i<2; i++){
+    សម្រាប់(i=0; i<2; i++){
       Expr *pNewExpr;
-      int idxNew;
+      ចំនួនគត់ idxNew;
       pNewExpr = sqlite3PExpr(pParse, ops[i],
                              sqlite3ExprDup(db, pExpr->pLeft, 0),
                              sqlite3ExprDup(db, pList->a[i].pExpr, 0));
@@ -1342,13 +1342,13 @@ exprAnalyze_restart:
   }
 #endif /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#ប្រសិនបើ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
   /* Analyze a term that is composed of two or more subterms connected by
   ** an OR operator.
   */
-  else if( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
+  បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
     Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-    if( pAlt!=pExpr ){
+    ប្រសិនបើ( pAlt!=pExpr ){
       pTerm->pExpr = pExpr = sqlite3ExprSkipCollateAndLikely(pAlt);
       goto exprAnalyze_restart;
     }
@@ -1363,14 +1363,14 @@ exprAnalyze_restart:
   **
   ** The virtual term must be tagged with TERM_VNULL.
   */
-  else if( pExpr->op==TK_NOTNULL ){
-    if( pExpr->pLeft->op==TK_COLUMN
+  បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_NOTNULL ){
+    ប្រសិនបើ( pExpr->pLeft->op==TK_COLUMN
      && pExpr->pLeft->iColumn>=0
      && !ExprHasProperty(pExpr, EP_OuterON)
     ){
       Expr *pNewExpr;
       Expr *pLeft = pExpr->pLeft;
-      int idxNew;
+      ចំនួនគត់ idxNew;
       WhereTerm *pNewTerm;
  
       pNewExpr = sqlite3PExpr(pParse, TK_GT,
@@ -1379,7 +1379,7 @@ exprAnalyze_restart:
  
       idxNew = whereClauseInsert(pWC, pNewExpr,
                                 TERM_VIRTUAL|TERM_DYNAMIC|TERM_VNULL);
-      if( idxNew ){
+      ប្រសិនបើ( idxNew ){
         pNewTerm = &pWC->a[idxNew];
         pNewTerm->prereqRight = 0;
         pNewTerm->leftCursor = pLeft->iTable;
@@ -1408,7 +1408,7 @@ exprAnalyze_restart:
   ** bound is made all lowercase so that the bounds also work when comparing
   ** BLOBs.
   */
-  else if( pExpr->op==TK_FUNCTION
+  បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_FUNCTION
    && pWC->op==TK_AND
    && isLikeOrGlob(pParse, pExpr, &pStr1, &isComplete, &noCase)
   ){
@@ -1416,9 +1416,9 @@ exprAnalyze_restart:
     Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
     Expr *pNewExpr1;
     Expr *pNewExpr2;
-    int idxNew1;
-    int idxNew2;
-    const char *zCollSeqName;     /* Name of collating sequence */
+    ចំនួនគត់ idxNew1;
+    ចំនួនគត់ idxNew2;
+    const var_na *zCollSeqName;     /* Name of collating sequence */
     const u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
 
     assert( ExprUseXList(pExpr) );
@@ -1432,32 +1432,32 @@ exprAnalyze_restart:
     ** lower-case (upper-case is less than lower-case in ASCII) so that
     ** the range constraints also work for BLOBs
     */
-    if( noCase && !pParse->db->mallocFailed ){
-      int i;
-      char c;
+    ប្រសិនបើ( noCase && !pParse->db->mallocFailed ){
+      ចំនួនគត់ i;
+      var_na c;
       pTerm->wtFlags |= TERM_LIKE;
-      for(i=0; (c = pStr1->u.zToken[i])!=0; i++){
+      សម្រាប់(i=0; (c = pStr1->u.zToken[i])!=0; i++){
         pStr1->u.zToken[i] = sqlite3Toupper(c);
         pStr2->u.zToken[i] = sqlite3Tolower(c);
       }
     }
 
-    if( !db->mallocFailed ){
+    ប្រសិនបើ( !db->mallocFailed ){
       u8 *pC;       /* Last character before the first wildcard */
       pC = (u8*)&pStr2->u.zToken[sqlite3Strlen30(pStr2->u.zToken)-1];
-      if( noCase ){
+      ប្រសិនបើ( noCase ){
         /* The point is to increment the last character before the first
         ** wildcard.  But if we increment '@', that will push it into the
         ** alphabetic range where case conversions will mess up the
         ** inequality.  To avoid this, make sure to also run the full
         ** LIKE on all candidate expressions by clearing the isComplete flag
         */
-        if( *pC=='A'-1 ) isComplete = 0;
+        ប្រសិនបើ( *pC=='A'-1 ) isComplete = 0;
         *pC = sqlite3UpperToLower[*pC];
       }
 
       /* Increment the value of the last utf8 character in the prefix. */
-      while( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
+      ខណៈពេល( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
         *pC = 0x80;
         pC--;
       }
@@ -1482,7 +1482,7 @@ exprAnalyze_restart:
     exprAnalyze(pSrc, pWC, idxNew1);
     exprAnalyze(pSrc, pWC, idxNew2);
     pTerm = &pWC->a[idxTerm];
-    if( isComplete ){
+    ប្រសិនបើ( isComplete ){
       markTermAsChild(pWC, idxNew1, idxTerm);
       markTermAsChild(pWC, idxNew2, idxTerm);
     }
@@ -1499,16 +1499,16 @@ exprAnalyze_restart:
   **
   ** tag-20220128a
   */
-  if( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
+  ប្រសិនបើ( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
    && (nLeft = sqlite3ExprVectorSize(pExpr->pLeft))>1
    && sqlite3ExprVectorSize(pExpr->pRight)==nLeft
    && ( (pExpr->pLeft->flags & EP_xIsSelect)==0
      || (pExpr->pRight->flags & EP_xIsSelect)==0)
    && pWC->op==TK_AND
   ){
-    int i;
-    for(i=0; i<nLeft; i++){
-      int idxNew;
+    ចំនួនគត់ i;
+    សម្រាប់(i=0; i<nLeft; i++){
+      ចំនួនគត់ idxNew;
       Expr *pNew;
       Expr *pLeft = sqlite3ExprForVectorField(pParse, pExpr->pLeft, i, nLeft);
       Expr *pRight = sqlite3ExprForVectorField(pParse, pExpr->pRight, i, nLeft);
@@ -1532,7 +1532,7 @@ exprAnalyze_restart:
   ** This only works if the RHS is a simple SELECT (not a compound) that does
   ** not use window functions.
   */
-  else if( pExpr->op==TK_IN
+  បើមិនដូច្នេះ ប្រសិនបើ( pExpr->op==TK_IN
    && pTerm->u.x.iField==0
    && pExpr->pLeft->op==TK_VECTOR
    && ALWAYS( ExprUseXSelect(pExpr) )
@@ -1545,10 +1545,10 @@ exprAnalyze_restart:
    && pExpr->x.pSelect->pEList->nExpr <= UMXV(pTerm->nChild)
    /* ^-- See bug 2026-06-04T10:00:49Z */
   ){
-    int i;
+    ចំនួនគត់ i;
     assert( pTerm->nChild==0 );
-    for(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
-      int idxNew;
+    សម្រាប់(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
+      ចំនួនគត់ idxNew;
       idxNew = whereClauseInsert(pWC, pExpr, TERM_VIRTUAL|TERM_SLICE);
       pWC->a[idxNew].u.x.iField = i+1;
       exprAnalyze(pSrc, pWC, idxNew);
@@ -1566,21 +1566,21 @@ exprAnalyze_restart:
   ** virtual tables.  The native query optimizer does not attempt
   ** to do anything with MATCH functions.
   */
-  else if( pWC->op==TK_AND ){
+  បើមិនដូច្នេះ ប្រសិនបើ( pWC->op==TK_AND ){
     Expr *pRight = 0, *pLeft = 0;
-    int res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
-    while( res-- > 0 ){
-      int idxNew;
+    ចំនួនគត់ res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
+    ខណៈពេល( res-- > 0 ){
+      ចំនួនគត់ idxNew;
       WhereTerm *pNewTerm;
       Bitmask prereqColumn, prereqExpr;
 
       prereqExpr = sqlite3WhereExprUsage(pMaskSet, pRight);
       prereqColumn = sqlite3WhereExprUsage(pMaskSet, pLeft);
-      if( (prereqExpr & prereqColumn)==0 ){
+      ប្រសិនបើ( (prereqExpr & prereqColumn)==0 ){
         Expr *pNewExpr;
         pNewExpr = sqlite3PExpr(pParse, TK_MATCH,
             0, sqlite3ExprDup(db, pRight, 0));
-        if( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
+        ប្រសិនបើ( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
           ExprSetProperty(pNewExpr, EP_OuterON);
           pNewExpr->w.iJoin = pExpr->w.iJoin;
         }
@@ -1636,10 +1636,10 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
   Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
   pWC->op = op;
   assert( pE2!=0 || pExpr==0 );
-  if( pE2==0 ) return;
-  if( pE2->op!=op ){
+  ប្រសិនបើ( pE2==0 ) ត្រឡប់;
+  ប្រសិនបើ( pE2->op!=op ){
     whereClauseInsert(pWC, pExpr, 0);
-  }else{
+  }បើមិនដូច្នេះ{
     sqlite3WhereSplit(pWC, pE2->pLeft, op);
     sqlite3WhereSplit(pWC, pE2->pRight, op);
   }
@@ -1658,29 +1658,29 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 */
 static void whereAddLimitExpr(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
-  int iReg,           /* Register that will hold value of the limit/offset */
+  ចំនួនគត់ iReg,           /* Register that will hold value of the limit/offset */
   Expr *pExpr,        /* Expression that defines the limit/offset */
-  int iCsr,           /* Cursor to which the constraint applies */
-  int eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
+  ចំនួនគត់ iCsr,           /* Cursor to which the constraint applies */
+  ចំនួនគត់ eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
 ){
   Parse *pParse = pWC->pWInfo->pParse;
   sqlite3 *db = pParse->db;
   Expr *pNew;
-  int iVal = 0;
+  ចំនួនគត់ iVal = 0;
 
-  if( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
+  ប្រសិនបើ( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
     Expr *pVal = sqlite3ExprInt32(db, iVal);
-    if( pVal==0 ) return;
+    ប្រសិនបើ( pVal==0 ) ត្រឡប់;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
-  }else{
+  }បើមិនដូច្នេះ{
     Expr *pVal = sqlite3ExprAlloc(db, TK_REGISTER, 0, 0);
-    if( pVal==0 ) return;
+    ប្រសិនបើ( pVal==0 ) ត្រឡប់;
     pVal->iTable = iReg;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
   }
-  if( pNew ){
+  ប្រសិនបើ( pNew ){
     WhereTerm *pTerm;
-    int idx;
+    ចំនួនគត់ idx;
     idx = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
     pTerm = &pWC->a[idx];
     pTerm->leftCursor = iCsr;
@@ -1709,37 +1709,37 @@ static void whereAddLimitExpr(
 */
 void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
   assert( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
-  if( p->pGroupBy==0
+  ប្រសិនបើ( p->pGroupBy==0
    && (p->selFlags & (SF_Distinct|SF_Aggregate))==0             /* 2 */
    && (p->pSrc->nSrc==1 && IsVirtual(p->pSrc->a[0].pSTab))      /* 3 */
   ){
     ExprList *pOrderBy = p->pOrderBy;
-    int iCsr = p->pSrc->a[0].iCursor;
-    int ii;
+    ចំនួនគត់ iCsr = p->pSrc->a[0].iCursor;
+    ចំនួនគត់ ii;
 
     /* Check condition (4). Return early if it is not met. */
-    for(ii=0; ii<pWC->nTerm; ii++){
-      if( pWC->a[ii].wtFlags & TERM_CODED ){
+    សម្រាប់(ii=0; ii<pWC->nTerm; ii++){
+      ប្រសិនបើ( pWC->a[ii].wtFlags & TERM_CODED ){
         /* This term is a vector operation that has been decomposed into
         ** other, subsequent terms.  It can be ignored. See tag-20220128a */
         assert( pWC->a[ii].wtFlags & TERM_VIRTUAL );
         assert( pWC->a[ii].eOperator==WO_ROWVAL );
         continue;
       }
-      if( pWC->a[ii].nChild ){
+      ប្រសិនបើ( pWC->a[ii].nChild ){
         /* If this term has child terms, then they are also part of the
         ** pWC->a[] array. So this term can be ignored, as a LIMIT clause
         ** will only be added if each of the child terms passes the
         ** (leftCursor==iCsr) test below.  */
         continue;
       }
-      if( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
+      ប្រសិនបើ( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
 
       /* If this term has a parent with exactly one child, and the parent will
       ** be passed through to xBestIndex, then this term can be ignored.  */
-      if( pWC->a[ii].iParent>=0 ){
+      ប្រសិនបើ( pWC->a[ii].iParent>=0 ){
         WhereTerm *pParent = &pWC->a[ pWC->a[ii].iParent ];
-        if( pParent->leftCursor==iCsr
+        ប្រសិនបើ( pParent->leftCursor==iCsr
          && pParent->prereqRight==0
          && pParent->nChild==1
         ){
@@ -1748,26 +1748,26 @@ void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
       }
 
       /* This term will not be passed through. Do not add a LIMIT clause. */
-      return;
+      ត្រឡប់;
     }
 
     /* Check condition (5). Return early if it is not met. */
-    if( pOrderBy ){
-      for(ii=0; ii<pOrderBy->nExpr; ii++){
+    ប្រសិនបើ( pOrderBy ){
+      សម្រាប់(ii=0; ii<pOrderBy->nExpr; ii++){
         Expr *pExpr = pOrderBy->a[ii].pExpr;
-        if( pExpr->op!=TK_COLUMN ) return;
-        if( pExpr->iTable!=iCsr ) return;
-        if( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) return;
+        ប្រសិនបើ( pExpr->op!=TK_COLUMN ) ត្រឡប់;
+        ប្រសិនបើ( pExpr->iTable!=iCsr ) ត្រឡប់;
+        ប្រសិនបើ( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) ត្រឡប់;
       }
     }
 
     /* All conditions are met. Add the terms to the where-clause object. */
     assert( p->pLimit->op==TK_LIMIT );
-    if( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
+    ប្រសិនបើ( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
       whereAddLimitExpr(pWC, p->iOffset, p->pLimit->pRight,
                         iCsr, SQLITE_INDEX_CONSTRAINT_OFFSET);
     }
-    if( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
+    ប្រសិនបើ( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
       whereAddLimitExpr(pWC, p->iLimit, p->pLimit->pLeft,
                         iCsr, SQLITE_INDEX_CONSTRAINT_LIMIT);
     }
@@ -1798,31 +1798,31 @@ void sqlite3WhereClauseInit(
 void sqlite3WhereClauseClear(WhereClause *pWC){
   sqlite3 *db = pWC->pWInfo->pParse->db;
   assert( pWC->nTerm>=pWC->nBase );
-  if( pWC->nTerm>0 ){
+  ប្រសិនបើ( pWC->nTerm>0 ){
     WhereTerm *a = pWC->a;
     WhereTerm *aLast = &pWC->a[pWC->nTerm-1];
 #ifdef SQLITE_DEBUG
-    int i;
+    ចំនួនគត់ i;
     /* Verify that every term past pWC->nBase is virtual */
-    for(i=pWC->nBase; i<pWC->nTerm; i++){
+    សម្រាប់(i=pWC->nBase; i<pWC->nTerm; i++){
       assert( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
     }
 #endif
-    while(1){
+    ខណៈពេល(1){
       assert( a->eMatchOp==0 || a->eOperator==WO_AUX );
-      if( a->wtFlags & TERM_DYNAMIC ){
+      ប្រសិនបើ( a->wtFlags & TERM_DYNAMIC ){
         sqlite3ExprDelete(db, a->pExpr);
       }
-      if( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
-        if( a->wtFlags & TERM_ORINFO ){
+      ប្រសិនបើ( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
+        ប្រសិនបើ( a->wtFlags & TERM_ORINFO ){
           assert( (a->wtFlags & TERM_ANDINFO)==0 );
           whereOrInfoDelete(db, a->u.pOrInfo);
-        }else{
+        }បើមិនដូច្នេះ{
           assert( (a->wtFlags & TERM_ANDINFO)!=0 );
           whereAndInfoDelete(db, a->u.pAndInfo);
         }
       }
-      if( a==aLast ) break;
+      ប្រសិនបើ( a==aLast ) bha_nga;
       a++;
     }
   }
@@ -1866,47 +1866,47 @@ static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
 ){
   Bitmask mask;
   mask = (p->op==TK_IF_NULL_ROW) ? sqlite3WhereGetMask(pMaskSet, p->iTable) : 0;
-  if( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
-  if( p->pRight ){
+  ប្រសិនបើ( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
+  ប្រសិនបើ( p->pRight ){
     mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pRight);
     assert( p->x.pList==0 );
-  }else if( ExprUseXSelect(p) ){
-    if( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
+  }បើមិនដូច្នេះ ប្រសិនបើ( ExprUseXSelect(p) ){
+    ប្រសិនបើ( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
     mask |= exprSelectUsage(pMaskSet, p->x.pSelect);
-  }else if( p->x.pList ){
+  }បើមិនដូច្នេះ ប្រសិនបើ( p->x.pList ){
     mask |= sqlite3WhereExprListUsage(pMaskSet, p->x.pList);
   }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
+  ប្រសិនបើ( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
     assert( p->y.pWin!=0 );
     mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pPartition);
     mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pOrderBy);
     mask |= sqlite3WhereExprUsage(pMaskSet, p->y.pWin->pFilter);
   }
 #endif
-  return mask;
+  ត្រឡប់ mask;
 }
 Bitmask sqlite3WhereExprUsageNN(WhereMaskSet *pMaskSet, Expr *p){
-  if( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return sqlite3WhereGetMask(pMaskSet, p->iTable);
-  }else if( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
+  ប្រសិនបើ( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
+    ត្រឡប់ sqlite3WhereGetMask(pMaskSet, p->iTable);
+  }បើមិនដូច្នេះ ប្រសិនបើ( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
     assert( p->op!=TK_IF_NULL_ROW );
-    return 0;
+    ត្រឡប់ 0;
   }
-  return sqlite3WhereExprUsageFull(pMaskSet, p);
+  ត្រឡប់ sqlite3WhereExprUsageFull(pMaskSet, p);
 }
 Bitmask sqlite3WhereExprUsage(WhereMaskSet *pMaskSet, Expr *p){
-  return p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
+  ត្រឡប់ p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
 }
 Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
-  int i;
+  ចំនួនគត់ i;
   Bitmask mask = 0;
-  if( pList ){
-    for(i=0; i<pList->nExpr; i++){
+  ប្រសិនបើ( pList ){
+    សម្រាប់(i=0; i<pList->nExpr; i++){
       mask |= sqlite3WhereExprUsage(pMaskSet, pList->a[i].pExpr);
     }
   }
-  return mask;
+  ត្រឡប់ mask;
 }
 
 
@@ -1922,8 +1922,8 @@ void sqlite3WhereExprAnalyze(
   SrcList *pTabList,       /* the FROM clause */
   WhereClause *pWC         /* the WHERE clause to be analyzed */
 ){
-  int i;
-  for(i=pWC->nTerm-1; i>=0; i--){
+  ចំនួនគត់ i;
+  សម្រាប់(i=pWC->nTerm-1; i>=0; i--){
     exprAnalyze(pTabList, pWC, i);
   }
 }
@@ -1941,30 +1941,30 @@ void sqlite3WhereTabFuncArgs(
   WhereClause *pWC                  /* Xfer function arguments to here */
 ){
   Table *pTab;
-  int j, k;
+  ចំនួនគត់ j, k;
   ExprList *pArgs;
   Expr *pColRef;
   Expr *pTerm;
-  if( pItem->fg.isTabFunc==0 ) return;
+  ប្រសិនបើ( pItem->fg.isTabFunc==0 ) ត្រឡប់;
   pTab = pItem->pSTab;
   assert( pTab!=0 );
-  if( !IsVirtual(pTab) ){
+  ប្រសិនបើ( !IsVirtual(pTab) ){
     sqlite3ErrorMsg(pParse, "'%s' is not a function", pItem->zName);
-    return;
+    ត្រឡប់;
   }
   pArgs = pItem->u1.pFuncArg;
-  if( pArgs==0 ) return;
-  for(j=k=0; j<pArgs->nExpr; j++){
+  ប្រសិនបើ( pArgs==0 ) ត្រឡប់;
+  សម្រាប់(j=k=0; j<pArgs->nExpr; j++){
     Expr *pRhs;
     u32 joinType;
-    while( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
-    if( k>=pTab->nCol ){
+    ខណៈពេល( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
+    ប្រសិនបើ( k>=pTab->nCol ){
       sqlite3ErrorMsg(pParse, "too many arguments on %s() - max %d",
                       pTab->zName, j);
-      return;
+      ត្រឡប់;
     }
     pColRef = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-    if( pColRef==0 ) return;
+    ប្រសិនបើ( pColRef==0 ) ត្រឡប់;
     pColRef->iTable = pItem->iCursor;
     pColRef->iColumn = k++;
     assert( ExprUseYTab(pColRef) );
@@ -1973,11 +1973,11 @@ void sqlite3WhereTabFuncArgs(
     pRhs = sqlite3PExpr(pParse, TK_UPLUS,
         sqlite3ExprDup(pParse->db, pArgs->a[j].pExpr, 0), 0);
     pTerm = sqlite3PExpr(pParse, TK_EQ, pColRef, pRhs);
-    if( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
+    ប្រសិនបើ( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
       testcase( pItem->fg.jointype & JT_LEFT );  /* testtag-20230227a */
       testcase( pItem->fg.jointype & JT_RIGHT ); /* testtag-20230227b */
       joinType = EP_OuterON;
-    }else{
+    }បើមិនដូច្នេះ{
       testcase( pItem->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
       joinType = EP_InnerON;
     }
@@ -1990,8 +1990,8 @@ void sqlite3WhereTabFuncArgs(
 ** Return true if the WhereLoop pLoop can be use a Bloom filter.
 ** tag-202607231411
 */
-int sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
-  if( pLoop->wsFlags & WHERE_IPK ) return 1;
-  if( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) return 0;
-  return sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
+ចំនួនគត់ sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
+  ប្រសិនបើ( pLoop->wsFlags & WHERE_IPK ) ត្រឡប់ 1;
+  ប្រសិនបើ( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) ត្រឡប់ 0;
+  ត្រឡប់ sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
 }

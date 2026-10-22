@@ -29,365 +29,365 @@
 ** versions of SQLite will not be able to load each other's shared
 ** libraries!
 */
-struct sqlite3_api_routines {
-  void * (*aggregate_context)(sqlite3_context*,int nBytes);
-  int  (*aggregate_count)(sqlite3_context*);
-  int  (*bind_blob)(sqlite3_stmt*,int,const void*,int n,void(*)(void*));
-  int  (*bind_double)(sqlite3_stmt*,int,double);
-  int  (*bind_int)(sqlite3_stmt*,int,int);
-  int  (*bind_int64)(sqlite3_stmt*,int,sqlite_int64);
-  int  (*bind_null)(sqlite3_stmt*,int);
-  int  (*bind_parameter_count)(sqlite3_stmt*);
-  int  (*bind_parameter_index)(sqlite3_stmt*,const char*zName);
-  const char * (*bind_parameter_name)(sqlite3_stmt*,int);
-  int  (*bind_text)(sqlite3_stmt*,int,const char*,int n,void(*)(void*));
-  int  (*bind_text16)(sqlite3_stmt*,int,const void*,int,void(*)(void*));
-  int  (*bind_value)(sqlite3_stmt*,int,const sqlite3_value*);
-  int  (*busy_handler)(sqlite3*,int(*)(void*,int),void*);
-  int  (*busy_timeout)(sqlite3*,int ms);
-  int  (*changes)(sqlite3*);
-  int  (*close)(sqlite3*);
-  int  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                           int eTextRep,const char*));
-  int  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                             int eTextRep,const void*));
-  const void * (*column_blob)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes16)(sqlite3_stmt*,int iCol);
-  int  (*column_count)(sqlite3_stmt*pStmt);
-  const char * (*column_database_name)(sqlite3_stmt*,int);
-  const void * (*column_database_name16)(sqlite3_stmt*,int);
-  const char * (*column_decltype)(sqlite3_stmt*,int i);
-  const void * (*column_decltype16)(sqlite3_stmt*,int);
-  double  (*column_double)(sqlite3_stmt*,int iCol);
-  int  (*column_int)(sqlite3_stmt*,int iCol);
-  sqlite_int64  (*column_int64)(sqlite3_stmt*,int iCol);
-  const char * (*column_name)(sqlite3_stmt*,int);
-  const void * (*column_name16)(sqlite3_stmt*,int);
-  const char * (*column_origin_name)(sqlite3_stmt*,int);
-  const void * (*column_origin_name16)(sqlite3_stmt*,int);
-  const char * (*column_table_name)(sqlite3_stmt*,int);
-  const void * (*column_table_name16)(sqlite3_stmt*,int);
-  const unsigned char * (*column_text)(sqlite3_stmt*,int iCol);
-  const void * (*column_text16)(sqlite3_stmt*,int iCol);
-  int  (*column_type)(sqlite3_stmt*,int iCol);
-  sqlite3_value* (*column_value)(sqlite3_stmt*,int iCol);
-  void * (*commit_hook)(sqlite3*,int(*)(void*),void*);
-  int  (*complete)(const char*sql);
-  int  (*complete16)(const void*sql);
-  int  (*create_collation)(sqlite3*,const char*,int,void*,
-                           int(*)(void*,int,const void*,int,const void*));
-  int  (*create_collation16)(sqlite3*,const void*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*));
-  int  (*create_function)(sqlite3*,const char*,int,int,void*,
-                          void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                          void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+sa_nracanaa sqlite3_api_routines {
+  void * (*aggregate_context)(sqlite3_context*,ចំនួនគត់ nBytes);
+  ចំនួនគត់  (*aggregate_count)(sqlite3_context*);
+  ចំនួនគត់  (*bind_blob)(sqlite3_stmt*,ចំនួនគត់,const void*,ចំនួនគត់ n,void(*)(void*));
+  ចំនួនគត់  (*bind_double)(sqlite3_stmt*,ចំនួនគត់,dviguu_na);
+  ចំនួនគត់  (*bind_int)(sqlite3_stmt*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់  (*bind_int64)(sqlite3_stmt*,ចំនួនគត់,sqlite_int64);
+  ចំនួនគត់  (*bind_null)(sqlite3_stmt*,ចំនួនគត់);
+  ចំនួនគត់  (*bind_parameter_count)(sqlite3_stmt*);
+  ចំនួនគត់  (*bind_parameter_index)(sqlite3_stmt*,const var_na*zName);
+  const var_na * (*bind_parameter_name)(sqlite3_stmt*,ចំនួនគត់);
+  ចំនួនគត់  (*bind_text)(sqlite3_stmt*,ចំនួនគត់,const var_na*,ចំនួនគត់ n,void(*)(void*));
+  ចំនួនគត់  (*bind_text16)(sqlite3_stmt*,ចំនួនគត់,const void*,ចំនួនគត់,void(*)(void*));
+  ចំនួនគត់  (*bind_value)(sqlite3_stmt*,ចំនួនគត់,const sqlite3_value*);
+  ចំនួនគត់  (*busy_handler)(sqlite3*,ចំនួនគត់(*)(void*,ចំនួនគត់),void*);
+  ចំនួនគត់  (*busy_timeout)(sqlite3*,ចំនួនគត់ ms);
+  ចំនួនគត់  (*changes)(sqlite3*);
+  ចំនួនគត់  (*close)(sqlite3*);
+  ចំនួនគត់  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,
+                           ចំនួនគត់ eTextRep,const var_na*));
+  ចំនួនគត់  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,
+                             ចំនួនគត់ eTextRep,const void*));
+  const void * (*column_blob)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  ចំនួនគត់  (*column_bytes)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  ចំនួនគត់  (*column_bytes16)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  ចំនួនគត់  (*column_count)(sqlite3_stmt*pStmt);
+  const var_na * (*column_database_name)(sqlite3_stmt*,ចំនួនគត់);
+  const void * (*column_database_name16)(sqlite3_stmt*,ចំនួនគត់);
+  const var_na * (*column_decltype)(sqlite3_stmt*,ចំនួនគត់ i);
+  const void * (*column_decltype16)(sqlite3_stmt*,ចំនួនគត់);
+  dviguu_na  (*column_double)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  ចំនួនគត់  (*column_int)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  sqlite_int64  (*column_int64)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  const var_na * (*column_name)(sqlite3_stmt*,ចំនួនគត់);
+  const void * (*column_name16)(sqlite3_stmt*,ចំនួនគត់);
+  const var_na * (*column_origin_name)(sqlite3_stmt*,ចំនួនគត់);
+  const void * (*column_origin_name16)(sqlite3_stmt*,ចំនួនគត់);
+  const var_na * (*column_table_name)(sqlite3_stmt*,ចំនួនគត់);
+  const void * (*column_table_name16)(sqlite3_stmt*,ចំនួនគត់);
+  const unsigned var_na * (*column_text)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  const void * (*column_text16)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  ចំនួនគត់  (*column_type)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  sqlite3_value* (*column_value)(sqlite3_stmt*,ចំនួនគត់ iCol);
+  void * (*commit_hook)(sqlite3*,ចំនួនគត់(*)(void*),void*);
+  ចំនួនគត់  (*complete)(const var_na*sql);
+  ចំនួនគត់  (*complete16)(const void*sql);
+  ចំនួនគត់  (*create_collation)(sqlite3*,const var_na*,ចំនួនគត់,void*,
+                           ចំនួនគត់(*)(void*,ចំនួនគត់,const void*,ចំនួនគត់,const void*));
+  ចំនួនគត់  (*create_collation16)(sqlite3*,const void*,ចំនួនគត់,void*,
+                             ចំនួនគត់(*)(void*,ចំនួនគត់,const void*,ចំនួនគត់,const void*));
+  ចំនួនគត់  (*create_function)(sqlite3*,const var_na*,ចំនួនគត់,ចំនួនគត់,void*,
+                          void (*xFunc)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
+                          void (*xStep)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
                           void (*xFinal)(sqlite3_context*));
-  int  (*create_function16)(sqlite3*,const void*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  ចំនួនគត់  (*create_function16)(sqlite3*,const void*,ចំនួនគត់,ចំនួនគត់,void*,
+                            void (*xFunc)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
+                            void (*xStep)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*));
-  int (*create_module)(sqlite3*,const char*,const sqlite3_module*,void*);
-  int  (*data_count)(sqlite3_stmt*pStmt);
+  ចំនួនគត់ (*create_module)(sqlite3*,const var_na*,const sqlite3_module*,void*);
+  ចំនួនគត់  (*data_count)(sqlite3_stmt*pStmt);
   sqlite3 * (*db_handle)(sqlite3_stmt*);
-  int (*declare_vtab)(sqlite3*,const char*);
-  int  (*enable_shared_cache)(int);
-  int  (*errcode)(sqlite3*db);
-  const char * (*errmsg)(sqlite3*);
+  ចំនួនគត់ (*declare_vtab)(sqlite3*,const var_na*);
+  ចំនួនគត់  (*enable_shared_cache)(ចំនួនគត់);
+  ចំនួនគត់  (*errcode)(sqlite3*db);
+  const var_na * (*errmsg)(sqlite3*);
   const void * (*errmsg16)(sqlite3*);
-  int  (*exec)(sqlite3*,const char*,sqlite3_callback,void*,char**);
-  int  (*expired)(sqlite3_stmt*);
-  int  (*finalize)(sqlite3_stmt*pStmt);
+  ចំនួនគត់  (*exec)(sqlite3*,const var_na*,sqlite3_callback,void*,var_na**);
+  ចំនួនគត់  (*expired)(sqlite3_stmt*);
+  ចំនួនគត់  (*finalize)(sqlite3_stmt*pStmt);
   void  (*free)(void*);
-  void  (*free_table)(char**result);
-  int  (*get_autocommit)(sqlite3*);
-  void * (*get_auxdata)(sqlite3_context*,int);
-  int  (*get_table)(sqlite3*,const char*,char***,int*,int*,char**);
-  int  (*global_recover)(void);
+  void  (*free_table)(var_na**result);
+  ចំនួនគត់  (*get_autocommit)(sqlite3*);
+  void * (*get_auxdata)(sqlite3_context*,ចំនួនគត់);
+  ចំនួនគត់  (*get_table)(sqlite3*,const var_na*,var_na***,ចំនួនគត់*,ចំនួនគត់*,var_na**);
+  ចំនួនគត់  (*global_recover)(void);
   void  (*interruptx)(sqlite3*);
   sqlite_int64  (*last_insert_rowid)(sqlite3*);
-  const char * (*libversion)(void);
-  int  (*libversion_number)(void);
-  void *(*malloc)(int);
-  char *(SQLITE_CDECL*mprintf)(const char*,...);
-  int  (*open)(const char*,sqlite3**);
-  int  (*open16)(const void*,sqlite3**);
-  int  (*prepare)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int  (*prepare16)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  void * (*profile)(sqlite3*,void(*)(void*,const char*,sqlite_uint64),void*);
-  void  (*progress_handler)(sqlite3*,int,int(*)(void*),void*);
-  void *(*realloc)(void*,int);
-  int  (*reset)(sqlite3_stmt*pStmt);
-  void  (*result_blob)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_double)(sqlite3_context*,double);
-  void  (*result_error)(sqlite3_context*,const char*,int);
-  void  (*result_error16)(sqlite3_context*,const void*,int);
-  void  (*result_int)(sqlite3_context*,int);
+  const var_na * (*libversion)(void);
+  ចំនួនគត់  (*libversion_number)(void);
+  void *(*malloc)(ចំនួនគត់);
+  var_na *(SQLITE_CDECL*mprintf)(const var_na*,...);
+  ចំនួនគត់  (*open)(const var_na*,sqlite3**);
+  ចំនួនគត់  (*open16)(const void*,sqlite3**);
+  ចំនួនគត់  (*prepare)(sqlite3*,const var_na*,ចំនួនគត់,sqlite3_stmt**,const var_na**);
+  ចំនួនគត់  (*prepare16)(sqlite3*,const void*,ចំនួនគត់,sqlite3_stmt**,const void**);
+  void * (*profile)(sqlite3*,void(*)(void*,const var_na*,sqlite_uint64),void*);
+  void  (*progress_handler)(sqlite3*,ចំនួនគត់,ចំនួនគត់(*)(void*),void*);
+  void *(*realloc)(void*,ចំនួនគត់);
+  ចំនួនគត់  (*reset)(sqlite3_stmt*pStmt);
+  void  (*result_blob)(sqlite3_context*,const void*,ចំនួនគត់,void(*)(void*));
+  void  (*result_double)(sqlite3_context*,dviguu_na);
+  void  (*result_error)(sqlite3_context*,const var_na*,ចំនួនគត់);
+  void  (*result_error16)(sqlite3_context*,const void*,ចំនួនគត់);
+  void  (*result_int)(sqlite3_context*,ចំនួនគត់);
   void  (*result_int64)(sqlite3_context*,sqlite_int64);
   void  (*result_null)(sqlite3_context*);
-  void  (*result_text)(sqlite3_context*,const char*,int,void(*)(void*));
-  void  (*result_text16)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16be)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16le)(sqlite3_context*,const void*,int,void(*)(void*));
+  void  (*result_text)(sqlite3_context*,const var_na*,ចំនួនគត់,void(*)(void*));
+  void  (*result_text16)(sqlite3_context*,const void*,ចំនួនគត់,void(*)(void*));
+  void  (*result_text16be)(sqlite3_context*,const void*,ចំនួនគត់,void(*)(void*));
+  void  (*result_text16le)(sqlite3_context*,const void*,ចំនួនគត់,void(*)(void*));
   void  (*result_value)(sqlite3_context*,sqlite3_value*);
   void *(*rollback_hook)(sqlite3*,void(*)(void*),void*);
-  int  (*set_authorizer)(sqlite3*,int(*)(void*,int,const char*,const char*,
-                         const char*,const char*),void*);
-  void  (*set_auxdata)(sqlite3_context*,int,void*,void (*)(void*));
-  char *(SQLITE_CDECL*xsnprintf)(int,char*,const char*,...);
-  int  (*step)(sqlite3_stmt*);
-  int  (*table_column_metadata)(sqlite3*,const char*,const char*,const char*,
-                                char const**,char const**,int*,int*,int*);
+  ចំនួនគត់  (*set_authorizer)(sqlite3*,ចំនួនគត់(*)(void*,ចំនួនគត់,const var_na*,const var_na*,
+                         const var_na*,const var_na*),void*);
+  void  (*set_auxdata)(sqlite3_context*,ចំនួនគត់,void*,void (*)(void*));
+  var_na *(SQLITE_CDECL*xsnprintf)(ចំនួនគត់,var_na*,const var_na*,...);
+  ចំនួនគត់  (*step)(sqlite3_stmt*);
+  ចំនួនគត់  (*table_column_metadata)(sqlite3*,const var_na*,const var_na*,const var_na*,
+                                var_na const**,var_na const**,ចំនួនគត់*,ចំនួនគត់*,ចំនួនគត់*);
   void  (*thread_cleanup)(void);
-  int  (*total_changes)(sqlite3*);
-  void * (*trace)(sqlite3*,void(*xTrace)(void*,const char*),void*);
-  int  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
-  void * (*update_hook)(sqlite3*,void(*)(void*,int ,char const*,char const*,
+  ចំនួនគត់  (*total_changes)(sqlite3*);
+  void * (*trace)(sqlite3*,void(*xTrace)(void*,const var_na*),void*);
+  ចំនួនគត់  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
+  void * (*update_hook)(sqlite3*,void(*)(void*,ចំនួនគត់ ,var_na const*,var_na const*,
                                          sqlite_int64),void*);
   void * (*user_data)(sqlite3_context*);
   const void * (*value_blob)(sqlite3_value*);
-  int  (*value_bytes)(sqlite3_value*);
-  int  (*value_bytes16)(sqlite3_value*);
-  double  (*value_double)(sqlite3_value*);
-  int  (*value_int)(sqlite3_value*);
+  ចំនួនគត់  (*value_bytes)(sqlite3_value*);
+  ចំនួនគត់  (*value_bytes16)(sqlite3_value*);
+  dviguu_na  (*value_double)(sqlite3_value*);
+  ចំនួនគត់  (*value_int)(sqlite3_value*);
   sqlite_int64  (*value_int64)(sqlite3_value*);
-  int  (*value_numeric_type)(sqlite3_value*);
-  const unsigned char * (*value_text)(sqlite3_value*);
+  ចំនួនគត់  (*value_numeric_type)(sqlite3_value*);
+  const unsigned var_na * (*value_text)(sqlite3_value*);
   const void * (*value_text16)(sqlite3_value*);
   const void * (*value_text16be)(sqlite3_value*);
   const void * (*value_text16le)(sqlite3_value*);
-  int  (*value_type)(sqlite3_value*);
-  char *(*vmprintf)(const char*,va_list);
+  ចំនួនគត់  (*value_type)(sqlite3_value*);
+  var_na *(*vmprintf)(const var_na*,va_list);
   /* Added ??? */
-  int (*overload_function)(sqlite3*, const char *zFuncName, int nArg);
+  ចំនួនគត់ (*overload_function)(sqlite3*, const var_na *zFuncName, ចំនួនគត់ nArg);
   /* Added by 3.3.13 */
-  int (*prepare_v2)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int (*prepare16_v2)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  int (*clear_bindings)(sqlite3_stmt*);
+  ចំនួនគត់ (*prepare_v2)(sqlite3*,const var_na*,ចំនួនគត់,sqlite3_stmt**,const var_na**);
+  ចំនួនគត់ (*prepare16_v2)(sqlite3*,const void*,ចំនួនគត់,sqlite3_stmt**,const void**);
+  ចំនួនគត់ (*clear_bindings)(sqlite3_stmt*);
   /* Added by 3.4.1 */
-  int (*create_module_v2)(sqlite3*,const char*,const sqlite3_module*,void*,
+  ចំនួនគត់ (*create_module_v2)(sqlite3*,const var_na*,const sqlite3_module*,void*,
                           void (*xDestroy)(void *));
   /* Added by 3.5.0 */
-  int (*bind_zeroblob)(sqlite3_stmt*,int,int);
-  int (*blob_bytes)(sqlite3_blob*);
-  int (*blob_close)(sqlite3_blob*);
-  int (*blob_open)(sqlite3*,const char*,const char*,const char*,sqlite3_int64,
-                   int,sqlite3_blob**);
-  int (*blob_read)(sqlite3_blob*,void*,int,int);
-  int (*blob_write)(sqlite3_blob*,const void*,int,int);
-  int (*create_collation_v2)(sqlite3*,const char*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*),
+  ចំនួនគត់ (*bind_zeroblob)(sqlite3_stmt*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់ (*blob_bytes)(sqlite3_blob*);
+  ចំនួនគត់ (*blob_close)(sqlite3_blob*);
+  ចំនួនគត់ (*blob_open)(sqlite3*,const var_na*,const var_na*,const var_na*,sqlite3_int64,
+                   ចំនួនគត់,sqlite3_blob**);
+  ចំនួនគត់ (*blob_read)(sqlite3_blob*,void*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់ (*blob_write)(sqlite3_blob*,const void*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់ (*create_collation_v2)(sqlite3*,const var_na*,ចំនួនគត់,void*,
+                             ចំនួនគត់(*)(void*,ចំនួនគត់,const void*,ចំនួនគត់,const void*),
                              void(*)(void*));
-  int (*file_control)(sqlite3*,const char*,int,void*);
-  sqlite3_int64 (*memory_highwater)(int);
+  ចំនួនគត់ (*file_control)(sqlite3*,const var_na*,ចំនួនគត់,void*);
+  sqlite3_int64 (*memory_highwater)(ចំនួនគត់);
   sqlite3_int64 (*memory_used)(void);
-  sqlite3_mutex *(*mutex_alloc)(int);
+  sqlite3_mutex *(*mutex_alloc)(ចំនួនគត់);
   void (*mutex_enter)(sqlite3_mutex*);
   void (*mutex_free)(sqlite3_mutex*);
   void (*mutex_leave)(sqlite3_mutex*);
-  int (*mutex_try)(sqlite3_mutex*);
-  int (*open_v2)(const char*,sqlite3**,int,const char*);
-  int (*release_memory)(int);
+  ចំនួនគត់ (*mutex_try)(sqlite3_mutex*);
+  ចំនួនគត់ (*open_v2)(const var_na*,sqlite3**,ចំនួនគត់,const var_na*);
+  ចំនួនគត់ (*release_memory)(ចំនួនគត់);
   void (*result_error_nomem)(sqlite3_context*);
   void (*result_error_toobig)(sqlite3_context*);
-  int (*sleep)(int);
-  void (*soft_heap_limit)(int);
-  sqlite3_vfs *(*vfs_find)(const char*);
-  int (*vfs_register)(sqlite3_vfs*,int);
-  int (*vfs_unregister)(sqlite3_vfs*);
-  int (*xthreadsafe)(void);
-  void (*result_zeroblob)(sqlite3_context*,int);
-  void (*result_error_code)(sqlite3_context*,int);
-  int (SQLITE_CDECL*test_control)(int, ...);
-  void (*randomness)(int,void*);
+  ចំនួនគត់ (*sleep)(ចំនួនគត់);
+  void (*soft_heap_limit)(ចំនួនគត់);
+  sqlite3_vfs *(*vfs_find)(const var_na*);
+  ចំនួនគត់ (*vfs_register)(sqlite3_vfs*,ចំនួនគត់);
+  ចំនួនគត់ (*vfs_unregister)(sqlite3_vfs*);
+  ចំនួនគត់ (*xthreadsafe)(void);
+  void (*result_zeroblob)(sqlite3_context*,ចំនួនគត់);
+  void (*result_error_code)(sqlite3_context*,ចំនួនគត់);
+  ចំនួនគត់ (SQLITE_CDECL*test_control)(ចំនួនគត់, ...);
+  void (*randomness)(ចំនួនគត់,void*);
   sqlite3 *(*context_db_handle)(sqlite3_context*);
-  int (*extended_result_codes)(sqlite3*,int);
-  int (*limit)(sqlite3*,int,int);
+  ចំនួនគត់ (*extended_result_codes)(sqlite3*,ចំនួនគត់);
+  ចំនួនគត់ (*limit)(sqlite3*,ចំនួនគត់,ចំនួនគត់);
   sqlite3_stmt *(*next_stmt)(sqlite3*,sqlite3_stmt*);
-  const char *(*sql)(sqlite3_stmt*);
-  int (*status)(int,int*,int*,int);
-  int (*backup_finish)(sqlite3_backup*);
-  sqlite3_backup *(*backup_init)(sqlite3*,const char*,sqlite3*,const char*);
-  int (*backup_pagecount)(sqlite3_backup*);
-  int (*backup_remaining)(sqlite3_backup*);
-  int (*backup_step)(sqlite3_backup*,int);
-  const char *(*compileoption_get)(int);
-  int (*compileoption_used)(const char*);
-  int (*create_function_v2)(sqlite3*,const char*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  const var_na *(*sql)(sqlite3_stmt*);
+  ចំនួនគត់ (*status)(ចំនួនគត់,ចំនួនគត់*,ចំនួនគត់*,ចំនួនគត់);
+  ចំនួនគត់ (*backup_finish)(sqlite3_backup*);
+  sqlite3_backup *(*backup_init)(sqlite3*,const var_na*,sqlite3*,const var_na*);
+  ចំនួនគត់ (*backup_pagecount)(sqlite3_backup*);
+  ចំនួនគត់ (*backup_remaining)(sqlite3_backup*);
+  ចំនួនគត់ (*backup_step)(sqlite3_backup*,ចំនួនគត់);
+  const var_na *(*compileoption_get)(ចំនួនគត់);
+  ចំនួនគត់ (*compileoption_used)(const var_na*);
+  ចំនួនគត់ (*create_function_v2)(sqlite3*,const var_na*,ចំនួនគត់,ចំនួនគត់,void*,
+                            void (*xFunc)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
+                            void (*xStep)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*),
                             void(*xDestroy)(void*));
-  int (SQLITE_CDECL*db_config)(sqlite3*,int,...);
+  ចំនួនគត់ (SQLITE_CDECL*db_config)(sqlite3*,ចំនួនគត់,...);
   sqlite3_mutex *(*db_mutex)(sqlite3*);
-  int (*db_status)(sqlite3*,int,int*,int*,int);
-  int (*extended_errcode)(sqlite3*);
-  void (SQLITE_CDECL*log)(int,const char*,...);
+  ចំនួនគត់ (*db_status)(sqlite3*,ចំនួនគត់,ចំនួនគត់*,ចំនួនគត់*,ចំនួនគត់);
+  ចំនួនគត់ (*extended_errcode)(sqlite3*);
+  void (SQLITE_CDECL*log)(ចំនួនគត់,const var_na*,...);
   sqlite3_int64 (*soft_heap_limit64)(sqlite3_int64);
-  const char *(*sourceid)(void);
-  int (*stmt_status)(sqlite3_stmt*,int,int);
-  int (*strnicmp)(const char*,const char*,int);
-  int (*unlock_notify)(sqlite3*,void(*)(void**,int),void*);
-  int (*wal_autocheckpoint)(sqlite3*,int);
-  int (*wal_checkpoint)(sqlite3*,const char*);
-  void *(*wal_hook)(sqlite3*,int(*)(void*,sqlite3*,const char*,int),void*);
-  int (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
-  int (SQLITE_CDECL*vtab_config)(sqlite3*,int op,...);
-  int (*vtab_on_conflict)(sqlite3*);
+  const var_na *(*sourceid)(void);
+  ចំនួនគត់ (*stmt_status)(sqlite3_stmt*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់ (*strnicmp)(const var_na*,const var_na*,ចំនួនគត់);
+  ចំនួនគត់ (*unlock_notify)(sqlite3*,void(*)(void**,ចំនួនគត់),void*);
+  ចំនួនគត់ (*wal_autocheckpoint)(sqlite3*,ចំនួនគត់);
+  ចំនួនគត់ (*wal_checkpoint)(sqlite3*,const var_na*);
+  void *(*wal_hook)(sqlite3*,ចំនួនគត់(*)(void*,sqlite3*,const var_na*,ចំនួនគត់),void*);
+  ចំនួនគត់ (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
+  ចំនួនគត់ (SQLITE_CDECL*vtab_config)(sqlite3*,ចំនួនគត់ op,...);
+  ចំនួនគត់ (*vtab_on_conflict)(sqlite3*);
   /* Version 3.7.16 and later */
-  int (*close_v2)(sqlite3*);
-  const char *(*db_filename)(sqlite3*,const char*);
-  int (*db_readonly)(sqlite3*,const char*);
-  int (*db_release_memory)(sqlite3*);
-  const char *(*errstr)(int);
-  int (*stmt_busy)(sqlite3_stmt*);
-  int (*stmt_readonly)(sqlite3_stmt*);
-  int (*stricmp)(const char*,const char*);
-  int (*uri_boolean)(const char*,const char*,int);
-  sqlite3_int64 (*uri_int64)(const char*,const char*,sqlite3_int64);
-  const char *(*uri_parameter)(const char*,const char*);
-  char *(*xvsnprintf)(int,char*,const char*,va_list);
-  int (*wal_checkpoint_v2)(sqlite3*,const char*,int,int*,int*);
+  ចំនួនគត់ (*close_v2)(sqlite3*);
+  const var_na *(*db_filename)(sqlite3*,const var_na*);
+  ចំនួនគត់ (*db_readonly)(sqlite3*,const var_na*);
+  ចំនួនគត់ (*db_release_memory)(sqlite3*);
+  const var_na *(*errstr)(ចំនួនគត់);
+  ចំនួនគត់ (*stmt_busy)(sqlite3_stmt*);
+  ចំនួនគត់ (*stmt_readonly)(sqlite3_stmt*);
+  ចំនួនគត់ (*stricmp)(const var_na*,const var_na*);
+  ចំនួនគត់ (*uri_boolean)(const var_na*,const var_na*,ចំនួនគត់);
+  sqlite3_int64 (*uri_int64)(const var_na*,const var_na*,sqlite3_int64);
+  const var_na *(*uri_parameter)(const var_na*,const var_na*);
+  var_na *(*xvsnprintf)(ចំនួនគត់,var_na*,const var_na*,va_list);
+  ចំនួនគត់ (*wal_checkpoint_v2)(sqlite3*,const var_na*,ចំនួនគត់,ចំនួនគត់*,ចំនួនគត់*);
   /* Version 3.8.7 and later */
-  int (*auto_extension)(void(*)(void));
-  int (*bind_blob64)(sqlite3_stmt*,int,const void*,sqlite3_uint64,
+  ចំនួនគត់ (*auto_extension)(void(*)(void));
+  ចំនួនគត់ (*bind_blob64)(sqlite3_stmt*,ចំនួនគត់,const void*,sqlite3_uint64,
                      void(*)(void*));
-  int (*bind_text64)(sqlite3_stmt*,int,const char*,sqlite3_uint64,
-                      void(*)(void*),unsigned char);
-  int (*cancel_auto_extension)(void(*)(void));
-  int (*load_extension)(sqlite3*,const char*,const char*,char**);
+  ចំនួនគត់ (*bind_text64)(sqlite3_stmt*,ចំនួនគត់,const var_na*,sqlite3_uint64,
+                      void(*)(void*),unsigned var_na);
+  ចំនួនគត់ (*cancel_auto_extension)(void(*)(void));
+  ចំនួនគត់ (*load_extension)(sqlite3*,const var_na*,const var_na*,var_na**);
   void *(*malloc64)(sqlite3_uint64);
   sqlite3_uint64 (*msize)(void*);
   void *(*realloc64)(void*,sqlite3_uint64);
   void (*reset_auto_extension)(void);
   void (*result_blob64)(sqlite3_context*,const void*,sqlite3_uint64,
                         void(*)(void*));
-  void (*result_text64)(sqlite3_context*,const char*,sqlite3_uint64,
-                         void(*)(void*), unsigned char);
-  int (*strglob)(const char*,const char*);
+  void (*result_text64)(sqlite3_context*,const var_na*,sqlite3_uint64,
+                         void(*)(void*), unsigned var_na);
+  ចំនួនគត់ (*strglob)(const var_na*,const var_na*);
   /* Version 3.8.11 and later */
   sqlite3_value *(*value_dup)(const sqlite3_value*);
   void (*value_free)(sqlite3_value*);
-  int (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
-  int (*bind_zeroblob64)(sqlite3_stmt*, int, sqlite3_uint64);
+  ចំនួនគត់ (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
+  ចំនួនគត់ (*bind_zeroblob64)(sqlite3_stmt*, ចំនួនគត់, sqlite3_uint64);
   /* Version 3.9.0 and later */
-  unsigned int (*value_subtype)(sqlite3_value*);
-  void (*result_subtype)(sqlite3_context*,unsigned int);
+  unsigned ចំនួនគត់ (*value_subtype)(sqlite3_value*);
+  void (*result_subtype)(sqlite3_context*,unsigned ចំនួនគត់);
   /* Version 3.10.0 and later */
-  int (*status64)(int,sqlite3_int64*,sqlite3_int64*,int);
-  int (*strlike)(const char*,const char*,unsigned int);
-  int (*db_cacheflush)(sqlite3*);
+  ចំនួនគត់ (*status64)(ចំនួនគត់,sqlite3_int64*,sqlite3_int64*,ចំនួនគត់);
+  ចំនួនគត់ (*strlike)(const var_na*,const var_na*,unsigned ចំនួនគត់);
+  ចំនួនគត់ (*db_cacheflush)(sqlite3*);
   /* Version 3.12.0 and later */
-  int (*system_errno)(sqlite3*);
+  ចំនួនគត់ (*system_errno)(sqlite3*);
   /* Version 3.14.0 and later */
-  int (*trace_v2)(sqlite3*,unsigned,int(*)(unsigned,void*,void*,void*),void*);
-  char *(*expanded_sql)(sqlite3_stmt*);
+  ចំនួនគត់ (*trace_v2)(sqlite3*,unsigned,ចំនួនគត់(*)(unsigned,void*,void*,void*),void*);
+  var_na *(*expanded_sql)(sqlite3_stmt*);
   /* Version 3.18.0 and later */
   void (*set_last_insert_rowid)(sqlite3*,sqlite3_int64);
   /* Version 3.20.0 and later */
-  int (*prepare_v3)(sqlite3*,const char*,int,unsigned int,
-                    sqlite3_stmt**,const char**);
-  int (*prepare16_v3)(sqlite3*,const void*,int,unsigned int,
+  ចំនួនគត់ (*prepare_v3)(sqlite3*,const var_na*,ចំនួនគត់,unsigned ចំនួនគត់,
+                    sqlite3_stmt**,const var_na**);
+  ចំនួនគត់ (*prepare16_v3)(sqlite3*,const void*,ចំនួនគត់,unsigned ចំនួនគត់,
                       sqlite3_stmt**,const void**);
-  int (*bind_pointer)(sqlite3_stmt*,int,void*,const char*,void(*)(void*));
-  void (*result_pointer)(sqlite3_context*,void*,const char*,void(*)(void*));
-  void *(*value_pointer)(sqlite3_value*,const char*);
-  int (*vtab_nochange)(sqlite3_context*);
-  int (*value_nochange)(sqlite3_value*);
-  const char *(*vtab_collation)(sqlite3_index_info*,int);
+  ចំនួនគត់ (*bind_pointer)(sqlite3_stmt*,ចំនួនគត់,void*,const var_na*,void(*)(void*));
+  void (*result_pointer)(sqlite3_context*,void*,const var_na*,void(*)(void*));
+  void *(*value_pointer)(sqlite3_value*,const var_na*);
+  ចំនួនគត់ (*vtab_nochange)(sqlite3_context*);
+  ចំនួនគត់ (*value_nochange)(sqlite3_value*);
+  const var_na *(*vtab_collation)(sqlite3_index_info*,ចំនួនគត់);
   /* Version 3.24.0 and later */
-  int (*keyword_count)(void);
-  int (*keyword_name)(int,const char**,int*);
-  int (*keyword_check)(const char*,int);
+  ចំនួនគត់ (*keyword_count)(void);
+  ចំនួនគត់ (*keyword_name)(ចំនួនគត់,const var_na**,ចំនួនគត់*);
+  ចំនួនគត់ (*keyword_check)(const var_na*,ចំនួនគត់);
   sqlite3_str *(*str_new)(sqlite3*);
-  char *(*str_finish)(sqlite3_str*);
-  void (SQLITE_CDECL*str_appendf)(sqlite3_str*, const char *zFormat, ...);
-  void (*str_vappendf)(sqlite3_str*, const char *zFormat, va_list);
-  void (*str_append)(sqlite3_str*, const char *zIn, int N);
-  void (*str_appendall)(sqlite3_str*, const char *zIn);
-  void (*str_appendchar)(sqlite3_str*, int N, char C);
+  var_na *(*str_finish)(sqlite3_str*);
+  void (SQLITE_CDECL*str_appendf)(sqlite3_str*, const var_na *zFormat, ...);
+  void (*str_vappendf)(sqlite3_str*, const var_na *zFormat, va_list);
+  void (*str_append)(sqlite3_str*, const var_na *zIn, ចំនួនគត់ N);
+  void (*str_appendall)(sqlite3_str*, const var_na *zIn);
+  void (*str_appendchar)(sqlite3_str*, ចំនួនគត់ N, var_na C);
   void (*str_reset)(sqlite3_str*);
-  int (*str_errcode)(sqlite3_str*);
-  int (*str_length)(sqlite3_str*);
-  char *(*str_value)(sqlite3_str*);
+  ចំនួនគត់ (*str_errcode)(sqlite3_str*);
+  ចំនួនគត់ (*str_length)(sqlite3_str*);
+  var_na *(*str_value)(sqlite3_str*);
   /* Version 3.25.0 and later */
-  int (*create_window_function)(sqlite3*,const char*,int,int,void*,
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  ចំនួនគត់ (*create_window_function)(sqlite3*,const var_na*,ចំនួនគត់,ចំនួនគត់,void*,
+                            void (*xStep)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*),
                             void (*xValue)(sqlite3_context*),
-                            void (*xInv)(sqlite3_context*,int,sqlite3_value**),
+                            void (*xInv)(sqlite3_context*,ចំនួនគត់,sqlite3_value**),
                             void(*xDestroy)(void*));
   /* Version 3.26.0 and later */
-  const char *(*normalized_sql)(sqlite3_stmt*);
+  const var_na *(*normalized_sql)(sqlite3_stmt*);
   /* Version 3.28.0 and later */
-  int (*stmt_isexplain)(sqlite3_stmt*);
-  int (*value_frombind)(sqlite3_value*);
+  ចំនួនគត់ (*stmt_isexplain)(sqlite3_stmt*);
+  ចំនួនគត់ (*value_frombind)(sqlite3_value*);
   /* Version 3.30.0 and later */
-  int (*drop_modules)(sqlite3*,const char**);
+  ចំនួនគត់ (*drop_modules)(sqlite3*,const var_na**);
   /* Version 3.31.0 and later */
   sqlite3_int64 (*hard_heap_limit64)(sqlite3_int64);
-  const char *(*uri_key)(const char*,int);
-  const char *(*filename_database)(const char*);
-  const char *(*filename_journal)(const char*);
-  const char *(*filename_wal)(const char*);
+  const var_na *(*uri_key)(const var_na*,ចំនួនគត់);
+  const var_na *(*filename_database)(const var_na*);
+  const var_na *(*filename_journal)(const var_na*);
+  const var_na *(*filename_wal)(const var_na*);
   /* Version 3.32.0 and later */
-  const char *(*create_filename)(const char*,const char*,const char*,
-                           int,const char**);
-  void (*free_filename)(const char*);
-  sqlite3_file *(*database_file_object)(const char*);
+  const var_na *(*create_filename)(const var_na*,const var_na*,const var_na*,
+                           ចំនួនគត់,const var_na**);
+  void (*free_filename)(const var_na*);
+  sqlite3_file *(*database_file_object)(const var_na*);
   /* Version 3.34.0 and later */
-  int (*txn_state)(sqlite3*,const char*);
+  ចំនួនគត់ (*txn_state)(sqlite3*,const var_na*);
   /* Version 3.36.1 and later */
   sqlite3_int64 (*changes64)(sqlite3*);
   sqlite3_int64 (*total_changes64)(sqlite3*);
   /* Version 3.37.0 and later */
-  int (*autovacuum_pages)(sqlite3*,
-     unsigned int(*)(void*,const char*,unsigned int,unsigned int,unsigned int),
+  ចំនួនគត់ (*autovacuum_pages)(sqlite3*,
+     unsigned ចំនួនគត់(*)(void*,const var_na*,unsigned ចំនួនគត់,unsigned ចំនួនគត់,unsigned ចំនួនគត់),
      void*, void(*)(void*));
   /* Version 3.38.0 and later */
-  int (*error_offset)(sqlite3*);
-  int (*vtab_rhs_value)(sqlite3_index_info*,int,sqlite3_value**);
-  int (*vtab_distinct)(sqlite3_index_info*);
-  int (*vtab_in)(sqlite3_index_info*,int,int);
-  int (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
-  int (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
+  ចំនួនគត់ (*error_offset)(sqlite3*);
+  ចំនួនគត់ (*vtab_rhs_value)(sqlite3_index_info*,ចំនួនគត់,sqlite3_value**);
+  ចំនួនគត់ (*vtab_distinct)(sqlite3_index_info*);
+  ចំនួនគត់ (*vtab_in)(sqlite3_index_info*,ចំនួនគត់,ចំនួនគត់);
+  ចំនួនគត់ (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
+  ចំនួនគត់ (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
   /* Version 3.39.0 and later */
-  int (*deserialize)(sqlite3*,const char*,unsigned char*,
+  ចំនួនគត់ (*deserialize)(sqlite3*,const var_na*,unsigned var_na*,
                      sqlite3_int64,sqlite3_int64,unsigned);
-  unsigned char *(*serialize)(sqlite3*,const char *,sqlite3_int64*,
-                              unsigned int);
-  const char *(*db_name)(sqlite3*,int);
+  unsigned var_na *(*serialize)(sqlite3*,const var_na *,sqlite3_int64*,
+                              unsigned ចំនួនគត់);
+  const var_na *(*db_name)(sqlite3*,ចំនួនគត់);
   /* Version 3.40.0 and later */
-  int (*value_encoding)(sqlite3_value*);
+  ចំនួនគត់ (*value_encoding)(sqlite3_value*);
   /* Version 3.41.0 and later */
-  int (*is_interrupted)(sqlite3*);
+  ចំនួនគត់ (*is_interrupted)(sqlite3*);
   /* Version 3.43.0 and later */
-  int (*stmt_explain)(sqlite3_stmt*,int);
+  ចំនួនគត់ (*stmt_explain)(sqlite3_stmt*,ចំនួនគត់);
   /* Version 3.44.0 and later */
-  void *(*get_clientdata)(sqlite3*,const char*);
-  int (*set_clientdata)(sqlite3*, const char*, void*, void(*)(void*));
+  void *(*get_clientdata)(sqlite3*,const var_na*);
+  ចំនួនគត់ (*set_clientdata)(sqlite3*, const var_na*, void*, void(*)(void*));
   /* Version 3.50.0 and later */
-  int (*setlk_timeout)(sqlite3*,int,int);
+  ចំនួនគត់ (*setlk_timeout)(sqlite3*,ចំនួនគត់,ចំនួនគត់);
   /* Version 3.51.0 and later */
-  int (*set_errmsg)(sqlite3*,int,const char*);
-  int (*db_status64)(sqlite3*,int,sqlite3_int64*,sqlite3_int64*,int);
+  ចំនួនគត់ (*set_errmsg)(sqlite3*,ចំនួនគត់,const var_na*);
+  ចំនួនគត់ (*db_status64)(sqlite3*,ចំនួនគត់,sqlite3_int64*,sqlite3_int64*,ចំនួនគត់);
   /* Version 3.52.0 and later */
-  void (*str_truncate)(sqlite3_str*,int);
+  void (*str_truncate)(sqlite3_str*,ចំនួនគត់);
   void (*str_free)(sqlite3_str*);
-  int (*carray_bind)(sqlite3_stmt*,int,void*,int,int,void(*)(void*));
-  int (*carray_bind_v2)(sqlite3_stmt*,int,void*,int,int,void(*)(void*),void*);
+  ចំនួនគត់ (*carray_bind)(sqlite3_stmt*,ចំនួនគត់,void*,ចំនួនគត់,ចំនួនគត់,void(*)(void*));
+  ចំនួនគត់ (*carray_bind_v2)(sqlite3_stmt*,ចំនួនគត់,void*,ចំនួនគត់,ចំនួនគត់,void(*)(void*),void*);
   /* Version 3.54.0 and later */
-  sqlite3_int64 (*incomplete)(const char*);
-  void (*result_str)(sqlite3_context*,sqlite3_str*,int);
+  sqlite3_int64 (*incomplete)(const var_na*);
+  void (*result_str)(sqlite3_context*,sqlite3_str*,ចំនួនគត់);
 };
 
 /*
 ** This is the function signature used for all extension entry points.  It
 ** is also defined in the file "loadext.c".
 */
-typedef int (*sqlite3_loadext_entry)(
+typedef ចំនួនគត់ (*sqlite3_loadext_entry)(
   sqlite3 *db,                       /* Handle to the database. */
-  char **pzErrMsg,                   /* Used to set error string on failure. */
+  var_na **pzErrMsg,                   /* Used to set error string on failure. */
   const sqlite3_api_routines *pThunk /* Extension API function pointers. */
 );
 
@@ -402,7 +402,7 @@ typedef int (*sqlite3_loadext_entry)(
 ** the API.  So the redefinition macros are only valid if the
 ** SQLITE_CORE macros is undefined.
 */
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ប្រសិនបើ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
 #define sqlite3_aggregate_context      sqlite3_api->aggregate_context
 #ifndef SQLITE_OMIT_DEPRECATED
 #define sqlite3_aggregate_count        sqlite3_api->aggregate_count
@@ -727,14 +727,14 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_str             sqlite3_api->result_str
 #endif /* !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION) */
 
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ប្រសិនបើ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
   /* This case when the file really is being compiled as a loadable 
   ** extension */
 # define SQLITE_EXTENSION_INIT1     const sqlite3_api_routines *sqlite3_api=0;
 # define SQLITE_EXTENSION_INIT2(v)  sqlite3_api=v;
 # define SQLITE_EXTENSION_INIT3     \
     extern const sqlite3_api_routines *sqlite3_api;
-#else
+#បើមិនដូច្នេះ
   /* This case when the file is being statically linked into the 
   ** application */
 # define SQLITE_EXTENSION_INIT1     /*no-op*/

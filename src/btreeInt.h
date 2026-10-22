@@ -219,7 +219,7 @@
 /* The following value is the maximum cell size assuming a maximum page
 ** size give above.
 */
-#define MX_CELL_SIZE(pBt)  ((int)(pBt->pageSize-8))
+#define MX_CELL_SIZE(pBt)  ((ចំនួនគត់)(pBt->pageSize-8))
 
 /* The maximum number of cells on a single page of the database.  This
 ** assumes a minimum cell size of 6 bytes  (4 bytes for the cell itself
@@ -229,9 +229,9 @@
 #define MX_CELL(pBt) ((pBt->pageSize-8)/6)
 
 /* Forward declarations */
-typedef struct MemPage MemPage;
-typedef struct BtLock BtLock;
-typedef struct CellInfo CellInfo;
+typedef sa_nracanaa MemPage MemPage;
+typedef sa_nracanaa BtLock BtLock;
+typedef sa_nracanaa CellInfo CellInfo;
 
 /*
 ** This is a magic string that appears at the beginning of every
@@ -270,7 +270,7 @@ typedef struct CellInfo CellInfo;
 ** Access to all fields of this structure is controlled by the mutex
 ** stored in MemPage.pBt->mutex.
 */
-struct MemPage {
+sa_nracanaa MemPage {
   u8 isInit;           /* True if previously initialized. MUST BE FIRST! */
   u8 intKey;           /* True if table b-trees.  False for index b-trees */
   u8 intKeyLeaf;       /* True if the leaf of an intKey table */
@@ -285,7 +285,7 @@ struct MemPage {
   u16 maxLocal;        /* Copy of BtShared.maxLocal or BtShared.maxLeaf */
   u16 minLocal;        /* Copy of BtShared.minLocal or BtShared.minLeaf */
   u16 cellOffset;      /* Index in aData of first cell pointer */
-  int nFree;           /* Number of free bytes on the page. -1 for unknown */
+  ចំនួនគត់ nFree;           /* Number of free bytes on the page. -1 for unknown */
   u16 nCell;           /* Number of cells on this page, local and ovfl */
   u16 maskPage;        /* Mask for page offset */
   u16 aiOvfl[4];       /* Insert the i-th overflow cell before the aiOvfl-th
@@ -310,7 +310,7 @@ struct MemPage {
 ** from this list when a transaction is committed or rolled back, or when
 ** a btree handle is closed.
 */
-struct BtLock {
+sa_nracanaa BtLock {
   Btree *pBtree;        /* Btree handle holding this lock */
   Pgno iTable;          /* Root page of table */
   u8 eLock;             /* READ_LOCK or WRITE_LOCK */
@@ -342,15 +342,15 @@ struct BtLock {
 ** cursors have to go through this Btree to find their BtShared and
 ** they often do so without holding sqlite3.mutex.
 */
-struct Btree {
+sa_nracanaa Btree {
   sqlite3 *db;       /* The database connection holding this btree */
   BtShared *pBt;     /* Sharable content of this btree */
   u8 inTrans;        /* TRANS_NONE, TRANS_READ or TRANS_WRITE */
   u8 sharable;       /* True if we can share pBt with another db */
   u8 locked;         /* True if db currently has pBt locked */
   u8 hasIncrblobCur; /* True if there are one or more Incrblob cursors */
-  int wantToLock;    /* Number of nested calls to sqlite3BtreeEnter() */
-  int nBackup;       /* Number of backup operations reading this btree */
+  ចំនួនគត់ wantToLock;    /* Number of nested calls to sqlite3BtreeEnter() */
+  ចំនួនគត់ nBackup;       /* Number of backup operations reading this btree */
   u32 iBDataVersion; /* Combines with pBt->pPager->iDataVersion */
   Btree *pNext;      /* List of other sharable Btrees from the same db */
   Btree *pPrev;      /* Back pointer of the same list */
@@ -376,14 +376,14 @@ struct Btree {
 #define TRANS_READ  1
 #define TRANS_WRITE 2
 
-#if TRANS_NONE!=SQLITE_TXN_NONE
-# error wrong numeric code for no-transaction
+#ប្រសិនបើ TRANS_NONE!=SQLITE_TXN_NONE
+# error wrong numeric code សម្រាប់ no-transaction
 #endif
-#if TRANS_READ!=SQLITE_TXN_READ
-# error wrong numeric code for read-transaction
+#ប្រសិនបើ TRANS_READ!=SQLITE_TXN_READ
+# error wrong numeric code សម្រាប់ read-transaction
 #endif
-#if TRANS_WRITE!=SQLITE_TXN_WRITE
-# error wrong numeric code for write-transaction
+#ប្រសិនបើ TRANS_WRITE!=SQLITE_TXN_WRITE
+# error wrong numeric code សម្រាប់ write-transaction
 #endif
 
 
@@ -422,7 +422,7 @@ struct Btree {
 **
 **   This feature is included to help prevent writer-starvation.
 */
-struct BtShared {
+sa_nracanaa BtShared {
   Pager *pPager;        /* The page cache */
   sqlite3 *db;          /* Database connection currently using this Btree */
   BtCursor *pCursor;    /* A list of all open cursors */
@@ -443,20 +443,20 @@ struct BtShared {
   u16 minLeaf;          /* Minimum local payload in a LEAFDATA table */
   u32 pageSize;         /* Total number of bytes on a page */
   u32 usableSize;       /* Number of usable bytes on each page */
-  int nTransaction;     /* Number of open transactions (read + write) */
+  ចំនួនគត់ nTransaction;     /* Number of open transactions (read + write) */
   u32 nPage;            /* Number of pages in the database */
   void *pSchema;        /* Pointer to space allocated by sqlite3BtreeSchema() */
   void (*xFreeSchema)(void*);  /* Destructor for BtShared.pSchema */
   sqlite3_mutex *mutex; /* Non-recursive mutex required to access this object */
   Bitvec *pHasContent;  /* Set of pages moved to free-list this transaction */
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  int nRef;             /* Number of references to this structure */
+  ចំនួនគត់ nRef;             /* Number of references to this structure */
   BtShared *pNext;      /* Next on a list of sharable BtShared structs */
   BtLock *pLock;        /* List of locks held on this shared-btree struct */
   Btree *pWriter;       /* Btree with currently open write transaction */
 #endif
   u8 *pTmpSpace;        /* Temp space sufficient to hold a single cell */
-  int nPreformatSize;   /* Size of last cell written by TransferRow() */
+  ចំនួនគត់ nPreformatSize;   /* Size of last cell written by TransferRow() */
 };
 
 /*
@@ -477,7 +477,7 @@ struct BtShared {
 ** about a cell.  The parseCellPtr() function fills in this structure
 ** based on information extract from the raw disk page.
 */
-struct CellInfo {
+sa_nracanaa CellInfo {
   i64 nKey;      /* The key for INTKEY tables, or nPayload otherwise */
   u8 *pPayload;  /* Pointer to the start of payload */
   u32 nPayload;  /* Bytes of payload */
@@ -528,17 +528,17 @@ struct CellInfo {
 **                     eState=SKIPNEXT if skipNext!=0
 **   FAULT             skipNext holds the cursor fault error code.
 */
-struct BtCursor {
+sa_nracanaa BtCursor {
   u8 eState;                /* One of the CURSOR_XXX constants (see below) */
   u8 curFlags;              /* zero or more BTCF_* flags defined below */
   u8 curPagerFlags;         /* Flags to send to sqlite3PagerGet() */
   u8 hints;                 /* As configured by CursorSetHints() */
-  int skipNext;    /* Prev() is noop if negative. Next() is noop if positive.
+  ចំនួនគត់ skipNext;    /* Prev() is noop if negative. Next() is noop if positive.
                    ** Error code if eState==CURSOR_FAULT */
   Btree *pBtree;            /* The Btree to which this cursor belongs */
   Pgno *aOverflow;          /* Cache of overflow page locations */
   void *pKey;               /* Saved key that was cursor last known position */
-#if defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
+#ប្រសិនបើ defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
   BtCursor *pCursorHintTableCursor;
 #endif
   /* All fields above are zeroed when the cursor is allocated.  See
@@ -554,7 +554,7 @@ struct BtCursor {
   u8 curIntKey;             /* Value of apPage[0]->intKey */
   u16 ix;                   /* Current index for apPage[iPage] */
   u16 aiIdx[BTCURSOR_MAX_DEPTH-1];     /* Current index in apPage[i] */
-  struct KeyInfo *pKeyInfo;            /* Arg passed to comparison function */
+  sa_nracanaa KeyInfo *pKeyInfo;            /* Arg passed to comparison function */
   MemPage *pPage;                        /* Current page */
   MemPage *apPage[BTCURSOR_MAX_DEPTH-1]; /* Stack of parents of current page */
 };
@@ -684,7 +684,7 @@ struct BtCursor {
 */
 #ifndef SQLITE_OMIT_AUTOVACUUM
 #define ISAUTOVACUUM(pBt) (pBt->autoVacuum)
-#else
+#បើមិនដូច្នេះ
 #define ISAUTOVACUUM(pBt) 0
 #endif
 
@@ -699,21 +699,21 @@ struct BtCursor {
 ** detect pages that are used twice and orphaned pages (both of which 
 ** indicate corruption).
 */
-typedef struct IntegrityCk IntegrityCk;
-struct IntegrityCk {
+typedef sa_nracanaa IntegrityCk IntegrityCk;
+sa_nracanaa IntegrityCk {
   BtShared *pBt;    /* The tree being checked out */
   Pager *pPager;    /* The associated pager.  Also accessible by pBt->pPager */
   u8 *aPgRef;       /* 1 bit per page in the db (see above) */
   Pgno nCkPage;     /* Pages in the database.  0 for partial check */
-  int mxErr;        /* Stop accumulating errors when this reaches zero */
-  int nErr;         /* Number of messages written to zErrMsg so far */
-  int rc;           /* SQLITE_OK, SQLITE_NOMEM, or SQLITE_INTERRUPT */
+  ចំនួនគត់ mxErr;        /* Stop accumulating errors when this reaches zero */
+  ចំនួនគត់ nErr;         /* Number of messages written to zErrMsg so far */
+  ចំនួនគត់ rc;           /* SQLITE_OK, SQLITE_NOMEM, or SQLITE_INTERRUPT */
   u32 nStep;        /* Number of steps into the integrity_check process */
   u8 nAbove;        /* Current btree recursion depth */
-  const char *zPfx; /* Error message prefix */
+  const var_na *zPfx; /* Error message prefix */
   Pgno v0;          /* Value for first %u substitution in zPfx (root page) */
   Pgno v1;          /* Value for second %u substitution in zPfx (current pg) */
-  int v2;           /* Value for third %d substitution in zPfx */
+  ចំនួនគត់ v2;           /* Value for third %d substitution in zPfx */
   StrAccum errMsg;  /* Accumulate the error message text here */
   u32 *heap;        /* Min-heap used for analyzing cell coverage */
   sqlite3 *db;      /* Database connection running the check */
@@ -736,12 +736,12 @@ struct IntegrityCk {
 ** two-byte aligned address.  get2byteAligned() is only used for accessing the
 ** cell addresses in a btree header.
 */
-#if SQLITE_BYTEORDER==4321
+#ប្រសិនបើ SQLITE_BYTEORDER==4321
 # define get2byteAligned(x)  (*(u16*)(x))
 #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4008000
 # define get2byteAligned(x)  __builtin_bswap16(*(u16*)(x))
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
 # define get2byteAligned(x)  _byteswap_ushort(*(u16*)(x))
-#else
+#បើមិនដូច្នេះ
 # define get2byteAligned(x)  ((x)[0]<<8 | (x)[1])
 #endif
