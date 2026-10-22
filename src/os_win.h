@@ -18,7 +18,7 @@
 /*
 ** Include the primary Windows SDK header file.
 */
-#include "windows.h"
+#अन्तर्भाव "windows.h"
 
 #ifdef __CYGWIN__
 # include <sys/cygwin.h>
@@ -31,9 +31,9 @@
 ** For some Windows sub-platforms, the _beginthreadex() / _endthreadex()
 ** functions are not available (e.g. those not using MSVC, Cygwin, etc).
 */
-#if SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
+#यदि SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
 # define SQLITE_OS_WIN_THREADS 1
-#else
+#अन्यथा
 # define SQLITE_OS_WIN_THREADS 0
 #endif
 

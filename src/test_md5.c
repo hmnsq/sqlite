@@ -12,11 +12,11 @@
 **
 ** This file contains code to implement an MD5 extension to TCL.
 */
-#include "sqlite3.h"
-#include <stdlib.h>
-#include <string.h>
-#include "sqlite3.h"
-#include "tclsqlite.h"
+#अन्तर्भाव "sqlite3.h"
+#अन्तर्भाव <stdlib.h>
+#अन्तर्भाव <string.h>
+#अन्तर्भाव "sqlite3.h"
+#अन्तर्भाव "tclsqlite.h"
 
 /*
  * This code implements the MD5 message-digest algorithm.
@@ -44,28 +44,28 @@
  *
  */
 #ifndef uint32
-#  define uint32 unsigned int
+#  define uint32 अचिन्हित पूर्णाङ्क
 #endif
 
-struct MD5Context {
-  int isInit;
+संरचना MD5Context {
+  पूर्णाङ्क isInit;
   uint32 buf[4];
   uint32 bits[2];
-  unsigned char in[64];
+  अचिन्हित वर्ण in[64];
 };
-typedef struct MD5Context MD5Context;
+प्रकारनिर्देश संरचना MD5Context MD5Context;
 
 /*
  * Note: this code is harmless on little-endian machines.
  */
-static void byteReverse (unsigned char *buf, unsigned longs){
+स्थिर शून्य byteReverse (अचिन्हित वर्ण *buf, अचिन्हित longs){
         uint32 t;
-        do {
-                t = (uint32)((unsigned)buf[3]<<8 | buf[2]) << 16 |
-                            ((unsigned)buf[1]<<8 | buf[0]);
+        कुरु {
+                t = (uint32)((अचिन्हित)buf[3]<<8 | buf[2]) << 16 |
+                            ((अचिन्हित)buf[1]<<8 | buf[0]);
                 *(uint32 *)buf = t;
                 buf += 4;
-        } while (--longs);
+        } यावत् (--longs);
 }
 /* The four core functions - F1 is optimized somewhat */
 
@@ -84,8 +84,8 @@ static void byteReverse (unsigned char *buf, unsigned longs){
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-static void MD5Transform(uint32 buf[4], const uint32 in[16]){
-        register uint32 a, b, c, d;
+स्थिर शून्य MD5Transform(uint32 buf[4], ध्रुव uint32 in[16]){
+        पञ्जिका uint32 a, b, c, d;
 
         a = buf[0];
         b = buf[1];
@@ -170,7 +170,7 @@ static void MD5Transform(uint32 buf[4], const uint32 in[16]){
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
-static void MD5Init(MD5Context *ctx){
+स्थिर शून्य MD5Init(MD5Context *ctx){
         ctx->isInit = 1;
         ctx->buf[0] = 0x67452301;
         ctx->buf[1] = 0xefcdab89;
@@ -184,14 +184,14 @@ static void MD5Init(MD5Context *ctx){
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-static
-void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
+स्थिर
+शून्य MD5Update(MD5Context *ctx, ध्रुव अचिन्हित वर्ण *buf, अचिन्हित पूर्णाङ्क len){
         uint32 t;
 
         /* Update bitcount */
 
         t = ctx->bits[0];
-        if ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
+        यदि ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
                 ctx->bits[1]++; /* Carry from low to high */
         ctx->bits[1] += len >> 29;
 
@@ -199,15 +199,15 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Handle any leading odd-sized chunks */
 
-        if ( t ) {
-                unsigned char *p = (unsigned char *)ctx->in + t;
+        यदि ( t ) {
+                अचिन्हित वर्ण *p = (अचिन्हित वर्ण *)ctx->in + t;
 
                 t = 64-t;
-                if (len < t) {
-                        memcpy(p, buf, len);
-                        return;
+                यदि (len < t) {
+                        स_नकल(p, buf, len);
+                        प्रत्यागम;
                 }
-                memcpy(p, buf, t);
+                स_नकल(p, buf, t);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
                 buf += t;
@@ -216,8 +216,8 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Process data in 64-byte chunks */
 
-        while (len >= 64) {
-                memcpy(ctx->in, buf, 64);
+        यावत् (len >= 64) {
+                स_नकल(ctx->in, buf, 64);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
                 buf += 64;
@@ -226,60 +226,60 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Handle any remaining bytes of data. */
 
-        memcpy(ctx->in, buf, len);
+        स_नकल(ctx->in, buf, len);
 }
 
 /*
  * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-static void MD5Final(unsigned char digest[16], MD5Context *ctx){
-        unsigned count;
-        unsigned char *p;
+स्थिर शून्य MD5Final(अचिन्हित वर्ण digest[16], MD5Context *ctx){
+        अचिन्हित गिनती;
+        अचिन्हित वर्ण *p;
 
         /* Compute number of bytes mod 64 */
-        count = (ctx->bits[0] >> 3) & 0x3F;
+        गिनती = (ctx->bits[0] >> 3) & 0x3F;
 
         /* Set the first char of padding to 0x80.  This is safe since there is
            always at least one byte free */
-        p = ctx->in + count;
+        p = ctx->in + गिनती;
         *p++ = 0x80;
 
         /* Bytes of padding needed to make 64 bytes */
-        count = 64 - 1 - count;
+        गिनती = 64 - 1 - गिनती;
 
         /* Pad out to 56 mod 64 */
-        if (count < 8) {
+        यदि (गिनती < 8) {
                 /* Two lots of padding:  Pad the first block to 64 bytes */
-                memset(p, 0, count);
+                स_रखो(p, 0, गिनती);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
 
                 /* Now fill the next block with 56 bytes */
-                memset(ctx->in, 0, 56);
-        } else {
+                स_रखो(ctx->in, 0, 56);
+        } अन्यथा {
                 /* Pad block to 56 bytes */
-                memset(p, 0, count-8);
+                स_रखो(p, 0, गिनती-8);
         }
         byteReverse(ctx->in, 14);
 
         /* Append length in bits and transform */
-        memcpy(ctx->in + 14*4, ctx->bits, 8);
+        स_नकल(ctx->in + 14*4, ctx->bits, 8);
 
         MD5Transform(ctx->buf, (uint32 *)ctx->in);
-        byteReverse((unsigned char *)ctx->buf, 4);
-        memcpy(digest, ctx->buf, 16);
+        byteReverse((अचिन्हित वर्ण *)ctx->buf, 4);
+        स_नकल(digest, ctx->buf, 16);
 }
 
 /*
 ** Convert a 128-bit MD5 digest into a 32-digit base-16 number.
 */
-static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
-  static char const zEncode[] = "0123456789abcdef";
-  int i, j;
+स्थिर शून्य MD5DigestToBase16(अचिन्हित वर्ण *digest, वर्ण *zBuf){
+  स्थिर वर्ण ध्रुव zEncode[] = "0123456789abcdef";
+  पूर्णाङ्क i, j;
 
-  for(j=i=0; i<16; i++){
-    int a = digest[i];
+  प्रति(j=i=0; i<16; i++){
+    पूर्णाङ्क a = digest[i];
     zBuf[j++] = zEncode[(a>>4)&0xf];
     zBuf[j++] = zEncode[a & 0xf];
   }
@@ -292,12 +292,12 @@ static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
 ** each representing 16 bits of the digest and separated from each
 ** other by a "-" character.
 */
-static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
-  int i, j;
-  unsigned int x;
-  for(i=j=0; i<16; i+=2){
+स्थिर शून्य MD5DigestToBase10x8(अचिन्हित वर्ण digest[16], वर्ण zDigest[50]){
+  पूर्णाङ्क i, j;
+  अचिन्हित पूर्णाङ्क x;
+  प्रति(i=j=0; i<16; i+=2){
     x = digest[i]*256 + digest[i+1];
-    if( i>0 ) zDigest[j++] = '-';
+    यदि( i>0 ) zDigest[j++] = '-';
     sqlite3_snprintf(50-j, &zDigest[j], "%05u", x);
     j += 5;
   }
@@ -308,89 +308,89 @@ static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
 ** A TCL command for md5.  The argument is the text to be hashed.  The
 ** Result is the hash in base64.
 */
-static int SQLITE_TCLAPI md5_cmd(
-  void*cd,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI md5_cmd(
+  शून्य*cd,
   Tcl_Interp *interp,
-  int argc,
-  const char **argv
+  पूर्णाङ्क argc,
+  ध्रुव वर्ण **argv
 ){
   MD5Context ctx;
-  unsigned char digest[16];
-  char zBuf[50];
-  void (*converter)(unsigned char*, char*);
+  अचिन्हित वर्ण digest[16];
+  वर्ण zBuf[50];
+  शून्य (*converter)(अचिन्हित वर्ण*, वर्ण*);
 
-  if( argc!=2 ){
+  यदि( argc!=2 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
-        " TEXT\"", (char*)0);
-    return TCL_ERROR;
+        " TEXT\"", (वर्ण*)0);
+    प्रत्यागम TCL_ERROR;
   }
   MD5Init(&ctx);
-  MD5Update(&ctx, (unsigned char*)argv[1], (unsigned)strlen(argv[1]));
+  MD5Update(&ctx, (अचिन्हित वर्ण*)argv[1], (अचिन्हित)म_माप(argv[1]));
   MD5Final(digest, &ctx);
-  converter = (void(*)(unsigned char*,char*))cd;
+  converter = (शून्य(*)(अचिन्हित वर्ण*,वर्ण*))cd;
   converter(digest, zBuf);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_AppendResult(interp, zBuf, (वर्ण*)0);
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** A TCL command to take the md5 hash of a file.  The argument is the
 ** name of the file.
 */
-static int SQLITE_TCLAPI md5file_cmd(
-  void*cd,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI md5file_cmd(
+  शून्य*cd,
   Tcl_Interp *interp,
-  int argc,
-  const char **argv
+  पूर्णाङ्क argc,
+  ध्रुव वर्ण **argv
 ){
-  FILE *in;
-  int ofst;
-  int amt;
+  खाता *in;
+  पूर्णाङ्क ofst;
+  पूर्णाङ्क amt;
   MD5Context ctx;
-  void (*converter)(unsigned char*, char*);
-  unsigned char digest[16];
-  char zBuf[10240];
+  शून्य (*converter)(अचिन्हित वर्ण*, वर्ण*);
+  अचिन्हित वर्ण digest[16];
+  वर्ण zBuf[10240];
 
-  if( argc!=2 && argc!=4 ){
+  यदि( argc!=2 && argc!=4 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
-        " FILENAME [OFFSET AMT]\"", (char*)0);
-    return TCL_ERROR;
+        " FILENAME [OFFSET AMT]\"", (वर्ण*)0);
+    प्रत्यागम TCL_ERROR;
   }
-  if( argc==4 ){
-    ofst = atoi(argv[2]);
-    amt = atoi(argv[3]);
-  }else{
+  यदि( argc==4 ){
+    ofst = म_से_प(argv[2]);
+    amt = म_से_प(argv[3]);
+  }अन्यथा{
     ofst = 0;
     amt = 2147483647;
   }
-  in = fopen(argv[1],"rb");
-  if( in==0 ){
+  in = ख_खोलो(argv[1],"rb");
+  यदि( in==0 ){
     Tcl_AppendResult(interp,"unable to open file \"", argv[1],
-         "\" for reading", (char*)0);
-    return TCL_ERROR;
+         "\" for reading", (वर्ण*)0);
+    प्रत्यागम TCL_ERROR;
   }
-  fseek(in, ofst, SEEK_SET);
+  ख_जाओ(in, ofst, शुरू_से);
   MD5Init(&ctx);
-  while( amt>0 ){
-    int n;
-    n = (int)fread(zBuf, 1, sizeof(zBuf)<=amt ? sizeof(zBuf) : amt, in);
-    if( n<=0 ) break;
-    MD5Update(&ctx, (unsigned char*)zBuf, (unsigned)n);
+  यावत्( amt>0 ){
+    पूर्णाङ्क n;
+    n = (पूर्णाङ्क)ख_पढ़ो(zBuf, 1, परिमाण(zBuf)<=amt ? परिमाण(zBuf) : amt, in);
+    यदि( n<=0 ) भङ्ग;
+    MD5Update(&ctx, (अचिन्हित वर्ण*)zBuf, (अचिन्हित)n);
     amt -= n;
   }
-  fclose(in);
+  ख_बंद(in);
   MD5Final(digest, &ctx);
-  converter = (void(*)(unsigned char*,char*))cd;
+  converter = (शून्य(*)(अचिन्हित वर्ण*,वर्ण*))cd;
   converter(digest, zBuf);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_AppendResult(interp, zBuf, (वर्ण*)0);
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** Register the four new TCL commands for generating MD5 checksums
 ** with the TCL interpreter.
 */
-int Md5_Init(Tcl_Interp *interp){
+पूर्णाङ्क Md5_Init(Tcl_Interp *interp){
   Tcl_CreateCommand(interp, "md5", (Tcl_CmdProc*)md5_cmd,
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5-10x8", (Tcl_CmdProc*)md5_cmd,
@@ -399,45 +399,45 @@ int Md5_Init(Tcl_Interp *interp){
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5file-10x8", (Tcl_CmdProc*)md5file_cmd,
                     MD5DigestToBase10x8, 0);
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** During testing, the special md5sum() aggregate function is available.
 ** inside SQLite.  The following routines implement that function.
 */
-static void md5step(sqlite3_context *context, int argc, sqlite3_value **argv){
+स्थिर शून्य md5step(sqlite3_context *context, पूर्णाङ्क argc, sqlite3_मूल्य **argv){
   MD5Context *p;
-  int i;
-  if( argc<1 ) return;
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( p==0 ) return;
-  if( !p->isInit ){
+  पूर्णाङ्क i;
+  यदि( argc<1 ) प्रत्यागम;
+  p = sqlite3_aggregate_context(context, परिमाण(*p));
+  यदि( p==0 ) प्रत्यागम;
+  यदि( !p->isInit ){
     MD5Init(p);
   }
-  for(i=0; i<argc; i++){
-    const char *zData = (char*)sqlite3_value_text(argv[i]);
-    if( zData ){
-      MD5Update(p, (unsigned char*)zData, (int)strlen(zData));
+  प्रति(i=0; i<argc; i++){
+    ध्रुव वर्ण *zData = (वर्ण*)sqlite3_मूल्य_text(argv[i]);
+    यदि( zData ){
+      MD5Update(p, (अचिन्हित वर्ण*)zData, (पूर्णाङ्क)म_माप(zData));
     }
   }
 }
-static void md5finalize(sqlite3_context *context){
+स्थिर शून्य md5finalize(sqlite3_context *context){
   MD5Context *p;
-  unsigned char digest[16];
-  char zBuf[33];
-  p = sqlite3_aggregate_context(context, sizeof(*p));
+  अचिन्हित वर्ण digest[16];
+  वर्ण zBuf[33];
+  p = sqlite3_aggregate_context(context, परिमाण(*p));
   MD5Final(digest,p);
   MD5DigestToBase16(digest, zBuf);
   sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
-int Md5_Register(
+पूर्णाङ्क Md5_Register(
   sqlite3 *db,
-  char **pzErrMsg,
-  const sqlite3_api_routines *pThunk
+  वर्ण **pz_Err_संदेश,
+  ध्रुव sqlite3_api_routines *pThunk
 ){
-  int rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
+  पूर्णाङ्क rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
                                  md5step, md5finalize);
   sqlite3_overload_function(db, "md5sum", -1);  /* To exercise this API */
-  return rc;
+  प्रत्यागम rc;
 }
