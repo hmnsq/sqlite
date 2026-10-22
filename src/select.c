@@ -12,19 +12,19 @@
 ** This file contains C code routines that are called by the parser
 ** to handle SELECT statements in SQLite.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /*
 ** An instance of the following object is used to record information about
 ** how to process the DISTINCT keyword, to simplify passing that information
 ** into the selectInnerLoop() routine.
 */
-typedef struct DistinctCtx DistinctCtx;
-struct DistinctCtx {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ DistinctCtx DistinctCtx;
+ਬਣਤਰ DistinctCtx {
   u8 isTnct;      /* 0: Not distinct. 1: DISTINCT  2: DISTINCT and ORDER BY */
   u8 eTnctType;   /* One of the WHERE_DISTINCT_* operators */
-  int tabTnct;    /* Ephemeral table used for DISTINCT processing */
-  int addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
+  ਪੂਰਨ tabTnct;    /* Ephemeral table used for DISTINCT processing */
+  ਪੂਰਨ addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
 };
 
 /*
@@ -45,32 +45,32 @@ struct DistinctCtx {
 ** aDefer[] array for each database table that may be read as values are
 ** extracted from the sorter.
 */
-typedef struct SortCtx SortCtx;
-struct SortCtx {
-  ExprList *pOrderBy;   /* The ORDER BY (or GROUP BY clause) */
-  int nOBSat;           /* Number of ORDER BY terms satisfied by indices */
-  int iECursor;         /* Cursor number for the sorter */
-  int regReturn;        /* Register holding block-output return address */
-  int labelBkOut;       /* Start label for the block-output subroutine */
-  int addrSortIndex;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
-  int labelDone;        /* Jump here when done, ex: LIMIT reached */
-  int labelOBLopt;      /* Jump here when sorter is full */
-  u8 sortFlags;         /* Zero or more SORTFLAG_* bits */
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ ਛਾਂਟੋ_Ctx ਛਾਂਟੋ_Ctx;
+ਬਣਤਰ ਛਾਂਟੋ_Ctx {
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By;   /* The ORDER BY (or GROUP BY clause) */
+  ਪੂਰਨ nOBSat;           /* Number of ORDER BY terms satisfied by indices */
+  ਪੂਰਨ iECursor;         /* Cursor number for the sorter */
+  ਪੂਰਨ regReturn;        /* Register holding block-output return address */
+  ਪੂਰਨ label_Bk_ਬਾਹਰਲਾ;       /* Start label for the block-output subroutine */
+  ਪੂਰਨ addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
+  ਪੂਰਨ label_ਪੂਰਾ;        /* Jump here when done, ex: LIMIT reached */
+  ਪੂਰਨ labelOBLopt;      /* Jump here when sorter is full */
+  u8 ਛਾਂਟੋ_Flags;         /* Zero or more SORTFLAG_* bits */
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
   u8 nDefer;            /* Number of valid entries in aDefer[] */
-  struct DeferredCsr {
-    Table *pTab;        /* Table definition */
-    int iCsr;           /* Cursor number for table */
-    int nKey;           /* Number of PK columns for table pTab (>=1) */
+  ਬਣਤਰ DeferredCsr {
+    ਸਾਰਣੀ *pTab;        /* Table definition */
+    ਪੂਰਨ iCsr;           /* Cursor number for table */
+    ਪੂਰਨ n_ਕੁੰਜੀ;           /* Number of PK columns for table pTab (>=1) */
   } aDefer[4];
-#endif
-  struct RowLoadInfo *pDeferredRowLoad;  /* Deferred row loading info or NULL */
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrPush;         /* First instruction to push data into sorter */
-  int addrPushEnd;      /* Last instruction that pushes data into sorter */
-#endif
+#ਜੇ_ਅੰਤ
+  ਬਣਤਰ ਪੰਕਤੀ_ਲੱਦੋ_Info *p_Deferred_ਪੰਕਤੀ_ਲੱਦੋ;  /* Deferred row loading info or NULL */
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+  ਪੂਰਨ addr_ਧੱਕੋ;         /* First instruction to push data into sorter */
+  ਪੂਰਨ addr_ਧੱਕੋ_ਸਿਰਾ;      /* Last instruction that pushes data into sorter */
+#ਜੇ_ਅੰਤ
 };
-#define SORTFLAG_UseSorter  0x01   /* Use SorterOpen instead of OpenEphemeral */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SORTFLAG_UseSorter  0x01   /* Use SorterOpen instead of OpenEphemeral */
 
 /*
 ** Delete all the content of a Select structure.  Deallocate the structure
@@ -79,29 +79,29 @@ struct SortCtx {
 ** If bFree==1, call sqlite3DbFree() on the p object.
 ** If bFree==0, Leave the first Select object unfreed
 */
-static void clearSelect(sqlite3 *db, Select *p, int bFree){
-  assert( db!=0 );
-  while( p ){
-    Select *pPrior = p->pPrior;
-    sqlite3ExprListDelete(db, p->pEList);
+ਸਥਿਰ ਖਾਲੀ clearSelect(sqlite3 *db, Select *p, ਪੂਰਨ bFree){
+  ਪ੍ਰਤਿਜ੍ਞਾ( db!=0 );
+  ਜਦੋਂ( p ){
+    Select *p_ਪੂਰਵ = p->p_ਪੂਰਵ;
+    sqlite3_ਵਿਅੰਜਕ_List_Delete(db, p->pEList);
     sqlite3SrcListDelete(db, p->pSrc);
-    sqlite3ExprDelete(db, p->pWhere);
-    sqlite3ExprListDelete(db, p->pGroupBy);
-    sqlite3ExprDelete(db, p->pHaving);
-    sqlite3ExprListDelete(db, p->pOrderBy);
-    sqlite3ExprDelete(db, p->pLimit);
-    if( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
-      sqlite3WindowListDelete(db, p->pWinDefn);
+    sqlite3_ਵਿਅੰਜਕ_Delete(db, p->pWhere);
+    sqlite3_ਵਿਅੰਜਕ_List_Delete(db, p->p_ਸਮੂਹ_By);
+    sqlite3_ਵਿਅੰਜਕ_Delete(db, p->pHaving);
+    sqlite3_ਵਿਅੰਜਕ_List_Delete(db, p->p_ਕ੍ਰਮ_By);
+    sqlite3_ਵਿਅੰਜਕ_Delete(db, p->p_ਹੱਦਬੰਦੀ);
+    ਜੇ( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
+      sqlite3_ਖਿੜਕੀ_List_Delete(db, p->pWinDefn);
     }
-    while( p->pWin ){
-      assert( p->pWin->ppThis==&p->pWin );
-      sqlite3WindowUnlinkFromSelect(p->pWin);
+    ਜਦੋਂ( p->pWin ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( p->pWin->ppThis==&p->pWin );
+      sqlite3_ਖਿੜਕੀ_Unlink_From_Select(p->pWin);
     }
-#endif
-    if( bFree ) sqlite3DbNNFreeNN(db, p);
-    p = pPrior;
+#ਜੇ_ਅੰਤ
+    ਜੇ( bFree ) sqlite3DbNNFreeNN(db, p);
+    p = p_ਪੂਰਵ;
     bFree = 1;
   }
 }
@@ -109,7 +109,7 @@ static void clearSelect(sqlite3 *db, Select *p, int bFree){
 /*
 ** Initialize a SelectDest structure.
 */
-void sqlite3SelectDestInit(SelectDest *pDest, int eDest, int iParm){
+ਖਾਲੀ sqlite3SelectDestInit(SelectDest *pDest, ਪੂਰਨ eDest, ਪੂਰਨ iParm){
   pDest->eDest = (u8)eDest;
   pDest->iSDParm = iParm;
   pDest->iSDParm2 = 0;
@@ -125,73 +125,73 @@ void sqlite3SelectDestInit(SelectDest *pDest, int eDest, int iParm){
 */
 Select *sqlite3SelectNew(
   Parse *pParse,        /* Parsing context */
-  ExprList *pEList,     /* which columns to include in the result */
+  ਵਿਅੰਜਕ_List *pEList,     /* which columns to include in the result */
   SrcList *pSrc,        /* the FROM clause -- which tables to scan */
-  Expr *pWhere,         /* the WHERE clause */
-  ExprList *pGroupBy,   /* the GROUP BY clause */
-  Expr *pHaving,        /* the HAVING clause */
-  ExprList *pOrderBy,   /* the ORDER BY clause */
+  ਵਿਅੰਜਕ *pWhere,         /* the WHERE clause */
+  ਵਿਅੰਜਕ_List *p_ਸਮੂਹ_By,   /* the GROUP BY clause */
+  ਵਿਅੰਜਕ *pHaving,        /* the HAVING clause */
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By,   /* the ORDER BY clause */
   u32 selFlags,         /* Flag parameters, such as SF_Distinct */
-  Expr *pLimit          /* LIMIT value.  NULL means not used */
+  ਵਿਅੰਜਕ *p_ਹੱਦਬੰਦੀ          /* LIMIT value.  NULL means not used */
 ){
   Select *pNew, *pAllocated;
   Select standin;
-  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, sizeof(*pNew) );
-  if( pNew==0 ){
-    assert( pParse->db->mallocFailed );
+  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, ਆਕਾਰ(*pNew) );
+  ਜੇ( pNew==0 ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pParse->db->mallocFailed );
     pNew = &standin;
   }
-  if( pEList==0 ){
-    pEList = sqlite3ExprListAppend(pParse, 0,
-                                   sqlite3Expr(pParse->db,TK_ASTERISK,0));
+  ਜੇ( pEList==0 ){
+    pEList = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, 0,
+                                   sqlite3_ਵਿਅੰਜਕ(pParse->db,TK_ASTERISK,0));
   }
   pNew->pEList = pEList;
   pNew->op = TK_SELECT;
   pNew->selFlags = selFlags;
-  pNew->iLimit = 0;
-  pNew->iOffset = 0;
+  pNew->i_ਹੱਦਬੰਦੀ = 0;
+  pNew->i_ਵਿੱਥ = 0;
   pNew->selId = ++pParse->nSelect;
-  pNew->nSelectRow = 0;
-  if( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
+  pNew->n_Select_ਪੰਕਤੀ = 0;
+  ਜੇ( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
   pNew->pSrc = pSrc;
   pNew->pWhere = pWhere;
-  pNew->pGroupBy = pGroupBy;
+  pNew->p_ਸਮੂਹ_By = p_ਸਮੂਹ_By;
   pNew->pHaving = pHaving;
-  pNew->pOrderBy = pOrderBy;
-  pNew->pPrior = 0;
-  pNew->pNext = 0;
-  pNew->pLimit = pLimit;
+  pNew->p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By;
+  pNew->p_ਪੂਰਵ = 0;
+  pNew->p_ਅਗਲਾ = 0;
+  pNew->p_ਹੱਦਬੰਦੀ = p_ਹੱਦਬੰਦੀ;
   pNew->pWith = 0;
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
   pNew->pWin = 0;
   pNew->pWinDefn = 0;
-#endif
-  if( pParse->db->mallocFailed ) {
+#ਜੇ_ਅੰਤ
+  ਜੇ( pParse->db->mallocFailed ) {
     clearSelect(pParse->db, pNew, pNew!=&standin);
     pAllocated = 0;
-  }else{
-    assert( pNew->pSrc!=0 || pParse->nErr>0 );
+  }ਨਹੀਂਤਾਂ{
+    ਪ੍ਰਤਿਜ੍ਞਾ( pNew->pSrc!=0 || pParse->nErr>0 );
   }
-  return pAllocated;
+  ਵਾਪਸ pAllocated;
 }
 
 
 /*
 ** Delete the given Select structure and all of its substructures.
 */
-void sqlite3SelectDelete(sqlite3 *db, Select *p){
-  if( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
+ਖਾਲੀ sqlite3SelectDelete(sqlite3 *db, Select *p){
+  ਜੇ( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
 }
-void sqlite3SelectDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
+ਖਾਲੀ sqlite3SelectDeleteGeneric(sqlite3 *db, ਖਾਲੀ *p){
+  ਜੇ( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
 }
 
 /*
 ** Return a pointer to the right-most SELECT statement in a compound.
 */
-static Select *findRightmost(Select *p){
-  while( p->pNext ) p = p->pNext;
-  return p;
+ਸਥਿਰ Select *ਲੱਭੋ_Rightmost(Select *p){
+  ਜਦੋਂ( p->p_ਅਗਲਾ ) p = p->p_ਅਗਲਾ;
+  ਵਾਪਸ p;
 }
 
 /*
@@ -257,112 +257,112 @@ static Select *findRightmost(Select *p){
 **    *   If "OUTER" is present then there must also be one of
 **        "LEFT", "RIGHT", or "FULL"
 */
-int sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
-  int jointype = 0;
+ਪੂਰਨ sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
+  ਪੂਰਨ jointype = 0;
   Token *apAll[3];
   Token *p;
                              /*   0123456789 123456789 123456789 123 */
-  static const char zKeyText[] = "naturaleftouterightfullinnercross";
-  static const struct {
+  ਸਥਿਰ ਅਚਲ ਅੱਖਰ z_ਕੁੰਜੀ_ਪਾਠ[] = "naturaleftouterightfullinnercross";
+  ਸਥਿਰ ਅਚਲ ਬਣਤਰ {
     u8 i;        /* Beginning of keyword text in zKeyText[] */
     u8 nChar;    /* Length of the keyword in characters */
-    u8 code;     /* Join type mask */
+    u8 ਕੋਡ;     /* Join type mask */
   } aKeyword[] = {
     /* (0) natural */ { 0,  7, JT_NATURAL                },
-    /* (1) left    */ { 6,  4, JT_LEFT|JT_OUTER          },
+    /* (1) left    */ { 6,  4, JT_ਖੱਬਾ|JT_OUTER          },
     /* (2) outer   */ { 10, 5, JT_OUTER                  },
-    /* (3) right   */ { 14, 5, JT_RIGHT|JT_OUTER         },
-    /* (4) full    */ { 19, 4, JT_LEFT|JT_RIGHT|JT_OUTER },
+    /* (3) right   */ { 14, 5, JT_ਸੱਜਾ|JT_OUTER         },
+    /* (4) full    */ { 19, 4, JT_ਖੱਬਾ|JT_ਸੱਜਾ|JT_OUTER },
     /* (5) inner   */ { 23, 5, JT_INNER                  },
     /* (6) cross   */ { 28, 5, JT_INNER|JT_CROSS         },
   };
-  int i, j;
+  ਪੂਰਨ i, j;
   apAll[0] = pA;
   apAll[1] = pB;
   apAll[2] = pC;
-  for(i=0; i<3 && apAll[i]; i++){
+  ਲਈ(i=0; i<3 && apAll[i]; i++){
     p = apAll[i];
-    for(j=0; j<ArraySize(aKeyword); j++){
-      if( p->n==aKeyword[j].nChar
-          && sqlite3StrNICmp((char*)p->z, &zKeyText[aKeyword[j].i], p->n)==0 ){
-        jointype |= aKeyword[j].code;
-        break;
+    ਲਈ(j=0; j<Array_ਮਾਪ(aKeyword); j++){
+      ਜੇ( p->n==aKeyword[j].nChar
+          && sqlite3StrNICmp((ਅੱਖਰ*)p->z, &z_ਕੁੰਜੀ_ਪਾਠ[aKeyword[j].i], p->n)==0 ){
+        jointype |= aKeyword[j].ਕੋਡ;
+        ਰੋਕੋ;
       }
     }
     testcase( j==0 || j==1 || j==2 || j==3 || j==4 || j==5 || j==6 );
-    if( j>=ArraySize(aKeyword) ){
+    ਜੇ( j>=Array_ਮਾਪ(aKeyword) ){
       jointype |= JT_ERROR;
-      break;
+      ਰੋਕੋ;
     }
   }
-  if(
+  ਜੇ(
      (jointype & (JT_INNER|JT_OUTER))==(JT_INNER|JT_OUTER) ||
      (jointype & JT_ERROR)!=0 ||
-     (jointype & (JT_OUTER|JT_LEFT|JT_RIGHT))==JT_OUTER
+     (jointype & (JT_OUTER|JT_ਖੱਬਾ|JT_ਸੱਜਾ))==JT_OUTER
   ){
-    const char *zSp1 = " ";
-    const char *zSp2 = " ";
-    if( pB==0 ){ zSp1++; }
-    if( pC==0 ){ zSp2++; }
-    sqlite3ErrorMsg(pParse, "unknown join type: "
+    ਅਚਲ ਅੱਖਰ *zSp1 = " ";
+    ਅਚਲ ਅੱਖਰ *zSp2 = " ";
+    ਜੇ( pB==0 ){ zSp1++; }
+    ਜੇ( pC==0 ){ zSp2++; }
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "unknown join type: "
        "%T%s%T%s%T", pA, zSp1, pB, zSp2, pC);
     jointype = JT_INNER;
   }
-  return jointype;
+  ਵਾਪਸ jointype;
 }
 
 /*
 ** Return the index of a column in a table.  Return -1 if the column
 ** is not contained in the table.
 */
-int sqlite3ColumnIndex(Table *pTab, const char *zCol){
-  int i;
+ਪੂਰਨ sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(ਸਾਰਣੀ *pTab, ਅਚਲ ਅੱਖਰ *z_ਖਾਨਾ){
+  ਪੂਰਨ i;
   u8 h;
-  const Column *aCol;
-  int nCol;
+  ਅਚਲ ਕਾਲਮ *a_ਖਾਨਾ;
+  ਪੂਰਨ n_ਖਾਨਾ;
 
-  h = sqlite3StrIHash(zCol);
-  aCol = pTab->aCol;
-  nCol = pTab->nCol;
+  h = sqlite3StrIHash(z_ਖਾਨਾ);
+  a_ਖਾਨਾ = pTab->a_ਖਾਨਾ;
+  n_ਖਾਨਾ = pTab->n_ਖਾਨਾ;
 
   /* See if the aHx gives us a lucky match */
-  i = pTab->aHx[h % sizeof(pTab->aHx)];
-  assert( i<nCol );
-  if( aCol[i].hName==h
-   && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
+  i = pTab->aHx[h % ਆਕਾਰ(pTab->aHx)];
+  ਪ੍ਰਤਿਜ੍ਞਾ( i<n_ਖਾਨਾ );
+  ਜੇ( a_ਖਾਨਾ[i].hName==h
+   && sqlite3StrICmp(a_ਖਾਨਾ[i].zCnName, z_ਖਾਨਾ)==0
   ){
-    return i;
+    ਵਾਪਸ i;
   }
 
   /* No lucky match from the hash table.  Do a full search. */
   i = 0;
-  while( 1 /*exit-by-break*/ ){
-    if( aCol[i].hName==h
-     && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
+  ਜਦੋਂ( 1 /*exit-by-break*/ ){
+    ਜੇ( a_ਖਾਨਾ[i].hName==h
+     && sqlite3StrICmp(a_ਖਾਨਾ[i].zCnName, z_ਖਾਨਾ)==0
     ){
-      return i;
+      ਵਾਪਸ i;
     }
     i++;
-    if( i>=nCol ) break;
+    ਜੇ( i>=n_ਖਾਨਾ ) ਰੋਕੋ;
   }
-  return -1;
+  ਵਾਪਸ -1;
 }
 
 /*
 ** Mark a subquery result column as having been used.
 */
-void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
-  assert( pItem!=0 );
-  assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-  if( pItem->fg.isNestedFrom ){
-    ExprList *pResults;
-    assert( pItem->fg.isSubquery );
-    assert( pItem->u4.pSubq!=0 );
-    assert( pItem->u4.pSubq->pSelect!=0 );
-    pResults = pItem->u4.pSubq->pSelect->pEList;
-    assert( pResults!=0 );
-    assert( iCol>=0 && iCol<pResults->nExpr );
-    pResults->a[iCol].fg.bUsed = 1;
+ਖਾਲੀ sqlite3_Src_ਵਸਤੂ_ਕਾਲਮ_ਵਰਤਿਆ(Src_ਵਸਤੂ *p_ਵਸਤੂ, ਪੂਰਨ i_ਖਾਨਾ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (ਪੂਰਨ)p_ਵਸਤੂ->fg.isNestedFrom == IsNestedFrom(p_ਵਸਤੂ) );
+  ਜੇ( p_ਵਸਤੂ->fg.isNestedFrom ){
+    ਵਿਅੰਜਕ_List *pResults;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->fg.isSubquery );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->u4.pSubq!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->u4.pSubq->pSelect!=0 );
+    pResults = p_ਵਸਤੂ->u4.pSubq->pSelect->pEList;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pResults!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ>=0 && i_ਖਾਨਾ<pResults->n_ਵਿਅੰਜਕ );
+    pResults->a[i_ਖਾਨਾ].fg.b_ਵਰਤਿਆ = 1;
   }
 }
 
@@ -376,36 +376,36 @@ void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
 **
 ** If not found, return FALSE.
 */
-static int tableAndColumnIndex(
+ਸਥਿਰ ਪੂਰਨ ਸਾਰਣੀ_And_ਕਾਲਮ_ਸੂਚਕਾਂਕ(
   SrcList *pSrc,       /* Array of tables to search */
-  int iStart,          /* First member of pSrc->a[] to check */
-  int iEnd,            /* Last member of pSrc->a[] to check */
-  const char *zCol,    /* Name of the column we are looking for */
-  int *piTab,          /* Write index of pSrc->a[] here */
-  int *piCol,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
-  int bIgnoreHidden    /* Ignore hidden columns */
+  ਪੂਰਨ i_ਸ਼ੁਰੂ,          /* First member of pSrc->a[] to check */
+  ਪੂਰਨ i_ਸਿਰਾ,            /* Last member of pSrc->a[] to check */
+  ਅਚਲ ਅੱਖਰ *z_ਖਾਨਾ,    /* Name of the column we are looking for */
+  ਪੂਰਨ *piTab,          /* Write index of pSrc->a[] here */
+  ਪੂਰਨ *pi_ਖਾਨਾ,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
+  ਪੂਰਨ bIgnoreHidden    /* Ignore hidden columns */
 ){
-  int i;               /* For looping over tables in pSrc */
-  int iCol;            /* Index of column matching zCol */
+  ਪੂਰਨ i;               /* For looping over tables in pSrc */
+  ਪੂਰਨ i_ਖਾਨਾ;            /* Index of column matching zCol */
 
-  assert( iEnd<pSrc->nSrc );
-  assert( iStart>=0 );
-  assert( (piTab==0)==(piCol==0) );  /* Both or neither are NULL */
+  ਪ੍ਰਤਿਜ੍ਞਾ( i_ਸਿਰਾ<pSrc->nSrc );
+  ਪ੍ਰਤਿਜ੍ਞਾ( i_ਸ਼ੁਰੂ>=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (piTab==0)==(pi_ਖਾਨਾ==0) );  /* Both or neither are NULL */
 
-  for(i=iStart; i<=iEnd; i++){
-    iCol = sqlite3ColumnIndex(pSrc->a[i].pSTab, zCol);
-    if( iCol>=0
-     && (bIgnoreHidden==0 || IsHiddenColumn(&pSrc->a[i].pSTab->aCol[iCol])==0)
+  ਲਈ(i=i_ਸ਼ੁਰੂ; i<=i_ਸਿਰਾ; i++){
+    i_ਖਾਨਾ = sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pSrc->a[i].pSTab, z_ਖਾਨਾ);
+    ਜੇ( i_ਖਾਨਾ>=0
+     && (bIgnoreHidden==0 || Is_Hidden_ਕਾਲਮ(&pSrc->a[i].pSTab->a_ਖਾਨਾ[i_ਖਾਨਾ])==0)
     ){
-      if( piTab ){
-        sqlite3SrcItemColumnUsed(&pSrc->a[i], iCol);
+      ਜੇ( piTab ){
+        sqlite3_Src_ਵਸਤੂ_ਕਾਲਮ_ਵਰਤਿਆ(&pSrc->a[i], i_ਖਾਨਾ);
         *piTab = i;
-        *piCol = iCol;
+        *pi_ਖਾਨਾ = i_ਖਾਨਾ;
       }
-      return 1;
+      ਵਾਪਸ 1;
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -434,23 +434,23 @@ static int tableAndColumnIndex(
 ** after the t1 loop and rows with t1.x!=5 will never appear in
 ** the output, which is incorrect.
 */
-void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
-  assert( joinFlag==EP_OuterON || joinFlag==EP_InnerON );
-  while( p ){
-    ExprSetProperty(p, joinFlag);
-    assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
-    ExprSetVVAProperty(p, EP_NoReduce);
-    p->w.iJoin = iTable;
-    if( ExprUseXList(p) ){
-      if( p->x.pList ){
-        int i;
-        for(i=0; i<p->x.pList->nExpr; i++){
-          sqlite3SetJoinExpr(p->x.pList->a[i].pExpr, iTable, joinFlag);
+ਖਾਲੀ sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(ਵਿਅੰਜਕ *p, ਪੂਰਨ i_ਸਾਰਣੀ, u32 joinFlag){
+  ਪ੍ਰਤਿਜ੍ਞਾ( joinFlag==EP_OuterON || joinFlag==EP_InnerON );
+  ਜਦੋਂ( p ){
+    ਵਿਅੰਜਕ_ਸੈੱਟ_Property(p, joinFlag);
+    ਪ੍ਰਤਿਜ੍ਞਾ( !ਵਿਅੰਜਕ_Has_Property(p, EP_TokenOnly|EP_Reduced) );
+    ਵਿਅੰਜਕ_ਸੈੱਟ_VVAProperty(p, EP_NoReduce);
+    p->w.iJoin = i_ਸਾਰਣੀ;
+    ਜੇ( ਵਿਅੰਜਕ_Use_XList(p) ){
+      ਜੇ( p->x.pList ){
+        ਪੂਰਨ i;
+        ਲਈ(i=0; i<p->x.pList->n_ਵਿਅੰਜਕ; i++){
+          sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(p->x.pList->a[i].p_ਵਿਅੰਜਕ, i_ਸਾਰਣੀ, joinFlag);
         }
       }
     }
-    sqlite3SetJoinExpr(p->pLeft, iTable, joinFlag);
-    p = p->pRight;
+    sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(p->p_ਖੱਬਾ, i_ਸਾਰਣੀ, joinFlag);
+    p = p->p_ਸੱਜਾ;
   }
 }
 
@@ -468,27 +468,27 @@ void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
 ** If nullable is true, then take care to not remove the EP_CanBeNull bit.
 ** See forum thread https://sqlite.org/forum/forumpost/b40696f50145d21c
 */
-static void unsetJoinExpr(Expr *p, int iTable, int nullable){
-  while( p ){
-    if( iTable<0 || (ExprHasProperty(p, EP_OuterON) && p->w.iJoin==iTable) ){
-      ExprClearProperty(p, EP_OuterON|EP_InnerON);
-      if( iTable>=0 ) ExprSetProperty(p, EP_InnerON);
+ਸਥਿਰ ਖਾਲੀ unset_Join_ਵਿਅੰਜਕ(ਵਿਅੰਜਕ *p, ਪੂਰਨ i_ਸਾਰਣੀ, ਪੂਰਨ nullable){
+  ਜਦੋਂ( p ){
+    ਜੇ( i_ਸਾਰਣੀ<0 || (ਵਿਅੰਜਕ_Has_Property(p, EP_OuterON) && p->w.iJoin==i_ਸਾਰਣੀ) ){
+      ਵਿਅੰਜਕ_Clear_Property(p, EP_OuterON|EP_InnerON);
+      ਜੇ( i_ਸਾਰਣੀ>=0 ) ਵਿਅੰਜਕ_ਸੈੱਟ_Property(p, EP_InnerON);
     }
-    if( p->op==TK_COLUMN && p->iTable==iTable && !nullable ){
-      ExprClearProperty(p, EP_CanBeNull);
+    ਜੇ( p->op==TK_ਕਾਲਮ && p->i_ਸਾਰਣੀ==i_ਸਾਰਣੀ && !nullable ){
+      ਵਿਅੰਜਕ_Clear_Property(p, EP_CanBeNull);
     }
-    if( p->op==TK_FUNCTION ){
-      assert( ExprUseXList(p) );
-      assert( p->pLeft==0 );
-      if( p->x.pList ){
-        int i;
-        for(i=0; i<p->x.pList->nExpr; i++){
-          unsetJoinExpr(p->x.pList->a[i].pExpr, iTable, nullable);
+    ਜੇ( p->op==TK_FUNCTION ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(p) );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਖੱਬਾ==0 );
+      ਜੇ( p->x.pList ){
+        ਪੂਰਨ i;
+        ਲਈ(i=0; i<p->x.pList->n_ਵਿਅੰਜਕ; i++){
+          unset_Join_ਵਿਅੰਜਕ(p->x.pList->a[i].p_ਵਿਅੰਜਕ, i_ਸਾਰਣੀ, nullable);
         }
       }
     }
-    unsetJoinExpr(p->pLeft, iTable, nullable);
-    p = p->pRight;
+    unset_Join_ਵਿਅੰਜਕ(p->p_ਖੱਬਾ, i_ਸਾਰਣੀ, nullable);
+    p = p->p_ਸੱਜਾ;
   }
 }
 
@@ -513,53 +513,53 @@ static void unsetJoinExpr(Expr *p, int iTable, int nullable){
 **
 ** This routine returns the number of errors encountered.
 */
-static int sqlite3ProcessJoin(Parse *pParse, Select *p){
+ਸਥਿਰ ਪੂਰਨ sqlite3ProcessJoin(Parse *pParse, Select *p){
   SrcList *pSrc;                  /* All tables in the FROM clause */
-  int i, j;                       /* Loop counters */
-  SrcItem *pLeft;                 /* Left table being joined */
-  SrcItem *pRight;                /* Right table being joined */
-  int bSeenTFunc = 0;             /* True if have seen table-valued function */
+  ਪੂਰਨ i, j;                       /* Loop counters */
+  Src_ਵਸਤੂ *p_ਖੱਬਾ;                 /* Left table being joined */
+  Src_ਵਸਤੂ *p_ਸੱਜਾ;                /* Right table being joined */
+  ਪੂਰਨ b_ਵੇਖਿਆ_TFunc = 0;             /* True if have seen table-valued function */
 
   pSrc = p->pSrc;
-  pLeft = &pSrc->a[0];
-  pRight = &pLeft[1];
-  for(i=0; i<pSrc->nSrc-1; i++, pRight++, pLeft++){
-    Table *pRightTab = pRight->pSTab;
+  p_ਖੱਬਾ = &pSrc->a[0];
+  p_ਸੱਜਾ = &p_ਖੱਬਾ[1];
+  ਲਈ(i=0; i<pSrc->nSrc-1; i++, p_ਸੱਜਾ++, p_ਖੱਬਾ++){
+    ਸਾਰਣੀ *p_ਸੱਜਾ_Tab = p_ਸੱਜਾ->pSTab;
     u32 joinType;
 
-    if( NEVER(pLeft->pSTab==0 || pRightTab==0) ) continue;
-    joinType = (pRight->fg.jointype & JT_OUTER)!=0 ? EP_OuterON : EP_InnerON;
+    ਜੇ( NEVER(p_ਖੱਬਾ->pSTab==0 || p_ਸੱਜਾ_Tab==0) ) ਜਾਰੀ;
+    joinType = (p_ਸੱਜਾ->fg.jointype & JT_OUTER)!=0 ? EP_OuterON : EP_InnerON;
 
     /* If this is a NATURAL join, synthesize an appropriate USING clause
     ** to specify which columns should be joined.
     */
-    if( pRight->fg.jointype & JT_NATURAL ){
+    ਜੇ( p_ਸੱਜਾ->fg.jointype & JT_NATURAL ){
       IdList *pUsing = 0;
-      if( pRight->fg.isUsing || pRight->u3.pOn ){
-        sqlite3ErrorMsg(pParse, "a NATURAL join may not have "
+      ਜੇ( p_ਸੱਜਾ->fg.isUsing || p_ਸੱਜਾ->u3.pOn ){
+        sqlite3_Error_ਸੁਨੇਹਾ(pParse, "a NATURAL join may not have "
            "an ON or USING clause", 0);
-        return 1;
+        ਵਾਪਸ 1;
       }
-      for(j=0; j<pRightTab->nCol; j++){
-        char *zName;   /* Name of column in the right table */
+      ਲਈ(j=0; j<p_ਸੱਜਾ_Tab->n_ਖਾਨਾ; j++){
+        ਅੱਖਰ *zName;   /* Name of column in the right table */
 
-        if( IsHiddenColumn(&pRightTab->aCol[j]) ) continue;
-        zName = pRightTab->aCol[j].zCnName;
-        if( tableAndColumnIndex(pSrc, 0, i, zName, 0, 0, 1) ){
+        ਜੇ( Is_Hidden_ਕਾਲਮ(&p_ਸੱਜਾ_Tab->a_ਖਾਨਾ[j]) ) ਜਾਰੀ;
+        zName = p_ਸੱਜਾ_Tab->a_ਖਾਨਾ[j].zCnName;
+        ਜੇ( ਸਾਰਣੀ_And_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pSrc, 0, i, zName, 0, 0, 1) ){
           pUsing = sqlite3IdListAppend(pParse, pUsing, 0);
-          if( pUsing ){
-            assert( pUsing->nId>0 );
-            assert( pUsing->a[pUsing->nId-1].zName==0 );
+          ਜੇ( pUsing ){
+            ਪ੍ਰਤਿਜ੍ਞਾ( pUsing->nId>0 );
+            ਪ੍ਰਤਿਜ੍ਞਾ( pUsing->a[pUsing->nId-1].zName==0 );
             pUsing->a[pUsing->nId-1].zName = sqlite3DbStrDup(pParse->db, zName);
           }
         }
       }
-      if( pUsing ){
-        pRight->fg.isUsing = 1;
-        pRight->fg.isSynthUsing = 1;
-        pRight->u3.pUsing = pUsing;
+      ਜੇ( pUsing ){
+        p_ਸੱਜਾ->fg.isUsing = 1;
+        p_ਸੱਜਾ->fg.isSynthUsing = 1;
+        p_ਸੱਜਾ->u3.pUsing = pUsing;
       }
-      if( pParse->nErr ) return 1;
+      ਜੇ( pParse->nErr ) ਵਾਪਸ 1;
     }
 
     /* Create extra terms on the WHERE clause for each column named
@@ -569,32 +569,32 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** Report an error if any column mentioned in the USING clause is
     ** not contained in both tables to be joined.
     */
-    if( pRight->fg.isUsing ){
-      IdList *pList = pRight->u3.pUsing;
+    ਜੇ( p_ਸੱਜਾ->fg.isUsing ){
+      IdList *pList = p_ਸੱਜਾ->u3.pUsing;
       sqlite3 *db = pParse->db;
-      assert( pList!=0 );
-      for(j=0; j<pList->nId; j++){
-        char *zName;     /* Name of the term in the USING clause */
-        int iLeft;       /* Table on the left with matching column name */
-        int iLeftCol;    /* Column number of matching column on the left */
-        int iRightCol;   /* Column number of matching column on the right */
-        Expr *pE1;       /* Reference to the column on the LEFT of the join */
-        Expr *pE2;       /* Reference to the column on the RIGHT of the join */
-        Expr *pEq;       /* Equality constraint.  pE1 == pE2 */
+      ਪ੍ਰਤਿਜ੍ਞਾ( pList!=0 );
+      ਲਈ(j=0; j<pList->nId; j++){
+        ਅੱਖਰ *zName;     /* Name of the term in the USING clause */
+        ਪੂਰਨ i_ਖੱਬਾ;       /* Table on the left with matching column name */
+        ਪੂਰਨ i_ਖੱਬਾ_ਖਾਨਾ;    /* Column number of matching column on the left */
+        ਪੂਰਨ i_ਸੱਜਾ_ਖਾਨਾ;   /* Column number of matching column on the right */
+        ਵਿਅੰਜਕ *pE1;       /* Reference to the column on the LEFT of the join */
+        ਵਿਅੰਜਕ *pE2;       /* Reference to the column on the RIGHT of the join */
+        ਵਿਅੰਜਕ *pEq;       /* Equality constraint.  pE1 == pE2 */
 
         zName = pList->a[j].zName;
-        iRightCol = sqlite3ColumnIndex(pRightTab, zName);
-        if( iRightCol<0
-         || tableAndColumnIndex(pSrc, 0, i, zName, &iLeft, &iLeftCol,
-                                pRight->fg.isSynthUsing)==0
+        i_ਸੱਜਾ_ਖਾਨਾ = sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(p_ਸੱਜਾ_Tab, zName);
+        ਜੇ( i_ਸੱਜਾ_ਖਾਨਾ<0
+         || ਸਾਰਣੀ_And_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pSrc, 0, i, zName, &i_ਖੱਬਾ, &i_ਖੱਬਾ_ਖਾਨਾ,
+                                p_ਸੱਜਾ->fg.isSynthUsing)==0
         ){
-          sqlite3ErrorMsg(pParse, "cannot join using column %s - column "
+          sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot join using column %s - column "
             "not present in both tables", zName);
-          return 1;
+          ਵਾਪਸ 1;
         }
-        pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
-        sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
-        if( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
+        pE1 = sqlite3_Create_ਕਾਲਮ_ਵਿਅੰਜਕ(db, pSrc, i_ਖੱਬਾ, i_ਖੱਬਾ_ਖਾਨਾ);
+        sqlite3_Src_ਵਸਤੂ_ਕਾਲਮ_ਵਰਤਿਆ(&pSrc->a[i_ਖੱਬਾ], i_ਖੱਬਾ_ਖਾਨਾ);
+        ਜੇ( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
           /* This branch runs if the query contains one or more RIGHT or FULL
           ** JOINs.  If only a single table on the left side of this join
           ** contains the zName column, then this branch is a no-op.
@@ -608,61 +608,61 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
           ** JOIN.  But older versions of SQLite do not do that, so we avoid
           ** adding a new error so as to not break legacy applications.
           */
-          ExprList *pFuncArgs = 0;   /* Arguments to the coalesce() */
-          static const Token tkCoalesce = { "coalesce", 8 };
-          assert( pE1!=0 );
-          ExprSetProperty(pE1, EP_CanBeNull);
-          while( tableAndColumnIndex(pSrc, iLeft+1, i, zName, &iLeft, &iLeftCol,
-                                     pRight->fg.isSynthUsing)!=0 ){
-            if( pSrc->a[iLeft].fg.isUsing==0
-             || sqlite3IdListIndex(pSrc->a[iLeft].u3.pUsing, zName)<0
+          ਵਿਅੰਜਕ_List *p_Func_ਦਲੀਲਾਂ = 0;   /* Arguments to the coalesce() */
+          ਸਥਿਰ ਅਚਲ Token tkCoalesce = { "coalesce", 8 };
+          ਪ੍ਰਤਿਜ੍ਞਾ( pE1!=0 );
+          ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pE1, EP_CanBeNull);
+          ਜਦੋਂ( ਸਾਰਣੀ_And_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pSrc, i_ਖੱਬਾ+1, i, zName, &i_ਖੱਬਾ, &i_ਖੱਬਾ_ਖਾਨਾ,
+                                     p_ਸੱਜਾ->fg.isSynthUsing)!=0 ){
+            ਜੇ( pSrc->a[i_ਖੱਬਾ].fg.isUsing==0
+             || sqlite3_Id_List_ਸੂਚਕਾਂਕ(pSrc->a[i_ਖੱਬਾ].u3.pUsing, zName)<0
             ){
-              sqlite3ErrorMsg(pParse, "ambiguous reference to %s in USING()",
+              sqlite3_Error_ਸੁਨੇਹਾ(pParse, "ambiguous reference to %s in USING()",
                               zName);
-              break;
+              ਰੋਕੋ;
             }
-            pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
-            pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
-            sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
+            p_Func_ਦਲੀਲਾਂ = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, p_Func_ਦਲੀਲਾਂ, pE1);
+            pE1 = sqlite3_Create_ਕਾਲਮ_ਵਿਅੰਜਕ(db, pSrc, i_ਖੱਬਾ, i_ਖੱਬਾ_ਖਾਨਾ);
+            sqlite3_Src_ਵਸਤੂ_ਕਾਲਮ_ਵਰਤਿਆ(&pSrc->a[i_ਖੱਬਾ], i_ਖੱਬਾ_ਖਾਨਾ);
           }
-          if( pFuncArgs ){
-            pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
-            pE1 = sqlite3ExprFunction(pParse, pFuncArgs, &tkCoalesce, 0);
-            if( pE1 ){
-              pE1->affExpr = SQLITE_AFF_DEFER;
+          ਜੇ( p_Func_ਦਲੀਲਾਂ ){
+            p_Func_ਦਲੀਲਾਂ = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, p_Func_ਦਲੀਲਾਂ, pE1);
+            pE1 = sqlite3_ਵਿਅੰਜਕ_Function(pParse, p_Func_ਦਲੀਲਾਂ, &tkCoalesce, 0);
+            ਜੇ( pE1 ){
+              pE1->aff_ਵਿਅੰਜਕ = SQLITE_AFF_DEFER;
             }
           }
-        }else if( (pSrc->a[i+1].fg.jointype & JT_LEFT)!=0 && pParse->nErr==0 ){
-          assert( pE1!=0 );
-          ExprSetProperty(pE1, EP_CanBeNull);
+        }ਨਹੀਂਤਾਂ ਜੇ( (pSrc->a[i+1].fg.jointype & JT_ਖੱਬਾ)!=0 && pParse->nErr==0 ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( pE1!=0 );
+          ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pE1, EP_CanBeNull);
         }
-        pE2 = sqlite3CreateColumnExpr(db, pSrc, i+1, iRightCol);
-        sqlite3SrcItemColumnUsed(pRight, iRightCol);
+        pE2 = sqlite3_Create_ਕਾਲਮ_ਵਿਅੰਜਕ(db, pSrc, i+1, i_ਸੱਜਾ_ਖਾਨਾ);
+        sqlite3_Src_ਵਸਤੂ_ਕਾਲਮ_ਵਰਤਿਆ(p_ਸੱਜਾ, i_ਸੱਜਾ_ਖਾਨਾ);
         pEq = sqlite3PExpr(pParse, TK_EQ, pE1, pE2);
-        assert( pE2!=0 || pEq==0 );
-        if( pEq ){
-          ExprSetProperty(pEq, joinType);
-          assert( !ExprHasProperty(pEq, EP_TokenOnly|EP_Reduced) );
-          ExprSetVVAProperty(pEq, EP_NoReduce);
-          pEq->w.iJoin = pE2->iTable;
+        ਪ੍ਰਤਿਜ੍ਞਾ( pE2!=0 || pEq==0 );
+        ਜੇ( pEq ){
+          ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pEq, joinType);
+          ਪ੍ਰਤਿਜ੍ਞਾ( !ਵਿਅੰਜਕ_Has_Property(pEq, EP_TokenOnly|EP_Reduced) );
+          ਵਿਅੰਜਕ_ਸੈੱਟ_VVAProperty(pEq, EP_NoReduce);
+          pEq->w.iJoin = pE2->i_ਸਾਰਣੀ;
         }
-        p->pWhere = sqlite3ExprAnd(pParse, p->pWhere, pEq);
+        p->pWhere = sqlite3_ਵਿਅੰਜਕ_And(pParse, p->pWhere, pEq);
       }
     }
 
     /* Add the ON clause to the end of the WHERE clause, connected by
     ** an AND operator.
     */
-    else if( pRight->u3.pOn ){
-      sqlite3SetJoinExpr(pRight->u3.pOn, pRight->iCursor, joinType);
-      p->pWhere = sqlite3ExprAnd(pParse, p->pWhere, pRight->u3.pOn);
-      pRight->u3.pOn = 0;
-      pRight->fg.isOn = 1;
-      p->selFlags |= SF_OnToWhere;
+    ਨਹੀਂਤਾਂ ਜੇ( p_ਸੱਜਾ->u3.pOn ){
+      sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(p_ਸੱਜਾ->u3.pOn, p_ਸੱਜਾ->iCursor, joinType);
+      p->pWhere = sqlite3_ਵਿਅੰਜਕ_And(pParse, p->pWhere, p_ਸੱਜਾ->u3.pOn);
+      p_ਸੱਜਾ->u3.pOn = 0;
+      p_ਸੱਜਾ->fg.isOn = 1;
+      p->selFlags |= SF_On_ਮੰਜ਼ਿਲ_Where;
     }
 
-    if( bSeenTFunc==0 ){
-      bSeenTFunc = (pLeft->fg.isTabFunc && pLeft->u1.pFuncArg);
+    ਜੇ( b_ਵੇਖਿਆ_TFunc==0 ){
+      b_ਵੇਖਿਆ_TFunc = (p_ਖੱਬਾ->fg.isTabFunc && p_ਖੱਬਾ->u1.pFuncArg);
     }
 
     /* We also need to call sqlite3SelectCheckOnClauses() to verify that
@@ -670,46 +670,46 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** their right. This test is required if either (a) there is a RIGHT JOIN
     ** in the SrcList, or (b) there is a LEFT JOIN to the right of a 
     ** table-valued function.  */
-    if( (pRight->fg.isTabFunc && joinType==EP_OuterON && pRight->u1.pFuncArg)
-     || (bSeenTFunc && joinType==EP_OuterON)
+    ਜੇ( (p_ਸੱਜਾ->fg.isTabFunc && joinType==EP_OuterON && p_ਸੱਜਾ->u1.pFuncArg)
+     || (b_ਵੇਖਿਆ_TFunc && joinType==EP_OuterON)
     ){
-      p->selFlags |= SF_OnToWhere;
+      p->selFlags |= SF_On_ਮੰਜ਼ਿਲ_Where;
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
 ** An instance of this object holds information (beyond pParse and pSelect)
 ** needed to load the next result row that is to be added to the sorter.
 */
-typedef struct RowLoadInfo RowLoadInfo;
-struct RowLoadInfo {
-  int regResult;               /* Store results in array of registers here */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ ਪੰਕਤੀ_ਲੱਦੋ_Info ਪੰਕਤੀ_ਲੱਦੋ_Info;
+ਬਣਤਰ ਪੰਕਤੀ_ਲੱਦੋ_Info {
+  ਪੂਰਨ reg_ਨਤੀਜਾ;               /* Store results in array of registers here */
   u8 ecelFlags;                /* Flag argument to ExprCodeExprList() */
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  ExprList *pExtra;            /* Extra columns needed by sorter refs */
-  int regExtraResult;          /* Where to load the extra columns */
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+  ਵਿਅੰਜਕ_List *pExtra;            /* Extra columns needed by sorter refs */
+  ਪੂਰਨ reg_Extra_ਨਤੀਜਾ;          /* Where to load the extra columns */
+#ਜੇ_ਅੰਤ
 };
 
 /*
 ** This routine does the work of loading query data into an array of
 ** registers so that it can be added to the sorter.
 */
-static void innerLoopLoadRow(
+ਸਥਿਰ ਖਾਲੀ inner_Loop_ਲੱਦੋ_ਪੰਕਤੀ(
   Parse *pParse,             /* Statement under construction */
   Select *pSelect,           /* The query being coded */
-  RowLoadInfo *pInfo         /* Info needed to complete the row load */
+  ਪੰਕਤੀ_ਲੱਦੋ_Info *pInfo         /* Info needed to complete the row load */
 ){
-  sqlite3ExprCodeExprList(pParse, pSelect->pEList, pInfo->regResult,
+  sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, pSelect->pEList, pInfo->reg_ਨਤੀਜਾ,
                           0, pInfo->ecelFlags);
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pInfo->pExtra ){
-    sqlite3ExprCodeExprList(pParse, pInfo->pExtra, pInfo->regExtraResult, 0, 0);
-    sqlite3ExprListDelete(pParse->db, pInfo->pExtra);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+  ਜੇ( pInfo->pExtra ){
+    sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, pInfo->pExtra, pInfo->reg_Extra_ਨਤੀਜਾ, 0, 0);
+    sqlite3_ਵਿਅੰਜਕ_List_Delete(pParse->db, pInfo->pExtra);
   }
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 /*
@@ -718,48 +718,48 @@ static void innerLoopLoadRow(
 **
 ** Return the register in which the result is stored.
 */
-static int makeSorterRecord(
+ਸਥਿਰ ਪੂਰਨ make_Sorter_ਰਿਕਾਰਡ(
   Parse *pParse,
-  SortCtx *pSort,
+  ਛਾਂਟੋ_Ctx *p_ਛਾਂਟੋ,
   Select *pSelect,
-  int regBase,
-  int nBase
+  ਪੂਰਨ reg_ਅਧਾਰ,
+  ਪੂਰਨ n_ਅਧਾਰ
 ){
-  int nOBSat = pSort->nOBSat;
+  ਪੂਰਨ nOBSat = p_ਛਾਂਟੋ->nOBSat;
   Vdbe *v = pParse->pVdbe;
-  int regOut = ++pParse->nMem;
-  if( pSort->pDeferredRowLoad ){
-    innerLoopLoadRow(pParse, pSelect, pSort->pDeferredRowLoad);
+  ਪੂਰਨ reg_ਬਾਹਰਲਾ = ++pParse->nMem;
+  ਜੇ( p_ਛਾਂਟੋ->p_Deferred_ਪੰਕਤੀ_ਲੱਦੋ ){
+    inner_Loop_ਲੱਦੋ_ਪੰਕਤੀ(pParse, pSelect, p_ਛਾਂਟੋ->p_Deferred_ਪੰਕਤੀ_ਲੱਦੋ);
   }
-  sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase+nOBSat, nBase-nOBSat, regOut);
-  return regOut;
+  sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, reg_ਅਧਾਰ+nOBSat, n_ਅਧਾਰ-nOBSat, reg_ਬਾਹਰਲਾ);
+  ਵਾਪਸ reg_ਬਾਹਰਲਾ;
 }
 
 /*
 ** Generate code that will push the record in registers regData
 ** through regData+nData-1 onto the sorter.
 */
-static void pushOntoSorter(
+ਸਥਿਰ ਖਾਲੀ ਧੱਕੋ_Onto_Sorter(
   Parse *pParse,         /* Parser context */
-  SortCtx *pSort,        /* Information about the ORDER BY clause */
+  ਛਾਂਟੋ_Ctx *p_ਛਾਂਟੋ,        /* Information about the ORDER BY clause */
   Select *pSelect,       /* The whole SELECT statement */
-  int regData,           /* First register holding data to be sorted */
-  int regOrigData,       /* First register holding data before packing */
-  int nData,             /* Number of elements in the regData data array */
-  int nPrefixReg         /* No. of reg prior to regData available for use */
+  ਪੂਰਨ reg_ਅੰਕੜੇ,           /* First register holding data to be sorted */
+  ਪੂਰਨ reg_Orig_ਅੰਕੜੇ,       /* First register holding data before packing */
+  ਪੂਰਨ n_ਅੰਕੜੇ,             /* Number of elements in the regData data array */
+  ਪੂਰਨ n_ਅਗੇਤਰ_Reg         /* No. of reg prior to regData available for use */
 ){
   Vdbe *v = pParse->pVdbe;                         /* Stmt under construction */
-  int bSeq = ((pSort->sortFlags & SORTFLAG_UseSorter)==0);
-  int nExpr = pSort->pOrderBy->nExpr;              /* No. of ORDER BY terms */
-  int nBase = nExpr + bSeq + nData;                /* Fields in sorter record */
-  int regBase;                                     /* Regs for sorter record */
-  int regRecord = 0;                               /* Assembled sorter record */
-  int nOBSat = pSort->nOBSat;                      /* ORDER BY terms to skip */
-  int op;                            /* Opcode to add sorter record to sorter */
-  int iLimit;                        /* LIMIT counter */
-  int iSkip = 0;                     /* End of the sorter insert loop */
+  ਪੂਰਨ bSeq = ((p_ਛਾਂਟੋ->ਛਾਂਟੋ_Flags & SORTFLAG_UseSorter)==0);
+  ਪੂਰਨ n_ਵਿਅੰਜਕ = p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ;              /* No. of ORDER BY terms */
+  ਪੂਰਨ n_ਅਧਾਰ = n_ਵਿਅੰਜਕ + bSeq + n_ਅੰਕੜੇ;                /* Fields in sorter record */
+  ਪੂਰਨ reg_ਅਧਾਰ;                                     /* Regs for sorter record */
+  ਪੂਰਨ reg_ਰਿਕਾਰਡ = 0;                               /* Assembled sorter record */
+  ਪੂਰਨ nOBSat = p_ਛਾਂਟੋ->nOBSat;                      /* ORDER BY terms to skip */
+  ਪੂਰਨ op;                            /* Opcode to add sorter record to sorter */
+  ਪੂਰਨ i_ਹੱਦਬੰਦੀ;                        /* LIMIT counter */
+  ਪੂਰਨ iSkip = 0;                     /* End of the sorter insert loop */
 
-  assert( bSeq==0 || bSeq==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( bSeq==0 || bSeq==1 );
 
   /* Three cases:
   **   (1) The data to be sorted has already been packed into a Record
@@ -774,74 +774,74 @@ static void pushOntoSorter(
   **       regOrigData is 0 to prevent this routine from trying to copy
   **       values that might not yet exist.
   */
-  assert( nData==1 || regData==regOrigData || regOrigData==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( n_ਅੰਕੜੇ==1 || reg_ਅੰਕੜੇ==reg_Orig_ਅੰਕੜੇ || reg_Orig_ਅੰਕੜੇ==0 );
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  pSort->addrPush = sqlite3VdbeCurrentAddr(v);
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+  p_ਛਾਂਟੋ->addr_ਧੱਕੋ = sqlite3VdbeCurrentAddr(v);
+#ਜੇ_ਅੰਤ
 
-  if( nPrefixReg ){
-    assert( nPrefixReg==nExpr+bSeq );
-    regBase = regData - nPrefixReg;
-  }else{
-    regBase = pParse->nMem + 1;
-    pParse->nMem += nBase;
+  ਜੇ( n_ਅਗੇਤਰ_Reg ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( n_ਅਗੇਤਰ_Reg==n_ਵਿਅੰਜਕ+bSeq );
+    reg_ਅਧਾਰ = reg_ਅੰਕੜੇ - n_ਅਗੇਤਰ_Reg;
+  }ਨਹੀਂਤਾਂ{
+    reg_ਅਧਾਰ = pParse->nMem + 1;
+    pParse->nMem += n_ਅਧਾਰ;
   }
-  assert( pSelect->iOffset==0 || pSelect->iLimit!=0 );
-  iLimit = pSelect->iOffset ? pSelect->iOffset+1 : pSelect->iLimit;
-  pSort->labelDone = sqlite3VdbeMakeLabel(pParse);
-  sqlite3ExprCodeExprList(pParse, pSort->pOrderBy, regBase, regOrigData,
-                          SQLITE_ECEL_DUP | (regOrigData? SQLITE_ECEL_REF : 0));
-  if( bSeq ){
-    sqlite3VdbeAddOp2(v, OP_Sequence, pSort->iECursor, regBase+nExpr);
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect->i_ਵਿੱਥ==0 || pSelect->i_ਹੱਦਬੰਦੀ!=0 );
+  i_ਹੱਦਬੰਦੀ = pSelect->i_ਵਿੱਥ ? pSelect->i_ਵਿੱਥ+1 : pSelect->i_ਹੱਦਬੰਦੀ;
+  p_ਛਾਂਟੋ->label_ਪੂਰਾ = sqlite3VdbeMakeLabel(pParse);
+  sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By, reg_ਅਧਾਰ, reg_Orig_ਅੰਕੜੇ,
+                          SQLITE_ECEL_DUP | (reg_Orig_ਅੰਕੜੇ? SQLITE_ECEL_REF : 0));
+  ਜੇ( bSeq ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sequence, p_ਛਾਂਟੋ->iECursor, reg_ਅਧਾਰ+n_ਵਿਅੰਜਕ);
   }
-  if( nPrefixReg==0 && nData>0 ){
-    sqlite3ExprCodeMove(pParse, regData, regBase+nExpr+bSeq, nData);
+  ਜੇ( n_ਅਗੇਤਰ_Reg==0 && n_ਅੰਕੜੇ>0 ){
+    sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Move(pParse, reg_ਅੰਕੜੇ, reg_ਅਧਾਰ+n_ਵਿਅੰਜਕ+bSeq, n_ਅੰਕੜੇ);
   }
-  if( nOBSat>0 ){
-    int regPrevKey;   /* The first nOBSat columns of the previous row */
-    int addrFirst;    /* Address of the OP_IfNot opcode */
-    int addrJmp;      /* Address of the OP_Jump opcode */
+  ਜੇ( nOBSat>0 ){
+    ਪੂਰਨ reg_Prev_ਕੁੰਜੀ;   /* The first nOBSat columns of the previous row */
+    ਪੂਰਨ addr_ਪਹਿਲਾ;    /* Address of the OP_IfNot opcode */
+    ਪੂਰਨ addrJmp;      /* Address of the OP_Jump opcode */
     VdbeOp *pOp;      /* Opcode that opens the sorter */
-    int nKey;         /* Number of sorting key columns, including OP_Sequence */
-    KeyInfo *pKI;     /* Original KeyInfo on the sorter table */
+    ਪੂਰਨ n_ਕੁੰਜੀ;         /* Number of sorting key columns, including OP_Sequence */
+    ਕੁੰਜੀ_Info *pKI;     /* Original KeyInfo on the sorter table */
 
-    regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
-    regPrevKey = pParse->nMem+1;
-    pParse->nMem += pSort->nOBSat;
-    nKey = nExpr - pSort->nOBSat + bSeq;
-    if( bSeq ){
-      addrFirst = sqlite3VdbeAddOp1(v, OP_IfNot, regBase+nExpr);
-    }else{
-      addrFirst = sqlite3VdbeAddOp1(v, OP_SequenceTest, pSort->iECursor);
+    reg_ਰਿਕਾਰਡ = make_Sorter_ਰਿਕਾਰਡ(pParse, p_ਛਾਂਟੋ, pSelect, reg_ਅਧਾਰ, n_ਅਧਾਰ);
+    reg_Prev_ਕੁੰਜੀ = pParse->nMem+1;
+    pParse->nMem += p_ਛਾਂਟੋ->nOBSat;
+    n_ਕੁੰਜੀ = n_ਵਿਅੰਜਕ - p_ਛਾਂਟੋ->nOBSat + bSeq;
+    ਜੇ( bSeq ){
+      addr_ਪਹਿਲਾ = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_IfNot, reg_ਅਧਾਰ+n_ਵਿਅੰਜਕ);
+    }ਨਹੀਂਤਾਂ{
+      addr_ਪਹਿਲਾ = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_SequenceTest, p_ਛਾਂਟੋ->iECursor);
     }
     VdbeCoverage(v);
-    sqlite3VdbeAddOp3(v, OP_Compare, regPrevKey, regBase, pSort->nOBSat);
-    pOp = sqlite3VdbeGetOp(v, pSort->addrSortIndex);
-    if( pParse->db->mallocFailed ) return;
-    pOp->p2 = nKey + nData;
-    pKI = pOp->p4.pKeyInfo;
-    memset(pKI->aSortFlags, 0, pKI->nKeyField); /* Makes OP_Jump testable */
-    sqlite3VdbeChangeP4(v, -1, (char*)pKI, P4_KEYINFO);
-    testcase( pKI->nAllField > pKI->nKeyField+2 );
-    pOp->p4.pKeyInfo = sqlite3KeyInfoFromExprList(pParse,pSort->pOrderBy,nOBSat,
-                                           pKI->nAllField-pKI->nKeyField-1);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Compare, reg_Prev_ਕੁੰਜੀ, reg_ਅਧਾਰ, p_ਛਾਂਟੋ->nOBSat);
+    pOp = sqlite3VdbeGetOp(v, p_ਛਾਂਟੋ->addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ);
+    ਜੇ( pParse->db->mallocFailed ) ਵਾਪਸ;
+    pOp->p2 = n_ਕੁੰਜੀ + n_ਅੰਕੜੇ;
+    pKI = pOp->p4.p_ਕੁੰਜੀ_Info;
+    memset(pKI->a_ਛਾਂਟੋ_Flags, 0, pKI->n_ਕੁੰਜੀ_ਖੇਤਰ); /* Makes OP_Jump testable */
+    sqlite3VdbeChangeP4(v, -1, (ਅੱਖਰ*)pKI, P4_KEYINFO);
+    testcase( pKI->n_All_ਖੇਤਰ > pKI->n_ਕੁੰਜੀ_ਖੇਤਰ+2 );
+    pOp->p4.p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(pParse,p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By,nOBSat,
+                                           pKI->n_All_ਖੇਤਰ-pKI->n_ਕੁੰਜੀ_ਖੇਤਰ-1);
     pOp = 0; /* Ensure pOp not used after sqlite3VdbeAddOp3() */
     addrJmp = sqlite3VdbeCurrentAddr(v);
-    sqlite3VdbeAddOp3(v, OP_Jump, addrJmp+1, 0, addrJmp+1); VdbeCoverage(v);
-    pSort->labelBkOut = sqlite3VdbeMakeLabel(pParse);
-    pSort->regReturn = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
-    sqlite3VdbeAddOp1(v, OP_ResetSorter, pSort->iECursor);
-    if( iLimit ){
-      sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, pSort->labelDone);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Jump, addrJmp+1, 0, addrJmp+1); VdbeCoverage(v);
+    p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ = sqlite3VdbeMakeLabel(pParse);
+    p_ਛਾਂਟੋ->regReturn = ++pParse->nMem;
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, p_ਛਾਂਟੋ->regReturn, p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ);
+    sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_ResetSorter, p_ਛਾਂਟੋ->iECursor);
+    ਜੇ( i_ਹੱਦਬੰਦੀ ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfNot, i_ਹੱਦਬੰਦੀ, p_ਛਾਂਟੋ->label_ਪੂਰਾ);
       VdbeCoverage(v);
     }
-    sqlite3VdbeJumpHere(v, addrFirst);
-    sqlite3ExprCodeMove(pParse, regBase, regPrevKey, pSort->nOBSat);
-    sqlite3VdbeJumpHere(v, addrJmp);
+    sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr_ਪਹਿਲਾ);
+    sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Move(pParse, reg_ਅਧਾਰ, reg_Prev_ਕੁੰਜੀ, p_ਛਾਂਟੋ->nOBSat);
+    sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addrJmp);
   }
-  if( iLimit ){
+  ਜੇ( i_ਹੱਦਬੰਦੀ ){
     /* At this point the values for the new sorter entry are stored
     ** in an array of registers. They need to be composed into a record
     ** and inserted into the sorter if either (a) there are currently
@@ -857,44 +857,44 @@ static void pushOntoSorter(
     ** just bypass the row insert logic.  See the header comment on the
     ** sqlite3WhereOrderByLimitOptLabel() function for additional info.
     */
-    int iCsr = pSort->iECursor;
-    sqlite3VdbeAddOp2(v, OP_IfNotZero, iLimit, sqlite3VdbeCurrentAddr(v)+4);
+    ਪੂਰਨ iCsr = p_ਛਾਂਟੋ->iECursor;
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfNotZero, i_ਹੱਦਬੰਦੀ, sqlite3VdbeCurrentAddr(v)+4);
     VdbeCoverage(v);
-    sqlite3VdbeAddOp2(v, OP_Last, iCsr, 0);
-    iSkip = sqlite3VdbeAddOp4Int(v, OP_IdxLE,
-                                 iCsr, 0, regBase+nOBSat, nExpr-nOBSat);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਆਖਰੀ, iCsr, 0);
+    iSkip = sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_IdxLE,
+                                 iCsr, 0, reg_ਅਧਾਰ+nOBSat, n_ਵਿਅੰਜਕ-nOBSat);
     VdbeCoverage(v);
-    sqlite3VdbeAddOp1(v, OP_Delete, iCsr);
+    sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Delete, iCsr);
   }
-  if( regRecord==0 ){
-    regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
+  ਜੇ( reg_ਰਿਕਾਰਡ==0 ){
+    reg_ਰਿਕਾਰਡ = make_Sorter_ਰਿਕਾਰਡ(pParse, p_ਛਾਂਟੋ, pSelect, reg_ਅਧਾਰ, n_ਅਧਾਰ);
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    op = OP_SorterInsert;
-  }else{
-    op = OP_IdxInsert;
+  ਜੇ( p_ਛਾਂਟੋ->ਛਾਂਟੋ_Flags & SORTFLAG_UseSorter ){
+    op = OP_Sorter_ਪਾਓ;
+  }ਨਹੀਂਤਾਂ{
+    op = OP_Idx_ਪਾਓ;
   }
-  sqlite3VdbeAddOp4Int(v, op, pSort->iECursor, regRecord,
-                       regBase+nOBSat, nBase-nOBSat);
-  if( iSkip ){
+  sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, op, p_ਛਾਂਟੋ->iECursor, reg_ਰਿਕਾਰਡ,
+                       reg_ਅਧਾਰ+nOBSat, n_ਅਧਾਰ-nOBSat);
+  ਜੇ( iSkip ){
     sqlite3VdbeChangeP2(v, iSkip,
-         pSort->labelOBLopt ? pSort->labelOBLopt : sqlite3VdbeCurrentAddr(v));
+         p_ਛਾਂਟੋ->labelOBLopt ? p_ਛਾਂਟੋ->labelOBLopt : sqlite3VdbeCurrentAddr(v));
   }
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  pSort->addrPushEnd = sqlite3VdbeCurrentAddr(v)-1;
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+  p_ਛਾਂਟੋ->addr_ਧੱਕੋ_ਸਿਰਾ = sqlite3VdbeCurrentAddr(v)-1;
+#ਜੇ_ਅੰਤ
 }
 
 /*
 ** Add code to implement the OFFSET
 */
-static void codeOffset(
+ਸਥਿਰ ਖਾਲੀ ਕੋਡ_ਵਿੱਥ(
   Vdbe *v,          /* Generate code into this VM */
-  int iOffset,      /* Register holding the offset counter */
-  int iContinue     /* Jump here to skip the current record */
+  ਪੂਰਨ i_ਵਿੱਥ,      /* Register holding the offset counter */
+  ਪੂਰਨ iContinue     /* Jump here to skip the current record */
 ){
-  if( iOffset>0 ){
-    sqlite3VdbeAddOp3(v, OP_IfPos, iOffset, iContinue, 1); VdbeCoverage(v);
+  ਜੇ( i_ਵਿੱਥ>0 ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_IfPos, i_ਵਿੱਥ, iContinue, 1); VdbeCoverage(v);
     VdbeComment((v, "OFFSET"));
   }
 }
@@ -942,65 +942,65 @@ static void codeOffset(
 ** collation sequences that should be used for the comparisons if
 ** eTnctType is WHERE_DISTINCT_ORDERED.
 */
-static int codeDistinct(
+ਸਥਿਰ ਪੂਰਨ ਕੋਡ_Distinct(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iTab,          /* A sorting index used to test for distinctness */
-  int addrRepeat,    /* Jump to here if not distinct */
-  ExprList *pEList,  /* Expression for each element */
-  int regElem        /* First element */
+  ਪੂਰਨ eTnctType,     /* WHERE_DISTINCT_* value */
+  ਪੂਰਨ iTab,          /* A sorting index used to test for distinctness */
+  ਪੂਰਨ addrRepeat,    /* Jump to here if not distinct */
+  ਵਿਅੰਜਕ_List *pEList,  /* Expression for each element */
+  ਪੂਰਨ regElem        /* First element */
 ){
-  int iRet = 0;
-  int nResultCol = pEList->nExpr;
+  ਪੂਰਨ iRet = 0;
+  ਪੂਰਨ n_ਨਤੀਜਾ_ਖਾਨਾ = pEList->n_ਵਿਅੰਜਕ;
   Vdbe *v = pParse->pVdbe;
 
-  switch( eTnctType ){
-    case WHERE_DISTINCT_ORDERED: {
-      int i;
-      int iJump;              /* Jump destination */
-      int regPrev;            /* Previous row content */
+  ਚੋਣ( eTnctType ){
+    ਹਾਲਤ WHERE_DISTINCT_ORDERED: {
+      ਪੂਰਨ i;
+      ਪੂਰਨ iJump;              /* Jump destination */
+      ਪੂਰਨ regPrev;            /* Previous row content */
 
       /* Allocate space for the previous row */
       iRet = regPrev = pParse->nMem+1;
-      pParse->nMem += nResultCol;
+      pParse->nMem += n_ਨਤੀਜਾ_ਖਾਨਾ;
 
-      iJump = sqlite3VdbeCurrentAddr(v) + nResultCol;
-      for(i=0; i<nResultCol; i++){
-        CollSeq *pColl = sqlite3ExprCollSeq(pParse, pEList->a[i].pExpr);
-        if( i<nResultCol-1 ){
-          sqlite3VdbeAddOp3(v, OP_Ne, regElem+i, iJump, regPrev+i);
+      iJump = sqlite3VdbeCurrentAddr(v) + n_ਨਤੀਜਾ_ਖਾਨਾ;
+      ਲਈ(i=0; i<n_ਨਤੀਜਾ_ਖਾਨਾ; i++){
+        CollSeq *pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, pEList->a[i].p_ਵਿਅੰਜਕ);
+        ਜੇ( i<n_ਨਤੀਜਾ_ਖਾਨਾ-1 ){
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Ne, regElem+i, iJump, regPrev+i);
           VdbeCoverage(v);
-        }else{
-          sqlite3VdbeAddOp3(v, OP_Eq, regElem+i, addrRepeat, regPrev+i);
+        }ਨਹੀਂਤਾਂ{
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Eq, regElem+i, addrRepeat, regPrev+i);
           VdbeCoverage(v);
          }
-        sqlite3VdbeChangeP4(v, -1, (const char *)pColl, P4_COLLSEQ);
+        sqlite3VdbeChangeP4(v, -1, (ਅਚਲ ਅੱਖਰ *)pColl, P4_COLLSEQ);
         sqlite3VdbeChangeP5(v, SQLITE_NULLEQ);
       }
-      assert( sqlite3VdbeCurrentAddr(v)==iJump || pParse->db->mallocFailed );
-      sqlite3VdbeAddOp3(v, OP_Copy, regElem, regPrev, nResultCol-1);
-      break;
+      ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3VdbeCurrentAddr(v)==iJump || pParse->db->mallocFailed );
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Copy, regElem, regPrev, n_ਨਤੀਜਾ_ਖਾਨਾ-1);
+      ਰੋਕੋ;
     }
 
-    case WHERE_DISTINCT_UNIQUE: {
+    ਹਾਲਤ WHERE_DISTINCT_UNIQUE: {
       /* nothing to do */
-      break;
+      ਰੋਕੋ;
     }
 
-    default: {
-      int r1 = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp4Int(v, OP_Found, iTab, addrRepeat, regElem, nResultCol);
+    ਮੂਲ: {
+      ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_ਮਿਲਿਆ, iTab, addrRepeat, regElem, n_ਨਤੀਜਾ_ਖਾਨਾ);
       VdbeCoverage(v);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regElem, nResultCol, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iTab, r1, regElem, nResultCol);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, regElem, n_ਨਤੀਜਾ_ਖਾਨਾ, r1);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iTab, r1, regElem, n_ਨਤੀਜਾ_ਖਾਨਾ);
       sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
-      sqlite3ReleaseTempReg(pParse, r1);
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
       iRet = iTab;
-      break;
+      ਰੋਕੋ;
     }
   }
 
-  return iRet;
+  ਵਾਪਸ iRet;
 }
 
 /*
@@ -1026,21 +1026,21 @@ static int codeDistinct(
 **     iVal to be initialized to NULL.  So change the OP_OpenEphemeral
 **     into an OP_Null on the iVal register.
 */
-static void fixDistinctOpenEph(
+ਸਥਿਰ ਖਾਲੀ fixDistinctOpenEph(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iVal,          /* Value returned by codeDistinct() */
-  int iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
+  ਪੂਰਨ eTnctType,     /* WHERE_DISTINCT_* value */
+  ਪੂਰਨ iVal,          /* Value returned by codeDistinct() */
+  ਪੂਰਨ iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
 ){
-  if( pParse->nErr==0
+  ਜੇ( pParse->nErr==0
    && (eTnctType==WHERE_DISTINCT_UNIQUE || eTnctType==WHERE_DISTINCT_ORDERED)
   ){
     Vdbe *v = pParse->pVdbe;
-    sqlite3VdbeChangeToNoop(v, iOpenEphAddr);
-    if( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
-      sqlite3VdbeChangeToNoop(v, iOpenEphAddr+1);
+    sqlite3_Vdbe_Change_ਮੰਜ਼ਿਲ_Noop(v, iOpenEphAddr);
+    ਜੇ( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
+      sqlite3_Vdbe_Change_ਮੰਜ਼ਿਲ_Noop(v, iOpenEphAddr+1);
     }
-    if( eTnctType==WHERE_DISTINCT_ORDERED ){
+    ਜੇ( eTnctType==WHERE_DISTINCT_ORDERED ){
       /* Change the OP_OpenEphemeral to an OP_Null that sets the MEM_Cleared
       ** bit on the first register of the previous value.  This will cause the
       ** OP_Ne added in codeDistinct() to always fail on the first iteration of
@@ -1053,7 +1053,7 @@ static void fixDistinctOpenEph(
   }
 }
 
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
 /*
 ** This function is called as part of inner-loop generation for a SELECT
 ** statement with an ORDER BY that is not optimized by an index. It
@@ -1078,68 +1078,68 @@ static void fixDistinctOpenEph(
 ** expressions for all extra PK values that should be stored in the
 ** sorter records.
 */
-static void selectExprDefer(
+ਸਥਿਰ ਖਾਲੀ select_ਵਿਅੰਜਕ_Defer(
   Parse *pParse,                  /* Leave any error here */
-  SortCtx *pSort,                 /* Sorter context */
-  ExprList *pEList,               /* Expressions destined for sorter */
-  ExprList **ppExtra              /* Expressions to append to sorter record */
+  ਛਾਂਟੋ_Ctx *p_ਛਾਂਟੋ,                 /* Sorter context */
+  ਵਿਅੰਜਕ_List *pEList,               /* Expressions destined for sorter */
+  ਵਿਅੰਜਕ_List **ppExtra              /* Expressions to append to sorter record */
 ){
-  int i;
-  int nDefer = 0;
-  ExprList *pExtra = 0;
-  for(i=0; i<pEList->nExpr; i++){
-    struct ExprList_item *pItem = &pEList->a[i];
-    if( pItem->u.x.iOrderByCol==0 ){
-      Expr *pExpr = pItem->pExpr;
-      Table *pTab;
-      if( pExpr->op==TK_COLUMN
-       && pExpr->iColumn>=0
-       && ALWAYS( ExprUseYTab(pExpr) )
-       && (pTab = pExpr->y.pTab)!=0
-       && IsOrdinaryTable(pTab)
-       && (pTab->aCol[pExpr->iColumn].colFlags & COLFLAG_SORTERREF)!=0
+  ਪੂਰਨ i;
+  ਪੂਰਨ nDefer = 0;
+  ਵਿਅੰਜਕ_List *pExtra = 0;
+  ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+    ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ = &pEList->a[i];
+    ਜੇ( p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ==0 ){
+      ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = p_ਵਸਤੂ->p_ਵਿਅੰਜਕ;
+      ਸਾਰਣੀ *pTab;
+      ਜੇ( p_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ
+       && p_ਵਿਅੰਜਕ->i_ਕਾਲਮ>=0
+       && ALWAYS( ਵਿਅੰਜਕ_Use_YTab(p_ਵਿਅੰਜਕ) )
+       && (pTab = p_ਵਿਅੰਜਕ->y.pTab)!=0
+       && Is_Ordinary_ਸਾਰਣੀ(pTab)
+       && (pTab->a_ਖਾਨਾ[p_ਵਿਅੰਜਕ->i_ਕਾਲਮ].ਖਾਨਾ_Flags & COLFLAG_SORTERREF)!=0
       ){
-        int j;
-        for(j=0; j<nDefer; j++){
-          if( pSort->aDefer[j].iCsr==pExpr->iTable ) break;
+        ਪੂਰਨ j;
+        ਲਈ(j=0; j<nDefer; j++){
+          ਜੇ( p_ਛਾਂਟੋ->aDefer[j].iCsr==p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ ) ਰੋਕੋ;
         }
-        if( j==nDefer ){
-          if( nDefer==ArraySize(pSort->aDefer) ){
-            continue;
-          }else{
-            int nKey = 1;
-            int k;
-            Index *pPk = 0;
-            if( !HasRowid(pTab) ){
-              pPk = sqlite3PrimaryKeyIndex(pTab);
-              nKey = pPk->nKeyCol;
+        ਜੇ( j==nDefer ){
+          ਜੇ( nDefer==Array_ਮਾਪ(p_ਛਾਂਟੋ->aDefer) ){
+            ਜਾਰੀ;
+          }ਨਹੀਂਤਾਂ{
+            ਪੂਰਨ n_ਕੁੰਜੀ = 1;
+            ਪੂਰਨ k;
+            ਸੂਚਕਾਂਕ *pPk = 0;
+            ਜੇ( !HasRowid(pTab) ){
+              pPk = sqlite3_Primary_ਕੁੰਜੀ_ਸੂਚਕਾਂਕ(pTab);
+              n_ਕੁੰਜੀ = pPk->n_ਕੁੰਜੀ_ਖਾਨਾ;
             }
-            for(k=0; k<nKey; k++){
-              Expr *pNew = sqlite3PExpr(pParse, TK_COLUMN, 0, 0);
-              if( pNew ){
-                pNew->iTable = pExpr->iTable;
-                assert( ExprUseYTab(pNew) );
-                pNew->y.pTab = pExpr->y.pTab;
-                pNew->iColumn = pPk ? pPk->aiColumn[k] : -1;
-                pExtra = sqlite3ExprListAppend(pParse, pExtra, pNew);
+            ਲਈ(k=0; k<n_ਕੁੰਜੀ; k++){
+              ਵਿਅੰਜਕ *pNew = sqlite3PExpr(pParse, TK_ਕਾਲਮ, 0, 0);
+              ਜੇ( pNew ){
+                pNew->i_ਸਾਰਣੀ = p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ;
+                ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_YTab(pNew) );
+                pNew->y.pTab = p_ਵਿਅੰਜਕ->y.pTab;
+                pNew->i_ਕਾਲਮ = pPk ? pPk->ai_ਕਾਲਮ[k] : -1;
+                pExtra = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, pExtra, pNew);
               }
             }
-            pSort->aDefer[nDefer].pTab = pExpr->y.pTab;
-            pSort->aDefer[nDefer].iCsr = pExpr->iTable;
-            pSort->aDefer[nDefer].nKey = nKey;
+            p_ਛਾਂਟੋ->aDefer[nDefer].pTab = p_ਵਿਅੰਜਕ->y.pTab;
+            p_ਛਾਂਟੋ->aDefer[nDefer].iCsr = p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ;
+            p_ਛਾਂਟੋ->aDefer[nDefer].n_ਕੁੰਜੀ = n_ਕੁੰਜੀ;
             nDefer++;
           }
         }
-        pItem->fg.bSorterRef = 1;
+        p_ਵਸਤੂ->fg.bSorterRef = 1;
       }
     }
   }
-  pSort->nDefer = (u8)nDefer;
+  p_ਛਾਂਟੋ->nDefer = (u8)nDefer;
   *ppExtra = pExtra;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
 /*
 ** This is a byte-code validation check that only runs when SQLITE_DEBUG
 ** is defined.  This routine looks backwards through the bytecode
@@ -1153,32 +1153,32 @@ static void selectExprDefer(
 **
 ** tag-202607231411
 */
-static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
-  int i,k;
+ਸਥਿਰ ਪੂਰਨ sqlite3CursorBloomable(Parse *pParse, ਪੂਰਨ iCur, ਪੂਰਨ n_ਖਾਨਾ){
+  ਪੂਰਨ i,k;
   Vdbe *v = pParse->pVdbe;
-  if( pParse->nErr ) return 1;
-  assert( v );
-  for(k=sqlite3VdbeCurrentAddr(v)-1; k>0; k--){
-    const VdbeOp *pOp = sqlite3VdbeGetOp(v, k);
-    const KeyInfo *pKeyInfo;
-    if( pOp->p1!=iCur ) continue;
-    if( pOp->opcode!=OP_OpenRead
+  ਜੇ( pParse->nErr ) ਵਾਪਸ 1;
+  ਪ੍ਰਤਿਜ੍ਞਾ( v );
+  ਲਈ(k=sqlite3VdbeCurrentAddr(v)-1; k>0; k--){
+    ਅਚਲ VdbeOp *pOp = sqlite3VdbeGetOp(v, k);
+    ਅਚਲ ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info;
+    ਜੇ( pOp->p1!=iCur ) ਜਾਰੀ;
+    ਜੇ( pOp->opcode!=OP_OpenRead
      && pOp->opcode!=OP_OpenWrite
      && pOp->opcode!=OP_OpenEphemeral
     ){
-      continue;
+      ਜਾਰੀ;
     }
-    assert( pOp->p4type==P4_KEYINFO );
-    pKeyInfo = (const KeyInfo*)pOp->p4.pKeyInfo;
-    assert( pKeyInfo!=0 );
-    for(i=0; i<nCol; i++){
-      assert( sqlite3IsBinary(pKeyInfo->aColl[i]) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pOp->p4type==P4_KEYINFO );
+    p_ਕੁੰਜੀ_Info = (ਅਚਲ ਕੁੰਜੀ_Info*)pOp->p4.p_ਕੁੰਜੀ_Info;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕੁੰਜੀ_Info!=0 );
+    ਲਈ(i=0; i<n_ਖਾਨਾ; i++){
+      ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_Is_ਦੁਆਧਾਰੀ(p_ਕੁੰਜੀ_Info->aColl[i]) );
     }
-    return 1;
+    ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
-#endif /* SQLITE_DEBUG */
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG */
 
 
 /*
@@ -1190,84 +1190,84 @@ static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
 ** zero or more, then data is pulled from srcTab and p->pEList is used only
 ** to get the number of columns and the collation sequence for each column.
 */
-static void selectInnerLoop(
+ਸਥਿਰ ਖਾਲੀ selectInnerLoop(
   Parse *pParse,          /* The parser context */
   Select *p,              /* The complete select statement being coded */
-  int srcTab,             /* Pull data from this table if non-negative */
-  SortCtx *pSort,         /* If not NULL, info on how to process ORDER BY */
+  ਪੂਰਨ srcTab,             /* Pull data from this table if non-negative */
+  ਛਾਂਟੋ_Ctx *p_ਛਾਂਟੋ,         /* If not NULL, info on how to process ORDER BY */
   DistinctCtx *pDistinct, /* If not NULL, info on how to process DISTINCT */
   SelectDest *pDest,      /* How to dispose of the results */
-  int iContinue,          /* Jump here to continue with next row */
-  int iBreak              /* Jump here to break out of the inner loop */
+  ਪੂਰਨ iContinue,          /* Jump here to continue with next row */
+  ਪੂਰਨ iBreak              /* Jump here to break out of the inner loop */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int hasDistinct;            /* True if the DISTINCT keyword is present */
-  int eDest = pDest->eDest;   /* How to dispose of results */
-  int iParm = pDest->iSDParm; /* First argument to disposal method */
-  int nResultCol;             /* Number of result columns */
-  int nPrefixReg = 0;         /* Number of extra registers before regResult */
-  RowLoadInfo sRowLoadInfo;   /* Info for deferred row loading */
+  ਪੂਰਨ i;
+  ਪੂਰਨ hasDistinct;            /* True if the DISTINCT keyword is present */
+  ਪੂਰਨ eDest = pDest->eDest;   /* How to dispose of results */
+  ਪੂਰਨ iParm = pDest->iSDParm; /* First argument to disposal method */
+  ਪੂਰਨ n_ਨਤੀਜਾ_ਖਾਨਾ;             /* Number of result columns */
+  ਪੂਰਨ n_ਅਗੇਤਰ_Reg = 0;         /* Number of extra registers before regResult */
+  ਪੰਕਤੀ_ਲੱਦੋ_Info s_ਪੰਕਤੀ_ਲੱਦੋ_Info;   /* Info for deferred row loading */
 
   /* Usually, regResult is the first cell in an array of memory cells
   ** containing the current result row. In this case regOrig is set to the
   ** same value. However, if the results are being sent to the sorter, the
   ** values for any expressions that are also part of the sort-key are omitted
   ** from this array. In this case regOrig is set to zero.  */
-  int regResult;              /* Start of memory holding current results */
-  int regOrig;                /* Start of memory holding full result (or 0) */
+  ਪੂਰਨ reg_ਨਤੀਜਾ;              /* Start of memory holding current results */
+  ਪੂਰਨ regOrig;                /* Start of memory holding full result (or 0) */
 
-  assert( v );
-  assert( p->pEList!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( v );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList!=0 );
   hasDistinct = pDistinct ? pDistinct->eTnctType : WHERE_DISTINCT_NOOP;
-  if( pSort && pSort->pOrderBy==0 ) pSort = 0;
-  if( pSort==0 && !hasDistinct ){
-    assert( iContinue!=0 );
-    codeOffset(v, p->iOffset, iContinue);
+  ਜੇ( p_ਛਾਂਟੋ && p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By==0 ) p_ਛਾਂਟੋ = 0;
+  ਜੇ( p_ਛਾਂਟੋ==0 && !hasDistinct ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( iContinue!=0 );
+    ਕੋਡ_ਵਿੱਥ(v, p->i_ਵਿੱਥ, iContinue);
   }
 
   /* Pull the requested columns.
   */
-  nResultCol = p->pEList->nExpr;
+  n_ਨਤੀਜਾ_ਖਾਨਾ = p->pEList->n_ਵਿਅੰਜਕ;
 
-  if( pDest->iSdst==0 ){
-    if( pSort ){
-      nPrefixReg = pSort->pOrderBy->nExpr;
-      if( !(pSort->sortFlags & SORTFLAG_UseSorter) ) nPrefixReg++;
-      pParse->nMem += nPrefixReg;
+  ਜੇ( pDest->iSdst==0 ){
+    ਜੇ( p_ਛਾਂਟੋ ){
+      n_ਅਗੇਤਰ_Reg = p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ;
+      ਜੇ( !(p_ਛਾਂਟੋ->ਛਾਂਟੋ_Flags & SORTFLAG_UseSorter) ) n_ਅਗੇਤਰ_Reg++;
+      pParse->nMem += n_ਅਗੇਤਰ_Reg;
     }
     pDest->iSdst = pParse->nMem+1;
-    pParse->nMem += nResultCol;
-  }else if( pDest->iSdst+nResultCol > pParse->nMem ){
+    pParse->nMem += n_ਨਤੀਜਾ_ਖਾਨਾ;
+  }ਨਹੀਂਤਾਂ ਜੇ( pDest->iSdst+n_ਨਤੀਜਾ_ਖਾਨਾ > pParse->nMem ){
     /* This is an error condition that can result, for example, when a SELECT
     ** on the right-hand side of an INSERT contains more result columns than
     ** there are columns in the table on the left.  The error will be caught
     ** and reported later.  But we need to make sure enough memory is allocated
     ** to avoid other spurious errors in the meantime. */
-    pParse->nMem += nResultCol;
+    pParse->nMem += n_ਨਤੀਜਾ_ਖਾਨਾ;
   }
-  pDest->nSdst = nResultCol;
-  regOrig = regResult = pDest->iSdst;
-  if( srcTab>=0 ){
-    for(i=0; i<nResultCol; i++){
-      sqlite3VdbeAddOp3(v, OP_Column, srcTab, i, regResult+i);
+  pDest->nSdst = n_ਨਤੀਜਾ_ਖਾਨਾ;
+  regOrig = reg_ਨਤੀਜਾ = pDest->iSdst;
+  ਜੇ( srcTab>=0 ){
+    ਲਈ(i=0; i<n_ਨਤੀਜਾ_ਖਾਨਾ; i++){
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, srcTab, i, reg_ਨਤੀਜਾ+i);
       VdbeComment((v, "%s", p->pEList->a[i].zEName));
     }
-  }else if( eDest!=SRT_Exists ){
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    ExprList *pExtra = 0;
-#endif
+  }ਨਹੀਂਤਾਂ ਜੇ( eDest!=SRT_Exists ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+    ਵਿਅੰਜਕ_List *pExtra = 0;
+#ਜੇ_ਅੰਤ
     /* If the destination is an EXISTS(...) expression, the actual
     ** values returned by the SELECT are not required.
     */
     u8 ecelFlags;    /* "ecel" is an abbreviation of "ExprCodeExprList" */
-    ExprList *pEList;
-    if( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
+    ਵਿਅੰਜਕ_List *pEList;
+    ਜੇ( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
       ecelFlags = SQLITE_ECEL_DUP;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       ecelFlags = 0;
     }
-    if( pSort && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_Table ){
+    ਜੇ( p_ਛਾਂਟੋ && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_ਸਾਰਣੀ ){
       /* For each expression in p->pEList that is a copy of an expression in
       ** the ORDER BY clause (pSort->pOrderBy), set the associated
       ** iOrderByCol value to one more than the index of the ORDER BY
@@ -1276,67 +1276,67 @@ static void selectInnerLoop(
       ** saving space and CPU cycles.  */
       ecelFlags |= (SQLITE_ECEL_OMITREF|SQLITE_ECEL_REF);
 
-      for(i=pSort->nOBSat; i<pSort->pOrderBy->nExpr; i++){
-        int j;
-        if( (j = pSort->pOrderBy->a[i].u.x.iOrderByCol)>0 ){
-          p->pEList->a[j-1].u.x.iOrderByCol = i+1-pSort->nOBSat;
+      ਲਈ(i=p_ਛਾਂਟੋ->nOBSat; i<p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ; i++){
+        ਪੂਰਨ j;
+        ਜੇ( (j = p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ)>0 ){
+          p->pEList->a[j-1].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ = i+1-p_ਛਾਂਟੋ->nOBSat;
         }
       }
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-      selectExprDefer(pParse, pSort, p->pEList, &pExtra);
-      if( pExtra && pParse->db->mallocFailed==0 ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+      select_ਵਿਅੰਜਕ_Defer(pParse, p_ਛਾਂਟੋ, p->pEList, &pExtra);
+      ਜੇ( pExtra && pParse->db->mallocFailed==0 ){
         /* If there are any extra PK columns to add to the sorter records,
         ** allocate extra memory cells and adjust the OpenEphemeral
         ** instruction to account for the larger records. This is only
         ** required if there are one or more WITHOUT ROWID tables with
         ** composite primary keys in the SortCtx.aDefer[] array.  */
-        VdbeOp *pOp = sqlite3VdbeGetOp(v, pSort->addrSortIndex);
-        pOp->p2 += (pExtra->nExpr - pSort->nDefer);
-        pOp->p4.pKeyInfo->nAllField += (pExtra->nExpr - pSort->nDefer);
-        pParse->nMem += pExtra->nExpr;
+        VdbeOp *pOp = sqlite3VdbeGetOp(v, p_ਛਾਂਟੋ->addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ);
+        pOp->p2 += (pExtra->n_ਵਿਅੰਜਕ - p_ਛਾਂਟੋ->nDefer);
+        pOp->p4.p_ਕੁੰਜੀ_Info->n_All_ਖੇਤਰ += (pExtra->n_ਵਿਅੰਜਕ - p_ਛਾਂਟੋ->nDefer);
+        pParse->nMem += pExtra->n_ਵਿਅੰਜਕ;
       }
-#endif
+#ਜੇ_ਅੰਤ
 
       /* Adjust nResultCol to account for columns that are omitted
       ** from the sorter by the optimizations in this branch */
       pEList = p->pEList;
-      for(i=0; i<pEList->nExpr; i++){
-        if( pEList->a[i].u.x.iOrderByCol>0
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
+      ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+        ਜੇ( pEList->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ>0
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
          || pEList->a[i].fg.bSorterRef
-#endif
+#ਜੇ_ਅੰਤ
         ){
-          nResultCol--;
+          n_ਨਤੀਜਾ_ਖਾਨਾ--;
           regOrig = 0;
         }
       }
 
       testcase( regOrig );
-      testcase( eDest==SRT_Set );
+      testcase( eDest==SRT_ਸੈੱਟ );
       testcase( eDest==SRT_Mem );
       testcase( eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
-      assert( eDest==SRT_Set || eDest==SRT_Mem
+      ਪ੍ਰਤਿਜ੍ਞਾ( eDest==SRT_ਸੈੱਟ || eDest==SRT_Mem
            || eDest==SRT_Coroutine || eDest==SRT_Output
            || eDest==SRT_Upfrom );
     }
-    sRowLoadInfo.regResult = regResult;
-    sRowLoadInfo.ecelFlags = ecelFlags;
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    sRowLoadInfo.pExtra = pExtra;
-    sRowLoadInfo.regExtraResult = regResult + nResultCol;
-    if( pExtra ) nResultCol += pExtra->nExpr;
-#endif
-    if( p->iLimit
+    s_ਪੰਕਤੀ_ਲੱਦੋ_Info.reg_ਨਤੀਜਾ = reg_ਨਤੀਜਾ;
+    s_ਪੰਕਤੀ_ਲੱਦੋ_Info.ecelFlags = ecelFlags;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+    s_ਪੰਕਤੀ_ਲੱਦੋ_Info.pExtra = pExtra;
+    s_ਪੰਕਤੀ_ਲੱਦੋ_Info.reg_Extra_ਨਤੀਜਾ = reg_ਨਤੀਜਾ + n_ਨਤੀਜਾ_ਖਾਨਾ;
+    ਜੇ( pExtra ) n_ਨਤੀਜਾ_ਖਾਨਾ += pExtra->n_ਵਿਅੰਜਕ;
+#ਜੇ_ਅੰਤ
+    ਜੇ( p->i_ਹੱਦਬੰਦੀ
      && (ecelFlags & SQLITE_ECEL_OMITREF)!=0
-     && nPrefixReg>0
+     && n_ਅਗੇਤਰ_Reg>0
     ){
-      assert( pSort!=0 );
-      assert( hasDistinct==0 );
-      pSort->pDeferredRowLoad = &sRowLoadInfo;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਛਾਂਟੋ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( hasDistinct==0 );
+      p_ਛਾਂਟੋ->p_Deferred_ਪੰਕਤੀ_ਲੱਦੋ = &s_ਪੰਕਤੀ_ਲੱਦੋ_Info;
       regOrig = 0;
-    }else{
-      innerLoopLoadRow(pParse, p, &sRowLoadInfo);
+    }ਨਹੀਂਤਾਂ{
+      inner_Loop_ਲੱਦੋ_ਪੰਕਤੀ(pParse, p, &s_ਪੰਕਤੀ_ਲੱਦੋ_Info);
     }
   }
 
@@ -1344,238 +1344,238 @@ static void selectInnerLoop(
   ** and this row has been seen before, then do not make this row
   ** part of the result.
   */
-  if( hasDistinct ){
-    int eType = pDistinct->eTnctType;
-    int iTab = pDistinct->tabTnct;
-    assert( nResultCol==p->pEList->nExpr );
-    iTab = codeDistinct(pParse, eType, iTab, iContinue, p->pEList, regResult);
+  ਜੇ( hasDistinct ){
+    ਪੂਰਨ eType = pDistinct->eTnctType;
+    ਪੂਰਨ iTab = pDistinct->tabTnct;
+    ਪ੍ਰਤਿਜ੍ਞਾ( n_ਨਤੀਜਾ_ਖਾਨਾ==p->pEList->n_ਵਿਅੰਜਕ );
+    iTab = ਕੋਡ_Distinct(pParse, eType, iTab, iContinue, p->pEList, reg_ਨਤੀਜਾ);
     fixDistinctOpenEph(pParse, eType, iTab, pDistinct->addrTnct);
-    if( pSort==0 ){
-      codeOffset(v, p->iOffset, iContinue);
+    ਜੇ( p_ਛਾਂਟੋ==0 ){
+      ਕੋਡ_ਵਿੱਥ(v, p->i_ਵਿੱਥ, iContinue);
     }
   }
 
-  switch( eDest ){
+  ਚੋਣ( eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempRange(pParse, nPrefixReg+1);
-      testcase( eDest==SRT_Table );
+    ਹਾਲਤ SRT_Fifo:
+    ਹਾਲਤ SRT_DistFifo:
+    ਹਾਲਤ SRT_ਸਾਰਣੀ:
+    ਹਾਲਤ SRT_EphemTab: {
+      ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_ਅਗੇਤਰ_Reg+1);
+      testcase( eDest==SRT_ਸਾਰਣੀ );
       testcase( eDest==SRT_EphemTab );
       testcase( eDest==SRT_Fifo );
       testcase( eDest==SRT_DistFifo );
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r1+nPrefixReg);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ, r1+n_ਅਗੇਤਰ_Reg);
+#ਜੇ !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( eDest==SRT_Table && pDest->iSDParm2 ){
+      ਜੇ( eDest==SRT_ਸਾਰਣੀ && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
-#endif
-#ifndef SQLITE_OMIT_CTE
-      if( eDest==SRT_DistFifo ){
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
+      ਜੇ( eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index. If the current row is already present
         ** in the index, do not write it to the output. If not, add the
         ** current row to the index and proceed with writing it to the
         ** output table as well.  */
-        int addr = sqlite3VdbeCurrentAddr(v) + 4;
-        sqlite3VdbeAddOp4Int(v, OP_Found, iParm+1, addr, r1, 0);
+        ਪੂਰਨ addr = sqlite3VdbeCurrentAddr(v) + 4;
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_ਮਿਲਿਆ, iParm+1, addr, r1, 0);
         VdbeCoverage(v);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm+1, r1,regResult,nResultCol);
-        assert( pSort==0 );
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm+1, r1,reg_ਨਤੀਜਾ,n_ਨਤੀਜਾ_ਖਾਨਾ);
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_ਛਾਂਟੋ==0 );
       }
-#endif
-      if( pSort ){
-        assert( regResult==regOrig );
-        pushOntoSorter(pParse, pSort, p, r1+nPrefixReg, regOrig, 1, nPrefixReg);
-      }else{
-        int r2 = sqlite3GetTempReg(pParse);
-        sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, r2);
-        sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, r2);
+#ਜੇ_ਅੰਤ
+      ਜੇ( p_ਛਾਂਟੋ ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( reg_ਨਤੀਜਾ==regOrig );
+        ਧੱਕੋ_Onto_Sorter(pParse, p_ਛਾਂਟੋ, p, r1+n_ਅਗੇਤਰ_Reg, regOrig, 1, n_ਅਗੇਤਰ_Reg);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ r2 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_NewRowid, iParm, r2);
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iParm, r1, r2);
         sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
-        sqlite3ReleaseTempReg(pParse, r2);
+        sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r2);
       }
-      sqlite3ReleaseTempRange(pParse, r1, nPrefixReg+1);
-      break;
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, r1, n_ਅਗੇਤਰ_Reg+1);
+      ਰੋਕੋ;
     }
 
-    case SRT_Upfrom: {
-      if( pSort ){
-        pushOntoSorter(
-            pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
-      }else{
-        int i2 = pDest->iSDParm2;
-        int r1 = sqlite3GetTempReg(pParse);
+    ਹਾਲਤ SRT_Upfrom: {
+      ਜੇ( p_ਛਾਂਟੋ ){
+        ਧੱਕੋ_Onto_Sorter(
+            pParse, p_ਛਾਂਟੋ, p, reg_ਨਤੀਜਾ, regOrig, n_ਨਤੀਜਾ_ਖਾਨਾ, n_ਅਗੇਤਰ_Reg);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ i2 = pDest->iSDParm2;
+        ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
 
         /* If the UPDATE FROM join is an aggregate that matches no rows, it
         ** might still be trying to return one row, because that is what
         ** aggregates do.  Don't record that empty row in the output table. */
-        sqlite3VdbeAddOp2(v, OP_IsNull, regResult, iBreak); VdbeCoverage(v);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IsNull, reg_ਨਤੀਜਾ, iBreak); VdbeCoverage(v);
 
-        sqlite3VdbeAddOp3(v, OP_MakeRecord,
-                          regResult+(i2<0), nResultCol-(i2<0), r1);
-        if( i2<0 ){
-          sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regResult);
-        }else{
-          sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, i2);
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ,
+                          reg_ਨਤੀਜਾ+(i2<0), n_ਨਤੀਜਾ_ਖਾਨਾ-(i2<0), r1);
+        ਜੇ( i2<0 ){
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iParm, r1, reg_ਨਤੀਜਾ);
+        }ਨਹੀਂਤਾਂ{
+          sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, r1, reg_ਨਤੀਜਾ, i2);
         }
       }
-      break;
+      ਰੋਕੋ;
     }
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
     /* If we are creating a set for an "expr IN (SELECT ...)" construct,
     ** then there should be a single item on the stack.  Write this
     ** item into the set table with bogus data.
     */
-    case SRT_Set: {
-      if( pSort ){
+    ਹਾਲਤ SRT_ਸੈੱਟ: {
+      ਜੇ( p_ਛਾਂਟੋ ){
         /* At first glance you would think we could optimize out the
         ** ORDER BY in this case since the order of entries in the set
         ** does not matter.  But there might be a LIMIT clause, in which
         ** case the order does matter */
-        pushOntoSorter(
-            pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
+        ਧੱਕੋ_Onto_Sorter(
+            pParse, p_ਛਾਂਟੋ, p, reg_ਨਤੀਜਾ, regOrig, n_ਨਤੀਜਾ_ਖਾਨਾ, n_ਅਗੇਤਰ_Reg);
         pDest->iSDParm2 = 0; /* Signal that any Bloom filter is unpopulated */
-      }else{
-        int r1 = sqlite3GetTempReg(pParse);
-        assert( sqlite3Strlen30(pDest->zAffSdst)==nResultCol );
-        sqlite3VdbeAddOp4(v, OP_MakeRecord, regResult, nResultCol,
-            r1, pDest->zAffSdst, nResultCol);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, nResultCol);
-        if( pDest->iSDParm2 ){
-          assert( sqlite3CursorBloomable(pParse,iParm,nResultCol) );
-          sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
-                               regResult, nResultCol);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+        ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3Strlen30(pDest->zAffSdst)==n_ਨਤੀਜਾ_ਖਾਨਾ );
+        sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Make_ਰਿਕਾਰਡ, reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ,
+            r1, pDest->zAffSdst, n_ਨਤੀਜਾ_ਖਾਨਾ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, r1, reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ);
+        ਜੇ( pDest->iSDParm2 ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3CursorBloomable(pParse,iParm,n_ਨਤੀਜਾ_ਖਾਨਾ) );
+          sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Filter_ਜੋੜੋ, pDest->iSDParm2, 0,
+                               reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ);
           ExplainQueryPlan((pParse, 0, "CREATE BLOOM FILTER"));
         }
-        sqlite3ReleaseTempReg(pParse, r1);
+        sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
       }
-      break;
+      ਰੋਕੋ;
     }
 
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, iParm);
+    ਹਾਲਤ SRT_Exists: {
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, iParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      ਰੋਕੋ;
     }
 
     /* If this is a scalar select that is part of an expression, then
     ** store the results in the appropriate memory cell or array of
     ** memory cells and break out of the scan loop.
     */
-    case SRT_Mem: {
-      if( pSort ){
-        assert( nResultCol<=pDest->nSdst );
-        pushOntoSorter(
-            pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
-        pDest->iSDParm = regResult;
-      }else{
-        assert( nResultCol==pDest->nSdst );
-        if( regResult!=iParm ){
+    ਹਾਲਤ SRT_Mem: {
+      ਜੇ( p_ਛਾਂਟੋ ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( n_ਨਤੀਜਾ_ਖਾਨਾ<=pDest->nSdst );
+        ਧੱਕੋ_Onto_Sorter(
+            pParse, p_ਛਾਂਟੋ, p, reg_ਨਤੀਜਾ, regOrig, n_ਨਤੀਜਾ_ਖਾਨਾ, n_ਅਗੇਤਰ_Reg);
+        pDest->iSDParm = reg_ਨਤੀਜਾ;
+      }ਨਹੀਂਤਾਂ{
+        ਪ੍ਰਤਿਜ੍ਞਾ( n_ਨਤੀਜਾ_ਖਾਨਾ==pDest->nSdst );
+        ਜੇ( reg_ਨਤੀਜਾ!=iParm ){
           /* This occurs in cases where the SELECT had both a DISTINCT and
           ** an OFFSET clause.  */
-          sqlite3VdbeAddOp3(v, OP_Copy, regResult, iParm, nResultCol-1);
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Copy, reg_ਨਤੀਜਾ, iParm, n_ਨਤੀਜਾ_ਖਾਨਾ-1);
         }
         /* The LIMIT clause will jump out of the loop for us */
       }
-      break;
+      ਰੋਕੋ;
     }
-#endif /* #ifndef SQLITE_OMIT_SUBQUERY */
+#ਜੇ_ਅੰਤ /* #ifndef SQLITE_OMIT_SUBQUERY */
 
-    case SRT_Coroutine:       /* Send data to a co-routine */
-    case SRT_Output: {        /* Return the results */
+    ਹਾਲਤ SRT_Coroutine:       /* Send data to a co-routine */
+    ਹਾਲਤ SRT_Output: {        /* Return the results */
       testcase( eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
-      if( pSort ){
-        pushOntoSorter(pParse, pSort, p, regResult, regOrig, nResultCol,
-                       nPrefixReg);
-      }else if( eDest==SRT_Coroutine ){
-        sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, nResultCol);
+      ਜੇ( p_ਛਾਂਟੋ ){
+        ਧੱਕੋ_Onto_Sorter(pParse, p_ਛਾਂਟੋ, p, reg_ਨਤੀਜਾ, regOrig, n_ਨਤੀਜਾ_ਖਾਨਾ,
+                       n_ਅਗੇਤਰ_Reg);
+      }ਨਹੀਂਤਾਂ ਜੇ( eDest==SRT_Coroutine ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Yield, pDest->iSDParm);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਨਤੀਜਾ_ਪੰਕਤੀ, reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ);
       }
-      break;
+      ਰੋਕੋ;
     }
 
-#ifndef SQLITE_OMIT_CTE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
     /* Write the results into a priority queue that is order according to
     ** pDest->pOrderBy (in pSO).  pDest->iSDParm (in iParm) is the cursor for an
     ** index with pSO->nExpr+2 columns.  Build a key using pSO for the first
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3;
-      int addrTest = 0;
-      ExprList *pSO;
-      pSO = pDest->pOrderBy;
-      assert( pSO );
-      nKey = pSO->nExpr;
-      r1 = sqlite3GetTempReg(pParse);
-      r2 = sqlite3GetTempRange(pParse, nKey+2);
-      r3 = r2+nKey+1;
-      if( eDest==SRT_DistQueue ){
+    ਹਾਲਤ SRT_Dist_ਕਤਾਰ:
+    ਹਾਲਤ SRT_ਕਤਾਰ: {
+      ਪੂਰਨ n_ਕੁੰਜੀ;
+      ਪੂਰਨ r1, r2, r3;
+      ਪੂਰਨ addrTest = 0;
+      ਵਿਅੰਜਕ_List *pSO;
+      pSO = pDest->p_ਕ੍ਰਮ_By;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSO );
+      n_ਕੁੰਜੀ = pSO->n_ਵਿਅੰਜਕ;
+      r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      r2 = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_ਕੁੰਜੀ+2);
+      r3 = r2+n_ਕੁੰਜੀ+1;
+      ਜੇ( eDest==SRT_Dist_ਕਤਾਰ ){
         /* If the destination is DistQueue, then cursor (iParm+1) is open
         ** on a second ephemeral index that holds all values every previously
         ** added to the queue. */
-        addrTest = sqlite3VdbeAddOp4Int(v, OP_Found, iParm+1, 0,
-                                        regResult, nResultCol);
+        addrTest = sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_ਮਿਲਿਆ, iParm+1, 0,
+                                        reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ);
         VdbeCoverage(v);
       }
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r3);
-      if( eDest==SRT_DistQueue ){
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, reg_ਨਤੀਜਾ, n_ਨਤੀਜਾ_ਖਾਨਾ, r3);
+      ਜੇ( eDest==SRT_Dist_ਕਤਾਰ ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Idx_ਪਾਓ, iParm+1, r3);
         sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
       }
-      for(i=0; i<nKey; i++){
-        sqlite3VdbeAddOp2(v, OP_SCopy,
-                          regResult + pSO->a[i].u.x.iOrderByCol - 1,
+      ਲਈ(i=0; i<n_ਕੁੰਜੀ; i++){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_SCopy,
+                          reg_ਨਤੀਜਾ + pSO->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ - 1,
                           r2+i);
       }
-      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+nKey);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, nKey+2, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
-      if( addrTest ) sqlite3VdbeJumpHere(v, addrTest);
-      sqlite3ReleaseTempReg(pParse, r1);
-      sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sequence, iParm, r2+n_ਕੁੰਜੀ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, r2, n_ਕੁੰਜੀ+2, r1);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, r1, r2, n_ਕੁੰਜੀ+2);
+      ਜੇ( addrTest ) sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addrTest);
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, r2, n_ਕੁੰਜੀ+2);
+      ਰੋਕੋ;
     }
-#endif /* SQLITE_OMIT_CTE */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_CTE */
 
 
 
-#if !defined(SQLITE_OMIT_TRIGGER)
+#ਜੇ !defined(SQLITE_OMIT_TRIGGER)
     /* Discard the results.  This is used for SELECT statements inside
     ** the body of a TRIGGER.  The purpose of such selects is to call
     ** user-defined functions that have side effects.  We do not care
     ** about the actual results of the select.
     */
-    default: {
-      assert( eDest==SRT_Discard );
-      break;
+    ਮੂਲ: {
+      ਪ੍ਰਤਿਜ੍ਞਾ( eDest==SRT_Discard );
+      ਰੋਕੋ;
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
 
   /* Jump to the end of the loop if the LIMIT is reached.  Except, if
   ** there is a sorter, in which case the sorter has already limited
   ** the output for us.
   */
-  if( pSort==0 && p->iLimit ){
-    sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
+  ਜੇ( p_ਛਾਂਟੋ==0 && p->i_ਹੱਦਬੰਦੀ ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_DecrJumpZero, p->i_ਹੱਦਬੰਦੀ, iBreak); VdbeCoverage(v);
   }
 }
 
@@ -1583,58 +1583,58 @@ static void selectInnerLoop(
 ** Allocate a KeyInfo object sufficient for an index of N key columns and
 ** X extra columns.
 */
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3 *db, int N, int X){
-  int nExtra = (N+X)*(sizeof(CollSeq*)+1);
-  KeyInfo *p;
-  assert( X>=0 );
-  if( NEVER(N+X>0xffff) ) return (KeyInfo*)sqlite3OomFault(db);
+ਕੁੰਜੀ_Info *sqlite3_ਕੁੰਜੀ_Info_Alloc(sqlite3 *db, ਪੂਰਨ N, ਪੂਰਨ X){
+  ਪੂਰਨ nExtra = (N+X)*(ਆਕਾਰ(CollSeq*)+1);
+  ਕੁੰਜੀ_Info *p;
+  ਪ੍ਰਤਿਜ੍ਞਾ( X>=0 );
+  ਜੇ( NEVER(N+X>0xffff) ) ਵਾਪਸ (ਕੁੰਜੀ_Info*)sqlite3OomFault(db);
   p = sqlite3DbMallocRawNN(db, SZ_KEYINFO(0) + nExtra);
-  if( p ){
-    p->aSortFlags = (u8*)&p->aColl[N+X];
-    p->nKeyField = (u16)N;
-    p->nAllField = (u16)(N+X);
+  ਜੇ( p ){
+    p->a_ਛਾਂਟੋ_Flags = (u8*)&p->aColl[N+X];
+    p->n_ਕੁੰਜੀ_ਖੇਤਰ = (u16)N;
+    p->n_All_ਖੇਤਰ = (u16)(N+X);
     p->enc = ENC(db);
     p->db = db;
     p->nRef = 1;
     memset(p->aColl, 0, nExtra);
-  }else{
-    return (KeyInfo*)sqlite3OomFault(db);
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ (ਕੁੰਜੀ_Info*)sqlite3OomFault(db);
   }
-  return p;
+  ਵਾਪਸ p;
 }
 
 /*
 ** Deallocate a KeyInfo object
 */
-void sqlite3KeyInfoUnref(KeyInfo *p){
-  if( p ){
-    assert( p->db!=0 );
-    assert( p->nRef>0 );
+ਖਾਲੀ sqlite3_ਕੁੰਜੀ_Info_Unref(ਕੁੰਜੀ_Info *p){
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->db!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->nRef>0 );
     p->nRef--;
-    if( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
+    ਜੇ( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
   }
 }
 
 /*
 ** Make a new pointer to a KeyInfo object
 */
-KeyInfo *sqlite3KeyInfoRef(KeyInfo *p){
-  if( p ){
-    assert( p->nRef>0 );
+ਕੁੰਜੀ_Info *sqlite3_ਕੁੰਜੀ_Info_Ref(ਕੁੰਜੀ_Info *p){
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->nRef>0 );
     p->nRef++;
   }
-  return p;
+  ਵਾਪਸ p;
 }
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
 /*
 ** Return TRUE if a KeyInfo object can be change.  The KeyInfo object
 ** can only be changed if this is just a single reference to the object.
 **
 ** This routine is used only inside of assert() statements.
 */
-int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
-#endif /* SQLITE_DEBUG */
+ਪੂਰਨ sqlite3_ਕੁੰਜੀ_Info_Is_Writeable(ਕੁੰਜੀ_Info *p){ ਵਾਪਸ p->nRef==1; }
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG */
 
 /*
 ** Given an expression list, generate a KeyInfo structure that records
@@ -1650,45 +1650,45 @@ int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
 ** function is responsible for seeing that this structure is eventually
 ** freed.
 */
-KeyInfo *sqlite3KeyInfoFromExprList(
+ਕੁੰਜੀ_Info *sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(
   Parse *pParse,       /* Parsing context */
-  ExprList *pList,     /* Form the KeyInfo object from this ExprList */
-  int iStart,          /* Begin with this column of pList */
-  int nExtra           /* Add this many extra columns to the end */
+  ਵਿਅੰਜਕ_List *pList,     /* Form the KeyInfo object from this ExprList */
+  ਪੂਰਨ i_ਸ਼ੁਰੂ,          /* Begin with this column of pList */
+  ਪੂਰਨ nExtra           /* Add this many extra columns to the end */
 ){
-  int nExpr;
-  KeyInfo *pInfo;
-  struct ExprList_item *pItem;
+  ਪੂਰਨ n_ਵਿਅੰਜਕ;
+  ਕੁੰਜੀ_Info *pInfo;
+  ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ;
   sqlite3 *db = pParse->db;
-  int i;
+  ਪੂਰਨ i;
 
-  nExpr = pList->nExpr;
-  pInfo = sqlite3KeyInfoAlloc(db, nExpr-iStart, nExtra+1);
-  if( pInfo ){
-    assert( sqlite3KeyInfoIsWriteable(pInfo) );
-    for(i=iStart, pItem=pList->a+iStart; i<nExpr; i++, pItem++){
-      pInfo->aColl[i-iStart] = sqlite3ExprNNCollSeq(pParse, pItem->pExpr);
-      pInfo->aSortFlags[i-iStart] = pItem->fg.sortFlags;
+  n_ਵਿਅੰਜਕ = pList->n_ਵਿਅੰਜਕ;
+  pInfo = sqlite3_ਕੁੰਜੀ_Info_Alloc(db, n_ਵਿਅੰਜਕ-i_ਸ਼ੁਰੂ, nExtra+1);
+  ਜੇ( pInfo ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਕੁੰਜੀ_Info_Is_Writeable(pInfo) );
+    ਲਈ(i=i_ਸ਼ੁਰੂ, p_ਵਸਤੂ=pList->a+i_ਸ਼ੁਰੂ; i<n_ਵਿਅੰਜਕ; i++, p_ਵਸਤੂ++){
+      pInfo->aColl[i-i_ਸ਼ੁਰੂ] = sqlite3_ਵਿਅੰਜਕ_NNColl_Seq(pParse, p_ਵਸਤੂ->p_ਵਿਅੰਜਕ);
+      pInfo->a_ਛਾਂਟੋ_Flags[i-i_ਸ਼ੁਰੂ] = p_ਵਸਤੂ->fg.ਛਾਂਟੋ_Flags;
     }
   }
-  return pInfo;
+  ਵਾਪਸ pInfo;
 }
 
 /*
 ** Name of the connection operator, used for error messages.
 */
-const char *sqlite3SelectOpName(int id){
-  char *z;
-  switch( id ){
-    case TK_ALL:       z = "UNION ALL";   break;
-    case TK_INTERSECT: z = "INTERSECT";   break;
-    case TK_EXCEPT:    z = "EXCEPT";      break;
-    default:           z = "UNION";       break;
+ਅਚਲ ਅੱਖਰ *sqlite3SelectOpName(ਪੂਰਨ id){
+  ਅੱਖਰ *z;
+  ਚੋਣ( id ){
+    ਹਾਲਤ TK_ALL:       z = "UNION ALL";   ਰੋਕੋ;
+    ਹਾਲਤ TK_INTERSECT: z = "INTERSECT";   ਰੋਕੋ;
+    ਹਾਲਤ TK_EXCEPT:    z = "EXCEPT";      ਰੋਕੋ;
+    ਮੂਲ:           z = "UNION";       ਰੋਕੋ;
   }
-  return z;
+  ਵਾਪਸ z;
 }
 
-#ifndef SQLITE_OMIT_EXPLAIN
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_EXPLAIN
 /*
 ** Unless an "EXPLAIN QUERY PLAN" command is being processed, this function
 ** is a no-op. Otherwise, it adds a single row of output to the EQP result,
@@ -1699,7 +1699,7 @@ const char *sqlite3SelectOpName(int id){
 ** where xxx is one of "DISTINCT", "ORDER BY" or "GROUP BY". Exactly which
 ** is determined by the zUsage argument.
 */
-static void explainTempTable(Parse *pParse, const char *zUsage){
+ਸਥਿਰ ਖਾਲੀ explain_ਆਰਜ਼ੀ_ਸਾਰਣੀ(Parse *pParse, ਅਚਲ ਅੱਖਰ *zUsage){
   ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s", zUsage));
 }
 
@@ -1710,13 +1710,13 @@ static void explainTempTable(Parse *pParse, const char *zUsage){
 ** only exist if SQLITE_OMIT_EXPLAIN is not defined without polluting the
 ** code with #ifndef directives.
 */
-# define explainSetInteger(a, b) a = b
+# define explain_ਸੈੱਟ_Integer(a, b) a = b
 
-#else
+#ਨਹੀਂਤਾਂ
 /* No-op versions of the explainXXX() functions and macros. */
-# define explainTempTable(y,z)
-# define explainSetInteger(y,z)
-#endif
+# define explain_ਆਰਜ਼ੀ_ਸਾਰਣੀ(y,z)
+# define explain_ਸੈੱਟ_Integer(y,z)
+#ਜੇ_ਅੰਤ
 
 
 /*
@@ -1725,226 +1725,226 @@ static void explainTempTable(Parse *pParse, const char *zUsage){
 ** we need to run the sorter and output the results.  The following
 ** routine generates the code needed to do that.
 */
-static void generateSortTail(
+ਸਥਿਰ ਖਾਲੀ generate_ਛਾਂਟੋ_ਪੂਛ(
   Parse *pParse,    /* Parsing context */
   Select *p,        /* The SELECT statement */
-  SortCtx *pSort,   /* Information on the ORDER BY clause */
-  int nColumn,      /* Number of columns of data */
+  ਛਾਂਟੋ_Ctx *p_ਛਾਂਟੋ,   /* Information on the ORDER BY clause */
+  ਪੂਰਨ n_ਕਾਲਮ,      /* Number of columns of data */
   SelectDest *pDest /* Write the sorted results here */
 ){
   Vdbe *v = pParse->pVdbe;                     /* The prepared statement */
-  int addrBreak = pSort->labelDone;            /* Jump here to exit loop */
-  int addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
-  int addr;                       /* Top of output loop. Jump for Next. */
-  int addrOnce = 0;
-  int iTab;
-  ExprList *pOrderBy = pSort->pOrderBy;
-  int eDest = pDest->eDest;
-  int iParm = pDest->iSDParm;
-  int regRow;
-  int regRowid;
-  int iCol;
-  int nKey;                       /* Number of key columns in sorter record */
-  int iSortTab;                   /* Sorter cursor to read from */
-  int i;
-  int bSeq;                       /* True if sorter record includes seq. no. */
-  int nRefKey = 0;
-  struct ExprList_item *aOutEx = p->pEList->a;
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;                /* Address of OP_Explain instruction */
-#endif
+  ਪੂਰਨ addrBreak = p_ਛਾਂਟੋ->label_ਪੂਰਾ;            /* Jump here to exit loop */
+  ਪੂਰਨ addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
+  ਪੂਰਨ addr;                       /* Top of output loop. Jump for Next. */
+  ਪੂਰਨ addrOnce = 0;
+  ਪੂਰਨ iTab;
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By = p_ਛਾਂਟੋ->p_ਕ੍ਰਮ_By;
+  ਪੂਰਨ eDest = pDest->eDest;
+  ਪੂਰਨ iParm = pDest->iSDParm;
+  ਪੂਰਨ reg_ਪੰਕਤੀ;
+  ਪੂਰਨ regRowid;
+  ਪੂਰਨ i_ਖਾਨਾ;
+  ਪੂਰਨ n_ਕੁੰਜੀ;                       /* Number of key columns in sorter record */
+  ਪੂਰਨ i_ਛਾਂਟੋ_Tab;                   /* Sorter cursor to read from */
+  ਪੂਰਨ i;
+  ਪੂਰਨ bSeq;                       /* True if sorter record includes seq. no. */
+  ਪੂਰਨ n_Ref_ਕੁੰਜੀ = 0;
+  ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *a_ਬਾਹਰਲਾ_Ex = p->pEList->a;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+  ਪੂਰਨ addrExplain;                /* Address of OP_Explain instruction */
+#ਜੇ_ਅੰਤ
 
-  nKey = pOrderBy->nExpr - pSort->nOBSat;
-  if( pSort->nOBSat==0 || nKey==1 ){
+  n_ਕੁੰਜੀ = p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ - p_ਛਾਂਟੋ->nOBSat;
+  ਜੇ( p_ਛਾਂਟੋ->nOBSat==0 || n_ਕੁੰਜੀ==1 ){
     ExplainQueryPlan2(addrExplain, (pParse, 0,
-      "USE TEMP B-TREE FOR %sORDER BY", pSort->nOBSat?"LAST TERM OF ":""
+      "USE TEMP B-TREE FOR %sORDER BY", p_ਛਾਂਟੋ->nOBSat?"LAST TERM OF ":""
     ));
-  }else{
+  }ਨਹੀਂਤਾਂ{
     ExplainQueryPlan2(addrExplain, (pParse, 0,
-      "USE TEMP B-TREE FOR LAST %d TERMS OF ORDER BY", nKey
+      "USE TEMP B-TREE FOR LAST %d TERMS OF ORDER BY", n_ਕੁੰਜੀ
     ));
   }
-  sqlite3VdbeScanStatusRange(v, addrExplain,pSort->addrPush,pSort->addrPushEnd);
-  sqlite3VdbeScanStatusCounters(v, addrExplain, addrExplain, pSort->addrPush);
+  sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExplain,p_ਛਾਂਟੋ->addr_ਧੱਕੋ,p_ਛਾਂਟੋ->addr_ਧੱਕੋ_ਸਿਰਾ);
+  sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Counters(v, addrExplain, addrExplain, p_ਛਾਂਟੋ->addr_ਧੱਕੋ);
 
 
-  assert( addrBreak<0 );
-  if( pSort->labelBkOut ){
-    sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
+  ਪ੍ਰਤਿਜ੍ਞਾ( addrBreak<0 );
+  ਜੇ( p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, p_ਛਾਂਟੋ->regReturn, p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ);
     sqlite3VdbeGoto(v, addrBreak);
-    sqlite3VdbeResolveLabel(v, pSort->labelBkOut);
+    sqlite3VdbeResolveLabel(v, p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ);
   }
 
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
   /* Open any cursors needed for sorter-reference expressions */
-  for(i=0; i<pSort->nDefer; i++){
-    Table *pTab = pSort->aDefer[i].pTab;
-    int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
-    sqlite3OpenTable(pParse, pSort->aDefer[i].iCsr, iDb, pTab, OP_OpenRead);
-    sqlite3VdbeAddOp2(v, OP_Rewind, pSort->aDefer[i].iCsr,
+  ਲਈ(i=0; i<p_ਛਾਂਟੋ->nDefer; i++){
+    ਸਾਰਣੀ *pTab = p_ਛਾਂਟੋ->aDefer[i].pTab;
+    ਪੂਰਨ iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pParse->db, pTab->pSchema);
+    sqlite3_Open_ਸਾਰਣੀ(pParse, p_ਛਾਂਟੋ->aDefer[i].iCsr, iDb, pTab, OP_OpenRead);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Rewind, p_ਛਾਂਟੋ->aDefer[i].iCsr,
                       sqlite3VdbeCurrentAddr(v)+1);
     VdbeCoverage(v);
-    nRefKey = MAX(nRefKey, pSort->aDefer[i].nKey);
+    n_Ref_ਕੁੰਜੀ = MAX(n_Ref_ਕੁੰਜੀ, p_ਛਾਂਟੋ->aDefer[i].n_ਕੁੰਜੀ);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  iTab = pSort->iECursor;
-  if( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
-    if( eDest==SRT_Mem && p->iOffset ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, pDest->iSdst);
+  iTab = p_ਛਾਂਟੋ->iECursor;
+  ਜੇ( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
+    ਜੇ( eDest==SRT_Mem && p->i_ਵਿੱਥ ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Null, 0, pDest->iSdst);
     }
     regRowid = 0;
-    regRow = pDest->iSdst;
-  }else{
-    regRowid = sqlite3GetTempReg(pParse);
-    if( eDest==SRT_EphemTab || eDest==SRT_Table ){
-      regRow = sqlite3GetTempReg(pParse);
-      nColumn = 0;
-    }else{
-      regRow = sqlite3GetTempRange(pParse, nColumn);
+    reg_ਪੰਕਤੀ = pDest->iSdst;
+  }ਨਹੀਂਤਾਂ{
+    regRowid = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+    ਜੇ( eDest==SRT_EphemTab || eDest==SRT_ਸਾਰਣੀ ){
+      reg_ਪੰਕਤੀ = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      n_ਕਾਲਮ = 0;
+    }ਨਹੀਂਤਾਂ{
+      reg_ਪੰਕਤੀ = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_ਕਾਲਮ);
     }
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    int regSortOut = ++pParse->nMem;
-    iSortTab = pParse->nTab++;
-    if( pSort->labelBkOut ){
-      addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+  ਜੇ( p_ਛਾਂਟੋ->ਛਾਂਟੋ_Flags & SORTFLAG_UseSorter ){
+    ਪੂਰਨ reg_ਛਾਂਟੋ_ਬਾਹਰਲਾ = ++pParse->nMem;
+    i_ਛਾਂਟੋ_Tab = pParse->nTab++;
+    ਜੇ( p_ਛਾਂਟੋ->label_Bk_ਬਾਹਰਲਾ ){
+      addrOnce = sqlite3_Vdbe_ਜੋੜੋ_Op0(v, OP_Once); VdbeCoverage(v);
     }
-    sqlite3VdbeAddOp3(v, OP_OpenPseudo, iSortTab, regSortOut,
-        nKey+1+nColumn+nRefKey);
-    if( addrOnce ) sqlite3VdbeJumpHere(v, addrOnce);
-    addr = 1 + sqlite3VdbeAddOp2(v, OP_SorterSort, iTab, addrBreak);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_OpenPseudo, i_ਛਾਂਟੋ_Tab, reg_ਛਾਂਟੋ_ਬਾਹਰਲਾ,
+        n_ਕੁੰਜੀ+1+n_ਕਾਲਮ+n_Ref_ਕੁੰਜੀ);
+    ਜੇ( addrOnce ) sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addrOnce);
+    addr = 1 + sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sorter_ਛਾਂਟੋ, iTab, addrBreak);
     VdbeCoverage(v);
-    assert( p->iLimit==0 && p->iOffset==0 );
-    sqlite3VdbeAddOp3(v, OP_SorterData, iTab, regSortOut, iSortTab);
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->i_ਹੱਦਬੰਦੀ==0 && p->i_ਵਿੱਥ==0 );
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Sorter_ਅੰਕੜੇ, iTab, reg_ਛਾਂਟੋ_ਬਾਹਰਲਾ, i_ਛਾਂਟੋ_Tab);
     bSeq = 0;
-  }else{
-    addr = 1 + sqlite3VdbeAddOp2(v, OP_Sort, iTab, addrBreak); VdbeCoverage(v);
-    codeOffset(v, p->iOffset, addrContinue);
-    iSortTab = iTab;
+  }ਨਹੀਂਤਾਂ{
+    addr = 1 + sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਛਾਂਟੋ, iTab, addrBreak); VdbeCoverage(v);
+    ਕੋਡ_ਵਿੱਥ(v, p->i_ਵਿੱਥ, addrContinue);
+    i_ਛਾਂਟੋ_Tab = iTab;
     bSeq = 1;
-    if( p->iOffset>0 ){
-      sqlite3VdbeAddOp2(v, OP_AddImm, p->iLimit, -1);
+    ਜੇ( p->i_ਵਿੱਥ>0 ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਜੋੜੋ_Imm, p->i_ਹੱਦਬੰਦੀ, -1);
     }
   }
-  for(i=0, iCol=nKey+bSeq-1; i<nColumn; i++){
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ) continue;
-#endif
-    if( aOutEx[i].u.x.iOrderByCol==0 ) iCol++;
+  ਲਈ(i=0, i_ਖਾਨਾ=n_ਕੁੰਜੀ+bSeq-1; i<n_ਕਾਲਮ; i++){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+    ਜੇ( a_ਬਾਹਰਲਾ_Ex[i].fg.bSorterRef ) ਜਾਰੀ;
+#ਜੇ_ਅੰਤ
+    ਜੇ( a_ਬਾਹਰਲਾ_Ex[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ==0 ) i_ਖਾਨਾ++;
   }
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pSort->nDefer ){
-    int iKey = iCol+1;
-    int regKey = sqlite3GetTempRange(pParse, nRefKey);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+  ਜੇ( p_ਛਾਂਟੋ->nDefer ){
+    ਪੂਰਨ i_ਕੁੰਜੀ = i_ਖਾਨਾ+1;
+    ਪੂਰਨ reg_ਕੁੰਜੀ = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_Ref_ਕੁੰਜੀ);
 
-    for(i=0; i<pSort->nDefer; i++){
-      int iCsr = pSort->aDefer[i].iCsr;
-      Table *pTab = pSort->aDefer[i].pTab;
-      int nKey = pSort->aDefer[i].nKey;
+    ਲਈ(i=0; i<p_ਛਾਂਟੋ->nDefer; i++){
+      ਪੂਰਨ iCsr = p_ਛਾਂਟੋ->aDefer[i].iCsr;
+      ਸਾਰਣੀ *pTab = p_ਛਾਂਟੋ->aDefer[i].pTab;
+      ਪੂਰਨ n_ਕੁੰਜੀ = p_ਛਾਂਟੋ->aDefer[i].n_ਕੁੰਜੀ;
 
-      sqlite3VdbeAddOp1(v, OP_NullRow, iCsr);
-      if( HasRowid(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey);
-        sqlite3VdbeAddOp3(v, OP_SeekRowid, iCsr,
-            sqlite3VdbeCurrentAddr(v)+1, regKey);
-      }else{
-        int k;
-        int iJmp;
-        assert( sqlite3PrimaryKeyIndex(pTab)->nKeyCol==nKey );
-        for(k=0; k<nKey; k++){
-          sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey+k);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Null_ਪੰਕਤੀ, iCsr);
+      ਜੇ( HasRowid(pTab) ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, i_ਛਾਂਟੋ_Tab, i_ਕੁੰਜੀ++, reg_ਕੁੰਜੀ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_SeekRowid, iCsr,
+            sqlite3VdbeCurrentAddr(v)+1, reg_ਕੁੰਜੀ);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ k;
+        ਪੂਰਨ iJmp;
+        ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_Primary_ਕੁੰਜੀ_ਸੂਚਕਾਂਕ(pTab)->n_ਕੁੰਜੀ_ਖਾਨਾ==n_ਕੁੰਜੀ );
+        ਲਈ(k=0; k<n_ਕੁੰਜੀ; k++){
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, i_ਛਾਂਟੋ_Tab, i_ਕੁੰਜੀ++, reg_ਕੁੰਜੀ+k);
         }
         iJmp = sqlite3VdbeCurrentAddr(v);
-        sqlite3VdbeAddOp4Int(v, OP_SeekGE, iCsr, iJmp+2, regKey, nKey);
-        sqlite3VdbeAddOp4Int(v, OP_IdxLE, iCsr, iJmp+3, regKey, nKey);
-        sqlite3VdbeAddOp1(v, OP_NullRow, iCsr);
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_SeekGE, iCsr, iJmp+2, reg_ਕੁੰਜੀ, n_ਕੁੰਜੀ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_IdxLE, iCsr, iJmp+3, reg_ਕੁੰਜੀ, n_ਕੁੰਜੀ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Null_ਪੰਕਤੀ, iCsr);
       }
     }
-    sqlite3ReleaseTempRange(pParse, regKey, nRefKey);
+    sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, reg_ਕੁੰਜੀ, n_Ref_ਕੁੰਜੀ);
   }
-#endif
-  for(i=nColumn-1; i>=0; i--){
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ){
-      sqlite3ExprCode(pParse, aOutEx[i].pExpr, regRow+i);
-    }else
-#endif
+#ਜੇ_ਅੰਤ
+  ਲਈ(i=n_ਕਾਲਮ-1; i>=0; i--){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SORTER_REFERENCES
+    ਜੇ( a_ਬਾਹਰਲਾ_Ex[i].fg.bSorterRef ){
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, a_ਬਾਹਰਲਾ_Ex[i].p_ਵਿਅੰਜਕ, reg_ਪੰਕਤੀ+i);
+    }ਨਹੀਂਤਾਂ
+#ਜੇ_ਅੰਤ
     {
-      int iRead;
-      if( aOutEx[i].u.x.iOrderByCol ){
-        iRead = aOutEx[i].u.x.iOrderByCol-1;
-      }else{
-        iRead = iCol--;
+      ਪੂਰਨ iRead;
+      ਜੇ( a_ਬਾਹਰਲਾ_Ex[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ ){
+        iRead = a_ਬਾਹਰਲਾ_Ex[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ-1;
+      }ਨਹੀਂਤਾਂ{
+        iRead = i_ਖਾਨਾ--;
       }
-      sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iRead, regRow+i);
-      VdbeComment((v, "%s", aOutEx[i].zEName));
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, i_ਛਾਂਟੋ_Tab, iRead, reg_ਪੰਕਤੀ+i);
+      VdbeComment((v, "%s", a_ਬਾਹਰਲਾ_Ex[i].zEName));
     }
   }
-  sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
-  switch( eDest ){
-    case SRT_Table:
-    case SRT_EphemTab: {
-      sqlite3VdbeAddOp3(v, OP_Column, iSortTab, nKey+bSeq, regRow);
-      sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, regRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, iParm, regRow, regRowid);
+  sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExplain, addrExplain, -1);
+  ਚੋਣ( eDest ){
+    ਹਾਲਤ SRT_ਸਾਰਣੀ:
+    ਹਾਲਤ SRT_EphemTab: {
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, i_ਛਾਂਟੋ_Tab, n_ਕੁੰਜੀ+bSeq, reg_ਪੰਕਤੀ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_NewRowid, iParm, regRowid);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iParm, reg_ਪੰਕਤੀ, regRowid);
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
-      break;
+      ਰੋਕੋ;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case SRT_Set: {
-      assert( nColumn==sqlite3Strlen30(pDest->zAffSdst) );
-      sqlite3VdbeAddOp4(v, OP_MakeRecord, regRow, nColumn, regRowid,
-                        pDest->zAffSdst, nColumn);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, regRowid, regRow, nColumn);
-      break;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
+    ਹਾਲਤ SRT_ਸੈੱਟ: {
+      ਪ੍ਰਤਿਜ੍ਞਾ( n_ਕਾਲਮ==sqlite3Strlen30(pDest->zAffSdst) );
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Make_ਰਿਕਾਰਡ, reg_ਪੰਕਤੀ, n_ਕਾਲਮ, regRowid,
+                        pDest->zAffSdst, n_ਕਾਲਮ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, regRowid, reg_ਪੰਕਤੀ, n_ਕਾਲਮ);
+      ਰੋਕੋ;
     }
-    case SRT_Mem: {
+    ਹਾਲਤ SRT_Mem: {
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      ਰੋਕੋ;
     }
-#endif
-    case SRT_Upfrom: {
-      int i2 = pDest->iSDParm2;
-      int r1 = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord,regRow+(i2<0),nColumn-(i2<0),r1);
-      if( i2<0 ){
-        sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regRow);
-      }else{
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regRow, i2);
+#ਜੇ_ਅੰਤ
+    ਹਾਲਤ SRT_Upfrom: {
+      ਪੂਰਨ i2 = pDest->iSDParm2;
+      ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ,reg_ਪੰਕਤੀ+(i2<0),n_ਕਾਲਮ-(i2<0),r1);
+      ਜੇ( i2<0 ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iParm, r1, reg_ਪੰਕਤੀ);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, r1, reg_ਪੰਕਤੀ, i2);
       }
-      break;
+      ਰੋਕੋ;
     }
-    default: {
-      assert( eDest==SRT_Output || eDest==SRT_Coroutine );
+    ਮੂਲ: {
+      ਪ੍ਰਤਿਜ੍ਞਾ( eDest==SRT_Output || eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
       testcase( eDest==SRT_Coroutine );
-      if( eDest==SRT_Output ){
-        sqlite3VdbeAddOp2(v, OP_ResultRow, pDest->iSdst, nColumn);
-      }else{
-        sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
+      ਜੇ( eDest==SRT_Output ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਨਤੀਜਾ_ਪੰਕਤੀ, pDest->iSdst, n_ਕਾਲਮ);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Yield, pDest->iSDParm);
       }
-      break;
+      ਰੋਕੋ;
     }
   }
-  if( regRowid ){
-    if( eDest==SRT_Set ){
-      sqlite3ReleaseTempRange(pParse, regRow, nColumn);
-    }else{
-      sqlite3ReleaseTempReg(pParse, regRow);
+  ਜੇ( regRowid ){
+    ਜੇ( eDest==SRT_ਸੈੱਟ ){
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, reg_ਪੰਕਤੀ, n_ਕਾਲਮ);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, reg_ਪੰਕਤੀ);
     }
-    sqlite3ReleaseTempReg(pParse, regRowid);
+    sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, regRowid);
   }
   /* The bottom of the loop
   */
   sqlite3VdbeResolveLabel(v, addrContinue);
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    sqlite3VdbeAddOp2(v, OP_SorterNext, iTab, addr); VdbeCoverage(v);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_Next, iTab, addr); VdbeCoverage(v);
+  ਜੇ( p_ਛਾਂਟੋ->ਛਾਂਟੋ_Flags & SORTFLAG_UseSorter ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sorter_ਅਗਲਾ, iTab, addr); VdbeCoverage(v);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਅਗਲਾ, iTab, addr); VdbeCoverage(v);
   }
-  sqlite3VdbeScanStatusRange(v, addrExplain, sqlite3VdbeCurrentAddr(v)-1, -1);
-  if( pSort->regReturn ) sqlite3VdbeAddOp1(v, OP_Return, pSort->regReturn);
+  sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExplain, sqlite3VdbeCurrentAddr(v)-1, -1);
+  ਜੇ( p_ਛਾਂਟੋ->regReturn ) sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, p_ਛਾਂਟੋ->regReturn);
   sqlite3VdbeResolveLabel(v, addrBreak);
 }
 
@@ -1969,57 +1969,57 @@ static void generateSortTail(
 ** This routine has either 3 or 6 parameters depending on whether or not
 ** the SQLITE_ENABLE_COLUMN_METADATA compile-time option is used.
 */
-#ifdef SQLITE_ENABLE_COLUMN_METADATA
-# define columnType(A,B,C,D,E) columnTypeImpl(A,B,C,D,E)
-#else /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
-# define columnType(A,B,C,D,E) columnTypeImpl(A,B)
-#endif
-static const char *columnTypeImpl(
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA
+# define ਕਾਲਮ_Type(A,B,C,D,E) ਕਾਲਮ_Type_Impl(A,B,C,D,E)
+#ਨਹੀਂਤਾਂ /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
+# define ਕਾਲਮ_Type(A,B,C,D,E) ਕਾਲਮ_Type_Impl(A,B)
+#ਜੇ_ਅੰਤ
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ *ਕਾਲਮ_Type_Impl(
   NameContext *pNC,
-#ifndef SQLITE_ENABLE_COLUMN_METADATA
-  Expr *pExpr
-#else
-  Expr *pExpr,
-  const char **pzOrigDb,
-  const char **pzOrigTab,
-  const char **pzOrigCol
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ
+#ਨਹੀਂਤਾਂ
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ,
+  ਅਚਲ ਅੱਖਰ **pzOrigDb,
+  ਅਚਲ ਅੱਖਰ **pzOrigTab,
+  ਅਚਲ ਅੱਖਰ **pz_Orig_ਖਾਨਾ
+#ਜੇ_ਅੰਤ
 ){
-  char const *zType = 0;
-  int j;
-#ifdef SQLITE_ENABLE_COLUMN_METADATA
-  char const *zOrigDb = 0;
-  char const *zOrigTab = 0;
-  char const *zOrigCol = 0;
-#endif
+  ਅੱਖਰ ਅਚਲ *zType = 0;
+  ਪੂਰਨ j;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA
+  ਅੱਖਰ ਅਚਲ *zOrigDb = 0;
+  ਅੱਖਰ ਅਚਲ *zOrigTab = 0;
+  ਅੱਖਰ ਅਚਲ *z_Orig_ਖਾਨਾ = 0;
+#ਜੇ_ਅੰਤ
 
-  assert( pExpr!=0 );
-  assert( pNC->pSrcList!=0 );
-  switch( pExpr->op ){
-    case TK_COLUMN: {
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNC->pSrcList!=0 );
+  ਚੋਣ( p_ਵਿਅੰਜਕ->op ){
+    ਹਾਲਤ TK_ਕਾਲਮ: {
       /* The expression is a column. Locate the table the column is being
       ** extracted from in NameContext.pSrcList. This table may be real
       ** database table or a subquery.
       */
-      Table *pTab = 0;            /* Table structure column is extracted from */
+      ਸਾਰਣੀ *pTab = 0;            /* Table structure column is extracted from */
       Select *pS = 0;             /* Select the column is extracted from */
-      int iCol = pExpr->iColumn;  /* Index of column in pTab */
-      while( pNC && !pTab ){
+      ਪੂਰਨ i_ਖਾਨਾ = p_ਵਿਅੰਜਕ->i_ਕਾਲਮ;  /* Index of column in pTab */
+      ਜਦੋਂ( pNC && !pTab ){
         SrcList *pTabList = pNC->pSrcList;
-        for(j=0;j<pTabList->nSrc && pTabList->a[j].iCursor!=pExpr->iTable;j++);
-        if( j<pTabList->nSrc ){
+        ਲਈ(j=0;j<pTabList->nSrc && pTabList->a[j].iCursor!=p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ;j++);
+        ਜੇ( j<pTabList->nSrc ){
           pTab = pTabList->a[j].pSTab;
-          if( pTabList->a[j].fg.isSubquery ){
+          ਜੇ( pTabList->a[j].fg.isSubquery ){
             pS = pTabList->a[j].u4.pSubq->pSelect;
-          }else{
+          }ਨਹੀਂਤਾਂ{
             pS = 0;
           }
-        }else{
-          pNC = pNC->pNext;
+        }ਨਹੀਂਤਾਂ{
+          pNC = pNC->p_ਅਗਲਾ;
         }
       }
 
-      if( pTab==0 ){
+      ਜੇ( pTab==0 ){
         /* At one time, code such as "SELECT new.x" within a trigger would
         ** cause this condition to run.  Since then, we have restructured how
         ** trigger code is generated and so this condition is no longer
@@ -2037,132 +2037,132 @@ static const char *columnTypeImpl(
         ** used. When columnType() is called on the expression
         ** "(SELECT t1.col)", the correct type is returned (see the TK_SELECT
         ** branch below.  */
-        break;
+        ਰੋਕੋ;
       }
 
-      assert( pTab && ExprUseYTab(pExpr) && pExpr->y.pTab==pTab );
-      if( pS ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pTab && ਵਿਅੰਜਕ_Use_YTab(p_ਵਿਅੰਜਕ) && p_ਵਿਅੰਜਕ->y.pTab==pTab );
+      ਜੇ( pS ){
         /* The "table" is actually a sub-select or a view in the FROM clause
         ** of the SELECT statement. Return the declaration type and origin
         ** data for the result-set column of the sub-select.
         */
-        if( iCol<pS->pEList->nExpr
-         && (!ViewCanHaveRowid || iCol>=0)
+        ਜੇ( i_ਖਾਨਾ<pS->pEList->n_ਵਿਅੰਜਕ
+         && (!ViewCanHaveRowid || i_ਖਾਨਾ>=0)
         ){
           /* If iCol is less than zero, then the expression requests the
           ** rowid of the sub-select or view. This expression is legal (see
           ** test case misc2.2.2) - it always evaluates to NULL.
           */
           NameContext sNC;
-          Expr *p = pS->pEList->a[iCol].pExpr;
+          ਵਿਅੰਜਕ *p = pS->pEList->a[i_ਖਾਨਾ].p_ਵਿਅੰਜਕ;
           sNC.pSrcList = pS->pSrc;
-          sNC.pNext = pNC;
+          sNC.p_ਅਗਲਾ = pNC;
           sNC.pParse = pNC->pParse;
-          zType = columnType(&sNC, p,&zOrigDb,&zOrigTab,&zOrigCol);
+          zType = ਕਾਲਮ_Type(&sNC, p,&zOrigDb,&zOrigTab,&z_Orig_ਖਾਨਾ);
         }
-      }else{
+      }ਨਹੀਂਤਾਂ{
         /* A real table or a CTE table */
-        assert( !pS );
-#ifdef SQLITE_ENABLE_COLUMN_METADATA
-        if( iCol<0 ) iCol = pTab->iPKey;
-        assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( !pS );
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA
+        ਜੇ( i_ਖਾਨਾ<0 ) i_ਖਾਨਾ = pTab->iPKey;
+        ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ==XN_ROWID || (i_ਖਾਨਾ>=0 && i_ਖਾਨਾ<pTab->n_ਖਾਨਾ) );
+        ਜੇ( i_ਖਾਨਾ<0 ){
           zType = "INTEGER";
-          zOrigCol = "rowid";
-        }else{
-          zOrigCol = pTab->aCol[iCol].zCnName;
-          zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
+          z_Orig_ਖਾਨਾ = "rowid";
+        }ਨਹੀਂਤਾਂ{
+          z_Orig_ਖਾਨਾ = pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName;
+          zType = sqlite3_ਕਾਲਮ_Type(&pTab->a_ਖਾਨਾ[i_ਖਾਨਾ],0);
         }
         zOrigTab = pTab->zName;
-        if( pNC->pParse && pTab->pSchema ){
-          int iDb = sqlite3SchemaToIndex(pNC->pParse->db, pTab->pSchema);
+        ਜੇ( pNC->pParse && pTab->pSchema ){
+          ਪੂਰਨ iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pNC->pParse->db, pTab->pSchema);
           zOrigDb = pNC->pParse->db->aDb[iDb].zDbSName;
         }
-#else
-        assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+#ਨਹੀਂਤਾਂ
+        ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ==XN_ROWID || (i_ਖਾਨਾ>=0 && i_ਖਾਨਾ<pTab->n_ਖਾਨਾ) );
+        ਜੇ( i_ਖਾਨਾ<0 ){
           zType = "INTEGER";
-        }else{
-          zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
+        }ਨਹੀਂਤਾਂ{
+          zType = sqlite3_ਕਾਲਮ_Type(&pTab->a_ਖਾਨਾ[i_ਖਾਨਾ],0);
         }
-#endif
+#ਜੇ_ਅੰਤ
       }
-      break;
+      ਰੋਕੋ;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case TK_SELECT: {
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
+    ਹਾਲਤ TK_SELECT: {
       /* The expression is a sub-select. Return the declaration type and
       ** origin info for the single column in the result set of the SELECT
       ** statement.
       */
       NameContext sNC;
       Select *pS;
-      Expr *p;
-      assert( ExprUseXSelect(pExpr) );
-      pS = pExpr->x.pSelect;
-      p = pS->pEList->a[0].pExpr;
+      ਵਿਅੰਜਕ *p;
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XSelect(p_ਵਿਅੰਜਕ) );
+      pS = p_ਵਿਅੰਜਕ->x.pSelect;
+      p = pS->pEList->a[0].p_ਵਿਅੰਜਕ;
       sNC.pSrcList = pS->pSrc;
-      sNC.pNext = pNC;
+      sNC.p_ਅਗਲਾ = pNC;
       sNC.pParse = pNC->pParse;
-      zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
-      break;
+      zType = ਕਾਲਮ_Type(&sNC, p, &zOrigDb, &zOrigTab, &z_Orig_ਖਾਨਾ);
+      ਰੋਕੋ;
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
 
-#ifdef SQLITE_ENABLE_COLUMN_METADATA 
-  if( pzOrigDb ){
-    assert( pzOrigTab && pzOrigCol );
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA 
+  ਜੇ( pzOrigDb ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pzOrigTab && pz_Orig_ਖਾਨਾ );
     *pzOrigDb = zOrigDb;
     *pzOrigTab = zOrigTab;
-    *pzOrigCol = zOrigCol;
+    *pz_Orig_ਖਾਨਾ = z_Orig_ਖਾਨਾ;
   }
-#endif
-  return zType;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ zType;
 }
 
 /*
 ** Generate code that will tell the VDBE the declaration types of columns
 ** in the result set.
 */
-static void generateColumnTypes(
+ਸਥਿਰ ਖਾਲੀ generate_ਕਾਲਮ_Types(
   Parse *pParse,      /* Parser context */
   SrcList *pTabList,  /* List of tables */
-  ExprList *pEList    /* Expressions defining the result set */
+  ਵਿਅੰਜਕ_List *pEList    /* Expressions defining the result set */
 ){
-#ifndef SQLITE_OMIT_DECLTYPE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_DECLTYPE
   Vdbe *v = pParse->pVdbe;
-  int i;
+  ਪੂਰਨ i;
   NameContext sNC;
   sNC.pSrcList = pTabList;
   sNC.pParse = pParse;
-  sNC.pNext = 0;
-  for(i=0; i<pEList->nExpr; i++){
-    Expr *p = pEList->a[i].pExpr;
-    const char *zType;
-#ifdef SQLITE_ENABLE_COLUMN_METADATA
-    const char *zOrigDb = 0;
-    const char *zOrigTab = 0;
-    const char *zOrigCol = 0;
-    zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
+  sNC.p_ਅਗਲਾ = 0;
+  ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+    ਵਿਅੰਜਕ *p = pEList->a[i].p_ਵਿਅੰਜਕ;
+    ਅਚਲ ਅੱਖਰ *zType;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_ਕਾਲਮ_METADATA
+    ਅਚਲ ਅੱਖਰ *zOrigDb = 0;
+    ਅਚਲ ਅੱਖਰ *zOrigTab = 0;
+    ਅਚਲ ਅੱਖਰ *z_Orig_ਖਾਨਾ = 0;
+    zType = ਕਾਲਮ_Type(&sNC, p, &zOrigDb, &zOrigTab, &z_Orig_ਖਾਨਾ);
 
     /* The vdbe must make its own copy of the column-type and other
     ** column specific strings, in case the schema is reset before this
     ** virtual machine is deleted.
     */
-    sqlite3VdbeSetColName(v, i, COLNAME_DATABASE, zOrigDb, SQLITE_TRANSIENT);
-    sqlite3VdbeSetColName(v, i, COLNAME_TABLE, zOrigTab, SQLITE_TRANSIENT);
-    sqlite3VdbeSetColName(v, i, COLNAME_COLUMN, zOrigCol, SQLITE_TRANSIENT);
-#else
-    zType = columnType(&sNC, p, 0, 0, 0);
-#endif
-    sqlite3VdbeSetColName(v, i, COLNAME_DECLTYPE, zType, SQLITE_TRANSIENT);
+    sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_DATABASE, zOrigDb, SQLITE_TRANSIENT);
+    sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_ਸਾਰਣੀ, zOrigTab, SQLITE_TRANSIENT);
+    sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_ਕਾਲਮ, z_Orig_ਖਾਨਾ, SQLITE_TRANSIENT);
+#ਨਹੀਂਤਾਂ
+    zType = ਕਾਲਮ_Type(&sNC, p, 0, 0, 0);
+#ਜੇ_ਅੰਤ
+    sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_DECLTYPE, zType, SQLITE_TRANSIENT);
   }
-#else
-  UNUSED_PARAMETER(pParse);
-  UNUSED_PARAMETER(pTabList);
-  UNUSED_PARAMETER(pEList);
-#endif /* !defined(SQLITE_OMIT_DECLTYPE) */
+#ਨਹੀਂਤਾਂ
+  ਅਣਵਰਤਿਆ_PARAMETER(pParse);
+  ਅਣਵਰਤਿਆ_PARAMETER(pTabList);
+  ਅਣਵਰਤਿਆ_PARAMETER(pEList);
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_DECLTYPE) */
 }
 
 
@@ -2196,68 +2196,68 @@ static void generateColumnTypes(
 **                              then the result column name with the table name
 **                              prefix, ex: TABLE.COLUMN.  Otherwise use zSpan.
 */
-void sqlite3GenerateColumnNames(
+ਖਾਲੀ sqlite3_Generate_ਕਾਲਮ_ਨਾਂ(
   Parse *pParse,      /* Parser context */
   Select *pSelect     /* Generate column names for this SELECT statement */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  Table *pTab;
+  ਪੂਰਨ i;
+  ਸਾਰਣੀ *pTab;
   SrcList *pTabList;
-  ExprList *pEList;
+  ਵਿਅੰਜਕ_List *pEList;
   sqlite3 *db = pParse->db;
-  int fullName;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
-  int srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
+  ਪੂਰਨ ਭਰਿਆ_Name;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
+  ਪੂਰਨ srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
 
-  if( pParse->colNamesSet ) return;
+  ਜੇ( pParse->ਖਾਨਾ_ਨਾਂ_ਸੈੱਟ ) ਵਾਪਸ;
   /* Column names are determined by the left-most term of a compound select */
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  ਜਦੋਂ( pSelect->p_ਪੂਰਵ ) pSelect = pSelect->p_ਪੂਰਵ;
   TREETRACE(0x80,pParse,pSelect,("generating column names\n"));
   pTabList = pSelect->pSrc;
   pEList = pSelect->pEList;
-  assert( v!=0 );
-  assert( pTabList!=0 );
-  pParse->colNamesSet = 1;
-  fullName = (db->flags & SQLITE_FullColNames)!=0;
-  srcName = (db->flags & SQLITE_ShortColNames)!=0 || fullName;
-  sqlite3VdbeSetNumCols(v, pEList->nExpr);
-  for(i=0; i<pEList->nExpr; i++){
-    Expr *p = pEList->a[i].pExpr;
+  ਪ੍ਰਤਿਜ੍ਞਾ( v!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTabList!=0 );
+  pParse->ਖਾਨਾ_ਨਾਂ_ਸੈੱਟ = 1;
+  ਭਰਿਆ_Name = (db->flags & SQLITE_ਭਰਿਆ_ਖਾਨਾ_ਨਾਂ)!=0;
+  srcName = (db->flags & SQLITE_Short_ਖਾਨਾ_ਨਾਂ)!=0 || ਭਰਿਆ_Name;
+  sqlite3_Vdbe_ਸੈੱਟ_ਅੰਕ_ਖਾਨੇ_ਗਿਣਤੀ(v, pEList->n_ਵਿਅੰਜਕ);
+  ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+    ਵਿਅੰਜਕ *p = pEList->a[i].p_ਵਿਅੰਜਕ;
 
-    assert( p!=0 );
-    assert( p->op!=TK_AGG_COLUMN );  /* Agg processing has not run yet */
-    assert( p->op!=TK_COLUMN
-        || (ExprUseYTab(p) && p->y.pTab!=0) ); /* Covering idx not yet coded */
-    if( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->op!=TK_AGG_ਕਾਲਮ );  /* Agg processing has not run yet */
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->op!=TK_ਕਾਲਮ
+        || (ਵਿਅੰਜਕ_Use_YTab(p) && p->y.pTab!=0) ); /* Covering idx not yet coded */
+    ਜੇ( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
       /* An AS clause always takes first priority */
-      char *zName = pEList->a[i].zEName;
-      sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_TRANSIENT);
-    }else if( srcName && p->op==TK_COLUMN ){
-      char *zCol;
-      int iCol = p->iColumn;
+      ਅੱਖਰ *zName = pEList->a[i].zEName;
+      sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_NAME, zName, SQLITE_TRANSIENT);
+    }ਨਹੀਂਤਾਂ ਜੇ( srcName && p->op==TK_ਕਾਲਮ ){
+      ਅੱਖਰ *z_ਖਾਨਾ;
+      ਪੂਰਨ i_ਖਾਨਾ = p->i_ਕਾਲਮ;
       pTab = p->y.pTab;
-      assert( pTab!=0 );
-      if( iCol<0 ) iCol = pTab->iPKey;
-      assert( iCol==-1 || (iCol>=0 && iCol<pTab->nCol) );
-      if( iCol<0 ){
-        zCol = "rowid";
-      }else{
-        zCol = pTab->aCol[iCol].zCnName;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
+      ਜੇ( i_ਖਾਨਾ<0 ) i_ਖਾਨਾ = pTab->iPKey;
+      ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ==-1 || (i_ਖਾਨਾ>=0 && i_ਖਾਨਾ<pTab->n_ਖਾਨਾ) );
+      ਜੇ( i_ਖਾਨਾ<0 ){
+        z_ਖਾਨਾ = "rowid";
+      }ਨਹੀਂਤਾਂ{
+        z_ਖਾਨਾ = pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName;
       }
-      if( fullName ){
-        char *zName = 0;
-        zName = sqlite3MPrintf(db, "%s.%s", pTab->zName, zCol);
-        sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_DYNAMIC);
-      }else{
-        sqlite3VdbeSetColName(v, i, COLNAME_NAME, zCol, SQLITE_TRANSIENT);
+      ਜੇ( ਭਰਿਆ_Name ){
+        ਅੱਖਰ *zName = 0;
+        zName = sqlite3MPrintf(db, "%s.%s", pTab->zName, z_ਖਾਨਾ);
+        sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_NAME, zName, SQLITE_DYNAMIC);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_NAME, z_ਖਾਨਾ, SQLITE_TRANSIENT);
       }
-    }else{
-      const char *z = pEList->a[i].zEName;
+    }ਨਹੀਂਤਾਂ{
+      ਅਚਲ ਅੱਖਰ *z = pEList->a[i].zEName;
       z = z==0 ? sqlite3MPrintf(db, "column%d", i+1) : sqlite3DbStrDup(db, z);
-      sqlite3VdbeSetColName(v, i, COLNAME_NAME, z, SQLITE_DYNAMIC);
+      sqlite3_Vdbe_ਸੈੱਟ_ਖਾਨਾ_Name(v, i, COLNAME_NAME, z, SQLITE_DYNAMIC);
     }
   }
-  generateColumnTypes(pParse, pTabList, pEList);
+  generate_ਕਾਲਮ_Types(pParse, pTabList, pEList);
 }
 
 /*
@@ -2282,69 +2282,69 @@ void sqlite3GenerateColumnNames(
 **
 ** See Also: sqlite3GenerateColumnNames()
 */
-int sqlite3ColumnsFromExprList(
+ਪੂਰਨ sqlite3_Columns_From_ਵਿਅੰਜਕ_List(
   Parse *pParse,          /* Parsing context */
-  ExprList *pEList,       /* Expr list from which to derive column names */
-  i16 *pnCol,             /* Write the number of columns here */
-  Column **paCol          /* Write the new column list here */
+  ਵਿਅੰਜਕ_List *pEList,       /* Expr list from which to derive column names */
+  i16 *pn_ਖਾਨਾ,             /* Write the number of columns here */
+  ਕਾਲਮ **pa_ਖਾਨਾ          /* Write the new column list here */
 ){
   sqlite3 *db = pParse->db;   /* Database connection */
-  int i, j;                   /* Loop counters */
+  ਪੂਰਨ i, j;                   /* Loop counters */
   u32 cnt;                    /* Index added to make the name unique */
-  Column *aCol, *pCol;        /* For looping over result columns */
-  int nCol;                   /* Number of columns in the result set */
-  char *zName;                /* Column name */
-  int nName;                  /* Size of name in zName[] */
+  ਕਾਲਮ *a_ਖਾਨਾ, *p_ਖਾਨਾ;        /* For looping over result columns */
+  ਪੂਰਨ n_ਖਾਨਾ;                   /* Number of columns in the result set */
+  ਅੱਖਰ *zName;                /* Column name */
+  ਪੂਰਨ nName;                  /* Size of name in zName[] */
   Hash ht;                    /* Hash table of column names */
-  Table *pTab;
+  ਸਾਰਣੀ *pTab;
 
   sqlite3HashInit(&ht);
-  if( pEList ){
-    nCol = pEList->nExpr;
-    aCol = sqlite3DbMallocZero(db, sizeof(aCol[0])*nCol);
-    testcase( aCol==0 );
-    if( nCol>32767 ) nCol = 32767;
-  }else{
-    nCol = 0;
-    aCol = 0;
+  ਜੇ( pEList ){
+    n_ਖਾਨਾ = pEList->n_ਵਿਅੰਜਕ;
+    a_ਖਾਨਾ = sqlite3DbMallocZero(db, ਆਕਾਰ(a_ਖਾਨਾ[0])*n_ਖਾਨਾ);
+    testcase( a_ਖਾਨਾ==0 );
+    ਜੇ( n_ਖਾਨਾ>32767 ) n_ਖਾਨਾ = 32767;
+  }ਨਹੀਂਤਾਂ{
+    n_ਖਾਨਾ = 0;
+    a_ਖਾਨਾ = 0;
   }
-  assert( nCol==(i16)nCol );
-  *pnCol = nCol;
-  *paCol = aCol;
+  ਪ੍ਰਤਿਜ੍ਞਾ( n_ਖਾਨਾ==(i16)n_ਖਾਨਾ );
+  *pn_ਖਾਨਾ = n_ਖਾਨਾ;
+  *pa_ਖਾਨਾ = a_ਖਾਨਾ;
 
-  for(i=0, pCol=aCol; i<nCol && !pParse->nErr; i++, pCol++){
-    struct ExprList_item *pX = &pEList->a[i];
-    struct ExprList_item *pCollide;
+  ਲਈ(i=0, p_ਖਾਨਾ=a_ਖਾਨਾ; i<n_ਖਾਨਾ && !pParse->nErr; i++, p_ਖਾਨਾ++){
+    ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *pX = &pEList->a[i];
+    ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *pCollide;
     /* Get an appropriate name for the column
     */
-    if( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
+    ਜੇ( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
       /* If the column contains an "AS <name>" phrase, use <name> as the name */
-    }else{
-      Expr *pColExpr = sqlite3ExprSkipCollateAndLikely(pX->pExpr);
-      while( ALWAYS(pColExpr!=0) && pColExpr->op==TK_DOT ){
-        pColExpr = pColExpr->pRight;
-        assert( pColExpr!=0 );
+    }ਨਹੀਂਤਾਂ{
+      ਵਿਅੰਜਕ *p_ਖਾਨਾ_ਵਿਅੰਜਕ = sqlite3_ਵਿਅੰਜਕ_Skip_Collate_And_Likely(pX->p_ਵਿਅੰਜਕ);
+      ਜਦੋਂ( ALWAYS(p_ਖਾਨਾ_ਵਿਅੰਜਕ!=0) && p_ਖਾਨਾ_ਵਿਅੰਜਕ->op==TK_DOT ){
+        p_ਖਾਨਾ_ਵਿਅੰਜਕ = p_ਖਾਨਾ_ਵਿਅੰਜਕ->p_ਸੱਜਾ;
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_ਖਾਨਾ_ਵਿਅੰਜਕ!=0 );
       }
-      if( pColExpr->op==TK_COLUMN
-       && ALWAYS( ExprUseYTab(pColExpr) )
-       && ALWAYS( pColExpr->y.pTab!=0 )
+      ਜੇ( p_ਖਾਨਾ_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ
+       && ALWAYS( ਵਿਅੰਜਕ_Use_YTab(p_ਖਾਨਾ_ਵਿਅੰਜਕ) )
+       && ALWAYS( p_ਖਾਨਾ_ਵਿਅੰਜਕ->y.pTab!=0 )
       ){
         /* For columns use the column name name */
-        int iCol = pColExpr->iColumn;
-        pTab = pColExpr->y.pTab;
-        if( iCol<0 ) iCol = pTab->iPKey;
-        zName = iCol>=0 ? pTab->aCol[iCol].zCnName : "rowid";
-      }else if( pColExpr->op==TK_ID ){
-        assert( !ExprHasProperty(pColExpr, EP_IntValue) );
-        zName = pColExpr->u.zToken;
-      }else{
+        ਪੂਰਨ i_ਖਾਨਾ = p_ਖਾਨਾ_ਵਿਅੰਜਕ->i_ਕਾਲਮ;
+        pTab = p_ਖਾਨਾ_ਵਿਅੰਜਕ->y.pTab;
+        ਜੇ( i_ਖਾਨਾ<0 ) i_ਖਾਨਾ = pTab->iPKey;
+        zName = i_ਖਾਨਾ>=0 ? pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName : "rowid";
+      }ਨਹੀਂਤਾਂ ਜੇ( p_ਖਾਨਾ_ਵਿਅੰਜਕ->op==TK_ID ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( !ਵਿਅੰਜਕ_Has_Property(p_ਖਾਨਾ_ਵਿਅੰਜਕ, EP_Int_ਮੁੱਲ) );
+        zName = p_ਖਾਨਾ_ਵਿਅੰਜਕ->u.zToken;
+      }ਨਹੀਂਤਾਂ{
         /* Use the original text of the column expression as its name */
-        assert( zName==pX->zEName );  /* pointer comparison intended */
+        ਪ੍ਰਤਿਜ੍ਞਾ( zName==pX->zEName );  /* pointer comparison intended */
       }
     }
-    if( zName && !sqlite3IsTrueOrFalse(zName) ){
+    ਜੇ( zName && !sqlite3IsTrueOrFalse(zName) ){
       zName = sqlite3DbStrDup(db, zName);
-    }else{
+    }ਨਹੀਂਤਾਂ{
       zName = sqlite3MPrintf(db,"column%d",i+1);
     }
 
@@ -2352,42 +2352,42 @@ int sqlite3ColumnsFromExprList(
     ** append an integer to the name so that it becomes unique.
     */
     cnt = 0;
-    while( zName && (pCollide = sqlite3HashFind(&ht, zName))!=0 ){
-      if( pCollide->fg.bUsingTerm ){
-        pCol->colFlags |= COLFLAG_NOEXPAND;
+    ਜਦੋਂ( zName && (pCollide = sqlite3_Hash_ਲੱਭੋ(&ht, zName))!=0 ){
+      ਜੇ( pCollide->fg.b_Using_ਪਦ ){
+        p_ਖਾਨਾ->ਖਾਨਾ_Flags |= COLFLAG_NOEXPAND;
       }
       nName = sqlite3Strlen30(zName);
-      if( nName>0 ){
-        for(j=nName-1; j>0 && sqlite3Isdigit(zName[j]); j--){}
-        if( zName[j]==':' ) nName = j;
+      ਜੇ( nName>0 ){
+        ਲਈ(j=nName-1; j>0 && sqlite3Isdigit(zName[j]); j--){}
+        ਜੇ( zName[j]==':' ) nName = j;
       }
       zName = sqlite3MPrintf(db, "%.*z:%u", nName, zName, ++cnt);
-      sqlite3ProgressCheck(pParse);
-      if( cnt>3 ){
-        sqlite3_randomness(sizeof(cnt), &cnt);
+      sqlite3_ਤਰੱਕੀ_Check(pParse);
+      ਜੇ( cnt>3 ){
+        sqlite3_randomness(ਆਕਾਰ(cnt), &cnt);
       }
     }
-    pCol->zCnName = zName;
-    pCol->hName = sqlite3StrIHash(zName);
-    if( pX->fg.bNoExpand ){
-      pCol->colFlags |= COLFLAG_NOEXPAND;
+    p_ਖਾਨਾ->zCnName = zName;
+    p_ਖਾਨਾ->hName = sqlite3StrIHash(zName);
+    ਜੇ( pX->fg.bNoExpand ){
+      p_ਖਾਨਾ->ਖਾਨਾ_Flags |= COLFLAG_NOEXPAND;
     }
-    sqlite3ColumnPropertiesFromName(0, pCol);
-    if( zName && sqlite3HashInsert(&ht, zName, pX)==pX ){
+    sqlite3_ਕਾਲਮ_Properties_From_Name(0, p_ਖਾਨਾ);
+    ਜੇ( zName && sqlite3_Hash_ਪਾਓ(&ht, zName, pX)==pX ){
       sqlite3OomFault(db);
     }
   }
   sqlite3HashClear(&ht);
-  if( pParse->nErr ){
-    for(j=0; j<i; j++){
-      sqlite3DbFree(db, aCol[j].zCnName);
+  ਜੇ( pParse->nErr ){
+    ਲਈ(j=0; j<i; j++){
+      sqlite3DbFree(db, a_ਖਾਨਾ[j].zCnName);
     }
-    sqlite3DbFree(db, aCol);
-    *paCol = 0;
-    *pnCol = 0;
-    return pParse->rc;
+    sqlite3DbFree(db, a_ਖਾਨਾ);
+    *pa_ਖਾਨਾ = 0;
+    *pn_ਖਾਨਾ = 0;
+    ਵਾਪਸ pParse->rc;
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -2401,144 +2401,144 @@ int sqlite3ColumnsFromExprList(
 **    *   Which collating sequence to use for the column
 **    *   The affinity of the column
 */
-void sqlite3SubqueryColumnTypes(
+ਖਾਲੀ sqlite3_Subquery_ਕਾਲਮ_Types(
   Parse *pParse,      /* Parsing contexts */
-  Table *pTab,        /* Add column type information to this table */
+  ਸਾਰਣੀ *pTab,        /* Add column type information to this table */
   Select *pSelect,    /* SELECT used to determine types and collations */
-  char aff            /* Default affinity. */
+  ਅੱਖਰ aff            /* Default affinity. */
 ){
   sqlite3 *db = pParse->db;
-  Column *pCol;
+  ਕਾਲਮ *p_ਖਾਨਾ;
   CollSeq *pColl;
-  int i,j;
-  Expr *p;
-  struct ExprList_item *a;
+  ਪੂਰਨ i,j;
+  ਵਿਅੰਜਕ *p;
+  ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *a;
   NameContext sNC;
 
-  assert( pSelect!=0 );
-  assert( (pSelect->selFlags & SF_Resolved)!=0 );
-  assert( pTab->nCol==pSelect->pEList->nExpr || pParse->nErr>0 );
-  assert( aff==SQLITE_AFF_NONE || aff==SQLITE_AFF_BLOB );
-  if( db->mallocFailed || IN_RENAME_OBJECT ) return;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (pSelect->selFlags & SF_Resolved)!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTab->n_ਖਾਨਾ==pSelect->pEList->n_ਵਿਅੰਜਕ || pParse->nErr>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aff==SQLITE_AFF_NONE || aff==SQLITE_AFF_BLOB );
+  ਜੇ( db->mallocFailed || ਵਿੱਚ_RENAME_OBJECT ) ਵਾਪਸ;
+  ਜਦੋਂ( pSelect->p_ਪੂਰਵ ) pSelect = pSelect->p_ਪੂਰਵ;
   a = pSelect->pEList->a;
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, ਆਕਾਰ(sNC));
   sNC.pSrcList = pSelect->pSrc;
-  for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-    const char *zType;
+  ਲਈ(i=0, p_ਖਾਨਾ=pTab->a_ਖਾਨਾ; i<pTab->n_ਖਾਨਾ; i++, p_ਖਾਨਾ++){
+    ਅਚਲ ਅੱਖਰ *zType;
     i64 n;
-    int m = 0;
+    ਪੂਰਨ m = 0;
     Select *pS2 = pSelect;
-    pTab->tabFlags |= (pCol->colFlags & COLFLAG_NOINSERT);
-    p = a[i].pExpr;
+    pTab->tabFlags |= (p_ਖਾਨਾ->ਖਾਨਾ_Flags & COLFLAG_NOINSERT);
+    p = a[i].p_ਵਿਅੰਜਕ;
     /* pCol->szEst = ... // Column size est for SELECT tables never used */
-    pCol->affinity = sqlite3ExprAffinity(p);
-    while( pCol->affinity<=SQLITE_AFF_NONE && pS2->pNext!=0 ){
-      m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
-      pS2 = pS2->pNext;
-      pCol->affinity = sqlite3ExprAffinity(pS2->pEList->a[i].pExpr);
+    p_ਖਾਨਾ->affinity = sqlite3_ਵਿਅੰਜਕ_Affinity(p);
+    ਜਦੋਂ( p_ਖਾਨਾ->affinity<=SQLITE_AFF_NONE && pS2->p_ਅਗਲਾ!=0 ){
+      m |= sqlite3_ਵਿਅੰਜਕ_ਅੰਕੜੇ_Type(pS2->pEList->a[i].p_ਵਿਅੰਜਕ);
+      pS2 = pS2->p_ਅਗਲਾ;
+      p_ਖਾਨਾ->affinity = sqlite3_ਵਿਅੰਜਕ_Affinity(pS2->pEList->a[i].p_ਵਿਅੰਜਕ);
     }
-    if( pCol->affinity<=SQLITE_AFF_NONE ){
-      pCol->affinity = aff;
+    ਜੇ( p_ਖਾਨਾ->affinity<=SQLITE_AFF_NONE ){
+      p_ਖਾਨਾ->affinity = aff;
     }
-    if( pCol->affinity>=SQLITE_AFF_TEXT && (pS2->pNext || pS2!=pSelect) ){
-      for(pS2=pS2->pNext; pS2; pS2=pS2->pNext){
-        m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
+    ਜੇ( p_ਖਾਨਾ->affinity>=SQLITE_AFF_ਪਾਠ && (pS2->p_ਅਗਲਾ || pS2!=pSelect) ){
+      ਲਈ(pS2=pS2->p_ਅਗਲਾ; pS2; pS2=pS2->p_ਅਗਲਾ){
+        m |= sqlite3_ਵਿਅੰਜਕ_ਅੰਕੜੇ_Type(pS2->pEList->a[i].p_ਵਿਅੰਜਕ);
       }
-      if( pCol->affinity==SQLITE_AFF_TEXT && (m&0x01)!=0 ){
-        pCol->affinity = SQLITE_AFF_BLOB;
-      }else
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
-        pCol->affinity = SQLITE_AFF_BLOB;
+      ਜੇ( p_ਖਾਨਾ->affinity==SQLITE_AFF_ਪਾਠ && (m&0x01)!=0 ){
+        p_ਖਾਨਾ->affinity = SQLITE_AFF_BLOB;
+      }ਨਹੀਂਤਾਂ
+      ਜੇ( p_ਖਾਨਾ->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
+        p_ਖਾਨਾ->affinity = SQLITE_AFF_BLOB;
       }
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
-        pCol->affinity = SQLITE_AFF_FLEXNUM;
+      ਜੇ( p_ਖਾਨਾ->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
+        p_ਖਾਨਾ->affinity = SQLITE_AFF_FLEXNUM;
       }
     }
-    zType = columnType(&sNC, p, 0, 0, 0);
-    if( zType==0 || pCol->affinity!=sqlite3AffinityType(zType, 0) ){
-      if( pCol->affinity==SQLITE_AFF_NUMERIC
-       || pCol->affinity==SQLITE_AFF_FLEXNUM
+    zType = ਕਾਲਮ_Type(&sNC, p, 0, 0, 0);
+    ਜੇ( zType==0 || p_ਖਾਨਾ->affinity!=sqlite3AffinityType(zType, 0) ){
+      ਜੇ( p_ਖਾਨਾ->affinity==SQLITE_AFF_NUMERIC
+       || p_ਖਾਨਾ->affinity==SQLITE_AFF_FLEXNUM
       ){
         zType = "NUM";
-      }else{
+      }ਨਹੀਂਤਾਂ{
         zType = 0;
-        for(j=1; j<SQLITE_N_STDTYPE; j++){
-          if( sqlite3StdTypeAffinity[j]==pCol->affinity ){
+        ਲਈ(j=1; j<SQLITE_N_STDTYPE; j++){
+          ਜੇ( sqlite3StdTypeAffinity[j]==p_ਖਾਨਾ->affinity ){
             zType = sqlite3StdType[j];
-            break;
+            ਰੋਕੋ;
           }
         }
       }
     }
-    if( zType ){
-      const i64 k = strlen(zType);
-      n = strlen(pCol->zCnName);
-      pCol->zCnName = sqlite3DbReallocOrFree(db, pCol->zCnName, n+k+2);
-      pCol->colFlags &= ~(COLFLAG_HASTYPE|COLFLAG_HASCOLL);
-      if( pCol->zCnName ){
-        memcpy(&pCol->zCnName[n+1], zType, k+1);
-        pCol->colFlags |= COLFLAG_HASTYPE;
+    ਜੇ( zType ){
+      ਅਚਲ i64 k = ਲੜੀ_ਲੰਬਾਈ(zType);
+      n = ਲੜੀ_ਲੰਬਾਈ(p_ਖਾਨਾ->zCnName);
+      p_ਖਾਨਾ->zCnName = sqlite3DbReallocOrFree(db, p_ਖਾਨਾ->zCnName, n+k+2);
+      p_ਖਾਨਾ->ਖਾਨਾ_Flags &= ~(COLFLAG_HASTYPE|COLFLAG_HASCOLL);
+      ਜੇ( p_ਖਾਨਾ->zCnName ){
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p_ਖਾਨਾ->zCnName[n+1], zType, k+1);
+        p_ਖਾਨਾ->ਖਾਨਾ_Flags |= COLFLAG_HASTYPE;
       }
     }
-    pColl = sqlite3ExprCollSeq(pParse, p);
-    if( pColl ){
-      assert( pTab->pIndex==0 );
-      sqlite3ColumnSetColl(db, pCol, pColl->zName);
+    pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, p);
+    ਜੇ( pColl ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pTab->p_ਸੂਚਕਾਂਕ==0 );
+      sqlite3_ਕਾਲਮ_ਸੈੱਟ_Coll(db, p_ਖਾਨਾ, pColl->zName);
     }
   }
-  pTab->szTabRow = 1; /* Any non-zero value works */
+  pTab->sz_Tab_ਪੰਕਤੀ = 1; /* Any non-zero value works */
 }
 
 /*
 ** Check the current subquery nesting depth.  Return true and set an
 ** error if it has gone too deep.
 */
-static int checkSubqueryNestingDepth(Parse *pParse){
-#if SQLITE_MAX_EXPR_DEPTH>0
-  if( pParse->nNestSel >= pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH] ){
-    sqlite3ErrorMsg(pParse, "VIEWs and/or subqueries nested too deep");
-    return 1;
+ਸਥਿਰ ਪੂਰਨ check_Subquery_Nesting_ਡੂੰਘਾਈ(Parse *pParse){
+#ਜੇ SQLITE_MAX_ਵਿਅੰਜਕ_ਡੂੰਘਾਈ>0
+  ਜੇ( pParse->nNestSel >= pParse->db->a_ਹੱਦਬੰਦੀ[SQLITE_ਹੱਦਬੰਦੀ_ਵਿਅੰਜਕ_ਡੂੰਘਾਈ] ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "VIEWs and/or subqueries nested too deep");
+    ਵਾਪਸ 1;
   }
-#endif
-  return 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ 0;
 }
 
 /*
 ** Given a SELECT statement, generate a Table structure that describes
 ** the result set of that SELECT.
 */
-Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
-  Table *pTab;
+ਸਾਰਣੀ *sqlite3_ਨਤੀਜਾ_ਸੈੱਟ_ਦਾ_Select(Parse *pParse, Select *pSelect, ਅੱਖਰ aff){
+  ਸਾਰਣੀ *pTab;
   sqlite3 *db = pParse->db;
   u64 savedFlags;
 
   pParse->nNestSel++;
-  if( checkSubqueryNestingDepth(pParse) ) return 0;
+  ਜੇ( check_Subquery_Nesting_ਡੂੰਘਾਈ(pParse) ) ਵਾਪਸ 0;
   savedFlags = db->flags;
-  db->flags &= ~(u64)SQLITE_FullColNames;
-  db->flags |= SQLITE_ShortColNames;
+  db->flags &= ~(u64)SQLITE_ਭਰਿਆ_ਖਾਨਾ_ਨਾਂ;
+  db->flags |= SQLITE_Short_ਖਾਨਾ_ਨਾਂ;
   sqlite3SelectPrep(pParse, pSelect, 0);
   db->flags = savedFlags;
-  if( pParse->nErr ) return 0;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
-  pTab = sqlite3DbMallocZero(db, sizeof(Table) );
-  if( pTab==0 ){
-    return 0;
+  ਜੇ( pParse->nErr ) ਵਾਪਸ 0;
+  ਜਦੋਂ( pSelect->p_ਪੂਰਵ ) pSelect = pSelect->p_ਪੂਰਵ;
+  pTab = sqlite3DbMallocZero(db, ਆਕਾਰ(ਸਾਰਣੀ) );
+  ਜੇ( pTab==0 ){
+    ਵਾਪਸ 0;
   }
   pTab->nTabRef = 1;
   pTab->zName = 0;
-  pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
-  sqlite3ColumnsFromExprList(pParse, pSelect->pEList, &pTab->nCol, &pTab->aCol);
-  sqlite3SubqueryColumnTypes(pParse, pTab, pSelect, aff);
+  pTab->n_ਪੰਕਤੀ_Log_Est = 200; ਪ੍ਰਤਿਜ੍ਞਾ( 200==sqlite3LogEst(1048576) );
+  sqlite3_Columns_From_ਵਿਅੰਜਕ_List(pParse, pSelect->pEList, &pTab->n_ਖਾਨਾ, &pTab->a_ਖਾਨਾ);
+  sqlite3_Subquery_ਕਾਲਮ_Types(pParse, pTab, pSelect, aff);
   pTab->iPKey = -1;
-  if( db->mallocFailed ){
-    sqlite3DeleteTable(db, pTab);
-    return 0;
+  ਜੇ( db->mallocFailed ){
+    sqlite3_Delete_ਸਾਰਣੀ(db, pTab);
+    ਵਾਪਸ 0;
   }
   pParse->nNestSel--;
-  assert( pParse->nNestSel>=0 );
-  return pTab;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nNestSel>=0 );
+  ਵਾਪਸ pTab;
 }
 
 /*
@@ -2546,13 +2546,13 @@ Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
 ** If an error occurs, return NULL and leave a message in pParse.
 */
 Vdbe *sqlite3GetVdbe(Parse *pParse){
-  if( pParse->pVdbe ){
-    return pParse->pVdbe;
+  ਜੇ( pParse->pVdbe ){
+    ਵਾਪਸ pParse->pVdbe;
   }
-  if( pParse->pToplevel==0 ){
-    pParse->okConstFactor = 1;
+  ਜੇ( pParse->pToplevel==0 ){
+    pParse->ok_Const_ਗੁਣਕ = 1;
   }
-  return sqlite3VdbeCreate(pParse);
+  ਵਾਪਸ sqlite3VdbeCreate(pParse);
 }
 
 
@@ -2579,14 +2579,14 @@ Vdbe *sqlite3GetVdbe(Parse *pParse){
 ** the reuse of the same limit and offset registers across multiple
 ** SELECT statements.
 */
-static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
+ਸਥਿਰ ਖਾਲੀ compute_ਹੱਦਬੰਦੀ_Registers(Parse *pParse, Select *p, ਪੂਰਨ iBreak){
   Vdbe *v = 0;
-  int iLimit = 0;
-  int iOffset;
-  int n;
-  Expr *pLimit = p->pLimit;
+  ਪੂਰਨ i_ਹੱਦਬੰਦੀ = 0;
+  ਪੂਰਨ i_ਵਿੱਥ;
+  ਪੂਰਨ n;
+  ਵਿਅੰਜਕ *p_ਹੱਦਬੰਦੀ = p->p_ਹੱਦਬੰਦੀ;
 
-  if( p->iLimit ) return;
+  ਜੇ( p->i_ਹੱਦਬੰਦੀ ) ਵਾਪਸ;
 
   /*
   ** "LIMIT -1" always shows all rows.  There is some
@@ -2594,42 +2594,42 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
   ** The current implementation interprets "LIMIT 0" to mean
   ** no rows.
   */
-  if( pLimit ){
-    assert( pLimit->op==TK_LIMIT );
-    assert( pLimit->pLeft!=0 );
-    p->iLimit = iLimit = ++pParse->nMem;
+  ਜੇ( p_ਹੱਦਬੰਦੀ ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਹੱਦਬੰਦੀ->op==TK_ਹੱਦਬੰਦੀ );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ!=0 );
+    p->i_ਹੱਦਬੰਦੀ = i_ਹੱਦਬੰਦੀ = ++pParse->nMem;
     v = sqlite3GetVdbe(pParse);
-    assert( v!=0 );
-    if( sqlite3ExprIsInteger(pLimit->pLeft, &n, pParse, 0) ){
-      sqlite3VdbeAddOp2(v, OP_Integer, n, iLimit);
+    ਪ੍ਰਤਿਜ੍ਞਾ( v!=0 );
+    ਜੇ( sqlite3_ਵਿਅੰਜਕ_Is_Integer(p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ, &n, pParse, 0) ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, n, i_ਹੱਦਬੰਦੀ);
       VdbeComment((v, "LIMIT counter"));
-      if( n==0 ){
+      ਜੇ( n==0 ){
         sqlite3VdbeGoto(v, iBreak);
-      }else if( n>=0 && p->nSelectRow>sqlite3LogEst((u64)n) ){
-        p->nSelectRow = sqlite3LogEst((u64)n);
-        p->selFlags |= SF_FixedLimit;
+      }ਨਹੀਂਤਾਂ ਜੇ( n>=0 && p->n_Select_ਪੰਕਤੀ>sqlite3LogEst((u64)n) ){
+        p->n_Select_ਪੰਕਤੀ = sqlite3LogEst((u64)n);
+        p->selFlags |= SF_Fixed_ਹੱਦਬੰਦੀ;
       }
-    }else{
-      sqlite3ExprCode(pParse, pLimit->pLeft, iLimit);
-      sqlite3VdbeAddOp1(v, OP_MustBeInt, iLimit); VdbeCoverage(v);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ, i_ਹੱਦਬੰਦੀ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_MustBeInt, i_ਹੱਦਬੰਦੀ); VdbeCoverage(v);
       VdbeComment((v, "LIMIT counter"));
       sqlite3MayAbort(pParse);
-      sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, iBreak); VdbeCoverage(v);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfNot, i_ਹੱਦਬੰਦੀ, iBreak); VdbeCoverage(v);
     }
-    if( pLimit->pRight ){
-      p->iOffset = iOffset = ++pParse->nMem;
+    ਜੇ( p_ਹੱਦਬੰਦੀ->p_ਸੱਜਾ ){
+      p->i_ਵਿੱਥ = i_ਵਿੱਥ = ++pParse->nMem;
       pParse->nMem++;   /* Allocate an extra register for limit+offset */
-      sqlite3ExprCode(pParse, pLimit->pRight, iOffset);
-      sqlite3VdbeAddOp1(v, OP_MustBeInt, iOffset); VdbeCoverage(v);
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, p_ਹੱਦਬੰਦੀ->p_ਸੱਜਾ, i_ਵਿੱਥ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_MustBeInt, i_ਵਿੱਥ); VdbeCoverage(v);
       sqlite3MayAbort(pParse);
       VdbeComment((v, "OFFSET counter"));
-      sqlite3VdbeAddOp3(v, OP_OffsetLimit, iLimit, iOffset+1, iOffset);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਵਿੱਥ_ਹੱਦਬੰਦੀ, i_ਹੱਦਬੰਦੀ, i_ਵਿੱਥ+1, i_ਵਿੱਥ);
       VdbeComment((v, "LIMIT+OFFSET"));
     }
   }
 }
 
-#ifndef SQLITE_OMIT_COMPOUND_SELECT
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_COMPOUND_SELECT
 /*
 ** Return the appropriate collating sequence for the iCol-th column of
 ** the result set for the compound-select statement "p".  Return NULL if
@@ -2638,21 +2638,21 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
 ** The collating sequence for the compound select is taken from the
 ** left-most term of the select that has a collating sequence.
 */
-static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
+ਸਥਿਰ CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, ਪੂਰਨ i_ਖਾਨਾ){
   CollSeq *pRet;
-  if( p->pPrior ){
-    pRet = multiSelectCollSeq(pParse, p->pPrior, iCol);
-  }else{
+  ਜੇ( p->p_ਪੂਰਵ ){
+    pRet = multiSelectCollSeq(pParse, p->p_ਪੂਰਵ, i_ਖਾਨਾ);
+  }ਨਹੀਂਤਾਂ{
     pRet = 0;
   }
-  assert( iCol>=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ>=0 );
   /* iCol must be less than p->pEList->nExpr.  Otherwise an error would
   ** have been thrown during name resolution and we would not have gotten
   ** this far */
-  if( pRet==0 && ALWAYS(iCol<p->pEList->nExpr) ){
-    pRet = sqlite3ExprCollSeq(pParse, p->pEList->a[iCol].pExpr);
+  ਜੇ( pRet==0 && ALWAYS(i_ਖਾਨਾ<p->pEList->n_ਵਿਅੰਜਕ) ){
+    pRet = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, p->pEList->a[i_ਖਾਨਾ].p_ਵਿਅੰਜਕ);
   }
-  return pRet;
+  ਵਾਪਸ pRet;
 }
 
 /*
@@ -2664,36 +2664,36 @@ static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
 ** function is responsible for ensuring that this structure is eventually
 ** freed.
 */
-static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
-  ExprList *pOrderBy = p->pOrderBy;
-  int nOrderBy = (pOrderBy!=0) ? pOrderBy->nExpr : 0;
+ਸਥਿਰ ਕੁੰਜੀ_Info *multi_Select_By_ਮਿਲਾਓ_ਕੁੰਜੀ_Info(Parse *pParse, Select *p, ਪੂਰਨ nExtra){
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
+  ਪੂਰਨ n_ਕ੍ਰਮ_By = (p_ਕ੍ਰਮ_By!=0) ? p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ : 0;
   sqlite3 *db = pParse->db;
-  KeyInfo *pRet = sqlite3KeyInfoAlloc(db, nOrderBy+nExtra, 1);
-  if( pRet ){
-    int i;
-    for(i=0; i<nOrderBy; i++){
-      struct ExprList_item *pItem = &pOrderBy->a[i];
-      Expr *pTerm = pItem->pExpr;
+  ਕੁੰਜੀ_Info *pRet = sqlite3_ਕੁੰਜੀ_Info_Alloc(db, n_ਕ੍ਰਮ_By+nExtra, 1);
+  ਜੇ( pRet ){
+    ਪੂਰਨ i;
+    ਲਈ(i=0; i<n_ਕ੍ਰਮ_By; i++){
+      ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ = &p_ਕ੍ਰਮ_By->a[i];
+      ਵਿਅੰਜਕ *p_ਪਦ = p_ਵਸਤੂ->p_ਵਿਅੰਜਕ;
       CollSeq *pColl;
 
-      if( pTerm->flags & EP_Collate ){
-        pColl = sqlite3ExprCollSeq(pParse, pTerm);
-      }else{
-        pColl = multiSelectCollSeq(pParse, p, pItem->u.x.iOrderByCol-1);
-        if( pColl==0 ) pColl = db->pDfltColl;
-        pOrderBy->a[i].pExpr =
-          sqlite3ExprAddCollateString(pParse, pTerm, pColl->zName);
+      ਜੇ( p_ਪਦ->flags & EP_Collate ){
+        pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, p_ਪਦ);
+      }ਨਹੀਂਤਾਂ{
+        pColl = multiSelectCollSeq(pParse, p, p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ-1);
+        ਜੇ( pColl==0 ) pColl = db->pDfltColl;
+        p_ਕ੍ਰਮ_By->a[i].p_ਵਿਅੰਜਕ =
+          sqlite3_ਵਿਅੰਜਕ_ਜੋੜੋ_Collate_String(pParse, p_ਪਦ, pColl->zName);
       }
-      assert( sqlite3KeyInfoIsWriteable(pRet) );
+      ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਕੁੰਜੀ_Info_Is_Writeable(pRet) );
       pRet->aColl[i] = pColl;
-      pRet->aSortFlags[i] = pOrderBy->a[i].fg.sortFlags;
+      pRet->a_ਛਾਂਟੋ_Flags[i] = p_ਕ੍ਰਮ_By->a[i].fg.ਛਾਂਟੋ_Flags;
     }
   }
 
-  return pRet;
+  ਵਾਪਸ pRet;
 }
 
-#ifndef SQLITE_OMIT_CTE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
 /*
 ** This routine generates VDBE code to compute the content of a WITH RECURSIVE
 ** query of the form:
@@ -2730,110 +2730,110 @@ static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
 ** than being sent to pDest.  The LIMIT count does not begin until after OFFSET
 ** rows have been skipped.
 */
-static void generateWithRecursiveQuery(
+ਸਥਿਰ ਖਾਲੀ generateWithRecursiveQuery(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The recursive SELECT to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
   SrcList *pSrc = p->pSrc;      /* The FROM clause of the recursive query */
-  int nCol = p->pEList->nExpr;  /* Number of columns in the recursive table */
+  ਪੂਰਨ n_ਖਾਨਾ = p->pEList->n_ਵਿਅੰਜਕ;  /* Number of columns in the recursive table */
   Vdbe *v = pParse->pVdbe;      /* The prepared statement under construction */
-  Select *pSetup;               /* The setup query */
-  Select *pFirstRec;            /* Left-most recursive term */
-  int addrTop;                  /* Top of the loop */
-  int addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
-  int iCurrent = 0;             /* The Current table */
-  int regCurrent;               /* Register holding Current table */
-  int iQueue;                   /* The Queue table */
-  int iDistinct = 0;            /* To ensure unique results if UNION */
-  int eDest = SRT_Fifo;         /* How to write to Queue */
-  SelectDest destQueue;         /* SelectDest targeting the Queue table */
-  int i;                        /* Loop counter */
-  int rc;                       /* Result code */
-  ExprList *pOrderBy;           /* The ORDER BY clause */
-  Expr *pLimit;                 /* Saved LIMIT and OFFSET */
-  int regLimit, regOffset;      /* Registers used by LIMIT and OFFSET */
+  Select *p_ਤਿਆਰੀ;               /* The setup query */
+  Select *p_ਪਹਿਲਾ_Rec;            /* Left-most recursive term */
+  ਪੂਰਨ addr_ਸਿਖਰ;                  /* Top of the loop */
+  ਪੂਰਨ addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
+  ਪੂਰਨ iCurrent = 0;             /* The Current table */
+  ਪੂਰਨ regCurrent;               /* Register holding Current table */
+  ਪੂਰਨ i_ਕਤਾਰ;                   /* The Queue table */
+  ਪੂਰਨ iDistinct = 0;            /* To ensure unique results if UNION */
+  ਪੂਰਨ eDest = SRT_Fifo;         /* How to write to Queue */
+  SelectDest dest_ਕਤਾਰ;         /* SelectDest targeting the Queue table */
+  ਪੂਰਨ i;                        /* Loop counter */
+  ਪੂਰਨ rc;                       /* Result code */
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By;           /* The ORDER BY clause */
+  ਵਿਅੰਜਕ *p_ਹੱਦਬੰਦੀ;                 /* Saved LIMIT and OFFSET */
+  ਪੂਰਨ reg_ਹੱਦਬੰਦੀ, reg_ਵਿੱਥ;      /* Registers used by LIMIT and OFFSET */
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin ){
-    sqlite3ErrorMsg(pParse, "cannot use window functions in recursive queries");
-    return;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+  ਜੇ( p->pWin ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot use window functions in recursive queries");
+    ਵਾਪਸ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Obtain authorization to do a recursive query */
-  if( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) return;
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) ਵਾਪਸ;
 
   /* Process the LIMIT and OFFSET clauses, if they exist */
   addrBreak = sqlite3VdbeMakeLabel(pParse);
-  p->nSelectRow = 320;  /* 4 billion rows */
-  computeLimitRegisters(pParse, p, addrBreak);
-  pLimit = p->pLimit;
-  regLimit = p->iLimit;
-  regOffset = p->iOffset;
-  p->pLimit = 0;
-  p->iLimit = p->iOffset = 0;
-  pOrderBy = p->pOrderBy;
+  p->n_Select_ਪੰਕਤੀ = 320;  /* 4 billion rows */
+  compute_ਹੱਦਬੰਦੀ_Registers(pParse, p, addrBreak);
+  p_ਹੱਦਬੰਦੀ = p->p_ਹੱਦਬੰਦੀ;
+  reg_ਹੱਦਬੰਦੀ = p->i_ਹੱਦਬੰਦੀ;
+  reg_ਵਿੱਥ = p->i_ਵਿੱਥ;
+  p->p_ਹੱਦਬੰਦੀ = 0;
+  p->i_ਹੱਦਬੰਦੀ = p->i_ਵਿੱਥ = 0;
+  p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
 
   /* Locate the cursor number of the Current table */
-  for(i=0; ALWAYS(i<pSrc->nSrc); i++){
-    if( pSrc->a[i].fg.isRecursive ){
+  ਲਈ(i=0; ALWAYS(i<pSrc->nSrc); i++){
+    ਜੇ( pSrc->a[i].fg.isRecursive ){
       iCurrent = pSrc->a[i].iCursor;
-      break;
+      ਰੋਕੋ;
     }
   }
 
   /* Allocate cursors numbers for Queue and Distinct.  The cursor number for
   ** the Distinct table must be exactly one greater than Queue in order
   ** for the SRT_DistFifo and SRT_DistQueue destinations to work. */
-  iQueue = pParse->nTab++;
-  if( p->op==TK_UNION ){
-    eDest = pOrderBy ? SRT_DistQueue : SRT_DistFifo;
+  i_ਕਤਾਰ = pParse->nTab++;
+  ਜੇ( p->op==TK_UNION ){
+    eDest = p_ਕ੍ਰਮ_By ? SRT_Dist_ਕਤਾਰ : SRT_DistFifo;
     iDistinct = pParse->nTab++;
-  }else{
-    eDest = pOrderBy ? SRT_Queue : SRT_Fifo;
+  }ਨਹੀਂਤਾਂ{
+    eDest = p_ਕ੍ਰਮ_By ? SRT_ਕਤਾਰ : SRT_Fifo;
   }
-  sqlite3SelectDestInit(&destQueue, eDest, iQueue);
+  sqlite3SelectDestInit(&dest_ਕਤਾਰ, eDest, i_ਕਤਾਰ);
 
   /* Allocate cursors for Current, Queue, and Distinct. */
   regCurrent = ++pParse->nMem;
-  sqlite3VdbeAddOp3(v, OP_OpenPseudo, iCurrent, regCurrent, nCol);
-  if( pOrderBy ){
-    KeyInfo *pKeyInfo = multiSelectByMergeKeyInfo(pParse, p, 1);
-    sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iQueue, pOrderBy->nExpr+2, 0,
-                      (char*)pKeyInfo, P4_KEYINFO);
-    destQueue.pOrderBy = pOrderBy;
-  }else{
-    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iQueue, nCol);
+  sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_OpenPseudo, iCurrent, regCurrent, n_ਖਾਨਾ);
+  ਜੇ( p_ਕ੍ਰਮ_By ){
+    ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info = multi_Select_By_ਮਿਲਾਓ_ਕੁੰਜੀ_Info(pParse, p, 1);
+    sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral, i_ਕਤਾਰ, p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ+2, 0,
+                      (ਅੱਖਰ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
+    dest_ਕਤਾਰ.p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By;
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_OpenEphemeral, i_ਕਤਾਰ, n_ਖਾਨਾ);
   }
   VdbeComment((v, "Queue table"));
-  if( iDistinct ){
+  ਜੇ( iDistinct ){
     /* Generate an ephemeral table used to enforce distinctness on the
     ** output of the recursive part of the CTE.
     */
-    KeyInfo *pKeyInfo;            /* Collating sequence for the result set */
+    ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info;            /* Collating sequence for the result set */
     CollSeq **apColl;             /* For looping through pKeyInfo->aColl[] */
 
-    assert( p->pNext==0 );
-    assert( p->pEList!=0 );
-    nCol = p->pEList->nExpr;
-    pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nCol, 1);
-    if( pKeyInfo ){
-      for(i=0, apColl=pKeyInfo->aColl; i<nCol; i++, apColl++){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਅਗਲਾ==0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList!=0 );
+    n_ਖਾਨਾ = p->pEList->n_ਵਿਅੰਜਕ;
+    p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_Alloc(pParse->db, n_ਖਾਨਾ, 1);
+    ਜੇ( p_ਕੁੰਜੀ_Info ){
+      ਲਈ(i=0, apColl=p_ਕੁੰਜੀ_Info->aColl; i<n_ਖਾਨਾ; i++, apColl++){
         *apColl = multiSelectCollSeq(pParse, p, i);
-        if( 0==*apColl ){
+        ਜੇ( 0==*apColl ){
           *apColl = pParse->db->pDfltColl;
         }
       }
-      sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iDistinct, nCol, 0,
-                           (void*)pKeyInfo, P4_KEYINFO);
-    }else{
-      assert( pParse->nErr>0 );
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral, iDistinct, n_ਖਾਨਾ, 0,
+                           (ਖਾਲੀ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
+    }ਨਹੀਂਤਾਂ{
+      ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nErr>0 );
     }
   }
 
   /* Detach the ORDER BY clause from the compound SELECT */
-  p->pOrderBy = 0;
+  p->p_ਕ੍ਰਮ_By = 0;
 
   /* Figure out how many elements of the compound SELECT are part of the
   ** recursive query.  Make sure no recursive elements use aggregate
@@ -2842,42 +2842,42 @@ static void generateWithRecursiveQuery(
   ** iDistinct table.  pFirstRec is left pointing to the left-most
   ** recursive term of the CTE.
   */
-  for(pFirstRec=p; ALWAYS(pFirstRec!=0); pFirstRec=pFirstRec->pPrior){
-    if( pFirstRec->selFlags & SF_Aggregate ){
-      sqlite3ErrorMsg(pParse, "recursive aggregate queries not supported");
-      goto end_of_recursive_query;
+  ਲਈ(p_ਪਹਿਲਾ_Rec=p; ALWAYS(p_ਪਹਿਲਾ_Rec!=0); p_ਪਹਿਲਾ_Rec=p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ){
+    ਜੇ( p_ਪਹਿਲਾ_Rec->selFlags & SF_Aggregate ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "recursive aggregate queries not supported");
+      ਜਾਓ ਸਿਰਾ_ਦਾ_recursive_query;
     }
-    pFirstRec->op = TK_ALL;
-    if( (pFirstRec->pPrior->selFlags & SF_Recursive)==0 ) break;
+    p_ਪਹਿਲਾ_Rec->op = TK_ALL;
+    ਜੇ( (p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ->selFlags & SF_Recursive)==0 ) ਰੋਕੋ;
   }
 
   /* Store the results of the setup-query in Queue. */
-  pSetup = pFirstRec->pPrior;
-  pSetup->pNext = 0;
+  p_ਤਿਆਰੀ = p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ;
+  p_ਤਿਆਰੀ->p_ਅਗਲਾ = 0;
   ExplainQueryPlan((pParse, 1, "SETUP"));
-  rc = sqlite3Select(pParse, pSetup, &destQueue);
-  pSetup->pNext = p;
-  if( rc ) goto end_of_recursive_query;
+  rc = sqlite3Select(pParse, p_ਤਿਆਰੀ, &dest_ਕਤਾਰ);
+  p_ਤਿਆਰੀ->p_ਅਗਲਾ = p;
+  ਜੇ( rc ) ਜਾਓ ਸਿਰਾ_ਦਾ_recursive_query;
 
   /* Find the next row in the Queue and output that row */
-  addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iQueue, addrBreak); VdbeCoverage(v);
+  addr_ਸਿਖਰ = sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Rewind, i_ਕਤਾਰ, addrBreak); VdbeCoverage(v);
 
   /* Transfer the next row in Queue over to Current */
-  sqlite3VdbeAddOp1(v, OP_NullRow, iCurrent); /* To reset column cache */
-  if( pOrderBy ){
-    sqlite3VdbeAddOp3(v, OP_Column, iQueue, pOrderBy->nExpr+1, regCurrent);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_RowData, iQueue, regCurrent);
+  sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Null_ਪੰਕਤੀ, iCurrent); /* To reset column cache */
+  ਜੇ( p_ਕ੍ਰਮ_By ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, i_ਕਤਾਰ, p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ+1, regCurrent);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਪੰਕਤੀ_ਅੰਕੜੇ, i_ਕਤਾਰ, regCurrent);
   }
-  sqlite3VdbeAddOp1(v, OP_Delete, iQueue);
+  sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Delete, i_ਕਤਾਰ);
 
   /* Output the single row in Current */
   addrCont = sqlite3VdbeMakeLabel(pParse);
-  codeOffset(v, regOffset, addrCont);
+  ਕੋਡ_ਵਿੱਥ(v, reg_ਵਿੱਥ, addrCont);
   selectInnerLoop(pParse, p, iCurrent,
       0, 0, pDest, addrCont, addrBreak);
-  if( regLimit ){
-    sqlite3VdbeAddOp2(v, OP_DecrJumpZero, regLimit, addrBreak);
+  ਜੇ( reg_ਹੱਦਬੰਦੀ ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_DecrJumpZero, reg_ਹੱਦਬੰਦੀ, addrBreak);
     VdbeCoverage(v);
   }
   sqlite3VdbeResolveLabel(v, addrCont);
@@ -2885,26 +2885,26 @@ static void generateWithRecursiveQuery(
   /* Execute the recursive SELECT taking the single row in Current as
   ** the value for the recursive-table. Store the results in the Queue.
   */
-  pFirstRec->pPrior = 0;
+  p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ = 0;
   ExplainQueryPlan((pParse, 1, "RECURSIVE STEP"));
-  sqlite3Select(pParse, p, &destQueue);
-  assert( pFirstRec->pPrior==0 );
-  pFirstRec->pPrior = pSetup;
+  sqlite3Select(pParse, p, &dest_ਕਤਾਰ);
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ==0 );
+  p_ਪਹਿਲਾ_Rec->p_ਪੂਰਵ = p_ਤਿਆਰੀ;
 
   /* Keep running the loop until the Queue is empty */
-  sqlite3VdbeGoto(v, addrTop);
+  sqlite3VdbeGoto(v, addr_ਸਿਖਰ);
   sqlite3VdbeResolveLabel(v, addrBreak);
 
-end_of_recursive_query:
-  sqlite3ExprListDelete(pParse->db, p->pOrderBy);
-  p->pOrderBy = pOrderBy;
-  p->pLimit = pLimit;
-  return;
+ਸਿਰਾ_ਦਾ_recursive_query:
+  sqlite3_ਵਿਅੰਜਕ_List_Delete(pParse->db, p->p_ਕ੍ਰਮ_By);
+  p->p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By;
+  p->p_ਹੱਦਬੰਦੀ = p_ਹੱਦਬੰਦੀ;
+  ਵਾਪਸ;
 }
-#endif /* SQLITE_OMIT_CTE */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_CTE */
 
 /* Forward references */
-static int multiSelectByMerge(
+ਸਥਿਰ ਪੂਰਨ multi_Select_By_ਮਿਲਾਓ(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
@@ -2926,36 +2926,36 @@ static int multiSelectByMerge(
 ** The sqlite3CodeSubselect will have added the LIMIT 1 clause in tht case.
 ** Since the limit is exactly 1, we only need to evaluate the left-most VALUES.
 */
-static int multiSelectValues(
+ਸਥਿਰ ਪੂਰਨ multi_Select_ਮੁੱਲਾਂ(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int nRow = 1;
-  int rc = 0;
-  int bShowAll = p->pLimit==0;
-  assert( p->selFlags & SF_MultiValue );
-  do{
-    assert( p->selFlags & SF_Values );
-    assert( p->op==TK_ALL || (p->op==TK_SELECT && p->pPrior==0) );
-    assert( p->pNext==0 || p->pEList->nExpr==p->pNext->pEList->nExpr );
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ) return -1;
-#endif
-    if( p->pPrior==0 ) break;
-    assert( p->pPrior->pNext==p );
-    p = p->pPrior;
-    nRow += bShowAll;
-  }while(1);
-  ExplainQueryPlan((pParse, 0, "SCAN %d CONSTANT ROW%s", nRow,
-                    nRow==1 ? "" : "S"));
-  while( p ){
+  ਪੂਰਨ n_ਪੰਕਤੀ = 1;
+  ਪੂਰਨ rc = 0;
+  ਪੂਰਨ bShowAll = p->p_ਹੱਦਬੰਦੀ==0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->selFlags & SF_Multi_ਮੁੱਲ );
+  ਕਰੋ{
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->selFlags & SF_ਮੁੱਲਾਂ );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->op==TK_ALL || (p->op==TK_SELECT && p->p_ਪੂਰਵ==0) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਅਗਲਾ==0 || p->pEList->n_ਵਿਅੰਜਕ==p->p_ਅਗਲਾ->pEList->n_ਵਿਅੰਜਕ );
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( p->pWin ) ਵਾਪਸ -1;
+#ਜੇ_ਅੰਤ
+    ਜੇ( p->p_ਪੂਰਵ==0 ) ਰੋਕੋ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਪੂਰਵ->p_ਅਗਲਾ==p );
+    p = p->p_ਪੂਰਵ;
+    n_ਪੰਕਤੀ += bShowAll;
+  }ਜਦੋਂ(1);
+  ExplainQueryPlan((pParse, 0, "SCAN %d CONSTANT ROW%s", n_ਪੰਕਤੀ,
+                    n_ਪੰਕਤੀ==1 ? "" : "S"));
+  ਜਦੋਂ( p ){
     selectInnerLoop(pParse, p, -1, 0, 0, pDest, 1, 1);
-    if( !bShowAll ) break;
-    p->nSelectRow = nRow;
-    p = p->pNext;
+    ਜੇ( !bShowAll ) ਰੋਕੋ;
+    p->n_Select_ਪੰਕਤੀ = n_ਪੰਕਤੀ;
+    p = p->p_ਅਗਲਾ;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -2963,9 +2963,9 @@ static int multiSelectValues(
 ** part of a recursive CTE still has its anchor terms attached.  If the
 ** anchor terms have already been removed, then return false.
 */
-static int hasAnchor(Select *p){
-  while( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->pPrior; }
-  return p!=0;
+ਸਥਿਰ ਪੂਰਨ hasAnchor(Select *p){
+  ਜਦੋਂ( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->p_ਪੂਰਵ; }
+  ਵਾਪਸ p!=0;
 }
 
 /*
@@ -2977,17 +2977,17 @@ static int hasAnchor(Select *p){
 ** false negatives for testing purposes, disable the SQLITE_UnionLimit
 ** optimization.
 */
-static int unionWithLimitOne(sqlite3 *db, Select *p){
-  int v;
-  if( p->op!=TK_UNION ) return 0;
-  if( p->pLimit==0 ) return 0;
-  if( p->pLimit->pRight ) return 0;  /* No OFFSET */
+ਸਥਿਰ ਪੂਰਨ union_With_ਹੱਦਬੰਦੀ_One(sqlite3 *db, Select *p){
+  ਪੂਰਨ v;
+  ਜੇ( p->op!=TK_UNION ) ਵਾਪਸ 0;
+  ਜੇ( p->p_ਹੱਦਬੰਦੀ==0 ) ਵਾਪਸ 0;
+  ਜੇ( p->p_ਹੱਦਬੰਦੀ->p_ਸੱਜਾ ) ਵਾਪਸ 0;  /* No OFFSET */
   v = 0;
-  assert( p->pLimit->pLeft!=0 );
-  if( sqlite3ExprIsInteger(p->pLimit->pLeft, &v, 0, 0)==0 ) return 0;
-  if( v!=1 ) return 0;
-  if( OptimizationDisabled(db, SQLITE_UnionLimit) ) return 0;
-  return 1;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ!=0 );
+  ਜੇ( sqlite3_ਵਿਅੰਜਕ_Is_Integer(p->p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ, &v, 0, 0)==0 ) ਵਾਪਸ 0;
+  ਜੇ( v!=1 ) ਵਾਪਸ 0;
+  ਜੇ( OptimizationDisabled(db, SQLITE_Union_ਹੱਦਬੰਦੀ) ) ਵਾਪਸ 0;
+  ਵਾਪਸ 1;
 }
 
 /*
@@ -3021,13 +3021,13 @@ static int unionWithLimitOne(sqlite3 *db, Select *p){
 ** Notice that because of the way SQLite parses compound SELECTs, the
 ** individual selects always group from left to right.
 */
-static int multiSelect(
+ਸਥਿਰ ਪੂਰਨ multiSelect(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int rc = SQLITE_OK;   /* Success code from a subroutine */
-  Select *pPrior;       /* Another SELECT immediately to our left */
+  ਪੂਰਨ rc = SQLITE_OK;   /* Success code from a subroutine */
+  Select *p_ਪੂਰਵ;       /* Another SELECT immediately to our left */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest dest;      /* Alternative data destination */
   Select *pDelete = 0;  /* Chain of simple selects to delete */
@@ -3036,138 +3036,138 @@ static int multiSelect(
   /* Make sure there is no ORDER BY or LIMIT clause on prior SELECTs.  Only
   ** the last (right-most) SELECT in the series may have an ORDER BY or LIMIT.
   */
-  assert( p && p->pPrior );  /* Calling function guarantees this much */
-  assert( (p->selFlags & SF_Recursive)==0 || p->op==TK_ALL || p->op==TK_UNION );
-  assert( p->selFlags & SF_Compound );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p && p->p_ਪੂਰਵ );  /* Calling function guarantees this much */
+  ਪ੍ਰਤਿਜ੍ਞਾ( (p->selFlags & SF_Recursive)==0 || p->op==TK_ALL || p->op==TK_UNION );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->selFlags & SF_Compound );
   db = pParse->db;
-  pPrior = p->pPrior;
+  p_ਪੂਰਵ = p->p_ਪੂਰਵ;
   dest = *pDest;
-  assert( pPrior->pOrderBy==0 );
-  assert( pPrior->pLimit==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪੂਰਵ->p_ਕ੍ਰਮ_By==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪੂਰਵ->p_ਹੱਦਬੰਦੀ==0 );
 
   v = sqlite3GetVdbe(pParse);
-  assert( v!=0 );  /* The VDBE already created by calling function */
+  ਪ੍ਰਤਿਜ੍ਞਾ( v!=0 );  /* The VDBE already created by calling function */
 
   /* Create the destination temporary table if necessary
   */
-  if( dest.eDest==SRT_EphemTab ){
-    assert( p->pEList );
-    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, dest.iSDParm, p->pEList->nExpr);
-    dest.eDest = SRT_Table;
+  ਜੇ( dest.eDest==SRT_EphemTab ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList );
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_OpenEphemeral, dest.iSDParm, p->pEList->n_ਵਿਅੰਜਕ);
+    dest.eDest = SRT_ਸਾਰਣੀ;
   }
 
   /* Special handling for a compound-select that originates as a VALUES clause.
   */
-  if( p->selFlags & SF_MultiValue ){
-    rc = multiSelectValues(pParse, p, &dest);
-    if( rc>=0 ) goto multi_select_end;
+  ਜੇ( p->selFlags & SF_Multi_ਮੁੱਲ ){
+    rc = multi_Select_ਮੁੱਲਾਂ(pParse, p, &dest);
+    ਜੇ( rc>=0 ) ਜਾਓ multi_select_ਸਿਰਾ;
     rc = SQLITE_OK;
   }
 
   /* Make sure all SELECTs in the statement have the same number of elements
   ** in their result sets.
   */
-  assert( p->pEList && pPrior->pEList );
-  assert( p->pEList->nExpr==pPrior->pEList->nExpr );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList && p_ਪੂਰਵ->pEList );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList->n_ਵਿਅੰਜਕ==p_ਪੂਰਵ->pEList->n_ਵਿਅੰਜਕ );
 
-#ifndef SQLITE_OMIT_CTE
-  if( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
+  ਜੇ( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
     generateWithRecursiveQuery(pParse, p, &dest);
-  }else
-#endif
-  if( p->pOrderBy ){
+  }ਨਹੀਂਤਾਂ
+#ਜੇ_ਅੰਤ
+  ਜੇ( p->p_ਕ੍ਰਮ_By ){
     /* If the compound has an ORDER BY clause, then always use the merge
     ** algorithm. */
-    return multiSelectByMerge(pParse, p, pDest);
-  }else if( p->op!=TK_ALL && !unionWithLimitOne(db,p) ){
+    ਵਾਪਸ multi_Select_By_ਮਿਲਾਓ(pParse, p, pDest);
+  }ਨਹੀਂਤਾਂ ਜੇ( p->op!=TK_ALL && !union_With_ਹੱਦਬੰਦੀ_One(db,p) ){
     /* If the compound is EXCEPT, INTERSECT, or UNION (anything other than
     ** UNION ALL) then also always use the merge algorithm.  However, the
     ** multiSelectByMerge() routine requires that the compound have an
     ** ORDER BY clause, and it doesn't right now.  So invent one first. */
-    Expr *pOne = sqlite3ExprInt32(db, 1);
-    p->pOrderBy = sqlite3ExprListAppend(pParse, 0, pOne);
-    if( pParse->nErr ) goto multi_select_end;
-    assert( p->pOrderBy!=0 );
-    p->pOrderBy->a[0].u.x.iOrderByCol = 1;
-    return multiSelectByMerge(pParse, p, pDest);
-  }else{
+    ਵਿਅੰਜਕ *pOne = sqlite3_ਵਿਅੰਜਕ_Int32(db, 1);
+    p->p_ਕ੍ਰਮ_By = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, 0, pOne);
+    ਜੇ( pParse->nErr ) ਜਾਓ multi_select_ਸਿਰਾ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By!=0 );
+    p->p_ਕ੍ਰਮ_By->a[0].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ = 1;
+    ਵਾਪਸ multi_Select_By_ਮਿਲਾਓ(pParse, p, pDest);
+  }ਨਹੀਂਤਾਂ{
     /* For a UNION ALL compound without ORDER BY, or for a UNION with a 
     ** LIMIT of exactly 1 and no OFFSET and no ORDER BY, simply run the left
     ** query, then run the right query */
-    int addr = 0;
-    int nLimit = 0;  /* Initialize to suppress harmless compiler warning */
+    ਪੂਰਨ addr = 0;
+    ਪੂਰਨ n_ਹੱਦਬੰਦੀ = 0;  /* Initialize to suppress harmless compiler warning */
 
-#ifndef SQLITE_OMIT_EXPLAIN
-    if( pPrior->pPrior==0 ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_EXPLAIN
+    ਜੇ( p_ਪੂਰਵ->p_ਪੂਰਵ==0 ){
       ExplainQueryPlan((pParse, 1, "COMPOUND QUERY"));
       ExplainQueryPlan((pParse, 1, "LEFT-MOST SUBQUERY"));
     }
-#endif
-    assert( !pPrior->pLimit );
-    pPrior->iLimit = p->iLimit;
-    pPrior->iOffset = p->iOffset;
-    pPrior->pLimit = sqlite3ExprDup(db, p->pLimit, 0);
+#ਜੇ_ਅੰਤ
+    ਪ੍ਰਤਿਜ੍ਞਾ( !p_ਪੂਰਵ->p_ਹੱਦਬੰਦੀ );
+    p_ਪੂਰਵ->i_ਹੱਦਬੰਦੀ = p->i_ਹੱਦਬੰਦੀ;
+    p_ਪੂਰਵ->i_ਵਿੱਥ = p->i_ਵਿੱਥ;
+    p_ਪੂਰਵ->p_ਹੱਦਬੰਦੀ = sqlite3_ਵਿਅੰਜਕ_Dup(db, p->p_ਹੱਦਬੰਦੀ, 0);
     TREETRACE(0x200, pParse, p, ("multiSelect UNION ALL left...\n"));
-    rc = sqlite3Select(pParse, pPrior, &dest);
-    sqlite3ExprDelete(db, pPrior->pLimit);
-    pPrior->pLimit = 0;
-    if( rc ){
-      goto multi_select_end;
+    rc = sqlite3Select(pParse, p_ਪੂਰਵ, &dest);
+    sqlite3_ਵਿਅੰਜਕ_Delete(db, p_ਪੂਰਵ->p_ਹੱਦਬੰਦੀ);
+    p_ਪੂਰਵ->p_ਹੱਦਬੰਦੀ = 0;
+    ਜੇ( rc ){
+      ਜਾਓ multi_select_ਸਿਰਾ;
     }
-    p->pPrior = 0;
-    p->iLimit = pPrior->iLimit;
-    p->iOffset = pPrior->iOffset;
-    if( p->iLimit ){
-      addr = sqlite3VdbeAddOp1(v, OP_IfNot, p->iLimit); VdbeCoverage(v);
+    p->p_ਪੂਰਵ = 0;
+    p->i_ਹੱਦਬੰਦੀ = p_ਪੂਰਵ->i_ਹੱਦਬੰਦੀ;
+    p->i_ਵਿੱਥ = p_ਪੂਰਵ->i_ਵਿੱਥ;
+    ਜੇ( p->i_ਹੱਦਬੰਦੀ ){
+      addr = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_IfNot, p->i_ਹੱਦਬੰਦੀ); VdbeCoverage(v);
       VdbeComment((v, "Jump ahead if LIMIT reached"));
-      if( p->iOffset ){
-        sqlite3VdbeAddOp3(v, OP_OffsetLimit,
-                          p->iLimit, p->iOffset+1, p->iOffset);
+      ਜੇ( p->i_ਵਿੱਥ ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਵਿੱਥ_ਹੱਦਬੰਦੀ,
+                          p->i_ਹੱਦਬੰਦੀ, p->i_ਵਿੱਥ+1, p->i_ਵਿੱਥ);
       }
     }
     ExplainQueryPlan((pParse, 1, "UNION ALL"));
     TREETRACE(0x200, pParse, p, ("multiSelect UNION ALL right...\n"));
     rc = sqlite3Select(pParse, p, &dest);
     testcase( rc!=SQLITE_OK );
-    pDelete = p->pPrior;
-    p->pPrior = pPrior;
-    p->nSelectRow = sqlite3LogEstAdd(p->nSelectRow, pPrior->nSelectRow);
-    if( p->pLimit
-     && sqlite3ExprIsInteger(p->pLimit->pLeft, &nLimit, pParse, 0)
-     && nLimit>0 && p->nSelectRow > sqlite3LogEst((u64)nLimit)
+    pDelete = p->p_ਪੂਰਵ;
+    p->p_ਪੂਰਵ = p_ਪੂਰਵ;
+    p->n_Select_ਪੰਕਤੀ = sqlite3_Log_Est_ਜੋੜੋ(p->n_Select_ਪੰਕਤੀ, p_ਪੂਰਵ->n_Select_ਪੰਕਤੀ);
+    ਜੇ( p->p_ਹੱਦਬੰਦੀ
+     && sqlite3_ਵਿਅੰਜਕ_Is_Integer(p->p_ਹੱਦਬੰਦੀ->p_ਖੱਬਾ, &n_ਹੱਦਬੰਦੀ, pParse, 0)
+     && n_ਹੱਦਬੰਦੀ>0 && p->n_Select_ਪੰਕਤੀ > sqlite3LogEst((u64)n_ਹੱਦਬੰਦੀ)
     ){
-      p->nSelectRow = sqlite3LogEst((u64)nLimit);
+      p->n_Select_ਪੰਕਤੀ = sqlite3LogEst((u64)n_ਹੱਦਬੰਦੀ);
     }
-    if( addr ){
-      sqlite3VdbeJumpHere(v, addr);
+    ਜੇ( addr ){
+      sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr);
     }
-#ifndef SQLITE_OMIT_EXPLAIN
-    if( p->pNext==0 ){
-      ExplainQueryPlanPop(pParse);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_EXPLAIN
+    ਜੇ( p->p_ਅਗਲਾ==0 ){
+      Explain_Query_Plan_ਕੱਢੋ(pParse);
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
 
-multi_select_end:
+multi_select_ਸਿਰਾ:
   pDest->iSdst = dest.iSdst;
   pDest->nSdst = dest.nSdst;
   pDest->iSDParm2 = dest.iSDParm2;
-  if( pDelete ){
-    sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pDelete);
+  ਜੇ( pDelete ){
+    sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3SelectDeleteGeneric, pDelete);
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
-#endif /* SQLITE_OMIT_COMPOUND_SELECT */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_COMPOUND_SELECT */
 
 /*
 ** Error message for when two or more terms of a compound select have different
 ** size result sets.
 */
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
-  if( p->selFlags & SF_Values ){
-    sqlite3ErrorMsg(pParse, "all VALUES must have the same number of terms");
-  }else{
-    sqlite3ErrorMsg(pParse, "SELECTs to the left and right of %s"
+ਖਾਲੀ sqlite3_Select_Wrong_ਅੰਕ_Terms_Error(Parse *pParse, Select *p){
+  ਜੇ( p->selFlags & SF_ਮੁੱਲਾਂ ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "all VALUES must have the same number of terms");
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "SELECTs to the left and right of %s"
       " do not have the same number of result columns",
       sqlite3SelectOpName(p->op));
   }
@@ -3193,70 +3193,70 @@ void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
 ** If the LIMIT found in p->iLimit is reached, jump immediately to
 ** iBreak.
 */
-static int generateOutputSubroutine(
+ਸਥਿਰ ਪੂਰਨ generateOutputSubroutine(
   Parse *pParse,          /* Parsing context */
   Select *p,              /* The SELECT statement */
-  SelectDest *pIn,        /* Coroutine supplying data */
+  SelectDest *p_ਵਿੱਚ,        /* Coroutine supplying data */
   SelectDest *pDest,      /* Where to send the data */
-  int regReturn,          /* The return address register */
-  int regPrev,            /* Previous result register.  No uniqueness if 0 */
-  KeyInfo *pKeyInfo,      /* For comparing with previous entry */
-  int iBreak              /* Jump here if we hit the LIMIT */
+  ਪੂਰਨ regReturn,          /* The return address register */
+  ਪੂਰਨ regPrev,            /* Previous result register.  No uniqueness if 0 */
+  ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info,      /* For comparing with previous entry */
+  ਪੂਰਨ iBreak              /* Jump here if we hit the LIMIT */
 ){
   Vdbe *v = pParse->pVdbe;
-  int iContinue;
-  int addr;
+  ਪੂਰਨ iContinue;
+  ਪੂਰਨ addr;
 
-  assert( pIn->eDest==SRT_Coroutine );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿੱਚ->eDest==SRT_Coroutine );
 
   addr = sqlite3VdbeCurrentAddr(v);
   iContinue = sqlite3VdbeMakeLabel(pParse);
 
   /* Suppress duplicates for UNION, EXCEPT, and INTERSECT
   */
-  if( regPrev ){
-    int addr1, addr2;
-    addr1 = sqlite3VdbeAddOp1(v, OP_IfNot, regPrev); VdbeCoverage(v);
-    addr2 = sqlite3VdbeAddOp4(v, OP_Compare, pIn->iSdst, regPrev+1, pIn->nSdst,
-                              (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
-    sqlite3VdbeAddOp3(v, OP_Jump, addr2+2, iContinue, addr2+2); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr1);
-    sqlite3VdbeAddOp3(v, OP_Copy, pIn->iSdst, regPrev+1, pIn->nSdst-1);
-    sqlite3VdbeAddOp2(v, OP_Integer, 1, regPrev);
+  ਜੇ( regPrev ){
+    ਪੂਰਨ addr1, addr2;
+    addr1 = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_IfNot, regPrev); VdbeCoverage(v);
+    addr2 = sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Compare, p_ਵਿੱਚ->iSdst, regPrev+1, p_ਵਿੱਚ->nSdst,
+                              (ਅੱਖਰ*)sqlite3_ਕੁੰਜੀ_Info_Ref(p_ਕੁੰਜੀ_Info), P4_KEYINFO);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Jump, addr2+2, iContinue, addr2+2); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr1);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Copy, p_ਵਿੱਚ->iSdst, regPrev+1, p_ਵਿੱਚ->nSdst-1);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, regPrev);
   }
-  if( pParse->db->mallocFailed ) return 0;
+  ਜੇ( pParse->db->mallocFailed ) ਵਾਪਸ 0;
 
   /* Suppress the first OFFSET entries if there is an OFFSET clause
   */
-  codeOffset(v, p->iOffset, iContinue);
+  ਕੋਡ_ਵਿੱਥ(v, p->i_ਵਿੱਥ, iContinue);
 
-  switch( pDest->eDest ){
+  ਚੋਣ( pDest->eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempReg(pParse);
-      int r2 = sqlite3GetTempReg(pParse);
-      int iParm = pDest->iSDParm;
-      testcase( pDest->eDest==SRT_Table );
+    ਹਾਲਤ SRT_Fifo:
+    ਹਾਲਤ SRT_DistFifo:
+    ਹਾਲਤ SRT_ਸਾਰਣੀ:
+    ਹਾਲਤ SRT_EphemTab: {
+      ਪੂਰਨ r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      ਪੂਰਨ r2 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      ਪੂਰਨ iParm = pDest->iSDParm;
+      testcase( pDest->eDest==SRT_ਸਾਰਣੀ );
       testcase( pDest->eDest==SRT_EphemTab );
       testcase( pDest->eDest==SRT_Fifo );
       testcase( pDest->eDest==SRT_DistFifo );
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r1);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst, r1);
+#ਜੇ !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( pDest->eDest==SRT_Table && pDest->iSDParm2 ){
+      ਜੇ( pDest->eDest==SRT_ਸਾਰਣੀ && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
-#endif
-#ifndef SQLITE_OMIT_CTE
-      if( pDest->eDest==SRT_DistFifo ){
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
+      ਜੇ( pDest->eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index that is used to enforce uniqueness on the
         ** total result.  At this point, we are processing the setup portion
@@ -3264,45 +3264,45 @@ static int generateOutputSubroutine(
         ** guaranteed to be unique anyhow.  But we still need to populate the
         ** (iParm+1) cursor for use by the subsequent recursive phase.
         */
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm+1, r1,
-                             pIn->iSdst, pIn->nSdst);
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm+1, r1,
+                             p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst);
       }
-#endif
-      sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, r2);
-      sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, r2);
+#ਜੇ_ਅੰਤ
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_NewRowid, iParm, r2);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iParm, r1, r2);
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
-      sqlite3ReleaseTempReg(pParse, r2);
-      sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r2);
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
+      ਰੋਕੋ;
     }
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, pDest->iSDParm);
+    ਹਾਲਤ SRT_Exists: {
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, pDest->iSDParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      ਰੋਕੋ;
     }
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
     /* If we are creating a set for an "expr IN (SELECT ...)".
     */
-    case SRT_Set: {
-      int r1;
-      testcase( pIn->nSdst>1 );
-      r1 = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp4(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst,
-          r1, pDest->zAffSdst, pIn->nSdst);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pDest->iSDParm, r1,
-                           pIn->iSdst, pIn->nSdst);
-      if( pDest->iSDParm2>0 ){
-        assert( sqlite3CursorBloomable(pParse, pDest->iSDParm, pIn->nSdst) );
-        sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
-                             pIn->iSdst, pIn->nSdst);
+    ਹਾਲਤ SRT_ਸੈੱਟ: {
+      ਪੂਰਨ r1;
+      testcase( p_ਵਿੱਚ->nSdst>1 );
+      r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Make_ਰਿਕਾਰਡ, p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst,
+          r1, pDest->zAffSdst, p_ਵਿੱਚ->nSdst);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, pDest->iSDParm, r1,
+                           p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst);
+      ਜੇ( pDest->iSDParm2>0 ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3CursorBloomable(pParse, pDest->iSDParm, p_ਵਿੱਚ->nSdst) );
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Filter_ਜੋੜੋ, pDest->iSDParm2, 0,
+                             p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst);
         ExplainQueryPlan((pParse, 0, "CREATE BLOOM FILTER"));
       }
-      sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
+      ਰੋਕੋ;
     }
 
     /* If this is a scalar select that is part of an expression, then
@@ -3310,68 +3310,68 @@ static int generateOutputSubroutine(
     ** of the scan loop.  Note that the select might return multiple columns
     ** if it is the RHS of a row-value IN operator.
     */
-    case SRT_Mem: {
-      testcase( pIn->nSdst>1 );
-      sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSDParm, pIn->nSdst);
+    ਹਾਲਤ SRT_Mem: {
+      testcase( p_ਵਿੱਚ->nSdst>1 );
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Move(pParse, p_ਵਿੱਚ->iSdst, pDest->iSDParm, p_ਵਿੱਚ->nSdst);
       /* The LIMIT clause will jump out of the loop for us */
-      break;
+      ਰੋਕੋ;
     }
-#endif /* #ifndef SQLITE_OMIT_SUBQUERY */
+#ਜੇ_ਅੰਤ /* #ifndef SQLITE_OMIT_SUBQUERY */
 
     /* The results are stored in a sequence of registers
     ** starting at pDest->iSdst.  Then the co-routine yields.
     */
-    case SRT_Coroutine: {
-      if( pDest->iSdst==0 ){
-        pDest->iSdst = sqlite3GetTempRange(pParse, pIn->nSdst);
-        pDest->nSdst = pIn->nSdst;
+    ਹਾਲਤ SRT_Coroutine: {
+      ਜੇ( pDest->iSdst==0 ){
+        pDest->iSdst = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, p_ਵਿੱਚ->nSdst);
+        pDest->nSdst = p_ਵਿੱਚ->nSdst;
       }
-      sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSdst, pIn->nSdst);
-      sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      break;
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Move(pParse, p_ਵਿੱਚ->iSdst, pDest->iSdst, p_ਵਿੱਚ->nSdst);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Yield, pDest->iSDParm);
+      ਰੋਕੋ;
     }
 
-#ifndef SQLITE_OMIT_CTE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
     /* Write the results into a priority queue that is order according to
     ** pDest->pOrderBy (in pSO).  pDest->iSDParm (in iParm) is the cursor for an
     ** index with pSO->nExpr+2 columns.  Build a key using pSO for the first
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3, ii;
-      ExprList *pSO;
-      int iParm = pDest->iSDParm;
-      pSO = pDest->pOrderBy;
-      assert( pSO );
-      nKey = pSO->nExpr;
-      r1 = sqlite3GetTempReg(pParse);
-      r2 = sqlite3GetTempRange(pParse, nKey+2);
-      r3 = r2+nKey+1;
+    ਹਾਲਤ SRT_Dist_ਕਤਾਰ:
+    ਹਾਲਤ SRT_ਕਤਾਰ: {
+      ਪੂਰਨ n_ਕੁੰਜੀ;
+      ਪੂਰਨ r1, r2, r3, ii;
+      ਵਿਅੰਜਕ_List *pSO;
+      ਪੂਰਨ iParm = pDest->iSDParm;
+      pSO = pDest->p_ਕ੍ਰਮ_By;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSO );
+      n_ਕੁੰਜੀ = pSO->n_ਵਿਅੰਜਕ;
+      r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+      r2 = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_ਕੁੰਜੀ+2);
+      r3 = r2+n_ਕੁੰਜੀ+1;
 
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r3);
-      if( pDest->eDest==SRT_DistQueue ){
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst, r3);
+      ਜੇ( pDest->eDest==SRT_Dist_ਕਤਾਰ ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Idx_ਪਾਓ, iParm+1, r3);
       }
-      for(ii=0; ii<nKey; ii++){
-        sqlite3VdbeAddOp2(v, OP_SCopy,
-                          pIn->iSdst + pSO->a[ii].u.x.iOrderByCol - 1,
+      ਲਈ(ii=0; ii<n_ਕੁੰਜੀ; ii++){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_SCopy,
+                          p_ਵਿੱਚ->iSdst + pSO->a[ii].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ - 1,
                           r2+ii);
       }
-      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+nKey);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, nKey+2, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
-      sqlite3ReleaseTempReg(pParse, r1);
-      sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sequence, iParm, r2+n_ਕੁੰਜੀ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, r2, n_ਕੁੰਜੀ+2, r1);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iParm, r1, r2, n_ਕੁੰਜੀ+2);
+      sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, r2, n_ਕੁੰਜੀ+2);
+      ਰੋਕੋ;
     }
-#endif /* SQLITE_OMIT_CTE */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_CTE */
 
     /* Ignore the output */
-    case SRT_Discard: {
-      break;
+    ਹਾਲਤ SRT_Discard: {
+      ਰੋਕੋ;
     }
 
     /* If none of the above, then the result destination must be
@@ -3381,25 +3381,25 @@ static int generateOutputSubroutine(
     ** Then the OP_ResultRow opcode is used to cause sqlite3_step() to
     ** return the next row of result.
     */
-    default: {
-      assert( pDest->eDest==SRT_Output );
-      sqlite3VdbeAddOp2(v, OP_ResultRow, pIn->iSdst, pIn->nSdst);
-      break;
+    ਮੂਲ: {
+      ਪ੍ਰਤਿਜ੍ਞਾ( pDest->eDest==SRT_Output );
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਨਤੀਜਾ_ਪੰਕਤੀ, p_ਵਿੱਚ->iSdst, p_ਵਿੱਚ->nSdst);
+      ਰੋਕੋ;
     }
   }
 
   /* Jump to the end of the loop if the LIMIT is reached.
   */
-  if( p->iLimit ){
-    sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
+  ਜੇ( p->i_ਹੱਦਬੰਦੀ ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_DecrJumpZero, p->i_ਹੱਦਬੰਦੀ, iBreak); VdbeCoverage(v);
   }
 
   /* Generate the subroutine return
   */
   sqlite3VdbeResolveLabel(v, iContinue);
-  sqlite3VdbeAddOp1(v, OP_Return, regReturn);
+  sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, regReturn);
 
-  return addr;
+  ਵਾਪਸ addr;
 }
 
 /*
@@ -3486,65 +3486,65 @@ static int generateOutputSubroutine(
 ** until all data is exhausted then jump to the "end" label.  AltB, AeqB,
 ** and AgtB jump to either Cmpr or to one of EofA or EofB.
 */
-#ifndef SQLITE_OMIT_COMPOUND_SELECT
-static int multiSelectByMerge(
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_COMPOUND_SELECT
+ਸਥਿਰ ਪੂਰਨ multi_Select_By_ਮਿਲਾਓ(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int i, j;             /* Loop counters */
-  Select *pPrior;       /* Another SELECT immediately to our left */
-  Select *pSplit;       /* Left-most SELECT in the right-hand group */
-  int nSelect;          /* Number of SELECT statements in the compound */
+  ਪੂਰਨ i, j;             /* Loop counters */
+  Select *p_ਪੂਰਵ;       /* Another SELECT immediately to our left */
+  Select *p_ਵੰਡੋ;       /* Left-most SELECT in the right-hand group */
+  ਪੂਰਨ nSelect;          /* Number of SELECT statements in the compound */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest destA;     /* Destination for coroutine A */
   SelectDest destB;     /* Destination for coroutine B */
-  int regAddrA;         /* Address register for select-A coroutine */
-  int regAddrB;         /* Address register for select-B coroutine */
-  int addrSelectA;      /* Address of the select-A coroutine */
-  int addrSelectB;      /* Address of the select-B coroutine */
-  int regOutA;          /* Address register for the output-A subroutine */
-  int regOutB;          /* Address register for the output-B subroutine */
-  int addrOutA;         /* Address of the output-A subroutine */
-  int addrOutB = 0;     /* Address of the output-B subroutine */
-  int addrEofA;         /* Address of the select-A-exhausted subroutine */
-  int addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
-  int addrEofB;         /* Address of the select-B-exhausted subroutine */
-  int addrAltB;         /* Address of the A<B subroutine */
-  int addrAeqB;         /* Address of the A==B subroutine */
-  int addrAgtB;         /* Address of the A>B subroutine */
-  int regLimitA;        /* Limit register for select-A */
-  int regLimitB;        /* Limit register for select-A */
-  int regPrev;          /* A range of registers to hold previous output */
-  int savedLimit;       /* Saved value of p->iLimit */
-  int savedOffset;      /* Saved value of p->iOffset */
-  int labelCmpr;        /* Label for the start of the merge algorithm */
-  int labelEnd;         /* Label for the end of the overall SELECT stmt */
-  int addr1;            /* Jump instructions that get retargeted */
-  int op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
-  KeyInfo *pKeyDup = 0; /* Comparison information for duplicate removal */
-  KeyInfo *pKeyMerge;   /* Comparison information for merging rows */
+  ਪੂਰਨ regAddrA;         /* Address register for select-A coroutine */
+  ਪੂਰਨ regAddrB;         /* Address register for select-B coroutine */
+  ਪੂਰਨ addrSelectA;      /* Address of the select-A coroutine */
+  ਪੂਰਨ addrSelectB;      /* Address of the select-B coroutine */
+  ਪੂਰਨ reg_ਬਾਹਰਲਾ_A;          /* Address register for the output-A subroutine */
+  ਪੂਰਨ reg_ਬਾਹਰਲਾ_B;          /* Address register for the output-B subroutine */
+  ਪੂਰਨ addr_ਬਾਹਰਲਾ_A;         /* Address of the output-A subroutine */
+  ਪੂਰਨ addr_ਬਾਹਰਲਾ_B = 0;     /* Address of the output-B subroutine */
+  ਪੂਰਨ addrEofA;         /* Address of the select-A-exhausted subroutine */
+  ਪੂਰਨ addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
+  ਪੂਰਨ addrEofB;         /* Address of the select-B-exhausted subroutine */
+  ਪੂਰਨ addrAltB;         /* Address of the A<B subroutine */
+  ਪੂਰਨ addrAeqB;         /* Address of the A==B subroutine */
+  ਪੂਰਨ addrAgtB;         /* Address of the A>B subroutine */
+  ਪੂਰਨ reg_ਹੱਦਬੰਦੀ_A;        /* Limit register for select-A */
+  ਪੂਰਨ reg_ਹੱਦਬੰਦੀ_B;        /* Limit register for select-A */
+  ਪੂਰਨ regPrev;          /* A range of registers to hold previous output */
+  ਪੂਰਨ saved_ਹੱਦਬੰਦੀ;       /* Saved value of p->iLimit */
+  ਪੂਰਨ saved_ਵਿੱਥ;      /* Saved value of p->iOffset */
+  ਪੂਰਨ labelCmpr;        /* Label for the start of the merge algorithm */
+  ਪੂਰਨ label_ਸਿਰਾ;         /* Label for the end of the overall SELECT stmt */
+  ਪੂਰਨ addr1;            /* Jump instructions that get retargeted */
+  ਪੂਰਨ op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
+  ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Dup = 0; /* Comparison information for duplicate removal */
+  ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_ਮਿਲਾਓ;   /* Comparison information for merging rows */
   sqlite3 *db;          /* Database connection */
-  ExprList *pOrderBy;   /* The ORDER BY clause */
-  int nOrderBy;         /* Number of terms in the ORDER BY clause */
-  u32 *aPermute;        /* Mapping from ORDER BY terms to result set columns */
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By;   /* The ORDER BY clause */
+  ਪੂਰਨ n_ਕ੍ਰਮ_By;         /* Number of terms in the ORDER BY clause */
+  u32 *a_ਕ੍ਰਮ_ਬਦਲੋ;        /* Mapping from ORDER BY terms to result set columns */
 
-  assert( p->pOrderBy!=0 );
-  assert( pKeyDup==0 ); /* "Managed" code needs this.  Ticket #3382. */
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕੁੰਜੀ_Dup==0 ); /* "Managed" code needs this.  Ticket #3382. */
   db = pParse->db;
   v = pParse->pVdbe;
-  assert( v!=0 );       /* Already thrown the error if VDBE alloc failed */
-  labelEnd = sqlite3VdbeMakeLabel(pParse);
+  ਪ੍ਰਤਿਜ੍ਞਾ( v!=0 );       /* Already thrown the error if VDBE alloc failed */
+  label_ਸਿਰਾ = sqlite3VdbeMakeLabel(pParse);
   labelCmpr = sqlite3VdbeMakeLabel(pParse);
 
 
   /* Patch up the ORDER BY clause
   */
   op = p->op; 
-  assert( p->pPrior->pOrderBy==0 );
-  pOrderBy = p->pOrderBy;
-  assert( pOrderBy );
-  nOrderBy = pOrderBy->nExpr;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਪੂਰਵ->p_ਕ੍ਰਮ_By==0 );
+  p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕ੍ਰਮ_By );
+  n_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ;
 
   /* For operators other than UNION ALL we have to make sure that
   ** the ORDER BY clause covers every term of the result set.  Add
@@ -3552,20 +3552,20 @@ static int multiSelectByMerge(
   ** if any operator to the left is not UNION ALL, so that the ORDER BY
   ** carries the collation of every column into that sub-compound.
   */
-  for(pPrior=p; pPrior && pPrior->op==TK_ALL; pPrior=pPrior->pPrior){}
-  if( pPrior && pPrior->pPrior ){
-    for(i=1; db->mallocFailed==0 && i<=p->pEList->nExpr; i++){
-      struct ExprList_item *pItem;
-      for(j=0, pItem=pOrderBy->a; j<nOrderBy; j++, pItem++){
-        assert( pItem!=0 );
-        assert( pItem->u.x.iOrderByCol>0 );
-        if( pItem->u.x.iOrderByCol==i ) break;
+  ਲਈ(p_ਪੂਰਵ=p; p_ਪੂਰਵ && p_ਪੂਰਵ->op==TK_ALL; p_ਪੂਰਵ=p_ਪੂਰਵ->p_ਪੂਰਵ){}
+  ਜੇ( p_ਪੂਰਵ && p_ਪੂਰਵ->p_ਪੂਰਵ ){
+    ਲਈ(i=1; db->mallocFailed==0 && i<=p->pEList->n_ਵਿਅੰਜਕ; i++){
+      ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ;
+      ਲਈ(j=0, p_ਵਸਤੂ=p_ਕ੍ਰਮ_By->a; j<n_ਕ੍ਰਮ_By; j++, p_ਵਸਤੂ++){
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ!=0 );
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ>0 );
+        ਜੇ( p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ==i ) ਰੋਕੋ;
       }
-      if( j==nOrderBy ){
-        Expr *pNew = sqlite3ExprInt32(db, i);
-        if( pNew==0 ) return SQLITE_NOMEM_BKPT;
-        p->pOrderBy = pOrderBy = sqlite3ExprListAppend(pParse, pOrderBy, pNew);
-        if( pOrderBy ) pOrderBy->a[nOrderBy++].u.x.iOrderByCol = (u16)i;
+      ਜੇ( j==n_ਕ੍ਰਮ_By ){
+        ਵਿਅੰਜਕ *pNew = sqlite3_ਵਿਅੰਜਕ_Int32(db, i);
+        ਜੇ( pNew==0 ) ਵਾਪਸ SQLITE_NOMEM_BKPT;
+        p->p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, p_ਕ੍ਰਮ_By, pNew);
+        ਜੇ( p_ਕ੍ਰਮ_By ) p_ਕ੍ਰਮ_By->a[n_ਕ੍ਰਮ_By++].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ = (u16)i;
       }
     }
   }
@@ -3576,45 +3576,45 @@ static int multiSelectByMerge(
   ** ORDER BY clause terms so that when selectA and selectB are
   ** evaluated, they use the correct collation.
   */
-  aPermute = sqlite3DbMallocRawNN(db, sizeof(u32)*(nOrderBy + 1));
-  if( aPermute ){
-    struct ExprList_item *pItem;
-    int bKeep = 0;
-    aPermute[0] = nOrderBy;
-    for(i=1, pItem=pOrderBy->a; i<=nOrderBy; i++, pItem++){
-      assert( pItem!=0 );
-      assert( pItem->u.x.iOrderByCol>0 );
-      assert( pItem->u.x.iOrderByCol<=p->pEList->nExpr );
-      aPermute[i] = pItem->u.x.iOrderByCol - 1;
-      if( aPermute[i]!=(u32)i-1 ) bKeep = 1;
+  a_ਕ੍ਰਮ_ਬਦਲੋ = sqlite3DbMallocRawNN(db, ਆਕਾਰ(u32)*(n_ਕ੍ਰਮ_By + 1));
+  ਜੇ( a_ਕ੍ਰਮ_ਬਦਲੋ ){
+    ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ;
+    ਪੂਰਨ bKeep = 0;
+    a_ਕ੍ਰਮ_ਬਦਲੋ[0] = n_ਕ੍ਰਮ_By;
+    ਲਈ(i=1, p_ਵਸਤੂ=p_ਕ੍ਰਮ_By->a; i<=n_ਕ੍ਰਮ_By; i++, p_ਵਸਤੂ++){
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ>0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ<=p->pEList->n_ਵਿਅੰਜਕ );
+      a_ਕ੍ਰਮ_ਬਦਲੋ[i] = p_ਵਸਤੂ->u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ - 1;
+      ਜੇ( a_ਕ੍ਰਮ_ਬਦਲੋ[i]!=(u32)i-1 ) bKeep = 1;
     }
-     if( bKeep==0 ){
-      sqlite3DbFreeNN(db, aPermute);
-      aPermute = 0;
+     ਜੇ( bKeep==0 ){
+      sqlite3DbFreeNN(db, a_ਕ੍ਰਮ_ਬਦਲੋ);
+      a_ਕ੍ਰਮ_ਬਦਲੋ = 0;
     }
   }
-  pKeyMerge = multiSelectByMergeKeyInfo(pParse, p, 1);
+  p_ਕੁੰਜੀ_ਮਿਲਾਓ = multi_Select_By_ਮਿਲਾਓ_ਕੁੰਜੀ_Info(pParse, p, 1);
 
   /* Allocate a range of temporary registers and the KeyInfo needed
   ** for the logic that removes duplicate result rows when the
   ** operator is UNION, EXCEPT, or INTERSECT (but not UNION ALL).
   */
-  if( op==TK_ALL ){
+  ਜੇ( op==TK_ALL ){
     regPrev = 0;
-  }else{
-    int nExpr = p->pEList->nExpr;
-    assert( nOrderBy>=nExpr || db->mallocFailed );
+  }ਨਹੀਂਤਾਂ{
+    ਪੂਰਨ n_ਵਿਅੰਜਕ = p->pEList->n_ਵਿਅੰਜਕ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( n_ਕ੍ਰਮ_By>=n_ਵਿਅੰਜਕ || db->mallocFailed );
     regPrev = pParse->nMem+1;
-    pParse->nMem += nExpr+1;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, regPrev);
-    pKeyDup = sqlite3KeyInfoAlloc(db, nExpr, 1);
-    if( pKeyDup ){
-      assert( sqlite3KeyInfoIsWriteable(pKeyDup) );
+    pParse->nMem += n_ਵਿਅੰਜਕ+1;
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 0, regPrev);
+    p_ਕੁੰਜੀ_Dup = sqlite3_ਕੁੰਜੀ_Info_Alloc(db, n_ਵਿਅੰਜਕ, 1);
+    ਜੇ( p_ਕੁੰਜੀ_Dup ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਕੁੰਜੀ_Info_Is_Writeable(p_ਕੁੰਜੀ_Dup) );
       /* Use the ORDER BY collations, not multiSelectCollSeq(p), because
       ** p might be just one part of a larger compound, in which case
       ** the ORDER BY carries the COLLATE of the larger compound. */
-      for(i=0; ALWAYS(pKeyMerge) && i<nOrderBy; i++){
-        pKeyDup->aColl[pOrderBy->a[i].u.x.iOrderByCol-1] = pKeyMerge->aColl[i];
+      ਲਈ(i=0; ALWAYS(p_ਕੁੰਜੀ_ਮਿਲਾਓ) && i<n_ਕ੍ਰਮ_By; i++){
+        p_ਕੁੰਜੀ_Dup->aColl[p_ਕ੍ਰਮ_By->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ-1] = p_ਕੁੰਜੀ_ਮਿਲਾਓ->aColl[i];
       }
     }
   }
@@ -3622,48 +3622,48 @@ static int multiSelectByMerge(
   /* Separate the left and the right query from one another
   */
   nSelect = 1;
-  if( (op==TK_ALL || op==TK_UNION)
-   && OptimizationEnabled(db, SQLITE_BalancedMerge)
+  ਜੇ( (op==TK_ALL || op==TK_UNION)
+   && OptimizationEnabled(db, SQLITE_ਸੰਤੁਲਿਤ_ਮਿਲਾਓ)
   ){
-    for(pSplit=p; pSplit->pPrior!=0 && pSplit->op==op; pSplit=pSplit->pPrior){
+    ਲਈ(p_ਵੰਡੋ=p; p_ਵੰਡੋ->p_ਪੂਰਵ!=0 && p_ਵੰਡੋ->op==op; p_ਵੰਡੋ=p_ਵੰਡੋ->p_ਪੂਰਵ){
       nSelect++;
-      assert( pSplit->pPrior->pNext==pSplit );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵੰਡੋ->p_ਪੂਰਵ->p_ਅਗਲਾ==p_ਵੰਡੋ );
     }
   }
-  if( nSelect<=3 ){
-    pSplit = p;
-  }else{
-    pSplit = p;
-    for(i=2; i<nSelect; i+=2){ pSplit = pSplit->pPrior; }
+  ਜੇ( nSelect<=3 ){
+    p_ਵੰਡੋ = p;
+  }ਨਹੀਂਤਾਂ{
+    p_ਵੰਡੋ = p;
+    ਲਈ(i=2; i<nSelect; i+=2){ p_ਵੰਡੋ = p_ਵੰਡੋ->p_ਪੂਰਵ; }
   }
-  pPrior = pSplit->pPrior;
-  assert( pPrior!=0 );
-  pSplit->pPrior = 0;
-  pPrior->pNext = 0;
-  assert( p->pOrderBy == pOrderBy );
-  assert( pOrderBy!=0 || db->mallocFailed );
-  pPrior->pOrderBy = sqlite3ExprListDup(pParse->db, pOrderBy, 0);
-  sqlite3ResolveOrderGroupBy(pParse, p, p->pOrderBy, "ORDER");
-  sqlite3ResolveOrderGroupBy(pParse, pPrior, pPrior->pOrderBy, "ORDER");
+  p_ਪੂਰਵ = p_ਵੰਡੋ->p_ਪੂਰਵ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪੂਰਵ!=0 );
+  p_ਵੰਡੋ->p_ਪੂਰਵ = 0;
+  p_ਪੂਰਵ->p_ਅਗਲਾ = 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By == p_ਕ੍ਰਮ_By );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕ੍ਰਮ_By!=0 || db->mallocFailed );
+  p_ਪੂਰਵ->p_ਕ੍ਰਮ_By = sqlite3_ਵਿਅੰਜਕ_List_Dup(pParse->db, p_ਕ੍ਰਮ_By, 0);
+  sqlite3_Resolve_ਕ੍ਰਮ_ਸਮੂਹ_By(pParse, p, p->p_ਕ੍ਰਮ_By, "ORDER");
+  sqlite3_Resolve_ਕ੍ਰਮ_ਸਮੂਹ_By(pParse, p_ਪੂਰਵ, p_ਪੂਰਵ->p_ਕ੍ਰਮ_By, "ORDER");
 
   /* Compute the limit registers */
-  computeLimitRegisters(pParse, p, labelEnd);
-  if( p->iLimit && (op==TK_ALL || unionWithLimitOne(db,p)) ){
-    regLimitA = ++pParse->nMem;
-    regLimitB = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Copy, p->iOffset ? p->iOffset+1 : p->iLimit,
-                                  regLimitA);
-    sqlite3VdbeAddOp2(v, OP_Copy, regLimitA, regLimitB);
-  }else{
-    regLimitA = regLimitB = 0;
+  compute_ਹੱਦਬੰਦੀ_Registers(pParse, p, label_ਸਿਰਾ);
+  ਜੇ( p->i_ਹੱਦਬੰਦੀ && (op==TK_ALL || union_With_ਹੱਦਬੰਦੀ_One(db,p)) ){
+    reg_ਹੱਦਬੰਦੀ_A = ++pParse->nMem;
+    reg_ਹੱਦਬੰਦੀ_B = ++pParse->nMem;
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Copy, p->i_ਵਿੱਥ ? p->i_ਵਿੱਥ+1 : p->i_ਹੱਦਬੰਦੀ,
+                                  reg_ਹੱਦਬੰਦੀ_A);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Copy, reg_ਹੱਦਬੰਦੀ_A, reg_ਹੱਦਬੰਦੀ_B);
+  }ਨਹੀਂਤਾਂ{
+    reg_ਹੱਦਬੰਦੀ_A = reg_ਹੱਦਬੰਦੀ_B = 0;
   }
-  sqlite3ExprDelete(db, p->pLimit);
-  p->pLimit = 0;
+  sqlite3_ਵਿਅੰਜਕ_Delete(db, p->p_ਹੱਦਬੰਦੀ);
+  p->p_ਹੱਦਬੰਦੀ = 0;
 
   regAddrA = ++pParse->nMem;
   regAddrB = ++pParse->nMem;
-  regOutA = ++pParse->nMem;
-  regOutB = ++pParse->nMem;
+  reg_ਬਾਹਰਲਾ_A = ++pParse->nMem;
+  reg_ਬਾਹਰਲਾ_B = ++pParse->nMem;
   sqlite3SelectDestInit(&destA, SRT_Coroutine, regAddrA);
   sqlite3SelectDestInit(&destB, SRT_Coroutine, regAddrB);
 
@@ -3673,134 +3673,134 @@ static int multiSelectByMerge(
   ** left of the compound operator - the "A" select.
   */
   addrSelectA = sqlite3VdbeCurrentAddr(v) + 1;
-  addr1 = sqlite3VdbeAddOp3(v, OP_InitCoroutine, regAddrA, 0, addrSelectA);
+  addr1 = sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_InitCoroutine, regAddrA, 0, addrSelectA);
   VdbeComment((v, "SUBR: next-A"));
-  pPrior->iLimit = regLimitA;
+  p_ਪੂਰਵ->i_ਹੱਦਬੰਦੀ = reg_ਹੱਦਬੰਦੀ_A;
   ExplainQueryPlan((pParse, 1, "LEFT"));
-  sqlite3Select(pParse, pPrior, &destA);
-  sqlite3VdbeEndCoroutine(v, regAddrA);
-  sqlite3VdbeJumpHere(v, addr1);
+  sqlite3Select(pParse, p_ਪੂਰਵ, &destA);
+  sqlite3_Vdbe_ਸਿਰਾ_Coroutine(v, regAddrA);
+  sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr1);
 
   /* Generate a coroutine to evaluate the SELECT statement on
   ** the right - the "B" select
   */
   addrSelectB = sqlite3VdbeCurrentAddr(v) + 1;
-  addr1 = sqlite3VdbeAddOp3(v, OP_InitCoroutine, regAddrB, 0, addrSelectB);
+  addr1 = sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_InitCoroutine, regAddrB, 0, addrSelectB);
   VdbeComment((v, "SUBR: next-B"));
-  savedLimit = p->iLimit;
-  savedOffset = p->iOffset;
-  p->iLimit = regLimitB;
-  p->iOffset = 0; 
+  saved_ਹੱਦਬੰਦੀ = p->i_ਹੱਦਬੰਦੀ;
+  saved_ਵਿੱਥ = p->i_ਵਿੱਥ;
+  p->i_ਹੱਦਬੰਦੀ = reg_ਹੱਦਬੰਦੀ_B;
+  p->i_ਵਿੱਥ = 0; 
   ExplainQueryPlan((pParse, 1, "RIGHT"));
   sqlite3Select(pParse, p, &destB);
-  p->iLimit = savedLimit;
-  p->iOffset = savedOffset;
-  sqlite3VdbeEndCoroutine(v, regAddrB);
+  p->i_ਹੱਦਬੰਦੀ = saved_ਹੱਦਬੰਦੀ;
+  p->i_ਵਿੱਥ = saved_ਵਿੱਥ;
+  sqlite3_Vdbe_ਸਿਰਾ_Coroutine(v, regAddrB);
 
   /* Generate a subroutine that outputs the current row of the A
   ** select as the next output row of the compound select.
   */
   VdbeNoopComment((v, "SUBR: out-A"));
-  addrOutA = generateOutputSubroutine(pParse,
-                 p, &destA, pDest, regOutA,
-                 regPrev, pKeyDup, labelEnd);
+  addr_ਬਾਹਰਲਾ_A = generateOutputSubroutine(pParse,
+                 p, &destA, pDest, reg_ਬਾਹਰਲਾ_A,
+                 regPrev, p_ਕੁੰਜੀ_Dup, label_ਸਿਰਾ);
  
   /* Generate a subroutine that outputs the current row of the B
   ** select as the next output row of the compound select.
   */
-  if( op==TK_ALL || op==TK_UNION ){
+  ਜੇ( op==TK_ALL || op==TK_UNION ){
     VdbeNoopComment((v, "SUBR: out-B"));
-    addrOutB = generateOutputSubroutine(pParse,
-                 p, &destB, pDest, regOutB,
-                 regPrev, pKeyDup, labelEnd);
+    addr_ਬਾਹਰਲਾ_B = generateOutputSubroutine(pParse,
+                 p, &destB, pDest, reg_ਬਾਹਰਲਾ_B,
+                 regPrev, p_ਕੁੰਜੀ_Dup, label_ਸਿਰਾ);
   }
-  sqlite3KeyInfoUnref(pKeyDup);
+  sqlite3_ਕੁੰਜੀ_Info_Unref(p_ਕੁੰਜੀ_Dup);
 
   /* Generate a subroutine to run when the results from select A
   ** are exhausted and only data in select B remains.
   */
-  if( op==TK_EXCEPT || op==TK_INTERSECT ){
-    addrEofA_noB = addrEofA = labelEnd;
-  }else{ 
+  ਜੇ( op==TK_EXCEPT || op==TK_INTERSECT ){
+    addrEofA_noB = addrEofA = label_ਸਿਰਾ;
+  }ਨਹੀਂਤਾਂ{ 
     VdbeNoopComment((v, "SUBR: eof-A"));
-    addrEofA = sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
+    addrEofA = sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_ਬਾਹਰਲਾ_B, addr_ਬਾਹਰਲਾ_B);
     VdbeComment((v, "out-B"));
-    addrEofA_noB = sqlite3VdbeAddOp2(v, OP_Yield, regAddrB, labelEnd);
+    addrEofA_noB = sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrB, label_ਸਿਰਾ);
                                      VdbeCoverage(v);
     VdbeComment((v, "next-B"));
     sqlite3VdbeGoto(v, addrEofA);
-    p->nSelectRow = sqlite3LogEstAdd(p->nSelectRow, pPrior->nSelectRow);
+    p->n_Select_ਪੰਕਤੀ = sqlite3_Log_Est_ਜੋੜੋ(p->n_Select_ਪੰਕਤੀ, p_ਪੂਰਵ->n_Select_ਪੰਕਤੀ);
   }
 
   /* Generate a subroutine to run when the results from select B
   ** are exhausted and only data in select A remains.
   */
-  if( op==TK_INTERSECT ){
+  ਜੇ( op==TK_INTERSECT ){
     addrEofB = addrEofA;
-    if( p->nSelectRow > pPrior->nSelectRow ) p->nSelectRow = pPrior->nSelectRow;
-  }else{ 
+    ਜੇ( p->n_Select_ਪੰਕਤੀ > p_ਪੂਰਵ->n_Select_ਪੰਕਤੀ ) p->n_Select_ਪੰਕਤੀ = p_ਪੂਰਵ->n_Select_ਪੰਕਤੀ;
+  }ਨਹੀਂਤਾਂ{ 
     VdbeNoopComment((v, "SUBR: eof-B"));
-    addrEofB = sqlite3VdbeAddOp2(v, OP_Gosub, regOutA, addrOutA);
+    addrEofB = sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_ਬਾਹਰਲਾ_A, addr_ਬਾਹਰਲਾ_A);
     VdbeComment((v, "out-A"));
-    sqlite3VdbeAddOp2(v, OP_Yield, regAddrA, labelEnd); VdbeCoverage(v);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrA, label_ਸਿਰਾ); VdbeCoverage(v);
     VdbeComment((v, "next-A"));
     sqlite3VdbeGoto(v, addrEofB);
   }
 
   /* Generate code to handle the case of A<B
   */
-  addrAltB = sqlite3VdbeAddOp2(v, OP_Gosub, regOutA, addrOutA);
+  addrAltB = sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_ਬਾਹਰਲਾ_A, addr_ਬਾਹਰਲਾ_A);
   VdbeComment((v, "out-A"));
-  sqlite3VdbeAddOp2(v, OP_Yield, regAddrA, addrEofA); VdbeCoverage(v);
+  sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrA, addrEofA); VdbeCoverage(v);
   VdbeComment((v, "next-A"));
   sqlite3VdbeGoto(v, labelCmpr);
 
   /* Generate code to handle the case of A==B
   */
-  if( op==TK_ALL ){
+  ਜੇ( op==TK_ALL ){
     addrAeqB = addrAltB;
-  }else if( op==TK_INTERSECT ){
+  }ਨਹੀਂਤਾਂ ਜੇ( op==TK_INTERSECT ){
     addrAeqB = addrAltB;
     addrAltB++;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     addrAeqB = addrAltB + 1;
   }
 
   /* Generate code to handle the case of A>B
   */
   addrAgtB = sqlite3VdbeCurrentAddr(v);
-  if( op==TK_ALL || op==TK_UNION ){
-    sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
+  ਜੇ( op==TK_ALL || op==TK_UNION ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_ਬਾਹਰਲਾ_B, addr_ਬਾਹਰਲਾ_B);
     VdbeComment((v, "out-B"));
-    sqlite3VdbeAddOp2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
     VdbeComment((v, "next-B"));
     sqlite3VdbeGoto(v, labelCmpr);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     addrAgtB++; /* Just do next-B.  Might as well use the next-B call
                 ** in the next code block */
   }
 
   /* This code runs once to initialize everything.
   */
-  sqlite3VdbeJumpHere(v, addr1);
-  sqlite3VdbeAddOp2(v, OP_Yield, regAddrA, addrEofA_noB); VdbeCoverage(v);
+  sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr1);
+  sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrA, addrEofA_noB); VdbeCoverage(v);
   VdbeComment((v, "next-A"));
   /* v---  Also the A>B case for EXCEPT and INTERSECT */
-  sqlite3VdbeAddOp2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
+  sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
   VdbeComment((v, "next-B"));
 
   /* Implement the main merge loop
   */
-  if( aPermute!=0 ){
-    sqlite3VdbeAddOp4(v, OP_Permutation, 0, 0, 0, (char*)aPermute, P4_INTARRAY);
+  ਜੇ( a_ਕ੍ਰਮ_ਬਦਲੋ!=0 ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Permutation, 0, 0, 0, (ਅੱਖਰ*)a_ਕ੍ਰਮ_ਬਦਲੋ, P4_INTARRAY);
   }
   sqlite3VdbeResolveLabel(v, labelCmpr);
-  sqlite3VdbeAddOp4(v, OP_Compare, destA.iSdst, destB.iSdst, nOrderBy,
-                         (char*)pKeyMerge, P4_KEYINFO);
-  if( aPermute!=0 ){
-    sqlite3VdbeChangeP5(v, OPFLAG_PERMUTE);
+  sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Compare, destA.iSdst, destB.iSdst, n_ਕ੍ਰਮ_By,
+                         (ਅੱਖਰ*)p_ਕੁੰਜੀ_ਮਿਲਾਓ, P4_KEYINFO);
+  ਜੇ( a_ਕ੍ਰਮ_ਬਦਲੋ!=0 ){
+    sqlite3VdbeChangeP5(v, OPFLAG_ਕ੍ਰਮ_ਬਦਲੋ);
   }
-  sqlite3VdbeAddOp3(v, OP_Jump, addrAltB, addrAeqB, addrAgtB);
+  sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Jump, addrAltB, addrAeqB, addrAgtB);
   VdbeCoverageIf(v, op==TK_ALL);
   VdbeCoverageIf(v, op==TK_UNION);
   VdbeCoverageIf(v, op==TK_EXCEPT);
@@ -3808,26 +3808,26 @@ static int multiSelectByMerge(
 
   /* Jump to the this point in order to terminate the query.
   */
-  sqlite3VdbeResolveLabel(v, labelEnd);
+  sqlite3VdbeResolveLabel(v, label_ਸਿਰਾ);
 
   /* Make arrangements to free the 2nd and subsequent arms of the compound
   ** after the parse has finished */
-  if( pSplit->pPrior ){
-    sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSplit->pPrior);
+  ਜੇ( p_ਵੰਡੋ->p_ਪੂਰਵ ){
+    sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3SelectDeleteGeneric, p_ਵੰਡੋ->p_ਪੂਰਵ);
   }
-  pSplit->pPrior = pPrior;
-  pPrior->pNext = pSplit;
-  sqlite3ExprListDelete(db, pPrior->pOrderBy);
-  pPrior->pOrderBy = 0;
+  p_ਵੰਡੋ->p_ਪੂਰਵ = p_ਪੂਰਵ;
+  p_ਪੂਰਵ->p_ਅਗਲਾ = p_ਵੰਡੋ;
+  sqlite3_ਵਿਅੰਜਕ_List_Delete(db, p_ਪੂਰਵ->p_ਕ੍ਰਮ_By);
+  p_ਪੂਰਵ->p_ਕ੍ਰਮ_By = 0;
 
   /*** TBD:  Insert subroutine calls to close cursors on incomplete
   **** subqueries ****/
-  ExplainQueryPlanPop(pParse);
-  return pParse->nErr!=0;
+  Explain_Query_Plan_ਕੱਢੋ(pParse);
+  ਵਾਪਸ pParse->nErr!=0;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 
 /* An instance of the SubstContext object describes an substitution edit
 ** to be performed on a parse tree.
@@ -3863,19 +3863,19 @@ static int multiSelectByMerge(
 ** "m" value of the subquery so that a NULL will be loaded instead of 59
 ** when processing a non-matched row of the left.
 */
-typedef struct SubstContext {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ SubstContext {
   Parse *pParse;            /* The parsing context */
-  int iTable;               /* Replace references to this table */
-  int iNewTable;            /* New table number */
-  int isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
-  int nSelDepth;            /* Depth of sub-query recursion.  Top==1 */
-  ExprList *pEList;         /* Replacement expressions */
-  ExprList *pCList;         /* Collation sequences for replacement expr */
+  ਪੂਰਨ i_ਸਾਰਣੀ;               /* Replace references to this table */
+  ਪੂਰਨ i_New_ਸਾਰਣੀ;            /* New table number */
+  ਪੂਰਨ isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
+  ਪੂਰਨ n_Sel_ਡੂੰਘਾਈ;            /* Depth of sub-query recursion.  Top==1 */
+  ਵਿਅੰਜਕ_List *pEList;         /* Replacement expressions */
+  ਵਿਅੰਜਕ_List *pCList;         /* Collation sequences for replacement expr */
 } SubstContext;
 
 /* Forward Declarations */
-static void substExprList(SubstContext*, ExprList*);
-static void substSelect(SubstContext*, Select*, int);
+ਸਥਿਰ ਖਾਲੀ subst_ਵਿਅੰਜਕ_List(SubstContext*, ਵਿਅੰਜਕ_List*);
+ਸਥਿਰ ਖਾਲੀ substSelect(SubstContext*, Select*, ਪੂਰਨ);
 
 /*
 ** Scan through the expression pExpr.  Replace every reference to
@@ -3890,155 +3890,155 @@ static void substSelect(SubstContext*, Select*, int);
 ** changes to pExpr so that it refers directly to the source table
 ** of the subquery rather the result set of the subquery.
 */
-static Expr *substExpr(
+ਸਥਿਰ ਵਿਅੰਜਕ *subst_ਵਿਅੰਜਕ(
   SubstContext *pSubst,  /* Description of the substitution */
-  Expr *pExpr            /* Expr in which substitution occurs */
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ            /* Expr in which substitution occurs */
 ){
-  if( pExpr==0 ) return 0;
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)
-   && pExpr->w.iJoin==pSubst->iTable
+  ਜੇ( p_ਵਿਅੰਜਕ==0 ) ਵਾਪਸ 0;
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_OuterON|EP_InnerON)
+   && p_ਵਿਅੰਜਕ->w.iJoin==pSubst->i_ਸਾਰਣੀ
   ){
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    pExpr->w.iJoin = pSubst->iNewTable;
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_InnerON) );
+    p_ਵਿਅੰਜਕ->w.iJoin = pSubst->i_New_ਸਾਰਣੀ;
   }
-  if( pExpr->op==TK_COLUMN
-   && pExpr->iTable==pSubst->iTable
-   && !ExprHasProperty(pExpr, EP_FixedCol)
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ
+   && p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ==pSubst->i_ਸਾਰਣੀ
+   && !ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_Fixed_ਖਾਨਾ)
   ){
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-    if( pExpr->iColumn<0 ){
-      pExpr->op = TK_NULL;
-    }else
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ALLOW_ROWID_ਵਿੱਚ_VIEW
+    ਜੇ( p_ਵਿਅੰਜਕ->i_ਕਾਲਮ<0 ){
+      p_ਵਿਅੰਜਕ->op = TK_NULL;
+    }ਨਹੀਂਤਾਂ
+#ਜੇ_ਅੰਤ
     {
-      Expr *pNew;
-      int iColumn;
-      Expr *pCopy;
-      Expr ifNullRow;
-      iColumn = pExpr->iColumn;
-      assert( iColumn>=0 );
-      assert( pSubst->pEList!=0 && iColumn<pSubst->pEList->nExpr );
-      assert( pExpr->pRight==0 );
-      pCopy = pSubst->pEList->a[iColumn].pExpr;
-      if( sqlite3ExprIsVector(pCopy) ){
-        sqlite3VectorErrorMsg(pSubst->pParse, pCopy);
-      }else{
+      ਵਿਅੰਜਕ *pNew;
+      ਪੂਰਨ i_ਕਾਲਮ;
+      ਵਿਅੰਜਕ *pCopy;
+      ਵਿਅੰਜਕ if_Null_ਪੰਕਤੀ;
+      i_ਕਾਲਮ = p_ਵਿਅੰਜਕ->i_ਕਾਲਮ;
+      ਪ੍ਰਤਿਜ੍ਞਾ( i_ਕਾਲਮ>=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSubst->pEList!=0 && i_ਕਾਲਮ<pSubst->pEList->n_ਵਿਅੰਜਕ );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->p_ਸੱਜਾ==0 );
+      pCopy = pSubst->pEList->a[i_ਕਾਲਮ].p_ਵਿਅੰਜਕ;
+      ਜੇ( sqlite3_ਵਿਅੰਜਕ_Is_ਸਦਿਸ਼(pCopy) ){
+        sqlite3_ਸਦਿਸ਼_Error_ਸੁਨੇਹਾ(pSubst->pParse, pCopy);
+      }ਨਹੀਂਤਾਂ{
         sqlite3 *db = pSubst->pParse->db;
-        if( pSubst->isOuterJoin
-         && (pCopy->op!=TK_COLUMN || pCopy->iTable!=pSubst->iNewTable)
+        ਜੇ( pSubst->isOuterJoin
+         && (pCopy->op!=TK_ਕਾਲਮ || pCopy->i_ਸਾਰਣੀ!=pSubst->i_New_ਸਾਰਣੀ)
         ){
-          memset(&ifNullRow, 0, sizeof(ifNullRow));
-          ifNullRow.op = TK_IF_NULL_ROW;
-          ifNullRow.pLeft = pCopy;
-          ifNullRow.iTable = pSubst->iNewTable;
-          ifNullRow.iColumn = -99;
-          ifNullRow.flags = EP_IfNullRow;
-          pCopy = &ifNullRow;
+          memset(&if_Null_ਪੰਕਤੀ, 0, ਆਕਾਰ(if_Null_ਪੰਕਤੀ));
+          if_Null_ਪੰਕਤੀ.op = TK_IF_NULL_ਪੰਕਤੀ;
+          if_Null_ਪੰਕਤੀ.p_ਖੱਬਾ = pCopy;
+          if_Null_ਪੰਕਤੀ.i_ਸਾਰਣੀ = pSubst->i_New_ਸਾਰਣੀ;
+          if_Null_ਪੰਕਤੀ.i_ਕਾਲਮ = -99;
+          if_Null_ਪੰਕਤੀ.flags = EP_If_Null_ਪੰਕਤੀ;
+          pCopy = &if_Null_ਪੰਕਤੀ;
         }
-        testcase( ExprHasProperty(pCopy, EP_Subquery) );
-        pNew = sqlite3ExprDup(db, pCopy, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pNew);
-          return pExpr;
+        testcase( ਵਿਅੰਜਕ_Has_Property(pCopy, EP_Subquery) );
+        pNew = sqlite3_ਵਿਅੰਜਕ_Dup(db, pCopy, 0);
+        ਜੇ( db->mallocFailed ){
+          sqlite3_ਵਿਅੰਜਕ_Delete(db, pNew);
+          ਵਾਪਸ p_ਵਿਅੰਜਕ;
         }
-        if( pSubst->isOuterJoin ){
-          ExprSetProperty(pNew, EP_CanBeNull);
+        ਜੇ( pSubst->isOuterJoin ){
+          ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pNew, EP_CanBeNull);
         }
-        if( pNew->op==TK_TRUEFALSE ){
-          pNew->u.iValue = sqlite3ExprTruthValue(pNew);
+        ਜੇ( pNew->op==TK_TRUEFALSE ){
+          pNew->u.i_ਮੁੱਲ = sqlite3_ਵਿਅੰਜਕ_Truth_ਮੁੱਲ(pNew);
           pNew->op = TK_INTEGER;
-          ExprSetProperty(pNew, EP_IntValue);
+          ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pNew, EP_Int_ਮੁੱਲ);
         }
 
         /* Ensure that the expression now has an implicit collation sequence,
         ** just as it did when it was a column of a view or sub-query. */
         {
-          CollSeq *pNat = sqlite3ExprCollSeq(pSubst->pParse, pNew);
-          CollSeq *pColl = sqlite3ExprCollSeq(pSubst->pParse,
-                pSubst->pCList->a[iColumn].pExpr
+          CollSeq *pNat = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pSubst->pParse, pNew);
+          CollSeq *pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pSubst->pParse,
+                pSubst->pCList->a[i_ਕਾਲਮ].p_ਵਿਅੰਜਕ
           );
-          if( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
-            pNew = sqlite3ExprAddCollateString(pSubst->pParse, pNew,
+          ਜੇ( pNat!=pColl || (pNew->op!=TK_ਕਾਲਮ && pNew->op!=TK_COLLATE) ){
+            pNew = sqlite3_ਵਿਅੰਜਕ_ਜੋੜੋ_Collate_String(pSubst->pParse, pNew,
                 (pColl ? pColl->zName : "BINARY")
             );
           }
         }
-        ExprClearProperty(pNew, EP_Collate);
-        if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) ){
-          sqlite3SetJoinExpr(pNew, pExpr->w.iJoin,
-                             pExpr->flags & (EP_OuterON|EP_InnerON));
+        ਵਿਅੰਜਕ_Clear_Property(pNew, EP_Collate);
+        ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ,EP_OuterON|EP_InnerON) ){
+          sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(pNew, p_ਵਿਅੰਜਕ->w.iJoin,
+                             p_ਵਿਅੰਜਕ->flags & (EP_OuterON|EP_InnerON));
         }
-        sqlite3ExprDelete(db, pExpr);
-        pExpr = pNew;
+        sqlite3_ਵਿਅੰਜਕ_Delete(db, p_ਵਿਅੰਜਕ);
+        p_ਵਿਅੰਜਕ = pNew;
       }
     }
-  }else{
-    if( pExpr->op==TK_IF_NULL_ROW && pExpr->iTable==pSubst->iTable ){
-      pExpr->iTable = pSubst->iNewTable;
+  }ਨਹੀਂਤਾਂ{
+    ਜੇ( p_ਵਿਅੰਜਕ->op==TK_IF_NULL_ਪੰਕਤੀ && p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ==pSubst->i_ਸਾਰਣੀ ){
+      p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ = pSubst->i_New_ਸਾਰਣੀ;
     }
-    if( pExpr->op==TK_AGG_FUNCTION && pExpr->op2>=pSubst->nSelDepth ){
-      pExpr->op2--;
+    ਜੇ( p_ਵਿਅੰਜਕ->op==TK_AGG_FUNCTION && p_ਵਿਅੰਜਕ->op2>=pSubst->n_Sel_ਡੂੰਘਾਈ ){
+      p_ਵਿਅੰਜਕ->op2--;
     }
-    pExpr->pLeft = substExpr(pSubst, pExpr->pLeft);
-    pExpr->pRight = substExpr(pSubst, pExpr->pRight);
-    if( ExprUseXSelect(pExpr) ){
-      substSelect(pSubst, pExpr->x.pSelect, 1);
-    }else{
-      substExprList(pSubst, pExpr->x.pList);
+    p_ਵਿਅੰਜਕ->p_ਖੱਬਾ = subst_ਵਿਅੰਜਕ(pSubst, p_ਵਿਅੰਜਕ->p_ਖੱਬਾ);
+    p_ਵਿਅੰਜਕ->p_ਸੱਜਾ = subst_ਵਿਅੰਜਕ(pSubst, p_ਵਿਅੰਜਕ->p_ਸੱਜਾ);
+    ਜੇ( ਵਿਅੰਜਕ_Use_XSelect(p_ਵਿਅੰਜਕ) ){
+      substSelect(pSubst, p_ਵਿਅੰਜਕ->x.pSelect, 1);
+    }ਨਹੀਂਤਾਂ{
+      subst_ਵਿਅੰਜਕ_List(pSubst, p_ਵਿਅੰਜਕ->x.pList);
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      Window *pWin = pExpr->y.pWin;
-      pWin->pFilter = substExpr(pSubst, pWin->pFilter);
-      substExprList(pSubst, pWin->pPartition);
-      substExprList(pSubst, pWin->pOrderBy);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_WinFunc) ){
+      ਖਿੜਕੀ *pWin = p_ਵਿਅੰਜਕ->y.pWin;
+      pWin->pFilter = subst_ਵਿਅੰਜਕ(pSubst, pWin->pFilter);
+      subst_ਵਿਅੰਜਕ_List(pSubst, pWin->p_ਹਿੱਸੇ_ਕਰੋ);
+      subst_ਵਿਅੰਜਕ_List(pSubst, pWin->p_ਕ੍ਰਮ_By);
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
-  return pExpr;
+  ਵਾਪਸ p_ਵਿਅੰਜਕ;
 }
-static void substExprList(
+ਸਥਿਰ ਖਾਲੀ subst_ਵਿਅੰਜਕ_List(
   SubstContext *pSubst, /* Description of the substitution */
-  ExprList *pList       /* List to scan and in which to make substitutes */
+  ਵਿਅੰਜਕ_List *pList       /* List to scan and in which to make substitutes */
 ){
-  int i;
-  if( pList==0 ) return;
-  for(i=0; i<pList->nExpr; i++){
-    pList->a[i].pExpr = substExpr(pSubst, pList->a[i].pExpr);
+  ਪੂਰਨ i;
+  ਜੇ( pList==0 ) ਵਾਪਸ;
+  ਲਈ(i=0; i<pList->n_ਵਿਅੰਜਕ; i++){
+    pList->a[i].p_ਵਿਅੰਜਕ = subst_ਵਿਅੰਜਕ(pSubst, pList->a[i].p_ਵਿਅੰਜਕ);
   }
 }
-static void substSelect(
+ਸਥਿਰ ਖਾਲੀ substSelect(
   SubstContext *pSubst, /* Description of the substitution */
   Select *p,            /* SELECT statement in which to make substitutions */
-  int doPrior           /* Do substitutes on p->pPrior too */
+  ਪੂਰਨ do_ਪੂਰਵ           /* Do substitutes on p->pPrior too */
 ){
   SrcList *pSrc;
-  SrcItem *pItem;
-  int i;
-  if( !p ) return;
-  pSubst->nSelDepth++;
-  do{
-    substExprList(pSubst, p->pEList);
-    substExprList(pSubst, p->pGroupBy);
-    substExprList(pSubst, p->pOrderBy);
-    p->pHaving = substExpr(pSubst, p->pHaving);
-    p->pWhere = substExpr(pSubst, p->pWhere);
+  Src_ਵਸਤੂ *p_ਵਸਤੂ;
+  ਪੂਰਨ i;
+  ਜੇ( !p ) ਵਾਪਸ;
+  pSubst->n_Sel_ਡੂੰਘਾਈ++;
+  ਕਰੋ{
+    subst_ਵਿਅੰਜਕ_List(pSubst, p->pEList);
+    subst_ਵਿਅੰਜਕ_List(pSubst, p->p_ਸਮੂਹ_By);
+    subst_ਵਿਅੰਜਕ_List(pSubst, p->p_ਕ੍ਰਮ_By);
+    p->pHaving = subst_ਵਿਅੰਜਕ(pSubst, p->pHaving);
+    p->pWhere = subst_ਵਿਅੰਜਕ(pSubst, p->pWhere);
     pSrc = p->pSrc;
-    assert( pSrc!=0 );
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery ){
-        substSelect(pSubst, pItem->u4.pSubq->pSelect, 1);
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSrc!=0 );
+    ਲਈ(i=pSrc->nSrc, p_ਵਸਤੂ=pSrc->a; i>0; i--, p_ਵਸਤੂ++){
+      ਜੇ( p_ਵਸਤੂ->fg.isSubquery ){
+        substSelect(pSubst, p_ਵਸਤੂ->u4.pSubq->pSelect, 1);
       }
-      if( pItem->fg.isTabFunc ){
-        substExprList(pSubst, pItem->u1.pFuncArg);
+      ਜੇ( p_ਵਸਤੂ->fg.isTabFunc ){
+        subst_ਵਿਅੰਜਕ_List(pSubst, p_ਵਸਤੂ->u1.pFuncArg);
       }
     }
-  }while( doPrior && (p = p->pPrior)!=0 );
-  pSubst->nSelDepth--;
+  }ਜਦੋਂ( do_ਪੂਰਵ && (p = p->p_ਪੂਰਵ)!=0 );
+  pSubst->n_Sel_ਡੂੰਘਾਈ--;
 }
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** pSelect is a SELECT statement and pSrcItem is one item in the FROM
 ** clause of that SELECT.
@@ -4046,31 +4046,31 @@ static void substSelect(
 ** This routine scans the entire SELECT statement and recomputes the
 ** pSrcItem->colUsed mask.
 */
-static int recomputeColumnsUsedExpr(Walker *pWalker, Expr *pExpr){
-  SrcItem *pItem;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
-  pItem = pWalker->u.pSrcItem;
-  if( pItem->iCursor!=pExpr->iTable ) return WRC_Continue;
-  if( pExpr->iColumn<0 ) return WRC_Continue;
-  pItem->colUsed |= sqlite3ExprColUsed(pExpr);
-  return WRC_Continue;
+ਸਥਿਰ ਪੂਰਨ recompute_Columns_ਵਰਤਿਆ_ਵਿਅੰਜਕ(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  Src_ਵਸਤੂ *p_ਵਸਤੂ;
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_ਕਾਲਮ ) ਵਾਪਸ WRC_Continue;
+  p_ਵਸਤੂ = pWalker->u.p_Src_ਵਸਤੂ;
+  ਜੇ( p_ਵਸਤੂ->iCursor!=p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( p_ਵਿਅੰਜਕ->i_ਕਾਲਮ<0 ) ਵਾਪਸ WRC_Continue;
+  p_ਵਸਤੂ->ਖਾਨਾ_ਵਰਤਿਆ |= sqlite3_ਵਿਅੰਜਕ_ਖਾਨਾ_ਵਰਤਿਆ(p_ਵਿਅੰਜਕ);
+  ਵਾਪਸ WRC_Continue;
 }
-static void recomputeColumnsUsed(
+ਸਥਿਰ ਖਾਲੀ recompute_Columns_ਵਰਤਿਆ(
   Select *pSelect,                 /* The complete SELECT statement */
-  SrcItem *pSrcItem                /* Which FROM clause item to recompute */
+  Src_ਵਸਤੂ *p_Src_ਵਸਤੂ                /* Which FROM clause item to recompute */
 ){
   Walker w;
-  if( NEVER(pSrcItem->pSTab==0) ) return;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = recomputeColumnsUsedExpr;
+  ਜੇ( NEVER(p_Src_ਵਸਤੂ->pSTab==0) ) ਵਾਪਸ;
+  memset(&w, 0, ਆਕਾਰ(w));
+  w.x_ਵਿਅੰਜਕ_Callback = recompute_Columns_ਵਰਤਿਆ_ਵਿਅੰਜਕ;
   w.xSelectCallback = sqlite3SelectWalkNoop;
-  w.u.pSrcItem = pSrcItem;
-  pSrcItem->colUsed = 0;
+  w.u.p_Src_ਵਸਤੂ = p_Src_ਵਸਤੂ;
+  p_Src_ਵਸਤੂ->ਖਾਨਾ_ਵਰਤਿਆ = 0;
   sqlite3WalkSelect(&w, pSelect);
 }
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Assign new cursor numbers to each of the items in pSrc. For each
 ** new cursor number assigned, set an entry in the aCsrMap[] array
@@ -4084,24 +4084,24 @@ static void recomputeColumnsUsed(
 ** If pSrc contains any sub-selects, call this routine recursively
 ** on the FROM clause of each such sub-select, with iExcept set to -1.
 */
-static void srclistRenumberCursors(
+ਸਥਿਰ ਖਾਲੀ srclistRenumberCursors(
   Parse *pParse,                  /* Parse context */
-  int *aCsrMap,                   /* Array to store cursor mappings in */
+  ਪੂਰਨ *aCsrMap,                   /* Array to store cursor mappings in */
   SrcList *pSrc,                  /* FROM clause to renumber */
-  int iExcept                     /* FROM clause item to skip */
+  ਪੂਰਨ iExcept                     /* FROM clause item to skip */
 ){
-  int i;
-  SrcItem *pItem;
-  for(i=0, pItem=pSrc->a; i<pSrc->nSrc; i++, pItem++){
-    if( i!=iExcept ){
+  ਪੂਰਨ i;
+  Src_ਵਸਤੂ *p_ਵਸਤੂ;
+  ਲਈ(i=0, p_ਵਸਤੂ=pSrc->a; i<pSrc->nSrc; i++, p_ਵਸਤੂ++){
+    ਜੇ( i!=iExcept ){
       Select *p;
-      assert( pItem->iCursor < aCsrMap[0] );
-      if( !pItem->fg.isRecursive || aCsrMap[pItem->iCursor+1]==0 ){
-        aCsrMap[pItem->iCursor+1] = pParse->nTab++;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->iCursor < aCsrMap[0] );
+      ਜੇ( !p_ਵਸਤੂ->fg.isRecursive || aCsrMap[p_ਵਸਤੂ->iCursor+1]==0 ){
+        aCsrMap[p_ਵਸਤੂ->iCursor+1] = pParse->nTab++;
       }
-      pItem->iCursor = aCsrMap[pItem->iCursor+1];
-      if( pItem->fg.isSubquery ){
-        for(p=pItem->u4.pSubq->pSelect; p; p=p->pPrior){
+      p_ਵਸਤੂ->iCursor = aCsrMap[p_ਵਸਤੂ->iCursor+1];
+      ਜੇ( p_ਵਸਤੂ->fg.isSubquery ){
+        ਲਈ(p=p_ਵਸਤੂ->u4.pSubq->pSelect; p; p=p->p_ਪੂਰਵ){
           srclistRenumberCursors(pParse, aCsrMap, p->pSrc, -1);
         }
       }
@@ -4112,10 +4112,10 @@ static void srclistRenumberCursors(
 /*
 ** *piCursor is a cursor number.  Change it if it needs to be mapped.
 */
-static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
-  int *aCsrMap = pWalker->u.aiCol;
-  int iCsr = *piCursor;
-  if( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
+ਸਥਿਰ ਖਾਲੀ renumberCursorDoMapping(Walker *pWalker, ਪੂਰਨ *piCursor){
+  ਪੂਰਨ *aCsrMap = pWalker->u.ai_ਖਾਨਾ;
+  ਪੂਰਨ iCsr = *piCursor;
+  ਜੇ( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
     *piCursor = aCsrMap[iCsr+1];
   }
 }
@@ -4124,17 +4124,17 @@ static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
 ** Expression walker callback used by renumberCursors() to update
 ** Expr objects to match newly assigned cursor numbers.
 */
-static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
-  int op = pExpr->op;
-  if( op==TK_COLUMN || op==TK_IF_NULL_ROW ){
-    renumberCursorDoMapping(pWalker, &pExpr->iTable);
+ਸਥਿਰ ਪੂਰਨ renumberCursorsCb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  ਪੂਰਨ op = p_ਵਿਅੰਜਕ->op;
+  ਜੇ( op==TK_ਕਾਲਮ || op==TK_IF_NULL_ਪੰਕਤੀ ){
+    renumberCursorDoMapping(pWalker, &p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ);
   }
-  if( ExprHasProperty(pExpr, (EP_OuterON|EP_InnerON)) ){
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    renumberCursorDoMapping(pWalker, &pExpr->w.iJoin);
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, (EP_OuterON|EP_InnerON)) ){
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_OuterON) );
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_InnerON) );
+    renumberCursorDoMapping(pWalker, &p_ਵਿਅੰਜਕ->w.iJoin);
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
@@ -4155,63 +4155,63 @@ static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
 **     FROM clauses of the select statement as described above are
 **     initialized to zero.
 */
-static void renumberCursors(
+ਸਥਿਰ ਖਾਲੀ renumberCursors(
   Parse *pParse,                  /* Parse context */
   Select *p,                      /* Select to renumber cursors within */
-  int iExcept,                    /* FROM clause item to skip */
-  int *aCsrMap                    /* Working space */
+  ਪੂਰਨ iExcept,                    /* FROM clause item to skip */
+  ਪੂਰਨ *aCsrMap                    /* Working space */
 ){
   Walker w;
   srclistRenumberCursors(pParse, aCsrMap, p->pSrc, iExcept);
-  memset(&w, 0, sizeof(w));
-  w.u.aiCol = aCsrMap;
-  w.xExprCallback = renumberCursorsCb;
+  memset(&w, 0, ਆਕਾਰ(w));
+  w.u.ai_ਖਾਨਾ = aCsrMap;
+  w.x_ਵਿਅੰਜਕ_Callback = renumberCursorsCb;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   sqlite3WalkSelect(&w, p);
 }
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
 /*
 ** If pSel is not part of a compound SELECT, return a pointer to its
 ** expression list. Otherwise, return a pointer to the expression list
 ** of the leftmost SELECT in the compound.
 */
-static ExprList *findLeftmostExprlist(Select *pSel){
-  while( pSel->pPrior ){
-    pSel = pSel->pPrior;
+ਸਥਿਰ ਵਿਅੰਜਕ_List *ਲੱਭੋ_Leftmost_Exprlist(Select *pSel){
+  ਜਦੋਂ( pSel->p_ਪੂਰਵ ){
+    pSel = pSel->p_ਪੂਰਵ;
   }
-  return pSel->pEList;
+  ਵਾਪਸ pSel->pEList;
 }
 
 /*
 ** Return true if any of the result-set columns in the compound query
 ** have incompatible affinities on one or more arms of the compound.
 */
-static int compoundHasDifferentAffinities(Select *p){
-  int ii;
-  ExprList *pList;
-  assert( p!=0 );
-  assert( p->pEList!=0 );
-  assert( p->pPrior!=0 );
+ਸਥਿਰ ਪੂਰਨ compoundHasDifferentAffinities(Select *p){
+  ਪੂਰਨ ii;
+  ਵਿਅੰਜਕ_List *pList;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਪੂਰਵ!=0 );
   pList = p->pEList;
-  for(ii=0; ii<pList->nExpr; ii++){
-    char aff;
+  ਲਈ(ii=0; ii<pList->n_ਵਿਅੰਜਕ; ii++){
+    ਅੱਖਰ aff;
     Select *pSub1;
-    assert( pList->a[ii].pExpr!=0 );
-    aff = sqlite3ExprAffinity(pList->a[ii].pExpr);
-    for(pSub1=p->pPrior; pSub1; pSub1=pSub1->pPrior){
-      assert( pSub1->pEList!=0 );
-      assert( pSub1->pEList->nExpr>ii );
-      assert( pSub1->pEList->a[ii].pExpr!=0 );
-      if( sqlite3ExprAffinity(pSub1->pEList->a[ii].pExpr)!=aff ){
-        return 1;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pList->a[ii].p_ਵਿਅੰਜਕ!=0 );
+    aff = sqlite3_ਵਿਅੰਜਕ_Affinity(pList->a[ii].p_ਵਿਅੰਜਕ);
+    ਲਈ(pSub1=p->p_ਪੂਰਵ; pSub1; pSub1=pSub1->p_ਪੂਰਵ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSub1->pEList!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSub1->pEList->n_ਵਿਅੰਜਕ>ii );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSub1->pEList->a[ii].p_ਵਿਅੰਜਕ!=0 );
+      ਜੇ( sqlite3_ਵਿਅੰਜਕ_Affinity(pSub1->pEList->a[ii].p_ਵਿਅੰਜਕ)!=aff ){
+        ਵਾਪਸ 1;
       }
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** This routine attempts to flatten subqueries as a performance optimization.
 ** This routine returns 1 if it makes changes and 0 if no flattening occurs.
@@ -4385,72 +4385,72 @@ static int compoundHasDifferentAffinities(Select *p){
 ** All of the expression analysis must occur on both the outer query and
 ** the subquery before this routine runs.
 */
-static int flattenSubquery(
+ਸਥਿਰ ਪੂਰਨ flattenSubquery(
   Parse *pParse,       /* Parsing context */
   Select *p,           /* The parent or outer SELECT statement */
-  int iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
-  int isAgg            /* True if outer SELECT uses aggregate functions */
+  ਪੂਰਨ iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
+  ਪੂਰਨ isAgg            /* True if outer SELECT uses aggregate functions */
 ){
-  const char *zSavedAuthContext = pParse->zAuthContext;
-  Select *pParent;    /* Current UNION ALL term of the other query */
+  ਅਚਲ ਅੱਖਰ *zSavedAuthContext = pParse->zAuthContext;
+  Select *p_ਮਾਪਾ;    /* Current UNION ALL term of the other query */
   Select *pSub;       /* The inner query or "subquery" */
   Select *pSub1;      /* Pointer to the rightmost select in sub-query */
   SrcList *pSrc;      /* The FROM clause of the outer query */
   SrcList *pSubSrc;   /* The FROM clause of the subquery */
-  int iParent;        /* VDBE cursor number of the pSub result set temp table */
-  int iNewParent = -1;/* Replacement table for iParent */
-  int isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
-  int i;              /* Loop counter */
-  Expr *pWhere;                    /* The WHERE clause */
-  SrcItem *pSubitem;               /* The subquery */
+  ਪੂਰਨ i_ਮਾਪਾ;        /* VDBE cursor number of the pSub result set temp table */
+  ਪੂਰਨ i_New_ਮਾਪਾ = -1;/* Replacement table for iParent */
+  ਪੂਰਨ isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
+  ਪੂਰਨ i;              /* Loop counter */
+  ਵਿਅੰਜਕ *pWhere;                    /* The WHERE clause */
+  Src_ਵਸਤੂ *pSubitem;               /* The subquery */
   sqlite3 *db = pParse->db;
   Walker w;                        /* Walker to persist agginfo data */
-  int *aCsrMap = 0;
+  ਪੂਰਨ *aCsrMap = 0;
 
   /* Check to see if flattening is permitted.  Return 0 if not.
   */
-  assert( p!=0 );
-  assert( p->pPrior==0 );
-  if( OptimizationDisabled(db, SQLITE_QueryFlattener) ) return 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਪੂਰਵ==0 );
+  ਜੇ( OptimizationDisabled(db, SQLITE_QueryFlattener) ) ਵਾਪਸ 0;
   pSrc = p->pSrc;
-  assert( pSrc && iFrom>=0 && iFrom<pSrc->nSrc );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSrc && iFrom>=0 && iFrom<pSrc->nSrc );
   pSubitem = &pSrc->a[iFrom];
-  iParent = pSubitem->iCursor;
-  assert( pSubitem->fg.isSubquery );
+  i_ਮਾਪਾ = pSubitem->iCursor;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.isSubquery );
   pSub = pSubitem->u4.pSubq->pSelect;
-  assert( pSub!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSub!=0 );
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin || pSub->pWin ) return 0;                  /* Restriction (25) */
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+  ਜੇ( p->pWin || pSub->pWin ) ਵਾਪਸ 0;                  /* Restriction (25) */
+#ਜੇ_ਅੰਤ
 
   pSubSrc = pSub->pSrc;
-  assert( pSubSrc );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubSrc );
   /* Prior to version 3.1.2, when LIMIT and OFFSET had to be simple constants,
   ** not arbitrary expressions, we allowed some combining of LIMIT and OFFSET
   ** because they could be computed at compile-time.  But when LIMIT and OFFSET
   ** became arbitrary expressions, we were forced to add restrictions (13)
   ** and (14). */
-  if( pSub->pLimit && p->pLimit ) return 0;              /* Restriction (13) */
-  if( pSub->pLimit && pSub->pLimit->pRight ) return 0;   /* Restriction (14) */
-  if( (p->selFlags & SF_Compound)!=0 && pSub->pLimit ){
-    return 0;                                            /* Restriction (15) */
+  ਜੇ( pSub->p_ਹੱਦਬੰਦੀ && p->p_ਹੱਦਬੰਦੀ ) ਵਾਪਸ 0;              /* Restriction (13) */
+  ਜੇ( pSub->p_ਹੱਦਬੰਦੀ && pSub->p_ਹੱਦਬੰਦੀ->p_ਸੱਜਾ ) ਵਾਪਸ 0;   /* Restriction (14) */
+  ਜੇ( (p->selFlags & SF_Compound)!=0 && pSub->p_ਹੱਦਬੰਦੀ ){
+    ਵਾਪਸ 0;                                            /* Restriction (15) */
   }
-  if( pSubSrc->nSrc==0 ) return 0;                       /* Restriction (7)  */
-  if( pSub->selFlags & SF_Distinct ) return 0;           /* Restriction (4)  */
-  if( pSub->pLimit && (pSrc->nSrc>1 || isAgg) ){
-     return 0;         /* Restrictions (8)(9) */
+  ਜੇ( pSubSrc->nSrc==0 ) ਵਾਪਸ 0;                       /* Restriction (7)  */
+  ਜੇ( pSub->selFlags & SF_Distinct ) ਵਾਪਸ 0;           /* Restriction (4)  */
+  ਜੇ( pSub->p_ਹੱਦਬੰਦੀ && (pSrc->nSrc>1 || isAgg) ){
+     ਵਾਪਸ 0;         /* Restrictions (8)(9) */
   }
-  if( p->pOrderBy && pSub->pOrderBy ){
-     return 0;                                           /* Restriction (11) */
+  ਜੇ( p->p_ਕ੍ਰਮ_By && pSub->p_ਕ੍ਰਮ_By ){
+     ਵਾਪਸ 0;                                           /* Restriction (11) */
   }
-  if( isAgg && pSub->pOrderBy ) return 0;                /* Restriction (16) */
-  if( pSub->pLimit && p->pWhere ) return 0;              /* Restriction (19) */
-  if( pSub->pLimit && (p->selFlags & SF_Distinct)!=0 ){
-     return 0;         /* Restriction (21) */
+  ਜੇ( isAgg && pSub->p_ਕ੍ਰਮ_By ) ਵਾਪਸ 0;                /* Restriction (16) */
+  ਜੇ( pSub->p_ਹੱਦਬੰਦੀ && p->pWhere ) ਵਾਪਸ 0;              /* Restriction (19) */
+  ਜੇ( pSub->p_ਹੱਦਬੰਦੀ && (p->selFlags & SF_Distinct)!=0 ){
+     ਵਾਪਸ 0;         /* Restriction (21) */
   }
-  if( pSub->selFlags & (SF_Recursive) ){
-    return 0; /* Restrictions (22) */
+  ਜੇ( pSub->selFlags & (SF_Recursive) ){
+    ਵਾਪਸ 0; /* Restrictions (22) */
   }
 
   /*
@@ -4468,80 +4468,80 @@ static int flattenSubquery(
   **
   ** See also tickets #306, #350, and #3300.
   */
-  if( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
-    if( pSubSrc->nSrc>1                        /* (3a) */
+  ਜੇ( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
+    ਜੇ( pSubSrc->nSrc>1                        /* (3a) */
      /**** || IsVirtual(pSubSrc->a[0].pSTab)      (3b)-omitted */
      || (p->selFlags & SF_Distinct)!=0         /* (3d) */
-     || (pSubitem->fg.jointype & JT_RIGHT)!=0  /* (26) */
+     || (pSubitem->fg.jointype & JT_ਸੱਜਾ)!=0  /* (26) */
     ){
-      return 0;
+      ਵਾਪਸ 0;
     }
     isOuterJoin = 1;
   }
 
-  assert( pSubSrc->nSrc>0 );  /* True by restriction (7) */
-  if( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
-    return 0;   /* Restriction (27a) */
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubSrc->nSrc>0 );  /* True by restriction (7) */
+  ਜੇ( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+    ਵਾਪਸ 0;   /* Restriction (27a) */
   }
 
   /* Condition (28) is blocked by the caller */
-  assert( !pSubitem->fg.isCte || pSubitem->u2.pCteUse->eM10d!=M10d_Yes );
+  ਪ੍ਰਤਿਜ੍ਞਾ( !pSubitem->fg.isCte || pSubitem->u2.pCteUse->eM10d!=M10d_Yes );
 
   /* Restriction (17): If the sub-query is a compound SELECT, then it must
   ** use only the UNION ALL operator. And none of the simple select queries
   ** that make up the compound SELECT are allowed to be aggregate or distinct
   ** queries.
   */
-  if( pSub->pPrior ){
-    int ii;
-    if( pSub->pOrderBy ){
-      return 0;  /* Restriction (20) */
+  ਜੇ( pSub->p_ਪੂਰਵ ){
+    ਪੂਰਨ ii;
+    ਜੇ( pSub->p_ਕ੍ਰਮ_By ){
+      ਵਾਪਸ 0;  /* Restriction (20) */
     }
-    if( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
-      return 0; /* (17d1), (17d2), or (17f) */
+    ਜੇ( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
+      ਵਾਪਸ 0; /* (17d1), (17d2), or (17f) */
     }
-    for(pSub1=pSub; pSub1; pSub1=pSub1->pPrior){
+    ਲਈ(pSub1=pSub; pSub1; pSub1=pSub1->p_ਪੂਰਵ){
       testcase( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct );
       testcase( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))==SF_Aggregate );
-      assert( pSub->pSrc!=0 );
-      assert( (pSub->selFlags & SF_Recursive)==0 );
-      assert( pSub->pEList->nExpr==pSub1->pEList->nExpr );
-      if( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
-       || (pSub1->pPrior && pSub1->op!=TK_ALL)                 /* (17a) */
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSub->pSrc!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( (pSub->selFlags & SF_Recursive)==0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSub->pEList->n_ਵਿਅੰਜਕ==pSub1->pEList->n_ਵਿਅੰਜਕ );
+      ਜੇ( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
+       || (pSub1->p_ਪੂਰਵ && pSub1->op!=TK_ALL)                 /* (17a) */
        || pSub1->pSrc->nSrc<1                                  /* (17c) */
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
        || pSub1->pWin                                          /* (17e) */
-#endif
+#ਜੇ_ਅੰਤ
       ){
-        return 0;
+        ਵਾਪਸ 0;
       }
-      if( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+      ਜੇ( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
         /* Without this restriction, the JT_LTORJ flag would end up being
         ** omitted on left-hand tables of the right join that is being
         ** flattened. */
-        return 0;   /* Restrictions (17g), (27b) */
+        ਵਾਪਸ 0;   /* Restrictions (17g), (27b) */
       }
       testcase( pSub1->pSrc->nSrc>1 );
     }
 
     /* Restriction (18). */
-    if( p->pOrderBy ){
-      for(ii=0; ii<p->pOrderBy->nExpr; ii++){
-        if( p->pOrderBy->a[ii].u.x.iOrderByCol==0 ) return 0;
+    ਜੇ( p->p_ਕ੍ਰਮ_By ){
+      ਲਈ(ii=0; ii<p->p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ; ii++){
+        ਜੇ( p->p_ਕ੍ਰਮ_By->a[ii].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ==0 ) ਵਾਪਸ 0;
       }
     }
 
     /* Restriction (23) */
-    if( (p->selFlags & SF_Recursive) ) return 0;
+    ਜੇ( (p->selFlags & SF_Recursive) ) ਵਾਪਸ 0;
 
     /* Restriction (17h) */
-    if( compoundHasDifferentAffinities(pSub) ) return 0;
+    ਜੇ( compoundHasDifferentAffinities(pSub) ) ਵਾਪਸ 0;
 
-    if( pSrc->nSrc>1 ){
-      if( pParse->nSelect>500 ) return 0;
-      if( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) return 0;
-      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*sizeof(int));
-      if( aCsrMap ) aCsrMap[0] = pParse->nTab;
+    ਜੇ( pSrc->nSrc>1 ){
+      ਜੇ( pParse->nSelect>500 ) ਵਾਪਸ 0;
+      ਜੇ( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) ਵਾਪਸ 0;
+      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*ਆਕਾਰ(ਪੂਰਨ));
+      ਜੇ( aCsrMap ) aCsrMap[0] = pParse->nTab;
     }
   }
 
@@ -4557,18 +4557,18 @@ static int flattenSubquery(
 
   /* Delete the transient structures associated with the subquery */
   
-  if( ALWAYS(pSubitem->fg.isSubquery) ){
+  ਜੇ( ALWAYS(pSubitem->fg.isSubquery) ){
     pSub1 = sqlite3SubqueryDetach(db, pSubitem);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     pSub1 = 0;
   }
-  assert( pSubitem->fg.isSubquery==0 );
-  assert( pSubitem->fg.fixedSchema==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.isSubquery==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.fixedSchema==0 );
   sqlite3DbFree(db, pSubitem->zName);
   sqlite3DbFree(db, pSubitem->zAlias);
   pSubitem->zName = 0;
   pSubitem->zAlias = 0;
-  assert( pSubitem->fg.isUsing!=0 || pSubitem->u3.pOn==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.isUsing!=0 || pSubitem->u3.pOn==0 );
 
   /* If the sub-query is a compound SELECT statement, then (by restrictions
   ** 17 and 18 above) it must be a UNION ALL and the parent query must
@@ -4603,44 +4603,44 @@ static int flattenSubquery(
   **
   ** We call this the "compound-subquery flattening".
   */
-  for(pSub=pSub->pPrior; pSub; pSub=pSub->pPrior){
+  ਲਈ(pSub=pSub->p_ਪੂਰਵ; pSub; pSub=pSub->p_ਪੂਰਵ){
     Select *pNew;
-    ExprList *pOrderBy = p->pOrderBy;
-    Expr *pLimit = p->pLimit;
-    Select *pPrior = p->pPrior;
-    Table *pItemTab = pSubitem->pSTab;
+    ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
+    ਵਿਅੰਜਕ *p_ਹੱਦਬੰਦੀ = p->p_ਹੱਦਬੰਦੀ;
+    Select *p_ਪੂਰਵ = p->p_ਪੂਰਵ;
+    ਸਾਰਣੀ *p_ਵਸਤੂ_Tab = pSubitem->pSTab;
     pSubitem->pSTab = 0;
-    p->pOrderBy = 0;
-    p->pPrior = 0;
-    p->pLimit = 0;
+    p->p_ਕ੍ਰਮ_By = 0;
+    p->p_ਪੂਰਵ = 0;
+    p->p_ਹੱਦਬੰਦੀ = 0;
     pNew = sqlite3SelectDup(db, p, 0);
-    p->pLimit = pLimit;
-    p->pOrderBy = pOrderBy;
+    p->p_ਹੱਦਬੰਦੀ = p_ਹੱਦਬੰਦੀ;
+    p->p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By;
     p->op = TK_ALL;
-    pSubitem->pSTab = pItemTab;
-    if( pNew==0 ){
-      p->pPrior = pPrior;
-    }else{
+    pSubitem->pSTab = p_ਵਸਤੂ_Tab;
+    ਜੇ( pNew==0 ){
+      p->p_ਪੂਰਵ = p_ਪੂਰਵ;
+    }ਨਹੀਂਤਾਂ{
       pNew->selId = ++pParse->nSelect;
-      if( aCsrMap && ALWAYS(db->mallocFailed==0) ){
+      ਜੇ( aCsrMap && ALWAYS(db->mallocFailed==0) ){
         renumberCursors(pParse, pNew, iFrom, aCsrMap);
       }
-      pNew->pPrior = pPrior;
-      if( pPrior ) pPrior->pNext = pNew;
-      pNew->pNext = p;
-      p->pPrior = pNew;
+      pNew->p_ਪੂਰਵ = p_ਪੂਰਵ;
+      ਜੇ( p_ਪੂਰਵ ) p_ਪੂਰਵ->p_ਅਗਲਾ = pNew;
+      pNew->p_ਅਗਲਾ = p;
+      p->p_ਪੂਰਵ = pNew;
       TREETRACE(0x4,pParse,p,("compound-subquery flattener"
                               " creates %u as peer\n",pNew->selId));
     }
-    assert( pSubitem->fg.isSubquery==0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.isSubquery==0 );
   }
   sqlite3DbFree(db, aCsrMap);
-  if( db->mallocFailed ){
-    assert( pSubitem->fg.fixedSchema==0 );
-    assert( pSubitem->fg.isSubquery==0 );
-    assert( pSubitem->u4.zDatabase==0 );
-    sqlite3SrcItemAttachSubquery(pParse, pSubitem, pSub1, 0);
-    return 1;
+  ਜੇ( db->mallocFailed ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.fixedSchema==0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->fg.isSubquery==0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSubitem->u4.zDatabase==0 );
+    sqlite3_Src_ਵਸਤੂ_Attach_Subquery(pParse, pSubitem, pSub1, 0);
+    ਵਾਪਸ 1;
   }
 
   /* Defer deleting the Table object associated with the
@@ -4650,14 +4650,14 @@ static int flattenSubquery(
   **
   ** pSubitem->pSTab is always non-NULL by test restrictions and tests above.
   */
-  if( ALWAYS(pSubitem->pSTab!=0) ){
-    Table *pTabToDel = pSubitem->pSTab;
-    if( pTabToDel->nTabRef==1 ){
+  ਜੇ( ALWAYS(pSubitem->pSTab!=0) ){
+    ਸਾਰਣੀ *p_Tab_ਮੰਜ਼ਿਲ_Del = pSubitem->pSTab;
+    ਜੇ( p_Tab_ਮੰਜ਼ਿਲ_Del->nTabRef==1 ){
       Parse *pToplevel = sqlite3ParseToplevel(pParse);
-      sqlite3ParserAddCleanup(pToplevel, sqlite3DeleteTableGeneric, pTabToDel);
+      sqlite3_Parser_ਜੋੜੋ_Cleanup(pToplevel, sqlite3_Delete_ਸਾਰਣੀ_Generic, p_Tab_ਮੰਜ਼ਿਲ_Del);
       testcase( pToplevel->earlyCleanup );
-    }else{
-      pTabToDel->nTabRef--;
+    }ਨਹੀਂਤਾਂ{
+      p_Tab_ਮੰਜ਼ਿਲ_Del->nTabRef--;
     }
     pSubitem->pSTab = 0;
   }
@@ -4676,13 +4676,13 @@ static int flattenSubquery(
   ** elements we are now copying in.
   */
   pSub = pSub1;
-  for(pParent=p; pParent; pParent=pParent->pPrior, pSub=pSub->pPrior){
-    int nSubSrc;
-    u8 jointype = pParent->pSrc->a[iFrom].fg.jointype;
-    assert( pSub!=0 );
+  ਲਈ(p_ਮਾਪਾ=p; p_ਮਾਪਾ; p_ਮਾਪਾ=p_ਮਾਪਾ->p_ਪੂਰਵ, pSub=pSub->p_ਪੂਰਵ){
+    ਪੂਰਨ nSubSrc;
+    u8 jointype = p_ਮਾਪਾ->pSrc->a[iFrom].fg.jointype;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSub!=0 );
     pSubSrc = pSub->pSrc;     /* FROM clause of subquery */
     nSubSrc = pSubSrc->nSrc;  /* Number of terms in subquery FROM clause */
-    pSrc = pParent->pSrc;     /* FROM clause of the outer query */
+    pSrc = p_ਮਾਪਾ->pSrc;     /* FROM clause of the outer query */
 
     /* The subquery uses a single slot of the FROM clause of the outer
     ** query.  If the subquery has more than one element in its FROM clause,
@@ -4699,26 +4699,26 @@ static int flattenSubquery(
     ** The middle slot is expanded to two slots in order to make space
     ** for the two elements in the FROM clause of the subquery.
     */
-    if( nSubSrc>1 ){
+    ਜੇ( nSubSrc>1 ){
       pSrc = sqlite3SrcListEnlarge(pParse, pSrc, nSubSrc-1,iFrom+1);
-      if( pSrc==0 ) break;
-      pParent->pSrc = pSrc;
+      ਜੇ( pSrc==0 ) ਰੋਕੋ;
+      p_ਮਾਪਾ->pSrc = pSrc;
     }
 
     /* Transfer the FROM clause terms from the subquery into the
     ** outer query.
     */
-    iNewParent = pSubSrc->a[0].iCursor;
-    for(i=0; i<nSubSrc; i++){
-      SrcItem *pItem = &pSrc->a[i+iFrom];
-      assert( pItem->fg.isTabFunc==0 );
-      assert( pItem->fg.isSubquery
-           || pItem->fg.fixedSchema
-           || pItem->u4.zDatabase==0 );
-      if( pItem->fg.isUsing ) sqlite3IdListDelete(db, pItem->u3.pUsing);
-      *pItem = pSubSrc->a[i];
-      pItem->fg.jointype |= (jointype & JT_LTORJ);
-      memset(&pSubSrc->a[i], 0, sizeof(pSubSrc->a[i]));
+    i_New_ਮਾਪਾ = pSubSrc->a[0].iCursor;
+    ਲਈ(i=0; i<nSubSrc; i++){
+      Src_ਵਸਤੂ *p_ਵਸਤੂ = &pSrc->a[i+iFrom];
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->fg.isTabFunc==0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->fg.isSubquery
+           || p_ਵਸਤੂ->fg.fixedSchema
+           || p_ਵਸਤੂ->u4.zDatabase==0 );
+      ਜੇ( p_ਵਸਤੂ->fg.isUsing ) sqlite3IdListDelete(db, p_ਵਸਤੂ->u3.pUsing);
+      *p_ਵਸਤੂ = pSubSrc->a[i];
+      p_ਵਸਤੂ->fg.jointype |= (jointype & JT_LTORJ);
+      memset(&pSubSrc->a[i], 0, ਆਕਾਰ(pSubSrc->a[i]));
     }
     pSrc->a[iFrom].fg.jointype |= jointype;
  
@@ -4734,7 +4734,7 @@ static int flattenSubquery(
     ** We look at every expression in the outer query and every place we see
     ** "a" we substitute "x*3" and every place we see "b" we substitute "y+10".
     */
-    if( pSub->pOrderBy ){
+    ਜੇ( pSub->p_ਕ੍ਰਮ_By ){
       /* At this point, any non-zero iOrderByCol values indicate that the
       ** ORDER BY column expression is identical to the iOrderByCol'th
       ** expression returned by SELECT statement pSub. Since these values
@@ -4745,43 +4745,43 @@ static int flattenSubquery(
       ** function attempts to flatten a compound sub-query into pParent.
       ** See ticket [d11a6e908f].
       */
-      ExprList *pOrderBy = pSub->pOrderBy;
-      for(i=0; i<pOrderBy->nExpr; i++){
-        pOrderBy->a[i].u.x.iOrderByCol = 0;
+      ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By = pSub->p_ਕ੍ਰਮ_By;
+      ਲਈ(i=0; i<p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ; i++){
+        p_ਕ੍ਰਮ_By->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ = 0;
       }
-      assert( pParent->pOrderBy==0 );
-      pParent->pOrderBy = pOrderBy;
-      pSub->pOrderBy = 0;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਮਾਪਾ->p_ਕ੍ਰਮ_By==0 );
+      p_ਮਾਪਾ->p_ਕ੍ਰਮ_By = p_ਕ੍ਰਮ_By;
+      pSub->p_ਕ੍ਰਮ_By = 0;
     }
     pWhere = pSub->pWhere;
     pSub->pWhere = 0;
-    if( isOuterJoin>0 ){
-      assert( pSubSrc->nSrc==1 );
-      sqlite3SetJoinExpr(pWhere, iNewParent, EP_OuterON);
+    ਜੇ( isOuterJoin>0 ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSubSrc->nSrc==1 );
+      sqlite3_ਸੈੱਟ_Join_ਵਿਅੰਜਕ(pWhere, i_New_ਮਾਪਾ, EP_OuterON);
     }
-    if( pWhere ){
-      if( pParent->pWhere ){
-        pParent->pWhere = sqlite3PExpr(pParse, TK_AND, pWhere, pParent->pWhere);
-      }else{
-        pParent->pWhere = pWhere;
+    ਜੇ( pWhere ){
+      ਜੇ( p_ਮਾਪਾ->pWhere ){
+        p_ਮਾਪਾ->pWhere = sqlite3PExpr(pParse, TK_AND, pWhere, p_ਮਾਪਾ->pWhere);
+      }ਨਹੀਂਤਾਂ{
+        p_ਮਾਪਾ->pWhere = pWhere;
       }
     }
-    if( db->mallocFailed==0 ){
+    ਜੇ( db->mallocFailed==0 ){
       SubstContext x;
       x.pParse = pParse;
-      x.iTable = iParent;
-      x.iNewTable = iNewParent;
+      x.i_ਸਾਰਣੀ = i_ਮਾਪਾ;
+      x.i_New_ਸਾਰਣੀ = i_New_ਮਾਪਾ;
       x.isOuterJoin = isOuterJoin;
-      x.nSelDepth = 0;
+      x.n_Sel_ਡੂੰਘਾਈ = 0;
       x.pEList = pSub->pEList;
-      x.pCList = findLeftmostExprlist(pSub);
-      substSelect(&x, pParent, 0);
+      x.pCList = ਲੱਭੋ_Leftmost_Exprlist(pSub);
+      substSelect(&x, p_ਮਾਪਾ, 0);
     }
  
     /* The flattened query is a compound if either the inner or the
     ** outer query is a compound. */
-    pParent->selFlags |= pSub->selFlags & SF_Compound;
-    assert( (pSub->selFlags & SF_Distinct)==0 ); /* restriction (17b) */
+    p_ਮਾਪਾ->selFlags |= pSub->selFlags & SF_Compound;
+    ਪ੍ਰਤਿਜ੍ਞਾ( (pSub->selFlags & SF_Distinct)==0 ); /* restriction (17b) */
  
     /*
     ** SELECT ... FROM (SELECT ... LIMIT a OFFSET b) LIMIT x OFFSET y;
@@ -4789,15 +4789,15 @@ static int flattenSubquery(
     ** One is tempted to try to add a and b to combine the limits.  But this
     ** does not work if either limit is negative.
     */
-    if( pSub->pLimit ){
-      pParent->pLimit = pSub->pLimit;
-      pSub->pLimit = 0;
+    ਜੇ( pSub->p_ਹੱਦਬੰਦੀ ){
+      p_ਮਾਪਾ->p_ਹੱਦਬੰਦੀ = pSub->p_ਹੱਦਬੰਦੀ;
+      pSub->p_ਹੱਦਬੰਦੀ = 0;
     }
 
     /* Recompute the SrcItem.colUsed masks for the flattened
     ** tables. */
-    for(i=0; i<nSubSrc; i++){
-      recomputeColumnsUsed(pParent, &pSrc->a[i+iFrom]);
+    ਲਈ(i=0; i<nSubSrc; i++){
+      recompute_Columns_ਵਰਤਿਆ(p_ਮਾਪਾ, &pSrc->a[i+iFrom]);
     }
   }
 
@@ -4807,31 +4807,31 @@ static int flattenSubquery(
   sqlite3WalkSelect(&w,pSub1);
   sqlite3SelectDelete(db, pSub1);
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x4 ){
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x4 ){
     TREETRACE(0x4,pParse,p,("After flattening:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  return 1;
+  ਵਾਪਸ 1;
 }
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
 /*
 ** A structure to keep track of all of the column values that are fixed to
 ** a known value due to WHERE clause constraints of the form COLUMN=VALUE.
 */
-typedef struct WhereConst WhereConst;
-struct WhereConst {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ WhereConst WhereConst;
+ਬਣਤਰ WhereConst {
   Parse *pParse;   /* Parsing context */
   u8 *pOomFault;   /* Pointer to pParse->db->mallocFailed */
-  int nConst;      /* Number for COLUMN=CONSTANT terms */
-  int nChng;       /* Number of times a constant is propagated */
-  int bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
+  ਪੂਰਨ nConst;      /* Number for COLUMN=CONSTANT terms */
+  ਪੂਰਨ nChng;       /* Number of times a constant is propagated */
+  ਪੂਰਨ bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
   u32 mExcludeOn;  /* Which ON expressions to exclude from considertion.
                    ** Either EP_OuterON or EP_InnerON|EP_OuterON */
-  Expr **apExpr;   /* [i*2] is COLUMN and [i*2+1] is VALUE */
+  ਵਿਅੰਜਕ **ap_ਵਿਅੰਜਕ;   /* [i*2] is COLUMN and [i*2+1] is VALUE */
 };
 
 /*
@@ -4851,46 +4851,46 @@ struct WhereConst {
 **
 ** The caller guarantees the pColumn is a column.
 */
-static void constInsert(
+ਸਥਿਰ ਖਾਲੀ const_ਪਾਓ(
   WhereConst *pConst,  /* The WhereConst into which we are inserting */
-  Expr *pColumn,       /* The COLUMN part of the constraint */
-  Expr *pValue,        /* The VALUE part of the constraint */
-  Expr *pExpr          /* Overall expression: COLUMN=VALUE or VALUE=COLUMN */
+  ਵਿਅੰਜਕ *p_ਕਾਲਮ,       /* The COLUMN part of the constraint */
+  ਵਿਅੰਜਕ *p_ਮੁੱਲ,        /* The VALUE part of the constraint */
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ          /* Overall expression: COLUMN=VALUE or VALUE=COLUMN */
 ){
-  int i;
-  assert( pColumn->op==TK_COLUMN );
-  assert( sqlite3ExprIsConstant(pConst->pParse, pValue) );
-  if( ExprHasProperty(pColumn, EP_FixedCol) ) return;
-  if( sqlite3ExprAffinity(pValue)!=0 ) return;
-  if( !sqlite3IsBinary(sqlite3ExprCompareCollSeq(pConst->pParse,pExpr)) ){
-    return;
+  ਪੂਰਨ i;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕਾਲਮ->op==TK_ਕਾਲਮ );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਵਿਅੰਜਕ_Is_Constant(pConst->pParse, p_ਮੁੱਲ) );
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਕਾਲਮ, EP_Fixed_ਖਾਨਾ) ) ਵਾਪਸ;
+  ਜੇ( sqlite3_ਵਿਅੰਜਕ_Affinity(p_ਮੁੱਲ)!=0 ) ਵਾਪਸ;
+  ਜੇ( !sqlite3_Is_ਦੁਆਧਾਰੀ(sqlite3_ਵਿਅੰਜਕ_Compare_Coll_Seq(pConst->pParse,p_ਵਿਅੰਜਕ)) ){
+    ਵਾਪਸ;
   }
-  if( sqlite3ExprCanReturnSubtype(pConst->pParse, pValue) ) return;
+  ਜੇ( sqlite3_ਵਿਅੰਜਕ_Can_Return_Subtype(pConst->pParse, p_ਮੁੱਲ) ) ਵਾਪਸ;
 
   /* 2018-10-25 ticket [cf5ed20f]
   ** Make sure the same pColumn is not inserted more than once */
-  for(i=0; i<pConst->nConst; i++){
-    const Expr *pE2 = pConst->apExpr[i*2];
-    assert( pE2->op==TK_COLUMN );
-    if( pE2->iTable==pColumn->iTable
-     && pE2->iColumn==pColumn->iColumn
+  ਲਈ(i=0; i<pConst->nConst; i++){
+    ਅਚਲ ਵਿਅੰਜਕ *pE2 = pConst->ap_ਵਿਅੰਜਕ[i*2];
+    ਪ੍ਰਤਿਜ੍ਞਾ( pE2->op==TK_ਕਾਲਮ );
+    ਜੇ( pE2->i_ਸਾਰਣੀ==p_ਕਾਲਮ->i_ਸਾਰਣੀ
+     && pE2->i_ਕਾਲਮ==p_ਕਾਲਮ->i_ਕਾਲਮ
     ){
-      return;  /* Already present.  Return without doing anything. */
+      ਵਾਪਸ;  /* Already present.  Return without doing anything. */
     }
   }
-  assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-  if( sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
+  ਜੇ( sqlite3_ਵਿਅੰਜਕ_Affinity(p_ਕਾਲਮ)<=SQLITE_AFF_BLOB ){
     pConst->bHasAffBlob = 1;
   }
 
   pConst->nConst++;
-  pConst->apExpr = sqlite3DbReallocOrFree(pConst->pParse->db, pConst->apExpr,
-                         pConst->nConst*2*sizeof(Expr*));
-  if( pConst->apExpr==0 ){
+  pConst->ap_ਵਿਅੰਜਕ = sqlite3DbReallocOrFree(pConst->pParse->db, pConst->ap_ਵਿਅੰਜਕ,
+                         pConst->nConst*2*ਆਕਾਰ(ਵਿਅੰਜਕ*));
+  ਜੇ( pConst->ap_ਵਿਅੰਜਕ==0 ){
     pConst->nConst = 0;
-  }else{
-    pConst->apExpr[pConst->nConst*2-2] = pColumn;
-    pConst->apExpr[pConst->nConst*2-1] = pValue;
+  }ਨਹੀਂਤਾਂ{
+    pConst->ap_ਵਿਅੰਜਕ[pConst->nConst*2-2] = p_ਕਾਲਮ;
+    pConst->ap_ਵਿਅੰਜਕ[pConst->nConst*2-1] = p_ਮੁੱਲ;
   }
 }
 
@@ -4900,29 +4900,29 @@ static void constInsert(
 ** is part of the AND-connected terms of the expression.  For each term
 ** found, add it to the pConst structure.
 */
-static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
-  Expr *pRight, *pLeft;
-  if( NEVER(pExpr==0) ) return;
-  if( ExprHasProperty(pExpr, pConst->mExcludeOn) ){
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return;
+ਸਥਿਰ ਖਾਲੀ ਲੱਭੋ_Const_ਵਿੱਚ_Where(WhereConst *pConst, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  ਵਿਅੰਜਕ *p_ਸੱਜਾ, *p_ਖੱਬਾ;
+  ਜੇ( NEVER(p_ਵਿਅੰਜਕ==0) ) ਵਾਪਸ;
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, pConst->mExcludeOn) ){
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_OuterON) );
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_InnerON) );
+    ਵਾਪਸ;
   }
-  if( pExpr->op==TK_AND ){
-    findConstInWhere(pConst, pExpr->pRight);
-    findConstInWhere(pConst, pExpr->pLeft);
-    return;
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_AND ){
+    ਲੱਭੋ_Const_ਵਿੱਚ_Where(pConst, p_ਵਿਅੰਜਕ->p_ਸੱਜਾ);
+    ਲੱਭੋ_Const_ਵਿੱਚ_Where(pConst, p_ਵਿਅੰਜਕ->p_ਖੱਬਾ);
+    ਵਾਪਸ;
   }
-  if( pExpr->op!=TK_EQ ) return;
-  pRight = pExpr->pRight;
-  pLeft = pExpr->pLeft;
-  assert( pRight!=0 );
-  assert( pLeft!=0 );
-  if( pRight->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pLeft) ){
-    constInsert(pConst,pRight,pLeft,pExpr);
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_EQ ) ਵਾਪਸ;
+  p_ਸੱਜਾ = p_ਵਿਅੰਜਕ->p_ਸੱਜਾ;
+  p_ਖੱਬਾ = p_ਵਿਅੰਜਕ->p_ਖੱਬਾ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਸੱਜਾ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਖੱਬਾ!=0 );
+  ਜੇ( p_ਸੱਜਾ->op==TK_ਕਾਲਮ && sqlite3_ਵਿਅੰਜਕ_Is_Constant(pConst->pParse, p_ਖੱਬਾ) ){
+    const_ਪਾਓ(pConst,p_ਸੱਜਾ,p_ਖੱਬਾ,p_ਵਿਅੰਜਕ);
   }
-  if( pLeft->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pRight) ){
-    constInsert(pConst,pLeft,pRight,pExpr);
+  ਜੇ( p_ਖੱਬਾ->op==TK_ਕਾਲਮ && sqlite3_ਵਿਅੰਜਕ_Is_Constant(pConst->pParse, p_ਸੱਜਾ) ){
+    const_ਪਾਓ(pConst,p_ਖੱਬਾ,p_ਸੱਜਾ,p_ਵਿਅੰਜਕ);
   }
 }
 
@@ -4935,39 +4935,39 @@ static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
 ** if argument bIgnoreAffBlob is non-zero and the affinity of pExpr
 ** is SQLITE_AFF_BLOB.
 */
-static int propagateConstantExprRewriteOne(
+ਸਥਿਰ ਪੂਰਨ propagate_Constant_ਵਿਅੰਜਕ_Rewrite_One(
   WhereConst *pConst,
-  Expr *pExpr,
-  int bIgnoreAffBlob
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ,
+  ਪੂਰਨ bIgnoreAffBlob
 ){
-  int i;
-  if( pConst->pOomFault[0] ) return WRC_Prune;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
-  if( ExprHasProperty(pExpr, EP_FixedCol|pConst->mExcludeOn) ){
-    testcase( ExprHasProperty(pExpr, EP_FixedCol) );
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return WRC_Continue;
+  ਪੂਰਨ i;
+  ਜੇ( pConst->pOomFault[0] ) ਵਾਪਸ WRC_Prune;
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_ਕਾਲਮ ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_Fixed_ਖਾਨਾ|pConst->mExcludeOn) ){
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_Fixed_ਖਾਨਾ) );
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_OuterON) );
+    testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_InnerON) );
+    ਵਾਪਸ WRC_Continue;
   }
-  for(i=0; i<pConst->nConst; i++){
-    Expr *pColumn = pConst->apExpr[i*2];
-    if( pColumn==pExpr ) continue;
-    if( pColumn->iTable!=pExpr->iTable ) continue;
-    if( pColumn->iColumn!=pExpr->iColumn ) continue;
-    assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-    if( bIgnoreAffBlob && sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
-      break;
+  ਲਈ(i=0; i<pConst->nConst; i++){
+    ਵਿਅੰਜਕ *p_ਕਾਲਮ = pConst->ap_ਵਿਅੰਜਕ[i*2];
+    ਜੇ( p_ਕਾਲਮ==p_ਵਿਅੰਜਕ ) ਜਾਰੀ;
+    ਜੇ( p_ਕਾਲਮ->i_ਸਾਰਣੀ!=p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ ) ਜਾਰੀ;
+    ਜੇ( p_ਕਾਲਮ->i_ਕਾਲਮ!=p_ਵਿਅੰਜਕ->i_ਕਾਲਮ ) ਜਾਰੀ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
+    ਜੇ( bIgnoreAffBlob && sqlite3_ਵਿਅੰਜਕ_Affinity(p_ਕਾਲਮ)<=SQLITE_AFF_BLOB ){
+      ਰੋਕੋ;
     }
     /* A match is found.  Add the EP_FixedCol property */
     pConst->nChng++;
-    ExprClearProperty(pExpr, EP_Leaf);
-    ExprSetProperty(pExpr, EP_FixedCol);
-    assert( pExpr->pLeft==0 );
-    pExpr->pLeft = sqlite3ExprDup(pConst->pParse->db, pConst->apExpr[i*2+1], 0);
-    if( pConst->pParse->db->mallocFailed ) return WRC_Prune;
-    break;
+    ਵਿਅੰਜਕ_Clear_Property(p_ਵਿਅੰਜਕ, EP_ਪੱਤੀ);
+    ਵਿਅੰਜਕ_ਸੈੱਟ_Property(p_ਵਿਅੰਜਕ, EP_Fixed_ਖਾਨਾ);
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->p_ਖੱਬਾ==0 );
+    p_ਵਿਅੰਜਕ->p_ਖੱਬਾ = sqlite3_ਵਿਅੰਜਕ_Dup(pConst->pParse->db, pConst->ap_ਵਿਅੰਜਕ[i*2+1], 0);
+    ਜੇ( pConst->pParse->db->mallocFailed ) ਵਾਪਸ WRC_Prune;
+    ਰੋਕੋ;
   }
-  return WRC_Prune;
+  ਵਾਪਸ WRC_Prune;
 }
 
 /*
@@ -4986,24 +4986,24 @@ static int propagateConstantExprRewriteOne(
 **     children is a column that matches one of the columns in
 **     pWalker->u.pConst.
 */
-static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ propagate_Constant_ਵਿਅੰਜਕ_Rewrite(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   WhereConst *pConst = pWalker->u.pConst;
-  assert( TK_GT==TK_EQ+1 );
-  assert( TK_LE==TK_EQ+2 );
-  assert( TK_LT==TK_EQ+3 );
-  assert( TK_GE==TK_EQ+4 );
-  if( pConst->bHasAffBlob ){
-    if( (pExpr->op>=TK_EQ && pExpr->op<=TK_GE)
-     || pExpr->op==TK_IS
+  ਪ੍ਰਤਿਜ੍ਞਾ( TK_GT==TK_EQ+1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( TK_LE==TK_EQ+2 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( TK_LT==TK_EQ+3 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( TK_GE==TK_EQ+4 );
+  ਜੇ( pConst->bHasAffBlob ){
+    ਜੇ( (p_ਵਿਅੰਜਕ->op>=TK_EQ && p_ਵਿਅੰਜਕ->op<=TK_GE)
+     || p_ਵਿਅੰਜਕ->op==TK_IS
     ){
-      propagateConstantExprRewriteOne(pConst, pExpr->pLeft, 0);
-      if( pConst->pOomFault[0] ) return WRC_Prune;
-      if( sqlite3ExprAffinity(pExpr->pLeft)!=SQLITE_AFF_TEXT ){
-        propagateConstantExprRewriteOne(pConst, pExpr->pRight, 0);
+      propagate_Constant_ਵਿਅੰਜਕ_Rewrite_One(pConst, p_ਵਿਅੰਜਕ->p_ਖੱਬਾ, 0);
+      ਜੇ( pConst->pOomFault[0] ) ਵਾਪਸ WRC_Prune;
+      ਜੇ( sqlite3_ਵਿਅੰਜਕ_Affinity(p_ਵਿਅੰਜਕ->p_ਖੱਬਾ)!=SQLITE_AFF_ਪਾਠ ){
+        propagate_Constant_ਵਿਅੰਜਕ_Rewrite_One(pConst, p_ਵਿਅੰਜਕ->p_ਸੱਜਾ, 0);
       }
     }
   }
-  return propagateConstantExprRewriteOne(pConst, pExpr, pConst->bHasAffBlob);
+  ਵਾਪਸ propagate_Constant_ਵਿਅੰਜਕ_Rewrite_One(pConst, p_ਵਿਅੰਜਕ, pConst->bHasAffBlob);
 }
 
 /*
@@ -5057,50 +5057,50 @@ static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
 ** type conversions to occur.  See logic associated with the bHasAffBlob flag
 ** for details.
 */
-static int propagateConstants(
+ਸਥਿਰ ਪੂਰਨ propagateConstants(
   Parse *pParse,   /* The parsing context */
   Select *p        /* The query in which to propagate constants */
 ){
   WhereConst x;
   Walker w;
-  int nChng = 0;
+  ਪੂਰਨ nChng = 0;
   x.pParse = pParse;
   x.pOomFault = &pParse->db->mallocFailed;
-  do{
+  ਕਰੋ{
     x.nConst = 0;
     x.nChng = 0;
-    x.apExpr = 0;
+    x.ap_ਵਿਅੰਜਕ = 0;
     x.bHasAffBlob = 0;
-    if( ALWAYS(p->pSrc!=0)
+    ਜੇ( ALWAYS(p->pSrc!=0)
      && p->pSrc->nSrc>0
      && (p->pSrc->a[0].fg.jointype & JT_LTORJ)!=0
     ){
       /* Do not propagate constants on any ON clause if there is a
       ** RIGHT JOIN anywhere in the query */
       x.mExcludeOn = EP_InnerON | EP_OuterON;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       /* Do not propagate constants through the ON clause of a LEFT JOIN */
       x.mExcludeOn = EP_OuterON;
     }
-    findConstInWhere(&x, p->pWhere);
-    if( x.nConst ){
-      memset(&w, 0, sizeof(w));
+    ਲੱਭੋ_Const_ਵਿੱਚ_Where(&x, p->pWhere);
+    ਜੇ( x.nConst ){
+      memset(&w, 0, ਆਕਾਰ(w));
       w.pParse = pParse;
-      w.xExprCallback = propagateConstantExprRewrite;
+      w.x_ਵਿਅੰਜਕ_Callback = propagate_Constant_ਵਿਅੰਜਕ_Rewrite;
       w.xSelectCallback = sqlite3SelectWalkNoop;
       w.xSelectCallback2 = 0;
-      w.walkerDepth = 0;
+      w.walker_ਡੂੰਘਾਈ = 0;
       w.u.pConst = &x;
-      sqlite3WalkExpr(&w, p->pWhere);
-      sqlite3DbFree(x.pParse->db, x.apExpr);
+      sqlite3_Walk_ਵਿਅੰਜਕ(&w, p->pWhere);
+      sqlite3DbFree(x.pParse->db, x.ap_ਵਿਅੰਜਕ);
       nChng += x.nChng;
     }
-  }while( x.nChng ); 
-  return nChng;
+  }ਜਦੋਂ( x.nChng ); 
+  ਵਾਪਸ nChng;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-# if !defined(SQLITE_OMIT_WINDOWFUNC)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+# ਜੇ !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** This function is called to determine whether or not it is safe to
 ** push WHERE clause expression pExpr down to FROM clause sub-query
@@ -5119,16 +5119,16 @@ static int propagateConstants(
 **   * the sub-query uses only one distinct window frame, and
 **   * that the window frame has a PARTITION BY clause.
 */
-static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
-  assert( pSubq->pWin->pPartition );
-  assert( (pSubq->selFlags & SF_MultiPart)==0 );
-  assert( pSubq->pPrior==0 );
-  return sqlite3ExprIsConstantOrGroupBy(pParse, pExpr, pSubq->pWin->pPartition);
+ਸਥਿਰ ਪੂਰਨ ਧੱਕੋ_ਥੱਲੇ_ਖਿੜਕੀ_Check(Parse *pParse, Select *pSubq, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubq->pWin->p_ਹਿੱਸੇ_ਕਰੋ );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (pSubq->selFlags & SF_MultiPart)==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSubq->p_ਪੂਰਵ==0 );
+  ਵਾਪਸ sqlite3_ਵਿਅੰਜਕ_Is_Constant_Or_ਸਮੂਹ_By(pParse, p_ਵਿਅੰਜਕ, pSubq->pWin->p_ਹਿੱਸੇ_ਕਰੋ);
 }
 # endif /* SQLITE_OMIT_WINDOWFUNC */
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Make copies of relevant WHERE clause terms of the outer query into
 ** the WHERE clause of subquery.  Example:
@@ -5237,169 +5237,169 @@ static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
 ** Return 0 if no changes are made and non-zero if one or more WHERE clause
 ** terms are duplicated into the subquery.
 */
-static int pushDownWhereTerms(
+ਸਥਿਰ ਪੂਰਨ ਧੱਕੋ_ਥੱਲੇ_Where_Terms(
   Parse *pParse,        /* Parse context (for malloc() and error reporting) */
   Select *pSubq,        /* The subquery whose WHERE clause is to be augmented */
-  Expr *pWhere,         /* The WHERE clause of the outer query */
+  ਵਿਅੰਜਕ *pWhere,         /* The WHERE clause of the outer query */
   SrcList *pSrcList,    /* The complete from clause of the outer query */
-  int iSrc              /* Which FROM clause term to try to push into  */
+  ਪੂਰਨ iSrc              /* Which FROM clause term to try to push into  */
 ){
-  Expr *pNew;
-  SrcItem *pSrc;        /* The subquery FROM term into which WHERE is pushed */
-  int nChng = 0;
+  ਵਿਅੰਜਕ *pNew;
+  Src_ਵਸਤੂ *pSrc;        /* The subquery FROM term into which WHERE is pushed */
+  ਪੂਰਨ nChng = 0;
   pSrc = &pSrcList->a[iSrc];
-  if( pWhere==0 ) return 0;
-  if( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
-    return 0;           /* restrictions (2) and (11) */
+  ਜੇ( pWhere==0 ) ਵਾਪਸ 0;
+  ਜੇ( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
+    ਵਾਪਸ 0;           /* restrictions (2) and (11) */
   }
-  if( pSrc->fg.jointype & (JT_LTORJ|JT_RIGHT) ){
-    return 0;           /* restrictions (10) */
+  ਜੇ( pSrc->fg.jointype & (JT_LTORJ|JT_ਸੱਜਾ) ){
+    ਵਾਪਸ 0;           /* restrictions (10) */
   }
 
-  if( pSubq->pPrior ){
+  ਜੇ( pSubq->p_ਪੂਰਵ ){
     Select *pSel;
-    int notUnionAll = 0;
-    for(pSel=pSubq; pSel; pSel=pSel->pPrior){
+    ਪੂਰਨ notUnionAll = 0;
+    ਲਈ(pSel=pSubq; pSel; pSel=pSel->p_ਪੂਰਵ){
       u8 op = pSel->op;
-      assert( op==TK_ALL || op==TK_SELECT
+      ਪ੍ਰਤਿਜ੍ਞਾ( op==TK_ALL || op==TK_SELECT
            || op==TK_UNION || op==TK_INTERSECT || op==TK_EXCEPT );
-      if( op!=TK_ALL && op!=TK_SELECT ){
+      ਜੇ( op!=TK_ALL && op!=TK_SELECT ){
         notUnionAll = 1;
       }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSel->pWin ) return 0;    /* restriction (6b) */
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+      ਜੇ( pSel->pWin ) ਵਾਪਸ 0;    /* restriction (6b) */
+#ਜੇ_ਅੰਤ
     }
-    if( notUnionAll ){
+    ਜੇ( notUnionAll ){
       /* If any of the compound arms are connected using UNION, INTERSECT,
       ** or EXCEPT, then we must ensure that none of the columns use a
       ** non-BINARY collating sequence. */
-      for(pSel=pSubq; pSel; pSel=pSel->pPrior){
-        int ii;
-        const ExprList *pList = pSel->pEList;
-        assert( pList!=0 );
-        for(ii=0; ii<pList->nExpr; ii++){
-          CollSeq *pColl = sqlite3ExprCollSeq(pParse, pList->a[ii].pExpr);
-          if( !sqlite3IsBinary(pColl) ){
-            return 0;  /* Restriction (8) */
+      ਲਈ(pSel=pSubq; pSel; pSel=pSel->p_ਪੂਰਵ){
+        ਪੂਰਨ ii;
+        ਅਚਲ ਵਿਅੰਜਕ_List *pList = pSel->pEList;
+        ਪ੍ਰਤਿਜ੍ਞਾ( pList!=0 );
+        ਲਈ(ii=0; ii<pList->n_ਵਿਅੰਜਕ; ii++){
+          CollSeq *pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, pList->a[ii].p_ਵਿਅੰਜਕ);
+          ਜੇ( !sqlite3_Is_ਦੁਆਧਾਰੀ(pColl) ){
+            ਵਾਪਸ 0;  /* Restriction (8) */
           }
         }
       }
     }
-  }else{
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pSubq->pWin && pSubq->pWin->pPartition==0 ) return 0;
-#endif
+  }ਨਹੀਂਤਾਂ{
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( pSubq->pWin && pSubq->pWin->p_ਹਿੱਸੇ_ਕਰੋ==0 ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
   }
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
   /* Only the first term of a compound can have a WITH clause.  But make
   ** sure no other terms are marked SF_Recursive in case something changes
   ** in the future.
   */
   {
     Select *pX; 
-    for(pX=pSubq; pX; pX=pX->pPrior){
-      assert( (pX->selFlags & (SF_Recursive))==0 );
+    ਲਈ(pX=pSubq; pX; pX=pX->p_ਪੂਰਵ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( (pX->selFlags & (SF_Recursive))==0 );
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  if( pSubq->pLimit!=0 ){
-    return 0; /* restriction (3) */
+  ਜੇ( pSubq->p_ਹੱਦਬੰਦੀ!=0 ){
+    ਵਾਪਸ 0; /* restriction (3) */
   }
-  while( pWhere->op==TK_AND ){
-    nChng += pushDownWhereTerms(pParse, pSubq, pWhere->pRight, pSrcList, iSrc);
-    pWhere = pWhere->pLeft;
+  ਜਦੋਂ( pWhere->op==TK_AND ){
+    nChng += ਧੱਕੋ_ਥੱਲੇ_Where_Terms(pParse, pSubq, pWhere->p_ਸੱਜਾ, pSrcList, iSrc);
+    pWhere = pWhere->p_ਖੱਬਾ;
   }
 
-#if 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
-  if( ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
+#ਜੇ 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (9c) */
   ){
-    int jj;
-    for(jj=0; jj<iSrc; jj++){
-      if( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
+    ਪੂਰਨ jj;
+    ਲਈ(jj=0; jj<iSrc; jj++){
+      ਜੇ( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
         /* If we reach this point, both (9a) and (9b) are satisfied.
         ** The following loop checks (9c):
         */
-        for(jj++; jj<iSrc; jj++){
-          if( (pSrcList->a[jj].fg.jointype & JT_RIGHT)!=0 ){
-            return 0;  /* restriction (9) */
+        ਲਈ(jj++; jj<iSrc; jj++){
+          ਜੇ( (pSrcList->a[jj].fg.jointype & JT_ਸੱਜਾ)!=0 ){
+            ਵਾਪਸ 0;  /* restriction (9) */
           }
         }
       }
     }
   }
-  if( isLeftJoin
-   && (ExprHasProperty(pWhere,EP_OuterON)==0
+  ਜੇ( is_ਖੱਬਾ_Join
+   && (ਵਿਅੰਜਕ_Has_Property(pWhere,EP_OuterON)==0
          || pWhere->w.iJoin!=iCursor)
   ){
-    return 0; /* restriction (4) */
+    ਵਾਪਸ 0; /* restriction (4) */
   }
-  if( ExprHasProperty(pWhere,EP_OuterON)
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(pWhere,EP_OuterON)
    && pWhere->w.iJoin!=iCursor
   ){
-    return 0; /* restriction (5) */
+    ਵਾਪਸ 0; /* restriction (5) */
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  if( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
-    Expr *pLeft = pWhere->pLeft;
-    if( ALWAYS(pLeft) 
-     && pLeft->op==TK_COLUMN
-     && pLeft->iColumn < 0
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ALLOW_ROWID_ਵਿੱਚ_VIEW
+  ਜੇ( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
+    ਵਿਅੰਜਕ *p_ਖੱਬਾ = pWhere->p_ਖੱਬਾ;
+    ਜੇ( ALWAYS(p_ਖੱਬਾ) 
+     && p_ਖੱਬਾ->op==TK_ਕਾਲਮ
+     && p_ਖੱਬਾ->i_ਕਾਲਮ < 0
     ){
-      return 0;  /* Restriction (12) */
+      ਵਾਪਸ 0;  /* Restriction (12) */
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  if( sqlite3ExprIsSingleTableConstraint(pWhere, pSrcList, iSrc, 1) ){
+  ਜੇ( sqlite3_ਵਿਅੰਜਕ_Is_Single_ਸਾਰਣੀ_Constraint(pWhere, pSrcList, iSrc, 1) ){
     nChng++;
-    pSubq->selFlags |= SF_PushDown;
-    while( pSubq ){
+    pSubq->selFlags |= SF_ਧੱਕੋ_ਥੱਲੇ;
+    ਜਦੋਂ( pSubq ){
       SubstContext x;
-      pNew = sqlite3ExprDup(pParse->db, pWhere, 0);
-      unsetJoinExpr(pNew, -1, 1);
+      pNew = sqlite3_ਵਿਅੰਜਕ_Dup(pParse->db, pWhere, 0);
+      unset_Join_ਵਿਅੰਜਕ(pNew, -1, 1);
       x.pParse = pParse;
-      x.iTable = pSrc->iCursor;
-      x.iNewTable = pSrc->iCursor;
+      x.i_ਸਾਰਣੀ = pSrc->iCursor;
+      x.i_New_ਸਾਰਣੀ = pSrc->iCursor;
       x.isOuterJoin = 0;
-      x.nSelDepth = 0;
+      x.n_Sel_ਡੂੰਘਾਈ = 0;
       x.pEList = pSubq->pEList;
-      x.pCList = findLeftmostExprlist(pSubq);
-      pNew = substExpr(&x, pNew);
-      assert( pNew!=0 || pParse->nErr!=0 );
-      if( pParse->nErr==0 && pNew->op==TK_IN && ExprUseXSelect(pNew) ){
-        assert( pNew->x.pSelect!=0 );
-        pNew->x.pSelect->selFlags |= SF_ClonedRhsIn;
-        assert( pWhere!=0 );
-        assert( pWhere->op==TK_IN );
-        assert( ExprUseXSelect(pWhere) );
-        assert( pWhere->x.pSelect!=0 );
-        pWhere->x.pSelect->selFlags |= SF_ClonedRhsIn;
+      x.pCList = ਲੱਭੋ_Leftmost_Exprlist(pSubq);
+      pNew = subst_ਵਿਅੰਜਕ(&x, pNew);
+      ਪ੍ਰਤਿਜ੍ਞਾ( pNew!=0 || pParse->nErr!=0 );
+      ਜੇ( pParse->nErr==0 && pNew->op==TK_ਵਿੱਚ && ਵਿਅੰਜਕ_Use_XSelect(pNew) ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( pNew->x.pSelect!=0 );
+        pNew->x.pSelect->selFlags |= SF_Cloned_Rhs_ਵਿੱਚ;
+        ਪ੍ਰਤਿਜ੍ਞਾ( pWhere!=0 );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pWhere->op==TK_ਵਿੱਚ );
+        ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XSelect(pWhere) );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pWhere->x.pSelect!=0 );
+        pWhere->x.pSelect->selFlags |= SF_Cloned_Rhs_ਵਿੱਚ;
       }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSubq->pWin && 0==pushDownWindowCheck(pParse, pSubq, pNew) ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+      ਜੇ( pSubq->pWin && 0==ਧੱਕੋ_ਥੱਲੇ_ਖਿੜਕੀ_Check(pParse, pSubq, pNew) ){
         /* Restriction 6c has prevented push-down in this case */
-        sqlite3ExprDelete(pParse->db, pNew);
+        sqlite3_ਵਿਅੰਜਕ_Delete(pParse->db, pNew);
         nChng--;
-        break;
+        ਰੋਕੋ;
       }
-#endif
-      if( pSubq->selFlags & SF_Aggregate ){
-        pSubq->pHaving = sqlite3ExprAnd(pParse, pSubq->pHaving, pNew);
-      }else{
-        pSubq->pWhere = sqlite3ExprAnd(pParse, pSubq->pWhere, pNew);
+#ਜੇ_ਅੰਤ
+      ਜੇ( pSubq->selFlags & SF_Aggregate ){
+        pSubq->pHaving = sqlite3_ਵਿਅੰਜਕ_And(pParse, pSubq->pHaving, pNew);
+      }ਨਹੀਂਤਾਂ{
+        pSubq->pWhere = sqlite3_ਵਿਅੰਜਕ_And(pParse, pSubq->pWhere, pNew);
       }
-      pSubq = pSubq->pPrior;
+      pSubq = pSubq->p_ਪੂਰਵ;
     }
   }
-  return nChng;
+  ਵਾਪਸ nChng;
 }
-#endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
 /*
 ** Check to see if a subquery contains result-set columns that are
@@ -5408,68 +5408,68 @@ static int pushDownWhereTerms(
 **
 ** Return the number of column that were changed to NULL.
 */
-static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
-  int nCol;
+ਸਥਿਰ ਪੂਰਨ disable_ਅਣਵਰਤਿਆ_Subquery_ਨਤੀਜਾ_Columns(Src_ਵਸਤੂ *p_ਵਸਤੂ){
+  ਪੂਰਨ n_ਖਾਨਾ;
   Select *pSub;      /* The subquery to be simplified */
   Select *pX;        /* For looping over compound elements of pSub */
-  Table *pTab;       /* The table that describes the subquery */
-  int j;             /* Column number */
-  int nChng = 0;     /* Number of columns converted to NULL */
-  Bitmask colUsed;   /* Columns that may not be NULLed out */
+  ਸਾਰਣੀ *pTab;       /* The table that describes the subquery */
+  ਪੂਰਨ j;             /* Column number */
+  ਪੂਰਨ nChng = 0;     /* Number of columns converted to NULL */
+  Bitmask ਖਾਨਾ_ਵਰਤਿਆ;   /* Columns that may not be NULLed out */
 
-  assert( pItem!=0 );
-  if( pItem->fg.isCorrelated || pItem->fg.isCte ){
-    return 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ!=0 );
+  ਜੇ( p_ਵਸਤੂ->fg.isCorrelated || p_ਵਸਤੂ->fg.isCte ){
+    ਵਾਪਸ 0;
   }
-  assert( pItem->pSTab!=0 );
-  pTab = pItem->pSTab;
-  assert( pItem->fg.isSubquery );
-  pSub = pItem->u4.pSubq->pSelect;
-  assert( pSub->pEList->nExpr==pTab->nCol );
-  for(pX=pSub; pX; pX=pX->pPrior){
-    if( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->pSTab!=0 );
+  pTab = p_ਵਸਤੂ->pSTab;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->fg.isSubquery );
+  pSub = p_ਵਸਤੂ->u4.pSubq->pSelect;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSub->pEList->n_ਵਿਅੰਜਕ==pTab->n_ਖਾਨਾ );
+  ਲਈ(pX=pSub; pX; pX=pX->p_ਪੂਰਵ){
+    ਜੇ( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
       testcase( pX->selFlags & SF_Distinct );
       testcase( pX->selFlags & SF_Aggregate );
-      return 0;
+      ਵਾਪਸ 0;
     }
-    if( pX->pPrior && pX->op!=TK_ALL ){
+    ਜੇ( pX->p_ਪੂਰਵ && pX->op!=TK_ALL ){
       /* This optimization does not work for compound subqueries that
       ** use UNION, INTERSECT, or EXCEPT.  Only UNION ALL is allowed. */
-      return 0;
+      ਵਾਪਸ 0;
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pX->pWin ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( pX->pWin ){
       /* This optimization does not work for subqueries that use window
       ** functions. */
-      return 0;
+      ਵਾਪਸ 0;
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
-  colUsed = pItem->colUsed;
-  if( pSub->pOrderBy ){
-    ExprList *pList = pSub->pOrderBy;
-    for(j=0; j<pList->nExpr; j++){
-      u16 iCol = pList->a[j].u.x.iOrderByCol;
-      if( iCol>0 ){
-        iCol--;
-        colUsed |= ((Bitmask)1)<<(iCol>=BMS ? BMS-1 : iCol);
+  ਖਾਨਾ_ਵਰਤਿਆ = p_ਵਸਤੂ->ਖਾਨਾ_ਵਰਤਿਆ;
+  ਜੇ( pSub->p_ਕ੍ਰਮ_By ){
+    ਵਿਅੰਜਕ_List *pList = pSub->p_ਕ੍ਰਮ_By;
+    ਲਈ(j=0; j<pList->n_ਵਿਅੰਜਕ; j++){
+      u16 i_ਖਾਨਾ = pList->a[j].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ;
+      ਜੇ( i_ਖਾਨਾ>0 ){
+        i_ਖਾਨਾ--;
+        ਖਾਨਾ_ਵਰਤਿਆ |= ((Bitmask)1)<<(i_ਖਾਨਾ>=BMS ? BMS-1 : i_ਖਾਨਾ);
       }
     }
   }
-  nCol = pTab->nCol;
-  for(j=0; j<nCol; j++){
+  n_ਖਾਨਾ = pTab->n_ਖਾਨਾ;
+  ਲਈ(j=0; j<n_ਖਾਨਾ; j++){
     Bitmask m = j<BMS-1 ? MASKBIT(j) : TOPBIT;
-    if( (m & colUsed)!=0 ) continue;
-    for(pX=pSub; pX; pX=pX->pPrior) {
-      Expr *pY = pX->pEList->a[j].pExpr;
-      if( pY->op==TK_NULL ) continue;
+    ਜੇ( (m & ਖਾਨਾ_ਵਰਤਿਆ)!=0 ) ਜਾਰੀ;
+    ਲਈ(pX=pSub; pX; pX=pX->p_ਪੂਰਵ) {
+      ਵਿਅੰਜਕ *pY = pX->pEList->a[j].p_ਵਿਅੰਜਕ;
+      ਜੇ( pY->op==TK_NULL ) ਜਾਰੀ;
       pY->op = TK_NULL;
-      ExprClearProperty(pY, EP_Skip|EP_Unlikely);
-      pX->selFlags |= SF_PushDown;
+      ਵਿਅੰਜਕ_Clear_Property(pY, EP_Skip|EP_Unlikely);
+      pX->selFlags |= SF_ਧੱਕੋ_ਥੱਲੇ;
       nChng++;
     }
   }
-  return nChng;
+  ਵਾਪਸ nChng;
 }
 
 
@@ -5489,42 +5489,42 @@ static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
 ** located but before their arguments have been subjected to aggregate
 ** analysis.
 */
-static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
-  int eRet = WHERE_ORDERBY_NORMAL;      /* Return value */
-  ExprList *pEList;                     /* Arguments to agg function */
-  const char *zFunc;                    /* Name of aggregate function pFunc */
-  ExprList *pOrderBy;
-  u8 sortFlags = 0;
+ਸਥਿਰ u8 minMaxQuery(sqlite3 *db, ਵਿਅੰਜਕ *pFunc, ਵਿਅੰਜਕ_List **ppMinMax){
+  ਪੂਰਨ eRet = WHERE_ORDERBY_ਸਾਧਾਰਨ;      /* Return value */
+  ਵਿਅੰਜਕ_List *pEList;                     /* Arguments to agg function */
+  ਅਚਲ ਅੱਖਰ *zFunc;                    /* Name of aggregate function pFunc */
+  ਵਿਅੰਜਕ_List *p_ਕ੍ਰਮ_By;
+  u8 ਛਾਂਟੋ_Flags = 0;
 
-  assert( *ppMinMax==0 );
-  assert( pFunc->op==TK_AGG_FUNCTION );
-  assert( !IsWindowFunc(pFunc) );
-  assert( ExprUseXList(pFunc) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( *ppMinMax==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFunc->op==TK_AGG_FUNCTION );
+  ਪ੍ਰਤਿਜ੍ਞਾ( !Is_ਖਿੜਕੀ_Func(pFunc) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pFunc) );
   pEList = pFunc->x.pList;
-  if( pEList==0
-   || pEList->nExpr!=1
-   || ExprHasProperty(pFunc, EP_WinFunc)
+  ਜੇ( pEList==0
+   || pEList->n_ਵਿਅੰਜਕ!=1
+   || ਵਿਅੰਜਕ_Has_Property(pFunc, EP_WinFunc)
    || OptimizationDisabled(db, SQLITE_MinMaxOpt)
   ){
-    return eRet;
+    ਵਾਪਸ eRet;
   }
-  assert( !ExprHasProperty(pFunc, EP_IntValue) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( !ਵਿਅੰਜਕ_Has_Property(pFunc, EP_Int_ਮੁੱਲ) );
   zFunc = pFunc->u.zToken;
-  if( sqlite3StrICmp(zFunc, "min")==0 ){
+  ਜੇ( sqlite3StrICmp(zFunc, "min")==0 ){
     eRet = WHERE_ORDERBY_MIN;
-    if( sqlite3ExprCanBeNull(pEList->a[0].pExpr) ){
-      sortFlags = KEYINFO_ORDER_BIGNULL;
+    ਜੇ( sqlite3_ਵਿਅੰਜਕ_Can_Be_Null(pEList->a[0].p_ਵਿਅੰਜਕ) ){
+      ਛਾਂਟੋ_Flags = KEYINFO_ਕ੍ਰਮ_BIGNULL;
     }
-  }else if( sqlite3StrICmp(zFunc, "max")==0 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( sqlite3StrICmp(zFunc, "max")==0 ){
     eRet = WHERE_ORDERBY_MAX;
-    sortFlags = KEYINFO_ORDER_DESC;
-  }else{
-    return eRet;
+    ਛਾਂਟੋ_Flags = KEYINFO_ਕ੍ਰਮ_DESC;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ eRet;
   }
-  *ppMinMax = pOrderBy = sqlite3ExprListDup(db, pEList, 0);
-  assert( pOrderBy!=0 || db->mallocFailed );
-  if( pOrderBy ) pOrderBy->a[0].fg.sortFlags = sortFlags;
-  return eRet;
+  *ppMinMax = p_ਕ੍ਰਮ_By = sqlite3_ਵਿਅੰਜਕ_List_Dup(db, pEList, 0);
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕ੍ਰਮ_By!=0 || db->mallocFailed );
+  ਜੇ( p_ਕ੍ਰਮ_By ) p_ਕ੍ਰਮ_By->a[0].fg.ਛਾਂਟੋ_Flags = ਛਾਂਟੋ_Flags;
+  ਵਾਪਸ eRet;
 }
 
 /*
@@ -5544,36 +5544,36 @@ static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
 ** But returning the pointer when NULL should have been returned can
 ** result in incorrect answers and/or crashes.  So, when in doubt, return NULL.
 */
-static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
-  Table *pTab;
-  Expr *pExpr;
+ਸਥਿਰ ਸਾਰਣੀ *is_Simple_ਗਿਣਤੀ(Select *p, AggInfo *pAggInfo){
+  ਸਾਰਣੀ *pTab;
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ;
 
-  assert( !p->pGroupBy );
+  ਪ੍ਰਤਿਜ੍ਞਾ( !p->p_ਸਮੂਹ_By );
 
-  if( p->pWhere
-   || p->pEList->nExpr!=1
+  ਜੇ( p->pWhere
+   || p->pEList->n_ਵਿਅੰਜਕ!=1
    || p->pSrc->nSrc!=1
    || p->pSrc->a[0].fg.isSubquery
    || pAggInfo->nFunc!=1
    || p->pHaving
   ){
-    return 0;
+    ਵਾਪਸ 0;
   }
   pTab = p->pSrc->a[0].pSTab;
-  assert( pTab!=0 );
-  assert( !IsView(pTab) );
-  if( !IsOrdinaryTable(pTab) ) return 0;
-  pExpr = p->pEList->a[0].pExpr;
-  assert( pExpr!=0 );
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;
-  if( pExpr->pAggInfo!=pAggInfo ) return 0;
-  if( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_COUNT)==0 ) return 0;
-  assert( pAggInfo->aFunc[0].pFExpr==pExpr );
-  testcase( ExprHasProperty(pExpr, EP_Distinct) );
-  testcase( ExprHasProperty(pExpr, EP_WinFunc) );
-  if( ExprHasProperty(pExpr, EP_Distinct|EP_WinFunc) ) return 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( !IsView(pTab) );
+  ਜੇ( !Is_Ordinary_ਸਾਰਣੀ(pTab) ) ਵਾਪਸ 0;
+  p_ਵਿਅੰਜਕ = p->pEList->a[0].p_ਵਿਅੰਜਕ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ!=0 );
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_AGG_FUNCTION ) ਵਾਪਸ 0;
+  ਜੇ( p_ਵਿਅੰਜਕ->pAggInfo!=pAggInfo ) ਵਾਪਸ 0;
+  ਜੇ( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_ਗਿਣਤੀ)==0 ) ਵਾਪਸ 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->aFunc[0].pFExpr==p_ਵਿਅੰਜਕ );
+  testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_Distinct) );
+  testcase( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_WinFunc) );
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_Distinct|EP_WinFunc) ) ਵਾਪਸ 0;
 
-  return pTab;
+  ਵਾਪਸ pTab;
 }
 
 /*
@@ -5583,25 +5583,25 @@ static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
 ** SQLITE_ERROR and leave an error in pParse. Otherwise, populate
 ** pFrom->pIndex and return SQLITE_OK.
 */
-int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
-  Table *pTab = pFrom->pSTab;
-  char *zIndexedBy = pFrom->u1.zIndexedBy;
-  Index *pIdx;
-  assert( pTab!=0 );
-  assert( pFrom->fg.isIndexedBy!=0 );
+ਪੂਰਨ sqlite3_ਸੂਚਕਾਂਕਿਤ_By_Lookup(Parse *pParse, Src_ਵਸਤੂ *pFrom){
+  ਸਾਰਣੀ *pTab = pFrom->pSTab;
+  ਅੱਖਰ *z_ਸੂਚਕਾਂਕਿਤ_By = pFrom->u1.z_ਸੂਚਕਾਂਕਿਤ_By;
+  ਸੂਚਕਾਂਕ *pIdx;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.is_ਸੂਚਕਾਂਕਿਤ_By!=0 );
 
-  for(pIdx=pTab->pIndex;
-      pIdx && sqlite3StrICmp(pIdx->zName, zIndexedBy);
-      pIdx=pIdx->pNext
+  ਲਈ(pIdx=pTab->p_ਸੂਚਕਾਂਕ;
+      pIdx && sqlite3StrICmp(pIdx->zName, z_ਸੂਚਕਾਂਕਿਤ_By);
+      pIdx=pIdx->p_ਅਗਲਾ
   );
-  if( !pIdx ){
-    sqlite3ErrorMsg(pParse, "no such index: %s", zIndexedBy, 0);
+  ਜੇ( !pIdx ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such index: %s", z_ਸੂਚਕਾਂਕਿਤ_By, 0);
     pParse->checkSchema = 1;
-    return SQLITE_ERROR;
+    ਵਾਪਸ SQLITE_ERROR;
   }
-  assert( pFrom->fg.isCte==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isCte==0 );
   pFrom->u2.pIBIndex = pIdx;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -5625,68 +5625,68 @@ int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
 ** The UNION ALL operator works fine with multiSelectByMerge() even when
 ** there are COLLATE terms in the ORDER BY.
 */
-static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
-  int i;
+ਸਥਿਰ ਪੂਰਨ convert_Compound_Select_ਮੰਜ਼ਿਲ_Subquery(Walker *pWalker, Select *p){
+  ਪੂਰਨ i;
   Select *pNew;
   Select *pX;
   sqlite3 *db;
-  struct ExprList_item *a;
+  ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *a;
   SrcList *pNewSrc;
   Parse *pParse;
   Token dummy;
 
-  if( p->pPrior==0 ) return WRC_Continue;
-  if( p->pOrderBy==0 ) return WRC_Continue;
-  for(pX=p; pX && (pX->op==TK_ALL || pX->op==TK_SELECT); pX=pX->pPrior){}
-  if( pX==0 ) return WRC_Continue;
-  a = p->pOrderBy->a;
-#ifndef SQLITE_OMIT_WINDOWFUNC
+  ਜੇ( p->p_ਪੂਰਵ==0 ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( p->p_ਕ੍ਰਮ_By==0 ) ਵਾਪਸ WRC_Continue;
+  ਲਈ(pX=p; pX && (pX->op==TK_ALL || pX->op==TK_SELECT); pX=pX->p_ਪੂਰਵ){}
+  ਜੇ( pX==0 ) ਵਾਪਸ WRC_Continue;
+  a = p->p_ਕ੍ਰਮ_By->a;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
   /* If iOrderByCol is already non-zero, then it has already been matched
   ** to a result column of the SELECT statement. This occurs when the
   ** SELECT is rewritten for window-functions processing and then passed
   ** to sqlite3SelectPrep() and similar a second time. The rewriting done
   ** by this function is not required in this case. */
-  if( a[0].u.x.iOrderByCol ) return WRC_Continue;
-#endif
-  for(i=p->pOrderBy->nExpr-1; i>=0; i--){
-    if( a[i].pExpr->flags & EP_Collate ) break;
+  ਜੇ( a[0].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ ) ਵਾਪਸ WRC_Continue;
+#ਜੇ_ਅੰਤ
+  ਲਈ(i=p->p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ-1; i>=0; i--){
+    ਜੇ( a[i].p_ਵਿਅੰਜਕ->flags & EP_Collate ) ਰੋਕੋ;
   }
-  if( i<0 ) return WRC_Continue;
+  ਜੇ( i<0 ) ਵਾਪਸ WRC_Continue;
 
   /* If we reach this point, that means the transformation is required. */
 
   pParse = pWalker->pParse;
   db = pParse->db;
-  pNew = sqlite3DbMallocZero(db, sizeof(*pNew) );
-  if( pNew==0 ) return WRC_Abort;
-  memset(&dummy, 0, sizeof(dummy));
-  pNewSrc = sqlite3SrcListAppendFromTerm(pParse,0,0,0,&dummy,pNew,0);
-  assert( pNewSrc!=0 || pParse->nErr );
-  if( pParse->nErr ){
+  pNew = sqlite3DbMallocZero(db, ਆਕਾਰ(*pNew) );
+  ਜੇ( pNew==0 ) ਵਾਪਸ WRC_Abort;
+  memset(&dummy, 0, ਆਕਾਰ(dummy));
+  pNewSrc = sqlite3_Src_List_Append_From_ਪਦ(pParse,0,0,0,&dummy,pNew,0);
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNewSrc!=0 || pParse->nErr );
+  ਜੇ( pParse->nErr ){
     sqlite3SrcListDelete(db, pNewSrc);
-    return WRC_Abort;
+    ਵਾਪਸ WRC_Abort;
   }
   *pNew = *p;
   p->pSrc = pNewSrc;
-  p->pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ASTERISK, 0));
+  p->pEList = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, 0, sqlite3_ਵਿਅੰਜਕ(db, TK_ASTERISK, 0));
   p->op = TK_SELECT;
   p->pWhere = 0;
-  p->pGroupBy = 0;
+  p->p_ਸਮੂਹ_By = 0;
   p->pHaving = 0;
-  pNew->pOrderBy = 0;
-  p->pPrior = 0;
-  p->pNext = 0;
+  pNew->p_ਕ੍ਰਮ_By = 0;
+  p->p_ਪੂਰਵ = 0;
+  p->p_ਅਗਲਾ = 0;
   p->pWith = 0;
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
   p->pWinDefn = 0;
-#endif
+#ਜੇ_ਅੰਤ
   p->selFlags &= ~(u32)(SF_Compound|SF_Distinct);
-  assert( (p->selFlags & SF_Converted)==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (p->selFlags & SF_Converted)==0 );
   p->selFlags |= SF_Converted;
-  assert( pNew->pPrior!=0 );
-  pNew->pPrior->pNext = pNew;
-  pNew->pLimit = 0;
-  return WRC_Continue;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew->p_ਪੂਰਵ!=0 );
+  pNew->p_ਪੂਰਵ->p_ਅਗਲਾ = pNew;
+  pNew->p_ਹੱਦਬੰਦੀ = 0;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
@@ -5694,15 +5694,15 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
 ** arguments.  If it does, leave an error message in pParse and return
 ** non-zero, since pFrom is not allowed to be a table-valued function.
 */
-static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
-  if( pFrom->fg.isTabFunc ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pFrom->zName);
-    return 1;
+ਸਥਿਰ ਪੂਰਨ cannotBeFunction(Parse *pParse, Src_ਵਸਤੂ *pFrom){
+  ਜੇ( pFrom->fg.isTabFunc ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "'%s' is not a function", pFrom->zName);
+    ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
-#ifndef SQLITE_OMIT_CTE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
 /*
 ** Argument pWith (which may be NULL) points to a linked list of nested
 ** WITH contexts, from inner to outermost. If the table identified by
@@ -5713,26 +5713,26 @@ static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
 ** If a non-NULL value is returned, set *ppContext to point to the With
 ** object that the returned CTE belongs to.
 */
-static struct Cte *searchWith(
+ਸਥਿਰ ਬਣਤਰ Cte *ਖੋਜ_With(
   With *pWith,                    /* Current innermost WITH clause */
-  SrcItem *pItem,                 /* FROM clause element to resolve */
+  Src_ਵਸਤੂ *p_ਵਸਤੂ,                 /* FROM clause element to resolve */
   With **ppContext                /* OUT: WITH clause return value belongs to */
 ){
-  const char *zName = pItem->zName;
+  ਅਚਲ ਅੱਖਰ *zName = p_ਵਸਤੂ->zName;
   With *p;
-  assert( pItem->fg.fixedSchema || pItem->u4.zDatabase==0 );
-  assert( zName!=0 );
-  for(p=pWith; p; p=p->pOuter){
-    int i;
-    for(i=0; i<p->nCte; i++){
-      if( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->fg.fixedSchema || p_ਵਸਤੂ->u4.zDatabase==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( zName!=0 );
+  ਲਈ(p=pWith; p; p=p->pOuter){
+    ਪੂਰਨ i;
+    ਲਈ(i=0; i<p->nCte; i++){
+      ਜੇ( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
         *ppContext = p;
-        return &p->a[i];
+        ਵਾਪਸ &p->a[i];
       }
     }
-    if( p->bView ) break;
+    ਜੇ( p->bView ) ਰੋਕੋ;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /* The code generator maintains a stack of active WITH clauses
@@ -5752,23 +5752,23 @@ static struct Cte *searchWith(
 ** If bFree is true, do not continue to use the pWith pointer after
 ** calling this routine,  Instead, use only the return value.
 */
-With *sqlite3WithPush(Parse *pParse, With *pWith, u8 bFree){
-  if( pWith ){
-    if( bFree ){
-      pWith = (With*)sqlite3ParserAddCleanup(pParse, sqlite3WithDeleteGeneric,
+With *sqlite3_With_ਧੱਕੋ(Parse *pParse, With *pWith, u8 bFree){
+  ਜੇ( pWith ){
+    ਜੇ( bFree ){
+      pWith = (With*)sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3WithDeleteGeneric,
                       pWith);
-      if( pWith==0 ) return 0;
+      ਜੇ( pWith==0 ) ਵਾਪਸ 0;
     }
-    if( pParse->nErr==0 ){
-      assert( pParse->pWith!=pWith );
+    ਜੇ( pParse->nErr==0 ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pParse->pWith!=pWith );
       pWith->pOuter = pParse->pWith;
       pParse->pWith = pWith;
     }
   }
-  return pWith;
+  ਵਾਪਸ pWith;
 }
 
-static int selectExpanderWalk(Walker*, Select*);
+ਸਥਿਰ ਪੂਰਨ selectExpanderWalk(Walker*, Select*);
 
 /*
 ** This function checks to see if argument pFrom refers to a CTE declared by
@@ -5783,72 +5783,72 @@ static int selectExpanderWalk(Walker*, Select*);
 ** Return 1 if a match is found.
 ** Return 2 if an error condition is detected.
 */
-static int resolveFromTermToCte(
+ਸਥਿਰ ਪੂਰਨ resolve_From_ਪਦ_ਮੰਜ਼ਿਲ_Cte(
   Parse *pParse,                  /* The parsing context */
   Walker *pWalker,                /* Current tree walker */
-  SrcItem *pFrom                  /* The FROM clause term to check */
+  Src_ਵਸਤੂ *pFrom                  /* The FROM clause term to check */
 ){
   Cte *pCte;               /* Matched CTE (or NULL if no match) */
   With *pWith;             /* The matching WITH */
 
-  assert( pFrom->pSTab==0 );
-  if( pParse->pWith==0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->pSTab==0 );
+  ਜੇ( pParse->pWith==0 ){
     /* There are no WITH clauses in the stack.  No match is possible */
-    return 0;
+    ਵਾਪਸ 0;
   }
-  if( pParse->nErr ){
+  ਜੇ( pParse->nErr ){
     /* Prior errors might have left pParse->pWith in a goofy state, so
     ** go no further. */
-    return 0;
+    ਵਾਪਸ 0;
   }
-  assert( pFrom->fg.hadSchema==0 || pFrom->fg.notCte!=0 );
-  if( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.hadSchema==0 || pFrom->fg.notCte!=0 );
+  ਜੇ( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
     /* The FROM term contains a schema qualifier (ex: main.t1) and so
     ** it cannot possibly be a CTE reference. */
-    return 0;
+    ਵਾਪਸ 0;
   }
-  if( pFrom->fg.notCte ){
+  ਜੇ( pFrom->fg.notCte ){
     /* The FROM term is specifically excluded from matching a CTE.
     **   (1)  It is part of a trigger that used to have zDatabase but had
     **        zDatabase removed by sqlite3FixTriggerStep().
     **   (2)  This is the first term in the FROM clause of an UPDATE.
     */
-    return 0;
+    ਵਾਪਸ 0;
   }
-  pCte = searchWith(pParse->pWith, pFrom, &pWith);
-  if( pCte ){
+  pCte = ਖੋਜ_With(pParse->pWith, pFrom, &pWith);
+  ਜੇ( pCte ){
     sqlite3 *db = pParse->db;
-    Table *pTab;
-    ExprList *pEList;
+    ਸਾਰਣੀ *pTab;
+    ਵਿਅੰਜਕ_List *pEList;
     Select *pSel;
-    Select *pLeft;                /* Left-most SELECT statement */
-    Select *pRecTerm;             /* Left-most recursive term */
-    int bMayRecursive;            /* True if compound joined by UNION [ALL] */
+    Select *p_ਖੱਬਾ;                /* Left-most SELECT statement */
+    Select *p_Rec_ਪਦ;             /* Left-most recursive term */
+    ਪੂਰਨ bMayRecursive;            /* True if compound joined by UNION [ALL] */
     With *pSavedWith;             /* Initial value of pParse->pWith */
-    int iRecTab = -1;             /* Cursor for recursive table */
+    ਪੂਰਨ iRecTab = -1;             /* Cursor for recursive table */
     CteUse *pCteUse;
 
     /* If pCte->zCteErr is non-NULL at this point, then this is an illegal
     ** recursive reference to CTE pCte. Leave an error in pParse and return
     ** early. If pCte->zCteErr is NULL, then this is not a recursive reference.
     ** In this case, proceed.  */
-    if( pCte->zCteErr ){
-      sqlite3ErrorMsg(pParse, pCte->zCteErr, pCte->zName);
-      return 2;
+    ਜੇ( pCte->zCteErr ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, pCte->zCteErr, pCte->zName);
+      ਵਾਪਸ 2;
     }
-    if( cannotBeFunction(pParse, pFrom) ) return 2;
+    ਜੇ( cannotBeFunction(pParse, pFrom) ) ਵਾਪਸ 2;
 
-    assert( pFrom->pSTab==0 );
-    pTab = sqlite3DbMallocZero(db, sizeof(Table));
-    if( pTab==0 ) return 2;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->pSTab==0 );
+    pTab = sqlite3DbMallocZero(db, ਆਕਾਰ(ਸਾਰਣੀ));
+    ਜੇ( pTab==0 ) ਵਾਪਸ 2;
     pCteUse = pCte->pUse;
-    if( pCteUse==0 ){
-      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, sizeof(pCteUse[0]));
-      if( pCteUse==0
-       || sqlite3ParserAddCleanup(pParse,sqlite3DbFree,pCteUse)==0
+    ਜੇ( pCteUse==0 ){
+      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, ਆਕਾਰ(pCteUse[0]));
+      ਜੇ( pCteUse==0
+       || sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse,sqlite3DbFree,pCteUse)==0
       ){
         sqlite3DbFree(db, pTab);
-        return 2;
+        ਵਾਪਸ 2;
       }
       pCteUse->eM10d = pCte->eM10d;
     }
@@ -5856,126 +5856,126 @@ static int resolveFromTermToCte(
     pTab->nTabRef = 1;
     pTab->zName = sqlite3DbStrDup(db, pCte->zName);
     pTab->iPKey = -1;
-    pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
+    pTab->n_ਪੰਕਤੀ_Log_Est = 200; ਪ੍ਰਤਿਜ੍ਞਾ( 200==sqlite3LogEst(1048576) );
     pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
-    sqlite3SrcItemAttachSubquery(pParse, pFrom, pCte->pSelect, 1);
-    if( db->mallocFailed ) return 2;
-    assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
+    sqlite3_Src_ਵਸਤੂ_Attach_Subquery(pParse, pFrom, pCte->pSelect, 1);
+    ਜੇ( db->mallocFailed ) ਵਾਪਸ 2;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isSubquery && pFrom->u4.pSubq );
     pSel = pFrom->u4.pSubq->pSelect;
-    assert( pSel!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSel!=0 );
     pSel->selFlags |= SF_CopyCte;
-    if( pFrom->fg.isIndexedBy ){
-      sqlite3ErrorMsg(pParse, "no such index: \"%s\"", pFrom->u1.zIndexedBy);
-      return 2;
+    ਜੇ( pFrom->fg.is_ਸੂਚਕਾਂਕਿਤ_By ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such index: \"%s\"", pFrom->u1.z_ਸੂਚਕਾਂਕਿਤ_By);
+      ਵਾਪਸ 2;
     }
-    assert( !pFrom->fg.isIndexedBy );
+    ਪ੍ਰਤਿਜ੍ਞਾ( !pFrom->fg.is_ਸੂਚਕਾਂਕਿਤ_By );
     pFrom->fg.isCte = 1;
     pFrom->u2.pCteUse = pCteUse;
     pCteUse->nUse++;
 
     /* Check if this is a recursive CTE. */
-    pRecTerm = pSel;
+    p_Rec_ਪਦ = pSel;
     bMayRecursive = ( pSel->op==TK_ALL || pSel->op==TK_UNION );
-    while( bMayRecursive && pRecTerm->op==pSel->op ){
-      int i;
-      SrcList *pSrc = pRecTerm->pSrc;
-      assert( pRecTerm->pPrior!=0 );
-      for(i=0; i<pSrc->nSrc; i++){
-        SrcItem *pItem = &pSrc->a[i];
-        if( pItem->zName!=0
-         && !pItem->fg.hadSchema
-         && ALWAYS( !pItem->fg.isSubquery )
-         && (pItem->fg.fixedSchema || pItem->u4.zDatabase==0)
-         && 0==sqlite3StrICmp(pItem->zName, pCte->zName)
+    ਜਦੋਂ( bMayRecursive && p_Rec_ਪਦ->op==pSel->op ){
+      ਪੂਰਨ i;
+      SrcList *pSrc = p_Rec_ਪਦ->pSrc;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_Rec_ਪਦ->p_ਪੂਰਵ!=0 );
+      ਲਈ(i=0; i<pSrc->nSrc; i++){
+        Src_ਵਸਤੂ *p_ਵਸਤੂ = &pSrc->a[i];
+        ਜੇ( p_ਵਸਤੂ->zName!=0
+         && !p_ਵਸਤੂ->fg.hadSchema
+         && ALWAYS( !p_ਵਸਤੂ->fg.isSubquery )
+         && (p_ਵਸਤੂ->fg.fixedSchema || p_ਵਸਤੂ->u4.zDatabase==0)
+         && 0==sqlite3StrICmp(p_ਵਸਤੂ->zName, pCte->zName)
         ){
-          pItem->pSTab = pTab;
+          p_ਵਸਤੂ->pSTab = pTab;
           pTab->nTabRef++;
-          pItem->fg.isRecursive = 1;
-          if( pRecTerm->selFlags & SF_Recursive ){
-            sqlite3ErrorMsg(pParse,
+          p_ਵਸਤੂ->fg.isRecursive = 1;
+          ਜੇ( p_Rec_ਪਦ->selFlags & SF_Recursive ){
+            sqlite3_Error_ਸੁਨੇਹਾ(pParse,
                "multiple references to recursive table: %s", pCte->zName
             );
-            return 2;
+            ਵਾਪਸ 2;
           }
-          pRecTerm->selFlags |= SF_Recursive;
-          if( iRecTab<0 ) iRecTab = pParse->nTab++;
-          pItem->iCursor = iRecTab;
+          p_Rec_ਪਦ->selFlags |= SF_Recursive;
+          ਜੇ( iRecTab<0 ) iRecTab = pParse->nTab++;
+          p_ਵਸਤੂ->iCursor = iRecTab;
         }
       }
-      if( (pRecTerm->selFlags & SF_Recursive)==0 ) break;
-      pRecTerm = pRecTerm->pPrior;
+      ਜੇ( (p_Rec_ਪਦ->selFlags & SF_Recursive)==0 ) ਰੋਕੋ;
+      p_Rec_ਪਦ = p_Rec_ਪਦ->p_ਪੂਰਵ;
     }
 
-    if( pParse->nTab >= db->aLimit[SQLITE_LIMIT_CTES]
-     && db->aLimit[SQLITE_LIMIT_CTES]>0
+    ਜੇ( pParse->nTab >= db->a_ਹੱਦਬੰਦੀ[SQLITE_ਹੱਦਬੰਦੀ_CTES]
+     && db->a_ਹੱਦਬੰਦੀ[SQLITE_ਹੱਦਬੰਦੀ_CTES]>0
     ){
-      sqlite3ErrorMsg(pParse, "too many CTEs");
-      return 2;
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "too many CTEs");
+      ਵਾਪਸ 2;
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ਜੇ SQLITE_MAX_ਵਿਅੰਜਕ_ਡੂੰਘਾਈ>0
     pParse->nNestSel++;
-    if( checkSubqueryNestingDepth(pParse) ) return 2;
-#endif
+    ਜੇ( check_Subquery_Nesting_ਡੂੰਘਾਈ(pParse) ) ਵਾਪਸ 2;
+#ਜੇ_ਅੰਤ
     pCte->zCteErr = "circular reference: %s";
     pSavedWith = pParse->pWith;
     pParse->pWith = pWith;
-    if( pSel->selFlags & SF_Recursive ){
-      int rc;
-      assert( pRecTerm!=0 );
-      assert( (pRecTerm->selFlags & SF_Recursive)==0 );
-      assert( pRecTerm->pNext!=0 );
-      assert( (pRecTerm->pNext->selFlags & SF_Recursive)!=0 );
-      assert( pRecTerm->pWith==0 );
-      pRecTerm->pWith = pSel->pWith;
-      rc = sqlite3WalkSelect(pWalker, pRecTerm);
-      pRecTerm->pWith = 0;
-      if( rc ){
+    ਜੇ( pSel->selFlags & SF_Recursive ){
+      ਪੂਰਨ rc;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_Rec_ਪਦ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( (p_Rec_ਪਦ->selFlags & SF_Recursive)==0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_Rec_ਪਦ->p_ਅਗਲਾ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( (p_Rec_ਪਦ->p_ਅਗਲਾ->selFlags & SF_Recursive)!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_Rec_ਪਦ->pWith==0 );
+      p_Rec_ਪਦ->pWith = pSel->pWith;
+      rc = sqlite3WalkSelect(pWalker, p_Rec_ਪਦ);
+      p_Rec_ਪਦ->pWith = 0;
+      ਜੇ( rc ){
         pParse->pWith = pSavedWith;
-        return 2;
+        ਵਾਪਸ 2;
       }
-    }else{
-      if( selectExpanderWalk(pWalker, pSel) ){
+    }ਨਹੀਂਤਾਂ{
+      ਜੇ( selectExpanderWalk(pWalker, pSel) ){
         pParse->pWith = pSavedWith;
-        return 2;
+        ਵਾਪਸ 2;
       }
     }
     pParse->pWith = pWith;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ਜੇ SQLITE_MAX_ਵਿਅੰਜਕ_ਡੂੰਘਾਈ>0
     pParse->nNestSel--;
-    assert( pParse->nNestSel>=0 );
-#endif
+    ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nNestSel>=0 );
+#ਜੇ_ਅੰਤ
 
-    for(pLeft=pSel; pLeft->pPrior; pLeft=pLeft->pPrior);
-    pEList = pLeft->pEList;
-    if( pCte->pCols ){
-      if( pEList && pEList->nExpr!=pCte->pCols->nExpr ){
-        sqlite3ErrorMsg(pParse, "table %s has %d values for %d columns",
-            pCte->zName, pEList->nExpr, pCte->pCols->nExpr
+    ਲਈ(p_ਖੱਬਾ=pSel; p_ਖੱਬਾ->p_ਪੂਰਵ; p_ਖੱਬਾ=p_ਖੱਬਾ->p_ਪੂਰਵ);
+    pEList = p_ਖੱਬਾ->pEList;
+    ਜੇ( pCte->p_ਖਾਨੇ_ਗਿਣਤੀ ){
+      ਜੇ( pEList && pEList->n_ਵਿਅੰਜਕ!=pCte->p_ਖਾਨੇ_ਗਿਣਤੀ->n_ਵਿਅੰਜਕ ){
+        sqlite3_Error_ਸੁਨੇਹਾ(pParse, "table %s has %d values for %d columns",
+            pCte->zName, pEList->n_ਵਿਅੰਜਕ, pCte->p_ਖਾਨੇ_ਗਿਣਤੀ->n_ਵਿਅੰਜਕ
         );
         pParse->pWith = pSavedWith;
-        return 2;
+        ਵਾਪਸ 2;
       }
-      pEList = pCte->pCols;
+      pEList = pCte->p_ਖਾਨੇ_ਗਿਣਤੀ;
     }
 
-    sqlite3ColumnsFromExprList(pParse, pEList, &pTab->nCol, &pTab->aCol);
-    if( bMayRecursive ){
-      if( pSel->selFlags & SF_Recursive ){
+    sqlite3_Columns_From_ਵਿਅੰਜਕ_List(pParse, pEList, &pTab->n_ਖਾਨਾ, &pTab->a_ਖਾਨਾ);
+    ਜੇ( bMayRecursive ){
+      ਜੇ( pSel->selFlags & SF_Recursive ){
         pCte->zCteErr = "multiple recursive references: %s";
-      }else{
+      }ਨਹੀਂਤਾਂ{
         pCte->zCteErr = "recursive reference in a subquery: %s";
       }
       sqlite3WalkSelect(pWalker, pSel);
     }
     pCte->zCteErr = 0;
     pParse->pWith = pSavedWith;
-    return 1;  /* Success */
+    ਵਾਪਸ 1;  /* Success */
   }
-  return 0;  /* No match */
+  ਵਾਪਸ 0;  /* No match */
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_CTE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
 /*
 ** If the SELECT passed as the second argument has an associated WITH
 ** clause, pop it from the stack stored as part of the Parse object.
@@ -5984,17 +5984,17 @@ static int resolveFromTermToCte(
 ** sqlite3SelectExpand() when walking a SELECT tree to resolve table
 ** names and other FROM clause elements.
 */
-void sqlite3SelectPopWith(Walker *pWalker, Select *p){
+ਖਾਲੀ sqlite3_Select_ਕੱਢੋ_With(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  if( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->pPrior==0 ){
-    With *pWith = findRightmost(p)->pWith;
-    if( pWith!=0 ){
-      assert( pParse->pWith==pWith || pParse->nErr );
+  ਜੇ( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->p_ਪੂਰਵ==0 ){
+    With *pWith = ਲੱਭੋ_Rightmost(p)->pWith;
+    ਜੇ( pWith!=0 ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pParse->pWith==pWith || pParse->nErr );
       pParse->pWith = pWith->pOuter;
     }
   }
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** The SrcItem structure passed as the second argument represents a
@@ -6003,35 +6003,35 @@ void sqlite3SelectPopWith(Walker *pWalker, Select *p){
 ** SQLITE_OK is returned. Otherwise, if an OOM error is encountered,
 ** SQLITE_NOMEM.
 */
-int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
+ਪੂਰਨ sqlite3ExpandSubquery(Parse *pParse, Src_ਵਸਤੂ *pFrom){
   Select *pSel;
-  Table *pTab;
+  ਸਾਰਣੀ *pTab;
 
-  assert( pFrom->fg.isSubquery );
-  assert( pFrom->u4.pSubq!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isSubquery );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->u4.pSubq!=0 );
   pSel = pFrom->u4.pSubq->pSelect;
-  assert( pSel );
-  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, sizeof(Table));
-  if( pTab==0 ) return SQLITE_NOMEM;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSel );
+  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, ਆਕਾਰ(ਸਾਰਣੀ));
+  ਜੇ( pTab==0 ) ਵਾਪਸ SQLITE_NOMEM;
   pTab->nTabRef = 1;
-  if( pFrom->zAlias ){
+  ਜੇ( pFrom->zAlias ){
     pTab->zName = sqlite3DbStrDup(pParse->db, pFrom->zAlias);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     pTab->zName = sqlite3MPrintf(pParse->db, "%!S", pFrom);
   }
-  while( pSel->pPrior ){ pSel = pSel->pPrior; }
-  sqlite3ColumnsFromExprList(pParse, pSel->pEList,&pTab->nCol,&pTab->aCol);
+  ਜਦੋਂ( pSel->p_ਪੂਰਵ ){ pSel = pSel->p_ਪੂਰਵ; }
+  sqlite3_Columns_From_ਵਿਅੰਜਕ_List(pParse, pSel->pEList,&pTab->n_ਖਾਨਾ,&pTab->a_ਖਾਨਾ);
   pTab->iPKey = -1;
   pTab->eTabType = TABTYP_VIEW;
-  pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
-#ifndef SQLITE_ALLOW_ROWID_IN_VIEW
+  pTab->n_ਪੰਕਤੀ_Log_Est = 200; ਪ੍ਰਤਿਜ੍ਞਾ( 200==sqlite3LogEst(1048576) );
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_ALLOW_ROWID_ਵਿੱਚ_VIEW
   /* The usual case - do not allow ROWID on a subquery */
   pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
-#else
+#ਨਹੀਂਤਾਂ
   /* Legacy compatibility mode */
   pTab->tabFlags |= TF_Ephemeral | sqlite3Config.mNoVisibleRowid;
-#endif
-  return pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 
@@ -6044,19 +6044,19 @@ int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
 ** contains a USING clause, or if none of the USING clauses contain zName,
 ** then return false.
 */
-static int inAnyUsingClause(
-  const char *zName, /* Name we are looking for */
-  SrcItem *pBase,    /* The base SrcItem.  Looking at pBase[1] and following */
-  int N              /* How many SrcItems to check */
+ਸਥਿਰ ਪੂਰਨ ਵਿੱਚ_Any_Using_Clause(
+  ਅਚਲ ਅੱਖਰ *zName, /* Name we are looking for */
+  Src_ਵਸਤੂ *p_ਅਧਾਰ,    /* The base SrcItem.  Looking at pBase[1] and following */
+  ਪੂਰਨ N              /* How many SrcItems to check */
 ){
-  while( N>0 ){
+  ਜਦੋਂ( N>0 ){
     N--;
-    pBase++;
-    if( pBase->fg.isUsing==0 ) continue;
-    if( NEVER(pBase->u3.pUsing==0) ) continue;
-    if( sqlite3IdListIndex(pBase->u3.pUsing, zName)>=0 ) return 1;
+    p_ਅਧਾਰ++;
+    ਜੇ( p_ਅਧਾਰ->fg.isUsing==0 ) ਜਾਰੀ;
+    ਜੇ( NEVER(p_ਅਧਾਰ->u3.pUsing==0) ) ਜਾਰੀ;
+    ਜੇ( sqlite3_Id_List_ਸੂਚਕਾਂਕ(p_ਅਧਾਰ->u3.pUsing, zName)>=0 ) ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 
@@ -6084,140 +6084,140 @@ static int inAnyUsingClause(
 **         and TABLE.* to be every column in TABLE.
 **
 */
-static int selectExpander(Walker *pWalker, Select *p){
+ਸਥਿਰ ਪੂਰਨ selectExpander(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  int i, j, k, rc;
+  ਪੂਰਨ i, j, k, rc;
   SrcList *pTabList;
-  ExprList *pEList;
-  SrcItem *pFrom;
+  ਵਿਅੰਜਕ_List *pEList;
+  Src_ਵਸਤੂ *pFrom;
   sqlite3 *db = pParse->db;
-  Expr *pE, *pRight, *pExpr;
+  ਵਿਅੰਜਕ *pE, *p_ਸੱਜਾ, *p_ਵਿਅੰਜਕ;
   u16 selFlags = p->selFlags;
   u32 elistFlags = 0;
 
   p->selFlags |= SF_Expanded;
-  if( db->mallocFailed  ){
-    return WRC_Abort;
+  ਜੇ( db->mallocFailed  ){
+    ਵਾਪਸ WRC_Abort;
   }
-  assert( p->pSrc!=0 );
-  if( (selFlags & SF_Expanded)!=0 ){
-    return WRC_Prune;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pSrc!=0 );
+  ਜੇ( (selFlags & SF_Expanded)!=0 ){
+    ਵਾਪਸ WRC_Prune;
   }
-  if( pWalker->eCode ){
+  ਜੇ( pWalker->e_ਕੋਡ ){
     /* Renumber selId because it has been copied from a view */
     p->selId = ++pParse->nSelect;
   }
   pTabList = p->pSrc;
   pEList = p->pEList;
-  if( pParse->pWith && (p->selFlags & SF_View) ){
-    if( p->pWith==0 ){
+  ਜੇ( pParse->pWith && (p->selFlags & SF_View) ){
+    ਜੇ( p->pWith==0 ){
       p->pWith = (With*)sqlite3DbMallocZero(db, SZ_WITH(1) );
-      if( p->pWith==0 ){
-        return WRC_Abort;
+      ਜੇ( p->pWith==0 ){
+        ਵਾਪਸ WRC_Abort;
       }
     }
     p->pWith->bView = 1;
   }
-  sqlite3WithPush(pParse, p->pWith, 0);
+  sqlite3_With_ਧੱਕੋ(pParse, p->pWith, 0);
 
   /* Make sure cursor numbers have been assigned to all entries in
   ** the FROM clause of the SELECT statement.
   */
-  sqlite3SrcListAssignCursors(pParse, pTabList);
+  sqlite3_Src_List_ਸੌਂਪੋ_Cursors(pParse, pTabList);
 
   /* Look up every table named in the FROM clause of the select.  If
   ** an entry of the FROM clause is a subquery instead of a table or view,
   ** then create a transient table structure to describe the subquery.
   */
-  for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
-    Table *pTab;
-    assert( pFrom->fg.isRecursive==0 || pFrom->pSTab!=0 );
-    if( pFrom->pSTab ) continue;
-    assert( pFrom->fg.isRecursive==0 );
-    if( pFrom->zName==0 ){
-#ifndef SQLITE_OMIT_SUBQUERY
+  ਲਈ(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+    ਸਾਰਣੀ *pTab;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isRecursive==0 || pFrom->pSTab!=0 );
+    ਜੇ( pFrom->pSTab ) ਜਾਰੀ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isRecursive==0 );
+    ਜੇ( pFrom->zName==0 ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
       Select *pSel;
-      assert( pFrom->fg.isSubquery && pFrom->u4.pSubq!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isSubquery && pFrom->u4.pSubq!=0 );
       pSel = pFrom->u4.pSubq->pSelect;
       /* A sub-query in the FROM clause of a SELECT */
-      assert( pSel!=0 );
-      assert( pFrom->pSTab==0 );
-      if( sqlite3WalkSelect(pWalker, pSel) ) return WRC_Abort;
-      if( sqlite3ExpandSubquery(pParse, pFrom) ) return WRC_Abort;
-#endif
-#ifndef SQLITE_OMIT_CTE
-    }else if( (rc = resolveFromTermToCte(pParse, pWalker, pFrom))!=0 ){
-      if( rc>1 ) return WRC_Abort;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSel!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->pSTab==0 );
+      ਜੇ( sqlite3WalkSelect(pWalker, pSel) ) ਵਾਪਸ WRC_Abort;
+      ਜੇ( sqlite3ExpandSubquery(pParse, pFrom) ) ਵਾਪਸ WRC_Abort;
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_CTE
+    }ਨਹੀਂਤਾਂ ਜੇ( (rc = resolve_From_ਪਦ_ਮੰਜ਼ਿਲ_Cte(pParse, pWalker, pFrom))!=0 ){
+      ਜੇ( rc>1 ) ਵਾਪਸ WRC_Abort;
       pTab = pFrom->pSTab;
-      assert( pTab!=0 );
-#endif
-    }else{
+      ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
+#ਜੇ_ਅੰਤ
+    }ਨਹੀਂਤਾਂ{
       /* An ordinary table or view name in the FROM clause */
-      assert( pFrom->pSTab==0 );
-      pFrom->pSTab = pTab = sqlite3LocateTableItem(pParse, 0, pFrom);
-      if( pTab==0 ) return WRC_Abort;
-      if( pTab->nTabRef>=0xffff ){
-        sqlite3ErrorMsg(pParse, "too many references to \"%s\": max 65535",
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->pSTab==0 );
+      pFrom->pSTab = pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, pFrom);
+      ਜੇ( pTab==0 ) ਵਾਪਸ WRC_Abort;
+      ਜੇ( pTab->nTabRef>=0xffff ){
+        sqlite3_Error_ਸੁਨੇਹਾ(pParse, "too many references to \"%s\": max 65535",
            pTab->zName);
         pFrom->pSTab = 0;
-        return WRC_Abort;
+        ਵਾਪਸ WRC_Abort;
       }
       pTab->nTabRef++;
-      if( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
-        return WRC_Abort;
+      ਜੇ( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
+        ਵਾਪਸ WRC_Abort;
       }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-      if( !IsOrdinaryTable(pTab) ){
-        i16 nCol;
-        u8 eCodeOrig = pWalker->eCode;
-        if( sqlite3ViewGetColumnNames(pParse, pTab) ) return WRC_Abort;
-        assert( pFrom->fg.isSubquery==0 );
-        if( IsView(pTab) ){
-          if( (db->flags & SQLITE_EnableView)==0
+#ਜੇ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+      ਜੇ( !Is_Ordinary_ਸਾਰਣੀ(pTab) ){
+        i16 n_ਖਾਨਾ;
+        u8 e_ਕੋਡ_Orig = pWalker->e_ਕੋਡ;
+        ਜੇ( sqlite3_View_Get_ਕਾਲਮ_ਨਾਂ(pParse, pTab) ) ਵਾਪਸ WRC_Abort;
+        ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isSubquery==0 );
+        ਜੇ( IsView(pTab) ){
+          ਜੇ( (db->flags & SQLITE_EnableView)==0
            && pTab->pSchema!=db->aDb[1].pSchema
           ){
-            sqlite3ErrorMsg(pParse, "access to view \"%s\" prohibited",
+            sqlite3_Error_ਸੁਨੇਹਾ(pParse, "access to view \"%s\" prohibited",
               pTab->zName);
           }
-          sqlite3SrcItemAttachSubquery(pParse, pFrom, pTab->u.view.pSelect, 1);
+          sqlite3_Src_ਵਸਤੂ_Attach_Subquery(pParse, pFrom, pTab->u.view.pSelect, 1);
         }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-        else if( ALWAYS(IsVirtual(pTab))
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
+        ਨਹੀਂਤਾਂ ਜੇ( ALWAYS(IsVirtual(pTab))
          && (pFrom->fg.fromDDL || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
          && ALWAYS(pTab->u.vtab.p!=0)
          && pTab->u.vtab.p->eVtabRisk > ((db->flags & SQLITE_TrustedSchema)!=0)
         ){
-          sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
+          sqlite3_Error_ਸੁਨੇਹਾ(pParse, "unsafe use of virtual table \"%s\"",
                                   pTab->zName);
         }
-        assert( SQLITE_VTABRISK_Normal==1 && SQLITE_VTABRISK_High==2 );
-#endif
-        nCol = pTab->nCol;
-        pTab->nCol = -1;
-        pWalker->eCode = 1;  /* Turn on Select.selId renumbering */
-        if( pFrom->fg.isSubquery ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_VTABRISK_ਸਾਧਾਰਨ==1 && SQLITE_VTABRISK_ਉੱਚਾ==2 );
+#ਜੇ_ਅੰਤ
+        n_ਖਾਨਾ = pTab->n_ਖਾਨਾ;
+        pTab->n_ਖਾਨਾ = -1;
+        pWalker->e_ਕੋਡ = 1;  /* Turn on Select.selId renumbering */
+        ਜੇ( pFrom->fg.isSubquery ){
           bft hasCompound = pParse->hasCompound;
           pParse->hasCompound = 1;
           selectExpanderWalk(pWalker, pFrom->u4.pSubq->pSelect);
           pParse->hasCompound = hasCompound;
         }
-        pWalker->eCode = eCodeOrig;
-        pTab->nCol = nCol;
+        pWalker->e_ਕੋਡ = e_ਕੋਡ_Orig;
+        pTab->n_ਖਾਨਾ = n_ਖਾਨਾ;
       }
-#endif
+#ਜੇ_ਅੰਤ
     }
 
     /* Locate the index named by the INDEXED BY clause, if any. */
-    if( pFrom->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pFrom) ){
-      return WRC_Abort;
+    ਜੇ( pFrom->fg.is_ਸੂਚਕਾਂਕਿਤ_By && sqlite3_ਸੂਚਕਾਂਕਿਤ_By_Lookup(pParse, pFrom) ){
+      ਵਾਪਸ WRC_Abort;
     }
   }
 
   /* Process NATURAL keywords, and ON and USING clauses of joins.
   */
-  assert( db->mallocFailed==0 || pParse->nErr!=0 );
-  if( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
-    return WRC_Abort;
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 || pParse->nErr!=0 );
+  ਜੇ( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
+    ਵਾਪਸ WRC_Abort;
   }
 
   /* For every "*" that occurs in the column list, insert the names of
@@ -6231,264 +6231,264 @@ static int selectExpander(Walker *pWalker, Select *p){
   ** The first loop just checks to see if there are any "*" operators
   ** that need expanding.
   */
-  for(k=0; k<pEList->nExpr; k++){
-    pE = pEList->a[k].pExpr;
-    if( pE->op==TK_ASTERISK ) break;
-    assert( pE->op!=TK_DOT || pE->pRight!=0 );
-    assert( pE->op!=TK_DOT || (pE->pLeft!=0 && pE->pLeft->op==TK_ID) );
-    if( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK ) break;
+  ਲਈ(k=0; k<pEList->n_ਵਿਅੰਜਕ; k++){
+    pE = pEList->a[k].p_ਵਿਅੰਜਕ;
+    ਜੇ( pE->op==TK_ASTERISK ) ਰੋਕੋ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pE->op!=TK_DOT || pE->p_ਸੱਜਾ!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pE->op!=TK_DOT || (pE->p_ਖੱਬਾ!=0 && pE->p_ਖੱਬਾ->op==TK_ID) );
+    ਜੇ( pE->op==TK_DOT && pE->p_ਸੱਜਾ->op==TK_ASTERISK ) ਰੋਕੋ;
     elistFlags |= pE->flags;
   }
-  if( k<pEList->nExpr ){
+  ਜੇ( k<pEList->n_ਵਿਅੰਜਕ ){
     /*
     ** If we get here it means the result set contains one or more "*"
     ** operators that need to be expanded.  Loop through each expression
     ** in the result set and expand them one by one.
     */
-    struct ExprList_item *a = pEList->a;
-    ExprList *pNew = 0;
-    int flags = pParse->db->flags;
-    int longNames = (flags & SQLITE_FullColNames)!=0
-                      && (flags & SQLITE_ShortColNames)==0;
+    ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *a = pEList->a;
+    ਵਿਅੰਜਕ_List *pNew = 0;
+    ਪੂਰਨ flags = pParse->db->flags;
+    ਪੂਰਨ long_ਨਾਂ = (flags & SQLITE_ਭਰਿਆ_ਖਾਨਾ_ਨਾਂ)!=0
+                      && (flags & SQLITE_Short_ਖਾਨਾ_ਨਾਂ)==0;
 
-    for(k=0; k<pEList->nExpr; k++){
-      pE = a[k].pExpr;
+    ਲਈ(k=0; k<pEList->n_ਵਿਅੰਜਕ; k++){
+      pE = a[k].p_ਵਿਅੰਜਕ;
       elistFlags |= pE->flags;
-      pRight = pE->pRight;
-      assert( pE->op!=TK_DOT || pRight!=0 );
-      if( pE->op!=TK_ASTERISK
-       && (pE->op!=TK_DOT || pRight->op!=TK_ASTERISK)
+      p_ਸੱਜਾ = pE->p_ਸੱਜਾ;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pE->op!=TK_DOT || p_ਸੱਜਾ!=0 );
+      ਜੇ( pE->op!=TK_ASTERISK
+       && (pE->op!=TK_DOT || p_ਸੱਜਾ->op!=TK_ASTERISK)
       ){
         /* This particular expression does not need to be expanded.
         */
-        pNew = sqlite3ExprListAppend(pParse, pNew, a[k].pExpr);
-        if( pNew ){
-          pNew->a[pNew->nExpr-1].zEName = a[k].zEName;
-          pNew->a[pNew->nExpr-1].fg.eEName = a[k].fg.eEName;
+        pNew = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, pNew, a[k].p_ਵਿਅੰਜਕ);
+        ਜੇ( pNew ){
+          pNew->a[pNew->n_ਵਿਅੰਜਕ-1].zEName = a[k].zEName;
+          pNew->a[pNew->n_ਵਿਅੰਜਕ-1].fg.eEName = a[k].fg.eEName;
           a[k].zEName = 0;
         }
-        a[k].pExpr = 0;
-      }else{
+        a[k].p_ਵਿਅੰਜਕ = 0;
+      }ਨਹੀਂਤਾਂ{
         /* This expression is a "*" or a "TABLE.*" and needs to be
         ** expanded. */
-        int tableSeen = 0;      /* Set to 1 when TABLE matches */
-        char *zTName = 0;       /* text of name of TABLE */
-        int iErrOfst;
-        if( pE->op==TK_DOT ){
-          assert( (selFlags & SF_NestedFrom)==0 );
-          assert( pE->pLeft!=0 );
-          assert( !ExprHasProperty(pE->pLeft, EP_IntValue) );
-          zTName = pE->pLeft->u.zToken;
-          assert( ExprUseWOfst(pE->pLeft) );
-          iErrOfst = pE->pRight->w.iOfst;
-        }else{
-          assert( pE->pLeft==0 );
-          assert( ExprUseWOfst(pE) );
+        ਪੂਰਨ ਸਾਰਣੀ_ਵੇਖਿਆ = 0;      /* Set to 1 when TABLE matches */
+        ਅੱਖਰ *zTName = 0;       /* text of name of TABLE */
+        ਪੂਰਨ iErrOfst;
+        ਜੇ( pE->op==TK_DOT ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( (selFlags & SF_NestedFrom)==0 );
+          ਪ੍ਰਤਿਜ੍ਞਾ( pE->p_ਖੱਬਾ!=0 );
+          ਪ੍ਰਤਿਜ੍ਞਾ( !ਵਿਅੰਜਕ_Has_Property(pE->p_ਖੱਬਾ, EP_Int_ਮੁੱਲ) );
+          zTName = pE->p_ਖੱਬਾ->u.zToken;
+          ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_WOfst(pE->p_ਖੱਬਾ) );
+          iErrOfst = pE->p_ਸੱਜਾ->w.iOfst;
+        }ਨਹੀਂਤਾਂ{
+          ਪ੍ਰਤਿਜ੍ਞਾ( pE->p_ਖੱਬਾ==0 );
+          ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_WOfst(pE) );
           iErrOfst = pE->w.iOfst;
         }
-        for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
-          int nAdd;                    /* Number of cols including rowid */
-          Table *pTab = pFrom->pSTab;  /* Table for this data source */
-          ExprList *pNestedFrom;       /* Result-set of a nested FROM clause */
-          char *zTabName;              /* AS name for this data source */
-          const char *zSchemaName = 0; /* Schema name for this data source */
-          int iDb;                     /* Schema index for this data src */
+        ਲਈ(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+          ਪੂਰਨ n_ਜੋੜੋ;                    /* Number of cols including rowid */
+          ਸਾਰਣੀ *pTab = pFrom->pSTab;  /* Table for this data source */
+          ਵਿਅੰਜਕ_List *pNestedFrom;       /* Result-set of a nested FROM clause */
+          ਅੱਖਰ *zTabName;              /* AS name for this data source */
+          ਅਚਲ ਅੱਖਰ *zSchemaName = 0; /* Schema name for this data source */
+          ਪੂਰਨ iDb;                     /* Schema index for this data src */
           IdList *pUsing;              /* USING clause for pFrom[1] */
 
-          if( (zTabName = pFrom->zAlias)==0 ){
+          ਜੇ( (zTabName = pFrom->zAlias)==0 ){
             zTabName = pTab->zName;
           }
-          if( db->mallocFailed ) break;
-          assert( (int)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
-          if( pFrom->fg.isNestedFrom ){
-            assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
-            assert( pFrom->u4.pSubq->pSelect!=0 );
+          ਜੇ( db->mallocFailed ) ਰੋਕੋ;
+          ਪ੍ਰਤਿਜ੍ਞਾ( (ਪੂਰਨ)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
+          ਜੇ( pFrom->fg.isNestedFrom ){
+            ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->fg.isSubquery && pFrom->u4.pSubq );
+            ਪ੍ਰਤਿਜ੍ਞਾ( pFrom->u4.pSubq->pSelect!=0 );
             pNestedFrom = pFrom->u4.pSubq->pSelect->pEList;
-            assert( pNestedFrom!=0 );
-            assert( pNestedFrom->nExpr==pTab->nCol );
-            assert( VisibleRowid(pTab)==0 || ViewCanHaveRowid );
-          }else{
-            if( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
-              continue;
+            ਪ੍ਰਤਿਜ੍ਞਾ( pNestedFrom!=0 );
+            ਪ੍ਰਤਿਜ੍ਞਾ( pNestedFrom->n_ਵਿਅੰਜਕ==pTab->n_ਖਾਨਾ );
+            ਪ੍ਰਤਿਜ੍ਞਾ( VisibleRowid(pTab)==0 || ViewCanHaveRowid );
+          }ਨਹੀਂਤਾਂ{
+            ਜੇ( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
+              ਜਾਰੀ;
             }
             pNestedFrom = 0;
-            iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+            iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema);
             zSchemaName = iDb>=0 ? db->aDb[iDb].zDbSName : "*";
           }
-          if( i+1<pTabList->nSrc
+          ਜੇ( i+1<pTabList->nSrc
            && pFrom[1].fg.isUsing
            && (selFlags & SF_NestedFrom)!=0
           ){
-            int ii;
+            ਪੂਰਨ ii;
             pUsing = pFrom[1].u3.pUsing;
-            for(ii=0; ii<pUsing->nId; ii++){
-              const char *zUName = pUsing->a[ii].zName;
-              pRight = sqlite3Expr(db, TK_ID, zUName);
-              sqlite3ExprSetErrorOffset(pRight, iErrOfst);
-              pNew = sqlite3ExprListAppend(pParse, pNew, pRight);
-              if( pNew ){
-                struct ExprList_item *pX = &pNew->a[pNew->nExpr-1];
-                assert( pX->zEName==0 );
+            ਲਈ(ii=0; ii<pUsing->nId; ii++){
+              ਅਚਲ ਅੱਖਰ *zUName = pUsing->a[ii].zName;
+              p_ਸੱਜਾ = sqlite3_ਵਿਅੰਜਕ(db, TK_ID, zUName);
+              sqlite3_ਵਿਅੰਜਕ_ਸੈੱਟ_Error_ਵਿੱਥ(p_ਸੱਜਾ, iErrOfst);
+              pNew = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, pNew, p_ਸੱਜਾ);
+              ਜੇ( pNew ){
+                ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *pX = &pNew->a[pNew->n_ਵਿਅੰਜਕ-1];
+                ਪ੍ਰਤਿਜ੍ਞਾ( pX->zEName==0 );
                 pX->zEName = sqlite3MPrintf(db,"..%s", zUName);
                 pX->fg.eEName = ENAME_TAB;
-                pX->fg.bUsingTerm = 1;
+                pX->fg.b_Using_ਪਦ = 1;
               }
             }
-          }else{
+          }ਨਹੀਂਤਾਂ{
             pUsing = 0;
           }
 
-          nAdd = pTab->nCol;
-          if( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) nAdd++;
-          for(j=0; j<nAdd; j++){
-            const char *zName; 
-            struct ExprList_item *pX; /* Newly added ExprList term */
+          n_ਜੋੜੋ = pTab->n_ਖਾਨਾ;
+          ਜੇ( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) n_ਜੋੜੋ++;
+          ਲਈ(j=0; j<n_ਜੋੜੋ; j++){
+            ਅਚਲ ਅੱਖਰ *zName; 
+            ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *pX; /* Newly added ExprList term */
 
-            if( j==pTab->nCol ){
+            ਜੇ( j==pTab->n_ਖਾਨਾ ){
               zName = sqlite3RowidAlias(pTab);
-              if( zName==0 ) continue;
-            }else{
-              zName = pTab->aCol[j].zCnName;
+              ਜੇ( zName==0 ) ਜਾਰੀ;
+            }ਨਹੀਂਤਾਂ{
+              zName = pTab->a_ਖਾਨਾ[j].zCnName;
 
               /* If pTab is actually an SF_NestedFrom sub-select, do not
               ** expand any ENAME_ROWID columns.  */
-              if( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
-                continue;
+              ਜੇ( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
+                ਜਾਰੀ;
               }
 
-              if( zTName
+              ਜੇ( zTName
                && pNestedFrom
-               && sqlite3MatchEName(&pNestedFrom->a[j], 0, zTName, 0, 0)==0
+               && sqlite3_ਮੇਲ_EName(&pNestedFrom->a[j], 0, zTName, 0, 0)==0
               ){
-                continue;
+                ਜਾਰੀ;
               }
 
               /* If a column is marked as 'hidden', omit it from the expanded
               ** result-set list unless the SELECT has the SF_IncludeHidden
               ** bit set.
               */
-              if( (p->selFlags & SF_IncludeHidden)==0
-                && IsHiddenColumn(&pTab->aCol[j])
+              ਜੇ( (p->selFlags & SF_IncludeHidden)==0
+                && Is_Hidden_ਕਾਲਮ(&pTab->a_ਖਾਨਾ[j])
               ){
-                continue;
+                ਜਾਰੀ;
               }
-              if( (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND)!=0
+              ਜੇ( (pTab->a_ਖਾਨਾ[j].ਖਾਨਾ_Flags & COLFLAG_NOEXPAND)!=0
                && zTName==0
                && (selFlags & (SF_NestedFrom))==0
               ){
-                continue;
+                ਜਾਰੀ;
               }
             }
-            assert( zName );
-            tableSeen = 1;
+            ਪ੍ਰਤਿਜ੍ਞਾ( zName );
+            ਸਾਰਣੀ_ਵੇਖਿਆ = 1;
 
-            if( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
-              if( pFrom->fg.isUsing
-               && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0
+            ਜੇ( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
+              ਜੇ( pFrom->fg.isUsing
+               && sqlite3_Id_List_ਸੂਚਕਾਂਕ(pFrom->u3.pUsing, zName)>=0
               ){
                 /* In a join with a USING clause, omit columns in the
                 ** using clause from the table on the right. */
-                continue;
+                ਜਾਰੀ;
               }
             }
-            pRight = sqlite3Expr(db, TK_ID, zName);
-            if( (pTabList->nSrc>1
+            p_ਸੱਜਾ = sqlite3_ਵਿਅੰਜਕ(db, TK_ID, zName);
+            ਜੇ( (pTabList->nSrc>1
                  && (  (pFrom->fg.jointype & JT_LTORJ)==0
                      || zTName!=0
                      || (selFlags & SF_NestedFrom)!=0
-                     || !inAnyUsingClause(zName,pFrom,pTabList->nSrc-i-1)
+                     || !ਵਿੱਚ_Any_Using_Clause(zName,pFrom,pTabList->nSrc-i-1)
                     )
                 )
-             || IN_RENAME_OBJECT
+             || ਵਿੱਚ_RENAME_OBJECT
             ){
-              Expr *pLeft;
-              pLeft = sqlite3Expr(db, TK_ID, zTabName);
-              pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight);
-              if( IN_RENAME_OBJECT && pE->pLeft ){
-                assert( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK );
-                sqlite3RenameTokenRemap(pParse, pLeft, pE->pLeft);
+              ਵਿਅੰਜਕ *p_ਖੱਬਾ;
+              p_ਖੱਬਾ = sqlite3_ਵਿਅੰਜਕ(db, TK_ID, zTabName);
+              p_ਵਿਅੰਜਕ = sqlite3PExpr(pParse, TK_DOT, p_ਖੱਬਾ, p_ਸੱਜਾ);
+              ਜੇ( ਵਿੱਚ_RENAME_OBJECT && pE->p_ਖੱਬਾ ){
+                ਪ੍ਰਤਿਜ੍ਞਾ( pE->op==TK_DOT && pE->p_ਸੱਜਾ->op==TK_ASTERISK );
+                sqlite3RenameTokenRemap(pParse, p_ਖੱਬਾ, pE->p_ਖੱਬਾ);
               }
-              if( zSchemaName ){
-                pLeft = sqlite3Expr(db, TK_ID, zSchemaName);
-                pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pExpr);
+              ਜੇ( zSchemaName ){
+                p_ਖੱਬਾ = sqlite3_ਵਿਅੰਜਕ(db, TK_ID, zSchemaName);
+                p_ਵਿਅੰਜਕ = sqlite3PExpr(pParse, TK_DOT, p_ਖੱਬਾ, p_ਵਿਅੰਜਕ);
               }
-            }else{
-              pExpr = pRight;
+            }ਨਹੀਂਤਾਂ{
+              p_ਵਿਅੰਜਕ = p_ਸੱਜਾ;
             }
-            sqlite3ExprSetErrorOffset(pExpr, iErrOfst);
-            pNew = sqlite3ExprListAppend(pParse, pNew, pExpr);
-            if( pNew==0 ){
-              break;  /* OOM */
+            sqlite3_ਵਿਅੰਜਕ_ਸੈੱਟ_Error_ਵਿੱਥ(p_ਵਿਅੰਜਕ, iErrOfst);
+            pNew = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, pNew, p_ਵਿਅੰਜਕ);
+            ਜੇ( pNew==0 ){
+              ਰੋਕੋ;  /* OOM */
             }
-            pX = &pNew->a[pNew->nExpr-1];
-            assert( pX->zEName==0 );
-            if( (selFlags & SF_NestedFrom)!=0 && !IN_RENAME_OBJECT ){
-              if( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->nExpr) ){
-                assert( j<pNestedFrom->nExpr );
+            pX = &pNew->a[pNew->n_ਵਿਅੰਜਕ-1];
+            ਪ੍ਰਤਿਜ੍ਞਾ( pX->zEName==0 );
+            ਜੇ( (selFlags & SF_NestedFrom)!=0 && !ਵਿੱਚ_RENAME_OBJECT ){
+              ਜੇ( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->n_ਵਿਅੰਜਕ) ){
+                ਪ੍ਰਤਿਜ੍ਞਾ( j<pNestedFrom->n_ਵਿਅੰਜਕ );
                 pX->zEName = sqlite3DbStrDup(db, pNestedFrom->a[j].zEName);
                 testcase( pX->zEName==0 );
-              }else{
+              }ਨਹੀਂਤਾਂ{
                 pX->zEName = sqlite3MPrintf(db, "%s.%s.%s",
                                            zSchemaName, zTabName, zName);
                 testcase( pX->zEName==0 );
               }
-              pX->fg.eEName = (j==pTab->nCol ? ENAME_ROWID : ENAME_TAB);
-              if( (pFrom->fg.isUsing
-                   && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0)
-               || (pUsing && sqlite3IdListIndex(pUsing, zName)>=0)
-               || (j<pTab->nCol && (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND))
+              pX->fg.eEName = (j==pTab->n_ਖਾਨਾ ? ENAME_ROWID : ENAME_TAB);
+              ਜੇ( (pFrom->fg.isUsing
+                   && sqlite3_Id_List_ਸੂਚਕਾਂਕ(pFrom->u3.pUsing, zName)>=0)
+               || (pUsing && sqlite3_Id_List_ਸੂਚਕਾਂਕ(pUsing, zName)>=0)
+               || (j<pTab->n_ਖਾਨਾ && (pTab->a_ਖਾਨਾ[j].ਖਾਨਾ_Flags & COLFLAG_NOEXPAND))
               ){
                 pX->fg.bNoExpand = 1;
               }
-            }else if( longNames ){
+            }ਨਹੀਂਤਾਂ ਜੇ( long_ਨਾਂ ){
               pX->zEName = sqlite3MPrintf(db, "%s.%s", zTabName, zName);
               pX->fg.eEName = ENAME_NAME;
-            }else{
+            }ਨਹੀਂਤਾਂ{
               pX->zEName = sqlite3DbStrDup(db, zName);
               pX->fg.eEName = ENAME_NAME;
             }
           }
         }
-        if( !tableSeen ){
-          if( zTName ){
-            sqlite3ErrorMsg(pParse, "no such table: %s", zTName);
-          }else{
-            sqlite3ErrorMsg(pParse, "no tables specified");
+        ਜੇ( !ਸਾਰਣੀ_ਵੇਖਿਆ ){
+          ਜੇ( zTName ){
+            sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such table: %s", zTName);
+          }ਨਹੀਂਤਾਂ{
+            sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no tables specified");
           }
         }
       }
     }
-    sqlite3ExprListDelete(db, pEList);
+    sqlite3_ਵਿਅੰਜਕ_List_Delete(db, pEList);
     p->pEList = pNew;
   }
-  if( p->pEList ){
-    if( p->pEList->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-      sqlite3ErrorMsg(pParse, "too many columns in result set");
-      return WRC_Abort;
+  ਜੇ( p->pEList ){
+    ਜੇ( p->pEList->n_ਵਿਅੰਜਕ>db->a_ਹੱਦਬੰਦੀ[SQLITE_ਹੱਦਬੰਦੀ_ਕਾਲਮ] ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "too many columns in result set");
+      ਵਾਪਸ WRC_Abort;
     }
-    if( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
-      p->selFlags |= SF_ComplexResult;
+    ਜੇ( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
+      p->selFlags |= SF_Complex_ਨਤੀਜਾ;
     }
   }
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8 ){
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x8 ){
     TREETRACE(0x8,pParse,p,("After result-set wildcard expansion:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
-  return WRC_Continue;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ WRC_Continue;
 }
 
-#if SQLITE_DEBUG
+#ਜੇ SQLITE_DEBUG
 /*
 ** Always assert.  This xSelectCallback2 implementation proves that the
 ** xSelectCallback2 is never invoked.
 */
-void sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
-  UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  assert( 0 );
+ਖਾਲੀ sqlite3SelectWalkAssert2(Walker *Not_ਵਰਤਿਆ, Select *NotUsed2){
+  ਅਣਵਰਤਿਆ_PARAMETER2(Not_ਵਰਤਿਆ, NotUsed2);
+  ਪ੍ਰਤਿਜ੍ਞਾ( 0 );
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** The first argument is a Walker object created by sqlite3SelectExpand().
@@ -6497,17 +6497,17 @@ void sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
 ** SELECT statements that have COLLATE clauses on ORDER BY expressions
 ** to sub-queries. Return the return value of sqlite3WalkSelect().
 */
-static int selectExpanderWalk(Walker *pWalker, Select *pSelect){
-  assert( pWalker->xExprCallback==sqlite3ExprWalkNoop );
-  assert( pWalker->pParse!=0 );
-  if( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
-    pWalker->xSelectCallback = convertCompoundSelectToSubquery;
+ਸਥਿਰ ਪੂਰਨ selectExpanderWalk(Walker *pWalker, Select *pSelect){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pWalker->x_ਵਿਅੰਜਕ_Callback==sqlite3_ਵਿਅੰਜਕ_Walk_Noop );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pWalker->pParse!=0 );
+  ਜੇ( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
+    pWalker->xSelectCallback = convert_Compound_Select_ਮੰਜ਼ਿਲ_Subquery;
     pWalker->xSelectCallback2 = 0;
     sqlite3WalkSelect(pWalker, pSelect);
   }
   pWalker->xSelectCallback = selectExpander;
-  pWalker->xSelectCallback2 = sqlite3SelectPopWith;
-  return sqlite3WalkSelect(pWalker, pSelect);
+  pWalker->xSelectCallback2 = sqlite3_Select_ਕੱਢੋ_With;
+  ਵਾਪਸ sqlite3WalkSelect(pWalker, pSelect);
 }
 
 /*
@@ -6523,16 +6523,16 @@ static int selectExpanderWalk(Walker *pWalker, Select *pSelect){
 ** The calling function can detect the problem by looking at pParse->nErr
 ** and/or pParse->db->mallocFailed.
 */
-static void sqlite3SelectExpand(Parse *pParse, Select *pSelect){
+ਸਥਿਰ ਖਾਲੀ sqlite3SelectExpand(Parse *pParse, Select *pSelect){
   Walker w;
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  w.x_ਵਿਅੰਜਕ_Callback = sqlite3_ਵਿਅੰਜਕ_Walk_Noop;
   w.pParse = pParse;
-  w.eCode = 0;
+  w.e_ਕੋਡ = 0;
   selectExpanderWalk(&w, pSelect);
 }
 
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
 /*
 ** This is a Walker.xSelectCallback callback for the sqlite3SelectTypeInfo()
 ** interface.
@@ -6546,28 +6546,28 @@ static void sqlite3SelectExpand(Parse *pParse, Select *pSelect){
 ** was omitted at that point because identifiers had not yet been resolved.
 ** This routine is called after identifier resolution.
 */
-static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
+ਸਥਿਰ ਖਾਲੀ select_ਜੋੜੋ_Subquery_Type_Info(Walker *pWalker, Select *p){
   Parse *pParse;
-  int i;
+  ਪੂਰਨ i;
   SrcList *pTabList;
-  SrcItem *pFrom;
+  Src_ਵਸਤੂ *pFrom;
 
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  ਜੇ( p->selFlags & SF_HasTypeInfo ) ਵਾਪਸ;
   p->selFlags |= SF_HasTypeInfo;
   pParse = pWalker->pParse;
-  assert( (p->selFlags & SF_Resolved) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (p->selFlags & SF_Resolved) );
   pTabList = p->pSrc;
-  for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
-    Table *pTab = pFrom->pSTab;
-    assert( pTab!=0 );
-    if( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
+  ਲਈ(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+    ਸਾਰਣੀ *pTab = pFrom->pSTab;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
+    ਜੇ( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
       /* A sub-query in the FROM clause of a SELECT */
       Select *pSel = pFrom->u4.pSubq->pSelect;
-      sqlite3SubqueryColumnTypes(pParse, pTab, pSel, SQLITE_AFF_NONE);
+      sqlite3_Subquery_ਕਾਲਮ_Types(pParse, pTab, pSel, SQLITE_AFF_NONE);
     }
   }
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 
 /*
@@ -6577,15 +6577,15 @@ static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
 **
 ** Use this routine after name resolution.
 */
-static void sqlite3SelectAddTypeInfo(Parse *pParse, Select *pSelect){
-#ifndef SQLITE_OMIT_SUBQUERY
+ਸਥਿਰ ਖਾਲੀ sqlite3_Select_ਜੋੜੋ_Type_Info(Parse *pParse, Select *pSelect){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_SUBQUERY
   Walker w;
   w.xSelectCallback = sqlite3SelectWalkNoop;
-  w.xSelectCallback2 = selectAddSubqueryTypeInfo;
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  w.xSelectCallback2 = select_ਜੋੜੋ_Subquery_Type_Info;
+  w.x_ਵਿਅੰਜਕ_Callback = sqlite3_ਵਿਅੰਜਕ_Walk_Noop;
   w.pParse = pParse;
   sqlite3WalkSelect(&w, pSelect);
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 
@@ -6601,48 +6601,48 @@ static void sqlite3SelectAddTypeInfo(Parse *pParse, Select *pSelect){
 **
 ** This routine acts recursively on all subqueries within the SELECT.
 */
-void sqlite3SelectPrep(
+ਖਾਲੀ sqlite3SelectPrep(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   NameContext *pOuterNC  /* Name context for container */
 ){
-  assert( p!=0 || pParse->db->mallocFailed );
-  assert( pParse->db->pParse==pParse );
-  if( pParse->db->mallocFailed ) return;
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p!=0 || pParse->db->mallocFailed );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->db->pParse==pParse );
+  ਜੇ( pParse->db->mallocFailed ) ਵਾਪਸ;
+  ਜੇ( p->selFlags & SF_HasTypeInfo ) ਵਾਪਸ;
   sqlite3SelectExpand(pParse, p);
-  if( pParse->nErr ) return;
-  sqlite3ResolveSelectNames(pParse, p, pOuterNC);
-  if( pParse->nErr ) return;
-  sqlite3SelectAddTypeInfo(pParse, p);
+  ਜੇ( pParse->nErr ) ਵਾਪਸ;
+  sqlite3_Resolve_Select_ਨਾਂ(pParse, p, pOuterNC);
+  ਜੇ( pParse->nErr ) ਵਾਪਸ;
+  sqlite3_Select_ਜੋੜੋ_Type_Info(pParse, p);
 }
 
-#if TREETRACE_ENABLED
+#ਜੇ TREETRACE_ENABLED
 /*
 ** Display all information about an AggInfo object
 */
-static void printAggInfo(AggInfo *pAggInfo){
-  int ii;
+ਸਥਿਰ ਖਾਲੀ printAggInfo(AggInfo *pAggInfo){
+  ਪੂਰਨ ii;
   sqlite3DebugPrintf("AggInfo %d/%p:\n",
      pAggInfo->selId, pAggInfo);
-  for(ii=0; ii<pAggInfo->nColumn; ii++){
-    struct AggInfo_col *pCol = &pAggInfo->aCol[ii];
+  ਲਈ(ii=0; ii<pAggInfo->n_ਕਾਲਮ; ii++){
+    ਬਣਤਰ Agg_Info_ਖਾਨਾ *p_ਖਾਨਾ = &pAggInfo->a_ਖਾਨਾ[ii];
     sqlite3DebugPrintf(
        "agg-column[%d] pTab=%s iTable=%d iColumn=%d iMem=%d"
        " iSorterColumn=%d %s\n",
-       ii, pCol->pTab ? pCol->pTab->zName : "NULL",
-       pCol->iTable, pCol->iColumn, pAggInfo->iFirstReg+ii,
-       pCol->iSorterColumn,
-       ii>=pAggInfo->nAccumulator ? "" : " Accumulator");
-    sqlite3TreeViewExpr(0, pAggInfo->aCol[ii].pCExpr, 0);
+       ii, p_ਖਾਨਾ->pTab ? p_ਖਾਨਾ->pTab->zName : "NULL",
+       p_ਖਾਨਾ->i_ਸਾਰਣੀ, p_ਖਾਨਾ->i_ਕਾਲਮ, pAggInfo->i_ਪਹਿਲਾ_Reg+ii,
+       p_ਖਾਨਾ->i_Sorter_ਕਾਲਮ,
+       ii>=pAggInfo->n_ਸੰਚਾਇਕ ? "" : " Accumulator");
+    sqlite3_ਰੁੱਖ_View_ਵਿਅੰਜਕ(0, pAggInfo->a_ਖਾਨਾ[ii].pCExpr, 0);
   }
-  for(ii=0; ii<pAggInfo->nFunc; ii++){
+  ਲਈ(ii=0; ii<pAggInfo->nFunc; ii++){
     sqlite3DebugPrintf("agg-func[%d]: iMem=%d\n",
-        ii, pAggInfo->iFirstReg+pAggInfo->nColumn+ii);
-    sqlite3TreeViewExpr(0, pAggInfo->aFunc[ii].pFExpr, 0);
+        ii, pAggInfo->i_ਪਹਿਲਾ_Reg+pAggInfo->n_ਕਾਲਮ+ii);
+    sqlite3_ਰੁੱਖ_View_ਵਿਅੰਜਕ(0, pAggInfo->aFunc[ii].pFExpr, 0);
   }
 }
-#endif /* TREETRACE_ENABLED */
+#ਜੇ_ਅੰਤ /* TREETRACE_ENABLED */
 
 /*
 ** Analyze the arguments to aggregate functions.  Create new pAggInfo->aCol[]
@@ -6661,32 +6661,32 @@ static void printAggInfo(AggInfo *pAggInfo){
 ** aggregate functions.  This routine is responsible for computing
 ** (or recomputing) those aCol[] entries.
 */
-static void analyzeAggFuncArgs(
+ਸਥਿਰ ਖਾਲੀ analyze_Agg_Func_ਦਲੀਲਾਂ(
   AggInfo *pAggInfo,
   NameContext *pNC
 ){
-  int i;
-  assert( pAggInfo!=0 );
-  assert( pAggInfo->iFirstReg==0 );
-  pNC->ncFlags |= NC_InAggFunc;
-  for(i=0; i<pAggInfo->nFunc; i++){
-    Expr *pExpr = pAggInfo->aFunc[i].pFExpr;
-    assert( pExpr->op==TK_FUNCTION || pExpr->op==TK_AGG_FUNCTION );
-    assert( ExprUseXList(pExpr) );
-    sqlite3ExprAnalyzeAggList(pNC, pExpr->x.pList);
-    if( pExpr->pLeft ){
-      assert( pExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pExpr->pLeft) );
-      sqlite3ExprAnalyzeAggList(pNC, pExpr->pLeft->x.pList);
+  ਪੂਰਨ i;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->i_ਪਹਿਲਾ_Reg==0 );
+  pNC->ncFlags |= NC_ਵਿੱਚ_Agg_Func;
+  ਲਈ(i=0; i<pAggInfo->nFunc; i++){
+    ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = pAggInfo->aFunc[i].pFExpr;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->op==TK_FUNCTION || p_ਵਿਅੰਜਕ->op==TK_AGG_FUNCTION );
+    ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(p_ਵਿਅੰਜਕ) );
+    sqlite3_ਵਿਅੰਜਕ_Analyze_Agg_List(pNC, p_ਵਿਅੰਜਕ->x.pList);
+    ਜੇ( p_ਵਿਅੰਜਕ->p_ਖੱਬਾ ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->p_ਖੱਬਾ->op==TK_ਕ੍ਰਮ );
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(p_ਵਿਅੰਜਕ->p_ਖੱਬਾ) );
+      sqlite3_ਵਿਅੰਜਕ_Analyze_Agg_List(pNC, p_ਵਿਅੰਜਕ->p_ਖੱਬਾ->x.pList);
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    assert( !IsWindowFunc(pExpr) );
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      sqlite3ExprAnalyzeAggregates(pNC, pExpr->y.pWin->pFilter);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਪ੍ਰਤਿਜ੍ਞਾ( !Is_ਖਿੜਕੀ_Func(p_ਵਿਅੰਜਕ) );
+    ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_WinFunc) ){
+      sqlite3_ਵਿਅੰਜਕ_Analyze_Aggregates(pNC, p_ਵਿਅੰਜਕ->y.pWin->pFilter);
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
-  pNC->ncFlags &= ~NC_InAggFunc;
+  pNC->ncFlags &= ~NC_ਵਿੱਚ_Agg_Func;
 }
 
 /*
@@ -6696,65 +6696,65 @@ static void analyzeAggFuncArgs(
 ** perhaps use the index as a covering index.
 **
 */
-static void optimizeAggregateUseOfIndexedExpr(
+ਸਥਿਰ ਖਾਲੀ optimize_Aggregate_Use_ਦਾ_ਸੂਚਕਾਂਕਿਤ_ਵਿਅੰਜਕ(
   Parse *pParse,          /* Parsing context */
   Select *pSelect,        /* The SELECT statement being processed */
   AggInfo *pAggInfo,      /* The aggregate info */
   NameContext *pNC        /* Name context used to resolve agg-func args */
 ){
-  assert( pAggInfo->iFirstReg==0 );
-  assert( pSelect!=0 );
-  assert( pSelect->pGroupBy!=0 );
-  pAggInfo->nColumn = pAggInfo->nAccumulator;
-  if( ALWAYS(pAggInfo->nSortingColumn>0) ){
-    int mx = pSelect->pGroupBy->nExpr - 1;
-    int j, k;
-    for(j=0; j<pAggInfo->nColumn; j++){
-      k = pAggInfo->aCol[j].iSorterColumn;
-      if( k>mx ) mx = k;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->i_ਪਹਿਲਾ_Reg==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect->p_ਸਮੂਹ_By!=0 );
+  pAggInfo->n_ਕਾਲਮ = pAggInfo->n_ਸੰਚਾਇਕ;
+  ਜੇ( ALWAYS(pAggInfo->n_ਛਾਂਟੀ_ਕਾਲਮ>0) ){
+    ਪੂਰਨ mx = pSelect->p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ - 1;
+    ਪੂਰਨ j, k;
+    ਲਈ(j=0; j<pAggInfo->n_ਕਾਲਮ; j++){
+      k = pAggInfo->a_ਖਾਨਾ[j].i_Sorter_ਕਾਲਮ;
+      ਜੇ( k>mx ) mx = k;
     }
-    pAggInfo->nSortingColumn = mx+1;
+    pAggInfo->n_ਛਾਂਟੀ_ਕਾਲਮ = mx+1;
   }
-  analyzeAggFuncArgs(pAggInfo, pNC);
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x20 ){
-    IndexedExpr *pIEpr;
+  analyze_Agg_Func_ਦਲੀਲਾਂ(pAggInfo, pNC);
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x20 ){
+    ਸੂਚਕਾਂਕਿਤ_ਵਿਅੰਜਕ *pIEpr;
     TREETRACE(0x20, pParse, pSelect,
         ("AggInfo (possibly) adjusted for Indexed Exprs\n"));
-    sqlite3TreeViewSelect(0, pSelect, 0);
-    for(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
-      printf("data-cursor=%d index={%d,%d}\n",
-          pIEpr->iDataCur, pIEpr->iIdxCur, pIEpr->iIdxCol);
-      sqlite3TreeViewExpr(0, pIEpr->pExpr, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, pSelect, 0);
+    ਲਈ(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
+      ਲਿਖੋ("data-cursor=%d index={%d,%d}\n",
+          pIEpr->i_ਅੰਕੜੇ_Cur, pIEpr->iIdxCur, pIEpr->i_Idx_ਖਾਨਾ);
+      sqlite3_ਰੁੱਖ_View_ਵਿਅੰਜਕ(0, pIEpr->p_ਵਿਅੰਜਕ, 0);
     }
     printAggInfo(pAggInfo);
   }
-#else
-  UNUSED_PARAMETER(pSelect);
-  UNUSED_PARAMETER(pParse);
-#endif
+#ਨਹੀਂਤਾਂ
+  ਅਣਵਰਤਿਆ_PARAMETER(pSelect);
+  ਅਣਵਰਤਿਆ_PARAMETER(pParse);
+#ਜੇ_ਅੰਤ
 }
 
 /*
 ** Walker callback for aggregateConvertIndexedExprRefToColumn().
 */
-static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ aggregate_Idx_Epr_Ref_ਮੰਜ਼ਿਲ_ਖਾਨਾ_Callback(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   AggInfo *pAggInfo;
-  struct AggInfo_col *pCol;
-  UNUSED_PARAMETER(pWalker);
-  if( pExpr->pAggInfo==0 ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_COLUMN ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_FUNCTION ) return WRC_Continue;
-  if( pExpr->op==TK_IF_NULL_ROW ) return WRC_Continue;
-  pAggInfo = pExpr->pAggInfo;
-  if( NEVER(pExpr->iAgg>=pAggInfo->nColumn) ) return WRC_Continue;
-  assert( pExpr->iAgg>=0 );
-  pCol = &pAggInfo->aCol[pExpr->iAgg];
-  pExpr->op = TK_AGG_COLUMN;
-  pExpr->iTable = pCol->iTable;
-  pExpr->iColumn = pCol->iColumn;
-  ExprClearProperty(pExpr, EP_Skip|EP_Collate|EP_Unlikely);
-  return WRC_Prune;
+  ਬਣਤਰ Agg_Info_ਖਾਨਾ *p_ਖਾਨਾ;
+  ਅਣਵਰਤਿਆ_PARAMETER(pWalker);
+  ਜੇ( p_ਵਿਅੰਜਕ->pAggInfo==0 ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_AGG_ਕਾਲਮ ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_AGG_FUNCTION ) ਵਾਪਸ WRC_Continue;
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_IF_NULL_ਪੰਕਤੀ ) ਵਾਪਸ WRC_Continue;
+  pAggInfo = p_ਵਿਅੰਜਕ->pAggInfo;
+  ਜੇ( NEVER(p_ਵਿਅੰਜਕ->iAgg>=pAggInfo->n_ਕਾਲਮ) ) ਵਾਪਸ WRC_Continue;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->iAgg>=0 );
+  p_ਖਾਨਾ = &pAggInfo->a_ਖਾਨਾ[p_ਵਿਅੰਜਕ->iAgg];
+  p_ਵਿਅੰਜਕ->op = TK_AGG_ਕਾਲਮ;
+  p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ = p_ਖਾਨਾ->i_ਸਾਰਣੀ;
+  p_ਵਿਅੰਜਕ->i_ਕਾਲਮ = p_ਖਾਨਾ->i_ਕਾਲਮ;
+  ਵਿਅੰਜਕ_Clear_Property(p_ਵਿਅੰਜਕ, EP_Skip|EP_Collate|EP_Unlikely);
+  ਵਾਪਸ WRC_Prune;
 }
 
 /*
@@ -6762,13 +6762,13 @@ static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
 ** those expressions that has pAppInfo set is changed into a TK_AGG_COLUMN
 ** opcode.
 */
-static void aggregateConvertIndexedExprRefToColumn(AggInfo *pAggInfo){
-  int i;
+ਸਥਿਰ ਖਾਲੀ aggregate_Convert_ਸੂਚਕਾਂਕਿਤ_ਵਿਅੰਜਕ_Ref_ਮੰਜ਼ਿਲ_ਕਾਲਮ(AggInfo *pAggInfo){
+  ਪੂਰਨ i;
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = aggregateIdxEprRefToColCallback;
-  for(i=0; i<pAggInfo->nFunc; i++){
-    sqlite3WalkExpr(&w, pAggInfo->aFunc[i].pFExpr);
+  memset(&w, 0, ਆਕਾਰ(w));
+  w.x_ਵਿਅੰਜਕ_Callback = aggregate_Idx_Epr_Ref_ਮੰਜ਼ਿਲ_ਖਾਨਾ_Callback;
+  ਲਈ(i=0; i<pAggInfo->nFunc; i++){
+    sqlite3_Walk_ਵਿਅੰਜਕ(&w, pAggInfo->aFunc[i].pFExpr);
   }
 }
 
@@ -6790,11 +6790,11 @@ static void aggregateConvertIndexedExprRefToColumn(AggInfo *pAggInfo){
 **     *  The AggInfoColumnReg() and AggInfoFuncReg() macros may be used
 **
 */
-static void assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
-  assert( pAggInfo!=0 );
-  assert( pAggInfo->iFirstReg==0 );
-  pAggInfo->iFirstReg = pParse->nMem + 1;
-  pParse->nMem += pAggInfo->nColumn + pAggInfo->nFunc;
+ਸਥਿਰ ਖਾਲੀ ਸੌਂਪੋ_Aggregate_Registers(Parse *pParse, AggInfo *pAggInfo){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->i_ਪਹਿਲਾ_Reg==0 );
+  pAggInfo->i_ਪਹਿਲਾ_Reg = pParse->nMem + 1;
+  pParse->nMem += pAggInfo->n_ਕਾਲਮ + pAggInfo->nFunc;
 }
 
 /*
@@ -6805,62 +6805,62 @@ static void assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
 ** routine generates code that stores NULLs in all of those memory
 ** cells.
 */
-static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
+ਸਥਿਰ ਖਾਲੀ reset_ਸੰਚਾਇਕ(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pFunc;
-  int nReg = pAggInfo->nFunc + pAggInfo->nColumn;
-  assert( pAggInfo->iFirstReg>0 );
-  assert( pParse->db->pParse==pParse );
-  assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  if( nReg==0 ) return;
-  if( pParse->nErr ) return;
-  sqlite3VdbeAddOp3(v, OP_Null, 0, pAggInfo->iFirstReg,
-                    pAggInfo->iFirstReg+nReg-1);
-  for(pFunc=pAggInfo->aFunc, i=0; i<pAggInfo->nFunc; i++, pFunc++){
-    if( pFunc->iDistinct>=0 ){
-      Expr *pE = pFunc->pFExpr;
-      assert( ExprUseXList(pE) );
-      if( pE->x.pList==0 || pE->x.pList->nExpr!=1 ){
-        sqlite3ErrorMsg(pParse, "DISTINCT aggregates must have exactly one "
+  ਪੂਰਨ i;
+  ਬਣਤਰ AggInfo_func *pFunc;
+  ਪੂਰਨ nReg = pAggInfo->nFunc + pAggInfo->n_ਕਾਲਮ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->i_ਪਹਿਲਾ_Reg>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->db->pParse==pParse );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
+  ਜੇ( nReg==0 ) ਵਾਪਸ;
+  ਜੇ( pParse->nErr ) ਵਾਪਸ;
+  sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Null, 0, pAggInfo->i_ਪਹਿਲਾ_Reg,
+                    pAggInfo->i_ਪਹਿਲਾ_Reg+nReg-1);
+  ਲਈ(pFunc=pAggInfo->aFunc, i=0; i<pAggInfo->nFunc; i++, pFunc++){
+    ਜੇ( pFunc->iDistinct>=0 ){
+      ਵਿਅੰਜਕ *pE = pFunc->pFExpr;
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pE) );
+      ਜੇ( pE->x.pList==0 || pE->x.pList->n_ਵਿਅੰਜਕ!=1 ){
+        sqlite3_Error_ਸੁਨੇਹਾ(pParse, "DISTINCT aggregates must have exactly one "
            "argument");
         pFunc->iDistinct = -1;
-      }else{
-        KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pE->x.pList,0,0);
-        pFunc->iDistAddr = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-            pFunc->iDistinct, 0, 0, (char*)pKeyInfo, P4_KEYINFO);
+      }ਨਹੀਂਤਾਂ{
+        ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(pParse, pE->x.pList,0,0);
+        pFunc->iDistAddr = sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral,
+            pFunc->iDistinct, 0, 0, (ਅੱਖਰ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
         ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(DISTINCT)",
                           pFunc->pFunc->zName));
       }
     }
-    if( pFunc->iOBTab>=0 ){
-      ExprList *pOBList;
-      KeyInfo *pKeyInfo;
-      int nExtra = 0;
-      assert( pFunc->pFExpr->pLeft!=0 );
-      assert( pFunc->pFExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pFunc->pFExpr->pLeft) );
-      assert( pFunc->pFunc!=0 );
-      pOBList = pFunc->pFExpr->pLeft->x.pList;
-      if( !pFunc->bOBUnique ){
+    ਜੇ( pFunc->iOBTab>=0 ){
+      ਵਿਅੰਜਕ_List *pOBList;
+      ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info;
+      ਪੂਰਨ nExtra = 0;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFunc->pFExpr->p_ਖੱਬਾ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFunc->pFExpr->p_ਖੱਬਾ->op==TK_ਕ੍ਰਮ );
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pFunc->pFExpr->p_ਖੱਬਾ) );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFunc->pFunc!=0 );
+      pOBList = pFunc->pFExpr->p_ਖੱਬਾ->x.pList;
+      ਜੇ( !pFunc->bOBUnique ){
         nExtra++;  /* One extra column for the OP_Sequence */
       }
-      if( pFunc->bOBPayload ){
+      ਜੇ( pFunc->bOBPayload ){
         /* extra columns for the function arguments */
-        assert( ExprUseXList(pFunc->pFExpr) );
-        assert( pFunc->pFExpr->x.pList!=0 );
-        nExtra += pFunc->pFExpr->x.pList->nExpr;
+        ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pFunc->pFExpr) );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pFunc->pFExpr->x.pList!=0 );
+        nExtra += pFunc->pFExpr->x.pList->n_ਵਿਅੰਜਕ;
       }
-      if( pFunc->bUseSubtype ){
-        nExtra += pFunc->pFExpr->x.pList->nExpr;
+      ਜੇ( pFunc->bUseSubtype ){
+        nExtra += pFunc->pFExpr->x.pList->n_ਵਿਅੰਜਕ;
       }
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pOBList, 0, nExtra);
-      if( !pFunc->bOBUnique && pParse->nErr==0 ){
-        pKeyInfo->nKeyField++;
+      p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(pParse, pOBList, 0, nExtra);
+      ਜੇ( !pFunc->bOBUnique && pParse->nErr==0 ){
+        p_ਕੁੰਜੀ_Info->n_ਕੁੰਜੀ_ਖੇਤਰ++;
       }
-      sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-            pFunc->iOBTab, pOBList->nExpr+nExtra, 0,
-            (char*)pKeyInfo, P4_KEYINFO);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral,
+            pFunc->iOBTab, pOBList->n_ਵਿਅੰਜਕ+nExtra, 0,
+            (ਅੱਖਰ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
       ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(ORDER BY)",
                           pFunc->pFunc->zName));
     }
@@ -6871,61 +6871,61 @@ static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
 ** Invoke the OP_AggFinalize opcode for every aggregate function
 ** in the AggInfo structure.
 */
-static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
+ਸਥਿਰ ਖਾਲੀ finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pF;
-  for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
-    ExprList *pList;
-    assert( ExprUseXList(pF->pFExpr) );
-    if( pParse->nErr ) return;
+  ਪੂਰਨ i;
+  ਬਣਤਰ AggInfo_func *pF;
+  ਲਈ(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
+    ਵਿਅੰਜਕ_List *pList;
+    ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pF->pFExpr) );
+    ਜੇ( pParse->nErr ) ਵਾਪਸ;
     pList = pF->pFExpr->x.pList;
-    if( pF->iOBTab>=0 ){
+    ਜੇ( pF->iOBTab>=0 ){
       /* For an ORDER BY aggregate, calls to OP_AggStep were deferred.  Inputs
       ** were stored in emphermal table pF->iOBTab.  Here, we extract those
       ** inputs (in ORDER BY order) and make all calls to OP_AggStep
       ** before doing the OP_AggFinal call. */
-      int iTop;        /* Start of loop for extracting columns */
-      int nArg;        /* Number of columns to extract */
-      int nKey;        /* Key columns to be skipped */
-      int regAgg;      /* Extract into this array */
-      int j;           /* Loop counter */
+      ਪੂਰਨ i_ਸਿਖਰ;        /* Start of loop for extracting columns */
+      ਪੂਰਨ nArg;        /* Number of columns to extract */
+      ਪੂਰਨ n_ਕੁੰਜੀ;        /* Key columns to be skipped */
+      ਪੂਰਨ regAgg;      /* Extract into this array */
+      ਪੂਰਨ j;           /* Loop counter */
      
-      assert( pF->pFunc!=0 );
-      nArg = pList->nExpr;
-      regAgg = sqlite3GetTempRange(pParse, nArg);
+      ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFunc!=0 );
+      nArg = pList->n_ਵਿਅੰਜਕ;
+      regAgg = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, nArg);
 
-      if( pF->bOBPayload==0 ){
-        nKey = 0;
-      }else{
-        assert( pF->pFExpr->pLeft!=0 );
-        assert( ExprUseXList(pF->pFExpr->pLeft) );
-        assert( pF->pFExpr->pLeft->x.pList!=0 );
-        nKey = pF->pFExpr->pLeft->x.pList->nExpr;
-        if( ALWAYS(!pF->bOBUnique) ) nKey++;
+      ਜੇ( pF->bOBPayload==0 ){
+        n_ਕੁੰਜੀ = 0;
+      }ਨਹੀਂਤਾਂ{
+        ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFExpr->p_ਖੱਬਾ!=0 );
+        ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pF->pFExpr->p_ਖੱਬਾ) );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFExpr->p_ਖੱਬਾ->x.pList!=0 );
+        n_ਕੁੰਜੀ = pF->pFExpr->p_ਖੱਬਾ->x.pList->n_ਵਿਅੰਜਕ;
+        ਜੇ( ALWAYS(!pF->bOBUnique) ) n_ਕੁੰਜੀ++;
       }
-      iTop = sqlite3VdbeAddOp1(v, OP_Rewind, pF->iOBTab); VdbeCoverage(v);
-      for(j=nArg-1; j>=0; j--){
-        sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, nKey+j, regAgg+j);
+      i_ਸਿਖਰ = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Rewind, pF->iOBTab); VdbeCoverage(v);
+      ਲਈ(j=nArg-1; j>=0; j--){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, pF->iOBTab, n_ਕੁੰਜੀ+j, regAgg+j);
       }
-      if( pF->bUseSubtype ){
-        int regSubtype = sqlite3GetTempReg(pParse);
-        int iBaseCol = nKey + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
-        for(j=nArg-1; j>=0; j--){
-          sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, iBaseCol+j, regSubtype);
-          sqlite3VdbeAddOp2(v, OP_SetSubtype, regSubtype, regAgg+j);
+      ਜੇ( pF->bUseSubtype ){
+        ਪੂਰਨ regSubtype = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+        ਪੂਰਨ i_ਅਧਾਰ_ਖਾਨਾ = n_ਕੁੰਜੀ + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
+        ਲਈ(j=nArg-1; j>=0; j--){
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, pF->iOBTab, i_ਅਧਾਰ_ਖਾਨਾ+j, regSubtype);
+          sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਸੈੱਟ_Subtype, regSubtype, regAgg+j);
         }
-        sqlite3ReleaseTempReg(pParse, regSubtype);
+        sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, regSubtype);
       }
-      sqlite3VdbeAddOp3(v, OP_AggStep, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Agg_ਕਦਮ, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
       sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
-      sqlite3VdbeAddOp2(v, OP_Next, pF->iOBTab, iTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, iTop);
-      sqlite3ReleaseTempRange(pParse, regAgg, nArg);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਅਗਲਾ, pF->iOBTab, i_ਸਿਖਰ+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_ਇੱਥੇ(v, i_ਸਿਖਰ);
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, regAgg, nArg);
     }
-    sqlite3VdbeAddOp2(v, OP_AggFinal, AggInfoFuncReg(pAggInfo,i),
-                      pList ? pList->nExpr : 0);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_AggFinal, AggInfoFuncReg(pAggInfo,i),
+                      pList ? pList->n_ਵਿਅੰਜਕ : 0);
     sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
   }
 }
@@ -6946,43 +6946,43 @@ static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
 ** have been passed into OP_AggStep into the sorting ephemeral table
 ** (along with the appropriate sort key).
 */
-static void updateAccumulator(
+ਸਥਿਰ ਖਾਲੀ update_ਸੰਚਾਇਕ(
   Parse *pParse,
-  int regAcc,
+  ਪੂਰਨ regAcc,
   AggInfo *pAggInfo,
-  int eDistinctType
+  ਪੂਰਨ eDistinctType
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int regHit = 0;
-  int addrHitTest = 0;
-  struct AggInfo_func *pF;
-  struct AggInfo_col *pC;
+  ਪੂਰਨ i;
+  ਪੂਰਨ reg_ਪ੍ਰਾਪਤੀ = 0;
+  ਪੂਰਨ addr_ਪ੍ਰਾਪਤੀ_Test = 0;
+  ਬਣਤਰ AggInfo_func *pF;
+  ਬਣਤਰ Agg_Info_ਖਾਨਾ *pC;
 
-  assert( pAggInfo->iFirstReg>0 );
-  if( pParse->nErr ) return;
-  pAggInfo->directMode = 1;
-  for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
-    int nArg;
-    int addrNext = 0;
-    int regAgg;
-    int regAggSz = 0;
-    int regDistinct = 0;
-    ExprList *pList;
-    assert( ExprUseXList(pF->pFExpr) );
-    assert( !IsWindowFunc(pF->pFExpr) );
-    assert( pF->pFunc!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pAggInfo->i_ਪਹਿਲਾ_Reg>0 );
+  ਜੇ( pParse->nErr ) ਵਾਪਸ;
+  pAggInfo->ਸਿੱਧਾ_ਬਹੁਲਕ = 1;
+  ਲਈ(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
+    ਪੂਰਨ nArg;
+    ਪੂਰਨ addr_ਅਗਲਾ = 0;
+    ਪੂਰਨ regAgg;
+    ਪੂਰਨ regAggSz = 0;
+    ਪੂਰਨ regDistinct = 0;
+    ਵਿਅੰਜਕ_List *pList;
+    ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pF->pFExpr) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( !Is_ਖਿੜਕੀ_Func(pF->pFExpr) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFunc!=0 );
     pList = pF->pFExpr->x.pList;
-    if( ExprHasProperty(pF->pFExpr, EP_WinFunc) ){
-      Expr *pFilter = pF->pFExpr->y.pWin->pFilter;
-      if( pAggInfo->nAccumulator
+    ਜੇ( ਵਿਅੰਜਕ_Has_Property(pF->pFExpr, EP_WinFunc) ){
+      ਵਿਅੰਜਕ *pFilter = pF->pFExpr->y.pWin->pFilter;
+      ਜੇ( pAggInfo->n_ਸੰਚਾਇਕ
        && (pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)
        && regAcc
       ){
         /* If regAcc==0, there there exists some min() or max() function
         ** without a FILTER clause that will ensure the magnet registers
         ** are populated. */
-        if( regHit==0 ) regHit = ++pParse->nMem;
+        ਜੇ( reg_ਪ੍ਰਾਪਤੀ==0 ) reg_ਪ੍ਰਾਪਤੀ = ++pParse->nMem;
         /* If this is the first row of the group (regAcc contains 0), clear the
         ** "magnet" register regHit so that the accumulator registers
         ** are populated if the FILTER clause jumps over the the
@@ -6990,120 +6990,120 @@ static void updateAccumulator(
         ** the first row (regAcc contains 1), set the magnet register so that
         ** the accumulators are not populated unless the min()/max() is invoked
         ** and indicates that they should be.  */
-        sqlite3VdbeAddOp2(v, OP_Copy, regAcc, regHit);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Copy, regAcc, reg_ਪ੍ਰਾਪਤੀ);
       }
-      addrNext = sqlite3VdbeMakeLabel(pParse);
-      sqlite3ExprIfFalse(pParse, pFilter, addrNext, SQLITE_JUMPIFNULL);
+      addr_ਅਗਲਾ = sqlite3VdbeMakeLabel(pParse);
+      sqlite3_ਵਿਅੰਜਕ_If_False(pParse, pFilter, addr_ਅਗਲਾ, SQLITE_JUMPIFNULL);
     }
-    if( pF->iOBTab>=0 ){
+    ਜੇ( pF->iOBTab>=0 ){
       /* Instead of invoking AggStep, we must push the arguments that would
       ** have been passed to AggStep onto the sorting table. */
-      int jj;                /* Registered used so far in building the record */
-      ExprList *pOBList;     /* The ORDER BY clause */
-      assert( pList!=0 );
-      nArg = pList->nExpr;
-      assert( nArg>0 );
-      assert( pF->pFExpr->pLeft!=0 );
-      assert( pF->pFExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pF->pFExpr->pLeft) );
-      pOBList = pF->pFExpr->pLeft->x.pList;
-      assert( pOBList!=0 );
-      assert( pOBList->nExpr>0 );
-      regAggSz = pOBList->nExpr;
-      if( !pF->bOBUnique ){
+      ਪੂਰਨ jj;                /* Registered used so far in building the record */
+      ਵਿਅੰਜਕ_List *pOBList;     /* The ORDER BY clause */
+      ਪ੍ਰਤਿਜ੍ਞਾ( pList!=0 );
+      nArg = pList->n_ਵਿਅੰਜਕ;
+      ਪ੍ਰਤਿਜ੍ਞਾ( nArg>0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFExpr->p_ਖੱਬਾ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pF->pFExpr->p_ਖੱਬਾ->op==TK_ਕ੍ਰਮ );
+      ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pF->pFExpr->p_ਖੱਬਾ) );
+      pOBList = pF->pFExpr->p_ਖੱਬਾ->x.pList;
+      ਪ੍ਰਤਿਜ੍ਞਾ( pOBList!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( pOBList->n_ਵਿਅੰਜਕ>0 );
+      regAggSz = pOBList->n_ਵਿਅੰਜਕ;
+      ਜੇ( !pF->bOBUnique ){
         regAggSz++;   /* One register for OP_Sequence */
       }
-      if( pF->bOBPayload ){
+      ਜੇ( pF->bOBPayload ){
         regAggSz += nArg;
       }
-      if( pF->bUseSubtype ){
+      ਜੇ( pF->bUseSubtype ){
         regAggSz += nArg;
       }
       regAggSz++;  /* One extra register to hold result of MakeRecord */
-      regAgg = sqlite3GetTempRange(pParse, regAggSz);
+      regAgg = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, regAggSz);
       regDistinct = regAgg;
-      sqlite3ExprCodeExprList(pParse, pOBList, regAgg, 0, SQLITE_ECEL_DUP);
-      jj = pOBList->nExpr;
-      if( !pF->bOBUnique ){
-        sqlite3VdbeAddOp2(v, OP_Sequence, pF->iOBTab, regAgg+jj);
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, pOBList, regAgg, 0, SQLITE_ECEL_DUP);
+      jj = pOBList->n_ਵਿਅੰਜਕ;
+      ਜੇ( !pF->bOBUnique ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sequence, pF->iOBTab, regAgg+jj);
         jj++;
       }
-      if( pF->bOBPayload ){
+      ਜੇ( pF->bOBPayload ){
         regDistinct = regAgg+jj;
-        sqlite3ExprCodeExprList(pParse, pList, regDistinct, 0, SQLITE_ECEL_DUP);
+        sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, pList, regDistinct, 0, SQLITE_ECEL_DUP);
         jj += nArg;
       }
-      if( pF->bUseSubtype ){
-        int kk;
-        int regBase = pF->bOBPayload ? regDistinct : regAgg;
-        for(kk=0; kk<nArg; kk++, jj++){
-          sqlite3VdbeAddOp2(v, OP_GetSubtype, regBase+kk, regAgg+jj);
+      ਜੇ( pF->bUseSubtype ){
+        ਪੂਰਨ kk;
+        ਪੂਰਨ reg_ਅਧਾਰ = pF->bOBPayload ? regDistinct : regAgg;
+        ਲਈ(kk=0; kk<nArg; kk++, jj++){
+          sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_GetSubtype, reg_ਅਧਾਰ+kk, regAgg+jj);
         }
       }
-    }else if( pList ){
-      nArg = pList->nExpr;
-      regAgg = sqlite3GetTempRange(pParse, nArg);
+    }ਨਹੀਂਤਾਂ ਜੇ( pList ){
+      nArg = pList->n_ਵਿਅੰਜਕ;
+      regAgg = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, nArg);
       regDistinct = regAgg;
-      sqlite3ExprCodeExprList(pParse, pList, regAgg, 0, SQLITE_ECEL_DUP);
-    }else{
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, pList, regAgg, 0, SQLITE_ECEL_DUP);
+    }ਨਹੀਂਤਾਂ{
       nArg = 0;
       regAgg = 0;
     }
-    if( pF->iDistinct>=0 && pList ){
-      if( addrNext==0 ){
-        addrNext = sqlite3VdbeMakeLabel(pParse);
+    ਜੇ( pF->iDistinct>=0 && pList ){
+      ਜੇ( addr_ਅਗਲਾ==0 ){
+        addr_ਅਗਲਾ = sqlite3VdbeMakeLabel(pParse);
       }
-      pF->iDistinct = codeDistinct(pParse, eDistinctType,
-          pF->iDistinct, addrNext, pList, regDistinct);
+      pF->iDistinct = ਕੋਡ_Distinct(pParse, eDistinctType,
+          pF->iDistinct, addr_ਅਗਲਾ, pList, regDistinct);
     }
-    if( pF->iOBTab>=0 ){
+    ਜੇ( pF->iOBTab>=0 ){
       /* Insert a new record into the ORDER BY table */
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regAgg, regAggSz-1,
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, regAgg, regAggSz-1,
                         regAgg+regAggSz-1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pF->iOBTab, regAgg+regAggSz-1,
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, pF->iOBTab, regAgg+regAggSz-1,
                            regAgg, regAggSz-1);
-      sqlite3ReleaseTempRange(pParse, regAgg, regAggSz);
-    }else{
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, regAgg, regAggSz);
+    }ਨਹੀਂਤਾਂ{
       /* Invoke the AggStep function */
-      if( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+      ਜੇ( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
         CollSeq *pColl = 0;
-        struct ExprList_item *pItem;
-        int j;
-        assert( pList!=0 );  /* pList!=0 if pF->pFunc has NEEDCOLL */
-        for(j=0, pItem=pList->a; !pColl && j<nArg; j++, pItem++){
-          pColl = sqlite3ExprCollSeq(pParse, pItem->pExpr);
+        ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ;
+        ਪੂਰਨ j;
+        ਪ੍ਰਤਿਜ੍ਞਾ( pList!=0 );  /* pList!=0 if pF->pFunc has NEEDCOLL */
+        ਲਈ(j=0, p_ਵਸਤੂ=pList->a; !pColl && j<nArg; j++, p_ਵਸਤੂ++){
+          pColl = sqlite3_ਵਿਅੰਜਕ_Coll_Seq(pParse, p_ਵਸਤੂ->p_ਵਿਅੰਜਕ);
         }
-        if( !pColl ){
+        ਜੇ( !pColl ){
           pColl = pParse->db->pDfltColl;
         }
-        if( regHit==0 && pAggInfo->nAccumulator ) regHit = ++pParse->nMem;
-        sqlite3VdbeAddOp4(v, OP_CollSeq, regHit, 0, 0,
-                         (char *)pColl, P4_COLLSEQ);
+        ਜੇ( reg_ਪ੍ਰਾਪਤੀ==0 && pAggInfo->n_ਸੰਚਾਇਕ ) reg_ਪ੍ਰਾਪਤੀ = ++pParse->nMem;
+        sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_CollSeq, reg_ਪ੍ਰਾਪਤੀ, 0, 0,
+                         (ਅੱਖਰ *)pColl, P4_COLLSEQ);
       }
-      sqlite3VdbeAddOp3(v, OP_AggStep, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Agg_ਕਦਮ, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
       sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
-      sqlite3ReleaseTempRange(pParse, regAgg, nArg);
+      sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, regAgg, nArg);
     }
-    if( addrNext ){
-      sqlite3VdbeResolveLabel(v, addrNext);
+    ਜੇ( addr_ਅਗਲਾ ){
+      sqlite3VdbeResolveLabel(v, addr_ਅਗਲਾ);
     }
-    if( pParse->nErr ) return;
+    ਜੇ( pParse->nErr ) ਵਾਪਸ;
   }
-  if( regHit==0 && pAggInfo->nAccumulator ){
-    regHit = regAcc;
+  ਜੇ( reg_ਪ੍ਰਾਪਤੀ==0 && pAggInfo->n_ਸੰਚਾਇਕ ){
+    reg_ਪ੍ਰਾਪਤੀ = regAcc;
   }
-  if( regHit ){
-    addrHitTest = sqlite3VdbeAddOp1(v, OP_If, regHit); VdbeCoverage(v);
+  ਜੇ( reg_ਪ੍ਰਾਪਤੀ ){
+    addr_ਪ੍ਰਾਪਤੀ_Test = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_If, reg_ਪ੍ਰਾਪਤੀ); VdbeCoverage(v);
   }
-  for(i=0, pC=pAggInfo->aCol; i<pAggInfo->nAccumulator; i++, pC++){
-    sqlite3ExprCode(pParse, pC->pCExpr, AggInfoColumnReg(pAggInfo,i));
-    if( pParse->nErr ) return;
+  ਲਈ(i=0, pC=pAggInfo->a_ਖਾਨਾ; i<pAggInfo->n_ਸੰਚਾਇਕ; i++, pC++){
+    sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, pC->pCExpr, Agg_Info_ਕਾਲਮ_Reg(pAggInfo,i));
+    ਜੇ( pParse->nErr ) ਵਾਪਸ;
   }
 
-  pAggInfo->directMode = 0;
-  if( addrHitTest ){
-    sqlite3VdbeJumpHereOrPopInst(v, addrHitTest);
+  pAggInfo->ਸਿੱਧਾ_ਬਹੁਲਕ = 0;
+  ਜੇ( addr_ਪ੍ਰਾਪਤੀ_Test ){
+    sqlite3_Vdbe_Jump_ਇੱਥੇ_Or_ਕੱਢੋ_Inst(v, addr_ਪ੍ਰਾਪਤੀ_Test);
   }
 }
 
@@ -7111,14 +7111,14 @@ static void updateAccumulator(
 ** Add a single OP_Explain instruction to the VDBE to explain a simple
 ** count(*) query ("SELECT count(*) FROM pTab").
 */
-#ifndef SQLITE_OMIT_EXPLAIN
-static void explainSimpleCount(
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_EXPLAIN
+ਸਥਿਰ ਖਾਲੀ explain_Simple_ਗਿਣਤੀ(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being queried */
-  Index *pIdx                     /* Index used to optimize scan, or NULL */
+  ਸਾਰਣੀ *pTab,                    /* Table being queried */
+  ਸੂਚਕਾਂਕ *pIdx                     /* Index used to optimize scan, or NULL */
 ){
-  if( pParse->explain==2 ){
-    int bCover = (pIdx!=0 && (HasRowid(pTab) || !IsPrimaryKeyIndex(pIdx)));
+  ਜੇ( pParse->explain==2 ){
+    ਪੂਰਨ bCover = (pIdx!=0 && (HasRowid(pTab) || !Is_Primary_ਕੁੰਜੀ_ਸੂਚਕਾਂਕ(pIdx)));
     sqlite3VdbeExplain(pParse, 0, "SCAN %s%s%s",
         pTab->zName,
         bCover ? " USING COVERING INDEX " : "",
@@ -7126,9 +7126,9 @@ static void explainSimpleCount(
     );
   }
 }
-#else
-# define explainSimpleCount(a,b,c)
-#endif
+#ਨਹੀਂਤਾਂ
+# define explain_Simple_ਗਿਣਤੀ(a,b,c)
+#ਜੇ_ਅੰਤ
 
 /*
 ** sqlite3WalkExpr() callback used by havingToWhere().
@@ -7141,8 +7141,8 @@ static void explainSimpleCount(
 ** clause. If so, add it to the WHERE clause and replace the sub-expression
 ** within the HAVING expression with a constant "1".
 */
-static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op!=TK_AND ){
+ਸਥਿਰ ਪੂਰਨ having_ਮੰਜ਼ਿਲ_Where_ਵਿਅੰਜਕ_Cb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_AND ){
     Select *pS = pWalker->u.pSelect;
     /* This routine is called before the HAVING clause of the current
     ** SELECT is analyzed for aggregates. So if pExpr->pAggInfo is set
@@ -7151,23 +7151,23 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
     ** belongs to an outer query. Do not move the expression to the WHERE
     ** clause in this obscure case, as doing so may corrupt the outer Select
     ** statements AggInfo structure.  */
-    if( sqlite3ExprIsConstantOrGroupBy(pWalker->pParse, pExpr, pS->pGroupBy)
-     && ExprAlwaysFalse(pExpr)==0
-     && pExpr->pAggInfo==0
+    ਜੇ( sqlite3_ਵਿਅੰਜਕ_Is_Constant_Or_ਸਮੂਹ_By(pWalker->pParse, p_ਵਿਅੰਜਕ, pS->p_ਸਮੂਹ_By)
+     && ਵਿਅੰਜਕ_Always_False(p_ਵਿਅੰਜਕ)==0
+     && p_ਵਿਅੰਜਕ->pAggInfo==0
     ){
       sqlite3 *db = pWalker->pParse->db;
-      Expr *pNew = sqlite3ExprInt32(db, 1);
-      if( pNew ){
-        Expr *pWhere = pS->pWhere;
-        SWAP(Expr, *pNew, *pExpr);
-        pNew = sqlite3ExprAnd(pWalker->pParse, pWhere, pNew);
+      ਵਿਅੰਜਕ *pNew = sqlite3_ਵਿਅੰਜਕ_Int32(db, 1);
+      ਜੇ( pNew ){
+        ਵਿਅੰਜਕ *pWhere = pS->pWhere;
+        ਅਦਲਾ_ਬਦਲੀ(ਵਿਅੰਜਕ, *pNew, *p_ਵਿਅੰਜਕ);
+        pNew = sqlite3_ਵਿਅੰਜਕ_And(pWalker->pParse, pWhere, pNew);
         pS->pWhere = pNew;
-        pWalker->eCode = 1;
+        pWalker->e_ਕੋਡ = 1;
       }
     }
-    return WRC_Prune;
+    ਵਾਪਸ WRC_Prune;
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
@@ -7185,19 +7185,19 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
 ** entirely of constants and expressions that are also GROUP BY terms that
 ** use the "BINARY" collation sequence.
 */
-static void havingToWhere(Parse *pParse, Select *p){
+ਸਥਿਰ ਖਾਲੀ having_ਮੰਜ਼ਿਲ_Where(Parse *pParse, Select *p){
   Walker sWalker;
-  memset(&sWalker, 0, sizeof(sWalker));
+  memset(&sWalker, 0, ਆਕਾਰ(sWalker));
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = havingToWhereExprCb;
+  sWalker.x_ਵਿਅੰਜਕ_Callback = having_ਮੰਜ਼ਿਲ_Where_ਵਿਅੰਜਕ_Cb;
   sWalker.u.pSelect = p;
-  sqlite3WalkExpr(&sWalker, p->pHaving);
-#if TREETRACE_ENABLED
-  if( sWalker.eCode && (sqlite3TreeTrace & 0x100)!=0 ){
+  sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, p->pHaving);
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sWalker.e_ਕੋਡ && (sqlite3_ਰੁੱਖ_Trace & 0x100)!=0 ){
     TREETRACE(0x100,pParse,p,("Move HAVING terms into WHERE:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 /*
@@ -7208,49 +7208,49 @@ static void havingToWhere(Parse *pParse, Select *p){
 ** If pThis is a self-join, then return the SrcItem for the first other
 ** instance of that view found.  If pThis is not a self-join then return 0.
 */
-static SrcItem *isSelfJoinView(
+ਸਥਿਰ Src_ਵਸਤੂ *isSelfJoinView(
   SrcList *pTabList,           /* Search for self-joins in this FROM clause */
-  SrcItem *pThis,              /* Search for prior reference to this subquery */
-  int iFirst, int iEnd        /* Range of FROM-clause entries to search. */
+  Src_ਵਸਤੂ *pThis,              /* Search for prior reference to this subquery */
+  ਪੂਰਨ i_ਪਹਿਲਾ, ਪੂਰਨ i_ਸਿਰਾ        /* Range of FROM-clause entries to search. */
 ){
-  SrcItem *pItem;
+  Src_ਵਸਤੂ *p_ਵਸਤੂ;
   Select *pSel;
-  assert( pThis->fg.isSubquery );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pThis->fg.isSubquery );
   pSel = pThis->u4.pSubq->pSelect;
-  assert( pSel!=0 );
-  if( pSel->selFlags & SF_PushDown ) return 0;
-  while( iFirst<iEnd ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSel!=0 );
+  ਜੇ( pSel->selFlags & SF_ਧੱਕੋ_ਥੱਲੇ ) ਵਾਪਸ 0;
+  ਜਦੋਂ( i_ਪਹਿਲਾ<i_ਸਿਰਾ ){
     Select *pS1;
-    pItem = &pTabList->a[iFirst++];
-    if( !pItem->fg.isSubquery ) continue;
-    if( pItem->fg.viaCoroutine ) continue;
-    if( pItem->zName==0 ) continue;
-    assert( pItem->pSTab!=0 );
-    assert( pThis->pSTab!=0 );
-    if( pItem->pSTab->pSchema!=pThis->pSTab->pSchema ) continue;
-    if( sqlite3_stricmp(pItem->zName, pThis->zName)!=0 ) continue;
-    pS1 = pItem->u4.pSubq->pSelect;
-    if( pItem->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
+    p_ਵਸਤੂ = &pTabList->a[i_ਪਹਿਲਾ++];
+    ਜੇ( !p_ਵਸਤੂ->fg.isSubquery ) ਜਾਰੀ;
+    ਜੇ( p_ਵਸਤੂ->fg.ਰਾਹੀਂ_Coroutine ) ਜਾਰੀ;
+    ਜੇ( p_ਵਸਤੂ->zName==0 ) ਜਾਰੀ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਸਤੂ->pSTab!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pThis->pSTab!=0 );
+    ਜੇ( p_ਵਸਤੂ->pSTab->pSchema!=pThis->pSTab->pSchema ) ਜਾਰੀ;
+    ਜੇ( sqlite3_stricmp(p_ਵਸਤੂ->zName, pThis->zName)!=0 ) ਜਾਰੀ;
+    pS1 = p_ਵਸਤੂ->u4.pSubq->pSelect;
+    ਜੇ( p_ਵਸਤੂ->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
       /* The query flattener left two different CTE tables with identical
       ** names in the same FROM clause. */
-      continue;
+      ਜਾਰੀ;
     }
-    if( pS1->selFlags & SF_PushDown ){
+    ਜੇ( pS1->selFlags & SF_ਧੱਕੋ_ਥੱਲੇ ){
       /* The view was modified by some other optimization such as
       ** pushDownWhereTerms() */
-      continue;
+      ਜਾਰੀ;
     }
-    return pItem;
+    ਵਾਪਸ p_ਵਸਤੂ;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
 ** Deallocate a single AggInfo object
 */
-static void agginfoFree(sqlite3 *db, void *pArg){
+ਸਥਿਰ ਖਾਲੀ agginfoFree(sqlite3 *db, ਖਾਲੀ *pArg){
   AggInfo *p = (AggInfo*)pArg;
-  sqlite3DbFree(db, p->aCol);
+  sqlite3DbFree(db, p->a_ਖਾਨਾ);
   sqlite3DbFree(db, p->aFunc);
   sqlite3DbFreeNN(db, p);
 }
@@ -7275,87 +7275,87 @@ static void agginfoFree(sqlite3 *db, void *pArg){
 **
 ** Return TRUE if the optimization is undertaken.
 */
-static int countOfViewOptimization(Parse *pParse, Select *p){
-  Select *pSub, *pPrior;
-  Expr *pExpr;
-  Expr *pCount;
+ਸਥਿਰ ਪੂਰਨ ਗਿਣਤੀ_ਦਾ_View_Optimization(Parse *pParse, Select *p){
+  Select *pSub, *p_ਪੂਰਵ;
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ;
+  ਵਿਅੰਜਕ *p_ਗਿਣਤੀ;
   sqlite3 *db;
-  SrcItem *pFrom;
-  if( (p->selFlags & SF_Aggregate)==0 ) return 0;   /* This is an aggregate */
-  if( p->pEList->nExpr!=1 ) return 0;               /* Single result column */
-  if( p->pWhere ) return 0;
-  if( p->pHaving ) return 0;
-  if( p->pGroupBy ) return 0;
-  if( p->pOrderBy ) return 0;
-  pExpr = p->pEList->a[0].pExpr;
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;        /* Result is an aggregate */
-  assert( ExprUseUToken(pExpr) );
-  if( sqlite3_stricmp(pExpr->u.zToken,"count") ) return 0;  /* Is count() */
-  assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList!=0 ) return 0;                 /* Must be count(*) */
-  if( p->pSrc->nSrc!=1 ) return 0;                  /* One table in FROM  */
-  if( ExprHasProperty(pExpr, EP_WinFunc) ) return 0;/* Not a window function */
+  Src_ਵਸਤੂ *pFrom;
+  ਜੇ( (p->selFlags & SF_Aggregate)==0 ) ਵਾਪਸ 0;   /* This is an aggregate */
+  ਜੇ( p->pEList->n_ਵਿਅੰਜਕ!=1 ) ਵਾਪਸ 0;               /* Single result column */
+  ਜੇ( p->pWhere ) ਵਾਪਸ 0;
+  ਜੇ( p->pHaving ) ਵਾਪਸ 0;
+  ਜੇ( p->p_ਸਮੂਹ_By ) ਵਾਪਸ 0;
+  ਜੇ( p->p_ਕ੍ਰਮ_By ) ਵਾਪਸ 0;
+  p_ਵਿਅੰਜਕ = p->pEList->a[0].p_ਵਿਅੰਜਕ;
+  ਜੇ( p_ਵਿਅੰਜਕ->op!=TK_AGG_FUNCTION ) ਵਾਪਸ 0;        /* Result is an aggregate */
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_UToken(p_ਵਿਅੰਜਕ) );
+  ਜੇ( sqlite3_stricmp(p_ਵਿਅੰਜਕ->u.zToken,"count") ) ਵਾਪਸ 0;  /* Is count() */
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(p_ਵਿਅੰਜਕ) );
+  ਜੇ( p_ਵਿਅੰਜਕ->x.pList!=0 ) ਵਾਪਸ 0;                 /* Must be count(*) */
+  ਜੇ( p->pSrc->nSrc!=1 ) ਵਾਪਸ 0;                  /* One table in FROM  */
+  ਜੇ( ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_WinFunc) ) ਵਾਪਸ 0;/* Not a window function */
   pFrom = p->pSrc->a;
-  if( pFrom->fg.isSubquery==0 ) return 0;           /* FROM is a subquery */
-  if( (p->selFlags & SF_Correlated)!=0 ) return 0;  /* Not a correlated subq */
+  ਜੇ( pFrom->fg.isSubquery==0 ) ਵਾਪਸ 0;           /* FROM is a subquery */
+  ਜੇ( (p->selFlags & SF_Correlated)!=0 ) ਵਾਪਸ 0;  /* Not a correlated subq */
   pSub = pFrom->u4.pSubq->pSelect;
-  if( pSub->pPrior==0 ) return 0;                   /* Must be a compound */
-  if( pSub->selFlags & SF_CopyCte ) return 0;       /* Not a CTE */
-  do{
-    if( pSub->op!=TK_ALL && pSub->pPrior ) return 0;  /* Must be UNION ALL */
-    if( pSub->pWhere ) return 0;                      /* No WHERE clause */
-    if( pSub->pLimit ) return 0;                      /* No LIMIT clause */
-    if( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
+  ਜੇ( pSub->p_ਪੂਰਵ==0 ) ਵਾਪਸ 0;                   /* Must be a compound */
+  ਜੇ( pSub->selFlags & SF_CopyCte ) ਵਾਪਸ 0;       /* Not a CTE */
+  ਕਰੋ{
+    ਜੇ( pSub->op!=TK_ALL && pSub->p_ਪੂਰਵ ) ਵਾਪਸ 0;  /* Must be UNION ALL */
+    ਜੇ( pSub->pWhere ) ਵਾਪਸ 0;                      /* No WHERE clause */
+    ਜੇ( pSub->p_ਹੱਦਬੰਦੀ ) ਵਾਪਸ 0;                      /* No LIMIT clause */
+    ਜੇ( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
        testcase( pSub->selFlags & SF_Aggregate );
        testcase( pSub->selFlags & SF_Distinct );
-       return 0;     /* Not an aggregate nor DISTINCT */
+       ਵਾਪਸ 0;     /* Not an aggregate nor DISTINCT */
     }
-    assert( pSub->pHaving==0 );  /* Due to the previous */
-    pSub = pSub->pPrior;                              /* Repeat over compound */
-  }while( pSub );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSub->pHaving==0 );  /* Due to the previous */
+    pSub = pSub->p_ਪੂਰਵ;                              /* Repeat over compound */
+  }ਜਦੋਂ( pSub );
 
   /* If we reach this point then it is OK to perform the transformation */
 
   db = pParse->db;
-  pCount = pExpr;
-  pExpr = 0;
+  p_ਗਿਣਤੀ = p_ਵਿਅੰਜਕ;
+  p_ਵਿਅੰਜਕ = 0;
   pSub = sqlite3SubqueryDetach(db, pFrom);
   sqlite3SrcListDelete(db, p->pSrc);
   p->pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
-  while( pSub ){
-    Expr *pTerm;
-    pPrior = pSub->pPrior;
-    pSub->pPrior = 0;
-    pSub->pNext = 0;
+  ਜਦੋਂ( pSub ){
+    ਵਿਅੰਜਕ *p_ਪਦ;
+    p_ਪੂਰਵ = pSub->p_ਪੂਰਵ;
+    pSub->p_ਪੂਰਵ = 0;
+    pSub->p_ਅਗਲਾ = 0;
     pSub->selFlags |= SF_Aggregate;
     pSub->selFlags &= ~(u32)SF_Compound;
-    pSub->nSelectRow = 0;
-    sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric, pSub->pEList);
-    pTerm = pPrior ? sqlite3ExprDup(db, pCount, 0) : pCount;
-    pSub->pEList = sqlite3ExprListAppend(pParse, 0, pTerm);
-    pTerm = sqlite3PExpr(pParse, TK_SELECT, 0, 0);
-    sqlite3PExprAddSelect(pParse, pTerm, pSub);
-    if( pExpr==0 ){
-      pExpr = pTerm;
-    }else{
-      pExpr = sqlite3PExpr(pParse, TK_PLUS, pTerm, pExpr);
+    pSub->n_Select_ਪੰਕਤੀ = 0;
+    sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3_ਵਿਅੰਜਕ_List_Delete_Generic, pSub->pEList);
+    p_ਪਦ = p_ਪੂਰਵ ? sqlite3_ਵਿਅੰਜਕ_Dup(db, p_ਗਿਣਤੀ, 0) : p_ਗਿਣਤੀ;
+    pSub->pEList = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, 0, p_ਪਦ);
+    p_ਪਦ = sqlite3PExpr(pParse, TK_SELECT, 0, 0);
+    sqlite3_PExpr_ਜੋੜੋ_Select(pParse, p_ਪਦ, pSub);
+    ਜੇ( p_ਵਿਅੰਜਕ==0 ){
+      p_ਵਿਅੰਜਕ = p_ਪਦ;
+    }ਨਹੀਂਤਾਂ{
+      p_ਵਿਅੰਜਕ = sqlite3PExpr(pParse, TK_PLUS, p_ਪਦ, p_ਵਿਅੰਜਕ);
     }
-    if( pParse->nErr ){
-      sqlite3ExprDelete(db, pExpr);
-      pExpr = 0;
+    ਜੇ( pParse->nErr ){
+      sqlite3_ਵਿਅੰਜਕ_Delete(db, p_ਵਿਅੰਜਕ);
+      p_ਵਿਅੰਜਕ = 0;
     }
-    pSub = pPrior;
+    pSub = p_ਪੂਰਵ;
   }
-  p->pEList->a[0].pExpr = pExpr;
+  p->pEList->a[0].p_ਵਿਅੰਜਕ = p_ਵਿਅੰਜਕ;
   p->selFlags &= ~(u32)SF_Aggregate;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x200 ){
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x200 ){
     TREETRACE(0x200,pParse,p,("After count-of-view optimization:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
-  return 1;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ 1;
 }
 
 /*
@@ -7363,22 +7363,22 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
 ** as pSrcItem but has the same alias as p0, then return true.
 ** Otherwise return false.
 */
-static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
-  int i;
-  for(i=0; i<pSrc->nSrc; i++){
-    SrcItem *p1 = &pSrc->a[i];
-    if( p1==p0 ) continue;
-    if( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
-      return 1;
+ਸਥਿਰ ਪੂਰਨ sameSrcAlias(Src_ਵਸਤੂ *p0, SrcList *pSrc){
+  ਪੂਰਨ i;
+  ਲਈ(i=0; i<pSrc->nSrc; i++){
+    Src_ਵਸਤੂ *p1 = &pSrc->a[i];
+    ਜੇ( p1==p0 ) ਜਾਰੀ;
+    ਜੇ( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
+      ਵਾਪਸ 1;
     }
-    if( p1->fg.isSubquery
+    ਜੇ( p1->fg.isSubquery
      && (p1->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0
      && sameSrcAlias(p0, p1->u4.pSubq->pSelect->pSrc)
     ){
-      return 1;
+      ਵਾਪਸ 1;
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -7409,38 +7409,38 @@ static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
 **    (4)  The SQLITE_Coroutine optimization disable flag is not set
 **    (5)  The subquery is not self-joined
 */
-static int fromClauseTermCanBeCoroutine(
+ਸਥਿਰ ਪੂਰਨ from_Clause_ਪਦ_Can_Be_Coroutine(
   Parse *pParse,          /* Parsing context */
   SrcList *pTabList,      /* FROM clause */
-  int i,                  /* Which term of the FROM clause holds the subquery */
-  int selFlags            /* Flags on the SELECT statement */
+  ਪੂਰਨ i,                  /* Which term of the FROM clause holds the subquery */
+  ਪੂਰਨ selFlags            /* Flags on the SELECT statement */
 ){
-  SrcItem *pItem = &pTabList->a[i];
-  if( pItem->fg.isCte ){
-    const CteUse *pCteUse = pItem->u2.pCteUse;
-    if( pCteUse->eM10d==M10d_Yes ) return 0;                          /* (2a) */
-    if( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) return 0;       /* (2b) */
+  Src_ਵਸਤੂ *p_ਵਸਤੂ = &pTabList->a[i];
+  ਜੇ( p_ਵਸਤੂ->fg.isCte ){
+    ਅਚਲ CteUse *pCteUse = p_ਵਸਤੂ->u2.pCteUse;
+    ਜੇ( pCteUse->eM10d==M10d_Yes ) ਵਾਪਸ 0;                          /* (2a) */
+    ਜੇ( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) ਵਾਪਸ 0;       /* (2b) */
   }
-  if( pTabList->a[0].fg.jointype & JT_LTORJ ) return 0;               /* (3)  */
-  if( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) return 0; /* (4)  */
-  if( isSelfJoinView(pTabList, pItem, i+1, pTabList->nSrc)!=0 ){
-    return 0;                                                          /* (5) */
+  ਜੇ( pTabList->a[0].fg.jointype & JT_LTORJ ) ਵਾਪਸ 0;               /* (3)  */
+  ਜੇ( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) ਵਾਪਸ 0; /* (4)  */
+  ਜੇ( isSelfJoinView(pTabList, p_ਵਸਤੂ, i+1, pTabList->nSrc)!=0 ){
+    ਵਾਪਸ 0;                                                          /* (5) */
   }
-  if( i==0 ){
-    if( pTabList->nSrc==1 ) return 1;                             /* (1a) */
-    if( pTabList->a[1].fg.jointype & JT_CROSS ) return 1;         /* (1b) */
-    if( selFlags & SF_UpdateFrom )              return 0;         /* (1c-iii) */
-    return 1;
+  ਜੇ( i==0 ){
+    ਜੇ( pTabList->nSrc==1 ) ਵਾਪਸ 1;                             /* (1a) */
+    ਜੇ( pTabList->a[1].fg.jointype & JT_CROSS ) ਵਾਪਸ 1;         /* (1b) */
+    ਜੇ( selFlags & SF_UpdateFrom )              ਵਾਪਸ 0;         /* (1c-iii) */
+    ਵਾਪਸ 1;
   }
-  if( selFlags & SF_UpdateFrom ) return 0;                        /* (1c-iii) */
-  while( 1 /*exit-by-break*/ ){
-    if( pItem->fg.jointype & (JT_OUTER|JT_CROSS)  ) return 0;     /* (1c-ii) */
-    if( i==0 ) break;
+  ਜੇ( selFlags & SF_UpdateFrom ) ਵਾਪਸ 0;                        /* (1c-iii) */
+  ਜਦੋਂ( 1 /*exit-by-break*/ ){
+    ਜੇ( p_ਵਸਤੂ->fg.jointype & (JT_OUTER|JT_CROSS)  ) ਵਾਪਸ 0;     /* (1c-ii) */
+    ਜੇ( i==0 ) ਰੋਕੋ;
     i--;
-    pItem--;
-    if( pItem->fg.isSubquery ) return 0;                          /* (1c-i) */
+    p_ਵਸਤੂ--;
+    ਜੇ( p_ਵਸਤੂ->fg.isSubquery ) ਵਾਪਸ 0;                          /* (1c-i) */
   }
-  return 1;
+  ਵਾਪਸ 1;
 }
 
 /*
@@ -7469,31 +7469,31 @@ static int fromClauseTermCanBeCoroutine(
 ** the where.c file to exit the corresponding loop after the first successful
 ** match (if any).
 */
-static SQLITE_NOINLINE void existsToJoin(
+ਸਥਿਰ SQLITE_NOINLINE ਖਾਲੀ exists_ਮੰਜ਼ਿਲ_Join(
   Parse *pParse,  /* Parsing context */
   Select *p,      /* The SELECT statement being optimized */
-  Expr *pWhere    /* part of the WHERE clause currently being examined */
+  ਵਿਅੰਜਕ *pWhere    /* part of the WHERE clause currently being examined */
 ){
-  if( pParse->nErr==0
+  ਜੇ( pParse->nErr==0
    && pWhere!=0
-   && !ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) 
+   && !ਵਿਅੰਜਕ_Has_Property(pWhere, EP_OuterON|EP_InnerON) 
    && ALWAYS(p->pSrc!=0)
    && p->pSrc->nSrc<BMS
-   && (p->pLimit==0 || p->pLimit->pRight==0)
+   && (p->p_ਹੱਦਬੰਦੀ==0 || p->p_ਹੱਦਬੰਦੀ->p_ਸੱਜਾ==0)
   ){
-    if( pWhere->op==TK_AND ){
-      Expr *pRight = pWhere->pRight;
-      existsToJoin(pParse, p, pWhere->pLeft);
-      existsToJoin(pParse, p, pRight);
+    ਜੇ( pWhere->op==TK_AND ){
+      ਵਿਅੰਜਕ *p_ਸੱਜਾ = pWhere->p_ਸੱਜਾ;
+      exists_ਮੰਜ਼ਿਲ_Join(pParse, p, pWhere->p_ਖੱਬਾ);
+      exists_ਮੰਜ਼ਿਲ_Join(pParse, p, p_ਸੱਜਾ);
     }
-    else if( pWhere->op==TK_EXISTS ){
+    ਨਹੀਂਤਾਂ ਜੇ( pWhere->op==TK_EXISTS ){
       Select *pSub = pWhere->x.pSelect;
-      Expr *pSubWhere = pSub->pWhere;
-      if( pSub->pSrc->nSrc==1
+      ਵਿਅੰਜਕ *pSubWhere = pSub->pWhere;
+      ਜੇ( pSub->pSrc->nSrc==1
        && (pSub->selFlags & SF_Aggregate)==0
        && !pSub->pSrc->a[0].fg.isSubquery
-       && pSub->pLimit==0
-       && pSub->pPrior==0
+       && pSub->p_ਹੱਦਬੰਦੀ==0
+       && pSub->p_ਪੂਰਵ==0
       ){
         /* Before combining the sub-select with the parent, renumber the 
         ** cursor used by the subselect. This is because the EXISTS expression
@@ -7501,33 +7501,33 @@ static SQLITE_NOINLINE void existsToJoin(
         ** else in the tree, and in this case it is important that it use
         ** a unique cursor number.  */
         sqlite3 *db = pParse->db;
-        int *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*sizeof(int));
-        if( aCsrMap==0 ) return;
+        ਪੂਰਨ *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*ਆਕਾਰ(ਪੂਰਨ));
+        ਜੇ( aCsrMap==0 ) ਵਾਪਸ;
         aCsrMap[0] = (pParse->nTab+1);
         renumberCursors(pParse, pSub, -1, aCsrMap);
         sqlite3DbFree(db, aCsrMap);
 
-        memset(pWhere, 0, sizeof(*pWhere));
+        memset(pWhere, 0, ਆਕਾਰ(*pWhere));
         pWhere->op = TK_INTEGER;
-        pWhere->u.iValue = 1;
-        ExprSetProperty(pWhere, EP_IntValue);
-        assert( p->pWhere!=0 );
+        pWhere->u.i_ਮੁੱਲ = 1;
+        ਵਿਅੰਜਕ_ਸੈੱਟ_Property(pWhere, EP_Int_ਮੁੱਲ);
+        ਪ੍ਰਤਿਜ੍ਞਾ( p->pWhere!=0 );
         pSub->pSrc->a[0].fg.fromExists = 1;
         p->pSrc = sqlite3SrcListAppendList(pParse, p->pSrc, pSub->pSrc);
-        if( pSubWhere ){
+        ਜੇ( pSubWhere ){
           p->pWhere = sqlite3PExpr(pParse, TK_AND, p->pWhere, pSubWhere);
           pSub->pWhere = 0;
         }
         pSub->pSrc = 0;
-        sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSub);
-        recomputeColumnsUsed(p, &p->pSrc->a[p->pSrc->nSrc-1]);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x100000 ){
+        sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3SelectDeleteGeneric, pSub);
+        recompute_Columns_ਵਰਤਿਆ(p, &p->pSrc->a[p->pSrc->nSrc-1]);
+#ਜੇ TREETRACE_ENABLED
+        ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x100000 ){
           TREETRACE(0x100000,pParse,p,
                     ("After EXISTS-to-JOIN optimization:\n"));
-          sqlite3TreeViewSelect(0, p, 0);
+          sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
         }
-#endif
+#ਜੇ_ਅੰਤ
       }
     }
   }
@@ -7536,24 +7536,24 @@ static SQLITE_NOINLINE void existsToJoin(
 /*
 ** Type used for Walker callbacks by selectCheckOnClauses().
 */
-typedef struct CheckOnCtx CheckOnCtx;
-struct CheckOnCtx {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ CheckOnCtx CheckOnCtx;
+ਬਣਤਰ CheckOnCtx {
   SrcList *pSrc;       /* SrcList for this context */
-  int iJoin;           /* Cursors must be left of this one, if not negative */
-  int bFuncArg;        /* True for table-function arg */
-  CheckOnCtx *pParent; /* Parent context */
+  ਪੂਰਨ iJoin;           /* Cursors must be left of this one, if not negative */
+  ਪੂਰਨ bFuncArg;        /* True for table-function arg */
+  CheckOnCtx *p_ਮਾਪਾ; /* Parent context */
 };
 
 /*
 ** True if the SrcList passed as the only argument contains at least
 ** one RIGHT or FULL JOIN. False otherwise.  
 */
-#define hasRightJoin(pSrc) (((pSrc)->a[0].fg.jointype & JT_LTORJ)!=0)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ has_ਸੱਜਾ_Join(pSrc) (((pSrc)->a[0].fg.jointype & JT_LTORJ)!=0)
 
 /*
 ** The xExpr callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ select_Check_On_Clauses_ਵਿਅੰਜਕ(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
 
   /* Check if pExpr is root or near-root of an ON clause constraint that needs
@@ -7564,74 +7564,74 @@ static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
   **   + an ON clause on an INNER join within a FROM that features at
   **     least one RIGHT or FULL join.
   */
-  if( (ExprHasProperty(pExpr, EP_OuterON))
-   || (ExprHasProperty(pExpr, EP_InnerON) && hasRightJoin(pCtx->pSrc))
+  ਜੇ( (ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_OuterON))
+   || (ਵਿਅੰਜਕ_Has_Property(p_ਵਿਅੰਜਕ, EP_InnerON) && has_ਸੱਜਾ_Join(pCtx->pSrc))
   ){
     /* If CheckOnCtx.iJoin is already set, then fall through and process
     ** this expression node as normal. Or, if CheckOnCtx.iJoin is still 0,
     ** set it to the cursor number of the RHS of the join to which this
     ** ON expression was attached and then iterate through the entire 
     ** expression.  */
-    assert( pCtx->iJoin<0 || pCtx->iJoin==pExpr->w.iJoin );
-    if( pCtx->iJoin<0 ){
-      pCtx->iJoin = pExpr->w.iJoin;
-      sqlite3WalkExprNN(pWalker, pExpr);
+    ਪ੍ਰਤਿਜ੍ਞਾ( pCtx->iJoin<0 || pCtx->iJoin==p_ਵਿਅੰਜਕ->w.iJoin );
+    ਜੇ( pCtx->iJoin<0 ){
+      pCtx->iJoin = p_ਵਿਅੰਜਕ->w.iJoin;
+      sqlite3_Walk_ਵਿਅੰਜਕ_NN(pWalker, p_ਵਿਅੰਜਕ);
       pCtx->iJoin = -1;
-      return WRC_Prune;
+      ਵਾਪਸ WRC_Prune;
     }
   }
 
-  if( pExpr->op==TK_COLUMN ){
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ ){
     /* A column expression. Find the SrcList (if any) to which it refers.
     ** Then, if CheckOnCtx.iJoin indicates that this expression is part of an
     ** ON clause from that SrcList (i.e. if iJoin is non-zero), check that it
     ** does not refer to a table to the right of CheckOnCtx.iJoin. */
-    int iTab = pExpr->iTable;
-    do {
+    ਪੂਰਨ iTab = p_ਵਿਅੰਜਕ->i_ਸਾਰਣੀ;
+    ਕਰੋ {
       SrcList *pSrc = pCtx->pSrc;
-      int nSrc = pSrc->nSrc;
-      int ii;
-      for(ii=0; ii<nSrc && pSrc->a[ii].iCursor!=iTab; ii++){}
-      if( ii<nSrc ){
+      ਪੂਰਨ nSrc = pSrc->nSrc;
+      ਪੂਰਨ ii;
+      ਲਈ(ii=0; ii<nSrc && pSrc->a[ii].iCursor!=iTab; ii++){}
+      ਜੇ( ii<nSrc ){
         /* pSrc is the FROM clause that contains iTab */
-        if( pCtx->iJoin>=0 ){
-          for(ii--; ii>=0 && pSrc->a[ii].iCursor!=pCtx->iJoin; ii--){}
-          if( ii>=0 ){
+        ਜੇ( pCtx->iJoin>=0 ){
+          ਲਈ(ii--; ii>=0 && pSrc->a[ii].iCursor!=pCtx->iJoin; ii--){}
+          ਜੇ( ii>=0 ){
             /* Table iJoin appears to the left of table iTab in the SrcList.
             ** Therefore the expression refers to a table to its right. */
-            sqlite3ErrorMsg(pWalker->pParse, 
+            sqlite3_Error_ਸੁਨੇਹਾ(pWalker->pParse, 
                 "%s references tables to its right",
                 (pCtx->bFuncArg ? "table-function argument" : "ON clause")
             );
-            return WRC_Abort;
+            ਵਾਪਸ WRC_Abort;
           }
         }
-        break;
+        ਰੋਕੋ;
       }
-      pCtx = pCtx->pParent;
-    }while( pCtx );
+      pCtx = pCtx->p_ਮਾਪਾ;
+    }ਜਦੋਂ( pCtx );
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
 ** The xSelect callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
+ਸਥਿਰ ਪੂਰਨ selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
-  if( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
-    return WRC_Continue;
-  }else{
+  ਜੇ( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
+    ਵਾਪਸ WRC_Continue;
+  }ਨਹੀਂਤਾਂ{
     CheckOnCtx sCtx;
-    memset(&sCtx, 0, sizeof(sCtx));
+    memset(&sCtx, 0, ਆਕਾਰ(sCtx));
     sCtx.pSrc = pSelect->pSrc;
-    sCtx.pParent = pCtx;
+    sCtx.p_ਮਾਪਾ = pCtx;
     sCtx.iJoin = -1;
     pWalker->u.pCheckOnCtx = &sCtx;
     sqlite3WalkSelect(pWalker, pSelect);
     pWalker->u.pCheckOnCtx = pCtx;
-    pSelect->selFlags &= ~SF_OnToWhere;
-    return WRC_Prune;
+    pSelect->selFlags &= ~SF_On_ਮੰਜ਼ਿਲ_Where;
+    ਵਾਪਸ WRC_Prune;
   }
 }
 
@@ -7639,22 +7639,22 @@ static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
 ** Check all ON clauses in pSelect to verify that they do not reference
 ** columns to the right.
 */
-void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
+ਖਾਲੀ sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   Walker w;
   CheckOnCtx sCtx;
-  int ii;
-  assert( pSelect->selFlags & SF_OnToWhere );
-  assert( pSelect->pSrc!=0 && pSelect->pSrc->nSrc>=2 );
-  memset(&w, 0, sizeof(w));
+  ਪੂਰਨ ii;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect->selFlags & SF_On_ਮੰਜ਼ਿਲ_Where );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSelect->pSrc!=0 && pSelect->pSrc->nSrc>=2 );
+  memset(&w, 0, ਆਕਾਰ(w));
   w.pParse = pParse;
-  w.xExprCallback = selectCheckOnClausesExpr;
+  w.x_ਵਿਅੰਜਕ_Callback = select_Check_On_Clauses_ਵਿਅੰਜਕ;
   w.xSelectCallback = selectCheckOnClausesSelect;
   w.u.pCheckOnCtx = &sCtx;
-  memset(&sCtx, 0, sizeof(sCtx));
+  memset(&sCtx, 0, ਆਕਾਰ(sCtx));
   sCtx.pSrc = pSelect->pSrc;
   sCtx.iJoin = -1;
-  sqlite3WalkExpr(&w, pSelect->pWhere);
-  pSelect->selFlags &= ~SF_OnToWhere;
+  sqlite3_Walk_ਵਿਅੰਜਕ(&w, pSelect->pWhere);
+  pSelect->selFlags &= ~SF_On_ਮੰਜ਼ਿਲ_Where;
 
   /* Check for any table-function args that are attached to virtual tables 
   ** on the RHS of an outer join. They are subject to similar constraints
@@ -7668,24 +7668,24 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   **   may not refer to any table that occurs to the right of the LEFT JOIN.
   */
   sCtx.bFuncArg = 1;
-  for(ii=0; ii<pSelect->pSrc->nSrc; ii++){
-    SrcItem *pItem = &pSelect->pSrc->a[ii];
-    if( pItem->fg.isTabFunc ){
+  ਲਈ(ii=0; ii<pSelect->pSrc->nSrc; ii++){
+    Src_ਵਸਤੂ *p_ਵਸਤੂ = &pSelect->pSrc->a[ii];
+    ਜੇ( p_ਵਸਤੂ->fg.isTabFunc ){
       sCtx.iJoin = -1;
-      if( (pItem->fg.jointype & (JT_LTORJ|JT_RIGHT)) ){
-        sCtx.iJoin = pItem->iCursor;
-      }else{
-        int jj;
-        for(jj=ii+1; jj<pSelect->pSrc->nSrc; jj++){
-          SrcItem *pItem2 = &pSelect->pSrc->a[jj];
-          if( pItem2->fg.jointype & JT_OUTER ){
+      ਜੇ( (p_ਵਸਤੂ->fg.jointype & (JT_LTORJ|JT_ਸੱਜਾ)) ){
+        sCtx.iJoin = p_ਵਸਤੂ->iCursor;
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ jj;
+        ਲਈ(jj=ii+1; jj<pSelect->pSrc->nSrc; jj++){
+          Src_ਵਸਤੂ *pItem2 = &pSelect->pSrc->a[jj];
+          ਜੇ( pItem2->fg.jointype & JT_OUTER ){
             sCtx.iJoin = pItem2[-1].iCursor;
-            break;
+            ਰੋਕੋ;
           }
         }
       }
-      if( sCtx.iJoin>=0 ){
-        sqlite3WalkExprList(&w, pItem->u1.pFuncArg);
+      ਜੇ( sCtx.iJoin>=0 ){
+        sqlite3_Walk_ਵਿਅੰਜਕ_List(&w, p_ਵਸਤੂ->u1.pFuncArg);
       }
     }
   }
@@ -7700,18 +7700,18 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
 **
 ** p1 must be non-NULL.
 */
-static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
-  assert( p1 );
-  if( p2 && p1->nExpr==p2->nExpr ){
-    int ii;
-    for(ii=0; ii<p1->nExpr; ii++){
-      u8 sortFlags;
-      sortFlags = p2->a[ii].fg.sortFlags & KEYINFO_ORDER_DESC;
-      p1->a[ii].fg.sortFlags = sortFlags;
+ਸਥਿਰ ਪੂਰਨ sqlite3_Copy_ਛਾਂਟੋ_ਕ੍ਰਮ(ਵਿਅੰਜਕ_List *p1, ਵਿਅੰਜਕ_List *p2){
+  ਪ੍ਰਤਿਜ੍ਞਾ( p1 );
+  ਜੇ( p2 && p1->n_ਵਿਅੰਜਕ==p2->n_ਵਿਅੰਜਕ ){
+    ਪੂਰਨ ii;
+    ਲਈ(ii=0; ii<p1->n_ਵਿਅੰਜਕ; ii++){
+      u8 ਛਾਂਟੋ_Flags;
+      ਛਾਂਟੋ_Flags = p2->a[ii].fg.ਛਾਂਟੋ_Flags & KEYINFO_ਕ੍ਰਮ_DESC;
+      p1->a[ii].fg.ਛਾਂਟੋ_Flags = ਛਾਂਟੋ_Flags;
     }
-    return 1;
-  }else{
-    return 0;
+    ਵਾਪਸ 1;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ 0;
   }
 }
 
@@ -7762,83 +7762,83 @@ static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
 **  *  Sort results, as needed                              tag-select-0900
 **  *  Internal self-checks                                 tag-select-1000
 */
-int sqlite3Select(
+ਪੂਰਨ sqlite3Select(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   SelectDest *pDest      /* What to do with the query results */
 ){
-  int i, j;              /* Loop counters */
+  ਪੂਰਨ i, j;              /* Loop counters */
   WhereInfo *pWInfo;     /* Return from sqlite3WhereBegin() */
   Vdbe *v;               /* The virtual machine under construction */
-  int isAgg;             /* True for select lists like "count(*)" */
-  ExprList *pEList = 0;  /* List of columns to extract. */
+  ਪੂਰਨ isAgg;             /* True for select lists like "count(*)" */
+  ਵਿਅੰਜਕ_List *pEList = 0;  /* List of columns to extract. */
   SrcList *pTabList;     /* List of tables to select from */
-  Expr *pWhere;          /* The WHERE clause.  May be NULL */
-  ExprList *pGroupBy;    /* The GROUP BY clause.  May be NULL */
-  Expr *pHaving;         /* The HAVING clause.  May be NULL */
+  ਵਿਅੰਜਕ *pWhere;          /* The WHERE clause.  May be NULL */
+  ਵਿਅੰਜਕ_List *p_ਸਮੂਹ_By;    /* The GROUP BY clause.  May be NULL */
+  ਵਿਅੰਜਕ *pHaving;         /* The HAVING clause.  May be NULL */
   AggInfo *pAggInfo = 0; /* Aggregate information */
-  int rc = 1;            /* Value to return from this function */
+  ਪੂਰਨ rc = 1;            /* Value to return from this function */
   DistinctCtx sDistinct; /* Info on how to code the DISTINCT keyword */
-  SortCtx sSort;         /* Info on how to code the ORDER BY clause */
-  int iEnd;              /* Address of the end of the query */
+  ਛਾਂਟੋ_Ctx s_ਛਾਂਟੋ;         /* Info on how to code the ORDER BY clause */
+  ਪੂਰਨ i_ਸਿਰਾ;              /* Address of the end of the query */
   sqlite3 *db;           /* The database connection */
-  ExprList *pMinMaxOrderBy = 0;  /* Added ORDER BY for min/max queries */
+  ਵਿਅੰਜਕ_List *p_Min_Max_ਕ੍ਰਮ_By = 0;  /* Added ORDER BY for min/max queries */
   u8 minMaxFlag;                 /* Flag for min/max queries */
 
   db = pParse->db;
-  assert( pParse==db->pParse );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse==db->pParse );
   v = sqlite3GetVdbe(pParse);
-  if( p==0 || pParse->nErr ){
-    return 1;
+  ਜੇ( p==0 || pParse->nErr ){
+    ਵਾਪਸ 1;
   }
-  assert( db->mallocFailed==0 );
-  if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 1;
-#if TREETRACE_ENABLED
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 );
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) ਵਾਪਸ 1;
+#ਜੇ TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p, ("begin processing:\n", pParse->addrExplain));
-  if( sqlite3TreeTrace & 0x10000 ){
-    if( (sqlite3TreeTrace & 0x10001)==0x10000 ){
-      sqlite3TreeViewLine(0, "In sqlite3Select() at %s:%d",
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x10000 ){
+    ਜੇ( (sqlite3_ਰੁੱਖ_Trace & 0x10001)==0x10000 ){
+      sqlite3_ਰੁੱਖ_View_ਸਤਰ(0, "In sqlite3Select() at %s:%d",
                            __FILE__, __LINE__);
     }
     sqlite3ShowSelect(p);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* tag-select-0100 */
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_DistFifo );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_Fifo );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_DistQueue );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_Queue );
-  if( IgnorableDistinct(pDest) ){
-    assert(pDest->eDest==SRT_Exists     || pDest->eDest==SRT_Discard ||
-           pDest->eDest==SRT_DistQueue  || pDest->eDest==SRT_DistFifo );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By==0 || pDest->eDest!=SRT_DistFifo );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By==0 || pDest->eDest!=SRT_Fifo );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By==0 || pDest->eDest!=SRT_Dist_ਕਤਾਰ );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਕ੍ਰਮ_By==0 || pDest->eDest!=SRT_ਕਤਾਰ );
+  ਜੇ( IgnorableDistinct(pDest) ){
+    ਪ੍ਰਤਿਜ੍ਞਾ(pDest->eDest==SRT_Exists     || pDest->eDest==SRT_Discard ||
+           pDest->eDest==SRT_Dist_ਕਤਾਰ  || pDest->eDest==SRT_DistFifo );
     /* All of these destinations are also able to ignore the ORDER BY clause */
-    if( p->pOrderBy ){
-#if TREETRACE_ENABLED
+    ਜੇ( p->p_ਕ੍ਰਮ_By ){
+#ਜੇ TREETRACE_ENABLED
       TREETRACE(0x800,pParse,p, ("dropping superfluous ORDER BY:\n"));
-      if( sqlite3TreeTrace & 0x800 ){
-        sqlite3TreeViewExprList(0, p->pOrderBy, 0, "ORDERBY");
+      ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x800 ){
+        sqlite3_ਰੁੱਖ_View_ਵਿਅੰਜਕ_List(0, p->p_ਕ੍ਰਮ_By, 0, "ORDERBY");
       }
-#endif   
-      sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric,
-                              p->pOrderBy);
+#ਜੇ_ਅੰਤ   
+      sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3_ਵਿਅੰਜਕ_List_Delete_Generic,
+                              p->p_ਕ੍ਰਮ_By);
       testcase( pParse->earlyCleanup );
-      p->pOrderBy = 0;
+      p->p_ਕ੍ਰਮ_By = 0;
     }
     p->selFlags &= ~(u32)SF_Distinct;
   }
   sqlite3SelectPrep(pParse, p, 0);
-  if( pParse->nErr ){
-    goto select_end;
+  ਜੇ( pParse->nErr ){
+    ਜਾਓ select_ਸਿਰਾ;
   }
-  assert( db->mallocFailed==0 );
-  assert( p->pEList!=0 );
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList!=0 );
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x10 ){
     TREETRACE(0x10,pParse,p, ("after name resolution:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* If the SF_UFSrcCheck flag is set, then this function is being called
   ** as part of populating the temp table for an UPDATE...FROM statement.
@@ -7849,14 +7849,14 @@ int sqlite3Select(
   ** systems handle this case differently, and not all the same way,
   ** which is just confusing. To avoid this, we follow PG's lead and
   ** disallow it altogether.  */
-  if( p->selFlags & SF_UFSrcCheck ){
-    SrcItem *p0 = &p->pSrc->a[0];
-    if( sameSrcAlias(p0, p->pSrc) ){
-      sqlite3ErrorMsg(pParse,
+  ਜੇ( p->selFlags & SF_UFSrcCheck ){
+    Src_ਵਸਤੂ *p0 = &p->pSrc->a[0];
+    ਜੇ( sameSrcAlias(p0, p->pSrc) ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse,
           "target object/alias may not appear in FROM clause: %s",
           p0->zAlias ? p0->zAlias : p0->pSTab->zName
       );
-      goto select_end;
+      ਜਾਓ select_ਸਿਰਾ;
     }
 
     /* Clear the SF_UFSrcCheck flag. The check has already been performed,
@@ -7866,41 +7866,41 @@ int sqlite3Select(
     p->selFlags &= ~(u32)SF_UFSrcCheck;
   }
 
-  if( pDest->eDest==SRT_Output ){
-    sqlite3GenerateColumnNames(pParse, p);
+  ਜੇ( pDest->eDest==SRT_Output ){
+    sqlite3_Generate_ਕਾਲਮ_ਨਾਂ(pParse, p);
   }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( sqlite3WindowRewrite(pParse, p) ){
-    assert( pParse->nErr );
-    goto select_end;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+  ਜੇ( sqlite3_ਖਿੜਕੀ_Rewrite(pParse, p) ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nErr );
+    ਜਾਓ select_ਸਿਰਾ;
   }
-#if TREETRACE_ENABLED
-  if( p->pWin && (sqlite3TreeTrace & 0x40)!=0 ){
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( p->pWin && (sqlite3_ਰੁੱਖ_Trace & 0x40)!=0 ){
     TREETRACE(0x40,pParse,p, ("after window rewrite:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_WINDOWFUNC */
   pTabList = p->pSrc;
   isAgg = (p->selFlags & SF_Aggregate)!=0;
-  memset(&sSort, 0, sizeof(sSort));
-  sSort.pOrderBy = p->pOrderBy;
+  memset(&s_ਛਾਂਟੋ, 0, ਆਕਾਰ(s_ਛਾਂਟੋ));
+  s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
 
   /* Try to do various optimizations (flattening subqueries, and strength
   ** reduction of join operators) in the FROM clause up into the main query
   ** tag-select-0200
   */
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-  for(i=0; !p->pPrior && i<pTabList->nSrc; i++){
-    SrcItem *pItem = &pTabList->a[i];
-    Select *pSub = pItem->fg.isSubquery ? pItem->u4.pSubq->pSelect : 0;
-    Table *pTab = pItem->pSTab;
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+  ਲਈ(i=0; !p->p_ਪੂਰਵ && i<pTabList->nSrc; i++){
+    Src_ਵਸਤੂ *p_ਵਸਤੂ = &pTabList->a[i];
+    Select *pSub = p_ਵਸਤੂ->fg.isSubquery ? p_ਵਸਤੂ->u4.pSubq->pSelect : 0;
+    ਸਾਰਣੀ *pTab = p_ਵਸਤੂ->pSTab;
 
     /* The expander should have already created transient Table objects
     ** even for FROM clause elements such as subqueries that do not correspond
     ** to a real table */
-    assert( pTab!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pTab!=0 );
 
     /* Try to simplify joins:
     **
@@ -7914,63 +7914,63 @@ int sqlite3Select(
     ** "OUTER JOIN strength reduction" in the SQLite documentation.
     ** tag-select-0220
     */
-    if( (pItem->fg.jointype & (JT_LEFT|JT_LTORJ))!=0
-     && sqlite3ExprImpliesNonNullRow(p->pWhere, pItem->iCursor,
-                                     pItem->fg.jointype & JT_LTORJ)
+    ਜੇ( (p_ਵਸਤੂ->fg.jointype & (JT_ਖੱਬਾ|JT_LTORJ))!=0
+     && sqlite3_ਵਿਅੰਜਕ_ਸਿੱਟਾ_ਦਿੰਦਾ_Non_Null_ਪੰਕਤੀ(p->pWhere, p_ਵਸਤੂ->iCursor,
+                                     p_ਵਸਤੂ->fg.jointype & JT_LTORJ)
      && OptimizationEnabled(db, SQLITE_SimplifyJoin)
     ){
-      if( pItem->fg.jointype & JT_LEFT ){
-        if( pItem->fg.jointype & JT_RIGHT ){
+      ਜੇ( p_ਵਸਤੂ->fg.jointype & JT_ਖੱਬਾ ){
+        ਜੇ( p_ਵਸਤੂ->fg.jointype & JT_ਸੱਜਾ ){
           TREETRACE(0x1000,pParse,p,
                     ("FULL-JOIN simplifies to RIGHT-JOIN on term %d\n",i));
-          pItem->fg.jointype &= ~JT_LEFT;
-        }else{
+          p_ਵਸਤੂ->fg.jointype &= ~JT_ਖੱਬਾ;
+        }ਨਹੀਂਤਾਂ{
           TREETRACE(0x1000,pParse,p,
                     ("LEFT-JOIN simplifies to JOIN on term %d\n",i));
-          pItem->fg.jointype &= ~(JT_LEFT|JT_OUTER);
-          unsetJoinExpr(p->pWhere, pItem->iCursor, 0);
+          p_ਵਸਤੂ->fg.jointype &= ~(JT_ਖੱਬਾ|JT_OUTER);
+          unset_Join_ਵਿਅੰਜਕ(p->pWhere, p_ਵਸਤੂ->iCursor, 0);
         }
       }
-      if( pItem->fg.jointype & JT_LTORJ ){
-        for(j=i+1; j<pTabList->nSrc; j++){
-          SrcItem *pI2 = &pTabList->a[j];
-          if( pI2->fg.jointype & JT_RIGHT ){
-            if( pI2->fg.jointype & JT_LEFT ){
+      ਜੇ( p_ਵਸਤੂ->fg.jointype & JT_LTORJ ){
+        ਲਈ(j=i+1; j<pTabList->nSrc; j++){
+          Src_ਵਸਤੂ *pI2 = &pTabList->a[j];
+          ਜੇ( pI2->fg.jointype & JT_ਸੱਜਾ ){
+            ਜੇ( pI2->fg.jointype & JT_ਖੱਬਾ ){
               TREETRACE(0x1000,pParse,p,
                         ("FULL-JOIN simplifies to LEFT-JOIN on term %d\n",j));
-              pI2->fg.jointype &= ~JT_RIGHT;
-            }else{
+              pI2->fg.jointype &= ~JT_ਸੱਜਾ;
+            }ਨਹੀਂਤਾਂ{
               TREETRACE(0x1000,pParse,p,
                         ("RIGHT-JOIN simplifies to JOIN on term %d\n",j));
-              pI2->fg.jointype &= ~(JT_RIGHT|JT_OUTER);
-              unsetJoinExpr(p->pWhere, pI2->iCursor, 1);
+              pI2->fg.jointype &= ~(JT_ਸੱਜਾ|JT_OUTER);
+              unset_Join_ਵਿਅੰਜਕ(p->pWhere, pI2->iCursor, 1);
             }
           }
         }
-        for(j=pTabList->nSrc-1; j>=0; j--){
+        ਲਈ(j=pTabList->nSrc-1; j>=0; j--){
           pTabList->a[j].fg.jointype &= ~JT_LTORJ;
-          if( pTabList->a[j].fg.jointype & JT_RIGHT ) break;
+          ਜੇ( pTabList->a[j].fg.jointype & JT_ਸੱਜਾ ) ਰੋਕੋ;
         }
       }
     }
 
     /* No further action if this term of the FROM clause is not a subquery */
-    if( pSub==0 ) continue;
+    ਜੇ( pSub==0 ) ਜਾਰੀ;
 
     /* Catch mismatch in the declared columns of a view and the number of
     ** columns in the SELECT on the RHS */
-    if( pTab->nCol!=pSub->pEList->nExpr ){
-      sqlite3ErrorMsg(pParse, "expected %d columns for '%s' but got %d",
-                      pTab->nCol, pTab->zName, pSub->pEList->nExpr);
-      goto select_end;
+    ਜੇ( pTab->n_ਖਾਨਾ!=pSub->pEList->n_ਵਿਅੰਜਕ ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "expected %d columns for '%s' but got %d",
+                      pTab->n_ਖਾਨਾ, pTab->zName, pSub->pEList->n_ਵਿਅੰਜਕ);
+      ਜਾਓ select_ਸਿਰਾ;
     }
 
     /* Do not attempt the usual optimizations (flattening and ORDER BY
     ** elimination) on a MATERIALIZED common table expression because
     ** a MATERIALIZED common table expression is an optimization fence.
     */
-    if( pItem->fg.isCte && pItem->u2.pCteUse->eM10d==M10d_Yes ){
-      continue;
+    ਜੇ( p_ਵਸਤੂ->fg.isCte && p_ਵਸਤੂ->u2.pCteUse->eM10d==M10d_Yes ){
+      ਜਾਰੀ;
     }
 
     /* Do not try to flatten an aggregate subquery.
@@ -7980,8 +7980,8 @@ int sqlite3Select(
     ** will be implemented as a co-routine and there is no advantage to
     ** flattening in that case.
     */
-    if( (pSub->selFlags & SF_Aggregate)!=0 ) continue;
-    assert( pSub->pGroupBy==0 );
+    ਜੇ( (pSub->selFlags & SF_Aggregate)!=0 ) ਜਾਰੀ;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSub->p_ਸਮੂਹ_By==0 );
 
     /* tag-select-0230:
     ** If a FROM-clause subquery has an ORDER BY clause that is not
@@ -8009,18 +8009,18 @@ int sqlite3Select(
     **
     ** Also retain the ORDER BY if the OmitOrderBy optimization is disabled.
     */
-    if( pSub->pOrderBy!=0
-     && (p->pOrderBy!=0 || pTabList->nSrc>1)      /* Condition (5) */
-     && pSub->pLimit==0                           /* Condition (1) */
-     && (pSub->selFlags & (SF_OrderByReqd|SF_Recursive))==0  /* (2) and (6) */
-     && (p->selFlags & SF_OrderByReqd)==0         /* Condition (3) and (4) */
-     && OptimizationEnabled(db, SQLITE_OmitOrderBy)
+    ਜੇ( pSub->p_ਕ੍ਰਮ_By!=0
+     && (p->p_ਕ੍ਰਮ_By!=0 || pTabList->nSrc>1)      /* Condition (5) */
+     && pSub->p_ਹੱਦਬੰਦੀ==0                           /* Condition (1) */
+     && (pSub->selFlags & (SF_ਕ੍ਰਮ_By_Reqd|SF_Recursive))==0  /* (2) and (6) */
+     && (p->selFlags & SF_ਕ੍ਰਮ_By_Reqd)==0         /* Condition (3) and (4) */
+     && OptimizationEnabled(db, SQLITE_Omit_ਕ੍ਰਮ_By)
     ){
       TREETRACE(0x800,pParse,p,
                 ("omit superfluous ORDER BY on %r FROM-clause subquery\n",i+1));
-      sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric,
-                              pSub->pOrderBy);
-      pSub->pOrderBy = 0;
+      sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, sqlite3_ਵਿਅੰਜਕ_List_Delete_Generic,
+                              pSub->p_ਕ੍ਰਮ_By);
+      pSub->p_ਕ੍ਰਮ_By = 0;
     }
 
     /* If the outer query contains a "complex" result set (that is,
@@ -8041,50 +8041,50 @@ int sqlite3Select(
     **
     **  SELECT x FROM (SELECT x FROM tab ORDER BY y LIMIT 10);
     */
-    if( pSub->pOrderBy!=0
+    ਜੇ( pSub->p_ਕ੍ਰਮ_By!=0
      && i==0
-     && (p->selFlags & SF_ComplexResult)!=0
+     && (p->selFlags & SF_Complex_ਨਤੀਜਾ)!=0
      && (pTabList->nSrc==1
          || (pTabList->a[1].fg.jointype&(JT_OUTER|JT_CROSS))!=0)
     ){
-      continue;
+      ਜਾਰੀ;
     }
 
     /* tag-select-0240 */
-    if( flattenSubquery(pParse, p, i, isAgg) ){
-      if( pParse->nErr ) goto select_end;
+    ਜੇ( flattenSubquery(pParse, p, i, isAgg) ){
+      ਜੇ( pParse->nErr ) ਜਾਓ select_ਸਿਰਾ;
       /* This subquery can be absorbed into its parent. */
       i = -1;
     }
     pTabList = p->pSrc;
-    if( db->mallocFailed ) goto select_end;
-    if( !IgnorableOrderby(pDest) ){
-      sSort.pOrderBy = p->pOrderBy;
+    ਜੇ( db->mallocFailed ) ਜਾਓ select_ਸਿਰਾ;
+    ਜੇ( !IgnorableOrderby(pDest) ){
+      s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By = p->p_ਕ੍ਰਮ_By;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_COMPOUND_SELECT
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_COMPOUND_SELECT
   /* Handle compound SELECT statements using the separate multiSelect()
   ** procedure.  tag-select-0300
   */
-  if( p->pPrior ){
+  ਜੇ( p->p_ਪੂਰਵ ){
     rc = multiSelect(pParse, p, pDest);
-#if TREETRACE_ENABLED
+#ਜੇ TREETRACE_ENABLED
     TREETRACE(0x400,pParse,p,("end compound-select processing\n"));
-    if( (sqlite3TreeTrace & 0x400)!=0 && ExplainQueryPlanParent(pParse)==0 ){
-      sqlite3TreeViewSelect(0, p, 0);
+    ਜੇ( (sqlite3_ਰੁੱਖ_Trace & 0x400)!=0 && Explain_Query_Plan_ਮਾਪਾ(pParse)==0 ){
+      sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
     }
-#endif
-    if( p->pNext==0 ) ExplainQueryPlanPop(pParse);
-    return rc;
+#ਜੇ_ਅੰਤ
+    ਜੇ( p->p_ਅਗਲਾ==0 ) Explain_Query_Plan_ਕੱਢੋ(pParse);
+    ਵਾਪਸ rc;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* If there may be an "EXISTS (SELECT ...)" in the WHERE clause, attempt
   ** to change it into a join.  */
-  if( pParse->bHasExists && OptimizationEnabled(db,SQLITE_ExistsToJoin) ){
-    existsToJoin(pParse, p, p->pWhere);
+  ਜੇ( pParse->bHasExists && OptimizationEnabled(db,SQLITE_Exists_ਮੰਜ਼ਿਲ_Join) ){
+    exists_ਮੰਜ਼ਿਲ_Join(pParse, p, p->pWhere);
     pTabList = p->pSrc;
   }
 
@@ -8093,26 +8093,26 @@ int sqlite3Select(
   ** as the equivalent optimization will be handled by query planner in
   ** sqlite3WhereBegin().  tag-select-0330
   */
-  if( p->pWhere!=0
+  ਜੇ( p->pWhere!=0
    && p->pWhere->op==TK_AND
    && OptimizationEnabled(db, SQLITE_PropagateConst)
    && propagateConstants(pParse, p)
   ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x2000 ){
+#ਜੇ TREETRACE_ENABLED
+    ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x2000 ){
       TREETRACE(0x2000,pParse,p,("After constant propagation:\n"));
-      sqlite3TreeViewSelect(0, p, 0);
+      sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
     }
-#endif
-  }else{
+#ਜੇ_ਅੰਤ
+  }ਨਹੀਂਤਾਂ{
     TREETRACE(0x2000,pParse,p,("Constant propagation not helpful\n"));
   }
 
   /* tag-select-0350 */
-  if( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_CountOfView)
-   && countOfViewOptimization(pParse, p)
+  ਜੇ( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_ਗਿਣਤੀ_ਦਾ_View)
+   && ਗਿਣਤੀ_ਦਾ_View_Optimization(pParse, p)
   ){
-    if( db->mallocFailed ) goto select_end;
+    ਜੇ( db->mallocFailed ) ਜਾਓ select_ਸਿਰਾ;
     pTabList = p->pSrc;
   }
 
@@ -8123,15 +8123,15 @@ int sqlite3Select(
   **
   ** tag-select-0400
   */
-  for(i=0; i<pTabList->nSrc; i++){
-    SrcItem *pItem = &pTabList->a[i];
-    SrcItem *pPrior;
+  ਲਈ(i=0; i<pTabList->nSrc; i++){
+    Src_ਵਸਤੂ *p_ਵਸਤੂ = &pTabList->a[i];
+    Src_ਵਸਤੂ *p_ਪੂਰਵ;
     SelectDest dest;
     Subquery *pSubq;
     Select *pSub;
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-    const char *zSavedAuthContext;
-#endif
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+    ਅਚਲ ਅੱਖਰ *zSavedAuthContext;
+#ਜੇ_ਅੰਤ
 
     /* Authorized unreferenced tables.  tag-select-0410
     **
@@ -8151,29 +8151,29 @@ int sqlite3Select(
     ** assume the column name is non-NULL and segfault.  The use of an empty
     ** string for the fake column name seems safer.
     */
-    if( pItem->colUsed==0 && pItem->zName!=0 ){
-      const char *zDb;
-      if( pItem->fg.fixedSchema ){
-        int iDb = sqlite3SchemaToIndex(pParse->db, pItem->u4.pSchema);
+    ਜੇ( p_ਵਸਤੂ->ਖਾਨਾ_ਵਰਤਿਆ==0 && p_ਵਸਤੂ->zName!=0 ){
+      ਅਚਲ ਅੱਖਰ *zDb;
+      ਜੇ( p_ਵਸਤੂ->fg.fixedSchema ){
+        ਪੂਰਨ iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pParse->db, p_ਵਸਤੂ->u4.pSchema);
         zDb = db->aDb[iDb].zDbSName;
-      }else if( pItem->fg.isSubquery ){
+      }ਨਹੀਂਤਾਂ ਜੇ( p_ਵਸਤੂ->fg.isSubquery ){
         zDb = 0;
-      }else{
-        zDb = pItem->u4.zDatabase;
+      }ਨਹੀਂਤਾਂ{
+        zDb = p_ਵਸਤੂ->u4.zDatabase;
       }
-      sqlite3AuthCheck(pParse, SQLITE_READ, pItem->zName, "", zDb);
+      sqlite3AuthCheck(pParse, SQLITE_READ, p_ਵਸਤੂ->zName, "", zDb);
     }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ਜੇ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
     /* Generate code for all sub-queries in the FROM clause
     */
-    if( pItem->fg.isSubquery==0 ) continue;
-    pSubq = pItem->u4.pSubq;
-    assert( pSubq!=0 );
+    ਜੇ( p_ਵਸਤੂ->fg.isSubquery==0 ) ਜਾਰੀ;
+    pSubq = p_ਵਸਤੂ->u4.pSubq;
+    ਪ੍ਰਤਿਜ੍ਞਾ( pSubq!=0 );
     pSub = pSubq->pSelect;
 
     /* The code for a subquery should only be generated once. */
-    if( pSubq->addrFillSub!=0 ) continue;
+    ਜੇ( pSubq->addrFillSub!=0 ) ਜਾਰੀ;
 
     /* Increment Parse.nHeight by the height of the largest expression
     ** tree referred to by this, the parent select. The child select
@@ -8182,26 +8182,26 @@ int sqlite3Select(
     ** more conservative than necessary, but much easier than enforcing
     ** an exact limit.
     */
-    pParse->nHeight += sqlite3SelectExprHeight(p);
+    pParse->n_ਉਚਾਈ += sqlite3_Select_ਵਿਅੰਜਕ_ਉਚਾਈ(p);
 
     /* Make copies of constant WHERE-clause terms in the outer query down
     ** inside the subquery.  This can help the subquery to run more efficiently.
     ** This is the "predicate push-down optimization".  tag-select-0420
     */
-    if( OptimizationEnabled(db, SQLITE_PushDown)
-     && (pItem->fg.isCte==0
-         || (pItem->u2.pCteUse->eM10d!=M10d_Yes && pItem->u2.pCteUse->nUse<2))
-     && pushDownWhereTerms(pParse, pSub, p->pWhere, pTabList, i)
+    ਜੇ( OptimizationEnabled(db, SQLITE_ਧੱਕੋ_ਥੱਲੇ)
+     && (p_ਵਸਤੂ->fg.isCte==0
+         || (p_ਵਸਤੂ->u2.pCteUse->eM10d!=M10d_Yes && p_ਵਸਤੂ->u2.pCteUse->nUse<2))
+     && ਧੱਕੋ_ਥੱਲੇ_Where_Terms(pParse, pSub, p->pWhere, pTabList, i)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#ਜੇ TREETRACE_ENABLED
+      ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("After WHERE-clause push-down into subquery %d:\n", pSub->selId));
-        sqlite3TreeViewSelect(0, p, 0);
+        sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
       }
-#endif
-      assert( pSubq->pSelect && (pSub->selFlags & SF_PushDown)!=0 );
-    }else{
+#ਜੇ_ਅੰਤ
+      ਪ੍ਰਤਿਜ੍ਞਾ( pSubq->pSelect && (pSub->selFlags & SF_ਧੱਕੋ_ਥੱਲੇ)!=0 );
+    }ਨਹੀਂਤਾਂ{
       TREETRACE(0x4000,pParse,p,("WHERE-clause push-down not possible\n"));
     }
 
@@ -8209,131 +8209,131 @@ int sqlite3Select(
     ** expressions, to avoid unneeded searching and computation.
     ** tag-select-0440
     */
-    if( OptimizationEnabled(db, SQLITE_NullUnusedCols)
-     && disableUnusedSubqueryResultColumns(pItem)
+    ਜੇ( OptimizationEnabled(db, SQLITE_Null_ਅਣਵਰਤਿਆ_ਖਾਨੇ_ਗਿਣਤੀ)
+     && disable_ਅਣਵਰਤਿਆ_Subquery_ਨਤੀਜਾ_Columns(p_ਵਸਤੂ)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#ਜੇ TREETRACE_ENABLED
+      ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("Change unused result columns to NULL for subquery %d:\n",
              pSub->selId));
-        sqlite3TreeViewSelect(0, p, 0);
+        sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
       }
-#endif
+#ਜੇ_ਅੰਤ
     }
 
     zSavedAuthContext = pParse->zAuthContext;
-    pParse->zAuthContext = pItem->zName;
+    pParse->zAuthContext = p_ਵਸਤੂ->zName;
 
     /* Generate byte-code to implement the subquery  tag-select-0480
     */
-    if( fromClauseTermCanBeCoroutine(pParse, pTabList, i, p->selFlags) ){
+    ਜੇ( from_Clause_ਪਦ_Can_Be_Coroutine(pParse, pTabList, i, p->selFlags) ){
       /* Implement a co-routine that will return a single row of the result
       ** set on each invocation.  tag-select-0482
       */
-      int addrTop = sqlite3VdbeCurrentAddr(v)+1;
+      ਪੂਰਨ addr_ਸਿਖਰ = sqlite3VdbeCurrentAddr(v)+1;
     
       pSubq->regReturn = ++pParse->nMem;
-      sqlite3VdbeAddOp3(v, OP_InitCoroutine, pSubq->regReturn, 0, addrTop);
-      VdbeComment((v, "%!S", pItem));
-      pSubq->addrFillSub = addrTop;
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_InitCoroutine, pSubq->regReturn, 0, addr_ਸਿਖਰ);
+      VdbeComment((v, "%!S", p_ਵਸਤੂ));
+      pSubq->addrFillSub = addr_ਸਿਖਰ;
       sqlite3SelectDestInit(&dest, SRT_Coroutine, pSubq->regReturn);
-      ExplainQueryPlan((pParse, 1, "CO-ROUTINE %!S", pItem));
+      ExplainQueryPlan((pParse, 1, "CO-ROUTINE %!S", p_ਵਸਤੂ));
       sqlite3Select(pParse, pSub, &dest);
-      pItem->pSTab->nRowLogEst = pSub->nSelectRow;
-      pItem->fg.viaCoroutine = 1;
-      pSubq->regResult = dest.iSdst;
-      sqlite3VdbeEndCoroutine(v, pSubq->regReturn);
-      VdbeComment((v, "end %!S", pItem));
-      sqlite3VdbeJumpHere(v, addrTop-1);
-      sqlite3ClearTempRegCache(pParse);
-    }else if( pItem->fg.isCte && pItem->u2.pCteUse->addrM9e>0 ){
+      p_ਵਸਤੂ->pSTab->n_ਪੰਕਤੀ_Log_Est = pSub->n_Select_ਪੰਕਤੀ;
+      p_ਵਸਤੂ->fg.ਰਾਹੀਂ_Coroutine = 1;
+      pSubq->reg_ਨਤੀਜਾ = dest.iSdst;
+      sqlite3_Vdbe_ਸਿਰਾ_Coroutine(v, pSubq->regReturn);
+      VdbeComment((v, "end %!S", p_ਵਸਤੂ));
+      sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr_ਸਿਖਰ-1);
+      sqlite3_Clear_ਆਰਜ਼ੀ_Reg_Cache(pParse);
+    }ਨਹੀਂਤਾਂ ਜੇ( p_ਵਸਤੂ->fg.isCte && p_ਵਸਤੂ->u2.pCteUse->addrM9e>0 ){
       /* This is a CTE for which materialization code has already been
       ** generated.  Invoke the subroutine to compute the materialization,
       ** then make the pItem->iCursor be a copy of the ephemeral table that
       ** holds the result of the materialization. tag-select-0484 */
-      CteUse *pCteUse = pItem->u2.pCteUse;
-      sqlite3VdbeAddOp2(v, OP_Gosub, pCteUse->regRtn, pCteUse->addrM9e);
-      if( pItem->iCursor!=pCteUse->iCur ){
-        sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pCteUse->iCur);
-        VdbeComment((v, "%!S", pItem));
+      CteUse *pCteUse = p_ਵਸਤੂ->u2.pCteUse;
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, pCteUse->regRtn, pCteUse->addrM9e);
+      ਜੇ( p_ਵਸਤੂ->iCursor!=pCteUse->iCur ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_OpenDup, p_ਵਸਤੂ->iCursor, pCteUse->iCur);
+        VdbeComment((v, "%!S", p_ਵਸਤੂ));
       }
-      pSub->nSelectRow = pCteUse->nRowEst;
-    }else if( (pPrior = isSelfJoinView(pTabList, pItem, 0, i))!=0 ){
+      pSub->n_Select_ਪੰਕਤੀ = pCteUse->n_ਪੰਕਤੀ_Est;
+    }ਨਹੀਂਤਾਂ ਜੇ( (p_ਪੂਰਵ = isSelfJoinView(pTabList, p_ਵਸਤੂ, 0, i))!=0 ){
       /* This view has already been materialized by a prior entry in
       ** this same FROM clause.  Reuse it.  tag-select-0486 */
-      Subquery *pPriorSubq;
-      assert( pPrior->fg.isSubquery );
-      pPriorSubq = pPrior->u4.pSubq;
-      assert( pPriorSubq!=0 );
-      if( pPriorSubq->addrFillSub ){
-        sqlite3VdbeAddOp2(v, OP_Gosub, pPriorSubq->regReturn,
-                                       pPriorSubq->addrFillSub);
+      Subquery *p_ਪੂਰਵ_Subq;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪੂਰਵ->fg.isSubquery );
+      p_ਪੂਰਵ_Subq = p_ਪੂਰਵ->u4.pSubq;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਪੂਰਵ_Subq!=0 );
+      ਜੇ( p_ਪੂਰਵ_Subq->addrFillSub ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, p_ਪੂਰਵ_Subq->regReturn,
+                                       p_ਪੂਰਵ_Subq->addrFillSub);
       }
-      sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pPrior->iCursor);
-      pSub->nSelectRow = pPriorSubq->pSelect->nSelectRow;
-    }else{
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_OpenDup, p_ਵਸਤੂ->iCursor, p_ਪੂਰਵ->iCursor);
+      pSub->n_Select_ਪੰਕਤੀ = p_ਪੂਰਵ_Subq->pSelect->n_Select_ਪੰਕਤੀ;
+    }ਨਹੀਂਤਾਂ{
       /* Materialize the view.  If the view is not correlated, generate a
       ** subroutine to do the materialization so that subsequent uses of
       ** the same view can reuse the materialization.  tag-select-0488 */
-      int topAddr;
-      int onceAddr = 0;
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-      int addrExplain;
-#endif
+      ਪੂਰਨ ਸਿਖਰ_Addr;
+      ਪੂਰਨ onceAddr = 0;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+      ਪੂਰਨ addrExplain;
+#ਜੇ_ਅੰਤ
 
       pSubq->regReturn = ++pParse->nMem;
-      topAddr = sqlite3VdbeAddOp0(v, OP_Goto);
-      pSubq->addrFillSub = topAddr+1;
-      pItem->fg.isMaterialized = 1;
-      if( pItem->fg.isCorrelated==0 ){
+      ਸਿਖਰ_Addr = sqlite3_Vdbe_ਜੋੜੋ_Op0(v, OP_Goto);
+      pSubq->addrFillSub = ਸਿਖਰ_Addr+1;
+      p_ਵਸਤੂ->fg.isMaterialized = 1;
+      ਜੇ( p_ਵਸਤੂ->fg.isCorrelated==0 ){
         /* If the subquery is not correlated and if we are not inside of
         ** a trigger, then we only need to compute the value of the subquery
         ** once. */
-        onceAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-        VdbeComment((v, "materialize %!S", pItem));
-      }else{
-        VdbeNoopComment((v, "materialize %!S", pItem));
+        onceAddr = sqlite3_Vdbe_ਜੋੜੋ_Op0(v, OP_Once); VdbeCoverage(v);
+        VdbeComment((v, "materialize %!S", p_ਵਸਤੂ));
+      }ਨਹੀਂਤਾਂ{
+        VdbeNoopComment((v, "materialize %!S", p_ਵਸਤੂ));
       }
-      sqlite3SelectDestInit(&dest, SRT_EphemTab, pItem->iCursor);
+      sqlite3SelectDestInit(&dest, SRT_EphemTab, p_ਵਸਤੂ->iCursor);
 
-      ExplainQueryPlan2(addrExplain, (pParse, 1, "MATERIALIZE %!S", pItem));
+      ExplainQueryPlan2(addrExplain, (pParse, 1, "MATERIALIZE %!S", p_ਵਸਤੂ));
       sqlite3Select(pParse, pSub, &dest);
-      pItem->pSTab->nRowLogEst = pSub->nSelectRow;
-      if( onceAddr ) sqlite3VdbeJumpHere(v, onceAddr);
-      sqlite3VdbeAddOp2(v, OP_Return, pSubq->regReturn, topAddr+1);
-      VdbeComment((v, "end %!S", pItem));
-      sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
-      sqlite3VdbeJumpHere(v, topAddr);
-      sqlite3ClearTempRegCache(pParse);
-      if( pItem->fg.isCte && pItem->fg.isCorrelated==0 ){
-        CteUse *pCteUse = pItem->u2.pCteUse;
+      p_ਵਸਤੂ->pSTab->n_ਪੰਕਤੀ_Log_Est = pSub->n_Select_ਪੰਕਤੀ;
+      ਜੇ( onceAddr ) sqlite3_Vdbe_Jump_ਇੱਥੇ(v, onceAddr);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Return, pSubq->regReturn, ਸਿਖਰ_Addr+1);
+      VdbeComment((v, "end %!S", p_ਵਸਤੂ));
+      sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExplain, addrExplain, -1);
+      sqlite3_Vdbe_Jump_ਇੱਥੇ(v, ਸਿਖਰ_Addr);
+      sqlite3_Clear_ਆਰਜ਼ੀ_Reg_Cache(pParse);
+      ਜੇ( p_ਵਸਤੂ->fg.isCte && p_ਵਸਤੂ->fg.isCorrelated==0 ){
+        CteUse *pCteUse = p_ਵਸਤੂ->u2.pCteUse;
         pCteUse->addrM9e = pSubq->addrFillSub;
         pCteUse->regRtn = pSubq->regReturn;
-        pCteUse->iCur = pItem->iCursor;
-        pCteUse->nRowEst = pSub->nSelectRow;
+        pCteUse->iCur = p_ਵਸਤੂ->iCursor;
+        pCteUse->n_ਪੰਕਤੀ_Est = pSub->n_Select_ਪੰਕਤੀ;
       }
     }
-    if( db->mallocFailed ) goto select_end;
-    pParse->nHeight -= sqlite3SelectExprHeight(p);
+    ਜੇ( db->mallocFailed ) ਜਾਓ select_ਸਿਰਾ;
+    pParse->n_ਉਚਾਈ -= sqlite3_Select_ਵਿਅੰਜਕ_ਉਚਾਈ(p);
     pParse->zAuthContext = zSavedAuthContext;
-#endif
+#ਜੇ_ਅੰਤ
   }
 
   /* Various elements of the SELECT copied into local variables for
   ** convenience */
   pEList = p->pEList;
   pWhere = p->pWhere;
-  pGroupBy = p->pGroupBy;
+  p_ਸਮੂਹ_By = p->p_ਸਮੂਹ_By;
   pHaving = p->pHaving;
   sDistinct.isTnct = (p->selFlags & SF_Distinct)!=0;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8000 ){
+#ਜੇ TREETRACE_ENABLED
+  ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x8000 ){
     TREETRACE(0x8000,pParse,p,("After all FROM-clause analysis:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* tag-select-0500
   **
@@ -8352,34 +8352,34 @@ int sqlite3Select(
   ** written the query must use a temp-table for at least one of the ORDER
   ** BY and DISTINCT, and an index or separate temp-table for the other.
   */
-  if( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
-   && sqlite3CopySortOrder(pEList, sSort.pOrderBy)
-   && sqlite3ExprListCompare(pEList, sSort.pOrderBy, -1)==0
-   && OptimizationEnabled(db, SQLITE_GroupByOrder)
-#ifndef SQLITE_OMIT_WINDOWFUNC
+  ਜੇ( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
+   && sqlite3_Copy_ਛਾਂਟੋ_ਕ੍ਰਮ(pEList, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By)
+   && sqlite3_ਵਿਅੰਜਕ_List_Compare(pEList, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By, -1)==0
+   && OptimizationEnabled(db, SQLITE_ਸਮੂਹ_By_ਕ੍ਰਮ)
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
    && p->pWin==0
-#endif
+#ਜੇ_ਅੰਤ
   ){
     p->selFlags &= ~(u32)SF_Distinct;
-    pGroupBy = p->pGroupBy = sqlite3ExprListDup(db, pEList, 0);
-    if( pGroupBy ){
-      for(i=0; i<pGroupBy->nExpr; i++){
-        pGroupBy->a[i].u.x.iOrderByCol = i+1;
+    p_ਸਮੂਹ_By = p->p_ਸਮੂਹ_By = sqlite3_ਵਿਅੰਜਕ_List_Dup(db, pEList, 0);
+    ਜੇ( p_ਸਮੂਹ_By ){
+      ਲਈ(i=0; i<p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ; i++){
+        p_ਸਮੂਹ_By->a[i].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ = i+1;
       }
     }
     p->selFlags |= SF_Aggregate;
     /* Notice that even thought SF_Distinct has been cleared from p->selFlags,
     ** the sDistinct.isTnct is still set.  Hence, isTnct represents the
     ** original setting of the SF_Distinct flag, not the current setting */
-    assert( sDistinct.isTnct );
+    ਪ੍ਰਤਿਜ੍ਞਾ( sDistinct.isTnct );
     sDistinct.isTnct = 2;
 
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20000 ){
+#ਜੇ TREETRACE_ENABLED
+    ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x20000 ){
       TREETRACE(0x20000,pParse,p,("Transform DISTINCT into GROUP BY:\n"));
-      sqlite3TreeViewSelect(0, p, 0);
+      sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
     }
-#endif
+#ਜੇ_ਅੰਤ
   }
 
   /* If there is an ORDER BY clause, then create an ephemeral index to
@@ -8390,100 +8390,100 @@ int sqlite3Select(
   ** not needed.  The sSort.addrSortIndex variable is used to facilitate
   ** that change.  tag-select-0600
   */
-  if( sSort.pOrderBy ){
-    KeyInfo *pKeyInfo;
-    pKeyInfo = sqlite3KeyInfoFromExprList(
-        pParse, sSort.pOrderBy, 0, pEList->nExpr);
-    sSort.iECursor = pParse->nTab++;
-    sSort.addrSortIndex =
-      sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-          sSort.iECursor, sSort.pOrderBy->nExpr+1+pEList->nExpr, 0,
-          (char*)pKeyInfo, P4_KEYINFO
+  ਜੇ( s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By ){
+    ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info;
+    p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(
+        pParse, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By, 0, pEList->n_ਵਿਅੰਜਕ);
+    s_ਛਾਂਟੋ.iECursor = pParse->nTab++;
+    s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ =
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral,
+          s_ਛਾਂਟੋ.iECursor, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ+1+pEList->n_ਵਿਅੰਜਕ, 0,
+          (ਅੱਖਰ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO
       );
-  }else{
-    sSort.addrSortIndex = -1;
+  }ਨਹੀਂਤਾਂ{
+    s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ = -1;
   }
 
   /* If the output is destined for a temporary table, open that table.
   ** tag-select-0630
   */
-  if( pDest->eDest==SRT_EphemTab ){
-    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pDest->iSDParm, pEList->nExpr);
-    if( p->selFlags & SF_NestedFrom ){
+  ਜੇ( pDest->eDest==SRT_EphemTab ){
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_OpenEphemeral, pDest->iSDParm, pEList->n_ਵਿਅੰਜਕ);
+    ਜੇ( p->selFlags & SF_NestedFrom ){
       /* Delete or NULL-out result columns that will never be used */
-      int ii;
-      for(ii=pEList->nExpr-1; ii>0 && pEList->a[ii].fg.bUsed==0; ii--){
-        sqlite3ExprDelete(db, pEList->a[ii].pExpr);
+      ਪੂਰਨ ii;
+      ਲਈ(ii=pEList->n_ਵਿਅੰਜਕ-1; ii>0 && pEList->a[ii].fg.b_ਵਰਤਿਆ==0; ii--){
+        sqlite3_ਵਿਅੰਜਕ_Delete(db, pEList->a[ii].p_ਵਿਅੰਜਕ);
         sqlite3DbFree(db, pEList->a[ii].zEName);
-        pEList->nExpr--;
+        pEList->n_ਵਿਅੰਜਕ--;
       }
-      for(ii=0; ii<pEList->nExpr; ii++){
-        if( pEList->a[ii].fg.bUsed==0 ) pEList->a[ii].pExpr->op = TK_NULL;
+      ਲਈ(ii=0; ii<pEList->n_ਵਿਅੰਜਕ; ii++){
+        ਜੇ( pEList->a[ii].fg.b_ਵਰਤਿਆ==0 ) pEList->a[ii].p_ਵਿਅੰਜਕ->op = TK_NULL;
       }
     }
   }
 
   /* Set the limiter.  tag-select-0650
   */
-  iEnd = sqlite3VdbeMakeLabel(pParse);
-  if( (p->selFlags & SF_FixedLimit)==0 ){
-    p->nSelectRow = 320;  /* 4 billion rows */
+  i_ਸਿਰਾ = sqlite3VdbeMakeLabel(pParse);
+  ਜੇ( (p->selFlags & SF_Fixed_ਹੱਦਬੰਦੀ)==0 ){
+    p->n_Select_ਪੰਕਤੀ = 320;  /* 4 billion rows */
   }
-  if( p->pLimit ) computeLimitRegisters(pParse, p, iEnd);
-  if( p->iLimit==0 && sSort.addrSortIndex>=0 ){
-    sqlite3VdbeChangeOpcode(v, sSort.addrSortIndex, OP_SorterOpen);
-    sSort.sortFlags |= SORTFLAG_UseSorter;
+  ਜੇ( p->p_ਹੱਦਬੰਦੀ ) compute_ਹੱਦਬੰਦੀ_Registers(pParse, p, i_ਸਿਰਾ);
+  ਜੇ( p->i_ਹੱਦਬੰਦੀ==0 && s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ>=0 ){
+    sqlite3VdbeChangeOpcode(v, s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ, OP_SorterOpen);
+    s_ਛਾਂਟੋ.ਛਾਂਟੋ_Flags |= SORTFLAG_UseSorter;
   }
 
   /* Open an ephemeral index to use for the distinct set. tag-select-0680
   */
-  if( p->selFlags & SF_Distinct ){
+  ਜੇ( p->selFlags & SF_Distinct ){
     sDistinct.tabTnct = pParse->nTab++;
-    sDistinct.addrTnct = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
+    sDistinct.addrTnct = sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_OpenEphemeral,
                        sDistinct.tabTnct, 0, 0,
-                       (char*)sqlite3KeyInfoFromExprList(pParse, p->pEList,0,0),
+                       (ਅੱਖਰ*)sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(pParse, p->pEList,0,0),
                        P4_KEYINFO);
     sqlite3VdbeChangeP5(v, BTREE_UNORDERED);
     sDistinct.eTnctType = WHERE_DISTINCT_UNORDERED;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     sDistinct.eTnctType = WHERE_DISTINCT_NOOP;
   }
 
-  if( !isAgg && pGroupBy==0 ){
+  ਜੇ( !isAgg && p_ਸਮੂਹ_By==0 ){
     /* No aggregate functions and no GROUP BY clause.  tag-select-0700 */
     u16 wctrlFlags = (sDistinct.isTnct ? WHERE_WANT_DISTINCT : 0)
-                   | (p->selFlags & SF_FixedLimit);
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    Window *pWin = p->pWin;      /* Main window object (or NULL) */
-    if( pWin ){
-      sqlite3WindowCodeInit(pParse, p);
+                   | (p->selFlags & SF_Fixed_ਹੱਦਬੰਦੀ);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਖਿੜਕੀ *pWin = p->pWin;      /* Main window object (or NULL) */
+    ਜੇ( pWin ){
+      sqlite3_ਖਿੜਕੀ_ਕੋਡ_Init(pParse, p);
     }
-#endif
-    assert( WHERE_USE_LIMIT==SF_FixedLimit );
+#ਜੇ_ਅੰਤ
+    ਪ੍ਰਤਿਜ੍ਞਾ( WHERE_USE_ਹੱਦਬੰਦੀ==SF_Fixed_ਹੱਦਬੰਦੀ );
 
 
     /* Begin the database scan. */
     TREETRACE(0x2,pParse,p,("WhereBegin\n"));
-    pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, sSort.pOrderBy,
-                               p->pEList, p, wctrlFlags, p->nSelectRow);
-    if( pWInfo==0 ) goto select_end;
-    if( sqlite3WhereOutputRowCount(pWInfo) < p->nSelectRow ){
-      p->nSelectRow = sqlite3WhereOutputRowCount(pWInfo);
-      if( pDest->eDest<=SRT_DistQueue && pDest->eDest>=SRT_DistFifo ){
+    pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By,
+                               p->pEList, p, wctrlFlags, p->n_Select_ਪੰਕਤੀ);
+    ਜੇ( pWInfo==0 ) ਜਾਓ select_ਸਿਰਾ;
+    ਜੇ( sqlite3_Where_Output_ਪੰਕਤੀ_ਗਿਣਤੀ(pWInfo) < p->n_Select_ਪੰਕਤੀ ){
+      p->n_Select_ਪੰਕਤੀ = sqlite3_Where_Output_ਪੰਕਤੀ_ਗਿਣਤੀ(pWInfo);
+      ਜੇ( pDest->eDest<=SRT_Dist_ਕਤਾਰ && pDest->eDest>=SRT_DistFifo ){
         /* TUNING: For a UNION CTE, because UNION is implies DISTINCT,
         ** reduce the estimated output row count by 8 (LogEst 30). 
         ** Search for tag-20250414a to see other cases */
-        p->nSelectRow -= 30;
+        p->n_Select_ਪੰਕਤੀ -= 30;
       }
     }
-    if( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
+    ਜੇ( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
       sDistinct.eTnctType = sqlite3WhereIsDistinct(pWInfo);
     }
-    if( sSort.pOrderBy ){
-      sSort.nOBSat = sqlite3WhereIsOrdered(pWInfo);
-      sSort.labelOBLopt = sqlite3WhereOrderByLimitOptLabel(pWInfo);
-      if( sSort.nOBSat==sSort.pOrderBy->nExpr ){
-        sSort.pOrderBy = 0;
+    ਜੇ( s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By ){
+      s_ਛਾਂਟੋ.nOBSat = sqlite3WhereIsOrdered(pWInfo);
+      s_ਛਾਂਟੋ.labelOBLopt = sqlite3_Where_ਕ੍ਰਮ_By_ਹੱਦਬੰਦੀ_Opt_Label(pWInfo);
+      ਜੇ( s_ਛਾਂਟੋ.nOBSat==s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ ){
+        s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By = 0;
       }
     }
     TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
@@ -8492,73 +8492,73 @@ int sqlite3Select(
     ** instruction ended up not being needed, then change the OP_OpenEphemeral
     ** into an OP_Noop.
     */
-    if( sSort.addrSortIndex>=0 && sSort.pOrderBy==0 ){
-      sqlite3VdbeChangeToNoop(v, sSort.addrSortIndex);
+    ਜੇ( s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ>=0 && s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By==0 ){
+      sqlite3_Vdbe_Change_ਮੰਜ਼ਿਲ_Noop(v, s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ);
     }
 
-    assert( p->pEList==pEList );
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pWin ){
-      int addrGosub = sqlite3VdbeMakeLabel(pParse);
-      int iCont = sqlite3VdbeMakeLabel(pParse);
-      int iBreak = sqlite3VdbeMakeLabel(pParse);
-      int regGosub = ++pParse->nMem;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList==pEList );
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
+    ਜੇ( pWin ){
+      ਪੂਰਨ addrGosub = sqlite3VdbeMakeLabel(pParse);
+      ਪੂਰਨ iCont = sqlite3VdbeMakeLabel(pParse);
+      ਪੂਰਨ iBreak = sqlite3VdbeMakeLabel(pParse);
+      ਪੂਰਨ regGosub = ++pParse->nMem;
 
-      sqlite3WindowCodeStep(pParse, p, pWInfo, regGosub, addrGosub);
+      sqlite3_ਖਿੜਕੀ_ਕੋਡ_ਕਦਮ(pParse, p, pWInfo, regGosub, addrGosub);
 
-      sqlite3VdbeAddOp2(v, OP_Goto, 0, iBreak);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Goto, 0, iBreak);
       sqlite3VdbeResolveLabel(v, addrGosub);
       VdbeNoopComment((v, "inner-loop subroutine"));
-      sSort.labelOBLopt = 0;
-      selectInnerLoop(pParse, p, -1, &sSort, &sDistinct, pDest, iCont, iBreak);
+      s_ਛਾਂਟੋ.labelOBLopt = 0;
+      selectInnerLoop(pParse, p, -1, &s_ਛਾਂਟੋ, &sDistinct, pDest, iCont, iBreak);
       sqlite3VdbeResolveLabel(v, iCont);
-      sqlite3VdbeAddOp1(v, OP_Return, regGosub);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, regGosub);
       VdbeComment((v, "end inner-loop subroutine"));
       sqlite3VdbeResolveLabel(v, iBreak);
-    }else
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+    }ਨਹੀਂਤਾਂ
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_WINDOWFUNC */
     {
       /* Use the standard inner loop. */
-      selectInnerLoop(pParse, p, -1, &sSort, &sDistinct, pDest,
+      selectInnerLoop(pParse, p, -1, &s_ਛਾਂਟੋ, &sDistinct, pDest,
           sqlite3WhereContinueLabel(pWInfo),
           sqlite3WhereBreakLabel(pWInfo));
 
       /* End the database scan loop.
       */
       TREETRACE(0x2,pParse,p,("WhereEnd\n"));
-      sqlite3WhereEnd(pWInfo);
+      sqlite3_Where_ਸਿਰਾ(pWInfo);
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     /* This case is for when there exist aggregate functions or a GROUP BY
     ** clause or both.  tag-select-0800 */
     NameContext sNC;    /* Name context for processing aggregate information */
-    int iAMem;          /* First Mem address for storing current GROUP BY */
-    int iBMem;          /* First Mem address for previous GROUP BY */
-    int iUseFlag;       /* Mem address holding flag indicating that at least
+    ਪੂਰਨ iAMem;          /* First Mem address for storing current GROUP BY */
+    ਪੂਰਨ iBMem;          /* First Mem address for previous GROUP BY */
+    ਪੂਰਨ iUseFlag;       /* Mem address holding flag indicating that at least
                         ** one row of the input to the aggregator has been
                         ** processed */
-    int iAbortFlag;     /* Mem address which causes query abort if positive */
-    int groupBySort;    /* Rows come from source in GROUP BY order */
-    int addrEnd;        /* End of processing for this SELECT */
-    int sortPTab = 0;   /* Pseudotable used to decode sorting results */
-    int sortOut = 0;    /* Output register from the sorter */
-    int orderByGrp = 0; /* True if the GROUP BY and ORDER BY are the same */
+    ਪੂਰਨ iAbortFlag;     /* Mem address which causes query abort if positive */
+    ਪੂਰਨ ਸਮੂਹ_By_ਛਾਂਟੋ;    /* Rows come from source in GROUP BY order */
+    ਪੂਰਨ addr_ਸਿਰਾ;        /* End of processing for this SELECT */
+    ਪੂਰਨ ਛਾਂਟੋ_PTab = 0;   /* Pseudotable used to decode sorting results */
+    ਪੂਰਨ ਛਾਂਟੋ_ਬਾਹਰਲਾ = 0;    /* Output register from the sorter */
+    ਪੂਰਨ ਕ੍ਰਮ_By_Grp = 0; /* True if the GROUP BY and ORDER BY are the same */
 
     /* Remove any and all aliases between the result set and the
     ** GROUP BY clause.
     */
-    if( pGroupBy ){
-      int k;                        /* Loop counter */
-      struct ExprList_item *pItem;  /* For looping over expression in a list */
+    ਜੇ( p_ਸਮੂਹ_By ){
+      ਪੂਰਨ k;                        /* Loop counter */
+      ਬਣਤਰ ਵਿਅੰਜਕ_List_ਵਸਤੂ *p_ਵਸਤੂ;  /* For looping over expression in a list */
 
-      for(k=p->pEList->nExpr, pItem=p->pEList->a; k>0; k--, pItem++){
-        pItem->u.x.iAlias = 0;
+      ਲਈ(k=p->pEList->n_ਵਿਅੰਜਕ, p_ਵਸਤੂ=p->pEList->a; k>0; k--, p_ਵਸਤੂ++){
+        p_ਵਸਤੂ->u.x.iAlias = 0;
       }
-      for(k=pGroupBy->nExpr, pItem=pGroupBy->a; k>0; k--, pItem++){
-        pItem->u.x.iAlias = 0;
+      ਲਈ(k=p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ, p_ਵਸਤੂ=p_ਸਮੂਹ_By->a; k>0; k--, p_ਵਸਤੂ++){
+        p_ਵਸਤੂ->u.x.iAlias = 0;
       }
-      assert( 66==sqlite3LogEst(100) );
-      if( p->nSelectRow>66 ) p->nSelectRow = 66;
+      ਪ੍ਰਤਿਜ੍ਞਾ( 66==sqlite3LogEst(100) );
+      ਜੇ( p->n_Select_ਪੰਕਤੀ>66 ) p->n_Select_ਪੰਕਤੀ = 66;
 
       /* If there is both a GROUP BY and an ORDER BY clause and they are
       ** identical, then it may be possible to disable the ORDER BY clause
@@ -8568,102 +8568,102 @@ int sqlite3Select(
       ** but not actually sorted. Either way, record the fact that the
       ** ORDER BY and GROUP BY clauses are the same by setting the orderByGrp
       ** variable.  */
-      if( sqlite3CopySortOrder(pGroupBy, sSort.pOrderBy)
-       && sqlite3ExprListCompare(pGroupBy, sSort.pOrderBy, -1)==0
+      ਜੇ( sqlite3_Copy_ਛਾਂਟੋ_ਕ੍ਰਮ(p_ਸਮੂਹ_By, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By)
+       && sqlite3_ਵਿਅੰਜਕ_List_Compare(p_ਸਮੂਹ_By, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By, -1)==0
       ){
-        orderByGrp = 1;
+        ਕ੍ਰਮ_By_Grp = 1;
       }
-    }else{
-      assert( 0==sqlite3LogEst(1) );
-      p->nSelectRow = 0;
+    }ਨਹੀਂਤਾਂ{
+      ਪ੍ਰਤਿਜ੍ਞਾ( 0==sqlite3LogEst(1) );
+      p->n_Select_ਪੰਕਤੀ = 0;
     }
 
     /* Create a label to jump to when we want to abort the query */
-    addrEnd = sqlite3VdbeMakeLabel(pParse);
+    addr_ਸਿਰਾ = sqlite3VdbeMakeLabel(pParse);
 
     /* Convert TK_COLUMN nodes into TK_AGG_COLUMN and make entries in
     ** sAggInfo for all TK_AGG_FUNCTION nodes in expressions of the
     ** SELECT statement.
     */
-    pAggInfo = sqlite3DbMallocZero(db, sizeof(*pAggInfo) );
-    if( pAggInfo ){
-      sqlite3ParserAddCleanup(pParse, agginfoFree, pAggInfo);
+    pAggInfo = sqlite3DbMallocZero(db, ਆਕਾਰ(*pAggInfo) );
+    ਜੇ( pAggInfo ){
+      sqlite3_Parser_ਜੋੜੋ_Cleanup(pParse, agginfoFree, pAggInfo);
       testcase( pParse->earlyCleanup );
     }
-    if( db->mallocFailed ){
-      goto select_end;
+    ਜੇ( db->mallocFailed ){
+      ਜਾਓ select_ਸਿਰਾ;
     }
     pAggInfo->selId = p->selId;
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
     pAggInfo->pSelect = p;
-#endif
-    memset(&sNC, 0, sizeof(sNC));
+#ਜੇ_ਅੰਤ
+    memset(&sNC, 0, ਆਕਾਰ(sNC));
     sNC.pParse = pParse;
     sNC.pSrcList = pTabList;
     sNC.uNC.pAggInfo = pAggInfo;
     VVA_ONLY( sNC.ncFlags = NC_UAggInfo; )
-    pAggInfo->nSortingColumn = pGroupBy ? pGroupBy->nExpr : 0;
-    pAggInfo->pGroupBy = pGroupBy;
-    sqlite3ExprAnalyzeAggList(&sNC, pEList);
-    sqlite3ExprAnalyzeAggList(&sNC, sSort.pOrderBy);
-    if( pHaving ){
-      if( pGroupBy ){
-        assert( pWhere==p->pWhere );
-        assert( pHaving==p->pHaving );
-        assert( pGroupBy==p->pGroupBy );
-        havingToWhere(pParse, p);
+    pAggInfo->n_ਛਾਂਟੀ_ਕਾਲਮ = p_ਸਮੂਹ_By ? p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ : 0;
+    pAggInfo->p_ਸਮੂਹ_By = p_ਸਮੂਹ_By;
+    sqlite3_ਵਿਅੰਜਕ_Analyze_Agg_List(&sNC, pEList);
+    sqlite3_ਵਿਅੰਜਕ_Analyze_Agg_List(&sNC, s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By);
+    ਜੇ( pHaving ){
+      ਜੇ( p_ਸਮੂਹ_By ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( pWhere==p->pWhere );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pHaving==p->pHaving );
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_ਸਮੂਹ_By==p->p_ਸਮੂਹ_By );
+        having_ਮੰਜ਼ਿਲ_Where(pParse, p);
         pWhere = p->pWhere;
       }
-      sqlite3ExprAnalyzeAggregates(&sNC, pHaving);
+      sqlite3_ਵਿਅੰਜਕ_Analyze_Aggregates(&sNC, pHaving);
     }
-    pAggInfo->nAccumulator = pAggInfo->nColumn;
-    if( p->pGroupBy==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
-      minMaxFlag = minMaxQuery(db, pAggInfo->aFunc[0].pFExpr, &pMinMaxOrderBy);
-    }else{
-      minMaxFlag = WHERE_ORDERBY_NORMAL;
+    pAggInfo->n_ਸੰਚਾਇਕ = pAggInfo->n_ਕਾਲਮ;
+    ਜੇ( p->p_ਸਮੂਹ_By==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
+      minMaxFlag = minMaxQuery(db, pAggInfo->aFunc[0].pFExpr, &p_Min_Max_ਕ੍ਰਮ_By);
+    }ਨਹੀਂਤਾਂ{
+      minMaxFlag = WHERE_ORDERBY_ਸਾਧਾਰਨ;
     }
-    analyzeAggFuncArgs(pAggInfo, &sNC);
-    if( db->mallocFailed ) goto select_end;
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+    analyze_Agg_Func_ਦਲੀਲਾਂ(pAggInfo, &sNC);
+    ਜੇ( db->mallocFailed ) ਜਾਓ select_ਸਿਰਾ;
+#ਜੇ TREETRACE_ENABLED
+    ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x20 ){
       TREETRACE(0x20,pParse,p,("After aggregate analysis %p:\n", pAggInfo));
-      sqlite3TreeViewSelect(0, p, 0);
-      if( minMaxFlag ){
+      sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
+      ਜੇ( minMaxFlag ){
         sqlite3DebugPrintf("MIN/MAX Optimization (0x%02x) adds:\n", minMaxFlag);
-        sqlite3TreeViewExprList(0, pMinMaxOrderBy, 0, "ORDERBY");
+        sqlite3_ਰੁੱਖ_View_ਵਿਅੰਜਕ_List(0, p_Min_Max_ਕ੍ਰਮ_By, 0, "ORDERBY");
       }
       printAggInfo(pAggInfo);
     }
-#endif
+#ਜੇ_ਅੰਤ
 
 
     /* Processing for aggregates with GROUP BY is very different and
     ** much more complex than aggregates without a GROUP BY.  tag-select-0810
     */
-    if( pGroupBy ){
-      KeyInfo *pKeyInfo;  /* Keying information for the group by clause */
-      int addr1;          /* A-vs-B comparison jump */
-      int addrOutputRow;  /* Start of subroutine that outputs a result row */
-      int regOutputRow;   /* Return address register for output subroutine */
-      int addrSetAbort;   /* Set the abort flag and return */
-      int addrTopOfLoop;  /* Top of the input loop */
-      int addrSortingIdx; /* The OP_OpenEphemeral for the sorting index */
-      int addrReset;      /* Subroutine for resetting the accumulator */
-      int regReset;       /* Return address register for reset subroutine */
-      ExprList *pDistinct = 0;
+    ਜੇ( p_ਸਮੂਹ_By ){
+      ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info;  /* Keying information for the group by clause */
+      ਪੂਰਨ addr1;          /* A-vs-B comparison jump */
+      ਪੂਰਨ addr_Output_ਪੰਕਤੀ;  /* Start of subroutine that outputs a result row */
+      ਪੂਰਨ reg_Output_ਪੰਕਤੀ;   /* Return address register for output subroutine */
+      ਪੂਰਨ addr_ਸੈੱਟ_Abort;   /* Set the abort flag and return */
+      ਪੂਰਨ addr_ਸਿਖਰ_ਦਾ_Loop;  /* Top of the input loop */
+      ਪੂਰਨ addr_ਛਾਂਟੀ_Idx; /* The OP_OpenEphemeral for the sorting index */
+      ਪੂਰਨ addrReset;      /* Subroutine for resetting the accumulator */
+      ਪੂਰਨ regReset;       /* Return address register for reset subroutine */
+      ਵਿਅੰਜਕ_List *pDistinct = 0;
       u16 distFlag = 0;
-      int eDist = WHERE_DISTINCT_NOOP;
+      ਪੂਰਨ eDist = WHERE_DISTINCT_NOOP;
 
-      if( pAggInfo->nFunc==1
+      ਜੇ( pAggInfo->nFunc==1
        && pAggInfo->aFunc[0].iDistinct>=0
        && ALWAYS(pAggInfo->aFunc[0].pFExpr!=0)
-       && ALWAYS(ExprUseXList(pAggInfo->aFunc[0].pFExpr))
+       && ALWAYS(ਵਿਅੰਜਕ_Use_XList(pAggInfo->aFunc[0].pFExpr))
        && pAggInfo->aFunc[0].pFExpr->x.pList!=0
       ){
-        Expr *pExpr = pAggInfo->aFunc[0].pFExpr->x.pList->a[0].pExpr;
-        pExpr = sqlite3ExprDup(db, pExpr, 0);
-        pDistinct = sqlite3ExprListDup(db, pGroupBy, 0);
-        pDistinct = sqlite3ExprListAppend(pParse, pDistinct, pExpr);
+        ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = pAggInfo->aFunc[0].pFExpr->x.pList->a[0].p_ਵਿਅੰਜਕ;
+        p_ਵਿਅੰਜਕ = sqlite3_ਵਿਅੰਜਕ_Dup(db, p_ਵਿਅੰਜਕ, 0);
+        pDistinct = sqlite3_ਵਿਅੰਜਕ_List_Dup(db, p_ਸਮੂਹ_By, 0);
+        pDistinct = sqlite3_ਵਿਅੰਜਕ_List_Append(pParse, pDistinct, p_ਵਿਅੰਜਕ);
         distFlag = pDistinct ? (WHERE_WANT_DISTINCT|WHERE_AGG_DISTINCT) : 0;
       }
 
@@ -8672,116 +8672,116 @@ int sqlite3Select(
       ** that we do not need it after all, the OP_SorterOpen instruction
       ** will be converted into a Noop. 
       */
-      pAggInfo->sortingIdx = pParse->nTab++;
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pGroupBy,
-                                            0, pAggInfo->nColumn);
-      addrSortingIdx = sqlite3VdbeAddOp4(v, OP_SorterOpen,
-          pAggInfo->sortingIdx, pAggInfo->nSortingColumn,
-          0, (char*)pKeyInfo, P4_KEYINFO);
+      pAggInfo->ਛਾਂਟੀ_Idx = pParse->nTab++;
+      p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_From_ਵਿਅੰਜਕ_List(pParse, p_ਸਮੂਹ_By,
+                                            0, pAggInfo->n_ਕਾਲਮ);
+      addr_ਛਾਂਟੀ_Idx = sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_SorterOpen,
+          pAggInfo->ਛਾਂਟੀ_Idx, pAggInfo->n_ਛਾਂਟੀ_ਕਾਲਮ,
+          0, (ਅੱਖਰ*)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
 
       /* Initialize memory locations used by GROUP BY aggregate processing
       */
       iUseFlag = ++pParse->nMem;
       iAbortFlag = ++pParse->nMem;
-      regOutputRow = ++pParse->nMem;
-      addrOutputRow = sqlite3VdbeMakeLabel(pParse);
+      reg_Output_ਪੰਕਤੀ = ++pParse->nMem;
+      addr_Output_ਪੰਕਤੀ = sqlite3VdbeMakeLabel(pParse);
       regReset = ++pParse->nMem;
       addrReset = sqlite3VdbeMakeLabel(pParse);
       iAMem = pParse->nMem + 1;
-      pParse->nMem += pGroupBy->nExpr;
+      pParse->nMem += p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ;
       iBMem = pParse->nMem + 1;
-      pParse->nMem += pGroupBy->nExpr;
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, iAbortFlag);
+      pParse->nMem += p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ;
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 0, iAbortFlag);
       VdbeComment((v, "clear abort flag"));
-      sqlite3VdbeAddOp3(v, OP_Null, 0, iAMem, iAMem+pGroupBy->nExpr-1);
-      sqlite3ExprNullRegisterRange(pParse, iAMem, pGroupBy->nExpr);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Null, 0, iAMem, iAMem+p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ-1);
+      sqlite3_ਵਿਅੰਜਕ_Null_ਰਜਿਸਟਰ_Range(pParse, iAMem, p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ);
 
       /* Begin a loop that will extract all source rows in GROUP BY order.
       ** This might involve two separate loops with an OP_Sort in between, or
       ** it might be a single loop that uses an index to extract information
       ** in the right order to begin with.
       */
-      sqlite3VdbeAddOp2(v, OP_Gosub, regReset, addrReset);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, regReset, addrReset);
       TREETRACE(0x2,pParse,p,("WhereBegin\n"));
-      pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, pGroupBy, pDistinct,
+      pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, p_ਸਮੂਹ_By, pDistinct,
           p, (sDistinct.isTnct==2 ? WHERE_DISTINCTBY : WHERE_GROUPBY)
-          |  (orderByGrp ? WHERE_SORTBYGROUP : 0) | distFlag, 0
+          |  (ਕ੍ਰਮ_By_Grp ? WHERE_SORTBYGROUP : 0) | distFlag, 0
       );
-      if( pWInfo==0 ){
-        sqlite3ExprListDelete(db, pDistinct);
-        goto select_end;
+      ਜੇ( pWInfo==0 ){
+        sqlite3_ਵਿਅੰਜਕ_List_Delete(db, pDistinct);
+        ਜਾਓ select_ਸਿਰਾ;
       }
-      if( pParse->pIdxEpr ){
-        optimizeAggregateUseOfIndexedExpr(pParse, p, pAggInfo, &sNC);
+      ਜੇ( pParse->pIdxEpr ){
+        optimize_Aggregate_Use_ਦਾ_ਸੂਚਕਾਂਕਿਤ_ਵਿਅੰਜਕ(pParse, p, pAggInfo, &sNC);
       }
-      assignAggregateRegisters(pParse, pAggInfo);
+      ਸੌਂਪੋ_Aggregate_Registers(pParse, pAggInfo);
       eDist = sqlite3WhereIsDistinct(pWInfo);
       TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
-      if( sqlite3WhereIsOrdered(pWInfo)==pGroupBy->nExpr ){
+      ਜੇ( sqlite3WhereIsOrdered(pWInfo)==p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ ){
         /* The optimizer is able to deliver rows in group by order so
         ** we do not have to sort.  The OP_OpenEphemeral table will be
         ** cancelled later because we still need to use the pKeyInfo
         */
-        groupBySort = 0;
-      }else{
+        ਸਮੂਹ_By_ਛਾਂਟੋ = 0;
+      }ਨਹੀਂਤਾਂ{
         /* Rows are coming out in undetermined order.  We have to push
         ** each row into a sorting index, terminate the first loop,
         ** then loop over the sorting index in order to get the output
         ** in sorted order
         */
-        int regBase;
-        int regRecord;
-        int nCol;
-        int nGroupBy;
+        ਪੂਰਨ reg_ਅਧਾਰ;
+        ਪੂਰਨ reg_ਰਿਕਾਰਡ;
+        ਪੂਰਨ n_ਖਾਨਾ;
+        ਪੂਰਨ n_ਸਮੂਹ_By;
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-        int addrExp;              /* Address of OP_Explain instruction */
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_STMT_SCANSTATUS
+        ਪੂਰਨ addrExp;              /* Address of OP_Explain instruction */
+#ਜੇ_ਅੰਤ
         ExplainQueryPlan2(addrExp, (pParse, 0, "USE TEMP B-TREE FOR %s",
             (sDistinct.isTnct && (p->selFlags&SF_Distinct)==0) ?
                     "DISTINCT" : "GROUP BY"
         ));
 
-        groupBySort = 1;
-        nGroupBy = pGroupBy->nExpr;
-        nCol = nGroupBy;
-        j = nGroupBy;
-        for(i=0; i<pAggInfo->nColumn; i++){
-          if( pAggInfo->aCol[i].iSorterColumn>=j ){
-            nCol++;
+        ਸਮੂਹ_By_ਛਾਂਟੋ = 1;
+        n_ਸਮੂਹ_By = p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ;
+        n_ਖਾਨਾ = n_ਸਮੂਹ_By;
+        j = n_ਸਮੂਹ_By;
+        ਲਈ(i=0; i<pAggInfo->n_ਕਾਲਮ; i++){
+          ਜੇ( pAggInfo->a_ਖਾਨਾ[i].i_Sorter_ਕਾਲਮ>=j ){
+            n_ਖਾਨਾ++;
             j++;
           }
         }
-        regBase = sqlite3GetTempRange(pParse, nCol);
-        sqlite3ExprCodeExprList(pParse, pGroupBy, regBase, 0, 0);
-        j = nGroupBy;
-        pAggInfo->directMode = 1;
-        for(i=0; i<pAggInfo->nColumn; i++){
-          struct AggInfo_col *pCol = &pAggInfo->aCol[i];
-          if( pCol->iSorterColumn>=j ){
-            sqlite3ExprCode(pParse, pCol->pCExpr, j + regBase);
+        reg_ਅਧਾਰ = sqlite3_Get_ਆਰਜ਼ੀ_Range(pParse, n_ਖਾਨਾ);
+        sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_ਵਿਅੰਜਕ_List(pParse, p_ਸਮੂਹ_By, reg_ਅਧਾਰ, 0, 0);
+        j = n_ਸਮੂਹ_By;
+        pAggInfo->ਸਿੱਧਾ_ਬਹੁਲਕ = 1;
+        ਲਈ(i=0; i<pAggInfo->n_ਕਾਲਮ; i++){
+          ਬਣਤਰ Agg_Info_ਖਾਨਾ *p_ਖਾਨਾ = &pAggInfo->a_ਖਾਨਾ[i];
+          ਜੇ( p_ਖਾਨਾ->i_Sorter_ਕਾਲਮ>=j ){
+            sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, p_ਖਾਨਾ->pCExpr, j + reg_ਅਧਾਰ);
             j++;
           }
         }
-        pAggInfo->directMode = 0;
-        regRecord = sqlite3GetTempReg(pParse);
-        sqlite3VdbeScanStatusCounters(v, addrExp, 0, sqlite3VdbeCurrentAddr(v));
-        sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase, nCol, regRecord);
-        sqlite3VdbeAddOp2(v, OP_SorterInsert, pAggInfo->sortingIdx, regRecord);
-        sqlite3VdbeScanStatusRange(v, addrExp, sqlite3VdbeCurrentAddr(v)-2, -1);
-        sqlite3ReleaseTempReg(pParse, regRecord);
-        sqlite3ReleaseTempRange(pParse, regBase, nCol);
+        pAggInfo->ਸਿੱਧਾ_ਬਹੁਲਕ = 0;
+        reg_ਰਿਕਾਰਡ = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+        sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Counters(v, addrExp, 0, sqlite3VdbeCurrentAddr(v));
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, reg_ਅਧਾਰ, n_ਖਾਨਾ, reg_ਰਿਕਾਰਡ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sorter_ਪਾਓ, pAggInfo->ਛਾਂਟੀ_Idx, reg_ਰਿਕਾਰਡ);
+        sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExp, sqlite3VdbeCurrentAddr(v)-2, -1);
+        sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, reg_ਰਿਕਾਰਡ);
+        sqlite3_Release_ਆਰਜ਼ੀ_Range(pParse, reg_ਅਧਾਰ, n_ਖਾਨਾ);
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
-        sqlite3WhereEnd(pWInfo);
-        pAggInfo->sortingIdxPTab = sortPTab = pParse->nTab++;
-        sortOut = sqlite3GetTempReg(pParse);
-        sqlite3VdbeScanStatusCounters(v, addrExp, sqlite3VdbeCurrentAddr(v), 0);
-        sqlite3VdbeAddOp3(v, OP_OpenPseudo, sortPTab, sortOut, nCol);
-        sqlite3VdbeAddOp2(v, OP_SorterSort, pAggInfo->sortingIdx, addrEnd);
+        sqlite3_Where_ਸਿਰਾ(pWInfo);
+        pAggInfo->ਛਾਂਟੀ_Idx_PTab = ਛਾਂਟੋ_PTab = pParse->nTab++;
+        ਛਾਂਟੋ_ਬਾਹਰਲਾ = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+        sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Counters(v, addrExp, sqlite3VdbeCurrentAddr(v), 0);
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_OpenPseudo, ਛਾਂਟੋ_PTab, ਛਾਂਟੋ_ਬਾਹਰਲਾ, n_ਖਾਨਾ);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sorter_ਛਾਂਟੋ, pAggInfo->ਛਾਂਟੀ_Idx, addr_ਸਿਰਾ);
         VdbeComment((v, "GROUP BY sort")); VdbeCoverage(v);
-        pAggInfo->useSortingIdx = 1;
-        sqlite3VdbeScanStatusRange(v, addrExp, -1, sortPTab);
-        sqlite3VdbeScanStatusRange(v, addrExp, -1, pAggInfo->sortingIdx);
+        pAggInfo->use_ਛਾਂਟੀ_Idx = 1;
+        sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExp, -1, ਛਾਂਟੋ_PTab);
+        sqlite3_Vdbe_ਜਾਂਚ_ਸਥਿਤੀ_Range(v, addrExp, -1, pAggInfo->ਛਾਂਟੀ_Idx);
       }
 
       /* If there are entries in pAgggInfo->aFunc[] that contain subexpressions
@@ -8789,16 +8789,16 @@ int sqlite3Select(
       ** in optimizeAggregateUseOfIndexedExpr()) then those subexpressions
       ** must now be converted into a TK_AGG_COLUMN node so that the value
       ** is correctly pulled from the index rather than being recomputed. */
-      if( pParse->pIdxEpr ){
-        aggregateConvertIndexedExprRefToColumn(pAggInfo);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x20 ){
+      ਜੇ( pParse->pIdxEpr ){
+        aggregate_Convert_ਸੂਚਕਾਂਕਿਤ_ਵਿਅੰਜਕ_Ref_ਮੰਜ਼ਿਲ_ਕਾਲਮ(pAggInfo);
+#ਜੇ TREETRACE_ENABLED
+        ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x20 ){
           TREETRACE(0x20, pParse, p,
              ("AggInfo function expressions converted to reference index\n"));
-          sqlite3TreeViewSelect(0, p, 0);
+          sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
           printAggInfo(pAggInfo);
         }
-#endif
+#ਜੇ_ਅੰਤ
       }
 
       /* If the index or temporary table used by the GROUP BY sort
@@ -8808,11 +8808,11 @@ int sqlite3Select(
       ** This is an optimization - the correct answer should result regardless.
       ** Use the SQLITE_GroupByOrder flag with SQLITE_TESTCTRL_OPTIMIZER to
       ** disable this optimization for testing purposes.  */
-      if( orderByGrp && OptimizationEnabled(db, SQLITE_GroupByOrder)
-       && (groupBySort || sqlite3WhereIsSorted(pWInfo))
+      ਜੇ( ਕ੍ਰਮ_By_Grp && OptimizationEnabled(db, SQLITE_ਸਮੂਹ_By_ਕ੍ਰਮ)
+       && (ਸਮੂਹ_By_ਛਾਂਟੋ || sqlite3WhereIsSorted(pWInfo))
       ){
-        sSort.pOrderBy = 0;
-        sqlite3VdbeChangeToNoop(v, sSort.addrSortIndex);
+        s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By = 0;
+        sqlite3_Vdbe_Change_ਮੰਜ਼ਿਲ_Noop(v, s_ਛਾਂਟੋ.addr_ਛਾਂਟੋ_ਸੂਚਕਾਂਕ);
       }
 
       /* Evaluate the current GROUP BY terms and store in b0, b1, b2...
@@ -8820,40 +8820,40 @@ int sqlite3Select(
       ** Then compare the current GROUP BY terms against the GROUP BY terms
       ** from the previous row currently stored in a0, a1, a2...
       */
-      addrTopOfLoop = sqlite3VdbeCurrentAddr(v);
-      if( groupBySort ){
-        sqlite3VdbeAddOp3(v, OP_SorterData, pAggInfo->sortingIdx,
-                          sortOut, sortPTab);
+      addr_ਸਿਖਰ_ਦਾ_Loop = sqlite3VdbeCurrentAddr(v);
+      ਜੇ( ਸਮੂਹ_By_ਛਾਂਟੋ ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Sorter_ਅੰਕੜੇ, pAggInfo->ਛਾਂਟੀ_Idx,
+                          ਛਾਂਟੋ_ਬਾਹਰਲਾ, ਛਾਂਟੋ_PTab);
       }
-      for(j=0; j<pGroupBy->nExpr; j++){
-        int iOrderByCol = pGroupBy->a[j].u.x.iOrderByCol;
+      ਲਈ(j=0; j<p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ; j++){
+        ਪੂਰਨ i_ਕ੍ਰਮ_By_ਖਾਨਾ = p_ਸਮੂਹ_By->a[j].u.x.i_ਕ੍ਰਮ_By_ਖਾਨਾ;
         
-        if( groupBySort ){
-          sqlite3VdbeAddOp3(v, OP_Column, sortPTab, j, iBMem+j);
-        }else{
-          pAggInfo->directMode = 1;
-          sqlite3ExprCode(pParse, pGroupBy->a[j].pExpr, iBMem+j);
+        ਜੇ( ਸਮੂਹ_By_ਛਾਂਟੋ ){
+          sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, ਛਾਂਟੋ_PTab, j, iBMem+j);
+        }ਨਹੀਂਤਾਂ{
+          pAggInfo->ਸਿੱਧਾ_ਬਹੁਲਕ = 1;
+          sqlite3_ਵਿਅੰਜਕ_ਕੋਡ(pParse, p_ਸਮੂਹ_By->a[j].p_ਵਿਅੰਜਕ, iBMem+j);
         }
 
-        if( iOrderByCol ){
-          Expr *pX = p->pEList->a[iOrderByCol-1].pExpr;
-          Expr *pBase = sqlite3ExprSkipCollateAndLikely(pX);
-          while( ALWAYS(pBase!=0) && pBase->op==TK_IF_NULL_ROW ){
-            pX = pBase->pLeft;
-            pBase = sqlite3ExprSkipCollateAndLikely(pX);
+        ਜੇ( i_ਕ੍ਰਮ_By_ਖਾਨਾ ){
+          ਵਿਅੰਜਕ *pX = p->pEList->a[i_ਕ੍ਰਮ_By_ਖਾਨਾ-1].p_ਵਿਅੰਜਕ;
+          ਵਿਅੰਜਕ *p_ਅਧਾਰ = sqlite3_ਵਿਅੰਜਕ_Skip_Collate_And_Likely(pX);
+          ਜਦੋਂ( ALWAYS(p_ਅਧਾਰ!=0) && p_ਅਧਾਰ->op==TK_IF_NULL_ਪੰਕਤੀ ){
+            pX = p_ਅਧਾਰ->p_ਖੱਬਾ;
+            p_ਅਧਾਰ = sqlite3_ਵਿਅੰਜਕ_Skip_Collate_And_Likely(pX);
           }
-          if( ALWAYS(pBase!=0)
-           && pBase->op!=TK_AGG_COLUMN
-           && pBase->op!=TK_REGISTER
+          ਜੇ( ALWAYS(p_ਅਧਾਰ!=0)
+           && p_ਅਧਾਰ->op!=TK_AGG_ਕਾਲਮ
+           && p_ਅਧਾਰ->op!=TK_ਰਜਿਸਟਰ
           ){
-            sqlite3ExprToRegister(pX, iAMem+j);
+            sqlite3_ਵਿਅੰਜਕ_ਮੰਜ਼ਿਲ_ਰਜਿਸਟਰ(pX, iAMem+j);
           }
         }
       }
-      sqlite3VdbeAddOp4(v, OP_Compare, iAMem, iBMem, pGroupBy->nExpr,
-                          (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
+      sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_Compare, iAMem, iBMem, p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ,
+                          (ਅੱਖਰ*)sqlite3_ਕੁੰਜੀ_Info_Ref(p_ਕੁੰਜੀ_Info), P4_KEYINFO);
       addr1 = sqlite3VdbeCurrentAddr(v);
-      sqlite3VdbeAddOp3(v, OP_Jump, addr1+1, 0, addr1+1); VdbeCoverage(v);
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Jump, addr1+1, 0, addr1+1); VdbeCoverage(v);
 
       /* Generate code that runs whenever the GROUP BY changes.
       ** Changes in the GROUP BY are detected by the previous code
@@ -8864,42 +8864,42 @@ int sqlite3Select(
       ** and resets the aggregate accumulator registers in preparation
       ** for the next GROUP BY batch.
       */
-      sqlite3VdbeAddOp2(v, OP_Gosub, regOutputRow, addrOutputRow);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_Output_ਪੰਕਤੀ, addr_Output_ਪੰਕਤੀ);
       VdbeComment((v, "output one row of %d", p->selId));
-      sqlite3ExprCodeMove(pParse, iBMem, iAMem, pGroupBy->nExpr);
-      sqlite3VdbeAddOp2(v, OP_IfPos, iAbortFlag, addrEnd); VdbeCoverage(v);
+      sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Move(pParse, iBMem, iAMem, p_ਸਮੂਹ_By->n_ਵਿਅੰਜਕ);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfPos, iAbortFlag, addr_ਸਿਰਾ); VdbeCoverage(v);
       VdbeComment((v, "check abort flag"));
-      sqlite3VdbeAddOp2(v, OP_Gosub, regReset, addrReset);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, regReset, addrReset);
       VdbeComment((v, "reset accumulator %d", p->selId));
 
       /* Update the aggregate accumulators based on the content of
       ** the current row
       */
-      sqlite3VdbeJumpHere(v, addr1);
-      updateAccumulator(pParse, iUseFlag, pAggInfo, eDist);
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, iUseFlag);
+      sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr1);
+      update_ਸੰਚਾਇਕ(pParse, iUseFlag, pAggInfo, eDist);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, iUseFlag);
       VdbeComment((v, "indicate data in accumulator %d", p->selId));
 
       /* End of the loop
       */
-      if( groupBySort ){
-        sqlite3VdbeAddOp2(v, OP_SorterNext, pAggInfo->sortingIdx,addrTopOfLoop);
+      ਜੇ( ਸਮੂਹ_By_ਛਾਂਟੋ ){
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Sorter_ਅਗਲਾ, pAggInfo->ਛਾਂਟੀ_Idx,addr_ਸਿਖਰ_ਦਾ_Loop);
         VdbeCoverage(v);
-      }else{
+      }ਨਹੀਂਤਾਂ{
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
-        sqlite3WhereEnd(pWInfo);
-        sqlite3VdbeChangeToNoop(v, addrSortingIdx);
+        sqlite3_Where_ਸਿਰਾ(pWInfo);
+        sqlite3_Vdbe_Change_ਮੰਜ਼ਿਲ_Noop(v, addr_ਛਾਂਟੀ_Idx);
       }
-      sqlite3ExprListDelete(db, pDistinct);
+      sqlite3_ਵਿਅੰਜਕ_List_Delete(db, pDistinct);
 
       /* Output the final row of result
       */
-      sqlite3VdbeAddOp2(v, OP_Gosub, regOutputRow, addrOutputRow);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Gosub, reg_Output_ਪੰਕਤੀ, addr_Output_ਪੰਕਤੀ);
       VdbeComment((v, "output final row of %d", p->selId));
 
       /* Jump over the subroutines
       */
-      sqlite3VdbeGoto(v, addrEnd);
+      sqlite3VdbeGoto(v, addr_ਸਿਰਾ);
 
       /* Generate a subroutine that outputs a single row of the result
       ** set.  This subroutine first looks at the iUseFlag.  If iUseFlag
@@ -8908,41 +8908,41 @@ int sqlite3Select(
       ** increments the iAbortFlag memory location before returning in
       ** order to signal the caller to abort.
       */
-      addrSetAbort = sqlite3VdbeCurrentAddr(v);
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, iAbortFlag);
+      addr_ਸੈੱਟ_Abort = sqlite3VdbeCurrentAddr(v);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, iAbortFlag);
       VdbeComment((v, "set abort flag"));
-      sqlite3VdbeAddOp1(v, OP_Return, regOutputRow);
-      sqlite3VdbeResolveLabel(v, addrOutputRow);
-      addrOutputRow = sqlite3VdbeCurrentAddr(v);
-      sqlite3VdbeAddOp2(v, OP_IfPos, iUseFlag, addrOutputRow+2);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, reg_Output_ਪੰਕਤੀ);
+      sqlite3VdbeResolveLabel(v, addr_Output_ਪੰਕਤੀ);
+      addr_Output_ਪੰਕਤੀ = sqlite3VdbeCurrentAddr(v);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfPos, iUseFlag, addr_Output_ਪੰਕਤੀ+2);
       VdbeCoverage(v);
       VdbeComment((v, "Groupby result generator entry point %d", p->selId));
-      sqlite3VdbeAddOp1(v, OP_Return, regOutputRow);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, reg_Output_ਪੰਕਤੀ);
       finalizeAggFunctions(pParse, pAggInfo);
-      sqlite3ExprIfFalse(pParse, pHaving, addrOutputRow+1, SQLITE_JUMPIFNULL);
-      selectInnerLoop(pParse, p, -1, &sSort,
+      sqlite3_ਵਿਅੰਜਕ_If_False(pParse, pHaving, addr_Output_ਪੰਕਤੀ+1, SQLITE_JUMPIFNULL);
+      selectInnerLoop(pParse, p, -1, &s_ਛਾਂਟੋ,
                       &sDistinct, pDest,
-                      addrOutputRow+1, addrSetAbort);
-      sqlite3VdbeAddOp1(v, OP_Return, regOutputRow);
+                      addr_Output_ਪੰਕਤੀ+1, addr_ਸੈੱਟ_Abort);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, reg_Output_ਪੰਕਤੀ);
       VdbeComment((v, "end groupby result generator %d", p->selId));
 
       /* Generate a subroutine that will reset the group-by accumulator
       */
       sqlite3VdbeResolveLabel(v, addrReset);
-      resetAccumulator(pParse, pAggInfo);
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, iUseFlag);
+      reset_ਸੰਚਾਇਕ(pParse, pAggInfo);
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 0, iUseFlag);
       VdbeComment((v, "indicate accumulator %d empty", p->selId));
-      sqlite3VdbeAddOp1(v, OP_Return, regReset);
+      sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Return, regReset);
 
-      if( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
-        struct AggInfo_func *pF = &pAggInfo->aFunc[0];
+      ਜੇ( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
+        ਬਣਤਰ AggInfo_func *pF = &pAggInfo->aFunc[0];
         fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
       }
     } /* endif pGroupBy.  Begin aggregate queries without GROUP BY: */
-    else {
+    ਨਹੀਂਤਾਂ {
       /* Aggregate functions without GROUP BY. tag-select-0820 */
-      Table *pTab;
-      if( (pTab = isSimpleCount(p, pAggInfo))!=0 ){
+      ਸਾਰਣੀ *pTab;
+      ਜੇ( (pTab = is_Simple_ਗਿਣਤੀ(p, pAggInfo))!=0 ){
         /* tag-select-0821
         **
         ** If isSimpleCount() returns a pointer to a Table structure, then
@@ -8958,15 +8958,15 @@ int sqlite3Select(
         ** is better to execute the op on an index, as indexes are almost
         ** always spread across less pages than their corresponding tables.
         */
-        const int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
-        const int iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
-        Index *pIdx;                         /* Iterator variable */
-        KeyInfo *pKeyInfo = 0;               /* Keyinfo for scanned index */
-        Index *pBest = 0;                    /* Best index found so far */
-        Pgno iRoot = pTab->tnum;             /* Root page of scanned b-tree */
+        ਅਚਲ ਪੂਰਨ iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pParse->db, pTab->pSchema);
+        ਅਚਲ ਪੂਰਨ iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
+        ਸੂਚਕਾਂਕ *pIdx;                         /* Iterator variable */
+        ਕੁੰਜੀ_Info *p_ਕੁੰਜੀ_Info = 0;               /* Keyinfo for scanned index */
+        ਸੂਚਕਾਂਕ *p_ਉੱਤਮ = 0;                    /* Best index found so far */
+        Pgno i_ਜੜ੍ਹ = pTab->tnum;             /* Root page of scanned b-tree */
 
-        sqlite3CodeVerifySchema(pParse, iDb);
-        sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
+        sqlite3_ਕੋਡ_Verify_Schema(pParse, iDb);
+        sqlite3_ਸਾਰਣੀ_ਤਾਲਾ(pParse, iDb, pTab->tnum, 0, pTab->zName);
 
         /* Search for the index that has the lowest scan cost.
         **
@@ -8977,39 +8977,39 @@ int sqlite3Select(
         ** In practice the KeyInfo structure will not be used. It is only
         ** passed to keep OP_OpenRead happy.
         */
-        if( !HasRowid(pTab) ) pBest = sqlite3PrimaryKeyIndex(pTab);
-        if( !p->pSrc->a[0].fg.notIndexed ){
-          for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->bUnordered==0
-             && pIdx->szIdxRow<pTab->szTabRow
+        ਜੇ( !HasRowid(pTab) ) p_ਉੱਤਮ = sqlite3_Primary_ਕੁੰਜੀ_ਸੂਚਕਾਂਕ(pTab);
+        ਜੇ( !p->pSrc->a[0].fg.not_ਸੂਚਕਾਂਕਿਤ ){
+          ਲਈ(pIdx=pTab->p_ਸੂਚਕਾਂਕ; pIdx; pIdx=pIdx->p_ਅਗਲਾ){
+            ਜੇ( pIdx->bUnordered==0
+             && pIdx->sz_Idx_ਪੰਕਤੀ<pTab->sz_Tab_ਪੰਕਤੀ
              && pIdx->pPartIdxWhere==0
-             && (!pBest || pIdx->szIdxRow<pBest->szIdxRow)
+             && (!p_ਉੱਤਮ || pIdx->sz_Idx_ਪੰਕਤੀ<p_ਉੱਤਮ->sz_Idx_ਪੰਕਤੀ)
             ){
-              pBest = pIdx;
+              p_ਉੱਤਮ = pIdx;
             }
           }
         }
-        if( pBest ){
-          iRoot = pBest->tnum;
-          pKeyInfo = sqlite3KeyInfoOfIndex(pParse, pBest);
+        ਜੇ( p_ਉੱਤਮ ){
+          i_ਜੜ੍ਹ = p_ਉੱਤਮ->tnum;
+          p_ਕੁੰਜੀ_Info = sqlite3_ਕੁੰਜੀ_Info_ਦਾ_ਸੂਚਕਾਂਕ(pParse, p_ਉੱਤਮ);
         }
 
         /* Open a read-only cursor, execute the OP_Count, close the cursor. */
-        sqlite3VdbeAddOp4Int(v, OP_OpenRead, iCsr, (int)iRoot, iDb, 1);
-        if( pKeyInfo ){
-          sqlite3VdbeChangeP4(v, -1, (char *)pKeyInfo, P4_KEYINFO);
+        sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_OpenRead, iCsr, (ਪੂਰਨ)i_ਜੜ੍ਹ, iDb, 1);
+        ਜੇ( p_ਕੁੰਜੀ_Info ){
+          sqlite3VdbeChangeP4(v, -1, (ਅੱਖਰ *)p_ਕੁੰਜੀ_Info, P4_KEYINFO);
         }
-        assignAggregateRegisters(pParse, pAggInfo);
-        sqlite3VdbeAddOp2(v, OP_Count, iCsr, AggInfoFuncReg(pAggInfo,0));
-        sqlite3VdbeAddOp1(v, OP_Close, iCsr);
-        explainSimpleCount(pParse, pTab, pBest);
-      }else{
+        ਸੌਂਪੋ_Aggregate_Registers(pParse, pAggInfo);
+        sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਗਿਣਤੀ, iCsr, AggInfoFuncReg(pAggInfo,0));
+        sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Close, iCsr);
+        explain_Simple_ਗਿਣਤੀ(pParse, pTab, p_ਉੱਤਮ);
+      }ਨਹੀਂਤਾਂ{
         /* The general case of an aggregate query without GROUP BY
         ** tag-select-0822 */
-        int regAcc = 0;           /* "populate accumulators" flag */
-        ExprList *pDistinct = 0;
+        ਪੂਰਨ regAcc = 0;           /* "populate accumulators" flag */
+        ਵਿਅੰਜਕ_List *pDistinct = 0;
         u16 distFlag = 0;
-        int eDist;
+        ਪੂਰਨ eDist;
 
         /* If there are accumulator registers but no min() or max() functions
         ** without FILTER clauses, allocate register regAcc. Register regAcc
@@ -9020,90 +9020,90 @@ int sqlite3Select(
         ** first row visited by the aggregate, so that they are updated at
         ** least once even if the FILTER clause means the min() or max()
         ** function visits zero rows.  */
-        if( pAggInfo->nAccumulator ){
-          for(i=0; i<pAggInfo->nFunc; i++){
-            if( ExprHasProperty(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
-              continue;
+        ਜੇ( pAggInfo->n_ਸੰਚਾਇਕ ){
+          ਲਈ(i=0; i<pAggInfo->nFunc; i++){
+            ਜੇ( ਵਿਅੰਜਕ_Has_Property(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
+              ਜਾਰੀ;
             }
-            if( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
-              break;
+            ਜੇ( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
+              ਰੋਕੋ;
             }
           }
-          if( i==pAggInfo->nFunc ){
+          ਜੇ( i==pAggInfo->nFunc ){
             regAcc = ++pParse->nMem;
-            sqlite3VdbeAddOp2(v, OP_Integer, 0, regAcc);
+            sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 0, regAcc);
           }
-        }else if( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
-          assert( ExprUseXList(pAggInfo->aFunc[0].pFExpr) );
+        }ਨਹੀਂਤਾਂ ਜੇ( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿਅੰਜਕ_Use_XList(pAggInfo->aFunc[0].pFExpr) );
           pDistinct = pAggInfo->aFunc[0].pFExpr->x.pList;
           distFlag = pDistinct ? (WHERE_WANT_DISTINCT|WHERE_AGG_DISTINCT) : 0;
         }
-        assignAggregateRegisters(pParse, pAggInfo);
+        ਸੌਂਪੋ_Aggregate_Registers(pParse, pAggInfo);
 
         /* This case runs if the aggregate has no GROUP BY clause.  The
         ** processing is much simpler since there is only a single row
         ** of output.
         */
-        assert( p->pGroupBy==0 );
-        resetAccumulator(pParse, pAggInfo);
+        ਪ੍ਰਤਿਜ੍ਞਾ( p->p_ਸਮੂਹ_By==0 );
+        reset_ਸੰਚਾਇਕ(pParse, pAggInfo);
 
         /* If this query is a candidate for the min/max optimization, then
         ** minMaxFlag will have been previously set to either
         ** WHERE_ORDERBY_MIN or WHERE_ORDERBY_MAX and pMinMaxOrderBy will
         ** be an appropriate ORDER BY expression for the optimization.
         */
-        assert( minMaxFlag==WHERE_ORDERBY_NORMAL || pMinMaxOrderBy!=0 );
-        assert( pMinMaxOrderBy==0 || pMinMaxOrderBy->nExpr==1 );
+        ਪ੍ਰਤਿਜ੍ਞਾ( minMaxFlag==WHERE_ORDERBY_ਸਾਧਾਰਨ || p_Min_Max_ਕ੍ਰਮ_By!=0 );
+        ਪ੍ਰਤਿਜ੍ਞਾ( p_Min_Max_ਕ੍ਰਮ_By==0 || p_Min_Max_ਕ੍ਰਮ_By->n_ਵਿਅੰਜਕ==1 );
 
         TREETRACE(0x2,pParse,p,("WhereBegin\n"));
-        pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, pMinMaxOrderBy,
+        pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, p_Min_Max_ਕ੍ਰਮ_By,
                                    pDistinct, p, minMaxFlag|distFlag, 0);
-        if( pWInfo==0 ){
-          goto select_end;
+        ਜੇ( pWInfo==0 ){
+          ਜਾਓ select_ਸਿਰਾ;
         }
         TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
         eDist = sqlite3WhereIsDistinct(pWInfo);
-        updateAccumulator(pParse, regAcc, pAggInfo, eDist);
-        if( eDist!=WHERE_DISTINCT_NOOP ){
-          struct AggInfo_func *pF = pAggInfo->aFunc;
-          if( pF ){
+        update_ਸੰਚਾਇਕ(pParse, regAcc, pAggInfo, eDist);
+        ਜੇ( eDist!=WHERE_DISTINCT_NOOP ){
+          ਬਣਤਰ AggInfo_func *pF = pAggInfo->aFunc;
+          ਜੇ( pF ){
             fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
           }
         }
 
-        if( regAcc ) sqlite3VdbeAddOp2(v, OP_Integer, 1, regAcc);
-        if( minMaxFlag ){
-          sqlite3WhereMinMaxOptEarlyOut(v, pWInfo);
+        ਜੇ( regAcc ) sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Integer, 1, regAcc);
+        ਜੇ( minMaxFlag ){
+          sqlite3_Where_Min_Max_Opt_Early_ਬਾਹਰਲਾ(v, pWInfo);
         }
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
-        sqlite3WhereEnd(pWInfo);
+        sqlite3_Where_ਸਿਰਾ(pWInfo);
         finalizeAggFunctions(pParse, pAggInfo);
       }
 
-      sSort.pOrderBy = 0;
-      sqlite3ExprIfFalse(pParse, pHaving, addrEnd, SQLITE_JUMPIFNULL);
+      s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By = 0;
+      sqlite3_ਵਿਅੰਜਕ_If_False(pParse, pHaving, addr_ਸਿਰਾ, SQLITE_JUMPIFNULL);
       selectInnerLoop(pParse, p, -1, 0, 0,
-                      pDest, addrEnd, addrEnd);
+                      pDest, addr_ਸਿਰਾ, addr_ਸਿਰਾ);
     }
-    sqlite3VdbeResolveLabel(v, addrEnd);
+    sqlite3VdbeResolveLabel(v, addr_ਸਿਰਾ);
 
   } /* endif aggregate query */
 
-  if( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
-    explainTempTable(pParse, "DISTINCT");
+  ਜੇ( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
+    explain_ਆਰਜ਼ੀ_ਸਾਰਣੀ(pParse, "DISTINCT");
   }
 
   /* If there is an ORDER BY clause, then we need to sort the results
   ** and send them to the callback one by one.  tag-select-0900
   */
-  if( sSort.pOrderBy ){
-    assert( p->pEList==pEList );
-    generateSortTail(pParse, p, &sSort, pEList->nExpr, pDest);
+  ਜੇ( s_ਛਾਂਟੋ.p_ਕ੍ਰਮ_By ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->pEList==pEList );
+    generate_ਛਾਂਟੋ_ਪੂਛ(pParse, p, &s_ਛਾਂਟੋ, pEList->n_ਵਿਅੰਜਕ, pDest);
   }
 
   /* Jump here to skip this query
   */
-  sqlite3VdbeResolveLabel(v, iEnd);
+  sqlite3VdbeResolveLabel(v, i_ਸਿਰਾ);
 
   /* The SELECT has been coded. If there is an error in the Parse structure,
   ** set the return code to 1. Otherwise 0. */
@@ -9112,40 +9112,40 @@ int sqlite3Select(
   /* Control jumps to here if an error is encountered above, or upon
   ** successful coding of the SELECT.
   */
-select_end:
-  assert( db->mallocFailed==0 || db->mallocFailed==1 );
-  assert( db->mallocFailed==0 || pParse->nErr!=0 );
-  sqlite3ExprListDelete(db, pMinMaxOrderBy);
-#ifdef SQLITE_DEBUG
+select_ਸਿਰਾ:
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 || db->mallocFailed==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 || pParse->nErr!=0 );
+  sqlite3_ਵਿਅੰਜਕ_List_Delete(db, p_Min_Max_ਕ੍ਰਮ_By);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
   /* Internal self-checks.  tag-select-1000 */
-  if( pAggInfo && !db->mallocFailed ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+  ਜੇ( pAggInfo && !db->mallocFailed ){
+#ਜੇ TREETRACE_ENABLED
+    ਜੇ( sqlite3_ਰੁੱਖ_Trace & 0x20 ){
       TREETRACE(0x20,pParse,p,("Finished with AggInfo\n"));
       printAggInfo(pAggInfo);
     }
-#endif
-    for(i=0; i<pAggInfo->nColumn; i++){
-      Expr *pExpr = pAggInfo->aCol[i].pCExpr;
-      if( pExpr==0 ) continue;
-      assert( pExpr->pAggInfo==pAggInfo );
-      assert( pExpr->iAgg==i );
+#ਜੇ_ਅੰਤ
+    ਲਈ(i=0; i<pAggInfo->n_ਕਾਲਮ; i++){
+      ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = pAggInfo->a_ਖਾਨਾ[i].pCExpr;
+      ਜੇ( p_ਵਿਅੰਜਕ==0 ) ਜਾਰੀ;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->pAggInfo==pAggInfo );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->iAgg==i );
     }
-    for(i=0; i<pAggInfo->nFunc; i++){
-      Expr *pExpr = pAggInfo->aFunc[i].pFExpr;
-      assert( pExpr!=0 );
-      assert( pExpr->pAggInfo==pAggInfo );
-      assert( pExpr->iAgg==i );
+    ਲਈ(i=0; i<pAggInfo->nFunc; i++){
+      ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = pAggInfo->aFunc[i].pFExpr;
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ!=0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->pAggInfo==pAggInfo );
+      ਪ੍ਰਤਿਜ੍ਞਾ( p_ਵਿਅੰਜਕ->iAgg==i );
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#if TREETRACE_ENABLED
+#ਜੇ TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p,("end processing\n"));
-  if( (sqlite3TreeTrace & 0x40000)!=0 && ExplainQueryPlanParent(pParse)==0 ){
-    sqlite3TreeViewSelect(0, p, 0);
+  ਜੇ( (sqlite3_ਰੁੱਖ_Trace & 0x40000)!=0 && Explain_Query_Plan_ਮਾਪਾ(pParse)==0 ){
+    sqlite3_ਰੁੱਖ_View_Select(0, p, 0);
   }
-#endif
-  ExplainQueryPlanPop(pParse);
-  return rc;
+#ਜੇ_ਅੰਤ
+  Explain_Query_Plan_ਕੱਢੋ(pParse);
+  ਵਾਪਸ rc;
 }

@@ -16,20 +16,20 @@
 ** This file also implements interface sqlite3_serialize() and
 ** sqlite3_deserialize().
 */
-#include "sqliteInt.h"
-#ifndef SQLITE_OMIT_DESERIALIZE
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_DESERIALIZE
 
 /*
 ** Forward declaration of objects used by this utility
 */
-typedef struct sqlite3_vfs MemVfs;
-typedef struct MemFile MemFile;
-typedef struct MemStore MemStore;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ sqlite3_vfs MemVfs;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ MemFile MemFile;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ MemStore MemStore;
 
 /* Access to a lower-level VFS that (might) implement dynamic loading,
 ** access to randomness, etc.
 */
-#define ORIGVFS(p) ((sqlite3_vfs*)((p)->pAppData))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ORIGVFS(p) ((sqlite3_vfs*)((p)->p_App_ਅੰਕੜੇ))
 
 /* Storage for a memdb file.
 **
@@ -67,25 +67,25 @@ typedef struct MemStore MemStore;
 **      be changed (for resizing) when nMmap is zero.
 **      
 */
-struct MemStore {
+ਬਣਤਰ MemStore {
   sqlite3_int64 sz;               /* Size of the file */
   sqlite3_int64 szAlloc;          /* Space allocated to aData */
   sqlite3_int64 szMax;            /* Maximum allowed size of the file */
-  unsigned char *aData;           /* content of the file */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *a_ਅੰਕੜੇ;           /* content of the file */
   sqlite3_mutex *pMutex;          /* Used by shared stores only */
-  int nMmap;                      /* Number of memory mapped pages */
-  unsigned mFlags;                /* Flags */
-  int nRdLock;                    /* Number of readers */
-  int nWrLock;                    /* Number of writers.  (Always 0 or 1) */
-  int nRef;                       /* Number of users of this MemStore */
-  char *zFName;                   /* The filename for shared stores */
+  ਪੂਰਨ nMmap;                      /* Number of memory mapped pages */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ mFlags;                /* Flags */
+  ਪੂਰਨ n_Rd_ਤਾਲਾ;                    /* Number of readers */
+  ਪੂਰਨ n_Wr_ਤਾਲਾ;                    /* Number of writers.  (Always 0 or 1) */
+  ਪੂਰਨ nRef;                       /* Number of users of this MemStore */
+  ਅੱਖਰ *zFName;                   /* The filename for shared stores */
 };
 
 /* An open file */
-struct MemFile {
-  sqlite3_file base;              /* IO methods */
+ਬਣਤਰ MemFile {
+  sqlite3_file ਅਧਾਰ;              /* IO methods */
   MemStore *pStore;               /* The storage */
-  int eLock;                      /* Most recent lock against this file */
+  ਪੂਰਨ e_ਤਾਲਾ;                      /* Most recent lock against this file */
 };
 
 /*
@@ -94,47 +94,47 @@ struct MemFile {
 **
 ** Must hold SQLITE_MUTEX_STATIC_VFS1 to access any part of this object.
 */
-static struct MemFS {
-  int nMemStore;                  /* Number of shared MemStore objects */
+ਸਥਿਰ ਬਣਤਰ MemFS {
+  ਪੂਰਨ nMemStore;                  /* Number of shared MemStore objects */
   MemStore **apMemStore;          /* Array of all shared MemStore objects */
 } memdb_g;
 
 /*
 ** Methods for MemFile
 */
-static int memdbClose(sqlite3_file*);
-static int memdbRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int memdbWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int memdbTruncate(sqlite3_file*, sqlite3_int64 size);
-static int memdbSync(sqlite3_file*, int flags);
-static int memdbFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int memdbLock(sqlite3_file*, int);
-static int memdbUnlock(sqlite3_file*, int);
+ਸਥਿਰ ਪੂਰਨ memdbClose(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ memdbRead(sqlite3_file*, ਖਾਲੀ*, ਪੂਰਨ iAmt, sqlite3_int64 iOfst);
+ਸਥਿਰ ਪੂਰਨ memdbWrite(sqlite3_file*,ਅਚਲ ਖਾਲੀ*,ਪੂਰਨ iAmt, sqlite3_int64 iOfst);
+ਸਥਿਰ ਪੂਰਨ memdbTruncate(sqlite3_file*, sqlite3_int64 ਮਾਪ);
+ਸਥਿਰ ਪੂਰਨ memdbSync(sqlite3_file*, ਪੂਰਨ flags);
+ਸਥਿਰ ਪੂਰਨ memdb_File_ਮਾਪ(sqlite3_file*, sqlite3_int64 *p_ਮਾਪ);
+ਸਥਿਰ ਪੂਰਨ memdb_ਤਾਲਾ(sqlite3_file*, ਪੂਰਨ);
+ਸਥਿਰ ਪੂਰਨ memdbUnlock(sqlite3_file*, ਪੂਰਨ);
 /* static int memdbCheckReservedLock(sqlite3_file*, int *pResOut);// not used */
-static int memdbFileControl(sqlite3_file*, int op, void *pArg);
+ਸਥਿਰ ਪੂਰਨ memdbFileControl(sqlite3_file*, ਪੂਰਨ op, ਖਾਲੀ *pArg);
 /* static int memdbSectorSize(sqlite3_file*); // not used */
-static int memdbDeviceCharacteristics(sqlite3_file*);
-static int memdbFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
-static int memdbUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
+ਸਥਿਰ ਪੂਰਨ memdbDeviceCharacteristics(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ memdbFetch(sqlite3_file*, sqlite3_int64 iOfst, ਪੂਰਨ iAmt, ਖਾਲੀ **pp);
+ਸਥਿਰ ਪੂਰਨ memdbUnfetch(sqlite3_file*, sqlite3_int64 iOfst, ਖਾਲੀ *p);
 
 /*
 ** Methods for MemVfs
 */
-static int memdbOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+ਸਥਿਰ ਪੂਰਨ memdbOpen(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *, sqlite3_file*, ਪੂਰਨ , ਪੂਰਨ *);
 /* static int memdbDelete(sqlite3_vfs*, const char *zName, int syncDir); */
-static int memdbAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int memdbFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *memdbDlOpen(sqlite3_vfs*, const char *zFilename);
-static void memdbDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void memdbDlClose(sqlite3_vfs*, void*);
-static int memdbRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int memdbSleep(sqlite3_vfs*, int microseconds);
+ਸਥਿਰ ਪੂਰਨ memdbAccess(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zName, ਪੂਰਨ flags, ਪੂਰਨ *);
+ਸਥਿਰ ਪੂਰਨ memdb_ਭਰਿਆ_Pathname(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zName, ਪੂਰਨ, ਅੱਖਰ *z_ਬਾਹਰਲਾ);
+ਸਥਿਰ ਖਾਲੀ *memdbDlOpen(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zFilename);
+ਸਥਿਰ ਖਾਲੀ memdbDlError(sqlite3_vfs*, ਪੂਰਨ nByte, ਅੱਖਰ *z_Err_ਸੁਨੇਹਾ);
+ਸਥਿਰ ਖਾਲੀ (*memdbDlSym(sqlite3_vfs *pVfs, ਖਾਲੀ *p, ਅਚਲ ਅੱਖਰ*zSym))(ਖਾਲੀ);
+ਸਥਿਰ ਖਾਲੀ memdbDlClose(sqlite3_vfs*, ਖਾਲੀ*);
+ਸਥਿਰ ਪੂਰਨ memdbRandomness(sqlite3_vfs*, ਪੂਰਨ nByte, ਅੱਖਰ *z_ਬਾਹਰਲਾ);
+ਸਥਿਰ ਪੂਰਨ memdbSleep(sqlite3_vfs*, ਪੂਰਨ microseconds);
 /* static int memdbCurrentTime(sqlite3_vfs*, double*); */
-static int memdbGetLastError(sqlite3_vfs*, int, char *);
-static int memdbCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+ਸਥਿਰ ਪੂਰਨ memdb_Get_ਆਖਰੀ_Error(sqlite3_vfs*, ਪੂਰਨ, ਅੱਖਰ *);
+ਸਥਿਰ ਪੂਰਨ memdb_Current_ਸਮਾਂ_Int64(sqlite3_vfs*, sqlite3_int64*);
 
-static sqlite3_vfs memdb_vfs = {
+ਸਥਿਰ sqlite3_vfs memdb_vfs = {
   2,                           /* iVersion */
   0,                           /* szOsFile (set when registered) */
   1024,                        /* mxPathname */
@@ -144,7 +144,7 @@ static sqlite3_vfs memdb_vfs = {
   memdbOpen,                   /* xOpen */
   0, /* memdbDelete, */        /* xDelete */
   memdbAccess,                 /* xAccess */
-  memdbFullPathname,           /* xFullPathname */
+  memdb_ਭਰਿਆ_Pathname,           /* xFullPathname */
   memdbDlOpen,                 /* xDlOpen */
   memdbDlError,                /* xDlError */
   memdbDlSym,                  /* xDlSym */
@@ -152,22 +152,22 @@ static sqlite3_vfs memdb_vfs = {
   memdbRandomness,             /* xRandomness */
   memdbSleep,                  /* xSleep */
   0, /* memdbCurrentTime, */   /* xCurrentTime */
-  memdbGetLastError,           /* xGetLastError */
-  memdbCurrentTimeInt64,       /* xCurrentTimeInt64 */
+  memdb_Get_ਆਖਰੀ_Error,           /* xGetLastError */
+  memdb_Current_ਸਮਾਂ_Int64,       /* xCurrentTimeInt64 */
   0,                           /* xSetSystemCall */
   0,                           /* xGetSystemCall */
   0,                           /* xNextSystemCall */
 };
 
-static const sqlite3_io_methods memdb_io_methods = {
+ਸਥਿਰ ਅਚਲ sqlite3_io_methods memdb_io_methods = {
   3,                              /* iVersion */
   memdbClose,                      /* xClose */
   memdbRead,                       /* xRead */
   memdbWrite,                      /* xWrite */
   memdbTruncate,                   /* xTruncate */
   memdbSync,                       /* xSync */
-  memdbFileSize,                   /* xFileSize */
-  memdbLock,                       /* xLock */
+  memdb_File_ਮਾਪ,                   /* xFileSize */
+  memdb_ਤਾਲਾ,                       /* xLock */
   memdbUnlock,                     /* xUnlock */
   0, /* memdbCheckReservedLock, */ /* xCheckReservedLock */
   memdbFileControl,                /* xFileControl */
@@ -184,21 +184,21 @@ static const sqlite3_io_methods memdb_io_methods = {
 /*
 ** Enter/leave the mutex on a MemStore
 */
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
-static void memdbEnter(MemStore *p){
-  UNUSED_PARAMETER(p);
+#ਜੇ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
+ਸਥਿਰ ਖਾਲੀ memdbEnter(MemStore *p){
+  ਅਣਵਰਤਿਆ_PARAMETER(p);
 }
-static void memdbLeave(MemStore *p){
-  UNUSED_PARAMETER(p);
+ਸਥਿਰ ਖਾਲੀ memdbLeave(MemStore *p){
+  ਅਣਵਰਤਿਆ_PARAMETER(p);
 }
-#else
-static void memdbEnter(MemStore *p){
+#ਨਹੀਂਤਾਂ
+ਸਥਿਰ ਖਾਲੀ memdbEnter(MemStore *p){
   sqlite3_mutex_enter(p->pMutex);
 }
-static void memdbLeave(MemStore *p){
+ਸਥਿਰ ਖਾਲੀ memdbLeave(MemStore *p){
   sqlite3_mutex_leave(p->pMutex);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 
 
@@ -207,118 +207,118 @@ static void memdbLeave(MemStore *p){
 ** Free the underlying MemStore object when its refcount drops to zero
 ** or less.
 */
-static int memdbClose(sqlite3_file *pFile){
+ਸਥਿਰ ਪੂਰਨ memdbClose(sqlite3_file *pFile){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  if( p->zFName ){
-    int i;
-#ifndef SQLITE_MUTEX_OMIT
+  ਜੇ( p->zFName ){
+    ਪੂਰਨ i;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_MUTEX_OMIT
     sqlite3_mutex *pVfsMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#endif
+#ਜੇ_ਅੰਤ
     sqlite3_mutex_enter(pVfsMutex);
-    for(i=0; ALWAYS(i<memdb_g.nMemStore); i++){
-      if( memdb_g.apMemStore[i]==p ){
+    ਲਈ(i=0; ALWAYS(i<memdb_g.nMemStore); i++){
+      ਜੇ( memdb_g.apMemStore[i]==p ){
         memdbEnter(p);
-        if( p->nRef==1 ){
+        ਜੇ( p->nRef==1 ){
           memdb_g.apMemStore[i] = memdb_g.apMemStore[--memdb_g.nMemStore];
-          if( memdb_g.nMemStore==0 ){
+          ਜੇ( memdb_g.nMemStore==0 ){
             sqlite3_free(memdb_g.apMemStore);
             memdb_g.apMemStore = 0;
           }
         }
-        break;
+        ਰੋਕੋ;
       }
     }
     sqlite3_mutex_leave(pVfsMutex);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     memdbEnter(p);
   }
   p->nRef--;
-  if( p->nRef<=0 ){
-    if( p->mFlags & SQLITE_DESERIALIZE_FREEONCLOSE ){
-      sqlite3_free(p->aData);
+  ਜੇ( p->nRef<=0 ){
+    ਜੇ( p->mFlags & SQLITE_DESERIALIZE_FREEONCLOSE ){
+      sqlite3_free(p->a_ਅੰਕੜੇ);
     }
     memdbLeave(p);
     sqlite3_mutex_free(p->pMutex);
     sqlite3_free(p);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     memdbLeave(p);
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Read data from an memdb-file.
 */
-static int memdbRead(
+ਸਥਿਰ ਪੂਰਨ memdbRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ਖਾਲੀ *zBuf, 
+  ਪੂਰਨ iAmt, 
   sqlite_int64 iOfst
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( iOfst+iAmt>p->sz ){
+  ਜੇ( iOfst+iAmt>p->sz ){
     memset(zBuf, 0, iAmt);
-    if( iOfst<p->sz ) memcpy(zBuf, p->aData+iOfst, p->sz - iOfst);
+    ਜੇ( iOfst<p->sz ) ਸਮ੍ਰਿਤੀ_ਨਕਲ(zBuf, p->a_ਅੰਕੜੇ+iOfst, p->sz - iOfst);
     memdbLeave(p);
-    return SQLITE_IOERR_SHORT_READ;
+    ਵਾਪਸ SQLITE_IOERR_SHORT_READ;
   }
-  memcpy(zBuf, p->aData+iOfst, iAmt);
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(zBuf, p->a_ਅੰਕੜੇ+iOfst, iAmt);
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Try to enlarge the memory allocation to hold at least sz bytes
 */
-static int memdbEnlarge(MemStore *p, sqlite3_int64 newSz){
-  unsigned char *pNew;
-  if( (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)==0 || NEVER(p->nMmap>0) ){
-    return SQLITE_FULL;
+ਸਥਿਰ ਪੂਰਨ memdbEnlarge(MemStore *p, sqlite3_int64 newSz){
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *pNew;
+  ਜੇ( (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)==0 || NEVER(p->nMmap>0) ){
+    ਵਾਪਸ SQLITE_ਭਰਿਆ;
   }
-  if( newSz>p->szMax ){
-    return SQLITE_FULL;
+  ਜੇ( newSz>p->szMax ){
+    ਵਾਪਸ SQLITE_ਭਰਿਆ;
   }
   newSz *= 2;
-  if( newSz>p->szMax ) newSz = p->szMax;
-  pNew = sqlite3Realloc(p->aData, newSz);
-  if( pNew==0 ) return SQLITE_IOERR_NOMEM;
-  p->aData = pNew;
+  ਜੇ( newSz>p->szMax ) newSz = p->szMax;
+  pNew = sqlite3Realloc(p->a_ਅੰਕੜੇ, newSz);
+  ਜੇ( pNew==0 ) ਵਾਪਸ SQLITE_IOERR_NOMEM;
+  p->a_ਅੰਕੜੇ = pNew;
   p->szAlloc = newSz;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Write data to an memdb-file.
 */
-static int memdbWrite(
+ਸਥਿਰ ਪੂਰਨ memdbWrite(
   sqlite3_file *pFile,
-  const void *z,
-  int iAmt,
+  ਅਚਲ ਖਾਲੀ *z,
+  ਪੂਰਨ iAmt,
   sqlite_int64 iOfst
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( NEVER(p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
+  ਜੇ( NEVER(p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
     /* Can't happen: memdbLock() will return SQLITE_READONLY before
     ** reaching this point */
     memdbLeave(p);
-    return SQLITE_IOERR_WRITE;
+    ਵਾਪਸ SQLITE_IOERR_WRITE;
   }
-  if( iOfst+iAmt>p->sz ){
-    int rc;
-    if( iOfst+iAmt>p->szAlloc
+  ਜੇ( iOfst+iAmt>p->sz ){
+    ਪੂਰਨ rc;
+    ਜੇ( iOfst+iAmt>p->szAlloc
      && (rc = memdbEnlarge(p, iOfst+iAmt))!=SQLITE_OK
     ){
       memdbLeave(p);
-      return rc;
+      ਵਾਪਸ rc;
     }
-    if( iOfst>p->sz ) memset(p->aData+p->sz, 0, iOfst-p->sz);
+    ਜੇ( iOfst>p->sz ) memset(p->a_ਅੰਕੜੇ+p->sz, 0, iOfst-p->sz);
     p->sz = iOfst+iAmt;
   }
-  memcpy(p->aData+iOfst, z, iAmt);
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->a_ਅੰਕੜੇ+iOfst, z, iAmt);
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -328,307 +328,307 @@ static int memdbWrite(
 ** support WAL mode) the truncate() method is only used to reduce
 ** the size of a file, never to increase the size.
 */
-static int memdbTruncate(sqlite3_file *pFile, sqlite_int64 size){
+ਸਥਿਰ ਪੂਰਨ memdbTruncate(sqlite3_file *pFile, sqlite_int64 ਮਾਪ){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  int rc = SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
   memdbEnter(p);
-  if( size>p->sz ){
+  ਜੇ( ਮਾਪ>p->sz ){
     /* This can only happen with a corrupt wal mode db */
     rc = SQLITE_CORRUPT;
-  }else{
-    p->sz = size; 
+  }ਨਹੀਂਤਾਂ{
+    p->sz = ਮਾਪ; 
   }
   memdbLeave(p);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Sync an memdb-file.
 */
-static int memdbSync(sqlite3_file *pFile, int flags){
-  UNUSED_PARAMETER(pFile);
-  UNUSED_PARAMETER(flags);
-  return SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ memdbSync(sqlite3_file *pFile, ਪੂਰਨ flags){
+  ਅਣਵਰਤਿਆ_PARAMETER(pFile);
+  ਅਣਵਰਤਿਆ_PARAMETER(flags);
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of an memdb-file.
 */
-static int memdbFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ਸਥਿਰ ਪੂਰਨ memdb_File_ਮਾਪ(sqlite3_file *pFile, sqlite_int64 *p_ਮਾਪ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  *pSize = p->sz;
+  *p_ਮਾਪ = p->sz;
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Lock an memdb-file.
 */
-static int memdbLock(sqlite3_file *pFile, int eLock){
+ਸਥਿਰ ਪੂਰਨ memdb_ਤਾਲਾ(sqlite3_file *pFile, ਪੂਰਨ e_ਤਾਲਾ){
   MemFile *pThis = (MemFile*)pFile;
   MemStore *p = pThis->pStore;
-  int rc = SQLITE_OK;
-  if( eLock<=pThis->eLock ) return SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਜੇ( e_ਤਾਲਾ<=pThis->e_ਤਾਲਾ ) ਵਾਪਸ SQLITE_OK;
   memdbEnter(p);
 
-  assert( p->nWrLock==0 || p->nWrLock==1 );
-  assert( pThis->eLock<=SQLITE_LOCK_SHARED || p->nWrLock==1 );
-  assert( pThis->eLock==SQLITE_LOCK_NONE || p->nRdLock>=1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->n_Wr_ਤਾਲਾ==0 || p->n_Wr_ਤਾਲਾ==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pThis->e_ਤਾਲਾ<=SQLITE_ਤਾਲਾ_SHARED || p->n_Wr_ਤਾਲਾ==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pThis->e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_NONE || p->n_Rd_ਤਾਲਾ>=1 );
 
-  if( eLock>SQLITE_LOCK_SHARED && (p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
+  ਜੇ( e_ਤਾਲਾ>SQLITE_ਤਾਲਾ_SHARED && (p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
     rc = SQLITE_READONLY;
-  }else{
-    switch( eLock ){
-      case SQLITE_LOCK_SHARED: {
-        assert( pThis->eLock==SQLITE_LOCK_NONE );
-        if( p->nWrLock>0 ){
+  }ਨਹੀਂਤਾਂ{
+    ਚੋਣ( e_ਤਾਲਾ ){
+      ਹਾਲਤ SQLITE_ਤਾਲਾ_SHARED: {
+        ਪ੍ਰਤਿਜ੍ਞਾ( pThis->e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_NONE );
+        ਜੇ( p->n_Wr_ਤਾਲਾ>0 ){
           rc = SQLITE_BUSY;
-        }else{
-          p->nRdLock++;
+        }ਨਹੀਂਤਾਂ{
+          p->n_Rd_ਤਾਲਾ++;
         }
-        break;
+        ਰੋਕੋ;
       };
   
-      case SQLITE_LOCK_RESERVED:
-      case SQLITE_LOCK_PENDING: {
-        assert( pThis->eLock>=SQLITE_LOCK_SHARED );
-        if( ALWAYS(pThis->eLock==SQLITE_LOCK_SHARED) ){
-          if( p->nWrLock>0 ){
+      ਹਾਲਤ SQLITE_ਤਾਲਾ_RESERVED:
+      ਹਾਲਤ SQLITE_ਤਾਲਾ_PENDING: {
+        ਪ੍ਰਤਿਜ੍ਞਾ( pThis->e_ਤਾਲਾ>=SQLITE_ਤਾਲਾ_SHARED );
+        ਜੇ( ALWAYS(pThis->e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_SHARED) ){
+          ਜੇ( p->n_Wr_ਤਾਲਾ>0 ){
             rc = SQLITE_BUSY;
-          }else{
-            p->nWrLock = 1;
+          }ਨਹੀਂਤਾਂ{
+            p->n_Wr_ਤਾਲਾ = 1;
           }
         }
-        break;
+        ਰੋਕੋ;
       }
   
-      default: {
-        assert(  eLock==SQLITE_LOCK_EXCLUSIVE );
-        assert( pThis->eLock>=SQLITE_LOCK_SHARED );
-        if( p->nRdLock>1 ){
+      ਮੂਲ: {
+        ਪ੍ਰਤਿਜ੍ਞਾ(  e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_EXCLUSIVE );
+        ਪ੍ਰਤਿਜ੍ਞਾ( pThis->e_ਤਾਲਾ>=SQLITE_ਤਾਲਾ_SHARED );
+        ਜੇ( p->n_Rd_ਤਾਲਾ>1 ){
           rc = SQLITE_BUSY;
-        }else if( pThis->eLock==SQLITE_LOCK_SHARED ){
-          p->nWrLock = 1;
+        }ਨਹੀਂਤਾਂ ਜੇ( pThis->e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_SHARED ){
+          p->n_Wr_ਤਾਲਾ = 1;
         }
-        break;
+        ਰੋਕੋ;
       }
     }
   }
-  if( rc==SQLITE_OK ) pThis->eLock = eLock;
+  ਜੇ( rc==SQLITE_OK ) pThis->e_ਤਾਲਾ = e_ਤਾਲਾ;
   memdbLeave(p);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Unlock an memdb-file.
 */
-static int memdbUnlock(sqlite3_file *pFile, int eLock){
+ਸਥਿਰ ਪੂਰਨ memdbUnlock(sqlite3_file *pFile, ਪੂਰਨ e_ਤਾਲਾ){
   MemFile *pThis = (MemFile*)pFile;
   MemStore *p = pThis->pStore;
-  if( eLock>=pThis->eLock ) return SQLITE_OK;
+  ਜੇ( e_ਤਾਲਾ>=pThis->e_ਤਾਲਾ ) ਵਾਪਸ SQLITE_OK;
   memdbEnter(p);
 
-  assert( eLock==SQLITE_LOCK_SHARED || eLock==SQLITE_LOCK_NONE );
-  if( eLock==SQLITE_LOCK_SHARED ){
-    if( ALWAYS(pThis->eLock>SQLITE_LOCK_SHARED) ){
-      p->nWrLock--;
+  ਪ੍ਰਤਿਜ੍ਞਾ( e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_SHARED || e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_NONE );
+  ਜੇ( e_ਤਾਲਾ==SQLITE_ਤਾਲਾ_SHARED ){
+    ਜੇ( ALWAYS(pThis->e_ਤਾਲਾ>SQLITE_ਤਾਲਾ_SHARED) ){
+      p->n_Wr_ਤਾਲਾ--;
     }
-  }else{
-    if( pThis->eLock>SQLITE_LOCK_SHARED ){
-      p->nWrLock--;
+  }ਨਹੀਂਤਾਂ{
+    ਜੇ( pThis->e_ਤਾਲਾ>SQLITE_ਤਾਲਾ_SHARED ){
+      p->n_Wr_ਤਾਲਾ--;
     }
-    p->nRdLock--;
+    p->n_Rd_ਤਾਲਾ--;
   }
 
-  pThis->eLock = eLock;
+  pThis->e_ਤਾਲਾ = e_ਤਾਲਾ;
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
-#if 0
+#ਜੇ 0
 /*
 ** This interface is only used for crash recovery, which does not
 ** occur on an in-memory database.
 */
-static int memdbCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  *pResOut = 0;
-  return SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ memdb_Check_Reserved_ਤਾਲਾ(sqlite3_file *pFile, ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ){
+  *p_Res_ਬਾਹਰਲਾ = 0;
+  ਵਾਪਸ SQLITE_OK;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 
 /*
 ** File control method. For custom operations on an memdb-file.
 */
-static int memdbFileControl(sqlite3_file *pFile, int op, void *pArg){
+ਸਥਿਰ ਪੂਰਨ memdbFileControl(sqlite3_file *pFile, ਪੂਰਨ op, ਖਾਲੀ *pArg){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  int rc = SQLITE_NOTFOUND;
+  ਪੂਰਨ rc = SQLITE_NOTFOUND;
   memdbEnter(p);
-  if( op==SQLITE_FCNTL_VFSNAME ){
-    *(char**)pArg = sqlite3_mprintf("memdb(%p,%lld)", p->aData, p->sz);
+  ਜੇ( op==SQLITE_FCNTL_VFSNAME ){
+    *(ਅੱਖਰ**)pArg = sqlite3_mprintf("memdb(%p,%lld)", p->a_ਅੰਕੜੇ, p->sz);
     rc = SQLITE_OK;
   }
-  if( op==SQLITE_FCNTL_SIZE_LIMIT ){
-    sqlite3_int64 iLimit = *(sqlite3_int64*)pArg;
-    if( iLimit<p->sz ){
-      if( iLimit<0 ){
-        iLimit = p->szMax;
-      }else{
-        iLimit = p->sz;
+  ਜੇ( op==SQLITE_FCNTL_ਮਾਪ_ਹੱਦਬੰਦੀ ){
+    sqlite3_int64 i_ਹੱਦਬੰਦੀ = *(sqlite3_int64*)pArg;
+    ਜੇ( i_ਹੱਦਬੰਦੀ<p->sz ){
+      ਜੇ( i_ਹੱਦਬੰਦੀ<0 ){
+        i_ਹੱਦਬੰਦੀ = p->szMax;
+      }ਨਹੀਂਤਾਂ{
+        i_ਹੱਦਬੰਦੀ = p->sz;
       }
     }
-    p->szMax = iLimit;
-    *(sqlite3_int64*)pArg = iLimit;
+    p->szMax = i_ਹੱਦਬੰਦੀ;
+    *(sqlite3_int64*)pArg = i_ਹੱਦਬੰਦੀ;
     rc = SQLITE_OK;
   }
   memdbLeave(p);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
-#if 0  /* Not used because of SQLITE_IOCAP_POWERSAFE_OVERWRITE */
+#ਜੇ 0  /* Not used because of SQLITE_IOCAP_POWERSAFE_OVERWRITE */
 /*
 ** Return the sector-size in bytes for an memdb-file.
 */
-static int memdbSectorSize(sqlite3_file *pFile){
-  return 1024;
+ਸਥਿਰ ਪੂਰਨ memdb_Sector_ਮਾਪ(sqlite3_file *pFile){
+  ਵਾਪਸ 1024;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Return the device characteristic flags supported by an memdb-file.
 */
-static int memdbDeviceCharacteristics(sqlite3_file *pFile){
-  UNUSED_PARAMETER(pFile);
-  return SQLITE_IOCAP_ATOMIC | 
+ਸਥਿਰ ਪੂਰਨ memdbDeviceCharacteristics(sqlite3_file *pFile){
+  ਅਣਵਰਤਿਆ_PARAMETER(pFile);
+  ਵਾਪਸ SQLITE_IOCAP_ATOMIC | 
          SQLITE_IOCAP_POWERSAFE_OVERWRITE |
-         SQLITE_IOCAP_SAFE_APPEND |
+         SQLITE_IOCAP_ਸੁਰੱਖਿਅਤ_APPEND |
          SQLITE_IOCAP_SEQUENTIAL;
 }
 
 /* Fetch a page of a memory-mapped file */
-static int memdbFetch(
+ਸਥਿਰ ਪੂਰਨ memdbFetch(
   sqlite3_file *pFile,
   sqlite3_int64 iOfst,
-  int iAmt,
-  void **pp
+  ਪੂਰਨ iAmt,
+  ਖਾਲੀ **pp
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( iOfst+iAmt>p->sz || (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)!=0 ){
+  ਜੇ( iOfst+iAmt>p->sz || (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)!=0 ){
     *pp = 0;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     p->nMmap++;
-    *pp = (void*)(p->aData + iOfst);
+    *pp = (ਖਾਲੀ*)(p->a_ਅੰਕੜੇ + iOfst);
   }
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Release a memory-mapped page */
-static int memdbUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
+ਸਥਿਰ ਪੂਰਨ memdbUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, ਖਾਲੀ *p_ਪੰਨਾ){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  UNUSED_PARAMETER(iOfst);
-  UNUSED_PARAMETER(pPage);
+  ਅਣਵਰਤਿਆ_PARAMETER(iOfst);
+  ਅਣਵਰਤਿਆ_PARAMETER(p_ਪੰਨਾ);
   memdbEnter(p);
   p->nMmap--;
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Open an mem file handle.
 */
-static int memdbOpen(
+ਸਥਿਰ ਪੂਰਨ memdbOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ਅਚਲ ਅੱਖਰ *zName,
   sqlite3_file *pFd,
-  int flags,
-  int *pOutFlags
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_ਬਾਹਰਲਾ_Flags
 ){
   MemFile *pFile = (MemFile*)pFd;
   MemStore *p = 0;
-  int szName;
-  UNUSED_PARAMETER(pVfs);
+  ਪੂਰਨ szName;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
 
-  memset(pFile, 0, sizeof(*pFile));
+  memset(pFile, 0, ਆਕਾਰ(*pFile));
   szName = sqlite3Strlen30(zName);
-  if( szName>1 && (zName[0]=='/' || zName[0]=='\\') ){
-    int i;
-#ifndef SQLITE_MUTEX_OMIT
+  ਜੇ( szName>1 && (zName[0]=='/' || zName[0]=='\\') ){
+    ਪੂਰਨ i;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_MUTEX_OMIT
     sqlite3_mutex *pVfsMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#endif
+#ਜੇ_ਅੰਤ
     sqlite3_mutex_enter(pVfsMutex);
-    for(i=0; i<memdb_g.nMemStore; i++){
-      if( strcmp(memdb_g.apMemStore[i]->zFName,zName)==0 ){
+    ਲਈ(i=0; i<memdb_g.nMemStore; i++){
+      ਜੇ( strcmp(memdb_g.apMemStore[i]->zFName,zName)==0 ){
         p = memdb_g.apMemStore[i];
-        break;
+        ਰੋਕੋ;
       }
     }
-    if( p==0 ){
+    ਜੇ( p==0 ){
       MemStore **apNew;
-      p = sqlite3Malloc( sizeof(*p) + (i64)szName + 3 );
-      if( p==0 ){
+      p = sqlite3Malloc( ਆਕਾਰ(*p) + (i64)szName + 3 );
+      ਜੇ( p==0 ){
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        ਵਾਪਸ SQLITE_NOMEM;
       }
       apNew = sqlite3Realloc(memdb_g.apMemStore,
-                             sizeof(apNew[0])*(1+(i64)memdb_g.nMemStore) );
-      if( apNew==0 ){
+                             ਆਕਾਰ(apNew[0])*(1+(i64)memdb_g.nMemStore) );
+      ਜੇ( apNew==0 ){
         sqlite3_free(p);
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        ਵਾਪਸ SQLITE_NOMEM;
       }
       apNew[memdb_g.nMemStore++] = p;
       memdb_g.apMemStore = apNew;
-      memset(p, 0, sizeof(*p));
+      memset(p, 0, ਆਕਾਰ(*p));
       p->mFlags = SQLITE_DESERIALIZE_RESIZEABLE|SQLITE_DESERIALIZE_FREEONCLOSE;
-      p->szMax = sqlite3GlobalConfig.mxMemdbSize;
-      p->zFName = (char*)&p[1];
-      memcpy(p->zFName, zName, szName+1);
+      p->szMax = sqlite3GlobalConfig.mx_Memdb_ਮਾਪ;
+      p->zFName = (ਅੱਖਰ*)&p[1];
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->zFName, zName, szName+1);
       p->pMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( p->pMutex==0 ){
+      ਜੇ( p->pMutex==0 ){
         memdb_g.nMemStore--;
         sqlite3_free(p);
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        ਵਾਪਸ SQLITE_NOMEM;
       }
       p->nRef = 1;
       memdbEnter(p);
-    }else{
+    }ਨਹੀਂਤਾਂ{
       memdbEnter(p);
       p->nRef++;
     }
     sqlite3_mutex_leave(pVfsMutex);
-  }else{
-    p = sqlite3Malloc( sizeof(*p) );
-    if( p==0 ){
-      return SQLITE_NOMEM;
+  }ਨਹੀਂਤਾਂ{
+    p = sqlite3Malloc( ਆਕਾਰ(*p) );
+    ਜੇ( p==0 ){
+      ਵਾਪਸ SQLITE_NOMEM;
     }
-    memset(p, 0, sizeof(*p));
+    memset(p, 0, ਆਕਾਰ(*p));
     p->mFlags = SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE;
-    p->szMax = sqlite3GlobalConfig.mxMemdbSize;
+    p->szMax = sqlite3GlobalConfig.mx_Memdb_ਮਾਪ;
   }
   pFile->pStore = p;
-  if( pOutFlags!=0 ){
-    *pOutFlags = flags | SQLITE_OPEN_MEMORY;
+  ਜੇ( p_ਬਾਹਰਲਾ_Flags!=0 ){
+    *p_ਬਾਹਰਲਾ_Flags = flags | SQLITE_OPEN_ਸਮ੍ਰਿਤੀ;
   }
   pFd->pMethods = &memdb_io_methods;
   memdbLeave(p);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
-#if 0 /* Only used to delete rollback journals, super-journals, and WAL
+#ਜੇ 0 /* Only used to delete rollback journals, super-journals, and WAL
       ** files, none of which exist in memdb.  So this routine is never used */
 /*
 ** Delete the file located at zPath. If the dirSync argument is true,
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int memdbDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return SQLITE_IOERR_DELETE;
+ਸਥਿਰ ਪੂਰਨ memdbDelete(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, ਪੂਰਨ dirSync){
+  ਵਾਪਸ SQLITE_IOERR_DELETE;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Test for access permissions. Return true if the requested permission
@@ -636,17 +636,17 @@ static int memdbDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 **
 ** With memdb, no files ever exist on disk.  So always return false.
 */
-static int memdbAccess(
+ਸਥਿਰ ਪੂਰਨ memdbAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, 
+  ਪੂਰਨ flags, 
+  ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ
 ){
-  UNUSED_PARAMETER(pVfs);
-  UNUSED_PARAMETER(zPath);
-  UNUSED_PARAMETER(flags);
-  *pResOut = 0;
-  return SQLITE_OK;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਅਣਵਰਤਿਆ_PARAMETER(z_ਰਸਤਾ);
+  ਅਣਵਰਤਿਆ_PARAMETER(flags);
+  *p_Res_ਬਾਹਰਲਾ = 0;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -654,22 +654,22 @@ static int memdbAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int memdbFullPathname(
+ਸਥਿਰ ਪੂਰਨ memdb_ਭਰਿਆ_Pathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, 
+  ਪੂਰਨ n_ਬਾਹਰਲਾ, 
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ
 ){
-  UNUSED_PARAMETER(pVfs);
-  sqlite3_snprintf(nOut, zOut, "%s", zPath);
-  return SQLITE_OK;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  sqlite3_snprintf(n_ਬਾਹਰਲਾ, z_ਬਾਹਰਲਾ, "%s", z_ਰਸਤਾ);
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *memdbDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return ORIGVFS(pVfs)->xDlOpen(ORIGVFS(pVfs), zPath);
+ਸਥਿਰ ਖਾਲੀ *memdbDlOpen(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ){
+  ਵਾਪਸ ORIGVFS(pVfs)->xDlOpen(ORIGVFS(pVfs), z_ਰਸਤਾ);
 }
 
 /*
@@ -677,21 +677,21 @@ static void *memdbDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void memdbDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, zErrMsg);
+ਸਥਿਰ ਖਾਲੀ memdbDlError(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Err_ਸੁਨੇਹਾ){
+  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, z_Err_ਸੁਨੇਹਾ);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return ORIGVFS(pVfs)->xDlSym(ORIGVFS(pVfs), p, zSym);
+ਸਥਿਰ ਖਾਲੀ (*memdbDlSym(sqlite3_vfs *pVfs, ਖਾਲੀ *p, ਅਚਲ ਅੱਖਰ *zSym))(ਖਾਲੀ){
+  ਵਾਪਸ ORIGVFS(pVfs)->xDlSym(ORIGVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void memdbDlClose(sqlite3_vfs *pVfs, void *pHandle){
+ਸਥਿਰ ਖਾਲੀ memdbDlClose(sqlite3_vfs *pVfs, ਖਾਲੀ *pHandle){
   ORIGVFS(pVfs)->xDlClose(ORIGVFS(pVfs), pHandle);
 }
 
@@ -699,244 +699,244 @@ static void memdbDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int memdbRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return ORIGVFS(pVfs)->xRandomness(ORIGVFS(pVfs), nByte, zBufOut);
+ਸਥਿਰ ਪੂਰਨ memdbRandomness(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Buf_ਬਾਹਰਲਾ){
+  ਵਾਪਸ ORIGVFS(pVfs)->xRandomness(ORIGVFS(pVfs), nByte, z_Buf_ਬਾਹਰਲਾ);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int memdbSleep(sqlite3_vfs *pVfs, int nMicro){
-  return ORIGVFS(pVfs)->xSleep(ORIGVFS(pVfs), nMicro);
+ਸਥਿਰ ਪੂਰਨ memdbSleep(sqlite3_vfs *pVfs, ਪੂਰਨ nMicro){
+  ਵਾਪਸ ORIGVFS(pVfs)->xSleep(ORIGVFS(pVfs), nMicro);
 }
 
-#if 0  /* Never used.  Modern cores only call xCurrentTimeInt64() */
+#ਜੇ 0  /* Never used.  Modern cores only call xCurrentTimeInt64() */
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int memdbCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return ORIGVFS(pVfs)->xCurrentTime(ORIGVFS(pVfs), pTimeOut);
+ਸਥਿਰ ਪੂਰਨ memdb_Current_ਸਮਾਂ(sqlite3_vfs *pVfs, ਦੁੱਗਣਾ *p_ਸਮਾਂ_ਬਾਹਰਲਾ){
+  ਵਾਪਸ ORIGVFS(pVfs)->x_Current_ਸਮਾਂ(ORIGVFS(pVfs), p_ਸਮਾਂ_ਬਾਹਰਲਾ);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-static int memdbGetLastError(sqlite3_vfs *pVfs, int a, char *b){
-  return ORIGVFS(pVfs)->xGetLastError(ORIGVFS(pVfs), a, b);
+ਸਥਿਰ ਪੂਰਨ memdb_Get_ਆਖਰੀ_Error(sqlite3_vfs *pVfs, ਪੂਰਨ a, ਅੱਖਰ *b){
+  ਵਾਪਸ ORIGVFS(pVfs)->x_Get_ਆਖਰੀ_Error(ORIGVFS(pVfs), a, b);
 }
-static int memdbCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
-  return ORIGVFS(pVfs)->xCurrentTimeInt64(ORIGVFS(pVfs), p);
+ਸਥਿਰ ਪੂਰਨ memdb_Current_ਸਮਾਂ_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+  ਵਾਪਸ ORIGVFS(pVfs)->x_Current_ਸਮਾਂ_Int64(ORIGVFS(pVfs), p);
 }
 
 /*
 ** Translate a database connection pointer and schema name into a
 ** MemFile pointer.
 */
-static MemFile *memdbFromDbSchema(sqlite3 *db, const char *zSchema){
+ਸਥਿਰ MemFile *memdbFromDbSchema(sqlite3 *db, ਅਚਲ ਅੱਖਰ *zSchema){
   MemFile *p = 0;
   MemStore *pStore;
-  int rc = sqlite3_file_control(db, zSchema, SQLITE_FCNTL_FILE_POINTER, &p);
-  if( rc ) return 0;
-  if( p->base.pMethods!=&memdb_io_methods ) return 0;
+  ਪੂਰਨ rc = sqlite3_file_control(db, zSchema, SQLITE_FCNTL_FILE_ਸੂਚਕ, &p);
+  ਜੇ( rc ) ਵਾਪਸ 0;
+  ਜੇ( p->ਅਧਾਰ.pMethods!=&memdb_io_methods ) ਵਾਪਸ 0;
   pStore = p->pStore;
   memdbEnter(pStore);
-  if( pStore->zFName!=0 ) p = 0;
+  ਜੇ( pStore->zFName!=0 ) p = 0;
   memdbLeave(pStore);
-  return p;
+  ਵਾਪਸ p;
 }
 
 /*
 ** Return the serialization of a database.  Or return NULL if there
 ** is an OOM or I/O error.
 */
-unsigned char *sqlite3_serialize(
+ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *sqlite3_serialize(
   sqlite3 *db,              /* The database connection */
-  const char *zSchema,      /* Which database within the connection */
-  sqlite3_int64 *piSize,    /* Write size here, if not NULL */
-  unsigned int mFlags       /* Maybe SQLITE_SERIALIZE_NOCOPY */
+  ਅਚਲ ਅੱਖਰ *zSchema,      /* Which database within the connection */
+  sqlite3_int64 *pi_ਮਾਪ,    /* Write size here, if not NULL */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ mFlags       /* Maybe SQLITE_SERIALIZE_NOCOPY */
 ){
   MemFile *p;
-  int iDb;
+  ਪੂਰਨ iDb;
   Btree *pBt;
   sqlite3_int64 sz;
-  int szPage = 0;
+  ਪੂਰਨ sz_ਪੰਨਾ = 0;
   sqlite3_stmt *pStmt = 0;
-  unsigned char *pOut = 0;
-  char *zSql;
-  int rc;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *p_ਬਾਹਰਲਾ = 0;
+  ਅੱਖਰ *zSql;
+  ਪੂਰਨ rc;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !sqlite3SafetyCheckOk(db) ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
+#ਜੇ_ਅੰਤ
   sqlite3_mutex_enter(db->mutex);
 
-  if( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
+  ਜੇ( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
   p = memdbFromDbSchema(db, zSchema);
-  iDb = sqlite3FindDbName(db, zSchema);
-  if( piSize ) *piSize = -1;
-  if( iDb<0 ) goto serialize_out;
-  if( p ){
+  iDb = sqlite3_ਲੱਭੋ_Db_Name(db, zSchema);
+  ਜੇ( pi_ਮਾਪ ) *pi_ਮਾਪ = -1;
+  ਜੇ( iDb<0 ) ਜਾਓ serialize_ਬਾਹਰਲਾ;
+  ਜੇ( p ){
     MemStore *pStore = p->pStore;
-    assert( pStore->pMutex==0 );
-    if( piSize ) *piSize = pStore->sz;
-    if( mFlags & SQLITE_SERIALIZE_NOCOPY ){
-      pOut = pStore->aData;
-    }else{
-      pOut = sqlite3_malloc64( pStore->sz );
-      if( pOut ) memcpy(pOut, pStore->aData, pStore->sz);
+    ਪ੍ਰਤਿਜ੍ਞਾ( pStore->pMutex==0 );
+    ਜੇ( pi_ਮਾਪ ) *pi_ਮਾਪ = pStore->sz;
+    ਜੇ( mFlags & SQLITE_SERIALIZE_NOCOPY ){
+      p_ਬਾਹਰਲਾ = pStore->a_ਅੰਕੜੇ;
+    }ਨਹੀਂਤਾਂ{
+      p_ਬਾਹਰਲਾ = sqlite3_malloc64( pStore->sz );
+      ਜੇ( p_ਬਾਹਰਲਾ ) ਸਮ੍ਰਿਤੀ_ਨਕਲ(p_ਬਾਹਰਲਾ, pStore->a_ਅੰਕੜੇ, pStore->sz);
     }
-    goto serialize_out;
+    ਜਾਓ serialize_ਬਾਹਰਲਾ;
   }
   pBt = db->aDb[iDb].pBt;
-  if( pBt==0 ) goto serialize_out;
-  szPage = sqlite3BtreeGetPageSize(pBt);
+  ਜੇ( pBt==0 ) ਜਾਓ serialize_ਬਾਹਰਲਾ;
+  sz_ਪੰਨਾ = sqlite3_Btree_Get_ਪੰਨਾ_ਮਾਪ(pBt);
   zSql = sqlite3_mprintf("PRAGMA \"%w\".page_count", zSchema);
   rc = zSql ? sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0) : SQLITE_NOMEM;
   sqlite3_free(zSql);
-  if( rc ) goto serialize_out;
-  rc = sqlite3_step(pStmt);
-  if( rc==SQLITE_ROW ){
-    sz = sqlite3_column_int64(pStmt, 0)*szPage;
-    if( sz==0 ){
+  ਜੇ( rc ) ਜਾਓ serialize_ਬਾਹਰਲਾ;
+  rc = sqlite3_ਕਦਮ(pStmt);
+  ਜੇ( rc==SQLITE_ਪੰਕਤੀ ){
+    sz = sqlite3_ਕਾਲਮ_int64(pStmt, 0)*sz_ਪੰਨਾ;
+    ਜੇ( sz==0 ){
       sqlite3_reset(pStmt);
       sqlite3_exec(db, "BEGIN IMMEDIATE; COMMIT;", 0, 0, 0);
-      rc = sqlite3_step(pStmt);
-      if( rc==SQLITE_ROW ){
-        sz = sqlite3_column_int64(pStmt, 0)*szPage;
+      rc = sqlite3_ਕਦਮ(pStmt);
+      ਜੇ( rc==SQLITE_ਪੰਕਤੀ ){
+        sz = sqlite3_ਕਾਲਮ_int64(pStmt, 0)*sz_ਪੰਨਾ;
       }
     }
-    if( piSize ) *piSize = sz;
-    if( mFlags & SQLITE_SERIALIZE_NOCOPY ){
-      pOut = 0;
-    }else{
-      pOut = sqlite3_malloc64( sz );
-      if( pOut ){
-        int nPage = sqlite3_column_int(pStmt, 0);
+    ਜੇ( pi_ਮਾਪ ) *pi_ਮਾਪ = sz;
+    ਜੇ( mFlags & SQLITE_SERIALIZE_NOCOPY ){
+      p_ਬਾਹਰਲਾ = 0;
+    }ਨਹੀਂਤਾਂ{
+      p_ਬਾਹਰਲਾ = sqlite3_malloc64( sz );
+      ਜੇ( p_ਬਾਹਰਲਾ ){
+        ਪੂਰਨ n_ਪੰਨਾ = sqlite3_ਕਾਲਮ_int(pStmt, 0);
         Pager *pPager = sqlite3BtreePager(pBt);
-        int pgno;
-        for(pgno=1; pgno<=nPage; pgno++){
-          DbPage *pPage = 0;
-          unsigned char *pTo = pOut + szPage*(sqlite3_int64)(pgno-1);
-          rc = sqlite3PagerGet(pPager, pgno, (DbPage**)&pPage, 0);
-          if( rc==SQLITE_OK ){
-            memcpy(pTo, sqlite3PagerGetData(pPage), szPage);
-          }else if( pgno==PENDING_BYTE/szPage+1 ){
-            memset(pTo, 0, szPage);
-          }else{
-            sqlite3_free(pOut);
-            pOut = 0;
-            nPage = 0;            
+        ਪੂਰਨ pgno;
+        ਲਈ(pgno=1; pgno<=n_ਪੰਨਾ; pgno++){
+          Db_ਪੰਨਾ *p_ਪੰਨਾ = 0;
+          ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *p_ਮੰਜ਼ਿਲ = p_ਬਾਹਰਲਾ + sz_ਪੰਨਾ*(sqlite3_int64)(pgno-1);
+          rc = sqlite3PagerGet(pPager, pgno, (Db_ਪੰਨਾ**)&p_ਪੰਨਾ, 0);
+          ਜੇ( rc==SQLITE_OK ){
+            ਸਮ੍ਰਿਤੀ_ਨਕਲ(p_ਮੰਜ਼ਿਲ, sqlite3_Pager_Get_ਅੰਕੜੇ(p_ਪੰਨਾ), sz_ਪੰਨਾ);
+          }ਨਹੀਂਤਾਂ ਜੇ( pgno==PENDING_BYTE/sz_ਪੰਨਾ+1 ){
+            memset(p_ਮੰਜ਼ਿਲ, 0, sz_ਪੰਨਾ);
+          }ਨਹੀਂਤਾਂ{
+            sqlite3_free(p_ਬਾਹਰਲਾ);
+            p_ਬਾਹਰਲਾ = 0;
+            n_ਪੰਨਾ = 0;            
           }
-          sqlite3PagerUnref(pPage);       
+          sqlite3PagerUnref(p_ਪੰਨਾ);       
         }
       }
     }
   }
   sqlite3_finalize(pStmt);
 
- serialize_out:
+ serialize_ਬਾਹਰਲਾ:
   sqlite3_mutex_leave(db->mutex);
-  return pOut;
+  ਵਾਪਸ p_ਬਾਹਰਲਾ;
 }
 
 /* Convert zSchema to a MemDB and initialize its content.
 */
-int sqlite3_deserialize(
+ਪੂਰਨ sqlite3_deserialize(
   sqlite3 *db,            /* The database connection */
-  const char *zSchema,    /* Which DB to reopen with the deserialization */
-  unsigned char *pData,   /* The serialized database content */
+  ਅਚਲ ਅੱਖਰ *zSchema,    /* Which DB to reopen with the deserialization */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *p_ਅੰਕੜੇ,   /* The serialized database content */
   sqlite3_int64 szDb,     /* Number bytes in the deserialization */
   sqlite3_int64 szBuf,    /* Total size of buffer pData[] */
-  unsigned mFlags         /* Zero or more SQLITE_DESERIALIZE_* flags */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ mFlags         /* Zero or more SQLITE_DESERIALIZE_* flags */
 ){
   MemFile *p;
-  char *zSql;
+  ਅੱਖਰ *zSql;
   sqlite3_stmt *pStmt = 0;
-  int rc;
-  int iDb;
+  ਪੂਰਨ rc;
+  ਪੂਰਨ iDb;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !sqlite3SafetyCheckOk(db) ){
+    ਵਾਪਸ SQLITE_MISUSE_BKPT;
   }
-  if( szDb<0 ) return SQLITE_MISUSE_BKPT;
-  if( szBuf<0 ) return SQLITE_MISUSE_BKPT;
-#endif
+  ਜੇ( szDb<0 ) ਵਾਪਸ SQLITE_MISUSE_BKPT;
+  ਜੇ( szBuf<0 ) ਵਾਪਸ SQLITE_MISUSE_BKPT;
+#ਜੇ_ਅੰਤ
 
   sqlite3_mutex_enter(db->mutex);
-  if( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
-  iDb = sqlite3FindDbName(db, zSchema);
+  ਜੇ( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
+  iDb = sqlite3_ਲੱਭੋ_Db_Name(db, zSchema);
   testcase( iDb==1 );
-  if( iDb<2 && iDb!=0 ){
+  ਜੇ( iDb<2 && iDb!=0 ){
     rc = SQLITE_ERROR;
-    goto end_deserialize;
+    ਜਾਓ ਸਿਰਾ_deserialize;
   }
   zSql = sqlite3_mprintf("ATTACH x AS %Q", zSchema);
-  if( zSql==0 ){
+  ਜੇ( zSql==0 ){
     rc = SQLITE_NOMEM;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
     sqlite3_free(zSql);
   }
-  if( rc ) goto end_deserialize;
+  ਜੇ( rc ) ਜਾਓ ਸਿਰਾ_deserialize;
   db->init.iDb = (u8)iDb;
   db->init.reopenMemdb = 1;
-  sqlite3_step(pStmt);
+  sqlite3_ਕਦਮ(pStmt);
   db->init.reopenMemdb = 0;
   rc = sqlite3_finalize(pStmt);
-  if( rc!=SQLITE_OK ){
-    goto end_deserialize;
+  ਜੇ( rc!=SQLITE_OK ){
+    ਜਾਓ ਸਿਰਾ_deserialize;
   }
   p = memdbFromDbSchema(db, zSchema);
-  if( p==0 ){
+  ਜੇ( p==0 ){
     rc = SQLITE_ERROR;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     MemStore *pStore = p->pStore;
-    pStore->aData = pData;
-    pData = 0;
+    pStore->a_ਅੰਕੜੇ = p_ਅੰਕੜੇ;
+    p_ਅੰਕੜੇ = 0;
     pStore->sz = szDb;
     pStore->szAlloc = szBuf;
     pStore->szMax = szBuf;
-    if( pStore->szMax<sqlite3GlobalConfig.mxMemdbSize ){
-      pStore->szMax = sqlite3GlobalConfig.mxMemdbSize;
+    ਜੇ( pStore->szMax<sqlite3GlobalConfig.mx_Memdb_ਮਾਪ ){
+      pStore->szMax = sqlite3GlobalConfig.mx_Memdb_ਮਾਪ;
     }
     pStore->mFlags = mFlags;
     rc = SQLITE_OK;
   }
 
-end_deserialize:
-  if( pData && (mFlags & SQLITE_DESERIALIZE_FREEONCLOSE)!=0 ){
-    sqlite3_free(pData);
+ਸਿਰਾ_deserialize:
+  ਜੇ( p_ਅੰਕੜੇ && (mFlags & SQLITE_DESERIALIZE_FREEONCLOSE)!=0 ){
+    sqlite3_free(p_ਅੰਕੜੇ);
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Return true if the VFS is the memvfs.
 */
-int sqlite3IsMemdb(const sqlite3_vfs *pVfs){
-  return pVfs==&memdb_vfs;
+ਪੂਰਨ sqlite3IsMemdb(ਅਚਲ sqlite3_vfs *pVfs){
+  ਵਾਪਸ pVfs==&memdb_vfs;
 }
 
 /* 
 ** This routine is called when the extension is loaded.
 ** Register the new VFS.
 */
-int sqlite3MemdbInit(void){
-  sqlite3_vfs *pLower = sqlite3_vfs_find(0);
-  unsigned int sz;
-  if( NEVER(pLower==0) ) return SQLITE_ERROR;
-  sz = pLower->szOsFile;
-  memdb_vfs.pAppData = pLower;
+ਪੂਰਨ sqlite3MemdbInit(ਖਾਲੀ){
+  sqlite3_vfs *p_ਹੇਠਲਾ = sqlite3_vfs_ਲੱਭੋ(0);
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ sz;
+  ਜੇ( NEVER(p_ਹੇਠਲਾ==0) ) ਵਾਪਸ SQLITE_ERROR;
+  sz = p_ਹੇਠਲਾ->szOsFile;
+  memdb_vfs.p_App_ਅੰਕੜੇ = p_ਹੇਠਲਾ;
   /* The following conditional can only be true when compiled for
   ** Windows x86 and SQLITE_MAX_MMAP_SIZE=0.  We always leave
   ** it in, to be safe, but it is marked as NO_TEST since there
   ** is no way to reach it under most builds. */
-  if( sz<sizeof(MemFile) ) sz = sizeof(MemFile); /*NO_TEST*/
+  ਜੇ( sz<ਆਕਾਰ(MemFile) ) sz = ਆਕਾਰ(MemFile); /*NO_TEST*/
   memdb_vfs.szOsFile = sz;
-  return sqlite3_vfs_register(&memdb_vfs, 0);
+  ਵਾਪਸ sqlite3_vfs_ਰਜਿਸਟਰ(&memdb_vfs, 0);
 }
-#endif /* SQLITE_OMIT_DESERIALIZE */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_DESERIALIZE */

@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#ਜੇ SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqlite3.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "tclsqlite.h"
 
-#ifdef SQLITE_VDBE_COVERAGE
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+ਸਥਿਰ u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+ਸਥਿਰ ਖਾਲੀ test_vdbe_branch(
+  ਖਾਲੀ *pCtx, 
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ iSrc, 
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ iBranch, 
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  ਜੇ( iSrc<ਆਕਾਰ(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+ਸਥਿਰ ਖਾਲੀ append_ਮੰਜ਼ਿਲ_List(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  ਪੂਰਨ i_ਸਤਰ, 
+  ਪੂਰਨ i_ਰਸਤਾ, 
+  ਅਚਲ ਅੱਖਰ *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
+  Tcl_Incr_Ref_ਗਿਣਤੀ(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_ਸਤਰ));
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_ਰਸਤਾ));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_ਗਿਣਤੀ(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
-  ClientData cd,
+ਸਥਿਰ ਪੂਰਨ SQLITE_TCLAPI test_vdbe_coverage(
+  Client_ਅੰਕੜੇ cd,
   Tcl_Interp *interp,
-  int objc,
+  ਪੂਰਨ objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  ਅਚਲ ਅੱਖਰ *aSub[] = { "start", "report", "stop", 0 };
+  ਪੂਰਨ iSub = -1;
+  ਜੇ( objc!=2 ){
+    Tcl_Wrong_ਅੰਕ_ਦਲੀਲਾਂ(interp, 1, objv, "sub-command");
+    ਵਾਪਸ TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ਜੇ( Tcl_Get_ਸੂਚਕਾਂਕ_From_Obj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    ਵਾਪਸ TCL_ERROR;
   }
 
-  Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  Tcl_Reset_ਨਤੀਜਾ(interp);
+  ਪ੍ਰਤਿਜ੍ਞਾ( iSub==0 || iSub==1 || iSub==2 );
+  ਚੋਣ( iSub ){
+    ਹਾਲਤ 0:       /*ਸ਼ੁਰੂ*/
+      memset(aBranchArray, 0, ਆਕਾਰ(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      ਰੋਕੋ;
+    ਹਾਲਤ 1: {     /* report */
+      ਪੂਰਨ i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_ਗਿਣਤੀ(pRes);
+      ਲਈ(i=0; i<ਆਕਾਰ(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
-            appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
+        ਪੂਰਨ bFlag = ((b >> 4)==4);
+        ਜੇ( b ){
+          ਜੇ( (b & 0x01)==0 ){
+            append_ਮੰਜ਼ਿਲ_List(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
-            appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
+          ਜੇ( (b & 0x02)==0 ){
+            append_ਮੰਜ਼ਿਲ_List(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
-            appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
+          ਜੇ( (b & 0x04)==0 ){
+            append_ਮੰਜ਼ਿਲ_List(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
-      Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_ਸੈੱਟ_Obj_ਨਤੀਜਾ(interp, pRes);
+      Tcl_Decr_Ref_ਗਿਣਤੀ(pRes);
+      ਰੋਕੋ;
     };
       
-    default:      /* stop */         
+    ਮੂਲ:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      ਰੋਕੋ;
   }
 
-  return TCL_OK;
+  ਵਾਪਸ TCL_OK;
 }
 
-#endif  /* SQLITE_VDBE_COVERAGE */
+#ਜੇ_ਅੰਤ  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
-#ifdef SQLITE_VDBE_COVERAGE
+ਪੂਰਨ Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
-#endif
-  return TCL_OK;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ TCL_OK;
 }
 
-#endif
+#ਜੇ_ਅੰਤ

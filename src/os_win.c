@@ -12,185 +12,185 @@
 **
 ** This file contains code that is specific to Windows.
 */
-#include "sqliteInt.h"
-#if SQLITE_OS_WIN               /* This file is used for Windows only */
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
+#ਜੇ SQLITE_OS_WIN               /* This file is used for Windows only */
 
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "os_common.h"
 
 /*
 ** Include the header file for the Windows VFS.
 */
-#include "os_win.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "os_win.h"
 
 /*
 ** This constant should already be defined (in the "WinDef.h" SDK file).
 */
-#ifndef MAX_PATH
-#  define MAX_PATH                      (260)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ MAX_ਰਸਤਾ
+#  define MAX_ਰਸਤਾ                      (260)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Maximum pathname length (in chars) for Win32.  This should normally be
 ** MAX_PATH.
 */
-#ifndef SQLITE_WIN32_MAX_PATH_CHARS
-#  define SQLITE_WIN32_MAX_PATH_CHARS   (MAX_PATH)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MAX_ਰਸਤਾ_CHARS
+#  define SQLITE_WIN32_MAX_ਰਸਤਾ_CHARS   (MAX_ਰਸਤਾ)
+#ਜੇ_ਅੰਤ
 
 /*
 ** This constant should already be defined (in the "WinNT.h" SDK file).
 */
-#ifndef UNICODE_STRING_MAX_CHARS
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ UNICODE_STRING_MAX_CHARS
 #  define UNICODE_STRING_MAX_CHARS      (32767)
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Maximum pathname length (in chars) for WinNT.  This should normally be
 ** UNICODE_STRING_MAX_CHARS.
 */
-#ifndef SQLITE_WINNT_MAX_PATH_CHARS
-#  define SQLITE_WINNT_MAX_PATH_CHARS   (UNICODE_STRING_MAX_CHARS)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WINNT_MAX_ਰਸਤਾ_CHARS
+#  define SQLITE_WINNT_MAX_ਰਸਤਾ_CHARS   (UNICODE_STRING_MAX_CHARS)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Maximum pathname length (in bytes) for Win32.  The MAX_PATH macro is in
 ** characters, so we allocate 4 bytes per character assuming worst-case of
 ** 4-bytes-per-character for UTF8.
 */
-#ifndef SQLITE_WIN32_MAX_PATH_BYTES
-#  define SQLITE_WIN32_MAX_PATH_BYTES   (SQLITE_WIN32_MAX_PATH_CHARS*4)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ
+#  define SQLITE_WIN32_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ   (SQLITE_WIN32_MAX_ਰਸਤਾ_CHARS*4)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Maximum pathname length (in bytes) for WinNT.  This should normally be
 ** UNICODE_STRING_MAX_CHARS * sizeof(WCHAR).
 */
-#ifndef SQLITE_WINNT_MAX_PATH_BYTES
-#  define SQLITE_WINNT_MAX_PATH_BYTES   \
-                            (sizeof(WCHAR) * SQLITE_WINNT_MAX_PATH_CHARS)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WINNT_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ
+#  define SQLITE_WINNT_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ   \
+                            (ਆਕਾਰ(WCHAR) * SQLITE_WINNT_MAX_ਰਸਤਾ_CHARS)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Maximum error message length (in chars) for WinRT.
 */
-#ifndef SQLITE_WIN32_MAX_ERRMSG_CHARS
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MAX_ERRMSG_CHARS
 #  define SQLITE_WIN32_MAX_ERRMSG_CHARS (1024)
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Returns non-zero if the character should be treated as a directory
 ** separator.
 */
-#ifndef winIsDirSep
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ winIsDirSep
 #  define winIsDirSep(a)                (((a) == '/') || ((a) == '\\'))
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** This macro is used when a local variable is set to a value that is
 ** [sometimes] not used by the code (e.g. via conditional compilation).
 */
-#ifndef UNUSED_VARIABLE_VALUE
-#  define UNUSED_VARIABLE_VALUE(x)      (void)(x)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ ਅਣਵਰਤਿਆ_VARIABLE_ਮੁੱਲ
+#  define ਅਣਵਰਤਿਆ_VARIABLE_ਮੁੱਲ(x)      (ਖਾਲੀ)(x)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Returns the character that should be used as the directory separator.
 */
-#ifndef winGetDirSep
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ winGetDirSep
 #  define winGetDirSep()                '\\'
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Some older Microsoft compilers lack the following definition.
 */
-#ifndef INVALID_FILE_ATTRIBUTES
-# define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ INVALID_FILE_ਗੁਣ
+# define INVALID_FILE_ਗੁਣ ((DWORD)-1)
+#ਜੇ_ਅੰਤ
 
-#ifndef FILE_FLAG_MASK
-# define FILE_FLAG_MASK          (0xFF3C0000)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ FILE_FLAG_ਨਕਾਬ
+# define FILE_FLAG_ਨਕਾਬ          (0xFF3C0000)
+#ਜੇ_ਅੰਤ
 
-#ifndef FILE_ATTRIBUTE_MASK
-# define FILE_ATTRIBUTE_MASK     (0x0003FFF7)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ FILE_ATTRIBUTE_ਨਕਾਬ
+# define FILE_ATTRIBUTE_ਨਕਾਬ     (0x0003FFF7)
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_WAL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
 /* Forward references to structures used for WAL */
-typedef struct winShm winShm;           /* A connection to shared-memory */
-typedef struct winShmNode winShmNode;   /* A region of shared-memory */
-#endif
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ winShm winShm;           /* A connection to shared-memory */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ win_Shm_ਗੰਢ win_Shm_ਗੰਢ;   /* A region of shared-memory */
+#ਜੇ_ਅੰਤ
 
 /*
 ** The winFile structure is a subclass of sqlite3_file* specific to the win32
 ** portability layer.
 */
-typedef struct winFile winFile;
-struct winFile {
-  const sqlite3_io_methods *pMethod; /*** Must be first ***/
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ winFile winFile;
+ਬਣਤਰ winFile {
+  ਅਚਲ sqlite3_io_methods *p_ਵਿਧੀ; /*** Must be first ***/
   sqlite3_vfs *pVfs;      /* The VFS used to open this file */
   HANDLE h;               /* Handle for accessing the file */
   u8 locktype;            /* Type of lock currently held on this file */
-  short sharedLockByte;   /* Randomly chosen byte used as a shared lock */
+  ਛੋਟਾ shared_ਤਾਲਾ_Byte;   /* Randomly chosen byte used as a shared lock */
   u8 ctrlFlags;           /* Flags.  See WINFILE_* below */
-  DWORD lastErrno;        /* The Windows errno from the last I/O error */
-#ifndef SQLITE_OMIT_WAL
+  DWORD ਆਖਰੀ_Errno;        /* The Windows errno from the last I/O error */
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
   winShm *pShm;           /* Instance of shared memory on this file */
-#endif
-  const char *zPath;      /* Full pathname of this file */
-  int szChunk;            /* Chunk size configured by FCNTL_CHUNK_SIZE */
-#if SQLITE_MAX_MMAP_SIZE>0
-  int nFetchOut;                /* Number of outstanding xFetch references */
+#ਜੇ_ਅੰਤ
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ;      /* Full pathname of this file */
+  ਪੂਰਨ szChunk;            /* Chunk size configured by FCNTL_CHUNK_SIZE */
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  ਪੂਰਨ n_Fetch_ਬਾਹਰਲਾ;                /* Number of outstanding xFetch references */
   HANDLE hMap;                  /* Handle for accessing memory mapping */
-  void *pMapRegion;             /* Area memory mapped */
-  sqlite3_int64 mmapSize;       /* Size of mapped region */
-  sqlite3_int64 mmapSizeMax;    /* Configured FCNTL_MMAP_SIZE value */
-#endif
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+  ਖਾਲੀ *pMapRegion;             /* Area memory mapped */
+  sqlite3_int64 mmap_ਮਾਪ;       /* Size of mapped region */
+  sqlite3_int64 mmap_ਮਾਪ_Max;    /* Configured FCNTL_MMAP_SIZE value */
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
   DWORD iBusyTimeout;        /* Wait this many millisec on locks */
-  int bBlockOnConnect;
-#endif
+  ਪੂਰਨ b_ਖੰਡ_On_Connect;
+#ਜੇ_ਅੰਤ
 };
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
 # define winFileBusyTimeout(pDbFd) pDbFd->iBusyTimeout
-#else
+#ਨਹੀਂਤਾਂ
 # define winFileBusyTimeout(pDbFd) 0
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** The winVfsAppData structure is used for the pAppData member for all of the
 ** Win32 VFS variants.
 */
-typedef struct winVfsAppData winVfsAppData;
-struct winVfsAppData {
-  const sqlite3_io_methods *pMethod; /* The file I/O methods to use. */
-  void *pAppData;                    /* The extra pAppData, if any. */
-  BOOL bNoLock;                      /* Non-zero if locking is disabled. */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ win_Vfs_App_ਅੰਕੜੇ win_Vfs_App_ਅੰਕੜੇ;
+ਬਣਤਰ win_Vfs_App_ਅੰਕੜੇ {
+  ਅਚਲ sqlite3_io_methods *p_ਵਿਧੀ; /* The file I/O methods to use. */
+  ਖਾਲੀ *p_App_ਅੰਕੜੇ;                    /* The extra pAppData, if any. */
+  BOOL b_No_ਤਾਲਾ;                      /* Non-zero if locking is disabled. */
 };
 
 /*
 ** Allowed values for winFile.ctrlFlags
 */
-#define WINFILE_RDONLY          0x02   /* Connection is read only */
-#define WINFILE_PERSIST_WAL     0x04   /* Persistent WAL mode */
-#define WINFILE_PSOW            0x10   /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WINFILE_RDONLY          0x02   /* Connection is read only */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WINFILE_PERSIST_WAL     0x04   /* Persistent WAL mode */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WINFILE_PSOW            0x10   /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
 
 /*
  * The size of the buffer used by sqlite3_win32_write_debug().
  */
-#ifndef SQLITE_WIN32_DBG_BUF_SIZE
-#  define SQLITE_WIN32_DBG_BUF_SIZE   ((int)(4096-sizeof(DWORD)))
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_DBG_BUF_ਮਾਪ
+#  define SQLITE_WIN32_DBG_BUF_ਮਾਪ   ((ਪੂਰਨ)(4096-ਆਕਾਰ(DWORD)))
+#ਜੇ_ਅੰਤ
 
 /*
  * If compiled with SQLITE_WIN32_MALLOC on Windows, we will use the
  * various Win32 API heap functions instead of our own.
  */
-#ifdef SQLITE_WIN32_MALLOC
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MALLOC
 
 /*
  * If this is non-zero, an isolated heap will be created by the native Win32
@@ -206,141 +206,141 @@ struct winVfsAppData {
  *          data will almost certainly result in an immediate access violation.
  ******************************************************************************
  */
-#ifndef SQLITE_WIN32_HEAP_CREATE
-#  define SQLITE_WIN32_HEAP_CREATE        (TRUE)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_CREATE
+#  define SQLITE_WIN32_ਢੇਰ_CREATE        (TRUE)
+#ਜੇ_ਅੰਤ
 
 /*
  * This is the maximum possible initial size of the Win32-specific heap, in
  * bytes.
  */
-#ifndef SQLITE_WIN32_HEAP_MAX_INIT_SIZE
-#  define SQLITE_WIN32_HEAP_MAX_INIT_SIZE (4294967295U)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_MAX_INIT_ਮਾਪ
+#  define SQLITE_WIN32_ਢੇਰ_MAX_INIT_ਮਾਪ (4294967295U)
+#ਜੇ_ਅੰਤ
 
 /*
  * This is the extra space for the initial size of the Win32-specific heap,
  * in bytes.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_INIT_EXTRA
-#  define SQLITE_WIN32_HEAP_INIT_EXTRA  (4194304)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_INIT_EXTRA
+#  define SQLITE_WIN32_ਢੇਰ_INIT_EXTRA  (4194304)
+#ਜੇ_ਅੰਤ
 
 /*
  * Calculate the maximum legal cache size, in pages, based on the maximum
  * possible initial heap size and the default page size, setting aside the
  * needed extra space.
  */
-#ifndef SQLITE_WIN32_MAX_CACHE_SIZE
-#  define SQLITE_WIN32_MAX_CACHE_SIZE   (((SQLITE_WIN32_HEAP_MAX_INIT_SIZE) - \
-                                          (SQLITE_WIN32_HEAP_INIT_EXTRA)) / \
-                                         (SQLITE_DEFAULT_PAGE_SIZE))
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MAX_CACHE_ਮਾਪ
+#  define SQLITE_WIN32_MAX_CACHE_ਮਾਪ   (((SQLITE_WIN32_ਢੇਰ_MAX_INIT_ਮਾਪ) - \
+                                          (SQLITE_WIN32_ਢੇਰ_INIT_EXTRA)) / \
+                                         (SQLITE_DEFAULT_ਪੰਨਾ_ਮਾਪ))
+#ਜੇ_ਅੰਤ
 
 /*
  * This is cache size used in the calculation of the initial size of the
  * Win32-specific heap.  It cannot be negative.
  */
-#ifndef SQLITE_WIN32_CACHE_SIZE
-#  if SQLITE_DEFAULT_CACHE_SIZE>=0
-#    define SQLITE_WIN32_CACHE_SIZE     (SQLITE_DEFAULT_CACHE_SIZE)
-#  else
-#    define SQLITE_WIN32_CACHE_SIZE     (-(SQLITE_DEFAULT_CACHE_SIZE))
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_CACHE_ਮਾਪ
+#  ਜੇ SQLITE_DEFAULT_CACHE_ਮਾਪ>=0
+#    define SQLITE_WIN32_CACHE_ਮਾਪ     (SQLITE_DEFAULT_CACHE_ਮਾਪ)
+#  ਨਹੀਂਤਾਂ
+#    define SQLITE_WIN32_CACHE_ਮਾਪ     (-(SQLITE_DEFAULT_CACHE_ਮਾਪ))
 #  endif
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
  * Make sure that the calculated cache size, in pages, cannot cause the
  * initial size of the Win32-specific heap to exceed the maximum amount
  * of memory that can be specified in the call to HeapCreate.
  */
-#if SQLITE_WIN32_CACHE_SIZE>SQLITE_WIN32_MAX_CACHE_SIZE
-#  undef SQLITE_WIN32_CACHE_SIZE
-#  define SQLITE_WIN32_CACHE_SIZE       (2000)
-#endif
+#ਜੇ SQLITE_WIN32_CACHE_ਮਾਪ>SQLITE_WIN32_MAX_CACHE_ਮਾਪ
+#  undef SQLITE_WIN32_CACHE_ਮਾਪ
+#  define SQLITE_WIN32_CACHE_ਮਾਪ       (2000)
+#ਜੇ_ਅੰਤ
 
 /*
  * The initial size of the Win32-specific heap.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_INIT_SIZE
-#  define SQLITE_WIN32_HEAP_INIT_SIZE   ((SQLITE_WIN32_CACHE_SIZE) * \
-                                         (SQLITE_DEFAULT_PAGE_SIZE) + \
-                                         (SQLITE_WIN32_HEAP_INIT_EXTRA))
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_INIT_ਮਾਪ
+#  define SQLITE_WIN32_ਢੇਰ_INIT_ਮਾਪ   ((SQLITE_WIN32_CACHE_ਮਾਪ) * \
+                                         (SQLITE_DEFAULT_ਪੰਨਾ_ਮਾਪ) + \
+                                         (SQLITE_WIN32_ਢੇਰ_INIT_EXTRA))
+#ਜੇ_ਅੰਤ
 
 /*
  * The maximum size of the Win32-specific heap.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_MAX_SIZE
-#  define SQLITE_WIN32_HEAP_MAX_SIZE    (0)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_MAX_ਮਾਪ
+#  define SQLITE_WIN32_ਢੇਰ_MAX_ਮਾਪ    (0)
+#ਜੇ_ਅੰਤ
 
 /*
  * The extra flags to use in calls to the Win32 heap APIs.  This value may be
  * zero for the default behavior.
  */
-#ifndef SQLITE_WIN32_HEAP_FLAGS
-#  define SQLITE_WIN32_HEAP_FLAGS       (0)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_ਢੇਰ_FLAGS
+#  define SQLITE_WIN32_ਢੇਰ_FLAGS       (0)
+#ਜੇ_ਅੰਤ
 
 
 /*
 ** The winMemData structure stores information required by the Win32-specific
 ** sqlite3_mem_methods implementation.
 */
-typedef struct winMemData winMemData;
-struct winMemData {
-#ifndef NDEBUG
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ win_Mem_ਅੰਕੜੇ win_Mem_ਅੰਕੜੇ;
+ਬਣਤਰ win_Mem_ਅੰਕੜੇ {
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
   u32 magic1;   /* Magic number to detect structure corruption. */
-#endif
-  HANDLE hHeap; /* The handle to our heap. */
+#ਜੇ_ਅੰਤ
+  HANDLE h_ਢੇਰ; /* The handle to our heap. */
   BOOL bOwned;  /* Do we own the heap (i.e. destroy it on shutdown)? */
-#ifndef NDEBUG
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
   u32 magic2;   /* Magic number to detect structure corruption. */
-#endif
+#ਜੇ_ਅੰਤ
 };
 
-#ifndef NDEBUG
-#define WINMEM_MAGIC1     0x42b2830b
-#define WINMEM_MAGIC2     0xbd4d7cf4
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WINMEM_MAGIC1     0x42b2830b
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WINMEM_MAGIC2     0xbd4d7cf4
+#ਜੇ_ਅੰਤ
 
-static struct winMemData win_mem_data = {
-#ifndef NDEBUG
+ਸਥਿਰ ਬਣਤਰ win_Mem_ਅੰਕੜੇ win_mem_ਅੰਕੜੇ = {
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
   WINMEM_MAGIC1,
-#endif
-  NULL, FALSE
-#ifndef NDEBUG
+#ਜੇ_ਅੰਤ
+  ਨਿਰਾ, FALSE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
   ,WINMEM_MAGIC2
-#endif
+#ਜੇ_ਅੰਤ
 };
 
-#ifndef NDEBUG
-#define winMemAssertMagic1() assert( win_mem_data.magic1==WINMEM_MAGIC1 )
-#define winMemAssertMagic2() assert( win_mem_data.magic2==WINMEM_MAGIC2 )
-#define winMemAssertMagic()  winMemAssertMagic1(); winMemAssertMagic2();
-#else
-#define winMemAssertMagic()
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winMemAssertMagic1() ਪ੍ਰਤਿਜ੍ਞਾ( win_mem_ਅੰਕੜੇ.magic1==WINMEM_MAGIC1 )
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winMemAssertMagic2() ਪ੍ਰਤਿਜ੍ਞਾ( win_mem_ਅੰਕੜੇ.magic2==WINMEM_MAGIC2 )
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winMemAssertMagic()  winMemAssertMagic1(); winMemAssertMagic2();
+#ਨਹੀਂਤਾਂ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winMemAssertMagic()
+#ਜੇ_ਅੰਤ
 
-#define winMemGetDataPtr()  &win_mem_data
-#define winMemGetHeap()     win_mem_data.hHeap
-#define winMemGetOwned()    win_mem_data.bOwned
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ win_Mem_Get_ਅੰਕੜੇ_Ptr()  &win_mem_ਅੰਕੜੇ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ win_Mem_Get_ਢੇਰ()     win_mem_ਅੰਕੜੇ.h_ਢੇਰ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winMemGetOwned()    win_mem_ਅੰਕੜੇ.bOwned
 
-static void *winMemMalloc(int nBytes);
-static void winMemFree(void *pPrior);
-static void *winMemRealloc(void *pPrior, int nBytes);
-static int winMemSize(void *p);
-static int winMemRoundup(int n);
-static int winMemInit(void *pAppData);
-static void winMemShutdown(void *pAppData);
+ਸਥਿਰ ਖਾਲੀ *winMemMalloc(ਪੂਰਨ n_ਬਾਈਟਾਂ);
+ਸਥਿਰ ਖਾਲੀ winMemFree(ਖਾਲੀ *p_ਪੂਰਵ);
+ਸਥਿਰ ਖਾਲੀ *winMemRealloc(ਖਾਲੀ *p_ਪੂਰਵ, ਪੂਰਨ n_ਬਾਈਟਾਂ);
+ਸਥਿਰ ਪੂਰਨ win_Mem_ਮਾਪ(ਖਾਲੀ *p);
+ਸਥਿਰ ਪੂਰਨ winMemRoundup(ਪੂਰਨ n);
+ਸਥਿਰ ਪੂਰਨ winMemInit(ਖਾਲੀ *p_App_ਅੰਕੜੇ);
+ਸਥਿਰ ਖਾਲੀ winMemShutdown(ਖਾਲੀ *p_App_ਅੰਕੜੇ);
 
-const sqlite3_mem_methods *sqlite3MemGetWin32(void);
-#endif /* SQLITE_WIN32_MALLOC */
+ਅਚਲ sqlite3_mem_methods *sqlite3MemGetWin32(ਖਾਲੀ);
+#ਜੇ_ਅੰਤ /* SQLITE_WIN32_MALLOC */
 
-#ifndef SYSCALL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SYSCALL
 #  define SYSCALL sqlite3_syscall_ptr
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Many system calls are accessed through pointer-to-functions so that
@@ -348,349 +348,349 @@ const sqlite3_mem_methods *sqlite3MemGetWin32(void);
 ** testing and sandboxing.  The following array holds the names and pointers
 ** to all overrideable system calls.
 */
-static struct win_syscall {
-  const char *zName;            /* Name of the system call */
+ਸਥਿਰ ਬਣਤਰ win_syscall {
+  ਅਚਲ ਅੱਖਰ *zName;            /* Name of the system call */
   sqlite3_syscall_ptr pCurrent; /* Current value of the system call */
   sqlite3_syscall_ptr pDefault; /* Default value */
 } aSyscall[] = {
   { "AreFileApisANSI",         (SYSCALL)AreFileApisANSI,         0 },
-#define osAreFileApisANSI ((BOOL(WINAPI*)(VOID))aSyscall[0].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osAreFileApisANSI ((BOOL(WINAPI*)(VOID))aSyscall[0].pCurrent)
 
   { "CloseHandle",             (SYSCALL)CloseHandle,             0 },
-#define osCloseHandle ((BOOL(WINAPI*)(HANDLE))aSyscall[1].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCloseHandle ((BOOL(WINAPI*)(HANDLE))aSyscall[1].pCurrent)
 
 
   { "CreateFileW",             (SYSCALL)CreateFileW,             0 },
-#define osCreateFileW ((HANDLE(WINAPI*)(LPCWSTR,DWORD,DWORD, \
-        LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE))aSyscall[2].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCreateFileW ((HANDLE(WINAPI*)(LPCWSTR,DWORD,DWORD, \
+        LPSECURITY_ਗੁਣ,DWORD,DWORD,HANDLE))aSyscall[2].pCurrent)
 
-#if defined(SQLITE_UWP)
+#ਜੇ defined(SQLITE_UWP)
   { "CreateFileMappingFromApp",(SYSCALL)CreateFileMappingFromApp,0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "CreateFileMappingFromApp",(SYSCALL)0,                       0 },
-#endif
-#define osCreateFileMappingFromApp ((HANDLE(WINAPI*)(HANDLE,\
-        PSECURITY_ATTRIBUTES, \
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCreateFileMappingFromApp ((HANDLE(WINAPI*)(HANDLE,\
+        PSECURITY_ਗੁਣ, \
         ULONG,ULONG64,PCWSTR))aSyscall[3].pCurrent)
 
-#if !defined(SQLITE_UWP)
+#ਜੇ !defined(SQLITE_UWP)
   { "CreateFileMappingW",      (SYSCALL)CreateFileMappingW,      0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "CreateFileMappingW",      (SYSCALL)0,                       0 },
-#endif
-#define osCreateFileMappingW ((HANDLE(WINAPI*)(HANDLE,LPSECURITY_ATTRIBUTES, \
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCreateFileMappingW ((HANDLE(WINAPI*)(HANDLE,LPSECURITY_ਗੁਣ, \
         DWORD,DWORD,DWORD,LPCWSTR))aSyscall[4].pCurrent)
 
   { "DeleteFileW",             (SYSCALL)DeleteFileW,             0 },
-#define osDeleteFileW ((BOOL(WINAPI*)(LPCWSTR))aSyscall[5].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osDeleteFileW ((BOOL(WINAPI*)(LPCWSTR))aSyscall[5].pCurrent)
 
   { "FlushFileBuffers",        (SYSCALL)FlushFileBuffers,        0 },
-#define osFlushFileBuffers ((BOOL(WINAPI*)(HANDLE))aSyscall[6].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osFlushFileBuffers ((BOOL(WINAPI*)(HANDLE))aSyscall[6].pCurrent)
 
-  { "FormatMessageW",          (SYSCALL)FormatMessageW,          0 },
-#define osFormatMessageW ((DWORD(WINAPI*)(DWORD,LPCVOID,DWORD,DWORD,LPWSTR, \
+  { "FormatMessageW",          (SYSCALL)Format_ਸੁਨੇਹਾ_W,          0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Format_ਸੁਨੇਹਾ_W ((DWORD(WINAPI*)(DWORD,LPCVOID,DWORD,DWORD,LPWSTR, \
         DWORD,va_list*))aSyscall[7].pCurrent)
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
+#ਜੇ !defined(SQLITE_OMIT_ਲੱਦੋ_EXTENSION) && !defined(SQLITE_UWP)
   { "FreeLibrary",             (SYSCALL)FreeLibrary,             0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "FreeLibrary",             (SYSCALL)0,                       0 },
-#endif
+#ਜੇ_ਅੰਤ
 
-#define osFreeLibrary ((BOOL(WINAPI*)(HMODULE))aSyscall[8].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osFreeLibrary ((BOOL(WINAPI*)(HMODULE))aSyscall[8].pCurrent)
 
   { "GetCurrentProcessId",     (SYSCALL)GetCurrentProcessId,     0 },
-#define osGetCurrentProcessId ((DWORD(WINAPI*)(VOID))aSyscall[9].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetCurrentProcessId ((DWORD(WINAPI*)(VOID))aSyscall[9].pCurrent)
 
-  { "GetFileAttributesW",      (SYSCALL)GetFileAttributesW,      0 },
-#define osGetFileAttributesW ((DWORD(WINAPI*)(LPCWSTR))aSyscall[10].pCurrent)
+  { "GetFileAttributesW",      (SYSCALL)Get_File_ਗੁਣ_W,      0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_File_ਗੁਣ_W ((DWORD(WINAPI*)(LPCWSTR))aSyscall[10].pCurrent)
 
-  { "GetFileAttributesExW",    (SYSCALL)GetFileAttributesExW,    0 },
-#define osGetFileAttributesExW ((BOOL(WINAPI*)(LPCWSTR,GET_FILEEX_INFO_LEVELS, \
+  { "GetFileAttributesExW",    (SYSCALL)Get_File_ਗੁਣ_Ex_W,    0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_File_ਗੁਣ_Ex_W ((BOOL(WINAPI*)(LPCWSTR,GET_FILEEX_INFO_ਪੱਧਰ, \
         LPVOID))aSyscall[11].pCurrent)
 
-  { "GetFileSizeEx",           (SYSCALL)GetFileSizeEx,           0 },
-#define osGetFileSizeEx ((BOOL(WINAPI*)(HANDLE, \
+  { "GetFileSizeEx",           (SYSCALL)Get_File_ਮਾਪ_Ex,           0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_File_ਮਾਪ_Ex ((BOOL(WINAPI*)(HANDLE, \
                         PLARGE_INTEGER))aSyscall[12].pCurrent)
 
-  { "GetFullPathNameW",        (SYSCALL)GetFullPathNameW,        0 },
-#define osGetFullPathNameW ((DWORD(WINAPI*)(LPCWSTR,DWORD,LPWSTR, \
+  { "GetFullPathNameW",        (SYSCALL)Get_ਭਰਿਆ_ਰਸਤਾ_Name_W,        0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_ਭਰਿਆ_ਰਸਤਾ_Name_W ((DWORD(WINAPI*)(LPCWSTR,DWORD,LPWSTR, \
         LPWSTR*))aSyscall[13].pCurrent)
 
-  { "GetLastError",            (SYSCALL)GetLastError,            0 },
-#define osGetLastError ((DWORD(WINAPI*)(VOID))aSyscall[14].pCurrent)
+  { "GetLastError",            (SYSCALL)Get_ਆਖਰੀ_Error,            0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_ਆਖਰੀ_Error ((DWORD(WINAPI*)(VOID))aSyscall[14].pCurrent)
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
-  { "GetProcAddressA",         (SYSCALL)GetProcAddress,          0 },
-#else
+#ਜੇ !defined(SQLITE_OMIT_ਲੱਦੋ_EXTENSION) && !defined(SQLITE_UWP)
+  { "GetProcAddressA",         (SYSCALL)Get_Proc_ਪਤਾ,          0 },
+#ਨਹੀਂਤਾਂ
   { "GetProcAddressA",         (SYSCALL)0,                       0 },
-#endif
-#define osGetProcAddressA ((FARPROC(WINAPI*)(HMODULE, \
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_Proc_ਪਤਾ_A ((FARPROC(WINAPI*)(HMODULE, \
         LPCSTR))aSyscall[15].pCurrent)
 
   { "GetSystemInfo",           (SYSCALL)GetSystemInfo,           0 },
-#define osGetSystemInfo ((VOID(WINAPI*)(LPSYSTEM_INFO))aSyscall[16].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetSystemInfo ((VOID(WINAPI*)(LPSYSTEM_INFO))aSyscall[16].pCurrent)
 
-  { "GetSystemTimeAsFileTime", (SYSCALL)GetSystemTimeAsFileTime, 0 },
-#define osGetSystemTimeAsFileTime ((VOID(WINAPI*)( \
+  { "GetSystemTimeAsFileTime", (SYSCALL)Get_System_ਸਮਾਂ_As_File_ਸਮਾਂ, 0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_System_ਸਮਾਂ_As_File_ਸਮਾਂ ((VOID(WINAPI*)( \
         LPFILETIME))aSyscall[17].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "GetTempPathW",            (SYSCALL)0,                       0 },
-#else
-  { "GetTempPathW",            (SYSCALL)GetTempPathW,            0 },
-#endif
-#define osGetTempPathW ((DWORD(WINAPI*)(DWORD,LPWSTR))aSyscall[18].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "GetTempPathW",            (SYSCALL)Get_ਆਰਜ਼ੀ_ਰਸਤਾ_W,            0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_ਆਰਜ਼ੀ_ਰਸਤਾ_W ((DWORD(WINAPI*)(DWORD,LPWSTR))aSyscall[18].pCurrent)
 
   { "GetTickCount64",          (SYSCALL)GetTickCount64,          0 },
-#define osGetTickCount64 ((ULONGLONG(WINAPI*)(VOID))aSyscall[19].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetTickCount64 ((ULONGLONG(WINAPI*)(VOID))aSyscall[19].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapAlloc",               (SYSCALL)0,                       0 },
-#else
-  { "HeapAlloc",               (SYSCALL)HeapAlloc,               0 },
-#endif
-#define osHeapAlloc ((LPVOID(WINAPI*)(HANDLE,DWORD, \
-        SIZE_T))aSyscall[20].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapAlloc",               (SYSCALL)ਢੇਰ_Alloc,               0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Alloc ((LPVOID(WINAPI*)(HANDLE,DWORD, \
+        ਮਾਪ_T))aSyscall[20].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapCreate",              (SYSCALL)0,                       0 },
-#else
-  { "HeapCreate",              (SYSCALL)HeapCreate,              0 },
-#endif
-#define osHeapCreate ((HANDLE(WINAPI*)(DWORD,SIZE_T, \
-        SIZE_T))aSyscall[21].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapCreate",              (SYSCALL)ਢੇਰ_Create,              0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Create ((HANDLE(WINAPI*)(DWORD,ਮਾਪ_T, \
+        ਮਾਪ_T))aSyscall[21].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapDestroy",             (SYSCALL)0,                       0 },
-#else
-  { "HeapDestroy",             (SYSCALL)HeapDestroy,             0 },
-#endif
-#define osHeapDestroy ((BOOL(WINAPI*)(HANDLE))aSyscall[22].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapDestroy",             (SYSCALL)ਢੇਰ_Destroy,             0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Destroy ((BOOL(WINAPI*)(HANDLE))aSyscall[22].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapFree",                (SYSCALL)0,                       0 },
-#else
-  { "HeapFree",                (SYSCALL)HeapFree,                0 },
-#endif
-#define osHeapFree ((BOOL(WINAPI*)(HANDLE,DWORD,LPVOID))aSyscall[23].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapFree",                (SYSCALL)ਢੇਰ_Free,                0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Free ((BOOL(WINAPI*)(HANDLE,DWORD,LPVOID))aSyscall[23].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapReAlloc",             (SYSCALL)0,                       0 },
-#else
-  { "HeapReAlloc",             (SYSCALL)HeapReAlloc,             0 },
-#endif
-#define osHeapReAlloc ((LPVOID(WINAPI*)(HANDLE,DWORD,LPVOID, \
-        SIZE_T))aSyscall[24].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapReAlloc",             (SYSCALL)ਢੇਰ_Re_Alloc,             0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Re_Alloc ((LPVOID(WINAPI*)(HANDLE,DWORD,LPVOID, \
+        ਮਾਪ_T))aSyscall[24].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapSize",                (SYSCALL)0,                       0 },
-#else
-  { "HeapSize",                (SYSCALL)HeapSize,                0 },
-#endif
-#define osHeapSize ((SIZE_T(WINAPI*)(HANDLE,DWORD, \
+#ਨਹੀਂਤਾਂ
+  { "HeapSize",                (SYSCALL)ਢੇਰ_ਮਾਪ,                0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_ਮਾਪ ((ਮਾਪ_T(WINAPI*)(HANDLE,DWORD, \
         LPCVOID))aSyscall[25].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapValidate",            (SYSCALL)0,                       0 },
-#else
-  { "HeapValidate",            (SYSCALL)HeapValidate,            0 },
-#endif
-#define osHeapValidate ((BOOL(WINAPI*)(HANDLE,DWORD, \
+#ਨਹੀਂਤਾਂ
+  { "HeapValidate",            (SYSCALL)ਢੇਰ_Validate,            0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Validate ((BOOL(WINAPI*)(HANDLE,DWORD, \
         LPCVOID))aSyscall[26].pCurrent)
 
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
   { "HeapCompact",             (SYSCALL)0,                       0 },
-#else
-  { "HeapCompact",             (SYSCALL)HeapCompact,             0 },
-#endif
-#define osHeapCompact ((UINT(WINAPI*)(HANDLE,DWORD))aSyscall[27].pCurrent)
+#ਨਹੀਂਤਾਂ
+  { "HeapCompact",             (SYSCALL)ਢੇਰ_Compact,             0 },
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਢੇਰ_Compact ((UINT(WINAPI*)(HANDLE,DWORD))aSyscall[27].pCurrent)
 
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
-  { "LoadLibraryW",            (SYSCALL)LoadLibraryW,            0 },
-#else
+#ਜੇ !defined(SQLITE_OMIT_ਲੱਦੋ_EXTENSION) && !defined(SQLITE_UWP)
+  { "LoadLibraryW",            (SYSCALL)ਲੱਦੋ_Library_W,            0 },
+#ਨਹੀਂਤਾਂ
   { "LoadLibraryW",            (SYSCALL)0,                       0 },
-#endif
-#define osLoadLibraryW ((HMODULE(WINAPI*)(LPCWSTR))aSyscall[28].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਲੱਦੋ_Library_W ((HMODULE(WINAPI*)(LPCWSTR))aSyscall[28].pCurrent)
 
   { "LocalFree",               (SYSCALL)LocalFree,               0 },
-#define osLocalFree ((HLOCAL(WINAPI*)(HLOCAL))aSyscall[29].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osLocalFree ((HLOCAL(WINAPI*)(HLOCAL))aSyscall[29].pCurrent)
 
-  { "LockFileEx",              (SYSCALL)LockFileEx,              0 },
-#define osLockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD,DWORD, \
+  { "LockFileEx",              (SYSCALL)ਤਾਲਾ_File_Ex,              0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਤਾਲਾ_File_Ex ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD,DWORD, \
         LPOVERLAPPED))aSyscall[30].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#ਜੇ (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ਮਾਪ>0) \
  && !defined(SQLITE_UWP)
-  { "MapViewOfFile",           (SYSCALL)MapViewOfFile,           0 },
-#else
+  { "MapViewOfFile",           (SYSCALL)Map_View_ਦਾ_File,           0 },
+#ਨਹੀਂਤਾਂ
   { "MapViewOfFile",           (SYSCALL)0,                       0 },
-#endif
-#define osMapViewOfFile ((LPVOID(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
-        SIZE_T))aSyscall[31].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Map_View_ਦਾ_File ((LPVOID(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
+        ਮਾਪ_T))aSyscall[31].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#ਜੇ (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ਮਾਪ>0) \
  && defined(SQLITE_UWP)
-  { "MapViewOfFileFromApp",    (SYSCALL)MapViewOfFileFromApp,   0 },
-#else
+  { "MapViewOfFileFromApp",    (SYSCALL)Map_View_ਦਾ_File_From_App,   0 },
+#ਨਹੀਂਤਾਂ
   { "MapViewOfFileFromApp",    (SYSCALL)0,                      0 },
-#endif
-#define osMapViewOfFileFromApp ((LPVOID(WINAPI*)(HANDLE,ULONG,ULONG64, \
-        SIZE_T))aSyscall[32].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Map_View_ਦਾ_File_From_App ((LPVOID(WINAPI*)(HANDLE,ULONG,ULONG64, \
+        ਮਾਪ_T))aSyscall[32].pCurrent)
 
-  { "MultiByteToWideChar",     (SYSCALL)MultiByteToWideChar,     0 },
-#define osMultiByteToWideChar ((int(WINAPI*)(UINT,DWORD,LPCSTR,int,LPWSTR, \
-        int))aSyscall[33].pCurrent)
+  { "MultiByteToWideChar",     (SYSCALL)Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char,     0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char ((ਪੂਰਨ(WINAPI*)(UINT,DWORD,LPCSTR,ਪੂਰਨ,LPWSTR, \
+        ਪੂਰਨ))aSyscall[33].pCurrent)
 
   { "QueryPerformanceCounter", (SYSCALL)QueryPerformanceCounter, 0 },
-#define osQueryPerformanceCounter ((BOOL(WINAPI*)( \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osQueryPerformanceCounter ((BOOL(WINAPI*)( \
         LARGE_INTEGER*))aSyscall[34].pCurrent)
 
   { "ReadFile",                (SYSCALL)ReadFile,                0 },
-#define osReadFile ((BOOL(WINAPI*)(HANDLE,LPVOID,DWORD,LPDWORD, \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osReadFile ((BOOL(WINAPI*)(HANDLE,LPVOID,DWORD,LPDWORD, \
         LPOVERLAPPED))aSyscall[35].pCurrent)
 
-  { "SetEndOfFile",            (SYSCALL)SetEndOfFile,            0 },
-#define osSetEndOfFile ((BOOL(WINAPI*)(HANDLE))aSyscall[36].pCurrent)
+  { "SetEndOfFile",            (SYSCALL)ਸੈੱਟ_ਸਿਰਾ_ਦਾ_File,            0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਸੈੱਟ_ਸਿਰਾ_ਦਾ_File ((BOOL(WINAPI*)(HANDLE))aSyscall[36].pCurrent)
 
-  { "SetFilePointerEx",        (SYSCALL)SetFilePointerEx,        0 },
-#define osSetFilePointerEx ((BOOL(WINAPI*)(HANDLE,LARGE_INTEGER,\
+  { "SetFilePointerEx",        (SYSCALL)ਸੈੱਟ_File_ਸੂਚਕ_Ex,        0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_ਸੈੱਟ_File_ਸੂਚਕ_Ex ((BOOL(WINAPI*)(HANDLE,LARGE_INTEGER,\
         PLARGE_INTEGER,DWORD))aSyscall[37].pCurrent)
 
   { "Sleep",                   (SYSCALL)Sleep,                   0 },
-#define osSleep ((VOID(WINAPI*)(DWORD))aSyscall[38].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osSleep ((VOID(WINAPI*)(DWORD))aSyscall[38].pCurrent)
 
   { "UnlockFileEx",            (SYSCALL)UnlockFileEx,            0 },
-#define osUnlockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osUnlockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
         LPOVERLAPPED))aSyscall[39].pCurrent)
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
-  { "UnmapViewOfFile",         (SYSCALL)UnmapViewOfFile,         0 },
-#else
+#ਜੇ !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ਮਾਪ>0
+  { "UnmapViewOfFile",         (SYSCALL)Unmap_View_ਦਾ_File,         0 },
+#ਨਹੀਂਤਾਂ
   { "UnmapViewOfFile",         (SYSCALL)0,                       0 },
-#endif
-#define osUnmapViewOfFile ((BOOL(WINAPI*)(LPCVOID))aSyscall[40].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Unmap_View_ਦਾ_File ((BOOL(WINAPI*)(LPCVOID))aSyscall[40].pCurrent)
 
-  { "WideCharToMultiByte",     (SYSCALL)WideCharToMultiByte,     0 },
-#define osWideCharToMultiByte ((int(WINAPI*)(UINT,DWORD,LPCWSTR,int,LPSTR,int, \
+  { "WideCharToMultiByte",     (SYSCALL)Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte,     0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte ((ਪੂਰਨ(WINAPI*)(UINT,DWORD,LPCWSTR,ਪੂਰਨ,LPSTR,ਪੂਰਨ, \
         LPCSTR,LPBOOL))aSyscall[41].pCurrent)
 
   { "WriteFile",               (SYSCALL)WriteFile,               0 },
-#define osWriteFile ((BOOL(WINAPI*)(HANDLE,LPCVOID,DWORD,LPDWORD, \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osWriteFile ((BOOL(WINAPI*)(HANDLE,LPCVOID,DWORD,LPDWORD, \
         LPOVERLAPPED))aSyscall[42].pCurrent)
 
   { "WaitForSingleObject",     (SYSCALL)WaitForSingleObject,     0 },
-#define osWaitForSingleObject ((DWORD(WINAPI*)(HANDLE, \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osWaitForSingleObject ((DWORD(WINAPI*)(HANDLE, \
         DWORD))aSyscall[43].pCurrent)
 
   { "WaitForSingleObjectEx",   (SYSCALL)WaitForSingleObjectEx,   0 },
-#define osWaitForSingleObjectEx ((DWORD(WINAPI*)(HANDLE,DWORD, \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osWaitForSingleObjectEx ((DWORD(WINAPI*)(HANDLE,DWORD, \
         BOOL))aSyscall[44].pCurrent)
 
   { "OutputDebugStringA",      (SYSCALL)OutputDebugStringA,      0 },
-#define osOutputDebugStringA ((VOID(WINAPI*)(LPCSTR))aSyscall[45].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osOutputDebugStringA ((VOID(WINAPI*)(LPCSTR))aSyscall[45].pCurrent)
 
-  { "GetProcessHeap",          (SYSCALL)GetProcessHeap,          0 },
-#define osGetProcessHeap ((HANDLE(WINAPI*)(VOID))aSyscall[46].pCurrent)
+  { "GetProcessHeap",          (SYSCALL)Get_Process_ਢੇਰ,          0 },
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Get_Process_ਢੇਰ ((HANDLE(WINAPI*)(VOID))aSyscall[46].pCurrent)
 
 /*
 ** NOTE: On some sub-platforms, the InterlockedCompareExchange "function"
 **       is really just a macro that uses a compiler intrinsic (e.g. x64).
 **       So do not try to make this is into a redefinable interface.
 */
-#if defined(InterlockedCompareExchange)
+#ਜੇ defined(InterlockedCompareExchange)
   { "InterlockedCompareExchange", (SYSCALL)0,                    0 },
-#define osInterlockedCompareExchange InterlockedCompareExchange
-#else
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osInterlockedCompareExchange InterlockedCompareExchange
+#ਨਹੀਂਤਾਂ
   { "InterlockedCompareExchange", (SYSCALL)InterlockedCompareExchange, 0 },
-#define osInterlockedCompareExchange ((LONG(WINAPI*)(LONG volatile*,\
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osInterlockedCompareExchange ((LONG(WINAPI*)(LONG ਅਸਥਿਰ*,\
         LONG,LONG))aSyscall[47].pCurrent)
-#endif /* defined(InterlockedCompareExchange) */
+#ਜੇ_ਅੰਤ /* defined(InterlockedCompareExchange) */
 
-#if SQLITE_WIN32_USE_UUID
+#ਜੇ SQLITE_WIN32_USE_UUID
   { "UuidCreate",               (SYSCALL)UuidCreate,             0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "UuidCreate",               (SYSCALL)0,                      0 },
-#endif
-#define osUuidCreate ((RPC_STATUS(RPC_ENTRY*)(UUID*))aSyscall[48].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osUuidCreate ((RPC_ਸਥਿਤੀ(RPC_ਇੰਦਰਾਜ*)(UUID*))aSyscall[48].pCurrent)
 
-#if SQLITE_WIN32_USE_UUID
+#ਜੇ SQLITE_WIN32_USE_UUID
   { "UuidCreateSequential",     (SYSCALL)UuidCreateSequential,   0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "UuidCreateSequential",     (SYSCALL)0,                      0 },
-#endif
-#define osUuidCreateSequential \
-        ((RPC_STATUS(RPC_ENTRY*)(UUID*))aSyscall[49].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osUuidCreateSequential \
+        ((RPC_ਸਥਿਤੀ(RPC_ਇੰਦਰਾਜ*)(UUID*))aSyscall[49].pCurrent)
 
-#if !defined(SQLITE_NO_SYNC) && SQLITE_MAX_MMAP_SIZE>0
-  { "FlushViewOfFile",          (SYSCALL)FlushViewOfFile,        0 },
-#else
+#ਜੇ !defined(SQLITE_NO_SYNC) && SQLITE_MAX_MMAP_ਮਾਪ>0
+  { "FlushViewOfFile",          (SYSCALL)Flush_View_ਦਾ_File,        0 },
+#ਨਹੀਂਤਾਂ
   { "FlushViewOfFile",          (SYSCALL)0,                      0 },
-#endif
-#define osFlushViewOfFile \
-        ((BOOL(WINAPI*)(LPCVOID,SIZE_T))aSyscall[50].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Flush_View_ਦਾ_File \
+        ((BOOL(WINAPI*)(LPCVOID,ਮਾਪ_T))aSyscall[50].pCurrent)
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
   { "CreateEvent",              (SYSCALL)CreateEvent,            0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "CreateEvent",              (SYSCALL)0,                      0 },
-#endif
-#define osCreateEvent ((HANDLE(WINAPI*)(LPSECURITY_ATTRIBUTES,BOOL, \
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCreateEvent ((HANDLE(WINAPI*)(LPSECURITY_ਗੁਣ,BOOL, \
                         BOOL,LPCSTR))aSyscall[51].pCurrent)
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
   { "CancelIo",                 (SYSCALL)CancelIo,               0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "CancelIo",                 (SYSCALL)0,                      0 },
-#endif
-#define osCancelIo ((BOOL(WINAPI*)(HANDLE))aSyscall[52].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osCancelIo ((BOOL(WINAPI*)(HANDLE))aSyscall[52].pCurrent)
 
-#ifndef _WIN32
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
   { "getenv",                   (SYSCALL)getenv,                 0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "getenv",                   (SYSCALL)0,                      0 },
-#endif
-#define osGetenv ((const char *(*)(const char *))aSyscall[53].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetenv ((ਅਚਲ ਅੱਖਰ *(*)(ਅਚਲ ਅੱਖਰ *))aSyscall[53].pCurrent)
 
-#ifndef _WIN32
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
   { "getcwd",                   (SYSCALL)getcwd,                 0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "getcwd",                   (SYSCALL)0,                      0 },
-#endif
-#define osGetcwd ((char*(*)(char*,size_t))aSyscall[54].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetcwd ((ਅੱਖਰ*(*)(ਅੱਖਰ*,size_t))aSyscall[54].pCurrent)
 
-#ifndef _WIN32
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
   { "readlink",                 (SYSCALL)readlink,               0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "readlink",                 (SYSCALL)0,                      0 },
-#endif
-#define osReadlink ((ssize_t(*)(const char*,char*,size_t))aSyscall[55].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osReadlink ((ssize_t(*)(ਅਚਲ ਅੱਖਰ*,ਅੱਖਰ*,size_t))aSyscall[55].pCurrent)
 
-#ifndef _WIN32
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
   { "lstat",                    (SYSCALL)lstat,                  0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "lstat",                    (SYSCALL)0,                      0 },
-#endif
-#define osLstat ((int(*)(const char*,struct stat*))aSyscall[56].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osLstat ((ਪੂਰਨ(*)(ਅਚਲ ਅੱਖਰ*,ਬਣਤਰ stat*))aSyscall[56].pCurrent)
 
-#ifndef _WIN32
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
   { "__errno",                  (SYSCALL)__errno,                0 },
-#else
+#ਨਹੀਂਤਾਂ
   { "__errno",                  (SYSCALL)0,                      0 },
-#endif
-#define osErrno (*((int*(*)(void))aSyscall[57].pCurrent)())
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osErrno (*((ਪੂਰਨ*(*)(ਖਾਲੀ))aSyscall[57].pCurrent)())
 
-#ifndef _WIN32
-  { "cygwin_conv_path",         (SYSCALL)cygwin_conv_path,       0 },
-#else
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _WIN32
+  { "cygwin_conv_path",         (SYSCALL)cygwin_conv_ਰਸਤਾ,       0 },
+#ਨਹੀਂਤਾਂ
   { "cygwin_conv_path",         (SYSCALL)0,                      0 },
-#endif
-#define osCygwin_conv_path ((size_t(*)(unsigned int, \
-    const void *, void *, size_t))aSyscall[58].pCurrent)
+#ਜੇ_ਅੰਤ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ os_Cygwin_conv_ਰਸਤਾ ((size_t(*)(ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ, \
+    ਅਚਲ ਖਾਲੀ *, ਖਾਲੀ *, size_t))aSyscall[58].pCurrent)
 
   { "GetDriveTypeW",            (SYSCALL)GetDriveTypeW,          0 },
-#define osGetDriveTypeW ((UINT(WINAPI*)(LPCWSTR))aSyscall[59].pCurrent)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ osGetDriveTypeW ((UINT(WINAPI*)(LPCWSTR))aSyscall[59].pCurrent)
 
 }; /* End of the overrideable system calls */
 
@@ -700,42 +700,42 @@ static struct win_syscall {
 ** system call pointer, or SQLITE_NOTFOUND if there is no configurable
 ** system call named zName.
 */
-static int winSetSystemCall(
-  sqlite3_vfs *pNotUsed,        /* The VFS pointer.  Not used */
-  const char *zName,            /* Name of system call to override */
+ਸਥਿਰ ਪੂਰਨ win_ਸੈੱਟ_System_Call(
+  sqlite3_vfs *p_Not_ਵਰਤਿਆ,        /* The VFS pointer.  Not used */
+  ਅਚਲ ਅੱਖਰ *zName,            /* Name of system call to override */
   sqlite3_syscall_ptr pNewFunc  /* Pointer to new system call value */
 ){
-  unsigned int i;
-  int rc = SQLITE_NOTFOUND;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i;
+  ਪੂਰਨ rc = SQLITE_NOTFOUND;
 
-  UNUSED_PARAMETER(pNotUsed);
-  if( zName==0 ){
+  ਅਣਵਰਤਿਆ_PARAMETER(p_Not_ਵਰਤਿਆ);
+  ਜੇ( zName==0 ){
     /* If no zName is given, restore all system calls to their default
     ** settings and return NULL
     */
     rc = SQLITE_OK;
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( aSyscall[i].pDefault ){
+    ਲਈ(i=0; i<ਆਕਾਰ(aSyscall)/ਆਕਾਰ(aSyscall[0]); i++){
+      ਜੇ( aSyscall[i].pDefault ){
         aSyscall[i].pCurrent = aSyscall[i].pDefault;
       }
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     /* If zName is specified, operate on only the one system call
     ** specified.
     */
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ){
-        if( aSyscall[i].pDefault==0 ){
+    ਲਈ(i=0; i<ਆਕਾਰ(aSyscall)/ਆਕਾਰ(aSyscall[0]); i++){
+      ਜੇ( strcmp(zName, aSyscall[i].zName)==0 ){
+        ਜੇ( aSyscall[i].pDefault==0 ){
           aSyscall[i].pDefault = aSyscall[i].pCurrent;
         }
         rc = SQLITE_OK;
-        if( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
+        ਜੇ( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
         aSyscall[i].pCurrent = pNewFunc;
-        break;
+        ਰੋਕੋ;
       }
     }
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -743,17 +743,17 @@ static int winSetSystemCall(
 ** recognized system call name.  NULL is also returned if the system call
 ** is currently undefined.
 */
-static sqlite3_syscall_ptr winGetSystemCall(
-  sqlite3_vfs *pNotUsed,
-  const char *zName
+ਸਥਿਰ sqlite3_syscall_ptr winGetSystemCall(
+  sqlite3_vfs *p_Not_ਵਰਤਿਆ,
+  ਅਚਲ ਅੱਖਰ *zName
 ){
-  unsigned int i;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i;
 
-  UNUSED_PARAMETER(pNotUsed);
-  for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-    if( strcmp(zName, aSyscall[i].zName)==0 ) return aSyscall[i].pCurrent;
+  ਅਣਵਰਤਿਆ_PARAMETER(p_Not_ਵਰਤਿਆ);
+  ਲਈ(i=0; i<ਆਕਾਰ(aSyscall)/ਆਕਾਰ(aSyscall[0]); i++){
+    ਜੇ( strcmp(zName, aSyscall[i].zName)==0 ) ਵਾਪਸ aSyscall[i].pCurrent;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -762,25 +762,25 @@ static sqlite3_syscall_ptr winGetSystemCall(
 ** is the last system call or if zName is not the name of a valid
 ** system call.
 */
-static const char *winNextSystemCall(sqlite3_vfs *p, const char *zName){
-  int i = -1;
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ *win_ਅਗਲਾ_System_Call(sqlite3_vfs *p, ਅਚਲ ਅੱਖਰ *zName){
+  ਪੂਰਨ i = -1;
 
-  UNUSED_PARAMETER(p);
-  if( zName ){
-    for(i=0; i<ArraySize(aSyscall)-1; i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ) break;
+  ਅਣਵਰਤਿਆ_PARAMETER(p);
+  ਜੇ( zName ){
+    ਲਈ(i=0; i<Array_ਮਾਪ(aSyscall)-1; i++){
+      ਜੇ( strcmp(zName, aSyscall[i].zName)==0 ) ਰੋਕੋ;
     }
   }
-  for(i++; i<ArraySize(aSyscall); i++){
-    if( aSyscall[i].pCurrent!=0 ) return aSyscall[i].zName;
+  ਲਈ(i++; i<Array_ਮਾਪ(aSyscall); i++){
+    ਜੇ( aSyscall[i].pCurrent!=0 ) ਵਾਪਸ aSyscall[i].zName;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
-#ifdef SQLITE_WIN32_MALLOC
-#ifdef SQLITE_UWP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MALLOC
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
 # error SQLITE_WIN32_MALLOC is incompatible with SQLITE_UWP
-#endif
+#ਜੇ_ਅੰਤ
 /*
 ** If a Win32 native heap has been configured, this function will attempt to
 ** compact it.  Upon success, SQLITE_OK will be returned.  Upon failure, one
@@ -788,32 +788,32 @@ static const char *winNextSystemCall(sqlite3_vfs *p, const char *zName){
 ** "pnLargest" argument, if non-zero, will be used to return the size of the
 ** largest committed free block in the heap, in bytes.
 */
-int sqlite3_win32_compact_heap(LPUINT pnLargest){
-  int rc = SQLITE_OK;
-  UINT nLargest = 0;
-  HANDLE hHeap;
+ਪੂਰਨ sqlite3_win32_compact_ਢੇਰ(LPUINT pn_ਸਭ_ਤੋਂ_ਵੱਡਾ){
+  ਪੂਰਨ rc = SQLITE_OK;
+  UINT n_ਸਭ_ਤੋਂ_ਵੱਡਾ = 0;
+  HANDLE h_ਢੇਰ;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  if( (nLargest=osHeapCompact(hHeap, SQLITE_WIN32_HEAP_FLAGS))==0 ){
-    DWORD lastErrno = osGetLastError();
-    if( lastErrno==NO_ERROR ){
+  h_ਢੇਰ = win_Mem_Get_ਢੇਰ();
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, ਨਿਰਾ) );
+#ਜੇ_ਅੰਤ
+  ਜੇ( (n_ਸਭ_ਤੋਂ_ਵੱਡਾ=os_ਢੇਰ_Compact(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS))==0 ){
+    DWORD ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+    ਜੇ( ਆਖਰੀ_Errno==NO_ERROR ){
       sqlite3_log(SQLITE_NOMEM, "failed to HeapCompact (no space), heap=%p",
-                  (void*)hHeap);
+                  (ਖਾਲੀ*)h_ਢੇਰ);
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       sqlite3_log(SQLITE_ERROR, "failed to HeapCompact (%lu), heap=%p",
-                  osGetLastError(), (void*)hHeap);
+                  os_Get_ਆਖਰੀ_Error(), (ਖਾਲੀ*)h_ਢੇਰ);
       rc = SQLITE_ERROR;
     }
   }
-  if( pnLargest ) *pnLargest = nLargest;
-  return rc;
+  ਜੇ( pn_ਸਭ_ਤੋਂ_ਵੱਡਾ ) *pn_ਸਭ_ਤੋਂ_ਵੱਡਾ = n_ਸਭ_ਤੋਂ_ਵੱਡਾ;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -822,8 +822,8 @@ int sqlite3_win32_compact_heap(LPUINT pnLargest){
 ** the sqlite3_memory_used() function does not return zero, SQLITE_BUSY will
 ** be returned and no changes will be made to the Win32 native heap.
 */
-int sqlite3_win32_reset_heap(){
-  int rc;
+ਪੂਰਨ sqlite3_win32_reset_ਢੇਰ(){
+  ਪੂਰਨ rc;
   MUTEX_LOGIC( sqlite3_mutex *pMainMtx; ) /* The main static mutex */
   MUTEX_LOGIC( sqlite3_mutex *pMem; )    /* The memsys static mutex */
   MUTEX_LOGIC( pMainMtx = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
@@ -831,7 +831,7 @@ int sqlite3_win32_reset_heap(){
   sqlite3_mutex_enter(pMainMtx);
   sqlite3_mutex_enter(pMem);
   winMemAssertMagic();
-  if( winMemGetHeap()!=NULL && winMemGetOwned() && sqlite3_memory_used()==0 ){
+  ਜੇ( win_Mem_Get_ਢੇਰ()!=ਨਿਰਾ && winMemGetOwned() && sqlite3_ਸਮ੍ਰਿਤੀ_ਵਰਤਿਆ()==0 ){
     /*
     ** At this point, there should be no outstanding memory allocations on
     ** the heap.  Also, since both the main and memsys locks are currently
@@ -839,18 +839,18 @@ int sqlite3_win32_reset_heap(){
     ** be able to even access the heap.  Attempt to destroy and recreate our
     ** isolated Win32 native heap now.
     */
-    assert( winMemGetHeap()!=NULL );
-    assert( winMemGetOwned() );
-    assert( sqlite3_memory_used()==0 );
-    winMemShutdown(winMemGetDataPtr());
-    assert( winMemGetHeap()==NULL );
-    assert( !winMemGetOwned() );
-    assert( sqlite3_memory_used()==0 );
-    rc = winMemInit(winMemGetDataPtr());
-    assert( rc!=SQLITE_OK || winMemGetHeap()!=NULL );
-    assert( rc!=SQLITE_OK || winMemGetOwned() );
-    assert( rc!=SQLITE_OK || sqlite3_memory_used()==0 );
-  }else{
+    ਪ੍ਰਤਿਜ੍ਞਾ( win_Mem_Get_ਢੇਰ()!=ਨਿਰਾ );
+    ਪ੍ਰਤਿਜ੍ਞਾ( winMemGetOwned() );
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਸਮ੍ਰਿਤੀ_ਵਰਤਿਆ()==0 );
+    winMemShutdown(win_Mem_Get_ਅੰਕੜੇ_Ptr());
+    ਪ੍ਰਤਿਜ੍ਞਾ( win_Mem_Get_ਢੇਰ()==ਨਿਰਾ );
+    ਪ੍ਰਤਿਜ੍ਞਾ( !winMemGetOwned() );
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_ਸਮ੍ਰਿਤੀ_ਵਰਤਿਆ()==0 );
+    rc = winMemInit(win_Mem_Get_ਅੰਕੜੇ_Ptr());
+    ਪ੍ਰਤਿਜ੍ਞਾ( rc!=SQLITE_OK || win_Mem_Get_ਢੇਰ()!=ਨਿਰਾ );
+    ਪ੍ਰਤਿਜ੍ਞਾ( rc!=SQLITE_OK || winMemGetOwned() );
+    ਪ੍ਰਤਿਜ੍ਞਾ( rc!=SQLITE_OK || sqlite3_ਸਮ੍ਰਿਤੀ_ਵਰਤਿਆ()==0 );
+  }ਨਹੀਂਤਾਂ{
     /*
     ** The Win32 native heap cannot be modified because it may be in use.
     */
@@ -858,224 +858,224 @@ int sqlite3_win32_reset_heap(){
   }
   sqlite3_mutex_leave(pMem);
   sqlite3_mutex_leave(pMainMtx);
-  return rc;
+  ਵਾਪਸ rc;
 }
-#endif /* SQLITE_WIN32_MALLOC */
+#ਜੇ_ਅੰਤ /* SQLITE_WIN32_MALLOC */
 
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 /*
 ** This function outputs the specified (ANSI) string to the Win32 debugger
 ** (if available).  Undocumented.  Might go away at any moment.
 */
-void sqlite3_win32_write_debug(const char *zBuf, int nBuf){
-  char zDbgBuf[SQLITE_WIN32_DBG_BUF_SIZE];
-  int nMin = MIN(nBuf, (SQLITE_WIN32_DBG_BUF_SIZE - 1)); /* may be negative. */
-  if( nMin<-1 ) nMin = -1; /* all negative values become -1. */
-  assert( nMin==-1 || nMin==0 || nMin<SQLITE_WIN32_DBG_BUF_SIZE );
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zBuf ){
-    (void)SQLITE_MISUSE_BKPT;
-    return;
+ਖਾਲੀ sqlite3_win32_write_debug(ਅਚਲ ਅੱਖਰ *zBuf, ਪੂਰਨ nBuf){
+  ਅੱਖਰ zDbgBuf[SQLITE_WIN32_DBG_BUF_ਮਾਪ];
+  ਪੂਰਨ nMin = MIN(nBuf, (SQLITE_WIN32_DBG_BUF_ਮਾਪ - 1)); /* may be negative. */
+  ਜੇ( nMin<-1 ) nMin = -1; /* all negative values become -1. */
+  ਪ੍ਰਤਿਜ੍ਞਾ( nMin==-1 || nMin==0 || nMin<SQLITE_WIN32_DBG_BUF_ਮਾਪ );
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !zBuf ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ;
   }
-#endif
-  if( nMin>0 ){
-    memset(zDbgBuf, 0, SQLITE_WIN32_DBG_BUF_SIZE);
-    memcpy(zDbgBuf, zBuf, nMin);
+#ਜੇ_ਅੰਤ
+  ਜੇ( nMin>0 ){
+    memset(zDbgBuf, 0, SQLITE_WIN32_DBG_BUF_ਮਾਪ);
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(zDbgBuf, zBuf, nMin);
     osOutputDebugStringA(zDbgBuf);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     osOutputDebugStringA(zBuf);
   }
 }
 
-void sqlite3_win32_sleep(DWORD milliseconds){
+ਖਾਲੀ sqlite3_win32_sleep(DWORD milliseconds){
   osSleep(milliseconds);
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0 && SQLITE_THREADSAFE>0
+#ਜੇ SQLITE_MAX_ਕਾਮਾ_ਧਾਗੇ>0 && SQLITE_THREADSAFE>0
 DWORD sqlite3Win32Wait(HANDLE hObject){
   DWORD rc;
-  while( (rc = osWaitForSingleObjectEx(hObject, INFINITE,
+  ਜਦੋਂ( (rc = osWaitForSingleObjectEx(hObject, INFINITE,
                                        TRUE))==WAIT_IO_COMPLETION ){}
-  return rc;
+  ਵਾਪਸ rc;
 }
-#endif
-#endif /* _WIN32 */
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅੰਤ /* _WIN32 */
 
-#ifdef SQLITE_WIN32_MALLOC
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_MALLOC
 /*
 ** Allocate nBytes of memory.
 */
-static void *winMemMalloc(int nBytes){
-  HANDLE hHeap;
-  void *p;
+ਸਥਿਰ ਖਾਲੀ *winMemMalloc(ਪੂਰਨ n_ਬਾਈਟਾਂ){
+  HANDLE h_ਢੇਰ;
+  ਖਾਲੀ *p;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  assert( nBytes>=0 );
-  p = osHeapAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, (SIZE_T)nBytes);
-  if( !p ){
+  h_ਢੇਰ = win_Mem_Get_ਢੇਰ();
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, ਨਿਰਾ) );
+#ਜੇ_ਅੰਤ
+  ਪ੍ਰਤਿਜ੍ਞਾ( n_ਬਾਈਟਾਂ>=0 );
+  p = os_ਢੇਰ_Alloc(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, (ਮਾਪ_T)n_ਬਾਈਟਾਂ);
+  ਜੇ( !p ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapAlloc %u bytes (%lu), heap=%p",
-                nBytes, osGetLastError(), (void*)hHeap);
+                n_ਬਾਈਟਾਂ, os_Get_ਆਖਰੀ_Error(), (ਖਾਲੀ*)h_ਢੇਰ);
   }
-  return p;
+  ਵਾਪਸ p;
 }
 
 /*
 ** Free memory.
 */
-static void winMemFree(void *pPrior){
-  HANDLE hHeap;
+ਸਥਿਰ ਖਾਲੀ winMemFree(ਖਾਲੀ *p_ਪੂਰਵ){
+  HANDLE h_ਢੇਰ;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) );
-#endif
-  if( !pPrior ) return; /* Passing NULL to HeapFree is undefined. */
-  if( !osHeapFree(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) ){
+  h_ਢੇਰ = win_Mem_Get_ਢੇਰ();
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p_ਪੂਰਵ) );
+#ਜੇ_ਅੰਤ
+  ਜੇ( !p_ਪੂਰਵ ) ਵਾਪਸ; /* Passing NULL to HeapFree is undefined. */
+  ਜੇ( !os_ਢੇਰ_Free(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p_ਪੂਰਵ) ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapFree block %p (%lu), heap=%p",
-                pPrior, osGetLastError(), (void*)hHeap);
+                p_ਪੂਰਵ, os_Get_ਆਖਰੀ_Error(), (ਖਾਲੀ*)h_ਢੇਰ);
   }
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
-static void *winMemRealloc(void *pPrior, int nBytes){
-  HANDLE hHeap;
-  void *p;
+ਸਥਿਰ ਖਾਲੀ *winMemRealloc(ਖਾਲੀ *p_ਪੂਰਵ, ਪੂਰਨ n_ਬਾਈਟਾਂ){
+  HANDLE h_ਢੇਰ;
+  ਖਾਲੀ *p;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) );
-#endif
-  assert( nBytes>=0 );
-  if( !pPrior ){
-    p = osHeapAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, (SIZE_T)nBytes);
-  }else{
-    p = osHeapReAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior, (SIZE_T)nBytes);
+  h_ਢੇਰ = win_Mem_Get_ਢੇਰ();
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p_ਪੂਰਵ) );
+#ਜੇ_ਅੰਤ
+  ਪ੍ਰਤਿਜ੍ਞਾ( n_ਬਾਈਟਾਂ>=0 );
+  ਜੇ( !p_ਪੂਰਵ ){
+    p = os_ਢੇਰ_Alloc(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, (ਮਾਪ_T)n_ਬਾਈਟਾਂ);
+  }ਨਹੀਂਤਾਂ{
+    p = os_ਢੇਰ_Re_Alloc(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p_ਪੂਰਵ, (ਮਾਪ_T)n_ਬਾਈਟਾਂ);
   }
-  if( !p ){
+  ਜੇ( !p ){
     sqlite3_log(SQLITE_NOMEM, "failed to %s %u bytes (%lu), heap=%p",
-                pPrior ? "HeapReAlloc" : "HeapAlloc", nBytes, osGetLastError(),
-                (void*)hHeap);
+                p_ਪੂਰਵ ? "HeapReAlloc" : "HeapAlloc", n_ਬਾਈਟਾਂ, os_Get_ਆਖਰੀ_Error(),
+                (ਖਾਲੀ*)h_ਢੇਰ);
   }
-  return p;
+  ਵਾਪਸ p;
 }
 
 /*
 ** Return the size of an outstanding allocation, in bytes.
 */
-static int winMemSize(void *p){
-  HANDLE hHeap;
-  SIZE_T n;
+ਸਥਿਰ ਪੂਰਨ win_Mem_ਮਾਪ(ਖਾਲੀ *p){
+  HANDLE h_ਢੇਰ;
+  ਮਾਪ_T n;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, p) );
-#endif
-  if( !p ) return 0;
-  n = osHeapSize(hHeap, SQLITE_WIN32_HEAP_FLAGS, p);
-  if( n==(SIZE_T)-1 ){
+  h_ਢੇਰ = win_Mem_Get_ਢੇਰ();
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p) );
+#ਜੇ_ਅੰਤ
+  ਜੇ( !p ) ਵਾਪਸ 0;
+  n = os_ਢੇਰ_ਮਾਪ(h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, p);
+  ਜੇ( n==(ਮਾਪ_T)-1 ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapSize block %p (%lu), heap=%p",
-                p, osGetLastError(), (void*)hHeap);
-    return 0;
+                p, os_Get_ਆਖਰੀ_Error(), (ਖਾਲੀ*)h_ਢੇਰ);
+    ਵਾਪਸ 0;
   }
-  return (int)n;
+  ਵਾਪਸ (ਪੂਰਨ)n;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int winMemRoundup(int n){
-  return n;
+ਸਥਿਰ ਪੂਰਨ winMemRoundup(ਪੂਰਨ n){
+  ਵਾਪਸ n;
 }
 
 /*
 ** Initialize this module.
 */
-static int winMemInit(void *pAppData){
-  winMemData *pWinMemData = (winMemData *)pAppData;
+ਸਥਿਰ ਪੂਰਨ winMemInit(ਖਾਲੀ *p_App_ਅੰਕੜੇ){
+  win_Mem_ਅੰਕੜੇ *p_Win_Mem_ਅੰਕੜੇ = (win_Mem_ਅੰਕੜੇ *)p_App_ਅੰਕੜੇ;
 
-  if( !pWinMemData ) return SQLITE_ERROR;
-  assert( pWinMemData->magic1==WINMEM_MAGIC1 );
-  assert( pWinMemData->magic2==WINMEM_MAGIC2 );
+  ਜੇ( !p_Win_Mem_ਅੰਕੜੇ ) ਵਾਪਸ SQLITE_ERROR;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->magic1==WINMEM_MAGIC1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->magic2==WINMEM_MAGIC2 );
 
-#if SQLITE_WIN32_HEAP_CREATE
-  if( !pWinMemData->hHeap ){
-    DWORD dwInitialSize = SQLITE_WIN32_HEAP_INIT_SIZE;
-    DWORD dwMaximumSize = (DWORD)sqlite3GlobalConfig.nHeap;
-    if( dwMaximumSize==0 ){
-      dwMaximumSize = SQLITE_WIN32_HEAP_MAX_SIZE;
-    }else if( dwInitialSize>dwMaximumSize ){
-      dwInitialSize = dwMaximumSize;
+#ਜੇ SQLITE_WIN32_ਢੇਰ_CREATE
+  ਜੇ( !p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ ){
+    DWORD dw_Initial_ਮਾਪ = SQLITE_WIN32_ਢੇਰ_INIT_ਮਾਪ;
+    DWORD dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ = (DWORD)sqlite3GlobalConfig.n_ਢੇਰ;
+    ਜੇ( dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ==0 ){
+      dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ = SQLITE_WIN32_ਢੇਰ_MAX_ਮਾਪ;
+    }ਨਹੀਂਤਾਂ ਜੇ( dw_Initial_ਮਾਪ>dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ ){
+      dw_Initial_ਮਾਪ = dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ;
     }
-    pWinMemData->hHeap = osHeapCreate(SQLITE_WIN32_HEAP_FLAGS,
-                                      dwInitialSize, dwMaximumSize);
-    if( !pWinMemData->hHeap ){
+    p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ = os_ਢੇਰ_Create(SQLITE_WIN32_ਢੇਰ_FLAGS,
+                                      dw_Initial_ਮਾਪ, dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ);
+    ਜੇ( !p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ ){
       sqlite3_log(SQLITE_NOMEM,
           "failed to HeapCreate (%lu), flags=%u, initSize=%lu, maxSize=%lu",
-          osGetLastError(), SQLITE_WIN32_HEAP_FLAGS, dwInitialSize,
-          dwMaximumSize);
-      return SQLITE_NOMEM_BKPT;
+          os_Get_ਆਖਰੀ_Error(), SQLITE_WIN32_ਢੇਰ_FLAGS, dw_Initial_ਮਾਪ,
+          dw_ਵੱਧ_ਤੋਂ_ਵੱਧ_ਮਾਪ);
+      ਵਾਪਸ SQLITE_NOMEM_BKPT;
     }
-    pWinMemData->bOwned = TRUE;
-    assert( pWinMemData->bOwned );
+    p_Win_Mem_ਅੰਕੜੇ->bOwned = TRUE;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->bOwned );
   }
-#else
-  pWinMemData->hHeap = osGetProcessHeap();
-  if( !pWinMemData->hHeap ){
+#ਨਹੀਂਤਾਂ
+  p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ = os_Get_Process_ਢੇਰ();
+  ਜੇ( !p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ ){
     sqlite3_log(SQLITE_NOMEM,
-        "failed to GetProcessHeap (%lu)", osGetLastError());
-    return SQLITE_NOMEM_BKPT;
+        "failed to GetProcessHeap (%lu)", os_Get_ਆਖਰੀ_Error());
+    ਵਾਪਸ SQLITE_NOMEM_BKPT;
   }
-  pWinMemData->bOwned = FALSE;
-  assert( !pWinMemData->bOwned );
-#endif
-  assert( pWinMemData->hHeap!=0 );
-  assert( pWinMemData->hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(pWinMemData->hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  return SQLITE_OK;
+  p_Win_Mem_ਅੰਕੜੇ->bOwned = FALSE;
+  ਪ੍ਰਤਿਜ੍ਞਾ( !p_Win_Mem_ਅੰਕੜੇ->bOwned );
+#ਜੇ_ਅੰਤ
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, ਨਿਰਾ) );
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Deinitialize this module.
 */
-static void winMemShutdown(void *pAppData){
-  winMemData *pWinMemData = (winMemData *)pAppData;
+ਸਥਿਰ ਖਾਲੀ winMemShutdown(ਖਾਲੀ *p_App_ਅੰਕੜੇ){
+  win_Mem_ਅੰਕੜੇ *p_Win_Mem_ਅੰਕੜੇ = (win_Mem_ਅੰਕੜੇ *)p_App_ਅੰਕੜੇ;
 
-  if( !pWinMemData ) return;
-  assert( pWinMemData->magic1==WINMEM_MAGIC1 );
-  assert( pWinMemData->magic2==WINMEM_MAGIC2 );
+  ਜੇ( !p_Win_Mem_ਅੰਕੜੇ ) ਵਾਪਸ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->magic1==WINMEM_MAGIC1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->magic2==WINMEM_MAGIC2 );
 
-  if( pWinMemData->hHeap ){
-    assert( pWinMemData->hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-    assert( osHeapValidate(pWinMemData->hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-    if( pWinMemData->bOwned ){
-      if( !osHeapDestroy(pWinMemData->hHeap) ){
+  ਜੇ( p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ!=INVALID_HANDLE_ਮੁੱਲ );
+#ਜੇ defined(SQLITE_WIN32_MALLOC_VALIDATE)
+    ਪ੍ਰਤਿਜ੍ਞਾ( os_ਢੇਰ_Validate(p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ, SQLITE_WIN32_ਢੇਰ_FLAGS, ਨਿਰਾ) );
+#ਜੇ_ਅੰਤ
+    ਜੇ( p_Win_Mem_ਅੰਕੜੇ->bOwned ){
+      ਜੇ( !os_ਢੇਰ_Destroy(p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ) ){
         sqlite3_log(SQLITE_NOMEM, "failed to HeapDestroy (%lu), heap=%p",
-                    osGetLastError(), (void*)pWinMemData->hHeap);
+                    os_Get_ਆਖਰੀ_Error(), (ਖਾਲੀ*)p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ);
       }
-      pWinMemData->bOwned = FALSE;
+      p_Win_Mem_ਅੰਕੜੇ->bOwned = FALSE;
     }
-    pWinMemData->hHeap = NULL;
+    p_Win_Mem_ਅੰਕੜੇ->h_ਢੇਰ = ਨਿਰਾ;
   }
 }
 
@@ -1087,107 +1087,107 @@ static void winMemShutdown(void *pAppData){
 ** This routine is only called by sqlite3_config(), and therefore
 ** is not required to be threadsafe (it is not).
 */
-const sqlite3_mem_methods *sqlite3MemGetWin32(void){
-  static const sqlite3_mem_methods winMemMethods = {
+ਅਚਲ sqlite3_mem_methods *sqlite3MemGetWin32(ਖਾਲੀ){
+  ਸਥਿਰ ਅਚਲ sqlite3_mem_methods winMemMethods = {
     winMemMalloc,
     winMemFree,
     winMemRealloc,
-    winMemSize,
+    win_Mem_ਮਾਪ,
     winMemRoundup,
     winMemInit,
     winMemShutdown,
-    &win_mem_data
+    &win_mem_ਅੰਕੜੇ
   };
-  return &winMemMethods;
+  ਵਾਪਸ &winMemMethods;
 }
 
-void sqlite3MemSetDefault(void){
+ਖਾਲੀ sqlite3_Mem_ਸੈੱਟ_Default(ਖਾਲੀ){
   sqlite3_config(SQLITE_CONFIG_MALLOC, sqlite3MemGetWin32());
 }
-#endif /* SQLITE_WIN32_MALLOC */
+#ਜੇ_ਅੰਤ /* SQLITE_WIN32_MALLOC */
 
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 /*
 ** Convert a UTF-8 string to Microsoft Unicode.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static LPWSTR winUtf8ToUnicode(const char *zText){
-  int nChar;
-  LPWSTR zWideText;
+ਸਥਿਰ LPWSTR win_Utf8_ਮੰਜ਼ਿਲ_Unicode(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ){
+  ਪੂਰਨ nChar;
+  LPWSTR z_Wide_ਪਾਠ;
 
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zText, -1, NULL, 0);
-  if( nChar==0 ){
-    return 0;
+  nChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(CP_UTF8, 0, z_ਪਾਠ, -1, ਨਿਰਾ, 0);
+  ਜੇ( nChar==0 ){
+    ਵਾਪਸ 0;
   }
-  zWideText = sqlite3MallocZero( nChar*sizeof(WCHAR) );
-  if( zWideText==0 ){
-    return 0;
+  z_Wide_ਪਾਠ = sqlite3MallocZero( nChar*ਆਕਾਰ(WCHAR) );
+  ਜੇ( z_Wide_ਪਾਠ==0 ){
+    ਵਾਪਸ 0;
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zText, -1, zWideText,
+  nChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(CP_UTF8, 0, z_ਪਾਠ, -1, z_Wide_ਪਾਠ,
                                 nChar);
-  if( nChar==0 ){
-    sqlite3_free(zWideText);
-    zWideText = 0;
+  ਜੇ( nChar==0 ){
+    sqlite3_free(z_Wide_ਪਾਠ);
+    z_Wide_ਪਾਠ = 0;
   }
-  return zWideText;
+  ਵਾਪਸ z_Wide_ਪਾਠ;
 }
-#endif /* _WIN32 */
+#ਜੇ_ਅੰਤ /* _WIN32 */
 
 /*
 ** Convert a Microsoft Unicode string to UTF-8.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUnicodeToUtf8(LPCWSTR zWideText){
-  int nByte;
-  char *zText;
+ਸਥਿਰ ਅੱਖਰ *win_Unicode_ਮੰਜ਼ਿਲ_Utf8(LPCWSTR z_Wide_ਪਾਠ){
+  ਪੂਰਨ nByte;
+  ਅੱਖਰ *z_ਪਾਠ;
 
-  nByte = osWideCharToMultiByte(CP_UTF8, 0, zWideText, -1, 0, 0, 0, 0);
-  if( nByte == 0 ){
-    return 0;
+  nByte = os_Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte(CP_UTF8, 0, z_Wide_ਪਾਠ, -1, 0, 0, 0, 0);
+  ਜੇ( nByte == 0 ){
+    ਵਾਪਸ 0;
   }
-  zText = sqlite3MallocZero( nByte );
-  if( zText==0 ){
-    return 0;
+  z_ਪਾਠ = sqlite3MallocZero( nByte );
+  ਜੇ( z_ਪਾਠ==0 ){
+    ਵਾਪਸ 0;
   }
-  nByte = osWideCharToMultiByte(CP_UTF8, 0, zWideText, -1, zText, nByte,
+  nByte = os_Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte(CP_UTF8, 0, z_Wide_ਪਾਠ, -1, z_ਪਾਠ, nByte,
                                 0, 0);
-  if( nByte == 0 ){
-    sqlite3_free(zText);
-    zText = 0;
+  ਜੇ( nByte == 0 ){
+    sqlite3_free(z_ਪਾਠ);
+    z_ਪਾਠ = 0;
   }
-  return zText;
+  ਵਾਪਸ z_ਪਾਠ;
 }
 
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 /*
 ** Convert an ANSI string to Microsoft Unicode, using the ANSI or OEM
 ** code page.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static LPWSTR winMbcsToUnicode(const char *zText, int useAnsi){
-  int nWideChar;
-  LPWSTR zMbcsText;
-  int codepage = useAnsi ? CP_ACP : CP_OEMCP;
+ਸਥਿਰ LPWSTR win_Mbcs_ਮੰਜ਼ਿਲ_Unicode(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ, ਪੂਰਨ useAnsi){
+  ਪੂਰਨ nWideChar;
+  LPWSTR z_Mbcs_ਪਾਠ;
+  ਪੂਰਨ codepage = useAnsi ? CP_ACP : CP_OEMCP;
 
-  nWideChar = osMultiByteToWideChar(codepage, 0, zText, -1, NULL,
+  nWideChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(codepage, 0, z_ਪਾਠ, -1, ਨਿਰਾ,
                                 0);
-  if( nWideChar==0 ){
-    return 0;
+  ਜੇ( nWideChar==0 ){
+    ਵਾਪਸ 0;
   }
-  zMbcsText = sqlite3MallocZero( nWideChar*sizeof(WCHAR) );
-  if( zMbcsText==0 ){
-    return 0;
+  z_Mbcs_ਪਾਠ = sqlite3MallocZero( nWideChar*ਆਕਾਰ(WCHAR) );
+  ਜੇ( z_Mbcs_ਪਾਠ==0 ){
+    ਵਾਪਸ 0;
   }
-  nWideChar = osMultiByteToWideChar(codepage, 0, zText, -1, zMbcsText,
+  nWideChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(codepage, 0, z_ਪਾਠ, -1, z_Mbcs_ਪਾਠ,
                                 nWideChar);
-  if( nWideChar==0 ){
-    sqlite3_free(zMbcsText);
-    zMbcsText = 0;
+  ਜੇ( nWideChar==0 ){
+    sqlite3_free(z_Mbcs_ਪਾਠ);
+    z_Mbcs_ਪਾਠ = 0;
   }
-  return zMbcsText;
+  ਵਾਪਸ z_Mbcs_ਪਾਠ;
 }
 
 /*
@@ -1196,26 +1196,26 @@ static LPWSTR winMbcsToUnicode(const char *zText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUnicodeToMbcs(LPCWSTR zWideText, int useAnsi){
-  int nByte;
-  char *zText;
-  int codepage = useAnsi ? CP_ACP : CP_OEMCP;
+ਸਥਿਰ ਅੱਖਰ *win_Unicode_ਮੰਜ਼ਿਲ_Mbcs(LPCWSTR z_Wide_ਪਾਠ, ਪੂਰਨ useAnsi){
+  ਪੂਰਨ nByte;
+  ਅੱਖਰ *z_ਪਾਠ;
+  ਪੂਰਨ codepage = useAnsi ? CP_ACP : CP_OEMCP;
 
-  nByte = osWideCharToMultiByte(codepage, 0, zWideText, -1, 0, 0, 0, 0);
-  if( nByte == 0 ){
-    return 0;
+  nByte = os_Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte(codepage, 0, z_Wide_ਪਾਠ, -1, 0, 0, 0, 0);
+  ਜੇ( nByte == 0 ){
+    ਵਾਪਸ 0;
   }
-  zText = sqlite3MallocZero( nByte );
-  if( zText==0 ){
-    return 0;
+  z_ਪਾਠ = sqlite3MallocZero( nByte );
+  ਜੇ( z_ਪਾਠ==0 ){
+    ਵਾਪਸ 0;
   }
-  nByte = osWideCharToMultiByte(codepage, 0, zWideText, -1, zText,
+  nByte = os_Wide_Char_ਮੰਜ਼ਿਲ_Multi_Byte(codepage, 0, z_Wide_ਪਾਠ, -1, z_ਪਾਠ,
                                 nByte, 0, 0);
-  if( nByte == 0 ){
-    sqlite3_free(zText);
-    zText = 0;
+  ਜੇ( nByte == 0 ){
+    sqlite3_free(z_ਪਾਠ);
+    z_ਪਾਠ = 0;
   }
-  return zText;
+  ਵਾਪਸ z_ਪਾਠ;
 }
 
 /*
@@ -1223,17 +1223,17 @@ static char *winUnicodeToMbcs(LPCWSTR zWideText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winMbcsToUtf8(const char *zText, int useAnsi){
-  char *zTextUtf8;
+ਸਥਿਰ ਅੱਖਰ *win_Mbcs_ਮੰਜ਼ਿਲ_Utf8(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ, ਪੂਰਨ useAnsi){
+  ਅੱਖਰ *z_ਪਾਠ_Utf8;
   LPWSTR zTmpWide;
 
-  zTmpWide = winMbcsToUnicode(zText, useAnsi);
-  if( zTmpWide==0 ){
-    return 0;
+  zTmpWide = win_Mbcs_ਮੰਜ਼ਿਲ_Unicode(z_ਪਾਠ, useAnsi);
+  ਜੇ( zTmpWide==0 ){
+    ਵਾਪਸ 0;
   }
-  zTextUtf8 = winUnicodeToUtf8(zTmpWide);
+  z_ਪਾਠ_Utf8 = win_Unicode_ਮੰਜ਼ਿਲ_Utf8(zTmpWide);
   sqlite3_free(zTmpWide);
-  return zTextUtf8;
+  ਵਾਪਸ z_ਪਾਠ_Utf8;
 }
 
 /*
@@ -1241,176 +1241,176 @@ static char *winMbcsToUtf8(const char *zText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUtf8ToMbcs(const char *zText, int useAnsi){
-  char *zTextMbcs;
+ਸਥਿਰ ਅੱਖਰ *win_Utf8_ਮੰਜ਼ਿਲ_Mbcs(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ, ਪੂਰਨ useAnsi){
+  ਅੱਖਰ *z_ਪਾਠ_Mbcs;
   LPWSTR zTmpWide;
 
-  zTmpWide = winUtf8ToUnicode(zText);
-  if( zTmpWide==0 ){
-    return 0;
+  zTmpWide = win_Utf8_ਮੰਜ਼ਿਲ_Unicode(z_ਪਾਠ);
+  ਜੇ( zTmpWide==0 ){
+    ਵਾਪਸ 0;
   }
-  zTextMbcs = winUnicodeToMbcs(zTmpWide, useAnsi);
+  z_ਪਾਠ_Mbcs = win_Unicode_ਮੰਜ਼ਿਲ_Mbcs(zTmpWide, useAnsi);
   sqlite3_free(zTmpWide);
-  return zTextMbcs;
+  ਵਾਪਸ z_ਪਾਠ_Mbcs;
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToUnicode() function.
 */
-LPWSTR sqlite3_win32_utf8_to_unicode(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+LPWSTR sqlite3_win32_utf8_ਮੰਜ਼ਿਲ_unicode(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToUnicode(zText);
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Utf8_ਮੰਜ਼ਿਲ_Unicode(z_ਪਾਠ);
 }
 
 /*
 ** This is a public wrapper for the winUnicodeToUtf8() function.
 */
-char *sqlite3_win32_unicode_to_utf8(LPCWSTR zWideText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zWideText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ਅੱਖਰ *sqlite3_win32_unicode_ਮੰਜ਼ਿਲ_utf8(LPCWSTR z_Wide_ਪਾਠ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_Wide_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUnicodeToUtf8(zWideText);
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Unicode_ਮੰਜ਼ਿਲ_Utf8(z_Wide_ਪਾਠ);
 }
 
 /*
 ** This is a public wrapper for the winMbcsToUtf8() function.
 */
-char *sqlite3_win32_mbcs_to_utf8(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ਅੱਖਰ *sqlite3_win32_mbcs_ਮੰਜ਼ਿਲ_utf8(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winMbcsToUtf8(zText, osAreFileApisANSI());
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Mbcs_ਮੰਜ਼ਿਲ_Utf8(z_ਪਾਠ, osAreFileApisANSI());
 }
 
 /*
 ** This is a public wrapper for the winMbcsToUtf8() function.
 */
-char *sqlite3_win32_mbcs_to_utf8_v2(const char *zText, int useAnsi){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ਅੱਖਰ *sqlite3_win32_mbcs_ਮੰਜ਼ਿਲ_utf8_v2(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ, ਪੂਰਨ useAnsi){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winMbcsToUtf8(zText, useAnsi);
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Mbcs_ਮੰਜ਼ਿਲ_Utf8(z_ਪਾਠ, useAnsi);
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToMbcs() function.
 */
-char *sqlite3_win32_utf8_to_mbcs(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ਅੱਖਰ *sqlite3_win32_utf8_ਮੰਜ਼ਿਲ_mbcs(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToMbcs(zText, osAreFileApisANSI());
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Utf8_ਮੰਜ਼ਿਲ_Mbcs(z_ਪਾਠ, osAreFileApisANSI());
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToMbcs() function.
 */
-char *sqlite3_win32_utf8_to_mbcs_v2(const char *zText, int useAnsi){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ਅੱਖਰ *sqlite3_win32_utf8_ਮੰਜ਼ਿਲ_mbcs_v2(ਅਚਲ ਅੱਖਰ *z_ਪਾਠ, ਪੂਰਨ useAnsi){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( !z_ਪਾਠ ){
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+    ਵਾਪਸ 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToMbcs(zText, useAnsi);
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ win_Utf8_ਮੰਜ਼ਿਲ_Mbcs(z_ਪਾਠ, useAnsi);
 }
 
 /*
 ** This function is the same as sqlite3_win32_set_directory (below); however,
 ** it accepts a UTF-8 string.
 */
-int sqlite3_win32_set_directory8(
-  unsigned long type, /* Identifier for directory being set or reset */
-  const char *zValue  /* New value for directory being set or reset */
+ਪੂਰਨ sqlite3_win32_ਸੈੱਟ_directory8(
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ type, /* Identifier for directory being set or reset */
+  ਅਚਲ ਅੱਖਰ *z_ਮੁੱਲ  /* New value for directory being set or reset */
 ){
-  char **ppDirectory = 0;
-  int rc;
-#ifndef SQLITE_OMIT_AUTOINIT
+  ਅੱਖਰ **ppDirectory = 0;
+  ਪੂਰਨ rc;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
+  ਜੇ( rc ) ਵਾਪਸ rc;
+#ਜੇ_ਅੰਤ
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  if( type==SQLITE_WIN32_DATA_DIRECTORY_TYPE ){
-    ppDirectory = &sqlite3_data_directory;
-  }else if( type==SQLITE_WIN32_TEMP_DIRECTORY_TYPE ){
-    ppDirectory = &sqlite3_temp_directory;
+  ਜੇ( type==SQLITE_WIN32_ਅੰਕੜੇ_DIRECTORY_TYPE ){
+    ppDirectory = &sqlite3_ਅੰਕੜੇ_directory;
+  }ਨਹੀਂਤਾਂ ਜੇ( type==SQLITE_WIN32_ਆਰਜ਼ੀ_DIRECTORY_TYPE ){
+    ppDirectory = &sqlite3_ਆਰਜ਼ੀ_directory;
   }
-  assert( !ppDirectory || type==SQLITE_WIN32_DATA_DIRECTORY_TYPE
-          || type==SQLITE_WIN32_TEMP_DIRECTORY_TYPE
+  ਪ੍ਰਤਿਜ੍ਞਾ( !ppDirectory || type==SQLITE_WIN32_ਅੰਕੜੇ_DIRECTORY_TYPE
+          || type==SQLITE_WIN32_ਆਰਜ਼ੀ_DIRECTORY_TYPE
   );
-  assert( !ppDirectory || sqlite3MemdebugHasType(*ppDirectory, MEMTYPE_HEAP) );
-  if( ppDirectory ){
-    char *zCopy = 0;
-    if( zValue && zValue[0] ){
-      zCopy = sqlite3_mprintf("%s", zValue);
-      if ( zCopy==0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( !ppDirectory || sqlite3MemdebugHasType(*ppDirectory, MEMTYPE_ਢੇਰ) );
+  ਜੇ( ppDirectory ){
+    ਅੱਖਰ *zCopy = 0;
+    ਜੇ( z_ਮੁੱਲ && z_ਮੁੱਲ[0] ){
+      zCopy = sqlite3_mprintf("%s", z_ਮੁੱਲ);
+      ਜੇ ( zCopy==0 ){
         rc = SQLITE_NOMEM_BKPT;
-        goto set_directory8_done;
+        ਜਾਓ ਸੈੱਟ_directory8_ਪੂਰਾ;
       }
     }
     sqlite3_free(*ppDirectory);
     *ppDirectory = zCopy;
     rc = SQLITE_OK;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     rc = SQLITE_ERROR;
   }
-set_directory8_done:
+ਸੈੱਟ_directory8_ਪੂਰਾ:
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** This function is the same as sqlite3_win32_set_directory (below); however,
 ** it accepts a UTF-16 string.
 */
-int sqlite3_win32_set_directory16(
-  unsigned long type, /* Identifier for directory being set or reset */
-  const void *zValue  /* New value for directory being set or reset */
+ਪੂਰਨ sqlite3_win32_ਸੈੱਟ_directory16(
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ type, /* Identifier for directory being set or reset */
+  ਅਚਲ ਖਾਲੀ *z_ਮੁੱਲ  /* New value for directory being set or reset */
 ){
-  int rc;
-  char *zUtf8 = 0;
-  if( zValue ){
-    zUtf8 = sqlite3_win32_unicode_to_utf8(zValue);
-    if( zUtf8==0 ) return SQLITE_NOMEM_BKPT;
+  ਪੂਰਨ rc;
+  ਅੱਖਰ *zUtf8 = 0;
+  ਜੇ( z_ਮੁੱਲ ){
+    zUtf8 = sqlite3_win32_unicode_ਮੰਜ਼ਿਲ_utf8(z_ਮੁੱਲ);
+    ਜੇ( zUtf8==0 ) ਵਾਪਸ SQLITE_NOMEM_BKPT;
   }
-  rc = sqlite3_win32_set_directory8(type, zUtf8);
-  if( zUtf8 ) sqlite3_free(zUtf8);
-  return rc;
+  rc = sqlite3_win32_ਸੈੱਟ_directory8(type, zUtf8);
+  ਜੇ( zUtf8 ) sqlite3_free(zUtf8);
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -1420,53 +1420,53 @@ int sqlite3_win32_set_directory16(
 ** argument is the name of the directory to use.  The return value will be
 ** SQLITE_OK if successful.
 */
-int sqlite3_win32_set_directory(
-  unsigned long type, /* Identifier for directory being set or reset */
-  void *zValue        /* New value for directory being set or reset */
+ਪੂਰਨ sqlite3_win32_ਸੈੱਟ_directory(
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ type, /* Identifier for directory being set or reset */
+  ਖਾਲੀ *z_ਮੁੱਲ        /* New value for directory being set or reset */
 ){
-  return sqlite3_win32_set_directory16(type, zValue);
+  ਵਾਪਸ sqlite3_win32_ਸੈੱਟ_directory16(type, z_ਮੁੱਲ);
 }
-#endif /* _WIN32 */
+#ਜੇ_ਅੰਤ /* _WIN32 */
 
 /*
 ** The return value of winGetLastErrorMsg
 ** is zero if the error message fits in the buffer, or non-zero
 ** otherwise (if the message was truncated).
 */
-static int winGetLastErrorMsg(DWORD lastErrno, int nBuf, char *zBuf){
+ਸਥਿਰ ਪੂਰਨ win_Get_ਆਖਰੀ_Error_ਸੁਨੇਹਾ(DWORD ਆਖਰੀ_Errno, ਪੂਰਨ nBuf, ਅੱਖਰ *zBuf){
   /* FormatMessage returns 0 on failure.  Otherwise it
   ** returns the number of TCHARs written to the output
   ** buffer, excluding the terminating null char.
   */
   DWORD dwLen = 0;
-  char *zOut = 0;
-  LPWSTR zTempWide = NULL;
-  dwLen = osFormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                           FORMAT_MESSAGE_FROM_SYSTEM |
-                           FORMAT_MESSAGE_IGNORE_INSERTS,
-                           NULL,
-                           lastErrno,
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ = 0;
+  LPWSTR z_ਆਰਜ਼ੀ_Wide = ਨਿਰਾ;
+  dwLen = os_Format_ਸੁਨੇਹਾ_W(FORMAT_ਸੁਨੇਹਾ_ALLOCATE_ਬਫਰ |
+                           FORMAT_ਸੁਨੇਹਾ_FROM_SYSTEM |
+                           FORMAT_ਸੁਨੇਹਾ_IGNORE_INSERTS,
+                           ਨਿਰਾ,
+                           ਆਖਰੀ_Errno,
                            0,
-                           (LPWSTR) &zTempWide,
+                           (LPWSTR) &z_ਆਰਜ਼ੀ_Wide,
                            0,
                            0);
-  if( dwLen > 0 ){
+  ਜੇ( dwLen > 0 ){
     /* allocate a buffer and convert to UTF8 */
     sqlite3BeginBenignMalloc();
-    zOut = winUnicodeToUtf8(zTempWide);
-    sqlite3EndBenignMalloc();
+    z_ਬਾਹਰਲਾ = win_Unicode_ਮੰਜ਼ਿਲ_Utf8(z_ਆਰਜ਼ੀ_Wide);
+    sqlite3_ਸਿਰਾ_Benign_Malloc();
     /* free the system buffer allocated by FormatMessage */
-    osLocalFree(zTempWide);
+    osLocalFree(z_ਆਰਜ਼ੀ_Wide);
   }
-  if( 0 == dwLen ){
-    sqlite3_snprintf(nBuf, zBuf, "OsError 0x%lx (%lu)", lastErrno, lastErrno);
-  }else{
+  ਜੇ( 0 == dwLen ){
+    sqlite3_snprintf(nBuf, zBuf, "OsError 0x%lx (%lu)", ਆਖਰੀ_Errno, ਆਖਰੀ_Errno);
+  }ਨਹੀਂਤਾਂ{
     /* copy a maximum of nBuf chars to output buffer */
-    sqlite3_snprintf(nBuf, zBuf, "%s", zOut);
+    sqlite3_snprintf(nBuf, zBuf, "%s", z_ਬਾਹਰਲਾ);
     /* free the UTF8 buffer */
-    sqlite3_free(zOut);
+    sqlite3_free(z_ਬਾਹਰਲਾ);
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -1484,29 +1484,29 @@ static int winGetLastErrorMsg(DWORD lastErrno, int nBuf, char *zBuf){
 ** The two subsequent arguments should be the name of the OS function that
 ** failed and the associated file-system path, if any.
 */
-#define winLogError(a,b,c,d)   winLogErrorAtLine(a,b,c,d,__LINE__)
-static int winLogErrorAtLine(
-  int errcode,                    /* SQLite error code */
-  DWORD lastErrno,                /* Win32 last error */
-  const char *zFunc,              /* Name of OS function that failed */
-  const char *zPath,              /* File path associated with error */
-  int iLine                       /* Source line number where error occurred */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winLogError(a,b,c,d)   win_Log_Error_At_ਸਤਰ(a,b,c,d,__LINE__)
+ਸਥਿਰ ਪੂਰਨ win_Log_Error_At_ਸਤਰ(
+  ਪੂਰਨ errcode,                    /* SQLite error code */
+  DWORD ਆਖਰੀ_Errno,                /* Win32 last error */
+  ਅਚਲ ਅੱਖਰ *zFunc,              /* Name of OS function that failed */
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,              /* File path associated with error */
+  ਪੂਰਨ i_ਸਤਰ                       /* Source line number where error occurred */
 ){
-  char zMsg[500];                 /* Human readable error text */
-  int i;                          /* Loop counter */
+  ਅੱਖਰ z_ਸੁਨੇਹਾ[500];                 /* Human readable error text */
+  ਪੂਰਨ i;                          /* Loop counter */
 
-  zMsg[0] = 0;
-  winGetLastErrorMsg(lastErrno, sizeof(zMsg), zMsg);
-  assert( errcode!=SQLITE_OK );
-  if( zPath==0 ) zPath = "";
-  for(i=0; zMsg[i] && zMsg[i]!='\r' && zMsg[i]!='\n'; i++){}
-  zMsg[i] = 0;
+  z_ਸੁਨੇਹਾ[0] = 0;
+  win_Get_ਆਖਰੀ_Error_ਸੁਨੇਹਾ(ਆਖਰੀ_Errno, ਆਕਾਰ(z_ਸੁਨੇਹਾ), z_ਸੁਨੇਹਾ);
+  ਪ੍ਰਤਿਜ੍ਞਾ( errcode!=SQLITE_OK );
+  ਜੇ( z_ਰਸਤਾ==0 ) z_ਰਸਤਾ = "";
+  ਲਈ(i=0; z_ਸੁਨੇਹਾ[i] && z_ਸੁਨੇਹਾ[i]!='\r' && z_ਸੁਨੇਹਾ[i]!='\n'; i++){}
+  z_ਸੁਨੇਹਾ[i] = 0;
   sqlite3_log(errcode,
       "os_win.c:%d: (%lu) %s(%s) - %s",
-      iLine, lastErrno, zFunc, zPath, zMsg
+      i_ਸਤਰ, ਆਖਰੀ_Errno, zFunc, z_ਰਸਤਾ, z_ਸੁਨੇਹਾ
   );
 
-  return errcode;
+  ਵਾਪਸ errcode;
 }
 
 /*
@@ -1515,14 +1515,14 @@ static int winLogErrorAtLine(
 ** antivirus software.  Also the initial delay before the first retry.
 ** The delay increases linearly with each retry.
 */
-#ifndef SQLITE_WIN32_IOERR_RETRY
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_IOERR_RETRY
 # define SQLITE_WIN32_IOERR_RETRY 10
-#endif
-#ifndef SQLITE_WIN32_IOERR_RETRY_DELAY
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_WIN32_IOERR_RETRY_DELAY
 # define SQLITE_WIN32_IOERR_RETRY_DELAY 25
-#endif
-static int winIoerrRetry = SQLITE_WIN32_IOERR_RETRY;
-static int winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
+#ਜੇ_ਅੰਤ
+ਸਥਿਰ ਪੂਰਨ winIoerrRetry = SQLITE_WIN32_IOERR_RETRY;
+ਸਥਿਰ ਪੂਰਨ winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
 
 /*
 ** The "winIoerrCanRetry1" macro is used to determine if a particular I/O
@@ -1540,52 +1540,52 @@ static int winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
 ** defined, the "winIoerrCanRetry2" macro must exhibit external semantics
 ** identical to those of the "winIoerrCanRetry1" macro.
 */
-#if !defined(winIoerrCanRetry1)
-#define winIoerrCanRetry1(a) (((a)==ERROR_ACCESS_DENIED)        || \
+#ਜੇ !defined(winIoerrCanRetry1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winIoerrCanRetry1(a) (((a)==ERROR_ACCESS_DENIED)        || \
                               ((a)==ERROR_SHARING_VIOLATION)    || \
-                              ((a)==ERROR_LOCK_VIOLATION)       || \
+                              ((a)==ERROR_ਤਾਲਾ_VIOLATION)       || \
                               ((a)==ERROR_DEV_NOT_EXIST)        || \
                               ((a)==ERROR_NETNAME_DELETED)      || \
                               ((a)==ERROR_SEM_TIMEOUT)          || \
-                              ((a)==ERROR_NETWORK_UNREACHABLE))
-#endif
+                              ((a)==ERROR_ਜਾਲ_UNREACHABLE))
+#ਜੇ_ਅੰਤ
 
 /*
 ** If a ReadFile() or WriteFile() error occurs, invoke this routine
 ** to see if it should be retried.  Return TRUE to retry.  Return FALSE
 ** to give up with an error.
 */
-static int winRetryIoerr(int *pnRetry, DWORD *pError){
-  DWORD e = osGetLastError();
-  if( *pnRetry>=winIoerrRetry ){
-    if( pError ){
+ਸਥਿਰ ਪੂਰਨ winRetryIoerr(ਪੂਰਨ *pnRetry, DWORD *pError){
+  DWORD e = os_Get_ਆਖਰੀ_Error();
+  ਜੇ( *pnRetry>=winIoerrRetry ){
+    ਜੇ( pError ){
       *pError = e;
     }
-    return 0;
+    ਵਾਪਸ 0;
   }
-  if( winIoerrCanRetry1(e) ){
+  ਜੇ( winIoerrCanRetry1(e) ){
     osSleep(winIoerrRetryDelay*(1+*pnRetry));
     ++*pnRetry;
-    return 1;
+    ਵਾਪਸ 1;
   }
-#if defined(winIoerrCanRetry2)
-  else if( winIoerrCanRetry2(e) ){
+#ਜੇ defined(winIoerrCanRetry2)
+  ਨਹੀਂਤਾਂ ਜੇ( winIoerrCanRetry2(e) ){
     osSleep(winIoerrRetryDelay*(1+*pnRetry));
     ++*pnRetry;
-    return 1;
+    ਵਾਪਸ 1;
   }
-#endif
-  if( pError ){
+#ਜੇ_ਅੰਤ
+  ਜੇ( pError ){
     *pError = e;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
 ** Log a I/O error retry episode.
 */
-static void winLogIoerr(int nRetry, int lineno){
-  if( nRetry ){
+ਸਥਿਰ ਖਾਲੀ winLogIoerr(ਪੂਰਨ nRetry, ਪੂਰਨ lineno){
+  ਜੇ( nRetry ){
     sqlite3_log(SQLITE_NOTICE,
       "delayed %dms for lock/sharing conflict at line %d",
       winIoerrRetryDelay*nRetry*(nRetry+1)/2, lineno
@@ -1597,22 +1597,22 @@ static void winLogIoerr(int nRetry, int lineno){
 /*
 ** Lock a file region.
 */
-static BOOL winLockFile(
+ਸਥਿਰ BOOL win_ਤਾਲਾ_File(
   LPHANDLE phFile,
   DWORD flags,
-  DWORD offsetLow,
-  DWORD offsetHigh,
-  DWORD numBytesLow,
-  DWORD numBytesHigh
+  DWORD ਵਿੱਥ_ਨੀਵਾਂ,
+  DWORD ਵਿੱਥ_ਉੱਚਾ,
+  DWORD ਅੰਕ_ਬਾਈਟਾਂ_ਨੀਵਾਂ,
+  DWORD ਅੰਕ_ਬਾਈਟਾਂ_ਉੱਚਾ
 ){
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offsetLow;
-  ovlp.OffsetHigh = offsetHigh;
-  return osLockFileEx(*phFile, flags, 0, numBytesLow, numBytesHigh, &ovlp);
+  memset(&ovlp, 0, ਆਕਾਰ(OVERLAPPED));
+  ovlp.ਵਿੱਥ_2 = ਵਿੱਥ_ਨੀਵਾਂ;
+  ovlp.ਵਿੱਥ_ਉੱਚਾ_2 = ਵਿੱਥ_ਉੱਚਾ;
+  ਵਾਪਸ os_ਤਾਲਾ_File_Ex(*phFile, flags, 0, ਅੰਕ_ਬਾਈਟਾਂ_ਨੀਵਾਂ, ਅੰਕ_ਬਾਈਟਾਂ_ਉੱਚਾ, &ovlp);
 }
 
-#ifndef SQLITE_OMIT_WAL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
 /*
 ** Lock a region of nByte bytes starting at offset offset of file hFile.
 ** Take an EXCLUSIVE lock if parameter bExclusive is true, or a SHARED lock
@@ -1623,31 +1623,31 @@ static BOOL winLockFile(
 ** some other process holds the lock, SQLITE_BUSY is returned if nMs==0, or
 ** SQLITE_BUSY_TIMEOUT otherwise. Or, if an error occurs, SQLITE_IOERR.
 */
-static int winHandleLockTimeout(
+ਸਥਿਰ ਪੂਰਨ win_Handle_ਤਾਲਾ_Timeout(
   HANDLE hFile,
-  DWORD offset,
+  DWORD ਵਿੱਥ,
   DWORD nByte,
-  int bExcl,
+  ਪੂਰਨ bExcl,
   DWORD nMs
 ){
-  DWORD flags = LOCKFILE_FAIL_IMMEDIATELY | (bExcl?LOCKFILE_EXCLUSIVE_LOCK:0);
-  int rc = SQLITE_OK;
+  DWORD flags = LOCKFILE_FAIL_IMMEDIATELY | (bExcl?LOCKFILE_EXCLUSIVE_ਤਾਲਾ:0);
+  ਪੂਰਨ rc = SQLITE_OK;
   BOOL ret;
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offset;
+  memset(&ovlp, 0, ਆਕਾਰ(OVERLAPPED));
+  ovlp.ਵਿੱਥ_2 = ਵਿੱਥ;
 
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT)
-  if( nMs!=0 ){
+#ਜੇ defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+  ਜੇ( nMs!=0 ){
     flags &= ~LOCKFILE_FAIL_IMMEDIATELY;
   }
-  ovlp.hEvent = osCreateEvent(NULL, TRUE, FALSE, NULL);
-  if( ovlp.hEvent==NULL ){
-    return SQLITE_IOERR_LOCK;
+  ovlp.hEvent = osCreateEvent(ਨਿਰਾ, TRUE, FALSE, ਨਿਰਾ);
+  ਜੇ( ovlp.hEvent==ਨਿਰਾ ){
+    ਵਾਪਸ SQLITE_IOERR_ਤਾਲਾ;
   }
-#endif
-  ret = osLockFileEx(hFile, flags, 0, nByte, 0, &ovlp);
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+#ਜੇ_ਅੰਤ
+  ret = os_ਤਾਲਾ_File_Ex(hFile, flags, 0, nByte, 0, &ovlp);
+#ਜੇ defined(SQLITE_ENABLE_SETLK_TIMEOUT)
   /* If SQLITE_ENABLE_SETLK_TIMEOUT is defined, then the file-handle was
   ** opened with FILE_FLAG_OVERHEAD specified. In this case, the call to
   ** LockFileEx() may fail because the request is still pending. This can
@@ -1660,20 +1660,20 @@ static int winHandleLockTimeout(
   ** Otherwise, wait for up to nMs ms for the operation to finish. nMs
   ** may be set to INFINITE.
   */
-  if( !ret && GetLastError()==ERROR_IO_PENDING ){
+  ਜੇ( !ret && Get_ਆਖਰੀ_Error()==ERROR_IO_PENDING ){
     DWORD nDelay = (nMs==0 ? INFINITE : nMs);
     DWORD res = osWaitForSingleObject(ovlp.hEvent, nDelay);
-    if( res==WAIT_OBJECT_0 ){
+    ਜੇ( res==WAIT_OBJECT_0 ){
       ret = TRUE;
-    }else if( res==WAIT_TIMEOUT ){
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
+    }ਨਹੀਂਤਾਂ ਜੇ( res==WAIT_TIMEOUT ){
+#ਜੇ SQLITE_ENABLE_SETLK_TIMEOUT==1
       rc = SQLITE_BUSY_TIMEOUT;
-#else
+#ਨਹੀਂਤਾਂ
       rc = SQLITE_BUSY;
-#endif
-    }else{
+#ਜੇ_ਅੰਤ
+    }ਨਹੀਂਤਾਂ{
       /* Some other error has occurred */
-      rc = SQLITE_IOERR_LOCK;
+      rc = SQLITE_IOERR_ਤਾਲਾ;
     }
 
     /* If it is still pending, cancel the LockFileEx() call. */
@@ -1681,41 +1681,41 @@ static int winHandleLockTimeout(
   }
 
   osCloseHandle(ovlp.hEvent);
-#endif /* defined(SQLITE_ENABLE_SETLK_TIMEOUT) */
+#ਜੇ_ਅੰਤ /* defined(SQLITE_ENABLE_SETLK_TIMEOUT) */
 
-  if( rc==SQLITE_OK && !ret ){
+  ਜੇ( rc==SQLITE_OK && !ret ){
     rc = SQLITE_BUSY;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#ਜੇ_ਅੰਤ /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Unlock a file region.
  */
-static BOOL winUnlockFile(
+ਸਥਿਰ BOOL winUnlockFile(
   LPHANDLE phFile,
-  DWORD offsetLow,
-  DWORD offsetHigh,
-  DWORD numBytesLow,
-  DWORD numBytesHigh
+  DWORD ਵਿੱਥ_ਨੀਵਾਂ,
+  DWORD ਵਿੱਥ_ਉੱਚਾ,
+  DWORD ਅੰਕ_ਬਾਈਟਾਂ_ਨੀਵਾਂ,
+  DWORD ਅੰਕ_ਬਾਈਟਾਂ_ਉੱਚਾ
 ){
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offsetLow;
-  ovlp.OffsetHigh = offsetHigh;
-  return osUnlockFileEx(*phFile, 0, numBytesLow, numBytesHigh, &ovlp);
+  memset(&ovlp, 0, ਆਕਾਰ(OVERLAPPED));
+  ovlp.ਵਿੱਥ_2 = ਵਿੱਥ_ਨੀਵਾਂ;
+  ovlp.ਵਿੱਥ_ਉੱਚਾ_2 = ਵਿੱਥ_ਉੱਚਾ;
+  ਵਾਪਸ osUnlockFileEx(*phFile, 0, ਅੰਕ_ਬਾਈਟਾਂ_ਨੀਵਾਂ, ਅੰਕ_ਬਾਈਟਾਂ_ਉੱਚਾ, &ovlp);
 }
 
-#ifndef SQLITE_OMIT_WAL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
 /*
 ** Remove an nByte lock starting at offset iOff from HANDLE h.
 */
-static int winHandleUnlock(HANDLE h, int iOff, int nByte){
+ਸਥਿਰ ਪੂਰਨ winHandleUnlock(HANDLE h, ਪੂਰਨ iOff, ਪੂਰਨ nByte){
   BOOL ret = winUnlockFile(&h, iOff, 0, nByte, 0);
-  return (ret ? SQLITE_OK : SQLITE_IOERR_UNLOCK);
+  ਵਾਪਸ (ret ? SQLITE_OK : SQLITE_IOERR_UNLOCK);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*****************************************************************************
 ** The next group of routines implement the I/O methods specified
@@ -1725,9 +1725,9 @@ static int winHandleUnlock(HANDLE h, int iOff, int nByte){
 /*
 ** Some Microsoft compilers lack this definition.
 */
-#ifndef INVALID_SET_FILE_POINTER
-# define INVALID_SET_FILE_POINTER ((DWORD)-1)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ INVALID_ਸੈੱਟ_FILE_ਸੂਚਕ
+# define INVALID_ਸੈੱਟ_FILE_ਸੂਚਕ ((DWORD)-1)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Seek the file handle h to offset nByte of the file.
@@ -1735,16 +1735,16 @@ static int winHandleUnlock(HANDLE h, int iOff, int nByte){
 ** If successful, return SQLITE_OK. Or, if an error occurs, return an SQLite
 ** error code.
 */
-static int winHandleSeek(HANDLE h, sqlite3_int64 iOffset){
-  int rc = SQLITE_OK;             /* Return value */
+ਸਥਿਰ ਪੂਰਨ winHandleSeek(HANDLE h, sqlite3_int64 i_ਵਿੱਥ){
+  ਪੂਰਨ rc = SQLITE_OK;             /* Return value */
   LARGE_INTEGER x;                /* The offset */
 
-  x.QuadPart = iOffset;
-  if( osSetFilePointerEx(h, x, 0, FILE_BEGIN)==0 ){
+  x.QuadPart = i_ਵਿੱਥ;
+  ਜੇ( os_ਸੈੱਟ_File_ਸੂਚਕ_Ex(h, x, 0, FILE_BEGIN)==0 ){
     rc = SQLITE_IOERR_SEEK;
   }
-  OSTRACE(("SEEK file=%p, offset=%lld rc=%s\n", h, iOffset,sqlite3ErrName(rc)));
-  return rc;
+  OSTRACE(("SEEK file=%p, offset=%lld rc=%s\n", h, i_ਵਿੱਥ,sqlite3ErrName(rc)));
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -1752,23 +1752,23 @@ static int winHandleSeek(HANDLE h, sqlite3_int64 iOffset){
 ** argument to offset iOffset within the file. If successful, return 0.
 ** Otherwise, set pFile->lastErrno and return non-zero.
 */
-static int winSeekFile(winFile *pFile, sqlite3_int64 iOffset){
-  int rc;
+ਸਥਿਰ ਪੂਰਨ winSeekFile(winFile *pFile, sqlite3_int64 i_ਵਿੱਥ){
+  ਪੂਰਨ rc;
 
-  rc = winHandleSeek(pFile->h, iOffset);
-  if( rc!=SQLITE_OK ){
-    pFile->lastErrno = osGetLastError();
-    winLogError(rc, pFile->lastErrno, "winSeekFile", pFile->zPath);
+  rc = winHandleSeek(pFile->h, i_ਵਿੱਥ);
+  ਜੇ( rc!=SQLITE_OK ){
+    pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+    winLogError(rc, pFile->ਆਖਰੀ_Errno, "winSeekFile", pFile->z_ਰਸਤਾ);
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
 /* Forward references to VFS helper methods used for memory mapped files */
-static int winMapfile(winFile*, sqlite3_int64);
-static int winUnmapfile(winFile*);
-#endif
+ਸਥਿਰ ਪੂਰਨ winMapfile(winFile*, sqlite3_int64);
+ਸਥਿਰ ਪੂਰਨ winUnmapfile(winFile*);
+#ਜੇ_ਅੰਤ
 
 /*
 ** Close a file.
@@ -1780,36 +1780,36 @@ static int winUnmapfile(winFile*);
 ** many as MX_CLOSE_ATTEMPT attempts to close the handle are made before
 ** giving up and returning an error.
 */
-#define MX_CLOSE_ATTEMPT 3
-static int winClose(sqlite3_file *id){
-  int rc, cnt = 0;
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ MX_CLOSE_ATTEMPT 3
+ਸਥਿਰ ਪੂਰਨ winClose(sqlite3_file *id){
+  ਪੂਰਨ rc, cnt = 0;
   winFile *pFile = (winFile*)id;
 
-  assert( id!=0 );
-#ifndef SQLITE_OMIT_WAL
-  assert( pFile->pShm==0 );
-#endif
-  assert( pFile->h!=NULL && pFile->h!=INVALID_HANDLE_VALUE );
+  ਪ੍ਰਤਿਜ੍ਞਾ( id!=0 );
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile->pShm==0 );
+#ਜੇ_ਅੰਤ
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile->h!=ਨਿਰਾ && pFile->h!=INVALID_HANDLE_ਮੁੱਲ );
   OSTRACE(("CLOSE pid=%lu, pFile=%p, file=%p\n",
            osGetCurrentProcessId(), pFile, pFile->h));
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
   winUnmapfile(pFile);
-#endif
+#ਜੇ_ਅੰਤ
 
-  do{
+  ਕਰੋ{
     rc = osCloseHandle(pFile->h);
     /* SimulateIOError( rc=0; cnt=MX_CLOSE_ATTEMPT; ); */
-  }while( rc==0 && ++cnt < MX_CLOSE_ATTEMPT && (osSleep(100), 1) );
-  if( rc ){
-    pFile->h = NULL;
+  }ਜਦੋਂ( rc==0 && ++cnt < MX_CLOSE_ATTEMPT && (osSleep(100), 1) );
+  ਜੇ( rc ){
+    pFile->h = ਨਿਰਾ;
   }
   OpenCounter(-1);
   OSTRACE(("CLOSE pid=%lu, pFile=%p, file=%p, rc=%s\n",
            osGetCurrentProcessId(), pFile, pFile->h, rc ? "ok" : "failed"));
-  return rc ? SQLITE_OK
-            : winLogError(SQLITE_IOERR_CLOSE, osGetLastError(),
-                          "winClose", pFile->zPath);
+  ਵਾਪਸ rc ? SQLITE_OK
+            : winLogError(SQLITE_IOERR_CLOSE, os_Get_ਆਖਰੀ_Error(),
+                          "winClose", pFile->z_ਰਸਤਾ);
 }
 
 /*
@@ -1817,244 +1817,244 @@ static int winClose(sqlite3_file *id){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-static int winRead(
+ਸਥਿਰ ਪੂਰਨ winRead(
   sqlite3_file *id,          /* File to read from */
-  void *pBuf,                /* Write content into this buffer */
-  int amt,                   /* Number of bytes to read */
-  sqlite3_int64 offset       /* Begin reading at this offset */
+  ਖਾਲੀ *pBuf,                /* Write content into this buffer */
+  ਪੂਰਨ amt,                   /* Number of bytes to read */
+  sqlite3_int64 ਵਿੱਥ       /* Begin reading at this offset */
 ){
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
+#ਜੇ !defined(SQLITE_WIN32_NO_OVERLAPPED)
   OVERLAPPED overlapped;          /* The offset for ReadFile. */
-#endif
+#ਜੇ_ਅੰਤ
   winFile *pFile = (winFile*)id;  /* file handle */
   DWORD nRead;                    /* Number of bytes actually read from file */
-  int nRetry = 0;                 /* Number of retrys */
+  ਪੂਰਨ nRetry = 0;                 /* Number of retrys */
 
-  assert( id!=0 );
-  assert( amt>0 );
-  assert( offset>=0 );
-  SimulateIOError(return SQLITE_IOERR_READ);
+  ਪ੍ਰਤਿਜ੍ਞਾ( id!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( amt>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਵਿੱਥ>=0 );
+  SimulateIOError(ਵਾਪਸ SQLITE_IOERR_READ);
   OSTRACE(("READ pid=%lu, pFile=%p, file=%p, buffer=%p, amount=%d, "
            "offset=%lld, lock=%d\n", osGetCurrentProcessId(), pFile,
-           pFile->h, pBuf, amt, offset, pFile->locktype));
+           pFile->h, pBuf, amt, ਵਿੱਥ, pFile->locktype));
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
   /* Deal with as much of this read request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], amt);
+  ਜੇ( ਵਿੱਥ<pFile->mmap_ਮਾਪ ){
+    ਜੇ( ਵਿੱਥ+amt <= pFile->mmap_ਮਾਪ ){
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(pBuf, &((u8 *)(pFile->pMapRegion))[ਵਿੱਥ], amt);
       OSTRACE(("READ-MMAP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return SQLITE_OK;
-    }else{
-      int nCopy = (int)(pFile->mmapSize - offset);
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], nCopy);
+      ਵਾਪਸ SQLITE_OK;
+    }ਨਹੀਂਤਾਂ{
+      ਪੂਰਨ nCopy = (ਪੂਰਨ)(pFile->mmap_ਮਾਪ - ਵਿੱਥ);
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(pBuf, &((u8 *)(pFile->pMapRegion))[ਵਿੱਥ], nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      ਵਿੱਥ += nCopy;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-  if( winSeekFile(pFile, offset) ){
+#ਜੇ defined(SQLITE_WIN32_NO_OVERLAPPED)
+  ਜੇ( winSeekFile(pFile, ਵਿੱਥ) ){
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_FULL\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_FULL;
+    ਵਾਪਸ SQLITE_ਭਰਿਆ;
   }
-  while( !osReadFile(pFile->h, pBuf, amt, &nRead, 0) ){
-#else
-  memset(&overlapped, 0, sizeof(OVERLAPPED));
-  overlapped.Offset = (LONG)(offset & 0xffffffff);
-  overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-  while( !osReadFile(pFile->h, pBuf, amt, &nRead, &overlapped) &&
-         osGetLastError()!=ERROR_HANDLE_EOF ){
-#endif
-    DWORD lastErrno;
-    if( winRetryIoerr(&nRetry, &lastErrno) ) continue;
-    pFile->lastErrno = lastErrno;
+  ਜਦੋਂ( !osReadFile(pFile->h, pBuf, amt, &nRead, 0) ){
+#ਨਹੀਂਤਾਂ
+  memset(&overlapped, 0, ਆਕਾਰ(OVERLAPPED));
+  overlapped.ਵਿੱਥ_2 = (LONG)(ਵਿੱਥ & 0xffffffff);
+  overlapped.ਵਿੱਥ_ਉੱਚਾ_2 = (LONG)((ਵਿੱਥ>>32) & 0x7fffffff);
+  ਜਦੋਂ( !osReadFile(pFile->h, pBuf, amt, &nRead, &overlapped) &&
+         os_Get_ਆਖਰੀ_Error()!=ERROR_HANDLE_EOF ){
+#ਜੇ_ਅੰਤ
+    DWORD ਆਖਰੀ_Errno;
+    ਜੇ( winRetryIoerr(&nRetry, &ਆਖਰੀ_Errno) ) ਜਾਰੀ;
+    pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_READ\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_READ, pFile->lastErrno,
-                       "winRead", pFile->zPath);
+    ਵਾਪਸ winLogError(SQLITE_IOERR_READ, pFile->ਆਖਰੀ_Errno,
+                       "winRead", pFile->z_ਰਸਤਾ);
   }
   winLogIoerr(nRetry, __LINE__);
-  if( nRead<(DWORD)amt ){
+  ਜੇ( nRead<(DWORD)amt ){
     /* Unread parts of the buffer must be zero-filled */
-    memset(&((char*)pBuf)[nRead], 0, amt-nRead);
+    memset(&((ਅੱਖਰ*)pBuf)[nRead], 0, amt-nRead);
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_SHORT_READ\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_IOERR_SHORT_READ;
+    ਵਾਪਸ SQLITE_IOERR_SHORT_READ;
   }
 
   OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-static int winWrite(
+ਸਥਿਰ ਪੂਰਨ winWrite(
   sqlite3_file *id,               /* File to write into */
-  const void *pBuf,               /* The bytes to be written */
-  int amt,                        /* Number of bytes to write */
-  sqlite3_int64 offset            /* Offset into the file to begin writing at */
+  ਅਚਲ ਖਾਲੀ *pBuf,               /* The bytes to be written */
+  ਪੂਰਨ amt,                        /* Number of bytes to write */
+  sqlite3_int64 ਵਿੱਥ            /* Offset into the file to begin writing at */
 ){
-  int rc = 0;                     /* True if error has occurred, else false */
+  ਪੂਰਨ rc = 0;                     /* True if error has occurred, else false */
   winFile *pFile = (winFile*)id;  /* File handle */
-  int nRetry = 0;                 /* Number of retries */
+  ਪੂਰਨ nRetry = 0;                 /* Number of retries */
 
-  assert( amt>0 );
-  assert( pFile );
-  SimulateIOError(return SQLITE_IOERR_WRITE);
-  SimulateDiskfullError(return SQLITE_FULL);
+  ਪ੍ਰਤਿਜ੍ਞਾ( amt>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile );
+  SimulateIOError(ਵਾਪਸ SQLITE_IOERR_WRITE);
+  SimulateDiskfullError(ਵਾਪਸ SQLITE_ਭਰਿਆ);
 
   OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, buffer=%p, amount=%d, "
            "offset=%lld, lock=%d\n", osGetCurrentProcessId(), pFile,
-           pFile->h, pBuf, amt, offset, pFile->locktype));
+           pFile->h, pBuf, amt, ਵਿੱਥ, pFile->locktype));
 
-#if defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_SIZE>0
+#ਜੇ defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_ਮਾਪ>0
   /* Deal with as much of this write request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, amt);
+  ਜੇ( ਵਿੱਥ<pFile->mmap_ਮਾਪ ){
+    ਜੇ( ਵਿੱਥ+amt <= pFile->mmap_ਮਾਪ ){
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(&((u8 *)(pFile->pMapRegion))[ਵਿੱਥ], pBuf, amt);
       OSTRACE(("WRITE-MMAP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return SQLITE_OK;
-    }else{
-      int nCopy = (int)(pFile->mmapSize - offset);
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, nCopy);
+      ਵਾਪਸ SQLITE_OK;
+    }ਨਹੀਂਤਾਂ{
+      ਪੂਰਨ nCopy = (ਪੂਰਨ)(pFile->mmap_ਮਾਪ - ਵਿੱਥ);
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(&((u8 *)(pFile->pMapRegion))[ਵਿੱਥ], pBuf, nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      ਵਿੱਥ += nCopy;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-  rc = winSeekFile(pFile, offset);
-  if( rc==0 ){
-#else
+#ਜੇ defined(SQLITE_WIN32_NO_OVERLAPPED)
+  rc = winSeekFile(pFile, ਵਿੱਥ);
+  ਜੇ( rc==0 ){
+#ਨਹੀਂਤਾਂ
   {
-#endif
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
+#ਜੇ_ਅੰਤ
+#ਜੇ !defined(SQLITE_WIN32_NO_OVERLAPPED)
     OVERLAPPED overlapped;        /* The offset for WriteFile. */
-#endif
+#ਜੇ_ਅੰਤ
     u8 *aRem = (u8 *)pBuf;        /* Data yet to be written */
-    int nRem = amt;               /* Number of bytes yet to be written */
+    ਪੂਰਨ nRem = amt;               /* Number of bytes yet to be written */
     DWORD nWrite;                 /* Bytes written by each WriteFile() call */
-    DWORD lastErrno = NO_ERROR;   /* Value returned by GetLastError() */
+    DWORD ਆਖਰੀ_Errno = NO_ERROR;   /* Value returned by GetLastError() */
 
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
-    memset(&overlapped, 0, sizeof(OVERLAPPED));
-    overlapped.Offset = (LONG)(offset & 0xffffffff);
-    overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-#endif
+#ਜੇ !defined(SQLITE_WIN32_NO_OVERLAPPED)
+    memset(&overlapped, 0, ਆਕਾਰ(OVERLAPPED));
+    overlapped.ਵਿੱਥ_2 = (LONG)(ਵਿੱਥ & 0xffffffff);
+    overlapped.ਵਿੱਥ_ਉੱਚਾ_2 = (LONG)((ਵਿੱਥ>>32) & 0x7fffffff);
+#ਜੇ_ਅੰਤ
 
-    while( nRem>0 ){
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-      if( !osWriteFile(pFile->h, aRem, nRem, &nWrite, 0) ){
-#else
-      if( !osWriteFile(pFile->h, aRem, nRem, &nWrite, &overlapped) ){
-#endif
-        if( winRetryIoerr(&nRetry, &lastErrno) ) continue;
-        break;
+    ਜਦੋਂ( nRem>0 ){
+#ਜੇ defined(SQLITE_WIN32_NO_OVERLAPPED)
+      ਜੇ( !osWriteFile(pFile->h, aRem, nRem, &nWrite, 0) ){
+#ਨਹੀਂਤਾਂ
+      ਜੇ( !osWriteFile(pFile->h, aRem, nRem, &nWrite, &overlapped) ){
+#ਜੇ_ਅੰਤ
+        ਜੇ( winRetryIoerr(&nRetry, &ਆਖਰੀ_Errno) ) ਜਾਰੀ;
+        ਰੋਕੋ;
       }
-      assert( nWrite==0 || nWrite<=(DWORD)nRem );
-      if( nWrite==0 || nWrite>(DWORD)nRem ){
-        lastErrno = osGetLastError();
-        break;
+      ਪ੍ਰਤਿਜ੍ਞਾ( nWrite==0 || nWrite<=(DWORD)nRem );
+      ਜੇ( nWrite==0 || nWrite>(DWORD)nRem ){
+        ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+        ਰੋਕੋ;
       }
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
-      offset += nWrite;
-      overlapped.Offset = (LONG)(offset & 0xffffffff);
-      overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-#endif
+#ਜੇ !defined(SQLITE_WIN32_NO_OVERLAPPED)
+      ਵਿੱਥ += nWrite;
+      overlapped.ਵਿੱਥ_2 = (LONG)(ਵਿੱਥ & 0xffffffff);
+      overlapped.ਵਿੱਥ_ਉੱਚਾ_2 = (LONG)((ਵਿੱਥ>>32) & 0x7fffffff);
+#ਜੇ_ਅੰਤ
       aRem += nWrite;
       nRem -= nWrite;
     }
-    if( nRem>0 ){
-      pFile->lastErrno = lastErrno;
+    ਜੇ( nRem>0 ){
+      pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
       rc = 1;
     }
   }
 
-  if( rc ){
-    if(   ( pFile->lastErrno==ERROR_HANDLE_DISK_FULL )
-       || ( pFile->lastErrno==ERROR_DISK_FULL )){
+  ਜੇ( rc ){
+    ਜੇ(   ( pFile->ਆਖਰੀ_Errno==ERROR_HANDLE_DISK_ਭਰਿਆ )
+       || ( pFile->ਆਖਰੀ_Errno==ERROR_DISK_ਭਰਿਆ )){
       OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_FULL\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return winLogError(SQLITE_FULL, pFile->lastErrno,
-                         "winWrite1", pFile->zPath);
+      ਵਾਪਸ winLogError(SQLITE_ਭਰਿਆ, pFile->ਆਖਰੀ_Errno,
+                         "winWrite1", pFile->z_ਰਸਤਾ);
     }
     OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_WRITE\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_WRITE, pFile->lastErrno,
-                       "winWrite2", pFile->zPath);
-  }else{
+    ਵਾਪਸ winLogError(SQLITE_IOERR_WRITE, pFile->ਆਖਰੀ_Errno,
+                       "winWrite2", pFile->z_ਰਸਤਾ);
+  }ਨਹੀਂਤਾਂ{
     winLogIoerr(nRetry, __LINE__);
   }
   OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
-#ifndef SQLITE_OMIT_WAL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
 /*
 ** Truncate the file opened by handle h to nByte bytes in size.
 */
-static int winHandleTruncate(HANDLE h, sqlite3_int64 nByte){ 
-  int rc = SQLITE_OK;             /* Return code */
+ਸਥਿਰ ਪੂਰਨ winHandleTruncate(HANDLE h, sqlite3_int64 nByte){ 
+  ਪੂਰਨ rc = SQLITE_OK;             /* Return code */
   rc = winHandleSeek(h, nByte);
-  if( rc==SQLITE_OK ){
-    if( 0==osSetEndOfFile(h) ){
+  ਜੇ( rc==SQLITE_OK ){
+    ਜੇ( 0==os_ਸੈੱਟ_ਸਿਰਾ_ਦਾ_File(h) ){
       rc = SQLITE_IOERR_TRUNCATE;
     }
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Determine the size in bytes of the file opened by the handle passed as 
 ** the first argument.
 */
-static int winHandleSize(HANDLE h, sqlite3_int64 *pnByte){ 
-  int rc = SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ win_Handle_ਮਾਪ(HANDLE h, sqlite3_int64 *pnByte){ 
+  ਪੂਰਨ rc = SQLITE_OK;
   LARGE_INTEGER x;
-  assert( pnByte );
-  if( osGetFileSizeEx(h, &x)==0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pnByte );
+  ਜੇ( os_Get_File_ਮਾਪ_Ex(h, &x)==0 ){
     rc = SQLITE_IOERR_FSTAT;
     *pnByte = 0;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     *pnByte = x.QuadPart;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Close the handle passed as the only argument.
 */
-static void winHandleClose(HANDLE h){
-  if( h!=INVALID_HANDLE_VALUE ){
+ਸਥਿਰ ਖਾਲੀ winHandleClose(HANDLE h){
+  ਜੇ( h!=INVALID_HANDLE_ਮੁੱਲ ){
     osCloseHandle(h);
   }
 }
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#ਜੇ_ਅੰਤ /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Truncate an open file to a specified size
 */
-static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
+ਸਥਿਰ ਪੂਰਨ winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   winFile *pFile = (winFile*)id;  /* File handle object */
-  int rc = SQLITE_OK;             /* Return code for this function */
-  DWORD lastErrno;
-#if SQLITE_MAX_MMAP_SIZE>0
-  sqlite3_int64 oldMmapSize;
-  if( pFile->nFetchOut>0 ){
+  ਪੂਰਨ rc = SQLITE_OK;             /* Return code for this function */
+  DWORD ਆਖਰੀ_Errno;
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  sqlite3_int64 old_Mmap_ਮਾਪ;
+  ਜੇ( pFile->n_Fetch_ਬਾਹਰਲਾ>0 ){
     /* File truncation is a no-op if there are outstanding memory mapped
     ** pages.  This is because truncating the file means temporarily unmapping
     ** the file, and that might delete memory out from under existing cursors.
@@ -2072,12 +2072,12 @@ static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
     ** now to simply make transactions a no-op if there are pending reads.  We
     ** can maybe revisit this decision in the future.
     */
-    return SQLITE_OK;
+    ਵਾਪਸ SQLITE_OK;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  assert( pFile );
-  SimulateIOError(return SQLITE_IOERR_TRUNCATE);
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile );
+  SimulateIOError(ਵਾਪਸ SQLITE_IOERR_TRUNCATE);
   OSTRACE(("TRUNCATE pid=%lu, pFile=%p, file=%p, size=%lld, lock=%d\n",
            osGetCurrentProcessId(), pFile, pFile->h, nByte, pFile->locktype));
 
@@ -2086,176 +2086,176 @@ static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   ** actual file size after the operation may be larger than the requested
   ** size).
   */
-  if( pFile->szChunk>0 ){
+  ਜੇ( pFile->szChunk>0 ){
     nByte = ((nByte + pFile->szChunk - 1)/pFile->szChunk) * pFile->szChunk;
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->pMapRegion ){
-    oldMmapSize = pFile->mmapSize;
-  }else{
-    oldMmapSize = 0;
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  ਜੇ( pFile->pMapRegion ){
+    old_Mmap_ਮਾਪ = pFile->mmap_ਮਾਪ;
+  }ਨਹੀਂਤਾਂ{
+    old_Mmap_ਮਾਪ = 0;
   }
   winUnmapfile(pFile);
-#endif
+#ਜੇ_ਅੰਤ
 
   /* SetEndOfFile() returns non-zero when successful, or zero when it fails. */
-  if( winSeekFile(pFile, nByte) ){
-    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->lastErrno,
-                     "winTruncate1", pFile->zPath);
-  }else if( 0==osSetEndOfFile(pFile->h) &&
-            ((lastErrno = osGetLastError())!=ERROR_USER_MAPPED_FILE) ){
-    pFile->lastErrno = lastErrno;
-    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->lastErrno,
-                     "winTruncate2", pFile->zPath);
+  ਜੇ( winSeekFile(pFile, nByte) ){
+    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->ਆਖਰੀ_Errno,
+                     "winTruncate1", pFile->z_ਰਸਤਾ);
+  }ਨਹੀਂਤਾਂ ਜੇ( 0==os_ਸੈੱਟ_ਸਿਰਾ_ਦਾ_File(pFile->h) &&
+            ((ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error())!=ERROR_USER_MAPPED_FILE) ){
+    pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
+    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->ਆਖਰੀ_Errno,
+                     "winTruncate2", pFile->z_ਰਸਤਾ);
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( rc==SQLITE_OK && oldMmapSize>0 ){
-    if( oldMmapSize>nByte ){
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  ਜੇ( rc==SQLITE_OK && old_Mmap_ਮਾਪ>0 ){
+    ਜੇ( old_Mmap_ਮਾਪ>nByte ){
       winMapfile(pFile, -1);
-    }else{
-      winMapfile(pFile, oldMmapSize);
+    }ਨਹੀਂਤਾਂ{
+      winMapfile(pFile, old_Mmap_ਮਾਪ);
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   OSTRACE(("TRUNCATE pid=%lu, pFile=%p, file=%p, rc=%s\n",
            osGetCurrentProcessId(), pFile, pFile->h, sqlite3ErrName(rc)));
-  return rc;
+  ਵਾਪਸ rc;
 }
 
-#ifdef SQLITE_TEST
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
 /*
 ** Count the number of fullsyncs and normal syncs.  This is used to test
 ** that syncs and fullsyncs are occurring at the right times.
 */
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
-#endif
+ਪੂਰਨ sqlite3_sync_ਗਿਣਤੀ = 0;
+ਪੂਰਨ sqlite3_fullsync_ਗਿਣਤੀ = 0;
+#ਜੇ_ਅੰਤ
 
 /*
 ** Make sure all writes to a particular file are committed to disk.
 */
-static int winSync(sqlite3_file *id, int flags){
-#ifndef SQLITE_NO_SYNC
+ਸਥਿਰ ਪੂਰਨ winSync(sqlite3_file *id, ਪੂਰਨ flags){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_NO_SYNC
   /*
   ** Used only when SQLITE_NO_SYNC is not defined.
    */
   BOOL rc;
-#endif
-#if !defined(NDEBUG) || !defined(SQLITE_NO_SYNC) || \
+#ਜੇ_ਅੰਤ
+#ਜੇ !defined(NDEBUG) || !defined(SQLITE_NO_SYNC) || \
     defined(SQLITE_HAVE_OS_TRACE)
   /*
   ** Used when SQLITE_NO_SYNC is not defined and by the assert() and/or
   ** OSTRACE() macros.
    */
   winFile *pFile = (winFile*)id;
-#else
-  UNUSED_PARAMETER(id);
-#endif
+#ਨਹੀਂਤਾਂ
+  ਅਣਵਰਤਿਆ_PARAMETER(id);
+#ਜੇ_ਅੰਤ
 
-  assert( pFile );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile );
   /* Check that one of SQLITE_SYNC_NORMAL or FULL was passed */
-  assert((flags&0x0F)==SQLITE_SYNC_NORMAL
-      || (flags&0x0F)==SQLITE_SYNC_FULL
+  ਪ੍ਰਤਿਜ੍ਞਾ((flags&0x0F)==SQLITE_SYNC_ਸਾਧਾਰਨ
+      || (flags&0x0F)==SQLITE_SYNC_ਭਰਿਆ
   );
 
   /* Unix cannot, but some systems may return SQLITE_FULL from here. This
   ** line is to test that doing so does not cause any problems.
   */
-  SimulateDiskfullError( return SQLITE_FULL );
+  SimulateDiskfullError( ਵਾਪਸ SQLITE_ਭਰਿਆ );
 
   OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, flags=%x, lock=%d\n",
            osGetCurrentProcessId(), pFile, pFile->h, flags,
            pFile->locktype));
 
-#ifndef SQLITE_TEST
-  UNUSED_PARAMETER(flags);
-#else
-  if( (flags&0x0F)==SQLITE_SYNC_FULL ){
-    sqlite3_fullsync_count++;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+  ਅਣਵਰਤਿਆ_PARAMETER(flags);
+#ਨਹੀਂਤਾਂ
+  ਜੇ( (flags&0x0F)==SQLITE_SYNC_ਭਰਿਆ ){
+    sqlite3_fullsync_ਗਿਣਤੀ++;
   }
-  sqlite3_sync_count++;
-#endif
+  sqlite3_sync_ਗਿਣਤੀ++;
+#ਜੇ_ਅੰਤ
 
   /* If we compiled with the SQLITE_NO_SYNC flag, then syncing is a
   ** no-op
   */
-#ifdef SQLITE_NO_SYNC
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_NO_SYNC
   OSTRACE(("SYNC-NOP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
-#else
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->pMapRegion ){
-    if( osFlushViewOfFile(pFile->pMapRegion, 0) ){
+  ਵਾਪਸ SQLITE_OK;
+#ਨਹੀਂਤਾਂ
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  ਜੇ( pFile->pMapRegion ){
+    ਜੇ( os_Flush_View_ਦਾ_File(pFile->pMapRegion, 0) ){
       OSTRACE(("SYNC-MMAP pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_OK\n", osGetCurrentProcessId(),
                pFile, pFile->pMapRegion));
-    }else{
-      pFile->lastErrno = osGetLastError();
+    }ਨਹੀਂਤਾਂ{
+      pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
       OSTRACE(("SYNC-MMAP pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_IOERR_MMAP\n", osGetCurrentProcessId(),
                pFile, pFile->pMapRegion));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winSync1", pFile->zPath);
+      ਵਾਪਸ winLogError(SQLITE_IOERR_MMAP, pFile->ਆਖਰੀ_Errno,
+                         "winSync1", pFile->z_ਰਸਤਾ);
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
   rc = osFlushFileBuffers(pFile->h);
   SimulateIOError( rc=FALSE );
-  if( rc ){
+  ਜੇ( rc ){
     OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_OK;
-  }else{
-    pFile->lastErrno = osGetLastError();
+    ਵਾਪਸ SQLITE_OK;
+  }ਨਹੀਂਤਾਂ{
+    pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
     OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_FSYNC\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_FSYNC, pFile->lastErrno,
-                       "winSync2", pFile->zPath);
+    ਵਾਪਸ winLogError(SQLITE_IOERR_FSYNC, pFile->ਆਖਰੀ_Errno,
+                       "winSync2", pFile->z_ਰਸਤਾ);
   }
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 /*
 ** Determine the current size of a file in bytes
 */
-static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
+ਸਥਿਰ ਪੂਰਨ win_File_ਮਾਪ(sqlite3_file *id, sqlite3_int64 *p_ਮਾਪ){
   winFile *pFile = (winFile*)id;
-  int rc = SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
 
-  assert( id!=0 );
-  assert( pSize!=0 );
-  SimulateIOError(return SQLITE_IOERR_FSTAT);
-  OSTRACE(("SIZE file=%p, pSize=%p\n", pFile->h, pSize));
+  ਪ੍ਰਤਿਜ੍ਞਾ( id!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p_ਮਾਪ!=0 );
+  SimulateIOError(ਵਾਪਸ SQLITE_IOERR_FSTAT);
+  OSTRACE(("SIZE file=%p, pSize=%p\n", pFile->h, p_ਮਾਪ));
   {
     LARGE_INTEGER x;
-    if( osGetFileSizeEx(pFile->h, &x)==0 ){
-      *pSize = 0;
-      pFile->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_FSTAT, pFile->lastErrno,
-                       "winFileSize", pFile->zPath);
-    }else{
-      *pSize = x.QuadPart;
+    ਜੇ( os_Get_File_ਮਾਪ_Ex(pFile->h, &x)==0 ){
+      *p_ਮਾਪ = 0;
+      pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+      rc = winLogError(SQLITE_IOERR_FSTAT, pFile->ਆਖਰੀ_Errno,
+                       "winFileSize", pFile->z_ਰਸਤਾ);
+    }ਨਹੀਂਤਾਂ{
+      *p_ਮਾਪ = x.QuadPart;
     }
   }
   OSTRACE(("SIZE file=%p, pSize=%p, *pSize=%lld, rc=%s\n",
-           pFile->h, pSize, *pSize, sqlite3ErrName(rc)));
-  return rc;
+           pFile->h, p_ਮਾਪ, *p_ਮਾਪ, sqlite3ErrName(rc)));
+  ਵਾਪਸ rc;
 }
 
 /*
 ** LOCKFILE_FAIL_IMMEDIATELY is undefined on some Windows systems.
 */
-#ifndef LOCKFILE_FAIL_IMMEDIATELY
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ LOCKFILE_FAIL_IMMEDIATELY
 # define LOCKFILE_FAIL_IMMEDIATELY 1
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef LOCKFILE_EXCLUSIVE_LOCK
-# define LOCKFILE_EXCLUSIVE_LOCK 2
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ LOCKFILE_EXCLUSIVE_ਤਾਲਾ
+# define LOCKFILE_EXCLUSIVE_ਤਾਲਾ 2
+#ਜੇ_ਅੰਤ
 
 /*
 ** Historically, SQLite has used both the LockFile and LockFileEx functions.
@@ -2264,53 +2264,53 @@ static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
 ** obtain an exclusive lock.  These flags are used with the LockFileEx function
 ** and reflect those expectations; therefore, they should not be changed.
 */
-#ifndef SQLITE_LOCKFILE_FLAGS
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_LOCKFILE_FLAGS
 # define SQLITE_LOCKFILE_FLAGS   (LOCKFILE_FAIL_IMMEDIATELY | \
-                                  LOCKFILE_EXCLUSIVE_LOCK)
-#endif
+                                  LOCKFILE_EXCLUSIVE_ਤਾਲਾ)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Currently, SQLite never calls the LockFileEx function without wanting the
 ** call to fail immediately if the lock cannot be obtained.
 */
-#ifndef SQLITE_LOCKFILEEX_FLAGS
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_LOCKFILEEX_FLAGS
 # define SQLITE_LOCKFILEEX_FLAGS (LOCKFILE_FAIL_IMMEDIATELY)
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Acquire a reader lock.
 ** Different API routines are called depending on whether or not this
 ** is Win9x or WinNT.
 */
-static int winGetReadLock(winFile *pFile, int bBlock){
-  int res;
-  DWORD mask = ~(bBlock ? LOCKFILE_FAIL_IMMEDIATELY : 0);
+ਸਥਿਰ ਪੂਰਨ win_Get_Read_ਤਾਲਾ(winFile *pFile, ਪੂਰਨ b_ਖੰਡ){
+  ਪੂਰਨ res;
+  DWORD ਨਕਾਬ = ~(b_ਖੰਡ ? LOCKFILE_FAIL_IMMEDIATELY : 0);
   OSTRACE(("READ-LOCK file=%p, lock=%d\n", pFile->h, pFile->locktype));
-  res = winLockFile(&pFile->h, SQLITE_LOCKFILEEX_FLAGS&mask, SHARED_FIRST, 0,
-                    SHARED_SIZE, 0);
-  if( res == 0 ){
-    pFile->lastErrno = osGetLastError();
+  res = win_ਤਾਲਾ_File(&pFile->h, SQLITE_LOCKFILEEX_FLAGS&ਨਕਾਬ, SHARED_ਪਹਿਲਾ, 0,
+                    SHARED_ਮਾਪ, 0);
+  ਜੇ( res == 0 ){
+    pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
     /* No need to log a failure to lock */
   }
   OSTRACE(("READ-LOCK file=%p, result=%d\n", pFile->h, res));
-  return res;
+  ਵਾਪਸ res;
 }
 
 /*
 ** Undo a readlock
 */
-static int winUnlockReadLock(winFile *pFile){
-  int res;
-  DWORD lastErrno;
+ਸਥਿਰ ਪੂਰਨ win_Unlock_Read_ਤਾਲਾ(winFile *pFile){
+  ਪੂਰਨ res;
+  DWORD ਆਖਰੀ_Errno;
   OSTRACE(("READ-UNLOCK file=%p, lock=%d\n", pFile->h, pFile->locktype));
-  res = winUnlockFile(&pFile->h, SHARED_FIRST, 0, SHARED_SIZE, 0);
-  if( res==0 && ((lastErrno = osGetLastError())!=ERROR_NOT_LOCKED) ){
-    pFile->lastErrno = lastErrno;
-    winLogError(SQLITE_IOERR_UNLOCK, pFile->lastErrno,
-                "winUnlockReadLock", pFile->zPath);
+  res = winUnlockFile(&pFile->h, SHARED_ਪਹਿਲਾ, 0, SHARED_ਮਾਪ, 0);
+  ਜੇ( res==0 && ((ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error())!=ERROR_NOT_LOCKED) ){
+    pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
+    winLogError(SQLITE_IOERR_UNLOCK, pFile->ਆਖਰੀ_Errno,
+                "winUnlockReadLock", pFile->z_ਰਸਤਾ);
   }
   OSTRACE(("READ-UNLOCK file=%p, result=%d\n", pFile->h, res));
-  return res;
+  ਵਾਪਸ res;
 }
 
 /*
@@ -2339,150 +2339,150 @@ static int winUnlockReadLock(winFile *pFile){
 ** It is not possible to lower the locking level one step at a time.  You
 ** must go straight to locking level 0.
 */
-static int winLock(sqlite3_file *id, int locktype){
-  int rc = SQLITE_OK;    /* Return code from subroutines */
-  int res = 1;           /* Result of a Windows lock call */
-  int newLocktype;       /* Set pFile->locktype to this value before exiting */
-  int gotPendingLock = 0;/* True if we acquired a PENDING lock this time */
+ਸਥਿਰ ਪੂਰਨ win_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ locktype){
+  ਪੂਰਨ rc = SQLITE_OK;    /* Return code from subroutines */
+  ਪੂਰਨ res = 1;           /* Result of a Windows lock call */
+  ਪੂਰਨ newLocktype;       /* Set pFile->locktype to this value before exiting */
+  ਪੂਰਨ got_Pending_ਤਾਲਾ = 0;/* True if we acquired a PENDING lock this time */
   winFile *pFile = (winFile*)id;
-  DWORD lastErrno = NO_ERROR;
+  DWORD ਆਖਰੀ_Errno = NO_ERROR;
 
-  assert( id!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( id!=0 );
   OSTRACE(("LOCK file=%p, oldLock=%d(%d), newLock=%d\n",
-           pFile->h, pFile->locktype, pFile->sharedLockByte, locktype));
+           pFile->h, pFile->locktype, pFile->shared_ਤਾਲਾ_Byte, locktype));
 
   /* If there is already a lock of this type or more restrictive on the
   ** OsFile, do nothing. Don't use the end_lock: exit path, as
   ** sqlite3OsEnterMutex() hasn't been called yet.
   */
-  if( pFile->locktype>=locktype ){
+  ਜੇ( pFile->locktype>=locktype ){
     OSTRACE(("LOCK-HELD file=%p, rc=SQLITE_OK\n", pFile->h));
-    return SQLITE_OK;
+    ਵਾਪਸ SQLITE_OK;
   }
 
   /* Do not allow any kind of write-lock on a read-only database
   */
-  if( (pFile->ctrlFlags & WINFILE_RDONLY)!=0 && locktype>=RESERVED_LOCK ){
-    return SQLITE_IOERR_LOCK;
+  ਜੇ( (pFile->ctrlFlags & WINFILE_RDONLY)!=0 && locktype>=RESERVED_ਤਾਲਾ ){
+    ਵਾਪਸ SQLITE_IOERR_ਤਾਲਾ;
   }
 
   /* Make sure the locking sequence is correct
   */
-  assert( pFile->locktype!=NO_LOCK || locktype==SHARED_LOCK );
-  assert( locktype!=PENDING_LOCK );
-  assert( locktype!=RESERVED_LOCK || pFile->locktype==SHARED_LOCK );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile->locktype!=NO_ਤਾਲਾ || locktype==SHARED_ਤਾਲਾ );
+  ਪ੍ਰਤਿਜ੍ਞਾ( locktype!=PENDING_ਤਾਲਾ );
+  ਪ੍ਰਤਿਜ੍ਞਾ( locktype!=RESERVED_ਤਾਲਾ || pFile->locktype==SHARED_ਤਾਲਾ );
 
   /* Lock the PENDING_LOCK byte if we need to acquire an EXCLUSIVE lock or
   ** a SHARED lock.  If we are acquiring a SHARED lock, the acquisition of
   ** the PENDING_LOCK byte is temporary.
   */
   newLocktype = pFile->locktype;
-  if( locktype==SHARED_LOCK
-   || (locktype==EXCLUSIVE_LOCK && pFile->locktype==RESERVED_LOCK)
+  ਜੇ( locktype==SHARED_ਤਾਲਾ
+   || (locktype==EXCLUSIVE_ਤਾਲਾ && pFile->locktype==RESERVED_ਤਾਲਾ)
   ){
-    int cnt = 3;
+    ਪੂਰਨ cnt = 3;
 
     /* Flags for the LockFileEx() call. This should be an exclusive lock if
     ** this call is to obtain EXCLUSIVE, or a shared lock if this call is to
     ** obtain SHARED.  */
-    int flags = LOCKFILE_FAIL_IMMEDIATELY;
-    if( locktype==EXCLUSIVE_LOCK ){
-      flags |= LOCKFILE_EXCLUSIVE_LOCK;
+    ਪੂਰਨ flags = LOCKFILE_FAIL_IMMEDIATELY;
+    ਜੇ( locktype==EXCLUSIVE_ਤਾਲਾ ){
+      flags |= LOCKFILE_EXCLUSIVE_ਤਾਲਾ;
     }
-    while( cnt>0 ){
+    ਜਦੋਂ( cnt>0 ){
       /* Try 3 times to get the pending lock.  This is needed to work
       ** around problems caused by indexing and/or anti-virus software on
       ** Windows systems.
       **
       ** If you are using this code as a model for alternative VFSes, do not
       ** copy this retry logic.  It is a hack intended for Windows only.  */
-      res = winLockFile(&pFile->h, flags, PENDING_BYTE, 0, 1, 0);
-      if( res ) break;
+      res = win_ਤਾਲਾ_File(&pFile->h, flags, PENDING_BYTE, 0, 1, 0);
+      ਜੇ( res ) ਰੋਕੋ;
 
-      lastErrno = osGetLastError();
+      ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
       OSTRACE(("LOCK-PENDING-FAIL file=%p, count=%d, result=%d\n", 
             pFile->h, cnt, res
       ));
 
-      if( lastErrno==ERROR_INVALID_HANDLE ){
-        pFile->lastErrno = lastErrno;
-        rc = SQLITE_IOERR_LOCK;
+      ਜੇ( ਆਖਰੀ_Errno==ERROR_INVALID_HANDLE ){
+        pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
+        rc = SQLITE_IOERR_ਤਾਲਾ;
         OSTRACE(("LOCK-FAIL file=%p, count=%d, rc=%s\n", 
               pFile->h, cnt, sqlite3ErrName(rc)
         ));
-        return rc;
+        ਵਾਪਸ rc;
       }
 
       cnt--;
-      if( cnt>0 ) osSleep(1);
+      ਜੇ( cnt>0 ) osSleep(1);
     }
-    gotPendingLock = res;
+    got_Pending_ਤਾਲਾ = res;
   }
 
   /* Acquire a shared lock
   */
-  if( locktype==SHARED_LOCK && res ){
-    assert( pFile->locktype==NO_LOCK );
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    res = winGetReadLock(pFile, pFile->bBlockOnConnect);
-#else
-    res = winGetReadLock(pFile, 0);
-#endif
-    if( res ){
-      newLocktype = SHARED_LOCK;
-    }else{
-      lastErrno = osGetLastError();
+  ਜੇ( locktype==SHARED_ਤਾਲਾ && res ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFile->locktype==NO_ਤਾਲਾ );
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
+    res = win_Get_Read_ਤਾਲਾ(pFile, pFile->b_ਖੰਡ_On_Connect);
+#ਨਹੀਂਤਾਂ
+    res = win_Get_Read_ਤਾਲਾ(pFile, 0);
+#ਜੇ_ਅੰਤ
+    ਜੇ( res ){
+      newLocktype = SHARED_ਤਾਲਾ;
+    }ਨਹੀਂਤਾਂ{
+      ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
     }
   }
 
   /* Acquire a RESERVED lock
   */
-  if( locktype==RESERVED_LOCK && res ){
-    assert( pFile->locktype==SHARED_LOCK );
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILE_FLAGS, RESERVED_BYTE, 0, 1, 0);
-    if( res ){
-      newLocktype = RESERVED_LOCK;
-    }else{
-      lastErrno = osGetLastError();
+  ਜੇ( locktype==RESERVED_ਤਾਲਾ && res ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFile->locktype==SHARED_ਤਾਲਾ );
+    res = win_ਤਾਲਾ_File(&pFile->h, SQLITE_LOCKFILE_FLAGS, RESERVED_BYTE, 0, 1, 0);
+    ਜੇ( res ){
+      newLocktype = RESERVED_ਤਾਲਾ;
+    }ਨਹੀਂਤਾਂ{
+      ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
     }
   }
 
   /* Acquire a PENDING lock
   */
-  if( locktype==EXCLUSIVE_LOCK && res ){
-    newLocktype = PENDING_LOCK;
-    gotPendingLock = 0;
+  ਜੇ( locktype==EXCLUSIVE_ਤਾਲਾ && res ){
+    newLocktype = PENDING_ਤਾਲਾ;
+    got_Pending_ਤਾਲਾ = 0;
   }
 
   /* Acquire an EXCLUSIVE lock
   */
-  if( locktype==EXCLUSIVE_LOCK && res ){
-    assert( pFile->locktype>=SHARED_LOCK );
-    (void)winUnlockReadLock(pFile);
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILE_FLAGS, SHARED_FIRST, 0,
-                      SHARED_SIZE, 0);
-    if( res ){
-      newLocktype = EXCLUSIVE_LOCK;
-    }else{
-      lastErrno = osGetLastError();
-      winGetReadLock(pFile, 0);
+  ਜੇ( locktype==EXCLUSIVE_ਤਾਲਾ && res ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pFile->locktype>=SHARED_ਤਾਲਾ );
+    (ਖਾਲੀ)win_Unlock_Read_ਤਾਲਾ(pFile);
+    res = win_ਤਾਲਾ_File(&pFile->h, SQLITE_LOCKFILE_FLAGS, SHARED_ਪਹਿਲਾ, 0,
+                      SHARED_ਮਾਪ, 0);
+    ਜੇ( res ){
+      newLocktype = EXCLUSIVE_ਤਾਲਾ;
+    }ਨਹੀਂਤਾਂ{
+      ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+      win_Get_Read_ਤਾਲਾ(pFile, 0);
     }
   }
 
   /* If we are holding a PENDING lock that ought to be released, then
   ** release it now.
   */
-  if( gotPendingLock && locktype==SHARED_LOCK ){
+  ਜੇ( got_Pending_ਤਾਲਾ && locktype==SHARED_ਤਾਲਾ ){
     winUnlockFile(&pFile->h, PENDING_BYTE, 0, 1, 0);
   }
 
   /* Update the state of the lock has held in the file descriptor then
   ** return the appropriate result code.
   */
-  if( res ){
+  ਜੇ( res ){
     rc = SQLITE_OK;
-  }else{
-    pFile->lastErrno = lastErrno;
+  }ਨਹੀਂਤਾਂ{
+    pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
     rc = SQLITE_BUSY;
     OSTRACE(("LOCK-FAIL file=%p, wanted=%d, got=%d\n",
              pFile->h, locktype, newLocktype));
@@ -2490,7 +2490,7 @@ static int winLock(sqlite3_file *id, int locktype){
   pFile->locktype = (u8)newLocktype;
   OSTRACE(("LOCK file=%p, lock=%d, rc=%s\n",
            pFile->h, pFile->locktype, sqlite3ErrName(rc)));
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -2498,29 +2498,29 @@ static int winLock(sqlite3_file *id, int locktype){
 ** file by this or any other process. If such a lock is held, return
 ** non-zero, otherwise zero.
 */
-static int winCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int res;
+ਸਥਿਰ ਪੂਰਨ win_Check_Reserved_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ){
+  ਪੂਰਨ res;
   winFile *pFile = (winFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
-  OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p\n", pFile->h, pResOut));
+  SimulateIOError( ਵਾਪਸ SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p\n", pFile->h, p_Res_ਬਾਹਰਲਾ));
 
-  assert( id!=0 );
-  if( pFile->locktype>=RESERVED_LOCK ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( id!=0 );
+  ਜੇ( pFile->locktype>=RESERVED_ਤਾਲਾ ){
     res = 1;
     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (local)\n", pFile->h, res));
-  }else{
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILEEX_FLAGS,RESERVED_BYTE,0,1,0);
-    if( res ){
+  }ਨਹੀਂਤਾਂ{
+    res = win_ਤਾਲਾ_File(&pFile->h, SQLITE_LOCKFILEEX_FLAGS,RESERVED_BYTE,0,1,0);
+    ਜੇ( res ){
       winUnlockFile(&pFile->h, RESERVED_BYTE, 0, 1, 0);
     }
     res = !res;
     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (remote)\n", pFile->h, res));
   }
-  *pResOut = res;
+  *p_Res_ਬਾਹਰਲਾ = res;
   OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-           pFile->h, pResOut, *pResOut));
-  return SQLITE_OK;
+           pFile->h, p_Res_ਬਾਹਰਲਾ, *p_Res_ਬਾਹਰਲਾ));
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -2534,37 +2534,37 @@ static int winCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** is NO_LOCK.  If the second argument is SHARED_LOCK then this routine
 ** might return SQLITE_IOERR;
 */
-static int winUnlock(sqlite3_file *id, int locktype){
-  int type;
+ਸਥਿਰ ਪੂਰਨ winUnlock(sqlite3_file *id, ਪੂਰਨ locktype){
+  ਪੂਰਨ type;
   winFile *pFile = (winFile*)id;
-  int rc = SQLITE_OK;
-  assert( pFile!=0 );
-  assert( locktype<=SHARED_LOCK );
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( locktype<=SHARED_ਤਾਲਾ );
   OSTRACE(("UNLOCK file=%p, oldLock=%d(%d), newLock=%d\n",
-           pFile->h, pFile->locktype, pFile->sharedLockByte, locktype));
+           pFile->h, pFile->locktype, pFile->shared_ਤਾਲਾ_Byte, locktype));
   type = pFile->locktype;
-  if( type>=EXCLUSIVE_LOCK ){
-    winUnlockFile(&pFile->h, SHARED_FIRST, 0, SHARED_SIZE, 0);
-    if( locktype==SHARED_LOCK && !winGetReadLock(pFile, 0) ){
+  ਜੇ( type>=EXCLUSIVE_ਤਾਲਾ ){
+    winUnlockFile(&pFile->h, SHARED_ਪਹਿਲਾ, 0, SHARED_ਮਾਪ, 0);
+    ਜੇ( locktype==SHARED_ਤਾਲਾ && !win_Get_Read_ਤਾਲਾ(pFile, 0) ){
       /* This should never happen.  We should always be able to
       ** reacquire the read lock */
-      rc = winLogError(SQLITE_IOERR_UNLOCK, osGetLastError(),
-                       "winUnlock", pFile->zPath);
+      rc = winLogError(SQLITE_IOERR_UNLOCK, os_Get_ਆਖਰੀ_Error(),
+                       "winUnlock", pFile->z_ਰਸਤਾ);
     }
   }
-  if( type>=RESERVED_LOCK ){
+  ਜੇ( type>=RESERVED_ਤਾਲਾ ){
     winUnlockFile(&pFile->h, RESERVED_BYTE, 0, 1, 0);
   }
-  if( locktype==NO_LOCK && type>=SHARED_LOCK ){
-    winUnlockReadLock(pFile);
+  ਜੇ( locktype==NO_ਤਾਲਾ && type>=SHARED_ਤਾਲਾ ){
+    win_Unlock_Read_ਤਾਲਾ(pFile);
   }
-  if( type>=PENDING_LOCK ){
+  ਜੇ( type>=PENDING_ਤਾਲਾ ){
     winUnlockFile(&pFile->h, PENDING_BYTE, 0, 1, 0);
   }
   pFile->locktype = (u8)locktype;
   OSTRACE(("UNLOCK file=%p, lock=%d, rc=%s\n",
            pFile->h, pFile->locktype, sqlite3ErrName(rc)));
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /******************************************************************************
@@ -2584,22 +2584,22 @@ static int winUnlock(sqlite3_file *id, int locktype){
 ** time and one or more of those connections are writing.
 */
 
-static int winNolockLock(sqlite3_file *id, int locktype){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(locktype);
-  return SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ win_Nolock_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ locktype){
+  ਅਣਵਰਤਿਆ_PARAMETER(id);
+  ਅਣਵਰਤਿਆ_PARAMETER(locktype);
+  ਵਾਪਸ SQLITE_OK;
 }
 
-static int winNolockCheckReservedLock(sqlite3_file *id, int *pResOut){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(pResOut);
-  return SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ win_Nolock_Check_Reserved_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ){
+  ਅਣਵਰਤਿਆ_PARAMETER(id);
+  ਅਣਵਰਤਿਆ_PARAMETER(p_Res_ਬਾਹਰਲਾ);
+  ਵਾਪਸ SQLITE_OK;
 }
 
-static int winNolockUnlock(sqlite3_file *id, int locktype){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(locktype);
-  return SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ winNolockUnlock(sqlite3_file *id, ਪੂਰਨ locktype){
+  ਅਣਵਰਤਿਆ_PARAMETER(id);
+  ਅਣਵਰਤਿਆ_PARAMETER(locktype);
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /******************* End of the no-op lock implementation *********************
@@ -2611,197 +2611,197 @@ static int winNolockUnlock(sqlite3_file *id, int locktype){
 **
 ** If *pArg is 0 or 1, then clear or set the mask bit of pFile->ctrlFlags.
 */
-static void winModeBit(winFile *pFile, unsigned char mask, int *pArg){
-  if( *pArg<0 ){
-    *pArg = (pFile->ctrlFlags & mask)!=0;
-  }else if( (*pArg)==0 ){
-    pFile->ctrlFlags &= ~mask;
-  }else{
-    pFile->ctrlFlags |= mask;
+ਸਥਿਰ ਖਾਲੀ win_ਬਹੁਲਕ_ਦੋਆਧਾਰੀ_ਅੰਕ(winFile *pFile, ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਨਕਾਬ, ਪੂਰਨ *pArg){
+  ਜੇ( *pArg<0 ){
+    *pArg = (pFile->ctrlFlags & ਨਕਾਬ)!=0;
+  }ਨਹੀਂਤਾਂ ਜੇ( (*pArg)==0 ){
+    pFile->ctrlFlags &= ~ਨਕਾਬ;
+  }ਨਹੀਂਤਾਂ{
+    pFile->ctrlFlags |= ਨਕਾਬ;
   }
 }
 
 /* Forward references to VFS helper methods used for temporary files */
-static int winGetTempname(sqlite3_vfs *, char **);
-static int winIsDir(LPCWSTR);
-static BOOL winIsLongPathPrefix(const char *);
-static BOOL winIsDriveLetterAndColon(const char *);
+ਸਥਿਰ ਪੂਰਨ winGetTempname(sqlite3_vfs *, ਅੱਖਰ **);
+ਸਥਿਰ ਪੂਰਨ winIsDir(LPCWSTR);
+ਸਥਿਰ BOOL win_Is_Long_ਰਸਤਾ_ਅਗੇਤਰ(ਅਚਲ ਅੱਖਰ *);
+ਸਥਿਰ BOOL winIsDriveLetterAndColon(ਅਚਲ ਅੱਖਰ *);
 
 /*
 ** Control and query of the open file handle.
 */
-static int winFileControl(sqlite3_file *id, int op, void *pArg){
+ਸਥਿਰ ਪੂਰਨ winFileControl(sqlite3_file *id, ਪੂਰਨ op, ਖਾਲੀ *pArg){
   winFile *pFile = (winFile*)id;
   OSTRACE(("FCNTL file=%p, op=%d, pArg=%p\n", pFile->h, op, pArg));
-  switch( op ){
-    case SQLITE_FCNTL_LOCKSTATE: {
-      *(int*)pArg = pFile->locktype;
+  ਚੋਣ( op ){
+    ਹਾਲਤ SQLITE_FCNTL_LOCKSTATE: {
+      *(ਪੂਰਨ*)pArg = pFile->locktype;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_LAST_ERRNO: {
-      *(int*)pArg = (int)pFile->lastErrno;
+    ਹਾਲਤ SQLITE_FCNTL_ਆਖਰੀ_ERRNO: {
+      *(ਪੂਰਨ*)pArg = (ਪੂਰਨ)pFile->ਆਖਰੀ_Errno;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_CHUNK_SIZE: {
-      pFile->szChunk = *(int *)pArg;
+    ਹਾਲਤ SQLITE_FCNTL_CHUNK_ਮਾਪ: {
+      pFile->szChunk = *(ਪੂਰਨ *)pArg;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_SIZE_HINT: {
-      if( pFile->szChunk>0 ){
+    ਹਾਲਤ SQLITE_FCNTL_ਮਾਪ_HINT: {
+      ਜੇ( pFile->szChunk>0 ){
         sqlite3_int64 oldSz;
-        int rc = winFileSize(id, &oldSz);
-        if( rc==SQLITE_OK ){
+        ਪੂਰਨ rc = win_File_ਮਾਪ(id, &oldSz);
+        ਜੇ( rc==SQLITE_OK ){
           sqlite3_int64 newSz = *(sqlite3_int64*)pArg;
-          if( newSz>oldSz ){
+          ਜੇ( newSz>oldSz ){
             SimulateIOErrorBenign(1);
             rc = winTruncate(id, newSz);
             SimulateIOErrorBenign(0);
           }
         }
         OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-        return rc;
+        ਵਾਪਸ rc;
       }
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_PERSIST_WAL: {
-      winModeBit(pFile, WINFILE_PERSIST_WAL, (int*)pArg);
+    ਹਾਲਤ SQLITE_FCNTL_PERSIST_WAL: {
+      win_ਬਹੁਲਕ_ਦੋਆਧਾਰੀ_ਅੰਕ(pFile, WINFILE_PERSIST_WAL, (ਪੂਰਨ*)pArg);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
-      winModeBit(pFile, WINFILE_PSOW, (int*)pArg);
+    ਹਾਲਤ SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
+      win_ਬਹੁਲਕ_ਦੋਆਧਾਰੀ_ਅੰਕ(pFile, WINFILE_PSOW, (ਪੂਰਨ*)pArg);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_VFSNAME: {
-      *(char**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
+    ਹਾਲਤ SQLITE_FCNTL_VFSNAME: {
+      *(ਅੱਖਰ**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_WIN32_AV_RETRY: {
-      int *a = (int*)pArg;
-      if( a[0]>0 ){
+    ਹਾਲਤ SQLITE_FCNTL_WIN32_AV_RETRY: {
+      ਪੂਰਨ *a = (ਪੂਰਨ*)pArg;
+      ਜੇ( a[0]>0 ){
         winIoerrRetry = a[0];
-      }else{
+      }ਨਹੀਂਤਾਂ{
         a[0] = winIoerrRetry;
       }
-      if( a[1]>0 ){
+      ਜੇ( a[1]>0 ){
         winIoerrRetryDelay = a[1];
-      }else{
+      }ਨਹੀਂਤਾਂ{
         a[1] = winIoerrRetryDelay;
       }
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_WIN32_GET_HANDLE: {
+    ਹਾਲਤ SQLITE_FCNTL_WIN32_GET_HANDLE: {
       LPHANDLE phFile = (LPHANDLE)pArg;
       *phFile = pFile->h;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-#ifdef SQLITE_TEST
-    case SQLITE_FCNTL_WIN32_SET_HANDLE: {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+    ਹਾਲਤ SQLITE_FCNTL_WIN32_ਸੈੱਟ_HANDLE: {
       LPHANDLE phFile = (LPHANDLE)pArg;
       HANDLE hOldFile = pFile->h;
       pFile->h = *phFile;
       *phFile = hOldFile;
       OSTRACE(("FCNTL oldFile=%p, newFile=%p, rc=SQLITE_OK\n",
                hOldFile, pFile->h));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-#endif
-    case SQLITE_FCNTL_NULL_IO: {
-      (void)osCloseHandle(pFile->h);
-      pFile->h = NULL;
-      return SQLITE_OK;
+#ਜੇ_ਅੰਤ
+    ਹਾਲਤ SQLITE_FCNTL_NULL_IO: {
+      (ਖਾਲੀ)osCloseHandle(pFile->h);
+      pFile->h = ਨਿਰਾ;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_TEMPFILENAME: {
-      char *zTFile = 0;
-      int rc = winGetTempname(pFile->pVfs, &zTFile);
-      if( rc==SQLITE_OK ){
-        *(char**)pArg = zTFile;
+    ਹਾਲਤ SQLITE_FCNTL_TEMPFILENAME: {
+      ਅੱਖਰ *zTFile = 0;
+      ਪੂਰਨ rc = winGetTempname(pFile->pVfs, &zTFile);
+      ਜੇ( rc==SQLITE_OK ){
+        *(ਅੱਖਰ**)pArg = zTFile;
       }
       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-      return rc;
+      ਵਾਪਸ rc;
     }
-#if SQLITE_MAX_MMAP_SIZE>0
-    case SQLITE_FCNTL_MMAP_SIZE: {
-      i64 newLimit = *(i64*)pArg;
-      int rc = SQLITE_OK;
-      if( newLimit>sqlite3GlobalConfig.mxMmap ){
-        newLimit = sqlite3GlobalConfig.mxMmap;
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+    ਹਾਲਤ SQLITE_FCNTL_MMAP_ਮਾਪ: {
+      i64 new_ਹੱਦਬੰਦੀ = *(i64*)pArg;
+      ਪੂਰਨ rc = SQLITE_OK;
+      ਜੇ( new_ਹੱਦਬੰਦੀ>sqlite3GlobalConfig.mxMmap ){
+        new_ਹੱਦਬੰਦੀ = sqlite3GlobalConfig.mxMmap;
       }
 
       /* The value of newLimit may be eventually cast to (SIZE_T) and passed
       ** to MapViewOfFile(). Restrict its value to 2GB if (SIZE_T) is not at
       ** least a 64-bit type. */
-      if( newLimit>0 && sizeof(SIZE_T)<8 ){
-        newLimit = (newLimit & 0x7FFFFFFF);
+      ਜੇ( new_ਹੱਦਬੰਦੀ>0 && ਆਕਾਰ(ਮਾਪ_T)<8 ){
+        new_ਹੱਦਬੰਦੀ = (new_ਹੱਦਬੰਦੀ & 0x7FFFFFFF);
       }
 
-      *(i64*)pArg = pFile->mmapSizeMax;
-      if( newLimit>=0 && newLimit!=pFile->mmapSizeMax && pFile->nFetchOut==0 ){
-        pFile->mmapSizeMax = newLimit;
-        if( pFile->mmapSize>0 ){
+      *(i64*)pArg = pFile->mmap_ਮਾਪ_Max;
+      ਜੇ( new_ਹੱਦਬੰਦੀ>=0 && new_ਹੱਦਬੰਦੀ!=pFile->mmap_ਮਾਪ_Max && pFile->n_Fetch_ਬਾਹਰਲਾ==0 ){
+        pFile->mmap_ਮਾਪ_Max = new_ਹੱਦਬੰਦੀ;
+        ਜੇ( pFile->mmap_ਮਾਪ>0 ){
           winUnmapfile(pFile);
           rc = winMapfile(pFile, -1);
         }
       }
       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-      return rc;
+      ਵਾਪਸ rc;
     }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    case SQLITE_FCNTL_LOCK_TIMEOUT: {
-      int iOld = pFile->iBusyTimeout;
-      int iNew = *(int*)pArg;
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
+    ਹਾਲਤ SQLITE_FCNTL_ਤਾਲਾ_TIMEOUT: {
+      ਪੂਰਨ iOld = pFile->iBusyTimeout;
+      ਪੂਰਨ iNew = *(ਪੂਰਨ*)pArg;
+#ਜੇ SQLITE_ENABLE_SETLK_TIMEOUT==1
       pFile->iBusyTimeout = (iNew < 0) ? INFINITE : (DWORD)iNew;
-#elif SQLITE_ENABLE_SETLK_TIMEOUT==2
+#ਜਾਂਜੇ SQLITE_ENABLE_SETLK_TIMEOUT==2
       pFile->iBusyTimeout = (DWORD)(!!iNew);
-#else
+#ਨਹੀਂਤਾਂ
 # error "SQLITE_ENABLE_SETLK_TIMEOUT must be set to 1 or 2"
-#endif
-      *(int*)pArg = iOld;
-      return SQLITE_OK;
+#ਜੇ_ਅੰਤ
+      *(ਪੂਰਨ*)pArg = iOld;
+      ਵਾਪਸ SQLITE_OK;
     }
-    case SQLITE_FCNTL_BLOCK_ON_CONNECT: {
-      int iNew = *(int*)pArg;
-      pFile->bBlockOnConnect = iNew;
-      return SQLITE_OK;
+    ਹਾਲਤ SQLITE_FCNTL_ਖੰਡ_ON_CONNECT: {
+      ਪੂਰਨ iNew = *(ਪੂਰਨ*)pArg;
+      pFile->b_ਖੰਡ_On_Connect = iNew;
+      ਵਾਪਸ SQLITE_OK;
     }
-#endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
+#ਜੇ_ਅੰਤ /* SQLITE_ENABLE_SETLK_TIMEOUT */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
-    case SQLITE_FCNTL_FILESTAT: {
+#ਜੇ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+    ਹਾਲਤ SQLITE_FCNTL_FILESTAT: {
       sqlite3_str *pStr = (sqlite3_str*)pArg;
       sqlite3_str_appendf(pStr, "{\"h\":%llu", (sqlite3_uint64)pFile->h);
       sqlite3_str_appendf(pStr, ",\"vfs\":\"%s\"", pFile->pVfs->zName);
-      if( pFile->locktype ){
-        static const char *azLock[] = { "SHARED", "RESERVED",
+      ਜੇ( pFile->locktype ){
+        ਸਥਿਰ ਅਚਲ ਅੱਖਰ *az_ਤਾਲਾ[] = { "SHARED", "RESERVED",
                                       "PENDING", "EXCLUSIVE" };
         sqlite3_str_appendf(pStr, ",\"locktype\":\"%s\"", 
-                                  azLock[pFile->locktype-1]);
+                                  az_ਤਾਲਾ[pFile->locktype-1]);
       }
-#if SQLITE_MAX_MMAP_SIZE>0
-      if( pFile->mmapSize ){
-        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmapSize);
-        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->nFetchOut);
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+      ਜੇ( pFile->mmap_ਮਾਪ ){
+        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmap_ਮਾਪ);
+        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->n_Fetch_ਬਾਹਰਲਾ);
       }
-#endif
+#ਜੇ_ਅੰਤ
       sqlite3_str_append(pStr, "}", 1);
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
   }
   OSTRACE(("FCNTL file=%p, rc=SQLITE_NOTFOUND\n", pFile->h));
-  return SQLITE_NOTFOUND;
+  ਵਾਪਸ SQLITE_NOTFOUND;
 }
 
 /*
@@ -2814,17 +2814,17 @@ static int winFileControl(sqlite3_file *id, int op, void *pArg){
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-static int winSectorSize(sqlite3_file *id){
-  (void)id;
-  return SQLITE_DEFAULT_SECTOR_SIZE;
+ਸਥਿਰ ਪੂਰਨ win_Sector_ਮਾਪ(sqlite3_file *id){
+  (ਖਾਲੀ)id;
+  ਵਾਪਸ SQLITE_DEFAULT_SECTOR_ਮਾਪ;
 }
 
 /*
 ** Return a vector of device characteristics.
 */
-static int winDeviceCharacteristics(sqlite3_file *id){
+ਸਥਿਰ ਪੂਰਨ winDeviceCharacteristics(sqlite3_file *id){
   winFile *p = (winFile*)id;
-  return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN | SQLITE_IOCAP_SUBPAGE_READ |
+  ਵਾਪਸ SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN | SQLITE_IOCAP_SUBPAGE_READ |
          ((p->ctrlFlags & WINFILE_PSOW)?SQLITE_IOCAP_POWERSAFE_OVERWRITE:0);
 }
 
@@ -2834,7 +2834,7 @@ static int winDeviceCharacteristics(sqlite3_file *id){
 ** During sqlite3_os_init() we do a GetSystemInfo()
 ** to get the granularity size.
 */
-static SYSTEM_INFO winSysInfo;
+ਸਥਿਰ SYSTEM_INFO winSysInfo;
 
 /*
 ** Convert a UTF-8 filename into whatever form the underlying
@@ -2855,75 +2855,75 @@ static SYSTEM_INFO winSysInfo;
 **   happen when the file path >32k, in which case winUtf8ToUnicode()
 **   will fail too.
 */
-static LPWSTR winConvertFromUtf8Filename(const char *zFilename){
+ਸਥਿਰ LPWSTR winConvertFromUtf8Filename(ਅਚਲ ਅੱਖਰ *zFilename){
   LPWSTR zConverted = 0;
-#ifdef __CYGWIN__
-  int nChar;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __CYGWIN__
+  ਪੂਰਨ nChar;
 
-  if( osCygwin_conv_path && !(winIsDriveLetterAndColon(zFilename)
+  ਜੇ( os_Cygwin_conv_ਰਸਤਾ && !(winIsDriveLetterAndColon(zFilename)
       && winIsDirSep(zFilename[2])) ){
     i64 nByte;
-    int convertflag = CCP_POSIX_TO_WIN_W;
-    if( !strchr(zFilename, '/') ) convertflag |= CCP_RELATIVE;
-    nByte = (i64)osCygwin_conv_path(convertflag,
+    ਪੂਰਨ convertflag = CCP_POSIX_ਮੰਜ਼ਿਲ_WIN_W;
+    ਜੇ( !strchr(zFilename, '/') ) convertflag |= CCP_RELATIVE;
+    nByte = (i64)os_Cygwin_conv_ਰਸਤਾ(convertflag,
         zFilename, 0, 0);
-    if( nByte>0 ){
+    ਜੇ( nByte>0 ){
       zConverted = sqlite3MallocZero(12+(u64)nByte);
-      if ( zConverted==0 ){
-        return zConverted;
+      ਜੇ ( zConverted==0 ){
+        ਵਾਪਸ zConverted;
       }
       /* Filenames should be prefixed, except when converted
        * full path already starts with "\\?\". */
-      if( osCygwin_conv_path(convertflag, zFilename,
+      ਜੇ( os_Cygwin_conv_ਰਸਤਾ(convertflag, zFilename,
                            zConverted+4, nByte)==0 ){
-        if( (convertflag&CCP_RELATIVE) ){
+        ਜੇ( (convertflag&CCP_RELATIVE) ){
           memmove(zConverted, zConverted+4, nByte);
-        }else if( memcmp(zConverted+4, L"\\\\", 4) ){
-          memcpy(zConverted, L"\\\\?\\", 8);
-        }else if( zConverted[6]!='?' ){
+        }ਨਹੀਂਤਾਂ ਜੇ( memcmp(zConverted+4, L"\\\\", 4) ){
+          ਸਮ੍ਰਿਤੀ_ਨਕਲ(zConverted, L"\\\\?\\", 8);
+        }ਨਹੀਂਤਾਂ ਜੇ( zConverted[6]!='?' ){
           memmove(zConverted+6, zConverted+4, nByte);
-          memcpy(zConverted, L"\\\\?\\UNC", 14);
-        }else{
+          ਸਮ੍ਰਿਤੀ_ਨਕਲ(zConverted, L"\\\\?\\UNC", 14);
+        }ਨਹੀਂਤਾਂ{
           memmove(zConverted, zConverted+4, nByte);
         }
-        return zConverted;
+        ਵਾਪਸ zConverted;
       }
       sqlite3_free(zConverted);
     }
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zFilename, -1, NULL, 0);
-  if( nChar==0 ){
-    return 0;
+  nChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(CP_UTF8, 0, zFilename, -1, ਨਿਰਾ, 0);
+  ਜੇ( nChar==0 ){
+    ਵਾਪਸ 0;
   }
-  zConverted = sqlite3MallocZero( ((u64)nChar+6)*sizeof(WCHAR) );
-  if( zConverted==0 ){
-    return 0;
+  zConverted = sqlite3MallocZero( ((u64)nChar+6)*ਆਕਾਰ(WCHAR) );
+  ਜੇ( zConverted==0 ){
+    ਵਾਪਸ 0;
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zFilename, -1,
+  nChar = os_Multi_Byte_ਮੰਜ਼ਿਲ_Wide_Char(CP_UTF8, 0, zFilename, -1,
                                 zConverted, nChar);
-  if( nChar==0 ){
+  ਜੇ( nChar==0 ){
     sqlite3_free(zConverted);
     zConverted = 0;
-  }else if( nChar>MAX_PATH
+  }ਨਹੀਂਤਾਂ ਜੇ( nChar>MAX_ਰਸਤਾ
       && winIsDriveLetterAndColon(zFilename)
       && winIsDirSep(zFilename[2]) ){
-    memmove(zConverted+4, zConverted, nChar*sizeof(WCHAR));
+    memmove(zConverted+4, zConverted, nChar*ਆਕਾਰ(WCHAR));
     zConverted[2] = '\\';
-    memcpy(zConverted, L"\\\\?\\", 8);
-  }else if( nChar>MAX_PATH
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(zConverted, L"\\\\?\\", 8);
+  }ਨਹੀਂਤਾਂ ਜੇ( nChar>MAX_ਰਸਤਾ
       && winIsDirSep(zFilename[0]) && winIsDirSep(zFilename[1])
       && zFilename[2] != '?' ){
-    memmove(zConverted+6, zConverted, nChar*sizeof(WCHAR));
-    memcpy(zConverted, L"\\\\?\\UNC", 14);
+    memmove(zConverted+6, zConverted, nChar*ਆਕਾਰ(WCHAR));
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(zConverted, L"\\\\?\\UNC", 14);
   }
-#else /* if !defined(__CYGWIN__) */
-  zConverted = winUtf8ToUnicode(zFilename);
-#endif /* __CYGWIN__ */
+#ਨਹੀਂਤਾਂ /* if !defined(__CYGWIN__) */
+  zConverted = win_Utf8_ਮੰਜ਼ਿਲ_Unicode(zFilename);
+#ਜੇ_ਅੰਤ /* __CYGWIN__ */
   /* caller will handle out of memory */
-  return zConverted;
+  ਵਾਪਸ zConverted;
 }
 
-#ifndef SQLITE_OMIT_WAL
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
 
 /*
 ** Helper functions to obtain and relinquish the global mutex. The
@@ -2938,18 +2938,18 @@ static LPWSTR winConvertFromUtf8Filename(const char *zFilename){
 **     assert( winShmMutexHeld() );
 **   winShmLeaveMutex()
 */
-static sqlite3_mutex *winBigLock = 0;
-static void winShmEnterMutex(void){
-  sqlite3_mutex_enter(winBigLock);
+ਸਥਿਰ sqlite3_mutex *win_Big_ਤਾਲਾ = 0;
+ਸਥਿਰ ਖਾਲੀ winShmEnterMutex(ਖਾਲੀ){
+  sqlite3_mutex_enter(win_Big_ਤਾਲਾ);
 }
-static void winShmLeaveMutex(void){
-  sqlite3_mutex_leave(winBigLock);
+ਸਥਿਰ ਖਾਲੀ winShmLeaveMutex(ਖਾਲੀ){
+  sqlite3_mutex_leave(win_Big_ਤਾਲਾ);
 }
-#ifndef NDEBUG
-static int winShmMutexHeld(void) {
-  return sqlite3_mutex_held(winBigLock);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
+ਸਥਿਰ ਪੂਰਨ winShmMutexHeld(ਖਾਲੀ) {
+  ਵਾਪਸ sqlite3_mutex_held(win_Big_ਤਾਲਾ);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Object used to represent a single file opened and mmapped to provide
@@ -2983,29 +2983,29 @@ static int winShmMutexHeld(void) {
 ** taken on hSharedShm. Or, if bUseSharedLockHandle is false, then other 
 ** locks are taken using each connection's winShm.hShm handles.
 */
-struct winShmNode {
+ਬਣਤਰ win_Shm_ਗੰਢ {
   sqlite3_mutex *mutex;      /* Mutex to access this object */
-  char *zFilename;           /* Name of the file */
+  ਅੱਖਰ *zFilename;           /* Name of the file */
   HANDLE hSharedShm;         /* File handle open on zFilename */
-  int bUseSharedLockHandle;  /* True to use hSharedShm for everything */
+  ਪੂਰਨ b_Use_Shared_ਤਾਲਾ_Handle;  /* True to use hSharedShm for everything */
 
-  int isUnlocked;            /* DMS lock has not yet been obtained */
-  int isReadonly;            /* True if read-only */
-  int szRegion;              /* Size of shared-memory regions */
-  int nRegion;               /* Size of array apRegion */
+  ਪੂਰਨ isUnlocked;            /* DMS lock has not yet been obtained */
+  ਪੂਰਨ isReadonly;            /* True if read-only */
+  ਪੂਰਨ szRegion;              /* Size of shared-memory regions */
+  ਪੂਰਨ nRegion;               /* Size of array apRegion */
 
-  struct ShmRegion {
+  ਬਣਤਰ ShmRegion {
     HANDLE hMap;             /* File handle from CreateFileMapping */
-    void *pMap;
+    ਖਾਲੀ *pMap;
   } *aRegion;
-  DWORD lastErrno;           /* The Windows errno from the last I/O error */
+  DWORD ਆਖਰੀ_Errno;           /* The Windows errno from the last I/O error */
 
   winShm *pWinShmList;       /* List of winShm objects with ptrs to this */
 
-  winShmNode *pNext;         /* Next in list of all winShmNode objects */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-  u8 nextShmId;              /* Next available winShm.id value */
-#endif
+  win_Shm_ਗੰਢ *p_ਅਗਲਾ;         /* Next in list of all winShmNode objects */
+#ਜੇ defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  u8 ਅਗਲਾ_Shm_Id;              /* Next available winShm.id value */
+#ਜੇ_ਅੰਤ
 };
 
 /*
@@ -3013,34 +3013,34 @@ struct winShmNode {
 **
 ** The winShmMutexHeld() must be true while reading or writing this list.
 */
-static winShmNode *winShmNodeList = 0;
+ਸਥਿਰ win_Shm_ਗੰਢ *win_Shm_ਗੰਢ_List = 0;
 
 /*
 ** Structure used internally by this VFS to record the state of an
 ** open shared memory connection. There is one such structure for each
 ** winFile open on a wal mode database.
 */
-struct winShm {
-  winShmNode *pShmNode;      /* The underlying winShmNode object */
-  u16 sharedMask;            /* Mask of shared locks held */
-  u16 exclMask;              /* Mask of exclusive locks held */
+ਬਣਤਰ winShm {
+  win_Shm_ਗੰਢ *p_Shm_ਗੰਢ;      /* The underlying winShmNode object */
+  u16 shared_ਨਕਾਬ;            /* Mask of shared locks held */
+  u16 excl_ਨਕਾਬ;              /* Mask of exclusive locks held */
   HANDLE hShm;               /* File-handle on *-shm file. For locking. */
-  int bReadonly;             /* True if hShm is opened read-only */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  ਪੂਰਨ bReadonly;             /* True if hShm is opened read-only */
+#ਜੇ defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
   u8 id;                     /* Id of this connection with its winShmNode */
-#endif
-  winShm *pWinShmNext;       /* Next winShm object on same winShmNode */
+#ਜੇ_ਅੰਤ
+  winShm *p_Win_Shm_ਅਗਲਾ;       /* Next winShm object on same winShmNode */
 };
 
 /*
 ** Constants used for locking
 */
-#define WIN_SHM_BASE   ((22+SQLITE_SHM_NLOCK)*4)        /* first lock byte */
-#define WIN_SHM_DMS    (WIN_SHM_BASE+SQLITE_SHM_NLOCK)  /* deadman switch */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WIN_SHM_ਅਧਾਰ   ((22+SQLITE_SHM_NLOCK)*4)        /* first lock byte */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WIN_SHM_DMS    (WIN_SHM_ਅਧਾਰ+SQLITE_SHM_NLOCK)  /* deadman switch */
 
 /* Forward references to VFS methods */
-static int winOpen(sqlite3_vfs*,const char*,sqlite3_file*,int,int*);
-static int winDelete(sqlite3_vfs *,const char*,int);
+ਸਥਿਰ ਪੂਰਨ winOpen(sqlite3_vfs*,ਅਚਲ ਅੱਖਰ*,sqlite3_file*,ਪੂਰਨ,ਪੂਰਨ*);
+ਸਥਿਰ ਪੂਰਨ winDelete(sqlite3_vfs *,ਅਚਲ ਅੱਖਰ*,ਪੂਰਨ);
 
 /*
 ** Purge the winShmNodeList list of all entries with winShmNode.pWinShmList==0.
@@ -3048,40 +3048,40 @@ static int winDelete(sqlite3_vfs *,const char*,int);
 ** This is not a VFS shared-memory method; it is a utility function called
 ** by VFS shared-memory methods.
 */
-static void winShmPurge(sqlite3_vfs *pVfs, int deleteFlag){
-  winShmNode **pp;
-  winShmNode *p;
-  assert( winShmMutexHeld() );
+ਸਥਿਰ ਖਾਲੀ winShmPurge(sqlite3_vfs *pVfs, ਪੂਰਨ deleteFlag){
+  win_Shm_ਗੰਢ **pp;
+  win_Shm_ਗੰਢ *p;
+  ਪ੍ਰਤਿਜ੍ਞਾ( winShmMutexHeld() );
   OSTRACE(("SHM-PURGE pid=%lu, deleteFlag=%d\n",
            osGetCurrentProcessId(), deleteFlag));
-  pp = &winShmNodeList;
-  while( (p = *pp)!=0 ){
-    if( p->pWinShmList==0 ){
-      int i;
-      if( p->mutex ){ sqlite3_mutex_free(p->mutex); }
-      for(i=0; i<p->nRegion; i++){
-        BOOL bRc = osUnmapViewOfFile(p->aRegion[i].pMap);
+  pp = &win_Shm_ਗੰਢ_List;
+  ਜਦੋਂ( (p = *pp)!=0 ){
+    ਜੇ( p->pWinShmList==0 ){
+      ਪੂਰਨ i;
+      ਜੇ( p->mutex ){ sqlite3_mutex_free(p->mutex); }
+      ਲਈ(i=0; i<p->nRegion; i++){
+        BOOL bRc = os_Unmap_View_ਦਾ_File(p->aRegion[i].pMap);
         OSTRACE(("SHM-PURGE-UNMAP pid=%lu, region=%d, rc=%s\n",
                  osGetCurrentProcessId(), i, bRc ? "ok" : "failed"));
-        UNUSED_VARIABLE_VALUE(bRc);
+        ਅਣਵਰਤਿਆ_VARIABLE_ਮੁੱਲ(bRc);
         bRc = osCloseHandle(p->aRegion[i].hMap);
         OSTRACE(("SHM-PURGE-CLOSE pid=%lu, region=%d, rc=%s\n",
                  osGetCurrentProcessId(), i, bRc ? "ok" : "failed"));
-        UNUSED_VARIABLE_VALUE(bRc);
+        ਅਣਵਰਤਿਆ_VARIABLE_ਮੁੱਲ(bRc);
       }
       winHandleClose(p->hSharedShm);
-      if( deleteFlag ){
+      ਜੇ( deleteFlag ){
         SimulateIOErrorBenign(1);
         sqlite3BeginBenignMalloc();
         winDelete(pVfs, p->zFilename, 0);
-        sqlite3EndBenignMalloc();
+        sqlite3_ਸਿਰਾ_Benign_Malloc();
         SimulateIOErrorBenign(0);
       }
-      *pp = p->pNext;
+      *pp = p->p_ਅਗਲਾ;
       sqlite3_free(p->aRegion);
       sqlite3_free(p);
-    }else{
-      pp = &p->pNext;
+    }ਨਹੀਂਤਾਂ{
+      pp = &p->p_ਅਗਲਾ;
     }
   }
 }
@@ -3091,21 +3091,21 @@ static void winShmPurge(sqlite3_vfs *pVfs, int deleteFlag){
 ** 8 bytes of the file. If SQLITE_ENABLE_SETLK_TIMEOUT is defined, h may 
 ** have been opened with FILE_FLAG_OVERLAPPED.
 */
-static int winZeroSharedMemory(HANDLE h){
+ਸਥਿਰ ਪੂਰਨ win_Zero_Shared_ਸਮ੍ਰਿਤੀ(HANDLE h){
   u8 aZero[8] = {0,0,0,0,0,0,0,0};
   DWORD nWrite = 0;
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  if( !osWriteFile(h, aZero, sizeof(aZero), &nWrite, &ovlp) ){
+  memset(&ovlp, 0, ਆਕਾਰ(OVERLAPPED));
+  ਜੇ( !osWriteFile(h, aZero, ਆਕਾਰ(aZero), &nWrite, &ovlp) ){
     /* If the file was opened with FILE_FLAG_OVERLAPPED, the write may still
     ** be pending. Wait for it with GetOverlappedResult().  */
-    if( osGetLastError()!=ERROR_IO_PENDING
-     || !GetOverlappedResult(h, &ovlp, &nWrite, TRUE)
+    ਜੇ( os_Get_ਆਖਰੀ_Error()!=ERROR_IO_PENDING
+     || !Get_Overlapped_ਨਤੀਜਾ(h, &ovlp, &nWrite, TRUE)
     ){
       nWrite = 0;
     }
   }
-  return (nWrite==sizeof(aZero) ? SQLITE_OK : SQLITE_IOERR_WRITE);
+  ਵਾਪਸ (nWrite==ਆਕਾਰ(aZero) ? SQLITE_OK : SQLITE_IOERR_WRITE);
 }
 
 /*
@@ -3113,42 +3113,42 @@ static int winZeroSharedMemory(HANDLE h){
 ** pShmNode. Take the lock. Truncate the *-shm file if required.
 ** Return SQLITE_OK if successful, or an SQLite error code otherwise.
 */
-static int winLockSharedMemory(winShmNode *pShmNode, DWORD nMs){
-  HANDLE h = pShmNode->hSharedShm;
-  int rc = SQLITE_OK;
+ਸਥਿਰ ਪੂਰਨ win_ਤਾਲਾ_Shared_ਸਮ੍ਰਿਤੀ(win_Shm_ਗੰਢ *p_Shm_ਗੰਢ, DWORD nMs){
+  HANDLE h = p_Shm_ਗੰਢ->hSharedShm;
+  ਪੂਰਨ rc = SQLITE_OK;
 
-  assert( sqlite3_mutex_held(pShmNode->mutex) );
-  rc = winHandleLockTimeout(h, WIN_SHM_DMS, 1, 1, 0);
-  if( rc==SQLITE_OK ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_mutex_held(p_Shm_ਗੰਢ->mutex) );
+  rc = win_Handle_ਤਾਲਾ_Timeout(h, WIN_SHM_DMS, 1, 1, 0);
+  ਜੇ( rc==SQLITE_OK ){
     /* We have an EXCLUSIVE lock on the DMS byte. This means that this
     ** is the first process to open the file. Truncate it to zero bytes
     ** in this case.  */
-    if( pShmNode->isReadonly ){
+    ਜੇ( p_Shm_ਗੰਢ->isReadonly ){
       rc = SQLITE_READONLY_CANTINIT;
-    }else{
-      if( SQLITE_OK!=winHandleTruncate(h, 0) ){
+    }ਨਹੀਂਤਾਂ{
+      ਜੇ( SQLITE_OK!=winHandleTruncate(h, 0) ){
         /* Sometimes the truncate operation may fail because some other
         ** process is still holding an open mapping. So try to write
         ** zeroes into the start of the file instead. */
-        rc = winZeroSharedMemory(h);
+        rc = win_Zero_Shared_ਸਮ੍ਰਿਤੀ(h);
       }
     }
 
     /* Release the EXCLUSIVE lock acquired above. */
     winUnlockFile(&h, WIN_SHM_DMS, 0, 1, 0);
-  }else if( (rc & 0xFF)==SQLITE_BUSY ){
+  }ਨਹੀਂਤਾਂ ਜੇ( (rc & 0xFF)==SQLITE_BUSY ){
     rc = SQLITE_OK;
   }
 
-  if( rc==SQLITE_OK ){
+  ਜੇ( rc==SQLITE_OK ){
     /* Take a SHARED lock on the DMS byte. */
-    rc = winHandleLockTimeout(h, WIN_SHM_DMS, 1, 0, nMs);
-    if( rc==SQLITE_OK ){
-      pShmNode->isUnlocked = 0;
+    rc = win_Handle_ਤਾਲਾ_Timeout(h, WIN_SHM_DMS, 1, 0, nMs);
+    ਜੇ( rc==SQLITE_OK ){
+      p_Shm_ਗੰਢ->isUnlocked = 0;
     }
   }
 
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 
@@ -3158,35 +3158,35 @@ static int winLockSharedMemory(winShmNode *pShmNode, DWORD nMs){
 ** If SQLITE_ENABLE_SETLK_TIMEOUT is defined at build time, then the file
 ** is opened with FILE_FLAG_OVERLAPPED specified. If not, it is not.
 */
-static int winHandleOpen(
-  const char *zUtf8,              /* File to open */
-  int *pbReadonly,                /* IN/OUT: True for readonly handle */
+ਸਥਿਰ ਪੂਰਨ winHandleOpen(
+  ਅਚਲ ਅੱਖਰ *zUtf8,              /* File to open */
+  ਪੂਰਨ *pbReadonly,                /* IN/OUT: True for readonly handle */
   HANDLE *ph                      /* OUT: New HANDLE for file */
 ){
-  int rc = SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
   LPWSTR zConverted = 0;
-  int bReadonly = *pbReadonly;
-  HANDLE h = INVALID_HANDLE_VALUE;
+  ਪੂਰਨ bReadonly = *pbReadonly;
+  HANDLE h = INVALID_HANDLE_ਮੁੱਲ;
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  const DWORD flag_overlapped = FILE_FLAG_OVERLAPPED;
-#else
-  const DWORD flag_overlapped = 0;
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_SETLK_TIMEOUT
+  ਅਚਲ DWORD flag_overlapped = FILE_FLAG_OVERLAPPED;
+#ਨਹੀਂਤਾਂ
+  ਅਚਲ DWORD flag_overlapped = 0;
+#ਜੇ_ਅੰਤ
 
   /* Convert the filename to the system encoding. */
   zConverted = winConvertFromUtf8Filename(zUtf8);
-  if( zConverted==0 ){
+  ਜੇ( zConverted==0 ){
     OSTRACE(("OPEN name=%s, rc=SQLITE_IOERR_NOMEM", zUtf8));
     rc = SQLITE_IOERR_NOMEM_BKPT;
-    goto winopenfile_out;
+    ਜਾਓ winopenfile_ਬਾਹਰਲਾ;
   }
 
   /* Ensure the file we are trying to open is not actually a directory. */
-  if( winIsDir(zConverted) ){
+  ਜੇ( winIsDir(zConverted) ){
     OSTRACE(("OPEN name=%s, rc=SQLITE_CANTOPEN_ISDIR", zUtf8));
     rc = SQLITE_CANTOPEN_ISDIR;
-    goto winopenfile_out;
+    ਜਾਓ winopenfile_ਬਾਹਰਲਾ;
   }
 
   /* TODO: platforms.
@@ -3195,51 +3195,51 @@ static int winHandleOpen(
   h = osCreateFileW(zConverted,         /* lpFileName */
       (GENERIC_READ | (bReadonly ? 0 : GENERIC_WRITE)),  /* dwDesiredAccess */
       FILE_SHARE_READ | FILE_SHARE_WRITE,        /* dwShareMode */
-      NULL,                                      /* lpSecurityAttributes */
+      ਨਿਰਾ,                                      /* lpSecurityAttributes */
       OPEN_ALWAYS,                               /* dwCreationDisposition */
-      FILE_ATTRIBUTE_NORMAL|flag_overlapped,
-      NULL
+      FILE_ATTRIBUTE_ਸਾਧਾਰਨ|flag_overlapped,
+      ਨਿਰਾ
   );
 
-  if( h==INVALID_HANDLE_VALUE ){
-    if( bReadonly==0 ){
+  ਜੇ( h==INVALID_HANDLE_ਮੁੱਲ ){
+    ਜੇ( bReadonly==0 ){
       bReadonly = 1;
       rc = winHandleOpen(zUtf8, &bReadonly, &h);
-    }else{
+    }ਨਹੀਂਤਾਂ{
       rc = SQLITE_CANTOPEN_BKPT;
     }
   }
 
- winopenfile_out:
+ winopenfile_ਬਾਹਰਲਾ:
   sqlite3_free(zConverted);
   *pbReadonly = bReadonly;
   *ph = h;
-  return rc;
+  ਵਾਪਸ rc;
 }
  
 /*
 ** Close pDbFd's connection to shared-memory.  Delete the underlying
 ** *-shm file if deleteFlag is true.
 */
-static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
+ਸਥਿਰ ਪੂਰਨ win_Close_Shared_ਸਮ੍ਰਿਤੀ(winFile *pDbFd, ਪੂਰਨ deleteFlag){
   winShm *p;            /* The connection to be closed */
   winShm **pp;          /* Iterator for pShmNode->pWinShmList */
-  winShmNode *pShmNode; /* The underlying shared-memory file */
+  win_Shm_ਗੰਢ *p_Shm_ਗੰਢ; /* The underlying shared-memory file */
 
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_OK;
-  if( p->hShm!=INVALID_HANDLE_VALUE ){
+  ਜੇ( p==0 ) ਵਾਪਸ SQLITE_OK;
+  ਜੇ( p->hShm!=INVALID_HANDLE_ਮੁੱਲ ){
     osCloseHandle(p->hShm);
   }
 
   winShmEnterMutex();
-  pShmNode = p->pShmNode;
+  p_Shm_ਗੰਢ = p->p_Shm_ਗੰਢ;
 
   /* Remove this connection from the winShmNode.pWinShmList list */
-  sqlite3_mutex_enter(pShmNode->mutex);
-  for(pp=&pShmNode->pWinShmList; *pp!=p; pp=&(*pp)->pWinShmNext){}
-  *pp = p->pWinShmNext;
-  sqlite3_mutex_leave(pShmNode->mutex);
+  sqlite3_mutex_enter(p_Shm_ਗੰਢ->mutex);
+  ਲਈ(pp=&p_Shm_ਗੰਢ->pWinShmList; *pp!=p; pp=&(*pp)->p_Win_Shm_ਅਗਲਾ){}
+  *pp = p->p_Win_Shm_ਅਗਲਾ;
+  sqlite3_mutex_leave(p_Shm_ਗੰਢ->mutex);
 
   winShmPurge(pDbFd->pVfs, deleteFlag);
   winShmLeaveMutex();
@@ -3247,7 +3247,7 @@ static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
   /* Free the connection p */
   sqlite3_free(p);
   pDbFd->pShm = 0;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -3255,11 +3255,11 @@ static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
 ** Tcl interface. This forces the VFS to use the locking normally
 ** only used for UNC paths for all files.
 */
-#ifdef SQLITE_TEST
-int sqlite3_win_test_unc_locking = 0;
-#else
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+ਪੂਰਨ sqlite3_win_test_unc_locking = 0;
+#ਨਹੀਂਤਾਂ
 # define sqlite3_win_test_unc_locking 0
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Return true if the string passed as the only argument is likely
@@ -3274,183 +3274,183 @@ int sqlite3_win_test_unc_locking = 0;
 ** For testing, also return true in all cases if the global variable
 ** sqlite3_win_test_unc_locking is true.
 */
-static int winIsUNCPath(const char *zFile){
-  if( zFile[0]=='\\' && zFile[1]=='\\' ){
-    if( zFile[2]=='?'
+ਸਥਿਰ ਪੂਰਨ winIsUNCPath(ਅਚਲ ਅੱਖਰ *zFile){
+  ਜੇ( zFile[0]=='\\' && zFile[1]=='\\' ){
+    ਜੇ( zFile[2]=='?'
      && zFile[3]=='\\'
      && sqlite3Isalpha(zFile[4])
      && zFile[5]==':'
      && winIsDirSep(zFile[6])
     ){
-      return sqlite3_win_test_unc_locking;
-    }else{
-      return 1;
+      ਵਾਪਸ sqlite3_win_test_unc_locking;
+    }ਨਹੀਂਤਾਂ{
+      ਵਾਪਸ 1;
     }
   }
-  return sqlite3_win_test_unc_locking;
+  ਵਾਪਸ sqlite3_win_test_unc_locking;
 }
 
 /*
 ** Return true if the string passed in is the name of a file on a
 ** remote (network-mounted) volume.
 */
-static int winIsRemoteVolume(const char *zFile){
-  WCHAR zRoot[4];
-  if( strncmp(zFile, "\\\\?\\",4)==0 ) zFile += 4;
-  if( !sqlite3Isalpha(zFile[0]) ) return 0;
-  if( zFile[1]!=':' ) return 0;
-  if( !winIsDirSep(zFile[2]) ) return 0;
-  zRoot[0] = (WCHAR)zFile[0];
-  zRoot[1] = ':';
-  zRoot[2] = '\\';
-  zRoot[3] = 0;
-  return osGetDriveTypeW(zRoot)==DRIVE_REMOTE;
+ਸਥਿਰ ਪੂਰਨ winIsRemoteVolume(ਅਚਲ ਅੱਖਰ *zFile){
+  WCHAR z_ਜੜ੍ਹ[4];
+  ਜੇ( ਲੜੀ_ਤੁਲਨਾ(zFile, "\\\\?\\",4)==0 ) zFile += 4;
+  ਜੇ( !sqlite3Isalpha(zFile[0]) ) ਵਾਪਸ 0;
+  ਜੇ( zFile[1]!=':' ) ਵਾਪਸ 0;
+  ਜੇ( !winIsDirSep(zFile[2]) ) ਵਾਪਸ 0;
+  z_ਜੜ੍ਹ[0] = (WCHAR)zFile[0];
+  z_ਜੜ੍ਹ[1] = ':';
+  z_ਜੜ੍ਹ[2] = '\\';
+  z_ਜੜ੍ਹ[3] = 0;
+  ਵਾਪਸ osGetDriveTypeW(z_ਜੜ੍ਹ)==DRIVE_REMOTE;
 }
 
 /*
 ** Open the shared-memory area associated with database file pDbFd.
 */
-static int winOpenSharedMemory(winFile *pDbFd){
-  struct winShm *p;                  /* The connection to be opened */
-  winShmNode *pShmNode = 0;          /* The underlying mmapped file */
-  int rc = SQLITE_OK;                /* Result code */
-  winShmNode *pNew;                  /* Newly allocated winShmNode */
-  int nName;                         /* Size of zName in bytes */
+ਸਥਿਰ ਪੂਰਨ win_Open_Shared_ਸਮ੍ਰਿਤੀ(winFile *pDbFd){
+  ਬਣਤਰ winShm *p;                  /* The connection to be opened */
+  win_Shm_ਗੰਢ *p_Shm_ਗੰਢ = 0;          /* The underlying mmapped file */
+  ਪੂਰਨ rc = SQLITE_OK;                /* Result code */
+  win_Shm_ਗੰਢ *pNew;                  /* Newly allocated winShmNode */
+  ਪੂਰਨ nName;                         /* Size of zName in bytes */
 
-  assert( pDbFd->pShm==0 );    /* Not previously opened */
+  ਪ੍ਰਤਿਜ੍ਞਾ( pDbFd->pShm==0 );    /* Not previously opened */
 
   /* Allocate space for the new sqlite3_shm object.  Also speculatively
   ** allocate space for a new winShmNode and filename.  */
-  p = sqlite3MallocZero( sizeof(*p) );
-  if( p==0 ) return SQLITE_IOERR_NOMEM_BKPT;
-  nName = sqlite3Strlen30(pDbFd->zPath);
-  pNew = sqlite3MallocZero( sizeof(*pShmNode) + (i64)nName + 17 );
-  if( pNew==0 ){
+  p = sqlite3MallocZero( ਆਕਾਰ(*p) );
+  ਜੇ( p==0 ) ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
+  nName = sqlite3Strlen30(pDbFd->z_ਰਸਤਾ);
+  pNew = sqlite3MallocZero( ਆਕਾਰ(*p_Shm_ਗੰਢ) + (i64)nName + 17 );
+  ਜੇ( pNew==0 ){
     sqlite3_free(p);
-    return SQLITE_IOERR_NOMEM_BKPT;
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
-  pNew->zFilename = (char*)&pNew[1];
-  pNew->hSharedShm = INVALID_HANDLE_VALUE;
+  pNew->zFilename = (ਅੱਖਰ*)&pNew[1];
+  pNew->hSharedShm = INVALID_HANDLE_ਮੁੱਲ;
   pNew->isUnlocked = 1;
-  if( winIsUNCPath(pDbFd->zPath) || winIsRemoteVolume(pDbFd->zPath) ){
-    pNew->bUseSharedLockHandle = 1;
-  }else{
-    pNew->bUseSharedLockHandle = 0;
+  ਜੇ( winIsUNCPath(pDbFd->z_ਰਸਤਾ) || winIsRemoteVolume(pDbFd->z_ਰਸਤਾ) ){
+    pNew->b_Use_Shared_ਤਾਲਾ_Handle = 1;
+  }ਨਹੀਂਤਾਂ{
+    pNew->b_Use_Shared_ਤਾਲਾ_Handle = 0;
   }
-  sqlite3_snprintf(nName+15, pNew->zFilename, "%s-shm", pDbFd->zPath);
-  sqlite3FileSuffix3(pDbFd->zPath, pNew->zFilename);
+  sqlite3_snprintf(nName+15, pNew->zFilename, "%s-shm", pDbFd->z_ਰਸਤਾ);
+  sqlite3FileSuffix3(pDbFd->z_ਰਸਤਾ, pNew->zFilename);
 
   /* Look to see if there is an existing winShmNode that can be used.
   ** If no matching winShmNode currently exists, then create a new one.  */
   winShmEnterMutex();
-  for(pShmNode = winShmNodeList; pShmNode; pShmNode=pShmNode->pNext){
+  ਲਈ(p_Shm_ਗੰਢ = win_Shm_ਗੰਢ_List; p_Shm_ਗੰਢ; p_Shm_ਗੰਢ=p_Shm_ਗੰਢ->p_ਅਗਲਾ){
     /* TBD need to come up with better match here.  Perhaps
     ** use FILE_ID_BOTH_DIR_INFO Structure.  */
-    if( sqlite3StrICmp(pShmNode->zFilename, pNew->zFilename)==0 ) break;
+    ਜੇ( sqlite3StrICmp(p_Shm_ਗੰਢ->zFilename, pNew->zFilename)==0 ) ਰੋਕੋ;
   }
-  if( pShmNode==0 ){
-    pShmNode = pNew;
+  ਜੇ( p_Shm_ਗੰਢ==0 ){
+    p_Shm_ਗੰਢ = pNew;
 
     /* Allocate a mutex for this winShmNode object, if one is required. */
-    if( sqlite3GlobalConfig.bCoreMutex ){
-      pShmNode->mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pShmNode->mutex==0 ) rc = SQLITE_IOERR_NOMEM_BKPT;
+    ਜੇ( sqlite3GlobalConfig.bCoreMutex ){
+      p_Shm_ਗੰਢ->mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      ਜੇ( p_Shm_ਗੰਢ->mutex==0 ) rc = SQLITE_IOERR_NOMEM_BKPT;
     }
 
     /* Open a file-handle to use for mappings, and for the DMS lock. */
-    if( rc==SQLITE_OK ){
-      HANDLE h = INVALID_HANDLE_VALUE;
-      pShmNode->isReadonly = sqlite3_uri_boolean(pDbFd->zPath,"readonly_shm",0);
-      rc = winHandleOpen(pNew->zFilename, &pShmNode->isReadonly, &h);
-      pShmNode->hSharedShm = h;
+    ਜੇ( rc==SQLITE_OK ){
+      HANDLE h = INVALID_HANDLE_ਮੁੱਲ;
+      p_Shm_ਗੰਢ->isReadonly = sqlite3_uri_boolean(pDbFd->z_ਰਸਤਾ,"readonly_shm",0);
+      rc = winHandleOpen(pNew->zFilename, &p_Shm_ਗੰਢ->isReadonly, &h);
+      p_Shm_ਗੰਢ->hSharedShm = h;
     }
 
     /* If successful, link the new winShmNode into the global list. If an 
     ** error occurred, free the object. */
-    if( rc==SQLITE_OK ){
-      pShmNode->pNext = winShmNodeList;
-      winShmNodeList = pShmNode;
+    ਜੇ( rc==SQLITE_OK ){
+      p_Shm_ਗੰਢ->p_ਅਗਲਾ = win_Shm_ਗੰਢ_List;
+      win_Shm_ਗੰਢ_List = p_Shm_ਗੰਢ;
       pNew = 0;
-    }else{
-      sqlite3_mutex_free(pShmNode->mutex);
-      if( pShmNode->hSharedShm!=INVALID_HANDLE_VALUE ){
-        osCloseHandle(pShmNode->hSharedShm);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_mutex_free(p_Shm_ਗੰਢ->mutex);
+      ਜੇ( p_Shm_ਗੰਢ->hSharedShm!=INVALID_HANDLE_ਮੁੱਲ ){
+        osCloseHandle(p_Shm_ਗੰਢ->hSharedShm);
       }
     }
   }
 
   /* If no error has occurred, link the winShm object to the winShmNode and
   ** the winShm to pDbFd.  */
-  if( rc==SQLITE_OK ){
-    sqlite3_mutex_enter(pShmNode->mutex);
-    p->pShmNode = pShmNode;
-    p->pWinShmNext = pShmNode->pWinShmList;
-    pShmNode->pWinShmList = p;
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-    p->id = pShmNode->nextShmId++;
-#endif
+  ਜੇ( rc==SQLITE_OK ){
+    sqlite3_mutex_enter(p_Shm_ਗੰਢ->mutex);
+    p->p_Shm_ਗੰਢ = p_Shm_ਗੰਢ;
+    p->p_Win_Shm_ਅਗਲਾ = p_Shm_ਗੰਢ->pWinShmList;
+    p_Shm_ਗੰਢ->pWinShmList = p;
+#ਜੇ defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+    p->id = p_Shm_ਗੰਢ->ਅਗਲਾ_Shm_Id++;
+#ਜੇ_ਅੰਤ
     pDbFd->pShm = p;
-    sqlite3_mutex_leave(pShmNode->mutex);
-  }else if( p ){
+    sqlite3_mutex_leave(p_Shm_ਗੰਢ->mutex);
+  }ਨਹੀਂਤਾਂ ਜੇ( p ){
     sqlite3_free(p);
   }
 
-  assert( rc!=SQLITE_OK || pShmNode->isUnlocked==0 || pShmNode->nRegion==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( rc!=SQLITE_OK || p_Shm_ਗੰਢ->isUnlocked==0 || p_Shm_ਗੰਢ->nRegion==0 );
   winShmLeaveMutex();
   sqlite3_free(pNew);
 
   /* Open a file-handle on the *-shm file for this connection. This file-handle
   ** is only used for locking. The mapping of the *-shm file is created using
   ** the shared file handle in winShmNode.hSharedShm.  */
-  if( rc==SQLITE_OK && pShmNode->bUseSharedLockHandle==0 ){
-    p->bReadonly = sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0);
-    rc = winHandleOpen(pShmNode->zFilename, &p->bReadonly, &p->hShm);
-    if( rc!=SQLITE_OK ){
-      assert( p->hShm==INVALID_HANDLE_VALUE );
-      winCloseSharedMemory(pDbFd, 0);
+  ਜੇ( rc==SQLITE_OK && p_Shm_ਗੰਢ->b_Use_Shared_ਤਾਲਾ_Handle==0 ){
+    p->bReadonly = sqlite3_uri_boolean(pDbFd->z_ਰਸਤਾ, "readonly_shm", 0);
+    rc = winHandleOpen(p_Shm_ਗੰਢ->zFilename, &p->bReadonly, &p->hShm);
+    ਜੇ( rc!=SQLITE_OK ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( p->hShm==INVALID_HANDLE_ਮੁੱਲ );
+      win_Close_Shared_ਸਮ੍ਰਿਤੀ(pDbFd, 0);
     }
   }
 
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Close a connection to shared-memory.  Delete the underlying
 ** storage if deleteFlag is true.
 */
-static int winShmUnmap(
+ਸਥਿਰ ਪੂਰਨ winShmUnmap(
   sqlite3_file *fd,          /* Database holding shared memory */
-  int deleteFlag             /* Delete after closing if true */
+  ਪੂਰਨ deleteFlag             /* Delete after closing if true */
 ){
-  return winCloseSharedMemory((winFile*)fd, deleteFlag);
+  ਵਾਪਸ win_Close_Shared_ਸਮ੍ਰਿਤੀ((winFile*)fd, deleteFlag);
 }
 
 /*
 ** Change the lock state for a shared-memory segment.
 */
-static int winShmLock(
+ਸਥਿਰ ਪੂਰਨ win_Shm_ਤਾਲਾ(
   sqlite3_file *fd,          /* Database file holding the shared memory */
-  int ofst,                  /* First lock to acquire or release */
-  int n,                     /* Number of locks to acquire or release */
-  int flags                  /* What to do with the lock */
+  ਪੂਰਨ ofst,                  /* First lock to acquire or release */
+  ਪੂਰਨ n,                     /* Number of locks to acquire or release */
+  ਪੂਰਨ flags                  /* What to do with the lock */
 ){
   winFile *pDbFd = (winFile*)fd;        /* Connection holding shared memory */
   winShm *p = pDbFd->pShm;              /* The shared memory being locked */
-  winShmNode *pShmNode;
-  int rc = SQLITE_OK;                   /* Result code */
-  u16 mask = (u16)((1U<<(ofst+n)) - (1U<<ofst)); /* Mask of locks to [un]take */
+  win_Shm_ਗੰਢ *p_Shm_ਗੰਢ;
+  ਪੂਰਨ rc = SQLITE_OK;                   /* Result code */
+  u16 ਨਕਾਬ = (u16)((1U<<(ofst+n)) - (1U<<ofst)); /* Mask of locks to [un]take */
 
-  if( p==0 ) return SQLITE_IOERR_SHMLOCK;
-  pShmNode = p->pShmNode;
-  if( NEVER(pShmNode==0) ) return SQLITE_IOERR_SHMLOCK;
+  ਜੇ( p==0 ) ਵਾਪਸ SQLITE_IOERR_SHMLOCK;
+  p_Shm_ਗੰਢ = p->p_Shm_ਗੰਢ;
+  ਜੇ( NEVER(p_Shm_ਗੰਢ==0) ) ਵਾਪਸ SQLITE_IOERR_SHMLOCK;
 
-  assert( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
-  assert( n>=1 );
-  assert( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
-       || flags==(SQLITE_SHM_LOCK | SQLITE_SHM_EXCLUSIVE)
+  ਪ੍ਰਤਿਜ੍ਞਾ( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
+  ਪ੍ਰਤਿਜ੍ਞਾ( n>=1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( flags==(SQLITE_SHM_ਤਾਲਾ | SQLITE_SHM_SHARED)
+       || flags==(SQLITE_SHM_ਤਾਲਾ | SQLITE_SHM_EXCLUSIVE)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE) );
-  assert( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
 
   /* Check that, if this to be a blocking lock, no locks that occur later
   ** in the following list than the lock being obtained are already held:
@@ -3464,17 +3464,17 @@ static int winShmLock(
   ** occur later in the above list than the lock being obtained may be
   ** held.
   */
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
+#ਜੇ defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
   {
-    u16 lockMask = (p->exclMask|p->sharedMask);
-    assert( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
-          (ofst!=2 || lockMask==0)
-       && (ofst!=1 || lockMask==0 || lockMask==2)
-       && (ofst!=0 || lockMask<3)
-       && (ofst<3  || lockMask<(1<<ofst))
+    u16 ਤਾਲਾ_ਨਕਾਬ = (p->excl_ਨਕਾਬ|p->shared_ਨਕਾਬ);
+    ਪ੍ਰਤਿਜ੍ਞਾ( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
+          (ofst!=2 || ਤਾਲਾ_ਨਕਾਬ==0)
+       && (ofst!=1 || ਤਾਲਾ_ਨਕਾਬ==0 || ਤਾਲਾ_ਨਕਾਬ==2)
+       && (ofst!=0 || ਤਾਲਾ_ਨਕਾਬ<3)
+       && (ofst<3  || ਤਾਲਾ_ਨਕਾਬ<(1<<ofst))
     ));
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Check if there is any work to do. There are three cases:
   **
@@ -3484,83 +3484,83 @@ static int winShmLock(
   **
   ** The SQLite core never requests an exclusive lock that it already holds.
   ** This is assert()ed immediately below.  */
-  assert( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK) 
-       || 0==(p->exclMask & mask)
+  ਪ੍ਰਤਿਜ੍ਞਾ( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_ਤਾਲਾ) 
+       || 0==(p->excl_ਨਕਾਬ & ਨਕਾਬ)
   );
-  if( ((flags & SQLITE_SHM_UNLOCK) && ((p->exclMask|p->sharedMask) & mask))
-   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_LOCK) && 0==(p->sharedMask & mask))
-   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK))
+  ਜੇ( ((flags & SQLITE_SHM_UNLOCK) && ((p->excl_ਨਕਾਬ|p->shared_ਨਕਾਬ) & ਨਕਾਬ))
+   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_ਤਾਲਾ) && 0==(p->shared_ਨਕਾਬ & ਨਕਾਬ))
+   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_ਤਾਲਾ))
   ){
     HANDLE h = p->hShm;
 
-    if( flags & SQLITE_SHM_UNLOCK ){
+    ਜੇ( flags & SQLITE_SHM_UNLOCK ){
       /* Case (a) - unlock.  */
 
-      assert( (p->exclMask & p->sharedMask)==0 );
-      assert( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->exclMask & mask)==mask );
-      assert( !(flags & SQLITE_SHM_SHARED) || (p->sharedMask & mask)==mask );
+      ਪ੍ਰਤਿਜ੍ਞਾ( (p->excl_ਨਕਾਬ & p->shared_ਨਕਾਬ)==0 );
+      ਪ੍ਰਤਿਜ੍ਞਾ( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->excl_ਨਕਾਬ & ਨਕਾਬ)==ਨਕਾਬ );
+      ਪ੍ਰਤਿਜ੍ਞਾ( !(flags & SQLITE_SHM_SHARED) || (p->shared_ਨਕਾਬ & ਨਕਾਬ)==ਨਕਾਬ );
 
-      assert( !(flags & SQLITE_SHM_SHARED) || n==1 );
-      if( pShmNode->bUseSharedLockHandle ){
-        h = pShmNode->hSharedShm;
-        if( flags & SQLITE_SHM_SHARED ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( !(flags & SQLITE_SHM_SHARED) || n==1 );
+      ਜੇ( p_Shm_ਗੰਢ->b_Use_Shared_ਤਾਲਾ_Handle ){
+        h = p_Shm_ਗੰਢ->hSharedShm;
+        ਜੇ( flags & SQLITE_SHM_SHARED ){
           winShm *pShm;
-          sqlite3_mutex_enter(pShmNode->mutex);
-          for(pShm=pShmNode->pWinShmList; pShm; pShm=pShm->pWinShmNext){
-            if( pShm!=p && (pShm->sharedMask & mask) ){
+          sqlite3_mutex_enter(p_Shm_ਗੰਢ->mutex);
+          ਲਈ(pShm=p_Shm_ਗੰਢ->pWinShmList; pShm; pShm=pShm->p_Win_Shm_ਅਗਲਾ){
+            ਜੇ( pShm!=p && (pShm->shared_ਨਕਾਬ & ਨਕਾਬ) ){
               /* Another connection within this process is also holding this
               ** SHARED lock. So do not actually release the OS lock.  */
-              h = INVALID_HANDLE_VALUE;
-              break;
+              h = INVALID_HANDLE_ਮੁੱਲ;
+              ਰੋਕੋ;
             }
           }
-          sqlite3_mutex_leave(pShmNode->mutex);
+          sqlite3_mutex_leave(p_Shm_ਗੰਢ->mutex);
         }
       }
 
-      if( h!=INVALID_HANDLE_VALUE ){
-        rc = winHandleUnlock(h, ofst+WIN_SHM_BASE, n);
+      ਜੇ( h!=INVALID_HANDLE_ਮੁੱਲ ){
+        rc = winHandleUnlock(h, ofst+WIN_SHM_ਅਧਾਰ, n);
       }
 
       /* If successful, also clear the bits in sharedMask/exclMask */
-      if( rc==SQLITE_OK ){
-        p->exclMask = (p->exclMask & ~mask);
-        p->sharedMask = (p->sharedMask & ~mask);
+      ਜੇ( rc==SQLITE_OK ){
+        p->excl_ਨਕਾਬ = (p->excl_ਨਕਾਬ & ~ਨਕਾਬ);
+        p->shared_ਨਕਾਬ = (p->shared_ਨਕਾਬ & ~ਨਕਾਬ);
       }
-    }else{
-      int bExcl = ((flags & SQLITE_SHM_EXCLUSIVE) ? 1 : 0);
+    }ਨਹੀਂਤਾਂ{
+      ਪੂਰਨ bExcl = ((flags & SQLITE_SHM_EXCLUSIVE) ? 1 : 0);
       DWORD nMs = winFileBusyTimeout(pDbFd);
 
-      if( pShmNode->bUseSharedLockHandle ){
+      ਜੇ( p_Shm_ਗੰਢ->b_Use_Shared_ਤਾਲਾ_Handle ){
         winShm *pShm;
-        h = pShmNode->hSharedShm;
-        sqlite3_mutex_enter(pShmNode->mutex);
-        for(pShm=pShmNode->pWinShmList; pShm; pShm=pShm->pWinShmNext){
-          if( bExcl ){
-            if( (pShm->sharedMask|pShm->exclMask) & mask ){
+        h = p_Shm_ਗੰਢ->hSharedShm;
+        sqlite3_mutex_enter(p_Shm_ਗੰਢ->mutex);
+        ਲਈ(pShm=p_Shm_ਗੰਢ->pWinShmList; pShm; pShm=pShm->p_Win_Shm_ਅਗਲਾ){
+          ਜੇ( bExcl ){
+            ਜੇ( (pShm->shared_ਨਕਾਬ|pShm->excl_ਨਕਾਬ) & ਨਕਾਬ ){
               rc = SQLITE_BUSY;
-              h = INVALID_HANDLE_VALUE;
+              h = INVALID_HANDLE_ਮੁੱਲ;
             }
-          }else{
-            if( pShm->sharedMask & mask ){
-              h = INVALID_HANDLE_VALUE;
-            }else if( pShm->exclMask & mask ){
+          }ਨਹੀਂਤਾਂ{
+            ਜੇ( pShm->shared_ਨਕਾਬ & ਨਕਾਬ ){
+              h = INVALID_HANDLE_ਮੁੱਲ;
+            }ਨਹੀਂਤਾਂ ਜੇ( pShm->excl_ਨਕਾਬ & ਨਕਾਬ ){
               rc = SQLITE_BUSY;
-              h = INVALID_HANDLE_VALUE;
+              h = INVALID_HANDLE_ਮੁੱਲ;
             }
           }
         }
-        sqlite3_mutex_leave(pShmNode->mutex);
+        sqlite3_mutex_leave(p_Shm_ਗੰਢ->mutex);
       }
 
-      if( h!=INVALID_HANDLE_VALUE ){
-        rc = winHandleLockTimeout(h, ofst+WIN_SHM_BASE, n, bExcl, nMs);
+      ਜੇ( h!=INVALID_HANDLE_ਮੁੱਲ ){
+        rc = win_Handle_ਤਾਲਾ_Timeout(h, ofst+WIN_SHM_ਅਧਾਰ, n, bExcl, nMs);
       }
-      if( rc==SQLITE_OK ){
-        if( bExcl ){
-          p->exclMask = (p->exclMask | mask);
-        }else{
-          p->sharedMask = (p->sharedMask | mask);
+      ਜੇ( rc==SQLITE_OK ){
+        ਜੇ( bExcl ){
+          p->excl_ਨਕਾਬ = (p->excl_ਨਕਾਬ | ਨਕਾਬ);
+        }ਨਹੀਂਤਾਂ{
+          p->shared_ਨਕਾਬ = (p->shared_ਨਕਾਬ | ਨਕਾਬ);
         }
       }
     }
@@ -3570,10 +3570,10 @@ static int winShmLock(
       "SHM-LOCK(%d,%d,%d) pid=%lu, id=%d, sharedMask=%03x, exclMask=%03x,"
       " rc=%s\n",
       ofst, n, flags, 
-      osGetCurrentProcessId(), p->id, p->sharedMask, p->exclMask,
+      osGetCurrentProcessId(), p->id, p->shared_ਨਕਾਬ, p->excl_ਨਕਾਬ,
       sqlite3ErrName(rc))
   );
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -3582,11 +3582,11 @@ static int winShmLock(
 ** All loads and stores begun before the barrier must complete before
 ** any load or store begun after the barrier.
 */
-static void winShmBarrier(
+ਸਥਿਰ ਖਾਲੀ winShmBarrier(
   sqlite3_file *fd          /* Database holding the shared memory */
 ){
-  UNUSED_PARAMETER(fd);
-  sqlite3MemoryBarrier();   /* compiler-defined memory barrier */
+  ਅਣਵਰਤਿਆ_PARAMETER(fd);
+  sqlite3_ਸਮ੍ਰਿਤੀ_Barrier();   /* compiler-defined memory barrier */
   winShmEnterMutex();       /* Also mutex, for redundancy */
   winShmLeaveMutex();
 }
@@ -3610,184 +3610,184 @@ static void winShmBarrier(
 ** address space (if it is not already), *pp is set to point to the mapped
 ** memory and SQLITE_OK returned.
 */
-static int winShmMap(
+ਸਥਿਰ ਪੂਰਨ winShmMap(
   sqlite3_file *fd,               /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int szRegion,                   /* Size of regions */
-  int isWrite,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  ਪੂਰਨ iRegion,                    /* Region to retrieve */
+  ਪੂਰਨ szRegion,                   /* Size of regions */
+  ਪੂਰਨ isWrite,                    /* True to extend file if necessary */
+  ਖਾਲੀ ਅਸਥਿਰ **pp              /* OUT: Mapped memory */
 ){
   winFile *pDbFd = (winFile*)fd;
   winShm *pShm = pDbFd->pShm;
-  winShmNode *pShmNode;
-  DWORD protect = PAGE_READWRITE;
+  win_Shm_ਗੰਢ *p_Shm_ਗੰਢ;
+  DWORD protect = ਪੰਨਾ_READWRITE;
   DWORD flags = FILE_MAP_WRITE | FILE_MAP_READ;
-  int rc = SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
 
-  if( !pShm ){
-    rc = winOpenSharedMemory(pDbFd);
-    if( rc!=SQLITE_OK ) return rc;
+  ਜੇ( !pShm ){
+    rc = win_Open_Shared_ਸਮ੍ਰਿਤੀ(pDbFd);
+    ਜੇ( rc!=SQLITE_OK ) ਵਾਪਸ rc;
     pShm = pDbFd->pShm;
-    assert( pShm!=0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pShm!=0 );
   }
-  pShmNode = pShm->pShmNode;
+  p_Shm_ਗੰਢ = pShm->p_Shm_ਗੰਢ;
 
-  sqlite3_mutex_enter(pShmNode->mutex);
-  if( pShmNode->isUnlocked ){
+  sqlite3_mutex_enter(p_Shm_ਗੰਢ->mutex);
+  ਜੇ( p_Shm_ਗੰਢ->isUnlocked ){
     /* Take the DMS lock. */
-    assert( pShmNode->nRegion==0 );
-    rc = winLockSharedMemory(pShmNode, winFileBusyTimeout(pDbFd));
-    if( rc!=SQLITE_OK ) goto shmpage_out;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p_Shm_ਗੰਢ->nRegion==0 );
+    rc = win_ਤਾਲਾ_Shared_ਸਮ੍ਰਿਤੀ(p_Shm_ਗੰਢ, winFileBusyTimeout(pDbFd));
+    ਜੇ( rc!=SQLITE_OK ) ਜਾਓ shmpage_ਬਾਹਰਲਾ;
   }
 
-  assert( szRegion==pShmNode->szRegion || pShmNode->nRegion==0 );
-  if( pShmNode->nRegion<=iRegion ){
-    HANDLE hShared = pShmNode->hSharedShm;
-    struct ShmRegion *apNew;           /* New aRegion[] array */
+  ਪ੍ਰਤਿਜ੍ਞਾ( szRegion==p_Shm_ਗੰਢ->szRegion || p_Shm_ਗੰਢ->nRegion==0 );
+  ਜੇ( p_Shm_ਗੰਢ->nRegion<=iRegion ){
+    HANDLE hShared = p_Shm_ਗੰਢ->hSharedShm;
+    ਬਣਤਰ ShmRegion *apNew;           /* New aRegion[] array */
     i64 nByte = ((i64)iRegion+1)*(i64)szRegion;  /* Minimum file size */
     sqlite3_int64 sz;                  /* Current size of wal-index file */
 
-    pShmNode->szRegion = szRegion;
+    p_Shm_ਗੰਢ->szRegion = szRegion;
 
     /* The requested region is not mapped into this processes address space.
     ** Check to see if it has been allocated (i.e. if the wal-index file is
     ** large enough to contain the requested region).
     */
-    rc = winHandleSize(hShared, &sz);
-    if( rc!=SQLITE_OK ){
-      rc = winLogError(rc, osGetLastError(), "winShmMap1", pDbFd->zPath);
-      goto shmpage_out;
+    rc = win_Handle_ਮਾਪ(hShared, &sz);
+    ਜੇ( rc!=SQLITE_OK ){
+      rc = winLogError(rc, os_Get_ਆਖਰੀ_Error(), "winShmMap1", pDbFd->z_ਰਸਤਾ);
+      ਜਾਓ shmpage_ਬਾਹਰਲਾ;
     }
 
-    if( sz<nByte ){
+    ਜੇ( sz<nByte ){
       /* The requested memory region does not exist. If isWrite is set to
       ** zero, exit early. *pp will be set to NULL and SQLITE_OK returned.
       **
       ** Alternatively, if isWrite is non-zero, use ftruncate() to allocate
       ** the requested memory region.  */
-      if( !isWrite ) goto shmpage_out;
+      ਜੇ( !isWrite ) ਜਾਓ shmpage_ਬਾਹਰਲਾ;
       rc = winHandleTruncate(hShared, nByte);
-      if( rc!=SQLITE_OK ){
-        rc = winLogError(rc, osGetLastError(), "winShmMap2", pDbFd->zPath);
-        goto shmpage_out;
+      ਜੇ( rc!=SQLITE_OK ){
+        rc = winLogError(rc, os_Get_ਆਖਰੀ_Error(), "winShmMap2", pDbFd->z_ਰਸਤਾ);
+        ਜਾਓ shmpage_ਬਾਹਰਲਾ;
       }
     }
 
     /* Map the requested memory region into this processes address space. */
-    apNew = (struct ShmRegion*)sqlite3_realloc64(
-        pShmNode->aRegion, ((i64)iRegion+1)*sizeof(apNew[0])
+    apNew = (ਬਣਤਰ ShmRegion*)sqlite3_realloc64(
+        p_Shm_ਗੰਢ->aRegion, ((i64)iRegion+1)*ਆਕਾਰ(apNew[0])
     );
-    if( !apNew ){
+    ਜੇ( !apNew ){
       rc = SQLITE_IOERR_NOMEM_BKPT;
-      goto shmpage_out;
+      ਜਾਓ shmpage_ਬਾਹਰਲਾ;
     }
-    pShmNode->aRegion = apNew;
+    p_Shm_ਗੰਢ->aRegion = apNew;
 
-    if( pShmNode->isReadonly ){
-      protect = PAGE_READONLY;
+    ਜੇ( p_Shm_ਗੰਢ->isReadonly ){
+      protect = ਪੰਨਾ_READONLY;
       flags = FILE_MAP_READ;
     }
 
-    while( pShmNode->nRegion<=iRegion ){
-      HANDLE hMap = NULL;         /* file-mapping handle */
-      void *pMap = 0;             /* Mapped memory region */
+    ਜਦੋਂ( p_Shm_ਗੰਢ->nRegion<=iRegion ){
+      HANDLE hMap = ਨਿਰਾ;         /* file-mapping handle */
+      ਖਾਲੀ *pMap = 0;             /* Mapped memory region */
 
-#ifdef SQLITE_UWP
-      hMap = osCreateFileMappingFromApp(hShared, NULL, protect, nByte, NULL);
-#else
-      hMap = osCreateFileMappingW(hShared, NULL, protect, 0, nByte, NULL);
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
+      hMap = osCreateFileMappingFromApp(hShared, ਨਿਰਾ, protect, nByte, ਨਿਰਾ);
+#ਨਹੀਂਤਾਂ
+      hMap = osCreateFileMappingW(hShared, ਨਿਰਾ, protect, 0, nByte, ਨਿਰਾ);
+#ਜੇ_ਅੰਤ
       OSTRACE(("SHM-MAP-CREATE pid=%lu, region=%d, size=%lld, rc=%s\n",
-               osGetCurrentProcessId(), pShmNode->nRegion, nByte,
+               osGetCurrentProcessId(), p_Shm_ਗੰਢ->nRegion, nByte,
                hMap ? "ok" : "failed"));
-      if( hMap ){
-        i64 iOffset = pShmNode->nRegion*szRegion;
-        int iOffsetShift = iOffset % winSysInfo.dwAllocationGranularity;
-#ifdef SQLITE_UWP
-        pMap = osMapViewOfFileFromApp(hMap, flags,
-            iOffset - iOffsetShift, (i64)szRegion + iOffsetShift
+      ਜੇ( hMap ){
+        i64 i_ਵਿੱਥ = p_Shm_ਗੰਢ->nRegion*szRegion;
+        ਪੂਰਨ i_ਵਿੱਥ_ਖਿਸਕਾਓ = i_ਵਿੱਥ % winSysInfo.dw_ਵੰਡ_Granularity;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
+        pMap = os_Map_View_ਦਾ_File_From_App(hMap, flags,
+            i_ਵਿੱਥ - i_ਵਿੱਥ_ਖਿਸਕਾਓ, (i64)szRegion + i_ਵਿੱਥ_ਖਿਸਕਾਓ
         );
-#else
-        pMap = osMapViewOfFile(hMap, flags,
-            0, iOffset - iOffsetShift, (i64)szRegion + iOffsetShift
+#ਨਹੀਂਤਾਂ
+        pMap = os_Map_View_ਦਾ_File(hMap, flags,
+            0, i_ਵਿੱਥ - i_ਵਿੱਥ_ਖਿਸਕਾਓ, (i64)szRegion + i_ਵਿੱਥ_ਖਿਸਕਾਓ
         );
-#endif
+#ਜੇ_ਅੰਤ
         OSTRACE(("SHM-MAP-MAP pid=%lu, region=%d, offset=%d, size=%d, rc=%s\n",
-                 osGetCurrentProcessId(), pShmNode->nRegion, iOffset,
+                 osGetCurrentProcessId(), p_Shm_ਗੰਢ->nRegion, i_ਵਿੱਥ,
                  szRegion, pMap ? "ok" : "failed"));
       }
-      if( !pMap ){
-        pShmNode->lastErrno = osGetLastError();
-        rc = winLogError(SQLITE_IOERR_SHMMAP, pShmNode->lastErrno,
-                         "winShmMap3", pDbFd->zPath);
-        if( hMap ) osCloseHandle(hMap);
-        goto shmpage_out;
+      ਜੇ( !pMap ){
+        p_Shm_ਗੰਢ->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+        rc = winLogError(SQLITE_IOERR_SHMMAP, p_Shm_ਗੰਢ->ਆਖਰੀ_Errno,
+                         "winShmMap3", pDbFd->z_ਰਸਤਾ);
+        ਜੇ( hMap ) osCloseHandle(hMap);
+        ਜਾਓ shmpage_ਬਾਹਰਲਾ;
       }
 
-      pShmNode->aRegion[pShmNode->nRegion].pMap = pMap;
-      pShmNode->aRegion[pShmNode->nRegion].hMap = hMap;
-      pShmNode->nRegion++;
+      p_Shm_ਗੰਢ->aRegion[p_Shm_ਗੰਢ->nRegion].pMap = pMap;
+      p_Shm_ਗੰਢ->aRegion[p_Shm_ਗੰਢ->nRegion].hMap = hMap;
+      p_Shm_ਗੰਢ->nRegion++;
     }
   }
 
-shmpage_out:
-  if( pShmNode->nRegion>iRegion ){
-    i64 iOffset = (i64)iRegion*(i64)szRegion;
-    int iOffsetShift = iOffset % winSysInfo.dwAllocationGranularity;
-    char *p = (char *)pShmNode->aRegion[iRegion].pMap;
-    *pp = (void *)&p[iOffsetShift];
-  }else{
+shmpage_ਬਾਹਰਲਾ:
+  ਜੇ( p_Shm_ਗੰਢ->nRegion>iRegion ){
+    i64 i_ਵਿੱਥ = (i64)iRegion*(i64)szRegion;
+    ਪੂਰਨ i_ਵਿੱਥ_ਖਿਸਕਾਓ = i_ਵਿੱਥ % winSysInfo.dw_ਵੰਡ_Granularity;
+    ਅੱਖਰ *p = (ਅੱਖਰ *)p_Shm_ਗੰਢ->aRegion[iRegion].pMap;
+    *pp = (ਖਾਲੀ *)&p[i_ਵਿੱਥ_ਖਿਸਕਾਓ];
+  }ਨਹੀਂਤਾਂ{
     *pp = 0;
   }
-  if( pShmNode->isReadonly && rc==SQLITE_OK ){
+  ਜੇ( p_Shm_ਗੰਢ->isReadonly && rc==SQLITE_OK ){
     rc = SQLITE_READONLY;
   }
-  sqlite3_mutex_leave(pShmNode->mutex);
-  return rc;
+  sqlite3_mutex_leave(p_Shm_ਗੰਢ->mutex);
+  ਵਾਪਸ rc;
 }
 
-#else
+#ਨਹੀਂਤਾਂ
 # define winShmMap     0
-# define winShmLock    0
+# define win_Shm_ਤਾਲਾ    0
 # define winShmBarrier 0
 # define winShmUnmap   0
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#ਜੇ_ਅੰਤ /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Cleans up the mapped region of the specified file, if any.
 */
-#if SQLITE_MAX_MMAP_SIZE>0
-static int winUnmapfile(winFile *pFile){
-  assert( pFile!=0 );
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+ਸਥਿਰ ਪੂਰਨ winUnmapfile(winFile *pFile){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile!=0 );
   OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, hMap=%p, pMapRegion=%p, "
            "mmapSize=%lld, mmapSizeMax=%lld\n",
            osGetCurrentProcessId(), pFile, pFile->hMap, pFile->pMapRegion,
-           pFile->mmapSize, pFile->mmapSizeMax));
-  if( pFile->pMapRegion ){
-    if( !osUnmapViewOfFile(pFile->pMapRegion) ){
-      pFile->lastErrno = osGetLastError();
+           pFile->mmap_ਮਾਪ, pFile->mmap_ਮਾਪ_Max));
+  ਜੇ( pFile->pMapRegion ){
+    ਜੇ( !os_Unmap_View_ਦਾ_File(pFile->pMapRegion) ){
+      pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
       OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_IOERR_MMAP\n", osGetCurrentProcessId(), pFile,
                pFile->pMapRegion));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winUnmapfile1", pFile->zPath);
+      ਵਾਪਸ winLogError(SQLITE_IOERR_MMAP, pFile->ਆਖਰੀ_Errno,
+                         "winUnmapfile1", pFile->z_ਰਸਤਾ);
     }
     pFile->pMapRegion = 0;
-    pFile->mmapSize = 0;
+    pFile->mmap_ਮਾਪ = 0;
   }
-  if( pFile->hMap!=NULL ){
-    if( !osCloseHandle(pFile->hMap) ){
-      pFile->lastErrno = osGetLastError();
+  ਜੇ( pFile->hMap!=ਨਿਰਾ ){
+    ਜੇ( !osCloseHandle(pFile->hMap) ){
+      pFile->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
       OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, hMap=%p, rc=SQLITE_IOERR_MMAP\n",
                osGetCurrentProcessId(), pFile, pFile->hMap));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winUnmapfile2", pFile->zPath);
+      ਵਾਪਸ winLogError(SQLITE_IOERR_MMAP, pFile->ਆਖਰੀ_Errno,
+                         "winUnmapfile2", pFile->z_ਰਸਤਾ);
     }
-    pFile->hMap = NULL;
+    pFile->hMap = ਨਿਰਾ;
   }
   OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -3806,87 +3806,87 @@ static int winUnmapfile(winFile *pFile){
 ** recreated as a result of outstanding references) or an SQLite error
 ** code otherwise.
 */
-static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
+ਸਥਿਰ ਪੂਰਨ winMapfile(winFile *pFd, sqlite3_int64 nByte){
   sqlite3_int64 nMap = nByte;
-  int rc;
+  ਪੂਰਨ rc;
 
-  assert( nMap>=0 || pFd->nFetchOut==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( nMap>=0 || pFd->n_Fetch_ਬਾਹਰਲਾ==0 );
   OSTRACE(("MAP-FILE pid=%lu, pFile=%p, size=%lld\n",
            osGetCurrentProcessId(), pFd, nByte));
 
-  if( pFd->nFetchOut>0 ) return SQLITE_OK;
+  ਜੇ( pFd->n_Fetch_ਬਾਹਰਲਾ>0 ) ਵਾਪਸ SQLITE_OK;
 
-  if( nMap<0 ){
-    rc = winFileSize((sqlite3_file*)pFd, &nMap);
-    if( rc ){
+  ਜੇ( nMap<0 ){
+    rc = win_File_ਮਾਪ((sqlite3_file*)pFd, &nMap);
+    ਜੇ( rc ){
       OSTRACE(("MAP-FILE pid=%lu, pFile=%p, rc=SQLITE_IOERR_FSTAT\n",
                osGetCurrentProcessId(), pFd));
-      return SQLITE_IOERR_FSTAT;
+      ਵਾਪਸ SQLITE_IOERR_FSTAT;
     }
   }
-  if( nMap>pFd->mmapSizeMax ){
-    nMap = pFd->mmapSizeMax;
+  ਜੇ( nMap>pFd->mmap_ਮਾਪ_Max ){
+    nMap = pFd->mmap_ਮਾਪ_Max;
   }
-  nMap &= ~(sqlite3_int64)(winSysInfo.dwPageSize - 1);
+  nMap &= ~(sqlite3_int64)(winSysInfo.dw_ਪੰਨਾ_ਮਾਪ - 1);
 
-  if( nMap==0 && pFd->mmapSize>0 ){
+  ਜੇ( nMap==0 && pFd->mmap_ਮਾਪ>0 ){
     winUnmapfile(pFd);
   }
-  if( nMap!=pFd->mmapSize ){
-    void *pNew = 0;
-    DWORD protect = PAGE_READONLY;
+  ਜੇ( nMap!=pFd->mmap_ਮਾਪ ){
+    ਖਾਲੀ *pNew = 0;
+    DWORD protect = ਪੰਨਾ_READONLY;
     DWORD flags = FILE_MAP_READ;
 
     winUnmapfile(pFd);
-#ifdef SQLITE_MMAP_READWRITE
-    if( (pFd->ctrlFlags & WINFILE_RDONLY)==0 ){
-      protect = PAGE_READWRITE;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_MMAP_READWRITE
+    ਜੇ( (pFd->ctrlFlags & WINFILE_RDONLY)==0 ){
+      protect = ਪੰਨਾ_READWRITE;
       flags |= FILE_MAP_WRITE;
     }
-#endif
-#ifdef SQLITE_UWP
-    pFd->hMap = osCreateFileMappingFromApp(pFd->h, NULL, protect, nMap, NULL);
-#else
-    pFd->hMap = osCreateFileMappingW(pFd->h, NULL, protect,
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
+    pFd->hMap = osCreateFileMappingFromApp(pFd->h, ਨਿਰਾ, protect, nMap, ਨਿਰਾ);
+#ਨਹੀਂਤਾਂ
+    pFd->hMap = osCreateFileMappingW(pFd->h, ਨਿਰਾ, protect,
                                 (DWORD)((nMap>>32) & 0xffffffff),
-                                (DWORD)(nMap & 0xffffffff), NULL);
-#endif
-    if( pFd->hMap==NULL ){
-      pFd->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_MMAP, pFd->lastErrno,
-                       "winMapfile1", pFd->zPath);
+                                (DWORD)(nMap & 0xffffffff), ਨਿਰਾ);
+#ਜੇ_ਅੰਤ
+    ਜੇ( pFd->hMap==ਨਿਰਾ ){
+      pFd->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+      rc = winLogError(SQLITE_IOERR_MMAP, pFd->ਆਖਰੀ_Errno,
+                       "winMapfile1", pFd->z_ਰਸਤਾ);
       /* Log the error, but continue normal operation using xRead/xWrite */
       OSTRACE(("MAP-FILE-CREATE pid=%lu, pFile=%p, rc=%s\n",
                osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
-    assert( (nMap % winSysInfo.dwPageSize)==0 );
-    assert( sizeof(SIZE_T)==sizeof(sqlite3_int64) || nMap<=0xffffffff );
-#ifdef SQLITE_UWP
-    pNew = osMapViewOfFileFromApp(pFd->hMap, flags, 0, (SIZE_T)nMap);
-#else
-    pNew = osMapViewOfFile(pFd->hMap, flags, 0, 0, (SIZE_T)nMap);
-#endif
-    if( pNew==NULL ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( (nMap % winSysInfo.dw_ਪੰਨਾ_ਮਾਪ)==0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( ਆਕਾਰ(ਮਾਪ_T)==ਆਕਾਰ(sqlite3_int64) || nMap<=0xffffffff );
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
+    pNew = os_Map_View_ਦਾ_File_From_App(pFd->hMap, flags, 0, (ਮਾਪ_T)nMap);
+#ਨਹੀਂਤਾਂ
+    pNew = os_Map_View_ਦਾ_File(pFd->hMap, flags, 0, 0, (ਮਾਪ_T)nMap);
+#ਜੇ_ਅੰਤ
+    ਜੇ( pNew==ਨਿਰਾ ){
       osCloseHandle(pFd->hMap);
-      pFd->hMap = NULL;
-      pFd->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_MMAP, pFd->lastErrno,
-                       "winMapfile2", pFd->zPath);
+      pFd->hMap = ਨਿਰਾ;
+      pFd->ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+      rc = winLogError(SQLITE_IOERR_MMAP, pFd->ਆਖਰੀ_Errno,
+                       "winMapfile2", pFd->z_ਰਸਤਾ);
       /* Log the error, but continue normal operation using xRead/xWrite */
       OSTRACE(("MAP-FILE-MAP pid=%lu, pFile=%p, rc=%s\n",
                osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-      return SQLITE_OK;
+      ਵਾਪਸ SQLITE_OK;
     }
     pFd->pMapRegion = pNew;
-    pFd->mmapSize = nMap;
+    pFd->mmap_ਮਾਪ = nMap;
   }
 
   OSTRACE(("MAP-FILE pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFd));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
-#endif /* SQLITE_MAX_MMAP_SIZE>0 */
+#ਜੇ_ਅੰਤ /* SQLITE_MAX_MMAP_SIZE>0 */
 
 /*
 ** If possible, return a pointer to a mapping of file fd starting at offset
@@ -3900,41 +3900,41 @@ static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
 ** If this function does return a pointer, the caller must eventually
 ** release the reference by calling winUnfetch().
 */
-static int winFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
-#if SQLITE_MAX_MMAP_SIZE>0
+ਸਥਿਰ ਪੂਰਨ winFetch(sqlite3_file *fd, i64 iOff, ਪੂਰਨ nAmt, ਖਾਲੀ **pp){
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
   winFile *pFd = (winFile*)fd;   /* The underlying database file */
-#endif
+#ਜੇ_ਅੰਤ
   *pp = 0;
 
   OSTRACE(("FETCH pid=%lu, pFile=%p, offset=%lld, amount=%d, pp=%p\n",
            osGetCurrentProcessId(), fd, iOff, nAmt, pp));
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFd->mmapSizeMax>0 ){
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  ਜੇ( pFd->mmap_ਮਾਪ_Max>0 ){
     /* Ensure that there is always at least a 256 byte buffer of addressable
     ** memory following the returned page. If the database is corrupt,
     ** SQLite may overread the page slightly (in practice only a few bytes,
     ** but 256 is safe, round, number).  */
-    const int nEofBuffer = 256;
-    if( pFd->pMapRegion==0 ){
-      int rc = winMapfile(pFd, -1);
-      if( rc!=SQLITE_OK ){
+    ਅਚਲ ਪੂਰਨ n_Eof_ਬਫਰ = 256;
+    ਜੇ( pFd->pMapRegion==0 ){
+      ਪੂਰਨ rc = winMapfile(pFd, -1);
+      ਜੇ( rc!=SQLITE_OK ){
         OSTRACE(("FETCH pid=%lu, pFile=%p, rc=%s\n",
                  osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-        return rc;
+        ਵਾਪਸ rc;
       }
     }
-    if( pFd->mmapSize >= (iOff+nAmt+nEofBuffer) ){
-      assert( pFd->pMapRegion!=0 );
+    ਜੇ( pFd->mmap_ਮਾਪ >= (iOff+nAmt+n_Eof_ਬਫਰ) ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pFd->pMapRegion!=0 );
       *pp = &((u8 *)pFd->pMapRegion)[iOff];
-      pFd->nFetchOut++;
+      pFd->n_Fetch_ਬਾਹਰਲਾ++;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   OSTRACE(("FETCH pid=%lu, pFile=%p, pp=%p, *pp=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), fd, pp, *pp));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -3947,24 +3947,24 @@ static int winFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
 ** to inform the VFS layer that, according to POSIX, any existing mapping
 ** may now be invalid and should be unmapped.
 */
-static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
-#if SQLITE_MAX_MMAP_SIZE>0
+ਸਥਿਰ ਪੂਰਨ winUnfetch(sqlite3_file *fd, i64 iOff, ਖਾਲੀ *p){
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
   winFile *pFd = (winFile*)fd;   /* The underlying database file */
 
   /* If p==0 (unmap the entire file) then there must be no outstanding
   ** xFetch references. Or, if p!=0 (meaning it is an xFetch reference),
   ** then there must be at least one outstanding.  */
-  assert( (p==0)==(pFd->nFetchOut==0) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (p==0)==(pFd->n_Fetch_ਬਾਹਰਲਾ==0) );
 
   /* If p!=0, it must match the iOff value. */
-  assert( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
 
   OSTRACE(("UNFETCH pid=%lu, pFile=%p, offset=%lld, p=%p\n",
            osGetCurrentProcessId(), pFd, iOff, p));
 
-  if( p ){
-    pFd->nFetchOut--;
-  }else{
+  ਜੇ( p ){
+    pFd->n_Fetch_ਬਾਹਰਲਾ--;
+  }ਨਹੀਂਤਾਂ{
     /* FIXME:  If Windows truly always prevents truncating or deleting a
     ** file while a mapping is held, then the following winUnmapfile() call
     ** is unnecessary can be omitted - potentially improving
@@ -3972,12 +3972,12 @@ static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
     winUnmapfile(pFd);
   }
 
-  assert( pFd->nFetchOut>=0 );
-#endif
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFd->n_Fetch_ਬਾਹਰਲਾ>=0 );
+#ਜੇ_ਅੰਤ
 
   OSTRACE(("UNFETCH pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), fd));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -3990,22 +3990,22 @@ static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
 ** This vector defines all the methods that can operate on an
 ** sqlite3_file for win32.
 */
-static const sqlite3_io_methods winIoMethod = {
+ਸਥਿਰ ਅਚਲ sqlite3_io_methods win_Io_ਵਿਧੀ = {
   3,                              /* iVersion */
   winClose,                       /* xClose */
   winRead,                        /* xRead */
   winWrite,                       /* xWrite */
   winTruncate,                    /* xTruncate */
   winSync,                        /* xSync */
-  winFileSize,                    /* xFileSize */
-  winLock,                        /* xLock */
+  win_File_ਮਾਪ,                    /* xFileSize */
+  win_ਤਾਲਾ,                        /* xLock */
   winUnlock,                      /* xUnlock */
-  winCheckReservedLock,           /* xCheckReservedLock */
+  win_Check_Reserved_ਤਾਲਾ,           /* xCheckReservedLock */
   winFileControl,                 /* xFileControl */
-  winSectorSize,                  /* xSectorSize */
+  win_Sector_ਮਾਪ,                  /* xSectorSize */
   winDeviceCharacteristics,       /* xDeviceCharacteristics */
   winShmMap,                      /* xShmMap */
-  winShmLock,                     /* xShmLock */
+  win_Shm_ਤਾਲਾ,                     /* xShmLock */
   winShmBarrier,                  /* xShmBarrier */
   winShmUnmap,                    /* xShmUnmap */
   winFetch,                       /* xFetch */
@@ -4016,36 +4016,36 @@ static const sqlite3_io_methods winIoMethod = {
 ** This vector defines all the methods that can operate on an
 ** sqlite3_file for win32 without performing any locking.
 */
-static const sqlite3_io_methods winIoNolockMethod = {
+ਸਥਿਰ ਅਚਲ sqlite3_io_methods win_Io_Nolock_ਵਿਧੀ = {
   3,                              /* iVersion */
   winClose,                       /* xClose */
   winRead,                        /* xRead */
   winWrite,                       /* xWrite */
   winTruncate,                    /* xTruncate */
   winSync,                        /* xSync */
-  winFileSize,                    /* xFileSize */
-  winNolockLock,                  /* xLock */
+  win_File_ਮਾਪ,                    /* xFileSize */
+  win_Nolock_ਤਾਲਾ,                  /* xLock */
   winNolockUnlock,                /* xUnlock */
-  winNolockCheckReservedLock,     /* xCheckReservedLock */
+  win_Nolock_Check_Reserved_ਤਾਲਾ,     /* xCheckReservedLock */
   winFileControl,                 /* xFileControl */
-  winSectorSize,                  /* xSectorSize */
+  win_Sector_ਮਾਪ,                  /* xSectorSize */
   winDeviceCharacteristics,       /* xDeviceCharacteristics */
   winShmMap,                      /* xShmMap */
-  winShmLock,                     /* xShmLock */
+  win_Shm_ਤਾਲਾ,                     /* xShmLock */
   winShmBarrier,                  /* xShmBarrier */
   winShmUnmap,                    /* xShmUnmap */
   winFetch,                       /* xFetch */
   winUnfetch                      /* xUnfetch */
 };
 
-static winVfsAppData winAppData = {
-  &winIoMethod,       /* pMethod */
+ਸਥਿਰ win_Vfs_App_ਅੰਕੜੇ win_App_ਅੰਕੜੇ = {
+  &win_Io_ਵਿਧੀ,       /* pMethod */
   0,                  /* pAppData */
   0                   /* bNoLock */
 };
 
-static winVfsAppData winNolockAppData = {
-  &winIoNolockMethod, /* pMethod */
+ਸਥਿਰ win_Vfs_App_ਅੰਕੜੇ win_Nolock_App_ਅੰਕੜੇ = {
+  &win_Io_Nolock_ਵਿਧੀ, /* pMethod */
   0,                  /* pAppData */
   1                   /* bNoLock */
 };
@@ -4062,27 +4062,27 @@ static winVfsAppData winNolockAppData = {
 ** ends with a directory separator character or one was successfully
 ** added to it.
 */
-static int winMakeEndInDirSep(int nBuf, char *zBuf){
-  if( zBuf ){
-    int nLen = sqlite3Strlen30(zBuf);
-    if( nLen>0 ){
-      if( winIsDirSep(zBuf[nLen-1]) ){
-        return 1;
-      }else if( nLen+1<nBuf ){
-        if( !osGetenv ){
+ਸਥਿਰ ਪੂਰਨ win_Make_ਸਿਰਾ_ਵਿੱਚ_Dir_Sep(ਪੂਰਨ nBuf, ਅੱਖਰ *zBuf){
+  ਜੇ( zBuf ){
+    ਪੂਰਨ nLen = sqlite3Strlen30(zBuf);
+    ਜੇ( nLen>0 ){
+      ਜੇ( winIsDirSep(zBuf[nLen-1]) ){
+        ਵਾਪਸ 1;
+      }ਨਹੀਂਤਾਂ ਜੇ( nLen+1<nBuf ){
+        ਜੇ( !osGetenv ){
           zBuf[nLen] = winGetDirSep();
-        }else if( winIsDriveLetterAndColon(zBuf) && winIsDirSep(zBuf[2]) ){
+        }ਨਹੀਂਤਾਂ ਜੇ( winIsDriveLetterAndColon(zBuf) && winIsDirSep(zBuf[2]) ){
           zBuf[nLen] = '\\';
           zBuf[2]='\\';
-        }else{
+        }ਨਹੀਂਤਾਂ{
           zBuf[nLen] = '/';
         }
         zBuf[nLen+1] = '\0';
-        return 1;
+        ਵਾਪਸ 1;
       }
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -4091,33 +4091,33 @@ static int winMakeEndInDirSep(int nBuf, char *zBuf){
 ** If sqlite3_temp_directory is NULL (undefined), omit the mutex and
 ** return false.
 */
-static int winTempDirDefined(void){
+ਸਥਿਰ ਪੂਰਨ win_ਆਰਜ਼ੀ_Dir_Defined(ਖਾਲੀ){
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  if( sqlite3_temp_directory!=0 ) return 1;
+  ਜੇ( sqlite3_ਆਰਜ਼ੀ_directory!=0 ) ਵਾਪਸ 1;
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
 ** Create a temporary file name and store the resulting pointer into pzBuf.
 ** The pointer returned in pzBuf must be freed via sqlite3_free().
 */
-static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
-  static const char zChars[] =
+ਸਥਿਰ ਪੂਰਨ winGetTempname(sqlite3_vfs *pVfs, ਅੱਖਰ **pzBuf){
+  ਸਥਿਰ ਅਚਲ ਅੱਖਰ zChars[] =
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "0123456789";
   size_t i, j;
   DWORD pid;
-  int nPre = sqlite3Strlen30(SQLITE_TEMP_FILE_PREFIX);
+  ਪੂਰਨ nPre = sqlite3Strlen30(SQLITE_ਆਰਜ਼ੀ_FILE_ਅਗੇਤਰ);
   i64 nMax, nBuf, nDir, nLen;
-  char *zBuf;
+  ਅੱਖਰ *zBuf;
 
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing.
   */
-  SimulateIOError( return SQLITE_IOERR );
+  SimulateIOError( ਵਾਪਸ SQLITE_IOERR );
 
   /* Allocate a temporary buffer to store the fully qualified file
   ** name for the temporary file.  If this fails, we cannot continue.
@@ -4125,9 +4125,9 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   nMax = pVfs->mxPathname;
   nBuf = 2 + (i64)nMax;
   zBuf = sqlite3MallocZero( nBuf );
-  if( !zBuf ){
+  ਜੇ( !zBuf ){
     OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
 
   /* Figure out the effective temporary directory.  First, check if one
@@ -4135,27 +4135,27 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** configured by the operating system.
   */
   nDir = nMax - (nPre + 15);
-  assert( nDir>0 );
-  if( winTempDirDefined() ){
-    int nDirLen = sqlite3Strlen30(sqlite3_temp_directory);
-    if( nDirLen>0 ){
-      if( !winIsDirSep(sqlite3_temp_directory[nDirLen-1]) ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( nDir>0 );
+  ਜੇ( win_ਆਰਜ਼ੀ_Dir_Defined() ){
+    ਪੂਰਨ nDirLen = sqlite3Strlen30(sqlite3_ਆਰਜ਼ੀ_directory);
+    ਜੇ( nDirLen>0 ){
+      ਜੇ( !winIsDirSep(sqlite3_ਆਰਜ਼ੀ_directory[nDirLen-1]) ){
         nDirLen++;
       }
-      if( nDirLen>nDir ){
+      ਜੇ( nDirLen>nDir ){
         sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
         sqlite3_free(zBuf);
         OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-        return winLogError(SQLITE_ERROR, 0, "winGetTempname1", 0);
+        ਵਾਪਸ winLogError(SQLITE_ERROR, 0, "winGetTempname1", 0);
       }
-      sqlite3_snprintf(nMax, zBuf, "%s", sqlite3_temp_directory);
+      sqlite3_snprintf(nMax, zBuf, "%s", sqlite3_ਆਰਜ਼ੀ_directory);
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
   }
 
-#if defined(__CYGWIN__)
-  else if( osGetenv!=NULL ){
-    static const char *azDirs[] = {
+#ਜੇ defined(__CYGWIN__)
+  ਨਹੀਂਤਾਂ ਜੇ( osGetenv!=ਨਿਰਾ ){
+    ਸਥਿਰ ਅਚਲ ਅੱਖਰ *azDirs[] = {
        0, /* getenv("SQLITE_TMPDIR") */
        0, /* getenv("TMPDIR") */
        0, /* getenv("TMP") */
@@ -4167,17 +4167,17 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
        ".",
        0        /* List terminator */
     };
-    unsigned int i;
-    const char *zDir = 0;
+    ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i;
+    ਅਚਲ ਅੱਖਰ *zDir = 0;
 
-    if( !azDirs[0] ) azDirs[0] = osGetenv("SQLITE_TMPDIR");
-    if( !azDirs[1] ) azDirs[1] = osGetenv("TMPDIR");
-    if( !azDirs[2] ) azDirs[2] = osGetenv("TMP");
-    if( !azDirs[3] ) azDirs[3] = osGetenv("TEMP");
-    if( !azDirs[4] ) azDirs[4] = osGetenv("USERPROFILE");
-    for(i=0; i<sizeof(azDirs)/sizeof(azDirs[0]); zDir=azDirs[i++]){
+    ਜੇ( !azDirs[0] ) azDirs[0] = osGetenv("SQLITE_TMPDIR");
+    ਜੇ( !azDirs[1] ) azDirs[1] = osGetenv("TMPDIR");
+    ਜੇ( !azDirs[2] ) azDirs[2] = osGetenv("TMP");
+    ਜੇ( !azDirs[3] ) azDirs[3] = osGetenv("TEMP");
+    ਜੇ( !azDirs[4] ) azDirs[4] = osGetenv("USERPROFILE");
+    ਲਈ(i=0; i<ਆਕਾਰ(azDirs)/ਆਕਾਰ(azDirs[0]); zDir=azDirs[i++]){
       LPWSTR zConverted;
-      if( zDir==0 ) continue;
+      ਜੇ( zDir==0 ) ਜਾਰੀ;
       /* If the path starts with a drive letter followed by the colon
       ** character, assume it is already a native Win32 path; otherwise,
       ** it must be converted to a native Win32 path via the Cygwin API
@@ -4185,46 +4185,46 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
       */
       {
         zConverted = winConvertFromUtf8Filename(zDir);
-        if( !zConverted ){
+        ਜੇ( !zConverted ){
           sqlite3_free(zBuf);
           OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-          return SQLITE_IOERR_NOMEM_BKPT;
+          ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
         }
-        if( winIsDir(zConverted) ){
+        ਜੇ( winIsDir(zConverted) ){
           sqlite3_snprintf(nMax, zBuf, "%s", zDir);
           sqlite3_free(zConverted);
-          break;
+          ਰੋਕੋ;
         }
         sqlite3_free(zConverted);
       }
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-  else{
-    char *zMulti;
-    LPWSTR zWidePath = sqlite3MallocZero( nMax*sizeof(WCHAR) );
-    if( !zWidePath ){
+  ਨਹੀਂਤਾਂ{
+    ਅੱਖਰ *zMulti;
+    LPWSTR z_Wide_ਰਸਤਾ = sqlite3MallocZero( nMax*ਆਕਾਰ(WCHAR) );
+    ਜੇ( !z_Wide_ਰਸਤਾ ){
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-      return SQLITE_IOERR_NOMEM_BKPT;
+      ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
     }
-    if( osGetTempPathW==0 || osGetTempPathW(nMax, zWidePath)==0 ){
-      sqlite3_free(zWidePath);
+    ਜੇ( os_Get_ਆਰਜ਼ੀ_ਰਸਤਾ_W==0 || os_Get_ਆਰਜ਼ੀ_ਰਸਤਾ_W(nMax, z_Wide_ਰਸਤਾ)==0 ){
+      sqlite3_free(z_Wide_ਰਸਤਾ);
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_GETTEMPPATH\n"));
-      return winLogError(SQLITE_IOERR_GETTEMPPATH, osGetLastError(),
+      ਵਾਪਸ winLogError(SQLITE_IOERR_GETTEMPPATH, os_Get_ਆਖਰੀ_Error(),
                          "winGetTempname2", 0);
     }
-    zMulti = winUnicodeToUtf8(zWidePath);
-    sqlite3_free(zWidePath);
-    if( zMulti ){
+    zMulti = win_Unicode_ਮੰਜ਼ਿਲ_Utf8(z_Wide_ਰਸਤਾ);
+    sqlite3_free(z_Wide_ਰਸਤਾ);
+    ਜੇ( zMulti ){
       sqlite3_snprintf(nMax, zBuf, "%s", zMulti);
       sqlite3_free(zMulti);
-    }else{
+    }ਨਹੀਂਤਾਂ{
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-      return SQLITE_IOERR_NOMEM_BKPT;
+      ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
     }
   }
 
@@ -4233,10 +4233,10 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** separator.  If it does not and there is not enough space left to add
   ** one, fail.
   */
-  if( !winMakeEndInDirSep(nDir+1, zBuf) ){
+  ਜੇ( !win_Make_ਸਿਰਾ_ਵਿੱਚ_Dir_Sep(nDir+1, zBuf) ){
     sqlite3_free(zBuf);
     OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-    return winLogError(SQLITE_ERROR, 0, "winGetTempname4", 0);
+    ਵਾਪਸ winLogError(SQLITE_ERROR, 0, "winGetTempname4", 0);
   }
 
   /*
@@ -4251,28 +4251,28 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** has already added if it was not already present.
   */
   nLen = sqlite3Strlen30(zBuf);
-  if( (nLen + nPre + 17) > nBuf ){
+  ਜੇ( (nLen + nPre + 17) > nBuf ){
     sqlite3_free(zBuf);
     OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-    return winLogError(SQLITE_ERROR, 0, "winGetTempname5", 0);
+    ਵਾਪਸ winLogError(SQLITE_ERROR, 0, "winGetTempname5", 0);
   }
 
-  sqlite3_snprintf(nBuf-16-nLen, zBuf+nLen, SQLITE_TEMP_FILE_PREFIX);
+  sqlite3_snprintf(nBuf-16-nLen, zBuf+nLen, SQLITE_ਆਰਜ਼ੀ_FILE_ਅਗੇਤਰ);
 
   j = sqlite3Strlen30(zBuf);
   sqlite3_randomness(15, &zBuf[j]);
   pid = osGetCurrentProcessId();
-  for(i=0; i<15; i++, j++){
+  ਲਈ(i=0; i<15; i++, j++){
     zBuf[j] += pid & 0xff;
     pid >>= 8;
-    zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
+    zBuf[j] = (ਅੱਖਰ)zChars[ ((ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ)zBuf[j])%(ਆਕਾਰ(zChars)-1) ];
   }
   zBuf[j] = 0;
   zBuf[j+1] = 0;
   *pzBuf = zBuf;
 
   OSTRACE(("TEMP-FILENAME name=%s, rc=SQLITE_OK\n", zBuf));
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -4280,86 +4280,86 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
 ** it is something other than a directory, or if there is any kind of memory
 ** allocation failure.
 */
-static int winIsDir(LPCWSTR zConverted){
+ਸਥਿਰ ਪੂਰਨ winIsDir(LPCWSTR zConverted){
   DWORD attr;
-  int rc = 0;
-  DWORD lastErrno;
-  int cnt = 0;
-  WIN32_FILE_ATTRIBUTE_DATA sAttrData;
-  memset(&sAttrData, 0, sizeof(sAttrData));
-  while( !(rc = osGetFileAttributesExW(zConverted,
+  ਪੂਰਨ rc = 0;
+  DWORD ਆਖਰੀ_Errno;
+  ਪੂਰਨ cnt = 0;
+  WIN32_FILE_ATTRIBUTE_ਅੰਕੜੇ s_Attr_ਅੰਕੜੇ;
+  memset(&s_Attr_ਅੰਕੜੇ, 0, ਆਕਾਰ(s_Attr_ਅੰਕੜੇ));
+  ਜਦੋਂ( !(rc = os_Get_File_ਗੁਣ_Ex_W(zConverted,
                            GetFileExInfoStandard,
-                           &sAttrData)) && winRetryIoerr(&cnt, &lastErrno) ){}
-  if( !rc ){
-    return 0; /* Invalid name? */
+                           &s_Attr_ਅੰਕੜੇ)) && winRetryIoerr(&cnt, &ਆਖਰੀ_Errno) ){}
+  ਜੇ( !rc ){
+    ਵਾਪਸ 0; /* Invalid name? */
   }
-  attr = sAttrData.dwFileAttributes;
-  return (attr!=INVALID_FILE_ATTRIBUTES) && (attr&FILE_ATTRIBUTE_DIRECTORY);
+  attr = s_Attr_ਅੰਕੜੇ.dw_File_ਗੁਣ;
+  ਵਾਪਸ (attr!=INVALID_FILE_ਗੁਣ) && (attr&FILE_ATTRIBUTE_DIRECTORY);
 }
 
 /* forward reference */
-static int winAccess(
+ਸਥਿਰ ਪੂਰਨ winAccess(
   sqlite3_vfs *pVfs,         /* Not used on win32 */
-  const char *zFilename,     /* Name of file to check */
-  int flags,                 /* Type of test to make on this file */
-  int *pResOut               /* OUT: Result */
+  ਅਚਲ ਅੱਖਰ *zFilename,     /* Name of file to check */
+  ਪੂਰਨ flags,                 /* Type of test to make on this file */
+  ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ               /* OUT: Result */
 );
 
 /*
 ** The Windows version of xAccess() accepts an extra bit in the flags
 ** parameter that prevents an anti-virus retry loop.
 */
-#define NORETRY 0x4000
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ NORETRY 0x4000
 
 /*
 ** Open a file.
 */
-static int winOpen(
+ਸਥਿਰ ਪੂਰਨ winOpen(
   sqlite3_vfs *pVfs,        /* Used to get maximum path length and AppData */
-  const char *zName,        /* Name of the file (UTF-8) */
+  ਅਚਲ ਅੱਖਰ *zName,        /* Name of the file (UTF-8) */
   sqlite3_file *id,         /* Write the SQLite file handle here */
-  int flags,                /* Open mode flags */
-  int *pOutFlags            /* Status return flags */
+  ਪੂਰਨ flags,                /* Open mode flags */
+  ਪੂਰਨ *p_ਬਾਹਰਲਾ_Flags            /* Status return flags */
 ){
   HANDLE h;
-  DWORD lastErrno = 0;
+  DWORD ਆਖਰੀ_Errno = 0;
   DWORD dwDesiredAccess;
-  DWORD dwShareMode;
+  DWORD dw_Share_ਬਹੁਲਕ;
   DWORD dwCreationDisposition;
-  DWORD dwFlagsAndAttributes = 0;
-  winVfsAppData *pAppData;
+  DWORD dw_Flags_And_ਗੁਣ = 0;
+  win_Vfs_App_ਅੰਕੜੇ *p_App_ਅੰਕੜੇ;
   winFile *pFile = (winFile*)id;
   LPWSTR zConverted;              /* Filename in OS encoding */
-  const char *zUtf8Name = zName; /* Filename in UTF-8 encoding */
-  int cnt = 0;
-  int isRO = 0;              /* file is known to be accessible readonly */
+  ਅਚਲ ਅੱਖਰ *zUtf8Name = zName; /* Filename in UTF-8 encoding */
+  ਪੂਰਨ cnt = 0;
+  ਪੂਰਨ isRO = 0;              /* file is known to be accessible readonly */
 
   /* If argument zPath is a NULL pointer, this function is required to open
   ** a temporary file. Use this buffer to store the file name in.
   */
-  char *zTmpname = 0; /* For temporary filename, if necessary. */
+  ਅੱਖਰ *zTmpname = 0; /* For temporary filename, if necessary. */
 
-  int rc = SQLITE_OK;            /* Function Return Code */
-#if !defined(NDEBUG)
-  int eType = flags&0x0FFF00;  /* Type of file to open */
-#endif
+  ਪੂਰਨ rc = SQLITE_OK;            /* Function Return Code */
+#ਜੇ !defined(NDEBUG)
+  ਪੂਰਨ eType = flags&0x0FFF00;  /* Type of file to open */
+#ਜੇ_ਅੰਤ
 
-  int isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
-  int isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
-  int isCreate     = (flags & SQLITE_OPEN_CREATE);
-  int isReadonly   = (flags & SQLITE_OPEN_READONLY);
-  int isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
+  ਪੂਰਨ isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
+  ਪੂਰਨ isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
+  ਪੂਰਨ isCreate     = (flags & SQLITE_OPEN_CREATE);
+  ਪੂਰਨ isReadonly   = (flags & SQLITE_OPEN_READONLY);
+  ਪੂਰਨ isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
 
-#ifndef NDEBUG
-  int isOpenJournal = (isCreate && (
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
+  ਪੂਰਨ isOpenJournal = (isCreate && (
         eType==SQLITE_OPEN_SUPER_JOURNAL
      || eType==SQLITE_OPEN_MAIN_JOURNAL
      || eType==SQLITE_OPEN_WAL
   ));
-#endif
+#ਜੇ_ਅੰਤ
 
   OSTRACE(("OPEN name=%s, pFile=%p, flags=%x, pOutFlags=%p\n",
-           zUtf8Name, id, flags, pOutFlags));
+           zUtf8Name, id, flags, p_ਬਾਹਰਲਾ_Flags));
 
   /* Check the following statements are true:
   **
@@ -4368,38 +4368,38 @@ static int winOpen(
   **   (c) if EXCLUSIVE is set, then CREATE must also be set.
   **   (d) if DELETEONCLOSE is set, then CREATE must also be set.
   */
-  assert((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
-  assert(isCreate==0 || isReadWrite);
-  assert(isExclusive==0 || isCreate);
-  assert(isDelete==0 || isCreate);
+  ਪ੍ਰਤਿਜ੍ਞਾ((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
+  ਪ੍ਰਤਿਜ੍ਞਾ(isCreate==0 || isReadWrite);
+  ਪ੍ਰਤਿਜ੍ਞਾ(isExclusive==0 || isCreate);
+  ਪ੍ਰਤਿਜ੍ਞਾ(isDelete==0 || isCreate);
 
   /* The main DB, main journal, WAL file and super-journal are never
   ** automatically deleted. Nor are they ever temporary files.  */
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
 
   /* Assert that the upper layer has set one of the "file-type" flags. */
-  assert( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_TEMP_DB
-       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_TEMP_JOURNAL
+  ਪ੍ਰਤਿਜ੍ਞਾ( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_ਆਰਜ਼ੀ_DB
+       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_ਆਰਜ਼ੀ_JOURNAL
        || eType==SQLITE_OPEN_SUBJOURNAL   || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_TRANSIENT_DB || eType==SQLITE_OPEN_WAL
   );
 
-  assert( pFile!=0 );
-  memset(pFile, 0, sizeof(winFile));
-  pFile->h = INVALID_HANDLE_VALUE;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile!=0 );
+  memset(pFile, 0, ਆਕਾਰ(winFile));
+  pFile->h = INVALID_HANDLE_ਮੁੱਲ;
 
   /* If the second argument to this function is NULL, generate a
   ** temporary file name to use
   */
-  if( !zUtf8Name ){
-    assert( isDelete && !isOpenJournal );
+  ਜੇ( !zUtf8Name ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( isDelete && !isOpenJournal );
     rc = winGetTempname(pVfs, &zTmpname);
-    if( rc!=SQLITE_OK ){
+    ਜੇ( rc!=SQLITE_OK ){
       OSTRACE(("OPEN name=%s, rc=%s", zUtf8Name, sqlite3ErrName(rc)));
-      return rc;
+      ਵਾਪਸ rc;
     }
     zUtf8Name = zTmpname;
   }
@@ -4408,27 +4408,27 @@ static int winOpen(
   ** URIs with parameters.  Hence, they can always be passed into
   ** sqlite3_uri_parameter().
   */
-  assert( (eType!=SQLITE_OPEN_MAIN_DB) || (flags & SQLITE_OPEN_URI) ||
+  ਪ੍ਰਤਿਜ੍ਞਾ( (eType!=SQLITE_OPEN_MAIN_DB) || (flags & SQLITE_OPEN_URI) ||
        zUtf8Name[sqlite3Strlen30(zUtf8Name)+1]==0 );
 
   /* Convert the filename to the system encoding. */
   zConverted = winConvertFromUtf8Filename(zUtf8Name);
-  if( zConverted==0 ){
+  ਜੇ( zConverted==0 ){
     sqlite3_free(zTmpname);
     OSTRACE(("OPEN name=%s, rc=SQLITE_IOERR_NOMEM", zUtf8Name));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
 
-  if( winIsDir(zConverted) ){
+  ਜੇ( winIsDir(zConverted) ){
     sqlite3_free(zConverted);
     sqlite3_free(zTmpname);
     OSTRACE(("OPEN name=%s, rc=SQLITE_CANTOPEN_ISDIR", zUtf8Name));
-    return SQLITE_CANTOPEN_ISDIR;
+    ਵਾਪਸ SQLITE_CANTOPEN_ISDIR;
   }
 
-  if( isReadWrite ){
+  ਜੇ( isReadWrite ){
     dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     dwDesiredAccess = GENERIC_READ;
   }
 
@@ -4436,105 +4436,105 @@ static int winOpen(
   ** created. SQLite doesn't use it to indicate "exclusive access"
   ** as it is usually understood.
   */
-  if( isExclusive ){
+  ਜੇ( isExclusive ){
     /* Creates a new file, only if it does not already exist. */
     /* If the file exists, it fails. */
     dwCreationDisposition = CREATE_NEW;
-  }else if( isCreate ){
+  }ਨਹੀਂਤਾਂ ਜੇ( isCreate ){
     /* Open existing file, or create if it doesn't exist */
     dwCreationDisposition = OPEN_ALWAYS;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     /* Opens a file, only if it exists. */
     dwCreationDisposition = OPEN_EXISTING;
   }
 
-  if( 0==sqlite3_uri_boolean(zName, "exclusive", 0) ){
-    dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  }else{
-    dwShareMode = 0;
+  ਜੇ( 0==sqlite3_uri_boolean(zName, "exclusive", 0) ){
+    dw_Share_ਬਹੁਲਕ = FILE_SHARE_READ | FILE_SHARE_WRITE;
+  }ਨਹੀਂਤਾਂ{
+    dw_Share_ਬਹੁਲਕ = 0;
   }
 
-  if( isDelete ){
-    dwFlagsAndAttributes = FILE_ATTRIBUTE_TEMPORARY
+  ਜੇ( isDelete ){
+    dw_Flags_And_ਗੁਣ = FILE_ATTRIBUTE_TEMPORARY
                                | FILE_ATTRIBUTE_HIDDEN
                                | FILE_FLAG_DELETE_ON_CLOSE;
-  }else{
-    dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
+  }ਨਹੀਂਤਾਂ{
+    dw_Flags_And_ਗੁਣ = FILE_ATTRIBUTE_ਸਾਧਾਰਨ;
   }
-  do{
+  ਕਰੋ{
     h = osCreateFileW(zConverted,
                       dwDesiredAccess,
-                      dwShareMode, NULL,
+                      dw_Share_ਬਹੁਲਕ, ਨਿਰਾ,
                       dwCreationDisposition,
-                      dwFlagsAndAttributes,
-                      NULL);
-    if( h!=INVALID_HANDLE_VALUE ) break;
-    if( isReadWrite ){
-      int rc2;
+                      dw_Flags_And_ਗੁਣ,
+                      ਨਿਰਾ);
+    ਜੇ( h!=INVALID_HANDLE_ਮੁੱਲ ) ਰੋਕੋ;
+    ਜੇ( isReadWrite ){
+      ਪੂਰਨ rc2;
       sqlite3BeginBenignMalloc();
       rc2 = winAccess(pVfs, zUtf8Name, SQLITE_ACCESS_READ|NORETRY, &isRO);
-      sqlite3EndBenignMalloc();
-      if( rc2==SQLITE_OK && isRO ) break;
+      sqlite3_ਸਿਰਾ_Benign_Malloc();
+      ਜੇ( rc2==SQLITE_OK && isRO ) ਰੋਕੋ;
     }
-  }while( winRetryIoerr(&cnt, &lastErrno) );
+  }ਜਦੋਂ( winRetryIoerr(&cnt, &ਆਖਰੀ_Errno) );
   winLogIoerr(cnt, __LINE__);
 
   OSTRACE(("OPEN file=%p, name=%s, access=%lx, rc=%s\n", h, zUtf8Name,
-           dwDesiredAccess, (h==INVALID_HANDLE_VALUE) ? "failed" : "ok"));
+           dwDesiredAccess, (h==INVALID_HANDLE_ਮੁੱਲ) ? "failed" : "ok"));
 
-  if( h==INVALID_HANDLE_VALUE ){
+  ਜੇ( h==INVALID_HANDLE_ਮੁੱਲ ){
     sqlite3_free(zConverted);
     sqlite3_free(zTmpname);
-    if( isReadWrite && isRO && !isExclusive ){
-      return winOpen(pVfs, zName, id,
+    ਜੇ( isReadWrite && isRO && !isExclusive ){
+      ਵਾਪਸ winOpen(pVfs, zName, id,
          ((flags|SQLITE_OPEN_READONLY) &
                      ~(SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE)),
-         pOutFlags);
-    }else{
-      pFile->lastErrno = lastErrno;
-      winLogError(SQLITE_CANTOPEN, pFile->lastErrno, "winOpen", zUtf8Name);
-      return SQLITE_CANTOPEN_BKPT;
+         p_ਬਾਹਰਲਾ_Flags);
+    }ਨਹੀਂਤਾਂ{
+      pFile->ਆਖਰੀ_Errno = ਆਖਰੀ_Errno;
+      winLogError(SQLITE_CANTOPEN, pFile->ਆਖਰੀ_Errno, "winOpen", zUtf8Name);
+      ਵਾਪਸ SQLITE_CANTOPEN_BKPT;
     }
   }
 
-  if( pOutFlags ){
-    if( isReadWrite ){
-      *pOutFlags = SQLITE_OPEN_READWRITE;
-    }else{
-      *pOutFlags = SQLITE_OPEN_READONLY;
+  ਜੇ( p_ਬਾਹਰਲਾ_Flags ){
+    ਜੇ( isReadWrite ){
+      *p_ਬਾਹਰਲਾ_Flags = SQLITE_OPEN_READWRITE;
+    }ਨਹੀਂਤਾਂ{
+      *p_ਬਾਹਰਲਾ_Flags = SQLITE_OPEN_READONLY;
     }
   }
 
   OSTRACE(("OPEN file=%p, name=%s, access=%lx, pOutFlags=%p, *pOutFlags=%d, "
-           "rc=%s\n", h, zUtf8Name, dwDesiredAccess, pOutFlags, pOutFlags ?
-           *pOutFlags : 0, (h==INVALID_HANDLE_VALUE) ? "failed" : "ok"));
+           "rc=%s\n", h, zUtf8Name, dwDesiredAccess, p_ਬਾਹਰਲਾ_Flags, p_ਬਾਹਰਲਾ_Flags ?
+           *p_ਬਾਹਰਲਾ_Flags : 0, (h==INVALID_HANDLE_ਮੁੱਲ) ? "failed" : "ok"));
 
-  pAppData = (winVfsAppData*)pVfs->pAppData;
+  p_App_ਅੰਕੜੇ = (win_Vfs_App_ਅੰਕੜੇ*)pVfs->p_App_ਅੰਕੜੇ;
 
   sqlite3_free(zConverted);
   sqlite3_free(zTmpname);
-  id->pMethods = pAppData ? pAppData->pMethod : &winIoMethod;
+  id->pMethods = p_App_ਅੰਕੜੇ ? p_App_ਅੰਕੜੇ->p_ਵਿਧੀ : &win_Io_ਵਿਧੀ;
   pFile->pVfs = pVfs;
   pFile->h = h;
-  if( isReadonly ){
+  ਜੇ( isReadonly ){
     pFile->ctrlFlags |= WINFILE_RDONLY;
   }
-  if( (flags & SQLITE_OPEN_MAIN_DB)
+  ਜੇ( (flags & SQLITE_OPEN_MAIN_DB)
    && sqlite3_uri_boolean(zName, "psow", SQLITE_POWERSAFE_OVERWRITE) 
   ){
     pFile->ctrlFlags |= WINFILE_PSOW;
   }
-  pFile->lastErrno = NO_ERROR;
-  pFile->zPath = zName;
-#if SQLITE_MAX_MMAP_SIZE>0
-  pFile->hMap = NULL;
+  pFile->ਆਖਰੀ_Errno = NO_ERROR;
+  pFile->z_ਰਸਤਾ = zName;
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
+  pFile->hMap = ਨਿਰਾ;
   pFile->pMapRegion = 0;
-  pFile->mmapSize = 0;
-  pFile->mmapSizeMax = sqlite3GlobalConfig.szMmap;
-#endif
+  pFile->mmap_ਮਾਪ = 0;
+  pFile->mmap_ਮਾਪ_Max = sqlite3GlobalConfig.szMmap;
+#ਜੇ_ਅੰਤ
 
   OpenCounter(+1);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -4549,157 +4549,157 @@ static int winOpen(
 ** to MX_DELETION_ATTEMPTs deletion attempts are run before giving
 ** up and returning an error.
 */
-static int winDelete(
+ਸਥਿਰ ਪੂਰਨ winDelete(
   sqlite3_vfs *pVfs,          /* Not used on win32 */
-  const char *zFilename,      /* Name of file to delete */
-  int syncDir                 /* Not used on win32 */
+  ਅਚਲ ਅੱਖਰ *zFilename,      /* Name of file to delete */
+  ਪੂਰਨ syncDir                 /* Not used on win32 */
 ){
-  int cnt = 0;
-  int rc;
+  ਪੂਰਨ cnt = 0;
+  ਪੂਰਨ rc;
   DWORD attr;
-  DWORD lastErrno = 0;
+  DWORD ਆਖਰੀ_Errno = 0;
   LPWSTR zConverted;
-  UNUSED_PARAMETER(pVfs);
-  UNUSED_PARAMETER(syncDir);
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਅਣਵਰਤਿਆ_PARAMETER(syncDir);
 
-  SimulateIOError(return SQLITE_IOERR_DELETE);
+  SimulateIOError(ਵਾਪਸ SQLITE_IOERR_DELETE);
   OSTRACE(("DELETE name=%s, syncDir=%d\n", zFilename, syncDir));
 
   zConverted = winConvertFromUtf8Filename(zFilename);
-  if( zConverted==0 ){
+  ਜੇ( zConverted==0 ){
     OSTRACE(("DELETE name=%s, rc=SQLITE_IOERR_NOMEM\n", zFilename));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
-  do {
-    attr = osGetFileAttributesW(zConverted);
-    if ( attr==INVALID_FILE_ATTRIBUTES ){
-      lastErrno = osGetLastError();
-      if( lastErrno==ERROR_FILE_NOT_FOUND
-       || lastErrno==ERROR_PATH_NOT_FOUND ){
+  ਕਰੋ {
+    attr = os_Get_File_ਗੁਣ_W(zConverted);
+    ਜੇ ( attr==INVALID_FILE_ਗੁਣ ){
+      ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
+      ਜੇ( ਆਖਰੀ_Errno==ERROR_FILE_NOT_ਮਿਲਿਆ
+       || ਆਖਰੀ_Errno==ERROR_ਰਸਤਾ_NOT_ਮਿਲਿਆ ){
         rc = SQLITE_IOERR_DELETE_NOENT; /* Already gone? */
-      }else{
+      }ਨਹੀਂਤਾਂ{
         rc = SQLITE_ERROR;
       }
-      break;
+      ਰੋਕੋ;
     }
-    if ( attr&FILE_ATTRIBUTE_DIRECTORY ){
+    ਜੇ ( attr&FILE_ATTRIBUTE_DIRECTORY ){
       rc = SQLITE_ERROR; /* Files only. */
-      break;
+      ਰੋਕੋ;
     }
-    if ( osDeleteFileW(zConverted) ){
+    ਜੇ ( osDeleteFileW(zConverted) ){
       rc = SQLITE_OK; /* Deleted OK. */
-      break;
+      ਰੋਕੋ;
     }
-    if ( !winRetryIoerr(&cnt, &lastErrno) ){
+    ਜੇ ( !winRetryIoerr(&cnt, &ਆਖਰੀ_Errno) ){
       rc = SQLITE_ERROR; /* No more retries. */
-      break;
+      ਰੋਕੋ;
     }
-  } while(1);
-  if( rc && rc!=SQLITE_IOERR_DELETE_NOENT ){
-    rc = winLogError(SQLITE_IOERR_DELETE, lastErrno, "winDelete", zFilename);
-  }else{
+  } ਜਦੋਂ(1);
+  ਜੇ( rc && rc!=SQLITE_IOERR_DELETE_NOENT ){
+    rc = winLogError(SQLITE_IOERR_DELETE, ਆਖਰੀ_Errno, "winDelete", zFilename);
+  }ਨਹੀਂਤਾਂ{
     winLogIoerr(cnt, __LINE__);
   }
   sqlite3_free(zConverted);
   OSTRACE(("DELETE name=%s, rc=%s\n", zFilename, sqlite3ErrName(rc)));
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Check the existence and status of a file.
 */
-static int winAccess(
+ਸਥਿਰ ਪੂਰਨ winAccess(
   sqlite3_vfs *pVfs,         /* Not used on win32 */
-  const char *zFilename,     /* Name of file to check */
-  int flags,                 /* Type of test to make on this file */
-  int *pResOut               /* OUT: Result */
+  ਅਚਲ ਅੱਖਰ *zFilename,     /* Name of file to check */
+  ਪੂਰਨ flags,                 /* Type of test to make on this file */
+  ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ               /* OUT: Result */
 ){
   DWORD attr;
-  int rc = 0;
-  int cnt = 0;
-  DWORD lastErrno = 0;
+  ਪੂਰਨ rc = 0;
+  ਪੂਰਨ cnt = 0;
+  DWORD ਆਖਰੀ_Errno = 0;
   LPWSTR zConverted;
-  int noRetry = 0;           /* Do not use winRetryIoerr() */
-  WIN32_FILE_ATTRIBUTE_DATA sAttrData;
-  UNUSED_PARAMETER(pVfs);
+  ਪੂਰਨ noRetry = 0;           /* Do not use winRetryIoerr() */
+  WIN32_FILE_ATTRIBUTE_ਅੰਕੜੇ s_Attr_ਅੰਕੜੇ;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
 
-  if( (flags & NORETRY)!=0 ){
+  ਜੇ( (flags & NORETRY)!=0 ){
     noRetry = 1;
     flags &= ~NORETRY;
   }  
 
-  SimulateIOError( return SQLITE_IOERR_ACCESS; );
+  SimulateIOError( ਵਾਪਸ SQLITE_IOERR_ACCESS; );
   OSTRACE(("ACCESS name=%s, flags=%x, pResOut=%p\n",
-           zFilename, flags, pResOut));
+           zFilename, flags, p_Res_ਬਾਹਰਲਾ));
 
-  if( zFilename==0 ){
-    *pResOut = 0;
+  ਜੇ( zFilename==0 ){
+    *p_Res_ਬਾਹਰਲਾ = 0;
     OSTRACE(("ACCESS name=%s, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-             zFilename, pResOut, *pResOut));
-    return SQLITE_OK;
+             zFilename, p_Res_ਬਾਹਰਲਾ, *p_Res_ਬਾਹਰਲਾ));
+    ਵਾਪਸ SQLITE_OK;
   }
 
   zConverted = winConvertFromUtf8Filename(zFilename);
-  if( zConverted==0 ){
+  ਜੇ( zConverted==0 ){
     OSTRACE(("ACCESS name=%s, rc=SQLITE_IOERR_NOMEM\n", zFilename));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
-  memset(&sAttrData, 0, sizeof(sAttrData));
-  while( !(rc = osGetFileAttributesExW(zConverted,
+  memset(&s_Attr_ਅੰਕੜੇ, 0, ਆਕਾਰ(s_Attr_ਅੰਕੜੇ));
+  ਜਦੋਂ( !(rc = os_Get_File_ਗੁਣ_Ex_W(zConverted,
                            GetFileExInfoStandard,
-                           &sAttrData))
+                           &s_Attr_ਅੰਕੜੇ))
      && !noRetry
-     && winRetryIoerr(&cnt, &lastErrno)
+     && winRetryIoerr(&cnt, &ਆਖਰੀ_Errno)
   ){ /* Loop until true */}
-  if( rc ){
+  ਜੇ( rc ){
     /* For an SQLITE_ACCESS_EXISTS query, treat a zero-length file
     ** as if it does not exist.
     */
-    if(    flags==SQLITE_ACCESS_EXISTS
-        && sAttrData.nFileSizeHigh==0
-        && sAttrData.nFileSizeLow==0 ){
-      attr = INVALID_FILE_ATTRIBUTES;
-    }else{
-      attr = sAttrData.dwFileAttributes;
+    ਜੇ(    flags==SQLITE_ACCESS_EXISTS
+        && s_Attr_ਅੰਕੜੇ.n_File_ਮਾਪ_ਉੱਚਾ==0
+        && s_Attr_ਅੰਕੜੇ.n_File_ਮਾਪ_ਨੀਵਾਂ==0 ){
+      attr = INVALID_FILE_ਗੁਣ;
+    }ਨਹੀਂਤਾਂ{
+      attr = s_Attr_ਅੰਕੜੇ.dw_File_ਗੁਣ;
     }
-  }else{
-    if( noRetry ) lastErrno = osGetLastError();
+  }ਨਹੀਂਤਾਂ{
+    ਜੇ( noRetry ) ਆਖਰੀ_Errno = os_Get_ਆਖਰੀ_Error();
     winLogIoerr(cnt, __LINE__);
-    if( lastErrno!=ERROR_FILE_NOT_FOUND && lastErrno!=ERROR_PATH_NOT_FOUND ){
+    ਜੇ( ਆਖਰੀ_Errno!=ERROR_FILE_NOT_ਮਿਲਿਆ && ਆਖਰੀ_Errno!=ERROR_ਰਸਤਾ_NOT_ਮਿਲਿਆ ){
       sqlite3_free(zConverted);
-      return winLogError(SQLITE_IOERR_ACCESS, lastErrno, "winAccess",
+      ਵਾਪਸ winLogError(SQLITE_IOERR_ACCESS, ਆਖਰੀ_Errno, "winAccess",
                          zFilename);
-    }else{
-      attr = INVALID_FILE_ATTRIBUTES;
+    }ਨਹੀਂਤਾਂ{
+      attr = INVALID_FILE_ਗੁਣ;
     }
   }
   sqlite3_free(zConverted);
-  switch( flags ){
-    case SQLITE_ACCESS_READ:
-    case SQLITE_ACCESS_EXISTS:
-      rc = attr!=INVALID_FILE_ATTRIBUTES;
-      break;
-    case SQLITE_ACCESS_READWRITE:
-      rc = attr!=INVALID_FILE_ATTRIBUTES &&
+  ਚੋਣ( flags ){
+    ਹਾਲਤ SQLITE_ACCESS_READ:
+    ਹਾਲਤ SQLITE_ACCESS_EXISTS:
+      rc = attr!=INVALID_FILE_ਗੁਣ;
+      ਰੋਕੋ;
+    ਹਾਲਤ SQLITE_ACCESS_READWRITE:
+      rc = attr!=INVALID_FILE_ਗੁਣ &&
              (attr & FILE_ATTRIBUTE_READONLY)==0;
-      break;
-    default:
-      assert(!"Invalid flags argument");
+      ਰੋਕੋ;
+    ਮੂਲ:
+      ਪ੍ਰਤਿਜ੍ਞਾ(!"Invalid flags argument");
   }
-  *pResOut = rc;
+  *p_Res_ਬਾਹਰਲਾ = rc;
   OSTRACE(("ACCESS name=%s, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-           zFilename, pResOut, *pResOut));
-  return SQLITE_OK;
+           zFilename, p_Res_ਬਾਹਰਲਾ, *p_Res_ਬਾਹਰਲਾ));
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Returns non-zero if the specified path name starts with the "long path"
 ** prefix.
 */
-static BOOL winIsLongPathPrefix(
-  const char *zPathname
+ਸਥਿਰ BOOL win_Is_Long_ਰਸਤਾ_ਅਗੇਤਰ(
+  ਅਚਲ ਅੱਖਰ *zPathname
 ){
-  return ( zPathname[0]=='\\' && zPathname[1]=='\\'
+  ਵਾਪਸ ( zPathname[0]=='\\' && zPathname[1]=='\\'
         && zPathname[2]=='?'  && zPathname[3]=='\\' );
 }
 
@@ -4707,21 +4707,21 @@ static BOOL winIsLongPathPrefix(
 ** Returns non-zero if the specified path name starts with a drive letter
 ** followed by a colon character.
 */
-static BOOL winIsDriveLetterAndColon(
-  const char *zPathname
+ਸਥਿਰ BOOL winIsDriveLetterAndColon(
+  ਅਚਲ ਅੱਖਰ *zPathname
 ){
-  return ( sqlite3Isalpha(zPathname[0]) && zPathname[1]==':' );
+  ਵਾਪਸ ( sqlite3Isalpha(zPathname[0]) && zPathname[1]==':' );
 }
 
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 /*
 ** Returns non-zero if the specified path name should be used verbatim.  If
 ** non-zero is returned from this function, the calling function must simply
 ** use the provided path name verbatim -OR- resolve it into a full path name
 ** using the GetFullPathName Win32 API function (if available).
 */
-static BOOL winIsVerbatimPathname(
-  const char *zPathname
+ਸਥਿਰ BOOL winIsVerbatimPathname(
+  ਅਚਲ ਅੱਖਰ *zPathname
 ){
   /*
   ** If the path name starts with a forward slash or a backslash, it is either
@@ -4730,8 +4730,8 @@ static BOOL winIsVerbatimPathname(
   ** the final two cases; therefore, we return the safer return value of TRUE
   ** so that callers of this function will simply use it verbatim.
   */
-  if ( winIsDirSep(zPathname[0]) ){
-    return TRUE;
+  ਜੇ ( winIsDirSep(zPathname[0]) ){
+    ਵਾਪਸ TRUE;
   }
 
   /*
@@ -4740,19 +4740,19 @@ static BOOL winIsVerbatimPathname(
   ** attempt to treat it as a relative path name (i.e. they should simply use
   ** it verbatim).
   */
-  if ( winIsDriveLetterAndColon(zPathname) ){
-    return TRUE;
+  ਜੇ ( winIsDriveLetterAndColon(zPathname) ){
+    ਵਾਪਸ TRUE;
   }
 
   /*
   ** If we get to this point, the path name should almost certainly be a purely
   ** relative one (i.e. not a UNC name, not absolute, and not volume relative).
   */
-  return FALSE;
+  ਵਾਪਸ FALSE;
 }
-#endif /* _WIN32 */
+#ਜੇ_ਅੰਤ /* _WIN32 */
 
-#ifdef __CYGWIN__
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __CYGWIN__
 /*
 ** Simplify a filename into its canonical form
 ** by making the following changes:
@@ -4766,129 +4766,129 @@ static BOOL winIsVerbatimPathname(
 ** The original filename is in z[0..]. If the path is shortened,
 ** no-longer used bytes will be written by '\0'.
 */
-static void winSimplifyName(char *z){
-  int i, j;
-  for(i=j=0; z[i]; ++i){
-    if( winIsDirSep(z[i]) ){
-#if !defined(SQLITE_TEST)
+ਸਥਿਰ ਖਾਲੀ winSimplifyName(ਅੱਖਰ *z){
+  ਪੂਰਨ i, j;
+  ਲਈ(i=j=0; z[i]; ++i){
+    ਜੇ( winIsDirSep(z[i]) ){
+#ਜੇ !defined(SQLITE_TEST)
       /* Some test-cases assume that "./foo" and "foo" are different */
-      if( z[i+1]=='.' && winIsDirSep(z[i+2]) ){
+      ਜੇ( z[i+1]=='.' && winIsDirSep(z[i+2]) ){
         ++i;
-        continue;
+        ਜਾਰੀ;
       }
-#endif
-      if( !z[i+1] || (winIsDirSep(z[i+1]) && (i!=0)) ){
-        continue;
+#ਜੇ_ਅੰਤ
+      ਜੇ( !z[i+1] || (winIsDirSep(z[i+1]) && (i!=0)) ){
+        ਜਾਰੀ;
       }
       z[j++] = osGetenv?'/':'\\';
-    }else{
+    }ਨਹੀਂਤਾਂ{
       z[j++] = z[i];
     }
   }
-  while(j<i) z[j++] = '\0';
+  ਜਦੋਂ(j<i) z[j++] = '\0';
 }
 
-#define SQLITE_MAX_SYMLINKS 100
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SQLITE_MAX_SYMLINKS 100
 
-static int mkFullPathname(
-  const char *zPath,              /* Input path */
-  char *zOut,                     /* Output buffer */
-  int nOut                        /* Allocated size of buffer zOut */
+ਸਥਿਰ ਪੂਰਨ mk_ਭਰਿਆ_Pathname(
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,              /* Input path */
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ,                     /* Output buffer */
+  ਪੂਰਨ n_ਬਾਹਰਲਾ                        /* Allocated size of buffer zOut */
 ){
-  int nPath = sqlite3Strlen30(zPath);
-  int iOff = 0;
-  if( zPath[0]!='/' ){
-    if( osGetcwd(zOut, nOut-2)==0 ){
-      return winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno, "getcwd", zPath);
+  ਪੂਰਨ n_ਰਸਤਾ = sqlite3Strlen30(z_ਰਸਤਾ);
+  ਪੂਰਨ iOff = 0;
+  ਜੇ( z_ਰਸਤਾ[0]!='/' ){
+    ਜੇ( osGetcwd(z_ਬਾਹਰਲਾ, n_ਬਾਹਰਲਾ-2)==0 ){
+      ਵਾਪਸ winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno, "getcwd", z_ਰਸਤਾ);
     }
-    iOff = sqlite3Strlen30(zOut);
-    zOut[iOff++] = '/';
+    iOff = sqlite3Strlen30(z_ਬਾਹਰਲਾ);
+    z_ਬਾਹਰਲਾ[iOff++] = '/';
   }
-  if( (iOff+nPath+1)>nOut ){
+  ਜੇ( (iOff+n_ਰਸਤਾ+1)>n_ਬਾਹਰਲਾ ){
     /* SQLite assumes that xFullPathname() nul-terminates the output buffer
     ** even if it returns an error.  */
-    zOut[iOff] = '\0';
-    return SQLITE_CANTOPEN_BKPT;
+    z_ਬਾਹਰਲਾ[iOff] = '\0';
+    ਵਾਪਸ SQLITE_CANTOPEN_BKPT;
   }
-  sqlite3_snprintf(nOut-iOff, &zOut[iOff], "%s", zPath);
-  return SQLITE_OK;
+  sqlite3_snprintf(n_ਬਾਹਰਲਾ-iOff, &z_ਬਾਹਰਲਾ[iOff], "%s", z_ਰਸਤਾ);
+  ਵਾਪਸ SQLITE_OK;
 }
-#endif /* __CYGWIN__ */
+#ਜੇ_ਅੰਤ /* __CYGWIN__ */
 
 /*
 ** Turn a relative pathname into a full pathname.  Write the full
 ** pathname into zOut[].  zOut[] will be at least pVfs->mxPathname
 ** bytes in size.
 */
-static int winFullPathnameNoMutex(
+ਸਥਿਰ ਪੂਰਨ win_ਭਰਿਆ_Pathname_No_Mutex(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zRelative,        /* Possibly relative input path */
-  int nFull,                    /* Size of output buffer in bytes */
-  char *zFull                   /* Output buffer */
+  ਅਚਲ ਅੱਖਰ *zRelative,        /* Possibly relative input path */
+  ਪੂਰਨ n_ਭਰਿਆ,                    /* Size of output buffer in bytes */
+  ਅੱਖਰ *z_ਭਰਿਆ                   /* Output buffer */
 ){
-  int nByte;
+  ਪੂਰਨ nByte;
   LPWSTR zConverted;
-  char *zOut;
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ;
 
   /* If this path name begins with "/X:" or "\\?\", where "X" is any
   ** alphabetic character, discard the initial "/" from the pathname.
   */
-  if( zRelative[0]=='/' && (winIsDriveLetterAndColon(zRelative+1)
-       || winIsLongPathPrefix(zRelative+1)) ){
+  ਜੇ( zRelative[0]=='/' && (winIsDriveLetterAndColon(zRelative+1)
+       || win_Is_Long_ਰਸਤਾ_ਅਗੇਤਰ(zRelative+1)) ){
     zRelative++;
   }
 
-  SimulateIOError( return SQLITE_ERROR );
+  SimulateIOError( ਵਾਪਸ SQLITE_ERROR );
 
-#ifdef __CYGWIN__
-  if( osGetcwd ){
-    zFull[nFull-1] = '\0';
-    if( !winIsDriveLetterAndColon(zRelative) || !winIsDirSep(zRelative[2]) ){
-      int rc = SQLITE_OK;
-      int nLink = 1;              /* Number of symbolic links followed so far */
-      const char *zIn = zRelative; /* Input path for each iteration of loop */
-      char *zDel = 0;
-      struct stat buf;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __CYGWIN__
+  ਜੇ( osGetcwd ){
+    z_ਭਰਿਆ[n_ਭਰਿਆ-1] = '\0';
+    ਜੇ( !winIsDriveLetterAndColon(zRelative) || !winIsDirSep(zRelative[2]) ){
+      ਪੂਰਨ rc = SQLITE_OK;
+      ਪੂਰਨ nLink = 1;              /* Number of symbolic links followed so far */
+      ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ = zRelative; /* Input path for each iteration of loop */
+      ਅੱਖਰ *zDel = 0;
+      ਬਣਤਰ stat buf;
 
-      UNUSED_PARAMETER(pVfs);
+      ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
 
-      do {
+      ਕਰੋ {
         /* Call lstat() on path zIn. Set bLink to true if the path
         ** is a symbolic link, or false otherwise.  */
-        int bLink = 0;
-        if( osLstat && osReadlink ) {
-          if( osLstat(zIn, &buf)!=0 ){
-            int myErrno = osErrno;
-            if( myErrno!=ENOENT ){
+        ਪੂਰਨ bLink = 0;
+        ਜੇ( osLstat && osReadlink ) {
+          ਜੇ( osLstat(z_ਵਿੱਚ, &buf)!=0 ){
+            ਪੂਰਨ myErrno = osErrno;
+            ਜੇ( myErrno!=ENOENT ){
               rc = winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)myErrno,
-                               "lstat", zIn);
+                               "lstat", z_ਵਿੱਚ);
             }
-          }else{
-            bLink = ((buf.st_mode & 0170000) == 0120000);
+          }ਨਹੀਂਤਾਂ{
+            bLink = ((buf.st_ਬਹੁਲਕ & 0170000) == 0120000);
           }
 
-          if( bLink ){
-            if( zDel==0 ){
-              zDel = sqlite3MallocZero(nFull);
-              if( zDel==0 ) rc = SQLITE_NOMEM;
-            }else if( ++nLink>SQLITE_MAX_SYMLINKS ){
+          ਜੇ( bLink ){
+            ਜੇ( zDel==0 ){
+              zDel = sqlite3MallocZero(n_ਭਰਿਆ);
+              ਜੇ( zDel==0 ) rc = SQLITE_NOMEM;
+            }ਨਹੀਂਤਾਂ ਜੇ( ++nLink>SQLITE_MAX_SYMLINKS ){
               rc = SQLITE_CANTOPEN_BKPT;
             }
 
-            if( rc==SQLITE_OK ){
-              nByte = osReadlink(zIn, zDel, nFull-1);
-              if( nByte ==(DWORD)-1 ){
+            ਜੇ( rc==SQLITE_OK ){
+              nByte = osReadlink(z_ਵਿੱਚ, zDel, n_ਭਰਿਆ-1);
+              ਜੇ( nByte ==(DWORD)-1 ){
                 rc = winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno,
-                                 "readlink", zIn);
-              }else{
-                if( zDel[0]!='/' ){
-                  int n;
-                  for(n = sqlite3Strlen30(zIn); n>0 && zIn[n-1]!='/'; n--);
-                  if( nByte+n+1>nFull ){
+                                 "readlink", z_ਵਿੱਚ);
+              }ਨਹੀਂਤਾਂ{
+                ਜੇ( zDel[0]!='/' ){
+                  ਪੂਰਨ n;
+                  ਲਈ(n = sqlite3Strlen30(z_ਵਿੱਚ); n>0 && z_ਵਿੱਚ[n-1]!='/'; n--);
+                  ਜੇ( nByte+n+1>n_ਭਰਿਆ ){
                     rc = SQLITE_CANTOPEN_BKPT;
-                  }else{
+                  }ਨਹੀਂਤਾਂ{
                     memmove(&zDel[n], zDel, nByte+1);
-                    memcpy(zDel, zIn, n);
+                    ਸਮ੍ਰਿਤੀ_ਨਕਲ(zDel, z_ਵਿੱਚ, n);
                     nByte += n;
                   }
                 }
@@ -4896,239 +4896,239 @@ static int winFullPathnameNoMutex(
               }
             }
 
-            zIn = zDel;
+            z_ਵਿੱਚ = zDel;
           }
         }
 
-        assert( rc!=SQLITE_OK || zIn!=zFull || zIn[0]=='/' );
-        if( rc==SQLITE_OK && zIn!=zFull ){
-          rc = mkFullPathname(zIn, zFull, nFull);
+        ਪ੍ਰਤਿਜ੍ਞਾ( rc!=SQLITE_OK || z_ਵਿੱਚ!=z_ਭਰਿਆ || z_ਵਿੱਚ[0]=='/' );
+        ਜੇ( rc==SQLITE_OK && z_ਵਿੱਚ!=z_ਭਰਿਆ ){
+          rc = mk_ਭਰਿਆ_Pathname(z_ਵਿੱਚ, z_ਭਰਿਆ, n_ਭਰਿਆ);
         }
-        if( bLink==0 ) break;
-        zIn = zFull;
-      }while( rc==SQLITE_OK );
+        ਜੇ( bLink==0 ) ਰੋਕੋ;
+        z_ਵਿੱਚ = z_ਭਰਿਆ;
+      }ਜਦੋਂ( rc==SQLITE_OK );
 
       sqlite3_free(zDel);
-      winSimplifyName(zFull);
-      return rc;
+      winSimplifyName(z_ਭਰਿਆ);
+      ਵਾਪਸ rc;
     }
   }
-#endif /* __CYGWIN__ */
+#ਜੇ_ਅੰਤ /* __CYGWIN__ */
 
-#if defined(_WIN32)
+#ਜੇ defined(_WIN32)
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing. This function could fail if, for example, the
   ** current working directory has been unlinked.
   */
-  SimulateIOError( return SQLITE_ERROR );
-  if ( sqlite3_data_directory && !winIsVerbatimPathname(zRelative) ){
+  SimulateIOError( ਵਾਪਸ SQLITE_ERROR );
+  ਜੇ ( sqlite3_ਅੰਕੜੇ_directory && !winIsVerbatimPathname(zRelative) ){
     /*
     ** NOTE: We are dealing with a relative path name and the data
     **       directory has been set.  Therefore, use it as the basis
     **       for converting the relative path name to an absolute
     **       one by prepending the data directory and a backslash.
     */
-    sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s%c%s",
-                     sqlite3_data_directory, winGetDirSep(), zRelative);
-    return SQLITE_OK;
+    sqlite3_snprintf(MIN(n_ਭਰਿਆ, pVfs->mxPathname), z_ਭਰਿਆ, "%s%c%s",
+                     sqlite3_ਅੰਕੜੇ_directory, winGetDirSep(), zRelative);
+    ਵਾਪਸ SQLITE_OK;
   }
-#endif
+#ਜੇ_ਅੰਤ
   zConverted = winConvertFromUtf8Filename(zRelative);
-  if( zConverted==0 ){
-    return SQLITE_IOERR_NOMEM_BKPT;
+  ਜੇ( zConverted==0 ){
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
   {
-    LPWSTR zTemp;
-    nByte = osGetFullPathNameW(zConverted, 0, 0, 0);
-    if( nByte==0 ){
+    LPWSTR z_ਆਰਜ਼ੀ;
+    nByte = os_Get_ਭਰਿਆ_ਰਸਤਾ_Name_W(zConverted, 0, 0, 0);
+    ਜੇ( nByte==0 ){
       sqlite3_free(zConverted);
-      return winLogError(SQLITE_CANTOPEN_FULLPATH, osGetLastError(),
+      ਵਾਪਸ winLogError(SQLITE_CANTOPEN_FULLPATH, os_Get_ਆਖਰੀ_Error(),
                          "winFullPathname1", zRelative);
     }
     nByte += 3;
-    zTemp = sqlite3MallocZero( (u64)nByte*sizeof(WCHAR) );
-    if( zTemp==0 ){
+    z_ਆਰਜ਼ੀ = sqlite3MallocZero( (u64)nByte*ਆਕਾਰ(WCHAR) );
+    ਜੇ( z_ਆਰਜ਼ੀ==0 ){
       sqlite3_free(zConverted);
-      return SQLITE_IOERR_NOMEM_BKPT;
+      ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
     }
-    nByte = osGetFullPathNameW(zConverted, nByte, zTemp, 0);
-    if( nByte==0 ){
+    nByte = os_Get_ਭਰਿਆ_ਰਸਤਾ_Name_W(zConverted, nByte, z_ਆਰਜ਼ੀ, 0);
+    ਜੇ( nByte==0 ){
       sqlite3_free(zConverted);
-      sqlite3_free(zTemp);
-      return winLogError(SQLITE_CANTOPEN_FULLPATH, osGetLastError(),
+      sqlite3_free(z_ਆਰਜ਼ੀ);
+      ਵਾਪਸ winLogError(SQLITE_CANTOPEN_FULLPATH, os_Get_ਆਖਰੀ_Error(),
                          "winFullPathname2", zRelative);
     }
     sqlite3_free(zConverted);
-    zOut = winUnicodeToUtf8(zTemp);
-    sqlite3_free(zTemp);
+    z_ਬਾਹਰਲਾ = win_Unicode_ਮੰਜ਼ਿਲ_Utf8(z_ਆਰਜ਼ੀ);
+    sqlite3_free(z_ਆਰਜ਼ੀ);
   }
-  if( zOut ){
-#ifdef __CYGWIN__
-    if( memcmp(zOut, "\\\\?\\", 4) ){
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut);
-    }else if( memcmp(zOut+4, "UNC\\", 4) ){
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut+4);
-    }else{
-      char *p = zOut+6;
+  ਜੇ( z_ਬਾਹਰਲਾ ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __CYGWIN__
+    ਜੇ( memcmp(z_ਬਾਹਰਲਾ, "\\\\?\\", 4) ){
+      sqlite3_snprintf(MIN(n_ਭਰਿਆ, pVfs->mxPathname), z_ਭਰਿਆ, "%s", z_ਬਾਹਰਲਾ);
+    }ਨਹੀਂਤਾਂ ਜੇ( memcmp(z_ਬਾਹਰਲਾ+4, "UNC\\", 4) ){
+      sqlite3_snprintf(MIN(n_ਭਰਿਆ, pVfs->mxPathname), z_ਭਰਿਆ, "%s", z_ਬਾਹਰਲਾ+4);
+    }ਨਹੀਂਤਾਂ{
+      ਅੱਖਰ *p = z_ਬਾਹਰਲਾ+6;
       *p = '\\';
-      if( osGetcwd ){
+      ਜੇ( osGetcwd ){
         /* On Cygwin, UNC paths use forward slashes */
-        while( *p ){
-          if( *p=='\\' ) *p = '/';
+        ਜਦੋਂ( *p ){
+          ਜੇ( *p=='\\' ) *p = '/';
           ++p;
         }
       }
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut+6);
+      sqlite3_snprintf(MIN(n_ਭਰਿਆ, pVfs->mxPathname), z_ਭਰਿਆ, "%s", z_ਬਾਹਰਲਾ+6);
     }
-#else
-    sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut);
-#endif /* __CYGWIN__ */
-    sqlite3_free(zOut);
-    return SQLITE_OK;
-  }else{
-    return SQLITE_IOERR_NOMEM_BKPT;
+#ਨਹੀਂਤਾਂ
+    sqlite3_snprintf(MIN(n_ਭਰਿਆ, pVfs->mxPathname), z_ਭਰਿਆ, "%s", z_ਬਾਹਰਲਾ);
+#ਜੇ_ਅੰਤ /* __CYGWIN__ */
+    sqlite3_free(z_ਬਾਹਰਲਾ);
+    ਵਾਪਸ SQLITE_OK;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;
   }
 }
-static int winFullPathname(
+ਸਥਿਰ ਪੂਰਨ win_ਭਰਿਆ_Pathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zRelative,        /* Possibly relative input path */
-  int nFull,                    /* Size of output buffer in bytes */
-  char *zFull                   /* Output buffer */
+  ਅਚਲ ਅੱਖਰ *zRelative,        /* Possibly relative input path */
+  ਪੂਰਨ n_ਭਰਿਆ,                    /* Size of output buffer in bytes */
+  ਅੱਖਰ *z_ਭਰਿਆ                   /* Output buffer */
 ){
-  int rc;
+  ਪੂਰਨ rc;
   MUTEX_LOGIC( sqlite3_mutex *pMutex; )
   MUTEX_LOGIC( pMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR); )
   sqlite3_mutex_enter(pMutex);
-  rc = winFullPathnameNoMutex(pVfs, zRelative, nFull, zFull);
+  rc = win_ਭਰਿਆ_Pathname_No_Mutex(pVfs, zRelative, n_ਭਰਿਆ, z_ਭਰਿਆ);
   sqlite3_mutex_leave(pMutex);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
 /*
 ** Interfaces for opening a shared library, finding entry points
 ** within the shared library, and closing the shared library.
 */
-static void *winDlOpen(sqlite3_vfs *pVfs, const char *zFilename){
+ਸਥਿਰ ਖਾਲੀ *winDlOpen(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *zFilename){
   HANDLE h = 0;
   LPWSTR zConverted = winConvertFromUtf8Filename(zFilename);
-  UNUSED_PARAMETER(pVfs);
-  if( zConverted==0 ){
-    OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (void*)0));
-    return 0;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਜੇ( zConverted==0 ){
+    OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (ਖਾਲੀ*)0));
+    ਵਾਪਸ 0;
   }
-  h = osLoadLibraryW ? osLoadLibraryW(zConverted) : 0;
-  OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (void*)h));
+  h = os_ਲੱਦੋ_Library_W ? os_ਲੱਦੋ_Library_W(zConverted) : 0;
+  OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (ਖਾਲੀ*)h));
   sqlite3_free(zConverted);
-  return (void*)h;
+  ਵਾਪਸ (ਖਾਲੀ*)h;
 }
-static void winDlError(sqlite3_vfs *pVfs, int nBuf, char *zBufOut){
-  UNUSED_PARAMETER(pVfs);
-  winGetLastErrorMsg(osGetLastError(), nBuf, zBufOut);
+ਸਥਿਰ ਖਾਲੀ winDlError(sqlite3_vfs *pVfs, ਪੂਰਨ nBuf, ਅੱਖਰ *z_Buf_ਬਾਹਰਲਾ){
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  win_Get_ਆਖਰੀ_Error_ਸੁਨੇਹਾ(os_Get_ਆਖਰੀ_Error(), nBuf, z_Buf_ਬਾਹਰਲਾ);
 }
-static void (*winDlSym(sqlite3_vfs *pVfs,void *pH,const char *zSym))(void){
+ਸਥਿਰ ਖਾਲੀ (*winDlSym(sqlite3_vfs *pVfs,ਖਾਲੀ *pH,ਅਚਲ ਅੱਖਰ *zSym))(ਖਾਲੀ){
   FARPROC proc = 0;
-  UNUSED_PARAMETER(pVfs);
-  proc = osGetProcAddressA ? osGetProcAddressA((HANDLE)pH, zSym) : 0;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  proc = os_Get_Proc_ਪਤਾ_A ? os_Get_Proc_ਪਤਾ_A((HANDLE)pH, zSym) : 0;
   OSTRACE(("DLSYM handle=%p, symbol=%s, address=%p\n",
-           (void*)pH, zSym, (void*)proc));
-  return (void(*)(void))proc;
+           (ਖਾਲੀ*)pH, zSym, (ਖਾਲੀ*)proc));
+  ਵਾਪਸ (ਖਾਲੀ(*)(ਖਾਲੀ))proc;
 }
-static void winDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  UNUSED_PARAMETER(pVfs);
-  if( osFreeLibrary!=0 ) osFreeLibrary((HANDLE)pHandle);
-  OSTRACE(("DLCLOSE handle=%p\n", (void*)pHandle));
+ਸਥਿਰ ਖਾਲੀ winDlClose(sqlite3_vfs *pVfs, ਖਾਲੀ *pHandle){
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਜੇ( osFreeLibrary!=0 ) osFreeLibrary((HANDLE)pHandle);
+  OSTRACE(("DLCLOSE handle=%p\n", (ਖਾਲੀ*)pHandle));
 }
-#else /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
-  #define winDlOpen  0
-  #define winDlError 0
-  #define winDlSym   0
-  #define winDlClose 0
-#endif
+#ਨਹੀਂਤਾਂ /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winDlOpen  0
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winDlError 0
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winDlSym   0
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ winDlClose 0
+#ਜੇ_ਅੰਤ
 
 /* State information for the randomness gatherer. */
-typedef struct EntropyGatherer EntropyGatherer;
-struct EntropyGatherer {
-  unsigned char *a;   /* Gather entropy into this buffer */
-  int na;             /* Size of a[] in bytes */
-  int i;              /* XOR next input into a[i] */
-  int nXor;           /* Number of XOR operations done */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ EntropyGatherer EntropyGatherer;
+ਬਣਤਰ EntropyGatherer {
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *a;   /* Gather entropy into this buffer */
+  ਪੂਰਨ na;             /* Size of a[] in bytes */
+  ਪੂਰਨ i;              /* XOR next input into a[i] */
+  ਪੂਰਨ nXor;           /* Number of XOR operations done */
 };
 
-#if !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
+#ਜੇ !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
 /* Mix sz bytes of entropy into p. */
-static void xorMemory(EntropyGatherer *p, unsigned char *x, int sz){
-  int j, k;
-  for(j=0, k=p->i; j<sz; j++){
+ਸਥਿਰ ਖਾਲੀ xor_ਸਮ੍ਰਿਤੀ(EntropyGatherer *p, ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *x, ਪੂਰਨ sz){
+  ਪੂਰਨ j, k;
+  ਲਈ(j=0, k=p->i; j<sz; j++){
     p->a[k++] ^= x[j];
-    if( k>=p->na ) k = 0;
+    ਜੇ( k>=p->na ) k = 0;
   }
   p->i = k;
   p->nXor += sz;
 }
-#endif /* !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS) */
 
 /*
 ** Write up to nBuf bytes of randomness into zBuf.
 */
-static int winRandomness(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-#if defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS)
-  UNUSED_PARAMETER(pVfs);
+ਸਥਿਰ ਪੂਰਨ winRandomness(sqlite3_vfs *pVfs, ਪੂਰਨ nBuf, ਅੱਖਰ *zBuf){
+#ਜੇ defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS)
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
   memset(zBuf, 0, nBuf);
-  return nBuf;
-#else
+  ਵਾਪਸ nBuf;
+#ਨਹੀਂਤਾਂ
   EntropyGatherer e;
-  UNUSED_PARAMETER(pVfs);
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
   memset(zBuf, 0, nBuf);
-  e.a = (unsigned char*)zBuf;
+  e.a = (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)zBuf;
   e.na = nBuf;
   e.nXor = 0;
   e.i = 0;
   {
     FILETIME x;
-    osGetSystemTimeAsFileTime(&x);
-    xorMemory(&e, (unsigned char*)&x, sizeof(x));
+    os_Get_System_ਸਮਾਂ_As_File_ਸਮਾਂ(&x);
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&x, ਆਕਾਰ(x));
   }
   {
     DWORD pid = osGetCurrentProcessId();
-    xorMemory(&e, (unsigned char*)&pid, sizeof(pid));
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&pid, ਆਕਾਰ(pid));
   }
   {
     ULONGLONG cnt = osGetTickCount64();
-    xorMemory(&e, (unsigned char*)&cnt, sizeof(cnt));
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&cnt, ਆਕਾਰ(cnt));
   }
   {
     LARGE_INTEGER i;
     osQueryPerformanceCounter(&i);
-    xorMemory(&e, (unsigned char*)&i, sizeof(i));
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&i, ਆਕਾਰ(i));
   }
-#if SQLITE_WIN32_USE_UUID
-#ifdef SQLITE_UWP
+#ਜੇ SQLITE_WIN32_USE_UUID
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_UWP
 # error SQLITE_WIN32_USE_UUID is incompatible with SQLITE_UWP
-#endif
+#ਜੇ_ਅੰਤ
   {
     UUID id;
-    memset(&id, 0, sizeof(id));
+    memset(&id, 0, ਆਕਾਰ(id));
     osUuidCreate(&id);
-    xorMemory(&e, (unsigned char*)&id, sizeof(id));
-    memset(&id, 0, sizeof(UUID));
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&id, ਆਕਾਰ(id));
+    memset(&id, 0, ਆਕਾਰ(UUID));
     osUuidCreateSequential(&id);
-    xorMemory(&e, (unsigned char*)&id, sizeof(id));
+    xor_ਸਮ੍ਰਿਤੀ(&e, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*)&id, ਆਕਾਰ(id));
   }
-#endif /* SQLITE_WIN32_USE_UUID */
-  return e.nXor>nBuf ? nBuf : e.nXor;
-#endif /* defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS) */
+#ਜੇ_ਅੰਤ /* SQLITE_WIN32_USE_UUID */
+  ਵਾਪਸ e.nXor>nBuf ? nBuf : e.nXor;
+#ਜੇ_ਅੰਤ /* defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS) */
 }
 
 
 /*
 ** Sleep for a little while.  Return the amount of time slept.
 */
-static int winSleep(sqlite3_vfs *pVfs, int microsec){
+ਸਥਿਰ ਪੂਰਨ winSleep(sqlite3_vfs *pVfs, ਪੂਰਨ microsec){
   osSleep((microsec+999)/1000);
-  UNUSED_PARAMETER(pVfs);
-  return ((microsec+999)/1000)*1000;
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਵਾਪਸ ((microsec+999)/1000)*1000;
 }
 
 /*
@@ -5136,9 +5136,9 @@ static int winSleep(sqlite3_vfs *pVfs, int microsec){
 ** the number of seconds since 1970 and is used to set the result of
 ** sqlite3OsCurrentTime() during testing.
 */
-#ifdef SQLITE_TEST
-int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+ਪੂਰਨ sqlite3_current_ਸਮਾਂ = 0;  /* Fake system time in seconds since 1970. */
+#ਜੇ_ਅੰਤ
 
 /*
 ** Find the current time (in Universal Coordinated Time).  Write into *piNow
@@ -5150,32 +5150,32 @@ int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 ** On success, return SQLITE_OK.  Return SQLITE_ERROR if the time and date
 ** cannot be found.
 */
-static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
+ਸਥਿਰ ਪੂਰਨ win_Current_ਸਮਾਂ_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
   /* FILETIME structure is a 64-bit value representing the number of
      100-nanosecond intervals since January 1, 1601 (= JD 2305813.5).
   */
   FILETIME ft;
-  static const sqlite3_int64 winFiletimeEpoch = 23058135*(sqlite3_int64)8640000;
-#ifdef SQLITE_TEST
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-#endif
+  ਸਥਿਰ ਅਚਲ sqlite3_int64 winFiletimeEpoch = 23058135*(sqlite3_int64)8640000;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+  ਸਥਿਰ ਅਚਲ sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+#ਜੇ_ਅੰਤ
   /* 2^32 - to avoid use of LL and warnings in gcc */
-  static const sqlite3_int64 max32BitValue =
+  ਸਥਿਰ ਅਚਲ sqlite3_int64 max32_ਦੋਆਧਾਰੀ_ਅੰਕ_ਮੁੱਲ =
       (sqlite3_int64)2000000000 + (sqlite3_int64)2000000000 +
       (sqlite3_int64)294967296;
 
-  osGetSystemTimeAsFileTime( &ft );
+  os_Get_System_ਸਮਾਂ_As_File_ਸਮਾਂ( &ft );
   *piNow = winFiletimeEpoch +
-            ((((sqlite3_int64)ft.dwHighDateTime)*max32BitValue) +
-               (sqlite3_int64)ft.dwLowDateTime)/(sqlite3_int64)10000;
+            ((((sqlite3_int64)ft.dw_ਉੱਚਾ_Date_ਸਮਾਂ)*max32_ਦੋਆਧਾਰੀ_ਅੰਕ_ਮੁੱਲ) +
+               (sqlite3_int64)ft.dw_ਨੀਵਾਂ_Date_ਸਮਾਂ)/(sqlite3_int64)10000;
 
-#ifdef SQLITE_TEST
-  if( sqlite3_current_time ){
-    *piNow = 1000*(sqlite3_int64)sqlite3_current_time + unixEpoch;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+  ਜੇ( sqlite3_current_ਸਮਾਂ ){
+    *piNow = 1000*(sqlite3_int64)sqlite3_current_ਸਮਾਂ + unixEpoch;
   }
-#endif
-  UNUSED_PARAMETER(pVfs);
-  return SQLITE_OK;
+#ਜੇ_ਅੰਤ
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -5183,14 +5183,14 @@ static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
 ** current time and date as a Julian Day number into *prNow and
 ** return 0.  Return 1 if the time and date cannot be found.
 */
-static int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
-  int rc;
+ਸਥਿਰ ਪੂਰਨ win_Current_ਸਮਾਂ(sqlite3_vfs *pVfs, ਦੁੱਗਣਾ *prNow){
+  ਪੂਰਨ rc;
   sqlite3_int64 i;
-  rc = winCurrentTimeInt64(pVfs, &i);
-  if( !rc ){
+  rc = win_Current_ਸਮਾਂ_Int64(pVfs, &i);
+  ਜੇ( !rc ){
     *prNow = i/86400000.0;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -5223,148 +5223,148 @@ static int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
 ** by sqlite into the error message available to the user using
 ** sqlite3_errmsg(), possibly making IO errors easier to debug.
 */
-static int winGetLastError(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-  DWORD e = osGetLastError();
-  UNUSED_PARAMETER(pVfs);
-  if( nBuf>0 ) winGetLastErrorMsg(e, nBuf, zBuf);
-  return e;
+ਸਥਿਰ ਪੂਰਨ win_Get_ਆਖਰੀ_Error(sqlite3_vfs *pVfs, ਪੂਰਨ nBuf, ਅੱਖਰ *zBuf){
+  DWORD e = os_Get_ਆਖਰੀ_Error();
+  ਅਣਵਰਤਿਆ_PARAMETER(pVfs);
+  ਜੇ( nBuf>0 ) win_Get_ਆਖਰੀ_Error_ਸੁਨੇਹਾ(e, nBuf, zBuf);
+  ਵਾਪਸ e;
 }
 
 /*
 ** Initialize and deinitialize the operating system interface.
 */
-int sqlite3_os_init(void){
-  static sqlite3_vfs winVfs = {
+ਪੂਰਨ sqlite3_os_init(ਖਾਲੀ){
+  ਸਥਿਰ sqlite3_vfs winVfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WIN32_MAX_PATH_BYTES, /* mxPathname */
+    ਆਕਾਰ(winFile),       /* szOsFile */
+    SQLITE_WIN32_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ, /* mxPathname */
     0,                     /* pNext */
     "win32",               /* zName */
-    &winAppData,           /* pAppData */
+    &win_App_ਅੰਕੜੇ,           /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_ਭਰਿਆ_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ਸਮਾਂ,        /* xCurrentTime */
+    win_Get_ਆਖਰੀ_Error,       /* xGetLastError */
+    win_Current_ਸਮਾਂ_Int64,   /* xCurrentTimeInt64 */
+    win_ਸੈੱਟ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_ਅਗਲਾ_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winLongPathVfs = {
+  ਸਥਿਰ sqlite3_vfs win_Long_ਰਸਤਾ_Vfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WINNT_MAX_PATH_BYTES, /* mxPathname */
+    ਆਕਾਰ(winFile),       /* szOsFile */
+    SQLITE_WINNT_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ, /* mxPathname */
     0,                     /* pNext */
     "win32-longpath",      /* zName */
-    &winAppData,           /* pAppData */
+    &win_App_ਅੰਕੜੇ,           /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_ਭਰਿਆ_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ਸਮਾਂ,        /* xCurrentTime */
+    win_Get_ਆਖਰੀ_Error,       /* xGetLastError */
+    win_Current_ਸਮਾਂ_Int64,   /* xCurrentTimeInt64 */
+    win_ਸੈੱਟ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_ਅਗਲਾ_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winNolockVfs = {
+  ਸਥਿਰ sqlite3_vfs winNolockVfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WIN32_MAX_PATH_BYTES, /* mxPathname */
+    ਆਕਾਰ(winFile),       /* szOsFile */
+    SQLITE_WIN32_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ, /* mxPathname */
     0,                     /* pNext */
     "win32-none",          /* zName */
-    &winNolockAppData,     /* pAppData */
+    &win_Nolock_App_ਅੰਕੜੇ,     /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_ਭਰਿਆ_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ਸਮਾਂ,        /* xCurrentTime */
+    win_Get_ਆਖਰੀ_Error,       /* xGetLastError */
+    win_Current_ਸਮਾਂ_Int64,   /* xCurrentTimeInt64 */
+    win_ਸੈੱਟ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_ਅਗਲਾ_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winLongPathNolockVfs = {
+  ਸਥਿਰ sqlite3_vfs win_Long_ਰਸਤਾ_Nolock_Vfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WINNT_MAX_PATH_BYTES, /* mxPathname */
+    ਆਕਾਰ(winFile),       /* szOsFile */
+    SQLITE_WINNT_MAX_ਰਸਤਾ_ਬਾਈਟਾਂ, /* mxPathname */
     0,                     /* pNext */
     "win32-longpath-none", /* zName */
-    &winNolockAppData,     /* pAppData */
+    &win_Nolock_App_ਅੰਕੜੇ,     /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_ਭਰਿਆ_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ਸਮਾਂ,        /* xCurrentTime */
+    win_Get_ਆਖਰੀ_Error,       /* xGetLastError */
+    win_Current_ਸਮਾਂ_Int64,   /* xCurrentTimeInt64 */
+    win_ਸੈੱਟ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_ਅਗਲਾ_System_Call,     /* xNextSystemCall */
   };
 
   /* Double-check that the aSyscall[] array has been constructed
   ** correctly.  See ticket [bb3a86e890c8e96ab] */
-  assert( ArraySize(aSyscall)==60 );
-  assert( strcmp(aSyscall[0].zName,"AreFileApisANSI")==0 );
-  assert( strcmp(aSyscall[8].zName,"FreeLibrary")==0 );
-  assert( strcmp(aSyscall[16].zName,"GetSystemInfo")==0 );
-  assert( strcmp(aSyscall[24].zName,"HeapReAlloc")==0 );
-  assert( strcmp(aSyscall[32].zName,"MapViewOfFileFromApp")==0 );
-  assert( strcmp(aSyscall[40].zName,"UnmapViewOfFile")==0 );
-  assert( strcmp(aSyscall[48].zName,"UuidCreate")==0 );
-  assert( strcmp(aSyscall[56].zName,"lstat")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( Array_ਮਾਪ(aSyscall)==60 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[0].zName,"AreFileApisANSI")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[8].zName,"FreeLibrary")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[16].zName,"GetSystemInfo")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[24].zName,"HeapReAlloc")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[32].zName,"MapViewOfFileFromApp")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[40].zName,"UnmapViewOfFile")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[48].zName,"UuidCreate")==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( strcmp(aSyscall[56].zName,"lstat")==0 );
 
   /* get memory map allocation granularity */
-  memset(&winSysInfo, 0, sizeof(SYSTEM_INFO));
+  memset(&winSysInfo, 0, ਆਕਾਰ(SYSTEM_INFO));
   osGetSystemInfo(&winSysInfo);
-  assert( winSysInfo.dwAllocationGranularity>0 );
-  assert( winSysInfo.dwPageSize>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( winSysInfo.dw_ਵੰਡ_Granularity>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( winSysInfo.dw_ਪੰਨਾ_ਮਾਪ>0 );
 
-  sqlite3_vfs_register(&winVfs, 1);
-  sqlite3_vfs_register(&winLongPathVfs, 0);
-  sqlite3_vfs_register(&winNolockVfs, 0);
-  sqlite3_vfs_register(&winLongPathNolockVfs, 0);
-#ifndef SQLITE_OMIT_WAL
-  winBigLock = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#endif
+  sqlite3_vfs_ਰਜਿਸਟਰ(&winVfs, 1);
+  sqlite3_vfs_ਰਜਿਸਟਰ(&win_Long_ਰਸਤਾ_Vfs, 0);
+  sqlite3_vfs_ਰਜਿਸਟਰ(&winNolockVfs, 0);
+  sqlite3_vfs_ਰਜਿਸਟਰ(&win_Long_ਰਸਤਾ_Nolock_Vfs, 0);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
+  win_Big_ਤਾਲਾ = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
+#ਜੇ_ਅੰਤ
 
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
-int sqlite3_os_end(void){
-#ifndef SQLITE_OMIT_WAL
-  winBigLock = 0;
-#endif
-  return SQLITE_OK;
+ਪੂਰਨ sqlite3_os_ਸਿਰਾ(ਖਾਲੀ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
+  win_Big_ਤਾਲਾ = 0;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ SQLITE_OK;
 }
 
-#endif /* SQLITE_OS_WIN */
+#ਜੇ_ਅੰਤ /* SQLITE_OS_WIN */

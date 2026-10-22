@@ -33,23 +33,23 @@
 **     0xfe 0xff   big-endian utf-16 follows
 **
 */
-#include "sqliteInt.h"
-#include <assert.h>
-#include "vdbeInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "vdbeInt.h"
 
-#if !defined(SQLITE_AMALGAMATION) && SQLITE_BYTEORDER==0
+#ਜੇ !defined(SQLITE_AMALGAMATION) && SQLITE_BYTEORDER==0
 /*
 ** The following constant value is used by the SQLITE_BIGENDIAN and
 ** SQLITE_LITTLEENDIAN macros.
 */
-const int sqlite3one = 1;
-#endif /* SQLITE_AMALGAMATION && SQLITE_BYTEORDER==0 */
+ਅਚਲ ਪੂਰਨ sqlite3one = 1;
+#ਜੇ_ਅੰਤ /* SQLITE_AMALGAMATION && SQLITE_BYTEORDER==0 */
 
 /*
 ** This lookup table is used to help decode the first byte of
 ** a multi-byte UTF8 character.
 */
-static const unsigned char sqlite3Utf8Trans1[] = {
+ਸਥਿਰ ਅਚਲ ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ sqlite3Utf8Trans1[] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -61,47 +61,47 @@ static const unsigned char sqlite3Utf8Trans1[] = {
 };
 
 
-#define WRITE_UTF8(zOut, c) {                          \
-  if( c<0x00080 ){                                     \
-    *zOut++ = (u8)(c&0xFF);                            \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WRITE_UTF8(z_ਬਾਹਰਲਾ, c) {                          \
+  ਜੇ( c<0x00080 ){                                     \
+    *z_ਬਾਹਰਲਾ++ = (u8)(c&0xFF);                            \
   }                                                    \
-  else if( c<0x00800 ){                                \
-    *zOut++ = 0xC0 + (u8)((c>>6)&0x1F);                \
-    *zOut++ = 0x80 + (u8)(c & 0x3F);                   \
+  ਨਹੀਂਤਾਂ ਜੇ( c<0x00800 ){                                \
+    *z_ਬਾਹਰਲਾ++ = 0xC0 + (u8)((c>>6)&0x1F);                \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)(c & 0x3F);                   \
   }                                                    \
-  else if( c<0x10000 ){                                \
-    *zOut++ = 0xE0 + (u8)((c>>12)&0x0F);               \
-    *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);              \
-    *zOut++ = 0x80 + (u8)(c & 0x3F);                   \
-  }else{                                               \
-    *zOut++ = 0xF0 + (u8)((c>>18) & 0x07);             \
-    *zOut++ = 0x80 + (u8)((c>>12) & 0x3F);             \
-    *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);              \
-    *zOut++ = 0x80 + (u8)(c & 0x3F);                   \
+  ਨਹੀਂਤਾਂ ਜੇ( c<0x10000 ){                                \
+    *z_ਬਾਹਰਲਾ++ = 0xE0 + (u8)((c>>12)&0x0F);               \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)((c>>6) & 0x3F);              \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)(c & 0x3F);                   \
+  }ਨਹੀਂਤਾਂ{                                               \
+    *z_ਬਾਹਰਲਾ++ = 0xF0 + (u8)((c>>18) & 0x07);             \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)((c>>12) & 0x3F);             \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)((c>>6) & 0x3F);              \
+    *z_ਬਾਹਰਲਾ++ = 0x80 + (u8)(c & 0x3F);                   \
   }                                                    \
 }
 
-#define WRITE_UTF16LE(zOut, c) {                                    \
-  if( c<=0xFFFF ){                                                  \
-    *zOut++ = (u8)(c&0x00FF);                                       \
-    *zOut++ = (u8)((c>>8)&0x00FF);                                  \
-  }else{                                                            \
-    *zOut++ = (u8)(((c>>10)&0x003F) + (((c-0x10000)>>10)&0x00C0));  \
-    *zOut++ = (u8)(0x00D8 + (((c-0x10000)>>18)&0x03));              \
-    *zOut++ = (u8)(c&0x00FF);                                       \
-    *zOut++ = (u8)(0x00DC + ((c>>8)&0x03));                         \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WRITE_UTF16LE(z_ਬਾਹਰਲਾ, c) {                                    \
+  ਜੇ( c<=0xFFFF ){                                                  \
+    *z_ਬਾਹਰਲਾ++ = (u8)(c&0x00FF);                                       \
+    *z_ਬਾਹਰਲਾ++ = (u8)((c>>8)&0x00FF);                                  \
+  }ਨਹੀਂਤਾਂ{                                                            \
+    *z_ਬਾਹਰਲਾ++ = (u8)(((c>>10)&0x003F) + (((c-0x10000)>>10)&0x00C0));  \
+    *z_ਬਾਹਰਲਾ++ = (u8)(0x00D8 + (((c-0x10000)>>18)&0x03));              \
+    *z_ਬਾਹਰਲਾ++ = (u8)(c&0x00FF);                                       \
+    *z_ਬਾਹਰਲਾ++ = (u8)(0x00DC + ((c>>8)&0x03));                         \
   }                                                                 \
 }
 
-#define WRITE_UTF16BE(zOut, c) {                                    \
-  if( c<=0xFFFF ){                                                  \
-    *zOut++ = (u8)((c>>8)&0x00FF);                                  \
-    *zOut++ = (u8)(c&0x00FF);                                       \
-  }else{                                                            \
-    *zOut++ = (u8)(0x00D8 + (((c-0x10000)>>18)&0x03));              \
-    *zOut++ = (u8)(((c>>10)&0x003F) + (((c-0x10000)>>10)&0x00C0));  \
-    *zOut++ = (u8)(0x00DC + ((c>>8)&0x03));                         \
-    *zOut++ = (u8)(c&0x00FF);                                       \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WRITE_UTF16BE(z_ਬਾਹਰਲਾ, c) {                                    \
+  ਜੇ( c<=0xFFFF ){                                                  \
+    *z_ਬਾਹਰਲਾ++ = (u8)((c>>8)&0x00FF);                                  \
+    *z_ਬਾਹਰਲਾ++ = (u8)(c&0x00FF);                                       \
+  }ਨਹੀਂਤਾਂ{                                                            \
+    *z_ਬਾਹਰਲਾ++ = (u8)(0x00D8 + (((c-0x10000)>>18)&0x03));              \
+    *z_ਬਾਹਰਲਾ++ = (u8)(((c>>10)&0x003F) + (((c-0x10000)>>10)&0x00C0));  \
+    *z_ਬਾਹਰਲਾ++ = (u8)(0x00DC + ((c>>8)&0x03));                         \
+    *z_ਬਾਹਰਲਾ++ = (u8)(c&0x00FF);                                       \
   }                                                                 \
 }
 
@@ -111,27 +111,27 @@ static const unsigned char sqlite3Utf8Trans1[] = {
 ** least four bytes.  Return the number of bytes needed
 ** to encode the new character.
 */
-int sqlite3AppendOneUtf8Character(char *zOut, u32 v){
-  if( v<0x00080 ){
-    zOut[0] = (u8)(v & 0xff);
-    return 1;
+ਪੂਰਨ sqlite3AppendOneUtf8Character(ਅੱਖਰ *z_ਬਾਹਰਲਾ, u32 v){
+  ਜੇ( v<0x00080 ){
+    z_ਬਾਹਰਲਾ[0] = (u8)(v & 0xff);
+    ਵਾਪਸ 1;
   }
-  if( v<0x00800 ){
-    zOut[0] = 0xc0 + (u8)((v>>6) & 0x1f);
-    zOut[1] = 0x80 + (u8)(v & 0x3f);
-    return 2;
+  ਜੇ( v<0x00800 ){
+    z_ਬਾਹਰਲਾ[0] = 0xc0 + (u8)((v>>6) & 0x1f);
+    z_ਬਾਹਰਲਾ[1] = 0x80 + (u8)(v & 0x3f);
+    ਵਾਪਸ 2;
   }
-  if( v<0x10000 ){
-    zOut[0] = 0xe0 + (u8)((v>>12) & 0x0f);
-    zOut[1] = 0x80 + (u8)((v>>6) & 0x3f);
-    zOut[2] = 0x80 + (u8)(v & 0x3f);
-    return 3;
+  ਜੇ( v<0x10000 ){
+    z_ਬਾਹਰਲਾ[0] = 0xe0 + (u8)((v>>12) & 0x0f);
+    z_ਬਾਹਰਲਾ[1] = 0x80 + (u8)((v>>6) & 0x3f);
+    z_ਬਾਹਰਲਾ[2] = 0x80 + (u8)(v & 0x3f);
+    ਵਾਪਸ 3;
   }
-  zOut[0] = 0xf0 + (u8)((v>>18) & 0x07);
-  zOut[1] = 0x80 + (u8)((v>>12) & 0x3f);
-  zOut[2] = 0x80 + (u8)((v>>6) & 0x3f);
-  zOut[3] = 0x80 + (u8)(v & 0x3f);
-  return 4;
+  z_ਬਾਹਰਲਾ[0] = 0xf0 + (u8)((v>>18) & 0x07);
+  z_ਬਾਹਰਲਾ[1] = 0x80 + (u8)((v>>12) & 0x3f);
+  z_ਬਾਹਰਲਾ[2] = 0x80 + (u8)((v>>6) & 0x3f);
+  z_ਬਾਹਰਲਾ[3] = 0x80 + (u8)(v & 0x3f);
+  ਵਾਪਸ 4;
 }
 
 /*
@@ -161,32 +161,32 @@ int sqlite3AppendOneUtf8Character(char *zOut, u32 v){
 **     for unicode values 0x80 and greater.  It does not change over-length
 **     encodings to 0xfffd as some systems recommend.
 */
-#define READ_UTF8(zIn, zTerm, c)                           \
-  c = *(zIn++);                                            \
-  if( c>=0xc0 ){                                           \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ READ_UTF8(z_ਵਿੱਚ, z_ਪਦ, c)                           \
+  c = *(z_ਵਿੱਚ++);                                            \
+  ਜੇ( c>=0xc0 ){                                           \
     c = sqlite3Utf8Trans1[c-0xc0];                         \
-    while( zIn<zTerm && (*zIn & 0xc0)==0x80 ){             \
-      c = (c<<6) + (0x3f & *(zIn++));                      \
+    ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ && (*z_ਵਿੱਚ & 0xc0)==0x80 ){             \
+      c = (c<<6) + (0x3f & *(z_ਵਿੱਚ++));                      \
     }                                                      \
-    if( c<0x80 || (c&0xFFFFF800)==0xD800 ){  c = 0xFFFD; } \
+    ਜੇ( c<0x80 || (c&0xFFFFF800)==0xD800 ){  c = 0xFFFD; } \
   }
 u32 sqlite3Utf8Read(
-  const unsigned char **pz    /* Pointer to string from which to read char */
+  ਅਚਲ ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ **pz    /* Pointer to string from which to read char */
 ){
-  unsigned int c;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ c;
 
   /* Same as READ_UTF8() above but without the zTerm parameter.
   ** For this routine, we assume the UTF8 string is always zero-terminated.
   */
   c = *((*pz)++);
-  if( c>=0xc0 ){
+  ਜੇ( c>=0xc0 ){
     c = sqlite3Utf8Trans1[c-0xc0];
-    while( (*(*pz) & 0xc0)==0x80 ){
+    ਜਦੋਂ( (*(*pz) & 0xc0)==0x80 ){
       c = (c<<6) + (0x3f & *((*pz)++));
     }
-    if( c<0x80 || (c&0xFFFFF800)==0xD800 ){  c = 0xFFFD; }
+    ਜੇ( c<0x80 || (c&0xFFFFF800)==0xD800 ){  c = 0xFFFD; }
   }
-  return c;
+  ਵਾਪਸ c;
 }
 
 /*
@@ -201,25 +201,25 @@ u32 sqlite3Utf8Read(
 ** At most 4 bytes will be read out of z[].  The return value will always
 ** be between 1 and 4.
 */
-int sqlite3Utf8ReadLimited(
-  const u8 *z,
-  int n,
-  u32 *piOut
+ਪੂਰਨ sqlite3Utf8ReadLimited(
+  ਅਚਲ u8 *z,
+  ਪੂਰਨ n,
+  u32 *pi_ਬਾਹਰਲਾ
 ){
   u32 c;
-  int i = 1;
-  assert( n>0 );
+  ਪੂਰਨ i = 1;
+  ਪ੍ਰਤਿਜ੍ਞਾ( n>0 );
   c = z[0];
-  if( c>=0xc0 ){
+  ਜੇ( c>=0xc0 ){
     c = sqlite3Utf8Trans1[c-0xc0];
-    if( n>4 ) n = 4;
-    while( i<n && (z[i] & 0xc0)==0x80 ){
+    ਜੇ( n>4 ) n = 4;
+    ਜਦੋਂ( i<n && (z[i] & 0xc0)==0x80 ){
       c = (c<<6) + (0x3f & z[i]);
       i++;
     }
   }
-  *piOut = c;
-  return i;
+  *pi_ਬਾਹਰਲਾ = c;
+  ਵਾਪਸ i;
 }
 
 
@@ -229,62 +229,62 @@ int sqlite3Utf8ReadLimited(
 */ 
 /* #define TRANSLATE_TRACE 1 */
 
-#ifndef SQLITE_OMIT_UTF16
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_UTF16
 /*
 ** This routine transforms the internal text encoding used by pMem to
 ** desiredEnc. It is an error if the string is already of the desired
 ** encoding, or if *pMem does not contain a string value.
 */
-SQLITE_NOINLINE int sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){
+SQLITE_NOINLINE ਪੂਰਨ sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){
   sqlite3_int64 len;          /* Maximum length of output string in bytes */
-  unsigned char *zOut;        /* Output buffer */
-  unsigned char *zIn;         /* Input iterator */
-  unsigned char *zTerm;       /* End of input */
-  unsigned char *z;           /* Output iterator */
-  unsigned int c;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਬਾਹਰਲਾ;        /* Output buffer */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਵਿੱਚ;         /* Input iterator */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਪਦ;       /* End of input */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z;           /* Output iterator */
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ c;
 
-  assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
-  assert( pMem->flags&MEM_Str );
-  assert( pMem->enc!=desiredEnc );
-  assert( pMem->enc!=0 );
-  assert( pMem->n>=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->flags&MEM_Str );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->enc!=desiredEnc );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->enc!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->n>=0 );
 
-#if defined(TRANSLATE_TRACE) && defined(SQLITE_DEBUG)
+#ਜੇ defined(TRANSLATE_TRACE) && defined(SQLITE_DEBUG)
   {
     StrAccum acc;
-    char zBuf[1000];
-    sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);  
+    ਅੱਖਰ zBuf[1000];
+    sqlite3StrAccumInit(&acc, 0, zBuf, ਆਕਾਰ(zBuf), 0);  
     sqlite3VdbeMemPrettyPrint(pMem, &acc);
-    fprintf(stderr, "INPUT:  %s\n", sqlite3StrAccumFinish(&acc));
+    fprintf(stderr, "INPUT:  %s\n", sqlite3_Str_Accum_ਅੰਤ(&acc));
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* If the translation is between UTF-16 little and big endian, then 
   ** all that is required is to swap the byte order. This case is handled
   ** differently from the others.
   */
-  if( pMem->enc!=SQLITE_UTF8 && desiredEnc!=SQLITE_UTF8 ){
-    u8 temp;
-    int rc;
+  ਜੇ( pMem->enc!=SQLITE_UTF8 && desiredEnc!=SQLITE_UTF8 ){
+    u8 ਆਰਜ਼ੀ;
+    ਪੂਰਨ rc;
     rc = sqlite3VdbeMemMakeWriteable(pMem);
-    if( rc!=SQLITE_OK ){
-      assert( rc==SQLITE_NOMEM );
-      return SQLITE_NOMEM_BKPT;
+    ਜੇ( rc!=SQLITE_OK ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( rc==SQLITE_NOMEM );
+      ਵਾਪਸ SQLITE_NOMEM_BKPT;
     }
-    zIn = (u8*)pMem->z;
-    zTerm = &zIn[pMem->n&~1];
-    while( zIn<zTerm ){
-      temp = *zIn;
-      *zIn = *(zIn+1);
-      zIn++;
-      *zIn++ = temp;
+    z_ਵਿੱਚ = (u8*)pMem->z;
+    z_ਪਦ = &z_ਵਿੱਚ[pMem->n&~1];
+    ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ ){
+      ਆਰਜ਼ੀ = *z_ਵਿੱਚ;
+      *z_ਵਿੱਚ = *(z_ਵਿੱਚ+1);
+      z_ਵਿੱਚ++;
+      *z_ਵਿੱਚ++ = ਆਰਜ਼ੀ;
     }
     pMem->enc = desiredEnc;
-    goto translate_out;
+    ਜਾਓ translate_ਬਾਹਰਲਾ;
   }
 
   /* Set len to the maximum number of bytes required in the output buffer. */
-  if( desiredEnc==SQLITE_UTF8 ){
+  ਜੇ( desiredEnc==SQLITE_UTF8 ){
     /* When converting from UTF-16, the maximum growth results from
     ** translating a 2-byte character to a 4-byte UTF-8 character.
     ** A single byte is required for the output string
@@ -292,7 +292,7 @@ SQLITE_NOINLINE int sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){
     */
     pMem->n &= ~1;
     len = 2 * (sqlite3_int64)pMem->n + 1;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     /* When converting from UTF-8 to UTF-16 the maximum growth is caused
     ** when a 1-byte UTF-8 character is translated into a 2-byte UTF-16
     ** character. Two bytes are required in the output buffer for the
@@ -307,120 +307,120 @@ SQLITE_NOINLINE int sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){
   ** Variable zOut is set to point at the output buffer, space obtained
   ** from sqlite3_malloc().
   */
-  zIn = (u8*)pMem->z;
-  zTerm = &zIn[pMem->n];
-  zOut = sqlite3DbMallocRaw(pMem->db, len);
-  if( !zOut ){
-    return SQLITE_NOMEM_BKPT;
+  z_ਵਿੱਚ = (u8*)pMem->z;
+  z_ਪਦ = &z_ਵਿੱਚ[pMem->n];
+  z_ਬਾਹਰਲਾ = sqlite3DbMallocRaw(pMem->db, len);
+  ਜੇ( !z_ਬਾਹਰਲਾ ){
+    ਵਾਪਸ SQLITE_NOMEM_BKPT;
   }
-  z = zOut;
+  z = z_ਬਾਹਰਲਾ;
 
-  if( pMem->enc==SQLITE_UTF8 ){
-    if( desiredEnc==SQLITE_UTF16LE ){
+  ਜੇ( pMem->enc==SQLITE_UTF8 ){
+    ਜੇ( desiredEnc==SQLITE_UTF16LE ){
       /* UTF-8 -> UTF-16 Little-endian */
-      while( zIn<zTerm ){
-        READ_UTF8(zIn, zTerm, c);
+      ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ ){
+        READ_UTF8(z_ਵਿੱਚ, z_ਪਦ, c);
         WRITE_UTF16LE(z, c);
       }
-    }else{
-      assert( desiredEnc==SQLITE_UTF16BE );
+    }ਨਹੀਂਤਾਂ{
+      ਪ੍ਰਤਿਜ੍ਞਾ( desiredEnc==SQLITE_UTF16BE );
       /* UTF-8 -> UTF-16 Big-endian */
-      while( zIn<zTerm ){
-        READ_UTF8(zIn, zTerm, c);
+      ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ ){
+        READ_UTF8(z_ਵਿੱਚ, z_ਪਦ, c);
         WRITE_UTF16BE(z, c);
       }
     }
-    pMem->n = (int)(z - zOut);
+    pMem->n = (ਪੂਰਨ)(z - z_ਬਾਹਰਲਾ);
     *z++ = 0;
-  }else{
-    assert( desiredEnc==SQLITE_UTF8 );
-    if( pMem->enc==SQLITE_UTF16LE ){
+  }ਨਹੀਂਤਾਂ{
+    ਪ੍ਰਤਿਜ੍ਞਾ( desiredEnc==SQLITE_UTF8 );
+    ਜੇ( pMem->enc==SQLITE_UTF16LE ){
       /* UTF-16 Little-endian -> UTF-8 */
-      while( zIn<zTerm ){
-        c = *(zIn++);
-        c += (*(zIn++))<<8;
-        if( c>=0xd800 && c<0xe000 ){
-#ifdef SQLITE_REPLACE_INVALID_UTF
-          if( c>=0xdc00 || zIn>=zTerm ){
+      ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ ){
+        c = *(z_ਵਿੱਚ++);
+        c += (*(z_ਵਿੱਚ++))<<8;
+        ਜੇ( c>=0xd800 && c<0xe000 ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_REPLACE_INVALID_UTF
+          ਜੇ( c>=0xdc00 || z_ਵਿੱਚ>=z_ਪਦ ){
             c = 0xfffd;
-          }else{
-            int c2 = *(zIn++);
-            c2 += (*(zIn++))<<8;
-            if( c2<0xdc00 || c2>=0xe000 ){
-              zIn -= 2;
+          }ਨਹੀਂਤਾਂ{
+            ਪੂਰਨ c2 = *(z_ਵਿੱਚ++);
+            c2 += (*(z_ਵਿੱਚ++))<<8;
+            ਜੇ( c2<0xdc00 || c2>=0xe000 ){
+              z_ਵਿੱਚ -= 2;
               c = 0xfffd;
-            }else{
+            }ਨਹੀਂਤਾਂ{
               c = ((c&0x3ff)<<10) + (c2&0x3ff) + 0x10000;
             }
           }
-#else
-          if( zIn<zTerm ){
-            int c2 = (*zIn++);
-            c2 += ((*zIn++)<<8);
+#ਨਹੀਂਤਾਂ
+          ਜੇ( z_ਵਿੱਚ<z_ਪਦ ){
+            ਪੂਰਨ c2 = (*z_ਵਿੱਚ++);
+            c2 += ((*z_ਵਿੱਚ++)<<8);
             c = (c2&0x03FF) + ((c&0x003F)<<10) + (((c&0x03C0)+0x0040)<<10);
           }
-#endif
+#ਜੇ_ਅੰਤ
         }
         WRITE_UTF8(z, c);
       }
-    }else{
+    }ਨਹੀਂਤਾਂ{
       /* UTF-16 Big-endian -> UTF-8 */
-      while( zIn<zTerm ){
-        c = (*(zIn++))<<8;
-        c += *(zIn++);
-        if( c>=0xd800 && c<0xe000 ){
-#ifdef SQLITE_REPLACE_INVALID_UTF
-          if( c>=0xdc00 || zIn>=zTerm ){
+      ਜਦੋਂ( z_ਵਿੱਚ<z_ਪਦ ){
+        c = (*(z_ਵਿੱਚ++))<<8;
+        c += *(z_ਵਿੱਚ++);
+        ਜੇ( c>=0xd800 && c<0xe000 ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_REPLACE_INVALID_UTF
+          ਜੇ( c>=0xdc00 || z_ਵਿੱਚ>=z_ਪਦ ){
             c = 0xfffd;
-          }else{
-            int c2 = (*(zIn++))<<8;
-            c2 += *(zIn++);
-            if( c2<0xdc00 || c2>=0xe000 ){
-              zIn -= 2;
+          }ਨਹੀਂਤਾਂ{
+            ਪੂਰਨ c2 = (*(z_ਵਿੱਚ++))<<8;
+            c2 += *(z_ਵਿੱਚ++);
+            ਜੇ( c2<0xdc00 || c2>=0xe000 ){
+              z_ਵਿੱਚ -= 2;
               c = 0xfffd;
-            }else{
+            }ਨਹੀਂਤਾਂ{
               c = ((c&0x3ff)<<10) + (c2&0x3ff) + 0x10000;
             }
           }
-#else
-          if( zIn<zTerm ){
-            int c2 = ((*zIn++)<<8);
-            c2 += (*zIn++);
+#ਨਹੀਂਤਾਂ
+          ਜੇ( z_ਵਿੱਚ<z_ਪਦ ){
+            ਪੂਰਨ c2 = ((*z_ਵਿੱਚ++)<<8);
+            c2 += (*z_ਵਿੱਚ++);
             c = (c2&0x03FF) + ((c&0x003F)<<10) + (((c&0x03C0)+0x0040)<<10);
           }
-#endif
+#ਜੇ_ਅੰਤ
         }
         WRITE_UTF8(z, c);
       }
     }
-    pMem->n = (int)(z - zOut);
+    pMem->n = (ਪੂਰਨ)(z - z_ਬਾਹਰਲਾ);
   }
   *z = 0;
-  assert( (pMem->n+(desiredEnc==SQLITE_UTF8?1:2))<=len );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (pMem->n+(desiredEnc==SQLITE_UTF8?1:2))<=len );
 
-  c = MEM_Str|MEM_Term|(pMem->flags&(MEM_AffMask|MEM_Subtype));
+  c = MEM_Str|MEM_ਪਦ|(pMem->flags&(MEM_Aff_ਨਕਾਬ|MEM_Subtype));
   sqlite3VdbeMemRelease(pMem);
   pMem->flags = c;
   pMem->enc = desiredEnc;
-  pMem->z = (char*)zOut;
+  pMem->z = (ਅੱਖਰ*)z_ਬਾਹਰਲਾ;
   pMem->zMalloc = pMem->z;
-  pMem->szMalloc = sqlite3DbMallocSize(pMem->db, pMem->z);
+  pMem->szMalloc = sqlite3_Db_Malloc_ਮਾਪ(pMem->db, pMem->z);
 
-translate_out:
-#if defined(TRANSLATE_TRACE) && defined(SQLITE_DEBUG)
+translate_ਬਾਹਰਲਾ:
+#ਜੇ defined(TRANSLATE_TRACE) && defined(SQLITE_DEBUG)
   {
     StrAccum acc;
-    char zBuf[1000];
-    sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);  
+    ਅੱਖਰ zBuf[1000];
+    sqlite3StrAccumInit(&acc, 0, zBuf, ਆਕਾਰ(zBuf), 0);  
     sqlite3VdbeMemPrettyPrint(pMem, &acc);
-    fprintf(stderr, "OUTPUT: %s\n", sqlite3StrAccumFinish(&acc));
+    fprintf(stderr, "OUTPUT: %s\n", sqlite3_Str_Accum_ਅੰਤ(&acc));
   }
-#endif
-  return SQLITE_OK;
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ SQLITE_OK;
 }
-#endif /* SQLITE_OMIT_UTF16 */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_UTF16 */
 
-#ifndef SQLITE_OMIT_UTF16
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_UTF16
 /*
 ** This routine checks for a byte-order mark at the beginning of the 
 ** UTF-16 string stored in *pMem. If one is present, it is removed and
@@ -430,36 +430,36 @@ translate_out:
 ** The allocation (static, dynamic etc.) and encoding of the Mem may be
 ** changed by this function.
 */
-int sqlite3VdbeMemHandleBom(Mem *pMem){
-  int rc = SQLITE_OK;
+ਪੂਰਨ sqlite3VdbeMemHandleBom(Mem *pMem){
+  ਪੂਰਨ rc = SQLITE_OK;
   u8 bom = 0;
 
-  assert( pMem->n>=0 );
-  if( pMem->n>1 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pMem->n>=0 );
+  ਜੇ( pMem->n>1 ){
     u8 b1 = *(u8 *)pMem->z;
     u8 b2 = *(((u8 *)pMem->z) + 1);
-    if( b1==0xFE && b2==0xFF ){
+    ਜੇ( b1==0xFE && b2==0xFF ){
       bom = SQLITE_UTF16BE;
     }
-    if( b1==0xFF && b2==0xFE ){
+    ਜੇ( b1==0xFF && b2==0xFE ){
       bom = SQLITE_UTF16LE;
     }
   }
   
-  if( bom ){
+  ਜੇ( bom ){
     rc = sqlite3VdbeMemMakeWriteable(pMem);
-    if( rc==SQLITE_OK ){
+    ਜੇ( rc==SQLITE_OK ){
       pMem->n -= 2;
       memmove(pMem->z, &pMem->z[2], pMem->n);
       pMem->z[pMem->n] = '\0';
       pMem->z[pMem->n+1] = '\0';
-      pMem->flags |= MEM_Term;
+      pMem->flags |= MEM_ਪਦ;
       pMem->enc = bom;
     }
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
-#endif /* SQLITE_OMIT_UTF16 */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_UTF16 */
 
 /*
 ** pZ is a UTF-8 encoded unicode string. If nByte is less than zero,
@@ -468,27 +468,27 @@ int sqlite3VdbeMemHandleBom(Mem *pMem){
 ** number of unicode characters in the first nByte of pZ (or up to 
 ** the first 0x00, whichever comes first).
 */
-int sqlite3Utf8CharLen(const char *zIn, int nByte){
-  int r = 0;
-  const u8 *z = (const u8*)zIn;
-  const u8 *zTerm;
-  if( nByte>=0 ){
-    zTerm = &z[nByte];
-  }else{
-    zTerm = (const u8*)(-1);
+ਪੂਰਨ sqlite3Utf8CharLen(ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ, ਪੂਰਨ nByte){
+  ਪੂਰਨ r = 0;
+  ਅਚਲ u8 *z = (ਅਚਲ u8*)z_ਵਿੱਚ;
+  ਅਚਲ u8 *z_ਪਦ;
+  ਜੇ( nByte>=0 ){
+    z_ਪਦ = &z[nByte];
+  }ਨਹੀਂਤਾਂ{
+    z_ਪਦ = (ਅਚਲ u8*)(-1);
   }
-  assert( z<=zTerm );
-  while( *z!=0 && z<zTerm ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( z<=z_ਪਦ );
+  ਜਦੋਂ( *z!=0 && z<z_ਪਦ ){
     SQLITE_SKIP_UTF8(z);
     r++;
   }
-  return r;
+  ਵਾਪਸ r;
 }
 
 /* This test function is not currently used by the automated test-suite. 
 ** Hence it is only available in debug builds.
 */
-#if defined(SQLITE_TEST) && defined(SQLITE_DEBUG)
+#ਜੇ defined(SQLITE_TEST) && defined(SQLITE_DEBUG)
 /*
 ** Translate UTF-8 to UTF-8.
 **
@@ -498,23 +498,23 @@ int sqlite3Utf8CharLen(const char *zIn, int nByte){
 ** The translation is done in-place and aborted if the output
 ** overruns the input.
 */
-int sqlite3Utf8To8(unsigned char *zIn){
-  unsigned char *zOut = zIn;
-  unsigned char *zStart = zIn;
+ਪੂਰਨ sqlite3Utf8To8(ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਵਿੱਚ){
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਬਾਹਰਲਾ = z_ਵਿੱਚ;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z_ਸ਼ੁਰੂ = z_ਵਿੱਚ;
   u32 c;
 
-  while( zIn[0] && zOut<=zIn ){
-    c = sqlite3Utf8Read((const u8**)&zIn);
-    if( c!=0xfffd ){
-      WRITE_UTF8(zOut, c);
+  ਜਦੋਂ( z_ਵਿੱਚ[0] && z_ਬਾਹਰਲਾ<=z_ਵਿੱਚ ){
+    c = sqlite3Utf8Read((ਅਚਲ u8**)&z_ਵਿੱਚ);
+    ਜੇ( c!=0xfffd ){
+      WRITE_UTF8(z_ਬਾਹਰਲਾ, c);
     }
   }
-  *zOut = 0;
-  return (int)(zOut - zStart);
+  *z_ਬਾਹਰਲਾ = 0;
+  ਵਾਪਸ (ਪੂਰਨ)(z_ਬਾਹਰਲਾ - z_ਸ਼ੁਰੂ);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_UTF16
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_UTF16
 /*
 ** Convert a UTF-16 string in the native encoding into a UTF-8 string.
 ** Memory to hold the UTF-8 string is obtained from sqlite3_malloc and must
@@ -522,20 +522,20 @@ int sqlite3Utf8To8(unsigned char *zIn){
 **
 ** NULL is returned if there is an allocation error.
 */
-char *sqlite3Utf16to8(sqlite3 *db, const void *z, int nByte, u8 enc){
+ਅੱਖਰ *sqlite3Utf16to8(sqlite3 *db, ਅਚਲ ਖਾਲੀ *z, ਪੂਰਨ nByte, u8 enc){
   Mem m;
-  memset(&m, 0, sizeof(m));
+  memset(&m, 0, ਆਕਾਰ(m));
   m.db = db;
-  sqlite3VdbeMemSetStr(&m, z, nByte, enc, SQLITE_STATIC);
+  sqlite3_Vdbe_Mem_ਸੈੱਟ_Str(&m, z, nByte, enc, SQLITE_STATIC);
   sqlite3VdbeChangeEncoding(&m, SQLITE_UTF8);
-  if( db->mallocFailed ){
+  ਜੇ( db->mallocFailed ){
     sqlite3VdbeMemRelease(&m);
     m.z = 0;
   }
-  assert( (m.flags & MEM_Term)!=0 || db->mallocFailed );
-  assert( (m.flags & MEM_Str)!=0 || db->mallocFailed );
-  assert( m.z || db->mallocFailed );
-  return m.z;
+  ਪ੍ਰਤਿਜ੍ਞਾ( (m.flags & MEM_ਪਦ)!=0 || db->mallocFailed );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (m.flags & MEM_Str)!=0 || db->mallocFailed );
+  ਪ੍ਰਤਿਜ੍ਞਾ( m.z || db->mallocFailed );
+  ਵਾਪਸ m.z;
 }
 
 /*
@@ -544,49 +544,49 @@ char *sqlite3Utf16to8(sqlite3 *db, const void *z, int nByte, u8 enc){
 ** in pZ.  nChar must be non-negative.  Surrogate pairs count as a single
 ** character.
 */
-int sqlite3Utf16ByteLen(const void *zIn, int nByte, int nChar){
-  int c;
-  unsigned char const *z = zIn;
-  unsigned char const *zEnd = &z[nByte-1];
-  int n = 0;
+ਪੂਰਨ sqlite3Utf16ByteLen(ਅਚਲ ਖਾਲੀ *z_ਵਿੱਚ, ਪੂਰਨ nByte, ਪੂਰਨ nChar){
+  ਪੂਰਨ c;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਅਚਲ *z = z_ਵਿੱਚ;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਅਚਲ *z_ਸਿਰਾ = &z[nByte-1];
+  ਪੂਰਨ n = 0;
   
-  if( SQLITE_UTF16NATIVE==SQLITE_UTF16LE ) z++;
-  while( n<nChar && z<=zEnd ){
+  ਜੇ( SQLITE_UTF16NATIVE==SQLITE_UTF16LE ) z++;
+  ਜਦੋਂ( n<nChar && z<=z_ਸਿਰਾ ){
     c = z[0];
     z += 2;
-    if( c>=0xd8 && c<0xdc && z<=zEnd && z[0]>=0xdc && z[0]<0xe0 ) z += 2;
+    ਜੇ( c>=0xd8 && c<0xdc && z<=z_ਸਿਰਾ && z[0]>=0xdc && z[0]<0xe0 ) z += 2;
     n++;
   }
-  return (int)(z-(unsigned char const *)zIn) 
+  ਵਾਪਸ (ਪੂਰਨ)(z-(ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਅਚਲ *)z_ਵਿੱਚ) 
               - (SQLITE_UTF16NATIVE==SQLITE_UTF16LE);
 }
 
-#if defined(SQLITE_TEST)
+#ਜੇ defined(SQLITE_TEST)
 /*
 ** This routine is called from the TCL test function "translate_selftest".
 ** It checks that the primitives for serializing and deserializing
 ** characters in each encoding are inverses of each other.
 */
-void sqlite3UtfSelfTest(void){
-  unsigned int i, t;
-  unsigned char zBuf[20];
-  unsigned char *z;
-  int n;
-  unsigned int c;
+ਖਾਲੀ sqlite3UtfSelfTest(ਖਾਲੀ){
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i, t;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ zBuf[20];
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *z;
+  ਪੂਰਨ n;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ c;
 
-  for(i=0; i<0x00110000; i++){
+  ਲਈ(i=0; i<0x00110000; i++){
     z = zBuf;
     WRITE_UTF8(z, i);
-    n = (int)(z-zBuf);
-    assert( n>0 && n<=4 );
+    n = (ਪੂਰਨ)(z-zBuf);
+    ਪ੍ਰਤਿਜ੍ਞਾ( n>0 && n<=4 );
     z[0] = 0;
     z = zBuf;
-    c = sqlite3Utf8Read((const u8**)&z);
+    c = sqlite3Utf8Read((ਅਚਲ u8**)&z);
     t = i;
-    if( i>=0xD800 && i<=0xDFFF ) t = 0xFFFD;
-    assert( c==t );
-    assert( (z-zBuf)==n );
+    ਜੇ( i>=0xD800 && i<=0xDFFF ) t = 0xFFFD;
+    ਪ੍ਰਤਿਜ੍ਞਾ( c==t );
+    ਪ੍ਰਤਿਜ੍ਞਾ( (z-zBuf)==n );
   }
 }
-#endif /* SQLITE_TEST */
-#endif /* SQLITE_OMIT_UTF16 */
+#ਜੇ_ਅੰਤ /* SQLITE_TEST */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_UTF16 */

@@ -11,118 +11,118 @@
 *************************************************************************
 ** Test extension for testing the sqlite3_load_extension() function.
 */
-#include <string.h>
-#include "sqlite3ext.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqlite3ext.h"
 SQLITE_EXTENSION_INIT1
 
 /*
 ** The half() SQL function returns half of its input value.
 */
-static void halfFunc(
+ਸਥਿਰ ਖਾਲੀ halfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  sqlite3_result_double(context, 0.5*sqlite3_value_double(argv[0]));
+  sqlite3_ਨਤੀਜਾ_double(context, 0.5*sqlite3_ਮੁੱਲ_double(argv[0]));
 }
 
 /*
 ** SQL functions to call the sqlite3_status function and return results.
 */
-static void statusFunc(
+ਸਥਿਰ ਖਾਲੀ ਸਥਿਤੀ_Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  int op = 0, mx, cur, resetFlag, rc;
-  if( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
-    op = sqlite3_value_int(argv[0]);
-  }else if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    int i;
-    const char *zName;
-    static const struct {
-      const char *zName;
-      int op;
+  ਪੂਰਨ op = 0, mx, cur, resetFlag, rc;
+  ਜੇ( sqlite3_ਮੁੱਲ_type(argv[0])==SQLITE_INTEGER ){
+    op = sqlite3_ਮੁੱਲ_int(argv[0]);
+  }ਨਹੀਂਤਾਂ ਜੇ( sqlite3_ਮੁੱਲ_type(argv[0])==SQLITE_ਪਾਠ ){
+    ਪੂਰਨ i;
+    ਅਚਲ ਅੱਖਰ *zName;
+    ਸਥਿਰ ਅਚਲ ਬਣਤਰ {
+      ਅਚਲ ਅੱਖਰ *zName;
+      ਪੂਰਨ op;
     } aOp[] = {
-      { "MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
-      { "PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
-      { "PAGECACHE_OVERFLOW",  SQLITE_STATUS_PAGECACHE_OVERFLOW  },
-      { "SCRATCH_USED",        SQLITE_STATUS_SCRATCH_USED        },
-      { "SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
-      { "MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
+      { "MEMORY_USED",         SQLITE_ਸਥਿਤੀ_ਸਮ੍ਰਿਤੀ_ਵਰਤਿਆ         },
+      { "PAGECACHE_USED",      SQLITE_ਸਥਿਤੀ_PAGECACHE_ਵਰਤਿਆ      },
+      { "PAGECACHE_OVERFLOW",  SQLITE_ਸਥਿਤੀ_PAGECACHE_ਉਛਾਲ  },
+      { "SCRATCH_USED",        SQLITE_ਸਥਿਤੀ_SCRATCH_ਵਰਤਿਆ        },
+      { "SCRATCH_OVERFLOW",    SQLITE_ਸਥਿਤੀ_SCRATCH_ਉਛਾਲ    },
+      { "MALLOC_SIZE",         SQLITE_ਸਥਿਤੀ_MALLOC_ਮਾਪ         },
     };
-    int nOp = sizeof(aOp)/sizeof(aOp[0]);
-    zName = (const char*)sqlite3_value_text(argv[0]);
-    for(i=0; i<nOp; i++){
-      if( strcmp(aOp[i].zName, zName)==0 ){
+    ਪੂਰਨ nOp = ਆਕਾਰ(aOp)/ਆਕਾਰ(aOp[0]);
+    zName = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+    ਲਈ(i=0; i<nOp; i++){
+      ਜੇ( strcmp(aOp[i].zName, zName)==0 ){
         op = aOp[i].op;
-        break;
+        ਰੋਕੋ;
       }
     }
-    if( i>=nOp ){
-      char *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
-      sqlite3_result_error(context, zMsg, -1);
-      sqlite3_free(zMsg);
-      return;
+    ਜੇ( i>=nOp ){
+      ਅੱਖਰ *z_ਸੁਨੇਹਾ = sqlite3_mprintf("unknown status property: %s", zName);
+      sqlite3_ਨਤੀਜਾ_error(context, z_ਸੁਨੇਹਾ, -1);
+      sqlite3_free(z_ਸੁਨੇਹਾ);
+      ਵਾਪਸ;
     }
-  }else{
-    sqlite3_result_error(context, "unknown status type", -1);
-    return;
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_error(context, "unknown status type", -1);
+    ਵਾਪਸ;
   }
-  if( argc==2 ){
-    resetFlag = sqlite3_value_int(argv[1]);
-  }else{
+  ਜੇ( argc==2 ){
+    resetFlag = sqlite3_ਮੁੱਲ_int(argv[1]);
+  }ਨਹੀਂਤਾਂ{
     resetFlag = 0;
   }
-  rc = sqlite3_status(op, &cur, &mx, resetFlag);
-  if( rc!=SQLITE_OK ){
-    char *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
-    sqlite3_result_error(context, zMsg, -1);
-    sqlite3_free(zMsg);
-    return;
+  rc = sqlite3_ਸਥਿਤੀ(op, &cur, &mx, resetFlag);
+  ਜੇ( rc!=SQLITE_OK ){
+    ਅੱਖਰ *z_ਸੁਨੇਹਾ = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
+    sqlite3_ਨਤੀਜਾ_error(context, z_ਸੁਨੇਹਾ, -1);
+    sqlite3_free(z_ਸੁਨੇਹਾ);
+    ਵਾਪਸ;
   } 
-  if( argc==2 ){
-    sqlite3_result_int(context, mx);
-  }else{
-    sqlite3_result_int(context, cur);
+  ਜੇ( argc==2 ){
+    sqlite3_ਨਤੀਜਾ_int(context, mx);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_int(context, cur);
   }
 }
 
 /*
 ** Extension load function.
 */
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 __declspec(dllexport)
-#endif
-int testloadext_init(
+#ਜੇ_ਅੰਤ
+ਪੂਰਨ testloadext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  ਅੱਖਰ **pz_Err_ਸੁਨੇਹਾ, 
+  ਅਚਲ sqlite3_api_routines *pApi
 ){
-  int nErr = 0;
+  ਪੂਰਨ nErr = 0;
   SQLITE_EXTENSION_INIT2(pApi);
   nErr |= sqlite3_create_function(db, "half", 1, SQLITE_ANY, 0, halfFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 1, SQLITE_ANY, 0,
-                          statusFunc, 0, 0);
+                          ਸਥਿਤੀ_Func, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 2, SQLITE_ANY, 0,
-                          statusFunc, 0, 0);
-  return nErr ? SQLITE_ERROR : SQLITE_OK;
+                          ਸਥਿਤੀ_Func, 0, 0);
+  ਵਾਪਸ nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 /*
 ** Another extension entry point. This one always fails.
 */
-#ifdef _WIN32
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _WIN32
 __declspec(dllexport)
-#endif
-int testbrokenext_init(
+#ਜੇ_ਅੰਤ
+ਪੂਰਨ testbrokenext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  ਅੱਖਰ **pz_Err_ਸੁਨੇਹਾ, 
+  ਅਚਲ sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  ਅੱਖਰ *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken!");
-  *pzErrMsg = zErr;
-  return 1;
+  *pz_Err_ਸੁਨੇਹਾ = zErr;
+  ਵਾਪਸ 1;
 }

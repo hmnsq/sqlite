@@ -13,21 +13,21 @@
 **
 ** This file contains code that is common across all mutex implementations.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_MUTEX_OMIT)
+#ਜੇ defined(SQLITE_DEBUG) && !defined(SQLITE_MUTEX_OMIT)
 /*
 ** For debugging purposes, record when the mutex subsystem is initialized
 ** and uninitialized so that we can assert() if there is an attempt to
 ** allocate a mutex while the system is uninitialized.
 */
-static SQLITE_WSD int mutexIsInit = 0;
-#endif /* SQLITE_DEBUG && !defined(SQLITE_MUTEX_OMIT) */
+ਸਥਿਰ SQLITE_WSD ਪੂਰਨ mutexIsInit = 0;
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG && !defined(SQLITE_MUTEX_OMIT) */
 
 
-#ifndef SQLITE_MUTEX_OMIT
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_MUTEX_OMIT
 
-#ifdef SQLITE_THREAD_MISUSE_WARNINGS
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_THREAD_MISUSE_WARNINGS
 /*
 ** This block (enclosed by SQLITE_THREAD_MISUSE_WARNINGS) contains
 ** the implementation of a wrapper around the system default mutex
@@ -56,119 +56,119 @@ static SQLITE_WSD int mutexIsInit = 0;
 ** that has been configured using sqlite3MutexWarnOnContention(), it is
 ** set to SQLITE_MUTEX_WARNONCONTENTION.
 */
-typedef struct CheckMutex CheckMutex;
-struct CheckMutex {
-  int iType;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ CheckMutex CheckMutex;
+ਬਣਤਰ CheckMutex {
+  ਪੂਰਨ iType;
   sqlite3_mutex *mutex;
 };
 
-#define SQLITE_MUTEX_WARNONCONTENTION  (-1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SQLITE_MUTEX_WARNONCONTENTION  (-1)
 
 /* 
 ** Pointer to real mutex methods object used by the CheckMutex
 ** implementation. Set by checkMutexInit(). 
 */
-static SQLITE_WSD const sqlite3_mutex_methods *pGlobalMutexMethods;
+ਸਥਿਰ SQLITE_WSD ਅਚਲ sqlite3_mutex_methods *pGlobalMutexMethods;
 
-#ifdef SQLITE_DEBUG
-static int checkMutexHeld(sqlite3_mutex *p){
-  return pGlobalMutexMethods->xMutexHeld(((CheckMutex*)p)->mutex);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
+ਸਥਿਰ ਪੂਰਨ checkMutexHeld(sqlite3_mutex *p){
+  ਵਾਪਸ pGlobalMutexMethods->xMutexHeld(((CheckMutex*)p)->mutex);
 }
-static int checkMutexNotheld(sqlite3_mutex *p){
-  return pGlobalMutexMethods->xMutexNotheld(((CheckMutex*)p)->mutex);
+ਸਥਿਰ ਪੂਰਨ checkMutexNotheld(sqlite3_mutex *p){
+  ਵਾਪਸ pGlobalMutexMethods->xMutexNotheld(((CheckMutex*)p)->mutex);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int checkMutexInit(void){ 
+ਸਥਿਰ ਪੂਰਨ checkMutexInit(ਖਾਲੀ){ 
   pGlobalMutexMethods = sqlite3DefaultMutex();
-  return pGlobalMutexMethods->xMutexInit(); 
+  ਵਾਪਸ pGlobalMutexMethods->xMutexInit(); 
 }
-static int checkMutexEnd(void){ 
-  int rc = pGlobalMutexMethods->xMutexEnd(); 
+ਸਥਿਰ ਪੂਰਨ check_Mutex_ਸਿਰਾ(ਖਾਲੀ){ 
+  ਪੂਰਨ rc = pGlobalMutexMethods->x_Mutex_ਸਿਰਾ(); 
   pGlobalMutexMethods = 0;
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Allocate a mutex.
 */
-static sqlite3_mutex *checkMutexAlloc(int iType){
-  static CheckMutex staticMutexes[] = {
+ਸਥਿਰ sqlite3_mutex *checkMutexAlloc(ਪੂਰਨ iType){
+  ਸਥਿਰ CheckMutex staticMutexes[] = {
     {2, 0}, {3, 0}, {4, 0}, {5, 0},
     {6, 0}, {7, 0}, {8, 0}, {9, 0},
     {10, 0}, {11, 0}, {12, 0}, {13, 0}
   };
   CheckMutex *p = 0;
 
-  assert( SQLITE_MUTEX_RECURSIVE==1 && SQLITE_MUTEX_FAST==0 );
-  if( iType<2 ){
-    p = sqlite3MallocZero(sizeof(CheckMutex));
-    if( p==0 ) return 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_MUTEX_RECURSIVE==1 && SQLITE_MUTEX_FAST==0 );
+  ਜੇ( iType<2 ){
+    p = sqlite3MallocZero(ਆਕਾਰ(CheckMutex));
+    ਜੇ( p==0 ) ਵਾਪਸ 0;
     p->iType = iType;
-  }else{
-#ifdef SQLITE_ENABLE_API_ARMOR
-    if( iType-2>=ArraySize(staticMutexes) ){
-      (void)SQLITE_MISUSE_BKPT;
-      return 0;
+  }ਨਹੀਂਤਾਂ{
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+    ਜੇ( iType-2>=Array_ਮਾਪ(staticMutexes) ){
+      (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
+      ਵਾਪਸ 0;
     }
-#endif
+#ਜੇ_ਅੰਤ
     p = &staticMutexes[iType-2];
   }
 
-  if( p->mutex==0 ){
+  ਜੇ( p->mutex==0 ){
     p->mutex = pGlobalMutexMethods->xMutexAlloc(iType);
-    if( p->mutex==0 ){
-      if( iType<2 ){
+    ਜੇ( p->mutex==0 ){
+      ਜੇ( iType<2 ){
         sqlite3_free(p);
       }
       p = 0;
     }
   }
 
-  return (sqlite3_mutex*)p;
+  ਵਾਪਸ (sqlite3_mutex*)p;
 }
 
 /*
 ** Free a mutex.
 */
-static void checkMutexFree(sqlite3_mutex *p){
-  assert( SQLITE_MUTEX_RECURSIVE<2 );
-  assert( SQLITE_MUTEX_FAST<2 );
-  assert( SQLITE_MUTEX_WARNONCONTENTION<2 );
+ਸਥਿਰ ਖਾਲੀ checkMutexFree(sqlite3_mutex *p){
+  ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_MUTEX_RECURSIVE<2 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_MUTEX_FAST<2 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( SQLITE_MUTEX_WARNONCONTENTION<2 );
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ((CheckMutex*)p)->iType<2 )
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( ((CheckMutex*)p)->iType<2 )
+#ਜੇ_ਅੰਤ
   {
     CheckMutex *pCheck = (CheckMutex*)p;
     pGlobalMutexMethods->xMutexFree(pCheck->mutex);
     sqlite3_free(pCheck);
   }
-#ifdef SQLITE_ENABLE_API_ARMOR
-  else{
-    (void)SQLITE_MISUSE_BKPT;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਨਹੀਂਤਾਂ{
+    (ਖਾਲੀ)SQLITE_MISUSE_BKPT;
   }
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 /*
 ** Enter the mutex.
 */
-static void checkMutexEnter(sqlite3_mutex *p){
+ਸਥਿਰ ਖਾਲੀ checkMutexEnter(sqlite3_mutex *p){
   CheckMutex *pCheck = (CheckMutex*)p;
-  if( pCheck->iType==SQLITE_MUTEX_WARNONCONTENTION ){
-    if( SQLITE_OK==pGlobalMutexMethods->xMutexTry(pCheck->mutex) ){
-      return;
+  ਜੇ( pCheck->iType==SQLITE_MUTEX_WARNONCONTENTION ){
+    ਜੇ( SQLITE_OK==pGlobalMutexMethods->xMutexTry(pCheck->mutex) ){
+      ਵਾਪਸ;
     }
     sqlite3_log(SQLITE_MISUSE, 
         "illegal multi-threaded access to database connection"
     );
-#if SQLITE_THREAD_MISUSE_ABORT
+#ਜੇ SQLITE_THREAD_MISUSE_ABORT
     abort();
-#endif
+#ਜੇ_ਅੰਤ
   }
   pGlobalMutexMethods->xMutexEnter(pCheck->mutex);
 }
@@ -176,147 +176,147 @@ static void checkMutexEnter(sqlite3_mutex *p){
 /*
 ** Enter the mutex (do not block).
 */
-static int checkMutexTry(sqlite3_mutex *p){
+ਸਥਿਰ ਪੂਰਨ checkMutexTry(sqlite3_mutex *p){
   CheckMutex *pCheck = (CheckMutex*)p;
-  return pGlobalMutexMethods->xMutexTry(pCheck->mutex);
+  ਵਾਪਸ pGlobalMutexMethods->xMutexTry(pCheck->mutex);
 }
 
 /*
 ** Leave the mutex.
 */
-static void checkMutexLeave(sqlite3_mutex *p){
+ਸਥਿਰ ਖਾਲੀ checkMutexLeave(sqlite3_mutex *p){
   CheckMutex *pCheck = (CheckMutex*)p;
   pGlobalMutexMethods->xMutexLeave(pCheck->mutex);
 }
 
-sqlite3_mutex_methods const *multiThreadedCheckMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ਅਚਲ *multiThreadedCheckMutex(ਖਾਲੀ){
+  ਸਥਿਰ ਅਚਲ sqlite3_mutex_methods sMutex = {
     checkMutexInit,
-    checkMutexEnd,
+    check_Mutex_ਸਿਰਾ,
     checkMutexAlloc,
     checkMutexFree,
     checkMutexEnter,
     checkMutexTry,
     checkMutexLeave,
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
     checkMutexHeld,
     checkMutexNotheld
-#else
+#ਨਹੀਂਤਾਂ
     0,
     0
-#endif
+#ਜੇ_ਅੰਤ
   };
-  return &sMutex;
+  ਵਾਪਸ &sMutex;
 }
 
 /*
 ** Mark the SQLITE_MUTEX_RECURSIVE mutex passed as the only argument as
 ** one on which there should be no contention.
 */
-void sqlite3MutexWarnOnContention(sqlite3_mutex *p){
-  if( sqlite3GlobalConfig.mutex.xMutexAlloc==checkMutexAlloc ){
+ਖਾਲੀ sqlite3MutexWarnOnContention(sqlite3_mutex *p){
+  ਜੇ( sqlite3GlobalConfig.mutex.xMutexAlloc==checkMutexAlloc ){
     CheckMutex *pCheck = (CheckMutex*)p;
-    assert( pCheck->iType==SQLITE_MUTEX_RECURSIVE );
+    ਪ੍ਰਤਿਜ੍ਞਾ( pCheck->iType==SQLITE_MUTEX_RECURSIVE );
     pCheck->iType = SQLITE_MUTEX_WARNONCONTENTION;
   }
 }
-#endif   /* ifdef SQLITE_THREAD_MISUSE_WARNINGS */
+#ਜੇ_ਅੰਤ   /* ifdef SQLITE_THREAD_MISUSE_WARNINGS */
 
 /*
 ** Initialize the mutex system.
 */
-int sqlite3MutexInit(void){ 
-  int rc = SQLITE_OK;
-  if( !sqlite3GlobalConfig.mutex.xMutexAlloc ){
+ਪੂਰਨ sqlite3MutexInit(ਖਾਲੀ){ 
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਜੇ( !sqlite3GlobalConfig.mutex.xMutexAlloc ){
     /* If the xMutexAlloc method has not been set, then the user did not
     ** install a mutex implementation via sqlite3_config() prior to 
     ** sqlite3_initialize() being called. This block copies pointers to
     ** the default implementation into the sqlite3GlobalConfig structure.
     */
-    sqlite3_mutex_methods const *pFrom;
-    sqlite3_mutex_methods *pTo = &sqlite3GlobalConfig.mutex;
+    sqlite3_mutex_methods ਅਚਲ *pFrom;
+    sqlite3_mutex_methods *p_ਮੰਜ਼ਿਲ = &sqlite3GlobalConfig.mutex;
 
-    if( sqlite3GlobalConfig.bCoreMutex ){
-#ifdef SQLITE_THREAD_MISUSE_WARNINGS
+    ਜੇ( sqlite3GlobalConfig.bCoreMutex ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_THREAD_MISUSE_WARNINGS
       pFrom = multiThreadedCheckMutex();
-#else
+#ਨਹੀਂਤਾਂ
       pFrom = sqlite3DefaultMutex();
-#endif
-    }else{
+#ਜੇ_ਅੰਤ
+    }ਨਹੀਂਤਾਂ{
       pFrom = sqlite3NoopMutex();
     }
-    pTo->xMutexInit = pFrom->xMutexInit;
-    pTo->xMutexEnd = pFrom->xMutexEnd;
-    pTo->xMutexFree = pFrom->xMutexFree;
-    pTo->xMutexEnter = pFrom->xMutexEnter;
-    pTo->xMutexTry = pFrom->xMutexTry;
-    pTo->xMutexLeave = pFrom->xMutexLeave;
-    pTo->xMutexHeld = pFrom->xMutexHeld;
-    pTo->xMutexNotheld = pFrom->xMutexNotheld;
-    sqlite3MemoryBarrier();
-    pTo->xMutexAlloc = pFrom->xMutexAlloc;
-  }else{
+    p_ਮੰਜ਼ਿਲ->xMutexInit = pFrom->xMutexInit;
+    p_ਮੰਜ਼ਿਲ->x_Mutex_ਸਿਰਾ = pFrom->x_Mutex_ਸਿਰਾ;
+    p_ਮੰਜ਼ਿਲ->xMutexFree = pFrom->xMutexFree;
+    p_ਮੰਜ਼ਿਲ->xMutexEnter = pFrom->xMutexEnter;
+    p_ਮੰਜ਼ਿਲ->xMutexTry = pFrom->xMutexTry;
+    p_ਮੰਜ਼ਿਲ->xMutexLeave = pFrom->xMutexLeave;
+    p_ਮੰਜ਼ਿਲ->xMutexHeld = pFrom->xMutexHeld;
+    p_ਮੰਜ਼ਿਲ->xMutexNotheld = pFrom->xMutexNotheld;
+    sqlite3_ਸਮ੍ਰਿਤੀ_Barrier();
+    p_ਮੰਜ਼ਿਲ->xMutexAlloc = pFrom->xMutexAlloc;
+  }ਨਹੀਂਤਾਂ{
     /* Another thread may have just installed the default methods above.
     ** This barrier pairs with the one prior to setting xMutexAlloc, so
     ** that the load of xMutexInit below cannot be satisfied before the
     ** load of xMutexAlloc on processors with weak memory ordering. */
-    sqlite3MemoryBarrier();
+    sqlite3_ਸਮ੍ਰਿਤੀ_Barrier();
   }
-  assert( sqlite3GlobalConfig.mutex.xMutexInit );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexInit );
   rc = sqlite3GlobalConfig.mutex.xMutexInit();
 
-#ifdef SQLITE_DEBUG
-  GLOBAL(int, mutexIsInit) = 1;
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
+  GLOBAL(ਪੂਰਨ, mutexIsInit) = 1;
+#ਜੇ_ਅੰਤ
 
-  sqlite3MemoryBarrier();
-  return rc;
+  sqlite3_ਸਮ੍ਰਿਤੀ_Barrier();
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Shutdown the mutex system. This call frees resources allocated by
 ** sqlite3MutexInit().
 */
-int sqlite3MutexEnd(void){
-  int rc = SQLITE_OK;
-  if( sqlite3GlobalConfig.mutex.xMutexEnd ){
-    rc = sqlite3GlobalConfig.mutex.xMutexEnd();
+ਪੂਰਨ sqlite3_Mutex_ਸਿਰਾ(ਖਾਲੀ){
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਜੇ( sqlite3GlobalConfig.mutex.x_Mutex_ਸਿਰਾ ){
+    rc = sqlite3GlobalConfig.mutex.x_Mutex_ਸਿਰਾ();
   }
 
-#ifdef SQLITE_DEBUG
-  GLOBAL(int, mutexIsInit) = 0;
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
+  GLOBAL(ਪੂਰਨ, mutexIsInit) = 0;
+#ਜੇ_ਅੰਤ
 
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Retrieve a pointer to a static mutex or allocate a new dynamic one.
 */
-sqlite3_mutex *sqlite3_mutex_alloc(int id){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( id<=SQLITE_MUTEX_RECURSIVE && sqlite3_initialize() ) return 0;
-  if( id>SQLITE_MUTEX_RECURSIVE && sqlite3MutexInit() ) return 0;
-#endif
-  assert( sqlite3GlobalConfig.mutex.xMutexAlloc );
-  return sqlite3GlobalConfig.mutex.xMutexAlloc(id);
+sqlite3_mutex *sqlite3_mutex_alloc(ਪੂਰਨ id){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( id<=SQLITE_MUTEX_RECURSIVE && sqlite3_initialize() ) ਵਾਪਸ 0;
+  ਜੇ( id>SQLITE_MUTEX_RECURSIVE && sqlite3MutexInit() ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexAlloc );
+  ਵਾਪਸ sqlite3GlobalConfig.mutex.xMutexAlloc(id);
 }
 
-sqlite3_mutex *sqlite3MutexAlloc(int id){
-  if( !sqlite3GlobalConfig.bCoreMutex ){
-    return 0;
+sqlite3_mutex *sqlite3MutexAlloc(ਪੂਰਨ id){
+  ਜੇ( !sqlite3GlobalConfig.bCoreMutex ){
+    ਵਾਪਸ 0;
   }
-  assert( GLOBAL(int, mutexIsInit) );
-  assert( sqlite3GlobalConfig.mutex.xMutexAlloc );
-  return sqlite3GlobalConfig.mutex.xMutexAlloc(id);
+  ਪ੍ਰਤਿਜ੍ਞਾ( GLOBAL(ਪੂਰਨ, mutexIsInit) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexAlloc );
+  ਵਾਪਸ sqlite3GlobalConfig.mutex.xMutexAlloc(id);
 }
 
 /*
 ** Free a dynamic mutex.
 */
-void sqlite3_mutex_free(sqlite3_mutex *p){
-  if( p ){
-    assert( sqlite3GlobalConfig.mutex.xMutexFree );
+ਖਾਲੀ sqlite3_mutex_free(sqlite3_mutex *p){
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexFree );
     sqlite3GlobalConfig.mutex.xMutexFree(p);
   }
 }
@@ -325,9 +325,9 @@ void sqlite3_mutex_free(sqlite3_mutex *p){
 ** Obtain the mutex p. If some other thread already has the mutex, block
 ** until it can be obtained.
 */
-void sqlite3_mutex_enter(sqlite3_mutex *p){
-  if( p ){
-    assert( sqlite3GlobalConfig.mutex.xMutexEnter );
+ਖਾਲੀ sqlite3_mutex_enter(sqlite3_mutex *p){
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexEnter );
     sqlite3GlobalConfig.mutex.xMutexEnter(p);
   }
 }
@@ -336,13 +336,13 @@ void sqlite3_mutex_enter(sqlite3_mutex *p){
 ** Obtain the mutex p. If successful, return SQLITE_OK. Otherwise, if another
 ** thread holds the mutex and it cannot be obtained, return SQLITE_BUSY.
 */
-int sqlite3_mutex_try(sqlite3_mutex *p){
-  int rc = SQLITE_OK;
-  if( p ){
-    assert( sqlite3GlobalConfig.mutex.xMutexTry );
-    return sqlite3GlobalConfig.mutex.xMutexTry(p);
+ਪੂਰਨ sqlite3_mutex_try(sqlite3_mutex *p){
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexTry );
+    ਵਾਪਸ sqlite3GlobalConfig.mutex.xMutexTry(p);
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -351,14 +351,14 @@ int sqlite3_mutex_try(sqlite3_mutex *p){
 ** is not currently entered. If a NULL pointer is passed as an argument
 ** this function is a no-op.
 */
-void sqlite3_mutex_leave(sqlite3_mutex *p){
-  if( p ){
-    assert( sqlite3GlobalConfig.mutex.xMutexLeave );
+ਖਾਲੀ sqlite3_mutex_leave(sqlite3_mutex *p){
+  ਜੇ( p ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3GlobalConfig.mutex.xMutexLeave );
     sqlite3GlobalConfig.mutex.xMutexLeave(p);
   }
 }
 
-#ifndef NDEBUG
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ NDEBUG
 /*
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
 ** intended for use inside assert() statements.
@@ -366,24 +366,24 @@ void sqlite3_mutex_leave(sqlite3_mutex *p){
 ** Because these routines raise false-positive alerts in TSAN, disable
 ** them (make them always return 1) when compiling with TSAN.
 */
-int sqlite3_mutex_held(sqlite3_mutex *p){
-# if defined(__has_feature)
-#   if __has_feature(thread_sanitizer)
+ਪੂਰਨ sqlite3_mutex_held(sqlite3_mutex *p){
+# ਜੇ defined(__has_feature)
+#   ਜੇ __has_feature(thread_sanitizer)
       p = 0;
 #   endif
 # endif
-  assert( p==0 || sqlite3GlobalConfig.mutex.xMutexHeld );
-  return p==0 || sqlite3GlobalConfig.mutex.xMutexHeld(p);
+  ਪ੍ਰਤਿਜ੍ਞਾ( p==0 || sqlite3GlobalConfig.mutex.xMutexHeld );
+  ਵਾਪਸ p==0 || sqlite3GlobalConfig.mutex.xMutexHeld(p);
 }
-int sqlite3_mutex_notheld(sqlite3_mutex *p){
-# if defined(__has_feature)
-#   if __has_feature(thread_sanitizer)
+ਪੂਰਨ sqlite3_mutex_notheld(sqlite3_mutex *p){
+# ਜੇ defined(__has_feature)
+#   ਜੇ __has_feature(thread_sanitizer)
       p = 0;
 #   endif
 # endif
-  assert( p==0 || sqlite3GlobalConfig.mutex.xMutexNotheld );
-  return p==0 || sqlite3GlobalConfig.mutex.xMutexNotheld(p);
+  ਪ੍ਰਤਿਜ੍ਞਾ( p==0 || sqlite3GlobalConfig.mutex.xMutexNotheld );
+  ਵਾਪਸ p==0 || sqlite3GlobalConfig.mutex.xMutexNotheld(p);
 }
-#endif /* NDEBUG */
+#ਜੇ_ਅੰਤ /* NDEBUG */
 
-#endif /* !defined(SQLITE_MUTEX_OMIT) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_MUTEX_OMIT) */

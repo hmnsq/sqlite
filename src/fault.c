@@ -24,17 +24,17 @@
 ** during a hash table resize is a benign fault.
 */
 
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
-#ifndef SQLITE_UNTESTABLE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_UNTESTABLE
 
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
-  void (*xBenignBegin)(void);
-  void (*xBenignEnd)(void);
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ BenignMallocHooks BenignMallocHooks;
+ਸਥਿਰ SQLITE_WSD ਬਣਤਰ BenignMallocHooks {
+  ਖਾਲੀ (*xBenignBegin)(ਖਾਲੀ);
+  ਖਾਲੀ (*x_Benign_ਸਿਰਾ)(ਖਾਲੀ);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
@@ -43,27 +43,27 @@ static SQLITE_WSD struct BenignMallocHooks {
 ** case where writable static data is supported, wsdHooks can refer directly
 ** to the "sqlite3Hooks" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WSD
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#ਨਹੀਂਤਾਂ
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
-#endif
+#ਜੇ_ਅੰਤ
 
 
 /*
 ** Register hooks to call when sqlite3BeginBenignMalloc() and
 ** sqlite3EndBenignMalloc() are called, respectively.
 */
-void sqlite3BenignMallocHooks(
-  void (*xBenignBegin)(void),
-  void (*xBenignEnd)(void)
+ਖਾਲੀ sqlite3BenignMallocHooks(
+  ਖਾਲੀ (*xBenignBegin)(ਖਾਲੀ),
+  ਖਾਲੀ (*x_Benign_ਸਿਰਾ)(ਖਾਲੀ)
 ){
   wsdHooksInit;
   wsdHooks.xBenignBegin = xBenignBegin;
-  wsdHooks.xBenignEnd = xBenignEnd;
+  wsdHooks.x_Benign_ਸਿਰਾ = x_Benign_ਸਿਰਾ;
 }
 
 /*
@@ -71,17 +71,17 @@ void sqlite3BenignMallocHooks(
 ** subsequent malloc failures are benign. A call to sqlite3EndBenignMalloc()
 ** indicates that subsequent malloc failures are non-benign.
 */
-void sqlite3BeginBenignMalloc(void){
+ਖਾਲੀ sqlite3BeginBenignMalloc(ਖਾਲੀ){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  ਜੇ( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
-void sqlite3EndBenignMalloc(void){
+ਖਾਲੀ sqlite3_ਸਿਰਾ_Benign_Malloc(ਖਾਲੀ){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
-    wsdHooks.xBenignEnd();
+  ਜੇ( wsdHooks.x_Benign_ਸਿਰਾ ){
+    wsdHooks.x_Benign_ਸਿਰਾ();
   }
 }
 
-#endif   /* #ifndef SQLITE_UNTESTABLE */
+#ਜੇ_ਅੰਤ   /* #ifndef SQLITE_UNTESTABLE */

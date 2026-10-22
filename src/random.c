@@ -15,32 +15,32 @@
 ** Random numbers are used by some of the database backends in order
 ** to generate random integer keys for tables or random filenames.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 
 /* All threads share a single random number generator.
 ** This structure is the current state of the generator.
 */
-static SQLITE_WSD struct sqlite3PrngType {
+ਸਥਿਰ SQLITE_WSD ਬਣਤਰ sqlite3PrngType {
   u32 s[16];                 /* 64 bytes of chacha20 state */
-  u8 out[64];                /* Output bytes */
+  u8 ਬਾਹਰਲਾ[64];                /* Output bytes */
   u8 n;                      /* Output bytes remaining */
 } sqlite3Prng;
 
 
 /* The RFC-7539 ChaCha20 block function
 */
-#define ROTL(a,b) (((a) << (b)) | ((a) >> (32 - (b))))
-#define QR(a, b, c, d) ( \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ROTL(a,b) (((a) << (b)) | ((a) >> (32 - (b))))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ QR(a, b, c, d) ( \
     a += b, d ^= a, d = ROTL(d,16), \
     c += d, b ^= c, b = ROTL(b,12), \
     a += b, d ^= a, d = ROTL(d, 8), \
     c += d, b ^= c, b = ROTL(b, 7))
-static void chacha_block(u32 *out, const u32 *in){
-  int i;
+ਸਥਿਰ ਖਾਲੀ chacha_ਖੰਡ(u32 *ਬਾਹਰਲਾ, ਅਚਲ u32 *ਵਿੱਚ){
+  ਪੂਰਨ i;
   u32 x[16];
-  memcpy(x, in, 64);
-  for(i=0; i<10; i++){
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(x, ਵਿੱਚ, 64);
+  ਲਈ(i=0; i<10; i++){
     QR(x[0], x[4], x[ 8], x[12]);
     QR(x[1], x[5], x[ 9], x[13]);
     QR(x[2], x[6], x[10], x[14]);
@@ -50,14 +50,14 @@ static void chacha_block(u32 *out, const u32 *in){
     QR(x[2], x[7], x[ 8], x[13]);
     QR(x[3], x[4], x[ 9], x[14]);
   }
-  for(i=0; i<16; i++) out[i] = x[i]+in[i];
+  ਲਈ(i=0; i<16; i++) ਬਾਹਰਲਾ[i] = x[i]+ਵਿੱਚ[i];
 }
 
 /*
 ** Return N random bytes.
 */
-void sqlite3_randomness(int N, void *pBuf){
-  unsigned char *zBuf = pBuf;
+ਖਾਲੀ sqlite3_randomness(ਪੂਰਨ N, ਖਾਲੀ *pBuf){
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *zBuf = pBuf;
 
   /* The "wsdPrng" macro will resolve to the pseudo-random number generator
   ** state vector.  If writable static data is unsupported on the target,
@@ -65,71 +65,71 @@ void sqlite3_randomness(int N, void *pBuf){
   ** case where writable static data is supported, wsdPrng can refer directly
   ** to the "sqlite3Prng" state vector declared above.
   */
-#ifdef SQLITE_OMIT_WSD
-  struct sqlite3PrngType *p = &GLOBAL(struct sqlite3PrngType, sqlite3Prng);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WSD
+  ਬਣਤਰ sqlite3PrngType *p = &GLOBAL(ਬਣਤਰ sqlite3PrngType, sqlite3Prng);
 # define wsdPrng p[0]
-#else
+#ਨਹੀਂਤਾਂ
 # define wsdPrng sqlite3Prng
-#endif
+#ਜੇ_ਅੰਤ
 
-#if SQLITE_THREADSAFE
+#ਜੇ SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return;
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਜੇ( sqlite3_initialize() ) ਵਾਪਸ;
+#ਜੇ_ਅੰਤ
 
-#if SQLITE_THREADSAFE
+#ਜੇ SQLITE_THREADSAFE
   mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_PRNG);
-#endif
+#ਜੇ_ਅੰਤ
 
   sqlite3_mutex_enter(mutex);
-  if( N<=0 || pBuf==0 ){
+  ਜੇ( N<=0 || pBuf==0 ){
     wsdPrng.s[0] = 0;
     sqlite3_mutex_leave(mutex);
-    return;
+    ਵਾਪਸ;
   }
 
   /* Initialize the state of the random number generator once,
   ** the first time this routine is called.
   */
-  if( wsdPrng.s[0]==0 ){
-    sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-    static const u32 chacha20_init[] = {
+  ਜੇ( wsdPrng.s[0]==0 ){
+    sqlite3_vfs *pVfs = sqlite3_vfs_ਲੱਭੋ(0);
+    ਸਥਿਰ ਅਚਲ u32 chacha20_init[] = {
       0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
     };
-    memcpy(&wsdPrng.s[0], chacha20_init, 16);
-    if( NEVER(pVfs==0) ){
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(&wsdPrng.s[0], chacha20_init, 16);
+    ਜੇ( NEVER(pVfs==0) ){
       memset(&wsdPrng.s[4], 0, 44);
-    }else{
-      sqlite3OsRandomness(pVfs, 44, (char*)&wsdPrng.s[4]);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3OsRandomness(pVfs, 44, (ਅੱਖਰ*)&wsdPrng.s[4]);
     }
     wsdPrng.s[15] = wsdPrng.s[12];
     wsdPrng.s[12] = 0;
     wsdPrng.n = 0;
   }
 
-  assert( N>0 );
-  while( 1 /* exit by break */ ){
-    if( N<=wsdPrng.n ){
-      memcpy(zBuf, &wsdPrng.out[wsdPrng.n-N], N);
+  ਪ੍ਰਤਿਜ੍ਞਾ( N>0 );
+  ਜਦੋਂ( 1 /* exit by break */ ){
+    ਜੇ( N<=wsdPrng.n ){
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(zBuf, &wsdPrng.ਬਾਹਰਲਾ[wsdPrng.n-N], N);
       wsdPrng.n -= N;
-      break;
+      ਰੋਕੋ;
     }
-    if( wsdPrng.n>0 ){
-      memcpy(zBuf, wsdPrng.out, wsdPrng.n);
+    ਜੇ( wsdPrng.n>0 ){
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(zBuf, wsdPrng.ਬਾਹਰਲਾ, wsdPrng.n);
       N -= wsdPrng.n;
       zBuf += wsdPrng.n;
     }
     wsdPrng.s[12]++;
-    chacha_block((u32*)wsdPrng.out, wsdPrng.s);
+    chacha_ਖੰਡ((u32*)wsdPrng.ਬਾਹਰਲਾ, wsdPrng.s);
     wsdPrng.n = 64;
   }
   sqlite3_mutex_leave(mutex);
 }
 
-#ifndef SQLITE_UNTESTABLE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_UNTESTABLE
 /*
 ** For testing purposes, we sometimes want to preserve the state of
 ** PRNG and restore the PRNG to its saved state at a later time, or
@@ -139,19 +139,19 @@ void sqlite3_randomness(int N, void *pBuf){
 ** The sqlite3_test_control() interface calls these routines to
 ** control the PRNG.
 */
-static SQLITE_WSD struct sqlite3PrngType sqlite3SavedPrng;
-void sqlite3PrngSaveState(void){
-  memcpy(
-    &GLOBAL(struct sqlite3PrngType, sqlite3SavedPrng),
-    &GLOBAL(struct sqlite3PrngType, sqlite3Prng),
-    sizeof(sqlite3Prng)
+ਸਥਿਰ SQLITE_WSD ਬਣਤਰ sqlite3PrngType sqlite3SavedPrng;
+ਖਾਲੀ sqlite3PrngSaveState(ਖਾਲੀ){
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(
+    &GLOBAL(ਬਣਤਰ sqlite3PrngType, sqlite3SavedPrng),
+    &GLOBAL(ਬਣਤਰ sqlite3PrngType, sqlite3Prng),
+    ਆਕਾਰ(sqlite3Prng)
   );
 }
-void sqlite3PrngRestoreState(void){
-  memcpy(
-    &GLOBAL(struct sqlite3PrngType, sqlite3Prng),
-    &GLOBAL(struct sqlite3PrngType, sqlite3SavedPrng),
-    sizeof(sqlite3Prng)
+ਖਾਲੀ sqlite3PrngRestoreState(ਖਾਲੀ){
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(
+    &GLOBAL(ਬਣਤਰ sqlite3PrngType, sqlite3Prng),
+    &GLOBAL(ਬਣਤਰ sqlite3PrngType, sqlite3SavedPrng),
+    ਆਕਾਰ(sqlite3Prng)
   );
 }
-#endif /* SQLITE_UNTESTABLE */
+#ਜੇ_ਅੰਤ /* SQLITE_UNTESTABLE */

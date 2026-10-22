@@ -117,29 +117,29 @@
 ** Additional information can be found in the doc/jsonb.md file of the
 ** canonical SQLite source tree.
 */
-#ifndef SQLITE_OMIT_JSON
-#include "sqliteInt.h"
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_JSON
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /* JSONB element types
 */
-#define JSONB_NULL     0   /* "null" */
-#define JSONB_TRUE     1   /* "true" */
-#define JSONB_FALSE    2   /* "false" */
-#define JSONB_INT      3   /* integer acceptable to JSON and SQL */
-#define JSONB_INT5     4   /* integer in 0x000 notation */
-#define JSONB_FLOAT    5   /* float acceptable to JSON and SQL */
-#define JSONB_FLOAT5   6   /* float with JSON5 extensions */
-#define JSONB_TEXT     7   /* Text compatible with both JSON and SQL */
-#define JSONB_TEXTJ    8   /* Text with JSON escapes */
-#define JSONB_TEXT5    9   /* Text with JSON-5 escape */
-#define JSONB_TEXTRAW 10   /* SQL text that needs escaping for JSON */
-#define JSONB_ARRAY   11   /* An array */
-#define JSONB_OBJECT  12   /* An object */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_NULL     0   /* "null" */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_TRUE     1   /* "true" */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_FALSE    2   /* "false" */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_INT      3   /* integer acceptable to JSON and SQL */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_INT5     4   /* integer in 0x000 notation */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_FLOAT    5   /* float acceptable to JSON and SQL */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_FLOAT5   6   /* float with JSON5 extensions */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_ਪਾਠ     7   /* Text compatible with both JSON and SQL */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_TEXTJ    8   /* Text with JSON escapes */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_TEXT5    9   /* Text with JSON-5 escape */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_TEXTRAW 10   /* SQL text that needs escaping for JSON */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_ARRAY   11   /* An array */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSONB_OBJECT  12   /* An object */
 
 /* Human-readable names for the JSONB values.  The index for each
 ** string must correspond to the JSONB_* integer above.
 */
-static const char * const jsonbType[] = {
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ * ਅਚਲ jsonbType[] = {
   "null", "true", "false", "integer", "integer", 
   "real", "real", "text",  "text",    "text",
   "text", "array", "object", "", "", "", ""
@@ -150,8 +150,8 @@ static const char * const jsonbType[] = {
 ** the library isspace() function, resulting in a 7% overall performance
 ** increase for the text-JSON parser.  (Ubuntu14.10 gcc 4.8.4 x64 with -Os).
 */
-static const char jsonIsSpace[] = {
-#ifdef SQLITE_ASCII
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ jsonIsSpace[] = {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 1, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -170,8 +170,8 @@ static const char jsonIsSpace[] = {
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* d */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* e */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* f */
-#endif
-#ifdef SQLITE_EBCDIC
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_EBCDIC
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 1, 0, 0,  0, 0, 0, 0, 0, 1, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -190,21 +190,21 @@ static const char jsonIsSpace[] = {
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* d */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* e */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* f */
-#endif
+#ਜੇ_ਅੰਤ
 
 };
-#define jsonIsspace(x) (jsonIsSpace[(unsigned char)x])
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ jsonIsspace(x) (jsonIsSpace[(ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ)x])
 
 /*
 ** The set of all space characters recognized by jsonIsspace().
 ** Useful as the second argument to strspn().
 */
-#ifdef SQLITE_ASCII
-static const char jsonSpaces[] = "\011\012\015\040";
-#endif
-#ifdef SQLITE_EBCDIC
-static const char jsonSpaces[] = "\005\045\015\100";
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ASCII
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ jsonSpaces[] = "\011\012\015\040";
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_EBCDIC
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ jsonSpaces[] = "\005\045\015\100";
+#ਜੇ_ਅੰਤ
 
 
 /*
@@ -213,8 +213,8 @@ static const char jsonSpaces[] = "\005\045\015\100";
 ** canonical JSON, but it is special in JSON-5, so we include
 ** it in the set of special characters.
 */
-static const char jsonIsOk[256] = {
-#ifdef SQLITE_ASCII
+ਸਥਿਰ ਅਚਲ ਅੱਖਰ jsonIsOk[256] = {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -233,8 +233,8 @@ static const char jsonIsOk[256] = {
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* d */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* e */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1   /* f */
-#endif
-#ifdef SQLITE_EBCDIC
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_EBCDIC
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -253,25 +253,25 @@ static const char jsonIsOk[256] = {
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* d */
   0, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* e */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1   /* f */
-#endif
+#ਜੇ_ਅੰਤ
 };
 
 /* Objects */
-typedef struct JsonCache JsonCache;
-typedef struct JsonString JsonString;
-typedef struct JsonParse JsonParse;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonCache JsonCache;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonString JsonString;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonParse JsonParse;
 
 /*
 ** Magic number used for the JSON parse cache in sqlite3_get_auxdata()
 */
-#define JSON_CACHE_ID    (-429938)  /* Cache entry */
-#define JSON_CACHE_SIZE  4          /* Max number of cache entries */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_CACHE_ID    (-429938)  /* Cache entry */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_CACHE_ਮਾਪ  4          /* Max number of cache entries */
 
 /*
 ** jsonUnescapeOneChar() returns this invalid code point if it encounters
 ** a syntax error.
 */
-#define JSON_INVALID_CHAR 0x99999
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_INVALID_CHAR 0x99999
 
 /* A cache mapping JSON text into JSONB blobs.
 **
@@ -286,10 +286,10 @@ typedef struct JsonParse JsonParse;
 **
 **    *   zJson must be an RCStr.  In other words bJsonIsRCStr must be true.
 */
-struct JsonCache {
+ਬਣਤਰ JsonCache {
   sqlite3 *db;                    /* Database connection */
-  int nUsed;                      /* Number of active entries in the cache */
-  JsonParse *a[JSON_CACHE_SIZE];  /* One line for each cache entry */
+  ਪੂਰਨ n_ਵਰਤਿਆ;                      /* Number of active entries in the cache */
+  JsonParse *a[JSON_CACHE_ਮਾਪ];  /* One line for each cache entry */
 };
 
 /* An instance of this object represents a JSON string
@@ -300,39 +300,39 @@ struct JsonCache {
 ** then it will be an RCStr string.  This aids with caching of large
 ** JSON strings.
 */
-struct JsonString {
+ਬਣਤਰ JsonString {
   sqlite3_context *pCtx;   /* Function context - put error messages here */
-  char *zBuf;              /* Append JSON content here */
+  ਅੱਖਰ *zBuf;              /* Append JSON content here */
   u64 nAlloc;              /* Bytes of storage available in zBuf[] */
-  u64 nUsed;               /* Bytes of zBuf[] currently used */
+  u64 n_ਵਰਤਿਆ;               /* Bytes of zBuf[] currently used */
   u8 bStatic;              /* True if zBuf is static space */
   u8 eErr;                 /* True if an error has been encountered */
-  char zSpace[100];        /* Initial static space */
+  ਅੱਖਰ zSpace[100];        /* Initial static space */
 };
 
 /* Allowed values for JsonString.eErr */
-#define JSTRING_OOM         0x01   /* Out of memory */
-#define JSTRING_MALFORMED   0x02   /* Malformed JSONB */
-#define JSTRING_TOODEEP     0x04   /* JSON nested too deep */
-#define JSTRING_ERR         0x08   /* Error already sent to sqlite3_result */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSTRING_OOM         0x01   /* Out of memory */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSTRING_MALFORMED   0x02   /* Malformed JSONB */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSTRING_TOODEEP     0x04   /* JSON nested too deep */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSTRING_ERR         0x08   /* Error already sent to sqlite3_result */
 
 /* The "subtype" set for text JSON values passed through using
 ** sqlite3_result_subtype() and sqlite3_value_subtype().
 */
-#define JSON_SUBTYPE  74    /* Ascii for "J" */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_SUBTYPE  74    /* Ascii for "J" */
 
 /*
 ** Bit values for the flags passed into various SQL function implementations
 ** via the sqlite3_user_data() value.
 */
-#define JSON_JSON      0x01        /* Result is always JSON */
-#define JSON_SQL       0x02        /* Result is always SQL */
-#define JSON_ABPATH    0x03        /* Allow abbreviated JSON path specs */
-#define JSON_ISSET     0x04        /* json_set(), not json_insert() */
-#define JSON_AINS      0x08        /* json_array_insert(), not json_insert() */
-#define JSON_BLOB      0x10        /* Use the BLOB output format */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_JSON      0x01        /* Result is always JSON */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_SQL       0x02        /* Result is always SQL */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ABPATH    0x03        /* Allow abbreviated JSON path specs */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ISSET     0x04        /* json_set(), not json_insert() */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_AINS      0x08        /* json_array_insert(), not json_insert() */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_BLOB      0x10        /* Use the BLOB output format */
 
-#define JSON_INSERT_TYPE(X)  (((X)&0xC)>>2)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਪਾਓ_TYPE(X)  (((X)&0xC)>>2)
 
 
 /* A parsed JSON value.  Lifecycle:
@@ -350,16 +350,16 @@ struct JsonString {
 **       is skipped if the function is one of the jsonb_* functions that
 **       returns JSONB instead of text JSON.
 */
-struct JsonParse {
+ਬਣਤਰ JsonParse {
   u8 *aBlob;         /* JSONB representation of JSON value */
   u32 nBlob;         /* Bytes of aBlob[] actually used */
   u32 nBlobAlloc;    /* Bytes allocated to aBlob[].  0 if aBlob is external */
-  char *zJson;       /* Json text used for parsing */
+  ਅੱਖਰ *zJson;       /* Json text used for parsing */
   sqlite3 *db;       /* The database connection to which this object belongs */
-  int nJson;         /* Length of the zJson string in bytes */
+  ਪੂਰਨ nJson;         /* Length of the zJson string in bytes */
   u32 nJPRef;        /* Number of references to this object */
   u32 iErr;          /* Error location in zJson[] */
-  u16 iDepth;        /* Nesting depth */
+  u16 i_ਡੂੰਘਾਈ;        /* Nesting depth */
   u8 nErr;           /* Number of errors seen */
   u8 oom;            /* Set to true if out of memory */
   u8 bJsonIsRCStr;   /* True if zJson is an RCStr */
@@ -367,18 +367,18 @@ struct JsonParse {
   u8 bReadOnly;      /* Do not modify. */
   /* Search and edit information.  See jsonLookupStep() */
   u8 eEdit;          /* Edit operation to apply */
-  int delta;         /* Size change due to the edit */
+  ਪੂਰਨ delta;         /* Size change due to the edit */
   u32 nIns;          /* Number of bytes to insert */
   u32 iLabel;        /* Location of label if search landed on an object value */
   u8 *aIns;          /* Content to be inserted */
 };
 
 /* Allowed values for JsonParse.eEdit */
-#define JEDIT_DEL   1   /* Delete if exists */
-#define JEDIT_REPL  2   /* Overwrite if exists */
-#define JEDIT_INS   3   /* Insert if not exists */
-#define JEDIT_SET   4   /* Insert or overwrite */
-#define JEDIT_AINS  5   /* array_insert() */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEDIT_DEL   1   /* Delete if exists */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEDIT_REPL  2   /* Overwrite if exists */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEDIT_INS   3   /* Insert if not exists */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEDIT_ਸੈੱਟ   4   /* Insert or overwrite */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEDIT_AINS  5   /* array_insert() */
 
 /*
 ** Maximum nesting depth of JSON for this implementation.
@@ -387,30 +387,30 @@ struct JsonParse {
 ** descent parser.  A depth of 1000 is far deeper than any sane JSON
 ** should go.  Historical note: This limit was 2000 prior to version 3.42.0
 */
-#ifndef SQLITE_JSON_MAX_DEPTH
-# define JSON_MAX_DEPTH  1000
-#else
-# define JSON_MAX_DEPTH SQLITE_JSON_MAX_DEPTH
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_JSON_MAX_ਡੂੰਘਾਈ
+# define JSON_MAX_ਡੂੰਘਾਈ  1000
+#ਨਹੀਂਤਾਂ
+# define JSON_MAX_ਡੂੰਘਾਈ SQLITE_JSON_MAX_ਡੂੰਘਾਈ
+#ਜੇ_ਅੰਤ
 
 /*
 ** Allowed values for the flgs argument to jsonParseFuncArg();
 */
-#define JSON_EDITABLE  0x01   /* Generate a writable JsonParse object */
-#define JSON_KEEPERROR 0x02   /* Return non-NULL even if there is an error */
-#define JSON_NOCACHE   0x04   /* Do not use the JSON cache */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_EDITABLE  0x01   /* Generate a writable JsonParse object */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_KEEPERROR 0x02   /* Return non-NULL even if there is an error */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_NOCACHE   0x04   /* Do not use the JSON cache */
 
 /**************************************************************************
 ** Forward references
 **************************************************************************/
-static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
-static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
-static void jsonReturnParse(sqlite3_context*,JsonParse*);
-static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
-static void jsonParseFree(JsonParse*);
-static u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
-static u32 jsonUnescapeOneChar(const char*, u32, u32*);
+ਸਥਿਰ ਖਾਲੀ jsonReturnStringAsBlob(JsonString*);
+ਸਥਿਰ ਪੂਰਨ jsonArgIsJsonb(sqlite3_ਮੁੱਲ *pJson, JsonParse *p);
+ਸਥਿਰ u32 json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(JsonParse*,u32,JsonString*);
+ਸਥਿਰ ਖਾਲੀ jsonReturnParse(sqlite3_context*,JsonParse*);
+ਸਥਿਰ JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_ਮੁੱਲ*,u32);
+ਸਥਿਰ ਖਾਲੀ jsonParseFree(JsonParse*);
+ਸਥਿਰ u32 jsonb_Payload_ਮਾਪ(ਅਚਲ JsonParse*, u32, u32*);
+ਸਥਿਰ u32 jsonUnescapeOneChar(ਅਚਲ ਅੱਖਰ*, u32, u32*);
 
 /**************************************************************************
 ** Utility routines for dealing with JsonCache objects
@@ -419,14 +419,14 @@ static u32 jsonUnescapeOneChar(const char*, u32, u32*);
 /*
 ** Free a JsonCache object.
 */
-static void jsonCacheDelete(JsonCache *p){
-  int i;
-  for(i=0; i<p->nUsed; i++){
+ਸਥਿਰ ਖਾਲੀ jsonCacheDelete(JsonCache *p){
+  ਪੂਰਨ i;
+  ਲਈ(i=0; i<p->n_ਵਰਤਿਆ; i++){
     jsonParseFree(p->a[i]);
   }
   sqlite3DbFree(p->db, p);
 }
-static void jsonCacheDeleteGeneric(void *p){
+ਸਥਿਰ ਖਾਲੀ jsonCacheDeleteGeneric(ਖਾਲੀ *p){
   jsonCacheDelete((JsonCache*)p);
 }
 
@@ -437,37 +437,37 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+ਸਥਿਰ ਪੂਰਨ json_Cache_ਪਾਓ(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
   JsonCache *p;
 
-  assert( pParse->zJson!=0 );
-  assert( pParse->bJsonIsRCStr );
-  assert( pParse->delta==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->zJson!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->bJsonIsRCStr );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->delta==0 );
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
+  ਜੇ( p==0 ){
     sqlite3 *db = sqlite3_context_db_handle(ctx);
-    p = sqlite3DbMallocZero(db, sizeof(*p));
-    if( p==0 ) return SQLITE_NOMEM;
+    p = sqlite3DbMallocZero(db, ਆਕਾਰ(*p));
+    ਜੇ( p==0 ) ਵਾਪਸ SQLITE_NOMEM;
     p->db = db;
-    sqlite3_set_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
+    sqlite3_ਸੈੱਟ_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
     p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-    if( p==0 ) return SQLITE_NOMEM;
+    ਜੇ( p==0 ) ਵਾਪਸ SQLITE_NOMEM;
   }
-  if( p->nUsed >= JSON_CACHE_SIZE ){
+  ਜੇ( p->n_ਵਰਤਿਆ >= JSON_CACHE_ਮਾਪ ){
     jsonParseFree(p->a[0]);
-    memmove(p->a, &p->a[1], (JSON_CACHE_SIZE-1)*sizeof(p->a[0]));
-    p->nUsed = JSON_CACHE_SIZE-1;
+    memmove(p->a, &p->a[1], (JSON_CACHE_ਮਾਪ-1)*ਆਕਾਰ(p->a[0]));
+    p->n_ਵਰਤਿਆ = JSON_CACHE_ਮਾਪ-1;
   }
-  assert( pParse->nBlobAlloc>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nBlobAlloc>0 );
   pParse->eEdit = 0;
   pParse->nJPRef++;
   pParse->bReadOnly = 1;
-  p->a[p->nUsed] = pParse;
-  p->nUsed++;
-  return SQLITE_OK;
+  p->a[p->n_ਵਰਤਿਆ] = pParse;
+  p->n_ਵਰਤਿਆ++;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -481,47 +481,47 @@ static int jsonCacheInsert(
 ** be deleted at any moment.  If the caller wants the JsonParse to
 ** linger, it needs to increment the nPJRef reference counter.
 */
-static JsonParse *jsonCacheSearch(
+ਸਥਿਰ JsonParse *json_Cache_ਖੋਜ(
   sqlite3_context *ctx,    /* The SQL statement context holding the cache */
-  sqlite3_value *pArg      /* Function argument containing SQL text */
+  sqlite3_ਮੁੱਲ *pArg      /* Function argument containing SQL text */
 ){
   JsonCache *p;
-  int i;
-  const char *zJson;
-  int nJson;
+  ਪੂਰਨ i;
+  ਅਚਲ ਅੱਖਰ *zJson;
+  ਪੂਰਨ nJson;
 
-  if( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
-    return 0;
+  ਜੇ( sqlite3_ਮੁੱਲ_type(pArg)!=SQLITE_ਪਾਠ ){
+    ਵਾਪਸ 0;
   }
-  zJson = (const char*)sqlite3_value_text(pArg);
-  if( zJson==0 ) return 0;
-  nJson = sqlite3_value_bytes(pArg);
+  zJson = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pArg);
+  ਜੇ( zJson==0 ) ਵਾਪਸ 0;
+  nJson = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
 
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
-    return 0;
+  ਜੇ( p==0 ){
+    ਵਾਪਸ 0;
   }
-  for(i=0; i<p->nUsed; i++){
-    if( p->a[i]->zJson==zJson ) break;
+  ਲਈ(i=0; i<p->n_ਵਰਤਿਆ; i++){
+    ਜੇ( p->a[i]->zJson==zJson ) ਰੋਕੋ;
   }
-  if( i>=p->nUsed ){
-    for(i=0; i<p->nUsed; i++){
-      if( p->a[i]->nJson!=nJson ) continue;
-      if( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) break;
+  ਜੇ( i>=p->n_ਵਰਤਿਆ ){
+    ਲਈ(i=0; i<p->n_ਵਰਤਿਆ; i++){
+      ਜੇ( p->a[i]->nJson!=nJson ) ਜਾਰੀ;
+      ਜੇ( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) ਰੋਕੋ;
     }
   }
-  if( i<p->nUsed ){
-    if( i<p->nUsed-1 ){
+  ਜੇ( i<p->n_ਵਰਤਿਆ ){
+    ਜੇ( i<p->n_ਵਰਤਿਆ-1 ){
       /* Make the matching entry the most recently used entry */
       JsonParse *tmp = p->a[i];
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed-i-1)*sizeof(tmp));
-      p->a[p->nUsed-1] = tmp;
-      i = p->nUsed - 1;
+      memmove(&p->a[i], &p->a[i+1], (p->n_ਵਰਤਿਆ-i-1)*ਆਕਾਰ(tmp));
+      p->a[p->n_ਵਰਤਿਆ-1] = tmp;
+      i = p->n_ਵਰਤਿਆ - 1;
     }
-    assert( p->a[i]->delta==0 );
-    return p->a[i];
-  }else{
-    return 0;
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->a[i]->delta==0 );
+    ਵਾਪਸ p->a[i];
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ 0;
   }
 }
 
@@ -532,16 +532,16 @@ static JsonParse *jsonCacheSearch(
 /* Turn uninitialized bulk memory into a valid JsonString object
 ** holding a zero-length string.
 */
-static void jsonStringZero(JsonString *p){
+ਸਥਿਰ ਖਾਲੀ jsonStringZero(JsonString *p){
   p->zBuf = p->zSpace;
-  p->nAlloc = sizeof(p->zSpace);
-  p->nUsed = 0;
+  p->nAlloc = ਆਕਾਰ(p->zSpace);
+  p->n_ਵਰਤਿਆ = 0;
   p->bStatic = 1;
 }
 
 /* Initialize the JsonString object
 */
-static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
+ਸਥਿਰ ਖਾਲੀ jsonStringInit(JsonString *p, sqlite3_context *pCtx){
   p->pCtx = pCtx;
   p->eErr = 0;
   jsonStringZero(p);
@@ -550,118 +550,118 @@ static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
 /* Free all allocated memory and reset the JsonString object back to its
 ** initial state.
 */
-static void jsonStringReset(JsonString *p){
-  if( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
+ਸਥਿਰ ਖਾਲੀ jsonStringReset(JsonString *p){
+  ਜੇ( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
   jsonStringZero(p);
 }
 
 /* Report an out-of-memory (OOM) condition
 */
-static void jsonStringOom(JsonString *p){
+ਸਥਿਰ ਖਾਲੀ jsonStringOom(JsonString *p){
   p->eErr |= JSTRING_OOM;
-  if( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
+  ਜੇ( p->pCtx ) sqlite3_ਨਤੀਜਾ_error_nomem(p->pCtx);
   jsonStringReset(p);
 }
 
 /* Report JSON nested too deep
 */
-static void jsonStringTooDeep(JsonString *p){
+ਸਥਿਰ ਖਾਲੀ jsonStringTooDeep(JsonString *p){
   p->eErr |= JSTRING_TOODEEP;
-  assert( p->pCtx!=0 );
-  sqlite3_result_error(p->pCtx, "JSON nested too deep", -1);
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->pCtx!=0 );
+  sqlite3_ਨਤੀਜਾ_error(p->pCtx, "JSON nested too deep", -1);
   jsonStringReset(p);
 }
 
 /* Enlarge pJson->zBuf so that it can hold at least N more bytes.
 ** Return zero on success.  Return non-zero on an OOM error
 */
-static int jsonStringGrow(JsonString *p, u32 N){
-  u64 nTotal = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
-  char *zNew;
-  if( p->bStatic ){
-    if( p->eErr ) return 1;
-    zNew = sqlite3RCStrNew(nTotal);
-    if( zNew==0 ){
+ਸਥਿਰ ਪੂਰਨ jsonStringGrow(JsonString *p, u32 N){
+  u64 n_ਕੁੱਲ = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
+  ਅੱਖਰ *zNew;
+  ਜੇ( p->bStatic ){
+    ਜੇ( p->eErr ) ਵਾਪਸ 1;
+    zNew = sqlite3RCStrNew(n_ਕੁੱਲ);
+    ਜੇ( zNew==0 ){
       jsonStringOom(p);
-      return SQLITE_NOMEM;
+      ਵਾਪਸ SQLITE_NOMEM;
     }
-    memcpy(zNew, p->zBuf, (size_t)p->nUsed);
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(zNew, p->zBuf, (size_t)p->n_ਵਰਤਿਆ);
     p->zBuf = zNew;
     p->bStatic = 0;
-  }else{
-    p->zBuf = sqlite3RCStrResize(p->zBuf, nTotal);
-    if( p->zBuf==0 ){
+  }ਨਹੀਂਤਾਂ{
+    p->zBuf = sqlite3RCStrResize(p->zBuf, n_ਕੁੱਲ);
+    ਜੇ( p->zBuf==0 ){
       p->eErr |= JSTRING_OOM;
       jsonStringZero(p);
-      return SQLITE_NOMEM;
+      ਵਾਪਸ SQLITE_NOMEM;
     }
   }
-  p->nAlloc = nTotal;
-  return SQLITE_OK;
+  p->nAlloc = n_ਕੁੱਲ;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Append N bytes from zIn onto the end of the JsonString string.
 */
-static SQLITE_NOINLINE void jsonStringExpandAndAppend(
+ਸਥਿਰ SQLITE_NOINLINE ਖਾਲੀ jsonStringExpandAndAppend(
   JsonString *p,
-  const char *zIn,
+  ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ,
   u32 N
 ){
-  assert( N>0 );
-  if( jsonStringGrow(p,N) ) return;
-  memcpy(p->zBuf+p->nUsed, zIn, N);
-  p->nUsed += N;
+  ਪ੍ਰਤਿਜ੍ਞਾ( N>0 );
+  ਜੇ( jsonStringGrow(p,N) ) ਵਾਪਸ;
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->zBuf+p->n_ਵਰਤਿਆ, z_ਵਿੱਚ, N);
+  p->n_ਵਰਤਿਆ += N;
 }
-static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
-  if( N==0 ) return;
-  if( N+p->nUsed >= p->nAlloc ){
-    jsonStringExpandAndAppend(p,zIn,N);
-  }else{
-    memcpy(p->zBuf+p->nUsed, zIn, N);
-    p->nUsed += N;
+ਸਥਿਰ ਖਾਲੀ jsonAppendRaw(JsonString *p, ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ, u32 N){
+  ਜੇ( N==0 ) ਵਾਪਸ;
+  ਜੇ( N+p->n_ਵਰਤਿਆ >= p->nAlloc ){
+    jsonStringExpandAndAppend(p,z_ਵਿੱਚ,N);
+  }ਨਹੀਂਤਾਂ{
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->zBuf+p->n_ਵਰਤਿਆ, z_ਵਿੱਚ, N);
+    p->n_ਵਰਤਿਆ += N;
   }
 }
-static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
-  assert( N>0 );
-  if( N+p->nUsed >= p->nAlloc ){
-    jsonStringExpandAndAppend(p,zIn,N);
-  }else{
-    memcpy(p->zBuf+p->nUsed, zIn, N);
-    p->nUsed += N;
+ਸਥਿਰ ਖਾਲੀ jsonAppendRawNZ(JsonString *p, ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ, u32 N){
+  ਪ੍ਰਤਿਜ੍ਞਾ( N>0 );
+  ਜੇ( N+p->n_ਵਰਤਿਆ >= p->nAlloc ){
+    jsonStringExpandAndAppend(p,z_ਵਿੱਚ,N);
+  }ਨਹੀਂਤਾਂ{
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->zBuf+p->n_ਵਰਤਿਆ, z_ਵਿੱਚ, N);
+    p->n_ਵਰਤਿਆ += N;
   }
 }
 
 /* Append formatted text (not to exceed N bytes) to the JsonString.
 */
-static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
+ਸਥਿਰ ਖਾਲੀ jsonPrintf(ਪੂਰਨ N, JsonString *p, ਅਚਲ ਅੱਖਰ *zFormat, ...){
   va_list ap;
-  if( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) return;
+  ਜੇ( (p->n_ਵਰਤਿਆ + N >= p->nAlloc) && jsonStringGrow(p, N) ) ਵਾਪਸ;
   va_start(ap, zFormat);
-  sqlite3_vsnprintf(N, p->zBuf+p->nUsed, zFormat, ap);
+  sqlite3_vsnprintf(N, p->zBuf+p->n_ਵਰਤਿਆ, zFormat, ap);
   va_end(ap);
-  p->nUsed += (int)strlen(p->zBuf+p->nUsed);
+  p->n_ਵਰਤਿਆ += (ਪੂਰਨ)ਲੜੀ_ਲੰਬਾਈ(p->zBuf+p->n_ਵਰਤਿਆ);
 }
 
 /* Append a single character
 */
-static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
-  if( jsonStringGrow(p,1) ) return;
-  p->zBuf[p->nUsed++] = c;
+ਸਥਿਰ SQLITE_NOINLINE ਖਾਲੀ jsonAppendCharExpand(JsonString *p, ਅੱਖਰ c){
+  ਜੇ( jsonStringGrow(p,1) ) ਵਾਪਸ;
+  p->zBuf[p->n_ਵਰਤਿਆ++] = c;
 }
-static void jsonAppendChar(JsonString *p, char c){
-  if( p->nUsed>=p->nAlloc ){
+ਸਥਿਰ ਖਾਲੀ jsonAppendChar(JsonString *p, ਅੱਖਰ c){
+  ਜੇ( p->n_ਵਰਤਿਆ>=p->nAlloc ){
     jsonAppendCharExpand(p,c);
-  }else{
-    p->zBuf[p->nUsed++] = c;
+  }ਨਹੀਂਤਾਂ{
+    p->zBuf[p->n_ਵਰਤਿਆ++] = c;
   }
 }
 
 /* Remove a single character from the end of the string
 */
-static void jsonStringTrimOneChar(JsonString *p){
-  if( p->eErr==0 ){
-    assert( p->nUsed>0 );
-    p->nUsed--;
+ਸਥਿਰ ਖਾਲੀ jsonStringTrimOneChar(JsonString *p){
+  ਜੇ( p->eErr==0 ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( p->n_ਵਰਤਿਆ>0 );
+    p->n_ਵਰਤਿਆ--;
   }
 }
 
@@ -671,20 +671,20 @@ static void jsonStringTrimOneChar(JsonString *p){
 ** Return true on success.  Return false if an OOM prevents this
 ** from happening.
 */
-static int jsonStringTerminate(JsonString *p){
+ਸਥਿਰ ਪੂਰਨ jsonStringTerminate(JsonString *p){
   jsonAppendChar(p, 0);
   jsonStringTrimOneChar(p);
-  return p->eErr==0;
+  ਵਾਪਸ p->eErr==0;
 }
 
 /* Append a comma separator to the output buffer, if the previous
 ** character is not '[' or '{'.
 */
-static void jsonAppendSeparator(JsonString *p){
-  char c;
-  if( p->nUsed==0 ) return;
-  c = p->zBuf[p->nUsed-1];
-  if( c=='[' || c=='{' ) return;
+ਸਥਿਰ ਖਾਲੀ jsonAppendSeparator(JsonString *p){
+  ਅੱਖਰ c;
+  ਜੇ( p->n_ਵਰਤਿਆ==0 ) ਵਾਪਸ;
+  c = p->zBuf[p->n_ਵਰਤਿਆ-1];
+  ਜੇ( c=='[' || c=='{' ) ਵਾਪਸ;
   jsonAppendChar(p, ',');
 }
 
@@ -694,31 +694,31 @@ static void jsonAppendSeparator(JsonString *p){
 ** This routine assumes that the output buffer has already been enlarged
 ** sufficiently to hold the worst-case encoding plus a nul terminator.
 */
-static void jsonAppendControlChar(JsonString *p, u8 c){
-  static const char aSpecial[] = {
+ਸਥਿਰ ਖਾਲੀ jsonAppendControlChar(JsonString *p, u8 c){
+  ਸਥਿਰ ਅਚਲ ਅੱਖਰ aSpecial[] = {
      0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0,   0,   0, 0, 0
   };
-  assert( sizeof(aSpecial)==32 );
-  assert( aSpecial['\b']=='b' );
-  assert( aSpecial['\f']=='f' );
-  assert( aSpecial['\n']=='n' );
-  assert( aSpecial['\r']=='r' );
-  assert( aSpecial['\t']=='t' );
-  assert( c>=0 && c<sizeof(aSpecial) );
-  assert( p->nUsed+7 <= p->nAlloc );
-  if( aSpecial[c] ){
-    p->zBuf[p->nUsed] = '\\';
-    p->zBuf[p->nUsed+1] = aSpecial[c];
-    p->nUsed += 2;
-  }else{
-    p->zBuf[p->nUsed] = '\\';
-    p->zBuf[p->nUsed+1] = 'u';
-    p->zBuf[p->nUsed+2] = '0';
-    p->zBuf[p->nUsed+3] = '0';
-    p->zBuf[p->nUsed+4] = "0123456789abcdef"[c>>4];
-    p->zBuf[p->nUsed+5] = "0123456789abcdef"[c&0xf];
-    p->nUsed += 6;
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਆਕਾਰ(aSpecial)==32 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aSpecial['\b']=='b' );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aSpecial['\f']=='f' );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aSpecial['\n']=='n' );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aSpecial['\r']=='r' );
+  ਪ੍ਰਤਿਜ੍ਞਾ( aSpecial['\t']=='t' );
+  ਪ੍ਰਤਿਜ੍ਞਾ( c>=0 && c<ਆਕਾਰ(aSpecial) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->n_ਵਰਤਿਆ+7 <= p->nAlloc );
+  ਜੇ( aSpecial[c] ){
+    p->zBuf[p->n_ਵਰਤਿਆ] = '\\';
+    p->zBuf[p->n_ਵਰਤਿਆ+1] = aSpecial[c];
+    p->n_ਵਰਤਿਆ += 2;
+  }ਨਹੀਂਤਾਂ{
+    p->zBuf[p->n_ਵਰਤਿਆ] = '\\';
+    p->zBuf[p->n_ਵਰਤਿਆ+1] = 'u';
+    p->zBuf[p->n_ਵਰਤਿਆ+2] = '0';
+    p->zBuf[p->n_ਵਰਤਿਆ+3] = '0';
+    p->zBuf[p->n_ਵਰਤਿਆ+4] = "0123456789abcdef"[c>>4];
+    p->zBuf[p->n_ਵਰਤਿਆ+5] = "0123456789abcdef"[c&0xf];
+    p->n_ਵਰਤਿਆ += 6;
   }
 }
 
@@ -730,117 +730,117 @@ static void jsonAppendControlChar(JsonString *p, u8 c){
 ** This routine is a high-runner.  There is a measurable performance
 ** increase associated with unwinding the jsonIsOk[] loop.
 */
-static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
+ਸਥਿਰ ਖਾਲੀ jsonAppendString(JsonString *p, ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ, u32 N){
   u32 k;
   u8 c;
-  const u8 *z = (const u8*)zIn;
-  if( z==0 ) return;
-  if( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) return;
-  p->zBuf[p->nUsed++] = '"';
-  while( 1 /*exit-by-break*/ ){
+  ਅਚਲ u8 *z = (ਅਚਲ u8*)z_ਵਿੱਚ;
+  ਜੇ( z==0 ) ਵਾਪਸ;
+  ਜੇ( (N+p->n_ਵਰਤਿਆ+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) ਵਾਪਸ;
+  p->zBuf[p->n_ਵਰਤਿਆ++] = '"';
+  ਜਦੋਂ( 1 /*exit-by-break*/ ){
     k = 0;
     /* The following while() is the 4-way unwound equivalent of
     **
     **     while( k<N && jsonIsOk[z[k]] ){ k++; }
     */
-    while( 1 /* Exit by break */ ){
-      if( k+3>=N ){
-        while( k<N && jsonIsOk[z[k]] ){ k++; }
-        break;
+    ਜਦੋਂ( 1 /* Exit by break */ ){
+      ਜੇ( k+3>=N ){
+        ਜਦੋਂ( k<N && jsonIsOk[z[k]] ){ k++; }
+        ਰੋਕੋ;
       }
-      if( !jsonIsOk[z[k]] ){
-        break;
+      ਜੇ( !jsonIsOk[z[k]] ){
+        ਰੋਕੋ;
       }
-      if( !jsonIsOk[z[k+1]] ){
+      ਜੇ( !jsonIsOk[z[k+1]] ){
         k += 1;
-        break;
+        ਰੋਕੋ;
       }
-      if( !jsonIsOk[z[k+2]] ){
+      ਜੇ( !jsonIsOk[z[k+2]] ){
         k += 2;
-        break;
+        ਰੋਕੋ;
       }
-      if( !jsonIsOk[z[k+3]] ){
+      ਜੇ( !jsonIsOk[z[k+3]] ){
         k += 3;
-        break;
-      }else{
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ{
         k += 4;
       }
     }
-    if( k>=N ){
-      if( k>0 ){
-        memcpy(&p->zBuf[p->nUsed], z, k);
-        p->nUsed += k;
+    ਜੇ( k>=N ){
+      ਜੇ( k>0 ){
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p->zBuf[p->n_ਵਰਤਿਆ], z, k);
+        p->n_ਵਰਤਿਆ += k;
       }
-      break;
+      ਰੋਕੋ;
     }
-    if( k>0 ){
-      memcpy(&p->zBuf[p->nUsed], z, k);
-      p->nUsed += k;
+    ਜੇ( k>0 ){
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p->zBuf[p->n_ਵਰਤਿਆ], z, k);
+      p->n_ਵਰਤਿਆ += k;
       z += k;
       N -= k;
     }
     c = z[0];
-    if( c=='"' || c=='\\' ){
-      if( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) return;
-      p->zBuf[p->nUsed++] = '\\';
-      p->zBuf[p->nUsed++] = c;
-    }else if( c=='\'' ){
-      p->zBuf[p->nUsed++] = c;
-    }else{
-      if( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) return;
+    ਜੇ( c=='"' || c=='\\' ){
+      ਜੇ( (p->n_ਵਰਤਿਆ+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) ਵਾਪਸ;
+      p->zBuf[p->n_ਵਰਤਿਆ++] = '\\';
+      p->zBuf[p->n_ਵਰਤਿਆ++] = c;
+    }ਨਹੀਂਤਾਂ ਜੇ( c=='\'' ){
+      p->zBuf[p->n_ਵਰਤਿਆ++] = c;
+    }ਨਹੀਂਤਾਂ{
+      ਜੇ( (p->n_ਵਰਤਿਆ+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) ਵਾਪਸ;
       jsonAppendControlChar(p, c);
     }
     z++;
     N--;
   }
-  p->zBuf[p->nUsed++] = '"';
-  assert( p->nUsed<p->nAlloc );
+  p->zBuf[p->n_ਵਰਤਿਆ++] = '"';
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->n_ਵਰਤਿਆ<p->nAlloc );
 }
 
 /*
 ** Append an sqlite3_value (such as a function parameter) to the JSON
 ** string under construction in p.
 */
-static void jsonAppendSqlValue(
+ਸਥਿਰ ਖਾਲੀ json_Append_Sql_ਮੁੱਲ(
   JsonString *p,                 /* Append to this JSON string */
-  sqlite3_value *pValue          /* Value to append */
+  sqlite3_ਮੁੱਲ *p_ਮੁੱਲ          /* Value to append */
 ){
-  switch( sqlite3_value_type(pValue) ){
-    case SQLITE_NULL: {
+  ਚੋਣ( sqlite3_ਮੁੱਲ_type(p_ਮੁੱਲ) ){
+    ਹਾਲਤ SQLITE_NULL: {
       jsonAppendRawNZ(p, "null", 4);
-      break;
+      ਰੋਕੋ;
     }
-    case SQLITE_FLOAT: {
-      jsonPrintf(100, p, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+    ਹਾਲਤ SQLITE_FLOAT: {
+      jsonPrintf(100, p, "%!0.17g", sqlite3_ਮੁੱਲ_double(p_ਮੁੱਲ));
+      ਰੋਕੋ;
     }
-    case SQLITE_INTEGER: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
+    ਹਾਲਤ SQLITE_INTEGER: {
+      ਅਚਲ ਅੱਖਰ *z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(p_ਮੁੱਲ);
+      u32 n = (u32)sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(p_ਮੁੱਲ);
       jsonAppendRaw(p, z, n);
-      break;
+      ਰੋਕੋ;
     }
-    case SQLITE_TEXT: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
-      if( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
+    ਹਾਲਤ SQLITE_ਪਾਠ: {
+      ਅਚਲ ਅੱਖਰ *z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(p_ਮੁੱਲ);
+      u32 n = (u32)sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(p_ਮੁੱਲ);
+      ਜੇ( sqlite3_ਮੁੱਲ_subtype(p_ਮੁੱਲ)==JSON_SUBTYPE ){
         jsonAppendRaw(p, z, n);
-      }else{
+      }ਨਹੀਂਤਾਂ{
         jsonAppendString(p, z, n);
       }
-      break;
+      ਰੋਕੋ;
     }
-    default: {
+    ਮੂਲ: {
       JsonParse px;
-      memset(&px, 0, sizeof(px));
-      if( jsonArgIsJsonb(pValue, &px) ){
-        jsonTranslateBlobToText(&px, 0, p);
-      }else if( p->eErr==0 ){
-        sqlite3_result_error(p->pCtx, "JSON cannot hold BLOB values", -1);
+      memset(&px, 0, ਆਕਾਰ(px));
+      ਜੇ( jsonArgIsJsonb(p_ਮੁੱਲ, &px) ){
+        json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(&px, 0, p);
+      }ਨਹੀਂਤਾਂ ਜੇ( p->eErr==0 ){
+        sqlite3_ਨਤੀਜਾ_error(p->pCtx, "JSON cannot hold BLOB values", -1);
         p->eErr = JSTRING_ERR;
         jsonStringReset(p);
       }
-      break;
+      ਰੋਕੋ;
     }
   }
 }
@@ -854,44 +854,44 @@ static void jsonAppendSqlValue(
 ** loaded into the zJson field of the pParse object as a RCStr and the
 ** pParse is added to the cache.
 */
-static void jsonReturnString(
+ਸਥਿਰ ਖਾਲੀ jsonReturnString(
   JsonString *p,            /* String to return */
   JsonParse *pParse,        /* JSONB source or NULL */
   sqlite3_context *ctx      /* Where to cache */
 ){
-  assert( (pParse!=0)==(ctx!=0) );
-  assert( ctx==0 || ctx==p->pCtx );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (pParse!=0)==(ctx!=0) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( ctx==0 || ctx==p->pCtx );
   jsonStringTerminate(p);
-  if( p->eErr==0 ){
-    int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
-    if( flags & JSON_BLOB ){
+  ਜੇ( p->eErr==0 ){
+    ਪੂਰਨ flags = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(p->pCtx));
+    ਜੇ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(p);
-    }else if( p->bStatic ){
-      sqlite3_result_text64(p->pCtx, p->zBuf, p->nUsed,
+    }ਨਹੀਂਤਾਂ ਜੇ( p->bStatic ){
+      sqlite3_ਨਤੀਜਾ_text64(p->pCtx, p->zBuf, p->n_ਵਰਤਿਆ,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-    }else{
-      if( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
-        int rc;
+    }ਨਹੀਂਤਾਂ{
+      ਜੇ( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
+        ਪੂਰਨ rc;
         pParse->zJson = sqlite3RCStrRef(p->zBuf);
-        pParse->nJson = p->nUsed;
+        pParse->nJson = p->n_ਵਰਤਿਆ;
         pParse->bJsonIsRCStr = 1;
-        rc = jsonCacheInsert(ctx, pParse);
-        if( rc==SQLITE_NOMEM ){
-          sqlite3_result_error_nomem(ctx);
+        rc = json_Cache_ਪਾਓ(ctx, pParse);
+        ਜੇ( rc==SQLITE_NOMEM ){
+          sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
           jsonStringReset(p);
-          return;
+          ਵਾਪਸ;
         }
       }
-      sqlite3_result_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->nUsed,
+      sqlite3_ਨਤੀਜਾ_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->n_ਵਰਤਿਆ,
                             sqlite3RCStrUnref,
                             SQLITE_UTF8);
     }
-  }else if( p->eErr & JSTRING_OOM ){
-    sqlite3_result_error_nomem(p->pCtx);
-  }else if( p->eErr & JSTRING_TOODEEP ){
+  }ਨਹੀਂਤਾਂ ਜੇ( p->eErr & JSTRING_OOM ){
+    sqlite3_ਨਤੀਜਾ_error_nomem(p->pCtx);
+  }ਨਹੀਂਤਾਂ ਜੇ( p->eErr & JSTRING_TOODEEP ){
     /* error already in p->pCtx */
-  }else if( p->eErr & JSTRING_MALFORMED ){
-    sqlite3_result_error(p->pCtx, "malformed JSON", -1);
+  }ਨਹੀਂਤਾਂ ਜੇ( p->eErr & JSTRING_MALFORMED ){
+    sqlite3_ਨਤੀਜਾ_error(p->pCtx, "malformed JSON", -1);
   }
   jsonStringReset(p);
 }
@@ -904,15 +904,15 @@ static void jsonReturnString(
 ** Reclaim all memory allocated by a JsonParse object.  But do not
 ** delete the JsonParse object itself.
 */
-static void jsonParseReset(JsonParse *pParse){
-  assert( pParse->nJPRef<=1 );
-  if( pParse->bJsonIsRCStr ){
+ਸਥਿਰ ਖਾਲੀ jsonParseReset(JsonParse *pParse){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nJPRef<=1 );
+  ਜੇ( pParse->bJsonIsRCStr ){
     sqlite3RCStrUnref(pParse->zJson);
     pParse->zJson = 0;
     pParse->nJson = 0;
     pParse->bJsonIsRCStr = 0;
   }
-  if( pParse->nBlobAlloc ){
+  ਜੇ( pParse->nBlobAlloc ){
     sqlite3DbFree(pParse->db, pParse->aBlob);
     pParse->aBlob = 0;
     pParse->nBlob = 0;
@@ -924,11 +924,11 @@ static void jsonParseReset(JsonParse *pParse){
 ** Decrement the reference count on the JsonParse object.  When the
 ** count reaches zero, free the object.
 */
-static void jsonParseFree(JsonParse *pParse){
-  if( pParse ){
-    if( pParse->nJPRef>1 ){
+ਸਥਿਰ ਖਾਲੀ jsonParseFree(JsonParse *pParse){
+  ਜੇ( pParse ){
+    ਜੇ( pParse->nJPRef>1 ){
       pParse->nJPRef--;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       jsonParseReset(pParse);
       sqlite3DbFree(pParse->db, pParse);
     }
@@ -945,40 +945,40 @@ static void jsonParseFree(JsonParse *pParse){
 ** character:  0..9a..fA..F.  But unlike sqlite3HexToInt(), it does not
 ** assert() if the digit is not hex.
 */
-static u8 jsonHexToInt(int h){
-#ifdef SQLITE_ASCII
+ਸਥਿਰ u8 json_Hex_ਮੰਜ਼ਿਲ_Int(ਪੂਰਨ h){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ASCII
   h += 9*(1&(h>>6));
-#endif
-#ifdef SQLITE_EBCDIC
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
-#endif
-  return (u8)(h & 0xf);
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ (u8)(h & 0xf);
 }
 
 /*
 ** Convert a 4-byte hex string into an integer
 */
-static u32 jsonHexToInt4(const char *z){
+ਸਥਿਰ u32 json_Hex_ਮੰਜ਼ਿਲ_Int4(ਅਚਲ ਅੱਖਰ *z){
   u32 v;
-  v = (jsonHexToInt(z[0])<<12)
-    + (jsonHexToInt(z[1])<<8)
-    + (jsonHexToInt(z[2])<<4)
-    + jsonHexToInt(z[3]);
-  return v;
+  v = (json_Hex_ਮੰਜ਼ਿਲ_Int(z[0])<<12)
+    + (json_Hex_ਮੰਜ਼ਿਲ_Int(z[1])<<8)
+    + (json_Hex_ਮੰਜ਼ਿਲ_Int(z[2])<<4)
+    + json_Hex_ਮੰਜ਼ਿਲ_Int(z[3]);
+  ਵਾਪਸ v;
 }
 
 /*
 ** Return true if z[] begins with 2 (or more) hexadecimal digits
 */
-static int jsonIs2Hex(const char *z){
-  return sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
+ਸਥਿਰ ਪੂਰਨ jsonIs2Hex(ਅਚਲ ਅੱਖਰ *z){
+  ਵਾਪਸ sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
 }
 
 /*
 ** Return true if z[] begins with 4 (or more) hexadecimal digits
 */
-static int jsonIs4Hex(const char *z){
-  return jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
+ਸਥਿਰ ਪੂਰਨ jsonIs4Hex(ਅਚਲ ਅੱਖਰ *z){
+  ਵਾਪਸ jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
 }
 
 /*
@@ -1017,108 +1017,108 @@ static int jsonIs4Hex(const char *z){
 ** In addition, comments between '/', '*' and '*', '/' and
 ** from '/', '/' to end-of-line are also considered to be whitespace.
 */
-static int json5Whitespace(const char *zIn){
-  int n = 0;
-  const u8 *z = (u8*)zIn;
-  while( 1 /*exit by "goto whitespace_done"*/ ){
-    switch( z[n] ){
-      case 0x09:
-      case 0x0a:
-      case 0x0b:
-      case 0x0c:
-      case 0x0d:
-      case 0x20: {
+ਸਥਿਰ ਪੂਰਨ json5Whitespace(ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ){
+  ਪੂਰਨ n = 0;
+  ਅਚਲ u8 *z = (u8*)z_ਵਿੱਚ;
+  ਜਦੋਂ( 1 /*exit by "goto whitespace_done"*/ ){
+    ਚੋਣ( z[n] ){
+      ਹਾਲਤ 0x09:
+      ਹਾਲਤ 0x0a:
+      ਹਾਲਤ 0x0b:
+      ਹਾਲਤ 0x0c:
+      ਹਾਲਤ 0x0d:
+      ਹਾਲਤ 0x20: {
         n++;
-        break;
+        ਰੋਕੋ;
       }
-      case '/': {
-        if( z[n+1]=='*' && z[n+2]!=0 ){
-          int j;
-          for(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
-            if( z[j]==0 ) goto whitespace_done;
+      ਹਾਲਤ '/': {
+        ਜੇ( z[n+1]=='*' && z[n+2]!=0 ){
+          ਪੂਰਨ j;
+          ਲਈ(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
+            ਜੇ( z[j]==0 ) ਜਾਓ whitespace_ਪੂਰਾ;
           }
           n = j+1;
-          break;
-        }else if( z[n+1]=='/' ){
-          int j;
-          char c;
-          for(j=n+2; (c = z[j])!=0; j++){
-            if( c=='\n' || c=='\r' ) break;
-            if( 0xe2==(u8)c && 0x80==(u8)z[j+1]
+          ਰੋਕੋ;
+        }ਨਹੀਂਤਾਂ ਜੇ( z[n+1]=='/' ){
+          ਪੂਰਨ j;
+          ਅੱਖਰ c;
+          ਲਈ(j=n+2; (c = z[j])!=0; j++){
+            ਜੇ( c=='\n' || c=='\r' ) ਰੋਕੋ;
+            ਜੇ( 0xe2==(u8)c && 0x80==(u8)z[j+1]
              && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2])
             ){
               j += 2;
-              break;
+              ਰੋਕੋ;
             }
           }
           n = j;
-          if( z[n] ) n++;
-          break;
+          ਜੇ( z[n] ) n++;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      case 0xc2: {
-        if( z[n+1]==0xa0 ){
+      ਹਾਲਤ 0xc2: {
+        ਜੇ( z[n+1]==0xa0 ){
           n += 2;
-          break;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      case 0xe1: {
-        if( z[n+1]==0x9a && z[n+2]==0x80 ){
+      ਹਾਲਤ 0xe1: {
+        ਜੇ( z[n+1]==0x9a && z[n+2]==0x80 ){
           n += 3;
-          break;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      case 0xe2: {
-        if( z[n+1]==0x80 ){
+      ਹਾਲਤ 0xe2: {
+        ਜੇ( z[n+1]==0x80 ){
           u8 c = z[n+2];
-          if( c<0x80 ) goto whitespace_done;
-          if( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
+          ਜੇ( c<0x80 ) ਜਾਓ whitespace_ਪੂਰਾ;
+          ਜੇ( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
             n += 3;
-            break;
+            ਰੋਕੋ;
           }
-        }else if( z[n+1]==0x81 && z[n+2]==0x9f ){
+        }ਨਹੀਂਤਾਂ ਜੇ( z[n+1]==0x81 && z[n+2]==0x9f ){
           n += 3;
-          break;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      case 0xe3: {
-        if( z[n+1]==0x80 && z[n+2]==0x80 ){
+      ਹਾਲਤ 0xe3: {
+        ਜੇ( z[n+1]==0x80 && z[n+2]==0x80 ){
           n += 3;
-          break;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      case 0xef: {
-        if( z[n+1]==0xbb && z[n+2]==0xbf ){
+      ਹਾਲਤ 0xef: {
+        ਜੇ( z[n+1]==0xbb && z[n+2]==0xbf ){
           n += 3;
-          break;
+          ਰੋਕੋ;
         }
-        goto whitespace_done;
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
-      default: {
-        goto whitespace_done;
+      ਮੂਲ: {
+        ਜਾਓ whitespace_ਪੂਰਾ;
       }
     }
   }
-  whitespace_done:
-  return n;
+  whitespace_ਪੂਰਾ:
+  ਵਾਪਸ n;
 }
 
 /*
 ** Extra floating-point literals to allow in JSON.
 */
-static const struct NanInfName {
-  char c1;
-  char c2;
-  char n;
-  char eType;
-  char nRepl;
-  char *zMatch;
-  char *zRepl;
+ਸਥਿਰ ਅਚਲ ਬਣਤਰ NanInfName {
+  ਅੱਖਰ c1;
+  ਅੱਖਰ c2;
+  ਅੱਖਰ n;
+  ਅੱਖਰ eType;
+  ਅੱਖਰ nRepl;
+  ਅੱਖਰ *z_ਮੇਲ;
+  ਅੱਖਰ *zRepl;
 } aNanInfName[] = {
   { 'i', 'I', 3, JSONB_FLOAT, 7, "inf", "9.0e999" },
   { 'i', 'I', 8, JSONB_FLOAT, 7, "infinity", "9.0e999" },
@@ -1132,14 +1132,14 @@ static const struct NanInfName {
 ** Report the wrong number of arguments for json_insert(), json_replace()
 ** or json_set().
 */
-static void jsonWrongNumArgs(
+ਸਥਿਰ ਖਾਲੀ json_Wrong_ਅੰਕ_ਦਲੀਲਾਂ(
   sqlite3_context *pCtx,
-  const char *zFuncName
+  ਅਚਲ ਅੱਖਰ *zFuncName
 ){
-  char *zMsg = sqlite3_mprintf("json_%s() needs an odd number of arguments",
+  ਅੱਖਰ *z_ਸੁਨੇਹਾ = sqlite3_mprintf("json_%s() needs an odd number of arguments",
                                zFuncName);
-  sqlite3_result_error(pCtx, zMsg, -1);
-  sqlite3_free(zMsg);
+  sqlite3_ਨਤੀਜਾ_error(pCtx, z_ਸੁਨੇਹਾ, -1);
+  sqlite3_free(z_ਸੁਨੇਹਾ);
 }
 
 /****************************************************************************
@@ -1151,22 +1151,22 @@ static void jsonWrongNumArgs(
 **
 ** Return the number of errors.
 */
-static int jsonBlobExpand(JsonParse *pParse, u64 N){
+ਸਥਿਰ ਪੂਰਨ jsonBlobExpand(JsonParse *pParse, u64 N){
   u8 *aNew;
   u64 t;
-  assert( N>pParse->nBlobAlloc );
-  if( pParse->nBlobAlloc==0 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( N>pParse->nBlobAlloc );
+  ਜੇ( pParse->nBlobAlloc==0 ){
     t = 100;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     t = pParse->nBlobAlloc*2;
   }
-  if( t<N ) t = N+100;
+  ਜੇ( t<N ) t = N+100;
   aNew = sqlite3DbRealloc(pParse->db, pParse->aBlob, t);
-  if( aNew==0 ){ pParse->oom = 1; return 1; }
-  assert( t<0x7fffffff );
+  ਜੇ( aNew==0 ){ pParse->oom = 1; ਵਾਪਸ 1; }
+  ਪ੍ਰਤਿਜ੍ਞਾ( t<0x7fffffff );
   pParse->aBlob = aNew;
   pParse->nBlobAlloc = (u32)t;
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -1177,42 +1177,42 @@ static int jsonBlobExpand(JsonParse *pParse, u64 N){
 **
 ** Return true on success.  Return false on OOM.
 */
-static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
+ਸਥਿਰ ਪੂਰਨ jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
   u8 *aOld;
-  u64 nSize;
-  assert( !pParse->bReadOnly );
-  if( pParse->oom ) return 0;
-  if( pParse->nBlobAlloc>0 ) return 1;
+  u64 n_ਮਾਪ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( !pParse->bReadOnly );
+  ਜੇ( pParse->oom ) ਵਾਪਸ 0;
+  ਜੇ( pParse->nBlobAlloc>0 ) ਵਾਪਸ 1;
   aOld = pParse->aBlob;
-  nSize = pParse->nBlob + nExtra;
+  n_ਮਾਪ = pParse->nBlob + nExtra;
   pParse->aBlob = 0;
-  if( jsonBlobExpand(pParse, nSize) ){
-    return 0;
+  ਜੇ( jsonBlobExpand(pParse, n_ਮਾਪ) ){
+    ਵਾਪਸ 0;
   }
-  assert( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
-  memcpy(pParse->aBlob, aOld, pParse->nBlob);
-  return 1;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(pParse->aBlob, aOld, pParse->nBlob);
+  ਵਾਪਸ 1;
 }
 
 /* Expand pParse->aBlob and append one bytes.
 */
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
+ਸਥਿਰ SQLITE_NOINLINE ਖਾਲੀ jsonBlobExpandAndAppendOneByte(
   JsonParse *pParse,
   u8 c
 ){
   jsonBlobExpand(pParse, (u64)pParse->nBlob+1);
-  if( pParse->oom==0 ){
-    assert( pParse->nBlob+1<=pParse->nBlobAlloc );
+  ਜੇ( pParse->oom==0 ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nBlob+1<=pParse->nBlobAlloc );
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
 
 /* Append a single character.
 */
-static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
-  if( pParse->nBlob >= pParse->nBlobAlloc ){
+ਸਥਿਰ ਖਾਲੀ jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
+  ਜੇ( pParse->nBlob >= pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendOneByte(pParse, c);
-  }else{
+  }ਨਹੀਂਤਾਂ{
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
@@ -1220,15 +1220,15 @@ static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
 /* Slow version of jsonBlobAppendNode() that first resizes the
 ** pParse->aBlob structure.
 */
-static void jsonBlobAppendNode(JsonParse*,u8,u64,const void*);
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
+ਸਥਿਰ ਖਾਲੀ json_Blob_Append_ਗੰਢ(JsonParse*,u8,u64,ਅਚਲ ਖਾਲੀ*);
+ਸਥਿਰ SQLITE_NOINLINE ਖਾਲੀ json_Blob_Expand_And_Append_ਗੰਢ(
   JsonParse *pParse,
   u8 eType,
   u64 szPayload,
-  const void *aPayload
+  ਅਚਲ ਖਾਲੀ *aPayload
 ){
-  if( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) return;
-  jsonBlobAppendNode(pParse, eType, szPayload, aPayload);
+  ਜੇ( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) ਵਾਪਸ;
+  json_Blob_Append_ਗੰਢ(pParse, eType, szPayload, aPayload);
 }
 
 
@@ -1241,32 +1241,32 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
 ** payload, but the payload is not appended and pParse->nBlob is left
 ** pointing to where the first byte of payload will eventually be.
 */
-static void jsonBlobAppendNode(
+ਸਥਿਰ ਖਾਲੀ json_Blob_Append_ਗੰਢ(
   JsonParse *pParse,          /* The JsonParse object under construction */
   u8 eType,                   /* Node type.  One of JSONB_* */
   u64 szPayload,              /* Number of bytes of payload */
-  const void *aPayload        /* The payload.  Might be NULL */
+  ਅਚਲ ਖਾਲੀ *aPayload        /* The payload.  Might be NULL */
 ){
   u8 *a;
-  if( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
-    jsonBlobExpandAndAppendNode(pParse,eType,szPayload,aPayload);
-    return;
+  ਜੇ( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
+    json_Blob_Expand_And_Append_ਗੰਢ(pParse,eType,szPayload,aPayload);
+    ਵਾਪਸ;
   }
-  assert( pParse->aBlob!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->aBlob!=0 );
   a = &pParse->aBlob[pParse->nBlob];
-  if( szPayload<=11 ){
+  ਜੇ( szPayload<=11 ){
     a[0] = eType | (szPayload<<4);
     pParse->nBlob += 1;
-  }else if( szPayload<=0xff ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szPayload<=0xff ){
     a[0] = eType | 0xc0;
     a[1] = szPayload & 0xff;
     pParse->nBlob += 2;
-  }else if( szPayload<=0xffff ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szPayload<=0xffff ){
     a[0] = eType | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
     pParse->nBlob += 3;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     a[0] = eType | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
@@ -1274,15 +1274,15 @@ static void jsonBlobAppendNode(
     a[4] = szPayload & 0xff;
     pParse->nBlob += 5;
   }
-  if( aPayload ){
+  ਜੇ( aPayload ){
     pParse->nBlob += szPayload;
-    memcpy(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
   }
 }
 
 /* Change the payload size for the node at index i to be szPayload.
 */
-static int jsonBlobChangePayloadSize(
+ਸਥਿਰ ਪੂਰਨ json_Blob_Change_Payload_ਮਾਪ(
   JsonParse *pParse,
   u32 i,
   u32 szPayload
@@ -1291,61 +1291,61 @@ static int jsonBlobChangePayloadSize(
   u8 szType;
   u8 nExtra;
   u8 nNeeded;
-  int delta;
-  if( pParse->oom ) return 0;
+  ਪੂਰਨ delta;
+  ਜੇ( pParse->oom ) ਵਾਪਸ 0;
   a = &pParse->aBlob[i];
   szType = a[0]>>4;
-  if( szType<=11 ){
+  ਜੇ( szType<=11 ){
     nExtra = 0;
-  }else if( szType==12 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szType==12 ){
     nExtra = 1;
-  }else if( szType==13 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szType==13 ){
     nExtra = 2;
-  }else if( szType==14 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szType==14 ){
     nExtra = 4;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     nExtra = 8;
   }
-  if( szPayload<=11 ){
+  ਜੇ( szPayload<=11 ){
     nNeeded = 0;
-  }else if( szPayload<=0xff ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szPayload<=0xff ){
     nNeeded = 1;
-  }else if( szPayload<=0xffff ){
+  }ਨਹੀਂਤਾਂ ਜੇ( szPayload<=0xffff ){
     nNeeded = 2;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     nNeeded = 4;
   }
   delta = nNeeded - nExtra;
-  if( delta ){
-    u64 newSize = (u64)pParse->nBlob + delta;
-    if( delta>0 ){
-      if( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
-        return 0;  /* OOM error.  Error state recorded in pParse->oom. */
+  ਜੇ( delta ){
+    u64 new_ਮਾਪ_2 = (u64)pParse->nBlob + delta;
+    ਜੇ( delta>0 ){
+      ਜੇ( new_ਮਾਪ_2>pParse->nBlobAlloc && jsonBlobExpand(pParse, new_ਮਾਪ_2) ){
+        ਵਾਪਸ 0;  /* OOM error.  Error state recorded in pParse->oom. */
       }
       a = &pParse->aBlob[i];
       memmove(&a[1+delta], &a[1], pParse->nBlob - (i+1));
-    }else{
+    }ਨਹੀਂਤਾਂ{
       memmove(&a[1], &a[1-delta], pParse->nBlob - (i+1-delta));
     }
-    pParse->nBlob = newSize;
+    pParse->nBlob = new_ਮਾਪ_2;
   }
-  if( nNeeded==0 ){
+  ਜੇ( nNeeded==0 ){
     a[0] = (a[0] & 0x0f) | (szPayload<<4);
-  }else if( nNeeded==1 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( nNeeded==1 ){
     a[0] = (a[0] & 0x0f) | 0xc0;
     a[1] = szPayload & 0xff;
-  }else if( nNeeded==2 ){
+  }ਨਹੀਂਤਾਂ ਜੇ( nNeeded==2 ){
     a[0] = (a[0] & 0x0f) | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     a[0] = (a[0] & 0x0f) | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
     a[3] = (szPayload >> 8) & 0xff;
     a[4] = szPayload & 0xff;
   }
-  return delta;
+  ਵਾਪਸ delta;
 }
 
 /*
@@ -1353,11 +1353,11 @@ static int jsonBlobChangePayloadSize(
 ** then set *pOp to JSONB_TEXTJ and return true.  If not, do not make
 ** any changes to *pOp and return false.
 */
-static int jsonIs4HexB(const char *z, int *pOp){
-  if( z[0]!='u' ) return 0;
-  if( !jsonIs4Hex(&z[1]) ) return 0;
+ਸਥਿਰ ਪੂਰਨ jsonIs4HexB(ਅਚਲ ਅੱਖਰ *z, ਪੂਰਨ *pOp){
+  ਜੇ( z[0]!='u' ) ਵਾਪਸ 0;
+  ਜੇ( !jsonIs4Hex(&z[1]) ) ਵਾਪਸ 0;
   *pOp = JSONB_TEXTJ;
-  return 1;
+  ਵਾਪਸ 1;
 }
 
 /*
@@ -1370,195 +1370,195 @@ static int jsonIs4HexB(const char *z, int *pOp){
 ** error if a problem is detected.  (In other words, if the error is at offset
 ** 0, return 1).
 */
-static u32 jsonbValidityCheck(
-  const JsonParse *pParse,    /* Input JSONB.  Only aBlob and nBlob are used */
+ਸਥਿਰ u32 jsonbValidityCheck(
+  ਅਚਲ JsonParse *pParse,    /* Input JSONB.  Only aBlob and nBlob are used */
   u32 i,                      /* Start of element as pParse->aBlob[i] */
-  u32 iEnd,                   /* One more than the last byte of the element */
-  u32 iDepth                  /* Current nesting depth */
+  u32 i_ਸਿਰਾ,                   /* One more than the last byte of the element */
+  u32 i_ਡੂੰਘਾਈ                  /* Current nesting depth */
 ){
   u32 n, sz, j, k;
-  const u8 *z;
+  ਅਚਲ u8 *z;
   u8 x;
-  if( iDepth>JSON_MAX_DEPTH ) return i+1;
+  ਜੇ( i_ਡੂੰਘਾਈ>JSON_MAX_ਡੂੰਘਾਈ ) ਵਾਪਸ i+1;
   sz = 0;
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( NEVER(n==0) ) return i+1;          /* Checked by caller */
-  if( NEVER(i+n+sz!=iEnd) ) return i+1;  /* Checked by caller */
+  n = jsonb_Payload_ਮਾਪ(pParse, i, &sz);
+  ਜੇ( NEVER(n==0) ) ਵਾਪਸ i+1;          /* Checked by caller */
+  ਜੇ( NEVER(i+n+sz!=i_ਸਿਰਾ) ) ਵਾਪਸ i+1;  /* Checked by caller */
   z = pParse->aBlob;
   x = z[i] & 0x0f;
-  switch( x ){
-    case JSONB_NULL:
-    case JSONB_TRUE:
-    case JSONB_FALSE: {
-      return n+sz==1 ? 0 : i+1;
+  ਚੋਣ( x ){
+    ਹਾਲਤ JSONB_NULL:
+    ਹਾਲਤ JSONB_TRUE:
+    ਹਾਲਤ JSONB_FALSE: {
+      ਵਾਪਸ n+sz==1 ? 0 : i+1;
     }
-    case JSONB_INT: {
-      if( sz<1 ) return i+1;
+    ਹਾਲਤ JSONB_INT: {
+      ਜੇ( sz<1 ) ਵਾਪਸ i+1;
       j = i+n;
-      if( z[j]=='-' ){
+      ਜੇ( z[j]=='-' ){
         j++;
-        if( sz<2 ) return i+1;
+        ਜੇ( sz<2 ) ਵਾਪਸ i+1;
       }
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isdigit(z[j]) ){
+      ਜਦੋਂ( j<k ){
+        ਜੇ( sqlite3Isdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }ਨਹੀਂਤਾਂ{
+          ਵਾਪਸ j+1;
         }
       }
-      return 0;
+      ਵਾਪਸ 0;
     }
-    case JSONB_INT5: {
-      if( sz<3 ) return i+1;
+    ਹਾਲਤ JSONB_INT5: {
+      ਜੇ( sz<3 ) ਵਾਪਸ i+1;
       j = i+n;
-      if( z[j]=='-' ){
-        if( sz<4 ) return i+1;
+      ਜੇ( z[j]=='-' ){
+        ਜੇ( sz<4 ) ਵਾਪਸ i+1;
         j++;
       }
-      if( z[j]!='0' ) return i+1;
-      if( z[j+1]!='x' && z[j+1]!='X' ) return j+2;
+      ਜੇ( z[j]!='0' ) ਵਾਪਸ i+1;
+      ਜੇ( z[j+1]!='x' && z[j+1]!='X' ) ਵਾਪਸ j+2;
       j += 2;
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isxdigit(z[j]) ){
+      ਜਦੋਂ( j<k ){
+        ਜੇ( sqlite3Isxdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }ਨਹੀਂਤਾਂ{
+          ਵਾਪਸ j+1;
         }
       }
-      return 0;
+      ਵਾਪਸ 0;
     }
-    case JSONB_FLOAT:
-    case JSONB_FLOAT5: {
-      u8 seen = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
-      if( sz<2 ) return i+1;
+    ਹਾਲਤ JSONB_FLOAT:
+    ਹਾਲਤ JSONB_FLOAT5: {
+      u8 ਵੇਖਿਆ = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
+      ਜੇ( sz<2 ) ਵਾਪਸ i+1;
       j = i+n;
       k = j+sz;
-      if( z[j]=='-' ){
+      ਜੇ( z[j]=='-' ){
         j++;
-        if( sz<3 ) return i+1;
+        ਜੇ( sz<3 ) ਵਾਪਸ i+1;
       }
-      if( z[j]=='.' ){
-        if( x==JSONB_FLOAT ) return j+1;
-        if( !sqlite3Isdigit(z[j+1]) ) return j+1;
+      ਜੇ( z[j]=='.' ){
+        ਜੇ( x==JSONB_FLOAT ) ਵਾਪਸ j+1;
+        ਜੇ( !sqlite3Isdigit(z[j+1]) ) ਵਾਪਸ j+1;
         j += 2;
-        seen = 1;
-      }else if( z[j]=='0' && x==JSONB_FLOAT ){
-        if( j+3>k ) return j+1;
-        if( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) return j+1;
+        ਵੇਖਿਆ = 1;
+      }ਨਹੀਂਤਾਂ ਜੇ( z[j]=='0' && x==JSONB_FLOAT ){
+        ਜੇ( j+3>k ) ਵਾਪਸ j+1;
+        ਜੇ( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) ਵਾਪਸ j+1;
         j++;
       }
-      for(; j<k; j++){
-        if( sqlite3Isdigit(z[j]) ) continue;
-        if( z[j]=='.' ){
-          if( seen>0 ) return j+1;
-          if( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
-            return j+1;
+      ਲਈ(; j<k; j++){
+        ਜੇ( sqlite3Isdigit(z[j]) ) ਜਾਰੀ;
+        ਜੇ( z[j]=='.' ){
+          ਜੇ( ਵੇਖਿਆ>0 ) ਵਾਪਸ j+1;
+          ਜੇ( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
+            ਵਾਪਸ j+1;
           }
-          seen = 1;
-          continue;
+          ਵੇਖਿਆ = 1;
+          ਜਾਰੀ;
         }
-        if( z[j]=='e' || z[j]=='E' ){
-          if( seen==2 ) return j+1;
-          if( j==k-1 ) return j+1;
-          if( z[j+1]=='+' || z[j+1]=='-' ){
+        ਜੇ( z[j]=='e' || z[j]=='E' ){
+          ਜੇ( ਵੇਖਿਆ==2 ) ਵਾਪਸ j+1;
+          ਜੇ( j==k-1 ) ਵਾਪਸ j+1;
+          ਜੇ( z[j+1]=='+' || z[j+1]=='-' ){
             j++;
-            if( j==k-1 ) return j+1;
+            ਜੇ( j==k-1 ) ਵਾਪਸ j+1;
           }
-          seen = 2;
-          continue;
+          ਵੇਖਿਆ = 2;
+          ਜਾਰੀ;
         }
-        return j+1;
+        ਵਾਪਸ j+1;
       }
-      if( seen==0 ) return i+1;
-      return 0;
+      ਜੇ( ਵੇਖਿਆ==0 ) ਵਾਪਸ i+1;
+      ਵਾਪਸ 0;
     }
-    case JSONB_TEXT: {
+    ਹਾਲਤ JSONB_ਪਾਠ: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ) return j+1;
+      ਜਦੋਂ( j<k ){
+        ਜੇ( !jsonIsOk[z[j]] && z[j]!='\'' ) ਵਾਪਸ j+1;
         j++;
       }
-      return 0;
+      ਵਾਪਸ 0;
     }
-    case JSONB_TEXTJ:
-    case JSONB_TEXT5: {
+    ਹਾਲਤ JSONB_TEXTJ:
+    ਹਾਲਤ JSONB_TEXT5: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ){
-          if( z[j]=='"' ){
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( z[j]<=0x1f ){
+      ਜਦੋਂ( j<k ){
+        ਜੇ( !jsonIsOk[z[j]] && z[j]!='\'' ){
+          ਜੇ( z[j]=='"' ){
+            ਜੇ( x==JSONB_TEXTJ ) ਵਾਪਸ j+1;
+          }ਨਹੀਂਤਾਂ ਜੇ( z[j]<=0x1f ){
             /* Control characters in JSON5 string literals are ok */
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( NEVER(z[j]!='\\') || j+1>=k ){
-            return j+1;
-          }else if( strchr("\"\\/bfnrt",z[j+1])!=0 ){
+            ਜੇ( x==JSONB_TEXTJ ) ਵਾਪਸ j+1;
+          }ਨਹੀਂਤਾਂ ਜੇ( NEVER(z[j]!='\\') || j+1>=k ){
+            ਵਾਪਸ j+1;
+          }ਨਹੀਂਤਾਂ ਜੇ( strchr("\"\\/bfnrt",z[j+1])!=0 ){
             j++;
-          }else if( z[j+1]=='u' ){
-            if( j+5>=k ) return j+1;
-            if( !jsonIs4Hex((const char*)&z[j+2]) ) return j+1;
+          }ਨਹੀਂਤਾਂ ਜੇ( z[j+1]=='u' ){
+            ਜੇ( j+5>=k ) ਵਾਪਸ j+1;
+            ਜੇ( !jsonIs4Hex((ਅਚਲ ਅੱਖਰ*)&z[j+2]) ) ਵਾਪਸ j+1;
             j++;
-          }else if( x!=JSONB_TEXT5 ){
-            return j+1;
-          }else{
+          }ਨਹੀਂਤਾਂ ਜੇ( x!=JSONB_TEXT5 ){
+            ਵਾਪਸ j+1;
+          }ਨਹੀਂਤਾਂ{
             u32 c = 0;
-            u32 szC = jsonUnescapeOneChar((const char*)&z[j], k-j, &c);
-            if( c==JSON_INVALID_CHAR ) return j+1;
+            u32 szC = jsonUnescapeOneChar((ਅਚਲ ਅੱਖਰ*)&z[j], k-j, &c);
+            ਜੇ( c==JSON_INVALID_CHAR ) ਵਾਪਸ j+1;
             j += szC - 1;
           }
         }
         j++;
       }
-      return 0;
+      ਵਾਪਸ 0;
     }
-    case JSONB_TEXTRAW: {
-      return 0;
+    ਹਾਲਤ JSONB_TEXTRAW: {
+      ਵਾਪਸ 0;
     }
-    case JSONB_ARRAY: {
+    ਹਾਲਤ JSONB_ARRAY: {
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      ਜਦੋਂ( j<k ){
         sz = 0;
-        n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        n = jsonb_Payload_ਮਾਪ(pParse, j, &sz);
+        ਜੇ( n==0 ) ਵਾਪਸ j+1;
+        ਜੇ( j+n+sz>k ) ਵਾਪਸ j+1;
+        sub = jsonbValidityCheck(pParse, j, j+n+sz, i_ਡੂੰਘਾਈ+1);
+        ਜੇ( sub ) ਵਾਪਸ sub;
         j += n + sz;
       }
-      assert( j==k );
-      return 0;
+      ਪ੍ਰਤਿਜ੍ਞਾ( j==k );
+      ਵਾਪਸ 0;
     }
-    case JSONB_OBJECT: {
+    ਹਾਲਤ JSONB_OBJECT: {
       u32 cnt = 0;
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      ਜਦੋਂ( j<k ){
         sz = 0;
-        n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        if( (cnt & 1)==0 ){
+        n = jsonb_Payload_ਮਾਪ(pParse, j, &sz);
+        ਜੇ( n==0 ) ਵਾਪਸ j+1;
+        ਜੇ( j+n+sz>k ) ਵਾਪਸ j+1;
+        ਜੇ( (cnt & 1)==0 ){
           x = z[j] & 0x0f;
-          if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return j+1;
+          ਜੇ( x<JSONB_ਪਾਠ || x>JSONB_TEXTRAW ) ਵਾਪਸ j+1;
         }
-        sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        sub = jsonbValidityCheck(pParse, j, j+n+sz, i_ਡੂੰਘਾਈ+1);
+        ਜੇ( sub ) ਵਾਪਸ sub;
         cnt++;
         j += n + sz;
       }
-      assert( j==k );
-      if( (cnt & 1)!=0 ) return j+1;
-      return 0;
+      ਪ੍ਰਤਿਜ੍ਞਾ( j==k );
+      ਜੇ( (cnt & 1)!=0 ) ਵਾਪਸ j+1;
+      ਵਾਪਸ 0;
     }
-    default: {
-      return i+1;
+    ਮੂਲ: {
+      ਵਾਪਸ i+1;
     }
   }
 }
@@ -1579,467 +1579,467 @@ static u32 jsonbValidityCheck(
 **     -4    ',' seen    /     the index in zJson[] of the seen character
 **     -5    ':' seen   /
 */
-static int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
-  char c;
+ਸਥਿਰ ਪੂਰਨ json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(JsonParse *pParse, u32 i){
+  ਅੱਖਰ c;
   u32 j;
-  u32 iThis, iStart;
-  int x;
+  u32 iThis, i_ਸ਼ੁਰੂ;
+  ਪੂਰਨ x;
   u8 t;
-  const char *z = pParse->zJson;
+  ਅਚਲ ਅੱਖਰ *z = pParse->zJson;
 json_parse_restart:
-  switch( (u8)z[i] ){
-  case '{': {
+  ਚੋਣ( (u8)z[i] ){
+  ਹਾਲਤ '{': {
     /* Parse object */
     iThis = pParse->nBlob;
-    jsonBlobAppendNode(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    json_Blob_Append_ਗੰਢ(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
+    ਜੇ( ++pParse->i_ਡੂੰਘਾਈ > JSON_MAX_ਡੂੰਘਾਈ ){
       pParse->iErr = i;
-      return -1;
+      ਵਾਪਸ -1;
     }
-    iStart = pParse->nBlob;
-    for(j=i+1;;j++){
+    i_ਸ਼ੁਰੂ = pParse->nBlob;
+    ਲਈ(j=i+1;;j++){
       u32 iBlob = pParse->nBlob;
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        int op;
-        if( x==(-2) ){
+      x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+      ਜੇ( x<=0 ){
+        ਪੂਰਨ op;
+        ਜੇ( x==(-2) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
-          break;
+          ਜੇ( pParse->nBlob!=(u32)i_ਸ਼ੁਰੂ ) pParse->hasNonstd = 1;
+          ਰੋਕੋ;
         }
         j += json5Whitespace(&z[j]);
-        op = JSONB_TEXT;
-        if( sqlite3JsonId1(z[j]) 
+        op = JSONB_ਪਾਠ;
+        ਜੇ( sqlite3JsonId1(z[j]) 
          || (z[j]=='\\' && jsonIs4HexB(&z[j+1], &op))
         ){
-          int k = j+1;
-          while( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
+          ਪੂਰਨ k = j+1;
+          ਜਦੋਂ( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
             || (z[k]=='\\' && jsonIs4HexB(&z[k+1], &op))
           ){
             k++;
           }
-          assert( iBlob==pParse->nBlob );
-          jsonBlobAppendNode(pParse, op, k-j, &z[j]);
+          ਪ੍ਰਤਿਜ੍ਞਾ( iBlob==pParse->nBlob );
+          json_Blob_Append_ਗੰਢ(pParse, op, k-j, &z[j]);
           pParse->hasNonstd = 1;
           x = k;
-        }else{
-          if( x!=-1 ) pParse->iErr = j;
-          return -1;
+        }ਨਹੀਂਤਾਂ{
+          ਜੇ( x!=-1 ) pParse->iErr = j;
+          ਵਾਪਸ -1;
         }
       }
-      if( pParse->oom ) return -1;
+      ਜੇ( pParse->oom ) ਵਾਪਸ -1;
       t = pParse->aBlob[iBlob] & 0x0f;
-      if( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
+      ਜੇ( t<JSONB_ਪਾਠ || t>JSONB_TEXTRAW ){
         pParse->iErr = j;
-        return -1;
+        ਵਾਪਸ -1;
       }
       j = x;
-      if( z[j]==':' ){
+      ਜੇ( z[j]==':' ){
         j++;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }ਨਹੀਂਤਾਂ{
+        ਜੇ( jsonIsspace(z[j]) ){
           /* strspn() is not helpful here */
-          do{ j++; }while( jsonIsspace(z[j]) );
-          if( z[j]==':' ){
+          ਕਰੋ{ j++; }ਜਦੋਂ( jsonIsspace(z[j]) );
+          ਜੇ( z[j]==':' ){
             j++;
-            goto parse_object_value;
+            ਜਾਓ parse_object_ਮੁੱਲ;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x!=(-5) ){
-          if( x!=(-1) ) pParse->iErr = j;
-          return -1;
+        x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+        ਜੇ( x!=(-5) ){
+          ਜੇ( x!=(-1) ) pParse->iErr = j;
+          ਵਾਪਸ -1;
         }
         j = pParse->iErr+1;
       }
-    parse_object_value:
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+    parse_object_ਮੁੱਲ:
+      x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+      ਜੇ( x<=0 ){
+        ਜੇ( x!=(-1) ) pParse->iErr = j;
+        ਵਾਪਸ -1;
       }
       j = x;
-      if( z[j]==',' ){
-        continue;
-      }else if( z[j]=='}' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      ਜੇ( z[j]==',' ){
+        ਜਾਰੀ;
+      }ਨਹੀਂਤਾਂ ਜੇ( z[j]=='}' ){
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ{
+        ਜੇ( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
-            continue;
-          }else if( z[j]=='}' ){
-            break;
+          ਜੇ( z[j]==',' ){
+            ਜਾਰੀ;
+          }ਨਹੀਂਤਾਂ ਜੇ( z[j]=='}' ){
+            ਰੋਕੋ;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+        ਜੇ( x==(-4) ){
           j = pParse->iErr;
-          continue;
+          ਜਾਰੀ;
         }
-        if( x==(-2) ){
+        ਜੇ( x==(-2) ){
           j = pParse->iErr;
-          break;
+          ਰੋਕੋ;
         }
       }
       pParse->iErr = j;
-      return -1;
+      ਵਾਪਸ -1;
     }
-    jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
-    pParse->iDepth--;
-    return j+1;
+    json_Blob_Change_Payload_ਮਾਪ(pParse, iThis, pParse->nBlob - i_ਸ਼ੁਰੂ);
+    pParse->i_ਡੂੰਘਾਈ--;
+    ਵਾਪਸ j+1;
   }
-  case '[': {
+  ਹਾਲਤ '[': {
     /* Parse array */
     iThis = pParse->nBlob;
-    assert( i<=(u32)pParse->nJson );
-    jsonBlobAppendNode(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
-    iStart = pParse->nBlob;
-    if( pParse->oom ) return -1;
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( i<=(u32)pParse->nJson );
+    json_Blob_Append_ਗੰਢ(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
+    i_ਸ਼ੁਰੂ = pParse->nBlob;
+    ਜੇ( pParse->oom ) ਵਾਪਸ -1;
+    ਜੇ( ++pParse->i_ਡੂੰਘਾਈ > JSON_MAX_ਡੂੰਘਾਈ ){
       pParse->iErr = i;
-      return -1;
+      ਵਾਪਸ -1;
     }
-    for(j=i+1;;j++){
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x==(-3) ){
+    ਲਈ(j=i+1;;j++){
+      x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+      ਜੇ( x<=0 ){
+        ਜੇ( x==(-3) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
-          break;
+          ਜੇ( pParse->nBlob!=i_ਸ਼ੁਰੂ ) pParse->hasNonstd = 1;
+          ਰੋਕੋ;
         }
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+        ਜੇ( x!=(-1) ) pParse->iErr = j;
+        ਵਾਪਸ -1;
       }
       j = x;
-      if( z[j]==',' ){
-        continue;
-      }else if( z[j]==']' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      ਜੇ( z[j]==',' ){
+        ਜਾਰੀ;
+      }ਨਹੀਂਤਾਂ ਜੇ( z[j]==']' ){
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ{
+        ਜੇ( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
-            continue;
-          }else if( z[j]==']' ){
-            break;
+          ਜੇ( z[j]==',' ){
+            ਜਾਰੀ;
+          }ਨਹੀਂਤਾਂ ਜੇ( z[j]==']' ){
+            ਰੋਕੋ;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        x = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, j);
+        ਜੇ( x==(-4) ){
           j = pParse->iErr;
-          continue;
+          ਜਾਰੀ;
         }
-        if( x==(-3) ){
+        ਜੇ( x==(-3) ){
           j = pParse->iErr;
-          break;
+          ਰੋਕੋ;
         }
       }
       pParse->iErr = j;
-      return -1;
+      ਵਾਪਸ -1;
     }
-    jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
-    pParse->iDepth--;
-    return j+1;
+    json_Blob_Change_Payload_ਮਾਪ(pParse, iThis, pParse->nBlob - i_ਸ਼ੁਰੂ);
+    pParse->i_ਡੂੰਘਾਈ--;
+    ਵਾਪਸ j+1;
   }
-  case '\'': {
+  ਹਾਲਤ '\'': {
     u8 opcode;
-    char cDelim;
+    ਅੱਖਰ cDelim;
     pParse->hasNonstd = 1;
-    opcode = JSONB_TEXT;
-    goto parse_string;
-  case '"':
+    opcode = JSONB_ਪਾਠ;
+    ਜਾਓ parse_string;
+  ਹਾਲਤ '"':
     /* Parse string */
-    opcode = JSONB_TEXT;
+    opcode = JSONB_ਪਾਠ;
   parse_string:
     cDelim = z[i];
     j = i+1;
-    while( 1 /*exit-by-break*/ ){
-      if( jsonIsOk[(u8)z[j]] ){
-        if( !jsonIsOk[(u8)z[j+1]] ){
+    ਜਦੋਂ( 1 /*exit-by-break*/ ){
+      ਜੇ( jsonIsOk[(u8)z[j]] ){
+        ਜੇ( !jsonIsOk[(u8)z[j+1]] ){
           j += 1;
-        }else if( !jsonIsOk[(u8)z[j+2]] ){
+        }ਨਹੀਂਤਾਂ ਜੇ( !jsonIsOk[(u8)z[j+2]] ){
           j += 2;
-        }else{
+        }ਨਹੀਂਤਾਂ{
           j += 3;
-          continue;
+          ਜਾਰੀ;
         }
       }
       c = z[j];
-      if( c==cDelim ){
-        break;
-      }else if( c=='\\' ){
+      ਜੇ( c==cDelim ){
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ ਜੇ( c=='\\' ){
         c = z[++j];
-        if( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
+        ਜੇ( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
            || c=='n' || c=='r' || c=='t'
            || (c=='u' && jsonIs4Hex(&z[j+1])) ){
-          if( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
-        }else if( c=='\'' ||  c=='v' || c=='\n'
-#ifdef SQLITE_BUG_COMPATIBLE_20250510
+          ਜੇ( opcode==JSONB_ਪਾਠ ) opcode = JSONB_TEXTJ;
+        }ਨਹੀਂਤਾਂ ਜੇ( c=='\'' ||  c=='v' || c=='\n'
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_BUG_COMPATIBLE_20250510
            || (c=='0')                            /* Legacy bug compatible */
-#else
+#ਨਹੀਂਤਾਂ
            || (c=='0' && !sqlite3Isdigit(z[j+1])) /* Correct implementation */
-#endif
+#ਜੇ_ਅੰਤ
            || (0xe2==(u8)c && 0x80==(u8)z[j+1]
                 && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2]))
            || (c=='x' && jsonIs2Hex(&z[j+1])) ){
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else if( c=='\r' ){
-          if( z[j+1]=='\n' ) j++;
+        }ਨਹੀਂਤਾਂ ਜੇ( c=='\r' ){
+          ਜੇ( z[j+1]=='\n' ) j++;
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else{
+        }ਨਹੀਂਤਾਂ{
           pParse->iErr = j;
-          return -1;
+          ਵਾਪਸ -1;
         }
-      }else if( c<=0x1f ){
-        if( c==0 ){
+      }ਨਹੀਂਤਾਂ ਜੇ( c<=0x1f ){
+        ਜੇ( c==0 ){
           pParse->iErr = j;
-          return -1;
+          ਵਾਪਸ -1;
         }
         /* Control characters are not allowed in canonical JSON string
         ** literals, but are allowed in JSON5 string literals. */
         opcode = JSONB_TEXT5;
         pParse->hasNonstd = 1;
-      }else if( c=='"' ){
+      }ਨਹੀਂਤਾਂ ਜੇ( c=='"' ){
         opcode = JSONB_TEXT5;
       }
       j++;
     }
-    jsonBlobAppendNode(pParse, opcode, j-1-i, &z[i+1]);
-    return j+1;
+    json_Blob_Append_ਗੰਢ(pParse, opcode, j-1-i, &z[i+1]);
+    ਵਾਪਸ j+1;
   }
-  case 't': {
-    if( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  ਹਾਲਤ 't': {
+    ਜੇ( ਲੜੀ_ਤੁਲਨਾ(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_TRUE);
-      return i+4;
+      ਵਾਪਸ i+4;
     }
     pParse->iErr = i;
-    return -1;
+    ਵਾਪਸ -1;
   }
-  case 'f': {
-    if( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
+  ਹਾਲਤ 'f': {
+    ਜੇ( ਲੜੀ_ਤੁਲਨਾ(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
       jsonBlobAppendOneByte(pParse, JSONB_FALSE);
-      return i+5;
+      ਵਾਪਸ i+5;
     }
     pParse->iErr = i;
-    return -1;
+    ਵਾਪਸ -1;
   }
-  case '+': {
-    u8 seenE;
+  ਹਾਲਤ '+': {
+    u8 ਵੇਖਿਆ_E;
     pParse->hasNonstd = 1;
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-    goto parse_number;
-  case '.':
-    if( sqlite3Isdigit(z[i+1]) ){
+    ਜਾਓ parse_ਸੰਖਿਆ;
+  ਹਾਲਤ '.':
+    ਜੇ( sqlite3Isdigit(z[i+1]) ){
       pParse->hasNonstd = 1;
       t = 0x03;          /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-      seenE = 0;
-      goto parse_number_2;
+      ਵੇਖਿਆ_E = 0;
+      ਜਾਓ parse_ਸੰਖਿਆ_2;
     }
     pParse->iErr = i;
-    return -1;
-  case '-':
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
+    ਵਾਪਸ -1;
+  ਹਾਲਤ '-':
+  ਹਾਲਤ '0':
+  ਹਾਲਤ '1':
+  ਹਾਲਤ '2':
+  ਹਾਲਤ '3':
+  ਹਾਲਤ '4':
+  ਹਾਲਤ '5':
+  ਹਾਲਤ '6':
+  ਹਾਲਤ '7':
+  ਹਾਲਤ '8':
+  ਹਾਲਤ '9':
     /* Parse number */
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-  parse_number:
-    seenE = 0;
-    assert( '-' < '0' );
-    assert( '+' < '0' );
-    assert( '.' < '0' );
+  parse_ਸੰਖਿਆ:
+    ਵੇਖਿਆ_E = 0;
+    ਪ੍ਰਤਿਜ੍ਞਾ( '-' < '0' );
+    ਪ੍ਰਤਿਜ੍ਞਾ( '+' < '0' );
+    ਪ੍ਰਤਿਜ੍ਞਾ( '.' < '0' );
     c = z[i];
 
-    if( c<='0' ){
-      if( c=='0' ){
-        if( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
-          assert( t==0x00 );
+    ਜੇ( c<='0' ){
+      ਜੇ( c=='0' ){
+        ਜੇ( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( t==0x00 );
           pParse->hasNonstd = 1;
           t = 0x01;
-          for(j=i+3; sqlite3Isxdigit(z[j]); j++){}
-          goto parse_number_finish;
-        }else if( sqlite3Isdigit(z[i+1]) ){
+          ਲਈ(j=i+3; sqlite3Isxdigit(z[j]); j++){}
+          ਜਾਓ parse_ਸੰਖਿਆ_ਅੰਤ;
+        }ਨਹੀਂਤਾਂ ਜੇ( sqlite3Isdigit(z[i+1]) ){
           pParse->iErr = i+1;
-          return -1;
+          ਵਾਪਸ -1;
         }
-      }else{
-        if( !sqlite3Isdigit(z[i+1]) ){
+      }ਨਹੀਂਤਾਂ{
+        ਜੇ( !sqlite3Isdigit(z[i+1]) ){
           /* JSON5 allows for "+Infinity" and "-Infinity" using exactly
           ** that case.  SQLite also allows these in any case and it allows
           ** "+inf" and "-inf". */
-          if( (z[i+1]=='I' || z[i+1]=='i')
+          ਜੇ( (z[i+1]=='I' || z[i+1]=='i')
            && sqlite3StrNICmp(&z[i+1], "inf",3)==0
           ){
             pParse->hasNonstd = 1;
-            if( z[i]=='-' ){
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-            }else{
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
+            ਜੇ( z[i]=='-' ){
+              json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, 6, "-9e999");
+            }ਨਹੀਂਤਾਂ{
+              json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, 5, "9e999");
             }
-            return i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
+            ਵਾਪਸ i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
           }
-          if( z[i+1]=='.' ){
+          ਜੇ( z[i+1]=='.' ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            goto parse_number_2;
+            ਜਾਓ parse_ਸੰਖਿਆ_2;
           }
           pParse->iErr = i;
-          return -1;
+          ਵਾਪਸ -1;
         }
-        if( z[i+1]=='0' ){
-          if( sqlite3Isdigit(z[i+2]) ){
+        ਜੇ( z[i+1]=='0' ){
+          ਜੇ( sqlite3Isdigit(z[i+2]) ){
             pParse->iErr = i+1;
-            return -1;
-          }else if( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
+            ਵਾਪਸ -1;
+          }ਨਹੀਂਤਾਂ ਜੇ( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            for(j=i+4; sqlite3Isxdigit(z[j]); j++){}
-            goto parse_number_finish;
+            ਲਈ(j=i+4; sqlite3Isxdigit(z[j]); j++){}
+            ਜਾਓ parse_ਸੰਖਿਆ_ਅੰਤ;
           }
         }
       }
     }
 
-  parse_number_2:
-    for(j=i+1;; j++){
+  parse_ਸੰਖਿਆ_2:
+    ਲਈ(j=i+1;; j++){
       c = z[j];
-      if( sqlite3Isdigit(c) ) continue;
-      if( c=='.' ){
-        if( (t & 0x02)!=0 ){
+      ਜੇ( sqlite3Isdigit(c) ) ਜਾਰੀ;
+      ਜੇ( c=='.' ){
+        ਜੇ( (t & 0x02)!=0 ){
           pParse->iErr = j;
-          return -1;
+          ਵਾਪਸ -1;
         }
         t |= 0x02;
-        continue;
+        ਜਾਰੀ;
       }
-      if( c=='e' || c=='E' ){
-        if( z[j-1]<'0' ){
-          if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+      ਜੇ( c=='e' || c=='E' ){
+        ਜੇ( z[j-1]<'0' ){
+          ਜੇ( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-          }else{
+          }ਨਹੀਂਤਾਂ{
             pParse->iErr = j;
-            return -1;
+            ਵਾਪਸ -1;
           }
         }
-        if( seenE ){
+        ਜੇ( ਵੇਖਿਆ_E ){
           pParse->iErr = j;
-          return -1;
+          ਵਾਪਸ -1;
         }
         t |= 0x02;
-        seenE = 1;
+        ਵੇਖਿਆ_E = 1;
         c = z[j+1];
-        if( c=='+' || c=='-' ){
+        ਜੇ( c=='+' || c=='-' ){
           j++;
           c = z[j+1];
         }
-        if( c<'0' || c>'9' ){
+        ਜੇ( c<'0' || c>'9' ){
           pParse->iErr = j;
-          return -1;
+          ਵਾਪਸ -1;
         }
-        continue;
+        ਜਾਰੀ;
       }
-      break;
+      ਰੋਕੋ;
     }
-    if( z[j-1]<'0' ){
-      if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+    ਜੇ( z[j-1]<'0' ){
+      ਜੇ( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
         pParse->hasNonstd = 1;
         t |= 0x01;
-      }else{
+      }ਨਹੀਂਤਾਂ{
         pParse->iErr = j;
-        return -1;
+        ਵਾਪਸ -1;
       }
     }
-  parse_number_finish:
-    assert( JSONB_INT+0x01==JSONB_INT5 );
-    assert( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
-    assert( JSONB_INT+0x02==JSONB_FLOAT );
-    if( z[i]=='+' ) i++;
-    jsonBlobAppendNode(pParse, JSONB_INT+t, j-i, &z[i]);
-    return j;
+  parse_ਸੰਖਿਆ_ਅੰਤ:
+    ਪ੍ਰਤਿਜ੍ਞਾ( JSONB_INT+0x01==JSONB_INT5 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( JSONB_INT+0x02==JSONB_FLOAT );
+    ਜੇ( z[i]=='+' ) i++;
+    json_Blob_Append_ਗੰਢ(pParse, JSONB_INT+t, j-i, &z[i]);
+    ਵਾਪਸ j;
   }
-  case '}': {
+  ਹਾਲਤ '}': {
     pParse->iErr = i;
-    return -2;  /* End of {...} */
+    ਵਾਪਸ -2;  /* End of {...} */
   }
-  case ']': {
+  ਹਾਲਤ ']': {
     pParse->iErr = i;
-    return -3;  /* End of [...] */
+    ਵਾਪਸ -3;  /* End of [...] */
   }
-  case ',': {
+  ਹਾਲਤ ',': {
     pParse->iErr = i;
-    return -4;  /* List separator */
+    ਵਾਪਸ -4;  /* List separator */
   }
-  case ':': {
+  ਹਾਲਤ ':': {
     pParse->iErr = i;
-    return -5;  /* Object label/value separator */
+    ਵਾਪਸ -5;  /* Object label/value separator */
   }
-  case 0: {
-    return 0;   /* End of file */
+  ਹਾਲਤ 0: {
+    ਵਾਪਸ 0;   /* End of file */
   }
-  case 0x09:
-  case 0x0a:
-  case 0x0d:
-  case 0x20: {
+  ਹਾਲਤ 0x09:
+  ਹਾਲਤ 0x0a:
+  ਹਾਲਤ 0x0d:
+  ਹਾਲਤ 0x20: {
     i += 1 + (u32)strspn(&z[i+1], jsonSpaces);
-    goto json_parse_restart;
+    ਜਾਓ json_parse_restart;
   }
-  case 0x0b:
-  case 0x0c:
-  case '/':
-  case 0xc2:
-  case 0xe1:
-  case 0xe2:
-  case 0xe3:
-  case 0xef: {
+  ਹਾਲਤ 0x0b:
+  ਹਾਲਤ 0x0c:
+  ਹਾਲਤ '/':
+  ਹਾਲਤ 0xc2:
+  ਹਾਲਤ 0xe1:
+  ਹਾਲਤ 0xe2:
+  ਹਾਲਤ 0xe3:
+  ਹਾਲਤ 0xef: {
     j = json5Whitespace(&z[i]);
-    if( j>0 ){
+    ਜੇ( j>0 ){
       i += j;
       pParse->hasNonstd = 1;
-      goto json_parse_restart;
+      ਜਾਓ json_parse_restart;
     }
     pParse->iErr = i;
-    return -1;
+    ਵਾਪਸ -1;
   }
-  case 'n': {
-    if( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  ਹਾਲਤ 'n': {
+    ਜੇ( ਲੜੀ_ਤੁਲਨਾ(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_NULL);
-      return i+4;
+      ਵਾਪਸ i+4;
     }
     /* fall-through into the default case that checks for NaN */
     /* no break */ deliberate_fall_through
   }
-  default: {
+  ਮੂਲ: {
     u32 k;
-    int nn;
+    ਪੂਰਨ nn;
     c = z[i];
-    for(k=0; k<sizeof(aNanInfName)/sizeof(aNanInfName[0]); k++){
-      if( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
+    ਲਈ(k=0; k<ਆਕਾਰ(aNanInfName)/ਆਕਾਰ(aNanInfName[0]); k++){
+      ਜੇ( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) ਜਾਰੀ;
       nn = aNanInfName[k].n;
-      if( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
-        continue;
+      ਜੇ( sqlite3StrNICmp(&z[i], aNanInfName[k].z_ਮੇਲ, nn)!=0 ){
+        ਜਾਰੀ;
       }
-      if( sqlite3Isalnum(z[i+nn]) ) continue;
-      if( aNanInfName[k].eType==JSONB_FLOAT ){
-        jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-      }else{
+      ਜੇ( sqlite3Isalnum(z[i+nn]) ) ਜਾਰੀ;
+      ਜੇ( aNanInfName[k].eType==JSONB_FLOAT ){
+        json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, 5, "9e999");
+      }ਨਹੀਂਤਾਂ{
         jsonBlobAppendOneByte(pParse, JSONB_NULL);
       }
       pParse->hasNonstd = 1;
-      return i + nn;
+      ਵਾਪਸ i + nn;
     }
     pParse->iErr = i;
-    return -1;  /* Syntax error */
+    ਵਾਪਸ -1;  /* Syntax error */
   }
   } /* End switch(z[i]) */
 }
@@ -2053,44 +2053,44 @@ json_parse_restart:
 ** pParse must be initialized to an empty parse object prior to calling
 ** this routine.
 */
-static int jsonConvertTextToBlob(
+ਸਥਿਰ ਪੂਰਨ json_Convert_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(
   JsonParse *pParse,           /* Initialize and fill this JsonParse object */
   sqlite3_context *pCtx        /* Report errors here */
 ){
-  int i;
-  const char *zJson = pParse->zJson;
-  i = jsonTranslateTextToBlob(pParse, 0);
-  if( pParse->oom ) i = -1;
-  if( i>0 ){
-#ifdef SQLITE_DEBUG
-    assert( pParse->iDepth==0 );
-    if( sqlite3Config.bJsonSelfcheck ){
-      assert( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
+  ਪੂਰਨ i;
+  ਅਚਲ ਅੱਖਰ *zJson = pParse->zJson;
+  i = json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, 0);
+  ਜੇ( pParse->oom ) i = -1;
+  ਜੇ( i>0 ){
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
+    ਪ੍ਰਤਿਜ੍ਞਾ( pParse->i_ਡੂੰਘਾਈ==0 );
+    ਜੇ( sqlite3Config.bJsonSelfcheck ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
     }   
-#endif
-    while( jsonIsspace(zJson[i]) ) i++;
-    if( zJson[i] ){
+#ਜੇ_ਅੰਤ
+    ਜਦੋਂ( jsonIsspace(zJson[i]) ) i++;
+    ਜੇ( zJson[i] ){
       i += json5Whitespace(&zJson[i]);
-      if( zJson[i] ){
-        if( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
+      ਜੇ( zJson[i] ){
+        ਜੇ( pCtx ) sqlite3_ਨਤੀਜਾ_error(pCtx, "malformed JSON", -1);
         jsonParseReset(pParse);
-        return 1;
+        ਵਾਪਸ 1;
       }
       pParse->hasNonstd = 1;
     }
   }
-  if( i<=0 ){
-    if( pCtx!=0 ){
-      if( pParse->oom ){
-        sqlite3_result_error_nomem(pCtx);
-      }else{
-        sqlite3_result_error(pCtx, "malformed JSON", -1);
+  ਜੇ( i<=0 ){
+    ਜੇ( pCtx!=0 ){
+      ਜੇ( pParse->oom ){
+        sqlite3_ਨਤੀਜਾ_error_nomem(pCtx);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_ਨਤੀਜਾ_error(pCtx, "malformed JSON", -1);
       }
     }
     jsonParseReset(pParse);
-    return 1;
+    ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -2098,21 +2098,21 @@ static int jsonConvertTextToBlob(
 ** this into the JSONB format and make it the return value of the
 ** SQL function.
 */
-static void jsonReturnStringAsBlob(JsonString *pStr){
+ਸਥਿਰ ਖਾਲੀ jsonReturnStringAsBlob(JsonString *pStr){
   JsonParse px;
-  assert( pStr->eErr==0 );
-  memset(&px, 0, sizeof(px));
+  ਪ੍ਰਤਿਜ੍ਞਾ( pStr->eErr==0 );
+  memset(&px, 0, ਆਕਾਰ(px));
   px.zJson = pStr->zBuf;
-  px.nJson = pStr->nUsed;
+  px.nJson = pStr->n_ਵਰਤਿਆ;
   px.db = sqlite3_context_db_handle(pStr->pCtx);
-  (void)jsonTranslateTextToBlob(&px, 0);
-  if( px.oom ){
+  (ਖਾਲੀ)json_Translate_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(&px, 0);
+  ਜੇ( px.oom ){
     sqlite3DbFree(px.db, px.aBlob);
-    sqlite3_result_error_nomem(pStr->pCtx);
-  }else{
-    assert( px.nBlobAlloc>0 );
-    assert( !px.bReadOnly );
-    sqlite3_result_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
+    sqlite3_ਨਤੀਜਾ_error_nomem(pStr->pCtx);
+  }ਨਹੀਂਤਾਂ{
+    ਪ੍ਰਤਿਜ੍ਞਾ( px.nBlobAlloc>0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( !px.bReadOnly );
+    sqlite3_ਨਤੀਜਾ_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
   }
 }
 
@@ -2122,41 +2122,41 @@ static void jsonReturnStringAsBlob(JsonString *pStr){
 ** recursion to handle the (relatively uncommon) cases where the
 ** the payload size is a 2, 4, or 8 byte integer.
 */
-static u32 jsonbPayloadSizeWide(
-  const JsonParse *pParse,   /* JSON parsing context */
+ਸਥਿਰ u32 jsonb_Payload_ਮਾਪ_Wide(
+  ਅਚਲ JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz,                  /* Write payload size here */
   u8 x                       /* pParse->aBlob[i]>>4 */
 ){
   u32 sz;
   u32 n;
-  assert( i<pParse->nBlob );
-  assert( x==(pParse->aBlob[i]>>4) );
-  assert( x>=13 );
-  if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( i<pParse->nBlob );
+  ਪ੍ਰਤਿਜ੍ਞਾ( x==(pParse->aBlob[i]>>4) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( x>=13 );
+  ਜੇ( x==13 ){
+    ਜੇ( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==14 ){
+    ਜੇ( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }ਨਹੀਂਤਾਂ{
+    ਜੇ( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
@@ -2170,14 +2170,14 @@ static u32 jsonbPayloadSizeWide(
   /* Quirks with -Os and gcov cause the NO_TEST line below to show up as
   ** false-positive coverage miss.  The testcases() macros above are
   ** sufficient to prove that the branch is in fact covered */
-  if( (i64)i+sz+n > pParse->nBlob
+  ਜੇ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta  /*NO_TEST*/
   ){
     *pSz = 0;
-    return 0;
+    ਵਾਪਸ 0;
   }
   *pSz = sz;
-  return n;
+  ਵਾਪਸ n;
 }
 
 /*
@@ -2192,111 +2192,111 @@ static u32 jsonbPayloadSizeWide(
 ** payload size in to *pSz.  It returns the offset from i to the
 ** beginning of the payload.  Return 0 on error.
 */
-static u32 jsonbPayloadSize(
-  const JsonParse *pParse,   /* JSON parsing context */
+ਸਥਿਰ u32 jsonb_Payload_ਮਾਪ(
+  ਅਚਲ JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ਜੇ( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    ਵਾਪਸ 0;
+  }ਨਹੀਂਤਾਂ ਜੇ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==12 ){
+    ਜੇ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse, i, pSz, x);
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ jsonb_Payload_ਮਾਪ_Wide(pParse, i, pSz, x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ਜੇ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    ਵਾਪਸ 0;
   }
   *pSz = sz;
-  return n;
+  ਵਾਪਸ n;
 }
 
-#if SQLITE_USES_INLINE
+#ਜੇ SQLITE_ਵਰਤਦਾ_INLINE
 /* A separate inline version of jsonbPayloadSize(), used in one particulary
 ** performance-critical place.
 */
-static SQLITE_INLINE u32 jsonbPayloadSizeInline(
-  const JsonParse *pParse,   /* JSON parsing context */
+ਸਥਿਰ SQLITE_INLINE u32 jsonb_Payload_ਮਾਪ_Inline(
+  ਅਚਲ JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ਜੇ( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    ਵਾਪਸ 0;
+  }ਨਹੀਂਤਾਂ ਜੇ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==12 ){
+    ਜੇ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==13 ){
+    ਜੇ( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==14 ){
+    ਜੇ( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }ਨਹੀਂਤਾਂ{
+    ਜੇ( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
     n = 9;
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ਜੇ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    ਵਾਪਸ 0;
   }
   *pSz = sz;
-  return n;
+  ਵਾਪਸ n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#ਨਹੀਂਤਾਂ /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
-# define jsonbPayloadSizeInline(a,b,c) jsonbPayloadSize(a,b,c)
-#endif
+# define jsonb_Payload_ਮਾਪ_Inline(a,b,c) jsonb_Payload_ਮਾਪ(a,b,c)
+#ਜੇ_ਅੰਤ
 
 
-#if SQLITE_USES_INLINE
+#ਜੇ SQLITE_ਵਰਤਦਾ_INLINE
 /* A separate inline version of jsonbPayloadSize() that implements the more
 ** common paths inline but then calls out to a subroutine for the uncommon
 ** paths.
@@ -2308,42 +2308,42 @@ static SQLITE_INLINE u32 jsonbPayloadSizeInline(
 **    *   Large sizes (greater than 255) are uncommon and are handled
 **        by a subroutine call to the jsonbPayloadSizeWide().
 */
-static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
-  const JsonParse *pParse,   /* JSON parsing context */
+ਸਥਿਰ SQLITE_INLINE u32 jsonb_Payload_ਮਾਪ_Semi_Inline(
+  ਅਚਲ JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  assert( i<pParse->nBlob );
-  if( (x = pParse->aBlob[i]>>4)<=11 ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( i<pParse->nBlob );
+  ਜੇ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }ਨਹੀਂਤਾਂ ਜੇ( x==12 ){
+    ਜੇ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      ਵਾਪਸ 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse,i,pSz,x);
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ jsonb_Payload_ਮਾਪ_Wide(pParse,i,pSz,x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ਜੇ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    ਵਾਪਸ 0;
   }
   *pSz = sz;
-  return n;
+  ਵਾਪਸ n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#ਨਹੀਂਤਾਂ /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
-# define jsonbPayloadSizeSemiInline(a,b,c) jsonbPayloadSize(a,b,c)
-#endif
+# define jsonb_Payload_ਮਾਪ_Semi_Inline(a,b,c) jsonb_Payload_ਮਾਪ(a,b,c)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Translate the binary JSONB representation of JSON beginning at
@@ -2358,247 +2358,247 @@ static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToText(
+ਸਥਿਰ u32 json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(
   JsonParse *pParse,             /* the complete parse of the JSON */
   u32 i,                         /* Start rendering at this index */
-  JsonString *pOut               /* Write JSON here */
+  JsonString *p_ਬਾਹਰਲਾ               /* Write JSON here */
 ){
-  u32 sz, n, j, iEnd;
+  u32 sz, n, j, i_ਸਿਰਾ;
 
-  n = jsonbPayloadSizeInline(pParse, i, &sz);
-  if( n==0 ){
-    pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+  n = jsonb_Payload_ਮਾਪ_Inline(pParse, i, &sz);
+  ਜੇ( n==0 ){
+    p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+    ਵਾਪਸ pParse->nBlob+1;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
-      jsonAppendRawNZ(pOut, "null", 4);
-      return i+1;
+  ਚੋਣ( pParse->aBlob[i] & 0x0f ){
+    ਹਾਲਤ JSONB_NULL: {
+      jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "null", 4);
+      ਵਾਪਸ i+1;
     }
-    case JSONB_TRUE: {
-      jsonAppendRawNZ(pOut, "true", 4);
-      return i+1;
+    ਹਾਲਤ JSONB_TRUE: {
+      jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "true", 4);
+      ਵਾਪਸ i+1;
     }
-    case JSONB_FALSE: {
-      jsonAppendRawNZ(pOut, "false", 5);
-      return i+1;
+    ਹਾਲਤ JSONB_FALSE: {
+      jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "false", 5);
+      ਵਾਪਸ i+1;
     }
-    case JSONB_INT:
-    case JSONB_FLOAT: {
-      if( sz==0 ) goto malformed_jsonb;
-      jsonAppendRaw(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    ਹਾਲਤ JSONB_INT:
+    ਹਾਲਤ JSONB_FLOAT: {
+      ਜੇ( sz==0 ) ਜਾਓ malformed_jsonb;
+      jsonAppendRaw(p_ਬਾਹਰਲਾ, (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n], sz);
+      ਰੋਕੋ;
     }
-    case JSONB_INT5: {  /* Integer literal in hexadecimal notation */
+    ਹਾਲਤ JSONB_INT5: {  /* Integer literal in hexadecimal notation */
       u32 k = 2;
       sqlite3_uint64 u = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      int bOverflow = 0;
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
-        jsonAppendChar(pOut, '-');
+      ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ = (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n];
+      ਪੂਰਨ b_ਉਛਾਲ = 0;
+      ਜੇ( sz==0 ) ਜਾਓ malformed_jsonb;
+      ਜੇ( z_ਵਿੱਚ[0]=='-' ){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '-');
         k++;
-      }else if( zIn[0]=='+' ){
+      }ਨਹੀਂਤਾਂ ਜੇ( z_ਵਿੱਚ[0]=='+' ){
         k++;
       }
-      for(; k<sz; k++){
-        if( !sqlite3Isxdigit(zIn[k]) ){
-          pOut->eErr |= JSTRING_MALFORMED;
-          break;
-        }else if( (u>>60)!=0 ){
-          bOverflow = 1;
-        }else{
-          u = u*16 + sqlite3HexToInt(zIn[k]);
+      ਲਈ(; k<sz; k++){
+        ਜੇ( !sqlite3Isxdigit(z_ਵਿੱਚ[k]) ){
+          p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+          ਰੋਕੋ;
+        }ਨਹੀਂਤਾਂ ਜੇ( (u>>60)!=0 ){
+          b_ਉਛਾਲ = 1;
+        }ਨਹੀਂਤਾਂ{
+          u = u*16 + sqlite3_Hex_ਮੰਜ਼ਿਲ_Int(z_ਵਿੱਚ[k]);
         }
       }
-      jsonPrintf(100,pOut,bOverflow?"9.0e999":"%llu", u);
-      break;
+      jsonPrintf(100,p_ਬਾਹਰਲਾ,b_ਉਛਾਲ?"9.0e999":"%llu", u);
+      ਰੋਕੋ;
     }
-    case JSONB_FLOAT5: { /* Float literal missing digits beside "." */
+    ਹਾਲਤ JSONB_FLOAT5: { /* Float literal missing digits beside "." */
       u32 k = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
-        jsonAppendChar(pOut, '-');
-        if( sz<=1 ) goto malformed_jsonb;
+      ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ = (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n];
+      ਜੇ( sz==0 ) ਜਾਓ malformed_jsonb;
+      ਜੇ( z_ਵਿੱਚ[0]=='-' ){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '-');
+        ਜੇ( sz<=1 ) ਜਾਓ malformed_jsonb;
         k = 1;
       }
-      if( zIn[k]=='.' ){
-        jsonAppendChar(pOut, '0');
+      ਜੇ( z_ਵਿੱਚ[k]=='.' ){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '0');
       }
-      for(; k<sz; k++){
-        jsonAppendChar(pOut, zIn[k]);
-        if( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
-          jsonAppendChar(pOut, '0');
+      ਲਈ(; k<sz; k++){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, z_ਵਿੱਚ[k]);
+        ਜੇ( z_ਵਿੱਚ[k]=='.' && (k+1==sz || !sqlite3Isdigit(z_ਵਿੱਚ[k+1])) ){
+          jsonAppendChar(p_ਬਾਹਰਲਾ, '0');
         }
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JSONB_TEXT:
-    case JSONB_TEXTJ: {
-      if( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
-        pOut->zBuf[pOut->nUsed] = '"';
-        memcpy(pOut->zBuf+pOut->nUsed+1,(const char*)&pParse->aBlob[i+n],sz);
-        pOut->zBuf[pOut->nUsed+sz+1] = '"';
-        pOut->nUsed += sz+2;
+    ਹਾਲਤ JSONB_ਪਾਠ:
+    ਹਾਲਤ JSONB_TEXTJ: {
+      ਜੇ( p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ+sz+2<=p_ਬਾਹਰਲਾ->nAlloc || jsonStringGrow(p_ਬਾਹਰਲਾ, sz+2)==0 ){
+        p_ਬਾਹਰਲਾ->zBuf[p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ] = '"';
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(p_ਬਾਹਰਲਾ->zBuf+p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ+1,(ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n],sz);
+        p_ਬਾਹਰਲਾ->zBuf[p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ+sz+1] = '"';
+        p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ += sz+2;
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JSONB_TEXT5: {
-      const char *zIn;
+    ਹਾਲਤ JSONB_TEXT5: {
+      ਅਚਲ ਅੱਖਰ *z_ਵਿੱਚ;
       u32 k;
       u32 sz2 = sz;
-      zIn = (const char*)&pParse->aBlob[i+n];
-      jsonAppendChar(pOut, '"');
-      while( sz2>0 ){
-        for(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
-        if( k>0 ){
-          jsonAppendRawNZ(pOut, zIn, k);
-          if( k>=sz2 ){
-            break;
+      z_ਵਿੱਚ = (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n];
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '"');
+      ਜਦੋਂ( sz2>0 ){
+        ਲਈ(k=0; k<sz2 && (jsonIsOk[(u8)z_ਵਿੱਚ[k]] || z_ਵਿੱਚ[k]=='\''); k++){}
+        ਜੇ( k>0 ){
+          jsonAppendRawNZ(p_ਬਾਹਰਲਾ, z_ਵਿੱਚ, k);
+          ਜੇ( k>=sz2 ){
+            ਰੋਕੋ;
           }
-          zIn += k;
+          z_ਵਿੱਚ += k;
           sz2 -= k;
         }
-        if( zIn[0]=='"' ){
-          jsonAppendRawNZ(pOut, "\\\"", 2);
-          zIn++;
+        ਜੇ( z_ਵਿੱਚ[0]=='"' ){
+          jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "\\\"", 2);
+          z_ਵਿੱਚ++;
           sz2--;
-          continue;
+          ਜਾਰੀ;
         }
-        if( zIn[0]<=0x1f ){
-          if( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) break;
-          jsonAppendControlChar(pOut, zIn[0]);
-          zIn++;
+        ਜੇ( z_ਵਿੱਚ[0]<=0x1f ){
+          ਜੇ( p_ਬਾਹਰਲਾ->n_ਵਰਤਿਆ+7>p_ਬਾਹਰਲਾ->nAlloc && jsonStringGrow(p_ਬਾਹਰਲਾ,7) ) ਰੋਕੋ;
+          jsonAppendControlChar(p_ਬਾਹਰਲਾ, z_ਵਿੱਚ[0]);
+          z_ਵਿੱਚ++;
           sz2--;
-          continue;
+          ਜਾਰੀ;
         }
-        assert( zIn[0]=='\\' );
-        assert( sz2>=1 );
-        if( sz2<2 ){
-          pOut->eErr |= JSTRING_MALFORMED;
-          break;
+        ਪ੍ਰਤਿਜ੍ਞਾ( z_ਵਿੱਚ[0]=='\\' );
+        ਪ੍ਰਤਿਜ੍ਞਾ( sz2>=1 );
+        ਜੇ( sz2<2 ){
+          p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+          ਰੋਕੋ;
         }
-        switch( (u8)zIn[1] ){
-          case '\'':
-            jsonAppendChar(pOut, '\'');
-            break;
-          case 'v':
-            jsonAppendRawNZ(pOut, "\\u000b", 6);
-            break;
-          case 'x':
-            if( sz2<4 ){
-              pOut->eErr |= JSTRING_MALFORMED;
+        ਚੋਣ( (u8)z_ਵਿੱਚ[1] ){
+          ਹਾਲਤ '\'':
+            jsonAppendChar(p_ਬਾਹਰਲਾ, '\'');
+            ਰੋਕੋ;
+          ਹਾਲਤ 'v':
+            jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "\\u000b", 6);
+            ਰੋਕੋ;
+          ਹਾਲਤ 'x':
+            ਜੇ( sz2<4 ){
+              p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              ਰੋਕੋ;
             }
-            jsonAppendRawNZ(pOut, "\\u00", 4);
-            jsonAppendRawNZ(pOut, &zIn[2], 2);
-            zIn += 2;
+            jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "\\u00", 4);
+            jsonAppendRawNZ(p_ਬਾਹਰਲਾ, &z_ਵਿੱਚ[2], 2);
+            z_ਵਿੱਚ += 2;
             sz2 -= 2;
-            break;
-          case '0':
-            jsonAppendRawNZ(pOut, "\\u0000", 6);
-            break;
-          case '\r':
-            if( sz2>2 && zIn[2]=='\n' ){
-              zIn++;
+            ਰੋਕੋ;
+          ਹਾਲਤ '0':
+            jsonAppendRawNZ(p_ਬਾਹਰਲਾ, "\\u0000", 6);
+            ਰੋਕੋ;
+          ਹਾਲਤ '\r':
+            ਜੇ( sz2>2 && z_ਵਿੱਚ[2]=='\n' ){
+              z_ਵਿੱਚ++;
               sz2--;
             }
-            break;
-          case '\n':
-            break;
-          case 0xe2:
+            ਰੋਕੋ;
+          ਹਾਲਤ '\n':
+            ਰੋਕੋ;
+          ਹਾਲਤ 0xe2:
             /* '\' followed by either U+2028 or U+2029 is ignored as
             ** whitespace.  Note that in UTF8, U+2028 is 0xe2 0x80 0x29.
             ** U+2029 is the same except for the last byte */
-            if( sz2<4
-             || 0x80!=(u8)zIn[2]
-             || (0xa8!=(u8)zIn[3] && 0xa9!=(u8)zIn[3])
+            ਜੇ( sz2<4
+             || 0x80!=(u8)z_ਵਿੱਚ[2]
+             || (0xa8!=(u8)z_ਵਿੱਚ[3] && 0xa9!=(u8)z_ਵਿੱਚ[3])
             ){
-              pOut->eErr |= JSTRING_MALFORMED;
+              p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              ਰੋਕੋ;
             }
-            zIn += 2;
+            z_ਵਿੱਚ += 2;
             sz2 -= 2;
-            break;
-          default:
-            jsonAppendRawNZ(pOut, zIn, 2);
-            break;
+            ਰੋਕੋ;
+          ਮੂਲ:
+            jsonAppendRawNZ(p_ਬਾਹਰਲਾ, z_ਵਿੱਚ, 2);
+            ਰੋਕੋ;
         }
-        assert( sz2>=2 );
-        zIn += 2;
+        ਪ੍ਰਤਿਜ੍ਞਾ( sz2>=2 );
+        z_ਵਿੱਚ += 2;
         sz2 -= 2;
       }
-      jsonAppendChar(pOut, '"');
-      break;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '"');
+      ਰੋਕੋ;
     }
-    case JSONB_TEXTRAW: {
-      jsonAppendString(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    ਹਾਲਤ JSONB_TEXTRAW: {
+      jsonAppendString(p_ਬਾਹਰਲਾ, (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n], sz);
+      ਰੋਕੋ;
     }
-    case JSONB_ARRAY: {
-      jsonAppendChar(pOut, '[');
+    ਹਾਲਤ JSONB_ARRAY: {
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '[');
       j = i+n;
-      iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
-        jsonStringTooDeep(pOut);
+      i_ਸਿਰਾ = j+sz;
+      ਜੇ( ++pParse->i_ਡੂੰਘਾਈ > JSON_MAX_ਡੂੰਘਾਈ ){
+        jsonStringTooDeep(p_ਬਾਹਰਲਾ);
       }
-      while( j<iEnd && pOut->eErr==0 ){
-        j = jsonTranslateBlobToText(pParse, j, pOut);
-        jsonAppendChar(pOut, ',');
+      ਜਦੋਂ( j<i_ਸਿਰਾ && p_ਬਾਹਰਲਾ->eErr==0 ){
+        j = json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(pParse, j, p_ਬਾਹਰਲਾ);
+        jsonAppendChar(p_ਬਾਹਰਲਾ, ',');
       }
-      pParse->iDepth--;
-      if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
-      jsonAppendChar(pOut, ']');
-      break;
+      pParse->i_ਡੂੰਘਾਈ--;
+      ਜੇ( j>i_ਸਿਰਾ ) p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+      ਜੇ( sz>0 ) jsonStringTrimOneChar(p_ਬਾਹਰਲਾ);
+      jsonAppendChar(p_ਬਾਹਰਲਾ, ']');
+      ਰੋਕੋ;
     }
-    case JSONB_OBJECT: {
-      int x = 0;
-      jsonAppendChar(pOut, '{');
+    ਹਾਲਤ JSONB_OBJECT: {
+      ਪੂਰਨ x = 0;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '{');
       j = i+n;
-      iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
-        jsonStringTooDeep(pOut);
+      i_ਸਿਰਾ = j+sz;
+      ਜੇ( ++pParse->i_ਡੂੰਘਾਈ > JSON_MAX_ਡੂੰਘਾਈ ){
+        jsonStringTooDeep(p_ਬਾਹਰਲਾ);
       }
-      while( j<iEnd && pOut->eErr==0 ){
-        j = jsonTranslateBlobToText(pParse, j, pOut);
-        jsonAppendChar(pOut, (x++ & 1) ? ',' : ':');
+      ਜਦੋਂ( j<i_ਸਿਰਾ && p_ਬਾਹਰਲਾ->eErr==0 ){
+        j = json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(pParse, j, p_ਬਾਹਰਲਾ);
+        jsonAppendChar(p_ਬਾਹਰਲਾ, (x++ & 1) ? ',' : ':');
       }
-      pParse->iDepth--;
-      if( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
-      jsonAppendChar(pOut, '}');
-      break;
+      pParse->i_ਡੂੰਘਾਈ--;
+      ਜੇ( (x & 1)!=0 || j>i_ਸਿਰਾ ) p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+      ਜੇ( sz>0 ) jsonStringTrimOneChar(p_ਬਾਹਰਲਾ);
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '}');
+      ਰੋਕੋ;
     }
 
-    default: {
+    ਮੂਲ: {
       malformed_jsonb:
-      pOut->eErr |= JSTRING_MALFORMED;
-      break;
+      p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+      ਰੋਕੋ;
     }
   }
-  return i+n+sz;
+  ਵਾਪਸ i+n+sz;
 }
 
 /* Context for recursion of json_pretty()
 */
-typedef struct JsonPretty JsonPretty;
-struct JsonPretty {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonPretty JsonPretty;
+ਬਣਤਰ JsonPretty {
   JsonParse *pParse;        /* The BLOB being rendered */
-  JsonString *pOut;         /* Generate pretty output into this string */
-  const char *zIndent;      /* Use this text for indentation */
+  JsonString *p_ਬਾਹਰਲਾ;         /* Generate pretty output into this string */
+  ਅਚਲ ਅੱਖਰ *zIndent;      /* Use this text for indentation */
   u32 szIndent;             /* Bytes in zIndent[] */
   u32 nIndent;              /* Current level of indentation */
 };
 
 /* Append indentation to the pretty JSON under construction */
-static void jsonPrettyIndent(JsonPretty *pPretty){
+ਸਥਿਰ ਖਾਲੀ jsonPrettyIndent(JsonPretty *pPretty){
   u32 jj;
-  for(jj=0; jj<pPretty->nIndent; jj++){
-    jsonAppendRaw(pPretty->pOut, pPretty->zIndent, pPretty->szIndent);
+  ਲਈ(jj=0; jj<pPretty->nIndent; jj++){
+    jsonAppendRaw(pPretty->p_ਬਾਹਰਲਾ, pPretty->zIndent, pPretty->szIndent);
   }
 }
 
@@ -2619,115 +2619,115 @@ static void jsonPrettyIndent(JsonPretty *pPretty){
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToPrettyText(
+ਸਥਿਰ u32 json_Translate_Blob_ਮੰਜ਼ਿਲ_Pretty_ਪਾਠ(
   JsonPretty *pPretty,       /* Pretty-printing context */
   u32 i                      /* Start rendering at this index */
 ){
-  u32 sz, n, j, iEnd;
+  u32 sz, n, j, i_ਸਿਰਾ;
   JsonParse *pParse = pPretty->pParse;
-  JsonString *pOut = pPretty->pOut;
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
-    pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+  JsonString *p_ਬਾਹਰਲਾ = pPretty->p_ਬਾਹਰਲਾ;
+  n = jsonb_Payload_ਮਾਪ(pParse, i, &sz);
+  ਜੇ( n==0 ){
+    p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+    ਵਾਪਸ pParse->nBlob+1;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_ARRAY: {
+  ਚੋਣ( pParse->aBlob[i] & 0x0f ){
+    ਹਾਲਤ JSONB_ARRAY: {
       j = i+n;
-      iEnd = j+sz;
-      jsonAppendChar(pOut, '[');
-      if( j<iEnd ){
-        jsonAppendChar(pOut, '\n');
+      i_ਸਿਰਾ = j+sz;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '[');
+      ਜੇ( j<i_ਸਿਰਾ ){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
-          jsonStringTooDeep(pOut);
+        ਜੇ( pPretty->nIndent >= JSON_MAX_ਡੂੰਘਾਈ ){
+          jsonStringTooDeep(p_ਬਾਹਰਲਾ);
         }
-        while( pOut->eErr==0 ){
+        ਜਦੋਂ( p_ਬਾਹਰਲਾ->eErr==0 ){
           jsonPrettyIndent(pPretty);
-          j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ){
-            if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-            break;
+          j = json_Translate_Blob_ਮੰਜ਼ਿਲ_Pretty_ਪਾਠ(pPretty, j);
+          ਜੇ( j>=i_ਸਿਰਾ ){
+            ਜੇ( j>i_ਸਿਰਾ ) p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+            ਰੋਕੋ;
           }
-          jsonAppendRawNZ(pOut, ",\n", 2);
+          jsonAppendRawNZ(p_ਬਾਹਰਲਾ, ",\n", 2);
         }
-        jsonAppendChar(pOut, '\n');
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '\n');
         pPretty->nIndent--;
         jsonPrettyIndent(pPretty);
       }
-      jsonAppendChar(pOut, ']');
-      i = iEnd;
-      break;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, ']');
+      i = i_ਸਿਰਾ;
+      ਰੋਕੋ;
     }
-    case JSONB_OBJECT: {
+    ਹਾਲਤ JSONB_OBJECT: {
       j = i+n;
-      iEnd = j+sz;
-      jsonAppendChar(pOut, '{');
-      if( j<iEnd ){
-        jsonAppendChar(pOut, '\n');
+      i_ਸਿਰਾ = j+sz;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '{');
+      ਜੇ( j<i_ਸਿਰਾ ){
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
-          jsonStringTooDeep(pOut);
+        ਜੇ( pPretty->nIndent >= JSON_MAX_ਡੂੰਘਾਈ ){
+          jsonStringTooDeep(p_ਬਾਹਰਲਾ);
         }
-        pParse->iDepth = pPretty->nIndent;
-        while( pOut->eErr==0 ){
+        pParse->i_ਡੂੰਘਾਈ = pPretty->nIndent;
+        ਜਦੋਂ( p_ਬਾਹਰਲਾ->eErr==0 ){
           jsonPrettyIndent(pPretty);
-          j = jsonTranslateBlobToText(pParse, j, pOut);
-          if( j>iEnd ){
-            pOut->eErr |= JSTRING_MALFORMED;
-            break;
+          j = json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(pParse, j, p_ਬਾਹਰਲਾ);
+          ਜੇ( j>i_ਸਿਰਾ ){
+            p_ਬਾਹਰਲਾ->eErr |= JSTRING_MALFORMED;
+            ਰੋਕੋ;
           }
-          jsonAppendRawNZ(pOut, ": ", 2);
-          j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ) break;
-          jsonAppendRawNZ(pOut, ",\n", 2);
+          jsonAppendRawNZ(p_ਬਾਹਰਲਾ, ": ", 2);
+          j = json_Translate_Blob_ਮੰਜ਼ਿਲ_Pretty_ਪਾਠ(pPretty, j);
+          ਜੇ( j>=i_ਸਿਰਾ ) ਰੋਕੋ;
+          jsonAppendRawNZ(p_ਬਾਹਰਲਾ, ",\n", 2);
         }
-        jsonAppendChar(pOut, '\n');
+        jsonAppendChar(p_ਬਾਹਰਲਾ, '\n');
         pPretty->nIndent--;
         jsonPrettyIndent(pPretty);
       }
-      jsonAppendChar(pOut, '}');
-      i = iEnd;
-      break;
+      jsonAppendChar(p_ਬਾਹਰਲਾ, '}');
+      i = i_ਸਿਰਾ;
+      ਰੋਕੋ;
     }
-    default: {
-      i = jsonTranslateBlobToText(pParse, i, pOut);
-      break;
+    ਮੂਲ: {
+      i = json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(pParse, i, p_ਬਾਹਰਲਾ);
+      ਰੋਕੋ;
     }
   }
-  return i;
+  ਵਾਪਸ i;
 }
 
 /*
 ** Given that a JSONB_ARRAY object starts at offset i, return
 ** the number of entries in that array.
 */
-static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
-  u32 n, sz, i, iEnd;
+ਸਥਿਰ u32 jsonb_Array_ਗਿਣਤੀ(JsonParse *pParse, u32 i_ਜੜ੍ਹ){
+  u32 n, sz, i, i_ਸਿਰਾ;
   u32 k = 0;
-  n = jsonbPayloadSize(pParse, iRoot, &sz);
-  iEnd = iRoot+n+sz;
-  for(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
-    n = jsonbPayloadSizeSemiInline(pParse, i, &sz);
+  n = jsonb_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, &sz);
+  i_ਸਿਰਾ = i_ਜੜ੍ਹ+n+sz;
+  ਲਈ(i=i_ਜੜ੍ਹ+n; n>0 && i<i_ਸਿਰਾ; i+=sz+n, k++){
+    n = jsonb_Payload_ਮਾਪ_Semi_Inline(pParse, i, &sz);
   }
-  return k;
+  ਵਾਪਸ k;
 }
 
 /*
 ** Edit the payload size of the element at iRoot by the amount in
 ** pParse->delta.
 */
-static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
+ਸਥਿਰ ਖਾਲੀ json_After_Edit_ਮਾਪ_Adjust(JsonParse *pParse, u32 i_ਜੜ੍ਹ){
   u32 sz = 0;
   u32 nBlob;
-  assert( pParse->delta!=0 );
-  assert( pParse->nBlobAlloc >= pParse->nBlob );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->delta!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nBlobAlloc >= pParse->nBlob );
   nBlob = pParse->nBlob;
   pParse->nBlob = pParse->nBlobAlloc;
-  (void)jsonbPayloadSize(pParse, iRoot, &sz);
+  (ਖਾਲੀ)jsonb_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, &sz);
   pParse->nBlob = nBlob;
   sz += pParse->delta;
-  pParse->delta += jsonBlobChangePayloadSize(pParse, iRoot, sz);
+  pParse->delta += json_Blob_Change_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, sz);
 }
 
 /*
@@ -2746,9 +2746,9 @@ static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
 ** This routine is an optimization.  A correct answer is obtained if it
 ** always leaves the output unchanged and returns false.
 */
-static int jsonBlobOverwrite(
-  u8 *aOut,                 /* Overwrite here */
-  const u8 *aIns,           /* New content */
+ਸਥਿਰ ਪੂਰਨ jsonBlobOverwrite(
+  u8 *a_ਬਾਹਰਲਾ,                 /* Overwrite here */
+  ਅਚਲ u8 *aIns,           /* New content */
   u32 nIns,                 /* Bytes of new content */
   u32 d                     /* Need to expand new content by this much */
 ){
@@ -2760,50 +2760,50 @@ static int jsonBlobOverwrite(
   ** expanded aIns[], based on the size of the expanded aIns[] header:
   **
   **                             2     3  4     5  6  7  8     9 */
-  static const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
+  ਸਥਿਰ ਅਚਲ u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
 
-  if( (aIns[0]&0x0f)<=2 ) return 0;    /* Cannot enlarge NULL, true, false */
-  switch( aIns[0]>>4 ){
-    default: {                         /* aIns[] header size 1 */
-      if( ((1<<d)&0x116)==0 ) return 0;  /* d must be 1, 2, 4, or 8 */
+  ਜੇ( (aIns[0]&0x0f)<=2 ) ਵਾਪਸ 0;    /* Cannot enlarge NULL, true, false */
+  ਚੋਣ( aIns[0]>>4 ){
+    ਮੂਲ: {                         /* aIns[] header size 1 */
+      ਜੇ( ((1<<d)&0x116)==0 ) ਵਾਪਸ 0;  /* d must be 1, 2, 4, or 8 */
       i = d + 1;                         /* New hdr sz: 2, 3, 5, or 9 */
       szHdr = 1;
-      break;
+      ਰੋਕੋ;
     }
-    case 12: {                         /* aIns[] header size is 2 */
-      if( ((1<<d)&0x8a)==0) return 0;    /* d must be 1, 3, or 7 */
+    ਹਾਲਤ 12: {                         /* aIns[] header size is 2 */
+      ਜੇ( ((1<<d)&0x8a)==0) ਵਾਪਸ 0;    /* d must be 1, 3, or 7 */
       i = d + 2;                         /* New hdr sz: 2, 5, or 9 */
       szHdr = 2;
-      break;
+      ਰੋਕੋ;
     }
-    case 13: {                         /* aIns[] header size is 3 */
-      if( d!=2 && d!=6 ) return 0;       /* d must be 2 or 6 */
+    ਹਾਲਤ 13: {                         /* aIns[] header size is 3 */
+      ਜੇ( d!=2 && d!=6 ) ਵਾਪਸ 0;       /* d must be 2 or 6 */
       i = d + 3;                         /* New hdr sz: 5 or 9 */
       szHdr = 3;
-      break;
+      ਰੋਕੋ;
     }
-    case 14: {                         /* aIns[] header size is 5 */
-      if( d!=4 ) return 0;               /* d must be 4 */
+    ਹਾਲਤ 14: {                         /* aIns[] header size is 5 */
+      ਜੇ( d!=4 ) ਵਾਪਸ 0;               /* d must be 4 */
       i = 9;                             /* New hdr sz: 9 */
       szHdr = 5;
-      break;
+      ਰੋਕੋ;
     }
-    case 15: {                         /* aIns[] header size is 9 */
-      return 0;                          /* No solution */
+    ਹਾਲਤ 15: {                         /* aIns[] header size is 9 */
+      ਵਾਪਸ 0;                          /* No solution */
     }
   }
-  assert( i>=2 && i<=9 && aType[i-2]!=0 );
-  aOut[0] = (aIns[0] & 0x0f) | aType[i-2];
-  memcpy(&aOut[i], &aIns[szHdr], nIns-szHdr);
+  ਪ੍ਰਤਿਜ੍ਞਾ( i>=2 && i<=9 && aType[i-2]!=0 );
+  a_ਬਾਹਰਲਾ[0] = (aIns[0] & 0x0f) | aType[i-2];
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(&a_ਬਾਹਰਲਾ[i], &aIns[szHdr], nIns-szHdr);
   szPayload = nIns - szHdr;
-  while( 1/*edit-by-break*/ ){
+  ਜਦੋਂ( 1/*edit-by-break*/ ){
     i--;
-    aOut[i] = szPayload & 0xff;
-    if( i==1 ) break;
+    a_ਬਾਹਰਲਾ[i] = szPayload & 0xff;
+    ਜੇ( i==1 ) ਰੋਕੋ;
     szPayload >>= 8;
   }
-  assert( (szPayload>>8)==0 );
-  return 1;
+  ਪ੍ਰਤਿਜ੍ਞਾ( (szPayload>>8)==0 );
+  ਵਾਪਸ 1;
 }
 
 /*
@@ -2819,24 +2819,24 @@ static int jsonBlobOverwrite(
 **
 ** Set pParse->oom if an OOM occurs.
 */
-static void jsonBlobEdit(
+ਸਥਿਰ ਖਾਲੀ jsonBlobEdit(
   JsonParse *pParse,     /* The JSONB to be modified is in pParse->aBlob */
   u32 iDel,              /* First byte to be removed */
   u32 nDel,              /* Number of bytes to remove */
-  const u8 *aIns,        /* Content to insert */
+  ਅਚਲ u8 *aIns,        /* Content to insert */
   u32 nIns               /* Bytes of content to insert */
 ){
   i64 d = (i64)nIns - (i64)nDel;
-  assert( pParse->nBlob >= (u64)iDel + (u64)nDel );
-  if( d<0 && d>=(-8) && aIns!=0
-   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (int)-d)
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nBlob >= (u64)iDel + (u64)nDel );
+  ਜੇ( d<0 && d>=(-8) && aIns!=0
+   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (ਪੂਰਨ)-d)
   ){
-    return;
+    ਵਾਪਸ;
   }
-  if( d!=0 ){
-    if( pParse->nBlob + d > pParse->nBlobAlloc ){
+  ਜੇ( d!=0 ){
+    ਜੇ( pParse->nBlob + d > pParse->nBlobAlloc ){
       jsonBlobExpand(pParse, (u64)pParse->nBlob+d);
-      if( pParse->oom ) return;
+      ਜੇ( pParse->oom ) ਵਾਪਸ;
     }
     memmove(&pParse->aBlob[iDel+nIns],
             &pParse->aBlob[iDel+nDel],
@@ -2844,8 +2844,8 @@ static void jsonBlobEdit(
     pParse->nBlob += d;
     pParse->delta += d;
   }
-  if( nIns && aIns ){
-    memcpy(&pParse->aBlob[iDel], aIns, nIns);
+  ਜੇ( nIns && aIns ){
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pParse->aBlob[iDel], aIns, nIns);
   }
 }
 
@@ -2859,33 +2859,33 @@ static void jsonBlobEdit(
 **    0x5c 0xe2 0x80 0xa8
 **    0x5c 0xe2 0x80 0xa9
 */
-static u32 jsonBytesToBypass(const char *z, u32 n){
+ਸਥਿਰ u32 json_ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_Bypass(ਅਚਲ ਅੱਖਰ *z, u32 n){
   u32 i = 0;
-  while( i+1<n ){
-    if( z[i]!='\\' ) return i;
-    if( z[i+1]=='\n' ){
+  ਜਦੋਂ( i+1<n ){
+    ਜੇ( z[i]!='\\' ) ਵਾਪਸ i;
+    ਜੇ( z[i+1]=='\n' ){
       i += 2;
-      continue;
+      ਜਾਰੀ;
     }
-    if( z[i+1]=='\r' ){
-      if( i+2<n && z[i+2]=='\n' ){
+    ਜੇ( z[i+1]=='\r' ){
+      ਜੇ( i+2<n && z[i+2]=='\n' ){
         i += 3;
-      }else{
+      }ਨਹੀਂਤਾਂ{
         i += 2;
       }
-      continue;
+      ਜਾਰੀ;
     }
-    if( 0xe2==(u8)z[i+1]
+    ਜੇ( 0xe2==(u8)z[i+1]
      && i+3<n
      && 0x80==(u8)z[i+2]
      && (0xa8==(u8)z[i+3] || 0xa9==(u8)z[i+3])
     ){
       i += 4;
-      continue;
+      ਜਾਰੀ;
     }
-    break;
+    ਰੋਕੋ;
   }
-  return i;
+  ਵਾਪਸ i;
 }
 
 /*
@@ -2897,87 +2897,87 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
 ** after the '\\' to complete the encoding) then *piOut is set to
 ** JSON_INVALID_CHAR.
 */
-static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
-  assert( n>0 );
-  assert( z[0]=='\\' );
-  if( n<2 ){
-    *piOut = JSON_INVALID_CHAR;
-    return n;
+ਸਥਿਰ u32 jsonUnescapeOneChar(ਅਚਲ ਅੱਖਰ *z, u32 n, u32 *pi_ਬਾਹਰਲਾ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( n>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( z[0]=='\\' );
+  ਜੇ( n<2 ){
+    *pi_ਬਾਹਰਲਾ = JSON_INVALID_CHAR;
+    ਵਾਪਸ n;
   }
-  switch( (u8)z[1] ){
-    case 'u': {
+  ਚੋਣ( (u8)z[1] ){
+    ਹਾਲਤ 'u': {
       u32 v, vlo;
-      if( n<6 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
+      ਜੇ( n<6 ){
+        *pi_ਬਾਹਰਲਾ = JSON_INVALID_CHAR;
+        ਵਾਪਸ n;
       }
-      v = jsonHexToInt4(&z[2]);
-      if( (v & 0xfc00)==0xd800
+      v = json_Hex_ਮੰਜ਼ਿਲ_Int4(&z[2]);
+      ਜੇ( (v & 0xfc00)==0xd800
        && n>=12
        && z[6]=='\\'
        && z[7]=='u'
-       && ((vlo = jsonHexToInt4(&z[8]))&0xfc00)==0xdc00
+       && ((vlo = json_Hex_ਮੰਜ਼ਿਲ_Int4(&z[8]))&0xfc00)==0xdc00
       ){
-        *piOut = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
-        return 12;
-      }else{
-        *piOut = v;
-        return 6;
+        *pi_ਬਾਹਰਲਾ = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
+        ਵਾਪਸ 12;
+      }ਨਹੀਂਤਾਂ{
+        *pi_ਬਾਹਰਲਾ = v;
+        ਵਾਪਸ 6;
       }
     }
-    case 'b': {   *piOut = '\b';  return 2; }
-    case 'f': {   *piOut = '\f';  return 2; }
-    case 'n': {   *piOut = '\n';  return 2; }
-    case 'r': {   *piOut = '\r';  return 2; }
-    case 't': {   *piOut = '\t';  return 2; }
-    case 'v': {   *piOut = '\v';  return 2; }
-    case '0': {
+    ਹਾਲਤ 'b': {   *pi_ਬਾਹਰਲਾ = '\b';  ਵਾਪਸ 2; }
+    ਹਾਲਤ 'f': {   *pi_ਬਾਹਰਲਾ = '\f';  ਵਾਪਸ 2; }
+    ਹਾਲਤ 'n': {   *pi_ਬਾਹਰਲਾ = '\n';  ਵਾਪਸ 2; }
+    ਹਾਲਤ 'r': {   *pi_ਬਾਹਰਲਾ = '\r';  ਵਾਪਸ 2; }
+    ਹਾਲਤ 't': {   *pi_ਬਾਹਰਲਾ = '\t';  ਵਾਪਸ 2; }
+    ਹਾਲਤ 'v': {   *pi_ਬਾਹਰਲਾ = '\v';  ਵਾਪਸ 2; }
+    ਹਾਲਤ '0': {
       /* JSON5 requires that the \0 escape not be followed by a digit.
       ** But SQLite did not enforce this restriction in versions 3.42.0
       ** through 3.49.2.  That was a bug.  But some applications might have
       ** come to depend on that bug.  Use the SQLITE_BUG_COMPATIBLE_20250510
       ** option to restore the old buggy behavior. */
-#ifdef SQLITE_BUG_COMPATIBLE_20250510
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_BUG_COMPATIBLE_20250510
       /* Legacy bug-compatible behavior */
-      *piOut = 0;
-#else
+      *pi_ਬਾਹਰਲਾ = 0;
+#ਨਹੀਂਤਾਂ
       /* Correct behavior */
-      *piOut = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
-#endif
-      return 2;
+      *pi_ਬਾਹਰਲਾ = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
+#ਜੇ_ਅੰਤ
+      ਵਾਪਸ 2;
     }
-    case '\'':
-    case '"':
-    case '/':
-    case '\\':{   *piOut = z[1];  return 2; }
-    case 'x': {
-      if( n<4 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
+    ਹਾਲਤ '\'':
+    ਹਾਲਤ '"':
+    ਹਾਲਤ '/':
+    ਹਾਲਤ '\\':{   *pi_ਬਾਹਰਲਾ = z[1];  ਵਾਪਸ 2; }
+    ਹਾਲਤ 'x': {
+      ਜੇ( n<4 ){
+        *pi_ਬਾਹਰਲਾ = JSON_INVALID_CHAR;
+        ਵਾਪਸ n;
       }
-      *piOut = (jsonHexToInt(z[2])<<4) | jsonHexToInt(z[3]);
-      return 4;
+      *pi_ਬਾਹਰਲਾ = (json_Hex_ਮੰਜ਼ਿਲ_Int(z[2])<<4) | json_Hex_ਮੰਜ਼ਿਲ_Int(z[3]);
+      ਵਾਪਸ 4;
     }
-    case 0xe2:
-    case '\r':
-    case '\n': {
-      u32 nSkip = jsonBytesToBypass(z, n);
-      if( nSkip==0 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
-      }else if( nSkip==n ){
-        *piOut = 0;
-        return n;
-      }else if( z[nSkip]=='\\' ){
-        return nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
-      }else{
-        int sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
-        return nSkip + sz;
+    ਹਾਲਤ 0xe2:
+    ਹਾਲਤ '\r':
+    ਹਾਲਤ '\n': {
+      u32 nSkip = json_ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_Bypass(z, n);
+      ਜੇ( nSkip==0 ){
+        *pi_ਬਾਹਰਲਾ = JSON_INVALID_CHAR;
+        ਵਾਪਸ n;
+      }ਨਹੀਂਤਾਂ ਜੇ( nSkip==n ){
+        *pi_ਬਾਹਰਲਾ = 0;
+        ਵਾਪਸ n;
+      }ਨਹੀਂਤਾਂ ਜੇ( z[nSkip]=='\\' ){
+        ਵਾਪਸ nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, pi_ਬਾਹਰਲਾ);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, pi_ਬਾਹਰਲਾ);
+        ਵਾਪਸ nSkip + sz;
       }
     }
-    default: {
-      *piOut = JSON_INVALID_CHAR;
-      return 2;
+    ਮੂਲ: {
+      *pi_ਬਾਹਰਲਾ = JSON_INVALID_CHAR;
+      ਵਾਪਸ 2;
     }
   }
 }
@@ -2990,55 +2990,55 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** In this version, we know that one or the other or both of the
 ** two comparands contains an escape sequence.
 */
-static SQLITE_NOINLINE int jsonLabelCompareEscaped(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+ਸਥਿਰ SQLITE_NOINLINE ਪੂਰਨ jsonLabelCompareEscaped(
+  ਅਚਲ ਅੱਖਰ *z_ਖੱਬਾ,          /* The left label */
+  u32 n_ਖੱਬਾ,                  /* Size of the left label in bytes */
+  ਪੂਰਨ raw_ਖੱਬਾ,                /* True if zLeft contains no escapes */
+  ਅਚਲ ਅੱਖਰ *z_ਸੱਜਾ,         /* The right label */
+  u32 n_ਸੱਜਾ,                 /* Size of the right label in bytes */
+  ਪੂਰਨ raw_ਸੱਜਾ                /* True if zRight is escape-free */
 ){
-  u32 cLeft, cRight;
-  assert( rawLeft==0 || rawRight==0 );
-  while( 1 /*exit-by-return*/ ){
-    if( nLeft==0 ){
-      cLeft = 0;
-    }else if( rawLeft || zLeft[0]!='\\' ){
-      cLeft = ((u8*)zLeft)[0];
-      if( cLeft>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
-        zLeft += sz;
-        nLeft -= sz;
-      }else{
-        zLeft++;
-        nLeft--;
+  u32 c_ਖੱਬਾ, c_ਸੱਜਾ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( raw_ਖੱਬਾ==0 || raw_ਸੱਜਾ==0 );
+  ਜਦੋਂ( 1 /*exit-by-return*/ ){
+    ਜੇ( n_ਖੱਬਾ==0 ){
+      c_ਖੱਬਾ = 0;
+    }ਨਹੀਂਤਾਂ ਜੇ( raw_ਖੱਬਾ || z_ਖੱਬਾ[0]!='\\' ){
+      c_ਖੱਬਾ = ((u8*)z_ਖੱਬਾ)[0];
+      ਜੇ( c_ਖੱਬਾ>=0xc0 ){
+        ਪੂਰਨ sz = sqlite3Utf8ReadLimited((u8*)z_ਖੱਬਾ, n_ਖੱਬਾ, &c_ਖੱਬਾ);
+        z_ਖੱਬਾ += sz;
+        n_ਖੱਬਾ -= sz;
+      }ਨਹੀਂਤਾਂ{
+        z_ਖੱਬਾ++;
+        n_ਖੱਬਾ--;
       }
-    }else{
-      u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
-      zLeft += n;
-      assert( n<=nLeft );
-      nLeft -= n;
+    }ਨਹੀਂਤਾਂ{
+      u32 n = jsonUnescapeOneChar(z_ਖੱਬਾ, n_ਖੱਬਾ, &c_ਖੱਬਾ);
+      z_ਖੱਬਾ += n;
+      ਪ੍ਰਤਿਜ੍ਞਾ( n<=n_ਖੱਬਾ );
+      n_ਖੱਬਾ -= n;
     }
-    if( nRight==0 ){
-      cRight = 0;
-    }else if( rawRight || zRight[0]!='\\' ){
-      cRight = ((u8*)zRight)[0];
-      if( cRight>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
-        zRight += sz;
-        nRight -= sz;
-      }else{
-        zRight++;
-        nRight--;
+    ਜੇ( n_ਸੱਜਾ==0 ){
+      c_ਸੱਜਾ = 0;
+    }ਨਹੀਂਤਾਂ ਜੇ( raw_ਸੱਜਾ || z_ਸੱਜਾ[0]!='\\' ){
+      c_ਸੱਜਾ = ((u8*)z_ਸੱਜਾ)[0];
+      ਜੇ( c_ਸੱਜਾ>=0xc0 ){
+        ਪੂਰਨ sz = sqlite3Utf8ReadLimited((u8*)z_ਸੱਜਾ, n_ਸੱਜਾ, &c_ਸੱਜਾ);
+        z_ਸੱਜਾ += sz;
+        n_ਸੱਜਾ -= sz;
+      }ਨਹੀਂਤਾਂ{
+        z_ਸੱਜਾ++;
+        n_ਸੱਜਾ--;
       }
-    }else{
-      u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
-      zRight += n;
-      assert( n<=nRight );
-      nRight -= n;
+    }ਨਹੀਂਤਾਂ{
+      u32 n = jsonUnescapeOneChar(z_ਸੱਜਾ, n_ਸੱਜਾ, &c_ਸੱਜਾ);
+      z_ਸੱਜਾ += n;
+      ਪ੍ਰਤਿਜ੍ਞਾ( n<=n_ਸੱਜਾ );
+      n_ਸੱਜਾ -= n;
     }
-    if( cLeft!=cRight ) return 0;
-    if( cLeft==0 ) return 1;
+    ਜੇ( c_ਖੱਬਾ!=c_ਸੱਜਾ ) ਵਾਪਸ 0;
+    ਜੇ( c_ਖੱਬਾ==0 ) ਵਾਪਸ 1;
   }
 }
 
@@ -3046,37 +3046,37 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** Compare two object labels.  Return 1 if they are equal and
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
-static int jsonLabelCompare(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+ਸਥਿਰ ਪੂਰਨ jsonLabelCompare(
+  ਅਚਲ ਅੱਖਰ *z_ਖੱਬਾ,          /* The left label */
+  u32 n_ਖੱਬਾ,                  /* Size of the left label in bytes */
+  ਪੂਰਨ raw_ਖੱਬਾ,                /* True if zLeft contains no escapes */
+  ਅਚਲ ਅੱਖਰ *z_ਸੱਜਾ,         /* The right label */
+  u32 n_ਸੱਜਾ,                 /* Size of the right label in bytes */
+  ਪੂਰਨ raw_ਸੱਜਾ                /* True if zRight is escape-free */
 ){
-  if( rawLeft && rawRight ){
+  ਜੇ( raw_ਖੱਬਾ && raw_ਸੱਜਾ ){
     /* Simpliest case:  Neither label contains escapes.  A simple
     ** memcmp() is sufficient. */
-    if( nLeft!=nRight ) return 0;
-    return memcmp(zLeft, zRight, nLeft)==0;
-  }else{
-    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
-                                   zRight, nRight, rawRight);
+    ਜੇ( n_ਖੱਬਾ!=n_ਸੱਜਾ ) ਵਾਪਸ 0;
+    ਵਾਪਸ memcmp(z_ਖੱਬਾ, z_ਸੱਜਾ, n_ਖੱਬਾ)==0;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ jsonLabelCompareEscaped(z_ਖੱਬਾ, n_ਖੱਬਾ, raw_ਖੱਬਾ,
+                                   z_ਸੱਜਾ, n_ਸੱਜਾ, raw_ਸੱਜਾ);
   }
 }
 
 /*
 ** Error returns from jsonLookupStep()
 */
-#define JSON_LOOKUP_ERROR      0xffffffff
-#define JSON_LOOKUP_NOTFOUND   0xfffffffe
-#define JSON_LOOKUP_NOTARRAY   0xfffffffd
-#define JSON_LOOKUP_TOODEEP    0xfffffffc
-#define JSON_LOOKUP_PATHERROR  0xfffffffb
-#define JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_ERROR      0xffffffff
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_NOTFOUND   0xfffffffe
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_NOTARRAY   0xfffffffd
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_TOODEEP    0xfffffffc
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_PATHERROR  0xfffffffb
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
 
 /* Forward declaration */
-static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
+ਸਥਿਰ u32 json_Lookup_ਕਦਮ(JsonParse*,u32,ਅਚਲ ਅੱਖਰ*,u32);
 
 
 /* This helper routine for jsonLookupStep() populates pIns with
@@ -3098,36 +3098,36 @@ static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
 ** The caller is responsible for resetting pIns when it has finished
 ** using the substructure.
 */
-static u32 jsonCreateEditSubstructure(
+ਸਥਿਰ u32 jsonCreateEditSubstructure(
   JsonParse *pParse,  /* The original JSONB that is being edited */
   JsonParse *pIns,    /* Populate this with the blob data to insert */
-  const char *zTail   /* Tail of the path that determines substructure */
+  ਅਚਲ ਅੱਖਰ *z_ਪੂਛ   /* Tail of the path that determines substructure */
 ){
-  static const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
-  int rc;
-  memset(pIns, 0, sizeof(*pIns));
+  ਸਥਿਰ ਅਚਲ u8 ਖਾਲੀ_ਥਾਵਾਂ_Object[] = { JSONB_ARRAY, JSONB_OBJECT };
+  ਪੂਰਨ rc;
+  memset(pIns, 0, ਆਕਾਰ(*pIns));
   pIns->db = pParse->db;
-  if( zTail[0]==0 ){
+  ਜੇ( z_ਪੂਛ[0]==0 ){
     /* No substructure.  Just insert what is given in pParse. */
     pIns->aBlob = pParse->aIns;
     pIns->nBlob = pParse->nIns;
     rc = 0;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     /* Construct the binary substructure */
     pIns->nBlob = 1;
-    pIns->aBlob = (u8*)&emptyObject[zTail[0]=='.'];
+    pIns->aBlob = (u8*)&ਖਾਲੀ_ਥਾਵਾਂ_Object[z_ਪੂਛ[0]=='.'];
     pIns->eEdit = pParse->eEdit;
     pIns->nIns = pParse->nIns;
     pIns->aIns = pParse->aIns;
-    pIns->iDepth = pParse->iDepth+1;
-    if( pIns->iDepth >= JSON_MAX_DEPTH ){
-      return JSON_LOOKUP_TOODEEP;
+    pIns->i_ਡੂੰਘਾਈ = pParse->i_ਡੂੰਘਾਈ+1;
+    ਜੇ( pIns->i_ਡੂੰਘਾਈ >= JSON_MAX_ਡੂੰਘਾਈ ){
+      ਵਾਪਸ JSON_LOOKUP_TOODEEP;
     }
-    rc = jsonLookupStep(pIns, 0, zTail, 0);
-    pParse->iDepth--;
+    rc = json_Lookup_ਕਦਮ(pIns, 0, z_ਪੂਛ, 0);
+    pParse->i_ਡੂੰਘਾਈ--;
     pParse->oom |= pIns->oom;
   }
-  return rc;  /* Error code only */
+  ਵਾਪਸ rc;  /* Error code only */
 }
 
 /*
@@ -3147,234 +3147,234 @@ static u32 jsonCreateEditSubstructure(
 ** is performed, the return value is only useful for detecting error
 ** conditions.
 */
-static u32 jsonLookupStep(
+ਸਥਿਰ u32 json_Lookup_ਕਦਮ(
   JsonParse *pParse,      /* The JSON to search */
-  u32 iRoot,              /* Begin the search at this element of aBlob[] */
-  const char *zPath,      /* The path to search */
+  u32 i_ਜੜ੍ਹ,              /* Begin the search at this element of aBlob[] */
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,      /* The path to search */
   u32 iLabel              /* Label if iRoot is a value of in an object */
 ){
-  u32 i, j, k, nKey, sz, n, iEnd, rc;
-  const char *zKey;
+  u32 i, j, k, n_ਕੁੰਜੀ, sz, n, i_ਸਿਰਾ, rc;
+  ਅਚਲ ਅੱਖਰ *z_ਕੁੰਜੀ;
   u8 x;
 
-  if( zPath[0]==0 ){
-    if( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
-      n = jsonbPayloadSize(pParse, iRoot, &sz);
+  ਜੇ( z_ਰਸਤਾ[0]==0 ){
+    ਜੇ( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
+      n = jsonb_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, &sz);
       sz += n;
-      if( pParse->eEdit==JEDIT_DEL ){
-        if( iLabel>0 ){
-          sz += iRoot - iLabel;
-          iRoot = iLabel;
+      ਜੇ( pParse->eEdit==JEDIT_DEL ){
+        ਜੇ( iLabel>0 ){
+          sz += i_ਜੜ੍ਹ - iLabel;
+          i_ਜੜ੍ਹ = iLabel;
         }
-        jsonBlobEdit(pParse, iRoot, sz, 0, 0);
-      }else if( pParse->eEdit==JEDIT_INS ){
+        jsonBlobEdit(pParse, i_ਜੜ੍ਹ, sz, 0, 0);
+      }ਨਹੀਂਤਾਂ ਜੇ( pParse->eEdit==JEDIT_INS ){
         /* Already exists, so json_insert() is a no-op */
-      }else if( pParse->eEdit==JEDIT_AINS ){
+      }ਨਹੀਂਤਾਂ ਜੇ( pParse->eEdit==JEDIT_AINS ){
         /* json_array_insert() */
-        if( zPath[-1]!=']' ){
-          return JSON_LOOKUP_NOTARRAY;
-        }else{
-          jsonBlobEdit(pParse, iRoot, 0, pParse->aIns, pParse->nIns);
+        ਜੇ( z_ਰਸਤਾ[-1]!=']' ){
+          ਵਾਪਸ JSON_LOOKUP_NOTARRAY;
+        }ਨਹੀਂਤਾਂ{
+          jsonBlobEdit(pParse, i_ਜੜ੍ਹ, 0, pParse->aIns, pParse->nIns);
         }
-      }else{
+      }ਨਹੀਂਤਾਂ{
         /* json_set() or json_replace() */
-        jsonBlobEdit(pParse, iRoot, sz, pParse->aIns, pParse->nIns);
+        jsonBlobEdit(pParse, i_ਜੜ੍ਹ, sz, pParse->aIns, pParse->nIns);
       }
     }
     pParse->iLabel = iLabel;
-    return iRoot;
+    ਵਾਪਸ i_ਜੜ੍ਹ;
   }
-  if( zPath[0]=='.' ){
-    int rawKey = 1;
-    x = pParse->aBlob[iRoot];
-    zPath++;
-    if( zPath[0]=='"' ){
-      zKey = zPath + 1;
-      for(i=1; zPath[i] && zPath[i]!='"'; i++){
-        if( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
+  ਜੇ( z_ਰਸਤਾ[0]=='.' ){
+    ਪੂਰਨ raw_ਕੁੰਜੀ = 1;
+    x = pParse->aBlob[i_ਜੜ੍ਹ];
+    z_ਰਸਤਾ++;
+    ਜੇ( z_ਰਸਤਾ[0]=='"' ){
+      z_ਕੁੰਜੀ = z_ਰਸਤਾ + 1;
+      ਲਈ(i=1; z_ਰਸਤਾ[i] && z_ਰਸਤਾ[i]!='"'; i++){
+        ਜੇ( z_ਰਸਤਾ[i]=='\\' && z_ਰਸਤਾ[i+1]!=0 ) i++;
       }
-      nKey = i-1;
-      if( zPath[i] ){
+      n_ਕੁੰਜੀ = i-1;
+      ਜੇ( z_ਰਸਤਾ[i] ){
         i++;
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }ਨਹੀਂਤਾਂ{
+        ਵਾਪਸ JSON_LOOKUP_PATHERROR;
       }
-      testcase( nKey==0 );
-      rawKey = memchr(zKey, '\\', nKey)==0;
-    }else{
-      zKey = zPath;
-      for(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
-      nKey = i;
-      if( nKey==0 ){
-        return JSON_LOOKUP_PATHERROR;
+      testcase( n_ਕੁੰਜੀ==0 );
+      raw_ਕੁੰਜੀ = memchr(z_ਕੁੰਜੀ, '\\', n_ਕੁੰਜੀ)==0;
+    }ਨਹੀਂਤਾਂ{
+      z_ਕੁੰਜੀ = z_ਰਸਤਾ;
+      ਲਈ(i=0; z_ਰਸਤਾ[i] && z_ਰਸਤਾ[i]!='.' && z_ਰਸਤਾ[i]!='['; i++){}
+      n_ਕੁੰਜੀ = i;
+      ਜੇ( n_ਕੁੰਜੀ==0 ){
+        ਵਾਪਸ JSON_LOOKUP_PATHERROR;
       }
     }
-    if( (x & 0x0f)!=JSONB_OBJECT ) return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
-    j = iRoot + n;  /* j is the index of a label */
-    iEnd = j+sz;
-    while( j<iEnd ){
-      int rawLabel;
-      const char *zLabel;
+    ਜੇ( (x & 0x0f)!=JSONB_OBJECT ) ਵਾਪਸ JSON_LOOKUP_NOTFOUND;
+    n = jsonb_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, &sz);
+    j = i_ਜੜ੍ਹ + n;  /* j is the index of a label */
+    i_ਸਿਰਾ = j+sz;
+    ਜਦੋਂ( j<i_ਸਿਰਾ ){
+      ਪੂਰਨ rawLabel;
+      ਅਚਲ ਅੱਖਰ *zLabel;
       x = pParse->aBlob[j] & 0x0f;
-      if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return JSON_LOOKUP_ERROR;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ਜੇ( x<JSONB_ਪਾਠ || x>JSONB_TEXTRAW ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_ਮਾਪ_Semi_Inline(pParse, j, &sz);
+      ਜੇ( n==0 ) ਵਾਪਸ JSON_LOOKUP_ERROR;
       k = j+n;  /* k is the index of the label text */
-      if( k+sz>=iEnd ) return JSON_LOOKUP_ERROR;
-      zLabel = (const char*)&pParse->aBlob[k];
-      rawLabel = x==JSONB_TEXT || x==JSONB_TEXTRAW;
-      if( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
+      ਜੇ( k+sz>=i_ਸਿਰਾ ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+      zLabel = (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[k];
+      rawLabel = x==JSONB_ਪਾਠ || x==JSONB_TEXTRAW;
+      ਜੇ( jsonLabelCompare(z_ਕੁੰਜੀ, n_ਕੁੰਜੀ, raw_ਕੁੰਜੀ, zLabel, sz, rawLabel) ){
         u32 v = k+sz;  /* v is the index of the value */
-        if( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
-        n = jsonbPayloadSize(pParse, v, &sz);
-        if( n==0 || v+n+sz>iEnd ) return JSON_LOOKUP_ERROR;
-        assert( j>0 );
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+        ਜੇ( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+        n = jsonb_Payload_ਮਾਪ(pParse, v, &sz);
+        ਜੇ( n==0 || v+n+sz>i_ਸਿਰਾ ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+        ਪ੍ਰਤਿਜ੍ਞਾ( j>0 );
+        ਜੇ( ++pParse->i_ਡੂੰਘਾਈ >= JSON_MAX_ਡੂੰਘਾਈ ){
+          ਵਾਪਸ JSON_LOOKUP_TOODEEP;
         }
-        rc = jsonLookupStep(pParse, v, &zPath[i], j);
-        pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        rc = json_Lookup_ਕਦਮ(pParse, v, &z_ਰਸਤਾ[i], j);
+        pParse->i_ਡੂੰਘਾਈ--;
+        ਜੇ( pParse->delta ) json_After_Edit_ਮਾਪ_Adjust(pParse, i_ਜੜ੍ਹ);
+        ਵਾਪਸ rc;
       }
       j = k+sz;
-      if( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ਜੇ( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_ਮਾਪ_Semi_Inline(pParse, j, &sz);
+      ਜੇ( n==0 ) ਵਾਪਸ JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ਜੇ( j>i_ਸਿਰਾ ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+    ਜੇ( pParse->eEdit>=JEDIT_INS ){
       u32 nIns;          /* Total bytes to insert (label+value) */
       JsonParse v;       /* BLOB encoding of the value to be inserted */
       JsonParse ix;      /* Header of the label to be inserted */
       testcase( pParse->eEdit==JEDIT_INS );
-      testcase( pParse->eEdit==JEDIT_SET );
+      testcase( pParse->eEdit==JEDIT_ਸੈੱਟ );
       testcase( pParse->eEdit==JEDIT_AINS );
-      if( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
-        return JSON_LOOKUP_NOTARRAY;
+      ਜੇ( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&z_ਰਸਤਾ[i])!=0 ){
+        ਵਾਪਸ JSON_LOOKUP_NOTARRAY;
       }
-      memset(&ix, 0, sizeof(ix));
+      memset(&ix, 0, ਆਕਾਰ(ix));
       ix.db = pParse->db;
-      jsonBlobAppendNode(&ix, rawKey?JSONB_TEXTRAW:JSONB_TEXT5, nKey, 0);
+      json_Blob_Append_ਗੰਢ(&ix, raw_ਕੁੰਜੀ?JSONB_TEXTRAW:JSONB_TEXT5, n_ਕੁੰਜੀ, 0);
       pParse->oom |= ix.oom;
-      rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i]);
-      if( !JSON_LOOKUP_ISERROR(rc)
-       && jsonBlobMakeEditable(pParse, ix.nBlob+nKey+v.nBlob)
+      rc = jsonCreateEditSubstructure(pParse, &v, &z_ਰਸਤਾ[i]);
+      ਜੇ( !JSON_LOOKUP_ISERROR(rc)
+       && jsonBlobMakeEditable(pParse, ix.nBlob+n_ਕੁੰਜੀ+v.nBlob)
       ){
-        assert( !pParse->oom );
-        nIns = ix.nBlob + nKey + v.nBlob;
+        ਪ੍ਰਤਿਜ੍ਞਾ( !pParse->oom );
+        nIns = ix.nBlob + n_ਕੁੰਜੀ + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
-        if( !pParse->oom ){
-          assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
-          assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
-          memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
+        ਜੇ( !pParse->oom ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
+          ਪ੍ਰਤਿਜ੍ਞਾ( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
+          ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
           k = j + ix.nBlob;
-          memcpy(&pParse->aBlob[k], zKey, nKey);
-          k += nKey;
-          memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pParse->aBlob[k], z_ਕੁੰਜੀ, n_ਕੁੰਜੀ);
+          k += n_ਕੁੰਜੀ;
+          ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pParse->aBlob[k], v.aBlob, v.nBlob);
+          ਜੇ( ALWAYS(pParse->delta) ) json_After_Edit_ਮਾਪ_Adjust(pParse, i_ਜੜ੍ਹ);
         }
       }
       jsonParseReset(&v);
       jsonParseReset(&ix);
-      return rc;
+      ਵਾਪਸ rc;
     }
-  }else if( zPath[0]=='[' ){
+  }ਨਹੀਂਤਾਂ ਜੇ( z_ਰਸਤਾ[0]=='[' ){
     u64 kk = 0;
-    x = pParse->aBlob[iRoot] & 0x0f;
-    if( x!=JSONB_ARRAY )  return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
+    x = pParse->aBlob[i_ਜੜ੍ਹ] & 0x0f;
+    ਜੇ( x!=JSONB_ARRAY )  ਵਾਪਸ JSON_LOOKUP_NOTFOUND;
+    n = jsonb_Payload_ਮਾਪ(pParse, i_ਜੜ੍ਹ, &sz);
     i = 1;
-    while( sqlite3Isdigit(zPath[i]) ){
-      if( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
+    ਜਦੋਂ( sqlite3Isdigit(z_ਰਸਤਾ[i]) ){
+      ਜੇ( kk<0xffffffff ) kk = kk*10 + z_ਰਸਤਾ[i] - '0';
       /*     ^^^^^^^^^^--- Allow kk to be bigger than any JSON array so that
       ** we get NOTFOUND instead of PATHERROR, without overflowing kk. */
       i++;
     }
-    if( i<2 || zPath[i]!=']' ){
-      if( zPath[1]=='#' ){
-        kk = jsonbArrayCount(pParse, iRoot);
+    ਜੇ( i<2 || z_ਰਸਤਾ[i]!=']' ){
+      ਜੇ( z_ਰਸਤਾ[1]=='#' ){
+        kk = jsonb_Array_ਗਿਣਤੀ(pParse, i_ਜੜ੍ਹ);
         i = 2;
-        if( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
+        ਜੇ( z_ਰਸਤਾ[2]=='-' && sqlite3Isdigit(z_ਰਸਤਾ[3]) ){
           u64 nn = 0;
           i = 3;
-          do{
-            if( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
+          ਕਰੋ{
+            ਜੇ( nn<0xffffffff ) nn = nn*10 + z_ਰਸਤਾ[i] - '0';
             /*     ^^^^^^^^^^--- Allow nn to be bigger than any JSON array to
             ** get NOTFOUND instead of PATHERROR, without overflowing nn. */
             i++;
-          }while( sqlite3Isdigit(zPath[i]) );
-          if( nn>kk ) return JSON_LOOKUP_NOTFOUND;
+          }ਜਦੋਂ( sqlite3Isdigit(z_ਰਸਤਾ[i]) );
+          ਜੇ( nn>kk ) ਵਾਪਸ JSON_LOOKUP_NOTFOUND;
           kk -= nn;
         }
-        if( zPath[i]!=']' ){
-          return JSON_LOOKUP_PATHERROR;
+        ਜੇ( z_ਰਸਤਾ[i]!=']' ){
+          ਵਾਪਸ JSON_LOOKUP_PATHERROR;
         }
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }ਨਹੀਂਤਾਂ{
+        ਵਾਪਸ JSON_LOOKUP_PATHERROR;
       }
     }
-    j = iRoot+n;
-    iEnd = j+sz;
-    while( j<iEnd ){
-      if( kk==0 ){
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+    j = i_ਜੜ੍ਹ+n;
+    i_ਸਿਰਾ = j+sz;
+    ਜਦੋਂ( j<i_ਸਿਰਾ ){
+      ਜੇ( kk==0 ){
+        ਜੇ( ++pParse->i_ਡੂੰਘਾਈ >= JSON_MAX_ਡੂੰਘਾਈ ){
+          ਵਾਪਸ JSON_LOOKUP_TOODEEP;
         }
-        rc = jsonLookupStep(pParse, j, &zPath[i+1], 0);
-        pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        rc = json_Lookup_ਕਦਮ(pParse, j, &z_ਰਸਤਾ[i+1], 0);
+        pParse->i_ਡੂੰਘਾਈ--;
+        ਜੇ( pParse->delta ) json_After_Edit_ਮਾਪ_Adjust(pParse, i_ਜੜ੍ਹ);
+        ਵਾਪਸ rc;
       }
       kk--;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_ਮਾਪ_Semi_Inline(pParse, j, &sz);
+      ਜੇ( n==0 ) ਵਾਪਸ JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( kk>0 ) return JSON_LOOKUP_NOTFOUND;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ਜੇ( j>i_ਸਿਰਾ ) ਵਾਪਸ JSON_LOOKUP_ERROR;
+    ਜੇ( kk>0 ) ਵਾਪਸ JSON_LOOKUP_NOTFOUND;
+    ਜੇ( pParse->eEdit>=JEDIT_INS ){
       JsonParse v;
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_AINS );
-      testcase( pParse->eEdit==JEDIT_SET );
-      rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i+1]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      testcase( pParse->eEdit==JEDIT_ਸੈੱਟ );
+      rc = jsonCreateEditSubstructure(pParse, &v, &z_ਰਸਤਾ[i+1]);
+      ਜੇ( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, v.nBlob)
       ){
-        assert( !pParse->oom );
+        ਪ੍ਰਤਿਜ੍ਞਾ( !pParse->oom );
         jsonBlobEdit(pParse, j, 0, v.aBlob, v.nBlob);
       }
       jsonParseReset(&v);
-      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-      return rc;
+      ਜੇ( pParse->delta ) json_After_Edit_ਮਾਪ_Adjust(pParse, i_ਜੜ੍ਹ);
+      ਵਾਪਸ rc;
     }
-  }else{
-    return JSON_LOOKUP_PATHERROR; 
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ JSON_LOOKUP_PATHERROR; 
   }
-  return JSON_LOOKUP_NOTFOUND;
+  ਵਾਪਸ JSON_LOOKUP_NOTFOUND;
 }
 
 /*
 ** Convert a JSON BLOB into text and make that text the return value
 ** of an SQL function.
 */
-static void jsonReturnTextJsonFromBlob(
+ਸਥਿਰ ਖਾਲੀ json_Return_ਪਾਠ_Json_From_Blob(
   sqlite3_context *ctx,
-  const u8 *aBlob,
+  ਅਚਲ u8 *aBlob,
   u32 nBlob
 ){
   JsonParse x;
   JsonString s;
 
-  if( NEVER(aBlob==0) ) return;
-  memset(&x, 0, sizeof(x));
+  ਜੇ( NEVER(aBlob==0) ) ਵਾਪਸ;
+  memset(&x, 0, ਆਕਾਰ(x));
   x.aBlob = (u8*)aBlob;
   x.nBlob = nBlob;
   jsonStringInit(&s, ctx);
-  jsonTranslateBlobToText(&x, 0, &s);
+  json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(&x, 0, &s);
   jsonReturnString(&s, 0, 0);
 }
 
@@ -3394,179 +3394,179 @@ static void jsonReturnTextJsonFromBlob(
 **
 **     eMode==2     JSONB
 */
-static void jsonReturnFromBlob(
+ਸਥਿਰ ਖਾਲੀ jsonReturnFromBlob(
   JsonParse *pParse,          /* Complete JSON parse tree */
   u32 i,                      /* Index of the node */
   sqlite3_context *pCtx,      /* Return value for this function */
-  int eMode                   /* Format of return: text of JSONB */
+  ਪੂਰਨ e_ਬਹੁਲਕ                   /* Format of return: text of JSONB */
 ){
   u32 n, sz;
-  int rc;
+  ਪੂਰਨ rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
 
-  assert( eMode>=0 && eMode<=2 );
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
-    sqlite3_result_error(pCtx, "malformed JSON", -1);
-    return;
+  ਪ੍ਰਤਿਜ੍ਞਾ( e_ਬਹੁਲਕ>=0 && e_ਬਹੁਲਕ<=2 );
+  n = jsonb_Payload_ਮਾਪ(pParse, i, &sz);
+  ਜੇ( n==0 ){
+    sqlite3_ਨਤੀਜਾ_error(pCtx, "malformed JSON", -1);
+    ਵਾਪਸ;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_null(pCtx);
-      break;
+  ਚੋਣ( pParse->aBlob[i] & 0x0f ){
+    ਹਾਲਤ JSONB_NULL: {
+      ਜੇ( sz ) ਜਾਓ returnfromblob_malformed;
+      sqlite3_ਨਤੀਜਾ_null(pCtx);
+      ਰੋਕੋ;
     }
-    case JSONB_TRUE: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_int(pCtx, 1);
-      break;
+    ਹਾਲਤ JSONB_TRUE: {
+      ਜੇ( sz ) ਜਾਓ returnfromblob_malformed;
+      sqlite3_ਨਤੀਜਾ_int(pCtx, 1);
+      ਰੋਕੋ;
     }
-    case JSONB_FALSE: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_int(pCtx, 0);
-      break;
+    ਹਾਲਤ JSONB_FALSE: {
+      ਜੇ( sz ) ਜਾਓ returnfromblob_malformed;
+      sqlite3_ਨਤੀਜਾ_int(pCtx, 0);
+      ਰੋਕੋ;
     }
-    case JSONB_INT5:
-    case JSONB_INT: {
+    ਹਾਲਤ JSONB_INT5:
+    ਹਾਲਤ JSONB_INT: {
       sqlite3_int64 iRes = 0;
-      char *z;
-      int bNeg = 0;
-      char x;
-      if( sz==0 ) goto returnfromblob_malformed;
-      x = (char)pParse->aBlob[i+n];
-      if( x=='-' ){
-        if( sz<2 ) goto returnfromblob_malformed;
+      ਅੱਖਰ *z;
+      ਪੂਰਨ bNeg = 0;
+      ਅੱਖਰ x;
+      ਜੇ( sz==0 ) ਜਾਓ returnfromblob_malformed;
+      x = (ਅੱਖਰ)pParse->aBlob[i+n];
+      ਜੇ( x=='-' ){
+        ਜੇ( sz<2 ) ਜਾਓ returnfromblob_malformed;
         n++;
         sz--;
         bNeg = 1;
       }
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
-      rc = sqlite3DecOrHexToI64(z, &iRes);
+      z = sqlite3DbStrNDup(db, (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n], (ਪੂਰਨ)sz);
+      ਜੇ( z==0 ) ਜਾਓ returnfromblob_oom;
+      rc = sqlite3_Dec_Or_Hex_ਮੰਜ਼ਿਲ_I64(z, &iRes);
       sqlite3DbFree(db, z);
-      if( rc==0 ){
-        if( iRes<0 ){
+      ਜੇ( rc==0 ){
+        ਜੇ( iRes<0 ){
           /* A hexadecimal literal with 16 significant digits and with the
           ** high-order bit set is a negative integer in SQLite (and hence
           ** iRes comes back as negative) but should be interpreted as a
           ** positive value if it occurs within JSON.  The value is too
           ** large to appear as an SQLite integer so it must be converted
           ** into floating point. */
-          double r;
-          r = (double)*(sqlite3_uint64*)&iRes;
-          sqlite3_result_double(pCtx, bNeg ? -r : r);
-        }else{
-          sqlite3_result_int64(pCtx, bNeg ? -iRes : iRes);
+          ਦੁੱਗਣਾ r;
+          r = (ਦੁੱਗਣਾ)*(sqlite3_uint64*)&iRes;
+          sqlite3_ਨਤੀਜਾ_double(pCtx, bNeg ? -r : r);
+        }ਨਹੀਂਤਾਂ{
+          sqlite3_ਨਤੀਜਾ_int64(pCtx, bNeg ? -iRes : iRes);
         }
-      }else if( rc==3 && bNeg ){
-        sqlite3_result_int64(pCtx, SMALLEST_INT64);
-      }else if( rc==1 ){
-        goto returnfromblob_malformed;
-      }else{
-        if( bNeg ){ n--; sz++; }
-        goto to_double;
+      }ਨਹੀਂਤਾਂ ਜੇ( rc==3 && bNeg ){
+        sqlite3_ਨਤੀਜਾ_int64(pCtx, ਸਭ_ਤੋਂ_ਛੋਟਾ_INT64);
+      }ਨਹੀਂਤਾਂ ਜੇ( rc==1 ){
+        ਜਾਓ returnfromblob_malformed;
+      }ਨਹੀਂਤਾਂ{
+        ਜੇ( bNeg ){ n--; sz++; }
+        ਜਾਓ ਮੰਜ਼ਿਲ_double;
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JSONB_FLOAT5:
-    case JSONB_FLOAT: {
-      double r;
-      char *z;
-      if( sz==0 ) goto returnfromblob_malformed;
-    to_double:
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+    ਹਾਲਤ JSONB_FLOAT5:
+    ਹਾਲਤ JSONB_FLOAT: {
+      ਦੁੱਗਣਾ r;
+      ਅੱਖਰ *z;
+      ਜੇ( sz==0 ) ਜਾਓ returnfromblob_malformed;
+    ਮੰਜ਼ਿਲ_double:
+      z = sqlite3DbStrNDup(db, (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n], (ਪੂਰਨ)sz);
+      ਜੇ( z==0 ) ਜਾਓ returnfromblob_oom;
       rc = sqlite3AtoF(z, &r);
       sqlite3DbFree(db, z);
-      if( rc<=0 ) goto returnfromblob_malformed;
-      sqlite3_result_double(pCtx, r);
-      break;
+      ਜੇ( rc<=0 ) ਜਾਓ returnfromblob_malformed;
+      sqlite3_ਨਤੀਜਾ_double(pCtx, r);
+      ਰੋਕੋ;
     }
-    case JSONB_TEXTRAW:
-    case JSONB_TEXT: {
-      sqlite3_result_text(pCtx, (char*)&pParse->aBlob[i+n], sz,
+    ਹਾਲਤ JSONB_TEXTRAW:
+    ਹਾਲਤ JSONB_ਪਾਠ: {
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(pCtx, (ਅੱਖਰ*)&pParse->aBlob[i+n], sz,
                           SQLITE_TRANSIENT);
-      break;
+      ਰੋਕੋ;
     }
-    case JSONB_TEXT5:
-    case JSONB_TEXTJ: {
+    ਹਾਲਤ JSONB_TEXT5:
+    ਹਾਲਤ JSONB_TEXTJ: {
       /* Translate JSON formatted string into raw text */
-      u32 iIn, iOut;
-      const char *z;
-      char *zOut;
-      u32 nOut = sz;
-      z = (const char*)&pParse->aBlob[i+n];
-      zOut = sqlite3DbMallocRaw(db, ((u64)nOut)+1);
-      if( zOut==0 ) goto returnfromblob_oom;
-      for(iIn=iOut=0; iIn<sz; iIn++){
-        char c = z[iIn];
-        if( c=='\\' ){
+      u32 i_ਵਿੱਚ, i_ਬਾਹਰਲਾ;
+      ਅਚਲ ਅੱਖਰ *z;
+      ਅੱਖਰ *z_ਬਾਹਰਲਾ;
+      u32 n_ਬਾਹਰਲਾ = sz;
+      z = (ਅਚਲ ਅੱਖਰ*)&pParse->aBlob[i+n];
+      z_ਬਾਹਰਲਾ = sqlite3DbMallocRaw(db, ((u64)n_ਬਾਹਰਲਾ)+1);
+      ਜੇ( z_ਬਾਹਰਲਾ==0 ) ਜਾਓ returnfromblob_oom;
+      ਲਈ(i_ਵਿੱਚ=i_ਬਾਹਰਲਾ=0; i_ਵਿੱਚ<sz; i_ਵਿੱਚ++){
+        ਅੱਖਰ c = z[i_ਵਿੱਚ];
+        ਜੇ( c=='\\' ){
           u32 v;
-          u32 szEscape = jsonUnescapeOneChar(&z[iIn], sz-iIn, &v);
-          if( v==0 && iIn+szEscape==sz
-           && (z[iIn+1]=='\n' || z[iIn+1]=='\r' || (u8)z[iIn+1]==0xe2)
+          u32 szEscape = jsonUnescapeOneChar(&z[i_ਵਿੱਚ], sz-i_ਵਿੱਚ, &v);
+          ਜੇ( v==0 && i_ਵਿੱਚ+szEscape==sz
+           && (z[i_ਵਿੱਚ+1]=='\n' || z[i_ਵਿੱਚ+1]=='\r' || (u8)z[i_ਵਿੱਚ+1]==0xe2)
           ){
             /* A JSON5 line continuation at the end of the string
             ** contributes no characters */
-          }else if( v<=0x7f ){
-            zOut[iOut++] = (char)v;
-          }else if( v<=0x7ff ){
-            assert( szEscape>=2 );
-            zOut[iOut++] = (char)(0xc0 | (v>>6));
-            zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v<0x10000 ){
-            assert( szEscape>=3 );
-            zOut[iOut++] = 0xe0 | (v>>12);
-            zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
-            zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v==JSON_INVALID_CHAR ){
+          }ਨਹੀਂਤਾਂ ਜੇ( v<=0x7f ){
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = (ਅੱਖਰ)v;
+          }ਨਹੀਂਤਾਂ ਜੇ( v<=0x7ff ){
+            ਪ੍ਰਤਿਜ੍ਞਾ( szEscape>=2 );
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = (ਅੱਖਰ)(0xc0 | (v>>6));
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | (v&0x3f);
+          }ਨਹੀਂਤਾਂ ਜੇ( v<0x10000 ){
+            ਪ੍ਰਤਿਜ੍ਞਾ( szEscape>=3 );
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0xe0 | (v>>12);
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | ((v>>6)&0x3f);
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | (v&0x3f);
+          }ਨਹੀਂਤਾਂ ਜੇ( v==JSON_INVALID_CHAR ){
             /* Silently ignore illegal unicode */
-          }else{
-            assert( szEscape>=4 );
-            zOut[iOut++] = 0xf0 | (v>>18);
-            zOut[iOut++] = 0x80 | ((v>>12)&0x3f);
-            zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
-            zOut[iOut++] = 0x80 | (v&0x3f);
+          }ਨਹੀਂਤਾਂ{
+            ਪ੍ਰਤਿਜ੍ਞਾ( szEscape>=4 );
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0xf0 | (v>>18);
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | ((v>>12)&0x3f);
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | ((v>>6)&0x3f);
+            z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = 0x80 | (v&0x3f);
           }
-          iIn += szEscape - 1;
-        }else{
-          zOut[iOut++] = c;
+          i_ਵਿੱਚ += szEscape - 1;
+        }ਨਹੀਂਤਾਂ{
+          z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ++] = c;
         }
       } /* end for() */
-      assert( iOut<=nOut );
-      zOut[iOut] = 0;
-      sqlite3_result_text(pCtx, zOut, iOut, SQLITE_DYNAMIC);
-      break;
+      ਪ੍ਰਤਿਜ੍ਞਾ( i_ਬਾਹਰਲਾ<=n_ਬਾਹਰਲਾ );
+      z_ਬਾਹਰਲਾ[i_ਬਾਹਰਲਾ] = 0;
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(pCtx, z_ਬਾਹਰਲਾ, i_ਬਾਹਰਲਾ, SQLITE_DYNAMIC);
+      ਰੋਕੋ;
     }
-    case JSONB_ARRAY:
-    case JSONB_OBJECT: {
-      if( eMode==0 ){
-        if( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
-          eMode = 2;
-        }else{
-          eMode = 1;
+    ਹਾਲਤ JSONB_ARRAY:
+    ਹਾਲਤ JSONB_OBJECT: {
+      ਜੇ( e_ਬਹੁਲਕ==0 ){
+        ਜੇ( (SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(pCtx)) & JSON_BLOB)!=0 ){
+          e_ਬਹੁਲਕ = 2;
+        }ਨਹੀਂਤਾਂ{
+          e_ਬਹੁਲਕ = 1;
         }
       }
-      if( eMode==2 ){
-        sqlite3_result_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
-      }else{
-        jsonReturnTextJsonFromBlob(pCtx, &pParse->aBlob[i], sz+n);
+      ਜੇ( e_ਬਹੁਲਕ==2 ){
+        sqlite3_ਨਤੀਜਾ_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
+      }ਨਹੀਂਤਾਂ{
+        json_Return_ਪਾਠ_Json_From_Blob(pCtx, &pParse->aBlob[i], sz+n);
       }
-      break;
+      ਰੋਕੋ;
     }
-    default: {
-      goto returnfromblob_malformed;
+    ਮੂਲ: {
+      ਜਾਓ returnfromblob_malformed;
     }
   }
-  return;
+  ਵਾਪਸ;
 
 returnfromblob_oom:
-  sqlite3_result_error_nomem(pCtx);
-  return;
+  sqlite3_ਨਤੀਜਾ_error_nomem(pCtx);
+  ਵਾਪਸ;
 
 returnfromblob_malformed:
-  sqlite3_result_error(pCtx, "malformed JSON", -1);
-  return;
+  sqlite3_ਨਤੀਜਾ_error(pCtx, "malformed JSON", -1);
+  ਵਾਪਸ;
 }
 
 /*
@@ -3586,76 +3586,76 @@ returnfromblob_malformed:
 ** function might set an error message in ctx and return non-zero.
 ** It might also set an error message and return non-zero on an OOM error.
 */
-static int jsonFunctionArgToBlob(
+ਸਥਿਰ ਪੂਰਨ json_Function_Arg_ਮੰਜ਼ਿਲ_Blob(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_ਮੁੱਲ *pArg,
   JsonParse *pParse
 ){
-  int eType = sqlite3_value_type(pArg);
-  static u8 aNull[] = { 0x00 };
-  memset(pParse, 0, sizeof(pParse[0]));
+  ਪੂਰਨ eType = sqlite3_ਮੁੱਲ_type(pArg);
+  ਸਥਿਰ u8 aNull[] = { 0x00 };
+  memset(pParse, 0, ਆਕਾਰ(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
-  switch( eType ){
-    default: {
+  ਚੋਣ( eType ){
+    ਮੂਲ: {
       pParse->aBlob = aNull;
       pParse->nBlob = 1;
-      return 0;
+      ਵਾਪਸ 0;
     }
-    case SQLITE_BLOB: {
-      if( !jsonArgIsJsonb(pArg, pParse) ){
-        sqlite3_result_error(ctx, "JSON cannot hold BLOB values", -1);
-        return 1;
+    ਹਾਲਤ SQLITE_BLOB: {
+      ਜੇ( !jsonArgIsJsonb(pArg, pParse) ){
+        sqlite3_ਨਤੀਜਾ_error(ctx, "JSON cannot hold BLOB values", -1);
+        ਵਾਪਸ 1;
       }
-      break;
+      ਰੋਕੋ;
     }
-    case SQLITE_TEXT: {
-      const char *zJson = (const char*)sqlite3_value_text(pArg);
-      int nJson = sqlite3_value_bytes(pArg);
-      if( zJson==0 ) return 1;
-      if( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
-        pParse->zJson = (char*)zJson;
+    ਹਾਲਤ SQLITE_ਪਾਠ: {
+      ਅਚਲ ਅੱਖਰ *zJson = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pArg);
+      ਪੂਰਨ nJson = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
+      ਜੇ( zJson==0 ) ਵਾਪਸ 1;
+      ਜੇ( sqlite3_ਮੁੱਲ_subtype(pArg)==JSON_SUBTYPE ){
+        pParse->zJson = (ਅੱਖਰ*)zJson;
         pParse->nJson = nJson;
-        if( jsonConvertTextToBlob(pParse, ctx) ){
-          sqlite3_result_error(ctx, "malformed JSON", -1);
+        ਜੇ( json_Convert_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(pParse, ctx) ){
+          sqlite3_ਨਤੀਜਾ_error(ctx, "malformed JSON", -1);
           sqlite3DbFree(pParse->db, pParse->aBlob);
-          memset(pParse, 0, sizeof(pParse[0]));
-          return 1;
+          memset(pParse, 0, ਆਕਾਰ(pParse[0]));
+          ਵਾਪਸ 1;
         }
-      }else{
-        jsonBlobAppendNode(pParse, JSONB_TEXTRAW, nJson, zJson);
+      }ਨਹੀਂਤਾਂ{
+        json_Blob_Append_ਗੰਢ(pParse, JSONB_TEXTRAW, nJson, zJson);
       }
-      break;
+      ਰੋਕੋ;
     }
-    case SQLITE_FLOAT: {
-      if( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
-        jsonBlobAppendNode(pParse, JSONB_NULL, 0, 0);
-      }else{
-        int n = sqlite3_value_bytes(pArg);
-        const char *z = (const char*)sqlite3_value_text(pArg);
-        if( z==0 ) return 1;
-        if( z[0]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-        }else if( z[0]=='-' && z[1]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-        }else{
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, n, z);
+    ਹਾਲਤ SQLITE_FLOAT: {
+      ਜੇ( NEVER(sqlite3IsNaN(sqlite3_ਮੁੱਲ_double(pArg))) ){
+        json_Blob_Append_ਗੰਢ(pParse, JSONB_NULL, 0, 0);
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ n = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
+        ਅਚਲ ਅੱਖਰ *z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pArg);
+        ਜੇ( z==0 ) ਵਾਪਸ 1;
+        ਜੇ( z[0]=='I' ){
+          json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, 5, "9e999");
+        }ਨਹੀਂਤਾਂ ਜੇ( z[0]=='-' && z[1]=='I' ){
+          json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, 6, "-9e999");
+        }ਨਹੀਂਤਾਂ{
+          json_Blob_Append_ਗੰਢ(pParse, JSONB_FLOAT, n, z);
         }
       }
-      break;
+      ਰੋਕੋ;
     }
-    case SQLITE_INTEGER: {
-      int n = sqlite3_value_bytes(pArg);
-      const char *z = (const char*)sqlite3_value_text(pArg);
-      if( z==0 ) return 1;
-      jsonBlobAppendNode(pParse, JSONB_INT, n, z);
-      break;
+    ਹਾਲਤ SQLITE_INTEGER: {
+      ਪੂਰਨ n = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
+      ਅਚਲ ਅੱਖਰ *z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pArg);
+      ਜੇ( z==0 ) ਵਾਪਸ 1;
+      json_Blob_Append_ਗੰਢ(pParse, JSONB_INT, n, z);
+      ਰੋਕੋ;
     }
   }
-  if( pParse->oom ){
-    sqlite3_result_error_nomem(ctx);
-    return 1;
-  }else{
-    return 0;
+  ਜੇ( pParse->oom ){
+    sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+    ਵਾਪਸ 1;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ 0;
   }
 }
 
@@ -3674,29 +3674,29 @@ static int jsonFunctionArgToBlob(
 ** If ctx is not NULL then push the error message into ctx and return NULL.
 ** If ctx is NULL, then return the text of the error message.
 */
-static char *jsonBadPathError(
+ਸਥਿਰ ਅੱਖਰ *json_Bad_ਰਸਤਾ_Error(
   sqlite3_context *ctx,     /* The function call containing the error */
-  const char *zPath,        /* The path with the problem */
-  int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,        /* The path with the problem */
+  ਪੂਰਨ rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
 ){
-  char *zMsg;
-  if( rc==(int)JSON_LOOKUP_NOTARRAY ){
-    zMsg = sqlite3_mprintf("not an array element: %Q", zPath);
-  }else if( rc==(int)JSON_LOOKUP_ERROR ){
-    zMsg = sqlite3_mprintf("malformed JSON");
-  }else if( rc==(int)JSON_LOOKUP_TOODEEP ){
-    zMsg = sqlite3_mprintf("JSON path too deep");
-  }else{
-    zMsg = sqlite3_mprintf("bad JSON path: %Q", zPath);
+  ਅੱਖਰ *z_ਸੁਨੇਹਾ;
+  ਜੇ( rc==(ਪੂਰਨ)JSON_LOOKUP_NOTARRAY ){
+    z_ਸੁਨੇਹਾ = sqlite3_mprintf("not an array element: %Q", z_ਰਸਤਾ);
+  }ਨਹੀਂਤਾਂ ਜੇ( rc==(ਪੂਰਨ)JSON_LOOKUP_ERROR ){
+    z_ਸੁਨੇਹਾ = sqlite3_mprintf("malformed JSON");
+  }ਨਹੀਂਤਾਂ ਜੇ( rc==(ਪੂਰਨ)JSON_LOOKUP_TOODEEP ){
+    z_ਸੁਨੇਹਾ = sqlite3_mprintf("JSON path too deep");
+  }ਨਹੀਂਤਾਂ{
+    z_ਸੁਨੇਹਾ = sqlite3_mprintf("bad JSON path: %Q", z_ਰਸਤਾ);
   }
-  if( ctx==0 ) return zMsg;
-  if( zMsg ){
-    sqlite3_result_error(ctx, zMsg, -1);
-    sqlite3_free(zMsg);
-  }else{
-    sqlite3_result_error_nomem(ctx);
+  ਜੇ( ctx==0 ) ਵਾਪਸ z_ਸੁਨੇਹਾ;
+  ਜੇ( z_ਸੁਨੇਹਾ ){
+    sqlite3_ਨਤੀਜਾ_error(ctx, z_ਸੁਨੇਹਾ, -1);
+    sqlite3_free(z_ਸੁਨੇਹਾ);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /* argv[0] is a BLOB that seems likely to be a JSONB.  Subsequent
@@ -3707,62 +3707,62 @@ static char *jsonBadPathError(
 ** The specific operation is determined by eEdit, which can be one
 ** of JEDIT_INS, JEDIT_REPL, JEDIT_SET, or JEDIT_AINS.
 */
-static void jsonInsertIntoBlob(
+ਸਥਿਰ ਖਾਲੀ json_ਪਾਓ_Into_Blob(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv,
-  int eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv,
+  ਪੂਰਨ eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
 ){
-  int i;
+  ਪੂਰਨ i;
   u32 rc = 0;
-  const char *zPath = 0;
-  int flgs;
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ = 0;
+  ਪੂਰਨ flgs;
   JsonParse *p;
   JsonParse ax;
 
-  assert( (argc&1)==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( (argc&1)==1 );
   flgs = argc==1 ? 0 : JSON_EDITABLE;
   p = jsonParseFuncArg(ctx, argv[0], flgs);
-  if( p==0 ) return;
-  for(i=1; i<argc-1; i+=2){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
-      sqlite3_result_error_nomem(ctx);
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  ਲਈ(i=1; i<argc-1; i+=2){
+    ਜੇ( sqlite3_ਮੁੱਲ_type(argv[i])==SQLITE_NULL ) ਜਾਰੀ;
+    z_ਰਸਤਾ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[i]);
+    ਜੇ( z_ਰਸਤਾ==0 ){
+      sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
       jsonParseFree(p);
-      return;
+      ਵਾਪਸ;
     }
-    if( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
-    if( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
+    ਜੇ( z_ਰਸਤਾ[0]!='$' ) ਜਾਓ json_ਪਾਓ_Into_Blob_patherror;
+    ਜੇ( json_Function_Arg_ਮੰਜ਼ਿਲ_Blob(ctx, argv[i+1], &ax) ){
       jsonParseReset(&ax);
       jsonParseFree(p);
-      return;
+      ਵਾਪਸ;
     }
-    if( zPath[1]==0 ){
-      if( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
+    ਜੇ( z_ਰਸਤਾ[1]==0 ){
+      ਜੇ( eEdit==JEDIT_REPL || eEdit==JEDIT_ਸੈੱਟ ){
         jsonBlobEdit(p, 0, p->nBlob, ax.aBlob, ax.nBlob);
       }
       rc = 0;
-   }else{
+   }ਨਹੀਂਤਾਂ{
       p->eEdit = eEdit;
       p->nIns = ax.nBlob;
       p->aIns = ax.aBlob;
       p->delta = 0;
-      p->iDepth = 0;
-      rc = jsonLookupStep(p, 0, zPath+1, 0);
+      p->i_ਡੂੰਘਾਈ = 0;
+      rc = json_Lookup_ਕਦਮ(p, 0, z_ਰਸਤਾ+1, 0);
     }
     jsonParseReset(&ax);
-    if( rc==JSON_LOOKUP_NOTFOUND ) continue;
-    if( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
+    ਜੇ( rc==JSON_LOOKUP_NOTFOUND ) ਜਾਰੀ;
+    ਜੇ( JSON_LOOKUP_ISERROR(rc) ) ਜਾਓ json_ਪਾਓ_Into_Blob_patherror;
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  ਵਾਪਸ;
 
-jsonInsertIntoBlob_patherror:
+json_ਪਾਓ_Into_Blob_patherror:
   jsonParseFree(p);
-  jsonBadPathError(ctx, zPath, rc);
-  return;
+  json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, rc);
+  ਵਾਪਸ;
 }
 
 /*
@@ -3793,27 +3793,27 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+ਸਥਿਰ ਪੂਰਨ jsonArgIsJsonb(sqlite3_ਮੁੱਲ *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
-  if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
-  p->aBlob = (u8*)sqlite3_value_blob(pArg);
-  p->nBlob = (u32)sqlite3_value_bytes(pArg);
-  if( p->nBlob>0
+  ਜੇ( sqlite3_ਮੁੱਲ_type(pArg)!=SQLITE_BLOB ) ਵਾਪਸ 0;
+  p->aBlob = (u8*)sqlite3_ਮੁੱਲ_blob(pArg);
+  p->nBlob = (u32)sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
+  ਜੇ( p->nBlob>0
    && ALWAYS(p->aBlob!=0)
    && ((c = p->aBlob[0]) & 0x0f)<=JSONB_OBJECT
-   && (n = jsonbPayloadSize(p, 0, &sz))>0
+   && (n = jsonb_Payload_ਮਾਪ(p, 0, &sz))>0
    && sz+n==p->nBlob
    && ((c & 0x0f)>JSONB_FALSE || sz==0)
    && (sz>7 
       || (c!=0x7b && c!=0x5b && !sqlite3Isdigit(c))
       || jsonbValidityCheck(p, 0, p->nBlob, 1)==0)
   ){
-    return 1;
+    ਵਾਪਸ 1;
   }
   p->aBlob = 0;
   p->nBlob = 0;
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -3832,53 +3832,53 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
 ** is so that SQL functions that are given NULL arguments will return
 ** a NULL value.
 */
-static JsonParse *jsonParseFuncArg(
+ਸਥਿਰ JsonParse *jsonParseFuncArg(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_ਮੁੱਲ *pArg,
   u32 flgs
 ){
-  int eType;                   /* Datatype of pArg */
+  ਪੂਰਨ eType;                   /* Datatype of pArg */
   JsonParse *p = 0;            /* Value to be returned */
   JsonParse *pFromCache = 0;   /* Value taken from cache */
   sqlite3 *db;                 /* The database connection */
   
-  assert( ctx!=0 );
-  eType = sqlite3_value_type(pArg);
-  if( eType==SQLITE_NULL ){
-    return 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( ctx!=0 );
+  eType = sqlite3_ਮੁੱਲ_type(pArg);
+  ਜੇ( eType==SQLITE_NULL ){
+    ਵਾਪਸ 0;
   }
-  if( (flgs & JSON_NOCACHE)==0 ){
-    pFromCache = jsonCacheSearch(ctx, pArg);
+  ਜੇ( (flgs & JSON_NOCACHE)==0 ){
+    pFromCache = json_Cache_ਖੋਜ(ctx, pArg);
   }
-  if( pFromCache ){
+  ਜੇ( pFromCache ){
     pFromCache->nJPRef++;
-    if( (flgs & JSON_EDITABLE)==0 ){
-      return pFromCache;
+    ਜੇ( (flgs & JSON_EDITABLE)==0 ){
+      ਵਾਪਸ pFromCache;
     }
   }
   db = sqlite3_context_db_handle(ctx);
 rebuild_from_cache:
-  p = sqlite3DbMallocZero(db, sizeof(*p));
-  if( p==0 ) goto json_pfa_oom;
-  memset(p, 0, sizeof(*p));
+  p = sqlite3DbMallocZero(db, ਆਕਾਰ(*p));
+  ਜੇ( p==0 ) ਜਾਓ json_pfa_oom;
+  memset(p, 0, ਆਕਾਰ(*p));
   p->db = db;
   p->nJPRef = 1;
-  if( pFromCache!=0 ){
+  ਜੇ( pFromCache!=0 ){
     u32 nBlob = pFromCache->nBlob;
     p->aBlob = sqlite3DbMallocRaw(db, nBlob);
-    if( p->aBlob==0 ) goto json_pfa_oom;
-    memcpy(p->aBlob, pFromCache->aBlob, nBlob);
+    ਜੇ( p->aBlob==0 ) ਜਾਓ json_pfa_oom;
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(p->aBlob, pFromCache->aBlob, nBlob);
     p->nBlobAlloc = p->nBlob = nBlob;
     p->hasNonstd = pFromCache->hasNonstd;
     jsonParseFree(pFromCache);
-    return p;
+    ਵਾਪਸ p;
   }
-  if( eType==SQLITE_BLOB ){
-    if( jsonArgIsJsonb(pArg,p) ){
-      if( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
-        goto json_pfa_oom;
+  ਜੇ( eType==SQLITE_BLOB ){
+    ਜੇ( jsonArgIsJsonb(pArg,p) ){
+      ਜੇ( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
+        ਜਾਓ json_pfa_oom;
       }
-      return p;
+      ਵਾਪਸ p;
     }
     /* If the blob is not valid JSONB, fall through into trying to cast
     ** the blob into text which is then interpreted as JSON.  (tag-20240123-a)
@@ -3893,57 +3893,57 @@ rebuild_from_cache:
     ** See for example https://sqlite.org/forum/forumpost/012136abd5292b8d
     */
   }
-  p->zJson = (char*)sqlite3_value_text(pArg);
-  p->nJson = sqlite3_value_bytes(pArg);
-  if( db->mallocFailed ) goto json_pfa_oom;
-  if( p->nJson==0 ) goto json_pfa_malformed;
-  assert( p->zJson!=0 );
-  if( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
-    if( flgs & JSON_KEEPERROR ){
+  p->zJson = (ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pArg);
+  p->nJson = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(pArg);
+  ਜੇ( db->mallocFailed ) ਜਾਓ json_pfa_oom;
+  ਜੇ( p->nJson==0 ) ਜਾਓ json_pfa_malformed;
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->zJson!=0 );
+  ਜੇ( json_Convert_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
+    ਜੇ( flgs & JSON_KEEPERROR ){
       p->nErr = 1;
-      return p;
-    }else{
+      ਵਾਪਸ p;
+    }ਨਹੀਂਤਾਂ{
       jsonParseFree(p);
-      return 0;
+      ਵਾਪਸ 0;
     }
-  }else{
-    int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
-    int rc;
-    if( !isRCStr ){
-      char *zNew = sqlite3RCStrNew( p->nJson );
-      if( zNew==0 ) goto json_pfa_oom;
-      memcpy(zNew, p->zJson, p->nJson);
+  }ਨਹੀਂਤਾਂ{
+    ਪੂਰਨ isRCStr = sqlite3_ਮੁੱਲ_Is_ਦਾ_Class(pArg, sqlite3RCStrUnref);
+    ਪੂਰਨ rc;
+    ਜੇ( !isRCStr ){
+      ਅੱਖਰ *zNew = sqlite3RCStrNew( p->nJson );
+      ਜੇ( zNew==0 ) ਜਾਓ json_pfa_oom;
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(zNew, p->zJson, p->nJson);
       p->zJson = zNew;
       p->zJson[p->nJson] = 0;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       sqlite3RCStrRef(p->zJson);
     }
     p->bJsonIsRCStr = 1;
-    rc = jsonCacheInsert(ctx, p);
-    if( rc==SQLITE_NOMEM ) goto json_pfa_oom;
-    if( flgs & JSON_EDITABLE ){
+    rc = json_Cache_ਪਾਓ(ctx, p);
+    ਜੇ( rc==SQLITE_NOMEM ) ਜਾਓ json_pfa_oom;
+    ਜੇ( flgs & JSON_EDITABLE ){
       pFromCache = p;
       p = 0;
-      goto rebuild_from_cache;
+      ਜਾਓ rebuild_from_cache;
     }
   }
-  return p;
+  ਵਾਪਸ p;
 
 json_pfa_malformed:
-  if( flgs & JSON_KEEPERROR ){
+  ਜੇ( flgs & JSON_KEEPERROR ){
     p->nErr = 1;
-    return p;
-  }else{
+    ਵਾਪਸ p;
+  }ਨਹੀਂਤਾਂ{
     jsonParseFree(p);
-    sqlite3_result_error(ctx, "malformed JSON", -1);
-    return 0;
+    sqlite3_ਨਤੀਜਾ_error(ctx, "malformed JSON", -1);
+    ਵਾਪਸ 0;
   }
 
 json_pfa_oom:
   jsonParseFree(pFromCache);
   jsonParseFree(p);
-  sqlite3_result_error_nomem(ctx);
-  return 0;
+  sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -3951,30 +3951,30 @@ json_pfa_oom:
 ** or make it JSON text, depending on whether the JSON_BLOB flag is
 ** set on the function.
 */
-static void jsonReturnParse(
+ਸਥਿਰ ਖਾਲੀ jsonReturnParse(
   sqlite3_context *ctx,
   JsonParse *p
 ){
-  int flgs;
-  if( p->oom ){
-    sqlite3_result_error_nomem(ctx);
-    return;
+  ਪੂਰਨ flgs;
+  ਜੇ( p->oom ){
+    sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+    ਵਾਪਸ;
   }
-  flgs = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  if( flgs & JSON_BLOB ){
-    if( p->nBlobAlloc>0 && !p->bReadOnly ){
-      sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
+  flgs = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(ctx));
+  ਜੇ( flgs & JSON_BLOB ){
+    ਜੇ( p->nBlobAlloc>0 && !p->bReadOnly ){
+      sqlite3_ਨਤੀਜਾ_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
       p->nBlobAlloc = 0;
-    }else{
-      sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਨਤੀਜਾ_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     JsonString s;
     jsonStringInit(&s, ctx);
     p->delta = 0;
-    jsonTranslateBlobToText(p, 0, &s);
+    json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(p, 0, &s);
     jsonReturnString(&s, p, ctx);
-    sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+    sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
   }
 }
 
@@ -3982,149 +3982,149 @@ static void jsonReturnParse(
 ** SQL functions used for testing and debugging
 ****************************************************************************/
 
-#if SQLITE_DEBUG
+#ਜੇ SQLITE_DEBUG
 /*
 ** Decode JSONB bytes in aBlob[] starting at iStart through but not 
 ** including iEnd.  Indent the
 ** content by nIndent spaces.
 */
-static void jsonDebugPrintBlob(
+ਸਥਿਰ ਖਾਲੀ jsonDebugPrintBlob(
   JsonParse *pParse, /* JSON content */
-  u32 iStart,        /* Start rendering here */
-  u32 iEnd,          /* Do not render this byte or any byte after this one */
-  int nIndent,       /* Indent by this many spaces */
-  sqlite3_str *pOut  /* Generate output into this sqlite3_str object */
+  u32 i_ਸ਼ੁਰੂ,        /* Start rendering here */
+  u32 i_ਸਿਰਾ,          /* Do not render this byte or any byte after this one */
+  ਪੂਰਨ nIndent,       /* Indent by this many spaces */
+  sqlite3_str *p_ਬਾਹਰਲਾ  /* Generate output into this sqlite3_str object */
 ){
-  while( iStart<iEnd ){
+  ਜਦੋਂ( i_ਸ਼ੁਰੂ<i_ਸਿਰਾ ){
     u32 i, n, nn, sz = 0;
-    int showContent = 1;
-    u8 x = pParse->aBlob[iStart] & 0x0f;
+    ਪੂਰਨ showContent = 1;
+    u8 x = pParse->aBlob[i_ਸ਼ੁਰੂ] & 0x0f;
     u32 savedNBlob = pParse->nBlob;
-    sqlite3_str_appendf(pOut, "%5d:%*s", iStart, nIndent, "");
-    if( pParse->nBlobAlloc>pParse->nBlob ){
+    sqlite3_str_appendf(p_ਬਾਹਰਲਾ, "%5d:%*s", i_ਸ਼ੁਰੂ, nIndent, "");
+    ਜੇ( pParse->nBlobAlloc>pParse->nBlob ){
       pParse->nBlob = pParse->nBlobAlloc;
     }
-    nn = n = jsonbPayloadSize(pParse, iStart, &sz);
-    if( nn==0 ) nn = 1;
-    if( sz>0 && x<JSONB_ARRAY ){
+    nn = n = jsonb_Payload_ਮਾਪ(pParse, i_ਸ਼ੁਰੂ, &sz);
+    ਜੇ( nn==0 ) nn = 1;
+    ਜੇ( sz>0 && x<JSONB_ARRAY ){
       nn += sz;
     }
-    for(i=0; i<nn; i++){
-      sqlite3_str_appendf(pOut, " %02x", pParse->aBlob[iStart+i]);
+    ਲਈ(i=0; i<nn; i++){
+      sqlite3_str_appendf(p_ਬਾਹਰਲਾ, " %02x", pParse->aBlob[i_ਸ਼ੁਰੂ+i]);
     }
-    if( n==0 ){
-      sqlite3_str_appendf(pOut, "   ERROR invalid node size\n");
-      iStart = n==0 ? iStart+1 : iEnd;
-      continue;
+    ਜੇ( n==0 ){
+      sqlite3_str_appendf(p_ਬਾਹਰਲਾ, "   ERROR invalid node size\n");
+      i_ਸ਼ੁਰੂ = n==0 ? i_ਸ਼ੁਰੂ+1 : i_ਸਿਰਾ;
+      ਜਾਰੀ;
     }
     pParse->nBlob = savedNBlob;
-    if( iStart+n+sz>iEnd ){
-      iEnd = iStart+n+sz;
-      if( iEnd>pParse->nBlob ){
-        if( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
-          iEnd = pParse->nBlobAlloc;
-        }else{
-          iEnd = pParse->nBlob;
+    ਜੇ( i_ਸ਼ੁਰੂ+n+sz>i_ਸਿਰਾ ){
+      i_ਸਿਰਾ = i_ਸ਼ੁਰੂ+n+sz;
+      ਜੇ( i_ਸਿਰਾ>pParse->nBlob ){
+        ਜੇ( pParse->nBlobAlloc>0 && i_ਸਿਰਾ>pParse->nBlobAlloc ){
+          i_ਸਿਰਾ = pParse->nBlobAlloc;
+        }ਨਹੀਂਤਾਂ{
+          i_ਸਿਰਾ = pParse->nBlob;
         }
       }
     }
-    sqlite3_str_appendall(pOut,"  <-- ");
-    switch( x ){
-      case JSONB_NULL:     sqlite3_str_appendall(pOut,"null"); break;
-      case JSONB_TRUE:     sqlite3_str_appendall(pOut,"true"); break;
-      case JSONB_FALSE:    sqlite3_str_appendall(pOut,"false"); break;
-      case JSONB_INT:      sqlite3_str_appendall(pOut,"int"); break;
-      case JSONB_INT5:     sqlite3_str_appendall(pOut,"int5"); break;
-      case JSONB_FLOAT:    sqlite3_str_appendall(pOut,"float"); break;
-      case JSONB_FLOAT5:   sqlite3_str_appendall(pOut,"float5"); break;
-      case JSONB_TEXT:     sqlite3_str_appendall(pOut,"text"); break;
-      case JSONB_TEXTJ:    sqlite3_str_appendall(pOut,"textj"); break;
-      case JSONB_TEXT5:    sqlite3_str_appendall(pOut,"text5"); break;
-      case JSONB_TEXTRAW:  sqlite3_str_appendall(pOut,"textraw"); break;
-      case JSONB_ARRAY: {
-        sqlite3_str_appendf(pOut,"array, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+    sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"  <-- ");
+    ਚੋਣ( x ){
+      ਹਾਲਤ JSONB_NULL:     sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"null"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_TRUE:     sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"true"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_FALSE:    sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"false"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_INT:      sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"int"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_INT5:     sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"int5"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_FLOAT:    sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"float"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_FLOAT5:   sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"float5"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_ਪਾਠ:     sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"text"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_TEXTJ:    sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"textj"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_TEXT5:    sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"text5"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_TEXTRAW:  sqlite3_str_appendall(p_ਬਾਹਰਲਾ,"textraw"); ਰੋਕੋ;
+      ਹਾਲਤ JSONB_ARRAY: {
+        sqlite3_str_appendf(p_ਬਾਹਰਲਾ,"array, %u bytes\n", sz);
+        jsonDebugPrintBlob(pParse, i_ਸ਼ੁਰੂ+n, i_ਸ਼ੁਰੂ+n+sz, nIndent+2, p_ਬਾਹਰਲਾ);
         showContent = 0;
-        break;
+        ਰੋਕੋ;
       }
-      case JSONB_OBJECT: {
-        sqlite3_str_appendf(pOut, "object, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+      ਹਾਲਤ JSONB_OBJECT: {
+        sqlite3_str_appendf(p_ਬਾਹਰਲਾ, "object, %u bytes\n", sz);
+        jsonDebugPrintBlob(pParse, i_ਸ਼ੁਰੂ+n, i_ਸ਼ੁਰੂ+n+sz, nIndent+2, p_ਬਾਹਰਲਾ);
         showContent = 0;
-        break;
+        ਰੋਕੋ;
       }
-      default: {
-        sqlite3_str_appendall(pOut, "ERROR: unknown node type\n");
+      ਮੂਲ: {
+        sqlite3_str_appendall(p_ਬਾਹਰਲਾ, "ERROR: unknown node type\n");
         showContent = 0;
-        break;
+        ਰੋਕੋ;
       }
     }
-    if( showContent ){
-      if( sz==0 && x<=JSONB_FALSE ){
-        sqlite3_str_append(pOut, "\n", 1);
-      }else{
+    ਜੇ( showContent ){
+      ਜੇ( sz==0 && x<=JSONB_FALSE ){
+        sqlite3_str_append(p_ਬਾਹਰਲਾ, "\n", 1);
+      }ਨਹੀਂਤਾਂ{
         u32 j;
-        sqlite3_str_appendall(pOut, ": \"");
-        for(j=iStart+n; j<iStart+n+sz; j++){
+        sqlite3_str_appendall(p_ਬਾਹਰਲਾ, ": \"");
+        ਲਈ(j=i_ਸ਼ੁਰੂ+n; j<i_ਸ਼ੁਰੂ+n+sz; j++){
           u8 c = pParse->aBlob[j];
-          if( c<0x20 || c>=0x7f ) c = '.';
-          sqlite3_str_append(pOut, (char*)&c, 1);
+          ਜੇ( c<0x20 || c>=0x7f ) c = '.';
+          sqlite3_str_append(p_ਬਾਹਰਲਾ, (ਅੱਖਰ*)&c, 1);
         }
-        sqlite3_str_append(pOut, "\"\n", 2);
+        sqlite3_str_append(p_ਬਾਹਰਲਾ, "\"\n", 2);
       }
     }
-    iStart += n + sz;
+    i_ਸ਼ੁਰੂ += n + sz;
   }
 }
-static void jsonShowParse(JsonParse *pParse){
-  sqlite3_str out;
-  char zBuf[1000];
-  if( pParse==0 ){
-    printf("NULL pointer\n");
-    return;
-  }else{
-    printf("nBlobAlloc = %u\n", pParse->nBlobAlloc);
-    printf("nBlob = %u\n", pParse->nBlob);
-    printf("delta = %d\n", pParse->delta);
-    if( pParse->nBlob==0 ) return;
-    printf("content (bytes 0..%u):\n", pParse->nBlob-1);
+ਸਥਿਰ ਖਾਲੀ jsonShowParse(JsonParse *pParse){
+  sqlite3_str ਬਾਹਰਲਾ;
+  ਅੱਖਰ zBuf[1000];
+  ਜੇ( pParse==0 ){
+    ਲਿਖੋ("NULL pointer\n");
+    ਵਾਪਸ;
+  }ਨਹੀਂਤਾਂ{
+    ਲਿਖੋ("nBlobAlloc = %u\n", pParse->nBlobAlloc);
+    ਲਿਖੋ("nBlob = %u\n", pParse->nBlob);
+    ਲਿਖੋ("delta = %d\n", pParse->delta);
+    ਜੇ( pParse->nBlob==0 ) ਵਾਪਸ;
+    ਲਿਖੋ("content (bytes 0..%u):\n", pParse->nBlob-1);
   }
-  sqlite3StrAccumInit(&out, 0, zBuf, sizeof(zBuf), 1000000);
-  jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &out);
-  printf("%s", sqlite3_str_value(&out));
-  sqlite3_str_reset(&out);
+  sqlite3StrAccumInit(&ਬਾਹਰਲਾ, 0, zBuf, ਆਕਾਰ(zBuf), 1000000);
+  jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &ਬਾਹਰਲਾ);
+  ਲਿਖੋ("%s", sqlite3_str_ਮੁੱਲ(&ਬਾਹਰਲਾ));
+  sqlite3_str_reset(&ਬਾਹਰਲਾ);
 }
-#endif /* SQLITE_DEBUG */
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG */
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
 /*
 ** SQL function:   json_parse(JSON)
 **
 ** Parse JSON using jsonParseFuncArg().  Return text that is a
 ** human-readable dump of the binary JSONB for the input parameter.
 */
-static void jsonParseFunc(
+ਸਥਿਰ ਖਾਲੀ jsonParseFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p;        /* The parse */
-  sqlite3_str out;
+  sqlite3_str ਬਾਹਰਲਾ;
 
-  assert( argc>=1 );
-  sqlite3StrAccumInit(&out, 0, 0, 0, 1000000);
+  ਪ੍ਰਤਿਜ੍ਞਾ( argc>=1 );
+  sqlite3StrAccumInit(&ਬਾਹਰਲਾ, 0, 0, 0, 1000000);
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==1 ){
-    jsonDebugPrintBlob(p, 0, p->nBlob, 0, &out);
-    sqlite3_result_text64(ctx,out.zText,out.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
-  }else{
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  ਜੇ( argc==1 ){
+    jsonDebugPrintBlob(p, 0, p->nBlob, 0, &ਬਾਹਰਲਾ);
+    sqlite3_ਨਤੀਜਾ_text64(ctx,ਬਾਹਰਲਾ.z_ਪਾਠ,ਬਾਹਰਲਾ.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
+  }ਨਹੀਂਤਾਂ{
     jsonShowParse(p);
   }
   jsonParseFree(p);
-  sqlite3_str_reset(&out);
+  sqlite3_str_reset(&ਬਾਹਰਲਾ);
 }
-#endif /* SQLITE_DEBUG */
+#ਜੇ_ਅੰਤ /* SQLITE_DEBUG */
 
 /****************************************************************************
 ** Scalar SQL function implementations
@@ -4136,18 +4136,18 @@ static void jsonParseFunc(
 ** double-quotes around strings and returning the unquoted string "null"
 ** when given a NULL input.
 */
-static void jsonQuoteFunc(
+ਸਥਿਰ ਖਾਲੀ jsonQuoteFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonString jx;
-  UNUSED_PARAMETER(argc);
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
 
   jsonStringInit(&jx, ctx);
-  jsonAppendSqlValue(&jx, argv[0]);
+  json_Append_Sql_ਮੁੱਲ(&jx, argv[0]);
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
 }
 
 /*
@@ -4155,23 +4155,23 @@ static void jsonQuoteFunc(
 ** array that contains all values given in arguments.  Or if any argument
 ** is a BLOB, throw an error.
 */
-static void jsonArrayFunc(
+ਸਥਿਰ ਖਾਲੀ jsonArrayFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  int i;
+  ਪੂਰਨ i;
   JsonString jx;
 
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '[');
-  for(i=0; i<argc; i++){
+  ਲਈ(i=0; i<argc; i++){
     jsonAppendSeparator(&jx);
-    jsonAppendSqlValue(&jx, argv[i]);
+    json_Append_Sql_ਮੁੱਲ(&jx, argv[i]);
   }
   jsonAppendChar(&jx, ']');
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
 }
 
 /*
@@ -4181,10 +4181,10 @@ static void jsonArrayFunc(
 ** Return the number of elements in the top-level JSON array.
 ** Return 0 if the input is not a well-formed JSON array.
 */
-static void jsonArrayLengthFunc(
+ਸਥਿਰ ਖਾਲੀ json_Array_ਲੰਮਾਈ_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p;          /* The parse */
   sqlite3_int64 cnt = 0;
@@ -4192,38 +4192,38 @@ static void jsonArrayLengthFunc(
   u8 eErr = 0;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    const char *zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ){
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  ਜੇ( argc==2 ){
+    ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+    ਜੇ( z_ਰਸਤਾ==0 ){
       jsonParseFree(p);
-      return;
+      ਵਾਪਸ;
     }
-    i = jsonLookupStep(p, 0, zPath[0]=='$' ? zPath+1 : "@", 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    i = json_Lookup_ਕਦਮ(p, 0, z_ਰਸਤਾ[0]=='$' ? z_ਰਸਤਾ+1 : "@", 0);
+    ਜੇ( JSON_LOOKUP_ISERROR(i) ){
+      ਜੇ( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
-        jsonBadPathError(ctx, zPath, i);
+      }ਨਹੀਂਤਾਂ{
+        json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, i);
       }
       eErr = 1;
       i = 0;
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     i = 0;
   }
-  if( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
-    cnt = jsonbArrayCount(p, i);
+  ਜੇ( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
+    cnt = jsonb_Array_ਗਿਣਤੀ(p, i);
   }
-  if( !eErr ) sqlite3_result_int64(ctx, cnt);
+  ਜੇ( !eErr ) sqlite3_ਨਤੀਜਾ_int64(ctx, cnt);
   jsonParseFree(p);
 }
 
 /* True if the string is all alphanumerics and underscores */
-static int jsonAllAlphanum(const char *z, int n){
-  int i;
-  for(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
-  return i==n;
+ਸਥਿਰ ਪੂਰਨ jsonAllAlphanum(ਅਚਲ ਅੱਖਰ *z, ਪੂਰਨ n){
+  ਪੂਰਨ i;
+  ਲਈ(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
+  ਵਾਪਸ i==n;
 }
 
 /*
@@ -4246,34 +4246,34 @@ static int jsonAllAlphanum(const char *z, int n){
 ** Abbreviated JSON path expressions are allows if JSON_ABPATH, for
 ** compatibility with PG.
 */
-static void jsonExtractFunc(
+ਸਥਿਰ ਖਾਲੀ json_ਕੱਢੋ_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p = 0;      /* The parse */
-  int flags;             /* Flags associated with the function */
-  int i;                 /* Loop counter */
+  ਪੂਰਨ flags;             /* Flags associated with the function */
+  ਪੂਰਨ i;                 /* Loop counter */
   JsonString jx;         /* String for array result */
 
-  if( argc<2 ) return;
+  ਜੇ( argc<2 ) ਵਾਪਸ;
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  flags = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(ctx));
   jsonStringInit(&jx, ctx);
-  if( argc>2 ){
+  ਜੇ( argc>2 ){
     jsonAppendChar(&jx, '[');
   }
-  for(i=1; i<argc; i++){
+  ਲਈ(i=1; i<argc; i++){
     /* With a single PATH argument */
-    const char *zPath = (const char*)sqlite3_value_text(argv[i]);
-    int nPath;
+    ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[i]);
+    ਪੂਰਨ n_ਰਸਤਾ;
     u32 j;
-    if( zPath==0 ) goto json_extract_error;
-    nPath = sqlite3Strlen30(zPath);
-    if( zPath[0]=='$' ){
-      j = jsonLookupStep(p, 0, zPath+1, 0);
-    }else if( (flags & JSON_ABPATH) ){
+    ਜੇ( z_ਰਸਤਾ==0 ) ਜਾਓ json_ਕੱਢੋ_error;
+    n_ਰਸਤਾ = sqlite3Strlen30(z_ਰਸਤਾ);
+    ਜੇ( z_ਰਸਤਾ[0]=='$' ){
+      j = json_Lookup_ਕਦਮ(p, 0, z_ਰਸਤਾ+1, 0);
+    }ਨਹੀਂਤਾਂ ਜੇ( (flags & JSON_ABPATH) ){
       /* The -> and ->> operators accept abbreviated PATH arguments.  This
       ** is mostly for compatibility with PostgreSQL, but also for
       ** convenience.
@@ -4288,82 +4288,82 @@ static void jsonExtractFunc(
       **     NUMBER   ==>  $[#NUMBER]    // PG compatible
       */
       jsonStringInit(&jx, ctx);
-      if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
+      ਜੇ( sqlite3_ਮੁੱਲ_type(argv[i])==SQLITE_INTEGER ){
         jsonAppendRawNZ(&jx, "[", 1);
-        if( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
-        jsonAppendRaw(&jx, zPath, nPath);
+        ਜੇ( z_ਰਸਤਾ[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
+        jsonAppendRaw(&jx, z_ਰਸਤਾ, n_ਰਸਤਾ);
         jsonAppendRawNZ(&jx, "]", 2);
-      }else if( jsonAllAlphanum(zPath, nPath) ){
+      }ਨਹੀਂਤਾਂ ਜੇ( jsonAllAlphanum(z_ਰਸਤਾ, n_ਰਸਤਾ) ){
         jsonAppendRawNZ(&jx, ".", 1);
-        jsonAppendRaw(&jx, zPath, nPath);
-      }else if( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
-        jsonAppendRaw(&jx, zPath, nPath);
-      }else{
+        jsonAppendRaw(&jx, z_ਰਸਤਾ, n_ਰਸਤਾ);
+      }ਨਹੀਂਤਾਂ ਜੇ( z_ਰਸਤਾ[0]=='[' && n_ਰਸਤਾ>=3 && z_ਰਸਤਾ[n_ਰਸਤਾ-1]==']' ){
+        jsonAppendRaw(&jx, z_ਰਸਤਾ, n_ਰਸਤਾ);
+      }ਨਹੀਂਤਾਂ{
         jsonAppendRawNZ(&jx, ".\"", 2);
-        jsonAppendRaw(&jx, zPath, nPath);
+        jsonAppendRaw(&jx, z_ਰਸਤਾ, n_ਰਸਤਾ);
         jsonAppendRawNZ(&jx, "\"", 1);
       }
       jsonStringTerminate(&jx);
-      j = jsonLookupStep(p, 0, jx.zBuf, 0);
+      j = json_Lookup_ਕਦਮ(p, 0, jx.zBuf, 0);
       jsonStringReset(&jx);
-    }else{
-      jsonBadPathError(ctx, zPath, 0);
-      goto json_extract_error;
+    }ਨਹੀਂਤਾਂ{
+      json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, 0);
+      ਜਾਓ json_ਕੱਢੋ_error;
     }
-    if( j<p->nBlob ){
-      if( argc==2 ){
-        if( flags & JSON_JSON ){
+    ਜੇ( j<p->nBlob ){
+      ਜੇ( argc==2 ){
+        ਜੇ( flags & JSON_JSON ){
           jsonStringInit(&jx, ctx);
-          jsonTranslateBlobToText(p, j, &jx);
+          json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(p, j, &jx);
           jsonReturnString(&jx, 0, 0);
           jsonStringReset(&jx);
-          assert( (flags & JSON_BLOB)==0 );
-          sqlite3_result_subtype(ctx, JSON_SUBTYPE);
-        }else{
+          ਪ੍ਰਤਿਜ੍ਞਾ( (flags & JSON_BLOB)==0 );
+          sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
+        }ਨਹੀਂਤਾਂ{
           jsonReturnFromBlob(p, j, ctx, 0);
-          if( (flags & (JSON_SQL|JSON_BLOB))==0
+          ਜੇ( (flags & (JSON_SQL|JSON_BLOB))==0
            && (p->aBlob[j]&0x0f)>=JSONB_ARRAY
           ){
-            sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+            sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
           }
         }
-      }else{
+      }ਨਹੀਂਤਾਂ{
         jsonAppendSeparator(&jx);
-        jsonTranslateBlobToText(p, j, &jx);
+        json_Translate_Blob_ਮੰਜ਼ਿਲ_ਪਾਠ(p, j, &jx);
       }
-    }else if( j==JSON_LOOKUP_NOTFOUND ){
-      if( argc==2 ){
-        goto json_extract_error;  /* Return NULL if not found */
-      }else{
+    }ਨਹੀਂਤਾਂ ਜੇ( j==JSON_LOOKUP_NOTFOUND ){
+      ਜੇ( argc==2 ){
+        ਜਾਓ json_ਕੱਢੋ_error;  /* Return NULL if not found */
+      }ਨਹੀਂਤਾਂ{
         jsonAppendSeparator(&jx);
         jsonAppendRawNZ(&jx, "null", 4);
       }
-    }else{
-      jsonBadPathError(ctx, zPath, j);
-      goto json_extract_error;
+    }ਨਹੀਂਤਾਂ{
+      json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, j);
+      ਜਾਓ json_ਕੱਢੋ_error;
     }
   }
-  if( argc>2 ){
+  ਜੇ( argc>2 ){
     jsonAppendChar(&jx, ']');
     jsonReturnString(&jx, 0, 0);
-    if( (flags & JSON_BLOB)==0 ){
-      sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+    ਜੇ( (flags & JSON_BLOB)==0 ){
+      sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
     }
   }
-json_extract_error:
+json_ਕੱਢੋ_error:
   jsonStringReset(&jx);
   jsonParseFree(p);
-  return;
+  ਵਾਪਸ;
 }
 
 /*
 ** Return codes for jsonMergePatch()
 */
-#define JSON_MERGE_OK          0     /* Success */
-#define JSON_MERGE_BADTARGET   1     /* Malformed TARGET blob */
-#define JSON_MERGE_BADPATCH    2     /* Malformed PATCH blob */
-#define JSON_MERGE_OOM         3     /* Out-of-memory condition */
-#define JSON_MERGE_TOODEEP     4     /* Nested too deep */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਮਿਲਾਓ_OK          0     /* Success */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਮਿਲਾਓ_BADTARGET   1     /* Malformed TARGET blob */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਮਿਲਾਓ_BADPATCH    2     /* Malformed PATCH blob */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਮਿਲਾਓ_OOM         3     /* Out-of-memory condition */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JSON_ਮਿਲਾਓ_TOODEEP     4     /* Nested too deep */
 
 /*
 ** RFC-7396 MergePatch for two JSONB blobs.
@@ -4411,12 +4411,12 @@ json_extract_error:
 **  |
 **  ^---- Line numbers referenced in comments in the implementation
 */
-static int jsonMergePatch(
-  JsonParse *pTarget,      /* The JSON parser that contains the TARGET */
-  u32 iTarget,             /* Index of TARGET in pTarget->aBlob[] */
-  const JsonParse *pPatch, /* The PATCH */
+ਸਥਿਰ ਪੂਰਨ json_ਮਿਲਾਓ_Patch(
+  JsonParse *p_ਨਿਸ਼ਾਨਾ,      /* The JSON parser that contains the TARGET */
+  u32 i_ਨਿਸ਼ਾਨਾ,             /* Index of TARGET in pTarget->aBlob[] */
+  ਅਚਲ JsonParse *pPatch, /* The PATCH */
   u32 iPatch,              /* Index of PATCH in pPatch->aBlob[] */
-  u32 iDepth               /* Nesting depth */
+  u32 i_ਡੂੰਘਾਈ               /* Nesting depth */
 ){
   u8 x;             /* Type of a single node */
   u32 n, sz=0;      /* Return values from jsonbPayloadSize() */
@@ -4442,120 +4442,120 @@ static int jsonMergePatch(
   u32 nPValue;      /* Header size for the patch value */
   u32 szPValue;     /* Payload size of the patch value */
 
-  assert( iTarget>=0 && iTarget<pTarget->nBlob );
-  assert( iPatch>=0 && iPatch<pPatch->nBlob );
+  ਪ੍ਰਤਿਜ੍ਞਾ( i_ਨਿਸ਼ਾਨਾ>=0 && i_ਨਿਸ਼ਾਨਾ<p_ਨਿਸ਼ਾਨਾ->nBlob );
+  ਪ੍ਰਤਿਜ੍ਞਾ( iPatch>=0 && iPatch<pPatch->nBlob );
   x = pPatch->aBlob[iPatch] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
+  ਜੇ( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
     u32 szPatch;        /* Total size of the patch, header+payload */
-    u32 szTarget;       /* Total size of the target, header+payload */
-    n = jsonbPayloadSize(pPatch, iPatch, &sz);
+    u32 sz_ਨਿਸ਼ਾਨਾ;       /* Total size of the target, header+payload */
+    n = jsonb_Payload_ਮਾਪ(pPatch, iPatch, &sz);
     szPatch = n+sz;
     sz = 0;
-    n = jsonbPayloadSize(pTarget, iTarget, &sz);
-    szTarget = n+sz;
-    jsonBlobEdit(pTarget, iTarget, szTarget, pPatch->aBlob+iPatch, szPatch);
-    return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
+    n = jsonb_Payload_ਮਾਪ(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ, &sz);
+    sz_ਨਿਸ਼ਾਨਾ = n+sz;
+    jsonBlobEdit(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ, sz_ਨਿਸ਼ਾਨਾ, pPatch->aBlob+iPatch, szPatch);
+    ਵਾਪਸ p_ਨਿਸ਼ਾਨਾ->oom ? JSON_ਮਿਲਾਓ_OOM : JSON_ਮਿਲਾਓ_OK;  /* Line 03 */
   }
-  x = pTarget->aBlob[iTarget] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
-    n = jsonbPayloadSize(pTarget, iTarget, &sz);
-    jsonBlobEdit(pTarget, iTarget+n, sz, 0, 0);
-    x = pTarget->aBlob[iTarget];
-    pTarget->aBlob[iTarget] = (x & 0xf0) | JSONB_OBJECT;
+  x = p_ਨਿਸ਼ਾਨਾ->aBlob[i_ਨਿਸ਼ਾਨਾ] & 0x0f;
+  ਜੇ( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
+    n = jsonb_Payload_ਮਾਪ(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ, &sz);
+    jsonBlobEdit(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ+n, sz, 0, 0);
+    x = p_ਨਿਸ਼ਾਨਾ->aBlob[i_ਨਿਸ਼ਾਨਾ];
+    p_ਨਿਸ਼ਾਨਾ->aBlob[i_ਨਿਸ਼ਾਨਾ] = (x & 0xf0) | JSONB_OBJECT;
   }
-  n = jsonbPayloadSize(pPatch, iPatch, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADPATCH;
+  n = jsonb_Payload_ਮਾਪ(pPatch, iPatch, &sz);
+  ਜੇ( NEVER(n==0) ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
   iPCursor = iPatch+n;
   iPEnd = iPCursor+sz;
-  n = jsonbPayloadSize(pTarget, iTarget, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADTARGET;
-  iTStart = iTarget+n;
+  n = jsonb_Payload_ਮਾਪ(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ, &sz);
+  ਜੇ( NEVER(n==0) ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
+  iTStart = i_ਨਿਸ਼ਾਨਾ+n;
   iTEndBE = iTStart+sz;
 
-  while( iPCursor<iPEnd ){  /* Algorithm line 07 */
+  ਜਦੋਂ( iPCursor<iPEnd ){  /* Algorithm line 07 */
     iPLabel = iPCursor;
     ePLabel = pPatch->aBlob[iPCursor] & 0x0f;
-    if( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
-      return JSON_MERGE_BADPATCH;
+    ਜੇ( ePLabel<JSONB_ਪਾਠ || ePLabel>JSONB_TEXTRAW ){
+      ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
     }
-    nPLabel = jsonbPayloadSize(pPatch, iPCursor, &szPLabel);
-    if( nPLabel==0 ) return JSON_MERGE_BADPATCH;
+    nPLabel = jsonb_Payload_ਮਾਪ(pPatch, iPCursor, &szPLabel);
+    ਜੇ( nPLabel==0 ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
     iPValue = iPCursor + nPLabel + szPLabel;
-    if( iPValue>=iPEnd ) return JSON_MERGE_BADPATCH;
-    nPValue = jsonbPayloadSize(pPatch, iPValue, &szPValue);
-    if( nPValue==0 ) return JSON_MERGE_BADPATCH;
+    ਜੇ( iPValue>=iPEnd ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
+    nPValue = jsonb_Payload_ਮਾਪ(pPatch, iPValue, &szPValue);
+    ਜੇ( nPValue==0 ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
     iPCursor = iPValue + nPValue + szPValue;
-    if( iPCursor>iPEnd ) return JSON_MERGE_BADPATCH;
+    ਜੇ( iPCursor>iPEnd ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADPATCH;
 
     iTCursor = iTStart;
-    iTEnd = iTEndBE + pTarget->delta;
-    while( iTCursor<iTEnd ){
-      int isEqual;   /* true if the patch and target labels match */
+    iTEnd = iTEndBE + p_ਨਿਸ਼ਾਨਾ->delta;
+    ਜਦੋਂ( iTCursor<iTEnd ){
+      ਪੂਰਨ isEqual;   /* true if the patch and target labels match */
       iTLabel = iTCursor;
-      eTLabel = pTarget->aBlob[iTCursor] & 0x0f;
-      if( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
-        return JSON_MERGE_BADTARGET;
+      eTLabel = p_ਨਿਸ਼ਾਨਾ->aBlob[iTCursor] & 0x0f;
+      ਜੇ( eTLabel<JSONB_ਪਾਠ || eTLabel>JSONB_TEXTRAW ){
+        ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
       }
-      nTLabel = jsonbPayloadSize(pTarget, iTCursor, &szTLabel);
-      if( nTLabel==0 ) return JSON_MERGE_BADTARGET;
+      nTLabel = jsonb_Payload_ਮਾਪ(p_ਨਿਸ਼ਾਨਾ, iTCursor, &szTLabel);
+      ਜੇ( nTLabel==0 ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
       iTValue = iTLabel + nTLabel + szTLabel;
-      if( iTValue>=iTEnd ) return JSON_MERGE_BADTARGET;
-      nTValue = jsonbPayloadSize(pTarget, iTValue, &szTValue);
-      if( nTValue==0 ) return JSON_MERGE_BADTARGET;
-      if( iTValue + nTValue + szTValue > iTEnd ) return JSON_MERGE_BADTARGET;
+      ਜੇ( iTValue>=iTEnd ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
+      nTValue = jsonb_Payload_ਮਾਪ(p_ਨਿਸ਼ਾਨਾ, iTValue, &szTValue);
+      ਜੇ( nTValue==0 ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
+      ਜੇ( iTValue + nTValue + szTValue > iTEnd ) ਵਾਪਸ JSON_ਮਿਲਾਓ_BADTARGET;
       isEqual = jsonLabelCompare(
-                   (const char*)&pPatch->aBlob[iPLabel+nPLabel],
+                   (ਅਚਲ ਅੱਖਰ*)&pPatch->aBlob[iPLabel+nPLabel],
                    szPLabel,
-                   (ePLabel==JSONB_TEXT || ePLabel==JSONB_TEXTRAW),
-                   (const char*)&pTarget->aBlob[iTLabel+nTLabel],
+                   (ePLabel==JSONB_ਪਾਠ || ePLabel==JSONB_TEXTRAW),
+                   (ਅਚਲ ਅੱਖਰ*)&p_ਨਿਸ਼ਾਨਾ->aBlob[iTLabel+nTLabel],
                    szTLabel,
-                   (eTLabel==JSONB_TEXT || eTLabel==JSONB_TEXTRAW));
-      if( isEqual ) break;
+                   (eTLabel==JSONB_ਪਾਠ || eTLabel==JSONB_TEXTRAW));
+      ਜੇ( isEqual ) ਰੋਕੋ;
       iTCursor = iTValue + nTValue + szTValue;
     }
     x = pPatch->aBlob[iPValue] & 0x0f;
-    if( iTCursor<iTEnd ){
+    ਜੇ( iTCursor<iTEnd ){
       /* A match was found.  Algorithm line 08 */
-      if( x==0 ){
+      ਜੇ( x==0 ){
         /* Patch value is NULL.  Algorithm line 09 */
-        jsonBlobEdit(pTarget, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
+        jsonBlobEdit(p_ਨਿਸ਼ਾਨਾ, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
         /*  vvvvvv----- No OOM on a delete-only edit */
-        if( NEVER(pTarget->oom) ) return JSON_MERGE_OOM;
-      }else{
+        ਜੇ( NEVER(p_ਨਿਸ਼ਾਨਾ->oom) ) ਵਾਪਸ JSON_ਮਿਲਾਓ_OOM;
+      }ਨਹੀਂਤਾਂ{
         /* Algorithm line 12 */
-        int rc, savedDelta = pTarget->delta;
-        pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
-        rc = jsonMergePatch(pTarget, iTValue, pPatch, iPValue, iDepth+1);
-        if( rc ) return rc;
-        pTarget->delta += savedDelta;
+        ਪੂਰਨ rc, savedDelta = p_ਨਿਸ਼ਾਨਾ->delta;
+        p_ਨਿਸ਼ਾਨਾ->delta = 0;
+        ਜੇ( i_ਡੂੰਘਾਈ>=JSON_MAX_ਡੂੰਘਾਈ ) ਵਾਪਸ JSON_ਮਿਲਾਓ_TOODEEP;
+        rc = json_ਮਿਲਾਓ_Patch(p_ਨਿਸ਼ਾਨਾ, iTValue, pPatch, iPValue, i_ਡੂੰਘਾਈ+1);
+        ਜੇ( rc ) ਵਾਪਸ rc;
+        p_ਨਿਸ਼ਾਨਾ->delta += savedDelta;
       }        
-    }else if( x>0 ){  /* Algorithm line 13 */
+    }ਨਹੀਂਤਾਂ ਜੇ( x>0 ){  /* Algorithm line 13 */
       /* No match and patch value is not NULL */
       u32 szNew = szPLabel+nPLabel;
-      if( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
-        jsonBlobEdit(pTarget, iTEnd, 0, 0, szPValue+nPValue+szNew);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
-        memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
-        memcpy(&pTarget->aBlob[iTEnd+szNew], 
+      ਜੇ( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
+        jsonBlobEdit(p_ਨਿਸ਼ਾਨਾ, iTEnd, 0, 0, szPValue+nPValue+szNew);
+        ਜੇ( p_ਨਿਸ਼ਾਨਾ->oom ) ਵਾਪਸ JSON_ਮਿਲਾਓ_OOM;
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p_ਨਿਸ਼ਾਨਾ->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p_ਨਿਸ਼ਾਨਾ->aBlob[iTEnd+szNew], 
                &pPatch->aBlob[iPValue], szPValue+nPValue);
-      }else{
-        int rc, savedDelta;
-        jsonBlobEdit(pTarget, iTEnd, 0, 0, szNew+1);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
-        memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
-        pTarget->aBlob[iTEnd+szNew] = 0x00;
-        savedDelta = pTarget->delta;
-        pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
-        rc = jsonMergePatch(pTarget, iTEnd+szNew,pPatch,iPValue,iDepth+1);
-        if( rc ) return rc;
-        pTarget->delta += savedDelta;
+      }ਨਹੀਂਤਾਂ{
+        ਪੂਰਨ rc, savedDelta;
+        jsonBlobEdit(p_ਨਿਸ਼ਾਨਾ, iTEnd, 0, 0, szNew+1);
+        ਜੇ( p_ਨਿਸ਼ਾਨਾ->oom ) ਵਾਪਸ JSON_ਮਿਲਾਓ_OOM;
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(&p_ਨਿਸ਼ਾਨਾ->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
+        p_ਨਿਸ਼ਾਨਾ->aBlob[iTEnd+szNew] = 0x00;
+        savedDelta = p_ਨਿਸ਼ਾਨਾ->delta;
+        p_ਨਿਸ਼ਾਨਾ->delta = 0;
+        ਜੇ( i_ਡੂੰਘਾਈ>=JSON_MAX_ਡੂੰਘਾਈ ) ਵਾਪਸ JSON_ਮਿਲਾਓ_TOODEEP;
+        rc = json_ਮਿਲਾਓ_Patch(p_ਨਿਸ਼ਾਨਾ, iTEnd+szNew,pPatch,iPValue,i_ਡੂੰਘਾਈ+1);
+        ਜੇ( rc ) ਵਾਪਸ rc;
+        p_ਨਿਸ਼ਾਨਾ->delta += savedDelta;
       }
     }
   }
-  if( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
-  return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
+  ਜੇ( p_ਨਿਸ਼ਾਨਾ->delta ) json_After_Edit_ਮਾਪ_Adjust(p_ਨਿਸ਼ਾਨਾ, i_ਨਿਸ਼ਾਨਾ);
+  ਵਾਪਸ p_ਨਿਸ਼ਾਨਾ->oom ? JSON_ਮਿਲਾਓ_OOM : JSON_ਮਿਲਾਓ_OK;
 }
 
 
@@ -4564,34 +4564,34 @@ static int jsonMergePatch(
 ** object that is the result of running the RFC 7396 MergePatch() algorithm
 ** on the two arguments.
 */
-static void jsonPatchFunc(
+ਸਥਿਰ ਖਾਲੀ jsonPatchFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  JsonParse *pTarget;    /* The TARGET */
+  JsonParse *p_ਨਿਸ਼ਾਨਾ;    /* The TARGET */
   JsonParse *pPatch;     /* The PATCH */
-  int rc;                /* Result code */
+  ਪੂਰਨ rc;                /* Result code */
 
-  UNUSED_PARAMETER(argc);
-  assert( argc==2 );
-  pTarget = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
-  if( pTarget==0 ) return;
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  ਪ੍ਰਤਿਜ੍ਞਾ( argc==2 );
+  p_ਨਿਸ਼ਾਨਾ = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
+  ਜੇ( p_ਨਿਸ਼ਾਨਾ==0 ) ਵਾਪਸ;
   pPatch = jsonParseFuncArg(ctx, argv[1], 0);
-  if( pPatch ){
-    rc = jsonMergePatch(pTarget, 0, pPatch, 0, 0);
-    if( rc==JSON_MERGE_OK ){
-      jsonReturnParse(ctx, pTarget);
-    }else if( rc==JSON_MERGE_OOM ){
-      sqlite3_result_error_nomem(ctx);
-    }else if( rc==JSON_MERGE_TOODEEP ){
-      sqlite3_result_error(ctx, "JSON nested too deep", -1);
-    }else{
-      sqlite3_result_error(ctx, "malformed JSON", -1);
+  ਜੇ( pPatch ){
+    rc = json_ਮਿਲਾਓ_Patch(p_ਨਿਸ਼ਾਨਾ, 0, pPatch, 0, 0);
+    ਜੇ( rc==JSON_ਮਿਲਾਓ_OK ){
+      jsonReturnParse(ctx, p_ਨਿਸ਼ਾਨਾ);
+    }ਨਹੀਂਤਾਂ ਜੇ( rc==JSON_ਮਿਲਾਓ_OOM ){
+      sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+    }ਨਹੀਂਤਾਂ ਜੇ( rc==JSON_ਮਿਲਾਓ_TOODEEP ){
+      sqlite3_ਨਤੀਜਾ_error(ctx, "JSON nested too deep", -1);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਨਤੀਜਾ_error(ctx, "malformed JSON", -1);
     }
     jsonParseFree(pPatch);
   }
-  jsonParseFree(pTarget);
+  jsonParseFree(p_ਨਿਸ਼ਾਨਾ);
 }
 
 
@@ -4600,39 +4600,39 @@ static void jsonPatchFunc(
 ** object that contains all name/value given in arguments.  Or if any name
 ** is not a string or if any value is a BLOB, throw an error.
 */
-static void jsonObjectFunc(
+ਸਥਿਰ ਖਾਲੀ jsonObjectFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  int i;
+  ਪੂਰਨ i;
   JsonString jx;
-  const char *z;
+  ਅਚਲ ਅੱਖਰ *z;
   u32 n;
 
-  if( argc&1 ){
-    sqlite3_result_error(ctx, "json_object() requires an even number "
+  ਜੇ( argc&1 ){
+    sqlite3_ਨਤੀਜਾ_error(ctx, "json_object() requires an even number "
                                   "of arguments", -1);
-    return;
+    ਵਾਪਸ;
   }
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '{');
-  for(i=0; i<argc; i+=2){
-    if( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
-      sqlite3_result_error(ctx, "json_object() labels must be TEXT", -1);
+  ਲਈ(i=0; i<argc; i+=2){
+    ਜੇ( sqlite3_ਮੁੱਲ_type(argv[i])!=SQLITE_ਪਾਠ ){
+      sqlite3_ਨਤੀਜਾ_error(ctx, "json_object() labels must be TEXT", -1);
       jsonStringReset(&jx);
-      return;
+      ਵਾਪਸ;
     }
     jsonAppendSeparator(&jx);
-    z = (const char*)sqlite3_value_text(argv[i]);
-    n = sqlite3_value_bytes(argv[i]);
+    z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[i]);
+    n = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(argv[i]);
     jsonAppendString(&jx, z, n);
     jsonAppendChar(&jx, ':');
-    jsonAppendSqlValue(&jx, argv[i+1]);
+    json_Append_Sql_ਮੁੱਲ(&jx, argv[i+1]);
   }
   jsonAppendChar(&jx, '}');
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
 }
 
 
@@ -4642,53 +4642,53 @@ static void jsonObjectFunc(
 ** Remove the named elements from JSON and return the result.  malformed
 ** JSON or PATH arguments result in an error.
 */
-static void jsonRemoveFunc(
+ਸਥਿਰ ਖਾਲੀ jsonRemoveFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0; /* Path of element to be removed */
-  int i;                 /* Loop counter */
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ = 0; /* Path of element to be removed */
+  ਪੂਰਨ i;                 /* Loop counter */
   u32 rc;                /* Subroutine return code */
 
-  if( argc<1 ) return;
+  ਜੇ( argc<1 ) ਵਾਪਸ;
   p = jsonParseFuncArg(ctx, argv[0], argc>1 ? JSON_EDITABLE : 0);
-  if( p==0 ) return;
-  for(i=1; i<argc; i++){
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
-      goto json_remove_done;
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  ਲਈ(i=1; i<argc; i++){
+    z_ਰਸਤਾ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[i]);
+    ਜੇ( z_ਰਸਤਾ==0 ){
+      ਜਾਓ json_remove_ਪੂਰਾ;
     }
-    if( zPath[0]!='$' ){
-      goto json_remove_patherror;
+    ਜੇ( z_ਰਸਤਾ[0]!='$' ){
+      ਜਾਓ json_remove_patherror;
     }
-    if( zPath[1]==0 ){
+    ਜੇ( z_ਰਸਤਾ[1]==0 ){
       /* json_remove(j,'$') returns NULL */
-      goto json_remove_done;
+      ਜਾਓ json_remove_ਪੂਰਾ;
     }
     p->eEdit = JEDIT_DEL;
     p->delta = 0;
-    rc = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(rc) ){
-      if( rc==JSON_LOOKUP_NOTFOUND ){
-        continue;  /* No-op */
-      }else{
-        jsonBadPathError(ctx, zPath, rc);
+    rc = json_Lookup_ਕਦਮ(p, 0, z_ਰਸਤਾ+1, 0);
+    ਜੇ( JSON_LOOKUP_ISERROR(rc) ){
+      ਜੇ( rc==JSON_LOOKUP_NOTFOUND ){
+        ਜਾਰੀ;  /* No-op */
+      }ਨਹੀਂਤਾਂ{
+        json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, rc);
       }
-      goto json_remove_done;
+      ਜਾਓ json_remove_ਪੂਰਾ;
     }
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  ਵਾਪਸ;
 
 json_remove_patherror:
-  jsonBadPathError(ctx, zPath, 0);
+  json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, 0);
 
-json_remove_done:
+json_remove_ਪੂਰਾ:
   jsonParseFree(p);
-  return;
+  ਵਾਪਸ;
 }
 
 /*
@@ -4697,17 +4697,17 @@ json_remove_done:
 ** Replace the value at PATH with VALUE.  If PATH does not already exist,
 ** this routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonReplaceFunc(
+ਸਥਿਰ ਖਾਲੀ jsonReplaceFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  if( argc<1 ) return;
-  if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, "replace");
-    return;
+  ਜੇ( argc<1 ) ਵਾਪਸ;
+  ਜੇ( (argc&1)==0 ) {
+    json_Wrong_ਅੰਕ_ਦਲੀਲਾਂ(ctx, "replace");
+    ਵਾਪਸ;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, JEDIT_REPL);
+  json_ਪਾਓ_Into_Blob(ctx, argc, argv, JEDIT_REPL);
 }
 
 
@@ -4723,23 +4723,23 @@ static void jsonReplaceFunc(
 ** Create PATH and initialize it to VALUE.  If PATH already exists, this
 ** routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonSetFunc(
+ਸਥਿਰ ਖਾਲੀ json_ਸੈੱਟ_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  int eInsType = JSON_INSERT_TYPE(flags);
-  static const char *azInsType[] = { "insert", "set", "array_insert" };
-  static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
+  ਪੂਰਨ flags = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(ctx));
+  ਪੂਰਨ eInsType = JSON_ਪਾਓ_TYPE(flags);
+  ਸਥਿਰ ਅਚਲ ਅੱਖਰ *azInsType[] = { "insert", "set", "array_insert" };
+  ਸਥਿਰ ਅਚਲ u8 aEditType[] = { JEDIT_INS, JEDIT_ਸੈੱਟ, JEDIT_AINS };
 
-  if( argc<1 ) return;
-  assert( eInsType>=0 && eInsType<=2 );
-  if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, azInsType[eInsType]);
-    return;
+  ਜੇ( argc<1 ) ਵਾਪਸ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( eInsType>=0 && eInsType<=2 );
+  ਜੇ( (argc&1)==0 ) {
+    json_Wrong_ਅੰਕ_ਦਲੀਲਾਂ(ctx, azInsType[eInsType]);
+    ਵਾਪਸ;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, aEditType[eInsType]);
+  json_ਪਾਓ_Into_Blob(ctx, argc, argv, aEditType[eInsType]);
 }
 
 /*
@@ -4749,38 +4749,38 @@ static void jsonSetFunc(
 ** Return the top-level "type" of a JSON string.  json_type() raises an
 ** error if either the JSON or PATH inputs are not well-formed.
 */
-static void jsonTypeFunc(
+ਸਥਿਰ ਖਾਲੀ jsonTypeFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0;
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ = 0;
   u32 i;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ) goto json_type_done;
-    if( zPath[0]!='$' ){
-      jsonBadPathError(ctx, zPath, 0);
-      goto json_type_done;
+  ਜੇ( p==0 ) ਵਾਪਸ;
+  ਜੇ( argc==2 ){
+    z_ਰਸਤਾ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+    ਜੇ( z_ਰਸਤਾ==0 ) ਜਾਓ json_type_ਪੂਰਾ;
+    ਜੇ( z_ਰਸਤਾ[0]!='$' ){
+      json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, 0);
+      ਜਾਓ json_type_ਪੂਰਾ;
     }
-    i = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    i = json_Lookup_ਕਦਮ(p, 0, z_ਰਸਤਾ+1, 0);
+    ਜੇ( JSON_LOOKUP_ISERROR(i) ){
+      ਜੇ( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
-        jsonBadPathError(ctx, zPath, i);
+      }ਨਹੀਂਤਾਂ{
+        json_Bad_ਰਸਤਾ_Error(ctx, z_ਰਸਤਾ, i);
       }
-      goto json_type_done;
+      ਜਾਓ json_type_ਪੂਰਾ;
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     i = 0;
   }
-  sqlite3_result_text(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
-json_type_done:
+  sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
+json_type_ਪੂਰਾ:
   jsonParseFree(p);
 }
 
@@ -4794,26 +4794,26 @@ json_type_done:
 ** The INDENT argument is text that is used for indentation.  If omitted,
 ** it defaults to four spaces (the same as PostgreSQL).
 */
-static void jsonPrettyFunc(
+ਸਥਿਰ ਖਾਲੀ jsonPrettyFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonString s;          /* The output string */
   JsonPretty x;          /* Pretty printing context */
 
-  memset(&x, 0, sizeof(x));
+  memset(&x, 0, ਆਕਾਰ(x));
   x.pParse = jsonParseFuncArg(ctx, argv[0], 0);
-  if( x.pParse==0 ) return;
-  x.pOut = &s;
+  ਜੇ( x.pParse==0 ) ਵਾਪਸ;
+  x.p_ਬਾਹਰਲਾ = &s;
   jsonStringInit(&s, ctx);
-  if( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
+  ਜੇ( argc==1 || (x.zIndent = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]))==0 ){
     x.zIndent = "    ";
     x.szIndent = 4;
-  }else{
-    x.szIndent = (u32)strlen(x.zIndent);
+  }ਨਹੀਂਤਾਂ{
+    x.szIndent = (u32)ਲੜੀ_ਲੰਬਾਈ(x.zIndent);
   }
-  jsonTranslateBlobToPrettyText(&x, 0);
+  json_Translate_Blob_ਮੰਜ਼ਿਲ_Pretty_ਪਾਠ(&x, 0);
   jsonReturnString(&s, 0, 0);
   jsonParseFree(x.pParse);
 }
@@ -4875,72 +4875,72 @@ static void jsonPrettyFunc(
 **   *   Return 1 if the input is well-formed.
 **   *   Return 0 if the input is not well-formed.
 */
-static void jsonValidFunc(
+ਸਥਿਰ ਖਾਲੀ jsonValidFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonParse *p;          /* The parse */
   u8 flags = 1;
   u8 res = 0;
-  if( argc==2 ){
-    i64 f = sqlite3_value_int64(argv[1]);
-    if( f<1 || f>15 ){
-      sqlite3_result_error(ctx, "FLAGS parameter to json_valid() must be"
+  ਜੇ( argc==2 ){
+    i64 f = sqlite3_ਮੁੱਲ_int64(argv[1]);
+    ਜੇ( f<1 || f>15 ){
+      sqlite3_ਨਤੀਜਾ_error(ctx, "FLAGS parameter to json_valid() must be"
                                 " between 1 and 15", -1);
-      return;
+      ਵਾਪਸ;
     }
     flags = f & 0x0f;
   }
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_NULL: {
-#ifdef SQLITE_LEGACY_JSON_VALID
+  ਚੋਣ( sqlite3_ਮੁੱਲ_type(argv[0]) ){
+    ਹਾਲਤ SQLITE_NULL: {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_LEGACY_JSON_VALID
       /* Incorrect legacy behavior was to return FALSE for a NULL input */
-      sqlite3_result_int(ctx, 0);
-#endif
-      return;
+      sqlite3_ਨਤੀਜਾ_int(ctx, 0);
+#ਜੇ_ਅੰਤ
+      ਵਾਪਸ;
     }
-    case SQLITE_BLOB: {
+    ਹਾਲਤ SQLITE_BLOB: {
       JsonParse py;
-      memset(&py, 0, sizeof(py));
-      if( jsonArgIsJsonb(argv[0], &py) ){
-        if( flags & 0x04 ){
+      memset(&py, 0, ਆਕਾਰ(py));
+      ਜੇ( jsonArgIsJsonb(argv[0], &py) ){
+        ਜੇ( flags & 0x04 ){
           /* Superficial checking only - accomplished by the
           ** jsonArgIsJsonb() call above. */
           res = 1;
-        }else if( flags & 0x08 ){
+        }ਨਹੀਂਤਾਂ ਜੇ( flags & 0x08 ){
           /* Strict checking.  Check by translating BLOB->TEXT->BLOB.  If
           ** no errors occur, call that a "strict check". */
           res = 0==jsonbValidityCheck(&py, 0, py.nBlob, 1);
         }
-        break;
+        ਰੋਕੋ;
       }
       /* Fall through into interpreting the input as text.  See note
       ** above at tag-20240123-a. */
       /* no break */ deliberate_fall_through
     }
-    default: {
+    ਮੂਲ: {
       JsonParse px;
-      if( (flags & 0x3)==0 ) break;
-      memset(&px, 0, sizeof(px));
+      ਜੇ( (flags & 0x3)==0 ) ਰੋਕੋ;
+      memset(&px, 0, ਆਕਾਰ(px));
      
       p = jsonParseFuncArg(ctx, argv[0], JSON_KEEPERROR|JSON_NOCACHE);
-      if( p ){
-        if( p->oom ){
-          sqlite3_result_error_nomem(ctx);
-        }else if( p->nErr ){
+      ਜੇ( p ){
+        ਜੇ( p->oom ){
+          sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+        }ਨਹੀਂਤਾਂ ਜੇ( p->nErr ){
           /* no-op */
-        }else if( (flags & 0x02)!=0 || p->hasNonstd==0 ){
+        }ਨਹੀਂਤਾਂ ਜੇ( (flags & 0x02)!=0 || p->hasNonstd==0 ){
           res = 1;
         }
         jsonParseFree(p);
-      }else{
-        sqlite3_result_error_nomem(ctx);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
       }
-      break;
+      ਰੋਕੋ;
     }
   }
-  sqlite3_result_int(ctx, res);
+  sqlite3_ਨਤੀਜਾ_int(ctx, res);
 }
 
 /*
@@ -4957,43 +4957,43 @@ static void jsonValidFunc(
 ** that the input was not valid JSON, or return 0 if the input text looks
 ** ok.  JSON-5 extensions are accepted.
 */
-static void jsonErrorFunc(
+ਸਥਿਰ ਖਾਲੀ jsonErrorFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   i64 iErrPos = 0;       /* Error position to be returned */
   JsonParse s;
 
-  assert( argc==1 );
-  UNUSED_PARAMETER(argc);
-  memset(&s, 0, sizeof(s));
+  ਪ੍ਰਤਿਜ੍ਞਾ( argc==1 );
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  memset(&s, 0, ਆਕਾਰ(s));
   s.db = sqlite3_context_db_handle(ctx);
-  if( jsonArgIsJsonb(argv[0], &s) ){
+  ਜੇ( jsonArgIsJsonb(argv[0], &s) ){
     iErrPos = (i64)jsonbValidityCheck(&s, 0, s.nBlob, 1);
-  }else{
-    s.zJson = (char*)sqlite3_value_text(argv[0]);
-    if( s.zJson==0 ) return;  /* NULL input or OOM */
-    s.nJson = sqlite3_value_bytes(argv[0]);
-    if( jsonConvertTextToBlob(&s,0) ){
-      if( s.oom ){
+  }ਨਹੀਂਤਾਂ{
+    s.zJson = (ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+    ਜੇ( s.zJson==0 ) ਵਾਪਸ;  /* NULL input or OOM */
+    s.nJson = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(argv[0]);
+    ਜੇ( json_Convert_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(&s,0) ){
+      ਜੇ( s.oom ){
         iErrPos = -1;
-      }else{
+      }ਨਹੀਂਤਾਂ{
         /* Convert byte-offset s.iErr into a character offset */
         u32 k;
-        assert( s.zJson!=0 );  /* Because s.oom is false */
-        for(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
-          if( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
+        ਪ੍ਰਤਿਜ੍ਞਾ( s.zJson!=0 );  /* Because s.oom is false */
+        ਲਈ(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
+          ਜੇ( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
         }
         iErrPos++;
       }
     }
   }
   jsonParseReset(&s);
-  if( iErrPos<0 ){
-    sqlite3_result_error_nomem(ctx);
-  }else{
-    sqlite3_result_int64(ctx, iErrPos);
+  ਜੇ( iErrPos<0 ){
+    sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_int64(ctx, iErrPos);
   }
 }
 
@@ -5005,114 +5005,114 @@ static void jsonErrorFunc(
 **
 ** Return a JSON array composed of all values in the aggregate.
 */
-static void jsonArrayStep(
+ਸਥਿਰ ਖਾਲੀ json_Array_ਕਦਮ(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonString *pStr;
-  UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    if( pStr->zBuf==0 ){
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, ਆਕਾਰ(*pStr));
+  ਜੇ( pStr ){
+    ਜੇ( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '[');
-    }else if( pStr->nUsed>1 ){
+    }ਨਹੀਂਤਾਂ ਜੇ( pStr->n_ਵਰਤਿਆ>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    jsonAppendSqlValue(pStr, argv[0]);
+    json_Append_Sql_ਮੁੱਲ(pStr, argv[0]);
   }
 }
-static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
+ਸਥਿਰ ਖਾਲੀ jsonArrayCompute(sqlite3_context *ctx, ਪੂਰਨ isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  ਪੂਰਨ flags = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ਜੇ( pStr ){
     pStr->pCtx = ctx;
     jsonAppendRawNZ(pStr, "]", 2);
     jsonStringTrimOneChar(pStr);
-    if( pStr->eErr ){
+    ਜੇ( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
-    }else if( flags & JSON_BLOB ){
+      ਵਾਪਸ;
+    }ਨਹੀਂਤਾਂ ਜੇ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ਜੇ( isFinal ){
+        ਜੇ( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }ਨਹੀਂਤਾਂ{
         jsonStringTrimOneChar(pStr);
       }
-      return;
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+      ਵਾਪਸ;
+    }ਨਹੀਂਤਾਂ ਜੇ( isFinal ){
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, pStr->zBuf, (ਪੂਰਨ)pStr->n_ਵਰਤਿਆ,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                               sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, pStr->zBuf, (ਪੂਰਨ)pStr->n_ਵਰਤਿਆ, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pStr);
     }
-  }else if( flags & JSON_BLOB ){
-    static const u8 emptyArray = 0x0b;
-    sqlite3_result_blob(ctx, &emptyArray, 1, SQLITE_STATIC);
-  }else{
-    sqlite3_result_text(ctx, "[]", 2, SQLITE_STATIC);
+  }ਨਹੀਂਤਾਂ ਜੇ( flags & JSON_BLOB ){
+    ਸਥਿਰ ਅਚਲ u8 ਖਾਲੀ_ਥਾਵਾਂ_Array = 0x0b;
+    sqlite3_ਨਤੀਜਾ_blob(ctx, &ਖਾਲੀ_ਥਾਵਾਂ_Array, 1, SQLITE_STATIC);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, "[]", 2, SQLITE_STATIC);
   }
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonArrayValue(sqlite3_context *ctx){
+ਸਥਿਰ ਖਾਲੀ json_Array_ਮੁੱਲ(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 0);
 }
-static void jsonArrayFinal(sqlite3_context *ctx){
+ਸਥਿਰ ਖਾਲੀ jsonArrayFinal(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 1);
 }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WINDOWFUNC
 /*
 ** This method works for both json_group_array() and json_group_object().
 ** It works by removing the first element of the group by searching forward
 ** to the first comma (",") that is not within a string and deleting all
 ** text through that comma.
 */
-static void jsonGroupInverse(
+ਸਥਿਰ ਖਾਲੀ json_ਸਮੂਹ_Inverse(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  unsigned int i;
-  int inStr = 0;
-  int nNest = 0;
-  char *z;
-  char c;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i;
+  ਪੂਰਨ ਵਿੱਚ_Str = 0;
+  ਪੂਰਨ nNest = 0;
+  ਅੱਖਰ *z;
+  ਅੱਖਰ c;
   JsonString *pStr;
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(argv);
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  ਅਣਵਰਤਿਆ_PARAMETER(argv);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
   /* pStr is always non-NULL since jsonArrayStep() or jsonObjectStep() will
   ** always have been called to initialize it */
-  if( NEVER(!pStr) ) return;
+  ਜੇ( NEVER(!pStr) ) ਵਾਪਸ;
   z = pStr->zBuf;
-  for(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
-    if( c=='"' ){
-      inStr = !inStr;
-    }else if( c=='\\' ){
+  ਲਈ(i=1; i<pStr->n_ਵਰਤਿਆ && ((c = z[i])!=',' || ਵਿੱਚ_Str || nNest); i++){
+    ਜੇ( c=='"' ){
+      ਵਿੱਚ_Str = !ਵਿੱਚ_Str;
+    }ਨਹੀਂਤਾਂ ਜੇ( c=='\\' ){
       i++;
-    }else if( !inStr ){
-      if( c=='{' || c=='[' ) nNest++;
-      if( c=='}' || c==']' ) nNest--;
+    }ਨਹੀਂਤਾਂ ਜੇ( !ਵਿੱਚ_Str ){
+      ਜੇ( c=='{' || c=='[' ) nNest++;
+      ਜੇ( c=='}' || c==']' ) nNest--;
     }
   }
-  if( i<pStr->nUsed ){
-    pStr->nUsed -= i;
-    memmove(&z[1], &z[i+1], (size_t)pStr->nUsed-1);
-    z[pStr->nUsed] = 0;
-  }else{
-    pStr->nUsed = 1;
+  ਜੇ( i<pStr->n_ਵਰਤਿਆ ){
+    pStr->n_ਵਰਤਿਆ -= i;
+    memmove(&z[1], &z[i+1], (size_t)pStr->n_ਵਰਤਿਆ-1);
+    z[pStr->n_ਵਰਤਿਆ] = 0;
+  }ਨਹੀਂਤਾਂ{
+    pStr->n_ਵਰਤਿਆ = 1;
   }
 }
-#else
-# define jsonGroupInverse 0
-#endif
+#ਨਹੀਂਤਾਂ
+# define json_ਸਮੂਹ_Inverse 0
+#ਜੇ_ਅੰਤ
 
 
 /*
@@ -5127,63 +5127,63 @@ static void jsonGroupInverse(
 ** correctly process xInverse() requests.  The initial "@" is converted
 ** back into "{" and the "@" null values are removed by jsonObjectCompute().
 */
-static void jsonObjectStep(
+ਸਥਿਰ ਖਾਲੀ json_Object_ਕਦਮ(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  ਪੂਰਨ argc,
+  sqlite3_ਮੁੱਲ **argv
 ){
   JsonString *pStr;
-  const char *z;
+  ਅਚਲ ਅੱਖਰ *z;
   u32 n;
-  UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    z = (const char*)sqlite3_value_text(argv[0]);
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, ਆਕਾਰ(*pStr));
+  ਜੇ( pStr ){
+    z = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
     n = sqlite3Strlen30(z);
-    if( pStr->zBuf==0 ){
+    ਜੇ( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '{');
-    }else if( pStr->nUsed>1 ){
+    }ਨਹੀਂਤਾਂ ਜੇ( pStr->n_ਵਰਤਿਆ>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    if( z!=0 ){
+    ਜੇ( z!=0 ){
       jsonAppendString(pStr, z, n);
       jsonAppendChar(pStr, ':');
-      jsonAppendSqlValue(pStr, argv[1]);
-    }else{
+      json_Append_Sql_ਮੁੱਲ(pStr, argv[1]);
+    }ਨਹੀਂਤਾਂ{
       pStr->zBuf[0] = '@';
       jsonAppendRawNZ(pStr, "@", 1);
     }
   }
 }
-static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
+ਸਥਿਰ ਖਾਲੀ jsonObjectCompute(sqlite3_context *ctx, ਪੂਰਨ isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  ਪੂਰਨ flags = SQLITE_PTR_ਮੰਜ਼ਿਲ_INT(sqlite3_user_ਅੰਕੜੇ(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ਜੇ( pStr ){
     JsonString *pOgStr = pStr;
     JsonString tmpStr;
     jsonAppendRawNZ(pOgStr, "}", 2);  /* Ensure it is zero-terminated */
     jsonStringTrimOneChar(pOgStr);    /* Remove the zero terminator */
     pStr->pCtx = ctx;
-    if( pStr->eErr ){
+    ਜੇ( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
+      ਵਾਪਸ;
     }
-    if( pStr->zBuf[0]!='{' ){
+    ਜੇ( pStr->zBuf[0]!='{' ){
       /* The string contains null entries that need to be removed */
       u64 i, j;
-      int inStr = 0;
-      if( !isFinal ){
+      ਪੂਰਨ ਵਿੱਚ_Str = 0;
+      ਜੇ( !isFinal ){
         /* Work with a temporary copy of the string if this is not the
         ** final result */
         jsonStringInit(&tmpStr, ctx);
-        jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->nUsed+1);
+        jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->n_ਵਰਤਿਆ+1);
         pStr = &tmpStr;
-        if( pStr->eErr ){
+        ਜੇ( pStr->eErr ){
           jsonReturnString(pStr, 0, 0);
-          return;
+          ਵਾਪਸ;
         }
         jsonStringTrimOneChar(pStr);  /* Remove zero terminator */
       }
@@ -5191,198 +5191,198 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
       ** to "{" and removing all subsequence "@" entries, with their
       ** associated comma delimeters. */
       pStr->zBuf[0] = '{';
-      for(i=j=1; i<pStr->nUsed; i++){
-        char c = pStr->zBuf[i];
-        if( c=='"' ){
-          inStr = !inStr;
+      ਲਈ(i=j=1; i<pStr->n_ਵਰਤਿਆ; i++){
+        ਅੱਖਰ c = pStr->zBuf[i];
+        ਜੇ( c=='"' ){
+          ਵਿੱਚ_Str = !ਵਿੱਚ_Str;
           pStr->zBuf[j++] = '"';
-        }else if( c=='\\' ){
+        }ਨਹੀਂਤਾਂ ਜੇ( c=='\\' ){
           pStr->zBuf[j++] = '\\';
           pStr->zBuf[j++] = pStr->zBuf[++i];
-        }else if( c=='@' && !inStr ){
-          assert( i+1<pStr->nUsed );
-          if( pStr->zBuf[i+1]==',' ){
+        }ਨਹੀਂਤਾਂ ਜੇ( c=='@' && !ਵਿੱਚ_Str ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( i+1<pStr->n_ਵਰਤਿਆ );
+          ਜੇ( pStr->zBuf[i+1]==',' ){
             i++;
-          }else if( pStr->zBuf[j-1]==',' ){
+          }ਨਹੀਂਤਾਂ ਜੇ( pStr->zBuf[j-1]==',' ){
             j--;
           }
-        }else{
+        }ਨਹੀਂਤਾਂ{
           pStr->zBuf[j++] = c;
         }
       }
       pStr->zBuf[j] = 0;  /* Restore zero terminator */
-      pStr->nUsed = j;    /* Truncate the string */
+      pStr->n_ਵਰਤਿਆ = j;    /* Truncate the string */
     }
-    if( flags & JSON_BLOB ){
+    ਜੇ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ਜੇ( isFinal ){
+        ਜੇ( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }ਨਹੀਂਤਾਂ{
         jsonStringTrimOneChar(pOgStr);
       }
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+    }ਨਹੀਂਤਾਂ ਜੇ( isFinal ){
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, pStr->zBuf, (ਪੂਰਨ)pStr->n_ਵਰਤਿਆ,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                           sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, pStr->zBuf, (ਪੂਰਨ)pStr->n_ਵਰਤਿਆ, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pOgStr);
     }
-    if( pStr!=pOgStr ) jsonStringReset(pStr);
-  }else if( flags & JSON_BLOB ){
-    static const unsigned char emptyObject = 0x0c;
-    sqlite3_result_blob(ctx, &emptyObject, 1, SQLITE_STATIC); 
-  }else{
-    sqlite3_result_text(ctx, "{}", 2, SQLITE_STATIC);
+    ਜੇ( pStr!=pOgStr ) jsonStringReset(pStr);
+  }ਨਹੀਂਤਾਂ ਜੇ( flags & JSON_BLOB ){
+    ਸਥਿਰ ਅਚਲ ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਖਾਲੀ_ਥਾਵਾਂ_Object = 0x0c;
+    sqlite3_ਨਤੀਜਾ_blob(ctx, &ਖਾਲੀ_ਥਾਵਾਂ_Object, 1, SQLITE_STATIC); 
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, "{}", 2, SQLITE_STATIC);
   }
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonObjectValue(sqlite3_context *ctx){
+ਸਥਿਰ ਖਾਲੀ json_Object_ਮੁੱਲ(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 0);
 }
-static void jsonObjectFinal(sqlite3_context *ctx){
+ਸਥਿਰ ਖਾਲੀ jsonObjectFinal(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 1);
 }
 
 
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
 /****************************************************************************
 ** The json_each virtual table
 ****************************************************************************/
-typedef struct JsonParent JsonParent;
-struct JsonParent {
-  u32 iHead;                 /* Start of object or array */
-  u32 iValue;                /* Start of the value */
-  u32 iEnd;                  /* First byte past the end */
-  u32 nPath;                 /* Length of path */
-  i64 iKey;                  /* Key for JSONB_ARRAY */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ Json_ਮਾਪਾ Json_ਮਾਪਾ;
+ਬਣਤਰ Json_ਮਾਪਾ {
+  u32 i_ਸਿਰ;                 /* Start of object or array */
+  u32 i_ਮੁੱਲ;                /* Start of the value */
+  u32 i_ਸਿਰਾ;                  /* First byte past the end */
+  u32 n_ਰਸਤਾ;                 /* Length of path */
+  i64 i_ਕੁੰਜੀ;                  /* Key for JSONB_ARRAY */
 };
 
-typedef struct JsonEachCursor JsonEachCursor;
-struct JsonEachCursor {
-  sqlite3_vtab_cursor base;  /* Base class - must be first */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonEachCursor JsonEachCursor;
+ਬਣਤਰ JsonEachCursor {
+  sqlite3_vtab_cursor ਅਧਾਰ;  /* Base class - must be first */
   u32 iRowid;                /* The rowid */
   u32 i;                     /* Index in sParse.aBlob[] of current row */
-  u32 iEnd;                  /* EOF when i equals or exceeds this value */
-  u32 nRoot;                 /* Size of the root path in bytes */
+  u32 i_ਸਿਰਾ;                  /* EOF when i equals or exceeds this value */
+  u32 n_ਜੜ੍ਹ;                 /* Size of the root path in bytes */
   u8 eType;                  /* Type of the container for element i */
   u8 bRecursive;             /* True for json_tree().  False for json_each() */
-  u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
-  u32 nParent;               /* Current nesting depth */
-  u32 nParentAlloc;          /* Space allocated for aParent[] */
-  JsonParent *aParent;       /* Parent elements of i */
+  u8 e_ਬਹੁਲਕ;                  /* 1 for json_each().  2 for jsonb_each() */
+  u32 n_ਮਾਪਾ;               /* Current nesting depth */
+  u32 n_ਮਾਪਾ_Alloc;          /* Space allocated for aParent[] */
+  Json_ਮਾਪਾ *a_ਮਾਪਾ;       /* Parent elements of i */
   sqlite3 *db;               /* Database connection */
-  JsonString path;           /* Current path */
+  JsonString ਰਸਤਾ;           /* Current path */
   JsonParse sParse;          /* Parse of the input JSON */
 };
-typedef struct JsonEachConnection JsonEachConnection;
-struct JsonEachConnection {
-  sqlite3_vtab base;         /* Base class - must be first */
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ JsonEachConnection JsonEachConnection;
+ਬਣਤਰ JsonEachConnection {
+  sqlite3_vtab ਅਧਾਰ;         /* Base class - must be first */
   sqlite3 *db;               /* Database connection */
-  u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
+  u8 e_ਬਹੁਲਕ;                  /* 1 for json_each().  2 for jsonb_each() */
   u8 bRecursive;             /* True for json_tree().  False for json_each() */
 };
 
 
 /* Constructor for the json_each virtual table */
-static int jsonEachConnect(
+ਸਥਿਰ ਪੂਰਨ jsonEachConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ਖਾਲੀ *pAux,
+  ਪੂਰਨ argc, ਅਚਲ ਅੱਖਰ *ਅਚਲ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ਅੱਖਰ **pzErr
 ){
   JsonEachConnection *pNew;
-  int rc;
+  ਪੂਰਨ rc;
 
 /* Column numbers */
-#define JEACH_KEY     0
-#define JEACH_VALUE   1
-#define JEACH_TYPE    2
-#define JEACH_ATOM    3
-#define JEACH_ID      4
-#define JEACH_PARENT  5
-#define JEACH_FULLKEY 6
-#define JEACH_PATH    7
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ਕੁੰਜੀ     0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ਮੁੱਲ   1
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_TYPE    2
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ATOM    3
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ID      4
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ਮਾਪਾ  5
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_FULLKEY 6
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ਰਸਤਾ    7
 /* The xBestIndex method assumes that the JSON and ROOT columns are
 ** the last two columns in the table.  Should this ever changes, be
 ** sure to update the xBestIndex method. */
-#define JEACH_JSON    8
-#define JEACH_ROOT    9
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_JSON    8
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ JEACH_ਜੜ੍ਹ    9
 
-  UNUSED_PARAMETER(pzErr);
-  UNUSED_PARAMETER(argv);
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(pAux);
+  ਅਣਵਰਤਿਆ_PARAMETER(pzErr);
+  ਅਣਵਰਤਿਆ_PARAMETER(argv);
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
+  ਅਣਵਰਤਿਆ_PARAMETER(pAux);
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(key,value,type,atom,id,parent,fullkey,path,"
                     "json HIDDEN,root HIDDEN)");
-  if( rc==SQLITE_OK ){
-    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, sizeof(*pNew));
+  ਜੇ( rc==SQLITE_OK ){
+    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, ਆਕਾਰ(*pNew));
     *ppVtab = (sqlite3_vtab*)pNew;
-    if( pNew==0 ) return SQLITE_NOMEM;
+    ਜੇ( pNew==0 ) ਵਾਪਸ SQLITE_NOMEM;
     sqlite3_vtab_config(db, SQLITE_VTAB_INNOCUOUS);
     pNew->db = db;
-    pNew->eMode = argv[0][4]=='b' ? 2 : 1;
-    pNew->bRecursive = argv[0][4+pNew->eMode]=='t';
+    pNew->e_ਬਹੁਲਕ = argv[0][4]=='b' ? 2 : 1;
+    pNew->bRecursive = argv[0][4+pNew->e_ਬਹੁਲਕ]=='t';
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /* destructor for json_each virtual table */
-static int jsonEachDisconnect(sqlite3_vtab *pVtab){
+ਸਥਿਰ ਪੂਰਨ jsonEachDisconnect(sqlite3_vtab *pVtab){
   JsonEachConnection *p = (JsonEachConnection*)pVtab;
   sqlite3DbFree(p->db, pVtab);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* constructor for a JsonEachCursor object for json_each()/json_tree(). */
-static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+ਸਥਿਰ ਪੂਰਨ jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   JsonEachConnection *pVtab = (JsonEachConnection*)p;
   JsonEachCursor *pCur;
 
-  UNUSED_PARAMETER(p);
-  pCur = sqlite3DbMallocZero(pVtab->db, sizeof(*pCur));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  ਅਣਵਰਤਿਆ_PARAMETER(p);
+  pCur = sqlite3DbMallocZero(pVtab->db, ਆਕਾਰ(*pCur));
+  ਜੇ( pCur==0 ) ਵਾਪਸ SQLITE_NOMEM;
   pCur->db = pVtab->db;
-  pCur->eMode = pVtab->eMode;
+  pCur->e_ਬਹੁਲਕ = pVtab->e_ਬਹੁਲਕ;
   pCur->bRecursive = pVtab->bRecursive;
-  jsonStringZero(&pCur->path);
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  jsonStringZero(&pCur->ਰਸਤਾ);
+  *ppCursor = &pCur->ਅਧਾਰ;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Reset a JsonEachCursor back to its original state.  Free any memory
 ** held. */
-static void jsonEachCursorReset(JsonEachCursor *p){
+ਸਥਿਰ ਖਾਲੀ jsonEachCursorReset(JsonEachCursor *p){
   jsonParseReset(&p->sParse);
-  jsonStringReset(&p->path);
-  sqlite3DbFree(p->db, p->aParent);
+  jsonStringReset(&p->ਰਸਤਾ);
+  sqlite3DbFree(p->db, p->a_ਮਾਪਾ);
   p->iRowid = 0;
   p->i = 0;
-  p->aParent = 0;
-  p->nParent = 0;
-  p->nParentAlloc = 0;
-  p->iEnd = 0;
+  p->a_ਮਾਪਾ = 0;
+  p->n_ਮਾਪਾ = 0;
+  p->n_ਮਾਪਾ_Alloc = 0;
+  p->i_ਸਿਰਾ = 0;
   p->eType = 0;
 }
 
 /* Destructor for a jsonEachCursor object */
-static int jsonEachClose(sqlite3_vtab_cursor *cur){
+ਸਥਿਰ ਪੂਰਨ jsonEachClose(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   jsonEachCursorReset(p);
   
   sqlite3DbFree(p->db, cur);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Return TRUE if the jsonEachCursor object has been advanced off the end
 ** of the JSON object */
-static int jsonEachEof(sqlite3_vtab_cursor *cur){
+ਸਥਿਰ ਪੂਰਨ jsonEachEof(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  return p->i >= p->iEnd;
+  ਵਾਪਸ p->i >= p->i_ਸਿਰਾ;
 }
 
 /*
@@ -5390,251 +5390,251 @@ static int jsonEachEof(sqlite3_vtab_cursor *cur){
 ** then return the index of the value.  For all other cases, return the
 ** current pointer position, which is the value.
 */
-static int jsonSkipLabel(JsonEachCursor *p){
-  if( p->eType==JSONB_OBJECT ){
+ਸਥਿਰ ਪੂਰਨ jsonSkipLabel(JsonEachCursor *p){
+  ਜੇ( p->eType==JSONB_OBJECT ){
     u32 sz = 0;
-    u32 n = jsonbPayloadSize(&p->sParse, p->i, &sz);
+    u32 n = jsonb_Payload_ਮਾਪ(&p->sParse, p->i, &sz);
     sz += p->i + n;
-    if( sz >= p->sParse.nBlob ) sz = p->i;
-    return sz;
-  }else{
-    return p->i;
+    ਜੇ( sz >= p->sParse.nBlob ) sz = p->i;
+    ਵਾਪਸ sz;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ p->i;
   }
 }
 
 /*
 ** Append the path name for the current element.
 */
-static void jsonAppendPathName(JsonEachCursor *p){
-  assert( p->nParent>0 );
-  assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
-  if( p->eType==JSONB_ARRAY ){
-    jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].iKey);
-  }else{
+ਸਥਿਰ ਖਾਲੀ json_Append_ਰਸਤਾ_Name(JsonEachCursor *p){
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->n_ਮਾਪਾ>0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
+  ਜੇ( p->eType==JSONB_ARRAY ){
+    jsonPrintf(30, &p->ਰਸਤਾ, "[%lld]", p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1].i_ਕੁੰਜੀ);
+  }ਨਹੀਂਤਾਂ{
     u32 n, sz = 0, k, i;
-    const char *z;
-    int needQuote = 0;
-    n = jsonbPayloadSize(&p->sParse, p->i, &sz);
+    ਅਚਲ ਅੱਖਰ *z;
+    ਪੂਰਨ needQuote = 0;
+    n = jsonb_Payload_ਮਾਪ(&p->sParse, p->i, &sz);
     k = p->i + n;
-    z = (const char*)&p->sParse.aBlob[k];
-    if( sz==0 || !sqlite3Isalpha(z[0]) ){
+    z = (ਅਚਲ ਅੱਖਰ*)&p->sParse.aBlob[k];
+    ਜੇ( sz==0 || !sqlite3Isalpha(z[0]) ){
       needQuote = 1;
-    }else{
-      for(i=0; i<sz; i++){
-        if( !sqlite3Isalnum(z[i]) ){
+    }ਨਹੀਂਤਾਂ{
+      ਲਈ(i=0; i<sz; i++){
+        ਜੇ( !sqlite3Isalnum(z[i]) ){
           needQuote = 1;
-          break;
+          ਰੋਕੋ;
         }
       }
     }
-    if( needQuote ){
-      jsonPrintf(sz+4,&p->path,".\"%.*s\"", sz, z);
-    }else{
-      jsonPrintf(sz+2,&p->path,".%.*s", sz, z);
+    ਜੇ( needQuote ){
+      jsonPrintf(sz+4,&p->ਰਸਤਾ,".\"%.*s\"", sz, z);
+    }ਨਹੀਂਤਾਂ{
+      jsonPrintf(sz+2,&p->ਰਸਤਾ,".%.*s", sz, z);
     }
   }
 }
 
 /* Report a "malformed JSON" or OOM error against the cursor.
 */
-static int jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
-  sqlite3_free(cur->pVtab->zErrMsg);
-  cur->pVtab->zErrMsg = sqlite3_mprintf("malformed JSON");
+ਸਥਿਰ ਪੂਰਨ json_Each_Malformed_ਨਿਵੇਸ਼(sqlite3_vtab_cursor *cur){
+  sqlite3_free(cur->pVtab->z_Err_ਸੁਨੇਹਾ);
+  cur->pVtab->z_Err_ਸੁਨੇਹਾ = sqlite3_mprintf("malformed JSON");
   jsonEachCursorReset((JsonEachCursor*)cur);
-  return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+  ਵਾਪਸ cur->pVtab->z_Err_ਸੁਨੇਹਾ ? SQLITE_ERROR : SQLITE_NOMEM;
 }
 
 /* Advance the cursor to the next element for json_tree() */
-static int jsonEachNext(sqlite3_vtab_cursor *cur){
+ਸਥਿਰ ਪੂਰਨ json_Each_ਅਗਲਾ(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  int rc = SQLITE_OK;
-  if( p->bRecursive ){
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਜੇ( p->bRecursive ){
     u8 x;
     u8 levelChange = 0;
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     x = p->sParse.aBlob[i] & 0x0f;
-    n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
-    if( x==JSONB_OBJECT || x==JSONB_ARRAY ){
-      JsonParent *pParent;
-      if( p->nParent>=p->nParentAlloc ){
-        JsonParent *pNew;
+    n = jsonb_Payload_ਮਾਪ(&p->sParse, i, &sz);
+    ਜੇ( n==0 )ਵਾਪਸ json_Each_Malformed_ਨਿਵੇਸ਼(cur);
+    ਜੇ( x==JSONB_OBJECT || x==JSONB_ARRAY ){
+      Json_ਮਾਪਾ *p_ਮਾਪਾ;
+      ਜੇ( p->n_ਮਾਪਾ>=p->n_ਮਾਪਾ_Alloc ){
+        Json_ਮਾਪਾ *pNew;
         u64 nNew;
-        nNew = p->nParentAlloc*2 + 3;
-        pNew = sqlite3DbRealloc(p->db, p->aParent, sizeof(JsonParent)*nNew);
-        if( pNew==0 ) return SQLITE_NOMEM;
-        p->nParentAlloc = (u32)nNew;
-        p->aParent = pNew;
+        nNew = p->n_ਮਾਪਾ_Alloc*2 + 3;
+        pNew = sqlite3DbRealloc(p->db, p->a_ਮਾਪਾ, ਆਕਾਰ(Json_ਮਾਪਾ)*nNew);
+        ਜੇ( pNew==0 ) ਵਾਪਸ SQLITE_NOMEM;
+        p->n_ਮਾਪਾ_Alloc = (u32)nNew;
+        p->a_ਮਾਪਾ = pNew;
       }
       levelChange = 1;
-      pParent = &p->aParent[p->nParent];
-      pParent->iHead = p->i;
-      pParent->iValue = i;
-      pParent->iEnd = i + n + sz;
-      pParent->iKey = -1;
-      pParent->nPath = (u32)p->path.nUsed;
-      if( p->eType && p->nParent ){
-        jsonAppendPathName(p);
-        if( p->path.eErr ) rc = SQLITE_NOMEM;
+      p_ਮਾਪਾ = &p->a_ਮਾਪਾ[p->n_ਮਾਪਾ];
+      p_ਮਾਪਾ->i_ਸਿਰ = p->i;
+      p_ਮਾਪਾ->i_ਮੁੱਲ = i;
+      p_ਮਾਪਾ->i_ਸਿਰਾ = i + n + sz;
+      p_ਮਾਪਾ->i_ਕੁੰਜੀ = -1;
+      p_ਮਾਪਾ->n_ਰਸਤਾ = (u32)p->ਰਸਤਾ.n_ਵਰਤਿਆ;
+      ਜੇ( p->eType && p->n_ਮਾਪਾ ){
+        json_Append_ਰਸਤਾ_Name(p);
+        ਜੇ( p->ਰਸਤਾ.eErr ) rc = SQLITE_NOMEM;
       }
-      p->nParent++;
+      p->n_ਮਾਪਾ++;
       p->i = i + n;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       p->i = i + n + sz;
     }
-    while( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
-      p->nParent--;
-      p->path.nUsed = p->aParent[p->nParent].nPath;
+    ਜਦੋਂ( p->n_ਮਾਪਾ>0 && p->i >= p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1].i_ਸਿਰਾ ){
+      p->n_ਮਾਪਾ--;
+      p->ਰਸਤਾ.n_ਵਰਤਿਆ = p->a_ਮਾਪਾ[p->n_ਮਾਪਾ].n_ਰਸਤਾ;
       levelChange = 1;
     }
-    if( levelChange ){
-      if( p->nParent>0 ){
-        JsonParent *pParent = &p->aParent[p->nParent-1];
-        u32 iVal = pParent->iValue;
+    ਜੇ( levelChange ){
+      ਜੇ( p->n_ਮਾਪਾ>0 ){
+        Json_ਮਾਪਾ *p_ਮਾਪਾ = &p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1];
+        u32 iVal = p_ਮਾਪਾ->i_ਮੁੱਲ;
         p->eType = p->sParse.aBlob[iVal] & 0x0f;
-      }else{
+      }ਨਹੀਂਤਾਂ{
         p->eType = 0;
       }
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
-    n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    n = jsonb_Payload_ਮਾਪ(&p->sParse, i, &sz);
+    ਜੇ( n==0 )ਵਾਪਸ json_Each_Malformed_ਨਿਵੇਸ਼(cur);
     p->i = i + n + sz;
   }
-  if( p->eType==JSONB_ARRAY && p->nParent ){
-    p->aParent[p->nParent-1].iKey++;
+  ਜੇ( p->eType==JSONB_ARRAY && p->n_ਮਾਪਾ ){
+    p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1].i_ਕੁੰਜੀ++;
   }
   p->iRowid++;
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /* Length of the path for rowid==0 in bRecursive mode.
 */
-static int jsonEachPathLength(JsonEachCursor *p){
-  u32 n = p->path.nUsed;
-  char *z = p->path.zBuf;
-  if( p->iRowid==0 && p->bRecursive && n>=2 ){
-    while( ALWAYS(n>1) ){
+ਸਥਿਰ ਪੂਰਨ json_Each_ਰਸਤਾ_ਲੰਮਾਈ(JsonEachCursor *p){
+  u32 n = p->ਰਸਤਾ.n_ਵਰਤਿਆ;
+  ਅੱਖਰ *z = p->ਰਸਤਾ.zBuf;
+  ਜੇ( p->iRowid==0 && p->bRecursive && n>=2 ){
+    ਜਦੋਂ( ALWAYS(n>1) ){
       n--;
-      if( z[n]=='[' || z[n]=='.' ){
+      ਜੇ( z[n]=='[' || z[n]=='.' ){
         u32 x;
-        char cSaved = z[n];
+        ਅੱਖਰ cSaved = z[n];
         z[n] = 0;
-        assert( p->sParse.eEdit==0 );
-        x = jsonLookupStep(&p->sParse, 0, z+1, 0);
+        ਪ੍ਰਤਿਜ੍ਞਾ( p->sParse.eEdit==0 );
+        x = json_Lookup_ਕਦਮ(&p->sParse, 0, z+1, 0);
         z[n] = cSaved;
-        if( !JSON_LOOKUP_ISERROR(x) ) break;
+        ਜੇ( !JSON_LOOKUP_ISERROR(x) ) ਰੋਕੋ;
       }
     }
   }
-  return n;
+  ਵਾਪਸ n;
 }
 
 /* Return the value of a column */
-static int jsonEachColumn(
+ਸਥਿਰ ਪੂਰਨ json_Each_ਕਾਲਮ(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int iColumn                 /* Which column to return */
+  ਪੂਰਨ i_ਕਾਲਮ                 /* Which column to return */
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  switch( iColumn ){
-    case JEACH_KEY: {
-      if( p->nParent==0 ){
+  ਚੋਣ( i_ਕਾਲਮ ){
+    ਹਾਲਤ JEACH_ਕੁੰਜੀ: {
+      ਜੇ( p->n_ਮਾਪਾ==0 ){
         u32 n, j;
-        if( p->nRoot==1 ) break;
-        j = jsonEachPathLength(p);
-        n = p->nRoot - j;
-        if( n==0 ){
-          break;
-        }else if( p->path.zBuf[j]=='[' ){
+        ਜੇ( p->n_ਜੜ੍ਹ==1 ) ਰੋਕੋ;
+        j = json_Each_ਰਸਤਾ_ਲੰਮਾਈ(p);
+        n = p->n_ਜੜ੍ਹ - j;
+        ਜੇ( n==0 ){
+          ਰੋਕੋ;
+        }ਨਹੀਂਤਾਂ ਜੇ( p->ਰਸਤਾ.zBuf[j]=='[' ){
           i64 x;
-          sqlite3Atoi64(&p->path.zBuf[j+1], &x, n-1, SQLITE_UTF8);
-          sqlite3_result_int64(ctx, x);
-        }else if( p->path.zBuf[j+1]=='"' ){
-          sqlite3_result_text(ctx, &p->path.zBuf[j+2], n-3, SQLITE_TRANSIENT);
-        }else{
-          sqlite3_result_text(ctx, &p->path.zBuf[j+1], n-1, SQLITE_TRANSIENT);
+          sqlite3Atoi64(&p->ਰਸਤਾ.zBuf[j+1], &x, n-1, SQLITE_UTF8);
+          sqlite3_ਨਤੀਜਾ_int64(ctx, x);
+        }ਨਹੀਂਤਾਂ ਜੇ( p->ਰਸਤਾ.zBuf[j+1]=='"' ){
+          sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, &p->ਰਸਤਾ.zBuf[j+2], n-3, SQLITE_TRANSIENT);
+        }ਨਹੀਂਤਾਂ{
+          sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, &p->ਰਸਤਾ.zBuf[j+1], n-1, SQLITE_TRANSIENT);
         }
-        break;
+        ਰੋਕੋ;
       }
-      if( p->eType==JSONB_OBJECT ){
+      ਜੇ( p->eType==JSONB_OBJECT ){
         jsonReturnFromBlob(&p->sParse, p->i, ctx, 1);
-      }else{
-        assert( p->eType==JSONB_ARRAY );
-        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iKey);
+      }ਨਹੀਂਤਾਂ{
+        ਪ੍ਰਤਿਜ੍ਞਾ( p->eType==JSONB_ARRAY );
+        sqlite3_ਨਤੀਜਾ_int64(ctx, p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1].i_ਕੁੰਜੀ);
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JEACH_VALUE: {
+    ਹਾਲਤ JEACH_ਮੁੱਲ: {
       u32 i = jsonSkipLabel(p);
-      jsonReturnFromBlob(&p->sParse, i, ctx, p->eMode);
-      if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
-        sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+      jsonReturnFromBlob(&p->sParse, i, ctx, p->e_ਬਹੁਲਕ);
+      ਜੇ( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
+        sqlite3_ਨਤੀਜਾ_subtype(ctx, JSON_SUBTYPE);
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JEACH_TYPE: {
+    ਹਾਲਤ JEACH_TYPE: {
       u32 i = jsonSkipLabel(p);
       u8 eType = p->sParse.aBlob[i] & 0x0f;
-      sqlite3_result_text(ctx, jsonbType[eType], -1, SQLITE_STATIC);
-      break;
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, jsonbType[eType], -1, SQLITE_STATIC);
+      ਰੋਕੋ;
     }
-    case JEACH_ATOM: {
+    ਹਾਲਤ JEACH_ATOM: {
       u32 i = jsonSkipLabel(p);
-      if( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
+      ਜੇ( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
         jsonReturnFromBlob(&p->sParse, i, ctx, 1);
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JEACH_ID: {
-      sqlite3_result_int64(ctx, (sqlite3_int64)p->i);
-      break;
+    ਹਾਲਤ JEACH_ID: {
+      sqlite3_ਨਤੀਜਾ_int64(ctx, (sqlite3_int64)p->i);
+      ਰੋਕੋ;
     }
-    case JEACH_PARENT: {
-      if( p->nParent>0 && p->bRecursive ){
-        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iHead);
+    ਹਾਲਤ JEACH_ਮਾਪਾ: {
+      ਜੇ( p->n_ਮਾਪਾ>0 && p->bRecursive ){
+        sqlite3_ਨਤੀਜਾ_int64(ctx, p->a_ਮਾਪਾ[p->n_ਮਾਪਾ-1].i_ਸਿਰ);
       }
-      break;
+      ਰੋਕੋ;
     }
-    case JEACH_FULLKEY: {
-      u64 nBase = p->path.nUsed;
-      if( p->nParent ) jsonAppendPathName(p);
-      sqlite3_result_text64(ctx, p->path.zBuf, p->path.nUsed,
+    ਹਾਲਤ JEACH_FULLKEY: {
+      u64 n_ਅਧਾਰ = p->ਰਸਤਾ.n_ਵਰਤਿਆ;
+      ਜੇ( p->n_ਮਾਪਾ ) json_Append_ਰਸਤਾ_Name(p);
+      sqlite3_ਨਤੀਜਾ_text64(ctx, p->ਰਸਤਾ.zBuf, p->ਰਸਤਾ.n_ਵਰਤਿਆ,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-      p->path.nUsed = nBase;
-      break;
+      p->ਰਸਤਾ.n_ਵਰਤਿਆ = n_ਅਧਾਰ;
+      ਰੋਕੋ;
     }
-    case JEACH_PATH: {
-      u32 n = jsonEachPathLength(p);
-      sqlite3_result_text64(ctx, p->path.zBuf, n,
+    ਹਾਲਤ JEACH_ਰਸਤਾ: {
+      u32 n = json_Each_ਰਸਤਾ_ਲੰਮਾਈ(p);
+      sqlite3_ਨਤੀਜਾ_text64(ctx, p->ਰਸਤਾ.zBuf, n,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-      break;
+      ਰੋਕੋ;
     }
-    default: {
-      sqlite3_result_text(ctx, p->path.zBuf, p->nRoot, SQLITE_TRANSIENT);
-      break;
+    ਮੂਲ: {
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, p->ਰਸਤਾ.zBuf, p->n_ਜੜ੍ਹ, SQLITE_TRANSIENT);
+      ਰੋਕੋ;
     }
-    case JEACH_JSON: {
-      if( p->sParse.zJson==0 ){
-        sqlite3_result_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
+    ਹਾਲਤ JEACH_JSON: {
+      ਜੇ( p->sParse.zJson==0 ){
+        sqlite3_ਨਤੀਜਾ_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
                             SQLITE_TRANSIENT);
-      }else{
-        sqlite3_result_text(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
       }
-      break;
+      ਰੋਕੋ;
     }
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Return the current rowid value */
-static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ਸਥਿਰ ਪੂਰਨ jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   *pRowid = p->iRowid;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* The query strategy is to look for an equality constraint on the json
@@ -5642,178 +5642,178 @@ static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** 1 if the constraint is found, 3 if the constraint and zRoot are found,
 ** and 0 otherwise.
 */
-static int jsonEachBestIndex(
+ਸਥਿਰ ਪੂਰਨ json_Each_ਉੱਤਮ_ਸੂਚਕਾਂਕ(
   sqlite3_vtab *tab,
-  sqlite3_index_info *pIdxInfo
+  sqlite3_ਸੂਚਕਾਂਕ_info *pIdxInfo
 ){
-  int i;                     /* Loop counter or computed array index */
-  int aIdx[2];               /* Index of constraints for JSON and ROOT */
-  int unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
-  int idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
-  const struct sqlite3_index_constraint *pConstraint;
+  ਪੂਰਨ i;                     /* Loop counter or computed array index */
+  ਪੂਰਨ aIdx[2];               /* Index of constraints for JSON and ROOT */
+  ਪੂਰਨ unusable_ਨਕਾਬ = 0;      /* Mask of unusable JSON and ROOT constraints */
+  ਪੂਰਨ idx_ਨਕਾਬ = 0;           /* Mask of usable == constraints JSON and ROOT */
+  ਅਚਲ ਬਣਤਰ sqlite3_ਸੂਚਕਾਂਕ_constraint *pConstraint;
 
   /* This implementation assumes that JSON and ROOT are the last two
   ** columns in the table */
-  assert( JEACH_ROOT == JEACH_JSON+1 );
-  UNUSED_PARAMETER(tab);
+  ਪ੍ਰਤਿਜ੍ਞਾ( JEACH_ਜੜ੍ਹ == JEACH_JSON+1 );
+  ਅਣਵਰਤਿਆ_PARAMETER(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    int iCol;
-    int iMask;
-    if( pConstraint->iColumn < JEACH_JSON ) continue;
-    iCol = pConstraint->iColumn - JEACH_JSON;
-    assert( iCol==0 || iCol==1 );
-    testcase( iCol==0 );
-    iMask = 1 << iCol;
-    if( pConstraint->usable==0 ){
-      unusableMask |= iMask;
-    }else if( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      aIdx[iCol] = i;
-      idxMask |= iMask;
+  ਲਈ(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    ਪੂਰਨ i_ਖਾਨਾ;
+    ਪੂਰਨ i_ਨਕਾਬ;
+    ਜੇ( pConstraint->i_ਕਾਲਮ < JEACH_JSON ) ਜਾਰੀ;
+    i_ਖਾਨਾ = pConstraint->i_ਕਾਲਮ - JEACH_JSON;
+    ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ==0 || i_ਖਾਨਾ==1 );
+    testcase( i_ਖਾਨਾ==0 );
+    i_ਨਕਾਬ = 1 << i_ਖਾਨਾ;
+    ਜੇ( pConstraint->usable==0 ){
+      unusable_ਨਕਾਬ |= i_ਨਕਾਬ;
+    }ਨਹੀਂਤਾਂ ਜੇ( pConstraint->op==SQLITE_ਸੂਚਕਾਂਕ_CONSTRAINT_EQ ){
+      aIdx[i_ਖਾਨਾ] = i;
+      idx_ਨਕਾਬ |= i_ਨਕਾਬ;
     }
   }
-  if( pIdxInfo->nOrderBy>0
-   && pIdxInfo->aOrderBy[0].iColumn<0
-   && pIdxInfo->aOrderBy[0].desc==0
+  ਜੇ( pIdxInfo->n_ਕ੍ਰਮ_By>0
+   && pIdxInfo->a_ਕ੍ਰਮ_By[0].i_ਕਾਲਮ<0
+   && pIdxInfo->a_ਕ੍ਰਮ_By[0].desc==0
   ){
-    pIdxInfo->orderByConsumed = 1;
+    pIdxInfo->ਕ੍ਰਮ_By_Consumed = 1;
   }
 
-  if( (unusableMask & ~idxMask)!=0 ){
+  ਜੇ( (unusable_ਨਕਾਬ & ~idx_ਨਕਾਬ)!=0 ){
     /* If there are any unusable constraints on JSON or ROOT, then reject
     ** this entire plan */
-    return SQLITE_CONSTRAINT;
+    ਵਾਪਸ SQLITE_CONSTRAINT;
   }
-  if( aIdx[0]<0 ){
+  ਜੇ( aIdx[0]<0 ){
     /* No JSON input.  Leave estimatedCost at the huge value that it was
     ** initialized to to discourage the query planner from selecting this
     ** plan. */
-    pIdxInfo->idxNum = 0;
-  }else{
-    pIdxInfo->estimatedCost = 1.0;
+    pIdxInfo->idx_ਅੰਕ = 0;
+  }ਨਹੀਂਤਾਂ{
+    pIdxInfo->estimated_ਲਾਗਤ = 1.0;
     i = aIdx[0];
-    pIdxInfo->aConstraintUsage[i].argvIndex = 1;
+    pIdxInfo->aConstraintUsage[i].argv_ਸੂਚਕਾਂਕ = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
-    if( aIdx[1]<0 ){
-      pIdxInfo->idxNum = 1;  /* Only JSON supplied.  Plan 1 */
-    }else{
+    ਜੇ( aIdx[1]<0 ){
+      pIdxInfo->idx_ਅੰਕ = 1;  /* Only JSON supplied.  Plan 1 */
+    }ਨਹੀਂਤਾਂ{
       i = aIdx[1];
-      pIdxInfo->aConstraintUsage[i].argvIndex = 2;
+      pIdxInfo->aConstraintUsage[i].argv_ਸੂਚਕਾਂਕ = 2;
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->idxNum = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
+      pIdxInfo->idx_ਅੰਕ = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
     }
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* Start a search on a new JSON string */
-static int jsonEachFilter(
+ਸਥਿਰ ਪੂਰਨ jsonEachFilter(
   sqlite3_vtab_cursor *cur,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ਪੂਰਨ idx_ਅੰਕ, ਅਚਲ ਅੱਖਰ *idxStr,
+  ਪੂਰਨ argc, sqlite3_ਮੁੱਲ **argv
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  const char *zRoot = 0;
+  ਅਚਲ ਅੱਖਰ *z_ਜੜ੍ਹ = 0;
   u32 i, n, sz;
 
-  UNUSED_PARAMETER(idxStr);
-  UNUSED_PARAMETER(argc);
+  ਅਣਵਰਤਿਆ_PARAMETER(idxStr);
+  ਅਣਵਰਤਿਆ_PARAMETER(argc);
   jsonEachCursorReset(p);
-  if( idxNum==0 ) return SQLITE_OK;
-  memset(&p->sParse, 0, sizeof(p->sParse));
+  ਜੇ( idx_ਅੰਕ==0 ) ਵਾਪਸ SQLITE_OK;
+  memset(&p->sParse, 0, ਆਕਾਰ(p->sParse));
   p->sParse.nJPRef = 1;
   p->sParse.db = p->db;
-  if( jsonArgIsJsonb(argv[0], &p->sParse) ){
+  ਜੇ( jsonArgIsJsonb(argv[0], &p->sParse) ){
     /* We have JSONB */
-  }else{
-    p->sParse.zJson = (char*)sqlite3_value_text(argv[0]);
-    p->sParse.nJson = sqlite3_value_bytes(argv[0]);
-    if( p->sParse.zJson==0 ){
-      p->i = p->iEnd = 0;
-      return SQLITE_OK;
+  }ਨਹੀਂਤਾਂ{
+    p->sParse.zJson = (ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+    p->sParse.nJson = sqlite3_ਮੁੱਲ_ਬਾਈਟਾਂ(argv[0]);
+    ਜੇ( p->sParse.zJson==0 ){
+      p->i = p->i_ਸਿਰਾ = 0;
+      ਵਾਪਸ SQLITE_OK;
     }      
-    if( jsonConvertTextToBlob(&p->sParse, 0) ){
-      if( p->sParse.oom ){
-        return SQLITE_NOMEM;
+    ਜੇ( json_Convert_ਪਾਠ_ਮੰਜ਼ਿਲ_Blob(&p->sParse, 0) ){
+      ਜੇ( p->sParse.oom ){
+        ਵਾਪਸ SQLITE_NOMEM;
       }
-      return jsonEachMalformedInput(cur);
+      ਵਾਪਸ json_Each_Malformed_ਨਿਵੇਸ਼(cur);
     }
   }
-  if( idxNum==3 ){
-    zRoot = (const char*)sqlite3_value_text(argv[1]);
-    if( zRoot==0 ) return SQLITE_OK;
-    if( zRoot[0]!='$' ){
-      sqlite3_free(cur->pVtab->zErrMsg);
-      cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+  ਜੇ( idx_ਅੰਕ==3 ){
+    z_ਜੜ੍ਹ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+    ਜੇ( z_ਜੜ੍ਹ==0 ) ਵਾਪਸ SQLITE_OK;
+    ਜੇ( z_ਜੜ੍ਹ[0]!='$' ){
+      sqlite3_free(cur->pVtab->z_Err_ਸੁਨੇਹਾ);
+      cur->pVtab->z_Err_ਸੁਨੇਹਾ = json_Bad_ਰਸਤਾ_Error(0, z_ਜੜ੍ਹ, 0);
       jsonEachCursorReset(p);
-      return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+      ਵਾਪਸ cur->pVtab->z_Err_ਸੁਨੇਹਾ ? SQLITE_ERROR : SQLITE_NOMEM;
     }
-    p->nRoot = sqlite3Strlen30(zRoot);
-    if( zRoot[1]==0 ){
+    p->n_ਜੜ੍ਹ = sqlite3Strlen30(z_ਜੜ੍ਹ);
+    ਜੇ( z_ਜੜ੍ਹ[1]==0 ){
       i = p->i = 0;
       p->eType = 0;
-    }else{
-      i = jsonLookupStep(&p->sParse, 0, zRoot+1, 0);
-      if( JSON_LOOKUP_ISERROR(i) ){
-        if( i==JSON_LOOKUP_NOTFOUND ){
+    }ਨਹੀਂਤਾਂ{
+      i = json_Lookup_ਕਦਮ(&p->sParse, 0, z_ਜੜ੍ਹ+1, 0);
+      ਜੇ( JSON_LOOKUP_ISERROR(i) ){
+        ਜੇ( i==JSON_LOOKUP_NOTFOUND ){
           p->i = 0;
           p->eType = 0;
-          p->iEnd = 0;
-          return SQLITE_OK;
+          p->i_ਸਿਰਾ = 0;
+          ਵਾਪਸ SQLITE_OK;
         }
-        sqlite3_free(cur->pVtab->zErrMsg);
-        cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+        sqlite3_free(cur->pVtab->z_Err_ਸੁਨੇਹਾ);
+        cur->pVtab->z_Err_ਸੁਨੇਹਾ = json_Bad_ਰਸਤਾ_Error(0, z_ਜੜ੍ਹ, 0);
         jsonEachCursorReset(p);
-        return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+        ਵਾਪਸ cur->pVtab->z_Err_ਸੁਨੇਹਾ ? SQLITE_ERROR : SQLITE_NOMEM;
       }
-      if( p->sParse.iLabel ){
+      ਜੇ( p->sParse.iLabel ){
         p->i = p->sParse.iLabel;
         p->eType = JSONB_OBJECT;
-      }else{
+      }ਨਹੀਂਤਾਂ{
         p->i = i;
         p->eType = JSONB_ARRAY;
       }
     }
-    jsonAppendRaw(&p->path, zRoot, p->nRoot);
-  }else{
+    jsonAppendRaw(&p->ਰਸਤਾ, z_ਜੜ੍ਹ, p->n_ਜੜ੍ਹ);
+  }ਨਹੀਂਤਾਂ{
     i = p->i = 0;
     p->eType = 0;
-    p->nRoot = 1;
-    jsonAppendRaw(&p->path, "$", 1);
+    p->n_ਜੜ੍ਹ = 1;
+    jsonAppendRaw(&p->ਰਸਤਾ, "$", 1);
   }
-  p->nParent = 0;
-  n = jsonbPayloadSize(&p->sParse, i, &sz);
-  p->iEnd = i+n+sz;
-  if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
+  p->n_ਮਾਪਾ = 0;
+  n = jsonb_Payload_ਮਾਪ(&p->sParse, i, &sz);
+  p->i_ਸਿਰਾ = i+n+sz;
+  ਜੇ( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
     p->i = i + n;
     p->eType = p->sParse.aBlob[i] & 0x0f;
-    p->aParent = sqlite3DbMallocZero(p->db, sizeof(JsonParent));
-    if( p->aParent==0 ) return SQLITE_NOMEM;
-    p->nParent = 1;
-    p->nParentAlloc = 1;
-    p->aParent[0].iKey = 0;
-    p->aParent[0].iEnd = p->iEnd;
-    p->aParent[0].iHead = p->i;
-    p->aParent[0].iValue = i;
+    p->a_ਮਾਪਾ = sqlite3DbMallocZero(p->db, ਆਕਾਰ(Json_ਮਾਪਾ));
+    ਜੇ( p->a_ਮਾਪਾ==0 ) ਵਾਪਸ SQLITE_NOMEM;
+    p->n_ਮਾਪਾ = 1;
+    p->n_ਮਾਪਾ_Alloc = 1;
+    p->a_ਮਾਪਾ[0].i_ਕੁੰਜੀ = 0;
+    p->a_ਮਾਪਾ[0].i_ਸਿਰਾ = p->i_ਸਿਰਾ;
+    p->a_ਮਾਪਾ[0].i_ਸਿਰ = p->i;
+    p->a_ਮਾਪਾ[0].i_ਮੁੱਲ = i;
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /* The methods of the json_each virtual table */
-static sqlite3_module jsonEachModule = {
+ਸਥਿਰ sqlite3_module jsonEachModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   jsonEachConnect,           /* xConnect */
-  jsonEachBestIndex,         /* xBestIndex */
+  json_Each_ਉੱਤਮ_ਸੂਚਕਾਂਕ,         /* xBestIndex */
   jsonEachDisconnect,        /* xDisconnect */
   0,                         /* xDestroy */
   jsonEachOpen,              /* xOpen - open a cursor */
   jsonEachClose,             /* xClose - close a cursor */
   jsonEachFilter,            /* xFilter - configure scan constraints */
-  jsonEachNext,              /* xNext - advance a cursor */
+  json_Each_ਅਗਲਾ,              /* xNext - advance a cursor */
   jsonEachEof,               /* xEof - check for end of scan */
-  jsonEachColumn,            /* xColumn - read data */
+  json_Each_ਕਾਲਮ,            /* xColumn - read data */
   jsonEachRowid,             /* xRowid - read data */
   0,                         /* xUpdate */
   0,                         /* xBegin */
@@ -5828,15 +5828,15 @@ static sqlite3_module jsonEachModule = {
   0,                         /* xShadowName */
   0                          /* xIntegrity */
 };
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
-#endif /* !defined(SQLITE_OMIT_JSON) */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_VIRTUALTABLE */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_JSON) */
 
 /*
 ** Register JSON functions.
 */
-void sqlite3RegisterJsonFunctions(void){
-#ifndef SQLITE_OMIT_JSON
-  static FuncDef aJsonFunc[] = {
+ਖਾਲੀ sqlite3_ਰਜਿਸਟਰ_Json_Functions(ਖਾਲੀ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_JSON
+  ਸਥਿਰ FuncDef aJsonFunc[] = {
     /*   sqlite3_result_subtype() ----,  ,--- sqlite3_value_subtype()       */
     /*                                |  |                                  */
     /*             Uses cache ------, |  | ,---- Returns JSONB              */
@@ -5847,17 +5847,17 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb,              1,1,0, 0,1,0,          jsonRemoveFunc),
     JFUNCTION(json_array,        -1,0,1, 1,0,0,          jsonArrayFunc),
     JFUNCTION(jsonb_array,       -1,0,1, 1,1,0,          jsonArrayFunc),
-    JFUNCTION(json_array_insert, -1,1,1, 1,0,JSON_AINS,  jsonSetFunc),
-    JFUNCTION(jsonb_array_insert,-1,1,0, 1,1,JSON_AINS,  jsonSetFunc),
-    JFUNCTION(json_array_length,  1,1,0, 0,0,0,          jsonArrayLengthFunc),
-    JFUNCTION(json_array_length,  2,1,0, 0,0,0,          jsonArrayLengthFunc),
+    JFUNCTION(json_array_ਪਾਓ, -1,1,1, 1,0,JSON_AINS,  json_ਸੈੱਟ_Func),
+    JFUNCTION(jsonb_array_ਪਾਓ,-1,1,0, 1,1,JSON_AINS,  json_ਸੈੱਟ_Func),
+    JFUNCTION(json_array_ਲੰਮਾਈ,  1,1,0, 0,0,0,          json_Array_ਲੰਮਾਈ_Func),
+    JFUNCTION(json_array_ਲੰਮਾਈ,  2,1,0, 0,0,0,          json_Array_ਲੰਮਾਈ_Func),
     JFUNCTION(json_error_position,1,1,0, 0,0,0,          jsonErrorFunc),
-    JFUNCTION(json_extract,      -1,1,1, 0,0,0,          jsonExtractFunc),
-    JFUNCTION(jsonb_extract,     -1,1,0, 0,1,0,          jsonExtractFunc),
-    JFUNCTION(->,                 2,1,1, 0,0,JSON_JSON,  jsonExtractFunc),
-    JFUNCTION(->>,                2,1,0, 0,0,JSON_SQL,   jsonExtractFunc),
-    JFUNCTION(json_insert,       -1,1,1, 1,0,0,          jsonSetFunc),
-    JFUNCTION(jsonb_insert,      -1,1,0, 1,1,0,          jsonSetFunc),
+    JFUNCTION(json_ਕੱਢੋ,      -1,1,1, 0,0,0,          json_ਕੱਢੋ_Func),
+    JFUNCTION(jsonb_ਕੱਢੋ,     -1,1,0, 0,1,0,          json_ਕੱਢੋ_Func),
+    JFUNCTION(->,                 2,1,1, 0,0,JSON_JSON,  json_ਕੱਢੋ_Func),
+    JFUNCTION(->>,                2,1,0, 0,0,JSON_SQL,   json_ਕੱਢੋ_Func),
+    JFUNCTION(json_ਪਾਓ,       -1,1,1, 1,0,0,          json_ਸੈੱਟ_Func),
+    JFUNCTION(jsonb_ਪਾਓ,      -1,1,0, 1,1,0,          json_ਸੈੱਟ_Func),
     JFUNCTION(json_object,       -1,0,1, 1,0,0,          jsonObjectFunc),
     JFUNCTION(jsonb_object,      -1,0,1, 1,1,0,          jsonObjectFunc),
     JFUNCTION(json_patch,         2,1,1, 0,0,0,          jsonPatchFunc),
@@ -5869,50 +5869,50 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb_remove,      -1,1,0, 0,1,0,          jsonRemoveFunc),
     JFUNCTION(json_replace,      -1,1,1, 1,0,0,          jsonReplaceFunc),
     JFUNCTION(jsonb_replace,     -1,1,0, 1,1,0,          jsonReplaceFunc),
-    JFUNCTION(json_set,          -1,1,1, 1,0,JSON_ISSET, jsonSetFunc),
-    JFUNCTION(jsonb_set,         -1,1,0, 1,1,JSON_ISSET, jsonSetFunc),
+    JFUNCTION(json_ਸੈੱਟ,          -1,1,1, 1,0,JSON_ISSET, json_ਸੈੱਟ_Func),
+    JFUNCTION(jsonb_ਸੈੱਟ,         -1,1,0, 1,1,JSON_ISSET, json_ਸੈੱਟ_Func),
     JFUNCTION(json_type,          1,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_type,          2,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_valid,         1,1,0, 0,0,0,          jsonValidFunc),
     JFUNCTION(json_valid,         2,1,0, 0,0,0,          jsonValidFunc),
-#if SQLITE_DEBUG
+#ਜੇ SQLITE_DEBUG
     JFUNCTION(json_parse,         1,1,0, 0,0,0,          jsonParseFunc),
-#endif
-    WAGGREGATE(json_group_array,  1, 0, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
+#ਜੇ_ਅੰਤ
+    WAGGREGATE(json_ਸਮੂਹ_array,  1, 0, 0,
+       json_Array_ਕਦਮ, jsonArrayFinal, json_Array_ਮੁੱਲ, json_ਸਮੂਹ_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ਨਤੀਜਾ_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC),
-    WAGGREGATE(jsonb_group_array, 1, JSON_BLOB, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
-    WAGGREGATE(json_group_object, 2, 0, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
-    WAGGREGATE(jsonb_group_object,2, JSON_BLOB, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
+    WAGGREGATE(jsonb_ਸਮੂਹ_array, 1, JSON_BLOB, 0,
+       json_Array_ਕਦਮ, jsonArrayFinal, json_Array_ਮੁੱਲ, json_ਸਮੂਹ_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ਨਤੀਜਾ_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
+    WAGGREGATE(json_ਸਮੂਹ_object, 2, 0, 0,
+       json_Object_ਕਦਮ, jsonObjectFinal, json_Object_ਮੁੱਲ, json_ਸਮੂਹ_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ਨਤੀਜਾ_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
+    WAGGREGATE(jsonb_ਸਮੂਹ_object,2, JSON_BLOB, 0,
+       json_Object_ਕਦਮ, jsonObjectFinal, json_Object_ਮੁੱਲ, json_ਸਮੂਹ_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ਨਤੀਜਾ_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC)
   };
-  sqlite3InsertBuiltinFuncs(aJsonFunc, ArraySize(aJsonFunc));
-#endif
+  sqlite3_ਪਾਓ_Builtin_Funcs(aJsonFunc, Array_ਮਾਪ(aJsonFunc));
+#ਜੇ_ਅੰਤ
 }
 
-#if  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+#ਜੇ  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
 /*
 ** Register the JSON table-valued function named zName and return a
 ** pointer to its Module object.  Return NULL if something goes wrong.
 */
-Module *sqlite3JsonVtabRegister(sqlite3 *db, const char *zName){
-  unsigned int i;
-  static const char *azModule[] = {
+Module *sqlite3_Json_Vtab_ਰਜਿਸਟਰ(sqlite3 *db, ਅਚਲ ਅੱਖਰ *zName){
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ i;
+  ਸਥਿਰ ਅਚਲ ਅੱਖਰ *azModule[] = {
     "json_each", "json_tree", "jsonb_each", "jsonb_tree"
   };
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  for(i=0; i<sizeof(azModule)/sizeof(azModule[0]); i++){
-    if( sqlite3StrICmp(azModule[i],zName)==0 ){
-      return sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_Hash_ਲੱਭੋ(&db->aModule, zName)==0 );
+  ਲਈ(i=0; i<ਆਕਾਰ(azModule)/ਆਕਾਰ(azModule[0]); i++){
+    ਜੇ( sqlite3StrICmp(azModule[i],zName)==0 ){
+      ਵਾਪਸ sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
-#endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */
+#ਜੇ_ਅੰਤ /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */

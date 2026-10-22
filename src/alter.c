@@ -12,13 +12,13 @@
 ** This file contains C code routines that used to generate VDBE code
 ** that implements the ALTER TABLE command.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /*
 ** The code in this file only exists if we are not omitting the
 ** ALTER TABLE logic from the build.
 */
-#ifndef SQLITE_OMIT_ALTERTABLE
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ALTERTABLE
 
 /*
 ** Parameter zName is the name of a table that is about to be altered
@@ -28,19 +28,19 @@
 **
 ** Or, if zName is not a system table, zero is returned.
 */
-static int isAlterableTable(Parse *pParse, Table *pTab){
-  if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7)
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+ਸਥਿਰ ਪੂਰਨ is_Alterable_ਸਾਰਣੀ(Parse *pParse, ਸਾਰਣੀ *pTab){
+  ਜੇ( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7)
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
    || (pTab->tabFlags & TF_Eponymous)!=0
    || ( (pTab->tabFlags & TF_Shadow)!=0
         && sqlite3ReadOnlyShadowTables(pParse->db)
    )
-#endif
+#ਜੇ_ਅੰਤ
   ){
-    sqlite3ErrorMsg(pParse, "table %s may not be altered", pTab->zName);
-    return 1;
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "table %s may not be altered", pTab->zName);
+    ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -50,28 +50,28 @@ static int isAlterableTable(Parse *pParse, Table *pTab){
 ** statement to ensure that the operation has not rendered any schema
 ** objects unusable.
 */
-static void renameTestSchema(
+ਸਥਿਰ ਖਾਲੀ renameTestSchema(
   Parse *pParse,                  /* Parse context */
-  const char *zDb,                /* Name of db to verify schema of */
-  int bTemp,                      /* True if this is the temp db */
-  const char *zWhen,              /* "when" part of error message */
-  int bNoDQS                      /* Do not allow DQS in the schema */
+  ਅਚਲ ਅੱਖਰ *zDb,                /* Name of db to verify schema of */
+  ਪੂਰਨ b_ਆਰਜ਼ੀ,                      /* True if this is the temp db */
+  ਅਚਲ ਅੱਖਰ *zWhen,              /* "when" part of error message */
+  ਪੂਰਨ bNoDQS                      /* Do not allow DQS in the schema */
 ){
-  pParse->colNamesSet = 1;
+  pParse->ਖਾਨਾ_ਨਾਂ_ਸੈੱਟ = 1;
   sqlite3NestedParse(pParse,
       "SELECT 1 "
-      "FROM \"%w\"." LEGACY_SCHEMA_TABLE " "
+      "FROM \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " "
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'"
       " AND sqlite_rename_test(%Q, sql, type, name, %d, %Q, %d)=NULL ",
       zDb,
-      zDb, bTemp, zWhen, bNoDQS
+      zDb, b_ਆਰਜ਼ੀ, zWhen, bNoDQS
   );
 
-  if( bTemp==0 ){
+  ਜੇ( b_ਆਰਜ਼ੀ==0 ){
     sqlite3NestedParse(pParse,
         "SELECT 1 "
-        "FROM temp." LEGACY_SCHEMA_TABLE " "
+        "FROM temp." LEGACY_SCHEMA_ਸਾਰਣੀ " "
         "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
         " AND sql NOT LIKE 'create virtual%%'"
         " AND sqlite_rename_test(%Q, sql, type, name, 1, %Q, %d)=NULL ",
@@ -87,16 +87,16 @@ static void renameTestSchema(
 ** not true, similarly update all SQL statements in the sqlite_schema table
 ** of the temp db.
 */
-static void renameFixQuotes(Parse *pParse, const char *zDb, int bTemp){
+ਸਥਿਰ ਖਾਲੀ renameFixQuotes(Parse *pParse, ਅਚਲ ਅੱਖਰ *zDb, ਪੂਰਨ b_ਆਰਜ਼ੀ){
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ
       " SET sql = sqlite_rename_quotefix(%Q, sql)"
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'" , zDb, zDb
   );
-  if( bTemp==0 ){
+  ਜੇ( b_ਆਰਜ਼ੀ==0 ){
     sqlite3NestedParse(pParse,
-      "UPDATE temp." LEGACY_SCHEMA_TABLE
+      "UPDATE temp." LEGACY_SCHEMA_ਸਾਰਣੀ
       " SET sql = sqlite_rename_quotefix('temp', sql)"
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'"
@@ -108,12 +108,12 @@ static void renameFixQuotes(Parse *pParse, const char *zDb, int bTemp){
 ** Generate code to reload the schema for database iDb. And, if iDb!=1, for
 ** the temp database as well.
 */
-static void renameReloadSchema(Parse *pParse, int iDb, u16 p5){
+ਸਥਿਰ ਖਾਲੀ renameReloadSchema(Parse *pParse, ਪੂਰਨ iDb, u16 p5){
   Vdbe *v = pParse->pVdbe;
-  if( v ){
+  ਜੇ( v ){
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddParseSchemaOp(pParse->pVdbe, iDb, 0, p5);
-    if( iDb!=1 ) sqlite3VdbeAddParseSchemaOp(pParse->pVdbe, 1, 0, p5);
+    sqlite3_Vdbe_ਜੋੜੋ_Parse_Schema_Op(pParse->pVdbe, iDb, 0, p5);
+    ਜੇ( iDb!=1 ) sqlite3_Vdbe_ਜੋੜੋ_Parse_Schema_Op(pParse->pVdbe, 1, 0, p5);
   }
 }
 
@@ -121,89 +121,89 @@ static void renameReloadSchema(Parse *pParse, int iDb, u16 p5){
 ** Generate code to implement the "ALTER TABLE xxx RENAME TO yyy"
 ** command.
 */
-void sqlite3AlterRenameTable(
+ਖਾਲੀ sqlite3_Alter_Rename_ਸਾਰਣੀ(
   Parse *pParse,            /* Parser context. */
   SrcList *pSrc,            /* The table to rename. */
   Token *pName              /* The new table name. */
 ){
-  int iDb;                  /* Database that contains the table */
-  char *zDb;                /* Name of database iDb */
-  Table *pTab;              /* Table being renamed */
-  char *zName = 0;          /* NULL-terminated version of pName */
+  ਪੂਰਨ iDb;                  /* Database that contains the table */
+  ਅੱਖਰ *zDb;                /* Name of database iDb */
+  ਸਾਰਣੀ *pTab;              /* Table being renamed */
+  ਅੱਖਰ *zName = 0;          /* NULL-terminated version of pName */
   sqlite3 *db = pParse->db; /* Database connection */
-  int nTabName;             /* Number of UTF-8 characters in zTabName */
-  const char *zTabName;     /* Original name of the table */
+  ਪੂਰਨ nTabName;             /* Number of UTF-8 characters in zTabName */
+  ਅਚਲ ਅੱਖਰ *zTabName;     /* Original name of the table */
   Vdbe *v;
   VTable *pVTab = 0;        /* Non-zero if this is a v-tab with an xRename() */
 
-  if( NEVER(db->mallocFailed) ) goto exit_rename_table;
-  assert( pSrc->nSrc==1 );
-  assert( sqlite3BtreeHoldsAllMutexes(pParse->db) );
+  ਜੇ( NEVER(db->mallocFailed) ) ਜਾਓ exit_rename_ਸਾਰਣੀ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSrc->nSrc==1 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3BtreeHoldsAllMutexes(pParse->db) );
 
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_rename_table;
-  iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+  pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, &pSrc->a[0]);
+  ਜੇ( !pTab ) ਜਾਓ exit_rename_ਸਾਰਣੀ;
+  iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pParse->db, pTab->pSchema);
   zDb = db->aDb[iDb].zDbSName;
 
   /* Get a NULL terminated version of the new table name. */
   zName = sqlite3NameFromToken(db, pName);
-  if( !zName ) goto exit_rename_table;
+  ਜੇ( !zName ) ਜਾਓ exit_rename_ਸਾਰਣੀ;
 
   /* Check that a table or index named 'zName' does not already exist
   ** in database iDb. If so, this is an error.
   */
-  if( sqlite3FindTable(db, zName, zDb)
-   || sqlite3FindIndex(db, zName, zDb)
-   || sqlite3IsShadowTableOf(db, pTab, zName)
+  ਜੇ( sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, zName, zDb)
+   || sqlite3_ਲੱਭੋ_ਸੂਚਕਾਂਕ(db, zName, zDb)
+   || sqlite3_Is_Shadow_ਸਾਰਣੀ_ਦਾ(db, pTab, zName)
   ){
-    sqlite3ErrorMsg(pParse,
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse,
         "there is already another table or index with this name: %s", zName);
-    goto exit_rename_table;
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
 
   /* Make sure it is not a system table being altered, or a reserved name
   ** that the table is being renamed to.
   */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ){
-    goto exit_rename_table;
+  ਜੇ( SQLITE_OK!=is_Alterable_ਸਾਰਣੀ(pParse, pTab) ){
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
-  if( SQLITE_OK!=sqlite3CheckObjectName(pParse,zName,"table",zName) ){
-    goto exit_rename_table;
+  ਜੇ( SQLITE_OK!=sqlite3CheckObjectName(pParse,zName,"table",zName) ){
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
 
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab) ){
-    sqlite3ErrorMsg(pParse, "view %s may not be altered", pTab->zName);
-    goto exit_rename_table;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIEW
+  ਜੇ( IsView(pTab) ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "view %s may not be altered", pTab->zName);
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    goto exit_rename_table;
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, zDb, pTab->zName, 0) ){
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto exit_rename_table;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
+  ਜੇ( sqlite3_View_Get_ਕਾਲਮ_ਨਾਂ(pParse, pTab) ){
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
-  if( IsVirtual(pTab) ){
+  ਜੇ( IsVirtual(pTab) ){
     pVTab = sqlite3GetVTable(db, pTab);
-    if( pVTab->pVtab->pModule->xRename==0 ){
+    ਜੇ( pVTab->pVtab->pModule->xRename==0 ){
       pVTab = 0;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Begin a transaction for database iDb. Then modify the schema cookie
   ** (since the ALTER TABLE modifies the schema). Call sqlite3MayAbort(),
   ** as the scalar functions (e.g. sqlite_rename_table()) invoked by the
   ** nested SQL may raise an exception.  */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ){
-    goto exit_rename_table;
+  ਜੇ( v==0 ){
+    ਜਾਓ exit_rename_ਸਾਰਣੀ;
   }
   sqlite3MayAbort(pParse);
 
@@ -214,7 +214,7 @@ void sqlite3AlterRenameTable(
   /* Rewrite all CREATE TABLE, INDEX, TRIGGER or VIEW statements in
   ** the schema to use the new table name.  */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_rename_table(%Q, type, name, sql, %Q, %Q, %d) "
       "WHERE (type!='index' OR tbl_name=%Q COLLATE nocase)"
       "AND   name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
@@ -224,7 +224,7 @@ void sqlite3AlterRenameTable(
   /* Update the tbl_name and name columns of the sqlite_schema table
   ** as required.  */
   sqlite3NestedParse(pParse,
-      "UPDATE %Q." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE %Q." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
           "tbl_name = %Q, "
           "name = CASE "
             "WHEN type='table' THEN %Q "
@@ -239,21 +239,21 @@ void sqlite3AlterRenameTable(
       nTabName, zTabName
   );
 
-#ifndef SQLITE_OMIT_AUTOINCREMENT
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINCREMENT
   /* If the sqlite_sequence table exists in this database, then update
   ** it with the new table name.
   */
-  if( sqlite3FindTable(db, "sqlite_sequence", zDb) ){
+  ਜੇ( sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, "sqlite_sequence", zDb) ){
     sqlite3NestedParse(pParse,
         "UPDATE \"%w\".sqlite_sequence set name = %Q WHERE name = %Q",
         zDb, zName, pTab->zName);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* If the table being renamed is not itself part of the temp database,
   ** edit view and trigger definitions within the temp database
   ** as required.  */
-  if( iDb!=1 ){
+  ਜੇ( iDb!=1 ){
     sqlite3NestedParse(pParse,
         "UPDATE sqlite_temp_schema SET "
             "sql = sqlite_rename_table(%Q, type, name, sql, %Q, %Q, 1), "
@@ -270,18 +270,18 @@ void sqlite3AlterRenameTable(
   ** of any resources used by the v-table implementation (including other
   ** SQLite tables) that are identified by the name of the virtual table.
   */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( pVTab ){
-    int i = ++pParse->nMem;
-    sqlite3VdbeLoadString(v, i, zName);
-    sqlite3VdbeAddOp4(v, OP_VRename, i, 0, 0,(const char*)pVTab, P4_VTAB);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
+  ਜੇ( pVTab ){
+    ਪੂਰਨ i = ++pParse->nMem;
+    sqlite3_Vdbe_ਲੱਦੋ_String(v, i, zName);
+    sqlite3_Vdbe_ਜੋੜੋ_Op4(v, OP_VRename, i, 0, 0,(ਅਚਲ ਅੱਖਰ*)pVTab, P4_VTAB);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   renameReloadSchema(pParse, iDb, INITFLAG_AlterRename);
   renameTestSchema(pParse, zDb, iDb==1, "after rename", 0);
 
-exit_rename_table:
+exit_rename_ਸਾਰਣੀ:
   sqlite3SrcListDelete(db, pSrc);
   sqlite3DbFree(db, zName);
 }
@@ -290,11 +290,11 @@ exit_rename_table:
 ** Write code that will raise an error if the table described by
 ** zDb and zTab is not empty.
 */
-static void sqlite3ErrorIfNotEmpty(
+ਸਥਿਰ ਖਾਲੀ sqlite3_Error_If_Not_ਖਾਲੀ_ਥਾਵਾਂ(
   Parse *pParse,        /* Parsing context */
-  const char *zDb,      /* Schema holding the table */
-  const char *zTab,     /* Table to check for empty */
-  const char *zErr      /* Error message text */
+  ਅਚਲ ਅੱਖਰ *zDb,      /* Schema holding the table */
+  ਅਚਲ ਅੱਖਰ *zTab,     /* Table to check for empty */
+  ਅਚਲ ਅੱਖਰ *zErr      /* Error message text */
 ){
   sqlite3NestedParse(pParse,
      "SELECT raise(ABORT,%Q) FROM \"%w\".\"%w\"",
@@ -311,17 +311,17 @@ static void sqlite3ErrorIfNotEmpty(
 ** returned and an error message left in pParse. Or, if zCol is not an alias 
 ** for "rowid" or pTab is not an intkey table, then SQLITE_OK is returned.
 */
-static int isRowidAlias(
+ਸਥਿਰ ਪੂਰਨ isRowidAlias(
   Parse *pParse, 
-  Table *pTab, 
-  const char *zCol, 
-  const char *zOp
+  ਸਾਰਣੀ *pTab, 
+  ਅਚਲ ਅੱਖਰ *z_ਖਾਨਾ, 
+  ਅਚਲ ਅੱਖਰ *zOp
 ){
-  if( HasRowid(pTab) && sqlite3IsRowid(zCol) ){
-    sqlite3ErrorMsg(pParse, "cannot %s rowid alias: %s", zOp, zCol);
-    return SQLITE_ERROR;
+  ਜੇ( HasRowid(pTab) && sqlite3IsRowid(z_ਖਾਨਾ) ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot %s rowid alias: %s", zOp, z_ਖਾਨਾ);
+    ਵਾਪਸ SQLITE_ERROR;
   }
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 
@@ -334,73 +334,73 @@ static int isRowidAlias(
 ** The Table structure pParse->pNewTable was extended to include
 ** the new column during parsing.
 */
-void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
-  Table *pNew;              /* Copy of pParse->pNewTable */
-  Table *pTab;              /* Table being altered */
-  int iDb;                  /* Database number */
-  const char *zDb;          /* Database name */
-  const char *zTab;         /* Table name */
-  char *zCol;               /* Null-terminated column definition */
-  Column *pCol;             /* The new column */
-  Expr *pDflt;              /* Default value for the new column */
+ਖਾਲੀ sqlite3_Alter_ਅੰਤ_ਜੋੜੋ_ਕਾਲਮ(Parse *pParse, Token *p_ਖਾਨਾ_Def){
+  ਸਾਰਣੀ *pNew;              /* Copy of pParse->pNewTable */
+  ਸਾਰਣੀ *pTab;              /* Table being altered */
+  ਪੂਰਨ iDb;                  /* Database number */
+  ਅਚਲ ਅੱਖਰ *zDb;          /* Database name */
+  ਅਚਲ ਅੱਖਰ *zTab;         /* Table name */
+  ਅੱਖਰ *z_ਖਾਨਾ;               /* Null-terminated column definition */
+  ਕਾਲਮ *p_ਖਾਨਾ;             /* The new column */
+  ਵਿਅੰਜਕ *pDflt;              /* Default value for the new column */
   sqlite3 *db;              /* The database connection; */
   Vdbe *v;                  /* The prepared statement under construction */
-  int r1;                   /* Temporary registers */
+  ਪੂਰਨ r1;                   /* Temporary registers */
 
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ) return;
-  assert( db->mallocFailed==0 );
-  pNew = pParse->pNewTable;
-  assert( pNew );
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->pParse==pParse );
+  ਜੇ( pParse->nErr ) ਵਾਪਸ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed==0 );
+  pNew = pParse->p_New_ਸਾਰਣੀ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew );
 
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  iDb = sqlite3SchemaToIndex(db, pNew->pSchema);
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3BtreeHoldsAllMutexes(db) );
+  iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pNew->pSchema);
   zDb = db->aDb[iDb].zDbSName;
   zTab = &pNew->zName[16];  /* Skip the "sqlite_altertab_" prefix on the name */
-  pCol = &pNew->aCol[pNew->nCol-1];
-  pDflt = sqlite3ColumnExpr(pNew, pCol);
-  pTab = sqlite3FindTable(db, zTab, zDb);
-  assert( pTab );
+  p_ਖਾਨਾ = &pNew->a_ਖਾਨਾ[pNew->n_ਖਾਨਾ-1];
+  pDflt = sqlite3_ਕਾਲਮ_ਵਿਅੰਜਕ(pNew, p_ਖਾਨਾ);
+  pTab = sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, zTab, zDb);
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTab );
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    return;
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, zDb, pTab->zName, 0) ){
+    ਵਾਪਸ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
 
   /* Check that the new column is not specified as PRIMARY KEY or UNIQUE,
   ** or a rowid alias. If there is a NOT NULL constraint, then the default
   ** value for the column must not be NULL.
   */
-  if( pCol->colFlags & COLFLAG_PRIMKEY ){
-    sqlite3ErrorMsg(pParse, "Cannot add a PRIMARY KEY column");
-    return;
+  ਜੇ( p_ਖਾਨਾ->ਖਾਨਾ_Flags & COLFLAG_PRIMKEY ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "Cannot add a PRIMARY KEY column");
+    ਵਾਪਸ;
   }
-  if( pNew->pIndex ){
-    sqlite3ErrorMsg(pParse,
+  ਜੇ( pNew->p_ਸੂਚਕਾਂਕ ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse,
          "Cannot add a UNIQUE column");
-    return;
+    ਵਾਪਸ;
   }
-  if( isRowidAlias(pParse, pTab, pCol->zCnName, "add") ) return;
-  if( (pCol->colFlags & COLFLAG_GENERATED)==0 ){
+  ਜੇ( isRowidAlias(pParse, pTab, p_ਖਾਨਾ->zCnName, "add") ) ਵਾਪਸ;
+  ਜੇ( (p_ਖਾਨਾ->ਖਾਨਾ_Flags & COLFLAG_GENERATED)==0 ){
     /* If the default value for the new column was specified with a
     ** literal NULL, then set pDflt to 0. This simplifies checking
     ** for an SQL NULL default below.
     */
-    assert( pDflt==0 || pDflt->op==TK_SPAN );
-    if( pDflt && pDflt->pLeft->op==TK_NULL ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pDflt==0 || pDflt->op==TK_ਵਿਸਤਾਰ );
+    ਜੇ( pDflt && pDflt->p_ਖੱਬਾ->op==TK_NULL ){
       pDflt = 0;
     }
-    assert( IsOrdinaryTable(pNew) );
-    if( (db->flags&SQLITE_ForeignKeys) && pNew->u.tab.pFKey && pDflt ){
-      sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+    ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pNew) );
+    ਜੇ( (db->flags&SQLITE_Foreign_ਕੁੰਜੀਆਂ) && pNew->u.tab.pFKey && pDflt ){
+      sqlite3_Error_If_Not_ਖਾਲੀ_ਥਾਵਾਂ(pParse, zDb, zTab,
           "Cannot add a REFERENCES column with non-NULL default value");
     }
-    if( pCol->notNull && !pDflt ){
-      sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+    ਜੇ( p_ਖਾਨਾ->notNull && !pDflt ){
+      sqlite3_Error_If_Not_ਖਾਲੀ_ਥਾਵਾਂ(pParse, zDb, zTab,
           "Cannot add a NOT NULL column with default value NULL");
     }
 
@@ -408,72 +408,72 @@ void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
     /* Ensure the default expression is something that sqlite3ValueFromExpr()
     ** can handle (i.e. not CURRENT_TIME etc.)
     */
-    if( pDflt ){
-      sqlite3_value *pVal = 0;
-      int rc;
-      rc = sqlite3ValueFromExpr(db, pDflt, SQLITE_UTF8, SQLITE_AFF_BLOB, &pVal);
-      assert( rc==SQLITE_OK || rc==SQLITE_NOMEM );
-      if( rc!=SQLITE_OK ){
-        assert( db->mallocFailed == 1 );
-        return;
+    ਜੇ( pDflt ){
+      sqlite3_ਮੁੱਲ *pVal = 0;
+      ਪੂਰਨ rc;
+      rc = sqlite3_ਮੁੱਲ_From_ਵਿਅੰਜਕ(db, pDflt, SQLITE_UTF8, SQLITE_AFF_BLOB, &pVal);
+      ਪ੍ਰਤਿਜ੍ਞਾ( rc==SQLITE_OK || rc==SQLITE_NOMEM );
+      ਜੇ( rc!=SQLITE_OK ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed == 1 );
+        ਵਾਪਸ;
       }
-      if( !pVal ){
-        sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+      ਜੇ( !pVal ){
+        sqlite3_Error_If_Not_ਖਾਲੀ_ਥਾਵਾਂ(pParse, zDb, zTab,
            "Cannot add a column with non-constant default");
       }
-      sqlite3ValueFree(pVal);
+      sqlite3_ਮੁੱਲ_Free(pVal);
     }
-  }else if( pCol->colFlags & COLFLAG_STORED ){
-    sqlite3ErrorIfNotEmpty(pParse, zDb, zTab, "cannot add a STORED column");
+  }ਨਹੀਂਤਾਂ ਜੇ( p_ਖਾਨਾ->ਖਾਨਾ_Flags & COLFLAG_STORED ){
+    sqlite3_Error_If_Not_ਖਾਲੀ_ਥਾਵਾਂ(pParse, zDb, zTab, "cannot add a STORED column");
   }
 
 
   /* Modify the CREATE TABLE statement. */
-  zCol = sqlite3DbStrNDup(db, (char*)pColDef->z, pColDef->n);
-  if( zCol ){
-    char *zEnd = &zCol[pColDef->n-1];
-    while( zEnd>zCol && (*zEnd==';' || sqlite3Isspace(*zEnd)) ){
-      *zEnd-- = '\0';
+  z_ਖਾਨਾ = sqlite3DbStrNDup(db, (ਅੱਖਰ*)p_ਖਾਨਾ_Def->z, p_ਖਾਨਾ_Def->n);
+  ਜੇ( z_ਖਾਨਾ ){
+    ਅੱਖਰ *z_ਸਿਰਾ = &z_ਖਾਨਾ[p_ਖਾਨਾ_Def->n-1];
+    ਜਦੋਂ( z_ਸਿਰਾ>z_ਖਾਨਾ && (*z_ਸਿਰਾ==';' || sqlite3Isspace(*z_ਸਿਰਾ)) ){
+      *z_ਸਿਰਾ-- = '\0';
     }
     /* substr() operations on characters, but addColOffset is in bytes. So we
     ** have to use printf() to translate between these units: */
-    assert( IsOrdinaryTable(pTab) );
-    assert( IsOrdinaryTable(pNew) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pTab) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pNew) );
     sqlite3NestedParse(pParse,
-        "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+        "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
           "sql = printf('%%.%ds, ',sql) || %Q"
           " || substr(sql,1+length(printf('%%.%ds',sql))) "
         "WHERE type = 'table' AND name = %Q",
-      zDb, pNew->u.tab.addColOffset, zCol, pNew->u.tab.addColOffset,
+      zDb, pNew->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ, z_ਖਾਨਾ, pNew->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ,
       zTab
     );
-    sqlite3DbFree(db, zCol);
+    sqlite3DbFree(db, z_ਖਾਨਾ);
   }
 
   v = sqlite3GetVdbe(pParse);
-  if( v ){
+  ਜੇ( v ){
     /* Make sure the schema version is at least 3.  But do not upgrade
     ** from less than 3 to 4, as that will corrupt any preexisting DESC
     ** index.
     */
-    r1 = sqlite3GetTempReg(pParse);
-    sqlite3VdbeAddOp3(v, OP_ReadCookie, iDb, r1, BTREE_FILE_FORMAT);
-    sqlite3VdbeUsesBtree(v, iDb);
-    sqlite3VdbeAddOp2(v, OP_AddImm, r1, -2);
-    sqlite3VdbeAddOp2(v, OP_IfPos, r1, sqlite3VdbeCurrentAddr(v)+2);
+    r1 = sqlite3_Get_ਆਰਜ਼ੀ_Reg(pParse);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ReadCookie, iDb, r1, BTREE_FILE_FORMAT);
+    sqlite3_Vdbe_ਵਰਤਦਾ_Btree(v, iDb);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਜੋੜੋ_Imm, r1, -2);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_IfPos, r1, sqlite3VdbeCurrentAddr(v)+2);
     VdbeCoverage(v);
-    sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_FILE_FORMAT, 3);
-    sqlite3ReleaseTempReg(pParse, r1);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਸੈੱਟ_Cookie, iDb, BTREE_FILE_FORMAT, 3);
+    sqlite3_Release_ਆਰਜ਼ੀ_Reg(pParse, r1);
 
     /* Reload the table definition */
-    renameReloadSchema(pParse, iDb, INITFLAG_AlterAdd);
+    renameReloadSchema(pParse, iDb, INITFLAG_Alter_ਜੋੜੋ);
 
     /* Verify that constraints are still satisfied */
-    if( pNew->pCheck!=0
-     || (pCol->notNull && (pCol->colFlags & COLFLAG_GENERATED)!=0)
+    ਜੇ( pNew->pCheck!=0
+     || (p_ਖਾਨਾ->notNull && (p_ਖਾਨਾ->ਖਾਨਾ_Flags & COLFLAG_GENERATED)!=0)
      || (pTab->tabFlags & TF_Strict)!=0
     ){
-      pParse->colNamesSet = 1;
+      pParse->ਖਾਨਾ_ਨਾਂ_ਸੈੱਟ = 1;
       sqlite3NestedParse(pParse,
         "SELECT CASE WHEN quick_check GLOB 'CHECK*'"
         " THEN raise(ABORT,'CHECK constraint failed')"
@@ -506,41 +506,41 @@ void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
 ** Routine sqlite3AlterFinishAddColumn() will be called to complete
 ** coding the "ALTER TABLE ... ADD" statement.
 */
-void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
-  Table *pNew;
-  Table *pTab;
-  int iDb;
-  int i;
-  int nAlloc;
+ਖਾਲੀ sqlite3_Alter_Begin_ਜੋੜੋ_ਕਾਲਮ(Parse *pParse, SrcList *pSrc){
+  ਸਾਰਣੀ *pNew;
+  ਸਾਰਣੀ *pTab;
+  ਪੂਰਨ iDb;
+  ਪੂਰਨ i;
+  ਪੂਰਨ nAlloc;
   sqlite3 *db = pParse->db;
 
   /* Look up the table being altered. */
-  assert( pParse->pNewTable==0 );
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  if( NEVER(db->mallocFailed) ) goto exit_begin_add_column;
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_begin_add_column;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->p_New_ਸਾਰਣੀ==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3BtreeHoldsAllMutexes(db) );
+  ਜੇ( NEVER(db->mallocFailed) ) ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
+  pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, &pSrc->a[0]);
+  ਜੇ( !pTab ) ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "virtual tables may not be altered");
-    goto exit_begin_add_column;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
+  ਜੇ( IsVirtual(pTab) ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "virtual tables may not be altered");
+    ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Make sure this is not an attempt to ALTER a view. */
-  if( IsView(pTab) ){
-    sqlite3ErrorMsg(pParse, "Cannot add a column to a view");
-    goto exit_begin_add_column;
+  ਜੇ( IsView(pTab) ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "Cannot add a column to a view");
+    ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
   }
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ){
-    goto exit_begin_add_column;
+  ਜੇ( SQLITE_OK!=is_Alterable_ਸਾਰਣੀ(pParse, pTab) ){
+    ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
   }
 
   sqlite3MayAbort(pParse);
-  assert( IsOrdinaryTable(pTab) );
-  assert( pTab->u.tab.addColOffset>0 );
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pTab) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pTab->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ>0 );
+  iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema);
 
   /* Put a copy of the Table struct in Parse.pNewTable for the
   ** sqlite3AddColumn() function and friends to modify.  But modify
@@ -549,35 +549,35 @@ void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
   ** table because user table are not allowed to have the "sqlite_"
   ** prefix on their name.
   */
-  pNew = (Table*)sqlite3DbMallocZero(db, sizeof(Table));
-  if( !pNew ) goto exit_begin_add_column;
-  pParse->pNewTable = pNew;
+  pNew = (ਸਾਰਣੀ*)sqlite3DbMallocZero(db, ਆਕਾਰ(ਸਾਰਣੀ));
+  ਜੇ( !pNew ) ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
+  pParse->p_New_ਸਾਰਣੀ = pNew;
   pNew->nTabRef = 1;
-  pNew->nCol = pTab->nCol;
-  assert( pNew->nCol>0 );
-  nAlloc = (((pNew->nCol-1)/8)*8)+8;
-  assert( nAlloc>=pNew->nCol && nAlloc%8==0 && nAlloc-pNew->nCol<8 );
-  pNew->aCol = (Column*)sqlite3DbMallocZero(db, sizeof(Column)*(u32)nAlloc);
+  pNew->n_ਖਾਨਾ = pTab->n_ਖਾਨਾ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew->n_ਖਾਨਾ>0 );
+  nAlloc = (((pNew->n_ਖਾਨਾ-1)/8)*8)+8;
+  ਪ੍ਰਤਿਜ੍ਞਾ( nAlloc>=pNew->n_ਖਾਨਾ && nAlloc%8==0 && nAlloc-pNew->n_ਖਾਨਾ<8 );
+  pNew->a_ਖਾਨਾ = (ਕਾਲਮ*)sqlite3DbMallocZero(db, ਆਕਾਰ(ਕਾਲਮ)*(u32)nAlloc);
   pNew->zName = sqlite3MPrintf(db, "sqlite_altertab_%s", pTab->zName);
-  if( !pNew->aCol || !pNew->zName ){
-    assert( db->mallocFailed );
-    goto exit_begin_add_column;
+  ਜੇ( !pNew->a_ਖਾਨਾ || !pNew->zName ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed );
+    ਜਾਓ exit_begin_ਜੋੜੋ_ਕਾਲਮ;
   }
-  memcpy(pNew->aCol, pTab->aCol, sizeof(Column)*(size_t)pNew->nCol);
-  for(i=0; i<pNew->nCol; i++){
-    Column *pCol = &pNew->aCol[i];
-    pCol->zCnName = sqlite3DbStrDup(db, pCol->zCnName);
-    pCol->hName = sqlite3StrIHash(pCol->zCnName);
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(pNew->a_ਖਾਨਾ, pTab->a_ਖਾਨਾ, ਆਕਾਰ(ਕਾਲਮ)*(size_t)pNew->n_ਖਾਨਾ);
+  ਲਈ(i=0; i<pNew->n_ਖਾਨਾ; i++){
+    ਕਾਲਮ *p_ਖਾਨਾ = &pNew->a_ਖਾਨਾ[i];
+    p_ਖਾਨਾ->zCnName = sqlite3DbStrDup(db, p_ਖਾਨਾ->zCnName);
+    p_ਖਾਨਾ->hName = sqlite3StrIHash(p_ਖਾਨਾ->zCnName);
   }
-  assert( IsOrdinaryTable(pNew) );
-  pNew->u.tab.pDfltList = sqlite3ExprListDup(db, pTab->u.tab.pDfltList, 0);
+  ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pNew) );
+  pNew->u.tab.pDfltList = sqlite3_ਵਿਅੰਜਕ_List_Dup(db, pTab->u.tab.pDfltList, 0);
   pNew->pSchema = db->aDb[iDb].pSchema;
-  pNew->u.tab.addColOffset = pTab->u.tab.addColOffset;
-  assert( pNew->nTabRef==1 );
+  pNew->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ = pTab->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew->nTabRef==1 );
 
-exit_begin_add_column:
+exit_begin_ਜੋੜੋ_ਕਾਲਮ:
   sqlite3SrcListDelete(db, pSrc);
-  return;
+  ਵਾਪਸ;
 }
 
 /*
@@ -588,83 +588,83 @@ exit_begin_add_column:
 **
 ** Or, if pTab is not a view or virtual table, zero is returned.
 */
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-static int isRealTable(Parse *pParse, Table *pTab, int iOp){
-  const char *zType = 0;
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab) ){
+#ਜੇ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+ਸਥਿਰ ਪੂਰਨ is_Real_ਸਾਰਣੀ(Parse *pParse, ਸਾਰਣੀ *pTab, ਪੂਰਨ iOp){
+  ਅਚਲ ਅੱਖਰ *zType = 0;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIEW
+  ਜੇ( IsView(pTab) ){
     zType = "view";
   }
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pTab) ){
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_VIRTUALTABLE
+  ਜੇ( IsVirtual(pTab) ){
     zType = "virtual table";
   }
-#endif
-  if( zType ){
-    const char *azMsg[] = {
+#ਜੇ_ਅੰਤ
+  ਜੇ( zType ){
+    ਅਚਲ ਅੱਖਰ *az_ਸੁਨੇਹਾ[] = {
       "rename columns of", "drop column from", "edit constraints of"
     };
-    assert( iOp>=0 && iOp<ArraySize(azMsg) );
-    sqlite3ErrorMsg(pParse, "cannot %s %s \"%s\"",
-        azMsg[iOp], zType, pTab->zName
+    ਪ੍ਰਤਿਜ੍ਞਾ( iOp>=0 && iOp<Array_ਮਾਪ(az_ਸੁਨੇਹਾ) );
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot %s %s \"%s\"",
+        az_ਸੁਨੇਹਾ[iOp], zType, pTab->zName
     );
-    return 1;
+    ਵਾਪਸ 1;
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
-#else /* !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE) */
-# define isRealTable(x,y,z) (0)
-#endif
+#ਨਹੀਂਤਾਂ /* !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE) */
+# define is_Real_ਸਾਰਣੀ(x,y,z) (0)
+#ਜੇ_ਅੰਤ
 
 /*
 ** Handles the following parser reduction:
 **
 **  cmd ::= ALTER TABLE pSrc RENAME COLUMN pOld TO pNew
 */
-void sqlite3AlterRenameColumn(
+ਖਾਲੀ sqlite3_Alter_Rename_ਕਾਲਮ(
   Parse *pParse,                  /* Parsing context */
   SrcList *pSrc,                  /* Table being altered.  pSrc->nSrc==1 */
   Token *pOld,                    /* Name of column being changed */
   Token *pNew                     /* New column name */
 ){
   sqlite3 *db = pParse->db;       /* Database connection */
-  Table *pTab;                    /* Table being updated */
-  int iCol;                       /* Index of column being renamed */
-  char *zOld = 0;                 /* Old column name */
-  char *zNew = 0;                 /* New column name */
-  const char *zDb;                /* Name of schema containing the table */
-  int iSchema;                    /* Index of the schema */
-  int bQuote;                     /* True to quote the new name */
+  ਸਾਰਣੀ *pTab;                    /* Table being updated */
+  ਪੂਰਨ i_ਖਾਨਾ;                       /* Index of column being renamed */
+  ਅੱਖਰ *zOld = 0;                 /* Old column name */
+  ਅੱਖਰ *zNew = 0;                 /* New column name */
+  ਅਚਲ ਅੱਖਰ *zDb;                /* Name of schema containing the table */
+  ਪੂਰਨ iSchema;                    /* Index of the schema */
+  ਪੂਰਨ bQuote;                     /* True to quote the new name */
 
   /* Locate the table to be altered */
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_rename_column;
+  pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, &pSrc->a[0]);
+  ਜੇ( !pTab ) ਜਾਓ exit_rename_ਕਾਲਮ;
 
   /* Cannot alter a system table */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ) goto exit_rename_column;
-  if( SQLITE_OK!=isRealTable(pParse, pTab, 0) ) goto exit_rename_column;
+  ਜੇ( SQLITE_OK!=is_Alterable_ਸਾਰਣੀ(pParse, pTab) ) ਜਾਓ exit_rename_ਕਾਲਮ;
+  ਜੇ( SQLITE_OK!=is_Real_ਸਾਰਣੀ(pParse, pTab, 0) ) ਜਾਓ exit_rename_ਕਾਲਮ;
 
   /* Which schema holds the table to be altered */ 
-  iSchema = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iSchema>=0 );
+  iSchema = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema);
+  ਪ੍ਰਤਿਜ੍ਞਾ( iSchema>=0 );
   zDb = db->aDb[iSchema].zDbSName;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    goto exit_rename_column;
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, zDb, pTab->zName, 0) ){
+    ਜਾਓ exit_rename_ਕਾਲਮ;
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Make sure the old name really is a column name in the table to be
   ** altered.  Set iCol to be the index of the column being renamed */
   zOld = sqlite3NameFromToken(db, pOld);
-  if( !zOld ) goto exit_rename_column;
-  iCol = sqlite3ColumnIndex(pTab, zOld);
-  if( iCol<0 ){
-    sqlite3ErrorMsg(pParse, "no such column: \"%T\"", pOld);
-    goto exit_rename_column;
+  ਜੇ( !zOld ) ਜਾਓ exit_rename_ਕਾਲਮ;
+  i_ਖਾਨਾ = sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pTab, zOld);
+  ਜੇ( i_ਖਾਨਾ<0 ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such column: \"%T\"", pOld);
+    ਜਾਓ exit_rename_ਕਾਲਮ;
   }
 
   /* Ensure the schema contains no double-quoted strings */
@@ -677,26 +677,26 @@ void sqlite3AlterRenameColumn(
   */
   sqlite3MayAbort(pParse);
   zNew = sqlite3NameFromToken(db, pNew);
-  if( !zNew ) goto exit_rename_column;
-  if( isRowidAlias(pParse, pTab, zOld, "rename from") ) goto exit_rename_column;
-  if( isRowidAlias(pParse, pTab, zNew, "rename to") ) goto exit_rename_column;
-  assert( pNew->n>0 );
+  ਜੇ( !zNew ) ਜਾਓ exit_rename_ਕਾਲਮ;
+  ਜੇ( isRowidAlias(pParse, pTab, zOld, "rename from") ) ਜਾਓ exit_rename_ਕਾਲਮ;
+  ਜੇ( isRowidAlias(pParse, pTab, zNew, "rename to") ) ਜਾਓ exit_rename_ਕਾਲਮ;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew->n>0 );
   bQuote = sqlite3Isquote(pNew->z[0]);
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_rename_column(sql, type, name, %Q, %Q, %d, %Q, %d, %d) "
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X' "
       " AND (type != 'index' OR tbl_name = %Q)",
       zDb,
-      zDb, pTab->zName, iCol, zNew, bQuote, iSchema==1,
+      zDb, pTab->zName, i_ਖਾਨਾ, zNew, bQuote, iSchema==1,
       pTab->zName
   );
-  if( iSchema!=1 ){
+  ਜੇ( iSchema!=1 ){
     sqlite3NestedParse(pParse,
-        "UPDATE temp." LEGACY_SCHEMA_TABLE " SET "
+        "UPDATE temp." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
         "sql = sqlite_rename_column(sql, type, name, %Q, %Q, %d, %Q, %d, 1) "
         "WHERE type IN ('trigger', 'view')",
-        zDb, pTab->zName, iCol, zNew, bQuote
+        zDb, pTab->zName, i_ਖਾਨਾ, zNew, bQuote
     );
   }
 
@@ -704,11 +704,11 @@ void sqlite3AlterRenameColumn(
   renameReloadSchema(pParse, iSchema, INITFLAG_AlterRename);
   renameTestSchema(pParse, zDb, iSchema==1, "after rename", 1);
 
- exit_rename_column:
+ exit_rename_ਕਾਲਮ:
   sqlite3SrcListDelete(db, pSrc);
   sqlite3DbFree(db, zOld);
   sqlite3DbFree(db, zNew);
-  return;
+  ਵਾਪਸ;
 }
 
 /*
@@ -728,26 +728,26 @@ void sqlite3AlterRenameColumn(
 ** to look up the actual token value that created some element in
 ** the parse tree.
 */
-struct RenameToken {
-  const void *p;         /* Parse tree element created by token t */
+ਬਣਤਰ RenameToken {
+  ਅਚਲ ਖਾਲੀ *p;         /* Parse tree element created by token t */
   Token t;               /* The token that created parse tree element p */
-  RenameToken *pNext;    /* Next is a list of all RenameToken objects */
+  RenameToken *p_ਅਗਲਾ;    /* Next is a list of all RenameToken objects */
 };
 
 /*
 ** The context of an ALTER TABLE RENAME COLUMN operation that gets passed
 ** down into the Walker.
 */
-typedef struct RenameCtx RenameCtx;
-struct RenameCtx {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ RenameCtx RenameCtx;
+ਬਣਤਰ RenameCtx {
   RenameToken *pList;             /* List of tokens to overwrite */
-  int nList;                      /* Number of tokens in pList */
-  int iCol;                       /* Index of column being renamed */
-  Table *pTab;                    /* Table being ALTERed */
-  const char *zOld;               /* Old column name */
+  ਪੂਰਨ nList;                      /* Number of tokens in pList */
+  ਪੂਰਨ i_ਖਾਨਾ;                       /* Index of column being renamed */
+  ਸਾਰਣੀ *pTab;                    /* Table being ALTERed */
+  ਅਚਲ ਅੱਖਰ *zOld;               /* Old column name */
 };
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
 /*
 ** This function is only for debugging. It performs two tasks:
 **
@@ -771,24 +771,24 @@ struct RenameCtx {
 ** Technically, as x no longer points into a valid object or to the byte
 ** following a valid object, it may not be used in comparison operations.
 */
-static void renameTokenCheckAll(Parse *pParse, const void *pPtr){
-  assert( pParse==pParse->db->pParse );
-  assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  if( pParse->nErr==0 ){
-    const RenameToken *p;
+ਸਥਿਰ ਖਾਲੀ renameTokenCheckAll(Parse *pParse, ਅਚਲ ਖਾਲੀ *pPtr){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse==pParse->db->pParse );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
+  ਜੇ( pParse->nErr==0 ){
+    ਅਚਲ RenameToken *p;
     u32 i = 1;
-    for(p=pParse->pRename; p; p=p->pNext){
-      if( p->p ){
-        assert( p->p!=pPtr );
+    ਲਈ(p=pParse->pRename; p; p=p->p_ਅਗਲਾ){
+      ਜੇ( p->p ){
+        ਪ੍ਰਤਿਜ੍ਞਾ( p->p!=pPtr );
         i += *(u8*)(p->p) | 1;
       }
     }
-    assert( i>0 );
+    ਪ੍ਰਤਿਜ੍ਞਾ( i>0 );
   }
 }
-#else
+#ਨਹੀਂਤਾਂ
 # define renameTokenCheckAll(x,y)
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** Remember that the parser tree element pPtr was created using
@@ -802,25 +802,25 @@ static void renameTokenCheckAll(Parse *pParse, const void *pPtr){
 ** with tail recursion in tokenExpr() routine, for a small performance
 ** improvement.
 */
-const void *sqlite3RenameTokenMap(
+ਅਚਲ ਖਾਲੀ *sqlite3RenameTokenMap(
   Parse *pParse,
-  const void *pPtr,
-  const Token *pToken
+  ਅਚਲ ਖਾਲੀ *pPtr,
+  ਅਚਲ Token *pToken
 ){
   RenameToken *pNew;
-  assert( pPtr || pParse->db->mallocFailed );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pPtr || pParse->db->mallocFailed );
   renameTokenCheckAll(pParse, pPtr);
-  if( ALWAYS(pParse->eParseMode!=PARSE_MODE_UNMAP) ){
-    pNew = sqlite3DbMallocZero(pParse->db, sizeof(RenameToken));
-    if( pNew ){
+  ਜੇ( ALWAYS(pParse->e_Parse_ਬਹੁਲਕ!=PARSE_ਬਹੁਲਕ_UNMAP) ){
+    pNew = sqlite3DbMallocZero(pParse->db, ਆਕਾਰ(RenameToken));
+    ਜੇ( pNew ){
       pNew->p = pPtr;
       pNew->t = *pToken;
-      pNew->pNext = pParse->pRename;
+      pNew->p_ਅਗਲਾ = pParse->pRename;
       pParse->pRename = pNew;
     }
   }
 
-  return pPtr;
+  ਵਾਪਸ pPtr;
 }
 
 /*
@@ -828,13 +828,13 @@ const void *sqlite3RenameTokenMap(
 ** with parse tree element pFrom. This function remaps the associated token
 ** to parse tree element pTo.
 */
-void sqlite3RenameTokenRemap(Parse *pParse, const void *pTo, const void *pFrom){
+ਖਾਲੀ sqlite3RenameTokenRemap(Parse *pParse, ਅਚਲ ਖਾਲੀ *p_ਮੰਜ਼ਿਲ, ਅਚਲ ਖਾਲੀ *pFrom){
   RenameToken *p;
-  renameTokenCheckAll(pParse, pTo);
-  for(p=pParse->pRename; p; p=p->pNext){
-    if( p->p==pFrom ){
-      p->p = pTo;
-      break;
+  renameTokenCheckAll(pParse, p_ਮੰਜ਼ਿਲ);
+  ਲਈ(p=pParse->pRename; p; p=p->p_ਅਗਲਾ){
+    ਜੇ( p->p==pFrom ){
+      p->p = p_ਮੰਜ਼ਿਲ;
+      ਰੋਕੋ;
     }
   }
 }
@@ -842,46 +842,46 @@ void sqlite3RenameTokenRemap(Parse *pParse, const void *pTo, const void *pFrom){
 /*
 ** Walker callback used by sqlite3RenameExprUnmap().
 */
-static int renameUnmapExprCb(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ rename_Unmap_ਵਿਅੰਜਕ_Cb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   Parse *pParse = pWalker->pParse;
-  sqlite3RenameTokenRemap(pParse, 0, (const void*)pExpr);
-  if( ExprUseYTab(pExpr) ){
-    sqlite3RenameTokenRemap(pParse, 0, (const void*)&pExpr->y.pTab);
+  sqlite3RenameTokenRemap(pParse, 0, (ਅਚਲ ਖਾਲੀ*)p_ਵਿਅੰਜਕ);
+  ਜੇ( ਵਿਅੰਜਕ_Use_YTab(p_ਵਿਅੰਜਕ) ){
+    sqlite3RenameTokenRemap(pParse, 0, (ਅਚਲ ਖਾਲੀ*)&p_ਵਿਅੰਜਕ->y.pTab);
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
 ** Iterate through the Select objects that are part of WITH clauses attached
 ** to select statement pSelect.
 */
-static void renameWalkWith(Walker *pWalker, Select *pSelect){
+ਸਥਿਰ ਖਾਲੀ renameWalkWith(Walker *pWalker, Select *pSelect){
   With *pWith = pSelect->pWith;
-  if( pWith ){
+  ਜੇ( pWith ){
     Parse *pParse = pWalker->pParse;
-    int i;
+    ਪੂਰਨ i;
     With *pCopy = 0;
-    assert( pWith->nCte>0 );
-    if( (pWith->a[0].pSelect->selFlags & SF_Expanded)==0 ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pWith->nCte>0 );
+    ਜੇ( (pWith->a[0].pSelect->selFlags & SF_Expanded)==0 ){
       /* Push a copy of the With object onto the with-stack. We use a copy
       ** here as the original will be expanded and resolved (flags SF_Expanded
       ** and SF_Resolved) below. And the parser code that uses the with-stack
       ** fails if the Select objects on it have already been expanded and
       ** resolved.  */
       pCopy = sqlite3WithDup(pParse->db, pWith);
-      pCopy = sqlite3WithPush(pParse, pCopy, 1);
+      pCopy = sqlite3_With_ਧੱਕੋ(pParse, pCopy, 1);
     }
-    for(i=0; i<pWith->nCte; i++){
+    ਲਈ(i=0; i<pWith->nCte; i++){
       Select *p = pWith->a[i].pSelect;
       NameContext sNC;
-      memset(&sNC, 0, sizeof(sNC));
+      memset(&sNC, 0, ਆਕਾਰ(sNC));
       sNC.pParse = pParse;
-      if( pCopy ) sqlite3SelectPrep(sNC.pParse, p, &sNC);
-      if( sNC.pParse->db->mallocFailed ) return;
+      ਜੇ( pCopy ) sqlite3SelectPrep(sNC.pParse, p, &sNC);
+      ਜੇ( sNC.pParse->db->mallocFailed ) ਵਾਪਸ;
       sqlite3WalkSelect(pWalker, p);
-      sqlite3RenameExprlistUnmap(pParse, pWith->a[i].pCols);
+      sqlite3RenameExprlistUnmap(pParse, pWith->a[i].p_ਖਾਨੇ_ਗਿਣਤੀ);
     }
-    if( pCopy && pParse->pWith==pCopy ){
+    ਜੇ( pCopy && pParse->pWith==pCopy ){
       pParse->pWith = pCopy->pOuter;
     }
   }
@@ -890,83 +890,83 @@ static void renameWalkWith(Walker *pWalker, Select *pSelect){
 /*
 ** Unmap all tokens in the IdList object passed as the second argument.
 */
-static void unmapColumnIdlistNames(
+ਸਥਿਰ ਖਾਲੀ unmap_ਕਾਲਮ_Idlist_ਨਾਂ(
   Parse *pParse,
-  const IdList *pIdList
+  ਅਚਲ IdList *pIdList
 ){
-  int ii;
-  assert( pIdList!=0 );
-  for(ii=0; ii<pIdList->nId; ii++){
-    sqlite3RenameTokenRemap(pParse, 0, (const void*)pIdList->a[ii].zName);
+  ਪੂਰਨ ii;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pIdList!=0 );
+  ਲਈ(ii=0; ii<pIdList->nId; ii++){
+    sqlite3RenameTokenRemap(pParse, 0, (ਅਚਲ ਖਾਲੀ*)pIdList->a[ii].zName);
   }
 }
 
 /*
 ** Walker callback used by sqlite3RenameExprUnmap().
 */
-static int renameUnmapSelectCb(Walker *pWalker, Select *p){
+ਸਥਿਰ ਪੂਰਨ renameUnmapSelectCb(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  int i;
-  if( pParse->nErr ) return WRC_Abort;
+  ਪੂਰਨ i;
+  ਜੇ( pParse->nErr ) ਵਾਪਸ WRC_Abort;
   testcase( p->selFlags & SF_View );
   testcase( p->selFlags & SF_CopyCte );
-  if( p->selFlags & (SF_View|SF_CopyCte) ){
-    return WRC_Prune;
+  ਜੇ( p->selFlags & (SF_View|SF_CopyCte) ){
+    ਵਾਪਸ WRC_Prune;
   }
-  if( ALWAYS(p->pEList) ){
-    ExprList *pList = p->pEList;
-    for(i=0; i<pList->nExpr; i++){
-      if( pList->a[i].zEName && pList->a[i].fg.eEName==ENAME_NAME ){
-        sqlite3RenameTokenRemap(pParse, 0, (void*)pList->a[i].zEName);
+  ਜੇ( ALWAYS(p->pEList) ){
+    ਵਿਅੰਜਕ_List *pList = p->pEList;
+    ਲਈ(i=0; i<pList->n_ਵਿਅੰਜਕ; i++){
+      ਜੇ( pList->a[i].zEName && pList->a[i].fg.eEName==ENAME_NAME ){
+        sqlite3RenameTokenRemap(pParse, 0, (ਖਾਲੀ*)pList->a[i].zEName);
       }
     }
   }
-  if( ALWAYS(p->pSrc) ){  /* Every Select as a SrcList, even if it is empty */
+  ਜੇ( ALWAYS(p->pSrc) ){  /* Every Select as a SrcList, even if it is empty */
     SrcList *pSrc = p->pSrc;
-    for(i=0; i<pSrc->nSrc; i++){
-      sqlite3RenameTokenRemap(pParse, 0, (void*)pSrc->a[i].zName);
-      if( pSrc->a[i].fg.isUsing==0 ){
-        sqlite3WalkExpr(pWalker, pSrc->a[i].u3.pOn);
-      }else{
-        unmapColumnIdlistNames(pParse, pSrc->a[i].u3.pUsing);
+    ਲਈ(i=0; i<pSrc->nSrc; i++){
+      sqlite3RenameTokenRemap(pParse, 0, (ਖਾਲੀ*)pSrc->a[i].zName);
+      ਜੇ( pSrc->a[i].fg.isUsing==0 ){
+        sqlite3_Walk_ਵਿਅੰਜਕ(pWalker, pSrc->a[i].u3.pOn);
+      }ਨਹੀਂਤਾਂ{
+        unmap_ਕਾਲਮ_Idlist_ਨਾਂ(pParse, pSrc->a[i].u3.pUsing);
       }
     }
   }
 
   renameWalkWith(pWalker, p);
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
 ** Remove all nodes that are part of expression pExpr from the rename list.
 */
-void sqlite3RenameExprUnmap(Parse *pParse, Expr *pExpr){
-  u8 eMode = pParse->eParseMode;
+ਖਾਲੀ sqlite3_Rename_ਵਿਅੰਜਕ_Unmap(Parse *pParse, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  u8 e_ਬਹੁਲਕ = pParse->e_Parse_ਬਹੁਲਕ;
   Walker sWalker;
-  memset(&sWalker, 0, sizeof(Walker));
+  memset(&sWalker, 0, ਆਕਾਰ(Walker));
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = renameUnmapExprCb;
+  sWalker.x_ਵਿਅੰਜਕ_Callback = rename_Unmap_ਵਿਅੰਜਕ_Cb;
   sWalker.xSelectCallback = renameUnmapSelectCb;
-  pParse->eParseMode = PARSE_MODE_UNMAP;
-  sqlite3WalkExpr(&sWalker, pExpr);
-  pParse->eParseMode = eMode;
+  pParse->e_Parse_ਬਹੁਲਕ = PARSE_ਬਹੁਲਕ_UNMAP;
+  sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, p_ਵਿਅੰਜਕ);
+  pParse->e_Parse_ਬਹੁਲਕ = e_ਬਹੁਲਕ;
 }
 
 /*
 ** Remove all nodes that are part of expression-list pEList from the
 ** rename list.
 */
-void sqlite3RenameExprlistUnmap(Parse *pParse, ExprList *pEList){
-  if( pEList ){
-    int i;
+ਖਾਲੀ sqlite3RenameExprlistUnmap(Parse *pParse, ਵਿਅੰਜਕ_List *pEList){
+  ਜੇ( pEList ){
+    ਪੂਰਨ i;
     Walker sWalker;
-    memset(&sWalker, 0, sizeof(Walker));
+    memset(&sWalker, 0, ਆਕਾਰ(Walker));
     sWalker.pParse = pParse;
-    sWalker.xExprCallback = renameUnmapExprCb;
-    sqlite3WalkExprList(&sWalker, pEList);
-    for(i=0; i<pEList->nExpr; i++){
-      if( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME) ){
-        sqlite3RenameTokenRemap(pParse, 0, (void*)pEList->a[i].zEName);
+    sWalker.x_ਵਿਅੰਜਕ_Callback = rename_Unmap_ਵਿਅੰਜਕ_Cb;
+    sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, pEList);
+    ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+      ਜੇ( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME) ){
+        sqlite3RenameTokenRemap(pParse, 0, (ਖਾਲੀ*)pEList->a[i].zEName);
       }
     }
   }
@@ -975,11 +975,11 @@ void sqlite3RenameExprlistUnmap(Parse *pParse, ExprList *pEList){
 /*
 ** Free the list of RenameToken objects given in the second argument
 */
-static void renameTokenFree(sqlite3 *db, RenameToken *pToken){
-  RenameToken *pNext;
+ਸਥਿਰ ਖਾਲੀ renameTokenFree(sqlite3 *db, RenameToken *pToken){
+  RenameToken *p_ਅਗਲਾ;
   RenameToken *p;
-  for(p=pToken; p; p=pNext){
-    pNext = p->pNext;
+  ਲਈ(p=pToken; p; p=p_ਅਗਲਾ){
+    p_ਅਗਲਾ = p->p_ਅਗਲਾ;
     sqlite3DbFree(db, p);
   }
 }
@@ -993,28 +993,28 @@ static void renameTokenFree(sqlite3 *db, RenameToken *pToken){
 ** RenameToken object is found, remove it from the Parse object and add it to
 ** the list maintained by the RenameCtx object.
 */
-static RenameToken *renameTokenFind(
+ਸਥਿਰ RenameToken *rename_Token_ਲੱਭੋ(
   Parse *pParse,
-  struct RenameCtx *pCtx,
-  const void *pPtr
+  ਬਣਤਰ RenameCtx *pCtx,
+  ਅਚਲ ਖਾਲੀ *pPtr
 ){
   RenameToken **pp;
-  if( NEVER(pPtr==0) ){
-    return 0;
+  ਜੇ( NEVER(pPtr==0) ){
+    ਵਾਪਸ 0;
   }
-  for(pp=&pParse->pRename; (*pp); pp=&(*pp)->pNext){
-    if( (*pp)->p==pPtr ){
+  ਲਈ(pp=&pParse->pRename; (*pp); pp=&(*pp)->p_ਅਗਲਾ){
+    ਜੇ( (*pp)->p==pPtr ){
       RenameToken *pToken = *pp;
-      if( pCtx ){
-        *pp = pToken->pNext;
-        pToken->pNext = pCtx->pList;
+      ਜੇ( pCtx ){
+        *pp = pToken->p_ਅਗਲਾ;
+        pToken->p_ਅਗਲਾ = pCtx->pList;
         pCtx->pList = pToken;
         pCtx->nList++;
       }
-      return pToken;
+      ਵਾਪਸ pToken;
     }
   }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
 /*
@@ -1022,14 +1022,14 @@ static RenameToken *renameTokenFind(
 ** because without a dummy callback, sqlite3WalkExpr() and similar do not
 ** descend into sub-select statements.
 */
-static int renameColumnSelectCb(Walker *pWalker, Select *p){
-  if( p->selFlags & (SF_View|SF_CopyCte) ){
+ਸਥਿਰ ਪੂਰਨ rename_ਕਾਲਮ_Select_Cb(Walker *pWalker, Select *p){
+  ਜੇ( p->selFlags & (SF_View|SF_CopyCte) ){
     testcase( p->selFlags & SF_View );
     testcase( p->selFlags & SF_CopyCte );
-    return WRC_Prune;
+    ਵਾਪਸ WRC_Prune;
   }
   renameWalkWith(pWalker, p);
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
@@ -1041,21 +1041,21 @@ static int renameColumnSelectCb(Walker *pWalker, Select *p){
 ** RenameToken object to the list of RenameToken objects being
 ** constructed in RenameCtx object at pWalker->u.pRename.
 */
-static int renameColumnExprCb(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ rename_ਕਾਲਮ_ਵਿਅੰਜਕ_Cb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   RenameCtx *p = pWalker->u.pRename;
-  if( pExpr->op==TK_TRIGGER
-   && pExpr->iColumn==p->iCol
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_TRIGGER
+   && p_ਵਿਅੰਜਕ->i_ਕਾਲਮ==p->i_ਖਾਨਾ
    && pWalker->pParse->pTriggerTab==p->pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)pExpr);
-  }else if( pExpr->op==TK_COLUMN
-   && pExpr->iColumn==p->iCol
-   && ALWAYS(ExprUseYTab(pExpr))
-   && p->pTab==pExpr->y.pTab
+    rename_Token_ਲੱਭੋ(pWalker->pParse, p, (ਖਾਲੀ*)p_ਵਿਅੰਜਕ);
+  }ਨਹੀਂਤਾਂ ਜੇ( p_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ
+   && p_ਵਿਅੰਜਕ->i_ਕਾਲਮ==p->i_ਖਾਨਾ
+   && ALWAYS(ਵਿਅੰਜਕ_Use_YTab(p_ਵਿਅੰਜਕ))
+   && p->pTab==p_ਵਿਅੰਜਕ->y.pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)pExpr);
+    rename_Token_ਲੱਭੋ(pWalker->pParse, p, (ਖਾਲੀ*)p_ਵਿਅੰਜਕ);
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
@@ -1067,36 +1067,36 @@ static int renameColumnExprCb(Walker *pWalker, Expr *pExpr){
 ** return all column name tokens in the order that they are encountered
 ** in the SQL statement.
 */
-static RenameToken *renameColumnTokenNext(RenameCtx *pCtx){
-  RenameToken *pBest = pCtx->pList;
+ਸਥਿਰ RenameToken *rename_ਕਾਲਮ_Token_ਅਗਲਾ(RenameCtx *pCtx){
+  RenameToken *p_ਉੱਤਮ = pCtx->pList;
   RenameToken *pToken;
   RenameToken **pp;
 
-  for(pToken=pBest->pNext; pToken; pToken=pToken->pNext){
-    if( pToken->t.z>pBest->t.z ) pBest = pToken;
+  ਲਈ(pToken=p_ਉੱਤਮ->p_ਅਗਲਾ; pToken; pToken=pToken->p_ਅਗਲਾ){
+    ਜੇ( pToken->t.z>p_ਉੱਤਮ->t.z ) p_ਉੱਤਮ = pToken;
   }
-  for(pp=&pCtx->pList; *pp!=pBest; pp=&(*pp)->pNext);
-  *pp = pBest->pNext;
+  ਲਈ(pp=&pCtx->pList; *pp!=p_ਉੱਤਮ; pp=&(*pp)->p_ਅਗਲਾ);
+  *pp = p_ਉੱਤਮ->p_ਅਗਲਾ;
 
-  return pBest;
+  ਵਾਪਸ p_ਉੱਤਮ;
 }
 
 /*
 ** Set the error message of the context passed as the first argument to
 ** the result of formatting zFmt using printf() style formatting.
 */
-static void errorMPrintf(sqlite3_context *pCtx, const char *zFmt, ...){
+ਸਥਿਰ ਖਾਲੀ errorMPrintf(sqlite3_context *pCtx, ਅਚਲ ਅੱਖਰ *zFmt, ...){
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  char *zErr = 0;
+  ਅੱਖਰ *zErr = 0;
   va_list ap;
   va_start(ap, zFmt);
   zErr = sqlite3VMPrintf(db, zFmt, ap);
   va_end(ap);
-  if( zErr ){
-    sqlite3_result_error(pCtx, zErr, -1);
+  ਜੇ( zErr ){
+    sqlite3_ਨਤੀਜਾ_error(pCtx, zErr, -1);
     sqlite3DbFree(db, zErr);
-  }else{
-    sqlite3_result_error_nomem(pCtx);
+  }ਨਹੀਂਤਾਂ{
+    sqlite3_ਨਤੀਜਾ_error_nomem(pCtx);
   }
 }
 
@@ -1107,22 +1107,22 @@ static void errorMPrintf(sqlite3_context *pCtx, const char *zFmt, ...){
 ** sub-routine is currently stored in pParse->zErrMsg. This function
 ** adds context to the error message and then stores it in pCtx.
 */
-static void renameColumnParseError(
+ਸਥਿਰ ਖਾਲੀ rename_ਕਾਲਮ_Parse_Error(
   sqlite3_context *pCtx,
-  const char *zWhen,
-  sqlite3_value *pType,
-  sqlite3_value *pObject,
+  ਅਚਲ ਅੱਖਰ *zWhen,
+  sqlite3_ਮੁੱਲ *pType,
+  sqlite3_ਮੁੱਲ *pObject,
   Parse *pParse
 ){
-  const char *zT = (const char*)sqlite3_value_text(pType);
-  const char *zN = (const char*)sqlite3_value_text(pObject);
-  char *zErr;
+  ਅਚਲ ਅੱਖਰ *zT = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pType);
+  ਅਚਲ ਅੱਖਰ *zN = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(pObject);
+  ਅੱਖਰ *zErr;
 
   zErr = sqlite3MPrintf(pParse->db, "error in %s %s%s%s: %s",
       zT, zN, (zWhen[0] ? " " : ""), zWhen,
-      pParse->zErrMsg
+      pParse->z_Err_ਸੁਨੇਹਾ
   );
-  sqlite3_result_error(pCtx, zErr, -1);
+  sqlite3_ਨਤੀਜਾ_error(pCtx, zErr, -1);
   sqlite3DbFree(pParse->db, zErr);
 }
 
@@ -1132,21 +1132,21 @@ static void renameColumnParseError(
 ** corresponding rename-token from Parse object pParse and add it
 ** to the RenameCtx pCtx.
 */
-static void renameColumnElistNames(
+ਸਥਿਰ ਖਾਲੀ rename_ਕਾਲਮ_Elist_ਨਾਂ(
   Parse *pParse,
   RenameCtx *pCtx,
-  const ExprList *pEList,
-  const char *zOld
+  ਅਚਲ ਵਿਅੰਜਕ_List *pEList,
+  ਅਚਲ ਅੱਖਰ *zOld
 ){
-  if( pEList ){
-    int i;
-    for(i=0; i<pEList->nExpr; i++){
-      const char *zName = pEList->a[i].zEName;
-      if( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME)
+  ਜੇ( pEList ){
+    ਪੂਰਨ i;
+    ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+      ਅਚਲ ਅੱਖਰ *zName = pEList->a[i].zEName;
+      ਜੇ( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME)
        && ALWAYS(zName!=0)
        && 0==sqlite3_stricmp(zName, zOld)
       ){
-        renameTokenFind(pParse, pCtx, (const void*)zName);
+        rename_Token_ਲੱਭੋ(pParse, pCtx, (ਅਚਲ ਖਾਲੀ*)zName);
       }
     }
   }
@@ -1157,18 +1157,18 @@ static void renameColumnElistNames(
 ** that matches the string in zOld, extract the corresponding rename-token
 ** from Parse object pParse and add it to the RenameCtx pCtx.
 */
-static void renameColumnIdlistNames(
+ਸਥਿਰ ਖਾਲੀ rename_ਕਾਲਮ_Idlist_ਨਾਂ(
   Parse *pParse,
   RenameCtx *pCtx,
-  const IdList *pIdList,
-  const char *zOld
+  ਅਚਲ IdList *pIdList,
+  ਅਚਲ ਅੱਖਰ *zOld
 ){
-  if( pIdList ){
-    int i;
-    for(i=0; i<pIdList->nId; i++){
-      const char *zName = pIdList->a[i].zName;
-      if( 0==sqlite3_stricmp(zName, zOld) ){
-        renameTokenFind(pParse, pCtx, (const void*)zName);
+  ਜੇ( pIdList ){
+    ਪੂਰਨ i;
+    ਲਈ(i=0; i<pIdList->nId; i++){
+      ਅਚਲ ਅੱਖਰ *zName = pIdList->a[i].zName;
+      ਜੇ( 0==sqlite3_stricmp(zName, zOld) ){
+        rename_Token_ਲੱਭੋ(pParse, pCtx, (ਅਚਲ ਖਾਲੀ*)zName);
       }
     }
   }
@@ -1179,59 +1179,59 @@ static void renameColumnIdlistNames(
 ** Parse the SQL statement zSql using Parse object (*p). The Parse object
 ** is initialized by this function before it is used.
 */
-static int renameParseSql(
+ਸਥਿਰ ਪੂਰਨ renameParseSql(
   Parse *p,                       /* Memory to use for Parse object */
-  const char *zDb,                /* Name of schema SQL belongs to */
+  ਅਚਲ ਅੱਖਰ *zDb,                /* Name of schema SQL belongs to */
   sqlite3 *db,                    /* Database handle */
-  const char *zSql,               /* SQL to parse */
-  int bTemp                       /* True if SQL is from temp schema */
+  ਅਚਲ ਅੱਖਰ *zSql,               /* SQL to parse */
+  ਪੂਰਨ b_ਆਰਜ਼ੀ                       /* True if SQL is from temp schema */
 ){
-  int rc;
+  ਪੂਰਨ rc;
   u64 flags;
 
   sqlite3ParseObjectInit(p, db);
-  if( zSql==0 ){
-    return SQLITE_NOMEM;
+  ਜੇ( zSql==0 ){
+    ਵਾਪਸ SQLITE_NOMEM;
   }
-  if( sqlite3StrNICmp(zSql,"CREATE ",7)!=0 ){
-    return SQLITE_CORRUPT_BKPT;
+  ਜੇ( sqlite3StrNICmp(zSql,"CREATE ",7)!=0 ){
+    ਵਾਪਸ SQLITE_CORRUPT_BKPT;
   }
-  if( bTemp ){
+  ਜੇ( b_ਆਰਜ਼ੀ ){
     db->init.iDb = 1;
-  }else{
-    int iDb = sqlite3FindDbName(db, zDb);
-    assert( iDb>=0 && iDb<=0xff );
+  }ਨਹੀਂਤਾਂ{
+    ਪੂਰਨ iDb = sqlite3_ਲੱਭੋ_Db_Name(db, zDb);
+    ਪ੍ਰਤਿਜ੍ਞਾ( iDb>=0 && iDb<=0xff );
     db->init.iDb = (u8)iDb;
   }
-  p->eParseMode = PARSE_MODE_RENAME;
+  p->e_Parse_ਬਹੁਲਕ = PARSE_ਬਹੁਲਕ_RENAME;
   p->db = db;
   p->nQueryLoop = 1;
   flags = db->flags;
-  testcase( (db->flags & SQLITE_Comments)==0 && strstr(zSql," /* ")!=0 );
+  testcase( (db->flags & SQLITE_Comments)==0 && ਲੜੀ_ਖੋਜ(zSql," /* ")!=0 );
   db->flags |= SQLITE_Comments;
-  rc = sqlite3RunParser(p, zSql);
+  rc = sqlite3_ਲੜੀਵਾਰ_Parser(p, zSql);
   db->flags = flags;
-  if( db->mallocFailed ) rc = SQLITE_NOMEM;
-  if( rc==SQLITE_OK
-   && NEVER(p->pNewTable==0 && p->pNewIndex==0 && p->pNewTrigger==0)
+  ਜੇ( db->mallocFailed ) rc = SQLITE_NOMEM;
+  ਜੇ( rc==SQLITE_OK
+   && NEVER(p->p_New_ਸਾਰਣੀ==0 && p->p_New_ਸੂਚਕਾਂਕ==0 && p->pNewTrigger==0)
   ){
     rc = SQLITE_CORRUPT_BKPT;
   }
 
-#ifdef SQLITE_DEBUG
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_DEBUG
   /* Ensure that all mappings in the Parse.pRename list really do map to
   ** a part of the input string.  */
-  if( rc==SQLITE_OK ){
-    int nSql = sqlite3Strlen30(zSql);
+  ਜੇ( rc==SQLITE_OK ){
+    ਪੂਰਨ nSql = sqlite3Strlen30(zSql);
     RenameToken *pToken;
-    for(pToken=p->pRename; pToken; pToken=pToken->pNext){
-      assert( pToken->t.z>=zSql && &pToken->t.z[pToken->t.n]<=&zSql[nSql] );
+    ਲਈ(pToken=p->pRename; pToken; pToken=pToken->p_ਅਗਲਾ){
+      ਪ੍ਰਤਿਜ੍ਞਾ( pToken->t.z>=zSql && &pToken->t.z[pToken->t.n]<=&zSql[nSql] );
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   db->init.iDb = 0;
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -1243,44 +1243,44 @@ static int renameParseSql(
 ** Or, if an error occurs (i.e. an OOM condition), an error is left in
 ** pCtx and an SQLite error code returned.
 */
-static int renameEditSql(
+ਸਥਿਰ ਪੂਰਨ renameEditSql(
   sqlite3_context *pCtx,          /* Return result here */
   RenameCtx *pRename,             /* Rename context */
-  const char *zSql,               /* SQL statement to edit */
-  const char *zNew,               /* New token text */
-  int bQuote                      /* True to always quote token */
+  ਅਚਲ ਅੱਖਰ *zSql,               /* SQL statement to edit */
+  ਅਚਲ ਅੱਖਰ *zNew,               /* New token text */
+  ਪੂਰਨ bQuote                      /* True to always quote token */
 ){
   i64 nNew = sqlite3Strlen30(zNew);
   i64 nSql = sqlite3Strlen30(zSql);
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  int rc = SQLITE_OK;
-  char *zQuot = 0;
-  char *zOut;
+  ਪੂਰਨ rc = SQLITE_OK;
+  ਅੱਖਰ *zQuot = 0;
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ;
   i64 nQuot = 0;
-  char *zBuf1 = 0;
-  char *zBuf2 = 0;
+  ਅੱਖਰ *zBuf1 = 0;
+  ਅੱਖਰ *zBuf2 = 0;
 
-  if( zNew ){
+  ਜੇ( zNew ){
     /* Set zQuot to point to a buffer containing a quoted copy of the
     ** identifier zNew. If the corresponding identifier in the original
     ** ALTER TABLE statement was quoted (bQuote==1), then set zNew to
     ** point to zQuot so that all substitutions are made using the
     ** quoted version of the new column name.  */
     zQuot = sqlite3MPrintf(db, "\"%w\" ", zNew);
-    if( zQuot==0 ){
-      return SQLITE_NOMEM;
-    }else{
+    ਜੇ( zQuot==0 ){
+      ਵਾਪਸ SQLITE_NOMEM;
+    }ਨਹੀਂਤਾਂ{
       nQuot = sqlite3Strlen30(zQuot)-1;
     }
 
-    assert( nQuot>=nNew && nSql>=0 && nNew>=0 );
-    zOut = sqlite3DbMallocZero(db, (u64)nSql + pRename->nList*(u64)nQuot + 1);
-  }else{
-    assert( nSql>0 );
-    zOut = (char*)sqlite3DbMallocZero(db, (2*(u64)nSql + 1) * 3);
-    if( zOut ){
-      zBuf1 = &zOut[nSql*2+1];
-      zBuf2 = &zOut[nSql*4+2];
+    ਪ੍ਰਤਿਜ੍ਞਾ( nQuot>=nNew && nSql>=0 && nNew>=0 );
+    z_ਬਾਹਰਲਾ = sqlite3DbMallocZero(db, (u64)nSql + pRename->nList*(u64)nQuot + 1);
+  }ਨਹੀਂਤਾਂ{
+    ਪ੍ਰਤਿਜ੍ਞਾ( nSql>0 );
+    z_ਬਾਹਰਲਾ = (ਅੱਖਰ*)sqlite3DbMallocZero(db, (2*(u64)nSql + 1) * 3);
+    ਜੇ( z_ਬਾਹਰਲਾ ){
+      zBuf1 = &z_ਬਾਹਰਲਾ[nSql*2+1];
+      zBuf2 = &z_ਬਾਹਰਲਾ[nSql*4+2];
     }
   }
 
@@ -1288,74 +1288,74 @@ static int renameEditSql(
   ** corresponding to all tokens in the input SQL that must be replaced
   ** with the new column name, or with single-quoted versions of themselves.
   ** All that remains is to construct and return the edited SQL string. */
-  if( zOut ){
-    i64 nOut = nSql;
-    assert( nSql>0 );
-    memcpy(zOut, zSql, (size_t)nSql);
-    while( pRename->pList ){
-      int iOff;                   /* Offset of token to replace in zOut */
+  ਜੇ( z_ਬਾਹਰਲਾ ){
+    i64 n_ਬਾਹਰਲਾ = nSql;
+    ਪ੍ਰਤਿਜ੍ਞਾ( nSql>0 );
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(z_ਬਾਹਰਲਾ, zSql, (size_t)nSql);
+    ਜਦੋਂ( pRename->pList ){
+      ਪੂਰਨ iOff;                   /* Offset of token to replace in zOut */
       i64 nReplace;
-      const char *zReplace;
-      RenameToken *pBest = renameColumnTokenNext(pRename);
+      ਅਚਲ ਅੱਖਰ *zReplace;
+      RenameToken *p_ਉੱਤਮ = rename_ਕਾਲਮ_Token_ਅਗਲਾ(pRename);
 
-      if( zNew ){
-        if( bQuote==0 && sqlite3IsIdChar(*(u8*)pBest->t.z) ){
+      ਜੇ( zNew ){
+        ਜੇ( bQuote==0 && sqlite3IsIdChar(*(u8*)p_ਉੱਤਮ->t.z) ){
           nReplace = nNew;
           zReplace = zNew;
-        }else{
+        }ਨਹੀਂਤਾਂ{
           nReplace = nQuot;
           zReplace = zQuot;
-          if( pBest->t.z[pBest->t.n]=='"' ) nReplace++;
+          ਜੇ( p_ਉੱਤਮ->t.z[p_ਉੱਤਮ->t.n]=='"' ) nReplace++;
         }
-      }else{
+      }ਨਹੀਂਤਾਂ{
         /* Dequote the double-quoted token. Then requote it again, this time
         ** using single quotes. If the character immediately following the
         ** original token within the input SQL was a single quote ('), then
         ** add another space after the new, single-quoted version of the
         ** token. This is so that (SELECT "string"'alias') maps to
         ** (SELECT 'string' 'alias'), and not (SELECT 'string''alias').  */
-        memcpy(zBuf1, pBest->t.z, pBest->t.n);
-        zBuf1[pBest->t.n] = 0;
+        ਸਮ੍ਰਿਤੀ_ਨਕਲ(zBuf1, p_ਉੱਤਮ->t.z, p_ਉੱਤਮ->t.n);
+        zBuf1[p_ਉੱਤਮ->t.n] = 0;
         sqlite3Dequote(zBuf1);
-        assert( nSql < 0x15555554 /* otherwise malloc would have failed */ );
-        sqlite3_snprintf((int)(nSql*2), zBuf2, "%Q%s", zBuf1,
-            pBest->t.z[pBest->t.n]=='\'' ? " " : ""
+        ਪ੍ਰਤਿਜ੍ਞਾ( nSql < 0x15555554 /* otherwise malloc would have failed */ );
+        sqlite3_snprintf((ਪੂਰਨ)(nSql*2), zBuf2, "%Q%s", zBuf1,
+            p_ਉੱਤਮ->t.z[p_ਉੱਤਮ->t.n]=='\'' ? " " : ""
         );
         zReplace = zBuf2;
         nReplace = sqlite3Strlen30(zReplace);
       }
 
-      iOff = (int)(pBest->t.z - zSql);
-      if( pBest->t.n!=nReplace ){
-        memmove(&zOut[iOff + nReplace], &zOut[iOff + pBest->t.n],
-            nOut - (iOff + pBest->t.n)
+      iOff = (ਪੂਰਨ)(p_ਉੱਤਮ->t.z - zSql);
+      ਜੇ( p_ਉੱਤਮ->t.n!=nReplace ){
+        memmove(&z_ਬਾਹਰਲਾ[iOff + nReplace], &z_ਬਾਹਰਲਾ[iOff + p_ਉੱਤਮ->t.n],
+            n_ਬਾਹਰਲਾ - (iOff + p_ਉੱਤਮ->t.n)
         );
-        nOut += nReplace - pBest->t.n;
-        zOut[nOut] = '\0';
+        n_ਬਾਹਰਲਾ += nReplace - p_ਉੱਤਮ->t.n;
+        z_ਬਾਹਰਲਾ[n_ਬਾਹਰਲਾ] = '\0';
       }
-      memcpy(&zOut[iOff], zReplace, nReplace);
-      sqlite3DbFree(db, pBest);
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ(&z_ਬਾਹਰਲਾ[iOff], zReplace, nReplace);
+      sqlite3DbFree(db, p_ਉੱਤਮ);
     }
 
-    sqlite3_result_text(pCtx, zOut, -1, SQLITE_TRANSIENT);
-    sqlite3DbFree(db, zOut);
-  }else{
+    sqlite3_ਨਤੀਜਾ_ਪਾਠ(pCtx, z_ਬਾਹਰਲਾ, -1, SQLITE_TRANSIENT);
+    sqlite3DbFree(db, z_ਬਾਹਰਲਾ);
+  }ਨਹੀਂਤਾਂ{
     rc = SQLITE_NOMEM;
   }
 
   sqlite3_free(zQuot);
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Set all pEList->a[].fg.eEName fields in the expression-list to val.
 */
-static void renameSetENames(ExprList *pEList, int val){
-  assert( val==ENAME_NAME || val==ENAME_TAB || val==ENAME_SPAN );
-  if( pEList ){
-    int i;
-    for(i=0; i<pEList->nExpr; i++){
-      assert( val==ENAME_NAME || pEList->a[i].fg.eEName==ENAME_NAME );
+ਸਥਿਰ ਖਾਲੀ rename_ਸੈੱਟ_ENames(ਵਿਅੰਜਕ_List *pEList, ਪੂਰਨ val){
+  ਪ੍ਰਤਿਜ੍ਞਾ( val==ENAME_NAME || val==ENAME_TAB || val==ENAME_ਵਿਸਤਾਰ );
+  ਜੇ( pEList ){
+    ਪੂਰਨ i;
+    ਲਈ(i=0; i<pEList->n_ਵਿਅੰਜਕ; i++){
+      ਪ੍ਰਤਿਜ੍ਞਾ( val==ENAME_NAME || pEList->a[i].fg.eEName==ENAME_NAME );
       pEList->a[i].fg.eEName = val&0x3;
     }
   }
@@ -1367,47 +1367,47 @@ static void renameSetENames(ExprList *pEList, int val){
 ** successful. Otherwise, return an SQLite error code and leave an error
 ** message in the Parse object.
 */
-static int renameResolveTrigger(Parse *pParse){
+ਸਥਿਰ ਪੂਰਨ renameResolveTrigger(Parse *pParse){
   sqlite3 *db = pParse->db;
   Trigger *pNew = pParse->pNewTrigger;
-  TriggerStep *pStep;
+  Trigger_ਕਦਮ *p_ਕਦਮ;
   NameContext sNC;
-  int rc = SQLITE_OK;
+  ਪੂਰਨ rc = SQLITE_OK;
 
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, ਆਕਾਰ(sNC));
   sNC.pParse = pParse;
-  assert( pNew->pTabSchema );
-  pParse->pTriggerTab = sqlite3FindTable(db, pNew->table,
-      db->aDb[sqlite3SchemaToIndex(db, pNew->pTabSchema)].zDbSName
+  ਪ੍ਰਤਿਜ੍ਞਾ( pNew->pTabSchema );
+  pParse->pTriggerTab = sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, pNew->ਸਾਰਣੀ_2,
+      db->aDb[sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pNew->pTabSchema)].zDbSName
   );
   pParse->eTriggerOp = pNew->op;
   /* ALWAYS() because if the table of the trigger does not exist, the
   ** error would have been hit before this point */
-  if( ALWAYS(pParse->pTriggerTab) ){
-    rc = sqlite3ViewGetColumnNames(pParse, pParse->pTriggerTab)!=0;
+  ਜੇ( ALWAYS(pParse->pTriggerTab) ){
+    rc = sqlite3_View_Get_ਕਾਲਮ_ਨਾਂ(pParse, pParse->pTriggerTab)!=0;
   }
 
   /* Resolve symbols in WHEN clause */
-  if( rc==SQLITE_OK && pNew->pWhen ){
-    rc = sqlite3ResolveExprNames(&sNC, pNew->pWhen);
+  ਜੇ( rc==SQLITE_OK && pNew->pWhen ){
+    rc = sqlite3_Resolve_ਵਿਅੰਜਕ_ਨਾਂ(&sNC, pNew->pWhen);
   }
 
-  for(pStep=pNew->step_list; rc==SQLITE_OK && pStep; pStep=pStep->pNext){
-    if( pStep->pSelect ){
-      sqlite3SelectPrep(pParse, pStep->pSelect, &sNC);
-      if( pParse->nErr ) rc = pParse->rc;
+  ਲਈ(p_ਕਦਮ=pNew->ਕਦਮ_list; rc==SQLITE_OK && p_ਕਦਮ; p_ਕਦਮ=p_ਕਦਮ->p_ਅਗਲਾ){
+    ਜੇ( p_ਕਦਮ->pSelect ){
+      sqlite3SelectPrep(pParse, p_ਕਦਮ->pSelect, &sNC);
+      ਜੇ( pParse->nErr ) rc = pParse->rc;
     }
-    if( rc==SQLITE_OK && pStep->pSrc ){
-      SrcList *pSrc = sqlite3SrcListDup(db, pStep->pSrc, 0);
-      if( pSrc ){
+    ਜੇ( rc==SQLITE_OK && p_ਕਦਮ->pSrc ){
+      SrcList *pSrc = sqlite3SrcListDup(db, p_ਕਦਮ->pSrc, 0);
+      ਜੇ( pSrc ){
         Select *pSel = sqlite3SelectNew(
-            pParse, pStep->pExprList, pSrc, 0, 0, 0, 0, 0, 0
+            pParse, p_ਕਦਮ->p_ਵਿਅੰਜਕ_List, pSrc, 0, 0, 0, 0, 0, 0
         );
-        if( pSel==0 ){
-          pStep->pExprList = 0;
+        ਜੇ( pSel==0 ){
+          p_ਕਦਮ->p_ਵਿਅੰਜਕ_List = 0;
           pSrc = 0;
           rc = SQLITE_NOMEM;
-        }else{
+        }ਨਹੀਂਤਾਂ{
           /* pStep->pExprList contains an expression-list used for an UPDATE
           ** statement. So the a[].zEName values are the RHS of the
           ** "<col> = <expr>" clauses of the UPDATE statement. So, before
@@ -1416,94 +1416,94 @@ static int renameResolveTrigger(Parse *pParse){
           ** ENAME_NAME). This is to prevent any ids in ON() clauses that are
           ** part of pSrc from being incorrectly resolved against the
           ** a[].zEName values as if they were column aliases.  */
-          renameSetENames(pStep->pExprList, ENAME_SPAN);
+          rename_ਸੈੱਟ_ENames(p_ਕਦਮ->p_ਵਿਅੰਜਕ_List, ENAME_ਵਿਸਤਾਰ);
           sqlite3SelectPrep(pParse, pSel, 0);
-          renameSetENames(pStep->pExprList, ENAME_NAME);
+          rename_ਸੈੱਟ_ENames(p_ਕਦਮ->p_ਵਿਅੰਜਕ_List, ENAME_NAME);
           rc = pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
-          assert( pStep->pExprList==0 || pStep->pExprList==pSel->pEList );
-          assert( pSrc==pSel->pSrc );
-          if( pStep->pExprList ) pSel->pEList = 0;
+          ਪ੍ਰਤਿਜ੍ਞਾ( p_ਕਦਮ->p_ਵਿਅੰਜਕ_List==0 || p_ਕਦਮ->p_ਵਿਅੰਜਕ_List==pSel->pEList );
+          ਪ੍ਰਤਿਜ੍ਞਾ( pSrc==pSel->pSrc );
+          ਜੇ( p_ਕਦਮ->p_ਵਿਅੰਜਕ_List ) pSel->pEList = 0;
           pSel->pSrc = 0;
           sqlite3SelectDelete(db, pSel);
         }
-        if( ALWAYS(pStep->pSrc) ){
-          int i;
-          for(i=0; i<pStep->pSrc->nSrc && rc==SQLITE_OK; i++){
-            SrcItem *p = &pStep->pSrc->a[i];
-            if( p->fg.isSubquery ){
-              assert( p->u4.pSubq!=0 );
+        ਜੇ( ALWAYS(p_ਕਦਮ->pSrc) ){
+          ਪੂਰਨ i;
+          ਲਈ(i=0; i<p_ਕਦਮ->pSrc->nSrc && rc==SQLITE_OK; i++){
+            Src_ਵਸਤੂ *p = &p_ਕਦਮ->pSrc->a[i];
+            ਜੇ( p->fg.isSubquery ){
+              ਪ੍ਰਤਿਜ੍ਞਾ( p->u4.pSubq!=0 );
               sqlite3SelectPrep(pParse, p->u4.pSubq->pSelect, 0);
             }
           }
         }
 
-        if(  db->mallocFailed ){
+        ਜੇ(  db->mallocFailed ){
           rc = SQLITE_NOMEM;
         }
         sNC.pSrcList = pSrc;
-        if( rc==SQLITE_OK && pStep->pWhere ){
-          rc = sqlite3ResolveExprNames(&sNC, pStep->pWhere);
+        ਜੇ( rc==SQLITE_OK && p_ਕਦਮ->pWhere ){
+          rc = sqlite3_Resolve_ਵਿਅੰਜਕ_ਨਾਂ(&sNC, p_ਕਦਮ->pWhere);
         }
-        if( rc==SQLITE_OK ){
-          rc = sqlite3ResolveExprListNames(&sNC, pStep->pExprList);
+        ਜੇ( rc==SQLITE_OK ){
+          rc = sqlite3_Resolve_ਵਿਅੰਜਕ_List_ਨਾਂ(&sNC, p_ਕਦਮ->p_ਵਿਅੰਜਕ_List);
         }
-        assert( !pStep->pUpsert || (!pStep->pWhere && !pStep->pExprList) );
-        if( pStep->pUpsert && rc==SQLITE_OK ){
-          Upsert *pUpsert = pStep->pUpsert;
+        ਪ੍ਰਤਿਜ੍ਞਾ( !p_ਕਦਮ->pUpsert || (!p_ਕਦਮ->pWhere && !p_ਕਦਮ->p_ਵਿਅੰਜਕ_List) );
+        ਜੇ( p_ਕਦਮ->pUpsert && rc==SQLITE_OK ){
+          Upsert *pUpsert = p_ਕਦਮ->pUpsert;
           pUpsert->pUpsertSrc = pSrc;
           sNC.uNC.pUpsert = pUpsert;
           sNC.ncFlags = NC_UUpsert;
-          rc = sqlite3ResolveExprListNames(&sNC, pUpsert->pUpsertTarget);
-          if( rc==SQLITE_OK ){
-            ExprList *pUpsertSet = pUpsert->pUpsertSet;
-            rc = sqlite3ResolveExprListNames(&sNC, pUpsertSet);
+          rc = sqlite3_Resolve_ਵਿਅੰਜਕ_List_ਨਾਂ(&sNC, pUpsert->p_Upsert_ਨਿਸ਼ਾਨਾ);
+          ਜੇ( rc==SQLITE_OK ){
+            ਵਿਅੰਜਕ_List *p_Upsert_ਸੈੱਟ = pUpsert->p_Upsert_ਸੈੱਟ;
+            rc = sqlite3_Resolve_ਵਿਅੰਜਕ_List_ਨਾਂ(&sNC, p_Upsert_ਸੈੱਟ);
           }
-          if( rc==SQLITE_OK ){
-            rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertWhere);
+          ਜੇ( rc==SQLITE_OK ){
+            rc = sqlite3_Resolve_ਵਿਅੰਜਕ_ਨਾਂ(&sNC, pUpsert->pUpsertWhere);
           }
-          if( rc==SQLITE_OK ){
-            rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertTargetWhere);
+          ਜੇ( rc==SQLITE_OK ){
+            rc = sqlite3_Resolve_ਵਿਅੰਜਕ_ਨਾਂ(&sNC, pUpsert->p_Upsert_ਨਿਸ਼ਾਨਾ_Where);
           }
           sNC.ncFlags = 0;
         }
         sNC.pSrcList = 0;
         sqlite3SrcListDelete(db, pSrc);
-      }else{
+      }ਨਹੀਂਤਾਂ{
         rc = SQLITE_NOMEM;
       }
     }
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
 ** Invoke sqlite3WalkExpr() or sqlite3WalkSelect() on all Select or Expr
 ** objects that are part of the trigger passed as the second argument.
 */
-static void renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
-  TriggerStep *pStep;
+ਸਥਿਰ ਖਾਲੀ renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
+  Trigger_ਕਦਮ *p_ਕਦਮ;
 
   /* Find tokens to edit in WHEN clause */
-  sqlite3WalkExpr(pWalker, pTrigger->pWhen);
+  sqlite3_Walk_ਵਿਅੰਜਕ(pWalker, pTrigger->pWhen);
 
   /* Find tokens to edit in trigger steps */
-  for(pStep=pTrigger->step_list; pStep; pStep=pStep->pNext){
-    sqlite3WalkSelect(pWalker, pStep->pSelect);
-    sqlite3WalkExpr(pWalker, pStep->pWhere);
-    sqlite3WalkExprList(pWalker, pStep->pExprList);
-    if( pStep->pUpsert ){
-      Upsert *pUpsert = pStep->pUpsert;
-      sqlite3WalkExprList(pWalker, pUpsert->pUpsertTarget);
-      sqlite3WalkExprList(pWalker, pUpsert->pUpsertSet);
-      sqlite3WalkExpr(pWalker, pUpsert->pUpsertWhere);
-      sqlite3WalkExpr(pWalker, pUpsert->pUpsertTargetWhere);
+  ਲਈ(p_ਕਦਮ=pTrigger->ਕਦਮ_list; p_ਕਦਮ; p_ਕਦਮ=p_ਕਦਮ->p_ਅਗਲਾ){
+    sqlite3WalkSelect(pWalker, p_ਕਦਮ->pSelect);
+    sqlite3_Walk_ਵਿਅੰਜਕ(pWalker, p_ਕਦਮ->pWhere);
+    sqlite3_Walk_ਵਿਅੰਜਕ_List(pWalker, p_ਕਦਮ->p_ਵਿਅੰਜਕ_List);
+    ਜੇ( p_ਕਦਮ->pUpsert ){
+      Upsert *pUpsert = p_ਕਦਮ->pUpsert;
+      sqlite3_Walk_ਵਿਅੰਜਕ_List(pWalker, pUpsert->p_Upsert_ਨਿਸ਼ਾਨਾ);
+      sqlite3_Walk_ਵਿਅੰਜਕ_List(pWalker, pUpsert->p_Upsert_ਸੈੱਟ);
+      sqlite3_Walk_ਵਿਅੰਜਕ(pWalker, pUpsert->pUpsertWhere);
+      sqlite3_Walk_ਵਿਅੰਜਕ(pWalker, pUpsert->p_Upsert_ਨਿਸ਼ਾਨਾ_Where);
     }
-    if( pStep->pSrc ){
-      int i;
-      SrcList *pSrc = pStep->pSrc;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          assert( pSrc->a[i].u4.pSubq!=0 );
+    ਜੇ( p_ਕਦਮ->pSrc ){
+      ਪੂਰਨ i;
+      SrcList *pSrc = p_ਕਦਮ->pSrc;
+      ਲਈ(i=0; i<pSrc->nSrc; i++){
+        ਜੇ( pSrc->a[i].fg.isSubquery ){
+          ਪ੍ਰਤਿਜ੍ਞਾ( pSrc->a[i].u4.pSubq!=0 );
           sqlite3WalkSelect(pWalker, pSrc->a[i].u4.pSubq->pSelect);
         }
       }
@@ -1515,19 +1515,19 @@ static void renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
 ** Free the contents of Parse object (*pParse). Do not free the memory
 ** occupied by the Parse object itself.
 */
-static void renameParseCleanup(Parse *pParse){
+ਸਥਿਰ ਖਾਲੀ renameParseCleanup(Parse *pParse){
   sqlite3 *db = pParse->db;
-  Index *pIdx;
-  if( pParse->pVdbe ){
+  ਸੂਚਕਾਂਕ *pIdx;
+  ਜੇ( pParse->pVdbe ){
     sqlite3VdbeFinalize(pParse->pVdbe);
   }
-  sqlite3DeleteTable(db, pParse->pNewTable);
-  while( (pIdx = pParse->pNewIndex)!=0 ){
-    pParse->pNewIndex = pIdx->pNext;
-    sqlite3FreeIndex(db, pIdx);
+  sqlite3_Delete_ਸਾਰਣੀ(db, pParse->p_New_ਸਾਰਣੀ);
+  ਜਦੋਂ( (pIdx = pParse->p_New_ਸੂਚਕਾਂਕ)!=0 ){
+    pParse->p_New_ਸੂਚਕਾਂਕ = pIdx->p_ਅਗਲਾ;
+    sqlite3_Free_ਸੂਚਕਾਂਕ(db, pIdx);
   }
   sqlite3DeleteTrigger(db, pParse->pNewTrigger);
-  sqlite3DbFree(db, pParse->zErrMsg);
+  sqlite3DbFree(db, pParse->z_Err_ਸੁਨੇਹਾ);
   renameTokenFree(db, pParse->pRename);
   sqlite3ParseObjectReset(pParse);
 }
@@ -1556,208 +1556,208 @@ static void renameParseCleanup(Parse *pParse){
 ** not reachable from ordinary SQL passed into sqlite3_prepare() unless the
 ** SQLITE_TESTCTRL_INTERNAL_FUNCTIONS test setting is enabled.
 */
-static void renameColumnFunc(
+ਸਥਿਰ ਖਾਲੀ rename_ਕਾਲਮ_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   RenameCtx sCtx;
-  const char *zSql = (const char*)sqlite3_value_text(argv[0]);
-  const char *zDb = (const char*)sqlite3_value_text(argv[3]);
-  const char *zTable = (const char*)sqlite3_value_text(argv[4]);
-  int iCol = sqlite3_value_int(argv[5]);
-  const char *zNew = (const char*)sqlite3_value_text(argv[6]);
-  int bQuote = sqlite3_value_int(argv[7]);
-  int bTemp = sqlite3_value_int(argv[8]);
-  const char *zOld;
-  int rc;
+  ਅਚਲ ਅੱਖਰ *zSql = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅਚਲ ਅੱਖਰ *zDb = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[3]);
+  ਅਚਲ ਅੱਖਰ *z_ਸਾਰਣੀ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[4]);
+  ਪੂਰਨ i_ਖਾਨਾ = sqlite3_ਮੁੱਲ_int(argv[5]);
+  ਅਚਲ ਅੱਖਰ *zNew = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[6]);
+  ਪੂਰਨ bQuote = sqlite3_ਮੁੱਲ_int(argv[7]);
+  ਪੂਰਨ b_ਆਰਜ਼ੀ = sqlite3_ਮੁੱਲ_int(argv[8]);
+  ਅਚਲ ਅੱਖਰ *zOld;
+  ਪੂਰਨ rc;
   Parse sParse;
   Walker sWalker;
-  Index *pIdx;
-  int i;
-  Table *pTab;
-#ifndef SQLITE_OMIT_AUTHORIZATION
+  ਸੂਚਕਾਂਕ *pIdx;
+  ਪੂਰਨ i;
+  ਸਾਰਣੀ *pTab;
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
-#endif
+#ਜੇ_ਅੰਤ
 
-  UNUSED_PARAMETER(NotUsed);
-  if( zSql==0 ) return;
-  if( zTable==0 ) return;
-  if( zNew==0 ) return;
-  if( iCol<0 ) return;
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
+  ਜੇ( zSql==0 ) ਵਾਪਸ;
+  ਜੇ( z_ਸਾਰਣੀ==0 ) ਵਾਪਸ;
+  ਜੇ( zNew==0 ) ਵਾਪਸ;
+  ਜੇ( i_ਖਾਨਾ<0 ) ਵਾਪਸ;
   sqlite3BtreeEnterAll(db);
-  pTab = sqlite3FindTable(db, zTable, zDb);
-  if( pTab==0 || iCol>=pTab->nCol ){
+  pTab = sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, z_ਸਾਰਣੀ, zDb);
+  ਜੇ( pTab==0 || i_ਖਾਨਾ>=pTab->n_ਖਾਨਾ ){
     sqlite3BtreeLeaveAll(db);
-    return;
+    ਵਾਪਸ;
   }
-  zOld = pTab->aCol[iCol].zCnName;
-  memset(&sCtx, 0, sizeof(sCtx));
-  sCtx.iCol = ((iCol==pTab->iPKey) ? -1 : iCol);
+  zOld = pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName;
+  memset(&sCtx, 0, ਆਕਾਰ(sCtx));
+  sCtx.i_ਖਾਨਾ = ((i_ਖਾਨਾ==pTab->iPKey) ? -1 : i_ਖਾਨਾ);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   db->xAuth = 0;
-#endif
-  rc = renameParseSql(&sParse, zDb, db, zSql, bTemp);
+#ਜੇ_ਅੰਤ
+  rc = renameParseSql(&sParse, zDb, db, zSql, b_ਆਰਜ਼ੀ);
 
   /* Find tokens that need to be replaced. */
-  memset(&sWalker, 0, sizeof(Walker));
+  memset(&sWalker, 0, ਆਕਾਰ(Walker));
   sWalker.pParse = &sParse;
-  sWalker.xExprCallback = renameColumnExprCb;
-  sWalker.xSelectCallback = renameColumnSelectCb;
+  sWalker.x_ਵਿਅੰਜਕ_Callback = rename_ਕਾਲਮ_ਵਿਅੰਜਕ_Cb;
+  sWalker.xSelectCallback = rename_ਕਾਲਮ_Select_Cb;
   sWalker.u.pRename = &sCtx;
 
   sCtx.pTab = pTab;
-  if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
-  if( sParse.pNewTable ){
-    if( IsView(sParse.pNewTable) ){
-      Select *pSelect = sParse.pNewTable->u.view.pSelect;
+  ਜੇ( rc!=SQLITE_OK ) ਜਾਓ rename_ਕਾਲਮ_Func_ਪੂਰਾ;
+  ਜੇ( sParse.p_New_ਸਾਰਣੀ ){
+    ਜੇ( IsView(sParse.p_New_ਸਾਰਣੀ) ){
+      Select *pSelect = sParse.p_New_ਸਾਰਣੀ->u.view.pSelect;
       pSelect->selFlags &= ~(u32)SF_View;
       sParse.rc = SQLITE_OK;
       sqlite3SelectPrep(&sParse, pSelect, 0);
       rc = (db->mallocFailed ? SQLITE_NOMEM : sParse.rc);
-      if( rc==SQLITE_OK ){
+      ਜੇ( rc==SQLITE_OK ){
         sqlite3WalkSelect(&sWalker, pSelect);
       }
-      if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
-    }else if( IsOrdinaryTable(sParse.pNewTable) ){
+      ਜੇ( rc!=SQLITE_OK ) ਜਾਓ rename_ਕਾਲਮ_Func_ਪੂਰਾ;
+    }ਨਹੀਂਤਾਂ ਜੇ( Is_Ordinary_ਸਾਰਣੀ(sParse.p_New_ਸਾਰਣੀ) ){
       /* A regular table */
-      int bFKOnly = sqlite3_stricmp(zTable, sParse.pNewTable->zName);
+      ਪੂਰਨ bFKOnly = sqlite3_stricmp(z_ਸਾਰਣੀ, sParse.p_New_ਸਾਰਣੀ->zName);
       FKey *pFKey;
-      sCtx.pTab = sParse.pNewTable;
-      if( bFKOnly==0 ){
-        if( iCol<sParse.pNewTable->nCol ){
-          renameTokenFind(
-              &sParse, &sCtx, (void*)sParse.pNewTable->aCol[iCol].zCnName
+      sCtx.pTab = sParse.p_New_ਸਾਰਣੀ;
+      ਜੇ( bFKOnly==0 ){
+        ਜੇ( i_ਖਾਨਾ<sParse.p_New_ਸਾਰਣੀ->n_ਖਾਨਾ ){
+          rename_Token_ਲੱਭੋ(
+              &sParse, &sCtx, (ਖਾਲੀ*)sParse.p_New_ਸਾਰਣੀ->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName
           );
         }
-        if( sCtx.iCol<0 ){
-          renameTokenFind(&sParse, &sCtx, (void*)&sParse.pNewTable->iPKey);
+        ਜੇ( sCtx.i_ਖਾਨਾ<0 ){
+          rename_Token_ਲੱਭੋ(&sParse, &sCtx, (ਖਾਲੀ*)&sParse.p_New_ਸਾਰਣੀ->iPKey);
         }
-        sqlite3WalkExprList(&sWalker, sParse.pNewTable->pCheck);
-        for(pIdx=sParse.pNewTable->pIndex; pIdx; pIdx=pIdx->pNext){
-          sqlite3WalkExprList(&sWalker, pIdx->aColExpr);
+        sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, sParse.p_New_ਸਾਰਣੀ->pCheck);
+        ਲਈ(pIdx=sParse.p_New_ਸਾਰਣੀ->p_ਸੂਚਕਾਂਕ; pIdx; pIdx=pIdx->p_ਅਗਲਾ){
+          sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, pIdx->a_ਖਾਨਾ_ਵਿਅੰਜਕ);
         }
-        for(pIdx=sParse.pNewIndex; pIdx; pIdx=pIdx->pNext){
-          sqlite3WalkExprList(&sWalker, pIdx->aColExpr);
+        ਲਈ(pIdx=sParse.p_New_ਸੂਚਕਾਂਕ; pIdx; pIdx=pIdx->p_ਅਗਲਾ){
+          sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, pIdx->a_ਖਾਨਾ_ਵਿਅੰਜਕ);
         }
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-        for(i=0; i<sParse.pNewTable->nCol; i++){
-          Expr *pExpr = sqlite3ColumnExpr(sParse.pNewTable,
-                                                  &sParse.pNewTable->aCol[i]);
-          sqlite3WalkExpr(&sWalker, pExpr);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_GENERATED_COLUMNS
+        ਲਈ(i=0; i<sParse.p_New_ਸਾਰਣੀ->n_ਖਾਨਾ; i++){
+          ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ = sqlite3_ਕਾਲਮ_ਵਿਅੰਜਕ(sParse.p_New_ਸਾਰਣੀ,
+                                                  &sParse.p_New_ਸਾਰਣੀ->a_ਖਾਨਾ[i]);
+          sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, p_ਵਿਅੰਜਕ);
         }
-#endif
+#ਜੇ_ਅੰਤ
       }
 
-      assert( IsOrdinaryTable(sParse.pNewTable) );
-      for(pFKey=sParse.pNewTable->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-        for(i=0; i<pFKey->nCol; i++){
-          if( bFKOnly==0 && pFKey->aCol[i].iFrom==iCol ){
-            renameTokenFind(&sParse, &sCtx, (void*)&pFKey->aCol[i]);
+      ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(sParse.p_New_ਸਾਰਣੀ) );
+      ਲਈ(pFKey=sParse.p_New_ਸਾਰਣੀ->u.tab.pFKey; pFKey; pFKey=pFKey->p_ਅਗਲਾ_From){
+        ਲਈ(i=0; i<pFKey->n_ਖਾਨਾ; i++){
+          ਜੇ( bFKOnly==0 && pFKey->a_ਖਾਨਾ[i].iFrom==i_ਖਾਨਾ ){
+            rename_Token_ਲੱਭੋ(&sParse, &sCtx, (ਖਾਲੀ*)&pFKey->a_ਖਾਨਾ[i]);
           }
-          if( 0==sqlite3_stricmp(pFKey->zTo, zTable)
-           && 0==sqlite3_stricmp(pFKey->aCol[i].zCol, zOld)
+          ਜੇ( 0==sqlite3_stricmp(pFKey->z_ਮੰਜ਼ਿਲ, z_ਸਾਰਣੀ)
+           && 0==sqlite3_stricmp(pFKey->a_ਖਾਨਾ[i].z_ਖਾਨਾ, zOld)
           ){
-            renameTokenFind(&sParse, &sCtx, (void*)pFKey->aCol[i].zCol);
+            rename_Token_ਲੱਭੋ(&sParse, &sCtx, (ਖਾਲੀ*)pFKey->a_ਖਾਨਾ[i].z_ਖਾਨਾ);
           }
         }
       }
     }
-  }else if( sParse.pNewIndex ){
-    sqlite3WalkExprList(&sWalker, sParse.pNewIndex->aColExpr);
-    sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
-  }else{
+  }ਨਹੀਂਤਾਂ ਜੇ( sParse.p_New_ਸੂਚਕਾਂਕ ){
+    sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, sParse.p_New_ਸੂਚਕਾਂਕ->a_ਖਾਨਾ_ਵਿਅੰਜਕ);
+    sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, sParse.p_New_ਸੂਚਕਾਂਕ->pPartIdxWhere);
+  }ਨਹੀਂਤਾਂ{
     /* A trigger */
-    TriggerStep *pStep;
+    Trigger_ਕਦਮ *p_ਕਦਮ;
     rc = renameResolveTrigger(&sParse);
-    if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
+    ਜੇ( rc!=SQLITE_OK ) ਜਾਓ rename_ਕਾਲਮ_Func_ਪੂਰਾ;
 
-    for(pStep=sParse.pNewTrigger->step_list; pStep; pStep=pStep->pNext){
-      if( pStep->pSrc ){
-        Table *pTarget = sqlite3LocateTableItem(&sParse, 0, &pStep->pSrc->a[0]);
-        if( pTarget==pTab ){
-          if( pStep->pUpsert ){
-            ExprList *pUpsertSet = pStep->pUpsert->pUpsertSet;
-            renameColumnElistNames(&sParse, &sCtx, pUpsertSet, zOld);
+    ਲਈ(p_ਕਦਮ=sParse.pNewTrigger->ਕਦਮ_list; p_ਕਦਮ; p_ਕਦਮ=p_ਕਦਮ->p_ਅਗਲਾ){
+      ਜੇ( p_ਕਦਮ->pSrc ){
+        ਸਾਰਣੀ *p_ਨਿਸ਼ਾਨਾ = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(&sParse, 0, &p_ਕਦਮ->pSrc->a[0]);
+        ਜੇ( p_ਨਿਸ਼ਾਨਾ==pTab ){
+          ਜੇ( p_ਕਦਮ->pUpsert ){
+            ਵਿਅੰਜਕ_List *p_Upsert_ਸੈੱਟ = p_ਕਦਮ->pUpsert->p_Upsert_ਸੈੱਟ;
+            rename_ਕਾਲਮ_Elist_ਨਾਂ(&sParse, &sCtx, p_Upsert_ਸੈੱਟ, zOld);
           }
-          renameColumnIdlistNames(&sParse, &sCtx, pStep->pIdList, zOld);
-          renameColumnElistNames(&sParse, &sCtx, pStep->pExprList, zOld);
+          rename_ਕਾਲਮ_Idlist_ਨਾਂ(&sParse, &sCtx, p_ਕਦਮ->pIdList, zOld);
+          rename_ਕਾਲਮ_Elist_ਨਾਂ(&sParse, &sCtx, p_ਕਦਮ->p_ਵਿਅੰਜਕ_List, zOld);
         }
       }
     }
 
     /* Find tokens to edit in UPDATE OF clause */
-    if( sParse.pTriggerTab==pTab ){
-      renameColumnIdlistNames(&sParse, &sCtx,sParse.pNewTrigger->pColumns,zOld);
+    ਜੇ( sParse.pTriggerTab==pTab ){
+      rename_ਕਾਲਮ_Idlist_ਨਾਂ(&sParse, &sCtx,sParse.pNewTrigger->pColumns,zOld);
     }
 
     /* Find tokens to edit in various expressions and selects */
     renameWalkTrigger(&sWalker, sParse.pNewTrigger);
   }
 
-  assert( rc==SQLITE_OK );
+  ਪ੍ਰਤਿਜ੍ਞਾ( rc==SQLITE_OK );
   rc = renameEditSql(context, &sCtx, zSql, zNew, bQuote);
 
-renameColumnFunc_done:
-  if( rc!=SQLITE_OK ){
-    if( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
-      sqlite3_result_value(context, argv[0]);
-    }else if( sParse.zErrMsg ){
-      renameColumnParseError(context, "", argv[1], argv[2], &sParse);
-    }else{
-      sqlite3_result_error_code(context, rc);
+rename_ਕਾਲਮ_Func_ਪੂਰਾ:
+  ਜੇ( rc!=SQLITE_OK ){
+    ਜੇ( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
+      sqlite3_ਨਤੀਜਾ_ਮੁੱਲ(context, argv[0]);
+    }ਨਹੀਂਤਾਂ ਜੇ( sParse.z_Err_ਸੁਨੇਹਾ ){
+      rename_ਕਾਲਮ_Parse_Error(context, "", argv[1], argv[2], &sParse);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(context, rc);
     }
   }
 
   renameParseCleanup(&sParse);
   renameTokenFree(db, sCtx.pList);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#ਜੇ_ਅੰਤ
   sqlite3BtreeLeaveAll(db);
 }
 
 /*
 ** Walker expression callback used by "RENAME TABLE".
 */
-static int renameTableExprCb(Walker *pWalker, Expr *pExpr){
+ਸਥਿਰ ਪੂਰਨ rename_ਸਾਰਣੀ_ਵਿਅੰਜਕ_Cb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
   RenameCtx *p = pWalker->u.pRename;
-  if( pExpr->op==TK_COLUMN
-   && ALWAYS(ExprUseYTab(pExpr))
-   && p->pTab==pExpr->y.pTab
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_ਕਾਲਮ
+   && ALWAYS(ਵਿਅੰਜਕ_Use_YTab(p_ਵਿਅੰਜਕ))
+   && p->pTab==p_ਵਿਅੰਜਕ->y.pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)&pExpr->y.pTab);
+    rename_Token_ਲੱਭੋ(pWalker->pParse, p, (ਖਾਲੀ*)&p_ਵਿਅੰਜਕ->y.pTab);
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /*
 ** Walker select callback used by "RENAME TABLE".
 */
-static int renameTableSelectCb(Walker *pWalker, Select *pSelect){
-  int i;
+ਸਥਿਰ ਪੂਰਨ rename_ਸਾਰਣੀ_Select_Cb(Walker *pWalker, Select *pSelect){
+  ਪੂਰਨ i;
   RenameCtx *p = pWalker->u.pRename;
   SrcList *pSrc = pSelect->pSrc;
-  if( pSelect->selFlags & (SF_View|SF_CopyCte) ){
+  ਜੇ( pSelect->selFlags & (SF_View|SF_CopyCte) ){
     testcase( pSelect->selFlags & SF_View );
     testcase( pSelect->selFlags & SF_CopyCte );
-    return WRC_Prune;
+    ਵਾਪਸ WRC_Prune;
   }
-  if( NEVER(pSrc==0) ){
-    assert( pWalker->pParse->db->mallocFailed );
-    return WRC_Abort;
+  ਜੇ( NEVER(pSrc==0) ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( pWalker->pParse->db->mallocFailed );
+    ਵਾਪਸ WRC_Abort;
   }
-  for(i=0; i<pSrc->nSrc; i++){
-    SrcItem *pItem = &pSrc->a[i];
-    if( pItem->pSTab==p->pTab ){
-      renameTokenFind(pWalker->pParse, p, pItem->zName);
+  ਲਈ(i=0; i<pSrc->nSrc; i++){
+    Src_ਵਸਤੂ *p_ਵਸਤੂ = &pSrc->a[i];
+    ਜੇ( p_ਵਸਤੂ->pSTab==p->pTab ){
+      rename_Token_ਲੱਭੋ(pWalker->pParse, p, p_ਵਸਤੂ->zName);
     }
   }
   renameWalkWith(pWalker, pSelect);
 
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 
@@ -1780,121 +1780,121 @@ static int renameTableSelectCb(Walker *pWalker, Select *pSelect){
 ** sqlite_rename_table('main', 'CREATE TABLE t1(a REFERENCES t2)','t2','t3',0)
 **       -> 'CREATE TABLE t1(a REFERENCES t3)'
 */
-static void renameTableFunc(
+ਸਥਿਰ ਖਾਲੀ rename_ਸਾਰਣੀ_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDb = (const char*)sqlite3_value_text(argv[0]);
-  const char *zInput = (const char*)sqlite3_value_text(argv[3]);
-  const char *zOld = (const char*)sqlite3_value_text(argv[4]);
-  const char *zNew = (const char*)sqlite3_value_text(argv[5]);
-  int bTemp = sqlite3_value_int(argv[6]);
-  UNUSED_PARAMETER(NotUsed);
+  ਅਚਲ ਅੱਖਰ *zDb = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅਚਲ ਅੱਖਰ *z_ਨਿਵੇਸ਼ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[3]);
+  ਅਚਲ ਅੱਖਰ *zOld = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[4]);
+  ਅਚਲ ਅੱਖਰ *zNew = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[5]);
+  ਪੂਰਨ b_ਆਰਜ਼ੀ = sqlite3_ਮੁੱਲ_int(argv[6]);
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
 
-  if( zInput && zOld && zNew ){
+  ਜੇ( z_ਨਿਵੇਸ਼ && zOld && zNew ){
     Parse sParse;
-    int rc;
-    int bQuote = 1;
+    ਪੂਰਨ rc;
+    ਪੂਰਨ bQuote = 1;
     RenameCtx sCtx;
     Walker sWalker;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
     sqlite3_xauth xAuth = db->xAuth;
     db->xAuth = 0;
-#endif
+#ਜੇ_ਅੰਤ
 
     sqlite3BtreeEnterAll(db);
 
-    memset(&sCtx, 0, sizeof(RenameCtx));
-    sCtx.pTab = sqlite3FindTable(db, zOld, zDb);
-    memset(&sWalker, 0, sizeof(Walker));
+    memset(&sCtx, 0, ਆਕਾਰ(RenameCtx));
+    sCtx.pTab = sqlite3_ਲੱਭੋ_ਸਾਰਣੀ(db, zOld, zDb);
+    memset(&sWalker, 0, ਆਕਾਰ(Walker));
     sWalker.pParse = &sParse;
-    sWalker.xExprCallback = renameTableExprCb;
-    sWalker.xSelectCallback = renameTableSelectCb;
+    sWalker.x_ਵਿਅੰਜਕ_Callback = rename_ਸਾਰਣੀ_ਵਿਅੰਜਕ_Cb;
+    sWalker.xSelectCallback = rename_ਸਾਰਣੀ_Select_Cb;
     sWalker.u.pRename = &sCtx;
 
-    rc = renameParseSql(&sParse, zDb, db, zInput, bTemp);
+    rc = renameParseSql(&sParse, zDb, db, z_ਨਿਵੇਸ਼, b_ਆਰਜ਼ੀ);
 
-    if( rc==SQLITE_OK ){
-      int isLegacy = (db->flags & SQLITE_LegacyAlter);
-      if( sParse.pNewTable ){
-        Table *pTab = sParse.pNewTable;
+    ਜੇ( rc==SQLITE_OK ){
+      ਪੂਰਨ isLegacy = (db->flags & SQLITE_LegacyAlter);
+      ਜੇ( sParse.p_New_ਸਾਰਣੀ ){
+        ਸਾਰਣੀ *pTab = sParse.p_New_ਸਾਰਣੀ;
 
-        if( IsView(pTab) ){
-          if( isLegacy==0 ){
+        ਜੇ( IsView(pTab) ){
+          ਜੇ( isLegacy==0 ){
             Select *pSelect = pTab->u.view.pSelect;
             NameContext sNC;
-            memset(&sNC, 0, sizeof(sNC));
+            memset(&sNC, 0, ਆਕਾਰ(sNC));
             sNC.pParse = &sParse;
 
-            assert( pSelect->selFlags & SF_View );
+            ਪ੍ਰਤਿਜ੍ਞਾ( pSelect->selFlags & SF_View );
             pSelect->selFlags &= ~(u32)SF_View;
             sqlite3SelectPrep(&sParse, pTab->u.view.pSelect, &sNC);
-            if( sParse.nErr ){
+            ਜੇ( sParse.nErr ){
               rc = sParse.rc;
-            }else{
+            }ਨਹੀਂਤਾਂ{
               sqlite3WalkSelect(&sWalker, pTab->u.view.pSelect);
             }
           }
-        }else{
+        }ਨਹੀਂਤਾਂ{
           /* Modify any FK definitions to point to the new table. */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-          if( (isLegacy==0 || (db->flags & SQLITE_ForeignKeys))
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_FOREIGN_ਕੁੰਜੀ
+          ਜੇ( (isLegacy==0 || (db->flags & SQLITE_Foreign_ਕੁੰਜੀਆਂ))
            && !IsVirtual(pTab)
           ){
             FKey *pFKey;
-            assert( IsOrdinaryTable(pTab) );
-            for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-              if( sqlite3_stricmp(pFKey->zTo, zOld)==0 ){
-                renameTokenFind(&sParse, &sCtx, (void*)pFKey->zTo);
+            ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pTab) );
+            ਲਈ(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->p_ਅਗਲਾ_From){
+              ਜੇ( sqlite3_stricmp(pFKey->z_ਮੰਜ਼ਿਲ, zOld)==0 ){
+                rename_Token_ਲੱਭੋ(&sParse, &sCtx, (ਖਾਲੀ*)pFKey->z_ਮੰਜ਼ਿਲ);
               }
             }
           }
-#endif
+#ਜੇ_ਅੰਤ
 
           /* If this is the table being altered, fix any table refs in CHECK
           ** expressions. Also update the name that appears right after the
           ** "CREATE [VIRTUAL] TABLE" bit. */
-          if( sqlite3_stricmp(zOld, pTab->zName)==0 ){
+          ਜੇ( sqlite3_stricmp(zOld, pTab->zName)==0 ){
             sCtx.pTab = pTab;
-            if( isLegacy==0 ){
-              sqlite3WalkExprList(&sWalker, pTab->pCheck);
+            ਜੇ( isLegacy==0 ){
+              sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, pTab->pCheck);
             }
-            renameTokenFind(&sParse, &sCtx, pTab->zName);
+            rename_Token_ਲੱਭੋ(&sParse, &sCtx, pTab->zName);
           }
         }
       }
 
-      else if( sParse.pNewIndex ){
-        renameTokenFind(&sParse, &sCtx, sParse.pNewIndex->zName);
-        if( isLegacy==0 ){
-          sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
+      ਨਹੀਂਤਾਂ ਜੇ( sParse.p_New_ਸੂਚਕਾਂਕ ){
+        rename_Token_ਲੱਭੋ(&sParse, &sCtx, sParse.p_New_ਸੂਚਕਾਂਕ->zName);
+        ਜੇ( isLegacy==0 ){
+          sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, sParse.p_New_ਸੂਚਕਾਂਕ->pPartIdxWhere);
         }
       }
 
-#ifndef SQLITE_OMIT_TRIGGER
-      else{
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_TRIGGER
+      ਨਹੀਂਤਾਂ{
         Trigger *pTrigger = sParse.pNewTrigger;
-        TriggerStep *pStep;
-        if( 0==sqlite3_stricmp(sParse.pNewTrigger->table, zOld)
+        Trigger_ਕਦਮ *p_ਕਦਮ;
+        ਜੇ( 0==sqlite3_stricmp(sParse.pNewTrigger->ਸਾਰਣੀ_2, zOld)
             && sCtx.pTab->pSchema==pTrigger->pTabSchema
           ){
-          renameTokenFind(&sParse, &sCtx, sParse.pNewTrigger->table);
+          rename_Token_ਲੱਭੋ(&sParse, &sCtx, sParse.pNewTrigger->ਸਾਰਣੀ_2);
         }
 
-        if( isLegacy==0 ){
+        ਜੇ( isLegacy==0 ){
           rc = renameResolveTrigger(&sParse);
-          if( rc==SQLITE_OK ){
+          ਜੇ( rc==SQLITE_OK ){
             renameWalkTrigger(&sWalker, pTrigger);
-            for(pStep=pTrigger->step_list; pStep; pStep=pStep->pNext){
-              if( pStep->pSrc ){
-                int i;
-                for(i=0; i<pStep->pSrc->nSrc; i++){
-                  SrcItem *pItem = &pStep->pSrc->a[i];
-                  if( 0==sqlite3_stricmp(pItem->zName, zOld) ){
-                    renameTokenFind(&sParse, &sCtx, pItem->zName);
+            ਲਈ(p_ਕਦਮ=pTrigger->ਕਦਮ_list; p_ਕਦਮ; p_ਕਦਮ=p_ਕਦਮ->p_ਅਗਲਾ){
+              ਜੇ( p_ਕਦਮ->pSrc ){
+                ਪੂਰਨ i;
+                ਲਈ(i=0; i<p_ਕਦਮ->pSrc->nSrc; i++){
+                  Src_ਵਸਤੂ *p_ਵਸਤੂ = &p_ਕਦਮ->pSrc->a[i];
+                  ਜੇ( 0==sqlite3_stricmp(p_ਵਸਤੂ->zName, zOld) ){
+                    rename_Token_ਲੱਭੋ(&sParse, &sCtx, p_ਵਸਤੂ->zName);
                   }
                 }
               }
@@ -1902,38 +1902,38 @@ static void renameTableFunc(
           }
         }
       }
-#endif
+#ਜੇ_ਅੰਤ
     }
 
-    if( rc==SQLITE_OK ){
-      rc = renameEditSql(context, &sCtx, zInput, zNew, bQuote);
+    ਜੇ( rc==SQLITE_OK ){
+      rc = renameEditSql(context, &sCtx, z_ਨਿਵੇਸ਼, zNew, bQuote);
     }
-    if( rc!=SQLITE_OK ){
-      if( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
-        sqlite3_result_value(context, argv[3]);
-      }else if( sParse.zErrMsg ){
-        renameColumnParseError(context, "", argv[1], argv[2], &sParse);
-      }else{
-        sqlite3_result_error_code(context, rc);
+    ਜੇ( rc!=SQLITE_OK ){
+      ਜੇ( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
+        sqlite3_ਨਤੀਜਾ_ਮੁੱਲ(context, argv[3]);
+      }ਨਹੀਂਤਾਂ ਜੇ( sParse.z_Err_ਸੁਨੇਹਾ ){
+        rename_ਕਾਲਮ_Parse_Error(context, "", argv[1], argv[2], &sParse);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(context, rc);
       }
     }
 
     renameParseCleanup(&sParse);
     renameTokenFree(db, sCtx.pList);
     sqlite3BtreeLeaveAll(db);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
     db->xAuth = xAuth;
-#endif
+#ਜੇ_ਅੰਤ
   }
 
-  return;
+  ਵਾਪਸ;
 }
 
-static int renameQuotefixExprCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_STRING && (pExpr->flags & EP_DblQuoted) ){
-    renameTokenFind(pWalker->pParse, pWalker->u.pRename, (const void*)pExpr);
+ਸਥਿਰ ਪੂਰਨ rename_Quotefix_ਵਿਅੰਜਕ_Cb(Walker *pWalker, ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ){
+  ਜੇ( p_ਵਿਅੰਜਕ->op==TK_STRING && (p_ਵਿਅੰਜਕ->flags & EP_DblQuoted) ){
+    rename_Token_ਲੱਭੋ(pWalker->pParse, pWalker->u.pRename, (ਅਚਲ ਖਾਲੀ*)p_ਵਿਅੰਜਕ);
   }
-  return WRC_Continue;
+  ਵਾਪਸ WRC_Continue;
 }
 
 /* SQL function: sqlite_rename_quotefix(DB,SQL)
@@ -1963,91 +1963,91 @@ static int renameQuotefixExprCb(Walker *pWalker, Expr *pExpr){
 ** if PRAGMA writable_schema=ON, then just return the input string
 ** unmodified following an error.
 */
-static void renameQuotefixFunc(
+ਸਥਿਰ ਖਾਲੀ renameQuotefixFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char const *zDb = (const char*)sqlite3_value_text(argv[0]);
-  char const *zInput = (const char*)sqlite3_value_text(argv[1]);
+  ਅੱਖਰ ਅਚਲ *zDb = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅੱਖਰ ਅਚਲ *z_ਨਿਵੇਸ਼ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#ਜੇ_ਅੰਤ
 
   sqlite3BtreeEnterAll(db);
 
-  UNUSED_PARAMETER(NotUsed);
-  if( zDb && zInput ){
-    int rc;
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
+  ਜੇ( zDb && z_ਨਿਵੇਸ਼ ){
+    ਪੂਰਨ rc;
     Parse sParse;
-    rc = renameParseSql(&sParse, zDb, db, zInput, 0);
+    rc = renameParseSql(&sParse, zDb, db, z_ਨਿਵੇਸ਼, 0);
 
-    if( rc==SQLITE_OK ){
+    ਜੇ( rc==SQLITE_OK ){
       RenameCtx sCtx;
       Walker sWalker;
 
       /* Walker to find tokens that need to be replaced. */
-      memset(&sCtx, 0, sizeof(RenameCtx));
-      memset(&sWalker, 0, sizeof(Walker));
+      memset(&sCtx, 0, ਆਕਾਰ(RenameCtx));
+      memset(&sWalker, 0, ਆਕਾਰ(Walker));
       sWalker.pParse = &sParse;
-      sWalker.xExprCallback = renameQuotefixExprCb;
-      sWalker.xSelectCallback = renameColumnSelectCb;
+      sWalker.x_ਵਿਅੰਜਕ_Callback = rename_Quotefix_ਵਿਅੰਜਕ_Cb;
+      sWalker.xSelectCallback = rename_ਕਾਲਮ_Select_Cb;
       sWalker.u.pRename = &sCtx;
 
-      if( sParse.pNewTable ){
-        if( IsView(sParse.pNewTable) ){
-          Select *pSelect = sParse.pNewTable->u.view.pSelect;
+      ਜੇ( sParse.p_New_ਸਾਰਣੀ ){
+        ਜੇ( IsView(sParse.p_New_ਸਾਰਣੀ) ){
+          Select *pSelect = sParse.p_New_ਸਾਰਣੀ->u.view.pSelect;
           pSelect->selFlags &= ~(u32)SF_View;
           sParse.rc = SQLITE_OK;
           sqlite3SelectPrep(&sParse, pSelect, 0);
           rc = (db->mallocFailed ? SQLITE_NOMEM : sParse.rc);
-          if( rc==SQLITE_OK ){
+          ਜੇ( rc==SQLITE_OK ){
             sqlite3WalkSelect(&sWalker, pSelect);
           }
-        }else{
-          int i;
-          sqlite3WalkExprList(&sWalker, sParse.pNewTable->pCheck);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-          for(i=0; i<sParse.pNewTable->nCol; i++){
-            sqlite3WalkExpr(&sWalker,
-               sqlite3ColumnExpr(sParse.pNewTable,
-                                         &sParse.pNewTable->aCol[i]));
+        }ਨਹੀਂਤਾਂ{
+          ਪੂਰਨ i;
+          sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, sParse.p_New_ਸਾਰਣੀ->pCheck);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_GENERATED_COLUMNS
+          ਲਈ(i=0; i<sParse.p_New_ਸਾਰਣੀ->n_ਖਾਨਾ; i++){
+            sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker,
+               sqlite3_ਕਾਲਮ_ਵਿਅੰਜਕ(sParse.p_New_ਸਾਰਣੀ,
+                                         &sParse.p_New_ਸਾਰਣੀ->a_ਖਾਨਾ[i]));
           }
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_GENERATED_COLUMNS */
         }
-      }else if( sParse.pNewIndex ){
-        sqlite3WalkExprList(&sWalker, sParse.pNewIndex->aColExpr);
-        sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
-      }else{
-#ifndef SQLITE_OMIT_TRIGGER
+      }ਨਹੀਂਤਾਂ ਜੇ( sParse.p_New_ਸੂਚਕਾਂਕ ){
+        sqlite3_Walk_ਵਿਅੰਜਕ_List(&sWalker, sParse.p_New_ਸੂਚਕਾਂਕ->a_ਖਾਨਾ_ਵਿਅੰਜਕ);
+        sqlite3_Walk_ਵਿਅੰਜਕ(&sWalker, sParse.p_New_ਸੂਚਕਾਂਕ->pPartIdxWhere);
+      }ਨਹੀਂਤਾਂ{
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_TRIGGER
         rc = renameResolveTrigger(&sParse);
-        if( rc==SQLITE_OK ){
+        ਜੇ( rc==SQLITE_OK ){
           renameWalkTrigger(&sWalker, sParse.pNewTrigger);
         }
-#endif /* SQLITE_OMIT_TRIGGER */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_TRIGGER */
       }
 
-      if( rc==SQLITE_OK ){
-        rc = renameEditSql(context, &sCtx, zInput, 0, 0);
+      ਜੇ( rc==SQLITE_OK ){
+        rc = renameEditSql(context, &sCtx, z_ਨਿਵੇਸ਼, 0, 0);
       }
       renameTokenFree(db, sCtx.pList);
     }
-    if( rc!=SQLITE_OK ){
-      if( sqlite3WritableSchema(db) && rc==SQLITE_ERROR ){
-        sqlite3_result_value(context, argv[1]);
-      }else{
-        sqlite3_result_error_code(context, rc);
+    ਜੇ( rc!=SQLITE_OK ){
+      ਜੇ( sqlite3WritableSchema(db) && rc==SQLITE_ERROR ){
+        sqlite3_ਨਤੀਜਾ_ਮੁੱਲ(context, argv[1]);
+      }ਨਹੀਂਤਾਂ{
+        sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(context, rc);
       }
     }
     renameParseCleanup(&sParse);
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#ਜੇ_ਅੰਤ
 
   sqlite3BtreeLeaveAll(db);
 }
@@ -2076,67 +2076,67 @@ static void renameQuotefixFunc(
 **      attached to is in database zDb, then return 1.
 **   C. Otherwise return NULL.
 */
-static void renameTableTest(
+ਸਥਿਰ ਖਾਲੀ rename_ਸਾਰਣੀ_Test(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char const *zDb = (const char*)sqlite3_value_text(argv[0]);
-  char const *zInput = (const char*)sqlite3_value_text(argv[1]);
-  int bTemp = sqlite3_value_int(argv[4]);
-  int isLegacy = (db->flags & SQLITE_LegacyAlter);
-  char const *zWhen = (const char*)sqlite3_value_text(argv[5]);
-  int bNoDQS = sqlite3_value_int(argv[6]);
+  ਅੱਖਰ ਅਚਲ *zDb = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅੱਖਰ ਅਚਲ *z_ਨਿਵੇਸ਼ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+  ਪੂਰਨ b_ਆਰਜ਼ੀ = sqlite3_ਮੁੱਲ_int(argv[4]);
+  ਪੂਰਨ isLegacy = (db->flags & SQLITE_LegacyAlter);
+  ਅੱਖਰ ਅਚਲ *zWhen = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[5]);
+  ਪੂਰਨ bNoDQS = sqlite3_ਮੁੱਲ_int(argv[6]);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#ਜੇ_ਅੰਤ
 
-  UNUSED_PARAMETER(NotUsed);
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
 
-  if( zDb && zInput ){
-    int rc;
+  ਜੇ( zDb && z_ਨਿਵੇਸ਼ ){
+    ਪੂਰਨ rc;
     Parse sParse;
     u64 flags = db->flags;
-    if( bNoDQS ) db->flags &= ~(SQLITE_DqsDML|SQLITE_DqsDDL);
-    rc = renameParseSql(&sParse, zDb, db, zInput, bTemp);
+    ਜੇ( bNoDQS ) db->flags &= ~(SQLITE_DqsDML|SQLITE_DqsDDL);
+    rc = renameParseSql(&sParse, zDb, db, z_ਨਿਵੇਸ਼, b_ਆਰਜ਼ੀ);
     db->flags = flags;
-    if( rc==SQLITE_OK ){
-      if( isLegacy==0 && sParse.pNewTable && IsView(sParse.pNewTable) ){
+    ਜੇ( rc==SQLITE_OK ){
+      ਜੇ( isLegacy==0 && sParse.p_New_ਸਾਰਣੀ && IsView(sParse.p_New_ਸਾਰਣੀ) ){
         NameContext sNC;
-        memset(&sNC, 0, sizeof(sNC));
+        memset(&sNC, 0, ਆਕਾਰ(sNC));
         sNC.pParse = &sParse;
-        sqlite3SelectPrep(&sParse, sParse.pNewTable->u.view.pSelect, &sNC);
-        if( sParse.nErr ) rc = sParse.rc;
+        sqlite3SelectPrep(&sParse, sParse.p_New_ਸਾਰਣੀ->u.view.pSelect, &sNC);
+        ਜੇ( sParse.nErr ) rc = sParse.rc;
       }
 
-      else if( sParse.pNewTrigger ){
-        if( isLegacy==0 ){
+      ਨਹੀਂਤਾਂ ਜੇ( sParse.pNewTrigger ){
+        ਜੇ( isLegacy==0 ){
           rc = renameResolveTrigger(&sParse);
         }
-        if( rc==SQLITE_OK ){
-          int i1 = sqlite3SchemaToIndex(db, sParse.pNewTrigger->pTabSchema);
-          int i2 = sqlite3FindDbName(db, zDb);
-          if( i1==i2 ){
+        ਜੇ( rc==SQLITE_OK ){
+          ਪੂਰਨ i1 = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, sParse.pNewTrigger->pTabSchema);
+          ਪੂਰਨ i2 = sqlite3_ਲੱਭੋ_Db_Name(db, zDb);
+          ਜੇ( i1==i2 ){
             /* Handle output case B */
-            sqlite3_result_int(context, 1);
+            sqlite3_ਨਤੀਜਾ_int(context, 1);
           }
         }
       }
     }
 
-    if( rc!=SQLITE_OK && zWhen && !sqlite3WritableSchema(db) ){
+    ਜੇ( rc!=SQLITE_OK && zWhen && !sqlite3WritableSchema(db) ){
       /* Output case A */
-      renameColumnParseError(context, zWhen, argv[2], argv[3],&sParse);
+      rename_ਕਾਲਮ_Parse_Error(context, zWhen, argv[2], argv[3],&sParse);
     }
     renameParseCleanup(&sParse);
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 
@@ -2162,32 +2162,32 @@ static void renameTableTest(
 **                              |
 **                              `--- return value
 */
-static int getConstraintToken(const u8 *z, int *piToken){
-  int iOff = 0;
-  int t = 0;
-  do {
+ਸਥਿਰ ਪੂਰਨ getConstraintToken(ਅਚਲ u8 *z, ਪੂਰਨ *piToken){
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ t = 0;
+  ਕਰੋ {
     iOff += sqlite3GetToken(&z[iOff], &t);
-  }while( t==TK_SPACE || t==TK_COMMENT );
+  }ਜਦੋਂ( t==TK_SPACE || t==TK_COMMENT );
 
   *piToken = t;
 
-  if( t==TK_LP ){
-    int nNest = 1;
-    while( nNest>0 ){
+  ਜੇ( t==TK_LP ){
+    ਪੂਰਨ nNest = 1;
+    ਜਦੋਂ( nNest>0 ){
       iOff += sqlite3GetToken(&z[iOff], &t);
-      if( t==TK_LP ){
+      ਜੇ( t==TK_LP ){
         nNest++;
-      }else if( t==TK_RP ){
+      }ਨਹੀਂਤਾਂ ਜੇ( t==TK_RP ){
         t = TK_LP;
         nNest--;
-      }else if( t==TK_ILLEGAL ){
-        break;
+      }ਨਹੀਂਤਾਂ ਜੇ( t==TK_ILLEGAL ){
+        ਰੋਕੋ;
       }
     }
   }
 
   *piToken = t;
-  return iOff;
+  ਵਾਪਸ iOff;
 }
 
 /*
@@ -2202,69 +2202,69 @@ static int getConstraintToken(const u8 *z, int *piToken){
 ** The value returned is a string containing the CREATE TABLE statement
 ** with column argv[2] removed.
 */
-static void dropColumnFunc(
+ਸਥਿਰ ਖਾਲੀ drop_ਕਾਲਮ_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  int iSchema = sqlite3_value_int(argv[0]);
-  const char *zSql = (const char*)sqlite3_value_text(argv[1]);
-  int iCol = sqlite3_value_int(argv[2]);
-  const char *zDb = db->aDb[iSchema].zDbSName;
-  int rc;
+  ਪੂਰਨ iSchema = sqlite3_ਮੁੱਲ_int(argv[0]);
+  ਅਚਲ ਅੱਖਰ *zSql = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+  ਪੂਰਨ i_ਖਾਨਾ = sqlite3_ਮੁੱਲ_int(argv[2]);
+  ਅਚਲ ਅੱਖਰ *zDb = db->aDb[iSchema].zDbSName;
+  ਪੂਰਨ rc;
   Parse sParse;
-  RenameToken *pCol;
-  Table *pTab;
-  const char *zEnd;
-  char *zNew = 0;
+  RenameToken *p_ਖਾਨਾ;
+  ਸਾਰਣੀ *pTab;
+  ਅਚਲ ਅੱਖਰ *z_ਸਿਰਾ;
+  ਅੱਖਰ *zNew = 0;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#ਜੇ_ਅੰਤ
 
-  UNUSED_PARAMETER(NotUsed);
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
   rc = renameParseSql(&sParse, zDb, db, zSql, iSchema==1);
-  if( rc!=SQLITE_OK ) goto drop_column_done;
-  pTab = sParse.pNewTable;
-  if( pTab==0 || pTab->nCol==1 || iCol>=pTab->nCol ){
+  ਜੇ( rc!=SQLITE_OK ) ਜਾਓ drop_ਕਾਲਮ_ਪੂਰਾ;
+  pTab = sParse.p_New_ਸਾਰਣੀ;
+  ਜੇ( pTab==0 || pTab->n_ਖਾਨਾ==1 || i_ਖਾਨਾ>=pTab->n_ਖਾਨਾ ){
     /* This can happen if the sqlite_schema table is corrupt */
     rc = SQLITE_CORRUPT_BKPT;
-    goto drop_column_done;
+    ਜਾਓ drop_ਕਾਲਮ_ਪੂਰਾ;
   }
 
-  if( iCol<pTab->nCol-1 ){
-    RenameToken *pEnd;
-    pCol = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol].zCnName);
-    pEnd = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol+1].zCnName);
-    zEnd = (const char*)pEnd->t.z;
-  }else{
-    int eTok;
-    assert( IsOrdinaryTable(pTab) );
-    assert( iCol!=0 );
+  ਜੇ( i_ਖਾਨਾ<pTab->n_ਖਾਨਾ-1 ){
+    RenameToken *p_ਸਿਰਾ;
+    p_ਖਾਨਾ = rename_Token_ਲੱਭੋ(&sParse, 0, (ਖਾਲੀ*)pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName);
+    p_ਸਿਰਾ = rename_Token_ਲੱਭੋ(&sParse, 0, (ਖਾਲੀ*)pTab->a_ਖਾਨਾ[i_ਖਾਨਾ+1].zCnName);
+    z_ਸਿਰਾ = (ਅਚਲ ਅੱਖਰ*)p_ਸਿਰਾ->t.z;
+  }ਨਹੀਂਤਾਂ{
+    ਪੂਰਨ eTok;
+    ਪ੍ਰਤਿਜ੍ਞਾ( Is_Ordinary_ਸਾਰਣੀ(pTab) );
+    ਪ੍ਰਤਿਜ੍ਞਾ( i_ਖਾਨਾ!=0 );
     /* Point pCol->t.z at the "," immediately preceding the definition of
     ** the column being dropped. To do this, start at the name of the 
     ** previous column, and tokenize until the next ",".  */
-    pCol = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol-1].zCnName);
-    do {
-      pCol->t.z += getConstraintToken((const u8*)pCol->t.z, &eTok);
-    }while( eTok!=TK_COMMA );
-    pCol->t.z--;
-    zEnd = (const char*)&zSql[pTab->u.tab.addColOffset];
+    p_ਖਾਨਾ = rename_Token_ਲੱਭੋ(&sParse, 0, (ਖਾਲੀ*)pTab->a_ਖਾਨਾ[i_ਖਾਨਾ-1].zCnName);
+    ਕਰੋ {
+      p_ਖਾਨਾ->t.z += getConstraintToken((ਅਚਲ u8*)p_ਖਾਨਾ->t.z, &eTok);
+    }ਜਦੋਂ( eTok!=TK_COMMA );
+    p_ਖਾਨਾ->t.z--;
+    z_ਸਿਰਾ = (ਅਚਲ ਅੱਖਰ*)&zSql[pTab->u.tab.ਜੋੜੋ_ਖਾਨਾ_ਵਿੱਥ];
   }
 
-  zNew = sqlite3MPrintf(db, "%.*s%s", pCol->t.z-zSql, zSql, zEnd);
-  sqlite3_result_text(context, zNew, -1, SQLITE_TRANSIENT);
+  zNew = sqlite3MPrintf(db, "%.*s%s", p_ਖਾਨਾ->t.z-zSql, zSql, z_ਸਿਰਾ);
+  sqlite3_ਨਤੀਜਾ_ਪਾਠ(context, zNew, -1, SQLITE_TRANSIENT);
   sqlite3_free(zNew);
 
-drop_column_done:
+drop_ਕਾਲਮ_ਪੂਰਾ:
   renameParseCleanup(&sParse);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
-  if( rc!=SQLITE_OK ){
-    sqlite3_result_error_code(context, rc);
+#ਜੇ_ਅੰਤ
+  ਜੇ( rc!=SQLITE_OK ){
+    sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(context, rc);
   }
 }
 
@@ -2276,72 +2276,72 @@ drop_column_done:
 ** statement. Argument pSrc contains the possibly qualified name of the
 ** table being edited, and token pName the name of the column to drop.
 */
-void sqlite3AlterDropColumn(Parse *pParse, SrcList *pSrc, const Token *pName){
+ਖਾਲੀ sqlite3_Alter_Drop_ਕਾਲਮ(Parse *pParse, SrcList *pSrc, ਅਚਲ Token *pName){
   sqlite3 *db = pParse->db;       /* Database handle */
-  Table *pTab;                    /* Table to modify */
-  int iDb;                        /* Index of db containing pTab in aDb[] */
-  const char *zDb;                /* Database containing pTab ("main" etc.) */
-  char *zCol = 0;                 /* Name of column to drop */
-  int iCol;                       /* Index of column zCol in pTab->aCol[] */
+  ਸਾਰਣੀ *pTab;                    /* Table to modify */
+  ਪੂਰਨ iDb;                        /* Index of db containing pTab in aDb[] */
+  ਅਚਲ ਅੱਖਰ *zDb;                /* Database containing pTab ("main" etc.) */
+  ਅੱਖਰ *z_ਖਾਨਾ = 0;                 /* Name of column to drop */
+  ਪੂਰਨ i_ਖਾਨਾ;                       /* Index of column zCol in pTab->aCol[] */
 
   /* Look up the table being altered. */
-  assert( pParse->pNewTable==0 );
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  if( NEVER(db->mallocFailed) ) goto exit_drop_column;
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_drop_column;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pParse->p_New_ਸਾਰਣੀ==0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3BtreeHoldsAllMutexes(db) );
+  ਜੇ( NEVER(db->mallocFailed) ) ਜਾਓ exit_drop_ਕਾਲਮ;
+  pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, &pSrc->a[0]);
+  ਜੇ( !pTab ) ਜਾਓ exit_drop_ਕਾਲਮ;
 
   /* Make sure this is not an attempt to ALTER a view, virtual table or
   ** system table. */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ) goto exit_drop_column;
-  if( SQLITE_OK!=isRealTable(pParse, pTab, 1) ) goto exit_drop_column;
+  ਜੇ( SQLITE_OK!=is_Alterable_ਸਾਰਣੀ(pParse, pTab) ) ਜਾਓ exit_drop_ਕਾਲਮ;
+  ਜੇ( SQLITE_OK!=is_Real_ਸਾਰਣੀ(pParse, pTab, 1) ) ਜਾਓ exit_drop_ਕਾਲਮ;
 
   /* Find the index of the column being dropped. */
-  zCol = sqlite3NameFromToken(db, pName);
-  if( zCol==0 ){
-    assert( db->mallocFailed );
-    goto exit_drop_column;
+  z_ਖਾਨਾ = sqlite3NameFromToken(db, pName);
+  ਜੇ( z_ਖਾਨਾ==0 ){
+    ਪ੍ਰਤਿਜ੍ਞਾ( db->mallocFailed );
+    ਜਾਓ exit_drop_ਕਾਲਮ;
   }
-  iCol = sqlite3ColumnIndex(pTab, zCol);
-  if( iCol<0 ){
-    sqlite3ErrorMsg(pParse, "no such column: \"%T\"", pName);
-    goto exit_drop_column;
+  i_ਖਾਨਾ = sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pTab, z_ਖਾਨਾ);
+  ਜੇ( i_ਖਾਨਾ<0 ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such column: \"%T\"", pName);
+    ਜਾਓ exit_drop_ਕਾਲਮ;
   }
-  if( isRowidAlias(pParse, pTab, zCol, "drop") ) goto exit_drop_column;
+  ਜੇ( isRowidAlias(pParse, pTab, z_ਖਾਨਾ, "drop") ) ਜਾਓ exit_drop_ਕਾਲਮ;
 
   /* Do not allow the user to drop a PRIMARY KEY column or a column
   ** constrained by a UNIQUE constraint.  */
-  if( pTab->aCol[iCol].colFlags & (COLFLAG_PRIMKEY|COLFLAG_UNIQUE) ){
-    sqlite3ErrorMsg(pParse, "cannot drop %s column: \"%s\"",
-        (pTab->aCol[iCol].colFlags&COLFLAG_PRIMKEY) ? "PRIMARY KEY" : "UNIQUE",
-        zCol
+  ਜੇ( pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].ਖਾਨਾ_Flags & (COLFLAG_PRIMKEY|COLFLAG_UNIQUE) ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot drop %s column: \"%s\"",
+        (pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].ਖਾਨਾ_Flags&COLFLAG_PRIMKEY) ? "PRIMARY KEY" : "UNIQUE",
+        z_ਖਾਨਾ
     );
-    goto exit_drop_column;
+    ਜਾਓ exit_drop_ਕਾਲਮ;
   }
 
   /* Do not allow the number of columns to go to zero */
-  if( pTab->nCol<=1 ){
-    sqlite3ErrorMsg(pParse, "cannot drop column \"%s\": no other columns exist",zCol);
-    goto exit_drop_column;
+  ਜੇ( pTab->n_ਖਾਨਾ<=1 ){
+    sqlite3_Error_ਸੁਨੇਹਾ(pParse, "cannot drop column \"%s\": no other columns exist",z_ਖਾਨਾ);
+    ਜਾਓ exit_drop_ਕਾਲਮ;
   }
 
   /* Edit the sqlite_schema table */
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb>=0 );
+  iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema);
+  ਪ੍ਰਤਿਜ੍ਞਾ( iDb>=0 );
   zDb = db->aDb[iDb].zDbSName;
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, zCol) ){
-    goto exit_drop_column;
+  ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, zDb, pTab->zName, z_ਖਾਨਾ) ){
+    ਜਾਓ exit_drop_ਕਾਲਮ;
   }
-#endif
+#ਜੇ_ਅੰਤ
   renameTestSchema(pParse, zDb, iDb==1, "", 0);
   renameFixQuotes(pParse, zDb, iDb==1);
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_drop_column(%d, sql, %d) "
       "WHERE (type=='table' AND tbl_name=%Q COLLATE nocase)"
-      , zDb, iDb, iCol, pTab->zName
+      , zDb, iDb, i_ਖਾਨਾ, pTab->zName
   );
 
   /* Drop and reload the database schema. */
@@ -2349,90 +2349,90 @@ void sqlite3AlterDropColumn(Parse *pParse, SrcList *pSrc, const Token *pName){
   renameTestSchema(pParse, zDb, iDb==1, "after drop column", 1);
 
   /* Edit rows of table on disk */
-  if( pParse->nErr==0 && (pTab->aCol[iCol].colFlags & COLFLAG_VIRTUAL)==0 ){
-    int i;
-    int addr;
-    int reg;
-    int regRec;
-    Index *pPk = 0;
-    int nField = 0;               /* Number of non-virtual columns after drop */
-    int iCur;
+  ਜੇ( pParse->nErr==0 && (pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].ਖਾਨਾ_Flags & COLFLAG_VIRTUAL)==0 ){
+    ਪੂਰਨ i;
+    ਪੂਰਨ addr;
+    ਪੂਰਨ reg;
+    ਪੂਰਨ regRec;
+    ਸੂਚਕਾਂਕ *pPk = 0;
+    ਪੂਰਨ n_ਖੇਤਰ = 0;               /* Number of non-virtual columns after drop */
+    ਪੂਰਨ iCur;
     Vdbe *v = sqlite3GetVdbe(pParse);
     iCur = pParse->nTab++;
-    sqlite3OpenTable(pParse, iCur, iDb, pTab, OP_OpenWrite);
-    addr = sqlite3VdbeAddOp1(v, OP_Rewind, iCur); VdbeCoverage(v);
+    sqlite3_Open_ਸਾਰਣੀ(pParse, iCur, iDb, pTab, OP_OpenWrite);
+    addr = sqlite3_Vdbe_ਜੋੜੋ_Op1(v, OP_Rewind, iCur); VdbeCoverage(v);
     reg = ++pParse->nMem;
-    if( HasRowid(pTab) ){
-      sqlite3VdbeAddOp2(v, OP_Rowid, iCur, reg);
-      pParse->nMem += pTab->nCol;
-    }else{
-      pPk = sqlite3PrimaryKeyIndex(pTab);
-      pParse->nMem += pPk->nColumn;
-      for(i=0; i<pPk->nKeyCol; i++){
-        sqlite3VdbeAddOp3(v, OP_Column, iCur, i, reg+i+1);
+    ਜੇ( HasRowid(pTab) ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Rowid, iCur, reg);
+      pParse->nMem += pTab->n_ਖਾਨਾ;
+    }ਨਹੀਂਤਾਂ{
+      pPk = sqlite3_Primary_ਕੁੰਜੀ_ਸੂਚਕਾਂਕ(pTab);
+      pParse->nMem += pPk->n_ਕਾਲਮ;
+      ਲਈ(i=0; i<pPk->n_ਕੁੰਜੀ_ਖਾਨਾ; i++){
+        sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਕਾਲਮ, iCur, i, reg+i+1);
       }
-      nField = pPk->nKeyCol;
+      n_ਖੇਤਰ = pPk->n_ਕੁੰਜੀ_ਖਾਨਾ;
     }
     regRec = ++pParse->nMem;
-    for(i=0; i<pTab->nCol; i++){
-      if( i!=iCol && (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
-        int regOut;
-        if( pPk ){
-          int iPos = sqlite3TableColumnToIndex(pPk, i);
-          int iColPos = sqlite3TableColumnToIndex(pPk, iCol);
-          if( iPos<pPk->nKeyCol ) continue;
-          regOut = reg+1+iPos-(iPos>iColPos);
-        }else{
-          regOut = reg+1+nField;
+    ਲਈ(i=0; i<pTab->n_ਖਾਨਾ; i++){
+      ਜੇ( i!=i_ਖਾਨਾ && (pTab->a_ਖਾਨਾ[i].ਖਾਨਾ_Flags & COLFLAG_VIRTUAL)==0 ){
+        ਪੂਰਨ reg_ਬਾਹਰਲਾ;
+        ਜੇ( pPk ){
+          ਪੂਰਨ iPos = sqlite3_ਸਾਰਣੀ_ਕਾਲਮ_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pPk, i);
+          ਪੂਰਨ i_ਖਾਨਾ_Pos = sqlite3_ਸਾਰਣੀ_ਕਾਲਮ_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(pPk, i_ਖਾਨਾ);
+          ਜੇ( iPos<pPk->n_ਕੁੰਜੀ_ਖਾਨਾ ) ਜਾਰੀ;
+          reg_ਬਾਹਰਲਾ = reg+1+iPos-(iPos>i_ਖਾਨਾ_Pos);
+        }ਨਹੀਂਤਾਂ{
+          reg_ਬਾਹਰਲਾ = reg+1+n_ਖੇਤਰ;
         }
-        if( i==pTab->iPKey ){
-          sqlite3VdbeAddOp2(v, OP_Null, 0, regOut);
-        }else{
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, i, regOut);
-          assert( pParse->nErr
+        ਜੇ( i==pTab->iPKey ){
+          sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Null, 0, reg_ਬਾਹਰਲਾ);
+        }ਨਹੀਂਤਾਂ{
+          sqlite3_ਵਿਅੰਜਕ_ਕੋਡ_Get_ਕਾਲਮ_ਦਾ_ਸਾਰਣੀ(v, pTab, iCur, i, reg_ਬਾਹਰਲਾ);
+          ਪ੍ਰਤਿਜ੍ਞਾ( pParse->nErr
                || sqlite3VdbeGetOp(v,sqlite3VdbeCurrentAddr(v)-1)->opcode
                     != OP_RealAffinity
-               || pTab->aCol[i].affinity==SQLITE_AFF_REAL );
-          sqlite3VdbeDeletePriorOpcode(v, OP_RealAffinity);
+               || pTab->a_ਖਾਨਾ[i].affinity==SQLITE_AFF_REAL );
+          sqlite3_Vdbe_Delete_ਪੂਰਵ_Opcode(v, OP_RealAffinity);
         }
-        nField++;
+        n_ਖੇਤਰ++;
       }
     }
-    if( nField==0 ){
+    ਜੇ( n_ਖੇਤਰ==0 ){
       /* dbsqlfuzz 5f09e7bcc78b4954d06bf9f2400d7715f48d1fef */
       pParse->nMem++;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, reg+1);
-      nField = 1;
+      sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_Null, 0, reg+1);
+      n_ਖੇਤਰ = 1;
     }
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, reg+1, nField, regRec);
-    if( pPk ){
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iCur, regRec, reg+1, pPk->nKeyCol);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_Insert, iCur, regRec, reg);
+    sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_Make_ਰਿਕਾਰਡ, reg+1, n_ਖੇਤਰ, regRec);
+    ਜੇ( pPk ){
+      sqlite3_Vdbe_ਜੋੜੋ_Op4_Int(v, OP_Idx_ਪਾਓ, iCur, regRec, reg+1, pPk->n_ਕੁੰਜੀ_ਖਾਨਾ);
+    }ਨਹੀਂਤਾਂ{
+      sqlite3_Vdbe_ਜੋੜੋ_Op3(v, OP_ਪਾਓ, iCur, regRec, reg);
     }
     sqlite3VdbeChangeP5(v, OPFLAG_SAVEPOSITION);
 
-    sqlite3VdbeAddOp2(v, OP_Next, iCur, addr+1); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr);
+    sqlite3_Vdbe_ਜੋੜੋ_Op2(v, OP_ਅਗਲਾ, iCur, addr+1); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ਇੱਥੇ(v, addr);
   }
 
-exit_drop_column:
-  sqlite3DbFree(db, zCol);
+exit_drop_ਕਾਲਮ:
+  sqlite3DbFree(db, z_ਖਾਨਾ);
   sqlite3SrcListDelete(db, pSrc);
 }
 
 /*
 ** Return the number of bytes of leading whitespace/comments in string z[].
 */
-static int getWhitespace(const u8 *z){
-  int nRet = 0;
-  while( 1 ){
-    int t = 0;
-    int n = sqlite3GetToken(&z[nRet], &t);
-    if( t!=TK_SPACE && t!=TK_COMMENT ) break;
+ਸਥਿਰ ਪੂਰਨ getWhitespace(ਅਚਲ u8 *z){
+  ਪੂਰਨ nRet = 0;
+  ਜਦੋਂ( 1 ){
+    ਪੂਰਨ t = 0;
+    ਪੂਰਨ n = sqlite3GetToken(&z[nRet], &t);
+    ਜੇ( t!=TK_SPACE && t!=TK_COMMENT ) ਰੋਕੋ;
     nRet += n;
   }
-  return nRet;
+  ਵਾਪਸ nRet;
 }
 
 
@@ -2450,12 +2450,12 @@ static int getWhitespace(const u8 *z){
 **
 ** Return the number of bytes until the end of the constraint. 
 */
-static int getConstraint(const u8 *z, int eTok){
-  int iOff = 0;
-  int t = 0;
+ਸਥਿਰ ਪੂਰਨ getConstraint(ਅਚਲ u8 *z, ਪੂਰਨ eTok){
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ t = 0;
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  if( eTok==TK_FOREIGN ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_FOREIGN_ਕੁੰਜੀ
+  ਜੇ( eTok==TK_FOREIGN ){
     /* For a FOREIGN KEY constraint, use getConstraint() to parse everything
     ** up to the REFERENCES keyword. Then getConstraintToken() to consume
     ** the TK_REFERENCES token itself. Then fall through to the special
@@ -2464,12 +2464,12 @@ static int getConstraint(const u8 *z, int eTok){
     iOff += getConstraintToken(&z[iOff], &eTok);
   }
 
-  if( eTok==TK_REFERENCES ){
+  ਜੇ( eTok==TK_REFERENCES ){
     /* REFERENCES is followed by a table name. Gobble this up here in
     ** case the table name is a fallback token like TK_GENERATED. */
     iOff += getConstraintToken(&z[iOff], &t);
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Now, the current constraint proceeds until the next occurence of one 
   ** of the following tokens: 
@@ -2479,19 +2479,19 @@ static int getConstraint(const u8 *z, int eTok){
   **
   ** Also exit the loop if ILLEGAL turns up.
   */
-  while( 1 ){
-    int n = getConstraintToken(&z[iOff], &t);
-    if( t==TK_CONSTRAINT || t==TK_PRIMARY || t==TK_NOT || t==TK_UNIQUE
+  ਜਦੋਂ( 1 ){
+    ਪੂਰਨ n = getConstraintToken(&z[iOff], &t);
+    ਜੇ( t==TK_CONSTRAINT || t==TK_PRIMARY || t==TK_NOT || t==TK_UNIQUE
      || t==TK_CHECK || t==TK_DEFAULT || t==TK_COLLATE || t==TK_REFERENCES
      || t==TK_FOREIGN || t==TK_RP || t==TK_COMMA || t==TK_ILLEGAL
      || t==TK_AS || t==TK_GENERATED
     ){
-      break;
+      ਰੋਕੋ;
     }
     iOff += n;
   }
   
-  return iOff;
+  ਵਾਪਸ iOff;
 }
 
 /*
@@ -2505,30 +2505,30 @@ static int getConstraint(const u8 *z, int eTok){
 ** non-zero if they differ.  Normally return SQLITE_OK, except if there
 ** is an OOM, set the OOM error condition on ctx and return SQLITE_NOMEM.
 */
-static int quotedCompare(
+ਸਥਿਰ ਪੂਰਨ quotedCompare(
   sqlite3_context *ctx,  /* Function context on which to report errors */
-  int t,                 /* Token type */
-  const u8 *zQuote,      /* Possibly quoted text.  Not zero-terminated. */
-  int nQuote,            /* Length of zQuote in bytes */
-  const u8 *zCmp,        /* Zero-terminated, unquoted name to compare against */
-  int *pRes              /* OUT: Set to 0 if equal, non-zero if unequal */
+  ਪੂਰਨ t,                 /* Token type */
+  ਅਚਲ u8 *zQuote,      /* Possibly quoted text.  Not zero-terminated. */
+  ਪੂਰਨ nQuote,            /* Length of zQuote in bytes */
+  ਅਚਲ u8 *zCmp,        /* Zero-terminated, unquoted name to compare against */
+  ਪੂਰਨ *pRes              /* OUT: Set to 0 if equal, non-zero if unequal */
 ){
-  char *zCopy = 0;       /* De-quoted, zero-terminated copy of zQuote[] */
+  ਅੱਖਰ *zCopy = 0;       /* De-quoted, zero-terminated copy of zQuote[] */
 
-  if( t==TK_ILLEGAL ){
+  ਜੇ( t==TK_ILLEGAL ){
     *pRes = 1;
-    return SQLITE_OK;
+    ਵਾਪਸ SQLITE_OK;
   }
   zCopy = sqlite3MallocZero(nQuote+1);
-  if( zCopy==0 ){
-    sqlite3_result_error_nomem(ctx);
-    return SQLITE_NOMEM_BKPT;
+  ਜੇ( zCopy==0 ){
+    sqlite3_ਨਤੀਜਾ_error_nomem(ctx);
+    ਵਾਪਸ SQLITE_NOMEM_BKPT;
   }
-  memcpy(zCopy, zQuote, nQuote);
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(zCopy, zQuote, nQuote);
   sqlite3Dequote(zCopy);
-  *pRes = sqlite3_stricmp((const char*)zCopy, (const char*)zCmp);
+  *pRes = sqlite3_stricmp((ਅਚਲ ਅੱਖਰ*)zCopy, (ਅਚਲ ਅੱਖਰ*)zCmp);
   sqlite3_free(zCopy);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -2537,24 +2537,24 @@ static int quotedCompare(
 ** that offset into *piOff and return SQLITE_OK.  Or, if not found,
 ** set the SQLITE_CORRUPT error code and return SQLITE_ERROR.
 */
-static int skipCreateTable(sqlite3_context *ctx, const u8 *zSql, int *piOff){
-  int iOff = 0;
+ਸਥਿਰ ਪੂਰਨ skip_Create_ਸਾਰਣੀ(sqlite3_context *ctx, ਅਚਲ u8 *zSql, ਪੂਰਨ *piOff){
+  ਪੂਰਨ iOff = 0;
 
-  if( zSql==0 ) return SQLITE_ERROR;
+  ਜੇ( zSql==0 ) ਵਾਪਸ SQLITE_ERROR;
 
   /* Jump past the "CREATE TABLE" bit. */
-  while( 1 ){
-    int t = 0;
+  ਜਦੋਂ( 1 ){
+    ਪੂਰਨ t = 0;
     iOff += sqlite3GetToken(&zSql[iOff], &t);
-    if( t==TK_LP ) break;
-    if( t==TK_ILLEGAL ){
-      sqlite3_result_error_code(ctx, SQLITE_CORRUPT_BKPT);
-      return SQLITE_ERROR;
+    ਜੇ( t==TK_LP ) ਰੋਕੋ;
+    ਜੇ( t==TK_ILLEGAL ){
+      sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(ctx, SQLITE_CORRUPT_BKPT);
+      ਵਾਪਸ SQLITE_ERROR;
     }
   }
 
   *piOff = iOff;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
@@ -2568,47 +2568,47 @@ static int skipCreateTable(sqlite3_context *ctx, const u8 *zSql, int *piOff){
 **
 ** In the first case, the left-most column is 0.
 */
-static void dropConstraintFunc(
+ਸਥਿਰ ਖਾਲੀ dropConstraintFunc(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  const u8 *zSql = sqlite3_value_text(argv[0]);
-  const u8 *zCons = 0;
-  int iNotNull = -1;
-  int ii;
-  int iOff = 0;
-  int iStart = 0;
-  int iEnd = 0;
-  char *zNew = 0;
-  int t = 0;
+  ਅਚਲ u8 *zSql = sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅਚਲ u8 *zCons = 0;
+  ਪੂਰਨ iNotNull = -1;
+  ਪੂਰਨ ii;
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ i_ਸ਼ੁਰੂ = 0;
+  ਪੂਰਨ i_ਸਿਰਾ = 0;
+  ਅੱਖਰ *zNew = 0;
+  ਪੂਰਨ t = 0;
   sqlite3 *db;
-  UNUSED_PARAMETER(NotUsed);
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
 
-  if( zSql==0 ) return;
+  ਜੇ( zSql==0 ) ਵਾਪਸ;
 
   /* Jump past the "CREATE TABLE" bit. */
-  if( skipCreateTable(ctx, zSql, &iOff) ) return;
+  ਜੇ( skip_Create_ਸਾਰਣੀ(ctx, zSql, &iOff) ) ਵਾਪਸ;
 
-  if( sqlite3_value_type(argv[1])==SQLITE_INTEGER ){
-    iNotNull = sqlite3_value_int(argv[1]);
-  }else{
-    zCons = sqlite3_value_text(argv[1]);
+  ਜੇ( sqlite3_ਮੁੱਲ_type(argv[1])==SQLITE_INTEGER ){
+    iNotNull = sqlite3_ਮੁੱਲ_int(argv[1]);
+  }ਨਹੀਂਤਾਂ{
+    zCons = sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
   }
 
   /* Search for the named constraint within column definitions. */
-  for(ii=0; iEnd==0; ii++){
+  ਲਈ(ii=0; i_ਸਿਰਾ==0; ii++){
   
     /* Now parse the column or table constraint definition. Search
     ** for the token CONSTRAINT if this is a DROP CONSTRAINT command, or
     ** NOT in the right column if this is a DROP NOT NULL. */
-    while( 1 ){
-      iStart = iOff;
+    ਜਦੋਂ( 1 ){
+      i_ਸ਼ੁਰੂ = iOff;
       iOff += getConstraintToken(&zSql[iOff], &t);
-      if( t==TK_CONSTRAINT && (zCons || iNotNull==ii) ){
+      ਜੇ( t==TK_CONSTRAINT && (zCons || iNotNull==ii) ){
         /* Check if this is the constraint we are searching for. */
-        int nTok = 0;
-        int cmp = 1;
+        ਪੂਰਨ nTok = 0;
+        ਪੂਰਨ cmp = 1;
 
         /* Skip past any whitespace. */
         iOff += getWhitespace(&zSql[iOff]);
@@ -2616,8 +2616,8 @@ static void dropConstraintFunc(
         /* Compare the next token - which may be quoted - with the name of
         ** the constraint being dropped.  */
         nTok = getConstraintToken(&zSql[iOff], &t);
-        if( zCons ){
-          if( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) return;
+        ਜੇ( zCons ){
+          ਜੇ( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) ਵਾਪਸ;
         }
         iOff += nTok;
 
@@ -2636,61 +2636,61 @@ static void dropConstraintFunc(
         ** the next iteration of the loop with &zSql[iOff] still pointing
         ** to the CONSTRAINT keyword.  */
         nTok = getConstraintToken(&zSql[iOff], &t);
-        if( t==TK_CONSTRAINT || t==TK_DEFAULT || t==TK_COLLATE 
+        ਜੇ( t==TK_CONSTRAINT || t==TK_DEFAULT || t==TK_COLLATE 
          || t==TK_COMMA || t==TK_RP || t==TK_GENERATED || t==TK_AS 
         ){
           t = TK_CHECK;
-        }else{
+        }ਨਹੀਂਤਾਂ{
           iOff += nTok;
           iOff += getConstraint(&zSql[iOff], t);
         }
 
-        if( cmp==0 || (iNotNull>=0 && t==TK_NOT) ){
-          if( t!=TK_NOT && t!=TK_CHECK && t!=TK_REFERENCES && t!=TK_FOREIGN ){
+        ਜੇ( cmp==0 || (iNotNull>=0 && t==TK_NOT) ){
+          ਜੇ( t!=TK_NOT && t!=TK_CHECK && t!=TK_REFERENCES && t!=TK_FOREIGN ){
             errorMPrintf(ctx, "constraint may not be dropped: %s", zCons);
-            return;
+            ਵਾਪਸ;
           }
-          iEnd = iOff;
-          break;
+          i_ਸਿਰਾ = iOff;
+          ਰੋਕੋ;
         }
 
-      }else if( t==TK_NOT && iNotNull==ii ){
-        iEnd = iOff + getConstraint(&zSql[iOff], 0);
-        break;
-      }else if( t==TK_RP || t==TK_ILLEGAL ){
-        iEnd = -1;
-        break;
-      }else if( t==TK_COMMA ){
-        break;
+      }ਨਹੀਂਤਾਂ ਜੇ( t==TK_NOT && iNotNull==ii ){
+        i_ਸਿਰਾ = iOff + getConstraint(&zSql[iOff], 0);
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ ਜੇ( t==TK_RP || t==TK_ILLEGAL ){
+        i_ਸਿਰਾ = -1;
+        ਰੋਕੋ;
+      }ਨਹੀਂਤਾਂ ਜੇ( t==TK_COMMA ){
+        ਰੋਕੋ;
       }
     }
   }
 
   /* If the constraint has not been found it is an error. */
-  if( iEnd<=0 ){
-    if( zCons ){
+  ਜੇ( i_ਸਿਰਾ<=0 ){
+    ਜੇ( zCons ){
       errorMPrintf(ctx, "no such constraint: %s", zCons);
-    }else{
+    }ਨਹੀਂਤਾਂ{
       /* SQLite follows postgres in that a DROP NOT NULL on a column that is
       ** not NOT NULL is not an error. So just return the original SQL here. */
-      sqlite3_result_text(ctx, (const char*)zSql, -1, SQLITE_TRANSIENT);
+      sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, (ਅਚਲ ਅੱਖਰ*)zSql, -1, SQLITE_TRANSIENT);
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
 
     /* Figure out if an extra space should be inserted after the constraint
     ** is removed. And if an additional comma preceding the constraint 
     ** should be removed. */
-    const char *zSpace = " ";
-    iEnd += getWhitespace(&zSql[iEnd]);
-    sqlite3GetToken(&zSql[iEnd], &t);
-    if( t==TK_RP || t==TK_COMMA ){
+    ਅਚਲ ਅੱਖਰ *zSpace = " ";
+    i_ਸਿਰਾ += getWhitespace(&zSql[i_ਸਿਰਾ]);
+    sqlite3GetToken(&zSql[i_ਸਿਰਾ], &t);
+    ਜੇ( t==TK_RP || t==TK_COMMA ){
       zSpace = "";
-      if( zSql[iStart-1]==',' ) iStart--;
+      ਜੇ( zSql[i_ਸ਼ੁਰੂ-1]==',' ) i_ਸ਼ੁਰੂ--;
     }
 
     db = sqlite3_context_db_handle(ctx);
-    zNew = sqlite3MPrintf(db, "%.*s%s%s", iStart, zSql, zSpace, &zSql[iEnd]);
-    sqlite3_result_text(ctx, zNew, -1, SQLITE_DYNAMIC);
+    zNew = sqlite3MPrintf(db, "%.*s%s%s", i_ਸ਼ੁਰੂ, zSql, zSpace, &zSql[i_ਸਿਰਾ]);
+    sqlite3_ਨਤੀਜਾ_ਪਾਠ(ctx, zNew, -1, SQLITE_DYNAMIC);
   }
 }
 
@@ -2703,30 +2703,30 @@ static void dropConstraintFunc(
 ** SQL that adds CONSTRAINT-TEXT at the end of the ICOL-th column
 ** definition.  (The left-most column defintion is 0.)
 */
-static void addConstraintFunc(
+ਸਥਿਰ ਖਾਲੀ ਜੋੜੋ_Constraint_Func(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  const u8 *zSql = sqlite3_value_text(argv[0]);
-  const char *zCons = (const char*)sqlite3_value_text(argv[1]);
-  int iCol = sqlite3_value_int(argv[2]);
-  int iOff = 0;
-  int ii;
+  ਅਚਲ u8 *zSql = sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਅਚਲ ਅੱਖਰ *zCons = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
+  ਪੂਰਨ i_ਖਾਨਾ = sqlite3_ਮੁੱਲ_int(argv[2]);
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ ii;
   sqlite3_str *pNew;
-  int t = 0;
-  UNUSED_PARAMETER(NotUsed);
+  ਪੂਰਨ t = 0;
+  ਅਣਵਰਤਿਆ_PARAMETER(Not_ਵਰਤਿਆ);
 
-  if( skipCreateTable(ctx, zSql, &iOff) ) return;
+  ਜੇ( skip_Create_ਸਾਰਣੀ(ctx, zSql, &iOff) ) ਵਾਪਸ;
   
-  for(ii=0; ii<=iCol || (iCol<0 && t!=TK_RP); ii++){
+  ਲਈ(ii=0; ii<=i_ਖਾਨਾ || (i_ਖਾਨਾ<0 && t!=TK_RP); ii++){
     iOff += getConstraintToken(&zSql[iOff], &t);
-    while( 1 ){
-      int nTok = getConstraintToken(&zSql[iOff], &t);
-      if( t==TK_COMMA || t==TK_RP ) break;
-      if( t==TK_ILLEGAL ){
-        sqlite3_result_error_code(ctx, SQLITE_CORRUPT_BKPT);
-        return;
+    ਜਦੋਂ( 1 ){
+      ਪੂਰਨ nTok = getConstraintToken(&zSql[iOff], &t);
+      ਜੇ( t==TK_COMMA || t==TK_RP ) ਰੋਕੋ;
+      ਜੇ( t==TK_ILLEGAL ){
+        sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(ctx, SQLITE_CORRUPT_BKPT);
+        ਵਾਪਸ;
       }
       iOff += nTok;
     }
@@ -2735,10 +2735,10 @@ static void addConstraintFunc(
   iOff += getWhitespace(&zSql[iOff]);
 
   pNew = sqlite3_str_new(sqlite3_context_db_handle(ctx));
-  sqlite3_str_append(pNew, (const char*)zSql, iOff);
-  if( iCol<0 ) sqlite3_str_append(pNew, ",", 1);
+  sqlite3_str_append(pNew, (ਅਚਲ ਅੱਖਰ*)zSql, iOff);
+  ਜੇ( i_ਖਾਨਾ<0 ) sqlite3_str_append(pNew, ",", 1);
   sqlite3_str_appendf(pNew, " %s%s", zCons, &zSql[iOff]);
-  sqlite3_result_str(ctx, pNew, SQLITE_FINISH);
+  sqlite3_ਨਤੀਜਾ_str(ctx, pNew, SQLITE_ਅੰਤ);
 }
 
 /*
@@ -2747,35 +2747,35 @@ static void addConstraintFunc(
 ** SQLITE_OK. Otherwise, set *piCol to -1 and return an SQLite error
 ** code.
 */
-static int alterFindCol(Parse *pParse, Table *pTab, Token *pCol, int *piCol){
+ਸਥਿਰ ਪੂਰਨ alter_ਲੱਭੋ_ਖਾਨਾ(Parse *pParse, ਸਾਰਣੀ *pTab, Token *p_ਖਾਨਾ, ਪੂਰਨ *pi_ਖਾਨਾ){
   sqlite3 *db = pParse->db;
-  char *zName = sqlite3NameFromToken(db, pCol);
-  int rc = SQLITE_NOMEM;
-  int iCol = -1;
+  ਅੱਖਰ *zName = sqlite3NameFromToken(db, p_ਖਾਨਾ);
+  ਪੂਰਨ rc = SQLITE_NOMEM;
+  ਪੂਰਨ i_ਖਾਨਾ = -1;
 
-  if( zName ){
-    iCol = sqlite3ColumnIndex(pTab, zName);
-    if( iCol<0 ){
-      sqlite3ErrorMsg(pParse, "no such column: %s", zName);
+  ਜੇ( zName ){
+    i_ਖਾਨਾ = sqlite3_ਕਾਲਮ_ਸੂਚਕਾਂਕ(pTab, zName);
+    ਜੇ( i_ਖਾਨਾ<0 ){
+      sqlite3_Error_ਸੁਨੇਹਾ(pParse, "no such column: %s", zName);
       rc = SQLITE_ERROR;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       rc = SQLITE_OK;
     }
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( rc==SQLITE_OK ){
-    const char *zDb = db->aDb[sqlite3SchemaToIndex(db, pTab->pSchema)].zDbSName;
-    const char *zCol = pTab->aCol[iCol].zCnName;
-    if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, zCol) ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
+  ਜੇ( rc==SQLITE_OK ){
+    ਅਚਲ ਅੱਖਰ *zDb = db->aDb[sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema)].zDbSName;
+    ਅਚਲ ਅੱਖਰ *z_ਖਾਨਾ = pTab->a_ਖਾਨਾ[i_ਖਾਨਾ].zCnName;
+    ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, zDb, pTab->zName, z_ਖਾਨਾ) ){
       pTab = 0;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
 
   sqlite3DbFree(db, zName);
-  *piCol = iCol;
-  return rc;
+  *pi_ਖਾਨਾ = i_ਖਾਨਾ;
+  ਵਾਪਸ rc;
 }
 
 
@@ -2788,37 +2788,37 @@ static int alterFindCol(Parse *pParse, Table *pTab, Token *pCol, int *piCol){
 ** If the table cannot be located, return NULL. The value of the two output
 ** parameters is undefined in this case.
 */
-static Table *alterFindTable(
+ਸਥਿਰ ਸਾਰਣੀ *alter_ਲੱਭੋ_ਸਾਰਣੀ(
   Parse *pParse,        /* Parsing context */
   SrcList *pSrc,        /* Name of the table to look for */
-  int *piDb,            /* OUT: write the iDb here */
-  const char **pzDb,    /* OUT: write name of schema here */
-  int bAuth             /* Do ALTER TABLE authorization checks if true */
+  ਪੂਰਨ *piDb,            /* OUT: write the iDb here */
+  ਅਚਲ ਅੱਖਰ **pzDb,    /* OUT: write name of schema here */
+  ਪੂਰਨ bAuth             /* Do ALTER TABLE authorization checks if true */
 ){
   sqlite3 *db = pParse->db;
-  Table *pTab = 0;
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( pTab ){
-    int iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  ਸਾਰਣੀ *pTab = 0;
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3BtreeHoldsAllMutexes(db) );
+  pTab = sqlite3_Locate_ਸਾਰਣੀ_ਵਸਤੂ(pParse, 0, &pSrc->a[0]);
+  ਜੇ( pTab ){
+    ਪੂਰਨ iDb = sqlite3_Schema_ਮੰਜ਼ਿਲ_ਸੂਚਕਾਂਕ(db, pTab->pSchema);
     *pzDb = db->aDb[iDb].zDbSName;
     *piDb = iDb;
 
-    if( SQLITE_OK!=isRealTable(pParse, pTab, 2) 
-     || SQLITE_OK!=isAlterableTable(pParse, pTab) 
+    ਜੇ( SQLITE_OK!=is_Real_ਸਾਰਣੀ(pParse, pTab, 2) 
+     || SQLITE_OK!=is_Alterable_ਸਾਰਣੀ(pParse, pTab) 
     ){
       pTab = 0;
     }
   }
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( pTab && bAuth ){
-    if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, *pzDb, pTab->zName, 0) ){
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTHORIZATION
+  ਜੇ( pTab && bAuth ){
+    ਜੇ( sqlite3AuthCheck(pParse, SQLITE_ALTER_ਸਾਰਣੀ, *pzDb, pTab->zName, 0) ){
       pTab = 0;
     }
   }
-#endif
+#ਜੇ_ਅੰਤ
   sqlite3SrcListDelete(db, pSrc);
-  return pTab;
+  ਵਾਪਸ pTab;
 }
 
 /*
@@ -2829,36 +2829,36 @@ static Table *alterFindTable(
 **
 ** One of pCons and pCol must be NULL and the other non-null.
 */
-void sqlite3AlterDropConstraint(
+ਖਾਲੀ sqlite3AlterDropConstraint(
   Parse *pParse,    /* Parsing context */
   SrcList *pSrc,    /* The table being altered */
   Token *pCons,     /* Name of the constraint to drop */
-  Token *pCol       /* Name of the column from which to remove the NOT NULL */
+  Token *p_ਖਾਨਾ       /* Name of the column from which to remove the NOT NULL */
 ){
   sqlite3 *db = pParse->db;
-  Table *pTab = 0;
-  int iDb = 0;
-  const char *zDb = 0;
-  char *zArg = 0;
+  ਸਾਰਣੀ *pTab = 0;
+  ਪੂਰਨ iDb = 0;
+  ਅਚਲ ਅੱਖਰ *zDb = 0;
+  ਅੱਖਰ *zArg = 0;
 
-  assert( (pCol==0)!=(pCons==0) );
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, pCons!=0);
-  if( !pTab ) return;
+  ਪ੍ਰਤਿਜ੍ਞਾ( (p_ਖਾਨਾ==0)!=(pCons==0) );
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSrc->nSrc==1 );
+  pTab = alter_ਲੱਭੋ_ਸਾਰਣੀ(pParse, pSrc, &iDb, &zDb, pCons!=0);
+  ਜੇ( !pTab ) ਵਾਪਸ;
 
-  if( pCons ){
-    char *z = sqlite3NameFromToken(db, pCons);
+  ਜੇ( pCons ){
+    ਅੱਖਰ *z = sqlite3NameFromToken(db, pCons);
     zArg = sqlite3MPrintf(db, "%Q", z);
     sqlite3DbFree(db, z);
-  }else{
-    int iCol;
-    if( alterFindCol(pParse, pTab, pCol, &iCol) ) return;
-    zArg = sqlite3MPrintf(db, "%d", iCol);
+  }ਨਹੀਂਤਾਂ{
+    ਪੂਰਨ i_ਖਾਨਾ;
+    ਜੇ( alter_ਲੱਭੋ_ਖਾਨਾ(pParse, pTab, p_ਖਾਨਾ, &i_ਖਾਨਾ) ) ਵਾਪਸ;
+    zArg = sqlite3MPrintf(db, "%d", i_ਖਾਨਾ);
   }
 
   /* Edit the SQL for the named table. */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_drop_constraint(sql, %s) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
       , zDb, zArg, pTab->zName
@@ -2874,16 +2874,16 @@ void sqlite3AlterDropConstraint(
 ** argument, and returns it as an error message with the error code set to
 ** SQLITE_CONSTRAINT.
 */
-static void failConstraintFunc(
+ਸਥਿਰ ਖਾਲੀ failConstraintFunc(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  const char *zText = (const char*)sqlite3_value_text(argv[0]);
-  int err = sqlite3_value_int(argv[1]);
-  (void)NotUsed;
-  sqlite3_result_error(ctx, zText, -1);
-  sqlite3_result_error_code(ctx, err);
+  ਅਚਲ ਅੱਖਰ *z_ਪਾਠ = (ਅਚਲ ਅੱਖਰ*)sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  ਪੂਰਨ err = sqlite3_ਮੁੱਲ_int(argv[1]);
+  (ਖਾਲੀ)Not_ਵਰਤਿਆ;
+  sqlite3_ਨਤੀਜਾ_error(ctx, z_ਪਾਠ, -1);
+  sqlite3_ਨਤੀਜਾ_error_ਕੋਡ(ctx, err);
 }
 
 /*
@@ -2899,29 +2899,29 @@ static void failConstraintFunc(
 ** will have the effect of removing the comment terminator and messing up
 ** the syntax.
 */
-static int alterRtrimConstraint(
+ਸਥਿਰ ਪੂਰਨ alterRtrimConstraint(
   sqlite3 *db,                    /* used to record OOM error */
-  const char *pCons,              /* Buffer containing constraint */
-  int nCons                       /* Size of pCons in bytes */
+  ਅਚਲ ਅੱਖਰ *pCons,              /* Buffer containing constraint */
+  ਪੂਰਨ nCons                       /* Size of pCons in bytes */
 ){
   u8 *zTmp = (u8*)sqlite3MPrintf(db, "%.*s", nCons, pCons);
-  int iOff = 0;
-  int iEnd = 0;
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ i_ਸਿਰਾ = 0;
 
-  if( zTmp==0 ) return 0;
+  ਜੇ( zTmp==0 ) ਵਾਪਸ 0;
 
-  while( 1 ){
-    int t = 0;
-    int nToken = sqlite3GetToken(&zTmp[iOff], &t);
-    if( t==TK_ILLEGAL ) break;
-    if( t!=TK_SPACE && (t!=TK_COMMENT || zTmp[iOff]!='-') ){
-      iEnd = iOff+nToken;
+  ਜਦੋਂ( 1 ){
+    ਪੂਰਨ t = 0;
+    ਪੂਰਨ nToken = sqlite3GetToken(&zTmp[iOff], &t);
+    ਜੇ( t==TK_ILLEGAL ) ਰੋਕੋ;
+    ਜੇ( t!=TK_SPACE && (t!=TK_COMMENT || zTmp[iOff]!='-') ){
+      i_ਸਿਰਾ = iOff+nToken;
     }
     iOff += nToken;
   }
 
   sqlite3DbFree(db, zTmp);
-  return iEnd;
+  ਵਾਪਸ i_ਸਿਰਾ;
 }
 
 /*
@@ -2929,46 +2929,46 @@ static int alterRtrimConstraint(
 **
 **   ALTER TABLE pSrc ALTER pCol SET NOT NULL
 */
-void sqlite3AlterSetNotNull(
+ਖਾਲੀ sqlite3_Alter_ਸੈੱਟ_Not_Null(
   Parse *pParse,   /* Parsing context */
   SrcList *pSrc,   /* Name of the table being altered */
-  Token *pCol,     /* Name of the column to add a NOT NULL constraint to */
-  Token *pFirst    /* The NOT token of the NOT NULL constraint text */
+  Token *p_ਖਾਨਾ,     /* Name of the column to add a NOT NULL constraint to */
+  Token *p_ਪਹਿਲਾ    /* The NOT token of the NOT NULL constraint text */
 ){
-  Table *pTab = 0;
-  int iCol = 0;
-  int iDb = 0;
-  const char *zDb = 0;
-  const char *pCons = 0;
-  int nCons = 0;
+  ਸਾਰਣੀ *pTab = 0;
+  ਪੂਰਨ i_ਖਾਨਾ = 0;
+  ਪੂਰਨ iDb = 0;
+  ਅਚਲ ਅੱਖਰ *zDb = 0;
+  ਅਚਲ ਅੱਖਰ *pCons = 0;
+  ਪੂਰਨ nCons = 0;
 
   /* Look up the table being altered. */
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, 0);
-  if( !pTab ) return;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSrc->nSrc==1 );
+  pTab = alter_ਲੱਭੋ_ਸਾਰਣੀ(pParse, pSrc, &iDb, &zDb, 0);
+  ਜੇ( !pTab ) ਵਾਪਸ;
 
   /* Find the column being altered. */
-  if( alterFindCol(pParse, pTab, pCol, &iCol) ){
-    return;
+  ਜੇ( alter_ਲੱਭੋ_ਖਾਨਾ(pParse, pTab, p_ਖਾਨਾ, &i_ਖਾਨਾ) ){
+    ਵਾਪਸ;
   }
 
   /* Find the length in bytes of the constraint definition */
-  pCons = pFirst->z;
-  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->sLastToken.z - pCons);
+  pCons = p_ਪਹਿਲਾ->z;
+  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->s_ਆਖਰੀ_Token.z - pCons);
 
   /* Search for a constraint violation. Throw an exception if one is found. */
   sqlite3NestedParse(pParse,
       "SELECT sqlite_fail('constraint failed', %d) "
       "FROM %Q.%Q AS x WHERE x.%.*s IS NULL", 
-      SQLITE_CONSTRAINT, zDb, pTab->zName, (int)pCol->n, pCol->z
+      SQLITE_CONSTRAINT, zDb, pTab->zName, (ਪੂਰਨ)p_ਖਾਨਾ->n, p_ਖਾਨਾ->z
   );
 
   /* Edit the SQL for the named table. */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_add_constraint(sqlite_drop_constraint(sql, %d), %.*Q, %d) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
-      , zDb, iCol, nCons, pCons, iCol, pTab->zName
+      , zDb, i_ਖਾਨਾ, nCons, pCons, i_ਖਾਨਾ, pTab->zName
   );
 
   /* Finally, reload the database schema. */
@@ -2984,43 +2984,43 @@ void sqlite3AlterSetNotNull(
 ** CREATE TABLE that contains a constraint with the name CONSTRAINT-NAME,
 ** or false otherwise.
 */
-static void findConstraintFunc(
+ਸਥਿਰ ਖਾਲੀ ਲੱਭੋ_Constraint_Func(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  ਪੂਰਨ Not_ਵਰਤਿਆ,
+  sqlite3_ਮੁੱਲ **argv
 ){
-  const u8 *zSql = 0;
-  const u8 *zCons = 0;
-  int iOff = 0;
-  int t = 0;
+  ਅਚਲ u8 *zSql = 0;
+  ਅਚਲ u8 *zCons = 0;
+  ਪੂਰਨ iOff = 0;
+  ਪੂਰਨ t = 0;
 
-  (void)NotUsed;
-  zSql = sqlite3_value_text(argv[0]);
-  zCons = sqlite3_value_text(argv[1]);
+  (ਖਾਲੀ)Not_ਵਰਤਿਆ;
+  zSql = sqlite3_ਮੁੱਲ_ਪਾਠ(argv[0]);
+  zCons = sqlite3_ਮੁੱਲ_ਪਾਠ(argv[1]);
 
-  if( zSql==0 || zCons==0 ) return;
-  while( t!=TK_LP && t!=TK_ILLEGAL ){
+  ਜੇ( zSql==0 || zCons==0 ) ਵਾਪਸ;
+  ਜਦੋਂ( t!=TK_LP && t!=TK_ILLEGAL ){
     iOff += sqlite3GetToken(&zSql[iOff], &t);
   }
 
-  while( 1 ){
+  ਜਦੋਂ( 1 ){
     iOff += getConstraintToken(&zSql[iOff], &t);
-    if( t==TK_CONSTRAINT ){
-      int nTok = 0;
-      int cmp = 0;
+    ਜੇ( t==TK_CONSTRAINT ){
+      ਪੂਰਨ nTok = 0;
+      ਪੂਰਨ cmp = 0;
       iOff += getWhitespace(&zSql[iOff]);
       nTok = getConstraintToken(&zSql[iOff], &t);
-      if( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) return;
-      if( cmp==0 ){
-        sqlite3_result_int(ctx, 1);
-        return;
+      ਜੇ( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) ਵਾਪਸ;
+      ਜੇ( cmp==0 ){
+        sqlite3_ਨਤੀਜਾ_int(ctx, 1);
+        ਵਾਪਸ;
       }
-    }else if( t==TK_ILLEGAL ){
-      break;
+    }ਨਹੀਂਤਾਂ ਜੇ( t==TK_ILLEGAL ){
+      ਰੋਕੋ;
     }
   }
 
-  sqlite3_result_int(ctx, 0);
+  sqlite3_ਨਤੀਜਾ_int(ctx, 0);
 }
 
 /*
@@ -3031,45 +3031,45 @@ static void findConstraintFunc(
 ** Any "ON CONFLICT" text that occurs after the "CHECK(...)", up
 ** until pParse->sLastToken, is included as part of the new constraint.
 */
-void sqlite3AlterAddConstraint(
+ਖਾਲੀ sqlite3_Alter_ਜੋੜੋ_Constraint(
   Parse *pParse,           /* Parse context */
   SrcList *pSrc,           /* Table to add constraint to */
-  Token *pFirst,           /* First token of new constraint */
+  Token *p_ਪਹਿਲਾ,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  ਅਚਲ ਅੱਖਰ *z_ਵਿਅੰਜਕ,       /* Text of CHECK expression */
+  ਪੂਰਨ n_ਵਿਅੰਜਕ,               /* Size of pExpr in bytes */
+  ਵਿਅੰਜਕ *p_ਵਿਅੰਜਕ              /* The parsed CHECK expression */
 ){ 
-  Table *pTab = 0;         /* Table identified by pSrc */
-  int iDb = 0;             /* Which schema does pTab live in */
-  const char *zDb = 0;     /* Name of the schema in which pTab lives */
-  const char *pCons = 0;   /* Text of the constraint */
-  int nCons;               /* Bytes of text to use from pCons[] */
-  int rc;                  /* Result from error checking pExpr */
+  ਸਾਰਣੀ *pTab = 0;         /* Table identified by pSrc */
+  ਪੂਰਨ iDb = 0;             /* Which schema does pTab live in */
+  ਅਚਲ ਅੱਖਰ *zDb = 0;     /* Name of the schema in which pTab lives */
+  ਅਚਲ ਅੱਖਰ *pCons = 0;   /* Text of the constraint */
+  ਪੂਰਨ nCons;               /* Bytes of text to use from pCons[] */
+  ਪੂਰਨ rc;                  /* Result from error checking pExpr */
 
   /* Look up the table being altered. */
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, 1);
-  if( !pTab ){
-    sqlite3ExprDelete(pParse->db, pExpr);
-    return;
+  ਪ੍ਰਤਿਜ੍ਞਾ( pSrc->nSrc==1 );
+  pTab = alter_ਲੱਭੋ_ਸਾਰਣੀ(pParse, pSrc, &iDb, &zDb, 1);
+  ਜੇ( !pTab ){
+    sqlite3_ਵਿਅੰਜਕ_Delete(pParse->db, p_ਵਿਅੰਜਕ);
+    ਵਾਪਸ;
   }
 
   /* Verify that the new CHECK constraint does not contain any
   ** internal-use-only function.  Forum post 2026-05-10T01:11:28Z
   */
-  rc = sqlite3ResolveSelfReference(pParse, pTab, NC_IsCheck, pExpr, 0);
-  sqlite3ExprDelete(pParse->db, pExpr);
-  if( rc ) return;
+  rc = sqlite3ResolveSelfReference(pParse, pTab, NC_IsCheck, p_ਵਿਅੰਜਕ, 0);
+  sqlite3_ਵਿਅੰਜਕ_Delete(pParse->db, p_ਵਿਅੰਜਕ);
+  ਜੇ( rc ) ਵਾਪਸ;
 
   /* If this new constraint has a name, check that it is not a duplicate of
   ** an existing constraint. It is an error if it is.  */
-  if( pName ){
-    char *zName = sqlite3NameFromToken(pParse->db, pName);
+  ਜੇ( pName ){
+    ਅੱਖਰ *zName = sqlite3NameFromToken(pParse->db, pName);
 
     sqlite3NestedParse(pParse,
         "SELECT sqlite_fail('constraint %q already exists', %d) "
-        "FROM \"%w\"." LEGACY_SCHEMA_TABLE " "
+        "FROM \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " "
         "WHERE type='table' AND tbl_name=%Q COLLATE nocase "
         "AND sqlite_find_constraint(sql, %Q)",
         zName, SQLITE_ERROR, zDb, pTab->zName, zName
@@ -3081,15 +3081,15 @@ void sqlite3AlterAddConstraint(
   sqlite3NestedParse(pParse,
       "SELECT sqlite_fail('constraint failed', %d) "
       "FROM %Q.%Q WHERE (%.*s) IS FALSE", 
-      SQLITE_CONSTRAINT, zDb, pTab->zName, nExpr, zExpr
+      SQLITE_CONSTRAINT, zDb, pTab->zName, n_ਵਿਅੰਜਕ, z_ਵਿਅੰਜਕ
   );
 
   /* Edit the SQL for the named table. */
-  pCons = pFirst->z;
-  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->sLastToken.z - pCons);
+  pCons = p_ਪਹਿਲਾ->z;
+  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->s_ਆਖਰੀ_Token.z - pCons);
 
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_ਸਾਰਣੀ " SET "
       "sql = sqlite_add_constraint(sql, %.*Q, -1) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
       , zDb, nCons, pCons, pTab->zName
@@ -3102,18 +3102,18 @@ void sqlite3AlterAddConstraint(
 /*
 ** Register built-in functions used to help implement ALTER TABLE
 */
-void sqlite3AlterFunctions(void){
-  static FuncDef aAlterTableFuncs[] = {
-    INTERNAL_FUNCTION(sqlite_rename_column,  9, renameColumnFunc),
-    INTERNAL_FUNCTION(sqlite_rename_table,   7, renameTableFunc),
-    INTERNAL_FUNCTION(sqlite_rename_test,    7, renameTableTest),
-    INTERNAL_FUNCTION(sqlite_drop_column,    3, dropColumnFunc),
-    INTERNAL_FUNCTION(sqlite_rename_quotefix,2, renameQuotefixFunc),
-    INTERNAL_FUNCTION(sqlite_drop_constraint,2, dropConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_fail,           2, failConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_add_constraint, 3, addConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_find_constraint,2, findConstraintFunc),
+ਖਾਲੀ sqlite3AlterFunctions(ਖਾਲੀ){
+  ਸਥਿਰ FuncDef a_Alter_ਸਾਰਣੀ_Funcs[] = {
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_rename_ਕਾਲਮ,  9, rename_ਕਾਲਮ_Func),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_rename_ਸਾਰਣੀ,   7, rename_ਸਾਰਣੀ_Func),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_rename_test,    7, rename_ਸਾਰਣੀ_Test),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_drop_ਕਾਲਮ,    3, drop_ਕਾਲਮ_Func),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_rename_quotefix,2, renameQuotefixFunc),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_drop_constraint,2, dropConstraintFunc),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_fail,           2, failConstraintFunc),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_ਜੋੜੋ_constraint, 3, ਜੋੜੋ_Constraint_Func),
+    ਅੰਦਰੂਨੀ_FUNCTION(sqlite_ਲੱਭੋ_constraint,2, ਲੱਭੋ_Constraint_Func),
   };
-  sqlite3InsertBuiltinFuncs(aAlterTableFuncs, ArraySize(aAlterTableFuncs));
+  sqlite3_ਪਾਓ_Builtin_Funcs(a_Alter_ਸਾਰਣੀ_Funcs, Array_ਮਾਪ(a_Alter_ਸਾਰਣੀ_Funcs));
 }
-#endif  /* SQLITE_ALTER_TABLE */
+#ਜੇ_ਅੰਤ  /* SQLITE_ALTER_TABLE */

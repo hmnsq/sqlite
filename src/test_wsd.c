@@ -15,70 +15,70 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#ਜੇ defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
-#define PLS_HASHSIZE 43
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ PLS_HASHSIZE 43
 
-typedef struct ProcessLocalStorage ProcessLocalStorage;
-typedef struct ProcessLocalVar ProcessLocalVar;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ ProcessLocalStorage ProcessLocalStorage;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ ProcessLocalVar ProcessLocalVar;
 
-struct ProcessLocalStorage {
-  ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+ਬਣਤਰ ProcessLocalStorage {
+  ProcessLocalVar *a_ਅੰਕੜੇ[PLS_HASHSIZE];
+  ਪੂਰਨ nFree;
   u8 *pFree;
 };
 
-struct ProcessLocalVar {
-  void *pKey;
-  ProcessLocalVar *pNext;
+ਬਣਤਰ ProcessLocalVar {
+  ਖਾਲੀ *p_ਕੁੰਜੀ;
+  ProcessLocalVar *p_ਅਗਲਾ;
 };
 
-static ProcessLocalStorage *pGlobal = 0;
+ਸਥਿਰ ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
-    pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
-      memset(pGlobal, 0, sizeof(ProcessLocalStorage));
-      pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
+ਪੂਰਨ sqlite3_wsd_init(ਪੂਰਨ N, ਪੂਰਨ J){
+  ਜੇ( !pGlobal ){
+    ਪੂਰਨ nMalloc = N + ਆਕਾਰ(ProcessLocalStorage) + J*ਆਕਾਰ(ProcessLocalVar);
+    pGlobal = (ProcessLocalStorage *)ਸਮ੍ਰਿਤੀ_ਦਿਓ(nMalloc);
+    ਜੇ( pGlobal ){
+      memset(pGlobal, 0, ਆਕਾਰ(ProcessLocalStorage));
+      pGlobal->nFree = nMalloc - ਆਕਾਰ(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  ਵਾਪਸ pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+ਖਾਲੀ *sqlite3_wsd_ਲੱਭੋ(ਖਾਲੀ *K, ਪੂਰਨ L){
+  ਪੂਰਨ i;
+  ਪੂਰਨ iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
-    iHash = (iHash<<3) + ((unsigned char *)&K)[i];
+  ਲਈ(i=0; i<ਆਕਾਰ(ਖਾਲੀ*); i++){
+    iHash = (iHash<<3) + ((ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  ਲਈ(pVar=pGlobal->a_ਅੰਕੜੇ[iHash]; pVar && pVar->p_ਕੁੰਜੀ!=K; pVar=pVar->p_ਅਗਲਾ);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
-    assert( pGlobal->nFree>=nByte );
+  ਜੇ( !pVar ){
+    ਪੂਰਨ nByte = ROUND8(ਆਕਾਰ(ProcessLocalVar) + L);
+    ਪ੍ਰਤਿਜ੍ਞਾ( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
-    pVar->pNext = pGlobal->aData[iHash];
-    pGlobal->aData[iHash] = pVar;
+    pVar->p_ਕੁੰਜੀ = K;
+    pVar->p_ਅਗਲਾ = pGlobal->a_ਅੰਕੜੇ[iHash];
+    pGlobal->a_ਅੰਕੜੇ[iHash] = pVar;
     pGlobal->nFree -= nByte;
     pGlobal->pFree += nByte;
-    memcpy(&pVar[1], K, L);
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  ਵਾਪਸ (ਖਾਲੀ *)&pVar[1];
 }
 
-#endif
+#ਜੇ_ਅੰਤ

@@ -16,25 +16,25 @@
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#ifdef SQLITE_ZERO_MALLOC
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ZERO_MALLOC
 
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+ਸਥਿਰ ਖਾਲੀ *sqlite3MemMalloc(ਪੂਰਨ nByte){ ਵਾਪਸ 0; }
+ਸਥਿਰ ਖਾਲੀ sqlite3MemFree(ਖਾਲੀ *p_ਪੂਰਵ){ ਵਾਪਸ; }
+ਸਥਿਰ ਖਾਲੀ *sqlite3MemRealloc(ਖਾਲੀ *p_ਪੂਰਵ, ਪੂਰਨ nByte){ ਵਾਪਸ 0; }
+ਸਥਿਰ ਪੂਰਨ sqlite3_Mem_ਮਾਪ(ਖਾਲੀ *p_ਪੂਰਵ){ ਵਾਪਸ 0; }
+ਸਥਿਰ ਪੂਰਨ sqlite3MemRoundup(ਪੂਰਨ n){ ਵਾਪਸ n; }
+ਸਥਿਰ ਪੂਰਨ sqlite3MemInit(ਖਾਲੀ *Not_ਵਰਤਿਆ){ ਵਾਪਸ SQLITE_OK; }
+ਸਥਿਰ ਖਾਲੀ sqlite3MemShutdown(ਖਾਲੀ *Not_ਵਰਤਿਆ){ ਵਾਪਸ; }
 
 /*
 ** This routine is the only routine in this file with external linkage.
@@ -42,12 +42,12 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+ਖਾਲੀ sqlite3_Mem_ਸੈੱਟ_Default(ਖਾਲੀ){
+  ਸਥਿਰ ਅਚਲ sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,
-     sqlite3MemSize,
+     sqlite3_Mem_ਮਾਪ,
      sqlite3MemRoundup,
      sqlite3MemInit,
      sqlite3MemShutdown,
@@ -56,4 +56,4 @@ void sqlite3MemSetDefault(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
-#endif /* SQLITE_ZERO_MALLOC */
+#ਜੇ_ਅੰਤ /* SQLITE_ZERO_MALLOC */

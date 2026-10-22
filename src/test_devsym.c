@@ -14,202 +14,202 @@
 ** different device types (by overriding the return values of the 
 ** xDeviceCharacteristics() and xSectorSize() methods).
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#ਜੇ SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqlite3.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /*
 ** Maximum pathname length supported by the devsym backend.
 */
-#define DEVSYM_MAX_PATHNAME 512
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ DEVSYM_MAX_PATHNAME 512
 
 /*
 ** Name used to identify this VFS.
 */
-#define DEVSYM_VFS_NAME "devsym"
-#define WRITECRASH_NAME "writecrash"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ DEVSYM_VFS_NAME "devsym"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WRITECRASH_NAME "writecrash"
 
-typedef struct devsym_file devsym_file;
-struct devsym_file {
-  sqlite3_file base;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ devsym_file devsym_file;
+ਬਣਤਰ devsym_file {
+  sqlite3_file ਅਧਾਰ;
   sqlite3_file *pReal;
 };
 
 /*
 ** Method declarations for devsym_file.
 */
-static int devsymClose(sqlite3_file*);
-static int devsymRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int devsymWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int devsymTruncate(sqlite3_file*, sqlite3_int64 size);
-static int devsymSync(sqlite3_file*, int flags);
-static int devsymFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int devsymLock(sqlite3_file*, int);
-static int devsymUnlock(sqlite3_file*, int);
-static int devsymCheckReservedLock(sqlite3_file*, int *);
-static int devsymFileControl(sqlite3_file*, int op, void *pArg);
-static int devsymSectorSize(sqlite3_file*);
-static int devsymDeviceCharacteristics(sqlite3_file*);
-static int devsymShmLock(sqlite3_file*,int,int,int);
-static int devsymShmMap(sqlite3_file*,int,int,int, void volatile **);
-static void devsymShmBarrier(sqlite3_file*);
-static int devsymShmUnmap(sqlite3_file*,int);
+ਸਥਿਰ ਪੂਰਨ devsymClose(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ devsymRead(sqlite3_file*, ਖਾਲੀ*, ਪੂਰਨ iAmt, sqlite3_int64 iOfst);
+ਸਥਿਰ ਪੂਰਨ devsymWrite(sqlite3_file*,ਅਚਲ ਖਾਲੀ*,ਪੂਰਨ iAmt, sqlite3_int64 iOfst);
+ਸਥਿਰ ਪੂਰਨ devsymTruncate(sqlite3_file*, sqlite3_int64 ਮਾਪ);
+ਸਥਿਰ ਪੂਰਨ devsymSync(sqlite3_file*, ਪੂਰਨ flags);
+ਸਥਿਰ ਪੂਰਨ devsym_File_ਮਾਪ(sqlite3_file*, sqlite3_int64 *p_ਮਾਪ);
+ਸਥਿਰ ਪੂਰਨ devsym_ਤਾਲਾ(sqlite3_file*, ਪੂਰਨ);
+ਸਥਿਰ ਪੂਰਨ devsymUnlock(sqlite3_file*, ਪੂਰਨ);
+ਸਥਿਰ ਪੂਰਨ devsym_Check_Reserved_ਤਾਲਾ(sqlite3_file*, ਪੂਰਨ *);
+ਸਥਿਰ ਪੂਰਨ devsymFileControl(sqlite3_file*, ਪੂਰਨ op, ਖਾਲੀ *pArg);
+ਸਥਿਰ ਪੂਰਨ devsym_Sector_ਮਾਪ(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ devsymDeviceCharacteristics(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ devsym_Shm_ਤਾਲਾ(sqlite3_file*,ਪੂਰਨ,ਪੂਰਨ,ਪੂਰਨ);
+ਸਥਿਰ ਪੂਰਨ devsymShmMap(sqlite3_file*,ਪੂਰਨ,ਪੂਰਨ,ਪੂਰਨ, ਖਾਲੀ ਅਸਥਿਰ **);
+ਸਥਿਰ ਖਾਲੀ devsymShmBarrier(sqlite3_file*);
+ਸਥਿਰ ਪੂਰਨ devsymShmUnmap(sqlite3_file*,ਪੂਰਨ);
 
 /*
 ** Method declarations for devsym_vfs.
 */
-static int devsymOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int devsymDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int devsymAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int devsymFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-static void *devsymDlOpen(sqlite3_vfs*, const char *zFilename);
-static void devsymDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*devsymDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void devsymDlClose(sqlite3_vfs*, void*);
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int devsymRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int devsymSleep(sqlite3_vfs*, int microseconds);
-static int devsymCurrentTime(sqlite3_vfs*, double*);
+ਸਥਿਰ ਪੂਰਨ devsymOpen(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *, sqlite3_file*, ਪੂਰਨ , ਪੂਰਨ *);
+ਸਥਿਰ ਪੂਰਨ devsymDelete(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zName, ਪੂਰਨ syncDir);
+ਸਥਿਰ ਪੂਰਨ devsymAccess(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zName, ਪੂਰਨ flags, ਪੂਰਨ *);
+ਸਥਿਰ ਪੂਰਨ devsym_ਭਰਿਆ_Pathname(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zName, ਪੂਰਨ, ਅੱਖਰ *z_ਬਾਹਰਲਾ);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
+ਸਥਿਰ ਖਾਲੀ *devsymDlOpen(sqlite3_vfs*, ਅਚਲ ਅੱਖਰ *zFilename);
+ਸਥਿਰ ਖਾਲੀ devsymDlError(sqlite3_vfs*, ਪੂਰਨ nByte, ਅੱਖਰ *z_Err_ਸੁਨੇਹਾ);
+ਸਥਿਰ ਖਾਲੀ (*devsymDlSym(sqlite3_vfs*,ਖਾਲੀ*, ਅਚਲ ਅੱਖਰ *z_ਚਿੰਨ੍ਹ))(ਖਾਲੀ);
+ਸਥਿਰ ਖਾਲੀ devsymDlClose(sqlite3_vfs*, ਖਾਲੀ*);
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_LOAD_EXTENSION */
+ਸਥਿਰ ਪੂਰਨ devsymRandomness(sqlite3_vfs*, ਪੂਰਨ nByte, ਅੱਖਰ *z_ਬਾਹਰਲਾ);
+ਸਥਿਰ ਪੂਰਨ devsymSleep(sqlite3_vfs*, ਪੂਰਨ microseconds);
+ਸਥਿਰ ਪੂਰਨ devsym_Current_ਸਮਾਂ(sqlite3_vfs*, ਦੁੱਗਣਾ*);
 
-struct DevsymGlobal {
+ਬਣਤਰ DevsymGlobal {
   sqlite3_vfs *pVfs;
-  int iDeviceChar;
-  int iSectorSize;
-  int nWriteCrash;
+  ਪੂਰਨ iDeviceChar;
+  ਪੂਰਨ i_Sector_ਮਾਪ;
+  ਪੂਰਨ nWriteCrash;
 };
-struct DevsymGlobal g = {0, 0, 512, 0};
+ਬਣਤਰ DevsymGlobal g = {0, 0, 512, 0};
 
 /*
 ** Close an devsym-file.
 */
-static int devsymClose(sqlite3_file *pFile){
+ਸਥਿਰ ਪੂਰਨ devsymClose(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   sqlite3OsClose(p->pReal);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Read data from an devsym-file.
 */
-static int devsymRead(
+ਸਥਿਰ ਪੂਰਨ devsymRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ਖਾਲੀ *zBuf, 
+  ਪੂਰਨ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
+  ਵਾਪਸ sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Write data to an devsym-file.
 */
-static int devsymWrite(
+ਸਥਿਰ ਪੂਰਨ devsymWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ਅਚਲ ਖਾਲੀ *zBuf, 
+  ਪੂਰਨ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ਵਾਪਸ sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Truncate an devsym-file.
 */
-static int devsymTruncate(sqlite3_file *pFile, sqlite_int64 size){
+ਸਥਿਰ ਪੂਰਨ devsymTruncate(sqlite3_file *pFile, sqlite_int64 ਮਾਪ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsTruncate(p->pReal, size);
+  ਵਾਪਸ sqlite3OsTruncate(p->pReal, ਮਾਪ);
 }
 
 /*
 ** Sync an devsym-file.
 */
-static int devsymSync(sqlite3_file *pFile, int flags){
+ਸਥਿਰ ਪੂਰਨ devsymSync(sqlite3_file *pFile, ਪੂਰਨ flags){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSync(p->pReal, flags);
+  ਵਾਪਸ sqlite3OsSync(p->pReal, flags);
 }
 
 /*
 ** Return the current file-size of an devsym-file.
 */
-static int devsymFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ਸਥਿਰ ਪੂਰਨ devsym_File_ਮਾਪ(sqlite3_file *pFile, sqlite_int64 *p_ਮਾਪ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileSize(p->pReal, pSize);
+  ਵਾਪਸ sqlite3_Os_File_ਮਾਪ(p->pReal, p_ਮਾਪ);
 }
 
 /*
 ** Lock an devsym-file.
 */
-static int devsymLock(sqlite3_file *pFile, int eLock){
+ਸਥਿਰ ਪੂਰਨ devsym_ਤਾਲਾ(sqlite3_file *pFile, ਪੂਰਨ e_ਤਾਲਾ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsLock(p->pReal, eLock);
+  ਵਾਪਸ sqlite3_Os_ਤਾਲਾ(p->pReal, e_ਤਾਲਾ);
 }
 
 /*
 ** Unlock an devsym-file.
 */
-static int devsymUnlock(sqlite3_file *pFile, int eLock){
+ਸਥਿਰ ਪੂਰਨ devsymUnlock(sqlite3_file *pFile, ਪੂਰਨ e_ਤਾਲਾ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsUnlock(p->pReal, eLock);
+  ਵਾਪਸ sqlite3OsUnlock(p->pReal, e_ਤਾਲਾ);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an devsym-file.
 */
-static int devsymCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+ਸਥਿਰ ਪੂਰਨ devsym_Check_Reserved_ਤਾਲਾ(sqlite3_file *pFile, ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsCheckReservedLock(p->pReal, pResOut);
+  ਵਾਪਸ sqlite3_Os_Check_Reserved_ਤਾਲਾ(p->pReal, p_Res_ਬਾਹਰਲਾ);
 }
 
 /*
 ** File control method. For custom operations on an devsym-file.
 */
-static int devsymFileControl(sqlite3_file *pFile, int op, void *pArg){
+ਸਥਿਰ ਪੂਰਨ devsymFileControl(sqlite3_file *pFile, ਪੂਰਨ op, ਖਾਲੀ *pArg){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileControl(p->pReal, op, pArg);
+  ਵਾਪਸ sqlite3OsFileControl(p->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an devsym-file.
 */
-static int devsymSectorSize(sqlite3_file *pFile){
-  return g.iSectorSize;
+ਸਥਿਰ ਪੂਰਨ devsym_Sector_ਮਾਪ(sqlite3_file *pFile){
+  ਵਾਪਸ g.i_Sector_ਮਾਪ;
 }
 
 /*
 ** Return the device characteristic flags supported by an devsym-file.
 */
-static int devsymDeviceCharacteristics(sqlite3_file *pFile){
-  return g.iDeviceChar;
+ਸਥਿਰ ਪੂਰਨ devsymDeviceCharacteristics(sqlite3_file *pFile){
+  ਵਾਪਸ g.iDeviceChar;
 }
 
 /*
 ** Shared-memory methods are all pass-throughs.
 */
-static int devsymShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
+ਸਥਿਰ ਪੂਰਨ devsym_Shm_ਤਾਲਾ(sqlite3_file *pFile, ਪੂਰਨ ofst, ਪੂਰਨ n, ਪੂਰਨ flags){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
+  ਵਾਪਸ p->pReal->pMethods->x_Shm_ਤਾਲਾ(p->pReal, ofst, n, flags);
 }
-static int devsymShmMap(
+ਸਥਿਰ ਪੂਰਨ devsymShmMap(
   sqlite3_file *pFile, 
-  int iRegion, 
-  int szRegion, 
-  int isWrite, 
-  void volatile **pp
+  ਪੂਰਨ iRegion, 
+  ਪੂਰਨ szRegion, 
+  ਪੂਰਨ isWrite, 
+  ਖਾਲੀ ਅਸਥਿਰ **pp
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
+  ਵਾਪਸ p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
 }
-static void devsymShmBarrier(sqlite3_file *pFile){
+ਸਥਿਰ ਖਾਲੀ devsymShmBarrier(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   p->pReal->pMethods->xShmBarrier(p->pReal);
 }
-static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
+ਸਥਿਰ ਪੂਰਨ devsymShmUnmap(sqlite3_file *pFile, ਪੂਰਨ delFlag){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
+  ਵਾਪਸ p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
 }
 
 
@@ -217,41 +217,41 @@ static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
 /*
 ** Open an devsym file handle.
 */
-static int devsymOpen(
+ਸਥਿਰ ਪੂਰਨ devsymOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ਅਚਲ ਅੱਖਰ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_ਬਾਹਰਲਾ_Flags
 ){
-static sqlite3_io_methods devsym_io_methods = {
+ਸਥਿਰ sqlite3_io_methods devsym_io_methods = {
   2,                                /* iVersion */
   devsymClose,                      /* xClose */
   devsymRead,                       /* xRead */
   devsymWrite,                      /* xWrite */
   devsymTruncate,                   /* xTruncate */
   devsymSync,                       /* xSync */
-  devsymFileSize,                   /* xFileSize */
-  devsymLock,                       /* xLock */
+  devsym_File_ਮਾਪ,                   /* xFileSize */
+  devsym_ਤਾਲਾ,                       /* xLock */
   devsymUnlock,                     /* xUnlock */
-  devsymCheckReservedLock,          /* xCheckReservedLock */
+  devsym_Check_Reserved_ਤਾਲਾ,          /* xCheckReservedLock */
   devsymFileControl,                /* xFileControl */
-  devsymSectorSize,                 /* xSectorSize */
+  devsym_Sector_ਮਾਪ,                 /* xSectorSize */
   devsymDeviceCharacteristics,      /* xDeviceCharacteristics */
   devsymShmMap,                     /* xShmMap */
-  devsymShmLock,                    /* xShmLock */
+  devsym_Shm_ਤਾਲਾ,                    /* xShmLock */
   devsymShmBarrier,                 /* xShmBarrier */
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  ਪੂਰਨ rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
-  rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, p_ਬਾਹਰਲਾ_Flags);
+  ਜੇ( p->pReal->pMethods ){
     pFile->pMethods = &devsym_io_methods;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
 /*
@@ -259,21 +259,21 @@ static sqlite3_io_methods devsym_io_methods = {
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int devsymDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return sqlite3OsDelete(g.pVfs, zPath, dirSync);
+ਸਥਿਰ ਪੂਰਨ devsymDelete(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, ਪੂਰਨ dirSync){
+  ਵਾਪਸ sqlite3OsDelete(g.pVfs, z_ਰਸਤਾ, dirSync);
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int devsymAccess(
+ਸਥਿਰ ਪੂਰਨ devsymAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, 
+  ਪੂਰਨ flags, 
+  ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ
 ){
-  return sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
+  ਵਾਪਸ sqlite3OsAccess(g.pVfs, z_ਰਸਤਾ, flags, p_Res_ਬਾਹਰਲਾ);
 }
 
 /*
@@ -281,21 +281,21 @@ static int devsymAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int devsymFullPathname(
+ਸਥਿਰ ਪੂਰਨ devsym_ਭਰਿਆ_Pathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, 
+  ਪੂਰਨ n_ਬਾਹਰਲਾ, 
+  ਅੱਖਰ *z_ਬਾਹਰਲਾ
 ){
-  return sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
+  ਵਾਪਸ sqlite3_Os_ਭਰਿਆ_Pathname(g.pVfs, z_ਰਸਤਾ, n_ਬਾਹਰਲਾ, z_ਬਾਹਰਲਾ);
 }
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(g.pVfs, zPath);
+ਸਥਿਰ ਖਾਲੀ *devsymDlOpen(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ){
+  ਵਾਪਸ sqlite3OsDlOpen(g.pVfs, z_ਰਸਤਾ);
 }
 
 /*
@@ -303,124 +303,124 @@ static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void devsymDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(g.pVfs, nByte, zErrMsg);
+ਸਥਿਰ ਖਾਲੀ devsymDlError(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Err_ਸੁਨੇਹਾ){
+  sqlite3OsDlError(g.pVfs, nByte, z_Err_ਸੁਨੇਹਾ);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*devsymDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(g.pVfs, p, zSym);
+ਸਥਿਰ ਖਾਲੀ (*devsymDlSym(sqlite3_vfs *pVfs, ਖਾਲੀ *p, ਅਚਲ ਅੱਖਰ *zSym))(ਖਾਲੀ){
+  ਵਾਪਸ sqlite3OsDlSym(g.pVfs, p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void devsymDlClose(sqlite3_vfs *pVfs, void *pHandle){
+ਸਥਿਰ ਖਾਲੀ devsymDlClose(sqlite3_vfs *pVfs, ਖਾਲੀ *pHandle){
   sqlite3OsDlClose(g.pVfs, pHandle);
 }
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_LOAD_EXTENSION */
 
 /*
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int devsymRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
+ਸਥਿਰ ਪੂਰਨ devsymRandomness(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Buf_ਬਾਹਰਲਾ){
+  ਵਾਪਸ sqlite3OsRandomness(g.pVfs, nByte, z_Buf_ਬਾਹਰਲਾ);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int devsymSleep(sqlite3_vfs *pVfs, int nMicro){
-  return sqlite3OsSleep(g.pVfs, nMicro);
+ਸਥਿਰ ਪੂਰਨ devsymSleep(sqlite3_vfs *pVfs, ਪੂਰਨ nMicro){
+  ਵਾਪਸ sqlite3OsSleep(g.pVfs, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int devsymCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
+ਸਥਿਰ ਪੂਰਨ devsym_Current_ਸਮਾਂ(sqlite3_vfs *pVfs, ਦੁੱਗਣਾ *p_ਸਮਾਂ_ਬਾਹਰਲਾ){
+  ਵਾਪਸ g.pVfs->x_Current_ਸਮਾਂ(g.pVfs, p_ਸਮਾਂ_ਬਾਹਰਲਾ);
 }
 
 /*
 ** Return the sector-size in bytes for an writecrash-file.
 */
-static int writecrashSectorSize(sqlite3_file *pFile){
+ਸਥਿਰ ਪੂਰਨ writecrash_Sector_ਮਾਪ(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSectorSize(p->pReal);
+  ਵਾਪਸ sqlite3_Os_Sector_ਮਾਪ(p->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an writecrash-file.
 */
-static int writecrashDeviceCharacteristics(sqlite3_file *pFile){
+ਸਥਿਰ ਪੂਰਨ writecrashDeviceCharacteristics(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsDeviceCharacteristics(p->pReal);
+  ਵਾਪਸ sqlite3OsDeviceCharacteristics(p->pReal);
 }
 
 /*
 ** Write data to an writecrash-file.
 */
-static int writecrashWrite(
+ਸਥਿਰ ਪੂਰਨ writecrashWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ਅਚਲ ਖਾਲੀ *zBuf, 
+  ਪੂਰਨ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  if( g.nWriteCrash>0 ){
+  ਜੇ( g.nWriteCrash>0 ){
     g.nWriteCrash--;
-    if( g.nWriteCrash==0 ) abort();
+    ਜੇ( g.nWriteCrash==0 ) abort();
   }
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ਵਾਪਸ sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Open an writecrash file handle.
 */
-static int writecrashOpen(
+ਸਥਿਰ ਪੂਰਨ writecrashOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ਅਚਲ ਅੱਖਰ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_ਬਾਹਰਲਾ_Flags
 ){
-static sqlite3_io_methods writecrash_io_methods = {
+ਸਥਿਰ sqlite3_io_methods writecrash_io_methods = {
   2,                                /* iVersion */
   devsymClose,                      /* xClose */
   devsymRead,                       /* xRead */
   writecrashWrite,                  /* xWrite */
   devsymTruncate,                   /* xTruncate */
   devsymSync,                       /* xSync */
-  devsymFileSize,                   /* xFileSize */
-  devsymLock,                       /* xLock */
+  devsym_File_ਮਾਪ,                   /* xFileSize */
+  devsym_ਤਾਲਾ,                       /* xLock */
   devsymUnlock,                     /* xUnlock */
-  devsymCheckReservedLock,          /* xCheckReservedLock */
+  devsym_Check_Reserved_ਤਾਲਾ,          /* xCheckReservedLock */
   devsymFileControl,                /* xFileControl */
-  writecrashSectorSize,             /* xSectorSize */
+  writecrash_Sector_ਮਾਪ,             /* xSectorSize */
   writecrashDeviceCharacteristics,  /* xDeviceCharacteristics */
   devsymShmMap,                     /* xShmMap */
-  devsymShmLock,                    /* xShmLock */
+  devsym_Shm_ਤਾਲਾ,                    /* xShmLock */
   devsymShmBarrier,                 /* xShmBarrier */
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  ਪੂਰਨ rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
-  rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, p_ਬਾਹਰਲਾ_Flags);
+  ਜੇ( p->pReal->pMethods ){
     pFile->pMethods = &writecrash_io_methods;
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
-static sqlite3_vfs devsym_vfs = {
+ਸਥਿਰ sqlite3_vfs devsym_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  ਆਕਾਰ(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   DEVSYM_VFS_NAME,          /* zName */
@@ -428,28 +428,28 @@ static sqlite3_vfs devsym_vfs = {
   devsymOpen,               /* xOpen */
   devsymDelete,             /* xDelete */
   devsymAccess,             /* xAccess */
-  devsymFullPathname,       /* xFullPathname */
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+  devsym_ਭਰਿਆ_Pathname,       /* xFullPathname */
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
   devsymDlOpen,             /* xDlOpen */
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#ਨਹੀਂਤਾਂ
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
   0,                        /* xDlClose */
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_LOAD_EXTENSION */
   devsymRandomness,         /* xRandomness */
   devsymSleep,              /* xSleep */
-  devsymCurrentTime,        /* xCurrentTime */
+  devsym_Current_ਸਮਾਂ,        /* xCurrentTime */
   0,                        /* xGetLastError */
   0                         /* xCurrentTimeInt64 */
 };
 
-static sqlite3_vfs writecrash_vfs = {
+ਸਥਿਰ sqlite3_vfs writecrash_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  ਆਕਾਰ(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   WRITECRASH_NAME,          /* zName */
@@ -457,21 +457,21 @@ static sqlite3_vfs writecrash_vfs = {
   writecrashOpen,           /* xOpen */
   devsymDelete,             /* xDelete */
   devsymAccess,             /* xAccess */
-  devsymFullPathname,       /* xFullPathname */
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+  devsym_ਭਰਿਆ_Pathname,       /* xFullPathname */
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
   devsymDlOpen,             /* xDlOpen */
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#ਨਹੀਂਤਾਂ
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
   0,                        /* xDlClose */
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_LOAD_EXTENSION */
   devsymRandomness,         /* xRandomness */
   devsymSleep,              /* xSleep */
-  devsymCurrentTime,        /* xCurrentTime */
+  devsym_Current_ਸਮਾਂ,        /* xCurrentTime */
   0,                        /* xGetLastError */
   0                         /* xCurrentTimeInt64 */
 };
@@ -482,44 +482,44 @@ static sqlite3_vfs writecrash_vfs = {
 ** true, the devsym vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-void devsym_register(int iDeviceChar, int iSectorSize){
+ਖਾਲੀ devsym_ਰਜਿਸਟਰ(ਪੂਰਨ iDeviceChar, ਪੂਰਨ i_Sector_ਮਾਪ){
 
-  if( g.pVfs==0 ){
-    g.pVfs = sqlite3_vfs_find(0);
+  ਜੇ( g.pVfs==0 ){
+    g.pVfs = sqlite3_vfs_ਲੱਭੋ(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;
-    sqlite3_vfs_register(&devsym_vfs, 0);
-    sqlite3_vfs_register(&writecrash_vfs, 0);
+    sqlite3_vfs_ਰਜਿਸਟਰ(&devsym_vfs, 0);
+    sqlite3_vfs_ਰਜਿਸਟਰ(&writecrash_vfs, 0);
   }
-  if( iDeviceChar>=0 ){
+  ਜੇ( iDeviceChar>=0 ){
     g.iDeviceChar = iDeviceChar;
-  }else{
+  }ਨਹੀਂਤਾਂ{
     g.iDeviceChar = 0;
   }
-  if( iSectorSize>=0 ){
-    g.iSectorSize = iSectorSize;
-  }else{
-    g.iSectorSize = 512;
+  ਜੇ( i_Sector_ਮਾਪ>=0 ){
+    g.i_Sector_ਮਾਪ = i_Sector_ਮਾਪ;
+  }ਨਹੀਂਤਾਂ{
+    g.i_Sector_ਮਾਪ = 512;
   }
 }
 
-void devsym_unregister(){
+ਖਾਲੀ devsym_unregister(){
   sqlite3_vfs_unregister(&devsym_vfs);
   sqlite3_vfs_unregister(&writecrash_vfs);
   g.pVfs = 0;
   g.iDeviceChar = 0;
-  g.iSectorSize = 0;
+  g.i_Sector_ਮਾਪ = 0;
 }
 
-void devsym_crash_on_write(int nWrite){
-  if( g.pVfs==0 ){
-    g.pVfs = sqlite3_vfs_find(0);
+ਖਾਲੀ devsym_crash_on_write(ਪੂਰਨ nWrite){
+  ਜੇ( g.pVfs==0 ){
+    g.pVfs = sqlite3_vfs_ਲੱਭੋ(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;
-    sqlite3_vfs_register(&devsym_vfs, 0);
-    sqlite3_vfs_register(&writecrash_vfs, 0);
+    sqlite3_vfs_ਰਜਿਸਟਰ(&devsym_vfs, 0);
+    sqlite3_vfs_ਰਜਿਸਟਰ(&writecrash_vfs, 0);
   }
   g.nWriteCrash = nWrite;
 }
 
-#endif
+#ਜੇ_ਅੰਤ

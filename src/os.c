@@ -13,29 +13,29 @@
 ** This file contains OS interface code that is common to all
 ** architectures.
 */
-#include "sqliteInt.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "sqliteInt.h"
 
 /*
 ** If we compile with the SQLITE_TEST macro set, then the following block
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_io_error_hit = 0;            /* Total number of I/O Errors */
-int sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
-int sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
-int sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
-int sqlite3_io_error_benign = 0;         /* True if errors are benign */
-int sqlite3_diskfull_pending = 0;
-int sqlite3_diskfull = 0;
-#endif /* defined(SQLITE_TEST) */
+#ਜੇ defined(SQLITE_TEST)
+ਪੂਰਨ sqlite3_io_error_ਪ੍ਰਾਪਤੀ = 0;            /* Total number of I/O Errors */
+ਪੂਰਨ sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
+ਪੂਰਨ sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
+ਪੂਰਨ sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
+ਪੂਰਨ sqlite3_io_error_benign = 0;         /* True if errors are benign */
+ਪੂਰਨ sqlite3_diskfull_pending = 0;
+ਪੂਰਨ sqlite3_diskfull = 0;
+#ਜੇ_ਅੰਤ /* defined(SQLITE_TEST) */
 
 /*
 ** When testing, also keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_open_file_count = 0;
-#endif /* defined(SQLITE_TEST) */
+#ਜੇ defined(SQLITE_TEST)
+ਪੂਰਨ sqlite3_open_file_ਗਿਣਤੀ = 0;
+#ਜੇ_ਅੰਤ /* defined(SQLITE_TEST) */
 
 /*
 ** The default SQLite sqlite3_vfs implementations do not allocate
@@ -61,17 +61,17 @@ int sqlite3_open_file_count = 0;
 **     sqlite3OsFullPathname()
 **
 */
-#if defined(SQLITE_TEST)
-int sqlite3_memdebug_vfs_oom_test = 1;
-  #define DO_OS_MALLOC_TEST(x)                                       \
-  if (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3JournalIsInMemory(x))) { \
-    void *pTstAlloc = sqlite3Malloc(10);                             \
-    if (!pTstAlloc) return SQLITE_IOERR_NOMEM_BKPT;                  \
+#ਜੇ defined(SQLITE_TEST)
+ਪੂਰਨ sqlite3_memdebug_vfs_oom_test = 1;
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ DO_OS_MALLOC_TEST(x)                                       \
+  ਜੇ (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3_Journal_Is_ਵਿੱਚ_ਸਮ੍ਰਿਤੀ(x))) { \
+    ਖਾਲੀ *pTstAlloc = sqlite3Malloc(10);                             \
+    ਜੇ (!pTstAlloc) ਵਾਪਸ SQLITE_IOERR_NOMEM_BKPT;                  \
     sqlite3_free(pTstAlloc);                                         \
   }
-#else
-  #define DO_OS_MALLOC_TEST(x)
-#endif
+#ਨਹੀਂਤਾਂ
+  #ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ DO_OS_MALLOC_TEST(x)
+#ਜੇ_ਅੰਤ
 
 /*
 ** The following routines are convenience wrappers around methods
@@ -79,43 +79,43 @@ int sqlite3_memdebug_vfs_oom_test = 1;
 ** of this would be completely automatic if SQLite were coded using
 ** C++ instead of plain old C.
 */
-void sqlite3OsClose(sqlite3_file *pId){
-  if( pId->pMethods ){
+ਖਾਲੀ sqlite3OsClose(sqlite3_file *pId){
+  ਜੇ( pId->pMethods ){
     pId->pMethods->xClose(pId);
     pId->pMethods = 0;
   }
 }
-int sqlite3OsRead(sqlite3_file *id, void *pBuf, int amt, i64 offset){
+ਪੂਰਨ sqlite3OsRead(sqlite3_file *id, ਖਾਲੀ *pBuf, ਪੂਰਨ amt, i64 ਵਿੱਥ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xRead(id, pBuf, amt, offset);
+  ਵਾਪਸ id->pMethods->xRead(id, pBuf, amt, ਵਿੱਥ);
 }
-int sqlite3OsWrite(sqlite3_file *id, const void *pBuf, int amt, i64 offset){
+ਪੂਰਨ sqlite3OsWrite(sqlite3_file *id, ਅਚਲ ਖਾਲੀ *pBuf, ਪੂਰਨ amt, i64 ਵਿੱਥ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xWrite(id, pBuf, amt, offset);
+  ਵਾਪਸ id->pMethods->xWrite(id, pBuf, amt, ਵਿੱਥ);
 }
-int sqlite3OsTruncate(sqlite3_file *id, i64 size){
-  return id->pMethods->xTruncate(id, size);
+ਪੂਰਨ sqlite3OsTruncate(sqlite3_file *id, i64 ਮਾਪ){
+  ਵਾਪਸ id->pMethods->xTruncate(id, ਮਾਪ);
 }
-int sqlite3OsSync(sqlite3_file *id, int flags){
+ਪੂਰਨ sqlite3OsSync(sqlite3_file *id, ਪੂਰਨ flags){
   DO_OS_MALLOC_TEST(id);
-  return flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
+  ਵਾਪਸ flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
 }
-int sqlite3OsFileSize(sqlite3_file *id, i64 *pSize){
+ਪੂਰਨ sqlite3_Os_File_ਮਾਪ(sqlite3_file *id, i64 *p_ਮਾਪ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFileSize(id, pSize);
+  ਵਾਪਸ id->pMethods->x_File_ਮਾਪ(id, p_ਮਾਪ);
 }
-int sqlite3OsLock(sqlite3_file *id, int lockType){
+ਪੂਰਨ sqlite3_Os_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ ਤਾਲਾ_Type){
   DO_OS_MALLOC_TEST(id);
-  assert( lockType>=SQLITE_LOCK_SHARED && lockType<=SQLITE_LOCK_EXCLUSIVE );
-  return id->pMethods->xLock(id, lockType);
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਤਾਲਾ_Type>=SQLITE_ਤਾਲਾ_SHARED && ਤਾਲਾ_Type<=SQLITE_ਤਾਲਾ_EXCLUSIVE );
+  ਵਾਪਸ id->pMethods->x_ਤਾਲਾ(id, ਤਾਲਾ_Type);
 }
-int sqlite3OsUnlock(sqlite3_file *id, int lockType){
-  assert( lockType==SQLITE_LOCK_NONE || lockType==SQLITE_LOCK_SHARED );
-  return id->pMethods->xUnlock(id, lockType);
+ਪੂਰਨ sqlite3OsUnlock(sqlite3_file *id, ਪੂਰਨ ਤਾਲਾ_Type){
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਤਾਲਾ_Type==SQLITE_ਤਾਲਾ_NONE || ਤਾਲਾ_Type==SQLITE_ਤਾਲਾ_SHARED );
+  ਵਾਪਸ id->pMethods->xUnlock(id, ਤਾਲਾ_Type);
 }
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
+ਪੂਰਨ sqlite3_Os_Check_Reserved_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xCheckReservedLock(id, pResOut);
+  ਵਾਪਸ id->pMethods->x_Check_Reserved_ਤਾਲਾ(id, p_Res_ਬਾਹਰਲਾ);
 }
 
 /*
@@ -126,13 +126,13 @@ int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** is only a hint and can be safely ignored.  The sqlite3OsFileControlHint()
 ** routine has no return value since the return value would be meaningless.
 */
-int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods==0 ) return SQLITE_NOTFOUND;
-#ifdef SQLITE_TEST
-  if( op!=SQLITE_FCNTL_COMMIT_PHASETWO
-   && op!=SQLITE_FCNTL_LOCK_TIMEOUT
-   && op!=SQLITE_FCNTL_CKPT_DONE
-   && op!=SQLITE_FCNTL_CKPT_START
+ਪੂਰਨ sqlite3OsFileControl(sqlite3_file *id, ਪੂਰਨ op, ਖਾਲੀ *pArg){
+  ਜੇ( id->pMethods==0 ) ਵਾਪਸ SQLITE_NOTFOUND;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_TEST
+  ਜੇ( op!=SQLITE_FCNTL_COMMIT_PHASETWO
+   && op!=SQLITE_FCNTL_ਤਾਲਾ_TIMEOUT
+   && op!=SQLITE_FCNTL_CKPT_ਪੂਰਾ
+   && op!=SQLITE_FCNTL_CKPT_ਸ਼ੁਰੂ
   ){
     /* Faults are not injected into COMMIT_PHASETWO because, assuming SQLite
     ** is using a regular VFS, it is called after the corresponding
@@ -151,187 +151,187 @@ int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
     */
     DO_OS_MALLOC_TEST(id);
   }
-#endif
-  return id->pMethods->xFileControl(id, op, pArg);
+#ਜੇ_ਅੰਤ
+  ਵਾਪਸ id->pMethods->xFileControl(id, op, pArg);
 }
-void sqlite3OsFileControlHint(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods ) (void)id->pMethods->xFileControl(id, op, pArg);
+ਖਾਲੀ sqlite3OsFileControlHint(sqlite3_file *id, ਪੂਰਨ op, ਖਾਲੀ *pArg){
+  ਜੇ( id->pMethods ) (ਖਾਲੀ)id->pMethods->xFileControl(id, op, pArg);
 }
 
-int sqlite3OsSectorSize(sqlite3_file *id){
-  int (*xSectorSize)(sqlite3_file*) = id->pMethods->xSectorSize;
-  return (xSectorSize ? xSectorSize(id) : SQLITE_DEFAULT_SECTOR_SIZE);
+ਪੂਰਨ sqlite3_Os_Sector_ਮਾਪ(sqlite3_file *id){
+  ਪੂਰਨ (*x_Sector_ਮਾਪ)(sqlite3_file*) = id->pMethods->x_Sector_ਮਾਪ;
+  ਵਾਪਸ (x_Sector_ਮਾਪ ? x_Sector_ਮਾਪ(id) : SQLITE_DEFAULT_SECTOR_ਮਾਪ);
 }
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id){
-  if( NEVER(id->pMethods==0) ) return 0;
-  return id->pMethods->xDeviceCharacteristics(id);
+ਪੂਰਨ sqlite3OsDeviceCharacteristics(sqlite3_file *id){
+  ਜੇ( NEVER(id->pMethods==0) ) ਵਾਪਸ 0;
+  ਵਾਪਸ id->pMethods->xDeviceCharacteristics(id);
 }
-#ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmLock(sqlite3_file *id, int offset, int n, int flags){
-  return id->pMethods->xShmLock(id, offset, n, flags);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_WAL
+ਪੂਰਨ sqlite3_Os_Shm_ਤਾਲਾ(sqlite3_file *id, ਪੂਰਨ ਵਿੱਥ, ਪੂਰਨ n, ਪੂਰਨ flags){
+  ਵਾਪਸ id->pMethods->x_Shm_ਤਾਲਾ(id, ਵਿੱਥ, n, flags);
 }
-void sqlite3OsShmBarrier(sqlite3_file *id){
+ਖਾਲੀ sqlite3OsShmBarrier(sqlite3_file *id){
   id->pMethods->xShmBarrier(id);
 }
-int sqlite3OsShmUnmap(sqlite3_file *id, int deleteFlag){
-  return id->pMethods->xShmUnmap(id, deleteFlag);
+ਪੂਰਨ sqlite3OsShmUnmap(sqlite3_file *id, ਪੂਰਨ deleteFlag){
+  ਵਾਪਸ id->pMethods->xShmUnmap(id, deleteFlag);
 }
-int sqlite3OsShmMap(
+ਪੂਰਨ sqlite3OsShmMap(
   sqlite3_file *id,               /* Database file handle */
-  int iPage,
-  int pgsz,
-  int bExtend,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Pointer to mapping */
+  ਪੂਰਨ i_ਪੰਨਾ,
+  ਪੂਰਨ pgsz,
+  ਪੂਰਨ bExtend,                    /* True to extend file if necessary */
+  ਖਾਲੀ ਅਸਥਿਰ **pp              /* OUT: Pointer to mapping */
 ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xShmMap(id, iPage, pgsz, bExtend, pp);
+  ਵਾਪਸ id->pMethods->xShmMap(id, i_ਪੰਨਾ, pgsz, bExtend, pp);
 }
-#endif /* SQLITE_OMIT_WAL */
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_WAL */
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#ਜੇ SQLITE_MAX_MMAP_ਮਾਪ>0
 /* The real implementation of xFetch and xUnfetch */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+ਪੂਰਨ sqlite3OsFetch(sqlite3_file *id, i64 iOff, ਪੂਰਨ iAmt, ਖਾਲੀ **pp){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFetch(id, iOff, iAmt, pp);
+  ਵਾਪਸ id->pMethods->xFetch(id, iOff, iAmt, pp);
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return id->pMethods->xUnfetch(id, iOff, p);
+ਪੂਰਨ sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, ਖਾਲੀ *p){
+  ਵਾਪਸ id->pMethods->xUnfetch(id, iOff, p);
 }
-#else
+#ਨਹੀਂਤਾਂ
 /* No-op stubs to use when memory-mapped I/O is disabled */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+ਪੂਰਨ sqlite3OsFetch(sqlite3_file *id, i64 iOff, ਪੂਰਨ iAmt, ਖਾਲੀ **pp){
   *pp = 0;
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return SQLITE_OK;
+ਪੂਰਨ sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, ਖਾਲੀ *p){
+  ਵਾਪਸ SQLITE_OK;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
 /*
 ** The next group of routines are convenience wrappers around the
 ** VFS methods.
 */
-int sqlite3OsOpen(
+ਪੂਰਨ sqlite3OsOpen(
   sqlite3_vfs *pVfs,
-  const char *zPath,
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,
   sqlite3_file *pFile,
-  int flags,
-  int *pFlagsOut
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_Flags_ਬਾਹਰਲਾ
 ){
-  int rc;
+  ਪੂਰਨ rc;
   DO_OS_MALLOC_TEST(0);
   /* 0x87f7f is a mask of SQLITE_OPEN_ flags that are valid to be passed
   ** down into the VFS layer.  Some SQLITE_OPEN_ flags (for example,
   ** SQLITE_OPEN_FULLMUTEX or SQLITE_OPEN_SHAREDCACHE) are blocked before
   ** reaching the VFS. */
-  assert( zPath || (flags & SQLITE_OPEN_EXCLUSIVE) );
-  rc = pVfs->xOpen(pVfs, zPath, pFile, flags & 0x1087f7f, pFlagsOut);
-  assert( rc==SQLITE_OK || pFile->pMethods==0 );
-  return rc;
+  ਪ੍ਰਤਿਜ੍ਞਾ( z_ਰਸਤਾ || (flags & SQLITE_OPEN_EXCLUSIVE) );
+  rc = pVfs->xOpen(pVfs, z_ਰਸਤਾ, pFile, flags & 0x1087f7f, p_Flags_ਬਾਹਰਲਾ);
+  ਪ੍ਰਤਿਜ੍ਞਾ( rc==SQLITE_OK || pFile->pMethods==0 );
+  ਵਾਪਸ rc;
 }
-int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+ਪੂਰਨ sqlite3OsDelete(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ, ਪੂਰਨ dirSync){
   DO_OS_MALLOC_TEST(0);
-  assert( dirSync==0 || dirSync==1 );
-  return pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, zPath, dirSync) : SQLITE_OK;
+  ਪ੍ਰਤਿਜ੍ਞਾ( dirSync==0 || dirSync==1 );
+  ਵਾਪਸ pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, z_ਰਸਤਾ, dirSync) : SQLITE_OK;
 }
-int sqlite3OsAccess(
+ਪੂਰਨ sqlite3OsAccess(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int flags,
-  int *pResOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_Res_ਬਾਹਰਲਾ
 ){
   DO_OS_MALLOC_TEST(0);
-  return pVfs->xAccess(pVfs, zPath, flags, pResOut);
+  ਵਾਪਸ pVfs->xAccess(pVfs, z_ਰਸਤਾ, flags, p_Res_ਬਾਹਰਲਾ);
 }
-int sqlite3OsFullPathname(
+ਪੂਰਨ sqlite3_Os_ਭਰਿਆ_Pathname(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int nPathOut,
-  char *zPathOut
+  ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ,
+  ਪੂਰਨ n_ਰਸਤਾ_ਬਾਹਰਲਾ,
+  ਅੱਖਰ *z_ਰਸਤਾ_ਬਾਹਰਲਾ
 ){
   DO_OS_MALLOC_TEST(0);
-  zPathOut[0] = 0;
-  return pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
+  z_ਰਸਤਾ_ਬਾਹਰਲਾ[0] = 0;
+  ਵਾਪਸ pVfs->x_ਭਰਿਆ_Pathname(pVfs, z_ਰਸਤਾ, n_ਰਸਤਾ_ਬਾਹਰਲਾ, z_ਰਸਤਾ_ਬਾਹਰਲਾ);
 }
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  assert( zPath!=0 );
-  assert( strlen(zPath)<=SQLITE_MAX_PATHLEN );  /* tag-20210611-1 */
-  return pVfs->xDlOpen(pVfs, zPath);
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_ਲੱਦੋ_EXTENSION
+ਖਾਲੀ *sqlite3OsDlOpen(sqlite3_vfs *pVfs, ਅਚਲ ਅੱਖਰ *z_ਰਸਤਾ){
+  ਪ੍ਰਤਿਜ੍ਞਾ( z_ਰਸਤਾ!=0 );
+  ਪ੍ਰਤਿਜ੍ਞਾ( ਲੜੀ_ਲੰਬਾਈ(z_ਰਸਤਾ)<=SQLITE_MAX_PATHLEN );  /* tag-20210611-1 */
+  ਵਾਪਸ pVfs->xDlOpen(pVfs, z_ਰਸਤਾ);
 }
-void sqlite3OsDlError(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  pVfs->xDlError(pVfs, nByte, zBufOut);
+ਖਾਲੀ sqlite3OsDlError(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Buf_ਬਾਹਰਲਾ){
+  pVfs->xDlError(pVfs, nByte, z_Buf_ਬਾਹਰਲਾ);
 }
-void (*sqlite3OsDlSym(sqlite3_vfs *pVfs, void *pHdle, const char *zSym))(void){
-  return pVfs->xDlSym(pVfs, pHdle, zSym);
+ਖਾਲੀ (*sqlite3OsDlSym(sqlite3_vfs *pVfs, ਖਾਲੀ *pHdle, ਅਚਲ ਅੱਖਰ *zSym))(ਖਾਲੀ){
+  ਵਾਪਸ pVfs->xDlSym(pVfs, pHdle, zSym);
 }
-void sqlite3OsDlClose(sqlite3_vfs *pVfs, void *pHandle){
+ਖਾਲੀ sqlite3OsDlClose(sqlite3_vfs *pVfs, ਖਾਲੀ *pHandle){
   pVfs->xDlClose(pVfs, pHandle);
 }
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  if( sqlite3Config.iPrngSeed ){
-    memset(zBufOut, 0, nByte);
-    if( ALWAYS(nByte>(signed)sizeof(unsigned)) ) nByte = sizeof(unsigned int);
-    memcpy(zBufOut, &sqlite3Config.iPrngSeed, nByte);
-    return SQLITE_OK;
-  }else{
-    return pVfs->xRandomness(pVfs, nByte, zBufOut);
+#ਜੇ_ਅੰਤ /* SQLITE_OMIT_LOAD_EXTENSION */
+ਪੂਰਨ sqlite3OsRandomness(sqlite3_vfs *pVfs, ਪੂਰਨ nByte, ਅੱਖਰ *z_Buf_ਬਾਹਰਲਾ){
+  ਜੇ( sqlite3Config.i_Prng_ਬੀਜ ){
+    memset(z_Buf_ਬਾਹਰਲਾ, 0, nByte);
+    ਜੇ( ALWAYS(nByte>(ਨਿਸ਼ਾਨੀਵਾਲਾ)ਆਕਾਰ(ਬਿਨਾਨਿਸ਼ਾਨੀ)) ) nByte = ਆਕਾਰ(ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ);
+    ਸਮ੍ਰਿਤੀ_ਨਕਲ(z_Buf_ਬਾਹਰਲਾ, &sqlite3Config.i_Prng_ਬੀਜ, nByte);
+    ਵਾਪਸ SQLITE_OK;
+  }ਨਹੀਂਤਾਂ{
+    ਵਾਪਸ pVfs->xRandomness(pVfs, nByte, z_Buf_ਬਾਹਰਲਾ);
   }
 
 }
-int sqlite3OsSleep(sqlite3_vfs *pVfs, int nMicro){
-  return pVfs->xSleep(pVfs, nMicro);
+ਪੂਰਨ sqlite3OsSleep(sqlite3_vfs *pVfs, ਪੂਰਨ nMicro){
+  ਵਾਪਸ pVfs->xSleep(pVfs, nMicro);
 }
-int sqlite3OsGetLastError(sqlite3_vfs *pVfs){
-  return pVfs->xGetLastError ? pVfs->xGetLastError(pVfs, 0, 0) : 0;
+ਪੂਰਨ sqlite3_Os_Get_ਆਖਰੀ_Error(sqlite3_vfs *pVfs){
+  ਵਾਪਸ pVfs->x_Get_ਆਖਰੀ_Error ? pVfs->x_Get_ਆਖਰੀ_Error(pVfs, 0, 0) : 0;
 }
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  int rc;
+ਪੂਰਨ sqlite3_Os_Current_ਸਮਾਂ_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *p_ਸਮਾਂ_ਬਾਹਰਲਾ){
+  ਪੂਰਨ rc;
   /* IMPLEMENTATION-OF: R-49045-42493 SQLite will use the xCurrentTimeInt64()
   ** method to get the current date and time if that method is available
   ** (if iVersion is 2 or greater and the function pointer is not NULL) and
   ** will fall back to xCurrentTime() if xCurrentTimeInt64() is
   ** unavailable.
   */
-  if( pVfs->iVersion>=2 && pVfs->xCurrentTimeInt64 ){
-    rc = pVfs->xCurrentTimeInt64(pVfs, pTimeOut);
-  }else{
-    double r;
-    rc = pVfs->xCurrentTime(pVfs, &r);
-    *pTimeOut = sqlite3RealToI64(r*86400000.0);
+  ਜੇ( pVfs->i_ਸੰਸਕਰਣ>=2 && pVfs->x_Current_ਸਮਾਂ_Int64 ){
+    rc = pVfs->x_Current_ਸਮਾਂ_Int64(pVfs, p_ਸਮਾਂ_ਬਾਹਰਲਾ);
+  }ਨਹੀਂਤਾਂ{
+    ਦੁੱਗਣਾ r;
+    rc = pVfs->x_Current_ਸਮਾਂ(pVfs, &r);
+    *p_ਸਮਾਂ_ਬਾਹਰਲਾ = sqlite3_Real_ਮੰਜ਼ਿਲ_I64(r*86400000.0);
   }
-  return rc;
+  ਵਾਪਸ rc;
 }
 
-int sqlite3OsOpenMalloc(
+ਪੂਰਨ sqlite3OsOpenMalloc(
   sqlite3_vfs *pVfs,
-  const char *zFile,
+  ਅਚਲ ਅੱਖਰ *zFile,
   sqlite3_file **ppFile,
-  int flags,
-  int *pOutFlags
+  ਪੂਰਨ flags,
+  ਪੂਰਨ *p_ਬਾਹਰਲਾ_Flags
 ){
-  int rc;
+  ਪੂਰਨ rc;
   sqlite3_file *pFile;
   pFile = (sqlite3_file *)sqlite3MallocZero(pVfs->szOsFile);
-  if( pFile ){
-    rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
+  ਜੇ( pFile ){
+    rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, p_ਬਾਹਰਲਾ_Flags);
+    ਜੇ( rc!=SQLITE_OK ){
       sqlite3_free(pFile);
       *ppFile = 0;
-    }else{
+    }ਨਹੀਂਤਾਂ{
       *ppFile = pFile;
     }
-  }else{
+  }ਨਹੀਂਤਾਂ{
     *ppFile = 0;
     rc = SQLITE_NOMEM_BKPT;
   }
-  assert( *ppFile!=0 || rc!=SQLITE_OK );
-  return rc;
+  ਪ੍ਰਤਿਜ੍ਞਾ( *ppFile!=0 || rc!=SQLITE_OK );
+  ਵਾਪਸ rc;
 }
-void sqlite3OsCloseFree(sqlite3_file *pFile){
-  assert( pFile );
+ਖਾਲੀ sqlite3OsCloseFree(sqlite3_file *pFile){
+  ਪ੍ਰਤਿਜ੍ਞਾ( pFile );
   sqlite3OsClose(pFile);
   sqlite3_free(pFile);
 }
@@ -342,60 +342,60 @@ void sqlite3OsCloseFree(sqlite3_file *pFile){
 ** ability to simulate a malloc failure, so that the handling of an
 ** error in sqlite3_os_init() by the upper layers can be tested.
 */
-int sqlite3OsInit(void){
-  void *p = sqlite3_malloc(10);
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
+ਪੂਰਨ sqlite3OsInit(ਖਾਲੀ){
+  ਖਾਲੀ *p = sqlite3_malloc(10);
+  ਜੇ( p==0 ) ਵਾਪਸ SQLITE_NOMEM_BKPT;
   sqlite3_free(p);
-  return sqlite3_os_init();
+  ਵਾਪਸ sqlite3_os_init();
 }
 
 /*
 ** The list of all registered VFS implementations.
 */
-static sqlite3_vfs * SQLITE_WSD vfsList = 0;
-#define vfsList GLOBAL(sqlite3_vfs *, vfsList)
+ਸਥਿਰ sqlite3_vfs * SQLITE_WSD vfsList = 0;
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ vfsList GLOBAL(sqlite3_vfs *, vfsList)
 
 /*
 ** Locate a VFS by name.  If no name is given, simply return the
 ** first VFS on the list.
 */
-sqlite3_vfs *sqlite3_vfs_find(const char *zVfs){
+sqlite3_vfs *sqlite3_vfs_ਲੱਭੋ(ਅਚਲ ਅੱਖਰ *zVfs){
   sqlite3_vfs *pVfs = 0;
-#if SQLITE_THREADSAFE
+#ਜੇ SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return 0;
-#endif
-#if SQLITE_THREADSAFE
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਪੂਰਨ rc = sqlite3_initialize();
+  ਜੇ( rc ) ਵਾਪਸ 0;
+#ਜੇ_ਅੰਤ
+#ਜੇ SQLITE_THREADSAFE
   mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
+#ਜੇ_ਅੰਤ
   sqlite3_mutex_enter(mutex);
-  for(pVfs = vfsList; pVfs; pVfs=pVfs->pNext){
-    if( zVfs==0 ) break;
-    if( strcmp(zVfs, pVfs->zName)==0 ) break;
+  ਲਈ(pVfs = vfsList; pVfs; pVfs=pVfs->p_ਅਗਲਾ){
+    ਜੇ( zVfs==0 ) ਰੋਕੋ;
+    ਜੇ( strcmp(zVfs, pVfs->zName)==0 ) ਰੋਕੋ;
   }
   sqlite3_mutex_leave(mutex);
-  return pVfs;
+  ਵਾਪਸ pVfs;
 }
 
 /*
 ** Unlink a VFS from the linked list
 */
-static void vfsUnlink(sqlite3_vfs *pVfs){
-  assert( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) );
-  if( pVfs==0 ){
+ਸਥਿਰ ਖਾਲੀ vfsUnlink(sqlite3_vfs *pVfs){
+  ਪ੍ਰਤਿਜ੍ਞਾ( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) );
+  ਜੇ( pVfs==0 ){
     /* No-op */
-  }else if( vfsList==pVfs ){
-    vfsList = pVfs->pNext;
-  }else if( vfsList ){
+  }ਨਹੀਂਤਾਂ ਜੇ( vfsList==pVfs ){
+    vfsList = pVfs->p_ਅਗਲਾ;
+  }ਨਹੀਂਤਾਂ ਜੇ( vfsList ){
     sqlite3_vfs *p = vfsList;
-    while( p->pNext && p->pNext!=pVfs ){
-      p = p->pNext;
+    ਜਦੋਂ( p->p_ਅਗਲਾ && p->p_ਅਗਲਾ!=pVfs ){
+      p = p->p_ਅਗਲਾ;
     }
-    if( p->pNext==pVfs ){
-      p->pNext = pVfs->pNext;
+    ਜੇ( p->p_ਅਗਲਾ==pVfs ){
+      p->p_ਅਗਲਾ = pVfs->p_ਅਗਲਾ;
     }
   }
 }
@@ -405,43 +405,43 @@ static void vfsUnlink(sqlite3_vfs *pVfs){
 ** VFS multiple times.  The new VFS becomes the default if makeDflt is
 ** true.
 */
-int sqlite3_vfs_register(sqlite3_vfs *pVfs, int makeDflt){
+ਪੂਰਨ sqlite3_vfs_ਰਜਿਸਟਰ(sqlite3_vfs *pVfs, ਪੂਰਨ makeDflt){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( pVfs==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਪੂਰਨ rc = sqlite3_initialize();
+  ਜੇ( rc ) ਵਾਪਸ rc;
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SQLITE_ENABLE_API_ARMOR
+  ਜੇ( pVfs==0 ) ਵਾਪਸ SQLITE_MISUSE_BKPT;
+#ਜੇ_ਅੰਤ
 
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
-  if( makeDflt || vfsList==0 ){
-    pVfs->pNext = vfsList;
+  ਜੇ( makeDflt || vfsList==0 ){
+    pVfs->p_ਅਗਲਾ = vfsList;
     vfsList = pVfs;
-  }else{
-    pVfs->pNext = vfsList->pNext;
-    vfsList->pNext = pVfs;
+  }ਨਹੀਂਤਾਂ{
+    pVfs->p_ਅਗਲਾ = vfsList->p_ਅਗਲਾ;
+    vfsList->p_ਅਗਲਾ = pVfs;
   }
-  assert(vfsList);
+  ਪ੍ਰਤਿਜ੍ਞਾ(vfsList);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
 
 /*
 ** Unregister a VFS so that it is no longer accessible.
 */
-int sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
+ਪੂਰਨ sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SQLITE_OMIT_AUTOINIT
+  ਪੂਰਨ rc = sqlite3_initialize();
+  ਜੇ( rc ) ਵਾਪਸ rc;
+#ਜੇ_ਅੰਤ
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  ਵਾਪਸ SQLITE_OK;
 }
