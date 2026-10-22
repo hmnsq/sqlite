@@ -24,30 +24,30 @@
 **   -mxpathname INTEGER        (Value for sqlite3_vfs.mxPathname)
 **   -iversion   INTEGER        (Value for sqlite3_vfs.iVersion)
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#যদি SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#অন্তর্ভাৱ "sqlite3.h"
+#অন্তর্ভাৱ "sqliteInt.h"
+#অন্তর্ভাৱ "tclsqlite.h"
 
-typedef struct Testvfs Testvfs;
-typedef struct TestvfsShm TestvfsShm;
-typedef struct TestvfsBuffer TestvfsBuffer;
-typedef struct TestvfsFile TestvfsFile;
-typedef struct TestvfsFd TestvfsFd;
+প্রকারনির্দেশ সংরচনা Testvfs Testvfs;
+প্রকারনির্দেশ সংরচনা TestvfsShm TestvfsShm;
+প্রকারনির্দেশ সংরচনা TestvfsBuffer TestvfsBuffer;
+প্রকারনির্দেশ সংরচনা TestvfsFile TestvfsFile;
+প্রকারনির্দেশ সংরচনা TestvfsFd TestvfsFd;
 
 /*
 ** An open file handle.
 */
-struct TestvfsFile {
+সংরচনা TestvfsFile {
   sqlite3_file base;              /* Base class.  Must be first */
   TestvfsFd *pFd;                 /* File data */
 };
 #define tvfsGetFd(pFile) (((TestvfsFile *)pFile)->pFd)
 
-struct TestvfsFd {
+সংরচনা TestvfsFd {
   sqlite3_vfs *pVfs;              /* The VFS */
-  const char *zFilename;          /* Filename as passed to xOpen() */
+  ধ্রুৱ ৱর্ণ *zFilename;          /* Filename as passed to xOpen() */
   sqlite3_file *pReal;            /* The real, underlying file descriptor */
   Tcl_Obj *pShmId;                /* Shared memory id for Tcl callbacks */
 
@@ -62,11 +62,11 @@ struct TestvfsFd {
 #define FAULT_INJECT_TRANSIENT  1
 #define FAULT_INJECT_PERSISTENT 2
 
-typedef struct TestFaultInject TestFaultInject;
-struct TestFaultInject {
-  int iCnt;                       /* Remaining calls before fault injection */
-  int eFault;                     /* A FAULT_INJECT_* value */
-  int nFail;                      /* Number of faults injected */
+প্রকারনির্দেশ সংরচনা TestFaultInject TestFaultInject;
+সংরচনা TestFaultInject {
+  পূর্ণাঙ্ক iCnt;                       /* Remaining calls before fault injection */
+  পূর্ণাঙ্ক eFault;                     /* A FAULT_INJECT_* value */
+  পূর্ণাঙ্ক nFail;                      /* Number of faults injected */
 };
 
 /*
@@ -74,33 +74,33 @@ struct TestFaultInject {
 ** sqlite3_vfs.pAppData field of the VFS structure registered with SQLite
 ** is set to point to it.
 */
-struct Testvfs {
-  char *zName;                    /* Name of this VFS */
+সংরচনা Testvfs {
+  ৱর্ণ *zName;                    /* Name of this VFS */
   sqlite3_vfs *pParent;           /* The VFS to use for file IO */
   sqlite3_vfs *pVfs;              /* The testvfs registered with SQLite */
   Tcl_Interp *interp;             /* Interpreter to run script in */
   Tcl_Obj *pScript;               /* Script to execute */
   TestvfsBuffer *pBuffer;         /* List of shared buffers */
-  int isNoshm;
-  int isFullshm;
+  পূর্ণাঙ্ক isNoshm;
+  পূর্ণাঙ্ক isFullshm;
 
-  int mask;                       /* Mask controlling [script] and [ioerr] */
+  পূর্ণাঙ্ক mask;                       /* Mask controlling [script] and [ioerr] */
 
   TestFaultInject ioerr_err;
   TestFaultInject full_err;
   TestFaultInject cantopen_err;
 
-#if 0
-  int iIoerrCnt;
-  int ioerr;
-  int nIoerrFail;
-  int iFullCnt;
-  int fullerr;
-  int nFullFail;
+#যদি 0
+  পূর্ণাঙ্ক iIoerrCnt;
+  পূর্ণাঙ্ক ioerr;
+  পূর্ণাঙ্ক nIoerrFail;
+  পূর্ণাঙ্ক iFullCnt;
+  পূর্ণাঙ্ক fullerr;
+  পূর্ণাঙ্ক nFullFail;
 #endif
 
-  int iDevchar;
-  int iSectorsize;
+  পূর্ণাঙ্ক iDevchar;
+  পূর্ণাঙ্ক iSectorsize;
 };
 
 /*
@@ -142,9 +142,9 @@ struct Testvfs {
 ** memory region opened by clients. If two clients open the same file,
 ** there are two TestvfsFile structures but only one TestvfsBuffer structure.
 */
-struct TestvfsBuffer {
-  char *zFile;                    /* Associated file name */
-  int pgsz;                       /* Page size */
+সংরচনা TestvfsBuffer {
+  ৱর্ণ *zFile;                    /* Associated file name */
+  পূর্ণাঙ্ক pgsz;                       /* Page size */
   u8 *aPage[TESTVFS_MAX_PAGES];   /* Array of ckalloc'd pages */
   TestvfsFd *pFile;               /* List of open handles */
   TestvfsBuffer *pNext;           /* Next in linked list of all buffers */
@@ -159,46 +159,46 @@ struct TestvfsBuffer {
 /*
 ** Method declarations for TestvfsFile.
 */
-static int tvfsClose(sqlite3_file*);
-static int tvfsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tvfsWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int tvfsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tvfsSync(sqlite3_file*, int flags);
-static int tvfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tvfsLock(sqlite3_file*, int);
-static int tvfsUnlock(sqlite3_file*, int);
-static int tvfsCheckReservedLock(sqlite3_file*, int *);
-static int tvfsFileControl(sqlite3_file*, int op, void *pArg);
-static int tvfsSectorSize(sqlite3_file*);
-static int tvfsDeviceCharacteristics(sqlite3_file*);
+স্থির পূর্ণাঙ্ক tvfsClose(sqlite3_file*);
+স্থির পূর্ণাঙ্ক tvfsRead(sqlite3_file*, শূন্য*, পূর্ণাঙ্ক iAmt, sqlite3_int64 iOfst);
+স্থির পূর্ণাঙ্ক tvfsWrite(sqlite3_file*,ধ্রুৱ শূন্য*,পূর্ণাঙ্ক iAmt, sqlite3_int64 iOfst);
+স্থির পূর্ণাঙ্ক tvfsTruncate(sqlite3_file*, sqlite3_int64 size);
+স্থির পূর্ণাঙ্ক tvfsSync(sqlite3_file*, পূর্ণাঙ্ক flags);
+স্থির পূর্ণাঙ্ক tvfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+স্থির পূর্ণাঙ্ক tvfsLock(sqlite3_file*, পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক tvfsUnlock(sqlite3_file*, পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক tvfsCheckReservedLock(sqlite3_file*, পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক tvfsFileControl(sqlite3_file*, পূর্ণাঙ্ক op, শূন্য *pArg);
+স্থির পূর্ণাঙ্ক tvfsSectorSize(sqlite3_file*);
+স্থির পূর্ণাঙ্ক tvfsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tvfs_vfs.
 */
-static int tvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int tvfsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int tvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int tvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+স্থির পূর্ণাঙ্ক tvfsOpen(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *, sqlite3_file*, পূর্ণাঙ্ক , পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক tvfsDelete(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক syncDir);
+স্থির পূর্ণাঙ্ক tvfsAccess(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক flags, পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক tvfsFullPathname(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক, ৱর্ণ *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-static void *tvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void tvfsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*tvfsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void tvfsDlClose(sqlite3_vfs*, void*);
+স্থির শূন্য *tvfsDlOpen(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zFilename);
+স্থির শূন্য tvfsDlError(sqlite3_vfs*, পূর্ণাঙ্ক nByte, ৱর্ণ *z_Err_বাৰ্তা);
+স্থির শূন্য (*tvfsDlSym(sqlite3_vfs*,শূন্য*, ধ্রুৱ ৱর্ণ *z_প্ৰতীক))(শূন্য);
+স্থির শূন্য tvfsDlClose(sqlite3_vfs*, শূন্য*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int tvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int tvfsSleep(sqlite3_vfs*, int microseconds);
-static int tvfsCurrentTime(sqlite3_vfs*, double*);
+স্থির পূর্ণাঙ্ক tvfsRandomness(sqlite3_vfs*, পূর্ণাঙ্ক nByte, ৱর্ণ *zOut);
+স্থির পূর্ণাঙ্ক tvfsSleep(sqlite3_vfs*, পূর্ণাঙ্ক microseconds);
+স্থির পূর্ণাঙ্ক tvfsCurrentTime(sqlite3_vfs*, দ্ৱিগুণ*);
 
-static int tvfsShmOpen(sqlite3_file*);
-static int tvfsShmLock(sqlite3_file*, int , int, int);
-static int tvfsShmMap(sqlite3_file*,int,int,int, void volatile **);
-static void tvfsShmBarrier(sqlite3_file*);
-static int tvfsShmUnmap(sqlite3_file*, int);
+স্থির পূর্ণাঙ্ক tvfsShmOpen(sqlite3_file*);
+স্থির পূর্ণাঙ্ক tvfsShmLock(sqlite3_file*, পূর্ণাঙ্ক , পূর্ণাঙ্ক, পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক tvfsShmMap(sqlite3_file*,পূর্ণাঙ্ক,পূর্ণাঙ্ক,পূর্ণাঙ্ক, শূন্য চঞ্চল **);
+স্থির শূন্য tvfsShmBarrier(sqlite3_file*);
+স্থির পূর্ণাঙ্ক tvfsShmUnmap(sqlite3_file*, পূর্ণাঙ্ক);
 
-static int tvfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
-static int tvfsUnfetch(sqlite3_file*, sqlite3_int64, void*);
+স্থির পূর্ণাঙ্ক tvfsFetch(sqlite3_file*, sqlite3_int64, পূর্ণাঙ্ক, শূন্য**);
+স্থির পূর্ণাঙ্ক tvfsUnfetch(sqlite3_file*, sqlite3_int64, শূন্য*);
 
-static sqlite3_io_methods tvfs_io_methods = {
+স্থির sqlite3_io_methods tvfs_io_methods = {
   3,                              /* iVersion */
   tvfsClose,                      /* xClose */
   tvfsRead,                       /* xRead */
@@ -220,10 +220,10 @@ static sqlite3_io_methods tvfs_io_methods = {
   tvfsUnfetch
 };
 
-static int tvfsResultCode(Testvfs *p, int *pRc){
-  struct errcode {
-    int eCode;
-    const char *zCode;
+স্থির পূর্ণাঙ্ক tvfsResultCode(Testvfs *p, পূর্ণাঙ্ক *pRc){
+  সংরচনা errcode {
+    পূর্ণাঙ্ক eCode;
+    ধ্রুৱ ৱর্ণ *zCode;
   } aCode[] = {
     { SQLITE_OK,       "SQLITE_OK"     },
     { SQLITE_ERROR,    "SQLITE_ERROR"  },
@@ -236,72 +236,72 @@ static int tvfsResultCode(Testvfs *p, int *pRc){
     { -1,              "SQLITE_OMIT"   },
   };
 
-  const char *z;
-  int i;
+  ধ্রুৱ ৱর্ণ *z;
+  পূর্ণাঙ্ক i;
 
   z = Tcl_GetStringResult(p->interp);
-  for(i=0; i<ArraySize(aCode); i++){
-    if( 0==strcmp(z, aCode[i].zCode) ){
+  বাবে(i=0; i<ArraySize(aCode); i++){
+    যদি( 0==strcmp(z, aCode[i].zCode) ){
       *pRc = aCode[i].eCode;
-      return 1;
+      ঘূৰাই 1;
     }
   }
 
-  return 0;
+  ঘূৰাই 0;
 }
 
-static int tvfsInjectFault(TestFaultInject *p){
-  int ret = 0;
-  if( p->eFault ){
+স্থির পূর্ণাঙ্ক tvfsInjectFault(TestFaultInject *p){
+  পূর্ণাঙ্ক ret = 0;
+  যদি( p->eFault ){
     p->iCnt--;
-    if( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
+    যদি( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
       ret = 1;
       p->nFail++;
     }
   }
-  return ret;
+  ঘূৰাই ret;
 }
 
 
-static int tvfsInjectIoerr(Testvfs *p){
-  return tvfsInjectFault(&p->ioerr_err);
+স্থির পূর্ণাঙ্ক tvfsInjectIoerr(Testvfs *p){
+  ঘূৰাই tvfsInjectFault(&p->ioerr_err);
 }
 
-static int tvfsInjectFullerr(Testvfs *p){
-  return tvfsInjectFault(&p->full_err);
+স্থির পূর্ণাঙ্ক tvfsInjectFullerr(Testvfs *p){
+  ঘূৰাই tvfsInjectFault(&p->full_err);
 }
-static int tvfsInjectCantopenerr(Testvfs *p){
-  return tvfsInjectFault(&p->cantopen_err);
+স্থির পূর্ণাঙ্ক tvfsInjectCantopenerr(Testvfs *p){
+  ঘূৰাই tvfsInjectFault(&p->cantopen_err);
 }
 
 
-static void tvfsExecTcl(
+স্থির শূন্য tvfsExecTcl(
   Testvfs *p, 
-  const char *zMethod,
+  ধ্রুৱ ৱর্ণ *zMethod,
   Tcl_Obj *arg1,
   Tcl_Obj *arg2,
   Tcl_Obj *arg3,
   Tcl_Obj *arg4
 ){
-  int rc;                         /* Return code from Tcl_EvalObj() */
+  পূর্ণাঙ্ক rc;                         /* Return code from Tcl_EvalObj() */
   Tcl_Obj *pEval;
-  assert( p->pScript );
+  প্রতিজ্ঞা( p->pScript );
 
-  assert( zMethod );
-  assert( p );
-  assert( arg2==0 || arg1!=0 );
-  assert( arg3==0 || arg2!=0 );
+  প্রতিজ্ঞা( zMethod );
+  প্রতিজ্ঞা( p );
+  প্রতিজ্ঞা( arg2==0 || arg1!=0 );
+  প্রতিজ্ঞা( arg3==0 || arg2!=0 );
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(p->pScript);
+  Tcl_Incr_Ref_গুনতি(p->pScript);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewStringObj(zMethod, -1));
-  if( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
-  if( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
-  if( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
-  if( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
+  যদি( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
+  যদি( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
+  যদি( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
+  যদি( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
 
   rc = Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
-  if( rc!=TCL_OK ){
+  যদি( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
     Tcl_ResetResult(p->interp);
   }
@@ -311,139 +311,139 @@ static void tvfsExecTcl(
 /*
 ** Close an tvfs-file.
 */
-static int tvfsClose(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক tvfsClose(sqlite3_file *pFile){
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd = pTestfile->pFd;
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_CLOSE_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_CLOSE_MASK ){
     tvfsExecTcl(p, "xClose", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
   }
 
-  if( pFd->pShmId ){
-    Tcl_DecrRefCount(pFd->pShmId);
+  যদি( pFd->pShmId ){
+    Tcl_Decr_Ref_গুনতি(pFd->pShmId);
     pFd->pShmId = 0;
   }
-  if( pFile->pMethods ){
-    ckfree((char *)pFile->pMethods);
+  যদি( pFile->pMethods ){
+    ckfree((ৱর্ণ *)pFile->pMethods);
   }
   sqlite3OsClose(pFd->pReal);
-  ckfree((char *)pFd);
+  ckfree((ৱর্ণ *)pFd);
   pTestfile->pFd = 0;
-  return SQLITE_OK;
+  ঘূৰাই SQLITE_OK;
 }
 
 /*
 ** Read data from an tvfs-file.
 */
-static int tvfsRead(
+স্থির পূর্ণাঙ্ক tvfsRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  শূন্য *zBuf, 
+  পূর্ণাঙ্ক iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_READ_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_READ_MASK ){
     tvfsExecTcl(p, "xRead", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_READ_MASK && tvfsInjectIoerr(p) ){
+  যদি( rc==SQLITE_OK && p->mask&TESTVFS_READ_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     rc = sqlite3OsRead(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
 ** Write data to an tvfs-file.
 */
-static int tvfsWrite(
+স্থির পূর্ণাঙ্ক tvfsWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ধ্রুৱ শূন্য *zBuf, 
+  পূর্ণাঙ্ক iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_WRITE_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_WRITE_MASK ){
     tvfsExecTcl(p, "xWrite", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 
         Tcl_NewWideIntObj(iOfst), Tcl_NewIntObj(iAmt)
     );
     tvfsResultCode(p, &rc);
-    if( rc<0 ) return SQLITE_OK;
+    যদি( rc<0 ) ঘূৰাই SQLITE_OK;
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
+  যদি( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
     rc = SQLITE_FULL;
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_WRITE_MASK && tvfsInjectIoerr(p) ){
+  যদি( rc==SQLITE_OK && p->mask&TESTVFS_WRITE_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
   
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     rc = sqlite3OsWrite(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
 ** Truncate an tvfs-file.
 */
-static int tvfsTruncate(sqlite3_file *pFile, sqlite_int64 size){
-  int rc = SQLITE_OK;
+স্থির পূর্ণাঙ্ক tvfsTruncate(sqlite3_file *pFile, sqlite_int64 size){
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_TRUNCATE_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_TRUNCATE_MASK ){
     tvfsExecTcl(p, "xTruncate", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
   
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     rc = sqlite3OsTruncate(pFd->pReal, size);
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
 ** Sync an tvfs-file.
 */
-static int tvfsSync(sqlite3_file *pFile, int flags){
-  int rc = SQLITE_OK;
+স্থির পূর্ণাঙ্ক tvfsSync(sqlite3_file *pFile, পূর্ণাঙ্ক flags){
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_SYNC_MASK ){
-    char *zFlags = 0;
+  যদি( p->pScript && p->mask&TESTVFS_SYNC_MASK ){
+    ৱর্ণ *zFlags = 0;
 
-    switch( flags ){
-      case SQLITE_SYNC_NORMAL:
+    ৱিকল্প( flags ){
+      পক্ষ SQLITE_SYNC_NORMAL:
         zFlags = "normal";
-        break;
-      case SQLITE_SYNC_FULL:
+        ভঙ্গ;
+      পক্ষ SQLITE_SYNC_FULL:
         zFlags = "full";
-        break;
-      case SQLITE_SYNC_NORMAL|SQLITE_SYNC_DATAONLY:
+        ভঙ্গ;
+      পক্ষ SQLITE_SYNC_NORMAL|SQLITE_SYNC_DATAONLY:
         zFlags = "normal|dataonly";
-        break;
-      case SQLITE_SYNC_FULL|SQLITE_SYNC_DATAONLY:
+        ভঙ্গ;
+      পক্ষ SQLITE_SYNC_FULL|SQLITE_SYNC_DATAONLY:
         zFlags = "full|dataonly";
-        break;
-      default:
-        assert(0);
+        ভঙ্গ;
+      স্ৱভাৱ:
+        প্রতিজ্ঞা(0);
     }
 
     tvfsExecTcl(p, "xSync", 
@@ -453,174 +453,174 @@ static int tvfsSync(sqlite3_file *pFile, int flags){
     tvfsResultCode(p, &rc);
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_FULL;
+  যদি( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_FULL;
 
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     rc = sqlite3OsSync(pFd->pReal, flags);
   }
 
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
 ** Return the current file-size of an tvfs-file.
 */
-static int tvfsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+স্থির পূর্ণাঙ্ক tvfsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   TestvfsFd *p = tvfsGetFd(pFile);
-  return sqlite3OsFileSize(p->pReal, pSize);
+  ঘূৰাই sqlite3OsFileSize(p->pReal, pSize);
 }
 
 /*
 ** Lock an tvfs-file.
 */
-static int tvfsLock(sqlite3_file *pFile, int eLock){
+স্থির পূর্ণাঙ্ক tvfsLock(sqlite3_file *pFile, পূর্ণাঙ্ক eLock){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_LOCK_MASK ){
-    char zLock[30];
-    sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
+  যদি( p->pScript && p->mask&TESTVFS_LOCK_MASK ){
+    ৱর্ণ zLock[30];
+    sqlite3_snprintf(পরিমাণ(zLock),zLock,"%d",eLock);
     tvfsExecTcl(p, "xLock", Tcl_NewStringObj(pFd->zFilename, -1), 
                    Tcl_NewStringObj(zLock, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_LOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_LOCK;
+  যদি( p->mask&TESTVFS_LOCK_MASK && tvfsInjectIoerr(p) ){
+    ঘূৰাই SQLITE_IOERR_LOCK;
   }
-  return sqlite3OsLock(pFd->pReal, eLock);
+  ঘূৰাই sqlite3OsLock(pFd->pReal, eLock);
 }
 
 /*
 ** Unlock an tvfs-file.
 */
-static int tvfsUnlock(sqlite3_file *pFile, int eLock){
+স্থির পূর্ণাঙ্ক tvfsUnlock(sqlite3_file *pFile, পূর্ণাঙ্ক eLock){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_UNLOCK_MASK ){
-    char zLock[30];
-    sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
+  যদি( p->pScript && p->mask&TESTVFS_UNLOCK_MASK ){
+    ৱর্ণ zLock[30];
+    sqlite3_snprintf(পরিমাণ(zLock),zLock,"%d",eLock);
     tvfsExecTcl(p, "xUnlock", Tcl_NewStringObj(pFd->zFilename, -1), 
                    Tcl_NewStringObj(zLock, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_UNLOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_UNLOCK;
+  যদি( p->mask&TESTVFS_UNLOCK_MASK && tvfsInjectIoerr(p) ){
+    ঘূৰাই SQLITE_IOERR_UNLOCK;
   }
-  return sqlite3OsUnlock(pFd->pReal, eLock);
+  ঘূৰাই sqlite3OsUnlock(pFd->pReal, eLock);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an tvfs-file.
 */
-static int tvfsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+স্থির পূর্ণাঙ্ক tvfsCheckReservedLock(sqlite3_file *pFile, পূর্ণাঙ্ক *pResOut){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_CKLOCK_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_CKLOCK_MASK ){
     tvfsExecTcl(p, "xCheckReservedLock", Tcl_NewStringObj(pFd->zFilename, -1),
                    0, 0, 0);
   }
-  return sqlite3OsCheckReservedLock(pFd->pReal, pResOut);
+  ঘূৰাই sqlite3OsCheckReservedLock(pFd->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an tvfs-file.
 */
-static int tvfsFileControl(sqlite3_file *pFile, int op, void *pArg){
+স্থির পূর্ণাঙ্ক tvfsFileControl(sqlite3_file *pFile, পূর্ণাঙ্ক op, শূন্য *pArg){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( op==SQLITE_FCNTL_PRAGMA ){
-    char **argv = (char**)pArg;
-    if( sqlite3_stricmp(argv[1],"error")==0 ){
-      int rc = SQLITE_ERROR;
-      if( argv[2] ){
-        const char *z = argv[2];
-        int x = atoi(z);
-        if( x ){
+  যদি( op==SQLITE_FCNTL_PRAGMA ){
+    ৱর্ণ **argv = (ৱর্ণ**)pArg;
+    যদি( sqlite3_stricmp(argv[1],"error")==0 ){
+      পূর্ণাঙ্ক rc = SQLITE_ERROR;
+      যদি( argv[2] ){
+        ধ্রুৱ ৱর্ণ *z = argv[2];
+        পূর্ণাঙ্ক x = atoi(z);
+        যদি( x ){
           rc = x;
-          while( sqlite3Isdigit(z[0]) ){ z++; }
-          while( sqlite3Isspace(z[0]) ){ z++; }
+          যেতিয়ালৈ( sqlite3Isdigit(z[0]) ){ z++; }
+          যেতিয়ালৈ( sqlite3Isspace(z[0]) ){ z++; }
         }
-        if( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
+        যদি( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
       }
-      return rc;
+      ঘূৰাই rc;
     }
-    if( sqlite3_stricmp(argv[1], "filename")==0 ){
+    যদি( sqlite3_stricmp(argv[1], "filename")==0 ){
       argv[0] = sqlite3_mprintf("%s", pFd->zFilename);
-      return SQLITE_OK;
+      ঘূৰাই SQLITE_OK;
     }
   }
-  if( p->pScript && (p->mask&TESTVFS_FCNTL_MASK) ){
-    struct Fcntl {
-      int iFnctl;
-      const char *zFnctl;
+  যদি( p->pScript && (p->mask&TESTVFS_FCNTL_MASK) ){
+    সংরচনা Fcntl {
+      পূর্ণাঙ্ক iFnctl;
+      ধ্রুৱ ৱর্ণ *zFnctl;
     } aF[] = {
       { SQLITE_FCNTL_BEGIN_ATOMIC_WRITE, "BEGIN_ATOMIC_WRITE" },
       { SQLITE_FCNTL_COMMIT_ATOMIC_WRITE, "COMMIT_ATOMIC_WRITE" },
       { SQLITE_FCNTL_ZIPVFS, "ZIPVFS" },
     };
-    int i;
-    for(i=0; i<sizeof(aF)/sizeof(aF[0]); i++){
-      if( op==aF[i].iFnctl ) break;
+    পূর্ণাঙ্ক i;
+    বাবে(i=0; i<পরিমাণ(aF)/পরিমাণ(aF[0]); i++){
+      যদি( op==aF[i].iFnctl ) ভঙ্গ;
     }
-    if( i<sizeof(aF)/sizeof(aF[0]) ){
-      int rc = 0;
+    যদি( i<পরিমাণ(aF)/পরিমাণ(aF[0]) ){
+      পূর্ণাঙ্ক rc = 0;
       tvfsExecTcl(p, "xFileControl", 
           Tcl_NewStringObj(pFd->zFilename, -1), 
           Tcl_NewStringObj(aF[i].zFnctl, -1),
           0, 0
       );
       tvfsResultCode(p, &rc);
-      if( rc ) return (rc<0 ? SQLITE_OK : rc);
+      যদি( rc ) ঘূৰাই (rc<0 ? SQLITE_OK : rc);
     }
   }
-  return sqlite3OsFileControl(pFd->pReal, op, pArg);
+  ঘূৰাই sqlite3OsFileControl(pFd->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an tvfs-file.
 */
-static int tvfsSectorSize(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক tvfsSectorSize(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iSectorsize>=0 ){
-    return p->iSectorsize;
+  যদি( p->iSectorsize>=0 ){
+    ঘূৰাই p->iSectorsize;
   }
-  return sqlite3OsSectorSize(pFd->pReal);
+  ঘূৰাই sqlite3OsSectorSize(pFd->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an tvfs-file.
 */
-static int tvfsDeviceCharacteristics(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক tvfsDeviceCharacteristics(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iDevchar>=0 ){
-    return p->iDevchar;
+  যদি( p->iDevchar>=0 ){
+    ঘূৰাই p->iDevchar;
   }
-  return sqlite3OsDeviceCharacteristics(pFd->pReal);
+  ঘূৰাই sqlite3OsDeviceCharacteristics(pFd->pReal);
 }
 
 /*
 ** Open an tvfs file handle.
 */
-static int tvfsOpen(
+স্থির পূর্ণাঙ্ক tvfsOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ধ্রুৱ ৱর্ণ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  পূর্ণাঙ্ক flags,
+  পূর্ণাঙ্ক *pOutFlags
 ){
-  int rc;
+  পূর্ণাঙ্ক rc;
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd;
   Tcl_Obj *pId = 0;
   Testvfs *p = (Testvfs *)pVfs->pAppData;
 
-  pFd = (TestvfsFd *)ckalloc(sizeof(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
-  memset(pFd, 0, sizeof(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
+  pFd = (TestvfsFd *)ckalloc(পরিমাণ(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
+  memset(pFd, 0, পরিমাণ(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
   pFd->pShm = 0;
   pFd->pShmId = 0;
   pFd->zFilename = zName;
   pFd->pVfs = pVfs;
   pFd->pReal = (sqlite3_file *)&pFd[1];
-  memset(pTestfile, 0, sizeof(TestvfsFile));
+  memset(pTestfile, 0, পরিমাণ(TestvfsFile));
   pTestfile->pFd = pFd;
 
   /* Evaluate the Tcl script: 
@@ -633,12 +633,12 @@ static int tvfsOpen(
   ** script is used as the connection name.
   */
   Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
-    if( flags&SQLITE_OPEN_MAIN_DB ){
-      const char *z = &zName[strlen(zName)+1];
-      while( *z ){
+    Tcl_Incr_Ref_গুনতি(pArg);
+    যদি( flags&SQLITE_OPEN_MAIN_DB ){
+      ধ্রুৱ ৱর্ণ *z = &zName[strlen(zName)+1];
+      যেতিয়ালৈ( *z ){
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
         z += strlen(z) + 1;
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
@@ -646,43 +646,43 @@ static int tvfsOpen(
       }
     }
     tvfsExecTcl(p, "xOpen", Tcl_NewStringObj(pFd->zFilename, -1), pArg, 0, 0);
-    Tcl_DecrRefCount(pArg);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
+    Tcl_Decr_Ref_গুনতি(pArg);
+    যদি( tvfsResultCode(p, &rc) ){
+      যদি( rc!=SQLITE_OK ) ঘূৰাই rc;
+    }অন্যথা{
       pId = Tcl_GetObjResult(p->interp);
     }
   }
 
-  if( (p->mask&TESTVFS_OPEN_MASK) &&  tvfsInjectIoerr(p) ) return SQLITE_IOERR;
-  if( tvfsInjectCantopenerr(p) ) return SQLITE_CANTOPEN;
-  if( tvfsInjectFullerr(p) ) return SQLITE_FULL;
+  যদি( (p->mask&TESTVFS_OPEN_MASK) &&  tvfsInjectIoerr(p) ) ঘূৰাই SQLITE_IOERR;
+  যদি( tvfsInjectCantopenerr(p) ) ঘূৰাই SQLITE_CANTOPEN;
+  যদি( tvfsInjectFullerr(p) ) ঘূৰাই SQLITE_FULL;
 
-  if( !pId ){
+  যদি( !pId ){
     pId = Tcl_NewStringObj("anon", -1);
   }
-  Tcl_IncrRefCount(pId);
+  Tcl_Incr_Ref_গুনতি(pId);
   pFd->pShmId = pId;
   Tcl_ResetResult(p->interp);
 
   rc = sqlite3OsOpen(PARENTVFS(pVfs), zName, pFd->pReal, flags, pOutFlags);
-  if( pFd->pReal->pMethods ){
+  যদি( pFd->pReal->pMethods ){
     sqlite3_io_methods *pMethods;
-    int nByte;
+    পূর্ণাঙ্ক nByte;
 
-    if( pVfs->iVersion>1 ){
-      nByte = sizeof(sqlite3_io_methods);
-    }else{
+    যদি( pVfs->iVersion>1 ){
+      nByte = পরিমাণ(sqlite3_io_methods);
+    }অন্যথা{
       nByte = offsetof(sqlite3_io_methods, xShmMap);
     }
 
     pMethods = (sqlite3_io_methods *)ckalloc(nByte);
     memcpy(pMethods, &tvfs_io_methods, nByte);
     pMethods->iVersion = pFd->pReal->pMethods->iVersion;
-    if( pMethods->iVersion>pVfs->iVersion ){
+    যদি( pMethods->iVersion>pVfs->iVersion ){
       pMethods->iVersion = pVfs->iVersion;
     }
-    if( pVfs->iVersion>1 && ((Testvfs *)pVfs->pAppData)->isNoshm ){
+    যদি( pVfs->iVersion>1 && ((Testvfs *)pVfs->pAppData)->isNoshm ){
       pMethods->xShmUnmap = 0;
       pMethods->xShmLock = 0;
       pMethods->xShmBarrier = 0;
@@ -691,7 +691,7 @@ static int tvfsOpen(
     pFile->pMethods = pMethods;
   }
 
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
@@ -699,52 +699,52 @@ static int tvfsOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int tvfsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
+স্থির পূর্ণাঙ্ক tvfsDelete(sqlite3_vfs *pVfs, ধ্রুৱ ৱর্ণ *zPath, পূর্ণাঙ্ক dirSync){
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   Testvfs *p = (Testvfs *)pVfs->pAppData;
 
-  if( p->pScript && p->mask&TESTVFS_DELETE_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_DELETE_MASK ){
     tvfsExecTcl(p, "xDelete", 
         Tcl_NewStringObj(zPath, -1), Tcl_NewIntObj(dirSync), 0, 0
     );
     tvfsResultCode(p, &rc);
   }
-  if( rc==SQLITE_OK ){
+  যদি( rc==SQLITE_OK ){
     rc = sqlite3OsDelete(PARENTVFS(pVfs), zPath, dirSync);
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int tvfsAccess(
+স্থির পূর্ণাঙ্ক tvfsAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ধ্রুৱ ৱর্ণ *zPath, 
+  পূর্ণাঙ্ক flags, 
+  পূর্ণাঙ্ক *pResOut
 ){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_ACCESS_MASK ){
-    int rc;
-    char *zArg = 0;
-    if( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
-    if( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
-    if( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
+  যদি( p->pScript && p->mask&TESTVFS_ACCESS_MASK ){
+    পূর্ণাঙ্ক rc;
+    ৱর্ণ *zArg = 0;
+    যদি( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
+    যদি( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
+    যদি( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
     tvfsExecTcl(p, "xAccess", 
         Tcl_NewStringObj(zPath, -1), Tcl_NewStringObj(zArg, -1), 0, 0
     );
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
+    যদি( tvfsResultCode(p, &rc) ){
+      যদি( rc!=SQLITE_OK ) ঘূৰাই rc;
+    }অন্যথা{
       Tcl_Interp *interp = p->interp;
-      if( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_GetObjResult(interp), pResOut) ){
-        return SQLITE_OK;
+      যদি( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_GetObjResult(interp), pResOut) ){
+        ঘূৰাই SQLITE_OK;
       }
     }
   }
-  return sqlite3OsAccess(PARENTVFS(pVfs), zPath, flags, pResOut);
+  ঘূৰাই sqlite3OsAccess(PARENTVFS(pVfs), zPath, flags, pResOut);
 }
 
 /*
@@ -752,29 +752,29 @@ static int tvfsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int tvfsFullPathname(
+স্থির পূর্ণাঙ্ক tvfsFullPathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ধ্রুৱ ৱর্ণ *zPath, 
+  পূর্ণাঙ্ক nOut, 
+  ৱর্ণ *zOut
 ){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_FULLPATHNAME_MASK ){
-    int rc;
+  যদি( p->pScript && p->mask&TESTVFS_FULLPATHNAME_MASK ){
+    পূর্ণাঙ্ক rc;
     tvfsExecTcl(p, "xFullPathname", Tcl_NewStringObj(zPath, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+    যদি( tvfsResultCode(p, &rc) ){
+      যদি( rc!=SQLITE_OK ) ঘূৰাই rc;
     }
   }
-  return sqlite3OsFullPathname(PARENTVFS(pVfs), zPath, nOut, zOut);
+  ঘূৰাই sqlite3OsFullPathname(PARENTVFS(pVfs), zPath, nOut, zOut);
 }
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(PARENTVFS(pVfs), zPath);
+স্থির শূন্য *tvfsDlOpen(sqlite3_vfs *pVfs, ধ্রুৱ ৱর্ণ *zPath){
+  ঘূৰাই sqlite3OsDlOpen(PARENTVFS(pVfs), zPath);
 }
 
 /*
@@ -782,21 +782,21 @@ static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(PARENTVFS(pVfs), nByte, zErrMsg);
+স্থির শূন্য tvfsDlError(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nByte, ৱর্ণ *z_Err_বাৰ্তা){
+  sqlite3OsDlError(PARENTVFS(pVfs), nByte, z_Err_বাৰ্তা);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*tvfsDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
+স্থির শূন্য (*tvfsDlSym(sqlite3_vfs *pVfs, শূন্য *p, ধ্রুৱ ৱর্ণ *zSym))(শূন্য){
+  ঘূৰাই sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void tvfsDlClose(sqlite3_vfs *pVfs, void *pHandle){
+স্থির শূন্য tvfsDlClose(sqlite3_vfs *pVfs, শূন্য *pHandle){
   sqlite3OsDlClose(PARENTVFS(pVfs), pHandle);
 }
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
@@ -805,67 +805,67 @@ static void tvfsDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int tvfsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(PARENTVFS(pVfs), nByte, zBufOut);
+স্থির পূর্ণাঙ্ক tvfsRandomness(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nByte, ৱর্ণ *zBufOut){
+  ঘূৰাই sqlite3OsRandomness(PARENTVFS(pVfs), nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int tvfsSleep(sqlite3_vfs *pVfs, int nMicro){
+স্থির পূর্ণাঙ্ক tvfsSleep(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nMicro){
   Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && (p->mask&TESTVFS_SLEEP_MASK) ){
+  যদি( p->pScript && (p->mask&TESTVFS_SLEEP_MASK) ){
     tvfsExecTcl(p, "xSleep", Tcl_NewIntObj(nMicro), 0, 0, 0);
   }
-  return sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
+  ঘূৰাই sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int tvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return PARENTVFS(pVfs)->xCurrentTime(PARENTVFS(pVfs), pTimeOut);
+স্থির পূর্ণাঙ্ক tvfsCurrentTime(sqlite3_vfs *pVfs, দ্ৱিগুণ *pTimeOut){
+  ঘূৰাই PARENTVFS(pVfs)->xCurrentTime(PARENTVFS(pVfs), pTimeOut);
 }
 
-static int tvfsShmOpen(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক tvfsShmOpen(sqlite3_file *pFile){
   Testvfs *p;
-  int rc = SQLITE_OK;             /* Return code */
+  পূর্ণাঙ্ক rc = SQLITE_OK;             /* Return code */
   TestvfsBuffer *pBuffer;         /* Buffer to open connection to */
   TestvfsFd *pFd;                 /* The testvfs file structure */
 
   pFd = tvfsGetFd(pFile);
   p = (Testvfs *)pFd->pVfs->pAppData;
-  assert( 0==p->isFullshm );
-  assert( pFd->pShmId && pFd->pShm==0 && pFd->pNext==0 );
+  প্রতিজ্ঞা( 0==p->isFullshm );
+  প্রতিজ্ঞা( pFd->pShmId && pFd->pShm==0 && pFd->pNext==0 );
 
   /* Evaluate the Tcl script: 
   **
   **   SCRIPT xShmOpen FILENAME
   */
   Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_SHMOPEN_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_SHMOPEN_MASK ){
     tvfsExecTcl(p, "xShmOpen", Tcl_NewStringObj(pFd->zFilename, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+    যদি( tvfsResultCode(p, &rc) ){
+      যদি( rc!=SQLITE_OK ) ঘূৰাই rc;
     }
   }
 
-  assert( rc==SQLITE_OK );
-  if( p->mask&TESTVFS_SHMOPEN_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR;
+  প্রতিজ্ঞা( rc==SQLITE_OK );
+  যদি( p->mask&TESTVFS_SHMOPEN_MASK && tvfsInjectIoerr(p) ){
+    ঘূৰাই SQLITE_IOERR;
   }
 
   /* Search for a TestvfsBuffer. Create a new one if required. */
-  for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-    if( 0==strcmp(pFd->zFilename, pBuffer->zFile) ) break;
+  বাবে(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
+    যদি( 0==strcmp(pFd->zFilename, pBuffer->zFile) ) ভঙ্গ;
   }
-  if( !pBuffer ){
-    int szName = (int)strlen(pFd->zFilename);
-    int nByte = sizeof(TestvfsBuffer) + szName + 1;
+  যদি( !pBuffer ){
+    পূর্ণাঙ্ক szName = (পূর্ণাঙ্ক)strlen(pFd->zFilename);
+    পূর্ণাঙ্ক nByte = পরিমাণ(TestvfsBuffer) + szName + 1;
     pBuffer = (TestvfsBuffer *)ckalloc(nByte);
     memset(pBuffer, 0, nByte);
-    pBuffer->zFile = (char *)&pBuffer[1];
+    pBuffer->zFile = (ৱর্ণ *)&pBuffer[1];
     memcpy(pBuffer->zFile, pFd->zFilename, szName+1);
     pBuffer->pNext = p->pBuffer;
     p->pBuffer = pBuffer;
@@ -875,44 +875,44 @@ static int tvfsShmOpen(sqlite3_file *pFile){
   pFd->pNext = pBuffer->pFile;
   pBuffer->pFile = pFd;
   pFd->pShm = pBuffer;
-  return rc;
+  ঘূৰাই rc;
 }
 
-static void tvfsAllocPage(TestvfsBuffer *p, int iPage, int pgsz){
-  assert( iPage<TESTVFS_MAX_PAGES );
-  if( p->aPage[iPage]==0 ){
+স্থির শূন্য tvfsAllocPage(TestvfsBuffer *p, পূর্ণাঙ্ক iPage, পূর্ণাঙ্ক pgsz){
+  প্রতিজ্ঞা( iPage<TESTVFS_MAX_PAGES );
+  যদি( p->aPage[iPage]==0 ){
     p->aPage[iPage] = (u8 *)ckalloc(pgsz);
     memset(p->aPage[iPage], 0, pgsz);
     p->pgsz = pgsz;
   }
 }
 
-static int tvfsShmMap(
+স্থির পূর্ণাঙ্ক tvfsShmMap(
   sqlite3_file *pFile,            /* Handle open on database file */
-  int iPage,                      /* Page to retrieve */
-  int pgsz,                       /* Size of pages */
-  int isWrite,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  পূর্ণাঙ্ক iPage,                      /* Page to retrieve */
+  পূর্ণাঙ্ক pgsz,                       /* Size of pages */
+  পূর্ণাঙ্ক isWrite,                    /* True to extend file if necessary */
+  শূন্য চঞ্চল **pp              /* OUT: Mapped memory */
 ){
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
 
-  if( p->isFullshm ){
+  যদি( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmMap(pReal, iPage, pgsz, isWrite, pp);
+    ঘূৰাই pReal->pMethods->xShmMap(pReal, iPage, pgsz, isWrite, pp);
   }
 
-  if( 0==pFd->pShm ){
+  যদি( 0==pFd->pShm ){
     rc = tvfsShmOpen(pFile);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    যদি( rc!=SQLITE_OK ){
+      ঘূৰাই rc;
     }
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
+    Tcl_Incr_Ref_গুনতি(pArg);
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(iPage));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(pgsz));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(isWrite));
@@ -920,52 +920,52 @@ static int tvfsShmMap(
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, pArg, 0
     );
     tvfsResultCode(p, &rc);
-    Tcl_DecrRefCount(pArg);
+    Tcl_Decr_Ref_গুনতি(pArg);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
+  যদি( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK && isWrite && !pFd->pShm->aPage[iPage] ){
+  যদি( rc==SQLITE_OK && isWrite && !pFd->pShm->aPage[iPage] ){
     tvfsAllocPage(pFd->pShm, iPage, pgsz);
   }
-  if( rc==SQLITE_OK || rc==SQLITE_READONLY ){
-    *pp = (void volatile *)pFd->pShm->aPage[iPage];
+  যদি( rc==SQLITE_OK || rc==SQLITE_READONLY ){
+    *pp = (শূন্য চঞ্চল *)pFd->pShm->aPage[iPage];
   }
 
-  return rc;
+  ঘূৰাই rc;
 }
 
 
-static int tvfsShmLock(
+স্থির পূর্ণাঙ্ক tvfsShmLock(
   sqlite3_file *pFile,
-  int ofst,
-  int n,
-  int flags
+  পূর্ণাঙ্ক ofst,
+  পূর্ণাঙ্ক n,
+  পূর্ণাঙ্ক flags
 ){
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
-  int nLock;
-  char zLock[80];
+  পূর্ণাঙ্ক nLock;
+  ৱর্ণ zLock[80];
 
-  if( p->isFullshm ){
+  যদি( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmLock(pReal, ofst, n, flags);
+    ঘূৰাই pReal->pMethods->xShmLock(pReal, ofst, n, flags);
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMLOCK_MASK ){
-    sqlite3_snprintf(sizeof(zLock), zLock, "%d %d", ofst, n);
-    nLock = (int)strlen(zLock);
-    if( flags & SQLITE_SHM_LOCK ){
+  যদি( p->pScript && p->mask&TESTVFS_SHMLOCK_MASK ){
+    sqlite3_snprintf(পরিমাণ(zLock), zLock, "%d %d", ofst, n);
+    nLock = (পূর্ণাঙ্ক)strlen(zLock);
+    যদি( flags & SQLITE_SHM_LOCK ){
       strcpy(&zLock[nLock], " lock");
-    }else{
+    }অন্যথা{
       strcpy(&zLock[nLock], " unlock");
     }
-    nLock += (int)strlen(&zLock[nLock]);
-    if( flags & SQLITE_SHM_SHARED ){
+    nLock += (পূর্ণাঙ্ক)strlen(&zLock[nLock]);
+    যদি( flags & SQLITE_SHM_SHARED ){
       strcpy(&zLock[nLock], " shared");
-    }else{
+    }অন্যথা{
       strcpy(&zLock[nLock], " exclusive");
     }
     tvfsExecTcl(p, "xShmLock", 
@@ -975,127 +975,127 @@ static int tvfsShmLock(
     tvfsResultCode(p, &rc);
   }
 
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMLOCK_MASK && tvfsInjectIoerr(p) ){
+  যদি( rc==SQLITE_OK && p->mask&TESTVFS_SHMLOCK_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK ){
-    int isLock = (flags & SQLITE_SHM_LOCK);
-    int isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
+  যদি( rc==SQLITE_OK ){
+    পূর্ণাঙ্ক isLock = (flags & SQLITE_SHM_LOCK);
+    পূর্ণাঙ্ক isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
     u32 mask = (((1<<n)-1) << ofst);
-    if( isLock ){
+    যদি( isLock ){
       TestvfsFd *p2;
-      for(p2=pFd->pShm->pFile; p2; p2=p2->pNext){
-        if( p2==pFd ) continue;
-        if( (p2->excllock&mask) || (isExcl && p2->sharedlock&mask) ){
+      বাবে(p2=pFd->pShm->pFile; p2; p2=p2->pNext){
+        যদি( p2==pFd ) অনুৱর্ত;
+        যদি( (p2->excllock&mask) || (isExcl && p2->sharedlock&mask) ){
           rc = SQLITE_BUSY;
-          break;
+          ভঙ্গ;
         }
       }
-      if( rc==SQLITE_OK ){
-        if( isExcl )  pFd->excllock |= mask;
-        if( !isExcl ) pFd->sharedlock |= mask;
+      যদি( rc==SQLITE_OK ){
+        যদি( isExcl )  pFd->excllock |= mask;
+        যদি( !isExcl ) pFd->sharedlock |= mask;
       }
-    }else{
-      if( isExcl )  pFd->excllock &= (~mask);
-      if( !isExcl ) pFd->sharedlock &= (~mask);
+    }অন্যথা{
+      যদি( isExcl )  pFd->excllock &= (~mask);
+      যদি( !isExcl ) pFd->sharedlock &= (~mask);
     }
   }
 
-  return rc;
+  ঘূৰাই rc;
 }
 
-static void tvfsShmBarrier(sqlite3_file *pFile){
+স্থির শূন্য tvfsShmBarrier(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
 
-  if( p->pScript && p->mask&TESTVFS_SHMBARRIER_MASK ){
-    const char *z = pFd->pShm ? pFd->pShm->zFile : "";
+  যদি( p->pScript && p->mask&TESTVFS_SHMBARRIER_MASK ){
+    ধ্রুৱ ৱর্ণ *z = pFd->pShm ? pFd->pShm->zFile : "";
     tvfsExecTcl(p, "xShmBarrier", Tcl_NewStringObj(z, -1), pFd->pShmId, 0, 0);
   }
 
-  if( p->isFullshm ){
+  যদি( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
     pReal->pMethods->xShmBarrier(pReal);
-    return;
+    ঘূৰাই;
   }
 }
 
-static int tvfsShmUnmap(
+স্থির পূর্ণাঙ্ক tvfsShmUnmap(
   sqlite3_file *pFile,
-  int deleteFlag
+  পূর্ণাঙ্ক deleteFlag
 ){
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
   Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
   TestvfsBuffer *pBuffer = pFd->pShm;
   TestvfsFd **ppFd;
 
-  if( p->isFullshm ){
+  যদি( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmUnmap(pReal, deleteFlag);
+    ঘূৰাই pReal->pMethods->xShmUnmap(pReal, deleteFlag);
   }
 
-  if( !pBuffer ) return SQLITE_OK;
-  assert( pFd->pShmId && pFd->pShm );
+  যদি( !pBuffer ) ঘূৰাই SQLITE_OK;
+  প্রতিজ্ঞা( pFd->pShmId && pFd->pShm );
 
-  if( p->pScript && p->mask&TESTVFS_SHMCLOSE_MASK ){
+  যদি( p->pScript && p->mask&TESTVFS_SHMCLOSE_MASK ){
     tvfsExecTcl(p, "xShmUnmap", 
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, 0, 0
     );
     tvfsResultCode(p, &rc);
   }
 
-  for(ppFd=&pBuffer->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->pNext));
-  assert( (*ppFd)==pFd );
+  বাবে(ppFd=&pBuffer->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->pNext));
+  প্রতিজ্ঞা( (*ppFd)==pFd );
   *ppFd = pFd->pNext;
   pFd->pNext = 0;
 
-  if( pBuffer->pFile==0 ){
-    int i;
+  যদি( pBuffer->pFile==0 ){
+    পূর্ণাঙ্ক i;
     TestvfsBuffer **pp;
-    for(pp=&p->pBuffer; *pp!=pBuffer; pp=&((*pp)->pNext));
+    বাবে(pp=&p->pBuffer; *pp!=pBuffer; pp=&((*pp)->pNext));
     *pp = (*pp)->pNext;
-    for(i=0; pBuffer->aPage[i]; i++){
-      ckfree((char *)pBuffer->aPage[i]);
+    বাবে(i=0; pBuffer->aPage[i]; i++){
+      ckfree((ৱর্ণ *)pBuffer->aPage[i]);
     }
-    ckfree((char *)pBuffer);
+    ckfree((ৱর্ণ *)pBuffer);
   }
   pFd->pShm = 0;
 
-  return rc;
+  ঘূৰাই rc;
 }
 
-static int tvfsFetch(
+স্থির পূর্ণাঙ্ক tvfsFetch(
     sqlite3_file *pFile, 
     sqlite3_int64 iOfst, 
-    int iAmt, 
-    void **pp
+    পূর্ণাঙ্ক iAmt, 
+    শূন্য **pp
 ){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
+  ঘূৰাই sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
 }
 
-static int tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *p){
+স্থির পূর্ণাঙ্ক tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, শূন্য *p){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsUnfetch(pFd->pReal, iOfst, p);
+  ঘূৰাই sqlite3OsUnfetch(pFd->pReal, iOfst, p);
 }
 
-static int SQLITE_TCLAPI testvfs_obj_cmd(
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI testvfs_obj_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
   Testvfs *p = (Testvfs *)cd;
 
-  enum DB_enum { 
+  গণনা DB_enum { 
     CMD_SHM, CMD_DELETE, CMD_FILTER, CMD_IOERR, CMD_SCRIPT, 
     CMD_DEVCHAR, CMD_SECTORSIZE, CMD_FULLERR, CMD_CANTOPENERR
   };
-  struct TestvfsSubcmd {
-    char *zName;
-    enum DB_enum eCmd;
+  সংরচনা TestvfsSubcmd {
+    ৱর্ণ *zName;
+    গণনা DB_enum eCmd;
   } aSubcmd[] = {
     { "shm",         CMD_SHM         },
     { "delete",      CMD_DELETE      },
@@ -1108,81 +1108,81 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     { "sectorsize",  CMD_SECTORSIZE  },
     { 0, 0 }
   };
-  int i;
+  পূর্ণাঙ্ক i;
   
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUBCOMMAND ...");
-    return TCL_ERROR;
+  যদি( objc<2 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "SUBCOMMAND ...");
+    ঘূৰাই TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObjStruct(
-        interp, objv[1], aSubcmd, sizeof(aSubcmd[0]), "subcommand", 0, &i) 
+  যদি( Tcl_GetIndexFromObjStruct(
+        interp, objv[1], aSubcmd, পরিমাণ(aSubcmd[0]), "subcommand", 0, &i) 
   ){
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
   Tcl_ResetResult(interp);
 
-  switch( aSubcmd[i].eCmd ){
-    case CMD_SHM: {
+  ৱিকল্প( aSubcmd[i].eCmd ){
+    পক্ষ CMD_SHM: {
       Tcl_Obj *pObj;
-      int rc;
+      পূর্ণাঙ্ক rc;
       TestvfsBuffer *pBuffer;
-      char *zName;
-      if( objc!=3 && objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "FILE ?VALUE?");
-        return TCL_ERROR;
+      ৱর্ণ *zName;
+      যদি( objc!=3 && objc!=4 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "FILE ?VALUE?");
+        ঘূৰাই TCL_ERROR;
       }
       zName = ckalloc(p->pParent->mxPathname);
       rc = p->pParent->xFullPathname(
           p->pParent, Tcl_GetString(objv[2]), 
           p->pParent->mxPathname, zName
       );
-      if( rc!=SQLITE_OK ){
+      যদি( rc!=SQLITE_OK ){
         Tcl_AppendResult(interp, "failed to get full path: ",
-                         Tcl_GetString(objv[2]), NULL);
+                         Tcl_GetString(objv[2]), রিক্ত);
         ckfree(zName);
-        return TCL_ERROR;
+        ঘূৰাই TCL_ERROR;
       }
-      for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-        if( 0==strcmp(pBuffer->zFile, zName) ) break;
+      বাবে(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
+        যদি( 0==strcmp(pBuffer->zFile, zName) ) ভঙ্গ;
       }
       ckfree(zName);
-      if( !pBuffer ){
-        Tcl_AppendResult(interp, "no such file: ", Tcl_GetString(objv[2]), NULL);
-        return TCL_ERROR;
+      যদি( !pBuffer ){
+        Tcl_AppendResult(interp, "no such file: ", Tcl_GetString(objv[2]), রিক্ত);
+        ঘূৰাই TCL_ERROR;
       }
-      if( objc==4 ){
+      যদি( objc==4 ){
         Tcl_Size n;
         u8 *a = Tcl_GetByteArrayFromObj(objv[3], &n);
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
-        for(i=0; i*pgsz<(int)n; i++){
-          int nByte = pgsz;
+        পূর্ণাঙ্ক pgsz = pBuffer->pgsz;
+        যদি( pgsz==0 ) pgsz = 65536;
+        বাবে(i=0; i*pgsz<(পূর্ণাঙ্ক)n; i++){
+          পূর্ণাঙ্ক nByte = pgsz;
           tvfsAllocPage(pBuffer, i, pgsz);
-          if( n-i*pgsz<pgsz ){
-            nByte = (int)n;
+          যদি( n-i*pgsz<pgsz ){
+            nByte = (পূর্ণাঙ্ক)n;
           }
           memcpy(pBuffer->aPage[i], &a[i*pgsz], nByte);
         }
       }
 
       pObj = Tcl_NewObj();
-      for(i=0; pBuffer->aPage[i]; i++){
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
+      বাবে(i=0; pBuffer->aPage[i]; i++){
+        পূর্ণাঙ্ক pgsz = pBuffer->pgsz;
+        যদি( pgsz==0 ) pgsz = 65536;
         Tcl_AppendObjToObj(pObj, Tcl_NewByteArrayObj(pBuffer->aPage[i], pgsz));
       }
       Tcl_SetObjResult(interp, pObj);
-      break;
+      ভঙ্গ;
     }
 
     /*  TESTVFS filter METHOD-LIST
     **
     **     Activate special processing for those methods contained in the list
     */
-    case CMD_FILTER: {
-      static struct VfsMethod {
-        char *zName;
-        int mask;
+    পক্ষ CMD_FILTER: {
+      স্থির সংরচনা VfsMethod {
+        ৱর্ণ *zName;
+        পূর্ণাঙ্ক mask;
       } vfsmethod [] = {
         { "xShmOpen",           TESTVFS_SHMOPEN_MASK },
         { "xShmLock",           TESTVFS_SHMLOCK_MASK },
@@ -1206,31 +1206,31 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       };
       Tcl_Obj **apElem = 0;
       Tcl_Size nElem = 0;
-      int mask = 0;
-      if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "LIST");
-        return TCL_ERROR;
+      পূর্ণাঙ্ক mask = 0;
+      যদি( objc!=3 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "LIST");
+        ঘূৰাই TCL_ERROR;
       }
-      if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-        return TCL_ERROR;
+      যদি( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+        ঘূৰাই TCL_ERROR;
       }
       Tcl_ResetResult(interp);
-      for(i=0; i<(int)nElem; i++){
-        int iMethod;
-        char *zElem = Tcl_GetString(apElem[i]);
-        for(iMethod=0; iMethod<ArraySize(vfsmethod); iMethod++){
-          if( strcmp(zElem, vfsmethod[iMethod].zName)==0 ){
+      বাবে(i=0; i<(পূর্ণাঙ্ক)nElem; i++){
+        পূর্ণাঙ্ক iMethod;
+        ৱর্ণ *zElem = Tcl_GetString(apElem[i]);
+        বাবে(iMethod=0; iMethod<ArraySize(vfsmethod); iMethod++){
+          যদি( strcmp(zElem, vfsmethod[iMethod].zName)==0 ){
             mask |= vfsmethod[iMethod].mask;
-            break;
+            ভঙ্গ;
           }
         }
-        if( iMethod==ArraySize(vfsmethod) ){
-          Tcl_AppendResult(interp, "unknown method: ", zElem, NULL);
-          return TCL_ERROR;
+        যদি( iMethod==ArraySize(vfsmethod) ){
+          Tcl_AppendResult(interp, "unknown method: ", zElem, রিক্ত);
+          ঘূৰাই TCL_ERROR;
         }
       }
       p->mask = mask;
-      break;
+      ভঙ্গ;
     }
 
     /*
@@ -1239,27 +1239,27 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     **  Query or set the script to be run when filtered VFS events
     **  occur.
     */
-    case CMD_SCRIPT: {
-      if( objc==3 ){
+    পক্ষ CMD_SCRIPT: {
+      যদি( objc==3 ){
         Tcl_Size nByte;
-        if( p->pScript ){
-          Tcl_DecrRefCount(p->pScript);
+        যদি( p->pScript ){
+          Tcl_Decr_Ref_গুনতি(p->pScript);
           p->pScript = 0;
         }
         Tcl_GetStringFromObj(objv[2], &nByte);
-        if( nByte>0 ){
+        যদি( nByte>0 ){
           p->pScript = Tcl_DuplicateObj(objv[2]);
-          Tcl_IncrRefCount(p->pScript);
+          Tcl_Incr_Ref_গুনতি(p->pScript);
         }
-      }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
-        return TCL_ERROR;
+      }অন্যথা যদি( objc!=2 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "?SCRIPT?");
+        ঘূৰাই TCL_ERROR;
       }
 
       Tcl_ResetResult(interp);
-      if( p->pScript ) Tcl_SetObjResult(interp, p->pScript);
+      যদি( p->pScript ) Tcl_SetObjResult(interp, p->pScript);
 
-      break;
+      ভঙ্গ;
     }
 
     /*
@@ -1267,49 +1267,49 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     **
     **   Where IFAIL is an integer and PERSIST is boolean.
     */
-    case CMD_CANTOPENERR:
-    case CMD_IOERR:
-    case CMD_FULLERR: {
+    পক্ষ CMD_CANTOPENERR:
+    পক্ষ CMD_IOERR:
+    পক্ষ CMD_FULLERR: {
       TestFaultInject *pTest = 0;
-      int iRet;
+      পূর্ণাঙ্ক iRet;
 
-      switch( aSubcmd[i].eCmd ){
-        case CMD_IOERR: pTest = &p->ioerr_err; break;
-        case CMD_FULLERR: pTest = &p->full_err; break;
-        case CMD_CANTOPENERR: pTest = &p->cantopen_err; break;
-        default: assert(0);
+      ৱিকল্প( aSubcmd[i].eCmd ){
+        পক্ষ CMD_IOERR: pTest = &p->ioerr_err; ভঙ্গ;
+        পক্ষ CMD_FULLERR: pTest = &p->full_err; ভঙ্গ;
+        পক্ষ CMD_CANTOPENERR: pTest = &p->cantopen_err; ভঙ্গ;
+        স্ৱভাৱ: প্রতিজ্ঞা(0);
       }
       iRet = pTest->nFail;
       pTest->nFail = 0;
       pTest->eFault = 0;
       pTest->iCnt = 0;
 
-      if( objc==4 ){
-        int iCnt, iPersist;
-        if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
+      যদি( objc==4 ){
+        পূর্ণাঙ্ক iCnt, iPersist;
+        যদি( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
          || TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[3], &iPersist)
         ){
-          return TCL_ERROR;
+          ঘূৰাই TCL_ERROR;
         }
         pTest->eFault = iPersist?FAULT_INJECT_PERSISTENT:FAULT_INJECT_TRANSIENT;
         pTest->iCnt = iCnt;
-      }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?CNT PERSIST?");
-        return TCL_ERROR;
+      }অন্যথা যদি( objc!=2 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "?CNT PERSIST?");
+        ঘূৰাই TCL_ERROR;
       }
       Tcl_SetObjResult(interp, Tcl_NewIntObj(iRet));
-      break;
+      ভঙ্গ;
     }
 
-    case CMD_DELETE: {
+    পক্ষ CMD_DELETE: {
       Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
-      break;
+      ভঙ্গ;
     }
 
-    case CMD_DEVCHAR: {
-      struct DeviceFlag {
-        char *zName;
-        int iValue;
+    পক্ষ CMD_DEVCHAR: {
+      সংরচনা DeviceFlag {
+        ৱর্ণ *zName;
+        পূর্ণাঙ্ক i_মান;
       } aFlag[] = {
         { "default",               -1 },
         { "atomic",                SQLITE_IOCAP_ATOMIC                },
@@ -1329,42 +1329,42 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
         { 0, 0 }
       };
       Tcl_Obj *pRet;
-      int iFlag;
+      পূর্ণাঙ্ক iFlag;
 
-      if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?ATTR-LIST?");
-        return TCL_ERROR;
+      যদি( objc>3 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "?ATTR-LIST?");
+        ঘূৰাই TCL_ERROR;
       }
-      if( objc==3 ){
-        int j;
-        int iNew = 0;
+      যদি( objc==3 ){
+        পূর্ণাঙ্ক j;
+        পূর্ণাঙ্ক iNew = 0;
         Tcl_Obj **flags = 0;
         Tcl_Size nFlags = 0;
 
-        if( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
-          return TCL_ERROR;
+        যদি( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
+          ঘূৰাই TCL_ERROR;
         }
 
-        for(j=0; j<(int)nFlags; j++){
-          int idx = 0;
-          if( Tcl_GetIndexFromObjStruct(interp, flags[j], aFlag, 
-                sizeof(aFlag[0]), "flag", 0, &idx) 
+        বাবে(j=0; j<(পূর্ণাঙ্ক)nFlags; j++){
+          পূর্ণাঙ্ক idx = 0;
+          যদি( Tcl_GetIndexFromObjStruct(interp, flags[j], aFlag, 
+                পরিমাণ(aFlag[0]), "flag", 0, &idx) 
           ){
-            return TCL_ERROR;
+            ঘূৰাই TCL_ERROR;
           }
-          if( aFlag[idx].iValue<0 && nFlags>1 ){
-            Tcl_AppendResult(interp, "bad flags: ", Tcl_GetString(objv[2]), NULL);
-            return TCL_ERROR;
+          যদি( aFlag[idx].i_মান<0 && nFlags>1 ){
+            Tcl_AppendResult(interp, "bad flags: ", Tcl_GetString(objv[2]), রিক্ত);
+            ঘূৰাই TCL_ERROR;
           }
-          iNew |= aFlag[idx].iValue;
+          iNew |= aFlag[idx].i_মান;
         }
 
         p->iDevchar = iNew| 0x10000000;
       }
 
       pRet = Tcl_NewObj();
-      for(iFlag=0; iFlag<sizeof(aFlag)/sizeof(aFlag[0]); iFlag++){
-        if( p->iDevchar & aFlag[iFlag].iValue ){
+      বাবে(iFlag=0; iFlag<পরিমাণ(aFlag)/পরিমাণ(aFlag[0]); iFlag++){
+        যদি( p->iDevchar & aFlag[iFlag].i_মান ){
           Tcl_ListObjAppendElement(
               interp, pRet, Tcl_NewStringObj(aFlag[iFlag].zName, -1)
           );
@@ -1372,37 +1372,37 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       }
       Tcl_SetObjResult(interp, pRet);
 
-      break;
+      ভঙ্গ;
     }
 
-    case CMD_SECTORSIZE: {
-      if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?VALUE?");
-        return TCL_ERROR;
+    পক্ষ CMD_SECTORSIZE: {
+      যদি( objc>3 ){
+        Tcl_Wrong_অঙ্ক_Args(interp, 2, objv, "?VALUE?");
+        ঘূৰাই TCL_ERROR;
       }
-      if( objc==3 ){
-        int iNew = 0;
-        if( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
-          return TCL_ERROR;
+      যদি( objc==3 ){
+        পূর্ণাঙ্ক iNew = 0;
+        যদি( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
+          ঘূৰাই TCL_ERROR;
         }
         p->iSectorsize = iNew;
       }
       Tcl_SetObjResult(interp, Tcl_NewIntObj(p->iSectorsize));
-      break;
+      ভঙ্গ;
     }
   }
 
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
-static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
+স্থির শূন্য SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
   Testvfs *p = (Testvfs *)cd;
-  if( p->pScript ) Tcl_DecrRefCount(p->pScript);
+  যদি( p->pScript ) Tcl_Decr_Ref_গুনতি(p->pScript);
   sqlite3_vfs_unregister(p->pVfs);
-  memset(p->pVfs, 0, sizeof(sqlite3_vfs));
-  ckfree((char *)p->pVfs);
-  memset(p, 0, sizeof(Testvfs));
-  ckfree((char *)p);
+  memset(p->pVfs, 0, পরিমাণ(sqlite3_vfs));
+  ckfree((ৱর্ণ *)p->pVfs);
+  memset(p, 0, পরিমাণ(Testvfs));
+  ckfree((ৱর্ণ *)p);
 }
 
 /*
@@ -1440,13 +1440,13 @@ static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
 **
 ** where LOCK is of the form "OFFSET NBYTE lock/unlock shared/exclusive"
 */
-static int SQLITE_TCLAPI testvfs_cmd(
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI testvfs_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
-  static sqlite3_vfs tvfs_vfs = {
+  স্থির sqlite3_vfs tvfs_vfs = {
     3,                            /* iVersion */
     0,                            /* szOsFile */
     0,                            /* mxPathname */
@@ -1462,7 +1462,7 @@ static int SQLITE_TCLAPI testvfs_cmd(
     tvfsDlError,                  /* xDlError */
     tvfsDlSym,                    /* xDlSym */
     tvfsDlClose,                  /* xDlClose */
-#else
+#অন্যথা
     0,                            /* xDlOpen */
     0,                            /* xDlError */
     0,                            /* xDlSym */
@@ -1480,66 +1480,66 @@ static int SQLITE_TCLAPI testvfs_cmd(
 
   Testvfs *p;                     /* New object */
   sqlite3_vfs *pVfs;              /* New VFS */
-  char *zVfs;
-  int nByte;                      /* Bytes of space to allocate at p */
+  ৱর্ণ *zVfs;
+  পূর্ণাঙ্ক nByte;                      /* Bytes of space to allocate at p */
 
-  int i;
-  int isNoshm = 0;                /* True if -noshm is passed */
-  int isFullshm = 0;              /* True if -fullshm is passed */
-  int isDefault = 0;              /* True if -default is passed */
-  int szOsFile = 0;               /* Value passed to -szosfile */
-  int mxPathname = -1;            /* Value passed to -mxpathname */
-  int iVersion = 3;               /* Value passed to -iversion */
+  পূর্ণাঙ্ক i;
+  পূর্ণাঙ্ক isNoshm = 0;                /* True if -noshm is passed */
+  পূর্ণাঙ্ক isFullshm = 0;              /* True if -fullshm is passed */
+  পূর্ণাঙ্ক isDefault = 0;              /* True if -default is passed */
+  পূর্ণাঙ্ক szOsFile = 0;               /* Value passed to -szosfile */
+  পূর্ণাঙ্ক mxPathname = -1;            /* Value passed to -mxpathname */
+  পূর্ণাঙ্ক iVersion = 3;               /* Value passed to -iversion */
 
-  if( objc<2 || 0!=(objc%2) ) goto bad_args;
-  for(i=2; i<objc; i += 2){
+  যদি( objc<2 || 0!=(objc%2) ) গচ্ছ bad_args;
+  বাবে(i=2; i<objc; i += 2){
     Tcl_Size nSwitch;
-    char *zSwitch;
+    ৱর্ণ *zSwitch;
     zSwitch = Tcl_GetStringFromObj(objv[i], &nSwitch); 
 
-    if( nSwitch>2 && 0==strncmp("-noshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
-        return TCL_ERROR;
+    যদি( nSwitch>2 && 0==strncmp("-noshm", zSwitch, nSwitch) ){
+      যদি( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
+        ঘূৰাই TCL_ERROR;
       }
-      if( isNoshm ) isFullshm = 0;
+      যদি( isNoshm ) isFullshm = 0;
     }
-    else if( nSwitch>2 && 0==strncmp("-default", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
-        return TCL_ERROR;
-      }
-    }
-    else if( nSwitch>2 && 0==strncmp("-szosfile", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
-        return TCL_ERROR;
+    অন্যথা যদি( nSwitch>2 && 0==strncmp("-default", zSwitch, nSwitch) ){
+      যদি( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
+        ঘূৰাই TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-mxpathname", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
-        return TCL_ERROR;
+    অন্যথা যদি( nSwitch>2 && 0==strncmp("-szosfile", zSwitch, nSwitch) ){
+      যদি( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
+        ঘূৰাই TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-iversion", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &iVersion) ){
-        return TCL_ERROR;
+    অন্যথা যদি( nSwitch>2 && 0==strncmp("-mxpathname", zSwitch, nSwitch) ){
+      যদি( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
+        ঘূৰাই TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-fullshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
-        return TCL_ERROR;
+    অন্যথা যদি( nSwitch>2 && 0==strncmp("-iversion", zSwitch, nSwitch) ){
+      যদি( Tcl_GetIntFromObj(interp, objv[i+1], &iVersion) ){
+        ঘূৰাই TCL_ERROR;
       }
-      if( isFullshm ) isNoshm = 0;
     }
-    else{
-      goto bad_args;
+    অন্যথা যদি( nSwitch>2 && 0==strncmp("-fullshm", zSwitch, nSwitch) ){
+      যদি( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
+        ঘূৰাই TCL_ERROR;
+      }
+      যদি( isFullshm ) isNoshm = 0;
+    }
+    অন্যথা{
+      গচ্ছ bad_args;
     }
   }
 
-  if( szOsFile<sizeof(TestvfsFile) ){
-    szOsFile = sizeof(TestvfsFile);
+  যদি( szOsFile<পরিমাণ(TestvfsFile) ){
+    szOsFile = পরিমাণ(TestvfsFile);
   }
 
   zVfs = Tcl_GetString(objv[1]);
-  nByte = sizeof(Testvfs) + (int)strlen(zVfs)+1;
+  nByte = পরিমাণ(Testvfs) + (পূর্ণাঙ্ক)strlen(zVfs)+1;
   p = (Testvfs *)ckalloc(nByte);
   memset(p, 0, nByte);
   p->iDevchar = -1;
@@ -1555,16 +1555,16 @@ static int SQLITE_TCLAPI testvfs_cmd(
   p->pParent = sqlite3_vfs_find(0);
   p->interp = interp;
 
-  p->zName = (char *)&p[1];
+  p->zName = (ৱর্ণ *)&p[1];
   memcpy(p->zName, zVfs, strlen(zVfs)+1);
 
-  pVfs = (sqlite3_vfs *)ckalloc(sizeof(sqlite3_vfs));
-  memcpy(pVfs, &tvfs_vfs, sizeof(sqlite3_vfs));
-  pVfs->pAppData = (void *)p;
+  pVfs = (sqlite3_vfs *)ckalloc(পরিমাণ(sqlite3_vfs));
+  memcpy(pVfs, &tvfs_vfs, পরিমাণ(sqlite3_vfs));
+  pVfs->pAppData = (শূন্য *)p;
   pVfs->iVersion = iVersion;
   pVfs->zName = p->zName;
   pVfs->mxPathname = p->pParent->mxPathname;
-  if( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
+  যদি( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
     pVfs->mxPathname = mxPathname;
   }
   pVfs->szOsFile = szOsFile;
@@ -1575,123 +1575,123 @@ static int SQLITE_TCLAPI testvfs_cmd(
 
   sqlite3_vfs_register(pVfs, isDefault);
 
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 
  bad_args:
-  Tcl_WrongNumArgs(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
-  return TCL_ERROR;
+  Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
+  ঘূৰাই TCL_ERROR;
 }
 
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern const char *sqlite3ErrName(int);
+বাহ্য পূর্ণাঙ্ক getDbPointer(Tcl_Interp *interp, ধ্রুৱ ৱর্ণ *zA, sqlite3 **ppDb);
+বাহ্য ধ্রুৱ ৱর্ণ *sqlite3ErrName(পূর্ণাঙ্ক);
 
 /*
 ** tclcmd: vfs_shmlock DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N
 */
-static int SQLITE_TCLAPI test_vfs_shmlock(
-  void * clientData,
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI test_vfs_shmlock(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *azArg1[] = {"shared", "exclusive", 0};
-  const char *azArg2[] = {"lock", "unlock", 0};
+  ধ্রুৱ ৱর্ণ *azArg1[] = {"shared", "exclusive", 0};
+  ধ্রুৱ ৱর্ণ *azArg2[] = {"lock", "unlock", 0};
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
-  const char *zDbname = 0;
-  int iArg1 = 0;
-  int iArg2 = 0;
-  int iOffset = 0;
-  int n = 0;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
+  ধ্রুৱ ৱর্ণ *zDbname = 0;
+  পূর্ণাঙ্ক iArg1 = 0;
+  পূর্ণাঙ্ক iArg2 = 0;
+  পূর্ণাঙ্ক iOffset = 0;
+  পূর্ণাঙ্ক n = 0;
   sqlite3_file *pFd;
 
-  if( objc!=7 ){
-    Tcl_WrongNumArgs(interp, 1, objv, 
+  যদি( objc!=7 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, 
         "DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N"
     );
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
+  যদি( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
    || Tcl_GetIndexFromObj(interp, objv[3], azArg1, "ARG", 0, &iArg1) 
    || Tcl_GetIndexFromObj(interp, objv[4], azArg2, "ARG", 0, &iArg2) 
    || Tcl_GetIntFromObj(interp, objv[5], &iOffset)
    || Tcl_GetIntFromObj(interp, objv[6], &n)
   ){
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
 
-  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (শূন্য*)&pFd);
+  যদি( pFd==0 ){
+    ঘূৰাই TCL_ERROR;
   }
   rc = pFd->pMethods->xShmLock(pFd, iOffset, n, 
       (iArg1==0 ? SQLITE_SHM_SHARED : SQLITE_SHM_EXCLUSIVE)
     | (iArg2==0 ? SQLITE_SHM_LOCK : SQLITE_SHM_UNLOCK)
   );
   Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_vfs_set_readmark(
-  void * clientData,
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI test_vfs_set_readmark(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
-  const char *zDbname = 0;
-  int iSlot = 0;
-  int iVal = -1;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
+  ধ্রুৱ ৱর্ণ *zDbname = 0;
+  পূর্ণাঙ্ক iSlot = 0;
+  পূর্ণাঙ্ক iVal = -1;
   sqlite3_file *pFd;
-  void volatile *pShm = 0;
+  শূন্য চঞ্চল *pShm = 0;
   u32 *aShm;
-  int iOff;
+  পূর্ণাঙ্ক iOff;
 
-  if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
-    return TCL_ERROR;
+  যদি( objc!=4 && objc!=5 ){
+    Tcl_Wrong_অঙ্ক_Args(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
+    ঘূৰাই TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
+  যদি( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
    || Tcl_GetIntFromObj(interp, objv[3], &iSlot)
    || (objc==5 && Tcl_GetIntFromObj(interp, objv[4], &iVal))
   ){
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
 
-  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (শূন্য*)&pFd);
+  যদি( pFd==0 ){
+    ঘূৰাই TCL_ERROR;
   }
   rc = pFd->pMethods->xShmMap(pFd, 0, 32*1024, 0, &pShm);
-  if( rc!=SQLITE_OK ){
+  যদি( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
-  if( pShm==0 ){
-    Tcl_AppendResult(interp, "*-shm is not yet mapped", NULL);
-    return TCL_ERROR;
+  যদি( pShm==0 ){
+    Tcl_AppendResult(interp, "*-shm is not yet mapped", রিক্ত);
+    ঘূৰাই TCL_ERROR;
   }
   aShm = (u32*)pShm;
   iOff = 12*2+1+iSlot;
 
-  if( objc==5 ){
+  যদি( objc==5 ){
     aShm[iOff] = iVal;
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(aShm[iOff]));
 
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
-int Sqlitetestvfs_Init(Tcl_Interp *interp){
+পূর্ণাঙ্ক Sqlitetestvfs_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "testvfs", testvfs_cmd, 0, 0);
   Tcl_CreateObjCommand(interp, "vfs_shmlock", test_vfs_shmlock, 0, 0);
   Tcl_CreateObjCommand(interp, "vfs_set_readmark", test_vfs_set_readmark, 0, 0);
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
 #endif

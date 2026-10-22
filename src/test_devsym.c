@@ -14,10 +14,10 @@
 ** different device types (by overriding the return values of the 
 ** xDeviceCharacteristics() and xSectorSize() methods).
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#যদি SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
+#অন্তর্ভাৱ "sqlite3.h"
+#অন্তর্ভাৱ "sqliteInt.h"
 
 /*
 ** Maximum pathname length supported by the devsym backend.
@@ -30,8 +30,8 @@
 #define DEVSYM_VFS_NAME "devsym"
 #define WRITECRASH_NAME "writecrash"
 
-typedef struct devsym_file devsym_file;
-struct devsym_file {
+প্রকারনির্দেশ সংরচনা devsym_file devsym_file;
+সংরচনা devsym_file {
   sqlite3_file base;
   sqlite3_file *pReal;
 };
@@ -39,177 +39,177 @@ struct devsym_file {
 /*
 ** Method declarations for devsym_file.
 */
-static int devsymClose(sqlite3_file*);
-static int devsymRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int devsymWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int devsymTruncate(sqlite3_file*, sqlite3_int64 size);
-static int devsymSync(sqlite3_file*, int flags);
-static int devsymFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int devsymLock(sqlite3_file*, int);
-static int devsymUnlock(sqlite3_file*, int);
-static int devsymCheckReservedLock(sqlite3_file*, int *);
-static int devsymFileControl(sqlite3_file*, int op, void *pArg);
-static int devsymSectorSize(sqlite3_file*);
-static int devsymDeviceCharacteristics(sqlite3_file*);
-static int devsymShmLock(sqlite3_file*,int,int,int);
-static int devsymShmMap(sqlite3_file*,int,int,int, void volatile **);
-static void devsymShmBarrier(sqlite3_file*);
-static int devsymShmUnmap(sqlite3_file*,int);
+স্থির পূর্ণাঙ্ক devsymClose(sqlite3_file*);
+স্থির পূর্ণাঙ্ক devsymRead(sqlite3_file*, শূন্য*, পূর্ণাঙ্ক iAmt, sqlite3_int64 iOfst);
+স্থির পূর্ণাঙ্ক devsymWrite(sqlite3_file*,ধ্রুৱ শূন্য*,পূর্ণাঙ্ক iAmt, sqlite3_int64 iOfst);
+স্থির পূর্ণাঙ্ক devsymTruncate(sqlite3_file*, sqlite3_int64 size);
+স্থির পূর্ণাঙ্ক devsymSync(sqlite3_file*, পূর্ণাঙ্ক flags);
+স্থির পূর্ণাঙ্ক devsymFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+স্থির পূর্ণাঙ্ক devsymLock(sqlite3_file*, পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক devsymUnlock(sqlite3_file*, পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক devsymCheckReservedLock(sqlite3_file*, পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক devsymFileControl(sqlite3_file*, পূর্ণাঙ্ক op, শূন্য *pArg);
+স্থির পূর্ণাঙ্ক devsymSectorSize(sqlite3_file*);
+স্থির পূর্ণাঙ্ক devsymDeviceCharacteristics(sqlite3_file*);
+স্থির পূর্ণাঙ্ক devsymShmLock(sqlite3_file*,পূর্ণাঙ্ক,পূর্ণাঙ্ক,পূর্ণাঙ্ক);
+স্থির পূর্ণাঙ্ক devsymShmMap(sqlite3_file*,পূর্ণাঙ্ক,পূর্ণাঙ্ক,পূর্ণাঙ্ক, শূন্য চঞ্চল **);
+স্থির শূন্য devsymShmBarrier(sqlite3_file*);
+স্থির পূর্ণাঙ্ক devsymShmUnmap(sqlite3_file*,পূর্ণাঙ্ক);
 
 /*
 ** Method declarations for devsym_vfs.
 */
-static int devsymOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int devsymDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int devsymAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int devsymFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+স্থির পূর্ণাঙ্ক devsymOpen(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *, sqlite3_file*, পূর্ণাঙ্ক , পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক devsymDelete(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক syncDir);
+স্থির পূর্ণাঙ্ক devsymAccess(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক flags, পূর্ণাঙ্ক *);
+স্থির পূর্ণাঙ্ক devsymFullPathname(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zName, পূর্ণাঙ্ক, ৱর্ণ *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-static void *devsymDlOpen(sqlite3_vfs*, const char *zFilename);
-static void devsymDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*devsymDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void devsymDlClose(sqlite3_vfs*, void*);
+স্থির শূন্য *devsymDlOpen(sqlite3_vfs*, ধ্রুৱ ৱর্ণ *zFilename);
+স্থির শূন্য devsymDlError(sqlite3_vfs*, পূর্ণাঙ্ক nByte, ৱর্ণ *z_Err_বাৰ্তা);
+স্থির শূন্য (*devsymDlSym(sqlite3_vfs*,শূন্য*, ধ্রুৱ ৱর্ণ *z_প্ৰতীক))(শূন্য);
+স্থির শূন্য devsymDlClose(sqlite3_vfs*, শূন্য*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int devsymRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int devsymSleep(sqlite3_vfs*, int microseconds);
-static int devsymCurrentTime(sqlite3_vfs*, double*);
+স্থির পূর্ণাঙ্ক devsymRandomness(sqlite3_vfs*, পূর্ণাঙ্ক nByte, ৱর্ণ *zOut);
+স্থির পূর্ণাঙ্ক devsymSleep(sqlite3_vfs*, পূর্ণাঙ্ক microseconds);
+স্থির পূর্ণাঙ্ক devsymCurrentTime(sqlite3_vfs*, দ্ৱিগুণ*);
 
-struct DevsymGlobal {
+সংরচনা DevsymGlobal {
   sqlite3_vfs *pVfs;
-  int iDeviceChar;
-  int iSectorSize;
-  int nWriteCrash;
+  পূর্ণাঙ্ক iDeviceChar;
+  পূর্ণাঙ্ক iSectorSize;
+  পূর্ণাঙ্ক nWriteCrash;
 };
-struct DevsymGlobal g = {0, 0, 512, 0};
+সংরচনা DevsymGlobal g = {0, 0, 512, 0};
 
 /*
 ** Close an devsym-file.
 */
-static int devsymClose(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক devsymClose(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   sqlite3OsClose(p->pReal);
-  return SQLITE_OK;
+  ঘূৰাই SQLITE_OK;
 }
 
 /*
 ** Read data from an devsym-file.
 */
-static int devsymRead(
+স্থির পূর্ণাঙ্ক devsymRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  শূন্য *zBuf, 
+  পূর্ণাঙ্ক iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
+  ঘূৰাই sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Write data to an devsym-file.
 */
-static int devsymWrite(
+স্থির পূর্ণাঙ্ক devsymWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ধ্রুৱ শূন্য *zBuf, 
+  পূর্ণাঙ্ক iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ঘূৰাই sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Truncate an devsym-file.
 */
-static int devsymTruncate(sqlite3_file *pFile, sqlite_int64 size){
+স্থির পূর্ণাঙ্ক devsymTruncate(sqlite3_file *pFile, sqlite_int64 size){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsTruncate(p->pReal, size);
+  ঘূৰাই sqlite3OsTruncate(p->pReal, size);
 }
 
 /*
 ** Sync an devsym-file.
 */
-static int devsymSync(sqlite3_file *pFile, int flags){
+স্থির পূর্ণাঙ্ক devsymSync(sqlite3_file *pFile, পূর্ণাঙ্ক flags){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSync(p->pReal, flags);
+  ঘূৰাই sqlite3OsSync(p->pReal, flags);
 }
 
 /*
 ** Return the current file-size of an devsym-file.
 */
-static int devsymFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+স্থির পূর্ণাঙ্ক devsymFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileSize(p->pReal, pSize);
+  ঘূৰাই sqlite3OsFileSize(p->pReal, pSize);
 }
 
 /*
 ** Lock an devsym-file.
 */
-static int devsymLock(sqlite3_file *pFile, int eLock){
+স্থির পূর্ণাঙ্ক devsymLock(sqlite3_file *pFile, পূর্ণাঙ্ক eLock){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsLock(p->pReal, eLock);
+  ঘূৰাই sqlite3OsLock(p->pReal, eLock);
 }
 
 /*
 ** Unlock an devsym-file.
 */
-static int devsymUnlock(sqlite3_file *pFile, int eLock){
+স্থির পূর্ণাঙ্ক devsymUnlock(sqlite3_file *pFile, পূর্ণাঙ্ক eLock){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsUnlock(p->pReal, eLock);
+  ঘূৰাই sqlite3OsUnlock(p->pReal, eLock);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an devsym-file.
 */
-static int devsymCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+স্থির পূর্ণাঙ্ক devsymCheckReservedLock(sqlite3_file *pFile, পূর্ণাঙ্ক *pResOut){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsCheckReservedLock(p->pReal, pResOut);
+  ঘূৰাই sqlite3OsCheckReservedLock(p->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an devsym-file.
 */
-static int devsymFileControl(sqlite3_file *pFile, int op, void *pArg){
+স্থির পূর্ণাঙ্ক devsymFileControl(sqlite3_file *pFile, পূর্ণাঙ্ক op, শূন্য *pArg){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileControl(p->pReal, op, pArg);
+  ঘূৰাই sqlite3OsFileControl(p->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an devsym-file.
 */
-static int devsymSectorSize(sqlite3_file *pFile){
-  return g.iSectorSize;
+স্থির পূর্ণাঙ্ক devsymSectorSize(sqlite3_file *pFile){
+  ঘূৰাই g.iSectorSize;
 }
 
 /*
 ** Return the device characteristic flags supported by an devsym-file.
 */
-static int devsymDeviceCharacteristics(sqlite3_file *pFile){
-  return g.iDeviceChar;
+স্থির পূর্ণাঙ্ক devsymDeviceCharacteristics(sqlite3_file *pFile){
+  ঘূৰাই g.iDeviceChar;
 }
 
 /*
 ** Shared-memory methods are all pass-throughs.
 */
-static int devsymShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
+স্থির পূর্ণাঙ্ক devsymShmLock(sqlite3_file *pFile, পূর্ণাঙ্ক ofst, পূর্ণাঙ্ক n, পূর্ণাঙ্ক flags){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
+  ঘূৰাই p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
 }
-static int devsymShmMap(
+স্থির পূর্ণাঙ্ক devsymShmMap(
   sqlite3_file *pFile, 
-  int iRegion, 
-  int szRegion, 
-  int isWrite, 
-  void volatile **pp
+  পূর্ণাঙ্ক iRegion, 
+  পূর্ণাঙ্ক szRegion, 
+  পূর্ণাঙ্ক isWrite, 
+  শূন্য চঞ্চল **pp
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
+  ঘূৰাই p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
 }
-static void devsymShmBarrier(sqlite3_file *pFile){
+স্থির শূন্য devsymShmBarrier(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   p->pReal->pMethods->xShmBarrier(p->pReal);
 }
-static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
+স্থির পূর্ণাঙ্ক devsymShmUnmap(sqlite3_file *pFile, পূর্ণাঙ্ক delFlag){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
+  ঘূৰাই p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
 }
 
 
@@ -217,14 +217,14 @@ static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
 /*
 ** Open an devsym file handle.
 */
-static int devsymOpen(
+স্থির পূর্ণাঙ্ক devsymOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ধ্রুৱ ৱর্ণ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  পূর্ণাঙ্ক flags,
+  পূর্ণাঙ্ক *pOutFlags
 ){
-static sqlite3_io_methods devsym_io_methods = {
+স্থির sqlite3_io_methods devsym_io_methods = {
   2,                                /* iVersion */
   devsymClose,                      /* xClose */
   devsymRead,                       /* xRead */
@@ -244,14 +244,14 @@ static sqlite3_io_methods devsym_io_methods = {
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  পূর্ণাঙ্ক rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  যদি( p->pReal->pMethods ){
     pFile->pMethods = &devsym_io_methods;
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
 /*
@@ -259,21 +259,21 @@ static sqlite3_io_methods devsym_io_methods = {
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int devsymDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return sqlite3OsDelete(g.pVfs, zPath, dirSync);
+স্থির পূর্ণাঙ্ক devsymDelete(sqlite3_vfs *pVfs, ধ্রুৱ ৱর্ণ *zPath, পূর্ণাঙ্ক dirSync){
+  ঘূৰাই sqlite3OsDelete(g.pVfs, zPath, dirSync);
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int devsymAccess(
+স্থির পূর্ণাঙ্ক devsymAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ধ্রুৱ ৱর্ণ *zPath, 
+  পূর্ণাঙ্ক flags, 
+  পূর্ণাঙ্ক *pResOut
 ){
-  return sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
+  ঘূৰাই sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
 }
 
 /*
@@ -281,21 +281,21 @@ static int devsymAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int devsymFullPathname(
+স্থির পূর্ণাঙ্ক devsymFullPathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ধ্রুৱ ৱর্ণ *zPath, 
+  পূর্ণাঙ্ক nOut, 
+  ৱর্ণ *zOut
 ){
-  return sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
+  ঘূৰাই sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
 }
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(g.pVfs, zPath);
+স্থির শূন্য *devsymDlOpen(sqlite3_vfs *pVfs, ধ্রুৱ ৱর্ণ *zPath){
+  ঘূৰাই sqlite3OsDlOpen(g.pVfs, zPath);
 }
 
 /*
@@ -303,21 +303,21 @@ static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void devsymDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(g.pVfs, nByte, zErrMsg);
+স্থির শূন্য devsymDlError(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nByte, ৱর্ণ *z_Err_বাৰ্তা){
+  sqlite3OsDlError(g.pVfs, nByte, z_Err_বাৰ্তা);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*devsymDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(g.pVfs, p, zSym);
+স্থির শূন্য (*devsymDlSym(sqlite3_vfs *pVfs, শূন্য *p, ধ্রুৱ ৱর্ণ *zSym))(শূন্য){
+  ঘূৰাই sqlite3OsDlSym(g.pVfs, p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void devsymDlClose(sqlite3_vfs *pVfs, void *pHandle){
+স্থির শূন্য devsymDlClose(sqlite3_vfs *pVfs, শূন্য *pHandle){
   sqlite3OsDlClose(g.pVfs, pHandle);
 }
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
@@ -326,69 +326,69 @@ static void devsymDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int devsymRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
+স্থির পূর্ণাঙ্ক devsymRandomness(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nByte, ৱর্ণ *zBufOut){
+  ঘূৰাই sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int devsymSleep(sqlite3_vfs *pVfs, int nMicro){
-  return sqlite3OsSleep(g.pVfs, nMicro);
+স্থির পূর্ণাঙ্ক devsymSleep(sqlite3_vfs *pVfs, পূর্ণাঙ্ক nMicro){
+  ঘূৰাই sqlite3OsSleep(g.pVfs, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int devsymCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
+স্থির পূর্ণাঙ্ক devsymCurrentTime(sqlite3_vfs *pVfs, দ্ৱিগুণ *pTimeOut){
+  ঘূৰাই g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
 }
 
 /*
 ** Return the sector-size in bytes for an writecrash-file.
 */
-static int writecrashSectorSize(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক writecrashSectorSize(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSectorSize(p->pReal);
+  ঘূৰাই sqlite3OsSectorSize(p->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an writecrash-file.
 */
-static int writecrashDeviceCharacteristics(sqlite3_file *pFile){
+স্থির পূর্ণাঙ্ক writecrashDeviceCharacteristics(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsDeviceCharacteristics(p->pReal);
+  ঘূৰাই sqlite3OsDeviceCharacteristics(p->pReal);
 }
 
 /*
 ** Write data to an writecrash-file.
 */
-static int writecrashWrite(
+স্থির পূর্ণাঙ্ক writecrashWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ধ্রুৱ শূন্য *zBuf, 
+  পূর্ণাঙ্ক iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  if( g.nWriteCrash>0 ){
+  যদি( g.nWriteCrash>0 ){
     g.nWriteCrash--;
-    if( g.nWriteCrash==0 ) abort();
+    যদি( g.nWriteCrash==0 ) abort();
   }
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ঘূৰাই sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Open an writecrash file handle.
 */
-static int writecrashOpen(
+স্থির পূর্ণাঙ্ক writecrashOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ধ্রুৱ ৱর্ণ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  পূর্ণাঙ্ক flags,
+  পূর্ণাঙ্ক *pOutFlags
 ){
-static sqlite3_io_methods writecrash_io_methods = {
+স্থির sqlite3_io_methods writecrash_io_methods = {
   2,                                /* iVersion */
   devsymClose,                      /* xClose */
   devsymRead,                       /* xRead */
@@ -408,19 +408,19 @@ static sqlite3_io_methods writecrash_io_methods = {
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  পূর্ণাঙ্ক rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  যদি( p->pReal->pMethods ){
     pFile->pMethods = &writecrash_io_methods;
   }
-  return rc;
+  ঘূৰাই rc;
 }
 
-static sqlite3_vfs devsym_vfs = {
+স্থির sqlite3_vfs devsym_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  পরিমাণ(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   DEVSYM_VFS_NAME,          /* zName */
@@ -434,7 +434,7 @@ static sqlite3_vfs devsym_vfs = {
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#অন্যথা
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
@@ -447,9 +447,9 @@ static sqlite3_vfs devsym_vfs = {
   0                         /* xCurrentTimeInt64 */
 };
 
-static sqlite3_vfs writecrash_vfs = {
+স্থির sqlite3_vfs writecrash_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  পরিমাণ(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   WRITECRASH_NAME,          /* zName */
@@ -463,7 +463,7 @@ static sqlite3_vfs writecrash_vfs = {
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#অন্যথা
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
@@ -482,28 +482,28 @@ static sqlite3_vfs writecrash_vfs = {
 ** true, the devsym vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-void devsym_register(int iDeviceChar, int iSectorSize){
+শূন্য devsym_register(পূর্ণাঙ্ক iDeviceChar, পূর্ণাঙ্ক iSectorSize){
 
-  if( g.pVfs==0 ){
+  যদি( g.pVfs==0 ){
     g.pVfs = sqlite3_vfs_find(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;
     sqlite3_vfs_register(&devsym_vfs, 0);
     sqlite3_vfs_register(&writecrash_vfs, 0);
   }
-  if( iDeviceChar>=0 ){
+  যদি( iDeviceChar>=0 ){
     g.iDeviceChar = iDeviceChar;
-  }else{
+  }অন্যথা{
     g.iDeviceChar = 0;
   }
-  if( iSectorSize>=0 ){
+  যদি( iSectorSize>=0 ){
     g.iSectorSize = iSectorSize;
-  }else{
+  }অন্যথা{
     g.iSectorSize = 512;
   }
 }
 
-void devsym_unregister(){
+শূন্য devsym_unregister(){
   sqlite3_vfs_unregister(&devsym_vfs);
   sqlite3_vfs_unregister(&writecrash_vfs);
   g.pVfs = 0;
@@ -511,8 +511,8 @@ void devsym_unregister(){
   g.iSectorSize = 0;
 }
 
-void devsym_crash_on_write(int nWrite){
-  if( g.pVfs==0 ){
+শূন্য devsym_crash_on_write(পূর্ণাঙ্ক nWrite){
+  যদি( g.pVfs==0 ){
     g.pVfs = sqlite3_vfs_find(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;

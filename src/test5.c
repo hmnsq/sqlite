@@ -15,32 +15,32 @@
 ** is used for testing the SQLite routines for converting between
 ** the various supported unicode encodings.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
+#অন্তর্ভাৱ "sqliteInt.h"
+#অন্তর্ভাৱ "vdbeInt.h"
+#অন্তর্ভাৱ "tclsqlite.h"
+#অন্তর্ভাৱ <stdlib.h>
+#অন্তর্ভাৱ <string.h>
 
 /*
 ** The first argument is a TCL UTF-8 string. Return the byte array
 ** object with the encoded representation of the string, including
 ** the NULL terminator.
 */
-static int SQLITE_TCLAPI binarize(
-  void * clientData,
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI binarize(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Size len;
-  char *bytes;
+  ৱর্ণ *bytes;
   Tcl_Obj *pRet;
-  assert(objc==2);
+  প্রতিজ্ঞা(objc==2);
 
   bytes = Tcl_GetStringFromObj(objv[1], &len);
   pRet = Tcl_NewByteArrayObj((u8*)bytes, len+1);
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
 /*
@@ -54,42 +54,42 @@ static int SQLITE_TCLAPI binarize(
 ** If <do-calls> is 0, then the calls to sqlite3_value_text() are not
 ** actually made.
 */
-static int SQLITE_TCLAPI test_value_overhead(
-  void * clientData,
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI test_মান_overhead(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
-  int do_calls;
-  int repeat_count;
-  int i;
+  পূর্ণাঙ্ক do_calls;
+  পূর্ণাঙ্ক repeat_গুনতি;
+  পূর্ণাঙ্ক i;
   Mem val;
 
-  if( objc!=3 ){
+  যদি( objc!=3 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"",
-        Tcl_GetStringFromObj(objv[0], 0), " <repeat-count> <do-calls>", NULL);
-    return TCL_ERROR;
+        Tcl_GetStringFromObj(objv[0], 0), " <repeat-count> <do-calls>", রিক্ত);
+    ঘূৰাই TCL_ERROR;
   }
 
-  if( Tcl_GetIntFromObj(interp, objv[1], &repeat_count) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &do_calls) ) return TCL_ERROR;
+  যদি( Tcl_GetIntFromObj(interp, objv[1], &repeat_গুনতি) ) ঘূৰাই TCL_ERROR;
+  যদি( Tcl_GetIntFromObj(interp, objv[2], &do_calls) ) ঘূৰাই TCL_ERROR;
 
   val.flags = MEM_Str|MEM_Term|MEM_Static;
   val.z = "hello world";
   val.enc = SQLITE_UTF8;
 
-  for(i=0; i<repeat_count; i++){
-    if( do_calls ){
-      sqlite3_value_text(&val);
+  বাবে(i=0; i<repeat_গুনতি; i++){
+    যদি( do_calls ){
+      sqlite3_মান_text(&val);
     }
   }
 
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
-static u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
-  struct EncName {
-    char *zName;
+স্থির u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
+  সংরচনা EncName {
+    ৱর্ণ *zName;
     u8 enc;
   } encnames[] = {
     { "UTF8", SQLITE_UTF8 },
@@ -98,81 +98,81 @@ static u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
     { "UTF16", SQLITE_UTF16 },
     { 0, 0 }
   };
-  struct EncName *pEnc;
-  char *z = Tcl_GetString(pObj);
-  for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-    if( 0==sqlite3StrICmp(z, pEnc->zName) ){
-      break;
+  সংরচনা EncName *pEnc;
+  ৱর্ণ *z = Tcl_GetString(pObj);
+  বাবে(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+    যদি( 0==sqlite3StrICmp(z, pEnc->zName) ){
+      ভঙ্গ;
     }
   }
-  if( !pEnc->enc ){
-    Tcl_AppendResult(interp, "No such encoding: ", z, NULL);
+  যদি( !pEnc->enc ){
+    Tcl_AppendResult(interp, "No such encoding: ", z, রিক্ত);
   }
-  if( pEnc->enc==SQLITE_UTF16 ){
-    return SQLITE_UTF16NATIVE;
+  যদি( pEnc->enc==SQLITE_UTF16 ){
+    ঘূৰাই SQLITE_UTF16NATIVE;
   }
-  return pEnc->enc;
+  ঘূৰাই pEnc->enc;
 }
 
 /*
 ** Usage:   test_translate <string/blob> <from enc> <to enc> ?<transient>?
 **
 */
-static int SQLITE_TCLAPI test_translate(
-  void * clientData,
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI test_translate(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
   u8 enc_from;
   u8 enc_to;
-  sqlite3_value *pVal;
+  sqlite3_মান *pVal;
 
-  char *z;
+  ৱর্ণ *z;
   Tcl_Size len;
-  void (*xDel)(void *p) = SQLITE_STATIC;
+  শূন্য (*xDel)(শূন্য *p) = SQLITE_STATIC;
 
-  if( objc!=4 && objc!=5 ){
+  যদি( objc!=4 && objc!=5 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"",
         Tcl_GetStringFromObj(objv[0], 0), 
-        " <string/blob> <from enc> <to enc>", NULL
+        " <string/blob> <from enc> <to enc>", রিক্ত
     );
-    return TCL_ERROR;
+    ঘূৰাই TCL_ERROR;
   }
-  if( objc==5 ){
+  যদি( objc==5 ){
     xDel = sqlite3_free;
   }
 
   enc_from = name_to_enc(interp, objv[2]);
-  if( !enc_from ) return TCL_ERROR;
+  যদি( !enc_from ) ঘূৰাই TCL_ERROR;
   enc_to = name_to_enc(interp, objv[3]);
-  if( !enc_to ) return TCL_ERROR;
+  যদি( !enc_to ) ঘূৰাই TCL_ERROR;
 
-  pVal = sqlite3ValueNew(0);
+  pVal = sqlite3_মান_New(0);
 
-  if( enc_from==SQLITE_UTF8 ){
+  যদি( enc_from==SQLITE_UTF8 ){
     z = Tcl_GetString(objv[1]);
-    if( objc==5 ){
+    যদি( objc==5 ){
       z = sqlite3_mprintf("%s", z);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
-  }else{
-    z = (char*)Tcl_GetByteArrayFromObj(objv[1], &len);
-    if( objc==5 ){
-      char *zTmp = z;
+    sqlite3_মান_Set_Str(pVal, -1, z, enc_from, xDel);
+  }অন্যথা{
+    z = (ৱর্ণ*)Tcl_GetByteArrayFromObj(objv[1], &len);
+    যদি( objc==5 ){
+      ৱর্ণ *zTmp = z;
       z = sqlite3_malloc64(len);
       memcpy(z, zTmp, len);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
+    sqlite3_মান_Set_Str(pVal, -1, z, enc_from, xDel);
   }
 
-  z = (char *)sqlite3ValueText(pVal, enc_to);
-  len = sqlite3ValueBytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
+  z = (ৱর্ণ *)sqlite3_মান_Text(pVal, enc_to);
+  len = sqlite3_মান_Bytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
   Tcl_SetObjResult(interp, Tcl_NewByteArrayObj((u8*)z, len));
 
-  sqlite3ValueFree(pVal);
+  sqlite3_মান_Free(pVal);
 
-  return TCL_OK;
+  ঘূৰাই TCL_OK;
 }
 
 /*
@@ -181,36 +181,36 @@ static int SQLITE_TCLAPI test_translate(
 ** Call sqlite3UtfSelfTest() to run the internal tests for unicode
 ** translation. If there is a problem an assert() will fail.
 **/
-void sqlite3UtfSelfTest(void);
-static int SQLITE_TCLAPI test_translate_selftest(
-  void * clientData,
+শূন্য sqlite3UtfSelfTest(শূন্য);
+স্থির পূর্ণাঙ্ক SQLITE_TCLAPI test_translate_selftest(
+  শূন্য * clientData,
   Tcl_Interp *interp,
-  int objc,
+  পূর্ণাঙ্ক objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifndef SQLITE_OMIT_UTF16
   sqlite3UtfSelfTest();
 #endif
-  return SQLITE_OK;
+  ঘূৰাই SQLITE_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest5_Init(Tcl_Interp *interp){
-  static struct {
-    char *zName;
+পূর্ণাঙ্ক Sqlitetest5_Init(Tcl_Interp *interp){
+  স্থির সংরচনা {
+    ৱর্ণ *zName;
     Tcl_ObjCmdProc *xProc;
   } aCmd[] = {
     { "binarize",                (Tcl_ObjCmdProc*)binarize },
-    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_value_overhead },
+    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_মান_overhead },
     { "test_translate",          (Tcl_ObjCmdProc*)test_translate     },
     { "translate_selftest",      (Tcl_ObjCmdProc*)test_translate_selftest},
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  পূর্ণাঙ্ক i;
+  বাবে(i=0; i<পরিমাণ(aCmd)/পরিমাণ(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
-  return SQLITE_OK;
+  ঘূৰাই SQLITE_OK;
 }
