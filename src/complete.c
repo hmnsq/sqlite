@@ -16,37 +16,37 @@
 ** separating it out, the code will be automatically omitted from
 ** static links that do not use it.
 */
-#include "sqliteInt.h"
-#ifndef SQLITE_OMIT_COMPLETE
+#شامل "sqliteInt.h"
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_COMPLETE
 
 /*
 ** This is defined in tokenize.c.  We just have to import the definition.
 */
-#ifndef SQLITE_AMALGAMATION
-#ifdef SQLITE_ASCII
-#define IdChar(C)  ((sqlite3CtypeMap[(unsigned char)C]&0x46)!=0)
-#endif
-#ifdef SQLITE_EBCDIC
-extern const char sqlite3IsEbcdicIdChar[];
-#define IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
-#endif
-#endif /* SQLITE_AMALGAMATION */
+#اگر_غیر_تعریف_شدہ SQLITE_AMALGAMATION
+#اگر_تعریف_شدہ SQLITE_ASCII
+#تعریف_کرو IdChar(C)  ((sqlite3CtypeMap[(غیرعلامتی حرف)C]&0x46)!=0)
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_EBCDIC
+خارجی ثابت حرف sqlite3IsEbcdicIdChar[];
+#تعریف_کرو IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
+#اگر_ختم
+#اگر_ختم /* SQLITE_AMALGAMATION */
 
 
 /*
 ** Token types used by the sqlite3_complete() routine.  See the header
 ** comments on that procedure for additional information.
 */
-#define tkSEMI    0
-#define tkWS      1
-#define tkOTHER   2
-#ifndef SQLITE_OMIT_TRIGGER
-#define tkEXPLAIN 3
-#define tkCREATE  4
-#define tkTEMP    5
-#define tkTRIGGER 6
-#define tkEND     7
-#endif
+#تعریف_کرو tkSEMI    0
+#تعریف_کرو tkWS      1
+#تعریف_کرو tkOTHER   2
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+#تعریف_کرو tkEXPLAIN 3
+#تعریف_کرو tkCREATE  4
+#تعریف_کرو tk_عارضی    5
+#تعریف_کرو tkTRIGGER 6
+#تعریف_کرو tk_انتہا     7
+#اگر_ختم
 
 /*
 ** Return zero if the given SQL string is complete - if all comments,
@@ -141,17 +141,17 @@ extern const char sqlite3IsEbcdicIdChar[];
 ** to recognize the end of a trigger can be omitted.  All we have to do
 ** is look for a semicolon that is not part of an string or comment.
 */
-sqlite3_int64 sqlite3_incomplete(const char *zSql){
+sqlite3_int64 sqlite3_incomplete(ثابت حرف *zSql){
   u8 state = 0;   /* Current state, using numbers defined in header comment */
   u8 token;       /* Value of the next token */
   u8 pending = 0; /* unmatched structure character */
-  int nParen = 0; /* Nested parentheses */
+  صحیح nParen = 0; /* Nested parentheses */
 
-#ifndef SQLITE_OMIT_TRIGGER
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
   /* A complex statement machine used to detect the end of a CREATE TRIGGER
   ** statement.  This is the normal case.
   */
-  static const u8 trans[8][8] = {
+  ساکن ثابت u8 trans[8][8] = {
                      /* Token:                                                */
      /* State:       **  SEMI  WS  OTHER  EXPLAIN  CREATE  TEMP  TRIGGER  END */
      /* 0 NOTHING: */ {    1,  0,     2,       3,      4,    2,       2,   2, },
@@ -163,20 +163,20 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
      /* 6    SEMI: */ {    6,  6,     5,       5,      5,    5,       5,   7, },
      /* 7     END: */ {    1,  7,     5,       5,      5,    5,       5,   5, },
   };
-#else
+#ورنہ
   /* If triggers are not supported by this compile then the statement machine
   ** used to detect the end of a statement is much simpler
   */
-  static const u8 trans[3][3] = {
+  ساکن ثابت u8 trans[3][3] = {
                      /* Token:           */
      /* State:       **  SEMI  WS  OTHER */
      /* 0 NOTHING: */ {    1,  0,     2, },
      /* 1   START: */ {    1,  1,     2, },
      /* 2  NORMAL: */ {    1,  2,     2, },
   };
-#endif /* SQLITE_OMIT_TRIGGER */
+#اگر_ختم /* SQLITE_OMIT_TRIGGER */
   /* Mapping state number to yy value for the return */
-  static const u8 statemap[8] = {
+  ساکن ثابت u8 statemap[8] = {
      /* 0 NOTHING */ 0,
      /* 1 START   */ 0,
      /* 2 NORMAL  */ 1,
@@ -187,187 +187,187 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
      /* 7 END     */ 1,
   };
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( zSql==0 ){
+    واپس SQLITE_MISUSE_BKPT;
   }
-#endif
+#اگر_ختم
 
-  while( *zSql ){
-    switch( *zSql ){
-      case ';': {  /* A semicolon */
+  جب( *zSql ){
+    انتخاب( *zSql ){
+      حالت ';': {  /* A semicolon */
         token = tkSEMI;
-        break;
+        توڑو;
       }
-      case ' ':
-      case '\r':
-      case '\t':
-      case '\n':
-      case '\f': {  /* White space is ignored */
+      حالت ' ':
+      حالت '\r':
+      حالت '\t':
+      حالت '\n':
+      حالت '\f': {  /* White space is ignored */
         token = tkWS;
-        break;
+        توڑو;
       }
-      case '/': {   /* C-style comments */
-        if( zSql[1]!='*' ){
+      حالت '/': {   /* C-style comments */
+        اگر( zSql[1]!='*' ){
           token = tkOTHER;
-          break;
+          توڑو;
         }
         zSql += 2;
-        while( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
-        if( zSql[0]==0 ){
+        جب( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
+        اگر( zSql[0]==0 ){
           pending = '/';
-          goto incomplete_finish;
+          جاؤ incomplete_اختتام;
         }
         zSql++;
         token = tkWS;
-        break;
+        توڑو;
       }
-      case '-': {   /* SQL-style comments from "--" to end of line */
-        if( zSql[1]!='-' ){
+      حالت '-': {   /* SQL-style comments from "--" to end of line */
+        اگر( zSql[1]!='-' ){
           token = tkOTHER;
-          break;
+          توڑو;
         }
-        while( *zSql && *zSql!='\n' ){ zSql++; }
-        if( *zSql==0 ){
+        جب( *zSql && *zSql!='\n' ){ zSql++; }
+        اگر( *zSql==0 ){
           pending = '-';
-          goto incomplete_finish;
+          جاؤ incomplete_اختتام;
         }
         token = tkWS;
-        break;
+        توڑو;
       }
-      case '[': {   /* Microsoft-style identifiers in [...] */
+      حالت '[': {   /* Microsoft-style identifiers in [...] */
         zSql++;
-        while( *zSql && *zSql!=']' ){ zSql++; }
-        if( *zSql==0 ){
+        جب( *zSql && *zSql!=']' ){ zSql++; }
+        اگر( *zSql==0 ){
           pending = ']';
-          goto incomplete_finish;
+          جاؤ incomplete_اختتام;
         }
         token = tkOTHER;
-        break;
+        توڑو;
       }
-      case '`':     /* Grave-accent quoted symbols used by MySQL */
-      case '"':     /* single- and double-quoted strings */
-      case '\'': {
-        int c = *zSql;
+      حالت '`':     /* Grave-accent quoted symbols used by MySQL */
+      حالت '"':     /* single- and double-quoted strings */
+      حالت '\'': {
+        صحیح c = *zSql;
         zSql++;
-        while( *zSql && *zSql!=c ){ zSql++; }
-        if( *zSql==0 ){
+        جب( *zSql && *zSql!=c ){ zSql++; }
+        اگر( *zSql==0 ){
           pending = c;
-          goto incomplete_finish;
+          جاؤ incomplete_اختتام;
         }
         token = tkOTHER;
-        break;
+        توڑو;
       }
-      case '(': {
+      حالت '(': {
         nParen++;
         token = tkOTHER;
-        break;
+        توڑو;
       }
-      case ')': {
+      حالت ')': {
         nParen--;
         token = tkOTHER;
-        break;
+        توڑو;
       }
-      default: {
-#ifdef SQLITE_EBCDIC
-        unsigned char c;
-#endif
-        if( IdChar((u8)*zSql) ){
+      طےشدہ: {
+#اگر_تعریف_شدہ SQLITE_EBCDIC
+        غیرعلامتی حرف c;
+#اگر_ختم
+        اگر( IdChar((u8)*zSql) ){
           /* Keywords and unquoted identifiers */
-          int nId;
-          for(nId=1; IdChar(zSql[nId]); nId++){}
-#ifdef SQLITE_OMIT_TRIGGER
+          صحیح nId;
+          برائے(nId=1; IdChar(zSql[nId]); nId++){}
+#اگر_تعریف_شدہ SQLITE_OMIT_TRIGGER
           token = tkOTHER;
-#else
-          switch( *zSql ){
-            case 'c': case 'C': {
-              if( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
+#ورنہ
+          انتخاب( *zSql ){
+            حالت 'c': حالت 'C': {
+              اگر( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
                 token = tkCREATE;
-              }else{
+              }ورنہ{
                 token = tkOTHER;
               }
-              break;
+              توڑو;
             }
-            case 't': case 'T': {
-              if( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
+            حالت 't': حالت 'T': {
+              اگر( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
                 token = tkTRIGGER;
-              }else if( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
-                token = tkTEMP;
-              }else if( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
-                token = tkTEMP;
-              }else{
+              }ورنہ اگر( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
+                token = tk_عارضی;
+              }ورنہ اگر( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
+                token = tk_عارضی;
+              }ورنہ{
                 token = tkOTHER;
               }
-              break;
+              توڑو;
             }
-            case 'e':  case 'E': {
-              if( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
-                token = tkEND;
-              }else
-#ifndef SQLITE_OMIT_EXPLAIN
-              if( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
+            حالت 'e':  حالت 'E': {
+              اگر( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
+                token = tk_انتہا;
+              }ورنہ
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_EXPLAIN
+              اگر( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
                 token = tkEXPLAIN;
-              }else
-#endif
+              }ورنہ
+#اگر_ختم
               {
                 token = tkOTHER;
               }
-              break;
+              توڑو;
             }
-            default: {
+            طےشدہ: {
               token = tkOTHER;
-              break;
+              توڑو;
             }
           }
-#endif /* SQLITE_OMIT_TRIGGER */
+#اگر_ختم /* SQLITE_OMIT_TRIGGER */
           zSql += nId-1;
-        }else{
+        }ورنہ{
           /* Operators and special symbols */
           token = tkOTHER;
         }
-        break;
+        توڑو;
       }
     }
     state = trans[state][token];
     zSql++;
   }
-incomplete_finish:
-  if( state==0 && pending==0 ) return SQLITE_EMPTY;
-  if( state==1 ) nParen = 0;
-  return (i64)((((u64)nParen)<<32) |
+incomplete_اختتام:
+  اگر( state==0 && pending==0 ) واپس SQLITE_خالی_خانے;
+  اگر( state==1 ) nParen = 0;
+  واپس (i64)((((u64)nParen)<<32) |
                ((u64)pending<<16) |
                ((u64)statemap[state]<<8) |
                (state>1 || pending!=0));
 }
-int sqlite3_complete(const char *zSql){
-  return sqlite3_incomplete(zSql)==0;
+صحیح sqlite3_complete(ثابت حرف *zSql){
+  واپس sqlite3_incomplete(zSql)==0;
 }
 
-#ifndef SQLITE_OMIT_UTF16
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_UTF16
 /*
 ** This routine is the same as the sqlite3_complete() routine described
 ** above, except that the parameter is required to be UTF-16 encoded, not
 ** UTF-8.
 */
-int sqlite3_complete16(const void *zSql){
-  sqlite3_value *pVal;
-  char const *zSql8;
-  int rc;
+صحیح sqlite3_complete16(ثابت خالی *zSql){
+  sqlite3_قدر *pVal;
+  حرف ثابت *zSql8;
+  صحیح rc;
 
-#ifndef SQLITE_OMIT_AUTOINIT
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
-  zSql8 = sqlite3ValueText(pVal, SQLITE_UTF8);
-  if( zSql8 ){
+  اگر( rc ) واپس rc;
+#اگر_ختم
+  pVal = sqlite3_قدر_New(0);
+  sqlite3_قدر_سیٹ_Str(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
+  zSql8 = sqlite3_قدر_متن_2(pVal, SQLITE_UTF8);
+  اگر( zSql8 ){
     rc = sqlite3_incomplete(zSql8)==0;
-  }else{
+  }ورنہ{
     rc = SQLITE_NOMEM_BKPT;
   }
-  sqlite3ValueFree(pVal);
-  return rc & 0xff;
+  sqlite3_قدر_Free(pVal);
+  واپس rc & 0xff;
 }
-#endif /* SQLITE_OMIT_UTF16 */
-#endif /* SQLITE_OMIT_COMPLETE */
+#اگر_ختم /* SQLITE_OMIT_UTF16 */
+#اگر_ختم /* SQLITE_OMIT_COMPLETE */

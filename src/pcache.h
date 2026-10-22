@@ -13,26 +13,26 @@
 ** subsystem. 
 */
 
-#ifndef _PCACHE_H_
-#define _PCACHE_H_
+#اگر_غیر_تعریف_شدہ _PCACHE_H_
+#تعریف_کرو _PCACHE_H_
 
-typedef struct PgHdr PgHdr;
-typedef struct PCache PCache;
+قسمتعریف ساخت PgHdr PgHdr;
+قسمتعریف ساخت PCache PCache;
 
 /*
 ** Every page in the cache is controlled by an instance of the following
 ** structure.
 */
-struct PgHdr {
-  sqlite3_pcache_page *pPage;    /* Pcache object page handle */
-  void *pData;                   /* Page data */
-  void *pExtra;                  /* Extra content */
+ساخت PgHdr {
+  sqlite3_pcache_صفحہ *p_صفحہ;    /* Pcache object page handle */
+  خالی *p_ڈیٹا;                   /* Page data */
+  خالی *pExtra;                  /* Extra content */
   PCache *pCache;                /* PRIVATE: Cache that owns this page */
   PgHdr *pDirty;                 /* Transient list of dirty sorted by pgno */
   Pager *pPager;                 /* The pager this page is part of */
-#ifdef SQLITE_CHECK_PAGES
-  u64 pageHash;                  /* Hash of page content */
-#endif
+#اگر_تعریف_شدہ SQLITE_CHECK_صفحات
+  u64 صفحہ_Hash;                  /* Hash of page content */
+#اگر_ختم
   Pgno pgno;                     /* Page number for this page */
   u16 flags;                     /* PGHDR flags defined below */
 
@@ -42,108 +42,108 @@ struct PgHdr {
   ** pCache is grouped with the public elements for efficiency.
   */
   i64 nRef;                      /* Number of users of this page */
-  PgHdr *pDirtyNext;             /* Next element in list of dirty pages */
-  PgHdr *pDirtyPrev;             /* Previous element in list of dirty pages */
+  PgHdr *p_Dirty_اگلا;             /* Next element in list of dirty pages */
+  PgHdr *p_Dirty_پچھلا;             /* Previous element in list of dirty pages */
                           /* NB: pDirtyNext and pDirtyPrev are undefined if the
                           ** PgHdr object is not dirty */
 };
 
 /* Bit values for PgHdr.flags */
-#define PGHDR_CLEAN           0x001  /* Page not on the PCache.pDirty list */
-#define PGHDR_DIRTY           0x002  /* Page is on the PCache.pDirty list */
-#define PGHDR_WRITEABLE       0x004  /* Journaled and ready to modify */
-#define PGHDR_NEED_SYNC       0x008  /* Fsync the rollback journal before
+#تعریف_کرو PGHDR_CLEAN           0x001  /* Page not on the PCache.pDirty list */
+#تعریف_کرو PGHDR_DIRTY           0x002  /* Page is on the PCache.pDirty list */
+#تعریف_کرو PGHDR_WRITEABLE       0x004  /* Journaled and ready to modify */
+#تعریف_کرو PGHDR_NEED_SYNC       0x008  /* Fsync the rollback journal before
                                      ** writing this page to the database */
-#define PGHDR_DONT_WRITE      0x010  /* Do not write content to disk */
-#define PGHDR_MMAP            0x020  /* This is an mmap page object */
+#تعریف_کرو PGHDR_DONT_WRITE      0x010  /* Do not write content to disk */
+#تعریف_کرو PGHDR_MMAP            0x020  /* This is an mmap page object */
 
-#define PGHDR_WAL_APPEND      0x040  /* Appended to wal file */
+#تعریف_کرو PGHDR_WAL_APPEND      0x040  /* Appended to wal file */
 
 /* Initialize and shutdown the page cache subsystem */
-int sqlite3PcacheInitialize(void);
-void sqlite3PcacheShutdown(void);
+صحیح sqlite3PcacheInitialize(خالی);
+خالی sqlite3PcacheShutdown(خالی);
 
 /* Page cache buffer management:
 ** These routines implement SQLITE_CONFIG_PAGECACHE.
 */
-void sqlite3PCacheBufferSetup(void *, int sz, int n);
+خالی sqlite3_PCache_بفر_تیاری(خالی *, صحیح sz, صحیح n);
 
 /* Create a new pager cache.
 ** Under memory stress, invoke xStress to try to make pages clean.
 ** Only clean and unpinned pages can be reclaimed.
 */
-int sqlite3PcacheOpen(
-  int szPage,                    /* Size of every page */
-  int szExtra,                   /* Extra space associated with each page */
-  int bPurgeable,                /* True if pages are on backing store */
-  int (*xStress)(void*, PgHdr*), /* Call to try to make pages clean */
-  void *pStress,                 /* Argument to xStress */
-  PCache *pToInit                /* Preallocated space for the PCache */
+صحیح sqlite3PcacheOpen(
+  صحیح sz_صفحہ,                    /* Size of every page */
+  صحیح szExtra,                   /* Extra space associated with each page */
+  صحیح bPurgeable,                /* True if pages are on backing store */
+  صحیح (*xStress)(خالی*, PgHdr*), /* Call to try to make pages clean */
+  خالی *pStress,                 /* Argument to xStress */
+  PCache *p_مقصد_Init                /* Preallocated space for the PCache */
 );
 
 /* Modify the page-size after the cache has been created. */
-int sqlite3PcacheSetPageSize(PCache *, int);
+صحیح sqlite3_Pcache_سیٹ_صفحہ_سائز(PCache *, صحیح);
 
 /* Return the size in bytes of a PCache object.  Used to preallocate
 ** storage space.
 */
-int sqlite3PcacheSize(void);
+صحیح sqlite3_Pcache_سائز(خالی);
 
 /* One release per successful fetch.  Page is pinned until released.
 ** Reference counted. 
 */
-sqlite3_pcache_page *sqlite3PcacheFetch(PCache*, Pgno, int createFlag);
-int sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_page**);
-PgHdr *sqlite3PcacheFetchFinish(PCache*, Pgno, sqlite3_pcache_page *pPage);
-void sqlite3PcacheRelease(PgHdr*);
+sqlite3_pcache_صفحہ *sqlite3PcacheFetch(PCache*, Pgno, صحیح createFlag);
+صحیح sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_صفحہ**);
+PgHdr *sqlite3_Pcache_Fetch_اختتام(PCache*, Pgno, sqlite3_pcache_صفحہ *p_صفحہ);
+خالی sqlite3PcacheRelease(PgHdr*);
 
-void sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
-void sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
-void sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
-void sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
-void sqlite3PcacheClearWritable(PCache*);
+خالی sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
+خالی sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
+خالی sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
+خالی sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
+خالی sqlite3PcacheClearWritable(PCache*);
 
 /* Change a page number.  Used by incr-vacuum. */
-void sqlite3PcacheMove(PgHdr*, Pgno);
+خالی sqlite3PcacheMove(PgHdr*, Pgno);
 
 /* Remove all pages with pgno>x.  Reset the cache if x==0 */
-void sqlite3PcacheTruncate(PCache*, Pgno x);
+خالی sqlite3PcacheTruncate(PCache*, Pgno x);
 
 /* Get a list of all dirty pages in the cache, sorted by page number */
 PgHdr *sqlite3PcacheDirtyList(PCache*);
 
 /* Reset and close the cache object */
-void sqlite3PcacheClose(PCache*);
+خالی sqlite3PcacheClose(PCache*);
 
 /* Clear flags from pages of the page cache */
-void sqlite3PcacheClearSyncFlags(PCache *);
+خالی sqlite3PcacheClearSyncFlags(PCache *);
 
 /* Discard the contents of the cache */
-void sqlite3PcacheClear(PCache*);
+خالی sqlite3PcacheClear(PCache*);
 
 /* Return the total number of outstanding page references */
-i64 sqlite3PcacheRefCount(PCache*);
+i64 sqlite3_Pcache_Ref_گنتی(PCache*);
 
 /* Increment the reference count of an existing page */
-void sqlite3PcacheRef(PgHdr*);
+خالی sqlite3PcacheRef(PgHdr*);
 
-i64 sqlite3PcachePageRefcount(PgHdr*);
+i64 sqlite3_Pcache_صفحہ_Refcount(PgHdr*);
 
 /* Return the total number of pages stored in the cache */
-int sqlite3PcachePagecount(PCache*);
+صحیح sqlite3PcachePagecount(PCache*);
 
-#if defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
+#اگر defined(SQLITE_CHECK_صفحات) || defined(SQLITE_DEBUG)
 /* Iterate through all dirty pages currently stored in the cache. This
 ** interface is only available if SQLITE_CHECK_PAGES is defined when the 
 ** library is built.
 */
-void sqlite3PcacheIterateDirty(PCache *pCache, void (*xIter)(PgHdr *));
-#endif
+خالی sqlite3PcacheIterateDirty(PCache *pCache, خالی (*xIter)(PgHdr *));
+#اگر_ختم
 
-#if defined(SQLITE_DEBUG)
+#اگر defined(SQLITE_DEBUG)
 /* Check invariants on a PgHdr object */
-int sqlite3PcachePageSanity(PgHdr*);
-#endif
+صحیح sqlite3_Pcache_صفحہ_Sanity(PgHdr*);
+#اگر_ختم
 
 /* Set and get the suggested cache-size for the specified pager-cache.
 **
@@ -151,41 +151,41 @@ int sqlite3PcachePageSanity(PgHdr*);
 ** the total number of pages cached by purgeable pager-caches to the sum
 ** of the suggested cache-sizes.
 */
-void sqlite3PcacheSetCachesize(PCache *, int);
-#ifdef SQLITE_TEST
-int sqlite3PcacheGetCachesize(PCache *);
-#endif
+خالی sqlite3_Pcache_سیٹ_Cachesize(PCache *, صحیح);
+#اگر_تعریف_شدہ SQLITE_TEST
+صحیح sqlite3PcacheGetCachesize(PCache *);
+#اگر_ختم
 
 /* Set or get the suggested spill-size for the specified pager-cache.
 **
 ** The spill-size is the minimum number of pages in cache before the cache
 ** will attempt to spill dirty pages by calling xStress.
 */
-int sqlite3PcacheSetSpillsize(PCache *, int);
+صحیح sqlite3_Pcache_سیٹ_Spillsize(PCache *, صحیح);
 
 /* Free up as much memory as possible from the page cache */
-void sqlite3PcacheShrink(PCache*);
+خالی sqlite3PcacheShrink(PCache*);
 
-#ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
+#اگر_تعریف_شدہ SQLITE_ENABLE_حافظہ_MANAGEMENT
 /* Try to return memory used by the pcache module to the main memory heap */
-int sqlite3PcacheReleaseMemory(int);
-#endif
+صحیح sqlite3_Pcache_Release_حافظہ(صحیح);
+#اگر_ختم
 
-#ifdef SQLITE_TEST
-void sqlite3PcacheStats(int*,int*,int*,int*);
-#endif
+#اگر_تعریف_شدہ SQLITE_TEST
+خالی sqlite3PcacheStats(صحیح*,صحیح*,صحیح*,صحیح*);
+#اگر_ختم
 
-void sqlite3PCacheSetDefault(void);
+خالی sqlite3_PCache_سیٹ_Default(خالی);
 
 /* Return the header size */
-int sqlite3HeaderSizePcache(void);
-int sqlite3HeaderSizePcache1(void);
+صحیح sqlite3_سرخی_سائز_Pcache(خالی);
+صحیح sqlite3_سرخی_سائز_Pcache1(خالی);
 
 /* Number of dirty pages as a percentage of the configured cache size */
-int sqlite3PCachePercentDirty(PCache*);
+صحیح sqlite3PCachePercentDirty(PCache*);
 
-#ifdef SQLITE_DIRECT_OVERFLOW_READ
-int sqlite3PCacheIsDirty(PCache *pCache);
-#endif
+#اگر_تعریف_شدہ SQLITE_براہ_راست_حد_سے_تجاوز_READ
+صحیح sqlite3PCacheIsDirty(PCache *pCache);
+#اگر_ختم
 
-#endif /* _PCACHE_H_ */
+#اگر_ختم /* _PCACHE_H_ */

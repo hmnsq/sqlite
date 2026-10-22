@@ -81,22 +81,22 @@
 ** implemented, it is not allowed to invoke sqlite3_intarray_create(D,N,P)
 ** more than once with the same D and N values.
 */
-#include "sqlite3.h"
-#ifndef SQLITE_INTARRAY_H
-#define SQLITE_INTARRAY_H
+#شامل "sqlite3.h"
+#اگر_غیر_تعریف_شدہ SQLITE_INTARRAY_H
+#تعریف_کرو SQLITE_INTARRAY_H
 
 /*
 ** Make sure we can call this stuff from C++.
 */
-#ifdef __cplusplus
-extern "C" {
-#endif
+#اگر_تعریف_شدہ __cplusplus
+خارجی "C" {
+#اگر_ختم
 
 /*
 ** An sqlite3_intarray is an abstract type to stores an instance of
 ** an integer array.
 */
-typedef struct sqlite3_intarray sqlite3_intarray;
+قسمتعریف ساخت sqlite3_intarray sqlite3_intarray;
 
 /*
 ** Invoke this routine to create a specific instance of an intarray object.
@@ -109,9 +109,9 @@ typedef struct sqlite3_intarray sqlite3_intarray;
 ** explicitly by the application, the virtual table will be dropped implicitly
 ** by the system when the database connection is closed.
 */
-SQLITE_API int sqlite3_intarray_create(
+SQLITE_API صحیح sqlite3_intarray_create(
   sqlite3 *db,
-  const char *zName,
+  ثابت حرف *zName,
   sqlite3_intarray **ppReturn
 );
 
@@ -122,14 +122,14 @@ SQLITE_API int sqlite3_intarray_create(
 ** any query against the corresponding virtual table.  If the integer
 ** array does change or is deallocated undefined behavior will result.
 */
-SQLITE_API int sqlite3_intarray_bind(
+SQLITE_API صحیح sqlite3_intarray_bind(
   sqlite3_intarray *pIntArray,   /* The intarray object to bind to */
-  int nElements,                 /* Number of elements in the intarray */
+  صحیح nElements,                 /* Number of elements in the intarray */
   sqlite3_int64 *aElements,      /* Content of the intarray */
-  void (*xFree)(void*)           /* How to dispose of the intarray when done */
+  خالی (*xFree)(خالی*)           /* How to dispose of the intarray when done */
 );
 
-#ifdef __cplusplus
+#اگر_تعریف_شدہ __cplusplus
 }  /* End of the 'extern "C"' block */
-#endif
-#endif /* SQLITE_INTARRAY_H */
+#اگر_ختم
+#اگر_ختم /* SQLITE_INTARRAY_H */

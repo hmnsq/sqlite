@@ -43,8 +43,8 @@
 **   *  Definitions of sqlite3_vfs objects for all locking methods
 **      plus implementations of sqlite3_os_init() and sqlite3_os_end().
 */
-#include "sqliteInt.h"
-#if SQLITE_OS_UNIX              /* This file is used on unix only */
+#شامل "sqliteInt.h"
+#اگر SQLITE_OS_UNIX              /* This file is used on unix only */
 
 /*
 ** There are various methods for file locking used for concurrency
@@ -63,48 +63,48 @@
 ** selection of the appropriate locking style based on the filesystem
 ** where the database is located.
 */
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#اگر !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  اگر defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  ورنہ
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
-#endif
+#اگر_ختم
 
 /* Use pread() and pwrite() if they are available */
-#if defined(__APPLE__) || defined(__linux__)
+#اگر defined(__APPLE__) || defined(__linux__)
 # define HAVE_PREAD 1
 # define HAVE_PWRITE 1
-#endif
-#if defined(HAVE_PREAD64) && defined(HAVE_PWRITE64)
+#اگر_ختم
+#اگر defined(HAVE_PREAD64) && defined(HAVE_PWRITE64)
 # undef USE_PREAD
 # define USE_PREAD64 1
-#elif defined(HAVE_PREAD) && defined(HAVE_PWRITE)
+#وگرنہ_اگر defined(HAVE_PREAD) && defined(HAVE_PWRITE)
 # undef USE_PREAD64
 # define USE_PREAD 1
-#endif
+#اگر_ختم
 
 /*
 ** standard include files.
 */
-#include <sys/types.h>   /* amalgamator: keep */
-#include <sys/stat.h>    /* amalgamator: keep */
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <unistd.h>      /* amalgamator: keep */
-#include <time.h>
-#include <sys/time.h>    /* amalgamator: keep */
-#include <errno.h>
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#شامل <sys/types.h>   /* amalgamator: keep */
+#شامل <sys/stat.h>    /* amalgamator: keep */
+#شامل <fcntl.h>
+#شامل <sys/ioctl.h>
+#شامل <unistd.h>      /* amalgamator: keep */
+#شامل <time.h>
+#شامل <sys/time.h>    /* amalgamator: keep */
+#شامل <errno.h>
+#اگر (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0) \
   && !defined(SQLITE_WASI)
 # include <sys/mman.h>
-#endif
+#اگر_ختم
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#اگر SQLITE_ENABLE_LOCKING_STYLE
 # include <sys/ioctl.h>
 # include <sys/file.h>
 # include <sys/param.h>
-#endif /* SQLITE_ENABLE_LOCKING_STYLE */
+#اگر_ختم /* SQLITE_ENABLE_LOCKING_STYLE */
 
 /*
 ** Try to determine if gethostuuid() is available based on standard
@@ -118,77 +118,77 @@
 ** None if this matters except when building on Apple products with
 ** -DSQLITE_ENABLE_LOCKING_STYLE.
 */
-#ifndef HAVE_GETHOSTUUID
+#اگر_غیر_تعریف_شدہ HAVE_GETHOSTUUID
 # define HAVE_GETHOSTUUID 0
-# if defined(__APPLE__) && ((__MAC_OS_X_VERSION_MIN_REQUIRED > 1050) || \
+# اگر defined(__APPLE__) && ((__MAC_OS_X_VERSION_MIN_REQUIRED > 1050) || \
                             (__IPHONE_OS_VERSION_MIN_REQUIRED > 2000))
-#    if (!defined(TARGET_OS_EMBEDDED) || (TARGET_OS_EMBEDDED==0)) \
-        && (!defined(TARGET_IPHONE_SIMULATOR) || (TARGET_IPHONE_SIMULATOR==0))\
-        && (!defined(TARGET_OS_MACCATALYST) || (TARGET_OS_MACCATALYST==0))
+#    اگر (!defined(ہدف_OS_EMBEDDED) || (ہدف_OS_EMBEDDED==0)) \
+        && (!defined(ہدف_IPHONE_SIMULATOR) || (ہدف_IPHONE_SIMULATOR==0))\
+        && (!defined(ہدف_OS_MACCATALYST) || (ہدف_OS_MACCATALYST==0))
 #      undef HAVE_GETHOSTUUID
 #      define HAVE_GETHOSTUUID 1
-#    else
+#    ورنہ
 #      warning "gethostuuid() is disabled."
 #    endif
 #  endif
-#endif
+#اگر_ختم
 
 
-#if OS_VXWORKS
+#اگر OS_VXWORKS
 # include <sys/ioctl.h>
 # include <semaphore.h>
 # include <limits.h>
-#endif /* OS_VXWORKS */
+#اگر_ختم /* OS_VXWORKS */
 
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
 # include <sys/mount.h>
-#endif
+#اگر_ختم
 
-#ifdef HAVE_UTIME
+#اگر_تعریف_شدہ HAVE_UTIME
 # include <utime.h>
-#endif
+#اگر_ختم
 
 /*
 ** Allowed values of unixFile.fsFlags
 */
-#define SQLITE_FSFLAGS_IS_MSDOS     0x1
+#تعریف_کرو SQLITE_FSFLAGS_IS_MSDOS     0x1
 
 /*
 ** If we are to be thread-safe, include the pthreads header.
 */
-#if SQLITE_THREADSAFE
+#اگر SQLITE_THREADSAFE
 # include <pthread.h>
-#endif
+#اگر_ختم
 
 /*
 ** Default permissions when creating a new file
 */
-#ifndef SQLITE_DEFAULT_FILE_PERMISSIONS
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_FILE_PERMISSIONS
 # define SQLITE_DEFAULT_FILE_PERMISSIONS 0644
-#endif
+#اگر_ختم
 
 /*
 ** Default permissions when creating auto proxy dir
 */
-#ifndef SQLITE_DEFAULT_PROXYDIR_PERMISSIONS
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_PROXYDIR_PERMISSIONS
 # define SQLITE_DEFAULT_PROXYDIR_PERMISSIONS 0755
-#endif
+#اگر_ختم
 
 /*
 ** Maximum supported path-length.
 */
-#define MAX_PATHNAME 512
+#تعریف_کرو MAX_PATHNAME 512
 
 /*
 ** Maximum supported symbolic links
 */
-#define SQLITE_MAX_SYMLINKS 100
+#تعریف_کرو SQLITE_MAX_SYMLINKS 100
 
 /*
 ** Remove and stub certain info for WASI (WebAssembly System
 ** Interface) builds.
 */
-#ifdef SQLITE_WASI
+#اگر_تعریف_شدہ SQLITE_WASI
 # undef HAVE_FCHMOD
 # undef HAVE_FCHOWN
 # undef HAVE_MREMAP
@@ -201,41 +201,41 @@
 #  define F_RDLCK 0
 #  define F_WRLCK 1
 #  define F_UNLCK 2
-#  if __LONG_MAX == 0x7fffffffL
+#  اگر __LONG_MAX == 0x7fffffffL
 #   define F_GETLK 12
 #   define F_SETLK 13
 #   define F_SETLKW 14
-#  else
+#  ورنہ
 #   define F_GETLK 5
 #   define F_SETLK 6
 #   define F_SETLKW 7
 #  endif
 # endif
-#else /* !SQLITE_WASI */
+#ورنہ /* !SQLITE_WASI */
 # ifndef HAVE_FCHMOD
 #  define HAVE_FCHMOD 1
 # endif
-#endif /* SQLITE_WASI */
+#اگر_ختم /* SQLITE_WASI */
 
-#ifdef SQLITE_WASI
+#اگر_تعریف_شدہ SQLITE_WASI
 # define osGetpid(X) (pid_t)1
-#else
+#ورنہ
 /* Always cast the getpid() return type for compatibility with
 ** kernel modules in VxWorks. */
 # define osGetpid(X) (pid_t)getpid()
-#endif
+#اگر_ختم
 
 /*
 ** Only set the lastErrno if the error code is a real error and not
 ** a normal expected return code of SQLITE_BUSY or SQLITE_OK
 */
-#define IS_LOCK_ERROR(x)  ((x != SQLITE_OK) && (x != SQLITE_BUSY))
+#تعریف_کرو IS_تالا_ERROR(x)  ((x != SQLITE_OK) && (x != SQLITE_BUSY))
 
 /* Forward references */
-typedef struct unixShm unixShm;               /* Connection shared memory */
-typedef struct unixShmNode unixShmNode;       /* Shared memory instance */
-typedef struct unixInodeInfo unixInodeInfo;   /* An i-node */
-typedef struct UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
+قسمتعریف ساخت unixShm unixShm;               /* Connection shared memory */
+قسمتعریف ساخت unix_Shm_گرہ unix_Shm_گرہ;       /* Shared memory instance */
+قسمتعریف ساخت unixInodeInfo unixInodeInfo;   /* An i-node */
+قسمتعریف ساخت Unix_غیر_مستعمل_Fd Unix_غیر_مستعمل_Fd;     /* An unused file descriptor */
 
 /*
 ** Sometimes, after a file handle is closed by SQLite, the file descriptor
@@ -243,53 +243,53 @@ typedef struct UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
 ** structure are used to store the file descriptor while waiting for an
 ** opportunity to either close or reuse it.
 */
-struct UnixUnusedFd {
-  int fd;                   /* File descriptor to close */
-  int flags;                /* Flags this file descriptor was opened with */
-  UnixUnusedFd *pNext;      /* Next unused file descriptor on same file */
+ساخت Unix_غیر_مستعمل_Fd {
+  صحیح fd;                   /* File descriptor to close */
+  صحیح flags;                /* Flags this file descriptor was opened with */
+  Unix_غیر_مستعمل_Fd *p_اگلا;      /* Next unused file descriptor on same file */
 };
 
 /*
 ** The unixFile structure is subclass of sqlite3_file specific to the unix
 ** VFS implementations.
 */
-typedef struct unixFile unixFile;
-struct unixFile {
-  sqlite3_io_methods const *pMethod;  /* Always the first entry */
+قسمتعریف ساخت unixFile unixFile;
+ساخت unixFile {
+  sqlite3_io_methods ثابت *p_طریقہ;  /* Always the first entry */
   sqlite3_vfs *pVfs;                  /* The VFS that created this unixFile */
   unixInodeInfo *pInode;              /* Info about locks on this inode */
-  int h;                              /* The file descriptor */
-  unsigned char eFileLock;            /* The type of lock held on this fd */
-  unsigned short int ctrlFlags;       /* Behavioral bits.  UNIXFILE_* flags */
-  int lastErrno;                      /* The unix errno from last I/O error */
-  void *lockingContext;               /* Locking style specific state */
-  UnixUnusedFd *pPreallocatedUnused;  /* Pre-allocated UnixUnusedFd */
-  const char *zPath;                  /* Name of the file */
+  صحیح h;                              /* The file descriptor */
+  غیرعلامتی حرف e_File_تالا;            /* The type of lock held on this fd */
+  غیرعلامتی مختصر صحیح ctrlFlags;       /* Behavioral bits.  UNIXFILE_* flags */
+  صحیح آخری_Errno;                      /* The unix errno from last I/O error */
+  خالی *lockingContext;               /* Locking style specific state */
+  Unix_غیر_مستعمل_Fd *p_Preallocated_غیر_مستعمل;  /* Pre-allocated UnixUnusedFd */
+  ثابت حرف *z_راستہ;                  /* Name of the file */
   unixShm *pShm;                      /* Shared memory segment information */
-  int szChunk;                        /* Configured by FCNTL_CHUNK_SIZE */
-#if SQLITE_MAX_MMAP_SIZE>0
-  int nFetchOut;                      /* Number of outstanding xFetch refs */
-  sqlite3_int64 mmapSize;             /* Usable size of mapping at pMapRegion */
-  sqlite3_int64 mmapSizeActual;       /* Actual size of mapping at pMapRegion */
-  sqlite3_int64 mmapSizeMax;          /* Configured FCNTL_MMAP_SIZE value */
-  void *pMapRegion;                   /* Memory mapped region */
-#endif
-  int sectorSize;                     /* Device sector size */
-  int deviceCharacteristics;          /* Precomputed device characteristics */
-#if SQLITE_ENABLE_LOCKING_STYLE
-  int openFlags;                      /* The flags specified at open() */
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE || defined(__APPLE__)
-  unsigned fsFlags;                   /* cached details from statfs() */
-#endif
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  unsigned iBusyTimeout;              /* Wait this many millisec on locks */
-  int bBlockOnConnect;                /* True to block for SHARED locks */
-#endif
-#if OS_VXWORKS
-  struct vxworksFileId *pId;          /* Unique file ID */
-#endif
-#ifdef SQLITE_DEBUG
+  صحیح szChunk;                        /* Configured by FCNTL_CHUNK_SIZE */
+#اگر SQLITE_MAX_MMAP_سائز>0
+  صحیح n_Fetch_برآمد;                      /* Number of outstanding xFetch refs */
+  sqlite3_int64 mmap_سائز;             /* Usable size of mapping at pMapRegion */
+  sqlite3_int64 mmap_سائز_Actual;       /* Actual size of mapping at pMapRegion */
+  sqlite3_int64 mmap_سائز_Max;          /* Configured FCNTL_MMAP_SIZE value */
+  خالی *pMapRegion;                   /* Memory mapped region */
+#اگر_ختم
+  صحیح sector_سائز;                     /* Device sector size */
+  صحیح deviceCharacteristics;          /* Precomputed device characteristics */
+#اگر SQLITE_ENABLE_LOCKING_STYLE
+  صحیح openFlags;                      /* The flags specified at open() */
+#اگر_ختم
+#اگر SQLITE_ENABLE_LOCKING_STYLE || defined(__APPLE__)
+  غیرعلامتی fsFlags;                   /* cached details from statfs() */
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+  غیرعلامتی iBusyTimeout;              /* Wait this many millisec on locks */
+  صحیح b_بلاک_On_Connect;                /* True to block for SHARED locks */
+#اگر_ختم
+#اگر OS_VXWORKS
+  ساخت vxworksFileId *pId;          /* Unique file ID */
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_DEBUG
   /* The next group of variables are used to track whether or not the
   ** transaction counter in bytes 24-27 of database files are updated
   ** whenever any part of the database changes.  An assertion fault will
@@ -297,105 +297,105 @@ struct unixFile {
   ** counter.  This test is made to avoid new problems similar to the
   ** one described by ticket #3584.
   */
-  unsigned char transCntrChng;   /* True if the transaction counter changed */
-  unsigned char dbUpdate;        /* True if any part of database file changed */
-  unsigned char inNormalWrite;   /* True if in a normal write operation */
+  غیرعلامتی حرف transCntrChng;   /* True if the transaction counter changed */
+  غیرعلامتی حرف dbUpdate;        /* True if any part of database file changed */
+  غیرعلامتی حرف اندر_معمول_Write;   /* True if in a normal write operation */
 
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_TEST
+#اگر_تعریف_شدہ SQLITE_TEST
   /* In test mode, increase the size of this structure a bit so that
   ** it is larger than the struct CrashFile defined in test6.c.
   */
-  char aPadding[32];
-#endif
+  حرف aPadding[32];
+#اگر_ختم
 };
 
 /* This variable holds the process id (pid) from when the xRandomness()
 ** method was called.  If xOpen() is called from a different process id,
 ** indicating that a fork() has occurred, the PRNG will be reset.
 */
-static pid_t randomnessPid = 0;
+ساکن pid_t randomnessPid = 0;
 
 /*
 ** Allowed values for the unixFile.ctrlFlags bitmask:
 */
-#define UNIXFILE_EXCL        0x01     /* Connections from one process only */
-#define UNIXFILE_RDONLY      0x02     /* Connection is read only */
-#define UNIXFILE_PERSIST_WAL 0x04     /* Persistent WAL mode */
-#if !defined(SQLITE_DISABLE_DIRSYNC) && !defined(_AIX)
+#تعریف_کرو UNIXFILE_EXCL        0x01     /* Connections from one process only */
+#تعریف_کرو UNIXFILE_RDONLY      0x02     /* Connection is read only */
+#تعریف_کرو UNIXFILE_PERSIST_WAL 0x04     /* Persistent WAL mode */
+#اگر !defined(SQLITE_DISABLE_DIRSYNC) && !defined(_AIX)
 # define UNIXFILE_DIRSYNC    0x08     /* Directory sync needed */
-#else
+#ورنہ
 # define UNIXFILE_DIRSYNC    0x00
-#endif
-#define UNIXFILE_PSOW        0x10     /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
-#define UNIXFILE_DELETE      0x20     /* Delete on close */
-#define UNIXFILE_URI         0x40     /* Filename might have query parameters */
-#define UNIXFILE_NOLOCK      0x80     /* Do no file locking */
+#اگر_ختم
+#تعریف_کرو UNIXFILE_PSOW        0x10     /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
+#تعریف_کرو UNIXFILE_DELETE      0x20     /* Delete on close */
+#تعریف_کرو UNIXFILE_URI         0x40     /* Filename might have query parameters */
+#تعریف_کرو UNIXFILE_NOLOCK      0x80     /* Do no file locking */
 
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#شامل "os_common.h"
 
 /*
 ** Define various macros that are missing from some systems.
 */
-#ifndef O_LARGEFILE
+#اگر_غیر_تعریف_شدہ O_LARGEFILE
 # define O_LARGEFILE 0
-#endif
-#ifdef SQLITE_DISABLE_LFS
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_DISABLE_LFS
 # undef O_LARGEFILE
 # define O_LARGEFILE 0
-#endif
-#ifndef O_NOFOLLOW
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ O_NOFOLLOW
 # define O_NOFOLLOW 0
-#endif
-#ifndef O_BINARY
-# define O_BINARY 0
-#endif
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ O_ثنائی
+# define O_ثنائی 0
+#اگر_ختم
 
 /*
 ** The threadid macro resolves to the thread-id or to 0.  Used for
 ** testing and debugging only.
 */
-#if SQLITE_THREADSAFE
-#define threadid pthread_self()
-#else
-#define threadid 0
-#endif
+#اگر SQLITE_THREADSAFE
+#تعریف_کرو threadid pthread_self()
+#ورنہ
+#تعریف_کرو threadid 0
+#اگر_ختم
 
 /*
 ** HAVE_MREMAP defaults to true on Linux and false everywhere else.
 */
-#if !defined(HAVE_MREMAP)
-# if defined(__linux__) && defined(_GNU_SOURCE)
+#اگر !defined(HAVE_MREMAP)
+# اگر defined(__linux__) && defined(GNU_ماخذ)
 #  define HAVE_MREMAP 1
-# else
+# ورنہ
 #  define HAVE_MREMAP 0
 # endif
-#endif
+#اگر_ختم
 
 /*
 ** Explicitly call the 64-bit version of lseek() on Android. Otherwise, lseek()
 ** is the 32-bit version, even if _FILE_OFFSET_BITS=64 is defined.
 */
-#ifdef __ANDROID__
+#اگر_تعریف_شدہ __ANDROID__
 # define lseek lseek64
-#endif
+#اگر_ختم
 
-#ifdef __linux__
+#اگر_تعریف_شدہ __linux__
 /*
 ** Linux-specific IOCTL magic numbers used for controlling F2FS
 */
-#define F2FS_IOCTL_MAGIC        0xf5
-#define F2FS_IOC_START_ATOMIC_WRITE     _IO(F2FS_IOCTL_MAGIC, 1)
-#define F2FS_IOC_COMMIT_ATOMIC_WRITE    _IO(F2FS_IOCTL_MAGIC, 2)
-#define F2FS_IOC_START_VOLATILE_WRITE   _IO(F2FS_IOCTL_MAGIC, 3)
-#define F2FS_IOC_ABORT_VOLATILE_WRITE   _IO(F2FS_IOCTL_MAGIC, 5)
-#define F2FS_IOC_GET_FEATURES           _IOR(F2FS_IOCTL_MAGIC, 12, u32)
-#define F2FS_FEATURE_ATOMIC_WRITE 0x0004
-#endif /* __linux__ */
+#تعریف_کرو F2FS_IOCTL_MAGIC        0xf5
+#تعریف_کرو F2_FS_IOC_آغاز_ATOMIC_WRITE     _IO(F2FS_IOCTL_MAGIC, 1)
+#تعریف_کرو F2FS_IOC_COMMIT_ATOMIC_WRITE    _IO(F2FS_IOCTL_MAGIC, 2)
+#تعریف_کرو F2_FS_IOC_آغاز_VOLATILE_WRITE   _IO(F2FS_IOCTL_MAGIC, 3)
+#تعریف_کرو F2FS_IOC_ABORT_VOLATILE_WRITE   _IO(F2FS_IOCTL_MAGIC, 5)
+#تعریف_کرو F2FS_IOC_GET_FEATURES           _IOR(F2FS_IOCTL_MAGIC, 12, u32)
+#تعریف_کرو F2FS_FEATURE_ATOMIC_WRITE 0x0004
+#اگر_ختم /* __linux__ */
 
 
 /*
@@ -406,13 +406,13 @@ static pid_t randomnessPid = 0;
 ** The safest way to deal with the problem is to always use this wrapper
 ** which always has the same well-defined interface.
 */
-static int posixOpen(const char *zFile, int flags, int mode){
-  return open(zFile, flags, mode);
+ساکن صحیح posixOpen(ثابت حرف *zFile, صحیح flags, صحیح منوال){
+  واپس open(zFile, flags, منوال);
 }
 
 /* Forward reference */
-static int openDirectory(const char*, int*);
-static int unixGetpagesize(void);
+ساکن صحیح openDirectory(ثابت حرف*, صحیح*);
+ساکن صحیح unixGetpagesize(خالی);
 
 /*
 ** Many system calls are accessed through pointer-to-functions so that
@@ -420,25 +420,25 @@ static int unixGetpagesize(void);
 ** testing and sandboxing.  The following array holds the names and pointers
 ** to all overrideable system calls.
 */
-static struct unix_syscall {
-  const char *zName;            /* Name of the system call */
+ساکن ساخت unix_syscall {
+  ثابت حرف *zName;            /* Name of the system call */
   sqlite3_syscall_ptr pCurrent; /* Current value of the system call */
   sqlite3_syscall_ptr pDefault; /* Default value */
 } aSyscall[] = {
   { "open",         (sqlite3_syscall_ptr)posixOpen,  0  },
-#define osOpen      ((int(*)(const char*,int,int))aSyscall[0].pCurrent)
+#تعریف_کرو osOpen      ((صحیح(*)(ثابت حرف*,صحیح,صحیح))aSyscall[0].pCurrent)
 
   { "close",        (sqlite3_syscall_ptr)close,      0  },
-#define osClose     ((int(*)(int))aSyscall[1].pCurrent)
+#تعریف_کرو osClose     ((صحیح(*)(صحیح))aSyscall[1].pCurrent)
 
   { "access",       (sqlite3_syscall_ptr)access,     0  },
-#define osAccess    ((int(*)(const char*,int))aSyscall[2].pCurrent)
+#تعریف_کرو osAccess    ((صحیح(*)(ثابت حرف*,صحیح))aSyscall[2].pCurrent)
 
   { "getcwd",       (sqlite3_syscall_ptr)getcwd,     0  },
-#define osGetcwd    ((char*(*)(char*,size_t))aSyscall[3].pCurrent)
+#تعریف_کرو osGetcwd    ((حرف*(*)(حرف*,size_t))aSyscall[3].pCurrent)
 
   { "stat",         (sqlite3_syscall_ptr)stat,       0  },
-#define osStat      ((int(*)(const char*,struct stat*))aSyscall[4].pCurrent)
+#تعریف_کرو osStat      ((صحیح(*)(ثابت حرف*,ساخت stat*))aSyscall[4].pCurrent)
 
 /*
 ** The DJGPP compiler environment looks mostly like Unix, but it
@@ -446,157 +446,157 @@ static struct unix_syscall {
 ** that always succeeds.  This means that locking does not occur under
 ** DJGPP.  But it is DOS - what did you expect?
 */
-#ifdef __DJGPP__
+#اگر_تعریف_شدہ __DJGPP__
   { "fstat",        0,                 0  },
-#define osFstat(a,b,c)    0
-#else   
+#تعریف_کرو osFstat(a,b,c)    0
+#ورنہ   
   { "fstat",        (sqlite3_syscall_ptr)fstat,      0  },
-#define osFstat     ((int(*)(int,struct stat*))aSyscall[5].pCurrent)
-#endif
+#تعریف_کرو osFstat     ((صحیح(*)(صحیح,ساخت stat*))aSyscall[5].pCurrent)
+#اگر_ختم
 
   { "ftruncate",    (sqlite3_syscall_ptr)ftruncate,  0  },
-#define osFtruncate ((int(*)(int,off_t))aSyscall[6].pCurrent)
+#تعریف_کرو osFtruncate ((صحیح(*)(صحیح,off_t))aSyscall[6].pCurrent)
 
   { "fcntl",        (sqlite3_syscall_ptr)fcntl,      0  },
-#define osFcntl     ((int(*)(int,int,...))aSyscall[7].pCurrent)
+#تعریف_کرو osFcntl     ((صحیح(*)(صحیح,صحیح,...))aSyscall[7].pCurrent)
 
-  { "read",         (sqlite3_syscall_ptr)read,       0  },
-#define osRead      ((ssize_t(*)(int,void*,size_t))aSyscall[8].pCurrent)
+  { "read",         (sqlite3_syscall_ptr)اقرأ,       0  },
+#تعریف_کرو osRead      ((ssize_t(*)(صحیح,خالی*,size_t))aSyscall[8].pCurrent)
 
-#if defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
   { "pread",        (sqlite3_syscall_ptr)pread,      0  },
-#else
+#ورنہ
   { "pread",        (sqlite3_syscall_ptr)0,          0  },
-#endif
-#define osPread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].pCurrent)
+#اگر_ختم
+#تعریف_کرو osPread     ((ssize_t(*)(صحیح,خالی*,size_t,off_t))aSyscall[9].pCurrent)
 
-#if defined(USE_PREAD64)
+#اگر defined(USE_PREAD64)
   { "pread64",      (sqlite3_syscall_ptr)pread64,    0  },
-#else
+#ورنہ
   { "pread64",      (sqlite3_syscall_ptr)0,          0  },
-#endif
-#define osPread64 ((ssize_t(*)(int,void*,size_t,off64_t))aSyscall[10].pCurrent)
+#اگر_ختم
+#تعریف_کرو osPread64 ((ssize_t(*)(صحیح,خالی*,size_t,off64_t))aSyscall[10].pCurrent)
 
-  { "write",        (sqlite3_syscall_ptr)write,      0  },
-#define osWrite     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].pCurrent)
+  { "write",        (sqlite3_syscall_ptr)اكتب,      0  },
+#تعریف_کرو osWrite     ((ssize_t(*)(صحیح,ثابت خالی*,size_t))aSyscall[11].pCurrent)
 
-#if defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
   { "pwrite",       (sqlite3_syscall_ptr)pwrite,     0  },
-#else
+#ورنہ
   { "pwrite",       (sqlite3_syscall_ptr)0,          0  },
-#endif
-#define osPwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#اگر_ختم
+#تعریف_کرو osPwrite    ((ssize_t(*)(صحیح,ثابت خالی*,size_t,off_t))\
                     aSyscall[12].pCurrent)
 
-#if defined(USE_PREAD64)
+#اگر defined(USE_PREAD64)
   { "pwrite64",     (sqlite3_syscall_ptr)pwrite64,   0  },
-#else
+#ورنہ
   { "pwrite64",     (sqlite3_syscall_ptr)0,          0  },
-#endif
-#define osPwrite64  ((ssize_t(*)(int,const void*,size_t,off64_t))\
+#اگر_ختم
+#تعریف_کرو osPwrite64  ((ssize_t(*)(صحیح,ثابت خالی*,size_t,off64_t))\
                     aSyscall[13].pCurrent)
 
-#if defined(HAVE_FCHMOD)
+#اگر defined(HAVE_FCHMOD)
   { "fchmod",       (sqlite3_syscall_ptr)fchmod,          0  },
-#define osFchmod    ((int(*)(int,mode_t))aSyscall[14].pCurrent)
-#else
+#تعریف_کرو osFchmod    ((صحیح(*)(صحیح,منوال_t))aSyscall[14].pCurrent)
+#ورنہ
   { "fchmod",       (sqlite3_syscall_ptr)0,               0  },
-#define osFchmod(FID,MODE) 0
-#endif
+#تعریف_کرو osFchmod(FID,منوال_2) 0
+#اگر_ختم
 
-#if defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
+#اگر defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
   { "fallocate",    (sqlite3_syscall_ptr)posix_fallocate,  0 },
-#else
+#ورنہ
   { "fallocate",    (sqlite3_syscall_ptr)0,                0 },
-#endif
-#define osFallocate ((int(*)(int,off_t,off_t))aSyscall[15].pCurrent)
+#اگر_ختم
+#تعریف_کرو osFallocate ((صحیح(*)(صحیح,off_t,off_t))aSyscall[15].pCurrent)
 
   { "unlink",       (sqlite3_syscall_ptr)unlink,           0 },
-#define osUnlink    ((int(*)(const char*))aSyscall[16].pCurrent)
+#تعریف_کرو osUnlink    ((صحیح(*)(ثابت حرف*))aSyscall[16].pCurrent)
 
   { "openDirectory",    (sqlite3_syscall_ptr)openDirectory,      0 },
-#define osOpenDirectory ((int(*)(const char*,int*))aSyscall[17].pCurrent)
+#تعریف_کرو osOpenDirectory ((صحیح(*)(ثابت حرف*,صحیح*))aSyscall[17].pCurrent)
 
   { "mkdir",        (sqlite3_syscall_ptr)mkdir,           0 },
-#define osMkdir     ((int(*)(const char*,mode_t))aSyscall[18].pCurrent)
+#تعریف_کرو osMkdir     ((صحیح(*)(ثابت حرف*,منوال_t))aSyscall[18].pCurrent)
 
   { "rmdir",        (sqlite3_syscall_ptr)rmdir,           0 },
-#define osRmdir     ((int(*)(const char*))aSyscall[19].pCurrent)
+#تعریف_کرو osRmdir     ((صحیح(*)(ثابت حرف*))aSyscall[19].pCurrent)
 
-#if defined(HAVE_FCHOWN)
+#اگر defined(HAVE_FCHOWN)
   { "fchown",       (sqlite3_syscall_ptr)fchown,          0 },
-#else
+#ورنہ
   { "fchown",       (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osFchown    ((int(*)(int,uid_t,gid_t))aSyscall[20].pCurrent)
+#اگر_ختم
+#تعریف_کرو osFchown    ((صحیح(*)(صحیح,uid_t,gid_t))aSyscall[20].pCurrent)
 
-#if defined(HAVE_FCHOWN)
+#اگر defined(HAVE_FCHOWN)
   { "geteuid",      (sqlite3_syscall_ptr)geteuid,         0 },
-#else
+#ورنہ
   { "geteuid",      (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osGeteuid   ((uid_t(*)(void))aSyscall[21].pCurrent)
+#اگر_ختم
+#تعریف_کرو osGeteuid   ((uid_t(*)(خالی))aSyscall[21].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#اگر (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0) \
   && !defined(SQLITE_WASI)
   { "mmap",         (sqlite3_syscall_ptr)mmap,            0 },
-#else
+#ورنہ
   { "mmap",         (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osMmap ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[22].pCurrent)
+#اگر_ختم
+#تعریف_کرو osMmap ((خالی*(*)(خالی*,size_t,صحیح,صحیح,صحیح,off_t))aSyscall[22].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#اگر (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0) \
   && !defined(SQLITE_WASI)
   { "munmap",       (sqlite3_syscall_ptr)munmap,          0 },
-#else
+#ورنہ
   { "munmap",       (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osMunmap ((int(*)(void*,size_t))aSyscall[23].pCurrent)
+#اگر_ختم
+#تعریف_کرو osMunmap ((صحیح(*)(خالی*,size_t))aSyscall[23].pCurrent)
 
-#if HAVE_MREMAP && (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0)
+#اگر HAVE_MREMAP && (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0)
   { "mremap",       (sqlite3_syscall_ptr)mremap,          0 },
-#else
+#ورنہ
   { "mremap",       (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osMremap ((void*(*)(void*,size_t,size_t,int,...))aSyscall[24].pCurrent)
+#اگر_ختم
+#تعریف_کرو osMremap ((خالی*(*)(خالی*,size_t,size_t,صحیح,...))aSyscall[24].pCurrent)
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
+#اگر !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0
   { "getpagesize",  (sqlite3_syscall_ptr)unixGetpagesize, 0 },
-#else
+#ورنہ
   { "getpagesize",  (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osGetpagesize ((int(*)(void))aSyscall[25].pCurrent)
+#اگر_ختم
+#تعریف_کرو osGetpagesize ((صحیح(*)(خالی))aSyscall[25].pCurrent)
 
-#if defined(HAVE_READLINK)
+#اگر defined(HAVE_READLINK)
   { "readlink",     (sqlite3_syscall_ptr)readlink,        0 },
-#else
+#ورنہ
   { "readlink",     (sqlite3_syscall_ptr)0,               0 },
-#endif
-#define osReadlink ((ssize_t(*)(const char*,char*,size_t))aSyscall[26].pCurrent)
+#اگر_ختم
+#تعریف_کرو osReadlink ((ssize_t(*)(ثابت حرف*,حرف*,size_t))aSyscall[26].pCurrent)
 
-#if defined(HAVE_LSTAT)
+#اگر defined(HAVE_LSTAT)
   { "lstat",         (sqlite3_syscall_ptr)lstat,          0 },
-#else
+#ورنہ
   { "lstat",         (sqlite3_syscall_ptr)0,              0 },
-#endif
-#define osLstat      ((int(*)(const char*,struct stat*))aSyscall[27].pCurrent)
+#اگر_ختم
+#تعریف_کرو osLstat      ((صحیح(*)(ثابت حرف*,ساخت stat*))aSyscall[27].pCurrent)
 
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#اگر defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
 # ifdef __ANDROID__
-  { "ioctl", (sqlite3_syscall_ptr)(int(*)(int, int, ...))ioctl, 0 },
-#define osIoctl ((int(*)(int,int,...))aSyscall[28].pCurrent)
-# else
+  { "ioctl", (sqlite3_syscall_ptr)(صحیح(*)(صحیح, صحیح, ...))ioctl, 0 },
+#تعریف_کرو osIoctl ((صحیح(*)(صحیح,صحیح,...))aSyscall[28].pCurrent)
+# ورنہ
   { "ioctl",         (sqlite3_syscall_ptr)ioctl,          0 },
-#define osIoctl ((int(*)(int,unsigned long,...))aSyscall[28].pCurrent)
+#تعریف_کرو osIoctl ((صحیح(*)(صحیح,غیرعلامتی طویل,...))aSyscall[28].pCurrent)
 # endif
-#else
+#ورنہ
   { "ioctl",         (sqlite3_syscall_ptr)0,              0 },
-#endif
+#اگر_ختم
 
 }; /* End of the overrideable system calls */
 
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Extract Posix Advisory Locking information about file description fd
 ** from the /proc/PID/fdinfo/FD pseudo-file.  Fill the string buffer a[16]
@@ -635,26 +635,26 @@ static struct unix_syscall {
 ** Return SQLITE_OK on success and SQLITE_ERROR_UNABLE if the /proc
 ** pseudo-filesystem is unavailable.
 */
-static int unixPosixAdvisoryLocks(
-  int fd,        /* The file descriptor to analyze */
-  char a[16]     /* Write a text description of PALs here */
+ساکن صحیح unixPosixAdvisoryLocks(
+  صحیح fd,        /* The file descriptor to analyze */
+  حرف a[16]     /* Write a text description of PALs here */
 ){
-  int in;
+  صحیح اندر;
   ssize_t n;
-  char *p, *pNext, *x;
-  char z[2000];
+  حرف *p, *p_اگلا, *x;
+  حرف z[2000];
 
         /*             1     */
         /*   012 4 678 01234 */
-  memcpy(a, "---/-.---.-----", 16);
-  sqlite3_snprintf(sizeof(z), z, "/proc/%d/fdinfo/%d", getpid(), fd);
-  in = osOpen(z, O_RDONLY, 0);
-  if( in<0 ){
-    return SQLITE_ERROR_UNABLE;
+  حافظہ_نقل(a, "---/-.---.-----", 16);
+  sqlite3_snprintf(حجم(z), z, "/proc/%d/fdinfo/%d", getpid(), fd);
+  اندر = osOpen(z, O_RDONLY, 0);
+  اگر( اندر<0 ){
+    واپس SQLITE_ERROR_UNABLE;
   }
-  n = osRead(in, z, sizeof(z)-1);
-  osClose(in);
-  if( n<=0 ) return SQLITE_ERROR_UNABLE;
+  n = osRead(اندر, z, حجم(z)-1);
+  osClose(اندر);
+  اگر( n<=0 ) واپس SQLITE_ERROR_UNABLE;
   z[n] = 0;
 
   /* We are looking for lines that begin with "lock:\t".  Examples:
@@ -664,62 +664,62 @@ static int unixPosixAdvisoryLocks(
   ** lock: 2: POSIX  ADVISORY  READ 494716 08:02:5282282 123 123
   ** lock: 3: POSIX  ADVISORY  READ 494716 08:02:5282282 128 128
   */
-  pNext = strstr(z, "lock:\t");
-  while( pNext ){
-    char cType = 0;
-    sqlite3_int64 iFirst, iLast;
-    p = pNext+6;
-    pNext = strstr(p, "lock:\t");
-    if( pNext ) pNext[-1] = 0;
-    if( (x = strstr(p, " READ "))!=0 ){
+  p_اگلا = لڑی_تلاش(z, "lock:\t");
+  جب( p_اگلا ){
+    حرف cType = 0;
+    sqlite3_int64 i_پہلا, i_آخری;
+    p = p_اگلا+6;
+    p_اگلا = لڑی_تلاش(p, "lock:\t");
+    اگر( p_اگلا ) p_اگلا[-1] = 0;
+    اگر( (x = لڑی_تلاش(p, " READ "))!=0 ){
       cType = 'r';
       x += 6;
-    }else if( (x = strstr(p, " WRITE "))!=0 ){
+    }ورنہ اگر( (x = لڑی_تلاش(p, " WRITE "))!=0 ){
       cType = 'w';
       x += 7;
-    }else{
-      continue;
+    }ورنہ{
+      جاری;
     }
     x = strrchr(x, ' ');
-    if( x==0 ) continue;
-    iLast = strtoll(x+1, 0, 10);
+    اگر( x==0 ) جاری;
+    i_آخری = strtoll(x+1, 0, 10);
     *x = 0;
     x = strrchr(p, ' ');
-    if( x==0 ) continue;
-    iFirst = strtoll(x+1, 0, 10);
-    if( iLast>=PENDING_BYTE ){
-      if( iFirst<=PENDING_BYTE && iLast>=PENDING_BYTE )     a[0] = cType;
-      if( iFirst<=PENDING_BYTE+1 && iLast>=PENDING_BYTE+1 ) a[1] = cType;
-      if( iFirst<=PENDING_BYTE+2 && iLast>=PENDING_BYTE+510 ) a[2] = cType;
-    }else if( iLast<=128 ){
-      if( iFirst<=128 && iLast>=128 ) a[4] = cType;
-      if( iFirst<=120 && iLast>=120 ) a[6] = cType;
-      if( iFirst<=121 && iLast>=121 ) a[7] = cType;
-      if( iFirst<=122 && iLast>=122 ) a[8] = cType;
-      if( iFirst<=123 && iLast>=123 ) a[10] = cType;
-      if( iFirst<=124 && iLast>=124 ) a[11] = cType;
-      if( iFirst<=125 && iLast>=125 ) a[12] = cType;
-      if( iFirst<=126 && iLast>=126 ) a[13] = cType;
-      if( iFirst<=127 && iLast>=127 ) a[14] = cType;
+    اگر( x==0 ) جاری;
+    i_پہلا = strtoll(x+1, 0, 10);
+    اگر( i_آخری>=PENDING_BYTE ){
+      اگر( i_پہلا<=PENDING_BYTE && i_آخری>=PENDING_BYTE )     a[0] = cType;
+      اگر( i_پہلا<=PENDING_BYTE+1 && i_آخری>=PENDING_BYTE+1 ) a[1] = cType;
+      اگر( i_پہلا<=PENDING_BYTE+2 && i_آخری>=PENDING_BYTE+510 ) a[2] = cType;
+    }ورنہ اگر( i_آخری<=128 ){
+      اگر( i_پہلا<=128 && i_آخری>=128 ) a[4] = cType;
+      اگر( i_پہلا<=120 && i_آخری>=120 ) a[6] = cType;
+      اگر( i_پہلا<=121 && i_آخری>=121 ) a[7] = cType;
+      اگر( i_پہلا<=122 && i_آخری>=122 ) a[8] = cType;
+      اگر( i_پہلا<=123 && i_آخری>=123 ) a[10] = cType;
+      اگر( i_پہلا<=124 && i_آخری>=124 ) a[11] = cType;
+      اگر( i_پہلا<=125 && i_آخری>=125 ) a[12] = cType;
+      اگر( i_پہلا<=126 && i_آخری>=126 ) a[13] = cType;
+      اگر( i_پہلا<=127 && i_آخری>=127 ) a[14] = cType;
     }
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
-#else
+#ورنہ
 #  define unixPosixAdvisoryLocks(A,B) SQLITE_ERROR_UNABLE
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#اگر_ختم /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
 /*
 ** On some systems, calls to fchown() will trigger a message in a security
 ** log if they come from non-root processes.  So avoid calling fchown() if
 ** we are not running as root.
 */
-static int robustFchown(int fd, uid_t uid, gid_t gid){
-#if defined(HAVE_FCHOWN)
-  return osGeteuid() ? 0 : osFchown(fd,uid,gid);
-#else
-  return 0;
-#endif
+ساکن صحیح robustFchown(صحیح fd, uid_t uid, gid_t gid){
+#اگر defined(HAVE_FCHOWN)
+  واپس osGeteuid() ? 0 : osFchown(fd,uid,gid);
+#ورنہ
+  واپس 0;
+#اگر_ختم
 }
 
 /*
@@ -728,42 +728,42 @@ static int robustFchown(int fd, uid_t uid, gid_t gid){
 ** system call pointer, or SQLITE_NOTFOUND if there is no configurable
 ** system call named zName.
 */
-static int unixSetSystemCall(
-  sqlite3_vfs *pNotUsed,        /* The VFS pointer.  Not used */
-  const char *zName,            /* Name of system call to override */
+ساکن صحیح unix_سیٹ_System_Call(
+  sqlite3_vfs *p_Not_مستعمل,        /* The VFS pointer.  Not used */
+  ثابت حرف *zName,            /* Name of system call to override */
   sqlite3_syscall_ptr pNewFunc  /* Pointer to new system call value */
 ){
-  unsigned int i;
-  int rc = SQLITE_NOTFOUND;
+  غیرعلامتی صحیح i;
+  صحیح rc = SQLITE_NOTFOUND;
 
-  UNUSED_PARAMETER(pNotUsed);
-  if( zName==0 ){
+  غیر_مستعمل_PARAMETER(p_Not_مستعمل);
+  اگر( zName==0 ){
     /* If no zName is given, restore all system calls to their default
     ** settings and return NULL
     */
     rc = SQLITE_OK;
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( aSyscall[i].pDefault ){
+    برائے(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+      اگر( aSyscall[i].pDefault ){
         aSyscall[i].pCurrent = aSyscall[i].pDefault;
       }
     }
-  }else{
+  }ورنہ{
     /* If zName is specified, operate on only the one system call
     ** specified.
     */
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ){
-        if( aSyscall[i].pDefault==0 ){
+    برائے(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+      اگر( strcmp(zName, aSyscall[i].zName)==0 ){
+        اگر( aSyscall[i].pDefault==0 ){
           aSyscall[i].pDefault = aSyscall[i].pCurrent;
         }
         rc = SQLITE_OK;
-        if( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
+        اگر( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
         aSyscall[i].pCurrent = pNewFunc;
-        break;
+        توڑو;
       }
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -771,17 +771,17 @@ static int unixSetSystemCall(
 ** recognized system call name.  NULL is also returned if the system call
 ** is currently undefined.
 */
-static sqlite3_syscall_ptr unixGetSystemCall(
-  sqlite3_vfs *pNotUsed,
-  const char *zName
+ساکن sqlite3_syscall_ptr unixGetSystemCall(
+  sqlite3_vfs *p_Not_مستعمل,
+  ثابت حرف *zName
 ){
-  unsigned int i;
+  غیرعلامتی صحیح i;
 
-  UNUSED_PARAMETER(pNotUsed);
-  for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-    if( strcmp(zName, aSyscall[i].zName)==0 ) return aSyscall[i].pCurrent;
+  غیر_مستعمل_PARAMETER(p_Not_مستعمل);
+  برائے(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+    اگر( strcmp(zName, aSyscall[i].zName)==0 ) واپس aSyscall[i].pCurrent;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -790,19 +790,19 @@ static sqlite3_syscall_ptr unixGetSystemCall(
 ** is the last system call or if zName is not the name of a valid
 ** system call.
 */
-static const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName){
-  int i = -1;
+ساکن ثابت حرف *unix_اگلا_System_Call(sqlite3_vfs *p, ثابت حرف *zName){
+  صحیح i = -1;
 
-  UNUSED_PARAMETER(p);
-  if( zName ){
-    for(i=0; i<ArraySize(aSyscall)-1; i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ) break;
+  غیر_مستعمل_PARAMETER(p);
+  اگر( zName ){
+    برائے(i=0; i<Array_سائز(aSyscall)-1; i++){
+      اگر( strcmp(zName, aSyscall[i].zName)==0 ) توڑو;
     }
   }
-  for(i++; i<ArraySize(aSyscall); i++){
-    if( aSyscall[i].pCurrent!=0 ) return aSyscall[i].zName;
+  برائے(i++; i<Array_سائز(aSyscall); i++){
+    اگر( aSyscall[i].pCurrent!=0 ) واپس aSyscall[i].zName;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -810,9 +810,9 @@ static const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName){
 ** opening database file using file descriptors that are commonly used for
 ** standard input, output, and error.
 */
-#ifndef SQLITE_MINIMUM_FILE_DESCRIPTOR
+#اگر_غیر_تعریف_شدہ SQLITE_MINIMUM_FILE_DESCRIPTOR
 # define SQLITE_MINIMUM_FILE_DESCRIPTOR 3
-#endif
+#اگر_ختم
 
 /*
 ** Invoke open().  Do so multiple times, until it either succeeds or
@@ -831,44 +831,44 @@ static const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName){
 ** process that is able to write to the database will also be able to
 ** recover the hot journals.
 */
-static int robust_open(const char *z, int f, mode_t m){
-  int fd;
-  mode_t m2 = m ? m : SQLITE_DEFAULT_FILE_PERMISSIONS;
-  while(1){
-#if defined(O_CLOEXEC)
+ساکن صحیح robust_open(ثابت حرف *z, صحیح f, منوال_t m){
+  صحیح fd;
+  منوال_t m2 = m ? m : SQLITE_DEFAULT_FILE_PERMISSIONS;
+  جب(1){
+#اگر defined(O_CLOEXEC)
     fd = osOpen(z,f|O_CLOEXEC,m2);
-#else
+#ورنہ
     fd = osOpen(z,f,m2);
-#endif
-    if( fd<0 ){
-      if( errno==EINTR ) continue;
-      break;
+#اگر_ختم
+    اگر( fd<0 ){
+      اگر( errno==EINTR ) جاری;
+      توڑو;
     }
-    if( fd>=SQLITE_MINIMUM_FILE_DESCRIPTOR ) break;
-    if( (f & (O_EXCL|O_CREAT))==(O_EXCL|O_CREAT) ){
-      (void)osUnlink(z);
+    اگر( fd>=SQLITE_MINIMUM_FILE_DESCRIPTOR ) توڑو;
+    اگر( (f & (O_EXCL|O_CREAT))==(O_EXCL|O_CREAT) ){
+      (خالی)osUnlink(z);
     }
     osClose(fd);
     sqlite3_log(SQLITE_WARNING,
                 "attempt to open \"%s\" as file descriptor %d", z, fd);
     fd = -1;
-    if( osOpen("/dev/null", O_RDONLY, m)<0 ) break;
+    اگر( osOpen("/dev/null", O_RDONLY, m)<0 ) توڑو;
   }
-  if( fd>=0 ){
-    if( m!=0 ){
-      struct stat statbuf;
-      if( osFstat(fd, &statbuf)==0
-       && statbuf.st_size==0
-       && (statbuf.st_mode&0777)!=m
+  اگر( fd>=0 ){
+    اگر( m!=0 ){
+      ساخت stat statbuf;
+      اگر( osFstat(fd, &statbuf)==0
+       && statbuf.st_سائز==0
+       && (statbuf.st_منوال&0777)!=m
       ){
         osFchmod(fd, m);
       }
     }
-#if defined(FD_CLOEXEC) && (!defined(O_CLOEXEC) || O_CLOEXEC==0)
+#اگر defined(FD_CLOEXEC) && (!defined(O_CLOEXEC) || O_CLOEXEC==0)
     osFcntl(fd, F_SETFD, osFcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
-#endif
+#اگر_ختم
   }
-  return fd;
+  واپس fd;
 }
 
 /*
@@ -895,41 +895,41 @@ static int robust_open(const char *z, int f, mode_t m){
 **      OK:     enter(pLockInfo)
 **   ERROR:     enter(pLockInfo), enter(unixBigLock)
 */
-static sqlite3_mutex *unixBigLock = 0;
-static void unixEnterMutex(void){
-  assert( sqlite3_mutex_notheld(unixBigLock) );  /* Not a recursive mutex */
-  sqlite3_mutex_enter(unixBigLock);
+ساکن sqlite3_mutex *unix_Big_تالا = 0;
+ساکن خالی unixEnterMutex(خالی){
+  أكد( sqlite3_mutex_notheld(unix_Big_تالا) );  /* Not a recursive mutex */
+  sqlite3_mutex_enter(unix_Big_تالا);
 }
-static void unixLeaveMutex(void){
-  assert( sqlite3_mutex_held(unixBigLock) );
-  sqlite3_mutex_leave(unixBigLock);
+ساکن خالی unixLeaveMutex(خالی){
+  أكد( sqlite3_mutex_held(unix_Big_تالا) );
+  sqlite3_mutex_leave(unix_Big_تالا);
 }
-#ifdef SQLITE_DEBUG
-static int unixMutexHeld(void) {
-  return sqlite3_mutex_held(unixBigLock);
+#اگر_تعریف_شدہ SQLITE_DEBUG
+ساکن صحیح unixMutexHeld(خالی) {
+  واپس sqlite3_mutex_held(unix_Big_تالا);
 }
-#endif
+#اگر_ختم
 
 
-#ifdef SQLITE_HAVE_OS_TRACE
+#اگر_تعریف_شدہ SQLITE_HAVE_OS_TRACE
 /*
 ** Helper function for printing out trace information from debugging
 ** binaries. This returns the string representation of the supplied
 ** integer lock-type.
 */
-static const char *azFileLock(int eFileLock){
-  switch( eFileLock ){
-    case NO_LOCK: return "NONE";
-    case SHARED_LOCK: return "SHARED";
-    case RESERVED_LOCK: return "RESERVED";
-    case PENDING_LOCK: return "PENDING";
-    case EXCLUSIVE_LOCK: return "EXCLUSIVE";
+ساکن ثابت حرف *az_File_تالا(صحیح e_File_تالا){
+  انتخاب( e_File_تالا ){
+    حالت NO_تالا: واپس "NONE";
+    حالت SHARED_تالا: واپس "SHARED";
+    حالت RESERVED_تالا: واپس "RESERVED";
+    حالت PENDING_تالا: واپس "PENDING";
+    حالت EXCLUSIVE_تالا: واپس "EXCLUSIVE";
   }
-  return "ERROR";
+  واپس "ERROR";
 }
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_LOCK_TRACE
+#اگر_تعریف_شدہ SQLITE_تالا_TRACE
 /*
 ** Print out information about all locking operations.
 **
@@ -938,56 +938,56 @@ static const char *azFileLock(int eFileLock){
 ** command-line option on the compiler.  This code is normally
 ** turned off.
 */
-static int lockTrace(int fd, int op, struct flock *p){
-  char *zOpName, *zType;
-  int s;
-  int savedErrno;
-  if( op==F_GETLK ){
+ساکن صحیح تالا_Trace(صحیح fd, صحیح op, ساخت flock *p){
+  حرف *zOpName, *zType;
+  صحیح s;
+  صحیح savedErrno;
+  اگر( op==F_GETLK ){
     zOpName = "GETLK";
-  }else if( op==F_SETLK ){
+  }ورنہ اگر( op==F_SETLK ){
     zOpName = "SETLK";
-  }else{
+  }ورنہ{
     s = osFcntl(fd, op, p);
     sqlite3DebugPrintf("fcntl unknown %d %d %d\n", fd, op, s);
-    return s;
+    واپس s;
   }
-  if( p->l_type==F_RDLCK ){
+  اگر( p->l_type==F_RDLCK ){
     zType = "RDLCK";
-  }else if( p->l_type==F_WRLCK ){
+  }ورنہ اگر( p->l_type==F_WRLCK ){
     zType = "WRLCK";
-  }else if( p->l_type==F_UNLCK ){
+  }ورنہ اگر( p->l_type==F_UNLCK ){
     zType = "UNLCK";
-  }else{
-    assert( 0 );
+  }ورنہ{
+    أكد( 0 );
   }
-  assert( p->l_whence==SEEK_SET );
+  أكد( p->l_whence==SEEK_SET );
   s = osFcntl(fd, op, p);
   savedErrno = errno;
   sqlite3DebugPrintf("fcntl %d %d %s %s %d %d %d %d\n",
-     threadid, fd, zOpName, zType, (int)p->l_start, (int)p->l_len,
-     (int)p->l_pid, s);
-  if( s==(-1) && op==F_SETLK && (p->l_type==F_RDLCK || p->l_type==F_WRLCK) ){
-    struct flock l2;
+     threadid, fd, zOpName, zType, (صحیح)p->l_آغاز, (صحیح)p->l_len,
+     (صحیح)p->l_pid, s);
+  اگر( s==(-1) && op==F_SETLK && (p->l_type==F_RDLCK || p->l_type==F_WRLCK) ){
+    ساخت flock l2;
     l2 = *p;
     osFcntl(fd, F_GETLK, &l2);
-    if( l2.l_type==F_RDLCK ){
+    اگر( l2.l_type==F_RDLCK ){
       zType = "RDLCK";
-    }else if( l2.l_type==F_WRLCK ){
+    }ورنہ اگر( l2.l_type==F_WRLCK ){
       zType = "WRLCK";
-    }else if( l2.l_type==F_UNLCK ){
+    }ورنہ اگر( l2.l_type==F_UNLCK ){
       zType = "UNLCK";
-    }else{
-      assert( 0 );
+    }ورنہ{
+      أكد( 0 );
     }
     sqlite3DebugPrintf("fcntl-failure-reason: %s %d %d %d\n",
-       zType, (int)l2.l_start, (int)l2.l_len, (int)l2.l_pid);
+       zType, (صحیح)l2.l_آغاز, (صحیح)l2.l_len, (صحیح)l2.l_pid);
   }
   errno = savedErrno;
-  return s;
+  واپس s;
 }
-#undef osFcntl
-#define osFcntl lockTrace
-#endif /* SQLITE_LOCK_TRACE */
+#تعریف_منسوخ osFcntl
+#تعریف_کرو osFcntl تالا_Trace
+#اگر_ختم /* SQLITE_LOCK_TRACE */
 
 /*
 ** Retry ftruncate() calls that fail due to EINTR
@@ -996,19 +996,19 @@ static int lockTrace(int fd, int op, struct flock *p){
 ** this wrapper.  On the Android platform, bypassing the logic below
 ** could lead to a corrupt database.
 */
-static int robust_ftruncate(int h, sqlite3_int64 sz){
-  int rc;
-#ifdef __ANDROID__
+ساکن صحیح robust_ftruncate(صحیح h, sqlite3_int64 sz){
+  صحیح rc;
+#اگر_تعریف_شدہ __ANDROID__
   /* On Android, ftruncate() always uses 32-bit offsets, even if
   ** _FILE_OFFSET_BITS=64 is defined. This means it is unsafe to attempt to
   ** truncate a file to any size larger than 2GiB. Silently ignore any
   ** such attempts.  */
-  if( sz>(sqlite3_int64)0x7FFFFFFF ){
+  اگر( sz>(sqlite3_int64)0x7FFFFFFF ){
     rc = SQLITE_OK;
-  }else
-#endif
-  do{ rc = osFtruncate(h,sz); }while( rc<0 && errno==EINTR );
-  return rc;
+  }ورنہ
+#اگر_ختم
+  کرو{ rc = osFtruncate(h,sz); }جب( rc<0 && errno==EINTR );
+  واپس rc;
 }
 
 /*
@@ -1021,27 +1021,27 @@ static int robust_ftruncate(int h, sqlite3_int64 sz){
 ** Errors during initialization of locks, or file system support for locks,
 ** should handle ENOLCK, ENOTSUP, EOPNOTSUPP separately.
 */
-static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
-  assert( (sqliteIOErr == SQLITE_IOERR_LOCK) ||
+ساکن صحیح sqliteErrorFromPosixError(صحیح posixError, صحیح sqliteIOErr) {
+  أكد( (sqliteIOErr == SQLITE_IOERR_تالا) ||
           (sqliteIOErr == SQLITE_IOERR_UNLOCK) ||
           (sqliteIOErr == SQLITE_IOERR_RDLOCK) ||
           (sqliteIOErr == SQLITE_IOERR_CHECKRESERVEDLOCK) );
-  switch (posixError) {
-  case EACCES:
-  case EAGAIN:
-  case ETIMEDOUT:
-  case EBUSY:
-  case EINTR:
-  case ENOLCK:
+  انتخاب (posixError) {
+  حالت EACCES:
+  حالت EAGAIN:
+  حالت ETIMEDOUT:
+  حالت EBUSY:
+  حالت EINTR:
+  حالت ENOLCK:
     /* random NFS retry error, unless during file system support
      * introspection, in which it actually means what it says */
-    return SQLITE_BUSY;
+    واپس SQLITE_BUSY;
   
-  case EPERM:
-    return SQLITE_PERM;
+  حالت EPERM:
+    واپس SQLITE_PERM;
   
-  default:
-    return sqliteIOErr;
+  طےشدہ:
+    واپس sqliteIOErr;
   }
 }
 
@@ -1063,20 +1063,20 @@ static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
 ** a performance-critical path, so it is sufficient to put these
 ** structures on a linked list.
 */
-struct vxworksFileId {
-  struct vxworksFileId *pNext;  /* Next in a list of them all */
-  int nRef;                     /* Number of references to this one */
-  int nName;                    /* Length of the zCanonicalName[] string */
-  char *zCanonicalName;         /* Canonical filename */
+ساخت vxworksFileId {
+  ساخت vxworksFileId *p_اگلا;  /* Next in a list of them all */
+  صحیح nRef;                     /* Number of references to this one */
+  صحیح nName;                    /* Length of the zCanonicalName[] string */
+  حرف *zCanonicalName;         /* Canonical filename */
 };
 
-#if OS_VXWORKS
+#اگر OS_VXWORKS
 /*
 ** All unique filenames are held on a linked list headed by this
 ** variable:
 */
-static struct vxworksFileId *vxworksFileList = 0;
-static sqlite3_mutex *vxworksMutex = 0;
+ساکن ساخت vxworksFileId *vxworksFileList = 0;
+ساکن sqlite3_mutex *vxworksMutex = 0;
 
 /*
 ** Simplify a filename into its canonical form
@@ -1091,27 +1091,27 @@ static sqlite3_mutex *vxworksMutex = 0;
 ** The original filename is in z[0..n-1].  Return the number of
 ** characters in the simplified name.
 */
-static int vxworksSimplifyName(char *z, int n){
-  int i, j;
-  while( n>1 && z[n-1]=='/' ){ n--; }
-  for(i=j=0; i<n; i++){
-    if( z[i]=='/' ){
-      if( z[i+1]=='/' ) continue;
-      if( z[i+1]=='.' && i+2<n && z[i+2]=='/' ){
+ساکن صحیح vxworksSimplifyName(حرف *z, صحیح n){
+  صحیح i, j;
+  جب( n>1 && z[n-1]=='/' ){ n--; }
+  برائے(i=j=0; i<n; i++){
+    اگر( z[i]=='/' ){
+      اگر( z[i+1]=='/' ) جاری;
+      اگر( z[i+1]=='.' && i+2<n && z[i+2]=='/' ){
         i += 1;
-        continue;
+        جاری;
       }
-      if( z[i+1]=='.' && i+3<n && z[i+2]=='.' && z[i+3]=='/' ){
-        while( j>0 && z[j-1]!='/' ){ j--; }
-        if( j>0 ){ j--; }
+      اگر( z[i+1]=='.' && i+3<n && z[i+2]=='.' && z[i+3]=='/' ){
+        جب( j>0 && z[j-1]!='/' ){ j--; }
+        اگر( j>0 ){ j--; }
         i += 2;
-        continue;
+        جاری;
       }
     }
     z[j++] = z[i];
   }
   z[j] = 0;
-  return j;
+  واپس j;
 }
 
 /*
@@ -1125,17 +1125,17 @@ static int vxworksSimplifyName(char *z, int n){
 **
 ** If a memory allocation error occurs, return NULL.
 */
-static struct vxworksFileId *vxworksFindFileId(const char *zAbsoluteName){
-  struct vxworksFileId *pNew;         /* search key and new file ID */
-  struct vxworksFileId *pCandidate;   /* For looping over existing file IDs */
-  int n;                              /* Length of zAbsoluteName string */
+ساکن ساخت vxworksFileId *vxworks_ڈھونڈو_File_Id(ثابت حرف *zAbsoluteName){
+  ساخت vxworksFileId *pNew;         /* search key and new file ID */
+  ساخت vxworksFileId *pCandidate;   /* For looping over existing file IDs */
+  صحیح n;                              /* Length of zAbsoluteName string */
 
-  assert( zAbsoluteName[0]=='/' );
-  n = (int)strlen(zAbsoluteName);
-  pNew = sqlite3_malloc64( sizeof(*pNew) + (n+1) );
-  if( pNew==0 ) return 0;
-  pNew->zCanonicalName = (char*)&pNew[1];
-  memcpy(pNew->zCanonicalName, zAbsoluteName, n+1);
+  أكد( zAbsoluteName[0]=='/' );
+  n = (صحیح)لڑی_لمبائی(zAbsoluteName);
+  pNew = sqlite3_malloc64( حجم(*pNew) + (n+1) );
+  اگر( pNew==0 ) واپس 0;
+  pNew->zCanonicalName = (حرف*)&pNew[1];
+  حافظہ_نقل(pNew->zCanonicalName, zAbsoluteName, n+1);
   n = vxworksSimplifyName(pNew->zCanonicalName, n);
 
   /* Search for an existing entry that matching the canonical name.
@@ -1143,44 +1143,44 @@ static struct vxworksFileId *vxworksFindFileId(const char *zAbsoluteName){
   ** the existing file ID.
   */
   sqlite3_mutex_enter(vxworksMutex);
-  for(pCandidate=vxworksFileList; pCandidate; pCandidate=pCandidate->pNext){
-    if( pCandidate->nName==n
+  برائے(pCandidate=vxworksFileList; pCandidate; pCandidate=pCandidate->p_اگلا){
+    اگر( pCandidate->nName==n
      && memcmp(pCandidate->zCanonicalName, pNew->zCanonicalName, n)==0
     ){
        sqlite3_free(pNew);
        pCandidate->nRef++;
        sqlite3_mutex_leave(vxworksMutex);
-       return pCandidate;
+       واپس pCandidate;
     }
   }
 
   /* No match was found.  We will make a new file ID */
   pNew->nRef = 1;
   pNew->nName = n;
-  pNew->pNext = vxworksFileList;
+  pNew->p_اگلا = vxworksFileList;
   vxworksFileList = pNew;
   sqlite3_mutex_leave(vxworksMutex);
-  return pNew;
+  واپس pNew;
 }
 
 /*
 ** Decrement the reference count on a vxworksFileId object.  Free
 ** the object when the reference count reaches zero.
 */
-static void vxworksReleaseFileId(struct vxworksFileId *pId){
+ساکن خالی vxworksReleaseFileId(ساخت vxworksFileId *pId){
   sqlite3_mutex_enter(vxworksMutex);
-  assert( pId->nRef>0 );
+  أكد( pId->nRef>0 );
   pId->nRef--;
-  if( pId->nRef==0 ){
-    struct vxworksFileId **pp;
-    for(pp=&vxworksFileList; *pp && *pp!=pId; pp = &((*pp)->pNext)){}
-    assert( *pp==pId );
-    *pp = pId->pNext;
+  اگر( pId->nRef==0 ){
+    ساخت vxworksFileId **pp;
+    برائے(pp=&vxworksFileList; *pp && *pp!=pId; pp = &((*pp)->p_اگلا)){}
+    أكد( *pp==pId );
+    *pp = pId->p_اگلا;
     sqlite3_free(pId);
   }
   sqlite3_mutex_leave(vxworksMutex);
 }
-#endif /* OS_VXWORKS */
+#اگر_ختم /* OS_VXWORKS */
 /*************** End of Unique File ID Utility Used By VxWorks ****************
 ******************************************************************************/
 
@@ -1279,11 +1279,11 @@ static void vxworksReleaseFileId(struct vxworksFileId *pId){
 ** An instance of the following structure serves as the key used
 ** to locate a particular unixInodeInfo object.
 */
-struct unixFileId {
+ساخت unixFileId {
   dev_t dev;                  /* Device number */
-#if OS_VXWORKS
-  struct vxworksFileId *pId;  /* Unique file ID for vxworks. */
-#else
+#اگر OS_VXWORKS
+  ساخت vxworksFileId *pId;  /* Unique file ID for vxworks. */
+#ورنہ
   /* We are told that some versions of Android contain a bug that
   ** sizes ino_t at only 32-bits instead of 64-bits. (See
   ** https://android-review.googlesource.com/#/c/115351/3/dist/sqlite3.c)
@@ -1292,7 +1292,7 @@ struct unixFileId {
   ** but that should not be a big deal. */
   /* WAS:  ino_t ino;   */
   u64 ino;                   /* Inode number */
-#endif
+#اگر_ختم
 };
 
 /*
@@ -1320,25 +1320,25 @@ struct unixFileId {
 ** be acquired while holding the pLockMutex mutex.  If both unixBigLock
 ** and pLockMutex are needed, then unixBigLock must be acquired first.
 */
-struct unixInodeInfo {
-  struct unixFileId fileId;       /* The lookup key */
-  sqlite3_mutex *pLockMutex;      /* Hold this mutex for... */
-  int nShared;                      /* Number of SHARED locks held */
-  int nLock;                        /* Number of outstanding file locks */
-  unsigned char eFileLock;          /* One of SHARED_LOCK, RESERVED_LOCK etc. */
-  unsigned char bProcessLock;       /* An exclusive process lock is held */
-  UnixUnusedFd *pUnused;            /* Unused file descriptors to close */
-  int nRef;                       /* Number of pointers to this structure */
-  unixShmNode *pShmNode;          /* Shared memory associated with this inode */
-  unixInodeInfo *pNext;           /* List of all unixInodeInfo objects */
-  unixInodeInfo *pPrev;           /*    .... doubly linked */
-#if SQLITE_ENABLE_LOCKING_STYLE
-  unsigned long long sharedByte;  /* for AFP simulated shared lock */
-#endif
-#if OS_VXWORKS
+ساخت unixInodeInfo {
+  ساخت unixFileId fileId;       /* The lookup key */
+  sqlite3_mutex *p_تالا_Mutex;      /* Hold this mutex for... */
+  صحیح nShared;                      /* Number of SHARED locks held */
+  صحیح n_تالا;                        /* Number of outstanding file locks */
+  غیرعلامتی حرف e_File_تالا;          /* One of SHARED_LOCK, RESERVED_LOCK etc. */
+  غیرعلامتی حرف b_Process_تالا;       /* An exclusive process lock is held */
+  Unix_غیر_مستعمل_Fd *p_غیر_مستعمل;            /* Unused file descriptors to close */
+  صحیح nRef;                       /* Number of pointers to this structure */
+  unix_Shm_گرہ *p_Shm_گرہ;          /* Shared memory associated with this inode */
+  unixInodeInfo *p_اگلا;           /* List of all unixInodeInfo objects */
+  unixInodeInfo *p_پچھلا;           /*    .... doubly linked */
+#اگر SQLITE_ENABLE_LOCKING_STYLE
+  غیرعلامتی طویل طویل sharedByte;  /* for AFP simulated shared lock */
+#اگر_ختم
+#اگر OS_VXWORKS
   sem_t *pSem;                    /* Named POSIX semaphore */
-  char aSemName[MAX_PATHNAME+2];  /* Name of that semaphore */
-#endif
+  حرف aSemName[MAX_PATHNAME+2];  /* Name of that semaphore */
+#اگر_ختم
 };
 
 /*
@@ -1346,23 +1346,23 @@ struct unixInodeInfo {
 **
 ** Must hold unixBigLock in order to read or write this variable.
 */
-static unixInodeInfo *inodeList = 0;  /* All unixInodeInfo objects */
+ساکن unixInodeInfo *inodeList = 0;  /* All unixInodeInfo objects */
 
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
 /*
 ** True if the inode mutex (on the unixFile.pFileMutex field) is held, or not.
 ** This routine is used only within assert() to help verify correct mutex
 ** usage.
 */
-int unixFileMutexHeld(unixFile *pFile){
-  assert( pFile->pInode );
-  return sqlite3_mutex_held(pFile->pInode->pLockMutex);
+صحیح unixFileMutexHeld(unixFile *pFile){
+  أكد( pFile->pInode );
+  واپس sqlite3_mutex_held(pFile->pInode->p_تالا_Mutex);
 }
-int unixFileMutexNotheld(unixFile *pFile){
-  assert( pFile->pInode );
-  return sqlite3_mutex_notheld(pFile->pInode->pLockMutex);
+صحیح unixFileMutexNotheld(unixFile *pFile){
+  أكد( pFile->pInode );
+  واپس sqlite3_mutex_notheld(pFile->pInode->p_تالا_Mutex);
 }
-#endif
+#اگر_ختم
 
 /*
 **
@@ -1380,23 +1380,23 @@ int unixFileMutexNotheld(unixFile *pFile){
 ** failed (e.g. "unlink", "open") and the associated file-system path,
 ** if any.
 */
-#define unixLogError(a,b,c)     unixLogErrorAtLine(a,b,c,__LINE__)
-static int unixLogErrorAtLine(
-  int errcode,                    /* SQLite error code */
-  const char *zFunc,              /* Name of OS function that failed */
-  const char *zPath,              /* File path associated with error */
-  int iLine                       /* Source line number where error occurred */
+#تعریف_کرو unixLogError(a,b,c)     unix_Log_Error_At_سطر(a,b,c,__LINE__)
+ساکن صحیح unix_Log_Error_At_سطر(
+  صحیح errcode,                    /* SQLite error code */
+  ثابت حرف *zFunc,              /* Name of OS function that failed */
+  ثابت حرف *z_راستہ,              /* File path associated with error */
+  صحیح i_سطر                       /* Source line number where error occurred */
 ){
-  char *zErr;                     /* Message from strerror() or equivalent */
-  int iErrno = errno;             /* Saved syscall error number */
+  حرف *zErr;                     /* Message from strerror() or equivalent */
+  صحیح iErrno = errno;             /* Saved syscall error number */
 
   /* If this is not a threadsafe build (SQLITE_THREADSAFE==0), then use
   ** the strerror() function to obtain the human-readable error message
   ** equivalent to errno. Otherwise, use strerror_r().
   */
-#if SQLITE_THREADSAFE && defined(HAVE_STRERROR_R)
-  char aErr[80];
-  memset(aErr, 0, sizeof(aErr));
+#اگر SQLITE_THREADSAFE && defined(HAVE_STRERROR_R)
+  حرف aErr[80];
+  memset(aErr, 0, حجم(aErr));
   zErr = aErr;
 
   /* If STRERROR_R_CHAR_P (set by autoconf scripts) or __USE_GNU is defined,
@@ -1414,27 +1414,27 @@ static int unixLogErrorAtLine(
   ** Forum post 3f13857fa4062301 reports that the Android SDK may use
   ** int-type return, depending on its version.
   */
-#if (defined(STRERROR_R_CHAR_P) || defined(__USE_GNU)) \
+#اگر (defined(STRERROR_R_CHAR_P) || defined(__USE_GNU)) \
   && !defined(ANDROID) && !defined(__ANDROID__)
   zErr =
 # endif
-  strerror_r(iErrno, aErr, sizeof(aErr)-1);
+  strerror_r(iErrno, aErr, حجم(aErr)-1);
 
-#elif SQLITE_THREADSAFE
+#وگرنہ_اگر SQLITE_THREADSAFE
   /* This is a threadsafe build, but strerror_r() is not available. */
   zErr = "";
-#else
+#ورنہ
   /* Non-threadsafe build, use strerror(). */
   zErr = strerror(iErrno);
-#endif
+#اگر_ختم
 
-  if( zPath==0 ) zPath = "";
+  اگر( z_راستہ==0 ) z_راستہ = "";
   sqlite3_log(errcode,
       "os_unix.c:%d: (%d) %s(%s) - %s",
-      iLine, iErrno, zFunc, zPath, zErr
+      i_سطر, iErrno, zFunc, z_راستہ, zErr
   );
 
-  return errcode;
+  واپس errcode;
 }
 
 /*
@@ -1450,10 +1450,10 @@ static int unixLogErrorAtLine(
 ** So we don't even try to recover from an EINTR.  Just log the error
 ** and move on.
 */
-static void robust_close(unixFile *pFile, int h, int lineno){
-  if( osClose(h) ){
-    unixLogErrorAtLine(SQLITE_IOERR_CLOSE, "close",
-                       pFile ? pFile->zPath : 0, lineno);
+ساکن خالی robust_close(unixFile *pFile, صحیح h, صحیح lineno){
+  اگر( osClose(h) ){
+    unix_Log_Error_At_سطر(SQLITE_IOERR_CLOSE, "close",
+                       pFile ? pFile->z_راستہ : 0, lineno);
   }
 }
 
@@ -1461,24 +1461,24 @@ static void robust_close(unixFile *pFile, int h, int lineno){
 ** Set the pFile->lastErrno.  Do this in a subroutine as that provides
 ** a convenient place to set a breakpoint.
 */
-static void storeLastErrno(unixFile *pFile, int error){
-  pFile->lastErrno = error;
+ساکن خالی store_آخری_Errno(unixFile *pFile, صحیح error){
+  pFile->آخری_Errno = error;
 }
 
 /*
 ** Close all file descriptors accumulated in the unixInodeInfo->pUnused list.
 */
-static void closePendingFds(unixFile *pFile){
+ساکن خالی closePendingFds(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
-  UnixUnusedFd *p;
-  UnixUnusedFd *pNext;
-  assert( unixFileMutexHeld(pFile) );
-  for(p=pInode->pUnused; p; p=pNext){
-    pNext = p->pNext;
+  Unix_غیر_مستعمل_Fd *p;
+  Unix_غیر_مستعمل_Fd *p_اگلا;
+  أكد( unixFileMutexHeld(pFile) );
+  برائے(p=pInode->p_غیر_مستعمل; p; p=p_اگلا){
+    p_اگلا = p->p_اگلا;
     robust_close(pFile, p->fd, __LINE__);
     sqlite3_free(p);
   }
-  pInode->pUnused = 0;
+  pInode->p_غیر_مستعمل = 0;
 }
 
 /*
@@ -1487,29 +1487,29 @@ static void closePendingFds(unixFile *pFile){
 ** The global mutex must be held when this routine is called, but the mutex
 ** on the inode being deleted must NOT be held.
 */
-static void releaseInodeInfo(unixFile *pFile){
+ساکن خالی releaseInodeInfo(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
-  assert( unixMutexHeld() );
-  assert( unixFileMutexNotheld(pFile) );
-  if( ALWAYS(pInode) ){
+  أكد( unixMutexHeld() );
+  أكد( unixFileMutexNotheld(pFile) );
+  اگر( ALWAYS(pInode) ){
     pInode->nRef--;
-    if( pInode->nRef==0 ){
-      assert( pInode->pShmNode==0 );
-      sqlite3_mutex_enter(pInode->pLockMutex);
+    اگر( pInode->nRef==0 ){
+      أكد( pInode->p_Shm_گرہ==0 );
+      sqlite3_mutex_enter(pInode->p_تالا_Mutex);
       closePendingFds(pFile);
-      sqlite3_mutex_leave(pInode->pLockMutex);
-      if( pInode->pPrev ){
-        assert( pInode->pPrev->pNext==pInode );
-        pInode->pPrev->pNext = pInode->pNext;
-      }else{
-        assert( inodeList==pInode );
-        inodeList = pInode->pNext;
+      sqlite3_mutex_leave(pInode->p_تالا_Mutex);
+      اگر( pInode->p_پچھلا ){
+        أكد( pInode->p_پچھلا->p_اگلا==pInode );
+        pInode->p_پچھلا->p_اگلا = pInode->p_اگلا;
+      }ورنہ{
+        أكد( inodeList==pInode );
+        inodeList = pInode->p_اگلا;
       }
-      if( pInode->pNext ){
-        assert( pInode->pNext->pPrev==pInode );
-        pInode->pNext->pPrev = pInode->pPrev;
+      اگر( pInode->p_اگلا ){
+        أكد( pInode->p_اگلا->p_پچھلا==pInode );
+        pInode->p_اگلا->p_پچھلا = pInode->p_پچھلا;
       }
-      sqlite3_mutex_free(pInode->pLockMutex);
+      sqlite3_mutex_free(pInode->p_تالا_Mutex);
       sqlite3_free(pInode);
     }
   }
@@ -1524,32 +1524,32 @@ static void releaseInodeInfo(unixFile *pFile){
 **
 ** Return an appropriate error code.
 */
-static int findInodeInfo(
+ساکن صحیح ڈھونڈو_Inode_Info(
   unixFile *pFile,               /* Unix file with file desc used in the key */
   unixInodeInfo **ppInode        /* Return the unixInodeInfo object here */
 ){
-  int rc;                        /* System call return code */
-  int fd;                        /* The file descriptor for pFile */
-  struct unixFileId fileId;      /* Lookup key for the unixInodeInfo */
-  struct stat statbuf;           /* Low-level file information */
+  صحیح rc;                        /* System call return code */
+  صحیح fd;                        /* The file descriptor for pFile */
+  ساخت unixFileId fileId;      /* Lookup key for the unixInodeInfo */
+  ساخت stat statbuf;           /* Low-level file information */
   unixInodeInfo *pInode = 0;     /* Candidate unixInodeInfo object */
 
-  assert( unixMutexHeld() );
+  أكد( unixMutexHeld() );
 
   /* Get low-level information about the file that we can used to
   ** create a unique name for the file.
   */
   fd = pFile->h;
   rc = osFstat(fd, &statbuf);
-  if( rc!=0 ){
-    storeLastErrno(pFile, errno);
-#if defined(EOVERFLOW) && defined(SQLITE_DISABLE_LFS)
-    if( pFile->lastErrno==EOVERFLOW ) return SQLITE_NOLFS;
-#endif
-    return SQLITE_IOERR;
+  اگر( rc!=0 ){
+    store_آخری_Errno(pFile, errno);
+#اگر defined(EOVERFLOW) && defined(SQLITE_DISABLE_LFS)
+    اگر( pFile->آخری_Errno==EOVERFLOW ) واپس SQLITE_NOLFS;
+#اگر_ختم
+    واپس SQLITE_IOERR;
   }
 
-#ifdef __APPLE__
+#اگر_تعریف_شدہ __APPLE__
   /* On OS X on an msdos filesystem, the inode number is reported
   ** incorrectly for zero-size files.  See ticket #3260.  To work
   ** around this problem (we consider it a bug in OS X, not SQLite)
@@ -1560,75 +1560,75 @@ static int findInodeInfo(
   ** is a race condition such that another thread has already populated
   ** the first page of the database, no damage is done.
   */
-  if( statbuf.st_size==0 && (pFile->fsFlags & SQLITE_FSFLAGS_IS_MSDOS)!=0 ){
-    do{ rc = osWrite(fd, "S", 1); }while( rc<0 && errno==EINTR );
-    if( rc!=1 ){
-      storeLastErrno(pFile, errno);
-      return SQLITE_IOERR;
+  اگر( statbuf.st_سائز==0 && (pFile->fsFlags & SQLITE_FSFLAGS_IS_MSDOS)!=0 ){
+    کرو{ rc = osWrite(fd, "S", 1); }جب( rc<0 && errno==EINTR );
+    اگر( rc!=1 ){
+      store_آخری_Errno(pFile, errno);
+      واپس SQLITE_IOERR;
     }
-    if( fsync(fd) ){
-      storeLastErrno(pFile, errno);
-      return SQLITE_IOERR_FSYNC;
+    اگر( fsync(fd) ){
+      store_آخری_Errno(pFile, errno);
+      واپس SQLITE_IOERR_FSYNC;
     }
     rc = osFstat(fd, &statbuf);
-    if( rc!=0 ){
-      storeLastErrno(pFile, errno);
-      return SQLITE_IOERR;
+    اگر( rc!=0 ){
+      store_آخری_Errno(pFile, errno);
+      واپس SQLITE_IOERR;
     }
   }
-#endif
+#اگر_ختم
 
-  memset(&fileId, 0, sizeof(fileId));
+  memset(&fileId, 0, حجم(fileId));
   fileId.dev = statbuf.st_dev;
-#if OS_VXWORKS
+#اگر OS_VXWORKS
   fileId.pId = pFile->pId;
-#else
+#ورنہ
   fileId.ino = (u64)statbuf.st_ino;
-#endif
-  assert( unixMutexHeld() );
+#اگر_ختم
+  أكد( unixMutexHeld() );
   pInode = inodeList;
-  while( pInode && memcmp(&fileId, &pInode->fileId, sizeof(fileId)) ){
-    pInode = pInode->pNext;
+  جب( pInode && memcmp(&fileId, &pInode->fileId, حجم(fileId)) ){
+    pInode = pInode->p_اگلا;
   }
-  if( pInode==0 ){
-    pInode = sqlite3_malloc64( sizeof(*pInode) );
-    if( pInode==0 ){
-      return SQLITE_NOMEM_BKPT;
+  اگر( pInode==0 ){
+    pInode = sqlite3_malloc64( حجم(*pInode) );
+    اگر( pInode==0 ){
+      واپس SQLITE_NOMEM_BKPT;
     }
-    memset(pInode, 0, sizeof(*pInode));
-    memcpy(&pInode->fileId, &fileId, sizeof(fileId));
-    if( sqlite3GlobalConfig.bCoreMutex ){
-      pInode->pLockMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pInode->pLockMutex==0 ){
+    memset(pInode, 0, حجم(*pInode));
+    حافظہ_نقل(&pInode->fileId, &fileId, حجم(fileId));
+    اگر( sqlite3GlobalConfig.bCoreMutex ){
+      pInode->p_تالا_Mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      اگر( pInode->p_تالا_Mutex==0 ){
         sqlite3_free(pInode);
-        return SQLITE_NOMEM_BKPT;
+        واپس SQLITE_NOMEM_BKPT;
       }
     }
     pInode->nRef = 1;
-    assert( unixMutexHeld() );
-    pInode->pNext = inodeList;
-    pInode->pPrev = 0;
-    if( inodeList ) inodeList->pPrev = pInode;
+    أكد( unixMutexHeld() );
+    pInode->p_اگلا = inodeList;
+    pInode->p_پچھلا = 0;
+    اگر( inodeList ) inodeList->p_پچھلا = pInode;
     inodeList = pInode;
-  }else{
+  }ورنہ{
     pInode->nRef++;
   }
   *ppInode = pInode;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Return TRUE if pFile has been renamed or unlinked since it was first opened.
 */
-static int fileHasMoved(unixFile *pFile){
-#if OS_VXWORKS
-  return pFile->pInode!=0 && pFile->pId!=pFile->pInode->fileId.pId;
-#else
-  struct stat buf;
-  return pFile->pInode!=0 &&
-      (osStat(pFile->zPath, &buf)!=0
+ساکن صحیح fileHasMoved(unixFile *pFile){
+#اگر OS_VXWORKS
+  واپس pFile->pInode!=0 && pFile->pId!=pFile->pInode->fileId.pId;
+#ورنہ
+  ساخت stat buf;
+  واپس pFile->pInode!=0 &&
+      (osStat(pFile->z_راستہ, &buf)!=0
          || (u64)buf.st_ino!=pFile->pInode->fileId.ino);
-#endif
+#اگر_ختم
 }
 
 
@@ -1641,29 +1641,29 @@ static int fileHasMoved(unixFile *pFile){
 **
 ** Issue sqlite3_log(SQLITE_WARNING,...) messages if anything is not right.
 */
-static void verifyDbFile(unixFile *pFile){
-  struct stat buf;
-  int rc;
+ساکن خالی verifyDbFile(unixFile *pFile){
+  ساخت stat buf;
+  صحیح rc;
 
   /* These verifications occurs for the main database only */
-  if( pFile->ctrlFlags & UNIXFILE_NOLOCK ) return;
+  اگر( pFile->ctrlFlags & UNIXFILE_NOLOCK ) واپس;
 
   rc = osFstat(pFile->h, &buf);
-  if( rc!=0 ){
-    sqlite3_log(SQLITE_WARNING, "cannot fstat db file %s", pFile->zPath);
-    return;
+  اگر( rc!=0 ){
+    sqlite3_log(SQLITE_WARNING, "cannot fstat db file %s", pFile->z_راستہ);
+    واپس;
   }
-  if( buf.st_nlink==0 ){
-    sqlite3_log(SQLITE_WARNING, "file unlinked while open: %s", pFile->zPath);
-    return;
+  اگر( buf.st_nlink==0 ){
+    sqlite3_log(SQLITE_WARNING, "file unlinked while open: %s", pFile->z_راستہ);
+    واپس;
   }
-  if( buf.st_nlink>1 ){
-    sqlite3_log(SQLITE_WARNING, "multiple links to file: %s", pFile->zPath);
-    return;
+  اگر( buf.st_nlink>1 ){
+    sqlite3_log(SQLITE_WARNING, "multiple links to file: %s", pFile->z_راستہ);
+    واپس;
   }
-  if( fileHasMoved(pFile) ){
-    sqlite3_log(SQLITE_WARNING, "file renamed while open: %s", pFile->zPath);
-    return;
+  اگر( fileHasMoved(pFile) ){
+    sqlite3_log(SQLITE_WARNING, "file renamed while open: %s", pFile->z_راستہ);
+    واپس;
   }
 }
 
@@ -1674,49 +1674,49 @@ static void verifyDbFile(unixFile *pFile){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int unixCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int rc = SQLITE_OK;
-  int reserved = 0;
+ساکن صحیح unix_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد){
+  صحیح rc = SQLITE_OK;
+  صحیح reserved = 0;
   unixFile *pFile = (unixFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( واپس SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
-  assert( pFile->eFileLock<=SHARED_LOCK );
-  sqlite3_mutex_enter(pFile->pInode->pLockMutex);
+  أكد( pFile );
+  أكد( pFile->e_File_تالا<=SHARED_تالا );
+  sqlite3_mutex_enter(pFile->pInode->p_تالا_Mutex);
 
   /* Check if a thread in this process holds such a lock */
-  if( pFile->pInode->eFileLock>SHARED_LOCK ){
+  اگر( pFile->pInode->e_File_تالا>SHARED_تالا ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it.
   */
-#ifndef __DJGPP__
-  if( !reserved && !pFile->pInode->bProcessLock ){
-    struct flock lock;
-    lock.l_whence = SEEK_SET;
-    lock.l_start = RESERVED_BYTE;
-    lock.l_len = 1;
-    lock.l_type = F_WRLCK;
-    if( osFcntl(pFile->h, F_GETLK, &lock) ){
+#اگر_غیر_تعریف_شدہ __DJGPP__
+  اگر( !reserved && !pFile->pInode->b_Process_تالا ){
+    ساخت flock تالا;
+    تالا.l_whence = SEEK_SET;
+    تالا.l_آغاز = RESERVED_BYTE;
+    تالا.l_len = 1;
+    تالا.l_type = F_WRLCK;
+    اگر( osFcntl(pFile->h, F_GETLK, &تالا) ){
       rc = SQLITE_IOERR_CHECKRESERVEDLOCK;
-      storeLastErrno(pFile, errno);
-    } else if( lock.l_type!=F_UNLCK ){
+      store_آخری_Errno(pFile, errno);
+    } ورنہ اگر( تالا.l_type!=F_UNLCK ){
       reserved = 1;
     }
   }
-#endif
+#اگر_ختم
 
-  sqlite3_mutex_leave(pFile->pInode->pLockMutex);
+  sqlite3_mutex_leave(pFile->pInode->p_تالا_Mutex);
   OSTRACE(("TEST WR-LOCK %d %d %d (unix)\n", pFile->h, rc, reserved));
 
-  *pResOut = reserved;
-  return rc;
+  *p_Res_برآمد = reserved;
+  واپس rc;
 }
 
 /* Forward declaration*/
-static int unixSleep(sqlite3_vfs*,int);
+ساکن صحیح unixSleep(sqlite3_vfs*,صحیح);
 
 /*
 ** Set a posix-advisory-lock.
@@ -1731,21 +1731,21 @@ static int unixSleep(sqlite3_vfs*,int);
 ** If SQLITE_ENABLE_SETLK_TIMEOUT is not defined, then do a non-blocking
 ** attempt to set the lock.
 */
-#ifndef SQLITE_ENABLE_SETLK_TIMEOUT
-# define osSetPosixAdvisoryLock(h,x,t) osFcntl(h,F_SETLK,x)
-#else
-static int osSetPosixAdvisoryLock(
-  int h,                /* The file descriptor on which to take the lock */
-  struct flock *pLock,  /* The description of the lock */
+#اگر_غیر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+# define os_سیٹ_Posix_Advisory_تالا(h,x,t) osFcntl(h,F_SETLK,x)
+#ورنہ
+ساکن صحیح os_سیٹ_Posix_Advisory_تالا(
+  صحیح h,                /* The file descriptor on which to take the lock */
+  ساخت flock *p_تالا,  /* The description of the lock */
   unixFile *pFile       /* Structure holding timeout value */
 ){
-  int rc = 0;
+  صحیح rc = 0;
 
-  if( pFile->iBusyTimeout==0 ){
+  اگر( pFile->iBusyTimeout==0 ){
     /* unixFile->iBusyTimeout is set to 0. In this case, attempt a 
     ** non-blocking lock. */
-    rc = osFcntl(h,F_SETLK,pLock);
-  }else{
+    rc = osFcntl(h,F_SETLK,p_تالا);
+  }ورنہ{
     /* unixFile->iBusyTimeout is set to greater than zero. In this case,
     ** attempt a blocking-lock with a unixFile->iBusyTimeout ms timeout.
     **
@@ -1760,24 +1760,24 @@ static int osSetPosixAdvisoryLock(
     ** SQLITE_BUSY_TIMEOUT to SQLite - as required by a VFS that does not 
     ** support blocking locks.
     */
-#ifdef SQLITE_TEST
-    int tm = pFile->iBusyTimeout;
-    while( tm>0 ){
-      rc = osFcntl(h,F_SETLK,pLock);
-      if( rc==0 ) break;
+#اگر_تعریف_شدہ SQLITE_TEST
+    صحیح tm = pFile->iBusyTimeout;
+    جب( tm>0 ){
+      rc = osFcntl(h,F_SETLK,p_تالا);
+      اگر( rc==0 ) توڑو;
       unixSleep(0,1000);
       tm--;
     }
-#else
-    rc = osFcntl(h,F_SETLK,pLock);
+#ورنہ
+    rc = osFcntl(h,F_SETLK,p_تالا);
     pFile->iBusyTimeout = 0;
-#endif
+#اگر_ختم
     /* End of code to replace with real blocking-locks code. */
   }
 
-  return rc;
+  واپس rc;
 }
-#endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
+#اگر_ختم /* SQLITE_ENABLE_SETLK_TIMEOUT */
 
 
 /*
@@ -1799,45 +1799,45 @@ static int osSetPosixAdvisoryLock(
 ** Zero is returned if the call completes successfully, or -1 if a call
 ** to fcntl() fails. In this case, errno is set appropriately (by fcntl()).
 */
-static int unixFileLock(unixFile *pFile, struct flock *pLock){
-  int rc;
+ساکن صحیح unix_File_تالا(unixFile *pFile, ساخت flock *p_تالا){
+  صحیح rc;
   unixInodeInfo *pInode = pFile->pInode;
-  assert( pInode!=0 );
-  assert( sqlite3_mutex_held(pInode->pLockMutex) );
-  if( (pFile->ctrlFlags & (UNIXFILE_EXCL|UNIXFILE_RDONLY))==UNIXFILE_EXCL ){
-    if( pInode->bProcessLock==0 ){
-      struct flock lock;
+  أكد( pInode!=0 );
+  أكد( sqlite3_mutex_held(pInode->p_تالا_Mutex) );
+  اگر( (pFile->ctrlFlags & (UNIXFILE_EXCL|UNIXFILE_RDONLY))==UNIXFILE_EXCL ){
+    اگر( pInode->b_Process_تالا==0 ){
+      ساخت flock تالا;
       /* assert( pInode->nLock==0 ); <-- Not true if unix-excl READONLY used */
-      lock.l_whence = SEEK_SET;
-      lock.l_start = SHARED_FIRST;
-      lock.l_len = SHARED_SIZE;
-      lock.l_type = F_WRLCK;
-      rc = osSetPosixAdvisoryLock(pFile->h, &lock, pFile);
-      if( rc<0 ) return rc;
-      pInode->bProcessLock = 1;
-      pInode->nLock++;
-    }else{
+      تالا.l_whence = SEEK_SET;
+      تالا.l_آغاز = SHARED_پہلا;
+      تالا.l_len = SHARED_سائز;
+      تالا.l_type = F_WRLCK;
+      rc = os_سیٹ_Posix_Advisory_تالا(pFile->h, &تالا, pFile);
+      اگر( rc<0 ) واپس rc;
+      pInode->b_Process_تالا = 1;
+      pInode->n_تالا++;
+    }ورنہ{
       rc = 0;
     }
-  }else{
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    if( pFile->bBlockOnConnect && pLock->l_type==F_RDLCK
-     && pLock->l_start==SHARED_FIRST && pLock->l_len==SHARED_SIZE
+  }ورنہ{
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    اگر( pFile->b_بلاک_On_Connect && p_تالا->l_type==F_RDLCK
+     && p_تالا->l_آغاز==SHARED_پہلا && p_تالا->l_len==SHARED_سائز
     ){
-      rc = osFcntl(pFile->h, F_SETLKW, pLock);
-    }else
-#endif
-    rc = osSetPosixAdvisoryLock(pFile->h, pLock, pFile);
+      rc = osFcntl(pFile->h, F_SETLKW, p_تالا);
+    }ورنہ
+#اگر_ختم
+    rc = os_سیٹ_Posix_Advisory_تالا(pFile->h, p_تالا, pFile);
   }
-  return rc;
+  واپس rc;
 }
 
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+#اگر !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
 /* Forward reference */
-static int unixIsSharingShmNode(unixFile*);
-#else
-#define unixIsSharingShmNode(pFile) (0)
-#endif
+ساکن صحیح unix_Is_Sharing_Shm_گرہ(unixFile*);
+#ورنہ
+#تعریف_کرو unix_Is_Sharing_Shm_گرہ(pFile) (0)
+#اگر_ختم
 
 /*
 ** Lock the file with the lock specified by parameter eFileLock - one
@@ -1863,7 +1863,7 @@ static int unixIsSharingShmNode(unixFile*);
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int unixLock(sqlite3_file *id, int eFileLock){
+ساکن صحیح unix_تالا(sqlite3_file *id, صحیح e_File_تالا){
   /* The following describes the implementation of the various locks and
   ** lock transitions in terms of the POSIX advisory shared and exclusive
   ** lock primitives (called read-locks and write-locks below, to avoid
@@ -1904,26 +1904,26 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   ** then re-attempt the EXCLUSIVE lock later on, after existing SHARED
   ** locks have cleared.
   */
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
-  struct flock lock;
-  int tErrno = 0;
+  ساخت flock تالا;
+  صحیح tErrno = 0;
 
-  assert( pFile );
+  أكد( pFile );
   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (unix)\n", pFile->h,
-      azFileLock(eFileLock), azFileLock(pFile->eFileLock),
-      azFileLock(pFile->pInode->eFileLock), pFile->pInode->nShared,
+      az_File_تالا(e_File_تالا), az_File_تالا(pFile->e_File_تالا),
+      az_File_تالا(pFile->pInode->e_File_تالا), pFile->pInode->nShared,
       osGetpid(0)));
 
   /* If there is already a lock of this type or more restrictive on the
   ** unixFile, do nothing. Don't use the end_lock: exit path, as
   ** unixEnterMutex() hasn't been called yet.
   */
-  if( pFile->eFileLock>=eFileLock ){
+  اگر( pFile->e_File_تالا>=e_File_تالا ){
     OSTRACE(("LOCK    %d %s ok (already held) (unix)\n", pFile->h,
-            azFileLock(eFileLock)));
-    return SQLITE_OK;
+            az_File_تالا(e_File_تالا)));
+    واپس SQLITE_OK;
   }
 
   /* Make sure the locking sequence is correct.
@@ -1931,38 +1931,38 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   **  (2) SQLite never explicitly requests a pending lock.
   **  (3) A shared lock is always held when a reserve lock is requested.
   */
-  assert( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
-  assert( eFileLock!=PENDING_LOCK );
-  assert( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
+  أكد( pFile->e_File_تالا!=NO_تالا || e_File_تالا==SHARED_تالا );
+  أكد( e_File_تالا!=PENDING_تالا );
+  أكد( e_File_تالا!=RESERVED_تالا || pFile->e_File_تالا==SHARED_تالا );
 
   /* This mutex is needed because pFile->pInode is shared across threads
   */
   pInode = pFile->pInode;
-  sqlite3_mutex_enter(pInode->pLockMutex);
+  sqlite3_mutex_enter(pInode->p_تالا_Mutex);
 
   /* If some thread using this PID has a lock via a different unixFile*
   ** handle that precludes the requested lock, return BUSY.
   */
-  if( (pFile->eFileLock!=pInode->eFileLock &&
-          (pInode->eFileLock>=PENDING_LOCK || eFileLock>SHARED_LOCK))
+  اگر( (pFile->e_File_تالا!=pInode->e_File_تالا &&
+          (pInode->e_File_تالا>=PENDING_تالا || e_File_تالا>SHARED_تالا))
   ){
     rc = SQLITE_BUSY;
-    goto end_lock;
+    جاؤ انتہا_تالا;
   }
 
   /* If a SHARED lock is requested, and some thread using this PID already
   ** has a SHARED or RESERVED lock, then increment reference counts and
   ** return SQLITE_OK.
   */
-  if( eFileLock==SHARED_LOCK &&
-      (pInode->eFileLock==SHARED_LOCK || pInode->eFileLock==RESERVED_LOCK) ){
-    assert( eFileLock==SHARED_LOCK );
-    assert( pFile->eFileLock==0 );
-    assert( pInode->nShared>0 );
-    pFile->eFileLock = SHARED_LOCK;
+  اگر( e_File_تالا==SHARED_تالا &&
+      (pInode->e_File_تالا==SHARED_تالا || pInode->e_File_تالا==RESERVED_تالا) ){
+    أكد( e_File_تالا==SHARED_تالا );
+    أكد( pFile->e_File_تالا==0 );
+    أكد( pInode->nShared>0 );
+    pFile->e_File_تالا = SHARED_تالا;
     pInode->nShared++;
-    pInode->nLock++;
-    goto end_lock;
+    pInode->n_تالا++;
+    جاؤ انتہا_تالا;
   }
 
 
@@ -1970,23 +1970,23 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   ** acquiring an EXCLUSIVE lock.  For the SHARED lock, the PENDING will
   ** be released.
   */
-  lock.l_len = 1L;
-  lock.l_whence = SEEK_SET;
-  if( eFileLock==SHARED_LOCK
-   || (eFileLock==EXCLUSIVE_LOCK && pFile->eFileLock==RESERVED_LOCK)
+  تالا.l_len = 1L;
+  تالا.l_whence = SEEK_SET;
+  اگر( e_File_تالا==SHARED_تالا
+   || (e_File_تالا==EXCLUSIVE_تالا && pFile->e_File_تالا==RESERVED_تالا)
   ){
-    lock.l_type = (eFileLock==SHARED_LOCK?F_RDLCK:F_WRLCK);
-    lock.l_start = PENDING_BYTE;
-    if( unixFileLock(pFile, &lock) ){
+    تالا.l_type = (e_File_تالا==SHARED_تالا?F_RDLCK:F_WRLCK);
+    تالا.l_آغاز = PENDING_BYTE;
+    اگر( unix_File_تالا(pFile, &تالا) ){
       tErrno = errno;
-      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
-        storeLastErrno(pFile, tErrno);
+      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_تالا);
+      اگر( rc!=SQLITE_BUSY ){
+        store_آخری_Errno(pFile, tErrno);
       }
-      goto end_lock;
-    }else if( eFileLock==EXCLUSIVE_LOCK ){
-      pFile->eFileLock = PENDING_LOCK;
-      pInode->eFileLock = PENDING_LOCK;
+      جاؤ انتہا_تالا;
+    }ورنہ اگر( e_File_تالا==EXCLUSIVE_تالا ){
+      pFile->e_File_تالا = PENDING_تالا;
+      pInode->e_File_تالا = PENDING_تالا;
     }
   }
 
@@ -1994,44 +1994,44 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   /* If control gets to this point, then actually go ahead and make
   ** operating system calls for the specified lock.
   */
-  if( eFileLock==SHARED_LOCK ){
-    assert( pInode->nShared==0 );
-    assert( pInode->eFileLock==0 );
-    assert( rc==SQLITE_OK );
+  اگر( e_File_تالا==SHARED_تالا ){
+    أكد( pInode->nShared==0 );
+    أكد( pInode->e_File_تالا==0 );
+    أكد( rc==SQLITE_OK );
 
     /* Now get the read-lock */
-    lock.l_start = SHARED_FIRST;
-    lock.l_len = SHARED_SIZE;
-    if( unixFileLock(pFile, &lock) ){
+    تالا.l_آغاز = SHARED_پہلا;
+    تالا.l_len = SHARED_سائز;
+    اگر( unix_File_تالا(pFile, &تالا) ){
       tErrno = errno;
-      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
+      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_تالا);
     }
 
     /* Drop the temporary PENDING lock */
-    lock.l_start = PENDING_BYTE;
-    lock.l_len = 1L;
-    lock.l_type = F_UNLCK;
-    if( unixFileLock(pFile, &lock) && rc==SQLITE_OK ){
+    تالا.l_آغاز = PENDING_BYTE;
+    تالا.l_len = 1L;
+    تالا.l_type = F_UNLCK;
+    اگر( unix_File_تالا(pFile, &تالا) && rc==SQLITE_OK ){
       /* This could happen with a network mount */
       tErrno = errno;
       rc = SQLITE_IOERR_UNLOCK;
     }
 
-    if( rc ){
-      if( rc!=SQLITE_BUSY ){
-        storeLastErrno(pFile, tErrno);
+    اگر( rc ){
+      اگر( rc!=SQLITE_BUSY ){
+        store_آخری_Errno(pFile, tErrno);
       }
-      goto end_lock;
-    }else{
-      pFile->eFileLock = SHARED_LOCK;
-      pInode->nLock++;
+      جاؤ انتہا_تالا;
+    }ورنہ{
+      pFile->e_File_تالا = SHARED_تالا;
+      pInode->n_تالا++;
       pInode->nShared = 1;
     }
-  }else if( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
+  }ورنہ اگر( e_File_تالا==EXCLUSIVE_تالا && pInode->nShared>1 ){
     /* We are trying for an exclusive lock but another thread in this
     ** same process is still holding a shared lock. */
     rc = SQLITE_BUSY;
-  }else if( unixIsSharingShmNode(pFile) ){
+  }ورنہ اگر( unix_Is_Sharing_Shm_گرہ(pFile) ){
     /* We are in WAL mode and attempting to delete the SHM and WAL
     ** files due to closing the connection or changing out of WAL mode,
     ** but another process still holds locks on the SHM file, thus
@@ -2039,73 +2039,73 @@ static int unixLock(sqlite3_file *id, int eFileLock){
     ** to a rogue close(open(dbFile)) or similar.
     */
     rc = SQLITE_BUSY;
-  }else{
+  }ورنہ{
     /* The request was for a RESERVED or EXCLUSIVE lock.  It is
     ** assumed that there is a SHARED or greater lock on the file
     ** already.
     */
-    assert( 0!=pFile->eFileLock );
-    lock.l_type = F_WRLCK;
+    أكد( 0!=pFile->e_File_تالا );
+    تالا.l_type = F_WRLCK;
 
-    assert( eFileLock==RESERVED_LOCK || eFileLock==EXCLUSIVE_LOCK );
-    if( eFileLock==RESERVED_LOCK ){
-      lock.l_start = RESERVED_BYTE;
-      lock.l_len = 1L;
-    }else{
-      lock.l_start = SHARED_FIRST;
-      lock.l_len = SHARED_SIZE;
+    أكد( e_File_تالا==RESERVED_تالا || e_File_تالا==EXCLUSIVE_تالا );
+    اگر( e_File_تالا==RESERVED_تالا ){
+      تالا.l_آغاز = RESERVED_BYTE;
+      تالا.l_len = 1L;
+    }ورنہ{
+      تالا.l_آغاز = SHARED_پہلا;
+      تالا.l_len = SHARED_سائز;
     }
 
-    if( unixFileLock(pFile, &lock) ){
+    اگر( unix_File_تالا(pFile, &تالا) ){
       tErrno = errno;
-      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
-        storeLastErrno(pFile, tErrno);
+      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_تالا);
+      اگر( rc!=SQLITE_BUSY ){
+        store_آخری_Errno(pFile, tErrno);
       }
     }
   }
 
 
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   /* Set up the transaction-counter change checking flags when
   ** transitioning from a SHARED to a RESERVED lock.  The change
   ** from SHARED to RESERVED marks the beginning of a normal
   ** write operation (not a hot journal rollback).
   */
-  if( rc==SQLITE_OK
-   && pFile->eFileLock<=SHARED_LOCK
-   && eFileLock==RESERVED_LOCK
+  اگر( rc==SQLITE_OK
+   && pFile->e_File_تالا<=SHARED_تالا
+   && e_File_تالا==RESERVED_تالا
   ){
     pFile->transCntrChng = 0;
     pFile->dbUpdate = 0;
-    pFile->inNormalWrite = 1;
+    pFile->اندر_معمول_Write = 1;
   }
-#endif
+#اگر_ختم
 
-  if( rc==SQLITE_OK ){
-    pFile->eFileLock = eFileLock;
-    pInode->eFileLock = eFileLock;
+  اگر( rc==SQLITE_OK ){
+    pFile->e_File_تالا = e_File_تالا;
+    pInode->e_File_تالا = e_File_تالا;
   }
 
-end_lock:
-  sqlite3_mutex_leave(pInode->pLockMutex);
-  OSTRACE(("LOCK    %d %s %s (unix)\n", pFile->h, azFileLock(eFileLock),
+انتہا_تالا:
+  sqlite3_mutex_leave(pInode->p_تالا_Mutex);
+  OSTRACE(("LOCK    %d %s %s (unix)\n", pFile->h, az_File_تالا(e_File_تالا),
       rc==SQLITE_OK ? "ok" : "failed"));
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Add the file descriptor used by file handle pFile to the corresponding
 ** pUnused list.
 */
-static void setPendingFd(unixFile *pFile){
+ساکن خالی سیٹ_Pending_Fd(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
-  UnixUnusedFd *p = pFile->pPreallocatedUnused;
-  assert( unixFileMutexHeld(pFile) );
-  p->pNext = pInode->pUnused;
-  pInode->pUnused = p;
+  Unix_غیر_مستعمل_Fd *p = pFile->p_Preallocated_غیر_مستعمل;
+  أكد( unixFileMutexHeld(pFile) );
+  p->p_اگلا = pInode->p_غیر_مستعمل;
+  pInode->p_غیر_مستعمل = p;
   pFile->h = -1;
-  pFile->pPreallocatedUnused = 0;
+  pFile->p_Preallocated_غیر_مستعمل = 0;
 }
 
 /*
@@ -2121,28 +2121,28 @@ static void setPendingFd(unixFile *pFile){
 ** around a bug in BSD NFS lockd (also seen on MacOSX 10.3+) that fails to
 ** remove the write lock on a region when a read lock is set.
 */
-static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
+ساکن صحیح posixUnlock(sqlite3_file *id, صحیح e_File_تالا, صحیح handleNFSUnlock){
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
-  struct flock lock;
-  int rc = SQLITE_OK;
+  ساخت flock تالا;
+  صحیح rc = SQLITE_OK;
 
-  assert( pFile );
-  OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (unix)\n", pFile->h, eFileLock,
-      pFile->eFileLock, pFile->pInode->eFileLock, pFile->pInode->nShared,
+  أكد( pFile );
+  OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (unix)\n", pFile->h, e_File_تالا,
+      pFile->e_File_تالا, pFile->pInode->e_File_تالا, pFile->pInode->nShared,
       osGetpid(0)));
 
-  assert( eFileLock<=SHARED_LOCK );
-  if( pFile->eFileLock<=eFileLock ){
-    return SQLITE_OK;
+  أكد( e_File_تالا<=SHARED_تالا );
+  اگر( pFile->e_File_تالا<=e_File_تالا ){
+    واپس SQLITE_OK;
   }
   pInode = pFile->pInode;
-  sqlite3_mutex_enter(pInode->pLockMutex);
-  assert( pInode->nShared!=0 );
-  if( pFile->eFileLock>SHARED_LOCK ){
-    assert( pInode->eFileLock==pFile->eFileLock );
+  sqlite3_mutex_enter(pInode->p_تالا_Mutex);
+  أكد( pInode->nShared!=0 );
+  اگر( pFile->e_File_تالا>SHARED_تالا ){
+    أكد( pInode->e_File_تالا==pFile->e_File_تالا );
 
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
     /* When reducing a lock such that other processes can start
     ** reading the database file again, make sure that the
     ** transaction counter was updated if any part of the database
@@ -2151,8 +2151,8 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
     ** the file has changed and hence might not know to flush their
     ** cache.  The use of a stale cache can lead to database corruption.
     */
-    pFile->inNormalWrite = 0;
-#endif
+    pFile->اندر_معمول_Write = 0;
+#اگر_ختم
 
     /* downgrading to a shared lock on NFS involves clearing the write lock
     ** before establishing the readlock - to avoid a race condition we downgrade
@@ -2163,56 +2163,56 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
     **  3:   [RRRRW]
     **  4:   [RRRR.]
     */
-    if( eFileLock==SHARED_LOCK ){
-#if !defined(__APPLE__) || !SQLITE_ENABLE_LOCKING_STYLE
-      (void)handleNFSUnlock;
-      assert( handleNFSUnlock==0 );
-#endif
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
-      if( handleNFSUnlock ){
-        int tErrno;               /* Error code from system call errors */
-        off_t divSize = SHARED_SIZE - 1;
+    اگر( e_File_تالا==SHARED_تالا ){
+#اگر !defined(__APPLE__) || !SQLITE_ENABLE_LOCKING_STYLE
+      (خالی)handleNFSUnlock;
+      أكد( handleNFSUnlock==0 );
+#اگر_ختم
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+      اگر( handleNFSUnlock ){
+        صحیح tErrno;               /* Error code from system call errors */
+        off_t div_سائز = SHARED_سائز - 1;
       
-        lock.l_type = F_UNLCK;
-        lock.l_whence = SEEK_SET;
-        lock.l_start = SHARED_FIRST;
-        lock.l_len = divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        تالا.l_type = F_UNLCK;
+        تالا.l_whence = SEEK_SET;
+        تالا.l_آغاز = SHARED_پہلا;
+        تالا.l_len = div_سائز;
+        اگر( unix_File_تالا(pFile, &تالا)==(-1) ){
           tErrno = errno;
           rc = SQLITE_IOERR_UNLOCK;
-          storeLastErrno(pFile, tErrno);
-          goto end_unlock;
+          store_آخری_Errno(pFile, tErrno);
+          جاؤ انتہا_unlock;
         }
-        lock.l_type = F_RDLCK;
-        lock.l_whence = SEEK_SET;
-        lock.l_start = SHARED_FIRST;
-        lock.l_len = divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        تالا.l_type = F_RDLCK;
+        تالا.l_whence = SEEK_SET;
+        تالا.l_آغاز = SHARED_پہلا;
+        تالا.l_len = div_سائز;
+        اگر( unix_File_تالا(pFile, &تالا)==(-1) ){
           tErrno = errno;
           rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_RDLOCK);
-          if( IS_LOCK_ERROR(rc) ){
-            storeLastErrno(pFile, tErrno);
+          اگر( IS_تالا_ERROR(rc) ){
+            store_آخری_Errno(pFile, tErrno);
           }
-          goto end_unlock;
+          جاؤ انتہا_unlock;
         }
-        lock.l_type = F_UNLCK;
-        lock.l_whence = SEEK_SET;
-        lock.l_start = SHARED_FIRST+divSize;
-        lock.l_len = SHARED_SIZE-divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        تالا.l_type = F_UNLCK;
+        تالا.l_whence = SEEK_SET;
+        تالا.l_آغاز = SHARED_پہلا+div_سائز;
+        تالا.l_len = SHARED_سائز-div_سائز;
+        اگر( unix_File_تالا(pFile, &تالا)==(-1) ){
           tErrno = errno;
           rc = SQLITE_IOERR_UNLOCK;
-          storeLastErrno(pFile, tErrno);
-          goto end_unlock;
+          store_آخری_Errno(pFile, tErrno);
+          جاؤ انتہا_unlock;
         }
-      }else
-#endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
+      }ورنہ
+#اگر_ختم /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
       {
-        lock.l_type = F_RDLCK;
-        lock.l_whence = SEEK_SET;
-        lock.l_start = SHARED_FIRST;
-        lock.l_len = SHARED_SIZE;
-        if( unixFileLock(pFile, &lock) ){
+        تالا.l_type = F_RDLCK;
+        تالا.l_whence = SEEK_SET;
+        تالا.l_آغاز = SHARED_پہلا;
+        تالا.l_len = SHARED_سائز;
+        اگر( unix_File_تالا(pFile, &تالا) ){
           /* In theory, the call to unixFileLock() cannot fail because another
           ** process is holding an incompatible lock. If it does, this
           ** indicates that the other process is not following the locking
@@ -2220,40 +2220,40 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
           ** SQLITE_BUSY would confuse the upper layer (in practice it causes
           ** an assert to fail). */
           rc = SQLITE_IOERR_RDLOCK;
-          storeLastErrno(pFile, errno);
-          goto end_unlock;
+          store_آخری_Errno(pFile, errno);
+          جاؤ انتہا_unlock;
         }
       }
     }
-    lock.l_type = F_UNLCK;
-    lock.l_whence = SEEK_SET;
-    lock.l_start = PENDING_BYTE;
-    lock.l_len = 2L;  assert( PENDING_BYTE+1==RESERVED_BYTE );
-    if( unixFileLock(pFile, &lock)==0 ){
-      pInode->eFileLock = SHARED_LOCK;
-    }else{
+    تالا.l_type = F_UNLCK;
+    تالا.l_whence = SEEK_SET;
+    تالا.l_آغاز = PENDING_BYTE;
+    تالا.l_len = 2L;  أكد( PENDING_BYTE+1==RESERVED_BYTE );
+    اگر( unix_File_تالا(pFile, &تالا)==0 ){
+      pInode->e_File_تالا = SHARED_تالا;
+    }ورنہ{
       rc = SQLITE_IOERR_UNLOCK;
-      storeLastErrno(pFile, errno);
-      goto end_unlock;
+      store_آخری_Errno(pFile, errno);
+      جاؤ انتہا_unlock;
     }
   }
-  if( eFileLock==NO_LOCK ){
+  اگر( e_File_تالا==NO_تالا ){
     /* Decrement the shared lock counter.  Release the lock using an
     ** OS call only when all threads in this same process have released
     ** the lock.
     */
     pInode->nShared--;
-    if( pInode->nShared==0 ){
-      lock.l_type = F_UNLCK;
-      lock.l_whence = SEEK_SET;
-      lock.l_start = lock.l_len = 0L;
-      if( unixFileLock(pFile, &lock)==0 ){
-        pInode->eFileLock = NO_LOCK;
-      }else{
+    اگر( pInode->nShared==0 ){
+      تالا.l_type = F_UNLCK;
+      تالا.l_whence = SEEK_SET;
+      تالا.l_آغاز = تالا.l_len = 0L;
+      اگر( unix_File_تالا(pFile, &تالا)==0 ){
+        pInode->e_File_تالا = NO_تالا;
+      }ورنہ{
         rc = SQLITE_IOERR_UNLOCK;
-        storeLastErrno(pFile, errno);
-        pInode->eFileLock = NO_LOCK;
-        pFile->eFileLock = NO_LOCK;
+        store_آخری_Errno(pFile, errno);
+        pInode->e_File_تالا = NO_تالا;
+        pFile->e_File_تالا = NO_تالا;
       }
     }
 
@@ -2261,17 +2261,17 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
     ** count reaches zero, close any other file descriptors whose close
     ** was deferred because of outstanding locks.
     */
-    pInode->nLock--;
-    assert( pInode->nLock>=0 );
-    if( pInode->nLock==0 ) closePendingFds(pFile);
+    pInode->n_تالا--;
+    أكد( pInode->n_تالا>=0 );
+    اگر( pInode->n_تالا==0 ) closePendingFds(pFile);
   }
 
-end_unlock:
-  sqlite3_mutex_leave(pInode->pLockMutex);
-  if( rc==SQLITE_OK ){
-    pFile->eFileLock = eFileLock;
+انتہا_unlock:
+  sqlite3_mutex_leave(pInode->p_تالا_Mutex);
+  اگر( rc==SQLITE_OK ){
+    pFile->e_File_تالا = e_File_تالا;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -2281,17 +2281,17 @@ end_unlock:
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int unixUnlock(sqlite3_file *id, int eFileLock){
-#if SQLITE_MAX_MMAP_SIZE>0
-  assert( eFileLock==SHARED_LOCK || ((unixFile *)id)->nFetchOut==0 );
-#endif
-  return posixUnlock(id, eFileLock, 0);
+ساکن صحیح unixUnlock(sqlite3_file *id, صحیح e_File_تالا){
+#اگر SQLITE_MAX_MMAP_سائز>0
+  أكد( e_File_تالا==SHARED_تالا || ((unixFile *)id)->n_Fetch_برآمد==0 );
+#اگر_ختم
+  واپس posixUnlock(id, e_File_تالا, 0);
 }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-static int unixMapfile(unixFile *pFd, i64 nByte);
-static void unixUnmapfile(unixFile *pFd);
-#endif
+#اگر SQLITE_MAX_MMAP_سائز>0
+ساکن صحیح unixMapfile(unixFile *pFd, i64 nByte);
+ساکن خالی unixUnmapfile(unixFile *pFd);
+#اگر_ختم
 
 /*
 ** This function performs the parts of the "close file" operation
@@ -2303,71 +2303,71 @@ static void unixUnmapfile(unixFile *pFd);
 ** even on VxWorks.  A mutex will be acquired on VxWorks by the
 ** vxworksReleaseFileId() routine.
 */
-static int closeUnixFile(sqlite3_file *id){
+ساکن صحیح closeUnixFile(sqlite3_file *id){
   unixFile *pFile = (unixFile*)id;
-#if SQLITE_MAX_MMAP_SIZE>0
+#اگر SQLITE_MAX_MMAP_سائز>0
   unixUnmapfile(pFile);
-#endif
-  if( pFile->h>=0 ){
+#اگر_ختم
+  اگر( pFile->h>=0 ){
     robust_close(pFile, pFile->h, __LINE__);
     pFile->h = -1;
   }
-#if OS_VXWORKS
-  if( pFile->pId ){
-    if( pFile->ctrlFlags & UNIXFILE_DELETE ){
+#اگر OS_VXWORKS
+  اگر( pFile->pId ){
+    اگر( pFile->ctrlFlags & UNIXFILE_DELETE ){
       osUnlink(pFile->pId->zCanonicalName);
     }
     vxworksReleaseFileId(pFile->pId);
     pFile->pId = 0;
   }
-#endif
-#ifdef SQLITE_UNLINK_AFTER_CLOSE
-  if( pFile->ctrlFlags & UNIXFILE_DELETE ){
-    osUnlink(pFile->zPath);
-    sqlite3_free(*(char**)&pFile->zPath);
-    pFile->zPath = 0;
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_UNLINK_AFTER_CLOSE
+  اگر( pFile->ctrlFlags & UNIXFILE_DELETE ){
+    osUnlink(pFile->z_راستہ);
+    sqlite3_free(*(حرف**)&pFile->z_راستہ);
+    pFile->z_راستہ = 0;
   }
-#endif
+#اگر_ختم
   OSTRACE(("CLOSE   %-3d\n", pFile->h));
-  OpenCounter(-1);
-  sqlite3_free(pFile->pPreallocatedUnused);
-  memset(pFile, 0, sizeof(unixFile));
-  return SQLITE_OK;
+  Open_شمار(-1);
+  sqlite3_free(pFile->p_Preallocated_غیر_مستعمل);
+  memset(pFile, 0, حجم(unixFile));
+  واپس SQLITE_OK;
 }
 
 /*
 ** Close a file.
 */
-static int unixClose(sqlite3_file *id){
-  int rc = SQLITE_OK;
+ساکن صحیح unixClose(sqlite3_file *id){
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile *)id;
   unixInodeInfo *pInode = pFile->pInode;
 
-  assert( pInode!=0 );
+  أكد( pInode!=0 );
   verifyDbFile(pFile);
-  unixUnlock(id, NO_LOCK);
-  assert( unixFileMutexNotheld(pFile) );
+  unixUnlock(id, NO_تالا);
+  أكد( unixFileMutexNotheld(pFile) );
   unixEnterMutex();
 
   /* unixFile.pInode is always valid here. Otherwise, a different close
   ** routine (e.g. nolockClose()) would be called instead.
   */
-  assert( pFile->pInode->nLock>0 || pFile->pInode->bProcessLock==0 );
-  sqlite3_mutex_enter(pInode->pLockMutex);
-  if( pInode->nLock ){
+  أكد( pFile->pInode->n_تالا>0 || pFile->pInode->b_Process_تالا==0 );
+  sqlite3_mutex_enter(pInode->p_تالا_Mutex);
+  اگر( pInode->n_تالا ){
     /* If there are outstanding locks, do not actually close the file just
     ** yet because that would clear those locks.  Instead, add the file
     ** descriptor to pInode->pUnused list.  It will be automatically closed
     ** when the last lock is cleared.
     */
-    setPendingFd(pFile);
+    سیٹ_Pending_Fd(pFile);
   }
-  sqlite3_mutex_leave(pInode->pLockMutex);
+  sqlite3_mutex_leave(pInode->p_تالا_Mutex);
   releaseInodeInfo(pFile);
-  assert( pFile->pShm==0 );
+  أكد( pFile->pShm==0 );
   rc = closeUnixFile(id);
   unixLeaveMutex();
-  return rc;
+  واپس rc;
 }
 
 /************** End of the posix advisory lock implementation *****************
@@ -2390,25 +2390,25 @@ static int unixClose(sqlite3_file *id){
 ** time and one or more of those connections are writing.
 */
 
-static int nolockCheckReservedLock(sqlite3_file *NotUsed, int *pResOut){
-  UNUSED_PARAMETER(NotUsed);
-  *pResOut = 0;
-  return SQLITE_OK;
+ساکن صحیح nolock_Check_Reserved_تالا(sqlite3_file *Not_مستعمل, صحیح *p_Res_برآمد){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  *p_Res_برآمد = 0;
+  واپس SQLITE_OK;
 }
-static int nolockLock(sqlite3_file *NotUsed, int NotUsed2){
-  UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return SQLITE_OK;
+ساکن صحیح nolock_تالا(sqlite3_file *Not_مستعمل, صحیح NotUsed2){
+  غیر_مستعمل_PARAMETER2(Not_مستعمل, NotUsed2);
+  واپس SQLITE_OK;
 }
-static int nolockUnlock(sqlite3_file *NotUsed, int NotUsed2){
-  UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return SQLITE_OK;
+ساکن صحیح nolockUnlock(sqlite3_file *Not_مستعمل, صحیح NotUsed2){
+  غیر_مستعمل_PARAMETER2(Not_مستعمل, NotUsed2);
+  واپس SQLITE_OK;
 }
 
 /*
 ** Close the file.
 */
-static int nolockClose(sqlite3_file *id) {
-  return closeUnixFile(id);
+ساکن صحیح nolockClose(sqlite3_file *id) {
+  واپس closeUnixFile(id);
 }
 
 /******************* End of the no-op lock implementation *********************
@@ -2440,7 +2440,7 @@ static int nolockClose(sqlite3_file *id) {
 ** The file suffix added to the data base filename in order to create the
 ** lock directory.
 */
-#define DOTLOCK_SUFFIX ".lock"
+#تعریف_کرو DOTLOCK_SUFFIX ".lock"
 
 /*
 ** This routine checks if there is a RESERVED lock held on the specified
@@ -2449,17 +2449,17 @@ static int nolockClose(sqlite3_file *id) {
 ** client may hold RESERVED. Or, if the caller holds no lock, then it
 ** is assumed another client holds RESERVED if the lock-file exists.
 */
-static int dotlockCheckReservedLock(sqlite3_file *id, int *pResOut) {
+ساکن صحیح dotlock_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد) {
   unixFile *pFile = (unixFile*)id;
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( واپس SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  if( pFile->eFileLock>=SHARED_LOCK ){
-    *pResOut = 0;
-  }else{
-    *pResOut = osAccess((const char*)pFile->lockingContext, 0)==0;
+  اگر( pFile->e_File_تالا>=SHARED_تالا ){
+    *p_Res_برآمد = 0;
+  }ورنہ{
+    *p_Res_برآمد = osAccess((ثابت حرف*)pFile->lockingContext, 0)==0;
   }
-  OSTRACE(("TEST WR-LOCK %d %d %d (dotlock)\n", pFile->h, 0, *pResOut));
-  return SQLITE_OK;
+  OSTRACE(("TEST WR-LOCK %d %d %d (dotlock)\n", pFile->h, 0, *p_Res_برآمد));
+  واپس SQLITE_OK;
 }
 
 /*
@@ -2489,45 +2489,45 @@ static int dotlockCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** With dotfile locking, we really only support state (4): EXCLUSIVE.
 ** But we track the other locking levels internally.
 */
-static int dotlockLock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح dotlock_تالا(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
-  char *zLockFile = (char *)pFile->lockingContext;
-  int rc = SQLITE_OK;
+  حرف *z_تالا_File = (حرف *)pFile->lockingContext;
+  صحیح rc = SQLITE_OK;
 
 
   /* If we have any lock, then the lock file already exists.  All we have
   ** to do is adjust our internal record of the lock level.
   */
-  if( pFile->eFileLock > NO_LOCK ){
-    pFile->eFileLock = eFileLock;
+  اگر( pFile->e_File_تالا > NO_تالا ){
+    pFile->e_File_تالا = e_File_تالا;
     /* Always update the timestamp on the old file */
-#ifdef HAVE_UTIME
-    utime(zLockFile, NULL);
-#else
-    utimes(zLockFile, NULL);
-#endif
-    return SQLITE_OK;
+#اگر_تعریف_شدہ HAVE_UTIME
+    utime(z_تالا_File, تہی);
+#ورنہ
+    utimes(z_تالا_File, تہی);
+#اگر_ختم
+    واپس SQLITE_OK;
   }
 
   /* grab an exclusive lock */
-  rc = osMkdir(zLockFile, 0777);
-  if( rc<0 ){
+  rc = osMkdir(z_تالا_File, 0777);
+  اگر( rc<0 ){
     /* failed to open/create the lock directory */
-    int tErrno = errno;
-    if( EEXIST == tErrno ){
+    صحیح tErrno = errno;
+    اگر( EEXIST == tErrno ){
       rc = SQLITE_BUSY;
-    } else {
-      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
-        storeLastErrno(pFile, tErrno);
+    } ورنہ {
+      rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_تالا);
+      اگر( rc!=SQLITE_BUSY ){
+        store_آخری_Errno(pFile, tErrno);
       }
     }
-    return rc;
+    واپس rc;
   }
 
   /* got it, set the type and return ok */
-  pFile->eFileLock = eFileLock;
-  return rc;
+  pFile->e_File_تالا = e_File_تالا;
+  واپس rc;
 }
 
 /*
@@ -2539,55 +2539,55 @@ static int dotlockLock(sqlite3_file *id, int eFileLock) {
 **
 ** When the locking level reaches NO_LOCK, delete the lock file.
 */
-static int dotlockUnlock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح dotlockUnlock(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
-  char *zLockFile = (char *)pFile->lockingContext;
-  int rc;
+  حرف *z_تالا_File = (حرف *)pFile->lockingContext;
+  صحیح rc;
 
-  assert( pFile );
-  OSTRACE(("UNLOCK  %d %d was %d pid=%d (dotlock)\n", pFile->h, eFileLock,
-           pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  أكد( pFile );
+  OSTRACE(("UNLOCK  %d %d was %d pid=%d (dotlock)\n", pFile->h, e_File_تالا,
+           pFile->e_File_تالا, osGetpid(0)));
+  أكد( e_File_تالا<=SHARED_تالا );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  اگر( pFile->e_File_تالا==e_File_تالا ){
+    واپس SQLITE_OK;
   }
 
   /* To downgrade to shared, simply update our internal notion of the
   ** lock state.  No need to mess with the file on disk.
   */
-  if( eFileLock==SHARED_LOCK ){
-    pFile->eFileLock = SHARED_LOCK;
-    return SQLITE_OK;
+  اگر( e_File_تالا==SHARED_تالا ){
+    pFile->e_File_تالا = SHARED_تالا;
+    واپس SQLITE_OK;
   }
 
   /* To fully unlock the database, delete the lock file */
-  assert( eFileLock==NO_LOCK );
-  rc = osRmdir(zLockFile);
-  if( rc<0 ){
-    int tErrno = errno;
-    if( tErrno==ENOENT ){
+  أكد( e_File_تالا==NO_تالا );
+  rc = osRmdir(z_تالا_File);
+  اگر( rc<0 ){
+    صحیح tErrno = errno;
+    اگر( tErrno==ENOENT ){
       rc = SQLITE_OK;
-    }else{
+    }ورنہ{
       rc = SQLITE_IOERR_UNLOCK;
-      storeLastErrno(pFile, tErrno);
+      store_آخری_Errno(pFile, tErrno);
     }
-    return rc;
+    واپس rc;
   }
-  pFile->eFileLock = NO_LOCK;
-  return SQLITE_OK;
+  pFile->e_File_تالا = NO_تالا;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Close a file.  Make sure the lock has been released before closing.
 */
-static int dotlockClose(sqlite3_file *id) {
+ساکن صحیح dotlockClose(sqlite3_file *id) {
   unixFile *pFile = (unixFile*)id;
-  assert( id!=0 );
-  dotlockUnlock(id, NO_LOCK);
+  أكد( id!=0 );
+  dotlockUnlock(id, NO_تالا);
   sqlite3_free(pFile->lockingContext);
-  return closeUnixFile(id);
+  واپس closeUnixFile(id);
 }
 /****************** End of the dot-file lock implementation *******************
 ******************************************************************************/
@@ -2606,20 +2606,20 @@ static int dotlockClose(sqlite3_file *id) {
 **
 ** Omit this section if SQLITE_ENABLE_LOCKING_STYLE is turned off
 */
-#if SQLITE_ENABLE_LOCKING_STYLE
+#اگر SQLITE_ENABLE_LOCKING_STYLE
 
 /*
 ** Retry flock() calls that fail with EINTR
 */
-#ifdef EINTR
-static int robust_flock(int fd, int op){
-  int rc;
-  do{ rc = flock(fd,op); }while( rc<0 && errno==EINTR );
-  return rc;
+#اگر_تعریف_شدہ EINTR
+ساکن صحیح robust_flock(صحیح fd, صحیح op){
+  صحیح rc;
+  کرو{ rc = flock(fd,op); }جب( rc<0 && errno==EINTR );
+  واپس rc;
 }
-#else
+#ورنہ
 # define robust_flock(a,b) flock(a,b)
-#endif
+#اگر_ختم
    
 
 /*
@@ -2628,17 +2628,17 @@ static int robust_flock(int fd, int op){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
-#ifdef SQLITE_DEBUG
+ساکن صحیح flock_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد){
+#اگر_تعریف_شدہ SQLITE_DEBUG
   unixFile *pFile = (unixFile*)id;
-#else
-  UNUSED_PARAMETER(id);
-#endif
+#ورنہ
+  غیر_مستعمل_PARAMETER(id);
+#اگر_ختم
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( واپس SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
-  assert( pFile->eFileLock<=SHARED_LOCK );
+  أكد( pFile );
+  أكد( pFile->e_File_تالا<=SHARED_تالا );
 
   /* The flock VFS only ever takes exclusive locks (see function flockLock).
   ** Therefore, if this connection is holding any lock at all, no other
@@ -2653,9 +2653,9 @@ static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
   ** to proceed while a writer is preparing its transaction. But that won't
   ** work with the flock VFS - as it always takes EXCLUSIVE locks - so it is
   ** not a problem in this case.  */
-  *pResOut = 0;
+  *p_Res_برآمد = 0;
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -2687,40 +2687,40 @@ static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int flockLock(sqlite3_file *id, int eFileLock) {
-  int rc = SQLITE_OK;
+ساکن صحیح flock_تالا(sqlite3_file *id, صحیح e_File_تالا) {
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
 
-  assert( pFile );
+  أكد( pFile );
 
   /* if we already have a lock, it is exclusive.
   ** Just adjust level and punt on outta here. */
-  if (pFile->eFileLock > NO_LOCK) {
-    pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+  اگر (pFile->e_File_تالا > NO_تالا) {
+    pFile->e_File_تالا = e_File_تالا;
+    واپس SQLITE_OK;
   }
 
   /* grab an exclusive lock */
 
-  if (robust_flock(pFile->h, LOCK_EX | LOCK_NB)) {
-    int tErrno = errno;
+  اگر (robust_flock(pFile->h, LOCK_EX | LOCK_NB)) {
+    صحیح tErrno = errno;
     /* didn't get, must be busy */
-    rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-    if( IS_LOCK_ERROR(rc) ){
-      storeLastErrno(pFile, tErrno);
+    rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_تالا);
+    اگر( IS_تالا_ERROR(rc) ){
+      store_آخری_Errno(pFile, tErrno);
     }
-  } else {
+  } ورنہ {
     /* got it, set the type and return ok */
-    pFile->eFileLock = eFileLock;
+    pFile->e_File_تالا = e_File_تالا;
   }
-  OSTRACE(("LOCK    %d %s %s (flock)\n", pFile->h, azFileLock(eFileLock),
+  OSTRACE(("LOCK    %d %s %s (flock)\n", pFile->h, az_File_تالا(e_File_تالا),
            rc==SQLITE_OK ? "ok" : "failed"));
-#ifdef SQLITE_IGNORE_FLOCK_LOCK_ERRORS
-  if( (rc & 0xff) == SQLITE_IOERR ){
+#اگر_تعریف_شدہ SQLITE_IGNORE_FLOCK_تالا_ERRORS
+  اگر( (rc & 0xff) == SQLITE_IOERR ){
     rc = SQLITE_BUSY;
   }
-#endif /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
-  return rc;
+#اگر_ختم /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
+  واپس rc;
 }
 
 
@@ -2731,47 +2731,47 @@ static int flockLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int flockUnlock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح flockUnlock(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
 
-  assert( pFile );
-  OSTRACE(("UNLOCK  %d %d was %d pid=%d (flock)\n", pFile->h, eFileLock,
-           pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  أكد( pFile );
+  OSTRACE(("UNLOCK  %d %d was %d pid=%d (flock)\n", pFile->h, e_File_تالا,
+           pFile->e_File_تالا, osGetpid(0)));
+  أكد( e_File_تالا<=SHARED_تالا );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  اگر( pFile->e_File_تالا==e_File_تالا ){
+    واپس SQLITE_OK;
   }
 
   /* shared can just be set because we always have an exclusive */
-  if (eFileLock==SHARED_LOCK) {
-    pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+  اگر (e_File_تالا==SHARED_تالا) {
+    pFile->e_File_تالا = e_File_تالا;
+    واپس SQLITE_OK;
   }
 
   /* no, really, unlock. */
-  if( robust_flock(pFile->h, LOCK_UN) ){
-#ifdef SQLITE_IGNORE_FLOCK_LOCK_ERRORS
-    return SQLITE_OK;
-#endif /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
-    return SQLITE_IOERR_UNLOCK;
-  }else{
-    pFile->eFileLock = NO_LOCK;
-    return SQLITE_OK;
+  اگر( robust_flock(pFile->h, LOCK_UN) ){
+#اگر_تعریف_شدہ SQLITE_IGNORE_FLOCK_تالا_ERRORS
+    واپس SQLITE_OK;
+#اگر_ختم /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
+    واپس SQLITE_IOERR_UNLOCK;
+  }ورنہ{
+    pFile->e_File_تالا = NO_تالا;
+    واپس SQLITE_OK;
   }
 }
 
 /*
 ** Close a file.
 */
-static int flockClose(sqlite3_file *id) {
-  assert( id!=0 );
-  flockUnlock(id, NO_LOCK);
-  return closeUnixFile(id);
+ساکن صحیح flockClose(sqlite3_file *id) {
+  أكد( id!=0 );
+  flockUnlock(id, NO_تالا);
+  واپس closeUnixFile(id);
 }
 
-#endif /* SQLITE_ENABLE_LOCKING_STYLE && !OS_VXWORK */
+#اگر_ختم /* SQLITE_ENABLE_LOCKING_STYLE && !OS_VXWORK */
 
 /******************* End of the flock lock implementation *********************
 ******************************************************************************/
@@ -2786,7 +2786,7 @@ static int flockClose(sqlite3_file *id) {
 ** the database file at a time.  This reduces potential concurrency, but
 ** makes the lock implementation much easier.
 */
-#if OS_VXWORKS
+#اگر OS_VXWORKS
 
 /*
 ** This routine checks if there is a RESERVED lock held on the specified
@@ -2794,42 +2794,42 @@ static int flockClose(sqlite3_file *id) {
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int semXCheckReservedLock(sqlite3_file *id, int *pResOut) {
-  int rc = SQLITE_OK;
-  int reserved = 0;
+ساکن صحیح sem_XCheck_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد) {
+  صحیح rc = SQLITE_OK;
+  صحیح reserved = 0;
   unixFile *pFile = (unixFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( واپس SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
+  أكد( pFile );
 
   /* Check if a thread in this process holds such a lock */
-  if( pFile->eFileLock>SHARED_LOCK ){
+  اگر( pFile->e_File_تالا>SHARED_تالا ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it. */
-  if( !reserved ){
+  اگر( !reserved ){
     sem_t *pSem = pFile->pInode->pSem;
 
-    if( sem_trywait(pSem)==-1 ){
-      int tErrno = errno;
-      if( EAGAIN != tErrno ){
+    اگر( sem_trywait(pSem)==-1 ){
+      صحیح tErrno = errno;
+      اگر( EAGAIN != tErrno ){
         rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_CHECKRESERVEDLOCK);
-        storeLastErrno(pFile, tErrno);
-      } else {
+        store_آخری_Errno(pFile, tErrno);
+      } ورنہ {
         /* someone else has the lock when we are in NO_LOCK */
-        reserved = (pFile->eFileLock < SHARED_LOCK);
+        reserved = (pFile->e_File_تالا < SHARED_تالا);
       }
-    }else{
+    }ورنہ{
       /* we could have it if we want it */
       sem_post(pSem);
     }
   }
   OSTRACE(("TEST WR-LOCK %d %d %d (sem)\n", pFile->h, rc, reserved));
 
-  *pResOut = reserved;
-  return rc;
+  *p_Res_برآمد = reserved;
+  واپس rc;
 }
 
 /*
@@ -2861,30 +2861,30 @@ static int semXCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int semXLock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح semXLock(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
   sem_t *pSem = pFile->pInode->pSem;
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
 
   /* if we already have a lock, it is exclusive.
   ** Just adjust level and punt on outta here. */
-  if (pFile->eFileLock > NO_LOCK) {
-    pFile->eFileLock = eFileLock;
+  اگر (pFile->e_File_تالا > NO_تالا) {
+    pFile->e_File_تالا = e_File_تالا;
     rc = SQLITE_OK;
-    goto sem_end_lock;
+    جاؤ sem_انتہا_تالا;
   }
 
   /* lock semaphore now but bail out when already locked. */
-  if( sem_trywait(pSem)==-1 ){
+  اگر( sem_trywait(pSem)==-1 ){
     rc = SQLITE_BUSY;
-    goto sem_end_lock;
+    جاؤ sem_انتہا_تالا;
   }
 
   /* got it, set the type and return ok */
-  pFile->eFileLock = eFileLock;
+  pFile->e_File_تالا = e_File_تالا;
 
- sem_end_lock:
-  return rc;
+ sem_انتہا_تالا:
+  واپس rc;
 }
 
 /*
@@ -2894,58 +2894,58 @@ static int semXLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int semXUnlock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح semXUnlock(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
   sem_t *pSem = pFile->pInode->pSem;
 
-  assert( pFile );
-  assert( pSem );
-  OSTRACE(("UNLOCK  %d %d was %d pid=%d (sem)\n", pFile->h, eFileLock,
-           pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  أكد( pFile );
+  أكد( pSem );
+  OSTRACE(("UNLOCK  %d %d was %d pid=%d (sem)\n", pFile->h, e_File_تالا,
+           pFile->e_File_تالا, osGetpid(0)));
+  أكد( e_File_تالا<=SHARED_تالا );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  اگر( pFile->e_File_تالا==e_File_تالا ){
+    واپس SQLITE_OK;
   }
 
   /* shared can just be set because we always have an exclusive */
-  if (eFileLock==SHARED_LOCK) {
-    pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+  اگر (e_File_تالا==SHARED_تالا) {
+    pFile->e_File_تالا = e_File_تالا;
+    واپس SQLITE_OK;
   }
 
   /* no, really unlock. */
-  if ( sem_post(pSem)==-1 ) {
-    int rc, tErrno = errno;
+  اگر ( sem_post(pSem)==-1 ) {
+    صحیح rc, tErrno = errno;
     rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_UNLOCK);
-    if( IS_LOCK_ERROR(rc) ){
-      storeLastErrno(pFile, tErrno);
+    اگر( IS_تالا_ERROR(rc) ){
+      store_آخری_Errno(pFile, tErrno);
     }
-    return rc;
+    واپس rc;
   }
-  pFile->eFileLock = NO_LOCK;
-  return SQLITE_OK;
+  pFile->e_File_تالا = NO_تالا;
+  واپس SQLITE_OK;
 }
 
 /*
  ** Close a file.
  */
-static int semXClose(sqlite3_file *id) {
-  if( id ){
+ساکن صحیح semXClose(sqlite3_file *id) {
+  اگر( id ){
     unixFile *pFile = (unixFile*)id;
-    semXUnlock(id, NO_LOCK);
-    assert( pFile );
-    assert( unixFileMutexNotheld(pFile) );
+    semXUnlock(id, NO_تالا);
+    أكد( pFile );
+    أكد( unixFileMutexNotheld(pFile) );
     unixEnterMutex();
     releaseInodeInfo(pFile);
     unixLeaveMutex();
     closeUnixFile(id);
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
-#endif /* OS_VXWORKS */
+#اگر_ختم /* OS_VXWORKS */
 /*
 ** Named semaphore locking is only available on VxWorks.
 **
@@ -2963,27 +2963,27 @@ static int semXClose(sqlite3_file *id) {
 ** only works on OSX.
 */
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
 ** The afpLockingContext structure contains all afp lock specific state
 */
-typedef struct afpLockingContext afpLockingContext;
-struct afpLockingContext {
-  int reserved;
-  const char *dbPath;             /* Name of the open file */
+قسمتعریف ساخت afpLockingContext afpLockingContext;
+ساخت afpLockingContext {
+  صحیح reserved;
+  ثابت حرف *db_راستہ;             /* Name of the open file */
 };
 
-struct ByteRangeLockPB2
+ساخت Byte_Range_تالا_PB2
 {
-  unsigned long long offset;        /* offset to first byte to lock */
-  unsigned long long length;        /* nbr of bytes to lock */
-  unsigned long long retRangeStart; /* nbr of 1st byte locked if successful */
-  unsigned char unLockFlag;         /* 1 = unlock, 0 = lock */
-  unsigned char startEndFlag;       /* 1=rel to end of fork, 0=rel to start */
-  int fd;                           /* file desc to assoc this lock with */
+  غیرعلامتی طویل طویل انحراف;        /* offset to first byte to lock */
+  غیرعلامتی طویل طویل لمبائی;        /* nbr of bytes to lock */
+  غیرعلامتی طویل طویل ret_Range_آغاز; /* nbr of 1st byte locked if successful */
+  غیرعلامتی حرف un_تالا_Flag;         /* 1 = unlock, 0 = lock */
+  غیرعلامتی حرف آغاز_انتہا_Flag;       /* 1=rel to end of fork, 0=rel to start */
+  صحیح fd;                           /* file desc to assoc this lock with */
 };
 
-#define afpfsByteRangeLock2FSCTL        _IOWR('z', 23, struct ByteRangeLockPB2)
+#تعریف_کرو afpfsByteRangeLock2FSCTL        _IOWR('z', 23, ساخت Byte_Range_تالا_PB2)
 
 /*
 ** This is a utility for setting or clearing a bit-range lock on an
@@ -2991,43 +2991,43 @@ struct ByteRangeLockPB2
 **
 ** Return SQLITE_OK on success, SQLITE_BUSY on failure.
 */
-static int afpSetLock(
-  const char *path,              /* Name of the file to be locked or unlocked */
+ساکن صحیح afp_سیٹ_تالا(
+  ثابت حرف *راستہ,              /* Name of the file to be locked or unlocked */
   unixFile *pFile,               /* Open file descriptor on path */
-  unsigned long long offset,     /* First byte to be locked */
-  unsigned long long length,     /* Number of bytes to lock */
-  int setLockFlag                /* True to set lock.  False to clear lock */
+  غیرعلامتی طویل طویل انحراف,     /* First byte to be locked */
+  غیرعلامتی طویل طویل لمبائی,     /* Number of bytes to lock */
+  صحیح سیٹ_تالا_Flag                /* True to set lock.  False to clear lock */
 ){
-  struct ByteRangeLockPB2 pb;
-  int err;
+  ساخت Byte_Range_تالا_PB2 pb;
+  صحیح err;
 
-  pb.unLockFlag = setLockFlag ? 0 : 1;
-  pb.startEndFlag = 0;
-  pb.offset = offset;
-  pb.length = length;
+  pb.un_تالا_Flag = سیٹ_تالا_Flag ? 0 : 1;
+  pb.آغاز_انتہا_Flag = 0;
+  pb.انحراف = انحراف;
+  pb.لمبائی = لمبائی;
   pb.fd = pFile->h;
 
   OSTRACE(("AFPSETLOCK [%s] for %d%s in range %llx:%llx\n",
-    (setLockFlag?"ON":"OFF"), pFile->h, (pb.fd==-1?"[testval-1]":""),
-    offset, length));
-  err = fsctl(path, afpfsByteRangeLock2FSCTL, &pb, 0);
-  if ( err==-1 ) {
-    int rc;
-    int tErrno = errno;
+    (سیٹ_تالا_Flag?"ON":"OFF"), pFile->h, (pb.fd==-1?"[testval-1]":""),
+    انحراف, لمبائی));
+  err = fsctl(راستہ, afpfsByteRangeLock2FSCTL, &pb, 0);
+  اگر ( err==-1 ) {
+    صحیح rc;
+    صحیح tErrno = errno;
     OSTRACE(("AFPSETLOCK failed to fsctl() '%s' %d %s\n",
-             path, tErrno, strerror(tErrno)));
-#ifdef SQLITE_IGNORE_AFP_LOCK_ERRORS
+             راستہ, tErrno, strerror(tErrno)));
+#اگر_تعریف_شدہ SQLITE_IGNORE_AFP_تالا_ERRORS
     rc = SQLITE_BUSY;
-#else
+#ورنہ
     rc = sqliteErrorFromPosixError(tErrno,
-                    setLockFlag ? SQLITE_IOERR_LOCK : SQLITE_IOERR_UNLOCK);
-#endif /* SQLITE_IGNORE_AFP_LOCK_ERRORS */
-    if( IS_LOCK_ERROR(rc) ){
-      storeLastErrno(pFile, tErrno);
+                    سیٹ_تالا_Flag ? SQLITE_IOERR_تالا : SQLITE_IOERR_UNLOCK);
+#اگر_ختم /* SQLITE_IGNORE_AFP_LOCK_ERRORS */
+    اگر( IS_تالا_ERROR(rc) ){
+      store_آخری_Errno(pFile, tErrno);
     }
-    return rc;
-  } else {
-    return SQLITE_OK;
+    واپس rc;
+  } ورنہ {
+    واپس SQLITE_OK;
   }
 }
 
@@ -3037,49 +3037,49 @@ static int afpSetLock(
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int afpCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int rc = SQLITE_OK;
-  int reserved = 0;
+ساکن صحیح afp_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد){
+  صحیح rc = SQLITE_OK;
+  صحیح reserved = 0;
   unixFile *pFile = (unixFile*)id;
   afpLockingContext *context;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( واپس SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
+  أكد( pFile );
   context = (afpLockingContext *) pFile->lockingContext;
-  if( context->reserved ){
-    *pResOut = 1;
-    return SQLITE_OK;
+  اگر( context->reserved ){
+    *p_Res_برآمد = 1;
+    واپس SQLITE_OK;
   }
-  sqlite3_mutex_enter(pFile->pInode->pLockMutex);
+  sqlite3_mutex_enter(pFile->pInode->p_تالا_Mutex);
   /* Check if a thread in this process holds such a lock */
-  if( pFile->pInode->eFileLock>SHARED_LOCK ){
+  اگر( pFile->pInode->e_File_تالا>SHARED_تالا ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it.
    */
-  if( !reserved ){
+  اگر( !reserved ){
     /* lock the RESERVED byte */
-    int lrc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1,1);
-    if( SQLITE_OK==lrc ){
+    صحیح lrc = afp_سیٹ_تالا(context->db_راستہ, pFile, RESERVED_BYTE, 1,1);
+    اگر( SQLITE_OK==lrc ){
       /* if we succeeded in taking the reserved lock, unlock it to restore
       ** the original state */
-      lrc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1, 0);
-    } else {
+      lrc = afp_سیٹ_تالا(context->db_راستہ, pFile, RESERVED_BYTE, 1, 0);
+    } ورنہ {
       /* if we failed to get the lock then someone else must have it */
       reserved = 1;
     }
-    if( IS_LOCK_ERROR(lrc) ){
+    اگر( IS_تالا_ERROR(lrc) ){
       rc=lrc;
     }
   }
 
-  sqlite3_mutex_leave(pFile->pInode->pLockMutex);
+  sqlite3_mutex_leave(pFile->pInode->p_تالا_Mutex);
   OSTRACE(("TEST WR-LOCK %d %d %d (afp)\n", pFile->h, rc, reserved));
 
-  *pResOut = reserved;
-  return rc;
+  *p_Res_برآمد = reserved;
+  واپس rc;
 }
 
 /*
@@ -3106,25 +3106,25 @@ static int afpCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int afpLock(sqlite3_file *id, int eFileLock){
-  int rc = SQLITE_OK;
+ساکن صحیح afp_تالا(sqlite3_file *id, صحیح e_File_تالا){
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode = pFile->pInode;
   afpLockingContext *context = (afpLockingContext *) pFile->lockingContext;
 
-  assert( pFile );
+  أكد( pFile );
   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (afp)\n", pFile->h,
-           azFileLock(eFileLock), azFileLock(pFile->eFileLock),
-           azFileLock(pInode->eFileLock), pInode->nShared , osGetpid(0)));
+           az_File_تالا(e_File_تالا), az_File_تالا(pFile->e_File_تالا),
+           az_File_تالا(pInode->e_File_تالا), pInode->nShared , osGetpid(0)));
 
   /* If there is already a lock of this type or more restrictive on the
   ** unixFile, do nothing. Don't use the afp_end_lock: exit path, as
   ** unixEnterMutex() hasn't been called yet.
   */
-  if( pFile->eFileLock>=eFileLock ){
+  اگر( pFile->e_File_تالا>=e_File_تالا ){
     OSTRACE(("LOCK    %d %s ok (already held) (afp)\n", pFile->h,
-           azFileLock(eFileLock)));
-    return SQLITE_OK;
+           az_File_تالا(e_File_تالا)));
+    واپس SQLITE_OK;
   }
 
   /* Make sure the locking sequence is correct
@@ -3132,153 +3132,153 @@ static int afpLock(sqlite3_file *id, int eFileLock){
   **  (2) SQLite never explicitly requests a pending lock.
   **  (3) A shared lock is always held when a reserve lock is requested.
   */
-  assert( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
-  assert( eFileLock!=PENDING_LOCK );
-  assert( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
+  أكد( pFile->e_File_تالا!=NO_تالا || e_File_تالا==SHARED_تالا );
+  أكد( e_File_تالا!=PENDING_تالا );
+  أكد( e_File_تالا!=RESERVED_تالا || pFile->e_File_تالا==SHARED_تالا );
 
   /* This mutex is needed because pFile->pInode is shared across threads
   */
   pInode = pFile->pInode;
-  sqlite3_mutex_enter(pInode->pLockMutex);
+  sqlite3_mutex_enter(pInode->p_تالا_Mutex);
 
   /* If some thread using this PID has a lock via a different unixFile*
   ** handle that precludes the requested lock, return BUSY.
   */
-  if( (pFile->eFileLock!=pInode->eFileLock &&
-       (pInode->eFileLock>=PENDING_LOCK || eFileLock>SHARED_LOCK))
+  اگر( (pFile->e_File_تالا!=pInode->e_File_تالا &&
+       (pInode->e_File_تالا>=PENDING_تالا || e_File_تالا>SHARED_تالا))
      ){
     rc = SQLITE_BUSY;
-    goto afp_end_lock;
+    جاؤ afp_انتہا_تالا;
   }
 
   /* If a SHARED lock is requested, and some thread using this PID already
   ** has a SHARED or RESERVED lock, then increment reference counts and
   ** return SQLITE_OK.
   */
-  if( eFileLock==SHARED_LOCK &&
-     (pInode->eFileLock==SHARED_LOCK || pInode->eFileLock==RESERVED_LOCK) ){
-    assert( eFileLock==SHARED_LOCK );
-    assert( pFile->eFileLock==0 );
-    assert( pInode->nShared>0 );
-    pFile->eFileLock = SHARED_LOCK;
+  اگر( e_File_تالا==SHARED_تالا &&
+     (pInode->e_File_تالا==SHARED_تالا || pInode->e_File_تالا==RESERVED_تالا) ){
+    أكد( e_File_تالا==SHARED_تالا );
+    أكد( pFile->e_File_تالا==0 );
+    أكد( pInode->nShared>0 );
+    pFile->e_File_تالا = SHARED_تالا;
     pInode->nShared++;
-    pInode->nLock++;
-    goto afp_end_lock;
+    pInode->n_تالا++;
+    جاؤ afp_انتہا_تالا;
   }
   
   /* A PENDING lock is needed before acquiring a SHARED lock and before
   ** acquiring an EXCLUSIVE lock.  For the SHARED lock, the PENDING will
   ** be released.
   */
-  if( eFileLock==SHARED_LOCK
-      || (eFileLock==EXCLUSIVE_LOCK && pFile->eFileLock<PENDING_LOCK)
+  اگر( e_File_تالا==SHARED_تالا
+      || (e_File_تالا==EXCLUSIVE_تالا && pFile->e_File_تالا<PENDING_تالا)
   ){
-    int failed;
-    failed = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 1);
-    if (failed) {
+    صحیح failed;
+    failed = afp_سیٹ_تالا(context->db_راستہ, pFile, PENDING_BYTE, 1, 1);
+    اگر (failed) {
       rc = failed;
-      goto afp_end_lock;
+      جاؤ afp_انتہا_تالا;
     }
   }
 
   /* If control gets to this point, then actually go ahead and make
   ** operating system calls for the specified lock.
   */
-  if( eFileLock==SHARED_LOCK ){
-    int lrc1, lrc2, lrc1Errno = 0;
-    long lk, mask;
+  اگر( e_File_تالا==SHARED_تالا ){
+    صحیح lrc1, lrc2, lrc1Errno = 0;
+    طویل lk, نقاب;
   
-    assert( pInode->nShared==0 );
-    assert( pInode->eFileLock==0 );
+    أكد( pInode->nShared==0 );
+    أكد( pInode->e_File_تالا==0 );
       
-    mask = (sizeof(long)==8) ? LARGEST_INT64 : 0x7fffffff;
+    نقاب = (حجم(طویل)==8) ? سب_سے_بڑا_INT64 : 0x7fffffff;
     /* Now get the read-lock SHARED_LOCK */
     /* note that the quality of the randomness doesn't matter that much */
     lk = random();
-    pInode->sharedByte = (lk & mask)%(SHARED_SIZE - 1);
-    lrc1 = afpSetLock(context->dbPath, pFile,
-          SHARED_FIRST+pInode->sharedByte, 1, 1);
-    if( IS_LOCK_ERROR(lrc1) ){
-      lrc1Errno = pFile->lastErrno;
+    pInode->sharedByte = (lk & نقاب)%(SHARED_سائز - 1);
+    lrc1 = afp_سیٹ_تالا(context->db_راستہ, pFile,
+          SHARED_پہلا+pInode->sharedByte, 1, 1);
+    اگر( IS_تالا_ERROR(lrc1) ){
+      lrc1Errno = pFile->آخری_Errno;
     }
     /* Drop the temporary PENDING lock */
-    lrc2 = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 0);
+    lrc2 = afp_سیٹ_تالا(context->db_راستہ, pFile, PENDING_BYTE, 1, 0);
   
-    if( IS_LOCK_ERROR(lrc1) ) {
-      storeLastErrno(pFile, lrc1Errno);
+    اگر( IS_تالا_ERROR(lrc1) ) {
+      store_آخری_Errno(pFile, lrc1Errno);
       rc = lrc1;
-      goto afp_end_lock;
-    } else if( IS_LOCK_ERROR(lrc2) ){
+      جاؤ afp_انتہا_تالا;
+    } ورنہ اگر( IS_تالا_ERROR(lrc2) ){
       rc = lrc2;
-      goto afp_end_lock;
-    } else if( lrc1 != SQLITE_OK ) {
+      جاؤ afp_انتہا_تالا;
+    } ورنہ اگر( lrc1 != SQLITE_OK ) {
       rc = lrc1;
-    } else {
-      pFile->eFileLock = SHARED_LOCK;
-      pInode->nLock++;
+    } ورنہ {
+      pFile->e_File_تالا = SHARED_تالا;
+      pInode->n_تالا++;
       pInode->nShared = 1;
     }
-  }else if( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
+  }ورنہ اگر( e_File_تالا==EXCLUSIVE_تالا && pInode->nShared>1 ){
     /* We are trying for an exclusive lock but another thread in this
      ** same process is still holding a shared lock. */
     rc = SQLITE_BUSY;
-  }else{
+  }ورنہ{
     /* The request was for a RESERVED or EXCLUSIVE lock.  It is
     ** assumed that there is a SHARED or greater lock on the file
     ** already.
     */
-    int failed = 0;
-    assert( 0!=pFile->eFileLock );
-    if (eFileLock >= RESERVED_LOCK && pFile->eFileLock < RESERVED_LOCK) {
+    صحیح failed = 0;
+    أكد( 0!=pFile->e_File_تالا );
+    اگر (e_File_تالا >= RESERVED_تالا && pFile->e_File_تالا < RESERVED_تالا) {
         /* Acquire a RESERVED lock */
-        failed = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1,1);
-      if( !failed ){
+        failed = afp_سیٹ_تالا(context->db_راستہ, pFile, RESERVED_BYTE, 1,1);
+      اگر( !failed ){
         context->reserved = 1;
       }
     }
-    if (!failed && eFileLock == EXCLUSIVE_LOCK) {
+    اگر (!failed && e_File_تالا == EXCLUSIVE_تالا) {
       /* Acquire an EXCLUSIVE lock */
 
       /* Remove the shared lock before trying the range.  we'll need to
       ** reestablish the shared lock if we can't get the  afpUnlock
       */
-      if( !(failed = afpSetLock(context->dbPath, pFile, SHARED_FIRST +
+      اگر( !(failed = afp_سیٹ_تالا(context->db_راستہ, pFile, SHARED_پہلا +
                          pInode->sharedByte, 1, 0)) ){
-        int failed2 = SQLITE_OK;
+        صحیح failed2 = SQLITE_OK;
         /* now attempt to get the exclusive lock range */
-        failed = afpSetLock(context->dbPath, pFile, SHARED_FIRST,
-                               SHARED_SIZE, 1);
-        if( failed && (failed2 = afpSetLock(context->dbPath, pFile,
-                       SHARED_FIRST + pInode->sharedByte, 1, 1)) ){
+        failed = afp_سیٹ_تالا(context->db_راستہ, pFile, SHARED_پہلا,
+                               SHARED_سائز, 1);
+        اگر( failed && (failed2 = afp_سیٹ_تالا(context->db_راستہ, pFile,
+                       SHARED_پہلا + pInode->sharedByte, 1, 1)) ){
           /* Can't reestablish the shared lock.  Sqlite can't deal, this is
           ** a critical I/O error
           */
           rc = ((failed & 0xff) == SQLITE_IOERR) ? failed2 :
-               SQLITE_IOERR_LOCK;
-          goto afp_end_lock;
+               SQLITE_IOERR_تالا;
+          جاؤ afp_انتہا_تالا;
         }
-      }else{
+      }ورنہ{
         rc = failed;
       }
     }
-    if( failed ){
+    اگر( failed ){
       rc = failed;
     }
   }
 
-  if( rc==SQLITE_OK ){
-    pFile->eFileLock = eFileLock;
-    pInode->eFileLock = eFileLock;
-  }else if( eFileLock==EXCLUSIVE_LOCK ){
-    pFile->eFileLock = PENDING_LOCK;
-    pInode->eFileLock = PENDING_LOCK;
+  اگر( rc==SQLITE_OK ){
+    pFile->e_File_تالا = e_File_تالا;
+    pInode->e_File_تالا = e_File_تالا;
+  }ورنہ اگر( e_File_تالا==EXCLUSIVE_تالا ){
+    pFile->e_File_تالا = PENDING_تالا;
+    pInode->e_File_تالا = PENDING_تالا;
   }
 
-afp_end_lock:
-  sqlite3_mutex_leave(pInode->pLockMutex);
-  OSTRACE(("LOCK    %d %s %s (afp)\n", pFile->h, azFileLock(eFileLock),
+afp_انتہا_تالا:
+  sqlite3_mutex_leave(pInode->p_تالا_Mutex);
+  OSTRACE(("LOCK    %d %s %s (afp)\n", pFile->h, az_File_تالا(e_File_تالا),
          rc==SQLITE_OK ? "ok" : "failed"));
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -3288,29 +3288,29 @@ afp_end_lock:
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int afpUnlock(sqlite3_file *id, int eFileLock) {
-  int rc = SQLITE_OK;
+ساکن صحیح afpUnlock(sqlite3_file *id, صحیح e_File_تالا) {
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
   afpLockingContext *context = (afpLockingContext *) pFile->lockingContext;
-  int skipShared = 0;
+  صحیح skipShared = 0;
 
-  assert( pFile );
-  OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (afp)\n", pFile->h, eFileLock,
-           pFile->eFileLock, pFile->pInode->eFileLock, pFile->pInode->nShared,
+  أكد( pFile );
+  OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (afp)\n", pFile->h, e_File_تالا,
+           pFile->e_File_تالا, pFile->pInode->e_File_تالا, pFile->pInode->nShared,
            osGetpid(0)));
 
-  assert( eFileLock<=SHARED_LOCK );
-  if( pFile->eFileLock<=eFileLock ){
-    return SQLITE_OK;
+  أكد( e_File_تالا<=SHARED_تالا );
+  اگر( pFile->e_File_تالا<=e_File_تالا ){
+    واپس SQLITE_OK;
   }
   pInode = pFile->pInode;
-  sqlite3_mutex_enter(pInode->pLockMutex);
-  assert( pInode->nShared!=0 );
-  if( pFile->eFileLock>SHARED_LOCK ){
-    assert( pInode->eFileLock==pFile->eFileLock );
+  sqlite3_mutex_enter(pInode->p_تالا_Mutex);
+  أكد( pInode->nShared!=0 );
+  اگر( pFile->e_File_تالا>SHARED_تالا ){
+    أكد( pInode->e_File_تالا==pFile->e_File_تالا );
   
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
     /* When reducing a lock such that other processes can start
     ** reading the database file again, make sure that the
     ** transaction counter was updated if any part of the database
@@ -3319,97 +3319,97 @@ static int afpUnlock(sqlite3_file *id, int eFileLock) {
     ** the file has changed and hence might not know to flush their
     ** cache.  The use of a stale cache can lead to database corruption.
     */
-    assert( pFile->inNormalWrite==0
+    أكد( pFile->اندر_معمول_Write==0
            || pFile->dbUpdate==0
            || pFile->transCntrChng==1 );
-    pFile->inNormalWrite = 0;
-#endif
+    pFile->اندر_معمول_Write = 0;
+#اگر_ختم
   
-    if( pFile->eFileLock==EXCLUSIVE_LOCK ){
-      rc = afpSetLock(context->dbPath, pFile, SHARED_FIRST, SHARED_SIZE, 0);
-      if( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1) ){
+    اگر( pFile->e_File_تالا==EXCLUSIVE_تالا ){
+      rc = afp_سیٹ_تالا(context->db_راستہ, pFile, SHARED_پہلا, SHARED_سائز, 0);
+      اگر( rc==SQLITE_OK && (e_File_تالا==SHARED_تالا || pInode->nShared>1) ){
         /* only re-establish the shared lock if necessary */
-        int sharedLockByte = SHARED_FIRST+pInode->sharedByte;
-        rc = afpSetLock(context->dbPath, pFile, sharedLockByte, 1, 1);
-      } else {
+        صحیح shared_تالا_Byte = SHARED_پہلا+pInode->sharedByte;
+        rc = afp_سیٹ_تالا(context->db_راستہ, pFile, shared_تالا_Byte, 1, 1);
+      } ورنہ {
         skipShared = 1;
       }
     }
-    if( rc==SQLITE_OK && pFile->eFileLock>=PENDING_LOCK ){
-      rc = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 0);
+    اگر( rc==SQLITE_OK && pFile->e_File_تالا>=PENDING_تالا ){
+      rc = afp_سیٹ_تالا(context->db_راستہ, pFile, PENDING_BYTE, 1, 0);
     }
-    if( rc==SQLITE_OK && pFile->eFileLock>=RESERVED_LOCK && context->reserved ){
-      rc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1, 0);
-      if( !rc ){
+    اگر( rc==SQLITE_OK && pFile->e_File_تالا>=RESERVED_تالا && context->reserved ){
+      rc = afp_سیٹ_تالا(context->db_راستہ, pFile, RESERVED_BYTE, 1, 0);
+      اگر( !rc ){
         context->reserved = 0;
       }
     }
-    if( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1)){
-      pInode->eFileLock = SHARED_LOCK;
+    اگر( rc==SQLITE_OK && (e_File_تالا==SHARED_تالا || pInode->nShared>1)){
+      pInode->e_File_تالا = SHARED_تالا;
     }
   }
-  if( rc==SQLITE_OK && eFileLock==NO_LOCK ){
+  اگر( rc==SQLITE_OK && e_File_تالا==NO_تالا ){
 
     /* Decrement the shared lock counter.  Release the lock using an
     ** OS call only when all threads in this same process have released
     ** the lock.
     */
-    unsigned long long sharedLockByte = SHARED_FIRST+pInode->sharedByte;
+    غیرعلامتی طویل طویل shared_تالا_Byte = SHARED_پہلا+pInode->sharedByte;
     pInode->nShared--;
-    if( pInode->nShared==0 ){
-      if( !skipShared ){
-        rc = afpSetLock(context->dbPath, pFile, sharedLockByte, 1, 0);
+    اگر( pInode->nShared==0 ){
+      اگر( !skipShared ){
+        rc = afp_سیٹ_تالا(context->db_راستہ, pFile, shared_تالا_Byte, 1, 0);
       }
-      if( !rc ){
-        pInode->eFileLock = NO_LOCK;
-        pFile->eFileLock = NO_LOCK;
+      اگر( !rc ){
+        pInode->e_File_تالا = NO_تالا;
+        pFile->e_File_تالا = NO_تالا;
       }
     }
-    if( rc==SQLITE_OK ){
-      pInode->nLock--;
-      assert( pInode->nLock>=0 );
-      if( pInode->nLock==0 ) closePendingFds(pFile);
+    اگر( rc==SQLITE_OK ){
+      pInode->n_تالا--;
+      أكد( pInode->n_تالا>=0 );
+      اگر( pInode->n_تالا==0 ) closePendingFds(pFile);
     }
   }
 
-  sqlite3_mutex_leave(pInode->pLockMutex);
-  if( rc==SQLITE_OK ){
-    pFile->eFileLock = eFileLock;
+  sqlite3_mutex_leave(pInode->p_تالا_Mutex);
+  اگر( rc==SQLITE_OK ){
+    pFile->e_File_تالا = e_File_تالا;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Close a file & cleanup AFP specific locking context
 */
-static int afpClose(sqlite3_file *id) {
-  int rc = SQLITE_OK;
+ساکن صحیح afpClose(sqlite3_file *id) {
+  صحیح rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
-  assert( id!=0 );
-  afpUnlock(id, NO_LOCK);
-  assert( unixFileMutexNotheld(pFile) );
+  أكد( id!=0 );
+  afpUnlock(id, NO_تالا);
+  أكد( unixFileMutexNotheld(pFile) );
   unixEnterMutex();
-  if( pFile->pInode ){
+  اگر( pFile->pInode ){
     unixInodeInfo *pInode = pFile->pInode;
-    sqlite3_mutex_enter(pInode->pLockMutex);
-    if( pInode->nLock ){
+    sqlite3_mutex_enter(pInode->p_تالا_Mutex);
+    اگر( pInode->n_تالا ){
       /* If there are outstanding locks, do not actually close the file just
       ** yet because that would clear those locks.  Instead, add the file
       ** descriptor to pInode->aPending.  It will be automatically closed when
       ** the last lock is cleared.
       */
-      setPendingFd(pFile);
+      سیٹ_Pending_Fd(pFile);
     }
-    sqlite3_mutex_leave(pInode->pLockMutex);
+    sqlite3_mutex_leave(pInode->p_تالا_Mutex);
   }
   releaseInodeInfo(pFile);
   sqlite3_free(pFile->lockingContext);
   rc = closeUnixFile(id);
   unixLeaveMutex();
-  return rc;
+  واپس rc;
 }
 
-#endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
+#اگر_ختم /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
 /*
 ** The code above is the AFP lock implementation.  The code is specific
 ** to MacOSX and does not work on other unix platforms.  No alternative
@@ -3422,7 +3422,7 @@ static int afpClose(sqlite3_file *id) {
 /******************************************************************************
 *************************** Begin NFS Locking ********************************/
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
  ** Lower the locking level on file descriptor pFile to eFileLock.  eFileLock
  ** must be either NO_LOCK or SHARED_LOCK.
@@ -3430,11 +3430,11 @@ static int afpClose(sqlite3_file *id) {
  ** If the locking level of the file descriptor is already at or below
  ** the requested locking level, this routine is a no-op.
  */
-static int nfsUnlock(sqlite3_file *id, int eFileLock){
-  return posixUnlock(id, eFileLock, 1);
+ساکن صحیح nfsUnlock(sqlite3_file *id, صحیح e_File_تالا){
+  واپس posixUnlock(id, e_File_تالا, 1);
 }
 
-#endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
+#اگر_ختم /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
 /*
 ** The code above is the NFS lock implementation.  The code is specific
 ** to MacOSX and does not work on other unix platforms.  No alternative
@@ -3460,48 +3460,48 @@ static int nfsUnlock(sqlite3_file *id, int eFileLock){
 ** To avoid stomping the errno value on a failed read the lastErrno value
 ** is set before returning.
 */
-static int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt){
-  int got;
-  int prior = 0;
-#if (!defined(USE_PREAD) && !defined(USE_PREAD64))
-  i64 newOffset;
-#endif
-  TIMER_START;
-  assert( cnt==(cnt&0x1ffff) );
-  assert( id->h>2 );
-  do{
-#if defined(USE_PREAD)
-    got = osPread(id->h, pBuf, cnt, offset);
+ساکن صحیح seekAndRead(unixFile *id, sqlite3_int64 انحراف, خالی *pBuf, صحیح cnt){
+  صحیح got;
+  صحیح پیشگی = 0;
+#اگر (!defined(USE_PREAD) && !defined(USE_PREAD64))
+  i64 new_انحراف;
+#اگر_ختم
+  TIMER_آغاز;
+  أكد( cnt==(cnt&0x1ffff) );
+  أكد( id->h>2 );
+  کرو{
+#اگر defined(USE_PREAD)
+    got = osPread(id->h, pBuf, cnt, انحراف);
     SimulateIOError( got = -1 );
-#elif defined(USE_PREAD64)
-    got = osPread64(id->h, pBuf, cnt, offset);
+#وگرنہ_اگر defined(USE_PREAD64)
+    got = osPread64(id->h, pBuf, cnt, انحراف);
     SimulateIOError( got = -1 );
-#else
-    newOffset = lseek(id->h, offset, SEEK_SET);
-    SimulateIOError( newOffset = -1 );
-    if( newOffset<0 ){
-      storeLastErrno((unixFile*)id, errno);
-      return -1;
+#ورنہ
+    new_انحراف = lseek(id->h, انحراف, SEEK_SET);
+    SimulateIOError( new_انحراف = -1 );
+    اگر( new_انحراف<0 ){
+      store_آخری_Errno((unixFile*)id, errno);
+      واپس -1;
     }
     got = osRead(id->h, pBuf, cnt);
-#endif
-    if( got==cnt ) break;
-    if( got<0 ){
-      if( errno==EINTR ){ got = 1; continue; }
-      prior = 0;
-      storeLastErrno((unixFile*)id,  errno);
-      break;
-    }else if( got>0 ){
+#اگر_ختم
+    اگر( got==cnt ) توڑو;
+    اگر( got<0 ){
+      اگر( errno==EINTR ){ got = 1; جاری; }
+      پیشگی = 0;
+      store_آخری_Errno((unixFile*)id,  errno);
+      توڑو;
+    }ورنہ اگر( got>0 ){
       cnt -= got;
-      offset += got;
-      prior += got;
-      pBuf = (void*)(got + (char*)pBuf);
+      انحراف += got;
+      پیشگی += got;
+      pBuf = (خالی*)(got + (حرف*)pBuf);
     }
-  }while( got>0 );
-  TIMER_END;
+  }جب( got>0 );
+  TIMER_انتہا;
   OSTRACE(("READ    %-3d %5d %7lld %llu\n",
-            id->h, got+prior, offset-prior, TIMER_ELAPSED));
-  return got+prior;
+            id->h, got+پیشگی, انحراف-پیشگی, TIMER_ELAPSED));
+  واپس got+پیشگی;
 }
 
 /*
@@ -3509,48 +3509,48 @@ static int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-static int unixRead(
+ساکن صحیح unixRead(
   sqlite3_file *id,
-  void *pBuf,
-  int amt,
-  sqlite3_int64 offset
+  خالی *pBuf,
+  صحیح amt,
+  sqlite3_int64 انحراف
 ){
   unixFile *pFile = (unixFile *)id;
-  int got;
-  assert( id );
-  assert( offset>=0 );
-  assert( amt>0 );
+  صحیح got;
+  أكد( id );
+  أكد( انحراف>=0 );
+  أكد( amt>0 );
 
   /* If this is a database file (not a journal, super-journal or temp
   ** file), the bytes in the locking range should never be read or written. */
-#if 0
-  assert( pFile->pPreallocatedUnused==0
-       || offset>=PENDING_BYTE+512
-       || offset+amt<=PENDING_BYTE
+#اگر 0
+  أكد( pFile->p_Preallocated_غیر_مستعمل==0
+       || انحراف>=PENDING_BYTE+512
+       || انحراف+amt<=PENDING_BYTE
   );
-#endif
+#اگر_ختم
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#اگر SQLITE_MAX_MMAP_سائز>0
   /* Deal with as much of this read request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], amt);
-      return SQLITE_OK;
-    }else{
-      int nCopy = pFile->mmapSize - offset;
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], nCopy);
+  اگر( انحراف<pFile->mmap_سائز ){
+    اگر( انحراف+amt <= pFile->mmap_سائز ){
+      حافظہ_نقل(pBuf, &((u8 *)(pFile->pMapRegion))[انحراف], amt);
+      واپس SQLITE_OK;
+    }ورنہ{
+      صحیح nCopy = pFile->mmap_سائز - انحراف;
+      حافظہ_نقل(pBuf, &((u8 *)(pFile->pMapRegion))[انحراف], nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      انحراف += nCopy;
     }
   }
-#endif
+#اگر_ختم
 
-  got = seekAndRead(pFile, offset, pBuf, amt);
-  if( got==amt ){
-    return SQLITE_OK;
-  }else if( got<0 ){
+  got = seekAndRead(pFile, انحراف, pBuf, amt);
+  اگر( got==amt ){
+    واپس SQLITE_OK;
+  }ورنہ اگر( got<0 ){
     /* pFile->lastErrno has been set by seekAndRead().
     ** Usually we return SQLITE_IOERR_READ here, though for some
     ** kinds of errors we return SQLITE_IOERR_CORRUPTFS.  The
@@ -3558,23 +3558,23 @@ static int unixRead(
     ** prior to returning to the application by the sqlite3ApiExit()
     ** routine.
     */
-    switch( pFile->lastErrno ){
-      case ERANGE:
-      case EIO:
-#ifdef ENXIO
-      case ENXIO:
-#endif
-#ifdef EDEVERR
-      case EDEVERR:
-#endif
-        return SQLITE_IOERR_CORRUPTFS;
+    انتخاب( pFile->آخری_Errno ){
+      حالت ERANGE:
+      حالت EIO:
+#اگر_تعریف_شدہ ENXIO
+      حالت ENXIO:
+#اگر_ختم
+#اگر_تعریف_شدہ EDEVERR
+      حالت EDEVERR:
+#اگر_ختم
+        واپس SQLITE_IOERR_CORRUPTFS;
     }
-    return SQLITE_IOERR_READ;
-  }else{
-    storeLastErrno(pFile, 0);   /* not a system error */
+    واپس SQLITE_IOERR_READ;
+  }ورنہ{
+    store_آخری_Errno(pFile, 0);   /* not a system error */
     /* Unread parts of the buffer must be zero-filled */
-    memset(&((char*)pBuf)[got], 0, amt-got);
-    return SQLITE_IOERR_SHORT_READ;
+    memset(&((حرف*)pBuf)[got], 0, amt-got);
+    واپس SQLITE_IOERR_SHORT_READ;
   }
 }
 
@@ -3585,42 +3585,42 @@ static int unixRead(
 ** return the actual number of bytes written (which may be less than
 ** nBuf).
 */
-static int seekAndWriteFd(
-  int fd,                         /* File descriptor to write to */
+ساکن صحیح seekAndWriteFd(
+  صحیح fd,                         /* File descriptor to write to */
   i64 iOff,                       /* File offset to begin writing at */
-  const void *pBuf,               /* Copy data from this buffer to the file */
-  int nBuf,                       /* Size of buffer pBuf in bytes */
-  int *piErrno                    /* OUT: Error number if error occurs */
+  ثابت خالی *pBuf,               /* Copy data from this buffer to the file */
+  صحیح nBuf,                       /* Size of buffer pBuf in bytes */
+  صحیح *piErrno                    /* OUT: Error number if error occurs */
 ){
-  int rc = 0;                     /* Value returned by system call */
+  صحیح rc = 0;                     /* Value returned by system call */
 
-  assert( nBuf==(nBuf&0x1ffff) );
-  assert( fd>2 );
-  assert( piErrno!=0 );
+  أكد( nBuf==(nBuf&0x1ffff) );
+  أكد( fd>2 );
+  أكد( piErrno!=0 );
   nBuf &= 0x1ffff;
-  TIMER_START;
+  TIMER_آغاز;
 
-#if defined(USE_PREAD)
-  do{ rc = (int)osPwrite(fd, pBuf, nBuf, iOff); }while( rc<0 && errno==EINTR );
-#elif defined(USE_PREAD64)
-  do{ rc = (int)osPwrite64(fd, pBuf, nBuf, iOff);}while( rc<0 && errno==EINTR);
-#else
-  do{
+#اگر defined(USE_PREAD)
+  کرو{ rc = (صحیح)osPwrite(fd, pBuf, nBuf, iOff); }جب( rc<0 && errno==EINTR );
+#وگرنہ_اگر defined(USE_PREAD64)
+  کرو{ rc = (صحیح)osPwrite64(fd, pBuf, nBuf, iOff);}جب( rc<0 && errno==EINTR);
+#ورنہ
+  کرو{
     i64 iSeek = lseek(fd, iOff, SEEK_SET);
     SimulateIOError( iSeek = -1 );
-    if( iSeek<0 ){
+    اگر( iSeek<0 ){
       rc = -1;
-      break;
+      توڑو;
     }
     rc = osWrite(fd, pBuf, nBuf);
-  }while( rc<0 && errno==EINTR );
-#endif
+  }جب( rc<0 && errno==EINTR );
+#اگر_ختم
 
-  TIMER_END;
+  TIMER_انتہا;
   OSTRACE(("WRITE   %-3d %5d %7lld %llu\n", fd, rc, iOff, TIMER_ELAPSED));
 
-  if( rc<0 ) *piErrno = errno;
-  return rc;
+  اگر( rc<0 ) *piErrno = errno;
+  واپس rc;
 }
 
 
@@ -3631,8 +3631,8 @@ static int seekAndWriteFd(
 ** To avoid stomping the errno value on a failed write the lastErrno value
 ** is set before returning.
 */
-static int seekAndWrite(unixFile *id, i64 offset, const void *pBuf, int cnt){
-  return seekAndWriteFd(id->h, offset, pBuf, cnt, &id->lastErrno);
+ساکن صحیح seekAndWrite(unixFile *id, i64 انحراف, ثابت خالی *pBuf, صحیح cnt){
+  واپس seekAndWriteFd(id->h, انحراف, pBuf, cnt, &id->آخری_Errno);
 }
 
 
@@ -3640,94 +3640,94 @@ static int seekAndWrite(unixFile *id, i64 offset, const void *pBuf, int cnt){
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-static int unixWrite(
+ساکن صحیح unixWrite(
   sqlite3_file *id,
-  const void *pBuf,
-  int amt,
-  sqlite3_int64 offset
+  ثابت خالی *pBuf,
+  صحیح amt,
+  sqlite3_int64 انحراف
 ){
   unixFile *pFile = (unixFile*)id;
-  int wrote = 0;
-  assert( id );
-  assert( amt>0 );
+  صحیح wrote = 0;
+  أكد( id );
+  أكد( amt>0 );
 
   /* If this is a database file (not a journal, super-journal or temp
   ** file), the bytes in the locking range should never be read or written. */
-#if 0
-  assert( pFile->pPreallocatedUnused==0
-       || offset>=PENDING_BYTE+512
-       || offset+amt<=PENDING_BYTE
+#اگر 0
+  أكد( pFile->p_Preallocated_غیر_مستعمل==0
+       || انحراف>=PENDING_BYTE+512
+       || انحراف+amt<=PENDING_BYTE
   );
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   /* If we are doing a normal write to a database file (as opposed to
   ** doing a hot-journal rollback or a write to some file other than a
   ** normal database file) then record the fact that the database
   ** has changed.  If the transaction counter is modified, record that
   ** fact too.
   */
-  if( pFile->inNormalWrite ){
+  اگر( pFile->اندر_معمول_Write ){
     pFile->dbUpdate = 1;  /* The database has been modified */
-    if( offset<=24 && offset+amt>=27 ){
-      int rc;
-      char oldCntr[4];
+    اگر( انحراف<=24 && انحراف+amt>=27 ){
+      صحیح rc;
+      حرف oldCntr[4];
       SimulateIOErrorBenign(1);
       rc = seekAndRead(pFile, 24, oldCntr, 4);
       SimulateIOErrorBenign(0);
-      if( rc!=4 || memcmp(oldCntr, &((char*)pBuf)[24-offset], 4)!=0 ){
+      اگر( rc!=4 || memcmp(oldCntr, &((حرف*)pBuf)[24-انحراف], 4)!=0 ){
         pFile->transCntrChng = 1;  /* The transaction counter has changed */
       }
     }
   }
-#endif
+#اگر_ختم
 
-#if defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_SIZE>0
+#اگر defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_سائز>0
   /* Deal with as much of this write request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, amt);
-      return SQLITE_OK;
-    }else{
-      int nCopy = pFile->mmapSize - offset;
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, nCopy);
+  اگر( انحراف<pFile->mmap_سائز ){
+    اگر( انحراف+amt <= pFile->mmap_سائز ){
+      حافظہ_نقل(&((u8 *)(pFile->pMapRegion))[انحراف], pBuf, amt);
+      واپس SQLITE_OK;
+    }ورنہ{
+      صحیح nCopy = pFile->mmap_سائز - انحراف;
+      حافظہ_نقل(&((u8 *)(pFile->pMapRegion))[انحراف], pBuf, nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      انحراف += nCopy;
     }
   }
-#endif
+#اگر_ختم
 
-  while( (wrote = seekAndWrite(pFile, offset, pBuf, amt))<amt && wrote>0 ){
+  جب( (wrote = seekAndWrite(pFile, انحراف, pBuf, amt))<amt && wrote>0 ){
     amt -= wrote;
-    offset += wrote;
-    pBuf = &((char*)pBuf)[wrote];
+    انحراف += wrote;
+    pBuf = &((حرف*)pBuf)[wrote];
   }
   SimulateIOError(( wrote=(-1), amt=1 ));
   SimulateDiskfullError(( wrote=0, amt=1 ));
 
-  if( amt>wrote ){
-    if( wrote<0 && pFile->lastErrno!=ENOSPC ){
+  اگر( amt>wrote ){
+    اگر( wrote<0 && pFile->آخری_Errno!=ENOSPC ){
       /* lastErrno set by seekAndWrite */
-      return SQLITE_IOERR_WRITE;
-    }else{
-      storeLastErrno(pFile, 0); /* not a system error */
-      return SQLITE_FULL;
+      واپس SQLITE_IOERR_WRITE;
+    }ورنہ{
+      store_آخری_Errno(pFile, 0); /* not a system error */
+      واپس SQLITE_بھرا;
     }
   }
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
-#ifdef SQLITE_TEST
+#اگر_تعریف_شدہ SQLITE_TEST
 /*
 ** Count the number of fullsyncs and normal syncs.  This is used to test
 ** that syncs and fullsyncs are occurring at the right times.
 */
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
-#endif
+صحیح sqlite3_sync_گنتی = 0;
+صحیح sqlite3_fullsync_گنتی = 0;
+#اگر_ختم
 
 /*
 ** We do not trust systems to provide a working fdatasync().  Some do.
@@ -3735,20 +3735,20 @@ int sqlite3_fullsync_count = 0;
 ** fsync(). If you know that your system does support fdatasync() correctly,
 ** then simply compile with -Dfdatasync=fdatasync or -DHAVE_FDATASYNC
 */
-#if !defined(fdatasync) && !HAVE_FDATASYNC
+#اگر !defined(fdatasync) && !HAVE_FDATASYNC
 # define fdatasync fsync
-#endif
+#اگر_ختم
 
 /*
 ** Define HAVE_FULLFSYNC to 0 or 1 depending on whether or not
 ** the F_FULLFSYNC macro is defined.  F_FULLFSYNC is currently
 ** only available on Mac OS X.  But that could change.
 */
-#ifdef F_FULLFSYNC
+#اگر_تعریف_شدہ F_FULLFSYNC
 # define HAVE_FULLFSYNC 1
-#else
+#ورنہ
 # define HAVE_FULLFSYNC 0
-#endif
+#اگر_ختم
 
 
 /*
@@ -3775,47 +3775,47 @@ int sqlite3_fullsync_count = 0;
 ** So, we always use fdatasync() if it is available, regardless of
 ** the value of the dataOnly flag.
 */
-static int full_fsync(int fd, int fullSync, int dataOnly){
-  int rc;
+ساکن صحیح بھرا_fsync(صحیح fd, صحیح بھرا_Sync, صحیح ڈیٹا_Only){
+  صحیح rc;
 
   /* The following "ifdef/elif/else/" block has the same structure as
   ** the one below. It is replicated here solely to avoid cluttering
   ** up the real code with the UNUSED_PARAMETER() macros.
   */
-#ifdef SQLITE_NO_SYNC
-  UNUSED_PARAMETER(fd);
-  UNUSED_PARAMETER(fullSync);
-  UNUSED_PARAMETER(dataOnly);
-#elif HAVE_FULLFSYNC
-  UNUSED_PARAMETER(dataOnly);
-#else
-  UNUSED_PARAMETER(fullSync);
-  UNUSED_PARAMETER(dataOnly);
-#endif
+#اگر_تعریف_شدہ SQLITE_NO_SYNC
+  غیر_مستعمل_PARAMETER(fd);
+  غیر_مستعمل_PARAMETER(بھرا_Sync);
+  غیر_مستعمل_PARAMETER(ڈیٹا_Only);
+#وگرنہ_اگر HAVE_FULLFSYNC
+  غیر_مستعمل_PARAMETER(ڈیٹا_Only);
+#ورنہ
+  غیر_مستعمل_PARAMETER(بھرا_Sync);
+  غیر_مستعمل_PARAMETER(ڈیٹا_Only);
+#اگر_ختم
 
   /* Record the number of times that we do a normal fsync() and
   ** FULLSYNC.  This is used during testing to verify that this procedure
   ** gets called with the correct arguments.
   */
-#ifdef SQLITE_TEST
-  if( fullSync ) sqlite3_fullsync_count++;
-  sqlite3_sync_count++;
-#endif
+#اگر_تعریف_شدہ SQLITE_TEST
+  اگر( بھرا_Sync ) sqlite3_fullsync_گنتی++;
+  sqlite3_sync_گنتی++;
+#اگر_ختم
 
   /* If we compiled with the SQLITE_NO_SYNC flag, then syncing is a
   ** no-op.  But go ahead and call fstat() to validate the file
   ** descriptor as we need a method to provoke a failure during
   ** coverage testing.
   */
-#ifdef SQLITE_NO_SYNC
+#اگر_تعریف_شدہ SQLITE_NO_SYNC
   {
-    struct stat buf;
+    ساخت stat buf;
     rc = osFstat(fd, &buf);
   }
-#elif HAVE_FULLFSYNC
-  if( fullSync ){
+#وگرنہ_اگر HAVE_FULLFSYNC
+  اگر( بھرا_Sync ){
     rc = osFcntl(fd, F_FULLFSYNC, 0);
-  }else{
+  }ورنہ{
     rc = 1;
   }
   /* If the FULLFSYNC failed, fall back to attempting an fsync().
@@ -3826,26 +3826,26 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   ** It'd be better to detect fullfsync support once and avoid
   ** the fcntl call every time sync is called.
   */
-  if( rc ) rc = fsync(fd);
+  اگر( rc ) rc = fsync(fd);
 
-#elif defined(__APPLE__)
+#وگرنہ_اگر defined(__APPLE__)
   /* fdatasync() on HFS+ doesn't yet flush the file size if it changed correctly
   ** so currently we default to the macro that redefines fdatasync to fsync
   */
   rc = fsync(fd);
-#else
+#ورنہ
   rc = fdatasync(fd);
-#if OS_VXWORKS
-  if( rc==-1 && errno==ENOTSUP ){
+#اگر OS_VXWORKS
+  اگر( rc==-1 && errno==ENOTSUP ){
     rc = fsync(fd);
   }
-#endif /* OS_VXWORKS */
-#endif /* ifdef SQLITE_NO_SYNC elif HAVE_FULLFSYNC */
+#اگر_ختم /* OS_VXWORKS */
+#اگر_ختم /* ifdef SQLITE_NO_SYNC elif HAVE_FULLFSYNC */
 
-  if( OS_VXWORKS && rc!= -1 ){
+  اگر( OS_VXWORKS && rc!= -1 ){
     rc = 0;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -3871,26 +3871,26 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
 ** If SQLITE_OK is returned, the caller is responsible for closing
 ** the file descriptor *pFd using close().
 */
-static int openDirectory(const char *zFilename, int *pFd){
-  int ii;
-  int fd = -1;
-  char zDirname[MAX_PATHNAME+1];
+ساکن صحیح openDirectory(ثابت حرف *zFilename, صحیح *pFd){
+  صحیح ii;
+  صحیح fd = -1;
+  حرف zDirname[MAX_PATHNAME+1];
 
   sqlite3_snprintf(MAX_PATHNAME, zDirname, "%s", zFilename);
-  for(ii=(int)strlen(zDirname); ii>0 && zDirname[ii]!='/'; ii--);
-  if( ii>0 ){
+  برائے(ii=(صحیح)لڑی_لمبائی(zDirname); ii>0 && zDirname[ii]!='/'; ii--);
+  اگر( ii>0 ){
     zDirname[ii] = '\0';
-  }else{
-    if( zDirname[0]!='/' ) zDirname[0] = '.';
+  }ورنہ{
+    اگر( zDirname[0]!='/' ) zDirname[0] = '.';
     zDirname[1] = 0;
   }
-  fd = robust_open(zDirname, O_RDONLY|O_BINARY, 0);
-  if( fd>=0 ){
+  fd = robust_open(zDirname, O_RDONLY|O_ثنائی, 0);
+  اگر( fd>=0 ){
     OSTRACE(("OPENDIR %-3d %s\n", fd, zDirname));
   }
   *pFd = fd;
-  if( fd>=0 ) return SQLITE_OK;
-  return unixLogError(SQLITE_CANTOPEN_BKPT, "openDirectory", zDirname);
+  اگر( fd>=0 ) واپس SQLITE_OK;
+  واپس unixLogError(SQLITE_CANTOPEN_BKPT, "openDirectory", zDirname);
 }
 
 /*
@@ -3908,77 +3908,77 @@ static int openDirectory(const char *zFilename, int *pFd){
 ** the directory entry for the journal was never created) and the transaction
 ** will not roll back - possibly leading to database corruption.
 */
-static int unixSync(sqlite3_file *id, int flags){
-  int rc;
+ساکن صحیح unixSync(sqlite3_file *id, صحیح flags){
+  صحیح rc;
   unixFile *pFile = (unixFile*)id;
 
-  int isDataOnly = (flags&SQLITE_SYNC_DATAONLY);
-  int isFullsync = (flags&0x0F)==SQLITE_SYNC_FULL;
+  صحیح is_ڈیٹا_Only = (flags&SQLITE_SYNC_DATAONLY);
+  صحیح isFullsync = (flags&0x0F)==SQLITE_SYNC_بھرا;
 
   /* Check that one of SQLITE_SYNC_NORMAL or FULL was passed */
-  assert((flags&0x0F)==SQLITE_SYNC_NORMAL
-      || (flags&0x0F)==SQLITE_SYNC_FULL
+  أكد((flags&0x0F)==SQLITE_SYNC_معمول
+      || (flags&0x0F)==SQLITE_SYNC_بھرا
   );
 
   /* Unix cannot, but some systems may return SQLITE_FULL from here. This
   ** line is to test that doing so does not cause any problems.
   */
-  SimulateDiskfullError( return SQLITE_FULL );
+  SimulateDiskfullError( واپس SQLITE_بھرا );
 
-  assert( pFile );
+  أكد( pFile );
   OSTRACE(("SYNC    %-3d\n", pFile->h));
-  rc = full_fsync(pFile->h, isFullsync, isDataOnly);
+  rc = بھرا_fsync(pFile->h, isFullsync, is_ڈیٹا_Only);
   SimulateIOError( rc=1 );
-  if( rc ){
-    storeLastErrno(pFile, errno);
-    return unixLogError(SQLITE_IOERR_FSYNC, "full_fsync", pFile->zPath);
+  اگر( rc ){
+    store_آخری_Errno(pFile, errno);
+    واپس unixLogError(SQLITE_IOERR_FSYNC, "full_fsync", pFile->z_راستہ);
   }
 
   /* Also fsync the directory containing the file if the DIRSYNC flag
   ** is set.  This is a one-time occurrence.  Many systems (examples: AIX)
   ** are unable to fsync a directory, so ignore errors on the fsync.
   */
-  if( pFile->ctrlFlags & UNIXFILE_DIRSYNC ){
-    int dirfd;
-    OSTRACE(("DIRSYNC %s (have_fullfsync=%d fullsync=%d)\n", pFile->zPath,
+  اگر( pFile->ctrlFlags & UNIXFILE_DIRSYNC ){
+    صحیح dirfd;
+    OSTRACE(("DIRSYNC %s (have_fullfsync=%d fullsync=%d)\n", pFile->z_راستہ,
             HAVE_FULLFSYNC, isFullsync));
-    rc = osOpenDirectory(pFile->zPath, &dirfd);
-    if( rc==SQLITE_OK ){
-      full_fsync(dirfd, 0, 0);
+    rc = osOpenDirectory(pFile->z_راستہ, &dirfd);
+    اگر( rc==SQLITE_OK ){
+      بھرا_fsync(dirfd, 0, 0);
       robust_close(pFile, dirfd, __LINE__);
-    }else{
-      assert( rc==SQLITE_CANTOPEN );
+    }ورنہ{
+      أكد( rc==SQLITE_CANTOPEN );
       rc = SQLITE_OK;
     }
     pFile->ctrlFlags &= ~UNIXFILE_DIRSYNC;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Truncate an open file to a specified size
 */
-static int unixTruncate(sqlite3_file *id, i64 nByte){
+ساکن صحیح unixTruncate(sqlite3_file *id, i64 nByte){
   unixFile *pFile = (unixFile *)id;
-  int rc;
-  assert( pFile );
-  SimulateIOError( return SQLITE_IOERR_TRUNCATE );
+  صحیح rc;
+  أكد( pFile );
+  SimulateIOError( واپس SQLITE_IOERR_TRUNCATE );
 
   /* If the user has configured a chunk-size for this file, truncate the
   ** file so that it consists of an integer number of chunks (i.e. the
   ** actual file size after the operation may be larger than the requested
   ** size).
   */
-  if( pFile->szChunk>0 ){
+  اگر( pFile->szChunk>0 ){
     nByte = ((nByte + pFile->szChunk - 1)/pFile->szChunk) * pFile->szChunk;
   }
 
   rc = robust_ftruncate(pFile->h, nByte);
-  if( rc ){
-    storeLastErrno(pFile, errno);
-    return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
-  }else{
-#ifdef SQLITE_DEBUG
+  اگر( rc ){
+    store_آخری_Errno(pFile, errno);
+    واپس unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->z_راستہ);
+  }ورنہ{
+#اگر_تعریف_شدہ SQLITE_DEBUG
     /* If we are doing a normal write to a database file (as opposed to
     ** doing a hot-journal rollback or a write to some file other than a
     ** normal database file) and we truncate the file to zero length,
@@ -3986,39 +3986,39 @@ static int unixTruncate(sqlite3_file *id, i64 nByte){
     ** when restoring a database using the backup API from a zero-length
     ** source.
     */
-    if( pFile->inNormalWrite && nByte==0 ){
+    اگر( pFile->اندر_معمول_Write && nByte==0 ){
       pFile->transCntrChng = 1;
     }
-#endif
+#اگر_ختم
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#اگر SQLITE_MAX_MMAP_سائز>0
     /* If the file was just truncated to a size smaller than the currently
     ** mapped region, reduce the effective mapping size as well. SQLite will
     ** use read() and write() to access data beyond this point from now on.
     */
-    if( nByte<pFile->mmapSize ){
-      pFile->mmapSize = nByte;
+    اگر( nByte<pFile->mmap_سائز ){
+      pFile->mmap_سائز = nByte;
     }
-#endif
+#اگر_ختم
 
-    return SQLITE_OK;
+    واپس SQLITE_OK;
   }
 }
 
 /*
 ** Determine the current size of a file in bytes
 */
-static int unixFileSize(sqlite3_file *id, i64 *pSize){
-  int rc;
-  struct stat buf;
-  assert( id );
+ساکن صحیح unix_File_سائز(sqlite3_file *id, i64 *p_سائز){
+  صحیح rc;
+  ساخت stat buf;
+  أكد( id );
   rc = osFstat(((unixFile*)id)->h, &buf);
   SimulateIOError( rc=1 );
-  if( rc!=0 ){
-    storeLastErrno((unixFile*)id, errno);
-    return SQLITE_IOERR_FSTAT;
+  اگر( rc!=0 ){
+    store_آخری_Errno((unixFile*)id, errno);
+    واپس SQLITE_IOERR_FSTAT;
   }
-  *pSize = buf.st_size;
+  *p_سائز = buf.st_سائز;
 
   /* When opening a zero-size database, the findInodeInfo() procedure
   ** writes a single byte into that file in order to work around a bug
@@ -4026,19 +4026,19 @@ static int unixFileSize(sqlite3_file *id, i64 *pSize){
   ** layers, we need to report this file size as zero even though it is
   ** really 1.   Ticket #3260.
   */
-  if( *pSize==1 ) *pSize = 0;
+  اگر( *p_سائز==1 ) *p_سائز = 0;
 
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
 /*
 ** Handler for proxy-locking file-control verbs.  Defined below in the
 ** proxying locking division.
 */
-static int proxyFileControl(sqlite3_file*,int,void*);
-#endif
+ساکن صحیح proxyFileControl(sqlite3_file*,صحیح,خالی*);
+#اگر_ختم
 
 /*
 ** This function is called to handle the SQLITE_FCNTL_SIZE_HINT
@@ -4046,28 +4046,28 @@ static int proxyFileControl(sqlite3_file*,int,void*);
 ** (rounded up to the next chunk-size).  If the database is already
 ** nBytes or larger, this routine is a no-op.
 */
-static int fcntlSizeHint(unixFile *pFile, i64 nByte){
-  if( pFile->szChunk>0 ){
-    i64 nSize;                    /* Required file size */
-    struct stat buf;              /* Used to hold return values of fstat() */
+ساکن صحیح fcntl_سائز_Hint(unixFile *pFile, i64 nByte){
+  اگر( pFile->szChunk>0 ){
+    i64 n_سائز;                    /* Required file size */
+    ساخت stat buf;              /* Used to hold return values of fstat() */
  
-    if( osFstat(pFile->h, &buf) ){
-      return SQLITE_IOERR_FSTAT;
+    اگر( osFstat(pFile->h, &buf) ){
+      واپس SQLITE_IOERR_FSTAT;
     }
 
-    nSize = ((nByte+pFile->szChunk-1) / pFile->szChunk) * pFile->szChunk;
-    if( nSize>(i64)buf.st_size ){
+    n_سائز = ((nByte+pFile->szChunk-1) / pFile->szChunk) * pFile->szChunk;
+    اگر( n_سائز>(i64)buf.st_سائز ){
 
-#if defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
+#اگر defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
       /* The code below is handling the return value of osFallocate()
       ** correctly. posix_fallocate() is defined to "returns zero on success,
       ** or an error number on  failure". See the manpage for details. */
-      int err;
-      do{
-        err = osFallocate(pFile->h, buf.st_size, nSize-buf.st_size);
-      }while( err==EINTR );
-      if( err && err!=EINVAL ) return SQLITE_IOERR_WRITE;
-#else
+      صحیح err;
+      کرو{
+        err = osFallocate(pFile->h, buf.st_سائز, n_سائز-buf.st_سائز);
+      }جب( err==EINTR );
+      اگر( err && err!=EINVAL ) واپس SQLITE_IOERR_WRITE;
+#ورنہ
       /* If the OS does not have posix_fallocate(), fake it. Write a
       ** single byte to the last byte in each block that falls entirely
       ** within the extended region. Then, if required, a single byte
@@ -4075,38 +4075,38 @@ static int fcntlSizeHint(unixFile *pFile, i64 nByte){
       ** This is a similar technique to that used by glibc on systems
       ** that do not have a real fallocate() call.
       */
-      int nBlk = buf.st_blksize;  /* File-system block size */
-      int nWrite = 0;             /* Number of bytes written by seekAndWrite */
+      صحیح nBlk = buf.st_blksize;  /* File-system block size */
+      صحیح nWrite = 0;             /* Number of bytes written by seekAndWrite */
       i64 iWrite;                 /* Next offset to write to */
 
-      iWrite = (buf.st_size/nBlk)*nBlk + nBlk - 1;
-      assert( iWrite>=buf.st_size );
-      assert( ((iWrite+1)%nBlk)==0 );
-      for(/*no-op*/; iWrite<nSize+nBlk-1; iWrite+=nBlk ){
-        if( iWrite>=nSize ) iWrite = nSize - 1;
+      iWrite = (buf.st_سائز/nBlk)*nBlk + nBlk - 1;
+      أكد( iWrite>=buf.st_سائز );
+      أكد( ((iWrite+1)%nBlk)==0 );
+      برائے(/*no-op*/; iWrite<n_سائز+nBlk-1; iWrite+=nBlk ){
+        اگر( iWrite>=n_سائز ) iWrite = n_سائز - 1;
         nWrite = seekAndWrite(pFile, iWrite, "", 1);
-        if( nWrite!=1 ) return SQLITE_IOERR_WRITE;
+        اگر( nWrite!=1 ) واپس SQLITE_IOERR_WRITE;
       }
-#endif
+#اگر_ختم
     }
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->mmapSizeMax>0 && nByte>pFile->mmapSize ){
-    int rc;
-    if( pFile->szChunk<=0 ){
-      if( robust_ftruncate(pFile->h, nByte) ){
-        storeLastErrno(pFile, errno);
-        return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
+#اگر SQLITE_MAX_MMAP_سائز>0
+  اگر( pFile->mmap_سائز_Max>0 && nByte>pFile->mmap_سائز ){
+    صحیح rc;
+    اگر( pFile->szChunk<=0 ){
+      اگر( robust_ftruncate(pFile->h, nByte) ){
+        store_آخری_Errno(pFile, errno);
+        واپس unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->z_راستہ);
       }
     }
 
     rc = unixMapfile(pFile, nByte);
-    return rc;
+    واپس rc;
   }
-#endif
+#اگر_ختم
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -4115,229 +4115,229 @@ static int fcntlSizeHint(unixFile *pFile, i64 nByte){
 **
 ** If *pArg is 0 or 1, then clear or set the mask bit of pFile->ctrlFlags.
 */
-static void unixModeBit(unixFile *pFile, unsigned char mask, int *pArg){
-  if( *pArg<0 ){
-    *pArg = (pFile->ctrlFlags & mask)!=0;
-  }else if( (*pArg)==0 ){
-    pFile->ctrlFlags &= ~mask;
-  }else{
-    pFile->ctrlFlags |= mask;
+ساکن خالی unix_منوال_ثنائی_ہندسہ(unixFile *pFile, غیرعلامتی حرف نقاب, صحیح *pArg){
+  اگر( *pArg<0 ){
+    *pArg = (pFile->ctrlFlags & نقاب)!=0;
+  }ورنہ اگر( (*pArg)==0 ){
+    pFile->ctrlFlags &= ~نقاب;
+  }ورنہ{
+    pFile->ctrlFlags |= نقاب;
   }
 }
 
 /* Forward declaration */
-static int unixGetTempname(int nBuf, char *zBuf);
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
- static int unixFcntlExternalReader(unixFile*, int*);
-#endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
- static void unixDescribeShm(sqlite3_str*,unixShm*);
-#endif
+ساکن صحیح unixGetTempname(صحیح nBuf, حرف *zBuf);
+#اگر !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+ ساکن صحیح unixFcntlExternalReader(unixFile*, صحیح*);
+#اگر_ختم
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+ ساکن خالی unixDescribeShm(sqlite3_str*,unixShm*);
+#اگر_ختم
 
 
 /*
 ** Information and control of an open file handle.
 */
-static int unixFileControl(sqlite3_file *id, int op, void *pArg){
+ساکن صحیح unixFileControl(sqlite3_file *id, صحیح op, خالی *pArg){
   unixFile *pFile = (unixFile*)id;
-  switch( op ){
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-    case SQLITE_FCNTL_BEGIN_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_START_ATOMIC_WRITE);
-      return rc ? SQLITE_IOERR_BEGIN_ATOMIC : SQLITE_OK;
+  انتخاب( op ){
+#اگر defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+    حالت SQLITE_FCNTL_BEGIN_ATOMIC_WRITE: {
+      صحیح rc = osIoctl(pFile->h, F2_FS_IOC_آغاز_ATOMIC_WRITE);
+      واپس rc ? SQLITE_IOERR_BEGIN_ATOMIC : SQLITE_OK;
     }
-    case SQLITE_FCNTL_COMMIT_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_COMMIT_ATOMIC_WRITE);
-      return rc ? SQLITE_IOERR_COMMIT_ATOMIC : SQLITE_OK;
+    حالت SQLITE_FCNTL_COMMIT_ATOMIC_WRITE: {
+      صحیح rc = osIoctl(pFile->h, F2FS_IOC_COMMIT_ATOMIC_WRITE);
+      واپس rc ? SQLITE_IOERR_COMMIT_ATOMIC : SQLITE_OK;
     }
-    case SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_ABORT_VOLATILE_WRITE);
-      return rc ? SQLITE_IOERR_ROLLBACK_ATOMIC : SQLITE_OK;
+    حالت SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE: {
+      صحیح rc = osIoctl(pFile->h, F2FS_IOC_ABORT_VOLATILE_WRITE);
+      واپس rc ? SQLITE_IOERR_ROLLBACK_ATOMIC : SQLITE_OK;
     }
-#endif /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
+#اگر_ختم /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
 
-    case SQLITE_FCNTL_NULL_IO: {
+    حالت SQLITE_FCNTL_NULL_IO: {
       osClose(pFile->h);
       pFile->h = -1;
-      return SQLITE_OK;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_LOCKSTATE: {
-      *(int*)pArg = pFile->eFileLock;
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_LOCKSTATE: {
+      *(صحیح*)pArg = pFile->e_File_تالا;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_LAST_ERRNO: {
-      *(int*)pArg = pFile->lastErrno;
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_آخری_ERRNO: {
+      *(صحیح*)pArg = pFile->آخری_Errno;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_CHUNK_SIZE: {
-      pFile->szChunk = *(int *)pArg;
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_CHUNK_سائز: {
+      pFile->szChunk = *(صحیح *)pArg;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_SIZE_HINT: {
-      int rc;
+    حالت SQLITE_FCNTL_سائز_HINT: {
+      صحیح rc;
       SimulateIOErrorBenign(1);
-      rc = fcntlSizeHint(pFile, *(i64 *)pArg);
+      rc = fcntl_سائز_Hint(pFile, *(i64 *)pArg);
       SimulateIOErrorBenign(0);
-      return rc;
+      واپس rc;
     }
-    case SQLITE_FCNTL_PERSIST_WAL: {
-      unixModeBit(pFile, UNIXFILE_PERSIST_WAL, (int*)pArg);
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_PERSIST_WAL: {
+      unix_منوال_ثنائی_ہندسہ(pFile, UNIXFILE_PERSIST_WAL, (صحیح*)pArg);
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
-      unixModeBit(pFile, UNIXFILE_PSOW, (int*)pArg);
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
+      unix_منوال_ثنائی_ہندسہ(pFile, UNIXFILE_PSOW, (صحیح*)pArg);
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_VFSNAME: {
-      *(char**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_VFSNAME: {
+      *(حرف**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_TEMPFILENAME: {
-      char *zTFile = sqlite3_malloc64( pFile->pVfs->mxPathname );
-      if( zTFile ){
+    حالت SQLITE_FCNTL_TEMPFILENAME: {
+      حرف *zTFile = sqlite3_malloc64( pFile->pVfs->mxPathname );
+      اگر( zTFile ){
         unixGetTempname(pFile->pVfs->mxPathname, zTFile);
-        *(char**)pArg = zTFile;
+        *(حرف**)pArg = zTFile;
       }
-      return SQLITE_OK;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_HAS_MOVED: {
-      *(int*)pArg = fileHasMoved(pFile);
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_HAS_MOVED: {
+      *(صحیح*)pArg = fileHasMoved(pFile);
+      واپس SQLITE_OK;
     }
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    case SQLITE_FCNTL_LOCK_TIMEOUT: {
-      int iOld = pFile->iBusyTimeout;
-      int iNew = *(int*)pArg;
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
-      pFile->iBusyTimeout = iNew<0 ? 0x7FFFFFFF : (unsigned)iNew;
-#elif SQLITE_ENABLE_SETLK_TIMEOUT==2
-      pFile->iBusyTimeout = !!(*(int*)pArg);
-#else
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    حالت SQLITE_FCNTL_تالا_TIMEOUT: {
+      صحیح iOld = pFile->iBusyTimeout;
+      صحیح iNew = *(صحیح*)pArg;
+#اگر SQLITE_ENABLE_SETLK_TIMEOUT==1
+      pFile->iBusyTimeout = iNew<0 ? 0x7FFFFFFF : (غیرعلامتی)iNew;
+#وگرنہ_اگر SQLITE_ENABLE_SETLK_TIMEOUT==2
+      pFile->iBusyTimeout = !!(*(صحیح*)pArg);
+#ورنہ
 # error "SQLITE_ENABLE_SETLK_TIMEOUT must be set to 1 or 2"
-#endif
-      *(int*)pArg = iOld;
-      return SQLITE_OK;
+#اگر_ختم
+      *(صحیح*)pArg = iOld;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_BLOCK_ON_CONNECT: {
-      int iNew = *(int*)pArg;
-      pFile->bBlockOnConnect = iNew;
-      return SQLITE_OK;
+    حالت SQLITE_FCNTL_بلاک_ON_CONNECT: {
+      صحیح iNew = *(صحیح*)pArg;
+      pFile->b_بلاک_On_Connect = iNew;
+      واپس SQLITE_OK;
     }
-#endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
-#if SQLITE_MAX_MMAP_SIZE>0
-    case SQLITE_FCNTL_MMAP_SIZE: {
-      i64 newLimit = *(i64*)pArg;
-      int rc = SQLITE_OK;
-      if( newLimit>sqlite3GlobalConfig.mxMmap ){
-        newLimit = sqlite3GlobalConfig.mxMmap;
+#اگر_ختم /* SQLITE_ENABLE_SETLK_TIMEOUT */
+#اگر SQLITE_MAX_MMAP_سائز>0
+    حالت SQLITE_FCNTL_MMAP_سائز: {
+      i64 new_حد_بندی = *(i64*)pArg;
+      صحیح rc = SQLITE_OK;
+      اگر( new_حد_بندی>sqlite3GlobalConfig.mxMmap ){
+        new_حد_بندی = sqlite3GlobalConfig.mxMmap;
       }
 
       /* The value of newLimit may be eventually cast to (size_t) and passed
       ** to mmap(). Restrict its value to 2GB if (size_t) is not at least a
       ** 64-bit type. */
-      if( newLimit>0 && sizeof(size_t)<8 ){
-        newLimit = (newLimit & 0x7FFFFFFF);
+      اگر( new_حد_بندی>0 && حجم(size_t)<8 ){
+        new_حد_بندی = (new_حد_بندی & 0x7FFFFFFF);
       }
 
-      *(i64*)pArg = pFile->mmapSizeMax;
-      if( newLimit>=0 && newLimit!=pFile->mmapSizeMax && pFile->nFetchOut==0 ){
-        pFile->mmapSizeMax = newLimit;
-        if( pFile->mmapSize>0 ){
+      *(i64*)pArg = pFile->mmap_سائز_Max;
+      اگر( new_حد_بندی>=0 && new_حد_بندی!=pFile->mmap_سائز_Max && pFile->n_Fetch_برآمد==0 ){
+        pFile->mmap_سائز_Max = new_حد_بندی;
+        اگر( pFile->mmap_سائز>0 ){
           unixUnmapfile(pFile);
           rc = unixMapfile(pFile, -1);
         }
       }
-      return rc;
+      واپس rc;
     }
-#endif
-#ifdef SQLITE_DEBUG
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_DEBUG
     /* The pager calls this method to signal that it has done
     ** a rollback and that the database is therefore unchanged and
     ** it hence it is OK for the transaction change counter to be
     ** unchanged.
     */
-    case SQLITE_FCNTL_DB_UNCHANGED: {
+    حالت SQLITE_FCNTL_DB_UNCHANGED: {
       ((unixFile*)id)->dbUpdate = 0;
-      return SQLITE_OK;
+      واپس SQLITE_OK;
     }
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-    case SQLITE_FCNTL_SET_LOCKPROXYFILE:
-    case SQLITE_FCNTL_GET_LOCKPROXYFILE: {
-      return proxyFileControl(id,op,pArg);
+#اگر_ختم
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+    حالت SQLITE_FCNTL_سیٹ_LOCKPROXYFILE:
+    حالت SQLITE_FCNTL_GET_LOCKPROXYFILE: {
+      واپس proxyFileControl(id,op,pArg);
     }
-#endif /* SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__) */
+#اگر_ختم /* SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__) */
 
-    case SQLITE_FCNTL_EXTERNAL_READER: {
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
-      return unixFcntlExternalReader((unixFile*)id, (int*)pArg);
-#else
-      *(int*)pArg = 0;
-      return SQLITE_OK;
-#endif
+    حالت SQLITE_FCNTL_EXTERNAL_READER: {
+#اگر !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+      واپس unixFcntlExternalReader((unixFile*)id, (صحیح*)pArg);
+#ورنہ
+      *(صحیح*)pArg = 0;
+      واپس SQLITE_OK;
+#اگر_ختم
     }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
-    case SQLITE_FCNTL_FILESTAT: {
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+    حالت SQLITE_FCNTL_FILESTAT: {
       sqlite3_str *pStr = (sqlite3_str*)pArg;
-      char aLck[16];
+      حرف aLck[16];
       unixInodeInfo *pInode;
-      static const char *azLock[] = { "SHARED", "RESERVED",
+      ساکن ثابت حرف *az_تالا[] = { "SHARED", "RESERVED",
                                       "PENDING", "EXCLUSIVE" };
       sqlite3_str_appendf(pStr, "{\"h\":%d", pFile->h);
       sqlite3_str_appendf(pStr, ",\"vfs\":\"%s\"", pFile->pVfs->zName);
-      if( pFile->eFileLock ){
+      اگر( pFile->e_File_تالا ){
         sqlite3_str_appendf(pStr, ",\"eFileLock\":\"%s\"", 
-                                  azLock[pFile->eFileLock-1]);
-        if( unixPosixAdvisoryLocks(pFile->h, aLck)==SQLITE_OK ){
+                                  az_تالا[pFile->e_File_تالا-1]);
+        اگر( unixPosixAdvisoryLocks(pFile->h, aLck)==SQLITE_OK ){
           sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
         }
       }
       unixEnterMutex();
-      if( pFile->pShm ){
+      اگر( pFile->pShm ){
         sqlite3_str_appendall(pStr, ",\"shm\":");
         unixDescribeShm(pStr, pFile->pShm);
       }
-#if SQLITE_MAX_MMAP_SIZE>0
-      if( pFile->mmapSize ){
-        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmapSize);
-        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->nFetchOut);
+#اگر SQLITE_MAX_MMAP_سائز>0
+      اگر( pFile->mmap_سائز ){
+        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmap_سائز);
+        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->n_Fetch_برآمد);
       }
-#endif
-      if( (pInode = pFile->pInode)!=0 ){
+#اگر_ختم
+      اگر( (pInode = pFile->pInode)!=0 ){
         sqlite3_str_appendf(pStr, ",\"inode\":{\"nRef\":%d",pInode->nRef);
-        sqlite3_mutex_enter(pInode->pLockMutex);
+        sqlite3_mutex_enter(pInode->p_تالا_Mutex);
         sqlite3_str_appendf(pStr, ",\"nShared\":%d", pInode->nShared);
-        if( pInode->eFileLock ){
+        اگر( pInode->e_File_تالا ){
           sqlite3_str_appendf(pStr, ",\"eFileLock\":\"%s\"", 
-                                  azLock[pInode->eFileLock-1]);
+                                  az_تالا[pInode->e_File_تالا-1]);
         }
-        if( pInode->pUnused ){
-          char cSep = '[';
-          UnixUnusedFd *pUFd = pFile->pInode->pUnused;
+        اگر( pInode->p_غیر_مستعمل ){
+          حرف cSep = '[';
+          Unix_غیر_مستعمل_Fd *pUFd = pFile->pInode->p_غیر_مستعمل;
           sqlite3_str_appendall(pStr, ",\"unusedFd\":");
-          while( pUFd ){
+          جب( pUFd ){
             sqlite3_str_appendf(pStr, "%c{\"fd\":%d,\"flags\":%d",
                                 cSep, pUFd->fd, pUFd->flags);
             cSep = ',';
-            if( unixPosixAdvisoryLocks(pUFd->fd, aLck)==SQLITE_OK ){
+            اگر( unixPosixAdvisoryLocks(pUFd->fd, aLck)==SQLITE_OK ){
               sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
             }
             sqlite3_str_append(pStr, "}", 1);
-            pUFd = pUFd->pNext;
+            pUFd = pUFd->p_اگلا;
           }
           sqlite3_str_append(pStr, "]", 1);
         }
-        sqlite3_mutex_leave(pInode->pLockMutex);
+        sqlite3_mutex_leave(pInode->p_تالا_Mutex);
         sqlite3_str_append(pStr, "}", 1);
       }
       unixLeaveMutex();
       sqlite3_str_append(pStr, "}", 1);
-      return SQLITE_OK;
+      واپس SQLITE_OK;
     }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#اگر_ختم /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
   }
-  return SQLITE_NOTFOUND;
+  واپس SQLITE_NOTFOUND;
 }
 
 /*
@@ -4349,104 +4349,104 @@ static int unixFileControl(sqlite3_file *id, int op, void *pArg){
 ** There are two versions of this function. One for QNX and one for all
 ** other systems.
 */
-#ifndef __QNXNTO__
-static void setDeviceCharacteristics(unixFile *pFd){
-  assert( pFd->deviceCharacteristics==0 || pFd->sectorSize!=0 );
-  if( pFd->sectorSize==0 ){
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-    int res;
+#اگر_غیر_تعریف_شدہ __QNXNTO__
+ساکن خالی سیٹ_Device_Characteristics(unixFile *pFd){
+  أكد( pFd->deviceCharacteristics==0 || pFd->sector_سائز!=0 );
+  اگر( pFd->sector_سائز==0 ){
+#اگر defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+    صحیح res;
     u32 f = 0;
 
     /* Check for support for F2FS atomic batch writes. */
     res = osIoctl(pFd->h, F2FS_IOC_GET_FEATURES, &f);
-    if( res==0 && (f & F2FS_FEATURE_ATOMIC_WRITE) ){
+    اگر( res==0 && (f & F2FS_FEATURE_ATOMIC_WRITE) ){
       pFd->deviceCharacteristics = SQLITE_IOCAP_BATCH_ATOMIC;
     }
-#endif /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
+#اگر_ختم /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
 
     /* Set the POWERSAFE_OVERWRITE flag if requested. */
-    if( pFd->ctrlFlags & UNIXFILE_PSOW ){
+    اگر( pFd->ctrlFlags & UNIXFILE_PSOW ){
       pFd->deviceCharacteristics |= SQLITE_IOCAP_POWERSAFE_OVERWRITE;
     }
     pFd->deviceCharacteristics |= SQLITE_IOCAP_SUBPAGE_READ;
 
-    pFd->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
+    pFd->sector_سائز = SQLITE_DEFAULT_SECTOR_سائز;
   }
 }
-#else
-#include <sys/dcmd_blk.h>
-#include <sys/statvfs.h>
-static void setDeviceCharacteristics(unixFile *pFile){
-  if( pFile->sectorSize == 0 ){
-    struct statvfs fsInfo;
+#ورنہ
+#شامل <sys/dcmd_blk.h>
+#شامل <sys/statvfs.h>
+ساکن خالی سیٹ_Device_Characteristics(unixFile *pFile){
+  اگر( pFile->sector_سائز == 0 ){
+    ساخت statvfs fsInfo;
 
     /* Set defaults for non-supported filesystems */
-    pFile->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
+    pFile->sector_سائز = SQLITE_DEFAULT_SECTOR_سائز;
     pFile->deviceCharacteristics = 0;
-    if( fstatvfs(pFile->h, &fsInfo) == -1 ) {
-      return;
+    اگر( fstatvfs(pFile->h, &fsInfo) == -1 ) {
+      واپس;
     }
 
-    if( !strcmp(fsInfo.f_basetype, "tmp") ) {
-      pFile->sectorSize = fsInfo.f_bsize;
+    اگر( !strcmp(fsInfo.f_basetype, "tmp") ) {
+      pFile->sector_سائز = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC4K |       /* All ram filesystem writes are atomic */
-        SQLITE_IOCAP_SAFE_APPEND |    /* growing the file does not occur until
+        SQLITE_IOCAP_محفوظ_APPEND |    /* growing the file does not occur until
                                       ** the write succeeds */
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( strstr(fsInfo.f_basetype, "etfs") ){
-      pFile->sectorSize = fsInfo.f_bsize;
+    }ورنہ اگر( لڑی_تلاش(fsInfo.f_basetype, "etfs") ){
+      pFile->sector_سائز = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* etfs cluster size writes are atomic */
-        (pFile->sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) |
-        SQLITE_IOCAP_SAFE_APPEND |    /* growing the file does not occur until
+        (pFile->sector_سائز / 512 * SQLITE_IOCAP_ATOMIC512) |
+        SQLITE_IOCAP_محفوظ_APPEND |    /* growing the file does not occur until
                                       ** the write succeeds */
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( !strcmp(fsInfo.f_basetype, "qnx6") ){
-      pFile->sectorSize = fsInfo.f_bsize;
+    }ورنہ اگر( !strcmp(fsInfo.f_basetype, "qnx6") ){
+      pFile->sector_سائز = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC |         /* All filesystem writes are atomic */
-        SQLITE_IOCAP_SAFE_APPEND |    /* growing the file does not occur until
+        SQLITE_IOCAP_محفوظ_APPEND |    /* growing the file does not occur until
                                       ** the write succeeds */
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( !strcmp(fsInfo.f_basetype, "qnx4") ){
-      pFile->sectorSize = fsInfo.f_bsize;
+    }ورنہ اگر( !strcmp(fsInfo.f_basetype, "qnx4") ){
+      pFile->sector_سائز = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* full bitset of atomics from max sector size and smaller */
-        (((pFile->sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) << 1) - 2) |
+        (((pFile->sector_سائز / 512 * SQLITE_IOCAP_ATOMIC512) << 1) - 2) |
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( strstr(fsInfo.f_basetype, "dos") ){
-      pFile->sectorSize = fsInfo.f_bsize;
+    }ورنہ اگر( لڑی_تلاش(fsInfo.f_basetype, "dos") ){
+      pFile->sector_سائز = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* full bitset of atomics from max sector size and smaller */
-        (((pFile->sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) << 1) - 2) |
+        (((pFile->sector_سائز / 512 * SQLITE_IOCAP_ATOMIC512) << 1) - 2) |
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else{
+    }ورنہ{
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC512 |      /* blocks are atomic */
-        SQLITE_IOCAP_SAFE_APPEND |    /* growing the file does not occur until
+        SQLITE_IOCAP_محفوظ_APPEND |    /* growing the file does not occur until
                                       ** the write succeeds */
         0;
     }
   }
   /* Last chance verification.  If the sector size isn't a multiple of 512
   ** then it isn't valid.*/
-  if( pFile->sectorSize % 512 != 0 ){
+  اگر( pFile->sector_سائز % 512 != 0 ){
     pFile->deviceCharacteristics = 0;
-    pFile->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
+    pFile->sector_سائز = SQLITE_DEFAULT_SECTOR_سائز;
   }
 }
-#endif
+#اگر_ختم
 
 /*
 ** Return the sector size in bytes of the underlying block device for
@@ -4458,10 +4458,10 @@ static void setDeviceCharacteristics(unixFile *pFile){
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-static int unixSectorSize(sqlite3_file *id){
+ساکن صحیح unix_Sector_سائز(sqlite3_file *id){
   unixFile *pFd = (unixFile*)id;
-  setDeviceCharacteristics(pFd);
-  return pFd->sectorSize;
+  سیٹ_Device_Characteristics(pFd);
+  واپس pFd->sector_سائز;
 }
 
 /*
@@ -4477,13 +4477,13 @@ static int unixSectorSize(sqlite3_file *id){
 **  Hence, while POWERSAFE_OVERWRITE is on by default, there is a file-control
 ** available to turn it off and URI query parameter available to turn it off.
 */
-static int unixDeviceCharacteristics(sqlite3_file *id){
+ساکن صحیح unixDeviceCharacteristics(sqlite3_file *id){
   unixFile *pFd = (unixFile*)id;
-  setDeviceCharacteristics(pFd);
-  return pFd->deviceCharacteristics;
+  سیٹ_Device_Characteristics(pFd);
+  واپس pFd->deviceCharacteristics;
 }
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
+#اگر !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_سائز>0
 
 /*
 ** Return the system page size.
@@ -4491,19 +4491,19 @@ static int unixDeviceCharacteristics(sqlite3_file *id){
 ** This function should not be called directly by other code in this file.
 ** Instead, it should be called via macro osGetpagesize().
 */
-static int unixGetpagesize(void){
-#if OS_VXWORKS
-  return 1024;
-#elif defined(_BSD_SOURCE)
-  return getpagesize();
-#else
-  return (int)sysconf(_SC_PAGESIZE);
-#endif
+ساکن صحیح unixGetpagesize(خالی){
+#اگر OS_VXWORKS
+  واپس 1024;
+#وگرنہ_اگر defined(BSD_ماخذ)
+  واپس getpagesize();
+#ورنہ
+  واپس (صحیح)sysconf(_SC_PAGESIZE);
+#اگر_ختم
 }
 
-#endif /* !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0 */
+#اگر_ختم /* !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0 */
 
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+#اگر !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
 
 /*
 ** Object used to represent an shared memory buffer.
@@ -4553,25 +4553,25 @@ static int unixGetpagesize(void){
 **   aMutex[iSlot]. Similarly, to call fcntl() to obtain or release a
 **   lock corresponding to slot iSlot, mutex aMutex[iSlot] must be held.
 */
-struct unixShmNode {
+ساخت unix_Shm_گرہ {
   unixInodeInfo *pInode;     /* unixInodeInfo that owns this SHM node */
   sqlite3_mutex *pShmMutex;  /* Mutex to access this object */
-  char *zFilename;           /* Name of the mmapped file */
-  int hShm;                  /* Open file descriptor */
-  int szRegion;              /* Size of shared-memory regions */
+  حرف *zFilename;           /* Name of the mmapped file */
+  صحیح hShm;                  /* Open file descriptor */
+  صحیح szRegion;              /* Size of shared-memory regions */
   u16 nRegion;               /* Size of array apRegion */
   u8 isReadonly;             /* True if read-only */
   u8 isUnlocked;             /* True if no DMS lock held */
-  char **apRegion;           /* Array of mapped shared-memory regions */
-  int nRef;                  /* Number of unixShm objects pointing to this */
-  unixShm *pFirst;           /* All unixShm objects pointing to this */
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+  حرف **apRegion;           /* Array of mapped shared-memory regions */
+  صحیح nRef;                  /* Number of unixShm objects pointing to this */
+  unixShm *p_پہلا;           /* All unixShm objects pointing to this */
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
   sqlite3_mutex *aMutex[SQLITE_SHM_NLOCK];
-#endif
-  int aLock[SQLITE_SHM_NLOCK];  /* # shared locks on slot, -1==excl lock */
-#ifdef SQLITE_DEBUG
-  u8 nextShmId;              /* Next available unixShm.id value */
-#endif
+#اگر_ختم
+  صحیح a_تالا[SQLITE_SHM_NLOCK];  /* # shared locks on slot, -1==excl lock */
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  u8 اگلا_Shm_Id;              /* Next available unixShm.id value */
+#اگر_ختم
 };
 
 /*
@@ -4587,40 +4587,40 @@ struct unixShmNode {
 ** All other fields are read/write.  The unixShm.pShmNode->pShmMutex must
 ** be held while accessing any read/write fields.
 */
-struct unixShm {
-  unixShmNode *pShmNode;     /* The underlying unixShmNode object */
-  unixShm *pNext;            /* Next unixShm with the same unixShmNode */
+ساخت unixShm {
+  unix_Shm_گرہ *p_Shm_گرہ;     /* The underlying unixShmNode object */
+  unixShm *p_اگلا;            /* Next unixShm with the same unixShmNode */
   u8 hasMutex;               /* True if holding the unixShmNode->pShmMutex */
   u8 id;                     /* Id of this connection within its unixShmNode */
-  u16 sharedMask;            /* Mask of shared locks held */
-  u16 exclMask;              /* Mask of exclusive locks held */
+  u16 shared_نقاب;            /* Mask of shared locks held */
+  u16 excl_نقاب;              /* Mask of exclusive locks held */
 };
 
 /*
 ** Constants used for locking
 */
-#define UNIX_SHM_BASE   ((22+SQLITE_SHM_NLOCK)*4)         /* first lock byte */
-#define UNIX_SHM_DMS    (UNIX_SHM_BASE+SQLITE_SHM_NLOCK)  /* deadman switch */
+#تعریف_کرو UNIX_SHM_بنیاد   ((22+SQLITE_SHM_NLOCK)*4)         /* first lock byte */
+#تعریف_کرو UNIX_SHM_DMS    (UNIX_SHM_بنیاد+SQLITE_SHM_NLOCK)  /* deadman switch */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Describe the pShm object using JSON.  Used for diagnostics only.
 */
-static void unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
-  unixShmNode *pNode = pShm->pShmNode;
-  char aLck[16];
-  sqlite3_str_appendf(pStr, "{\"h\":%d", pNode->hShm);
-  assert( unixMutexHeld() );
-  sqlite3_str_appendf(pStr, ",\"nRef\":%d", pNode->nRef);
+ساکن خالی unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
+  unix_Shm_گرہ *p_گرہ = pShm->p_Shm_گرہ;
+  حرف aLck[16];
+  sqlite3_str_appendf(pStr, "{\"h\":%d", p_گرہ->hShm);
+  أكد( unixMutexHeld() );
+  sqlite3_str_appendf(pStr, ",\"nRef\":%d", p_گرہ->nRef);
   sqlite3_str_appendf(pStr, ",\"id\":%d", pShm->id);
-  sqlite3_str_appendf(pStr, ",\"sharedMask\":%d", pShm->sharedMask);
-  sqlite3_str_appendf(pStr, ",\"exclMask\":%d", pShm->exclMask);
-  if( unixPosixAdvisoryLocks(pNode->hShm, aLck)==SQLITE_OK ){
+  sqlite3_str_appendf(pStr, ",\"sharedMask\":%d", pShm->shared_نقاب);
+  sqlite3_str_appendf(pStr, ",\"exclMask\":%d", pShm->excl_نقاب);
+  اگر( unixPosixAdvisoryLocks(p_گرہ->hShm, aLck)==SQLITE_OK ){
     sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
   }
   sqlite3_str_append(pStr, "}", 1);
 }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#اگر_ختم /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
 /*
 ** Use F_GETLK to check whether or not there are any readers with open
@@ -4630,29 +4630,29 @@ static void unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
 ** SQLite error code. The final value of *piOut is undefined in this
 ** case.
 */
-static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
-  int rc = SQLITE_OK;
-  *piOut = 0;
-  if( pFile->pShm){
-    unixShmNode *pShmNode = pFile->pShm->pShmNode;
-    struct flock f;
+ساکن صحیح unixFcntlExternalReader(unixFile *pFile, صحیح *pi_برآمد){
+  صحیح rc = SQLITE_OK;
+  *pi_برآمد = 0;
+  اگر( pFile->pShm){
+    unix_Shm_گرہ *p_Shm_گرہ = pFile->pShm->p_Shm_گرہ;
+    ساخت flock f;
 
-    memset(&f, 0, sizeof(f));
+    memset(&f, 0, حجم(f));
     f.l_type = F_WRLCK;
     f.l_whence = SEEK_SET;
-    f.l_start = UNIX_SHM_BASE + 3;
+    f.l_آغاز = UNIX_SHM_بنیاد + 3;
     f.l_len = SQLITE_SHM_NLOCK - 3;
 
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
-    if( osFcntl(pShmNode->hShm, F_GETLK, &f)<0 ){
-      rc = SQLITE_IOERR_LOCK;
-    }else{
-      *piOut = (f.l_type!=F_UNLCK);
+    sqlite3_mutex_enter(p_Shm_گرہ->pShmMutex);
+    اگر( osFcntl(p_Shm_گرہ->hShm, F_GETLK, &f)<0 ){
+      rc = SQLITE_IOERR_تالا;
+    }ورنہ{
+      *pi_برآمد = (f.l_type!=F_UNLCK);
     }
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
+    sqlite3_mutex_leave(p_Shm_گرہ->pShmMutex);
   }
 
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -4676,22 +4676,22 @@ static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
 ** the database out of WAL mode, which is perhaps more serious, but is
 ** still not a disaster.
 */
-static int unixIsSharingShmNode(unixFile *pFile){
-  unixShmNode *pShmNode;
-  struct flock lock;
-  if( pFile->pShm==0 ) return 0;
-  if( pFile->ctrlFlags & UNIXFILE_EXCL ) return 0;
-  pShmNode = pFile->pShm->pShmNode;
-#if SQLITE_ATOMIC_INTRINSICS
-  assert( AtomicLoad(&pShmNode->nRef)==1 );
-#endif
-  memset(&lock, 0, sizeof(lock));
-  lock.l_whence = SEEK_SET;
-  lock.l_start = UNIX_SHM_DMS;
-  lock.l_len = 1;
-  lock.l_type = F_WRLCK;
-  osFcntl(pShmNode->hShm, F_GETLK, &lock);
-  return (lock.l_type!=F_UNLCK);
+ساکن صحیح unix_Is_Sharing_Shm_گرہ(unixFile *pFile){
+  unix_Shm_گرہ *p_Shm_گرہ;
+  ساخت flock تالا;
+  اگر( pFile->pShm==0 ) واپس 0;
+  اگر( pFile->ctrlFlags & UNIXFILE_EXCL ) واپس 0;
+  p_Shm_گرہ = pFile->pShm->p_Shm_گرہ;
+#اگر SQLITE_ATOMIC_INTRINSICS
+  أكد( Atomic_بھرو(&p_Shm_گرہ->nRef)==1 );
+#اگر_ختم
+  memset(&تالا, 0, حجم(تالا));
+  تالا.l_whence = SEEK_SET;
+  تالا.l_آغاز = UNIX_SHM_DMS;
+  تالا.l_len = 1;
+  تالا.l_type = F_WRLCK;
+  osFcntl(p_Shm_گرہ->hShm, F_GETLK, &تالا);
+  واپس (تالا.l_type!=F_UNLCK);
 }
 
 /*
@@ -4700,89 +4700,89 @@ static int unixIsSharingShmNode(unixFile *pFile){
 ** Locks block if the mask is exactly UNIX_SHM_C and are non-blocking
 ** otherwise.
 */
-static int unixShmSystemLock(
+ساکن صحیح unix_Shm_System_تالا(
   unixFile *pFile,       /* Open connection to the WAL file */
-  int lockType,          /* F_UNLCK, F_RDLCK, or F_WRLCK */
-  int ofst,              /* First byte of the locking range */
-  int n                  /* Number of bytes to lock */
+  صحیح تالا_Type,          /* F_UNLCK, F_RDLCK, or F_WRLCK */
+  صحیح ofst,              /* First byte of the locking range */
+  صحیح n                  /* Number of bytes to lock */
 ){
-  unixShmNode *pShmNode; /* Apply locks to this open shared-memory segment */
-  struct flock f;        /* The posix advisory locking structure */
-  int rc = SQLITE_OK;    /* Result code form fcntl() */
+  unix_Shm_گرہ *p_Shm_گرہ; /* Apply locks to this open shared-memory segment */
+  ساخت flock f;        /* The posix advisory locking structure */
+  صحیح rc = SQLITE_OK;    /* Result code form fcntl() */
 
-  pShmNode = pFile->pInode->pShmNode;
+  p_Shm_گرہ = pFile->pInode->p_Shm_گرہ;
 
   /* Assert that the parameters are within expected range and that the
   ** correct mutex or mutexes are held. */
-  assert( pShmNode->nRef>=0 );
-  assert( (ofst==UNIX_SHM_DMS && n==1)
-       || (ofst>=UNIX_SHM_BASE && ofst+n<=(UNIX_SHM_BASE+SQLITE_SHM_NLOCK))
+  أكد( p_Shm_گرہ->nRef>=0 );
+  أكد( (ofst==UNIX_SHM_DMS && n==1)
+       || (ofst>=UNIX_SHM_بنیاد && ofst+n<=(UNIX_SHM_بنیاد+SQLITE_SHM_NLOCK))
   );
-  if( ofst==UNIX_SHM_DMS ){
-    assert( pShmNode->nRef>0 || unixMutexHeld() );
-    assert( pShmNode->nRef==0 || sqlite3_mutex_held(pShmNode->pShmMutex) );
-  }else{
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    int ii;
-    for(ii=ofst-UNIX_SHM_BASE; ii<ofst-UNIX_SHM_BASE+n; ii++){
-      assert( sqlite3_mutex_held(pShmNode->aMutex[ii]) );
+  اگر( ofst==UNIX_SHM_DMS ){
+    أكد( p_Shm_گرہ->nRef>0 || unixMutexHeld() );
+    أكد( p_Shm_گرہ->nRef==0 || sqlite3_mutex_held(p_Shm_گرہ->pShmMutex) );
+  }ورنہ{
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    صحیح ii;
+    برائے(ii=ofst-UNIX_SHM_بنیاد; ii<ofst-UNIX_SHM_بنیاد+n; ii++){
+      أكد( sqlite3_mutex_held(p_Shm_گرہ->aMutex[ii]) );
     }
-#else
-    assert( sqlite3_mutex_held(pShmNode->pShmMutex) );
-    assert( pShmNode->nRef>0 );
-#endif
+#ورنہ
+    أكد( sqlite3_mutex_held(p_Shm_گرہ->pShmMutex) );
+    أكد( p_Shm_گرہ->nRef>0 );
+#اگر_ختم
   }
 
   /* Shared locks never span more than one byte */
-  assert( n==1 || lockType!=F_RDLCK );
+  أكد( n==1 || تالا_Type!=F_RDLCK );
 
   /* Locks are within range */
-  assert( n>=1 && n<=SQLITE_SHM_NLOCK );
-  assert( ofst>=UNIX_SHM_BASE && ofst<=UNIX_SHM_DMS );
-  assert( ofst+n-1<=UNIX_SHM_DMS );
+  أكد( n>=1 && n<=SQLITE_SHM_NLOCK );
+  أكد( ofst>=UNIX_SHM_بنیاد && ofst<=UNIX_SHM_DMS );
+  أكد( ofst+n-1<=UNIX_SHM_DMS );
 
-  if( pShmNode->hShm>=0 ){
-    int res;
+  اگر( p_Shm_گرہ->hShm>=0 ){
+    صحیح res;
     /* Initialize the locking parameters */
-    f.l_type = lockType;
+    f.l_type = تالا_Type;
     f.l_whence = SEEK_SET;
-    f.l_start = ofst;
+    f.l_آغاز = ofst;
     f.l_len = n;
-    res = osSetPosixAdvisoryLock(pShmNode->hShm, &f, pFile);
-    if( res==-1 ){
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && SQLITE_ENABLE_SETLK_TIMEOUT==1
+    res = os_سیٹ_Posix_Advisory_تالا(p_Shm_گرہ->hShm, &f, pFile);
+    اگر( res==-1 ){
+#اگر defined(SQLITE_ENABLE_SETLK_TIMEOUT) && SQLITE_ENABLE_SETLK_TIMEOUT==1
       rc = (pFile->iBusyTimeout ? SQLITE_BUSY_TIMEOUT : SQLITE_BUSY);
-#else
+#ورنہ
       rc = SQLITE_BUSY;
-#endif
+#اگر_ختم
     }
   }
 
   /* Do debug tracing */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   OSTRACE(("SHM-LOCK "));
-  if( rc==SQLITE_OK ){
-    if( lockType==F_UNLCK ){
+  اگر( rc==SQLITE_OK ){
+    اگر( تالا_Type==F_UNLCK ){
       OSTRACE(("unlock %d..%d ok\n", ofst, ofst+n-1));
-    }else if( lockType==F_RDLCK ){
+    }ورنہ اگر( تالا_Type==F_RDLCK ){
       OSTRACE(("read-lock %d..%d ok\n", ofst, ofst+n-1));
-    }else{
-      assert( lockType==F_WRLCK );
+    }ورنہ{
+      أكد( تالا_Type==F_WRLCK );
       OSTRACE(("write-lock %d..%d ok\n", ofst, ofst+n-1));
     }
-  }else{
-    if( lockType==F_UNLCK ){
+  }ورنہ{
+    اگر( تالا_Type==F_UNLCK ){
       OSTRACE(("unlock %d..%d failed\n", ofst, ofst+n-1));
-    }else if( lockType==F_RDLCK ){
+    }ورنہ اگر( تالا_Type==F_RDLCK ){
       OSTRACE(("read-lock %d..%d failed\n", ofst, ofst+n-1));
-    }else{
-      assert( lockType==F_WRLCK );
+    }ورنہ{
+      أكد( تالا_Type==F_WRLCK );
       OSTRACE(("write-lock %d..%d failed\n", ofst, ofst+n-1));
     }
   }
-#endif
+#اگر_ختم
 
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -4794,12 +4794,12 @@ static int unixShmSystemLock(
 ** to use 64KB pages - in this case each mapping must cover at least two
 ** shm regions.
 */
-static int unixShmRegionPerMap(void){
-  int shmsz = 32*1024;            /* SHM region size */
-  int pgsz = osGetpagesize();   /* System page size */
-  assert( ((pgsz-1)&pgsz)==0 );   /* Page size must be a power of 2 */
-  if( pgsz<shmsz ) return 1;
-  return pgsz/shmsz;
+ساکن صحیح unix_Shm_Region_فی_Map(خالی){
+  صحیح shmsz = 32*1024;            /* SHM region size */
+  صحیح pgsz = osGetpagesize();   /* System page size */
+  أكد( ((pgsz-1)&pgsz)==0 );   /* Page size must be a power of 2 */
+  اگر( pgsz<shmsz ) واپس 1;
+  واپس pgsz/shmsz;
 }
 
 /*
@@ -4808,32 +4808,32 @@ static int unixShmRegionPerMap(void){
 ** This is not a VFS shared-memory method; it is a utility function called
 ** by VFS shared-memory methods.
 */
-static void unixShmPurge(unixFile *pFd){
-  unixShmNode *p = pFd->pInode->pShmNode;
-  assert( unixMutexHeld() );
-  if( p && ALWAYS(p->nRef==0) ){
-    int nShmPerMap = unixShmRegionPerMap();
-    int i;
-    assert( p->pInode==pFd->pInode );
+ساکن خالی unixShmPurge(unixFile *pFd){
+  unix_Shm_گرہ *p = pFd->pInode->p_Shm_گرہ;
+  أكد( unixMutexHeld() );
+  اگر( p && ALWAYS(p->nRef==0) ){
+    صحیح n_Shm_فی_Map = unix_Shm_Region_فی_Map();
+    صحیح i;
+    أكد( p->pInode==pFd->pInode );
     sqlite3_mutex_free(p->pShmMutex);
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    for(i=0; i<SQLITE_SHM_NLOCK; i++){
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    برائے(i=0; i<SQLITE_SHM_NLOCK; i++){
       sqlite3_mutex_free(p->aMutex[i]);
     }
-#endif
-    for(i=0; i<p->nRegion; i+=nShmPerMap){
-      if( p->hShm>=0 ){
+#اگر_ختم
+    برائے(i=0; i<p->nRegion; i+=n_Shm_فی_Map){
+      اگر( p->hShm>=0 ){
         osMunmap(p->apRegion[i], p->szRegion);
-      }else{
+      }ورنہ{
         sqlite3_free(p->apRegion[i]);
       }
     }
     sqlite3_free(p->apRegion);
-    if( p->hShm>=0 ){
+    اگر( p->hShm>=0 ){
       robust_close(pFd, p->hShm, __LINE__);
       p->hShm = -1;
     }
-    p->pInode->pShmNode = 0;
+    p->pInode->p_Shm_گرہ = 0;
     sqlite3_free(p);
   }
 }
@@ -4847,9 +4847,9 @@ static void unixShmPurge(unixFile *pFd){
 ** connection and no other process already holds a lock, return
 ** SQLITE_READONLY_CANTINIT and set pShmNode->isUnlocked=1.
 */
-static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
-  struct flock lock;
-  int rc = SQLITE_OK;
+ساکن صحیح unix_تالا_Shared_حافظہ(unixFile *pDbFd, unix_Shm_گرہ *p_Shm_گرہ){
+  ساخت flock تالا;
+  صحیح rc = SQLITE_OK;
 
   /* Use F_GETLK to determine the locks other processes are holding
   ** on the DMS byte. If it indicates that another process is holding
@@ -4869,49 +4869,49 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
   ** process might open and use the *-shm file without truncating it.
   ** And if the *-shm file has been corrupted by a power failure or
   ** system crash, the database itself may also become corrupt.  */
-  lock.l_whence = SEEK_SET;
-  lock.l_start = UNIX_SHM_DMS;
-  lock.l_len = 1;
-  lock.l_type = F_WRLCK;
-  if( osFcntl(pShmNode->hShm, F_GETLK, &lock)!=0 ) {
-    rc = SQLITE_IOERR_LOCK;
-  }else if( lock.l_type==F_UNLCK ){
-    if( pShmNode->isReadonly ){
-      pShmNode->isUnlocked = 1;
+  تالا.l_whence = SEEK_SET;
+  تالا.l_آغاز = UNIX_SHM_DMS;
+  تالا.l_len = 1;
+  تالا.l_type = F_WRLCK;
+  اگر( osFcntl(p_Shm_گرہ->hShm, F_GETLK, &تالا)!=0 ) {
+    rc = SQLITE_IOERR_تالا;
+  }ورنہ اگر( تالا.l_type==F_UNLCK ){
+    اگر( p_Shm_گرہ->isReadonly ){
+      p_Shm_گرہ->isUnlocked = 1;
       rc = SQLITE_READONLY_CANTINIT;
-    }else{
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+    }ورنہ{
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
       /* Do not use a blocking lock here. If the lock cannot be obtained
       ** immediately, it means some other connection is truncating the
       ** *-shm file. And after it has done so, it will not release its
       ** lock, but only downgrade it to a shared lock. So no point in
       ** blocking here. The call below to obtain the shared DMS lock may 
       ** use a blocking lock. */
-      int iSaveTimeout = pDbFd->iBusyTimeout;
+      صحیح iSaveTimeout = pDbFd->iBusyTimeout;
       pDbFd->iBusyTimeout = 0;
-#endif
-      rc = unixShmSystemLock(pDbFd, F_WRLCK, UNIX_SHM_DMS, 1);
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#اگر_ختم
+      rc = unix_Shm_System_تالا(pDbFd, F_WRLCK, UNIX_SHM_DMS, 1);
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
       pDbFd->iBusyTimeout = iSaveTimeout;
-#endif
+#اگر_ختم
       /* The first connection to attach must truncate the -shm file.  We
       ** truncate to 3 bytes (an arbitrary small number, less than the
       ** -shm header size) rather than 0 as a system debugging aid, to
       ** help detect if a -shm file truncation is legitimate or is the work
       ** or a rogue process. */
-      if( rc==SQLITE_OK && robust_ftruncate(pShmNode->hShm, 3) ){
-        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",pShmNode->zFilename);
+      اگر( rc==SQLITE_OK && robust_ftruncate(p_Shm_گرہ->hShm, 3) ){
+        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",p_Shm_گرہ->zFilename);
       }
     }
-  }else if( lock.l_type==F_WRLCK ){
+  }ورنہ اگر( تالا.l_type==F_WRLCK ){
     rc = SQLITE_BUSY;
   }
 
-  if( rc==SQLITE_OK ){
-    assert( lock.l_type==F_UNLCK || lock.l_type==F_RDLCK );
-    rc = unixShmSystemLock(pDbFd, F_RDLCK, UNIX_SHM_DMS, 1);
+  اگر( rc==SQLITE_OK ){
+    أكد( تالا.l_type==F_UNLCK || تالا.l_type==F_RDLCK );
+    rc = unix_Shm_System_تالا(pDbFd, F_RDLCK, UNIX_SHM_DMS, 1);
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -4949,117 +4949,117 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
 ** that case, we do not really need shared memory.  No shared memory
 ** file is created.  The shared memory will be simulated with heap memory.
 */
-static int unixOpenSharedMemory(unixFile *pDbFd){
-  struct unixShm *p = 0;          /* The connection to be opened */
-  struct unixShmNode *pShmNode;   /* The underlying mmapped file */
-  int rc = SQLITE_OK;             /* Result code */
+ساکن صحیح unix_Open_Shared_حافظہ(unixFile *pDbFd){
+  ساخت unixShm *p = 0;          /* The connection to be opened */
+  ساخت unix_Shm_گرہ *p_Shm_گرہ;   /* The underlying mmapped file */
+  صحیح rc = SQLITE_OK;             /* Result code */
   unixInodeInfo *pInode;          /* The inode of fd */
-  char *zShm;             /* Name of the file used for SHM */
-  int nShmFilename;               /* Size of the SHM filename in bytes */
+  حرف *zShm;             /* Name of the file used for SHM */
+  صحیح nShmFilename;               /* Size of the SHM filename in bytes */
 
   /* Allocate space for the new unixShm object. */
-  p = sqlite3_malloc64( sizeof(*p) );
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
-  memset(p, 0, sizeof(*p));
-  assert( pDbFd->pShm==0 );
+  p = sqlite3_malloc64( حجم(*p) );
+  اگر( p==0 ) واپس SQLITE_NOMEM_BKPT;
+  memset(p, 0, حجم(*p));
+  أكد( pDbFd->pShm==0 );
 
   /* Check to see if a unixShmNode object already exists. Reuse an existing
   ** one if present. Create a new one if necessary.
   */
-  assert( unixFileMutexNotheld(pDbFd) );
+  أكد( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
   pInode = pDbFd->pInode;
-  pShmNode = pInode->pShmNode;
-  if( pShmNode==0 ){
-    struct stat sStat;                 /* fstat() info for database file */
-#ifndef SQLITE_SHM_DIRECTORY
-    const char *zBasePath = pDbFd->zPath;
-#endif
+  p_Shm_گرہ = pInode->p_Shm_گرہ;
+  اگر( p_Shm_گرہ==0 ){
+    ساخت stat sStat;                 /* fstat() info for database file */
+#اگر_غیر_تعریف_شدہ SQLITE_SHM_DIRECTORY
+    ثابت حرف *z_بنیاد_راستہ = pDbFd->z_راستہ;
+#اگر_ختم
 
     /* Call fstat() to figure out the permissions on the database file. If
     ** a new *-shm file is created, an attempt will be made to create it
     ** with the same permissions.
     */
-    if( osFstat(pDbFd->h, &sStat) ){
+    اگر( osFstat(pDbFd->h, &sStat) ){
       rc = SQLITE_IOERR_FSTAT;
-      goto shm_open_err;
+      جاؤ shm_open_err;
     }
 
-#ifdef SQLITE_SHM_DIRECTORY
-    nShmFilename = sizeof(SQLITE_SHM_DIRECTORY) + 31;
-#else
-    nShmFilename = 6 + (int)strlen(zBasePath);
-#endif
-    pShmNode = sqlite3_malloc64( sizeof(*pShmNode) + nShmFilename );
-    if( pShmNode==0 ){
+#اگر_تعریف_شدہ SQLITE_SHM_DIRECTORY
+    nShmFilename = حجم(SQLITE_SHM_DIRECTORY) + 31;
+#ورنہ
+    nShmFilename = 6 + (صحیح)لڑی_لمبائی(z_بنیاد_راستہ);
+#اگر_ختم
+    p_Shm_گرہ = sqlite3_malloc64( حجم(*p_Shm_گرہ) + nShmFilename );
+    اگر( p_Shm_گرہ==0 ){
       rc = SQLITE_NOMEM_BKPT;
-      goto shm_open_err;
+      جاؤ shm_open_err;
     }
-    memset(pShmNode, 0, sizeof(*pShmNode)+nShmFilename);
-    zShm = pShmNode->zFilename = (char*)&pShmNode[1];
-#ifdef SQLITE_SHM_DIRECTORY
+    memset(p_Shm_گرہ, 0, حجم(*p_Shm_گرہ)+nShmFilename);
+    zShm = p_Shm_گرہ->zFilename = (حرف*)&p_Shm_گرہ[1];
+#اگر_تعریف_شدہ SQLITE_SHM_DIRECTORY
     sqlite3_snprintf(nShmFilename, zShm,
                      SQLITE_SHM_DIRECTORY "/sqlite-shm-%x-%x",
                      (u32)sStat.st_ino, (u32)sStat.st_dev);
-#else
-    sqlite3_snprintf(nShmFilename, zShm, "%s-shm", zBasePath);
-    sqlite3FileSuffix3(pDbFd->zPath, zShm);
-#endif
-    pShmNode->hShm = -1;
-    pDbFd->pInode->pShmNode = pShmNode;
-    pShmNode->pInode = pDbFd->pInode;
-    if( sqlite3GlobalConfig.bCoreMutex ){
-      pShmNode->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pShmNode->pShmMutex==0 ){
+#ورنہ
+    sqlite3_snprintf(nShmFilename, zShm, "%s-shm", z_بنیاد_راستہ);
+    sqlite3FileSuffix3(pDbFd->z_راستہ, zShm);
+#اگر_ختم
+    p_Shm_گرہ->hShm = -1;
+    pDbFd->pInode->p_Shm_گرہ = p_Shm_گرہ;
+    p_Shm_گرہ->pInode = pDbFd->pInode;
+    اگر( sqlite3GlobalConfig.bCoreMutex ){
+      p_Shm_گرہ->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      اگر( p_Shm_گرہ->pShmMutex==0 ){
         rc = SQLITE_NOMEM_BKPT;
-        goto shm_open_err;
+        جاؤ shm_open_err;
       }
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
       {
-        int ii;
-        for(ii=0; ii<SQLITE_SHM_NLOCK; ii++){
-          pShmNode->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-          if( pShmNode->aMutex[ii]==0 ){
+        صحیح ii;
+        برائے(ii=0; ii<SQLITE_SHM_NLOCK; ii++){
+          p_Shm_گرہ->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+          اگر( p_Shm_گرہ->aMutex[ii]==0 ){
             rc = SQLITE_NOMEM_BKPT;
-            goto shm_open_err;
+            جاؤ shm_open_err;
           }
         }
       }
-#endif
+#اگر_ختم
     }
 
-    if( pInode->bProcessLock==0 ){
-      if( 0==sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0) ){
-        pShmNode->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
-                                     (sStat.st_mode&0777));
+    اگر( pInode->b_Process_تالا==0 ){
+      اگر( 0==sqlite3_uri_boolean(pDbFd->z_راستہ, "readonly_shm", 0) ){
+        p_Shm_گرہ->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
+                                     (sStat.st_منوال&0777));
       }
-      if( pShmNode->hShm<0 ){
-        pShmNode->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
-                                     (sStat.st_mode&0777));
-        if( pShmNode->hShm<0 ){
+      اگر( p_Shm_گرہ->hShm<0 ){
+        p_Shm_گرہ->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
+                                     (sStat.st_منوال&0777));
+        اگر( p_Shm_گرہ->hShm<0 ){
           rc = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zShm);
-          goto shm_open_err;
+          جاؤ shm_open_err;
         }
-        pShmNode->isReadonly = 1;
+        p_Shm_گرہ->isReadonly = 1;
       }
 
       /* If this process is running as root, make sure that the SHM file
       ** is owned by the same user that owns the original database.  Otherwise,
       ** the original owner will not be able to connect.
       */
-      robustFchown(pShmNode->hShm, sStat.st_uid, sStat.st_gid);
+      robustFchown(p_Shm_گرہ->hShm, sStat.st_uid, sStat.st_gid);
 
-      rc = unixLockSharedMemory(pDbFd, pShmNode);
-      if( rc!=SQLITE_OK && rc!=SQLITE_READONLY_CANTINIT ) goto shm_open_err;
+      rc = unix_تالا_Shared_حافظہ(pDbFd, p_Shm_گرہ);
+      اگر( rc!=SQLITE_OK && rc!=SQLITE_READONLY_CANTINIT ) جاؤ shm_open_err;
     }
   }
 
   /* Make the new connection a child of the unixShmNode */
-  p->pShmNode = pShmNode;
-#ifdef SQLITE_DEBUG
-  p->id = pShmNode->nextShmId++;
-#endif
-  pShmNode->nRef++;
+  p->p_Shm_گرہ = p_Shm_گرہ;
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  p->id = p_Shm_گرہ->اگلا_Shm_Id++;
+#اگر_ختم
+  p_Shm_گرہ->nRef++;
   pDbFd->pShm = p;
   unixLeaveMutex();
 
@@ -5070,18 +5070,18 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
   ** at pShmNode->pFirst. This must be done while holding the
   ** pShmNode->pShmMutex.
   */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  p->pNext = pShmNode->pFirst;
-  pShmNode->pFirst = p;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
-  return rc;
+  sqlite3_mutex_enter(p_Shm_گرہ->pShmMutex);
+  p->p_اگلا = p_Shm_گرہ->p_پہلا;
+  p_Shm_گرہ->p_پہلا = p;
+  sqlite3_mutex_leave(p_Shm_گرہ->pShmMutex);
+  واپس rc;
 
   /* Jump here on any error */
 shm_open_err:
   unixShmPurge(pDbFd);       /* This call frees pShmNode if required */
   sqlite3_free(p);
   unixLeaveMutex();
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -5103,65 +5103,65 @@ shm_open_err:
 ** address space (if it is not already), *pp is set to point to the mapped
 ** memory and SQLITE_OK returned.
 */
-static int unixShmMap(
+ساکن صحیح unixShmMap(
   sqlite3_file *fd,               /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int szRegion,                   /* Size of regions */
-  int bExtend,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  صحیح iRegion,                    /* Region to retrieve */
+  صحیح szRegion,                   /* Size of regions */
+  صحیح bExtend,                    /* True to extend file if necessary */
+  خالی متلون **pp              /* OUT: Mapped memory */
 ){
   unixFile *pDbFd = (unixFile*)fd;
   unixShm *p;
-  unixShmNode *pShmNode;
-  int rc = SQLITE_OK;
-  int nShmPerMap = unixShmRegionPerMap();
-  int nReqRegion;
+  unix_Shm_گرہ *p_Shm_گرہ;
+  صحیح rc = SQLITE_OK;
+  صحیح n_Shm_فی_Map = unix_Shm_Region_فی_Map();
+  صحیح nReqRegion;
 
   /* If the shared-memory file has not yet been opened, open it now. */
-  if( pDbFd->pShm==0 ){
-    rc = unixOpenSharedMemory(pDbFd);
-    if( rc!=SQLITE_OK ) return rc;
+  اگر( pDbFd->pShm==0 ){
+    rc = unix_Open_Shared_حافظہ(pDbFd);
+    اگر( rc!=SQLITE_OK ) واپس rc;
   }
 
   p = pDbFd->pShm;
-  pShmNode = p->pShmNode;
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  if( pShmNode->isUnlocked ){
-    rc = unixLockSharedMemory(pDbFd, pShmNode);
-    if( rc!=SQLITE_OK ) goto shmpage_out;
-    pShmNode->isUnlocked = 0;
+  p_Shm_گرہ = p->p_Shm_گرہ;
+  sqlite3_mutex_enter(p_Shm_گرہ->pShmMutex);
+  اگر( p_Shm_گرہ->isUnlocked ){
+    rc = unix_تالا_Shared_حافظہ(pDbFd, p_Shm_گرہ);
+    اگر( rc!=SQLITE_OK ) جاؤ shmpage_برآمد;
+    p_Shm_گرہ->isUnlocked = 0;
   }
-  assert( szRegion==pShmNode->szRegion || pShmNode->nRegion==0 );
-  assert( pShmNode->pInode==pDbFd->pInode );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  أكد( szRegion==p_Shm_گرہ->szRegion || p_Shm_گرہ->nRegion==0 );
+  أكد( p_Shm_گرہ->pInode==pDbFd->pInode );
+  أكد( p_Shm_گرہ->hShm>=0 || pDbFd->pInode->b_Process_تالا==1 );
+  أكد( p_Shm_گرہ->hShm<0 || pDbFd->pInode->b_Process_تالا==0 );
 
   /* Minimum number of regions required to be mapped. */
-  nReqRegion = ((iRegion+nShmPerMap) / nShmPerMap) * nShmPerMap;
+  nReqRegion = ((iRegion+n_Shm_فی_Map) / n_Shm_فی_Map) * n_Shm_فی_Map;
 
-  if( pShmNode->nRegion<nReqRegion ){
-    char **apNew;                         /* New apRegion[] array */
+  اگر( p_Shm_گرہ->nRegion<nReqRegion ){
+    حرف **apNew;                         /* New apRegion[] array */
     i64 nByte = nReqRegion*(i64)szRegion; /* Minimum required file size */
-    struct stat sStat;                    /* Used by fstat() */
+    ساخت stat sStat;                    /* Used by fstat() */
 
-    pShmNode->szRegion = szRegion;
+    p_Shm_گرہ->szRegion = szRegion;
 
-    if( pShmNode->hShm>=0 ){
+    اگر( p_Shm_گرہ->hShm>=0 ){
       /* The requested region is not mapped into this processes address space.
       ** Check to see if it has been allocated (i.e. if the wal-index file is
       ** large enough to contain the requested region).
       */
-      if( osFstat(pShmNode->hShm, &sStat) ){
+      اگر( osFstat(p_Shm_گرہ->hShm, &sStat) ){
         rc = SQLITE_IOERR_SHMSIZE;
-        goto shmpage_out;
+        جاؤ shmpage_برآمد;
       }
 
-      if( sStat.st_size<nByte ){
+      اگر( sStat.st_سائز<nByte ){
         /* The requested memory region does not exist. If bExtend is set to
         ** false, exit early. *pp will be set to NULL and SQLITE_OK returned.
         */
-        if( !bExtend ){
-          goto shmpage_out;
+        اگر( !bExtend ){
+          جاؤ shmpage_برآمد;
         }
 
         /* Alternatively, if bExtend is true, extend the file. Do this by
@@ -5171,18 +5171,18 @@ static int unixShmMap(
         ** pages forces the OS to allocate them immediately, which reduces
         ** the chances of SIGBUS while accessing the mapped region later on.
         */
-        else{
-          static const int pgsz = 4096;
+        ورنہ{
+          ساکن ثابت صحیح pgsz = 4096;
           i64 iPg;
 
           /* Write to the last byte of each newly allocated or extended page */
-          assert( (nByte % pgsz)==0 );
-          for(iPg=(sStat.st_size/pgsz); iPg<(nByte/pgsz); iPg++){
-            int x = 0;
-            if( seekAndWriteFd(pShmNode->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
-              const char *zFile = pShmNode->zFilename;
+          أكد( (nByte % pgsz)==0 );
+          برائے(iPg=(sStat.st_سائز/pgsz); iPg<(nByte/pgsz); iPg++){
+            صحیح x = 0;
+            اگر( seekAndWriteFd(p_Shm_گرہ->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
+              ثابت حرف *zFile = p_Shm_گرہ->zFilename;
               rc = unixLogError(SQLITE_IOERR_SHMSIZE, "write", zFile);
-              goto shmpage_out;
+              جاؤ shmpage_برآمد;
             }
           }
         }
@@ -5190,52 +5190,52 @@ static int unixShmMap(
     }
 
     /* Map the requested memory region into this processes address space. */
-    apNew = (char **)sqlite3_realloc64(
-        pShmNode->apRegion, nReqRegion*sizeof(char *)
+    apNew = (حرف **)sqlite3_realloc64(
+        p_Shm_گرہ->apRegion, nReqRegion*حجم(حرف *)
     );
-    if( !apNew ){
+    اگر( !apNew ){
       rc = SQLITE_IOERR_NOMEM_BKPT;
-      goto shmpage_out;
+      جاؤ shmpage_برآمد;
     }
-    pShmNode->apRegion = apNew;
-    while( pShmNode->nRegion<nReqRegion ){
-      i64 nMap = (i64)szRegion*(i64)nShmPerMap;
+    p_Shm_گرہ->apRegion = apNew;
+    جب( p_Shm_گرہ->nRegion<nReqRegion ){
+      i64 nMap = (i64)szRegion*(i64)n_Shm_فی_Map;
       i64 i;
-      void *pMem;
-      if( pShmNode->hShm>=0 ){
+      خالی *pMem;
+      اگر( p_Shm_گرہ->hShm>=0 ){
         pMem = osMmap(0, nMap,
-            pShmNode->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
-            MAP_SHARED, pShmNode->hShm, szRegion*(i64)pShmNode->nRegion
+            p_Shm_گرہ->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
+            MAP_SHARED, p_Shm_گرہ->hShm, szRegion*(i64)p_Shm_گرہ->nRegion
         );
-        if( pMem==MAP_FAILED ){
-          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", pShmNode->zFilename);
-          goto shmpage_out;
+        اگر( pMem==MAP_FAILED ){
+          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", p_Shm_گرہ->zFilename);
+          جاؤ shmpage_برآمد;
         }
-      }else{
+      }ورنہ{
         pMem = sqlite3_malloc64(nMap);
-        if( pMem==0 ){
+        اگر( pMem==0 ){
           rc = SQLITE_NOMEM_BKPT;
-          goto shmpage_out;
+          جاؤ shmpage_برآمد;
         }
         memset(pMem, 0, nMap);
       }
 
-      for(i=0; i<nShmPerMap; i++){
-        pShmNode->apRegion[pShmNode->nRegion+i] = &((char*)pMem)[szRegion*i];
+      برائے(i=0; i<n_Shm_فی_Map; i++){
+        p_Shm_گرہ->apRegion[p_Shm_گرہ->nRegion+i] = &((حرف*)pMem)[szRegion*i];
       }
-      pShmNode->nRegion += nShmPerMap;
+      p_Shm_گرہ->nRegion += n_Shm_فی_Map;
     }
   }
 
-shmpage_out:
-  if( pShmNode->nRegion>iRegion ){
-    *pp = pShmNode->apRegion[iRegion];
-  }else{
+shmpage_برآمد:
+  اگر( p_Shm_گرہ->nRegion>iRegion ){
+    *pp = p_Shm_گرہ->apRegion[iRegion];
+  }ورنہ{
     *pp = 0;
   }
-  if( pShmNode->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
-  return rc;
+  اگر( p_Shm_گرہ->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
+  sqlite3_mutex_leave(p_Shm_گرہ->pShmMutex);
+  واپس rc;
 }
 
 /*
@@ -5245,33 +5245,33 @@ shmpage_out:
 **
 **     assert( assertLockingArrayOk(pShmNode) );
 */
-#ifdef SQLITE_DEBUG
-static int assertLockingArrayOk(unixShmNode *pShmNode){
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  return 1;
-#else
+#اگر_تعریف_شدہ SQLITE_DEBUG
+ساکن صحیح assertLockingArrayOk(unix_Shm_گرہ *p_Shm_گرہ){
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+  واپس 1;
+#ورنہ
   unixShm *pX;
-  int aLock[SQLITE_SHM_NLOCK];
+  صحیح a_تالا[SQLITE_SHM_NLOCK];
 
-  memset(aLock, 0, sizeof(aLock));
-  for(pX=pShmNode->pFirst; pX; pX=pX->pNext){
-    int i;
-    for(i=0; i<SQLITE_SHM_NLOCK; i++){
-      if( pX->exclMask & (1<<i) ){
-        assert( aLock[i]==0 );
-        aLock[i] = -1;
-      }else if( pX->sharedMask & (1<<i) ){
-        assert( aLock[i]>=0 );
-        aLock[i]++;
+  memset(a_تالا, 0, حجم(a_تالا));
+  برائے(pX=p_Shm_گرہ->p_پہلا; pX; pX=pX->p_اگلا){
+    صحیح i;
+    برائے(i=0; i<SQLITE_SHM_NLOCK; i++){
+      اگر( pX->excl_نقاب & (1<<i) ){
+        أكد( a_تالا[i]==0 );
+        a_تالا[i] = -1;
+      }ورنہ اگر( pX->shared_نقاب & (1<<i) ){
+        أكد( a_تالا[i]>=0 );
+        a_تالا[i]++;
       }
     }
   }
 
-  assert( 0==memcmp(pShmNode->aLock, aLock, sizeof(aLock)) );
-  return (memcmp(pShmNode->aLock, aLock, sizeof(aLock))==0);
-#endif
+  أكد( 0==memcmp(p_Shm_گرہ->a_تالا, a_تالا, حجم(a_تالا)) );
+  واپس (memcmp(p_Shm_گرہ->a_تالا, a_تالا, حجم(a_تالا))==0);
+#اگر_ختم
 }
-#endif /* !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL) */
+#اگر_ختم /* !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL) */
 
 /*
 ** Change the lock state for a shared-memory segment.
@@ -5281,36 +5281,36 @@ static int assertLockingArrayOk(unixShmNode *pShmNode){
 ** to shared and back or from unlocked to exclusive and back.  But one may
 ** not go from shared to exclusive or from exclusive to shared.
 */
-static int unixShmLock(
+ساکن صحیح unix_Shm_تالا(
   sqlite3_file *fd,          /* Database file holding the shared memory */
-  int ofst,                  /* First lock to acquire or release */
-  int n,                     /* Number of locks to acquire or release */
-  int flags                  /* What to do with the lock */
+  صحیح ofst,                  /* First lock to acquire or release */
+  صحیح n,                     /* Number of locks to acquire or release */
+  صحیح flags                  /* What to do with the lock */
 ){
   unixFile *pDbFd = (unixFile*)fd;      /* Connection holding shared memory */
   unixShm *p;                           /* The shared memory being locked */
-  unixShmNode *pShmNode;                /* The underlying file iNode */
-  int rc = SQLITE_OK;                   /* Result code */
-  u16 mask = (1<<(ofst+n)) - (1<<ofst); /* Mask of locks to take or release */
-  int *aLock;
+  unix_Shm_گرہ *p_Shm_گرہ;                /* The underlying file iNode */
+  صحیح rc = SQLITE_OK;                   /* Result code */
+  u16 نقاب = (1<<(ofst+n)) - (1<<ofst); /* Mask of locks to take or release */
+  صحیح *a_تالا;
 
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_IOERR_SHMLOCK;
-  pShmNode = p->pShmNode;
-  if( NEVER(pShmNode==0) ) return SQLITE_IOERR_SHMLOCK;
-  aLock = pShmNode->aLock;
+  اگر( p==0 ) واپس SQLITE_IOERR_SHMLOCK;
+  p_Shm_گرہ = p->p_Shm_گرہ;
+  اگر( NEVER(p_Shm_گرہ==0) ) واپس SQLITE_IOERR_SHMLOCK;
+  a_تالا = p_Shm_گرہ->a_تالا;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
-  assert( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
-  assert( n>=1 );
-  assert( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
-       || flags==(SQLITE_SHM_LOCK | SQLITE_SHM_EXCLUSIVE)
+  أكد( p_Shm_گرہ==pDbFd->pInode->p_Shm_گرہ );
+  أكد( p_Shm_گرہ->pInode==pDbFd->pInode );
+  أكد( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
+  أكد( n>=1 );
+  أكد( flags==(SQLITE_SHM_تالا | SQLITE_SHM_SHARED)
+       || flags==(SQLITE_SHM_تالا | SQLITE_SHM_EXCLUSIVE)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE) );
-  assert( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  أكد( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
+  أكد( p_Shm_گرہ->hShm>=0 || pDbFd->pInode->b_Process_تالا==1 );
+  أكد( p_Shm_گرہ->hShm<0 || pDbFd->pInode->b_Process_تالا==0 );
 
   /* Check that, if this to be a blocking lock, no locks that occur later
   ** in the following list than the lock being obtained are already held:
@@ -5324,17 +5324,17 @@ static int unixShmLock(
   ** occur later in the above list than the lock being obtained may be
   ** held.
   */
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
+#اگر defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
   {
-    u16 lockMask = (p->exclMask|p->sharedMask);
-    assert( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
-          (ofst!=2 || lockMask==0)
-       && (ofst!=1 || lockMask==0 || lockMask==2)
-       && (ofst!=0 || lockMask<3)
-       && (ofst<3  || lockMask<(1<<ofst))
+    u16 تالا_نقاب = (p->excl_نقاب|p->shared_نقاب);
+    أكد( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
+          (ofst!=2 || تالا_نقاب==0)
+       && (ofst!=1 || تالا_نقاب==0 || تالا_نقاب==2)
+       && (ofst!=0 || تالا_نقاب<3)
+       && (ofst<3  || تالا_نقاب<(1<<ofst))
     ));
   }
-#endif
+#اگر_ختم
 
   /* Check if there is any work to do. There are three cases:
   **
@@ -5345,12 +5345,12 @@ static int unixShmLock(
   ** The SQLite core never requests an exclusive lock that it already holds.
   ** This is assert()ed below.
   */
-  assert( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK) 
-       || 0==(p->exclMask & mask) 
+  أكد( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_تالا) 
+       || 0==(p->excl_نقاب & نقاب) 
   );
-  if( ((flags & SQLITE_SHM_UNLOCK) && ((p->exclMask|p->sharedMask) & mask))
-   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_LOCK) && 0==(p->sharedMask & mask))
-   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK))
+  اگر( ((flags & SQLITE_SHM_UNLOCK) && ((p->excl_نقاب|p->shared_نقاب) & نقاب))
+   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_تالا) && 0==(p->shared_نقاب & نقاب))
+   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_تالا))
   ){
 
     /* Take the required mutexes. In SETLK_TIMEOUT mode (blocking locks), if
@@ -5368,111 +5368,111 @@ static int unixShmLock(
     ** 1 obtained WRITER and released the mutex. Since thread 2 already holds
     ** a lock on a read-locking slot at this point, this breaks the
     ** anti-deadlock rules (see above).  */
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    int iMutex;
-    for(iMutex=ofst; iMutex<ofst+n; iMutex++){
-      if( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) ){
-        rc = sqlite3_mutex_try(pShmNode->aMutex[iMutex]);
-        if( rc!=SQLITE_OK ) goto leave_shmnode_mutexes;
-      }else{
-        sqlite3_mutex_enter(pShmNode->aMutex[iMutex]);
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    صحیح iMutex;
+    برائے(iMutex=ofst; iMutex<ofst+n; iMutex++){
+      اگر( flags==(SQLITE_SHM_تالا|SQLITE_SHM_EXCLUSIVE) ){
+        rc = sqlite3_mutex_try(p_Shm_گرہ->aMutex[iMutex]);
+        اگر( rc!=SQLITE_OK ) جاؤ leave_shmnode_mutexes;
+      }ورنہ{
+        sqlite3_mutex_enter(p_Shm_گرہ->aMutex[iMutex]);
       }
     }
-#else
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
-#endif
+#ورنہ
+    sqlite3_mutex_enter(p_Shm_گرہ->pShmMutex);
+#اگر_ختم
 
-    if( ALWAYS(rc==SQLITE_OK) ){
-      if( flags & SQLITE_SHM_UNLOCK ){
+    اگر( ALWAYS(rc==SQLITE_OK) ){
+      اگر( flags & SQLITE_SHM_UNLOCK ){
         /* Case (a) - unlock.  */
-        int bUnlock = 1;
-        assert( (p->exclMask & p->sharedMask)==0 );
-        assert( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->exclMask & mask)==mask );
-        assert( !(flags & SQLITE_SHM_SHARED) || (p->sharedMask & mask)==mask );
+        صحیح bUnlock = 1;
+        أكد( (p->excl_نقاب & p->shared_نقاب)==0 );
+        أكد( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->excl_نقاب & نقاب)==نقاب );
+        أكد( !(flags & SQLITE_SHM_SHARED) || (p->shared_نقاب & نقاب)==نقاب );
   
         /* If this is a SHARED lock being unlocked, it is possible that other
         ** clients within this process are holding the same SHARED lock. In
         ** this case, set bUnlock to 0 so that the posix lock is not removed
         ** from the file-descriptor below.  */
-        if( flags & SQLITE_SHM_SHARED ){
-          assert( n==1 );
-          assert( aLock[ofst]>=1 );
-          if( aLock[ofst]>1 ){
+        اگر( flags & SQLITE_SHM_SHARED ){
+          أكد( n==1 );
+          أكد( a_تالا[ofst]>=1 );
+          اگر( a_تالا[ofst]>1 ){
             bUnlock = 0;
-            aLock[ofst]--;
-            p->sharedMask &= ~mask;
+            a_تالا[ofst]--;
+            p->shared_نقاب &= ~نقاب;
           }
         }
   
-        if( bUnlock ){
-          rc = unixShmSystemLock(pDbFd, F_UNLCK, ofst+UNIX_SHM_BASE, n);
-          if( rc==SQLITE_OK ){
-            memset(&aLock[ofst], 0, sizeof(int)*n);
-            p->sharedMask &= ~mask;
-            p->exclMask &= ~mask;
+        اگر( bUnlock ){
+          rc = unix_Shm_System_تالا(pDbFd, F_UNLCK, ofst+UNIX_SHM_بنیاد, n);
+          اگر( rc==SQLITE_OK ){
+            memset(&a_تالا[ofst], 0, حجم(صحیح)*n);
+            p->shared_نقاب &= ~نقاب;
+            p->excl_نقاب &= ~نقاب;
           }
         }
-      }else if( flags & SQLITE_SHM_SHARED ){
+      }ورنہ اگر( flags & SQLITE_SHM_SHARED ){
         /* Case (b) - a shared lock.  */
   
-        if( aLock[ofst]<0 ){
+        اگر( a_تالا[ofst]<0 ){
           /* An exclusive lock is held by some other connection. BUSY. */ 
           rc = SQLITE_BUSY;
-        }else if( aLock[ofst]==0 ){
-          rc = unixShmSystemLock(pDbFd, F_RDLCK, ofst+UNIX_SHM_BASE, n);
+        }ورنہ اگر( a_تالا[ofst]==0 ){
+          rc = unix_Shm_System_تالا(pDbFd, F_RDLCK, ofst+UNIX_SHM_بنیاد, n);
         }
   
         /* Get the local shared locks */
-        if( rc==SQLITE_OK ){
-          p->sharedMask |= mask;
-          aLock[ofst]++;
+        اگر( rc==SQLITE_OK ){
+          p->shared_نقاب |= نقاب;
+          a_تالا[ofst]++;
         }
-      }else{
+      }ورنہ{
         /* Case (c) - an exclusive lock.  */
-        int ii;
+        صحیح ii;
   
-        assert( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) );
-        assert( (p->sharedMask & mask)==0 );
-        assert( (p->exclMask & mask)==0 );
+        أكد( flags==(SQLITE_SHM_تالا|SQLITE_SHM_EXCLUSIVE) );
+        أكد( (p->shared_نقاب & نقاب)==0 );
+        أكد( (p->excl_نقاب & نقاب)==0 );
   
         /* Make sure no sibling connections hold locks that will block this
         ** lock.  If any do, return SQLITE_BUSY right away.  */
-        for(ii=ofst; ii<ofst+n; ii++){
-          if( aLock[ii] ){
+        برائے(ii=ofst; ii<ofst+n; ii++){
+          اگر( a_تالا[ii] ){
             rc = SQLITE_BUSY;
-            break;
+            توڑو;
           }
         }
   
         /* Get the exclusive locks at the system level. Then if successful
         ** also update the in-memory values. */
-        if( rc==SQLITE_OK ){
-          rc = unixShmSystemLock(pDbFd, F_WRLCK, ofst+UNIX_SHM_BASE, n);
-          if( rc==SQLITE_OK ){
-            p->exclMask |= mask;
-            for(ii=ofst; ii<ofst+n; ii++){
-              aLock[ii] = -1;
+        اگر( rc==SQLITE_OK ){
+          rc = unix_Shm_System_تالا(pDbFd, F_WRLCK, ofst+UNIX_SHM_بنیاد, n);
+          اگر( rc==SQLITE_OK ){
+            p->excl_نقاب |= نقاب;
+            برائے(ii=ofst; ii<ofst+n; ii++){
+              a_تالا[ii] = -1;
             }
           }
         }
       }
-      assert( assertLockingArrayOk(pShmNode) );
+      أكد( assertLockingArrayOk(p_Shm_گرہ) );
     }
 
     /* Drop the mutexes acquired above. */
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
   leave_shmnode_mutexes:
-    for(iMutex--; iMutex>=ofst; iMutex--){
-      sqlite3_mutex_leave(pShmNode->aMutex[iMutex]);
+    برائے(iMutex--; iMutex>=ofst; iMutex--){
+      sqlite3_mutex_leave(p_Shm_گرہ->aMutex[iMutex]);
     }
-#else
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
-#endif
+#ورنہ
+    sqlite3_mutex_leave(p_Shm_گرہ->pShmMutex);
+#اگر_ختم
   }
 
   OSTRACE(("SHM-LOCK shmid-%d, pid-%d got %03x,%03x\n",
-           p->id, osGetpid(0), p->sharedMask, p->exclMask));
-  return rc;
+           p->id, osGetpid(0), p->shared_نقاب, p->excl_نقاب));
+  واپس rc;
 }
 
 /*
@@ -5481,12 +5481,12 @@ static int unixShmLock(
 ** All loads and stores begun before the barrier must complete before
 ** any load or store begun after the barrier.
 */
-static void unixShmBarrier(
+ساکن خالی unixShmBarrier(
   sqlite3_file *fd                /* Database file holding the shared memory */
 ){
-  UNUSED_PARAMETER(fd);
-  sqlite3MemoryBarrier();         /* compiler-defined memory barrier */
-  assert( fd->pMethods->xLock==nolockLock
+  غیر_مستعمل_PARAMETER(fd);
+  sqlite3_حافظہ_Barrier();         /* compiler-defined memory barrier */
+  أكد( fd->pMethods->x_تالا==nolock_تالا
        || unixFileMutexNotheld((unixFile*)fd)
   );
   unixEnterMutex();               /* Also mutex, for redundancy */
@@ -5500,70 +5500,70 @@ static void unixShmBarrier(
 ** If there is no shared memory associated with the connection then this
 ** routine is a harmless no-op.
 */
-static int unixShmUnmap(
+ساکن صحیح unixShmUnmap(
   sqlite3_file *fd,               /* The underlying database file */
-  int deleteFlag                  /* Delete shared-memory if true */
+  صحیح deleteFlag                  /* Delete shared-memory if true */
 ){
   unixShm *p;                     /* The connection to be closed */
-  unixShmNode *pShmNode;          /* The underlying shared-memory file */
+  unix_Shm_گرہ *p_Shm_گرہ;          /* The underlying shared-memory file */
   unixShm **pp;                   /* For looping over sibling connections */
   unixFile *pDbFd;                /* The underlying database file */
 
   pDbFd = (unixFile*)fd;
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_OK;
-  pShmNode = p->pShmNode;
+  اگر( p==0 ) واپس SQLITE_OK;
+  p_Shm_گرہ = p->p_Shm_گرہ;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
+  أكد( p_Shm_گرہ==pDbFd->pInode->p_Shm_گرہ );
+  أكد( p_Shm_گرہ->pInode==pDbFd->pInode );
 
   /* Remove connection p from the set of connections associated
   ** with pShmNode */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  for(pp=&pShmNode->pFirst; (*pp)!=p; pp = &(*pp)->pNext){}
-  *pp = p->pNext;
+  sqlite3_mutex_enter(p_Shm_گرہ->pShmMutex);
+  برائے(pp=&p_Shm_گرہ->p_پہلا; (*pp)!=p; pp = &(*pp)->p_اگلا){}
+  *pp = p->p_اگلا;
 
   /* Free the connection p */
   sqlite3_free(p);
   pDbFd->pShm = 0;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
+  sqlite3_mutex_leave(p_Shm_گرہ->pShmMutex);
 
   /* If pShmNode->nRef has reached 0, then close the underlying
   ** shared-memory file, too */
-  assert( unixFileMutexNotheld(pDbFd) );
+  أكد( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
-  assert( pShmNode->nRef>0 );
-  pShmNode->nRef--;
-  if( pShmNode->nRef==0 ){
-    if( deleteFlag && pShmNode->hShm>=0 ){
-      osUnlink(pShmNode->zFilename);
+  أكد( p_Shm_گرہ->nRef>0 );
+  p_Shm_گرہ->nRef--;
+  اگر( p_Shm_گرہ->nRef==0 ){
+    اگر( deleteFlag && p_Shm_گرہ->hShm>=0 ){
+      osUnlink(p_Shm_گرہ->zFilename);
     }
     unixShmPurge(pDbFd);
   }
   unixLeaveMutex();
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 
-#else
+#ورنہ
 # define unixShmMap     0
-# define unixShmLock    0
+# define unix_Shm_تالا    0
 # define unixShmBarrier 0
 # define unixShmUnmap   0
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#اگر_ختم /* #ifndef SQLITE_OMIT_WAL */
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#اگر SQLITE_MAX_MMAP_سائز>0
 /*
 ** If it is currently memory mapped, unmap file pFd.
 */
-static void unixUnmapfile(unixFile *pFd){
-  assert( pFd->nFetchOut==0 );
-  if( pFd->pMapRegion ){
-    osMunmap(pFd->pMapRegion, pFd->mmapSizeActual);
+ساکن خالی unixUnmapfile(unixFile *pFd){
+  أكد( pFd->n_Fetch_برآمد==0 );
+  اگر( pFd->pMapRegion ){
+    osMunmap(pFd->pMapRegion, pFd->mmap_سائز_Actual);
     pFd->pMapRegion = 0;
-    pFd->mmapSize = 0;
-    pFd->mmapSizeActual = 0;
+    pFd->mmap_سائز = 0;
+    pFd->mmap_سائز_Actual = 0;
   }
 }
 
@@ -5582,77 +5582,77 @@ static void unixUnmapfile(unixFile *pFd){
 ** continue accessing the database using the xRead() and xWrite()
 ** methods.
 */
-static void unixRemapfile(
+ساکن خالی unixRemapfile(
   unixFile *pFd,                  /* File descriptor object */
   i64 nNew                        /* Required mapping size */
 ){
-  const char *zErr = "mmap";
-  int h = pFd->h;                      /* File descriptor open on db file */
+  ثابت حرف *zErr = "mmap";
+  صحیح h = pFd->h;                      /* File descriptor open on db file */
   u8 *pOrig = (u8 *)pFd->pMapRegion;   /* Pointer to current file mapping */
   u8 *pNew = 0;                        /* Location of new mapping */
-  int flags = PROT_READ;               /* Flags to pass to mmap() */
+  صحیح flags = PROT_READ;               /* Flags to pass to mmap() */
 
-  assert( pFd->nFetchOut==0 );
-  assert( nNew>pFd->mmapSize );
-  assert( nNew<=pFd->mmapSizeMax );
-  assert( nNew>0 );
-  assert( pFd->mmapSizeActual>=pFd->mmapSize );
-  assert( MAP_FAILED!=0 );
+  أكد( pFd->n_Fetch_برآمد==0 );
+  أكد( nNew>pFd->mmap_سائز );
+  أكد( nNew<=pFd->mmap_سائز_Max );
+  أكد( nNew>0 );
+  أكد( pFd->mmap_سائز_Actual>=pFd->mmap_سائز );
+  أكد( MAP_FAILED!=0 );
 
-#ifdef SQLITE_MMAP_READWRITE
-  if( (pFd->ctrlFlags & UNIXFILE_RDONLY)==0 ) flags |= PROT_WRITE;
-#endif
+#اگر_تعریف_شدہ SQLITE_MMAP_READWRITE
+  اگر( (pFd->ctrlFlags & UNIXFILE_RDONLY)==0 ) flags |= PROT_WRITE;
+#اگر_ختم
 
-  if( pOrig ){
-    i64 nReuse = pFd->mmapSize & ~((int)osGetpagesize()-1);
+  اگر( pOrig ){
+    i64 nReuse = pFd->mmap_سائز & ~((صحیح)osGetpagesize()-1);
 
     /* Unmap any part of the current mapping that will not be reused */
-    if( nReuse<pFd->mmapSizeActual ){
-      osMunmap(&pOrig[nReuse], pFd->mmapSizeActual - nReuse);
+    اگر( nReuse<pFd->mmap_سائز_Actual ){
+      osMunmap(&pOrig[nReuse], pFd->mmap_سائز_Actual - nReuse);
     }
 
     /* If nReuse is now zero, then the entire mapping was unmapped by the
     ** call above. In this case do not attempt to extend pOrig. */
-    if( nReuse>0 ){
-#if HAVE_MREMAP
+    اگر( nReuse>0 ){
+#اگر HAVE_MREMAP
       pNew = osMremap(pOrig, nReuse, nNew, MREMAP_MAYMOVE);
       zErr = "mremap";
-#else
+#ورنہ
       pNew = osMmap(&pOrig[nReuse], nNew-nReuse, flags, MAP_SHARED, h, nReuse);
-      if( pNew!=MAP_FAILED ){
-        if( pNew!=&pOrig[nReuse] ){
+      اگر( pNew!=MAP_FAILED ){
+        اگر( pNew!=&pOrig[nReuse] ){
           osMunmap(pNew, nNew - nReuse);
           pNew = 0;
-        }else{
+        }ورنہ{
           pNew = pOrig;
         }
       }
-#endif
+#اگر_ختم
 
       /* The attempt to extend the existing mapping failed. Free it. */
-      if( pNew==MAP_FAILED || pNew==0 ){
+      اگر( pNew==MAP_FAILED || pNew==0 ){
         osMunmap(pOrig, nReuse);
       }
     }
   }
 
   /* If pNew is still NULL, try to create an entirely new mapping. */
-  if( pNew==0 ){
+  اگر( pNew==0 ){
     pNew = osMmap(0, nNew, flags, MAP_SHARED, h, 0);
   }
 
-  if( pNew==MAP_FAILED ){
+  اگر( pNew==MAP_FAILED ){
     pNew = 0;
     nNew = 0;
-    unixLogError(SQLITE_OK, zErr, pFd->zPath);
+    unixLogError(SQLITE_OK, zErr, pFd->z_راستہ);
 
     /* If the mmap() above failed, assume that all subsequent mmap() calls
     ** will probably fail too. Fall back to using xRead/xWrite exclusively
     ** in this case.  */
-    pFd->mmapSizeMax = 0;
+    pFd->mmap_سائز_Max = 0;
   }
-  pFd->pMapRegion = (void *)pNew;
-  pFd->mmapSize = pFd->mmapSizeActual = nNew;
+  pFd->pMapRegion = (خالی *)pNew;
+  pFd->mmap_سائز = pFd->mmap_سائز_Actual = nNew;
 }
 
 /*
@@ -5671,30 +5671,30 @@ static void unixRemapfile(
 ** recreated as a result of outstanding references) or an SQLite error
 ** code otherwise.
 */
-static int unixMapfile(unixFile *pFd, i64 nMap){
-  assert( nMap>=0 || pFd->nFetchOut==0 );
-  assert( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
-  if( pFd->nFetchOut>0 ) return SQLITE_OK;
+ساکن صحیح unixMapfile(unixFile *pFd, i64 nMap){
+  أكد( nMap>=0 || pFd->n_Fetch_برآمد==0 );
+  أكد( nMap>0 || (pFd->mmap_سائز==0 && pFd->pMapRegion==0) );
+  اگر( pFd->n_Fetch_برآمد>0 ) واپس SQLITE_OK;
 
-  if( nMap<0 ){
-    struct stat statbuf;          /* Low-level file information */
-    if( osFstat(pFd->h, &statbuf) ){
-      return SQLITE_IOERR_FSTAT;
+  اگر( nMap<0 ){
+    ساخت stat statbuf;          /* Low-level file information */
+    اگر( osFstat(pFd->h, &statbuf) ){
+      واپس SQLITE_IOERR_FSTAT;
     }
-    nMap = statbuf.st_size;
+    nMap = statbuf.st_سائز;
   }
-  if( nMap>pFd->mmapSizeMax ){
-    nMap = pFd->mmapSizeMax;
+  اگر( nMap>pFd->mmap_سائز_Max ){
+    nMap = pFd->mmap_سائز_Max;
   }
 
-  assert( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
-  if( nMap!=pFd->mmapSize ){
+  أكد( nMap>0 || (pFd->mmap_سائز==0 && pFd->pMapRegion==0) );
+  اگر( nMap!=pFd->mmap_سائز ){
     unixRemapfile(pFd, nMap);
   }
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
-#endif /* SQLITE_MAX_MMAP_SIZE>0 */
+#اگر_ختم /* SQLITE_MAX_MMAP_SIZE>0 */
 
 /*
 ** If possible, return a pointer to a mapping of file fd starting at offset
@@ -5708,30 +5708,30 @@ static int unixMapfile(unixFile *pFd, i64 nMap){
 ** If this function does return a pointer, the caller must eventually
 ** release the reference by calling unixUnfetch().
 */
-static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
-#if SQLITE_MAX_MMAP_SIZE>0
+ساکن صحیح unixFetch(sqlite3_file *fd, i64 iOff, صحیح nAmt, خالی **pp){
+#اگر SQLITE_MAX_MMAP_سائز>0
   unixFile *pFd = (unixFile *)fd;   /* The underlying database file */
-#endif
+#اگر_ختم
   *pp = 0;
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFd->mmapSizeMax>0 ){
+#اگر SQLITE_MAX_MMAP_سائز>0
+  اگر( pFd->mmap_سائز_Max>0 ){
     /* Ensure that there is always at least a 256 byte buffer of addressable
     ** memory following the returned page. If the database is corrupt,
     ** SQLite may overread the page slightly (in practice only a few bytes,
     ** but 256 is safe, round, number).  */
-    const int nEofBuffer = 256;
-    if( pFd->pMapRegion==0 ){
-      int rc = unixMapfile(pFd, -1);
-      if( rc!=SQLITE_OK ) return rc;
+    ثابت صحیح n_Eof_بفر = 256;
+    اگر( pFd->pMapRegion==0 ){
+      صحیح rc = unixMapfile(pFd, -1);
+      اگر( rc!=SQLITE_OK ) واپس rc;
     }
-    if( pFd->mmapSize >= (iOff+nAmt+nEofBuffer) ){
+    اگر( pFd->mmap_سائز >= (iOff+nAmt+n_Eof_بفر) ){
       *pp = &((u8 *)pFd->pMapRegion)[iOff];
-      pFd->nFetchOut++;
+      pFd->n_Fetch_برآمد++;
     }
   }
-#endif
-  return SQLITE_OK;
+#اگر_ختم
+  واپس SQLITE_OK;
 }
 
 /*
@@ -5744,32 +5744,32 @@ static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
 ** to inform the VFS layer that, according to POSIX, any existing mapping
 ** may now be invalid and should be unmapped.
 */
-static int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p){
-#if SQLITE_MAX_MMAP_SIZE>0
+ساکن صحیح unixUnfetch(sqlite3_file *fd, i64 iOff, خالی *p){
+#اگر SQLITE_MAX_MMAP_سائز>0
   unixFile *pFd = (unixFile *)fd;   /* The underlying database file */
-  UNUSED_PARAMETER(iOff);
+  غیر_مستعمل_PARAMETER(iOff);
 
   /* If p==0 (unmap the entire file) then there must be no outstanding
   ** xFetch references. Or, if p!=0 (meaning it is an xFetch reference),
   ** then there must be at least one outstanding.  */
-  assert( (p==0)==(pFd->nFetchOut==0) );
+  أكد( (p==0)==(pFd->n_Fetch_برآمد==0) );
 
   /* If p!=0, it must match the iOff value. */
-  assert( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
+  أكد( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
 
-  if( p ){
-    pFd->nFetchOut--;
-  }else{
+  اگر( p ){
+    pFd->n_Fetch_برآمد--;
+  }ورنہ{
     unixUnmapfile(pFd);
   }
 
-  assert( pFd->nFetchOut>=0 );
-#else
-  UNUSED_PARAMETER(fd);
-  UNUSED_PARAMETER(p);
-  UNUSED_PARAMETER(iOff);
-#endif
-  return SQLITE_OK;
+  أكد( pFd->n_Fetch_برآمد>=0 );
+#ورنہ
+  غیر_مستعمل_PARAMETER(fd);
+  غیر_مستعمل_PARAMETER(p);
+  غیر_مستعمل_PARAMETER(iOff);
+#اگر_ختم
+  واپس SQLITE_OK;
 }
 
 /*
@@ -5812,33 +5812,33 @@ static int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p){
 **   *  An I/O method finder function called FINDER that returns a pointer
 **      to the METHOD object in the previous bullet.
 */
-#define IOMETHODS(FINDER,METHOD,VERSION,CLOSE,LOCK,UNLOCK,CKLOCK,SHMMAP)     \
-static const sqlite3_io_methods METHOD = {                                   \
-   VERSION,                    /* iVersion */                                \
+#تعریف_کرو IOMETHODS(FINDER,طریقہ,نسخہ,CLOSE,تالا_2,UNLOCK,CKLOCK,SHMMAP)     \
+ساکن ثابت sqlite3_io_methods طریقہ = {                                   \
+   نسخہ,                    /* iVersion */                                \
    CLOSE,                      /* xClose */                                  \
    unixRead,                   /* xRead */                                   \
    unixWrite,                  /* xWrite */                                  \
    unixTruncate,               /* xTruncate */                               \
    unixSync,                   /* xSync */                                   \
-   unixFileSize,               /* xFileSize */                               \
-   LOCK,                       /* xLock */                                   \
+   unix_File_سائز,               /* xFileSize */                               \
+   تالا_2,                       /* xLock */                                   \
    UNLOCK,                     /* xUnlock */                                 \
    CKLOCK,                     /* xCheckReservedLock */                      \
    unixFileControl,            /* xFileControl */                            \
-   unixSectorSize,             /* xSectorSize */                             \
+   unix_Sector_سائز,             /* xSectorSize */                             \
    unixDeviceCharacteristics,  /* xDeviceCapabilities */                     \
    SHMMAP,                     /* xShmMap */                                 \
-   unixShmLock,                /* xShmLock */                                \
+   unix_Shm_تالا,                /* xShmLock */                                \
    unixShmBarrier,             /* xShmBarrier */                             \
    unixShmUnmap,               /* xShmUnmap */                               \
    unixFetch,                  /* xFetch */                                  \
    unixUnfetch,                /* xUnfetch */                                \
 };                                                                           \
-static const sqlite3_io_methods *FINDER##Impl(const char *z, unixFile *p){   \
-  UNUSED_PARAMETER(z); UNUSED_PARAMETER(p);                                  \
-  return &METHOD;                                                            \
+ساکن ثابت sqlite3_io_methods *FINDER##Impl(ثابت حرف *z, unixFile *p){   \
+  غیر_مستعمل_PARAMETER(z); غیر_مستعمل_PARAMETER(p);                                  \
+  واپس &طریقہ;                                                            \
 }                                                                            \
-static const sqlite3_io_methods *(*const FINDER)(const char*,unixFile *p)    \
+ساکن ثابت sqlite3_io_methods *(*ثابت FINDER)(ثابت حرف*,unixFile *p)    \
     = FINDER##Impl;
 
 /*
@@ -5851,9 +5851,9 @@ IOMETHODS(
   posixIoMethods,           /* sqlite3_io_methods object name */
   3,                        /* shared memory and mmap are enabled */
   unixClose,                /* xClose method */
-  unixLock,                 /* xLock method */
+  unix_تالا,                 /* xLock method */
   unixUnlock,               /* xUnlock method */
-  unixCheckReservedLock,    /* xCheckReservedLock method */
+  unix_Check_Reserved_تالا,    /* xCheckReservedLock method */
   unixShmMap                /* xShmMap method */
 )
 IOMETHODS(
@@ -5861,9 +5861,9 @@ IOMETHODS(
   nolockIoMethods,          /* sqlite3_io_methods object name */
   3,                        /* shared memory and mmap are enabled */
   nolockClose,              /* xClose method */
-  nolockLock,               /* xLock method */
+  nolock_تالا,               /* xLock method */
   nolockUnlock,             /* xUnlock method */
-  nolockCheckReservedLock,  /* xCheckReservedLock method */
+  nolock_Check_Reserved_تالا,  /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
 IOMETHODS(
@@ -5871,26 +5871,26 @@ IOMETHODS(
   dotlockIoMethods,         /* sqlite3_io_methods object name */
   1,                        /* shared memory is disabled */
   dotlockClose,             /* xClose method */
-  dotlockLock,              /* xLock method */
+  dotlock_تالا,              /* xLock method */
   dotlockUnlock,            /* xUnlock method */
-  dotlockCheckReservedLock, /* xCheckReservedLock method */
+  dotlock_Check_Reserved_تالا, /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#اگر SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   flockIoFinder,            /* Finder function name */
   flockIoMethods,           /* sqlite3_io_methods object name */
   1,                        /* shared memory is disabled */
   flockClose,               /* xClose method */
-  flockLock,                /* xLock method */
+  flock_تالا,                /* xLock method */
   flockUnlock,              /* xUnlock method */
-  flockCheckReservedLock,   /* xCheckReservedLock method */
+  flock_Check_Reserved_تالا,   /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
-#endif
+#اگر_ختم
 
-#if OS_VXWORKS
+#اگر OS_VXWORKS
 IOMETHODS(
   semIoFinder,              /* Finder function name */
   semIoMethods,             /* sqlite3_io_methods object name */
@@ -5898,23 +5898,23 @@ IOMETHODS(
   semXClose,                /* xClose method */
   semXLock,                 /* xLock method */
   semXUnlock,               /* xUnlock method */
-  semXCheckReservedLock,    /* xCheckReservedLock method */
+  sem_XCheck_Reserved_تالا,    /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
-#endif
+#اگر_ختم
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   afpIoFinder,              /* Finder function name */
   afpIoMethods,             /* sqlite3_io_methods object name */
   1,                        /* shared memory is disabled */
   afpClose,                 /* xClose method */
-  afpLock,                  /* xLock method */
+  afp_تالا,                  /* xLock method */
   afpUnlock,                /* xUnlock method */
-  afpCheckReservedLock,     /* xCheckReservedLock method */
+  afp_Check_Reserved_تالا,     /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
-#endif
+#اگر_ختم
 
 /*
 ** The proxy locking method is a "super-method" in the sense that it
@@ -5925,38 +5925,38 @@ IOMETHODS(
 ** to go ahead and define the sqlite3_io_methods and finder function
 ** for proxy locking here.  So we forward declare the I/O methods.
 */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
-static int proxyClose(sqlite3_file*);
-static int proxyLock(sqlite3_file*, int);
-static int proxyUnlock(sqlite3_file*, int);
-static int proxyCheckReservedLock(sqlite3_file*, int*);
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+ساکن صحیح proxyClose(sqlite3_file*);
+ساکن صحیح proxy_تالا(sqlite3_file*, صحیح);
+ساکن صحیح proxyUnlock(sqlite3_file*, صحیح);
+ساکن صحیح proxy_Check_Reserved_تالا(sqlite3_file*, صحیح*);
 IOMETHODS(
   proxyIoFinder,            /* Finder function name */
   proxyIoMethods,           /* sqlite3_io_methods object name */
   1,                        /* shared memory is disabled */
   proxyClose,               /* xClose method */
-  proxyLock,                /* xLock method */
+  proxy_تالا,                /* xLock method */
   proxyUnlock,              /* xUnlock method */
-  proxyCheckReservedLock,   /* xCheckReservedLock method */
+  proxy_Check_Reserved_تالا,   /* xCheckReservedLock method */
   0                         /* xShmMap method */
 )
-#endif
+#اگر_ختم
 
 /* nfs lockd on OSX 10.3+ doesn't clear write locks when a read lock is set */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   nfsIoFinder,               /* Finder function name */
   nfsIoMethods,              /* sqlite3_io_methods object name */
   1,                         /* shared memory is disabled */
   unixClose,                 /* xClose method */
-  unixLock,                  /* xLock method */
+  unix_تالا,                  /* xLock method */
   nfsUnlock,                 /* xUnlock method */
-  unixCheckReservedLock,     /* xCheckReservedLock method */
+  unix_Check_Reserved_تالا,     /* xCheckReservedLock method */
   0                          /* xShmMap method */
 )
-#endif
+#اگر_ختم
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
 ** This "finder" function attempts to determine the best locking strategy
 ** for the database file "filePath".  It then returns the sqlite3_io_methods
@@ -5964,13 +5964,13 @@ IOMETHODS(
 **
 ** This is for MacOSX only.
 */
-static const sqlite3_io_methods *autolockIoFinderImpl(
-  const char *filePath,    /* name of the database file */
+ساکن ثابت sqlite3_io_methods *autolockIoFinderImpl(
+  ثابت حرف *file_راستہ,    /* name of the database file */
   unixFile *pNew           /* open file object for the database file */
 ){
-  static const struct Mapping {
-    const char *zFilesystem;              /* Filesystem type name */
-    const sqlite3_io_methods *pMethods;   /* Appropriate locking method */
+  ساکن ثابت ساخت Mapping {
+    ثابت حرف *zFilesystem;              /* Filesystem type name */
+    ثابت sqlite3_io_methods *pMethods;   /* Appropriate locking method */
   } aMap[] = {
     { "hfs",    &posixIoMethods },
     { "ufs",    &posixIoMethods },
@@ -5979,22 +5979,22 @@ static const sqlite3_io_methods *autolockIoFinderImpl(
     { "webdav", &nolockIoMethods },
     { 0, 0 }
   };
-  int i;
-  struct statfs fsInfo;
-  struct flock lockInfo;
+  صحیح i;
+  ساخت statfs fsInfo;
+  ساخت flock تالا_Info;
 
-  if( !filePath ){
+  اگر( !file_راستہ ){
     /* If filePath==NULL that means we are dealing with a transient file
     ** that does not need to be locked. */
-    return &nolockIoMethods;
+    واپس &nolockIoMethods;
   }
-  if( statfs(filePath, &fsInfo) != -1 ){
-    if( fsInfo.f_flags & MNT_RDONLY ){
-      return &nolockIoMethods;
+  اگر( statfs(file_راستہ, &fsInfo) != -1 ){
+    اگر( fsInfo.f_flags & MNT_RDONLY ){
+      واپس &nolockIoMethods;
     }
-    for(i=0; aMap[i].zFilesystem; i++){
-      if( strcmp(fsInfo.f_fstypename, aMap[i].zFilesystem)==0 ){
-        return aMap[i].pMethods;
+    برائے(i=0; aMap[i].zFilesystem; i++){
+      اگر( strcmp(fsInfo.f_fstypename, aMap[i].zFilesystem)==0 ){
+        واپس aMap[i].pMethods;
       }
     }
   }
@@ -6003,65 +6003,65 @@ static const sqlite3_io_methods *autolockIoFinderImpl(
   ** Test byte-range lock using fcntl(). If the call succeeds,
   ** assume that the file-system supports POSIX style locks.
   */
-  lockInfo.l_len = 1;
-  lockInfo.l_start = 0;
-  lockInfo.l_whence = SEEK_SET;
-  lockInfo.l_type = F_RDLCK;
-  if( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
-    if( strcmp(fsInfo.f_fstypename, "nfs")==0 ){
-      return &nfsIoMethods;
-    } else {
-      return &posixIoMethods;
+  تالا_Info.l_len = 1;
+  تالا_Info.l_آغاز = 0;
+  تالا_Info.l_whence = SEEK_SET;
+  تالا_Info.l_type = F_RDLCK;
+  اگر( osFcntl(pNew->h, F_GETLK, &تالا_Info)!=-1 ) {
+    اگر( strcmp(fsInfo.f_fstypename, "nfs")==0 ){
+      واپس &nfsIoMethods;
+    } ورنہ {
+      واپس &posixIoMethods;
     }
-  }else{
-    return &dotlockIoMethods;
+  }ورنہ{
+    واپس &dotlockIoMethods;
   }
 }
-static const sqlite3_io_methods
-  *(*const autolockIoFinder)(const char*,unixFile*) = autolockIoFinderImpl;
+ساکن ثابت sqlite3_io_methods
+  *(*ثابت autolockIoFinder)(ثابت حرف*,unixFile*) = autolockIoFinderImpl;
 
-#endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
+#اگر_ختم /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
 
-#if OS_VXWORKS
+#اگر OS_VXWORKS
 /*
 ** This "finder" function for VxWorks checks to see if posix advisory
 ** locking works.  If it does, then that is what is used.  If it does not
 ** work, then fallback to named semaphore locking.
 */
-static const sqlite3_io_methods *vxworksIoFinderImpl(
-  const char *filePath,    /* name of the database file */
+ساکن ثابت sqlite3_io_methods *vxworksIoFinderImpl(
+  ثابت حرف *file_راستہ,    /* name of the database file */
   unixFile *pNew           /* the open file object */
 ){
-  struct flock lockInfo;
+  ساخت flock تالا_Info;
 
-  if( !filePath ){
+  اگر( !file_راستہ ){
     /* If filePath==NULL that means we are dealing with a transient file
     ** that does not need to be locked. */
-    return &nolockIoMethods;
+    واپس &nolockIoMethods;
   }
 
   /* Test if fcntl() is supported and use POSIX style locks.
   ** Otherwise fall back to the named semaphore method.
   */
-  lockInfo.l_len = 1;
-  lockInfo.l_start = 0;
-  lockInfo.l_whence = SEEK_SET;
-  lockInfo.l_type = F_RDLCK;
-  if( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
-    return &posixIoMethods;
-  }else{
-    return &semIoMethods;
+  تالا_Info.l_len = 1;
+  تالا_Info.l_آغاز = 0;
+  تالا_Info.l_whence = SEEK_SET;
+  تالا_Info.l_type = F_RDLCK;
+  اگر( osFcntl(pNew->h, F_GETLK, &تالا_Info)!=-1 ) {
+    واپس &posixIoMethods;
+  }ورنہ{
+    واپس &semIoMethods;
   }
 }
-static const sqlite3_io_methods
-  *(*const vxworksIoFinder)(const char*,unixFile*) = vxworksIoFinderImpl;
+ساکن ثابت sqlite3_io_methods
+  *(*ثابت vxworksIoFinder)(ثابت حرف*,unixFile*) = vxworksIoFinderImpl;
 
-#endif /* OS_VXWORKS */
+#اگر_ختم /* OS_VXWORKS */
 
 /*
 ** An abstract type for a pointer to an IO method finder function:
 */
-typedef const sqlite3_io_methods *(*finder_type)(const char*,unixFile*);
+قسمتعریف ثابت sqlite3_io_methods *(*finder_type)(ثابت حرف*,unixFile*);
 
 
 /****************************************************************************
@@ -6074,66 +6074,66 @@ typedef const sqlite3_io_methods *(*finder_type)(const char*,unixFile*);
 /*
 ** Initialize the contents of the unixFile structure pointed to by pId.
 */
-static int fillInUnixFile(
+ساکن صحیح fill_اندر_Unix_File(
   sqlite3_vfs *pVfs,      /* Pointer to vfs object */
-  int h,                  /* Open file descriptor of file being opened */
+  صحیح h,                  /* Open file descriptor of file being opened */
   sqlite3_file *pId,      /* Write to the unixFile structure here */
-  const char *zFilename,  /* Name of the file being opened */
-  int ctrlFlags           /* Zero or more UNIXFILE_* values */
+  ثابت حرف *zFilename,  /* Name of the file being opened */
+  صحیح ctrlFlags           /* Zero or more UNIXFILE_* values */
 ){
-  const sqlite3_io_methods *pLockingStyle;
+  ثابت sqlite3_io_methods *pLockingStyle;
   unixFile *pNew = (unixFile *)pId;
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
 
-  assert( pNew->pInode==NULL );
+  أكد( pNew->pInode==تہی );
 
   /* No locking occurs in temporary files */
-  assert( zFilename!=0 || (ctrlFlags & UNIXFILE_NOLOCK)!=0 );
+  أكد( zFilename!=0 || (ctrlFlags & UNIXFILE_NOLOCK)!=0 );
 
   OSTRACE(("OPEN    %-3d %s\n", h, zFilename));
   pNew->h = h;
   pNew->pVfs = pVfs;
-  pNew->zPath = zFilename;
+  pNew->z_راستہ = zFilename;
   pNew->ctrlFlags = (u8)ctrlFlags;
-#if SQLITE_MAX_MMAP_SIZE>0
-  pNew->mmapSizeMax = sqlite3GlobalConfig.szMmap;
-#endif
-  if( sqlite3_uri_boolean(((ctrlFlags & UNIXFILE_URI) ? zFilename : 0),
+#اگر SQLITE_MAX_MMAP_سائز>0
+  pNew->mmap_سائز_Max = sqlite3GlobalConfig.szMmap;
+#اگر_ختم
+  اگر( sqlite3_uri_boolean(((ctrlFlags & UNIXFILE_URI) ? zFilename : 0),
                            "psow", SQLITE_POWERSAFE_OVERWRITE) ){
     pNew->ctrlFlags |= UNIXFILE_PSOW;
   }
-  if( strcmp(pVfs->zName,"unix-excl")==0 ){
+  اگر( strcmp(pVfs->zName,"unix-excl")==0 ){
     pNew->ctrlFlags |= UNIXFILE_EXCL;
   }
 
-#if OS_VXWORKS
-  pNew->pId = vxworksFindFileId(zFilename);
-  if( pNew->pId==0 ){
+#اگر OS_VXWORKS
+  pNew->pId = vxworks_ڈھونڈو_File_Id(zFilename);
+  اگر( pNew->pId==0 ){
     ctrlFlags |= UNIXFILE_NOLOCK;
     rc = SQLITE_NOMEM_BKPT;
   }
-#endif
+#اگر_ختم
 
-  if( ctrlFlags & UNIXFILE_NOLOCK ){
+  اگر( ctrlFlags & UNIXFILE_NOLOCK ){
     pLockingStyle = &nolockIoMethods;
-  }else{
-    pLockingStyle = (**(finder_type*)pVfs->pAppData)(zFilename, pNew);
-#if SQLITE_ENABLE_LOCKING_STYLE
+  }ورنہ{
+    pLockingStyle = (**(finder_type*)pVfs->p_App_ڈیٹا)(zFilename, pNew);
+#اگر SQLITE_ENABLE_LOCKING_STYLE
     /* Cache zFilename in the locking context (AFP and dotlock override) for
     ** proxyLock activation is possible (remote proxy is based on db name)
     ** zFilename remains valid until file is closed, to support */
-    pNew->lockingContext = (void*)zFilename;
-#endif
+    pNew->lockingContext = (خالی*)zFilename;
+#اگر_ختم
   }
 
-  if( pLockingStyle == &posixIoMethods
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+  اگر( pLockingStyle == &posixIoMethods
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
     || pLockingStyle == &nfsIoMethods
-#endif
+#اگر_ختم
   ){
     unixEnterMutex();
-    rc = findInodeInfo(pNew, &pNew->pInode);
-    if( rc!=SQLITE_OK ){
+    rc = ڈھونڈو_Inode_Info(pNew, &pNew->pInode);
+    اگر( rc!=SQLITE_OK ){
       /* If an error occurred in findInodeInfo(), close the file descriptor
       ** immediately, before releasing the mutex. findInodeInfo() may fail
       ** in two scenarios:
@@ -6158,25 +6158,25 @@ static int fillInUnixFile(
     unixLeaveMutex();
   }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-  else if( pLockingStyle == &afpIoMethods ){
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+  ورنہ اگر( pLockingStyle == &afpIoMethods ){
     /* AFP locking uses the file path so it needs to be included in
     ** the afpLockingContext.
     */
     afpLockingContext *pCtx;
-    pNew->lockingContext = pCtx = sqlite3_malloc64( sizeof(*pCtx) );
-    if( pCtx==0 ){
+    pNew->lockingContext = pCtx = sqlite3_malloc64( حجم(*pCtx) );
+    اگر( pCtx==0 ){
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }ورنہ{
       /* NB: zFilename exists and remains valid until the file is closed
       ** according to requirement F11141.  So we do not need to make a
       ** copy of the filename. */
-      pCtx->dbPath = zFilename;
+      pCtx->db_راستہ = zFilename;
       pCtx->reserved = 0;
       srandomdev();
       unixEnterMutex();
-      rc = findInodeInfo(pNew, &pNew->pInode);
-      if( rc!=SQLITE_OK ){
+      rc = ڈھونڈو_Inode_Info(pNew, &pNew->pInode);
+      اگر( rc!=SQLITE_OK ){
         sqlite3_free(pNew->lockingContext);
         robust_close(pNew, h, __LINE__);
         h = -1;
@@ -6184,73 +6184,73 @@ static int fillInUnixFile(
       unixLeaveMutex();      
     }
   }
-#endif
+#اگر_ختم
 
-  else if( pLockingStyle == &dotlockIoMethods ){
+  ورنہ اگر( pLockingStyle == &dotlockIoMethods ){
     /* Dotfile locking uses the file path so it needs to be included in
     ** the dotlockLockingContext
     */
-    char *zLockFile;
-    int nFilename;
-    assert( zFilename!=0 );
-    nFilename = (int)strlen(zFilename) + 6;
-    zLockFile = (char *)sqlite3_malloc64(nFilename);
-    if( zLockFile==0 ){
+    حرف *z_تالا_File;
+    صحیح nFilename;
+    أكد( zFilename!=0 );
+    nFilename = (صحیح)لڑی_لمبائی(zFilename) + 6;
+    z_تالا_File = (حرف *)sqlite3_malloc64(nFilename);
+    اگر( z_تالا_File==0 ){
       rc = SQLITE_NOMEM_BKPT;
-    }else{
-      sqlite3_snprintf(nFilename, zLockFile, "%s" DOTLOCK_SUFFIX, zFilename);
+    }ورنہ{
+      sqlite3_snprintf(nFilename, z_تالا_File, "%s" DOTLOCK_SUFFIX, zFilename);
     }
-    pNew->lockingContext = zLockFile;
+    pNew->lockingContext = z_تالا_File;
   }
 
-#if OS_VXWORKS
-  else if( pLockingStyle == &semIoMethods ){
+#اگر OS_VXWORKS
+  ورنہ اگر( pLockingStyle == &semIoMethods ){
     /* Named semaphore locking uses the file path so it needs to be
     ** included in the semLockingContext
     */
     unixEnterMutex();
-    rc = findInodeInfo(pNew, &pNew->pInode);
-    if( (rc==SQLITE_OK) && (pNew->pInode->pSem==NULL) ){
-      char *zSemName = pNew->pInode->aSemName;
-      int n;
+    rc = ڈھونڈو_Inode_Info(pNew, &pNew->pInode);
+    اگر( (rc==SQLITE_OK) && (pNew->pInode->pSem==تہی) ){
+      حرف *zSemName = pNew->pInode->aSemName;
+      صحیح n;
       sqlite3_snprintf(MAX_PATHNAME, zSemName, "/%s.sem",
                        pNew->pId->zCanonicalName);
-      for( n=1; zSemName[n]; n++ )
-        if( zSemName[n]=='/' ) zSemName[n] = '_';
+      برائے( n=1; zSemName[n]; n++ )
+        اگر( zSemName[n]=='/' ) zSemName[n] = '_';
       pNew->pInode->pSem = sem_open(zSemName, O_CREAT, 0666, 1);
-      if( pNew->pInode->pSem == SEM_FAILED ){
+      اگر( pNew->pInode->pSem == SEM_FAILED ){
         rc = SQLITE_NOMEM_BKPT;
         pNew->pInode->aSemName[0] = '\0';
       }
     }
     unixLeaveMutex();
   }
-#endif
+#اگر_ختم
 
-  storeLastErrno(pNew, 0);
-#if OS_VXWORKS
-  if( rc!=SQLITE_OK ){
-    if( h>=0 ){
+  store_آخری_Errno(pNew, 0);
+#اگر OS_VXWORKS
+  اگر( rc!=SQLITE_OK ){
+    اگر( h>=0 ){
       robust_close(pNew, h, __LINE__);
       h = -1;
     }
-    if( pNew->ctrlFlags & UNIXFILE_DELETE ){
+    اگر( pNew->ctrlFlags & UNIXFILE_DELETE ){
       osUnlink(zFilename);
     }
-    if( pNew->pId ){
+    اگر( pNew->pId ){
       vxworksReleaseFileId(pNew->pId);
       pNew->pId = 0;
     }
   }
-#endif
-  if( rc!=SQLITE_OK ){
-    if( h>=0 ) robust_close(pNew, h, __LINE__);
-  }else{
+#اگر_ختم
+  اگر( rc!=SQLITE_OK ){
+    اگر( h>=0 ) robust_close(pNew, h, __LINE__);
+  }ورنہ{
     pId->pMethods = pLockingStyle;
-    OpenCounter(+1);
+    Open_شمار(+1);
     verifyDbFile(pNew);
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -6261,33 +6261,33 @@ static int fillInUnixFile(
 ** the return value should not be used after any call to setenv() or
 ** putenv() as that value might have been freed.
 */
-static const char *unixTempFileDir(void){
-  unsigned int i;
-  struct stat buf;
-  const char *zDir;
+ساکن ثابت حرف *unix_عارضی_File_Dir(خالی){
+  غیرعلامتی صحیح i;
+  ساخت stat buf;
+  ثابت حرف *zDir;
 
-  for(i=0; i<7; i++){
-    switch( i ){
-      case 0:  zDir = sqlite3_temp_directory;   break;
-      case 1:  zDir = getenv("SQLITE_TMPDIR");  break;
-      case 2:  zDir = getenv("TMPDIR");         break;
-      case 3:  zDir = "/var/tmp";               break;
-      case 4:  zDir = "/usr/tmp";               break;
-      case 5:  zDir = "/tmp";                   break;
-      default: zDir = ".";                      break;
+  برائے(i=0; i<7; i++){
+    انتخاب( i ){
+      حالت 0:  zDir = sqlite3_عارضی_directory;   توڑو;
+      حالت 1:  zDir = getenv("SQLITE_TMPDIR");  توڑو;
+      حالت 2:  zDir = getenv("TMPDIR");         توڑو;
+      حالت 3:  zDir = "/var/tmp";               توڑو;
+      حالت 4:  zDir = "/usr/tmp";               توڑو;
+      حالت 5:  zDir = "/tmp";                   توڑو;
+      طےشدہ: zDir = ".";                      توڑو;
     }
-    if( zDir!=0
-#if OS_VXWORKS
+    اگر( zDir!=0
+#اگر OS_VXWORKS
      && zDir[0]=='/'
-#endif
+#اگر_ختم
      && osStat(zDir, &buf)==0
-     && S_ISDIR(buf.st_mode)
+     && S_ISDIR(buf.st_منوال)
      && osAccess(zDir, 03)==0
     ){
-      return zDir;
+      واپس zDir;
     }
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -6295,48 +6295,48 @@ static const char *unixTempFileDir(void){
 ** by the calling process and must be big enough to hold at least
 ** pVfs->mxPathname bytes.
 */
-static int unixGetTempname(int nBuf, char *zBuf){
-  const char *zDir;
-  int iLimit = 0;
-  int rc = SQLITE_OK;
+ساکن صحیح unixGetTempname(صحیح nBuf, حرف *zBuf){
+  ثابت حرف *zDir;
+  صحیح i_حد_بندی = 0;
+  صحیح rc = SQLITE_OK;
 
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing.
   */
   zBuf[0] = 0;
-  SimulateIOError( return SQLITE_IOERR );
+  SimulateIOError( واپس SQLITE_IOERR );
 
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  zDir = unixTempFileDir();
-  if( zDir==0 ){
+  zDir = unix_عارضی_File_Dir();
+  اگر( zDir==0 ){
     rc = SQLITE_IOERR_GETTEMPPATH;
-  }else{
-    do{
+  }ورنہ{
+    کرو{
       u64 r;
-      sqlite3_randomness(sizeof(r), &r);
-      assert( nBuf>2 );
+      sqlite3_randomness(حجم(r), &r);
+      أكد( nBuf>2 );
       zBuf[nBuf-2] = 0;
-      sqlite3_snprintf(nBuf, zBuf, "%s/"SQLITE_TEMP_FILE_PREFIX"%llx%c",
+      sqlite3_snprintf(nBuf, zBuf, "%s/"SQLITE_عارضی_FILE_سابقہ"%llx%c",
                        zDir, r, 0);
-      if( zBuf[nBuf-2]!=0 || (iLimit++)>10 ){
+      اگر( zBuf[nBuf-2]!=0 || (i_حد_بندی++)>10 ){
         rc = SQLITE_ERROR;
-        break;
+        توڑو;
       }
-    }while( osAccess(zBuf,0)==0 );
+    }جب( osAccess(zBuf,0)==0 );
   }
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return rc;
+  واپس rc;
 }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
 /*
 ** Routine to transform a unixFile into a proxy-locking unixFile.
 ** Implementation in the proxy-lock division, but used by unixOpen()
 ** if SQLITE_PREFER_PROXY_LOCKING is defined.
 */
-static int proxyTransformUnixFile(unixFile*, const char*);
-#endif
+ساکن صحیح proxyTransformUnixFile(unixFile*, ثابت حرف*);
+#اگر_ختم
 
 /*
 ** Search for an unused file descriptor that was opened on the database
@@ -6354,16 +6354,16 @@ static int proxyTransformUnixFile(unixFile*, const char*);
 ** If a suitable file descriptor is found, then it is returned. If no
 ** such file descriptor is located, -1 is returned.
 */
-static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
-  UnixUnusedFd *pUnused = 0;
+ساکن Unix_غیر_مستعمل_Fd *ڈھونڈو_Reusable_Fd(ثابت حرف *z_راستہ, صحیح flags){
+  Unix_غیر_مستعمل_Fd *p_غیر_مستعمل = 0;
 
   /* Do not search for an unused file descriptor on vxworks. Not because
   ** vxworks would not benefit from the change (it might, we're not sure),
   ** but because no way to test it is currently available. It is better
   ** not to risk breaking vxworks support for the sake of such an obscure
   ** feature.  */
-#if !OS_VXWORKS
-  struct stat sStat;                   /* Results of stat() call */
+#اگر !OS_VXWORKS
+  ساخت stat sStat;                   /* Results of stat() call */
 
   unixEnterMutex();
 
@@ -6375,51 +6375,51 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
   **
   ** Even if a subsequent open() call does succeed, the consequences of
   ** not searching for a reusable file descriptor are not dire.  */
-  if( inodeList!=0 && 0==osStat(zPath, &sStat) ){
+  اگر( inodeList!=0 && 0==osStat(z_راستہ, &sStat) ){
     unixInodeInfo *pInode;
 
     pInode = inodeList;
-    while( pInode && (pInode->fileId.dev!=sStat.st_dev
+    جب( pInode && (pInode->fileId.dev!=sStat.st_dev
                      || pInode->fileId.ino!=(u64)sStat.st_ino) ){
-       pInode = pInode->pNext;
+       pInode = pInode->p_اگلا;
     }
-    if( pInode ){
-      UnixUnusedFd **pp;
-      assert( sqlite3_mutex_notheld(pInode->pLockMutex) );
-      sqlite3_mutex_enter(pInode->pLockMutex);
+    اگر( pInode ){
+      Unix_غیر_مستعمل_Fd **pp;
+      أكد( sqlite3_mutex_notheld(pInode->p_تالا_Mutex) );
+      sqlite3_mutex_enter(pInode->p_تالا_Mutex);
       flags &= (SQLITE_OPEN_READONLY|SQLITE_OPEN_READWRITE);
-      for(pp=&pInode->pUnused; *pp && (*pp)->flags!=flags; pp=&((*pp)->pNext));
-      pUnused = *pp;
-      if( pUnused ){
-        *pp = pUnused->pNext;
+      برائے(pp=&pInode->p_غیر_مستعمل; *pp && (*pp)->flags!=flags; pp=&((*pp)->p_اگلا));
+      p_غیر_مستعمل = *pp;
+      اگر( p_غیر_مستعمل ){
+        *pp = p_غیر_مستعمل->p_اگلا;
       }
-      sqlite3_mutex_leave(pInode->pLockMutex);
+      sqlite3_mutex_leave(pInode->p_تالا_Mutex);
     }
   }
   unixLeaveMutex();
-#endif    /* if !OS_VXWORKS */
-  return pUnused;
+#اگر_ختم    /* if !OS_VXWORKS */
+  واپس p_غیر_مستعمل;
 }
 
 /*
 ** Find the mode, uid and gid of file zFile.
 */
-static int getFileMode(
-  const char *zFile,              /* File name */
-  mode_t *pMode,                  /* OUT: Permissions of zFile */
+ساکن صحیح get_File_منوال(
+  ثابت حرف *zFile,              /* File name */
+  منوال_t *p_منوال,                  /* OUT: Permissions of zFile */
   uid_t *pUid,                    /* OUT: uid of zFile. */
   gid_t *pGid                     /* OUT: gid of zFile. */
 ){
-  struct stat sStat;              /* Output of stat() on database file */
-  int rc = SQLITE_OK;
-  if( 0==osStat(zFile, &sStat) ){
-    *pMode = sStat.st_mode & 0777;
+  ساخت stat sStat;              /* Output of stat() on database file */
+  صحیح rc = SQLITE_OK;
+  اگر( 0==osStat(zFile, &sStat) ){
+    *p_منوال = sStat.st_منوال & 0777;
     *pUid = sStat.st_uid;
     *pGid = sStat.st_gid;
-  }else{
+  }ورنہ{
     rc = SQLITE_IOERR_FSTAT;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -6443,20 +6443,20 @@ static int getFileMode(
 ** FAT filesystems and permissions do not matter there, so just use
 ** the default permissions.  In 8_3_NAMES mode, leave *pMode set to zero.
 */
-static int findCreateFileMode(
-  const char *zPath,              /* Path of file (possibly) being created */
-  int flags,                      /* Flags passed as 4th argument to xOpen() */
-  mode_t *pMode,                  /* OUT: Permissions to open file with */
+ساکن صحیح ڈھونڈو_Create_File_منوال(
+  ثابت حرف *z_راستہ,              /* Path of file (possibly) being created */
+  صحیح flags,                      /* Flags passed as 4th argument to xOpen() */
+  منوال_t *p_منوال,                  /* OUT: Permissions to open file with */
   uid_t *pUid,                    /* OUT: uid to set on the file */
   gid_t *pGid                     /* OUT: gid to set on the file */
 ){
-  int rc = SQLITE_OK;             /* Return Code */
-  *pMode = 0;
+  صحیح rc = SQLITE_OK;             /* Return Code */
+  *p_منوال = 0;
   *pUid = 0;
   *pGid = 0;
-  if( flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL) ){
-    char zDb[MAX_PATHNAME+1];     /* Database file path */
-    int nDb;                      /* Number of valid bytes in zDb */
+  اگر( flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL) ){
+    حرف zDb[MAX_PATHNAME+1];     /* Database file path */
+    صحیح nDb;                      /* Number of valid bytes in zDb */
 
     /* zPath is a path to a WAL or journal file. The following block derives
     ** the path to the associated database file from zPath. This block handles
@@ -6476,29 +6476,29 @@ static int findCreateFileMode(
     ** the '-' might be missing or the '-' might be the first character in
     ** the filename.  In that case, just return SQLITE_OK with *pMode==0.
     */
-    nDb = sqlite3Strlen30(zPath) - 1;
-    while( nDb>0 && zPath[nDb]!='.' ){
-      if( zPath[nDb]=='-' ){
-        memcpy(zDb, zPath, nDb);
+    nDb = sqlite3Strlen30(z_راستہ) - 1;
+    جب( nDb>0 && z_راستہ[nDb]!='.' ){
+      اگر( z_راستہ[nDb]=='-' ){
+        حافظہ_نقل(zDb, z_راستہ, nDb);
         zDb[nDb] = '\0';
-        rc = getFileMode(zDb, pMode, pUid, pGid);
-        break;
+        rc = get_File_منوال(zDb, p_منوال, pUid, pGid);
+        توڑو;
       }
       nDb--;
     }
-  }else if( flags & SQLITE_OPEN_DELETEONCLOSE ){
-    *pMode = 0600;
-  }else if( flags & SQLITE_OPEN_URI ){
+  }ورنہ اگر( flags & SQLITE_OPEN_DELETEONCLOSE ){
+    *p_منوال = 0600;
+  }ورنہ اگر( flags & SQLITE_OPEN_URI ){
     /* If this is a main database file and the file was opened using a URI
     ** filename, check for the "modeof" parameter. If present, interpret
     ** its value as a filename and try to copy the mode, uid and gid from
     ** that file.  */
-    const char *z = sqlite3_uri_parameter(zPath, "modeof");
-    if( z ){
-      rc = getFileMode(z, pMode, pUid, pGid);
+    ثابت حرف *z = sqlite3_uri_parameter(z_راستہ, "modeof");
+    اگر( z ){
+      rc = get_File_منوال(z, p_منوال, pUid, pGid);
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -6523,38 +6523,38 @@ static int findCreateFileMode(
 ** interface, add the DELETEONCLOSE flag to those specified above for
 ** OpenExclusive().
 */
-static int unixOpen(
+ساکن صحیح unixOpen(
   sqlite3_vfs *pVfs,           /* The VFS for which this is the xOpen method */
-  const char *zPath,           /* Pathname of file to be opened */
+  ثابت حرف *z_راستہ,           /* Pathname of file to be opened */
   sqlite3_file *pFile,         /* The file descriptor to be filled in */
-  int flags,                   /* Input flags to control the opening */
-  int *pOutFlags               /* Output flags returned to SQLite core */
+  صحیح flags,                   /* Input flags to control the opening */
+  صحیح *p_برآمد_Flags               /* Output flags returned to SQLite core */
 ){
   unixFile *p = (unixFile *)pFile;
-  int fd = -1;                   /* File descriptor returned by open() */
-  int openFlags = 0;             /* Flags to pass to open() */
-  int eType = flags&0x0FFF00;  /* Type of file to open */
-  int noLock;                    /* True to omit locking primitives */
-  int rc = SQLITE_OK;            /* Function Return Code */
-  int ctrlFlags = 0;             /* UNIXFILE_* flags */
+  صحیح fd = -1;                   /* File descriptor returned by open() */
+  صحیح openFlags = 0;             /* Flags to pass to open() */
+  صحیح eType = flags&0x0FFF00;  /* Type of file to open */
+  صحیح no_تالا;                    /* True to omit locking primitives */
+  صحیح rc = SQLITE_OK;            /* Function Return Code */
+  صحیح ctrlFlags = 0;             /* UNIXFILE_* flags */
 
-  int isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
-  int isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
-  int isCreate     = (flags & SQLITE_OPEN_CREATE);
-  int isReadonly   = (flags & SQLITE_OPEN_READONLY);
-  int isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
-#if SQLITE_ENABLE_LOCKING_STYLE
-  int isAutoProxy  = (flags & SQLITE_OPEN_AUTOPROXY);
-#endif
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
-  struct statfs fsInfo;
-#endif
+  صحیح isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
+  صحیح isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
+  صحیح isCreate     = (flags & SQLITE_OPEN_CREATE);
+  صحیح isReadonly   = (flags & SQLITE_OPEN_READONLY);
+  صحیح isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
+#اگر SQLITE_ENABLE_LOCKING_STYLE
+  صحیح isAutoProxy  = (flags & SQLITE_OPEN_AUTOPROXY);
+#اگر_ختم
+#اگر defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+  ساخت statfs fsInfo;
+#اگر_ختم
 
   /* If creating a super- or main-file journal, this function will open
   ** a file-descriptor on the directory too. The first time unixSync()
   ** is called the directory file descriptor will be fsync()ed and close()d.
   */
-  int isNewJrnl = (isCreate && (
+  صحیح isNewJrnl = (isCreate && (
         eType==SQLITE_OPEN_SUPER_JOURNAL
      || eType==SQLITE_OPEN_MAIN_JOURNAL
      || eType==SQLITE_OPEN_WAL
@@ -6563,8 +6563,8 @@ static int unixOpen(
   /* If argument zPath is a NULL pointer, this function is required to open
   ** a temporary file. Use this buffer to store the file name in.
   */
-  char zTmpname[MAX_PATHNAME+2];
-  const char *zName = zPath;
+  حرف zTmpname[MAX_PATHNAME+2];
+  ثابت حرف *zName = z_راستہ;
 
   /* Check the following statements are true:
   **
@@ -6573,143 +6573,143 @@ static int unixOpen(
   **   (c) if EXCLUSIVE is set, then CREATE must also be set.
   **   (d) if DELETEONCLOSE is set, then CREATE must also be set.
   */
-  assert((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
-  assert(isCreate==0 || isReadWrite);
-  assert(isExclusive==0 || isCreate);
-  assert(isDelete==0 || isCreate);
+  أكد((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
+  أكد(isCreate==0 || isReadWrite);
+  أكد(isExclusive==0 || isCreate);
+  أكد(isDelete==0 || isCreate);
 
   /* The main DB, main journal, WAL file and super-journal are never
   ** automatically deleted. Nor are they ever temporary files.  */
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
 
   /* Assert that the upper layer has set one of the "file-type" flags. */
-  assert( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_TEMP_DB
-       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_TEMP_JOURNAL
+  أكد( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_عارضی_DB
+       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_عارضی_JOURNAL
        || eType==SQLITE_OPEN_SUBJOURNAL   || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_TRANSIENT_DB || eType==SQLITE_OPEN_WAL
   );
 
-#if OS_VXWORKS
+#اگر OS_VXWORKS
   /* The file-ID mechanism used in Vxworks requires that all pathnames
   ** provided to unixOpen must be absolute pathnames. */
-  if( zPath!=0 && zPath[0]!='/' ){ return SQLITE_CANTOPEN; }
-#endif
+  اگر( z_راستہ!=0 && z_راستہ[0]!='/' ){ واپس SQLITE_CANTOPEN; }
+#اگر_ختم
 
   /* Detect a pid change and reset the PRNG.  There is a race condition
   ** here such that two or more threads all trying to open databases at
   ** the same instant might all reset the PRNG.  But multiple resets
   ** are harmless.
   */
-  if( randomnessPid!=osGetpid(0) ){
+  اگر( randomnessPid!=osGetpid(0) ){
     randomnessPid = osGetpid(0);
     sqlite3_randomness(0,0);
   }
-  memset(p, 0, sizeof(unixFile));
+  memset(p, 0, حجم(unixFile));
 
-#ifdef SQLITE_ASSERT_NO_FILES
+#اگر_تعریف_شدہ SQLITE_ASSERT_NO_FILES
   /* Applications that never read or write a persistent disk files */
-  assert( zName==0 );
-#endif
+  أكد( zName==0 );
+#اگر_ختم
 
-  if( eType==SQLITE_OPEN_MAIN_DB ){
-    UnixUnusedFd *pUnused;
-    pUnused = findReusableFd(zName, flags);
-    if( pUnused ){
-      fd = pUnused->fd;
-    }else{
-      pUnused = sqlite3_malloc64(sizeof(*pUnused));
-      if( !pUnused ){
-        return SQLITE_NOMEM_BKPT;
+  اگر( eType==SQLITE_OPEN_MAIN_DB ){
+    Unix_غیر_مستعمل_Fd *p_غیر_مستعمل;
+    p_غیر_مستعمل = ڈھونڈو_Reusable_Fd(zName, flags);
+    اگر( p_غیر_مستعمل ){
+      fd = p_غیر_مستعمل->fd;
+    }ورنہ{
+      p_غیر_مستعمل = sqlite3_malloc64(حجم(*p_غیر_مستعمل));
+      اگر( !p_غیر_مستعمل ){
+        واپس SQLITE_NOMEM_BKPT;
       }
     }
-    p->pPreallocatedUnused = pUnused;
+    p->p_Preallocated_غیر_مستعمل = p_غیر_مستعمل;
 
     /* Database filenames are double-zero terminated if they are not
     ** URIs with parameters.  Hence, they can always be passed into
     ** sqlite3_uri_parameter(). */
-    assert( (flags & SQLITE_OPEN_URI) || zName[strlen(zName)+1]==0 );
+    أكد( (flags & SQLITE_OPEN_URI) || zName[لڑی_لمبائی(zName)+1]==0 );
 
-  }else if( !zName ){
+  }ورنہ اگر( !zName ){
     /* If zName is NULL, the upper layer is requesting a temp file. */
-    assert( isDelete );
-    assert( !isNewJrnl );
-    assert( isExclusive );
-    assert( isReadWrite );
-#if defined(__linux__) && defined(O_TMPFILE)
+    أكد( isDelete );
+    أكد( !isNewJrnl );
+    أكد( isExclusive );
+    أكد( isReadWrite );
+#اگر defined(__linux__) && defined(O_TMPFILE)
     /* On systems that support O_TMPFILE, use that flag to create a more
     ** secure temporary file that cannot be accessed by other processes
     */
-    zName = unixTempFileDir();
-    if( zName
+    zName = unix_عارضی_File_Dir();
+    اگر( zName
      && (fd = robust_open(zName, O_RDWR|O_EXCL|O_TMPFILE, 0600))>=0
     ){
-      rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags|UNIXFILE_NOLOCK);
-      goto open_finished;
+      rc = fill_اندر_Unix_File(pVfs, fd, pFile, z_راستہ, ctrlFlags|UNIXFILE_NOLOCK);
+      جاؤ open_ختم_شدہ;
     }
-#endif
+#اگر_ختم
     rc = unixGetTempname(pVfs->mxPathname, zTmpname);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    اگر( rc!=SQLITE_OK ){
+      واپس rc;
     }
     zName = zTmpname;
 
     /* Generated temporary filenames are always double-zero terminated
     ** for use by sqlite3_uri_parameter(). */
-    assert( zName[strlen(zName)+1]==0 );
+    أكد( zName[لڑی_لمبائی(zName)+1]==0 );
   }
 
   /* Determine the value of the flags parameter passed to POSIX function
   ** open(). These must be calculated even if open() is not called, as
   ** they may be stored as part of the file handle and used by the
   ** 'conch file' locking functions later on.  */
-  if( isReadonly )  openFlags |= O_RDONLY;
-  if( isReadWrite ) openFlags |= O_RDWR;
-  if( isCreate )    openFlags |= O_CREAT;
-  if( isExclusive ) openFlags |= (O_EXCL|O_NOFOLLOW);
-  openFlags |= (O_LARGEFILE|O_BINARY|O_NOFOLLOW);
+  اگر( isReadonly )  openFlags |= O_RDONLY;
+  اگر( isReadWrite ) openFlags |= O_RDWR;
+  اگر( isCreate )    openFlags |= O_CREAT;
+  اگر( isExclusive ) openFlags |= (O_EXCL|O_NOFOLLOW);
+  openFlags |= (O_LARGEFILE|O_ثنائی|O_NOFOLLOW);
 
-  if( fd<0 ){
-    mode_t openMode;              /* Permissions to create file with */
+  اگر( fd<0 ){
+    منوال_t open_منوال;              /* Permissions to create file with */
     uid_t uid;                    /* Userid for the file */
     gid_t gid;                    /* Groupid for the file */
-    rc = findCreateFileMode(zName, flags, &openMode, &uid, &gid);
-    if( rc!=SQLITE_OK ){
-      assert( !p->pPreallocatedUnused );
-      assert( eType==SQLITE_OPEN_WAL || eType==SQLITE_OPEN_MAIN_JOURNAL );
-      return rc;
+    rc = ڈھونڈو_Create_File_منوال(zName, flags, &open_منوال, &uid, &gid);
+    اگر( rc!=SQLITE_OK ){
+      أكد( !p->p_Preallocated_غیر_مستعمل );
+      أكد( eType==SQLITE_OPEN_WAL || eType==SQLITE_OPEN_MAIN_JOURNAL );
+      واپس rc;
     }
-    fd = robust_open(zName, openFlags, openMode);
+    fd = robust_open(zName, openFlags, open_منوال);
     OSTRACE(("OPENX   %-3d %s 0%o\n", fd, zName, openFlags));
-    assert( !isExclusive || (openFlags & O_CREAT)!=0 );
-    if( fd<0 ){
-      if( isNewJrnl && errno==EACCES && osAccess(zName, F_OK) ){
+    أكد( !isExclusive || (openFlags & O_CREAT)!=0 );
+    اگر( fd<0 ){
+      اگر( isNewJrnl && errno==EACCES && osAccess(zName, F_OK) ){
         /* If unable to create a journal because the directory is not
         ** writable, change the error code to indicate that. */
         rc = SQLITE_READONLY_DIRECTORY;
-      }else if( errno!=EISDIR && isReadWrite ){
+      }ورنہ اگر( errno!=EISDIR && isReadWrite ){
         /* Failed to open the file for read/write access. Try read-only. */
-        UnixUnusedFd *pReadonly = 0;
+        Unix_غیر_مستعمل_Fd *pReadonly = 0;
         flags &= ~(SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE);
         openFlags &= ~(O_RDWR|O_CREAT);
         flags |= SQLITE_OPEN_READONLY;
         openFlags |= O_RDONLY;
         isReadonly = 1;
-        pReadonly = findReusableFd(zName, flags);
-        if( pReadonly ){
+        pReadonly = ڈھونڈو_Reusable_Fd(zName, flags);
+        اگر( pReadonly ){
           fd = pReadonly->fd;
           sqlite3_free(pReadonly);
-        }else{
-          fd = robust_open(zName, openFlags, openMode);
+        }ورنہ{
+          fd = robust_open(zName, openFlags, open_منوال);
         }
       }
     }
-    if( fd<0 ){
-      int rc2 = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zName);
-      if( rc==SQLITE_OK ) rc = rc2;
-      goto open_finished;
+    اگر( fd<0 ){
+      صحیح rc2 = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zName);
+      اگر( rc==SQLITE_OK ) rc = rc2;
+      جاؤ open_ختم_شدہ;
     }
 
     /* The owner of the rollback journal or WAL file should always be the
@@ -6724,108 +6724,108 @@ static int unixOpen(
     ** (probably because SQLite is configured to use 8+3 filename mode) and
     ** in that case we do not want to attempt the chown().
     */
-    if( openMode && (flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL))!=0 ){
+    اگر( open_منوال && (flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL))!=0 ){
       robustFchown(fd, uid, gid);
     }
   }
-  assert( fd>=0 );
-  if( pOutFlags ){
-    *pOutFlags = flags;
+  أكد( fd>=0 );
+  اگر( p_برآمد_Flags ){
+    *p_برآمد_Flags = flags;
   }
 
-  if( p->pPreallocatedUnused ){
-    p->pPreallocatedUnused->fd = fd;
-    p->pPreallocatedUnused->flags =
+  اگر( p->p_Preallocated_غیر_مستعمل ){
+    p->p_Preallocated_غیر_مستعمل->fd = fd;
+    p->p_Preallocated_غیر_مستعمل->flags =
                           flags & (SQLITE_OPEN_READONLY|SQLITE_OPEN_READWRITE);
   }
 
-  if( isDelete ){
-#if OS_VXWORKS
-    zPath = zName;
-#elif defined(SQLITE_UNLINK_AFTER_CLOSE)
-    zPath = sqlite3_mprintf("%s", zName);
-    if( zPath==0 ){
+  اگر( isDelete ){
+#اگر OS_VXWORKS
+    z_راستہ = zName;
+#وگرنہ_اگر defined(SQLITE_UNLINK_AFTER_CLOSE)
+    z_راستہ = sqlite3_mprintf("%s", zName);
+    اگر( z_راستہ==0 ){
       robust_close(p, fd, __LINE__);
-      return SQLITE_NOMEM_BKPT;
+      واپس SQLITE_NOMEM_BKPT;
     }
-#else
+#ورنہ
     osUnlink(zName);
-#endif
+#اگر_ختم
   }
-#if SQLITE_ENABLE_LOCKING_STYLE
-  else{
+#اگر SQLITE_ENABLE_LOCKING_STYLE
+  ورنہ{
     p->openFlags = openFlags;
   }
-#endif
+#اگر_ختم
 
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
-  if( fstatfs(fd, &fsInfo) == -1 ){
-    storeLastErrno(p, errno);
+#اگر defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+  اگر( fstatfs(fd, &fsInfo) == -1 ){
+    store_آخری_Errno(p, errno);
     robust_close(p, fd, __LINE__);
-    return SQLITE_IOERR_ACCESS;
+    واپس SQLITE_IOERR_ACCESS;
   }
-  if (0 == strncmp("msdos", fsInfo.f_fstypename, 5)) {
+  اگر (0 == لڑی_موازنہ("msdos", fsInfo.f_fstypename, 5)) {
     ((unixFile*)pFile)->fsFlags |= SQLITE_FSFLAGS_IS_MSDOS;
   }
-  if (0 == strncmp("exfat", fsInfo.f_fstypename, 5)) {
+  اگر (0 == لڑی_موازنہ("exfat", fsInfo.f_fstypename, 5)) {
     ((unixFile*)pFile)->fsFlags |= SQLITE_FSFLAGS_IS_MSDOS;
   }
-#endif
+#اگر_ختم
 
   /* Set up appropriate ctrlFlags */
-  if( isDelete )                ctrlFlags |= UNIXFILE_DELETE;
-  if( isReadonly )              ctrlFlags |= UNIXFILE_RDONLY;
-  noLock = eType!=SQLITE_OPEN_MAIN_DB;
-  if( noLock )                  ctrlFlags |= UNIXFILE_NOLOCK;
-  if( isNewJrnl )               ctrlFlags |= UNIXFILE_DIRSYNC;
-  if( flags & SQLITE_OPEN_URI ) ctrlFlags |= UNIXFILE_URI;
+  اگر( isDelete )                ctrlFlags |= UNIXFILE_DELETE;
+  اگر( isReadonly )              ctrlFlags |= UNIXFILE_RDONLY;
+  no_تالا = eType!=SQLITE_OPEN_MAIN_DB;
+  اگر( no_تالا )                  ctrlFlags |= UNIXFILE_NOLOCK;
+  اگر( isNewJrnl )               ctrlFlags |= UNIXFILE_DIRSYNC;
+  اگر( flags & SQLITE_OPEN_URI ) ctrlFlags |= UNIXFILE_URI;
 
-#if SQLITE_ENABLE_LOCKING_STYLE
-#if SQLITE_PREFER_PROXY_LOCKING
+#اگر SQLITE_ENABLE_LOCKING_STYLE
+#اگر SQLITE_PREFER_PROXY_LOCKING
   isAutoProxy = 1;
-#endif
-  if( isAutoProxy && (zPath!=NULL) && (!noLock) && pVfs->xOpen ){
-    char *envforce = getenv("SQLITE_FORCE_PROXY_LOCKING");
-    int useProxy = 0;
+#اگر_ختم
+  اگر( isAutoProxy && (z_راستہ!=تہی) && (!no_تالا) && pVfs->xOpen ){
+    حرف *envforce = getenv("SQLITE_FORCE_PROXY_LOCKING");
+    صحیح useProxy = 0;
 
     /* SQLITE_FORCE_PROXY_LOCKING==1 means force always use proxy, 0 means
     ** never use proxy, NULL means use proxy for non-local files only.  */
-    if( envforce!=NULL ){
+    اگر( envforce!=تہی ){
       useProxy = atoi(envforce)>0;
-    }else{
+    }ورنہ{
       useProxy = !(fsInfo.f_flags&MNT_LOCAL);
     }
-    if( useProxy ){
-      rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);
-      if( rc==SQLITE_OK ){
+    اگر( useProxy ){
+      rc = fill_اندر_Unix_File(pVfs, fd, pFile, z_راستہ, ctrlFlags);
+      اگر( rc==SQLITE_OK ){
         rc = proxyTransformUnixFile((unixFile*)pFile, ":auto:");
-        if( rc!=SQLITE_OK ){
+        اگر( rc!=SQLITE_OK ){
           /* Use unixClose to clean up the resources added in fillInUnixFile
           ** and clear all the structure's references.  Specifically,
           ** pFile->pMethods will be NULL so sqlite3OsClose will be a no-op
           */
           unixClose(pFile);
-          return rc;
+          واپس rc;
         }
       }
-      goto open_finished;
+      جاؤ open_ختم_شدہ;
     }
   }
-#endif
+#اگر_ختم
 
-  assert( zPath==0
-       || zPath[0]=='/'
+  أكد( z_راستہ==0
+       || z_راستہ[0]=='/'
        || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_MAIN_JOURNAL
-       || eType==SQLITE_OPEN_TEMP_JOURNAL
+       || eType==SQLITE_OPEN_عارضی_JOURNAL
   );
-  rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);
+  rc = fill_اندر_Unix_File(pVfs, fd, pFile, z_راستہ, ctrlFlags);
 
-open_finished:
-  if( rc!=SQLITE_OK ){
-    sqlite3_free(p->pPreallocatedUnused);
+open_ختم_شدہ:
+  اگر( rc!=SQLITE_OK ){
+    sqlite3_free(p->p_Preallocated_غیر_مستعمل);
   }
-  return rc;
+  واپس rc;
 }
 
 
@@ -6833,42 +6833,42 @@ open_finished:
 ** Delete the file at zPath. If the dirSync argument is true, fsync()
 ** the directory after deleting the file.
 */
-static int unixDelete(
-  sqlite3_vfs *NotUsed,     /* VFS containing this as the xDelete method */
-  const char *zPath,        /* Name of file to be deleted */
-  int dirSync               /* If true, fsync() directory after deleting file */
+ساکن صحیح unixDelete(
+  sqlite3_vfs *Not_مستعمل,     /* VFS containing this as the xDelete method */
+  ثابت حرف *z_راستہ,        /* Name of file to be deleted */
+  صحیح dirSync               /* If true, fsync() directory after deleting file */
 ){
-  int rc = SQLITE_OK;
-  UNUSED_PARAMETER(NotUsed);
-  SimulateIOError(return SQLITE_IOERR_DELETE);
-  if( osUnlink(zPath)==(-1) ){
-    if( errno==ENOENT
-#if OS_VXWORKS
-        || osAccess(zPath,0)!=0
-#endif
+  صحیح rc = SQLITE_OK;
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  SimulateIOError(واپس SQLITE_IOERR_DELETE);
+  اگر( osUnlink(z_راستہ)==(-1) ){
+    اگر( errno==ENOENT
+#اگر OS_VXWORKS
+        || osAccess(z_راستہ,0)!=0
+#اگر_ختم
     ){
       rc = SQLITE_IOERR_DELETE_NOENT;
-    }else{
-      rc = unixLogError(SQLITE_IOERR_DELETE, "unlink", zPath);
+    }ورنہ{
+      rc = unixLogError(SQLITE_IOERR_DELETE, "unlink", z_راستہ);
     }
-    return rc;
+    واپس rc;
   }
-#ifndef SQLITE_DISABLE_DIRSYNC
-  if( (dirSync & 1)!=0 ){
-    int fd;
-    rc = osOpenDirectory(zPath, &fd);
-    if( rc==SQLITE_OK ){
-      if( full_fsync(fd,0,0) ){
-        rc = unixLogError(SQLITE_IOERR_DIR_FSYNC, "fsync", zPath);
+#اگر_غیر_تعریف_شدہ SQLITE_DISABLE_DIRSYNC
+  اگر( (dirSync & 1)!=0 ){
+    صحیح fd;
+    rc = osOpenDirectory(z_راستہ, &fd);
+    اگر( rc==SQLITE_OK ){
+      اگر( بھرا_fsync(fd,0,0) ){
+        rc = unixLogError(SQLITE_IOERR_DIR_FSYNC, "fsync", z_راستہ);
       }
       robust_close(0, fd, __LINE__);
-    }else{
-      assert( rc==SQLITE_CANTOPEN );
+    }ورنہ{
+      أكد( rc==SQLITE_CANTOPEN );
       rc = SQLITE_OK;
     }
   }
-#endif
-  return rc;
+#اگر_ختم
+  واپس rc;
 }
 
 /*
@@ -6881,122 +6881,122 @@ static int unixDelete(
 **
 ** Otherwise return 0.
 */
-static int unixAccess(
-  sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
-  const char *zPath,      /* Path of the file to examine */
-  int flags,              /* What do we want to learn about the zPath file? */
-  int *pResOut            /* Write result boolean here */
+ساکن صحیح unixAccess(
+  sqlite3_vfs *Not_مستعمل,   /* The VFS containing this xAccess method */
+  ثابت حرف *z_راستہ,      /* Path of the file to examine */
+  صحیح flags,              /* What do we want to learn about the zPath file? */
+  صحیح *p_Res_برآمد            /* Write result boolean here */
 ){
-  UNUSED_PARAMETER(NotUsed);
-  SimulateIOError( return SQLITE_IOERR_ACCESS; );
-  assert( pResOut!=0 );
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  SimulateIOError( واپس SQLITE_IOERR_ACCESS; );
+  أكد( p_Res_برآمد!=0 );
 
   /* The spec says there are three possible values for flags.  But only
   ** two of them are actually used */
-  assert( flags==SQLITE_ACCESS_EXISTS || flags==SQLITE_ACCESS_READWRITE );
+  أكد( flags==SQLITE_ACCESS_EXISTS || flags==SQLITE_ACCESS_READWRITE );
 
-  if( flags==SQLITE_ACCESS_EXISTS ){
-    struct stat buf;
-    *pResOut = 0==osStat(zPath, &buf) &&
-                (!S_ISREG(buf.st_mode) || buf.st_size>0);
-  }else{
-    *pResOut = osAccess(zPath, W_OK|R_OK)==0;
+  اگر( flags==SQLITE_ACCESS_EXISTS ){
+    ساخت stat buf;
+    *p_Res_برآمد = 0==osStat(z_راستہ, &buf) &&
+                (!S_ISREG(buf.st_منوال) || buf.st_سائز>0);
+  }ورنہ{
+    *p_Res_برآمد = osAccess(z_راستہ, W_OK|R_OK)==0;
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** A pathname under construction
 */
-typedef struct DbPath DbPath;
-struct DbPath {
-  int rc;           /* Non-zero following any error */
-  int nSymlink;     /* Number of symlinks resolved */
-  char *zOut;       /* Write the pathname here */
-  int nOut;         /* Bytes of space available to zOut[] */
-  int nUsed;        /* Bytes of zOut[] currently being used */
+قسمتعریف ساخت Db_راستہ Db_راستہ;
+ساخت Db_راستہ {
+  صحیح rc;           /* Non-zero following any error */
+  صحیح nSymlink;     /* Number of symlinks resolved */
+  حرف *z_برآمد;       /* Write the pathname here */
+  صحیح n_برآمد;         /* Bytes of space available to zOut[] */
+  صحیح n_مستعمل;        /* Bytes of zOut[] currently being used */
 };
 
 /* Forward reference */
-static void appendAllPathElements(DbPath*,const char*);
+ساکن خالی append_All_راستہ_Elements(Db_راستہ*,ثابت حرف*);
 
 /*
 ** Append a single path element to the DbPath under construction
 */
-static void appendOnePathElement(
-  DbPath *pPath,       /* Path under construction, to which to append zName */
-  const char *zName,   /* Name to append to pPath.  Not zero-terminated */
-  int nName            /* Number of significant bytes in zName */
+ساکن خالی append_One_راستہ_Element(
+  Db_راستہ *p_راستہ,       /* Path under construction, to which to append zName */
+  ثابت حرف *zName,   /* Name to append to pPath.  Not zero-terminated */
+  صحیح nName            /* Number of significant bytes in zName */
 ){
-  assert( nName>0 );
-  assert( zName!=0 );
-  if( zName[0]=='.' ){
-    if( nName==1 ) return;
-    if( zName[1]=='.' && nName==2 ){
-      if( pPath->nUsed>1 ){
-        assert( pPath->zOut[0]=='/' );
-        while( pPath->zOut[--pPath->nUsed]!='/' ){}
+  أكد( nName>0 );
+  أكد( zName!=0 );
+  اگر( zName[0]=='.' ){
+    اگر( nName==1 ) واپس;
+    اگر( zName[1]=='.' && nName==2 ){
+      اگر( p_راستہ->n_مستعمل>1 ){
+        أكد( p_راستہ->z_برآمد[0]=='/' );
+        جب( p_راستہ->z_برآمد[--p_راستہ->n_مستعمل]!='/' ){}
       }
-      return;
+      واپس;
     }
   }
-  if( pPath->nUsed + nName + 2 >= pPath->nOut ){
-    pPath->rc = SQLITE_ERROR;
-    return;
+  اگر( p_راستہ->n_مستعمل + nName + 2 >= p_راستہ->n_برآمد ){
+    p_راستہ->rc = SQLITE_ERROR;
+    واپس;
   }
-  pPath->zOut[pPath->nUsed++] = '/';
-  memcpy(&pPath->zOut[pPath->nUsed], zName, nName);
-  pPath->nUsed += nName;
-#if defined(HAVE_READLINK) && defined(HAVE_LSTAT)
-  if( pPath->rc==SQLITE_OK ){
-    const char *zIn;
-    struct stat buf;
-    pPath->zOut[pPath->nUsed] = 0;
-    zIn = pPath->zOut;
-    if( osLstat(zIn, &buf)!=0 ){
-      if( errno!=ENOENT ){
-        pPath->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "lstat", zIn);
+  p_راستہ->z_برآمد[p_راستہ->n_مستعمل++] = '/';
+  حافظہ_نقل(&p_راستہ->z_برآمد[p_راستہ->n_مستعمل], zName, nName);
+  p_راستہ->n_مستعمل += nName;
+#اگر defined(HAVE_READLINK) && defined(HAVE_LSTAT)
+  اگر( p_راستہ->rc==SQLITE_OK ){
+    ثابت حرف *z_اندر;
+    ساخت stat buf;
+    p_راستہ->z_برآمد[p_راستہ->n_مستعمل] = 0;
+    z_اندر = p_راستہ->z_برآمد;
+    اگر( osLstat(z_اندر, &buf)!=0 ){
+      اگر( errno!=ENOENT ){
+        p_راستہ->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "lstat", z_اندر);
       }
-    }else if( S_ISLNK(buf.st_mode) ){
+    }ورنہ اگر( S_ISLNK(buf.st_منوال) ){
       ssize_t got;
-      char zLnk[SQLITE_MAX_PATHLEN+2];
-      if( pPath->nSymlink++ > SQLITE_MAX_SYMLINK ){
-        pPath->rc = SQLITE_CANTOPEN_BKPT;
-        return;
+      حرف zLnk[SQLITE_MAX_PATHLEN+2];
+      اگر( p_راستہ->nSymlink++ > SQLITE_MAX_SYMLINK ){
+        p_راستہ->rc = SQLITE_CANTOPEN_BKPT;
+        واپس;
       }
-      got = osReadlink(zIn, zLnk, sizeof(zLnk)-2);
-      if( got<=0 || got>=(ssize_t)sizeof(zLnk)-2 ){
-        pPath->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "readlink", zIn);
-        return;
+      got = osReadlink(z_اندر, zLnk, حجم(zLnk)-2);
+      اگر( got<=0 || got>=(ssize_t)حجم(zLnk)-2 ){
+        p_راستہ->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "readlink", z_اندر);
+        واپس;
       }
       zLnk[got] = 0;
-      if( zLnk[0]=='/' ){
-        pPath->nUsed = 0;
-      }else{
-        pPath->nUsed -= nName + 1;
+      اگر( zLnk[0]=='/' ){
+        p_راستہ->n_مستعمل = 0;
+      }ورنہ{
+        p_راستہ->n_مستعمل -= nName + 1;
       }
-      appendAllPathElements(pPath, zLnk);
+      append_All_راستہ_Elements(p_راستہ, zLnk);
     }
   }
-#endif
+#اگر_ختم
 }
 
 /*
 ** Append all path elements in zPath to the DbPath under construction.
 */
-static void appendAllPathElements(
-  DbPath *pPath,       /* Path under construction, to which to append zName */
-  const char *zPath    /* Path to append to pPath.  Is zero-terminated */
+ساکن خالی append_All_راستہ_Elements(
+  Db_راستہ *p_راستہ,       /* Path under construction, to which to append zName */
+  ثابت حرف *z_راستہ    /* Path to append to pPath.  Is zero-terminated */
 ){
-  int i = 0;
-  int j = 0;
-  do{
-    while( zPath[i] && zPath[i]!='/' ){ i++; }
-    if( i>j ){
-      appendOnePathElement(pPath, &zPath[j], i-j);
+  صحیح i = 0;
+  صحیح j = 0;
+  کرو{
+    جب( z_راستہ[i] && z_راستہ[i]!='/' ){ i++; }
+    اگر( i>j ){
+      append_One_راستہ_Element(p_راستہ, &z_راستہ[j], i-j);
     }
     j = i+1;
-  }while( zPath[i++] );
+  }جب( z_راستہ[i++] );
 }
 
 /*
@@ -7008,42 +7008,42 @@ static void appendAllPathElements(
 ** (in this case, MAX_PATHNAME bytes). The full-path is written to
 ** this buffer before returning.
 */
-static int unixFullPathname(
+ساکن صحیح unix_بھرا_Pathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zPath,            /* Possibly relative input path */
-  int nOut,                     /* Size of output buffer in bytes */
-  char *zOut                    /* Output buffer */
+  ثابت حرف *z_راستہ,            /* Possibly relative input path */
+  صحیح n_برآمد,                     /* Size of output buffer in bytes */
+  حرف *z_برآمد                    /* Output buffer */
 ){
-  DbPath path;
-  UNUSED_PARAMETER(pVfs);
-  path.rc = 0;
-  path.nUsed = 0;
-  path.nSymlink = 0;
-  path.nOut = nOut;
-  path.zOut = zOut;
-  if( zPath[0]!='/' ){
-    char zPwd[SQLITE_MAX_PATHLEN+2];
-    if( osGetcwd(zPwd, sizeof(zPwd)-2)==0 ){
-      return unixLogError(SQLITE_CANTOPEN_BKPT, "getcwd", zPath);
+  Db_راستہ راستہ;
+  غیر_مستعمل_PARAMETER(pVfs);
+  راستہ.rc = 0;
+  راستہ.n_مستعمل = 0;
+  راستہ.nSymlink = 0;
+  راستہ.n_برآمد = n_برآمد;
+  راستہ.z_برآمد = z_برآمد;
+  اگر( z_راستہ[0]!='/' ){
+    حرف zPwd[SQLITE_MAX_PATHLEN+2];
+    اگر( osGetcwd(zPwd, حجم(zPwd)-2)==0 ){
+      واپس unixLogError(SQLITE_CANTOPEN_BKPT, "getcwd", z_راستہ);
     }
-    appendAllPathElements(&path, zPwd);
+    append_All_راستہ_Elements(&راستہ, zPwd);
   }
-  appendAllPathElements(&path, zPath);
-  zOut[path.nUsed] = 0;
-  if( path.rc || path.nUsed<2 ) return SQLITE_CANTOPEN_BKPT;
-  if( path.nSymlink ) return SQLITE_OK_SYMLINK;
-  return SQLITE_OK;
+  append_All_راستہ_Elements(&راستہ, z_راستہ);
+  z_برآمد[راستہ.n_مستعمل] = 0;
+  اگر( راستہ.rc || راستہ.n_مستعمل<2 ) واپس SQLITE_CANTOPEN_BKPT;
+  اگر( راستہ.nSymlink ) واپس SQLITE_OK_SYMLINK;
+  واپس SQLITE_OK;
 }
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_بھرو_EXTENSION
 /*
 ** Interfaces for opening a shared library, finding entry points
 ** within the shared library, and closing the shared library.
 */
-#include <dlfcn.h>
-static void *unixDlOpen(sqlite3_vfs *NotUsed, const char *zFilename){
-  UNUSED_PARAMETER(NotUsed);
-  return dlopen(zFilename, RTLD_NOW | RTLD_GLOBAL);
+#شامل <dlfcn.h>
+ساکن خالی *unixDlOpen(sqlite3_vfs *Not_مستعمل, ثابت حرف *zFilename){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  واپس dlopen(zFilename, RTLD_NOW | RTLD_GLOBAL);
 }
 
 /*
@@ -7053,17 +7053,17 @@ static void *unixDlOpen(sqlite3_vfs *NotUsed, const char *zFilename){
 ** is available, zBufOut is left unmodified and SQLite uses a default
 ** error message.
 */
-static void unixDlError(sqlite3_vfs *NotUsed, int nBuf, char *zBufOut){
-  const char *zErr;
-  UNUSED_PARAMETER(NotUsed);
+ساکن خالی unixDlError(sqlite3_vfs *Not_مستعمل, صحیح nBuf, حرف *z_Buf_برآمد){
+  ثابت حرف *zErr;
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
   unixEnterMutex();
   zErr = dlerror();
-  if( zErr ){
-    sqlite3_snprintf(nBuf, zBufOut, "%s", zErr);
+  اگر( zErr ){
+    sqlite3_snprintf(nBuf, z_Buf_برآمد, "%s", zErr);
   }
   unixLeaveMutex();
 }
-static void (*unixDlSym(sqlite3_vfs *NotUsed, void *p, const char*zSym))(void){
+ساکن خالی (*unixDlSym(sqlite3_vfs *Not_مستعمل, خالی *p, ثابت حرف*zSym))(خالی){
   /*
   ** GCC with -pedantic-errors says that C90 does not allow a void* to be
   ** cast into a pointer to a function.  And yet the library dlsym() routine
@@ -7081,28 +7081,28 @@ static void (*unixDlSym(sqlite3_vfs *NotUsed, void *p, const char*zSym))(void){
   ** other hand, dlsym() will not work on such a system either, so we have
   ** not really lost anything.
   */
-  void (*(*x)(void*,const char*))(void);
-  UNUSED_PARAMETER(NotUsed);
-  x = (void(*(*)(void*,const char*))(void))dlsym;
-  return (*x)(p, zSym);
+  خالی (*(*x)(خالی*,ثابت حرف*))(خالی);
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  x = (خالی(*(*)(خالی*,ثابت حرف*))(خالی))dlsym;
+  واپس (*x)(p, zSym);
 }
-static void unixDlClose(sqlite3_vfs *NotUsed, void *pHandle){
-  UNUSED_PARAMETER(NotUsed);
+ساکن خالی unixDlClose(sqlite3_vfs *Not_مستعمل, خالی *pHandle){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
   dlclose(pHandle);
 }
-#else /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
-  #define unixDlOpen  0
-  #define unixDlError 0
-  #define unixDlSym   0
-  #define unixDlClose 0
-#endif
+#ورنہ /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
+  #تعریف_کرو unixDlOpen  0
+  #تعریف_کرو unixDlError 0
+  #تعریف_کرو unixDlSym   0
+  #تعریف_کرو unixDlClose 0
+#اگر_ختم
 
 /*
 ** Write nBuf bytes of random data to the supplied buffer zBuf.
 */
-static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
-  UNUSED_PARAMETER(NotUsed);
-  assert((size_t)nBuf>=(sizeof(time_t)+sizeof(int)));
+ساکن صحیح unixRandomness(sqlite3_vfs *Not_مستعمل, صحیح nBuf, حرف *zBuf){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  أكد((size_t)nBuf>=(حجم(وقت_t)+حجم(صحیح)));
 
   /* We have to initialize zBuf to prevent valgrind from reporting
   ** errors.  The reports issued by valgrind are incorrect - we would
@@ -7118,24 +7118,24 @@ static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
   */
   memset(zBuf, 0, nBuf);
   randomnessPid = osGetpid(0);
-#if !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
+#اگر !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
   {
-    int fd, got;
+    صحیح fd, got;
     fd = robust_open("/dev/urandom", O_RDONLY, 0);
-    if( fd<0 ){
-      time_t t;
-      time(&t);
-      memcpy(zBuf, &t, sizeof(t));
-      memcpy(&zBuf[sizeof(t)], &randomnessPid, sizeof(randomnessPid));
-      assert( sizeof(t)+sizeof(randomnessPid)<=(size_t)nBuf );
-      nBuf = sizeof(t) + sizeof(randomnessPid);
-    }else{
-      do{ got = osRead(fd, zBuf, nBuf); }while( got<0 && errno==EINTR );
+    اگر( fd<0 ){
+      وقت_t t;
+      وقت(&t);
+      حافظہ_نقل(zBuf, &t, حجم(t));
+      حافظہ_نقل(&zBuf[حجم(t)], &randomnessPid, حجم(randomnessPid));
+      أكد( حجم(t)+حجم(randomnessPid)<=(size_t)nBuf );
+      nBuf = حجم(t) + حجم(randomnessPid);
+    }ورنہ{
+      کرو{ got = osRead(fd, zBuf, nBuf); }جب( got<0 && errno==EINTR );
       robust_close(0, fd, __LINE__);
     }
   }
-#endif
-  return nBuf;
+#اگر_ختم
+  واپس nBuf;
 }
 
 
@@ -7147,9 +7147,9 @@ static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
 ** might be greater than or equal to the argument, but not less
 ** than the argument.
 */
-static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
-#if !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP+0
-  struct timespec sp;
+ساکن صحیح unixSleep(sqlite3_vfs *Not_مستعمل, صحیح microseconds){
+#اگر !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP+0
+  ساخت timespec sp;
   sp.tv_sec = microseconds / 1000000;
   sp.tv_nsec = (microseconds % 1000000) * 1000;
 
@@ -7157,21 +7157,21 @@ static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
   ** compiling for one of the rare exceptions, you can use
   ** -DHAVE_NANOSLEEP=0 (perhaps in conjunction with -DHAVE_USLEEP if
   ** usleep() is available) in order to bypass the use of nanosleep() */
-  nanosleep(&sp, NULL);
+  nanosleep(&sp, تہی);
 
-  UNUSED_PARAMETER(NotUsed);
-  return microseconds;
-#elif defined(HAVE_USLEEP) && HAVE_USLEEP
-  if( microseconds>=1000000 ) sleep(microseconds/1000000);
-  if( microseconds%1000000 ) usleep(microseconds%1000000);
-  UNUSED_PARAMETER(NotUsed);
-  return microseconds;
-#else
-  int seconds = (microseconds+999999)/1000000;
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  واپس microseconds;
+#وگرنہ_اگر defined(HAVE_USLEEP) && HAVE_USLEEP
+  اگر( microseconds>=1000000 ) sleep(microseconds/1000000);
+  اگر( microseconds%1000000 ) usleep(microseconds%1000000);
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  واپس microseconds;
+#ورنہ
+  صحیح seconds = (microseconds+999999)/1000000;
   sleep(seconds);
-  UNUSED_PARAMETER(NotUsed);
-  return seconds*1000000;
-#endif
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  واپس seconds*1000000;
+#اگر_ختم
 }
 
 /*
@@ -7179,9 +7179,9 @@ static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
 ** the number of seconds since 1970 and is used to set the result of
 ** sqlite3OsCurrentTime() during testing.
 */
-#ifdef SQLITE_TEST
-int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
-#endif
+#اگر_تعریف_شدہ SQLITE_TEST
+صحیح sqlite3_current_وقت = 0;  /* Fake system time in seconds since 1970. */
+#اگر_ختم
 
 /*
 ** Find the current time (in Universal Coordinated Time).  Write into *piNow
@@ -7193,49 +7193,49 @@ int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 ** On success, return SQLITE_OK.  Return SQLITE_ERROR if the time and date
 ** cannot be found.
 */
-static int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow){
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-  int rc = SQLITE_OK;
-#if defined(NO_GETTOD)
-  time_t t;
-  time(&t);
+ساکن صحیح unix_Current_وقت_Int64(sqlite3_vfs *Not_مستعمل, sqlite3_int64 *piNow){
+  ساکن ثابت sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+  صحیح rc = SQLITE_OK;
+#اگر defined(NO_GETTOD)
+  وقت_t t;
+  وقت(&t);
   *piNow = ((sqlite3_int64)t)*1000 + unixEpoch;
-#elif OS_VXWORKS
-  struct timespec sNow;
+#وگرنہ_اگر OS_VXWORKS
+  ساخت timespec sNow;
   clock_gettime(CLOCK_REALTIME, &sNow);
   *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_nsec/1000000;
-#else
-  struct timeval sNow;
-  (void)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
+#ورنہ
+  ساخت timeval sNow;
+  (خالی)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
   *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_usec/1000;
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_TEST
-  if( sqlite3_current_time ){
-    *piNow = 1000*(sqlite3_int64)sqlite3_current_time + unixEpoch;
+#اگر_تعریف_شدہ SQLITE_TEST
+  اگر( sqlite3_current_وقت ){
+    *piNow = 1000*(sqlite3_int64)sqlite3_current_وقت + unixEpoch;
   }
-#endif
-  UNUSED_PARAMETER(NotUsed);
-  return rc;
+#اگر_ختم
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  واپس rc;
 }
 
-#ifndef SQLITE_OMIT_DEPRECATED
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DEPRECATED
 /*
 ** Find the current time (in Universal Coordinated Time).  Write the
 ** current time and date as a Julian Day number into *prNow and
 ** return 0.  Return 1 if the time and date cannot be found.
 */
-static int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow){
+ساکن صحیح unix_Current_وقت(sqlite3_vfs *Not_مستعمل, دوہرا *prNow){
   sqlite3_int64 i = 0;
-  int rc;
-  UNUSED_PARAMETER(NotUsed);
-  rc = unixCurrentTimeInt64(0, &i);
+  صحیح rc;
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  rc = unix_Current_وقت_Int64(0, &i);
   *prNow = i/86400000.0;
-  return rc;
+  واپس rc;
 }
-#else
-# define unixCurrentTime 0
-#endif
+#ورنہ
+# define unix_Current_وقت 0
+#اگر_ختم
 
 /*
 ** The xGetLastError() method is designed to return a better
@@ -7243,11 +7243,11 @@ static int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow){
 ** during SQLite operation.  Only the integer return code is currently
 ** used.
 */
-static int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3){
-  UNUSED_PARAMETER(NotUsed);
-  UNUSED_PARAMETER(NotUsed2);
-  UNUSED_PARAMETER(NotUsed3);
-  return errno;
+ساکن صحیح unix_Get_آخری_Error(sqlite3_vfs *Not_مستعمل, صحیح NotUsed2, حرف *NotUsed3){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  غیر_مستعمل_PARAMETER(NotUsed2);
+  غیر_مستعمل_PARAMETER(NotUsed3);
+  واپس errno;
 }
 
 
@@ -7408,23 +7408,23 @@ static int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3){
 /*
 ** Proxy locking is only available on MacOSX
 */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#اگر defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 
 /*
 ** The proxyLockingContext has the path and file structures for the remote
 ** and local proxy files in it
 */
-typedef struct proxyLockingContext proxyLockingContext;
-struct proxyLockingContext {
+قسمتعریف ساخت proxyLockingContext proxyLockingContext;
+ساخت proxyLockingContext {
   unixFile *conchFile;         /* Open conch file */
-  char *conchFilePath;         /* Name of the conch file */
-  unixFile *lockProxy;         /* Open proxy lock file */
-  char *lockProxyPath;         /* Name of the proxy lock file */
-  char *dbPath;                /* Name of the open file */
-  int conchHeld;               /* 1 if the conch is held, -1 if lockless */
-  int nFails;                  /* Number of conch taking failures */
-  void *oldLockingContext;     /* Original lockingcontext to restore on close */
-  sqlite3_io_methods const *pOldMethod;     /* Original I/O methods for close */
+  حرف *conch_File_راستہ;         /* Name of the conch file */
+  unixFile *تالا_Proxy;         /* Open proxy lock file */
+  حرف *تالا_Proxy_راستہ;         /* Name of the proxy lock file */
+  حرف *db_راستہ;                /* Name of the open file */
+  صحیح conchHeld;               /* 1 if the conch is held, -1 if lockless */
+  صحیح nFails;                  /* Number of conch taking failures */
+  خالی *oldLockingContext;     /* Original lockingcontext to restore on close */
+  sqlite3_io_methods ثابت *p_Old_طریقہ;     /* Original I/O methods for close */
 };
 
 /*
@@ -7432,78 +7432,78 @@ struct proxyLockingContext {
 ** which must point to valid, writable memory large enough for a maxLen length
 ** file path.
 */
-static int proxyGetLockPath(const char *dbPath, char *lPath, size_t maxLen){
-  int len;
-  int dbLen;
-  int i;
+ساکن صحیح proxy_Get_تالا_راستہ(ثابت حرف *db_راستہ, حرف *l_راستہ, size_t maxLen){
+  صحیح len;
+  صحیح dbLen;
+  صحیح i;
 
-#ifdef LOCKPROXYDIR
-  len = strlcpy(lPath, LOCKPROXYDIR, maxLen);
-#else
-# ifdef _CS_DARWIN_USER_TEMP_DIR
+#اگر_تعریف_شدہ LOCKPROXYDIR
+  len = strlcpy(l_راستہ, LOCKPROXYDIR, maxLen);
+#ورنہ
+# ifdef CS_DARWIN_USER_عارضی_DIR
   {
-    if( !confstr(_CS_DARWIN_USER_TEMP_DIR, lPath, maxLen) ){
+    اگر( !confstr(CS_DARWIN_USER_عارضی_DIR, l_راستہ, maxLen) ){
       OSTRACE(("GETLOCKPATH  failed %s errno=%d pid=%d\n",
-               lPath, errno, osGetpid(0)));
-      return SQLITE_IOERR_LOCK;
+               l_راستہ, errno, osGetpid(0)));
+      واپس SQLITE_IOERR_تالا;
     }
-    len = strlcat(lPath, "sqliteplocks", maxLen);  
+    len = strlcat(l_راستہ, "sqliteplocks", maxLen);  
   }
-# else
-  len = strlcpy(lPath, "/tmp/", maxLen);
+# ورنہ
+  len = strlcpy(l_راستہ, "/tmp/", maxLen);
 # endif
-#endif
+#اگر_ختم
 
-  if( lPath[len-1]!='/' ){
-    len = strlcat(lPath, "/", maxLen);
+  اگر( l_راستہ[len-1]!='/' ){
+    len = strlcat(l_راستہ, "/", maxLen);
   }
 
   /* transform the db path to a unique cache name */
-  dbLen = (int)strlen(dbPath);
-  for( i=0; i<dbLen && (i+len+7)<(int)maxLen; i++){
-    char c = dbPath[i];
-    lPath[i+len] = (c=='/')?'_':c;
+  dbLen = (صحیح)لڑی_لمبائی(db_راستہ);
+  برائے( i=0; i<dbLen && (i+len+7)<(صحیح)maxLen; i++){
+    حرف c = db_راستہ[i];
+    l_راستہ[i+len] = (c=='/')?'_':c;
   }
-  lPath[i+len]='\0';
-  strlcat(lPath, ":auto:", maxLen);
-  OSTRACE(("GETLOCKPATH  proxy lock path=%s pid=%d\n", lPath, osGetpid(0)));
-  return SQLITE_OK;
+  l_راستہ[i+len]='\0';
+  strlcat(l_راستہ, ":auto:", maxLen);
+  OSTRACE(("GETLOCKPATH  proxy lock path=%s pid=%d\n", l_راستہ, osGetpid(0)));
+  واپس SQLITE_OK;
 }
 
 /*
  ** Creates the lock file and any missing directories in lockPath
  */
-static int proxyCreateLockPath(const char *lockPath){
-  int i, len;
-  char buf[MAXPATHLEN];
-  int start = 0;
+ساکن صحیح proxy_Create_تالا_راستہ(ثابت حرف *تالا_راستہ){
+  صحیح i, len;
+  حرف buf[MAXPATHLEN];
+  صحیح آغاز = 0;
 
-  assert(lockPath!=NULL);
+  أكد(تالا_راستہ!=تہی);
   /* try to create all the intermediate directories */
-  len = (int)strlen(lockPath);
-  buf[0] = lockPath[0];
-  for( i=1; i<len; i++ ){
-    if( lockPath[i] == '/' && (i - start > 0) ){
+  len = (صحیح)لڑی_لمبائی(تالا_راستہ);
+  buf[0] = تالا_راستہ[0];
+  برائے( i=1; i<len; i++ ){
+    اگر( تالا_راستہ[i] == '/' && (i - آغاز > 0) ){
       /* only mkdir if leaf dir != "." or "/" or ".." */
-      if( i-start>2 || (i-start==1 && buf[start] != '.' && buf[start] != '/')
-         || (i-start==2 && buf[start] != '.' && buf[start+1] != '.') ){
+      اگر( i-آغاز>2 || (i-آغاز==1 && buf[آغاز] != '.' && buf[آغاز] != '/')
+         || (i-آغاز==2 && buf[آغاز] != '.' && buf[آغاز+1] != '.') ){
         buf[i]='\0';
-        if( osMkdir(buf, SQLITE_DEFAULT_PROXYDIR_PERMISSIONS) ){
-          int err=errno;
-          if( err!=EEXIST ) {
+        اگر( osMkdir(buf, SQLITE_DEFAULT_PROXYDIR_PERMISSIONS) ){
+          صحیح err=errno;
+          اگر( err!=EEXIST ) {
             OSTRACE(("CREATELOCKPATH  FAILED creating %s, "
                      "'%s' proxy lock path=%s pid=%d\n",
-                     buf, strerror(err), lockPath, osGetpid(0)));
-            return err;
+                     buf, strerror(err), تالا_راستہ, osGetpid(0)));
+            واپس err;
           }
         }
       }
-      start=i+1;
+      آغاز=i+1;
     }
-    buf[i] = lockPath[i];
+    buf[i] = تالا_راستہ[i];
   }
-  OSTRACE(("CREATELOCKPATH  proxy lock path=%s pid=%d\n",lockPath,osGetpid(0)));
-  return 0;
+  OSTRACE(("CREATELOCKPATH  proxy lock path=%s pid=%d\n",تالا_راستہ,osGetpid(0)));
+  واپس 0;
 }
 
 /*
@@ -7513,18 +7513,18 @@ static int proxyCreateLockPath(const char *lockPath){
 ** The caller is responsible not only for closing the file descriptor
 ** but also for freeing the memory associated with the file descriptor.
 */
-static int proxyCreateUnixFile(
-    const char *path,        /* path for the new unixFile */
+ساکن صحیح proxyCreateUnixFile(
+    ثابت حرف *راستہ,        /* path for the new unixFile */
     unixFile **ppFile,       /* unixFile created and returned by ref */
-    int islockfile           /* if non zero missing dirs will be created */
+    صحیح islockfile           /* if non zero missing dirs will be created */
 ) {
-  int fd = -1;
+  صحیح fd = -1;
   unixFile *pNew;
-  int rc = SQLITE_OK;
-  int openFlags = O_RDWR | O_CREAT | O_NOFOLLOW;
+  صحیح rc = SQLITE_OK;
+  صحیح openFlags = O_RDWR | O_CREAT | O_NOFOLLOW;
   sqlite3_vfs dummyVfs;
-  int terrno = 0;
-  UnixUnusedFd *pUnused = NULL;
+  صحیح terrno = 0;
+  Unix_غیر_مستعمل_Fd *p_غیر_مستعمل = تہی;
 
   /* 1. first try to open/create the file
   ** 2. if that fails, and this is a lock file (not-conch), try creating
@@ -7532,117 +7532,117 @@ static int proxyCreateUnixFile(
   ** 3. if that fails, try to open the file read-only
   ** otherwise return BUSY (if lock file) or CANTOPEN for the conch file
   */
-  pUnused = findReusableFd(path, openFlags);
-  if( pUnused ){
-    fd = pUnused->fd;
-  }else{
-    pUnused = sqlite3_malloc64(sizeof(*pUnused));
-    if( !pUnused ){
-      return SQLITE_NOMEM_BKPT;
+  p_غیر_مستعمل = ڈھونڈو_Reusable_Fd(راستہ, openFlags);
+  اگر( p_غیر_مستعمل ){
+    fd = p_غیر_مستعمل->fd;
+  }ورنہ{
+    p_غیر_مستعمل = sqlite3_malloc64(حجم(*p_غیر_مستعمل));
+    اگر( !p_غیر_مستعمل ){
+      واپس SQLITE_NOMEM_BKPT;
     }
   }
-  if( fd<0 ){
-    fd = robust_open(path, openFlags, 0);
+  اگر( fd<0 ){
+    fd = robust_open(راستہ, openFlags, 0);
     terrno = errno;
-    if( fd<0 && errno==ENOENT && islockfile ){
-      if( proxyCreateLockPath(path) == SQLITE_OK ){
-        fd = robust_open(path, openFlags, 0);
+    اگر( fd<0 && errno==ENOENT && islockfile ){
+      اگر( proxy_Create_تالا_راستہ(راستہ) == SQLITE_OK ){
+        fd = robust_open(راستہ, openFlags, 0);
       }
     }
   }
-  if( fd<0 ){
+  اگر( fd<0 ){
     openFlags = O_RDONLY | O_NOFOLLOW;
-    fd = robust_open(path, openFlags, 0);
+    fd = robust_open(راستہ, openFlags, 0);
     terrno = errno;
   }
-  if( fd<0 ){
-    if( islockfile ){
-      return SQLITE_BUSY;
+  اگر( fd<0 ){
+    اگر( islockfile ){
+      واپس SQLITE_BUSY;
     }
-    switch (terrno) {
-      case EACCES:
-        return SQLITE_PERM;
-      case EIO:
-        return SQLITE_IOERR_LOCK; /* even though it is the conch */
-      default:
-        return SQLITE_CANTOPEN_BKPT;
+    انتخاب (terrno) {
+      حالت EACCES:
+        واپس SQLITE_PERM;
+      حالت EIO:
+        واپس SQLITE_IOERR_تالا; /* even though it is the conch */
+      طےشدہ:
+        واپس SQLITE_CANTOPEN_BKPT;
     }
   }
 
-  pNew = (unixFile *)sqlite3_malloc64(sizeof(*pNew));
-  if( pNew==NULL ){
+  pNew = (unixFile *)sqlite3_malloc64(حجم(*pNew));
+  اگر( pNew==تہی ){
     rc = SQLITE_NOMEM_BKPT;
-    goto end_create_proxy;
+    جاؤ انتہا_create_proxy;
   }
-  memset(pNew, 0, sizeof(unixFile));
+  memset(pNew, 0, حجم(unixFile));
   pNew->openFlags = openFlags;
-  memset(&dummyVfs, 0, sizeof(dummyVfs));
-  dummyVfs.pAppData = (void*)&autolockIoFinder;
+  memset(&dummyVfs, 0, حجم(dummyVfs));
+  dummyVfs.p_App_ڈیٹا = (خالی*)&autolockIoFinder;
   dummyVfs.zName = "dummy";
-  pUnused->fd = fd;
-  pUnused->flags = openFlags;
-  pNew->pPreallocatedUnused = pUnused;
+  p_غیر_مستعمل->fd = fd;
+  p_غیر_مستعمل->flags = openFlags;
+  pNew->p_Preallocated_غیر_مستعمل = p_غیر_مستعمل;
 
-  rc = fillInUnixFile(&dummyVfs, fd, (sqlite3_file*)pNew, path, 0);
-  if( rc==SQLITE_OK ){
+  rc = fill_اندر_Unix_File(&dummyVfs, fd, (sqlite3_file*)pNew, راستہ, 0);
+  اگر( rc==SQLITE_OK ){
     *ppFile = pNew;
-    return SQLITE_OK;
+    واپس SQLITE_OK;
   }
-end_create_proxy:  
+انتہا_create_proxy:  
   robust_close(pNew, fd, __LINE__);
   sqlite3_free(pNew);
-  sqlite3_free(pUnused);
-  return rc;
+  sqlite3_free(p_غیر_مستعمل);
+  واپس rc;
 }
 
-#ifdef SQLITE_TEST
+#اگر_تعریف_شدہ SQLITE_TEST
 /* simulate multiple hosts by creating unique hostid file paths */
-int sqlite3_hostid_num = 0;
-#endif
+صحیح sqlite3_hostid_عدد = 0;
+#اگر_ختم
 
-#define PROXY_HOSTIDLEN    16  /* conch file host id length */
+#تعریف_کرو PROXY_HOSTIDLEN    16  /* conch file host id length */
 
-#if HAVE_GETHOSTUUID
+#اگر HAVE_GETHOSTUUID
 /* Not always defined in the headers as it ought to be */
-extern int gethostuuid(uuid_t id, const struct timespec *wait);
-#endif
+خارجی صحیح gethostuuid(uuid_t id, ثابت ساخت timespec *wait);
+#اگر_ختم
 
 /* get the host ID via gethostuuid(), pHostID must point to PROXY_HOSTIDLEN
 ** bytes of writable memory.
 */
-static int proxyGetHostID(unsigned char *pHostID, int *pError){
-  assert(PROXY_HOSTIDLEN == sizeof(uuid_t));
+ساکن صحیح proxyGetHostID(غیرعلامتی حرف *pHostID, صحیح *pError){
+  أكد(PROXY_HOSTIDLEN == حجم(uuid_t));
   memset(pHostID, 0, PROXY_HOSTIDLEN);
-#if HAVE_GETHOSTUUID
+#اگر HAVE_GETHOSTUUID
   {
-    struct timespec timeout = {1, 0}; /* 1 sec timeout */
-    if( gethostuuid(pHostID, &timeout) ){
-      int err = errno;
-      if( pError ){
+    ساخت timespec timeout = {1, 0}; /* 1 sec timeout */
+    اگر( gethostuuid(pHostID, &timeout) ){
+      صحیح err = errno;
+      اگر( pError ){
         *pError = err;
       }
-      return SQLITE_IOERR;
+      واپس SQLITE_IOERR;
     }
   }
-#else
-  UNUSED_PARAMETER(pError);
-#endif
-#ifdef SQLITE_TEST
+#ورنہ
+  غیر_مستعمل_PARAMETER(pError);
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_TEST
   /* simulate multiple hosts by creating unique hostid file paths */
-  if( sqlite3_hostid_num != 0){
-    pHostID[0] = (char)(pHostID[0] + (char)(sqlite3_hostid_num & 0xFF));
+  اگر( sqlite3_hostid_عدد != 0){
+    pHostID[0] = (حرف)(pHostID[0] + (حرف)(sqlite3_hostid_عدد & 0xFF));
   }
-#endif
+#اگر_ختم
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* The conch file contains the header, host id and lock file path
  */
-#define PROXY_CONCHVERSION 2   /* 1-byte header, 16-byte host id, path */
-#define PROXY_HEADERLEN    1   /* conch file header length */
-#define PROXY_PATHINDEX    (PROXY_HEADERLEN+PROXY_HOSTIDLEN)
-#define PROXY_MAXCONCHLEN  (PROXY_HEADERLEN+PROXY_HOSTIDLEN+MAXPATHLEN)
+#تعریف_کرو PROXY_CONCHVERSION 2   /* 1-byte header, 16-byte host id, path */
+#تعریف_کرو PROXY_HEADERLEN    1   /* conch file header length */
+#تعریف_کرو PROXY_PATHINDEX    (PROXY_HEADERLEN+PROXY_HOSTIDLEN)
+#تعریف_کرو PROXY_MAXCONCHLEN  (PROXY_HEADERLEN+PROXY_HOSTIDLEN+MAXPATHLEN)
 
 /*
 ** Takes an open conch file, copies the contents to a new path and then moves
@@ -7650,136 +7650,136 @@ static int proxyGetHostID(unsigned char *pHostID, int *pError){
 ** conch file structure and finally the original conch file descriptor is
 ** closed.  Returns zero if successful.
 */
-static int proxyBreakConchLock(unixFile *pFile, uuid_t myHostID){
+ساکن صحیح proxy_Break_Conch_تالا(unixFile *pFile, uuid_t myHostID){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
   unixFile *conchFile = pCtx->conchFile;
-  char tPath[MAXPATHLEN];
-  char buf[PROXY_MAXCONCHLEN];
-  char *cPath = pCtx->conchFilePath;
+  حرف t_راستہ[MAXPATHLEN];
+  حرف buf[PROXY_MAXCONCHLEN];
+  حرف *c_راستہ = pCtx->conch_File_راستہ;
   size_t readLen = 0;
-  size_t pathLen = 0;
-  char errmsg[64] = "";
-  int fd = -1;
-  int rc = -1;
-  UNUSED_PARAMETER(myHostID);
+  size_t راستہ_Len = 0;
+  حرف errmsg[64] = "";
+  صحیح fd = -1;
+  صحیح rc = -1;
+  غیر_مستعمل_PARAMETER(myHostID);
 
   /* create a new path by replace the trailing '-conch' with '-break' */
-  pathLen = strlcpy(tPath, cPath, MAXPATHLEN);
-  if( pathLen>MAXPATHLEN || pathLen<6 ||
-     (strlcpy(&tPath[pathLen-5], "break", 6) != 5) ){
-    sqlite3_snprintf(sizeof(errmsg),errmsg,"path error (len %d)",(int)pathLen);
-    goto end_breaklock;
+  راستہ_Len = strlcpy(t_راستہ, c_راستہ, MAXPATHLEN);
+  اگر( راستہ_Len>MAXPATHLEN || راستہ_Len<6 ||
+     (strlcpy(&t_راستہ[راستہ_Len-5], "break", 6) != 5) ){
+    sqlite3_snprintf(حجم(errmsg),errmsg,"path error (len %d)",(صحیح)راستہ_Len);
+    جاؤ انتہا_breaklock;
   }
   /* read the conch content */
   readLen = osPread(conchFile->h, buf, PROXY_MAXCONCHLEN, 0);
-  if( readLen<PROXY_PATHINDEX ){
-    sqlite3_snprintf(sizeof(errmsg),errmsg,"read error (len %d)",(int)readLen);
-    goto end_breaklock;
+  اگر( readLen<PROXY_PATHINDEX ){
+    sqlite3_snprintf(حجم(errmsg),errmsg,"read error (len %d)",(صحیح)readLen);
+    جاؤ انتہا_breaklock;
   }
   /* write it out to the temporary break file */
-  fd = robust_open(tPath, (O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW), 0);
-  if( fd<0 ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "create failed (%d)", errno);
-    goto end_breaklock;
+  fd = robust_open(t_راستہ, (O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW), 0);
+  اگر( fd<0 ){
+    sqlite3_snprintf(حجم(errmsg), errmsg, "create failed (%d)", errno);
+    جاؤ انتہا_breaklock;
   }
-  if( osPwrite(fd, buf, readLen, 0) != (ssize_t)readLen ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "write failed (%d)", errno);
-    goto end_breaklock;
+  اگر( osPwrite(fd, buf, readLen, 0) != (ssize_t)readLen ){
+    sqlite3_snprintf(حجم(errmsg), errmsg, "write failed (%d)", errno);
+    جاؤ انتہا_breaklock;
   }
-  if( rename(tPath, cPath) ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "rename failed (%d)", errno);
-    goto end_breaklock;
+  اگر( rename(t_راستہ, c_راستہ) ){
+    sqlite3_snprintf(حجم(errmsg), errmsg, "rename failed (%d)", errno);
+    جاؤ انتہا_breaklock;
   }
   rc = 0;
-  fprintf(stderr, "broke stale lock on %s\n", cPath);
+  fprintf(stderr, "broke stale lock on %s\n", c_راستہ);
   robust_close(pFile, conchFile->h, __LINE__);
   conchFile->h = fd;
   conchFile->openFlags = O_RDWR | O_CREAT;
 
-end_breaklock:
-  if( rc ){
-    if( fd>=0 ){
-      osUnlink(tPath);
+انتہا_breaklock:
+  اگر( rc ){
+    اگر( fd>=0 ){
+      osUnlink(t_راستہ);
       robust_close(pFile, fd, __LINE__);
     }
-    fprintf(stderr, "failed to break stale lock on %s, %s\n", cPath, errmsg);
+    fprintf(stderr, "failed to break stale lock on %s, %s\n", c_راستہ, errmsg);
   }
-  return rc;
+  واپس rc;
 }
 
 /* Take the requested lock on the conch file and break a stale lock if the
 ** host id matches.
 */
-static int proxyConchLock(unixFile *pFile, uuid_t myHostID, int lockType){
+ساکن صحیح proxy_Conch_تالا(unixFile *pFile, uuid_t myHostID, صحیح تالا_Type){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
   unixFile *conchFile = pCtx->conchFile;
-  int rc = SQLITE_OK;
-  int nTries = 0;
-  struct timespec conchModTime;
+  صحیح rc = SQLITE_OK;
+  صحیح nTries = 0;
+  ساخت timespec conch_Mod_وقت;
 
-  memset(&conchModTime, 0, sizeof(conchModTime));
-  do {
-    rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, lockType);
+  memset(&conch_Mod_وقت, 0, حجم(conch_Mod_وقت));
+  کرو {
+    rc = conchFile->p_طریقہ->x_تالا((sqlite3_file*)conchFile, تالا_Type);
     nTries ++;
-    if( rc==SQLITE_BUSY ){
+    اگر( rc==SQLITE_BUSY ){
       /* If the lock failed (busy):
        * 1st try: get the mod time of the conch, wait 0.5s and try again.
        * 2nd try: fail if the mod time changed or host id is different, wait
        *           10 sec and try again
        * 3rd try: break the lock unless the mod time has changed.
        */
-      struct stat buf;
-      if( osFstat(conchFile->h, &buf) ){
-        storeLastErrno(pFile, errno);
-        return SQLITE_IOERR_LOCK;
+      ساخت stat buf;
+      اگر( osFstat(conchFile->h, &buf) ){
+        store_آخری_Errno(pFile, errno);
+        واپس SQLITE_IOERR_تالا;
       }
     
-      if( nTries==1 ){
-        conchModTime = buf.st_mtimespec;
+      اگر( nTries==1 ){
+        conch_Mod_وقت = buf.st_mtimespec;
         unixSleep(0,500000); /* wait 0.5 sec and try the lock again*/
-        continue;
+        جاری;
       }
 
-      assert( nTries>1 );
-      if( conchModTime.tv_sec != buf.st_mtimespec.tv_sec ||
-         conchModTime.tv_nsec != buf.st_mtimespec.tv_nsec ){
-        return SQLITE_BUSY;
+      أكد( nTries>1 );
+      اگر( conch_Mod_وقت.tv_sec != buf.st_mtimespec.tv_sec ||
+         conch_Mod_وقت.tv_nsec != buf.st_mtimespec.tv_nsec ){
+        واپس SQLITE_BUSY;
       }
     
-      if( nTries==2 ){
-        char tBuf[PROXY_MAXCONCHLEN];
-        int len = osPread(conchFile->h, tBuf, PROXY_MAXCONCHLEN, 0);
-        if( len<0 ){
-          storeLastErrno(pFile, errno);
-          return SQLITE_IOERR_LOCK;
+      اگر( nTries==2 ){
+        حرف tBuf[PROXY_MAXCONCHLEN];
+        صحیح len = osPread(conchFile->h, tBuf, PROXY_MAXCONCHLEN, 0);
+        اگر( len<0 ){
+          store_آخری_Errno(pFile, errno);
+          واپس SQLITE_IOERR_تالا;
         }
-        if( len>PROXY_PATHINDEX && tBuf[0]==(char)PROXY_CONCHVERSION){
+        اگر( len>PROXY_PATHINDEX && tBuf[0]==(حرف)PROXY_CONCHVERSION){
           /* don't break the lock if the host id doesn't match */
-          if( 0!=memcmp(&tBuf[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN) ){
-            return SQLITE_BUSY;
+          اگر( 0!=memcmp(&tBuf[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN) ){
+            واپس SQLITE_BUSY;
           }
-        }else{
+        }ورنہ{
           /* don't break the lock on short read or a version mismatch */
-          return SQLITE_BUSY;
+          واپس SQLITE_BUSY;
         }
         unixSleep(0,10000000); /* wait 10 sec and try the lock again */
-        continue;
+        جاری;
       }
     
-      assert( nTries==3 );
-      if( 0==proxyBreakConchLock(pFile, myHostID) ){
+      أكد( nTries==3 );
+      اگر( 0==proxy_Break_Conch_تالا(pFile, myHostID) ){
         rc = SQLITE_OK;
-        if( lockType==EXCLUSIVE_LOCK ){
-          rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, SHARED_LOCK);
+        اگر( تالا_Type==EXCLUSIVE_تالا ){
+          rc = conchFile->p_طریقہ->x_تالا((sqlite3_file*)conchFile, SHARED_تالا);
         }
-        if( !rc ){
-          rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, lockType);
+        اگر( !rc ){
+          rc = conchFile->p_طریقہ->x_تالا((sqlite3_file*)conchFile, تالا_Type);
         }
       }
     }
-  } while( rc==SQLITE_BUSY && nTries<3 );
+  } جب( rc==SQLITE_BUSY && nTries<3 );
 
-  return rc;
+  واپس rc;
 }
 
 /* Takes the conch by taking a shared lock and read the contents conch, if
@@ -7788,47 +7788,47 @@ static int proxyConchLock(unixFile *pFile, uuid_t myHostID, int lockType){
 ** host IDs match, or a new lock path will be generated automatically
 ** and written to the conch file.
 */
-static int proxyTakeConch(unixFile *pFile){
+ساکن صحیح proxyTakeConch(unixFile *pFile){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
 
-  if( pCtx->conchHeld!=0 ){
-    return SQLITE_OK;
-  }else{
+  اگر( pCtx->conchHeld!=0 ){
+    واپس SQLITE_OK;
+  }ورنہ{
     unixFile *conchFile = pCtx->conchFile;
     uuid_t myHostID;
-    int pError = 0;
-    char readBuf[PROXY_MAXCONCHLEN];
-    char lockPath[MAXPATHLEN];
-    char *tempLockPath = NULL;
-    int rc = SQLITE_OK;
-    int createConch = 0;
-    int hostIdMatch = 0;
-    int readLen = 0;
-    int tryOldLockPath = 0;
-    int forceNewLockPath = 0;
+    صحیح pError = 0;
+    حرف readBuf[PROXY_MAXCONCHLEN];
+    حرف تالا_راستہ[MAXPATHLEN];
+    حرف *عارضی_تالا_راستہ = تہی;
+    صحیح rc = SQLITE_OK;
+    صحیح createConch = 0;
+    صحیح host_Id_مطابقت = 0;
+    صحیح readLen = 0;
+    صحیح try_Old_تالا_راستہ = 0;
+    صحیح force_New_تالا_راستہ = 0;
   
     OSTRACE(("TAKECONCH  %d for %s pid=%d\n", conchFile->h,
-             (pCtx->lockProxyPath ? pCtx->lockProxyPath : ":auto:"),
+             (pCtx->تالا_Proxy_راستہ ? pCtx->تالا_Proxy_راستہ : ":auto:"),
              osGetpid(0)));
 
     rc = proxyGetHostID(myHostID, &pError);
-    if( (rc&0xff)==SQLITE_IOERR ){
-      storeLastErrno(pFile, pError);
-      goto end_takeconch;
+    اگر( (rc&0xff)==SQLITE_IOERR ){
+      store_آخری_Errno(pFile, pError);
+      جاؤ انتہا_takeconch;
     }
-    rc = proxyConchLock(pFile, myHostID, SHARED_LOCK);
-    if( rc!=SQLITE_OK ){
-      goto end_takeconch;
+    rc = proxy_Conch_تالا(pFile, myHostID, SHARED_تالا);
+    اگر( rc!=SQLITE_OK ){
+      جاؤ انتہا_takeconch;
     }
     /* read the existing conch file */
     readLen = seekAndRead((unixFile*)conchFile, 0, readBuf, PROXY_MAXCONCHLEN);
-    if( readLen<0 ){
+    اگر( readLen<0 ){
       /* I/O error: lastErrno set by seekAndRead */
-      storeLastErrno(pFile, conchFile->lastErrno);
+      store_آخری_Errno(pFile, conchFile->آخری_Errno);
       rc = SQLITE_IOERR_READ;
-      goto end_takeconch;
-    }else if( readLen<=(PROXY_HEADERLEN+PROXY_HOSTIDLEN) ||
-             readBuf[0]!=(char)PROXY_CONCHVERSION ){
+      جاؤ انتہا_takeconch;
+    }ورنہ اگر( readLen<=(PROXY_HEADERLEN+PROXY_HOSTIDLEN) ||
+             readBuf[0]!=(حرف)PROXY_CONCHVERSION ){
       /* a short read or version format mismatch means we need to create a new
       ** conch file.
       */
@@ -7838,48 +7838,48 @@ static int proxyTakeConch(unixFile *pFile){
     ** we'll try to use the path there, if we can't open that path, we'll
     ** retry with a new auto-generated path
     */
-    do { /* in case we need to try again for an :auto: named lock file */
+    کرو { /* in case we need to try again for an :auto: named lock file */
 
-      if( !createConch && !forceNewLockPath ){
-        hostIdMatch = !memcmp(&readBuf[PROXY_HEADERLEN], myHostID,
+      اگر( !createConch && !force_New_تالا_راستہ ){
+        host_Id_مطابقت = !memcmp(&readBuf[PROXY_HEADERLEN], myHostID,
                                   PROXY_HOSTIDLEN);
         /* if the conch has data compare the contents */
-        if( !pCtx->lockProxyPath ){
+        اگر( !pCtx->تالا_Proxy_راستہ ){
           /* for auto-named local lock file, just check the host ID and we'll
            ** use the local lock file path that's already in there
            */
-          if( hostIdMatch ){
-            size_t pathLen = (readLen - PROXY_PATHINDEX);
+          اگر( host_Id_مطابقت ){
+            size_t راستہ_Len = (readLen - PROXY_PATHINDEX);
           
-            if( pathLen>=MAXPATHLEN ){
-              pathLen=MAXPATHLEN-1;
+            اگر( راستہ_Len>=MAXPATHLEN ){
+              راستہ_Len=MAXPATHLEN-1;
             }
-            memcpy(lockPath, &readBuf[PROXY_PATHINDEX], pathLen);
-            lockPath[pathLen] = 0;
-            tempLockPath = lockPath;
-            tryOldLockPath = 1;
+            حافظہ_نقل(تالا_راستہ, &readBuf[PROXY_PATHINDEX], راستہ_Len);
+            تالا_راستہ[راستہ_Len] = 0;
+            عارضی_تالا_راستہ = تالا_راستہ;
+            try_Old_تالا_راستہ = 1;
             /* create a copy of the lock path if the conch is taken */
-            goto end_takeconch;
+            جاؤ انتہا_takeconch;
           }
-        }else if( hostIdMatch
-               && !strncmp(pCtx->lockProxyPath, &readBuf[PROXY_PATHINDEX],
+        }ورنہ اگر( host_Id_مطابقت
+               && !لڑی_موازنہ(pCtx->تالا_Proxy_راستہ, &readBuf[PROXY_PATHINDEX],
                            readLen-PROXY_PATHINDEX)
         ){
           /* conch host and lock path match */
-          goto end_takeconch;
+          جاؤ انتہا_takeconch;
         }
       }
     
       /* if the conch isn't writable and doesn't match, we can't take it */
-      if( (conchFile->openFlags&O_RDWR) == 0 ){
+      اگر( (conchFile->openFlags&O_RDWR) == 0 ){
         rc = SQLITE_BUSY;
-        goto end_takeconch;
+        جاؤ انتہا_takeconch;
       }
     
       /* either the conch didn't match or we need to create a new one */
-      if( !pCtx->lockProxyPath ){
-        proxyGetLockPath(pCtx->dbPath, lockPath, MAXPATHLEN);
-        tempLockPath = lockPath;
+      اگر( !pCtx->تالا_Proxy_راستہ ){
+        proxy_Get_تالا_راستہ(pCtx->db_راستہ, تالا_راستہ, MAXPATHLEN);
+        عارضی_تالا_راستہ = تالا_راستہ;
         /* create a copy of the lock path _only_ if the conch is taken */
       }
     
@@ -7887,122 +7887,122 @@ static int proxyTakeConch(unixFile *pFile){
       ** has a shared lock already), if the host id matches, use the big
       ** stick.
       */
-      futimes(conchFile->h, NULL);
-      if( hostIdMatch && !createConch ){
-        if( conchFile->pInode && conchFile->pInode->nShared>1 ){
+      futimes(conchFile->h, تہی);
+      اگر( host_Id_مطابقت && !createConch ){
+        اگر( conchFile->pInode && conchFile->pInode->nShared>1 ){
           /* We are trying for an exclusive lock but another thread in this
            ** same process is still holding a shared lock. */
           rc = SQLITE_BUSY;
-        } else {        
-          rc = proxyConchLock(pFile, myHostID, EXCLUSIVE_LOCK);
+        } ورنہ {        
+          rc = proxy_Conch_تالا(pFile, myHostID, EXCLUSIVE_تالا);
         }
-      }else{
-        rc = proxyConchLock(pFile, myHostID, EXCLUSIVE_LOCK);
+      }ورنہ{
+        rc = proxy_Conch_تالا(pFile, myHostID, EXCLUSIVE_تالا);
       }
-      if( rc==SQLITE_OK ){
-        char writeBuffer[PROXY_MAXCONCHLEN];
-        int writeSize = 0;
+      اگر( rc==SQLITE_OK ){
+        حرف write_بفر[PROXY_MAXCONCHLEN];
+        صحیح write_سائز = 0;
       
-        writeBuffer[0] = (char)PROXY_CONCHVERSION;
-        memcpy(&writeBuffer[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN);
-        if( pCtx->lockProxyPath!=NULL ){
-          strlcpy(&writeBuffer[PROXY_PATHINDEX], pCtx->lockProxyPath,
+        write_بفر[0] = (حرف)PROXY_CONCHVERSION;
+        حافظہ_نقل(&write_بفر[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN);
+        اگر( pCtx->تالا_Proxy_راستہ!=تہی ){
+          strlcpy(&write_بفر[PROXY_PATHINDEX], pCtx->تالا_Proxy_راستہ,
                   MAXPATHLEN);
-        }else{
-          strlcpy(&writeBuffer[PROXY_PATHINDEX], tempLockPath, MAXPATHLEN);
+        }ورنہ{
+          strlcpy(&write_بفر[PROXY_PATHINDEX], عارضی_تالا_راستہ, MAXPATHLEN);
         }
-        writeSize = PROXY_PATHINDEX + strlen(&writeBuffer[PROXY_PATHINDEX]);
-        robust_ftruncate(conchFile->h, writeSize);
-        rc = unixWrite((sqlite3_file *)conchFile, writeBuffer, writeSize, 0);
-        full_fsync(conchFile->h,0,0);
+        write_سائز = PROXY_PATHINDEX + لڑی_لمبائی(&write_بفر[PROXY_PATHINDEX]);
+        robust_ftruncate(conchFile->h, write_سائز);
+        rc = unixWrite((sqlite3_file *)conchFile, write_بفر, write_سائز, 0);
+        بھرا_fsync(conchFile->h,0,0);
         /* If we created a new conch file (not just updated the contents of a
          ** valid conch file), try to match the permissions of the database
          */
-        if( rc==SQLITE_OK && createConch ){
-          struct stat buf;
-          int err = osFstat(pFile->h, &buf);
-          if( err==0 ){
-            mode_t cmode = buf.st_mode&(S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP |
+        اگر( rc==SQLITE_OK && createConch ){
+          ساخت stat buf;
+          صحیح err = osFstat(pFile->h, &buf);
+          اگر( err==0 ){
+            منوال_t cmode = buf.st_منوال&(S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP |
                                         S_IROTH|S_IWOTH);
             /* try to match the database file R/W permissions, ignore failure */
-#ifndef SQLITE_PROXY_DEBUG
+#اگر_غیر_تعریف_شدہ SQLITE_PROXY_DEBUG
             osFchmod(conchFile->h, cmode);
-#else
-            do{
+#ورنہ
+            کرو{
               rc = osFchmod(conchFile->h, cmode);
-            }while( rc==(-1) && errno==EINTR );
-            if( rc!=0 ){
-              int code = errno;
+            }جب( rc==(-1) && errno==EINTR );
+            اگر( rc!=0 ){
+              صحیح رمز = errno;
               fprintf(stderr, "fchmod %o FAILED with %d %s\n",
-                      cmode, code, strerror(code));
-            } else {
+                      cmode, رمز, strerror(رمز));
+            } ورنہ {
               fprintf(stderr, "fchmod %o SUCCEDED\n",cmode);
             }
-          }else{
-            int code = errno;
+          }ورنہ{
+            صحیح رمز = errno;
             fprintf(stderr, "STAT FAILED[%d] with %d %s\n",
-                    err, code, strerror(code));
-#endif
+                    err, رمز, strerror(رمز));
+#اگر_ختم
           }
         }
       }
-      conchFile->pMethod->xUnlock((sqlite3_file*)conchFile, SHARED_LOCK);
+      conchFile->p_طریقہ->xUnlock((sqlite3_file*)conchFile, SHARED_تالا);
     
-    end_takeconch:
+    انتہا_takeconch:
       OSTRACE(("TRANSPROXY: CLOSE  %d\n", pFile->h));
-      if( rc==SQLITE_OK && pFile->openFlags ){
-        int fd;
-        if( pFile->h>=0 ){
+      اگر( rc==SQLITE_OK && pFile->openFlags ){
+        صحیح fd;
+        اگر( pFile->h>=0 ){
           robust_close(pFile, pFile->h, __LINE__);
         }
         pFile->h = -1;
-        fd = robust_open(pCtx->dbPath, pFile->openFlags, 0);
+        fd = robust_open(pCtx->db_راستہ, pFile->openFlags, 0);
         OSTRACE(("TRANSPROXY: OPEN  %d\n", fd));
-        if( fd>=0 ){
+        اگر( fd>=0 ){
           pFile->h = fd;
-        }else{
+        }ورنہ{
           rc=SQLITE_CANTOPEN_BKPT; /* SQLITE_BUSY? proxyTakeConch called
            during locking */
         }
       }
-      if( rc==SQLITE_OK && !pCtx->lockProxy ){
-        char *path = tempLockPath ? tempLockPath : pCtx->lockProxyPath;
-        rc = proxyCreateUnixFile(path, &pCtx->lockProxy, 1);
-        if( rc!=SQLITE_OK && rc!=SQLITE_NOMEM && tryOldLockPath ){
+      اگر( rc==SQLITE_OK && !pCtx->تالا_Proxy ){
+        حرف *راستہ = عارضی_تالا_راستہ ? عارضی_تالا_راستہ : pCtx->تالا_Proxy_راستہ;
+        rc = proxyCreateUnixFile(راستہ, &pCtx->تالا_Proxy, 1);
+        اگر( rc!=SQLITE_OK && rc!=SQLITE_NOMEM && try_Old_تالا_راستہ ){
           /* we couldn't create the proxy lock file with the old lock file path
            ** so try again via auto-naming
            */
-          forceNewLockPath = 1;
-          tryOldLockPath = 0;
-          continue; /* go back to the do {} while start point, try again */
+          force_New_تالا_راستہ = 1;
+          try_Old_تالا_راستہ = 0;
+          جاری; /* go back to the do {} while start point, try again */
         }
       }
-      if( rc==SQLITE_OK ){
+      اگر( rc==SQLITE_OK ){
         /* Need to make a copy of path if we extracted the value
          ** from the conch file or the path was allocated on the stack
          */
-        if( tempLockPath ){
-          pCtx->lockProxyPath = sqlite3DbStrDup(0, tempLockPath);
-          if( !pCtx->lockProxyPath ){
+        اگر( عارضی_تالا_راستہ ){
+          pCtx->تالا_Proxy_راستہ = sqlite3DbStrDup(0, عارضی_تالا_راستہ);
+          اگر( !pCtx->تالا_Proxy_راستہ ){
             rc = SQLITE_NOMEM_BKPT;
           }
         }
       }
-      if( rc==SQLITE_OK ){
+      اگر( rc==SQLITE_OK ){
         pCtx->conchHeld = 1;
       
-        if( pCtx->lockProxy->pMethod == &afpIoMethods ){
+        اگر( pCtx->تالا_Proxy->p_طریقہ == &afpIoMethods ){
           afpLockingContext *afpCtx;
-          afpCtx = (afpLockingContext *)pCtx->lockProxy->lockingContext;
-          afpCtx->dbPath = pCtx->lockProxyPath;
+          afpCtx = (afpLockingContext *)pCtx->تالا_Proxy->lockingContext;
+          afpCtx->db_راستہ = pCtx->تالا_Proxy_راستہ;
         }
-      } else {
-        conchFile->pMethod->xUnlock((sqlite3_file*)conchFile, NO_LOCK);
+      } ورنہ {
+        conchFile->p_طریقہ->xUnlock((sqlite3_file*)conchFile, NO_تالا);
       }
       OSTRACE(("TAKECONCH  %d %s\n", conchFile->h,
                rc==SQLITE_OK?"ok":"failed"));
-      return rc;
-    } while (1); /* in case we need to retry the :auto: lock file -
+      واپس rc;
+    } جب (1); /* in case we need to retry the :auto: lock file -
                  ** we should never get here except via the 'continue' call. */
   }
 }
@@ -8010,23 +8010,23 @@ static int proxyTakeConch(unixFile *pFile){
 /*
 ** If pFile holds a lock on a conch file, then release that lock.
 */
-static int proxyReleaseConch(unixFile *pFile){
-  int rc = SQLITE_OK;         /* Subroutine return code */
+ساکن صحیح proxyReleaseConch(unixFile *pFile){
+  صحیح rc = SQLITE_OK;         /* Subroutine return code */
   proxyLockingContext *pCtx;  /* The locking context for the proxy lock */
   unixFile *conchFile;        /* Name of the conch file */
 
   pCtx = (proxyLockingContext *)pFile->lockingContext;
   conchFile = pCtx->conchFile;
   OSTRACE(("RELEASECONCH  %d for %s pid=%d\n", conchFile->h,
-           (pCtx->lockProxyPath ? pCtx->lockProxyPath : ":auto:"),
+           (pCtx->تالا_Proxy_راستہ ? pCtx->تالا_Proxy_راستہ : ":auto:"),
            osGetpid(0)));
-  if( pCtx->conchHeld>0 ){
-    rc = conchFile->pMethod->xUnlock((sqlite3_file*)conchFile, NO_LOCK);
+  اگر( pCtx->conchHeld>0 ){
+    rc = conchFile->p_طریقہ->xUnlock((sqlite3_file*)conchFile, NO_تالا);
   }
   pCtx->conchHeld = 0;
   OSTRACE(("RELEASECONCH  %d %s\n", conchFile->h,
            (rc==SQLITE_OK ? "ok" : "failed")));
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -8040,70 +8040,70 @@ static int proxyReleaseConch(unixFile *pFile){
 **
 ** *pConchPath is set to NULL if a memory allocation error occurs.
 */
-static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
-  int i;                        /* Loop counter */
-  int len = (int)strlen(dbPath); /* Length of database filename - dbPath */
-  char *conchPath;              /* buffer in which to construct conch name */
+ساکن صحیح proxyCreateConchPathname(حرف *db_راستہ, حرف **p_Conch_راستہ){
+  صحیح i;                        /* Loop counter */
+  صحیح len = (صحیح)لڑی_لمبائی(db_راستہ); /* Length of database filename - dbPath */
+  حرف *conch_راستہ;              /* buffer in which to construct conch name */
 
   /* Allocate space for the conch filename and initialize the name to
   ** the name of the original database file. */
-  *pConchPath = conchPath = (char *)sqlite3_malloc64(len + 8);
-  if( conchPath==0 ){
-    return SQLITE_NOMEM_BKPT;
+  *p_Conch_راستہ = conch_راستہ = (حرف *)sqlite3_malloc64(len + 8);
+  اگر( conch_راستہ==0 ){
+    واپس SQLITE_NOMEM_BKPT;
   }
-  memcpy(conchPath, dbPath, len+1);
+  حافظہ_نقل(conch_راستہ, db_راستہ, len+1);
 
   /* now insert a "." before the last / character */
-  for( i=(len-1); i>=0; i-- ){
-    if( conchPath[i]=='/' ){
+  برائے( i=(len-1); i>=0; i-- ){
+    اگر( conch_راستہ[i]=='/' ){
       i++;
-      break;
+      توڑو;
     }
   }
-  conchPath[i]='.';
-  while ( i<len ){
-    conchPath[i+1]=dbPath[i];
+  conch_راستہ[i]='.';
+  جب ( i<len ){
+    conch_راستہ[i+1]=db_راستہ[i];
     i++;
   }
 
   /* append the "-conch" suffix to the file */
-  memcpy(&conchPath[i+1], "-conch", 7);
-  assert( (int)strlen(conchPath) == len+7 );
+  حافظہ_نقل(&conch_راستہ[i+1], "-conch", 7);
+  أكد( (صحیح)لڑی_لمبائی(conch_راستہ) == len+7 );
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 
 /* Takes a fully configured proxy locking-style unix file and switches
 ** the local lock file path
 */
-static int switchLockProxyPath(unixFile *pFile, const char *path) {
+ساکن صحیح switch_تالا_Proxy_راستہ(unixFile *pFile, ثابت حرف *راستہ) {
   proxyLockingContext *pCtx = (proxyLockingContext*)pFile->lockingContext;
-  char *oldPath = pCtx->lockProxyPath;
-  int rc = SQLITE_OK;
+  حرف *old_راستہ = pCtx->تالا_Proxy_راستہ;
+  صحیح rc = SQLITE_OK;
 
-  if( pFile->eFileLock!=NO_LOCK ){
-    return SQLITE_BUSY;
+  اگر( pFile->e_File_تالا!=NO_تالا ){
+    واپس SQLITE_BUSY;
   }
 
   /* nothing to do if the path is NULL, :auto: or matches the existing path */
-  if( !path || path[0]=='\0' || !strcmp(path, ":auto:") ||
-    (oldPath && !strncmp(oldPath, path, MAXPATHLEN)) ){
-    return SQLITE_OK;
-  }else{
-    unixFile *lockProxy = pCtx->lockProxy;
-    pCtx->lockProxy=NULL;
+  اگر( !راستہ || راستہ[0]=='\0' || !strcmp(راستہ, ":auto:") ||
+    (old_راستہ && !لڑی_موازنہ(old_راستہ, راستہ, MAXPATHLEN)) ){
+    واپس SQLITE_OK;
+  }ورنہ{
+    unixFile *تالا_Proxy = pCtx->تالا_Proxy;
+    pCtx->تالا_Proxy=تہی;
     pCtx->conchHeld = 0;
-    if( lockProxy!=NULL ){
-      rc=lockProxy->pMethod->xClose((sqlite3_file *)lockProxy);
-      if( rc ) return rc;
-      sqlite3_free(lockProxy);
+    اگر( تالا_Proxy!=تہی ){
+      rc=تالا_Proxy->p_طریقہ->xClose((sqlite3_file *)تالا_Proxy);
+      اگر( rc ) واپس rc;
+      sqlite3_free(تالا_Proxy);
     }
-    sqlite3_free(oldPath);
-    pCtx->lockProxyPath = sqlite3DbStrDup(0, path);
+    sqlite3_free(old_راستہ);
+    pCtx->تالا_Proxy_راستہ = sqlite3DbStrDup(0, راستہ);
   }
 
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -8113,27 +8113,27 @@ static int switchLockProxyPath(unixFile *pFile, const char *path) {
 ** This routine find the filename associated with pFile and writes it
 ** int dbPath.
 */
-static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
-#if defined(__APPLE__)
-  if( pFile->pMethod == &afpIoMethods ){
+ساکن صحیح proxy_Get_Db_راستہ_For_Unix_File(unixFile *pFile, حرف *db_راستہ){
+#اگر defined(__APPLE__)
+  اگر( pFile->p_طریقہ == &afpIoMethods ){
     /* afp style keeps a reference to the db path in the filePath field
     ** of the struct */
-    assert( (int)strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
-    strlcpy(dbPath, ((afpLockingContext *)pFile->lockingContext)->dbPath,
+    أكد( (صحیح)لڑی_لمبائی((حرف*)pFile->lockingContext)<=MAXPATHLEN );
+    strlcpy(db_راستہ, ((afpLockingContext *)pFile->lockingContext)->db_راستہ,
             MAXPATHLEN);
-  } else
-#endif
-  if( pFile->pMethod == &dotlockIoMethods ){
+  } ورنہ
+#اگر_ختم
+  اگر( pFile->p_طریقہ == &dotlockIoMethods ){
     /* dot lock style uses the locking context to store the dot lock
     ** file path */
-    int len = strlen((char *)pFile->lockingContext) - strlen(DOTLOCK_SUFFIX);
-    memcpy(dbPath, (char *)pFile->lockingContext, len + 1);
-  }else{
+    صحیح len = لڑی_لمبائی((حرف *)pFile->lockingContext) - لڑی_لمبائی(DOTLOCK_SUFFIX);
+    حافظہ_نقل(db_راستہ, (حرف *)pFile->lockingContext, len + 1);
+  }ورنہ{
     /* all other styles use the locking context to store the db file path */
-    assert( strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
-    strlcpy(dbPath, (char *)pFile->lockingContext, MAXPATHLEN);
+    أكد( لڑی_لمبائی((حرف*)pFile->lockingContext)<=MAXPATHLEN );
+    strlcpy(db_راستہ, (حرف *)pFile->lockingContext, MAXPATHLEN);
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -8144,86 +8144,86 @@ static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
 **  ->lockingContext
 **  ->pMethod
 */
-static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
+ساکن صحیح proxyTransformUnixFile(unixFile *pFile, ثابت حرف *راستہ) {
   proxyLockingContext *pCtx;
-  char dbPath[MAXPATHLEN+1];       /* Name of the database file */
-  char *lockPath=NULL;
-  int rc = SQLITE_OK;
+  حرف db_راستہ[MAXPATHLEN+1];       /* Name of the database file */
+  حرف *تالا_راستہ=تہی;
+  صحیح rc = SQLITE_OK;
 
-  if( pFile->eFileLock!=NO_LOCK ){
-    return SQLITE_BUSY;
+  اگر( pFile->e_File_تالا!=NO_تالا ){
+    واپس SQLITE_BUSY;
   }
-  proxyGetDbPathForUnixFile(pFile, dbPath);
-  if( !path || path[0]=='\0' || !strcmp(path, ":auto:") ){
-    lockPath=NULL;
-  }else{
-    lockPath=(char *)path;
+  proxy_Get_Db_راستہ_For_Unix_File(pFile, db_راستہ);
+  اگر( !راستہ || راستہ[0]=='\0' || !strcmp(راستہ, ":auto:") ){
+    تالا_راستہ=تہی;
+  }ورنہ{
+    تالا_راستہ=(حرف *)راستہ;
   }
 
   OSTRACE(("TRANSPROXY  %d for %s pid=%d\n", pFile->h,
-           (lockPath ? lockPath : ":auto:"), osGetpid(0)));
+           (تالا_راستہ ? تالا_راستہ : ":auto:"), osGetpid(0)));
 
-  pCtx = sqlite3_malloc64( sizeof(*pCtx) );
-  if( pCtx==0 ){
-    return SQLITE_NOMEM_BKPT;
+  pCtx = sqlite3_malloc64( حجم(*pCtx) );
+  اگر( pCtx==0 ){
+    واپس SQLITE_NOMEM_BKPT;
   }
-  memset(pCtx, 0, sizeof(*pCtx));
+  memset(pCtx, 0, حجم(*pCtx));
 
-  rc = proxyCreateConchPathname(dbPath, &pCtx->conchFilePath);
-  if( rc==SQLITE_OK ){
-    rc = proxyCreateUnixFile(pCtx->conchFilePath, &pCtx->conchFile, 0);
-    if( rc==SQLITE_CANTOPEN && ((pFile->openFlags&O_RDWR) == 0) ){
+  rc = proxyCreateConchPathname(db_راستہ, &pCtx->conch_File_راستہ);
+  اگر( rc==SQLITE_OK ){
+    rc = proxyCreateUnixFile(pCtx->conch_File_راستہ, &pCtx->conchFile, 0);
+    اگر( rc==SQLITE_CANTOPEN && ((pFile->openFlags&O_RDWR) == 0) ){
       /* if (a) the open flags are not O_RDWR, (b) the conch isn't there, and
       ** (c) the file system is read-only, then enable no-locking access.
       ** Ugh, since O_RDONLY==0x0000 we test for !O_RDWR since unixOpen asserts
       ** that openFlags will have only one of O_RDONLY or O_RDWR.
       */
-      struct statfs fsInfo;
-      struct stat conchInfo;
-      int goLockless = 0;
+      ساخت statfs fsInfo;
+      ساخت stat conchInfo;
+      صحیح goLockless = 0;
 
-      if( osStat(pCtx->conchFilePath, &conchInfo) == -1 ) {
-        int err = errno;
-        if( (err==ENOENT) && (statfs(dbPath, &fsInfo) != -1) ){
+      اگر( osStat(pCtx->conch_File_راستہ, &conchInfo) == -1 ) {
+        صحیح err = errno;
+        اگر( (err==ENOENT) && (statfs(db_راستہ, &fsInfo) != -1) ){
           goLockless = (fsInfo.f_flags&MNT_RDONLY) == MNT_RDONLY;
         }
       }
-      if( goLockless ){
+      اگر( goLockless ){
         pCtx->conchHeld = -1; /* read only FS/ lockless */
         rc = SQLITE_OK;
       }
     }
   }
-  if( rc==SQLITE_OK && lockPath ){
-    pCtx->lockProxyPath = sqlite3DbStrDup(0, lockPath);
+  اگر( rc==SQLITE_OK && تالا_راستہ ){
+    pCtx->تالا_Proxy_راستہ = sqlite3DbStrDup(0, تالا_راستہ);
   }
 
-  if( rc==SQLITE_OK ){
-    pCtx->dbPath = sqlite3DbStrDup(0, dbPath);
-    if( pCtx->dbPath==NULL ){
+  اگر( rc==SQLITE_OK ){
+    pCtx->db_راستہ = sqlite3DbStrDup(0, db_راستہ);
+    اگر( pCtx->db_راستہ==تہی ){
       rc = SQLITE_NOMEM_BKPT;
     }
   }
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     /* all memory is allocated, proxys are created and assigned,
     ** switch the locking context and pMethod then return.
     */
     pCtx->oldLockingContext = pFile->lockingContext;
     pFile->lockingContext = pCtx;
-    pCtx->pOldMethod = pFile->pMethod;
-    pFile->pMethod = &proxyIoMethods;
-  }else{
-    if( pCtx->conchFile ){
-      pCtx->conchFile->pMethod->xClose((sqlite3_file *)pCtx->conchFile);
+    pCtx->p_Old_طریقہ = pFile->p_طریقہ;
+    pFile->p_طریقہ = &proxyIoMethods;
+  }ورنہ{
+    اگر( pCtx->conchFile ){
+      pCtx->conchFile->p_طریقہ->xClose((sqlite3_file *)pCtx->conchFile);
       sqlite3_free(pCtx->conchFile);
     }
-    sqlite3DbFree(0, pCtx->lockProxyPath);
-    sqlite3_free(pCtx->conchFilePath);
+    sqlite3DbFree(0, pCtx->تالا_Proxy_راستہ);
+    sqlite3_free(pCtx->conch_File_راستہ);
     sqlite3_free(pCtx);
   }
   OSTRACE(("TRANSPROXY  %d %s\n", pFile->h,
            (rc==SQLITE_OK ? "ok" : "failed")));
-  return rc;
+  واپس rc;
 }
 
 
@@ -8231,64 +8231,64 @@ static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
 ** This routine handles sqlite3_file_control() calls that are specific
 ** to proxy locking.
 */
-static int proxyFileControl(sqlite3_file *id, int op, void *pArg){
-  switch( op ){
-    case SQLITE_FCNTL_GET_LOCKPROXYFILE: {
+ساکن صحیح proxyFileControl(sqlite3_file *id, صحیح op, خالی *pArg){
+  انتخاب( op ){
+    حالت SQLITE_FCNTL_GET_LOCKPROXYFILE: {
       unixFile *pFile = (unixFile*)id;
-      if( pFile->pMethod == &proxyIoMethods ){
+      اگر( pFile->p_طریقہ == &proxyIoMethods ){
         proxyLockingContext *pCtx = (proxyLockingContext*)pFile->lockingContext;
         proxyTakeConch(pFile);
-        if( pCtx->lockProxyPath ){
-          *(const char **)pArg = pCtx->lockProxyPath;
-        }else{
-          *(const char **)pArg = ":auto: (not held)";
+        اگر( pCtx->تالا_Proxy_راستہ ){
+          *(ثابت حرف **)pArg = pCtx->تالا_Proxy_راستہ;
+        }ورنہ{
+          *(ثابت حرف **)pArg = ":auto: (not held)";
         }
-      } else {
-        *(const char **)pArg = NULL;
+      } ورنہ {
+        *(ثابت حرف **)pArg = تہی;
       }
-      return SQLITE_OK;
+      واپس SQLITE_OK;
     }
-    case SQLITE_FCNTL_SET_LOCKPROXYFILE: {
+    حالت SQLITE_FCNTL_سیٹ_LOCKPROXYFILE: {
       unixFile *pFile = (unixFile*)id;
-      int rc = SQLITE_OK;
-      int isProxyStyle = (pFile->pMethod == &proxyIoMethods);
-      if( pArg==NULL || (const char *)pArg==0 ){
-        if( isProxyStyle ){
+      صحیح rc = SQLITE_OK;
+      صحیح isProxyStyle = (pFile->p_طریقہ == &proxyIoMethods);
+      اگر( pArg==تہی || (ثابت حرف *)pArg==0 ){
+        اگر( isProxyStyle ){
           /* turn off proxy locking - not supported.  If support is added for
           ** switching proxy locking mode off then it will need to fail if
           ** the journal mode is WAL mode.
           */
           rc = SQLITE_ERROR /*SQLITE_PROTOCOL? SQLITE_MISUSE?*/;
-        }else{
+        }ورنہ{
           /* turn off proxy locking - already off - NOOP */
           rc = SQLITE_OK;
         }
-      }else{
-        const char *proxyPath = (const char *)pArg;
-        if( isProxyStyle ){
+      }ورنہ{
+        ثابت حرف *proxy_راستہ = (ثابت حرف *)pArg;
+        اگر( isProxyStyle ){
           proxyLockingContext *pCtx =
             (proxyLockingContext*)pFile->lockingContext;
-          if( !strcmp(pArg, ":auto:")
-           || (pCtx->lockProxyPath &&
-               !strncmp(pCtx->lockProxyPath, proxyPath, MAXPATHLEN))
+          اگر( !strcmp(pArg, ":auto:")
+           || (pCtx->تالا_Proxy_راستہ &&
+               !لڑی_موازنہ(pCtx->تالا_Proxy_راستہ, proxy_راستہ, MAXPATHLEN))
           ){
             rc = SQLITE_OK;
-          }else{
-            rc = switchLockProxyPath(pFile, proxyPath);
+          }ورنہ{
+            rc = switch_تالا_Proxy_راستہ(pFile, proxy_راستہ);
           }
-        }else{
+        }ورنہ{
           /* turn on proxy file locking */
-          rc = proxyTransformUnixFile(pFile, proxyPath);
+          rc = proxyTransformUnixFile(pFile, proxy_راستہ);
         }
       }
-      return rc;
+      واپس rc;
     }
-    default: {
-      assert( 0 );  /* The call assures that only valid opcodes are sent */
+    طےشدہ: {
+      أكد( 0 );  /* The call assures that only valid opcodes are sent */
     }
   }
-  /*NOTREACHED*/ assert(0);
-  return SQLITE_ERROR;
+  /*NOTREACHED*/ أكد(0);
+  واپس SQLITE_ERROR;
 }
 
 /*
@@ -8304,19 +8304,19 @@ static int proxyFileControl(sqlite3_file *id, int op, void *pArg){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int proxyCheckReservedLock(sqlite3_file *id, int *pResOut) {
+ساکن صحیح proxy_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  صحیح rc = proxyTakeConch(pFile);
+  اگر( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
-      unixFile *proxy = pCtx->lockProxy;
-      return proxy->pMethod->xCheckReservedLock((sqlite3_file*)proxy, pResOut);
-    }else{ /* conchHeld < 0 is lockless */
-      pResOut=0;
+    اگر( pCtx->conchHeld>0 ){
+      unixFile *proxy = pCtx->تالا_Proxy;
+      واپس proxy->p_طریقہ->x_Check_Reserved_تالا((sqlite3_file*)proxy, p_Res_برآمد);
+    }ورنہ{ /* conchHeld < 0 is lockless */
+      p_Res_برآمد=0;
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -8343,20 +8343,20 @@ static int proxyCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int proxyLock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح proxy_تالا(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  صحیح rc = proxyTakeConch(pFile);
+  اگر( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
-      unixFile *proxy = pCtx->lockProxy;
-      rc = proxy->pMethod->xLock((sqlite3_file*)proxy, eFileLock);
-      pFile->eFileLock = proxy->eFileLock;
-    }else{
+    اگر( pCtx->conchHeld>0 ){
+      unixFile *proxy = pCtx->تالا_Proxy;
+      rc = proxy->p_طریقہ->x_تالا((sqlite3_file*)proxy, e_File_تالا);
+      pFile->e_File_تالا = proxy->e_File_تالا;
+    }ورنہ{
       /* conchHeld < 0 is lockless */
     }
   }
-  return rc;
+  واپس rc;
 }
 
 
@@ -8367,65 +8367,65 @@ static int proxyLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int proxyUnlock(sqlite3_file *id, int eFileLock) {
+ساکن صحیح proxyUnlock(sqlite3_file *id, صحیح e_File_تالا) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  صحیح rc = proxyTakeConch(pFile);
+  اگر( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
-      unixFile *proxy = pCtx->lockProxy;
-      rc = proxy->pMethod->xUnlock((sqlite3_file*)proxy, eFileLock);
-      pFile->eFileLock = proxy->eFileLock;
-    }else{
+    اگر( pCtx->conchHeld>0 ){
+      unixFile *proxy = pCtx->تالا_Proxy;
+      rc = proxy->p_طریقہ->xUnlock((sqlite3_file*)proxy, e_File_تالا);
+      pFile->e_File_تالا = proxy->e_File_تالا;
+    }ورنہ{
       /* conchHeld < 0 is lockless */
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Close a file that uses proxy locks.
 */
-static int proxyClose(sqlite3_file *id) {
-  if( ALWAYS(id) ){
+ساکن صحیح proxyClose(sqlite3_file *id) {
+  اگر( ALWAYS(id) ){
     unixFile *pFile = (unixFile*)id;
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    unixFile *lockProxy = pCtx->lockProxy;
+    unixFile *تالا_Proxy = pCtx->تالا_Proxy;
     unixFile *conchFile = pCtx->conchFile;
-    int rc = SQLITE_OK;
+    صحیح rc = SQLITE_OK;
 
-    if( lockProxy ){
-      rc = lockProxy->pMethod->xUnlock((sqlite3_file*)lockProxy, NO_LOCK);
-      if( rc ) return rc;
-      rc = lockProxy->pMethod->xClose((sqlite3_file*)lockProxy);
-      if( rc ) return rc;
-      sqlite3_free(lockProxy);
-      pCtx->lockProxy = 0;
+    اگر( تالا_Proxy ){
+      rc = تالا_Proxy->p_طریقہ->xUnlock((sqlite3_file*)تالا_Proxy, NO_تالا);
+      اگر( rc ) واپس rc;
+      rc = تالا_Proxy->p_طریقہ->xClose((sqlite3_file*)تالا_Proxy);
+      اگر( rc ) واپس rc;
+      sqlite3_free(تالا_Proxy);
+      pCtx->تالا_Proxy = 0;
     }
-    if( conchFile ){
-      if( pCtx->conchHeld ){
+    اگر( conchFile ){
+      اگر( pCtx->conchHeld ){
         rc = proxyReleaseConch(pFile);
-        if( rc ) return rc;
+        اگر( rc ) واپس rc;
       }
-      rc = conchFile->pMethod->xClose((sqlite3_file*)conchFile);
-      if( rc ) return rc;
+      rc = conchFile->p_طریقہ->xClose((sqlite3_file*)conchFile);
+      اگر( rc ) واپس rc;
       sqlite3_free(conchFile);
     }
-    sqlite3DbFree(0, pCtx->lockProxyPath);
-    sqlite3_free(pCtx->conchFilePath);
-    sqlite3DbFree(0, pCtx->dbPath);
+    sqlite3DbFree(0, pCtx->تالا_Proxy_راستہ);
+    sqlite3_free(pCtx->conch_File_راستہ);
+    sqlite3DbFree(0, pCtx->db_راستہ);
     /* restore the original locking context and pMethod then close it */
     pFile->lockingContext = pCtx->oldLockingContext;
-    pFile->pMethod = pCtx->pOldMethod;
+    pFile->p_طریقہ = pCtx->p_Old_طریقہ;
     sqlite3_free(pCtx);
-    return pFile->pMethod->xClose(id);
+    واپس pFile->p_طریقہ->xClose(id);
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 
 
-#endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
+#اگر_ختم /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
 /*
 ** The proxy locking style is intended for use with AFP filesystems.
 ** And since AFP is only supported on MacOSX, the proxy locking is also
@@ -8448,7 +8448,7 @@ static int proxyClose(sqlite3_file *id) {
 ** necessarily been initialized when this routine is called, and so they
 ** should not be used.
 */
-int sqlite3_os_init(void){
+صحیح sqlite3_os_init(خالی){
   /*
   ** The following macro defines an initializer for an sqlite3_vfs object.
   ** The name of the VFS is NAME.  The pAppData is a pointer to a pointer
@@ -8469,29 +8469,29 @@ int sqlite3_os_init(void){
   ** database file and tries to choose an locking method appropriate for
   ** that filesystem time.
   */
-  #define UNIXVFS(VFSNAME, FINDER) {                        \
+  #تعریف_کرو UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
-    sizeof(unixFile),     /* szOsFile */                    \
+    حجم(unixFile),     /* szOsFile */                    \
     MAX_PATHNAME,         /* mxPathname */                  \
     0,                    /* pNext */                       \
     VFSNAME,              /* zName */                       \
-    (void*)&FINDER,       /* pAppData */                    \
+    (خالی*)&FINDER,       /* pAppData */                    \
     unixOpen,             /* xOpen */                       \
     unixDelete,           /* xDelete */                     \
     unixAccess,           /* xAccess */                     \
-    unixFullPathname,     /* xFullPathname */               \
+    unix_بھرا_Pathname,     /* xFullPathname */               \
     unixDlOpen,           /* xDlOpen */                     \
     unixDlError,          /* xDlError */                    \
     unixDlSym,            /* xDlSym */                      \
     unixDlClose,          /* xDlClose */                    \
     unixRandomness,       /* xRandomness */                 \
     unixSleep,            /* xSleep */                      \
-    unixCurrentTime,      /* xCurrentTime */                \
-    unixGetLastError,     /* xGetLastError */               \
-    unixCurrentTimeInt64, /* xCurrentTimeInt64 */           \
-    unixSetSystemCall,    /* xSetSystemCall */              \
+    unix_Current_وقت,      /* xCurrentTime */                \
+    unix_Get_آخری_Error,     /* xGetLastError */               \
+    unix_Current_وقت_Int64, /* xCurrentTimeInt64 */           \
+    unix_سیٹ_System_Call,    /* xSetSystemCall */              \
     unixGetSystemCall,    /* xGetSystemCall */              \
-    unixNextSystemCall,   /* xNextSystemCall */             \
+    unix_اگلا_System_Call,   /* xNextSystemCall */             \
   }
 
   /*
@@ -8501,59 +8501,59 @@ int sqlite3_os_init(void){
   ** by the SQLite core when the VFS is registered.  So the following
   ** array cannot be const.
   */
-  static sqlite3_vfs aVfs[] = {
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+  ساکن sqlite3_vfs aVfs[] = {
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
     UNIXVFS("unix",          autolockIoFinder ),
-#elif OS_VXWORKS
+#وگرنہ_اگر OS_VXWORKS
     UNIXVFS("unix",          vxworksIoFinder ),
-#else
+#ورنہ
     UNIXVFS("unix",          posixIoFinder ),
-#endif
+#اگر_ختم
     UNIXVFS("unix-none",     nolockIoFinder ),
     UNIXVFS("unix-dotfile",  dotlockIoFinder ),
     UNIXVFS("unix-excl",     posixIoFinder ),
-#if OS_VXWORKS
+#اگر OS_VXWORKS
     UNIXVFS("unix-namedsem", semIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
+#اگر_ختم
+#اگر SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
     UNIXVFS("unix-posix",    posixIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE
+#اگر_ختم
+#اگر SQLITE_ENABLE_LOCKING_STYLE
     UNIXVFS("unix-flock",    flockIoFinder ),
-#endif
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#اگر_ختم
+#اگر SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
     UNIXVFS("unix-afp",      afpIoFinder ),
     UNIXVFS("unix-nfs",      nfsIoFinder ),
     UNIXVFS("unix-proxy",    proxyIoFinder ),
-#endif
+#اگر_ختم
   };
-  unsigned int i;          /* Loop counter */
+  غیرعلامتی صحیح i;          /* Loop counter */
 
   /* Double-check that the aSyscall[] array has been constructed
   ** correctly.  See ticket [bb3a86e890c8e96ab] */
-  assert( ArraySize(aSyscall)==29 );
+  أكد( Array_سائز(aSyscall)==29 );
 
   /* Register all VFSes defined in the aVfs[] array */
-  for(i=0; i<(sizeof(aVfs)/sizeof(sqlite3_vfs)); i++){
-#ifdef SQLITE_DEFAULT_UNIX_VFS
-    sqlite3_vfs_register(&aVfs[i],
+  برائے(i=0; i<(حجم(aVfs)/حجم(sqlite3_vfs)); i++){
+#اگر_تعریف_شدہ SQLITE_DEFAULT_UNIX_VFS
+    sqlite3_vfs_رجسٹر(&aVfs[i],
            0==strcmp(aVfs[i].zName,SQLITE_DEFAULT_UNIX_VFS));
-#else
-    sqlite3_vfs_register(&aVfs[i], i==0);
-#endif
+#ورنہ
+    sqlite3_vfs_رجسٹر(&aVfs[i], i==0);
+#اگر_ختم
   }
-#ifdef SQLITE_OS_KV_OPTIONAL
+#اگر_تعریف_شدہ SQLITE_OS_KV_OPTIONAL
   sqlite3KvvfsInit();
-#endif
-  unixBigLock = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#if OS_VXWORKS
+#اگر_ختم
+  unix_Big_تالا = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
+#اگر OS_VXWORKS
   vxworksMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS2);
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_WAL
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
   /* Validate lock assumptions */
-  assert( SQLITE_SHM_NLOCK==8 );  /* Number of available locks */
-  assert( UNIX_SHM_BASE==120  );  /* Start of locking area */
+  أكد( SQLITE_SHM_NLOCK==8 );  /* Number of available locks */
+  أكد( UNIX_SHM_بنیاد==120  );  /* Start of locking area */
   /* Locks:
   **    WRITE       UNIX_SHM_BASE      120
   **    CKPT        UNIX_SHM_BASE+1    121
@@ -8565,10 +8565,10 @@ int sqlite3_os_init(void){
   **    READ-4      UNIX_SHM_BASE+7    127
   **    DMS         UNIX_SHM_BASE+8    128
   */
-  assert( UNIX_SHM_DMS==128   );  /* Byte offset of the deadman-switch */
-#endif
+  أكد( UNIX_SHM_DMS==128   );  /* Byte offset of the deadman-switch */
+#اگر_ختم
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -8578,12 +8578,12 @@ int sqlite3_os_init(void){
 ** to release dynamically allocated objects.  But not on unix.
 ** This routine is a no-op for unix.
 */
-int sqlite3_os_end(void){
-  unixBigLock = 0;
-#if OS_VXWORKS
+صحیح sqlite3_os_انتہا(خالی){
+  unix_Big_تالا = 0;
+#اگر OS_VXWORKS
   vxworksMutex = 0;
-#endif
-  return SQLITE_OK;
+#اگر_ختم
+  واپس SQLITE_OK;
 }
 
-#endif /* SQLITE_OS_UNIX */
+#اگر_ختم /* SQLITE_OS_UNIX */

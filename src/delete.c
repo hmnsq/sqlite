@@ -12,7 +12,7 @@
 ** This file contains C code routines that are called by the parser
 ** in order to generate code for DELETE FROM statements.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
 /*
 ** While a SrcList can in general represent multiple tables and subqueries
@@ -28,31 +28,31 @@
 **    pSrc->a[0].u2.pIBIndex  Pointer to the INDEXED BY index, if there is one
 **
 */
-Table *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
-  SrcItem *pItem = pSrc->a;
-  Table *pTab;
-  assert( pItem && pSrc->nSrc>=1 );
-  pTab = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pItem->pSTab ) sqlite3DeleteTable(pParse->db, pItem->pSTab);
-  pItem->pSTab = pTab;
-  pItem->fg.notCte = 1;
-  if( pTab ){
+جدول *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
+  Src_شے *p_شے = pSrc->a;
+  جدول *pTab;
+  أكد( p_شے && pSrc->nSrc>=1 );
+  pTab = sqlite3_Locate_جدول_شے(pParse, 0, p_شے);
+  اگر( p_شے->pSTab ) sqlite3_Delete_جدول(pParse->db, p_شے->pSTab);
+  p_شے->pSTab = pTab;
+  p_شے->fg.notCte = 1;
+  اگر( pTab ){
     pTab->nTabRef++;
-    if( pItem->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pItem) ){
+    اگر( p_شے->fg.is_اشاریہ_دار_By && sqlite3_اشاریہ_دار_By_Lookup(pParse, p_شے) ){
       pTab = 0;
     }
   }
-  return pTab;
+  واپس pTab;
 }
 
 /* Generate byte-code that will report the number of rows modified
 ** by a DELETE, INSERT, or UPDATE statement.
 */
-void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
-  sqlite3VdbeAddOp0(v, OP_FkCheck);
-  sqlite3VdbeAddOp2(v, OP_ResultRow, regCounter, 1);
-  sqlite3VdbeSetNumCols(v, 1);
-  sqlite3VdbeSetColName(v, 0, COLNAME_NAME, zColName, SQLITE_STATIC);
+خالی sqlite3_رمز_Change_گنتی(Vdbe *v, صحیح reg_شمار, ثابت حرف *z_ستون_Name){
+  sqlite3_Vdbe_جوڑو_Op0(v, OP_FkCheck);
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, reg_شمار, 1);
+  sqlite3_Vdbe_سیٹ_عدد_ستون_تعداد(v, 1);
+  sqlite3_Vdbe_سیٹ_ستون_Name(v, 0, COLNAME_NAME, z_ستون_Name, SQLITE_STATIC);
 }
 
 /* Return true if table pTab is read-only.
@@ -74,10 +74,10 @@ void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
 **      defensive mode, and the current sqlite3_prepare()
 **      is for a top-level SQL statement.
 */
-static int vtabIsReadOnly(Parse *pParse, Table *pTab){
-  assert( IsVirtual(pTab) );
-  if( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
-    return 1;
+ساکن صحیح vtabIsReadOnly(Parse *pParse, جدول *pTab){
+  أكد( IsVirtual(pTab) );
+  اگر( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
+    واپس 1;
   }
 
   /* Within triggers:
@@ -86,27 +86,27 @@ static int vtabIsReadOnly(Parse *pParse, Table *pTab){
   **   *  Only allow DELETE, INSERT, or UPDATE of non-SQLITE_VTAB_INNOCUOUS
   **      virtual tables if PRAGMA trusted_schema=ON.
   */
-  if( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
+  اگر( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
    && pTab->u.vtab.p->eVtabRisk >
            ((pParse->db->flags & SQLITE_TrustedSchema)!=0)
   ){
-    sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
+    sqlite3_Error_پیغام(pParse, "unsafe use of virtual table \"%s\"",
       pTab->zName);
   }
-  return 0;
+  واپس 0;
 }
-static int tabIsReadOnly(Parse *pParse, Table *pTab){
+ساکن صحیح tabIsReadOnly(Parse *pParse, جدول *pTab){
   sqlite3 *db;
-  if( IsVirtual(pTab) ){
-    return vtabIsReadOnly(pParse, pTab);
+  اگر( IsVirtual(pTab) ){
+    واپس vtabIsReadOnly(pParse, pTab);
   }
-  if( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) return 0;
+  اگر( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) واپس 0;
   db = pParse->db;
-  if( (pTab->tabFlags & TF_Readonly)!=0 ){
-    return sqlite3WritableSchema(db)==0 && pParse->nested==0;
+  اگر( (pTab->tabFlags & TF_Readonly)!=0 ){
+    واپس sqlite3WritableSchema(db)==0 && pParse->nested==0;
   }
-  assert( pTab->tabFlags & TF_Shadow );
-  return sqlite3ReadOnlyShadowTables(db);
+  أكد( pTab->tabFlags & TF_Shadow );
+  واپس sqlite3ReadOnlyShadowTables(db);
 }
 
 /*
@@ -116,61 +116,61 @@ static int tabIsReadOnly(Parse *pParse, Table *pTab){
 ** If pTab is writable but other errors have occurred -> return 1.
 ** If pTab is writable and no prior errors -> return 0;
 */
-int sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
-  if( tabIsReadOnly(pParse, pTab) ){
-    sqlite3ErrorMsg(pParse, "table %s may not be modified", pTab->zName);
-    return 1;
+صحیح sqlite3IsReadOnly(Parse *pParse, جدول *pTab, Trigger *pTrigger){
+  اگر( tabIsReadOnly(pParse, pTab) ){
+    sqlite3_Error_پیغام(pParse, "table %s may not be modified", pTab->zName);
+    واپس 1;
   }
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab)
-   && (pTrigger==0 || (pTrigger->bReturning && pTrigger->pNext==0))
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIEW
+  اگر( IsView(pTab)
+   && (pTrigger==0 || (pTrigger->bReturning && pTrigger->p_اگلا==0))
   ){
-    sqlite3ErrorMsg(pParse,"cannot modify %s because it is a view",pTab->zName);
-    return 1;
+    sqlite3_Error_پیغام(pParse,"cannot modify %s because it is a view",pTab->zName);
+    واپس 1;
   }
-#endif
-  return 0;
+#اگر_ختم
+  واپس 0;
 }
 
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+#اگر !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
 /*
 ** Evaluate a view and store its result in an ephemeral table.  The
 ** pWhere argument is an optional WHERE clause that restricts the
 ** set of rows in the view that are to be added to the ephemeral table.
 */
-void sqlite3MaterializeView(
+خالی sqlite3MaterializeView(
   Parse *pParse,       /* Parsing context */
-  Table *pView,        /* View definition */
-  Expr *pWhere,        /* Optional WHERE clause to be added */
-  ExprList *pOrderBy,  /* Optional ORDER BY clause */
-  Expr *pLimit,        /* Optional LIMIT clause */
-  int iCur             /* Cursor number for ephemeral table */
+  جدول *pView,        /* View definition */
+  اظہاریہ *pWhere,        /* Optional WHERE clause to be added */
+  اظہاریہ_List *p_ترتیب_By,  /* Optional ORDER BY clause */
+  اظہاریہ *p_حد_بندی,        /* Optional LIMIT clause */
+  صحیح iCur             /* Cursor number for ephemeral table */
 ){
   SelectDest dest;
   Select *pSel;
   SrcList *pFrom;
   sqlite3 *db = pParse->db;
-  int iDb = sqlite3SchemaToIndex(db, pView->pSchema);
-  pWhere = sqlite3ExprDup(db, pWhere, 0);
+  صحیح iDb = sqlite3_Schema_مقصد_اشاریہ(db, pView->pSchema);
+  pWhere = sqlite3_اظہاریہ_Dup(db, pWhere, 0);
   pFrom = sqlite3SrcListAppend(pParse, 0, 0, 0);
-  if( pFrom ){
-    assert( pFrom->nSrc==1 );
+  اگر( pFrom ){
+    أكد( pFrom->nSrc==1 );
     pFrom->a[0].zName = sqlite3DbStrDup(db, pView->zName);
-    assert( pFrom->a[0].fg.fixedSchema==0 && pFrom->a[0].fg.isSubquery==0 );
+    أكد( pFrom->a[0].fg.fixedSchema==0 && pFrom->a[0].fg.isSubquery==0 );
     pFrom->a[0].u4.zDatabase = sqlite3DbStrDup(db, db->aDb[iDb].zDbSName);
-    assert( pFrom->a[0].fg.isUsing==0 );
-    assert( pFrom->a[0].u3.pOn==0 );
+    أكد( pFrom->a[0].fg.isUsing==0 );
+    أكد( pFrom->a[0].u3.pOn==0 );
   }
-  pSel = sqlite3SelectNew(pParse, 0, pFrom, pWhere, 0, 0, pOrderBy,
-                          SF_IncludeHidden, pLimit);
+  pSel = sqlite3SelectNew(pParse, 0, pFrom, pWhere, 0, 0, p_ترتیب_By,
+                          SF_IncludeHidden, p_حد_بندی);
   sqlite3SelectDestInit(&dest, SRT_EphemTab, iCur);
   sqlite3Select(pParse, pSel, &dest);
   sqlite3SelectDelete(db, pSel);
 }
-#endif /* !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER) */
+#اگر_ختم /* !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER) */
 
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
+#اگر defined(SQLITE_ENABLE_UPDATE_DELETE_حد_بندی) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Generate an expression tree to implement the WHERE, ORDER BY,
 ** and LIMIT/OFFSET portion of DELETE and UPDATE statements.
@@ -179,36 +179,36 @@ void sqlite3MaterializeView(
 **                            \__________________________/
 **                               pLimitWhere (pInClause)
 */
-Expr *sqlite3LimitWhere(
+اظہاریہ *sqlite3_حد_بندی_Where(
   Parse *pParse,               /* The parser context */
   SrcList *pSrc,               /* the FROM clause -- which tables to scan */
-  Expr *pWhere,                /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,          /* The ORDER BY clause.  May be null */
-  Expr *pLimit,                /* The LIMIT clause.  May be null */
-  char *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
+  اظہاریہ *pWhere,                /* The WHERE clause.  May be null */
+  اظہاریہ_List *p_ترتیب_By,          /* The ORDER BY clause.  May be null */
+  اظہاریہ *p_حد_بندی,                /* The LIMIT clause.  May be null */
+  حرف *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
 ){
   sqlite3 *db = pParse->db;
-  Expr *pLhs = NULL;           /* LHS of IN(SELECT...) operator */
-  Expr *pInClause = NULL;      /* WHERE rowid IN ( select ) */
-  ExprList *pEList = NULL;     /* Expression list containing only pSelectRowid*/
-  SrcList *pSelectSrc = NULL;  /* SELECT rowid FROM x ... (dup of pSrc) */
-  Select *pSelect = NULL;      /* Complete SELECT tree */
-  Table *pTab;
+  اظہاریہ *pLhs = تہی;           /* LHS of IN(SELECT...) operator */
+  اظہاریہ *p_اندر_Clause = تہی;      /* WHERE rowid IN ( select ) */
+  اظہاریہ_List *pEList = تہی;     /* Expression list containing only pSelectRowid*/
+  SrcList *pSelectSrc = تہی;  /* SELECT rowid FROM x ... (dup of pSrc) */
+  Select *pSelect = تہی;      /* Complete SELECT tree */
+  جدول *pTab;
 
   /* Check that there isn't an ORDER BY without a LIMIT clause.
   */
-  if( pOrderBy && pLimit==0 ) {
-    sqlite3ErrorMsg(pParse, "ORDER BY without LIMIT on %s", zStmtType);
-    sqlite3ExprDelete(pParse->db, pWhere);
-    sqlite3ExprListDelete(pParse->db, pOrderBy);
-    return 0;
+  اگر( p_ترتیب_By && p_حد_بندی==0 ) {
+    sqlite3_Error_پیغام(pParse, "ORDER BY without LIMIT on %s", zStmtType);
+    sqlite3_اظہاریہ_Delete(pParse->db, pWhere);
+    sqlite3_اظہاریہ_List_Delete(pParse->db, p_ترتیب_By);
+    واپس 0;
   }
 
   /* We only need to generate a select expression if there
   ** is a limit/offset term to enforce.
   */
-  if( pLimit == 0 ) {
-    return pWhere;
+  اگر( p_حد_بندی == 0 ) {
+    واپس pWhere;
   }
 
   /* Generate a select expression tree to enforce the limit/offset
@@ -221,32 +221,32 @@ Expr *sqlite3LimitWhere(
   */
 
   pTab = pSrc->a[0].pSTab;
-  if( HasRowid(pTab) ){
-    pLhs = sqlite3PExpr(pParse, TK_ROW, 0, 0);
-    pEList = sqlite3ExprListAppend(
-        pParse, 0, sqlite3PExpr(pParse, TK_ROW, 0, 0)
+  اگر( HasRowid(pTab) ){
+    pLhs = sqlite3PExpr(pParse, TK_صف, 0, 0);
+    pEList = sqlite3_اظہاریہ_List_Append(
+        pParse, 0, sqlite3PExpr(pParse, TK_صف, 0, 0)
     );
-  }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-    assert( pPk!=0 );
-    assert( pPk->nKeyCol>=1 );
-    if( pPk->nKeyCol==1 ){
-      const char *zName;
-      assert( pPk->aiColumn[0]>=0 && pPk->aiColumn[0]<pTab->nCol );
-      zName = pTab->aCol[pPk->aiColumn[0]].zCnName;
-      pLhs = sqlite3Expr(db, TK_ID, zName);
-      pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ID, zName));
-    }else{
-      int i;
-      for(i=0; i<pPk->nKeyCol; i++){
-        Expr *p;
-        assert( pPk->aiColumn[i]>=0 && pPk->aiColumn[i]<pTab->nCol );
-        p = sqlite3Expr(db, TK_ID, pTab->aCol[pPk->aiColumn[i]].zCnName);
-        pEList = sqlite3ExprListAppend(pParse, pEList, p);
+  }ورنہ{
+    اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+    أكد( pPk!=0 );
+    أكد( pPk->n_کلید_ستون>=1 );
+    اگر( pPk->n_کلید_ستون==1 ){
+      ثابت حرف *zName;
+      أكد( pPk->ai_عمود[0]>=0 && pPk->ai_عمود[0]<pTab->n_ستون );
+      zName = pTab->a_ستون[pPk->ai_عمود[0]].zCnName;
+      pLhs = sqlite3_اظہاریہ(db, TK_ID, zName);
+      pEList = sqlite3_اظہاریہ_List_Append(pParse, 0, sqlite3_اظہاریہ(db, TK_ID, zName));
+    }ورنہ{
+      صحیح i;
+      برائے(i=0; i<pPk->n_کلید_ستون; i++){
+        اظہاریہ *p;
+        أكد( pPk->ai_عمود[i]>=0 && pPk->ai_عمود[i]<pTab->n_ستون );
+        p = sqlite3_اظہاریہ(db, TK_ID, pTab->a_ستون[pPk->ai_عمود[i]].zCnName);
+        pEList = sqlite3_اظہاریہ_List_Append(pParse, pEList, p);
       }
-      pLhs = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
-      if( pLhs ){
-        pLhs->x.pList = sqlite3ExprListDup(db, pEList, 0);
+      pLhs = sqlite3PExpr(pParse, TK_سمتیہ, 0, 0);
+      اگر( pLhs ){
+        pLhs->x.pList = sqlite3_اظہاریہ_List_Dup(db, pEList, 0);
       }
     }
   }
@@ -256,26 +256,26 @@ Expr *sqlite3LimitWhere(
   pSrc->a[0].pSTab = 0;
   pSelectSrc = sqlite3SrcListDup(db, pSrc, 0);
   pSrc->a[0].pSTab = pTab;
-  if( pSrc->a[0].fg.isIndexedBy ){
-    assert( pSrc->a[0].fg.isCte==0 );
+  اگر( pSrc->a[0].fg.is_اشاریہ_دار_By ){
+    أكد( pSrc->a[0].fg.isCte==0 );
     pSrc->a[0].u2.pIBIndex = 0;
-    pSrc->a[0].fg.isIndexedBy = 0;
-    sqlite3DbFree(db, pSrc->a[0].u1.zIndexedBy);
-  }else if( pSrc->a[0].fg.isCte ){
+    pSrc->a[0].fg.is_اشاریہ_دار_By = 0;
+    sqlite3DbFree(db, pSrc->a[0].u1.z_اشاریہ_دار_By);
+  }ورنہ اگر( pSrc->a[0].fg.isCte ){
     pSrc->a[0].u2.pCteUse->nUse++;
   }
 
   /* generate the SELECT expression tree. */
   pSelect = sqlite3SelectNew(pParse, pEList, pSelectSrc, pWhere, 0 ,0,
-      pOrderBy,0,pLimit
+      p_ترتیب_By,0,p_حد_بندی
   );
 
   /* now generate the new WHERE rowid IN clause for the DELETE/UPDATE */
-  pInClause = sqlite3PExpr(pParse, TK_IN, pLhs, 0);
-  sqlite3PExprAddSelect(pParse, pInClause, pSelect);
-  return pInClause;
+  p_اندر_Clause = sqlite3PExpr(pParse, TK_اندر, pLhs, 0);
+  sqlite3_PExpr_جوڑو_Select(pParse, p_اندر_Clause, pSelect);
+  واپس p_اندر_Clause;
 }
-#endif /* defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) */
+#اگر_ختم /* defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) */
        /*      && !defined(SQLITE_OMIT_SUBQUERY) */
 
 /*
@@ -285,57 +285,57 @@ Expr *sqlite3LimitWhere(
 **                 \________/       \________________/
 **                  pTabList              pWhere
 */
-void sqlite3DeleteFrom(
+خالی sqlite3DeleteFrom(
   Parse *pParse,         /* The parser context */
   SrcList *pTabList,     /* The table from which we should delete things */
-  Expr *pWhere,          /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,    /* ORDER BY clause. May be null */
-  Expr *pLimit           /* LIMIT clause. May be null */
+  اظہاریہ *pWhere,          /* The WHERE clause.  May be null */
+  اظہاریہ_List *p_ترتیب_By,    /* ORDER BY clause. May be null */
+  اظہاریہ *p_حد_بندی           /* LIMIT clause. May be null */
 ){
   Vdbe *v;               /* The virtual database engine */
-  Table *pTab;           /* The table from which records will be deleted */
-  int i;                 /* Loop counter */
+  جدول *pTab;           /* The table from which records will be deleted */
+  صحیح i;                 /* Loop counter */
   WhereInfo *pWInfo;     /* Information about the WHERE clause */
-  Index *pIdx;           /* For looping over indices of the table */
-  int iTabCur;           /* Cursor number for the table */
-  int iDataCur = 0;      /* VDBE cursor for the canonical data source */
-  int iIdxCur = 0;       /* Cursor number of the first index */
-  int nIdx;              /* Number of indices */
+  اشاریہ *pIdx;           /* For looping over indices of the table */
+  صحیح iTabCur;           /* Cursor number for the table */
+  صحیح i_ڈیٹا_Cur = 0;      /* VDBE cursor for the canonical data source */
+  صحیح iIdxCur = 0;       /* Cursor number of the first index */
+  صحیح nIdx;              /* Number of indices */
   sqlite3 *db;           /* Main database structure */
   AuthContext sContext;  /* Authorization context */
   NameContext sNC;       /* Name context to resolve expressions in */
-  int iDb;               /* Database number */
-  int memCnt = 0;        /* Memory cell used for change counting */
-  int rcauth;            /* Value returned by authorization callback */
-  int eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
-  int aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
-  u8 *aToOpen = 0;       /* Open cursor iTabCur+j if aToOpen[j] is true */
-  Index *pPk;            /* The PRIMARY KEY index on the table */
-  int iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
+  صحیح iDb;               /* Database number */
+  صحیح memCnt = 0;        /* Memory cell used for change counting */
+  صحیح rcauth;            /* Value returned by authorization callback */
+  صحیح eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
+  صحیح aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
+  u8 *a_مقصد_Open = 0;       /* Open cursor iTabCur+j if aToOpen[j] is true */
+  اشاریہ *pPk;            /* The PRIMARY KEY index on the table */
+  صحیح iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
   i16 nPk = 1;           /* Number of columns in the PRIMARY KEY */
-  int iKey;              /* Memory cell holding key of row to be deleted */
-  i16 nKey;              /* Number of memory cells in the row key */
-  int iEphCur = 0;       /* Ephemeral table holding all primary key values */
-  int iRowSet = 0;       /* Register for rowset of rows to delete */
-  int addrBypass = 0;    /* Address of jump over the delete logic */
-  int addrLoop = 0;      /* Top of the delete loop */
-  int addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
-  int bComplex;          /* True if there are triggers or FKs or
+  صحیح i_کلید;              /* Memory cell holding key of row to be deleted */
+  i16 n_کلید;              /* Number of memory cells in the row key */
+  صحیح iEphCur = 0;       /* Ephemeral table holding all primary key values */
+  صحیح i_صف_سیٹ = 0;       /* Register for rowset of rows to delete */
+  صحیح addrBypass = 0;    /* Address of jump over the delete logic */
+  صحیح addrLoop = 0;      /* Top of the delete loop */
+  صحیح addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
+  صحیح bComplex;          /* True if there are triggers or FKs or
                          ** subqueries in the WHERE clause */
 
-#ifndef SQLITE_OMIT_TRIGGER
-  int isView;                  /* True if attempting to delete from a view */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+  صحیح isView;                  /* True if attempting to delete from a view */
   Trigger *pTrigger;           /* List of table triggers, if required */
-#endif
+#اگر_ختم
 
-  memset(&sContext, 0, sizeof(sContext));
+  memset(&sContext, 0, حجم(sContext));
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ){
-    goto delete_from_cleanup;
+  أكد( db->pParse==pParse );
+  اگر( pParse->nErr ){
+    جاؤ delete_from_cleanup;
   }
-  assert( db->mallocFailed==0 );
-  assert( pTabList->nSrc==1 );
+  أكد( db->mallocFailed==0 );
+  أكد( pTabList->nSrc==1 );
 
   /* Locate the table which we want to delete.  This table has to be
   ** put in an SrcList structure because some of the subroutines we
@@ -343,120 +343,120 @@ void sqlite3DeleteFrom(
   ** an SrcList* parameter instead of just a Table* parameter.
   */
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 )  goto delete_from_cleanup;
+  اگر( pTab==0 )  جاؤ delete_from_cleanup;
 
   /* Figure out if we have any triggers and if the table being
   ** deleted from is a view
   */
-#ifndef SQLITE_OMIT_TRIGGER
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
   pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
   isView = IsView(pTab);
-#else
+#ورنہ
 # define pTrigger 0
 # define isView 0
-#endif
+#اگر_ختم
   bComplex = pTrigger || sqlite3FkRequired(pParse, pTab, 0, 0);
-#ifdef SQLITE_OMIT_VIEW
+#اگر_تعریف_شدہ SQLITE_OMIT_VIEW
 # undef isView
 # define isView 0
-#endif
+#اگر_ختم
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewDelete(pParse->pWith, pTabList, pWhere,
-                          pOrderBy, pLimit, pTrigger);
+#اگر TREETRACE_ENABLED
+  اگر( sqlite3_درخت_Trace & 0x10000 ){
+    sqlite3_درخت_View_سطر(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
+    sqlite3_درخت_View_Delete(pParse->pWith, pTabList, pWhere,
+                          p_ترتیب_By, p_حد_بندی, pTrigger);
   }
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( !isView ){
-    pWhere = sqlite3LimitWhere(
-        pParse, pTabList, pWhere, pOrderBy, pLimit, "DELETE"
+#اگر_تعریف_شدہ SQLITE_ENABLE_UPDATE_DELETE_حد_بندی
+  اگر( !isView ){
+    pWhere = sqlite3_حد_بندی_Where(
+        pParse, pTabList, pWhere, p_ترتیب_By, p_حد_بندی, "DELETE"
     );
-    pOrderBy = 0;
-    pLimit = 0;
+    p_ترتیب_By = 0;
+    p_حد_بندی = 0;
   }
-#endif
+#اگر_ختم
 
   /* If pTab is really a view, make sure it has been initialized.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto delete_from_cleanup;
+  اگر( sqlite3_View_Get_عمود_نام(pParse, pTab) ){
+    جاؤ delete_from_cleanup;
   }
 
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
-    goto delete_from_cleanup;
+  اگر( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+    جاؤ delete_from_cleanup;
   }
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb<db->nDb );
+  iDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
+  أكد( iDb<db->nDb );
   rcauth = sqlite3AuthCheck(pParse, SQLITE_DELETE, pTab->zName, 0,
                             db->aDb[iDb].zDbSName);
-  assert( rcauth==SQLITE_OK || rcauth==SQLITE_DENY || rcauth==SQLITE_IGNORE );
-  if( rcauth==SQLITE_DENY ){
-    goto delete_from_cleanup;
+  أكد( rcauth==SQLITE_OK || rcauth==SQLITE_DENY || rcauth==SQLITE_IGNORE );
+  اگر( rcauth==SQLITE_DENY ){
+    جاؤ delete_from_cleanup;
   }
-  assert(!isView || pTrigger);
+  أكد(!isView || pTrigger);
 
   /* Assign cursor numbers to the table and all its indices.
   */
-  assert( pTabList->nSrc==1 );
+  أكد( pTabList->nSrc==1 );
   iTabCur = pTabList->a[0].iCursor = pParse->nTab++;
-  for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
+  برائے(nIdx=0, pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا, nIdx++){
     pParse->nTab++;
   }
 
   /* Start the view context
   */
-  if( isView ){
-    sqlite3AuthContextPush(pParse, &sContext, pTab->zName);
+  اگر( isView ){
+    sqlite3_Auth_Context_ڈالو(pParse, &sContext, pTab->zName);
   }
 
   /* Begin generating code.
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ){
-    goto delete_from_cleanup;
+  اگر( v==0 ){
+    جاؤ delete_from_cleanup;
   }
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  اگر( pParse->nested==0 ) sqlite3_Vdbe_گنتی_Changes(v);
   sqlite3BeginWriteOperation(pParse, bComplex, iDb);
 
   /* If we are trying to delete from a view, realize that view into
   ** an ephemeral table.
   */
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-  if( isView ){
+#اگر !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+  اگر( isView ){
     sqlite3MaterializeView(pParse, pTab,
-        pWhere, pOrderBy, pLimit, iTabCur
+        pWhere, p_ترتیب_By, p_حد_بندی, iTabCur
     );
-    iDataCur = iIdxCur = iTabCur;
-    pOrderBy = 0;
-    pLimit = 0;
+    i_ڈیٹا_Cur = iIdxCur = iTabCur;
+    p_ترتیب_By = 0;
+    p_حد_بندی = 0;
   }
-#endif
+#اگر_ختم
 
   /* Resolve the column names in the WHERE clause.
   */
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, حجم(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  if( sqlite3ResolveExprNames(&sNC, pWhere) ){
-    goto delete_from_cleanup;
+  اگر( sqlite3_Resolve_اظہاریہ_نام(&sNC, pWhere) ){
+    جاؤ delete_from_cleanup;
   }
 
   /* Initialize the counter of the number of rows deleted, if
   ** we are counting rows.
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  اگر( (db->flags & SQLITE_گنتی_صفیں)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
   ){
     memCnt = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, memCnt);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, memCnt);
   }
 
-#ifndef SQLITE_OMIT_TRUNCATE_OPTIMIZATION
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRUNCATE_OPTIMIZATION
   /* Special case: A DELETE without a WHERE clause deletes everything.
   ** It is easier just to erase the whole table. Prior to version 3.6.5,
   ** this optimization caused the row change count (the value returned by
@@ -468,51 +468,51 @@ void sqlite3DeleteFrom(
   ** the truncate optimization is disabled and all rows are deleted
   ** individually.
   */
-  if( rcauth==SQLITE_OK
+  اگر( rcauth==SQLITE_OK
    && pWhere==0
    && !bComplex
    && !IsVirtual(pTab)
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
+#اگر_تعریف_شدہ SQLITE_ENABLE_PREUPDATE_HOOK
    && db->xPreUpdateCallback==0
-#endif
+#اگر_ختم
   ){
-    assert( !isView );
-    sqlite3TableLock(pParse, iDb, pTab->tnum, 1, pTab->zName);
-    if( HasRowid(pTab) ){
-      sqlite3VdbeAddOp4(v, OP_Clear, pTab->tnum, iDb, memCnt ? memCnt : -1,
+    أكد( !isView );
+    sqlite3_جدول_تالا(pParse, iDb, pTab->tnum, 1, pTab->zName);
+    اگر( HasRowid(pTab) ){
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_Clear, pTab->tnum, iDb, memCnt ? memCnt : -1,
                         pTab->zName, P4_STATIC);
     }
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      assert( pIdx->pSchema==pTab->pSchema );
-      if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_Clear, pIdx->tnum, iDb);
+    برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){
+      أكد( pIdx->pSchema==pTab->pSchema );
+      اگر( Is_Primary_کلید_اشاریہ(pIdx) && !HasRowid(pTab) ){
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Clear, pIdx->tnum, iDb);
       }
     }
-  }else
-#endif /* SQLITE_OMIT_TRUNCATE_OPTIMIZATION */
+  }ورنہ
+#اگر_ختم /* SQLITE_OMIT_TRUNCATE_OPTIMIZATION */
   {
     u16 wcf = WHERE_ONEPASS_DESIRED|WHERE_DUPLICATES_OK;
-    if( sNC.ncFlags & NC_Subquery ) bComplex = 1;
+    اگر( sNC.ncFlags & NC_Subquery ) bComplex = 1;
     wcf |= (bComplex ? 0 : WHERE_ONEPASS_MULTIROW);
-    if( HasRowid(pTab) ){
+    اگر( HasRowid(pTab) ){
       /* For a rowid table, initialize the RowSet to an empty set */
       pPk = 0;
-      assert( nPk==1 );
-      iRowSet = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, iRowSet);
-    }else{
+      أكد( nPk==1 );
+      i_صف_سیٹ = ++pParse->nMem;
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, i_صف_سیٹ);
+    }ورنہ{
       /* For a WITHOUT ROWID table, create an ephemeral table used to
       ** hold all primary keys for rows to be deleted. */
-      pPk = sqlite3PrimaryKeyIndex(pTab);
-      assert( pPk!=0 );
-      nPk = pPk->nKeyCol;
+      pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+      أكد( pPk!=0 );
+      nPk = pPk->n_کلید_ستون;
       iPk = pParse->nMem+1;
       pParse->nMem += nPk;
       iEphCur = pParse->nTab++;
-      addrEphOpen = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iEphCur, nPk);
-      sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+      addrEphOpen = sqlite3_Vdbe_جوڑو_Op2(v, OP_OpenEphemeral, iEphCur, nPk);
+      sqlite3_Vdbe_سیٹ_P4_کلید_Info(pParse, pPk);
     }
  
     /* Construct a query to find the rowid or primary key for every row
@@ -524,64 +524,64 @@ void sqlite3DeleteFrom(
     **  ONEPASS_MULTI:  One-pass approach - any number of rows may be deleted.
     */
     pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, 0, 0,0,wcf,iTabCur+1);
-    if( pWInfo==0 ) goto delete_from_cleanup;
+    اگر( pWInfo==0 ) جاؤ delete_from_cleanup;
     eOnePass = sqlite3WhereOkOnePass(pWInfo, aiCurOnePass);
-    assert( IsVirtual(pTab)==0 || eOnePass!=ONEPASS_MULTI );
-    assert( IsVirtual(pTab) || bComplex || eOnePass!=ONEPASS_OFF
+    أكد( IsVirtual(pTab)==0 || eOnePass!=ONEPASS_MULTI );
+    أكد( IsVirtual(pTab) || bComplex || eOnePass!=ONEPASS_OFF
             || OptimizationDisabled(db, SQLITE_OnePass) );
-    if( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
-    if( sqlite3WhereUsesDeferredSeek(pWInfo) ){
-      sqlite3VdbeAddOp1(v, OP_FinishSeek, iTabCur);
+    اگر( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
+    اگر( sqlite3_Where_استعمال_کرتا_Deferred_Seek(pWInfo) ){
+      sqlite3_Vdbe_جوڑو_Op1(v, OP_اختتام_Seek, iTabCur);
     }
  
     /* Keep track of the number of rows to be deleted */
-    if( memCnt ){
-      sqlite3VdbeAddOp2(v, OP_AddImm, memCnt, 1);
+    اگر( memCnt ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_جوڑو_Imm, memCnt, 1);
     }
  
     /* Extract the rowid or primary key for the current row */
-    if( pPk ){
-      for(i=0; i<nPk; i++){
-        assert( pPk->aiColumn[i]>=0 );
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur,
-                                        pPk->aiColumn[i], iPk+i);
+    اگر( pPk ){
+      برائے(i=0; i<nPk; i++){
+        أكد( pPk->ai_عمود[i]>=0 );
+        sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iTabCur,
+                                        pPk->ai_عمود[i], iPk+i);
       }
-      iKey = iPk;
-    }else{
-      iKey = ++pParse->nMem;
-      sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur, -1, iKey);
+      i_کلید = iPk;
+    }ورنہ{
+      i_کلید = ++pParse->nMem;
+      sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iTabCur, -1, i_کلید);
     }
  
-    if( eOnePass!=ONEPASS_OFF ){
+    اگر( eOnePass!=ONEPASS_OFF ){
       /* For ONEPASS, no need to store the rowid/primary-key. There is only
       ** one, so just keep it in its register(s) and fall through to the
       ** delete code.  */
-      nKey = nPk; /* OP_Found will use an unpacked key */
-      aToOpen = sqlite3DbMallocRawNN(db, nIdx+2);
-      if( aToOpen==0 ){
-        sqlite3WhereEnd(pWInfo);
-        goto delete_from_cleanup;
+      n_کلید = nPk; /* OP_Found will use an unpacked key */
+      a_مقصد_Open = sqlite3DbMallocRawNN(db, nIdx+2);
+      اگر( a_مقصد_Open==0 ){
+        sqlite3_Where_انتہا(pWInfo);
+        جاؤ delete_from_cleanup;
       }
-      memset(aToOpen, 1, nIdx+1);
-      aToOpen[nIdx+1] = 0;
-      if( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iTabCur] = 0;
-      if( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iTabCur] = 0;
-      if( addrEphOpen ) sqlite3VdbeChangeToNoop(v, addrEphOpen);
+      memset(a_مقصد_Open, 1, nIdx+1);
+      a_مقصد_Open[nIdx+1] = 0;
+      اگر( aiCurOnePass[0]>=0 ) a_مقصد_Open[aiCurOnePass[0]-iTabCur] = 0;
+      اگر( aiCurOnePass[1]>=0 ) a_مقصد_Open[aiCurOnePass[1]-iTabCur] = 0;
+      اگر( addrEphOpen ) sqlite3_Vdbe_Change_مقصد_Noop(v, addrEphOpen);
       addrBypass = sqlite3VdbeMakeLabel(pParse);
-    }else{
-      if( pPk ){
+    }ورنہ{
+      اگر( pPk ){
         /* Add the PK key for this row to the temporary table */
-        iKey = ++pParse->nMem;
-        nKey = 0;   /* Zero tells OP_Found to use a composite key */
-        sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, iKey,
-            sqlite3IndexAffinityStr(pParse->db, pPk), nPk);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iEphCur, iKey, iPk, nPk);
-      }else{
+        i_کلید = ++pParse->nMem;
+        n_کلید = 0;   /* Zero tells OP_Found to use a composite key */
+        sqlite3_Vdbe_جوڑو_Op4(v, OP_Make_ریکارڈ, iPk, nPk, i_کلید,
+            sqlite3_اشاریہ_Affinity_Str(pParse->db, pPk), nPk);
+        sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Idx_داخل_کرو, iEphCur, i_کلید, iPk, nPk);
+      }ورنہ{
         /* Add the rowid of the row to be deleted to the RowSet */
-        nKey = 1;  /* OP_DeferredSeek always uses a single rowid */
-        sqlite3VdbeAddOp2(v, OP_RowSetAdd, iRowSet, iKey);
+        n_کلید = 1;  /* OP_DeferredSeek always uses a single rowid */
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_صف_سیٹ_جوڑو, i_صف_سیٹ, i_کلید);
       }
-      sqlite3WhereEnd(pWInfo);
+      sqlite3_Where_انتہا(pWInfo);
     }
  
     /* Unless this is a view, open cursors for the table we are
@@ -589,78 +589,78 @@ void sqlite3DeleteFrom(
     ** only effect this statement has is to fire the INSTEAD OF
     ** triggers.
     */
-    if( !isView ){
-      int iAddrOnce = 0;
-      if( eOnePass==ONEPASS_MULTI ){
-        iAddrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+    اگر( !isView ){
+      صحیح iAddrOnce = 0;
+      اگر( eOnePass==ONEPASS_MULTI ){
+        iAddrOnce = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
       }
       testcase( IsVirtual(pTab) );
-      sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, OPFLAG_FORDELETE,
-                                 iTabCur, aToOpen, &iDataCur, &iIdxCur);
-      assert( pPk || IsVirtual(pTab) || iDataCur==iTabCur );
-      assert( pPk || IsVirtual(pTab) || iIdxCur==iDataCur+1 );
-      if( eOnePass==ONEPASS_MULTI ){
-        sqlite3VdbeJumpHereOrPopInst(v, iAddrOnce);
+      sqlite3_Open_جدول_And_Indices(pParse, pTab, OP_OpenWrite, OPFLAG_FORDELETE,
+                                 iTabCur, a_مقصد_Open, &i_ڈیٹا_Cur, &iIdxCur);
+      أكد( pPk || IsVirtual(pTab) || i_ڈیٹا_Cur==iTabCur );
+      أكد( pPk || IsVirtual(pTab) || iIdxCur==i_ڈیٹا_Cur+1 );
+      اگر( eOnePass==ONEPASS_MULTI ){
+        sqlite3_Vdbe_Jump_یہاں_Or_نکالو_Inst(v, iAddrOnce);
       }
     }
  
     /* Set up a loop over the rowids/primary-keys that were found in the
     ** where-clause loop above.
     */
-    if( eOnePass!=ONEPASS_OFF ){
-      assert( nKey==nPk );  /* OP_Found will use an unpacked key */
-      if( !IsVirtual(pTab) && aToOpen[iDataCur-iTabCur] ){
-        assert( pPk!=0 || IsView(pTab) );
-        sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, addrBypass, iKey, nKey);
+    اگر( eOnePass!=ONEPASS_OFF ){
+      أكد( n_کلید==nPk );  /* OP_Found will use an unpacked key */
+      اگر( !IsVirtual(pTab) && a_مقصد_Open[i_ڈیٹا_Cur-iTabCur] ){
+        أكد( pPk!=0 || IsView(pTab) );
+        sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Not_ملا, i_ڈیٹا_Cur, addrBypass, i_کلید, n_کلید);
         VdbeCoverage(v);
       }
-    }else if( pPk ){
-      addrLoop = sqlite3VdbeAddOp1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
-      if( IsVirtual(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Column, iEphCur, 0, iKey);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_RowData, iEphCur, iKey);
+    }ورنہ اگر( pPk ){
+      addrLoop = sqlite3_Vdbe_جوڑو_Op1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
+      اگر( IsVirtual(pTab) ){
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iEphCur, 0, i_کلید);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_صف_ڈیٹا, iEphCur, i_کلید);
       }
-      assert( nKey==0 );  /* OP_Found will use a composite key */
-    }else{
-      addrLoop = sqlite3VdbeAddOp3(v, OP_RowSetRead, iRowSet, 0, iKey);
+      أكد( n_کلید==0 );  /* OP_Found will use a composite key */
+    }ورنہ{
+      addrLoop = sqlite3_Vdbe_جوڑو_Op3(v, OP_صف_سیٹ_Read, i_صف_سیٹ, 0, i_کلید);
       VdbeCoverage(v);
-      assert( nKey==1 );
+      أكد( n_کلید==1 );
     } 
  
     /* Delete the row */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+    اگر( IsVirtual(pTab) ){
+      ثابت حرف *pVTab = (ثابت حرف *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
-      assert( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
+      أكد( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
       sqlite3MayAbort(pParse);
-      if( eOnePass==ONEPASS_SINGLE ){
-        sqlite3VdbeAddOp1(v, OP_Close, iTabCur);
-        if( sqlite3IsToplevel(pParse) ){
+      اگر( eOnePass==ONEPASS_SINGLE ){
+        sqlite3_Vdbe_جوڑو_Op1(v, OP_Close, iTabCur);
+        اگر( sqlite3IsToplevel(pParse) ){
           pParse->isMultiWrite = 0;
         }
       }
-      sqlite3VdbeAddOp4(v, OP_VUpdate, 0, 1, iKey, pVTab, P4_VTAB);
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_VUpdate, 0, 1, i_کلید, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, OE_Abort);
-    }else
-#endif
+    }ورنہ
+#اگر_ختم
     {
-      int count = (pParse->nested==0);    /* True to count changes */
-      sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-          iKey, nKey, count, OE_Default, eOnePass, aiCurOnePass[1]);
+      صحیح گنتی = (pParse->nested==0);    /* True to count changes */
+      sqlite3_Generate_صف_Delete(pParse, pTab, pTrigger, i_ڈیٹا_Cur, iIdxCur,
+          i_کلید, n_کلید, گنتی, OE_Default, eOnePass, aiCurOnePass[1]);
     }
  
     /* End of the loop over all rowids/primary-keys. */
-    if( eOnePass!=ONEPASS_OFF ){
+    اگر( eOnePass!=ONEPASS_OFF ){
       sqlite3VdbeResolveLabel(v, addrBypass);
-      sqlite3WhereEnd(pWInfo);
-    }else if( pPk ){
-      sqlite3VdbeAddOp2(v, OP_Next, iEphCur, addrLoop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrLoop);
-    }else{
+      sqlite3_Where_انتہا(pWInfo);
+    }ورنہ اگر( pPk ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_اگلا, iEphCur, addrLoop+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_یہاں(v, addrLoop);
+    }ورنہ{
       sqlite3VdbeGoto(v, addrLoop);
-      sqlite3VdbeJumpHere(v, addrLoop);
+      sqlite3_Vdbe_Jump_یہاں(v, addrLoop);
     }    
   } /* End non-truncate path */
 
@@ -668,38 +668,38 @@ void sqlite3DeleteFrom(
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
-    sqlite3AutoincrementEnd(pParse);
+  اگر( pParse->nested==0 && pParse->pTriggerTab==0 ){
+    sqlite3_Autoincrement_انتہا(pParse);
   }
 
   /* Return the number of rows that were deleted. If this routine is
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( memCnt ){
-    sqlite3CodeChangeCount(v, memCnt, "rows deleted");
+  اگر( memCnt ){
+    sqlite3_رمز_Change_گنتی(v, memCnt, "rows deleted");
   }
 
 delete_from_cleanup:
-  sqlite3AuthContextPop(&sContext);
+  sqlite3_Auth_Context_نکالو(&sContext);
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprDelete(db, pWhere);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
-  sqlite3ExprListDelete(db, pOrderBy);
-  sqlite3ExprDelete(db, pLimit);
-#endif
-  if( aToOpen ) sqlite3DbNNFreeNN(db, aToOpen);
-  return;
+  sqlite3_اظہاریہ_Delete(db, pWhere);
+#اگر defined(SQLITE_ENABLE_UPDATE_DELETE_حد_بندی)
+  sqlite3_اظہاریہ_List_Delete(db, p_ترتیب_By);
+  sqlite3_اظہاریہ_Delete(db, p_حد_بندی);
+#اگر_ختم
+  اگر( a_مقصد_Open ) sqlite3DbNNFreeNN(db, a_مقصد_Open);
+  واپس;
 }
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
 ** (or in another file, if this file becomes part of the amalgamation).  */
-#ifdef isView
- #undef isView
-#endif
-#ifdef pTrigger
- #undef pTrigger
-#endif
+#اگر_تعریف_شدہ isView
+ #تعریف_منسوخ isView
+#اگر_ختم
+#اگر_تعریف_شدہ pTrigger
+ #تعریف_منسوخ pTrigger
+#اگر_ختم
 
 /*
 ** This routine generates VDBE code that causes a single row of a
@@ -742,71 +742,71 @@ delete_from_cleanup:
 **   Except, this optimization is disabled if there are BEFORE triggers since
 **   the trigger body might have moved the cursor.
 */
-void sqlite3GenerateRowDelete(
+خالی sqlite3_Generate_صف_Delete(
   Parse *pParse,     /* Parsing context */
-  Table *pTab,       /* Table containing the row to be deleted */
+  جدول *pTab,       /* Table containing the row to be deleted */
   Trigger *pTrigger, /* List of triggers to (potentially) fire */
-  int iDataCur,      /* Cursor from which column data is extracted */
-  int iIdxCur,       /* First index cursor */
-  int iPk,           /* First memory cell containing the PRIMARY KEY */
+  صحیح i_ڈیٹا_Cur,      /* Cursor from which column data is extracted */
+  صحیح iIdxCur,       /* First index cursor */
+  صحیح iPk,           /* First memory cell containing the PRIMARY KEY */
   i16 nPk,           /* Number of PRIMARY KEY memory cells */
-  u8 count,          /* If non-zero, increment the row change counter */
+  u8 گنتی,          /* If non-zero, increment the row change counter */
   u8 onconf,         /* Default ON CONFLICT policy for triggers */
-  u8 eMode,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
-  int iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
+  u8 e_منوال,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
+  صحیح iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
 ){
   Vdbe *v = pParse->pVdbe;        /* Vdbe */
-  int iOld = 0;                   /* First register in OLD.* array */
-  int iLabel;                     /* Label resolved to end of generated code */
+  صحیح iOld = 0;                   /* First register in OLD.* array */
+  صحیح iLabel;                     /* Label resolved to end of generated code */
   u8 opSeek;                      /* Seek opcode */
 
   /* Vdbe is guaranteed to have been allocated by this stage. */
-  assert( v );
+  أكد( v );
   VdbeModuleComment((v, "BEGIN: GenRowDel(%d,%d,%d,%d)",
-                         iDataCur, iIdxCur, iPk, (int)nPk));
+                         i_ڈیٹا_Cur, iIdxCur, iPk, (صحیح)nPk));
 
   /* Seek cursor iCur to the row to delete. If this row no longer exists
   ** (this can happen if a trigger program has already deleted it), do
   ** not attempt to delete it or fire any DELETE triggers.  */
   iLabel = sqlite3VdbeMakeLabel(pParse);
-  opSeek = HasRowid(pTab) ? OP_NotExists : OP_NotFound;
-  if( eMode==ONEPASS_OFF ){
-    sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
+  opSeek = HasRowid(pTab) ? OP_NotExists : OP_Not_ملا;
+  اگر( e_منوال==ONEPASS_OFF ){
+    sqlite3_Vdbe_جوڑو_Op4_Int(v, opSeek, i_ڈیٹا_Cur, iLabel, iPk, nPk);
     VdbeCoverageIf(v, opSeek==OP_NotExists);
-    VdbeCoverageIf(v, opSeek==OP_NotFound);
+    VdbeCoverageIf(v, opSeek==OP_Not_ملا);
   }
 
   /* If there are any triggers to fire, allocate a range of registers to
   ** use for the old.* references in the triggers.  */
-  if( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
-    u32 mask;                     /* Mask of OLD.* columns in use */
-    int iCol;                     /* Iterator used while populating OLD.* */
-    int addrStart;                /* Start of BEFORE trigger programs */
+  اگر( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
+    u32 نقاب;                     /* Mask of OLD.* columns in use */
+    صحیح i_ستون;                     /* Iterator used while populating OLD.* */
+    صحیح addr_آغاز;                /* Start of BEFORE trigger programs */
 
     /* TODO: Could use temporary registers here. Also could attempt to
     ** avoid copying the contents of the rowid register.  */
-    mask = sqlite3TriggerColmask(
+    نقاب = sqlite3TriggerColmask(
         pParse, pTrigger, 0, 0, TRIGGER_BEFORE|TRIGGER_AFTER, pTab, onconf
     );
-    mask |= sqlite3FkOldmask(pParse, pTab);
+    نقاب |= sqlite3FkOldmask(pParse, pTab);
     iOld = pParse->nMem+1;
-    pParse->nMem += (1 + pTab->nCol);
+    pParse->nMem += (1 + pTab->n_ستون);
 
     /* Populate the OLD.* pseudo-table register array. These values will be
     ** used by any BEFORE and AFTER triggers that exist.  */
-    sqlite3VdbeAddOp2(v, OP_Copy, iPk, iOld);
-    for(iCol=0; iCol<pTab->nCol; iCol++){
-      testcase( mask!=0xffffffff && iCol==31 );
-      testcase( mask!=0xffffffff && iCol==32 );
-      if( mask==0xffffffff || (iCol<=31 && (mask & MASKBIT32(iCol))!=0) ){
-        int kk = sqlite3TableColumnToStorage(pTab, iCol);
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, iCol, iOld+kk+1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Copy, iPk, iOld);
+    برائے(i_ستون=0; i_ستون<pTab->n_ستون; i_ستون++){
+      testcase( نقاب!=0xffffffff && i_ستون==31 );
+      testcase( نقاب!=0xffffffff && i_ستون==32 );
+      اگر( نقاب==0xffffffff || (i_ستون<=31 && (نقاب & MASKBIT32(i_ستون))!=0) ){
+        صحیح kk = sqlite3_جدول_عمود_مقصد_Storage(pTab, i_ستون);
+        sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, i_ڈیٹا_Cur, i_ستون, iOld+kk+1);
       }
     }
 
     /* Invoke BEFORE DELETE trigger programs. */
-    addrStart = sqlite3VdbeCurrentAddr(v);
-    sqlite3CodeRowTrigger(pParse, pTrigger,
+    addr_آغاز = sqlite3VdbeCurrentAddr(v);
+    sqlite3_رمز_صف_Trigger(pParse, pTrigger,
         TK_DELETE, 0, TRIGGER_BEFORE, pTab, iOld, onconf, iLabel
     );
 
@@ -818,10 +818,10 @@ void sqlite3GenerateRowDelete(
     ** Also disable the iIdxNoSeek optimization since the BEFORE trigger
     ** may have moved that cursor.
     */
-    if( addrStart<sqlite3VdbeCurrentAddr(v) ){
-      sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
+    اگر( addr_آغاز<sqlite3VdbeCurrentAddr(v) ){
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, opSeek, i_ڈیٹا_Cur, iLabel, iPk, nPk);
       VdbeCoverageIf(v, opSeek==OP_NotExists);
-      VdbeCoverageIf(v, opSeek==OP_NotFound);
+      VdbeCoverageIf(v, opSeek==OP_Not_ملا);
       testcase( iIdxNoSeek>=0 );
       iIdxNoSeek = -1;
     }
@@ -842,20 +842,20 @@ void sqlite3GenerateRowDelete(
   ** the update-hook is not invoked for rows removed by REPLACE, but the
   ** pre-update-hook is.
   */
-  if( !IsView(pTab) ){
+  اگر( !IsView(pTab) ){
     u8 p5 = 0;
-    sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,iIdxNoSeek);
-    sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, (count?OPFLAG_NCHANGE:0));
-    if( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
-      sqlite3VdbeAppendP4(v, (char*)pTab, P4_TABLE);
+    sqlite3_Generate_صف_اشاریہ_Delete(pParse, pTab, i_ڈیٹا_Cur, iIdxCur,0,iIdxNoSeek);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Delete, i_ڈیٹا_Cur, (گنتی?OPFLAG_NCHANGE:0));
+    اگر( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
+      sqlite3VdbeAppendP4(v, (حرف*)pTab, P4_جدول);
     }
-    if( eMode!=ONEPASS_OFF ){
+    اگر( e_منوال!=ONEPASS_OFF ){
       sqlite3VdbeChangeP5(v, OPFLAG_AUXDELETE);
     }
-    if( iIdxNoSeek>=0 && iIdxNoSeek!=iDataCur ){
-      sqlite3VdbeAddOp1(v, OP_Delete, iIdxNoSeek);
+    اگر( iIdxNoSeek>=0 && iIdxNoSeek!=i_ڈیٹا_Cur ){
+      sqlite3_Vdbe_جوڑو_Op1(v, OP_Delete, iIdxNoSeek);
     }
-    if( eMode==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
+    اگر( e_منوال==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
     sqlite3VdbeChangeP5(v, p5);
   }
 
@@ -865,8 +865,8 @@ void sqlite3GenerateRowDelete(
   sqlite3FkActions(pParse, pTab, 0, iOld, 0, 0);
 
   /* Invoke AFTER DELETE trigger programs. */
-  if( pTrigger ){
-    sqlite3CodeRowTrigger(pParse, pTrigger,
+  اگر( pTrigger ){
+    sqlite3_رمز_صف_Trigger(pParse, pTrigger,
         TK_DELETE, 0, TRIGGER_AFTER, pTab, iOld, onconf, iLabel
     );
   }
@@ -896,41 +896,41 @@ void sqlite3GenerateRowDelete(
 **   3.  The "iDataCur" cursor must be already be positioned on the row
 **       that is to be deleted.
 */
-void sqlite3GenerateRowIndexDelete(
+خالی sqlite3_Generate_صف_اشاریہ_Delete(
   Parse *pParse,     /* Parsing and code generating context */
-  Table *pTab,       /* Table containing the row to be deleted */
-  int iDataCur,      /* Cursor of table holding data. */
-  int iIdxCur,       /* First index cursor */
-  int *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
-  int iIdxNoSeek     /* Do not delete from this cursor */
+  جدول *pTab,       /* Table containing the row to be deleted */
+  صحیح i_ڈیٹا_Cur,      /* Cursor of table holding data. */
+  صحیح iIdxCur,       /* First index cursor */
+  صحیح *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
+  صحیح iIdxNoSeek     /* Do not delete from this cursor */
 ){
-  int i;             /* Index loop counter */
-  int r1 = -1;       /* Register holding an index key */
-  int iPartIdxLabel; /* Jump destination for skipping partial index entries */
-  Index *pIdx;       /* Current index */
-  Index *pPrior = 0; /* Prior index */
+  صحیح i;             /* Index loop counter */
+  صحیح r1 = -1;       /* Register holding an index key */
+  صحیح iPartIdxLabel; /* Jump destination for skipping partial index entries */
+  اشاریہ *pIdx;       /* Current index */
+  اشاریہ *p_پیشگی = 0; /* Prior index */
   Vdbe *v;           /* The prepared statement under construction */
-  Index *pPk;        /* PRIMARY KEY index, or NULL for rowid tables */
+  اشاریہ *pPk;        /* PRIMARY KEY index, or NULL for rowid tables */
 
   v = pParse->pVdbe;
-  pPk = HasRowid(pTab) ? 0 : sqlite3PrimaryKeyIndex(pTab);
-  for(i=0, pIdx=pTab->pIndex; pIdx; i++, pIdx=pIdx->pNext){
-    int p3 = 0;
-    assert( iIdxCur+i!=iDataCur || pPk==pIdx );
-    if( aRegIdx!=0 && aRegIdx[i]==0 ) continue;
-    if( pIdx==pPk ) continue;
-    if( iIdxCur+i==iIdxNoSeek ) continue;
+  pPk = HasRowid(pTab) ? 0 : sqlite3_Primary_کلید_اشاریہ(pTab);
+  برائے(i=0, pIdx=pTab->p_اشاریہ; pIdx; i++, pIdx=pIdx->p_اگلا){
+    صحیح p3 = 0;
+    أكد( iIdxCur+i!=i_ڈیٹا_Cur || pPk==pIdx );
+    اگر( aRegIdx!=0 && aRegIdx[i]==0 ) جاری;
+    اگر( pIdx==pPk ) جاری;
+    اگر( iIdxCur+i==iIdxNoSeek ) جاری;
     VdbeModuleComment((v, "GenRowIdxDel for %s", pIdx->zName));
-    r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 1,
-        &iPartIdxLabel, pPrior, r1);
-    if( pIdx->bHasExpr && aRegIdx ){
+    r1 = sqlite3_Generate_اشاریہ_کلید(pParse, pIdx, i_ڈیٹا_Cur, 0, 1,
+        &iPartIdxLabel, p_پیشگی, r1);
+    اگر( pIdx->b_Has_اظہاریہ && aRegIdx ){
       p3 = aRegIdx[i];
     }
-    sqlite3VdbeAddOp3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
-    sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->nKeyCol : pIdx->nColumn);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
+    sqlite3VdbeChangeP4(v, -1, (ثابت حرف*)pIdx, P4_اشاریہ);
+    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->n_کلید_ستون : pIdx->n_عمود);
     sqlite3ResolvePartIdxLabel(pParse, iPartIdxLabel);
-    pPrior = pIdx;
+    p_پیشگی = pIdx;
   }
 }
 
@@ -965,49 +965,49 @@ void sqlite3GenerateRowIndexDelete(
 ** on a table with multiple indices, and especially with the ROWID or
 ** PRIMARY KEY columns of the index.
 */
-int sqlite3GenerateIndexKey(
+صحیح sqlite3_Generate_اشاریہ_کلید(
   Parse *pParse,       /* Parsing context */
-  Index *pIdx,         /* The index for which to generate a key */
-  int iDataCur,        /* Cursor number from which to take column data */
-  int regOut,          /* Put the new key into this register if not 0 */
-  int prefixOnly,      /* Compute only a unique prefix of the key */
-  int *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
-  Index *pPrior,       /* Previously generated index key */
-  int regPrior         /* Register holding previous generated key */
+  اشاریہ *pIdx,         /* The index for which to generate a key */
+  صحیح i_ڈیٹا_Cur,        /* Cursor number from which to take column data */
+  صحیح reg_برآمد,          /* Put the new key into this register if not 0 */
+  صحیح سابقہ_Only,      /* Compute only a unique prefix of the key */
+  صحیح *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
+  اشاریہ *p_پیشگی,       /* Previously generated index key */
+  صحیح reg_پیشگی         /* Register holding previous generated key */
 ){
   Vdbe *v = pParse->pVdbe;
-  int j;
-  int regBase;
-  int nCol;
+  صحیح j;
+  صحیح reg_بنیاد;
+  صحیح n_ستون;
 
-  if( piPartIdxLabel ){
-    if( pIdx->pPartIdxWhere ){
+  اگر( piPartIdxLabel ){
+    اگر( pIdx->pPartIdxWhere ){
       *piPartIdxLabel = sqlite3VdbeMakeLabel(pParse);
-      pParse->iSelfTab = iDataCur + 1;
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
+      pParse->iSelfTab = i_ڈیٹا_Cur + 1;
+      sqlite3_اظہاریہ_If_False_Dup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
-      pPrior = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
+      p_پیشگی = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
                   ** pPartIdxWhere may have corrupted regPrior registers */
-    }else{
+    }ورنہ{
       *piPartIdxLabel = 0;
     }
   }
-  nCol = (prefixOnly && pIdx->uniqNotNull) ? pIdx->nKeyCol : pIdx->nColumn;
-  regBase = sqlite3GetTempRange(pParse, nCol);
-  if( pPrior && (regBase!=regPrior || pPrior->pPartIdxWhere) ) pPrior = 0;
-  for(j=0; j<nCol; j++){
-    int iTabCol;
-    if( pPrior
-     && pPrior->aiColumn[j]==pIdx->aiColumn[j]
-     && pPrior->aiColumn[j]!=XN_EXPR
+  n_ستون = (سابقہ_Only && pIdx->uniqNotNull) ? pIdx->n_کلید_ستون : pIdx->n_عمود;
+  reg_بنیاد = sqlite3_Get_عارضی_Range(pParse, n_ستون);
+  اگر( p_پیشگی && (reg_بنیاد!=reg_پیشگی || p_پیشگی->pPartIdxWhere) ) p_پیشگی = 0;
+  برائے(j=0; j<n_ستون; j++){
+    صحیح i_Tab_ستون;
+    اگر( p_پیشگی
+     && p_پیشگی->ai_عمود[j]==pIdx->ai_عمود[j]
+     && p_پیشگی->ai_عمود[j]!=XN_اظہاریہ
     ){
       /* This column was already computed by the previous index */
-      continue;
+      جاری;
     }
-    sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iDataCur, j, regBase+j);
-    if( (iTabCol = pIdx->aiColumn[j])>=0 
-     && (pIdx->pTable->aCol[iTabCol].colFlags & COLFLAG_VIRTUAL)==0
+    sqlite3_اظہاریہ_رمز_بھرو_اشاریہ_عمود(pParse, pIdx, i_ڈیٹا_Cur, j, reg_بنیاد+j);
+    اگر( (i_Tab_ستون = pIdx->ai_عمود[j])>=0 
+     && (pIdx->p_جدول->a_ستون[i_Tab_ستون].ستون_Flags & COLFLAG_VIRTUAL)==0
     ){
       /* If the column affinity is REAL but the number is an integer, then it
       ** might be stored in the table as an integer (using a compact
@@ -1015,14 +1015,14 @@ int sqlite3GenerateIndexKey(
       ** But we are getting ready to store this value back into an index, where
       ** it should be converted by to INTEGER again.  So omit the
       ** OP_RealAffinity opcode if it is present */
-      sqlite3VdbeDeletePriorOpcode(v, OP_RealAffinity);
+      sqlite3_Vdbe_Delete_پیشگی_Opcode(v, OP_RealAffinity);
     }
   }
-  if( regOut ){
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase, nCol, regOut);
+  اگر( reg_برآمد ){
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Make_ریکارڈ, reg_بنیاد, n_ستون, reg_برآمد);
   }
-  sqlite3ReleaseTempRange(pParse, regBase, nCol);
-  return regBase;
+  sqlite3_Release_عارضی_Range(pParse, reg_بنیاد, n_ستون);
+  واپس reg_بنیاد;
 }
 
 /*
@@ -1030,8 +1030,8 @@ int sqlite3GenerateIndexKey(
 ** because it was a partial index, then this routine should be called to
 ** resolve that label.
 */
-void sqlite3ResolvePartIdxLabel(Parse *pParse, int iLabel){
-  if( iLabel ){
+خالی sqlite3ResolvePartIdxLabel(Parse *pParse, صحیح iLabel){
+  اگر( iLabel ){
     sqlite3VdbeResolveLabel(pParse->pVdbe, iLabel);
   }
 }

@@ -12,8 +12,8 @@
 ** Internal interface definitions for SQLite.
 **
 */
-#ifndef SQLITEINT_H
-#define SQLITEINT_H
+#اگر_غیر_تعریف_شدہ SQLITEINT_H
+#تعریف_کرو SQLITEINT_H
 
 /* Special Comments:
 **
@@ -46,9 +46,9 @@
 ** Make sure the Tcl calling convention macro is defined.  This macro is
 ** only used by test code and Tcl integration code.
 */
-#ifndef SQLITE_TCLAPI
+#اگر_غیر_تعریف_شدہ SQLITE_TCLAPI
 #  define SQLITE_TCLAPI
-#endif
+#اگر_ختم
 
 /*
 ** Include the header file used to customize the compiler options for MSVC.
@@ -56,12 +56,12 @@
 ** compiler warnings due to subsequent content in this file and other files
 ** that are included by this file.
 */
-#include "msvc.h"
+#شامل "msvc.h"
 
 /*
 ** Special setup for VxWorks
 */
-#include "vxworks.h"
+#شامل "vxworks.h"
 
 /*
 ** These #defines should enable >2GB file support on POSIX if the
@@ -87,13 +87,13 @@
 **
 ** Similar is true for Mac OS X.  LFS is only supported on Mac OS X 9 and later.
 */
-#ifndef SQLITE_DISABLE_LFS
+#اگر_غیر_تعریف_شدہ SQLITE_DISABLE_LFS
 # define _LARGE_FILE       1
-# ifndef _FILE_OFFSET_BITS
-#   define _FILE_OFFSET_BITS 64
+# ifndef FILE_انحراف_بٹ
+#   define FILE_انحراف_بٹ 64
 # endif
-# define _LARGEFILE_SOURCE 1
-#endif
+# define LARGEFILE_ماخذ 1
+#اگر_ختم
 
 /* The GCC_VERSION and MSVC_VERSION macros are used to
 ** conditionally include optimizations for each of these compilers.  A
@@ -108,49 +108,49 @@
 ** so the GCC_VERSION macro will be set to a correct non-zero value even
 ** when compiling with clang.
 */
-#if defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
-# define GCC_VERSION (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
-#else
-# define GCC_VERSION 0
-#endif
-#if defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
-# define MSVC_VERSION _MSC_VER
-#else
-# define MSVC_VERSION 0
-#endif
+#اگر defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
+# define GCC_نسخہ (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
+#ورنہ
+# define GCC_نسخہ 0
+#اگر_ختم
+#اگر defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
+# define MSVC_نسخہ _MSC_VER
+#ورنہ
+# define MSVC_نسخہ 0
+#اگر_ختم
 
 /*
 ** Some C99 functions in "math.h" are only present for MSVC when its version
 ** is associated with Visual Studio 2013 or higher.
 */
-#ifndef SQLITE_HAVE_C99_MATH_FUNCS
-# if MSVC_VERSION==0 || MSVC_VERSION>=1800
+#اگر_غیر_تعریف_شدہ SQLITE_HAVE_C99_MATH_FUNCS
+# اگر MSVC_نسخہ==0 || MSVC_نسخہ>=1800
 #  define SQLITE_HAVE_C99_MATH_FUNCS (1)
-# else
+# ورنہ
 #  define SQLITE_HAVE_C99_MATH_FUNCS (0)
 # endif
-#endif
+#اگر_ختم
 
 /* Needed for various definitions... */
-#if defined(__GNUC__) && !defined(_GNU_SOURCE)
-# define _GNU_SOURCE
-#endif
+#اگر defined(__GNUC__) && !defined(GNU_ماخذ)
+# define GNU_ماخذ
+#اگر_ختم
 
-#if defined(__OpenBSD__) && !defined(_BSD_SOURCE)
-# define _BSD_SOURCE
-#endif
+#اگر defined(__OpenBSD__) && !defined(BSD_ماخذ)
+# define BSD_ماخذ
+#اگر_ختم
 
 /*
 ** Macro to disable warnings about missing "break" at the end of a "case".
 */
-#if defined(__has_attribute)
-#  if __has_attribute(fallthrough)
+#اگر defined(__has_attribute)
+#  اگر __has_attribute(fallthrough)
 #    define deliberate_fall_through __attribute__((fallthrough));
 #  endif
-#endif
-#if !defined(deliberate_fall_through)
+#اگر_ختم
+#اگر !defined(deliberate_fall_through)
 #  define deliberate_fall_through
-#endif
+#اگر_ختم
 
 /*
 ** For MinGW, check to see if we can include the header file containing its
@@ -166,90 +166,90 @@
 ** defined; otherwise, detection of conditions specific to MinGW will be
 ** disabled.
 */
-#if defined(_HAVE_MINGW_H)
+#اگر defined(_HAVE_MINGW_H)
 # include "mingw.h"
-#elif defined(_HAVE__MINGW_H)
+#وگرنہ_اگر defined(_HAVE__MINGW_H)
 # include "_mingw.h"
-#endif
+#اگر_ختم
 
 /*
 ** For MinGW version 4.x (and higher), check to see if the _USE_32BIT_TIME_T
 ** define is required to maintain binary compatibility with the MSVC runtime
 ** library in use (e.g. for Windows XP).
 */
-#if !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
+#اگر !defined(USE_32_ثنائی_ہندسہ_وقت_T) && !defined(USE_64_ثنائی_ہندسہ_وقت_T) && \
     defined(_WIN32) && !defined(_WIN64) && \
     defined(__MINGW_MAJOR_VERSION) && __MINGW_MAJOR_VERSION >= 4 && \
     defined(__MSVCRT__)
-# define _USE_32BIT_TIME_T
-#endif
+# define USE_32_ثنائی_ہندسہ_وقت_T
+#اگر_ختم
 
 /* Optionally #include a user-defined header, whereby compilation options
 ** may be set prior to where they take effect, but after platform setup.
 ** If SQLITE_CUSTOM_INCLUDE=? is defined, its value names the #include
 ** file.
 */
-#ifdef SQLITE_CUSTOM_INCLUDE
+#اگر_تعریف_شدہ SQLITE_CUSTOM_INCLUDE
 # define INC_STRINGIFY_(f) #f
 # define INC_STRINGIFY(f) INC_STRINGIFY_(f)
 # include INC_STRINGIFY(SQLITE_CUSTOM_INCLUDE)
-#endif
+#اگر_ختم
 
 /* The public SQLite interface.  The _FILE_OFFSET_BITS macro must appear
 ** first in QNX.  Also, the _USE_32BIT_TIME_T macro must appear first for
 ** MinGW.
 */
-#include "sqlite3.h"
+#شامل "sqlite3.h"
 
 /*
 ** Reuse the STATIC_VFS1 for mutex access to sqlite3_temp_directory.
 */
-#define SQLITE_MUTEX_STATIC_TEMPDIR SQLITE_MUTEX_STATIC_VFS1
+#تعریف_کرو SQLITE_MUTEX_STATIC_TEMPDIR SQLITE_MUTEX_STATIC_VFS1
 
 /*
 ** Include the configuration header output by 'configure' if we're using the
 ** autoconf-based build
 */
-#if defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
-#include "sqlite_cfg.h"
-#define SQLITECONFIG_H 1
-#endif
+#اگر defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
+#شامل "sqlite_cfg.h"
+#تعریف_کرو SQLITECONFIG_H 1
+#اگر_ختم
 
-#include "sqliteLimit.h"
+#شامل "sqliteLimit.h"
 
 /* Disable nuisance warnings on Borland compilers */
-#if defined(__BORLANDC__)
-#pragma warn -rch /* unreachable code */
-#pragma warn -ccc /* Condition is always true or false */
-#pragma warn -aus /* Assigned value is never used */
-#pragma warn -csu /* Comparing signed and unsigned */
-#pragma warn -spa /* Suspicious pointer arithmetic */
-#endif
+#اگر defined(__BORLANDC__)
+#ہدایت warn -rch /* unreachable code */
+#ہدایت warn -ccc /* Condition is always true or false */
+#ہدایت warn -aus /* Assigned value is never used */
+#ہدایت warn -csu /* Comparing signed and unsigned */
+#ہدایت warn -spa /* Suspicious pointer arithmetic */
+#اگر_ختم
 
 /*
 ** A few places in the code require atomic load/store of aligned
 ** integer values.
 */
-#ifndef __has_extension
+#اگر_غیر_تعریف_شدہ __has_extension
 # define __has_extension(x) 0     /* compatibility with non-clang compilers */
-#endif
-#if GCC_VERSION>=4007000 || __has_extension(c_atomic)
+#اگر_ختم
+#اگر GCC_نسخہ>=4007000 || __has_extension(c_atomic)
 # define SQLITE_ATOMIC_INTRINSICS 1
-# define AtomicLoad(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
+# define Atomic_بھرو(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
 # define AtomicStore(PTR,VAL)  __atomic_store_n((PTR),(VAL),__ATOMIC_RELAXED)
-#else
+#ورنہ
 # define SQLITE_ATOMIC_INTRINSICS 0
-# define AtomicLoad(PTR)       (*(PTR))
+# define Atomic_بھرو(PTR)       (*(PTR))
 # define AtomicStore(PTR,VAL)  (*(PTR) = (VAL))
-#endif
+#اگر_ختم
 
 /*
 ** Include standard header files as necessary
 */
-#include <stdint.h>
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
+#شامل <stdint.h>
+#اگر_تعریف_شدہ HAVE_INTTYPES_H
+#شامل <inttypes.h>
+#اگر_ختم
 
 /*
 ** The following macros are used to cast pointers to integers and
@@ -267,19 +267,19 @@
 ** So we have to define the macros in different ways depending on the
 ** compiler.
 */
-#if defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(intptr_t)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(intptr_t)(X))
-#elif defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(__PTRDIFF_TYPE__)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(__PTRDIFF_TYPE__)(X))
-#elif !defined(__GNUC__)       /* Works for compilers other than LLVM */
-# define SQLITE_INT_TO_PTR(X)  ((void*)&((char*)0)[X])
-# define SQLITE_PTR_TO_INT(X)  ((int)(((char*)X)-(char*)0))
-#else                          /* Generates a warning - but it always works */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(X))
-#endif
+#اگر defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
+# define SQLITE_INT_مقصد_PTR(X)  ((خالی*)(intptr_t)(X))
+# define SQLITE_PTR_مقصد_INT(X)  ((صحیح)(intptr_t)(X))
+#وگرنہ_اگر defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
+# define SQLITE_INT_مقصد_PTR(X)  ((خالی*)(__PTRDIFF_TYPE__)(X))
+# define SQLITE_PTR_مقصد_INT(X)  ((صحیح)(__PTRDIFF_TYPE__)(X))
+#وگرنہ_اگر !defined(__GNUC__)       /* Works for compilers other than LLVM */
+# define SQLITE_INT_مقصد_PTR(X)  ((خالی*)&((حرف*)0)[X])
+# define SQLITE_PTR_مقصد_INT(X)  ((صحیح)(((حرف*)X)-(حرف*)0))
+#ورنہ                          /* Generates a warning - but it always works */
+# define SQLITE_INT_مقصد_PTR(X)  ((خالی*)(X))
+# define SQLITE_PTR_مقصد_INT(X)  ((صحیح)(X))
+#اگر_ختم
 
 /*
 ** Hint to the compiler that a function should or should not be inlined:
@@ -294,80 +294,80 @@
 **    SQLITE_USES_INLINE      Set to 1 or 0 according to whether or not
 **                            inline functions are supported.
 */
-#if defined(SQLITE_DISABLE_INLINE)
+#اگر defined(SQLITE_DISABLE_INLINE)
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
-#  define SQLITE_USES_INLINE 0
-#elif defined(__GNUC__)
+#  define SQLITE_استعمال_کرتا_INLINE 0
+#وگرنہ_اگر defined(__GNUC__)
 #  define SQLITE_NOINLINE    __attribute__((noinline))
-#  define SQLITE_INLINE      __attribute__((always_inline)) inline
-#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) inline
-#  define SQLITE_USES_INLINE 1
-#elif defined(_MSC_VER) && _MSC_VER>=1310
+#  define SQLITE_INLINE      __attribute__((always_inline)) اندرونی
+#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) اندرونی
+#  define SQLITE_استعمال_کرتا_INLINE 1
+#وگرنہ_اگر defined(_MSC_VER) && _MSC_VER>=1310
 #  define SQLITE_NOINLINE    __declspec(noinline)
 #  define SQLITE_INLINE      __forceinline
 #  define SQLITE_OPT_INLINE  __forceinline
-#  define SQLITE_USES_INLINE 1
-#else
+#  define SQLITE_استعمال_کرتا_INLINE 1
+#ورنہ
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
-#  define SQLITE_USES_INLINE 0
-#endif
-#if defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
+#  define SQLITE_استعمال_کرتا_INLINE 0
+#اگر_ختم
+#اگر defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
 # undef SQLITE_INLINE
 # define SQLITE_INLINE
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
-# undef SQLITE_USES_INLINE
-# define SQLITE_USES_INLINE 0
-#endif
-#if !defined(SQLITE_AMALGAMATION)
+# undef SQLITE_استعمال_کرتا_INLINE
+# define SQLITE_استعمال_کرتا_INLINE 0
+#اگر_ختم
+#اگر !defined(SQLITE_AMALGAMATION)
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
-#endif
+#اگر_ختم
 
 /*
 ** Make sure that the compiler intrinsics we desire are enabled when
 ** compiling with an appropriate version of MSVC unless prevented by
 ** the SQLITE_DISABLE_INTRINSIC define.
 */
-#if !defined(SQLITE_DISABLE_INTRINSIC)
-#  if defined(_MSC_VER) && _MSC_VER>=1400
-#    if !defined(_WIN32_WCE)
+#اگر !defined(SQLITE_DISABLE_INTRINSIC)
+#  اگر defined(_MSC_VER) && _MSC_VER>=1400
+#    اگر !defined(_WIN32_WCE)
 #      include <intrin.h>
 #      pragma intrinsic(_byteswap_ushort)
 #      pragma intrinsic(_byteswap_ulong)
 #      pragma intrinsic(_byteswap_uint64)
 #      pragma intrinsic(_ReadWriteBarrier)
-#    else
+#    ورنہ
 #      include <cmnintrin.h>
 #    endif
 #  endif
-#endif
+#اگر_ختم
 
 /*
 ** Enable SQLITE_USE_SEH by default on MSVC builds.  Only omit
 ** SEH support if the -DSQLITE_OMIT_SEH option is given.
 */
-#if defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
+#اگر defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
 # define SQLITE_USE_SEH 1
-#else
+#ورنہ
 # undef SQLITE_USE_SEH
-#endif
+#اگر_ختم
 
 /*
 ** Enable SQLITE_DIRECT_OVERFLOW_READ, unless the build explicitly
 ** disables it using -DSQLITE_DIRECT_OVERFLOW_READ=0
 */
-#if defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
+#اگر defined(SQLITE_براہ_راست_حد_سے_تجاوز_READ) && SQLITE_براہ_راست_حد_سے_تجاوز_READ+1==1
   /* Disable if -DSQLITE_DIRECT_OVERFLOW_READ=0 */
-# undef SQLITE_DIRECT_OVERFLOW_READ
-#else
+# undef SQLITE_براہ_راست_حد_سے_تجاوز_READ
+#ورنہ
   /* In all other cases, enable */
-# define SQLITE_DIRECT_OVERFLOW_READ 1
-#endif
+# define SQLITE_براہ_راست_حد_سے_تجاوز_READ 1
+#اگر_ختم
 
 
 /*
@@ -386,30 +386,30 @@
 ** logic is partially replicated in ctime.c. If it is updated here, it should
 ** also be updated there.
 */
-#if !defined(SQLITE_THREADSAFE)
-# if defined(THREADSAFE)
+#اگر !defined(SQLITE_THREADSAFE)
+# اگر defined(THREADSAFE)
 #   define SQLITE_THREADSAFE THREADSAFE
-# else
+# ورنہ
 #   define SQLITE_THREADSAFE 1 /* IMP: R-07272-22309 */
 # endif
-#endif
+#اگر_ختم
 
 /*
 ** Powersafe overwrite is on by default.  But can be turned off using
 ** the -DSQLITE_POWERSAFE_OVERWRITE=0 command-line option.
 */
-#ifndef SQLITE_POWERSAFE_OVERWRITE
+#اگر_غیر_تعریف_شدہ SQLITE_POWERSAFE_OVERWRITE
 # define SQLITE_POWERSAFE_OVERWRITE 1
-#endif
+#اگر_ختم
 
 /*
 ** EVIDENCE-OF: R-25715-37072 Memory allocation statistics are enabled by
 ** default unless SQLite is compiled with SQLITE_DEFAULT_MEMSTATUS=0 in
 ** which case memory allocation statistics are disabled by default.
 */
-#if !defined(SQLITE_DEFAULT_MEMSTATUS)
+#اگر !defined(SQLITE_DEFAULT_MEMSTATUS)
 # define SQLITE_DEFAULT_MEMSTATUS 1
-#endif
+#اگر_ختم
 
 /*
 ** Exactly one of the following macros must be defined in order to
@@ -428,29 +428,29 @@
 ** If none of the above are defined, then set SQLITE_SYSTEM_MALLOC as
 ** the default.
 */
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#اگر defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)>1
-# error "Two or more of the following compile-time configuration options\
+# error "Two or مزید کا the following compile-وقت configuration options\
  are defined but at most one is allowed:\
  SQLITE_SYSTEM_MALLOC, SQLITE_WIN32_MALLOC, SQLITE_MEMDEBUG,\
  SQLITE_ZERO_MALLOC"
-#endif
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#اگر_ختم
+#اگر defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)==0
 # define SQLITE_SYSTEM_MALLOC 1
-#endif
+#اگر_ختم
 
 /*
 ** If SQLITE_MALLOC_SOFT_LIMIT is not zero, then try to keep the
 ** sizes of memory allocations below this value where possible.
 */
-#if !defined(SQLITE_MALLOC_SOFT_LIMIT)
-# define SQLITE_MALLOC_SOFT_LIMIT 1024
-#endif
+#اگر !defined(SQLITE_MALLOC_SOFT_حد_بندی)
+# define SQLITE_MALLOC_SOFT_حد_بندی 1024
+#اگر_ختم
 
 /*
 ** We need to define _XOPEN_SOURCE as follows in order to enable
@@ -458,9 +458,9 @@
 ** But _XOPEN_SOURCE define causes problems for Mac OS X, so omit
 ** it.
 */
-#if !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
-#  define _XOPEN_SOURCE 600
-#endif
+#اگر !defined(XOPEN_ماخذ) && !defined(__DARWIN__) && !defined(__APPLE__)
+#  define XOPEN_ماخذ 600
+#اگر_ختم
 
 /*
 ** NDEBUG and SQLITE_DEBUG are opposites.  It should always be true that
@@ -473,19 +473,19 @@
 ** is set.  Thus NDEBUG becomes an opt-in rather than an opt-out
 ** feature.
 */
-#if !defined(NDEBUG) && !defined(SQLITE_DEBUG)
+#اگر !defined(NDEBUG) && !defined(SQLITE_DEBUG)
 # define NDEBUG 1
-#endif
-#if defined(NDEBUG) && defined(SQLITE_DEBUG)
+#اگر_ختم
+#اگر defined(NDEBUG) && defined(SQLITE_DEBUG)
 # undef NDEBUG
-#endif
+#اگر_ختم
 
 /*
 ** Enable SQLITE_ENABLE_EXPLAIN_COMMENTS if SQLITE_DEBUG is turned on.
 */
-#if !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
+#اگر !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
 # define SQLITE_ENABLE_EXPLAIN_COMMENTS 1
-#endif
+#اگر_ختم
 
 /*
 ** The testcase() macro is used to aid in coverage testing.  When
@@ -500,27 +500,27 @@
 ** where multiple cases go to the same block of code, testcase()
 ** can insure that all cases are evaluated.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#اگر defined(SQLITE_MUTATION_TEST)
 # define testcase(X)
-#elif defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#وگرنہ_اگر defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 # ifndef SQLITE_AMALGAMATION
-    extern unsigned int sqlite3CoverageCounter;
+    خارجی غیرعلامتی صحیح sqlite3_Coverage_شمار;
 # endif
-# define testcase(X)  if( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
-#else
+# define testcase(X)  اگر( X ){ sqlite3_Coverage_شمار += (غیرعلامتی)__LINE__; }
+#ورنہ
 # define testcase(X)
-#endif
+#اگر_ختم
 
 /*
 ** The TESTONLY macro is used to enclose variable declarations or
 ** other bits of code that are needed to support the arguments
 ** within testcase() and assert() macros.
 */
-#if !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
+#اگر !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
 # define TESTONLY(X)  X
-#else
+#ورنہ
 # define TESTONLY(X)
-#endif
+#اگر_ختم
 
 /*
 ** Sometimes we need a small amount of code such as a variable initialization
@@ -530,19 +530,19 @@
 ** "Verification, Validation, and Accreditation".  In other words, the
 ** code within VVA_ONLY() will only run during verification processes.
 */
-#ifndef NDEBUG
+#اگر_غیر_تعریف_شدہ NDEBUG
 # define VVA_ONLY(X)  X
-#else
+#ورنہ
 # define VVA_ONLY(X)
-#endif
+#اگر_ختم
 
 /*
 ** Disable ALWAYS() and NEVER() (make them pass-throughs) for coverage
 ** and mutation testing
 */
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
+#اگر defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
 # define SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS  1
-#endif
+#اگر_ختم
 
 /*
 ** The ALWAYS and NEVER macros surround boolean expressions which
@@ -559,16 +559,16 @@
 ** be true and false so that the unreachable code they specify will
 ** not be counted as untested code.
 */
-#if defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
+#اگر defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
 # define ALWAYS(X)      (1)
 # define NEVER(X)       (0)
-#elif !defined(NDEBUG)
-# define ALWAYS(X)      ((X)?1:(assert(0),0))
-# define NEVER(X)       ((X)?(assert(0),1):0)
-#else
+#وگرنہ_اگر !defined(NDEBUG)
+# define ALWAYS(X)      ((X)?1:(أكد(0),0))
+# define NEVER(X)       ((X)?(أكد(0),1):0)
+#ورنہ
 # define ALWAYS(X)      (X)
 # define NEVER(X)       (X)
-#endif
+#اگر_ختم
 
 /*
 ** Some conditionals are optimizations only.  In other words, if the
@@ -577,13 +577,13 @@
 **
 ** The following macros mark these optimizations conditionals.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#اگر defined(SQLITE_MUTATION_TEST)
 # define OK_IF_ALWAYS_TRUE(X)  (1)
 # define OK_IF_ALWAYS_FALSE(X) (0)
-#else
+#ورنہ
 # define OK_IF_ALWAYS_TRUE(X)  (X)
 # define OK_IF_ALWAYS_FALSE(X) (X)
-#endif
+#اگر_ختم
 
 /*
 ** Some malloc failures are only possible if SQLITE_TEST_REALLOC_STRESS is
@@ -592,26 +592,26 @@
 ** during a normal build.  The following macro can be used to disable tests
 ** that are always false except when SQLITE_TEST_REALLOC_STRESS is set.
 */
-#if defined(SQLITE_TEST_REALLOC_STRESS)
+#اگر defined(SQLITE_TEST_REALLOC_STRESS)
 # define ONLY_IF_REALLOC_STRESS(X)  (X)
-#elif !defined(NDEBUG)
-# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(assert(0),1):0)
-#else
+#وگرنہ_اگر !defined(NDEBUG)
+# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(أكد(0),1):0)
+#ورنہ
 # define ONLY_IF_REALLOC_STRESS(X)  (0)
-#endif
+#اگر_ختم
 
 /*
 ** Declarations used for tracing the operating system interfaces.
 */
-#if defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
+#اگر defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
-  extern int sqlite3OSTrace;
-# define OSTRACE(X)          if( sqlite3OSTrace ) sqlite3DebugPrintf X
+  خارجی صحیح sqlite3OSTrace;
+# define OSTRACE(X)          اگر( sqlite3OSTrace ) sqlite3DebugPrintf X
 # define SQLITE_HAVE_OS_TRACE
-#else
+#ورنہ
 # define OSTRACE(X)
 # undef  SQLITE_HAVE_OS_TRACE
-#endif
+#اگر_ختم
 
 /*
 ** Is the sqlite3ErrName() function needed in the build?  Currently,
@@ -619,35 +619,35 @@
 ** OSTRACE is enabled), and by several "test*.c" files (which are
 ** compiled using SQLITE_TEST).
 */
-#if defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
+#اگر defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
 # define SQLITE_NEED_ERR_NAME
-#else
+#ورنہ
 # undef  SQLITE_NEED_ERR_NAME
-#endif
+#اگر_ختم
 
 /*
 ** SQLITE_ENABLE_EXPLAIN_COMMENTS is incompatible with SQLITE_OMIT_EXPLAIN
 */
-#ifdef SQLITE_OMIT_EXPLAIN
+#اگر_تعریف_شدہ SQLITE_OMIT_EXPLAIN
 # undef SQLITE_ENABLE_EXPLAIN_COMMENTS
-#endif
+#اگر_ختم
 
 /*
 ** SQLITE_OMIT_VIRTUALTABLE implies SQLITE_OMIT_ALTERTABLE
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
+#اگر defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
 # define SQLITE_OMIT_ALTERTABLE
-#endif
+#اگر_ختم
 
-#define SQLITE_DIGIT_SEPARATOR '_'
+#تعریف_کرو SQLITE_DIGIT_SEPARATOR '_'
 
 /*
 ** Return true (non-zero) if the input is an integer that is too large
 ** to fit in 32-bits.  This macro is used inside of various testcase()
 ** macros to verify that we have tested SQLite for large-file support.
 */
-#define IS_BIG_INT(X)  (((X)&~(i64)0xffffffff)!=0)
+#تعریف_کرو IS_BIG_INT(X)  (((X)&~(i64)0xffffffff)!=0)
 
 /*
 ** The macro unlikely() is a hint that surrounds a boolean
@@ -656,17 +656,17 @@
 ** in theory, be used by the compiler to generate better code, but
 ** currently they are just comments for human readers.
 */
-#define likely(X)    (X)
-#define unlikely(X)  (X)
+#تعریف_کرو likely(X)    (X)
+#تعریف_کرو unlikely(X)  (X)
 
-#include "hash.h"
-#include "parse.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stddef.h>
-#include <ctype.h>
+#شامل "hash.h"
+#شامل "parse.h"
+#شامل <stdio.h>
+#شامل <stdlib.h>
+#شامل <string.h>
+#شامل <assert.h>
+#شامل <stddef.h>
+#شامل <ctype.h>
 
 /*
 ** Use a macro to replace memcpy() if compiled with SQLITE_INLINE_MEMCPY.
@@ -675,43 +675,43 @@
 ** should not be used in production.  This is a performance measurement
 ** hack only.
 */
-#ifdef SQLITE_INLINE_MEMCPY
-# define memcpy(D,S,N) {char*xxd=(char*)(D);const char*xxs=(const char*)(S);\
-                        int xxn=(N);while(xxn-->0)*(xxd++)=*(xxs++);}
-#endif
+#اگر_تعریف_شدہ SQLITE_INLINE_MEMCPY
+# define حافظہ_نقل(D,S,N) {حرف*xxd=(حرف*)(D);ثابت حرف*xxs=(ثابت حرف*)(S);\
+                        صحیح xxn=(N);جب(xxn-->0)*(xxd++)=*(xxs++);}
+#اگر_ختم
 
 /*
 ** If compiling for a processor that lacks floating point support,
 ** substitute integer for floating-point
 */
-#ifdef SQLITE_OMIT_FLOATING_POINT
-# define double sqlite_int64
-# define float sqlite_int64
+#اگر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
+# define دوہرا sqlite_int64
+# define اعشاری sqlite_int64
 # define fabs(X) ((X)<0?-(X):(X))
-# define sqlite3IsOverflow(X) 0
+# define sqlite3_Is_حد_سے_تجاوز(X) 0
 # define INFINITY (9223372036854775807LL)
 # ifndef SQLITE_BIG_DBL
 #   define SQLITE_BIG_DBL (((sqlite3_int64)1)<<50)
 # endif
 # define SQLITE_OMIT_DATETIME_FUNCS 1
 # define SQLITE_OMIT_TRACE 1
-# undef SQLITE_MIXED_ENDIAN_64BIT_FLOAT
+# undef SQLITE_MIXED_ENDIAN_64_ثنائی_ہندسہ_FLOAT
 # undef SQLITE_HAVE_ISNAN
-#endif
-#ifndef SQLITE_BIG_DBL
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_BIG_DBL
 # define SQLITE_BIG_DBL (1e99)
-#endif
+#اگر_ختم
 
 /*
 ** OMIT_TEMPDB is set to 1 if SQLITE_OMIT_TEMPDB is defined, or 0
 ** afterward. Having this macro allows us to cause the C compiler
 ** to omit code used by TEMP tables without messy #ifndef statements.
 */
-#ifdef SQLITE_OMIT_TEMPDB
-#define OMIT_TEMPDB 1
-#else
-#define OMIT_TEMPDB 0
-#endif
+#اگر_تعریف_شدہ SQLITE_OMIT_TEMPDB
+#تعریف_کرو OMIT_TEMPDB 1
+#ورنہ
+#تعریف_کرو OMIT_TEMPDB 0
+#اگر_ختم
 
 /*
 ** The "file format" number is an integer that is incremented whenever
@@ -719,46 +719,46 @@
 ** the default file format for new databases and the maximum file format
 ** that the library can read.
 */
-#define SQLITE_MAX_FILE_FORMAT 4
-#ifndef SQLITE_DEFAULT_FILE_FORMAT
+#تعریف_کرو SQLITE_MAX_FILE_FORMAT 4
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_FILE_FORMAT
 # define SQLITE_DEFAULT_FILE_FORMAT 4
-#endif
+#اگر_ختم
 
 /*
 ** Determine whether triggers are recursive by default.  This can be
 ** changed at run-time using a pragma.
 */
-#ifndef SQLITE_DEFAULT_RECURSIVE_TRIGGERS
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_RECURSIVE_TRIGGERS
 # define SQLITE_DEFAULT_RECURSIVE_TRIGGERS 0
-#endif
+#اگر_ختم
 
 /*
 ** Provide a default value for SQLITE_TEMP_STORE in case it is not specified
 ** on the command-line
 */
-#ifndef SQLITE_TEMP_STORE
-# define SQLITE_TEMP_STORE 1
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_عارضی_STORE
+# define SQLITE_عارضی_STORE 1
+#اگر_ختم
 
 /*
 ** If no value has been provided for SQLITE_MAX_WORKER_THREADS, or if
 ** SQLITE_TEMP_STORE is set to 3 (never use temporary files), set it
 ** to zero.
 */
-#if SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
-# undef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS 0
-#endif
-#ifndef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS 8
-#endif
-#ifndef SQLITE_DEFAULT_WORKER_THREADS
-# define SQLITE_DEFAULT_WORKER_THREADS 0
-#endif
-#if SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
-# undef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS SQLITE_DEFAULT_WORKER_THREADS
-#endif
+#اگر SQLITE_عارضی_STORE==3 || SQLITE_THREADSAFE==0
+# undef SQLITE_MAX_کارکن_دھاگے
+# define SQLITE_MAX_کارکن_دھاگے 0
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_MAX_کارکن_دھاگے
+# define SQLITE_MAX_کارکن_دھاگے 8
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_کارکن_دھاگے
+# define SQLITE_DEFAULT_کارکن_دھاگے 0
+#اگر_ختم
+#اگر SQLITE_DEFAULT_کارکن_دھاگے>SQLITE_MAX_کارکن_دھاگے
+# undef SQLITE_MAX_کارکن_دھاگے
+# define SQLITE_MAX_کارکن_دھاگے SQLITE_DEFAULT_کارکن_دھاگے
+#اگر_ختم
 
 /*
 ** The default initial allocation for the pagecache when using separate
@@ -769,75 +769,75 @@
 ** The default value of "20" was chosen to minimize the run-time of the
 ** speedtest1 test program with options: --shrink-memory --reprepare
 */
-#ifndef SQLITE_DEFAULT_PCACHE_INITSZ
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_PCACHE_INITSZ
 # define SQLITE_DEFAULT_PCACHE_INITSZ 20
-#endif
+#اگر_ختم
 
 /*
 ** Default value for the SQLITE_CONFIG_SORTERREF_SIZE option.
 */
-#ifndef SQLITE_DEFAULT_SORTERREF_SIZE
-# define SQLITE_DEFAULT_SORTERREF_SIZE 0x7fffffff
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_SORTERREF_سائز
+# define SQLITE_DEFAULT_SORTERREF_سائز 0x7fffffff
+#اگر_ختم
 
 /*
 ** The compile-time options SQLITE_MMAP_READWRITE and
 ** SQLITE_ENABLE_BATCH_ATOMIC_WRITE are not compatible with one another.
 ** You must choose one or the other (or neither) but not both.
 */
-#if defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-#error Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
-#endif
+#اگر defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#غلطی Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
+#اگر_ختم
 
 /*
 ** GCC does not define the offsetof() macro so we'll have to do it
 ** ourselves.
 */
-#ifndef offsetof
-# define offsetof(ST,M) ((size_t)((char*)&((ST*)0)->M - (char*)0))
-#endif
+#اگر_غیر_تعریف_شدہ offsetof
+# define offsetof(ST,M) ((size_t)((حرف*)&((ST*)0)->M - (حرف*)0))
+#اگر_ختم
 
 /*
 ** sizeof64() is like sizeof(), but always returns a 64-bit value, even
 ** on 32-bit builds. This can help to avoid overflow by ensuring 64-bit
 ** arithmetic is used consistently in both 32-bit and 64-bit builds.
 */
-#define sizeof64(X) ((sqlite3_int64)sizeof(X))
+#تعریف_کرو sizeof64(X) ((sqlite3_int64)حجم(X))
 
 /*
 ** Work around C99 "flex-array" syntax for pre-C99 compilers, so as
 ** to avoid complaints from -fsanitize=strict-bounds.
 */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#اگر defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 # define FLEXARRAY
-#else
+#ورنہ
 # define FLEXARRAY 1
-#endif
+#اگر_ختم
 
 /*
 ** Macros to compute minimum and maximum of two numbers.
 */
-#ifndef MIN
+#اگر_غیر_تعریف_شدہ MIN
 # define MIN(A,B) ((A)<(B)?(A):(B))
-#endif
-#ifndef MAX
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ MAX
 # define MAX(A,B) ((A)>(B)?(A):(B))
-#endif
+#اگر_ختم
 
 /*
 ** Swap two objects of type TYPE.
 */
-#define SWAP(TYPE,A,B) {TYPE t=A; A=B; B=t;}
+#تعریف_کرو تبادلہ(TYPE,A,B) {TYPE t=A; A=B; B=t;}
 
 /*
 ** Check to see if this machine uses EBCDIC.  (Yes, believe it or
 ** not, there are still machines out there that use EBCDIC.)
 */
-#if 'A' == '\301'
+#اگر 'A' == '\301'
 # define SQLITE_EBCDIC 1
-#else
+#ورنہ
 # define SQLITE_ASCII 1
-#endif
+#اگر_ختم
 
 /*
 ** Integers of known sizes.  These typedefs might change for architectures
@@ -846,53 +846,53 @@
 **
 **         cc '-DUINTPTR_TYPE=long long int' ...
 */
-#ifndef UINT32_TYPE
+#اگر_غیر_تعریف_شدہ UINT32_TYPE
 # ifdef HAVE_UINT32_T
 #  define UINT32_TYPE uint32_t
-# else
-#  define UINT32_TYPE unsigned int
+# ورنہ
+#  define UINT32_TYPE غیرعلامتی صحیح
 # endif
-#endif
-#ifndef UINT16_TYPE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ UINT16_TYPE
 # ifdef HAVE_UINT16_T
 #  define UINT16_TYPE uint16_t
-# else
-#  define UINT16_TYPE unsigned short int
+# ورنہ
+#  define UINT16_TYPE غیرعلامتی مختصر صحیح
 # endif
-#endif
-#ifndef INT16_TYPE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ INT16_TYPE
 # ifdef HAVE_INT16_T
 #  define INT16_TYPE int16_t
-# else
-#  define INT16_TYPE short int
+# ورنہ
+#  define INT16_TYPE مختصر صحیح
 # endif
-#endif
-#ifndef UINT8_TYPE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ UINT8_TYPE
 # ifdef HAVE_UINT8_T
 #  define UINT8_TYPE uint8_t
-# else
-#  define UINT8_TYPE unsigned char
+# ورنہ
+#  define UINT8_TYPE غیرعلامتی حرف
 # endif
-#endif
-#ifndef INT8_TYPE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ INT8_TYPE
 # ifdef HAVE_INT8_T
 #  define INT8_TYPE int8_t
-# else
-#  define INT8_TYPE signed char
+# ورنہ
+#  define INT8_TYPE علامتی حرف
 # endif
-#endif
-typedef sqlite_int64 i64;          /* 8-byte signed integer */
-typedef sqlite_uint64 u64;         /* 8-byte unsigned integer */
-typedef UINT32_TYPE u32;           /* 4-byte unsigned integer */
-typedef UINT16_TYPE u16;           /* 2-byte unsigned integer */
-typedef INT16_TYPE i16;            /* 2-byte signed integer */
-typedef UINT8_TYPE u8;             /* 1-byte unsigned integer */
-typedef INT8_TYPE i8;              /* 1-byte signed integer */
+#اگر_ختم
+قسمتعریف sqlite_int64 i64;          /* 8-byte signed integer */
+قسمتعریف sqlite_uint64 u64;         /* 8-byte unsigned integer */
+قسمتعریف UINT32_TYPE u32;           /* 4-byte unsigned integer */
+قسمتعریف UINT16_TYPE u16;           /* 2-byte unsigned integer */
+قسمتعریف INT16_TYPE i16;            /* 2-byte signed integer */
+قسمتعریف UINT8_TYPE u8;             /* 1-byte unsigned integer */
+قسمتعریف INT8_TYPE i8;              /* 1-byte signed integer */
 
 /* A bitfield type for use inside of structures.  Always follow with :N where
 ** N is the number of bits.
 */
-typedef unsigned bft;  /* Bit Field Type */
+قسمتعریف غیرعلامتی bft;  /* Bit Field Type */
 
 /*
 ** SQLITE_MAX_U32 is a u64 constant that is the maximum u64 value
@@ -900,13 +900,13 @@ typedef unsigned bft;  /* Bit Field Type */
 ** is 0x00000000ffffffff.  But because of quirks of some compilers, we
 ** have to specify the value in the less intuitive manner shown:
 */
-#define SQLITE_MAX_U32  ((((u64)1)<<32)-1)
+#تعریف_کرو SQLITE_MAX_U32  ((((u64)1)<<32)-1)
 
 /*
 ** The datatype used to store estimates of the number of rows in a
 ** table or index.
 */
-typedef u64 tRowcnt;
+قسمتعریف u64 tRowcnt;
 
 /*
 ** Estimated quantities used for query planning are stored as 16-bit
@@ -931,35 +931,35 @@ typedef u64 tRowcnt;
 **
 **    0.5 -> -10           0.1 -> -33        0.0625 -> -40
 */
-typedef INT16_TYPE LogEst;
-#define LOGEST_MIN (-32768)
-#define LOGEST_MAX (32767)
+قسمتعریف INT16_TYPE LogEst;
+#تعریف_کرو LOGEST_MIN (-32768)
+#تعریف_کرو LOGEST_MAX (32767)
 
 /*
 ** Set the SQLITE_PTRSIZE macro to the number of bytes in a pointer
 */
-#ifndef SQLITE_PTRSIZE
-# if defined(__SIZEOF_POINTER__)
+#اگر_غیر_تعریف_شدہ SQLITE_PTRSIZE
+# اگر defined(__SIZEOF_POINTER__)
 #   define SQLITE_PTRSIZE __SIZEOF_POINTER__
 # elif defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
        defined(_M_ARM)   || defined(__arm__)    || defined(__x86)   ||    \
       (defined(__APPLE__) && defined(__ppc__)) ||                         \
       (defined(__TOS_AIX__) && !defined(__64BIT__))
 #   define SQLITE_PTRSIZE 4
-# else
+# ورنہ
 #   define SQLITE_PTRSIZE 8
 # endif
-#endif
+#اگر_ختم
 
 /* The uptr type is an unsigned integer large enough to hold a pointer
 */
-#if defined(HAVE_STDINT_H)
-  typedef uintptr_t uptr;
-#elif SQLITE_PTRSIZE==4
-  typedef u32 uptr;
-#else
-  typedef u64 uptr;
-#endif
+#اگر defined(HAVE_STDINT_H)
+  قسمتعریف uintptr_t uptr;
+#وگرنہ_اگر SQLITE_PTRSIZE==4
+  قسمتعریف u32 uptr;
+#ورنہ
+  قسمتعریف u64 uptr;
+#اگر_ختم
 
 /*
 ** The SQLITE_WITHIN(P,S,E) macro checks to see if pointer P points to
@@ -969,7 +969,7 @@ typedef INT16_TYPE LogEst;
 ** the end of buffer S.  This macro returns true if P points to something
 ** contained within the buffer S.
 */
-#define SQLITE_WITHIN(P,S,E)   (((uptr)(P)>=(uptr)(S))&&((uptr)(P)<(uptr)(E)))
+#تعریف_کرو SQLITE_WITHIN(P,S,E)   (((uptr)(P)>=(uptr)(S))&&((uptr)(P)<(uptr)(E)))
 
 /*
 ** P is one byte past the end of a large buffer. Return true if a span of bytes
@@ -993,7 +993,7 @@ typedef INT16_TYPE LogEst;
 **                        |-------|       FALSE
 **                        S        E
 */
-#define SQLITE_OVERFLOW(P,S,E) (((uptr)(S)<(uptr)(P))&&((uptr)(E)>(uptr)(P)))
+#تعریف_کرو SQLITE_حد_سے_تجاوز(P,S,E) (((uptr)(S)<(uptr)(P))&&((uptr)(E)>(uptr)(P)))
 
 /*
 ** Macros to determine whether the machine is big or little endian,
@@ -1016,8 +1016,8 @@ typedef INT16_TYPE LogEst;
 ** to cause the build to work for little-endian or big-endian processors,
 ** respectively.
 */
-#ifndef SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
-# if defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
+#اگر_غیر_تعریف_شدہ SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
+# اگر defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
 #   define SQLITE_BYTEORDER 4321
 # elif defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__
 #   define SQLITE_BYTEORDER 1234
@@ -1030,45 +1030,45 @@ typedef INT16_TYPE LogEst;
 #   define SQLITE_BYTEORDER 1234
 # elif defined(sparc)   || defined(__ARMEB__)     || defined(__AARCH64EB__)
 #   define SQLITE_BYTEORDER 4321
-# else
+# ورنہ
 #   define SQLITE_BYTEORDER 0
 # endif
-#endif
-#if SQLITE_BYTEORDER==4321
+#اگر_ختم
+#اگر SQLITE_BYTEORDER==4321
 # define SQLITE_BIGENDIAN    1
 # define SQLITE_LITTLEENDIAN 0
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16BE
-#elif SQLITE_BYTEORDER==1234
+#وگرنہ_اگر SQLITE_BYTEORDER==1234
 # define SQLITE_BIGENDIAN    0
 # define SQLITE_LITTLEENDIAN 1
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16LE
-#else
+#ورنہ
 # ifdef SQLITE_AMALGAMATION
-  const int sqlite3one = 1;
-# else
-  extern const int sqlite3one;
+  ثابت صحیح sqlite3one = 1;
+# ورنہ
+  خارجی ثابت صحیح sqlite3one;
 # endif
-# define SQLITE_BIGENDIAN    (*(char *)(&sqlite3one)==0)
-# define SQLITE_LITTLEENDIAN (*(char *)(&sqlite3one)==1)
+# define SQLITE_BIGENDIAN    (*(حرف *)(&sqlite3one)==0)
+# define SQLITE_LITTLEENDIAN (*(حرف *)(&sqlite3one)==1)
 # define SQLITE_UTF16NATIVE  (SQLITE_BIGENDIAN?SQLITE_UTF16BE:SQLITE_UTF16LE)
-#endif
+#اگر_ختم
 
 /*
 ** Constants for the largest and smallest possible 64-bit signed integers.
 ** These macros are designed to work correctly on both 32-bit and 64-bit
 ** compilers.
 */
-#define LARGEST_INT64  (0xffffffff|(((i64)0x7fffffff)<<32))
-#define LARGEST_UINT64 (0xffffffff|(((u64)0xffffffff)<<32))
-#define SMALLEST_INT64 (((i64)-1) - LARGEST_INT64)
+#تعریف_کرو سب_سے_بڑا_INT64  (0xffffffff|(((i64)0x7fffffff)<<32))
+#تعریف_کرو سب_سے_بڑا_UINT64 (0xffffffff|(((u64)0xffffffff)<<32))
+#تعریف_کرو سب_سے_چھوٹا_INT64 (((i64)-1) - سب_سے_بڑا_INT64)
 
 /*
 ** Macro SMXV(n) return the maximum value that can be held in variable n,
 ** assuming n is a signed integer type.  UMXV(n) is similar for unsigned
 ** integer types.
 */
-#define SMXV(n) ((((i64)1)<<(sizeof(n)*8-1))-1)
-#define UMXV(n) ((((i64)1)<<(sizeof(n)*8))-1)
+#تعریف_کرو SMXV(n) ((((i64)1)<<(حجم(n)*8-1))-1)
+#تعریف_کرو UMXV(n) ((((i64)1)<<(حجم(n)*8))-1)
 
 /*
 ** Round up a number to the next larger multiple of 8.  This is used
@@ -1080,17 +1080,17 @@ typedef INT16_TYPE LogEst;
 ** pointers in size, and so it is a no-op on systems where the pointer
 ** size is 8.
 */
-#define ROUND8(x)     (((x)+7)&~7)
-#if SQLITE_PTRSIZE==8
+#تعریف_کرو ROUND8(x)     (((x)+7)&~7)
+#اگر SQLITE_PTRSIZE==8
 # define ROUND8P(x)   (x)
-#else
+#ورنہ
 # define ROUND8P(x)   (((x)+7)&~7)
-#endif
+#اگر_ختم
 
 /*
 ** Round down to the nearest multiple of 8
 */
-#define ROUNDDOWN8(x) ((x)&~7)
+#تعریف_کرو ROUNDDOWN8(x) ((x)&~7)
 
 /*
 ** Assert that the pointer X is aligned to an 8-byte boundary.  This
@@ -1101,72 +1101,72 @@ typedef INT16_TYPE LogEst;
 ** underlying malloc() implementation might return us 4-byte aligned
 ** pointers.  In that case, only verify 4-byte alignment.
 */
-#ifdef SQLITE_4_BYTE_ALIGNED_MALLOC
+#اگر_تعریف_شدہ SQLITE_4_BYTE_ALIGNED_MALLOC
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&3)==0)
-#else
+#ورنہ
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&7)==0)
-#endif
-#define TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
+#اگر_ختم
+#تعریف_کرو TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
 
 /*
 ** Disable MMAP on platforms where it is known to not work
 */
-#if defined(__OpenBSD__) || defined(__QNXNTO__)
-# undef SQLITE_MAX_MMAP_SIZE
-# define SQLITE_MAX_MMAP_SIZE 0
-#endif
+#اگر defined(__OpenBSD__) || defined(__QNXNTO__)
+# undef SQLITE_MAX_MMAP_سائز
+# define SQLITE_MAX_MMAP_سائز 0
+#اگر_ختم
 
 /*
 ** Default maximum size of memory used by memory-mapped I/O in the VFS
 */
-#ifdef __APPLE__
+#اگر_تعریف_شدہ __APPLE__
 # include <TargetConditionals.h>
-#endif
-#ifndef SQLITE_MAX_MMAP_SIZE
-# if defined(__linux__) \
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_MAX_MMAP_سائز
+# اگر defined(__linux__) \
   || defined(_WIN32) \
   || (defined(__APPLE__) && defined(__MACH__)) \
   || defined(__sun) \
   || defined(__FreeBSD__) \
   || defined(__DragonFly__)
-#   define SQLITE_MAX_MMAP_SIZE 0x7fff0000  /* 2147418112 */
-# else
-#   define SQLITE_MAX_MMAP_SIZE 0
+#   define SQLITE_MAX_MMAP_سائز 0x7fff0000  /* 2147418112 */
+# ورنہ
+#   define SQLITE_MAX_MMAP_سائز 0
 # endif
-#endif
+#اگر_ختم
 
 /*
 ** The default MMAP_SIZE is zero on all platforms.  Or, even if a larger
 ** default MMAP_SIZE is specified at compile-time, make sure that it does
 ** not exceed the maximum mmap size.
 */
-#ifndef SQLITE_DEFAULT_MMAP_SIZE
-# define SQLITE_DEFAULT_MMAP_SIZE 0
-#endif
-#if SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
-# undef SQLITE_DEFAULT_MMAP_SIZE
-# define SQLITE_DEFAULT_MMAP_SIZE SQLITE_MAX_MMAP_SIZE
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_MMAP_سائز
+# define SQLITE_DEFAULT_MMAP_سائز 0
+#اگر_ختم
+#اگر SQLITE_DEFAULT_MMAP_سائز>SQLITE_MAX_MMAP_سائز
+# undef SQLITE_DEFAULT_MMAP_سائز
+# define SQLITE_DEFAULT_MMAP_سائز SQLITE_MAX_MMAP_سائز
+#اگر_ختم
 
 /*
 ** TREETRACE_ENABLED will be either 1 or 0 depending on whether or not
 ** the Abstract Syntax Tree tracing logic is turned on.
 */
-#if !defined(SQLITE_AMALGAMATION)
-extern u32 sqlite3TreeTrace;
-#endif
-#if defined(SQLITE_DEBUG) \
+#اگر !defined(SQLITE_AMALGAMATION)
+خارجی u32 sqlite3_درخت_Trace;
+#اگر_ختم
+#اگر defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_SELECTTRACE) \
                              || defined(SQLITE_ENABLE_TREETRACE))
 # define TREETRACE_ENABLED 1
 # define TREETRACE(K,P,S,X)  \
-  if(sqlite3TreeTrace&(K))   \
+  اگر(sqlite3_درخت_Trace&(K))   \
     sqlite3DebugPrintf("%u/%d/%p: ",(S)->selId,(P)->addrExplain,(S)),\
     sqlite3DebugPrintf X
-#else
+#ورنہ
 # define TREETRACE(K,P,S,X)
 # define TREETRACE_ENABLED 0
-#endif
+#اگر_ختم
 
 /* TREETRACE flag meanings:
 **
@@ -1197,14 +1197,14 @@ extern u32 sqlite3TreeTrace;
 /*
 ** Macros for "wheretrace"
 */
-extern u32 sqlite3WhereTrace;
-#if defined(SQLITE_DEBUG) \
+خارجی u32 sqlite3WhereTrace;
+#اگر defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_WHERETRACE))
-# define WHERETRACE(K,X)  if(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
+# define WHERETRACE(K,X)  اگر(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
 # define WHERETRACE_ENABLED 1
-#else
+#ورنہ
 # define WHERETRACE(K,X)
-#endif
+#اگر_ختم
 
 /*
 ** Bits for the sqlite3WhereTrace mask:
@@ -1249,11 +1249,11 @@ extern u32 sqlite3WhereTrace;
 ** handle is passed a pointer to sqlite.busyHandler. The busy-handler
 ** callback is currently invoked only from within pager.c.
 */
-typedef struct BusyHandler BusyHandler;
-struct BusyHandler {
-  int (*xBusyHandler)(void *,int);  /* The busy callback */
-  void *pBusyArg;                   /* First arg to busy callback */
-  int nBusy;                        /* Incremented with each busy call */
+قسمتعریف ساخت BusyHandler BusyHandler;
+ساخت BusyHandler {
+  صحیح (*xBusyHandler)(خالی *,صحیح);  /* The busy callback */
+  خالی *pBusyArg;                   /* First arg to busy callback */
+  صحیح nBusy;                        /* Incremented with each busy call */
 };
 
 /*
@@ -1273,33 +1273,33 @@ struct BusyHandler {
 **
 ** Note that "sqlite_temp_schema" can also be called "temp.sqlite_schema".
 */
-#define LEGACY_SCHEMA_TABLE          "sqlite_master"
-#define LEGACY_TEMP_SCHEMA_TABLE     "sqlite_temp_master"
-#define PREFERRED_SCHEMA_TABLE       "sqlite_schema"
-#define PREFERRED_TEMP_SCHEMA_TABLE  "sqlite_temp_schema"
+#تعریف_کرو LEGACY_SCHEMA_جدول          "sqlite_master"
+#تعریف_کرو LEGACY_عارضی_SCHEMA_جدول     "sqlite_temp_master"
+#تعریف_کرو PREFERRED_SCHEMA_جدول       "sqlite_schema"
+#تعریف_کرو PREFERRED_عارضی_SCHEMA_جدول  "sqlite_temp_schema"
 
 
 /*
 ** The root-page of the schema table.
 */
-#define SCHEMA_ROOT    1
+#تعریف_کرو SCHEMA_جڑ    1
 
 /*
 ** The name of the schema table.  The name is different for TEMP.
 */
-#define SCHEMA_TABLE(x) \
-    ((!OMIT_TEMPDB)&&(x==1)?LEGACY_TEMP_SCHEMA_TABLE:LEGACY_SCHEMA_TABLE)
+#تعریف_کرو SCHEMA_جدول(x) \
+    ((!OMIT_TEMPDB)&&(x==1)?LEGACY_عارضی_SCHEMA_جدول:LEGACY_SCHEMA_جدول)
 
 /*
 ** A convenience macro that returns the number of elements in
 ** an array.
 */
-#define ArraySize(X)    ((int)(sizeof(X)/sizeof(X[0])))
+#تعریف_کرو Array_سائز(X)    ((صحیح)(حجم(X)/حجم(X[0])))
 
 /*
 ** Determine if the argument is a power of two
 */
-#define IsPowerOfTwo(X) (((X)&((X)-1))==0)
+#تعریف_کرو Is_Power_کا_Two(X) (((X)&((X)-1))==0)
 
 /*
 ** The following value as a destructor means to use sqlite3DbFree().
@@ -1309,7 +1309,7 @@ struct BusyHandler {
 ** pointer will work here as long as it is distinct from SQLITE_STATIC
 ** and SQLITE_TRANSIENT.
 */
-#define SQLITE_DYNAMIC   ((sqlite3_destructor_type)sqlite3RowSetClear)
+#تعریف_کرو SQLITE_DYNAMIC   ((sqlite3_destructor_type)sqlite3_صف_سیٹ_Clear)
 
 /*
 ** When SQLITE_OMIT_WSD is defined, it means that the target platform does
@@ -1325,17 +1325,17 @@ struct BusyHandler {
 ** In the usual case where WSD is supported, the SQLITE_WSD and GLOBAL
 ** macros become no-ops and have zero performance impact.
 */
-#ifdef SQLITE_OMIT_WSD
-  #define SQLITE_WSD const
-  #define GLOBAL(t,v) (*(t*)sqlite3_wsd_find((void*)&(v), sizeof(v)))
-  #define sqlite3GlobalConfig GLOBAL(struct Sqlite3Config, sqlite3Config)
-  int sqlite3_wsd_init(int N, int J);
-  void *sqlite3_wsd_find(void *K, int L);
-#else
-  #define SQLITE_WSD
-  #define GLOBAL(t,v) v
-  #define sqlite3GlobalConfig sqlite3Config
-#endif
+#اگر_تعریف_شدہ SQLITE_OMIT_WSD
+  #تعریف_کرو SQLITE_WSD ثابت
+  #تعریف_کرو GLOBAL(t,v) (*(t*)sqlite3_wsd_ڈھونڈو((خالی*)&(v), حجم(v)))
+  #تعریف_کرو sqlite3GlobalConfig GLOBAL(ساخت Sqlite3Config, sqlite3Config)
+  صحیح sqlite3_wsd_init(صحیح N, صحیح J);
+  خالی *sqlite3_wsd_ڈھونڈو(خالی *K, صحیح L);
+#ورنہ
+  #تعریف_کرو SQLITE_WSD
+  #تعریف_کرو GLOBAL(t,v) v
+  #تعریف_کرو sqlite3GlobalConfig sqlite3Config
+#اگر_ختم
 
 /*
 ** The following macros are used to suppress compiler warnings and to
@@ -1353,73 +1353,73 @@ struct BusyHandler {
 ** For example those parameters only used in assert() statements. In these
 ** cases the parameters are named as per the usual conventions.
 */
-#define UNUSED_PARAMETER(x) (void)(x)
-#define UNUSED_PARAMETER2(x,y) UNUSED_PARAMETER(x),UNUSED_PARAMETER(y)
+#تعریف_کرو غیر_مستعمل_PARAMETER(x) (خالی)(x)
+#تعریف_کرو غیر_مستعمل_PARAMETER2(x,y) غیر_مستعمل_PARAMETER(x),غیر_مستعمل_PARAMETER(y)
 
 /*
 ** Forward references to structures
 */
-typedef struct AggInfo AggInfo;
-typedef struct AuthContext AuthContext;
-typedef struct AutoincInfo AutoincInfo;
-typedef struct Bitvec Bitvec;
-typedef struct CollSeq CollSeq;
-typedef struct Column Column;
-typedef struct Cte Cte;
-typedef struct CteUse CteUse;
-typedef struct Db Db;
-typedef struct DbClientData DbClientData;
-typedef struct DbFixer DbFixer;
-typedef struct Schema Schema;
-typedef struct Expr Expr;
-typedef struct ExprList ExprList;
-typedef struct FKey FKey;
-typedef struct FpDecode FpDecode;
-typedef struct FuncDestructor FuncDestructor;
-typedef struct FuncDef FuncDef;
-typedef struct FuncDefHash FuncDefHash;
-typedef struct IdList IdList;
-typedef struct Index Index;
-typedef struct IndexedExpr IndexedExpr;
-typedef struct IndexSample IndexSample;
-typedef struct KeyClass KeyClass;
-typedef struct KeyInfo KeyInfo;
-typedef struct Lookaside Lookaside;
-typedef struct LookasideSlot LookasideSlot;
-typedef struct Module Module;
-typedef struct NameContext NameContext;
-typedef struct OnOrUsing OnOrUsing;
-typedef struct Parse Parse;
-typedef struct ParseCleanup ParseCleanup;
-typedef struct PreUpdate PreUpdate;
-typedef struct PrintfArguments PrintfArguments;
-typedef struct RCStr RCStr;
-typedef struct RenameToken RenameToken;
-typedef struct Returning Returning;
-typedef struct RowSet RowSet;
-typedef struct Savepoint Savepoint;
-typedef struct Select Select;
-typedef struct SQLiteThread SQLiteThread;
-typedef struct SelectDest SelectDest;
-typedef struct Subquery Subquery;
-typedef struct SrcItem SrcItem;
-typedef struct SrcList SrcList;
-typedef struct sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
-typedef struct Table Table;
-typedef struct TableLock TableLock;
-typedef struct Token Token;
-typedef struct TreeView TreeView;
-typedef struct Trigger Trigger;
-typedef struct TriggerPrg TriggerPrg;
-typedef struct TriggerStep TriggerStep;
-typedef struct UnpackedRecord UnpackedRecord;
-typedef struct Upsert Upsert;
-typedef struct VTable VTable;
-typedef struct VtabCtx VtabCtx;
-typedef struct Walker Walker;
-typedef struct WhereInfo WhereInfo;
-typedef struct Window Window;
-typedef struct With With;
+قسمتعریف ساخت AggInfo AggInfo;
+قسمتعریف ساخت AuthContext AuthContext;
+قسمتعریف ساخت AutoincInfo AutoincInfo;
+قسمتعریف ساخت Bitvec Bitvec;
+قسمتعریف ساخت CollSeq CollSeq;
+قسمتعریف ساخت عمود عمود;
+قسمتعریف ساخت Cte Cte;
+قسمتعریف ساخت CteUse CteUse;
+قسمتعریف ساخت Db Db;
+قسمتعریف ساخت Db_Client_ڈیٹا Db_Client_ڈیٹا;
+قسمتعریف ساخت DbFixer DbFixer;
+قسمتعریف ساخت Schema Schema;
+قسمتعریف ساخت اظہاریہ اظہاریہ;
+قسمتعریف ساخت اظہاریہ_List اظہاریہ_List;
+قسمتعریف ساخت FKey FKey;
+قسمتعریف ساخت FpDecode FpDecode;
+قسمتعریف ساخت FuncDestructor FuncDestructor;
+قسمتعریف ساخت FuncDef FuncDef;
+قسمتعریف ساخت FuncDefHash FuncDefHash;
+قسمتعریف ساخت IdList IdList;
+قسمتعریف ساخت اشاریہ اشاریہ;
+قسمتعریف ساخت اشاریہ_دار_اظہاریہ اشاریہ_دار_اظہاریہ;
+قسمتعریف ساخت اشاریہ_Sample اشاریہ_Sample;
+قسمتعریف ساخت کلید_Class کلید_Class;
+قسمتعریف ساخت کلید_Info کلید_Info;
+قسمتعریف ساخت Lookaside Lookaside;
+قسمتعریف ساخت Lookaside_خانہ Lookaside_خانہ;
+قسمتعریف ساخت Module Module;
+قسمتعریف ساخت NameContext NameContext;
+قسمتعریف ساخت OnOrUsing OnOrUsing;
+قسمتعریف ساخت Parse Parse;
+قسمتعریف ساخت ParseCleanup ParseCleanup;
+قسمتعریف ساخت PreUpdate PreUpdate;
+قسمتعریف ساخت PrintfArguments PrintfArguments;
+قسمتعریف ساخت RCStr RCStr;
+قسمتعریف ساخت RenameToken RenameToken;
+قسمتعریف ساخت Returning Returning;
+قسمتعریف ساخت صف_سیٹ صف_سیٹ;
+قسمتعریف ساخت Savepoint Savepoint;
+قسمتعریف ساخت Select Select;
+قسمتعریف ساخت SQLiteThread SQLiteThread;
+قسمتعریف ساخت SelectDest SelectDest;
+قسمتعریف ساخت Subquery Subquery;
+قسمتعریف ساخت Src_شے Src_شے;
+قسمتعریف ساخت SrcList SrcList;
+قسمتعریف ساخت sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
+قسمتعریف ساخت جدول جدول;
+قسمتعریف ساخت جدول_تالا جدول_تالا;
+قسمتعریف ساخت Token Token;
+قسمتعریف ساخت درخت_View درخت_View;
+قسمتعریف ساخت Trigger Trigger;
+قسمتعریف ساخت TriggerPrg TriggerPrg;
+قسمتعریف ساخت Trigger_قدم Trigger_قدم;
+قسمتعریف ساخت Unpacked_ریکارڈ Unpacked_ریکارڈ;
+قسمتعریف ساخت Upsert Upsert;
+قسمتعریف ساخت VTable VTable;
+قسمتعریف ساخت VtabCtx VtabCtx;
+قسمتعریف ساخت Walker Walker;
+قسمتعریف ساخت WhereInfo WhereInfo;
+قسمتعریف ساخت کھڑکی کھڑکی;
+قسمتعریف ساخت With With;
 
 
 /*
@@ -1429,26 +1429,26 @@ typedef struct With With;
 ** tables in a join to 32 instead of 64.  But it also reduces the size
 ** of the library by 738 bytes on ix86.
 */
-#ifdef SQLITE_BITMASK_TYPE
-  typedef SQLITE_BITMASK_TYPE Bitmask;
-#else
-  typedef u64 Bitmask;
-#endif
+#اگر_تعریف_شدہ SQLITE_BITMASK_TYPE
+  قسمتعریف SQLITE_BITMASK_TYPE Bitmask;
+#ورنہ
+  قسمتعریف u64 Bitmask;
+#اگر_ختم
 
 /*
 ** The number of bits in a Bitmask.  "BMS" means "BitMask Size".
 */
-#define BMS  ((int)(sizeof(Bitmask)*8))
+#تعریف_کرو BMS  ((صحیح)(حجم(Bitmask)*8))
 
 /*
 ** A bit in a Bitmask
 */
-#define MASKBIT(n)    (((Bitmask)1)<<(n))
-#define MASKBIT64(n)  (((u64)1)<<(n))
-#define MASKBIT32(n)  (((unsigned int)1)<<(n))
-#define SMASKBIT32(n) ((n)<=31?((unsigned int)1)<<(n):0)
-#define ALLBITS       ((Bitmask)-1)
-#define TOPBIT        (((Bitmask)1)<<(BMS-1))
+#تعریف_کرو MASKBIT(n)    (((Bitmask)1)<<(n))
+#تعریف_کرو MASKBIT64(n)  (((u64)1)<<(n))
+#تعریف_کرو MASKBIT32(n)  (((غیرعلامتی صحیح)1)<<(n))
+#تعریف_کرو SMASKBIT32(n) ((n)<=31?((غیرعلامتی صحیح)1)<<(n):0)
+#تعریف_کرو ALLBITS       ((Bitmask)-1)
+#تعریف_کرو TOPBIT        (((Bitmask)1)<<(BMS-1))
 
 /* A VList object records a mapping between parameters/variables/wildcards
 ** in the SQL statement (such as $abc, @pqr, or :xyz) and the integer
@@ -1456,27 +1456,27 @@ typedef struct With With;
 ** on the sqlite3VListAdd() routine for more information.  A VList is really
 ** just an array of integers.
 */
-typedef int VList;
+قسمتعریف صحیح VList;
 
 /*
 ** Defer sourcing vdbe.h and btree.h until after the "u8" and
 ** "BusyHandler" typedefs. vdbe.h also requires a few of the opaque
 ** pointer types (i.e. FuncDef) defined above.
 */
-#include "os.h"
-#include "pager.h"
-#include "btree.h"
-#include "vdbe.h"
-#include "pcache.h"
-#include "mutex.h"
+#شامل "os.h"
+#شامل "pager.h"
+#شامل "btree.h"
+#شامل "vdbe.h"
+#شامل "pcache.h"
+#شامل "mutex.h"
 
 /* The SQLITE_EXTRA_DURABLE compile-time option used to set the default
 ** synchronous setting to EXTRA.  It is no longer supported.
 */
-#ifdef SQLITE_EXTRA_DURABLE
-# warning Use SQLITE_DEFAULT_SYNCHRONOUS=3 instead of SQLITE_EXTRA_DURABLE
+#اگر_تعریف_شدہ SQLITE_EXTRA_DURABLE
+# warning Use SQLITE_DEFAULT_SYNCHRONOUS=3 instead کا SQLITE_EXTRA_DURABLE
 # define SQLITE_DEFAULT_SYNCHRONOUS 3
-#endif
+#اگر_ختم
 
 /*
 ** Default synchronous levels.
@@ -1494,12 +1494,12 @@ typedef int VList;
 ** In other words, the zero-based numbers are used for all external interfaces
 ** and the one-based values are used internally.
 */
-#ifndef SQLITE_DEFAULT_SYNCHRONOUS
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_SYNCHRONOUS
 # define SQLITE_DEFAULT_SYNCHRONOUS 2
-#endif
-#ifndef SQLITE_DEFAULT_WAL_SYNCHRONOUS
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_WAL_SYNCHRONOUS
 # define SQLITE_DEFAULT_WAL_SYNCHRONOUS SQLITE_DEFAULT_SYNCHRONOUS
-#endif
+#اگر_ختم
 
 /*
 ** Each database file to be accessed by the system is an instance
@@ -1508,11 +1508,11 @@ typedef int VList;
 ** aDb[1] is the database file used to hold temporary tables.  Additional
 ** databases may be attached.
 */
-struct Db {
-  char *zDbSName;      /* Name of this database. (schema name, not filename) */
+ساخت Db {
+  حرف *zDbSName;      /* Name of this database. (schema name, not filename) */
   Btree *pBt;          /* The B*Tree structure for this database file */
   u8 safety_level;     /* How aggressive at syncing data to disk */
-  u8 bSyncSet;         /* True if "PRAGMA synchronous=N" has been run */
+  u8 b_Sync_سیٹ;         /* True if "PRAGMA synchronous=N" has been run */
   Schema *pSchema;     /* Pointer to database schema (possibly shared) */
 };
 
@@ -1533,28 +1533,28 @@ struct Db {
 ** holding a mutex on the sqlite3 connection pointer that owns the Btree.
 ** For a TEMP Schema, only the connection mutex is required.
 */
-struct Schema {
-  int schema_cookie;   /* Database schema version number for this file */
-  int iGeneration;     /* Generation counter.  Incremented with each change */
+ساخت Schema {
+  صحیح schema_cookie;   /* Database schema version number for this file */
+  صحیح iGeneration;     /* Generation counter.  Incremented with each change */
   Hash tblHash;        /* All tables indexed by name */
   Hash idxHash;        /* All (named) indices indexed by name */
   Hash trigHash;       /* All triggers indexed by name */
   Hash fkeyHash;       /* All foreign keys by referenced table name */
-  Table *pSeqTab;      /* The sqlite_sequence table used by AUTOINCREMENT */
+  جدول *pSeqTab;      /* The sqlite_sequence table used by AUTOINCREMENT */
   u8 file_format;      /* Schema format version for this file */
   u8 enc;              /* Text encoding used by this database */
   u16 schemaFlags;     /* Flags associated with this schema */
-  int cache_size;      /* Number of pages to use in the cache */
+  صحیح cache_سائز;      /* Number of pages to use in the cache */
 };
 
 /*
 ** These macros can be used to test, set, or clear bits in the
 ** Db.pSchema->flags field.
 */
-#define DbHasProperty(D,I,P)     (((D)->aDb[I].pSchema->schemaFlags&(P))==(P))
-#define DbHasAnyProperty(D,I,P)  (((D)->aDb[I].pSchema->schemaFlags&(P))!=0)
-#define DbSetProperty(D,I,P)     (D)->aDb[I].pSchema->schemaFlags|=(P)
-#define DbClearProperty(D,I,P)   (D)->aDb[I].pSchema->schemaFlags&=~(P)
+#تعریف_کرو DbHasProperty(D,I,P)     (((D)->aDb[I].pSchema->schemaFlags&(P))==(P))
+#تعریف_کرو DbHasAnyProperty(D,I,P)  (((D)->aDb[I].pSchema->schemaFlags&(P))!=0)
+#تعریف_کرو Db_سیٹ_Property(D,I,P)     (D)->aDb[I].pSchema->schemaFlags|=(P)
+#تعریف_کرو DbClearProperty(D,I,P)   (D)->aDb[I].pSchema->schemaFlags&=~(P)
 
 /*
 ** Allowed values for the DB.pSchema->flags field.
@@ -1566,15 +1566,15 @@ struct Schema {
 ** have been filled out.  If the schema changes, these column names might
 ** changes and so the view will need to be reset.
 */
-#define DB_SchemaLoaded    0x0001  /* The schema has been loaded */
-#define DB_UnresetViews    0x0002  /* Some views have defined column names */
-#define DB_ResetWanted     0x0008  /* Reset the schema when nSchemaLock==0 */
+#تعریف_کرو DB_SchemaLoaded    0x0001  /* The schema has been loaded */
+#تعریف_کرو DB_UnresetViews    0x0002  /* Some views have defined column names */
+#تعریف_کرو DB_ResetWanted     0x0008  /* Reset the schema when nSchemaLock==0 */
 
 /*
 ** The number of different kinds of things that can be limited
 ** using the sqlite3_limit() interface.
 */
-#define SQLITE_N_LIMIT (SQLITE_LIMIT_CTES+1)
+#تعریف_کرو SQLITE_N_حد_بندی (SQLITE_حد_بندی_CTES+1)
 
 /*
 ** Lookaside malloc is a set of fixed-size buffers that can be used
@@ -1621,39 +1621,39 @@ struct Schema {
 ** This enhancement can be omitted by compiling with
 ** SQLITE_OMIT_TWOSIZE_LOOKASIDE.
 */
-struct Lookaside {
+ساخت Lookaside {
   u32 bDisable;           /* Only operate the lookaside when zero */
   u16 sz;                 /* Size of each buffer in bytes */
   u16 szTrue;             /* True value of sz, even if disabled */
   u8 bMalloced;           /* True if pStart obtained from sqlite3_malloc() */
-  u32 nSlot;              /* Number of lookaside slots allocated */
+  u32 n_خانہ;              /* Number of lookaside slots allocated */
   u32 anStat[3];          /* 0: hits.  1: size misses.  2: full misses */
-  LookasideSlot *pInit;   /* List of buffers not previously used */
-  LookasideSlot *pFree;   /* List of available buffers */
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  LookasideSlot *pSmallInit; /* List of small buffers not previously used */
-  LookasideSlot *pSmallFree; /* List of available small buffers */
-  void *pMiddle;          /* First byte past end of full-size buffers and
+  Lookaside_خانہ *pInit;   /* List of buffers not previously used */
+  Lookaside_خانہ *pFree;   /* List of available buffers */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+  Lookaside_خانہ *pSmallInit; /* List of small buffers not previously used */
+  Lookaside_خانہ *pSmallFree; /* List of available small buffers */
+  خالی *p_درمیان;          /* First byte past end of full-size buffers and
                           ** the first byte of LOOKASIDE_SMALL buffers */
-#endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-  void *pStart;           /* First byte of available memory space */
-  void *pEnd;             /* First byte past end of available space */
-  void *pTrueEnd;         /* True value of pEnd, when db->pnBytesFreed!=0 */
+#اگر_ختم /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
+  خالی *p_آغاز;           /* First byte of available memory space */
+  خالی *p_انتہا;             /* First byte past end of available space */
+  خالی *p_True_انتہا;         /* True value of pEnd, when db->pnBytesFreed!=0 */
 };
-struct LookasideSlot {
-  LookasideSlot *pNext;    /* Next buffer in the list of free buffers */
+ساخت Lookaside_خانہ {
+  Lookaside_خانہ *p_اگلا;    /* Next buffer in the list of free buffers */
 };
 
-#define DisableLookaside  db->lookaside.bDisable++;db->lookaside.sz=0
-#define EnableLookaside   db->lookaside.bDisable--;\
+#تعریف_کرو DisableLookaside  db->lookaside.bDisable++;db->lookaside.sz=0
+#تعریف_کرو EnableLookaside   db->lookaside.bDisable--;\
    db->lookaside.sz=db->lookaside.bDisable?0:db->lookaside.szTrue
 
 /* Size of the smaller allocations in two-size lookaside */
-#ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
+#اگر_تعریف_شدہ SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #  define LOOKASIDE_SMALL           0
-#else
+#ورنہ
 #  define LOOKASIDE_SMALL         128
-#endif
+#اگر_ختم
 
 /*
 ** A hash table for built-in function definitions.  (Application-defined
@@ -1663,63 +1663,63 @@ struct LookasideSlot {
 ** Collisions are on the FuncDef.u.pHash chain.  Use the SQLITE_FUNC_HASH()
 ** macro to compute a hash on the function name.
 */
-#define SQLITE_FUNC_HASH_SZ 23
-struct FuncDefHash {
+#تعریف_کرو SQLITE_FUNC_HASH_SZ 23
+ساخت FuncDefHash {
   FuncDef *a[SQLITE_FUNC_HASH_SZ];       /* Hash table for functions */
 };
-#define SQLITE_FUNC_HASH(C,L) (((C)+(L))%SQLITE_FUNC_HASH_SZ)
+#تعریف_کرو SQLITE_FUNC_HASH(C,L) (((C)+(L))%SQLITE_FUNC_HASH_SZ)
 
 /*
 ** typedef for the authorization callback function.
 */
-typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
-                             const char*);
+قسمتعریف صحیح (*sqlite3_xauth)(خالی*,صحیح,ثابت حرف*,ثابت حرف*,ثابت حرف*,
+                             ثابت حرف*);
 
-#ifndef SQLITE_OMIT_DEPRECATED
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DEPRECATED
 /* This is an extra SQLITE_TRACE macro that indicates "legacy" tracing
 ** in the style of sqlite3_trace()
 */
-#define SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
-#define SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
-#else
-#define SQLITE_TRACE_LEGACY          0
-#define SQLITE_TRACE_XPROFILE        0
-#endif /* SQLITE_OMIT_DEPRECATED */
-#define SQLITE_TRACE_NONLEGACY_MASK  0x0f     /* Normal flags */
+#تعریف_کرو SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
+#تعریف_کرو SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
+#ورنہ
+#تعریف_کرو SQLITE_TRACE_LEGACY          0
+#تعریف_کرو SQLITE_TRACE_XPROFILE        0
+#اگر_ختم /* SQLITE_OMIT_DEPRECATED */
+#تعریف_کرو SQLITE_TRACE_NONLEGACY_نقاب  0x0f     /* Normal flags */
 
 /*
 ** Maximum number of sqlite3.aDb[] entries.  This is the number of attached
 ** databases plus 2 for "main" and "temp".
 */
-#define SQLITE_MAX_DB (SQLITE_MAX_ATTACHED+2)
+#تعریف_کرو SQLITE_MAX_DB (SQLITE_MAX_ATTACHED+2)
 
 /*
 ** Each database connection is an instance of the following structure.
 */
-struct sqlite3 {
+ساخت sqlite3 {
   sqlite3_vfs *pVfs;            /* OS Interface */
-  struct Vdbe *pVdbe;           /* List of active virtual machines */
+  ساخت Vdbe *pVdbe;           /* List of active virtual machines */
   CollSeq *pDfltColl;           /* BINARY collseq for the database encoding */
   sqlite3_mutex *mutex;         /* Connection mutex */
   Db *aDb;                      /* All backends */
-  int nDb;                      /* Number of backends currently in use */
+  صحیح nDb;                      /* Number of backends currently in use */
   u32 mDbFlags;                 /* flags recording internal state */
   u64 flags;                    /* flags settable by pragmas. See below */
-  i64 lastRowid;                /* ROWID of most recent insert (see above) */
+  i64 آخری_Rowid;                /* ROWID of most recent insert (see above) */
   i64 szMmap;                   /* Default mmap_size setting */
-  u32 nSchemaLock;              /* Do not reset the schema when non-zero */
-  unsigned int openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
-  int errCode;                  /* Most recent error code (SQLITE_*) */
-  int errByteOffset;            /* Byte offset of error in SQL statement */
-  int errMask;                  /* & result codes with this before returning */
-  int iSysErrno;                /* Errno value from last system error */
+  u32 n_Schema_تالا;              /* Do not reset the schema when non-zero */
+  غیرعلامتی صحیح openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
+  صحیح err_رمز;                  /* Most recent error code (SQLITE_*) */
+  صحیح err_Byte_انحراف;            /* Byte offset of error in SQL statement */
+  صحیح err_نقاب;                  /* & result codes with this before returning */
+  صحیح iSysErrno;                /* Errno value from last system error */
   u8 enc;                       /* Text encoding */
   u8 autoCommit;                /* The auto-commit flag. */
-  u8 temp_store;                /* 1: file 2: memory 0: default */
+  u8 عارضی_store;                /* 1: file 2: memory 0: default */
   u8 mallocFailed;              /* True if we have seen a malloc failure */
   u8 bBenignMalloc;             /* Do not require OOMs if true */
-  u8 dfltLockMode;              /* Default locking-mode for attached dbs */
-  signed char nextAutovac;      /* Autovac setting after VACUUM if >=0 */
+  u8 dflt_تالا_منوال;              /* Default locking-mode for attached dbs */
+  علامتی حرف اگلا_Autovac;      /* Autovac setting after VACUUM if >=0 */
   u8 suppressErr;               /* Do not issue error messages if true */
   u8 vtabOnConflict;            /* Value to return for s3_vtab_on_conflict() */
   u8 isTransactionSavepoint;    /* True if the outermost savepoint is a TS */
@@ -1728,102 +1728,102 @@ struct sqlite3 {
   u8 nSqlExec;                  /* Number of pending OP_SqlExec opcodes */
   u8 eOpenState;                /* Current condition of the connection */
   u8 nFpDigit;                  /* Significant digits to keep on double->text */
-  int nextPagesize;             /* Pagesize after VACUUM if >0 */
+  صحیح اگلا_Pagesize;             /* Pagesize after VACUUM if >0 */
   i64 nChange;                  /* Value returned by sqlite3_changes() */
-  i64 nTotalChange;             /* Value returned by sqlite3_total_changes() */
+  i64 n_کل_Change;             /* Value returned by sqlite3_total_changes() */
   u32 dbOptFlags;               /* Flags to enable/disable optimizations */
-  int aLimit[SQLITE_N_LIMIT];   /* Limits */
-  int nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
-  struct sqlite3InitInfo {      /* Information used during initialization */
+  صحیح a_حد_بندی[SQLITE_N_حد_بندی];   /* Limits */
+  صحیح nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
+  ساخت sqlite3InitInfo {      /* Information used during initialization */
     Pgno newTnum;               /* Rootpage of table being initialized */
     u8 iDb;                     /* Which db file is being initialized */
     u8 busy;                    /* TRUE if initing. 2 if due to ADD COLUMN */
-    unsigned orphanTrigger : 1; /* Last statement is orphaned TEMP trigger */
-    unsigned imposterTable : 2; /* Building an imposter table */
-    unsigned reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
-    const char **azInit;        /* "type", "name", and "tbl_name" columns */
+    غیرعلامتی orphanTrigger : 1; /* Last statement is orphaned TEMP trigger */
+    غیرعلامتی imposter_جدول : 2; /* Building an imposter table */
+    غیرعلامتی reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
+    ثابت حرف **azInit;        /* "type", "name", and "tbl_name" columns */
   } init;
-  int nVdbeActive;              /* Number of VDBEs currently running */
-  int nVdbeRead;                /* Number of active VDBEs that read or write */
-  int nVdbeWrite;               /* Number of active VDBEs that read and write */
-  int nVdbeExec;                /* Number of nested calls to VdbeExec() */
-  int nVDestroy;                /* Number of active OP_VDestroy operations */
-  int nExtension;               /* Number of loaded extensions */
-  void **aExtension;            /* Array of shared library handles */
-  union {
-    void (*xLegacy)(void*,const char*);   /* mTrace==SQLITE_TRACE_LEGACY */
-    int (*xV2)(u32,void*,void*,void*);    /* All other mTrace values */
+  صحیح n_Vdbe_فعال;              /* Number of VDBEs currently running */
+  صحیح nVdbeRead;                /* Number of active VDBEs that read or write */
+  صحیح nVdbeWrite;               /* Number of active VDBEs that read and write */
+  صحیح nVdbeExec;                /* Number of nested calls to VdbeExec() */
+  صحیح nVDestroy;                /* Number of active OP_VDestroy operations */
+  صحیح nExtension;               /* Number of loaded extensions */
+  خالی **aExtension;            /* Array of shared library handles */
+  اتحاد {
+    خالی (*xLegacy)(خالی*,ثابت حرف*);   /* mTrace==SQLITE_TRACE_LEGACY */
+    صحیح (*xV2)(u32,خالی*,خالی*,خالی*);    /* All other mTrace values */
   } trace;
-  void *pTraceArg;                        /* Argument to the trace function */
-#ifndef SQLITE_OMIT_DEPRECATED
-  void (*xProfile)(void*,const char*,u64);  /* Profiling function */
-  void *pProfileArg;                        /* Argument to profile function */
-#endif
-  void *pCommitArg;                 /* Argument to xCommitCallback() */
-  int (*xCommitCallback)(void*);    /* Invoked at every commit. */
-  void *pRollbackArg;               /* Argument to xRollbackCallback() */
-  void (*xRollbackCallback)(void*); /* Invoked at every commit. */
-  void *pUpdateArg;
-  void (*xUpdateCallback)(void*,int, const char*,const char*,sqlite_int64);
-  void *pAutovacPagesArg;           /* Client argument to autovac_pages */
-  void (*xAutovacDestr)(void*);     /* Destructor for pAutovacPAgesArg */
-  unsigned int (*xAutovacPages)(void*,const char*,u32,u32,u32);
+  خالی *pTraceArg;                        /* Argument to the trace function */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DEPRECATED
+  خالی (*xProfile)(خالی*,ثابت حرف*,u64);  /* Profiling function */
+  خالی *pProfileArg;                        /* Argument to profile function */
+#اگر_ختم
+  خالی *pCommitArg;                 /* Argument to xCommitCallback() */
+  صحیح (*xCommitCallback)(خالی*);    /* Invoked at every commit. */
+  خالی *pRollbackArg;               /* Argument to xRollbackCallback() */
+  خالی (*xRollbackCallback)(خالی*); /* Invoked at every commit. */
+  خالی *pUpdateArg;
+  خالی (*xUpdateCallback)(خالی*,صحیح, ثابت حرف*,ثابت حرف*,sqlite_int64);
+  خالی *p_Autovac_صفحات_Arg;           /* Client argument to autovac_pages */
+  خالی (*xAutovacDestr)(خالی*);     /* Destructor for pAutovacPAgesArg */
+  غیرعلامتی صحیح (*x_Autovac_صفحات)(خالی*,ثابت حرف*,u32,u32,u32);
   Parse *pParse;                /* Current parse */
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-  void *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
-  void (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
-    void*,sqlite3*,int,char const*,char const*,sqlite3_int64,sqlite3_int64
+#اگر_تعریف_شدہ SQLITE_ENABLE_PREUPDATE_HOOK
+  خالی *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
+  خالی (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
+    خالی*,sqlite3*,صحیح,حرف ثابت*,حرف ثابت*,sqlite3_int64,sqlite3_int64
   );
   PreUpdate *pPreUpdate;        /* Context for active pre-update callback */
-#endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-#ifndef SQLITE_OMIT_WAL
-  int (*xWalCallback)(void *, sqlite3 *, const char *, int);
-  void *pWalArg;
-#endif
-  void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*);
-  void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*);
-  void *pCollNeededArg;
-  sqlite3_value *pErr;          /* Most recent error message */
-  union {
-    volatile int isInterrupted; /* True if sqlite3_interrupt has been called */
-    double notUsed1;            /* Spacer */
+#اگر_ختم /* SQLITE_ENABLE_PREUPDATE_HOOK */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
+  صحیح (*xWalCallback)(خالی *, sqlite3 *, ثابت حرف *, صحیح);
+  خالی *pWalArg;
+#اگر_ختم
+  خالی(*xCollNeeded)(خالی*,sqlite3*,صحیح e_متن_Rep,ثابت حرف*);
+  خالی(*xCollNeeded16)(خالی*,sqlite3*,صحیح e_متن_Rep,ثابت خالی*);
+  خالی *pCollNeededArg;
+  sqlite3_قدر *pErr;          /* Most recent error message */
+  اتحاد {
+    متلون صحیح isInterrupted; /* True if sqlite3_interrupt has been called */
+    دوہرا notUsed1;            /* Spacer */
   } u1;
   Lookaside lookaside;          /* Lookaside malloc configuration */
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth;          /* Access authorization function */
-  void *pAuthArg;               /* 1st argument to the access auth function */
-#endif
-#ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  int (*xProgress)(void *);     /* The progress callback */
-  void *pProgressArg;           /* Argument to the progress callback */
-  unsigned nProgressOps;        /* Number of opcodes for progress callback */
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVTrans;                  /* Allocated size of aVTrans */
+  خالی *pAuthArg;               /* 1st argument to the access auth function */
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_پیش_رفت_CALLBACK
+  صحیح (*x_پیش_رفت)(خالی *);     /* The progress callback */
+  خالی *p_پیش_رفت_Arg;           /* Argument to the progress callback */
+  غیرعلامتی n_پیش_رفت_Ops;        /* Number of opcodes for progress callback */
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  صحیح nVTrans;                  /* Allocated size of aVTrans */
   Hash aModule;                 /* populated by sqlite3_create_module() */
   VtabCtx *pVtabCtx;            /* Context for active vtab connect/create */
   VTable **aVTrans;             /* Virtual tables with open transactions */
   VTable *pDisconnect;          /* Disconnect these in next sqlite3_prepare() */
-#endif
+#اگر_ختم
   Hash aFunc;                   /* Hash table of connection functions */
   Hash aCollSeq;                /* All collating sequences */
   BusyHandler busyHandler;      /* Busy callback */
   Db aDbStatic[2];              /* Static space for the 2 default backends */
   Savepoint *pSavepoint;        /* List of active savepoints */
-  int nAnalysisLimit;           /* Number of index rows to ANALYZE */
-  int busyTimeout;              /* Busy handler timeout, in msec */
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  int setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
-  int setlkFlags;               /* Flags passed to setlk_timeout() */
-#endif
-  int nSavepoint;               /* Number of non-transaction savepoints */
-  int nStatement;               /* Number of nested statement-transactions  */
+  صحیح n_Analysis_حد_بندی;           /* Number of index rows to ANALYZE */
+  صحیح busyTimeout;              /* Busy handler timeout, in msec */
+#اگر_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+  صحیح setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
+  صحیح setlkFlags;               /* Flags passed to setlk_timeout() */
+#اگر_ختم
+  صحیح nSavepoint;               /* Number of non-transaction savepoints */
+  صحیح nStatement;               /* Number of nested statement-transactions  */
   i64 nDeferredCons;            /* Net deferred constraints this transaction. */
   i64 nDeferredImmCons;         /* Net deferred immediate constraints */
-  int *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
-  DbClientData *pDbData;        /* sqlite3_set_clientdata() content */
+  صحیح *pn_بائٹیں_Freed;            /* If not NULL, increment this in DbFree() */
+  Db_Client_ڈیٹا *p_Db_ڈیٹا;        /* sqlite3_set_clientdata() content */
   u64 nSpill;                   /* TEMP content spilled to disk */
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
+#اگر_تعریف_شدہ SQLITE_ENABLE_UNLOCK_NOTIFY
   /* The following variables are all protected by the STATIC_MAIN
   ** mutex, not by sqlite3.mutex. They are used by code in notify.c.
   **
@@ -1836,24 +1836,24 @@ struct sqlite3 {
   */
   sqlite3 *pBlockingConnection; /* Connection that caused SQLITE_LOCKED */
   sqlite3 *pUnlockConnection;           /* Connection to watch for unlock */
-  void *pUnlockArg;                     /* Argument to xUnlockNotify */
-  void (*xUnlockNotify)(void **, int);  /* Unlock notify callback */
-  sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
-#endif
+  خالی *pUnlockArg;                     /* Argument to xUnlockNotify */
+  خالی (*xUnlockNotify)(خالی **, صحیح);  /* Unlock notify callback */
+  sqlite3 *p_اگلا_Blocked;        /* Next in list of all blocked connections */
+#اگر_ختم
 };
 
 /*
 ** A macro to discover the encoding of a database.
 */
-#define SCHEMA_ENC(db) ((db)->aDb[0].pSchema->enc)
-#define ENC(db)        ((db)->enc)
+#تعریف_کرو SCHEMA_ENC(db) ((db)->aDb[0].pSchema->enc)
+#تعریف_کرو ENC(db)        ((db)->enc)
 
 /*
 ** A u64 constant where the lower 32 bits are all zeros.  Only the
 ** upper 32 bits are included in the argument.  Necessary because some
 ** C-compilers still do not accept LL integer literals.
 */
-#define HI(X)  ((u64)(X)<<32)
+#تعریف_کرو HI(X)  ((u64)(X)<<32)
 
 /*
 ** Possible values for the sqlite3.flags.
@@ -1863,70 +1863,70 @@ struct sqlite3 {
 **      SQLITE_CkptFullFSync == PAGER_CKPT_FULLFSYNC
 **      SQLITE_CacheSpill    == PAGER_CACHE_SPILL
 */
-#define SQLITE_WriteSchema    0x00000001  /* OK to update SQLITE_SCHEMA */
-#define SQLITE_LegacyFileFmt  0x00000002  /* Create new databases in format 1 */
-#define SQLITE_FullColNames   0x00000004  /* Show full column names on SELECT */
-#define SQLITE_FullFSync      0x00000008  /* Use full fsync on the backend */
-#define SQLITE_CkptFullFSync  0x00000010  /* Use full fsync for checkpoint */
-#define SQLITE_CacheSpill     0x00000020  /* OK to spill pager cache */
-#define SQLITE_ShortColNames  0x00000040  /* Show short columns names */
-#define SQLITE_TrustedSchema  0x00000080  /* Allow unsafe functions and
+#تعریف_کرو SQLITE_WriteSchema    0x00000001  /* OK to update SQLITE_SCHEMA */
+#تعریف_کرو SQLITE_LegacyFileFmt  0x00000002  /* Create new databases in format 1 */
+#تعریف_کرو SQLITE_بھرا_ستون_نام   0x00000004  /* Show full column names on SELECT */
+#تعریف_کرو SQLITE_بھرا_FSync      0x00000008  /* Use full fsync on the backend */
+#تعریف_کرو SQLITE_Ckpt_بھرا_FSync  0x00000010  /* Use full fsync for checkpoint */
+#تعریف_کرو SQLITE_CacheSpill     0x00000020  /* OK to spill pager cache */
+#تعریف_کرو SQLITE_Short_ستون_نام  0x00000040  /* Show short columns names */
+#تعریف_کرو SQLITE_TrustedSchema  0x00000080  /* Allow unsafe functions and
                                           ** vtabs in the schema definition */
-#define SQLITE_NullCallback   0x00000100  /* Invoke the callback once if the */
+#تعریف_کرو SQLITE_NullCallback   0x00000100  /* Invoke the callback once if the */
                                           /*   result set is empty */
-#define SQLITE_IgnoreChecks   0x00000200  /* Do not enforce check constraints */
-#define SQLITE_StmtScanStatus 0x00000400  /* Enable stmt_scanstats() counters */
-#define SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
-#define SQLITE_ReverseOrder   0x00001000  /* Reverse unordered SELECTs */
-#define SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
-#define SQLITE_ForeignKeys    0x00004000  /* Enforce foreign key constraints  */
-#define SQLITE_AutoIndex      0x00008000  /* Enable automatic indexes */
-#define SQLITE_LoadExtension  0x00010000  /* Enable load_extension */
-#define SQLITE_LoadExtFunc    0x00020000  /* Enable load_extension() SQL func */
-#define SQLITE_EnableTrigger  0x00040000  /* True to enable triggers */
-#define SQLITE_DeferFKs       0x00080000  /* Defer all FK constraints */
-#define SQLITE_QueryOnly      0x00100000  /* Disable database changes */
-#define SQLITE_CellSizeCk     0x00200000  /* Check btree cell sizes on load */
-#define SQLITE_Fts3Tokenizer  0x00400000  /* Enable fts3_tokenizer(2) */
-#define SQLITE_EnableQPSG     0x00800000  /* Query Planner Stability Guarantee*/
-#define SQLITE_TriggerEQP     0x01000000  /* Show trigger EXPLAIN QUERY PLAN */
-#define SQLITE_ResetDatabase  0x02000000  /* Reset the database */
-#define SQLITE_LegacyAlter    0x04000000  /* Legacy ALTER TABLE behaviour */
-#define SQLITE_NoSchemaError  0x08000000  /* Do not report schema parse errors*/
-#define SQLITE_Defensive      0x10000000  /* Input SQL is likely hostile */
-#define SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
-#define SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
-#define SQLITE_EnableView     0x80000000  /* Enable the use of views */
-#define SQLITE_CountRows      HI(0x00001) /* Count rows changed by INSERT, */
+#تعریف_کرو SQLITE_IgnoreChecks   0x00000200  /* Do not enforce check constraints */
+#تعریف_کرو SQLITE_Stmt_جائزہ_حالت 0x00000400  /* Enable stmt_scanstats() counters */
+#تعریف_کرو SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
+#تعریف_کرو SQLITE_الٹ_ترتیب   0x00001000  /* Reverse unordered SELECTs */
+#تعریف_کرو SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
+#تعریف_کرو SQLITE_Foreign_کلیدیں    0x00004000  /* Enforce foreign key constraints  */
+#تعریف_کرو SQLITE_Auto_اشاریہ      0x00008000  /* Enable automatic indexes */
+#تعریف_کرو SQLITE_بھرو_Extension  0x00010000  /* Enable load_extension */
+#تعریف_کرو SQLITE_بھرو_Ext_Func    0x00020000  /* Enable load_extension() SQL func */
+#تعریف_کرو SQLITE_EnableTrigger  0x00040000  /* True to enable triggers */
+#تعریف_کرو SQLITE_DeferFKs       0x00080000  /* Defer all FK constraints */
+#تعریف_کرو SQLITE_QueryOnly      0x00100000  /* Disable database changes */
+#تعریف_کرو SQLITE_Cell_سائز_Ck     0x00200000  /* Check btree cell sizes on load */
+#تعریف_کرو SQLITE_Fts3Tokenizer  0x00400000  /* Enable fts3_tokenizer(2) */
+#تعریف_کرو SQLITE_EnableQPSG     0x00800000  /* Query Planner Stability Guarantee*/
+#تعریف_کرو SQLITE_TriggerEQP     0x01000000  /* Show trigger EXPLAIN QUERY PLAN */
+#تعریف_کرو SQLITE_ResetDatabase  0x02000000  /* Reset the database */
+#تعریف_کرو SQLITE_LegacyAlter    0x04000000  /* Legacy ALTER TABLE behaviour */
+#تعریف_کرو SQLITE_NoSchemaError  0x08000000  /* Do not report schema parse errors*/
+#تعریف_کرو SQLITE_Defensive      0x10000000  /* Input SQL is likely hostile */
+#تعریف_کرو SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
+#تعریف_کرو SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
+#تعریف_کرو SQLITE_EnableView     0x80000000  /* Enable the use of views */
+#تعریف_کرو SQLITE_گنتی_صفیں      HI(0x00001) /* Count rows changed by INSERT, */
                                           /*   DELETE, or UPDATE and return */
                                           /*   the count using a callback. */
-#define SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
-#define SQLITE_ReadUncommit   HI(0x00004) /* READ UNCOMMITTED in shared-cache */
-#define SQLITE_FkNoAction     HI(0x00008) /* Treat all FK as NO ACTION */
-#define SQLITE_AttachCreate   HI(0x00010) /* ATTACH allowed to create new dbs */
-#define SQLITE_AttachWrite    HI(0x00020) /* ATTACH allowed to open for write */
-#define SQLITE_Comments       HI(0x00040) /* Enable SQL comments */
+#تعریف_کرو SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
+#تعریف_کرو SQLITE_ReadUncommit   HI(0x00004) /* READ UNCOMMITTED in shared-cache */
+#تعریف_کرو SQLITE_FkNoAction     HI(0x00008) /* Treat all FK as NO ACTION */
+#تعریف_کرو SQLITE_AttachCreate   HI(0x00010) /* ATTACH allowed to create new dbs */
+#تعریف_کرو SQLITE_AttachWrite    HI(0x00020) /* ATTACH allowed to open for write */
+#تعریف_کرو SQLITE_Comments       HI(0x00040) /* Enable SQL comments */
 
 /* Flags used only if debugging */
-#ifdef SQLITE_DEBUG
-#define SQLITE_SqlTrace       HI(0x0100000) /* Debug print SQL as it executes */
-#define SQLITE_VdbeListing    HI(0x0200000) /* Debug listings of VDBE progs */
-#define SQLITE_VdbeTrace      HI(0x0400000) /* True to trace VDBE execution */
-#define SQLITE_VdbeAddopTrace HI(0x0800000) /* Trace sqlite3VdbeAddOp() calls */
-#define SQLITE_VdbeEQP        HI(0x1000000) /* Debug EXPLAIN QUERY PLAN */
-#define SQLITE_ParserTrace    HI(0x2000000) /* PRAGMA parser_trace=ON */
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+#تعریف_کرو SQLITE_SqlTrace       HI(0x0100000) /* Debug print SQL as it executes */
+#تعریف_کرو SQLITE_VdbeListing    HI(0x0200000) /* Debug listings of VDBE progs */
+#تعریف_کرو SQLITE_VdbeTrace      HI(0x0400000) /* True to trace VDBE execution */
+#تعریف_کرو SQLITE_VdbeAddopTrace HI(0x0800000) /* Trace sqlite3VdbeAddOp() calls */
+#تعریف_کرو SQLITE_VdbeEQP        HI(0x1000000) /* Debug EXPLAIN QUERY PLAN */
+#تعریف_کرو SQLITE_ParserTrace    HI(0x2000000) /* PRAGMA parser_trace=ON */
+#اگر_ختم
 
 /*
 ** Allowed values for sqlite3.mDbFlags
 */
-#define DBFLAG_SchemaChange   0x0001  /* Uncommitted Hash table changes */
-#define DBFLAG_PreferBuiltin  0x0002  /* Preference to built-in funcs */
-#define DBFLAG_Vacuum         0x0004  /* Currently in a VACUUM */
-#define DBFLAG_VacuumInto     0x0008  /* Currently running VACUUM INTO */
-#define DBFLAG_SchemaKnownOk  0x0010  /* Schema is known to be valid */
-#define DBFLAG_InternalFunc   0x0020  /* Allow use of internal functions */
-#define DBFLAG_EncodingFixed  0x0040  /* No longer possible to change enc. */
+#تعریف_کرو DBFLAG_SchemaChange   0x0001  /* Uncommitted Hash table changes */
+#تعریف_کرو DBFLAG_PreferBuiltin  0x0002  /* Preference to built-in funcs */
+#تعریف_کرو DBFLAG_Vacuum         0x0004  /* Currently in a VACUUM */
+#تعریف_کرو DBFLAG_VacuumInto     0x0008  /* Currently running VACUUM INTO */
+#تعریف_کرو DBFLAG_Schema_معلوم_Ok  0x0010  /* Schema is known to be valid */
+#تعریف_کرو DBFLAG_اندرونی_Func   0x0020  /* Allow use of internal functions */
+#تعریف_کرو DBFLAG_EncodingFixed  0x0040  /* No longer possible to change enc. */
 
 /*
 ** Bits of the sqlite3.dbOptFlags field that are used by the
@@ -1936,61 +1936,61 @@ struct sqlite3 {
 **
 ** Keep these values in sync with the ext/misc/optname.c extension.
 */
-#define SQLITE_QueryFlattener  1 /* Query flattening */
-#define SQLITE_WindowFunc      2 /* Use xInverse for window functions */
-#define SQLITE_GroupByOrder    3 /* GROUPBY cover of ORDERBY */
-#define SQLITE_JoinMiss        4 /* Unwind join loops on a lookup miss*/
-#define SQLITE_DistinctOpt     5 /* DISTINCT using indexes */
-#define SQLITE_CoverIdxScan    6 /* Covering index scans */
-#define SQLITE_OrderByIdxJoin  7 /* ORDER BY of joins via index */
-#define SQLITE_Transitive      8 /* Transitive constraints */
-#define SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
-#define SQLITE_CountOfView    10 /* The count-of-view optimization */
-#define SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
-#define SQLITE_Stat4          12 /* Use STAT4 data */
-#define SQLITE_PushDown       13 /* WHERE-clause push-down opt */
-#define SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
-#define SQLITE_SkipScan       15 /* Skip-scans */
-#define SQLITE_PropagateConst 16 /* The constant propagation opt */
-#define SQLITE_MinMaxOpt      17 /* The min/max optimization */
-#define SQLITE_SeekScan       18 /* The OP_SeekScan optimization */
-#define SQLITE_OmitOrderBy    19 /* Omit pointless ORDER BY */
-#define SQLITE_BloomFilter    20 /* Use a Bloom filters */
+#تعریف_کرو SQLITE_QueryFlattener  1 /* Query flattening */
+#تعریف_کرو SQLITE_کھڑکی_Func      2 /* Use xInverse for window functions */
+#تعریف_کرو SQLITE_گروہ_By_ترتیب    3 /* GROUPBY cover of ORDERBY */
+#تعریف_کرو SQLITE_Join_ناکامی        4 /* Unwind join loops on a lookup miss*/
+#تعریف_کرو SQLITE_DistinctOpt     5 /* DISTINCT using indexes */
+#تعریف_کرو SQLITE_Cover_Idx_جائزہ    6 /* Covering index scans */
+#تعریف_کرو SQLITE_ترتیب_By_Idx_Join  7 /* ORDER BY of joins via index */
+#تعریف_کرو SQLITE_متعدی      8 /* Transitive constraints */
+#تعریف_کرو SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
+#تعریف_کرو SQLITE_گنتی_کا_View    10 /* The count-of-view optimization */
+#تعریف_کرو SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
+#تعریف_کرو SQLITE_Stat4          12 /* Use STAT4 data */
+#تعریف_کرو SQLITE_ڈالو_نیچے_کو       13 /* WHERE-clause push-down opt */
+#تعریف_کرو SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
+#تعریف_کرو SQLITE_Skip_جائزہ       15 /* Skip-scans */
+#تعریف_کرو SQLITE_PropagateConst 16 /* The constant propagation opt */
+#تعریف_کرو SQLITE_MinMaxOpt      17 /* The min/max optimization */
+#تعریف_کرو SQLITE_Seek_جائزہ       18 /* The OP_SeekScan optimization */
+#تعریف_کرو SQLITE_Omit_ترتیب_By    19 /* Omit pointless ORDER BY */
+#تعریف_کرو SQLITE_BloomFilter    20 /* Use a Bloom filters */
                           /*  21 -- Available for reuse */
-#define SQLITE_BalancedMerge  22 /* Balance multi-way merges */
-#define SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
-#define SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
-#define SQLITE_IndexedExpr    25 /* Pull exprs from index when able */
-#define SQLITE_Coroutines     26 /* Co-routines for subqueries */
-#define SQLITE_NullUnusedCols 27 /* NULL unused columns in subqueries */
-#define SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
-#define SQLITE_OrderBySubq    29 /* ORDER BY in subquery helps outer */
-#define SQLITE_StarQuery      30 /* Heurists for star queries */
-#define SQLITE_ExistsToJoin   31 /* The EXISTS-to-JOIN optimization */
-#define SQLITE_UnionLimit     32 /* Optimizations for UNION + LIMIT */
+#تعریف_کرو SQLITE_متوازن_ملاؤ  22 /* Balance multi-way merges */
+#تعریف_کرو SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
+#تعریف_کرو SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
+#تعریف_کرو SQLITE_اشاریہ_دار_اظہاریہ    25 /* Pull exprs from index when able */
+#تعریف_کرو SQLITE_Coroutines     26 /* Co-routines for subqueries */
+#تعریف_کرو SQLITE_Null_غیر_مستعمل_ستون_تعداد 27 /* NULL unused columns in subqueries */
+#تعریف_کرو SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
+#تعریف_کرو SQLITE_ترتیب_By_Subq    29 /* ORDER BY in subquery helps outer */
+#تعریف_کرو SQLITE_ستارہ_Query      30 /* Heurists for star queries */
+#تعریف_کرو SQLITE_Exists_مقصد_Join   31 /* The EXISTS-to-JOIN optimization */
+#تعریف_کرو SQLITE_Union_حد_بندی     32 /* Optimizations for UNION + LIMIT */
 
 /*
 ** Macros for testing whether or not optimizations are enabled or disabled.
 */
-#define OptimizationDisabled(D,M)  (((D)->dbOptFlags&(1ul<<((M)-1)))!=0)
-#define OptimizationEnabled(D,M)   (((D)->dbOptFlags&(1ul<<((M)-1)))==0)
+#تعریف_کرو OptimizationDisabled(D,M)  (((D)->dbOptFlags&(1ul<<((M)-1)))!=0)
+#تعریف_کرو OptimizationEnabled(D,M)   (((D)->dbOptFlags&(1ul<<((M)-1)))==0)
 
 /*
 ** Return true if it OK to factor constant expressions into the initialization
 ** code. The argument is a Parse object for the code generator.
 */
-#define ConstFactorOk(P) ((P)->okConstFactor)
+#تعریف_کرو Const_ضربی_عدد_Ok(P) ((P)->ok_Const_ضربی_عدد)
 
 /* Possible values for the sqlite3.eOpenState field.
 ** The numbers are randomly selected such that a minimum of three bits must
 ** change to convert any number to another or to zero
 */
-#define SQLITE_STATE_OPEN     0x76  /* Database is open */
-#define SQLITE_STATE_CLOSED   0xce  /* Database is closed */
-#define SQLITE_STATE_SICK     0xba  /* Error and awaiting close */
-#define SQLITE_STATE_BUSY     0x6d  /* Database currently in use */
-#define SQLITE_STATE_ERROR    0xd5  /* An SQLITE_MISUSE error occurred */
-#define SQLITE_STATE_ZOMBIE   0xa7  /* Close with last statement close */
+#تعریف_کرو SQLITE_STATE_OPEN     0x76  /* Database is open */
+#تعریف_کرو SQLITE_STATE_CLOSED   0xce  /* Database is closed */
+#تعریف_کرو SQLITE_STATE_SICK     0xba  /* Error and awaiting close */
+#تعریف_کرو SQLITE_STATE_BUSY     0x6d  /* Database currently in use */
+#تعریف_کرو SQLITE_STATE_ERROR    0xd5  /* An SQLITE_MISUSE error occurred */
+#تعریف_کرو SQLITE_STATE_ZOMBIE   0xa7  /* Close with last statement close */
 
 /*
 ** Each SQL function is defined by an instance of the following
@@ -2002,17 +2002,17 @@ struct sqlite3 {
 ** The u.pHash field is used by the global built-ins.  The u.pDestructor
 ** field is used by per-connection app-def functions.
 */
-struct FuncDef {
+ساخت FuncDef {
   i16 nArg;            /* Number of arguments.  -1 means unlimited */
   u32 funcFlags;       /* Some combination of SQLITE_FUNC_* */
-  void *pUserData;     /* User data parameter */
-  FuncDef *pNext;      /* Next function with same name */
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**); /* func or agg-step */
-  void (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
-  void (*xValue)(sqlite3_context*);                     /* Current agg value */
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**); /* inverse agg-step */
-  const char *zName;   /* SQL name of the function. */
-  union {
+  خالی *p_User_ڈیٹا;     /* User data parameter */
+  FuncDef *p_اگلا;      /* Next function with same name */
+  خالی (*xSFunc)(sqlite3_context*,صحیح,sqlite3_قدر**); /* func or agg-step */
+  خالی (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
+  خالی (*x_قدر)(sqlite3_context*);                     /* Current agg value */
+  خالی (*xInverse)(sqlite3_context*,صحیح,sqlite3_قدر**); /* inverse agg-step */
+  ثابت حرف *zName;   /* SQL name of the function. */
+  اتحاد {
     FuncDef *pHash;      /* Next with a different name but the same hash */
     FuncDestructor *pDestructor;   /* Reference counted destructor function */
   } u; /* pHash if SQLITE_FUNC_BUILTIN, pDestructor otherwise */
@@ -2032,10 +2032,10 @@ struct FuncDef {
 ** count on this object is decremented. When it reaches 0, the destructor
 ** is invoked and the FuncDestructor structure freed.
 */
-struct FuncDestructor {
-  int nRef;
-  void (*xDestroy)(void *);
-  void *pUserData;
+ساخت FuncDestructor {
+  صحیح nRef;
+  خالی (*xDestroy)(خالی *);
+  خالی *p_User_ڈیٹا;
 };
 
 /*
@@ -2061,42 +2061,42 @@ struct FuncDestructor {
 ** SQLITE_INNOCUOUS is used by application code and means "not unsafe".
 ** See multiple instances of tag-20230109-1.
 */
-#define SQLITE_FUNC_ENCMASK  0x0003 /* SQLITE_UTF8, SQLITE_UTF16BE or UTF16LE */
-#define SQLITE_FUNC_LIKE     0x0004 /* Candidate for the LIKE optimization */
-#define SQLITE_FUNC_CASE     0x0008 /* Case-sensitive LIKE-type function */
-#define SQLITE_FUNC_EPHEM    0x0010 /* Ephemeral.  Delete with VDBE */
-#define SQLITE_FUNC_NEEDCOLL 0x0020 /* sqlite3GetFuncCollSeq() might be called*/
-#define SQLITE_FUNC_LENGTH   0x0040 /* Built-in length() function */
-#define SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
-#define SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
-#define SQLITE_FUNC_COUNT    0x0100 /* Built-in count(*) aggregate */
+#تعریف_کرو SQLITE_FUNC_ENCMASK  0x0003 /* SQLITE_UTF8, SQLITE_UTF16BE or UTF16LE */
+#تعریف_کرو SQLITE_FUNC_LIKE     0x0004 /* Candidate for the LIKE optimization */
+#تعریف_کرو SQLITE_FUNC_CASE     0x0008 /* Case-sensitive LIKE-type function */
+#تعریف_کرو SQLITE_FUNC_EPHEM    0x0010 /* Ephemeral.  Delete with VDBE */
+#تعریف_کرو SQLITE_FUNC_NEEDCOLL 0x0020 /* sqlite3GetFuncCollSeq() might be called*/
+#تعریف_کرو SQLITE_FUNC_لمبائی   0x0040 /* Built-in length() function */
+#تعریف_کرو SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
+#تعریف_کرو SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
+#تعریف_کرو SQLITE_FUNC_گنتی    0x0100 /* Built-in count(*) aggregate */
 /*                           0x0200 -- available for reuse */
-#define SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
-#define SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
-#define SQLITE_FUNC_MINMAX   0x1000 /* True for min() and max() aggregates */
-#define SQLITE_FUNC_SLOCHNG  0x2000 /* "Slow Change". Value constant during a
+#تعریف_کرو SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
+#تعریف_کرو SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
+#تعریف_کرو SQLITE_FUNC_MINMAX   0x1000 /* True for min() and max() aggregates */
+#تعریف_کرو SQLITE_FUNC_SLOCHNG  0x2000 /* "Slow Change". Value constant during a
                                     ** single query - might change over time */
-#define SQLITE_FUNC_TEST     0x4000 /* Built-in testing functions */
-#define SQLITE_FUNC_RUNONLY  0x8000 /* Cannot be used by valueFromFunction */
-#define SQLITE_FUNC_WINDOW   0x00010000 /* Built-in window-only function */
-#define SQLITE_FUNC_INTERNAL 0x00040000 /* For use by NestedParse() only */
-#define SQLITE_FUNC_DIRECT   0x00080000 /* Not for use in TRIGGERs or VIEWs */
+#تعریف_کرو SQLITE_FUNC_TEST     0x4000 /* Built-in testing functions */
+#تعریف_کرو SQLITE_FUNC_RUNONLY  0x8000 /* Cannot be used by valueFromFunction */
+#تعریف_کرو SQLITE_FUNC_کھڑکی   0x00010000 /* Built-in window-only function */
+#تعریف_کرو SQLITE_FUNC_اندرونی 0x00040000 /* For use by NestedParse() only */
+#تعریف_کرو SQLITE_FUNC_براہ_راست   0x00080000 /* Not for use in TRIGGERs or VIEWs */
 /* SQLITE_SUBTYPE            0x00100000 // Consumer of subtypes */
-#define SQLITE_FUNC_UNSAFE   0x00200000 /* Function has side effects */
-#define SQLITE_FUNC_INLINE   0x00400000 /* Functions implemented in-line */
-#define SQLITE_FUNC_BUILTIN  0x00800000 /* This is a built-in function */
+#تعریف_کرو SQLITE_FUNC_UNSAFE   0x00200000 /* Function has side effects */
+#تعریف_کرو SQLITE_FUNC_INLINE   0x00400000 /* Functions implemented in-line */
+#تعریف_کرو SQLITE_FUNC_BUILTIN  0x00800000 /* This is a built-in function */
 /*  SQLITE_RESULT_SUBTYPE    0x01000000 // Generator of subtypes */
-#define SQLITE_FUNC_ANYORDER 0x08000000 /* count/min/max aggregate */
+#تعریف_کرو SQLITE_FUNC_ANYORDER 0x08000000 /* count/min/max aggregate */
 
 /* Identifier numbers for each in-line function */
-#define INLINEFUNC_coalesce             0
-#define INLINEFUNC_implies_nonnull_row  1
-#define INLINEFUNC_expr_implies_expr    2
-#define INLINEFUNC_expr_compare         3
-#define INLINEFUNC_affinity             4
-#define INLINEFUNC_iif                  5
-#define INLINEFUNC_sqlite_offset        6
-#define INLINEFUNC_unlikely            99  /* Default case */
+#تعریف_کرو INLINEFUNC_coalesce             0
+#تعریف_کرو INLINEFUNC_مستلزم_nonnull_صف  1
+#تعریف_کرو INLINEFUNC_اظہاریہ_مستلزم_اظہاریہ    2
+#تعریف_کرو INLINEFUNC_اظہاریہ_compare         3
+#تعریف_کرو INLINEFUNC_affinity             4
+#تعریف_کرو INLINEFUNC_iif                  5
+#تعریف_کرو INLINEFUNC_sqlite_انحراف        6
+#تعریف_کرو INLINEFUNC_unlikely            99  /* Default case */
 
 /*
 ** The following three macros, FUNCTION(), LIKEFUNC() and AGGREGATE() are
@@ -2164,57 +2164,57 @@ struct FuncDestructor {
 **     FuncDef.flags variable is set to the value passed as the flags
 **     parameter.
 */
-#define FUNCTION(zName, nArg, iArg, bNC, xFunc) \
+#تعریف_کرو FUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_CONSTANT|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define VFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو VFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define SFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو SFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_DIRECTONLY|SQLITE_FUNC_UNSAFE, \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define MFUNCTION(zName, nArg, xPtr, xFunc) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو MFUNCTION(zName, nArg, xPtr, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8, \
    xPtr, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define JFUNCTION(zName, nArg, bUseCache, bWS, bRS, bJsonB, iArg, xFunc) \
+#تعریف_کرو JFUNCTION(zName, nArg, bUseCache, bWS, bRS, bJsonB, iArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_DETERMINISTIC|SQLITE_FUNC_CONSTANT|\
    SQLITE_UTF8|((bUseCache)*SQLITE_FUNC_RUNONLY)|\
-   ((bRS)*SQLITE_SUBTYPE)|((bWS)*SQLITE_RESULT_SUBTYPE), \
-   SQLITE_INT_TO_PTR(iArg|((bJsonB)*JSON_BLOB)),0,xFunc,0, 0, 0, #zName, {0} }
-#define INLINE_FUNC(zName, nArg, iArg, mFlags) \
+   ((bRS)*SQLITE_SUBTYPE)|((bWS)*SQLITE_نتیجہ_SUBTYPE), \
+   SQLITE_INT_مقصد_PTR(iArg|((bJsonB)*JSON_BLOB)),0,xFunc,0, 0, 0, #zName, {0} }
+#تعریف_کرو INLINE_FUNC(zName, nArg, iArg, mFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_UTF8|SQLITE_FUNC_INLINE|SQLITE_FUNC_CONSTANT|(mFlags), \
-   SQLITE_INT_TO_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
-#define TEST_FUNC(zName, nArg, iArg, mFlags) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو TEST_FUNC(zName, nArg, iArg, mFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
-         SQLITE_UTF8|SQLITE_FUNC_INTERNAL|SQLITE_FUNC_TEST| \
+         SQLITE_UTF8|SQLITE_FUNC_اندرونی|SQLITE_FUNC_TEST| \
          SQLITE_FUNC_INLINE|SQLITE_FUNC_CONSTANT|(mFlags), \
-   SQLITE_INT_TO_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
-#define DFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو DFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_SLOCHNG|SQLITE_UTF8, \
    0, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define PURE_DATE(zName, nArg, iArg, bNC, xFunc) \
+#تعریف_کرو خالص_DATE(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
          SQLITE_FUNC_SLOCHNG|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
-   (void*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define FUNCTION2(zName, nArg, iArg, bNC, xFunc, extraFlags) \
+   (خالی*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو FUNCTION2(zName, nArg, iArg, bNC, xFunc, extraFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_CONSTANT|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL)|extraFlags,\
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define STR_FUNCTION(zName, nArg, pArg, bNC, xFunc) \
+   SQLITE_INT_مقصد_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو STR_FUNCTION(zName, nArg, pArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_SLOCHNG|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
    pArg, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define LIKEFUNC(zName, nArg, arg, flags) \
+#تعریف_کرو LIKEFUNC(zName, nArg, arg, flags) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8|flags, \
-   (void *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
-#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, xValue, xInverse, f) \
+   (خالی *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
+#تعریف_کرو WAGGREGATE(zName, nArg, arg, nc, x_قدم, xFinal, x_قدر, xInverse, f) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(nc*SQLITE_FUNC_NEEDCOLL)|f, \
-   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,xValue,xInverse,#zName, {0}}
-#define INTERNAL_FUNCTION(zName, nArg, xFunc) \
+   SQLITE_INT_مقصد_PTR(arg), 0, x_قدم,xFinal,x_قدر,xInverse,#zName, {0}}
+#تعریف_کرو اندرونی_FUNCTION(zName, nArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
-   SQLITE_FUNC_INTERNAL|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
+   SQLITE_FUNC_اندرونی|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
    0, 0, xFunc, 0, 0, 0, #zName, {0} }
 
 
@@ -2224,20 +2224,20 @@ struct FuncDestructor {
 ** opened savepoint. Savepoints are added to the list by the vdbe
 ** OP_Savepoint instruction.
 */
-struct Savepoint {
-  char *zName;                        /* Savepoint name (nul-terminated) */
+ساخت Savepoint {
+  حرف *zName;                        /* Savepoint name (nul-terminated) */
   i64 nDeferredCons;                  /* Number of deferred fk violations */
   i64 nDeferredImmCons;               /* Number of deferred imm fk. */
-  Savepoint *pNext;                   /* Parent savepoint (if any) */
+  Savepoint *p_اگلا;                   /* Parent savepoint (if any) */
 };
 
 /*
 ** The following are used as the second parameter to sqlite3Savepoint(),
 ** and as the P1 argument to the OP_Savepoint instruction.
 */
-#define SAVEPOINT_BEGIN      0
-#define SAVEPOINT_RELEASE    1
-#define SAVEPOINT_ROLLBACK   2
+#تعریف_کرو SAVEPOINT_BEGIN      0
+#تعریف_کرو SAVEPOINT_RELEASE    1
+#تعریف_کرو SAVEPOINT_ROLLBACK   2
 
 
 /*
@@ -2245,13 +2245,13 @@ struct Savepoint {
 ** instance of the following structure, stored in the sqlite3.aModule
 ** hash table.
 */
-struct Module {
-  const sqlite3_module *pModule;       /* Callback pointers */
-  const char *zName;                   /* Name passed to create_module() */
-  int nRefModule;                      /* Number of pointers to this object */
-  void *pAux;                          /* pAux passed to create_module() */
-  void (*xDestroy)(void *);            /* Module destructor function */
-  Table *pEpoTab;                      /* Eponymous table for this module */
+ساخت Module {
+  ثابت sqlite3_module *pModule;       /* Callback pointers */
+  ثابت حرف *zName;                   /* Name passed to create_module() */
+  صحیح nRefModule;                      /* Number of pointers to this object */
+  خالی *pAux;                          /* pAux passed to create_module() */
+  خالی (*xDestroy)(خالی *);            /* Module destructor function */
+  جدول *pEpoTab;                      /* Eponymous table for this module */
 };
 
 /*
@@ -2279,15 +2279,15 @@ struct Module {
 ** collating sequence name is only included if the COLFLAG_HASCOLL bit is
 ** set.
 */
-struct Column {
-  char *zCnName;        /* Name of this column */
-  unsigned notNull :4;  /* An OE_ code for handling a NOT NULL constraint */
-  unsigned eCType :4;   /* One of the standard types */
-  char affinity;        /* One of the SQLITE_AFF_... values */
+ساخت عمود {
+  حرف *zCnName;        /* Name of this column */
+  غیرعلامتی notNull :4;  /* An OE_ code for handling a NOT NULL constraint */
+  غیرعلامتی eCType :4;   /* One of the standard types */
+  حرف affinity;        /* One of the SQLITE_AFF_... values */
   u8 szEst;             /* Est size of value in this column. sizeof(INT)==1 */
   u8 hName;             /* Column name hash for faster lookup */
   u16 iDflt;            /* 1-based index of DEFAULT.  0 means "none" */
-  u16 colFlags;         /* Boolean properties.  See COLFLAG_ defines below */
+  u16 ستون_Flags;         /* Boolean properties.  See COLFLAG_ defines below */
 };
 
 /* Allowed values for Column.eCType.
@@ -2297,14 +2297,14 @@ struct Column {
 ** than the offset into these arrays for the corresponding name.
 ** Adjust the SQLITE_N_STDTYPE value if adding or removing entries.
 */
-#define COLTYPE_CUSTOM      0   /* Type appended to zName */
-#define COLTYPE_ANY         1
-#define COLTYPE_BLOB        2
-#define COLTYPE_INT         3
-#define COLTYPE_INTEGER     4
-#define COLTYPE_REAL        5
-#define COLTYPE_TEXT        6
-#define SQLITE_N_STDTYPE    6  /* Number of standard types */
+#تعریف_کرو COLTYPE_CUSTOM      0   /* Type appended to zName */
+#تعریف_کرو COLTYPE_ANY         1
+#تعریف_کرو COLTYPE_BLOB        2
+#تعریف_کرو COLTYPE_INT         3
+#تعریف_کرو COLTYPE_INTEGER     4
+#تعریف_کرو COLTYPE_REAL        5
+#تعریف_کرو COLTYPE_متن        6
+#تعریف_کرو SQLITE_N_STDTYPE    6  /* Number of standard types */
 
 /* Allowed values for Column.colFlags.
 **
@@ -2313,19 +2313,19 @@ struct Column {
 **         TF_HasStored  == COLFLAG_STORED
 **         TF_HasHidden  == COLFLAG_HIDDEN
 */
-#define COLFLAG_PRIMKEY   0x0001   /* Column is part of the primary key */
-#define COLFLAG_HIDDEN    0x0002   /* A hidden column in a virtual table */
-#define COLFLAG_HASTYPE   0x0004   /* Type name follows column name */
-#define COLFLAG_UNIQUE    0x0008   /* Column def contains "UNIQUE" or "PK" */
-#define COLFLAG_SORTERREF 0x0010   /* Use sorter-refs with this column */
-#define COLFLAG_VIRTUAL   0x0020   /* GENERATED ALWAYS AS ... VIRTUAL */
-#define COLFLAG_STORED    0x0040   /* GENERATED ALWAYS AS ... STORED */
-#define COLFLAG_NOTAVAIL  0x0080   /* STORED column not yet calculated */
-#define COLFLAG_BUSY      0x0100   /* Blocks recursion on GENERATED columns */
-#define COLFLAG_HASCOLL   0x0200   /* Has collating sequence name in zCnName */
-#define COLFLAG_NOEXPAND  0x0400   /* Omit this column when expanding "*" */
-#define COLFLAG_GENERATED 0x0060   /* Combo: _STORED, _VIRTUAL */
-#define COLFLAG_NOINSERT  0x0062   /* Combo: _HIDDEN, _STORED, _VIRTUAL */
+#تعریف_کرو COLFLAG_PRIMKEY   0x0001   /* Column is part of the primary key */
+#تعریف_کرو COLFLAG_HIDDEN    0x0002   /* A hidden column in a virtual table */
+#تعریف_کرو COLFLAG_HASTYPE   0x0004   /* Type name follows column name */
+#تعریف_کرو COLFLAG_UNIQUE    0x0008   /* Column def contains "UNIQUE" or "PK" */
+#تعریف_کرو COLFLAG_SORTERREF 0x0010   /* Use sorter-refs with this column */
+#تعریف_کرو COLFLAG_VIRTUAL   0x0020   /* GENERATED ALWAYS AS ... VIRTUAL */
+#تعریف_کرو COLFLAG_STORED    0x0040   /* GENERATED ALWAYS AS ... STORED */
+#تعریف_کرو COLFLAG_NOTAVAIL  0x0080   /* STORED column not yet calculated */
+#تعریف_کرو COLFLAG_BUSY      0x0100   /* Blocks recursion on GENERATED columns */
+#تعریف_کرو COLFLAG_HASCOLL   0x0200   /* Has collating sequence name in zCnName */
+#تعریف_کرو COLFLAG_NOEXPAND  0x0400   /* Omit this column when expanding "*" */
+#تعریف_کرو COLFLAG_GENERATED 0x0060   /* Combo: _STORED, _VIRTUAL */
+#تعریف_کرو COLFLAG_NOINSERT  0x0062   /* Combo: _HIDDEN, _STORED, _VIRTUAL */
 
 /*
 ** A "Collating Sequence" is defined by an instance of the following
@@ -2336,20 +2336,20 @@ struct Column {
 ** collating sequence is undefined.  Indices built on an undefined
 ** collating sequence may not be read or written.
 */
-struct CollSeq {
-  char *zName;          /* Name of the collating sequence, UTF-8 encoded */
+ساخت CollSeq {
+  حرف *zName;          /* Name of the collating sequence, UTF-8 encoded */
   u8 enc;               /* Text encoding handled by xCmp() */
-  void *pUser;          /* First argument to xCmp() */
-  int (*xCmp)(void*,int, const void*, int, const void*);
-  void (*xDel)(void*);  /* Destructor for pUser */
+  خالی *pUser;          /* First argument to xCmp() */
+  صحیح (*xCmp)(خالی*,صحیح, ثابت خالی*, صحیح, ثابت خالی*);
+  خالی (*xDel)(خالی*);  /* Destructor for pUser */
 };
 
 /*
 ** A sort order can be either ASC or DESC.
 */
-#define SQLITE_SO_ASC       0  /* Sort in ascending order */
-#define SQLITE_SO_DESC      1  /* Sort in ascending order */
-#define SQLITE_SO_UNDEFINED -1 /* No sort order specified */
+#تعریف_کرو SQLITE_SO_ASC       0  /* Sort in ascending order */
+#تعریف_کرو SQLITE_SO_DESC      1  /* Sort in ascending order */
+#تعریف_کرو SQLITE_SO_UNDEFINED -1 /* No sort order specified */
 
 /*
 ** Column affinity types.
@@ -2365,22 +2365,22 @@ struct CollSeq {
 ** Note also that the numeric types are grouped together so that testing
 ** for a numeric type is a single comparison.  And the BLOB type is first.
 */
-#define SQLITE_AFF_NONE     0x40  /* '@' */
-#define SQLITE_AFF_BLOB     0x41  /* 'A' */
-#define SQLITE_AFF_TEXT     0x42  /* 'B' */
-#define SQLITE_AFF_NUMERIC  0x43  /* 'C' */
-#define SQLITE_AFF_INTEGER  0x44  /* 'D' */
-#define SQLITE_AFF_REAL     0x45  /* 'E' */
-#define SQLITE_AFF_FLEXNUM  0x46  /* 'F' */
-#define SQLITE_AFF_DEFER    0x58  /* 'X'  - defer computation until later */
+#تعریف_کرو SQLITE_AFF_NONE     0x40  /* '@' */
+#تعریف_کرو SQLITE_AFF_BLOB     0x41  /* 'A' */
+#تعریف_کرو SQLITE_AFF_متن     0x42  /* 'B' */
+#تعریف_کرو SQLITE_AFF_NUMERIC  0x43  /* 'C' */
+#تعریف_کرو SQLITE_AFF_INTEGER  0x44  /* 'D' */
+#تعریف_کرو SQLITE_AFF_REAL     0x45  /* 'E' */
+#تعریف_کرو SQLITE_AFF_FLEXNUM  0x46  /* 'F' */
+#تعریف_کرو SQLITE_AFF_DEFER    0x58  /* 'X'  - defer computation until later */
 
-#define sqlite3IsNumericAffinity(X)  ((X)>=SQLITE_AFF_NUMERIC)
+#تعریف_کرو sqlite3IsNumericAffinity(X)  ((X)>=SQLITE_AFF_NUMERIC)
 
 /*
 ** The SQLITE_AFF_MASK values masks off the significant bits of an
 ** affinity value.
 */
-#define SQLITE_AFF_MASK     0x47
+#تعریف_کرو SQLITE_AFF_نقاب     0x47
 
 /*
 ** Additional bit values that can be ORed with an affinity without
@@ -2391,9 +2391,9 @@ struct CollSeq {
 ** operator is NULL.  It is added to certain comparison operators to
 ** prove that the operands are always NOT NULL.
 */
-#define SQLITE_JUMPIFNULL   0x10  /* jumps if either operand is NULL */
-#define SQLITE_NULLEQ       0x80  /* NULL=NULL */
-#define SQLITE_NOTNULL      0x90  /* Assert that operands are never NULL */
+#تعریف_کرو SQLITE_JUMPIFNULL   0x10  /* jumps if either operand is NULL */
+#تعریف_کرو SQLITE_NULLEQ       0x80  /* NULL=NULL */
+#تعریف_کرو SQLITE_NOTNULL      0x90  /* Assert that operands are never NULL */
 
 /*
 ** An object of this type is created for each virtual table present in
@@ -2437,61 +2437,61 @@ struct CollSeq {
 ** sqlite3DbMalloc(), using the connection handle stored in VTable.db as
 ** the first argument.
 */
-struct VTable {
+ساخت VTable {
   sqlite3 *db;              /* Database connection associated with this table */
   Module *pMod;             /* Pointer to module implementation */
   sqlite3_vtab *pVtab;      /* Pointer to vtab instance */
-  int nRef;                 /* Number of pointers to this structure */
+  صحیح nRef;                 /* Number of pointers to this structure */
   u8 bConstraint;           /* True if constraints are supported */
   u8 bAllSchemas;           /* True if might use any attached schema */
   u8 eVtabRisk;             /* Riskiness of allowing hacker access */
-  int iSavepoint;           /* Depth of the SAVEPOINT stack */
-  VTable *pNext;            /* Next in linked list (see above) */
+  صحیح iSavepoint;           /* Depth of the SAVEPOINT stack */
+  VTable *p_اگلا;            /* Next in linked list (see above) */
 };
 
 /* Allowed values for VTable.eVtabRisk
 */
-#define SQLITE_VTABRISK_Low          0
-#define SQLITE_VTABRISK_Normal       1
-#define SQLITE_VTABRISK_High         2
+#تعریف_کرو SQLITE_VTABRISK_کم          0
+#تعریف_کرو SQLITE_VTABRISK_معمول       1
+#تعریف_کرو SQLITE_VTABRISK_بلند         2
 
 /*
 ** The schema for each SQL table, virtual table, and view is represented
 ** in memory by an instance of the following structure.
 */
-struct Table {
-  char *zName;         /* Name of the table or view */
-  Column *aCol;        /* Information about each column */
-  Index *pIndex;       /* List of SQL indexes on this table. */
-  char *zColAff;       /* String defining the affinity of each column */
-  ExprList *pCheck;    /* All CHECK constraints */
+ساخت جدول {
+  حرف *zName;         /* Name of the table or view */
+  عمود *a_ستون;        /* Information about each column */
+  اشاریہ *p_اشاریہ;       /* List of SQL indexes on this table. */
+  حرف *z_ستون_Aff;       /* String defining the affinity of each column */
+  اظہاریہ_List *pCheck;    /* All CHECK constraints */
                        /*   ... also used as column name list in a VIEW */
   Pgno tnum;           /* Root BTree page for this table */
   u32 nTabRef;         /* Number of pointers to this Table */
   u32 tabFlags;        /* Mask of TF_* values */
   i16 iPKey;           /* If not negative, use aCol[iPKey] as the rowid */
-  i16 nCol;            /* Number of columns in this table */
+  i16 n_ستون;            /* Number of columns in this table */
   i16 nNVCol;          /* Number of columns that are not VIRTUAL */
-  LogEst nRowLogEst;   /* Estimated rows in table - from sqlite_stat1 table */
-  LogEst szTabRow;     /* Estimated size of each table row in bytes */
-#ifdef SQLITE_ENABLE_COSTMULT
-  LogEst costMult;     /* Cost multiplier for using this table */
-#endif
-  u8 keyConf;          /* What to do in case of uniqueness conflict on iPKey */
+  LogEst n_صف_Log_Est;   /* Estimated rows in table - from sqlite_stat1 table */
+  LogEst sz_Tab_صف;     /* Estimated size of each table row in bytes */
+#اگر_تعریف_شدہ SQLITE_ENABLE_COSTMULT
+  LogEst لاگت_Mult;     /* Cost multiplier for using this table */
+#اگر_ختم
+  u8 کلید_Conf;          /* What to do in case of uniqueness conflict on iPKey */
   u8 eTabType;         /* 0: normal, 1: virtual, 2: view */
-  union {
-    struct {             /* Used by ordinary tables: */
-      int addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
+  اتحاد {
+    ساخت {             /* Used by ordinary tables: */
+      صحیح جوڑو_ستون_انحراف;    /* Offset in CREATE TABLE stmt to add a new column */
       FKey *pFKey;         /* Linked list of all foreign keys in this table */
-      ExprList *pDfltList; /* DEFAULT clauses on various columns.
+      اظہاریہ_List *pDfltList; /* DEFAULT clauses on various columns.
                            ** Or the AS clause for generated columns. */
     } tab;
-    struct {             /* Used by views: */
+    ساخت {             /* Used by views: */
       Select *pSelect;     /* View definition */
     } view;
-    struct {             /* Used by virtual tables only: */
-      int nArg;            /* Number of arguments to the module */
-      char **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
+    ساخت {             /* Used by virtual tables only: */
+      صحیح nArg;            /* Number of arguments to the module */
+      حرف **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
       VTable *p;           /* List of VTable objects. */
     } vtab;
   } u;
@@ -2515,49 +2515,49 @@ struct Table {
 **         TF_HasStored  == COLFLAG_STORED
 **         TF_HasHidden  == COLFLAG_HIDDEN
 */
-#define TF_Readonly       0x00000001 /* Read-only system table */
-#define TF_HasHidden      0x00000002 /* Has one or more hidden columns */
-#define TF_HasPrimaryKey  0x00000004 /* Table has a primary key */
-#define TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
-#define TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
-#define TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
-#define TF_HasStored      0x00000040 /* Has one or more STORED columns */
-#define TF_HasGenerated   0x00000060 /* Combo: HasVirtual + HasStored */
-#define TF_WithoutRowid   0x00000080 /* No rowid.  PRIMARY KEY is the key */
-#define TF_MaybeReanalyze 0x00000100 /* Maybe run ANALYZE on this table */
-#define TF_NoVisibleRowid 0x00000200 /* No user-visible "rowid" column */
-#define TF_OOOHidden      0x00000400 /* Out-of-Order hidden columns */
-#define TF_HasNotNull     0x00000800 /* Contains NOT NULL constraints */
-#define TF_Shadow         0x00001000 /* True for a shadow table */
-#define TF_HasStat4       0x00002000 /* STAT4 info available for this table */
-#define TF_Ephemeral      0x00004000 /* An ephemeral table */
-#define TF_Eponymous      0x00008000 /* An eponymous virtual table */
-#define TF_Strict         0x00010000 /* STRICT mode */
-#define TF_Imposter       0x00020000 /* An imposter table */
+#تعریف_کرو TF_Readonly       0x00000001 /* Read-only system table */
+#تعریف_کرو TF_HasHidden      0x00000002 /* Has one or more hidden columns */
+#تعریف_کرو TF_Has_Primary_کلید  0x00000004 /* Table has a primary key */
+#تعریف_کرو TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
+#تعریف_کرو TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
+#تعریف_کرو TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
+#تعریف_کرو TF_HasStored      0x00000040 /* Has one or more STORED columns */
+#تعریف_کرو TF_HasGenerated   0x00000060 /* Combo: HasVirtual + HasStored */
+#تعریف_کرو TF_WithoutRowid   0x00000080 /* No rowid.  PRIMARY KEY is the key */
+#تعریف_کرو TF_MaybeReanalyze 0x00000100 /* Maybe run ANALYZE on this table */
+#تعریف_کرو TF_NoVisibleRowid 0x00000200 /* No user-visible "rowid" column */
+#تعریف_کرو TF_OOOHidden      0x00000400 /* Out-of-Order hidden columns */
+#تعریف_کرو TF_HasNotNull     0x00000800 /* Contains NOT NULL constraints */
+#تعریف_کرو TF_Shadow         0x00001000 /* True for a shadow table */
+#تعریف_کرو TF_HasStat4       0x00002000 /* STAT4 info available for this table */
+#تعریف_کرو TF_Ephemeral      0x00004000 /* An ephemeral table */
+#تعریف_کرو TF_Eponymous      0x00008000 /* An eponymous virtual table */
+#تعریف_کرو TF_Strict         0x00010000 /* STRICT mode */
+#تعریف_کرو TF_Imposter       0x00020000 /* An imposter table */
 
 /*
 ** Allowed values for Table.eTabType
 */
-#define TABTYP_NORM      0     /* Ordinary table */
-#define TABTYP_VTAB      1     /* Virtual table */
-#define TABTYP_VIEW      2     /* A view */
+#تعریف_کرو TABTYP_NORM      0     /* Ordinary table */
+#تعریف_کرو TABTYP_VTAB      1     /* Virtual table */
+#تعریف_کرو TABTYP_VIEW      2     /* A view */
 
-#define IsView(X)           ((X)->eTabType==TABTYP_VIEW)
-#define IsOrdinaryTable(X)  ((X)->eTabType==TABTYP_NORM)
+#تعریف_کرو IsView(X)           ((X)->eTabType==TABTYP_VIEW)
+#تعریف_کرو Is_Ordinary_جدول(X)  ((X)->eTabType==TABTYP_NORM)
 
 /*
 ** Test to see whether or not a table is a virtual table.  This is
 ** done as a macro so that it will be optimized out when virtual
 ** table support is omitted from the build.
 */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
 #  define IsVirtual(X)      ((X)->eTabType==TABTYP_VTAB)
-#  define ExprIsVtab(X)  \
-   ((X)->op==TK_COLUMN && (X)->y.pTab->eTabType==TABTYP_VTAB)
-#else
+#  define اظہاریہ_Is_Vtab(X)  \
+   ((X)->op==TK_عمود && (X)->y.pTab->eTabType==TABTYP_VTAB)
+#ورنہ
 #  define IsVirtual(X)      0
-#  define ExprIsVtab(X)     0
-#endif
+#  define اظہاریہ_Is_Vtab(X)     0
+#اگر_ختم
 
 /*
 ** Macros to determine if a column is hidden.  IsOrdinaryHiddenColumn()
@@ -2565,30 +2565,30 @@ struct Table {
 ** always false unless SQLITE_ENABLE_HIDDEN_COLUMNS is defined.  The
 ** IsHiddenColumn() macro is general purpose.
 */
-#if defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
-#  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#  define IsOrdinaryHiddenColumn(X) (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#elif !defined(SQLITE_OMIT_VIRTUALTABLE)
-#  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#  define IsOrdinaryHiddenColumn(X) 0
-#else
-#  define IsHiddenColumn(X)         0
-#  define IsOrdinaryHiddenColumn(X) 0
-#endif
+#اگر defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
+#  define Is_Hidden_عمود(X)         (((X)->ستون_Flags & COLFLAG_HIDDEN)!=0)
+#  define Is_Ordinary_Hidden_عمود(X) (((X)->ستون_Flags & COLFLAG_HIDDEN)!=0)
+#وگرنہ_اگر !defined(SQLITE_OMIT_VIRTUALTABLE)
+#  define Is_Hidden_عمود(X)         (((X)->ستون_Flags & COLFLAG_HIDDEN)!=0)
+#  define Is_Ordinary_Hidden_عمود(X) 0
+#ورنہ
+#  define Is_Hidden_عمود(X)         0
+#  define Is_Ordinary_Hidden_عمود(X) 0
+#اگر_ختم
 
 
 /* Does the table have a rowid */
-#define HasRowid(X)     (((X)->tabFlags & TF_WithoutRowid)==0)
-#define VisibleRowid(X) (((X)->tabFlags & TF_NoVisibleRowid)==0)
+#تعریف_کرو HasRowid(X)     (((X)->tabFlags & TF_WithoutRowid)==0)
+#تعریف_کرو VisibleRowid(X) (((X)->tabFlags & TF_NoVisibleRowid)==0)
 
 /* Macro is true if the SQLITE_ALLOW_ROWID_IN_VIEW (mis-)feature is
 ** available.  By default, this macro is false
 */
-#ifndef SQLITE_ALLOW_ROWID_IN_VIEW
+#اگر_غیر_تعریف_شدہ SQLITE_ALLOW_ROWID_اندر_VIEW
 # define ViewCanHaveRowid     0
-#else
+#ورنہ
 # define ViewCanHaveRowid     (sqlite3Config.mNoVisibleRowid==0)
-#endif
+#اگر_ختم
 
 /*
 ** Each foreign key constraint is an instance of the following structure.
@@ -2618,26 +2618,26 @@ struct Table {
 ** A list of all children for a table named Z (which might not even exist)
 ** is held in Schema.fkeyHash with a hash key of Z.
 */
-struct FKey {
-  Table *pFrom;     /* Table containing the REFERENCES clause (aka: Child) */
-  FKey *pNextFrom;  /* Next FKey with the same in pFrom. Next parent of pFrom */
-  char *zTo;        /* Name of table that the key points to (aka: Parent) */
-  FKey *pNextTo;    /* Next with the same zTo. Next child of zTo. */
-  FKey *pPrevTo;    /* Previous with the same zTo */
-  int nCol;         /* Number of columns in this key */
+ساخت FKey {
+  جدول *pFrom;     /* Table containing the REFERENCES clause (aka: Child) */
+  FKey *p_اگلا_From;  /* Next FKey with the same in pFrom. Next parent of pFrom */
+  حرف *z_مقصد;        /* Name of table that the key points to (aka: Parent) */
+  FKey *p_اگلا_مقصد;    /* Next with the same zTo. Next child of zTo. */
+  FKey *p_پچھلا_مقصد;    /* Previous with the same zTo */
+  صحیح n_ستون;         /* Number of columns in this key */
   /* EV: R-30323-21917 */
   u8 isDeferred;       /* True if constraint checking is deferred till COMMIT */
   u8 aAction[2];        /* ON DELETE and ON UPDATE actions, respectively */
   Trigger *apTrigger[2];/* Triggers for aAction[] actions */
-  struct sColMap {      /* Mapping of columns in pFrom to columns in zTo */
-    int iFrom;            /* Index of column in pFrom */
-    char *zCol;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
-  } aCol[FLEXARRAY];      /* One entry for each of nCol columns */
+  ساخت s_ستون_Map {      /* Mapping of columns in pFrom to columns in zTo */
+    صحیح iFrom;            /* Index of column in pFrom */
+    حرف *z_ستون;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
+  } a_ستون[FLEXARRAY];      /* One entry for each of nCol columns */
 };
 
 /* The size (in bytes) of an FKey object holding N columns.  The answer
 ** does NOT include space to hold the zTo name. */
-#define SZ_FKEY(N)  (offsetof(FKey,aCol)+(N)*sizeof(struct sColMap))
+#تعریف_کرو SZ_FKEY(N)  (offsetof(FKey,a_ستون)+(N)*حجم(ساخت s_ستون_Map))
 
 /*
 ** SQLite supports many different ways to resolve a constraint
@@ -2670,18 +2670,18 @@ struct FKey {
 ** The following symbolic values are used to record which type
 ** of conflict resolution action to take.
 */
-#define OE_None     0   /* There is no constraint to check */
-#define OE_Rollback 1   /* Fail the operation and rollback the transaction */
-#define OE_Abort    2   /* Back out changes but do no rollback transaction */
-#define OE_Fail     3   /* Stop the operation but leave all prior changes */
-#define OE_Ignore   4   /* Ignore the error. Do not do the INSERT or UPDATE */
-#define OE_Replace  5   /* Delete existing record, then do INSERT or UPDATE */
-#define OE_Update   6   /* Process as a DO UPDATE in an upsert */
-#define OE_Restrict 7   /* OE_Abort for IMMEDIATE, OE_Rollback for DEFERRED */
-#define OE_SetNull  8   /* Set the foreign key value to NULL */
-#define OE_SetDflt  9   /* Set the foreign key value to its default */
-#define OE_Cascade  10  /* Cascade the changes */
-#define OE_Default  11  /* Do whatever the default action is */
+#تعریف_کرو OE_None     0   /* There is no constraint to check */
+#تعریف_کرو OE_Rollback 1   /* Fail the operation and rollback the transaction */
+#تعریف_کرو OE_Abort    2   /* Back out changes but do no rollback transaction */
+#تعریف_کرو OE_Fail     3   /* Stop the operation but leave all prior changes */
+#تعریف_کرو OE_Ignore   4   /* Ignore the error. Do not do the INSERT or UPDATE */
+#تعریف_کرو OE_Replace  5   /* Delete existing record, then do INSERT or UPDATE */
+#تعریف_کرو OE_Update   6   /* Process as a DO UPDATE in an upsert */
+#تعریف_کرو OE_Restrict 7   /* OE_Abort for IMMEDIATE, OE_Rollback for DEFERRED */
+#تعریف_کرو OE_سیٹ_Null  8   /* Set the foreign key value to NULL */
+#تعریف_کرو OE_سیٹ_Dflt  9   /* Set the foreign key value to its default */
+#تعریف_کرو OE_Cascade  10  /* Cascade the changes */
+#تعریف_کرو OE_Default  11  /* Do whatever the default action is */
 
 
 /*
@@ -2699,33 +2699,33 @@ struct FKey {
 ** is NULL, then nAllField is uninitialized and no space is allocated for
 ** aColl[], so those fields may not be used.
 */
-struct KeyInfo {
+ساخت کلید_Info {
   u32 nRef;           /* Number of references to this KeyInfo object */
   u8 enc;             /* Text encoding - one of the SQLITE_UTF* values */
-  u16 nKeyField;      /* Number of key columns in the index */
-  u16 nAllField;      /* Total columns, including key plus others */
+  u16 n_کلید_میدان;      /* Number of key columns in the index */
+  u16 n_All_میدان;      /* Total columns, including key plus others */
   sqlite3 *db;        /* The database connection */
-  u8 *aSortFlags;     /* Sort order for each column. */
+  u8 *a_ترتیب_دو_Flags;     /* Sort order for each column. */
   CollSeq *aColl[FLEXARRAY]; /* Collating sequence for each term of the key */
 };
 
 /* The size (in bytes) of a KeyInfo object with up to N fields.  This includes
 ** the main body of the KeyInfo object and the aColl[] array of N elements,
 ** but does not count the memory used to hold aSortFlags[]. */
-#define SZ_KEYINFO(N)  (offsetof(KeyInfo,aColl) + (N)*sizeof(CollSeq*))
+#تعریف_کرو SZ_KEYINFO(N)  (offsetof(کلید_Info,aColl) + (N)*حجم(CollSeq*))
 
 /* The size of a bare KeyInfo with no aColl[] entries */
-#if FLEXARRAY+1 > 1
-# define SZ_KEYINFO_0   offsetof(KeyInfo,aColl)
-#else
-# define SZ_KEYINFO_0   sizeof(KeyInfo)
-#endif
+#اگر FLEXARRAY+1 > 1
+# define SZ_KEYINFO_0   offsetof(کلید_Info,aColl)
+#ورنہ
+# define SZ_KEYINFO_0   حجم(کلید_Info)
+#اگر_ختم
 
 /*
 ** Allowed bit values for entries in the KeyInfo.aSortFlags[] array.
 */
-#define KEYINFO_ORDER_DESC    0x01    /* DESC sort order */
-#define KEYINFO_ORDER_BIGNULL 0x02    /* NULL is larger than any other value */
+#تعریف_کرو KEYINFO_ترتیب_DESC    0x01    /* DESC sort order */
+#تعریف_کرو KEYINFO_ترتیب_BIGNULL 0x02    /* NULL is larger than any other value */
 
 /*
 ** This object holds a record which has been parsed out into individual
@@ -2761,20 +2761,20 @@ struct KeyInfo {
 ** eqSeen field will indicate whether or not an exact match exists in the
 ** b-tree.
 */
-struct UnpackedRecord {
-  KeyInfo *pKeyInfo;  /* Comparison info for the index that is unpacked */
+ساخت Unpacked_ریکارڈ {
+  کلید_Info *p_کلید_Info;  /* Comparison info for the index that is unpacked */
   Mem *aMem;          /* Values for columns of the index */
-  union {
-    char *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
+  اتحاد {
+    حرف *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
     i64 i;              /* Cache of aMem[0].u.i for vdbeRecordCompareInt() */
   } u;
-  int n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
-  u16 nField;         /* Number of entries in apMem[] */
+  صحیح n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
+  u16 n_میدان;         /* Number of entries in apMem[] */
   i8 default_rc;      /* Comparison result if keys are equal */
-  u8 errCode;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
+  u8 err_رمز;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
   i8 r1;              /* Value to return if (lhs < rhs) */
   i8 r2;              /* Value to return if (lhs > rhs) */
-  u8 eqSeen;          /* True if an equality comparison has been seen */
+  u8 eq_نظر_آیا;          /* True if an equality comparison has been seen */
 };
 
 
@@ -2824,75 +2824,75 @@ struct UnpackedRecord {
 ** number (it cannot - the database page is not allocated until the VDBE
 ** program is executed). See convertToWithoutRowidTable() for details.
 */
-struct Index {
-  char *zName;             /* Name of this index */
-  i16 *aiColumn;           /* Which columns are used by this index.  1st is 0 */
-  LogEst *aiRowLogEst;     /* From ANALYZE: Est. rows selected by each column */
-  Table *pTable;           /* The SQL table being indexed */
-  char *zColAff;           /* String defining the affinity of each column */
-  Index *pNext;            /* The next index associated with the same table */
+ساخت اشاریہ {
+  حرف *zName;             /* Name of this index */
+  i16 *ai_عمود;           /* Which columns are used by this index.  1st is 0 */
+  LogEst *ai_صف_Log_Est;     /* From ANALYZE: Est. rows selected by each column */
+  جدول *p_جدول;           /* The SQL table being indexed */
+  حرف *z_ستون_Aff;           /* String defining the affinity of each column */
+  اشاریہ *p_اگلا;            /* The next index associated with the same table */
   Schema *pSchema;         /* Schema containing this index */
-  u8 *aSortOrder;          /* for each column: True==DESC, False==ASC */
-  const char **azColl;     /* Array of collation sequence names for index */
-  Expr *pPartIdxWhere;     /* WHERE clause for partial indices */
-  ExprList *aColExpr;      /* Column expressions */
+  u8 *a_ترتیب_دو_ترتیب;          /* for each column: True==DESC, False==ASC */
+  ثابت حرف **azColl;     /* Array of collation sequence names for index */
+  اظہاریہ *pPartIdxWhere;     /* WHERE clause for partial indices */
+  اظہاریہ_List *a_ستون_اظہاریہ;      /* Column expressions */
   Pgno tnum;               /* DB Page containing root of this index */
-  LogEst szIdxRow;         /* Estimated average row size in bytes */
-  u16 nKeyCol;             /* Number of columns forming the key */
-  u16 nColumn;             /* Nr columns in btree. Can be 2*Table.nCol */
+  LogEst sz_Idx_صف;         /* Estimated average row size in bytes */
+  u16 n_کلید_ستون;             /* Number of columns forming the key */
+  u16 n_عمود;             /* Nr columns in btree. Can be 2*Table.nCol */
   u8 onError;              /* OE_Abort, OE_Ignore, OE_Replace, or OE_None */
-  unsigned idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
-  unsigned bUnordered:1;   /* Use this index for == or IN queries only */
-  unsigned uniqNotNull:1;  /* True if UNIQUE and NOT NULL for all columns */
-  unsigned isResized:1;    /* True if resizeIndexObject() has been called */
-  unsigned isCovering:1;   /* True if this is a covering index */
-  unsigned noSkipScan:1;   /* Do not try to use skip-scan if true */
-  unsigned hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
-  unsigned bNoQuery:1;     /* Do not use this index to optimize queries */
-  unsigned bAscKeyBug:1;   /* True if the bba7b69f9849b5bf bug applies */
-  unsigned bHasVCol:1;     /* Index references one or more VIRTUAL columns */
-  unsigned bHasExpr:1;     /* Index contains an expression, either a literal
+  غیرعلامتی idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
+  غیرعلامتی bUnordered:1;   /* Use this index for == or IN queries only */
+  غیرعلامتی uniqNotNull:1;  /* True if UNIQUE and NOT NULL for all columns */
+  غیرعلامتی isResized:1;    /* True if resizeIndexObject() has been called */
+  غیرعلامتی isCovering:1;   /* True if this is a covering index */
+  غیرعلامتی no_Skip_جائزہ:1;   /* Do not try to use skip-scan if true */
+  غیرعلامتی hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
+  غیرعلامتی bNoQuery:1;     /* Do not use this index to optimize queries */
+  غیرعلامتی b_Asc_کلید_Bug:1;   /* True if the bba7b69f9849b5bf bug applies */
+  غیرعلامتی bHasVCol:1;     /* Index references one or more VIRTUAL columns */
+  غیرعلامتی b_Has_اظہاریہ:1;     /* Index contains an expression, either a literal
                            ** expression, or a reference to a VIRTUAL column */
-#ifdef SQLITE_ENABLE_STAT4
-  int nSample;             /* Number of elements in aSample[] */
-  int mxSample;            /* Number of slots allocated to aSample[] */
-  int nSampleCol;          /* Size of IndexSample.anEq[] and so on */
+#اگر_تعریف_شدہ SQLITE_ENABLE_STAT4
+  صحیح nSample;             /* Number of elements in aSample[] */
+  صحیح mxSample;            /* Number of slots allocated to aSample[] */
+  صحیح n_Sample_ستون;          /* Size of IndexSample.anEq[] and so on */
   tRowcnt *aAvgEq;         /* Average nEq values for keys not in aSample */
-  IndexSample *aSample;    /* Samples of the left-most key */
-  tRowcnt *aiRowEst;       /* Non-logarithmic stat1 data for this index */
-  tRowcnt nRowEst0;        /* Non-logarithmic number of rows in the index */
-#endif
-  Bitmask colNotIdxed;     /* Unindexed columns in pTab */
+  اشاریہ_Sample *aSample;    /* Samples of the left-most key */
+  tRowcnt *ai_صف_Est;       /* Non-logarithmic stat1 data for this index */
+  tRowcnt n_صف_Est0;        /* Non-logarithmic number of rows in the index */
+#اگر_ختم
+  Bitmask ستون_Not_Idxed;     /* Unindexed columns in pTab */
 };
 
 /*
 ** Allowed values for Index.idxType
 */
-#define SQLITE_IDXTYPE_APPDEF      0   /* Created using CREATE INDEX */
-#define SQLITE_IDXTYPE_UNIQUE      1   /* Implements a UNIQUE constraint */
-#define SQLITE_IDXTYPE_PRIMARYKEY  2   /* Is the PRIMARY KEY for the table */
-#define SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
+#تعریف_کرو SQLITE_IDXTYPE_APPDEF      0   /* Created using CREATE INDEX */
+#تعریف_کرو SQLITE_IDXTYPE_UNIQUE      1   /* Implements a UNIQUE constraint */
+#تعریف_کرو SQLITE_IDXTYPE_PRIMARYKEY  2   /* Is the PRIMARY KEY for the table */
+#تعریف_کرو SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
 
 /* Return true if index X is a PRIMARY KEY index */
-#define IsPrimaryKeyIndex(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
+#تعریف_کرو Is_Primary_کلید_اشاریہ(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
 
 /* Return true if index X is a UNIQUE index */
-#define IsUniqueIndex(X)      ((X)->onError!=OE_None)
+#تعریف_کرو Is_Unique_اشاریہ(X)      ((X)->onError!=OE_None)
 
 /* The Index.aiColumn[] values are normally positive integer.  But
 ** there are some negative values that have special meaning:
 */
-#define XN_ROWID     (-1)     /* Indexed column is the rowid */
-#define XN_EXPR      (-2)     /* Indexed column is an expression */
+#تعریف_کرو XN_ROWID     (-1)     /* Indexed column is the rowid */
+#تعریف_کرو XN_اظہاریہ      (-2)     /* Indexed column is an expression */
 
 /*
 ** Each sample stored in the sqlite_stat4 table is represented in memory
 ** using a structure of this type.  See documentation at the top of the
 ** analyze.c source file for additional information.
 */
-struct IndexSample {
-  void *p;          /* Pointer to sampled record */
-  int n;            /* Size of record in bytes */
+ساخت اشاریہ_Sample {
+  خالی *p;          /* Pointer to sampled record */
+  صحیح n;            /* Size of record in bytes */
   tRowcnt *anEq;    /* Est. number of rows where the key equals this sample */
   tRowcnt *anLt;    /* Est. number of rows where key is less than this sample */
   tRowcnt *anDLt;   /* Est. number of distinct keys less than this sample */
@@ -2901,8 +2901,8 @@ struct IndexSample {
 /*
 ** Possible values to use within the flags argument to sqlite3GetToken().
 */
-#define SQLITE_TOKEN_QUOTED    0x1 /* Token is a quoted identifier. */
-#define SQLITE_TOKEN_KEYWORD   0x2 /* Token is a keyword. */
+#تعریف_کرو SQLITE_TOKEN_QUOTED    0x1 /* Token is a quoted identifier. */
+#تعریف_کرو SQLITE_TOKEN_KEYWORD   0x2 /* Token is a keyword. */
 
 /*
 ** Each token coming out of the lexer is an instance of
@@ -2914,9 +2914,9 @@ struct IndexSample {
 ** in the middle of the Parse.zSql text.  But it might also point to a
 ** static string.
 */
-struct Token {
-  const char *z;     /* Text of the token.  Not NULL-terminated! */
-  unsigned int n;    /* Number of characters in this token */
+ساخت Token {
+  ثابت حرف *z;     /* Text of the token.  Not NULL-terminated! */
+  غیرعلامتی صحیح n;    /* Number of characters in this token */
 };
 
 /*
@@ -2932,42 +2932,42 @@ struct Token {
 ** original Select structure that describes the SELECT statement.  These
 ** fields do not need to be freed when deallocating the AggInfo structure.
 */
-struct AggInfo {
-  u8 directMode;          /* Direct rendering mode means take data directly
+ساخت AggInfo {
+  u8 براہ_راست_منوال;          /* Direct rendering mode means take data directly
                           ** from source tables rather than from accumulators */
-  u8 useSortingIdx;       /* In direct mode, reference the sorting index rather
+  u8 use_ترتیب_کاری_Idx;       /* In direct mode, reference the sorting index rather
                           ** than the source table */
-  u32 nSortingColumn;     /* Number of columns in the sorting index */
-  int sortingIdx;         /* Cursor number of the sorting index */
-  int sortingIdxPTab;     /* Cursor number of pseudo-table */
-  int iFirstReg;          /* First register in range for aCol[] and aFunc[] */
-  ExprList *pGroupBy;     /* The group by clause */
-  struct AggInfo_col {    /* For each column used in source tables */
-    Table *pTab;             /* Source table */
-    Expr *pCExpr;            /* The original expression */
-    int iTable;              /* Cursor number of the source table */
-    int iColumn;             /* Column number within the source table */
-    int iSorterColumn;       /* Column number in the sorting index */
-  } *aCol;
-  int nColumn;            /* Number of used entries in aCol[] */
-  int nAccumulator;       /* Number of columns that show through to the output.
+  u32 n_ترتیب_کاری_عمود;     /* Number of columns in the sorting index */
+  صحیح ترتیب_کاری_Idx;         /* Cursor number of the sorting index */
+  صحیح ترتیب_کاری_Idx_PTab;     /* Cursor number of pseudo-table */
+  صحیح i_پہلا_Reg;          /* First register in range for aCol[] and aFunc[] */
+  اظہاریہ_List *p_گروہ_By;     /* The group by clause */
+  ساخت Agg_Info_ستون {    /* For each column used in source tables */
+    جدول *pTab;             /* Source table */
+    اظہاریہ *pCExpr;            /* The original expression */
+    صحیح i_جدول;              /* Cursor number of the source table */
+    صحیح i_عمود;             /* Column number within the source table */
+    صحیح i_Sorter_عمود;       /* Column number in the sorting index */
+  } *a_ستون;
+  صحیح n_عمود;            /* Number of used entries in aCol[] */
+  صحیح n_مجمع;       /* Number of columns that show through to the output.
                           ** Additional columns are used only as parameters to
                           ** aggregate functions */
-  struct AggInfo_func {   /* For each aggregate function */
-    Expr *pFExpr;            /* Expression encoding the function */
+  ساخت AggInfo_func {   /* For each aggregate function */
+    اظہاریہ *pFExpr;            /* Expression encoding the function */
     FuncDef *pFunc;          /* The aggregate function implementation */
-    int iDistinct;           /* Ephemeral table used to enforce DISTINCT */
-    int iDistAddr;           /* Address of OP_OpenEphemeral */
-    int iOBTab;              /* Ephemeral table to implement ORDER BY */
+    صحیح iDistinct;           /* Ephemeral table used to enforce DISTINCT */
+    صحیح iDistAddr;           /* Address of OP_OpenEphemeral */
+    صحیح iOBTab;              /* Ephemeral table to implement ORDER BY */
     u8 bOBPayload;           /* iOBTab has payload columns separate from key */
     u8 bOBUnique;            /* Enforce uniqueness on iOBTab keys */
     u8 bUseSubtype;          /* Transfer subtype info through sorter */
   } *aFunc;
-  int nFunc;              /* Number of entries in aFunc[] */
+  صحیح nFunc;              /* Number of entries in aFunc[] */
   u32 selId;              /* Select to which this AggInfo belongs */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   Select *pSelect;        /* SELECT statement that this AggInfo supports */
-#endif
+#اگر_ختم
 };
 
 /*
@@ -2977,15 +2977,15 @@ struct AggInfo {
 ** assignAggregateRegisters() that computes the value of pAggInfo->iFirstReg.
 ** The assert()s that are part of this macro verify that constraint.
 */
-#ifndef NDEBUG
-#define AggInfoColumnReg(A,I)  (assert((A)->iFirstReg),(A)->iFirstReg+(I))
-#define AggInfoFuncReg(A,I)    \
-                      (assert((A)->iFirstReg),(A)->iFirstReg+(A)->nColumn+(I))
-#else
-#define AggInfoColumnReg(A,I)  ((A)->iFirstReg+(I))
-#define AggInfoFuncReg(A,I)    \
-                      ((A)->iFirstReg+(A)->nColumn+(I))
-#endif
+#اگر_غیر_تعریف_شدہ NDEBUG
+#تعریف_کرو Agg_Info_عمود_Reg(A,I)  (أكد((A)->i_پہلا_Reg),(A)->i_پہلا_Reg+(I))
+#تعریف_کرو AggInfoFuncReg(A,I)    \
+                      (أكد((A)->i_پہلا_Reg),(A)->i_پہلا_Reg+(A)->n_عمود+(I))
+#ورنہ
+#تعریف_کرو Agg_Info_عمود_Reg(A,I)  ((A)->i_پہلا_Reg+(I))
+#تعریف_کرو AggInfoFuncReg(A,I)    \
+                      ((A)->i_پہلا_Reg+(A)->n_عمود+(I))
+#اگر_ختم
 
 /*
 ** The datatype ynVar is a signed integer, either 16-bit or 32-bit.
@@ -2997,11 +2997,11 @@ struct AggInfo {
 ** to have prepared statements with over 32766 variables, and for them
 ** the option is available (at compile-time).
 */
-#if SQLITE_MAX_VARIABLE_NUMBER<32767
-typedef i16 ynVar;
-#else
-typedef int ynVar;
-#endif
+#اگر SQLITE_MAX_VARIABLE_نمبر<32767
+قسمتعریف i16 ynVar;
+#ورنہ
+قسمتعریف صحیح ynVar;
+#اگر_ختم
 
 /*
 ** Each node of an expression in the parse tree is an instance
@@ -3066,20 +3066,20 @@ typedef int ynVar;
 ** the subtrees in Expr.x.pList or Expr.x.pSelect are always separately
 ** allocated, regardless of whether or not EP_Reduced is set.
 */
-struct Expr {
+ساخت اظہاریہ {
   u8 op;                 /* Operation performed by this node */
-  char affExpr;          /* affinity, or RAISE type */
+  حرف aff_اظہاریہ;          /* affinity, or RAISE type */
   u8 op2;                /* TK_REGISTER/TK_TRUTH: original value of Expr.op
                          ** TK_COLUMN: the value of p5 for OP_Column
                          ** TK_AGG_FUNCTION: nesting depth
                          ** TK_FUNCTION: NC_SelfRef flag if needs OP_PureFunc */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   u8 vvaFlags;           /* Verification flags. */
-#endif
+#اگر_ختم
   u32 flags;             /* Various flags.  EP_* See below */
-  union {
-    char *zToken;          /* Token value. Zero terminated and dequoted */
-    int iValue;            /* Non-negative integer value if EP_IntValue */
+  اتحاد {
+    حرف *zToken;          /* Token value. Zero terminated and dequoted */
+    صحیح i_قدر;            /* Non-negative integer value if EP_IntValue */
   } u;
 
   /* If the EP_TokenOnly flag is set in the Expr.flags mask, then no
@@ -3087,10 +3087,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-  Expr *pLeft;           /* Left subnode */
-  Expr *pRight;          /* Right subnode */
-  union {
-    ExprList *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
+  اظہاریہ *p_بایاں;           /* Left subnode */
+  اظہاریہ *p_دایاں;          /* Right subnode */
+  اتحاد {
+    اظہاریہ_List *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
     Select *pSelect;     /* EP_xIsSelect and op = IN, EXISTS, SELECT */
   } x;
 
@@ -3099,33 +3099,33 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int nHeight;           /* Height of the tree headed by this node */
-#endif
-  int iTable;            /* TK_COLUMN: cursor number of table holding column
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+  صحیح n_اونچائی;           /* Height of the tree headed by this node */
+#اگر_ختم
+  صحیح i_جدول;            /* TK_COLUMN: cursor number of table holding column
                          ** TK_REGISTER: register number
                          ** TK_TRIGGER: 1 -> new, 0 -> old
                          ** EP_Unlikely:  134217728 times likelihood
                          ** TK_IN: ephemeral table holding RHS
                          ** TK_SELECT_COLUMN: Number of columns on the LHS
                          ** TK_SELECT: 1st register of result vector */
-  ynVar iColumn;         /* TK_COLUMN: column index.  -1 for rowid.
+  ynVar i_عمود;         /* TK_COLUMN: column index.  -1 for rowid.
                          ** TK_VARIABLE: variable number (always >= 1).
                          ** TK_SELECT_COLUMN: column of the result vector */
   i16 iAgg;              /* Which entry in pAggInfo->aCol[] or ->aFunc[] */
-  union {
-    int iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
-    int iOfst;             /* else: start of token from start of statement */
+  اتحاد {
+    صحیح iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
+    صحیح iOfst;             /* else: start of token from start of statement */
   } w;
   AggInfo *pAggInfo;     /* Used by TK_AGG_COLUMN and TK_AGG_FUNCTION */
-  union {
-    Table *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
+  اتحاد {
+    جدول *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
                            ** for a column of an index on an expression */
-    Window *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
-    int nReg;              /* TK_NULLS: Number of registers to NULL out */
-    struct {               /* TK_IN, TK_SELECT, and TK_EXISTS */
-      int iAddr;             /* Subroutine entry address */
-      int regReturn;         /* Register used to hold return address */
+    کھڑکی *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
+    صحیح nReg;              /* TK_NULLS: Number of registers to NULL out */
+    ساخت {               /* TK_IN, TK_SELECT, and TK_EXISTS */
+      صحیح iAddr;             /* Subroutine entry address */
+      صحیح regReturn;         /* Register used to hold return address */
     } sub;
   } y;
 };
@@ -3136,113 +3136,113 @@ struct Expr {
 **          EP_Agg == NC_HasAgg == SF_HasAgg
 **          EP_Win == NC_HasWin
 */
-#define EP_OuterON    0x000001 /* Originates in ON/USING clause of outer join */
-#define EP_InnerON    0x000002 /* Originates in ON/USING of an inner join */
-#define EP_Distinct   0x000004 /* Aggregate function with DISTINCT keyword */
-#define EP_HasFunc    0x000008 /* Contains one or more functions of any kind */
-#define EP_Agg        0x000010 /* Contains one or more aggregate functions */
-#define EP_FixedCol   0x000020 /* TK_Column with a known fixed value */
-#define EP_VarSelect  0x000040 /* pSelect is correlated, not constant */
-#define EP_DblQuoted  0x000080 /* token.z was originally in "..." */
-#define EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
-#define EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
-#define EP_Commuted   0x000400 /* Comparison operator has been commuted */
-#define EP_IntValue   0x000800 /* Integer value contained in u.iValue */
-#define EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
-#define EP_Skip       0x002000 /* Operator does not contribute to affinity */
-#define EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
-#define EP_Win        0x008000 /* Contains window functions */
-#define EP_TokenOnly  0x010000 /* Expr struct EXPR_TOKENONLYSIZE bytes only */
-#define EP_FullSize   0x020000 /* Expr structure must remain full sized */
-#define EP_IfNullRow  0x040000 /* The TK_IF_NULL_ROW opcode */
-#define EP_Unlikely   0x080000 /* unlikely() or likelihood() function */
-#define EP_ConstFunc  0x100000 /* A SQLITE_FUNC_CONSTANT or _SLOCHNG function */
-#define EP_CanBeNull  0x200000 /* Can be null despite NOT NULL constraint */
-#define EP_Subquery   0x400000 /* Tree contains a TK_SELECT operator */
-#define EP_Leaf       0x800000 /* Expr.pLeft, .pRight, .u.pSelect all NULL */
-#define EP_WinFunc   0x1000000 /* TK_FUNCTION with Expr.y.pWin set */
-#define EP_Subrtn    0x2000000 /* Uses Expr.y.sub. TK_IN, _SELECT, or _EXISTS */
-#define EP_Quoted    0x4000000 /* TK_ID was originally quoted */
-#define EP_Static    0x8000000 /* Held in memory not obtained from malloc() */
-#define EP_IsTrue   0x10000000 /* Always has boolean value of TRUE */
-#define EP_IsFalse  0x20000000 /* Always has boolean value of FALSE */
-#define EP_FromDDL  0x40000000 /* Originates from sqlite_schema */
-#define EP_SubtArg  0x80000000 /* Is argument to SQLITE_SUBTYPE function */
+#تعریف_کرو EP_OuterON    0x000001 /* Originates in ON/USING clause of outer join */
+#تعریف_کرو EP_InnerON    0x000002 /* Originates in ON/USING of an inner join */
+#تعریف_کرو EP_Distinct   0x000004 /* Aggregate function with DISTINCT keyword */
+#تعریف_کرو EP_HasFunc    0x000008 /* Contains one or more functions of any kind */
+#تعریف_کرو EP_Agg        0x000010 /* Contains one or more aggregate functions */
+#تعریف_کرو EP_Fixed_ستون   0x000020 /* TK_Column with a known fixed value */
+#تعریف_کرو EP_VarSelect  0x000040 /* pSelect is correlated, not constant */
+#تعریف_کرو EP_DblQuoted  0x000080 /* token.z was originally in "..." */
+#تعریف_کرو EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
+#تعریف_کرو EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
+#تعریف_کرو EP_Commuted   0x000400 /* Comparison operator has been commuted */
+#تعریف_کرو EP_Int_قدر   0x000800 /* Integer value contained in u.iValue */
+#تعریف_کرو EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
+#تعریف_کرو EP_Skip       0x002000 /* Operator does not contribute to affinity */
+#تعریف_کرو EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
+#تعریف_کرو EP_Win        0x008000 /* Contains window functions */
+#تعریف_کرو EP_TokenOnly  0x010000 /* Expr struct EXPR_TOKENONLYSIZE bytes only */
+#تعریف_کرو EP_بھرا_سائز   0x020000 /* Expr structure must remain full sized */
+#تعریف_کرو EP_If_Null_صف  0x040000 /* The TK_IF_NULL_ROW opcode */
+#تعریف_کرو EP_Unlikely   0x080000 /* unlikely() or likelihood() function */
+#تعریف_کرو EP_ConstFunc  0x100000 /* A SQLITE_FUNC_CONSTANT or _SLOCHNG function */
+#تعریف_کرو EP_CanBeNull  0x200000 /* Can be null despite NOT NULL constraint */
+#تعریف_کرو EP_Subquery   0x400000 /* Tree contains a TK_SELECT operator */
+#تعریف_کرو EP_برگ       0x800000 /* Expr.pLeft, .pRight, .u.pSelect all NULL */
+#تعریف_کرو EP_WinFunc   0x1000000 /* TK_FUNCTION with Expr.y.pWin set */
+#تعریف_کرو EP_Subrtn    0x2000000 /* Uses Expr.y.sub. TK_IN, _SELECT, or _EXISTS */
+#تعریف_کرو EP_Quoted    0x4000000 /* TK_ID was originally quoted */
+#تعریف_کرو EP_Static    0x8000000 /* Held in memory not obtained from malloc() */
+#تعریف_کرو EP_IsTrue   0x10000000 /* Always has boolean value of TRUE */
+#تعریف_کرو EP_IsFalse  0x20000000 /* Always has boolean value of FALSE */
+#تعریف_کرو EP_FromDDL  0x40000000 /* Originates from sqlite_schema */
+#تعریف_کرو EP_SubtArg  0x80000000 /* Is argument to SQLITE_SUBTYPE function */
 
 /* The EP_Propagate mask is a set of properties that automatically propagate
 ** upwards into parent nodes.
 */
-#define EP_Propagate (EP_Collate|EP_Subquery|EP_HasFunc)
+#تعریف_کرو EP_Propagate (EP_Collate|EP_Subquery|EP_HasFunc)
 
 /* Macros can be used to test, set, or clear bits in the
 ** Expr.flags field.
 */
-#define ExprHasProperty(E,P)     (((E)->flags&(u32)(P))!=0)
-#define ExprHasAllProperty(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
-#define ExprSetProperty(E,P)     (E)->flags|=(u32)(P)
-#define ExprClearProperty(E,P)   (E)->flags&=~(u32)(P)
-#define ExprAlwaysTrue(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
-#define ExprAlwaysFalse(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
-#define ExprIsFullSize(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
+#تعریف_کرو اظہاریہ_Has_Property(E,P)     (((E)->flags&(u32)(P))!=0)
+#تعریف_کرو اظہاریہ_Has_All_Property(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
+#تعریف_کرو اظہاریہ_سیٹ_Property(E,P)     (E)->flags|=(u32)(P)
+#تعریف_کرو اظہاریہ_Clear_Property(E,P)   (E)->flags&=~(u32)(P)
+#تعریف_کرو اظہاریہ_Always_True(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
+#تعریف_کرو اظہاریہ_Always_False(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
+#تعریف_کرو اظہاریہ_Is_بھرا_سائز(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
 
 /* Macros used to ensure that the correct members of unions are accessed
 ** in Expr.
 */
-#define ExprUseUToken(E)    (((E)->flags&EP_IntValue)==0)
-#define ExprUseUValue(E)    (((E)->flags&EP_IntValue)!=0)
-#define ExprUseWOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
-#define ExprUseWJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
-#define ExprUseXList(E)     (((E)->flags&EP_xIsSelect)==0)
-#define ExprUseXSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
-#define ExprUseYTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
-#define ExprUseYWin(E)      (((E)->flags&EP_WinFunc)!=0)
-#define ExprUseYSub(E)      (((E)->flags&EP_Subrtn)!=0)
+#تعریف_کرو اظہاریہ_Use_UToken(E)    (((E)->flags&EP_Int_قدر)==0)
+#تعریف_کرو اظہاریہ_Use_UValue(E)    (((E)->flags&EP_Int_قدر)!=0)
+#تعریف_کرو اظہاریہ_Use_WOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
+#تعریف_کرو اظہاریہ_Use_WJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
+#تعریف_کرو اظہاریہ_Use_XList(E)     (((E)->flags&EP_xIsSelect)==0)
+#تعریف_کرو اظہاریہ_Use_XSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
+#تعریف_کرو اظہاریہ_Use_YTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
+#تعریف_کرو اظہاریہ_Use_YWin(E)      (((E)->flags&EP_WinFunc)!=0)
+#تعریف_کرو اظہاریہ_Use_YSub(E)      (((E)->flags&EP_Subrtn)!=0)
 
 /* Flags for use with Expr.vvaFlags
 */
-#define EP_NoReduce   0x01  /* Cannot EXPRDUP_REDUCE this Expr */
-#define EP_Immutable  0x02  /* Do not change this Expr node */
+#تعریف_کرو EP_NoReduce   0x01  /* Cannot EXPRDUP_REDUCE this Expr */
+#تعریف_کرو EP_Immutable  0x02  /* Do not change this Expr node */
 
 /* The ExprSetVVAProperty() macro is used for Verification, Validation,
 ** and Accreditation only.  It works like ExprSetProperty() during VVA
 ** processes but is a no-op for delivery.
 */
-#ifdef SQLITE_DEBUG
-# define ExprSetVVAProperty(E,P)   (E)->vvaFlags|=(P)
-# define ExprHasVVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
-# define ExprClearVVAProperties(E) (E)->vvaFlags = 0
-#else
-# define ExprSetVVAProperty(E,P)
-# define ExprHasVVAProperty(E,P)   0
-# define ExprClearVVAProperties(E)
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+# define اظہاریہ_سیٹ_VVAProperty(E,P)   (E)->vvaFlags|=(P)
+# define اظہاریہ_Has_VVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
+# define اظہاریہ_Clear_VVAProperties(E) (E)->vvaFlags = 0
+#ورنہ
+# define اظہاریہ_سیٹ_VVAProperty(E,P)
+# define اظہاریہ_Has_VVAProperty(E,P)   0
+# define اظہاریہ_Clear_VVAProperties(E)
+#اگر_ختم
 
 /*
 ** Macros to determine the number of bytes required by a normal Expr
 ** struct, an Expr struct with the EP_Reduced flag set in Expr.flags
 ** and an Expr struct with the EP_TokenOnly flag set.
 */
-#define EXPR_FULLSIZE           sizeof(Expr)           /* Full size */
-#define EXPR_REDUCEDSIZE        offsetof(Expr,iTable)  /* Common features */
-#define EXPR_TOKENONLYSIZE      offsetof(Expr,pLeft)   /* Fewer features */
+#تعریف_کرو اظہاریہ_FULLSIZE           حجم(اظہاریہ)           /* Full size */
+#تعریف_کرو اظہاریہ_REDUCEDSIZE        offsetof(اظہاریہ,i_جدول)  /* Common features */
+#تعریف_کرو اظہاریہ_TOKENONLYSIZE      offsetof(اظہاریہ,p_بایاں)   /* Fewer features */
 
 /*
 ** Flags passed to the sqlite3ExprDup() function. See the header comment
 ** above sqlite3ExprDup() for details.
 */
-#define EXPRDUP_REDUCE         0x0001  /* Used reduced-size Expr nodes */
+#تعریف_کرو EXPRDUP_REDUCE         0x0001  /* Used reduced-size Expr nodes */
 
 /*
 ** True if the expression passed as an argument was a function with
 ** an OVER() clause (a window function).
 */
-#ifdef SQLITE_OMIT_WINDOWFUNC
-# define IsWindowFunc(p) 0
-#else
-# define IsWindowFunc(p) ( \
-    ExprHasProperty((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
+#اگر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+# define Is_کھڑکی_Func(p) 0
+#ورنہ
+# define Is_کھڑکی_Func(p) ( \
+    اظہاریہ_Has_Property((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
  )
-#endif
+#اگر_ختم
 
 /*
 ** A list of expressions.  Each expression may optionally have a
@@ -3266,30 +3266,30 @@ struct Expr {
 **    ENAME_SPAN       Text of the original result set
 **                     expression.
 */
-struct ExprList {
-  int nExpr;             /* Number of expressions on the list */
-  int nAlloc;            /* Number of a[] slots allocated */
-  struct ExprList_item { /* For each expression in the list */
-    Expr *pExpr;            /* The parse tree for this expression */
-    char *zEName;           /* Token associated with this expression */
-    struct {
-      u8 sortFlags;           /* Mask of KEYINFO_ORDER_* flags */
-      unsigned eEName :2;     /* Meaning of zEName */
-      unsigned done :1;       /* Indicates when processing is finished */
-      unsigned reusable :1;   /* Constant expression is reusable */
-      unsigned bSorterRef :1; /* Defer evaluation until after sorting */
-      unsigned bNulls :1;     /* True if explicit "NULLS FIRST/LAST" */
-      unsigned bUsed :1;      /* This column used in a SF_NestedFrom subquery */
-      unsigned bUsingTerm:1;  /* Term from the USING clause of a NestedFrom */
-      unsigned bNoExpand: 1;  /* Term is an auxiliary in NestedFrom and should
+ساخت اظہاریہ_List {
+  صحیح n_اظہاریہ;             /* Number of expressions on the list */
+  صحیح nAlloc;            /* Number of a[] slots allocated */
+  ساخت اظہاریہ_List_شے { /* For each expression in the list */
+    اظہاریہ *p_اظہاریہ;            /* The parse tree for this expression */
+    حرف *zEName;           /* Token associated with this expression */
+    ساخت {
+      u8 ترتیب_دو_Flags;           /* Mask of KEYINFO_ORDER_* flags */
+      غیرعلامتی eEName :2;     /* Meaning of zEName */
+      غیرعلامتی مکمل :1;       /* Indicates when processing is finished */
+      غیرعلامتی reusable :1;   /* Constant expression is reusable */
+      غیرعلامتی bSorterRef :1; /* Defer evaluation until after sorting */
+      غیرعلامتی bNulls :1;     /* True if explicit "NULLS FIRST/LAST" */
+      غیرعلامتی b_مستعمل :1;      /* This column used in a SF_NestedFrom subquery */
+      غیرعلامتی b_Using_رکن:1;  /* Term from the USING clause of a NestedFrom */
+      غیرعلامتی bNoExpand: 1;  /* Term is an auxiliary in NestedFrom and should
                               ** not be expanded by "*" in parent queries */
     } fg;
-    union {
-      struct {             /* Used by any ExprList other than Parse.pConsExpr */
-        u16 iOrderByCol;      /* For ORDER BY, column number in result set */
+    اتحاد {
+      ساخت {             /* Used by any ExprList other than Parse.pConsExpr */
+        u16 i_ترتیب_By_ستون;      /* For ORDER BY, column number in result set */
         u16 iAlias;           /* Index into Parse.aAlias[] for zName */
       } x;
-      int iConstExprReg;   /* Register in which Expr value is cached. Used only
+      صحیح i_Const_اظہاریہ_Reg;   /* Register in which Expr value is cached. Used only
                            ** by Parse.pConstExpr */
     } u;
   } a[FLEXARRAY];          /* One slot for each expression in the list */
@@ -3297,16 +3297,16 @@ struct ExprList {
 
 /* The size (in bytes) of an ExprList object that is big enough to hold
 ** as many as N expressions. */
-#define SZ_EXPRLIST(N)  \
-             (offsetof(ExprList,a) + (N)*sizeof(struct ExprList_item))
+#تعریف_کرو SZ_EXPRLIST(N)  \
+             (offsetof(اظہاریہ_List,a) + (N)*حجم(ساخت اظہاریہ_List_شے))
 
 /*
 ** Allowed values for Expr.a.eEName
 */
-#define ENAME_NAME  0       /* The AS clause of a result set */
-#define ENAME_SPAN  1       /* Complete text of the result set expression */
-#define ENAME_TAB   2       /* "DB.TABLE.NAME" for the result set */
-#define ENAME_ROWID 3       /* "DB.TABLE._rowid_" for * expansion of rowid */
+#تعریف_کرو ENAME_NAME  0       /* The AS clause of a result set */
+#تعریف_کرو ENAME_وسعت  1       /* Complete text of the result set expression */
+#تعریف_کرو ENAME_TAB   2       /* "DB.TABLE.NAME" for the result set */
+#تعریف_کرو ENAME_ROWID 3       /* "DB.TABLE._rowid_" for * expansion of rowid */
 
 /*
 ** An instance of this structure can hold a simple list of identifiers,
@@ -3323,32 +3323,32 @@ struct ExprList {
 **
 ** If "a" is the k-th column of table "t", then IdList.a[0].idx==k.
 */
-struct IdList {
-  int nId;         /* Number of identifiers on the list */
-  struct IdList_item {
-    char *zName;      /* Name of the identifier */
+ساخت IdList {
+  صحیح nId;         /* Number of identifiers on the list */
+  ساخت Id_List_شے {
+    حرف *zName;      /* Name of the identifier */
   } a[FLEXARRAY];
 };
 
 /* The size (in bytes) of an IdList object that can hold up to N IDs. */
-#define SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*sizeof(struct IdList_item))
+#تعریف_کرو SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*حجم(ساخت Id_List_شے))
 
 /*
 ** Allowed values for IdList.eType, which determines which value of the a.u4
 ** is valid.
 */
-#define EU4_NONE   0   /* Does not use IdList.a.u4 */
-#define EU4_IDX    1   /* Uses IdList.a.u4.idx */
-#define EU4_EXPR   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
+#تعریف_کرو EU4_NONE   0   /* Does not use IdList.a.u4 */
+#تعریف_کرو EU4_IDX    1   /* Uses IdList.a.u4.idx */
+#تعریف_کرو EU4_اظہاریہ   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
 
 /*
 ** Details of the implementation of a subquery.
 */
-struct Subquery {
+ساخت Subquery {
   Select *pSelect;  /* A SELECT statement used in place of a table name */
-  int addrFillSub;  /* Address of subroutine to initialize a subquery */
-  int regReturn;    /* Register holding return address of addrFillSub */
-  int regResult;    /* Registers holding results of a co-routine */
+  صحیح addrFillSub;  /* Address of subroutine to initialize a subquery */
+  صحیح regReturn;    /* Register holding return address of addrFillSub */
+  صحیح reg_نتیجہ;    /* Registers holding results of a co-routine */
 };
 
 /*
@@ -3388,50 +3388,50 @@ struct Subquery {
 ** check invariants on the fields of this object, especially the flags
 ** inside the fg struct.
 */
-struct SrcItem {
-  char *zName;      /* Name of the table */
-  char *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
-  Table *pSTab;     /* Table object for zName. Mnemonic: Srcitem-TABle */
-  struct {
+ساخت Src_شے {
+  حرف *zName;      /* Name of the table */
+  حرف *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
+  جدول *pSTab;     /* Table object for zName. Mnemonic: Srcitem-TABle */
+  ساخت {
     u8 jointype;      /* Type of join between this table and the previous */
-    unsigned notIndexed :1;    /* True if there is a NOT INDEXED clause */
-    unsigned isIndexedBy :1;   /* True if there is an INDEXED BY clause */
-    unsigned isSubquery :1;    /* True if this term is a subquery */
-    unsigned isTabFunc :1;     /* True if table-valued-function syntax */
-    unsigned isCorrelated :1;  /* True if sub-query is correlated */
-    unsigned isMaterialized:1; /* This is a materialized view */
-    unsigned viaCoroutine :1;  /* Implemented as a co-routine */
-    unsigned isRecursive :1;   /* True for recursive reference in WITH */
-    unsigned fromDDL :1;       /* Comes from sqlite_schema */
-    unsigned isCte :1;         /* This is a CTE */
-    unsigned notCte :1;        /* This item may not match a CTE */
-    unsigned isUsing :1;       /* u3.pUsing is valid */
-    unsigned isOn :1;          /* u3.pOn was once valid and non-NULL */
-    unsigned isSynthUsing :1;  /* u3.pUsing is synthesized from NATURAL */
-    unsigned isNestedFrom :1;  /* pSelect is a SF_NestedFrom subquery */
-    unsigned rowidUsed :1;     /* The ROWID of this table is referenced */
-    unsigned fixedSchema :1;   /* Uses u4.pSchema, not u4.zDatabase */
-    unsigned hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
-    unsigned fromExists :1;    /* Comes from WHERE EXISTS(...) */
+    غیرعلامتی not_اشاریہ_دار :1;    /* True if there is a NOT INDEXED clause */
+    غیرعلامتی is_اشاریہ_دار_By :1;   /* True if there is an INDEXED BY clause */
+    غیرعلامتی isSubquery :1;    /* True if this term is a subquery */
+    غیرعلامتی isTabFunc :1;     /* True if table-valued-function syntax */
+    غیرعلامتی isCorrelated :1;  /* True if sub-query is correlated */
+    غیرعلامتی isMaterialized:1; /* This is a materialized view */
+    غیرعلامتی بذریعہ_Coroutine :1;  /* Implemented as a co-routine */
+    غیرعلامتی isRecursive :1;   /* True for recursive reference in WITH */
+    غیرعلامتی fromDDL :1;       /* Comes from sqlite_schema */
+    غیرعلامتی isCte :1;         /* This is a CTE */
+    غیرعلامتی notCte :1;        /* This item may not match a CTE */
+    غیرعلامتی isUsing :1;       /* u3.pUsing is valid */
+    غیرعلامتی isOn :1;          /* u3.pOn was once valid and non-NULL */
+    غیرعلامتی isSynthUsing :1;  /* u3.pUsing is synthesized from NATURAL */
+    غیرعلامتی isNestedFrom :1;  /* pSelect is a SF_NestedFrom subquery */
+    غیرعلامتی rowid_مستعمل :1;     /* The ROWID of this table is referenced */
+    غیرعلامتی fixedSchema :1;   /* Uses u4.pSchema, not u4.zDatabase */
+    غیرعلامتی hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
+    غیرعلامتی fromExists :1;    /* Comes from WHERE EXISTS(...) */
   } fg;
-  int iCursor;      /* The VDBE cursor number used to access this table */
-  Bitmask colUsed;  /* Bit N set if column N used. Details above for N>62 */
-  union {
-    char *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
-    ExprList *pFuncArg;  /* Arguments to table-valued-function */
-    u32 nRow;            /* Number of rows in a VALUES clause */
+  صحیح iCursor;      /* The VDBE cursor number used to access this table */
+  Bitmask ستون_مستعمل;  /* Bit N set if column N used. Details above for N>62 */
+  اتحاد {
+    حرف *z_اشاریہ_دار_By;    /* Identifier from "INDEXED BY <zIndex>" clause */
+    اظہاریہ_List *pFuncArg;  /* Arguments to table-valued-function */
+    u32 n_صف;            /* Number of rows in a VALUES clause */
   } u1;
-  union {
-    Index *pIBIndex;  /* Index structure corresponding to u1.zIndexedBy */
+  اتحاد {
+    اشاریہ *pIBIndex;  /* Index structure corresponding to u1.zIndexedBy */
     CteUse *pCteUse;  /* CTE Usage info when fg.isCte is true */
   } u2;
-  union {
-    Expr *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
+  اتحاد {
+    اظہاریہ *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
     IdList *pUsing;   /* fg.isUsing==1 =>  The USING clause of a join */
   } u3;
-  union {
+  اتحاد {
     Schema *pSchema;  /* Schema to which this item is fixed */
-    char *zDatabase;  /* Name of database holding this table */
+    حرف *zDatabase;  /* Name of database holding this table */
     Subquery *pSubq;  /* Description of a subquery */
   } u4;
 };
@@ -3440,8 +3440,8 @@ struct SrcItem {
 ** The OnOrUsing object represents either an ON clause or a USING clause.
 ** It can never be both at the same time, but it can be neither.
 */
-struct OnOrUsing {
-  Expr *pOn;         /* The ON clause of a join */
+ساخت OnOrUsing {
+  اظہاریہ *pOn;         /* The ON clause of a join */
   IdList *pUsing;    /* The USING clause of a join */
 };
 
@@ -3452,32 +3452,32 @@ struct OnOrUsing {
 ** represents the target tables for DELETE, INSERT, and UPDATE statements.
 **
 */
-struct SrcList {
-  int nSrc;             /* Number of tables or subqueries in the FROM clause */
+ساخت SrcList {
+  صحیح nSrc;             /* Number of tables or subqueries in the FROM clause */
   u32 nAlloc;           /* Number of entries allocated in a[] below */
-  SrcItem a[FLEXARRAY]; /* One entry for each identifier on the list */
+  Src_شے a[FLEXARRAY]; /* One entry for each identifier on the list */
 };
 
 /* Size (in bytes) of a SrcList object that can hold as many as N
 ** SrcItem objects. */
-#define SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*sizeof(SrcItem))
+#تعریف_کرو SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*حجم(Src_شے))
 
 /* Size (in bytes( of a SrcList object that holds 1 SrcItem.  This is a
 ** special case of SZ_SRCITEM(1) that comes up often. */
-#define SZ_SRCLIST_1  (offsetof(SrcList,a)+sizeof(SrcItem))
+#تعریف_کرو SZ_SRCLIST_1  (offsetof(SrcList,a)+حجم(Src_شے))
 
 /*
 ** Permitted values of the SrcList.a.jointype field
 */
-#define JT_INNER     0x01    /* Any kind of inner or cross join */
-#define JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
-#define JT_NATURAL   0x04    /* True for a "natural" join */
-#define JT_LEFT      0x08    /* Left outer join */
-#define JT_RIGHT     0x10    /* Right outer join */
-#define JT_OUTER     0x20    /* The "OUTER" keyword is present */
-#define JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
+#تعریف_کرو JT_INNER     0x01    /* Any kind of inner or cross join */
+#تعریف_کرو JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
+#تعریف_کرو JT_NATURAL   0x04    /* True for a "natural" join */
+#تعریف_کرو JT_بایاں      0x08    /* Left outer join */
+#تعریف_کرو JT_دایاں     0x10    /* Right outer join */
+#تعریف_کرو JT_OUTER     0x20    /* The "OUTER" keyword is present */
+#تعریف_کرو JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
                              ** Mnemonic: Left Table Of Right Join */
-#define JT_ERROR     0x80    /* unknown or unsupported join type */
+#تعریف_کرو JT_ERROR     0x80    /* unknown or unsupported join type */
 
 /*
 ** Flags appropriate for the wctrlFlags parameter of sqlite3WhereBegin()
@@ -3486,31 +3486,31 @@ struct SrcList {
 ** Value constraints (enforced via assert()):
 **     WHERE_USE_LIMIT  == SF_FixedLimit
 */
-#define WHERE_ORDERBY_NORMAL   0x0000 /* No-op */
-#define WHERE_ORDERBY_MIN      0x0001 /* ORDER BY processing for min() func */
-#define WHERE_ORDERBY_MAX      0x0002 /* ORDER BY processing for max() func */
-#define WHERE_ONEPASS_DESIRED  0x0004 /* Want to do one-pass UPDATE/DELETE */
-#define WHERE_ONEPASS_MULTIROW 0x0008 /* ONEPASS is ok with multiple rows */
-#define WHERE_DUPLICATES_OK    0x0010 /* Ok to return a row more than once */
-#define WHERE_OR_SUBCLAUSE     0x0020 /* Processing a sub-WHERE as part of
+#تعریف_کرو WHERE_ORDERBY_معمول   0x0000 /* No-op */
+#تعریف_کرو WHERE_ORDERBY_MIN      0x0001 /* ORDER BY processing for min() func */
+#تعریف_کرو WHERE_ORDERBY_MAX      0x0002 /* ORDER BY processing for max() func */
+#تعریف_کرو WHERE_ONEPASS_DESIRED  0x0004 /* Want to do one-pass UPDATE/DELETE */
+#تعریف_کرو WHERE_ONEPASS_MULTIROW 0x0008 /* ONEPASS is ok with multiple rows */
+#تعریف_کرو WHERE_DUPLICATES_OK    0x0010 /* Ok to return a row more than once */
+#تعریف_کرو WHERE_OR_SUBCLAUSE     0x0020 /* Processing a sub-WHERE as part of
                                       ** the OR optimization  */
-#define WHERE_GROUPBY          0x0040 /* pOrderBy is really a GROUP BY */
-#define WHERE_DISTINCTBY       0x0080 /* pOrderby is really a DISTINCT clause */
-#define WHERE_WANT_DISTINCT    0x0100 /* All output needs to be distinct */
-#define WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
-#define WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
-#define WHERE_ORDERBY_LIMIT    0x0800 /* ORDERBY+LIMIT on the inner loop */
-#define WHERE_RIGHT_JOIN       0x1000 /* Processing a RIGHT JOIN */
-#define WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
-#define WHERE_USE_LIMIT        0x4000 /* Use the LIMIT in cost estimates */
+#تعریف_کرو WHERE_GROUPBY          0x0040 /* pOrderBy is really a GROUP BY */
+#تعریف_کرو WHERE_DISTINCTBY       0x0080 /* pOrderby is really a DISTINCT clause */
+#تعریف_کرو WHERE_WANT_DISTINCT    0x0100 /* All output needs to be distinct */
+#تعریف_کرو WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
+#تعریف_کرو WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
+#تعریف_کرو WHERE_ORDERBY_حد_بندی    0x0800 /* ORDERBY+LIMIT on the inner loop */
+#تعریف_کرو WHERE_دایاں_JOIN       0x1000 /* Processing a RIGHT JOIN */
+#تعریف_کرو WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
+#تعریف_کرو WHERE_USE_حد_بندی        0x4000 /* Use the LIMIT in cost estimates */
                         /*     0x8000    not currently used */
 
 /* Allowed return values from sqlite3WhereIsDistinct()
 */
-#define WHERE_DISTINCT_NOOP      0  /* DISTINCT keyword not used */
-#define WHERE_DISTINCT_UNIQUE    1  /* No duplicates */
-#define WHERE_DISTINCT_ORDERED   2  /* All duplicates are adjacent */
-#define WHERE_DISTINCT_UNORDERED 3  /* Duplicates are scattered */
+#تعریف_کرو WHERE_DISTINCT_NOOP      0  /* DISTINCT keyword not used */
+#تعریف_کرو WHERE_DISTINCT_UNIQUE    1  /* No duplicates */
+#تعریف_کرو WHERE_DISTINCT_ORDERED   2  /* All duplicates are adjacent */
+#تعریف_کرو WHERE_DISTINCT_UNORDERED 3  /* Duplicates are scattered */
 
 /*
 ** A NameContext defines a context in which to resolve table and column
@@ -3533,19 +3533,19 @@ struct SrcList {
 ** NameContext list corresponds to searching through successively outer
 ** subqueries looking for a match.
 */
-struct NameContext {
+ساخت NameContext {
   Parse *pParse;       /* The parser */
   SrcList *pSrcList;   /* One or more tables used to resolve names */
-  union {
-    ExprList *pEList;    /* Optional list of result-set columns */
+  اتحاد {
+    اظہاریہ_List *pEList;    /* Optional list of result-set columns */
     AggInfo *pAggInfo;   /* Information about aggregates at this level */
     Upsert *pUpsert;     /* ON CONFLICT clause information from an upsert */
-    int iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
+    صحیح i_بنیاد_Reg;        /* For TK_REGISTER when parsing RETURNING */
   } uNC;
-  NameContext *pNext;  /* Next outer name context.  NULL for outermost */
-  int nRef;            /* Number of names resolved by this context */
-  int nNcErr;          /* Number of errors encountered while resolving names */
-  int ncFlags;         /* Zero or more NC_* flags defined below */
+  NameContext *p_اگلا;  /* Next outer name context.  NULL for outermost */
+  صحیح nRef;            /* Number of names resolved by this context */
+  صحیح nNcErr;          /* Number of errors encountered while resolving names */
+  صحیح ncFlags;         /* Zero or more NC_* flags defined below */
   u32 nNestedSelect;   /* Number of nested selects using this NC */
   Select *pWinSelect;  /* SELECT statement for any window functions */
 };
@@ -3560,28 +3560,28 @@ struct NameContext {
 **    NC_HasWin    == EP_Win
 **
 */
-#define NC_AllowAgg  0x000001 /* Aggregate functions are allowed here */
-#define NC_PartIdx   0x000002 /* True if resolving a partial index WHERE */
-#define NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
-#define NC_GenCol    0x000008 /* True for a GENERATED ALWAYS AS clause */
-#define NC_HasAgg    0x000010 /* One or more aggregate functions seen */
-#define NC_IdxExpr   0x000020 /* True if resolving columns of CREATE INDEX */
-#define NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
-#define NC_Subquery  0x000040 /* A subquery has been seen */
-#define NC_UEList    0x000080 /* True if uNC.pEList is used */
-#define NC_UAggInfo  0x000100 /* True if uNC.pAggInfo is used */
-#define NC_UUpsert   0x000200 /* True if uNC.pUpsert is used */
-#define NC_UBaseReg  0x000400 /* True if uNC.iBaseReg is used */
-#define NC_MinMaxAgg 0x001000 /* min/max aggregates seen.  See note above */
+#تعریف_کرو NC_AllowAgg  0x000001 /* Aggregate functions are allowed here */
+#تعریف_کرو NC_PartIdx   0x000002 /* True if resolving a partial index WHERE */
+#تعریف_کرو NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
+#تعریف_کرو NC_Gen_ستون    0x000008 /* True for a GENERATED ALWAYS AS clause */
+#تعریف_کرو NC_HasAgg    0x000010 /* One or more aggregate functions seen */
+#تعریف_کرو NC_Idx_اظہاریہ   0x000020 /* True if resolving columns of CREATE INDEX */
+#تعریف_کرو NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
+#تعریف_کرو NC_Subquery  0x000040 /* A subquery has been seen */
+#تعریف_کرو NC_UEList    0x000080 /* True if uNC.pEList is used */
+#تعریف_کرو NC_UAggInfo  0x000100 /* True if uNC.pAggInfo is used */
+#تعریف_کرو NC_UUpsert   0x000200 /* True if uNC.pUpsert is used */
+#تعریف_کرو NC_UBaseReg  0x000400 /* True if uNC.iBaseReg is used */
+#تعریف_کرو NC_MinMaxAgg 0x001000 /* min/max aggregates seen.  See note above */
 /*                   0x002000 // available for reuse */
-#define NC_AllowWin  0x004000 /* Window functions are allowed here */
-#define NC_HasWin    0x008000 /* One or more window functions seen */
-#define NC_IsDDL     0x010000 /* Resolving names in a CREATE statement */
-#define NC_InAggFunc 0x020000 /* True if analyzing arguments to an agg func */
-#define NC_FromDDL   0x040000 /* SQL text comes from sqlite_schema */
-#define NC_NoSelect  0x080000 /* Do not descend into sub-selects */
-#define NC_Where     0x100000 /* Processing WHERE clause of a SELECT */
-#define NC_OrderAgg 0x8000000 /* Has an aggregate other than count/min/max */
+#تعریف_کرو NC_AllowWin  0x004000 /* Window functions are allowed here */
+#تعریف_کرو NC_HasWin    0x008000 /* One or more window functions seen */
+#تعریف_کرو NC_IsDDL     0x010000 /* Resolving names in a CREATE statement */
+#تعریف_کرو NC_اندر_Agg_Func 0x020000 /* True if analyzing arguments to an agg func */
+#تعریف_کرو NC_FromDDL   0x040000 /* SQL text comes from sqlite_schema */
+#تعریف_کرو NC_NoSelect  0x080000 /* Do not descend into sub-selects */
+#تعریف_کرو NC_Where     0x100000 /* Processing WHERE clause of a SELECT */
+#تعریف_کرو NC_ترتیب_Agg 0x8000000 /* Has an aggregate other than count/min/max */
 
 /*
 ** An instance of the following object describes a single ON CONFLICT
@@ -3597,53 +3597,53 @@ struct NameContext {
 ** pUpsertWhere is the WHERE clause for the UPDATE and is NULL if the
 ** WHERE clause is omitted.
 */
-struct Upsert {
-  ExprList *pUpsertTarget;  /* Optional description of conflict target */
-  Expr *pUpsertTargetWhere; /* WHERE clause for partial index targets */
-  ExprList *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
-  Expr *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
-  Upsert *pNextUpsert;      /* Next ON CONFLICT clause in the list */
+ساخت Upsert {
+  اظہاریہ_List *p_Upsert_ہدف;  /* Optional description of conflict target */
+  اظہاریہ *p_Upsert_ہدف_Where; /* WHERE clause for partial index targets */
+  اظہاریہ_List *p_Upsert_سیٹ;     /* The SET clause from an ON CONFLICT UPDATE */
+  اظہاریہ *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
+  Upsert *p_اگلا_Upsert;      /* Next ON CONFLICT clause in the list */
   u8 isDoUpdate;            /* True for DO UPDATE.  False for DO NOTHING */
   u8 isDup;                 /* True if 2nd or later with same pUpsertIdx */
   /* Above this point is the parse tree for the ON CONFLICT clauses.
   ** The next group of fields stores intermediate data. */
-  void *pToFree;            /* Free memory when deleting the Upsert object */
+  خالی *p_مقصد_Free;            /* Free memory when deleting the Upsert object */
   /* All fields above are owned by the Upsert object and must be freed
   ** when the Upsert is destroyed.  The fields below are used to transfer
   ** information from the INSERT processing down into the UPDATE processing
   ** while generating code.  The fields below are owned by the INSERT
   ** statement and will be freed by INSERT processing. */
-  Index *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
+  اشاریہ *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
   SrcList *pUpsertSrc;      /* Table to be updated */
-  int regData;              /* First register holding array of VALUES */
-  int iDataCur;             /* Index of the data cursor */
-  int iIdxCur;              /* Index of the first index cursor */
+  صحیح reg_ڈیٹا;              /* First register holding array of VALUES */
+  صحیح i_ڈیٹا_Cur;             /* Index of the data cursor */
+  صحیح iIdxCur;              /* Index of the first index cursor */
 };
 
 /*
 ** An instance of the following structure contains all information
 ** needed to generate code for a single SELECT statement.
 */
-struct Select {
+ساخت Select {
   u8 op;                 /* One of: TK_UNION TK_ALL TK_INTERSECT TK_EXCEPT */
-  LogEst nSelectRow;     /* Estimated number of result rows */
+  LogEst n_Select_صف;     /* Estimated number of result rows */
   u32 selFlags;          /* Various SF_* values */
-  int iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
+  صحیح i_حد_بندی, i_انحراف;   /* Memory registers holding LIMIT & OFFSET counters */
   u32 selId;             /* Unique identifier number for this SELECT */
-  ExprList *pEList;      /* The fields of the result */
+  اظہاریہ_List *pEList;      /* The fields of the result */
   SrcList *pSrc;         /* The FROM clause */
-  Expr *pWhere;          /* The WHERE clause */
-  ExprList *pGroupBy;    /* The GROUP BY clause */
-  Expr *pHaving;         /* The HAVING clause */
-  ExprList *pOrderBy;    /* The ORDER BY clause */
-  Select *pPrior;        /* Prior select in a compound select statement */
-  Select *pNext;         /* Next select to the left in a compound */
-  Expr *pLimit;          /* LIMIT expression. NULL means not used. */
+  اظہاریہ *pWhere;          /* The WHERE clause */
+  اظہاریہ_List *p_گروہ_By;    /* The GROUP BY clause */
+  اظہاریہ *pHaving;         /* The HAVING clause */
+  اظہاریہ_List *p_ترتیب_By;    /* The ORDER BY clause */
+  Select *p_پیشگی;        /* Prior select in a compound select statement */
+  Select *p_اگلا;         /* Next select to the left in a compound */
+  اظہاریہ *p_حد_بندی;          /* LIMIT expression. NULL means not used. */
   With *pWith;           /* WITH clause attached to this select. Or NULL. */
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  Window *pWin;          /* List of window functions */
-  Window *pWinDefn;      /* List of named window definitions */
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+  کھڑکی *pWin;          /* List of window functions */
+  کھڑکی *pWinDefn;      /* List of named window definitions */
+#اگر_ختم
 };
 
 /*
@@ -3656,40 +3656,40 @@ struct Select {
 **     SF_OrderByReqd == NC_OrderAgg      == SQLITE_FUNC_ANYORDER
 **     SF_FixedLimit  == WHERE_USE_LIMIT
 */
-#define SF_Distinct      0x0000001 /* Output should be DISTINCT */
-#define SF_All           0x0000002 /* Includes the ALL keyword */
-#define SF_Resolved      0x0000004 /* Identifiers have been resolved */
-#define SF_Aggregate     0x0000008 /* Contains agg functions or a GROUP BY */
-#define SF_HasAgg        0x0000010 /* Contains aggregate functions */
-#define SF_ClonedRhsIn   0x0000020 /* Cloned RHS of an IN operator */
-#define SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
-#define SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
-#define SF_Compound      0x0000100 /* Part of a compound query */
-#define SF_Values        0x0000200 /* Synthesized from VALUES clause */
-#define SF_MultiValue    0x0000400 /* Single VALUES term with multiple rows */
-#define SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
-#define SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
-#define SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
-#define SF_FixedLimit    0x0004000 /* nSelectRow set by a constant LIMIT */
+#تعریف_کرو SF_Distinct      0x0000001 /* Output should be DISTINCT */
+#تعریف_کرو SF_All           0x0000002 /* Includes the ALL keyword */
+#تعریف_کرو SF_Resolved      0x0000004 /* Identifiers have been resolved */
+#تعریف_کرو SF_Aggregate     0x0000008 /* Contains agg functions or a GROUP BY */
+#تعریف_کرو SF_HasAgg        0x0000010 /* Contains aggregate functions */
+#تعریف_کرو SF_Cloned_Rhs_اندر   0x0000020 /* Cloned RHS of an IN operator */
+#تعریف_کرو SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
+#تعریف_کرو SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
+#تعریف_کرو SF_Compound      0x0000100 /* Part of a compound query */
+#تعریف_کرو SF_اقدار        0x0000200 /* Synthesized from VALUES clause */
+#تعریف_کرو SF_Multi_قدر    0x0000400 /* Single VALUES term with multiple rows */
+#تعریف_کرو SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
+#تعریف_کرو SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
+#تعریف_کرو SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
+#تعریف_کرو SF_Fixed_حد_بندی    0x0004000 /* nSelectRow set by a constant LIMIT */
 /*                       0x0008000 // available for reuse */
-#define SF_Converted     0x0010000 /* By convertCompoundSelectToSubquery() */
-#define SF_IncludeHidden 0x0020000 /* Include hidden columns in output */
-#define SF_ComplexResult 0x0040000 /* Result contains subquery or function */
-#define SF_WhereBegin    0x0080000 /* Really a WhereBegin() call.  Debug Only */
-#define SF_WinRewrite    0x0100000 /* Window function rewrite accomplished */
-#define SF_View          0x0200000 /* SELECT statement is a view */
+#تعریف_کرو SF_Converted     0x0010000 /* By convertCompoundSelectToSubquery() */
+#تعریف_کرو SF_IncludeHidden 0x0020000 /* Include hidden columns in output */
+#تعریف_کرو SF_Complex_نتیجہ 0x0040000 /* Result contains subquery or function */
+#تعریف_کرو SF_WhereBegin    0x0080000 /* Really a WhereBegin() call.  Debug Only */
+#تعریف_کرو SF_WinRewrite    0x0100000 /* Window function rewrite accomplished */
+#تعریف_کرو SF_View          0x0200000 /* SELECT statement is a view */
 /*                       0x0400000 // available for reuse */
-#define SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
-#define SF_PushDown      0x1000000 /* Modified by WHERE-clause push-down opt */
-#define SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
-#define SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
-#define SF_OrderByReqd   0x8000000 /* The ORDER BY clause may not be omitted */
-#define SF_UpdateFrom   0x10000000 /* Query originates with UPDATE FROM */
-#define SF_Correlated   0x20000000 /* True if references the outer context */
-#define SF_OnToWhere    0x40000000 /* One or more ON clauses moved to WHERE */
+#تعریف_کرو SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
+#تعریف_کرو SF_ڈالو_نیچے_کو      0x1000000 /* Modified by WHERE-clause push-down opt */
+#تعریف_کرو SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
+#تعریف_کرو SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
+#تعریف_کرو SF_ترتیب_By_Reqd   0x8000000 /* The ORDER BY clause may not be omitted */
+#تعریف_کرو SF_UpdateFrom   0x10000000 /* Query originates with UPDATE FROM */
+#تعریف_کرو SF_Correlated   0x20000000 /* True if references the outer context */
+#تعریف_کرو SF_On_مقصد_Where    0x40000000 /* One or more ON clauses moved to WHERE */
 
 /* True if SrcItem X is a subquery that has SF_NestedFrom */
-#define IsNestedFrom(X) \
+#تعریف_کرو IsNestedFrom(X) \
    ((X)->fg.isSubquery && \
     ((X)->u4.pSubq->pSelect->selFlags&SF_NestedFrom)!=0)
 
@@ -3761,41 +3761,41 @@ struct Select {
 **                     table. (pDest->iSDParm) is the number of key columns in
 **                     each index record in this case.
 */
-#define SRT_Exists       1  /* Store 1 if the result is not empty */
-#define SRT_Discard      2  /* Do not save the results anywhere */
-#define SRT_DistFifo     3  /* Like SRT_Fifo, but unique results only */
-#define SRT_DistQueue    4  /* Like SRT_Queue, but unique results only */
+#تعریف_کرو SRT_Exists       1  /* Store 1 if the result is not empty */
+#تعریف_کرو SRT_Discard      2  /* Do not save the results anywhere */
+#تعریف_کرو SRT_DistFifo     3  /* Like SRT_Fifo, but unique results only */
+#تعریف_کرو SRT_Dist_قطار    4  /* Like SRT_Queue, but unique results only */
 
 /* The DISTINCT clause is ignored for all of the above.  Not that
 ** IgnorableDistinct() implies IgnorableOrderby() */
-#define IgnorableDistinct(X) ((X->eDest)<=SRT_DistQueue)
+#تعریف_کرو IgnorableDistinct(X) ((X->eDest)<=SRT_Dist_قطار)
 
-#define SRT_Queue        5  /* Store result in an queue */
-#define SRT_Fifo         6  /* Store result as data with an automatic rowid */
+#تعریف_کرو SRT_قطار        5  /* Store result in an queue */
+#تعریف_کرو SRT_Fifo         6  /* Store result as data with an automatic rowid */
 
 /* The ORDER BY clause is ignored for all of the above */
-#define IgnorableOrderby(X) ((X->eDest)<=SRT_Fifo)
+#تعریف_کرو IgnorableOrderby(X) ((X->eDest)<=SRT_Fifo)
 
-#define SRT_Output       7  /* Output each row of result */
-#define SRT_Mem          8  /* Store result in a memory cell */
-#define SRT_Set          9  /* Store results as keys in an index */
-#define SRT_EphemTab    10  /* Create transient tab and store like SRT_Table */
-#define SRT_Coroutine   11  /* Generate a single row of result */
-#define SRT_Table       12  /* Store result as data with an automatic rowid */
-#define SRT_Upfrom      13  /* Store result as data with rowid */
+#تعریف_کرو SRT_Output       7  /* Output each row of result */
+#تعریف_کرو SRT_Mem          8  /* Store result in a memory cell */
+#تعریف_کرو SRT_سیٹ          9  /* Store results as keys in an index */
+#تعریف_کرو SRT_EphemTab    10  /* Create transient tab and store like SRT_Table */
+#تعریف_کرو SRT_Coroutine   11  /* Generate a single row of result */
+#تعریف_کرو SRT_جدول       12  /* Store result as data with an automatic rowid */
+#تعریف_کرو SRT_Upfrom      13  /* Store result as data with rowid */
 
 /*
 ** An instance of this object describes where to put of the results of
 ** a SELECT statement.
 */
-struct SelectDest {
+ساخت SelectDest {
   u8 eDest;            /* How to dispose of the results.  One of SRT_* above. */
-  int iSDParm;         /* A parameter used by the eDest disposal method */
-  int iSDParm2;        /* A second parameter for the eDest disposal method */
-  int iSdst;           /* Base register where results are written */
-  int nSdst;           /* Number of registers allocated */
-  char *zAffSdst;      /* Affinity used for SRT_Set */
-  ExprList *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
+  صحیح iSDParm;         /* A parameter used by the eDest disposal method */
+  صحیح iSDParm2;        /* A second parameter for the eDest disposal method */
+  صحیح iSdst;           /* Base register where results are written */
+  صحیح nSdst;           /* Number of registers allocated */
+  حرف *zAffSdst;      /* Affinity used for SRT_Set */
+  اظہاریہ_List *p_ترتیب_By;  /* Key columns for SRT_Queue and SRT_DistQueue */
 };
 
 /*
@@ -3807,11 +3807,11 @@ struct SelectDest {
 ** normally coordinate their activities, but we do need to coordinate the
 ** loading and saving of autoincrement information.
 */
-struct AutoincInfo {
-  AutoincInfo *pNext;   /* Next info block in a list of them all */
-  Table *pTab;          /* Table this info block refers to */
-  int iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
-  int regCtr;           /* Memory register holding the rowid counter */
+ساخت AutoincInfo {
+  AutoincInfo *p_اگلا;   /* Next info block in a list of them all */
+  جدول *pTab;          /* Table this info block refers to */
+  صحیح iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
+  صحیح regCtr;           /* Memory register holding the rowid counter */
 };
 
 /*
@@ -3832,32 +3832,32 @@ struct AutoincInfo {
 ** statements). Similarly, the TriggerPrg.aColmask[1] variable is set to
 ** a mask of new.* columns used by the program.
 */
-struct TriggerPrg {
+ساخت TriggerPrg {
   Trigger *pTrigger;      /* Trigger this program was coded from */
-  TriggerPrg *pNext;      /* Next entry in Parse.pTriggerPrg list */
-  SubProgram *pProgram;   /* Program implementing pTrigger/orconf */
-  int orconf;             /* Default ON CONFLICT policy */
+  TriggerPrg *p_اگلا;      /* Next entry in Parse.pTriggerPrg list */
+  Sub_پروگرام *p_پروگرام;   /* Program implementing pTrigger/orconf */
+  صحیح orconf;             /* Default ON CONFLICT policy */
   u32 aColmask[2];        /* Masks of old.*, new.* columns accessed */
 };
 
 /*
 ** The yDbMask datatype for the bitmask of all attached databases.
 */
-#if SQLITE_MAX_ATTACHED>30
-  typedef unsigned char yDbMask[(SQLITE_MAX_ATTACHED+9)/8];
-# define DbMaskTest(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
-# define DbMaskZero(M)      memset((M),0,sizeof(M))
-# define DbMaskSet(M,I)     (M)[(I)/8]|=(1<<((I)&7))
-# define DbMaskAllZero(M)   sqlite3DbMaskAllZero(M)
-# define DbMaskNonZero(M)   (sqlite3DbMaskAllZero(M)==0)
-#else
-  typedef unsigned int yDbMask;
-# define DbMaskTest(M,I)    (((M)&(((yDbMask)1)<<(I)))!=0)
-# define DbMaskZero(M)      ((M)=0)
-# define DbMaskSet(M,I)     ((M)|=(((yDbMask)1)<<(I)))
-# define DbMaskAllZero(M)   ((M)==0)
-# define DbMaskNonZero(M)   ((M)!=0)
-#endif
+#اگر SQLITE_MAX_ATTACHED>30
+  قسمتعریف غیرعلامتی حرف y_Db_نقاب[(SQLITE_MAX_ATTACHED+9)/8];
+# define Db_نقاب_Test(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
+# define Db_نقاب_Zero(M)      memset((M),0,حجم(M))
+# define Db_نقاب_سیٹ(M,I)     (M)[(I)/8]|=(1<<((I)&7))
+# define Db_نقاب_All_Zero(M)   sqlite3_Db_نقاب_All_Zero(M)
+# define Db_نقاب_Non_Zero(M)   (sqlite3_Db_نقاب_All_Zero(M)==0)
+#ورنہ
+  قسمتعریف غیرعلامتی صحیح y_Db_نقاب;
+# define Db_نقاب_Test(M,I)    (((M)&(((y_Db_نقاب)1)<<(I)))!=0)
+# define Db_نقاب_Zero(M)      ((M)=0)
+# define Db_نقاب_سیٹ(M,I)     ((M)|=(((y_Db_نقاب)1)<<(I)))
+# define Db_نقاب_All_Zero(M)   ((M)==0)
+# define Db_نقاب_Non_Zero(M)   ((M)!=0)
+#اگر_ختم
 
 /*
 ** For each index X that has as one of its arguments either an expression
@@ -3869,17 +3869,17 @@ struct TriggerPrg {
 ** this list is consulted and if a matching expression is found, the value
 ** is read from the index rather than being recomputed.
 */
-struct IndexedExpr {
-  Expr *pExpr;            /* The expression contained in the index */
-  int iDataCur;           /* The data cursor associated with the index */
-  int iIdxCur;            /* The index cursor */
-  int iIdxCol;            /* The index column that contains value of pExpr */
-  u8 bMaybeNullRow;       /* True if we need an OP_IfNullRow check */
+ساخت اشاریہ_دار_اظہاریہ {
+  اظہاریہ *p_اظہاریہ;            /* The expression contained in the index */
+  صحیح i_ڈیٹا_Cur;           /* The data cursor associated with the index */
+  صحیح iIdxCur;            /* The index cursor */
+  صحیح i_Idx_ستون;            /* The index column that contains value of pExpr */
+  u8 b_Maybe_Null_صف;       /* True if we need an OP_IfNullRow check */
   u8 aff;                 /* Affinity of the pExpr expression */
-  IndexedExpr *pIENext;   /* Next in a list of all indexed expressions */
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  const char *zIdxName;   /* Name of index, used only for bytecode comments */
-#endif
+  اشاریہ_دار_اظہاریہ *pIENext;   /* Next in a list of all indexed expressions */
+#اگر_تعریف_شدہ SQLITE_ENABLE_EXPLAIN_COMMENTS
+  ثابت حرف *zIdxName;   /* Name of index, used only for bytecode comments */
+#اگر_ختم
 };
 
 /*
@@ -3887,18 +3887,18 @@ struct IndexedExpr {
 ** should be performed after parsing to deallocation resources obtained
 ** during the parse and which are no longer needed.
 */
-struct ParseCleanup {
-  ParseCleanup *pNext;               /* Next cleanup task */
-  void *pPtr;                        /* Pointer to object to deallocate */
-  void (*xCleanup)(sqlite3*,void*);  /* Deallocation routine */
+ساخت ParseCleanup {
+  ParseCleanup *p_اگلا;               /* Next cleanup task */
+  خالی *pPtr;                        /* Pointer to object to deallocate */
+  خالی (*xCleanup)(sqlite3*,خالی*);  /* Deallocation routine */
 };
 
 /*
 ** Number of 64-bit entried in the variable number bitmap cache (VNBMC).
 */
-#ifndef SQLITE_VNBMC
+#اگر_غیر_تعریف_شدہ SQLITE_VNBMC
 # define SQLITE_VNBMC 2
-#endif
+#اگر_ختم
 
 /*
 ** An SQL parser context.  A copy of this structure is passed through
@@ -3916,14 +3916,14 @@ struct ParseCleanup {
 ** compiled. Function sqlite3TableLock() is used to add entries to the
 ** list.
 */
-struct Parse {
+ساخت Parse {
   sqlite3 *db;         /* The main database structure */
-  char *zErrMsg;       /* An error message */
+  حرف *z_Err_پیغام;       /* An error message */
   Vdbe *pVdbe;         /* An engine for executing database bytecode */
-  int rc;              /* Return code from execution */
+  صحیح rc;              /* Return code from execution */
   LogEst nQueryLoop;   /* Est number of iterations of a query (10*log2(N)) */
   u8 nested;           /* Number of nested calls to the parser/code generator */
-  u8 nTempReg;         /* Number of temporary registers in aTempReg[] */
+  u8 n_عارضی_Reg;         /* Number of temporary registers in aTempReg[] */
   u8 isMultiWrite;     /* True if statement may modify/insert multiple rows */
   u8 disableLookaside; /* Number of times lookaside has been disabled */
   u8 prepFlags;        /* SQLITE_PREPARE_* flags */
@@ -3931,51 +3931,51 @@ struct Parse {
   u8 mSubrtnSig;       /* mini Bloom filter on available SubrtnSig.selId */
   u8 eTriggerOp;       /* TK_UPDATE, TK_INSERT or TK_DELETE */
   u8 eOrconf;          /* Default ON CONFLICT policy for trigger steps */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
   u8 earlyCleanup;     /* OOM inside sqlite3ParserAddCleanup() */
-#endif
-#ifdef SQLITE_DEBUG
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_DEBUG
   u8 ifNotExists;      /* Might be true if IF NOT EXISTS.  Assert()s only */
   u8 isCreate;         /* CREATE TABLE, INDEX, or VIEW (but not TRIGGER)
                        ** and ALTER TABLE ADD COLUMN. */
-#endif
+#اگر_ختم
   bft disableTriggers:1; /* True to disable triggers */
   bft mayAbort :1;     /* True if statement may throw an ABORT exception */
   bft hasCompound :1;  /* Need to invoke convertCompoundSelectToSubquery() */
   bft bReturning :1;   /* Coding a RETURNING trigger */
   bft bHasExists :1;   /* Has a correlated "EXISTS (SELECT ....)" expression */
-  bft colNamesSet :1;  /* TRUE after OP_ColumnName has been issued to pVdbe */
+  bft ستون_نام_سیٹ :1;  /* TRUE after OP_ColumnName has been issued to pVdbe */
   bft bHasWith :1;     /* True if statement contains WITH */
-  bft okConstFactor:1; /* OK to factor out constants */
+  bft ok_Const_ضربی_عدد:1; /* OK to factor out constants */
   bft checkSchema :1;  /* Causes schema cookie check after an error */
-  bft usesAinc :1;     /* True if pAinc is valid */
-  int nRangeReg;       /* Size of the temporary register block */
-  int iRangeReg;       /* First register in temporary register block */
-  int nErr;            /* Number of errors seen */
-  int nTab;            /* Number of previously allocated VDBE cursors */
-  int nMem;            /* Number of memory cells used so far */
-  int szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
-  int iSelfTab;        /* Table associated with an index on expr, or negative
+  bft استعمال_کرتا_Ainc :1;     /* True if pAinc is valid */
+  صحیح nRangeReg;       /* Size of the temporary register block */
+  صحیح iRangeReg;       /* First register in temporary register block */
+  صحیح nErr;            /* Number of errors seen */
+  صحیح nTab;            /* Number of previously allocated VDBE cursors */
+  صحیح nMem;            /* Number of memory cells used so far */
+  صحیح szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
+  صحیح iSelfTab;        /* Table associated with an index on expr, or negative
                        ** of the base register during check-constraint eval */
-  int nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
-  int nLabel;          /* The *negative* of the number of labels used */
-  int nLabelAlloc;     /* Number of slots in aLabel */
-  int *aLabel;         /* Space to hold the labels */
-  ExprList *pConstExpr;/* Constant expressions */
-  IndexedExpr *pIdxEpr;/* List of expressions used by active indexes */
-  IndexedExpr *pIdxPartExpr; /* Exprs constrained by index WHERE clauses */
-  yDbMask writeMask;   /* Start a write transaction on these databases */
-  yDbMask cookieMask;  /* Bitmask of schema verified databases */
-  int nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
-  int nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
-#ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  u32 nProgressSteps;  /* xProgress steps taken during sqlite3_prepare() */
-#endif
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  int nTableLock;        /* Number of locks in aTableLock */
-#endif
+  صحیح nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
+  صحیح nLabel;          /* The *negative* of the number of labels used */
+  صحیح nLabelAlloc;     /* Number of slots in aLabel */
+  صحیح *aLabel;         /* Space to hold the labels */
+  اظہاریہ_List *p_Const_اظہاریہ;/* Constant expressions */
+  اشاریہ_دار_اظہاریہ *pIdxEpr;/* List of expressions used by active indexes */
+  اشاریہ_دار_اظہاریہ *p_Idx_Part_اظہاریہ; /* Exprs constrained by index WHERE clauses */
+  y_Db_نقاب write_نقاب;   /* Start a write transaction on these databases */
+  y_Db_نقاب cookie_نقاب;  /* Bitmask of schema verified databases */
+  صحیح nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
+  صحیح nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_پیش_رفت_CALLBACK
+  u32 n_پیش_رفت_اقدام;  /* xProgress steps taken during sqlite3_prepare() */
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SHARED_CACHE
+  صحیح n_جدول_تالا;        /* Number of locks in aTableLock */
+#اگر_ختم
   Parse *pToplevel;    /* Parse structure for main program (or NULL) */
-  Table *pTriggerTab;  /* Table triggers are being coded for */
+  جدول *pTriggerTab;  /* Table triggers are being coded for */
   TriggerPrg *pTriggerPrg;  /* Linked list of coded triggers */
   ParseCleanup *pCleanup;   /* List of cleanup operations to run after parse */
   Trigger *pTrigCoded;      /* Trigger whose sub-program is being coded */
@@ -3987,28 +3987,28 @@ struct Parse {
   ** determined by offsetof(Parse,aTempReg).
   **************************************************************************/
 
-  int aTempReg[8];        /* Holding area for temporary registers */
+  صحیح a_عارضی_Reg[8];        /* Holding area for temporary registers */
   Parse *pOuterParse;     /* Outer Parse object when nested */
   Token sNameToken;       /* Token with unqualified schema object name */
   u32 oldmask;            /* Mask of old.* columns referenced */
   u32 newmask;            /* Mask of new.* columns referenced */
-  union {
-    struct {  /* These fields available when isCreate is true */
-      int addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
-      int regRowid;         /* Register holding rowid of CREATE TABLE entry */
-      int regRoot;          /* Register holding root page for new objects */
+  اتحاد {
+    ساخت {  /* These fields available when isCreate is true */
+      صحیح addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
+      صحیح regRowid;         /* Register holding rowid of CREATE TABLE entry */
+      صحیح reg_جڑ;          /* Register holding root page for new objects */
       Token constraintName; /* Name of the constraint currently being parsed */
     } cr;
-    struct {  /* These fields available to all other statements */
+    ساخت {  /* These fields available to all other statements */
       Returning *pReturning; /* The RETURNING clause */
     } d;
   } u1;
   AutoincInfo *pAinc;     /* Information about AUTOINCREMENT counters. Only
                           ** valid if Parse.usesAinc is true */
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  TableLock *aTableLock;  /* Required table locks for shared-cache mode. Only
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SHARED_CACHE
+  جدول_تالا *a_جدول_تالا;  /* Required table locks for shared-cache mode. Only
                           ** valid if Parse.nTableLock>0 */
-#endif
+#اگر_ختم
 
 
   /************************************************************************
@@ -4018,79 +4018,79 @@ struct Parse {
   ** first field in the recursive region.
   ************************************************************************/
 
-  Token sLastToken;       /* The last token parsed */
+  Token s_آخری_Token;       /* The last token parsed */
   ynVar nVar;               /* Number of '?' variables seen in the SQL so far */
   u64 aVnbmc[SQLITE_VNBMC]; /* Varible Number Bitmap Cache */
-  u8 iPkSortOrder;          /* ASC or DESC for INTEGER PRIMARY KEY */
+  u8 i_Pk_ترتیب_دو_ترتیب;          /* ASC or DESC for INTEGER PRIMARY KEY */
   u8 explain;               /* True if the EXPLAIN flag is found on the query */
-  u8 eParseMode;            /* PARSE_MODE_XXX constant */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVtabLock;            /* Number of virtual tables to lock */
-#endif
-  int nHeight;              /* Expression tree height of current sub-select */
-  int addrExplain;          /* Address of current OP_Explain opcode */
+  u8 e_Parse_منوال;            /* PARSE_MODE_XXX constant */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  صحیح n_Vtab_تالا;            /* Number of virtual tables to lock */
+#اگر_ختم
+  صحیح n_اونچائی;              /* Expression tree height of current sub-select */
+  صحیح addrExplain;          /* Address of current OP_Explain opcode */
   VList *pVList;            /* Mapping between variable names and numbers */
   Vdbe *pReprepare;         /* VM being reprepared (sqlite3Reprepare()) */
-  const char *zTail;        /* All SQL text past the last semicolon parsed */
-  Table *pNewTable;         /* A table being constructed by CREATE TABLE */
-  Index *pNewIndex;         /* An index being constructed by CREATE INDEX.
+  ثابت حرف *z_دم;        /* All SQL text past the last semicolon parsed */
+  جدول *p_New_جدول;         /* A table being constructed by CREATE TABLE */
+  اشاریہ *p_New_اشاریہ;         /* An index being constructed by CREATE INDEX.
                             ** Also used to hold redundant UNIQUE constraints
                             ** during a RENAME COLUMN */
   Trigger *pNewTrigger;     /* Trigger under construct by a CREATE TRIGGER */
-  const char *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  ثابت حرف *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
   Token sArg;               /* Complete text of a module argument */
-  Table **apVtabLock;       /* Pointer to virtual tables needing locking */
-#endif
+  جدول **ap_Vtab_تالا;       /* Pointer to virtual tables needing locking */
+#اگر_ختم
   With *pWith;              /* Current WITH clause, or NULL */
-#ifndef SQLITE_OMIT_ALTERTABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_ALTERTABLE
   RenameToken *pRename;     /* Tokens subject to renaming by ALTER TABLE */
-#endif
+#اگر_ختم
 };
 
 /* Allowed values for Parse.eParseMode
 */
-#define PARSE_MODE_NORMAL        0
-#define PARSE_MODE_DECLARE_VTAB  1
-#define PARSE_MODE_RENAME        2
-#define PARSE_MODE_UNMAP         3
+#تعریف_کرو PARSE_منوال_معمول        0
+#تعریف_کرو PARSE_منوال_DECLARE_VTAB  1
+#تعریف_کرو PARSE_منوال_RENAME        2
+#تعریف_کرو PARSE_منوال_UNMAP         3
 
 /*
 ** Sizes and pointers of various parts of the Parse object.
 */
-#define PARSE_HDR(X)  (((char*)(X))+offsetof(Parse,zErrMsg))
-#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,zErrMsg)) /* Recursive part w/o aColCache*/
-#define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
-#define PARSE_TAIL_SZ (sizeof(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
-#define PARSE_TAIL(X) (((char*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
+#تعریف_کرو PARSE_HDR(X)  (((حرف*)(X))+offsetof(Parse,z_Err_پیغام))
+#تعریف_کرو PARSE_HDR_SZ (offsetof(Parse,a_عارضی_Reg)-offsetof(Parse,z_Err_پیغام)) /* Recursive part w/o aColCache*/
+#تعریف_کرو PARSE_RECURSE_SZ offsetof(Parse,s_آخری_Token)    /* Recursive part */
+#تعریف_کرو PARSE_دم_SZ (حجم(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
+#تعریف_کرو PARSE_دم(X) (((حرف*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
 
 /*
 ** Return true if currently inside an sqlite3_declare_vtab() call.
 */
-#ifdef SQLITE_OMIT_VIRTUALTABLE
-  #define IN_DECLARE_VTAB 0
-#else
-  #define IN_DECLARE_VTAB (pParse->eParseMode==PARSE_MODE_DECLARE_VTAB)
-#endif
+#اگر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  #تعریف_کرو اندر_DECLARE_VTAB 0
+#ورنہ
+  #تعریف_کرو اندر_DECLARE_VTAB (pParse->e_Parse_منوال==PARSE_منوال_DECLARE_VTAB)
+#اگر_ختم
 
-#if defined(SQLITE_OMIT_ALTERTABLE)
-  #define IN_RENAME_OBJECT 0
-#else
-  #define IN_RENAME_OBJECT (pParse->eParseMode>=PARSE_MODE_RENAME)
-#endif
+#اگر defined(SQLITE_OMIT_ALTERTABLE)
+  #تعریف_کرو اندر_RENAME_OBJECT 0
+#ورنہ
+  #تعریف_کرو اندر_RENAME_OBJECT (pParse->e_Parse_منوال>=PARSE_منوال_RENAME)
+#اگر_ختم
 
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
-  #define IN_SPECIAL_PARSE 0
-#else
-  #define IN_SPECIAL_PARSE (pParse->eParseMode!=PARSE_MODE_NORMAL)
-#endif
+#اگر defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
+  #تعریف_کرو اندر_SPECIAL_PARSE 0
+#ورنہ
+  #تعریف_کرو اندر_SPECIAL_PARSE (pParse->e_Parse_منوال!=PARSE_منوال_معمول)
+#اگر_ختم
 
 /*
 ** An instance of the following structure can be declared on a stack and used
 ** to save the Parse.zAuthContext value so that it can be restored later.
 */
-struct AuthContext {
-  const char *zAuthContext;   /* Put saved Parse.zAuthContext here */
+ساخت AuthContext {
+  ثابت حرف *zAuthContext;   /* Put saved Parse.zAuthContext here */
   Parse *pParse;              /* The Parse structure */
 };
 
@@ -4106,27 +4106,27 @@ struct AuthContext {
 **    OPFLAG_SAVEPOSITION == BTREE_SAVEPOSITION
 **    OPFLAG_AUXDELETE    == BTREE_AUXDELETE
 */
-#define OPFLAG_NCHANGE       0x01    /* OP_Insert: Set to update db->nChange */
+#تعریف_کرو OPFLAG_NCHANGE       0x01    /* OP_Insert: Set to update db->nChange */
                                      /* Also used in P2 (not P5) of OP_Delete */
-#define OPFLAG_NOCHNG        0x01    /* OP_VColumn nochange for UPDATE */
-#define OPFLAG_EPHEM         0x01    /* OP_Column: Ephemeral output is ok */
-#define OPFLAG_LASTROWID     0x20    /* Set to update db->lastRowid */
-#define OPFLAG_ISUPDATE      0x04    /* This OP_Insert is an sql UPDATE */
-#define OPFLAG_APPEND        0x08    /* This is likely to be an append */
-#define OPFLAG_USESEEKRESULT 0x10    /* Try to avoid a seek in BtreeInsert() */
-#define OPFLAG_ISNOOP        0x40    /* OP_Delete does pre-update-hook only */
-#define OPFLAG_LENGTHARG     0x40    /* OP_Column only used for length() */
-#define OPFLAG_TYPEOFARG     0x80    /* OP_Column only used for typeof() */
-#define OPFLAG_BYTELENARG    0xc0    /* OP_Column only for octet_length() */
-#define OPFLAG_BULKCSR       0x01    /* OP_Open** used to open bulk cursor */
-#define OPFLAG_SEEKEQ        0x02    /* OP_Open** cursor uses EQ seek only */
-#define OPFLAG_FORDELETE     0x08    /* OP_Open should use BTREE_FORDELETE */
-#define OPFLAG_P2ISREG       0x10    /* P2 to OP_Open** is a register number */
-#define OPFLAG_PERMUTE       0x01    /* OP_Compare: use the permutation */
-#define OPFLAG_SAVEPOSITION  0x02    /* OP_Delete/Insert: save cursor pos */
-#define OPFLAG_AUXDELETE     0x04    /* OP_Delete: index in a DELETE op */
-#define OPFLAG_NOCHNG_MAGIC  0x6d    /* OP_MakeRecord: serialtype 10 is ok */
-#define OPFLAG_PREFORMAT     0x80    /* OP_Insert uses preformatted cell */
+#تعریف_کرو OPFLAG_NOCHNG        0x01    /* OP_VColumn nochange for UPDATE */
+#تعریف_کرو OPFLAG_EPHEM         0x01    /* OP_Column: Ephemeral output is ok */
+#تعریف_کرو OPFLAG_LASTROWID     0x20    /* Set to update db->lastRowid */
+#تعریف_کرو OPFLAG_ISUPDATE      0x04    /* This OP_Insert is an sql UPDATE */
+#تعریف_کرو OPFLAG_APPEND        0x08    /* This is likely to be an append */
+#تعریف_کرو OPFLAG_USESEEKRESULT 0x10    /* Try to avoid a seek in BtreeInsert() */
+#تعریف_کرو OPFLAG_ISNOOP        0x40    /* OP_Delete does pre-update-hook only */
+#تعریف_کرو OPFLAG_LENGTHARG     0x40    /* OP_Column only used for length() */
+#تعریف_کرو OPFLAG_TYPEOFARG     0x80    /* OP_Column only used for typeof() */
+#تعریف_کرو OPFLAG_BYTELENARG    0xc0    /* OP_Column only for octet_length() */
+#تعریف_کرو OPFLAG_BULKCSR       0x01    /* OP_Open** used to open bulk cursor */
+#تعریف_کرو OPFLAG_SEEKEQ        0x02    /* OP_Open** cursor uses EQ seek only */
+#تعریف_کرو OPFLAG_FORDELETE     0x08    /* OP_Open should use BTREE_FORDELETE */
+#تعریف_کرو OPFLAG_P2ISREG       0x10    /* P2 to OP_Open** is a register number */
+#تعریف_کرو OPFLAG_ترتیب_بدلو       0x01    /* OP_Compare: use the permutation */
+#تعریف_کرو OPFLAG_SAVEPOSITION  0x02    /* OP_Delete/Insert: save cursor pos */
+#تعریف_کرو OPFLAG_AUXDELETE     0x04    /* OP_Delete: index in a DELETE op */
+#تعریف_کرو OPFLAG_NOCHNG_MAGIC  0x6d    /* OP_MakeRecord: serialtype 10 is ok */
+#تعریف_کرو OPFLAG_PREFORMAT     0x80    /* OP_Insert uses preformatted cell */
 
 /*
 ** Each trigger present in the database schema is stored as an instance of
@@ -4143,19 +4143,19 @@ struct AuthContext {
 ** The "step_list" member points to the first element of a linked list
 ** containing the SQL statements specified as the trigger program.
 */
-struct Trigger {
-  char *zName;            /* The name of the trigger                        */
-  char *table;            /* The table or view to which the trigger applies */
+ساخت Trigger {
+  حرف *zName;            /* The name of the trigger                        */
+  حرف *جدول_2;            /* The table or view to which the trigger applies */
   u8 op;                  /* One of TK_DELETE, TK_UPDATE, TK_INSERT         */
   u8 tr_tm;               /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
   u8 bReturning;          /* This trigger implements a RETURNING clause */
-  Expr *pWhen;            /* The WHEN clause of the expression (may be NULL) */
+  اظہاریہ *pWhen;            /* The WHEN clause of the expression (may be NULL) */
   IdList *pColumns;       /* If this is an UPDATE OF <column-list> trigger,
                              the <column-list> is stored here */
   Schema *pSchema;        /* Schema containing the trigger */
   Schema *pTabSchema;     /* Schema containing the table */
-  TriggerStep *step_list; /* Link list of trigger program steps             */
-  Trigger *pNext;         /* Next trigger associated with the table */
+  Trigger_قدم *قدم_list; /* Link list of trigger program steps             */
+  Trigger *p_اگلا;         /* Next trigger associated with the table */
 };
 
 /*
@@ -4165,8 +4165,8 @@ struct Trigger {
 ** If there are multiple triggers, you might of some BEFORE and some AFTER.
 ** In that cases, the constants below can be ORed together.
 */
-#define TRIGGER_BEFORE  1
-#define TRIGGER_AFTER   2
+#تعریف_کرو TRIGGER_BEFORE  1
+#تعریف_کرو TRIGGER_AFTER   2
 
 /*
 ** An instance of struct TriggerStep is used to store a single SQL statement
@@ -4211,54 +4211,54 @@ struct Trigger {
 ** pExprList -> The list of expressions that follow the RETURNING keyword.
 **
 */
-struct TriggerStep {
+ساخت Trigger_قدم {
   u8 op;               /* One of TK_DELETE, TK_UPDATE, TK_INSERT, TK_SELECT,
                        ** or TK_RETURNING */
   u8 orconf;           /* OE_Rollback etc. */
   Trigger *pTrig;      /* The trigger that this step is a part of */
   Select *pSelect;     /* SELECT statement or RHS of INSERT INTO SELECT ... */
   SrcList *pSrc;       /* Table to insert/update/delete */
-  Expr *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
-  ExprList *pExprList; /* SET clause for UPDATE, or RETURNING clause */
+  اظہاریہ *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
+  اظہاریہ_List *p_اظہاریہ_List; /* SET clause for UPDATE, or RETURNING clause */
   IdList *pIdList;     /* Column names for INSERT */
   Upsert *pUpsert;     /* Upsert clauses on an INSERT */
-  char *zSpan;         /* Original SQL text of this command */
-  TriggerStep *pNext;  /* Next in the link-list */
-  TriggerStep *pLast;  /* Last element in link-list. Valid for 1st elem only */
+  حرف *z_وسعت;         /* Original SQL text of this command */
+  Trigger_قدم *p_اگلا;  /* Next in the link-list */
+  Trigger_قدم *p_آخری;  /* Last element in link-list. Valid for 1st elem only */
 };
 
 /*
 ** Information about a RETURNING clause
 */
-struct Returning {
+ساخت Returning {
   Parse *pParse;        /* The parse that includes the RETURNING clause */
-  ExprList *pReturnEL;  /* List of expressions to return */
+  اظہاریہ_List *pReturnEL;  /* List of expressions to return */
   Trigger retTrig;      /* The transient trigger that implements RETURNING */
-  TriggerStep retTStep; /* The trigger step */
-  int iRetCur;          /* Transient table holding RETURNING results */
-  int nRetCol;          /* Number of in pReturnEL after expansion */
-  int iRetReg;          /* Register array for holding a row of RETURNING */
-  char zName[40];       /* Name of trigger: "sqlite_returning_%p" */
+  Trigger_قدم retTStep; /* The trigger step */
+  صحیح iRetCur;          /* Transient table holding RETURNING results */
+  صحیح n_Ret_ستون;          /* Number of in pReturnEL after expansion */
+  صحیح iRetReg;          /* Register array for holding a row of RETURNING */
+  حرف zName[40];       /* Name of trigger: "sqlite_returning_%p" */
 };
 
 /*
 ** An object used to accumulate the text of a string where we
 ** do not necessarily know how big the string will be in the end.
 */
-struct sqlite3_str {
+ساخت sqlite3_str {
   sqlite3 *db;         /* Optional database for lookaside.  Can be NULL */
-  char *zText;         /* The string collected so far */
+  حرف *z_متن;         /* The string collected so far */
   u32  nAlloc;         /* Amount of space allocated in zText */
   u32  mxAlloc;        /* Maximum allowed allocation.  0 for no malloc usage */
   u32  nChar;          /* Length of the string so far */
   u8   accError;       /* SQLITE_NOMEM or SQLITE_TOOBIG */
   u8   printfFlags;    /* SQLITE_PRINTF flags below */
 };
-#define SQLITE_PRINTF_INTERNAL 0x01  /* Internal-use-only converters allowed */
-#define SQLITE_PRINTF_SQLFUNC  0x02  /* SQL function arguments to VXPrintf */
-#define SQLITE_PRINTF_MALLOCED 0x04  /* True if zText is allocated space */
+#تعریف_کرو SQLITE_PRINTF_اندرونی 0x01  /* Internal-use-only converters allowed */
+#تعریف_کرو SQLITE_PRINTF_SQLFUNC  0x02  /* SQL function arguments to VXPrintf */
+#تعریف_کرو SQLITE_PRINTF_MALLOCED 0x04  /* True if zText is allocated space */
 
-#define isMalloced(X)  (((X)->printfFlags & SQLITE_PRINTF_MALLOCED)!=0)
+#تعریف_کرو isMalloced(X)  (((X)->printfFlags & SQLITE_PRINTF_MALLOCED)!=0)
 
 /*
 ** The following object is the header for an "RCStr" or "reference-counted
@@ -4278,7 +4278,7 @@ struct sqlite3_str {
 ** "String" is in the name, but an RCStr object can also be used to hold
 ** binary data.
 */
-struct RCStr {
+ساخت RCStr {
   u64 nRCRef;            /* Number of references */
   /* Total structure size should be a multiple of 8 bytes for alignment */
 };
@@ -4287,24 +4287,24 @@ struct RCStr {
 ** A pointer to this structure is used to communicate information
 ** from sqlite3Init and OP_ParseSchema into the sqlite3InitCallback.
 */
-typedef struct {
+قسمتعریف ساخت {
   sqlite3 *db;        /* The database being initialized */
-  char **pzErrMsg;    /* Error message stored here */
-  int iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
-  int rc;             /* Result code stored here */
+  حرف **pz_Err_پیغام;    /* Error message stored here */
+  صحیح iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
+  صحیح rc;             /* Result code stored here */
   u32 mInitFlags;     /* Flags controlling error messages */
-  u32 nInitRow;       /* Number of rows processed */
-  Pgno mxPage;        /* Maximum page number.  0 for no limit. */
-} InitData;
+  u32 n_Init_صف;       /* Number of rows processed */
+  Pgno mx_صفحہ;        /* Maximum page number.  0 for no limit. */
+} Init_ڈیٹا;
 
 /*
 ** Allowed values for mInitFlags
 */
-#define INITFLAG_AlterMask     0x0007  /* Types of ALTER */
-#define INITFLAG_AlterRename   0x0001  /* Reparse after a RENAME */
-#define INITFLAG_AlterDrop     0x0002  /* Reparse after a DROP COLUMN */
-#define INITFLAG_AlterAdd      0x0003  /* Reparse after an ADD COLUMN */
-#define INITFLAG_AlterDropCons 0x0004  /* Reparse after a DROP CONSTRAINT */
+#تعریف_کرو INITFLAG_Alter_نقاب     0x0007  /* Types of ALTER */
+#تعریف_کرو INITFLAG_AlterRename   0x0001  /* Reparse after a RENAME */
+#تعریف_کرو INITFLAG_AlterDrop     0x0002  /* Reparse after a DROP COLUMN */
+#تعریف_کرو INITFLAG_Alter_جوڑو      0x0003  /* Reparse after an ADD COLUMN */
+#تعریف_کرو INITFLAG_AlterDropCons 0x0004  /* Reparse after a DROP CONSTRAINT */
 
 /* Tuning parameters are set using SQLITE_TESTCTRL_TUNE and are controlled
 ** on debug-builds of the CLI using ".testctrl tune ID VALUE".  Tuning
@@ -4315,90 +4315,90 @@ typedef struct {
 **
 ** Tuning parameters are numbered starting with 1.
 */
-#define SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
-#ifdef SQLITE_DEBUG
+#تعریف_کرو SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
+#اگر_تعریف_شدہ SQLITE_DEBUG
 # define Tuning(X)  (sqlite3Config.aTune[(X)-1])
-#else
+#ورنہ
 # define Tuning(X)  0
-#endif
+#اگر_ختم
 
 /*
 ** Structure containing global configuration data for the SQLite library.
 **
 ** This structure also contains some state information.
 */
-struct Sqlite3Config {
-  int bMemstat;                     /* True to enable memory status */
+ساخت Sqlite3Config {
+  صحیح bMemstat;                     /* True to enable memory status */
   u8 bCoreMutex;                    /* True to enable core mutexing */
-  u8 bFullMutex;                    /* True to enable full mutexing */
+  u8 b_بھرا_Mutex;                    /* True to enable full mutexing */
   u8 bOpenUri;                      /* True to interpret filenames as URIs */
   u8 bUseCis;                       /* Use covering indices for full-scans */
   u8 bSmallMalloc;                  /* Avoid large memory allocations if true */
   u8 bExtraSchemaChecks;            /* Verify type,name,tbl_name in schema */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   u8 bJsonSelfcheck;                /* Double-check JSON parsing */
-#endif
-  int mxStrlen;                     /* Maximum string length */
-  int neverCorrupt;                 /* Database is always well-formed */
-  int szLookaside;                  /* Default lookaside buffer size */
-  int nLookaside;                   /* Default lookaside buffer count */
-  int nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
+#اگر_ختم
+  صحیح mxStrlen;                     /* Maximum string length */
+  صحیح neverCorrupt;                 /* Database is always well-formed */
+  صحیح szLookaside;                  /* Default lookaside buffer size */
+  صحیح nLookaside;                   /* Default lookaside buffer count */
+  صحیح nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
   sqlite3_mem_methods m;            /* Low-level memory allocation interface */
   sqlite3_mutex_methods mutex;      /* Low-level mutex interface */
   sqlite3_pcache_methods2 pcache2;  /* Low-level page-cache interface */
-  void *pHeap;                      /* Heap storage space */
-  int nHeap;                        /* Size of pHeap[] */
-  int mnReq, mxReq;                 /* Min and max heap requests sizes */
+  خالی *p_ڈھیر;                      /* Heap storage space */
+  صحیح n_ڈھیر;                        /* Size of pHeap[] */
+  صحیح mnReq, mxReq;                 /* Min and max heap requests sizes */
   sqlite3_int64 szMmap;             /* mmap() space per open file */
   sqlite3_int64 mxMmap;             /* Maximum value for szMmap */
-  void *pPage;                      /* Page cache memory */
-  int szPage;                       /* Size of each page in pPage[] */
-  int nPage;                        /* Number of pages in pPage[] */
-  int mxParserStack;                /* maximum depth of the parser stack */
-  int sharedCacheEnabled;           /* true if shared-cache mode enabled */
+  خالی *p_صفحہ;                      /* Page cache memory */
+  صحیح sz_صفحہ;                       /* Size of each page in pPage[] */
+  صحیح n_صفحہ;                        /* Number of pages in pPage[] */
+  صحیح mx_Parser_ڈھیر;                /* maximum depth of the parser stack */
+  صحیح sharedCacheEnabled;           /* true if shared-cache mode enabled */
   u32 szPma;                        /* Maximum Sorter PMA size */
   /* The above might be initialized to non-zero.  The following need to always
   ** initially be zero, however. */
-  int isInit;                       /* True after initialization has finished */
-  int inProgress;                   /* True while initialization in progress */
-  int isMutexInit;                  /* True after mutexes are initialized */
-  int isMallocInit;                 /* True after malloc is initialized */
-  int isPCacheInit;                 /* True after malloc is initialized */
-  int nRefInitMutex;                /* Number of users of pInitMutex */
+  صحیح isInit;                       /* True after initialization has finished */
+  صحیح اندر_پیش_رفت;                   /* True while initialization in progress */
+  صحیح isMutexInit;                  /* True after mutexes are initialized */
+  صحیح isMallocInit;                 /* True after malloc is initialized */
+  صحیح isPCacheInit;                 /* True after malloc is initialized */
+  صحیح nRefInitMutex;                /* Number of users of pInitMutex */
   sqlite3_mutex *pInitMutex;        /* Mutex used by sqlite3_initialize() */
-  void (*xLog)(void*,int,const char*); /* Function for logging */
-  void *pLogArg;                       /* First argument to xLog() */
-#ifdef SQLITE_ENABLE_SQLLOG
-  void(*xSqllog)(void*,sqlite3*,const char*, int);
-  void *pSqllogArg;
-#endif
-#ifdef SQLITE_VDBE_COVERAGE
+  خالی (*xLog)(خالی*,صحیح,ثابت حرف*); /* Function for logging */
+  خالی *pLogArg;                       /* First argument to xLog() */
+#اگر_تعریف_شدہ SQLITE_ENABLE_SQLLOG
+  خالی(*xSqllog)(خالی*,sqlite3*,ثابت حرف*, صحیح);
+  خالی *pSqllogArg;
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_VDBE_COVERAGE
   /* The following callback (if not NULL) is invoked on every VDBE branch
   ** operation.  Set the callback using SQLITE_TESTCTRL_VDBE_COVERAGE.
   */
-  void (*xVdbeBranch)(void*,unsigned iSrcLine,u8 eThis,u8 eMx);  /* Callback */
-  void *pVdbeBranchArg;                                     /* 1st argument */
-#endif
-#ifndef SQLITE_OMIT_DESERIALIZE
-  sqlite3_int64 mxMemdbSize;        /* Default max memdb size */
-#endif
-#ifndef SQLITE_UNTESTABLE
-  int (*xTestCallback)(int);        /* Invoked by sqlite3FaultSim() */
-#endif
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
+  خالی (*xVdbeBranch)(خالی*,غیرعلامتی i_Src_سطر,u8 eThis,u8 eMx);  /* Callback */
+  خالی *pVdbeBranchArg;                                     /* 1st argument */
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DESERIALIZE
+  sqlite3_int64 mx_Memdb_سائز;        /* Default max memdb size */
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+  صحیح (*xTestCallback)(صحیح);        /* Invoked by sqlite3FaultSim() */
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_ALLOW_ROWID_اندر_VIEW
   u32 mNoVisibleRowid;              /* TF_NoVisibleRowid if the ROWID_IN_VIEW
                                     ** feature is disabled.  0 if rowids can
                                     ** occur in views. */
-#endif
-  int bLocaltimeFault;              /* True to fail localtime() calls */
-  int (*xAltLocaltime)(const void*,void*); /* Alternative localtime() routine */
-  int iOnceResetThreshold;          /* When to reset OP_Once counters */
+#اگر_ختم
+  صحیح bLocaltimeFault;              /* True to fail localtime() calls */
+  صحیح (*xAltLocaltime)(ثابت خالی*,خالی*); /* Alternative localtime() routine */
+  صحیح i_Once_Reset_حد;          /* When to reset OP_Once counters */
   u32 szSorterRef;                  /* Min size in bytes to use sorter-refs */
-  unsigned int iPrngSeed;           /* Alternative fixed seed for the PRNG */
+  غیرعلامتی صحیح i_Prng_بیج;           /* Alternative fixed seed for the PRNG */
   /* vvvv--- must be last ---vvv */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   sqlite3_int64 aTune[SQLITE_NTUNE]; /* Tuning parameters */
-#endif
+#اگر_ختم
 };
 
 /*
@@ -4417,40 +4417,40 @@ struct Sqlite3Config {
 ** sqlite3_test_control().  This enables assert() statements to prove
 ** things that are always true for well-formed databases.
 */
-#define CORRUPT_DB  (sqlite3Config.neverCorrupt==0)
+#تعریف_کرو CORRUPT_DB  (sqlite3Config.neverCorrupt==0)
 
 /*
 ** Context pointer passed down through the tree-walk.
 */
-struct Walker {
+ساخت Walker {
   Parse *pParse;                            /* Parser context.  */
-  int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
-  int (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
-  void (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
-  int walkerDepth;                          /* Number of subqueries */
-  u16 eCode;                                /* A small processing code */
+  صحیح (*x_اظہاریہ_Callback)(Walker*, اظہاریہ*);     /* Callback for expressions */
+  صحیح (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
+  خالی (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
+  صحیح walker_گہرائی;                          /* Number of subqueries */
+  u16 e_رمز;                                /* A small processing code */
   u16 mWFlags;                              /* Use-dependent flags */
-  union {                                   /* Extra data for callback */
+  اتحاد {                                   /* Extra data for callback */
     NameContext *pNC;                         /* Naming context */
-    int n;                                    /* A counter */
-    int iCur;                                 /* A cursor number */
-    int sz;                                   /* String literal length */
+    صحیح n;                                    /* A counter */
+    صحیح iCur;                                 /* A cursor number */
+    صحیح sz;                                   /* String literal length */
     SrcList *pSrcList;                        /* FROM clause */
-    struct CCurHint *pCCurHint;               /* Used by codeCursorHint() */
-    struct RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
-    int *aiCol;                               /* array of column indexes */
-    struct IdxCover *pIdxCover;               /* Check for index coverage */
-    ExprList *pGroupBy;                       /* GROUP BY clause */
+    ساخت CCurHint *pCCurHint;               /* Used by codeCursorHint() */
+    ساخت RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
+    صحیح *ai_ستون;                               /* array of column indexes */
+    ساخت IdxCover *pIdxCover;               /* Check for index coverage */
+    اظہاریہ_List *p_گروہ_By;                       /* GROUP BY clause */
     Select *pSelect;                          /* HAVING to WHERE clause ctx */
-    struct WindowRewrite *pRewrite;           /* Window rewrite context */
-    struct WhereConst *pConst;                /* WHERE clause constants */
-    struct RenameCtx *pRename;                /* RENAME COLUMN context */
-    struct Table *pTab;                       /* Table of generated column */
-    struct CoveringIndexCheck *pCovIdxCk;     /* Check for covering index */
-    SrcItem *pSrcItem;                        /* A single FROM clause item */
+    ساخت کھڑکی_Rewrite *pRewrite;           /* Window rewrite context */
+    ساخت WhereConst *pConst;                /* WHERE clause constants */
+    ساخت RenameCtx *pRename;                /* RENAME COLUMN context */
+    ساخت جدول *pTab;                       /* Table of generated column */
+    ساخت Covering_اشاریہ_Check *pCovIdxCk;     /* Check for covering index */
+    Src_شے *p_Src_شے;                        /* A single FROM clause item */
     DbFixer *pFix;                            /* See sqlite3FixSelect() */
     Mem *aMem;                                /* See sqlite3BtreeCursorHint() */
-    struct CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
+    ساخت CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
   } u;
 };
 
@@ -4459,56 +4459,56 @@ struct Walker {
 ** routines as they walk the parse tree to make database references
 ** explicit.
 */
-struct DbFixer {
+ساخت DbFixer {
   Parse *pParse;      /* The parsing context.  Error messages written here */
   Walker w;           /* Walker object */
   Schema *pSchema;    /* Fix items to this schema */
-  u8 bTemp;           /* True for TEMP schema entries */
-  const char *zDb;    /* Make sure all objects are contained in this database */
-  const char *zType;  /* Type of the container - used for error messages */
-  const Token *pName; /* Name of the container - used for error messages */
+  u8 b_عارضی;           /* True for TEMP schema entries */
+  ثابت حرف *zDb;    /* Make sure all objects are contained in this database */
+  ثابت حرف *zType;  /* Type of the container - used for error messages */
+  ثابت Token *pName; /* Name of the container - used for error messages */
 };
 
 /* Forward declarations */
-int sqlite3WalkExpr(Walker*, Expr*);
-int sqlite3WalkExprNN(Walker*, Expr*);
-int sqlite3WalkExprList(Walker*, ExprList*);
-int sqlite3WalkSelect(Walker*, Select*);
-int sqlite3WalkSelectExpr(Walker*, Select*);
-int sqlite3WalkSelectFrom(Walker*, Select*);
-int sqlite3ExprWalkNoop(Walker*, Expr*);
-int sqlite3SelectWalkNoop(Walker*, Select*);
-int sqlite3SelectWalkFail(Walker*, Select*);
-int sqlite3WalkerDepthIncrease(Walker*,Select*);
-void sqlite3WalkerDepthDecrease(Walker*,Select*);
-void sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
+صحیح sqlite3_Walk_اظہاریہ(Walker*, اظہاریہ*);
+صحیح sqlite3_Walk_اظہاریہ_NN(Walker*, اظہاریہ*);
+صحیح sqlite3_Walk_اظہاریہ_List(Walker*, اظہاریہ_List*);
+صحیح sqlite3WalkSelect(Walker*, Select*);
+صحیح sqlite3_Walk_Select_اظہاریہ(Walker*, Select*);
+صحیح sqlite3WalkSelectFrom(Walker*, Select*);
+صحیح sqlite3_اظہاریہ_Walk_Noop(Walker*, اظہاریہ*);
+صحیح sqlite3SelectWalkNoop(Walker*, Select*);
+صحیح sqlite3SelectWalkFail(Walker*, Select*);
+صحیح sqlite3_Walker_گہرائی_Increase(Walker*,Select*);
+خالی sqlite3_Walker_گہرائی_Decrease(Walker*,Select*);
+خالی sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
 
-#ifdef SQLITE_DEBUG
-void sqlite3SelectWalkAssert2(Walker*, Select*);
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+خالی sqlite3SelectWalkAssert2(Walker*, Select*);
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_CTE
-void sqlite3SelectPopWith(Walker*, Select*);
-#else
-# define sqlite3SelectPopWith 0
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CTE
+خالی sqlite3_Select_نکالو_With(Walker*, Select*);
+#ورنہ
+# define sqlite3_Select_نکالو_With 0
+#اگر_ختم
 
 /*
 ** Return code from the parse-tree walking primitives and their
 ** callbacks.
 */
-#define WRC_Continue    0   /* Continue down into children */
-#define WRC_Prune       1   /* Omit children but continue walking siblings */
-#define WRC_Abort       2   /* Abandon the tree walk */
+#تعریف_کرو WRC_Continue    0   /* Continue down into children */
+#تعریف_کرو WRC_Prune       1   /* Omit children but continue walking siblings */
+#تعریف_کرو WRC_Abort       2   /* Abandon the tree walk */
 
 /*
 ** A single common table expression
 */
-struct Cte {
-  char *zName;            /* Name of this CTE */
-  ExprList *pCols;        /* List of explicit column names, or NULL */
+ساخت Cte {
+  حرف *zName;            /* Name of this CTE */
+  اظہاریہ_List *p_ستون_تعداد;        /* List of explicit column names, or NULL */
   Select *pSelect;        /* The definition of this CTE */
-  const char *zCteErr;    /* Error message for circular references */
+  ثابت حرف *zCteErr;    /* Error message for circular references */
   CteUse *pUse;           /* Usage information for this CTE */
   u8 eM10d;               /* The MATERIALIZED flag */
 };
@@ -4516,24 +4516,24 @@ struct Cte {
 /*
 ** Allowed values for the materialized flag (eM10d):
 */
-#define M10d_Yes       0  /* AS MATERIALIZED */
-#define M10d_Any       1  /* Not specified.  Query planner's choice */
-#define M10d_No        2  /* AS NOT MATERIALIZED */
+#تعریف_کرو M10d_Yes       0  /* AS MATERIALIZED */
+#تعریف_کرو M10d_Any       1  /* Not specified.  Query planner's choice */
+#تعریف_کرو M10d_No        2  /* AS NOT MATERIALIZED */
 
 /*
 ** An instance of the With object represents a WITH clause containing
 ** one or more CTEs (common table expressions).
 */
-struct With {
-  int nCte;               /* Number of CTEs in the WITH clause */
-  int bView;              /* Belongs to the outermost Select of a view */
+ساخت With {
+  صحیح nCte;               /* Number of CTEs in the WITH clause */
+  صحیح bView;              /* Belongs to the outermost Select of a view */
   With *pOuter;           /* Containing WITH clause, or NULL */
   Cte a[FLEXARRAY];       /* For each CTE in the WITH clause.... */
 };
 
 /* The size (in bytes) of a With object that can hold as many
 ** as N different CTEs. */
-#define SZ_WITH(N)  (offsetof(With,a) + (N)*sizeof(Cte))
+#تعریف_کرو SZ_WITH(N)  (offsetof(With,a) + (N)*حجم(Cte))
 
 /*
 ** The Cte object is not guaranteed to persist for the entire duration
@@ -4546,12 +4546,12 @@ struct With {
 ** than sqlite3SelectDelete(), which is what enables them to persist
 ** until the end of code generation.
 */
-struct CteUse {
-  int nUse;              /* Number of users of this CTE */
-  int addrM9e;           /* Start of subroutine to compute materialization */
-  int regRtn;            /* Return address register for addrM9e subroutine */
-  int iCur;              /* Ephemeral table holding the materialization */
-  LogEst nRowEst;        /* Estimated number of rows in the table */
+ساخت CteUse {
+  صحیح nUse;              /* Number of users of this CTE */
+  صحیح addrM9e;           /* Start of subroutine to compute materialization */
+  صحیح regRtn;            /* Return address register for addrM9e subroutine */
+  صحیح iCur;              /* Ephemeral table holding the materialization */
+  LogEst n_صف_Est;        /* Estimated number of rows in the table */
   u8 eM10d;              /* The MATERIALIZED flag */
 };
 
@@ -4559,27 +4559,27 @@ struct CteUse {
 /* Client data associated with sqlite3_set_clientdata() and
 ** sqlite3_get_clientdata().
 */
-struct DbClientData {
-  DbClientData *pNext;        /* Next in a linked list */
-  void *pData;                /* The data */
-  void (*xDestructor)(void*); /* Destructor.  Might be NULL */
-  char zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
+ساخت Db_Client_ڈیٹا {
+  Db_Client_ڈیٹا *p_اگلا;        /* Next in a linked list */
+  خالی *p_ڈیٹا;                /* The data */
+  خالی (*xDestructor)(خالی*); /* Destructor.  Might be NULL */
+  حرف zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
 };
 
 /* The size (in bytes) of a DbClientData object that can has a name
 ** that is N bytes long, including the zero-terminator. */
-#define SZ_DBCLIENTDATA(N) (offsetof(DbClientData,zName)+(N))
+#تعریف_کرو SZ_DBCLIENTDATA(N) (offsetof(Db_Client_ڈیٹا,zName)+(N))
 
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
 /*
 ** An instance of the TreeView object is used for printing the content of
 ** data structures on sqlite3DebugPrintf() using a tree-like view.
 */
-struct TreeView {
-  int iLevel;             /* Which level of the tree we are on */
-  u8  bLine[100];         /* Draw vertical in column i if bLine[i] is true */
+ساخت درخت_View {
+  صحیح iLevel;             /* Which level of the tree we are on */
+  u8  b_سطر[100];         /* Draw vertical in column i if bLine[i] is true */
 };
-#endif /* SQLITE_DEBUG */
+#اگر_ختم /* SQLITE_DEBUG */
 
 /*
 ** This object is used in various ways, most (but not all) related to window
@@ -4604,63 +4604,63 @@ struct TreeView {
 ** The uses (1) and (2) are really the same Window object that just happens
 ** to be accessible in two different ways.  Use case (3) are separate objects.
 */
-struct Window {
-  char *zName;            /* Name of window (may be NULL) */
-  char *zBase;            /* Name of base window for chaining (may be NULL) */
-  ExprList *pPartition;   /* PARTITION BY clause */
-  ExprList *pOrderBy;     /* ORDER BY clause */
+ساخت کھڑکی {
+  حرف *zName;            /* Name of window (may be NULL) */
+  حرف *z_بنیاد;            /* Name of base window for chaining (may be NULL) */
+  اظہاریہ_List *p_تقسیم;   /* PARTITION BY clause */
+  اظہاریہ_List *p_ترتیب_By;     /* ORDER BY clause */
   u8 eFrmType;            /* TK_RANGE, TK_GROUPS, TK_ROWS, or 0 */
-  u8 eStart;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
-  u8 eEnd;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
-  u8 bImplicitFrame;      /* True if frame was implicitly specified */
+  u8 e_آغاز;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
+  u8 e_انتہا;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
+  u8 b_Implicit_چوکھٹا;      /* True if frame was implicitly specified */
   u8 eExclude;            /* TK_NO, TK_CURRENT, TK_TIES, TK_GROUP, or 0 */
-  Expr *pStart;           /* Expression for "<expr> PRECEDING" */
-  Expr *pEnd;             /* Expression for "<expr> FOLLOWING" */
-  Window **ppThis;        /* Pointer to this object in Select.pWin list */
-  Window *pNextWin;       /* Next window function belonging to this SELECT */
-  Expr *pFilter;          /* The FILTER expression */
+  اظہاریہ *p_آغاز;           /* Expression for "<expr> PRECEDING" */
+  اظہاریہ *p_انتہا;             /* Expression for "<expr> FOLLOWING" */
+  کھڑکی **ppThis;        /* Pointer to this object in Select.pWin list */
+  کھڑکی *p_اگلا_Win;       /* Next window function belonging to this SELECT */
+  اظہاریہ *pFilter;          /* The FILTER expression */
   FuncDef *pWFunc;        /* The function */
-  int iEphCsr;            /* Partition buffer or Peer buffer */
-  int regAccum;           /* Accumulator */
-  int regResult;          /* Interim result */
-  int csrApp;             /* Function cursor (used by min/max) */
-  int regApp;             /* Function register (also used by min/max) */
-  int regPart;            /* Array of registers for PARTITION BY values */
-  Expr *pOwner;           /* Expression object this window is attached to */
-  int nBufferCol;         /* Number of columns in buffer table */
-  int iArgCol;            /* Offset of first argument for this function */
-  int regOne;             /* Register containing constant value 1 */
-  int regStartRowid;
-  int regEndRowid;
-  u8 bExprArgs;           /* Defer evaluation of window function arguments
+  صحیح iEphCsr;            /* Partition buffer or Peer buffer */
+  صحیح regAccum;           /*مجمع*/
+  صحیح reg_نتیجہ;          /* Interim result */
+  صحیح csrApp;             /* Function cursor (used by min/max) */
+  صحیح regApp;             /* Function register (also used by min/max) */
+  صحیح regPart;            /* Array of registers for PARTITION BY values */
+  اظہاریہ *pOwner;           /* Expression object this window is attached to */
+  صحیح n_بفر_ستون;         /* Number of columns in buffer table */
+  صحیح i_Arg_ستون;            /* Offset of first argument for this function */
+  صحیح regOne;             /* Register containing constant value 1 */
+  صحیح reg_آغاز_Rowid;
+  صحیح reg_انتہا_Rowid;
+  u8 b_اظہاریہ_دلائل;           /* Defer evaluation of window function arguments
                           ** due to the SQLITE_SUBTYPE flag */
 };
 
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow);
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal);
+Select *sqlite3_Multi_اقدار(Parse *pParse, Select *p_بایاں, اظہاریہ_List *p_صف);
+خالی sqlite3_Multi_اقدار_انتہا(Parse *pParse, Select *pVal);
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3WindowDelete(sqlite3*, Window*);
-void sqlite3WindowUnlinkFromSelect(Window*);
-void sqlite3WindowListDelete(sqlite3 *db, Window *p);
-Window *sqlite3WindowAlloc(Parse*, int, int, Expr*, int , Expr*, u8);
-void sqlite3WindowAttach(Parse*, Expr*, Window*);
-void sqlite3WindowLink(Select *pSel, Window *pWin);
-int sqlite3WindowCompare(const Parse*, const Window*, const Window*, int);
-void sqlite3WindowCodeInit(Parse*, Select*);
-void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, int, int);
-int sqlite3WindowRewrite(Parse*, Select*);
-void sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p);
-Window *sqlite3WindowListDup(sqlite3 *db, Window *p);
-void sqlite3WindowFunctions(void);
-void sqlite3WindowChain(Parse*, Window*, Window*);
-Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
-#else
-# define sqlite3WindowDelete(a,b)
-# define sqlite3WindowFunctions()
-# define sqlite3WindowAttach(a,b,c)
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+خالی sqlite3_کھڑکی_Delete(sqlite3*, کھڑکی*);
+خالی sqlite3_کھڑکی_Unlink_From_Select(کھڑکی*);
+خالی sqlite3_کھڑکی_List_Delete(sqlite3 *db, کھڑکی *p);
+کھڑکی *sqlite3_کھڑکی_Alloc(Parse*, صحیح, صحیح, اظہاریہ*, صحیح , اظہاریہ*, u8);
+خالی sqlite3_کھڑکی_Attach(Parse*, اظہاریہ*, کھڑکی*);
+خالی sqlite3_کھڑکی_Link(Select *pSel, کھڑکی *pWin);
+صحیح sqlite3_کھڑکی_Compare(ثابت Parse*, ثابت کھڑکی*, ثابت کھڑکی*, صحیح);
+خالی sqlite3_کھڑکی_رمز_Init(Parse*, Select*);
+خالی sqlite3_کھڑکی_رمز_قدم(Parse*, Select*, WhereInfo*, صحیح, صحیح);
+صحیح sqlite3_کھڑکی_Rewrite(Parse*, Select*);
+خالی sqlite3_کھڑکی_Update(Parse*, کھڑکی*, کھڑکی*, FuncDef*);
+کھڑکی *sqlite3_کھڑکی_Dup(sqlite3 *db, اظہاریہ *pOwner, کھڑکی *p);
+کھڑکی *sqlite3_کھڑکی_List_Dup(sqlite3 *db, کھڑکی *p);
+خالی sqlite3_کھڑکی_Functions(خالی);
+خالی sqlite3_کھڑکی_Chain(Parse*, کھڑکی*, کھڑکی*);
+کھڑکی *sqlite3_کھڑکی_Assemble(Parse*, کھڑکی*, اظہاریہ_List*, اظہاریہ_List*, Token*);
+#ورنہ
+# define sqlite3_کھڑکی_Delete(a,b)
+# define sqlite3_کھڑکی_Functions()
+# define sqlite3_کھڑکی_Attach(a,b,c)
+#اگر_ختم
 
 /*
 ** Assuming zIn points to the first byte of a UTF-8 character,
@@ -4717,9 +4717,9 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** that constant (0xc0-1) instead, gcc 13.3.0 generates code that runs slower.
 ** So the (0x80-1) constant is used for substr() and length().
 */
-#define SQLITE_SKIP_UTF8(zIn) {                        \
-  if( (*(zIn++))>=0xc0 ){                              \
-    while( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
+#تعریف_کرو SQLITE_SKIP_UTF8(z_اندر) {                        \
+  اگر( (*(z_اندر++))>=0xc0 ){                              \
+    جب( (*z_اندر & 0xc0)==0x80 ){ z_اندر++; }             \
   }                                                    \
 }
 
@@ -4730,110 +4730,110 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** using sqlite3_log().  The routines also provide a convenient place
 ** to set a debugger breakpoint.
 */
-int sqlite3ReportError(int iErr, int lineno, const char *zType);
-int sqlite3CorruptError(int);
-int sqlite3MisuseError(int);
-int sqlite3CantopenError(int);
-#define SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
-#define SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
-#define SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
-#ifdef SQLITE_DEBUG
-  int sqlite3NomemError(int);
-  int sqlite3IoerrnomemError(int);
+صحیح sqlite3ReportError(صحیح iErr, صحیح lineno, ثابت حرف *zType);
+صحیح sqlite3CorruptError(صحیح);
+صحیح sqlite3MisuseError(صحیح);
+صحیح sqlite3CantopenError(صحیح);
+#تعریف_کرو SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
+#تعریف_کرو SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
+#تعریف_کرو SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  صحیح sqlite3NomemError(صحیح);
+  صحیح sqlite3IoerrnomemError(صحیح);
 # define SQLITE_NOMEM_BKPT sqlite3NomemError(__LINE__)
 # define SQLITE_IOERR_NOMEM_BKPT sqlite3IoerrnomemError(__LINE__)
-#else
+#ورنہ
 # define SQLITE_NOMEM_BKPT SQLITE_NOMEM
 # define SQLITE_IOERR_NOMEM_BKPT SQLITE_IOERR_NOMEM
-#endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
-  int sqlite3CorruptPgnoError(int,Pgno);
+#اگر_ختم
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
+  صحیح sqlite3CorruptPgnoError(صحیح,Pgno);
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptPgnoError(__LINE__,(P))
-#else
+#ورنہ
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptError(__LINE__)
-#endif
+#اگر_ختم
 
 /*
 ** FTS3 and FTS4 both require virtual table support
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE)
+#اگر defined(SQLITE_OMIT_VIRTUALTABLE)
 # undef SQLITE_ENABLE_FTS3
 # undef SQLITE_ENABLE_FTS4
-#endif
+#اگر_ختم
 
 /*
 ** FTS4 is really an extension for FTS3.  It is enabled using the
 ** SQLITE_ENABLE_FTS3 macro.  But to avoid confusion we also call
 ** the SQLITE_ENABLE_FTS4 macro to serve as an alias for SQLITE_ENABLE_FTS3.
 */
-#if defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
+#اگر defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
 # define SQLITE_ENABLE_FTS3 1
-#endif
+#اگر_ختم
 
 /*
 ** The following macros mimic the standard library functions toupper(),
 ** isspace(), isalnum(), isdigit() and isxdigit(), respectively. The
 ** sqlite versions only work for ASCII characters, regardless of locale.
 */
-#ifdef SQLITE_ASCII
-# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(unsigned char)(x)]&0x20))
-# define sqlite3Isspace(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x01)
-# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x06)
-# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x02)
-# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x04)
-# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(unsigned char)(x)]&0x08)
-# define sqlite3Tolower(x)   (sqlite3UpperToLower[(unsigned char)(x)])
-# define sqlite3Isquote(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x80)
-# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x42)
-# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x46)
-#else
-# define sqlite3Toupper(x)   toupper((unsigned char)(x))
-# define sqlite3Isspace(x)   isspace((unsigned char)(x))
-# define sqlite3Isalnum(x)   isalnum((unsigned char)(x))
-# define sqlite3Isalpha(x)   isalpha((unsigned char)(x))
-# define sqlite3Isdigit(x)   isdigit((unsigned char)(x))
-# define sqlite3Isxdigit(x)  isxdigit((unsigned char)(x))
-# define sqlite3Tolower(x)   tolower((unsigned char)(x))
+#اگر_تعریف_شدہ SQLITE_ASCII
+# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x20))
+# define sqlite3Isspace(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x01)
+# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x06)
+# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x02)
+# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x04)
+# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x08)
+# define sqlite3Tolower(x)   (sqlite3_بالائی_مقصد_زیریں[(غیرعلامتی حرف)(x)])
+# define sqlite3Isquote(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x80)
+# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x42)
+# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(غیرعلامتی حرف)(x)]&0x46)
+#ورنہ
+# define sqlite3Toupper(x)   بڑا_حرف((غیرعلامتی حرف)(x))
+# define sqlite3Isspace(x)   خلا_ہے((غیرعلامتی حرف)(x))
+# define sqlite3Isalnum(x)   حرف_یا_ہندسہ((غیرعلامتی حرف)(x))
+# define sqlite3Isalpha(x)   حرف_ہے((غیرعلامتی حرف)(x))
+# define sqlite3Isdigit(x)   ہندسہ_ہے((غیرعلامتی حرف)(x))
+# define sqlite3Isxdigit(x)  isxdigit((غیرعلامتی حرف)(x))
+# define sqlite3Tolower(x)   tolower((غیرعلامتی حرف)(x))
 # define sqlite3Isquote(x)   ((x)=='"'||(x)=='\''||(x)=='['||(x)=='`')
 # define sqlite3JsonId1(x)   (sqlite3IsIdChar(x)&&(x)<'0')
 # define sqlite3JsonId2(x)   sqlite3IsIdChar(x)
-#endif
-int sqlite3IsIdChar(u8);
+#اگر_ختم
+صحیح sqlite3IsIdChar(u8);
 
 /*
 ** Internal function prototypes
 */
-int sqlite3StrICmp(const char*,const char*);
-int sqlite3Strlen30(const char*);
-#define sqlite3Strlen30NN(C) (strlen(C)&0x3fffffff)
-char *sqlite3ColumnType(Column*,char*);
-#define sqlite3StrNICmp sqlite3_strnicmp
+صحیح sqlite3StrICmp(ثابت حرف*,ثابت حرف*);
+صحیح sqlite3Strlen30(ثابت حرف*);
+#تعریف_کرو sqlite3Strlen30NN(C) (لڑی_لمبائی(C)&0x3fffffff)
+حرف *sqlite3_عمود_Type(عمود*,حرف*);
+#تعریف_کرو sqlite3StrNICmp sqlite3_strnicmp
 
-int sqlite3MallocInit(void);
-void sqlite3MallocEnd(void);
-void *sqlite3Malloc(u64);
-void *sqlite3MallocZero(u64);
-void *sqlite3DbMallocZero(sqlite3*, u64);
-void *sqlite3DbMallocRaw(sqlite3*, u64);
-void *sqlite3DbMallocRawNN(sqlite3*, u64);
-char *sqlite3DbStrDup(sqlite3*,const char*);
-char *sqlite3DbStrNDup(sqlite3*,const char*, u64);
-char *sqlite3DbSpanDup(sqlite3*,const char*,const char*);
-void *sqlite3Realloc(void*, u64);
-void *sqlite3DbReallocOrFree(sqlite3 *, void *, u64);
-void *sqlite3DbRealloc(sqlite3 *, void *, u64);
-void sqlite3DbFree(sqlite3*, void*);
-void sqlite3DbFreeNN(sqlite3*, void*);
-void sqlite3DbNNFreeNN(sqlite3*, void*);
-int sqlite3MallocSize(const void*);
-int sqlite3DbMallocSize(sqlite3*, const void*);
-void *sqlite3PageMalloc(int);
-void sqlite3PageFree(void*);
-void sqlite3MemSetDefault(void);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3BenignMallocHooks(void (*)(void), void (*)(void));
-#endif
-int sqlite3HeapNearlyFull(void);
+صحیح sqlite3MallocInit(خالی);
+خالی sqlite3_Malloc_انتہا(خالی);
+خالی *sqlite3Malloc(u64);
+خالی *sqlite3MallocZero(u64);
+خالی *sqlite3DbMallocZero(sqlite3*, u64);
+خالی *sqlite3DbMallocRaw(sqlite3*, u64);
+خالی *sqlite3DbMallocRawNN(sqlite3*, u64);
+حرف *sqlite3DbStrDup(sqlite3*,ثابت حرف*);
+حرف *sqlite3DbStrNDup(sqlite3*,ثابت حرف*, u64);
+حرف *sqlite3_Db_وسعت_Dup(sqlite3*,ثابت حرف*,ثابت حرف*);
+خالی *sqlite3Realloc(خالی*, u64);
+خالی *sqlite3DbReallocOrFree(sqlite3 *, خالی *, u64);
+خالی *sqlite3DbRealloc(sqlite3 *, خالی *, u64);
+خالی sqlite3DbFree(sqlite3*, خالی*);
+خالی sqlite3DbFreeNN(sqlite3*, خالی*);
+خالی sqlite3DbNNFreeNN(sqlite3*, خالی*);
+صحیح sqlite3_Malloc_سائز(ثابت خالی*);
+صحیح sqlite3_Db_Malloc_سائز(sqlite3*, ثابت خالی*);
+خالی *sqlite3_صفحہ_Malloc(صحیح);
+خالی sqlite3_صفحہ_Free(خالی*);
+خالی sqlite3_Mem_سیٹ_Default(خالی);
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+خالی sqlite3BenignMallocHooks(خالی (*)(خالی), خالی (*)(خالی));
+#اگر_ختم
+صحیح sqlite3_ڈھیر_Nearly_بھرا(خالی);
 
 /*
 ** On systems with ample stack space and that support alloca(), make
@@ -4843,982 +4843,982 @@ int sqlite3HeapNearlyFull(void);
 ** The alloca() routine never returns NULL.  This will cause code paths
 ** that deal with sqlite3StackAlloc() failures to be unreachable.
 */
-#ifdef SQLITE_USE_ALLOCA
-# define sqlite3StackAllocRaw(D,N)   alloca(N)
-# define sqlite3StackAllocRawNN(D,N) alloca(N)
-# define sqlite3StackFree(D,P)
-# define sqlite3StackFreeNN(D,P)
-#else
-# define sqlite3StackAllocRaw(D,N)   sqlite3DbMallocRaw(D,N)
-# define sqlite3StackAllocRawNN(D,N) sqlite3DbMallocRawNN(D,N)
-# define sqlite3StackFree(D,P)       sqlite3DbFree(D,P)
-# define sqlite3StackFreeNN(D,P)     sqlite3DbFreeNN(D,P)
-#endif
+#اگر_تعریف_شدہ SQLITE_USE_ALLOCA
+# define sqlite3_ڈھیر_Alloc_Raw(D,N)   alloca(N)
+# define sqlite3_ڈھیر_Alloc_Raw_NN(D,N) alloca(N)
+# define sqlite3_ڈھیر_Free(D,P)
+# define sqlite3_ڈھیر_Free_NN(D,P)
+#ورنہ
+# define sqlite3_ڈھیر_Alloc_Raw(D,N)   sqlite3DbMallocRaw(D,N)
+# define sqlite3_ڈھیر_Alloc_Raw_NN(D,N) sqlite3DbMallocRawNN(D,N)
+# define sqlite3_ڈھیر_Free(D,P)       sqlite3DbFree(D,P)
+# define sqlite3_ڈھیر_Free_NN(D,P)     sqlite3DbFreeNN(D,P)
+#اگر_ختم
 
 /* Do not allow both MEMSYS5 and MEMSYS3 to be defined together.  If they
 ** are, disable MEMSYS3
 */
-#ifdef SQLITE_ENABLE_MEMSYS5
-const sqlite3_mem_methods *sqlite3MemGetMemsys5(void);
-#undef SQLITE_ENABLE_MEMSYS3
-#endif
-#ifdef SQLITE_ENABLE_MEMSYS3
-const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
-#endif
+#اگر_تعریف_شدہ SQLITE_ENABLE_MEMSYS5
+ثابت sqlite3_mem_methods *sqlite3MemGetMemsys5(خالی);
+#تعریف_منسوخ SQLITE_ENABLE_MEMSYS3
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_ENABLE_MEMSYS3
+ثابت sqlite3_mem_methods *sqlite3MemGetMemsys3(خالی);
+#اگر_ختم
 
 
-#ifndef SQLITE_MUTEX_OMIT
-  sqlite3_mutex_methods const *sqlite3DefaultMutex(void);
-  sqlite3_mutex_methods const *sqlite3NoopMutex(void);
-  sqlite3_mutex *sqlite3MutexAlloc(int);
-  int sqlite3MutexInit(void);
-  int sqlite3MutexEnd(void);
-#endif
-#if !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
-  void sqlite3MemoryBarrier(void);
-#else
-# define sqlite3MemoryBarrier()
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_MUTEX_OMIT
+  sqlite3_mutex_methods ثابت *sqlite3DefaultMutex(خالی);
+  sqlite3_mutex_methods ثابت *sqlite3NoopMutex(خالی);
+  sqlite3_mutex *sqlite3MutexAlloc(صحیح);
+  صحیح sqlite3MutexInit(خالی);
+  صحیح sqlite3_Mutex_انتہا(خالی);
+#اگر_ختم
+#اگر !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
+  خالی sqlite3_حافظہ_Barrier(خالی);
+#ورنہ
+# define sqlite3_حافظہ_Barrier()
+#اگر_ختم
 
-sqlite3_int64 sqlite3StatusValue(int);
-void sqlite3StatusUp(int, int);
-void sqlite3StatusDown(int, int);
-void sqlite3StatusHighwater(int, int);
-int sqlite3LookasideUsed(sqlite3*,int*);
+sqlite3_int64 sqlite3_حالت_قدر(صحیح);
+خالی sqlite3_حالت_اوپر(صحیح, صحیح);
+خالی sqlite3_حالت_نیچے_کو(صحیح, صحیح);
+خالی sqlite3_حالت_Highwater(صحیح, صحیح);
+صحیح sqlite3_Lookaside_مستعمل(sqlite3*,صحیح*);
 
 /* Access to mutexes used by sqlite3_status() */
-sqlite3_mutex *sqlite3Pcache1Mutex(void);
-sqlite3_mutex *sqlite3MallocMutex(void);
+sqlite3_mutex *sqlite3Pcache1Mutex(خالی);
+sqlite3_mutex *sqlite3MallocMutex(خالی);
 
 
 /* The SQLITE_THREAD_MISUSE_WARNINGS compile-time option used to be called
 ** SQLITE_ENABLE_MULTITHREADED_CHECKS.  Keep that older macro for backwards
 ** compatibility, at least for a while... */
-#ifdef SQLITE_ENABLE_MULTITHREADED_CHECKS
+#اگر_تعریف_شدہ SQLITE_ENABLE_MULTITHREADED_CHECKS
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
-#endif
+#اگر_ختم
 
 /* SQLITE_THREAD_MISUSE_ABORT implies SQLITE_THREAD_MISUSE_WARNINGS */
-#ifdef SQLITE_THREAD_MISUSE_ABORT
+#اگر_تعریف_شدہ SQLITE_THREAD_MISUSE_ABORT
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
-#endif
+#اگر_ختم
 
-#if defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
-void sqlite3MutexWarnOnContention(sqlite3_mutex*);
-#else
+#اگر defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
+خالی sqlite3MutexWarnOnContention(sqlite3_mutex*);
+#ورنہ
 # define sqlite3MutexWarnOnContention(x)
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
 # define EXP754 (((u64)0x7ff)<<52)
 # define MAN754 ((((u64)1)<<52)-1)
 # define IsNaN(X) (((X)&EXP754)==EXP754 && ((X)&MAN754)!=0)
 # define IsOvfl(X) (((X)&EXP754)==EXP754)
-  int sqlite3IsNaN(double);
-  int sqlite3IsOverflow(double);
-#else
+  صحیح sqlite3IsNaN(دوہرا);
+  صحیح sqlite3_Is_حد_سے_تجاوز(دوہرا);
+#ورنہ
 # define IsNaN(X)             0
 # define sqlite3IsNaN(X)      0
-# define sqlite3IsOVerflow(X) 0
-#endif
+# define sqlite3_Is_حد_سے_تجاوز_2(X) 0
+#اگر_ختم
 
 /*
 ** An instance of the following structure holds information about SQL
 ** functions arguments that are the parameters to the printf() function.
 */
-struct PrintfArguments {
-  int nArg;                /* Total number of arguments */
-  int nUsed;               /* Number of arguments used so far */
-  sqlite3_value **apArg;   /* The argument values */
+ساخت PrintfArguments {
+  صحیح nArg;                /* Total number of arguments */
+  صحیح n_مستعمل;               /* Number of arguments used so far */
+  sqlite3_قدر **apArg;   /* The argument values */
 };
 
 /*
 ** Maxium number of base-10 digits in an unsigned 64-bit integer
 */
-#define SQLITE_U64_DIGITS 20
+#تعریف_کرو SQLITE_U64_DIGITS 20
 
 /*
 ** An instance of this object receives the decoding of a floating point
 ** value into an approximate decimal representation.
 */
-struct FpDecode {
-  int n;                           /* Significant digits in the decode */
-  int iDP;                         /* Location of the decimal point */
-  char *z;                         /* Start of significant digits */
-  char zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
-  char sign;                       /* '+' or '-' */
-  char isSpecial;                  /* 1: Infinity  2: NaN */
+ساخت FpDecode {
+  صحیح n;                           /* Significant digits in the decode */
+  صحیح iDP;                         /* Location of the decimal point */
+  حرف *z;                         /* Start of significant digits */
+  حرف zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
+  حرف sign;                       /* '+' or '-' */
+  حرف isSpecial;                  /* 1: Infinity  2: NaN */
 };
 
-void sqlite3FpDecode(FpDecode*,double,int,int);
-char *sqlite3MPrintf(sqlite3*,const char*, ...);
-char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-  void sqlite3DebugPrintf(const char*, ...);
-#endif
-#if defined(SQLITE_TEST)
-  void *sqlite3TestTextToPtr(const char*);
-  const char *sqlite3TestPtrToText(void*);
-#endif
+خالی sqlite3FpDecode(FpDecode*,دوہرا,صحیح,صحیح);
+حرف *sqlite3MPrintf(sqlite3*,ثابت حرف*, ...);
+حرف *sqlite3VMPrintf(sqlite3*,ثابت حرف*, va_list);
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  خالی sqlite3DebugPrintf(ثابت حرف*, ...);
+#اگر_ختم
+#اگر defined(SQLITE_TEST)
+  خالی *sqlite3_Test_متن_مقصد_Ptr(ثابت حرف*);
+  ثابت حرف *sqlite3_Test_Ptr_مقصد_متن(خالی*);
+#اگر_ختم
 
-#if defined(SQLITE_DEBUG)
-  void sqlite3TreeViewLine(TreeView*, const char *zFormat, ...);
-  void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);
-  void sqlite3TreeViewBareExprList(TreeView*, const ExprList*, const char*);
-  void sqlite3TreeViewExprList(TreeView*, const ExprList*, u8, const char*);
-  void sqlite3TreeViewBareIdList(TreeView*, const IdList*, const char*);
-  void sqlite3TreeViewIdList(TreeView*, const IdList*, u8, const char*);
-  void sqlite3TreeViewColumnList(TreeView*, const Column*, int, u8);
-  void sqlite3TreeViewSrcList(TreeView*, const SrcList*);
-  void sqlite3TreeViewSelect(TreeView*, const Select*, u8);
-  void sqlite3TreeViewWith(TreeView*, const With*, u8);
-  void sqlite3TreeViewUpsert(TreeView*, const Upsert*, u8);
-#if TREETRACE_ENABLED
-  void sqlite3TreeViewDelete(const With*, const SrcList*, const Expr*,
-                             const ExprList*,const Expr*, const Trigger*);
-  void sqlite3TreeViewInsert(const With*, const SrcList*,
-                             const IdList*, const Select*, const ExprList*,
-                             int, const Upsert*, const Trigger*);
-  void sqlite3TreeViewUpdate(const With*, const SrcList*, const ExprList*,
-                             const Expr*, int, const ExprList*, const Expr*,
-                             const Upsert*, const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3TreeViewTriggerStep(TreeView*, const TriggerStep*, u8, u8);
-  void sqlite3TreeViewTrigger(TreeView*, const Trigger*, u8, u8);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3TreeViewWindow(TreeView*, const Window*, u8);
-  void sqlite3TreeViewWinFunc(TreeView*, const Window*, u8);
-#endif
-  void sqlite3ShowExpr(const Expr*);
-  void sqlite3ShowExprList(const ExprList*);
-  void sqlite3ShowIdList(const IdList*);
-  void sqlite3ShowSrcList(const SrcList*);
-  void sqlite3ShowSelect(const Select*);
-  void sqlite3ShowWith(const With*);
-  void sqlite3ShowUpsert(const Upsert*);
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3ShowTriggerStep(const TriggerStep*);
-  void sqlite3ShowTriggerStepList(const TriggerStep*);
-  void sqlite3ShowTrigger(const Trigger*);
-  void sqlite3ShowTriggerList(const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3ShowWindow(const Window*);
-  void sqlite3ShowWinFunc(const Window*);
-#endif
-  void sqlite3ShowBitvec(Bitvec*);
-#endif
+#اگر defined(SQLITE_DEBUG)
+  خالی sqlite3_درخت_View_سطر(درخت_View*, ثابت حرف *zFormat, ...);
+  خالی sqlite3_درخت_View_اظہاریہ(درخت_View*, ثابت اظہاریہ*, u8);
+  خالی sqlite3_درخت_View_Bare_اظہاریہ_List(درخت_View*, ثابت اظہاریہ_List*, ثابت حرف*);
+  خالی sqlite3_درخت_View_اظہاریہ_List(درخت_View*, ثابت اظہاریہ_List*, u8, ثابت حرف*);
+  خالی sqlite3_درخت_View_Bare_Id_List(درخت_View*, ثابت IdList*, ثابت حرف*);
+  خالی sqlite3_درخت_View_Id_List(درخت_View*, ثابت IdList*, u8, ثابت حرف*);
+  خالی sqlite3_درخت_View_عمود_List(درخت_View*, ثابت عمود*, صحیح, u8);
+  خالی sqlite3_درخت_View_Src_List(درخت_View*, ثابت SrcList*);
+  خالی sqlite3_درخت_View_Select(درخت_View*, ثابت Select*, u8);
+  خالی sqlite3_درخت_View_With(درخت_View*, ثابت With*, u8);
+  خالی sqlite3_درخت_View_Upsert(درخت_View*, ثابت Upsert*, u8);
+#اگر TREETRACE_ENABLED
+  خالی sqlite3_درخت_View_Delete(ثابت With*, ثابت SrcList*, ثابت اظہاریہ*,
+                             ثابت اظہاریہ_List*,ثابت اظہاریہ*, ثابت Trigger*);
+  خالی sqlite3_درخت_View_داخل_کرو(ثابت With*, ثابت SrcList*,
+                             ثابت IdList*, ثابت Select*, ثابت اظہاریہ_List*,
+                             صحیح, ثابت Upsert*, ثابت Trigger*);
+  خالی sqlite3_درخت_View_Update(ثابت With*, ثابت SrcList*, ثابت اظہاریہ_List*,
+                             ثابت اظہاریہ*, صحیح, ثابت اظہاریہ_List*, ثابت اظہاریہ*,
+                             ثابت Upsert*, ثابت Trigger*);
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+  خالی sqlite3_درخت_View_Trigger_قدم(درخت_View*, ثابت Trigger_قدم*, u8, u8);
+  خالی sqlite3_درخت_View_Trigger(درخت_View*, ثابت Trigger*, u8, u8);
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+  خالی sqlite3_درخت_View_کھڑکی(درخت_View*, ثابت کھڑکی*, u8);
+  خالی sqlite3_درخت_View_Win_Func(درخت_View*, ثابت کھڑکی*, u8);
+#اگر_ختم
+  خالی sqlite3_Show_اظہاریہ(ثابت اظہاریہ*);
+  خالی sqlite3_Show_اظہاریہ_List(ثابت اظہاریہ_List*);
+  خالی sqlite3ShowIdList(ثابت IdList*);
+  خالی sqlite3ShowSrcList(ثابت SrcList*);
+  خالی sqlite3ShowSelect(ثابت Select*);
+  خالی sqlite3ShowWith(ثابت With*);
+  خالی sqlite3ShowUpsert(ثابت Upsert*);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+  خالی sqlite3_Show_Trigger_قدم(ثابت Trigger_قدم*);
+  خالی sqlite3_Show_Trigger_قدم_List(ثابت Trigger_قدم*);
+  خالی sqlite3ShowTrigger(ثابت Trigger*);
+  خالی sqlite3ShowTriggerList(ثابت Trigger*);
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+  خالی sqlite3_Show_کھڑکی(ثابت کھڑکی*);
+  خالی sqlite3ShowWinFunc(ثابت کھڑکی*);
+#اگر_ختم
+  خالی sqlite3ShowBitvec(Bitvec*);
+#اگر_ختم
 
-void sqlite3SetString(char **, sqlite3*, const char*);
-void sqlite3ProgressCheck(Parse*);
-void sqlite3ErrorMsg(Parse*, const char*, ...);
-int sqlite3ErrorToParser(sqlite3*,int);
-void sqlite3Dequote(char*);
-void sqlite3DequoteExpr(Expr*);
-void sqlite3DequoteToken(Token*);
-void sqlite3DequoteNumber(Parse*, Expr*);
-void sqlite3TokenInit(Token*,char*);
-int sqlite3KeywordCode(const unsigned char*, int);
-int sqlite3RunParser(Parse*, const char*);
-void sqlite3FinishCoding(Parse*);
-int sqlite3GetTempReg(Parse*);
-void sqlite3ReleaseTempReg(Parse*,int);
-int sqlite3GetTempRange(Parse*,int);
-void sqlite3ReleaseTempRange(Parse*,int,int);
-void sqlite3ClearTempRegCache(Parse*);
-void sqlite3TouchRegister(Parse*,int);
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
-int sqlite3FirstAvailableRegister(Parse*,int);
-#endif
-#ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse*,int,int);
-#endif
-Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);
-Expr *sqlite3Expr(sqlite3*,int,const char*);
-Expr *sqlite3ExprInt32(sqlite3*,int);
-void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);
-Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*);
-void sqlite3PExprAddSelect(Parse*, Expr*, Select*);
-Expr *sqlite3ExprAnd(Parse*,Expr*, Expr*);
-Expr *sqlite3ExprSimplifiedAndOr(Expr*);
-Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, int);
-void sqlite3ExprAddFunctionOrderBy(Parse*,Expr*,ExprList*);
-void sqlite3ExprOrderByAggregateError(Parse*,Expr*);
-void sqlite3ExprFunctionUsable(Parse*,const Expr*,const FuncDef*);
-void sqlite3ExprAssignVarNumber(Parse*, Expr*, u32);
-void sqlite3ExprDelete(sqlite3*, Expr*);
-void sqlite3ExprDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprDeferredDelete(Parse*, Expr*);
-void sqlite3ExprUnmapAndDelete(Parse*, Expr*);
-ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);
-ExprList *sqlite3ExprListAppendVector(Parse*,ExprList*,IdList*,Expr*);
-Select *sqlite3ExprListToValues(Parse*, int, ExprList*);
-void sqlite3ExprListSetSortOrder(ExprList*,int,int);
-void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,int);
-void sqlite3ExprListSetSpan(Parse*,ExprList*,const char*,const char*);
-void sqlite3ExprListDelete(sqlite3*, ExprList*);
-void sqlite3ExprListDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprCanReturnSubtype(Parse*,Expr*);
-u32 sqlite3ExprListFlags(const ExprList*);
-int sqlite3IndexHasDuplicateRootPage(Index*);
-int sqlite3Init(sqlite3*, char**);
-int sqlite3InitCallback(void*, int, char**, char**);
-int sqlite3InitOne(sqlite3*, int, char**, u32);
-void sqlite3Pragma(Parse*,Token*,Token*,Token*,int);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-Module *sqlite3PragmaVtabRegister(sqlite3*,const char *zName);
-#endif
-void sqlite3ResetAllSchemasOfConnection(sqlite3*);
-void sqlite3ResetOneSchema(sqlite3*,int);
-void sqlite3CollapseDatabaseArray(sqlite3*);
-void sqlite3CommitInternalChanges(sqlite3*);
-void sqlite3ColumnSetExpr(Parse*,Table*,Column*,Expr*);
-Expr *sqlite3ColumnExpr(Table*,Column*);
-Expr *sqlite3ColumnExprAuth(Table*,Column*,Parse*);
-void sqlite3ColumnSetColl(sqlite3*,Column*,const char*zColl);
-const char *sqlite3ColumnColl(Column*);
-void sqlite3DeleteColumnNames(sqlite3*,Table*);
-void sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
-int sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
-void sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,char);
-Table *sqlite3ResultSetOfSelect(Parse*,Select*,char);
-void sqlite3OpenSchemaTable(Parse *, int);
-Index *sqlite3PrimaryKeyIndex(Table*);
-int sqlite3TableColumnToIndex(Index*, int);
-#ifdef SQLITE_OMIT_GENERATED_COLUMNS
-# define sqlite3TableColumnToStorage(T,X) (X)  /* No-op pass-through */
-# define sqlite3StorageColumnToTable(T,X) (X)  /* No-op pass-through */
-#else
-  i16 sqlite3TableColumnToStorage(Table*, i16);
-  i16 sqlite3StorageColumnToTable(Table*, i16);
-#endif
-void sqlite3StartTable(Parse*,Token*,Token*,int,int,int,int);
-#if SQLITE_ENABLE_HIDDEN_COLUMNS
-  void sqlite3ColumnPropertiesFromName(Table*, Column*);
-#else
-# define sqlite3ColumnPropertiesFromName(T,C) /* no-op */
-#endif
-void sqlite3AddColumn(Parse*,Token,Token);
-void sqlite3AddNotNull(Parse*, int);
-void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
-void sqlite3AddCheckConstraint(Parse*, Expr*, const char*, const char*);
-void sqlite3AddDefaultValue(Parse*,Expr*,const char*,const char*);
-void sqlite3AddCollateType(Parse*, Token*);
-void sqlite3AddGenerated(Parse*,Expr*,Token*);
-void sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
-void sqlite3AddReturning(Parse*,ExprList*);
-int sqlite3ParseUri(const char*,const char*,unsigned int*,
-                    sqlite3_vfs**,char**,char **);
-#define sqlite3CodecQueryParameters(A,B,C) 0
-Btree *sqlite3DbNameToBtree(sqlite3*,const char*);
+خالی sqlite3_سیٹ_String(حرف **, sqlite3*, ثابت حرف*);
+خالی sqlite3_پیش_رفت_Check(Parse*);
+خالی sqlite3_Error_پیغام(Parse*, ثابت حرف*, ...);
+صحیح sqlite3_Error_مقصد_Parser(sqlite3*,صحیح);
+خالی sqlite3Dequote(حرف*);
+خالی sqlite3_Dequote_اظہاریہ(اظہاریہ*);
+خالی sqlite3DequoteToken(Token*);
+خالی sqlite3_Dequote_نمبر(Parse*, اظہاریہ*);
+خالی sqlite3TokenInit(Token*,حرف*);
+صحیح sqlite3_Keyword_رمز(ثابت غیرعلامتی حرف*, صحیح);
+صحیح sqlite3_تسلسل_Parser(Parse*, ثابت حرف*);
+خالی sqlite3_اختتام_Coding(Parse*);
+صحیح sqlite3_Get_عارضی_Reg(Parse*);
+خالی sqlite3_Release_عارضی_Reg(Parse*,صحیح);
+صحیح sqlite3_Get_عارضی_Range(Parse*,صحیح);
+خالی sqlite3_Release_عارضی_Range(Parse*,صحیح,صحیح);
+خالی sqlite3_Clear_عارضی_Reg_Cache(Parse*);
+خالی sqlite3_Touch_رجسٹر(Parse*,صحیح);
+#اگر defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+صحیح sqlite3_پہلا_دستیاب_رجسٹر(Parse*,صحیح);
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_DEBUG
+صحیح sqlite3_No_Temps_اندر_Range(Parse*,صحیح,صحیح);
+#اگر_ختم
+اظہاریہ *sqlite3_اظہاریہ_Alloc(sqlite3*,صحیح,ثابت Token*,صحیح);
+اظہاریہ *sqlite3_اظہاریہ(sqlite3*,صحیح,ثابت حرف*);
+اظہاریہ *sqlite3_اظہاریہ_Int32(sqlite3*,صحیح);
+خالی sqlite3_اظہاریہ_Attach_Subtrees(sqlite3*,اظہاریہ*,اظہاریہ*,اظہاریہ*);
+اظہاریہ *sqlite3PExpr(Parse*, صحیح, اظہاریہ*, اظہاریہ*);
+خالی sqlite3_PExpr_جوڑو_Select(Parse*, اظہاریہ*, Select*);
+اظہاریہ *sqlite3_اظہاریہ_And(Parse*,اظہاریہ*, اظہاریہ*);
+اظہاریہ *sqlite3_اظہاریہ_Simplified_And_Or(اظہاریہ*);
+اظہاریہ *sqlite3_اظہاریہ_Function(Parse*,اظہاریہ_List*, ثابت Token*, صحیح);
+خالی sqlite3_اظہاریہ_جوڑو_Function_ترتیب_By(Parse*,اظہاریہ*,اظہاریہ_List*);
+خالی sqlite3_اظہاریہ_ترتیب_By_Aggregate_Error(Parse*,اظہاریہ*);
+خالی sqlite3_اظہاریہ_Function_Usable(Parse*,ثابت اظہاریہ*,ثابت FuncDef*);
+خالی sqlite3_اظہاریہ_تفویض_Var_نمبر(Parse*, اظہاریہ*, u32);
+خالی sqlite3_اظہاریہ_Delete(sqlite3*, اظہاریہ*);
+خالی sqlite3_اظہاریہ_Delete_Generic(sqlite3*,خالی*);
+صحیح sqlite3_اظہاریہ_Deferred_Delete(Parse*, اظہاریہ*);
+خالی sqlite3_اظہاریہ_Unmap_And_Delete(Parse*, اظہاریہ*);
+اظہاریہ_List *sqlite3_اظہاریہ_List_Append(Parse*,اظہاریہ_List*,اظہاریہ*);
+اظہاریہ_List *sqlite3_اظہاریہ_List_Append_سمتیہ(Parse*,اظہاریہ_List*,IdList*,اظہاریہ*);
+Select *sqlite3_اظہاریہ_List_مقصد_اقدار(Parse*, صحیح, اظہاریہ_List*);
+خالی sqlite3_اظہاریہ_List_سیٹ_ترتیب_دو_ترتیب(اظہاریہ_List*,صحیح,صحیح);
+خالی sqlite3_اظہاریہ_List_سیٹ_Name(Parse*,اظہاریہ_List*,ثابت Token*,صحیح);
+خالی sqlite3_اظہاریہ_List_سیٹ_وسعت(Parse*,اظہاریہ_List*,ثابت حرف*,ثابت حرف*);
+خالی sqlite3_اظہاریہ_List_Delete(sqlite3*, اظہاریہ_List*);
+خالی sqlite3_اظہاریہ_List_Delete_Generic(sqlite3*,خالی*);
+صحیح sqlite3_اظہاریہ_Can_Return_Subtype(Parse*,اظہاریہ*);
+u32 sqlite3_اظہاریہ_List_Flags(ثابت اظہاریہ_List*);
+صحیح sqlite3_اشاریہ_Has_Duplicate_جڑ_صفحہ(اشاریہ*);
+صحیح sqlite3Init(sqlite3*, حرف**);
+صحیح sqlite3InitCallback(خالی*, صحیح, حرف**, حرف**);
+صحیح sqlite3InitOne(sqlite3*, صحیح, حرف**, u32);
+خالی sqlite3Pragma(Parse*,Token*,Token*,Token*,صحیح);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+Module *sqlite3_Pragma_Vtab_رجسٹر(sqlite3*,ثابت حرف *zName);
+#اگر_ختم
+خالی sqlite3_Reset_All_Schemas_کا_Connection(sqlite3*);
+خالی sqlite3ResetOneSchema(sqlite3*,صحیح);
+خالی sqlite3CollapseDatabaseArray(sqlite3*);
+خالی sqlite3_Commit_اندرونی_Changes(sqlite3*);
+خالی sqlite3_عمود_سیٹ_اظہاریہ(Parse*,جدول*,عمود*,اظہاریہ*);
+اظہاریہ *sqlite3_عمود_اظہاریہ(جدول*,عمود*);
+اظہاریہ *sqlite3_عمود_اظہاریہ_Auth(جدول*,عمود*,Parse*);
+خالی sqlite3_عمود_سیٹ_Coll(sqlite3*,عمود*,ثابت حرف*zColl);
+ثابت حرف *sqlite3_عمود_Coll(عمود*);
+خالی sqlite3_Delete_عمود_نام(sqlite3*,جدول*);
+خالی sqlite3_Generate_عمود_نام(Parse *pParse, Select *pSelect);
+صحیح sqlite3_Columns_From_اظہاریہ_List(Parse*,اظہاریہ_List*,i16*,عمود**);
+خالی sqlite3_Subquery_عمود_Types(Parse*,جدول*,Select*,حرف);
+جدول *sqlite3_نتیجہ_سیٹ_کا_Select(Parse*,Select*,حرف);
+خالی sqlite3_Open_Schema_جدول(Parse *, صحیح);
+اشاریہ *sqlite3_Primary_کلید_اشاریہ(جدول*);
+صحیح sqlite3_جدول_عمود_مقصد_اشاریہ(اشاریہ*, صحیح);
+#اگر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
+# define sqlite3_جدول_عمود_مقصد_Storage(T,X) (X)  /* No-op pass-through */
+# define sqlite3_Storage_عمود_مقصد_جدول(T,X) (X)  /* No-op pass-through */
+#ورنہ
+  i16 sqlite3_جدول_عمود_مقصد_Storage(جدول*, i16);
+  i16 sqlite3_Storage_عمود_مقصد_جدول(جدول*, i16);
+#اگر_ختم
+خالی sqlite3_آغاز_جدول(Parse*,Token*,Token*,صحیح,صحیح,صحیح,صحیح);
+#اگر SQLITE_ENABLE_HIDDEN_COLUMNS
+  خالی sqlite3_عمود_Properties_From_Name(جدول*, عمود*);
+#ورنہ
+# define sqlite3_عمود_Properties_From_Name(T,C) /* no-op */
+#اگر_ختم
+خالی sqlite3_جوڑو_عمود(Parse*,Token,Token);
+خالی sqlite3_جوڑو_Not_Null(Parse*, صحیح);
+خالی sqlite3_جوڑو_Primary_کلید(Parse*, اظہاریہ_List*, صحیح, صحیح, صحیح);
+خالی sqlite3_جوڑو_Check_Constraint(Parse*, اظہاریہ*, ثابت حرف*, ثابت حرف*);
+خالی sqlite3_جوڑو_Default_قدر(Parse*,اظہاریہ*,ثابت حرف*,ثابت حرف*);
+خالی sqlite3_جوڑو_Collate_Type(Parse*, Token*);
+خالی sqlite3_جوڑو_Generated(Parse*,اظہاریہ*,Token*);
+خالی sqlite3_انتہا_جدول(Parse*,Token*,Token*,u32,Select*);
+خالی sqlite3_جوڑو_Returning(Parse*,اظہاریہ_List*);
+صحیح sqlite3ParseUri(ثابت حرف*,ثابت حرف*,غیرعلامتی صحیح*,
+                    sqlite3_vfs**,حرف**,حرف **);
+#تعریف_کرو sqlite3CodecQueryParameters(A,B,C) 0
+Btree *sqlite3_Db_Name_مقصد_Btree(sqlite3*,ثابت حرف*);
 
-#ifdef SQLITE_UNTESTABLE
+#اگر_تعریف_شدہ SQLITE_UNTESTABLE
 # define sqlite3FaultSim(X) SQLITE_OK
-#else
-  int sqlite3FaultSim(int);
-#endif
+#ورنہ
+  صحیح sqlite3FaultSim(صحیح);
+#اگر_ختم
 
 Bitvec *sqlite3BitvecCreate(u32);
-int sqlite3BitvecTest(Bitvec*, u32);
-int sqlite3BitvecTestNotNull(Bitvec*, u32);
-int sqlite3BitvecSet(Bitvec*, u32);
-void sqlite3BitvecClear(Bitvec*, u32, void*);
-void sqlite3BitvecDestroy(Bitvec*);
-u32 sqlite3BitvecSize(Bitvec*);
-#ifndef SQLITE_UNTESTABLE
-int sqlite3BitvecBuiltinTest(int,int*);
-#endif
+صحیح sqlite3BitvecTest(Bitvec*, u32);
+صحیح sqlite3BitvecTestNotNull(Bitvec*, u32);
+صحیح sqlite3_Bitvec_سیٹ(Bitvec*, u32);
+خالی sqlite3BitvecClear(Bitvec*, u32, خالی*);
+خالی sqlite3BitvecDestroy(Bitvec*);
+u32 sqlite3_Bitvec_سائز(Bitvec*);
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+صحیح sqlite3BitvecBuiltinTest(صحیح,صحیح*);
+#اگر_ختم
 
-RowSet *sqlite3RowSetInit(sqlite3*);
-void sqlite3RowSetDelete(void*);
-void sqlite3RowSetClear(void*);
-void sqlite3RowSetInsert(RowSet*, i64);
-int sqlite3RowSetTest(RowSet*, int iBatch, i64);
-int sqlite3RowSetNext(RowSet*, i64*);
+صف_سیٹ *sqlite3_صف_سیٹ_Init(sqlite3*);
+خالی sqlite3_صف_سیٹ_Delete(خالی*);
+خالی sqlite3_صف_سیٹ_Clear(خالی*);
+خالی sqlite3_صف_سیٹ_داخل_کرو(صف_سیٹ*, i64);
+صحیح sqlite3_صف_سیٹ_Test(صف_سیٹ*, صحیح iBatch, i64);
+صحیح sqlite3_صف_سیٹ_اگلا(صف_سیٹ*, i64*);
 
-void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,int,int);
+خالی sqlite3CreateView(Parse*,Token*,Token*,Token*,اظہاریہ_List*,Select*,صحیح,صحیح);
 
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-  int sqlite3ViewGetColumnNames(Parse*,Table*);
-#else
-# define sqlite3ViewGetColumnNames(A,B) 0
-#endif
+#اگر !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+  صحیح sqlite3_View_Get_عمود_نام(Parse*,جدول*);
+#ورنہ
+# define sqlite3_View_Get_عمود_نام(A,B) 0
+#اگر_ختم
 
-#if SQLITE_MAX_ATTACHED>30
-  int sqlite3DbMaskAllZero(yDbMask);
-#endif
-void sqlite3DropTable(Parse*, SrcList*, int, int);
-void sqlite3CodeDropTable(Parse*, Table*, int, int);
-void sqlite3DeleteTable(sqlite3*, Table*);
-void sqlite3DeleteTableGeneric(sqlite3*, void*);
-void sqlite3FreeIndex(sqlite3*, Index*);
-#ifndef SQLITE_OMIT_AUTOINCREMENT
-  void sqlite3AutoincrementBegin(Parse *pParse);
-  void sqlite3AutoincrementEnd(Parse *pParse);
-#else
+#اگر SQLITE_MAX_ATTACHED>30
+  صحیح sqlite3_Db_نقاب_All_Zero(y_Db_نقاب);
+#اگر_ختم
+خالی sqlite3_Drop_جدول(Parse*, SrcList*, صحیح, صحیح);
+خالی sqlite3_رمز_Drop_جدول(Parse*, جدول*, صحیح, صحیح);
+خالی sqlite3_Delete_جدول(sqlite3*, جدول*);
+خالی sqlite3_Delete_جدول_Generic(sqlite3*, خالی*);
+خالی sqlite3_Free_اشاریہ(sqlite3*, اشاریہ*);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOINCREMENT
+  خالی sqlite3AutoincrementBegin(Parse *pParse);
+  خالی sqlite3_Autoincrement_انتہا(Parse *pParse);
+#ورنہ
 # define sqlite3AutoincrementBegin(X)
-# define sqlite3AutoincrementEnd(X)
-#endif
-void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  void sqlite3ComputeGeneratedColumns(Parse*, int, Table*);
-#endif
-void *sqlite3ArrayAllocate(sqlite3*,void*,int,int*,int*);
+# define sqlite3_Autoincrement_انتہا(X)
+#اگر_ختم
+خالی sqlite3_داخل_کرو(Parse*, SrcList*, Select*, IdList*, صحیح, Upsert*);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
+  خالی sqlite3ComputeGeneratedColumns(Parse*, صحیح, جدول*);
+#اگر_ختم
+خالی *sqlite3ArrayAllocate(sqlite3*,خالی*,صحیح,صحیح*,صحیح*);
 IdList *sqlite3IdListAppend(Parse*, IdList*, Token*);
-int sqlite3IdListIndex(IdList*,const char*);
-SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, int, int);
+صحیح sqlite3_Id_List_اشاریہ(IdList*,ثابت حرف*);
+SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, صحیح, صحیح);
 SrcList *sqlite3SrcListAppendList(Parse *pParse, SrcList *p1, SrcList *p2);
 SrcList *sqlite3SrcListAppend(Parse*, SrcList*, Token*, Token*);
-void sqlite3SubqueryDelete(sqlite3*,Subquery*);
-Select *sqlite3SubqueryDetach(sqlite3*,SrcItem*);
-int sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, int);
-SrcList *sqlite3SrcListAppendFromTerm(Parse*, SrcList*, Token*, Token*,
+خالی sqlite3SubqueryDelete(sqlite3*,Subquery*);
+Select *sqlite3SubqueryDetach(sqlite3*,Src_شے*);
+صحیح sqlite3_Src_شے_Attach_Subquery(Parse*, Src_شے*, Select*, صحیح);
+SrcList *sqlite3_Src_List_Append_From_رکن(Parse*, SrcList*, Token*, Token*,
                                       Token*, Select*, OnOrUsing*);
-void sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
-void sqlite3SrcListFuncArgs(Parse*, SrcList*, ExprList*);
-int sqlite3IndexedByLookup(Parse *, SrcItem *);
-void sqlite3SrcListShiftJoinType(Parse*,SrcList*);
-void sqlite3SrcListAssignCursors(Parse*, SrcList*);
-void sqlite3IdListDelete(sqlite3*, IdList*);
-void sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
-void sqlite3SrcListDelete(sqlite3*, SrcList*);
-Index *sqlite3AllocateIndexObject(sqlite3*,int,int,char**);
-int sqlite3IndexBloomable(const Index*,int);
-void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,int,Token*,
-                          Expr*, int, int, u8);
-void sqlite3DropIndex(Parse*, SrcList*, int);
-int sqlite3Select(Parse*, Select*, SelectDest*);
-Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,
-                         Expr*,ExprList*,u32,Expr*);
-void sqlite3SelectDelete(sqlite3*, Select*);
-void sqlite3SelectDeleteGeneric(sqlite3*,void*);
-void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
-Table *sqlite3SrcListLookup(Parse*, SrcList*);
-int sqlite3IsReadOnly(Parse*, Table*, Trigger*);
-void sqlite3OpenTable(Parse*, int iCur, int iDb, Table*, int);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
-Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,char*);
-#endif
-void sqlite3CodeChangeCount(Vdbe*,int,const char*);
-void sqlite3DeleteFrom(Parse*, SrcList*, Expr*, ExprList*, Expr*);
-void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,int,ExprList*,Expr*,
+خالی sqlite3_Src_List_اشاریہ_دار_By(Parse *, SrcList *, Token *);
+خالی sqlite3_Src_List_Func_دلائل(Parse*, SrcList*, اظہاریہ_List*);
+صحیح sqlite3_اشاریہ_دار_By_Lookup(Parse *, Src_شے *);
+خالی sqlite3_Src_List_سرکاؤ_Join_Type(Parse*,SrcList*);
+خالی sqlite3_Src_List_تفویض_Cursors(Parse*, SrcList*);
+خالی sqlite3IdListDelete(sqlite3*, IdList*);
+خالی sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
+خالی sqlite3SrcListDelete(sqlite3*, SrcList*);
+اشاریہ *sqlite3_Allocate_اشاریہ_Object(sqlite3*,صحیح,صحیح,حرف**);
+صحیح sqlite3_اشاریہ_Bloomable(ثابت اشاریہ*,صحیح);
+خالی sqlite3_Create_اشاریہ(Parse*,Token*,Token*,SrcList*,اظہاریہ_List*,صحیح,Token*,
+                          اظہاریہ*, صحیح, صحیح, u8);
+خالی sqlite3_Drop_اشاریہ(Parse*, SrcList*, صحیح);
+صحیح sqlite3Select(Parse*, Select*, SelectDest*);
+Select *sqlite3SelectNew(Parse*,اظہاریہ_List*,SrcList*,اظہاریہ*,اظہاریہ_List*,
+                         اظہاریہ*,اظہاریہ_List*,u32,اظہاریہ*);
+خالی sqlite3SelectDelete(sqlite3*, Select*);
+خالی sqlite3SelectDeleteGeneric(sqlite3*,خالی*);
+خالی sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
+جدول *sqlite3SrcListLookup(Parse*, SrcList*);
+صحیح sqlite3IsReadOnly(Parse*, جدول*, Trigger*);
+خالی sqlite3_Open_جدول(Parse*, صحیح iCur, صحیح iDb, جدول*, صحیح);
+#اگر defined(SQLITE_ENABLE_UPDATE_DELETE_حد_بندی) && !defined(SQLITE_OMIT_SUBQUERY)
+اظہاریہ *sqlite3_حد_بندی_Where(Parse*,SrcList*,اظہاریہ*,اظہاریہ_List*,اظہاریہ*,حرف*);
+#اگر_ختم
+خالی sqlite3_رمز_Change_گنتی(Vdbe*,صحیح,ثابت حرف*);
+خالی sqlite3DeleteFrom(Parse*, SrcList*, اظہاریہ*, اظہاریہ_List*, اظہاریہ*);
+خالی sqlite3Update(Parse*, SrcList*, اظہاریہ_List*,اظہاریہ*,صحیح,اظہاریہ_List*,اظہاریہ*,
                    Upsert*);
-WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,
-                             ExprList*,Select*,u16,int);
-void sqlite3WhereEnd(WhereInfo*);
-LogEst sqlite3WhereOutputRowCount(WhereInfo*);
-int sqlite3WhereIsDistinct(WhereInfo*);
-int sqlite3WhereIsOrdered(WhereInfo*);
-int sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
-void sqlite3WhereMinMaxOptEarlyOut(Vdbe*,WhereInfo*);
-int sqlite3WhereIsSorted(WhereInfo*);
-int sqlite3WhereContinueLabel(WhereInfo*);
-int sqlite3WhereBreakLabel(WhereInfo*);
-int sqlite3WhereOkOnePass(WhereInfo*, int*);
-#define ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
-#define ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
-#define ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
-int sqlite3WhereUsesDeferredSeek(WhereInfo*);
-void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, int, int, int);
-int sqlite3ExprCodeGetColumn(Parse*, Table*, int, int, int, u8);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, int, int, int);
-void sqlite3ExprCodeMove(Parse*, int, int, int);
-void sqlite3ExprToRegister(Expr *pExpr, int iReg);
-void sqlite3ExprCode(Parse*, Expr*, int);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, int);
-#endif
-void sqlite3ExprCodeCopy(Parse*, Expr*, int);
-void sqlite3ExprCodeFactorable(Parse*, Expr*, int);
-int sqlite3ExprCodeRunJustOnce(Parse*, Expr*, int);
-void sqlite3ExprNullRegisterRange(Parse*, int, int);
-int sqlite3ExprCodeTemp(Parse*, Expr*, int*);
-int sqlite3ExprCodeTarget(Parse*, Expr*, int);
-int sqlite3ExprCodeExprList(Parse*, ExprList*, int, int, u8);
-#define SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
-#define SQLITE_ECEL_FACTOR   0x02  /* Factor out constant terms */
-#define SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
-#define SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
-void sqlite3ExprIfTrue(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalse(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalseDup(Parse*, Expr*, int, int);
-Table *sqlite3FindTable(sqlite3*,const char*, const char*);
-#define LOCATE_VIEW    0x01
-#define LOCATE_NOERR   0x02
-Table *sqlite3LocateTable(Parse*,u32 flags,const char*, const char*);
-const char *sqlite3PreferredTableName(const char*);
-Table *sqlite3LocateTableItem(Parse*,u32 flags,SrcItem *);
-Index *sqlite3FindIndex(sqlite3*,const char*, const char*);
-void sqlite3UnlinkAndDeleteTable(sqlite3*,int,const char*);
-void sqlite3UnlinkAndDeleteIndex(sqlite3*,int,const char*);
-void sqlite3Vacuum(Parse*,Token*,Expr*);
-int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_value*);
-char *sqlite3NameFromToken(sqlite3*, const Token*);
-int sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprCompareSkip(Expr*,Expr*,int);
-int sqlite3ExprListCompare(const ExprList*,const ExprList*, int);
-int sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprImpliesNonNullRow(Expr*,int,int);
-void sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
-void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);
-void sqlite3ExprAnalyzeAggList(NameContext*,ExprList*);
-int sqlite3ExprCoveredByIndex(Expr*, int iCur, Index *pIdx);
-int sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
+WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,اظہاریہ*,اظہاریہ_List*,
+                             اظہاریہ_List*,Select*,u16,صحیح);
+خالی sqlite3_Where_انتہا(WhereInfo*);
+LogEst sqlite3_Where_Output_صف_گنتی(WhereInfo*);
+صحیح sqlite3WhereIsDistinct(WhereInfo*);
+صحیح sqlite3WhereIsOrdered(WhereInfo*);
+صحیح sqlite3_Where_ترتیب_By_حد_بندی_Opt_Label(WhereInfo*);
+خالی sqlite3_Where_Min_Max_Opt_Early_برآمد(Vdbe*,WhereInfo*);
+صحیح sqlite3WhereIsSorted(WhereInfo*);
+صحیح sqlite3WhereContinueLabel(WhereInfo*);
+صحیح sqlite3WhereBreakLabel(WhereInfo*);
+صحیح sqlite3WhereOkOnePass(WhereInfo*, صحیح*);
+#تعریف_کرو ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
+#تعریف_کرو ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
+#تعریف_کرو ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
+صحیح sqlite3_Where_استعمال_کرتا_Deferred_Seek(WhereInfo*);
+خالی sqlite3_اظہاریہ_رمز_بھرو_اشاریہ_عمود(Parse*, اشاریہ*, صحیح, صحیح, صحیح);
+صحیح sqlite3_اظہاریہ_رمز_Get_عمود(Parse*, جدول*, صحیح, صحیح, صحیح, u8);
+خالی sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(Vdbe*, جدول*, صحیح, صحیح, صحیح);
+خالی sqlite3_اظہاریہ_رمز_Move(Parse*, صحیح, صحیح, صحیح);
+خالی sqlite3_اظہاریہ_مقصد_رجسٹر(اظہاریہ *p_اظہاریہ, صحیح iReg);
+خالی sqlite3_اظہاریہ_رمز(Parse*, اظہاریہ*, صحیح);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
+خالی sqlite3_اظہاریہ_رمز_Generated_عمود(Parse*, جدول*, عمود*, صحیح);
+#اگر_ختم
+خالی sqlite3_اظہاریہ_رمز_Copy(Parse*, اظہاریہ*, صحیح);
+خالی sqlite3_اظہاریہ_رمز_Factorable(Parse*, اظہاریہ*, صحیح);
+صحیح sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(Parse*, اظہاریہ*, صحیح);
+خالی sqlite3_اظہاریہ_Null_رجسٹر_Range(Parse*, صحیح, صحیح);
+صحیح sqlite3_اظہاریہ_رمز_عارضی(Parse*, اظہاریہ*, صحیح*);
+صحیح sqlite3_اظہاریہ_رمز_ہدف(Parse*, اظہاریہ*, صحیح);
+صحیح sqlite3_اظہاریہ_رمز_اظہاریہ_List(Parse*, اظہاریہ_List*, صحیح, صحیح, u8);
+#تعریف_کرو SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
+#تعریف_کرو SQLITE_ECEL_ضربی_عدد   0x02  /* Factor out constant terms */
+#تعریف_کرو SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
+#تعریف_کرو SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
+خالی sqlite3_اظہاریہ_If_True(Parse*, اظہاریہ*, صحیح, صحیح);
+خالی sqlite3_اظہاریہ_If_False(Parse*, اظہاریہ*, صحیح, صحیح);
+خالی sqlite3_اظہاریہ_If_False_Dup(Parse*, اظہاریہ*, صحیح, صحیح);
+جدول *sqlite3_ڈھونڈو_جدول(sqlite3*,ثابت حرف*, ثابت حرف*);
+#تعریف_کرو LOCATE_VIEW    0x01
+#تعریف_کرو LOCATE_NOERR   0x02
+جدول *sqlite3_Locate_جدول(Parse*,u32 flags,ثابت حرف*, ثابت حرف*);
+ثابت حرف *sqlite3_Preferred_جدول_Name(ثابت حرف*);
+جدول *sqlite3_Locate_جدول_شے(Parse*,u32 flags,Src_شے *);
+اشاریہ *sqlite3_ڈھونڈو_اشاریہ(sqlite3*,ثابت حرف*, ثابت حرف*);
+خالی sqlite3_Unlink_And_Delete_جدول(sqlite3*,صحیح,ثابت حرف*);
+خالی sqlite3_Unlink_And_Delete_اشاریہ(sqlite3*,صحیح,ثابت حرف*);
+خالی sqlite3Vacuum(Parse*,Token*,اظہاریہ*);
+صحیح sqlite3_تسلسل_Vacuum(حرف**, sqlite3*, صحیح, sqlite3_قدر*);
+حرف *sqlite3NameFromToken(sqlite3*, ثابت Token*);
+صحیح sqlite3_اظہاریہ_Compare(ثابت Parse*,ثابت اظہاریہ*,ثابت اظہاریہ*, صحیح);
+صحیح sqlite3_اظہاریہ_Compare_Skip(اظہاریہ*,اظہاریہ*,صحیح);
+صحیح sqlite3_اظہاریہ_List_Compare(ثابت اظہاریہ_List*,ثابت اظہاریہ_List*, صحیح);
+صحیح sqlite3_اظہاریہ_مستلزم_اظہاریہ(ثابت Parse*,ثابت اظہاریہ*,ثابت اظہاریہ*, صحیح);
+صحیح sqlite3_اظہاریہ_مستلزم_Non_Null_صف(اظہاریہ*,صحیح,صحیح);
+خالی sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
+خالی sqlite3_اظہاریہ_Analyze_Aggregates(NameContext*, اظہاریہ*);
+خالی sqlite3_اظہاریہ_Analyze_Agg_List(NameContext*,اظہاریہ_List*);
+صحیح sqlite3_اظہاریہ_Covered_By_اشاریہ(اظہاریہ*, صحیح iCur, اشاریہ *pIdx);
+صحیح sqlite3ReferencesSrcList(Parse*, اظہاریہ*, SrcList*);
 Vdbe *sqlite3GetVdbe(Parse*);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3PrngSaveState(void);
-void sqlite3PrngRestoreState(void);
-#endif
-void sqlite3RollbackAll(sqlite3*,int);
-void sqlite3CodeVerifySchema(Parse*, int);
-void sqlite3CodeVerifyNamedSchema(Parse*, const char *zDb);
-void sqlite3BeginTransaction(Parse*, int);
-void sqlite3EndTransaction(Parse*,int);
-void sqlite3Savepoint(Parse*, int, Token*);
-void sqlite3CloseSavepoints(sqlite3 *);
-void sqlite3LeaveMutexAndCloseZombie(sqlite3*);
-u32 sqlite3IsTrueOrFalse(const char*);
-int sqlite3ExprIdToTrueFalse(Expr*);
-int sqlite3ExprTruthValue(const Expr*);
-int sqlite3ExprIsConstant(Parse*,Expr*);
-int sqlite3ExprIsConstantOrFunction(Expr*, u8);
-int sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
-int sqlite3ExprIsTableConstant(Expr*,int,int);
-int sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,int,int);
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs);
-int sqlite3ExprContainsSubquery(Expr*);
-int sqlite3ExprIsInteger(const Expr*, int*, Parse*, int);
-int sqlite3ExprCanBeNull(const Expr*);
-int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
-int sqlite3ExprIsLikeOperator(const Expr*);
-int sqlite3IsRowid(const char*);
-const char *sqlite3RowidAlias(Table *pTab);
-void sqlite3GenerateRowDelete(
-    Parse*,Table*,Trigger*,int,int,int,i16,u8,u8,u8,int);
-void sqlite3GenerateRowIndexDelete(Parse*, Table*, int, int, int*, int);
-int sqlite3GenerateIndexKey(Parse*, Index*, int, int, int, int*,Index*,int);
-void sqlite3ResolvePartIdxLabel(Parse*,int);
-int sqlite3ExprReferencesUpdatedColumn(Expr*,int*,int);
-void sqlite3GenerateConstraintChecks(Parse*,Table*,int*,int,int,int,int,
-                                     u8,u8,int,int*,int*,Upsert*);
-#ifdef SQLITE_ENABLE_NULL_TRIM
-  void sqlite3SetMakeRecordP5(Vdbe*,Table*);
-#else
-# define sqlite3SetMakeRecordP5(A,B)
-#endif
-void sqlite3CompleteInsertion(Parse*,Table*,int,int,int,int*,int,int,int);
-int sqlite3OpenTableAndIndices(Parse*, Table*, int, u8, int, u8*, int*, int*);
-void sqlite3BeginWriteOperation(Parse*, int, int);
-void sqlite3MultiWrite(Parse*);
-void sqlite3MayAbort(Parse*);
-void sqlite3HaltConstraint(Parse*, int, int, char*, i8, u8);
-void sqlite3UniqueConstraint(Parse*, int, Index*);
-void sqlite3RowidConstraint(Parse*, int, Table*);
-Expr *sqlite3ExprDup(sqlite3*,const Expr*,int);
-ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,int);
-SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,int);
-IdList *sqlite3IdListDup(sqlite3*,const IdList*);
-Select *sqlite3SelectDup(sqlite3*,const Select*,int);
-FuncDef *sqlite3FunctionSearch(int,const char*);
-void sqlite3InsertBuiltinFuncs(FuncDef*,int);
-FuncDef *sqlite3FindFunction(sqlite3*,const char*,int,u8,u8);
-void sqlite3QuoteValue(StrAccum*,sqlite3_value*,int);
-int sqlite3AppendOneUtf8Character(char*, u32);
-void sqlite3RegisterBuiltinFunctions(void);
-void sqlite3RegisterDateTimeFunctions(void);
-void sqlite3RegisterJsonFunctions(void);
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3*);
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
-  Module *sqlite3JsonVtabRegister(sqlite3*,const char*);
-#endif
-int sqlite3SafetyCheckOk(sqlite3*);
-int sqlite3SafetyCheckSickOrOk(sqlite3*);
-void sqlite3ChangeCookie(Parse*, int);
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+خالی sqlite3PrngSaveState(خالی);
+خالی sqlite3PrngRestoreState(خالی);
+#اگر_ختم
+خالی sqlite3RollbackAll(sqlite3*,صحیح);
+خالی sqlite3_رمز_Verify_Schema(Parse*, صحیح);
+خالی sqlite3_رمز_Verify_Named_Schema(Parse*, ثابت حرف *zDb);
+خالی sqlite3BeginTransaction(Parse*, صحیح);
+خالی sqlite3_انتہا_Transaction(Parse*,صحیح);
+خالی sqlite3Savepoint(Parse*, صحیح, Token*);
+خالی sqlite3CloseSavepoints(sqlite3 *);
+خالی sqlite3LeaveMutexAndCloseZombie(sqlite3*);
+u32 sqlite3IsTrueOrFalse(ثابت حرف*);
+صحیح sqlite3_اظہاریہ_Id_مقصد_True_False(اظہاریہ*);
+صحیح sqlite3_اظہاریہ_Truth_قدر(ثابت اظہاریہ*);
+صحیح sqlite3_اظہاریہ_Is_Constant(Parse*,اظہاریہ*);
+صحیح sqlite3_اظہاریہ_Is_Constant_Or_Function(اظہاریہ*, u8);
+صحیح sqlite3_اظہاریہ_Is_Constant_Or_گروہ_By(Parse*, اظہاریہ*, اظہاریہ_List*);
+صحیح sqlite3_اظہاریہ_Is_جدول_Constant(اظہاریہ*,صحیح,صحیح);
+صحیح sqlite3_اظہاریہ_Is_Single_جدول_Constraint(اظہاریہ*,ثابت SrcList*,صحیح,صحیح);
+صحیح sqlite3_اظہاریہ_List_Is_Constant(Parse *pParse, اظہاریہ_List *pList, صحیح bNoIs);
+صحیح sqlite3_اظہاریہ_شامل_ہے_Subquery(اظہاریہ*);
+صحیح sqlite3_اظہاریہ_Is_Integer(ثابت اظہاریہ*, صحیح*, Parse*, صحیح);
+صحیح sqlite3_اظہاریہ_Can_Be_Null(ثابت اظہاریہ*);
+صحیح sqlite3_اظہاریہ_Needs_No_Affinity_Change(ثابت اظہاریہ*, حرف);
+صحیح sqlite3_اظہاریہ_Is_Like_Operator(ثابت اظہاریہ*);
+صحیح sqlite3IsRowid(ثابت حرف*);
+ثابت حرف *sqlite3RowidAlias(جدول *pTab);
+خالی sqlite3_Generate_صف_Delete(
+    Parse*,جدول*,Trigger*,صحیح,صحیح,صحیح,i16,u8,u8,u8,صحیح);
+خالی sqlite3_Generate_صف_اشاریہ_Delete(Parse*, جدول*, صحیح, صحیح, صحیح*, صحیح);
+صحیح sqlite3_Generate_اشاریہ_کلید(Parse*, اشاریہ*, صحیح, صحیح, صحیح, صحیح*,اشاریہ*,صحیح);
+خالی sqlite3ResolvePartIdxLabel(Parse*,صحیح);
+صحیح sqlite3_اظہاریہ_References_Updated_عمود(اظہاریہ*,صحیح*,صحیح);
+خالی sqlite3GenerateConstraintChecks(Parse*,جدول*,صحیح*,صحیح,صحیح,صحیح,صحیح,
+                                     u8,u8,صحیح,صحیح*,صحیح*,Upsert*);
+#اگر_تعریف_شدہ SQLITE_ENABLE_NULL_TRIM
+  خالی sqlite3_سیٹ_Make_ریکارڈ_P5(Vdbe*,جدول*);
+#ورنہ
+# define sqlite3_سیٹ_Make_ریکارڈ_P5(A,B)
+#اگر_ختم
+خالی sqlite3CompleteInsertion(Parse*,جدول*,صحیح,صحیح,صحیح,صحیح*,صحیح,صحیح,صحیح);
+صحیح sqlite3_Open_جدول_And_Indices(Parse*, جدول*, صحیح, u8, صحیح, u8*, صحیح*, صحیح*);
+خالی sqlite3BeginWriteOperation(Parse*, صحیح, صحیح);
+خالی sqlite3MultiWrite(Parse*);
+خالی sqlite3MayAbort(Parse*);
+خالی sqlite3HaltConstraint(Parse*, صحیح, صحیح, حرف*, i8, u8);
+خالی sqlite3UniqueConstraint(Parse*, صحیح, اشاریہ*);
+خالی sqlite3RowidConstraint(Parse*, صحیح, جدول*);
+اظہاریہ *sqlite3_اظہاریہ_Dup(sqlite3*,ثابت اظہاریہ*,صحیح);
+اظہاریہ_List *sqlite3_اظہاریہ_List_Dup(sqlite3*,ثابت اظہاریہ_List*,صحیح);
+SrcList *sqlite3SrcListDup(sqlite3*,ثابت SrcList*,صحیح);
+IdList *sqlite3IdListDup(sqlite3*,ثابت IdList*);
+Select *sqlite3SelectDup(sqlite3*,ثابت Select*,صحیح);
+FuncDef *sqlite3_Function_تلاش(صحیح,ثابت حرف*);
+خالی sqlite3_داخل_کرو_Builtin_Funcs(FuncDef*,صحیح);
+FuncDef *sqlite3_ڈھونڈو_Function(sqlite3*,ثابت حرف*,صحیح,u8,u8);
+خالی sqlite3_Quote_قدر(StrAccum*,sqlite3_قدر*,صحیح);
+صحیح sqlite3AppendOneUtf8Character(حرف*, u32);
+خالی sqlite3_رجسٹر_Builtin_Functions(خالی);
+خالی sqlite3_رجسٹر_Date_وقت_Functions(خالی);
+خالی sqlite3_رجسٹر_Json_Functions(خالی);
+خالی sqlite3_رجسٹر_فی_Connection_Builtin_Functions(sqlite3*);
+#اگر !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+  Module *sqlite3_Json_Vtab_رجسٹر(sqlite3*,ثابت حرف*);
+#اگر_ختم
+صحیح sqlite3SafetyCheckOk(sqlite3*);
+صحیح sqlite3SafetyCheckSickOrOk(sqlite3*);
+خالی sqlite3ChangeCookie(Parse*, صحیح);
 With *sqlite3WithDup(sqlite3 *db, With *p);
 
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
-  Module *sqlite3CarrayRegister(sqlite3*);
-#endif
+#اگر !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+  Module *sqlite3_Carray_رجسٹر(sqlite3*);
+#اگر_ختم
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
-#endif
+#اگر !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+خالی sqlite3MaterializeView(Parse*, جدول*, اظہاریہ*, اظہاریہ_List*,اظہاریہ*,صحیح);
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3BeginTrigger(Parse*, Token*,Token*,int,int,IdList*,SrcList*,
-                           Expr*,int, int);
-  void sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
-  void sqlite3DropTrigger(Parse*, SrcList*, int);
-  void sqlite3DropTriggerPtr(Parse*, Trigger*);
-  Trigger *sqlite3TriggersExist(Parse *, Table*, int, ExprList*, int *pMask);
-  Trigger *sqlite3TriggerList(Parse *, Table *);
-  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, ExprList*, int, Table *,
-                            int, int, int);
-  void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, int, int, int);
-  void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);
-  void sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
-  TriggerStep *sqlite3TriggerSelectStep(sqlite3*,Select*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerInsertStep(Parse*,SrcList*, IdList*,
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+  خالی sqlite3BeginTrigger(Parse*, Token*,Token*,صحیح,صحیح,IdList*,SrcList*,
+                           اظہاریہ*,صحیح, صحیح);
+  خالی sqlite3_اختتام_Trigger(Parse*, Trigger_قدم*, Token*);
+  خالی sqlite3DropTrigger(Parse*, SrcList*, صحیح);
+  خالی sqlite3DropTriggerPtr(Parse*, Trigger*);
+  Trigger *sqlite3TriggersExist(Parse *, جدول*, صحیح, اظہاریہ_List*, صحیح *p_نقاب);
+  Trigger *sqlite3TriggerList(Parse *, جدول *);
+  خالی sqlite3_رمز_صف_Trigger(Parse*, Trigger *, صحیح, اظہاریہ_List*, صحیح, جدول *,
+                            صحیح, صحیح, صحیح);
+  خالی sqlite3_رمز_صف_Trigger_براہ_راست(Parse *, Trigger *, جدول *, صحیح, صحیح, صحیح);
+  خالی sqliteViewTriggers(Parse*, جدول*, اظہاریہ*, صحیح, اظہاریہ_List*);
+  خالی sqlite3_Delete_Trigger_قدم(sqlite3*, Trigger_قدم*);
+  Trigger_قدم *sqlite3_Trigger_Select_قدم(sqlite3*,Select*,
+                                        ثابت حرف*,ثابت حرف*);
+  Trigger_قدم *sqlite3_Trigger_داخل_کرو_قدم(Parse*,SrcList*, IdList*,
                                         Select*,u8,Upsert*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,ExprList*,
-                                        Expr*, u8, const char*,const char*);
-  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, Expr*,
-                                        const char*,const char*);
-  void sqlite3DeleteTrigger(sqlite3*, Trigger*);
-  void sqlite3UnlinkAndDeleteTrigger(sqlite3*,int,const char*);
-  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,int,int,Table*,int);
+                                        ثابت حرف*,ثابت حرف*);
+  Trigger_قدم *sqlite3_Trigger_Update_قدم(Parse*,SrcList*,SrcList*,اظہاریہ_List*,
+                                        اظہاریہ*, u8, ثابت حرف*,ثابت حرف*);
+  Trigger_قدم *sqlite3_Trigger_Delete_قدم(Parse*,SrcList*, اظہاریہ*,
+                                        ثابت حرف*,ثابت حرف*);
+  خالی sqlite3DeleteTrigger(sqlite3*, Trigger*);
+  خالی sqlite3UnlinkAndDeleteTrigger(sqlite3*,صحیح,ثابت حرف*);
+  u32 sqlite3TriggerColmask(Parse*,Trigger*,اظہاریہ_List*,صحیح,صحیح,جدول*,صحیح);
 # define sqlite3ParseToplevel(p) ((p)->pToplevel ? (p)->pToplevel : (p))
 # define sqlite3IsToplevel(p) ((p)->pToplevel==0)
-#else
+#ورنہ
 # define sqlite3TriggersExist(B,C,D,E,F) 0
 # define sqlite3DeleteTrigger(A,B)
 # define sqlite3DropTriggerPtr(A,B)
 # define sqlite3UnlinkAndDeleteTrigger(A,B,C)
-# define sqlite3CodeRowTrigger(A,B,C,D,E,F,G,H,I)
-# define sqlite3CodeRowTriggerDirect(A,B,C,D,E,F)
+# define sqlite3_رمز_صف_Trigger(A,B,C,D,E,F,G,H,I)
+# define sqlite3_رمز_صف_Trigger_براہ_راست(A,B,C,D,E,F)
 # define sqlite3TriggerList(X, Y) 0
 # define sqlite3ParseToplevel(p) p
 # define sqlite3IsToplevel(p) 1
 # define sqlite3TriggerColmask(A,B,C,D,E,F,G) 0
-#endif
+#اگر_ختم
 
-int sqlite3JoinType(Parse*, Token*, Token*, Token*);
-int sqlite3ColumnIndex(Table *pTab, const char *zCol);
-void sqlite3SrcItemColumnUsed(SrcItem*,int);
-void sqlite3SetJoinExpr(Expr*,int,u32);
-void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, int);
-void sqlite3DeferForeignKey(Parse*, int);
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);
-  int sqlite3AuthCheck(Parse*,int, const char*, const char*, const char*);
-  void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
-  void sqlite3AuthContextPop(AuthContext*);
-  int sqlite3AuthReadCol(Parse*, const char *, const char *, int);
-#else
+صحیح sqlite3JoinType(Parse*, Token*, Token*, Token*);
+صحیح sqlite3_عمود_اشاریہ(جدول *pTab, ثابت حرف *z_ستون);
+خالی sqlite3_Src_شے_عمود_مستعمل(Src_شے*,صحیح);
+خالی sqlite3_سیٹ_Join_اظہاریہ(اظہاریہ*,صحیح,u32);
+خالی sqlite3_Create_Foreign_کلید(Parse*, اظہاریہ_List*, Token*, اظہاریہ_List*, صحیح);
+خالی sqlite3_Defer_Foreign_کلید(Parse*, صحیح);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTHORIZATION
+  خالی sqlite3AuthRead(Parse*,اظہاریہ*,Schema*,SrcList*);
+  صحیح sqlite3AuthCheck(Parse*,صحیح, ثابت حرف*, ثابت حرف*, ثابت حرف*);
+  خالی sqlite3_Auth_Context_ڈالو(Parse*, AuthContext*, ثابت حرف*);
+  خالی sqlite3_Auth_Context_نکالو(AuthContext*);
+  صحیح sqlite3_Auth_Read_ستون(Parse*, ثابت حرف *, ثابت حرف *, صحیح);
+#ورنہ
 # define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
-# define sqlite3AuthContextPush(a,b,c)
-# define sqlite3AuthContextPop(a)  ((void)(a))
-#endif
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName);
-void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);
-void sqlite3Detach(Parse*, Expr*);
-void sqlite3FixInit(DbFixer*, Parse*, int, const char*, const Token*);
-int sqlite3FixSrcList(DbFixer*, SrcList*);
-int sqlite3FixSelect(DbFixer*, Select*);
-int sqlite3FixExpr(DbFixer*, Expr*);
-int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
+# define sqlite3_Auth_Context_ڈالو(a,b,c)
+# define sqlite3_Auth_Context_نکالو(a)  ((خالی)(a))
+#اگر_ختم
+صحیح sqlite3DbIsNamed(sqlite3 *db, صحیح iDb, ثابت حرف *zName);
+خالی sqlite3Attach(Parse*, اظہاریہ*, اظہاریہ*, اظہاریہ*);
+خالی sqlite3Detach(Parse*, اظہاریہ*);
+خالی sqlite3FixInit(DbFixer*, Parse*, صحیح, ثابت حرف*, ثابت Token*);
+صحیح sqlite3FixSrcList(DbFixer*, SrcList*);
+صحیح sqlite3FixSelect(DbFixer*, Select*);
+صحیح sqlite3_Fix_اظہاریہ(DbFixer*, اظہاریہ*);
+صحیح sqlite3_Fix_Trigger_قدم(DbFixer*, Trigger_قدم*);
 
-int sqlite3RealSameAsInt(double,sqlite3_int64);
-i64 sqlite3RealToI64(double);
-int sqlite3Int64ToText(i64,char*);
-int sqlite3AtoF(const char *z, double*);
-int sqlite3GetInt32(const char *, int*);
-int sqlite3GetUInt32(const char*, u32*);
-int sqlite3Atoi(const char*);
-#ifndef SQLITE_OMIT_UTF16
-int sqlite3Utf16ByteLen(const void *pData, int nByte, int nChar);
-#endif
-int sqlite3Utf8CharLen(const char *pData, int nByte);
-u32 sqlite3Utf8Read(const u8**);
-int sqlite3Utf8ReadLimited(const u8*, int, u32*);
+صحیح sqlite3RealSameAsInt(دوہرا,sqlite3_int64);
+i64 sqlite3_Real_مقصد_I64(دوہرا);
+صحیح sqlite3_Int64_مقصد_متن(i64,حرف*);
+صحیح sqlite3AtoF(ثابت حرف *z, دوہرا*);
+صحیح sqlite3GetInt32(ثابت حرف *, صحیح*);
+صحیح sqlite3GetUInt32(ثابت حرف*, u32*);
+صحیح sqlite3Atoi(ثابت حرف*);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_UTF16
+صحیح sqlite3Utf16ByteLen(ثابت خالی *p_ڈیٹا, صحیح nByte, صحیح nChar);
+#اگر_ختم
+صحیح sqlite3Utf8CharLen(ثابت حرف *p_ڈیٹا, صحیح nByte);
+u32 sqlite3Utf8Read(ثابت u8**);
+صحیح sqlite3Utf8ReadLimited(ثابت u8*, صحیح, u32*);
 LogEst sqlite3LogEst(u64);
-LogEst sqlite3LogEstAdd(LogEst,LogEst);
-LogEst sqlite3LogEstFromDouble(double);
-u64 sqlite3LogEstToInt(LogEst);
-VList *sqlite3VListAdd(sqlite3*,VList*,const char*,int,int);
-const char *sqlite3VListNumToName(VList*,int);
-int sqlite3VListNameToNum(VList*,const char*,int);
+LogEst sqlite3_Log_Est_جوڑو(LogEst,LogEst);
+LogEst sqlite3LogEstFromDouble(دوہرا);
+u64 sqlite3_Log_Est_مقصد_Int(LogEst);
+VList *sqlite3_VList_جوڑو(sqlite3*,VList*,ثابت حرف*,صحیح,صحیح);
+ثابت حرف *sqlite3_VList_عدد_مقصد_Name(VList*,صحیح);
+صحیح sqlite3_VList_Name_مقصد_عدد(VList*,ثابت حرف*,صحیح);
 
 /*
 ** Routines to read and write variable-length integers.  These used to
 ** be defined locally, but now we use the varint routines in the util.c
 ** file.
 */
-int sqlite3PutVarint(unsigned char*, u64);
-u8 sqlite3GetVarint(const unsigned char *, u64 *);
-i64 sqlite3VarintValue(const unsigned char*);
-u8 sqlite3GetVarint32(const unsigned char *, u32 *);
-int sqlite3VarintLen(u64 v);
+صحیح sqlite3PutVarint(غیرعلامتی حرف*, u64);
+u8 sqlite3GetVarint(ثابت غیرعلامتی حرف *, u64 *);
+i64 sqlite3_Varint_قدر(ثابت غیرعلامتی حرف*);
+u8 sqlite3GetVarint32(ثابت غیرعلامتی حرف *, u32 *);
+صحیح sqlite3VarintLen(u64 v);
 
 /*
 ** The common case is for a varint to be a single byte.  They following
 ** macros handle the common case without a procedure call, but then call
 ** the procedure for larger varints.
 */
-#define getVarint32(A,B)  \
+#تعریف_کرو getVarint32(A,B)  \
   (u8)((*(A)<(u8)0x80)?((B)=(u32)*(A)),1:sqlite3GetVarint32((A),(u32 *)&(B)))
-#define getVarint32NR(A,B) \
-  B=(u32)*(A);if(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
-#define putVarint32(A,B)  \
-  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(unsigned char)(B)),1:\
+#تعریف_کرو getVarint32NR(A,B) \
+  B=(u32)*(A);اگر(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
+#تعریف_کرو putVarint32(A,B)  \
+  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(غیرعلامتی حرف)(B)),1:\
   sqlite3PutVarint((A),(B)))
 
-const char *sqlite3IndexAffinityStr(sqlite3*, Index*);
-char *sqlite3TableAffinityStr(sqlite3*,const Table*);
-void sqlite3TableAffinity(Vdbe*, Table*, int);
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2);
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
-char sqlite3TableColumnAffinity(const Table*,int);
-char sqlite3ExprAffinity(const Expr *pExpr);
-int sqlite3ExprDataType(const Expr *pExpr);
-int sqlite3Atoi64(const char*, i64*, int, u8);
-int sqlite3DecOrHexToI64(const char*, i64*);
-void sqlite3ErrorWithMsg(sqlite3*, int, const char*,...);
-void sqlite3Error(sqlite3*,int);
-void sqlite3ErrorClear(sqlite3*);
-void sqlite3SystemError(sqlite3*,int);
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
-void *sqlite3HexToBlob(sqlite3*, const char *z, int n);
-#endif
-u8 sqlite3HexToInt(int h);
-int sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
+ثابت حرف *sqlite3_اشاریہ_Affinity_Str(sqlite3*, اشاریہ*);
+حرف *sqlite3_جدول_Affinity_Str(sqlite3*,ثابت جدول*);
+خالی sqlite3_جدول_Affinity(Vdbe*, جدول*, صحیح);
+حرف sqlite3CompareAffinity(ثابت اظہاریہ *p_اظہاریہ, حرف aff2);
+صحیح sqlite3_اشاریہ_Affinity_Ok(ثابت اظہاریہ *p_اظہاریہ, حرف idx_affinity);
+حرف sqlite3_جدول_عمود_Affinity(ثابت جدول*,صحیح);
+حرف sqlite3_اظہاریہ_Affinity(ثابت اظہاریہ *p_اظہاریہ);
+صحیح sqlite3_اظہاریہ_ڈیٹا_Type(ثابت اظہاریہ *p_اظہاریہ);
+صحیح sqlite3Atoi64(ثابت حرف*, i64*, صحیح, u8);
+صحیح sqlite3_Dec_Or_Hex_مقصد_I64(ثابت حرف*, i64*);
+خالی sqlite3_Error_With_پیغام(sqlite3*, صحیح, ثابت حرف*,...);
+خالی sqlite3Error(sqlite3*,صحیح);
+خالی sqlite3ErrorClear(sqlite3*);
+خالی sqlite3SystemError(sqlite3*,صحیح);
+#اگر !defined(SQLITE_OMIT_BLOB_LITERAL)
+خالی *sqlite3_Hex_مقصد_Blob(sqlite3*, ثابت حرف *z, صحیح n);
+#اگر_ختم
+u8 sqlite3_Hex_مقصد_Int(صحیح h);
+صحیح sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
 
-#if defined(SQLITE_NEED_ERR_NAME)
-const char *sqlite3ErrName(int);
-#endif
+#اگر defined(SQLITE_NEED_ERR_NAME)
+ثابت حرف *sqlite3ErrName(صحیح);
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_DESERIALIZE
-int sqlite3MemdbInit(void);
-int sqlite3IsMemdb(const sqlite3_vfs*);
-#else
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DESERIALIZE
+صحیح sqlite3MemdbInit(خالی);
+صحیح sqlite3IsMemdb(ثابت sqlite3_vfs*);
+#ورنہ
 # define sqlite3IsMemdb(X) 0
-#endif
+#اگر_ختم
 
-const char *sqlite3ErrStr(int);
-int sqlite3ReadSchema(Parse *pParse);
-CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,int);
-int sqlite3BinaryCompare(void*,int,const void*,int,const void*);
-#if SQLITE_USES_INLINE
-static SQLITE_INLINE int sqlite3IsBinary(const CollSeq *p){
-  assert( p==0 || p->xCmp!=sqlite3BinaryCompare
+ثابت حرف *sqlite3ErrStr(صحیح);
+صحیح sqlite3ReadSchema(Parse *pParse);
+CollSeq *sqlite3_ڈھونڈو_Coll_Seq(sqlite3*,u8 enc, ثابت حرف*,صحیح);
+صحیح sqlite3_ثنائی_Compare(خالی*,صحیح,ثابت خالی*,صحیح,ثابت خالی*);
+#اگر SQLITE_استعمال_کرتا_INLINE
+ساکن SQLITE_INLINE صحیح sqlite3_Is_ثنائی(ثابت CollSeq *p){
+  أكد( p==0 || p->xCmp!=sqlite3_ثنائی_Compare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  واپس p==0 || p->xCmp==sqlite3_ثنائی_Compare;
 }
-#else
-int sqlite3IsBinary(const CollSeq*);
-#endif
-CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char*zName);
-void sqlite3SetTextEncoding(sqlite3 *db, u8);
-CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr);
-CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr);
-int sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
-Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, int);
-Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);
-Expr *sqlite3ExprSkipCollate(Expr*);
-Expr *sqlite3ExprSkipCollateAndLikely(Expr*);
-int sqlite3CheckCollSeq(Parse *, CollSeq *);
-int sqlite3WritableSchema(sqlite3*);
-int sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
-void sqlite3VdbeSetChanges(sqlite3 *, i64);
-int sqlite3AddInt64(i64*,i64);
-int sqlite3SubInt64(i64*,i64);
-int sqlite3MulInt64(i64*,i64);
-int sqlite3AbsInt32(int);
-#ifdef SQLITE_ENABLE_8_3_NAMES
-void sqlite3FileSuffix3(const char*, char*);
-#else
+#ورنہ
+صحیح sqlite3_Is_ثنائی(ثابت CollSeq*);
+#اگر_ختم
+CollSeq *sqlite3LocateCollSeq(Parse *pParse, ثابت حرف*zName);
+خالی sqlite3_سیٹ_متن_Encoding(sqlite3 *db, u8);
+CollSeq *sqlite3_اظہاریہ_Coll_Seq(Parse *pParse, ثابت اظہاریہ *p_اظہاریہ);
+CollSeq *sqlite3_اظہاریہ_NNColl_Seq(Parse *pParse, ثابت اظہاریہ *p_اظہاریہ);
+صحیح sqlite3_اظہاریہ_Coll_Seq_مطابقت(Parse*,ثابت اظہاریہ*,ثابت اظہاریہ*);
+اظہاریہ *sqlite3_اظہاریہ_جوڑو_Collate_Token(Parse *pParse, اظہاریہ*, ثابت Token*, صحیح);
+اظہاریہ *sqlite3_اظہاریہ_جوڑو_Collate_String(Parse*,اظہاریہ*,ثابت حرف*);
+اظہاریہ *sqlite3_اظہاریہ_Skip_Collate(اظہاریہ*);
+اظہاریہ *sqlite3_اظہاریہ_Skip_Collate_And_Likely(اظہاریہ*);
+صحیح sqlite3CheckCollSeq(Parse *, CollSeq *);
+صحیح sqlite3WritableSchema(sqlite3*);
+صحیح sqlite3CheckObjectName(Parse*, ثابت حرف*,ثابت حرف*,ثابت حرف*);
+خالی sqlite3_Vdbe_سیٹ_Changes(sqlite3 *, i64);
+صحیح sqlite3_جوڑو_Int64(i64*,i64);
+صحیح sqlite3SubInt64(i64*,i64);
+صحیح sqlite3MulInt64(i64*,i64);
+صحیح sqlite3AbsInt32(صحیح);
+#اگر_تعریف_شدہ SQLITE_ENABLE_8_3_نام
+خالی sqlite3FileSuffix3(ثابت حرف*, حرف*);
+#ورنہ
 # define sqlite3FileSuffix3(X,Y)
-#endif
-u8 sqlite3GetBoolean(const char *z,u8);
+#اگر_ختم
+u8 sqlite3GetBoolean(ثابت حرف *z,u8);
 
-const void *sqlite3ValueText(sqlite3_value*, u8);
-int sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
-int sqlite3ValueBytes(sqlite3_value*, u8);
-void sqlite3ValueSetStr(sqlite3_value*, int, const void *,u8,
-                        void(*)(void*));
-void sqlite3ValueSetNull(sqlite3_value*);
-void sqlite3ValueFree(sqlite3_value*);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3ResultIntReal(sqlite3_context*);
-#endif
-sqlite3_value *sqlite3ValueNew(sqlite3 *);
-#ifndef SQLITE_OMIT_UTF16
-char *sqlite3Utf16to8(sqlite3 *, const void*, int, u8);
-#endif
-int sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
-void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
-#ifndef SQLITE_AMALGAMATION
-extern const unsigned char sqlite3OpcodeProperty[];
-extern const char sqlite3StrBINARY[];
-extern const unsigned char sqlite3StdTypeLen[];
-extern const char sqlite3StdTypeAffinity[];
-extern const char *sqlite3StdType[];
-extern const unsigned char sqlite3UpperToLower[];
-extern const unsigned char *sqlite3aLTb;
-extern const unsigned char *sqlite3aEQb;
-extern const unsigned char *sqlite3aGTb;
-extern const unsigned char sqlite3CtypeMap[];
-extern SQLITE_WSD struct Sqlite3Config sqlite3Config;
-extern FuncDefHash sqlite3BuiltinFunctions;
-extern const sqlite3_str sqlite3OomStr;
-#ifndef SQLITE_OMIT_WSD
-extern int sqlite3PendingByte;
-#endif
-#endif /* SQLITE_AMALGAMATION */
-#ifdef VDBE_PROFILE
-extern sqlite3_uint64 sqlite3NProfileCnt;
-#endif
-void sqlite3RootPageMoved(sqlite3*, int, Pgno, Pgno);
-void sqlite3Reindex(Parse*, Token*, Token*);
-void sqlite3AlterFunctions(void);
-void sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
-void sqlite3AlterRenameColumn(Parse*, SrcList*, Token*, Token*);
-void sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
-void sqlite3AlterAddConstraint(
+ثابت خالی *sqlite3_قدر_متن_2(sqlite3_قدر*, u8);
+صحیح sqlite3_قدر_Is_کا_Class(ثابت sqlite3_قدر*, خالی(*)(خالی*));
+صحیح sqlite3_قدر_بائٹیں_2(sqlite3_قدر*, u8);
+خالی sqlite3_قدر_سیٹ_Str(sqlite3_قدر*, صحیح, ثابت خالی *,u8,
+                        خالی(*)(خالی*));
+خالی sqlite3_قدر_سیٹ_Null(sqlite3_قدر*);
+خالی sqlite3_قدر_Free(sqlite3_قدر*);
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+خالی sqlite3_نتیجہ_Int_Real(sqlite3_context*);
+#اگر_ختم
+sqlite3_قدر *sqlite3_قدر_New(sqlite3 *);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_UTF16
+حرف *sqlite3Utf16to8(sqlite3 *, ثابت خالی*, صحیح, u8);
+#اگر_ختم
+صحیح sqlite3_قدر_From_اظہاریہ(sqlite3 *, ثابت اظہاریہ *, u8, u8, sqlite3_قدر **);
+خالی sqlite3_قدر_Apply_Affinity(sqlite3_قدر *, u8, u8);
+#اگر_غیر_تعریف_شدہ SQLITE_AMALGAMATION
+خارجی ثابت غیرعلامتی حرف sqlite3OpcodeProperty[];
+خارجی ثابت حرف sqlite3_Str_ثنائی[];
+خارجی ثابت غیرعلامتی حرف sqlite3StdTypeLen[];
+خارجی ثابت حرف sqlite3StdTypeAffinity[];
+خارجی ثابت حرف *sqlite3StdType[];
+خارجی ثابت غیرعلامتی حرف sqlite3_بالائی_مقصد_زیریں[];
+خارجی ثابت غیرعلامتی حرف *sqlite3aLTb;
+خارجی ثابت غیرعلامتی حرف *sqlite3aEQb;
+خارجی ثابت غیرعلامتی حرف *sqlite3aGTb;
+خارجی ثابت غیرعلامتی حرف sqlite3CtypeMap[];
+خارجی SQLITE_WSD ساخت Sqlite3Config sqlite3Config;
+خارجی FuncDefHash sqlite3BuiltinFunctions;
+خارجی ثابت sqlite3_str sqlite3OomStr;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WSD
+خارجی صحیح sqlite3PendingByte;
+#اگر_ختم
+#اگر_ختم /* SQLITE_AMALGAMATION */
+#اگر_تعریف_شدہ VDBE_PROFILE
+خارجی sqlite3_uint64 sqlite3NProfileCnt;
+#اگر_ختم
+خالی sqlite3_جڑ_صفحہ_Moved(sqlite3*, صحیح, Pgno, Pgno);
+خالی sqlite3Reindex(Parse*, Token*, Token*);
+خالی sqlite3AlterFunctions(خالی);
+خالی sqlite3_Alter_Rename_جدول(Parse*, SrcList*, Token*);
+خالی sqlite3_Alter_Rename_عمود(Parse*, SrcList*, Token*, Token*);
+خالی sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
+خالی sqlite3_Alter_جوڑو_Constraint(
   Parse *pParse,           /* Parse context */
   SrcList *pSrc,           /* Table to add constraint to */
-  Token *pFirst,           /* First token of new constraint */
+  Token *p_پہلا,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  ثابت حرف *z_اظہاریہ,       /* Text of CHECK expression */
+  صحیح n_اظہاریہ,               /* Size of pExpr in bytes */
+  اظہاریہ *p_اظہاریہ              /* The parsed CHECK expression */
 );
-void sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
-i64 sqlite3GetToken(const unsigned char *, int *);
-void sqlite3NestedParse(Parse*, const char*, ...);
-void sqlite3ExpirePreparedStatements(sqlite3*, int);
-void sqlite3CodeRhsOfIN(Parse*, Expr*, int, int);
-int sqlite3CodeSubselect(Parse*, Expr*);
-void sqlite3SelectPrep(Parse*, Select*, NameContext*);
-int sqlite3ExpandSubquery(Parse*, SrcItem*);
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p);
-int sqlite3MatchEName(
-  const struct ExprList_item*,
-  const char*,
-  const char*,
-  const char*,
-  int*
+خالی sqlite3_Alter_سیٹ_Not_Null(Parse*, SrcList*, Token*, Token*);
+i64 sqlite3GetToken(ثابت غیرعلامتی حرف *, صحیح *);
+خالی sqlite3NestedParse(Parse*, ثابت حرف*, ...);
+خالی sqlite3ExpirePreparedStatements(sqlite3*, صحیح);
+خالی sqlite3_رمز_Rhs_کا_اندر(Parse*, اظہاریہ*, صحیح, صحیح);
+صحیح sqlite3_رمز_Subselect(Parse*, اظہاریہ*);
+خالی sqlite3SelectPrep(Parse*, Select*, NameContext*);
+صحیح sqlite3ExpandSubquery(Parse*, Src_شے*);
+خالی sqlite3_Select_Wrong_عدد_Terms_Error(Parse *pParse, Select *p);
+صحیح sqlite3_مطابقت_EName(
+  ثابت ساخت اظہاریہ_List_شے*,
+  ثابت حرف*,
+  ثابت حرف*,
+  ثابت حرف*,
+  صحیح*
 );
-Bitmask sqlite3ExprColUsed(Expr*);
-u8 sqlite3StrIHash(const char*);
-int sqlite3ResolveExprNames(NameContext*, Expr*);
-int sqlite3ResolveExprListNames(NameContext*, ExprList*);
-void sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
-int sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);
-int sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
-void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
-void sqlite3AlterFinishAddColumn(Parse *, Token *);
-void sqlite3AlterBeginAddColumn(Parse *, SrcList *);
-void sqlite3AlterDropColumn(Parse*, SrcList*, const Token*);
-const void *sqlite3RenameTokenMap(Parse*, const void*, const Token*);
-void sqlite3RenameTokenRemap(Parse*, const void *pTo, const void *pFrom);
-void sqlite3RenameExprUnmap(Parse*, Expr*);
-void sqlite3RenameExprlistUnmap(Parse*, ExprList*);
-CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, const char*);
-char sqlite3AffinityType(const char*, Column*);
-void sqlite3Analyze(Parse*, Token*, Token*);
-int sqlite3InvokeBusyHandler(BusyHandler*);
-int sqlite3FindDb(sqlite3*, Token*);
-int sqlite3FindDbName(sqlite3 *, const char *);
-int sqlite3AnalysisLoad(sqlite3*,int iDB);
-void sqlite3DeleteIndexSamples(sqlite3*,Index*);
-void sqlite3DefaultRowEst(Index*);
-void sqlite3RegisterLikeFunctions(sqlite3*, int);
-int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);
-void sqlite3SchemaClear(void *);
+Bitmask sqlite3_اظہاریہ_ستون_مستعمل(اظہاریہ*);
+u8 sqlite3StrIHash(ثابت حرف*);
+صحیح sqlite3_Resolve_اظہاریہ_نام(NameContext*, اظہاریہ*);
+صحیح sqlite3_Resolve_اظہاریہ_List_نام(NameContext*, اظہاریہ_List*);
+خالی sqlite3_Resolve_Select_نام(Parse*, Select*, NameContext*);
+صحیح sqlite3ResolveSelfReference(Parse*,جدول*,صحیح,اظہاریہ*,اظہاریہ_List*);
+صحیح sqlite3_Resolve_ترتیب_گروہ_By(Parse*, Select*, اظہاریہ_List*, ثابت حرف*);
+خالی sqlite3_عمود_Default(Vdbe *, جدول *, صحیح, صحیح);
+خالی sqlite3_Alter_اختتام_جوڑو_عمود(Parse *, Token *);
+خالی sqlite3_Alter_Begin_جوڑو_عمود(Parse *, SrcList *);
+خالی sqlite3_Alter_Drop_عمود(Parse*, SrcList*, ثابت Token*);
+ثابت خالی *sqlite3RenameTokenMap(Parse*, ثابت خالی*, ثابت Token*);
+خالی sqlite3RenameTokenRemap(Parse*, ثابت خالی *p_مقصد, ثابت خالی *pFrom);
+خالی sqlite3_Rename_اظہاریہ_Unmap(Parse*, اظہاریہ*);
+خالی sqlite3RenameExprlistUnmap(Parse*, اظہاریہ_List*);
+CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, ثابت حرف*);
+حرف sqlite3AffinityType(ثابت حرف*, عمود*);
+خالی sqlite3Analyze(Parse*, Token*, Token*);
+صحیح sqlite3InvokeBusyHandler(BusyHandler*);
+صحیح sqlite3_ڈھونڈو_Db(sqlite3*, Token*);
+صحیح sqlite3_ڈھونڈو_Db_Name(sqlite3 *, ثابت حرف *);
+صحیح sqlite3_Analysis_بھرو(sqlite3*,صحیح iDB);
+خالی sqlite3_Delete_اشاریہ_Samples(sqlite3*,اشاریہ*);
+خالی sqlite3_Default_صف_Est(اشاریہ*);
+خالی sqlite3_رجسٹر_Like_Functions(sqlite3*, صحیح);
+صحیح sqlite3IsLikeFunction(sqlite3*,اظہاریہ*,صحیح*,حرف*);
+خالی sqlite3SchemaClear(خالی *);
 Schema *sqlite3SchemaGet(sqlite3 *, Btree *);
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *);
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,int,int);
-void sqlite3KeyInfoUnref(KeyInfo*);
-KeyInfo *sqlite3KeyInfoRef(KeyInfo*);
-KeyInfo *sqlite3KeyInfoOfIndex(Parse*, Index*);
-KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, int, int);
-const char *sqlite3SelectOpName(int);
-int sqlite3HasExplicitNulls(Parse*, ExprList*);
+صحیح sqlite3_Schema_مقصد_اشاریہ(sqlite3 *db, Schema *);
+کلید_Info *sqlite3_کلید_Info_Alloc(sqlite3*,صحیح,صحیح);
+خالی sqlite3_کلید_Info_Unref(کلید_Info*);
+کلید_Info *sqlite3_کلید_Info_Ref(کلید_Info*);
+کلید_Info *sqlite3_کلید_Info_کا_اشاریہ(Parse*, اشاریہ*);
+کلید_Info *sqlite3_کلید_Info_From_اظہاریہ_List(Parse*, اظہاریہ_List*, صحیح, صحیح);
+ثابت حرف *sqlite3SelectOpName(صحیح);
+صحیح sqlite3HasExplicitNulls(Parse*, اظہاریہ_List*);
 
-#ifdef SQLITE_DEBUG
-int sqlite3KeyInfoIsWriteable(KeyInfo*);
-#endif
-int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+#اگر_تعریف_شدہ SQLITE_DEBUG
+صحیح sqlite3_کلید_Info_Is_Writeable(کلید_Info*);
+#اگر_ختم
+صحیح sqlite3CreateFunc(sqlite3 *, ثابت حرف *, صحیح, صحیح, خالی *,
+  خالی (*)(sqlite3_context*,صحیح,sqlite3_قدر **),
+  خالی (*)(sqlite3_context*,صحیح,sqlite3_قدر **),
+  خالی (*)(sqlite3_context*),
+  خالی (*)(sqlite3_context*),
+  خالی (*)(sqlite3_context*,صحیح,sqlite3_قدر **),
   FuncDestructor *pDestructor
 );
-void sqlite3NoopDestructor(void*);
-void *sqlite3OomFault(sqlite3*);
-void sqlite3OomClear(sqlite3*);
-int sqlite3ApiExit(sqlite3 *db, int);
-int sqlite3OpenTempDatabase(Parse *);
+خالی sqlite3NoopDestructor(خالی*);
+خالی *sqlite3OomFault(sqlite3*);
+خالی sqlite3OomClear(sqlite3*);
+صحیح sqlite3ApiExit(sqlite3 *db, صحیح);
+صحیح sqlite3_Open_عارضی_Database(Parse *);
 
-char *sqlite3RCStrRef(char*);
-void sqlite3RCStrUnref(void*);
-char *sqlite3RCStrNew(u64);
-char *sqlite3RCStrResize(char*,u64);
+حرف *sqlite3RCStrRef(حرف*);
+خالی sqlite3RCStrUnref(خالی*);
+حرف *sqlite3RCStrNew(u64);
+حرف *sqlite3RCStrResize(حرف*,u64);
 
-void sqlite3StrAccumInit(StrAccum*, sqlite3*, char*, int, int);
-int sqlite3StrAccumEnlarge(StrAccum*, i64);
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
-char *sqlite3StrAccumFinish(StrAccum*);
-void sqlite3StrAccumSetError(StrAccum*, u8);
-void sqlite3SelectDestInit(SelectDest*,int,int);
-Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);
-void sqlite3RecordErrorByteOffset(sqlite3*,const char*);
-void sqlite3RecordErrorOffsetOfExpr(sqlite3*,const Expr*);
+خالی sqlite3StrAccumInit(StrAccum*, sqlite3*, حرف*, صحیح, صحیح);
+صحیح sqlite3StrAccumEnlarge(StrAccum*, i64);
+صحیح sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
+حرف *sqlite3_Str_Accum_اختتام(StrAccum*);
+خالی sqlite3_Str_Accum_سیٹ_Error(StrAccum*, u8);
+خالی sqlite3SelectDestInit(SelectDest*,صحیح,صحیح);
+اظہاریہ *sqlite3_Create_عمود_اظہاریہ(sqlite3 *, SrcList *, صحیح, صحیح);
+خالی sqlite3_ریکارڈ_Error_Byte_انحراف(sqlite3*,ثابت حرف*);
+خالی sqlite3_ریکارڈ_Error_انحراف_کا_اظہاریہ(sqlite3*,ثابت اظہاریہ*);
 
-void sqlite3BackupRestart(sqlite3_backup *);
-void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
+خالی sqlite3BackupRestart(sqlite3_backup *);
+خالی sqlite3BackupUpdate(sqlite3_backup *, Pgno, ثابت u8 *);
 
-#ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3ExprCheckIN(Parse*, Expr*);
-#else
-# define sqlite3ExprCheckIN(x,y) SQLITE_OK
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+صحیح sqlite3_اظہاریہ_Check_اندر(Parse*, اظہاریہ*);
+#ورنہ
+# define sqlite3_اظہاریہ_Check_اندر(x,y) SQLITE_OK
+#اگر_ختم
 
-#ifdef SQLITE_ENABLE_STAT4
-int sqlite3Stat4ProbeSetValue(
-    Parse*,Index*,UnpackedRecord**,Expr*,int,int,int*);
-int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
-void sqlite3Stat4ProbeFree(UnpackedRecord*);
-int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_value**);
-char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
-#endif
+#اگر_تعریف_شدہ SQLITE_ENABLE_STAT4
+صحیح sqlite3_Stat4_Probe_سیٹ_قدر(
+    Parse*,اشاریہ*,Unpacked_ریکارڈ**,اظہاریہ*,صحیح,صحیح,صحیح*);
+صحیح sqlite3_Stat4_قدر_From_اظہاریہ(Parse*, اظہاریہ*, u8, sqlite3_قدر**);
+خالی sqlite3Stat4ProbeFree(Unpacked_ریکارڈ*);
+صحیح sqlite3_Stat4_عمود(sqlite3*, ثابت خالی*, صحیح, صحیح, sqlite3_قدر**);
+حرف sqlite3_اشاریہ_عمود_Affinity(sqlite3*, اشاریہ*, صحیح);
+#اگر_ختم
 
 /*
 ** The interface to the LEMON-generated parser
 */
-#ifndef SQLITE_AMALGAMATION
-  void *sqlite3ParserAlloc(void*(*)(u64), Parse*);
-  void sqlite3ParserFree(void*, void(*)(void*));
-#endif
-void sqlite3Parser(void*, int, Token);
-int sqlite3ParserFallback(int);
-#ifdef YYTRACKMAXSTACKDEPTH
-  int sqlite3ParserStackPeak(void*);
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_AMALGAMATION
+  خالی *sqlite3ParserAlloc(خالی*(*)(u64), Parse*);
+  خالی sqlite3ParserFree(خالی*, خالی(*)(خالی*));
+#اگر_ختم
+خالی sqlite3Parser(خالی*, صحیح, Token);
+صحیح sqlite3ParserFallback(صحیح);
+#اگر_تعریف_شدہ YYTRACKMAXSTACKDEPTH
+  صحیح sqlite3_Parser_ڈھیر_Peak(خالی*);
+#اگر_ختم
 
-void sqlite3AutoLoadExtensions(sqlite3*);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-  void sqlite3CloseExtensions(sqlite3*);
-#else
+خالی sqlite3_Auto_بھرو_Extensions(sqlite3*);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_بھرو_EXTENSION
+  خالی sqlite3CloseExtensions(sqlite3*);
+#ورنہ
 # define sqlite3CloseExtensions(X)
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3TableLock(Parse *, int, Pgno, u8, const char *);
-#else
-  #define sqlite3TableLock(v,w,x,y,z)
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SHARED_CACHE
+  خالی sqlite3_جدول_تالا(Parse *, صحیح, Pgno, u8, ثابت حرف *);
+#ورنہ
+  #تعریف_کرو sqlite3_جدول_تالا(v,w,x,y,z)
+#اگر_ختم
 
-#ifdef SQLITE_TEST
-  int sqlite3Utf8To8(unsigned char*);
-#endif
+#اگر_تعریف_شدہ SQLITE_TEST
+  صحیح sqlite3Utf8To8(غیرعلامتی حرف*);
+#اگر_ختم
 
-#ifdef SQLITE_OMIT_VIRTUALTABLE
+#اگر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
 #  define sqlite3VtabClear(D,T)
 #  define sqlite3VtabSync(X,Y) SQLITE_OK
 #  define sqlite3VtabRollback(X)
 #  define sqlite3VtabCommit(X)
-#  define sqlite3VtabInSync(db) 0
-#  define sqlite3VtabLock(X)
+#  define sqlite3_Vtab_اندر_Sync(db) 0
+#  define sqlite3_Vtab_تالا(X)
 #  define sqlite3VtabUnlock(X)
 #  define sqlite3VtabModuleUnref(D,X)
 #  define sqlite3VtabUnlockList(X)
 #  define sqlite3VtabSavepoint(X, Y, Z) SQLITE_OK
 #  define sqlite3GetVTable(X,Y)  ((VTable*)0)
-#else
-   void sqlite3VtabClear(sqlite3 *db, Table*);
-   void sqlite3VtabDisconnect(sqlite3 *db, Table *p);
-   int sqlite3VtabSync(sqlite3 *db, Vdbe*);
-   int sqlite3VtabRollback(sqlite3 *db);
-   int sqlite3VtabCommit(sqlite3 *db);
-   void sqlite3VtabLock(VTable *);
-   void sqlite3VtabUnlock(VTable *);
-   void sqlite3VtabModuleUnref(sqlite3*,Module*);
-   void sqlite3VtabUnlockList(sqlite3*);
-   int sqlite3VtabSavepoint(sqlite3 *, int, int);
-   void sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
-   VTable *sqlite3GetVTable(sqlite3*, Table*);
+#ورنہ
+   خالی sqlite3VtabClear(sqlite3 *db, جدول*);
+   خالی sqlite3VtabDisconnect(sqlite3 *db, جدول *p);
+   صحیح sqlite3VtabSync(sqlite3 *db, Vdbe*);
+   صحیح sqlite3VtabRollback(sqlite3 *db);
+   صحیح sqlite3VtabCommit(sqlite3 *db);
+   خالی sqlite3_Vtab_تالا(VTable *);
+   خالی sqlite3VtabUnlock(VTable *);
+   خالی sqlite3VtabModuleUnref(sqlite3*,Module*);
+   خالی sqlite3VtabUnlockList(sqlite3*);
+   صحیح sqlite3VtabSavepoint(sqlite3 *, صحیح, صحیح);
+   خالی sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
+   VTable *sqlite3GetVTable(sqlite3*, جدول*);
    Module *sqlite3VtabCreateModule(
      sqlite3*,
-     const char*,
-     const sqlite3_module*,
-     void*,
-     void(*)(void*)
+     ثابت حرف*,
+     ثابت sqlite3_module*,
+     خالی*,
+     خالی(*)(خالی*)
    );
-#  define sqlite3VtabInSync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
-#endif
-int sqlite3ReadOnlyShadowTables(sqlite3 *db);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int sqlite3ShadowTableName(sqlite3 *db, const char *zName);
-  int sqlite3IsShadowTableOf(sqlite3*,Table*,const char*);
-  void sqlite3MarkAllShadowTablesOf(sqlite3*, Table*);
-  void sqlite3VtabEponymousTableClearAll(sqlite3*);
-#else
-# define sqlite3ShadowTableName(A,B) 0
-# define sqlite3IsShadowTableOf(A,B,C) 0
-# define sqlite3MarkAllShadowTablesOf(A,B)
-# define sqlite3VtabEponymousTableClearAll(X)
-#endif
-int sqlite3VtabEponymousTableInit(Parse*,Module*);
-void sqlite3VtabEponymousTableClear(sqlite3*,Module*);
-void sqlite3VtabMakeWritable(Parse*,Table*);
-void sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, int);
-void sqlite3VtabFinishParse(Parse*, Token*);
-void sqlite3VtabArgInit(Parse*);
-void sqlite3VtabArgExtend(Parse*, Token*);
-int sqlite3VtabCallCreate(sqlite3*, int, const char *, char **);
-int sqlite3VtabCallConnect(Parse*, Table*);
-int sqlite3VtabCallDestroy(sqlite3*, int, const char *);
-int sqlite3VtabBegin(sqlite3 *, VTable *);
+#  define sqlite3_Vtab_اندر_Sync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
+#اگر_ختم
+صحیح sqlite3ReadOnlyShadowTables(sqlite3 *db);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  صحیح sqlite3_Shadow_جدول_Name(sqlite3 *db, ثابت حرف *zName);
+  صحیح sqlite3_Is_Shadow_جدول_کا(sqlite3*,جدول*,ثابت حرف*);
+  خالی sqlite3_Mark_All_Shadow_Tables_کا(sqlite3*, جدول*);
+  خالی sqlite3_Vtab_Eponymous_جدول_Clear_All(sqlite3*);
+#ورنہ
+# define sqlite3_Shadow_جدول_Name(A,B) 0
+# define sqlite3_Is_Shadow_جدول_کا(A,B,C) 0
+# define sqlite3_Mark_All_Shadow_Tables_کا(A,B)
+# define sqlite3_Vtab_Eponymous_جدول_Clear_All(X)
+#اگر_ختم
+صحیح sqlite3_Vtab_Eponymous_جدول_Init(Parse*,Module*);
+خالی sqlite3_Vtab_Eponymous_جدول_Clear(sqlite3*,Module*);
+خالی sqlite3VtabMakeWritable(Parse*,جدول*);
+خالی sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, صحیح);
+خالی sqlite3_Vtab_اختتام_Parse(Parse*, Token*);
+خالی sqlite3VtabArgInit(Parse*);
+خالی sqlite3VtabArgExtend(Parse*, Token*);
+صحیح sqlite3VtabCallCreate(sqlite3*, صحیح, ثابت حرف *, حرف **);
+صحیح sqlite3VtabCallConnect(Parse*, جدول*);
+صحیح sqlite3VtabCallDestroy(sqlite3*, صحیح, ثابت حرف *);
+صحیح sqlite3VtabBegin(sqlite3 *, VTable *);
 
-FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);
-void sqlite3VtabUsesAllSchemas(Parse*);
-sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context*);
-int sqlite3VdbeParameterIndex(Vdbe*, const char*, int);
-int sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
-void sqlite3ParseObjectInit(Parse*,sqlite3*);
-void sqlite3ParseObjectReset(Parse*);
-void *sqlite3ParserAddCleanup(Parse*,void(*)(sqlite3*,void*),void*);
-#ifdef SQLITE_ENABLE_NORMALIZE
-char *sqlite3Normalize(Vdbe*, const char*);
-#endif
-int sqlite3Reprepare(Vdbe*);
-void sqlite3ExprListCheckLength(Parse*, ExprList*, const char*);
-CollSeq *sqlite3ExprCompareCollSeq(Parse*,const Expr*);
-CollSeq *sqlite3BinaryCompareCollSeq(Parse *, const Expr*, const Expr*);
-int sqlite3TempInMemory(const sqlite3*);
-const char *sqlite3JournalModename(int);
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3Checkpoint(sqlite3*, int, int, int*, int*);
-  int sqlite3WalDefaultHook(void*,sqlite3*,const char*,int);
-#endif
-#ifndef SQLITE_OMIT_CTE
-  Cte *sqlite3CteNew(Parse*,Token*,ExprList*,Select*,u8);
-  void sqlite3CteDelete(sqlite3*,Cte*);
-  With *sqlite3WithAdd(Parse*,With*,Cte*);
-  void sqlite3WithDelete(sqlite3*,With*);
-  void sqlite3WithDeleteGeneric(sqlite3*,void*);
-  With *sqlite3WithPush(Parse*, With*, u8);
-#else
-# define sqlite3CteNew(P,T,E,S)   ((void*)0)
+FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, صحیح nArg, اظہاریہ*);
+خالی sqlite3_Vtab_استعمال_کرتا_All_Schemas(Parse*);
+sqlite3_int64 sqlite3_Stmt_Current_وقت(sqlite3_context*);
+صحیح sqlite3_Vdbe_Parameter_اشاریہ(Vdbe*, ثابت حرف*, صحیح);
+صحیح sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
+خالی sqlite3ParseObjectInit(Parse*,sqlite3*);
+خالی sqlite3ParseObjectReset(Parse*);
+خالی *sqlite3_Parser_جوڑو_Cleanup(Parse*,خالی(*)(sqlite3*,خالی*),خالی*);
+#اگر_تعریف_شدہ SQLITE_ENABLE_NORMALIZE
+حرف *sqlite3Normalize(Vdbe*, ثابت حرف*);
+#اگر_ختم
+صحیح sqlite3Reprepare(Vdbe*);
+خالی sqlite3_اظہاریہ_List_Check_لمبائی(Parse*, اظہاریہ_List*, ثابت حرف*);
+CollSeq *sqlite3_اظہاریہ_Compare_Coll_Seq(Parse*,ثابت اظہاریہ*);
+CollSeq *sqlite3_ثنائی_Compare_Coll_Seq(Parse *, ثابت اظہاریہ*, ثابت اظہاریہ*);
+صحیح sqlite3_عارضی_اندر_حافظہ(ثابت sqlite3*);
+ثابت حرف *sqlite3JournalModename(صحیح);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
+  صحیح sqlite3Checkpoint(sqlite3*, صحیح, صحیح, صحیح*, صحیح*);
+  صحیح sqlite3WalDefaultHook(خالی*,sqlite3*,ثابت حرف*,صحیح);
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CTE
+  Cte *sqlite3CteNew(Parse*,Token*,اظہاریہ_List*,Select*,u8);
+  خالی sqlite3CteDelete(sqlite3*,Cte*);
+  With *sqlite3_With_جوڑو(Parse*,With*,Cte*);
+  خالی sqlite3WithDelete(sqlite3*,With*);
+  خالی sqlite3WithDeleteGeneric(sqlite3*,خالی*);
+  With *sqlite3_With_ڈالو(Parse*, With*, u8);
+#ورنہ
+# define sqlite3CteNew(P,T,E,S)   ((خالی*)0)
 # define sqlite3CteDelete(D,C)
-# define sqlite3CteWithAdd(P,W,C) ((void*)0)
+# define sqlite3_Cte_With_جوڑو(P,W,C) ((خالی*)0)
 # define sqlite3WithDelete(x,y)
-# define sqlite3WithPush(x,y,z) ((void*)0)
-#endif
-#ifndef SQLITE_OMIT_UPSERT
-  Upsert *sqlite3UpsertNew(sqlite3*,ExprList*,Expr*,ExprList*,Expr*,Upsert*);
-  void sqlite3UpsertDelete(sqlite3*,Upsert*);
+# define sqlite3_With_ڈالو(x,y,z) ((خالی*)0)
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_UPSERT
+  Upsert *sqlite3UpsertNew(sqlite3*,اظہاریہ_List*,اظہاریہ*,اظہاریہ_List*,اظہاریہ*,Upsert*);
+  خالی sqlite3UpsertDelete(sqlite3*,Upsert*);
   Upsert *sqlite3UpsertDup(sqlite3*,Upsert*);
-  int sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
-  void sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,int);
-  Upsert *sqlite3UpsertOfIndex(Upsert*,Index*);
-  int sqlite3UpsertNextIsIPK(Upsert*);
-#else
-#define sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
-#define sqlite3UpsertDelete(x,y)
-#define sqlite3UpsertDup(x,y)         ((Upsert*)0)
-#define sqlite3UpsertOfIndex(x,y)     ((Upsert*)0)
-#define sqlite3UpsertNextIsIPK(x)     0
-#endif
+  صحیح sqlite3_Upsert_Analyze_ہدف(Parse*,SrcList*,Upsert*,Upsert*);
+  خالی sqlite3UpsertDoUpdate(Parse*,Upsert*,جدول*,اشاریہ*,صحیح);
+  Upsert *sqlite3_Upsert_کا_اشاریہ(Upsert*,اشاریہ*);
+  صحیح sqlite3_Upsert_اگلا_Is_IPK(Upsert*);
+#ورنہ
+#تعریف_کرو sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
+#تعریف_کرو sqlite3UpsertDelete(x,y)
+#تعریف_کرو sqlite3UpsertDup(x,y)         ((Upsert*)0)
+#تعریف_کرو sqlite3_Upsert_کا_اشاریہ(x,y)     ((Upsert*)0)
+#تعریف_کرو sqlite3_Upsert_اگلا_Is_IPK(x)     0
+#اگر_ختم
 
 
 /* Declarations for functions in fkey.c. All of these are replaced by
@@ -5828,124 +5828,124 @@ const char *sqlite3JournalModename(int);
 ** this case foreign keys are parsed, but no other functionality is
 ** provided (enforcement of FK constraints requires the triggers sub-system).
 */
-#if !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
-  void sqlite3FkCheck(Parse*, Table*, int, int, int*, int);
-  void sqlite3FkDropTable(Parse*, SrcList *, Table*);
-  void sqlite3FkActions(Parse*, Table*, ExprList*, int, int*, int);
-  int sqlite3FkRequired(Parse*, Table*, int*, int);
-  u32 sqlite3FkOldmask(Parse*, Table*);
-  FKey *sqlite3FkReferences(Table *);
-  void sqlite3FkClearTriggerCache(sqlite3*,int);
-#else
-  #define sqlite3FkActions(a,b,c,d,e,f)
-  #define sqlite3FkCheck(a,b,c,d,e,f)
-  #define sqlite3FkDropTable(a,b,c)
-  #define sqlite3FkOldmask(a,b)         0
-  #define sqlite3FkRequired(a,b,c,d)    0
-  #define sqlite3FkReferences(a)        0
-  #define sqlite3FkClearTriggerCache(a,b)
-#endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  void sqlite3FkDelete(sqlite3 *, Table*);
-  int sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,int**);
-#else
-  #define sqlite3FkDelete(a,b)
-  #define sqlite3FkLocateIndex(a,b,c,d,e)
-#endif
+#اگر !defined(SQLITE_OMIT_FOREIGN_کلید) && !defined(SQLITE_OMIT_TRIGGER)
+  خالی sqlite3FkCheck(Parse*, جدول*, صحیح, صحیح, صحیح*, صحیح);
+  خالی sqlite3_Fk_Drop_جدول(Parse*, SrcList *, جدول*);
+  خالی sqlite3FkActions(Parse*, جدول*, اظہاریہ_List*, صحیح, صحیح*, صحیح);
+  صحیح sqlite3FkRequired(Parse*, جدول*, صحیح*, صحیح);
+  u32 sqlite3FkOldmask(Parse*, جدول*);
+  FKey *sqlite3FkReferences(جدول *);
+  خالی sqlite3FkClearTriggerCache(sqlite3*,صحیح);
+#ورنہ
+  #تعریف_کرو sqlite3FkActions(a,b,c,d,e,f)
+  #تعریف_کرو sqlite3FkCheck(a,b,c,d,e,f)
+  #تعریف_کرو sqlite3_Fk_Drop_جدول(a,b,c)
+  #تعریف_کرو sqlite3FkOldmask(a,b)         0
+  #تعریف_کرو sqlite3FkRequired(a,b,c,d)    0
+  #تعریف_کرو sqlite3FkReferences(a)        0
+  #تعریف_کرو sqlite3FkClearTriggerCache(a,b)
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FOREIGN_کلید
+  خالی sqlite3FkDelete(sqlite3 *, جدول*);
+  صحیح sqlite3_Fk_Locate_اشاریہ(Parse*,جدول*,FKey*,اشاریہ**,صحیح**);
+#ورنہ
+  #تعریف_کرو sqlite3FkDelete(a,b)
+  #تعریف_کرو sqlite3_Fk_Locate_اشاریہ(a,b,c,d,e)
+#اگر_ختم
 
 
 /*
 ** Available fault injectors.  Should be numbered beginning with 0.
 */
-#define SQLITE_FAULTINJECTOR_MALLOC     0
-#define SQLITE_FAULTINJECTOR_COUNT      1
+#تعریف_کرو SQLITE_FAULTINJECTOR_MALLOC     0
+#تعریف_کرو SQLITE_FAULTINJECTOR_گنتی      1
 
 /*
 ** The interface to the code in fault.c used for identifying "benign"
 ** malloc failures. This is only present if SQLITE_UNTESTABLE
 ** is not defined.
 */
-#ifndef SQLITE_UNTESTABLE
-  void sqlite3BeginBenignMalloc(void);
-  void sqlite3EndBenignMalloc(void);
-#else
-  #define sqlite3BeginBenignMalloc()
-  #define sqlite3EndBenignMalloc()
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_UNTESTABLE
+  خالی sqlite3BeginBenignMalloc(خالی);
+  خالی sqlite3_انتہا_Benign_Malloc(خالی);
+#ورنہ
+  #تعریف_کرو sqlite3BeginBenignMalloc()
+  #تعریف_کرو sqlite3_انتہا_Benign_Malloc()
+#اگر_ختم
 
 /*
 ** Allowed return values from sqlite3FindInIndex()
 */
-#define IN_INDEX_ROWID        1   /* Search the rowid of the table */
-#define IN_INDEX_EPH          2   /* Search an ephemeral b-tree */
-#define IN_INDEX_INDEX_ASC    3   /* Existing index ASCENDING */
-#define IN_INDEX_INDEX_DESC   4   /* Existing index DESCENDING */
-#define IN_INDEX_NOOP         5   /* No table available. Use comparisons */
+#تعریف_کرو اندر_اشاریہ_ROWID        1   /* Search the rowid of the table */
+#تعریف_کرو اندر_اشاریہ_EPH          2   /* Search an ephemeral b-tree */
+#تعریف_کرو اندر_اشاریہ_اشاریہ_ASC    3   /* Existing index ASCENDING */
+#تعریف_کرو اندر_اشاریہ_اشاریہ_DESC   4   /* Existing index DESCENDING */
+#تعریف_کرو اندر_اشاریہ_NOOP         5   /* No table available. Use comparisons */
 /*
 ** Allowed flags for the 3rd parameter to sqlite3FindInIndex().
 */
-#define IN_INDEX_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
-#define IN_INDEX_MEMBERSHIP  0x0002  /* IN operator used for membership test */
-#define IN_INDEX_LOOP        0x0004  /* IN operator used as a loop */
-int sqlite3FindInIndex(Parse *, Expr *, u32, int*, int*, int*);
+#تعریف_کرو اندر_اشاریہ_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
+#تعریف_کرو اندر_اشاریہ_MEMBERSHIP  0x0002  /* IN operator used for membership test */
+#تعریف_کرو اندر_اشاریہ_LOOP        0x0004  /* IN operator used as a loop */
+صحیح sqlite3_ڈھونڈو_اندر_اشاریہ(Parse *, اظہاریہ *, u32, صحیح*, صحیح*, صحیح*);
 
-int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
-int sqlite3JournalSize(sqlite3_vfs *);
-#if defined(SQLITE_ENABLE_ATOMIC_WRITE) \
+صحیح sqlite3JournalOpen(sqlite3_vfs *, ثابت حرف *, sqlite3_file *, صحیح, صحیح);
+صحیح sqlite3_Journal_سائز(sqlite3_vfs *);
+#اگر defined(SQLITE_ENABLE_ATOMIC_WRITE) \
  || defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-  int sqlite3JournalCreate(sqlite3_file *);
-#endif
+  صحیح sqlite3JournalCreate(sqlite3_file *);
+#اگر_ختم
 
-int sqlite3JournalIsInMemory(sqlite3_file *p);
-void sqlite3MemJournalOpen(sqlite3_file *);
+صحیح sqlite3_Journal_Is_اندر_حافظہ(sqlite3_file *p);
+خالی sqlite3MemJournalOpen(sqlite3_file *);
 
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int sqlite3SelectExprHeight(const Select *);
-  int sqlite3ExprCheckHeight(Parse*, int);
-#else
-  #define sqlite3SelectExprHeight(x) 0
-  #define sqlite3ExprCheckHeight(x,y)
-#endif
-void sqlite3ExprSetErrorOffset(Expr*,int);
+خالی sqlite3_اظہاریہ_سیٹ_اونچائی_And_Flags(Parse *pParse, اظہاریہ *p);
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+  صحیح sqlite3_Select_اظہاریہ_اونچائی(ثابت Select *);
+  صحیح sqlite3_اظہاریہ_Check_اونچائی(Parse*, صحیح);
+#ورنہ
+  #تعریف_کرو sqlite3_Select_اظہاریہ_اونچائی(x) 0
+  #تعریف_کرو sqlite3_اظہاریہ_Check_اونچائی(x,y)
+#اگر_ختم
+خالی sqlite3_اظہاریہ_سیٹ_Error_انحراف(اظہاریہ*,صحیح);
 
-u32 sqlite3Get4byte(const u8*);
-SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8*);
-#if SQLITE_BYTEORDER!=4321
+u32 sqlite3Get4byte(ثابت u8*);
+SQLITE_OPT_INLINE u64 sqlite3Get8byte(ثابت u8*);
+#اگر SQLITE_BYTEORDER!=4321
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64);
-#endif
-void sqlite3Put4byte(u8*, u32);
+#اگر_ختم
+خالی sqlite3Put4byte(u8*, u32);
 
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
-  void sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
-  void sqlite3ConnectionUnlocked(sqlite3 *db);
-  void sqlite3ConnectionClosed(sqlite3 *db);
-#else
-  #define sqlite3ConnectionBlocked(x,y)
-  #define sqlite3ConnectionUnlocked(x)
-  #define sqlite3ConnectionClosed(x)
-#endif
+#اگر_تعریف_شدہ SQLITE_ENABLE_UNLOCK_NOTIFY
+  خالی sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
+  خالی sqlite3ConnectionUnlocked(sqlite3 *db);
+  خالی sqlite3ConnectionClosed(sqlite3 *db);
+#ورنہ
+  #تعریف_کرو sqlite3ConnectionBlocked(x,y)
+  #تعریف_کرو sqlite3ConnectionUnlocked(x)
+  #تعریف_کرو sqlite3ConnectionClosed(x)
+#اگر_ختم
 
-#ifdef SQLITE_DEBUG
-  void sqlite3ParserTrace(FILE*, char *);
-#endif
-#if defined(YYCOVERAGE)
-  int sqlite3ParserCoverage(FILE*);
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  خالی sqlite3ParserTrace(FILE*, حرف *);
+#اگر_ختم
+#اگر defined(YYCOVERAGE)
+  صحیح sqlite3ParserCoverage(FILE*);
+#اگر_ختم
 
 /*
 ** If the SQLITE_ENABLE IOTRACE exists then the global variable
 ** sqlite3IoTrace is a pointer to a printf-like routine used to
 ** print I/O tracing messages.
 */
-#ifdef SQLITE_ENABLE_IOTRACE
-# define IOTRACE(A)  if( sqlite3IoTrace ){ sqlite3IoTrace A; }
-  void sqlite3VdbeIOTraceSql(Vdbe*);
-SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
-#else
+#اگر_تعریف_شدہ SQLITE_ENABLE_IOTRACE
+# define IOTRACE(A)  اگر( sqlite3IoTrace ){ sqlite3IoTrace A; }
+  خالی sqlite3VdbeIOTraceSql(Vdbe*);
+SQLITE_API SQLITE_EXTERN خالی (SQLITE_CDECL *sqlite3IoTrace)(ثابت حرف*,...);
+#ورنہ
 # define IOTRACE(A)
 # define sqlite3VdbeIOTraceSql(X)
-#endif
+#اگر_ختم
 
 /*
 ** These routines are available for the mem2.c debugging memory allocator
@@ -5975,58 +5975,58 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 ** All of this is no-op for a production build.  It only comes into
 ** play when the SQLITE_MEMDEBUG compile-time option is used.
 */
-#ifdef SQLITE_MEMDEBUG
-  void sqlite3MemdebugSetType(void*,u8);
-  int sqlite3MemdebugHasType(const void*,u8);
-  int sqlite3MemdebugNoType(const void*,u8);
-#else
-# define sqlite3MemdebugSetType(X,Y)  /* no-op */
+#اگر_تعریف_شدہ SQLITE_MEMDEBUG
+  خالی sqlite3_Memdebug_سیٹ_Type(خالی*,u8);
+  صحیح sqlite3MemdebugHasType(ثابت خالی*,u8);
+  صحیح sqlite3MemdebugNoType(ثابت خالی*,u8);
+#ورنہ
+# define sqlite3_Memdebug_سیٹ_Type(X,Y)  /* no-op */
 # define sqlite3MemdebugHasType(X,Y)  1
 # define sqlite3MemdebugNoType(X,Y)   1
-#endif
-#define MEMTYPE_HEAP       0x01  /* General heap allocations */
-#define MEMTYPE_LOOKASIDE  0x02  /* Heap that might have been lookaside */
-#define MEMTYPE_PCACHE     0x04  /* Page cache allocations */
+#اگر_ختم
+#تعریف_کرو MEMTYPE_ڈھیر       0x01  /* General heap allocations */
+#تعریف_کرو MEMTYPE_LOOKASIDE  0x02  /* Heap that might have been lookaside */
+#تعریف_کرو MEMTYPE_PCACHE     0x04  /* Page cache allocations */
 
 /*
 ** Threading interface
 */
-#if SQLITE_MAX_WORKER_THREADS>0
-int sqlite3ThreadCreate(SQLiteThread**,void*(*)(void*),void*);
-int sqlite3ThreadJoin(SQLiteThread*, void**);
-#endif
+#اگر SQLITE_MAX_کارکن_دھاگے>0
+صحیح sqlite3ThreadCreate(SQLiteThread**,خالی*(*)(خالی*),خالی*);
+صحیح sqlite3ThreadJoin(SQLiteThread*, خالی**);
+#اگر_ختم
 
-#if defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbpageRegister(sqlite3*);
-#endif
-#if defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbstatRegister(sqlite3*);
-#endif
+#اگر defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
+صحیح sqlite3_Dbpage_رجسٹر(sqlite3*);
+#اگر_ختم
+#اگر defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
+صحیح sqlite3_Dbstat_رجسٹر(sqlite3*);
+#اگر_ختم
 
-int sqlite3ExprVectorSize(const Expr *pExpr);
-int sqlite3ExprIsVector(const Expr *pExpr);
-Expr *sqlite3VectorFieldSubexpr(Expr*, int);
-Expr *sqlite3ExprForVectorField(Parse*,Expr*,int,int);
-void sqlite3VectorErrorMsg(Parse*, Expr*);
+صحیح sqlite3_اظہاریہ_سمتیہ_سائز(ثابت اظہاریہ *p_اظہاریہ);
+صحیح sqlite3_اظہاریہ_Is_سمتیہ(ثابت اظہاریہ *p_اظہاریہ);
+اظہاریہ *sqlite3_سمتیہ_میدان_Subexpr(اظہاریہ*, صحیح);
+اظہاریہ *sqlite3_اظہاریہ_For_سمتیہ_میدان(Parse*,اظہاریہ*,صحیح,صحیح);
+خالی sqlite3_سمتیہ_Error_پیغام(Parse*, اظہاریہ*);
 
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-const char **sqlite3CompileOptions(int *pnOpt);
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_COMPILEOPTION_DIAGS
+ثابت حرف **sqlite3CompileOptions(صحیح *pnOpt);
+#اگر_ختم
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void);
-#endif
+#اگر SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+صحیح sqlite3KvvfsInit(خالی);
+#اگر_ختم
 
-#if defined(VDBE_PROFILE) \
+#اگر defined(VDBE_PROFILE) \
  || defined(SQLITE_PERFORMANCE_TRACE) \
  || defined(SQLITE_ENABLE_STMT_SCANSTATUS)
-sqlite3_uint64 sqlite3Hwtime(void);
-#endif
+sqlite3_uint64 sqlite3Hwtime(خالی);
+#اگر_ختم
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-# define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_StmtScanStatus)
-#else
+#اگر_تعریف_شدہ SQLITE_ENABLE_STMT_SCANSTATUS
+# define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_Stmt_جائزہ_حالت)
+#ورنہ
 # define IS_STMT_SCANSTATUS(db) 0
-#endif
+#اگر_ختم
 
-#endif /* SQLITEINT_H */
+#اگر_ختم /* SQLITEINT_H */

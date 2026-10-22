@@ -61,19 +61,19 @@
 ** be possible, but the feature was not used, so it was removed in order
 ** to simplify the code.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
 
 /*
 ** Target size for allocation chunks.
 */
-#define ROWSET_ALLOCATION_SIZE 1024
+#تعریف_کرو ROWSET_تخصیص_سائز 1024
 
 /*
 ** The number of rowset entries per allocation chunk.
 */
-#define ROWSET_ENTRY_PER_CHUNK  \
-                       ((ROWSET_ALLOCATION_SIZE-8)/sizeof(struct RowSetEntry))
+#تعریف_کرو ROWSET_اندراج_فی_CHUNK  \
+                       ((ROWSET_تخصیص_سائز-8)/حجم(ساخت صف_سیٹ_اندراج))
 
 /*
 ** Each entry in a RowSet is an instance of the following object.
@@ -83,10 +83,10 @@
 ** in the list, pLeft points to the tree, and v is unused.  The
 ** RowSet.pForest value points to the head of this forest list.
 */
-struct RowSetEntry {           
+ساخت صف_سیٹ_اندراج {           
   i64 v;                        /* ROWID value for this entry */
-  struct RowSetEntry *pRight;   /* Right subtree (larger entries) or list */
-  struct RowSetEntry *pLeft;    /* Left subtree (smaller entries) */
+  ساخت صف_سیٹ_اندراج *p_دایاں;   /* Right subtree (larger entries) or list */
+  ساخت صف_سیٹ_اندراج *p_بایاں;    /* Left subtree (smaller entries) */
 };
 
 /*
@@ -95,9 +95,9 @@ struct RowSetEntry {
 ** chunks are kept on a linked list so that they can be deallocated
 ** when the RowSet is destroyed.
 */
-struct RowSetChunk {
-  struct RowSetChunk *pNextChunk;        /* Next chunk on list of them all */
-  struct RowSetEntry aEntry[ROWSET_ENTRY_PER_CHUNK]; /* Allocated entries */
+ساخت صف_سیٹ_Chunk {
+  ساخت صف_سیٹ_Chunk *p_اگلا_Chunk;        /* Next chunk on list of them all */
+  ساخت صف_سیٹ_اندراج a_اندراج[ROWSET_اندراج_فی_CHUNK]; /* Allocated entries */
 };
 
 /*
@@ -105,43 +105,43 @@ struct RowSetChunk {
 **
 ** A typedef of this structure if found in sqliteInt.h.
 */
-struct RowSet {
-  struct RowSetChunk *pChunk;    /* List of all chunk allocations */
+ساخت صف_سیٹ {
+  ساخت صف_سیٹ_Chunk *pChunk;    /* List of all chunk allocations */
   sqlite3 *db;                   /* The database connection */
-  struct RowSetEntry *pEntry;    /* List of entries using pRight */
-  struct RowSetEntry *pLast;     /* Last entry on the pEntry list */
-  struct RowSetEntry *pFresh;    /* Source of new entry objects */
-  struct RowSetEntry *pForest;   /* List of binary trees of entries */
+  ساخت صف_سیٹ_اندراج *p_اندراج;    /* List of entries using pRight */
+  ساخت صف_سیٹ_اندراج *p_آخری;     /* Last entry on the pEntry list */
+  ساخت صف_سیٹ_اندراج *pFresh;    /* Source of new entry objects */
+  ساخت صف_سیٹ_اندراج *pForest;   /* List of binary trees of entries */
   u16 nFresh;                    /* Number of objects on pFresh */
   u16 rsFlags;                   /* Various flags */
-  int iBatch;                    /* Current insert batch */
+  صحیح iBatch;                    /* Current insert batch */
 };
 
 /*
 ** Allowed values for RowSet.rsFlags
 */
-#define ROWSET_SORTED  0x01   /* True if RowSet.pEntry is sorted */
-#define ROWSET_NEXT    0x02   /* True if sqlite3RowSetNext() has been called */
+#تعریف_کرو ROWSET_SORTED  0x01   /* True if RowSet.pEntry is sorted */
+#تعریف_کرو ROWSET_اگلا    0x02   /* True if sqlite3RowSetNext() has been called */
 
 /*
 ** Allocate a RowSet object.  Return NULL if a memory allocation
 ** error occurs.
 */
-RowSet *sqlite3RowSetInit(sqlite3 *db){
-  RowSet *p = sqlite3DbMallocRawNN(db, sizeof(*p));
-  if( p ){
-    int N = sqlite3DbMallocSize(db, p);
+صف_سیٹ *sqlite3_صف_سیٹ_Init(sqlite3 *db){
+  صف_سیٹ *p = sqlite3DbMallocRawNN(db, حجم(*p));
+  اگر( p ){
+    صحیح N = sqlite3_Db_Malloc_سائز(db, p);
     p->pChunk = 0;
     p->db = db;
-    p->pEntry = 0;
-    p->pLast = 0;
+    p->p_اندراج = 0;
+    p->p_آخری = 0;
     p->pForest = 0;
-    p->pFresh = (struct RowSetEntry*)(ROUND8(sizeof(*p)) + (char*)p);
-    p->nFresh = (u16)((N - ROUND8(sizeof(*p)))/sizeof(struct RowSetEntry));
+    p->pFresh = (ساخت صف_سیٹ_اندراج*)(ROUND8(حجم(*p)) + (حرف*)p);
+    p->nFresh = (u16)((N - ROUND8(حجم(*p)))/حجم(ساخت صف_سیٹ_اندراج));
     p->rsFlags = ROWSET_SORTED;
     p->iBatch = 0;
   }
-  return p;
+  واپس p;
 }
 
 /*
@@ -149,17 +149,17 @@ RowSet *sqlite3RowSetInit(sqlite3 *db){
 ** the RowSet has allocated over its lifetime.  This routine is
 ** the destructor for the RowSet.
 */
-void sqlite3RowSetClear(void *pArg){
-  RowSet *p = (RowSet*)pArg;
-  struct RowSetChunk *pChunk, *pNextChunk;
-  for(pChunk=p->pChunk; pChunk; pChunk = pNextChunk){
-    pNextChunk = pChunk->pNextChunk;
+خالی sqlite3_صف_سیٹ_Clear(خالی *pArg){
+  صف_سیٹ *p = (صف_سیٹ*)pArg;
+  ساخت صف_سیٹ_Chunk *pChunk, *p_اگلا_Chunk;
+  برائے(pChunk=p->pChunk; pChunk; pChunk = p_اگلا_Chunk){
+    p_اگلا_Chunk = pChunk->p_اگلا_Chunk;
     sqlite3DbFree(p->db, pChunk);
   }
   p->pChunk = 0;
   p->nFresh = 0;
-  p->pEntry = 0;
-  p->pLast = 0;
+  p->p_اندراج = 0;
+  p->p_آخری = 0;
   p->pForest = 0;
   p->rsFlags = ROWSET_SORTED;
 }
@@ -169,9 +169,9 @@ void sqlite3RowSetClear(void *pArg){
 ** the RowSet has allocated over its lifetime.  This routine is
 ** the destructor for the RowSet.
 */
-void sqlite3RowSetDelete(void *pArg){
-  sqlite3RowSetClear(pArg);
-  sqlite3DbFree(((RowSet*)pArg)->db, pArg);
+خالی sqlite3_صف_سیٹ_Delete(خالی *pArg){
+  sqlite3_صف_سیٹ_Clear(pArg);
+  sqlite3DbFree(((صف_سیٹ*)pArg)->db, pArg);
 }
 
 /*
@@ -182,23 +182,23 @@ void sqlite3RowSetDelete(void *pArg){
 ** In an OOM situation, the RowSet.db->mallocFailed flag is set and this
 ** routine returns NULL.
 */
-static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
-  assert( p!=0 );
-  if( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
+ساکن ساخت صف_سیٹ_اندراج *صف_سیٹ_اندراج_Alloc(صف_سیٹ *p){
+  أكد( p!=0 );
+  اگر( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
     /* We could allocate a fresh RowSetEntry each time one is needed, but it
     ** is more efficient to pull a preallocated entry from the pool */
-    struct RowSetChunk *pNew;
-    pNew = sqlite3DbMallocRawNN(p->db, sizeof(*pNew));
-    if( pNew==0 ){
-      return 0;
+    ساخت صف_سیٹ_Chunk *pNew;
+    pNew = sqlite3DbMallocRawNN(p->db, حجم(*pNew));
+    اگر( pNew==0 ){
+      واپس 0;
     }
-    pNew->pNextChunk = p->pChunk;
+    pNew->p_اگلا_Chunk = p->pChunk;
     p->pChunk = pNew;
-    p->pFresh = pNew->aEntry;
-    p->nFresh = ROWSET_ENTRY_PER_CHUNK;
+    p->pFresh = pNew->a_اندراج;
+    p->nFresh = ROWSET_اندراج_فی_CHUNK;
   }
   p->nFresh--;
-  return p->pFresh++;
+  واپس p->pFresh++;
 }
 
 /*
@@ -207,29 +207,29 @@ static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
 ** The mallocFailed flag of the database connection is set if a
 ** memory allocation fails.
 */
-void sqlite3RowSetInsert(RowSet *p, i64 rowid){
-  struct RowSetEntry *pEntry;  /* The new entry */
-  struct RowSetEntry *pLast;   /* The last prior entry */
+خالی sqlite3_صف_سیٹ_داخل_کرو(صف_سیٹ *p, i64 rowid){
+  ساخت صف_سیٹ_اندراج *p_اندراج;  /* The new entry */
+  ساخت صف_سیٹ_اندراج *p_آخری;   /* The last prior entry */
 
   /* This routine is never called after sqlite3RowSetNext() */
-  assert( p!=0 && (p->rsFlags & ROWSET_NEXT)==0 );
+  أكد( p!=0 && (p->rsFlags & ROWSET_اگلا)==0 );
 
-  pEntry = rowSetEntryAlloc(p);
-  if( pEntry==0 ) return;
-  pEntry->v = rowid;
-  pEntry->pRight = 0;
-  pLast = p->pLast;
-  if( pLast ){
-    if( rowid<=pLast->v ){  /*OPTIMIZATION-IF-FALSE*/
+  p_اندراج = صف_سیٹ_اندراج_Alloc(p);
+  اگر( p_اندراج==0 ) واپس;
+  p_اندراج->v = rowid;
+  p_اندراج->p_دایاں = 0;
+  p_آخری = p->p_آخری;
+  اگر( p_آخری ){
+    اگر( rowid<=p_آخری->v ){  /*OPTIMIZATION-IF-FALSE*/
       /* Avoid unnecessary sorts by preserving the ROWSET_SORTED flags
       ** where possible */
       p->rsFlags &= ~ROWSET_SORTED;
     }
-    pLast->pRight = pEntry;
-  }else{
-    p->pEntry = pEntry;
+    p_آخری->p_دایاں = p_اندراج;
+  }ورنہ{
+    p->p_اندراج = p_اندراج;
   }
-  p->pLast = pEntry;
+  p->p_آخری = p_اندراج;
 }
 
 /*
@@ -238,62 +238,62 @@ void sqlite3RowSetInsert(RowSet *p, i64 rowid){
 ** The input lists are connected via pRight pointers and are
 ** assumed to each already be in sorted order.
 */
-static struct RowSetEntry *rowSetEntryMerge(
-  struct RowSetEntry *pA,    /* First sorted list to be merged */
-  struct RowSetEntry *pB     /* Second sorted list to be merged */
+ساکن ساخت صف_سیٹ_اندراج *صف_سیٹ_اندراج_ملاؤ(
+  ساخت صف_سیٹ_اندراج *pA,    /* First sorted list to be merged */
+  ساخت صف_سیٹ_اندراج *pB     /* Second sorted list to be merged */
 ){
-  struct RowSetEntry head;
-  struct RowSetEntry *pTail;
+  ساخت صف_سیٹ_اندراج سر;
+  ساخت صف_سیٹ_اندراج *p_دم;
 
-  pTail = &head;
-  assert( pA!=0 && pB!=0 );
-  for(;;){
-    assert( pA->pRight==0 || pA->v<=pA->pRight->v );
-    assert( pB->pRight==0 || pB->v<=pB->pRight->v );
-    if( pA->v<=pB->v ){
-      if( pA->v<pB->v ) pTail = pTail->pRight = pA;
-      pA = pA->pRight;
-      if( pA==0 ){
-        pTail->pRight = pB;
-        break;
+  p_دم = &سر;
+  أكد( pA!=0 && pB!=0 );
+  برائے(;;){
+    أكد( pA->p_دایاں==0 || pA->v<=pA->p_دایاں->v );
+    أكد( pB->p_دایاں==0 || pB->v<=pB->p_دایاں->v );
+    اگر( pA->v<=pB->v ){
+      اگر( pA->v<pB->v ) p_دم = p_دم->p_دایاں = pA;
+      pA = pA->p_دایاں;
+      اگر( pA==0 ){
+        p_دم->p_دایاں = pB;
+        توڑو;
       }
-    }else{
-      pTail = pTail->pRight = pB;
-      pB = pB->pRight;
-      if( pB==0 ){
-        pTail->pRight = pA;
-        break;
+    }ورنہ{
+      p_دم = p_دم->p_دایاں = pB;
+      pB = pB->p_دایاں;
+      اگر( pB==0 ){
+        p_دم->p_دایاں = pA;
+        توڑو;
       }
     }
   }
-  return head.pRight;
+  واپس سر.p_دایاں;
 }
 
 /*
 ** Sort all elements on the list of RowSetEntry objects into order of
 ** increasing v.
 */
-static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
-  unsigned int i;
-  struct RowSetEntry *pNext, *aBucket[40];
+ساکن ساخت صف_سیٹ_اندراج *صف_سیٹ_اندراج_ترتیب_دو(ساخت صف_سیٹ_اندراج *p_اندر){
+  غیرعلامتی صحیح i;
+  ساخت صف_سیٹ_اندراج *p_اگلا, *a_بالٹی[40];
 
-  memset(aBucket, 0, sizeof(aBucket));
-  while( pIn ){
-    pNext = pIn->pRight;
-    pIn->pRight = 0;
-    for(i=0; aBucket[i]; i++){
-      pIn = rowSetEntryMerge(aBucket[i], pIn);
-      aBucket[i] = 0;
+  memset(a_بالٹی, 0, حجم(a_بالٹی));
+  جب( p_اندر ){
+    p_اگلا = p_اندر->p_دایاں;
+    p_اندر->p_دایاں = 0;
+    برائے(i=0; a_بالٹی[i]; i++){
+      p_اندر = صف_سیٹ_اندراج_ملاؤ(a_بالٹی[i], p_اندر);
+      a_بالٹی[i] = 0;
     }
-    aBucket[i] = pIn;
-    pIn = pNext;
+    a_بالٹی[i] = p_اندر;
+    p_اندر = p_اگلا;
   }
-  pIn = aBucket[0];
-  for(i=1; i<sizeof(aBucket)/sizeof(aBucket[0]); i++){
-    if( aBucket[i]==0 ) continue;
-    pIn = pIn ? rowSetEntryMerge(pIn, aBucket[i]) : aBucket[i];
+  p_اندر = a_بالٹی[0];
+  برائے(i=1; i<حجم(a_بالٹی)/حجم(a_بالٹی[0]); i++){
+    اگر( a_بالٹی[i]==0 ) جاری;
+    p_اندر = p_اندر ? صف_سیٹ_اندراج_ملاؤ(p_اندر, a_بالٹی[i]) : a_بالٹی[i];
   }
-  return pIn;
+  واپس p_اندر;
 }
 
 
@@ -302,25 +302,25 @@ static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
 ** Convert this tree into a linked list connected by the pRight pointers
 ** and return pointers to the first and last elements of the new list.
 */
-static void rowSetTreeToList(
-  struct RowSetEntry *pIn,         /* Root of the input tree */
-  struct RowSetEntry **ppFirst,    /* Write head of the output list here */
-  struct RowSetEntry **ppLast      /* Write tail of the output list here */
+ساکن خالی صف_سیٹ_درخت_مقصد_List(
+  ساخت صف_سیٹ_اندراج *p_اندر,         /* Root of the input tree */
+  ساخت صف_سیٹ_اندراج **pp_پہلا,    /* Write head of the output list here */
+  ساخت صف_سیٹ_اندراج **pp_آخری      /* Write tail of the output list here */
 ){
-  assert( pIn!=0 );
-  if( pIn->pLeft ){
-    struct RowSetEntry *p;
-    rowSetTreeToList(pIn->pLeft, ppFirst, &p);
-    p->pRight = pIn;
-  }else{
-    *ppFirst = pIn;
+  أكد( p_اندر!=0 );
+  اگر( p_اندر->p_بایاں ){
+    ساخت صف_سیٹ_اندراج *p;
+    صف_سیٹ_درخت_مقصد_List(p_اندر->p_بایاں, pp_پہلا, &p);
+    p->p_دایاں = p_اندر;
+  }ورنہ{
+    *pp_پہلا = p_اندر;
   }
-  if( pIn->pRight ){
-    rowSetTreeToList(pIn->pRight, &pIn->pRight, ppLast);
-  }else{
-    *ppLast = pIn;
+  اگر( p_اندر->p_دایاں ){
+    صف_سیٹ_درخت_مقصد_List(p_اندر->p_دایاں, &p_اندر->p_دایاں, pp_آخری);
+  }ورنہ{
+    *pp_آخری = p_اندر;
   }
-  assert( (*ppLast)->pRight==0 );
+  أكد( (*pp_آخری)->p_دایاں==0 );
 }
 
 
@@ -337,59 +337,59 @@ static void rowSetTreeToList(
 **
 ** Return a pointer to the root of the constructed binary tree.
 */
-static struct RowSetEntry *rowSetNDeepTree(
-  struct RowSetEntry **ppList,
-  int iDepth
+ساکن ساخت صف_سیٹ_اندراج *صف_سیٹ_NDeep_درخت(
+  ساخت صف_سیٹ_اندراج **ppList,
+  صحیح i_گہرائی
 ){
-  struct RowSetEntry *p;         /* Root of the new tree */
-  struct RowSetEntry *pLeft;     /* Left subtree */
-  if( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
+  ساخت صف_سیٹ_اندراج *p;         /* Root of the new tree */
+  ساخت صف_سیٹ_اندراج *p_بایاں;     /* Left subtree */
+  اگر( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
     /* Prevent unnecessary deep recursion when we run out of entries */
-    return 0;
+    واپس 0;
   }
-  if( iDepth>1 ){   /*OPTIMIZATION-IF-TRUE*/
+  اگر( i_گہرائی>1 ){   /*OPTIMIZATION-IF-TRUE*/
     /* This branch causes a *balanced* tree to be generated.  A valid tree
     ** is still generated without this branch, but the tree is wildly
     ** unbalanced and inefficient. */
-    pLeft = rowSetNDeepTree(ppList, iDepth-1);
+    p_بایاں = صف_سیٹ_NDeep_درخت(ppList, i_گہرائی-1);
     p = *ppList;
-    if( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
+    اگر( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
       /* It is safe to always return here, but the resulting tree
       ** would be unbalanced */
-      return pLeft;
+      واپس p_بایاں;
     }
-    p->pLeft = pLeft;
-    *ppList = p->pRight;
-    p->pRight = rowSetNDeepTree(ppList, iDepth-1);
-  }else{
+    p->p_بایاں = p_بایاں;
+    *ppList = p->p_دایاں;
+    p->p_دایاں = صف_سیٹ_NDeep_درخت(ppList, i_گہرائی-1);
+  }ورنہ{
     p = *ppList;
-    *ppList = p->pRight;
-    p->pLeft = p->pRight = 0;
+    *ppList = p->p_دایاں;
+    p->p_بایاں = p->p_دایاں = 0;
   }
-  return p;
+  واپس p;
 }
 
 /*
 ** Convert a sorted list of elements into a binary tree. Make the tree
 ** as deep as it needs to be in order to contain the entire list.
 */
-static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
-  int iDepth;           /* Depth of the tree so far */
-  struct RowSetEntry *p;       /* Current tree root */
-  struct RowSetEntry *pLeft;   /* Left subtree */
+ساکن ساخت صف_سیٹ_اندراج *صف_سیٹ_List_مقصد_درخت(ساخت صف_سیٹ_اندراج *pList){
+  صحیح i_گہرائی;           /* Depth of the tree so far */
+  ساخت صف_سیٹ_اندراج *p;       /* Current tree root */
+  ساخت صف_سیٹ_اندراج *p_بایاں;   /* Left subtree */
 
-  assert( pList!=0 );
+  أكد( pList!=0 );
   p = pList;
-  pList = p->pRight;
-  p->pLeft = p->pRight = 0;
-  for(iDepth=1; pList; iDepth++){
-    pLeft = p;
+  pList = p->p_دایاں;
+  p->p_بایاں = p->p_دایاں = 0;
+  برائے(i_گہرائی=1; pList; i_گہرائی++){
+    p_بایاں = p;
     p = pList;
-    pList = p->pRight;
-    p->pLeft = pLeft;
-    p->pRight = rowSetNDeepTree(&pList, iDepth);
+    pList = p->p_دایاں;
+    p->p_بایاں = p_بایاں;
+    p->p_دایاں = صف_سیٹ_NDeep_درخت(&pList, i_گہرائی);
   }
-  return p;
+  واپس p;
 }
 
 /*
@@ -405,29 +405,29 @@ static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
 ** capability was not used by the code generator, it was removed
 ** for code economy.
 */
-int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
-  assert( p!=0 );
-  assert( p->pForest==0 );  /* Cannot be used with sqlite3RowSetText() */
+صحیح sqlite3_صف_سیٹ_اگلا(صف_سیٹ *p, i64 *pRowid){
+  أكد( p!=0 );
+  أكد( p->pForest==0 );  /* Cannot be used with sqlite3RowSetText() */
 
   /* Merge the forest into a single sorted list on first call */
-  if( (p->rsFlags & ROWSET_NEXT)==0 ){  /*OPTIMIZATION-IF-FALSE*/
-    if( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
-      p->pEntry = rowSetEntrySort(p->pEntry);
+  اگر( (p->rsFlags & ROWSET_اگلا)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+    اگر( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+      p->p_اندراج = صف_سیٹ_اندراج_ترتیب_دو(p->p_اندراج);
     }
-    p->rsFlags |= ROWSET_SORTED|ROWSET_NEXT;
+    p->rsFlags |= ROWSET_SORTED|ROWSET_اگلا;
   }
 
   /* Return the next entry on the list */
-  if( p->pEntry ){
-    *pRowid = p->pEntry->v;
-    p->pEntry = p->pEntry->pRight;
-    if( p->pEntry==0 ){ /*OPTIMIZATION-IF-TRUE*/
+  اگر( p->p_اندراج ){
+    *pRowid = p->p_اندراج->v;
+    p->p_اندراج = p->p_اندراج->p_دایاں;
+    اگر( p->p_اندراج==0 ){ /*OPTIMIZATION-IF-TRUE*/
       /* Free memory immediately, rather than waiting on sqlite3_finalize() */
-      sqlite3RowSetClear(p);
+      sqlite3_صف_سیٹ_Clear(p);
     }
-    return 1;
-  }else{
-    return 0;
+    واپس 1;
+  }ورنہ{
+    واپس 0;
   }
 }
 
@@ -439,64 +439,64 @@ int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
 ** on pRowSet->pEntry, then sort those entries into the forest at
 ** pRowSet->pForest so that they can be tested.
 */
-int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
-  struct RowSetEntry *p, *pTree;
+صحیح sqlite3_صف_سیٹ_Test(صف_سیٹ *p_صف_سیٹ, صحیح iBatch, sqlite3_int64 iRowid){
+  ساخت صف_سیٹ_اندراج *p, *p_درخت;
 
   /* This routine is never called after sqlite3RowSetNext() */
-  assert( pRowSet!=0 && (pRowSet->rsFlags & ROWSET_NEXT)==0 );
+  أكد( p_صف_سیٹ!=0 && (p_صف_سیٹ->rsFlags & ROWSET_اگلا)==0 );
 
   /* Sort entries into the forest on the first test of a new batch.
   ** To save unnecessary work, only do this when the batch number changes.
   */
-  if( iBatch!=pRowSet->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
-    p = pRowSet->pEntry;
-    if( p ){
-      struct RowSetEntry **ppPrevTree = &pRowSet->pForest;
-      if( (pRowSet->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
+  اگر( iBatch!=p_صف_سیٹ->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
+    p = p_صف_سیٹ->p_اندراج;
+    اگر( p ){
+      ساخت صف_سیٹ_اندراج **pp_پچھلا_درخت = &p_صف_سیٹ->pForest;
+      اگر( (p_صف_سیٹ->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
         /* Only sort the current set of entries if they need it */
-        p = rowSetEntrySort(p);
+        p = صف_سیٹ_اندراج_ترتیب_دو(p);
       }
-      for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
-        ppPrevTree = &pTree->pRight;
-        if( pTree->pLeft==0 ){
-          pTree->pLeft = rowSetListToTree(p);
-          break;
-        }else{
-          struct RowSetEntry *pAux, *pTail;
-          rowSetTreeToList(pTree->pLeft, &pAux, &pTail);
-          pTree->pLeft = 0;
-          p = rowSetEntryMerge(pAux, p);
+      برائے(p_درخت = p_صف_سیٹ->pForest; p_درخت; p_درخت=p_درخت->p_دایاں){
+        pp_پچھلا_درخت = &p_درخت->p_دایاں;
+        اگر( p_درخت->p_بایاں==0 ){
+          p_درخت->p_بایاں = صف_سیٹ_List_مقصد_درخت(p);
+          توڑو;
+        }ورنہ{
+          ساخت صف_سیٹ_اندراج *pAux, *p_دم;
+          صف_سیٹ_درخت_مقصد_List(p_درخت->p_بایاں, &pAux, &p_دم);
+          p_درخت->p_بایاں = 0;
+          p = صف_سیٹ_اندراج_ملاؤ(pAux, p);
         }
       }
-      if( pTree==0 ){
-        *ppPrevTree = pTree = rowSetEntryAlloc(pRowSet);
-        if( pTree ){
-          pTree->v = 0;
-          pTree->pRight = 0;
-          pTree->pLeft = rowSetListToTree(p);
+      اگر( p_درخت==0 ){
+        *pp_پچھلا_درخت = p_درخت = صف_سیٹ_اندراج_Alloc(p_صف_سیٹ);
+        اگر( p_درخت ){
+          p_درخت->v = 0;
+          p_درخت->p_دایاں = 0;
+          p_درخت->p_بایاں = صف_سیٹ_List_مقصد_درخت(p);
         }
       }
-      pRowSet->pEntry = 0;
-      pRowSet->pLast = 0;
-      pRowSet->rsFlags |= ROWSET_SORTED;
+      p_صف_سیٹ->p_اندراج = 0;
+      p_صف_سیٹ->p_آخری = 0;
+      p_صف_سیٹ->rsFlags |= ROWSET_SORTED;
     }
-    pRowSet->iBatch = iBatch;
+    p_صف_سیٹ->iBatch = iBatch;
   }
 
   /* Test to see if the iRowid value appears anywhere in the forest.
   ** Return 1 if it does and 0 if not.
   */
-  for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
-    p = pTree->pLeft;
-    while( p ){
-      if( p->v<iRowid ){
-        p = p->pRight;
-      }else if( p->v>iRowid ){
-        p = p->pLeft;
-      }else{
-        return 1;
+  برائے(p_درخت = p_صف_سیٹ->pForest; p_درخت; p_درخت=p_درخت->p_دایاں){
+    p = p_درخت->p_بایاں;
+    جب( p ){
+      اگر( p->v<iRowid ){
+        p = p->p_دایاں;
+      }ورنہ اگر( p->v>iRowid ){
+        p = p->p_بایاں;
+      }ورنہ{
+        واپس 1;
       }
     }
   }
-  return 0;
+  واپس 0;
 }

@@ -17,41 +17,41 @@
 ** This header file is #include-ed by sqliteInt.h and thus ends up
 ** being included by every source file.
 */
-#ifndef _SQLITE_OS_H_
-#define _SQLITE_OS_H_
+#اگر_غیر_تعریف_شدہ _SQLITE_OS_H_
+#تعریف_کرو _SQLITE_OS_H_
 
 /*
 ** Attempt to automatically detect the operating system and setup the
 ** necessary pre-processor macros for it.
 */
-#include "os_setup.h"
+#شامل "os_setup.h"
 
 /* If the SET_FULLSYNC macro is not defined above, then make it
 ** a no-op
 */
-#ifndef SET_FULLSYNC
-# define SET_FULLSYNC(x,y)
-#endif
+#اگر_غیر_تعریف_شدہ سیٹ_FULLSYNC
+# define سیٹ_FULLSYNC(x,y)
+#اگر_ختم
 
 /* Maximum pathname length.  Note: FILENAME_MAX defined by stdio.h
 */
-#ifndef SQLITE_MAX_PATHLEN
+#اگر_غیر_تعریف_شدہ SQLITE_MAX_PATHLEN
 # define SQLITE_MAX_PATHLEN FILENAME_MAX
-#endif
+#اگر_ختم
 
 /* Maximum number of symlinks that will be resolved while trying to
 ** expand a filename in xFullPathname() in the VFS.
 */
-#ifndef SQLITE_MAX_SYMLINK
+#اگر_غیر_تعریف_شدہ SQLITE_MAX_SYMLINK
 # define SQLITE_MAX_SYMLINK 200
-#endif
+#اگر_ختم
 
 /*
 ** The default size of a disk sector
 */
-#ifndef SQLITE_DEFAULT_SECTOR_SIZE
-# define SQLITE_DEFAULT_SECTOR_SIZE 4096
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_SECTOR_سائز
+# define SQLITE_DEFAULT_SECTOR_سائز 4096
+#اگر_ختم
 
 /*
 ** Temporary files are named starting with this prefix followed by 16 random
@@ -74,9 +74,9 @@
 ** enough to know that calling the developer will not help get rid
 ** of the file.
 */
-#ifndef SQLITE_TEMP_FILE_PREFIX
-# define SQLITE_TEMP_FILE_PREFIX "etilqs_"
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_عارضی_FILE_سابقہ
+# define SQLITE_عارضی_FILE_سابقہ "etilqs_"
+#اگر_ختم
 
 /*
 ** The following values may be passed as the second argument to
@@ -95,11 +95,11 @@
 ** lock. This can be upgraded to an EXCLUSIVE lock by a subsequent call to
 ** sqlite3OsLock().
 */
-#define NO_LOCK         0
-#define SHARED_LOCK     1
-#define RESERVED_LOCK   2
-#define PENDING_LOCK    3
-#define EXCLUSIVE_LOCK  4
+#تعریف_کرو NO_تالا         0
+#تعریف_کرو SHARED_تالا     1
+#تعریف_کرو RESERVED_تالا   2
+#تعریف_کرو PENDING_تالا    3
+#تعریف_کرو EXCLUSIVE_تالا  4
 
 /*
 ** File Locking Notes:  (Mostly about windows but also some info for Unix)
@@ -156,70 +156,70 @@
 ** 1GB boundary.
 **
 */
-#ifdef SQLITE_OMIT_WSD
+#اگر_تعریف_شدہ SQLITE_OMIT_WSD
 # define PENDING_BYTE     (0x40000000)
-#else
+#ورنہ
 # define PENDING_BYTE      sqlite3PendingByte
-#endif
-#define RESERVED_BYTE     (PENDING_BYTE+1)
-#define SHARED_FIRST      (PENDING_BYTE+2)
-#define SHARED_SIZE       510
+#اگر_ختم
+#تعریف_کرو RESERVED_BYTE     (PENDING_BYTE+1)
+#تعریف_کرو SHARED_پہلا      (PENDING_BYTE+2)
+#تعریف_کرو SHARED_سائز       510
 
 /*
 ** Wrapper around OS specific sqlite3_os_init() function.
 */
-int sqlite3OsInit(void);
+صحیح sqlite3OsInit(خالی);
 
 /* 
 ** Functions for accessing sqlite3_file methods 
 */
-void sqlite3OsClose(sqlite3_file*);
-int sqlite3OsRead(sqlite3_file*, void*, int amt, i64 offset);
-int sqlite3OsWrite(sqlite3_file*, const void*, int amt, i64 offset);
-int sqlite3OsTruncate(sqlite3_file*, i64 size);
-int sqlite3OsSync(sqlite3_file*, int);
-int sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
-int sqlite3OsLock(sqlite3_file*, int);
-int sqlite3OsUnlock(sqlite3_file*, int);
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut);
-int sqlite3OsFileControl(sqlite3_file*,int,void*);
-void sqlite3OsFileControlHint(sqlite3_file*,int,void*);
-#define SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
-int sqlite3OsSectorSize(sqlite3_file *id);
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id);
-#ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmMap(sqlite3_file *,int,int,int,void volatile **);
-int sqlite3OsShmLock(sqlite3_file *id, int, int, int);
-void sqlite3OsShmBarrier(sqlite3_file *id);
-int sqlite3OsShmUnmap(sqlite3_file *id, int);
-#endif /* SQLITE_OMIT_WAL */
-int sqlite3OsFetch(sqlite3_file *id, i64, int, void **);
-int sqlite3OsUnfetch(sqlite3_file *, i64, void *);
+خالی sqlite3OsClose(sqlite3_file*);
+صحیح sqlite3OsRead(sqlite3_file*, خالی*, صحیح amt, i64 انحراف);
+صحیح sqlite3OsWrite(sqlite3_file*, ثابت خالی*, صحیح amt, i64 انحراف);
+صحیح sqlite3OsTruncate(sqlite3_file*, i64 سائز);
+صحیح sqlite3OsSync(sqlite3_file*, صحیح);
+صحیح sqlite3_Os_File_سائز(sqlite3_file*, i64 *p_سائز);
+صحیح sqlite3_Os_تالا(sqlite3_file*, صحیح);
+صحیح sqlite3OsUnlock(sqlite3_file*, صحیح);
+صحیح sqlite3_Os_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد);
+صحیح sqlite3OsFileControl(sqlite3_file*,صحیح,خالی*);
+خالی sqlite3OsFileControlHint(sqlite3_file*,صحیح,خالی*);
+#تعریف_کرو SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
+صحیح sqlite3_Os_Sector_سائز(sqlite3_file *id);
+صحیح sqlite3OsDeviceCharacteristics(sqlite3_file *id);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
+صحیح sqlite3OsShmMap(sqlite3_file *,صحیح,صحیح,صحیح,خالی متلون **);
+صحیح sqlite3_Os_Shm_تالا(sqlite3_file *id, صحیح, صحیح, صحیح);
+خالی sqlite3OsShmBarrier(sqlite3_file *id);
+صحیح sqlite3OsShmUnmap(sqlite3_file *id, صحیح);
+#اگر_ختم /* SQLITE_OMIT_WAL */
+صحیح sqlite3OsFetch(sqlite3_file *id, i64, صحیح, خالی **);
+صحیح sqlite3OsUnfetch(sqlite3_file *, i64, خالی *);
 
 
 /* 
 ** Functions for accessing sqlite3_vfs methods 
 */
-int sqlite3OsOpen(sqlite3_vfs *, const char *, sqlite3_file*, int, int *);
-int sqlite3OsDelete(sqlite3_vfs *, const char *, int);
-int sqlite3OsAccess(sqlite3_vfs *, const char *, int, int *pResOut);
-int sqlite3OsFullPathname(sqlite3_vfs *, const char *, int, char *);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *, const char *);
-void sqlite3OsDlError(sqlite3_vfs *, int, char *);
-void (*sqlite3OsDlSym(sqlite3_vfs *, void *, const char *))(void);
-void sqlite3OsDlClose(sqlite3_vfs *, void *);
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *, int, char *);
-int sqlite3OsSleep(sqlite3_vfs *, int);
-int sqlite3OsGetLastError(sqlite3_vfs*);
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
+صحیح sqlite3OsOpen(sqlite3_vfs *, ثابت حرف *, sqlite3_file*, صحیح, صحیح *);
+صحیح sqlite3OsDelete(sqlite3_vfs *, ثابت حرف *, صحیح);
+صحیح sqlite3OsAccess(sqlite3_vfs *, ثابت حرف *, صحیح, صحیح *p_Res_برآمد);
+صحیح sqlite3_Os_بھرا_Pathname(sqlite3_vfs *, ثابت حرف *, صحیح, حرف *);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_بھرو_EXTENSION
+خالی *sqlite3OsDlOpen(sqlite3_vfs *, ثابت حرف *);
+خالی sqlite3OsDlError(sqlite3_vfs *, صحیح, حرف *);
+خالی (*sqlite3OsDlSym(sqlite3_vfs *, خالی *, ثابت حرف *))(خالی);
+خالی sqlite3OsDlClose(sqlite3_vfs *, خالی *);
+#اگر_ختم /* SQLITE_OMIT_LOAD_EXTENSION */
+صحیح sqlite3OsRandomness(sqlite3_vfs *, صحیح, حرف *);
+صحیح sqlite3OsSleep(sqlite3_vfs *, صحیح);
+صحیح sqlite3_Os_Get_آخری_Error(sqlite3_vfs*);
+صحیح sqlite3_Os_Current_وقت_Int64(sqlite3_vfs *, sqlite3_int64*);
 
 /*
 ** Convenience functions for opening and closing files using 
 ** sqlite3_malloc() to obtain space for the file-handle structure.
 */
-int sqlite3OsOpenMalloc(sqlite3_vfs *, const char *, sqlite3_file **, int,int*);
-void sqlite3OsCloseFree(sqlite3_file *);
+صحیح sqlite3OsOpenMalloc(sqlite3_vfs *, ثابت حرف *, sqlite3_file **, صحیح,صحیح*);
+خالی sqlite3OsCloseFree(sqlite3_file *);
 
-#endif /* _SQLITE_OS_H_ */
+#اگر_ختم /* _SQLITE_OS_H_ */

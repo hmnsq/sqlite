@@ -12,18 +12,18 @@
 ** This file contains routines used for analyzing expressions and
 ** for generating VDBE code that evaluates expressions in SQLite.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
 /* Forward declarations */
-static void exprCodeBetween(Parse*,Expr*,int,void(*)(Parse*,Expr*,int,int),int);
-static int exprCodeVector(Parse *pParse, Expr *p, int *piToFree);
+ساکن خالی اظہاریہ_رمز_Between(Parse*,اظہاریہ*,صحیح,خالی(*)(Parse*,اظہاریہ*,صحیح,صحیح),صحیح);
+ساکن صحیح اظہاریہ_رمز_سمتیہ(Parse *pParse, اظہاریہ *p, صحیح *pi_مقصد_Free);
 
 /*
 ** Return the affinity character for a single column of a table.
 */
-char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
-  if( iCol<0 || NEVER(iCol>=pTab->nCol) ) return SQLITE_AFF_INTEGER;
-  return pTab->aCol[iCol].affinity;
+حرف sqlite3_جدول_عمود_Affinity(ثابت جدول *pTab, صحیح i_ستون){
+  اگر( i_ستون<0 || NEVER(i_ستون>=pTab->n_ستون) ) واپس SQLITE_AFF_INTEGER;
+  واپس pTab->a_ستون[i_ستون].affinity;
 }
 
 /*
@@ -42,56 +42,56 @@ char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
 ** SELECT a AS b FROM t1 WHERE b;
 ** SELECT * FROM t1 WHERE (select a from t1);
 */
-char sqlite3ExprAffinity(const Expr *pExpr){
-  int op;
-  op = pExpr->op;
-  while( 1 /* exit-by-break */ ){
-    if( op==TK_COLUMN || (op==TK_AGG_COLUMN && pExpr->y.pTab!=0) ){
-      assert( ExprUseYTab(pExpr) );
-      assert( pExpr->y.pTab!=0 );
-      return sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
+حرف sqlite3_اظہاریہ_Affinity(ثابت اظہاریہ *p_اظہاریہ){
+  صحیح op;
+  op = p_اظہاریہ->op;
+  جب( 1 /* exit-by-break */ ){
+    اگر( op==TK_عمود || (op==TK_AGG_عمود && p_اظہاریہ->y.pTab!=0) ){
+      أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+      أكد( p_اظہاریہ->y.pTab!=0 );
+      واپس sqlite3_جدول_عمود_Affinity(p_اظہاریہ->y.pTab, p_اظہاریہ->i_عمود);
     }
-    if( op==TK_SELECT ){
-      assert( ExprUseXSelect(pExpr) );
-      assert( pExpr->x.pSelect!=0 );
-      assert( pExpr->x.pSelect->pEList!=0 );
-      assert( pExpr->x.pSelect->pEList->a[0].pExpr!=0 );
-      return sqlite3ExprAffinity(pExpr->x.pSelect->pEList->a[0].pExpr);
+    اگر( op==TK_SELECT ){
+      أكد( اظہاریہ_Use_XSelect(p_اظہاریہ) );
+      أكد( p_اظہاریہ->x.pSelect!=0 );
+      أكد( p_اظہاریہ->x.pSelect->pEList!=0 );
+      أكد( p_اظہاریہ->x.pSelect->pEList->a[0].p_اظہاریہ!=0 );
+      واپس sqlite3_اظہاریہ_Affinity(p_اظہاریہ->x.pSelect->pEList->a[0].p_اظہاریہ);
     }
-#ifndef SQLITE_OMIT_CAST
-    if( op==TK_CAST ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      return sqlite3AffinityType(pExpr->u.zToken, 0);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CAST
+    اگر( op==TK_CAST ){
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      واپس sqlite3AffinityType(p_اظہاریہ->u.zToken, 0);
     }
-#endif
-    if( op==TK_SELECT_COLUMN ){
-      assert( pExpr->pLeft!=0 && ExprUseXSelect(pExpr->pLeft) );
-      assert( pExpr->iColumn < pExpr->iTable );
-      assert( pExpr->iColumn >= 0 );
-      assert( pExpr->iTable==pExpr->pLeft->x.pSelect->pEList->nExpr );
-      return sqlite3ExprAffinity(
-          pExpr->pLeft->x.pSelect->pEList->a[pExpr->iColumn].pExpr
+#اگر_ختم
+    اگر( op==TK_SELECT_عمود ){
+      أكد( p_اظہاریہ->p_بایاں!=0 && اظہاریہ_Use_XSelect(p_اظہاریہ->p_بایاں) );
+      أكد( p_اظہاریہ->i_عمود < p_اظہاریہ->i_جدول );
+      أكد( p_اظہاریہ->i_عمود >= 0 );
+      أكد( p_اظہاریہ->i_جدول==p_اظہاریہ->p_بایاں->x.pSelect->pEList->n_اظہاریہ );
+      واپس sqlite3_اظہاریہ_Affinity(
+          p_اظہاریہ->p_بایاں->x.pSelect->pEList->a[p_اظہاریہ->i_عمود].p_اظہاریہ
       );
     }
-    if( op==TK_VECTOR
-     || (op==TK_FUNCTION && pExpr->affExpr==SQLITE_AFF_DEFER)
+    اگر( op==TK_سمتیہ
+     || (op==TK_FUNCTION && p_اظہاریہ->aff_اظہاریہ==SQLITE_AFF_DEFER)
     ){
-      assert( ExprUseXList(pExpr) );
-      return sqlite3ExprAffinity(pExpr->x.pList->a[0].pExpr);
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+      واپس sqlite3_اظہاریہ_Affinity(p_اظہاریہ->x.pList->a[0].p_اظہاریہ);
     }
-    if( ExprHasProperty(pExpr, EP_Skip|EP_IfNullRow) ){
-      assert( pExpr->op==TK_COLLATE
-           || pExpr->op==TK_IF_NULL_ROW
-           || (pExpr->op==TK_REGISTER && pExpr->op2==TK_IF_NULL_ROW) );
-      pExpr = pExpr->pLeft;
-      op = pExpr->op;
-      continue;
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Skip|EP_If_Null_صف) ){
+      أكد( p_اظہاریہ->op==TK_COLLATE
+           || p_اظہاریہ->op==TK_IF_NULL_صف
+           || (p_اظہاریہ->op==TK_رجسٹر && p_اظہاریہ->op2==TK_IF_NULL_صف) );
+      p_اظہاریہ = p_اظہاریہ->p_بایاں;
+      op = p_اظہاریہ->op;
+      جاری;
     }
-    if( op!=TK_REGISTER ) break;
-    op = pExpr->op2;
-    if( NEVER( op==TK_REGISTER ) ) break;
+    اگر( op!=TK_رجسٹر ) توڑو;
+    op = p_اظہاریہ->op2;
+    اگر( NEVER( op==TK_رجسٹر ) ) توڑو;
   }
-  return pExpr->affExpr;
+  واپس p_اظہاریہ->aff_اظہاریہ;
 }
 
 /*
@@ -104,64 +104,64 @@ char sqlite3ExprAffinity(const Expr *pExpr){
 **
 ** If the expression must return NULL, then 0x00 is returned.
 */
-int sqlite3ExprDataType(const Expr *pExpr){
-  while( pExpr ){
-    switch( pExpr->op ){
-      case TK_COLLATE:
-      case TK_IF_NULL_ROW:
-      case TK_UPLUS:  {
-        pExpr = pExpr->pLeft;
-        break;
+صحیح sqlite3_اظہاریہ_ڈیٹا_Type(ثابت اظہاریہ *p_اظہاریہ){
+  جب( p_اظہاریہ ){
+    انتخاب( p_اظہاریہ->op ){
+      حالت TK_COLLATE:
+      حالت TK_IF_NULL_صف:
+      حالت TK_UPLUS:  {
+        p_اظہاریہ = p_اظہاریہ->p_بایاں;
+        توڑو;
       }
-      case TK_NULL: {
-        pExpr = 0;
-        break;
+      حالت TK_NULL: {
+        p_اظہاریہ = 0;
+        توڑو;
       }
-      case TK_STRING: {
-        return 0x02;
+      حالت TK_STRING: {
+        واپس 0x02;
       }
-      case TK_BLOB: {
-        return 0x04;
+      حالت TK_BLOB: {
+        واپس 0x04;
       }
-      case TK_CONCAT: {
-        return 0x06;
+      حالت TK_CONCAT: {
+        واپس 0x06;
       }
-      case TK_VARIABLE:
-      case TK_AGG_FUNCTION:
-      case TK_FUNCTION: {
-        return 0x07;
+      حالت TK_VARIABLE:
+      حالت TK_AGG_FUNCTION:
+      حالت TK_FUNCTION: {
+        واپس 0x07;
       }
-      case TK_COLUMN:
-      case TK_AGG_COLUMN:
-      case TK_SELECT:
-      case TK_CAST:
-      case TK_SELECT_COLUMN:
-      case TK_VECTOR:  {
-        int aff = sqlite3ExprAffinity(pExpr);
-        if( aff>=SQLITE_AFF_NUMERIC ) return 0x05;
-        if( aff==SQLITE_AFF_TEXT )    return 0x06;
-        return 0x07;
+      حالت TK_عمود:
+      حالت TK_AGG_عمود:
+      حالت TK_SELECT:
+      حالت TK_CAST:
+      حالت TK_SELECT_عمود:
+      حالت TK_سمتیہ:  {
+        صحیح aff = sqlite3_اظہاریہ_Affinity(p_اظہاریہ);
+        اگر( aff>=SQLITE_AFF_NUMERIC ) واپس 0x05;
+        اگر( aff==SQLITE_AFF_متن )    واپس 0x06;
+        واپس 0x07;
       }
-      case TK_CASE: {
-        int res = 0;
-        int ii;
-        ExprList *pList = pExpr->x.pList;
-        assert( ExprUseXList(pExpr) && pList!=0 );
-        assert( pList->nExpr > 0);
-        for(ii=1; ii<pList->nExpr; ii+=2){
-          res |= sqlite3ExprDataType(pList->a[ii].pExpr);
+      حالت TK_CASE: {
+        صحیح res = 0;
+        صحیح ii;
+        اظہاریہ_List *pList = p_اظہاریہ->x.pList;
+        أكد( اظہاریہ_Use_XList(p_اظہاریہ) && pList!=0 );
+        أكد( pList->n_اظہاریہ > 0);
+        برائے(ii=1; ii<pList->n_اظہاریہ; ii+=2){
+          res |= sqlite3_اظہاریہ_ڈیٹا_Type(pList->a[ii].p_اظہاریہ);
         }
-        if( pList->nExpr % 2 ){
-          res |= sqlite3ExprDataType(pList->a[pList->nExpr-1].pExpr);
+        اگر( pList->n_اظہاریہ % 2 ){
+          res |= sqlite3_اظہاریہ_ڈیٹا_Type(pList->a[pList->n_اظہاریہ-1].p_اظہاریہ);
         }
-        return res;
+        واپس res;
       }
-      default: {
-        return 0x01;
+      طےشدہ: {
+        واپس 0x01;
       }
     } /* End of switch(op) */
   } /* End of while(pExpr) */
-  return 0x00;
+  واپس 0x00;
 }
 
 /*
@@ -172,48 +172,48 @@ int sqlite3ExprDataType(const Expr *pExpr){
 ** If a memory allocation error occurs, that fact is recorded in pParse->db
 ** and the pExpr parameter is returned unchanged.
 */
-Expr *sqlite3ExprAddCollateToken(
+اظہاریہ *sqlite3_اظہاریہ_جوڑو_Collate_Token(
   Parse *pParse,           /* Parsing context */
-  Expr *pExpr,             /* Add the "COLLATE" clause to this expression */
-  const Token *pCollName,  /* Name of collating sequence */
-  int dequote              /* True to dequote pCollName */
+  اظہاریہ *p_اظہاریہ,             /* Add the "COLLATE" clause to this expression */
+  ثابت Token *pCollName,  /* Name of collating sequence */
+  صحیح dequote              /* True to dequote pCollName */
 ){
-  if( pCollName->n>0 && pParse->nErr==0 ){
-    Expr *pNew = sqlite3ExprAlloc(pParse->db, TK_COLLATE, pCollName, dequote);
-    assert( pExpr!=0 );
-    if( pNew ){
-      pNew->pLeft = pExpr;
+  اگر( pCollName->n>0 && pParse->nErr==0 ){
+    اظہاریہ *pNew = sqlite3_اظہاریہ_Alloc(pParse->db, TK_COLLATE, pCollName, dequote);
+    أكد( p_اظہاریہ!=0 );
+    اگر( pNew ){
+      pNew->p_بایاں = p_اظہاریہ;
       pNew->flags |= EP_Collate|EP_Skip;
-#if SQLITE_MAX_EXPR_DEPTH>0
-      pNew->nHeight = pExpr->nHeight+1;
-      sqlite3ExprCheckHeight(pParse, pNew->nHeight);
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+      pNew->n_اونچائی = p_اظہاریہ->n_اونچائی+1;
+      sqlite3_اظہاریہ_Check_اونچائی(pParse, pNew->n_اونچائی);
       testcase( pParse->nErr>0 );
-#endif
-      pExpr = pNew;
+#اگر_ختم
+      p_اظہاریہ = pNew;
     }
   }
-  return pExpr;
+  واپس p_اظہاریہ;
 }
-Expr *sqlite3ExprAddCollateString(
+اظہاریہ *sqlite3_اظہاریہ_جوڑو_Collate_String(
   Parse *pParse,        /* Parsing context */
-  Expr *pExpr,          /* Add the "COLLATE" clause to this expression */
-  const char *zC        /* The collating sequence name */
+  اظہاریہ *p_اظہاریہ,          /* Add the "COLLATE" clause to this expression */
+  ثابت حرف *zC        /* The collating sequence name */
 ){
   Token s;
-  assert( zC!=0 );
-  sqlite3TokenInit(&s, (char*)zC);
-  return sqlite3ExprAddCollateToken(pParse, pExpr, &s, 0);
+  أكد( zC!=0 );
+  sqlite3TokenInit(&s, (حرف*)zC);
+  واپس sqlite3_اظہاریہ_جوڑو_Collate_Token(pParse, p_اظہاریہ, &s, 0);
 }
 
 /*
 ** Skip over any TK_COLLATE operators.
 */
-Expr *sqlite3ExprSkipCollate(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip) ){
-    assert( pExpr->op==TK_COLLATE );
-    pExpr = pExpr->pLeft;
+اظہاریہ *sqlite3_اظہاریہ_Skip_Collate(اظہاریہ *p_اظہاریہ){
+  جب( p_اظہاریہ && اظہاریہ_Has_Property(p_اظہاریہ, EP_Skip) ){
+    أكد( p_اظہاریہ->op==TK_COLLATE );
+    p_اظہاریہ = p_اظہاریہ->p_بایاں;
   }  
-  return pExpr;
+  واپس p_اظہاریہ;
 }
 
 /*
@@ -221,20 +221,20 @@ Expr *sqlite3ExprSkipCollate(Expr *pExpr){
 ** or likelihood() or likely() functions at the root of an
 ** expression.
 */
-Expr *sqlite3ExprSkipCollateAndLikely(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip|EP_Unlikely) ){
-    if( ExprHasProperty(pExpr, EP_Unlikely) ){
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr>0 );
-      assert( pExpr->op==TK_FUNCTION );
-      pExpr = pExpr->x.pList->a[0].pExpr;
-    }else if( pExpr->op==TK_COLLATE ){
-      pExpr = pExpr->pLeft;
-    }else{
-      break;
+اظہاریہ *sqlite3_اظہاریہ_Skip_Collate_And_Likely(اظہاریہ *p_اظہاریہ){
+  جب( p_اظہاریہ && اظہاریہ_Has_Property(p_اظہاریہ, EP_Skip|EP_Unlikely) ){
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Unlikely) ){
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+      أكد( p_اظہاریہ->x.pList->n_اظہاریہ>0 );
+      أكد( p_اظہاریہ->op==TK_FUNCTION );
+      p_اظہاریہ = p_اظہاریہ->x.pList->a[0].p_اظہاریہ;
+    }ورنہ اگر( p_اظہاریہ->op==TK_COLLATE ){
+      p_اظہاریہ = p_اظہاریہ->p_بایاں;
+    }ورنہ{
+      توڑو;
     }
   }  
-  return pExpr;
+  واپس p_اظہاریہ;
 }
 
 /*
@@ -251,67 +251,67 @@ Expr *sqlite3ExprSkipCollateAndLikely(Expr *pExpr){
 ** COLLATE operators take first precedence.  Left operands take
 ** precedence over right operands.
 */
-CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
+CollSeq *sqlite3_اظہاریہ_Coll_Seq(Parse *pParse, ثابت اظہاریہ *p_اظہاریہ){
   sqlite3 *db = pParse->db;
   CollSeq *pColl = 0;
-  const Expr *p = pExpr;
-  while( p ){
-    int op = p->op;
-    if( op==TK_REGISTER ) op = p->op2;
-    if( (op==TK_AGG_COLUMN && p->y.pTab!=0)
-     || op==TK_COLUMN || op==TK_TRIGGER
+  ثابت اظہاریہ *p = p_اظہاریہ;
+  جب( p ){
+    صحیح op = p->op;
+    اگر( op==TK_رجسٹر ) op = p->op2;
+    اگر( (op==TK_AGG_عمود && p->y.pTab!=0)
+     || op==TK_عمود || op==TK_TRIGGER
     ){
-      int j;
-      assert( ExprUseYTab(p) );
-      assert( p->y.pTab!=0 );
-      if( (j = p->iColumn)>=0 ){
-        const char *zColl = sqlite3ColumnColl(&p->y.pTab->aCol[j]);
-        pColl = sqlite3FindCollSeq(db, ENC(db), zColl, 0);
+      صحیح j;
+      أكد( اظہاریہ_Use_YTab(p) );
+      أكد( p->y.pTab!=0 );
+      اگر( (j = p->i_عمود)>=0 ){
+        ثابت حرف *zColl = sqlite3_عمود_Coll(&p->y.pTab->a_ستون[j]);
+        pColl = sqlite3_ڈھونڈو_Coll_Seq(db, ENC(db), zColl, 0);
       }
-      break;
+      توڑو;
     }
-    if( op==TK_CAST || op==TK_UPLUS ){
-      p = p->pLeft;
-      continue;
+    اگر( op==TK_CAST || op==TK_UPLUS ){
+      p = p->p_بایاں;
+      جاری;
     }
-    if( op==TK_VECTOR
-     || (op==TK_FUNCTION && p->affExpr==SQLITE_AFF_DEFER)
+    اگر( op==TK_سمتیہ
+     || (op==TK_FUNCTION && p->aff_اظہاریہ==SQLITE_AFF_DEFER)
     ){
-      assert( ExprUseXList(p) );
-      p = p->x.pList->a[0].pExpr;
-      continue;
+      أكد( اظہاریہ_Use_XList(p) );
+      p = p->x.pList->a[0].p_اظہاریہ;
+      جاری;
     }
-    if( op==TK_COLLATE ){
-      assert( !ExprHasProperty(p, EP_IntValue) );
+    اگر( op==TK_COLLATE ){
+      أكد( !اظہاریہ_Has_Property(p, EP_Int_قدر) );
       pColl = sqlite3GetCollSeq(pParse, ENC(db), 0, p->u.zToken);
-      break;
+      توڑو;
     }
-    if( p->flags & EP_Collate ){
-      if( p->pLeft && (p->pLeft->flags & EP_Collate)!=0 ){
-        p = p->pLeft;
-      }else{
-        Expr *pNext  = p->pRight;
+    اگر( p->flags & EP_Collate ){
+      اگر( p->p_بایاں && (p->p_بایاں->flags & EP_Collate)!=0 ){
+        p = p->p_بایاں;
+      }ورنہ{
+        اظہاریہ *p_اگلا  = p->p_دایاں;
         /* The Expr.x union is never used at the same time as Expr.pRight */
-        assert( !ExprUseXList(p) || p->x.pList==0 || p->pRight==0 );
-        if( ExprUseXList(p) && p->x.pList!=0 && !db->mallocFailed ){
-          int i;
-          for(i=0; i<p->x.pList->nExpr; i++){
-            if( ExprHasProperty(p->x.pList->a[i].pExpr, EP_Collate) ){
-              pNext = p->x.pList->a[i].pExpr;
-              break;
+        أكد( !اظہاریہ_Use_XList(p) || p->x.pList==0 || p->p_دایاں==0 );
+        اگر( اظہاریہ_Use_XList(p) && p->x.pList!=0 && !db->mallocFailed ){
+          صحیح i;
+          برائے(i=0; i<p->x.pList->n_اظہاریہ; i++){
+            اگر( اظہاریہ_Has_Property(p->x.pList->a[i].p_اظہاریہ, EP_Collate) ){
+              p_اگلا = p->x.pList->a[i].p_اظہاریہ;
+              توڑو;
             }
           }
         }
-        p = pNext;
+        p = p_اگلا;
       }
-    }else{
-      break;
+    }ورنہ{
+      توڑو;
     }
   }
-  if( sqlite3CheckCollSeq(pParse, pColl) ){
+  اگر( sqlite3CheckCollSeq(pParse, pColl) ){
     pColl = 0;
   }
-  return pColl;
+  واپس pColl;
 }
 
 /*
@@ -324,22 +324,22 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
 ** The sqlite3ExprCollSeq() routine works the same except that it
 ** returns NULL if there is no defined collation.
 */
-CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr){
-  CollSeq *p = sqlite3ExprCollSeq(pParse, pExpr);
-  if( p==0 ) p = pParse->db->pDfltColl;
-  assert( p!=0 );
-  return p;
+CollSeq *sqlite3_اظہاریہ_NNColl_Seq(Parse *pParse, ثابت اظہاریہ *p_اظہاریہ){
+  CollSeq *p = sqlite3_اظہاریہ_Coll_Seq(pParse, p_اظہاریہ);
+  اگر( p==0 ) p = pParse->db->pDfltColl;
+  أكد( p!=0 );
+  واپس p;
 }
 
 /*
 ** Return TRUE if the two expressions have equivalent collating sequences.
 */
-int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
-  CollSeq *pColl1 = sqlite3ExprNNCollSeq(pParse, pE1);
-  CollSeq *pColl2 = sqlite3ExprNNCollSeq(pParse, pE2);
-  assert( (pColl1==pColl2) ==
+صحیح sqlite3_اظہاریہ_Coll_Seq_مطابقت(Parse *pParse, ثابت اظہاریہ *pE1, ثابت اظہاریہ *pE2){
+  CollSeq *pColl1 = sqlite3_اظہاریہ_NNColl_Seq(pParse, pE1);
+  CollSeq *pColl2 = sqlite3_اظہاریہ_NNColl_Seq(pParse, pE2);
+  أكد( (pColl1==pColl2) ==
           (sqlite3_stricmp(pColl1->zName,pColl2->zName)==0) );
-  return pColl1==pColl2;
+  واپس pColl1==pColl2;
 }
 
 /*
@@ -347,21 +347,21 @@ int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
 ** type affinity of the other operand.  This routine returns the
 ** type affinity that should be used for the comparison operator.
 */
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2){
-  char aff1 = sqlite3ExprAffinity(pExpr);
-  if( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
+حرف sqlite3CompareAffinity(ثابت اظہاریہ *p_اظہاریہ, حرف aff2){
+  حرف aff1 = sqlite3_اظہاریہ_Affinity(p_اظہاریہ);
+  اگر( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
     /* Both sides of the comparison are columns. If one has numeric
     ** affinity, use that. Otherwise use no affinity.
     */
-    if( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
-      return SQLITE_AFF_NUMERIC;
-    }else{
-      return SQLITE_AFF_BLOB;
+    اگر( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
+      واپس SQLITE_AFF_NUMERIC;
+    }ورنہ{
+      واپس SQLITE_AFF_BLOB;
     }
-  }else{
+  }ورنہ{
     /* One side is a column, the other is not. Use the columns affinity. */
-    assert( aff1<=SQLITE_AFF_NONE || aff2<=SQLITE_AFF_NONE );
-    return (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
+    أكد( aff1<=SQLITE_AFF_NONE || aff2<=SQLITE_AFF_NONE );
+    واپس (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
   }
 }
 
@@ -369,20 +369,20 @@ char sqlite3CompareAffinity(const Expr *pExpr, char aff2){
 ** pExpr is a comparison operator.  Return the type affinity that should
 ** be applied to both operands prior to doing the comparison.
 */
-static char comparisonAffinity(const Expr *pExpr){
-  char aff;
-  assert( pExpr->op==TK_EQ || pExpr->op==TK_IN || pExpr->op==TK_LT ||
-          pExpr->op==TK_GT || pExpr->op==TK_GE || pExpr->op==TK_LE ||
-          pExpr->op==TK_NE || pExpr->op==TK_IS || pExpr->op==TK_ISNOT );
-  assert( pExpr->pLeft );
-  assert( !ExprUseXSelect(pExpr) );
-  aff = sqlite3ExprAffinity(pExpr->pLeft);
-  if( pExpr->pRight ){
-    aff = sqlite3CompareAffinity(pExpr->pRight, aff);
-  }else if( aff==0 ){
+ساکن حرف comparisonAffinity(ثابت اظہاریہ *p_اظہاریہ){
+  حرف aff;
+  أكد( p_اظہاریہ->op==TK_EQ || p_اظہاریہ->op==TK_اندر || p_اظہاریہ->op==TK_LT ||
+          p_اظہاریہ->op==TK_GT || p_اظہاریہ->op==TK_GE || p_اظہاریہ->op==TK_LE ||
+          p_اظہاریہ->op==TK_NE || p_اظہاریہ->op==TK_IS || p_اظہاریہ->op==TK_ISNOT );
+  أكد( p_اظہاریہ->p_بایاں );
+  أكد( !اظہاریہ_Use_XSelect(p_اظہاریہ) );
+  aff = sqlite3_اظہاریہ_Affinity(p_اظہاریہ->p_بایاں);
+  اگر( p_اظہاریہ->p_دایاں ){
+    aff = sqlite3CompareAffinity(p_اظہاریہ->p_دایاں, aff);
+  }ورنہ اگر( aff==0 ){
     aff = SQLITE_AFF_BLOB;
   }
-  return aff;
+  واپس aff;
 }
 
 /*
@@ -391,29 +391,29 @@ static char comparisonAffinity(const Expr *pExpr){
 ** if the index with affinity idx_affinity may be used to implement
 ** the comparison in pExpr.
 */
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
-  char aff = comparisonAffinity(pExpr);
-  if( aff<SQLITE_AFF_TEXT ){
-    return 1;
+صحیح sqlite3_اشاریہ_Affinity_Ok(ثابت اظہاریہ *p_اظہاریہ, حرف idx_affinity){
+  حرف aff = comparisonAffinity(p_اظہاریہ);
+  اگر( aff<SQLITE_AFF_متن ){
+    واپس 1;
   }
-  if( aff==SQLITE_AFF_TEXT ){
-    return idx_affinity==SQLITE_AFF_TEXT;
+  اگر( aff==SQLITE_AFF_متن ){
+    واپس idx_affinity==SQLITE_AFF_متن;
   }
-  return sqlite3IsNumericAffinity(idx_affinity);
+  واپس sqlite3IsNumericAffinity(idx_affinity);
 }
 
 /*
 ** Return the P5 value that should be used for a binary comparison
 ** opcode (OP_Eq, OP_Ge etc.) used to compare pExpr1 and pExpr2.
 */
-static u8 binaryCompareP5(
-  const Expr *pExpr1,   /* Left operand */
-  const Expr *pExpr2,   /* Right operand */
-  int jumpIfNull        /* Extra flags added to P5 */
+ساکن u8 ثنائی_Compare_P5(
+  ثابت اظہاریہ *pExpr1,   /* Left operand */
+  ثابت اظہاریہ *pExpr2,   /* Right operand */
+  صحیح jumpIfNull        /* Extra flags added to P5 */
 ){
-  u8 aff = (char)sqlite3ExprAffinity(pExpr2);
+  u8 aff = (حرف)sqlite3_اظہاریہ_Affinity(pExpr2);
   aff = (u8)sqlite3CompareAffinity(pExpr1, aff) | (u8)jumpIfNull;
-  return aff;
+  واپس aff;
 }
 
 /*
@@ -428,24 +428,24 @@ static u8 binaryCompareP5(
 ** Argument pRight (but not pLeft) may be a null pointer. In this case,
 ** it is not considered.
 */
-CollSeq *sqlite3BinaryCompareCollSeq(
+CollSeq *sqlite3_ثنائی_Compare_Coll_Seq(
   Parse *pParse,
-  const Expr *pLeft,
-  const Expr *pRight
+  ثابت اظہاریہ *p_بایاں,
+  ثابت اظہاریہ *p_دایاں
 ){
   CollSeq *pColl;
-  assert( pLeft );
-  if( pLeft->flags & EP_Collate ){
-    pColl = sqlite3ExprCollSeq(pParse, pLeft);
-  }else if( pRight && (pRight->flags & EP_Collate)!=0 ){
-    pColl = sqlite3ExprCollSeq(pParse, pRight);
-  }else{
-    pColl = sqlite3ExprCollSeq(pParse, pLeft);
-    if( !pColl ){
-      pColl = sqlite3ExprCollSeq(pParse, pRight);
+  أكد( p_بایاں );
+  اگر( p_بایاں->flags & EP_Collate ){
+    pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p_بایاں);
+  }ورنہ اگر( p_دایاں && (p_دایاں->flags & EP_Collate)!=0 ){
+    pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p_دایاں);
+  }ورنہ{
+    pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p_بایاں);
+    اگر( !pColl ){
+      pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p_دایاں);
     }
   }
-  return pColl;
+  واپس pColl;
 }
 
 /* Expression p is a comparison operator.  Return a collation sequence
@@ -456,42 +456,42 @@ CollSeq *sqlite3BinaryCompareCollSeq(
 ** is reversed in the sqlite3BinaryCompareCollSeq() call so that the
 ** correct collating sequence is found.
 */
-CollSeq *sqlite3ExprCompareCollSeq(Parse *pParse, const Expr *p){
-  if( ExprHasProperty(p, EP_Commuted) ){
-    return sqlite3BinaryCompareCollSeq(pParse, p->pRight, p->pLeft);
-  }else{
-    return sqlite3BinaryCompareCollSeq(pParse, p->pLeft, p->pRight);
+CollSeq *sqlite3_اظہاریہ_Compare_Coll_Seq(Parse *pParse, ثابت اظہاریہ *p){
+  اگر( اظہاریہ_Has_Property(p, EP_Commuted) ){
+    واپس sqlite3_ثنائی_Compare_Coll_Seq(pParse, p->p_دایاں, p->p_بایاں);
+  }ورنہ{
+    واپس sqlite3_ثنائی_Compare_Coll_Seq(pParse, p->p_بایاں, p->p_دایاں);
   }
 }
 
 /*
 ** Generate code for a comparison operator.
 */
-static int codeCompare(
+ساکن صحیح رمز_Compare(
   Parse *pParse,    /* The parsing (and code generating) context */
-  Expr *pLeft,      /* The left operand */
-  Expr *pRight,     /* The right operand */
-  int opcode,       /* The comparison opcode */
-  int in1, int in2, /* Register holding operands */
-  int dest,         /* Jump here if true.  */
-  int jumpIfNull,   /* If true, jump if either operand is NULL */
-  int isCommuted    /* The comparison has been commuted */
+  اظہاریہ *p_بایاں,      /* The left operand */
+  اظہاریہ *p_دایاں,     /* The right operand */
+  صحیح opcode,       /* The comparison opcode */
+  صحیح in1, صحیح in2, /* Register holding operands */
+  صحیح dest,         /* Jump here if true.  */
+  صحیح jumpIfNull,   /* If true, jump if either operand is NULL */
+  صحیح isCommuted    /* The comparison has been commuted */
 ){
-  int p5;
-  int addr;
+  صحیح p5;
+  صحیح addr;
   CollSeq *p4;
 
-  if( pParse->nErr ) return 0;
-  if( isCommuted ){
-    p4 = sqlite3BinaryCompareCollSeq(pParse, pRight, pLeft);
-  }else{
-    p4 = sqlite3BinaryCompareCollSeq(pParse, pLeft, pRight);
+  اگر( pParse->nErr ) واپس 0;
+  اگر( isCommuted ){
+    p4 = sqlite3_ثنائی_Compare_Coll_Seq(pParse, p_دایاں, p_بایاں);
+  }ورنہ{
+    p4 = sqlite3_ثنائی_Compare_Coll_Seq(pParse, p_بایاں, p_دایاں);
   }
-  p5 = binaryCompareP5(pLeft, pRight, jumpIfNull);
-  addr = sqlite3VdbeAddOp4(pParse->pVdbe, opcode, in2, dest, in1,
-                           (void*)p4, P4_COLLSEQ);
+  p5 = ثنائی_Compare_P5(p_بایاں, p_دایاں, jumpIfNull);
+  addr = sqlite3_Vdbe_جوڑو_Op4(pParse->pVdbe, opcode, in2, dest, in1,
+                           (خالی*)p4, P4_COLLSEQ);
   sqlite3VdbeChangeP5(pParse->pVdbe, (u16)p5);
-  return addr;
+  واپس addr;
 }
 
 /*
@@ -503,8 +503,8 @@ static int codeCompare(
 ** But a TK_SELECT might be either a vector or a scalar. It is only
 ** considered a vector if it has two or more result columns.
 */
-int sqlite3ExprIsVector(const Expr *pExpr){
-  return sqlite3ExprVectorSize(pExpr)>1;
+صحیح sqlite3_اظہاریہ_Is_سمتیہ(ثابت اظہاریہ *p_اظہاریہ){
+  واپس sqlite3_اظہاریہ_سمتیہ_سائز(p_اظہاریہ)>1;
 }
 
 /*
@@ -513,17 +513,17 @@ int sqlite3ExprIsVector(const Expr *pExpr){
 ** is a sub-select, return the number of columns in the sub-select. For
 ** any other type of expression, return 1.
 */
-int sqlite3ExprVectorSize(const Expr *pExpr){
-  u8 op = pExpr->op;
-  if( op==TK_REGISTER ) op = pExpr->op2;
-  if( op==TK_VECTOR ){
-    assert( ExprUseXList(pExpr) );
-    return pExpr->x.pList->nExpr;
-  }else if( op==TK_SELECT ){
-    assert( ExprUseXSelect(pExpr) );
-    return pExpr->x.pSelect->pEList->nExpr;
-  }else{
-    return 1;
+صحیح sqlite3_اظہاریہ_سمتیہ_سائز(ثابت اظہاریہ *p_اظہاریہ){
+  u8 op = p_اظہاریہ->op;
+  اگر( op==TK_رجسٹر ) op = p_اظہاریہ->op2;
+  اگر( op==TK_سمتیہ ){
+    أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+    واپس p_اظہاریہ->x.pList->n_اظہاریہ;
+  }ورنہ اگر( op==TK_SELECT ){
+    أكد( اظہاریہ_Use_XSelect(p_اظہاریہ) );
+    واپس p_اظہاریہ->x.pSelect->pEList->n_اظہاریہ;
+  }ورنہ{
+    واپس 1;
   }
 }
 
@@ -542,19 +542,19 @@ int sqlite3ExprVectorSize(const Expr *pExpr){
 ** not be ready for evaluation because the table cursor has not yet
 ** been positioned.
 */
-Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
-  assert( i<sqlite3ExprVectorSize(pVector) || pVector->op==TK_ERROR );
-  if( sqlite3ExprIsVector(pVector) ){
-    assert( pVector->op2==0 || pVector->op==TK_REGISTER );
-    if( pVector->op==TK_SELECT || pVector->op2==TK_SELECT ){
-      assert( ExprUseXSelect(pVector) );
-      return pVector->x.pSelect->pEList->a[i].pExpr;
-    }else{
-      assert( ExprUseXList(pVector) );
-      return pVector->x.pList->a[i].pExpr;
+اظہاریہ *sqlite3_سمتیہ_میدان_Subexpr(اظہاریہ *p_سمتیہ, صحیح i){
+  أكد( i<sqlite3_اظہاریہ_سمتیہ_سائز(p_سمتیہ) || p_سمتیہ->op==TK_ERROR );
+  اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_سمتیہ) ){
+    أكد( p_سمتیہ->op2==0 || p_سمتیہ->op==TK_رجسٹر );
+    اگر( p_سمتیہ->op==TK_SELECT || p_سمتیہ->op2==TK_SELECT ){
+      أكد( اظہاریہ_Use_XSelect(p_سمتیہ) );
+      واپس p_سمتیہ->x.pSelect->pEList->a[i].p_اظہاریہ;
+    }ورنہ{
+      أكد( اظہاریہ_Use_XList(p_سمتیہ) );
+      واپس p_سمتیہ->x.pList->a[i].p_اظہاریہ;
     }
   }
-  return pVector;
+  واپس p_سمتیہ;
 }
 
 /*
@@ -578,15 +578,15 @@ Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
 ** the returned Expr object is to attach the pVector to the pRight field
 ** of the returned TK_SELECT_COLUMN Expr object.
 */
-Expr *sqlite3ExprForVectorField(
+اظہاریہ *sqlite3_اظہاریہ_For_سمتیہ_میدان(
   Parse *pParse,       /* Parsing context */
-  Expr *pVector,       /* The vector.  List of expressions or a sub-SELECT */
-  int iField,          /* Which column of the vector to return */
-  int nField           /* Total number of columns in the vector */
+  اظہاریہ *p_سمتیہ,       /* The vector.  List of expressions or a sub-SELECT */
+  صحیح i_میدان,          /* Which column of the vector to return */
+  صحیح n_میدان           /* Total number of columns in the vector */
 ){
-  Expr *pRet;
-  if( pVector->op==TK_SELECT ){
-    assert( ExprUseXSelect(pVector) );
+  اظہاریہ *pRet;
+  اگر( p_سمتیہ->op==TK_SELECT ){
+    أكد( اظہاریہ_Use_XSelect(p_سمتیہ) );
     /* The TK_SELECT_COLUMN Expr node:
     **
     ** pLeft:           pVector containing TK_SELECT.  Not deleted.
@@ -603,28 +603,28 @@ Expr *sqlite3ExprForVectorField(
     ** with the same pLeft pointer to the pVector, but only one of them
     ** will own the pVector.
     */
-    pRet = sqlite3PExpr(pParse, TK_SELECT_COLUMN, 0, 0);
-    if( pRet ){
-      ExprSetProperty(pRet, EP_FullSize);
-      pRet->iTable = nField;
-      pRet->iColumn = iField;
-      pRet->pLeft = pVector;
+    pRet = sqlite3PExpr(pParse, TK_SELECT_عمود, 0, 0);
+    اگر( pRet ){
+      اظہاریہ_سیٹ_Property(pRet, EP_بھرا_سائز);
+      pRet->i_جدول = n_میدان;
+      pRet->i_عمود = i_میدان;
+      pRet->p_بایاں = p_سمتیہ;
     }
-  }else{
-    if( pVector->op==TK_VECTOR ){
-      Expr **ppVector;
-      assert( ExprUseXList(pVector) );
-      ppVector = &pVector->x.pList->a[iField].pExpr;
-      pVector = *ppVector;
-      if( IN_RENAME_OBJECT ){
+  }ورنہ{
+    اگر( p_سمتیہ->op==TK_سمتیہ ){
+      اظہاریہ **pp_سمتیہ;
+      أكد( اظہاریہ_Use_XList(p_سمتیہ) );
+      pp_سمتیہ = &p_سمتیہ->x.pList->a[i_میدان].p_اظہاریہ;
+      p_سمتیہ = *pp_سمتیہ;
+      اگر( اندر_RENAME_OBJECT ){
         /* This must be a vector UPDATE inside a trigger */
-        *ppVector = 0;
-        return pVector;
+        *pp_سمتیہ = 0;
+        واپس p_سمتیہ;
       }
     }
-    pRet = sqlite3ExprDup(pParse->db, pVector, 0);
+    pRet = sqlite3_اظہاریہ_Dup(pParse->db, p_سمتیہ, 0);
   }
-  return pRet;
+  واپس pRet;
 }
 
 /*
@@ -635,14 +635,14 @@ Expr *sqlite3ExprForVectorField(
 **
 ** If pExpr is not a TK_SELECT expression, return 0.
 */
-static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
-  int reg = 0;
-#ifndef SQLITE_OMIT_SUBQUERY
-  if( pExpr->op==TK_SELECT ){
-    reg = sqlite3CodeSubselect(pParse, pExpr);
+ساکن صحیح اظہاریہ_رمز_Subselect(Parse *pParse, اظہاریہ *p_اظہاریہ){
+  صحیح reg = 0;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+  اگر( p_اظہاریہ->op==TK_SELECT ){
+    reg = sqlite3_رمز_Subselect(pParse, p_اظہاریہ);
   }
-#endif
-  return reg;
+#اگر_ختم
+  واپس reg;
 }
 
 /*
@@ -663,41 +663,41 @@ static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
 ** Before returning, output parameter (*ppExpr) is set to point to the
 ** Expr object corresponding to element iElem of the vector.
 */
-static int exprVectorRegister(
+ساکن صحیح اظہاریہ_سمتیہ_رجسٹر(
   Parse *pParse,                  /* Parse context */
-  Expr *pVector,                  /* Vector to extract element from */
-  int iField,                     /* Field to extract from pVector */
-  int regSelect,                  /* First in array of registers */
-  Expr *pTmp,                     /* Temporary space */
-  Expr **ppExpr,                  /* OUT: Expression element */
-  int *pRegFree                   /* OUT: Temp register to free */
+  اظہاریہ *p_سمتیہ,                  /* Vector to extract element from */
+  صحیح i_میدان,                     /* Field to extract from pVector */
+  صحیح regSelect,                  /* First in array of registers */
+  اظہاریہ *pTmp,                     /* Temporary space */
+  اظہاریہ **pp_اظہاریہ,                  /* OUT: Expression element */
+  صحیح *pRegFree                   /* OUT: Temp register to free */
 ){
-  u8 op = pVector->op;
-  assert( op==TK_VECTOR || op==TK_REGISTER || op==TK_SELECT || op==TK_ERROR );
-  if( op==TK_REGISTER ){
-    *ppExpr = sqlite3VectorFieldSubexpr(pVector, iField);
-    return pVector->iTable+iField;
+  u8 op = p_سمتیہ->op;
+  أكد( op==TK_سمتیہ || op==TK_رجسٹر || op==TK_SELECT || op==TK_ERROR );
+  اگر( op==TK_رجسٹر ){
+    *pp_اظہاریہ = sqlite3_سمتیہ_میدان_Subexpr(p_سمتیہ, i_میدان);
+    واپس p_سمتیہ->i_جدول+i_میدان;
   }
-  if( op==TK_SELECT ){
-    assert( ExprUseXSelect(pVector) );
+  اگر( op==TK_SELECT ){
+    أكد( اظہاریہ_Use_XSelect(p_سمتیہ) );
     /* Use the temporary expression node to wrap expression iField of the
     ** sub-select in a TK_SELECT_COLUMN node. This causes the caller to
     ** use the affinity of the expression in any comparison, but not the
     ** collation sequence.  */
-    memset(pTmp, 0, sizeof(Expr));
-    pTmp->op = TK_SELECT_COLUMN;
-    pTmp->pLeft = pVector;
-    pTmp->iColumn = iField;
-    pTmp->iTable = pVector->x.pSelect->pEList->nExpr;
-    *ppExpr = pTmp;
-    return regSelect+iField;
+    memset(pTmp, 0, حجم(اظہاریہ));
+    pTmp->op = TK_SELECT_عمود;
+    pTmp->p_بایاں = p_سمتیہ;
+    pTmp->i_عمود = i_میدان;
+    pTmp->i_جدول = p_سمتیہ->x.pSelect->pEList->n_اظہاریہ;
+    *pp_اظہاریہ = pTmp;
+    واپس regSelect+i_میدان;
   }
-  if( op==TK_VECTOR ){
-    assert( ExprUseXList(pVector) );
-    *ppExpr = pVector->x.pList->a[iField].pExpr;
-    return sqlite3ExprCodeTemp(pParse, *ppExpr, pRegFree);
+  اگر( op==TK_سمتیہ ){
+    أكد( اظہاریہ_Use_XList(p_سمتیہ) );
+    *pp_اظہاریہ = p_سمتیہ->x.pList->a[i_میدان].p_اظہاریہ;
+    واپس sqlite3_اظہاریہ_رمز_عارضی(pParse, *pp_اظہاریہ, pRegFree);
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -711,112 +711,112 @@ static int exprVectorRegister(
 **    if pExpr->op==TK_ISNOT:   op==TK_NE and p5==SQLITE_NULLEQ
 **    otherwise:                op==pExpr->op and p5==0
 */
-static void codeVectorCompare(
+ساکن خالی رمز_سمتیہ_Compare(
   Parse *pParse,        /* Code generator context */
-  Expr *pExpr,          /* The comparison operation */
-  int dest,             /* Write results into this register */
+  اظہاریہ *p_اظہاریہ,          /* The comparison operation */
+  صحیح dest,             /* Write results into this register */
   u8 op,                /* Comparison operator */
   u8 p5                 /* SQLITE_NULLEQ or zero */
 ){
   Vdbe *v = pParse->pVdbe;
-  Expr *pLeft = pExpr->pLeft;
-  Expr *pRight = pExpr->pRight;
-  int nLeft = sqlite3ExprVectorSize(pLeft);
-  int i;
-  int regLeft = 0;
-  int regRight = 0;
+  اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+  اظہاریہ *p_دایاں = p_اظہاریہ->p_دایاں;
+  صحیح n_بایاں = sqlite3_اظہاریہ_سمتیہ_سائز(p_بایاں);
+  صحیح i;
+  صحیح reg_بایاں = 0;
+  صحیح reg_دایاں = 0;
   u8 opx = op;
-  int addrCmp = 0;
-  int addrDone = sqlite3VdbeMakeLabel(pParse);
-  int isCommuted = ExprHasProperty(pExpr,EP_Commuted);
+  صحیح addrCmp = 0;
+  صحیح addr_مکمل = sqlite3VdbeMakeLabel(pParse);
+  صحیح isCommuted = اظہاریہ_Has_Property(p_اظہاریہ,EP_Commuted);
 
-  assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
-  if( pParse->nErr ) return;
-  if( nLeft!=sqlite3ExprVectorSize(pRight) ){
-    sqlite3ErrorMsg(pParse, "row value misused");
-    return;
+  أكد( !اظہاریہ_Has_VVAProperty(p_اظہاریہ,EP_Immutable) );
+  اگر( pParse->nErr ) واپس;
+  اگر( n_بایاں!=sqlite3_اظہاریہ_سمتیہ_سائز(p_دایاں) ){
+    sqlite3_Error_پیغام(pParse, "row value misused");
+    واپس;
   }
-  assert( pExpr->op==TK_EQ || pExpr->op==TK_NE
-       || pExpr->op==TK_IS || pExpr->op==TK_ISNOT
-       || pExpr->op==TK_LT || pExpr->op==TK_GT
-       || pExpr->op==TK_LE || pExpr->op==TK_GE
+  أكد( p_اظہاریہ->op==TK_EQ || p_اظہاریہ->op==TK_NE
+       || p_اظہاریہ->op==TK_IS || p_اظہاریہ->op==TK_ISNOT
+       || p_اظہاریہ->op==TK_LT || p_اظہاریہ->op==TK_GT
+       || p_اظہاریہ->op==TK_LE || p_اظہاریہ->op==TK_GE
   );
-  assert( pExpr->op==op || (pExpr->op==TK_IS && op==TK_EQ)
-            || (pExpr->op==TK_ISNOT && op==TK_NE) );
-  assert( p5==0 || pExpr->op!=op );
-  assert( p5==SQLITE_NULLEQ || pExpr->op==op );
+  أكد( p_اظہاریہ->op==op || (p_اظہاریہ->op==TK_IS && op==TK_EQ)
+            || (p_اظہاریہ->op==TK_ISNOT && op==TK_NE) );
+  أكد( p5==0 || p_اظہاریہ->op!=op );
+  أكد( p5==SQLITE_NULLEQ || p_اظہاریہ->op==op );
 
-  if( op==TK_LE ) opx = TK_LT;
-  if( op==TK_GE ) opx = TK_GT;
-  if( op==TK_NE ) opx = TK_EQ;
+  اگر( op==TK_LE ) opx = TK_LT;
+  اگر( op==TK_GE ) opx = TK_GT;
+  اگر( op==TK_NE ) opx = TK_EQ;
 
-  regLeft = exprCodeSubselect(pParse, pLeft);
-  regRight = exprCodeSubselect(pParse, pRight);
+  reg_بایاں = اظہاریہ_رمز_Subselect(pParse, p_بایاں);
+  reg_دایاں = اظہاریہ_رمز_Subselect(pParse, p_دایاں);
 
-  sqlite3VdbeAddOp2(v, OP_Integer, 1, dest);
-  for(i=0; 1 /*Loop exits by "break"*/; i++){
-    int regFree1 = 0, regFree2 = 0;
-    Expr *pL = 0, *pR = 0;
-    Expr tmp1, tmp2;
-    int r1, r2;
-    assert( i>=0 && i<nLeft );
-    if( addrCmp ) sqlite3VdbeJumpHere(v, addrCmp);
-    r1 = exprVectorRegister(pParse, pLeft, i, regLeft, &tmp1, &pL, &regFree1);
-    r2 = exprVectorRegister(pParse, pRight, i, regRight, &tmp2, &pR, &regFree2);
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, dest);
+  برائے(i=0; 1 /*Loop exits by "break"*/; i++){
+    صحیح regFree1 = 0, regFree2 = 0;
+    اظہاریہ *pL = 0, *pR = 0;
+    اظہاریہ tmp1, tmp2;
+    صحیح r1, r2;
+    أكد( i>=0 && i<n_بایاں );
+    اگر( addrCmp ) sqlite3_Vdbe_Jump_یہاں(v, addrCmp);
+    r1 = اظہاریہ_سمتیہ_رجسٹر(pParse, p_بایاں, i, reg_بایاں, &tmp1, &pL, &regFree1);
+    r2 = اظہاریہ_سمتیہ_رجسٹر(pParse, p_دایاں, i, reg_دایاں, &tmp2, &pR, &regFree2);
     addrCmp = sqlite3VdbeCurrentAddr(v);
-    codeCompare(pParse, pL, pR, opx, r1, r2, addrDone, p5, isCommuted);
+    رمز_Compare(pParse, pL, pR, opx, r1, r2, addr_مکمل, p5, isCommuted);
     testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
     testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
     testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
     testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
     testcase(op==OP_Eq); VdbeCoverageIf(v,op==OP_Eq);
     testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
-    sqlite3ReleaseTempReg(pParse, regFree1);
-    sqlite3ReleaseTempReg(pParse, regFree2);
-    if( (opx==TK_LT || opx==TK_GT) && i<nLeft-1 ){
-      addrCmp = sqlite3VdbeAddOp0(v, OP_ElseEq);
+    sqlite3_Release_عارضی_Reg(pParse, regFree1);
+    sqlite3_Release_عارضی_Reg(pParse, regFree2);
+    اگر( (opx==TK_LT || opx==TK_GT) && i<n_بایاں-1 ){
+      addrCmp = sqlite3_Vdbe_جوڑو_Op0(v, OP_ElseEq);
       testcase(opx==TK_LT); VdbeCoverageIf(v,opx==TK_LT);
       testcase(opx==TK_GT); VdbeCoverageIf(v,opx==TK_GT);
     }
-    if( p5==SQLITE_NULLEQ ){
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, dest);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, dest, r2);
+    اگر( p5==SQLITE_NULLEQ ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, dest);
+    }ورنہ{
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_ZeroOrNull, r1, dest, r2);
     }
-    if( i==nLeft-1 ){
-      break;
+    اگر( i==n_بایاں-1 ){
+      توڑو;
     }
-    if( opx==TK_EQ ){
-      sqlite3VdbeAddOp2(v, OP_NotNull, dest, addrDone); VdbeCoverage(v);
-    }else{
-      assert( op==TK_LT || op==TK_GT || op==TK_LE || op==TK_GE );
-      sqlite3VdbeAddOp2(v, OP_Goto, 0, addrDone);
-      if( i==nLeft-2 ) opx = op;
+    اگر( opx==TK_EQ ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_NotNull, dest, addr_مکمل); VdbeCoverage(v);
+    }ورنہ{
+      أكد( op==TK_LT || op==TK_GT || op==TK_LE || op==TK_GE );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, addr_مکمل);
+      اگر( i==n_بایاں-2 ) opx = op;
     }
   }
-  sqlite3VdbeJumpHere(v, addrCmp);
-  sqlite3VdbeResolveLabel(v, addrDone);
-  if( op==TK_NE ){
-    sqlite3VdbeAddOp2(v, OP_Not, dest, dest);
+  sqlite3_Vdbe_Jump_یہاں(v, addrCmp);
+  sqlite3VdbeResolveLabel(v, addr_مکمل);
+  اگر( op==TK_NE ){
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Not, dest, dest);
   }
 }
 
-#if SQLITE_MAX_EXPR_DEPTH>0
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
 /*
 ** Check that argument nHeight is less than or equal to the maximum
 ** expression depth allowed. If it is not, leave an error message in
 ** pParse.
 */
-int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
-  int rc = SQLITE_OK;
-  int mxHeight = pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH];
-  if( nHeight>mxHeight ){
-    sqlite3ErrorMsg(pParse,
-       "Expression tree is too large (maximum depth %d)", mxHeight
+صحیح sqlite3_اظہاریہ_Check_اونچائی(Parse *pParse, صحیح n_اونچائی){
+  صحیح rc = SQLITE_OK;
+  صحیح mx_اونچائی = pParse->db->a_حد_بندی[SQLITE_حد_بندی_اظہاریہ_گہرائی];
+  اگر( n_اونچائی>mx_اونچائی ){
+    sqlite3_Error_پیغام(pParse,
+       "Expression tree is too large (maximum depth %d)", mx_اونچائی
     );
     rc = SQLITE_ERROR;
   }
-  return rc;
+  واپس rc;
 }
 
 /* The following three functions, heightOfExpr(), heightOfExprList()
@@ -828,30 +828,30 @@ int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
 ** to by pnHeight, the second parameter, then set *pnHeight to that
 ** value.
 */
-static void heightOfExpr(const Expr *p, int *pnHeight){
-  if( p ){
-    if( p->nHeight>*pnHeight ){
-      *pnHeight = p->nHeight;
+ساکن خالی اونچائی_کا_اظہاریہ(ثابت اظہاریہ *p, صحیح *pn_اونچائی){
+  اگر( p ){
+    اگر( p->n_اونچائی>*pn_اونچائی ){
+      *pn_اونچائی = p->n_اونچائی;
     }
   }
 }
-static void heightOfExprList(const ExprList *p, int *pnHeight){
-  if( p ){
-    int i;
-    for(i=0; i<p->nExpr; i++){
-      heightOfExpr(p->a[i].pExpr, pnHeight);
+ساکن خالی اونچائی_کا_اظہاریہ_List(ثابت اظہاریہ_List *p, صحیح *pn_اونچائی){
+  اگر( p ){
+    صحیح i;
+    برائے(i=0; i<p->n_اظہاریہ; i++){
+      اونچائی_کا_اظہاریہ(p->a[i].p_اظہاریہ, pn_اونچائی);
     }
   }
 }
-static void heightOfSelect(const Select *pSelect, int *pnHeight){
-  const Select *p;
-  for(p=pSelect; p; p=p->pPrior){
-    heightOfExpr(p->pWhere, pnHeight);
-    heightOfExpr(p->pHaving, pnHeight);
-    heightOfExpr(p->pLimit, pnHeight);
-    heightOfExprList(p->pEList, pnHeight);
-    heightOfExprList(p->pGroupBy, pnHeight);
-    heightOfExprList(p->pOrderBy, pnHeight);
+ساکن خالی اونچائی_کا_Select(ثابت Select *pSelect, صحیح *pn_اونچائی){
+  ثابت Select *p;
+  برائے(p=pSelect; p; p=p->p_پیشگی){
+    اونچائی_کا_اظہاریہ(p->pWhere, pn_اونچائی);
+    اونچائی_کا_اظہاریہ(p->pHaving, pn_اونچائی);
+    اونچائی_کا_اظہاریہ(p->p_حد_بندی, pn_اونچائی);
+    اونچائی_کا_اظہاریہ_List(p->pEList, pn_اونچائی);
+    اونچائی_کا_اظہاریہ_List(p->p_گروہ_By, pn_اونچائی);
+    اونچائی_کا_اظہاریہ_List(p->p_ترتیب_By, pn_اونچائی);
   }
 }
 
@@ -865,18 +865,18 @@ static void heightOfSelect(const Select *pSelect, int *pnHeight){
 ** Also propagate EP_Propagate flags up from Expr.x.pList to Expr.flags,
 ** if appropriate.
 */
-static void exprSetHeight(Expr *p){
-  int nHeight = p->pLeft ? p->pLeft->nHeight : 0;
-  if( NEVER(p->pRight) && p->pRight->nHeight>nHeight ){
-    nHeight = p->pRight->nHeight;
+ساکن خالی اظہاریہ_سیٹ_اونچائی(اظہاریہ *p){
+  صحیح n_اونچائی = p->p_بایاں ? p->p_بایاں->n_اونچائی : 0;
+  اگر( NEVER(p->p_دایاں) && p->p_دایاں->n_اونچائی>n_اونچائی ){
+    n_اونچائی = p->p_دایاں->n_اونچائی;
   }
-  if( ExprUseXSelect(p) ){
-    heightOfSelect(p->x.pSelect, &nHeight);
-  }else if( p->x.pList ){
-    heightOfExprList(p->x.pList, &nHeight);
-    p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
+  اگر( اظہاریہ_Use_XSelect(p) ){
+    اونچائی_کا_Select(p->x.pSelect, &n_اونچائی);
+  }ورنہ اگر( p->x.pList ){
+    اونچائی_کا_اظہاریہ_List(p->x.pList, &n_اونچائی);
+    p->flags |= EP_Propagate & sqlite3_اظہاریہ_List_Flags(p->x.pList);
   }
-  p->nHeight = nHeight + 1;
+  p->n_اونچائی = n_اونچائی + 1;
 }
 
 /*
@@ -887,42 +887,42 @@ static void exprSetHeight(Expr *p){
 ** Also propagate all EP_Propagate flags from the Expr.x.pList into
 ** Expr.flags.
 */
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
-  exprSetHeight(p);
-  sqlite3ExprCheckHeight(pParse, p->nHeight);
+خالی sqlite3_اظہاریہ_سیٹ_اونچائی_And_Flags(Parse *pParse, اظہاریہ *p){
+  اگر( pParse->nErr ) واپس;
+  اظہاریہ_سیٹ_اونچائی(p);
+  sqlite3_اظہاریہ_Check_اونچائی(pParse, p->n_اونچائی);
 }
 
 /*
 ** Return the maximum height of any expression tree referenced
 ** by the select statement passed as an argument.
 */
-int sqlite3SelectExprHeight(const Select *p){
-  int nHeight = 0;
-  heightOfSelect(p, &nHeight);
-  return nHeight;
+صحیح sqlite3_Select_اظہاریہ_اونچائی(ثابت Select *p){
+  صحیح n_اونچائی = 0;
+  اونچائی_کا_Select(p, &n_اونچائی);
+  واپس n_اونچائی;
 }
-#else /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
+#ورنہ /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
 /*
 ** Propagate all EP_Propagate flags from the Expr.x.pList into
 ** Expr.flags.
 */
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
-  if( p && ExprUseXList(p) && p->x.pList ){
-    p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
+خالی sqlite3_اظہاریہ_سیٹ_اونچائی_And_Flags(Parse *pParse, اظہاریہ *p){
+  اگر( pParse->nErr ) واپس;
+  اگر( p && اظہاریہ_Use_XList(p) && p->x.pList ){
+    p->flags |= EP_Propagate & sqlite3_اظہاریہ_List_Flags(p->x.pList);
   }
 }
-#define exprSetHeight(y)
-#endif /* SQLITE_MAX_EXPR_DEPTH>0 */
+#تعریف_کرو اظہاریہ_سیٹ_اونچائی(y)
+#اگر_ختم /* SQLITE_MAX_EXPR_DEPTH>0 */
 
 /*
 ** Set the error offset for an Expr node, if possible.
 */
-void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
-  if( pExpr==0 ) return;
-  if( NEVER(ExprUseWJoin(pExpr)) ) return;
-  pExpr->w.iOfst = iOfst;
+خالی sqlite3_اظہاریہ_سیٹ_Error_انحراف(اظہاریہ *p_اظہاریہ, صحیح iOfst){
+  اگر( p_اظہاریہ==0 ) واپس;
+  اگر( NEVER(اظہاریہ_Use_WJoin(p_اظہاریہ)) ) واپس;
+  p_اظہاریہ->w.iOfst = iOfst;
 }
 
 /*
@@ -946,69 +946,69 @@ void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
 ** is allocated to hold the integer text and the dequote flag is ignored.
 ** See also tag-20240227-b.
 */
-Expr *sqlite3ExprAlloc(
+اظہاریہ *sqlite3_اظہاریہ_Alloc(
   sqlite3 *db,            /* Handle for sqlite3DbMallocRawNN() */
-  int op,                 /* Expression opcode */
-  const Token *pToken,    /* Token argument.  Might be NULL */
-  int dequote             /* True to dequote */
+  صحیح op,                 /* Expression opcode */
+  ثابت Token *pToken,    /* Token argument.  Might be NULL */
+  صحیح dequote             /* True to dequote */
 ){
-  Expr *pNew;
-  int nExtra = pToken ? pToken->n+1 : 0;
+  اظہاریہ *pNew;
+  صحیح nExtra = pToken ? pToken->n+1 : 0;
 
-  assert( db!=0 );
-  pNew = sqlite3DbMallocRawNN(db, sizeof(Expr)+nExtra);
-  if( pNew ){
-    memset(pNew, 0, sizeof(Expr));
+  أكد( db!=0 );
+  pNew = sqlite3DbMallocRawNN(db, حجم(اظہاریہ)+nExtra);
+  اگر( pNew ){
+    memset(pNew, 0, حجم(اظہاریہ));
     pNew->op = (u8)op;
     pNew->iAgg = -1;
-    if( nExtra ){
-      assert( pToken!=0 );
-      pNew->u.zToken = (char*)&pNew[1];
-      assert( pToken->z!=0 || pToken->n==0 );
-      if( pToken->n ) memcpy(pNew->u.zToken, pToken->z, pToken->n);
+    اگر( nExtra ){
+      أكد( pToken!=0 );
+      pNew->u.zToken = (حرف*)&pNew[1];
+      أكد( pToken->z!=0 || pToken->n==0 );
+      اگر( pToken->n ) حافظہ_نقل(pNew->u.zToken, pToken->z, pToken->n);
       pNew->u.zToken[pToken->n] = 0;
-      if( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
-        sqlite3DequoteExpr(pNew);
+      اگر( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
+        sqlite3_Dequote_اظہاریہ(pNew);
       }
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
-    pNew->nHeight = 1;
-#endif 
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+    pNew->n_اونچائی = 1;
+#اگر_ختم 
   }
-  return pNew;
+  واپس pNew;
 }
 
 /*
 ** Allocate a new expression node from a zero-terminated token that has
 ** already been dequoted.
 */
-Expr *sqlite3Expr(
+اظہاریہ *sqlite3_اظہاریہ(
   sqlite3 *db,            /* Handle for sqlite3DbMallocZero() (may be null) */
-  int op,                 /* Expression opcode */
-  const char *zToken      /* Token argument.  Might be NULL */
+  صحیح op,                 /* Expression opcode */
+  ثابت حرف *zToken      /* Token argument.  Might be NULL */
 ){
   Token x;
   x.z = zToken;
   x.n = sqlite3Strlen30(zToken);
-  return sqlite3ExprAlloc(db, op, &x, 0);
+  واپس sqlite3_اظہاریہ_Alloc(db, op, &x, 0);
 }
 
 /*
 ** Allocate an expression for a 32-bit signed integer literal.
 */
-Expr *sqlite3ExprInt32(sqlite3 *db, int iVal){
-  Expr *pNew = sqlite3DbMallocRawNN(db, sizeof(Expr));
-  if( pNew ){
-    memset(pNew, 0, sizeof(Expr));
+اظہاریہ *sqlite3_اظہاریہ_Int32(sqlite3 *db, صحیح iVal){
+  اظہاریہ *pNew = sqlite3DbMallocRawNN(db, حجم(اظہاریہ));
+  اگر( pNew ){
+    memset(pNew, 0, حجم(اظہاریہ));
     pNew->op = TK_INTEGER;
     pNew->iAgg = -1;
-    pNew->flags = EP_IntValue|EP_Leaf|(iVal?EP_IsTrue:EP_IsFalse);
-    pNew->u.iValue = iVal;
-#if SQLITE_MAX_EXPR_DEPTH>0
-    pNew->nHeight = 1;
-#endif 
+    pNew->flags = EP_Int_قدر|EP_برگ|(iVal?EP_IsTrue:EP_IsFalse);
+    pNew->u.i_قدر = iVal;
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+    pNew->n_اونچائی = 1;
+#اگر_ختم 
   }
-  return pNew;
+  واپس pNew;
 }
 
 /*
@@ -1017,36 +1017,36 @@ Expr *sqlite3ExprInt32(sqlite3 *db, int iVal){
 ** If pRoot==NULL that means that a memory allocation error has occurred.
 ** In that case, delete the subtrees pLeft and pRight.
 */
-void sqlite3ExprAttachSubtrees(
+خالی sqlite3_اظہاریہ_Attach_Subtrees(
   sqlite3 *db,
-  Expr *pRoot,
-  Expr *pLeft,
-  Expr *pRight
+  اظہاریہ *p_جڑ,
+  اظہاریہ *p_بایاں,
+  اظہاریہ *p_دایاں
 ){
-  if( pRoot==0 ){
-    assert( db->mallocFailed );
-    sqlite3ExprDelete(db, pLeft);
-    sqlite3ExprDelete(db, pRight);
-  }else{
-    assert( ExprUseXList(pRoot) );
-    assert( pRoot->x.pSelect==0 );
-    if( pRight ){
-      pRoot->pRight = pRight;
-      pRoot->flags |= EP_Propagate & pRight->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
-      pRoot->nHeight = pRight->nHeight+1;
-    }else{
-      pRoot->nHeight = 1;
-#endif
+  اگر( p_جڑ==0 ){
+    أكد( db->mallocFailed );
+    sqlite3_اظہاریہ_Delete(db, p_بایاں);
+    sqlite3_اظہاریہ_Delete(db, p_دایاں);
+  }ورنہ{
+    أكد( اظہاریہ_Use_XList(p_جڑ) );
+    أكد( p_جڑ->x.pSelect==0 );
+    اگر( p_دایاں ){
+      p_جڑ->p_دایاں = p_دایاں;
+      p_جڑ->flags |= EP_Propagate & p_دایاں->flags;
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+      p_جڑ->n_اونچائی = p_دایاں->n_اونچائی+1;
+    }ورنہ{
+      p_جڑ->n_اونچائی = 1;
+#اگر_ختم
     }
-    if( pLeft ){
-      pRoot->pLeft = pLeft;
-      pRoot->flags |= EP_Propagate & pLeft->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
-      if( pLeft->nHeight>=pRoot->nHeight ){
-        pRoot->nHeight = pLeft->nHeight+1;
+    اگر( p_بایاں ){
+      p_جڑ->p_بایاں = p_بایاں;
+      p_جڑ->flags |= EP_Propagate & p_بایاں->flags;
+#اگر SQLITE_MAX_اظہاریہ_گہرائی>0
+      اگر( p_بایاں->n_اونچائی>=p_جڑ->n_اونچائی ){
+        p_جڑ->n_اونچائی = p_بایاں->n_اونچائی+1;
       }
-#endif
+#اگر_ختم
     }
   }
 }
@@ -1058,38 +1058,38 @@ void sqlite3ExprAttachSubtrees(
 ** Expr node.  Or, if an OOM error occurs, set pParse->db->mallocFailed,
 ** free the subtrees and return NULL.
 */
-Expr *sqlite3PExpr(
+اظہاریہ *sqlite3PExpr(
   Parse *pParse,          /* Parsing context */
-  int op,                 /* Expression opcode */
-  Expr *pLeft,            /* Left operand */
-  Expr *pRight            /* Right operand */
+  صحیح op,                 /* Expression opcode */
+  اظہاریہ *p_بایاں,            /* Left operand */
+  اظہاریہ *p_دایاں            /* Right operand */
 ){
-  Expr *p;
-  p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr));
-  if( p ){
-    memset(p, 0, sizeof(Expr));
+  اظہاریہ *p;
+  p = sqlite3DbMallocRawNN(pParse->db, حجم(اظہاریہ));
+  اگر( p ){
+    memset(p, 0, حجم(اظہاریہ));
     p->op = op & 0xff;
     p->iAgg = -1;
-    sqlite3ExprAttachSubtrees(pParse->db, p, pLeft, pRight);
-    sqlite3ExprCheckHeight(pParse, p->nHeight);
-  }else{
-    sqlite3ExprDelete(pParse->db, pLeft);
-    sqlite3ExprDelete(pParse->db, pRight);
+    sqlite3_اظہاریہ_Attach_Subtrees(pParse->db, p, p_بایاں, p_دایاں);
+    sqlite3_اظہاریہ_Check_اونچائی(pParse, p->n_اونچائی);
+  }ورنہ{
+    sqlite3_اظہاریہ_Delete(pParse->db, p_بایاں);
+    sqlite3_اظہاریہ_Delete(pParse->db, p_دایاں);
   }
-  return p;
+  واپس p;
 }
 
 /*
 ** Add pSelect to the Expr.x.pSelect field.  Or, if pExpr is NULL (due
 ** do a memory allocation failure) then delete the pSelect object.
 */
-void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
-  if( pExpr ){
-    pExpr->x.pSelect = pSelect;
-    ExprSetProperty(pExpr, EP_xIsSelect|EP_Subquery);
-    sqlite3ExprSetHeightAndFlags(pParse, pExpr);
-  }else{
-    assert( pParse->db->mallocFailed );
+خالی sqlite3_PExpr_جوڑو_Select(Parse *pParse, اظہاریہ *p_اظہاریہ, Select *pSelect){
+  اگر( p_اظہاریہ ){
+    p_اظہاریہ->x.pSelect = pSelect;
+    اظہاریہ_سیٹ_Property(p_اظہاریہ, EP_xIsSelect|EP_Subquery);
+    sqlite3_اظہاریہ_سیٹ_اونچائی_And_Flags(pParse, p_اظہاریہ);
+  }ورنہ{
+    أكد( pParse->db->mallocFailed );
     sqlite3SelectDelete(pParse->db, pSelect);
   }
 }
@@ -1113,43 +1113,43 @@ void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
 ** This is used as part of processing IN(...) expressions with a list
 ** of vectors on the RHS. e.g. "... IN ((1,2), (3,4), (5,6))".
 */
-Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
-  int ii;
+Select *sqlite3_اظہاریہ_List_مقصد_اقدار(Parse *pParse, صحیح nElem, اظہاریہ_List *pEList){
+  صحیح ii;
   Select *pRet = 0;
-  assert( nElem>1 );
-  for(ii=0; ii<pEList->nExpr; ii++){
+  أكد( nElem>1 );
+  برائے(ii=0; ii<pEList->n_اظہاریہ; ii++){
     Select *pSel;
-    Expr *pExpr = pEList->a[ii].pExpr;
-    int nExprElem;
-    if( pExpr->op==TK_VECTOR ){
-      assert( ExprUseXList(pExpr) );
-      nExprElem = pExpr->x.pList->nExpr;
-    }else{
-      nExprElem = 1;
+    اظہاریہ *p_اظہاریہ = pEList->a[ii].p_اظہاریہ;
+    صحیح n_اظہاریہ_Elem;
+    اگر( p_اظہاریہ->op==TK_سمتیہ ){
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+      n_اظہاریہ_Elem = p_اظہاریہ->x.pList->n_اظہاریہ;
+    }ورنہ{
+      n_اظہاریہ_Elem = 1;
     }
-    if( nExprElem!=nElem ){
-      sqlite3ErrorMsg(pParse, "IN(...) element has %d term%s - expected %d",
-          nExprElem, nExprElem>1?"s":"", nElem
+    اگر( n_اظہاریہ_Elem!=nElem ){
+      sqlite3_Error_پیغام(pParse, "IN(...) element has %d term%s - expected %d",
+          n_اظہاریہ_Elem, n_اظہاریہ_Elem>1?"s":"", nElem
       );
-      break;
+      توڑو;
     }
-    assert( ExprUseXList(pExpr) );
-    pSel = sqlite3SelectNew(pParse, pExpr->x.pList, 0, 0, 0, 0, 0, SF_Values,0);
-    pExpr->x.pList = 0;
-    if( pSel ){
-      if( pRet ){
+    أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+    pSel = sqlite3SelectNew(pParse, p_اظہاریہ->x.pList, 0, 0, 0, 0, 0, SF_اقدار,0);
+    p_اظہاریہ->x.pList = 0;
+    اگر( pSel ){
+      اگر( pRet ){
         pSel->op = TK_ALL;
-        pSel->pPrior = pRet;
+        pSel->p_پیشگی = pRet;
       }
       pRet = pSel;
     }
   }
 
-  if( pRet && pRet->pPrior ){
-    pRet->selFlags |= SF_MultiValue;
+  اگر( pRet && pRet->p_پیشگی ){
+    pRet->selFlags |= SF_Multi_قدر;
   }
-  sqlite3ExprListDelete(pParse->db, pEList);
-  return pRet;
+  sqlite3_اظہاریہ_List_Delete(pParse->db, pEList);
+  واپس pRet;
 }
 
 /*
@@ -1160,25 +1160,25 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
 ** is part of an ON clause, then instead of returning an AND expression,
 ** just return a constant expression with a value of false.
 */
-Expr *sqlite3ExprAnd(Parse *pParse, Expr *pLeft, Expr *pRight){
+اظہاریہ *sqlite3_اظہاریہ_And(Parse *pParse, اظہاریہ *p_بایاں, اظہاریہ *p_دایاں){
   sqlite3 *db = pParse->db;
-  if( pLeft==0  ){
-    return pRight;
-  }else if( pRight==0 ){
-    return pLeft;
-  }else{
-    u32 f = pLeft->flags | pRight->flags;
-    if( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
-     && !IN_RENAME_OBJECT
+  اگر( p_بایاں==0  ){
+    واپس p_دایاں;
+  }ورنہ اگر( p_دایاں==0 ){
+    واپس p_بایاں;
+  }ورنہ{
+    u32 f = p_بایاں->flags | p_دایاں->flags;
+    اگر( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
+     && !اندر_RENAME_OBJECT
     ){
-      Expr *p;
-      sqlite3ExprDeferredDelete(pParse, pLeft);
-      sqlite3ExprDeferredDelete(pParse, pRight);
-      p = sqlite3ExprInt32(db, 0);
-      if( p ) p->op2 = 1;
-      return p;
-    }else{
-      return sqlite3PExpr(pParse, TK_AND, pLeft, pRight);
+      اظہاریہ *p;
+      sqlite3_اظہاریہ_Deferred_Delete(pParse, p_بایاں);
+      sqlite3_اظہاریہ_Deferred_Delete(pParse, p_دایاں);
+      p = sqlite3_اظہاریہ_Int32(db, 0);
+      اگر( p ) p->op2 = 1;
+      واپس p;
+    }ورنہ{
+      واپس sqlite3PExpr(pParse, TK_AND, p_بایاں, p_دایاں);
     }
   }
 }
@@ -1187,42 +1187,42 @@ Expr *sqlite3ExprAnd(Parse *pParse, Expr *pLeft, Expr *pRight){
 ** Construct a new expression node for a function with multiple
 ** arguments.
 */
-Expr *sqlite3ExprFunction(
+اظہاریہ *sqlite3_اظہاریہ_Function(
   Parse *pParse,        /* Parsing context */
-  ExprList *pList,      /* Argument list */
-  const Token *pToken,  /* Name of the function */
-  int eDistinct         /* SF_Distinct or SF_ALL or 0 */
+  اظہاریہ_List *pList,      /* Argument list */
+  ثابت Token *pToken,  /* Name of the function */
+  صحیح eDistinct         /* SF_Distinct or SF_ALL or 0 */
 ){
-  Expr *pNew;
+  اظہاریہ *pNew;
   sqlite3 *db = pParse->db;
-  assert( pToken );
-  pNew = sqlite3ExprAlloc(db, TK_FUNCTION, pToken, 1);
-  if( pNew==0 ){
-    sqlite3ExprListDelete(db, pList); /* Avoid memory leak when malloc fails */
-    return 0;
+  أكد( pToken );
+  pNew = sqlite3_اظہاریہ_Alloc(db, TK_FUNCTION, pToken, 1);
+  اگر( pNew==0 ){
+    sqlite3_اظہاریہ_List_Delete(db, pList); /* Avoid memory leak when malloc fails */
+    واپس 0;
   }
-  assert( !ExprHasProperty(pNew, EP_InnerON|EP_OuterON) );
-  pNew->w.iOfst = (int)(pToken->z - pParse->zTail);
-  if( pList
-   && pList->nExpr > pParse->db->aLimit[SQLITE_LIMIT_FUNCTION_ARG]
+  أكد( !اظہاریہ_Has_Property(pNew, EP_InnerON|EP_OuterON) );
+  pNew->w.iOfst = (صحیح)(pToken->z - pParse->z_دم);
+  اگر( pList
+   && pList->n_اظہاریہ > pParse->db->a_حد_بندی[SQLITE_حد_بندی_FUNCTION_ARG]
    && !pParse->nested
   ){
-    sqlite3ErrorMsg(pParse, "too many arguments on function %T", pToken);
+    sqlite3_Error_پیغام(pParse, "too many arguments on function %T", pToken);
   }
   pNew->x.pList = pList;
-  ExprSetProperty(pNew, EP_HasFunc);
-  assert( ExprUseXList(pNew) );
-  sqlite3ExprSetHeightAndFlags(pParse, pNew);
-  if( eDistinct==SF_Distinct ) ExprSetProperty(pNew, EP_Distinct);
-  return pNew;
+  اظہاریہ_سیٹ_Property(pNew, EP_HasFunc);
+  أكد( اظہاریہ_Use_XList(pNew) );
+  sqlite3_اظہاریہ_سیٹ_اونچائی_And_Flags(pParse, pNew);
+  اگر( eDistinct==SF_Distinct ) اظہاریہ_سیٹ_Property(pNew, EP_Distinct);
+  واپس pNew;
 }
 
 /*
 ** Report an error when attempting to use an ORDER BY clause within
 ** the arguments of a non-aggregate function.
 */
-void sqlite3ExprOrderByAggregateError(Parse *pParse, Expr *p){
-  sqlite3ErrorMsg(pParse,
+خالی sqlite3_اظہاریہ_ترتیب_By_Aggregate_Error(Parse *pParse, اظہاریہ *p){
+  sqlite3_Error_پیغام(pParse,
      "ORDER BY may not be used with non-aggregate %#T()", p
   );
 }
@@ -1237,50 +1237,50 @@ void sqlite3ExprOrderByAggregateError(Parse *pParse, Expr *p){
 ** The ORDER BY clause is inserted into a new Expr node of type TK_ORDER
 ** and added to the Expr.pLeft field of the parent TK_FUNCTION node.
 */
-void sqlite3ExprAddFunctionOrderBy(
+خالی sqlite3_اظہاریہ_جوڑو_Function_ترتیب_By(
   Parse *pParse,        /* Parsing context */
-  Expr *pExpr,          /* The function call to which ORDER BY is to be added */
-  ExprList *pOrderBy    /* The ORDER BY clause to add */
+  اظہاریہ *p_اظہاریہ,          /* The function call to which ORDER BY is to be added */
+  اظہاریہ_List *p_ترتیب_By    /* The ORDER BY clause to add */
 ){
-  Expr *pOB;
+  اظہاریہ *pOB;
   sqlite3 *db = pParse->db;
-  if( NEVER(pOrderBy==0) ){
-    assert( db->mallocFailed );
-    return;
+  اگر( NEVER(p_ترتیب_By==0) ){
+    أكد( db->mallocFailed );
+    واپس;
   }
-  if( pExpr==0 ){
-    assert( db->mallocFailed );
-    sqlite3ExprListDelete(db, pOrderBy);
-    return;
+  اگر( p_اظہاریہ==0 ){
+    أكد( db->mallocFailed );
+    sqlite3_اظہاریہ_List_Delete(db, p_ترتیب_By);
+    واپس;
   }
-  assert( pExpr->op==TK_FUNCTION );
-  assert( pExpr->pLeft==0 );
-  assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList==0 || NEVER(pExpr->x.pList->nExpr==0) ){
+  أكد( p_اظہاریہ->op==TK_FUNCTION );
+  أكد( p_اظہاریہ->p_بایاں==0 );
+  أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+  اگر( p_اظہاریہ->x.pList==0 || NEVER(p_اظہاریہ->x.pList->n_اظہاریہ==0) ){
     /* Ignore ORDER BY on zero-argument aggregates */
-    sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric, pOrderBy);
-    return;
+    sqlite3_Parser_جوڑو_Cleanup(pParse, sqlite3_اظہاریہ_List_Delete_Generic, p_ترتیب_By);
+    واپس;
   }
-  if( IsWindowFunc(pExpr) ){
-    sqlite3ExprOrderByAggregateError(pParse, pExpr);
-    sqlite3ExprListDelete(db, pOrderBy);
-    return;
+  اگر( Is_کھڑکی_Func(p_اظہاریہ) ){
+    sqlite3_اظہاریہ_ترتیب_By_Aggregate_Error(pParse, p_اظہاریہ);
+    sqlite3_اظہاریہ_List_Delete(db, p_ترتیب_By);
+    واپس;
   }
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many terms in ORDER BY clause");
-    sqlite3ExprListDelete(db, pOrderBy);
-    return;
+  اگر( p_ترتیب_By->n_اظہاریہ>db->a_حد_بندی[SQLITE_حد_بندی_عمود] ){
+    sqlite3_Error_پیغام(pParse, "too many terms in ORDER BY clause");
+    sqlite3_اظہاریہ_List_Delete(db, p_ترتیب_By);
+    واپس;
   }
 
-  pOB = sqlite3ExprAlloc(db, TK_ORDER, 0, 0);
-  if( pOB==0 ){
-    sqlite3ExprListDelete(db, pOrderBy);
-    return;
+  pOB = sqlite3_اظہاریہ_Alloc(db, TK_ترتیب, 0, 0);
+  اگر( pOB==0 ){
+    sqlite3_اظہاریہ_List_Delete(db, p_ترتیب_By);
+    واپس;
   }
-  pOB->x.pList = pOrderBy;
-  assert( ExprUseXList(pOB) );
-  pExpr->pLeft = pOB;
-  ExprSetProperty(pOB, EP_FullSize);
+  pOB->x.pList = p_ترتیب_By;
+  أكد( اظہاریہ_Use_XList(pOB) );
+  p_اظہاریہ->p_بایاں = pOB;
+  اظہاریہ_سیٹ_Property(pOB, EP_بھرا_سائز);
 }
 
 /*
@@ -1294,17 +1294,17 @@ void sqlite3ExprAddFunctionOrderBy(
 **
 ** If the function is not usable, create an error.
 */
-void sqlite3ExprFunctionUsable(
+خالی sqlite3_اظہاریہ_Function_Usable(
   Parse *pParse,         /* Parsing and code generating context */
-  const Expr *pExpr,     /* The function invocation */
-  const FuncDef *pDef    /* The function being invoked */
+  ثابت اظہاریہ *p_اظہاریہ,     /* The function invocation */
+  ثابت FuncDef *pDef    /* The function being invoked */
 ){
-  assert( !IN_RENAME_OBJECT );
-  assert( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0 );
-  if( ExprHasProperty(pExpr, EP_FromDDL) 
+  أكد( !اندر_RENAME_OBJECT );
+  أكد( (pDef->funcFlags & (SQLITE_FUNC_براہ_راست|SQLITE_FUNC_UNSAFE))!=0 );
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_FromDDL) 
    || pParse->prepFlags & SQLITE_PREPARE_FROM_DDL
   ){
-    if( (pDef->funcFlags & SQLITE_FUNC_DIRECT)!=0
+    اگر( (pDef->funcFlags & SQLITE_FUNC_براہ_راست)!=0
      || (pParse->db->flags & SQLITE_TrustedSchema)==0
     ){
       /* Functions prohibited in triggers and views if:
@@ -1314,7 +1314,7 @@ void sqlite3ExprFunctionUsable(
       **         SQLITE_DBCONFIG_TRUSTED_SCHEMA is off (meaning
       **         that the schema is possibly tainted).
       */
-      sqlite3ErrorMsg(pParse, "unsafe use of %#T()", pExpr);
+      sqlite3_Error_پیغام(pParse, "unsafe use of %#T()", p_اظہاریہ);
     }
   }
 }
@@ -1335,148 +1335,148 @@ void sqlite3ExprFunctionUsable(
 ** instance of the wildcard, the next sequential variable number is
 ** assigned.
 */
-void sqlite3ExprAssignVarNumber(Parse *pParse, Expr *pExpr, u32 n){
+خالی sqlite3_اظہاریہ_تفویض_Var_نمبر(Parse *pParse, اظہاریہ *p_اظہاریہ, u32 n){
   sqlite3 *db = pParse->db;
-  const char *z;
+  ثابت حرف *z;
   ynVar x;
 
-  if( pExpr==0 ) return;
-  assert( !ExprHasProperty(pExpr, EP_IntValue|EP_Reduced|EP_TokenOnly) );
-  z = pExpr->u.zToken;
-  assert( z!=0 );
-  assert( z[0]!=0 );
-  assert( n==(u32)sqlite3Strlen30(z) );
-  if( z[1]==0 ){
+  اگر( p_اظہاریہ==0 ) واپس;
+  أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر|EP_Reduced|EP_TokenOnly) );
+  z = p_اظہاریہ->u.zToken;
+  أكد( z!=0 );
+  أكد( z[0]!=0 );
+  أكد( n==(u32)sqlite3Strlen30(z) );
+  اگر( z[1]==0 ){
     /* Wildcard of the form "?".  Assign the next variable number */
-    assert( z[0]=='?' );
+    أكد( z[0]=='?' );
     x = (ynVar)(++pParse->nVar);
-  }else{
-    int doAdd = 0;
-    if( z[0]=='?' ){
+  }ورنہ{
+    صحیح do_جوڑو = 0;
+    اگر( z[0]=='?' ){
       /* Wildcard of the form "?nnn".  Convert "nnn" to an integer and
       ** use it as the variable number */
       i64 i;
-      int bOk;
-      if( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
+      صحیح bOk;
+      اگر( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
         i = z[1]-'0';  /* The common case of ?N for a single digit N */
         bOk = 1;
-      }else{
+      }ورنہ{
         bOk = 0==sqlite3Atoi64(&z[1], &i, n-1, SQLITE_UTF8);
       }
       testcase( i==0 );
       testcase( i==1 );
-      testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]-1 );
-      testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] );
-      if( bOk==0 || i<1 || i>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
-        sqlite3ErrorMsg(pParse, "variable number must be between ?1 and ?%d",
-            db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]);
-        sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
-        return;
+      testcase( i==db->a_حد_بندی[SQLITE_حد_بندی_VARIABLE_نمبر]-1 );
+      testcase( i==db->a_حد_بندی[SQLITE_حد_بندی_VARIABLE_نمبر] );
+      اگر( bOk==0 || i<1 || i>db->a_حد_بندی[SQLITE_حد_بندی_VARIABLE_نمبر] ){
+        sqlite3_Error_پیغام(pParse, "variable number must be between ?1 and ?%d",
+            db->a_حد_بندی[SQLITE_حد_بندی_VARIABLE_نمبر]);
+        sqlite3_ریکارڈ_Error_انحراف_کا_اظہاریہ(pParse->db, p_اظہاریہ);
+        واپس;
       }
       x = (ynVar)i;
-      if( x>pParse->nVar ){
-        pParse->nVar = (int)x;
-        doAdd = 1;
-      }else if( x<SQLITE_VNBMC*64 ){
-        doAdd = (pParse->aVnbmc[x>>6] & MASKBIT64(x&63))==0;
-      }else if( sqlite3VListNumToName(pParse->pVList, x)==0 ){
-        doAdd = 1;
+      اگر( x>pParse->nVar ){
+        pParse->nVar = (صحیح)x;
+        do_جوڑو = 1;
+      }ورنہ اگر( x<SQLITE_VNBMC*64 ){
+        do_جوڑو = (pParse->aVnbmc[x>>6] & MASKBIT64(x&63))==0;
+      }ورنہ اگر( sqlite3_VList_عدد_مقصد_Name(pParse->pVList, x)==0 ){
+        do_جوڑو = 1;
       }
-    }else{
+    }ورنہ{
       /* Wildcards like ":aaa", "$aaa" or "@aaa".  Reuse the same variable
       ** number as the prior appearance of the same name, or if the name
       ** has never appeared before, reuse the same variable number
       */
-      x = (ynVar)sqlite3VListNameToNum(pParse->pVList, z, n);
-      if( x==0 ){
+      x = (ynVar)sqlite3_VList_Name_مقصد_عدد(pParse->pVList, z, n);
+      اگر( x==0 ){
         x = (ynVar)(++pParse->nVar);
-        doAdd = 1;
+        do_جوڑو = 1;
       }
     }
-    if( doAdd ){
-      pParse->pVList = sqlite3VListAdd(db, pParse->pVList, z, n, x);
-      if( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
+    اگر( do_جوڑو ){
+      pParse->pVList = sqlite3_VList_جوڑو(db, pParse->pVList, z, n, x);
+      اگر( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
         pParse->aVnbmc[x>>6] |= MASKBIT64(x&63);
       }
     }
   }
-  pExpr->iColumn = x;
-  if( x>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
-    sqlite3ErrorMsg(pParse, "too many SQL variables");
-    sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
+  p_اظہاریہ->i_عمود = x;
+  اگر( x>db->a_حد_بندی[SQLITE_حد_بندی_VARIABLE_نمبر] ){
+    sqlite3_Error_پیغام(pParse, "too many SQL variables");
+    sqlite3_ریکارڈ_Error_انحراف_کا_اظہاریہ(pParse->db, p_اظہاریہ);
   }
 }
 
 /*
 ** Recursively delete an expression tree.
 */
-static SQLITE_NOINLINE void sqlite3ExprDeleteNN(sqlite3 *db, Expr *p){
-  assert( p!=0 );
-  assert( db!=0 );
-exprDeleteRestart:
-  assert( !ExprUseUValue(p) || p->u.iValue>=0 );
-  assert( !ExprUseYWin(p) || !ExprUseYSub(p) );
-  assert( !ExprUseYWin(p) || p->y.pWin!=0 || db->mallocFailed );
-  assert( p->op!=TK_FUNCTION || !ExprUseYSub(p) );
-#ifdef SQLITE_DEBUG
-  if( ExprHasProperty(p, EP_Leaf) && !ExprHasProperty(p, EP_TokenOnly) ){
-    assert( p->pLeft==0 );
-    assert( p->pRight==0 );
-    assert( !ExprUseXSelect(p) || p->x.pSelect==0 );
-    assert( !ExprUseXList(p) || p->x.pList==0 );
+ساکن SQLITE_NOINLINE خالی sqlite3_اظہاریہ_Delete_NN(sqlite3 *db, اظہاریہ *p){
+  أكد( p!=0 );
+  أكد( db!=0 );
+اظہاریہ_Delete_Restart:
+  أكد( !اظہاریہ_Use_UValue(p) || p->u.i_قدر>=0 );
+  أكد( !اظہاریہ_Use_YWin(p) || !اظہاریہ_Use_YSub(p) );
+  أكد( !اظہاریہ_Use_YWin(p) || p->y.pWin!=0 || db->mallocFailed );
+  أكد( p->op!=TK_FUNCTION || !اظہاریہ_Use_YSub(p) );
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  اگر( اظہاریہ_Has_Property(p, EP_برگ) && !اظہاریہ_Has_Property(p, EP_TokenOnly) ){
+    أكد( p->p_بایاں==0 );
+    أكد( p->p_دایاں==0 );
+    أكد( !اظہاریہ_Use_XSelect(p) || p->x.pSelect==0 );
+    أكد( !اظہاریہ_Use_XList(p) || p->x.pList==0 );
   }
-#endif
-  if( !ExprHasProperty(p, (EP_TokenOnly|EP_Leaf)) ){
+#اگر_ختم
+  اگر( !اظہاریہ_Has_Property(p, (EP_TokenOnly|EP_برگ)) ){
     /* The Expr.x union is never used at the same time as Expr.pRight */
-    assert( (ExprUseXList(p) && p->x.pList==0) || p->pRight==0 );
-    if( p->pRight ){
-      assert( !ExprHasProperty(p, EP_WinFunc) );
-      sqlite3ExprDeleteNN(db, p->pRight);
-    }else if( ExprUseXSelect(p) ){
-      assert( !ExprHasProperty(p, EP_WinFunc) );
+    أكد( (اظہاریہ_Use_XList(p) && p->x.pList==0) || p->p_دایاں==0 );
+    اگر( p->p_دایاں ){
+      أكد( !اظہاریہ_Has_Property(p, EP_WinFunc) );
+      sqlite3_اظہاریہ_Delete_NN(db, p->p_دایاں);
+    }ورنہ اگر( اظہاریہ_Use_XSelect(p) ){
+      أكد( !اظہاریہ_Has_Property(p, EP_WinFunc) );
       sqlite3SelectDelete(db, p->x.pSelect);
-    }else{
-      sqlite3ExprListDelete(db, p->x.pList);
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
-        sqlite3WindowDelete(db, p->y.pWin);
+    }ورنہ{
+      sqlite3_اظہاریہ_List_Delete(db, p->x.pList);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+      اگر( اظہاریہ_Has_Property(p, EP_WinFunc) ){
+        sqlite3_کھڑکی_Delete(db, p->y.pWin);
       }
-#endif
+#اگر_ختم
     }
-    if( p->pLeft && p->op!=TK_SELECT_COLUMN ){
-      Expr *pLeft = p->pLeft;
-      if( !ExprHasProperty(p, EP_Static)
-       && !ExprHasProperty(pLeft, EP_Static)
+    اگر( p->p_بایاں && p->op!=TK_SELECT_عمود ){
+      اظہاریہ *p_بایاں = p->p_بایاں;
+      اگر( !اظہاریہ_Has_Property(p, EP_Static)
+       && !اظہاریہ_Has_Property(p_بایاں, EP_Static)
       ){
         /* Avoid unnecessary recursion on unary operators */
         sqlite3DbNNFreeNN(db, p);
-        p = pLeft;
-        goto exprDeleteRestart;
-      }else{
-        sqlite3ExprDeleteNN(db, pLeft);
+        p = p_بایاں;
+        جاؤ اظہاریہ_Delete_Restart;
+      }ورنہ{
+        sqlite3_اظہاریہ_Delete_NN(db, p_بایاں);
       }
     }
   }
-  if( !ExprHasProperty(p, EP_Static) ){
+  اگر( !اظہاریہ_Has_Property(p, EP_Static) ){
     sqlite3DbNNFreeNN(db, p);
   }
 }
-void sqlite3ExprDelete(sqlite3 *db, Expr *p){
-  if( p ) sqlite3ExprDeleteNN(db, p);
+خالی sqlite3_اظہاریہ_Delete(sqlite3 *db, اظہاریہ *p){
+  اگر( p ) sqlite3_اظہاریہ_Delete_NN(db, p);
 }
-void sqlite3ExprDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) sqlite3ExprDeleteNN(db, (Expr*)p);
+خالی sqlite3_اظہاریہ_Delete_Generic(sqlite3 *db, خالی *p){
+  اگر( ALWAYS(p) ) sqlite3_اظہاریہ_Delete_NN(db, (اظہاریہ*)p);
 }
 
 /*
 ** Clear both elements of an OnOrUsing object
 */
-void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
-  if( p==0 ){
+خالی sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
+  اگر( p==0 ){
     /* Nothing to clear */
-  }else if( p->pOn ){
-    sqlite3ExprDeleteNN(db, p->pOn);
-  }else if( p->pUsing ){
+  }ورنہ اگر( p->pOn ){
+    sqlite3_اظہاریہ_Delete_NN(db, p->pOn);
+  }ورنہ اگر( p->pUsing ){
     sqlite3IdListDelete(db, p->pUsing);
   }
 }
@@ -1491,19 +1491,19 @@ void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
 ** Return 0 if the delete was successfully deferred.  Return non-zero
 ** if the delete happened immediately because of an OOM.
 */
-int sqlite3ExprDeferredDelete(Parse *pParse, Expr *pExpr){
-  return 0==sqlite3ParserAddCleanup(pParse, sqlite3ExprDeleteGeneric, pExpr);
+صحیح sqlite3_اظہاریہ_Deferred_Delete(Parse *pParse, اظہاریہ *p_اظہاریہ){
+  واپس 0==sqlite3_Parser_جوڑو_Cleanup(pParse, sqlite3_اظہاریہ_Delete_Generic, p_اظہاریہ);
 }
 
 /* Invoke sqlite3RenameExprUnmap() and sqlite3ExprDelete() on the
 ** expression.
 */
-void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
-  if( p ){
-    if( IN_RENAME_OBJECT ){
-      sqlite3RenameExprUnmap(pParse, p);
+خالی sqlite3_اظہاریہ_Unmap_And_Delete(Parse *pParse, اظہاریہ *p){
+  اگر( p ){
+    اگر( اندر_RENAME_OBJECT ){
+      sqlite3_Rename_اظہاریہ_Unmap(pParse, p);
     }
-    sqlite3ExprDeleteNN(pParse->db, p);
+    sqlite3_اظہاریہ_Delete_NN(pParse->db, p);
   }
 }
 
@@ -1512,10 +1512,10 @@ void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
 ** passed as the first argument. This is always one of EXPR_FULLSIZE,
 ** EXPR_REDUCEDSIZE or EXPR_TOKENONLYSIZE.
 */
-static int exprStructSize(const Expr *p){
-  if( ExprHasProperty(p, EP_TokenOnly) ) return EXPR_TOKENONLYSIZE;
-  if( ExprHasProperty(p, EP_Reduced) ) return EXPR_REDUCEDSIZE;
-  return EXPR_FULLSIZE;
+ساکن صحیح اظہاریہ_Struct_سائز(ثابت اظہاریہ *p){
+  اگر( اظہاریہ_Has_Property(p, EP_TokenOnly) ) واپس اظہاریہ_TOKENONLYSIZE;
+  اگر( اظہاریہ_Has_Property(p, EP_Reduced) ) واپس اظہاریہ_REDUCEDSIZE;
+  واپس اظہاریہ_FULLSIZE;
 }
 
 /*
@@ -1552,25 +1552,25 @@ static int exprStructSize(const Expr *p){
 ** of dupedExprStructSize() contain multiple assert() statements that attempt
 ** to enforce this constraint.
 */
-static int dupedExprStructSize(const Expr *p, int flags){
-  int nSize;
-  assert( flags==EXPRDUP_REDUCE || flags==0 ); /* Only one flag value allowed */
-  assert( EXPR_FULLSIZE<=0xfff );
-  assert( (0xfff & (EP_Reduced|EP_TokenOnly))==0 );
-  if( 0==flags || ExprHasProperty(p, EP_FullSize) ){
-    nSize = EXPR_FULLSIZE;
-  }else{
-    assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
-    assert( !ExprHasProperty(p, EP_OuterON) );
-    assert( !ExprHasVVAProperty(p, EP_NoReduce) );
-    if( p->pLeft || p->x.pList ){
-      nSize = EXPR_REDUCEDSIZE | EP_Reduced;
-    }else{
-      assert( p->pRight==0 );
-      nSize = EXPR_TOKENONLYSIZE | EP_TokenOnly;
+ساکن صحیح duped_اظہاریہ_Struct_سائز(ثابت اظہاریہ *p, صحیح flags){
+  صحیح n_سائز;
+  أكد( flags==EXPRDUP_REDUCE || flags==0 ); /* Only one flag value allowed */
+  أكد( اظہاریہ_FULLSIZE<=0xfff );
+  أكد( (0xfff & (EP_Reduced|EP_TokenOnly))==0 );
+  اگر( 0==flags || اظہاریہ_Has_Property(p, EP_بھرا_سائز) ){
+    n_سائز = اظہاریہ_FULLSIZE;
+  }ورنہ{
+    أكد( !اظہاریہ_Has_Property(p, EP_TokenOnly|EP_Reduced) );
+    أكد( !اظہاریہ_Has_Property(p, EP_OuterON) );
+    أكد( !اظہاریہ_Has_VVAProperty(p, EP_NoReduce) );
+    اگر( p->p_بایاں || p->x.pList ){
+      n_سائز = اظہاریہ_REDUCEDSIZE | EP_Reduced;
+    }ورنہ{
+      أكد( p->p_دایاں==0 );
+      n_سائز = اظہاریہ_TOKENONLYSIZE | EP_TokenOnly;
     }
   }
-  return nSize;
+  واپس n_سائز;
 }
 
 /*
@@ -1578,12 +1578,12 @@ static int dupedExprStructSize(const Expr *p, int flags){
 ** of the Expr structure and a copy of the Expr.u.zToken string (if that
 ** string is defined.)
 */
-static int dupedExprNodeSize(const Expr *p, int flags){
-  int nByte = dupedExprStructSize(p, flags) & 0xfff;
-  if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+ساکن صحیح duped_اظہاریہ_گرہ_سائز(ثابت اظہاریہ *p, صحیح flags){
+  صحیح nByte = duped_اظہاریہ_Struct_سائز(p, flags) & 0xfff;
+  اگر( !اظہاریہ_Has_Property(p, EP_Int_قدر) && p->u.zToken ){
     nByte += sqlite3Strlen30NN(p->u.zToken)+1;
   }
-  return ROUND8(nByte);
+  واپس ROUND8(nByte);
 }
 
 /*
@@ -1597,14 +1597,14 @@ static int dupedExprNodeSize(const Expr *p, int flags){
 ** tree formed by Expr.pLeft and Expr.pRight, but not any other
 ** substructure such as Expr.x.pList, Expr.x.pSelect, and Expr.y.pWin.
 */
-static int dupedExprSize(const Expr *p){
-  int nByte;
-  assert( p!=0 );
-  nByte = dupedExprNodeSize(p, EXPRDUP_REDUCE);
-  if( p->pLeft ) nByte += dupedExprSize(p->pLeft);
-  if( p->pRight ) nByte += dupedExprSize(p->pRight);
-  assert( nByte==ROUND8(nByte) );
-  return nByte;
+ساکن صحیح duped_اظہاریہ_سائز(ثابت اظہاریہ *p){
+  صحیح nByte;
+  أكد( p!=0 );
+  nByte = duped_اظہاریہ_گرہ_سائز(p, EXPRDUP_REDUCE);
+  اگر( p->p_بایاں ) nByte += duped_اظہاریہ_سائز(p->p_بایاں);
+  اگر( p->p_دایاں ) nByte += duped_اظہاریہ_سائز(p->p_دایاں);
+  أكد( nByte==ROUND8(nByte) );
+  واپس nByte;
 }
 
 /*
@@ -1615,12 +1615,12 @@ static int dupedExprSize(const Expr *p){
 ** of the structure down into exprDup() so that they decendents can have
 ** access to that memory.
 */
-typedef struct EdupBuf EdupBuf;
-struct EdupBuf {
+قسمتعریف ساخت EdupBuf EdupBuf;
+ساخت EdupBuf {
   u8 *zAlloc;          /* Memory space available for storage */
-#ifdef SQLITE_DEBUG
-  u8 *zEnd;            /* First byte past the end of memory */
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  u8 *z_انتہا;            /* First byte past the end of memory */
+#اگر_ختم
 };
 
 /*
@@ -1629,147 +1629,147 @@ struct EdupBuf {
 ** of the input Expr p together with its p->u.zToken (if any).  pEdupBuf
 ** is updated with the new buffer tail prior to returning.
 */
-static Expr *exprDup(
+ساکن اظہاریہ *اظہاریہ_Dup(
   sqlite3 *db,          /* Database connection (for memory allocation) */
-  const Expr *p,        /* Expr tree to be duplicated */
-  int dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
+  ثابت اظہاریہ *p,        /* Expr tree to be duplicated */
+  صحیح dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
   EdupBuf *pEdupBuf     /* Preallocated storage space, or NULL */
 ){
-  Expr *pNew;           /* Value to return */
+  اظہاریہ *pNew;           /* Value to return */
   EdupBuf sEdupBuf;     /* Memory space from which to build Expr object */
   u32 staticFlag;       /* EP_Static if space not obtained from malloc */
-  int nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
+  صحیح nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
 
-  assert( db!=0 );
-  assert( p );
-  assert( dupFlags==0 || dupFlags==EXPRDUP_REDUCE );
-  assert( pEdupBuf==0 || dupFlags==EXPRDUP_REDUCE );
+  أكد( db!=0 );
+  أكد( p );
+  أكد( dupFlags==0 || dupFlags==EXPRDUP_REDUCE );
+  أكد( pEdupBuf==0 || dupFlags==EXPRDUP_REDUCE );
 
   /* Figure out where to write the new Expr structure. */
-  if( pEdupBuf ){
+  اگر( pEdupBuf ){
     sEdupBuf.zAlloc = pEdupBuf->zAlloc;
-#ifdef SQLITE_DEBUG
-    sEdupBuf.zEnd = pEdupBuf->zEnd;
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+    sEdupBuf.z_انتہا = pEdupBuf->z_انتہا;
+#اگر_ختم
     staticFlag = EP_Static;
-    assert( sEdupBuf.zAlloc!=0 );
-    assert( dupFlags==EXPRDUP_REDUCE );
-  }else{
-    int nAlloc;
-    if( dupFlags ){
-      nAlloc = dupedExprSize(p);
-    }else if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    أكد( sEdupBuf.zAlloc!=0 );
+    أكد( dupFlags==EXPRDUP_REDUCE );
+  }ورنہ{
+    صحیح nAlloc;
+    اگر( dupFlags ){
+      nAlloc = duped_اظہاریہ_سائز(p);
+    }ورنہ اگر( !اظہاریہ_Has_Property(p, EP_Int_قدر) && p->u.zToken ){
       nToken = sqlite3Strlen30NN(p->u.zToken)+1;
-      nAlloc = ROUND8(EXPR_FULLSIZE + nToken);
-    }else{
+      nAlloc = ROUND8(اظہاریہ_FULLSIZE + nToken);
+    }ورنہ{
       nToken = 0;
-      nAlloc = ROUND8(EXPR_FULLSIZE);
+      nAlloc = ROUND8(اظہاریہ_FULLSIZE);
     }
-    assert( nAlloc==ROUND8(nAlloc) );
+    أكد( nAlloc==ROUND8(nAlloc) );
     sEdupBuf.zAlloc = sqlite3DbMallocRawNN(db, nAlloc);
-#ifdef SQLITE_DEBUG
-    sEdupBuf.zEnd = sEdupBuf.zAlloc ? sEdupBuf.zAlloc+nAlloc : 0;
-#endif
+#اگر_تعریف_شدہ SQLITE_DEBUG
+    sEdupBuf.z_انتہا = sEdupBuf.zAlloc ? sEdupBuf.zAlloc+nAlloc : 0;
+#اگر_ختم
     
     staticFlag = 0;
   }
-  pNew = (Expr *)sEdupBuf.zAlloc;
-  assert( EIGHT_BYTE_ALIGNMENT(pNew) );
+  pNew = (اظہاریہ *)sEdupBuf.zAlloc;
+  أكد( EIGHT_BYTE_ALIGNMENT(pNew) );
 
-  if( pNew ){
+  اگر( pNew ){
     /* Set nNewSize to the size allocated for the structure pointed to
     ** by pNew. This is either EXPR_FULLSIZE, EXPR_REDUCEDSIZE or
     ** EXPR_TOKENONLYSIZE. nToken is set to the number of bytes consumed
     ** by the copy of the p->u.zToken string (if any).
     */
-    const unsigned nStructSize = dupedExprStructSize(p, dupFlags);
-    int nNewSize = nStructSize & 0xfff;
-    if( nToken<0 ){
-      if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    ثابت غیرعلامتی n_Struct_سائز = duped_اظہاریہ_Struct_سائز(p, dupFlags);
+    صحیح n_New_سائز = n_Struct_سائز & 0xfff;
+    اگر( nToken<0 ){
+      اگر( !اظہاریہ_Has_Property(p, EP_Int_قدر) && p->u.zToken ){
         nToken = sqlite3Strlen30(p->u.zToken) + 1;
-      }else{
+      }ورنہ{
         nToken = 0;
       }
     }
-    if( dupFlags ){
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >= nNewSize+nToken );
-      assert( ExprHasProperty(p, EP_Reduced)==0 );
-      memcpy(sEdupBuf.zAlloc, p, nNewSize);
-    }else{
-      u32 nSize = (u32)exprStructSize(p);
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >=
-                                                   (int)EXPR_FULLSIZE+nToken );
-      memcpy(sEdupBuf.zAlloc, p, nSize);
-      if( nSize<EXPR_FULLSIZE ){
-        memset(&sEdupBuf.zAlloc[nSize], 0, EXPR_FULLSIZE-nSize);
+    اگر( dupFlags ){
+      أكد( (صحیح)(sEdupBuf.z_انتہا - sEdupBuf.zAlloc) >= n_New_سائز+nToken );
+      أكد( اظہاریہ_Has_Property(p, EP_Reduced)==0 );
+      حافظہ_نقل(sEdupBuf.zAlloc, p, n_New_سائز);
+    }ورنہ{
+      u32 n_سائز = (u32)اظہاریہ_Struct_سائز(p);
+      أكد( (صحیح)(sEdupBuf.z_انتہا - sEdupBuf.zAlloc) >=
+                                                   (صحیح)اظہاریہ_FULLSIZE+nToken );
+      حافظہ_نقل(sEdupBuf.zAlloc, p, n_سائز);
+      اگر( n_سائز<اظہاریہ_FULLSIZE ){
+        memset(&sEdupBuf.zAlloc[n_سائز], 0, اظہاریہ_FULLSIZE-n_سائز);
       }
-      nNewSize = EXPR_FULLSIZE;
+      n_New_سائز = اظہاریہ_FULLSIZE;
     }
 
     /* Set the EP_Reduced, EP_TokenOnly, and EP_Static flags appropriately. */
     pNew->flags &= ~(EP_Reduced|EP_TokenOnly|EP_Static);
-    pNew->flags |= nStructSize & (EP_Reduced|EP_TokenOnly);
+    pNew->flags |= n_Struct_سائز & (EP_Reduced|EP_TokenOnly);
     pNew->flags |= staticFlag;
-    ExprClearVVAProperties(pNew);
-    if( dupFlags ){
-      ExprSetVVAProperty(pNew, EP_Immutable);
+    اظہاریہ_Clear_VVAProperties(pNew);
+    اگر( dupFlags ){
+      اظہاریہ_سیٹ_VVAProperty(pNew, EP_Immutable);
     }
 
     /* Copy the p->u.zToken string, if any. */
-    assert( nToken>=0 );
-    if( nToken>0 ){
-      char *zToken = pNew->u.zToken = (char*)&sEdupBuf.zAlloc[nNewSize];
-      memcpy(zToken, p->u.zToken, nToken);
-      nNewSize += nToken;
+    أكد( nToken>=0 );
+    اگر( nToken>0 ){
+      حرف *zToken = pNew->u.zToken = (حرف*)&sEdupBuf.zAlloc[n_New_سائز];
+      حافظہ_نقل(zToken, p->u.zToken, nToken);
+      n_New_سائز += nToken;
     }
-    sEdupBuf.zAlloc += ROUND8(nNewSize);
+    sEdupBuf.zAlloc += ROUND8(n_New_سائز);
 
-    if( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_Leaf))==0 ){
+    اگر( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_برگ))==0 ){
 
       /* Fill in the pNew->x.pSelect or pNew->x.pList member. */
-      if( ExprUseXSelect(p) ){
+      اگر( اظہاریہ_Use_XSelect(p) ){
         pNew->x.pSelect = sqlite3SelectDup(db, p->x.pSelect, dupFlags);
-      }else{
-        pNew->x.pList = sqlite3ExprListDup(db, p->x.pList,
-                           p->op!=TK_ORDER ? dupFlags : 0);
+      }ورنہ{
+        pNew->x.pList = sqlite3_اظہاریہ_List_Dup(db, p->x.pList,
+                           p->op!=TK_ترتیب ? dupFlags : 0);
       }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
-        pNew->y.pWin = sqlite3WindowDup(db, pNew, p->y.pWin);
-        assert( ExprHasProperty(pNew, EP_WinFunc) );
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+      اگر( اظہاریہ_Has_Property(p, EP_WinFunc) ){
+        pNew->y.pWin = sqlite3_کھڑکی_Dup(db, pNew, p->y.pWin);
+        أكد( اظہاریہ_Has_Property(pNew, EP_WinFunc) );
       }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#اگر_ختم /* SQLITE_OMIT_WINDOWFUNC */
 
       /* Fill in pNew->pLeft and pNew->pRight. */
-      if( dupFlags ){
-        if( p->op==TK_SELECT_COLUMN ){
-          pNew->pLeft = p->pLeft;
-          assert( p->pRight==0 
-               || p->pRight==p->pLeft
-               || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
-          pNew->pLeft = p->pLeft ?
-                      exprDup(db, p->pLeft, EXPRDUP_REDUCE, &sEdupBuf) : 0;
+      اگر( dupFlags ){
+        اگر( p->op==TK_SELECT_عمود ){
+          pNew->p_بایاں = p->p_بایاں;
+          أكد( p->p_دایاں==0 
+               || p->p_دایاں==p->p_بایاں
+               || اظہاریہ_Has_Property(p->p_بایاں, EP_Subquery) );
+        }ورنہ{
+          pNew->p_بایاں = p->p_بایاں ?
+                      اظہاریہ_Dup(db, p->p_بایاں, EXPRDUP_REDUCE, &sEdupBuf) : 0;
         }
-        pNew->pRight = p->pRight ?
-                       exprDup(db, p->pRight, EXPRDUP_REDUCE, &sEdupBuf) : 0;
-      }else{
-        if( p->op==TK_SELECT_COLUMN ){
-          pNew->pLeft = p->pLeft;
-          assert( p->pRight==0 
-               || p->pRight==p->pLeft
-               || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
-          pNew->pLeft = sqlite3ExprDup(db, p->pLeft, 0);
+        pNew->p_دایاں = p->p_دایاں ?
+                       اظہاریہ_Dup(db, p->p_دایاں, EXPRDUP_REDUCE, &sEdupBuf) : 0;
+      }ورنہ{
+        اگر( p->op==TK_SELECT_عمود ){
+          pNew->p_بایاں = p->p_بایاں;
+          أكد( p->p_دایاں==0 
+               || p->p_دایاں==p->p_بایاں
+               || اظہاریہ_Has_Property(p->p_بایاں, EP_Subquery) );
+        }ورنہ{
+          pNew->p_بایاں = sqlite3_اظہاریہ_Dup(db, p->p_بایاں, 0);
         }
-        pNew->pRight = sqlite3ExprDup(db, p->pRight, 0);
+        pNew->p_دایاں = sqlite3_اظہاریہ_Dup(db, p->p_دایاں, 0);
       }
     }
   }
-  if( pEdupBuf ) memcpy(pEdupBuf, &sEdupBuf, sizeof(sEdupBuf));
-  assert( sEdupBuf.zAlloc <= sEdupBuf.zEnd );
-  return pNew;
+  اگر( pEdupBuf ) حافظہ_نقل(pEdupBuf, &sEdupBuf, حجم(sEdupBuf));
+  أكد( sEdupBuf.zAlloc <= sEdupBuf.z_انتہا );
+  واپس pNew;
 }
 
 /*
@@ -1777,60 +1777,60 @@ static Expr *exprDup(
 ** argument. If an OOM condition is encountered, NULL is returned
 ** and the db->mallocFailed flag set.
 */
-#ifndef SQLITE_OMIT_CTE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CTE
 With *sqlite3WithDup(sqlite3 *db, With *p){
   With *pRet = 0;
-  if( p ){
+  اگر( p ){
     sqlite3_int64 nByte = SZ_WITH(p->nCte);
     pRet = sqlite3DbMallocZero(db, nByte);
-    if( pRet ){
-      int i;
+    اگر( pRet ){
+      صحیح i;
       pRet->nCte = p->nCte;
-      for(i=0; i<p->nCte; i++){
+      برائے(i=0; i<p->nCte; i++){
         pRet->a[i].pSelect = sqlite3SelectDup(db, p->a[i].pSelect, 0);
-        pRet->a[i].pCols = sqlite3ExprListDup(db, p->a[i].pCols, 0);
+        pRet->a[i].p_ستون_تعداد = sqlite3_اظہاریہ_List_Dup(db, p->a[i].p_ستون_تعداد, 0);
         pRet->a[i].zName = sqlite3DbStrDup(db, p->a[i].zName);
         pRet->a[i].eM10d = p->a[i].eM10d;
       }
     }
   }
-  return pRet;
+  واپس pRet;
 }
-#else
+#ورنہ
 # define sqlite3WithDup(x,y) 0
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
 /*
 ** The gatherSelectWindows() procedure and its helper routine
 ** gatherSelectWindowsCallback() are used to scan all the expressions
 ** an a newly duplicated SELECT statement and gather all of the Window
 ** objects found there, assembling them onto the linked list at Select->pWin.
 */
-static int gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_WinFunc) ){
+ساکن صحیح gatherSelectWindowsCallback(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اگر( p_اظہاریہ->op==TK_FUNCTION && اظہاریہ_Has_Property(p_اظہاریہ, EP_WinFunc) ){
     Select *pSelect = pWalker->u.pSelect;
-    Window *pWin = pExpr->y.pWin;
-    assert( pWin );
-    assert( IsWindowFunc(pExpr) );
-    assert( pWin->ppThis==0 );
-    sqlite3WindowLink(pSelect, pWin);
+    کھڑکی *pWin = p_اظہاریہ->y.pWin;
+    أكد( pWin );
+    أكد( Is_کھڑکی_Func(p_اظہاریہ) );
+    أكد( pWin->ppThis==0 );
+    sqlite3_کھڑکی_Link(pSelect, pWin);
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
-static int gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
-  return p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
+ساکن صحیح gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
+  واپس p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
 }
-static void gatherSelectWindows(Select *p){
+ساکن خالی gatherSelectWindows(Select *p){
   Walker w;
-  w.xExprCallback = gatherSelectWindowsCallback;
+  w.x_اظہاریہ_Callback = gatherSelectWindowsCallback;
   w.xSelectCallback = gatherSelectWindowsSelectCallback;
   w.xSelectCallback2 = 0;
   w.pParse = 0;
   w.u.pSelect = p;
   sqlite3WalkSelect(&w, p);
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -1850,51 +1850,51 @@ static void gatherSelectWindows(Select *p){
 ** truncated version of the usual Expr structure that will be stored as
 ** part of the in-memory representation of the database schema.
 */
-Expr *sqlite3ExprDup(sqlite3 *db, const Expr *p, int flags){
-  assert( flags==0 || flags==EXPRDUP_REDUCE );
-  return p ? exprDup(db, p, flags, 0) : 0;
+اظہاریہ *sqlite3_اظہاریہ_Dup(sqlite3 *db, ثابت اظہاریہ *p, صحیح flags){
+  أكد( flags==0 || flags==EXPRDUP_REDUCE );
+  واپس p ? اظہاریہ_Dup(db, p, flags, 0) : 0;
 }
-ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
-  ExprList *pNew;
-  struct ExprList_item *pItem;
-  const struct ExprList_item *pOldItem;
-  int i;
-  Expr *pPriorSelectColOld = 0;
-  Expr *pPriorSelectColNew = 0;
-  assert( db!=0 );
-  if( p==0 ) return 0;
-  pNew = sqlite3DbMallocRawNN(db, sqlite3DbMallocSize(db, p));
-  if( pNew==0 ) return 0;
-  pNew->nExpr = p->nExpr;
+اظہاریہ_List *sqlite3_اظہاریہ_List_Dup(sqlite3 *db, ثابت اظہاریہ_List *p, صحیح flags){
+  اظہاریہ_List *pNew;
+  ساخت اظہاریہ_List_شے *p_شے;
+  ثابت ساخت اظہاریہ_List_شے *p_Old_شے;
+  صحیح i;
+  اظہاریہ *p_پیشگی_Select_ستون_Old = 0;
+  اظہاریہ *p_پیشگی_Select_ستون_New = 0;
+  أكد( db!=0 );
+  اگر( p==0 ) واپس 0;
+  pNew = sqlite3DbMallocRawNN(db, sqlite3_Db_Malloc_سائز(db, p));
+  اگر( pNew==0 ) واپس 0;
+  pNew->n_اظہاریہ = p->n_اظہاریہ;
   pNew->nAlloc = p->nAlloc;
-  pItem = pNew->a;
-  pOldItem = p->a;
-  for(i=0; i<p->nExpr; i++, pItem++, pOldItem++){
-    Expr *pOldExpr = pOldItem->pExpr;
-    Expr *pNewExpr;
-    pItem->pExpr = sqlite3ExprDup(db, pOldExpr, flags);
-    if( pOldExpr
-     && pOldExpr->op==TK_SELECT_COLUMN
-     && (pNewExpr = pItem->pExpr)!=0
+  p_شے = pNew->a;
+  p_Old_شے = p->a;
+  برائے(i=0; i<p->n_اظہاریہ; i++, p_شے++, p_Old_شے++){
+    اظہاریہ *p_Old_اظہاریہ = p_Old_شے->p_اظہاریہ;
+    اظہاریہ *p_New_اظہاریہ;
+    p_شے->p_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_Old_اظہاریہ, flags);
+    اگر( p_Old_اظہاریہ
+     && p_Old_اظہاریہ->op==TK_SELECT_عمود
+     && (p_New_اظہاریہ = p_شے->p_اظہاریہ)!=0
     ){
-      if( pNewExpr->pRight ){
-        pPriorSelectColOld = pOldExpr->pRight;
-        pPriorSelectColNew = pNewExpr->pRight;
-        pNewExpr->pLeft = pNewExpr->pRight;
-      }else{
-        if( pOldExpr->pLeft!=pPriorSelectColOld ){
-          pPriorSelectColOld = pOldExpr->pLeft;
-          pPriorSelectColNew = sqlite3ExprDup(db, pPriorSelectColOld, flags);
-          pNewExpr->pRight = pPriorSelectColNew;
+      اگر( p_New_اظہاریہ->p_دایاں ){
+        p_پیشگی_Select_ستون_Old = p_Old_اظہاریہ->p_دایاں;
+        p_پیشگی_Select_ستون_New = p_New_اظہاریہ->p_دایاں;
+        p_New_اظہاریہ->p_بایاں = p_New_اظہاریہ->p_دایاں;
+      }ورنہ{
+        اگر( p_Old_اظہاریہ->p_بایاں!=p_پیشگی_Select_ستون_Old ){
+          p_پیشگی_Select_ستون_Old = p_Old_اظہاریہ->p_بایاں;
+          p_پیشگی_Select_ستون_New = sqlite3_اظہاریہ_Dup(db, p_پیشگی_Select_ستون_Old, flags);
+          p_New_اظہاریہ->p_دایاں = p_پیشگی_Select_ستون_New;
         }
-        pNewExpr->pLeft = pPriorSelectColNew;
+        p_New_اظہاریہ->p_بایاں = p_پیشگی_Select_ستون_New;
       }
     }
-    pItem->zEName = sqlite3DbStrDup(db, pOldItem->zEName);
-    pItem->fg = pOldItem->fg;
-    pItem->u = pOldItem->u;
+    p_شے->zEName = sqlite3DbStrDup(db, p_Old_شے->zEName);
+    p_شے->fg = p_Old_شے->fg;
+    p_شے->u = p_Old_شے->u;
   }
-  return pNew;
+  واپس pNew;
 }
 
 /*
@@ -1903,136 +1903,136 @@ ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
 ** sqlite3SelectDup(), can be called. sqlite3SelectDup() is sometimes
 ** called with a NULL argument.
 */
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
+#اگر !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
  || !defined(SQLITE_OMIT_SUBQUERY)
-SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, int flags){
+SrcList *sqlite3SrcListDup(sqlite3 *db, ثابت SrcList *p, صحیح flags){
   SrcList *pNew;
-  int i;
-  assert( db!=0 );
-  if( p==0 ) return 0;
+  صحیح i;
+  أكد( db!=0 );
+  اگر( p==0 ) واپس 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_SRCLIST(p->nSrc) );
-  if( pNew==0 ) return 0;
+  اگر( pNew==0 ) واپس 0;
   pNew->nSrc = pNew->nAlloc = p->nSrc;
-  for(i=0; i<p->nSrc; i++){
-    SrcItem *pNewItem = &pNew->a[i];
-    const SrcItem *pOldItem = &p->a[i];
-    Table *pTab;
-    pNewItem->fg = pOldItem->fg;
-    if( pOldItem->fg.isSubquery ){
-      Subquery *pNewSubq = sqlite3DbMallocRaw(db, sizeof(Subquery));
-      if( pNewSubq==0 ){
-        assert( db->mallocFailed );
-        pNewItem->fg.isSubquery = 0;
-      }else{
-        memcpy(pNewSubq, pOldItem->u4.pSubq, sizeof(*pNewSubq));
+  برائے(i=0; i<p->nSrc; i++){
+    Src_شے *p_New_شے = &pNew->a[i];
+    ثابت Src_شے *p_Old_شے = &p->a[i];
+    جدول *pTab;
+    p_New_شے->fg = p_Old_شے->fg;
+    اگر( p_Old_شے->fg.isSubquery ){
+      Subquery *pNewSubq = sqlite3DbMallocRaw(db, حجم(Subquery));
+      اگر( pNewSubq==0 ){
+        أكد( db->mallocFailed );
+        p_New_شے->fg.isSubquery = 0;
+      }ورنہ{
+        حافظہ_نقل(pNewSubq, p_Old_شے->u4.pSubq, حجم(*pNewSubq));
         pNewSubq->pSelect = sqlite3SelectDup(db, pNewSubq->pSelect, flags);
-        if( pNewSubq->pSelect==0 ){
+        اگر( pNewSubq->pSelect==0 ){
           sqlite3DbFree(db, pNewSubq);
           pNewSubq = 0;
-          pNewItem->fg.isSubquery = 0;
+          p_New_شے->fg.isSubquery = 0;
         }
       }
-      pNewItem->u4.pSubq = pNewSubq;
-    }else if( pOldItem->fg.fixedSchema ){
-      pNewItem->u4.pSchema = pOldItem->u4.pSchema;
-    }else{
-      pNewItem->u4.zDatabase = sqlite3DbStrDup(db, pOldItem->u4.zDatabase);
+      p_New_شے->u4.pSubq = pNewSubq;
+    }ورنہ اگر( p_Old_شے->fg.fixedSchema ){
+      p_New_شے->u4.pSchema = p_Old_شے->u4.pSchema;
+    }ورنہ{
+      p_New_شے->u4.zDatabase = sqlite3DbStrDup(db, p_Old_شے->u4.zDatabase);
     }
-    pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
-    pNewItem->zAlias = sqlite3DbStrDup(db, pOldItem->zAlias);
-    pNewItem->iCursor = pOldItem->iCursor;
-    if( pNewItem->fg.isIndexedBy ){
-      pNewItem->u1.zIndexedBy = sqlite3DbStrDup(db, pOldItem->u1.zIndexedBy);
-    }else if( pNewItem->fg.isTabFunc ){
-      pNewItem->u1.pFuncArg =
-          sqlite3ExprListDup(db, pOldItem->u1.pFuncArg, flags);
-    }else{
-      pNewItem->u1.nRow = pOldItem->u1.nRow;
+    p_New_شے->zName = sqlite3DbStrDup(db, p_Old_شے->zName);
+    p_New_شے->zAlias = sqlite3DbStrDup(db, p_Old_شے->zAlias);
+    p_New_شے->iCursor = p_Old_شے->iCursor;
+    اگر( p_New_شے->fg.is_اشاریہ_دار_By ){
+      p_New_شے->u1.z_اشاریہ_دار_By = sqlite3DbStrDup(db, p_Old_شے->u1.z_اشاریہ_دار_By);
+    }ورنہ اگر( p_New_شے->fg.isTabFunc ){
+      p_New_شے->u1.pFuncArg =
+          sqlite3_اظہاریہ_List_Dup(db, p_Old_شے->u1.pFuncArg, flags);
+    }ورنہ{
+      p_New_شے->u1.n_صف = p_Old_شے->u1.n_صف;
     }
-    pNewItem->u2 = pOldItem->u2;
-    if( pNewItem->fg.isCte ){
-      pNewItem->u2.pCteUse->nUse++;
+    p_New_شے->u2 = p_Old_شے->u2;
+    اگر( p_New_شے->fg.isCte ){
+      p_New_شے->u2.pCteUse->nUse++;
     }
-    pTab = pNewItem->pSTab = pOldItem->pSTab;
-    if( pTab ){
+    pTab = p_New_شے->pSTab = p_Old_شے->pSTab;
+    اگر( pTab ){
       pTab->nTabRef++;
     }
-    if( pOldItem->fg.isUsing ){
-      assert( pNewItem->fg.isUsing );
-      pNewItem->u3.pUsing = sqlite3IdListDup(db, pOldItem->u3.pUsing);
-    }else{
-      pNewItem->u3.pOn = sqlite3ExprDup(db, pOldItem->u3.pOn, flags);
+    اگر( p_Old_شے->fg.isUsing ){
+      أكد( p_New_شے->fg.isUsing );
+      p_New_شے->u3.pUsing = sqlite3IdListDup(db, p_Old_شے->u3.pUsing);
+    }ورنہ{
+      p_New_شے->u3.pOn = sqlite3_اظہاریہ_Dup(db, p_Old_شے->u3.pOn, flags);
     }
-    pNewItem->colUsed = pOldItem->colUsed;
+    p_New_شے->ستون_مستعمل = p_Old_شے->ستون_مستعمل;
   }
-  return pNew;
+  واپس pNew;
 }
-IdList *sqlite3IdListDup(sqlite3 *db, const IdList *p){
+IdList *sqlite3IdListDup(sqlite3 *db, ثابت IdList *p){
   IdList *pNew;
-  int i;
-  assert( db!=0 );
-  if( p==0 ) return 0;
+  صحیح i;
+  أكد( db!=0 );
+  اگر( p==0 ) واپس 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_IDLIST(p->nId));
-  if( pNew==0 ) return 0;
+  اگر( pNew==0 ) واپس 0;
   pNew->nId = p->nId;
-  for(i=0; i<p->nId; i++){
-    struct IdList_item *pNewItem = &pNew->a[i];
-    const struct IdList_item *pOldItem = &p->a[i];
-    pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
+  برائے(i=0; i<p->nId; i++){
+    ساخت Id_List_شے *p_New_شے = &pNew->a[i];
+    ثابت ساخت Id_List_شے *p_Old_شے = &p->a[i];
+    p_New_شے->zName = sqlite3DbStrDup(db, p_Old_شے->zName);
   }
-  return pNew;
+  واپس pNew;
 }
-Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
+Select *sqlite3SelectDup(sqlite3 *db, ثابت Select *pDup, صحیح flags){
   Select *pRet = 0;
-  Select *pNext = 0;
+  Select *p_اگلا = 0;
   Select **pp = &pRet;
-  const Select *p;
+  ثابت Select *p;
 
-  assert( db!=0 );
-  for(p=pDup; p; p=p->pPrior){
-    Select *pNew = sqlite3DbMallocRawNN(db, sizeof(*p) );
-    if( pNew==0 ) break;
-    pNew->pEList = sqlite3ExprListDup(db, p->pEList, flags);
+  أكد( db!=0 );
+  برائے(p=pDup; p; p=p->p_پیشگی){
+    Select *pNew = sqlite3DbMallocRawNN(db, حجم(*p) );
+    اگر( pNew==0 ) توڑو;
+    pNew->pEList = sqlite3_اظہاریہ_List_Dup(db, p->pEList, flags);
     pNew->pSrc = sqlite3SrcListDup(db, p->pSrc, flags);
-    pNew->pWhere = sqlite3ExprDup(db, p->pWhere, flags);
-    pNew->pGroupBy = sqlite3ExprListDup(db, p->pGroupBy, flags);
-    pNew->pHaving = sqlite3ExprDup(db, p->pHaving, flags);
-    pNew->pOrderBy = sqlite3ExprListDup(db, p->pOrderBy, flags);
+    pNew->pWhere = sqlite3_اظہاریہ_Dup(db, p->pWhere, flags);
+    pNew->p_گروہ_By = sqlite3_اظہاریہ_List_Dup(db, p->p_گروہ_By, flags);
+    pNew->pHaving = sqlite3_اظہاریہ_Dup(db, p->pHaving, flags);
+    pNew->p_ترتیب_By = sqlite3_اظہاریہ_List_Dup(db, p->p_ترتیب_By, flags);
     pNew->op = p->op;
-    pNew->pNext = pNext;
-    pNew->pPrior = 0;
-    pNew->pLimit = sqlite3ExprDup(db, p->pLimit, flags);
-    pNew->iLimit = 0;
-    pNew->iOffset = 0;
+    pNew->p_اگلا = p_اگلا;
+    pNew->p_پیشگی = 0;
+    pNew->p_حد_بندی = sqlite3_اظہاریہ_Dup(db, p->p_حد_بندی, flags);
+    pNew->i_حد_بندی = 0;
+    pNew->i_انحراف = 0;
     pNew->selFlags = p->selFlags;
-    pNew->nSelectRow = p->nSelectRow;
+    pNew->n_Select_صف = p->n_Select_صف;
     pNew->pWith = sqlite3WithDup(db, p->pWith);
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
     pNew->pWin = 0;
-    pNew->pWinDefn = sqlite3WindowListDup(db, p->pWinDefn);
-    if( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
-#endif
+    pNew->pWinDefn = sqlite3_کھڑکی_List_Dup(db, p->pWinDefn);
+    اگر( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
+#اگر_ختم
     pNew->selId = p->selId;
-    if( db->mallocFailed ){
+    اگر( db->mallocFailed ){
       /* Any prior OOM might have left the Select object incomplete.
       ** Delete the whole thing rather than allow an incomplete Select
       ** to be used by the code generator. */
-      pNew->pNext = 0;
+      pNew->p_اگلا = 0;
       sqlite3SelectDelete(db, pNew);
-      break;
+      توڑو;
     }
     *pp = pNew;
-    pp = &pNew->pPrior;
-    pNext = pNew;
+    pp = &pNew->p_پیشگی;
+    p_اگلا = pNew;
   }
-  return pRet;
+  واپس pRet;
 }
-#else
-Select *sqlite3SelectDup(sqlite3 *db, const Select *p, int flags){
-  assert( p==0 );
-  return 0;
+#ورنہ
+Select *sqlite3SelectDup(sqlite3 *db, ثابت Select *p, صحیح flags){
+  أكد( p==0 );
+  واپس 0;
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -2046,63 +2046,63 @@ Select *sqlite3SelectDup(sqlite3 *db, const Select *p, int flags){
 ** NULL is returned.  If non-NULL is returned, then it is guaranteed
 ** that the new entry was successfully appended.
 */
-static const struct ExprList_item zeroItem = {0};
-SQLITE_NOINLINE ExprList *sqlite3ExprListAppendNew(
+ساکن ثابت ساخت اظہاریہ_List_شے zero_شے = {0};
+SQLITE_NOINLINE اظہاریہ_List *sqlite3_اظہاریہ_List_Append_New(
   sqlite3 *db,            /* Database handle.  Used for memory allocation */
-  Expr *pExpr             /* Expression to be appended. Might be NULL */
+  اظہاریہ *p_اظہاریہ             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
-  ExprList *pList;
+  ساخت اظہاریہ_List_شے *p_شے;
+  اظہاریہ_List *pList;
 
   pList = sqlite3DbMallocRawNN(db, SZ_EXPRLIST(4));
-  if( pList==0 ){
-    sqlite3ExprDelete(db, pExpr);
-    return 0;
+  اگر( pList==0 ){
+    sqlite3_اظہاریہ_Delete(db, p_اظہاریہ);
+    واپس 0;
   }
   pList->nAlloc = 4;
-  pList->nExpr = 1;
-  pItem = &pList->a[0];
-  *pItem = zeroItem;
-  pItem->pExpr = pExpr;
-  return pList;
+  pList->n_اظہاریہ = 1;
+  p_شے = &pList->a[0];
+  *p_شے = zero_شے;
+  p_شے->p_اظہاریہ = p_اظہاریہ;
+  واپس pList;
 }
-SQLITE_NOINLINE ExprList *sqlite3ExprListAppendGrow(
+SQLITE_NOINLINE اظہاریہ_List *sqlite3_اظہاریہ_List_Append_Grow(
   sqlite3 *db,            /* Database handle.  Used for memory allocation */
-  ExprList *pList,        /* List to which to append. Might be NULL */
-  Expr *pExpr             /* Expression to be appended. Might be NULL */
+  اظہاریہ_List *pList,        /* List to which to append. Might be NULL */
+  اظہاریہ *p_اظہاریہ             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
-  ExprList *pNew;
+  ساخت اظہاریہ_List_شے *p_شے;
+  اظہاریہ_List *pNew;
   pList->nAlloc *= 2;
   pNew = sqlite3DbRealloc(db, pList, SZ_EXPRLIST(pList->nAlloc));
-  if( pNew==0 ){
-    sqlite3ExprListDelete(db, pList);
-    sqlite3ExprDelete(db, pExpr);
-    return 0;
-  }else{
+  اگر( pNew==0 ){
+    sqlite3_اظہاریہ_List_Delete(db, pList);
+    sqlite3_اظہاریہ_Delete(db, p_اظہاریہ);
+    واپس 0;
+  }ورنہ{
     pList = pNew;
   }
-  pItem = &pList->a[pList->nExpr++];
-  *pItem = zeroItem;
-  pItem->pExpr = pExpr;
-  return pList;
+  p_شے = &pList->a[pList->n_اظہاریہ++];
+  *p_شے = zero_شے;
+  p_شے->p_اظہاریہ = p_اظہاریہ;
+  واپس pList;
 }
-ExprList *sqlite3ExprListAppend(
+اظہاریہ_List *sqlite3_اظہاریہ_List_Append(
   Parse *pParse,          /* Parsing context */
-  ExprList *pList,        /* List to which to append. Might be NULL */
-  Expr *pExpr             /* Expression to be appended. Might be NULL */
+  اظہاریہ_List *pList,        /* List to which to append. Might be NULL */
+  اظہاریہ *p_اظہاریہ             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
-  if( pList==0 ){
-    return sqlite3ExprListAppendNew(pParse->db,pExpr);
+  ساخت اظہاریہ_List_شے *p_شے;
+  اگر( pList==0 ){
+    واپس sqlite3_اظہاریہ_List_Append_New(pParse->db,p_اظہاریہ);
   }
-  if( pList->nAlloc<pList->nExpr+1 ){
-    return sqlite3ExprListAppendGrow(pParse->db,pList,pExpr);
+  اگر( pList->nAlloc<pList->n_اظہاریہ+1 ){
+    واپس sqlite3_اظہاریہ_List_Append_Grow(pParse->db,pList,p_اظہاریہ);
   }
-  pItem = &pList->a[pList->nExpr++];
-  *pItem = zeroItem;
-  pItem->pExpr = pExpr;
-  return pList;
+  p_شے = &pList->a[pList->n_اظہاریہ++];
+  *p_شے = zero_شے;
+  p_شے->p_اظہاریہ = p_اظہاریہ;
+  واپس pList;
 }
 
 /*
@@ -2116,94 +2116,94 @@ ExprList *sqlite3ExprListAppend(
 ** expression list pList.  In the case of a subquery on the RHS, append
 ** TK_SELECT_COLUMN expressions.
 */
-ExprList *sqlite3ExprListAppendVector(
+اظہاریہ_List *sqlite3_اظہاریہ_List_Append_سمتیہ(
   Parse *pParse,         /* Parsing context */
-  ExprList *pList,       /* List to which to append. Might be NULL */
+  اظہاریہ_List *pList,       /* List to which to append. Might be NULL */
   IdList *pColumns,      /* List of names of LHS of the assignment */
-  Expr *pExpr            /* Vector expression to be appended. Might be NULL */
+  اظہاریہ *p_اظہاریہ            /* Vector expression to be appended. Might be NULL */
 ){
   sqlite3 *db = pParse->db;
-  int n;
-  int i;
-  int iFirst = pList ? pList->nExpr : 0;
+  صحیح n;
+  صحیح i;
+  صحیح i_پہلا = pList ? pList->n_اظہاریہ : 0;
   /* pColumns can only be NULL due to an OOM but an OOM will cause an
   ** exit prior to this routine being invoked */
-  if( NEVER(pColumns==0) ) goto vector_append_error;
-  if( pExpr==0 ) goto vector_append_error;
+  اگر( NEVER(pColumns==0) ) جاؤ سمتیہ_append_error;
+  اگر( p_اظہاریہ==0 ) جاؤ سمتیہ_append_error;
 
   /* If the RHS is a vector, then we can immediately check to see that
   ** the size of the RHS and LHS match.  But if the RHS is a SELECT,
   ** wildcards ("*") in the result set of the SELECT must be expanded before
   ** we can do the size check, so defer the size check until code generation.
   */
-  if( pExpr->op!=TK_SELECT && pColumns->nId!=(n=sqlite3ExprVectorSize(pExpr)) ){
-    sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
+  اگر( p_اظہاریہ->op!=TK_SELECT && pColumns->nId!=(n=sqlite3_اظہاریہ_سمتیہ_سائز(p_اظہاریہ)) ){
+    sqlite3_Error_پیغام(pParse, "%d columns assigned %d values",
                     pColumns->nId, n);
-    goto vector_append_error;
+    جاؤ سمتیہ_append_error;
   }
 
-  for(i=0; i<pColumns->nId; i++){
-    Expr *pSubExpr = sqlite3ExprForVectorField(pParse, pExpr, i, pColumns->nId);
-    assert( pSubExpr!=0 || db->mallocFailed );
-    if( pSubExpr==0 ) continue;
-    pList = sqlite3ExprListAppend(pParse, pList, pSubExpr);
-    if( pList ){
-      assert( pList->nExpr==iFirst+i+1 );
-      pList->a[pList->nExpr-1].zEName = pColumns->a[i].zName;
+  برائے(i=0; i<pColumns->nId; i++){
+    اظہاریہ *p_Sub_اظہاریہ = sqlite3_اظہاریہ_For_سمتیہ_میدان(pParse, p_اظہاریہ, i, pColumns->nId);
+    أكد( p_Sub_اظہاریہ!=0 || db->mallocFailed );
+    اگر( p_Sub_اظہاریہ==0 ) جاری;
+    pList = sqlite3_اظہاریہ_List_Append(pParse, pList, p_Sub_اظہاریہ);
+    اگر( pList ){
+      أكد( pList->n_اظہاریہ==i_پہلا+i+1 );
+      pList->a[pList->n_اظہاریہ-1].zEName = pColumns->a[i].zName;
       pColumns->a[i].zName = 0;
     }
   }
 
-  if( !db->mallocFailed && pExpr->op==TK_SELECT && ALWAYS(pList!=0) ){
-    Expr *pFirst = pList->a[iFirst].pExpr;
-    assert( pFirst!=0 );
-    assert( pFirst->op==TK_SELECT_COLUMN );
+  اگر( !db->mallocFailed && p_اظہاریہ->op==TK_SELECT && ALWAYS(pList!=0) ){
+    اظہاریہ *p_پہلا = pList->a[i_پہلا].p_اظہاریہ;
+    أكد( p_پہلا!=0 );
+    أكد( p_پہلا->op==TK_SELECT_عمود );
     
     /* Store the SELECT statement in pRight so it will be deleted when
     ** sqlite3ExprListDelete() is called */
-    pFirst->pRight = pExpr;
-    pExpr = 0;
+    p_پہلا->p_دایاں = p_اظہاریہ;
+    p_اظہاریہ = 0;
 
     /* Remember the size of the LHS in iTable so that we can check that
     ** the RHS and LHS sizes match during code generation. */
-    pFirst->iTable = pColumns->nId;
+    p_پہلا->i_جدول = pColumns->nId;
   }
 
-vector_append_error:
-  sqlite3ExprUnmapAndDelete(pParse, pExpr);
+سمتیہ_append_error:
+  sqlite3_اظہاریہ_Unmap_And_Delete(pParse, p_اظہاریہ);
   sqlite3IdListDelete(db, pColumns);
-  return pList;
+  واپس pList;
 }
 
 /*
 ** Set the sort order for the last element on the given ExprList.
 */
-void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
-  struct ExprList_item *pItem;
-  if( p==0 ) return;
-  assert( p->nExpr>0 );
+خالی sqlite3_اظہاریہ_List_سیٹ_ترتیب_دو_ترتیب(اظہاریہ_List *p, صحیح i_ترتیب_دو_ترتیب, صحیح eNulls){
+  ساخت اظہاریہ_List_شے *p_شے;
+  اگر( p==0 ) واپس;
+  أكد( p->n_اظہاریہ>0 );
 
-  assert( SQLITE_SO_UNDEFINED<0 && SQLITE_SO_ASC==0 && SQLITE_SO_DESC>0 );
-  assert( iSortOrder==SQLITE_SO_UNDEFINED
-       || iSortOrder==SQLITE_SO_ASC
-       || iSortOrder==SQLITE_SO_DESC
+  أكد( SQLITE_SO_UNDEFINED<0 && SQLITE_SO_ASC==0 && SQLITE_SO_DESC>0 );
+  أكد( i_ترتیب_دو_ترتیب==SQLITE_SO_UNDEFINED
+       || i_ترتیب_دو_ترتیب==SQLITE_SO_ASC
+       || i_ترتیب_دو_ترتیب==SQLITE_SO_DESC
   );
-  assert( eNulls==SQLITE_SO_UNDEFINED
+  أكد( eNulls==SQLITE_SO_UNDEFINED
        || eNulls==SQLITE_SO_ASC
        || eNulls==SQLITE_SO_DESC
   );
 
-  pItem = &p->a[p->nExpr-1];
-  assert( pItem->fg.bNulls==0 );
-  if( iSortOrder==SQLITE_SO_UNDEFINED ){
-    iSortOrder = SQLITE_SO_ASC;
+  p_شے = &p->a[p->n_اظہاریہ-1];
+  أكد( p_شے->fg.bNulls==0 );
+  اگر( i_ترتیب_دو_ترتیب==SQLITE_SO_UNDEFINED ){
+    i_ترتیب_دو_ترتیب = SQLITE_SO_ASC;
   }
-  pItem->fg.sortFlags = (u8)iSortOrder;
+  p_شے->fg.ترتیب_دو_Flags = (u8)i_ترتیب_دو_ترتیب;
 
-  if( eNulls!=SQLITE_SO_UNDEFINED ){
-    pItem->fg.bNulls = 1;
-    if( iSortOrder!=eNulls ){
-      pItem->fg.sortFlags |= KEYINFO_ORDER_BIGNULL;
+  اگر( eNulls!=SQLITE_SO_UNDEFINED ){
+    p_شے->fg.bNulls = 1;
+    اگر( i_ترتیب_دو_ترتیب!=eNulls ){
+      p_شے->fg.ترتیب_دو_Flags |= KEYINFO_ترتیب_BIGNULL;
     }
   }
 }
@@ -2216,28 +2216,28 @@ void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
 ** NULL.  If a memory allocation fails, the pParse->db->mallocFailed flag
 ** is set.
 */
-void sqlite3ExprListSetName(
+خالی sqlite3_اظہاریہ_List_سیٹ_Name(
   Parse *pParse,          /* Parsing context */
-  ExprList *pList,        /* List to which to add the span. */
-  const Token *pName,     /* Name to be added */
-  int dequote             /* True to cause the name to be dequoted */
+  اظہاریہ_List *pList,        /* List to which to add the span. */
+  ثابت Token *pName,     /* Name to be added */
+  صحیح dequote             /* True to cause the name to be dequoted */
 ){
-  assert( pList!=0 || pParse->db->mallocFailed!=0 );
-  assert( pParse->eParseMode!=PARSE_MODE_UNMAP || dequote==0 );
-  if( pList ){
-    struct ExprList_item *pItem;
-    assert( pList->nExpr>0 );
-    pItem = &pList->a[pList->nExpr-1];
-    assert( pItem->zEName==0 );
-    assert( pItem->fg.eEName==ENAME_NAME );
-    pItem->zEName = sqlite3DbStrNDup(pParse->db, pName->z, pName->n);
-    if( dequote ){
+  أكد( pList!=0 || pParse->db->mallocFailed!=0 );
+  أكد( pParse->e_Parse_منوال!=PARSE_منوال_UNMAP || dequote==0 );
+  اگر( pList ){
+    ساخت اظہاریہ_List_شے *p_شے;
+    أكد( pList->n_اظہاریہ>0 );
+    p_شے = &pList->a[pList->n_اظہاریہ-1];
+    أكد( p_شے->zEName==0 );
+    أكد( p_شے->fg.eEName==ENAME_NAME );
+    p_شے->zEName = sqlite3DbStrNDup(pParse->db, pName->z, pName->n);
+    اگر( dequote ){
       /* If dequote==0, then pName->z does not point to part of a DDL
       ** statement handled by the parser. And so no token need be added
       ** to the token-map.  */
-      sqlite3Dequote(pItem->zEName);
-      if( IN_RENAME_OBJECT ){
-        sqlite3RenameTokenMap(pParse, (const void*)pItem->zEName, pName);
+      sqlite3Dequote(p_شے->zEName);
+      اگر( اندر_RENAME_OBJECT ){
+        sqlite3RenameTokenMap(pParse, (ثابت خالی*)p_شے->zEName, pName);
       }
     }
   }
@@ -2251,20 +2251,20 @@ void sqlite3ExprListSetName(
 ** NULL.  If a memory allocation fails, the pParse->db->mallocFailed flag
 ** is set.
 */
-void sqlite3ExprListSetSpan(
+خالی sqlite3_اظہاریہ_List_سیٹ_وسعت(
   Parse *pParse,          /* Parsing context */
-  ExprList *pList,        /* List to which to add the span. */
-  const char *zStart,     /* Start of the span */
-  const char *zEnd        /* End of the span */
+  اظہاریہ_List *pList,        /* List to which to add the span. */
+  ثابت حرف *z_آغاز,     /* Start of the span */
+  ثابت حرف *z_انتہا        /* End of the span */
 ){
   sqlite3 *db = pParse->db;
-  assert( pList!=0 || db->mallocFailed!=0 );
-  if( pList ){
-    struct ExprList_item *pItem = &pList->a[pList->nExpr-1];
-    assert( pList->nExpr>0 );
-    if( pItem->zEName==0 ){
-      pItem->zEName = sqlite3DbSpanDup(db, zStart, zEnd);
-      pItem->fg.eEName = ENAME_SPAN;
+  أكد( pList!=0 || db->mallocFailed!=0 );
+  اگر( pList ){
+    ساخت اظہاریہ_List_شے *p_شے = &pList->a[pList->n_اظہاریہ-1];
+    أكد( pList->n_اظہاریہ>0 );
+    اگر( p_شے->zEName==0 ){
+      p_شے->zEName = sqlite3_Db_وسعت_Dup(db, z_آغاز, z_انتہا);
+      p_شے->fg.eEName = ENAME_وسعت;
     }
   }
 }
@@ -2273,55 +2273,55 @@ void sqlite3ExprListSetSpan(
 ** If the expression list pEList contains more than iLimit elements,
 ** leave an error message in pParse.
 */
-void sqlite3ExprListCheckLength(
+خالی sqlite3_اظہاریہ_List_Check_لمبائی(
   Parse *pParse,
-  ExprList *pEList,
-  const char *zObject
+  اظہاریہ_List *pEList,
+  ثابت حرف *zObject
 ){
-  int mx = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
-  testcase( pEList && pEList->nExpr==mx );
-  testcase( pEList && pEList->nExpr==mx+1 );
-  if( pEList && pEList->nExpr>mx ){
-    sqlite3ErrorMsg(pParse, "too many columns in %s", zObject);
+  صحیح mx = pParse->db->a_حد_بندی[SQLITE_حد_بندی_عمود];
+  testcase( pEList && pEList->n_اظہاریہ==mx );
+  testcase( pEList && pEList->n_اظہاریہ==mx+1 );
+  اگر( pEList && pEList->n_اظہاریہ>mx ){
+    sqlite3_Error_پیغام(pParse, "too many columns in %s", zObject);
   }
 }
 
 /*
 ** Delete an entire expression list.
 */
-static SQLITE_NOINLINE void exprListDeleteNN(sqlite3 *db, ExprList *pList){
-  int i = pList->nExpr;
-  struct ExprList_item *pItem =  pList->a;
-  assert( pList->nExpr>0 );
-  assert( db!=0 );
-  do{
-    sqlite3ExprDelete(db, pItem->pExpr);
-    if( pItem->zEName ) sqlite3DbNNFreeNN(db, pItem->zEName);
-    pItem++;
-  }while( --i>0 );
+ساکن SQLITE_NOINLINE خالی اظہاریہ_List_Delete_NN(sqlite3 *db, اظہاریہ_List *pList){
+  صحیح i = pList->n_اظہاریہ;
+  ساخت اظہاریہ_List_شے *p_شے =  pList->a;
+  أكد( pList->n_اظہاریہ>0 );
+  أكد( db!=0 );
+  کرو{
+    sqlite3_اظہاریہ_Delete(db, p_شے->p_اظہاریہ);
+    اگر( p_شے->zEName ) sqlite3DbNNFreeNN(db, p_شے->zEName);
+    p_شے++;
+  }جب( --i>0 );
   sqlite3DbNNFreeNN(db, pList);
 }
-void sqlite3ExprListDelete(sqlite3 *db, ExprList *pList){
-  if( pList ) exprListDeleteNN(db, pList);
+خالی sqlite3_اظہاریہ_List_Delete(sqlite3 *db, اظہاریہ_List *pList){
+  اگر( pList ) اظہاریہ_List_Delete_NN(db, pList);
 }
-void sqlite3ExprListDeleteGeneric(sqlite3 *db, void *pList){
-  if( ALWAYS(pList) ) exprListDeleteNN(db, (ExprList*)pList);
+خالی sqlite3_اظہاریہ_List_Delete_Generic(sqlite3 *db, خالی *pList){
+  اگر( ALWAYS(pList) ) اظہاریہ_List_Delete_NN(db, (اظہاریہ_List*)pList);
 }
 
 /*
 ** Return the bitwise-OR of all Expr.flags fields in the given
 ** ExprList.
 */
-u32 sqlite3ExprListFlags(const ExprList *pList){
-  int i;
+u32 sqlite3_اظہاریہ_List_Flags(ثابت اظہاریہ_List *pList){
+  صحیح i;
   u32 m = 0;
-  assert( pList!=0 );
-  for(i=0; i<pList->nExpr; i++){
-     Expr *pExpr = pList->a[i].pExpr;
-     assert( pExpr!=0 );
-     m |= pExpr->flags;
+  أكد( pList!=0 );
+  برائے(i=0; i<pList->n_اظہاریہ; i++){
+     اظہاریہ *p_اظہاریہ = pList->a[i].p_اظہاریہ;
+     أكد( p_اظہاریہ!=0 );
+     m |= p_اظہاریہ->flags;
   }
-  return m;
+  واپس m;
 }
 
 /*
@@ -2331,10 +2331,10 @@ u32 sqlite3ExprListFlags(const ExprList *pList){
 **
 ** This callback is used by multiple expression walkers.
 */
-int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
-  UNUSED_PARAMETER(NotUsed);
-  pWalker->eCode = 0;
-  return WRC_Abort;
+صحیح sqlite3SelectWalkFail(Walker *pWalker, Select *Not_مستعمل){
+  غیر_مستعمل_PARAMETER(Not_مستعمل);
+  pWalker->e_رمز = 0;
+  واپس WRC_Abort;
 }
 
 /*
@@ -2345,10 +2345,10 @@ int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
 **         "false"                        EP_IsFalse
 **         anything else                  0
 */
-u32 sqlite3IsTrueOrFalse(const char *zIn){
-  if( sqlite3StrICmp(zIn, "true")==0  ) return EP_IsTrue;
-  if( sqlite3StrICmp(zIn, "false")==0 ) return EP_IsFalse;
-  return 0;
+u32 sqlite3IsTrueOrFalse(ثابت حرف *z_اندر){
+  اگر( sqlite3StrICmp(z_اندر, "true")==0  ) واپس EP_IsTrue;
+  اگر( sqlite3StrICmp(z_اندر, "false")==0 ) واپس EP_IsFalse;
+  واپس 0;
 }
 
 
@@ -2357,30 +2357,30 @@ u32 sqlite3IsTrueOrFalse(const char *zIn){
 ** then convert it into an TK_TRUEFALSE term.  Return non-zero if
 ** the conversion happened, and zero if the expression is unaltered.
 */
-int sqlite3ExprIdToTrueFalse(Expr *pExpr){
+صحیح sqlite3_اظہاریہ_Id_مقصد_True_False(اظہاریہ *p_اظہاریہ){
   u32 v;
-  assert( pExpr->op==TK_ID || pExpr->op==TK_STRING );
-  if( !ExprHasProperty(pExpr, EP_Quoted|EP_IntValue)
-   && (v = sqlite3IsTrueOrFalse(pExpr->u.zToken))!=0
+  أكد( p_اظہاریہ->op==TK_ID || p_اظہاریہ->op==TK_STRING );
+  اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Quoted|EP_Int_قدر)
+   && (v = sqlite3IsTrueOrFalse(p_اظہاریہ->u.zToken))!=0
   ){
-    pExpr->op = TK_TRUEFALSE;
-    ExprSetProperty(pExpr, v);
-    return 1;
+    p_اظہاریہ->op = TK_TRUEFALSE;
+    اظہاریہ_سیٹ_Property(p_اظہاریہ, v);
+    واپس 1;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
 ** The argument must be a TK_TRUEFALSE Expr node.  Return 1 if it is TRUE
 ** and 0 if it is FALSE.
 */
-int sqlite3ExprTruthValue(const Expr *pExpr){
-  pExpr = sqlite3ExprSkipCollateAndLikely((Expr*)pExpr);
-  assert( pExpr->op==TK_TRUEFALSE );
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  assert( sqlite3StrICmp(pExpr->u.zToken,"true")==0
-       || sqlite3StrICmp(pExpr->u.zToken,"false")==0 );
-  return pExpr->u.zToken[4]==0;
+صحیح sqlite3_اظہاریہ_Truth_قدر(ثابت اظہاریہ *p_اظہاریہ){
+  p_اظہاریہ = sqlite3_اظہاریہ_Skip_Collate_And_Likely((اظہاریہ*)p_اظہاریہ);
+  أكد( p_اظہاریہ->op==TK_TRUEFALSE );
+  أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+  أكد( sqlite3StrICmp(p_اظہاریہ->u.zToken,"true")==0
+       || sqlite3StrICmp(p_اظہاریہ->u.zToken,"false")==0 );
+  واپس p_اظہاریہ->u.zToken[4]==0;
 }
 
 /*
@@ -2396,18 +2396,18 @@ int sqlite3ExprTruthValue(const Expr *pExpr){
 **     (x<10) AND (y=22 OR true)      =>   (x<10)
 **     (y=22) OR true                 =>   true
 */
-Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
-  assert( pExpr!=0 );
-  if( pExpr->op==TK_AND || pExpr->op==TK_OR ){
-    Expr *pRight = sqlite3ExprSimplifiedAndOr(pExpr->pRight);
-    Expr *pLeft = sqlite3ExprSimplifiedAndOr(pExpr->pLeft);
-    if( ExprAlwaysTrue(pLeft) || ExprAlwaysFalse(pRight) ){
-      pExpr = pExpr->op==TK_AND ? pRight : pLeft;
-    }else if( ExprAlwaysTrue(pRight) || ExprAlwaysFalse(pLeft) ){
-      pExpr = pExpr->op==TK_AND ? pLeft : pRight;
+اظہاریہ *sqlite3_اظہاریہ_Simplified_And_Or(اظہاریہ *p_اظہاریہ){
+  أكد( p_اظہاریہ!=0 );
+  اگر( p_اظہاریہ->op==TK_AND || p_اظہاریہ->op==TK_OR ){
+    اظہاریہ *p_دایاں = sqlite3_اظہاریہ_Simplified_And_Or(p_اظہاریہ->p_دایاں);
+    اظہاریہ *p_بایاں = sqlite3_اظہاریہ_Simplified_And_Or(p_اظہاریہ->p_بایاں);
+    اگر( اظہاریہ_Always_True(p_بایاں) || اظہاریہ_Always_False(p_دایاں) ){
+      p_اظہاریہ = p_اظہاریہ->op==TK_AND ? p_دایاں : p_بایاں;
+    }ورنہ اگر( اظہاریہ_Always_True(p_دایاں) || اظہاریہ_Always_False(p_بایاں) ){
+      p_اظہاریہ = p_اظہاریہ->op==TK_AND ? p_بایاں : p_دایاں;
     }
   }
-  return pExpr;
+  واپس p_اظہاریہ;
 }
 
 /*
@@ -2418,13 +2418,13 @@ Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
 ** the left operand contains a subquery and the right does not, then it
 ** might be more efficient to compute the right operand first.
 */
-static int exprEvalRhsFirst(Expr *pExpr){
-  if( ExprHasProperty(pExpr->pLeft, EP_Subquery)
-   && !ExprHasProperty(pExpr->pRight, EP_Subquery)
+ساکن صحیح اظہاریہ_Eval_Rhs_پہلا(اظہاریہ *p_اظہاریہ){
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ->p_بایاں, EP_Subquery)
+   && !اظہاریہ_Has_Property(p_اظہاریہ->p_دایاں, EP_Subquery)
   ){
-    return 1;
-  }else{
-    return 0;
+    واپس 1;
+  }ورنہ{
+    واپس 0;
   }
 }
 
@@ -2440,53 +2440,53 @@ static int exprEvalRhsFirst(Expr *pExpr){
 **
 ** If no optimization opportunities exist, return 0.
 */
-static int exprComputeOperands(
+ساکن صحیح اظہاریہ_Compute_Operands(
   Parse *pParse,     /* Parsing context */
-  Expr *pExpr,       /* The comparison expression */
-  int *pR1,          /* OUT: Register holding the left operand */
-  int *pR2,          /* OUT: Register holding the right operand */
-  int *pFree1,       /* OUT: Temp register to free if not zero */
-  int *pFree2        /* OUT: Another temp register to free if not zero */
+  اظہاریہ *p_اظہاریہ,       /* The comparison expression */
+  صحیح *pR1,          /* OUT: Register holding the left operand */
+  صحیح *pR2,          /* OUT: Register holding the right operand */
+  صحیح *pFree1,       /* OUT: Temp register to free if not zero */
+  صحیح *pFree2        /* OUT: Another temp register to free if not zero */
 ){
-  int addrIsNull;
-  int r1, r2;
+  صحیح addrIsNull;
+  صحیح r1, r2;
   Vdbe *v = pParse->pVdbe;
 
-  assert( v!=0 );
+  أكد( v!=0 );
   /*
   ** If the left operand contains a (possibly expensive) subquery and the
   ** right operand does not and the right operation might be NULL,
   ** then compute the right operand first and do an IsNull jump if the
   ** right operand evalutes to NULL.
   */
-  if( exprEvalRhsFirst(pExpr) && sqlite3ExprCanBeNull(pExpr->pRight) ){
-    r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pFree2);
-    addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r2);
+  اگر( اظہاریہ_Eval_Rhs_پہلا(p_اظہاریہ) && sqlite3_اظہاریہ_Can_Be_Null(p_اظہاریہ->p_دایاں) ){
+    r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, pFree2);
+    addrIsNull = sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, r2);
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v);
-  }else{
+  }ورنہ{
     r2 = 0; /* Silence a false-positive uninit-var warning in MSVC */
     addrIsNull = 0;
   }
-  r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pFree1);
-  if( addrIsNull==0 ){
+  r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, pFree1);
+  اگر( addrIsNull==0 ){
     /*
     ** If the right operand contains a subquery and the left operand does not
     ** and the left operand might be NULL, then do an IsNull check
     ** check on the left operand before computing the right operand.
     */
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery)
-     && sqlite3ExprCanBeNull(pExpr->pLeft)
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ->p_دایاں, EP_Subquery)
+     && sqlite3_اظہاریہ_Can_Be_Null(p_اظہاریہ->p_بایاں)
     ){
-      addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r1);
+      addrIsNull = sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, r1);
       VdbeComment((v, "skip right operand"));
       VdbeCoverage(v);
     }
-    r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pFree2);
+    r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, pFree2);
   }
   *pR1 = r1;
   *pR2 = r2;
-  return addrIsNull;
+  واپس addrIsNull;
 }
 
 /*
@@ -2505,36 +2505,36 @@ static int exprComputeOperands(
 **
 ** Called as a service subroutine from exprNodeIsConstant().
 */
-static SQLITE_NOINLINE int exprNodeIsConstantFunction(
+ساکن SQLITE_NOINLINE صحیح اظہاریہ_گرہ_Is_Constant_Function(
   Walker *pWalker,
-  Expr *pExpr
+  اظہاریہ *p_اظہاریہ
 ){
-  int n;             /* Number of arguments */
-  ExprList *pList;   /* List of arguments */
+  صحیح n;             /* Number of arguments */
+  اظہاریہ_List *pList;   /* List of arguments */
   FuncDef *pDef;     /* The function */
   sqlite3 *db;       /* The database */
 
-  assert( pExpr->op==TK_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_TokenOnly)
-   || (pList = pExpr->x.pList)==0
+  أكد( p_اظہاریہ->op==TK_FUNCTION );
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly)
+   || (pList = p_اظہاریہ->x.pList)==0
   ){;
     n = 0;
-  }else{
-    n = pList->nExpr;
-    sqlite3WalkExprList(pWalker, pList);
-    if( pWalker->eCode==0 ) return WRC_Abort;
+  }ورنہ{
+    n = pList->n_اظہاریہ;
+    sqlite3_Walk_اظہاریہ_List(pWalker, pList);
+    اگر( pWalker->e_رمز==0 ) واپس WRC_Abort;
   }
   db = pWalker->pParse->db;
-  pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
-  if( pDef==0
+  pDef = sqlite3_ڈھونڈو_Function(db, p_اظہاریہ->u.zToken, n, ENC(db), 0);
+  اگر( pDef==0
    || pDef->xFinalize!=0
    || (pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG))==0
-   || NEVER(ExprHasProperty(pExpr, EP_WinFunc))
+   || NEVER(اظہاریہ_Has_Property(p_اظہاریہ, EP_WinFunc))
   ){
-    pWalker->eCode = 0;
-    return WRC_Abort;
+    pWalker->e_رمز = 0;
+    واپس WRC_Abort;
   }
-  return WRC_Prune;
+  واپس WRC_Prune;
 }
 
 
@@ -2565,107 +2565,107 @@ static SQLITE_NOINLINE int exprNodeIsConstantFunction(
 ** of SQLite to be parsed by newer versions of SQLite without raising a
 ** malformed schema error.
 */
-static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
-  assert( pWalker->eCode>0 );
+ساکن صحیح اظہاریہ_گرہ_Is_Constant(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  أكد( pWalker->e_رمز>0 );
 
   /* If pWalker->eCode is 2 then any term of the expression that comes from
   ** the ON or USING clauses of an outer join disqualifies the expression
   ** from being considered constant. */
-  if( pWalker->eCode==2 && ExprHasProperty(pExpr, EP_OuterON) ){
-    pWalker->eCode = 0;
-    return WRC_Abort;
+  اگر( pWalker->e_رمز==2 && اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON) ){
+    pWalker->e_رمز = 0;
+    واپس WRC_Abort;
   }
 
-  switch( pExpr->op ){
-    case TK_FUNCTION:
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
-        pWalker->eCode = 0;  /* Window functions are never constant */
-        return WRC_Abort;
-      }else if( pWalker->eCode>=4 && pWalker->eCode<=5 ){
+  انتخاب( p_اظہاریہ->op ){
+    حالت TK_FUNCTION:
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_WinFunc) ){
+        pWalker->e_رمز = 0;  /* Window functions are never constant */
+        واپس WRC_Abort;
+      }ورنہ اگر( pWalker->e_رمز>=4 && pWalker->e_رمز<=5 ){
         /* Functions used within a CREATE TABLE statement are constant as
         ** long as all of their arguments are constant */
-        if( pWalker->eCode==5 ) ExprSetProperty(pExpr, EP_FromDDL);
-        return WRC_Continue;
-      }else if( ExprHasProperty(pExpr,EP_ConstFunc) ){
+        اگر( pWalker->e_رمز==5 ) اظہاریہ_سیٹ_Property(p_اظہاریہ, EP_FromDDL);
+        واپس WRC_Continue;
+      }ورنہ اگر( اظہاریہ_Has_Property(p_اظہاریہ,EP_ConstFunc) ){
         /* Functions marked with EP_ConstFunc are constant as long as 
         ** all their arugments are constant and they are not window functions */
-        return WRC_Continue;
-      }else if( pWalker->pParse ){
+        واپس WRC_Continue;
+      }ورنہ اگر( pWalker->pParse ){
         /* Functions are constant if they have SQLITE_FUNC_CONSTANT or
         ** SQLITE_FUNC_SLOCHNG and if all arguments are constant */
-        return exprNodeIsConstantFunction(pWalker, pExpr);
-      }else{
-        pWalker->eCode = 0;  /* Function call is not constant */
-        return WRC_Abort;
+        واپس اظہاریہ_گرہ_Is_Constant_Function(pWalker, p_اظہاریہ);
+      }ورنہ{
+        pWalker->e_رمز = 0;  /* Function call is not constant */
+        واپس WRC_Abort;
       }
-    case TK_ID:
+    حالت TK_ID:
       /* Convert "true" or "false" in a DEFAULT clause into the
       ** appropriate TK_TRUEFALSE operator */
-      if( sqlite3ExprIdToTrueFalse(pExpr) ){
-        return WRC_Prune;
+      اگر( sqlite3_اظہاریہ_Id_مقصد_True_False(p_اظہاریہ) ){
+        واپس WRC_Prune;
       }
       /* no break */ deliberate_fall_through
-    case TK_COLUMN:
-    case TK_AGG_FUNCTION:
-    case TK_AGG_COLUMN:
-      testcase( pExpr->op==TK_ID );
-      testcase( pExpr->op==TK_COLUMN );
-      testcase( pExpr->op==TK_AGG_FUNCTION );
-      testcase( pExpr->op==TK_AGG_COLUMN );
-      if( ExprHasProperty(pExpr, EP_FixedCol) && pWalker->eCode!=2 ){
-        return WRC_Continue;
+    حالت TK_عمود:
+    حالت TK_AGG_FUNCTION:
+    حالت TK_AGG_عمود:
+      testcase( p_اظہاریہ->op==TK_ID );
+      testcase( p_اظہاریہ->op==TK_عمود );
+      testcase( p_اظہاریہ->op==TK_AGG_FUNCTION );
+      testcase( p_اظہاریہ->op==TK_AGG_عمود );
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Fixed_ستون) && pWalker->e_رمز!=2 ){
+        واپس WRC_Continue;
       }
-      if( pWalker->eCode==3 && pExpr->iTable==pWalker->u.iCur ){
-        return WRC_Continue;
+      اگر( pWalker->e_رمز==3 && p_اظہاریہ->i_جدول==pWalker->u.iCur ){
+        واپس WRC_Continue;
       }
       /* no break */ deliberate_fall_through
-    case TK_IF_NULL_ROW:
-    case TK_REGISTER:
-    case TK_DOT:
-    case TK_RAISE:
-      testcase( pExpr->op==TK_REGISTER );
-      testcase( pExpr->op==TK_IF_NULL_ROW );
-      testcase( pExpr->op==TK_DOT );
-      testcase( pExpr->op==TK_RAISE );
-      pWalker->eCode = 0;
-      return WRC_Abort;
-    case TK_IS:
-    case TK_ISNOT:
-      if( pWalker->eCode==6 ){
-        pWalker->eCode = 0;
-        return WRC_Abort;
+    حالت TK_IF_NULL_صف:
+    حالت TK_رجسٹر:
+    حالت TK_DOT:
+    حالت TK_RAISE:
+      testcase( p_اظہاریہ->op==TK_رجسٹر );
+      testcase( p_اظہاریہ->op==TK_IF_NULL_صف );
+      testcase( p_اظہاریہ->op==TK_DOT );
+      testcase( p_اظہاریہ->op==TK_RAISE );
+      pWalker->e_رمز = 0;
+      واپس WRC_Abort;
+    حالت TK_IS:
+    حالت TK_ISNOT:
+      اگر( pWalker->e_رمز==6 ){
+        pWalker->e_رمز = 0;
+        واپس WRC_Abort;
       }
-      return WRC_Continue;
-    case TK_VARIABLE:
-      if( pWalker->eCode==5 ){
+      واپس WRC_Continue;
+    حالت TK_VARIABLE:
+      اگر( pWalker->e_رمز==5 ){
         /* Silently convert bound parameters that appear inside of CREATE
         ** statements into a NULL when parsing the CREATE statement text out
         ** of the sqlite_schema table */
-        pExpr->op = TK_NULL;
-      }else if( pWalker->eCode==4 ){
+        p_اظہاریہ->op = TK_NULL;
+      }ورنہ اگر( pWalker->e_رمز==4 ){
         /* A bound parameter in a CREATE statement that originates from
         ** sqlite3_prepare() causes an error */
-        pWalker->eCode = 0;
-        return WRC_Abort;
+        pWalker->e_رمز = 0;
+        واپس WRC_Abort;
       }
       /* no break */ deliberate_fall_through
-    default:
-      testcase( pExpr->op==TK_SELECT ); /* sqlite3SelectWalkFail() disallows */
-      testcase( pExpr->op==TK_EXISTS ); /* sqlite3SelectWalkFail() disallows */
-      return WRC_Continue;
+    طےشدہ:
+      testcase( p_اظہاریہ->op==TK_SELECT ); /* sqlite3SelectWalkFail() disallows */
+      testcase( p_اظہاریہ->op==TK_EXISTS ); /* sqlite3SelectWalkFail() disallows */
+      واپس WRC_Continue;
   }
 }
-static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
+ساکن صحیح اظہاریہ_Is_Const(Parse *pParse, اظہاریہ *p, صحیح initFlag){
   Walker w;
-  w.eCode = initFlag;
+  w.e_رمز = initFlag;
   w.pParse = pParse;
-  w.xExprCallback = exprNodeIsConstant;
+  w.x_اظہاریہ_Callback = اظہاریہ_گرہ_Is_Constant;
   w.xSelectCallback = sqlite3SelectWalkFail;
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
-#endif
-  sqlite3WalkExpr(&w, p);
-  return w.eCode;
+#اگر_ختم
+  sqlite3_Walk_اظہاریہ(&w, p);
+  واپس w.e_رمز;
 }
 
 /*
@@ -2682,8 +2682,8 @@ static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
 ** not NULL, then a function call might be constant, depending on the
 ** function and on its parameters.
 */
-int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 1);
+صحیح sqlite3_اظہاریہ_Is_Constant(Parse *pParse, اظہاریہ *p){
+  واپس اظہاریہ_Is_Const(pParse, p, 1);
 }
 
 /*
@@ -2693,13 +2693,13 @@ int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
 ** like "x IS TRUE" need to be transformed to TK_TRUTH expression nodes,
 ** which happens at the same time as column name resolution.
 */
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
-  const int iInit = bNoIs ? 6 : 1;
-  int ii;
-  for(ii=0; ii<pList->nExpr; ii++){
-    if( 0==exprIsConst(pParse, pList->a[ii].pExpr, iInit) ) return 0;
+صحیح sqlite3_اظہاریہ_List_Is_Constant(Parse *pParse, اظہاریہ_List *pList, صحیح bNoIs){
+  ثابت صحیح iInit = bNoIs ? 6 : 1;
+  صحیح ii;
+  برائے(ii=0; ii<pList->n_اظہاریہ; ii++){
+    اگر( 0==اظہاریہ_Is_Const(pParse, pList->a[ii].p_اظہاریہ, iInit) ) واپس 0;
   }
-  return 1;
+  واپس 1;
 }
 
 /*
@@ -2715,8 +2715,8 @@ int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
 ** can be added to the pParse->pConstExpr list and evaluated once when
 ** the prepared statement starts up.  See sqlite3ExprCodeRunJustOnce().
 */
-static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 2);
+ساکن صحیح sqlite3_اظہاریہ_Is_Constant_Not_Join(Parse *pParse, اظہاریہ *p){
+  واپس اظہاریہ_Is_Const(pParse, p, 2);
 }
 
 /*
@@ -2725,14 +2725,14 @@ static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
 ** constant as long as they are uncorrelated - meaning that they do not
 ** contain any terms from outer contexts.
 */
-static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
-  assert( pSelect!=0 );
-  assert( pWalker->eCode==3 || pWalker->eCode==0 );
-  if( (pSelect->selFlags & SF_Correlated)!=0 ){
-    pWalker->eCode = 0;
-    return WRC_Abort;
+ساکن صحیح اظہاریہ_Select_Walk_جدول_Constant(Walker *pWalker, Select *pSelect){
+  أكد( pSelect!=0 );
+  أكد( pWalker->e_رمز==3 || pWalker->e_رمز==0 );
+  اگر( (pSelect->selFlags & SF_Correlated)!=0 ){
+    pWalker->e_رمز = 0;
+    واپس WRC_Abort;
   }
-  return WRC_Prune;
+  واپس WRC_Prune;
 }
 
 /*
@@ -2744,22 +2744,22 @@ static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
 ** Consider uncorrelated subqueries to be constants if the bAllowSubq
 ** parameter is true.
 */
-int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
+صحیح sqlite3_اظہاریہ_Is_جدول_Constant(اظہاریہ *p, صحیح iCur, صحیح bAllowSubq){
   Walker w;
-  w.eCode = 3;
+  w.e_رمز = 3;
   w.pParse = 0;
-  w.xExprCallback = exprNodeIsConstant;
-  if( bAllowSubq ){
-    w.xSelectCallback = exprSelectWalkTableConstant;
-  }else{
+  w.x_اظہاریہ_Callback = اظہاریہ_گرہ_Is_Constant;
+  اگر( bAllowSubq ){
+    w.xSelectCallback = اظہاریہ_Select_Walk_جدول_Constant;
+  }ورنہ{
     w.xSelectCallback = sqlite3SelectWalkFail;
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
     w.xSelectCallback2 = sqlite3SelectWalkAssert2;
-#endif
+#اگر_ختم
   }
   w.u.iCur = iCur;
-  sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  sqlite3_Walk_اظہاریہ(&w, p);
+  واپس w.e_رمز;
 }
 
 /*
@@ -2806,66 +2806,66 @@ int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
 **       which leads to incorrect answers.  See also restriction (9)
 **       on push-down.
 */
-int sqlite3ExprIsSingleTableConstraint(
-  Expr *pExpr,                 /* The constraint */
-  const SrcList *pSrcList,     /* Complete FROM clause */
-  int iSrc,                    /* Which element of pSrcList to use */
-  int bAllowSubq               /* Allow non-correlated subqueries */
+صحیح sqlite3_اظہاریہ_Is_Single_جدول_Constraint(
+  اظہاریہ *p_اظہاریہ,                 /* The constraint */
+  ثابت SrcList *pSrcList,     /* Complete FROM clause */
+  صحیح iSrc,                    /* Which element of pSrcList to use */
+  صحیح bAllowSubq               /* Allow non-correlated subqueries */
 ){
-  const SrcItem *pSrc = &pSrcList->a[iSrc];
-  if( pSrc->fg.jointype & JT_LTORJ ){
-    return 0;  /* rule (3) */
+  ثابت Src_شے *pSrc = &pSrcList->a[iSrc];
+  اگر( pSrc->fg.jointype & JT_LTORJ ){
+    واپس 0;  /* rule (3) */
   }
-  if( pSrc->fg.jointype & JT_LEFT ){
-    if( !ExprHasProperty(pExpr, EP_OuterON) ) return 0;   /* rule (4a) */
-    if( pExpr->w.iJoin!=pSrc->iCursor ) return 0;         /* rule (4b) */
-  }else{
-    if( ExprHasProperty(pExpr, EP_OuterON) ) return 0;    /* rule (5) */
+  اگر( pSrc->fg.jointype & JT_بایاں ){
+    اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON) ) واپس 0;   /* rule (4a) */
+    اگر( p_اظہاریہ->w.iJoin!=pSrc->iCursor ) واپس 0;         /* rule (4b) */
+  }ورنہ{
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON) ) واپس 0;    /* rule (5) */
   }
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)  /* (6a) */
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON|EP_InnerON)  /* (6a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (6b) */
   ){
-    int jj;
-    for(jj=0; jj<iSrc; jj++){
-      if( pExpr->w.iJoin==pSrcList->a[jj].iCursor ){
-        if( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
-          return 0;  /* restriction (6) */
+    صحیح jj;
+    برائے(jj=0; jj<iSrc; jj++){
+      اگر( p_اظہاریہ->w.iJoin==pSrcList->a[jj].iCursor ){
+        اگر( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
+          واپس 0;  /* restriction (6) */
         }
-        break;
+        توڑو;
       }
     }
   }
   /* Rules (1), (2a), and (2b) handled by the following: */
-  return sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
+  واپس sqlite3_اظہاریہ_Is_جدول_Constant(p_اظہاریہ, pSrc->iCursor, bAllowSubq);
 }
 
 
 /*
 ** sqlite3WalkExpr() callback used by sqlite3ExprIsConstantOrGroupBy().
 */
-static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
-  ExprList *pGroupBy = pWalker->u.pGroupBy;
-  int i;
+ساکن صحیح اظہاریہ_گرہ_Is_Constant_Or_گروہ_By(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اظہاریہ_List *p_گروہ_By = pWalker->u.p_گروہ_By;
+  صحیح i;
 
   /* Check if pExpr is identical to any GROUP BY term. If so, consider
   ** it constant.  */
-  for(i=0; i<pGroupBy->nExpr; i++){
-    Expr *p = pGroupBy->a[i].pExpr;
-    if( sqlite3ExprCompare(0, pExpr, p, -1)<2 ){
-      CollSeq *pColl = sqlite3ExprNNCollSeq(pWalker->pParse, p);
-      if( sqlite3IsBinary(pColl) ){
-        return WRC_Prune;
+  برائے(i=0; i<p_گروہ_By->n_اظہاریہ; i++){
+    اظہاریہ *p = p_گروہ_By->a[i].p_اظہاریہ;
+    اگر( sqlite3_اظہاریہ_Compare(0, p_اظہاریہ, p, -1)<2 ){
+      CollSeq *pColl = sqlite3_اظہاریہ_NNColl_Seq(pWalker->pParse, p);
+      اگر( sqlite3_Is_ثنائی(pColl) ){
+        واپس WRC_Prune;
       }
     }
   }
 
   /* Check if pExpr is a sub-select. If so, consider it variable. */
-  if( ExprUseXSelect(pExpr) ){
-    pWalker->eCode = 0;
-    return WRC_Abort;
+  اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
+    pWalker->e_رمز = 0;
+    واپس WRC_Abort;
   }
 
-  return exprNodeIsConstant(pWalker, pExpr);
+  واپس اظہاریہ_گرہ_Is_Constant(pWalker, p_اظہاریہ);
 }
 
 /*
@@ -2887,15 +2887,15 @@ static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
 ** optimization, so we take the easy way out and simply require the
 ** GROUP BY to use the BINARY collating sequence.
 */
-int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
+صحیح sqlite3_اظہاریہ_Is_Constant_Or_گروہ_By(Parse *pParse, اظہاریہ *p, اظہاریہ_List *p_گروہ_By){
   Walker w;
-  w.eCode = 1;
-  w.xExprCallback = exprNodeIsConstantOrGroupBy;
+  w.e_رمز = 1;
+  w.x_اظہاریہ_Callback = اظہاریہ_گرہ_Is_Constant_Or_گروہ_By;
   w.xSelectCallback = 0;
-  w.u.pGroupBy = pGroupBy;
+  w.u.p_گروہ_By = p_گروہ_By;
   w.pParse = pParse;
-  sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  sqlite3_Walk_اظہاریہ(&w, p);
+  واپس w.e_رمز;
 }
 
 /*
@@ -2919,25 +2919,25 @@ int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
 ** is considered a variable but a single-quoted string (ex: 'abc') is
 ** a constant.
 */
-int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){
-  assert( isInit==0 || isInit==1 );
-  return exprIsConst(0, p, 4+isInit);
+صحیح sqlite3_اظہاریہ_Is_Constant_Or_Function(اظہاریہ *p, u8 isInit){
+  أكد( isInit==0 || isInit==1 );
+  واپس اظہاریہ_Is_Const(0, p, 4+isInit);
 }
 
 /*
 ** Walk an expression tree.  Return 1 if the expression contains a
 ** subquery of some kind.  Return 0 if there are no subqueries.
 */
-int sqlite3ExprContainsSubquery(Expr *p){
+صحیح sqlite3_اظہاریہ_شامل_ہے_Subquery(اظہاریہ *p){
   Walker w;
-  w.eCode = 1;
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  w.e_رمز = 1;
+  w.x_اظہاریہ_Callback = sqlite3_اظہاریہ_Walk_Noop;
   w.xSelectCallback = sqlite3SelectWalkFail;
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
-#endif
-  sqlite3WalkExpr(&w, p);
-  return w.eCode==0;
+#اگر_ختم
+  sqlite3_Walk_اظہاریہ(&w, p);
+  واپس w.e_رمز==0;
 }
 
 /*
@@ -2981,54 +2981,54 @@ int sqlite3ExprContainsSubquery(Expr *p){
 **                    change move the variable value to or from an integer 0
 **                    or 1.
 */
-int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
-  int iSign = 1;   /* Either +1 or -1. */
-  while( 1/*exit-by-break*/ ){
-    if( NEVER(p==0) ) return 0;
-    if( ExprUseUValue(p) ){
-      assert( p->op==TK_INTEGER );
-      *pValue = p->u.iValue*iSign;
-      if( bRSI && pParse==0 && p->op2 ){
-        return 0;
+صحیح sqlite3_اظہاریہ_Is_Integer(ثابت اظہاریہ *p, صحیح *p_قدر, Parse *pParse, صحیح bRSI){
+  صحیح iSign = 1;   /* Either +1 or -1. */
+  جب( 1/*exit-by-break*/ ){
+    اگر( NEVER(p==0) ) واپس 0;
+    اگر( اظہاریہ_Use_UValue(p) ){
+      أكد( p->op==TK_INTEGER );
+      *p_قدر = p->u.i_قدر*iSign;
+      اگر( bRSI && pParse==0 && p->op2 ){
+        واپس 0;
       }
-      return 1;
+      واپس 1;
     }
-    if( p->op==TK_UPLUS ){
-      p = p->pLeft;
+    اگر( p->op==TK_UPLUS ){
+      p = p->p_بایاں;
       pParse = 0;
-      continue;
+      جاری;
     }
-    if( p->op==TK_UMINUS ){
+    اگر( p->op==TK_UMINUS ){
       iSign = -iSign;
-      p = p->pLeft;
+      p = p->p_بایاں;
       pParse = 0;
-      continue;
+      جاری;
     }
-    if( p->op==TK_VARIABLE && pParse!=0 ){
-      sqlite3_value *pVal; /* The variable */
-      int rc = 0;          /* 1 if successful, 0 if failed */
-      assert( iSign==1 );
-      if( NEVER(pParse->pVdbe==0) ) break;
-      if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) break;
-      pVal = sqlite3VdbeGetBoundValue(pParse->pReprepare, p->iColumn,
+    اگر( p->op==TK_VARIABLE && pParse!=0 ){
+      sqlite3_قدر *pVal; /* The variable */
+      صحیح rc = 0;          /* 1 if successful, 0 if failed */
+      أكد( iSign==1 );
+      اگر( NEVER(pParse->pVdbe==0) ) توڑو;
+      اگر( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) توڑو;
+      pVal = sqlite3_Vdbe_Get_Bound_قدر(pParse->pReprepare, p->i_عمود,
                                       SQLITE_AFF_BLOB);
-      if( pVal ){
+      اگر( pVal ){
         i64 vv;
-        if( sqlite3_value_type(pVal)==SQLITE_INTEGER
-         && (vv = sqlite3_value_int64(pVal))>=0
+        اگر( sqlite3_قدر_type(pVal)==SQLITE_INTEGER
+         && (vv = sqlite3_قدر_int64(pVal))>=0
          && vv<=0x7fffffff
         ){
-          *pValue = (int)vv;
+          *p_قدر = (صحیح)vv;
           rc = 1;       
         }
-        sqlite3ValueFree(pVal);
+        sqlite3_قدر_Free(pVal);
       }
-      sqlite3VdbeReprepareOnBind(pParse->pVdbe, p->iColumn, bRSI);
-      return rc;
+      sqlite3VdbeReprepareOnBind(pParse->pVdbe, p->i_عمود, bRSI);
+      واپس rc;
     }
-    break;
+    توڑو;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -3045,34 +3045,34 @@ int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
 ** will likely result in an incorrect answer.  So when in doubt, return
 ** TRUE.
 */
-int sqlite3ExprCanBeNull(const Expr *p){
+صحیح sqlite3_اظہاریہ_Can_Be_Null(ثابت اظہاریہ *p){
   u8 op;
-  assert( p!=0 );
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
-    p = p->pLeft;
-    assert( p!=0 );
+  أكد( p!=0 );
+  جب( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+    p = p->p_بایاں;
+    أكد( p!=0 );
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
-  switch( op ){
-    case TK_INTEGER:
-    case TK_STRING:
-    case TK_FLOAT:
-    case TK_BLOB:
-      return 0;
-    case TK_COLUMN:
-      assert( ExprUseYTab(p) );
-      return ExprHasProperty(p, EP_CanBeNull)
+  اگر( op==TK_رجسٹر ) op = p->op2;
+  انتخاب( op ){
+    حالت TK_INTEGER:
+    حالت TK_STRING:
+    حالت TK_FLOAT:
+    حالت TK_BLOB:
+      واپس 0;
+    حالت TK_عمود:
+      أكد( اظہاریہ_Use_YTab(p) );
+      واپس اظہاریہ_Has_Property(p, EP_CanBeNull)
           || NEVER(p->y.pTab==0) /* Reference to column of index on expr */
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-          || (p->iColumn==XN_ROWID && IsView(p->y.pTab))
-#endif
-          || (p->iColumn>=0
-              && p->y.pTab->aCol!=0 /* Possible due to prior error */
-              && ALWAYS(p->iColumn<p->y.pTab->nCol)
-              && p->y.pTab->aCol[p->iColumn].notNull==0);
-    default:
-      return 1;
+#اگر_تعریف_شدہ SQLITE_ALLOW_ROWID_اندر_VIEW
+          || (p->i_عمود==XN_ROWID && IsView(p->y.pTab))
+#اگر_ختم
+          || (p->i_عمود>=0
+              && p->y.pTab->a_ستون!=0 /* Possible due to prior error */
+              && ALWAYS(p->i_عمود<p->y.pTab->n_ستون)
+              && p->y.pTab->a_ستون[p->i_عمود].notNull==0);
+    طےشدہ:
+      واپس 1;
   }
 }
 
@@ -3086,35 +3086,35 @@ int sqlite3ExprCanBeNull(const Expr *p){
 ** is harmless.  A false positive, however, can result in the wrong
 ** answer.
 */
-int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
+صحیح sqlite3_اظہاریہ_Needs_No_Affinity_Change(ثابت اظہاریہ *p, حرف aff){
   u8 op;
-  int unaryMinus = 0;
-  if( aff==SQLITE_AFF_BLOB ) return 1;
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
-    if( p->op==TK_UMINUS ) unaryMinus = 1;
-    p = p->pLeft;
+  صحیح unaryMinus = 0;
+  اگر( aff==SQLITE_AFF_BLOB ) واپس 1;
+  جب( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+    اگر( p->op==TK_UMINUS ) unaryMinus = 1;
+    p = p->p_بایاں;
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
-  switch( op ){
-    case TK_INTEGER: {
-      return aff>=SQLITE_AFF_NUMERIC;
+  اگر( op==TK_رجسٹر ) op = p->op2;
+  انتخاب( op ){
+    حالت TK_INTEGER: {
+      واپس aff>=SQLITE_AFF_NUMERIC;
     }
-    case TK_FLOAT: {
-      return aff>=SQLITE_AFF_NUMERIC;
+    حالت TK_FLOAT: {
+      واپس aff>=SQLITE_AFF_NUMERIC;
     }
-    case TK_STRING: {
-      return !unaryMinus && aff==SQLITE_AFF_TEXT;
+    حالت TK_STRING: {
+      واپس !unaryMinus && aff==SQLITE_AFF_متن;
     }
-    case TK_BLOB: {
-      return !unaryMinus;
+    حالت TK_BLOB: {
+      واپس !unaryMinus;
     }
-    case TK_COLUMN: {
-      assert( p->iTable>=0 );  /* p cannot be part of a CHECK constraint */
-      return aff>=SQLITE_AFF_NUMERIC && p->iColumn<0;
+    حالت TK_عمود: {
+      أكد( p->i_جدول>=0 );  /* p cannot be part of a CHECK constraint */
+      واپس aff>=SQLITE_AFF_NUMERIC && p->i_عمود<0;
     }
-    default: {
-      return 0;
+    طےشدہ: {
+      واپس 0;
     }
   }
 }
@@ -3122,11 +3122,11 @@ int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
 /*
 ** Return TRUE if the given string is a row-id column name.
 */
-int sqlite3IsRowid(const char *z){
-  if( sqlite3StrICmp(z, "_ROWID_")==0 ) return 1;
-  if( sqlite3StrICmp(z, "ROWID")==0 ) return 1;
-  if( sqlite3StrICmp(z, "OID")==0 ) return 1;
-  return 0;
+صحیح sqlite3IsRowid(ثابت حرف *z){
+  اگر( sqlite3StrICmp(z, "_ROWID_")==0 ) واپس 1;
+  اگر( sqlite3StrICmp(z, "ROWID")==0 ) واپس 1;
+  اگر( sqlite3StrICmp(z, "OID")==0 ) واپس 1;
+  واپس 0;
 }
 
 /*
@@ -3134,14 +3134,14 @@ int sqlite3IsRowid(const char *z){
 ** pTab. An alias is usable if there is not an explicit user-defined column 
 ** of the same name.
 */
-const char *sqlite3RowidAlias(Table *pTab){
-  const char *azOpt[] = {"_ROWID_", "ROWID", "OID"};
-  int ii;
-  assert( VisibleRowid(pTab) );
-  for(ii=0; ii<ArraySize(azOpt); ii++){
-    if( sqlite3ColumnIndex(pTab, azOpt[ii])<0 ) return azOpt[ii];
+ثابت حرف *sqlite3RowidAlias(جدول *pTab){
+  ثابت حرف *azOpt[] = {"_ROWID_", "ROWID", "OID"};
+  صحیح ii;
+  أكد( VisibleRowid(pTab) );
+  برائے(ii=0; ii<Array_سائز(azOpt); ii++){
+    اگر( sqlite3_عمود_اشاریہ(pTab, azOpt[ii])<0 ) واپس azOpt[ii];
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -3151,89 +3151,89 @@ const char *sqlite3RowidAlias(Table *pTab){
 ** or if the SELECT statement needs to be materialized into a transient
 ** table, then return NULL.
 */
-#ifndef SQLITE_OMIT_SUBQUERY
-static Select *isCandidateForInOpt(const Expr *pX){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+ساکن Select *is_Candidate_For_اندر_Opt(ثابت اظہاریہ *pX){
   Select *p;
   SrcList *pSrc;
-  ExprList *pEList;
-  Table *pTab;
-  int i;
-  if( !ExprUseXSelect(pX) ) return 0;                 /* Not a subquery */
-  if( ExprHasProperty(pX, EP_VarSelect)  ) return 0;  /* Correlated subq */
+  اظہاریہ_List *pEList;
+  جدول *pTab;
+  صحیح i;
+  اگر( !اظہاریہ_Use_XSelect(pX) ) واپس 0;                 /* Not a subquery */
+  اگر( اظہاریہ_Has_Property(pX, EP_VarSelect)  ) واپس 0;  /* Correlated subq */
   p = pX->x.pSelect;
-  if( p->pPrior ) return 0;              /* Not a compound SELECT */
-  if( p->selFlags & SF_Aggregate ){
-    return 0; /* No GROUP BY keyword or aggregate functions */
+  اگر( p->p_پیشگی ) واپس 0;              /* Not a compound SELECT */
+  اگر( p->selFlags & SF_Aggregate ){
+    واپس 0; /* No GROUP BY keyword or aggregate functions */
   }
-  assert( p->pGroupBy==0 );              /* Has no GROUP BY clause */
-  if( p->pLimit ) return 0;              /* Has no LIMIT clause */
-  if( p->pWhere ) return 0;              /* Has no WHERE clause */
+  أكد( p->p_گروہ_By==0 );              /* Has no GROUP BY clause */
+  اگر( p->p_حد_بندی ) واپس 0;              /* Has no LIMIT clause */
+  اگر( p->pWhere ) واپس 0;              /* Has no WHERE clause */
   pSrc = p->pSrc;
-  assert( pSrc!=0 );
-  if( pSrc->nSrc!=1 ) return 0;          /* Single term in FROM clause */
-  if( pSrc->a[0].fg.isSubquery) return 0;/* FROM is not a subquery or view */
+  أكد( pSrc!=0 );
+  اگر( pSrc->nSrc!=1 ) واپس 0;          /* Single term in FROM clause */
+  اگر( pSrc->a[0].fg.isSubquery) واپس 0;/* FROM is not a subquery or view */
   pTab = pSrc->a[0].pSTab;
-  assert( pTab!=0 );
-  assert( !IsView(pTab)  );              /* FROM clause is not a view */
-  if( IsVirtual(pTab) ) return 0;        /* FROM clause not a virtual table */
+  أكد( pTab!=0 );
+  أكد( !IsView(pTab)  );              /* FROM clause is not a view */
+  اگر( IsVirtual(pTab) ) واپس 0;        /* FROM clause not a virtual table */
   pEList = p->pEList;
-  assert( pEList!=0 );
+  أكد( pEList!=0 );
   /* All SELECT results must be columns. */
-  for(i=0; i<pEList->nExpr; i++){
-    Expr *pRes = pEList->a[i].pExpr;
-    if( pRes->op!=TK_COLUMN ) return 0;
-    assert( pRes->iTable==pSrc->a[0].iCursor );  /* Not a correlated subquery */
+  برائے(i=0; i<pEList->n_اظہاریہ; i++){
+    اظہاریہ *pRes = pEList->a[i].p_اظہاریہ;
+    اگر( pRes->op!=TK_عمود ) واپس 0;
+    أكد( pRes->i_جدول==pSrc->a[0].iCursor );  /* Not a correlated subquery */
   }
-  return p;
+  واپس p;
 }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Generate code that checks the left-most column of index table iCur to see if
 ** it contains any NULL entries.  Cause the register at regHasNull to be set
 ** to a non-NULL value if iCur contains no NULLs.  Cause register regHasNull
 ** to be set to NULL if iCur contains one or more NULL values.
 */
-static void sqlite3SetHasNullFlag(
+ساکن خالی sqlite3_سیٹ_Has_Null_Flag(
   Vdbe *v,           /* Write new code into this statement under construction */
-  int iCur,          /* Cursor for the index */
-  int regHasNull,    /* Register in which to store hasNull flag */
-  int eSortOrder     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
+  صحیح iCur,          /* Cursor for the index */
+  صحیح regHasNull,    /* Register in which to store hasNull flag */
+  صحیح e_ترتیب_دو_ترتیب     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
 ){
-  int addr1;
-  int op;
-  sqlite3VdbeAddOp2(v, OP_Integer, 0, regHasNull);
-  if( eSortOrder==SQLITE_SO_ASC ){
+  صحیح addr1;
+  صحیح op;
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, regHasNull);
+  اگر( e_ترتیب_دو_ترتیب==SQLITE_SO_ASC ){
     op = OP_Rewind;
-  }else{
-    op = OP_Last;
+  }ورنہ{
+    op = OP_آخری;
   }
-  addr1 = sqlite3VdbeAddOp1(v, op, iCur); VdbeCoverage(v);
-  sqlite3VdbeAddOp3(v, OP_Column, iCur, 0, regHasNull);
+  addr1 = sqlite3_Vdbe_جوڑو_Op1(v, op, iCur); VdbeCoverage(v);
+  sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iCur, 0, regHasNull);
   sqlite3VdbeChangeP5(v, OPFLAG_TYPEOFARG);
-  VdbeComment((v, op==OP_Last?"last_entry_in(%d)":"first_entry_in(%d)", iCur));
-  sqlite3VdbeJumpHere(v, addr1);
+  VdbeComment((v, op==OP_آخری?"last_entry_in(%d)":"first_entry_in(%d)", iCur));
+  sqlite3_Vdbe_Jump_یہاں(v, addr1);
 }
-#endif
+#اگر_ختم
 
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** The argument is an IN operator with a list (not a subquery) on the
 ** right-hand side.  Return TRUE if that list is constant.
 */
-static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
-  Expr *pLHS;
-  int res;
-  assert( !ExprHasProperty(pIn, EP_xIsSelect) );
-  pLHS = pIn->pLeft;
-  pIn->pLeft = 0;
-  res = sqlite3ExprIsConstant(pParse, pIn);
-  pIn->pLeft = pLHS;
-  return res;
+ساکن صحیح sqlite3_اندر_Rhs_Is_Constant(Parse *pParse, اظہاریہ *p_اندر){
+  اظہاریہ *pLHS;
+  صحیح res;
+  أكد( !اظہاریہ_Has_Property(p_اندر, EP_xIsSelect) );
+  pLHS = p_اندر->p_بایاں;
+  p_اندر->p_بایاں = 0;
+  res = sqlite3_اظہاریہ_Is_Constant(pParse, p_اندر);
+  p_اندر->p_بایاں = pLHS;
+  واپس res;
 }
-#endif
+#اگر_ختم
 
 /*
 ** This function is used by the implementation of the IN (...) operator.
@@ -3318,23 +3318,23 @@ static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
 **
 ** then aiMap[] is populated with {2, 0, 1}.
 */
-#ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3FindInIndex(
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+صحیح sqlite3_ڈھونڈو_اندر_اشاریہ(
   Parse *pParse,             /* Parsing context */
-  Expr *pX,                  /* The IN expression */
-  u32 inFlags,               /* IN_INDEX_LOOP, _MEMBERSHIP, and/or _NOOP_OK */
-  int *prRhsHasNull,         /* Register holding NULL status.  See notes */
-  int *aiMap,                /* Mapping from Index fields to RHS fields */
-  int *piTab                 /* OUT: index to use */
+  اظہاریہ *pX,                  /* The IN expression */
+  u32 اندر_Flags,               /* IN_INDEX_LOOP, _MEMBERSHIP, and/or _NOOP_OK */
+  صحیح *prRhsHasNull,         /* Register holding NULL status.  See notes */
+  صحیح *aiMap,                /* Mapping from Index fields to RHS fields */
+  صحیح *piTab                 /* OUT: index to use */
 ){
   Select *p;                            /* SELECT to the right of IN operator */
-  int eType = 0;                        /* Type of RHS table. IN_INDEX_* */
-  int iTab;                             /* Cursor of the RHS table */
-  int mustBeUnique;                     /* True if RHS must be unique */
+  صحیح eType = 0;                        /* Type of RHS table. IN_INDEX_* */
+  صحیح iTab;                             /* Cursor of the RHS table */
+  صحیح mustBeUnique;                     /* True if RHS must be unique */
   Vdbe *v = sqlite3GetVdbe(pParse);     /* Virtual machine being coded */
 
-  assert( pX->op==TK_IN );
-  mustBeUnique = (inFlags & IN_INDEX_LOOP)!=0;
+  أكد( pX->op==TK_اندر );
+  mustBeUnique = (اندر_Flags & اندر_اشاریہ_LOOP)!=0;
   iTab = pParse->nTab++;
 
   /* If the RHS of this IN(...) operator is a SELECT, and if it matters
@@ -3342,13 +3342,13 @@ int sqlite3FindInIndex(
   ** or not NULL is actually possible (it may not be, for example, due
   ** to NOT NULL constraints in the schema). If no NULL values are possible,
   ** set prRhsHasNull to 0 before continuing.  */
-  if( prRhsHasNull && ExprUseXSelect(pX) ){
-    int i;
-    ExprList *pEList = pX->x.pSelect->pEList;
-    for(i=0; i<pEList->nExpr; i++){
-      if( sqlite3ExprCanBeNull(pEList->a[i].pExpr) ) break;
+  اگر( prRhsHasNull && اظہاریہ_Use_XSelect(pX) ){
+    صحیح i;
+    اظہاریہ_List *pEList = pX->x.pSelect->pEList;
+    برائے(i=0; i<pEList->n_اظہاریہ; i++){
+      اگر( sqlite3_اظہاریہ_Can_Be_Null(pEList->a[i].p_اظہاریہ) ) توڑو;
     }
-    if( i==pEList->nExpr ){
+    اگر( i==pEList->n_اظہاریہ ){
       prRhsHasNull = 0;
     }
   }
@@ -3356,134 +3356,134 @@ int sqlite3FindInIndex(
   /* Check to see if an existing table or index can be used to
   ** satisfy the query.  This is preferable to generating a new
   ** ephemeral table.  */
-  if( pParse->nErr==0 && (p = isCandidateForInOpt(pX))!=0 ){
+  اگر( pParse->nErr==0 && (p = is_Candidate_For_اندر_Opt(pX))!=0 ){
     sqlite3 *db = pParse->db;              /* Database connection */
-    Table *pTab;                           /* Table <table>. */
-    int iDb;                               /* Database idx for pTab */
-    ExprList *pEList = p->pEList;
-    int nExpr = pEList->nExpr;
+    جدول *pTab;                           /* Table <table>. */
+    صحیح iDb;                               /* Database idx for pTab */
+    اظہاریہ_List *pEList = p->pEList;
+    صحیح n_اظہاریہ = pEList->n_اظہاریہ;
 
-    assert( p->pEList!=0 );             /* Because of isCandidateForInOpt(p) */
-    assert( p->pEList->a[0].pExpr!=0 ); /* Because of isCandidateForInOpt(p) */
-    assert( p->pSrc!=0 );               /* Because of isCandidateForInOpt(p) */
+    أكد( p->pEList!=0 );             /* Because of isCandidateForInOpt(p) */
+    أكد( p->pEList->a[0].p_اظہاریہ!=0 ); /* Because of isCandidateForInOpt(p) */
+    أكد( p->pSrc!=0 );               /* Because of isCandidateForInOpt(p) */
     pTab = p->pSrc->a[0].pSTab;
 
     /* Code an OP_Transaction and OP_TableLock for <table>. */
-    iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-    assert( iDb>=0 && iDb<SQLITE_MAX_DB );
-    sqlite3CodeVerifySchema(pParse, iDb);
-    sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
+    iDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
+    أكد( iDb>=0 && iDb<SQLITE_MAX_DB );
+    sqlite3_رمز_Verify_Schema(pParse, iDb);
+    sqlite3_جدول_تالا(pParse, iDb, pTab->tnum, 0, pTab->zName);
 
-    assert(v);  /* sqlite3GetVdbe() has always been previously called */
-    if( nExpr==1 && pEList->a[0].pExpr->iColumn<0 ){
+    أكد(v);  /* sqlite3GetVdbe() has always been previously called */
+    اگر( n_اظہاریہ==1 && pEList->a[0].p_اظہاریہ->i_عمود<0 ){
       /* The "x IN (SELECT rowid FROM table)" case */
-      int iAddr = sqlite3VdbeAddOp0(v, OP_Once);
+      صحیح iAddr = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once);
       VdbeCoverage(v);
 
-      sqlite3OpenTable(pParse, iTab, iDb, pTab, OP_OpenRead);
-      eType = IN_INDEX_ROWID;
+      sqlite3_Open_جدول(pParse, iTab, iDb, pTab, OP_OpenRead);
+      eType = اندر_اشاریہ_ROWID;
       ExplainQueryPlan((pParse, 0,
             "USING ROWID SEARCH ON TABLE %s FOR IN-OPERATOR",pTab->zName));
-      sqlite3VdbeJumpHere(v, iAddr);
-    }else{
-      Index *pIdx;                         /* Iterator variable */
-      int affinity_ok = 1;
-      int i;
+      sqlite3_Vdbe_Jump_یہاں(v, iAddr);
+    }ورنہ{
+      اشاریہ *pIdx;                         /* Iterator variable */
+      صحیح affinity_ok = 1;
+      صحیح i;
 
       /* Check that the affinity that will be used to perform each
       ** comparison is the same as the affinity of each column in table
       ** on the RHS of the IN operator.  If it not, it is not possible to
       ** use any index of the RHS table.  */
-      for(i=0; i<nExpr && affinity_ok; i++){
-        Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
-        int iCol = pEList->a[i].pExpr->iColumn;
-        char idxaff = sqlite3TableColumnAffinity(pTab,iCol); /* RHS table */
-        char cmpaff = sqlite3CompareAffinity(pLhs, idxaff);
+      برائے(i=0; i<n_اظہاریہ && affinity_ok; i++){
+        اظہاریہ *pLhs = sqlite3_سمتیہ_میدان_Subexpr(pX->p_بایاں, i);
+        صحیح i_ستون = pEList->a[i].p_اظہاریہ->i_عمود;
+        حرف idxaff = sqlite3_جدول_عمود_Affinity(pTab,i_ستون); /* RHS table */
+        حرف cmpaff = sqlite3CompareAffinity(pLhs, idxaff);
         testcase( cmpaff==SQLITE_AFF_BLOB );
-        testcase( cmpaff==SQLITE_AFF_TEXT );
-        switch( cmpaff ){
-          case SQLITE_AFF_BLOB:
-            break;
-          case SQLITE_AFF_TEXT:
+        testcase( cmpaff==SQLITE_AFF_متن );
+        انتخاب( cmpaff ){
+          حالت SQLITE_AFF_BLOB:
+            توڑو;
+          حالت SQLITE_AFF_متن:
             /* sqlite3CompareAffinity() only returns TEXT if one side or the
             ** other has no affinity and the other side is TEXT.  Hence,
             ** the only way for cmpaff to be TEXT is for idxaff to be TEXT
             ** and for the term on the LHS of the IN to have no affinity. */
-            assert( idxaff==SQLITE_AFF_TEXT );
-            break;
-          default:
+            أكد( idxaff==SQLITE_AFF_متن );
+            توڑو;
+          طےشدہ:
             affinity_ok = sqlite3IsNumericAffinity(idxaff);
         }
       }
 
-      if( affinity_ok ){
+      اگر( affinity_ok ){
         /* Search for an existing index that will work for this IN operator */
-        for(pIdx=pTab->pIndex; pIdx && eType==0; pIdx=pIdx->pNext){
-          Bitmask colUsed;      /* Columns of the index used */
-          Bitmask mCol;         /* Mask for the current column */
-          if( pIdx->nColumn<nExpr ) continue;
-          if( pIdx->pPartIdxWhere!=0 ) continue;
+        برائے(pIdx=pTab->p_اشاریہ; pIdx && eType==0; pIdx=pIdx->p_اگلا){
+          Bitmask ستون_مستعمل;      /* Columns of the index used */
+          Bitmask m_ستون;         /* Mask for the current column */
+          اگر( pIdx->n_عمود<n_اظہاریہ ) جاری;
+          اگر( pIdx->pPartIdxWhere!=0 ) جاری;
           /* Maximum nColumn is BMS-2, not BMS-1, so that we can compute
           ** BITMASK(nExpr) without overflowing */
-          testcase( pIdx->nColumn==BMS-2 );
-          testcase( pIdx->nColumn==BMS-1 );
-          if( pIdx->nColumn>=BMS-1 ) continue;
-          if( mustBeUnique ){
-            if( pIdx->nKeyCol>nExpr
-             ||(pIdx->nColumn>nExpr && !IsUniqueIndex(pIdx))
+          testcase( pIdx->n_عمود==BMS-2 );
+          testcase( pIdx->n_عمود==BMS-1 );
+          اگر( pIdx->n_عمود>=BMS-1 ) جاری;
+          اگر( mustBeUnique ){
+            اگر( pIdx->n_کلید_ستون>n_اظہاریہ
+             ||(pIdx->n_عمود>n_اظہاریہ && !Is_Unique_اشاریہ(pIdx))
             ){
-              continue;  /* This index is not unique over the IN RHS columns */
+              جاری;  /* This index is not unique over the IN RHS columns */
             }
           }
  
-          colUsed = 0;   /* Columns of index used so far */
-          for(i=0; i<nExpr; i++){
-            Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
-            Expr *pRhs = pEList->a[i].pExpr;
-            CollSeq *pReq = sqlite3BinaryCompareCollSeq(pParse, pLhs, pRhs);
-            int j;
+          ستون_مستعمل = 0;   /* Columns of index used so far */
+          برائے(i=0; i<n_اظہاریہ; i++){
+            اظہاریہ *pLhs = sqlite3_سمتیہ_میدان_Subexpr(pX->p_بایاں, i);
+            اظہاریہ *pRhs = pEList->a[i].p_اظہاریہ;
+            CollSeq *pReq = sqlite3_ثنائی_Compare_Coll_Seq(pParse, pLhs, pRhs);
+            صحیح j;
  
-            for(j=0; j<nExpr; j++){
-              if( pIdx->aiColumn[j]!=pRhs->iColumn ) continue;
-              assert( pIdx->azColl[j] );
-              if( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
-                continue;
+            برائے(j=0; j<n_اظہاریہ; j++){
+              اگر( pIdx->ai_عمود[j]!=pRhs->i_عمود ) جاری;
+              أكد( pIdx->azColl[j] );
+              اگر( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
+                جاری;
               }
-              break;
+              توڑو;
             }
-            if( j==nExpr ) break;
-            mCol = MASKBIT(j);
-            if( mCol & colUsed ) break; /* Each column used only once */
-            colUsed |= mCol;
-            if( aiMap ) aiMap[i] = j;
+            اگر( j==n_اظہاریہ ) توڑو;
+            m_ستون = MASKBIT(j);
+            اگر( m_ستون & ستون_مستعمل ) توڑو; /* Each column used only once */
+            ستون_مستعمل |= m_ستون;
+            اگر( aiMap ) aiMap[i] = j;
           }
  
-          assert( nExpr>0 && nExpr<BMS );
-          assert( i==nExpr || colUsed!=(MASKBIT(nExpr)-1) );
-          if( colUsed==(MASKBIT(nExpr)-1) ){
+          أكد( n_اظہاریہ>0 && n_اظہاریہ<BMS );
+          أكد( i==n_اظہاریہ || ستون_مستعمل!=(MASKBIT(n_اظہاریہ)-1) );
+          اگر( ستون_مستعمل==(MASKBIT(n_اظہاریہ)-1) ){
             /* If we reach this point, that means the index pIdx is usable */
-            int iAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+            صحیح iAddr = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
             ExplainQueryPlan((pParse, 0,
                               "USING INDEX %s FOR IN-OPERATOR",pIdx->zName));
-            sqlite3VdbeAddOp3(v, OP_OpenRead, iTab, pIdx->tnum, iDb);
-            sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_OpenRead, iTab, pIdx->tnum, iDb);
+            sqlite3_Vdbe_سیٹ_P4_کلید_Info(pParse, pIdx);
             VdbeComment((v, "%s", pIdx->zName));
-            assert( IN_INDEX_INDEX_DESC == IN_INDEX_INDEX_ASC+1 );
-            eType = IN_INDEX_INDEX_ASC + pIdx->aSortOrder[0];
+            أكد( اندر_اشاریہ_اشاریہ_DESC == اندر_اشاریہ_اشاریہ_ASC+1 );
+            eType = اندر_اشاریہ_اشاریہ_ASC + pIdx->a_ترتیب_دو_ترتیب[0];
  
-            if( prRhsHasNull ){
-#ifdef SQLITE_ENABLE_COLUMN_USED_MASK
-              u64 mask = (1<<nExpr)-1;
-              sqlite3VdbeAddOp3(v, OP_ColumnsUsed,
-                                iTab, LOWER32(mask), UPPER32(mask));
-#endif
+            اگر( prRhsHasNull ){
+#اگر_تعریف_شدہ SQLITE_ENABLE_عمود_مستعمل_نقاب
+              u64 نقاب = (1<<n_اظہاریہ)-1;
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_Columns_مستعمل,
+                                iTab, LOWER32(نقاب), UPPER32(نقاب));
+#اگر_ختم
               *prRhsHasNull = ++pParse->nMem;
-              if( nExpr==1 ){
-                sqlite3SetHasNullFlag(v, iTab, *prRhsHasNull,
-                                      pIdx->aSortOrder[0]);
+              اگر( n_اظہاریہ==1 ){
+                sqlite3_سیٹ_Has_Null_Flag(v, iTab, *prRhsHasNull,
+                                      pIdx->a_ترتیب_دو_ترتیب[0]);
               }
             }
-            sqlite3VdbeJumpHere(v, iAddr);
+            sqlite3_Vdbe_Jump_یہاں(v, iAddr);
           }
         } /* End loop over indexes */
       } /* End if( affinity_ok ) */
@@ -3497,54 +3497,54 @@ int sqlite3FindInIndex(
   ** then it is not worth creating an ephemeral table to evaluate
   ** the IN operator so return IN_INDEX_NOOP.
   */
-  if( eType==0
-   && (inFlags & IN_INDEX_NOOP_OK)
-   && ExprUseXList(pX)
-   && (!sqlite3InRhsIsConstant(pParse,pX) || pX->x.pList->nExpr<=2)
+  اگر( eType==0
+   && (اندر_Flags & اندر_اشاریہ_NOOP_OK)
+   && اظہاریہ_Use_XList(pX)
+   && (!sqlite3_اندر_Rhs_Is_Constant(pParse,pX) || pX->x.pList->n_اظہاریہ<=2)
   ){
     pParse->nTab--;  /* Back out the allocation of the unused cursor */
     iTab = -1;       /* Cursor is not allocated */
-    eType = IN_INDEX_NOOP;
+    eType = اندر_اشاریہ_NOOP;
   }
 
-  if( eType==0 ){
+  اگر( eType==0 ){
     /* Could not find an existing table or index to use as the RHS b-tree.
     ** We will have to generate an ephemeral table to do the job.
     */
     u32 savedNQueryLoop = pParse->nQueryLoop;
-    int rMayHaveNull = 0;
-    int bloomOk = (inFlags & IN_INDEX_MEMBERSHIP)!=0;
-    eType = IN_INDEX_EPH;
-    if( inFlags & IN_INDEX_LOOP ){
+    صحیح rMayHaveNull = 0;
+    صحیح bloomOk = (اندر_Flags & اندر_اشاریہ_MEMBERSHIP)!=0;
+    eType = اندر_اشاریہ_EPH;
+    اگر( اندر_Flags & اندر_اشاریہ_LOOP ){
       pParse->nQueryLoop = 0;
-    }else if( prRhsHasNull ){
+    }ورنہ اگر( prRhsHasNull ){
       *prRhsHasNull = rMayHaveNull = ++pParse->nMem;
     }
-    assert( pX->op==TK_IN );
-    if( !bloomOk
-     && ExprUseXSelect(pX)
-     && (pX->x.pSelect->selFlags & SF_ClonedRhsIn)!=0
+    أكد( pX->op==TK_اندر );
+    اگر( !bloomOk
+     && اظہاریہ_Use_XSelect(pX)
+     && (pX->x.pSelect->selFlags & SF_Cloned_Rhs_اندر)!=0
     ){
       bloomOk = 1;
     }
-    sqlite3CodeRhsOfIN(pParse, pX, iTab, bloomOk);
-    if( rMayHaveNull ){
-      sqlite3SetHasNullFlag(v, iTab, rMayHaveNull, SQLITE_SO_ASC);
+    sqlite3_رمز_Rhs_کا_اندر(pParse, pX, iTab, bloomOk);
+    اگر( rMayHaveNull ){
+      sqlite3_سیٹ_Has_Null_Flag(v, iTab, rMayHaveNull, SQLITE_SO_ASC);
     }
     pParse->nQueryLoop = savedNQueryLoop;
   }
 
-  if( aiMap && eType!=IN_INDEX_INDEX_ASC && eType!=IN_INDEX_INDEX_DESC ){
-    int i, n;
-    n = sqlite3ExprVectorSize(pX->pLeft);
-    for(i=0; i<n; i++) aiMap[i] = i;
+  اگر( aiMap && eType!=اندر_اشاریہ_اشاریہ_ASC && eType!=اندر_اشاریہ_اشاریہ_DESC ){
+    صحیح i, n;
+    n = sqlite3_اظہاریہ_سمتیہ_سائز(pX->p_بایاں);
+    برائے(i=0; i<n; i++) aiMap[i] = i;
   }
   *piTab = iTab;
-  return eType;
+  واپس eType;
 }
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Argument pExpr is an (?, ?...) IN(...) expression. This
 ** function allocates and returns a nul-terminated string containing
@@ -3553,45 +3553,45 @@ int sqlite3FindInIndex(
 ** It is the responsibility of the caller to ensure that the returned
 ** string is eventually freed using sqlite3DbFree().
 */
-static char *exprINAffinity(Parse *pParse, const Expr *pExpr){
-  Expr *pLeft = pExpr->pLeft;
-  int nVal = sqlite3ExprVectorSize(pLeft);
-  Select *pSelect = ExprUseXSelect(pExpr) ? pExpr->x.pSelect : 0;
-  char *zRet;
+ساکن حرف *اظہاریہ_INAffinity(Parse *pParse, ثابت اظہاریہ *p_اظہاریہ){
+  اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+  صحیح nVal = sqlite3_اظہاریہ_سمتیہ_سائز(p_بایاں);
+  Select *pSelect = اظہاریہ_Use_XSelect(p_اظہاریہ) ? p_اظہاریہ->x.pSelect : 0;
+  حرف *zRet;
 
-  assert( pExpr->op==TK_IN );
+  أكد( p_اظہاریہ->op==TK_اندر );
   zRet = sqlite3DbMallocRaw(pParse->db, 1+(i64)nVal);
-  if( zRet ){
-    int i;
-    for(i=0; i<nVal; i++){
-      Expr *pA = sqlite3VectorFieldSubexpr(pLeft, i);
-      char a = sqlite3ExprAffinity(pA);
-      if( pSelect ){
-        zRet[i] = sqlite3CompareAffinity(pSelect->pEList->a[i].pExpr, a);
-      }else{
+  اگر( zRet ){
+    صحیح i;
+    برائے(i=0; i<nVal; i++){
+      اظہاریہ *pA = sqlite3_سمتیہ_میدان_Subexpr(p_بایاں, i);
+      حرف a = sqlite3_اظہاریہ_Affinity(pA);
+      اگر( pSelect ){
+        zRet[i] = sqlite3CompareAffinity(pSelect->pEList->a[i].p_اظہاریہ, a);
+      }ورنہ{
         zRet[i] = a;
       }
     }
     zRet[nVal] = '\0';
   }
-  return zRet;
+  واپس zRet;
 }
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Load the Parse object passed as the first argument with an error
 ** message of the form:
 **
 **   "sub-select returns N columns - expected M"
 */  
-void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
-  if( pParse->nErr==0 ){
-    const char *zFmt = "sub-select returns %d columns - expected %d";
-    sqlite3ErrorMsg(pParse, zFmt, nActual, nExpect);
+خالی sqlite3SubselectError(Parse *pParse, صحیح nActual, صحیح nExpect){
+  اگر( pParse->nErr==0 ){
+    ثابت حرف *zFmt = "sub-select returns %d columns - expected %d";
+    sqlite3_Error_پیغام(pParse, zFmt, nActual, nExpect);
   }
 }
-#endif
+#اگر_ختم
 
 /*
 ** Expression pExpr is a vector that has been used in a context where
@@ -3604,62 +3604,62 @@ void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
 **
 **   "row value misused"
 */  
-void sqlite3VectorErrorMsg(Parse *pParse, Expr *pExpr){
-#ifndef SQLITE_OMIT_SUBQUERY
-  if( ExprUseXSelect(pExpr) ){
-    sqlite3SubselectError(pParse, pExpr->x.pSelect->pEList->nExpr, 1);
-  }else
-#endif
+خالی sqlite3_سمتیہ_Error_پیغام(Parse *pParse, اظہاریہ *p_اظہاریہ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+  اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
+    sqlite3SubselectError(pParse, p_اظہاریہ->x.pSelect->pEList->n_اظہاریہ, 1);
+  }ورنہ
+#اگر_ختم
   {
-    sqlite3ErrorMsg(pParse, "row value misused");
+    sqlite3_Error_پیغام(pParse, "row value misused");
   }
 }
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Scan all previously generated bytecode looking for an OP_BeginSubrtn
 ** that is compatible with pExpr.  If found, add the y.sub values
 ** to pExpr and return true.  If not found, return false.
 */
-static int findCompatibleInRhsSubrtn(
+ساکن صحیح ڈھونڈو_Compatible_اندر_Rhs_Subrtn(
   Parse *pParse,          /* Parsing context */
-  Expr *pExpr,            /* IN operator with RHS that we want to reuse */
+  اظہاریہ *p_اظہاریہ,            /* IN operator with RHS that we want to reuse */
   SubrtnSig *pNewSig      /* Signature for the IN operator */
 ){
-  VdbeOp *pOp, *pEnd;
+  VdbeOp *pOp, *p_انتہا;
   SubrtnSig *pSig;
   Vdbe *v;
 
-  if( pNewSig==0 ) return 0;
-  if( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) return 0;
-  assert( pExpr->op==TK_IN );
-  assert( !ExprUseYSub(pExpr) );
-  assert( ExprUseXSelect(pExpr) );
-  assert( pExpr->x.pSelect!=0 );
-  assert( (pExpr->x.pSelect->selFlags & SF_All)==0 );
+  اگر( pNewSig==0 ) واپس 0;
+  اگر( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) واپس 0;
+  أكد( p_اظہاریہ->op==TK_اندر );
+  أكد( !اظہاریہ_Use_YSub(p_اظہاریہ) );
+  أكد( اظہاریہ_Use_XSelect(p_اظہاریہ) );
+  أكد( p_اظہاریہ->x.pSelect!=0 );
+  أكد( (p_اظہاریہ->x.pSelect->selFlags & SF_All)==0 );
   v = pParse->pVdbe;
-  assert( v!=0 );
+  أكد( v!=0 );
   pOp = sqlite3VdbeGetOp(v, 1);
-  pEnd = sqlite3VdbeGetLastOp(v);
-  for(; pOp<pEnd; pOp++){
-    if( pOp->p4type!=P4_SUBRTNSIG ) continue;
-    assert( pOp->opcode==OP_BeginSubrtn );
+  p_انتہا = sqlite3_Vdbe_Get_آخری_Op(v);
+  برائے(; pOp<p_انتہا; pOp++){
+    اگر( pOp->p4type!=P4_SUBRTNSIG ) جاری;
+    أكد( pOp->opcode==OP_BeginSubrtn );
     pSig = pOp->p4.pSubrtnSig;
-    assert( pSig!=0 );
-    if( !pSig->bComplete ) continue;
-    if( pNewSig->selId!=pSig->selId ) continue;
-    if( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) continue;
-    pExpr->y.sub.iAddr = pSig->iAddr;
-    pExpr->y.sub.regReturn = pSig->regReturn;
-    pExpr->iTable = pSig->iTable;
-    ExprSetProperty(pExpr, EP_Subrtn);
-    return 1;
+    أكد( pSig!=0 );
+    اگر( !pSig->bComplete ) جاری;
+    اگر( pNewSig->selId!=pSig->selId ) جاری;
+    اگر( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) جاری;
+    p_اظہاریہ->y.sub.iAddr = pSig->iAddr;
+    p_اظہاریہ->y.sub.regReturn = pSig->regReturn;
+    p_اظہاریہ->i_جدول = pSig->i_جدول;
+    اظہاریہ_سیٹ_Property(p_اظہاریہ, EP_Subrtn);
+    واپس 1;
   }
-  return 0;
+  واپس 0;
 }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Generate code that will construct an ephemeral table containing all terms
 ** in the RHS of an IN operator.  The IN operator can be in either of two
@@ -3682,22 +3682,22 @@ static int findCompatibleInRhsSubrtn(
 ** 'x' nor the SELECT... statement are columns, then numeric affinity
 ** is used.
 */
-void sqlite3CodeRhsOfIN(
+خالی sqlite3_رمز_Rhs_کا_اندر(
   Parse *pParse,          /* Parsing context */
-  Expr *pExpr,            /* The IN operator */
-  int iTab,               /* Use this cursor number */
-  int allowBloom          /* True to allow the use of a Bloom filter */
+  اظہاریہ *p_اظہاریہ,            /* The IN operator */
+  صحیح iTab,               /* Use this cursor number */
+  صحیح allowBloom          /* True to allow the use of a Bloom filter */
 ){
-  int addrOnce = 0;           /* Address of the OP_Once instruction at top */
-  int addr;                   /* Address of OP_OpenEphemeral instruction */
-  Expr *pLeft;                /* the LHS of the IN operator */
-  KeyInfo *pKeyInfo = 0;      /* Key information */
-  int nVal;                   /* Size of vector pLeft */
+  صحیح addrOnce = 0;           /* Address of the OP_Once instruction at top */
+  صحیح addr;                   /* Address of OP_OpenEphemeral instruction */
+  اظہاریہ *p_بایاں;                /* the LHS of the IN operator */
+  کلید_Info *p_کلید_Info = 0;      /* Key information */
+  صحیح nVal;                   /* Size of vector pLeft */
   Vdbe *v;                    /* The prepared statement under construction */
   SubrtnSig *pSig = 0;        /* Signature for this subroutine */
 
   v = pParse->pVdbe;
-  assert( v!=0 );
+  أكد( v!=0 );
 
   /* The evaluation of the IN must be repeated every time it
   ** is encountered if any of the following is true:
@@ -3709,18 +3709,18 @@ void sqlite3CodeRhsOfIN(
   ** If all of the above are false, then we can compute the RHS just once
   ** and reuse it many names.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) && pParse->iSelfTab==0 ){
+  اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_VarSelect) && pParse->iSelfTab==0 ){
     /* Reuse of the RHS is allowed
     **
     ** Compute a signature for the RHS of the IN operator to facility
     ** finding and reusing prior instances of the same IN operator.
     */
-    assert( !ExprUseXSelect(pExpr) || pExpr->x.pSelect!=0 );
-    if( ExprUseXSelect(pExpr) && (pExpr->x.pSelect->selFlags & SF_All)==0 ){
-      pSig = sqlite3DbMallocRawNN(pParse->db, sizeof(pSig[0]));
-      if( pSig ){
-        pSig->selId = pExpr->x.pSelect->selId;
-        pSig->zAff = exprINAffinity(pParse, pExpr);
+    أكد( !اظہاریہ_Use_XSelect(p_اظہاریہ) || p_اظہاریہ->x.pSelect!=0 );
+    اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) && (p_اظہاریہ->x.pSelect->selFlags & SF_All)==0 ){
+      pSig = sqlite3DbMallocRawNN(pParse->db, حجم(pSig[0]));
+      اگر( pSig ){
+        pSig->selId = p_اظہاریہ->x.pSelect->selId;
+        pSig->zAff = اظہاریہ_INAffinity(pParse, p_اظہاریہ);
       }
     }
 
@@ -3728,132 +3728,132 @@ void sqlite3CodeRhsOfIN(
     ** this IN operator.  If there is, then make use of that prior
     ** materialization rather than recomputing it.
     */
-    if( ExprHasProperty(pExpr, EP_Subrtn) 
-     || findCompatibleInRhsSubrtn(pParse, pExpr, pSig)
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subrtn) 
+     || ڈھونڈو_Compatible_اندر_Rhs_Subrtn(pParse, p_اظہاریہ, pSig)
     ){
-      addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-      if( ExprUseXSelect(pExpr) ){
+      addrOnce = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
+      اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
         ExplainQueryPlan((pParse, 0, "REUSE LIST SUBQUERY %d",
-              pExpr->x.pSelect->selId));
+              p_اظہاریہ->x.pSelect->selId));
       }
-      assert( ExprUseYSub(pExpr) );
-      sqlite3VdbeAddOp2(v, OP_Gosub, pExpr->y.sub.regReturn,
-                        pExpr->y.sub.iAddr);
-      assert( iTab!=pExpr->iTable );
-      sqlite3VdbeAddOp2(v, OP_OpenDup, iTab, pExpr->iTable);
-      sqlite3VdbeJumpHere(v, addrOnce);
-      if( pSig ){
+      أكد( اظہاریہ_Use_YSub(p_اظہاریہ) );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Gosub, p_اظہاریہ->y.sub.regReturn,
+                        p_اظہاریہ->y.sub.iAddr);
+      أكد( iTab!=p_اظہاریہ->i_جدول );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_OpenDup, iTab, p_اظہاریہ->i_جدول);
+      sqlite3_Vdbe_Jump_یہاں(v, addrOnce);
+      اگر( pSig ){
         sqlite3DbFree(pParse->db, pSig->zAff);
         sqlite3DbFree(pParse->db, pSig);
       }
-      return;
+      واپس;
     }
 
     /* Begin coding the subroutine */
-    assert( !ExprUseYWin(pExpr) );
-    ExprSetProperty(pExpr, EP_Subrtn);
-    assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
-    pExpr->y.sub.regReturn = ++pParse->nMem;
-    pExpr->y.sub.iAddr =
-      sqlite3VdbeAddOp2(v, OP_BeginSubrtn, 0, pExpr->y.sub.regReturn) + 1;
-    if( pSig ){
+    أكد( !اظہاریہ_Use_YWin(p_اظہاریہ) );
+    اظہاریہ_سیٹ_Property(p_اظہاریہ, EP_Subrtn);
+    أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly|EP_Reduced) );
+    p_اظہاریہ->y.sub.regReturn = ++pParse->nMem;
+    p_اظہاریہ->y.sub.iAddr =
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_BeginSubrtn, 0, p_اظہاریہ->y.sub.regReturn) + 1;
+    اگر( pSig ){
       pSig->bComplete = 0;
-      pSig->iAddr = pExpr->y.sub.iAddr;
-      pSig->regReturn = pExpr->y.sub.regReturn;
-      pSig->iTable = iTab;
+      pSig->iAddr = p_اظہاریہ->y.sub.iAddr;
+      pSig->regReturn = p_اظہاریہ->y.sub.regReturn;
+      pSig->i_جدول = iTab;
       pParse->mSubrtnSig = 1 << (pSig->selId&7);
-      sqlite3VdbeChangeP4(v, -1, (const char*)pSig, P4_SUBRTNSIG);
+      sqlite3VdbeChangeP4(v, -1, (ثابت حرف*)pSig, P4_SUBRTNSIG);
     }
-    addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+    addrOnce = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
   }
 
   /* Check to see if this is a vector IN operator */
-  pLeft = pExpr->pLeft;
-  nVal = sqlite3ExprVectorSize(pLeft);
+  p_بایاں = p_اظہاریہ->p_بایاں;
+  nVal = sqlite3_اظہاریہ_سمتیہ_سائز(p_بایاں);
 
   /* Construct the ephemeral table that will contain the content of
   ** RHS of the IN operator.
   */
-  pExpr->iTable = iTab;
-  addr = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pExpr->iTable, nVal);
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  if( ExprUseXSelect(pExpr) ){
-    VdbeComment((v, "Result of SELECT %u", pExpr->x.pSelect->selId));
-  }else{
+  p_اظہاریہ->i_جدول = iTab;
+  addr = sqlite3_Vdbe_جوڑو_Op2(v, OP_OpenEphemeral, p_اظہاریہ->i_جدول, nVal);
+#اگر_تعریف_شدہ SQLITE_ENABLE_EXPLAIN_COMMENTS
+  اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
+    VdbeComment((v, "Result of SELECT %u", p_اظہاریہ->x.pSelect->selId));
+  }ورنہ{
     VdbeComment((v, "RHS of IN operator"));
   }
-#endif
-  pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nVal, 1);
-  assert( pKeyInfo!=0 || pParse->nErr );
-  if( pKeyInfo==0 ) return;
+#اگر_ختم
+  p_کلید_Info = sqlite3_کلید_Info_Alloc(pParse->db, nVal, 1);
+  أكد( p_کلید_Info!=0 || pParse->nErr );
+  اگر( p_کلید_Info==0 ) واپس;
 
-  if( ExprUseXSelect(pExpr) ){
+  اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
     /* Case 1:     expr IN (SELECT ...)
     **
     ** Generate code to write the results of the select into the temporary
     ** table allocated and opened above.
     */
-    Select *pSelect = pExpr->x.pSelect;
-    ExprList *pEList = pSelect->pEList;
+    Select *pSelect = p_اظہاریہ->x.pSelect;
+    اظہاریہ_List *pEList = pSelect->pEList;
 
     ExplainQueryPlan((pParse, 1, "%sLIST SUBQUERY %d",
         addrOnce?"":"CORRELATED ", pSelect->selId
     ));
     /* If the LHS and RHS of the IN operator do not match, that
     ** error will have been caught long before we reach this point. */
-    if( ALWAYS(pEList->nExpr==nVal) ){
+    اگر( ALWAYS(pEList->n_اظہاریہ==nVal) ){
       Select *pCopy;
       SelectDest dest;
-      int i;
-      int rc;
-      int addrBloom = 0;
-      sqlite3SelectDestInit(&dest, SRT_Set, iTab);
-      dest.zAffSdst = exprINAffinity(pParse, pExpr);
-      pSelect->iLimit = 0;
-      assert( pEList!=0 );
-      assert( pEList->nExpr>0 );
-      assert( sqlite3KeyInfoIsWriteable(pKeyInfo) );
-      for(i=0; i<nVal; i++){
-        Expr *p = sqlite3VectorFieldSubexpr(pLeft, i);
+      صحیح i;
+      صحیح rc;
+      صحیح addrBloom = 0;
+      sqlite3SelectDestInit(&dest, SRT_سیٹ, iTab);
+      dest.zAffSdst = اظہاریہ_INAffinity(pParse, p_اظہاریہ);
+      pSelect->i_حد_بندی = 0;
+      أكد( pEList!=0 );
+      أكد( pEList->n_اظہاریہ>0 );
+      أكد( sqlite3_کلید_Info_Is_Writeable(p_کلید_Info) );
+      برائے(i=0; i<nVal; i++){
+        اظہاریہ *p = sqlite3_سمتیہ_میدان_Subexpr(p_بایاں, i);
         CollSeq *pColl;
-        pKeyInfo->aColl[i] = pColl = sqlite3BinaryCompareCollSeq(
-            pParse, p, pEList->a[i].pExpr
+        p_کلید_Info->aColl[i] = pColl = sqlite3_ثنائی_Compare_Coll_Seq(
+            pParse, p, pEList->a[i].p_اظہاریہ
         );
-        if( !sqlite3IsBinary(pColl) ){
+        اگر( !sqlite3_Is_ثنائی(pColl) ){
           allowBloom = 0;  /* tag-202607231411 */
         }
       }
-      if( addrOnce
+      اگر( addrOnce
        && allowBloom
        && OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
       ){
-        int regBloom = ++pParse->nMem;
-        addrBloom = sqlite3VdbeAddOp2(v, OP_Blob, 10000, regBloom);
+        صحیح regBloom = ++pParse->nMem;
+        addrBloom = sqlite3_Vdbe_جوڑو_Op2(v, OP_Blob, 10000, regBloom);
         VdbeComment((v, "Bloom filter"));
         dest.iSDParm2 = regBloom;
-        sqlite3VdbeChangeP4(v, addr, (void *)pKeyInfo, P4_KEYINFO);
-        pKeyInfo = 0;
+        sqlite3VdbeChangeP4(v, addr, (خالی *)p_کلید_Info, P4_KEYINFO);
+        p_کلید_Info = 0;
       }
       testcase( pSelect->selFlags & SF_Distinct );
       pCopy = sqlite3SelectDup(pParse->db, pSelect, 0);
       rc = pParse->db->mallocFailed ? 1 :sqlite3Select(pParse, pCopy, &dest);
       sqlite3SelectDelete(pParse->db, pCopy);
       sqlite3DbFree(pParse->db, dest.zAffSdst);
-      if( addrBloom ){
+      اگر( addrBloom ){
         /* Remember that location of the Bloom filter in the P3 operand
         ** of the OP_Once that began this subroutine. tag-202407032019 */
         sqlite3VdbeGetOp(v, addrOnce)->p3 = dest.iSDParm2;
-        if( dest.iSDParm2==0 ){
+        اگر( dest.iSDParm2==0 ){
           /* If the Bloom filter won't actually be used, keep it small */
           sqlite3VdbeGetOp(v, addrBloom)->p1 = 10;
         }
       }
-      if( rc ){
-        sqlite3KeyInfoUnref(pKeyInfo);
-        return;
+      اگر( rc ){
+        sqlite3_کلید_Info_Unref(p_کلید_Info);
+        واپس;
       }
     }
-  }else if( ALWAYS(pExpr->x.pList!=0) ){
+  }ورنہ اگر( ALWAYS(p_اظہاریہ->x.pList!=0) ){
     /* Case 2:     expr IN (exprlist)
     **
     ** For each expression, build an index key from the evaluation and
@@ -3861,65 +3861,65 @@ void sqlite3CodeRhsOfIN(
     ** that columns affinity when building index keys. If <expr> is not
     ** a column, use numeric affinity.
     */
-    char affinity;            /* Affinity of the LHS of the IN */
-    int i;
-    ExprList *pList = pExpr->x.pList;
-    struct ExprList_item *pItem;
-    int r1, r2;
-    affinity = sqlite3ExprAffinity(pLeft);
-    if( affinity<=SQLITE_AFF_NONE ){
+    حرف affinity;            /* Affinity of the LHS of the IN */
+    صحیح i;
+    اظہاریہ_List *pList = p_اظہاریہ->x.pList;
+    ساخت اظہاریہ_List_شے *p_شے;
+    صحیح r1, r2;
+    affinity = sqlite3_اظہاریہ_Affinity(p_بایاں);
+    اگر( affinity<=SQLITE_AFF_NONE ){
       affinity = SQLITE_AFF_BLOB;
-    }else if( affinity==SQLITE_AFF_REAL ){
+    }ورنہ اگر( affinity==SQLITE_AFF_REAL ){
       affinity = SQLITE_AFF_NUMERIC;
     }
-    assert( pKeyInfo!=0 );
-    assert( sqlite3KeyInfoIsWriteable(pKeyInfo) );
-    pKeyInfo->aColl[0] = sqlite3ExprCollSeq(pParse, pExpr->pLeft);
+    أكد( p_کلید_Info!=0 );
+    أكد( sqlite3_کلید_Info_Is_Writeable(p_کلید_Info) );
+    p_کلید_Info->aColl[0] = sqlite3_اظہاریہ_Coll_Seq(pParse, p_اظہاریہ->p_بایاں);
 
     /* Loop through each expression in <exprlist>. */
-    r1 = sqlite3GetTempReg(pParse);
-    r2 = sqlite3GetTempReg(pParse);
-    for(i=pList->nExpr, pItem=pList->a; i>0; i--, pItem++){
-      Expr *pE2 = pItem->pExpr;
+    r1 = sqlite3_Get_عارضی_Reg(pParse);
+    r2 = sqlite3_Get_عارضی_Reg(pParse);
+    برائے(i=pList->n_اظہاریہ, p_شے=pList->a; i>0; i--, p_شے++){
+      اظہاریہ *pE2 = p_شے->p_اظہاریہ;
 
       /* If the expression is not constant then we will need to
       ** disable the test that was generated above that makes sure
       ** this code only executes once.  Because for a non-constant
       ** expression we need to rerun this code each time.
       */
-      if( addrOnce && !sqlite3ExprIsConstant(pParse, pE2) ){
-        sqlite3VdbeChangeToNoop(v, addrOnce-1);
-        sqlite3VdbeChangeToNoop(v, addrOnce);
-        ExprClearProperty(pExpr, EP_Subrtn);
+      اگر( addrOnce && !sqlite3_اظہاریہ_Is_Constant(pParse, pE2) ){
+        sqlite3_Vdbe_Change_مقصد_Noop(v, addrOnce-1);
+        sqlite3_Vdbe_Change_مقصد_Noop(v, addrOnce);
+        اظہاریہ_Clear_Property(p_اظہاریہ, EP_Subrtn);
         addrOnce = 0;
       }
 
       /* Evaluate the expression and insert it into the temp table */
-      sqlite3ExprCode(pParse, pE2, r1);
-      sqlite3VdbeAddOp4(v, OP_MakeRecord, r1, 1, r2, &affinity, 1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iTab, r2, r1, 1);
+      sqlite3_اظہاریہ_رمز(pParse, pE2, r1);
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_Make_ریکارڈ, r1, 1, r2, &affinity, 1);
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Idx_داخل_کرو, iTab, r2, r1, 1);
     }
-    sqlite3ReleaseTempReg(pParse, r1);
-    sqlite3ReleaseTempReg(pParse, r2);
+    sqlite3_Release_عارضی_Reg(pParse, r1);
+    sqlite3_Release_عارضی_Reg(pParse, r2);
   }
-  if( pSig ) pSig->bComplete = 1;
-  if( pKeyInfo ){
-    sqlite3VdbeChangeP4(v, addr, (void *)pKeyInfo, P4_KEYINFO);
+  اگر( pSig ) pSig->bComplete = 1;
+  اگر( p_کلید_Info ){
+    sqlite3VdbeChangeP4(v, addr, (خالی *)p_کلید_Info, P4_KEYINFO);
   }
-  if( addrOnce ){
-    sqlite3VdbeAddOp1(v, OP_NullRow, iTab);
-    sqlite3VdbeJumpHere(v, addrOnce);
+  اگر( addrOnce ){
+    sqlite3_Vdbe_جوڑو_Op1(v, OP_Null_صف, iTab);
+    sqlite3_Vdbe_Jump_یہاں(v, addrOnce);
     /* Subroutine return */
-    assert( ExprUseYSub(pExpr) );
-    assert( sqlite3VdbeGetOp(v,pExpr->y.sub.iAddr-1)->opcode==OP_BeginSubrtn
+    أكد( اظہاریہ_Use_YSub(p_اظہاریہ) );
+    أكد( sqlite3VdbeGetOp(v,p_اظہاریہ->y.sub.iAddr-1)->opcode==OP_BeginSubrtn
             || pParse->nErr );
-    sqlite3VdbeAddOp3(v, OP_Return, pExpr->y.sub.regReturn,
-                      pExpr->y.sub.iAddr, 1);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Return, p_اظہاریہ->y.sub.regReturn,
+                      p_اظہاریہ->y.sub.iAddr, 1);
     VdbeCoverage(v);
-    sqlite3ClearTempRegCache(pParse);
+    sqlite3_Clear_عارضی_Reg_Cache(pParse);
   }
 }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
 /*
 ** Generate code for scalar subqueries used as a subquery expression
@@ -3935,44 +3935,44 @@ void sqlite3CodeRhsOfIN(
 ** return value is the register of the left-most result column.
 ** Return 0 if an error occurs.
 */
-#ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
-  int addrOnce = 0;           /* Address of OP_Once at top of subroutine */
-  int rReg = 0;               /* Register storing resulting */
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+صحیح sqlite3_رمز_Subselect(Parse *pParse, اظہاریہ *p_اظہاریہ){
+  صحیح addrOnce = 0;           /* Address of OP_Once at top of subroutine */
+  صحیح rReg = 0;               /* Register storing resulting */
   Select *pSel;               /* SELECT statement to encode */
   SelectDest dest;            /* How to deal with SELECT result */
-  int nReg;                   /* Registers to allocate */
-  Expr *pLimit;               /* New limit expression */
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;            /* Address of OP_Explain instruction */
-#endif
+  صحیح nReg;                   /* Registers to allocate */
+  اظہاریہ *p_حد_بندی;               /* New limit expression */
+#اگر_تعریف_شدہ SQLITE_ENABLE_STMT_SCANSTATUS
+  صحیح addrExplain;            /* Address of OP_Explain instruction */
+#اگر_ختم
 
   Vdbe *v = pParse->pVdbe;
-  assert( v!=0 );
-  if( pParse->nErr ) return 0;
-  testcase( pExpr->op==TK_EXISTS );
-  testcase( pExpr->op==TK_SELECT );
-  assert( pExpr->op==TK_EXISTS || pExpr->op==TK_SELECT );
-  assert( ExprUseXSelect(pExpr) );
-  pSel = pExpr->x.pSelect;
+  أكد( v!=0 );
+  اگر( pParse->nErr ) واپس 0;
+  testcase( p_اظہاریہ->op==TK_EXISTS );
+  testcase( p_اظہاریہ->op==TK_SELECT );
+  أكد( p_اظہاریہ->op==TK_EXISTS || p_اظہاریہ->op==TK_SELECT );
+  أكد( اظہاریہ_Use_XSelect(p_اظہاریہ) );
+  pSel = p_اظہاریہ->x.pSelect;
 
   /* If this routine has already been coded, then invoke it as a
   ** subroutine. */
-  if( ExprHasProperty(pExpr, EP_Subrtn) ){
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subrtn) ){
     ExplainQueryPlan((pParse, 0, "REUSE SUBQUERY %d", pSel->selId));
-    assert( ExprUseYSub(pExpr) );
-    sqlite3VdbeAddOp2(v, OP_Gosub, pExpr->y.sub.regReturn,
-                      pExpr->y.sub.iAddr);
-    return pExpr->iTable;
+    أكد( اظہاریہ_Use_YSub(p_اظہاریہ) );
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Gosub, p_اظہاریہ->y.sub.regReturn,
+                      p_اظہاریہ->y.sub.iAddr);
+    واپس p_اظہاریہ->i_جدول;
   }
 
   /* Begin coding the subroutine */
-  assert( !ExprUseYWin(pExpr) );
-  assert( !ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) );
-  ExprSetProperty(pExpr, EP_Subrtn);
-  pExpr->y.sub.regReturn = ++pParse->nMem;
-  pExpr->y.sub.iAddr =
-    sqlite3VdbeAddOp2(v, OP_BeginSubrtn, 0, pExpr->y.sub.regReturn) + 1;
+  أكد( !اظہاریہ_Use_YWin(p_اظہاریہ) );
+  أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Reduced|EP_TokenOnly) );
+  اظہاریہ_سیٹ_Property(p_اظہاریہ, EP_Subrtn);
+  p_اظہاریہ->y.sub.regReturn = ++pParse->nMem;
+  p_اظہاریہ->y.sub.iAddr =
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_BeginSubrtn, 0, p_اظہاریہ->y.sub.regReturn) + 1;
 
   /* The evaluation of the EXISTS/SELECT must be repeated every time it
   ** is encountered if any of the following is true:
@@ -3984,8 +3984,8 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   ** If all of the above are false, then we can run this code just once
   ** save the results, and reuse the same result on subsequent invocations.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) ){
-    addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+  اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_VarSelect) ){
+    addrOnce = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
   }
  
   /* For a SELECT, generate code to put the values for all columns of
@@ -4000,13 +4000,13 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   */
   ExplainQueryPlan2(addrExplain, (pParse, 1, "%sSCALAR SUBQUERY %d",
         addrOnce?"":"CORRELATED ", pSel->selId));
-  sqlite3VdbeScanStatusCounters(v, addrExplain, addrExplain, -1);
-  nReg = pExpr->op==TK_SELECT ? pSel->pEList->nExpr : 1;
+  sqlite3_Vdbe_جائزہ_حالت_Counters(v, addrExplain, addrExplain, -1);
+  nReg = p_اظہاریہ->op==TK_SELECT ? pSel->pEList->n_اظہاریہ : 1;
   sqlite3SelectDestInit(&dest, 0, pParse->nMem+1);
   pParse->nMem += nReg;
-  if( pExpr->op==TK_SELECT ){
+  اگر( p_اظہاریہ->op==TK_SELECT ){
     dest.eDest = SRT_Mem;
-    if( (pSel->selFlags&SF_Distinct) && pSel->pLimit && pSel->pLimit->pRight ){
+    اگر( (pSel->selFlags&SF_Distinct) && pSel->p_حد_بندی && pSel->p_حد_بندی->p_دایاں ){
       /* If there is both a DISTINCT and an OFFSET clause, then allocate
       ** a separate dest.iSdst array for sqlite3Select() and other
       ** routines to populate. In this case results will be copied over
@@ -4017,94 +4017,94 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
       ** excluded by OFFSET.  */ 
       dest.iSdst = pParse->nMem+1;
       pParse->nMem += nReg;
-    }else{
+    }ورنہ{
       dest.iSdst = dest.iSDParm;
     }
     dest.nSdst = nReg;
-    sqlite3VdbeAddOp3(v, OP_Null, 0, dest.iSDParm, pParse->nMem);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Null, 0, dest.iSDParm, pParse->nMem);
     VdbeComment((v, "Init subquery result"));
-  }else{
+  }ورنہ{
     dest.eDest = SRT_Exists;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, dest.iSDParm);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, dest.iSDParm);
     VdbeComment((v, "Init EXISTS result"));
   }
-  if( pSel->pLimit ){
+  اگر( pSel->p_حد_بندی ){
     /* The subquery already has a limit.  If the pre-existing limit X is 
     ** not already integer value 1 or 0, then make the new limit X<>0 so that
     ** the new limit is either 1 or 0 */
-    Expr *pLeft = pSel->pLimit->pLeft;
-    if( ExprHasProperty(pLeft, EP_IntValue)==0
-     || (pLeft->u.iValue!=1 && pLeft->u.iValue!=0)
+    اظہاریہ *p_بایاں = pSel->p_حد_بندی->p_بایاں;
+    اگر( اظہاریہ_Has_Property(p_بایاں, EP_Int_قدر)==0
+     || (p_بایاں->u.i_قدر!=1 && p_بایاں->u.i_قدر!=0)
     ){
       sqlite3 *db = pParse->db;
-      pLimit = sqlite3ExprInt32(db, 0);
-      if( pLimit ){
-        pLimit->affExpr = SQLITE_AFF_NUMERIC;
-        pLimit = sqlite3PExpr(pParse, TK_NE,
-            sqlite3ExprDup(db, pLeft, 0), pLimit);
+      p_حد_بندی = sqlite3_اظہاریہ_Int32(db, 0);
+      اگر( p_حد_بندی ){
+        p_حد_بندی->aff_اظہاریہ = SQLITE_AFF_NUMERIC;
+        p_حد_بندی = sqlite3PExpr(pParse, TK_NE,
+            sqlite3_اظہاریہ_Dup(db, p_بایاں, 0), p_حد_بندی);
       }
-      sqlite3ExprDeferredDelete(pParse, pLeft);
-      pSel->pLimit->pLeft = pLimit;
+      sqlite3_اظہاریہ_Deferred_Delete(pParse, p_بایاں);
+      pSel->p_حد_بندی->p_بایاں = p_حد_بندی;
     }
-  }else{
+  }ورنہ{
     /* If there is no pre-existing limit add a limit of 1 */
-    pLimit = sqlite3ExprInt32(pParse->db, 1);
-    pSel->pLimit = sqlite3PExpr(pParse, TK_LIMIT, pLimit, 0);
+    p_حد_بندی = sqlite3_اظہاریہ_Int32(pParse->db, 1);
+    pSel->p_حد_بندی = sqlite3PExpr(pParse, TK_حد_بندی, p_حد_بندی, 0);
   }
-  pSel->iLimit = 0;
-  if( sqlite3Select(pParse, pSel, &dest) ){
-    pExpr->op2 = pExpr->op;
-    pExpr->op = TK_ERROR;
-    return 0;
+  pSel->i_حد_بندی = 0;
+  اگر( sqlite3Select(pParse, pSel, &dest) ){
+    p_اظہاریہ->op2 = p_اظہاریہ->op;
+    p_اظہاریہ->op = TK_ERROR;
+    واپس 0;
   }
-  pExpr->iTable = rReg = dest.iSDParm;
-  ExprSetVVAProperty(pExpr, EP_NoReduce);
-  if( addrOnce ){
-    sqlite3VdbeJumpHere(v, addrOnce);
+  p_اظہاریہ->i_جدول = rReg = dest.iSDParm;
+  اظہاریہ_سیٹ_VVAProperty(p_اظہاریہ, EP_NoReduce);
+  اگر( addrOnce ){
+    sqlite3_Vdbe_Jump_یہاں(v, addrOnce);
   }
-  sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
+  sqlite3_Vdbe_جائزہ_حالت_Range(v, addrExplain, addrExplain, -1);
 
-  if( dest.eDest==SRT_Mem 
-   && sqlite3ExprCanReturnSubtype(pParse, pSel->pEList->a[0].pExpr) 
+  اگر( dest.eDest==SRT_Mem 
+   && sqlite3_اظہاریہ_Can_Return_Subtype(pParse, pSel->pEList->a[0].p_اظہاریہ) 
   ){
-    sqlite3VdbeAddOp1(v, OP_ClrSubtype, rReg);
+    sqlite3_Vdbe_جوڑو_Op1(v, OP_ClrSubtype, rReg);
   }
 
   /* Subroutine return */
-  assert( ExprUseYSub(pExpr) );
-  assert( sqlite3VdbeGetOp(v,pExpr->y.sub.iAddr-1)->opcode==OP_BeginSubrtn
+  أكد( اظہاریہ_Use_YSub(p_اظہاریہ) );
+  أكد( sqlite3VdbeGetOp(v,p_اظہاریہ->y.sub.iAddr-1)->opcode==OP_BeginSubrtn
           || pParse->nErr );
-  sqlite3VdbeAddOp3(v, OP_Return, pExpr->y.sub.regReturn,
-                    pExpr->y.sub.iAddr, 1);
+  sqlite3_Vdbe_جوڑو_Op3(v, OP_Return, p_اظہاریہ->y.sub.regReturn,
+                    p_اظہاریہ->y.sub.iAddr, 1);
   VdbeCoverage(v);
-  sqlite3ClearTempRegCache(pParse);
-  return rReg;
+  sqlite3_Clear_عارضی_Reg_Cache(pParse);
+  واپس rReg;
 }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Expr pIn is an IN(...) expression. This function checks that the
 ** sub-select on the RHS of the IN() operator has the same number of
 ** columns as the vector on the LHS. Or, if the RHS of the IN() is not
 ** a sub-query, that the LHS is a vector of size 1.
 */
-int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
-  int nVector = sqlite3ExprVectorSize(pIn->pLeft);
-  if( ExprUseXSelect(pIn) && !pParse->db->mallocFailed ){
-    if( nVector!=pIn->x.pSelect->pEList->nExpr ){
-      sqlite3SubselectError(pParse, pIn->x.pSelect->pEList->nExpr, nVector);
-      return 1;
+صحیح sqlite3_اظہاریہ_Check_اندر(Parse *pParse, اظہاریہ *p_اندر){
+  صحیح n_سمتیہ = sqlite3_اظہاریہ_سمتیہ_سائز(p_اندر->p_بایاں);
+  اگر( اظہاریہ_Use_XSelect(p_اندر) && !pParse->db->mallocFailed ){
+    اگر( n_سمتیہ!=p_اندر->x.pSelect->pEList->n_اظہاریہ ){
+      sqlite3SubselectError(pParse, p_اندر->x.pSelect->pEList->n_اظہاریہ, n_سمتیہ);
+      واپس 1;
     }
-  }else if( nVector!=1 ){
-    sqlite3VectorErrorMsg(pParse, pIn->pLeft);
-    return 1;
+  }ورنہ اگر( n_سمتیہ!=1 ){
+    sqlite3_سمتیہ_Error_پیغام(pParse, p_اندر->p_بایاں);
+    واپس 1;
   }
-  return 0;
+  واپس 0;
 }
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Generate code for an IN expression.
 **
@@ -4130,62 +4130,62 @@ int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
 ** See the separate in-operator.md documentation file in the canonical
 ** SQLite source tree for additional information.
 */
-static void sqlite3ExprCodeIN(
+ساکن خالی sqlite3_اظہاریہ_رمز_اندر(
   Parse *pParse,        /* Parsing and code generating context */
-  Expr *pExpr,          /* The IN expression */
-  int destIfFalse,      /* Jump here if LHS is not contained in the RHS */
-  int destIfNull        /* Jump here if the results are unknown due to NULLs */
+  اظہاریہ *p_اظہاریہ,          /* The IN expression */
+  صحیح destIfFalse,      /* Jump here if LHS is not contained in the RHS */
+  صحیح destIfNull        /* Jump here if the results are unknown due to NULLs */
 ){
-  int rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
-  int eType;            /* Type of the RHS */
-  int rLhs;             /* Register(s) holding the LHS values */
+  صحیح rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
+  صحیح eType;            /* Type of the RHS */
+  صحیح rLhs;             /* Register(s) holding the LHS values */
   Vdbe *v;              /* Statement under construction */
-  int *aiMap = 0;       /* Map from vector field to index column */
-  char *zAff = 0;       /* Affinity string for comparisons */
-  int nVector;          /* Size of vectors for this IN operator */
-  int iDummy;           /* Dummy parameter to exprCodeVector() */
-  Expr *pLeft;          /* The LHS of the IN operator */
-  int i;                /* loop counter */
-  int destStep2;        /* Where to jump when NULLs seen in step 2 */
-  int destStep6 = 0;    /* Start of code for Step 6 */
-  int addrTruthOp;      /* Address of opcode that determines the IN is true */
-  int destNotNull;      /* Jump here if a comparison is not true in step 6 */
-  int addrTop;          /* Top of the step-6 loop */
-  int iTab = 0;         /* Index to use */
-  u8 okConstFactor = pParse->okConstFactor;
+  صحیح *aiMap = 0;       /* Map from vector field to index column */
+  حرف *zAff = 0;       /* Affinity string for comparisons */
+  صحیح n_سمتیہ;          /* Size of vectors for this IN operator */
+  صحیح iDummy;           /* Dummy parameter to exprCodeVector() */
+  اظہاریہ *p_بایاں;          /* The LHS of the IN operator */
+  صحیح i;                /* loop counter */
+  صحیح destStep2;        /* Where to jump when NULLs seen in step 2 */
+  صحیح destStep6 = 0;    /* Start of code for Step 6 */
+  صحیح addrTruthOp;      /* Address of opcode that determines the IN is true */
+  صحیح destNotNull;      /* Jump here if a comparison is not true in step 6 */
+  صحیح addr_چوٹی;          /* Top of the step-6 loop */
+  صحیح iTab = 0;         /* Index to use */
+  u8 ok_Const_ضربی_عدد = pParse->ok_Const_ضربی_عدد;
 
-  assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
-  pLeft = pExpr->pLeft;
-  if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-  zAff = exprINAffinity(pParse, pExpr);
-  nVector = sqlite3ExprVectorSize(pExpr->pLeft);
-  aiMap = (int*)sqlite3DbMallocZero(pParse->db, nVector*sizeof(int));
-  if( pParse->db->mallocFailed ) goto sqlite3ExprCodeIN_oom_error;
+  أكد( !اظہاریہ_Has_VVAProperty(p_اظہاریہ,EP_Immutable) );
+  p_بایاں = p_اظہاریہ->p_بایاں;
+  اگر( sqlite3_اظہاریہ_Check_اندر(pParse, p_اظہاریہ) ) واپس;
+  zAff = اظہاریہ_INAffinity(pParse, p_اظہاریہ);
+  n_سمتیہ = sqlite3_اظہاریہ_سمتیہ_سائز(p_اظہاریہ->p_بایاں);
+  aiMap = (صحیح*)sqlite3DbMallocZero(pParse->db, n_سمتیہ*حجم(صحیح));
+  اگر( pParse->db->mallocFailed ) جاؤ sqlite3_اظہاریہ_رمز_اندر_oom_error;
 
   /* Attempt to compute the RHS. After this step, if anything other than
   ** IN_INDEX_NOOP is returned, the table opened with cursor iTab
   ** contains the values that make up the RHS. If IN_INDEX_NOOP is returned,
   ** the RHS has not yet been coded.  */
   v = pParse->pVdbe;
-  assert( v!=0 );       /* OOM detected prior to this routine */
+  أكد( v!=0 );       /* OOM detected prior to this routine */
   VdbeNoopComment((v, "begin IN expr"));
-  eType = sqlite3FindInIndex(pParse, pExpr,
-                             IN_INDEX_MEMBERSHIP | IN_INDEX_NOOP_OK,
+  eType = sqlite3_ڈھونڈو_اندر_اشاریہ(pParse, p_اظہاریہ,
+                             اندر_اشاریہ_MEMBERSHIP | اندر_اشاریہ_NOOP_OK,
                              destIfFalse==destIfNull ? 0 : &rRhsHasNull,
                              aiMap, &iTab);
 
-  assert( pParse->nErr || nVector==1 || eType==IN_INDEX_EPH
-       || eType==IN_INDEX_INDEX_ASC || eType==IN_INDEX_INDEX_DESC
+  أكد( pParse->nErr || n_سمتیہ==1 || eType==اندر_اشاریہ_EPH
+       || eType==اندر_اشاریہ_اشاریہ_ASC || eType==اندر_اشاریہ_اشاریہ_DESC
   );
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   /* Confirm that aiMap[] contains nVector integer values between 0 and
   ** nVector-1. */
-  for(i=0; i<nVector; i++){
-    int j, cnt;
-    for(cnt=j=0; j<nVector; j++) if( aiMap[j]==i ) cnt++;
-    assert( cnt==1 );
+  برائے(i=0; i<n_سمتیہ; i++){
+    صحیح j, cnt;
+    برائے(cnt=j=0; j<n_سمتیہ; j++) اگر( aiMap[j]==i ) cnt++;
+    أكد( cnt==1 );
   }
-#endif
+#اگر_ختم
 
   /* Code the LHS, the <expr> from "<expr> IN (...)". If the LHS is a
   ** vector, then it is stored in an array of nVector registers starting
@@ -4199,10 +4199,10 @@ static void sqlite3ExprCodeIN(
   ** Avoid factoring the LHS of the IN(...) expression out of the loop,
   ** even if it is constant, as OP_Affinity may be used on the register
   ** by code generated below.  */
-  assert( pParse->okConstFactor==okConstFactor );
-  pParse->okConstFactor = 0;
-  rLhs = exprCodeVector(pParse, pLeft, &iDummy);
-  pParse->okConstFactor = okConstFactor;
+  أكد( pParse->ok_Const_ضربی_عدد==ok_Const_ضربی_عدد );
+  pParse->ok_Const_ضربی_عدد = 0;
+  rLhs = اظہاریہ_رمز_سمتیہ(pParse, p_بایاں, &iDummy);
+  pParse->ok_Const_ضربی_عدد = ok_Const_ضربی_عدد;
 
   /* If sqlite3FindInIndex() did not find or create an index that is
   ** suitable for evaluating the IN operator, then evaluate using a
@@ -4210,84 +4210,84 @@ static void sqlite3ExprCodeIN(
   **
   ** This is step (1) in the in-operator.md optimized algorithm.
   */
-  if( eType==IN_INDEX_NOOP ){
-    ExprList *pList;
+  اگر( eType==اندر_اشاریہ_NOOP ){
+    اظہاریہ_List *pList;
     CollSeq *pColl;
-    int labelOk = sqlite3VdbeMakeLabel(pParse);
-    int r2, regToFree;
-    int regCkNull = 0;
-    int ii;
-    assert( nVector==1 );
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    pColl = sqlite3ExprCollSeq(pParse, pExpr->pLeft);
-    if( destIfNull!=destIfFalse ){
-      regCkNull = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp3(v, OP_BitAnd, rLhs, rLhs, regCkNull);
+    صحیح labelOk = sqlite3VdbeMakeLabel(pParse);
+    صحیح r2, reg_مقصد_Free;
+    صحیح regCkNull = 0;
+    صحیح ii;
+    أكد( n_سمتیہ==1 );
+    أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+    pList = p_اظہاریہ->x.pList;
+    pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p_اظہاریہ->p_بایاں);
+    اگر( destIfNull!=destIfFalse ){
+      regCkNull = sqlite3_Get_عارضی_Reg(pParse);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_ثنائی_ہندسہ_And, rLhs, rLhs, regCkNull);
     }
-    for(ii=0; ii<pList->nExpr; ii++){
-      r2 = sqlite3ExprCodeTemp(pParse, pList->a[ii].pExpr, &regToFree);
-      if( regCkNull && sqlite3ExprCanBeNull(pList->a[ii].pExpr) ){
-        sqlite3VdbeAddOp3(v, OP_BitAnd, regCkNull, r2, regCkNull);
+    برائے(ii=0; ii<pList->n_اظہاریہ; ii++){
+      r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, pList->a[ii].p_اظہاریہ, &reg_مقصد_Free);
+      اگر( regCkNull && sqlite3_اظہاریہ_Can_Be_Null(pList->a[ii].p_اظہاریہ) ){
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_ثنائی_ہندسہ_And, regCkNull, r2, regCkNull);
       }
-      sqlite3ReleaseTempReg(pParse, regToFree);
-      if( ii<pList->nExpr-1 || destIfNull!=destIfFalse ){
-        int op = rLhs!=r2 ? OP_Eq : OP_NotNull;
-        sqlite3VdbeAddOp4(v, op, rLhs, labelOk, r2,
-                          (void*)pColl, P4_COLLSEQ);
-        VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_Eq);
-        VdbeCoverageIf(v, ii==pList->nExpr-1 && op==OP_Eq);
-        VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_NotNull);
-        VdbeCoverageIf(v, ii==pList->nExpr-1 && op==OP_NotNull);
+      sqlite3_Release_عارضی_Reg(pParse, reg_مقصد_Free);
+      اگر( ii<pList->n_اظہاریہ-1 || destIfNull!=destIfFalse ){
+        صحیح op = rLhs!=r2 ? OP_Eq : OP_NotNull;
+        sqlite3_Vdbe_جوڑو_Op4(v, op, rLhs, labelOk, r2,
+                          (خالی*)pColl, P4_COLLSEQ);
+        VdbeCoverageIf(v, ii<pList->n_اظہاریہ-1 && op==OP_Eq);
+        VdbeCoverageIf(v, ii==pList->n_اظہاریہ-1 && op==OP_Eq);
+        VdbeCoverageIf(v, ii<pList->n_اظہاریہ-1 && op==OP_NotNull);
+        VdbeCoverageIf(v, ii==pList->n_اظہاریہ-1 && op==OP_NotNull);
         sqlite3VdbeChangeP5(v, zAff[0]);
-      }else{
-        int op = rLhs!=r2 ? OP_Ne : OP_IsNull;
-        assert( destIfNull==destIfFalse );
-        sqlite3VdbeAddOp4(v, op, rLhs, destIfFalse, r2,
-                          (void*)pColl, P4_COLLSEQ);
+      }ورنہ{
+        صحیح op = rLhs!=r2 ? OP_Ne : OP_IsNull;
+        أكد( destIfNull==destIfFalse );
+        sqlite3_Vdbe_جوڑو_Op4(v, op, rLhs, destIfFalse, r2,
+                          (خالی*)pColl, P4_COLLSEQ);
         VdbeCoverageIf(v, op==OP_Ne);
         VdbeCoverageIf(v, op==OP_IsNull);
         sqlite3VdbeChangeP5(v, zAff[0] | SQLITE_JUMPIFNULL);
       }
     }
-    if( regCkNull ){
-      sqlite3VdbeAddOp2(v, OP_IsNull, regCkNull, destIfNull); VdbeCoverage(v);
+    اگر( regCkNull ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, regCkNull, destIfNull); VdbeCoverage(v);
       sqlite3VdbeGoto(v, destIfFalse);
     }
     sqlite3VdbeResolveLabel(v, labelOk);
-    sqlite3ReleaseTempReg(pParse, regCkNull);
-    goto sqlite3ExprCodeIN_finished;
+    sqlite3_Release_عارضی_Reg(pParse, regCkNull);
+    جاؤ sqlite3_اظہاریہ_رمز_اندر_ختم_شدہ;
   }
 
-  if( eType!=IN_INDEX_ROWID ){
+  اگر( eType!=اندر_اشاریہ_ROWID ){
     /* If this IN operator will use an index, then the order of columns in the
     ** vector might be different from the order in the index.  In that case,
     ** we need to reorder the LHS values to be in index order.  Run Affinity
     ** before reordering the columns, so that the affinity is correct.
     */
-    if( nVector==1 ){
-      char aff = zAff[0];
-      if( aff>=SQLITE_AFF_TEXT && aff!=sqlite3ExprAffinity(pLeft) ){
+    اگر( n_سمتیہ==1 ){
+      حرف aff = zAff[0];
+      اگر( aff>=SQLITE_AFF_متن && aff!=sqlite3_اظہاریہ_Affinity(p_بایاں) ){
         /* The OP_Affinity below may change the value. In this case, create a
         ** copy of rLhs to run OP_Affinity on, in case the original register
         ** is used again (e.g. if it is TK_AGG_COLUMN).  */
-        int rTmp = sqlite3GetTempReg(pParse);
-        sqlite3VdbeAddOp3(v, OP_Copy, rLhs, rTmp, 0);
+        صحیح rTmp = sqlite3_Get_عارضی_Reg(pParse);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_Copy, rLhs, rTmp, 0);
         rLhs = rTmp;
-        sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, 1, 0, zAff, 1);
+        sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, rLhs, 1, 0, zAff, 1);
       }
-    }else{
-      sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, nVector, 0, zAff, nVector);
+    }ورنہ{
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, rLhs, n_سمتیہ, 0, zAff, n_سمتیہ);
     }
 
-    for(i=0; i<nVector && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
-    if( i!=nVector ){
+    برائے(i=0; i<n_سمتیہ && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
+    اگر( i!=n_سمتیہ ){
       /* Need to reorder the LHS fields according to aiMap */
-      int rLhsOrig = rLhs;
-      rLhs = sqlite3GetTempRange(pParse, nVector);
-      for(i=0; i<nVector; i++){
+      صحیح rLhsOrig = rLhs;
+      rLhs = sqlite3_Get_عارضی_Range(pParse, n_سمتیہ);
+      برائے(i=0; i<n_سمتیہ; i++){
         testcase( aiMap[i]!=i );
-        sqlite3VdbeAddOp3(v, OP_Copy, rLhsOrig+i, rLhs+aiMap[i], 0);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_Copy, rLhsOrig+i, rLhs+aiMap[i], 0);
       }
     }
   }
@@ -4297,17 +4297,17 @@ static void sqlite3ExprCodeIN(
   ** LHS does contain NULLs then the result must be either FALSE or NULL.
   ** We will then skip the binary search of the RHS.
   */
-  if( destIfNull==destIfFalse ){
+  اگر( destIfNull==destIfFalse ){
     destStep2 = destIfFalse;
-  }else{
+  }ورنہ{
     destStep2 = destStep6 = sqlite3VdbeMakeLabel(pParse);
   }
-  for(i=0; i<nVector; i++){
-    Expr *p = sqlite3VectorFieldSubexpr(pExpr->pLeft, i);
-    if( pParse->nErr ) goto sqlite3ExprCodeIN_oom_error;
-    if( sqlite3ExprCanBeNull(p) ){
+  برائے(i=0; i<n_سمتیہ; i++){
+    اظہاریہ *p = sqlite3_سمتیہ_میدان_Subexpr(p_اظہاریہ->p_بایاں, i);
+    اگر( pParse->nErr ) جاؤ sqlite3_اظہاریہ_رمز_اندر_oom_error;
+    اگر( sqlite3_اظہاریہ_Can_Be_Null(p) ){
       testcase( aiMap[i]!=i );
-      sqlite3VdbeAddOp2(v, OP_IsNull, rLhs+aiMap[i], destStep2);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, rLhs+aiMap[i], destStep2);
       VdbeCoverage(v);
     }
   }
@@ -4316,48 +4316,48 @@ static void sqlite3ExprCodeIN(
   ** of the RHS using the LHS as a probe.  If found, the result is
   ** true.
   */
-  if( eType==IN_INDEX_ROWID ){
+  اگر( eType==اندر_اشاریہ_ROWID ){
     /* In this case, the RHS is the ROWID of table b-tree and so we also
     ** know that the RHS is non-NULL.  Hence, we combine steps 3 and 4
     ** into a single opcode. */
-    assert( nVector==1 );
-    sqlite3VdbeAddOp3(v, OP_SeekRowid, iTab, destIfFalse, rLhs);
+    أكد( n_سمتیہ==1 );
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_SeekRowid, iTab, destIfFalse, rLhs);
     VdbeCoverage(v);
-    addrTruthOp = sqlite3VdbeAddOp0(v, OP_Goto);  /* Return True */
-  }else{
-    if( destIfFalse==destIfNull ){
+    addrTruthOp = sqlite3_Vdbe_جوڑو_Op0(v, OP_Goto);  /* Return True */
+  }ورنہ{
+    اگر( destIfFalse==destIfNull ){
       /* Combine Step 3 and Step 5 into a single opcode */
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
-        const VdbeOp *pOp = sqlite3VdbeGetOp(v, pExpr->y.sub.iAddr);
-        assert( pOp->opcode==OP_Once || pParse->nErr );
-        if( pOp->p3>0 ){  /* tag-202407032019 */
-          assert( OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subrtn) ){
+        ثابت VdbeOp *pOp = sqlite3VdbeGetOp(v, p_اظہاریہ->y.sub.iAddr);
+        أكد( pOp->opcode==OP_Once || pParse->nErr );
+        اگر( pOp->p3>0 ){  /* tag-202407032019 */
+          أكد( OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
                  || pParse->nErr );
-          sqlite3VdbeAddOp4Int(v, OP_Filter, pOp->p3, destIfFalse,
-                               rLhs, nVector); VdbeCoverage(v);
+          sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter, pOp->p3, destIfFalse,
+                               rLhs, n_سمتیہ); VdbeCoverage(v);
         }
       }
-      sqlite3VdbeAddOp4Int(v, OP_NotFound, iTab, destIfFalse,
-                           rLhs, nVector); VdbeCoverage(v);
-      goto sqlite3ExprCodeIN_finished;
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Not_ملا, iTab, destIfFalse,
+                           rLhs, n_سمتیہ); VdbeCoverage(v);
+      جاؤ sqlite3_اظہاریہ_رمز_اندر_ختم_شدہ;
     }
     /* Ordinary Step 3, for the case where FALSE and NULL are distinct */
-    addrTruthOp = sqlite3VdbeAddOp4Int(v, OP_Found, iTab, 0,
-                                      rLhs, nVector); VdbeCoverage(v);
+    addrTruthOp = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, iTab, 0,
+                                      rLhs, n_سمتیہ); VdbeCoverage(v);
   }
 
   /* Step 4.  If the RHS is known to be non-NULL and we did not find
   ** an match on the search above, then the result must be FALSE.
   */
-  if( rRhsHasNull && nVector==1 ){
-    sqlite3VdbeAddOp2(v, OP_NotNull, rRhsHasNull, destIfFalse);
+  اگر( rRhsHasNull && n_سمتیہ==1 ){
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_NotNull, rRhsHasNull, destIfFalse);
     VdbeCoverage(v);
   }
 
   /* Step 5.  If we do not care about the difference between NULL and
   ** FALSE, then just return false.
   */
-  if( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
+  اگر( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
 
   /* Step 6: Loop through rows of the RHS.  Compare each row to the LHS.
   ** If any comparison is NULL, then the result is NULL.  If all
@@ -4366,67 +4366,67 @@ static void sqlite3ExprCodeIN(
   ** For a scalar LHS, it is sufficient to check just the first row
   ** of the RHS.
   */
-  if( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
-  if( eType==IN_INDEX_INDEX_DESC ){
-    addrTop = sqlite3VdbeAddOp2(v, OP_Last, iTab, destIfFalse);
-  }else{
-    testcase( eType==IN_INDEX_EPH );
-    testcase( eType==IN_INDEX_ROWID );
-    addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iTab, destIfFalse);
+  اگر( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
+  اگر( eType==اندر_اشاریہ_اشاریہ_DESC ){
+    addr_چوٹی = sqlite3_Vdbe_جوڑو_Op2(v, OP_آخری, iTab, destIfFalse);
+  }ورنہ{
+    testcase( eType==اندر_اشاریہ_EPH );
+    testcase( eType==اندر_اشاریہ_ROWID );
+    addr_چوٹی = sqlite3_Vdbe_جوڑو_Op2(v, OP_Rewind, iTab, destIfFalse);
   }
   VdbeCoverage(v);
-  if( nVector>1 ){
+  اگر( n_سمتیہ>1 ){
     destNotNull = sqlite3VdbeMakeLabel(pParse);
-  }else{
+  }ورنہ{
     /* For nVector==1, combine steps 6 and 7 by immediately returning
     ** FALSE if the first comparison is not NULL */
     destNotNull = destIfFalse;
   }
-  for(i=0; i<nVector; i++){
-    Expr *p;
+  برائے(i=0; i<n_سمتیہ; i++){
+    اظہاریہ *p;
     CollSeq *pColl;
-    int r3 = sqlite3GetTempReg(pParse);
-    p = sqlite3VectorFieldSubexpr(pLeft, i);
-    if( ExprUseXSelect(pExpr) ){
-      Expr *pRhs = pExpr->x.pSelect->pEList->a[i].pExpr;
-      pColl = sqlite3BinaryCompareCollSeq(pParse, p, pRhs);
-    }else{
+    صحیح r3 = sqlite3_Get_عارضی_Reg(pParse);
+    p = sqlite3_سمتیہ_میدان_Subexpr(p_بایاں, i);
+    اگر( اظہاریہ_Use_XSelect(p_اظہاریہ) ){
+      اظہاریہ *pRhs = p_اظہاریہ->x.pSelect->pEList->a[i].p_اظہاریہ;
+      pColl = sqlite3_ثنائی_Compare_Coll_Seq(pParse, p, pRhs);
+    }ورنہ{
       /* If the RHS of the IN(...) expression are scalar expressions, do
       ** not consider their collation sequences. The documentation says
       ** "The collating sequence used for expressions of the form "x IN (y, z,
       ** ...)" is the collating sequence of x.".  */
-      pColl = sqlite3ExprCollSeq(pParse, p);
+      pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, p);
     }
     testcase( aiMap[i]!=i );
-    sqlite3VdbeAddOp3(v, OP_Column, iTab, aiMap[i], r3);
-    sqlite3VdbeAddOp4(v, OP_Ne, rLhs+aiMap[i], destNotNull, r3,
-                      (void*)pColl, P4_COLLSEQ);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iTab, aiMap[i], r3);
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_Ne, rLhs+aiMap[i], destNotNull, r3,
+                      (خالی*)pColl, P4_COLLSEQ);
     VdbeCoverage(v);
-    sqlite3ReleaseTempReg(pParse, r3);
+    sqlite3_Release_عارضی_Reg(pParse, r3);
   }
-  sqlite3VdbeAddOp2(v, OP_Goto, 0, destIfNull);
-  if( nVector>1 ){
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, destIfNull);
+  اگر( n_سمتیہ>1 ){
     sqlite3VdbeResolveLabel(v, destNotNull);
-    sqlite3VdbeAddOp2(v, OP_Next, iTab, addrTop+1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_اگلا, iTab, addr_چوٹی+1);
     VdbeCoverage(v);
 
     /* Step 7:  If we reach this point, we know that the result must
     ** be false. */
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, destIfFalse);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, destIfFalse);
   }
 
   /* Jumps here in order to return true. */
-  sqlite3VdbeJumpHere(v, addrTruthOp);
+  sqlite3_Vdbe_Jump_یہاں(v, addrTruthOp);
 
-sqlite3ExprCodeIN_finished:
+sqlite3_اظہاریہ_رمز_اندر_ختم_شدہ:
   VdbeComment((v, "end IN expr"));
-sqlite3ExprCodeIN_oom_error:
+sqlite3_اظہاریہ_رمز_اندر_oom_error:
   sqlite3DbFree(pParse->db, aiMap);
   sqlite3DbFree(pParse->db, zAff);
 }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
 /*
 ** Generate an instruction that will put the floating point
 ** value described by z[0..n-1] into register iMem.
@@ -4435,16 +4435,16 @@ sqlite3ExprCodeIN_oom_error:
 ** z[n] character is guaranteed to be something that does not look
 ** like the continuation of the number.
 */
-static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
-  if( ALWAYS(z!=0) ){
-    double value;
-    sqlite3AtoF(z, &value);
-    assert( !sqlite3IsNaN(value) ); /* The new AtoF never returns NaN */
-    if( negateFlag ) value = -value;
-    sqlite3VdbeAddDouble(v, iMem, value);
+ساکن خالی رمز_Real(Vdbe *v, ثابت حرف *z, صحیح negateFlag, صحیح iMem){
+  اگر( ALWAYS(z!=0) ){
+    دوہرا قدر;
+    sqlite3AtoF(z, &قدر);
+    أكد( !sqlite3IsNaN(قدر) ); /* The new AtoF never returns NaN */
+    اگر( negateFlag ) قدر = -قدر;
+    sqlite3_Vdbe_جوڑو_Double(v, iMem, قدر);
   }
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -4453,36 +4453,36 @@ static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
 **
 ** Expr.u.zToken is always UTF8 and zero-terminated.
 */
-static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
+ساکن خالی رمز_Integer(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح negFlag, صحیح iMem){
   Vdbe *v = pParse->pVdbe;
-  if( pExpr->flags & EP_IntValue ){
-    int i = pExpr->u.iValue;
-    assert( i>=0 );
-    if( negFlag ) i = -i;
-    sqlite3VdbeAddOp2(v, OP_Integer, i, iMem);
-  }else{
-    int c;
-    i64 value;
-    const char *z = pExpr->u.zToken;
-    assert( z!=0 );
-    c = sqlite3DecOrHexToI64(z, &value);
-    if( (c==3 && !negFlag) || (c==2) || (negFlag && value==SMALLEST_INT64)){
-#ifdef SQLITE_OMIT_FLOATING_POINT
-      sqlite3ErrorMsg(pParse, "oversized integer: %s%#T", negFlag?"-":"",pExpr);
-#else
-#ifndef SQLITE_OMIT_HEX_INTEGER
-      if( sqlite3_strnicmp(z,"0x",2)==0 ){
-        sqlite3ErrorMsg(pParse, "hex literal too big: %s%#T",
-                        negFlag?"-":"",pExpr);
-      }else
-#endif
+  اگر( p_اظہاریہ->flags & EP_Int_قدر ){
+    صحیح i = p_اظہاریہ->u.i_قدر;
+    أكد( i>=0 );
+    اگر( negFlag ) i = -i;
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, i, iMem);
+  }ورنہ{
+    صحیح c;
+    i64 قدر;
+    ثابت حرف *z = p_اظہاریہ->u.zToken;
+    أكد( z!=0 );
+    c = sqlite3_Dec_Or_Hex_مقصد_I64(z, &قدر);
+    اگر( (c==3 && !negFlag) || (c==2) || (negFlag && قدر==سب_سے_چھوٹا_INT64)){
+#اگر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
+      sqlite3_Error_پیغام(pParse, "oversized integer: %s%#T", negFlag?"-":"",p_اظہاریہ);
+#ورنہ
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_HEX_INTEGER
+      اگر( sqlite3_strnicmp(z,"0x",2)==0 ){
+        sqlite3_Error_پیغام(pParse, "hex literal too big: %s%#T",
+                        negFlag?"-":"",p_اظہاریہ);
+      }ورنہ
+#اگر_ختم
       {
-        codeReal(v, z, negFlag, iMem);
+        رمز_Real(v, z, negFlag, iMem);
       }
-#endif
-    }else{
-      if( negFlag ){ value = c==3 ? SMALLEST_INT64 : -value; }
-      sqlite3VdbeAddInt64(v, iMem, value);
+#اگر_ختم
+    }ورنہ{
+      اگر( negFlag ){ قدر = c==3 ? سب_سے_چھوٹا_INT64 : -قدر; }
+      sqlite3_Vdbe_جوڑو_Int64(v, iMem, قدر);
     }
   }
 }
@@ -4491,109 +4491,109 @@ static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
 /* Generate code that will load into register regOut a value that is
 ** appropriate for the iIdxCol-th column of index pIdx.
 */
-void sqlite3ExprCodeLoadIndexColumn(
+خالی sqlite3_اظہاریہ_رمز_بھرو_اشاریہ_عمود(
   Parse *pParse,  /* The parsing context */
-  Index *pIdx,    /* The index whose column is to be loaded */
-  int iTabCur,    /* Cursor pointing to a table row */
-  int iIdxCol,    /* The column of the index to be loaded */
-  int regOut      /* Store the index column value in this register */
+  اشاریہ *pIdx,    /* The index whose column is to be loaded */
+  صحیح iTabCur,    /* Cursor pointing to a table row */
+  صحیح i_Idx_ستون,    /* The column of the index to be loaded */
+  صحیح reg_برآمد      /* Store the index column value in this register */
 ){
-  i16 iTabCol = pIdx->aiColumn[iIdxCol];
-  if( iTabCol==XN_EXPR ){
-    assert( pIdx->aColExpr );
-    assert( pIdx->aColExpr->nExpr>iIdxCol );
+  i16 i_Tab_ستون = pIdx->ai_عمود[i_Idx_ستون];
+  اگر( i_Tab_ستون==XN_اظہاریہ ){
+    أكد( pIdx->a_ستون_اظہاریہ );
+    أكد( pIdx->a_ستون_اظہاریہ->n_اظہاریہ>i_Idx_ستون );
     pParse->iSelfTab = iTabCur + 1;
-    sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[iIdxCol].pExpr, regOut);
+    sqlite3_اظہاریہ_رمز_Copy(pParse, pIdx->a_ستون_اظہاریہ->a[i_Idx_ستون].p_اظہاریہ, reg_برآمد);
     pParse->iSelfTab = 0;
-  }else{
-    sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pIdx->pTable, iTabCur,
-                                    iTabCol, regOut);
+  }ورنہ{
+    sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(pParse->pVdbe, pIdx->p_جدول, iTabCur,
+                                    i_Tab_ستون, reg_برآمد);
   }
 }
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
 /*
 ** Generate code that will compute the value of generated column pCol
 ** and store the result in register regOut
 */
-void sqlite3ExprCodeGeneratedColumn(
+خالی sqlite3_اظہاریہ_رمز_Generated_عمود(
   Parse *pParse,     /* Parsing context */
-  Table *pTab,       /* Table containing the generated column */
-  Column *pCol,      /* The generated column */
-  int regOut         /* Put the result in this register */
+  جدول *pTab,       /* Table containing the generated column */
+  عمود *p_ستون,      /* The generated column */
+  صحیح reg_برآمد         /* Put the result in this register */
 ){
-  int iAddr;
+  صحیح iAddr;
   Vdbe *v = pParse->pVdbe;
-  int nErr = pParse->nErr;
-  assert( v!=0 );
-  assert( pParse->iSelfTab!=0 );
-  if( pParse->iSelfTab>0 ){
-    iAddr = sqlite3VdbeAddOp3(v, OP_IfNullRow, pParse->iSelfTab-1, 0, regOut);
-  }else{
+  صحیح nErr = pParse->nErr;
+  أكد( v!=0 );
+  أكد( pParse->iSelfTab!=0 );
+  اگر( pParse->iSelfTab>0 ){
+    iAddr = sqlite3_Vdbe_جوڑو_Op3(v, OP_If_Null_صف, pParse->iSelfTab-1, 0, reg_برآمد);
+  }ورنہ{
     iAddr = 0;
   }
-  sqlite3ExprCodeCopy(pParse, sqlite3ColumnExpr(pTab,pCol), regOut);
-  if( (pCol->colFlags & COLFLAG_VIRTUAL)!=0
+  sqlite3_اظہاریہ_رمز_Copy(pParse, sqlite3_عمود_اظہاریہ(pTab,p_ستون), reg_برآمد);
+  اگر( (p_ستون->ستون_Flags & COLFLAG_VIRTUAL)!=0
    && (pTab->tabFlags & TF_Strict)!=0
   ){
-    int p3 = 2+(int)(pCol - pTab->aCol);
-    sqlite3VdbeAddOp4(v, OP_TypeCheck, regOut, 1, p3, (char*)pTab, P4_TABLE);
-  }else if( pCol->affinity>=SQLITE_AFF_TEXT ){
-    sqlite3VdbeAddOp4(v, OP_Affinity, regOut, 1, 0, &pCol->affinity, 1);
+    صحیح p3 = 2+(صحیح)(p_ستون - pTab->a_ستون);
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_TypeCheck, reg_برآمد, 1, p3, (حرف*)pTab, P4_جدول);
+  }ورنہ اگر( p_ستون->affinity>=SQLITE_AFF_متن ){
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, reg_برآمد, 1, 0, &p_ستون->affinity, 1);
   }
-  if( iAddr ) sqlite3VdbeJumpHere(v, iAddr);
-  if( pParse->nErr>nErr ) pParse->db->errByteOffset = -1;
+  اگر( iAddr ) sqlite3_Vdbe_Jump_یہاں(v, iAddr);
+  اگر( pParse->nErr>nErr ) pParse->db->err_Byte_انحراف = -1;
 }
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
+#اگر_ختم /* SQLITE_OMIT_GENERATED_COLUMNS */
 
 /*
 ** Generate code to extract the value of the iCol-th column of a table.
 */
-void sqlite3ExprCodeGetColumnOfTable(
+خالی sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(
   Vdbe *v,        /* Parsing context */
-  Table *pTab,    /* The table containing the value */
-  int iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
-  int iCol,       /* Index of the column to extract */
-  int regOut      /* Extract the value into this register */
+  جدول *pTab,    /* The table containing the value */
+  صحیح iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
+  صحیح i_ستون,       /* Index of the column to extract */
+  صحیح reg_برآمد      /* Extract the value into this register */
 ){
-  Column *pCol;
-  assert( v!=0 );
-  assert( pTab!=0 );
-  assert( iCol!=XN_EXPR );
-  if( iCol<0 || iCol==pTab->iPKey ){
-    sqlite3VdbeAddOp2(v, OP_Rowid, iTabCur, regOut);
+  عمود *p_ستون;
+  أكد( v!=0 );
+  أكد( pTab!=0 );
+  أكد( i_ستون!=XN_اظہاریہ );
+  اگر( i_ستون<0 || i_ستون==pTab->iPKey ){
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Rowid, iTabCur, reg_برآمد);
     VdbeComment((v, "%s.rowid", pTab->zName));
- }else{
-    int x;
-    if( IsVirtual(pTab) ){
-      x = iCol;
-      sqlite3VdbeAddOp3(v, OP_VColumn, iTabCur, x, regOut);
-      return;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    }else if( (pCol = &pTab->aCol[iCol])->colFlags & COLFLAG_VIRTUAL ){
+ }ورنہ{
+    صحیح x;
+    اگر( IsVirtual(pTab) ){
+      x = i_ستون;
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_VColumn, iTabCur, x, reg_برآمد);
+      واپس;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
+    }ورنہ اگر( (p_ستون = &pTab->a_ستون[i_ستون])->ستون_Flags & COLFLAG_VIRTUAL ){
       Parse *pParse = sqlite3VdbeParser(v);
-      if( pCol->colFlags & COLFLAG_BUSY ){
-        sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
-                        pCol->zCnName);
-      }else{
-        int savedSelfTab = pParse->iSelfTab;
-        pCol->colFlags |= COLFLAG_BUSY;
+      اگر( p_ستون->ستون_Flags & COLFLAG_BUSY ){
+        sqlite3_Error_پیغام(pParse, "generated column loop on \"%s\"",
+                        p_ستون->zCnName);
+      }ورنہ{
+        صحیح savedSelfTab = pParse->iSelfTab;
+        p_ستون->ستون_Flags |= COLFLAG_BUSY;
         pParse->iSelfTab = iTabCur+1;
-        sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, regOut);
+        sqlite3_اظہاریہ_رمز_Generated_عمود(pParse, pTab, p_ستون, reg_برآمد);
         pParse->iSelfTab = savedSelfTab;
-        pCol->colFlags &= ~COLFLAG_BUSY;
+        p_ستون->ستون_Flags &= ~COLFLAG_BUSY;
       }
-      return;
-#endif
-    }else if( !HasRowid(pTab) ){
-      testcase( iCol!=sqlite3TableColumnToStorage(pTab, iCol) );
-      x = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), iCol);
-    }else{
-      x = sqlite3TableColumnToStorage(pTab,iCol);
-      testcase( x!=iCol );
+      واپس;
+#اگر_ختم
+    }ورنہ اگر( !HasRowid(pTab) ){
+      testcase( i_ستون!=sqlite3_جدول_عمود_مقصد_Storage(pTab, i_ستون) );
+      x = sqlite3_جدول_عمود_مقصد_اشاریہ(sqlite3_Primary_کلید_اشاریہ(pTab), i_ستون);
+    }ورنہ{
+      x = sqlite3_جدول_عمود_مقصد_Storage(pTab,i_ستون);
+      testcase( x!=i_ستون );
     }
-    sqlite3VdbeAddOp3(v, OP_Column, iTabCur, x, regOut);
-    sqlite3ColumnDefault(v, pTab, iCol, regOut);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iTabCur, x, reg_برآمد);
+    sqlite3_عمود_Default(v, pTab, i_ستون, reg_برآمد);
   }
 }
 
@@ -4604,32 +4604,32 @@ void sqlite3ExprCodeGetColumnOfTable(
 ** There must be an open cursor to pTab in iTable when this routine
 ** is called.  If iColumn<0 then code is generated that extracts the rowid.
 */
-int sqlite3ExprCodeGetColumn(
+صحیح sqlite3_اظہاریہ_رمز_Get_عمود(
   Parse *pParse,   /* Parsing and code generating context */
-  Table *pTab,     /* Description of the table we are reading from */
-  int iColumn,     /* Index of the table column */
-  int iTable,      /* The cursor pointing to the table */
-  int iReg,        /* Store results here */
+  جدول *pTab,     /* Description of the table we are reading from */
+  صحیح i_عمود,     /* Index of the table column */
+  صحیح i_جدول,      /* The cursor pointing to the table */
+  صحیح iReg,        /* Store results here */
   u8 p5            /* P5 value for OP_Column + FLAGS */
 ){
-  assert( pParse->pVdbe!=0 );
-  assert( (p5 & (OPFLAG_NOCHNG|OPFLAG_TYPEOFARG|OPFLAG_LENGTHARG))==p5 );
-  assert( IsVirtual(pTab) || (p5 & OPFLAG_NOCHNG)==0 );
-  sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pTab, iTable, iColumn, iReg);
-  if( p5 ){
-    VdbeOp *pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Column ) pOp->p5 = p5;
-    if( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
+  أكد( pParse->pVdbe!=0 );
+  أكد( (p5 & (OPFLAG_NOCHNG|OPFLAG_TYPEOFARG|OPFLAG_LENGTHARG))==p5 );
+  أكد( IsVirtual(pTab) || (p5 & OPFLAG_NOCHNG)==0 );
+  sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(pParse->pVdbe, pTab, i_جدول, i_عمود, iReg);
+  اگر( p5 ){
+    VdbeOp *pOp = sqlite3_Vdbe_Get_آخری_Op(pParse->pVdbe);
+    اگر( pOp->opcode==OP_عمود ) pOp->p5 = p5;
+    اگر( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
   }
-  return iReg;
+  واپس iReg;
 }
 
 /*
 ** Generate code to move content from registers iFrom...iFrom+nReg-1
 ** over to iTo..iTo+nReg-1.
 */
-void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
-  sqlite3VdbeAddOp3(pParse->pVdbe, OP_Move, iFrom, iTo, nReg);
+خالی sqlite3_اظہاریہ_رمز_Move(Parse *pParse, صحیح iFrom, صحیح i_مقصد, صحیح nReg){
+  sqlite3_Vdbe_جوڑو_Op3(pParse->pVdbe, OP_Move, iFrom, i_مقصد, nReg);
 }
 
 /*
@@ -4637,16 +4637,16 @@ void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
 ** register iReg.  The caller must ensure that iReg already contains
 ** the correct value for the expression.
 */
-void sqlite3ExprToRegister(Expr *pExpr, int iReg){
-  Expr *p = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( NEVER(p==0) ) return;
-  if( p->op==TK_REGISTER ){
-    assert( p->iTable==iReg );
-  }else{
+خالی sqlite3_اظہاریہ_مقصد_رجسٹر(اظہاریہ *p_اظہاریہ, صحیح iReg){
+  اظہاریہ *p = sqlite3_اظہاریہ_Skip_Collate_And_Likely(p_اظہاریہ);
+  اگر( NEVER(p==0) ) واپس;
+  اگر( p->op==TK_رجسٹر ){
+    أكد( p->i_جدول==iReg );
+  }ورنہ{
     p->op2 = p->op;
-    p->op = TK_REGISTER;
-    p->iTable = iReg;
-    ExprClearProperty(p, EP_Skip);
+    p->op = TK_رجسٹر;
+    p->i_جدول = iReg;
+    اظہاریہ_Clear_Property(p, EP_Skip);
   }
 }
 
@@ -4660,38 +4660,38 @@ void sqlite3ExprToRegister(Expr *pExpr, int iReg){
 ** is not a temporary or if the expression is a vector set *piFreeable
 ** to 0.
 */
-static int exprCodeVector(Parse *pParse, Expr *p, int *piFreeable){
-  int iResult;
-  int nResult = sqlite3ExprVectorSize(p);
-  if( nResult==1 ){
-    iResult = sqlite3ExprCodeTemp(pParse, p, piFreeable);
-  }else{
+ساکن صحیح اظہاریہ_رمز_سمتیہ(Parse *pParse, اظہاریہ *p, صحیح *piFreeable){
+  صحیح i_نتیجہ;
+  صحیح n_نتیجہ = sqlite3_اظہاریہ_سمتیہ_سائز(p);
+  اگر( n_نتیجہ==1 ){
+    i_نتیجہ = sqlite3_اظہاریہ_رمز_عارضی(pParse, p, piFreeable);
+  }ورنہ{
     *piFreeable = 0;
-    if( p->op==TK_SELECT ){
-#if SQLITE_OMIT_SUBQUERY
-      iResult = 0;
-#else
-      iResult = sqlite3CodeSubselect(pParse, p);
-#endif
-    }else{
-      int i;
-      iResult = pParse->nMem+1;
-      pParse->nMem += nResult;
-      assert( ExprUseXList(p) );
-      for(i=0; i<nResult; i++){
-        sqlite3ExprCodeFactorable(pParse, p->x.pList->a[i].pExpr, i+iResult);
+    اگر( p->op==TK_SELECT ){
+#اگر SQLITE_OMIT_SUBQUERY
+      i_نتیجہ = 0;
+#ورنہ
+      i_نتیجہ = sqlite3_رمز_Subselect(pParse, p);
+#اگر_ختم
+    }ورنہ{
+      صحیح i;
+      i_نتیجہ = pParse->nMem+1;
+      pParse->nMem += n_نتیجہ;
+      أكد( اظہاریہ_Use_XList(p) );
+      برائے(i=0; i<n_نتیجہ; i++){
+        sqlite3_اظہاریہ_رمز_Factorable(pParse, p->x.pList->a[i].p_اظہاریہ, i+i_نتیجہ);
       }
     }
   }
-  return iResult;
+  واپس i_نتیجہ;
 }
 
 /*
 ** If the last opcode is a OP_Copy, then set the do-not-merge flag (p5)
 ** so that a subsequent copy will not be merged into this one.
 */
-static void setDoNotMergeFlagOnCopy(Vdbe *v){
-  if( sqlite3VdbeGetLastOp(v)->opcode==OP_Copy ){
+ساکن خالی سیٹ_Do_Not_ملاؤ_Flag_On_Copy(Vdbe *v){
+  اگر( sqlite3_Vdbe_Get_آخری_Op(v)->opcode==OP_Copy ){
     sqlite3VdbeChangeP5(v, 1);  /* Tag trailing OP_Copy as not mergeable */
   }
 }
@@ -4700,121 +4700,121 @@ static void setDoNotMergeFlagOnCopy(Vdbe *v){
 ** Generate code to implement special SQL functions that are implemented
 ** in-line rather than by using the usual callbacks.
 */
-static int exprCodeInlineFunction(
+ساکن صحیح اظہاریہ_رمز_Inline_Function(
   Parse *pParse,        /* Parsing context */
-  ExprList *pFarg,      /* List of function arguments */
-  int iFuncId,          /* Function ID.  One of the INTFUNC_... values */
-  int target            /* Store function result in this register */
+  اظہاریہ_List *pFarg,      /* List of function arguments */
+  صحیح iFuncId,          /* Function ID.  One of the INTFUNC_... values */
+  صحیح ہدف            /* Store function result in this register */
 ){
-  int nFarg;
+  صحیح nFarg;
   Vdbe *v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( pFarg!=0 );
-  nFarg = pFarg->nExpr;
-  assert( nFarg>0 );  /* All in-line functions have at least one argument */
-  switch( iFuncId ){
-    case INLINEFUNC_coalesce: {
+  أكد( v!=0 );
+  أكد( pFarg!=0 );
+  nFarg = pFarg->n_اظہاریہ;
+  أكد( nFarg>0 );  /* All in-line functions have at least one argument */
+  انتخاب( iFuncId ){
+    حالت INLINEFUNC_coalesce: {
       /* Attempt a direct implementation of the built-in COALESCE() and
       ** IFNULL() functions.  This avoids unnecessary evaluation of
       ** arguments past the first non-NULL argument.
       */
-      int endCoalesce = sqlite3VdbeMakeLabel(pParse);
-      int i;
-      assert( nFarg>=2 );
-      sqlite3ExprCode(pParse, pFarg->a[0].pExpr, target);
-      for(i=1; i<nFarg; i++){
-        sqlite3VdbeAddOp2(v, OP_NotNull, target, endCoalesce);
+      صحیح انتہا_Coalesce = sqlite3VdbeMakeLabel(pParse);
+      صحیح i;
+      أكد( nFarg>=2 );
+      sqlite3_اظہاریہ_رمز(pParse, pFarg->a[0].p_اظہاریہ, ہدف);
+      برائے(i=1; i<nFarg; i++){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_NotNull, ہدف, انتہا_Coalesce);
         VdbeCoverage(v);
-        sqlite3ExprCode(pParse, pFarg->a[i].pExpr, target);
+        sqlite3_اظہاریہ_رمز(pParse, pFarg->a[i].p_اظہاریہ, ہدف);
       }
-      setDoNotMergeFlagOnCopy(v);
-      sqlite3VdbeResolveLabel(v, endCoalesce);
-      break;
+      سیٹ_Do_Not_ملاؤ_Flag_On_Copy(v);
+      sqlite3VdbeResolveLabel(v, انتہا_Coalesce);
+      توڑو;
     }
-    case INLINEFUNC_iif: {
-      Expr caseExpr;
-      memset(&caseExpr, 0, sizeof(caseExpr));
-      caseExpr.op = TK_CASE;
-      caseExpr.x.pList = pFarg;
-      return sqlite3ExprCodeTarget(pParse, &caseExpr, target);
+    حالت INLINEFUNC_iif: {
+      اظہاریہ case_اظہاریہ;
+      memset(&case_اظہاریہ, 0, حجم(case_اظہاریہ));
+      case_اظہاریہ.op = TK_CASE;
+      case_اظہاریہ.x.pList = pFarg;
+      واپس sqlite3_اظہاریہ_رمز_ہدف(pParse, &case_اظہاریہ, ہدف);
     }
-#ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
-    case INLINEFUNC_sqlite_offset: {
-      Expr *pArg = pFarg->a[0].pExpr;
-      if( pArg->op==TK_COLUMN && pArg->iTable>=0 ){
-        sqlite3VdbeAddOp3(v, OP_Offset, pArg->iTable, pArg->iColumn, target);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_Null, 0, target);
+#اگر_تعریف_شدہ SQLITE_ENABLE_انحراف_SQL_FUNC
+    حالت INLINEFUNC_sqlite_انحراف: {
+      اظہاریہ *pArg = pFarg->a[0].p_اظہاریہ;
+      اگر( pArg->op==TK_عمود && pArg->i_جدول>=0 ){
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_انحراف, pArg->i_جدول, pArg->i_عمود, ہدف);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
       }
-      break;
+      توڑو;
     }
-#endif
-    default: {  
+#اگر_ختم
+    طےشدہ: {  
       /* The UNLIKELY() function is a no-op.  The result is the value
       ** of the first argument.
       */
-      assert( nFarg==1 || nFarg==2 );
-      target = sqlite3ExprCodeTarget(pParse, pFarg->a[0].pExpr, target);
-      break;
+      أكد( nFarg==1 || nFarg==2 );
+      ہدف = sqlite3_اظہاریہ_رمز_ہدف(pParse, pFarg->a[0].p_اظہاریہ, ہدف);
+      توڑو;
     }
 
   /***********************************************************************
   ** Test-only SQL functions that are only usable if enabled
   ** via SQLITE_TESTCTRL_INTERNAL_FUNCTIONS
   */
-#if !defined(SQLITE_UNTESTABLE)
-    case INLINEFUNC_expr_compare: {
+#اگر !defined(SQLITE_UNTESTABLE)
+    حالت INLINEFUNC_اظہاریہ_compare: {
       /* Compare two expressions using sqlite3ExprCompare() */
-      assert( nFarg==2 );
-      sqlite3VdbeAddOp2(v, OP_Integer,
-         sqlite3ExprCompare(0,pFarg->a[0].pExpr, pFarg->a[1].pExpr,-1),
-         target);
-      break;
+      أكد( nFarg==2 );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer,
+         sqlite3_اظہاریہ_Compare(0,pFarg->a[0].p_اظہاریہ, pFarg->a[1].p_اظہاریہ,-1),
+         ہدف);
+      توڑو;
     }
 
-    case INLINEFUNC_expr_implies_expr: {
+    حالت INLINEFUNC_اظہاریہ_مستلزم_اظہاریہ: {
       /* Compare two expressions using sqlite3ExprImpliesExpr() */
-      assert( nFarg==2 );
-      sqlite3VdbeAddOp2(v, OP_Integer,
-         sqlite3ExprImpliesExpr(pParse,pFarg->a[0].pExpr, pFarg->a[1].pExpr,-1),
-         target);
-      break;
+      أكد( nFarg==2 );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer,
+         sqlite3_اظہاریہ_مستلزم_اظہاریہ(pParse,pFarg->a[0].p_اظہاریہ, pFarg->a[1].p_اظہاریہ,-1),
+         ہدف);
+      توڑو;
     }
 
-    case INLINEFUNC_implies_nonnull_row: {
+    حالت INLINEFUNC_مستلزم_nonnull_صف: {
       /* Result of sqlite3ExprImpliesNonNullRow() */
-      Expr *pA1;
-      assert( nFarg==2 );
-      pA1 = pFarg->a[1].pExpr;
-      if( pA1->op==TK_COLUMN ){
-        sqlite3VdbeAddOp2(v, OP_Integer,
-           sqlite3ExprImpliesNonNullRow(pFarg->a[0].pExpr,pA1->iTable,1),
-           target);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_Null, 0, target);
+      اظہاریہ *pA1;
+      أكد( nFarg==2 );
+      pA1 = pFarg->a[1].p_اظہاریہ;
+      اگر( pA1->op==TK_عمود ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer,
+           sqlite3_اظہاریہ_مستلزم_Non_Null_صف(pFarg->a[0].p_اظہاریہ,pA1->i_جدول,1),
+           ہدف);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
       }
-      break;
+      توڑو;
     }
 
-    case INLINEFUNC_affinity: {
+    حالت INLINEFUNC_affinity: {
       /* The AFFINITY() function evaluates to a string that describes
       ** the type affinity of the argument.  This is used for testing of
       ** the SQLite type logic.
       */
-      const char *azAff[] = { "blob", "text", "numeric", "integer",
+      ثابت حرف *azAff[] = { "blob", "text", "numeric", "integer",
                               "real", "flexnum" };
-      char aff;
-      assert( nFarg==1 );
-      aff = sqlite3ExprAffinity(pFarg->a[0].pExpr);
-      assert( aff<=SQLITE_AFF_NONE
+      حرف aff;
+      أكد( nFarg==1 );
+      aff = sqlite3_اظہاریہ_Affinity(pFarg->a[0].p_اظہاریہ);
+      أكد( aff<=SQLITE_AFF_NONE
            || (aff>=SQLITE_AFF_BLOB && aff<=SQLITE_AFF_FLEXNUM) );
-      sqlite3VdbeLoadString(v, target,
+      sqlite3_Vdbe_بھرو_String(v, ہدف,
               (aff<=SQLITE_AFF_NONE) ? "none" : azAff[aff-SQLITE_AFF_BLOB]);
-      break;
+      توڑو;
     }
-#endif /* !defined(SQLITE_UNTESTABLE) */
+#اگر_ختم /* !defined(SQLITE_UNTESTABLE) */
   }
-  return target;
+  واپس ہدف;
 }
 
 /*
@@ -4840,32 +4840,32 @@ static int exprCodeInlineFunction(
 ** In all cases 1 through 5, the expression might also return a subtype
 ** if any operand can return a subtype.
 */
-static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
-  int n;
+ساکن صحیح اظہاریہ_گرہ_Can_Return_Subtype(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  صحیح n;
   FuncDef *pDef;
   sqlite3 *db;
-  if( pExpr->op==TK_CASE || pExpr->op==TK_UPLUS 
-   || pExpr->op==TK_COLLATE || pExpr->op==TK_CAST 
+  اگر( p_اظہاریہ->op==TK_CASE || p_اظہاریہ->op==TK_UPLUS 
+   || p_اظہاریہ->op==TK_COLLATE || p_اظہاریہ->op==TK_CAST 
   ){
-    return WRC_Continue;
+    واپس WRC_Continue;
   }
-  if( pExpr->op!=TK_FUNCTION && pExpr->op!=TK_AGG_FUNCTION ){
-    return WRC_Prune;
+  اگر( p_اظہاریہ->op!=TK_FUNCTION && p_اظہاریہ->op!=TK_AGG_FUNCTION ){
+    واپس WRC_Prune;
   }
-  assert( ExprUseXList(pExpr) );
+  أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
   db = pWalker->pParse->db;
-  n = pExpr->x.pList ? pExpr->x.pList->nExpr : 0;
-  pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return WRC_Continue;
-#else
-  assert( pDef!=0 );
-#endif
-  if( (pDef->funcFlags & SQLITE_RESULT_SUBTYPE)!=0 ){
-    pWalker->eCode = 1;
-    return WRC_Abort;
+  n = p_اظہاریہ->x.pList ? p_اظہاریہ->x.pList->n_اظہاریہ : 0;
+  pDef = sqlite3_ڈھونڈو_Function(db, p_اظہاریہ->u.zToken, n, ENC(db), 0);
+#اگر_تعریف_شدہ SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+  اگر( pDef==0 ) واپس WRC_Continue;
+#ورنہ
+  أكد( pDef!=0 );
+#اگر_ختم
+  اگر( (pDef->funcFlags & SQLITE_نتیجہ_SUBTYPE)!=0 ){
+    pWalker->e_رمز = 1;
+    واپس WRC_Abort;
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
@@ -4876,13 +4876,13 @@ static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
 ** are acceptable as they only disable an optimization.  False negatives,
 ** on the other hand, can lead to incorrect answers.
 */
-int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
+صحیح sqlite3_اظہاریہ_Can_Return_Subtype(Parse *pParse, اظہاریہ *p_اظہاریہ){
   Walker w;
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, حجم(w));
   w.pParse = pParse;
-  w.xExprCallback = exprNodeCanReturnSubtype;
-  sqlite3WalkExpr(&w, pExpr);
-  return w.eCode;
+  w.x_اظہاریہ_Callback = اظہاریہ_گرہ_Can_Return_Subtype;
+  sqlite3_Walk_اظہاریہ(&w, p_اظہاریہ);
+  واپس w.e_رمز;
 }
 
 
@@ -4892,30 +4892,30 @@ int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
 ** return the register into which the value has been read.  If pExpr is
 ** not an indexed expression, then return negative.
 */
-static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
+ساکن SQLITE_NOINLINE صحیح sqlite3_اشاریہ_دار_اظہاریہ_Lookup(
   Parse *pParse,   /* The parsing context */
-  Expr *pExpr,     /* The expression to potentially bypass */
-  int target       /* Where to store the result of the expression */
+  اظہاریہ *p_اظہاریہ,     /* The expression to potentially bypass */
+  صحیح ہدف       /* Where to store the result of the expression */
 ){
-  IndexedExpr *p;
+  اشاریہ_دار_اظہاریہ *p;
   Vdbe *v;
-  for(p=pParse->pIdxEpr; p; p=p->pIENext){
-    u8 exprAff;
-    int iDataCur = p->iDataCur;
-    if( iDataCur<0 ) continue;
-    if( pParse->iSelfTab ){
-      if( p->iDataCur!=pParse->iSelfTab-1 ) continue;
-      iDataCur = -1;
+  برائے(p=pParse->pIdxEpr; p; p=p->pIENext){
+    u8 اظہاریہ_Aff;
+    صحیح i_ڈیٹا_Cur = p->i_ڈیٹا_Cur;
+    اگر( i_ڈیٹا_Cur<0 ) جاری;
+    اگر( pParse->iSelfTab ){
+      اگر( p->i_ڈیٹا_Cur!=pParse->iSelfTab-1 ) جاری;
+      i_ڈیٹا_Cur = -1;
     }
-    if( sqlite3ExprCompare(0, pExpr, p->pExpr, iDataCur)!=0 ) continue;
-    assert( p->aff>=SQLITE_AFF_BLOB && p->aff<=SQLITE_AFF_NUMERIC );
-    exprAff = sqlite3ExprAffinity(pExpr);
-    if( (exprAff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
-     || (exprAff==SQLITE_AFF_TEXT && p->aff!=SQLITE_AFF_TEXT)
-     || (exprAff>=SQLITE_AFF_NUMERIC && p->aff!=SQLITE_AFF_NUMERIC)
+    اگر( sqlite3_اظہاریہ_Compare(0, p_اظہاریہ, p->p_اظہاریہ, i_ڈیٹا_Cur)!=0 ) جاری;
+    أكد( p->aff>=SQLITE_AFF_BLOB && p->aff<=SQLITE_AFF_NUMERIC );
+    اظہاریہ_Aff = sqlite3_اظہاریہ_Affinity(p_اظہاریہ);
+    اگر( (اظہاریہ_Aff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
+     || (اظہاریہ_Aff==SQLITE_AFF_متن && p->aff!=SQLITE_AFF_متن)
+     || (اظہاریہ_Aff>=SQLITE_AFF_NUMERIC && p->aff!=SQLITE_AFF_NUMERIC)
     ){
       /* Affinity mismatch on a generated column */
-      continue;
+      جاری;
     }
 
 
@@ -4923,15 +4923,15 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
     ** value taken from an expression index if they are themselves an
     ** argument to another scalar function or aggregate. 
     ** https://sqlite.org/forum/forumpost/68d284c86b082c3e */
-    if( ExprHasProperty(pExpr, EP_SubtArg)
-     && sqlite3ExprCanReturnSubtype(pParse, pExpr) 
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_SubtArg)
+     && sqlite3_اظہاریہ_Can_Return_Subtype(pParse, p_اظہاریہ) 
     ){
-      continue;
+      جاری;
     }
 
     v = pParse->pVdbe;
-    assert( v!=0 );
-    if( p->bMaybeNullRow || sqlite3ExprIsConstant(pParse, pExpr) ){
+    أكد( v!=0 );
+    اگر( p->b_Maybe_Null_صف || sqlite3_اظہاریہ_Is_Constant(pParse, p_اظہاریہ) ){
       /* The value of pExpr should be computed from the original expression,
       ** not from the index, if either:
       **
@@ -4941,24 +4941,24 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
       **         use an index value outside of the loop that positions the
       **         index.  (Bug 2026-10-11T19:26:40Z).
       */
-      int addr = sqlite3VdbeCurrentAddr(v);
-      sqlite3VdbeAddOp3(v, OP_IfNullRow, p->iIdxCur, addr+3, target);
+      صحیح addr = sqlite3VdbeCurrentAddr(v);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_If_Null_صف, p->iIdxCur, addr+3, ہدف);
       VdbeCoverage(v);
-      sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
-      VdbeComment((v, "%s expr-column %d", p->zIdxName, p->iIdxCol));
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, p->iIdxCur, p->i_Idx_ستون, ہدف);
+      VdbeComment((v, "%s expr-column %d", p->zIdxName, p->i_Idx_ستون));
       sqlite3VdbeGoto(v, 0);
       p = pParse->pIdxEpr;
       pParse->pIdxEpr = 0;
-      sqlite3ExprCode(pParse, pExpr, target);
+      sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ, ہدف);
       pParse->pIdxEpr = p;
-      sqlite3VdbeJumpHere(v, addr+2);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
-      VdbeComment((v, "%s expr-column %d", p->zIdxName, p->iIdxCol));
+      sqlite3_Vdbe_Jump_یہاں(v, addr+2);
+    }ورنہ{
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, p->iIdxCur, p->i_Idx_ستون, ہدف);
+      VdbeComment((v, "%s expr-column %d", p->zIdxName, p->i_Idx_ستون));
     }
-    return target;
+    واپس ہدف;
   }
-  return -1;  /* Not found */
+  واپس -1;  /* Not found */
 }
 
 
@@ -4972,33 +4972,33 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
 ** Or, if the TK_COLUMN cannot be replaced by a constant, zero is 
 ** returned.
 */
-static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
-  IndexedExpr *p;
-  for(p=pParse->pIdxPartExpr; p; p=p->pIENext){
-    if( pExpr->iColumn==p->iIdxCol && pExpr->iTable==p->iDataCur ){
+ساکن صحیح اظہاریہ_Partidx_اظہاریہ_Lookup(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح i_ہدف){
+  اشاریہ_دار_اظہاریہ *p;
+  برائے(p=pParse->p_Idx_Part_اظہاریہ; p; p=p->pIENext){
+    اگر( p_اظہاریہ->i_عمود==p->i_Idx_ستون && p_اظہاریہ->i_جدول==p->i_ڈیٹا_Cur ){
       Vdbe *v = pParse->pVdbe;
-      int addr = 0;
-      int ret;
+      صحیح addr = 0;
+      صحیح ret;
 
-      if( p->bMaybeNullRow ){
-        addr = sqlite3VdbeAddOp1(v, OP_IfNullRow, p->iIdxCur);
+      اگر( p->b_Maybe_Null_صف ){
+        addr = sqlite3_Vdbe_جوڑو_Op1(v, OP_If_Null_صف, p->iIdxCur);
       }
-      ret = sqlite3ExprCodeTarget(pParse, p->pExpr, iTarget);
-      sqlite3VdbeAddOp4(pParse->pVdbe, OP_Affinity, ret, 1, 0,
-                        (const char*)&p->aff, 1);
-      if( sqlite3ExprCanReturnSubtype(pParse, p->pExpr) ){
+      ret = sqlite3_اظہاریہ_رمز_ہدف(pParse, p->p_اظہاریہ, i_ہدف);
+      sqlite3_Vdbe_جوڑو_Op4(pParse->pVdbe, OP_Affinity, ret, 1, 0,
+                        (ثابت حرف*)&p->aff, 1);
+      اگر( sqlite3_اظہاریہ_Can_Return_Subtype(pParse, p->p_اظہاریہ) ){
         /* If the expression value may have a sub-type, clear it. Values
         ** read from columns do not have subtypes. */
-        sqlite3VdbeAddOp1(pParse->pVdbe, OP_ClrSubtype, ret);
+        sqlite3_Vdbe_جوڑو_Op1(pParse->pVdbe, OP_ClrSubtype, ret);
       }
-      if( addr ){
-        sqlite3VdbeJumpHere(v, addr);
+      اگر( addr ){
+        sqlite3_Vdbe_Jump_یہاں(v, addr);
         sqlite3VdbeChangeP3(v, addr, ret);
       }
-      return ret;
+      واپس ret;
     }
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -5011,67 +5011,67 @@ static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
 ** If it does, then write the number of that temporary register
 ** into *pTmpReg.  If not, leave *pTmpReg unchanged.
 */
-static SQLITE_NOINLINE int exprCodeTargetAndOr(
+ساکن SQLITE_NOINLINE صحیح اظہاریہ_رمز_ہدف_And_Or(
   Parse *pParse,     /* Parsing context */
-  Expr *pExpr,       /* AND or OR expression to be coded */
-  int target,        /* Put result in this register, guaranteed */
-  int *pTmpReg       /* Write a temporary register here */
+  اظہاریہ *p_اظہاریہ,       /* AND or OR expression to be coded */
+  صحیح ہدف,        /* Put result in this register, guaranteed */
+  صحیح *pTmpReg       /* Write a temporary register here */
 ){
-  int op;            /* The opcode.  TK_AND or TK_OR */
-  int skipOp;        /* Opcode for the branch that skips one operand */
-  int addrSkip;      /* Branch instruction that skips one of the operands */
-  int regSS = 0;     /* Register holding computed operand when other omitted */
-  int r1, r2;        /* Registers for left and right operands, respectively */
-  Expr *pAlt;        /* Alternative, simplified expression */
+  صحیح op;            /* The opcode.  TK_AND or TK_OR */
+  صحیح skipOp;        /* Opcode for the branch that skips one operand */
+  صحیح addrSkip;      /* Branch instruction that skips one of the operands */
+  صحیح regSS = 0;     /* Register holding computed operand when other omitted */
+  صحیح r1, r2;        /* Registers for left and right operands, respectively */
+  اظہاریہ *pAlt;        /* Alternative, simplified expression */
   Vdbe *v;           /* statement being coded */
 
-  assert( pExpr!=0 );
-  op = pExpr->op;
-  assert( op==TK_AND || op==TK_OR );
-  assert( TK_AND==OP_And );            testcase( op==TK_AND );
-  assert( TK_OR==OP_Or );              testcase( op==TK_OR );
-  assert( pParse->pVdbe!=0 );
+  أكد( p_اظہاریہ!=0 );
+  op = p_اظہاریہ->op;
+  أكد( op==TK_AND || op==TK_OR );
+  أكد( TK_AND==OP_And );            testcase( op==TK_AND );
+  أكد( TK_OR==OP_Or );              testcase( op==TK_OR );
+  أكد( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
-  pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-  if( pAlt!=pExpr ){
-    r1 = sqlite3ExprCodeTarget(pParse, pAlt, target);
-    sqlite3VdbeAddOp3(v, OP_And, r1, r1, target);
-    return target;
+  pAlt = sqlite3_اظہاریہ_Simplified_And_Or(p_اظہاریہ);
+  اگر( pAlt!=p_اظہاریہ ){
+    r1 = sqlite3_اظہاریہ_رمز_ہدف(pParse, pAlt, ہدف);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_And, r1, r1, ہدف);
+    واپس ہدف;
   }
   skipOp = op==TK_AND ? OP_IfNot : OP_If;
-  if( exprEvalRhsFirst(pExpr) ){
+  اگر( اظہاریہ_Eval_Rhs_پہلا(p_اظہاریہ) ){
     /* Compute the right operand first.  Skip the computation of the left
     ** operand if the right operand fully determines the result */
-    r2 = regSS = sqlite3ExprCodeTarget(pParse, pExpr->pRight, target);
-    addrSkip = sqlite3VdbeAddOp1(v, skipOp, r2);
+    r2 = regSS = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ->p_دایاں, ہدف);
+    addrSkip = sqlite3_Vdbe_جوڑو_Op1(v, skipOp, r2);
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v); 
-    r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pTmpReg);
-  }else{
+    r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, pTmpReg);
+  }ورنہ{
     /* Compute the left operand first */
-    r1 = sqlite3ExprCodeTarget(pParse, pExpr->pLeft, target);
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery) ){
+    r1 = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ->p_بایاں, ہدف);
+    اگر( اظہاریہ_Has_Property(p_اظہاریہ->p_دایاں, EP_Subquery) ){
       /* Skip over the computation of the right operand if the right
       ** operand is a subquery and the left operand completely determines
       ** the result */
       regSS = r1;
-      addrSkip = sqlite3VdbeAddOp1(v, skipOp, r1);
+      addrSkip = sqlite3_Vdbe_جوڑو_Op1(v, skipOp, r1);
       VdbeComment((v, "skip right operand"));
       VdbeCoverage(v);
-    }else{
+    }ورنہ{
       addrSkip = regSS = 0;
     }
-    r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pTmpReg);
+    r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, pTmpReg);
   }
-  sqlite3VdbeAddOp3(v, op, r2, r1, target);
+  sqlite3_Vdbe_جوڑو_Op3(v, op, r2, r1, ہدف);
   testcase( (*pTmpReg)==0 );
-  if( addrSkip ){
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
-    sqlite3VdbeJumpHere(v, addrSkip);
-    sqlite3VdbeAddOp3(v, OP_Or, regSS, regSS, target);
+  اگر( addrSkip ){
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
+    sqlite3_Vdbe_Jump_یہاں(v, addrSkip);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Or, regSS, regSS, ہدف);
     VdbeComment((v, "short-circut value"));
   }
-  return target;
+  واپس ہدف;
 }
 
 
@@ -5087,471 +5087,471 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
 ** must check the return code and move the results to the desired
 ** register.
 */
-int sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, int target){
+صحیح sqlite3_اظہاریہ_رمز_ہدف(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح ہدف){
   Vdbe *v = pParse->pVdbe;  /* The VM under construction */
-  int op;                   /* The opcode being coded */
-  int inReg = target;       /* Results stored in register inReg */
-  int regFree1 = 0;         /* If non-zero free this temporary register */
-  int regFree2 = 0;         /* If non-zero free this temporary register */
-  int r1, r2;               /* Various register numbers */
-  Expr tempX;               /* Temporary expression node */
-  int p5 = 0;
+  صحیح op;                   /* The opcode being coded */
+  صحیح اندر_Reg = ہدف;       /* Results stored in register inReg */
+  صحیح regFree1 = 0;         /* If non-zero free this temporary register */
+  صحیح regFree2 = 0;         /* If non-zero free this temporary register */
+  صحیح r1, r2;               /* Various register numbers */
+  اظہاریہ عارضی_X;               /* Temporary expression node */
+  صحیح p5 = 0;
 
-  assert( target>0 && target<=pParse->nMem );
-  assert( v!=0 );
+  أكد( ہدف>0 && ہدف<=pParse->nMem );
+  أكد( v!=0 );
 
-expr_code_doover:
-  if( pExpr==0 ){
+اظہاریہ_رمز_doover:
+  اگر( p_اظہاریہ==0 ){
     op = TK_NULL;
-  }else if( pParse->pIdxEpr!=0
-   && !ExprHasProperty(pExpr, EP_Leaf)
-   && (r1 = sqlite3IndexedExprLookup(pParse, pExpr, target))>=0
+  }ورنہ اگر( pParse->pIdxEpr!=0
+   && !اظہاریہ_Has_Property(p_اظہاریہ, EP_برگ)
+   && (r1 = sqlite3_اشاریہ_دار_اظہاریہ_Lookup(pParse, p_اظہاریہ, ہدف))>=0
   ){
-    return r1;
-  }else{
-    assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
-    op = pExpr->op;
+    واپس r1;
+  }ورنہ{
+    أكد( !اظہاریہ_Has_VVAProperty(p_اظہاریہ,EP_Immutable) );
+    op = p_اظہاریہ->op;
   }
-  assert( op!=TK_ORDER );
-  switch( op ){
-    case TK_AGG_COLUMN: {
-      AggInfo *pAggInfo = pExpr->pAggInfo;
-      struct AggInfo_col *pCol;
-      assert( pAggInfo!=0 );
-      assert( pExpr->iAgg>=0 );
-      if( pExpr->iAgg>=pAggInfo->nColumn ){
+  أكد( op!=TK_ترتیب );
+  انتخاب( op ){
+    حالت TK_AGG_عمود: {
+      AggInfo *pAggInfo = p_اظہاریہ->pAggInfo;
+      ساخت Agg_Info_ستون *p_ستون;
+      أكد( pAggInfo!=0 );
+      أكد( p_اظہاریہ->iAgg>=0 );
+      اگر( p_اظہاریہ->iAgg>=pAggInfo->n_عمود ){
         /* Happens when the left table of a RIGHT JOIN is null and
         ** is using an expression index */
-        sqlite3VdbeAddOp2(v, OP_Null, 0, target);
-#ifdef SQLITE_VDBE_COVERAGE
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
+#اگر_تعریف_شدہ SQLITE_VDBE_COVERAGE
         /* Verify that the OP_Null above is exercised by tests
         ** tag-20230325-2 */
-        sqlite3VdbeAddOp3(v, OP_NotNull, target, 1, 20230325);
-        VdbeCoverageNeverTaken(v);
-#endif
-        break;
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_NotNull, ہدف, 1, 20230325);
+        Vdbe_Coverage_Never_لیا_گیا(v);
+#اگر_ختم
+        توڑو;
       }
-      pCol = &pAggInfo->aCol[pExpr->iAgg];
-      if( !pAggInfo->directMode ){
-        return AggInfoColumnReg(pAggInfo, pExpr->iAgg);
-      }else if( pAggInfo->useSortingIdx ){
-        Table *pTab = pCol->pTab;
-        sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
-                              pCol->iSorterColumn, target);
-        if( pTab==0 ){
+      p_ستون = &pAggInfo->a_ستون[p_اظہاریہ->iAgg];
+      اگر( !pAggInfo->براہ_راست_منوال ){
+        واپس Agg_Info_عمود_Reg(pAggInfo, p_اظہاریہ->iAgg);
+      }ورنہ اگر( pAggInfo->use_ترتیب_کاری_Idx ){
+        جدول *pTab = p_ستون->pTab;
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, pAggInfo->ترتیب_کاری_Idx_PTab,
+                              p_ستون->i_Sorter_عمود, ہدف);
+        اگر( pTab==0 ){
           /* No comment added */
-        }else if( pCol->iColumn<0 ){
+        }ورنہ اگر( p_ستون->i_عمود<0 ){
           VdbeComment((v,"%s.rowid",pTab->zName));
-        }else{
+        }ورنہ{
           VdbeComment((v,"%s.%s",
-              pTab->zName, pTab->aCol[pCol->iColumn].zCnName));
-          if( pTab->aCol[pCol->iColumn].affinity==SQLITE_AFF_REAL ){
-            sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
+              pTab->zName, pTab->a_ستون[p_ستون->i_عمود].zCnName));
+          اگر( pTab->a_ستون[p_ستون->i_عمود].affinity==SQLITE_AFF_REAL ){
+            sqlite3_Vdbe_جوڑو_Op1(v, OP_RealAffinity, ہدف);
           }
         }
-        return target;
-      }else if( pExpr->y.pTab==0 ){
+        واپس ہدف;
+      }ورنہ اگر( p_اظہاریہ->y.pTab==0 ){
         /* This case happens when the argument to an aggregate function
         ** is rewritten by aggregateConvertIndexedExprRefToColumn() */
-        sqlite3VdbeAddOp3(v, OP_Column, pExpr->iTable, pExpr->iColumn, target);
-        return target;
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, p_اظہاریہ->i_جدول, p_اظہاریہ->i_عمود, ہدف);
+        واپس ہدف;
       }
       /* Otherwise, fall thru into the TK_COLUMN case */
       /* no break */ deliberate_fall_through
     }
-    case TK_COLUMN: {
-      int iTab = pExpr->iTable;
-      int iReg;
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
+    حالت TK_عمود: {
+      صحیح iTab = p_اظہاریہ->i_جدول;
+      صحیح iReg;
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Fixed_ستون) ){
         /* This COLUMN expression is really a constant due to WHERE clause
         ** constraints, and that constant is coded by the pExpr->pLeft
         ** expression.  However, make sure the constant has the correct
         ** datatype by applying the Affinity of the table column to the
         ** constant.
         */
-        int aff;
-        iReg = sqlite3ExprCodeTarget(pParse, pExpr->pLeft,target);
-        assert( ExprUseYTab(pExpr) );
-        assert( pExpr->y.pTab!=0 );
-        aff = sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
-        if( aff>SQLITE_AFF_BLOB ){
-          static const char zAff[] = "B\000C\000D\000E\000F";
-          assert( SQLITE_AFF_BLOB=='A' );
-          assert( SQLITE_AFF_TEXT=='B' );
-          sqlite3VdbeAddOp4(v, OP_Affinity, iReg, 1, 0,
+        صحیح aff;
+        iReg = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ->p_بایاں,ہدف);
+        أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+        أكد( p_اظہاریہ->y.pTab!=0 );
+        aff = sqlite3_جدول_عمود_Affinity(p_اظہاریہ->y.pTab, p_اظہاریہ->i_عمود);
+        اگر( aff>SQLITE_AFF_BLOB ){
+          ساکن ثابت حرف zAff[] = "B\000C\000D\000E\000F";
+          أكد( SQLITE_AFF_BLOB=='A' );
+          أكد( SQLITE_AFF_متن=='B' );
+          sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, iReg, 1, 0,
                             &zAff[(aff-'B')*2], P4_STATIC);
         }
-        return iReg;
+        واپس iReg;
       }
-      if( iTab<0 ){
-        if( pParse->iSelfTab<0 ){
+      اگر( iTab<0 ){
+        اگر( pParse->iSelfTab<0 ){
           /* Other columns in the same row for CHECK constraints or
           ** generated columns or for inserting into partial index.
           ** The row is unpacked into registers beginning at
           ** 0-(pParse->iSelfTab).  The rowid (if any) is in a register
           ** immediately prior to the first column.
           */
-          Column *pCol;
-          Table *pTab;
-          int iSrc;
-          int iCol = pExpr->iColumn;
-          assert( ExprUseYTab(pExpr) );
-          pTab = pExpr->y.pTab;
-          assert( pTab!=0 );
-          assert( iCol>=XN_ROWID );
-          assert( iCol<pTab->nCol );
-          if( iCol<0 ){
-            return -1-pParse->iSelfTab;
+          عمود *p_ستون;
+          جدول *pTab;
+          صحیح iSrc;
+          صحیح i_ستون = p_اظہاریہ->i_عمود;
+          أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+          pTab = p_اظہاریہ->y.pTab;
+          أكد( pTab!=0 );
+          أكد( i_ستون>=XN_ROWID );
+          أكد( i_ستون<pTab->n_ستون );
+          اگر( i_ستون<0 ){
+            واپس -1-pParse->iSelfTab;
           }
-          pCol = pTab->aCol + iCol;
-          testcase( iCol!=sqlite3TableColumnToStorage(pTab,iCol) );
-          iSrc = sqlite3TableColumnToStorage(pTab, iCol) - pParse->iSelfTab;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-          if( pCol->colFlags & COLFLAG_GENERATED ){
-            if( pCol->colFlags & COLFLAG_BUSY ){
-              sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
-                              pCol->zCnName);
-              return 0;
+          p_ستون = pTab->a_ستون + i_ستون;
+          testcase( i_ستون!=sqlite3_جدول_عمود_مقصد_Storage(pTab,i_ستون) );
+          iSrc = sqlite3_جدول_عمود_مقصد_Storage(pTab, i_ستون) - pParse->iSelfTab;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GENERATED_COLUMNS
+          اگر( p_ستون->ستون_Flags & COLFLAG_GENERATED ){
+            اگر( p_ستون->ستون_Flags & COLFLAG_BUSY ){
+              sqlite3_Error_پیغام(pParse, "generated column loop on \"%s\"",
+                              p_ستون->zCnName);
+              واپس 0;
             }
-            pCol->colFlags |= COLFLAG_BUSY;
-            if( pCol->colFlags & COLFLAG_NOTAVAIL ){
-              sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, iSrc);
+            p_ستون->ستون_Flags |= COLFLAG_BUSY;
+            اگر( p_ستون->ستون_Flags & COLFLAG_NOTAVAIL ){
+              sqlite3_اظہاریہ_رمز_Generated_عمود(pParse, pTab, p_ستون, iSrc);
             }
-            pCol->colFlags &= ~(COLFLAG_BUSY|COLFLAG_NOTAVAIL);
-            return iSrc;
-          }else
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
-          if( pCol->affinity==SQLITE_AFF_REAL ){
-            sqlite3VdbeAddOp2(v, OP_SCopy, iSrc, target);
-            sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
-            return target;
-          }else{
-            return iSrc;
+            p_ستون->ستون_Flags &= ~(COLFLAG_BUSY|COLFLAG_NOTAVAIL);
+            واپس iSrc;
+          }ورنہ
+#اگر_ختم /* SQLITE_OMIT_GENERATED_COLUMNS */
+          اگر( p_ستون->affinity==SQLITE_AFF_REAL ){
+            sqlite3_Vdbe_جوڑو_Op2(v, OP_SCopy, iSrc, ہدف);
+            sqlite3_Vdbe_جوڑو_Op1(v, OP_RealAffinity, ہدف);
+            واپس ہدف;
+          }ورنہ{
+            واپس iSrc;
           }
-        }else{
+        }ورنہ{
           /* Coding an expression that is part of an index where column names
           ** in the index refer to the table to which the index belongs */
           iTab = pParse->iSelfTab - 1;
         }
       }
-      else if( pParse->pIdxPartExpr 
-       && 0!=(r1 = exprPartidxExprLookup(pParse, pExpr, target))
+      ورنہ اگر( pParse->p_Idx_Part_اظہاریہ 
+       && 0!=(r1 = اظہاریہ_Partidx_اظہاریہ_Lookup(pParse, p_اظہاریہ, ہدف))
       ){
-        return r1;
+        واپس r1;
       }
-      assert( ExprUseYTab(pExpr) );
-      assert( pExpr->y.pTab!=0 );
-      iReg = sqlite3ExprCodeGetColumn(pParse, pExpr->y.pTab,
-                               pExpr->iColumn, iTab, target,
-                               pExpr->op2);
-      return iReg;
+      أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+      أكد( p_اظہاریہ->y.pTab!=0 );
+      iReg = sqlite3_اظہاریہ_رمز_Get_عمود(pParse, p_اظہاریہ->y.pTab,
+                               p_اظہاریہ->i_عمود, iTab, ہدف,
+                               p_اظہاریہ->op2);
+      واپس iReg;
     }
-    case TK_INTEGER: {
-      codeInteger(pParse, pExpr, 0, target);
-      return target;
+    حالت TK_INTEGER: {
+      رمز_Integer(pParse, p_اظہاریہ, 0, ہدف);
+      واپس ہدف;
     }
-    case TK_TRUEFALSE: {
-      sqlite3VdbeAddOp2(v, OP_Integer, sqlite3ExprTruthValue(pExpr), target);
-      return target;
+    حالت TK_TRUEFALSE: {
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, sqlite3_اظہاریہ_Truth_قدر(p_اظہاریہ), ہدف);
+      واپس ہدف;
     }
-#ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      codeReal(v, pExpr->u.zToken, 0, target);
-      return target;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
+    حالت TK_FLOAT: {
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      رمز_Real(v, p_اظہاریہ->u.zToken, 0, ہدف);
+      واپس ہدف;
     }
-#endif
-    case TK_STRING: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3VdbeLoadString(v, target, pExpr->u.zToken);
-      return target;
+#اگر_ختم
+    حالت TK_STRING: {
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      sqlite3_Vdbe_بھرو_String(v, ہدف, p_اظہاریہ->u.zToken);
+      واپس ہدف;
     }
-    case TK_NULLS: {
+    حالت TK_NULLS: {
       /* Set a range of registers to NULL.  pExpr->y.nReg registers starting
       ** with target */
-      sqlite3VdbeAddOp3(v, OP_Null, 0, target, target + pExpr->y.nReg - 1);
-      return target;
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Null, 0, ہدف, ہدف + p_اظہاریہ->y.nReg - 1);
+      واپس ہدف;
     }
-    default: {
+    طےشدہ: {
       /* Make NULL the default case so that if a bug causes an illegal
       ** Expr node to be passed into this function, it will be handled
       ** sanely and not crash.  But keep the assert() to bring the problem
       ** to the attention of the developers. */
-      assert( op==TK_NULL || op==TK_ERROR || pParse->db->mallocFailed );
-      sqlite3VdbeAddOp2(v, OP_Null, 0, target);
-      return target;
+      أكد( op==TK_NULL || op==TK_ERROR || pParse->db->mallocFailed );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
+      واپس ہدف;
     }
-#ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      int n;
-      const char *z;
-      char *zBlob;
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      assert( pExpr->u.zToken[0]=='x' || pExpr->u.zToken[0]=='X' );
-      assert( pExpr->u.zToken[1]=='\'' );
-      z = &pExpr->u.zToken[2];
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_BLOB_LITERAL
+    حالت TK_BLOB: {
+      صحیح n;
+      ثابت حرف *z;
+      حرف *zBlob;
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      أكد( p_اظہاریہ->u.zToken[0]=='x' || p_اظہاریہ->u.zToken[0]=='X' );
+      أكد( p_اظہاریہ->u.zToken[1]=='\'' );
+      z = &p_اظہاریہ->u.zToken[2];
       n = sqlite3Strlen30(z) - 1;
-      assert( z[n]=='\'' );
-      zBlob = sqlite3HexToBlob(sqlite3VdbeDb(v), z, n);
-      sqlite3VdbeAddOp4(v, OP_Blob, n/2, target, 0, zBlob, P4_DYNAMIC);
-      return target;
+      أكد( z[n]=='\'' );
+      zBlob = sqlite3_Hex_مقصد_Blob(sqlite3VdbeDb(v), z, n);
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_Blob, n/2, ہدف, 0, zBlob, P4_DYNAMIC);
+      واپس ہدف;
     }
-#endif
-    case TK_VARIABLE: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      assert( pExpr->u.zToken!=0 );
-      assert( pExpr->u.zToken[0]!=0 );
-      sqlite3VdbeAddOp2(v, OP_Variable, pExpr->iColumn, target);
-      return target;
+#اگر_ختم
+    حالت TK_VARIABLE: {
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      أكد( p_اظہاریہ->u.zToken!=0 );
+      أكد( p_اظہاریہ->u.zToken[0]!=0 );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Variable, p_اظہاریہ->i_عمود, ہدف);
+      واپس ہدف;
     }
-    case TK_REGISTER: {
-      return pExpr->iTable;
+    حالت TK_رجسٹر: {
+      واپس p_اظہاریہ->i_جدول;
     }
-#ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CAST
+    حالت TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
-      sqlite3ExprCode(pParse, pExpr->pLeft, target);
-      assert( inReg==target );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3VdbeAddOp2(v, OP_Cast, target,
-                        sqlite3AffinityType(pExpr->u.zToken, 0));
-      return inReg;
+      sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ->p_بایاں, ہدف);
+      أكد( اندر_Reg==ہدف );
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Cast, ہدف,
+                        sqlite3AffinityType(p_اظہاریہ->u.zToken, 0));
+      واپس اندر_Reg;
     }
-#endif /* SQLITE_OMIT_CAST */
-    case TK_IS:
-    case TK_ISNOT:
+#اگر_ختم /* SQLITE_OMIT_CAST */
+    حالت TK_IS:
+    حالت TK_ISNOT:
       op = (op==TK_IS) ? TK_EQ : TK_NE;
       p5 = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
-      Expr *pLeft = pExpr->pLeft;
-      int addrIsNull = 0;
-      if( sqlite3ExprIsVector(pLeft) ){
-        codeVectorCompare(pParse, pExpr, target, op, p5);
-      }else{
-        if( ExprHasProperty(pExpr, EP_Subquery) && p5!=SQLITE_NULLEQ ){
-          addrIsNull = exprComputeOperands(pParse, pExpr,
+    حالت TK_LT:
+    حالت TK_LE:
+    حالت TK_GT:
+    حالت TK_GE:
+    حالت TK_NE:
+    حالت TK_EQ: {
+      اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+      صحیح addrIsNull = 0;
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_بایاں) ){
+        رمز_سمتیہ_Compare(pParse, p_اظہاریہ, ہدف, op, p5);
+      }ورنہ{
+        اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subquery) && p5!=SQLITE_NULLEQ ){
+          addrIsNull = اظہاریہ_Compute_Operands(pParse, p_اظہاریہ,
                                      &r1, &r2, &regFree1, &regFree2);
-        }else{
-          r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-          r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
+        }ورنہ{
+          r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+          r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, &regFree2);
         }
-        sqlite3VdbeAddOp2(v, OP_Integer, 1, inReg);
-        codeCompare(pParse, pLeft, pExpr->pRight, op, r1, r2,
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, اندر_Reg);
+        رمز_Compare(pParse, p_بایاں, p_اظہاریہ->p_دایاں, op, r1, r2,
             sqlite3VdbeCurrentAddr(v)+2, p5,
-            ExprHasProperty(pExpr,EP_Commuted));
-        assert(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
-        assert(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
-        assert(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
-        assert(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
-        assert(TK_EQ==OP_Eq); testcase(op==OP_Eq); VdbeCoverageIf(v,op==OP_Eq);
-        assert(TK_NE==OP_Ne); testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
-        if( p5==SQLITE_NULLEQ ){
-          sqlite3VdbeAddOp2(v, OP_Integer, 0, inReg);
-        }else{
-          sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, inReg, r2);
-          if( addrIsNull ){
-            sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
-            sqlite3VdbeJumpHere(v, addrIsNull);
-            sqlite3VdbeAddOp2(v, OP_Null, 0, inReg);
+            اظہاریہ_Has_Property(p_اظہاریہ,EP_Commuted));
+        أكد(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
+        أكد(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
+        أكد(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
+        أكد(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
+        أكد(TK_EQ==OP_Eq); testcase(op==OP_Eq); VdbeCoverageIf(v,op==OP_Eq);
+        أكد(TK_NE==OP_Ne); testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
+        اگر( p5==SQLITE_NULLEQ ){
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, اندر_Reg);
+        }ورنہ{
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_ZeroOrNull, r1, اندر_Reg, r2);
+          اگر( addrIsNull ){
+            sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
+            sqlite3_Vdbe_Jump_یہاں(v, addrIsNull);
+            sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, اندر_Reg);
           }
         }
         testcase( regFree1==0 );
         testcase( regFree2==0 );
       }
-      break;
+      توڑو;
     }
-    case TK_AND:
-    case TK_OR: {
-      inReg = exprCodeTargetAndOr(pParse, pExpr, target, &regFree1);
-      break;
+    حالت TK_AND:
+    حالت TK_OR: {
+      اندر_Reg = اظہاریہ_رمز_ہدف_And_Or(pParse, p_اظہاریہ, ہدف, &regFree1);
+      توڑو;
     }
-    case TK_PLUS:
-    case TK_STAR:
-    case TK_MINUS:
-    case TK_REM:
-    case TK_BITAND:
-    case TK_BITOR:
-    case TK_SLASH:
-    case TK_LSHIFT:
-    case TK_RSHIFT:
-    case TK_CONCAT: {
-      int addrIsNull;
-      assert( TK_PLUS==OP_Add );           testcase( op==TK_PLUS );
-      assert( TK_MINUS==OP_Subtract );     testcase( op==TK_MINUS );
-      assert( TK_REM==OP_Remainder );      testcase( op==TK_REM );
-      assert( TK_BITAND==OP_BitAnd );      testcase( op==TK_BITAND );
-      assert( TK_BITOR==OP_BitOr );        testcase( op==TK_BITOR );
-      assert( TK_SLASH==OP_Divide );       testcase( op==TK_SLASH );
-      assert( TK_LSHIFT==OP_ShiftLeft );   testcase( op==TK_LSHIFT );
-      assert( TK_RSHIFT==OP_ShiftRight );  testcase( op==TK_RSHIFT );
-      assert( TK_CONCAT==OP_Concat );      testcase( op==TK_CONCAT );
-      if( ExprHasProperty(pExpr, EP_Subquery) ){
-        addrIsNull = exprComputeOperands(pParse, pExpr,
+    حالت TK_PLUS:
+    حالت TK_ستارہ:
+    حالت TK_MINUS:
+    حالت TK_REM:
+    حالت TK_BITAND:
+    حالت TK_BITOR:
+    حالت TK_SLASH:
+    حالت TK_LSHIFT:
+    حالت TK_RSHIFT:
+    حالت TK_CONCAT: {
+      صحیح addrIsNull;
+      أكد( TK_PLUS==OP_جوڑو );           testcase( op==TK_PLUS );
+      أكد( TK_MINUS==OP_تفریق );     testcase( op==TK_MINUS );
+      أكد( TK_REM==OP_Remainder );      testcase( op==TK_REM );
+      أكد( TK_BITAND==OP_ثنائی_ہندسہ_And );      testcase( op==TK_BITAND );
+      أكد( TK_BITOR==OP_ثنائی_ہندسہ_Or );        testcase( op==TK_BITOR );
+      أكد( TK_SLASH==OP_Divide );       testcase( op==TK_SLASH );
+      أكد( TK_LSHIFT==OP_سرکاؤ_بایاں );   testcase( op==TK_LSHIFT );
+      أكد( TK_RSHIFT==OP_سرکاؤ_دایاں );  testcase( op==TK_RSHIFT );
+      أكد( TK_CONCAT==OP_Concat );      testcase( op==TK_CONCAT );
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subquery) ){
+        addrIsNull = اظہاریہ_Compute_Operands(pParse, p_اظہاریہ,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-        r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+        r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, &regFree2);
         addrIsNull = 0;
       }
-      sqlite3VdbeAddOp3(v, op, r2, r1, target);
+      sqlite3_Vdbe_جوڑو_Op3(v, op, r2, r1, ہدف);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
-        sqlite3VdbeJumpHere(v, addrIsNull);
-        sqlite3VdbeAddOp2(v, OP_Null, 0, target);
+      اگر( addrIsNull ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
+        sqlite3_Vdbe_Jump_یہاں(v, addrIsNull);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
         VdbeComment((v, "short-circut value"));
       }
-      break;
+      توڑو;
     }
-    case TK_UMINUS: {
-      Expr *pLeft = pExpr->pLeft;
-      assert( pLeft );
-      if( pLeft->op==TK_INTEGER ){
-        codeInteger(pParse, pLeft, 1, target);
-        return target;
-#ifndef SQLITE_OMIT_FLOATING_POINT
-      }else if( pLeft->op==TK_FLOAT ){
-        assert( !ExprHasProperty(pExpr, EP_IntValue) );
-        codeReal(v, pLeft->u.zToken, 1, target);
-        return target;
-#endif
-      }else{
-        tempX.op = TK_INTEGER;
-        tempX.flags = EP_IntValue|EP_TokenOnly;
-        tempX.u.iValue = 0;
-        ExprClearVVAProperties(&tempX);
-        r1 = sqlite3ExprCodeTemp(pParse, &tempX, &regFree1);
-        r2 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree2);
-        sqlite3VdbeAddOp3(v, OP_Subtract, r2, r1, target);
+    حالت TK_UMINUS: {
+      اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+      أكد( p_بایاں );
+      اگر( p_بایاں->op==TK_INTEGER ){
+        رمز_Integer(pParse, p_بایاں, 1, ہدف);
+        واپس ہدف;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
+      }ورنہ اگر( p_بایاں->op==TK_FLOAT ){
+        أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+        رمز_Real(v, p_بایاں->u.zToken, 1, ہدف);
+        واپس ہدف;
+#اگر_ختم
+      }ورنہ{
+        عارضی_X.op = TK_INTEGER;
+        عارضی_X.flags = EP_Int_قدر|EP_TokenOnly;
+        عارضی_X.u.i_قدر = 0;
+        اظہاریہ_Clear_VVAProperties(&عارضی_X);
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, &عارضی_X, &regFree1);
+        r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree2);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_تفریق, r2, r1, ہدف);
         testcase( regFree2==0 );
       }
-      break;
+      توڑو;
     }
-    case TK_BITNOT:
-    case TK_NOT: {
-      assert( TK_BITNOT==OP_BitNot );   testcase( op==TK_BITNOT );
-      assert( TK_NOT==OP_Not );         testcase( op==TK_NOT );
-      r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
+    حالت TK_BITNOT:
+    حالت TK_NOT: {
+      أكد( TK_BITNOT==OP_ثنائی_ہندسہ_Not );   testcase( op==TK_BITNOT );
+      أكد( TK_NOT==OP_Not );         testcase( op==TK_NOT );
+      r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
       testcase( regFree1==0 );
-      sqlite3VdbeAddOp2(v, op, r1, inReg);
-      break;
+      sqlite3_Vdbe_جوڑو_Op2(v, op, r1, اندر_Reg);
+      توڑو;
     }
-    case TK_TRUTH: {
-      int isTrue;    /* IS TRUE or IS NOT TRUE */
-      int bNormal;   /* IS TRUE or IS FALSE */
-      r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
+    حالت TK_TRUTH: {
+      صحیح isTrue;    /* IS TRUE or IS NOT TRUE */
+      صحیح b_معمول;   /* IS TRUE or IS FALSE */
+      r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
       testcase( regFree1==0 );
-      isTrue = sqlite3ExprTruthValue(pExpr->pRight);
-      bNormal = pExpr->op2==TK_IS;
-      testcase( isTrue && bNormal);
-      testcase( !isTrue && bNormal);
-      sqlite3VdbeAddOp4Int(v, OP_IsTrue, r1, inReg, !isTrue, isTrue ^ bNormal);
-      break;
+      isTrue = sqlite3_اظہاریہ_Truth_قدر(p_اظہاریہ->p_دایاں);
+      b_معمول = p_اظہاریہ->op2==TK_IS;
+      testcase( isTrue && b_معمول);
+      testcase( !isTrue && b_معمول);
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsTrue, r1, اندر_Reg, !isTrue, isTrue ^ b_معمول);
+      توڑو;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
-      int addr;
-      assert( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
-      assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
-      r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
+    حالت TK_ISNULL:
+    حالت TK_NOTNULL: {
+      صحیح addr;
+      أكد( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
+      أكد( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, ہدف);
+      r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
       testcase( regFree1==0 );
-      addr = sqlite3VdbeAddOp1(v, op, r1);
+      addr = sqlite3_Vdbe_جوڑو_Op1(v, op, r1);
       VdbeCoverageIf(v, op==TK_ISNULL);
       VdbeCoverageIf(v, op==TK_NOTNULL);
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, target);
-      sqlite3VdbeJumpHere(v, addr);
-      break;
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, ہدف);
+      sqlite3_Vdbe_Jump_یہاں(v, addr);
+      توڑو;
     }
-    case TK_AGG_FUNCTION: {
-      AggInfo *pInfo = pExpr->pAggInfo;
-      if( pInfo==0
-       || NEVER(pExpr->iAgg<0)
-       || NEVER(pExpr->iAgg>=pInfo->nFunc)
+    حالت TK_AGG_FUNCTION: {
+      AggInfo *pInfo = p_اظہاریہ->pAggInfo;
+      اگر( pInfo==0
+       || NEVER(p_اظہاریہ->iAgg<0)
+       || NEVER(p_اظہاریہ->iAgg>=pInfo->nFunc)
       ){
-        assert( !ExprHasProperty(pExpr, EP_IntValue) );
-        sqlite3ErrorMsg(pParse, "misuse of aggregate: %#T()", pExpr);
-      }else{
-        return AggInfoFuncReg(pInfo, pExpr->iAgg);
+        أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+        sqlite3_Error_پیغام(pParse, "misuse of aggregate: %#T()", p_اظہاریہ);
+      }ورنہ{
+        واپس AggInfoFuncReg(pInfo, p_اظہاریہ->iAgg);
       }
-      break;
+      توڑو;
     }
-    case TK_FUNCTION: {
-      ExprList *pFarg;       /* List of function arguments */
-      int nFarg;             /* Number of function arguments */
+    حالت TK_FUNCTION: {
+      اظہاریہ_List *pFarg;       /* List of function arguments */
+      صحیح nFarg;             /* Number of function arguments */
       FuncDef *pDef;         /* The function definition object */
-      const char *zId;       /* The function name */
-      u32 constMask = 0;     /* Mask of function arguments that are constant */
-      int i;                 /* Loop counter */
+      ثابت حرف *zId;       /* The function name */
+      u32 const_نقاب = 0;     /* Mask of function arguments that are constant */
+      صحیح i;                 /* Loop counter */
       sqlite3 *db = pParse->db;  /* The database connection */
       u8 enc = ENC(db);      /* The text encoding used by this database */
       CollSeq *pColl = 0;    /* A collating sequence */
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
-        return pExpr->y.pWin->regResult;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_WinFunc) ){
+        واپس p_اظہاریہ->y.pWin->reg_نتیجہ;
       }
-#endif
+#اگر_ختم
 
-      if( ConstFactorOk(pParse)
-       && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
+      اگر( Const_ضربی_عدد_Ok(pParse)
+       && sqlite3_اظہاریہ_Is_Constant_Not_Join(pParse,p_اظہاریہ)
       ){
         /* SQL functions can be expensive. So try to avoid running them
         ** multiple times if we know they always give the same result */
-        return sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
+        واپس sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(pParse, p_اظہاریہ, -1);
       }
-      assert( !ExprHasProperty(pExpr, EP_TokenOnly) );
-      assert( ExprUseXList(pExpr) );
-      pFarg = pExpr->x.pList;
-      nFarg = pFarg ? pFarg->nExpr : 0;
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      zId = pExpr->u.zToken;
-      pDef = sqlite3FindFunction(db, zId, nFarg, enc, 0);
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-      if( pDef==0 && pParse->explain ){
-        pDef = sqlite3FindFunction(db, "unknown", nFarg, enc, 0);
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly) );
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+      pFarg = p_اظہاریہ->x.pList;
+      nFarg = pFarg ? pFarg->n_اظہاریہ : 0;
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      zId = p_اظہاریہ->u.zToken;
+      pDef = sqlite3_ڈھونڈو_Function(db, zId, nFarg, enc, 0);
+#اگر_تعریف_شدہ SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+      اگر( pDef==0 && pParse->explain ){
+        pDef = sqlite3_ڈھونڈو_Function(db, "unknown", nFarg, enc, 0);
       }
-#endif
-      if( pDef==0
+#اگر_ختم
+      اگر( pDef==0
        || pDef->xFinalize!=0
-       || ((pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0 &&
+       || ((pDef->funcFlags & SQLITE_FUNC_اندرونی)!=0 &&
            !pParse->nested &&
-           (db->mDbFlags & DBFLAG_InternalFunc)==0)
+           (db->mDbFlags & DBFLAG_اندرونی_Func)==0)
       ){
-        sqlite3ErrorMsg(pParse, "unknown function: %#T()", pExpr);
-        break;
+        sqlite3_Error_پیغام(pParse, "unknown function: %#T()", p_اظہاریہ);
+        توڑو;
       }
-      if( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
-        assert( (pDef->funcFlags & SQLITE_FUNC_UNSAFE)==0 );
-        assert( (pDef->funcFlags & SQLITE_FUNC_DIRECT)==0 );
-        return exprCodeInlineFunction(pParse, pFarg,
-             SQLITE_PTR_TO_INT(pDef->pUserData), target);
-      }else if( pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE) ){
-        sqlite3ExprFunctionUsable(pParse, pExpr, pDef);
+      اگر( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
+        أكد( (pDef->funcFlags & SQLITE_FUNC_UNSAFE)==0 );
+        أكد( (pDef->funcFlags & SQLITE_FUNC_براہ_راست)==0 );
+        واپس اظہاریہ_رمز_Inline_Function(pParse, pFarg,
+             SQLITE_PTR_مقصد_INT(pDef->p_User_ڈیٹا), ہدف);
+      }ورنہ اگر( pDef->funcFlags & (SQLITE_FUNC_براہ_راست|SQLITE_FUNC_UNSAFE) ){
+        sqlite3_اظہاریہ_Function_Usable(pParse, p_اظہاریہ, pDef);
       }
 
-      for(i=0; i<nFarg; i++){
-        if( i<32 && sqlite3ExprIsConstant(pParse, pFarg->a[i].pExpr) ){
+      برائے(i=0; i<nFarg; i++){
+        اگر( i<32 && sqlite3_اظہاریہ_Is_Constant(pParse, pFarg->a[i].p_اظہاریہ) ){
           testcase( i==31 );
-          constMask |= MASKBIT32(i);
+          const_نقاب |= MASKBIT32(i);
         }
-        if( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
-          pColl = sqlite3ExprCollSeq(pParse, pFarg->a[i].pExpr);
+        اگر( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
+          pColl = sqlite3_اظہاریہ_Coll_Seq(pParse, pFarg->a[i].p_اظہاریہ);
         }
       }
-      if( pFarg ){
-        if( constMask ){
+      اگر( pFarg ){
+        اگر( const_نقاب ){
           r1 = pParse->nMem+1;
           pParse->nMem += nFarg;
-        }else{
-          r1 = sqlite3GetTempRange(pParse, nFarg);
+        }ورنہ{
+          r1 = sqlite3_Get_عارضی_Range(pParse, nFarg);
         }
 
         /* For length() and typeof() and octet_length() functions,
@@ -5559,28 +5559,28 @@ expr_code_doover:
         ** or OPFLAG_TYPEOFARG or OPFLAG_BYTELENARG respectively, to avoid
         ** unnecessary data loading.
         */
-        if( (pDef->funcFlags & (SQLITE_FUNC_LENGTH|SQLITE_FUNC_TYPEOF))!=0 ){
-          u8 exprOp;
-          assert( nFarg==1 );
-          assert( pFarg->a[0].pExpr!=0 );
-          exprOp = pFarg->a[0].pExpr->op;
-          if( exprOp==TK_COLUMN || exprOp==TK_AGG_COLUMN ){
-            assert( SQLITE_FUNC_LENGTH==OPFLAG_LENGTHARG );
-            assert( SQLITE_FUNC_TYPEOF==OPFLAG_TYPEOFARG );
-            assert( SQLITE_FUNC_BYTELEN==OPFLAG_BYTELENARG );
-            assert( (OPFLAG_LENGTHARG|OPFLAG_TYPEOFARG)==OPFLAG_BYTELENARG );
+        اگر( (pDef->funcFlags & (SQLITE_FUNC_لمبائی|SQLITE_FUNC_TYPEOF))!=0 ){
+          u8 اظہاریہ_Op;
+          أكد( nFarg==1 );
+          أكد( pFarg->a[0].p_اظہاریہ!=0 );
+          اظہاریہ_Op = pFarg->a[0].p_اظہاریہ->op;
+          اگر( اظہاریہ_Op==TK_عمود || اظہاریہ_Op==TK_AGG_عمود ){
+            أكد( SQLITE_FUNC_لمبائی==OPFLAG_LENGTHARG );
+            أكد( SQLITE_FUNC_TYPEOF==OPFLAG_TYPEOFARG );
+            أكد( SQLITE_FUNC_BYTELEN==OPFLAG_BYTELENARG );
+            أكد( (OPFLAG_LENGTHARG|OPFLAG_TYPEOFARG)==OPFLAG_BYTELENARG );
             testcase( (pDef->funcFlags & OPFLAG_BYTELENARG)==OPFLAG_LENGTHARG );
             testcase( (pDef->funcFlags & OPFLAG_BYTELENARG)==OPFLAG_TYPEOFARG );
             testcase( (pDef->funcFlags & OPFLAG_BYTELENARG)==OPFLAG_BYTELENARG);
-            pFarg->a[0].pExpr->op2 = pDef->funcFlags & OPFLAG_BYTELENARG;
+            pFarg->a[0].p_اظہاریہ->op2 = pDef->funcFlags & OPFLAG_BYTELENARG;
           }
         }
 
-        sqlite3ExprCodeExprList(pParse, pFarg, r1, 0, SQLITE_ECEL_FACTOR);
-      }else{
+        sqlite3_اظہاریہ_رمز_اظہاریہ_List(pParse, pFarg, r1, 0, SQLITE_ECEL_ضربی_عدد);
+      }ورنہ{
         r1 = 0;
       }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
       /* Possibly overload the function if the first argument is
       ** a virtual table column.
       **
@@ -5593,72 +5593,72 @@ expr_code_doover:
       ** "glob(B,A).  We want to use the A in "A glob B" to test
       ** for function overloading.  But we use the B term in "glob(B,A)".
       */
-      if( nFarg>=2 && ExprHasProperty(pExpr, EP_InfixFunc) ){
-        pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[1].pExpr);
-      }else if( nFarg>0 ){
-        pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[0].pExpr);
+      اگر( nFarg>=2 && اظہاریہ_Has_Property(p_اظہاریہ, EP_InfixFunc) ){
+        pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[1].p_اظہاریہ);
+      }ورنہ اگر( nFarg>0 ){
+        pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[0].p_اظہاریہ);
       }
-#endif
-      if( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
-        if( !pColl ) pColl = db->pDfltColl;
-        sqlite3VdbeAddOp4(v, OP_CollSeq, 0, 0, 0, (char *)pColl, P4_COLLSEQ);
+#اگر_ختم
+      اگر( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+        اگر( !pColl ) pColl = db->pDfltColl;
+        sqlite3_Vdbe_جوڑو_Op4(v, OP_CollSeq, 0, 0, 0, (حرف *)pColl, P4_COLLSEQ);
       }
-      sqlite3VdbeAddFunctionCall(pParse, constMask, r1, target, nFarg,
-                                 pDef, pExpr->op2);
-      if( nFarg ){
-        if( constMask==0 ){
-          sqlite3ReleaseTempRange(pParse, r1, nFarg);
-        }else{
-          sqlite3VdbeReleaseRegisters(pParse, r1, nFarg, constMask, 1);
+      sqlite3_Vdbe_جوڑو_Function_Call(pParse, const_نقاب, r1, ہدف, nFarg,
+                                 pDef, p_اظہاریہ->op2);
+      اگر( nFarg ){
+        اگر( const_نقاب==0 ){
+          sqlite3_Release_عارضی_Range(pParse, r1, nFarg);
+        }ورنہ{
+          sqlite3VdbeReleaseRegisters(pParse, r1, nFarg, const_نقاب, 1);
         }
       }
-      return target;
+      واپس ہدف;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS:
-    case TK_SELECT: {
-      int nCol;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+    حالت TK_EXISTS:
+    حالت TK_SELECT: {
+      صحیح n_ستون;
       testcase( op==TK_EXISTS );
       testcase( op==TK_SELECT );
-      if( pParse->db->mallocFailed ){
-        return 0;
-      }else if( op==TK_SELECT
-             && ALWAYS( ExprUseXSelect(pExpr) )
-             && (nCol = pExpr->x.pSelect->pEList->nExpr)!=1
+      اگر( pParse->db->mallocFailed ){
+        واپس 0;
+      }ورنہ اگر( op==TK_SELECT
+             && ALWAYS( اظہاریہ_Use_XSelect(p_اظہاریہ) )
+             && (n_ستون = p_اظہاریہ->x.pSelect->pEList->n_اظہاریہ)!=1
       ){
-        sqlite3SubselectError(pParse, nCol, 1);
-      }else{
-        return sqlite3CodeSubselect(pParse, pExpr);
+        sqlite3SubselectError(pParse, n_ستون, 1);
+      }ورنہ{
+        واپس sqlite3_رمز_Subselect(pParse, p_اظہاریہ);
       }
-      break;
+      توڑو;
     }
-    case TK_SELECT_COLUMN: {
-      int n;
-      Expr *pLeft = pExpr->pLeft;
-      if( pLeft->iTable==0 || pParse->withinRJSubrtn > pLeft->op2 ){
-        pLeft->iTable = sqlite3CodeSubselect(pParse, pLeft);
-        pLeft->op2 = pParse->withinRJSubrtn;
+    حالت TK_SELECT_عمود: {
+      صحیح n;
+      اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+      اگر( p_بایاں->i_جدول==0 || pParse->withinRJSubrtn > p_بایاں->op2 ){
+        p_بایاں->i_جدول = sqlite3_رمز_Subselect(pParse, p_بایاں);
+        p_بایاں->op2 = pParse->withinRJSubrtn;
       }
-      assert( pLeft->op==TK_SELECT || pLeft->op==TK_ERROR );
-      n = sqlite3ExprVectorSize(pLeft);
-      if( pExpr->iTable!=n ){
-        sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
-                                pExpr->iTable, n);
+      أكد( p_بایاں->op==TK_SELECT || p_بایاں->op==TK_ERROR );
+      n = sqlite3_اظہاریہ_سمتیہ_سائز(p_بایاں);
+      اگر( p_اظہاریہ->i_جدول!=n ){
+        sqlite3_Error_پیغام(pParse, "%d columns assigned %d values",
+                                p_اظہاریہ->i_جدول, n);
       }
-      return pLeft->iTable + pExpr->iColumn;
+      واپس p_بایاں->i_جدول + p_اظہاریہ->i_عمود;
     }
-    case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = sqlite3VdbeMakeLabel(pParse);
-      sqlite3VdbeAddOp2(v, OP_Null, 0, target);
-      sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
+    حالت TK_اندر: {
+      صحیح destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      صحیح destIfNull = sqlite3VdbeMakeLabel(pParse);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
+      sqlite3_اظہاریہ_رمز_اندر(pParse, p_اظہاریہ, destIfFalse, destIfNull);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, ہدف);
       sqlite3VdbeResolveLabel(v, destIfFalse);
-      sqlite3VdbeAddOp2(v, OP_AddImm, target, 0);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_جوڑو_Imm, ہدف, 0);
       sqlite3VdbeResolveLabel(v, destIfNull);
-      return target;
+      واپس ہدف;
     }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#اگر_ختم /* SQLITE_OMIT_SUBQUERY */
 
 
     /*
@@ -5672,34 +5672,34 @@ expr_code_doover:
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
-      exprCodeBetween(pParse, pExpr, target, 0, 0);
-      return target;
+    حالت TK_BETWEEN: {
+      اظہاریہ_رمز_Between(pParse, p_اظہاریہ, ہدف, 0, 0);
+      واپس ہدف;
     }
-    case TK_COLLATE: {
-      if( !ExprHasProperty(pExpr, EP_Collate) ){
+    حالت TK_COLLATE: {
+      اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Collate) ){
         /* A TK_COLLATE Expr node without the EP_Collate tag is a so-called
         ** "SOFT-COLLATE" that is added to constraints that are pushed down
         ** from outer queries into sub-queries by the WHERE-clause push-down
         ** optimization. Clear subtypes as subtypes may not cross a subquery
         ** boundary.
         */
-        assert( pExpr->pLeft );
-        sqlite3ExprCode(pParse, pExpr->pLeft, target);
-        sqlite3VdbeAddOp1(v, OP_ClrSubtype, target);
-        return target;
-      }else{
-        pExpr = pExpr->pLeft;
-        goto expr_code_doover; /* 2018-04-28: Prevent deep recursion. */
+        أكد( p_اظہاریہ->p_بایاں );
+        sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ->p_بایاں, ہدف);
+        sqlite3_Vdbe_جوڑو_Op1(v, OP_ClrSubtype, ہدف);
+        واپس ہدف;
+      }ورنہ{
+        p_اظہاریہ = p_اظہاریہ->p_بایاں;
+        جاؤ اظہاریہ_رمز_doover; /* 2018-04-28: Prevent deep recursion. */
       }
     }
-    case TK_SPAN:
-    case TK_UPLUS: {
-      pExpr = pExpr->pLeft;
-      goto expr_code_doover; /* 2018-04-28: Prevent deep recursion. OSSFuzz. */
+    حالت TK_وسعت:
+    حالت TK_UPLUS: {
+      p_اظہاریہ = p_اظہاریہ->p_بایاں;
+      جاؤ اظہاریہ_رمز_doover; /* 2018-04-28: Prevent deep recursion. OSSFuzz. */
     }
 
-    case TK_TRIGGER: {
+    حالت TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -5725,43 +5725,43 @@ expr_code_doover:
       **   p1==1   ->    old.a         p1==4   ->    new.a
       **   p1==2   ->    old.b         p1==5   ->    new.b      
       */
-      Table *pTab;
-      int iCol;
-      int p1;
+      جدول *pTab;
+      صحیح i_ستون;
+      صحیح p1;
 
-      assert( ExprUseYTab(pExpr) );
-      pTab = pExpr->y.pTab;
-      iCol = pExpr->iColumn;
-      p1 = pExpr->iTable * (pTab->nCol+1) + 1
-                     + sqlite3TableColumnToStorage(pTab, iCol);
+      أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+      pTab = p_اظہاریہ->y.pTab;
+      i_ستون = p_اظہاریہ->i_عمود;
+      p1 = p_اظہاریہ->i_جدول * (pTab->n_ستون+1) + 1
+                     + sqlite3_جدول_عمود_مقصد_Storage(pTab, i_ستون);
 
-      assert( pExpr->iTable==0 || pExpr->iTable==1 );
-      assert( iCol>=-1 && iCol<pTab->nCol );
-      assert( pTab->iPKey<0 || iCol!=pTab->iPKey );
-      assert( p1>=0 && p1<(pTab->nCol*2+2) );
+      أكد( p_اظہاریہ->i_جدول==0 || p_اظہاریہ->i_جدول==1 );
+      أكد( i_ستون>=-1 && i_ستون<pTab->n_ستون );
+      أكد( pTab->iPKey<0 || i_ستون!=pTab->iPKey );
+      أكد( p1>=0 && p1<(pTab->n_ستون*2+2) );
 
-      sqlite3VdbeAddOp2(v, OP_Param, p1, target);
-      VdbeComment((v, "r[%d]=%s.%s", target,
-        (pExpr->iTable ? "new" : "old"),
-        (pExpr->iColumn<0 ? "rowid" : pExpr->y.pTab->aCol[iCol].zCnName)
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Param, p1, ہدف);
+      VdbeComment((v, "r[%d]=%s.%s", ہدف,
+        (p_اظہاریہ->i_جدول ? "new" : "old"),
+        (p_اظہاریہ->i_عمود<0 ? "rowid" : p_اظہاریہ->y.pTab->a_ستون[i_ستون].zCnName)
       ));
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
       /* If the column has REAL affinity, it may currently be stored as an
       ** integer. Use OP_RealAffinity to make sure it is really real.
       **
       ** EVIDENCE-OF: R-60985-57662 SQLite will convert the value back to
       ** floating point when extracting it from the record.  */
-      if( iCol>=0 && pTab->aCol[iCol].affinity==SQLITE_AFF_REAL ){
-        sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
+      اگر( i_ستون>=0 && pTab->a_ستون[i_ستون].affinity==SQLITE_AFF_REAL ){
+        sqlite3_Vdbe_جوڑو_Op1(v, OP_RealAffinity, ہدف);
       }
-#endif
-      break;
+#اگر_ختم
+      توڑو;
     }
 
-    case TK_VECTOR: {
-      sqlite3ErrorMsg(pParse, "row value misused");
-      break;
+    حالت TK_سمتیہ: {
+      sqlite3_Error_پیغام(pParse, "row value misused");
+      توڑو;
     }
 
     /* TK_IF_NULL_ROW Expr nodes are inserted ahead of expressions
@@ -5770,25 +5770,25 @@ expr_code_doover:
     ** The expression is only evaluated if that table is not currently
     ** on a LEFT JOIN NULL row.
     */
-    case TK_IF_NULL_ROW: {
-      int addrINR;
-      u8 okConstFactor = pParse->okConstFactor;
-      AggInfo *pAggInfo = pExpr->pAggInfo;
-      if( pAggInfo ){
-        assert( pExpr->iAgg>=0 && pExpr->iAgg<pAggInfo->nColumn );
-        if( !pAggInfo->directMode ){
-          inReg = AggInfoColumnReg(pAggInfo, pExpr->iAgg);
-          break;
+    حالت TK_IF_NULL_صف: {
+      صحیح addrINR;
+      u8 ok_Const_ضربی_عدد = pParse->ok_Const_ضربی_عدد;
+      AggInfo *pAggInfo = p_اظہاریہ->pAggInfo;
+      اگر( pAggInfo ){
+        أكد( p_اظہاریہ->iAgg>=0 && p_اظہاریہ->iAgg<pAggInfo->n_عمود );
+        اگر( !pAggInfo->براہ_راست_منوال ){
+          اندر_Reg = Agg_Info_عمود_Reg(pAggInfo, p_اظہاریہ->iAgg);
+          توڑو;
         }
-        if( pExpr->pAggInfo->useSortingIdx ){
-          sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
-                            pAggInfo->aCol[pExpr->iAgg].iSorterColumn,
-                            target);
-          inReg = target;
-          break;
+        اگر( p_اظہاریہ->pAggInfo->use_ترتیب_کاری_Idx ){
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, pAggInfo->ترتیب_کاری_Idx_PTab,
+                            pAggInfo->a_ستون[p_اظہاریہ->iAgg].i_Sorter_عمود,
+                            ہدف);
+          اندر_Reg = ہدف;
+          توڑو;
         }
       }
-      addrINR = sqlite3VdbeAddOp3(v, OP_IfNullRow, pExpr->iTable, 0, target);
+      addrINR = sqlite3_Vdbe_جوڑو_Op3(v, OP_If_Null_صف, p_اظہاریہ->i_جدول, 0, ہدف);
       /* The OP_IfNullRow opcode above can overwrite the result register with
       ** NULL.  So we have to ensure that the result register is not a value
       ** that is suppose to be a constant.  Two defenses are needed:
@@ -5796,12 +5796,12 @@ expr_code_doover:
       **   (2)  Make sure the computed value really is stored in register
       **        "target" and not someplace else.
       */
-      pParse->okConstFactor = 0;   /* note (1) above */
-      sqlite3ExprCode(pParse, pExpr->pLeft, target);
-      assert( target==inReg );
-      pParse->okConstFactor = okConstFactor;
-      sqlite3VdbeJumpHere(v, addrINR);
-      break;
+      pParse->ok_Const_ضربی_عدد = 0;   /* note (1) above */
+      sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ->p_بایاں, ہدف);
+      أكد( ہدف==اندر_Reg );
+      pParse->ok_Const_ضربی_عدد = ok_Const_ضربی_عدد;
+      sqlite3_Vdbe_Jump_یہاں(v, addrINR);
+      توڑو;
     }
 
     /*
@@ -5825,37 +5825,37 @@ expr_code_doover:
     ** or if there is no matching Ei, the ELSE term Y, or if there is
     ** no ELSE term, NULL.
     */
-    case TK_CASE: {
-      int endLabel;                     /* GOTO label for end of CASE stmt */
-      int nextCase;                     /* GOTO label for next WHEN clause */
-      int nExpr;                        /* 2x number of WHEN terms */
-      int i;                            /* Loop counter */
-      ExprList *pEList;                 /* List of WHEN terms */
-      struct ExprList_item *aListelem;  /* Array of WHEN terms */
-      Expr opCompare;                   /* The X==Ei expression */
-      Expr *pX;                         /* The X expression */
-      Expr *pTest = 0;                  /* X==Ei (form A) or just Ei (form B) */
-      Expr *pDel = 0;
+    حالت TK_CASE: {
+      صحیح انتہا_Label;                     /* GOTO label for end of CASE stmt */
+      صحیح اگلا_Case;                     /* GOTO label for next WHEN clause */
+      صحیح n_اظہاریہ;                        /* 2x number of WHEN terms */
+      صحیح i;                            /* Loop counter */
+      اظہاریہ_List *pEList;                 /* List of WHEN terms */
+      ساخت اظہاریہ_List_شے *aListelem;  /* Array of WHEN terms */
+      اظہاریہ opCompare;                   /* The X==Ei expression */
+      اظہاریہ *pX;                         /* The X expression */
+      اظہاریہ *pTest = 0;                  /* X==Ei (form A) or just Ei (form B) */
+      اظہاریہ *pDel = 0;
       sqlite3 *db = pParse->db;
 
-      assert( ExprUseXList(pExpr) && pExpr->x.pList!=0 );
-      assert(pExpr->x.pList->nExpr > 0);
-      pEList = pExpr->x.pList;
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) && p_اظہاریہ->x.pList!=0 );
+      أكد(p_اظہاریہ->x.pList->n_اظہاریہ > 0);
+      pEList = p_اظہاریہ->x.pList;
       aListelem = pEList->a;
-      nExpr = pEList->nExpr;
-      endLabel = sqlite3VdbeMakeLabel(pParse);
-      if( (pX = pExpr->pLeft)!=0 ){
-        pDel = sqlite3ExprDup(db, pX, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDel);
-          break;
+      n_اظہاریہ = pEList->n_اظہاریہ;
+      انتہا_Label = sqlite3VdbeMakeLabel(pParse);
+      اگر( (pX = p_اظہاریہ->p_بایاں)!=0 ){
+        pDel = sqlite3_اظہاریہ_Dup(db, pX, 0);
+        اگر( db->mallocFailed ){
+          sqlite3_اظہاریہ_Delete(db, pDel);
+          توڑو;
         }
-        testcase( pX->op==TK_COLUMN );
-        sqlite3ExprToRegister(pDel, exprCodeVector(pParse, pDel, &regFree1));
+        testcase( pX->op==TK_عمود );
+        sqlite3_اظہاریہ_مقصد_رجسٹر(pDel, اظہاریہ_رمز_سمتیہ(pParse, pDel, &regFree1));
         testcase( regFree1==0 );
-        memset(&opCompare, 0, sizeof(opCompare));
+        memset(&opCompare, 0, حجم(opCompare));
         opCompare.op = TK_EQ;
-        opCompare.pLeft = pDel;
+        opCompare.p_بایاں = pDel;
         pTest = &opCompare;
         /* Ticket b351d95f9cd5ef17e9d9dbae18f5ca8611190001:
         ** The value in regFree1 might get SCopy-ed into the file result.
@@ -5863,63 +5863,63 @@ expr_code_doover:
         ** purposes and possibly overwritten.  */
         regFree1 = 0;
       }
-      for(i=0; i<nExpr-1; i=i+2){
-        if( pX ){
-          assert( pTest!=0 );
-          opCompare.pRight = aListelem[i].pExpr;
-        }else{
-          pTest = aListelem[i].pExpr;
+      برائے(i=0; i<n_اظہاریہ-1; i=i+2){
+        اگر( pX ){
+          أكد( pTest!=0 );
+          opCompare.p_دایاں = aListelem[i].p_اظہاریہ;
+        }ورنہ{
+          pTest = aListelem[i].p_اظہاریہ;
         }
-        nextCase = sqlite3VdbeMakeLabel(pParse);
-        testcase( pTest->op==TK_COLUMN );
-        sqlite3ExprIfFalse(pParse, pTest, nextCase, SQLITE_JUMPIFNULL);
-        testcase( aListelem[i+1].pExpr->op==TK_COLUMN );
-        sqlite3ExprCode(pParse, aListelem[i+1].pExpr, target);
-        sqlite3VdbeGoto(v, endLabel);
-        sqlite3VdbeResolveLabel(v, nextCase);
+        اگلا_Case = sqlite3VdbeMakeLabel(pParse);
+        testcase( pTest->op==TK_عمود );
+        sqlite3_اظہاریہ_If_False(pParse, pTest, اگلا_Case, SQLITE_JUMPIFNULL);
+        testcase( aListelem[i+1].p_اظہاریہ->op==TK_عمود );
+        sqlite3_اظہاریہ_رمز(pParse, aListelem[i+1].p_اظہاریہ, ہدف);
+        sqlite3VdbeGoto(v, انتہا_Label);
+        sqlite3VdbeResolveLabel(v, اگلا_Case);
       }
-      if( (nExpr&1)!=0 ){
-        sqlite3ExprCode(pParse, pEList->a[nExpr-1].pExpr, target);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_Null, 0, target);
+      اگر( (n_اظہاریہ&1)!=0 ){
+        sqlite3_اظہاریہ_رمز(pParse, pEList->a[n_اظہاریہ-1].p_اظہاریہ, ہدف);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, ہدف);
       }
-      sqlite3ExprDelete(db, pDel);
-      setDoNotMergeFlagOnCopy(v);
-      sqlite3VdbeResolveLabel(v, endLabel);
-      break;
+      sqlite3_اظہاریہ_Delete(db, pDel);
+      سیٹ_Do_Not_ملاؤ_Flag_On_Copy(v);
+      sqlite3VdbeResolveLabel(v, انتہا_Label);
+      توڑو;
     }
-#ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
-      assert( pExpr->affExpr==OE_Rollback
-           || pExpr->affExpr==OE_Abort
-           || pExpr->affExpr==OE_Fail
-           || pExpr->affExpr==OE_Ignore
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+    حالت TK_RAISE: {
+      أكد( p_اظہاریہ->aff_اظہاریہ==OE_Rollback
+           || p_اظہاریہ->aff_اظہاریہ==OE_Abort
+           || p_اظہاریہ->aff_اظہاریہ==OE_Fail
+           || p_اظہاریہ->aff_اظہاریہ==OE_Ignore
       );
-      if( !pParse->pTriggerTab && !pParse->nested ){
-        sqlite3ErrorMsg(pParse,
+      اگر( !pParse->pTriggerTab && !pParse->nested ){
+        sqlite3_Error_پیغام(pParse,
                        "RAISE() may only be used within a trigger-program");
-        return 0;
+        واپس 0;
       }
-      if( pExpr->affExpr==OE_Abort ){
+      اگر( p_اظہاریہ->aff_اظہاریہ==OE_Abort ){
         sqlite3MayAbort(pParse);
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->affExpr==OE_Ignore ){
-        sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, OE_Ignore);
+      أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_Int_قدر) );
+      اگر( p_اظہاریہ->aff_اظہاریہ==OE_Ignore ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Halt, SQLITE_OK, OE_Ignore);
         VdbeCoverage(v);
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-        sqlite3VdbeAddOp3(v, OP_Halt, 
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_Halt, 
              pParse->pTriggerTab ? SQLITE_CONSTRAINT_TRIGGER : SQLITE_ERROR,
-             pExpr->affExpr, r1);
+             p_اظہاریہ->aff_اظہاریہ, r1);
       }
-      break;
+      توڑو;
     }
-#endif
+#اگر_ختم
   }
-  sqlite3ReleaseTempReg(pParse, regFree1);
-  sqlite3ReleaseTempReg(pParse, regFree2);
-  return inReg;
+  sqlite3_Release_عارضی_Reg(pParse, regFree1);
+  sqlite3_Release_عارضی_Reg(pParse, regFree2);
+  واپس اندر_Reg;
 }
 
 /*
@@ -5939,70 +5939,70 @@ expr_code_doover:
 ** are factored out into the initialization section at the end of the
 ** prepared statement.
 */
-int sqlite3ExprCodeRunJustOnce(
+صحیح sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(
   Parse *pParse,    /* Parsing context */
-  Expr *pExpr,      /* The expression to code when the VDBE initializes */
-  int regDest       /* Store the value in this register */
+  اظہاریہ *p_اظہاریہ,      /* The expression to code when the VDBE initializes */
+  صحیح regDest       /* Store the value in this register */
 ){
-  ExprList *p;
-  assert( ConstFactorOk(pParse) );
-  assert( regDest!=0 );
-  p = pParse->pConstExpr;
-  if( regDest<0 && p ){
-    struct ExprList_item *pItem;
-    int i;
-    for(pItem=p->a, i=p->nExpr; i>0; pItem++, i--){
-      if( pItem->fg.reusable
-       && sqlite3ExprCompare(0,pItem->pExpr,pExpr,-1)==0
+  اظہاریہ_List *p;
+  أكد( Const_ضربی_عدد_Ok(pParse) );
+  أكد( regDest!=0 );
+  p = pParse->p_Const_اظہاریہ;
+  اگر( regDest<0 && p ){
+    ساخت اظہاریہ_List_شے *p_شے;
+    صحیح i;
+    برائے(p_شے=p->a, i=p->n_اظہاریہ; i>0; p_شے++, i--){
+      اگر( p_شے->fg.reusable
+       && sqlite3_اظہاریہ_Compare(0,p_شے->p_اظہاریہ,p_اظہاریہ,-1)==0
       ){
-        return pItem->u.iConstExprReg;
+        واپس p_شے->u.i_Const_اظہاریہ_Reg;
       }
     }
   }
-  pExpr = sqlite3ExprDup(pParse->db, pExpr, 0);
-  if( pExpr!=0 && ExprHasProperty(pExpr, EP_HasFunc) ){
+  p_اظہاریہ = sqlite3_اظہاریہ_Dup(pParse->db, p_اظہاریہ, 0);
+  اگر( p_اظہاریہ!=0 && اظہاریہ_Has_Property(p_اظہاریہ, EP_HasFunc) ){
     Vdbe *v = pParse->pVdbe;
-    int addr;
-    assert( v );
-    addr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-    pParse->okConstFactor = 0;
-    if( !pParse->db->mallocFailed ){
-      if( regDest<0 ) regDest = ++pParse->nMem;
-      sqlite3ExprCode(pParse, pExpr, regDest);
+    صحیح addr;
+    أكد( v );
+    addr = sqlite3_Vdbe_جوڑو_Op0(v, OP_Once); VdbeCoverage(v);
+    pParse->ok_Const_ضربی_عدد = 0;
+    اگر( !pParse->db->mallocFailed ){
+      اگر( regDest<0 ) regDest = ++pParse->nMem;
+      sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ, regDest);
     }
-    pParse->okConstFactor = 1;
-    sqlite3ExprDelete(pParse->db, pExpr);
-    sqlite3VdbeJumpHere(v, addr);
-  }else{
-    p = sqlite3ExprListAppend(pParse, p, pExpr);
-    if( p ){
-       struct ExprList_item *pItem = &p->a[p->nExpr-1];
-       pItem->fg.reusable = regDest<0;
-       if( regDest<0 ) regDest = ++pParse->nMem;
-       pItem->u.iConstExprReg = regDest;
+    pParse->ok_Const_ضربی_عدد = 1;
+    sqlite3_اظہاریہ_Delete(pParse->db, p_اظہاریہ);
+    sqlite3_Vdbe_Jump_یہاں(v, addr);
+  }ورنہ{
+    p = sqlite3_اظہاریہ_List_Append(pParse, p, p_اظہاریہ);
+    اگر( p ){
+       ساخت اظہاریہ_List_شے *p_شے = &p->a[p->n_اظہاریہ-1];
+       p_شے->fg.reusable = regDest<0;
+       اگر( regDest<0 ) regDest = ++pParse->nMem;
+       p_شے->u.i_Const_اظہاریہ_Reg = regDest;
     }
-    pParse->pConstExpr = p;
+    pParse->p_Const_اظہاریہ = p;
   }
-  return regDest;
+  واپس regDest;
 }
 
 /*
 ** Make arrangements to invoke OP_Null on a range of registers
 ** during initialization.
 */
-SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
+SQLITE_NOINLINE خالی sqlite3_اظہاریہ_Null_رجسٹر_Range(
   Parse *pParse,   /* Parsing context */
-  int iReg,        /* First register to set to NULL */
-  int nReg         /* Number of sequential registers to NULL out */
+  صحیح iReg,        /* First register to set to NULL */
+  صحیح nReg         /* Number of sequential registers to NULL out */
 ){
-  u8 okConstFactor = pParse->okConstFactor;
-  Expr t;
-  memset(&t, 0, sizeof(t));
+  u8 ok_Const_ضربی_عدد = pParse->ok_Const_ضربی_عدد;
+  اظہاریہ t;
+  memset(&t, 0, حجم(t));
   t.op = TK_NULLS;
   t.y.nReg = nReg;
-  pParse->okConstFactor = 1;
-  sqlite3ExprCodeRunJustOnce(pParse, &t, iReg);
-  pParse->okConstFactor = okConstFactor;
+  pParse->ok_Const_ضربی_عدد = 1;
+  sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(pParse, &t, iReg);
+  pParse->ok_Const_ضربی_عدد = ok_Const_ضربی_عدد;
 }
 
 /*
@@ -6018,27 +6018,27 @@ SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
 ** code to fill the register in the initialization section of the
 ** VDBE program, in order to factor it out of the evaluation loop.
 */
-int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
-  int r2;
-  pExpr = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( ConstFactorOk(pParse)
-   && ALWAYS(pExpr!=0)
-   && pExpr->op!=TK_REGISTER
-   && sqlite3ExprIsConstantNotJoin(pParse, pExpr)
+صحیح sqlite3_اظہاریہ_رمز_عارضی(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح *pReg){
+  صحیح r2;
+  p_اظہاریہ = sqlite3_اظہاریہ_Skip_Collate_And_Likely(p_اظہاریہ);
+  اگر( Const_ضربی_عدد_Ok(pParse)
+   && ALWAYS(p_اظہاریہ!=0)
+   && p_اظہاریہ->op!=TK_رجسٹر
+   && sqlite3_اظہاریہ_Is_Constant_Not_Join(pParse, p_اظہاریہ)
   ){
     *pReg  = 0;
-    r2 = sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
-  }else{
-    int r1 = sqlite3GetTempReg(pParse);
-    r2 = sqlite3ExprCodeTarget(pParse, pExpr, r1);
-    if( r2==r1 ){
+    r2 = sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(pParse, p_اظہاریہ, -1);
+  }ورنہ{
+    صحیح r1 = sqlite3_Get_عارضی_Reg(pParse);
+    r2 = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ, r1);
+    اگر( r2==r1 ){
       *pReg = r1;
-    }else{
-      sqlite3ReleaseTempReg(pParse, r1);
+    }ورنہ{
+      sqlite3_Release_عارضی_Reg(pParse, r1);
       *pReg = 0;
     }
   }
-  return r2;
+  واپس r2;
 }
 
 /*
@@ -6046,26 +6046,26 @@ int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
 ** results in register target.  The results are guaranteed to appear
 ** in register target.
 */
-void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
-  int inReg;
+خالی sqlite3_اظہاریہ_رمز(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح ہدف){
+  صحیح اندر_Reg;
 
-  assert( pExpr==0 || !ExprHasVVAProperty(pExpr,EP_Immutable) );
-  assert( target>0 && target<=pParse->nMem );
-  assert( pParse->pVdbe!=0 || pParse->db->mallocFailed );
-  if( pParse->pVdbe==0 ) return;
-  inReg = sqlite3ExprCodeTarget(pParse, pExpr, target);
-  if( inReg!=target ){
+  أكد( p_اظہاریہ==0 || !اظہاریہ_Has_VVAProperty(p_اظہاریہ,EP_Immutable) );
+  أكد( ہدف>0 && ہدف<=pParse->nMem );
+  أكد( pParse->pVdbe!=0 || pParse->db->mallocFailed );
+  اگر( pParse->pVdbe==0 ) واپس;
+  اندر_Reg = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ, ہدف);
+  اگر( اندر_Reg!=ہدف ){
     u8 op;
-    Expr *pX = sqlite3ExprSkipCollateAndLikely(pExpr);
-    testcase( pX!=pExpr );
-    if( ALWAYS(pX)
-     && (ExprHasProperty(pX,EP_Subquery) || pX->op==TK_REGISTER)
+    اظہاریہ *pX = sqlite3_اظہاریہ_Skip_Collate_And_Likely(p_اظہاریہ);
+    testcase( pX!=p_اظہاریہ );
+    اگر( ALWAYS(pX)
+     && (اظہاریہ_Has_Property(pX,EP_Subquery) || pX->op==TK_رجسٹر)
     ){
       op = OP_Copy;
-    }else{
+    }ورنہ{
       op = OP_SCopy;
     }
-    sqlite3VdbeAddOp2(pParse->pVdbe, op, inReg, target);
+    sqlite3_Vdbe_جوڑو_Op2(pParse->pVdbe, op, اندر_Reg, ہدف);
   }
 }
 
@@ -6074,11 +6074,11 @@ void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
 ** sqlite3ExprCode().  This routine works just like sqlite3ExprCode()
 ** except that the input expression is guaranteed to be unchanged.
 */
-void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
+خالی sqlite3_اظہاریہ_رمز_Copy(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح ہدف){
   sqlite3 *db = pParse->db;
-  pExpr = sqlite3ExprDup(db, pExpr, 0);
-  if( !db->mallocFailed ) sqlite3ExprCode(pParse, pExpr, target);
-  sqlite3ExprDelete(db, pExpr);
+  p_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ, 0);
+  اگر( !db->mallocFailed ) sqlite3_اظہاریہ_رمز(pParse, p_اظہاریہ, ہدف);
+  sqlite3_اظہاریہ_Delete(db, p_اظہاریہ);
 }
 
 /*
@@ -6087,11 +6087,11 @@ void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
 ** in register target.  If the expression is constant, then this routine
 ** might choose to code the expression at initialization time.
 */
-void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
-  if( pParse->okConstFactor && sqlite3ExprIsConstantNotJoin(pParse,pExpr) ){
-    sqlite3ExprCodeRunJustOnce(pParse, pExpr, target);
-  }else{
-    sqlite3ExprCodeCopy(pParse, pExpr, target);
+خالی sqlite3_اظہاریہ_رمز_Factorable(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح ہدف){
+  اگر( pParse->ok_Const_ضربی_عدد && sqlite3_اظہاریہ_Is_Constant_Not_Join(pParse,p_اظہاریہ) ){
+    sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(pParse, p_اظہاریہ, ہدف);
+  }ورنہ{
+    sqlite3_اظہاریہ_رمز_Copy(pParse, p_اظہاریہ, ہدف);
   }
 }
 
@@ -6115,59 +6115,59 @@ void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
 ** If SQLITE_ECEL_OMITREF is also set, then the values with u.x.iOrderByCol>0
 ** are simply omitted rather than being copied from srcReg.
 */
-int sqlite3ExprCodeExprList(
+صحیح sqlite3_اظہاریہ_رمز_اظہاریہ_List(
   Parse *pParse,     /* Parsing context */
-  ExprList *pList,   /* The expression list to be coded */
-  int target,        /* Where to write results */
-  int srcReg,        /* Source registers if SQLITE_ECEL_REF */
+  اظہاریہ_List *pList,   /* The expression list to be coded */
+  صحیح ہدف,        /* Where to write results */
+  صحیح srcReg,        /* Source registers if SQLITE_ECEL_REF */
   u8 flags           /* SQLITE_ECEL_* flags */
 ){
-  struct ExprList_item *pItem;
-  int i, j, n;
+  ساخت اظہاریہ_List_شے *p_شے;
+  صحیح i, j, n;
   u8 copyOp = (flags & SQLITE_ECEL_DUP) ? OP_Copy : OP_SCopy;
   Vdbe *v = pParse->pVdbe;
-  assert( pList!=0 );
-  assert( target>0 );
-  assert( pParse->pVdbe!=0 );  /* Never gets this far otherwise */
-  n = pList->nExpr;
-  if( !ConstFactorOk(pParse) ) flags &= ~SQLITE_ECEL_FACTOR;
-  for(pItem=pList->a, i=0; i<n; i++, pItem++){
-    Expr *pExpr = pItem->pExpr;
-#ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( pItem->fg.bSorterRef ){
+  أكد( pList!=0 );
+  أكد( ہدف>0 );
+  أكد( pParse->pVdbe!=0 );  /* Never gets this far otherwise */
+  n = pList->n_اظہاریہ;
+  اگر( !Const_ضربی_عدد_Ok(pParse) ) flags &= ~SQLITE_ECEL_ضربی_عدد;
+  برائے(p_شے=pList->a, i=0; i<n; i++, p_شے++){
+    اظہاریہ *p_اظہاریہ = p_شے->p_اظہاریہ;
+#اگر_تعریف_شدہ SQLITE_ENABLE_SORTER_REFERENCES
+    اگر( p_شے->fg.bSorterRef ){
       i--;
       n--;
-    }else
-#endif
-    if( (flags & SQLITE_ECEL_REF)!=0 && (j = pItem->u.x.iOrderByCol)>0 ){
-      if( flags & SQLITE_ECEL_OMITREF ){
+    }ورنہ
+#اگر_ختم
+    اگر( (flags & SQLITE_ECEL_REF)!=0 && (j = p_شے->u.x.i_ترتیب_By_ستون)>0 ){
+      اگر( flags & SQLITE_ECEL_OMITREF ){
         i--;
         n--;
-      }else{
-        sqlite3VdbeAddOp2(v, copyOp, j+srcReg-1, target+i);
+      }ورنہ{
+        sqlite3_Vdbe_جوڑو_Op2(v, copyOp, j+srcReg-1, ہدف+i);
       }
-    }else if( (flags & SQLITE_ECEL_FACTOR)!=0
-           && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
+    }ورنہ اگر( (flags & SQLITE_ECEL_ضربی_عدد)!=0
+           && sqlite3_اظہاریہ_Is_Constant_Not_Join(pParse,p_اظہاریہ)
     ){
-      sqlite3ExprCodeRunJustOnce(pParse, pExpr, target+i);
-    }else{
-      int inReg = sqlite3ExprCodeTarget(pParse, pExpr, target+i);
-      if( inReg!=target+i ){
+      sqlite3_اظہاریہ_رمز_تسلسل_Just_Once(pParse, p_اظہاریہ, ہدف+i);
+    }ورنہ{
+      صحیح اندر_Reg = sqlite3_اظہاریہ_رمز_ہدف(pParse, p_اظہاریہ, ہدف+i);
+      اگر( اندر_Reg!=ہدف+i ){
         VdbeOp *pOp;
-        if( copyOp==OP_Copy
-         && (pOp=sqlite3VdbeGetLastOp(v))->opcode==OP_Copy
-         && pOp->p1+pOp->p3+1==inReg
-         && pOp->p2+pOp->p3+1==target+i
+        اگر( copyOp==OP_Copy
+         && (pOp=sqlite3_Vdbe_Get_آخری_Op(v))->opcode==OP_Copy
+         && pOp->p1+pOp->p3+1==اندر_Reg
+         && pOp->p2+pOp->p3+1==ہدف+i
          && pOp->p5==0  /* The do-not-merge flag must be clear */
         ){
           pOp->p3++;
-        }else{
-          sqlite3VdbeAddOp2(v, copyOp, inReg, target+i);
+        }ورنہ{
+          sqlite3_Vdbe_جوڑو_Op2(v, copyOp, اندر_Reg, ہدف+i);
         }
       }
     }
   }
-  return n;
+  واپس n;
 }
 
 /*
@@ -6190,61 +6190,61 @@ int sqlite3ExprCodeExprList(
 **
 ** The jumpIfNull parameter is ignored if xJumpIf is NULL.
 */
-static void exprCodeBetween(
+ساکن خالی اظہاریہ_رمز_Between(
   Parse *pParse,    /* Parsing and code generating context */
-  Expr *pExpr,      /* The BETWEEN expression */
-  int dest,         /* Jump destination or storage location */
-  void (*xJump)(Parse*,Expr*,int,int), /* Action to take */
-  int jumpIfNull    /* Take the jump if the BETWEEN is NULL */
+  اظہاریہ *p_اظہاریہ,      /* The BETWEEN expression */
+  صحیح dest,         /* Jump destination or storage location */
+  خالی (*xJump)(Parse*,اظہاریہ*,صحیح,صحیح), /* Action to take */
+  صحیح jumpIfNull    /* Take the jump if the BETWEEN is NULL */
 ){
-  Expr exprAnd;     /* The AND operator in  x>=y AND x<=z  */
-  Expr compLeft;    /* The  x>=y  term */
-  Expr compRight;   /* The  x<=z  term */
-  int regFree1 = 0; /* Temporary use register */
-  Expr *pDel = 0;
+  اظہاریہ اظہاریہ_And;     /* The AND operator in  x>=y AND x<=z  */
+  اظہاریہ comp_بایاں;    /* The  x>=y  term */
+  اظہاریہ comp_دایاں;   /* The  x<=z  term */
+  صحیح regFree1 = 0; /* Temporary use register */
+  اظہاریہ *pDel = 0;
   sqlite3 *db = pParse->db;
 
-  memset(&compLeft, 0, sizeof(Expr));
-  memset(&compRight, 0, sizeof(Expr));
-  memset(&exprAnd, 0, sizeof(Expr));
+  memset(&comp_بایاں, 0, حجم(اظہاریہ));
+  memset(&comp_دایاں, 0, حجم(اظہاریہ));
+  memset(&اظہاریہ_And, 0, حجم(اظہاریہ));
 
-  assert( ExprUseXList(pExpr) );
-  pDel = sqlite3ExprDup(db, pExpr->pLeft, 0);
-  if( db->mallocFailed==0 ){
-    exprAnd.op = TK_AND;
-    exprAnd.pLeft = &compLeft;
-    exprAnd.pRight = &compRight;
-    compLeft.op = TK_GE;
-    compLeft.pLeft = pDel;
-    compLeft.pRight = pExpr->x.pList->a[0].pExpr;
-    compRight.op = TK_LE;
-    compRight.pLeft = pDel;
-    compRight.pRight = pExpr->x.pList->a[1].pExpr;
-    sqlite3ExprToRegister(pDel, exprCodeVector(pParse, pDel, &regFree1));
-    if( xJump ){
-      xJump(pParse, &exprAnd, dest, jumpIfNull);
-    }else{
+  أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+  pDel = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ->p_بایاں, 0);
+  اگر( db->mallocFailed==0 ){
+    اظہاریہ_And.op = TK_AND;
+    اظہاریہ_And.p_بایاں = &comp_بایاں;
+    اظہاریہ_And.p_دایاں = &comp_دایاں;
+    comp_بایاں.op = TK_GE;
+    comp_بایاں.p_بایاں = pDel;
+    comp_بایاں.p_دایاں = p_اظہاریہ->x.pList->a[0].p_اظہاریہ;
+    comp_دایاں.op = TK_LE;
+    comp_دایاں.p_بایاں = pDel;
+    comp_دایاں.p_دایاں = p_اظہاریہ->x.pList->a[1].p_اظہاریہ;
+    sqlite3_اظہاریہ_مقصد_رجسٹر(pDel, اظہاریہ_رمز_سمتیہ(pParse, pDel, &regFree1));
+    اگر( xJump ){
+      xJump(pParse, &اظہاریہ_And, dest, jumpIfNull);
+    }ورنہ{
       /* Mark the expression is being from the ON or USING clause of a join
       ** so that the sqlite3ExprCodeTarget() routine will not attempt to move
       ** it into the Parse.pConstExpr list.  We should use a new bit for this,
       ** for clarity, but we are out of bits in the Expr.flags field so we
       ** have to reuse the EP_OuterON bit.  Bummer. */
       pDel->flags |= EP_OuterON;
-      sqlite3ExprCodeTarget(pParse, &exprAnd, dest);
+      sqlite3_اظہاریہ_رمز_ہدف(pParse, &اظہاریہ_And, dest);
     }
-    sqlite3ReleaseTempReg(pParse, regFree1);
+    sqlite3_Release_عارضی_Reg(pParse, regFree1);
   }
-  sqlite3ExprDelete(db, pDel);
+  sqlite3_اظہاریہ_Delete(db, pDel);
 
   /* Ensure adequate test coverage */
-  testcase( xJump==sqlite3ExprIfTrue  && jumpIfNull==0 && regFree1==0 );
-  testcase( xJump==sqlite3ExprIfTrue  && jumpIfNull==0 && regFree1!=0 );
-  testcase( xJump==sqlite3ExprIfTrue  && jumpIfNull!=0 && regFree1==0 );
-  testcase( xJump==sqlite3ExprIfTrue  && jumpIfNull!=0 && regFree1!=0 );
-  testcase( xJump==sqlite3ExprIfFalse && jumpIfNull==0 && regFree1==0 );
-  testcase( xJump==sqlite3ExprIfFalse && jumpIfNull==0 && regFree1!=0 );
-  testcase( xJump==sqlite3ExprIfFalse && jumpIfNull!=0 && regFree1==0 );
-  testcase( xJump==sqlite3ExprIfFalse && jumpIfNull!=0 && regFree1!=0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_True  && jumpIfNull==0 && regFree1==0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_True  && jumpIfNull==0 && regFree1!=0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_True  && jumpIfNull!=0 && regFree1==0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_True  && jumpIfNull!=0 && regFree1!=0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_False && jumpIfNull==0 && regFree1==0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_False && jumpIfNull==0 && regFree1!=0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_False && jumpIfNull!=0 && regFree1==0 );
+  testcase( xJump==sqlite3_اظہاریہ_If_False && jumpIfNull!=0 && regFree1!=0 );
   testcase( xJump==0 );
 }
 
@@ -6262,161 +6262,161 @@ static void exprCodeBetween(
 ** the make process cause these values to align.  Assert()s in the code
 ** below verify that the numbers are aligned correctly.
 */
-void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+خالی sqlite3_اظہاریہ_If_True(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح dest, صحیح jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  صحیح op = 0;
+  صحیح regFree1 = 0;
+  صحیح regFree2 = 0;
+  صحیح r1, r2;
 
-  assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) )     return;  /* Existence of VDBE checked by caller */
-  if( NEVER(pExpr==0) ) return;  /* No way this can happen */
-  assert( !ExprHasVVAProperty(pExpr, EP_Immutable) );
-  op = pExpr->op;
-  switch( op ){
-    case TK_AND:
-    case TK_OR: {
-      Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
-        sqlite3ExprIfTrue(pParse, pAlt, dest, jumpIfNull);
-      }else{
-        Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
-          pFirst = pExpr->pRight;
-          pSecond = pExpr->pLeft;
-        }else{
-          pFirst = pExpr->pLeft;
-          pSecond = pExpr->pRight;
+  أكد( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
+  اگر( NEVER(v==0) )     واپس;  /* Existence of VDBE checked by caller */
+  اگر( NEVER(p_اظہاریہ==0) ) واپس;  /* No way this can happen */
+  أكد( !اظہاریہ_Has_VVAProperty(p_اظہاریہ, EP_Immutable) );
+  op = p_اظہاریہ->op;
+  انتخاب( op ){
+    حالت TK_AND:
+    حالت TK_OR: {
+      اظہاریہ *pAlt = sqlite3_اظہاریہ_Simplified_And_Or(p_اظہاریہ);
+      اگر( pAlt!=p_اظہاریہ ){
+        sqlite3_اظہاریہ_If_True(pParse, pAlt, dest, jumpIfNull);
+      }ورنہ{
+        اظہاریہ *p_پہلا, *p_دوسرا;
+        اگر( اظہاریہ_Eval_Rhs_پہلا(p_اظہاریہ) ){
+          p_پہلا = p_اظہاریہ->p_دایاں;
+          p_دوسرا = p_اظہاریہ->p_بایاں;
+        }ورنہ{
+          p_پہلا = p_اظہاریہ->p_بایاں;
+          p_دوسرا = p_اظہاریہ->p_دایاں;
         }
-        if( op==TK_AND ){
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+        اگر( op==TK_AND ){
+          صحیح d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
-          sqlite3ExprIfFalse(pParse, pFirst, d2,
+          sqlite3_اظہاریہ_If_False(pParse, p_پہلا, d2,
                              jumpIfNull^SQLITE_JUMPIFNULL);
-          sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
+          sqlite3_اظہاریہ_If_True(pParse, p_دوسرا, dest, jumpIfNull);
           sqlite3VdbeResolveLabel(v, d2);
-        }else{
+        }ورنہ{
           testcase( jumpIfNull==0 );
-          sqlite3ExprIfTrue(pParse, pFirst, dest, jumpIfNull);
-          sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
+          sqlite3_اظہاریہ_If_True(pParse, p_پہلا, dest, jumpIfNull);
+          sqlite3_اظہاریہ_If_True(pParse, p_دوسرا, dest, jumpIfNull);
         }
       }
-      break;
+      توڑو;
     }
-    case TK_NOT: {
+    حالت TK_NOT: {
       testcase( jumpIfNull==0 );
-      sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest, jumpIfNull);
-      break;
+      sqlite3_اظہاریہ_If_False(pParse, p_اظہاریہ->p_بایاں, dest, jumpIfNull);
+      توڑو;
     }
-    case TK_TRUTH: {
-      int isNot;      /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;     /* IS TRUE or IS NOT TRUE */
+    حالت TK_TRUTH: {
+      صحیح isNot;      /* IS NOT TRUE or IS NOT FALSE */
+      صحیح isTrue;     /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
-      isNot = pExpr->op2==TK_ISNOT;
-      isTrue = sqlite3ExprTruthValue(pExpr->pRight);
+      isNot = p_اظہاریہ->op2==TK_ISNOT;
+      isTrue = sqlite3_اظہاریہ_Truth_قدر(p_اظہاریہ->p_دایاں);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
-        sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
+      اگر( isTrue ^ isNot ){
+        sqlite3_اظہاریہ_If_True(pParse, p_اظہاریہ->p_بایاں, dest,
                           isNot ? SQLITE_JUMPIFNULL : 0);
-      }else{
-        sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
+      }ورنہ{
+        sqlite3_اظہاریہ_If_False(pParse, p_اظہاریہ->p_بایاں, dest,
                            isNot ? SQLITE_JUMPIFNULL : 0);
       }
-      break;
+      توڑو;
     }
-    case TK_IS:
-    case TK_ISNOT:
+    حالت TK_IS:
+    حالت TK_ISNOT:
       testcase( op==TK_IS );
       testcase( op==TK_ISNOT );
       op = (op==TK_IS) ? TK_EQ : TK_NE;
       jumpIfNull = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
-        addrIsNull = exprComputeOperands(pParse, pExpr,
+    حالت TK_LT:
+    حالت TK_LE:
+    حالت TK_GT:
+    حالت TK_GE:
+    حالت TK_NE:
+    حالت TK_EQ: {
+      صحیح addrIsNull;
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_اظہاریہ->p_بایاں) ) جاؤ default_اظہاریہ;
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+        addrIsNull = اظہاریہ_Compute_Operands(pParse, p_اظہاریہ,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-        r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+        r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, &regFree2);
         addrIsNull = 0;
       }
-      codeCompare(pParse, pExpr->pLeft, pExpr->pRight, op,
-                  r1, r2, dest, jumpIfNull, ExprHasProperty(pExpr,EP_Commuted));
-      assert(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
-      assert(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
-      assert(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
-      assert(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
-      assert(TK_EQ==OP_Eq); testcase(op==OP_Eq);
+      رمز_Compare(pParse, p_اظہاریہ->p_بایاں, p_اظہاریہ->p_دایاں, op,
+                  r1, r2, dest, jumpIfNull, اظہاریہ_Has_Property(p_اظہاریہ,EP_Commuted));
+      أكد(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
+      أكد(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
+      أكد(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
+      أكد(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
+      أكد(TK_EQ==OP_Eq); testcase(op==OP_Eq);
       VdbeCoverageIf(v, op==OP_Eq && jumpIfNull==SQLITE_NULLEQ);
       VdbeCoverageIf(v, op==OP_Eq && jumpIfNull!=SQLITE_NULLEQ);
-      assert(TK_NE==OP_Ne); testcase(op==OP_Ne);
+      أكد(TK_NE==OP_Ne); testcase(op==OP_Ne);
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull==SQLITE_NULLEQ);
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull!=SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      اگر( addrIsNull ){
+        اگر( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
-          sqlite3VdbeJumpHere(v, addrIsNull);
+        }ورنہ{
+          sqlite3_Vdbe_Jump_یہاں(v, addrIsNull);
         }
       }
-      break;
+      توڑو;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
-      assert( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
-      assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
-      r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-      assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
-      sqlite3VdbeAddOp2(v, op, r1, dest);
+    حالت TK_ISNULL:
+    حالت TK_NOTNULL: {
+      أكد( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
+      أكد( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
+      r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+      أكد( regFree1==0 || regFree1==r1 );
+      اگر( regFree1 ) sqlite3_Vdbe_Typeof_عمود(v, r1);
+      sqlite3_Vdbe_جوڑو_Op2(v, op, r1, dest);
       VdbeCoverageIf(v, op==TK_ISNULL);
       VdbeCoverageIf(v, op==TK_NOTNULL);
-      break;
+      توڑو;
     }
-    case TK_BETWEEN: {
+    حالت TK_BETWEEN: {
       testcase( jumpIfNull==0 );
-      exprCodeBetween(pParse, pExpr, dest, sqlite3ExprIfTrue, jumpIfNull);
-      break;
+      اظہاریہ_رمز_Between(pParse, p_اظہاریہ, dest, sqlite3_اظہاریہ_If_True, jumpIfNull);
+      توڑو;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = jumpIfNull ? dest : destIfFalse;
-      sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+    حالت TK_اندر: {
+      صحیح destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      صحیح destIfNull = jumpIfNull ? dest : destIfFalse;
+      sqlite3_اظہاریہ_رمز_اندر(pParse, p_اظہاریہ, destIfFalse, destIfNull);
       sqlite3VdbeGoto(v, dest);
       sqlite3VdbeResolveLabel(v, destIfFalse);
-      break;
+      توڑو;
     }
-#endif
-    default: {
-    default_expr:
-      if( ExprAlwaysTrue(pExpr) ){
+#اگر_ختم
+    طےشدہ: {
+    default_اظہاریہ:
+      اگر( اظہاریہ_Always_True(p_اظہاریہ) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysFalse(pExpr) ){
+      }ورنہ اگر( اظہاریہ_Always_False(p_اظہاریہ) ){
         /* No-op */
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
-        sqlite3VdbeAddOp3(v, OP_If, r1, dest, jumpIfNull!=0);
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ, &regFree1);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_If, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
         testcase( regFree1==0 );
         testcase( jumpIfNull==0 );
       }
-      break;
+      توڑو;
     }
   }
-  sqlite3ReleaseTempReg(pParse, regFree1);
-  sqlite3ReleaseTempReg(pParse, regFree2); 
+  sqlite3_Release_عارضی_Reg(pParse, regFree1);
+  sqlite3_Release_عارضی_Reg(pParse, regFree2); 
 }
 
 /*
@@ -6428,17 +6428,17 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** jump if jumpIfNull is SQLITE_JUMPIFNULL or fall through if jumpIfNull
 ** is 0.
 */
-void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+خالی sqlite3_اظہاریہ_If_False(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح dest, صحیح jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  صحیح op = 0;
+  صحیح regFree1 = 0;
+  صحیح regFree2 = 0;
+  صحیح r1, r2;
 
-  assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) ) return; /* Existence of VDBE checked by caller */
-  if( pExpr==0 )    return;
-  assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
+  أكد( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
+  اگر( NEVER(v==0) ) واپس; /* Existence of VDBE checked by caller */
+  اگر( p_اظہاریہ==0 )    واپس;
+  أكد( !اظہاریہ_Has_VVAProperty(p_اظہاریہ,EP_Immutable) );
 
   /* The value of pExpr->op and op are related as follows:
   **
@@ -6458,165 +6458,165 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
   ** can compute the mapping above using the following expression.
   ** Assert()s verify that the computation is correct.
   */
-  op = ((pExpr->op+(TK_ISNULL&1))^1)-(TK_ISNULL&1);
+  op = ((p_اظہاریہ->op+(TK_ISNULL&1))^1)-(TK_ISNULL&1);
 
   /* Verify correct alignment of TK_ and OP_ constants
   */
-  assert( pExpr->op!=TK_ISNULL || op==OP_NotNull );
-  assert( pExpr->op!=TK_NOTNULL || op==OP_IsNull );
-  assert( pExpr->op!=TK_NE || op==OP_Eq );
-  assert( pExpr->op!=TK_EQ || op==OP_Ne );
-  assert( pExpr->op!=TK_LT || op==OP_Ge );
-  assert( pExpr->op!=TK_LE || op==OP_Gt );
-  assert( pExpr->op!=TK_GT || op==OP_Le );
-  assert( pExpr->op!=TK_GE || op==OP_Lt );
+  أكد( p_اظہاریہ->op!=TK_ISNULL || op==OP_NotNull );
+  أكد( p_اظہاریہ->op!=TK_NOTNULL || op==OP_IsNull );
+  أكد( p_اظہاریہ->op!=TK_NE || op==OP_Eq );
+  أكد( p_اظہاریہ->op!=TK_EQ || op==OP_Ne );
+  أكد( p_اظہاریہ->op!=TK_LT || op==OP_Ge );
+  أكد( p_اظہاریہ->op!=TK_LE || op==OP_Gt );
+  أكد( p_اظہاریہ->op!=TK_GT || op==OP_Le );
+  أكد( p_اظہاریہ->op!=TK_GE || op==OP_Lt );
 
-  switch( pExpr->op ){
-    case TK_AND:
-    case TK_OR: {
-      Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
-        sqlite3ExprIfFalse(pParse, pAlt, dest, jumpIfNull);
-      }else{
-        Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
-          pFirst = pExpr->pRight;
-          pSecond = pExpr->pLeft;
-        }else{
-          pFirst = pExpr->pLeft;
-          pSecond = pExpr->pRight;
+  انتخاب( p_اظہاریہ->op ){
+    حالت TK_AND:
+    حالت TK_OR: {
+      اظہاریہ *pAlt = sqlite3_اظہاریہ_Simplified_And_Or(p_اظہاریہ);
+      اگر( pAlt!=p_اظہاریہ ){
+        sqlite3_اظہاریہ_If_False(pParse, pAlt, dest, jumpIfNull);
+      }ورنہ{
+        اظہاریہ *p_پہلا, *p_دوسرا;
+        اگر( اظہاریہ_Eval_Rhs_پہلا(p_اظہاریہ) ){
+          p_پہلا = p_اظہاریہ->p_دایاں;
+          p_دوسرا = p_اظہاریہ->p_بایاں;
+        }ورنہ{
+          p_پہلا = p_اظہاریہ->p_بایاں;
+          p_دوسرا = p_اظہاریہ->p_دایاں;
         }
-        if( pExpr->op==TK_AND ){
+        اگر( p_اظہاریہ->op==TK_AND ){
           testcase( jumpIfNull==0 );
-          sqlite3ExprIfFalse(pParse, pFirst, dest, jumpIfNull);
-          sqlite3ExprIfFalse(pParse, pSecond, dest, jumpIfNull);
-        }else{
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+          sqlite3_اظہاریہ_If_False(pParse, p_پہلا, dest, jumpIfNull);
+          sqlite3_اظہاریہ_If_False(pParse, p_دوسرا, dest, jumpIfNull);
+        }ورنہ{
+          صحیح d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
-          sqlite3ExprIfTrue(pParse, pFirst, d2,
+          sqlite3_اظہاریہ_If_True(pParse, p_پہلا, d2,
                             jumpIfNull^SQLITE_JUMPIFNULL);
-          sqlite3ExprIfFalse(pParse, pSecond, dest, jumpIfNull);
+          sqlite3_اظہاریہ_If_False(pParse, p_دوسرا, dest, jumpIfNull);
           sqlite3VdbeResolveLabel(v, d2);
         }
       }
-      break;
+      توڑو;
     }
-    case TK_NOT: {
+    حالت TK_NOT: {
       testcase( jumpIfNull==0 );
-      sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest, jumpIfNull);
-      break;
+      sqlite3_اظہاریہ_If_True(pParse, p_اظہاریہ->p_بایاں, dest, jumpIfNull);
+      توڑو;
     }
-    case TK_TRUTH: {
-      int isNot;   /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;  /* IS TRUE or IS NOT TRUE */
+    حالت TK_TRUTH: {
+      صحیح isNot;   /* IS NOT TRUE or IS NOT FALSE */
+      صحیح isTrue;  /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
-      isNot = pExpr->op2==TK_ISNOT;
-      isTrue = sqlite3ExprTruthValue(pExpr->pRight);
+      isNot = p_اظہاریہ->op2==TK_ISNOT;
+      isTrue = sqlite3_اظہاریہ_Truth_قدر(p_اظہاریہ->p_دایاں);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
+      اگر( isTrue ^ isNot ){
         /* IS TRUE and IS NOT FALSE */
-        sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
+        sqlite3_اظہاریہ_If_False(pParse, p_اظہاریہ->p_بایاں, dest,
                            isNot ? 0 : SQLITE_JUMPIFNULL);
 
-      }else{
+      }ورنہ{
         /* IS FALSE and IS NOT TRUE */
-        sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
+        sqlite3_اظہاریہ_If_True(pParse, p_اظہاریہ->p_بایاں, dest,
                           isNot ? 0 : SQLITE_JUMPIFNULL);
       }
-      break;
+      توڑو;
     }
-    case TK_IS:
-    case TK_ISNOT:
-      testcase( pExpr->op==TK_IS );
-      testcase( pExpr->op==TK_ISNOT );
-      op = (pExpr->op==TK_IS) ? TK_NE : TK_EQ;
+    حالت TK_IS:
+    حالت TK_ISNOT:
+      testcase( p_اظہاریہ->op==TK_IS );
+      testcase( p_اظہاریہ->op==TK_ISNOT );
+      op = (p_اظہاریہ->op==TK_IS) ? TK_NE : TK_EQ;
       jumpIfNull = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
-        addrIsNull = exprComputeOperands(pParse, pExpr,
+    حالت TK_LT:
+    حالت TK_LE:
+    حالت TK_GT:
+    حالت TK_GE:
+    حالت TK_NE:
+    حالت TK_EQ: {
+      صحیح addrIsNull;
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_اظہاریہ->p_بایاں) ) جاؤ default_اظہاریہ;
+      اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+        addrIsNull = اظہاریہ_Compute_Operands(pParse, p_اظہاریہ,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-        r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+        r2 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_دایاں, &regFree2);
         addrIsNull = 0;
       }
-      codeCompare(pParse, pExpr->pLeft, pExpr->pRight, op,
-                  r1, r2, dest, jumpIfNull,ExprHasProperty(pExpr,EP_Commuted));
-      assert(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
-      assert(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
-      assert(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
-      assert(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
-      assert(TK_EQ==OP_Eq); testcase(op==OP_Eq);
+      رمز_Compare(pParse, p_اظہاریہ->p_بایاں, p_اظہاریہ->p_دایاں, op,
+                  r1, r2, dest, jumpIfNull,اظہاریہ_Has_Property(p_اظہاریہ,EP_Commuted));
+      أكد(TK_LT==OP_Lt); testcase(op==OP_Lt); VdbeCoverageIf(v,op==OP_Lt);
+      أكد(TK_LE==OP_Le); testcase(op==OP_Le); VdbeCoverageIf(v,op==OP_Le);
+      أكد(TK_GT==OP_Gt); testcase(op==OP_Gt); VdbeCoverageIf(v,op==OP_Gt);
+      أكد(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
+      أكد(TK_EQ==OP_Eq); testcase(op==OP_Eq);
       VdbeCoverageIf(v, op==OP_Eq && jumpIfNull!=SQLITE_NULLEQ);
       VdbeCoverageIf(v, op==OP_Eq && jumpIfNull==SQLITE_NULLEQ);
-      assert(TK_NE==OP_Ne); testcase(op==OP_Ne);
+      أكد(TK_NE==OP_Ne); testcase(op==OP_Ne);
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull!=SQLITE_NULLEQ);
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull==SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      اگر( addrIsNull ){
+        اگر( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
-          sqlite3VdbeJumpHere(v, addrIsNull);
+        }ورنہ{
+          sqlite3_Vdbe_Jump_یہاں(v, addrIsNull);
         }
       }
-      break;
+      توڑو;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
-      r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
-      assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
-      sqlite3VdbeAddOp2(v, op, r1, dest);
+    حالت TK_ISNULL:
+    حالت TK_NOTNULL: {
+      r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ->p_بایاں, &regFree1);
+      أكد( regFree1==0 || regFree1==r1 );
+      اگر( regFree1 ) sqlite3_Vdbe_Typeof_عمود(v, r1);
+      sqlite3_Vdbe_جوڑو_Op2(v, op, r1, dest);
       testcase( op==TK_ISNULL );   VdbeCoverageIf(v, op==TK_ISNULL);
       testcase( op==TK_NOTNULL );  VdbeCoverageIf(v, op==TK_NOTNULL);
-      break;
+      توڑو;
     }
-    case TK_BETWEEN: {
+    حالت TK_BETWEEN: {
       testcase( jumpIfNull==0 );
-      exprCodeBetween(pParse, pExpr, dest, sqlite3ExprIfFalse, jumpIfNull);
-      break;
+      اظہاریہ_رمز_Between(pParse, p_اظہاریہ, dest, sqlite3_اظہاریہ_If_False, jumpIfNull);
+      توڑو;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case TK_IN: {
-      if( jumpIfNull ){
-        sqlite3ExprCodeIN(pParse, pExpr, dest, dest);
-      }else{
-        int destIfNull = sqlite3VdbeMakeLabel(pParse);
-        sqlite3ExprCodeIN(pParse, pExpr, dest, destIfNull);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+    حالت TK_اندر: {
+      اگر( jumpIfNull ){
+        sqlite3_اظہاریہ_رمز_اندر(pParse, p_اظہاریہ, dest, dest);
+      }ورنہ{
+        صحیح destIfNull = sqlite3VdbeMakeLabel(pParse);
+        sqlite3_اظہاریہ_رمز_اندر(pParse, p_اظہاریہ, dest, destIfNull);
         sqlite3VdbeResolveLabel(v, destIfNull);
       }
-      break;
+      توڑو;
     }
-#endif
-    default: {
-    default_expr:
-      if( ExprAlwaysFalse(pExpr) ){
+#اگر_ختم
+    طےشدہ: {
+    default_اظہاریہ:
+      اگر( اظہاریہ_Always_False(p_اظہاریہ) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysTrue(pExpr) ){
+      }ورنہ اگر( اظہاریہ_Always_True(p_اظہاریہ) ){
         /* no-op */
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
-        sqlite3VdbeAddOp3(v, OP_IfNot, r1, dest, jumpIfNull!=0);
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, p_اظہاریہ, &regFree1);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_IfNot, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
         testcase( regFree1==0 );
         testcase( jumpIfNull==0 );
       }
-      break;
+      توڑو;
     }
   }
-  sqlite3ReleaseTempReg(pParse, regFree1);
-  sqlite3ReleaseTempReg(pParse, regFree2);
+  sqlite3_Release_عارضی_Reg(pParse, regFree1);
+  sqlite3_Release_عارضی_Reg(pParse, regFree2);
 }
 
 /*
@@ -6624,13 +6624,13 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** code generation, and that copy is deleted after code generation. This
 ** ensures that the original pExpr is unchanged.
 */
-void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
+خالی sqlite3_اظہاریہ_If_False_Dup(Parse *pParse, اظہاریہ *p_اظہاریہ, صحیح dest,صحیح jumpIfNull){
   sqlite3 *db = pParse->db;
-  Expr *pCopy = sqlite3ExprDup(db, pExpr, 0);
-  if( db->mallocFailed==0 ){
-    sqlite3ExprIfFalse(pParse, pCopy, dest, jumpIfNull);
+  اظہاریہ *pCopy = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ, 0);
+  اگر( db->mallocFailed==0 ){
+    sqlite3_اظہاریہ_If_False(pParse, pCopy, dest, jumpIfNull);
   }
-  sqlite3ExprDelete(db, pCopy);
+  sqlite3_اظہاریہ_Delete(db, pCopy);
 }
 
 /*
@@ -6649,34 +6649,34 @@ void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
 ** If the SQLITE_EnableQPSG flag is set on the database connection, then
 ** this routine always returns false.
 */
-static SQLITE_NOINLINE int exprCompareVariable(
-  const Parse *pParse,
-  const Expr *pVar,
-  const Expr *pExpr
+ساکن SQLITE_NOINLINE صحیح اظہاریہ_Compare_Variable(
+  ثابت Parse *pParse,
+  ثابت اظہاریہ *pVar,
+  ثابت اظہاریہ *p_اظہاریہ
 ){
-  int res = 2;
-  int iVar;
-  sqlite3_value *pL, *pR = 0;
+  صحیح res = 2;
+  صحیح iVar;
+  sqlite3_قدر *pL, *pR = 0;
  
-  if( pExpr->op==TK_VARIABLE && pVar->iColumn==pExpr->iColumn ){
-    return 0;
+  اگر( p_اظہاریہ->op==TK_VARIABLE && pVar->i_عمود==p_اظہاریہ->i_عمود ){
+    واپس 0;
   }
-  if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) return 2;
-  sqlite3ValueFromExpr(pParse->db, pExpr, SQLITE_UTF8, SQLITE_AFF_BLOB, &pR);
-  if( pR ){
-    iVar = pVar->iColumn;
+  اگر( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) واپس 2;
+  sqlite3_قدر_From_اظہاریہ(pParse->db, p_اظہاریہ, SQLITE_UTF8, SQLITE_AFF_BLOB, &pR);
+  اگر( pR ){
+    iVar = pVar->i_عمود;
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iVar, 0);
-    pL = sqlite3VdbeGetBoundValue(pParse->pReprepare, iVar, SQLITE_AFF_BLOB);
-    if( pL ){
-      if( sqlite3_value_type(pL)==SQLITE_TEXT ){
-        sqlite3_value_text(pL); /* Make sure the encoding is UTF-8 */
+    pL = sqlite3_Vdbe_Get_Bound_قدر(pParse->pReprepare, iVar, SQLITE_AFF_BLOB);
+    اگر( pL ){
+      اگر( sqlite3_قدر_type(pL)==SQLITE_متن ){
+        sqlite3_قدر_متن(pL); /* Make sure the encoding is UTF-8 */
       }
       res = sqlite3MemCompare(pL, pR, 0) ? 2 : 0;
     }
-    sqlite3ValueFree(pR);
-    sqlite3ValueFree(pL);
+    sqlite3_قدر_Free(pR);
+    sqlite3_قدر_Free(pL);
   }
-  return res;
+  واپس res;
 }
 
 /*
@@ -6706,90 +6706,90 @@ static SQLITE_NOINLINE int exprCompareVariable(
 ** literals in pB.  The pParse->pVdbe->expmask bitmask is updated for
 ** each variable referenced.
 */
-int sqlite3ExprCompare(
-  const Parse *pParse,
-  const Expr *pA,
-  const Expr *pB,
-  int iTab
+صحیح sqlite3_اظہاریہ_Compare(
+  ثابت Parse *pParse,
+  ثابت اظہاریہ *pA,
+  ثابت اظہاریہ *pB,
+  صحیح iTab
 ){
   u32 combinedFlags;
-  if( pA==0 || pB==0 ){
-    return pB==pA ? 0 : 2;
+  اگر( pA==0 || pB==0 ){
+    واپس pB==pA ? 0 : 2;
   }
-  if( pParse && pA->op==TK_VARIABLE ){
-    return exprCompareVariable(pParse, pA, pB);
+  اگر( pParse && pA->op==TK_VARIABLE ){
+    واپس اظہاریہ_Compare_Variable(pParse, pA, pB);
   }
   combinedFlags = pA->flags | pB->flags;
-  if( combinedFlags & EP_IntValue ){
-    if( (pA->flags&pB->flags&EP_IntValue)!=0 && pA->u.iValue==pB->u.iValue ){
-      return 0;
+  اگر( combinedFlags & EP_Int_قدر ){
+    اگر( (pA->flags&pB->flags&EP_Int_قدر)!=0 && pA->u.i_قدر==pB->u.i_قدر ){
+      واپس 0;
     }
-    return 2;
+    واپس 2;
   }
-  if( pA->op!=pB->op || pA->op==TK_RAISE ){
-    if( pA->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA->pLeft,pB,iTab)<2 ){
-      return 1;
+  اگر( pA->op!=pB->op || pA->op==TK_RAISE ){
+    اگر( pA->op==TK_COLLATE && sqlite3_اظہاریہ_Compare(pParse, pA->p_بایاں,pB,iTab)<2 ){
+      واپس 1;
     }
-    if( pB->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA,pB->pLeft,iTab)<2 ){
-      return 1;
+    اگر( pB->op==TK_COLLATE && sqlite3_اظہاریہ_Compare(pParse, pA,pB->p_بایاں,iTab)<2 ){
+      واپس 1;
     }
-    if( pA->op==TK_AGG_COLUMN && pB->op==TK_COLUMN
-     && pB->iTable<0 && pA->iTable==iTab
+    اگر( pA->op==TK_AGG_عمود && pB->op==TK_عمود
+     && pB->i_جدول<0 && pA->i_جدول==iTab
     ){
       /* fall through */
-    }else{
-      return 2;
+    }ورنہ{
+      واپس 2;
     }
   }
-  assert( !ExprHasProperty(pA, EP_IntValue) );
-  assert( !ExprHasProperty(pB, EP_IntValue) );
-  if( pA->u.zToken ){
-    if( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
-      if( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      assert( pA->op==pB->op );
-      if( ExprHasProperty(pA,EP_WinFunc)!=ExprHasProperty(pB,EP_WinFunc) ){
-        return 2;
+  أكد( !اظہاریہ_Has_Property(pA, EP_Int_قدر) );
+  أكد( !اظہاریہ_Has_Property(pB, EP_Int_قدر) );
+  اگر( pA->u.zToken ){
+    اگر( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
+      اگر( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) واپس 2;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+      أكد( pA->op==pB->op );
+      اگر( اظہاریہ_Has_Property(pA,EP_WinFunc)!=اظہاریہ_Has_Property(pB,EP_WinFunc) ){
+        واپس 2;
       }
-      if( ExprHasProperty(pA,EP_WinFunc) ){
-        if( sqlite3WindowCompare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
-          return 2;
+      اگر( اظہاریہ_Has_Property(pA,EP_WinFunc) ){
+        اگر( sqlite3_کھڑکی_Compare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
+          واپس 2;
         }
       }
-#endif
-    }else if( pA->op==TK_NULL ){
-      return 0;
-    }else if( pA->op==TK_COLLATE ){
-      if( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
-    }else
-    if( pB->u.zToken!=0
-     && pA->op!=TK_COLUMN
-     && pA->op!=TK_AGG_COLUMN
+#اگر_ختم
+    }ورنہ اگر( pA->op==TK_NULL ){
+      واپس 0;
+    }ورنہ اگر( pA->op==TK_COLLATE ){
+      اگر( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) واپس 2;
+    }ورنہ
+    اگر( pB->u.zToken!=0
+     && pA->op!=TK_عمود
+     && pA->op!=TK_AGG_عمود
      && strcmp(pA->u.zToken,pB->u.zToken)!=0
     ){
-      return 2;
+      واپس 2;
     }
   }
-  if( (pA->flags & (EP_Distinct|EP_Commuted))
-     != (pB->flags & (EP_Distinct|EP_Commuted)) ) return 2;
-  if( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
-    if( combinedFlags & EP_xIsSelect ) return 2;
-    if( (combinedFlags & EP_FixedCol)==0
-     && sqlite3ExprCompare(pParse, pA->pLeft, pB->pLeft, iTab) ) return 2;
-    if( sqlite3ExprCompare(pParse, pA->pRight, pB->pRight, iTab) ) return 2;
-    if( sqlite3ExprListCompare(pA->x.pList, pB->x.pList, iTab) ) return 2;
-    if( pA->op!=TK_STRING
+  اگر( (pA->flags & (EP_Distinct|EP_Commuted))
+     != (pB->flags & (EP_Distinct|EP_Commuted)) ) واپس 2;
+  اگر( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
+    اگر( combinedFlags & EP_xIsSelect ) واپس 2;
+    اگر( (combinedFlags & EP_Fixed_ستون)==0
+     && sqlite3_اظہاریہ_Compare(pParse, pA->p_بایاں, pB->p_بایاں, iTab) ) واپس 2;
+    اگر( sqlite3_اظہاریہ_Compare(pParse, pA->p_دایاں, pB->p_دایاں, iTab) ) واپس 2;
+    اگر( sqlite3_اظہاریہ_List_Compare(pA->x.pList, pB->x.pList, iTab) ) واپس 2;
+    اگر( pA->op!=TK_STRING
      && pA->op!=TK_TRUEFALSE
      && ALWAYS((combinedFlags & EP_Reduced)==0)
     ){
-      if( pA->iColumn!=pB->iColumn ) return 2;
-      if( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) return 2;
-      if( pA->op!=TK_IN && pA->iTable!=pB->iTable && pA->iTable!=iTab ){
-        return 2;
+      اگر( pA->i_عمود!=pB->i_عمود ) واپس 2;
+      اگر( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) واپس 2;
+      اگر( pA->op!=TK_اندر && pA->i_جدول!=pB->i_جدول && pA->i_جدول!=iTab ){
+        واپس 2;
       }
     }
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -6808,29 +6808,29 @@ int sqlite3ExprCompare(
 ** Two NULL pointers are considered to be the same.  But a NULL pointer
 ** always differs from a non-NULL pointer.
 */
-int sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, int iTab){
-  int i;
-  if( pA==0 && pB==0 ) return 0;
-  if( pA==0 || pB==0 ) return 1;
-  if( pA->nExpr!=pB->nExpr ) return 1;
-  for(i=0; i<pA->nExpr; i++){
-    int res;
-    Expr *pExprA = pA->a[i].pExpr;
-    Expr *pExprB = pB->a[i].pExpr;
-    if( pA->a[i].fg.sortFlags!=pB->a[i].fg.sortFlags ) return 1;
-    if( (res = sqlite3ExprCompare(0, pExprA, pExprB, iTab)) ) return res;
+صحیح sqlite3_اظہاریہ_List_Compare(ثابت اظہاریہ_List *pA, ثابت اظہاریہ_List *pB, صحیح iTab){
+  صحیح i;
+  اگر( pA==0 && pB==0 ) واپس 0;
+  اگر( pA==0 || pB==0 ) واپس 1;
+  اگر( pA->n_اظہاریہ!=pB->n_اظہاریہ ) واپس 1;
+  برائے(i=0; i<pA->n_اظہاریہ; i++){
+    صحیح res;
+    اظہاریہ *p_اظہاریہ_A = pA->a[i].p_اظہاریہ;
+    اظہاریہ *p_اظہاریہ_B = pB->a[i].p_اظہاریہ;
+    اگر( pA->a[i].fg.ترتیب_دو_Flags!=pB->a[i].fg.ترتیب_دو_Flags ) واپس 1;
+    اگر( (res = sqlite3_اظہاریہ_Compare(0, p_اظہاریہ_A, p_اظہاریہ_B, iTab)) ) واپس res;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
 ** Like sqlite3ExprCompare() except COLLATE operators at the top-level
 ** are ignored.
 */
-int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
-  return sqlite3ExprCompare(0,
-             sqlite3ExprSkipCollate(pA),
-             sqlite3ExprSkipCollate(pB),
+صحیح sqlite3_اظہاریہ_Compare_Skip(اظہاریہ *pA,اظہاریہ *pB, صحیح iTab){
+  واپس sqlite3_اظہاریہ_Compare(0,
+             sqlite3_اظہاریہ_Skip_Collate(pA),
+             sqlite3_اظہاریہ_Skip_Collate(pB),
              iTab);
 }
 
@@ -6840,89 +6840,89 @@ int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
 ** Or if seenNot is true, return non-zero if Expr p can only be
 ** non-NULL if pNN is not NULL
 */
-static int exprImpliesNotNull(
-  const Parse *pParse,/* Parsing context */
-  const Expr *p,      /* The expression to be checked */
-  const Expr *pNN,    /* The expression that is NOT NULL */
-  int iTab,           /* Table being evaluated */
-  int seenNot         /* Return true only if p can be any non-NULL value */
+ساکن صحیح اظہاریہ_مستلزم_Not_Null(
+  ثابت Parse *pParse,/* Parsing context */
+  ثابت اظہاریہ *p,      /* The expression to be checked */
+  ثابت اظہاریہ *pNN,    /* The expression that is NOT NULL */
+  صحیح iTab,           /* Table being evaluated */
+  صحیح نظر_آیا_Not         /* Return true only if p can be any non-NULL value */
 ){
-  assert( p );
-  assert( pNN );
-  if( sqlite3ExprCompare(pParse, p, pNN, iTab)==0 ){
-    return pNN->op!=TK_NULL;
+  أكد( p );
+  أكد( pNN );
+  اگر( sqlite3_اظہاریہ_Compare(pParse, p, pNN, iTab)==0 ){
+    واپس pNN->op!=TK_NULL;
   }
-  switch( p->op ){
-    case TK_IN: {
-      if( seenNot && ExprHasProperty(p, EP_xIsSelect) ) return 0;
-      assert( ExprUseXSelect(p) || (p->x.pList!=0 && p->x.pList->nExpr>0) );
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+  انتخاب( p->op ){
+    حالت TK_اندر: {
+      اگر( نظر_آیا_Not && اظہاریہ_Has_Property(p, EP_xIsSelect) ) واپس 0;
+      أكد( اظہاریہ_Use_XSelect(p) || (p->x.pList!=0 && p->x.pList->n_اظہاریہ>0) );
+      واپس اظہاریہ_مستلزم_Not_Null(pParse, p->p_بایاں, pNN, iTab, 1);
     }
-    case TK_BETWEEN: {
-      ExprList *pList;
-      assert( ExprUseXList(p) );
+    حالت TK_BETWEEN: {
+      اظہاریہ_List *pList;
+      أكد( اظہاریہ_Use_XList(p) );
       pList = p->x.pList;
-      assert( pList!=0 );
-      assert( pList->nExpr==2 );
-      if( seenNot ) return 0;
-      if( exprImpliesNotNull(pParse, pList->a[0].pExpr, pNN, iTab, 1)
-       || exprImpliesNotNull(pParse, pList->a[1].pExpr, pNN, iTab, 1)
+      أكد( pList!=0 );
+      أكد( pList->n_اظہاریہ==2 );
+      اگر( نظر_آیا_Not ) واپس 0;
+      اگر( اظہاریہ_مستلزم_Not_Null(pParse, pList->a[0].p_اظہاریہ, pNN, iTab, 1)
+       || اظہاریہ_مستلزم_Not_Null(pParse, pList->a[1].p_اظہاریہ, pNN, iTab, 1)
       ){
-        return 1;
+        واپس 1;
       }
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      واپس اظہاریہ_مستلزم_Not_Null(pParse, p->p_بایاں, pNN, iTab, 1);
     }
-    case TK_EQ:
-    case TK_NE:
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_PLUS:
-    case TK_MINUS:
-    case TK_BITOR:
-    case TK_LSHIFT:
-    case TK_RSHIFT:
-    case TK_CONCAT:
-      seenNot = 1;
+    حالت TK_EQ:
+    حالت TK_NE:
+    حالت TK_LT:
+    حالت TK_LE:
+    حالت TK_GT:
+    حالت TK_GE:
+    حالت TK_PLUS:
+    حالت TK_MINUS:
+    حالت TK_BITOR:
+    حالت TK_LSHIFT:
+    حالت TK_RSHIFT:
+    حالت TK_CONCAT:
+      نظر_آیا_Not = 1;
       /* no break */ deliberate_fall_through
-    case TK_STAR:
-    case TK_REM:
-    case TK_BITAND:
-    case TK_SLASH: {
-      if( exprImpliesNotNull(pParse, p->pRight, pNN, iTab, seenNot) ) return 1;
+    حالت TK_ستارہ:
+    حالت TK_REM:
+    حالت TK_BITAND:
+    حالت TK_SLASH: {
+      اگر( اظہاریہ_مستلزم_Not_Null(pParse, p->p_دایاں, pNN, iTab, نظر_آیا_Not) ) واپس 1;
       /* no break */ deliberate_fall_through
     }
-    case TK_SPAN:
-    case TK_COLLATE:
-    case TK_UPLUS:
-    case TK_UMINUS: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, seenNot);
+    حالت TK_وسعت:
+    حالت TK_COLLATE:
+    حالت TK_UPLUS:
+    حالت TK_UMINUS: {
+      واپس اظہاریہ_مستلزم_Not_Null(pParse, p->p_بایاں, pNN, iTab, نظر_آیا_Not);
     }
-    case TK_TRUTH: {
-      if( seenNot ) return 0;
-      if( p->op2!=TK_IS ) return 0;
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+    حالت TK_TRUTH: {
+      اگر( نظر_آیا_Not ) واپس 0;
+      اگر( p->op2!=TK_IS ) واپس 0;
+      واپس اظہاریہ_مستلزم_Not_Null(pParse, p->p_بایاں, pNN, iTab, 1);
     }
-    case TK_BITNOT:
-    case TK_NOT: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+    حالت TK_BITNOT:
+    حالت TK_NOT: {
+      واپس اظہاریہ_مستلزم_Not_Null(pParse, p->p_بایاں, pNN, iTab, 1);
     }
   }
-  return 0;
+  واپس 0;
 }
 
 /*
 ** Return true if the boolean value of the expression is always either
 ** FALSE or NULL.
 */
-static int sqlite3ExprIsNotTrue(Expr *pExpr){
-  int v;
-  if( pExpr->op==TK_NULL ) return 1;
-  if( pExpr->op==TK_TRUEFALSE && sqlite3ExprTruthValue(pExpr)==0 ) return 1;
+ساکن صحیح sqlite3_اظہاریہ_Is_Not_True(اظہاریہ *p_اظہاریہ){
+  صحیح v;
+  اگر( p_اظہاریہ->op==TK_NULL ) واپس 1;
+  اگر( p_اظہاریہ->op==TK_TRUEFALSE && sqlite3_اظہاریہ_Truth_قدر(p_اظہاریہ)==0 ) واپس 1;
   v = 1;
-  if( sqlite3ExprIsInteger(pExpr, &v, 0, 0) && v==0 ) return 1;
-  return 0;
+  اگر( sqlite3_اظہاریہ_Is_Integer(p_اظہاریہ, &v, 0, 0) && v==0 ) واپس 1;
+  واپس 0;
 }
 
 /*
@@ -6935,31 +6935,31 @@ static int sqlite3ExprIsNotTrue(Expr *pExpr){
 **    iif(x,y,NULL)
 **    iif(x,y,false)
 */
-static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
-  ExprList *pList;
-  if( pExpr->op==TK_FUNCTION ){
-    const char *z = pExpr->u.zToken;
+ساکن صحیح sqlite3_اظہاریہ_Is_IIF(sqlite3 *db, ثابت اظہاریہ *p_اظہاریہ){
+  اظہاریہ_List *pList;
+  اگر( p_اظہاریہ->op==TK_FUNCTION ){
+    ثابت حرف *z = p_اظہاریہ->u.zToken;
     FuncDef *pDef;
-    if( (z[0]!='i' && z[0]!='I') ) return 0;
-    if( pExpr->x.pList==0 ) return 0;
-    pDef = sqlite3FindFunction(db, z, pExpr->x.pList->nExpr, ENC(db), 0);
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-    if( pDef==0 ) return 0;
-#else
-    if( NEVER(pDef==0) ) return 0;
-#endif
-    if( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) return 0;
-    if( SQLITE_PTR_TO_INT(pDef->pUserData)!=INLINEFUNC_iif ) return 0;
-  }else if( pExpr->op==TK_CASE ){
-    if( pExpr->pLeft!=0 ) return 0;
-  }else{
-    return 0;
+    اگر( (z[0]!='i' && z[0]!='I') ) واپس 0;
+    اگر( p_اظہاریہ->x.pList==0 ) واپس 0;
+    pDef = sqlite3_ڈھونڈو_Function(db, z, p_اظہاریہ->x.pList->n_اظہاریہ, ENC(db), 0);
+#اگر_تعریف_شدہ SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+    اگر( pDef==0 ) واپس 0;
+#ورنہ
+    اگر( NEVER(pDef==0) ) واپس 0;
+#اگر_ختم
+    اگر( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) واپس 0;
+    اگر( SQLITE_PTR_مقصد_INT(pDef->p_User_ڈیٹا)!=INLINEFUNC_iif ) واپس 0;
+  }ورنہ اگر( p_اظہاریہ->op==TK_CASE ){
+    اگر( p_اظہاریہ->p_بایاں!=0 ) واپس 0;
+  }ورنہ{
+    واپس 0;
   }
-  pList = pExpr->x.pList;
-  assert( pList!=0 );
-  if( pList->nExpr==2 ) return 1;
-  if( pList->nExpr==3 && sqlite3ExprIsNotTrue(pList->a[2].pExpr) ) return 1;
-  return 0;
+  pList = p_اظہاریہ->x.pList;
+  أكد( pList!=0 );
+  اگر( pList->n_اظہاریہ==2 ) واپس 1;
+  اگر( pList->n_اظہاریہ==3 && sqlite3_اظہاریہ_Is_Not_True(pList->a[2].p_اظہاریہ) ) واپس 1;
+  واپس 0;
 }
 
 /*
@@ -6989,42 +6989,42 @@ static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
 ** improvement.  Returning false might cause a performance reduction, but
 ** it will always give the correct answer and is hence always safe.
 */
-int sqlite3ExprImpliesExpr(
-  const Parse *pParse,
-  const Expr *pE1,
-  const Expr *pE2,
-  int iTab
+صحیح sqlite3_اظہاریہ_مستلزم_اظہاریہ(
+  ثابت Parse *pParse,
+  ثابت اظہاریہ *pE1,
+  ثابت اظہاریہ *pE2,
+  صحیح iTab
 ){
-  if( sqlite3ExprCompare(pParse, pE1, pE2, iTab)==0 ){
-    return 1;
+  اگر( sqlite3_اظہاریہ_Compare(pParse, pE1, pE2, iTab)==0 ){
+    واپس 1;
   }
-  if( pE2->op==TK_OR
-   && (sqlite3ExprImpliesExpr(pParse, pE1, pE2->pLeft, iTab)
-             || sqlite3ExprImpliesExpr(pParse, pE1, pE2->pRight, iTab) )
+  اگر( pE2->op==TK_OR
+   && (sqlite3_اظہاریہ_مستلزم_اظہاریہ(pParse, pE1, pE2->p_بایاں, iTab)
+             || sqlite3_اظہاریہ_مستلزم_اظہاریہ(pParse, pE1, pE2->p_دایاں, iTab) )
   ){
-    return 1;
+    واپس 1;
   }
-  if( pE2->op==TK_NOTNULL
-   && exprImpliesNotNull(pParse, pE1, pE2->pLeft, iTab, 0)
+  اگر( pE2->op==TK_NOTNULL
+   && اظہاریہ_مستلزم_Not_Null(pParse, pE1, pE2->p_بایاں, iTab, 0)
   ){
-    return 1;
+    واپس 1;
   }
-  if( sqlite3ExprIsIIF(pParse->db, pE1) ){
-    return sqlite3ExprImpliesExpr(pParse,pE1->x.pList->a[0].pExpr,pE2,iTab);
+  اگر( sqlite3_اظہاریہ_Is_IIF(pParse->db, pE1) ){
+    واپس sqlite3_اظہاریہ_مستلزم_اظہاریہ(pParse,pE1->x.pList->a[0].p_اظہاریہ,pE2,iTab);
   }
-  return 0;
+  واپس 0;
 }
 
 /* This is a helper function to impliesNotNullRow().  In this routine,
 ** set pWalker->eCode to one only if *both* of the input expressions
 ** separately have the implies-not-null-row property.
 */
-static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
-  if( pWalker->eCode==0 ){
-    sqlite3WalkExpr(pWalker, pE1);
-    if( pWalker->eCode ){
-      pWalker->eCode = 0;
-      sqlite3WalkExpr(pWalker, pE2);
+ساکن خالی both_Imply_Not_Null_صف(Walker *pWalker, اظہاریہ *pE1, اظہاریہ *pE2){
+  اگر( pWalker->e_رمز==0 ){
+    sqlite3_Walk_اظہاریہ(pWalker, pE1);
+    اگر( pWalker->e_رمز ){
+      pWalker->e_رمز = 0;
+      sqlite3_Walk_اظہاریہ(pWalker, pE2);
     }
   }
 }
@@ -7042,46 +7042,46 @@ static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
 ** pWalker->eCode to 1 when it should not be) are deadly, but false-negatives
 ** (never setting pWalker->eCode) is a harmless missed optimization.
 */
-static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
-  testcase( pExpr->op==TK_AGG_COLUMN );
-  testcase( pExpr->op==TK_AGG_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_OuterON) ) return WRC_Prune;
-  if( ExprHasProperty(pExpr, EP_InnerON) && pWalker->mWFlags ){
+ساکن صحیح مستلزم_Not_Null_صف(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  testcase( p_اظہاریہ->op==TK_AGG_عمود );
+  testcase( p_اظہاریہ->op==TK_AGG_FUNCTION );
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON) ) واپس WRC_Prune;
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_InnerON) && pWalker->mWFlags ){
     /* If iCur is used in an inner-join ON clause to the left of a
     ** RIGHT JOIN, that does *not* mean that the table must be non-null.
     ** But it is difficult to check for that condition precisely.
     ** To keep things simple, any use of iCur from any inner-join is
     ** ignored while attempting to simplify a RIGHT JOIN. */
-    return WRC_Prune;
+    واپس WRC_Prune;
   }
-  switch( pExpr->op ){
-    case TK_ISNOT:
-    case TK_ISNULL:
-    case TK_NOTNULL:
-    case TK_IS:
-    case TK_VECTOR:
-    case TK_FUNCTION:
-    case TK_TRUTH:
-    case TK_CASE:
-      testcase( pExpr->op==TK_ISNOT );
-      testcase( pExpr->op==TK_ISNULL );
-      testcase( pExpr->op==TK_NOTNULL );
-      testcase( pExpr->op==TK_IS );
-      testcase( pExpr->op==TK_VECTOR );
-      testcase( pExpr->op==TK_FUNCTION );
-      testcase( pExpr->op==TK_TRUTH );
-      testcase( pExpr->op==TK_CASE );
-      return WRC_Prune;
+  انتخاب( p_اظہاریہ->op ){
+    حالت TK_ISNOT:
+    حالت TK_ISNULL:
+    حالت TK_NOTNULL:
+    حالت TK_IS:
+    حالت TK_سمتیہ:
+    حالت TK_FUNCTION:
+    حالت TK_TRUTH:
+    حالت TK_CASE:
+      testcase( p_اظہاریہ->op==TK_ISNOT );
+      testcase( p_اظہاریہ->op==TK_ISNULL );
+      testcase( p_اظہاریہ->op==TK_NOTNULL );
+      testcase( p_اظہاریہ->op==TK_IS );
+      testcase( p_اظہاریہ->op==TK_سمتیہ );
+      testcase( p_اظہاریہ->op==TK_FUNCTION );
+      testcase( p_اظہاریہ->op==TK_TRUTH );
+      testcase( p_اظہاریہ->op==TK_CASE );
+      واپس WRC_Prune;
 
-    case TK_COLUMN:
-      if( pWalker->u.iCur==pExpr->iTable ){
-        pWalker->eCode = 1;
-        return WRC_Abort;
+    حالت TK_عمود:
+      اگر( pWalker->u.iCur==p_اظہاریہ->i_جدول ){
+        pWalker->e_رمز = 1;
+        واپس WRC_Abort;
       }
-      return WRC_Prune;
+      واپس WRC_Prune;
 
-    case TK_OR:
-    case TK_AND:
+    حالت TK_OR:
+    حالت TK_AND:
       /* Both sides of an AND or OR must separately imply non-null-row.
       ** Consider these cases:
       **    1.  NOT (x AND y)
@@ -7089,65 +7089,65 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       ** If only one of x or y is non-null-row, then the overall expression
       ** can be true if the other arm is false (case 1) or true (case 2).
       */
-      testcase( pExpr->op==TK_OR );
-      testcase( pExpr->op==TK_AND );
-      bothImplyNotNullRow(pWalker, pExpr->pLeft, pExpr->pRight);
-      return WRC_Prune;
+      testcase( p_اظہاریہ->op==TK_OR );
+      testcase( p_اظہاریہ->op==TK_AND );
+      both_Imply_Not_Null_صف(pWalker, p_اظہاریہ->p_بایاں, p_اظہاریہ->p_دایاں);
+      واپس WRC_Prune;
        
-    case TK_IN:
+    حالت TK_اندر:
       /* Beware of "x NOT IN ()" and "x NOT IN (SELECT 1 WHERE false)",
       ** both of which can be true.  But apart from these cases, if
       ** the left-hand side of the IN is NULL then the IN itself will be
       ** NULL. */
-      if( ExprUseXList(pExpr) && ALWAYS(pExpr->x.pList->nExpr>0) ){
-        sqlite3WalkExpr(pWalker, pExpr->pLeft);
+      اگر( اظہاریہ_Use_XList(p_اظہاریہ) && ALWAYS(p_اظہاریہ->x.pList->n_اظہاریہ>0) ){
+        sqlite3_Walk_اظہاریہ(pWalker, p_اظہاریہ->p_بایاں);
       }
-      return WRC_Prune;
+      واپس WRC_Prune;
 
-    case TK_BETWEEN:
+    حالت TK_BETWEEN:
       /* In "x NOT BETWEEN y AND z" either x must be non-null-row or else
       ** both y and z must be non-null row */
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr==2 );
-      sqlite3WalkExpr(pWalker, pExpr->pLeft);
-      bothImplyNotNullRow(pWalker, pExpr->x.pList->a[0].pExpr,
-                                   pExpr->x.pList->a[1].pExpr);
-      return WRC_Prune;
+      أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+      أكد( p_اظہاریہ->x.pList->n_اظہاریہ==2 );
+      sqlite3_Walk_اظہاریہ(pWalker, p_اظہاریہ->p_بایاں);
+      both_Imply_Not_Null_صف(pWalker, p_اظہاریہ->x.pList->a[0].p_اظہاریہ,
+                                   p_اظہاریہ->x.pList->a[1].p_اظہاریہ);
+      واپس WRC_Prune;
 
     /* Virtual tables are allowed to use constraints like x=NULL.  So
     ** a term of the form x=y does not prove that y is not null if x
     ** is the column of a virtual table */
-    case TK_EQ:
-    case TK_NE:
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE: {
-      Expr *pLeft = pExpr->pLeft;
-      Expr *pRight = pExpr->pRight;
-      testcase( pExpr->op==TK_EQ );
-      testcase( pExpr->op==TK_NE );
-      testcase( pExpr->op==TK_LT );
-      testcase( pExpr->op==TK_LE );
-      testcase( pExpr->op==TK_GT );
-      testcase( pExpr->op==TK_GE );
+    حالت TK_EQ:
+    حالت TK_NE:
+    حالت TK_LT:
+    حالت TK_LE:
+    حالت TK_GT:
+    حالت TK_GE: {
+      اظہاریہ *p_بایاں = p_اظہاریہ->p_بایاں;
+      اظہاریہ *p_دایاں = p_اظہاریہ->p_دایاں;
+      testcase( p_اظہاریہ->op==TK_EQ );
+      testcase( p_اظہاریہ->op==TK_NE );
+      testcase( p_اظہاریہ->op==TK_LT );
+      testcase( p_اظہاریہ->op==TK_LE );
+      testcase( p_اظہاریہ->op==TK_GT );
+      testcase( p_اظہاریہ->op==TK_GE );
       /* The y.pTab=0 assignment in wherecode.c always happens after the
       ** impliesNotNullRow() test */
-      assert( pLeft->op!=TK_COLUMN || ExprUseYTab(pLeft) );
-      assert( pRight->op!=TK_COLUMN || ExprUseYTab(pRight) );
-      if( (pLeft->op==TK_COLUMN
-           && ALWAYS(pLeft->y.pTab!=0)
-           && IsVirtual(pLeft->y.pTab))
-       || (pRight->op==TK_COLUMN
-           && ALWAYS(pRight->y.pTab!=0)
-           && IsVirtual(pRight->y.pTab))
+      أكد( p_بایاں->op!=TK_عمود || اظہاریہ_Use_YTab(p_بایاں) );
+      أكد( p_دایاں->op!=TK_عمود || اظہاریہ_Use_YTab(p_دایاں) );
+      اگر( (p_بایاں->op==TK_عمود
+           && ALWAYS(p_بایاں->y.pTab!=0)
+           && IsVirtual(p_بایاں->y.pTab))
+       || (p_دایاں->op==TK_عمود
+           && ALWAYS(p_دایاں->y.pTab!=0)
+           && IsVirtual(p_دایاں->y.pTab))
       ){
-        return WRC_Prune;
+        واپس WRC_Prune;
       }
       /* no break */ deliberate_fall_through
     }
-    default:
-      return WRC_Continue;
+    طےشدہ:
+      واپس WRC_Continue;
   }
 }
 
@@ -7173,26 +7173,26 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
 ** be non-NULL, then the LEFT JOIN can be safely converted into an
 ** ordinary join.
 */
-int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
+صحیح sqlite3_اظہاریہ_مستلزم_Non_Null_صف(اظہاریہ *p, صحیح iTab, صحیح isRJ){
   Walker w;
-  p = sqlite3ExprSkipCollateAndLikely(p);
-  if( p==0 ) return 0;
-  if( p->op==TK_NOTNULL ){
-    p = p->pLeft;
-  }else{
-    while( p->op==TK_AND ){
-      if( sqlite3ExprImpliesNonNullRow(p->pLeft, iTab, isRJ) ) return 1;
-      p = p->pRight;
+  p = sqlite3_اظہاریہ_Skip_Collate_And_Likely(p);
+  اگر( p==0 ) واپس 0;
+  اگر( p->op==TK_NOTNULL ){
+    p = p->p_بایاں;
+  }ورنہ{
+    جب( p->op==TK_AND ){
+      اگر( sqlite3_اظہاریہ_مستلزم_Non_Null_صف(p->p_بایاں, iTab, isRJ) ) واپس 1;
+      p = p->p_دایاں;
     }
   }
-  w.xExprCallback = impliesNotNullRow;
+  w.x_اظہاریہ_Callback = مستلزم_Not_Null_صف;
   w.xSelectCallback = 0;
   w.xSelectCallback2 = 0;
-  w.eCode = 0;
+  w.e_رمز = 0;
   w.mWFlags = isRJ!=0;
   w.u.iCur = iTab;
-  sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  sqlite3_Walk_اظہاریہ(&w, p);
+  واپس w.e_رمز;
 }
 
 /*
@@ -7202,9 +7202,9 @@ int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
 ** table entry.  The IdxCover.pIdx field is the index.  IdxCover.iCur
 ** is the cursor for the table.
 */
-struct IdxCover {
-  Index *pIdx;     /* The index to be tested for coverage */
-  int iCur;        /* Cursor number for the table corresponding to the index */
+ساخت IdxCover {
+  اشاریہ *pIdx;     /* The index to be tested for coverage */
+  صحیح iCur;        /* Cursor number for the table corresponding to the index */
 };
 
 /*
@@ -7212,15 +7212,15 @@ struct IdxCover {
 ** pWalker->u.pIdxCover->iCur can be satisfied using the index
 ** pWalker->u.pIdxCover->pIdx.
 */
-static int exprIdxCover(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
-   && pExpr->iTable==pWalker->u.pIdxCover->iCur
-   && sqlite3TableColumnToIndex(pWalker->u.pIdxCover->pIdx, pExpr->iColumn)<0
+ساکن صحیح اظہاریہ_Idx_Cover(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اگر( p_اظہاریہ->op==TK_عمود
+   && p_اظہاریہ->i_جدول==pWalker->u.pIdxCover->iCur
+   && sqlite3_جدول_عمود_مقصد_اشاریہ(pWalker->u.pIdxCover->pIdx, p_اظہاریہ->i_عمود)<0
   ){
-    pWalker->eCode = 1;
-    return WRC_Abort;
+    pWalker->e_رمز = 1;
+    واپس WRC_Abort;
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
@@ -7233,31 +7233,31 @@ static int exprIdxCover(Walker *pWalker, Expr *pExpr){
 ** evaluated using only the index and without having to lookup the
 ** corresponding table entry.
 */
-int sqlite3ExprCoveredByIndex(
-  Expr *pExpr,        /* The index to be tested */
-  int iCur,           /* The cursor number for the corresponding table */
-  Index *pIdx         /* The index that might be used for coverage */
+صحیح sqlite3_اظہاریہ_Covered_By_اشاریہ(
+  اظہاریہ *p_اظہاریہ,        /* The index to be tested */
+  صحیح iCur,           /* The cursor number for the corresponding table */
+  اشاریہ *pIdx         /* The index that might be used for coverage */
 ){
   Walker w;
-  struct IdxCover xcov;
-  memset(&w, 0, sizeof(w));
+  ساخت IdxCover xcov;
+  memset(&w, 0, حجم(w));
   xcov.iCur = iCur;
   xcov.pIdx = pIdx;
-  w.xExprCallback = exprIdxCover;
+  w.x_اظہاریہ_Callback = اظہاریہ_Idx_Cover;
   w.u.pIdxCover = &xcov;
-  sqlite3WalkExpr(&w, pExpr);
-  return !w.eCode;
+  sqlite3_Walk_اظہاریہ(&w, p_اظہاریہ);
+  واپس !w.e_رمز;
 }
 
 
 /* Structure used to pass information throughout the Walker in order to
 ** implement sqlite3ReferencesSrcList().
 */
-struct RefSrcList {
+ساخت RefSrcList {
   sqlite3 *db;         /* Database connection used for sqlite3DbRealloc() */
   SrcList *pRef;       /* Looking for references to these tables */
   i64 nExclude;        /* Number of tables to exclude from the search */
-  int *aiExclude;      /* Cursor IDs for tables to exclude from the search */
+  صحیح *aiExclude;      /* Cursor IDs for tables to exclude from the search */
 };
 
 /*
@@ -7268,31 +7268,31 @@ struct RefSrcList {
 **
 ** When leaving the subquery, remove those entries from the exclude list.
 */
-static int selectRefEnter(Walker *pWalker, Select *pSelect){
-  struct RefSrcList *p = pWalker->u.pRefSrcList;
+ساکن صحیح selectRefEnter(Walker *pWalker, Select *pSelect){
+  ساخت RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
   i64 i, j;
-  int *piNew;
-  if( pSrc->nSrc==0 ) return WRC_Continue;
+  صحیح *piNew;
+  اگر( pSrc->nSrc==0 ) واپس WRC_Continue;
   j = p->nExclude;
   p->nExclude += pSrc->nSrc;
-  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*sizeof(int));
-  if( piNew==0 ){
+  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*حجم(صحیح));
+  اگر( piNew==0 ){
     p->nExclude = 0;
-    return WRC_Abort;
-  }else{
+    واپس WRC_Abort;
+  }ورنہ{
     p->aiExclude = piNew;
   }
-  for(i=0; i<pSrc->nSrc; i++, j++){
+  برائے(i=0; i<pSrc->nSrc; i++, j++){
      p->aiExclude[j] = pSrc->a[i].iCursor;
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
-static void selectRefLeave(Walker *pWalker, Select *pSelect){
-  struct RefSrcList *p = pWalker->u.pRefSrcList;
+ساکن خالی selectRefLeave(Walker *pWalker, Select *pSelect){
+  ساخت RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
-  if( p->nExclude ){
-    assert( p->nExclude>=pSrc->nSrc );
+  اگر( p->nExclude ){
+    أكد( p->nExclude>=pSrc->nSrc );
     p->nExclude -= pSrc->nSrc;
   }
 }
@@ -7305,26 +7305,26 @@ static void selectRefLeave(Walker *pWalker, Select *pSelect){
 ** Set the 0x02 bit of pWalker->eCode if there is a reference to a
 ** table is in neither RefSrcList.pRef nor RefSrcList.aiExclude.
 */
-static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
-   || pExpr->op==TK_AGG_COLUMN
+ساکن صحیح اظہاریہ_Ref_مقصد_Src_List(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اگر( p_اظہاریہ->op==TK_عمود
+   || p_اظہاریہ->op==TK_AGG_عمود
   ){
-    int i;
-    struct RefSrcList *p = pWalker->u.pRefSrcList;
+    صحیح i;
+    ساخت RefSrcList *p = pWalker->u.pRefSrcList;
     SrcList *pSrc = p->pRef;
-    int nSrc = pSrc ? pSrc->nSrc : 0;
-    for(i=0; i<nSrc; i++){
-      if( pExpr->iTable==pSrc->a[i].iCursor ){
-        pWalker->eCode |= 1;
-        return WRC_Continue;
+    صحیح nSrc = pSrc ? pSrc->nSrc : 0;
+    برائے(i=0; i<nSrc; i++){
+      اگر( p_اظہاریہ->i_جدول==pSrc->a[i].iCursor ){
+        pWalker->e_رمز |= 1;
+        واپس WRC_Continue;
       }
     }
-    for(i=0; i<p->nExclude && p->aiExclude[i]!=pExpr->iTable; i++){}
-    if( i>=p->nExclude ){
-      pWalker->eCode |= 2;
+    برائے(i=0; i<p->nExclude && p->aiExclude[i]!=p_اظہاریہ->i_جدول; i++){}
+    اگر( i>=p->nExclude ){
+      pWalker->e_رمز |= 2;
     }
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
@@ -7342,39 +7342,39 @@ static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
 ** As currently used, pExpr is always an aggregate function call.  That
 ** fact is exploited for efficiency.
 */
-int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
+صحیح sqlite3ReferencesSrcList(Parse *pParse, اظہاریہ *p_اظہاریہ, SrcList *pSrcList){
   Walker w;
-  struct RefSrcList x;
-  assert( pParse->db!=0 );
-  memset(&w, 0, sizeof(w));
-  memset(&x, 0, sizeof(x));
-  w.xExprCallback = exprRefToSrcList;
+  ساخت RefSrcList x;
+  أكد( pParse->db!=0 );
+  memset(&w, 0, حجم(w));
+  memset(&x, 0, حجم(x));
+  w.x_اظہاریہ_Callback = اظہاریہ_Ref_مقصد_Src_List;
   w.xSelectCallback = selectRefEnter;
   w.xSelectCallback2 = selectRefLeave;
   w.u.pRefSrcList = &x;
   x.db = pParse->db;
   x.pRef = pSrcList;
-  assert( pExpr->op==TK_AGG_FUNCTION );
-  assert( ExprUseXList(pExpr) );
-  sqlite3WalkExprList(&w, pExpr->x.pList);
-  if( pExpr->pLeft ){
-    assert( pExpr->pLeft->op==TK_ORDER );
-    assert( ExprUseXList(pExpr->pLeft) );
-    assert( pExpr->pLeft->x.pList!=0 );
-    sqlite3WalkExprList(&w, pExpr->pLeft->x.pList);
+  أكد( p_اظہاریہ->op==TK_AGG_FUNCTION );
+  أكد( اظہاریہ_Use_XList(p_اظہاریہ) );
+  sqlite3_Walk_اظہاریہ_List(&w, p_اظہاریہ->x.pList);
+  اگر( p_اظہاریہ->p_بایاں ){
+    أكد( p_اظہاریہ->p_بایاں->op==TK_ترتیب );
+    أكد( اظہاریہ_Use_XList(p_اظہاریہ->p_بایاں) );
+    أكد( p_اظہاریہ->p_بایاں->x.pList!=0 );
+    sqlite3_Walk_اظہاریہ_List(&w, p_اظہاریہ->p_بایاں->x.pList);
   }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( ExprHasProperty(pExpr, EP_WinFunc) ){
-    sqlite3WalkExpr(&w, pExpr->y.pWin->pFilter);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WINDOWFUNC
+  اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_WinFunc) ){
+    sqlite3_Walk_اظہاریہ(&w, p_اظہاریہ->y.pWin->pFilter);
   }
-#endif
-  if( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
-  if( w.eCode & 0x01 ){
-    return 1;
-  }else if( w.eCode ){
-    return 0;
-  }else{
-    return -1;
+#اگر_ختم
+  اگر( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
+  اگر( w.e_رمز & 0x01 ){
+    واپس 1;
+  }ورنہ اگر( w.e_رمز ){
+    واپس 0;
+  }ورنہ{
+    واپس -1;
   }
 }
 
@@ -7389,47 +7389,47 @@ int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
 ** The copy is scheduled for deletion using the sqlite3ExprDeferredDelete()
 ** which builds on the sqlite3ParserAddCleanup() mechanism.
 */
-static int agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
-  if( ALWAYS(!ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced))
-   && pExpr->pAggInfo!=0
+ساکن صحیح agginfo_Persist_اظہاریہ_Cb(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اگر( ALWAYS(!اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly|EP_Reduced))
+   && p_اظہاریہ->pAggInfo!=0
   ){
-    AggInfo *pAggInfo = pExpr->pAggInfo;
-    int iAgg = pExpr->iAgg;
+    AggInfo *pAggInfo = p_اظہاریہ->pAggInfo;
+    صحیح iAgg = p_اظہاریہ->iAgg;
     Parse *pParse = pWalker->pParse;
     sqlite3 *db = pParse->db;
-    assert( iAgg>=0 );
-    if( pExpr->op!=TK_AGG_FUNCTION ){
-      if( iAgg<pAggInfo->nColumn
-       && pAggInfo->aCol[iAgg].pCExpr==pExpr
+    أكد( iAgg>=0 );
+    اگر( p_اظہاریہ->op!=TK_AGG_FUNCTION ){
+      اگر( iAgg<pAggInfo->n_عمود
+       && pAggInfo->a_ستون[iAgg].pCExpr==p_اظہاریہ
       ){
-        pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
-          pAggInfo->aCol[iAgg].pCExpr = pExpr;
+        p_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ, 0);
+        اگر( p_اظہاریہ && !sqlite3_اظہاریہ_Deferred_Delete(pParse, p_اظہاریہ) ){
+          pAggInfo->a_ستون[iAgg].pCExpr = p_اظہاریہ;
         }
       }
-    }else{
-      assert( pExpr->op==TK_AGG_FUNCTION );
-      if( ALWAYS(iAgg<pAggInfo->nFunc)
-       && pAggInfo->aFunc[iAgg].pFExpr==pExpr
+    }ورنہ{
+      أكد( p_اظہاریہ->op==TK_AGG_FUNCTION );
+      اگر( ALWAYS(iAgg<pAggInfo->nFunc)
+       && pAggInfo->aFunc[iAgg].pFExpr==p_اظہاریہ
       ){
-        pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
-          pAggInfo->aFunc[iAgg].pFExpr = pExpr;
+        p_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ, 0);
+        اگر( p_اظہاریہ && !sqlite3_اظہاریہ_Deferred_Delete(pParse, p_اظہاریہ) ){
+          pAggInfo->aFunc[iAgg].pFExpr = p_اظہاریہ;
         }
       }
     }
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
 ** Initialize a Walker object so that will persist AggInfo entries referenced
 ** by the tree that is walked.
 */
-void sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
-  memset(pWalker, 0, sizeof(*pWalker));
+خالی sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
+  memset(pWalker, 0, حجم(*pWalker));
   pWalker->pParse = pParse;
-  pWalker->xExprCallback = agginfoPersistExprCb;
+  pWalker->x_اظہاریہ_Callback = agginfo_Persist_اظہاریہ_Cb;
   pWalker->xSelectCallback = sqlite3SelectWalkNoop;
 }
 
@@ -7437,32 +7437,32 @@ void sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
 ** Add a new element to the pAggInfo->aCol[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
-  int i;
-  pInfo->aCol = sqlite3ArrayAllocate(
+ساکن صحیح جوڑو_Agg_Info_عمود(sqlite3 *db, AggInfo *pInfo){
+  صحیح i;
+  pInfo->a_ستون = sqlite3ArrayAllocate(
        db,
-       pInfo->aCol,
-       sizeof(pInfo->aCol[0]),
-       &pInfo->nColumn,
+       pInfo->a_ستون,
+       حجم(pInfo->a_ستون[0]),
+       &pInfo->n_عمود,
        &i
   );
-  return i;
+  واپس i;
 }   
 
 /*
 ** Add a new element to the pAggInfo->aFunc[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
-  int i;
+ساکن صحیح جوڑو_Agg_Info_Func(sqlite3 *db, AggInfo *pInfo){
+  صحیح i;
   pInfo->aFunc = sqlite3ArrayAllocate(
        db,
        pInfo->aFunc,
-       sizeof(pInfo->aFunc[0]),
+       حجم(pInfo->aFunc[0]),
        &pInfo->nFunc,
        &i
   );
-  return i;
+  واپس i;
 }
 
 /*
@@ -7472,72 +7472,72 @@ static int addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
 ** If no prior entry is found, create a new one and return -1.  The
 ** new column will have an index of pAggInfo->nColumn-1.
 */
-static void findOrCreateAggInfoColumn(
+ساکن خالی ڈھونڈو_Or_Create_Agg_Info_عمود(
   Parse *pParse,       /* Parsing context */
   AggInfo *pAggInfo,   /* The AggInfo object to search and/or modify */
-  Expr *pExpr          /* Expr describing the column to find or insert */
+  اظہاریہ *p_اظہاریہ          /* Expr describing the column to find or insert */
 ){
-  struct AggInfo_col *pCol;
-  int k;
-  int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+  ساخت Agg_Info_ستون *p_ستون;
+  صحیح k;
+  صحیح mx_رکن = pParse->db->a_حد_بندی[SQLITE_حد_بندی_عمود];
 
-  assert( mxTerm <= SMXV(i16) );
-  assert( pAggInfo->iFirstReg==0 );
-  pCol = pAggInfo->aCol;
-  for(k=0; k<pAggInfo->nColumn; k++, pCol++){
-    if( pCol->pCExpr==pExpr ) return;
-    if( pCol->iTable==pExpr->iTable
-     && pCol->iColumn==pExpr->iColumn
-     && pExpr->op!=TK_IF_NULL_ROW
+  أكد( mx_رکن <= SMXV(i16) );
+  أكد( pAggInfo->i_پہلا_Reg==0 );
+  p_ستون = pAggInfo->a_ستون;
+  برائے(k=0; k<pAggInfo->n_عمود; k++, p_ستون++){
+    اگر( p_ستون->pCExpr==p_اظہاریہ ) واپس;
+    اگر( p_ستون->i_جدول==p_اظہاریہ->i_جدول
+     && p_ستون->i_عمود==p_اظہاریہ->i_عمود
+     && p_اظہاریہ->op!=TK_IF_NULL_صف
     ){
-      goto fix_up_expr;
+      جاؤ fix_اوپر_اظہاریہ;
     }
   }
-  k = addAggInfoColumn(pParse->db, pAggInfo);
-  if( k<0 ){
+  k = جوڑو_Agg_Info_عمود(pParse->db, pAggInfo);
+  اگر( k<0 ){
     /* OOM on resize */
-    assert( pParse->db->mallocFailed );
-    return;
+    أكد( pParse->db->mallocFailed );
+    واپس;
   }
-  if( k>mxTerm ){
-    sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
-    k = mxTerm;
+  اگر( k>mx_رکن ){
+    sqlite3_Error_پیغام(pParse, "more than %d aggregate terms", mx_رکن);
+    k = mx_رکن;
   }
-  pCol = &pAggInfo->aCol[k];
-  assert( ExprUseYTab(pExpr) );
-  pCol->pTab = pExpr->y.pTab;
-  pCol->iTable = pExpr->iTable;
-  pCol->iColumn = pExpr->iColumn;
-  pCol->iSorterColumn = -1;
-  pCol->pCExpr = pExpr;
-  if( pAggInfo->pGroupBy && pExpr->op!=TK_IF_NULL_ROW ){
-    int j, n;
-    ExprList *pGB = pAggInfo->pGroupBy;
-    struct ExprList_item *pTerm = pGB->a;
-    n = pGB->nExpr;
-    for(j=0; j<n; j++, pTerm++){
-      Expr *pE = pTerm->pExpr;
-      if( pE->op==TK_COLUMN
-       && pE->iTable==pExpr->iTable
-       && pE->iColumn==pExpr->iColumn
+  p_ستون = &pAggInfo->a_ستون[k];
+  أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+  p_ستون->pTab = p_اظہاریہ->y.pTab;
+  p_ستون->i_جدول = p_اظہاریہ->i_جدول;
+  p_ستون->i_عمود = p_اظہاریہ->i_عمود;
+  p_ستون->i_Sorter_عمود = -1;
+  p_ستون->pCExpr = p_اظہاریہ;
+  اگر( pAggInfo->p_گروہ_By && p_اظہاریہ->op!=TK_IF_NULL_صف ){
+    صحیح j, n;
+    اظہاریہ_List *pGB = pAggInfo->p_گروہ_By;
+    ساخت اظہاریہ_List_شے *p_رکن = pGB->a;
+    n = pGB->n_اظہاریہ;
+    برائے(j=0; j<n; j++, p_رکن++){
+      اظہاریہ *pE = p_رکن->p_اظہاریہ;
+      اگر( pE->op==TK_عمود
+       && pE->i_جدول==p_اظہاریہ->i_جدول
+       && pE->i_عمود==p_اظہاریہ->i_عمود
       ){
-        pCol->iSorterColumn = j;
-        break;
+        p_ستون->i_Sorter_عمود = j;
+        توڑو;
       }
     }
   }
-  if( pCol->iSorterColumn<0 ){
-    pCol->iSorterColumn = pAggInfo->nSortingColumn++;
+  اگر( p_ستون->i_Sorter_عمود<0 ){
+    p_ستون->i_Sorter_عمود = pAggInfo->n_ترتیب_کاری_عمود++;
   }
-fix_up_expr:
-  ExprSetVVAProperty(pExpr, EP_NoReduce);
-  assert( pExpr->pAggInfo==0 || pExpr->pAggInfo==pAggInfo );
-  pExpr->pAggInfo = pAggInfo;
-  if( pExpr->op==TK_COLUMN ){
-    pExpr->op = TK_AGG_COLUMN;
+fix_اوپر_اظہاریہ:
+  اظہاریہ_سیٹ_VVAProperty(p_اظہاریہ, EP_NoReduce);
+  أكد( p_اظہاریہ->pAggInfo==0 || p_اظہاریہ->pAggInfo==pAggInfo );
+  p_اظہاریہ->pAggInfo = pAggInfo;
+  اگر( p_اظہاریہ->op==TK_عمود ){
+    p_اظہاریہ->op = TK_AGG_عمود;
   }
-  assert( k <= SMXV(pExpr->iAgg) );
-  pExpr->iAgg = (i16)k;
+  أكد( k <= SMXV(p_اظہاریہ->iAgg) );
+  p_اظہاریہ->iAgg = (i16)k;
 }
 
 /*
@@ -7545,161 +7545,161 @@ fix_up_expr:
 ** implement sqlite3ExprAnalyzeAggregates().  See sqlite3ExprAnalyzeAggregates
 ** for additional information.
 */
-static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
-  int i;
+ساکن صحیح analyzeAggregate(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  صحیح i;
   NameContext *pNC = pWalker->u.pNC;
   Parse *pParse = pNC->pParse;
   SrcList *pSrcList = pNC->pSrcList;
   AggInfo *pAggInfo = pNC->uNC.pAggInfo;
 
-  assert( pNC->ncFlags & NC_UAggInfo );
-  assert( pAggInfo->iFirstReg==0 );
-  switch( pExpr->op ){
-    default: {
-      IndexedExpr *pIEpr;
-      Expr tmp;
-      assert( pParse->iSelfTab==0 );
-      if( (pNC->ncFlags & NC_InAggFunc)==0 ) break;
-      if( pParse->pIdxEpr==0 ) break;
-      for(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
-        int iDataCur = pIEpr->iDataCur;
-        if( iDataCur<0 ) continue;
-        if( sqlite3ExprCompare(0, pExpr, pIEpr->pExpr, iDataCur)==0 ) break;
+  أكد( pNC->ncFlags & NC_UAggInfo );
+  أكد( pAggInfo->i_پہلا_Reg==0 );
+  انتخاب( p_اظہاریہ->op ){
+    طےشدہ: {
+      اشاریہ_دار_اظہاریہ *pIEpr;
+      اظہاریہ tmp;
+      أكد( pParse->iSelfTab==0 );
+      اگر( (pNC->ncFlags & NC_اندر_Agg_Func)==0 ) توڑو;
+      اگر( pParse->pIdxEpr==0 ) توڑو;
+      برائے(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
+        صحیح i_ڈیٹا_Cur = pIEpr->i_ڈیٹا_Cur;
+        اگر( i_ڈیٹا_Cur<0 ) جاری;
+        اگر( sqlite3_اظہاریہ_Compare(0, p_اظہاریہ, pIEpr->p_اظہاریہ, i_ڈیٹا_Cur)==0 ) توڑو;
       }
-      if( pIEpr==0 ) break;
-      if( NEVER(!ExprUseYTab(pExpr)) ) break;
-      for(i=0; i<pSrcList->nSrc; i++){
-         if( pSrcList->a[i].iCursor==pIEpr->iDataCur ){
+      اگر( pIEpr==0 ) توڑو;
+      اگر( NEVER(!اظہاریہ_Use_YTab(p_اظہاریہ)) ) توڑو;
+      برائے(i=0; i<pSrcList->nSrc; i++){
+         اگر( pSrcList->a[i].iCursor==pIEpr->i_ڈیٹا_Cur ){
            testcase( i>0 );
-           break;
+           توڑو;
          }
       }
-      if( i>=pSrcList->nSrc ) break;
-      if( NEVER(pExpr->pAggInfo!=0) ) break; /* Resolved by outer context */
-      if( pParse->nErr ){ return WRC_Abort; }
+      اگر( i>=pSrcList->nSrc ) توڑو;
+      اگر( NEVER(p_اظہاریہ->pAggInfo!=0) ) توڑو; /* Resolved by outer context */
+      اگر( pParse->nErr ){ واپس WRC_Abort; }
 
       /* If we reach this point, it means that expression pExpr can be
       ** translated into a reference to an index column as described by
       ** pIEpr.
       */
-      memset(&tmp, 0, sizeof(tmp));
-      tmp.op = TK_AGG_COLUMN;
-      tmp.iTable = pIEpr->iIdxCur;
-      tmp.iColumn = pIEpr->iIdxCol;
-      findOrCreateAggInfoColumn(pParse, pAggInfo, &tmp);
-      if( pParse->nErr ){ return WRC_Abort; }
-      assert( pAggInfo->aCol!=0 );
-      assert( tmp.iAgg<pAggInfo->nColumn );
-      pAggInfo->aCol[tmp.iAgg].pCExpr = pExpr;
-      pExpr->pAggInfo = pAggInfo;
-      pExpr->iAgg = tmp.iAgg;
-      return WRC_Prune;
+      memset(&tmp, 0, حجم(tmp));
+      tmp.op = TK_AGG_عمود;
+      tmp.i_جدول = pIEpr->iIdxCur;
+      tmp.i_عمود = pIEpr->i_Idx_ستون;
+      ڈھونڈو_Or_Create_Agg_Info_عمود(pParse, pAggInfo, &tmp);
+      اگر( pParse->nErr ){ واپس WRC_Abort; }
+      أكد( pAggInfo->a_ستون!=0 );
+      أكد( tmp.iAgg<pAggInfo->n_عمود );
+      pAggInfo->a_ستون[tmp.iAgg].pCExpr = p_اظہاریہ;
+      p_اظہاریہ->pAggInfo = pAggInfo;
+      p_اظہاریہ->iAgg = tmp.iAgg;
+      واپس WRC_Prune;
     }
-    case TK_IF_NULL_ROW:
-    case TK_AGG_COLUMN:
-    case TK_COLUMN: {
-      testcase( pExpr->op==TK_AGG_COLUMN );
-      testcase( pExpr->op==TK_COLUMN );
-      testcase( pExpr->op==TK_IF_NULL_ROW );
+    حالت TK_IF_NULL_صف:
+    حالت TK_AGG_عمود:
+    حالت TK_عمود: {
+      testcase( p_اظہاریہ->op==TK_AGG_عمود );
+      testcase( p_اظہاریہ->op==TK_عمود );
+      testcase( p_اظہاریہ->op==TK_IF_NULL_صف );
       /* Check to see if the column is in one of the tables in the FROM
       ** clause of the aggregate query */
-      if( ALWAYS(pSrcList!=0) ){
-        SrcItem *pItem = pSrcList->a;
-        for(i=0; i<pSrcList->nSrc; i++, pItem++){
-          assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
-          if( pExpr->iTable==pItem->iCursor ){
-            findOrCreateAggInfoColumn(pParse, pAggInfo, pExpr);
-            break;
+      اگر( ALWAYS(pSrcList!=0) ){
+        Src_شے *p_شے = pSrcList->a;
+        برائے(i=0; i<pSrcList->nSrc; i++, p_شے++){
+          أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly|EP_Reduced) );
+          اگر( p_اظہاریہ->i_جدول==p_شے->iCursor ){
+            ڈھونڈو_Or_Create_Agg_Info_عمود(pParse, pAggInfo, p_اظہاریہ);
+            توڑو;
           } /* endif pExpr->iTable==pItem->iCursor */
         } /* end loop over pSrcList */
       }
-      return WRC_Continue;
+      واپس WRC_Continue;
     }
-    case TK_AGG_FUNCTION: {
-      if( (pNC->ncFlags & NC_InAggFunc)==0
-       && pWalker->walkerDepth==pExpr->op2
-       && pExpr->pAggInfo==0
+    حالت TK_AGG_FUNCTION: {
+      اگر( (pNC->ncFlags & NC_اندر_Agg_Func)==0
+       && pWalker->walker_گہرائی==p_اظہاریہ->op2
+       && p_اظہاریہ->pAggInfo==0
       ){
         /* Check to see if pExpr is a duplicate of another aggregate
         ** function that is already in the pAggInfo structure
         */
-        struct AggInfo_func *pItem = pAggInfo->aFunc;
-        int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
-        assert( mxTerm <= SMXV(i16) );
-        for(i=0; i<pAggInfo->nFunc; i++, pItem++){
-          if( NEVER(pItem->pFExpr==pExpr) ) break;
-          if( sqlite3ExprCompare(0, pItem->pFExpr, pExpr, -1)==0 ){
-            break;
+        ساخت AggInfo_func *p_شے = pAggInfo->aFunc;
+        صحیح mx_رکن = pParse->db->a_حد_بندی[SQLITE_حد_بندی_عمود];
+        أكد( mx_رکن <= SMXV(i16) );
+        برائے(i=0; i<pAggInfo->nFunc; i++, p_شے++){
+          اگر( NEVER(p_شے->pFExpr==p_اظہاریہ) ) توڑو;
+          اگر( sqlite3_اظہاریہ_Compare(0, p_شے->pFExpr, p_اظہاریہ, -1)==0 ){
+            توڑو;
           }
         }
-        if( i>mxTerm ){
-          sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
-          i = mxTerm;
-          assert( i<pAggInfo->nFunc );
-        }else if( i>=pAggInfo->nFunc ){
+        اگر( i>mx_رکن ){
+          sqlite3_Error_پیغام(pParse, "more than %d aggregate terms", mx_رکن);
+          i = mx_رکن;
+          أكد( i<pAggInfo->nFunc );
+        }ورنہ اگر( i>=pAggInfo->nFunc ){
           /* pExpr is original.  Make a new entry in pAggInfo->aFunc[]
           */
           u8 enc = ENC(pParse->db);
-          i = addAggInfoFunc(pParse->db, pAggInfo);
-          if( i>=0 ){
-            int nArg;
-            assert( !ExprHasProperty(pExpr, EP_xIsSelect) );
-            pItem = &pAggInfo->aFunc[i];
-            pItem->pFExpr = pExpr;
-            assert( ExprUseUToken(pExpr) );
-            nArg = pExpr->x.pList ? pExpr->x.pList->nExpr : 0;
-            pItem->pFunc = sqlite3FindFunction(pParse->db,
-                                         pExpr->u.zToken, nArg, enc, 0);
-            assert( pItem->bOBUnique==0 );
-            if( pExpr->pLeft
-             && (pItem->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)==0
+          i = جوڑو_Agg_Info_Func(pParse->db, pAggInfo);
+          اگر( i>=0 ){
+            صحیح nArg;
+            أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_xIsSelect) );
+            p_شے = &pAggInfo->aFunc[i];
+            p_شے->pFExpr = p_اظہاریہ;
+            أكد( اظہاریہ_Use_UToken(p_اظہاریہ) );
+            nArg = p_اظہاریہ->x.pList ? p_اظہاریہ->x.pList->n_اظہاریہ : 0;
+            p_شے->pFunc = sqlite3_ڈھونڈو_Function(pParse->db,
+                                         p_اظہاریہ->u.zToken, nArg, enc, 0);
+            أكد( p_شے->bOBUnique==0 );
+            اگر( p_اظہاریہ->p_بایاں
+             && (p_شے->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)==0
             ){
               /* The NEEDCOLL test above causes any ORDER BY clause on
               ** aggregate min() or max() to be ignored. */
-              ExprList *pOBList;
-              assert( nArg>0 );
-              assert( pExpr->pLeft->op==TK_ORDER );
-              assert( ExprUseXList(pExpr->pLeft) );
-              pItem->iOBTab = pParse->nTab++;
-              pOBList = pExpr->pLeft->x.pList;
-              assert( pOBList->nExpr>0 );
-              assert( pItem->bOBUnique==0 );
-              if( pOBList->nExpr==1
+              اظہاریہ_List *pOBList;
+              أكد( nArg>0 );
+              أكد( p_اظہاریہ->p_بایاں->op==TK_ترتیب );
+              أكد( اظہاریہ_Use_XList(p_اظہاریہ->p_بایاں) );
+              p_شے->iOBTab = pParse->nTab++;
+              pOBList = p_اظہاریہ->p_بایاں->x.pList;
+              أكد( pOBList->n_اظہاریہ>0 );
+              أكد( p_شے->bOBUnique==0 );
+              اگر( pOBList->n_اظہاریہ==1
                && nArg==1
-               && sqlite3ExprCompare(0,pOBList->a[0].pExpr,
-                               pExpr->x.pList->a[0].pExpr,-1)==0
+               && sqlite3_اظہاریہ_Compare(0,pOBList->a[0].p_اظہاریہ,
+                               p_اظہاریہ->x.pList->a[0].p_اظہاریہ,-1)==0
               ){
-                pItem->bOBPayload = 0;
-                pItem->bOBUnique = ExprHasProperty(pExpr, EP_Distinct);
-              }else{
-                pItem->bOBPayload = 1;
+                p_شے->bOBPayload = 0;
+                p_شے->bOBUnique = اظہاریہ_Has_Property(p_اظہاریہ, EP_Distinct);
+              }ورنہ{
+                p_شے->bOBPayload = 1;
               }
-              pItem->bUseSubtype =
-                    (pItem->pFunc->funcFlags & SQLITE_SUBTYPE)!=0;
-            }else{
-              pItem->iOBTab = -1;
+              p_شے->bUseSubtype =
+                    (p_شے->pFunc->funcFlags & SQLITE_SUBTYPE)!=0;
+            }ورنہ{
+              p_شے->iOBTab = -1;
             }
-            if( ExprHasProperty(pExpr, EP_Distinct) && !pItem->bOBUnique ){
-              pItem->iDistinct = pParse->nTab++;
-            }else{
-              pItem->iDistinct = -1;
+            اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Distinct) && !p_شے->bOBUnique ){
+              p_شے->iDistinct = pParse->nTab++;
+            }ورنہ{
+              p_شے->iDistinct = -1;
             }
           }
         }
         /* Make pExpr point to the appropriate pAggInfo->aFunc[] entry
         */
-        assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
-        ExprSetVVAProperty(pExpr, EP_NoReduce);
-        assert( i <= SMXV(pExpr->iAgg) );
-        pExpr->iAgg = (i16)i;
-        pExpr->pAggInfo = pAggInfo;
-        return WRC_Prune;
-      }else{
-        return WRC_Continue;
+        أكد( !اظہاریہ_Has_Property(p_اظہاریہ, EP_TokenOnly|EP_Reduced) );
+        اظہاریہ_سیٹ_VVAProperty(p_اظہاریہ, EP_NoReduce);
+        أكد( i <= SMXV(p_اظہاریہ->iAgg) );
+        p_اظہاریہ->iAgg = (i16)i;
+        p_اظہاریہ->pAggInfo = pAggInfo;
+        واپس WRC_Prune;
+      }ورنہ{
+        واپس WRC_Continue;
       }
     }
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
@@ -7711,16 +7711,16 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
 ** This routine should only be called after the expression has been
 ** analyzed by sqlite3ResolveExprNames().
 */
-void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr){
+خالی sqlite3_اظہاریہ_Analyze_Aggregates(NameContext *pNC, اظہاریہ *p_اظہاریہ){
   Walker w;
-  w.xExprCallback = analyzeAggregate;
-  w.xSelectCallback = sqlite3WalkerDepthIncrease;
-  w.xSelectCallback2 = sqlite3WalkerDepthDecrease;
-  w.walkerDepth = 0;
+  w.x_اظہاریہ_Callback = analyzeAggregate;
+  w.xSelectCallback = sqlite3_Walker_گہرائی_Increase;
+  w.xSelectCallback2 = sqlite3_Walker_گہرائی_Decrease;
+  w.walker_گہرائی = 0;
   w.u.pNC = pNC;
   w.pParse = 0;
-  assert( pNC->pSrcList!=0 );
-  sqlite3WalkExpr(&w, pExpr);
+  أكد( pNC->pSrcList!=0 );
+  sqlite3_Walk_اظہاریہ(&w, p_اظہاریہ);
 }
 
 /*
@@ -7729,12 +7729,12 @@ void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr){
 **
 ** If an error is found, the analysis is cut short.
 */
-void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
-  struct ExprList_item *pItem;
-  int i;
-  if( pList ){
-    for(pItem=pList->a, i=0; i<pList->nExpr; i++, pItem++){
-      sqlite3ExprAnalyzeAggregates(pNC, pItem->pExpr);
+خالی sqlite3_اظہاریہ_Analyze_Agg_List(NameContext *pNC, اظہاریہ_List *pList){
+  ساخت اظہاریہ_List_شے *p_شے;
+  صحیح i;
+  اگر( pList ){
+    برائے(p_شے=pList->a, i=0; i<pList->n_اظہاریہ; i++, p_شے++){
+      sqlite3_اظہاریہ_Analyze_Aggregates(pNC, p_شے->p_اظہاریہ);
     }
   }
 }
@@ -7742,29 +7742,29 @@ void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
 /*
 ** Allocate a single new register for use to hold some intermediate result.
 */
-int sqlite3GetTempReg(Parse *pParse){
-  if( pParse->nTempReg==0 ){
-    return ++pParse->nMem;
+صحیح sqlite3_Get_عارضی_Reg(Parse *pParse){
+  اگر( pParse->n_عارضی_Reg==0 ){
+    واپس ++pParse->nMem;
   }
-  return pParse->aTempReg[--pParse->nTempReg];
+  واپس pParse->a_عارضی_Reg[--pParse->n_عارضی_Reg];
 }
 
 /*
 ** Deallocate a register, making available for reuse for some other
 ** purpose.
 */
-void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
-  if( iReg ){
-#ifdef SQLITE_DEBUG
+خالی sqlite3_Release_عارضی_Reg(Parse *pParse, صحیح iReg){
+  اگر( iReg ){
+#اگر_تعریف_شدہ SQLITE_DEBUG
     /* Verify that iReg is not already on the unused register list */
-    int kk;
-    for(kk=0; kk<pParse->nTempReg; kk++){
-      assert( pParse->aTempReg[kk]!=iReg );
+    صحیح kk;
+    برائے(kk=0; kk<pParse->n_عارضی_Reg; kk++){
+      أكد( pParse->a_عارضی_Reg[kk]!=iReg );
     }
-#endif
+#اگر_ختم
     sqlite3VdbeReleaseRegisters(pParse, iReg, 1, 0, 0);
-    if( pParse->nTempReg<ArraySize(pParse->aTempReg) ){
-      pParse->aTempReg[pParse->nTempReg++] = iReg;
+    اگر( pParse->n_عارضی_Reg<Array_سائز(pParse->a_عارضی_Reg) ){
+      pParse->a_عارضی_Reg[pParse->n_عارضی_Reg++] = iReg;
     }
   }
 }
@@ -7772,27 +7772,27 @@ void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
 /*
 ** Allocate or deallocate a block of nReg consecutive registers.
 */
-int sqlite3GetTempRange(Parse *pParse, int nReg){
-  int i, n;
-  if( nReg==1 ) return sqlite3GetTempReg(pParse);
+صحیح sqlite3_Get_عارضی_Range(Parse *pParse, صحیح nReg){
+  صحیح i, n;
+  اگر( nReg==1 ) واپس sqlite3_Get_عارضی_Reg(pParse);
   i = pParse->iRangeReg;
   n = pParse->nRangeReg;
-  if( nReg<=n ){
+  اگر( nReg<=n ){
     pParse->iRangeReg += nReg;
     pParse->nRangeReg -= nReg;
-  }else{
+  }ورنہ{
     i = pParse->nMem+1;
     pParse->nMem += nReg;
   }
-  return i;
+  واپس i;
 }
-void sqlite3ReleaseTempRange(Parse *pParse, int iReg, int nReg){
-  if( nReg==1 ){
-    sqlite3ReleaseTempReg(pParse, iReg);
-    return;
+خالی sqlite3_Release_عارضی_Range(Parse *pParse, صحیح iReg, صحیح nReg){
+  اگر( nReg==1 ){
+    sqlite3_Release_عارضی_Reg(pParse, iReg);
+    واپس;
   }
   sqlite3VdbeReleaseRegisters(pParse, iReg, nReg, 0, 0);
-  if( nReg>pParse->nRangeReg ){
+  اگر( nReg>pParse->nRangeReg ){
     pParse->nRangeReg = nReg;
     pParse->iRangeReg = iReg;
   }
@@ -7806,8 +7806,8 @@ void sqlite3ReleaseTempRange(Parse *pParse, int iReg, int nReg){
 ** the sub/co-routine does not use registers in common with the code that
 ** invokes the sub/co-routine.
 */
-void sqlite3ClearTempRegCache(Parse *pParse){
-  pParse->nTempReg = 0;
+خالی sqlite3_Clear_عارضی_Reg_Cache(Parse *pParse){
+  pParse->n_عارضی_Reg = 0;
   pParse->nRangeReg = 0;
 }
 
@@ -7815,60 +7815,60 @@ void sqlite3ClearTempRegCache(Parse *pParse){
 ** Make sure sufficient registers have been allocated so that
 ** iReg is a valid register number.
 */
-void sqlite3TouchRegister(Parse *pParse, int iReg){
-  if( pParse->nMem<iReg ) pParse->nMem = iReg;
+خالی sqlite3_Touch_رجسٹر(Parse *pParse, صحیح iReg){
+  اگر( pParse->nMem<iReg ) pParse->nMem = iReg;
 }
 
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+#اگر defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
 /*
 ** Return the latest reusable register in the set of all registers.
 ** The value returned is no less than iMin.  If any register iMin or
 ** greater is in permanent use, then return one more than that last
 ** permanent register.
 */
-int sqlite3FirstAvailableRegister(Parse *pParse, int iMin){
-  const ExprList *pList = pParse->pConstExpr;
-  if( pList ){
-    int i;
-    for(i=0; i<pList->nExpr; i++){
-      if( pList->a[i].u.iConstExprReg>=iMin ){
-        iMin = pList->a[i].u.iConstExprReg + 1;
+صحیح sqlite3_پہلا_دستیاب_رجسٹر(Parse *pParse, صحیح iMin){
+  ثابت اظہاریہ_List *pList = pParse->p_Const_اظہاریہ;
+  اگر( pList ){
+    صحیح i;
+    برائے(i=0; i<pList->n_اظہاریہ; i++){
+      اگر( pList->a[i].u.i_Const_اظہاریہ_Reg>=iMin ){
+        iMin = pList->a[i].u.i_Const_اظہاریہ_Reg + 1;
       }
     }
   }
-  pParse->nTempReg = 0;
+  pParse->n_عارضی_Reg = 0;
   pParse->nRangeReg = 0;
-  return iMin;
+  واپس iMin;
 }
-#endif /* SQLITE_ENABLE_STAT4 || SQLITE_DEBUG */
+#اگر_ختم /* SQLITE_ENABLE_STAT4 || SQLITE_DEBUG */
 
 /*
 ** Validate that no temporary register falls within the range of
 ** iFirst..iLast, inclusive.  This routine is only call from within assert()
 ** statements.
 */
-#ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse *pParse, int iFirst, int iLast){
-  int i;
-  if( pParse->nRangeReg>0
-   && pParse->iRangeReg+pParse->nRangeReg > iFirst
-   && pParse->iRangeReg <= iLast
+#اگر_تعریف_شدہ SQLITE_DEBUG
+صحیح sqlite3_No_Temps_اندر_Range(Parse *pParse, صحیح i_پہلا, صحیح i_آخری){
+  صحیح i;
+  اگر( pParse->nRangeReg>0
+   && pParse->iRangeReg+pParse->nRangeReg > i_پہلا
+   && pParse->iRangeReg <= i_آخری
   ){
-     return 0;
+     واپس 0;
   }
-  for(i=0; i<pParse->nTempReg; i++){
-    if( pParse->aTempReg[i]>=iFirst && pParse->aTempReg[i]<=iLast ){
-      return 0;
+  برائے(i=0; i<pParse->n_عارضی_Reg; i++){
+    اگر( pParse->a_عارضی_Reg[i]>=i_پہلا && pParse->a_عارضی_Reg[i]<=i_آخری ){
+      واپس 0;
     }
   }
-  if( pParse->pConstExpr ){
-    ExprList *pList = pParse->pConstExpr;
-    for(i=0; i<pList->nExpr; i++){
-      int iReg = pList->a[i].u.iConstExprReg;
-      if( iReg==0 ) continue;
-      if( iReg>=iFirst && iReg<=iLast ) return 0;
+  اگر( pParse->p_Const_اظہاریہ ){
+    اظہاریہ_List *pList = pParse->p_Const_اظہاریہ;
+    برائے(i=0; i<pList->n_اظہاریہ; i++){
+      صحیح iReg = pList->a[i].u.i_Const_اظہاریہ_Reg;
+      اگر( iReg==0 ) جاری;
+      اگر( iReg>=i_پہلا && iReg<=i_آخری ) واپس 0;
     }
   }
-  return 1;
+  واپس 1;
 }
-#endif /* SQLITE_DEBUG */
+#اگر_ختم /* SQLITE_DEBUG */

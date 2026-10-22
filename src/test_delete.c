@@ -19,35 +19,35 @@
 **     above.
 */
 
-#ifndef SQLITE_OS_WIN
+#اگر_غیر_تعریف_شدہ SQLITE_OS_WIN
 #  include <unistd.h>
 #  include <errno.h>
-#endif
-#include <string.h>
-#include <assert.h>
-#include "sqlite3.h"
+#اگر_ختم
+#شامل <string.h>
+#شامل <assert.h>
+#شامل "sqlite3.h"
 
 /* The following #defines are copied from test_multiplex.c */
-#ifndef MX_CHUNK_NUMBER 
-# define MX_CHUNK_NUMBER 299
-#endif
-#ifndef SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET
-# define SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET 400
-#endif
-#ifndef SQLITE_MULTIPLEX_WAL_8_3_OFFSET
-# define SQLITE_MULTIPLEX_WAL_8_3_OFFSET 700
-#endif
+#اگر_غیر_تعریف_شدہ MX_CHUNK_نمبر 
+# define MX_CHUNK_نمبر 299
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_MULTIPLEX_JOURNAL_8_3_انحراف
+# define SQLITE_MULTIPLEX_JOURNAL_8_3_انحراف 400
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_MULTIPLEX_WAL_8_3_انحراف
+# define SQLITE_MULTIPLEX_WAL_8_3_انحراف 700
+#اگر_ختم
 
 /*
 ** This routine is a copy of (most of) the code from SQLite function
 ** sqlite3FileSuffix3(). It modifies the filename in buffer z in the
 ** same way as SQLite does when in 8.3 filenames mode.
 */
-static void sqlite3Delete83Name(char *z){
-  int i, sz;
-  sz = (int)strlen(z);
-  for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-  if( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
+ساکن خالی sqlite3Delete83Name(حرف *z){
+  صحیح i, sz;
+  sz = (صحیح)لڑی_لمبائی(z);
+  برائے(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
+  اگر( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
 }
 
 /*
@@ -57,100 +57,100 @@ static void sqlite3Delete83Name(char *z){
 **
 ** If an error occurs, non-zero is returned. Or, if no error occurs, zero.
 */
-static int sqlite3DeleteUnlinkIfExists(
+ساکن صحیح sqlite3DeleteUnlinkIfExists(
   sqlite3_vfs *pVfs,
-  const char *zFile, 
-  int *pbExists
+  ثابت حرف *zFile, 
+  صحیح *pbExists
 ){
-  int rc = SQLITE_ERROR;
-#ifdef SQLITE_OS_WIN
-  if( pVfs ){
-    if( pbExists ) *pbExists = 1;
+  صحیح rc = SQLITE_ERROR;
+#اگر_تعریف_شدہ SQLITE_OS_WIN
+  اگر( pVfs ){
+    اگر( pbExists ) *pbExists = 1;
     rc = pVfs->xDelete(pVfs, zFile, 0);
-    if( rc==SQLITE_IOERR_DELETE_NOENT ){
-      if( pbExists ) *pbExists = 0;
+    اگر( rc==SQLITE_IOERR_DELETE_NOENT ){
+      اگر( pbExists ) *pbExists = 0;
       rc = SQLITE_OK;
     }
   }
-#else
-  assert( pVfs==0 );
+#ورنہ
+  أكد( pVfs==0 );
   rc = access(zFile, F_OK);
-  if( rc ){
-    if( errno==ENOENT ){ 
-      if( pbExists ) *pbExists = 0;
+  اگر( rc ){
+    اگر( errno==ENOENT ){ 
+      اگر( pbExists ) *pbExists = 0;
       rc = SQLITE_OK; 
     }
-  }else{
-    if( pbExists ) *pbExists = 1;
+  }ورنہ{
+    اگر( pbExists ) *pbExists = 1;
     rc = unlink(zFile);
   }
-#endif
-  return rc;
+#اگر_ختم
+  واپس rc;
 }
 
 /*
 ** Delete the database file identified by the string argument passed to this
 ** function. The string must contain a filename, not an SQLite URI.
 */
-SQLITE_API int sqlite3_delete_database(
-  const char *zFile               /* File to delete */
+SQLITE_API صحیح sqlite3_delete_database(
+  ثابت حرف *zFile               /* File to delete */
 ){
-  char *zBuf;                     /* Buffer to sprintf() filenames to */
-  int nBuf;                       /* Size of buffer in bytes */
-  int rc = 0;                     /* System error code */
-  int i;                          /* Iterate through azFmt[] and aMFile[] */
+  حرف *zBuf;                     /* Buffer to sprintf() filenames to */
+  صحیح nBuf;                       /* Size of buffer in bytes */
+  صحیح rc = 0;                     /* System error code */
+  صحیح i;                          /* Iterate through azFmt[] and aMFile[] */
 
-  const char *azFmt[] = { "%s", "%s-journal", "%s-wal", "%s-shm" };
+  ثابت حرف *azFmt[] = { "%s", "%s-journal", "%s-wal", "%s-shm" };
 
-  struct MFile {
-    const char *zFmt;
-    int iOffset;
-    int b83;
+  ساخت MFile {
+    ثابت حرف *zFmt;
+    صحیح i_انحراف;
+    صحیح b83;
   } aMFile[] = {
     { "%s%03d",         0,   0 },
     { "%s-journal%03d", 0,   0 },
     { "%s-wal%03d",     0,   0 },
     { "%s%03d",         0,   1 },
-    { "%s-journal%03d", SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET, 1 },
-    { "%s-wal%03d",     SQLITE_MULTIPLEX_WAL_8_3_OFFSET, 1 },
+    { "%s-journal%03d", SQLITE_MULTIPLEX_JOURNAL_8_3_انحراف, 1 },
+    { "%s-wal%03d",     SQLITE_MULTIPLEX_WAL_8_3_انحراف, 1 },
   };
 
-#ifdef SQLITE_OS_WIN
-  sqlite3_vfs *pVfs = sqlite3_vfs_find("win32");
-#else
+#اگر_تعریف_شدہ SQLITE_OS_WIN
+  sqlite3_vfs *pVfs = sqlite3_vfs_ڈھونڈو("win32");
+#ورنہ
   sqlite3_vfs *pVfs = 0;
-#endif
+#اگر_ختم
 
   /* Allocate a buffer large enough for any of the files that need to be
   ** deleted.  */
-  nBuf = (int)strlen(zFile) + 100;
-  zBuf = (char*)sqlite3_malloc(nBuf);
-  if( zBuf==0 ) return SQLITE_NOMEM;
+  nBuf = (صحیح)لڑی_لمبائی(zFile) + 100;
+  zBuf = (حرف*)sqlite3_malloc(nBuf);
+  اگر( zBuf==0 ) واپس SQLITE_NOMEM;
 
   /* Delete both the regular and 8.3 filenames versions of the database,
   ** journal, wal and shm files.  */
-  for(i=0; rc==0 && i<sizeof(azFmt)/sizeof(azFmt[0]); i++){
+  برائے(i=0; rc==0 && i<حجم(azFmt)/حجم(azFmt[0]); i++){
     sqlite3_snprintf(nBuf, zBuf, azFmt[i], zFile);
     rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
-    if( rc==0 && i!=0 ){
+    اگر( rc==0 && i!=0 ){
       sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
     }
   }
 
   /* Delete any multiplexor files */
-  for(i=0; rc==0 && i<sizeof(aMFile)/sizeof(aMFile[0]); i++){
-    struct MFile *p = &aMFile[i];
-    int iChunk;
-    for(iChunk=1; iChunk<=MX_CHUNK_NUMBER; iChunk++){
-      int bExists;
-      sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->iOffset);
-      if( p->b83 ) sqlite3Delete83Name(zBuf);
+  برائے(i=0; rc==0 && i<حجم(aMFile)/حجم(aMFile[0]); i++){
+    ساخت MFile *p = &aMFile[i];
+    صحیح iChunk;
+    برائے(iChunk=1; iChunk<=MX_CHUNK_نمبر; iChunk++){
+      صحیح bExists;
+      sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->i_انحراف);
+      اگر( p->b83 ) sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, &bExists);
-      if( bExists==0 || rc!=0 ) break;
+      اگر( bExists==0 || rc!=0 ) توڑو;
     }
   }
 
   sqlite3_free(zBuf);
-  return (rc ? SQLITE_ERROR : SQLITE_OK);
+  واپس (rc ? SQLITE_ERROR : SQLITE_OK);
 }

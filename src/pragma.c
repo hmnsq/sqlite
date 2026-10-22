@@ -11,15 +11,15 @@
 *************************************************************************
 ** This file contains code used to implement the PRAGMA command.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#اگر !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  اگر defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  ورنہ
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
-#endif
+#اگر_ختم
 
 /***************************************************************************
 ** The "pragma.h" include file is an automatically generated file that
@@ -28,7 +28,7 @@
 ** lexicographical order to facility a binary search of the pragma name.
 ** Do not edit pragma.h directly.  Edit and rerun the script in at
 ** ../tool/mkpragmatab.tcl. */
-#include "pragma.h"
+#شامل "pragma.h"
 
 /*
 ** When the 0x10 bit of PRAGMA optimize is set, any ANALYZE commands
@@ -54,9 +54,9 @@
 ** planner to fully characterize an index.  The additional accuracy from
 ** a larger analysis is not usually helpful.
 */
-#ifndef SQLITE_DEFAULT_OPTIMIZE_LIMIT
-# define SQLITE_DEFAULT_OPTIMIZE_LIMIT 2000
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_DEFAULT_OPTIMIZE_حد_بندی
+# define SQLITE_DEFAULT_OPTIMIZE_حد_بندی 2000
+#اگر_ختم
 
 /*
 ** Interpret the given string as a safety level.  Return 0 for OFF,
@@ -69,144 +69,144 @@
 ** to support legacy SQL code.  The safety level used to be boolean
 ** and older scripts may have used numbers 0 for OFF and 1 for ON.
 */
-static u8 getSafetyLevel(const char *z, int omitFull, u8 dflt){
+ساکن u8 getSafetyLevel(ثابت حرف *z, صحیح omit_بھرا, u8 dflt){
                              /* 123456789 123456789 123 */
-  static const char zText[] = "onoffalseyestruextrafull";
-  static const u8 iOffset[] = {0, 1, 2,  4,    9,  12,  15,   20};
-  static const u8 iLength[] = {2, 2, 3,  5,    3,   4,   5,    4};
-  static const u8 iValue[] =  {1, 0, 0,  0,    1,   1,   3,    2};
+  ساکن ثابت حرف z_متن[] = "onoffalseyestruextrafull";
+  ساکن ثابت u8 i_انحراف[] = {0, 1, 2,  4,    9,  12,  15,   20};
+  ساکن ثابت u8 i_لمبائی[] = {2, 2, 3,  5,    3,   4,   5,    4};
+  ساکن ثابت u8 i_قدر[] =  {1, 0, 0,  0,    1,   1,   3,    2};
                             /* on no off false yes true extra full */
-  int i, n;
-  if( sqlite3Isdigit(*z) ){
-    return sqlite3Atoi(z)!=0;
+  صحیح i, n;
+  اگر( sqlite3Isdigit(*z) ){
+    واپس sqlite3Atoi(z)!=0;
   }
   n = sqlite3Strlen30(z);
-  for(i=0; i<ArraySize(iLength); i++){
-    if( iLength[i]==n && sqlite3StrNICmp(&zText[iOffset[i]],z,n)==0
-     && (!omitFull || iValue[i]<=1)
+  برائے(i=0; i<Array_سائز(i_لمبائی); i++){
+    اگر( i_لمبائی[i]==n && sqlite3StrNICmp(&z_متن[i_انحراف[i]],z,n)==0
+     && (!omit_بھرا || i_قدر[i]<=1)
     ){
-      return iValue[i];
+      واپس i_قدر[i];
     }
   }
-  return dflt;
+  واپس dflt;
 }
 
 /*
 ** Interpret the given string as a boolean value.
 */
-u8 sqlite3GetBoolean(const char *z, u8 dflt){
-  return getSafetyLevel(z,1,dflt)!=0;
+u8 sqlite3GetBoolean(ثابت حرف *z, u8 dflt){
+  واپس getSafetyLevel(z,1,dflt)!=0;
 }
 
 /* The sqlite3GetBoolean() function is used by other modules but the
 ** remainder of this file is specific to PRAGMA processing.  So omit
 ** the rest of the file if PRAGMAs are omitted from the build.
 */
-#if !defined(SQLITE_OMIT_PRAGMA)
+#اگر !defined(SQLITE_OMIT_PRAGMA)
 
 /*
 ** Interpret the given string as a locking mode value.
 */
-static int getLockingMode(const char *z){
-  if( z ){
-    if( 0==sqlite3StrICmp(z, "exclusive") ) return PAGER_LOCKINGMODE_EXCLUSIVE;
-    if( 0==sqlite3StrICmp(z, "normal") ) return PAGER_LOCKINGMODE_NORMAL;
+ساکن صحیح get_Locking_منوال(ثابت حرف *z){
+  اگر( z ){
+    اگر( 0==sqlite3StrICmp(z, "exclusive") ) واپس PAGER_LOCKINGMODE_EXCLUSIVE;
+    اگر( 0==sqlite3StrICmp(z, "normal") ) واپس PAGER_LOCKINGMODE_معمول;
   }
-  return PAGER_LOCKINGMODE_QUERY;
+  واپس PAGER_LOCKINGMODE_QUERY;
 }
 
-#ifndef SQLITE_OMIT_AUTOVACUUM
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOVACUUM
 /*
 ** Interpret the given string as an auto-vacuum mode value.
 **
 ** The following strings, "none", "full" and "incremental" are
 ** acceptable, as are their numeric equivalents: 0, 1 and 2 respectively.
 */
-static int getAutoVacuum(const char *z){
-  int i;
-  if( 0==sqlite3StrICmp(z, "none") ) return BTREE_AUTOVACUUM_NONE;
-  if( 0==sqlite3StrICmp(z, "full") ) return BTREE_AUTOVACUUM_FULL;
-  if( 0==sqlite3StrICmp(z, "incremental") ) return BTREE_AUTOVACUUM_INCR;
+ساکن صحیح getAutoVacuum(ثابت حرف *z){
+  صحیح i;
+  اگر( 0==sqlite3StrICmp(z, "none") ) واپس BTREE_AUTOVACUUM_NONE;
+  اگر( 0==sqlite3StrICmp(z, "full") ) واپس BTREE_AUTOVACUUM_بھرا;
+  اگر( 0==sqlite3StrICmp(z, "incremental") ) واپس BTREE_AUTOVACUUM_INCR;
   i = sqlite3Atoi(z);
-  return (u8)((i>=0&&i<=2)?i:0);
+  واپس (u8)((i>=0&&i<=2)?i:0);
 }
-#endif /* ifndef SQLITE_OMIT_AUTOVACUUM */
+#اگر_ختم /* ifndef SQLITE_OMIT_AUTOVACUUM */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Interpret the given string as a temp db location. Return 1 for file
 ** backed temporary databases, 2 for the Red-Black tree in memory database
 ** and 0 to use the compile-time default.
 */
-static int getTempStore(const char *z){
-  if( z[0]>='0' && z[0]<='2' ){
-    return z[0] - '0';
-  }else if( sqlite3StrICmp(z, "file")==0 ){
-    return 1;
-  }else if( sqlite3StrICmp(z, "memory")==0 ){
-    return 2;
-  }else{
-    return 0;
+ساکن صحیح get_عارضی_Store(ثابت حرف *z){
+  اگر( z[0]>='0' && z[0]<='2' ){
+    واپس z[0] - '0';
+  }ورنہ اگر( sqlite3StrICmp(z, "file")==0 ){
+    واپس 1;
+  }ورنہ اگر( sqlite3StrICmp(z, "memory")==0 ){
+    واپس 2;
+  }ورنہ{
+    واپس 0;
   }
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#اگر_ختم /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Invalidate temp storage, either when the temp storage is changed
 ** from default, or when 'file' and the temp_store_directory has changed
 */
-static int invalidateTempStorage(Parse *pParse){
+ساکن صحیح invalidate_عارضی_Storage(Parse *pParse){
   sqlite3 *db = pParse->db;
-  if( db->aDb[1].pBt!=0 ){
-    if( !db->autoCommit
+  اگر( db->aDb[1].pBt!=0 ){
+    اگر( !db->autoCommit
      || sqlite3BtreeTxnState(db->aDb[1].pBt)!=SQLITE_TXN_NONE
     ){
-      sqlite3ErrorMsg(pParse, "temporary storage cannot be changed "
+      sqlite3_Error_پیغام(pParse, "temporary storage cannot be changed "
         "from within a transaction");
-      return SQLITE_ERROR;
+      واپس SQLITE_ERROR;
     }
     sqlite3BtreeClose(db->aDb[1].pBt);
     db->aDb[1].pBt = 0;
-    sqlite3ResetAllSchemasOfConnection(db);
+    sqlite3_Reset_All_Schemas_کا_Connection(db);
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#اگر_ختم /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** If the TEMP database is open, close it and mark the database schema
 ** as needing reloading.  This must be done when using the SQLITE_TEMP_STORE
 ** or DEFAULT_TEMP_STORE pragmas.
 */
-static int changeTempStorage(Parse *pParse, const char *zStorageType){
-  int ts = getTempStore(zStorageType);
+ساکن صحیح change_عارضی_Storage(Parse *pParse, ثابت حرف *zStorageType){
+  صحیح ts = get_عارضی_Store(zStorageType);
   sqlite3 *db = pParse->db;
-  if( db->temp_store==ts ) return SQLITE_OK;
-  if( invalidateTempStorage( pParse ) != SQLITE_OK ){
-    return SQLITE_ERROR;
+  اگر( db->عارضی_store==ts ) واپس SQLITE_OK;
+  اگر( invalidate_عارضی_Storage( pParse ) != SQLITE_OK ){
+    واپس SQLITE_ERROR;
   }
-  db->temp_store = (u8)ts;
-  return SQLITE_OK;
+  db->عارضی_store = (u8)ts;
+  واپس SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#اگر_ختم /* SQLITE_PAGER_PRAGMAS */
 
 /*
 ** Set result column names for a pragma.
 */
-static void setPragmaResultColumnNames(
+ساکن خالی سیٹ_Pragma_نتیجہ_عمود_نام(
   Vdbe *v,                     /* The query under construction */
-  const PragmaName *pPragma    /* The pragma */
+  ثابت PragmaName *pPragma    /* The pragma */
 ){
   u8 n = pPragma->nPragCName;
-  sqlite3VdbeSetNumCols(v, n==0 ? 1 : n);
-  if( n==0 ){
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
-  }else{
-    int i, j;
-    for(i=0, j=pPragma->iPragCName; i<n; i++, j++){
-      sqlite3VdbeSetColName(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
+  sqlite3_Vdbe_سیٹ_عدد_ستون_تعداد(v, n==0 ? 1 : n);
+  اگر( n==0 ){
+    sqlite3_Vdbe_سیٹ_ستون_Name(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
+  }ورنہ{
+    صحیح i, j;
+    برائے(i=0, j=pPragma->iPragCName; i<n; i++, j++){
+      sqlite3_Vdbe_سیٹ_ستون_Name(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
     }
   }
 }
@@ -214,21 +214,21 @@ static void setPragmaResultColumnNames(
 /*
 ** Generate code to return a single integer value.
 */
-static void returnSingleInt(Vdbe *v, i64 value){
-  sqlite3VdbeAddInt64(v, 1, value);
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+ساکن خالی returnSingleInt(Vdbe *v, i64 قدر){
+  sqlite3_Vdbe_جوڑو_Int64(v, 1, قدر);
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 1);
 }
 
 /*
 ** Generate code to return a single text value.
 */
-static void returnSingleText(
+ساکن خالی return_Single_متن(
   Vdbe *v,                /* Prepared statement under construction */
-  const char *zValue      /* Value to be returned */
+  ثابت حرف *z_قدر      /* Value to be returned */
 ){
-  if( zValue ){
-    sqlite3VdbeLoadString(v, 1, (const char*)zValue);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+  اگر( z_قدر ){
+    sqlite3_Vdbe_بھرو_String(v, 1, (ثابت حرف*)z_قدر);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 1);
   }
 }
 
@@ -237,48 +237,48 @@ static void returnSingleText(
 ** Set the safety_level and pager flags for pager iDb.  Or if iDb<0
 ** set these values for all pagers.
 */
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
-static void setAllPagerFlags(sqlite3 *db){
-  if( db->autoCommit ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_PAGER_PRAGMAS
+ساکن خالی سیٹ_All_Pager_Flags(sqlite3 *db){
+  اگر( db->autoCommit ){
     Db *pDb = db->aDb;
-    int n = db->nDb;
-    assert( SQLITE_FullFSync==PAGER_FULLFSYNC );
-    assert( SQLITE_CkptFullFSync==PAGER_CKPT_FULLFSYNC );
-    assert( SQLITE_CacheSpill==PAGER_CACHESPILL );
-    assert( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
-             ==  PAGER_FLAGS_MASK );
-    assert( (pDb->safety_level & PAGER_SYNCHRONOUS_MASK)==pDb->safety_level );
-    while( (n--) > 0 ){
-      if( pDb->pBt ){
-        sqlite3BtreeSetPagerFlags(pDb->pBt,
-                 pDb->safety_level | (db->flags & PAGER_FLAGS_MASK) );
+    صحیح n = db->nDb;
+    أكد( SQLITE_بھرا_FSync==PAGER_FULLFSYNC );
+    أكد( SQLITE_Ckpt_بھرا_FSync==PAGER_CKPT_FULLFSYNC );
+    أكد( SQLITE_CacheSpill==PAGER_CACHESPILL );
+    أكد( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
+             ==  PAGER_FLAGS_نقاب );
+    أكد( (pDb->safety_level & PAGER_SYNCHRONOUS_نقاب)==pDb->safety_level );
+    جب( (n--) > 0 ){
+      اگر( pDb->pBt ){
+        sqlite3_Btree_سیٹ_Pager_Flags(pDb->pBt,
+                 pDb->safety_level | (db->flags & PAGER_FLAGS_نقاب) );
       }
       pDb++;
     }
   }
 }
-#else
-# define setAllPagerFlags(X)  /* no-op */
-#endif
+#ورنہ
+# define سیٹ_All_Pager_Flags(X)  /* no-op */
+#اگر_ختم
 
 
 /*
 ** Return a human-readable name for a constraint resolution action.
 */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-static const char *actionName(u8 action){
-  const char *zName;
-  switch( action ){
-    case OE_SetNull:  zName = "SET NULL";        break;
-    case OE_SetDflt:  zName = "SET DEFAULT";     break;
-    case OE_Cascade:  zName = "CASCADE";         break;
-    case OE_Restrict: zName = "RESTRICT";        break;
-    default:          zName = "NO ACTION"; 
-                      assert( action==OE_None ); break;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FOREIGN_کلید
+ساکن ثابت حرف *actionName(u8 action){
+  ثابت حرف *zName;
+  انتخاب( action ){
+    حالت OE_سیٹ_Null:  zName = "SET NULL";        توڑو;
+    حالت OE_سیٹ_Dflt:  zName = "SET DEFAULT";     توڑو;
+    حالت OE_Cascade:  zName = "CASCADE";         توڑو;
+    حالت OE_Restrict: zName = "RESTRICT";        توڑو;
+    طےشدہ:          zName = "NO ACTION"; 
+                      أكد( action==OE_None ); توڑو;
   }
-  return zName;
+  واپس zName;
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -286,90 +286,90 @@ static const char *actionName(u8 action){
 ** defined in pager.h. This function returns the associated lowercase
 ** journal-mode name.
 */
-const char *sqlite3JournalModename(int eMode){
-  static char * const azModeName[] = {
+ثابت حرف *sqlite3JournalModename(صحیح e_منوال){
+  ساکن حرف * ثابت az_منوال_Name[] = {
     "delete", "persist", "off", "truncate", "memory"
-#ifndef SQLITE_OMIT_WAL
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
      , "wal"
-#endif
+#اگر_ختم
   };
-  assert( PAGER_JOURNALMODE_DELETE==0 );
-  assert( PAGER_JOURNALMODE_PERSIST==1 );
-  assert( PAGER_JOURNALMODE_OFF==2 );
-  assert( PAGER_JOURNALMODE_TRUNCATE==3 );
-  assert( PAGER_JOURNALMODE_MEMORY==4 );
-  assert( PAGER_JOURNALMODE_WAL==5 );
-  assert( eMode>=0 && eMode<=ArraySize(azModeName) );
+  أكد( PAGER_JOURNALMODE_DELETE==0 );
+  أكد( PAGER_JOURNALMODE_PERSIST==1 );
+  أكد( PAGER_JOURNALMODE_OFF==2 );
+  أكد( PAGER_JOURNALMODE_TRUNCATE==3 );
+  أكد( PAGER_JOURNALMODE_حافظہ==4 );
+  أكد( PAGER_JOURNALMODE_WAL==5 );
+  أكد( e_منوال>=0 && e_منوال<=Array_سائز(az_منوال_Name) );
 
-  if( eMode==ArraySize(azModeName) ) return 0;
-  return azModeName[eMode];
+  اگر( e_منوال==Array_سائز(az_منوال_Name) ) واپس 0;
+  واپس az_منوال_Name[e_منوال];
 }
 
 /*
 ** Locate a pragma in the aPragmaName[] array.
 */
-static const PragmaName *pragmaLocate(const char *zName){
-  int upr, lwr, mid = 0, rc;
+ساکن ثابت PragmaName *pragmaLocate(ثابت حرف *zName){
+  صحیح upr, lwr, mid = 0, rc;
   lwr = 0;
-  upr = ArraySize(aPragmaName)-1;
-  while( lwr<=upr ){
+  upr = Array_سائز(aPragmaName)-1;
+  جب( lwr<=upr ){
     mid = (lwr+upr)/2;
     rc = sqlite3_stricmp(zName, aPragmaName[mid].zName);
-    if( rc==0 ) break;
-    if( rc<0 ){
+    اگر( rc==0 ) توڑو;
+    اگر( rc<0 ){
       upr = mid - 1;
-    }else{
+    }ورنہ{
       lwr = mid + 1;
     }
   }
-  return lwr>upr ? 0 : &aPragmaName[mid];
+  واپس lwr>upr ? 0 : &aPragmaName[mid];
 }
 
 /*
 ** Create zero or more entries in the output for the SQL functions
 ** defined by FuncDef p.
 */
-static void pragmaFunclistLine(
+ساکن خالی pragma_Funclist_سطر(
   Vdbe *v,               /* The prepared statement being created */
   FuncDef *p,            /* A particular function definition */
-  int isBuiltin,         /* True if this is a built-in function */
-  int showInternFuncs    /* True if showing internal functions */
+  صحیح isBuiltin,         /* True if this is a built-in function */
+  صحیح showInternFuncs    /* True if showing internal functions */
 ){
-  u32 mask =
+  u32 نقاب =
       SQLITE_DETERMINISTIC |
       SQLITE_DIRECTONLY |
       SQLITE_SUBTYPE |
       SQLITE_INNOCUOUS |
-      SQLITE_FUNC_INTERNAL
+      SQLITE_FUNC_اندرونی
   ;
-  if( showInternFuncs ) mask = 0xffffffff;
-  for(; p; p=p->pNext){
-    const char *zType;
-    static const char *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
+  اگر( showInternFuncs ) نقاب = 0xffffffff;
+  برائے(; p; p=p->p_اگلا){
+    ثابت حرف *zType;
+    ساکن ثابت حرف *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
 
-    assert( SQLITE_FUNC_ENCMASK==0x3 );
-    assert( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
+    أكد( SQLITE_FUNC_ENCMASK==0x3 );
+    أكد( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
+    أكد( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
+    أكد( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
 
-    if( p->xSFunc==0 ) continue;
-    if( (p->funcFlags & SQLITE_FUNC_INTERNAL)!=0
+    اگر( p->xSFunc==0 ) جاری;
+    اگر( (p->funcFlags & SQLITE_FUNC_اندرونی)!=0
      && showInternFuncs==0
     ){
-      continue;
+      جاری;
     }   
-    if( p->xValue!=0 ){
+    اگر( p->x_قدر!=0 ){
       zType = "w";
-    }else if( p->xFinalize!=0 ){
+    }ورنہ اگر( p->xFinalize!=0 ){
       zType = "a";
-    }else{
+    }ورنہ{
       zType = "s";
     }
-    sqlite3VdbeMultiLoad(v, 1, "sissii",
+    sqlite3_Vdbe_Multi_بھرو(v, 1, "sissii",
        p->zName, isBuiltin,
        zType, azEnc[p->funcFlags&SQLITE_FUNC_ENCMASK],
        p->nArg,
-       (p->funcFlags & mask) ^ SQLITE_INNOCUOUS
+       (p->funcFlags & نقاب) ^ SQLITE_INNOCUOUS
     );
   }
 }
@@ -382,13 +382,13 @@ static void pragmaFunclistLine(
 ** string held in register 3.  Decrement the result count in register 1
 ** and halt if the maximum number of result rows have been issued.
 */
-static int integrityCheckResultRow(Vdbe *v){
-  int addr;
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 3, 1);
-  addr = sqlite3VdbeAddOp3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
+ساکن صحیح integrity_Check_نتیجہ_صف(Vdbe *v){
+  صحیح addr;
+  sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 3, 1);
+  addr = sqlite3_Vdbe_جوڑو_Op3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
   VdbeCoverage(v);
-  sqlite3VdbeAddOp0(v, OP_Halt);
-  return addr;
+  sqlite3_Vdbe_جوڑو_Op0(v, OP_Halt);
+  واپس addr;
 }
 
 /*
@@ -399,11 +399,11 @@ static int integrityCheckResultRow(Vdbe *v){
 **
 ** If pObjTab is null, then return true only if pTab is an imposter table.
 */
-static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
-  if( pObjTab ){
-    return pTab!=pObjTab;
-  }else{
-    return (pTab->tabFlags & TF_Imposter)!=0;
+ساکن صحیح جدول_Skip_Integrity_Check(ثابت جدول *pTab, ثابت جدول *pObjTab){
+  اگر( pObjTab ){
+    واپس pTab!=pObjTab;
+  }ورنہ{
+    واپس (pTab->tabFlags & TF_Imposter)!=0;
   }
 }
 
@@ -422,54 +422,54 @@ static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
 ** and pId2 is the id.  If the left side is just "id" then pId1 is the
 ** id and pId2 is any empty string.
 */
-void sqlite3Pragma(
+خالی sqlite3Pragma(
   Parse *pParse,
   Token *pId1,        /* First part of [schema.]id field */
   Token *pId2,        /* Second part of [schema.]id field, or NULL */
-  Token *pValue,      /* Token for <value>, or NULL */
-  int minusFlag       /* True if a '-' sign preceded <value> */
+  Token *p_قدر,      /* Token for <value>, or NULL */
+  صحیح minusFlag       /* True if a '-' sign preceded <value> */
 ){
-  char *zLeft = 0;       /* Nul-terminated UTF-8 string <id> */
-  char *zRight = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
-  const char *zDb = 0;   /* The database name */
+  حرف *z_بایاں = 0;       /* Nul-terminated UTF-8 string <id> */
+  حرف *z_دایاں = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
+  ثابت حرف *zDb = 0;   /* The database name */
   Token *pId;            /* Pointer to <id> token */
-  char *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
-  int iDb;               /* Database index for <database> */
-  int rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
+  حرف *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
+  صحیح iDb;               /* Database index for <database> */
+  صحیح rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
   sqlite3 *db = pParse->db;    /* The database connection */
   Db *pDb;                     /* The specific database being pragmaed */
   Vdbe *v = sqlite3GetVdbe(pParse);  /* Prepared statement */
-  const PragmaName *pPragma;   /* The pragma */
+  ثابت PragmaName *pPragma;   /* The pragma */
 
-  if( v==0 ) return;
-  sqlite3VdbeRunOnlyOnce(v);
+  اگر( v==0 ) واپس;
+  sqlite3_Vdbe_تسلسل_Only_Once(v);
   pParse->nMem = 2;
 
   /* Interpret the [schema.] part of the pragma statement. iDb is the
   ** index of the database this pragma is being applied to in db.aDb[]. */
   iDb = sqlite3TwoPartName(pParse, pId1, pId2, &pId);
-  if( iDb<0 ) return;
+  اگر( iDb<0 ) واپس;
   pDb = &db->aDb[iDb];
 
   /* If the temp database has been explicitly named as part of the
   ** pragma, make sure it is open.
   */
-  if( iDb==1 && sqlite3OpenTempDatabase(pParse) ){
-    return;
+  اگر( iDb==1 && sqlite3_Open_عارضی_Database(pParse) ){
+    واپس;
   }
 
-  zLeft = sqlite3NameFromToken(db, pId);
-  if( !zLeft ) return;
-  if( minusFlag ){
-    zRight = sqlite3MPrintf(db, "-%T", pValue);
-  }else{
-    zRight = sqlite3NameFromToken(db, pValue);
+  z_بایاں = sqlite3NameFromToken(db, pId);
+  اگر( !z_بایاں ) واپس;
+  اگر( minusFlag ){
+    z_دایاں = sqlite3MPrintf(db, "-%T", p_قدر);
+  }ورنہ{
+    z_دایاں = sqlite3NameFromToken(db, p_قدر);
   }
 
-  assert( pId2 );
+  أكد( pId2 );
   zDb = pId2->n>0 ? pDb->zDbSName : 0;
-  if( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, zLeft, zRight, zDb) ){
-    goto pragma_out;
+  اگر( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, z_بایاں, z_دایاں, zDb) ){
+    جاؤ pragma_برآمد;
   }
 
   /* Send an SQLITE_FCNTL_PRAGMA file-control to the underlying VFS
@@ -488,52 +488,52 @@ void sqlite3Pragma(
   ** argument.
   */
   aFcntl[0] = 0;
-  aFcntl[1] = zLeft;
-  aFcntl[2] = zRight;
+  aFcntl[1] = z_بایاں;
+  aFcntl[2] = z_دایاں;
   aFcntl[3] = 0;
   db->busyHandler.nBusy = 0;
-  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (void*)aFcntl);
-  if( rc==SQLITE_OK ){
-    sqlite3VdbeSetNumCols(v, 1);
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
-    returnSingleText(v, aFcntl[0]);
+  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (خالی*)aFcntl);
+  اگر( rc==SQLITE_OK ){
+    sqlite3_Vdbe_سیٹ_عدد_ستون_تعداد(v, 1);
+    sqlite3_Vdbe_سیٹ_ستون_Name(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
+    return_Single_متن(v, aFcntl[0]);
     sqlite3_free(aFcntl[0]);
-    goto pragma_out;
+    جاؤ pragma_برآمد;
   }
-  if( rc!=SQLITE_NOTFOUND ){
-    if( aFcntl[0] ){
-      sqlite3ErrorMsg(pParse, "%s", aFcntl[0]);
+  اگر( rc!=SQLITE_NOTFOUND ){
+    اگر( aFcntl[0] ){
+      sqlite3_Error_پیغام(pParse, "%s", aFcntl[0]);
       sqlite3_free(aFcntl[0]);
     }
     pParse->nErr++;
     pParse->rc = rc;
-    goto pragma_out;
+    جاؤ pragma_برآمد;
   }
 
   /* Locate the pragma in the lookup table */
-  pPragma = pragmaLocate(zLeft);
-  if( pPragma==0 ){
+  pPragma = pragmaLocate(z_بایاں);
+  اگر( pPragma==0 ){
     /* IMP: R-43042-22504 No error messages are generated if an
     ** unknown pragma is issued. */
-    goto pragma_out;
+    جاؤ pragma_برآمد;
   }
 
   /* Make sure the database schema is loaded if the pragma requires that */
-  if( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
-    if( sqlite3ReadSchema(pParse) ) goto pragma_out;
+  اگر( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
+    اگر( sqlite3ReadSchema(pParse) ) جاؤ pragma_برآمد;
   }
 
   /* Register the result column names for pragmas that return results */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns)==0
-   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || zRight==0)
+  اگر( (pPragma->mPragFlg & PragFlg_NoColumns)==0
+   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || z_دایاں==0)
   ){
-    setPragmaResultColumnNames(v, pPragma);
+    سیٹ_Pragma_نتیجہ_عمود_نام(v, pPragma);
   }
 
   /* Jump to the appropriate pragma handler */
-  switch( pPragma->ePragTyp ){
+  انتخاب( pPragma->ePragTyp ){
  
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
+#اگر !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
   /*
   **  PRAGMA [schema.]default_cache_size
   **  PRAGMA [schema.]default_cache_size=N
@@ -550,42 +550,42 @@ void sqlite3Pragma(
   ** size.  But continue to take the absolute value of the default cache
   ** size of historical compatibility.
   */
-  case PragTyp_DEFAULT_CACHE_SIZE: {
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList getCacheSize[] = {
+  حالت Prag_Typ_DEFAULT_CACHE_سائز: {
+    ساکن ثابت صحیح iLn = VDBE_انحراف_LINENO(2);
+    ساکن ثابت VdbeOpList get_Cache_سائز[] = {
       { OP_Transaction, 0, 0,        0},                         /* 0 */
-      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_SIZE},  /* 1 */
+      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_سائز},  /* 1 */
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 2,        0},
-      { OP_Subtract,    1, 2,        1},
+      { OP_تفریق,    1, 2,        1},
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 1,        0},                         /* 6 */
       { OP_Noop,        0, 0,        0},
-      { OP_ResultRow,   1, 1,        0},
+      { OP_نتیجہ_صف,   1, 1,        0},
     };
     VdbeOp *aOp;
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( !zRight ){
+    sqlite3_Vdbe_استعمال_کرتا_Btree(v, iDb);
+    اگر( !z_دایاں ){
       pParse->nMem += 2;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(getCacheSize));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(getCacheSize), getCacheSize, iLn);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_سائز(get_Cache_سائز));
+      aOp = sqlite3_Vdbe_جوڑو_Op_List(v, Array_سائز(get_Cache_سائز), get_Cache_سائز, iLn);
+      اگر( ONLY_IF_REALLOC_STRESS(aOp==0) ) توڑو;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
-      aOp[6].p1 = SQLITE_DEFAULT_CACHE_SIZE;
-    }else{
-      int size = sqlite3AbsInt32(sqlite3Atoi(zRight));
+      aOp[6].p1 = SQLITE_DEFAULT_CACHE_سائز;
+    }ورنہ{
+      صحیح سائز = sqlite3AbsInt32(sqlite3Atoi(z_دایاں));
       sqlite3BeginWriteOperation(pParse, 0, iDb);
-      sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_DEFAULT_CACHE_SIZE, size);
-      assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_سیٹ_Cookie, iDb, BTREE_DEFAULT_CACHE_سائز, سائز);
+      أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+      pDb->pSchema->cache_سائز = سائز;
+      sqlite3_Btree_سیٹ_Cache_سائز(pDb->pBt, pDb->pSchema->cache_سائز);
     }
-    break;
+    توڑو;
   }
-#endif /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
+#اگر_ختم /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
 
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS)
+#اگر !defined(SQLITE_OMIT_PAGER_PRAGMAS)
   /*
   **  PRAGMA [schema.]page_size
   **  PRAGMA [schema.]page_size=N
@@ -595,22 +595,22 @@ void sqlite3Pragma(
   ** database page size value.  The value can only be set if
   ** the database has not yet been created.
   */
-  case PragTyp_PAGE_SIZE: {
+  حالت Prag_Typ_صفحہ_سائز: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
-      int size = ALWAYS(pBt) ? sqlite3BtreeGetPageSize(pBt) : 0;
-      returnSingleInt(v, size);
-    }else{
+    أكد( pBt!=0 );
+    اگر( !z_دایاں ){
+      صحیح سائز = ALWAYS(pBt) ? sqlite3_Btree_Get_صفحہ_سائز(pBt) : 0;
+      returnSingleInt(v, سائز);
+    }ورنہ{
       /* Malloc may fail when setting the page-size, as there is an internal
       ** buffer that the pager module resizes using sqlite3_realloc().
       */
-      db->nextPagesize = sqlite3Atoi(zRight);
-      if( SQLITE_NOMEM==sqlite3BtreeSetPageSize(pBt, db->nextPagesize,0,0) ){
+      db->اگلا_Pagesize = sqlite3Atoi(z_دایاں);
+      اگر( SQLITE_NOMEM==sqlite3_Btree_سیٹ_صفحہ_سائز(pBt, db->اگلا_Pagesize,0,0) ){
         sqlite3OomFault(db);
       }
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -621,26 +621,26 @@ void sqlite3Pragma(
   ** secure_delete flag.  The second form changes the secure_delete
   ** flag setting and reports the new value.
   */
-  case PragTyp_SECURE_DELETE: {
+  حالت PragTyp_SECURE_DELETE: {
     Btree *pBt = pDb->pBt;
-    int b = -1;
-    assert( pBt!=0 );
-    if( zRight ){
-      if( sqlite3_stricmp(zRight, "fast")==0 ){
+    صحیح b = -1;
+    أكد( pBt!=0 );
+    اگر( z_دایاں ){
+      اگر( sqlite3_stricmp(z_دایاں, "fast")==0 ){
         b = 2;
-      }else{
-        b = sqlite3GetBoolean(zRight, 0);
+      }ورنہ{
+        b = sqlite3GetBoolean(z_دایاں, 0);
       }
     }
-    if( pId2->n==0 && b>=0 ){
-      int ii;
-      for(ii=0; ii<db->nDb; ii++){
+    اگر( pId2->n==0 && b>=0 ){
+      صحیح ii;
+      برائے(ii=0; ii<db->nDb; ii++){
         sqlite3BtreeSecureDelete(db->aDb[ii].pBt, b);
       }
     }
     b = sqlite3BtreeSecureDelete(pBt, b);
     returnSingleInt(v, b);
-    break;
+    توڑو;
   }
 
   /*
@@ -660,43 +660,43 @@ void sqlite3Pragma(
   **
   ** Return the number of pages in the specified database.
   */
-  case PragTyp_PAGE_COUNT: {
-    int iReg;
+  حالت Prag_Typ_صفحہ_گنتی: {
+    صحیح iReg;
     i64 x = 0;
-    sqlite3CodeVerifySchema(pParse, iDb);
+    sqlite3_رمز_Verify_Schema(pParse, iDb);
     iReg = ++pParse->nMem;
-    if( sqlite3Tolower(zLeft[0])=='p' ){
-      sqlite3VdbeAddOp2(v, OP_Pagecount, iDb, iReg);
-    }else{
-      if( zRight && sqlite3DecOrHexToI64(zRight,&x)==0 ){
-        if( x<0 ) x = 0;
-        else if( x>0xfffffffe ) x = 0xfffffffe;
-      }else{
+    اگر( sqlite3Tolower(z_بایاں[0])=='p' ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Pagecount, iDb, iReg);
+    }ورنہ{
+      اگر( z_دایاں && sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں,&x)==0 ){
+        اگر( x<0 ) x = 0;
+        ورنہ اگر( x>0xfffffffe ) x = 0xfffffffe;
+      }ورنہ{
         x = 0;
       }
-      sqlite3VdbeAddOp3(v, OP_MaxPgcnt, iDb, iReg, (int)x);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_MaxPgcnt, iDb, iReg, (صحیح)x);
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, iReg, 1);
-    break;
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, iReg, 1);
+    توڑو;
   }
 
   /*
   **  PRAGMA [schema.]locking_mode
   **  PRAGMA [schema.]locking_mode = (normal|exclusive)
   */
-  case PragTyp_LOCKING_MODE: {
-    const char *zRet = "normal";
-    int eMode = getLockingMode(zRight);
+  حالت Prag_Typ_LOCKING_منوال: {
+    ثابت حرف *zRet = "normal";
+    صحیح e_منوال = get_Locking_منوال(z_دایاں);
 
-    if( pId2->n==0 && eMode==PAGER_LOCKINGMODE_QUERY ){
+    اگر( pId2->n==0 && e_منوال==PAGER_LOCKINGMODE_QUERY ){
       /* Simple "PRAGMA locking_mode;" statement. This is a query for
       ** the current default locking mode (which may be different to
       ** the locking-mode of the main database).
       */
-      eMode = db->dfltLockMode;
-    }else{
+      e_منوال = db->dflt_تالا_منوال;
+    }ورنہ{
       Pager *pPager;
-      if( pId2->n==0 ){
+      اگر( pId2->n==0 ){
         /* This indicates that no database name was specified as part
         ** of the PRAGMA command. In this case the locking-mode must be
         ** set on all attached databases, as well as the main db file.
@@ -705,25 +705,25 @@ void sqlite3Pragma(
         ** any subsequently attached databases also use the specified
         ** locking mode.
         */
-        int ii;
-        assert(pDb==&db->aDb[0]);
-        for(ii=2; ii<db->nDb; ii++){
+        صحیح ii;
+        أكد(pDb==&db->aDb[0]);
+        برائے(ii=2; ii<db->nDb; ii++){
           pPager = sqlite3BtreePager(db->aDb[ii].pBt);
-          sqlite3PagerLockingMode(pPager, eMode);
+          sqlite3_Pager_Locking_منوال(pPager, e_منوال);
         }
-        db->dfltLockMode = (u8)eMode;
+        db->dflt_تالا_منوال = (u8)e_منوال;
       }
       pPager = sqlite3BtreePager(pDb->pBt);
-      eMode = sqlite3PagerLockingMode(pPager, eMode);
+      e_منوال = sqlite3_Pager_Locking_منوال(pPager, e_منوال);
     }
 
-    assert( eMode==PAGER_LOCKINGMODE_NORMAL
-            || eMode==PAGER_LOCKINGMODE_EXCLUSIVE );
-    if( eMode==PAGER_LOCKINGMODE_EXCLUSIVE ){
+    أكد( e_منوال==PAGER_LOCKINGMODE_معمول
+            || e_منوال==PAGER_LOCKINGMODE_EXCLUSIVE );
+    اگر( e_منوال==PAGER_LOCKINGMODE_EXCLUSIVE ){
       zRet = "exclusive";
     }
-    returnSingleText(v, zRet);
-    break;
+    return_Single_متن(v, zRet);
+    توڑو;
   }
 
   /*
@@ -731,44 +731,44 @@ void sqlite3Pragma(
   **  PRAGMA [schema.]journal_mode =
   **                      (delete|persist|off|truncate|memory|wal|off)
   */
-  case PragTyp_JOURNAL_MODE: {
-    int eMode;        /* One of the PAGER_JOURNALMODE_XXX symbols */
-    int ii;           /* Loop counter */
+  حالت Prag_Typ_JOURNAL_منوال: {
+    صحیح e_منوال;        /* One of the PAGER_JOURNALMODE_XXX symbols */
+    صحیح ii;           /* Loop counter */
 
-    if( zRight==0 ){
+    اگر( z_دایاں==0 ){
       /* If there is no "=MODE" part of the pragma, do a query for the
       ** current mode */
-      eMode = PAGER_JOURNALMODE_QUERY;
-    }else{
-      const char *zMode;
-      int n = sqlite3Strlen30(zRight);
-      for(eMode=0; (zMode = sqlite3JournalModename(eMode))!=0; eMode++){
-        if( sqlite3StrNICmp(zRight, zMode, n)==0 ) break;
+      e_منوال = PAGER_JOURNALMODE_QUERY;
+    }ورنہ{
+      ثابت حرف *z_منوال;
+      صحیح n = sqlite3Strlen30(z_دایاں);
+      برائے(e_منوال=0; (z_منوال = sqlite3JournalModename(e_منوال))!=0; e_منوال++){
+        اگر( sqlite3StrNICmp(z_دایاں, z_منوال, n)==0 ) توڑو;
       }
-      if( !zMode ){
+      اگر( !z_منوال ){
         /* If the "=MODE" part does not match any known journal mode,
         ** then do a query */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_منوال = PAGER_JOURNALMODE_QUERY;
       }
-      if( eMode==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
+      اگر( e_منوال==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow journal-mode "OFF" in defensive since the database
         ** can become corrupted using ordinary SQL when the journal is off */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_منوال = PAGER_JOURNALMODE_QUERY;
       }
     }
-    if( eMode==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
+    اگر( e_منوال==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
       /* Convert "PRAGMA journal_mode" into "PRAGMA main.journal_mode" */
       iDb = 0;
       pId2->n = 1;
     }
-    for(ii=db->nDb-1; ii>=0; ii--){
-      if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-        sqlite3VdbeUsesBtree(v, ii);
-        sqlite3VdbeAddOp3(v, OP_JournalMode, ii, 1, eMode);
+    برائے(ii=db->nDb-1; ii>=0; ii--){
+      اگر( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+        sqlite3_Vdbe_استعمال_کرتا_Btree(v, ii);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_Journal_منوال, ii, 1, e_منوال);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
-    break;
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 1);
+    توڑو;
   }
 
   /*
@@ -777,19 +777,19 @@ void sqlite3Pragma(
   **
   ** Get or set the size limit on rollback journal files.
   */
-  case PragTyp_JOURNAL_SIZE_LIMIT: {
+  حالت Prag_Typ_JOURNAL_سائز_حد_بندی: {
     Pager *pPager = sqlite3BtreePager(pDb->pBt);
-    i64 iLimit = -2;
-    if( zRight ){
-      sqlite3DecOrHexToI64(zRight, &iLimit);
-      if( iLimit<-1 ) iLimit = -1;
+    i64 i_حد_بندی = -2;
+    اگر( z_دایاں ){
+      sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &i_حد_بندی);
+      اگر( i_حد_بندی<-1 ) i_حد_بندی = -1;
     }
-    iLimit = sqlite3PagerJournalSizeLimit(pPager, iLimit);
-    returnSingleInt(v, iLimit);
-    break;
+    i_حد_بندی = sqlite3_Pager_Journal_سائز_حد_بندی(pPager, i_حد_بندی);
+    returnSingleInt(v, i_حد_بندی);
+    توڑو;
   }
 
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#اگر_ختم /* SQLITE_OMIT_PAGER_PRAGMAS */
 
   /*
   **  PRAGMA [schema.]auto_vacuum
@@ -798,76 +798,76 @@ void sqlite3Pragma(
   ** Get or set the value of the database 'auto-vacuum' parameter.
   ** The value is one of:  0 NONE 1 FULL 2 INCREMENTAL
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_AUTO_VACUUM: {
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOVACUUM
+  حالت PragTyp_AUTO_VACUUM: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
+    أكد( pBt!=0 );
+    اگر( !z_دایاں ){
       returnSingleInt(v, sqlite3BtreeGetAutoVacuum(pBt));
-    }else{
-      int eAuto = getAutoVacuum(zRight);
-      assert( eAuto>=0 && eAuto<=2 );
-      db->nextAutovac = (u8)eAuto;
+    }ورنہ{
+      صحیح eAuto = getAutoVacuum(z_دایاں);
+      أكد( eAuto>=0 && eAuto<=2 );
+      db->اگلا_Autovac = (u8)eAuto;
       /* Call SetAutoVacuum() to set initialize the internal auto and
       ** incr-vacuum flags. This is required in case this connection
       ** creates the database file. It is important that it is created
       ** as an auto-vacuum capable db.
       */
-      rc = sqlite3BtreeSetAutoVacuum(pBt, eAuto);
-      if( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
+      rc = sqlite3_Btree_سیٹ_Auto_Vacuum(pBt, eAuto);
+      اگر( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
         /* When setting the auto_vacuum mode to either "full" or
         ** "incremental", write the value of meta[6] in the database
         ** file. Before writing to meta[6], check that meta[3] indicates
         ** that this really is an auto-vacuum capable database.
         */
-        static const int iLn = VDBE_OFFSET_LINENO(2);
-        static const VdbeOpList setMeta6[] = {
+        ساکن ثابت صحیح iLn = VDBE_انحراف_LINENO(2);
+        ساکن ثابت VdbeOpList سیٹ_Meta6[] = {
           { OP_Transaction,    0,         1,                 0},    /* 0 */
-          { OP_ReadCookie,     0,         1,         BTREE_LARGEST_ROOT_PAGE},
+          { OP_ReadCookie,     0,         1,         BTREE_سب_سے_بڑا_جڑ_صفحہ},
           { OP_If,             1,         0,                 0},    /* 2 */
           { OP_Halt,           SQLITE_OK, OE_Abort,          0},    /* 3 */
-          { OP_SetCookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
+          { OP_سیٹ_Cookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
         };
         VdbeOp *aOp;
-        int iAddr = sqlite3VdbeCurrentAddr(v);
-        sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setMeta6));
-        aOp = sqlite3VdbeAddOpList(v, ArraySize(setMeta6), setMeta6, iLn);
-        if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+        صحیح iAddr = sqlite3VdbeCurrentAddr(v);
+        sqlite3VdbeVerifyNoMallocRequired(v, Array_سائز(سیٹ_Meta6));
+        aOp = sqlite3_Vdbe_جوڑو_Op_List(v, Array_سائز(سیٹ_Meta6), سیٹ_Meta6, iLn);
+        اگر( ONLY_IF_REALLOC_STRESS(aOp==0) ) توڑو;
         aOp[0].p1 = iDb;
         aOp[1].p1 = iDb;
         aOp[2].p2 = iAddr+4;
         aOp[4].p1 = iDb;
         aOp[4].p3 = eAuto - 1;
-        sqlite3VdbeUsesBtree(v, iDb);
+        sqlite3_Vdbe_استعمال_کرتا_Btree(v, iDb);
       }
     }
-    break;
+    توڑو;
   }
-#endif
+#اگر_ختم
 
   /*
   **  PRAGMA [schema.]incremental_vacuum(N)
   **
   ** Do N steps of incremental vacuuming on a database.
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_INCREMENTAL_VACUUM: {
-    int iLimit = 0, addr;
-    if( zRight==0 || !sqlite3GetInt32(zRight, &iLimit) || iLimit<=0 ){
-      iLimit = 0x7fffffff;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOVACUUM
+  حالت PragTyp_INCREMENTAL_VACUUM: {
+    صحیح i_حد_بندی = 0, addr;
+    اگر( z_دایاں==0 || !sqlite3GetInt32(z_دایاں, &i_حد_بندی) || i_حد_بندی<=0 ){
+      i_حد_بندی = 0x7fffffff;
     }
     sqlite3BeginWriteOperation(pParse, 0, iDb);
-    sqlite3VdbeAddOp2(v, OP_Integer, iLimit, 1);
-    addr = sqlite3VdbeAddOp1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
-    sqlite3VdbeAddOp1(v, OP_ResultRow, 1);
-    sqlite3VdbeAddOp2(v, OP_AddImm, 1, -1);
-    sqlite3VdbeAddOp2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr);
-    break;
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, i_حد_بندی, 1);
+    addr = sqlite3_Vdbe_جوڑو_Op1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
+    sqlite3_Vdbe_جوڑو_Op1(v, OP_نتیجہ_صف, 1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_جوڑو_Imm, 1, -1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_یہاں(v, addr);
+    توڑو;
   }
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_PAGER_PRAGMAS
   /*
   **  PRAGMA [schema.]cache_size
   **  PRAGMA [schema.]cache_size=N
@@ -879,16 +879,16 @@ void sqlite3Pragma(
   ** number of pages is adjusted so that the cache uses -N kibibytes
   ** of memory.
   */
-  case PragTyp_CACHE_SIZE: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
-      returnSingleInt(v, pDb->pSchema->cache_size);
-    }else{
-      int size = sqlite3Atoi(zRight);
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+  حالت Prag_Typ_CACHE_سائز: {
+    أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    اگر( !z_دایاں ){
+      returnSingleInt(v, pDb->pSchema->cache_سائز);
+    }ورنہ{
+      صحیح سائز = sqlite3Atoi(z_دایاں);
+      pDb->pSchema->cache_سائز = سائز;
+      sqlite3_Btree_سیٹ_Cache_سائز(pDb->pBt, pDb->pSchema->cache_سائز);
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -913,25 +913,25 @@ void sqlite3Pragma(
   ** The cache_spill=BOOLEAN setting applies to all attached schemas,
   ** not just the schema specified.
   */
-  case PragTyp_CACHE_SPILL: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
+  حالت PragTyp_CACHE_SPILL: {
+    أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    اگر( !z_دایاں ){
       returnSingleInt(v,
          (db->flags & SQLITE_CacheSpill)==0 ? 0 :
-            sqlite3BtreeSetSpillSize(pDb->pBt,0));
-    }else{
-      int size = 1;
-      if( sqlite3GetInt32(zRight, &size) ){
-        sqlite3BtreeSetSpillSize(pDb->pBt, size);
+            sqlite3_Btree_سیٹ_Spill_سائز(pDb->pBt,0));
+    }ورنہ{
+      صحیح سائز = 1;
+      اگر( sqlite3GetInt32(z_دایاں, &سائز) ){
+        sqlite3_Btree_سیٹ_Spill_سائز(pDb->pBt, سائز);
       }
-      if( sqlite3GetBoolean(zRight, size!=0) ){
+      اگر( sqlite3GetBoolean(z_دایاں, سائز!=0) ){
         db->flags |= SQLITE_CacheSpill;
-      }else{
+      }ورنہ{
         db->flags &= ~(u64)SQLITE_CacheSpill;
       }
-      setAllPagerFlags(db);
+      سیٹ_All_Pager_Flags(db);
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -948,34 +948,34 @@ void sqlite3Pragma(
   ** as little or as much as it wants.  Except, if N is set to 0 then the
   ** upper layers will never invoke the xFetch interfaces to the VFS.
   */
-  case PragTyp_MMAP_SIZE: {
+  حالت Prag_Typ_MMAP_سائز: {
     sqlite3_int64 sz;
-#if SQLITE_MAX_MMAP_SIZE>0
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( zRight ){
-      int ii;
-      sqlite3DecOrHexToI64(zRight, &sz);
-      if( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
-      if( pId2->n==0 ) db->szMmap = sz;
-      for(ii=db->nDb-1; ii>=0; ii--){
-        if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-          sqlite3BtreeSetMmapLimit(db->aDb[ii].pBt, sz);
+#اگر SQLITE_MAX_MMAP_سائز>0
+    أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    اگر( z_دایاں ){
+      صحیح ii;
+      sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &sz);
+      اگر( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
+      اگر( pId2->n==0 ) db->szMmap = sz;
+      برائے(ii=db->nDb-1; ii>=0; ii--){
+        اگر( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+          sqlite3_Btree_سیٹ_Mmap_حد_بندی(db->aDb[ii].pBt, sz);
         }
       }
     }
     sz = -1;
-    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_SIZE, &sz);
-#else
+    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_سائز, &sz);
+#ورنہ
     sz = 0;
     rc = SQLITE_OK;
-#endif
-    if( rc==SQLITE_OK ){
+#اگر_ختم
+    اگر( rc==SQLITE_OK ){
       returnSingleInt(v, sz);
-    }else if( rc!=SQLITE_NOTFOUND ){
+    }ورنہ اگر( rc!=SQLITE_NOTFOUND ){
       pParse->nErr++;
       pParse->rc = rc;
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -989,13 +989,13 @@ void sqlite3Pragma(
   ** Note that it is possible for the library compile-time options to
   ** override this setting
   */
-  case PragTyp_TEMP_STORE: {
-    if( !zRight ){
-      returnSingleInt(v, db->temp_store);
-    }else{
-      changeTempStorage(pParse, zRight);
+  حالت Prag_Typ_عارضی_STORE: {
+    اگر( !z_دایاں ){
+      returnSingleInt(v, db->عارضی_store);
+    }ورنہ{
+      change_عارضی_Storage(pParse, z_دایاں);
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -1008,40 +1008,40 @@ void sqlite3Pragma(
   ** If temporary directory is changed, then invalidateTempStorage.
   **
   */
-  case PragTyp_TEMP_STORE_DIRECTORY: {
+  حالت Prag_Typ_عارضی_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_temp_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    اگر( !z_دایاں ){
+      return_Single_متن(v, sqlite3_عارضی_directory);
+    }ورنہ{
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WSD
+      اگر( z_دایاں[0] ){
+        صحیح res;
+        rc = sqlite3OsAccess(db->pVfs, z_دایاں, SQLITE_ACCESS_READWRITE, &res);
+        اگر( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_پیغام(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          جاؤ pragma_برآمد;
         }
       }
-      if( SQLITE_TEMP_STORE==0
-       || (SQLITE_TEMP_STORE==1 && db->temp_store<=1)
-       || (SQLITE_TEMP_STORE==2 && db->temp_store==1)
+      اگر( SQLITE_عارضی_STORE==0
+       || (SQLITE_عارضی_STORE==1 && db->عارضی_store<=1)
+       || (SQLITE_عارضی_STORE==2 && db->عارضی_store==1)
       ){
-        invalidateTempStorage(pParse);
+        invalidate_عارضی_Storage(pParse);
       }
-      sqlite3_free(sqlite3_temp_directory);
-      if( zRight[0] ){
-        sqlite3_temp_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_temp_directory = 0;
+      sqlite3_free(sqlite3_عارضی_directory);
+      اگر( z_دایاں[0] ){
+        sqlite3_عارضی_directory = sqlite3_mprintf("%s", z_دایاں);
+      }ورنہ{
+        sqlite3_عارضی_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#اگر_ختم /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    توڑو;
   }
 
-#if SQLITE_OS_WIN
+#اگر SQLITE_OS_WIN
   /*
   **   PRAGMA data_store_directory
   **   PRAGMA data_store_directory = ""|"directory_name"
@@ -1055,35 +1055,35 @@ void sqlite3Pragma(
   ** by this setting, regardless of its value.
   **
   */
-  case PragTyp_DATA_STORE_DIRECTORY: {
+  حالت Prag_Typ_ڈیٹا_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_data_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    اگر( !z_دایاں ){
+      return_Single_متن(v, sqlite3_ڈیٹا_directory);
+    }ورنہ{
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WSD
+      اگر( z_دایاں[0] ){
+        صحیح res;
+        rc = sqlite3OsAccess(db->pVfs, z_دایاں, SQLITE_ACCESS_READWRITE, &res);
+        اگر( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_پیغام(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          جاؤ pragma_برآمد;
         }
       }
-      sqlite3_free(sqlite3_data_directory);
-      if( zRight[0] ){
-        sqlite3_data_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_data_directory = 0;
+      sqlite3_free(sqlite3_ڈیٹا_directory);
+      اگر( z_دایاں[0] ){
+        sqlite3_ڈیٹا_directory = sqlite3_mprintf("%s", z_دایاں);
+      }ورنہ{
+        sqlite3_ڈیٹا_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#اگر_ختم /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    توڑو;
   }
-#endif
+#اگر_ختم
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#اگر SQLITE_ENABLE_LOCKING_STYLE
   /*
   **   PRAGMA [schema.]lock_proxy_file
   **   PRAGMA [schema.]lock_proxy_file = ":auto:"|"lock_file_path"
@@ -1092,33 +1092,33 @@ void sqlite3Pragma(
   ** the value sets a specific file to be used for database access locks.
   **
   */
-  case PragTyp_LOCK_PROXY_FILE: {
-    if( !zRight ){
+  حالت Prag_Typ_تالا_PROXY_FILE: {
+    اگر( !z_دایاں ){
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
-      char *proxy_file_path = NULL;
+      حرف *proxy_file_راستہ = تہی;
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
       sqlite3OsFileControlHint(pFile, SQLITE_GET_LOCKPROXYFILE,
-                           &proxy_file_path);
-      returnSingleText(v, proxy_file_path);
-    }else{
+                           &proxy_file_راستہ);
+      return_Single_متن(v, proxy_file_راستہ);
+    }ورنہ{
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
-      int res;
-      if( zRight[0] ){
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     zRight);
-      } else {
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     NULL);
+      صحیح res;
+      اگر( z_دایاں[0] ){
+        res=sqlite3OsFileControl(pFile, SQLITE_سیٹ_LOCKPROXYFILE,
+                                     z_دایاں);
+      } ورنہ {
+        res=sqlite3OsFileControl(pFile, SQLITE_سیٹ_LOCKPROXYFILE,
+                                     تہی);
       }
-      if( res!=SQLITE_OK ){
-        sqlite3ErrorMsg(pParse, "failed to set lock proxy file");
-        goto pragma_out;
+      اگر( res!=SQLITE_OK ){
+        sqlite3_Error_پیغام(pParse, "failed to set lock proxy file");
+        جاؤ pragma_برآمد;
       }
     }
-    break;
+    توڑو;
   }
-#endif /* SQLITE_ENABLE_LOCKING_STYLE */     
+#اگر_ختم /* SQLITE_ENABLE_LOCKING_STYLE */     
    
   /*
   **   PRAGMA [schema.]synchronous
@@ -1129,63 +1129,63 @@ void sqlite3Pragma(
   ** default value will be restored the next time the database is
   ** opened.
   */
-  case PragTyp_SYNCHRONOUS: {
-    if( !zRight ){
+  حالت PragTyp_SYNCHRONOUS: {
+    اگر( !z_دایاں ){
       returnSingleInt(v, pDb->safety_level-1);
-    }else{
-      if( !db->autoCommit ){
-        sqlite3ErrorMsg(pParse,
+    }ورنہ{
+      اگر( !db->autoCommit ){
+        sqlite3_Error_پیغام(pParse,
             "Safety level may not be changed inside a transaction");
-      }else if( iDb!=1 ){
-        int iLevel;
-        if( sqlite3Isdigit(zRight[0]) ){
-          iLevel = sqlite3Atoi(zRight);
-        }else{
-          iLevel = getSafetyLevel(zRight,0,1);
+      }ورنہ اگر( iDb!=1 ){
+        صحیح iLevel;
+        اگر( sqlite3Isdigit(z_دایاں[0]) ){
+          iLevel = sqlite3Atoi(z_دایاں);
+        }ورنہ{
+          iLevel = getSafetyLevel(z_دایاں,0,1);
         }
-        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_MASK;
-        if( iLevel==0 ) iLevel = 1;
+        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_نقاب;
+        اگر( iLevel==0 ) iLevel = 1;
         pDb->safety_level = iLevel;
-        pDb->bSyncSet = 1;
-        setAllPagerFlags(db);
+        pDb->b_Sync_سیٹ = 1;
+        سیٹ_All_Pager_Flags(db);
       }
     }
-    break;
+    توڑو;
   }
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#اگر_ختم /* SQLITE_OMIT_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FLAG_PRAGMAS
-  case PragTyp_FLAG: {
-    if( zRight==0 ){
-      setPragmaResultColumnNames(v, pPragma);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FLAG_PRAGMAS
+  حالت PragTyp_FLAG: {
+    اگر( z_دایاں==0 ){
+      سیٹ_Pragma_نتیجہ_عمود_نام(v, pPragma);
       returnSingleInt(v, (db->flags & pPragma->iArg)!=0 );
-    }else{
-      u64 mask = pPragma->iArg;    /* Mask of bits to set or clear. */
-      if( db->autoCommit==0 ){
+    }ورنہ{
+      u64 نقاب = pPragma->iArg;    /* Mask of bits to set or clear. */
+      اگر( db->autoCommit==0 ){
         /* Foreign key support may not be enabled or disabled while not
         ** in auto-commit mode.  */
-        mask &= ~(SQLITE_ForeignKeys);
+        نقاب &= ~(SQLITE_Foreign_کلیدیں);
       }
 
-      if( sqlite3GetBoolean(zRight, 0) ){
-        if( (mask & SQLITE_WriteSchema)==0
+      اگر( sqlite3GetBoolean(z_دایاں, 0) ){
+        اگر( (نقاب & SQLITE_WriteSchema)==0
          || (db->flags & SQLITE_Defensive)==0
         ){
-          db->flags |= mask;
+          db->flags |= نقاب;
         }
-      }else{
-        db->flags &= ~mask;
-        if( mask==SQLITE_DeferFKs ){
+      }ورنہ{
+        db->flags &= ~نقاب;
+        اگر( نقاب==SQLITE_DeferFKs ){
           db->nDeferredImmCons = 0;
           db->nDeferredCons = 0;
         }
-        if( (mask & SQLITE_WriteSchema)!=0
-         && sqlite3_stricmp(zRight, "reset")==0
+        اگر( (نقاب & SQLITE_WriteSchema)!=0
+         && sqlite3_stricmp(z_دایاں, "reset")==0
         ){
           /* IMP: R-60817-01178 If the argument is "RESET" then schema
           ** writing is disabled (as with "PRAGMA writable_schema=OFF") and,
           ** in addition, the schema is reloaded. */
-          sqlite3ResetAllSchemasOfConnection(db);
+          sqlite3_Reset_All_Schemas_کا_Connection(db);
         }
       }
 
@@ -1193,14 +1193,14 @@ void sqlite3Pragma(
       ** compiler (eg. count_changes). So add an opcode to expire all
       ** compiled SQL statements after modifying a pragma value.
       */
-      sqlite3VdbeAddOp0(v, OP_Expire);
-      setAllPagerFlags(db);
+      sqlite3_Vdbe_جوڑو_Op0(v, OP_Expire);
+      سیٹ_All_Pager_Flags(db);
     }
-    break;
+    توڑو;
   }
-#endif /* SQLITE_OMIT_FLAG_PRAGMAS */
+#اگر_ختم /* SQLITE_OMIT_FLAG_PRAGMAS */
 
-#ifndef SQLITE_OMIT_SCHEMA_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SCHEMA_PRAGMAS
   /*
   **   PRAGMA table_info(<table>)
   **
@@ -1214,56 +1214,56 @@ void sqlite3Pragma(
   ** dflt_value: The default value for the column, if any.
   ** pk:         Non-zero for PK fields.
   */
-  case PragTyp_TABLE_INFO: if( zRight ){
-    Table *pTab;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-    if( pTab ){
-      int i, k;
-      int nHidden = 0;
-      Column *pCol;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+  حالت Prag_Typ_جدول_INFO: اگر( z_دایاں ){
+    جدول *pTab;
+    sqlite3_رمز_Verify_Named_Schema(pParse, zDb);
+    pTab = sqlite3_Locate_جدول(pParse, LOCATE_NOERR, z_دایاں, zDb);
+    اگر( pTab ){
+      صحیح i, k;
+      صحیح nHidden = 0;
+      عمود *p_ستون;
+      اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
       pParse->nMem = 7;
-      sqlite3ViewGetColumnNames(pParse, pTab);
-      for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-        int isHidden = 0;
-        const Expr *pColExpr;
-        if( pCol->colFlags & COLFLAG_NOINSERT ){
-          if( pPragma->iArg==0 ){
+      sqlite3_View_Get_عمود_نام(pParse, pTab);
+      برائے(i=0, p_ستون=pTab->a_ستون; i<pTab->n_ستون; i++, p_ستون++){
+        صحیح isHidden = 0;
+        ثابت اظہاریہ *p_ستون_اظہاریہ;
+        اگر( p_ستون->ستون_Flags & COLFLAG_NOINSERT ){
+          اگر( pPragma->iArg==0 ){
             nHidden++;
-            continue;
+            جاری;
           }
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
+          اگر( p_ستون->ستون_Flags & COLFLAG_VIRTUAL ){
             isHidden = 2;  /* GENERATED ALWAYS AS ... VIRTUAL */
-          }else if( pCol->colFlags & COLFLAG_STORED ){
+          }ورنہ اگر( p_ستون->ستون_Flags & COLFLAG_STORED ){
             isHidden = 3;  /* GENERATED ALWAYS AS ... STORED */
-          }else{ assert( pCol->colFlags & COLFLAG_HIDDEN );
+          }ورنہ{ أكد( p_ستون->ستون_Flags & COLFLAG_HIDDEN );
             isHidden = 1;  /* HIDDEN */
           }
         }
-        if( (pCol->colFlags & COLFLAG_PRIMKEY)==0 ){
+        اگر( (p_ستون->ستون_Flags & COLFLAG_PRIMKEY)==0 ){
           k = 0;
-        }else if( pPk==0 ){
+        }ورنہ اگر( pPk==0 ){
           k = 1;
-        }else{
-          for(k=1; k<=pTab->nCol && pPk->aiColumn[k-1]!=i; k++){}
+        }ورنہ{
+          برائے(k=1; k<=pTab->n_ستون && pPk->ai_عمود[k-1]!=i; k++){}
         }
-        pColExpr = sqlite3ColumnExpr(pTab,pCol);
-        assert( pColExpr==0 || pColExpr->op==TK_SPAN || isHidden>=2 );
-        assert( pColExpr==0 || !ExprHasProperty(pColExpr, EP_IntValue)
+        p_ستون_اظہاریہ = sqlite3_عمود_اظہاریہ(pTab,p_ستون);
+        أكد( p_ستون_اظہاریہ==0 || p_ستون_اظہاریہ->op==TK_وسعت || isHidden>=2 );
+        أكد( p_ستون_اظہاریہ==0 || !اظہاریہ_Has_Property(p_ستون_اظہاریہ, EP_Int_قدر)
                   || isHidden>=2 );
-        sqlite3VdbeMultiLoad(v, 1, pPragma->iArg ? "issisii" : "issisi",
+        sqlite3_Vdbe_Multi_بھرو(v, 1, pPragma->iArg ? "issisii" : "issisi",
                i-nHidden,
-               pCol->zCnName,
-               sqlite3ColumnType(pCol,""),
-               pCol->notNull ? 1 : 0,
-               (isHidden>=2 || pColExpr==0) ? 0 : pColExpr->u.zToken,
+               p_ستون->zCnName,
+               sqlite3_عمود_Type(p_ستون,""),
+               p_ستون->notNull ? 1 : 0,
+               (isHidden>=2 || p_ستون_اظہاریہ==0) ? 0 : p_ستون_اظہاریہ->u.zToken,
                k,
                isHidden);
       }
     }
   }
-  break;
+  توڑو;
 
   /*
   **   PRAGMA table_list
@@ -1278,15 +1278,15 @@ void sqlite3Pragma(
   ** wr:         True for a WITHOUT ROWID table
   ** strict:     True for a STRICT table
   */
-  case PragTyp_TABLE_LIST: {
-    int ii;
+  حالت Prag_Typ_جدول_LIST: {
+    صحیح ii;
     pParse->nMem = 6;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    for(ii=0; ii<db->nDb; ii++){
+    sqlite3_رمز_Verify_Named_Schema(pParse, zDb);
+    برائے(ii=0; ii<db->nDb; ii++){
       HashElem *k;
       Hash *pHash;
-      int initNCol;
-      if( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) continue;
+      صحیح initNCol;
+      اگر( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) جاری;
 
       /* Ensure that the Table.nCol field is initialized for all views
       ** and virtual tables.  Each time we initialize a Table.nCol value
@@ -1294,322 +1294,322 @@ void sqlite3Pragma(
       ** the initialization scan.
       */
       pHash = &db->aDb[ii].pSchema->tblHash;
-      initNCol = sqliteHashCount(pHash);
-      while( initNCol-- ){
-        for(k=sqliteHashFirst(pHash); 1; k=sqliteHashNext(k) ){
-          Table *pTab;
-          if( k==0 ){ initNCol = 0; break; }
-          pTab = sqliteHashData(k);
-          if( pTab->nCol==0 ){
-            char *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
-            if( zSql ){
+      initNCol = sqlite_Hash_گنتی(pHash);
+      جب( initNCol-- ){
+        برائے(k=sqlite_Hash_پہلا(pHash); 1; k=sqlite_Hash_اگلا(k) ){
+          جدول *pTab;
+          اگر( k==0 ){ initNCol = 0; توڑو; }
+          pTab = sqlite_Hash_ڈیٹا(k);
+          اگر( pTab->n_ستون==0 ){
+            حرف *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
+            اگر( zSql ){
               sqlite3_stmt *pDummy = 0;
-              (void)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
+              (خالی)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
                                        &pDummy, 0);
-              (void)sqlite3_finalize(pDummy);
+              (خالی)sqlite3_finalize(pDummy);
               sqlite3DbFree(db, zSql);
             }
-            if( db->mallocFailed ){
-              sqlite3ErrorMsg(db->pParse, "out of memory");
+            اگر( db->mallocFailed ){
+              sqlite3_Error_پیغام(db->pParse, "out of memory");
               db->pParse->rc = SQLITE_NOMEM_BKPT;
             }
             pHash = &db->aDb[ii].pSchema->tblHash;
-            break;
+            توڑو;
           }
         }
       }
 
-      for(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k) ){
-        Table *pTab = sqliteHashData(k);
-        const char *zType;
-        if( zRight && sqlite3_stricmp(zRight, pTab->zName)!=0 ) continue;
-        if( IsView(pTab) ){
+      برائے(k=sqlite_Hash_پہلا(pHash); k; k=sqlite_Hash_اگلا(k) ){
+        جدول *pTab = sqlite_Hash_ڈیٹا(k);
+        ثابت حرف *zType;
+        اگر( z_دایاں && sqlite3_stricmp(z_دایاں, pTab->zName)!=0 ) جاری;
+        اگر( IsView(pTab) ){
           zType = "view";
-        }else if( IsVirtual(pTab) ){
+        }ورنہ اگر( IsVirtual(pTab) ){
           zType = "virtual";
-        }else if( pTab->tabFlags & TF_Shadow ){
+        }ورنہ اگر( pTab->tabFlags & TF_Shadow ){
           zType = "shadow";
-        }else{
+        }ورنہ{
           zType = "table";
         }
-        sqlite3VdbeMultiLoad(v, 1, "sssiii",
+        sqlite3_Vdbe_Multi_بھرو(v, 1, "sssiii",
            db->aDb[ii].zDbSName,
-           sqlite3PreferredTableName(pTab->zName),
+           sqlite3_Preferred_جدول_Name(pTab->zName),
            zType,
-           pTab->nCol,
+           pTab->n_ستون,
            (pTab->tabFlags & TF_WithoutRowid)!=0,
            (pTab->tabFlags & TF_Strict)!=0
         );
       }
     }
   }
-  break;
+  توڑو;
 
-#ifdef SQLITE_DEBUG
-  case PragTyp_STATS: {
-    Index *pIdx;
+#اگر_تعریف_شدہ SQLITE_DEBUG
+  حالت PragTyp_STATS: {
+    اشاریہ *pIdx;
     HashElem *i;
     pParse->nMem = 5;
-    sqlite3CodeVerifySchema(pParse, iDb);
-    for(i=sqliteHashFirst(&pDb->pSchema->tblHash); i; i=sqliteHashNext(i)){
-      Table *pTab = sqliteHashData(i);
-      sqlite3VdbeMultiLoad(v, 1, "ssiii",
-           sqlite3PreferredTableName(pTab->zName),
+    sqlite3_رمز_Verify_Schema(pParse, iDb);
+    برائے(i=sqlite_Hash_پہلا(&pDb->pSchema->tblHash); i; i=sqlite_Hash_اگلا(i)){
+      جدول *pTab = sqlite_Hash_ڈیٹا(i);
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "ssiii",
+           sqlite3_Preferred_جدول_Name(pTab->zName),
            0,
-           pTab->szTabRow,
-           pTab->nRowLogEst,
+           pTab->sz_Tab_صف,
+           pTab->n_صف_Log_Est,
            pTab->tabFlags);
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-        sqlite3VdbeMultiLoad(v, 2, "siiiX",
+      برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){
+        sqlite3_Vdbe_Multi_بھرو(v, 2, "siiiX",
            pIdx->zName,
-           pIdx->szIdxRow,
-           pIdx->aiRowLogEst[0],
+           pIdx->sz_Idx_صف,
+           pIdx->ai_صف_Log_Est[0],
            pIdx->hasStat1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 5);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 5);
       }
     }
   }
-  break;
-#endif
+  توڑو;
+#اگر_ختم
 
-  case PragTyp_INDEX_INFO: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    pIdx = sqlite3FindIndex(db, zRight, zDb);
-    if( pIdx==0 ){
+  حالت Prag_Typ_اشاریہ_INFO: اگر( z_دایاں ){
+    اشاریہ *pIdx;
+    جدول *pTab;
+    pIdx = sqlite3_ڈھونڈو_اشاریہ(db, z_دایاں, zDb);
+    اگر( pIdx==0 ){
       /* If there is no index named zRight, check to see if there is a
       ** WITHOUT ROWID table named zRight, and if there is, show the
       ** structure of the PRIMARY KEY index for that table. */
-      pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-      if( pTab && !HasRowid(pTab) ){
-        pIdx = sqlite3PrimaryKeyIndex(pTab);
+      pTab = sqlite3_Locate_جدول(pParse, LOCATE_NOERR, z_دایاں, zDb);
+      اگر( pTab && !HasRowid(pTab) ){
+        pIdx = sqlite3_Primary_کلید_اشاریہ(pTab);
       }
     }
-    if( pIdx ){
-      int iIdxDb = sqlite3SchemaToIndex(db, pIdx->pSchema);
-      int i;
-      int mx;
-      if( pPragma->iArg ){
+    اگر( pIdx ){
+      صحیح iIdxDb = sqlite3_Schema_مقصد_اشاریہ(db, pIdx->pSchema);
+      صحیح i;
+      صحیح mx;
+      اگر( pPragma->iArg ){
         /* PRAGMA index_xinfo (newer version with more rows and columns) */
-        mx = pIdx->nColumn;
+        mx = pIdx->n_عمود;
         pParse->nMem = 6;
-      }else{
+      }ورنہ{
         /* PRAGMA index_info (legacy version) */
-        mx = pIdx->nKeyCol;
+        mx = pIdx->n_کلید_ستون;
         pParse->nMem = 3;
       }
-      pTab = pIdx->pTable;
-      sqlite3CodeVerifySchema(pParse, iIdxDb);
-      assert( pParse->nMem<=pPragma->nPragCName );
-      for(i=0; i<mx; i++){
-        i16 cnum = pIdx->aiColumn[i];
-        sqlite3VdbeMultiLoad(v, 1, "iisX", i, cnum,
-                             cnum<0 ? 0 : pTab->aCol[cnum].zCnName);
-        if( pPragma->iArg ){
-          sqlite3VdbeMultiLoad(v, 4, "isiX",
-            pIdx->aSortOrder[i],
+      pTab = pIdx->p_جدول;
+      sqlite3_رمز_Verify_Schema(pParse, iIdxDb);
+      أكد( pParse->nMem<=pPragma->nPragCName );
+      برائے(i=0; i<mx; i++){
+        i16 cnum = pIdx->ai_عمود[i];
+        sqlite3_Vdbe_Multi_بھرو(v, 1, "iisX", i, cnum,
+                             cnum<0 ? 0 : pTab->a_ستون[cnum].zCnName);
+        اگر( pPragma->iArg ){
+          sqlite3_Vdbe_Multi_بھرو(v, 4, "isiX",
+            pIdx->a_ترتیب_دو_ترتیب[i],
             pIdx->azColl[i],
-            i<pIdx->nKeyCol);
+            i<pIdx->n_کلید_ستون);
         }
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, pParse->nMem);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, pParse->nMem);
       }
     }
   }
-  break;
+  توڑو;
 
-  case PragTyp_INDEX_LIST: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    int i;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab ){
-      int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  حالت Prag_Typ_اشاریہ_LIST: اگر( z_دایاں ){
+    اشاریہ *pIdx;
+    جدول *pTab;
+    صحیح i;
+    pTab = sqlite3_ڈھونڈو_جدول(db, z_دایاں, zDb);
+    اگر( pTab ){
+      صحیح iTabDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
       pParse->nMem = 5;
-      sqlite3CodeVerifySchema(pParse, iTabDb);
-      for(pIdx=pTab->pIndex, i=0; pIdx; pIdx=pIdx->pNext, i++){
-        const char *azOrigin[] = { "c", "u", "pk" };
-        sqlite3VdbeMultiLoad(v, 1, "isisi",
+      sqlite3_رمز_Verify_Schema(pParse, iTabDb);
+      برائے(pIdx=pTab->p_اشاریہ, i=0; pIdx; pIdx=pIdx->p_اگلا, i++){
+        ثابت حرف *azOrigin[] = { "c", "u", "pk" };
+        sqlite3_Vdbe_Multi_بھرو(v, 1, "isisi",
            i,
            pIdx->zName,
-           IsUniqueIndex(pIdx),
+           Is_Unique_اشاریہ(pIdx),
            azOrigin[pIdx->idxType],
            pIdx->pPartIdxWhere!=0);
       }
     }
   }
-  break;
+  توڑو;
 
-  case PragTyp_DATABASE_LIST: {
-    int i;
+  حالت PragTyp_DATABASE_LIST: {
+    صحیح i;
     pParse->nMem = 3;
-    for(i=0; i<db->nDb; i++){
-      if( db->aDb[i].pBt==0 ) continue;
-      assert( db->aDb[i].zDbSName!=0 );
-      sqlite3VdbeMultiLoad(v, 1, "iss",
+    برائے(i=0; i<db->nDb; i++){
+      اگر( db->aDb[i].pBt==0 ) جاری;
+      أكد( db->aDb[i].zDbSName!=0 );
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "iss",
          i,
          db->aDb[i].zDbSName,
          sqlite3BtreeGetFilename(db->aDb[i].pBt));
     }
   }
-  break;
+  توڑو;
 
-  case PragTyp_COLLATION_LIST: {
-    int i = 0;
+  حالت PragTyp_COLLATION_LIST: {
+    صحیح i = 0;
     HashElem *p;
     pParse->nMem = 2;
-    for(p=sqliteHashFirst(&db->aCollSeq); p; p=sqliteHashNext(p)){
-      CollSeq *pColl = (CollSeq *)sqliteHashData(p);
-      sqlite3VdbeMultiLoad(v, 1, "is", i++, pColl->zName);
+    برائے(p=sqlite_Hash_پہلا(&db->aCollSeq); p; p=sqlite_Hash_اگلا(p)){
+      CollSeq *pColl = (CollSeq *)sqlite_Hash_ڈیٹا(p);
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "is", i++, pColl->zName);
     }
   }
-  break;
+  توڑو;
 
-#ifndef SQLITE_OMIT_INTROSPECTION_PRAGMAS
-  case PragTyp_FUNCTION_LIST: {
-    int i;
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_INTROSPECTION_PRAGMAS
+  حالت PragTyp_FUNCTION_LIST: {
+    صحیح i;
     HashElem *j;
     FuncDef *p;
-    int showInternFunc = (db->mDbFlags & DBFLAG_InternalFunc)!=0;
+    صحیح showInternFunc = (db->mDbFlags & DBFLAG_اندرونی_Func)!=0;
     pParse->nMem = 6;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-        pragmaFunclistLine(v, p, 1, showInternFunc);
+    برائے(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+      برائے(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
+        أكد( p->funcFlags & SQLITE_FUNC_BUILTIN );
+        pragma_Funclist_سطر(v, p, 1, showInternFunc);
       }
     }
-    for(j=sqliteHashFirst(&db->aFunc); j; j=sqliteHashNext(j)){
-      p = (FuncDef*)sqliteHashData(j);
-      assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
-      pragmaFunclistLine(v, p, 0, showInternFunc);
+    برائے(j=sqlite_Hash_پہلا(&db->aFunc); j; j=sqlite_Hash_اگلا(j)){
+      p = (FuncDef*)sqlite_Hash_ڈیٹا(j);
+      أكد( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
+      pragma_Funclist_سطر(v, p, 0, showInternFunc);
     }
   }
-  break;
+  توڑو;
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  case PragTyp_MODULE_LIST: {
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  حالت PragTyp_MODULE_LIST: {
     HashElem *j;
     pParse->nMem = 1;
-    for(j=sqliteHashFirst(&db->aModule); j; j=sqliteHashNext(j)){
-      Module *pMod = (Module*)sqliteHashData(j);
-      sqlite3VdbeMultiLoad(v, 1, "s", pMod->zName);
+    برائے(j=sqlite_Hash_پہلا(&db->aModule); j; j=sqlite_Hash_اگلا(j)){
+      Module *pMod = (Module*)sqlite_Hash_ڈیٹا(j);
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "s", pMod->zName);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_VIRTUALTABLE */
 
-  case PragTyp_PRAGMA_LIST: {
-    int i;
-    for(i=0; i<ArraySize(aPragmaName); i++){
-      sqlite3VdbeMultiLoad(v, 1, "s", aPragmaName[i].zName);
+  حالت PragTyp_PRAGMA_LIST: {
+    صحیح i;
+    برائے(i=0; i<Array_سائز(aPragmaName); i++){
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "s", aPragmaName[i].zName);
     }
   }
-  break;
-#endif /* SQLITE_INTROSPECTION_PRAGMAS */
+  توڑو;
+#اگر_ختم /* SQLITE_INTROSPECTION_PRAGMAS */
 
-#endif /* SQLITE_OMIT_SCHEMA_PRAGMAS */
+#اگر_ختم /* SQLITE_OMIT_SCHEMA_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  case PragTyp_FOREIGN_KEY_LIST: if( zRight ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FOREIGN_کلید
+  حالت Prag_Typ_FOREIGN_کلید_LIST: اگر( z_دایاں ){
     FKey *pFK;
-    Table *pTab;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab && IsOrdinaryTable(pTab) ){
+    جدول *pTab;
+    pTab = sqlite3_ڈھونڈو_جدول(db, z_دایاں, zDb);
+    اگر( pTab && Is_Ordinary_جدول(pTab) ){
       pFK = pTab->u.tab.pFKey;
-      if( pFK ){
-        int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-        int i = 0;
+      اگر( pFK ){
+        صحیح iTabDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
+        صحیح i = 0;
         pParse->nMem = 8;
-        sqlite3CodeVerifySchema(pParse, iTabDb);
-        while(pFK){
-          int j;
-          for(j=0; j<pFK->nCol; j++){
-            sqlite3VdbeMultiLoad(v, 1, "iissssss",
+        sqlite3_رمز_Verify_Schema(pParse, iTabDb);
+        جب(pFK){
+          صحیح j;
+          برائے(j=0; j<pFK->n_ستون; j++){
+            sqlite3_Vdbe_Multi_بھرو(v, 1, "iissssss",
                    i,
                    j,
-                   pFK->zTo,
-                   pTab->aCol[pFK->aCol[j].iFrom].zCnName,
-                   pFK->aCol[j].zCol,
+                   pFK->z_مقصد,
+                   pTab->a_ستون[pFK->a_ستون[j].iFrom].zCnName,
+                   pFK->a_ستون[j].z_ستون,
                    actionName(pFK->aAction[1]),  /* ON UPDATE */
                    actionName(pFK->aAction[0]),  /* ON DELETE */
                    "NONE");
           }
           ++i;
-          pFK = pFK->pNextFrom;
+          pFK = pFK->p_اگلا_From;
         }
       }
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  توڑو;
+#اگر_ختم /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-#ifndef SQLITE_OMIT_TRIGGER
-  case PragTyp_FOREIGN_KEY_CHECK: {
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_FOREIGN_کلید
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_TRIGGER
+  حالت Prag_Typ_FOREIGN_کلید_CHECK: {
     FKey *pFK;             /* A foreign key constraint */
-    Table *pTab;           /* Child table contain "REFERENCES" keyword */
-    Table *pParent;        /* Parent table that child points to */
-    Index *pIdx;           /* Index in the parent table */
-    int i;                 /* Loop counter:  Foreign key number for pTab */
-    int j;                 /* Loop counter:  Field of the foreign key */
+    جدول *pTab;           /* Child table contain "REFERENCES" keyword */
+    جدول *p_والد;        /* Parent table that child points to */
+    اشاریہ *pIdx;           /* Index in the parent table */
+    صحیح i;                 /* Loop counter:  Foreign key number for pTab */
+    صحیح j;                 /* Loop counter:  Field of the foreign key */
     HashElem *k;           /* Loop counter:  Next table in schema */
-    int x;                 /* result variable */
-    int regResult;         /* 3 registers to hold a result row */
-    int regRow;            /* Registers to hold a row from pTab */
-    int addrTop;           /* Top of a loop checking foreign keys */
-    int addrOk;            /* Jump here if the key is OK */
-    int *aiCols;           /* child to parent column mapping */
+    صحیح x;                 /* result variable */
+    صحیح reg_نتیجہ;         /* 3 registers to hold a result row */
+    صحیح reg_صف;            /* Registers to hold a row from pTab */
+    صحیح addr_چوٹی;           /* Top of a loop checking foreign keys */
+    صحیح addrOk;            /* Jump here if the key is OK */
+    صحیح *ai_ستون_تعداد;           /* child to parent column mapping */
 
-    regResult = pParse->nMem+1;
+    reg_نتیجہ = pParse->nMem+1;
     pParse->nMem += 4;
-    regRow = ++pParse->nMem;
-    k = sqliteHashFirst(&db->aDb[iDb].pSchema->tblHash);
-    while( k ){
-      if( zRight ){
-        pTab = sqlite3LocateTable(pParse, 0, zRight, zDb);
+    reg_صف = ++pParse->nMem;
+    k = sqlite_Hash_پہلا(&db->aDb[iDb].pSchema->tblHash);
+    جب( k ){
+      اگر( z_دایاں ){
+        pTab = sqlite3_Locate_جدول(pParse, 0, z_دایاں, zDb);
         k = 0;
-      }else{
-        pTab = (Table*)sqliteHashData(k);
-        k = sqliteHashNext(k);
+      }ورنہ{
+        pTab = (جدول*)sqlite_Hash_ڈیٹا(k);
+        k = sqlite_Hash_اگلا(k);
       }
-      if( pTab==0 || !IsOrdinaryTable(pTab) || pTab->u.tab.pFKey==0 ) continue;
-      iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+      اگر( pTab==0 || !Is_Ordinary_جدول(pTab) || pTab->u.tab.pFKey==0 ) جاری;
+      iDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
       zDb = db->aDb[iDb].zDbSName;
-      sqlite3CodeVerifySchema(pParse, iDb);
-      sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
-      sqlite3TouchRegister(pParse, pTab->nCol+regRow);
-      sqlite3OpenTable(pParse, 0, iDb, pTab, OP_OpenRead);
-      sqlite3VdbeLoadString(v, regResult, pTab->zName);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
-        if( pParent==0 ) continue;
+      sqlite3_رمز_Verify_Schema(pParse, iDb);
+      sqlite3_جدول_تالا(pParse, iDb, pTab->tnum, 0, pTab->zName);
+      sqlite3_Touch_رجسٹر(pParse, pTab->n_ستون+reg_صف);
+      sqlite3_Open_جدول(pParse, 0, iDb, pTab, OP_OpenRead);
+      sqlite3_Vdbe_بھرو_String(v, reg_نتیجہ, pTab->zName);
+      أكد( Is_Ordinary_جدول(pTab) );
+      برائے(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_اگلا_From){
+        p_والد = sqlite3_ڈھونڈو_جدول(db, pFK->z_مقصد, zDb);
+        اگر( p_والد==0 ) جاری;
         pIdx = 0;
-        sqlite3TableLock(pParse, iDb, pParent->tnum, 0, pParent->zName);
-        x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, 0);
-        if( x==0 ){
-          if( pIdx==0 ){
-            sqlite3OpenTable(pParse, i, iDb, pParent, OP_OpenRead);
-          }else{
-            sqlite3VdbeAddOp3(v, OP_OpenRead, i, pIdx->tnum, iDb);
-            sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+        sqlite3_جدول_تالا(pParse, iDb, p_والد->tnum, 0, p_والد->zName);
+        x = sqlite3_Fk_Locate_اشاریہ(pParse, p_والد, pFK, &pIdx, 0);
+        اگر( x==0 ){
+          اگر( pIdx==0 ){
+            sqlite3_Open_جدول(pParse, i, iDb, p_والد, OP_OpenRead);
+          }ورنہ{
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_OpenRead, i, pIdx->tnum, iDb);
+            sqlite3_Vdbe_سیٹ_P4_کلید_Info(pParse, pIdx);
           }
-        }else{
+        }ورنہ{
           k = 0;
-          break;
+          توڑو;
         }
       }
-      assert( pParse->nErr>0 || pFK==0 );
-      if( pFK ) break;
-      if( pParse->nTab<i ) pParse->nTab = i;
-      addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, 0); VdbeCoverage(v);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
+      أكد( pParse->nErr>0 || pFK==0 );
+      اگر( pFK ) توڑو;
+      اگر( pParse->nTab<i ) pParse->nTab = i;
+      addr_چوٹی = sqlite3_Vdbe_جوڑو_Op1(v, OP_Rewind, 0); VdbeCoverage(v);
+      أكد( Is_Ordinary_جدول(pTab) );
+      برائے(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_اگلا_From){
+        p_والد = sqlite3_ڈھونڈو_جدول(db, pFK->z_مقصد, zDb);
         pIdx = 0;
-        aiCols = 0;
-        if( pParent ){
-          x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, &aiCols);
-          assert( x==0 || db->mallocFailed );
+        ai_ستون_تعداد = 0;
+        اگر( p_والد ){
+          x = sqlite3_Fk_Locate_اشاریہ(pParse, p_والد, pFK, &pIdx, &ai_ستون_تعداد);
+          أكد( x==0 || db->mallocFailed );
         }
         addrOk = sqlite3VdbeMakeLabel(pParse);
 
@@ -1617,63 +1617,63 @@ void sqlite3Pragma(
         ** regRow..regRow+n. If any of the child key values are NULL, this
         ** row cannot cause an FK violation. Jump directly to addrOk in
         ** this case. */
-        sqlite3TouchRegister(pParse, regRow + pFK->nCol);
-        for(j=0; j<pFK->nCol; j++){
-          int iCol = aiCols ? aiCols[j] : pFK->aCol[j].iFrom;
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, 0, iCol, regRow+j);
-          sqlite3VdbeAddOp2(v, OP_IsNull, regRow+j, addrOk); VdbeCoverage(v);
+        sqlite3_Touch_رجسٹر(pParse, reg_صف + pFK->n_ستون);
+        برائے(j=0; j<pFK->n_ستون; j++){
+          صحیح i_ستون = ai_ستون_تعداد ? ai_ستون_تعداد[j] : pFK->a_ستون[j].iFrom;
+          sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, 0, i_ستون, reg_صف+j);
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, reg_صف+j, addrOk); VdbeCoverage(v);
         }
 
         /* Generate code to query the parent index for a matching parent
         ** key. If a match is found, jump to addrOk. */
-        if( pIdx ){
-          sqlite3VdbeAddOp4(v, OP_Affinity, regRow, pFK->nCol, 0,
-              sqlite3IndexAffinityStr(db,pIdx), pFK->nCol);
-          sqlite3VdbeAddOp4Int(v, OP_Found, i, addrOk, regRow, pFK->nCol);
+        اگر( pIdx ){
+          sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, reg_صف, pFK->n_ستون, 0,
+              sqlite3_اشاریہ_Affinity_Str(db,pIdx), pFK->n_ستون);
+          sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, i, addrOk, reg_صف, pFK->n_ستون);
           VdbeCoverage(v);
-        }else if( pParent ){
-          int jmp = sqlite3VdbeCurrentAddr(v)+2;
-          sqlite3VdbeAddOp3(v, OP_SeekRowid, i, jmp, regRow); VdbeCoverage(v);
+        }ورنہ اگر( p_والد ){
+          صحیح jmp = sqlite3VdbeCurrentAddr(v)+2;
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_SeekRowid, i, jmp, reg_صف); VdbeCoverage(v);
           sqlite3VdbeGoto(v, addrOk);
-          assert( pFK->nCol==1 || db->mallocFailed );
+          أكد( pFK->n_ستون==1 || db->mallocFailed );
         }
 
         /* Generate code to report an FK violation to the caller. */
-        if( HasRowid(pTab) ){
-          sqlite3VdbeAddOp2(v, OP_Rowid, 0, regResult+1);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Null, 0, regResult+1);
+        اگر( HasRowid(pTab) ){
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Rowid, 0, reg_نتیجہ+1);
+        }ورنہ{
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, reg_نتیجہ+1);
         }
-        sqlite3VdbeMultiLoad(v, regResult+2, "siX", pFK->zTo, i-1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, 4);
+        sqlite3_Vdbe_Multi_بھرو(v, reg_نتیجہ+2, "siX", pFK->z_مقصد, i-1);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, reg_نتیجہ, 4);
         sqlite3VdbeResolveLabel(v, addrOk);
-        sqlite3DbFree(db, aiCols);
+        sqlite3DbFree(db, ai_ستون_تعداد);
       }
-      sqlite3VdbeAddOp2(v, OP_Next, 0, addrTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrTop);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_اگلا, 0, addr_چوٹی+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_یہاں(v, addr_چوٹی);
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_TRIGGER) */
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  توڑو;
+#اگر_ختم /* !defined(SQLITE_OMIT_TRIGGER) */
+#اگر_ختم /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
   /* Reinstall the LIKE and GLOB functions.  The variant of LIKE
   ** used will be case sensitive or not depending on the RHS.
   */
-  case PragTyp_CASE_SENSITIVE_LIKE: {
-    if( zRight ){
-      sqlite3RegisterLikeFunctions(db, sqlite3GetBoolean(zRight, 0));
+  حالت PragTyp_CASE_SENSITIVE_LIKE: {
+    اگر( z_دایاں ){
+      sqlite3_رجسٹر_Like_Functions(db, sqlite3GetBoolean(z_دایاں, 0));
     }
   }
-  break;
-#endif /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
 
-#ifndef SQLITE_INTEGRITY_CHECK_ERROR_MAX
+#اگر_غیر_تعریف_شدہ SQLITE_INTEGRITY_CHECK_ERROR_MAX
 # define SQLITE_INTEGRITY_CHECK_ERROR_MAX 100
-#endif
+#اگر_ختم
 
-#ifndef SQLITE_OMIT_INTEGRITY_CHECK
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_INTEGRITY_CHECK
   /*    PRAGMA integrity_check
   **    PRAGMA integrity_check(N)
   **    PRAGMA quick_check
@@ -1698,11 +1698,11 @@ void sqlite3Pragma(
   **
   **      PRAGMA schema.integrity_check;
   */
-  case PragTyp_INTEGRITY_CHECK: {
-    int i, j, addr, mxErr;
-    Table *pObjTab = 0;     /* Check only this one table, if not NULL */
+  حالت PragTyp_INTEGRITY_CHECK: {
+    صحیح i, j, addr, mxErr;
+    جدول *pObjTab = 0;     /* Check only this one table, if not NULL */
 
-    int isQuick = (sqlite3Tolower(zLeft[0])=='q');
+    صحیح is_تیز = (sqlite3Tolower(z_بایاں[0])=='q');
 
     /* If the PRAGMA command was of the form "PRAGMA <db>.integrity_check",
     ** then iDb is set to the index of the database identified by <db>.
@@ -1713,112 +1713,112 @@ void sqlite3Pragma(
     ** "PRAGMA quick_check"), then iDb is set to 0. In this case, set iDb
     ** to -1 here, to indicate that the VDBE should verify the integrity
     ** of all attached databases.  */
-    assert( iDb>=0 );
-    assert( iDb==0 || pId2->z );
-    if( pId2->z==0 ) iDb = -1;
+    أكد( iDb>=0 );
+    أكد( iDb==0 || pId2->z );
+    اگر( pId2->z==0 ) iDb = -1;
 
     /* Initialize the VDBE program */
     pParse->nMem = 6;
 
     /* Set the maximum error count */
     mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
-    if( zRight ){
-      if( sqlite3GetInt32(pValue->z, &mxErr) ){
-        if( mxErr<=0 ){
+    اگر( z_دایاں ){
+      اگر( sqlite3GetInt32(p_قدر->z, &mxErr) ){
+        اگر( mxErr<=0 ){
           mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
         }
-      }else{
-        pObjTab = sqlite3LocateTable(pParse, 0, zRight,
+      }ورنہ{
+        pObjTab = sqlite3_Locate_جدول(pParse, 0, z_دایاں,
                       iDb>=0 ? db->aDb[iDb].zDbSName : 0);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
 
     /* Do an integrity check on each database file */
-    for(i=0; i<db->nDb; i++){
+    برائے(i=0; i<db->nDb; i++){
       HashElem *x;     /* For looping over tables in the schema */
       Hash *pTbls;     /* Set of all tables in the schema */
-      int *aRoot;      /* Array of root page numbers of all btrees */
-      int cnt = 0;     /* Number of entries in aRoot[] */
+      صحیح *a_جڑ;      /* Array of root page numbers of all btrees */
+      صحیح cnt = 0;     /* Number of entries in aRoot[] */
 
-      if( OMIT_TEMPDB && i==1 ) continue;
-      if( iDb>=0 && i!=iDb ) continue;
+      اگر( OMIT_TEMPDB && i==1 ) جاری;
+      اگر( iDb>=0 && i!=iDb ) جاری;
 
-      sqlite3CodeVerifySchema(pParse, i);
-      pParse->okConstFactor = 0;  /* tag-20230327-1 */
+      sqlite3_رمز_Verify_Schema(pParse, i);
+      pParse->ok_Const_ضربی_عدد = 0;  /* tag-20230327-1 */
 
       /* Do an integrity check of the B-Tree
       **
       ** Begin by finding the root pages numbers
       ** for all tables and indices in the database.
       */
-      assert( sqlite3SchemaMutexHeld(db, i, 0) );
+      أكد( sqlite3SchemaMutexHeld(db, i, 0) );
       pTbls = &db->aDb[i].pSchema->tblHash;
-      for(cnt=0, x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);  /* Current table */
-        Index *pIdx;                      /* An index on pTab */
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) cnt++;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){ cnt++; }
+      برائے(cnt=0, x=sqlite_Hash_پہلا(pTbls); x; x=sqlite_Hash_اگلا(x)){
+        جدول *pTab = sqlite_Hash_ڈیٹا(x);  /* Current table */
+        اشاریہ *pIdx;                      /* An index on pTab */
+        اگر( جدول_Skip_Integrity_Check(pTab,pObjTab) ) جاری;
+        اگر( HasRowid(pTab) ) cnt++;
+        برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){ cnt++; }
       }
-      if( cnt==0 ) continue;
-      if( pObjTab ) cnt++;
-      aRoot = sqlite3DbMallocRawNN(db, sizeof(int)*(cnt+1));
-      if( aRoot==0 ) break;
+      اگر( cnt==0 ) جاری;
+      اگر( pObjTab ) cnt++;
+      a_جڑ = sqlite3DbMallocRawNN(db, حجم(صحیح)*(cnt+1));
+      اگر( a_جڑ==0 ) توڑو;
       cnt = 0;
-      if( pObjTab ) aRoot[++cnt] = 0;
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) aRoot[++cnt] = pTab->tnum;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          aRoot[++cnt] = pIdx->tnum;
+      اگر( pObjTab ) a_جڑ[++cnt] = 0;
+      برائے(x=sqlite_Hash_پہلا(pTbls); x; x=sqlite_Hash_اگلا(x)){
+        جدول *pTab = sqlite_Hash_ڈیٹا(x);
+        اشاریہ *pIdx;
+        اگر( جدول_Skip_Integrity_Check(pTab,pObjTab) ) جاری;
+        اگر( HasRowid(pTab) ) a_جڑ[++cnt] = pTab->tnum;
+        برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){
+          a_جڑ[++cnt] = pIdx->tnum;
         }
       }
-      aRoot[0] = cnt;
+      a_جڑ[0] = cnt;
 
       /* Make sure sufficient number of registers have been allocated */
-      sqlite3TouchRegister(pParse, 8+cnt);
-      sqlite3VdbeAddOp3(v, OP_Null, 0, 8, 8+cnt);
-      sqlite3ClearTempRegCache(pParse);
+      sqlite3_Touch_رجسٹر(pParse, 8+cnt);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Null, 0, 8, 8+cnt);
+      sqlite3_Clear_عارضی_Reg_Cache(pParse);
 
       /* Do the b-tree integrity checks */
-      sqlite3VdbeAddOp4(v, OP_IntegrityCk, 1, cnt, 8, (char*)aRoot,P4_INTARRAY);
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_IntegrityCk, 1, cnt, 8, (حرف*)a_جڑ,P4_INTARRAY);
       sqlite3VdbeChangeP5(v, (u16)i);
-      addr = sqlite3VdbeAddOp1(v, OP_IsNull, 2); VdbeCoverage(v);
-      sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+      addr = sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, 2); VdbeCoverage(v);
+      sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0,
          sqlite3MPrintf(db, "*** in database %s ***\n", db->aDb[i].zDbSName),
          P4_DYNAMIC);
-      sqlite3VdbeAddOp3(v, OP_Concat, 2, 3, 3);
-      integrityCheckResultRow(v);
-      sqlite3VdbeJumpHere(v, addr);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 2, 3, 3);
+      integrity_Check_نتیجہ_صف(v);
+      sqlite3_Vdbe_Jump_یہاں(v, addr);
 
       /* Check that the indexes all have the right number of rows */
       cnt = pObjTab ? 1 : 0;
-      sqlite3VdbeLoadString(v, 2, "wrong # of entries in index ");
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        int iTab = 0;
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ){
+      sqlite3_Vdbe_بھرو_String(v, 2, "wrong # of entries in index ");
+      برائے(x=sqlite_Hash_پہلا(pTbls); x; x=sqlite_Hash_اگلا(x)){
+        صحیح iTab = 0;
+        جدول *pTab = sqlite_Hash_ڈیٹا(x);
+        اشاریہ *pIdx;
+        اگر( جدول_Skip_Integrity_Check(pTab,pObjTab) ) جاری;
+        اگر( HasRowid(pTab) ){
           iTab = cnt++;
-        }else{
+        }ورنہ{
           iTab = cnt;
-          for(pIdx=pTab->pIndex; ALWAYS(pIdx); pIdx=pIdx->pNext){
-            if( IsPrimaryKeyIndex(pIdx) ) break;
+          برائے(pIdx=pTab->p_اشاریہ; ALWAYS(pIdx); pIdx=pIdx->p_اگلا){
+            اگر( Is_Primary_کلید_اشاریہ(pIdx) ) توڑو;
             iTab++;
           }
         }
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          if( pIdx->pPartIdxWhere==0 ){
-            addr = sqlite3VdbeAddOp3(v, OP_Eq, 8+cnt, 0, 8+iTab);
+        برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){
+          اگر( pIdx->pPartIdxWhere==0 ){
+            addr = sqlite3_Vdbe_جوڑو_Op3(v, OP_Eq, 8+cnt, 0, 8+iTab);
             VdbeCoverageNeverNull(v);
-            sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 2, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, addr);
+            sqlite3_Vdbe_بھرو_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 4, 2, 3);
+            integrity_Check_نتیجہ_صف(v);
+            sqlite3_Vdbe_Jump_یہاں(v, addr);
           }
           cnt++;
         }
@@ -1826,81 +1826,81 @@ void sqlite3Pragma(
 
       /* Make sure all the indices are constructed correctly.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx, *pPk;
-        Index *pPrior = 0;      /* Previous index */
-        int loopTop;
-        int iDataCur, iIdxCur;
-        int r1 = -1;
-        int bStrict;            /* True for a STRICT table */
-        int r2;                 /* Previous key for WITHOUT ROWID tables */
-        int mxCol;              /* Maximum non-virtual column number */
+      برائے(x=sqlite_Hash_پہلا(pTbls); x; x=sqlite_Hash_اگلا(x)){
+        جدول *pTab = sqlite_Hash_ڈیٹا(x);
+        اشاریہ *pIdx, *pPk;
+        اشاریہ *p_پیشگی = 0;      /* Previous index */
+        صحیح loop_چوٹی;
+        صحیح i_ڈیٹا_Cur, iIdxCur;
+        صحیح r1 = -1;
+        صحیح bStrict;            /* True for a STRICT table */
+        صحیح r2;                 /* Previous key for WITHOUT ROWID tables */
+        صحیح mx_ستون;              /* Maximum non-virtual column number */
 
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( !IsOrdinaryTable(pTab) ) continue;
-        if( isQuick || HasRowid(pTab) ){
+        اگر( جدول_Skip_Integrity_Check(pTab,pObjTab) ) جاری;
+        اگر( !Is_Ordinary_جدول(pTab) ) جاری;
+        اگر( is_تیز || HasRowid(pTab) ){
           pPk = 0;
           r2 = 0;
-        }else{
-          pPk = sqlite3PrimaryKeyIndex(pTab);
-          r2 = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-          sqlite3VdbeAddOp3(v, OP_Null, 1, r2, r2+pPk->nKeyCol-1);
+        }ورنہ{
+          pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+          r2 = sqlite3_Get_عارضی_Range(pParse, pPk->n_کلید_ستون);
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_Null, 1, r2, r2+pPk->n_کلید_ستون-1);
         }
-        sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenRead, 0,
-                                   1, 0, &iDataCur, &iIdxCur);
+        sqlite3_Open_جدول_And_Indices(pParse, pTab, OP_OpenRead, 0,
+                                   1, 0, &i_ڈیٹا_Cur, &iIdxCur);
         /* reg[7] counts the number of entries in the table.
         ** reg[8+i] counts the number of entries in the i-th index
         */
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, 7);
-        for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-          sqlite3VdbeAddOp2(v, OP_Integer, 0, 8+j); /* index entries counter */
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, 7);
+        برائے(j=0, pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا, j++){
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, 8+j); /* index entries counter */
         }
-        assert( pParse->nMem>=8+j );
-        assert( sqlite3NoTempsInRange(pParse,1,7+j) );
-        sqlite3VdbeAddOp2(v, OP_Rewind, iDataCur, 0); VdbeCoverage(v);
-        loopTop = sqlite3VdbeAddOp2(v, OP_AddImm, 7, 1);
+        أكد( pParse->nMem>=8+j );
+        أكد( sqlite3_No_Temps_اندر_Range(pParse,1,7+j) );
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Rewind, i_ڈیٹا_Cur, 0); VdbeCoverage(v);
+        loop_چوٹی = sqlite3_Vdbe_جوڑو_Op2(v, OP_جوڑو_Imm, 7, 1);
 
         /* Fetch the right-most column from the table.  This will cause
         ** the entire record header to be parsed and sanity checked.  It
         ** will also prepopulate the cursor column cache that is used
         ** by the OP_IsType code, so it is a required step.
         */
-        assert( !IsVirtual(pTab) );
-        if( HasRowid(pTab) ){
-          mxCol = -1;
-          for(j=0; j<pTab->nCol; j++){
-            if( (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)==0 ) mxCol++;
+        أكد( !IsVirtual(pTab) );
+        اگر( HasRowid(pTab) ){
+          mx_ستون = -1;
+          برائے(j=0; j<pTab->n_ستون; j++){
+            اگر( (pTab->a_ستون[j].ستون_Flags & COLFLAG_VIRTUAL)==0 ) mx_ستون++;
           }
-          if( mxCol==pTab->iPKey ) mxCol--;
-        }else{
+          اگر( mx_ستون==pTab->iPKey ) mx_ستون--;
+        }ورنہ{
           /* COLFLAG_VIRTUAL columns are not included in the WITHOUT ROWID
           ** PK index column-count, so there is no need to account for them
           ** in this case. */
-          mxCol = sqlite3PrimaryKeyIndex(pTab)->nColumn-1;
+          mx_ستون = sqlite3_Primary_کلید_اشاریہ(pTab)->n_عمود-1;
         }
-        if( mxCol>=0 ){
-          sqlite3VdbeAddOp3(v, OP_Column, iDataCur, mxCol, 3);
-          sqlite3VdbeTypeofColumn(v, 3);
+        اگر( mx_ستون>=0 ){
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, i_ڈیٹا_Cur, mx_ستون, 3);
+          sqlite3_Vdbe_Typeof_عمود(v, 3);
         }
 
-        if( !isQuick ){
-          if( pPk ){
+        اگر( !is_تیز ){
+          اگر( pPk ){
             /* Verify WITHOUT ROWID keys are in ascending order */
-            int a1;
-            char *zErr;
-            a1 = sqlite3VdbeAddOp4Int(v, OP_IdxGT, iDataCur, 0,r2,pPk->nKeyCol);
+            صحیح a1;
+            حرف *zErr;
+            a1 = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IdxGT, i_ڈیٹا_Cur, 0,r2,pPk->n_کلید_ستون);
             VdbeCoverage(v);
-            sqlite3VdbeAddOp1(v, OP_IsNull, r2); VdbeCoverage(v);
+            sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, r2); VdbeCoverage(v);
             zErr = sqlite3MPrintf(db,
                    "row not in PRIMARY KEY order for %s",
                     pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, a1);
-            sqlite3VdbeJumpHere(v, a1+1);
-            for(j=0; j<pPk->nKeyCol; j++){
-              sqlite3ExprCodeLoadIndexColumn(pParse, pPk, iDataCur, j, r2+j);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_نتیجہ_صف(v);
+            sqlite3_Vdbe_Jump_یہاں(v, a1);
+            sqlite3_Vdbe_Jump_یہاں(v, a1+1);
+            برائے(j=0; j<pPk->n_کلید_ستون; j++){
+              sqlite3_اظہاریہ_رمز_بھرو_اشاریہ_عمود(pParse, pPk, i_ڈیٹا_Cur, j, r2+j);
             }
           }
         }
@@ -1914,317 +1914,317 @@ void sqlite3Pragma(
         **       be a TEXT value that can be losslessly converted to numeric.
         */
         bStrict = (pTab->tabFlags & TF_Strict)!=0;
-        for(j=0; j<pTab->nCol; j++){
-          char *zErr;
-          Column *pCol = pTab->aCol + j;  /* The column to be checked */
-          int labelError;               /* Jump here to report an error */
-          int labelOk;                  /* Jump here if all looks ok */
-          int p1, p3, p4;               /* Operands to the OP_IsType opcode */
-          int doTypeCheck;              /* Check datatypes (besides NOT NULL) */
+        برائے(j=0; j<pTab->n_ستون; j++){
+          حرف *zErr;
+          عمود *p_ستون = pTab->a_ستون + j;  /* The column to be checked */
+          صحیح labelError;               /* Jump here to report an error */
+          صحیح labelOk;                  /* Jump here if all looks ok */
+          صحیح p1, p3, p4;               /* Operands to the OP_IsType opcode */
+          صحیح doTypeCheck;              /* Check datatypes (besides NOT NULL) */
 
-          if( j==pTab->iPKey ) continue;
-          if( bStrict ){
-            doTypeCheck = pCol->eCType>COLTYPE_ANY;
-          }else{
-            doTypeCheck = pCol->affinity>SQLITE_AFF_BLOB;
+          اگر( j==pTab->iPKey ) جاری;
+          اگر( bStrict ){
+            doTypeCheck = p_ستون->eCType>COLTYPE_ANY;
+          }ورنہ{
+            doTypeCheck = p_ستون->affinity>SQLITE_AFF_BLOB;
           }
-          if( pCol->notNull==0 && !doTypeCheck ) continue;
+          اگر( p_ستون->notNull==0 && !doTypeCheck ) جاری;
 
           /* Compute the operands that will be needed for OP_IsType */
           p4 = SQLITE_NULL;
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
-            sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+          اگر( p_ستون->ستون_Flags & COLFLAG_VIRTUAL ){
+            sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, i_ڈیٹا_Cur, j, 3);
             p1 = -1;
             p3 = 3;
-          }else{
-            if( pCol->iDflt ){
-              sqlite3_value *pDfltValue = 0;
-              sqlite3ValueFromExpr(db, sqlite3ColumnExprAuth(pTab,pCol,pParse),
-                                   ENC(db), pCol->affinity, &pDfltValue);
-              if( pDfltValue ){
-                p4 = sqlite3_value_type(pDfltValue);
-                sqlite3ValueFree(pDfltValue);
+          }ورنہ{
+            اگر( p_ستون->iDflt ){
+              sqlite3_قدر *p_Dflt_قدر = 0;
+              sqlite3_قدر_From_اظہاریہ(db, sqlite3_عمود_اظہاریہ_Auth(pTab,p_ستون,pParse),
+                                   ENC(db), p_ستون->affinity, &p_Dflt_قدر);
+              اگر( p_Dflt_قدر ){
+                p4 = sqlite3_قدر_type(p_Dflt_قدر);
+                sqlite3_قدر_Free(p_Dflt_قدر);
               }
             }
-            p1 = iDataCur;
-            if( !HasRowid(pTab) ){
-              testcase( j!=sqlite3TableColumnToStorage(pTab, j) );
-              p3 = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), j);
-            }else{
-              p3 = sqlite3TableColumnToStorage(pTab,j);
+            p1 = i_ڈیٹا_Cur;
+            اگر( !HasRowid(pTab) ){
+              testcase( j!=sqlite3_جدول_عمود_مقصد_Storage(pTab, j) );
+              p3 = sqlite3_جدول_عمود_مقصد_اشاریہ(sqlite3_Primary_کلید_اشاریہ(pTab), j);
+            }ورنہ{
+              p3 = sqlite3_جدول_عمود_مقصد_Storage(pTab,j);
               testcase( p3!=j);
             }
           }
 
           labelError = sqlite3VdbeMakeLabel(pParse);
           labelOk = sqlite3VdbeMakeLabel(pParse);
-          if( pCol->notNull ){
+          اگر( p_ستون->notNull ){
             /* (1) NOT NULL columns may not contain a NULL */
-            int jmp3;
-            int jmp2 = sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            صحیح jmp3;
+            صحیح jmp2 = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             VdbeCoverage(v);
-            if( p1<0 ){
+            اگر( p1<0 ){
               sqlite3VdbeChangeP5(v, 0x0f); /* INT, REAL, TEXT, or BLOB */
               jmp3 = jmp2;
-            }else{
+            }ورنہ{
               sqlite3VdbeChangeP5(v, 0x0d); /* INT, TEXT, or BLOB */
               /* OP_IsType does not detect NaN values in the database file
               ** which should be treated as a NULL.  So if the header type
               ** is REAL, we have to load the actual data using OP_Column
               ** to reliably determine if the value is a NULL. */
-              sqlite3VdbeAddOp3(v, OP_Column, p1, p3, 3);
-              sqlite3ColumnDefault(v, pTab, j, 3);
-              jmp3 = sqlite3VdbeAddOp2(v, OP_NotNull, 3, labelOk);
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, p1, p3, 3);
+              sqlite3_عمود_Default(v, pTab, j, 3);
+              jmp3 = sqlite3_Vdbe_جوڑو_Op2(v, OP_NotNull, 3, labelOk);
               VdbeCoverage(v);
             }           
             zErr = sqlite3MPrintf(db, "NULL value in %s.%s", pTab->zName,
-                                pCol->zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            if( doTypeCheck ){
+                                p_ستون->zCnName);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            اگر( doTypeCheck ){
               sqlite3VdbeGoto(v, labelError);
-              sqlite3VdbeJumpHere(v, jmp2);
-              sqlite3VdbeJumpHere(v, jmp3);
-            }else{
+              sqlite3_Vdbe_Jump_یہاں(v, jmp2);
+              sqlite3_Vdbe_Jump_یہاں(v, jmp3);
+            }ورنہ{
               /* VDBE byte code will fall thru */
             }
           }
-          if( bStrict && doTypeCheck ){
+          اگر( bStrict && doTypeCheck ){
             /* (2) Datatype must be exact for non-ANY columns in STRICT tables*/
-            static unsigned char aStdTypeMask[] = {
+            ساکن غیرعلامتی حرف a_Std_Type_نقاب[] = {
                0x1f,    /* ANY */
                0x18,    /* BLOB */
                0x11,    /* INT */
                0x11,    /* INTEGER */
                0x13,    /* REAL */
-               0x14     /* TEXT */
+               0x14     /*متن*/
             };
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
-            assert( pCol->eCType>=1 && pCol->eCType<=sizeof(aStdTypeMask) );
-            sqlite3VdbeChangeP5(v, aStdTypeMask[pCol->eCType-1]);
+            sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
+            أكد( p_ستون->eCType>=1 && p_ستون->eCType<=حجم(a_Std_Type_نقاب) );
+            sqlite3VdbeChangeP5(v, a_Std_Type_نقاب[p_ستون->eCType-1]);
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "non-%s value in %s.%s",
-                                  sqlite3StdType[pCol->eCType-1],
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity==SQLITE_AFF_TEXT ){
+                                  sqlite3StdType[p_ستون->eCType-1],
+                                  pTab->zName, pTab->a_ستون[j].zCnName);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }ورنہ اگر( !bStrict && p_ستون->affinity==SQLITE_AFF_متن ){
             /* (3) Datatype for TEXT columns in non-STRICT tables must be
             **     NULL, TEXT, or BLOB. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "NUMERIC value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity>=SQLITE_AFF_NUMERIC ){
+                                  pTab->zName, pTab->a_ستون[j].zCnName);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }ورنہ اگر( !bStrict && p_ستون->affinity>=SQLITE_AFF_NUMERIC ){
             /* (4) Datatype for numeric columns in non-STRICT tables must not
             **     be a TEXT value that can be converted to numeric. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1b); /* NULL, INT, FLOAT, or BLOB */
             VdbeCoverage(v);
-            if( p1>=0 ){
-              sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+            اگر( p1>=0 ){
+              sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, i_ڈیٹا_Cur, j, 3);
             }
-            sqlite3VdbeAddOp4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
-            sqlite3VdbeAddOp4Int(v, OP_IsType, -1, labelOk, 3, p4);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
+            sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IsType, -1, labelOk, 3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "TEXT value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+                                  pTab->zName, pTab->a_ستون[j].zCnName);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
           }
           sqlite3VdbeResolveLabel(v, labelError);
-          integrityCheckResultRow(v);
+          integrity_Check_نتیجہ_صف(v);
           sqlite3VdbeResolveLabel(v, labelOk);
         }
         /* Verify CHECK constraints */
-        if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-          ExprList *pCheck = sqlite3ExprListDup(db, pTab->pCheck, 0);
-          if( db->mallocFailed==0 ){
-            int addrCkFault = sqlite3VdbeMakeLabel(pParse);
-            int addrCkOk = sqlite3VdbeMakeLabel(pParse);
-            char *zErr;
-            int k;
-            pParse->iSelfTab = iDataCur + 1;
-            for(k=pCheck->nExpr-1; k>0; k--){
-              sqlite3ExprIfFalse(pParse, pCheck->a[k].pExpr, addrCkFault, 0);
+        اگر( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+          اظہاریہ_List *pCheck = sqlite3_اظہاریہ_List_Dup(db, pTab->pCheck, 0);
+          اگر( db->mallocFailed==0 ){
+            صحیح addrCkFault = sqlite3VdbeMakeLabel(pParse);
+            صحیح addrCkOk = sqlite3VdbeMakeLabel(pParse);
+            حرف *zErr;
+            صحیح k;
+            pParse->iSelfTab = i_ڈیٹا_Cur + 1;
+            برائے(k=pCheck->n_اظہاریہ-1; k>0; k--){
+              sqlite3_اظہاریہ_If_False(pParse, pCheck->a[k].p_اظہاریہ, addrCkFault, 0);
             }
-            sqlite3ExprIfTrue(pParse, pCheck->a[0].pExpr, addrCkOk,
+            sqlite3_اظہاریہ_If_True(pParse, pCheck->a[0].p_اظہاریہ, addrCkOk,
                 SQLITE_JUMPIFNULL);
             sqlite3VdbeResolveLabel(v, addrCkFault);
             pParse->iSelfTab = 0;
             zErr = sqlite3MPrintf(db, "CHECK constraint failed in %s",
                 pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_نتیجہ_صف(v);
             sqlite3VdbeResolveLabel(v, addrCkOk);
           }
-          sqlite3ExprListDelete(db, pCheck);
+          sqlite3_اظہاریہ_List_Delete(db, pCheck);
         }
-        if( !isQuick ){ /* Omit the remaining tests for quick_check */
+        اگر( !is_تیز ){ /* Omit the remaining tests for quick_check */
           /* Validate index entries for the current row */
-          for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-            int jmp2, jmp3, jmp4, jmp5, label6;
-            int kk;
-            int ckUniq = sqlite3VdbeMakeLabel(pParse);
-            if( pPk==pIdx ) continue;
-            r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 0, &jmp3,
-                                         pPrior, r1);
-            pPrior = pIdx;
-            sqlite3VdbeAddOp2(v, OP_AddImm, 8+j, 1);/* increment entry count */
+          برائے(j=0, pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا, j++){
+            صحیح jmp2, jmp3, jmp4, jmp5, label6;
+            صحیح kk;
+            صحیح ckUniq = sqlite3VdbeMakeLabel(pParse);
+            اگر( pPk==pIdx ) جاری;
+            r1 = sqlite3_Generate_اشاریہ_کلید(pParse, pIdx, i_ڈیٹا_Cur, 0, 0, &jmp3,
+                                         p_پیشگی, r1);
+            p_پیشگی = pIdx;
+            sqlite3_Vdbe_جوڑو_Op2(v, OP_جوڑو_Imm, 8+j, 1);/* increment entry count */
             /* Verify that an index entry exists for the current table row */
-            sqlite3VdbeAddOp4Int(v, OP_Found, iIdxCur+j, ckUniq, r1,
-                                        pIdx->nColumn); VdbeCoverage(v);
-            jmp2 = sqlite3VdbeAddOp3(v, OP_IFindKey, iIdxCur+j, ckUniq, r1); 
+            sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, iIdxCur+j, ckUniq, r1,
+                                        pIdx->n_عمود); VdbeCoverage(v);
+            jmp2 = sqlite3_Vdbe_جوڑو_Op3(v, OP_IFind_کلید, iIdxCur+j, ckUniq, r1); 
             VdbeCoverage(v);
-            sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+            sqlite3VdbeChangeP4(v, -1, (ثابت حرف*)pIdx, P4_اشاریہ);
+            sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, 3, 0,
               sqlite3MPrintf(db, "index %s stores an imprecise floating-point "
                                  "value for row ", pIdx->zName),
               P4_DYNAMIC);
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeAddOp2(v, OP_Goto, 0, ckUniq);
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 7, 3, 3);
+            integrity_Check_نتیجہ_صف(v);
+            sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, ckUniq);
 
-            sqlite3VdbeJumpHere(v, jmp2);
-            sqlite3VdbeLoadString(v, 3, "row ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            sqlite3VdbeLoadString(v, 4, " missing from index ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp5 = sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp4 = integrityCheckResultRow(v);
+            sqlite3_Vdbe_Jump_یہاں(v, jmp2);
+            sqlite3_Vdbe_بھرو_String(v, 3, "row ");
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 7, 3, 3);
+            sqlite3_Vdbe_بھرو_String(v, 4, " missing from index ");
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 4, 3, 3);
+            jmp5 = sqlite3_Vdbe_بھرو_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 4, 3, 3);
+            jmp4 = integrity_Check_نتیجہ_صف(v);
             sqlite3VdbeResolveLabel(v, ckUniq);
 
             /* The OP_IdxRowid opcode is an optimized version of OP_Column
             ** that extracts the rowid off the end of the index record.
             ** But it only works correctly if index record does not have
             ** any extra bytes at the end.  Verify that this is the case. */
-            if( HasRowid(pTab) ){
-              int jmp7;
-              sqlite3VdbeAddOp2(v, OP_IdxRowid, iIdxCur+j, 3);
-              jmp7 = sqlite3VdbeAddOp3(v, OP_Eq, 3, 0, r1+pIdx->nColumn-1);
+            اگر( HasRowid(pTab) ){
+              صحیح jmp7;
+              sqlite3_Vdbe_جوڑو_Op2(v, OP_IdxRowid, iIdxCur+j, 3);
+              jmp7 = sqlite3_Vdbe_جوڑو_Op3(v, OP_Eq, 3, 0, r1+pIdx->n_عمود-1);
               VdbeCoverageNeverNull(v);
-              sqlite3VdbeLoadString(v, 3,
+              sqlite3_Vdbe_بھرو_String(v, 3,
                  "rowid not at end-of-record for row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " of index ");
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_بھرو_String(v, 4, " of index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp7);
+              sqlite3_Vdbe_Jump_یہاں(v, jmp7);
             }
 
             /* Any indexed columns with non-BINARY collations must still hold
             ** the exact same text value as the table. */
             label6 = 0;
-            for(kk=0; kk<pIdx->nKeyCol; kk++){
-              if( pIdx->azColl[kk]==sqlite3StrBINARY ) continue;
-              if( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
-              sqlite3VdbeAddOp3(v, OP_Column, iIdxCur+j, kk, 3);
-              sqlite3VdbeAddOp3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
+            برائے(kk=0; kk<pIdx->n_کلید_ستون; kk++){
+              اگر( pIdx->azColl[kk]==sqlite3_Str_ثنائی ) جاری;
+              اگر( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iIdxCur+j, kk, 3);
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
             }
-            if( label6 ){
-              int jmp6 = sqlite3VdbeAddOp0(v, OP_Goto);
+            اگر( label6 ){
+              صحیح jmp6 = sqlite3_Vdbe_جوڑو_Op0(v, OP_Goto);
               sqlite3VdbeResolveLabel(v, label6);
-              sqlite3VdbeLoadString(v, 3, "row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " values differ from index ");
+              sqlite3_Vdbe_بھرو_String(v, 3, "row ");
+              sqlite3_Vdbe_جوڑو_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_بھرو_String(v, 4, " values differ from index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp6);
+              sqlite3_Vdbe_Jump_یہاں(v, jmp6);
             }
              
             /* For UNIQUE indexes, verify that only one entry exists with the
             ** current key.  The entry is unique if (1) any column is NULL
             ** or (2) the next entry has a different key */
-            if( IsUniqueIndex(pIdx) ){
-              int uniqOk = sqlite3VdbeMakeLabel(pParse);
-              int jmp6;
-              for(kk=0; kk<pIdx->nKeyCol; kk++){
-                int iCol = pIdx->aiColumn[kk];
-                assert( iCol!=XN_ROWID && iCol<pTab->nCol );
-                if( iCol>=0 && pTab->aCol[iCol].notNull ) continue;
-                sqlite3VdbeAddOp2(v, OP_IsNull, r1+kk, uniqOk);
+            اگر( Is_Unique_اشاریہ(pIdx) ){
+              صحیح uniqOk = sqlite3VdbeMakeLabel(pParse);
+              صحیح jmp6;
+              برائے(kk=0; kk<pIdx->n_کلید_ستون; kk++){
+                صحیح i_ستون = pIdx->ai_عمود[kk];
+                أكد( i_ستون!=XN_ROWID && i_ستون<pTab->n_ستون );
+                اگر( i_ستون>=0 && pTab->a_ستون[i_ستون].notNull ) جاری;
+                sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, r1+kk, uniqOk);
                 VdbeCoverage(v);
               }
-              jmp6 = sqlite3VdbeAddOp1(v, OP_Next, iIdxCur+j); VdbeCoverage(v);
+              jmp6 = sqlite3_Vdbe_جوڑو_Op1(v, OP_اگلا, iIdxCur+j); VdbeCoverage(v);
               sqlite3VdbeGoto(v, uniqOk);
-              sqlite3VdbeJumpHere(v, jmp6);
-              sqlite3VdbeAddOp4Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
-                                   pIdx->nKeyCol); VdbeCoverage(v);
-              sqlite3VdbeLoadString(v, 3, "non-unique entry in index ");
+              sqlite3_Vdbe_Jump_یہاں(v, jmp6);
+              sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
+                                   pIdx->n_کلید_ستون); VdbeCoverage(v);
+              sqlite3_Vdbe_بھرو_String(v, 3, "non-unique entry in index ");
               sqlite3VdbeGoto(v, jmp5);
               sqlite3VdbeResolveLabel(v, uniqOk);
             }
-            sqlite3VdbeJumpHere(v, jmp4);
+            sqlite3_Vdbe_Jump_یہاں(v, jmp4);
             sqlite3ResolvePartIdxLabel(pParse, jmp3);
           }
         }
-        sqlite3VdbeAddOp2(v, OP_Next, iDataCur, loopTop); VdbeCoverage(v);
-        sqlite3VdbeJumpHere(v, loopTop-1);
-        if( pPk ){
-          assert( !isQuick );
-          sqlite3ReleaseTempRange(pParse, r2, pPk->nKeyCol);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_اگلا, i_ڈیٹا_Cur, loop_چوٹی); VdbeCoverage(v);
+        sqlite3_Vdbe_Jump_یہاں(v, loop_چوٹی-1);
+        اگر( pPk ){
+          أكد( !is_تیز );
+          sqlite3_Release_عارضی_Range(pParse, r2, pPk->n_کلید_ستون);
         }
       }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
       /* Second pass to invoke the xIntegrity method on all virtual
       ** tables.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
+      برائے(x=sqlite_Hash_پہلا(pTbls); x; x=sqlite_Hash_اگلا(x)){
+        جدول *pTab = sqlite_Hash_ڈیٹا(x);
         sqlite3_vtab *pVTab;
-        int a1;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( IsOrdinaryTable(pTab) ) continue;
-        if( !IsVirtual(pTab) ) continue;
-        if( pTab->nCol<=0 ){
-          const char *zMod = pTab->u.vtab.azArg[0];
-          if( sqlite3HashFind(&db->aModule, zMod)==0 ) continue;
+        صحیح a1;
+        اگر( جدول_Skip_Integrity_Check(pTab,pObjTab) ) جاری;
+        اگر( Is_Ordinary_جدول(pTab) ) جاری;
+        اگر( !IsVirtual(pTab) ) جاری;
+        اگر( pTab->n_ستون<=0 ){
+          ثابت حرف *zMod = pTab->u.vtab.azArg[0];
+          اگر( sqlite3_Hash_ڈھونڈو(&db->aModule, zMod)==0 ) جاری;
         }
-        sqlite3ViewGetColumnNames(pParse, pTab);
-        if( pTab->u.vtab.p==0 ) continue;
+        sqlite3_View_Get_عمود_نام(pParse, pTab);
+        اگر( pTab->u.vtab.p==0 ) جاری;
         pVTab = pTab->u.vtab.p->pVtab;
-        if( NEVER(pVTab==0) ) continue;
-        if( NEVER(pVTab->pModule==0) ) continue;
-        if( pVTab->pModule->iVersion<4 ) continue;
-        if( pVTab->pModule->xIntegrity==0 ) continue;
-        sqlite3VdbeAddOp3(v, OP_VCheck, i, 3, isQuick);
+        اگر( NEVER(pVTab==0) ) جاری;
+        اگر( NEVER(pVTab->pModule==0) ) جاری;
+        اگر( pVTab->pModule->i_نسخہ<4 ) جاری;
+        اگر( pVTab->pModule->xIntegrity==0 ) جاری;
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_VCheck, i, 3, is_تیز);
         pTab->nTabRef++;
         sqlite3VdbeAppendP4(v, pTab, P4_TABLEREF);
-        a1 = sqlite3VdbeAddOp1(v, OP_IsNull, 3); VdbeCoverage(v);
-        integrityCheckResultRow(v);
-        sqlite3VdbeJumpHere(v, a1);
-        continue;
+        a1 = sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, 3); VdbeCoverage(v);
+        integrity_Check_نتیجہ_صف(v);
+        sqlite3_Vdbe_Jump_یہاں(v, a1);
+        جاری;
       }
-#endif
+#اگر_ختم
     }
     {
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList endCode[] = {
-        { OP_AddImm,      1, 0,        0},    /* 0 */
+      ساکن ثابت صحیح iLn = VDBE_انحراف_LINENO(2);
+      ساکن ثابت VdbeOpList انتہا_رمز[] = {
+        { OP_جوڑو_Imm,      1, 0,        0},    /* 0 */
         { OP_IfNotZero,   1, 4,        0},    /* 1 */
         { OP_String8,     0, 3,        0},    /* 2 */
-        { OP_ResultRow,   3, 1,        0},    /* 3 */
+        { OP_نتیجہ_صف,   3, 1,        0},    /* 3 */
         { OP_Halt,        0, 0,        0},    /* 4 */
         { OP_String8,     0, 3,        0},    /* 5 */
         { OP_Goto,        0, 3,        0},    /* 6 */
       };
       VdbeOp *aOp;
 
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(endCode), endCode, iLn);
-      if( aOp ){
+      aOp = sqlite3_Vdbe_جوڑو_Op_List(v, Array_سائز(انتہا_رمز), انتہا_رمز, iLn);
+      اگر( aOp ){
         aOp[0].p2 = 1-mxErr;
         aOp[2].p4type = P4_STATIC;
         aOp[2].p4.z = "ok";
         aOp[5].p4type = P4_STATIC;
-        aOp[5].p4.z = (char*)sqlite3ErrStr(SQLITE_CORRUPT);
+        aOp[5].p4.z = (حرف*)sqlite3ErrStr(SQLITE_CORRUPT);
       }
       sqlite3VdbeChangeP3(v, 0, sqlite3VdbeCurrentAddr(v)-2);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_INTEGRITY_CHECK */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_INTEGRITY_CHECK */
 
-#ifndef SQLITE_OMIT_UTF16
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_UTF16
   /*
   **   PRAGMA encoding
   **   PRAGMA encoding = "utf-8"|"utf-16"|"utf-16le"|"utf-16be"
@@ -2247,9 +2247,9 @@ void sqlite3Pragma(
   ** new database files created using this database handle. It is only
   ** useful if invoked immediately after the main database i
   */
-  case PragTyp_ENCODING: {
-    static const struct EncName {
-      char *zName;
+  حالت PragTyp_ENCODING: {
+    ساکن ثابت ساخت EncName {
+      حرف *zName;
       u8 enc;
     } encnames[] = {
       { "UTF8",     SQLITE_UTF8        },
@@ -2262,38 +2262,38 @@ void sqlite3Pragma(
       { "UTF16",    0                  }, /* SQLITE_UTF16NATIVE */
       { 0, 0 }
     };
-    const struct EncName *pEnc;
-    if( !zRight ){    /* "PRAGMA encoding" */
-      if( sqlite3ReadSchema(pParse) ) goto pragma_out;
-      assert( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
-      assert( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
-      assert( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
-      returnSingleText(v, encnames[ENC(pParse->db)].zName);
-    }else{                        /* "PRAGMA encoding = XXX" */
+    ثابت ساخت EncName *pEnc;
+    اگر( !z_دایاں ){    /* "PRAGMA encoding" */
+      اگر( sqlite3ReadSchema(pParse) ) جاؤ pragma_برآمد;
+      أكد( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
+      أكد( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
+      أكد( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
+      return_Single_متن(v, encnames[ENC(pParse->db)].zName);
+    }ورنہ{                        /* "PRAGMA encoding = XXX" */
       /* Only change the value of sqlite.enc if the database handle is not
       ** initialized. If the main database exists, the new sqlite.enc value
       ** will be overwritten when the schema is next loaded. If it does not
       ** already exists, it will be created to use the new encoding value.
       */
-      if( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
-        for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-          if( 0==sqlite3StrICmp(zRight, pEnc->zName) ){
+      اگر( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+        برائے(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+          اگر( 0==sqlite3StrICmp(z_دایاں, pEnc->zName) ){
             u8 enc = pEnc->enc ? pEnc->enc : SQLITE_UTF16NATIVE;
             SCHEMA_ENC(db) = enc;
-            sqlite3SetTextEncoding(db, enc);
-            break;
+            sqlite3_سیٹ_متن_Encoding(db, enc);
+            توڑو;
           }
         }
-        if( !pEnc->zName ){
-          sqlite3ErrorMsg(pParse, "unsupported encoding: %s", zRight);
+        اگر( !pEnc->zName ){
+          sqlite3_Error_پیغام(pParse, "unsupported encoding: %s", z_دایاں);
         }
       }
     }
   }
-  break;
-#endif /* SQLITE_OMIT_UTF16 */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_UTF16 */
 
-#ifndef SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SCHEMA_نسخہ_PRAGMAS
   /*
   **   PRAGMA [schema.]schema_version
   **   PRAGMA [schema.]schema_version = <integer>
@@ -2326,94 +2326,94 @@ void sqlite3Pragma(
   ** The user-version is not used internally by SQLite. It may be used by
   ** applications for any purpose.
   */
-  case PragTyp_HEADER_VALUE: {
-    int iCookie = pPragma->iArg;  /* Which cookie to read or write */
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( zRight && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
+  حالت Prag_Typ_سرخی_قدر: {
+    صحیح iCookie = pPragma->iArg;  /* Which cookie to read or write */
+    sqlite3_Vdbe_استعمال_کرتا_Btree(v, iDb);
+    اگر( z_دایاں && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
       /* Write the specified cookie value */
-      static const VdbeOpList setCookie[] = {
+      ساکن ثابت VdbeOpList سیٹ_Cookie[] = {
         { OP_Transaction,    0,  1,  0},    /* 0 */
-        { OP_SetCookie,      0,  0,  0},    /* 1 */
+        { OP_سیٹ_Cookie,      0,  0,  0},    /* 1 */
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(setCookie), setCookie, 0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_سائز(سیٹ_Cookie));
+      aOp = sqlite3_Vdbe_جوڑو_Op_List(v, Array_سائز(سیٹ_Cookie), سیٹ_Cookie, 0);
+      اگر( ONLY_IF_REALLOC_STRESS(aOp==0) ) توڑو;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p2 = iCookie;
-      aOp[1].p3 = sqlite3Atoi(zRight);
+      aOp[1].p3 = sqlite3Atoi(z_دایاں);
       aOp[1].p5 = 1;
-      if( iCookie==BTREE_SCHEMA_VERSION && (db->flags & SQLITE_Defensive)!=0 ){
+      اگر( iCookie==BTREE_SCHEMA_نسخہ && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow the use of PRAGMA schema_version=VALUE in defensive
         ** mode.  Change the OP_SetCookie opcode into a no-op.  */
         aOp[1].opcode = OP_Noop;
       }
-    }else{
+    }ورنہ{
       /* Read the specified cookie value */
-      static const VdbeOpList readCookie[] = {
+      ساکن ثابت VdbeOpList readCookie[] = {
         { OP_Transaction,     0,  0,  0},    /* 0 */
         { OP_ReadCookie,      0,  1,  0},    /* 1 */
-        { OP_ResultRow,       1,  1,  0}
+        { OP_نتیجہ_صف,       1,  1,  0}
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(readCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(readCookie),readCookie,0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_سائز(readCookie));
+      aOp = sqlite3_Vdbe_جوڑو_Op_List(v, Array_سائز(readCookie),readCookie,0);
+      اگر( ONLY_IF_REALLOC_STRESS(aOp==0) ) توڑو;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p3 = iCookie;
       sqlite3VdbeReusable(v);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
 
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_COMPILEOPTION_DIAGS
   /*
   **   PRAGMA compile_options
   **
   ** Return the names of all compile-time options used in this build,
   ** one option per row.
   */
-  case PragTyp_COMPILE_OPTIONS: {
-    int i = 0;
-    const char *zOpt;
+  حالت PragTyp_COMPILE_OPTIONS: {
+    صحیح i = 0;
+    ثابت حرف *zOpt;
     pParse->nMem = 1;
-    while( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
-      sqlite3VdbeLoadString(v, 1, zOpt);
-      sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+    جب( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
+      sqlite3_Vdbe_بھرو_String(v, 1, zOpt);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 1);
     }
     sqlite3VdbeReusable(v);
   }
-  break;
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+  توڑو;
+#اگر_ختم /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
-#ifndef SQLITE_OMIT_WAL
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
   /*
   **   PRAGMA [schema.]wal_checkpoint = passive|full|restart|truncate
   **
   ** Checkpoint the database.
   */
-  case PragTyp_WAL_CHECKPOINT: {
-    int iBt = (pId2->z?iDb:SQLITE_MAX_DB);
-    int eMode = SQLITE_CHECKPOINT_PASSIVE;
-    if( zRight ){
-      if( sqlite3StrICmp(zRight, "full")==0 ){
-        eMode = SQLITE_CHECKPOINT_FULL;
-      }else if( sqlite3StrICmp(zRight, "restart")==0 ){
-        eMode = SQLITE_CHECKPOINT_RESTART;
-      }else if( sqlite3StrICmp(zRight, "truncate")==0 ){
-        eMode = SQLITE_CHECKPOINT_TRUNCATE;
-      }else if( sqlite3StrICmp(zRight, "noop")==0 ){
-        eMode = SQLITE_CHECKPOINT_NOOP;
+  حالت PragTyp_WAL_CHECKPOINT: {
+    صحیح iBt = (pId2->z?iDb:SQLITE_MAX_DB);
+    صحیح e_منوال = SQLITE_CHECKPOINT_PASSIVE;
+    اگر( z_دایاں ){
+      اگر( sqlite3StrICmp(z_دایاں, "full")==0 ){
+        e_منوال = SQLITE_CHECKPOINT_بھرا;
+      }ورنہ اگر( sqlite3StrICmp(z_دایاں, "restart")==0 ){
+        e_منوال = SQLITE_CHECKPOINT_RESTART;
+      }ورنہ اگر( sqlite3StrICmp(z_دایاں, "truncate")==0 ){
+        e_منوال = SQLITE_CHECKPOINT_TRUNCATE;
+      }ورنہ اگر( sqlite3StrICmp(z_دایاں, "noop")==0 ){
+        e_منوال = SQLITE_CHECKPOINT_NOOP;
       }
     }
     pParse->nMem = 3;
-    sqlite3VdbeAddOp3(v, OP_Checkpoint, iBt, eMode, 1);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 3);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Checkpoint, iBt, e_منوال, 1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, 1, 3);
   }
-  break;
+  توڑو;
 
   /*
   **   PRAGMA wal_autocheckpoint
@@ -2423,16 +2423,16 @@ void sqlite3Pragma(
   ** after accumulating N frames in the log. Or query for the current value
   ** of N.
   */
-  case PragTyp_WAL_AUTOCHECKPOINT: {
-    if( zRight ){
-      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(zRight));
+  حالت PragTyp_WAL_AUTOCHECKPOINT: {
+    اگر( z_دایاں ){
+      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(z_دایاں));
     }
     returnSingleInt(v,
        db->xWalCallback==sqlite3WalDefaultHook ?
-           SQLITE_PTR_TO_INT(db->pWalArg) : 0);
+           SQLITE_PTR_مقصد_INT(db->pWalArg) : 0);
   }
-  break;
-#endif
+  توڑو;
+#اگر_ختم
 
   /*
   **  PRAGMA shrink_memory
@@ -2441,9 +2441,9 @@ void sqlite3Pragma(
   ** connection on which it is invoked to free up as much memory as it
   ** can, by calling sqlite3_db_release_memory().
   */
-  case PragTyp_SHRINK_MEMORY: {
-    sqlite3_db_release_memory(db);
-    break;
+  حالت Prag_Typ_SHRINK_حافظہ: {
+    sqlite3_db_release_حافظہ(db);
+    توڑو;
   }
 
   /*
@@ -2519,129 +2519,129 @@ void sqlite3Pragma(
   ** literal argument to this pragma that contains a mnemonic description
   ** of the options rather than a bitmap.
   */
-  case PragTyp_OPTIMIZE: {
-    int iDbLast;           /* Loop termination point for the schema loop */
-    int iTabCur;           /* Cursor for a table whose size needs checking */
+  حالت PragTyp_OPTIMIZE: {
+    صحیح i_Db_آخری;           /* Loop termination point for the schema loop */
+    صحیح iTabCur;           /* Cursor for a table whose size needs checking */
     HashElem *k;           /* Loop over tables of a schema */
     Schema *pSchema;       /* The current schema */
-    Table *pTab;           /* A table in the schema */
-    Index *pIdx;           /* An index of the table */
-    LogEst szThreshold;    /* Size threshold above which reanalysis needed */
-    char *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
-    u32 opMask;            /* Mask of operations to perform */
-    int nLimit;            /* Analysis limit to use */
-    int nCheck = 0;        /* Number of tables to be optimized */
-    int nBtree = 0;        /* Number of btrees to scan */
-    int nIndex;            /* Number of indexes on the current table */
+    جدول *pTab;           /* A table in the schema */
+    اشاریہ *pIdx;           /* An index of the table */
+    LogEst sz_حد;    /* Size threshold above which reanalysis needed */
+    حرف *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
+    u32 op_نقاب;            /* Mask of operations to perform */
+    صحیح n_حد_بندی;            /* Analysis limit to use */
+    صحیح nCheck = 0;        /* Number of tables to be optimized */
+    صحیح nBtree = 0;        /* Number of btrees to scan */
+    صحیح n_اشاریہ;            /* Number of indexes on the current table */
 
-    if( zRight ){
-      opMask = (u32)sqlite3Atoi(zRight);
-      if( (opMask & 0x02)==0 ) break;
-    }else{
-      opMask = 0xfffe;
+    اگر( z_دایاں ){
+      op_نقاب = (u32)sqlite3Atoi(z_دایاں);
+      اگر( (op_نقاب & 0x02)==0 ) توڑو;
+    }ورنہ{
+      op_نقاب = 0xfffe;
     }
-    if( (opMask & 0x10)==0 ){
-      nLimit = 0;
-    }else if( db->nAnalysisLimit>0
-           && db->nAnalysisLimit<SQLITE_DEFAULT_OPTIMIZE_LIMIT ){
-      nLimit = 0;
-    }else{
-      nLimit = SQLITE_DEFAULT_OPTIMIZE_LIMIT;
+    اگر( (op_نقاب & 0x10)==0 ){
+      n_حد_بندی = 0;
+    }ورنہ اگر( db->n_Analysis_حد_بندی>0
+           && db->n_Analysis_حد_بندی<SQLITE_DEFAULT_OPTIMIZE_حد_بندی ){
+      n_حد_بندی = 0;
+    }ورنہ{
+      n_حد_بندی = SQLITE_DEFAULT_OPTIMIZE_حد_بندی;
     }
     iTabCur = pParse->nTab++;
-    for(iDbLast = zDb?iDb:db->nDb-1; iDb<=iDbLast; iDb++){
-      if( iDb==1 ) continue;
-      sqlite3CodeVerifySchema(pParse, iDb);
+    برائے(i_Db_آخری = zDb?iDb:db->nDb-1; iDb<=i_Db_آخری; iDb++){
+      اگر( iDb==1 ) جاری;
+      sqlite3_رمز_Verify_Schema(pParse, iDb);
       pSchema = db->aDb[iDb].pSchema;
-      for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
-        pTab = (Table*)sqliteHashData(k);
+      برائے(k=sqlite_Hash_پہلا(&pSchema->tblHash); k; k=sqlite_Hash_اگلا(k)){
+        pTab = (جدول*)sqlite_Hash_ڈیٹا(k);
 
         /* This only works for ordinary tables */
-        if( !IsOrdinaryTable(pTab) ) continue;
+        اگر( !Is_Ordinary_جدول(pTab) ) جاری;
 
         /* Do not scan system tables */
-        if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) continue;
+        اگر( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) جاری;
 
         /* Find the size of the table as last recorded in sqlite_stat1.
         ** If any index is unanalyzed, then the threshold is -1 to
         ** indicate a new, unanalyzed index
         */
-        szThreshold = pTab->nRowLogEst;
-        nIndex = 0;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          nIndex++;
-          if( !pIdx->hasStat1 ){
-            szThreshold = -1; /* Always analyze if any index lacks statistics */
+        sz_حد = pTab->n_صف_Log_Est;
+        n_اشاریہ = 0;
+        برائے(pIdx=pTab->p_اشاریہ; pIdx; pIdx=pIdx->p_اگلا){
+          n_اشاریہ++;
+          اگر( !pIdx->hasStat1 ){
+            sz_حد = -1; /* Always analyze if any index lacks statistics */
           }
         }
 
         /* If table pTab has not been used in a way that would benefit from
         ** having analysis statistics during the current session, then skip it,
         ** unless the 0x10000 MASK bit is set. */
-        if( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
+        اگر( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
           /* Check for size change if stat1 has been used for a query */
-        }else if( opMask & 0x10000 ){
+        }ورنہ اگر( op_نقاب & 0x10000 ){
           /* Check for size change if 0x10000 is set */
-        }else if( pTab->pIndex!=0 && szThreshold<0 ){
+        }ورنہ اگر( pTab->p_اشاریہ!=0 && sz_حد<0 ){
           /* Do analysis if unanalyzed indexes exists */
-        }else{
+        }ورنہ{
           /* Otherwise, we can skip this table */
-          continue;
+          جاری;
         }
 
         nCheck++;
-        if( nCheck==2 ){
+        اگر( nCheck==2 ){
           /* If ANALYZE might be invoked two or more times, hold a write
           ** transaction for efficiency */
           sqlite3BeginWriteOperation(pParse, 0, iDb);
         }
-        nBtree += nIndex+1;
+        nBtree += n_اشاریہ+1;
 
         /* Reanalyze if the table is 10 times larger or smaller than
         ** the last analysis.  Unconditional reanalysis if there are
         ** unanalyzed indexes. */
-        sqlite3OpenTable(pParse, iTabCur, iDb, pTab, OP_OpenRead);
-        if( szThreshold>=0 ){
-          const LogEst iRange = 33;   /* 10x size change */
-          sqlite3VdbeAddOp4Int(v, OP_IfSizeBetween, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1),
-                         szThreshold>=iRange ? szThreshold-iRange : -1,
-                         szThreshold+iRange);
+        sqlite3_Open_جدول(pParse, iTabCur, iDb, pTab, OP_OpenRead);
+        اگر( sz_حد>=0 ){
+          ثابت LogEst iRange = 33;   /* 10x size change */
+          sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_If_سائز_Between, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_نقاب&1),
+                         sz_حد>=iRange ? sz_حد-iRange : -1,
+                         sz_حد+iRange);
           VdbeCoverage(v);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Rewind, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1));
+        }ورنہ{
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Rewind, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_نقاب&1));
           VdbeCoverage(v);
         }
         zSubSql = sqlite3MPrintf(db, "ANALYZE \"%w\".\"%w\"",
                                  db->aDb[iDb].zDbSName, pTab->zName);
-        if( opMask & 0x01 ){
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3VdbeAddOp4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
-          sqlite3VdbeAddOp2(v, OP_ResultRow, r1, 1);
-        }else{
-          sqlite3VdbeAddOp4(v, OP_SqlExec, nLimit ? 0x02 : 00, nLimit, 0,
+        اگر( op_نقاب & 0x01 ){
+          صحیح r1 = sqlite3_Get_عارضی_Reg(pParse);
+          sqlite3_Vdbe_جوڑو_Op4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_نتیجہ_صف, r1, 1);
+        }ورنہ{
+          sqlite3_Vdbe_جوڑو_Op4(v, OP_SqlExec, n_حد_بندی ? 0x02 : 00, n_حد_بندی, 0,
                             zSubSql, P4_DYNAMIC);
         }
       }
     }
-    sqlite3VdbeAddOp0(v, OP_Expire);
+    sqlite3_Vdbe_جوڑو_Op0(v, OP_Expire);
 
     /* In a schema with a large number of tables and indexes, scale back
     ** the analysis_limit to avoid excess run-time in the worst case.
     */
-    if( !db->mallocFailed && nLimit>0 && nBtree>100 ){
-      int iAddr, iEnd;
+    اگر( !db->mallocFailed && n_حد_بندی>0 && nBtree>100 ){
+      صحیح iAddr, i_انتہا;
       VdbeOp *aOp;
-      nLimit = 100*nLimit/nBtree;
-      if( nLimit<100 ) nLimit = 100;
+      n_حد_بندی = 100*n_حد_بندی/nBtree;
+      اگر( n_حد_بندی<100 ) n_حد_بندی = 100;
       aOp = sqlite3VdbeGetOp(v, 0);
-      iEnd = sqlite3VdbeCurrentAddr(v);
-      for(iAddr=0; iAddr<iEnd; iAddr++){
-        if( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = nLimit;
+      i_انتہا = sqlite3VdbeCurrentAddr(v);
+      برائے(iAddr=0; iAddr<i_انتہا; iAddr++){
+        اگر( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = n_حد_بندی;
       }
     }
-    break;
+    توڑو;
   }
 
   /*
@@ -2653,14 +2653,14 @@ void sqlite3Pragma(
   ** then 0 is returned.  Setting the busy_timeout to 0 or negative
   ** disables the timeout.
   */
-  /*case PragTyp_BUSY_TIMEOUT*/ default: {
-    int n = 0;
-    assert( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
-    if( zRight && sqlite3GetInt32(zRight,&n) ){
+  /*case PragTyp_BUSY_TIMEOUT*/ طےشدہ: {
+    صحیح n = 0;
+    أكد( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
+    اگر( z_دایاں && sqlite3GetInt32(z_دایاں,&n) ){
       sqlite3_busy_timeout(db, n);
     }
     returnSingleInt(v, db->busyTimeout);
-    break;
+    توڑو;
   }
 
   /*
@@ -2674,13 +2674,13 @@ void sqlite3Pragma(
   ** returns the same integer that would be returned by the
   ** sqlite3_soft_heap_limit64(-1) C-language function.
   */
-  case PragTyp_SOFT_HEAP_LIMIT: {
+  حالت Prag_Typ_SOFT_ڈھیر_حد_بندی: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_soft_heap_limit64(N);
+    اگر( z_دایاں && sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &N)==SQLITE_OK ){
+      sqlite3_soft_ڈھیر_limit64(N);
     }
-    returnSingleInt(v, sqlite3_soft_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_soft_ڈھیر_limit64(-1));
+    توڑو;
   }
 
   /*
@@ -2694,14 +2694,14 @@ void sqlite3Pragma(
   ** the hard heap limit.  This allows an application to set a heap limit
   ** constraint that cannot be relaxed by an untrusted SQL script.
   */
-  case PragTyp_HARD_HEAP_LIMIT: {
+  حالت Prag_Typ_HARD_ڈھیر_حد_بندی: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_int64 iPrior = sqlite3_hard_heap_limit64(-1);
-      if( N>0 && (iPrior==0 || iPrior>N) ) sqlite3_hard_heap_limit64(N);
+    اگر( z_دایاں && sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &N)==SQLITE_OK ){
+      sqlite3_int64 i_پیشگی = sqlite3_hard_ڈھیر_limit64(-1);
+      اگر( N>0 && (i_پیشگی==0 || i_پیشگی>N) ) sqlite3_hard_ڈھیر_limit64(N);
     }
-    returnSingleInt(v, sqlite3_hard_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_hard_ڈھیر_limit64(-1));
+    توڑو;
   }
 
   /*
@@ -2711,16 +2711,16 @@ void sqlite3Pragma(
   ** Configure the maximum number of worker threads.  Return the new
   ** maximum, which might be less than requested.
   */
-  case PragTyp_THREADS: {
+  حالت Prag_Typ_دھاگے: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK
+    اگر( z_دایاں
+     && sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &N)==SQLITE_OK
      && N>=0
     ){
-      sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, (int)(N&0x7fffffff));
+      sqlite3_حد_بندی(db, SQLITE_حد_بندی_کارکن_دھاگے, (صحیح)(N&0x7fffffff));
     }
-    returnSingleInt(v, sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, -1));
-    break;
+    returnSingleInt(v, sqlite3_حد_بندی(db, SQLITE_حد_بندی_کارکن_دھاگے, -1));
+    توڑو;
   }
 
   /*
@@ -2730,54 +2730,54 @@ void sqlite3Pragma(
   ** Configure the maximum number of rows that ANALYZE will examine
   ** in each index that it looks at.  Return the new limit.
   */
-  case PragTyp_ANALYSIS_LIMIT: {
+  حالت Prag_Typ_ANALYSIS_حد_بندی: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK /* IMP: R-40975-20399 */
+    اگر( z_دایاں
+     && sqlite3_Dec_Or_Hex_مقصد_I64(z_دایاں, &N)==SQLITE_OK /* IMP: R-40975-20399 */
      && N>=0
     ){
-      db->nAnalysisLimit = (int)(N&0x7fffffff);
+      db->n_Analysis_حد_بندی = (صحیح)(N&0x7fffffff);
     }
-    returnSingleInt(v, db->nAnalysisLimit); /* IMP: R-57594-65522 */
-    break;
+    returnSingleInt(v, db->n_Analysis_حد_بندی); /* IMP: R-57594-65522 */
+    توڑو;
   }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#اگر defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /*
   ** Report the current state of file logs for all databases
   */
-  case PragTyp_LOCK_STATUS: {
-    static const char *const azLockName[] = {
+  حالت Prag_Typ_تالا_حالت: {
+    ساکن ثابت حرف *ثابت az_تالا_Name[] = {
       "unlocked", "shared", "reserved", "pending", "exclusive"
     };
-    int i;
+    صحیح i;
     pParse->nMem = 2;
-    for(i=0; i<db->nDb; i++){
+    برائے(i=0; i<db->nDb; i++){
       Btree *pBt;
-      const char *zState = "unknown";
-      int j;
-      if( db->aDb[i].zDbSName==0 ) continue;
+      ثابت حرف *zState = "unknown";
+      صحیح j;
+      اگر( db->aDb[i].zDbSName==0 ) جاری;
       pBt = db->aDb[i].pBt;
-      if( pBt==0 || sqlite3BtreePager(pBt)==0 ){
+      اگر( pBt==0 || sqlite3BtreePager(pBt)==0 ){
         zState = "closed";
-      }else if( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
+      }ورنہ اگر( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
                                      SQLITE_FCNTL_LOCKSTATE, &j)==SQLITE_OK ){
-         zState = azLockName[j];
+         zState = az_تالا_Name[j];
       }
-      sqlite3VdbeMultiLoad(v, 1, "ss", db->aDb[i].zDbSName, zState);
+      sqlite3_Vdbe_Multi_بھرو(v, 1, "ss", db->aDb[i].zDbSName, zState);
     }
-    break;
+    توڑو;
   }
-#endif
+#اگر_ختم
 
-#if defined(SQLITE_ENABLE_CEROD)
-  case PragTyp_ACTIVATE_EXTENSIONS: if( zRight ){
-    if( sqlite3StrNICmp(zRight, "cerod-", 6)==0 ){
-      sqlite3_activate_cerod(&zRight[6]);
+#اگر defined(SQLITE_ENABLE_CEROD)
+  حالت PragTyp_ACTIVATE_EXTENSIONS: اگر( z_دایاں ){
+    اگر( sqlite3StrNICmp(z_دایاں, "cerod-", 6)==0 ){
+      sqlite3_activate_cerod(&z_دایاں[6]);
     }
   }
-  break;
-#endif
+  توڑو;
+#اگر_ختم
 
   } /* End of the PRAGMA switch */
 
@@ -2786,104 +2786,104 @@ void sqlite3Pragma(
   ** PragFlg_NoColumns1 flag is set and the caller specified an argument
   ** to the PRAGMA, the implementation has not added any OP_ResultRow
   ** instructions to the VM.  */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns1) && zRight ){
-    sqlite3VdbeVerifyNoResultRow(v);
+  اگر( (pPragma->mPragFlg & PragFlg_NoColumns1) && z_دایاں ){
+    sqlite3_Vdbe_Verify_No_نتیجہ_صف(v);
   }
 
-pragma_out:
-  sqlite3DbFree(db, zLeft);
-  sqlite3DbFree(db, zRight);
+pragma_برآمد:
+  sqlite3DbFree(db, z_بایاں);
+  sqlite3DbFree(db, z_دایاں);
 }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
 /*****************************************************************************
 ** Implementation of an eponymous virtual table that runs a pragma.
 **
 */
-typedef struct PragmaVtab PragmaVtab;
-typedef struct PragmaVtabCursor PragmaVtabCursor;
-struct PragmaVtab {
-  sqlite3_vtab base;        /* Base class.  Must be first */
+قسمتعریف ساخت PragmaVtab PragmaVtab;
+قسمتعریف ساخت PragmaVtabCursor PragmaVtabCursor;
+ساخت PragmaVtab {
+  sqlite3_vtab بنیاد;        /* Base class.  Must be first */
   sqlite3 *db;              /* The database connection to which it belongs */
-  const PragmaName *pName;  /* Name of the pragma */
+  ثابت PragmaName *pName;  /* Name of the pragma */
   u8 nHidden;               /* Number of hidden columns */
   u8 iHidden;               /* Index of the first hidden column */
 };
-struct PragmaVtabCursor {
-  sqlite3_vtab_cursor base; /* Base class.  Must be first */
+ساخت PragmaVtabCursor {
+  sqlite3_vtab_cursor بنیاد; /* Base class.  Must be first */
   sqlite3_stmt *pPragma;    /* The pragma statement to run */
   sqlite_int64 iRowid;      /* Current rowid */
-  char *azArg[2];           /* Value of the argument and schema */
+  حرف *azArg[2];           /* Value of the argument and schema */
 };
 
 /*
 ** Pragma virtual table module xConnect method.
 */
-static int pragmaVtabConnect(
+ساکن صحیح pragmaVtabConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  خالی *pAux,
+  صحیح argc, ثابت حرف *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  حرف **pzErr
 ){
-  const PragmaName *pPragma = (const PragmaName*)pAux;
+  ثابت PragmaName *pPragma = (ثابت PragmaName*)pAux;
   PragmaVtab *pTab = 0;
-  int rc;
-  int i, j;
-  char cSep = '(';
+  صحیح rc;
+  صحیح i, j;
+  حرف cSep = '(';
   StrAccum acc;
-  char zBuf[200];
+  حرف zBuf[200];
 
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(argv);
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
+  غیر_مستعمل_PARAMETER(argc);
+  غیر_مستعمل_PARAMETER(argv);
+  sqlite3StrAccumInit(&acc, 0, zBuf, حجم(zBuf), 0);
   sqlite3_str_appendall(&acc, "CREATE TABLE x");
-  for(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
+  برائے(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
     sqlite3_str_appendf(&acc, "%c\"%s\"", cSep, pragCName[j]);
     cSep = ',';
   }
-  if( i==0 ){
+  اگر( i==0 ){
     sqlite3_str_appendf(&acc, "(\"%s\"", pPragma->zName);
     i++;
   }
   j = 0;
-  if( pPragma->mPragFlg & PragFlg_Result1 ){
+  اگر( pPragma->mPragFlg & PragFlg_Result1 ){
     sqlite3_str_appendall(&acc, ",arg HIDDEN");
     j++;
   }
-  if( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
+  اگر( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
     sqlite3_str_appendall(&acc, ",schema HIDDEN");
     j++;
   }
   sqlite3_str_append(&acc, ")", 1);
-  sqlite3StrAccumFinish(&acc);
-  assert( strlen(zBuf) < sizeof(zBuf)-1 );
+  sqlite3_Str_Accum_اختتام(&acc);
+  أكد( لڑی_لمبائی(zBuf) < حجم(zBuf)-1 );
   rc = sqlite3_declare_vtab(db, zBuf);
-  if( rc==SQLITE_OK ){
-    pTab = (PragmaVtab*)sqlite3_malloc(sizeof(PragmaVtab));
-    if( pTab==0 ){
+  اگر( rc==SQLITE_OK ){
+    pTab = (PragmaVtab*)sqlite3_malloc(حجم(PragmaVtab));
+    اگر( pTab==0 ){
       rc = SQLITE_NOMEM;
-    }else{
-      memset(pTab, 0, sizeof(PragmaVtab));
+    }ورنہ{
+      memset(pTab, 0, حجم(PragmaVtab));
       pTab->pName = pPragma;
       pTab->db = db;
       pTab->iHidden = i;
       pTab->nHidden = j;
     }
-  }else{
+  }ورنہ{
     *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Pragma virtual table module xDisconnect method.
 */
-static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
+ساکن صحیح pragmaVtabDisconnect(sqlite3_vtab *pVtab){
   PragmaVtab *pTab = (PragmaVtab*)pVtab;
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Figure out the best index to use to search a pragma virtual table.
@@ -2893,189 +2893,189 @@ static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
 ** possible, and especially on the first hidden parameter.  So return a
 ** high cost if hidden parameters are unconstrained.
 */
-static int pragmaVtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+ساکن صحیح pragma_Vtab_بہترین_اشاریہ(sqlite3_vtab *tab, sqlite3_اشاریہ_info *pIdxInfo){
   PragmaVtab *pTab = (PragmaVtab*)tab;
-  const struct sqlite3_index_constraint *pConstraint;
-  int i, j;
-  int seen[2];
+  ثابت ساخت sqlite3_اشاریہ_constraint *pConstraint;
+  صحیح i, j;
+  صحیح نظر_آیا[2];
 
-  pIdxInfo->estimatedCost = (double)1;
-  if( pTab->nHidden==0 ){ return SQLITE_OK; }
+  pIdxInfo->estimated_لاگت = (دوہرا)1;
+  اگر( pTab->nHidden==0 ){ واپس SQLITE_OK; }
   pConstraint = pIdxInfo->aConstraint;
-  seen[0] = 0;
-  seen[1] = 0;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->iColumn < pTab->iHidden ) continue;
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->usable==0 ) return SQLITE_CONSTRAINT;
-    j = pConstraint->iColumn - pTab->iHidden;
-    assert( j < 2 );
-    seen[j] = i+1;
+  نظر_آیا[0] = 0;
+  نظر_آیا[1] = 0;
+  برائے(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    اگر( pConstraint->i_عمود < pTab->iHidden ) جاری;
+    اگر( pConstraint->op!=SQLITE_اشاریہ_CONSTRAINT_EQ ) جاری;
+    اگر( pConstraint->usable==0 ) واپس SQLITE_CONSTRAINT;
+    j = pConstraint->i_عمود - pTab->iHidden;
+    أكد( j < 2 );
+    نظر_آیا[j] = i+1;
   }
-  if( seen[0]==0 ){
-    pIdxInfo->estimatedCost = (double)2147483647;
-    pIdxInfo->estimatedRows = 2147483647;
-    return SQLITE_OK;
+  اگر( نظر_آیا[0]==0 ){
+    pIdxInfo->estimated_لاگت = (دوہرا)2147483647;
+    pIdxInfo->estimated_صفیں = 2147483647;
+    واپس SQLITE_OK;
   }
-  j = seen[0]-1;
-  pIdxInfo->aConstraintUsage[j].argvIndex = 1;
+  j = نظر_آیا[0]-1;
+  pIdxInfo->aConstraintUsage[j].argv_اشاریہ = 1;
   pIdxInfo->aConstraintUsage[j].omit = 1;
-  pIdxInfo->estimatedCost = (double)20;
-  pIdxInfo->estimatedRows = 20;
-  if( seen[1] ){
-    j = seen[1]-1;
-    pIdxInfo->aConstraintUsage[j].argvIndex = 2;
+  pIdxInfo->estimated_لاگت = (دوہرا)20;
+  pIdxInfo->estimated_صفیں = 20;
+  اگر( نظر_آیا[1] ){
+    j = نظر_آیا[1]-1;
+    pIdxInfo->aConstraintUsage[j].argv_اشاریہ = 2;
     pIdxInfo->aConstraintUsage[j].omit = 1;
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Create a new cursor for the pragma virtual table */
-static int pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
+ساکن صحیح pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
   PragmaVtabCursor *pCsr;
-  pCsr = (PragmaVtabCursor*)sqlite3_malloc(sizeof(*pCsr));
-  if( pCsr==0 ) return SQLITE_NOMEM;
-  memset(pCsr, 0, sizeof(PragmaVtabCursor));
-  pCsr->base.pVtab = pVtab;
-  *ppCursor = &pCsr->base;
-  return SQLITE_OK;
+  pCsr = (PragmaVtabCursor*)sqlite3_malloc(حجم(*pCsr));
+  اگر( pCsr==0 ) واپس SQLITE_NOMEM;
+  memset(pCsr, 0, حجم(PragmaVtabCursor));
+  pCsr->بنیاد.pVtab = pVtab;
+  *ppCursor = &pCsr->بنیاد;
+  واپس SQLITE_OK;
 }
 
 /* Clear all content from pragma virtual table cursor. */
-static void pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
-  int i;
+ساکن خالی pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
+  صحیح i;
   sqlite3_finalize(pCsr->pPragma);
   pCsr->pPragma = 0;
   pCsr->iRowid = 0;
-  for(i=0; i<ArraySize(pCsr->azArg); i++){
+  برائے(i=0; i<Array_سائز(pCsr->azArg); i++){
     sqlite3_free(pCsr->azArg[i]);
     pCsr->azArg[i] = 0;
   }
 }
 
 /* Close a pragma virtual table cursor */
-static int pragmaVtabClose(sqlite3_vtab_cursor *cur){
+ساکن صحیح pragmaVtabClose(sqlite3_vtab_cursor *cur){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)cur;
   pragmaVtabCursorClear(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Advance the pragma virtual table cursor to the next row */
-static int pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor){
+ساکن صحیح pragma_Vtab_اگلا(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
 
   /* Increment the xRowid value */
   pCsr->iRowid++;
-  assert( pCsr->pPragma );
-  if( SQLITE_ROW!=sqlite3_step(pCsr->pPragma) ){
+  أكد( pCsr->pPragma );
+  اگر( SQLITE_صف!=sqlite3_قدم(pCsr->pPragma) ){
     rc = sqlite3_finalize(pCsr->pPragma);
     pCsr->pPragma = 0;
     pragmaVtabCursorClear(pCsr);
   }
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Pragma virtual table module xFilter method.
 */
-static int pragmaVtabFilter(
+ساکن صحیح pragmaVtabFilter(
   sqlite3_vtab_cursor *pVtabCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_عدد, ثابت حرف *idxStr,
+  صحیح argc, sqlite3_قدر **argv
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  int rc;
-  int i, j;
+  صحیح rc;
+  صحیح i, j;
   StrAccum acc;
-  char *zSql;
+  حرف *zSql;
 
-  UNUSED_PARAMETER(idxNum);
-  UNUSED_PARAMETER(idxStr);
+  غیر_مستعمل_PARAMETER(idx_عدد);
+  غیر_مستعمل_PARAMETER(idxStr);
   pragmaVtabCursorClear(pCsr);
   j = (pTab->pName->mPragFlg & PragFlg_Result1)!=0 ? 0 : 1;
-  for(i=0; i<argc; i++, j++){
-    const char *zText = (const char*)sqlite3_value_text(argv[i]);
-    assert( j<ArraySize(pCsr->azArg) );
-    assert( pCsr->azArg[j]==0 );
-    if( zText ){
-      pCsr->azArg[j] = sqlite3_mprintf("%s", zText);
-      if( pCsr->azArg[j]==0 ){
-        return SQLITE_NOMEM;
+  برائے(i=0; i<argc; i++, j++){
+    ثابت حرف *z_متن = (ثابت حرف*)sqlite3_قدر_متن(argv[i]);
+    أكد( j<Array_سائز(pCsr->azArg) );
+    أكد( pCsr->azArg[j]==0 );
+    اگر( z_متن ){
+      pCsr->azArg[j] = sqlite3_mprintf("%s", z_متن);
+      اگر( pCsr->azArg[j]==0 ){
+        واپس SQLITE_NOMEM;
       }
     }
   }
-  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->aLimit[SQLITE_LIMIT_SQL_LENGTH]);
+  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->a_حد_بندی[SQLITE_حد_بندی_SQL_لمبائی]);
   sqlite3_str_appendall(&acc, "PRAGMA ");
-  if( pCsr->azArg[1] ){
+  اگر( pCsr->azArg[1] ){
     sqlite3_str_appendf(&acc, "%Q.", pCsr->azArg[1]);
   }
   sqlite3_str_appendall(&acc, pTab->pName->zName);
-  if( pCsr->azArg[0] ){
+  اگر( pCsr->azArg[0] ){
     sqlite3_str_appendf(&acc, "=%Q", pCsr->azArg[0]);
   }
-  zSql = sqlite3StrAccumFinish(&acc);
-  if( zSql==0 ) return SQLITE_NOMEM;
+  zSql = sqlite3_Str_Accum_اختتام(&acc);
+  اگر( zSql==0 ) واپس SQLITE_NOMEM;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pPragma, 0);
   sqlite3_free(zSql);
-  if( rc!=SQLITE_OK ){
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
-    return rc;
+  اگر( rc!=SQLITE_OK ){
+    pTab->بنیاد.z_Err_پیغام = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
+    واپس rc;
   }
-  return pragmaVtabNext(pVtabCursor);
+  واپس pragma_Vtab_اگلا(pVtabCursor);
 }
 
 /*
 ** Pragma virtual table module xEof method.
 */
-static int pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
+ساکن صحیح pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  return (pCsr->pPragma==0);
+  واپس (pCsr->pPragma==0);
 }
 
 /* The xColumn method simply returns the corresponding column from
 ** the PRAGMA. 
 */
-static int pragmaVtabColumn(
+ساکن صحیح pragma_Vtab_عمود(
   sqlite3_vtab_cursor *pVtabCursor,
   sqlite3_context *ctx,
-  int i
+  صحیح i
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  if( i<pTab->iHidden ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pPragma, i));
-  }else{
-    sqlite3_result_text(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
+  اگر( i<pTab->iHidden ){
+    sqlite3_نتیجہ_قدر(ctx, sqlite3_عمود_قدر(pCsr->pPragma, i));
+  }ورنہ{
+    sqlite3_نتیجہ_متن(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Pragma virtual table module xRowid method.
 */
-static int pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
+ساکن صحیح pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   *p = pCsr->iRowid;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* The pragma virtual table object */
-static const sqlite3_module pragmaVtabModule = {
+ساکن ثابت sqlite3_module pragmaVtabModule = {
   0,                           /* iVersion */
   0,                           /* xCreate - create a table */
   pragmaVtabConnect,           /* xConnect - connect to an existing table */
-  pragmaVtabBestIndex,         /* xBestIndex - Determine search strategy */
+  pragma_Vtab_بہترین_اشاریہ,         /* xBestIndex - Determine search strategy */
   pragmaVtabDisconnect,        /* xDisconnect - Disconnect from a table */
   0,                           /* xDestroy - Drop a table */
   pragmaVtabOpen,              /* xOpen - open a cursor */
   pragmaVtabClose,             /* xClose - close a cursor */
   pragmaVtabFilter,            /* xFilter - configure scan constraints */
-  pragmaVtabNext,              /* xNext - advance a cursor */
+  pragma_Vtab_اگلا,              /* xNext - advance a cursor */
   pragmaVtabEof,               /* xEof */
-  pragmaVtabColumn,            /* xColumn - read data */
+  pragma_Vtab_عمود,            /* xColumn - read data */
   pragmaVtabRowid,             /* xRowid - read data */
   0,                           /* xUpdate - write data */
   0,                           /* xBegin - begin transaction */
@@ -3096,16 +3096,16 @@ static const sqlite3_module pragmaVtabModule = {
 ** then register an eponymous virtual table for that pragma and return
 ** a pointer to the Module object for the new virtual table.
 */
-Module *sqlite3PragmaVtabRegister(sqlite3 *db, const char *zName){
-  const PragmaName *pName;
-  assert( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
+Module *sqlite3_Pragma_Vtab_رجسٹر(sqlite3 *db, ثابت حرف *zName){
+  ثابت PragmaName *pName;
+  أكد( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
   pName = pragmaLocate(zName+7);
-  if( pName==0 ) return 0;
-  if( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) return 0;
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  return sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (void*)pName, 0);
+  اگر( pName==0 ) واپس 0;
+  اگر( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) واپس 0;
+  أكد( sqlite3_Hash_ڈھونڈو(&db->aModule, zName)==0 );
+  واپس sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (خالی*)pName, 0);
 }
 
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#اگر_ختم /* SQLITE_OMIT_VIRTUALTABLE */
 
-#endif /* SQLITE_OMIT_PRAGMA */
+#اگر_ختم /* SQLITE_OMIT_PRAGMA */

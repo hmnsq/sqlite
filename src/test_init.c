@@ -25,137 +25,137 @@
 **      the remaining, uninitialized, subsystems.
 */
 
-#include "sqliteInt.h"
-#include <string.h>
-#include "tclsqlite.h"
+#شامل "sqliteInt.h"
+#شامل <string.h>
+#شامل "tclsqlite.h"
 
-static struct Wrapped {
+ساکن ساخت Wrapped {
   sqlite3_pcache_methods2 pcache;
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  صحیح mem_init;              /* True if mem subsystem is initialized */
+  صحیح mem_fail;              /* True to fail mem subsystem initialization */
+  صحیح mutex_init;            /* True if mutex subsystem is initialized */
+  صحیح mutex_fail;            /* True to fail mutex subsystem initialization */
+  صحیح pcache_init;           /* True if pcache subsystem is initialized */
+  صحیح pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+ساکن صحیح wrMemInit(خالی *p_App_ڈیٹا){
+  صحیح rc;
+  اگر( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
-    rc = wrapped.mem.xInit(wrapped.mem.pAppData);
+  }ورنہ{
+    rc = wrapped.mem.xInit(wrapped.mem.p_App_ڈیٹا);
   }
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  واپس rc;
 }
-static void wrMemShutdown(void *pAppData){
-  wrapped.mem.xShutdown(wrapped.mem.pAppData);
+ساکن خالی wrMemShutdown(خالی *p_App_ڈیٹا){
+  wrapped.mem.xShutdown(wrapped.mem.p_App_ڈیٹا);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
-static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+ساکن خالی *wrMemMalloc(صحیح n)           {واپس wrapped.mem.xMalloc(n);}
+ساکن خالی wrMemFree(خالی *p)            {wrapped.mem.xFree(p);}
+ساکن خالی *wrMemRealloc(خالی *p, صحیح n) {واپس wrapped.mem.xRealloc(p, n);}
+ساکن صحیح wr_Mem_سائز(خالی *p)             {واپس wrapped.mem.x_سائز(p);}
+ساکن صحیح wrMemRoundup(صحیح n)            {واپس wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+ساکن صحیح wrMutexInit(خالی){
+  صحیح rc;
+  اگر( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }ورنہ{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  واپس rc;
 }
-static int wrMutexEnd(void){
-  wrapped.mutex.xMutexEnd();
+ساکن صحیح wr_Mutex_انتہا(خالی){
+  wrapped.mutex.x_Mutex_انتہا();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+ساکن sqlite3_mutex *wrMutexAlloc(صحیح e){
+  واپس wrapped.mutex.xMutexAlloc(e);
 }
-static void wrMutexFree(sqlite3_mutex *p){
+ساکن خالی wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
 }
-static void wrMutexEnter(sqlite3_mutex *p){
+ساکن خالی wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+ساکن صحیح wrMutexTry(sqlite3_mutex *p){
+  واپس wrapped.mutex.xMutexTry(p);
 }
-static void wrMutexLeave(sqlite3_mutex *p){
+ساکن خالی wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+ساکن صحیح wrMutexHeld(sqlite3_mutex *p){
+  واپس wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+ساکن صحیح wrMutexNotheld(sqlite3_mutex *p){
+  واپس wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+ساکن صحیح wrPCacheInit(خالی *pArg){
+  صحیح rc;
+  اگر( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }ورنہ{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  واپس rc;
 }
-static void wrPCacheShutdown(void *pArg){
+ساکن خالی wrPCacheShutdown(خالی *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+ساکن sqlite3_pcache *wrPCacheCreate(صحیح a, صحیح b, صحیح c){
+  واپس wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+ساکن خالی wrPCacheCachesize(sqlite3_pcache *p, صحیح n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+ساکن صحیح wrPCachePagecount(sqlite3_pcache *p){
+  واپس wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+ساکن sqlite3_pcache_صفحہ *wrPCacheFetch(sqlite3_pcache *p, غیرعلامتی a, صحیح b){
+  واپس wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+ساکن خالی wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_صفحہ *a, صحیح b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
-static void wrPCacheRekey(
+ساکن خالی wrPCacheRekey(
   sqlite3_pcache *p, 
-  sqlite3_pcache_page *a, 
-  unsigned b, 
-  unsigned c
+  sqlite3_pcache_صفحہ *a, 
+  غیرعلامتی b, 
+  غیرعلامتی c
 ){
   wrapped.pcache.xRekey(p, a, b, c);
 }  
-static void wrPCacheTruncate(sqlite3_pcache *p, unsigned a){
+ساکن خالی wrPCacheTruncate(sqlite3_pcache *p, غیرعلامتی a){
   wrapped.pcache.xTruncate(p, a);
 }  
-static void wrPCacheDestroy(sqlite3_pcache *p){
+ساکن خالی wrPCacheDestroy(sqlite3_pcache *p){
   wrapped.pcache.xDestroy(p);
 }  
 
-static void installInitWrappers(void){
+ساکن خالی installInitWrappers(خالی){
   sqlite3_mutex_methods mutexmethods = {
-    wrMutexInit,  wrMutexEnd,   wrMutexAlloc,
+    wrMutexInit,  wr_Mutex_انتہا,   wrMutexAlloc,
     wrMutexFree,  wrMutexEnter, wrMutexTry,
     wrMutexLeave, wrMutexHeld,  wrMutexNotheld
   };
@@ -168,12 +168,12 @@ static void installInitWrappers(void){
   };
   sqlite3_mem_methods memmethods = {
     wrMemMalloc,   wrMemFree,    wrMemRealloc,
-    wrMemSize,     wrMemRoundup, wrMemInit,
+    wr_Mem_سائز,     wrMemRoundup, wrMemInit,
     wrMemShutdown,
     0
   };
 
-  memset(&wrapped, 0, sizeof(wrapped));
+  memset(&wrapped, 0, حجم(wrapped));
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_GETMUTEX, &wrapped.mutex);
@@ -184,96 +184,96 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
-  ClientData clientData, /* Unused */
+ساکن صحیح SQLITE_TCLAPI init_wrapper_install(
+  Client_ڈیٹا client_ڈیٹا, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحیح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  صحیح i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
-    char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+  برائے(i=1; i<objc; i++){
+    حرف *z = Tcl_GetString(objv[i]);
+    اگر( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }ورنہ اگر( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }ورنہ اگر( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
-      Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+    }ورنہ{
+      Tcl_Append_نتیجہ(interp, "Unknown argument: \"", z, "\"", تہی);
+      واپس TCL_ERROR;
     }
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
-  ClientData clientData, /* Unused */
+ساکن صحیح SQLITE_TCLAPI init_wrapper_uninstall(
+  Client_ڈیٹا client_ڈیٹا, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحیح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  اگر( objc!=1 ){
+    Tcl_Wrong_عدد_دلائل(interp, 1, objv, "");
+    واپس TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
-  ClientData clientData, /* Unused */
+ساکن صحیح SQLITE_TCLAPI init_wrapper_clear(
+  Client_ڈیٹا client_ڈیٹا, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحیح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  اگر( objc!=1 ){
+    Tcl_Wrong_عدد_دلائل(interp, 1, objv, "");
+    واپس TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
-  ClientData clientData, /* Unused */
+ساکن صحیح SQLITE_TCLAPI init_wrapper_query(
+  Client_ڈیٹا client_ڈیٹا, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحیح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  اگر( objc!=1 ){
+    Tcl_Wrong_عدد_دلائل(interp, 1, objv, "");
+    واپس TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  اگر( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  اگر( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  اگر( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
-  Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  Tcl_سیٹ_Obj_نتیجہ(interp, pRet);
+  واپس TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+صحیح Sqlitetest_init_Init(Tcl_Interp *interp){
+  ساکن ساخت {
+     حرف *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
     {"init_wrapper_install",   init_wrapper_install},
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  صحیح i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  برائے(i=0; i<حجم(aObjCmd)/حجم(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  واپس TCL_OK;
 }

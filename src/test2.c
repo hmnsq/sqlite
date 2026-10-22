@@ -13,24 +13,24 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#شامل "sqliteInt.h"
+#شامل "tclsqlite.h"
+#شامل <stdlib.h>
+#شامل <string.h>
+#شامل <ctype.h>
 
-extern const char *sqlite3ErrName(int);
+خارجی ثابت حرف *sqlite3ErrName(صحیح);
 
 /*
 ** Page size and reserved size used for testing.
 */
-static int test_pagesize = 1024;
+ساکن صحیح test_pagesize = 1024;
 
 /*
 ** Dummy page reinitializer
 */
-static void pager_test_reiniter(DbPage *pNotUsed){
-  return;
+ساکن خالی pager_test_reiniter(Db_صفحہ *p_Not_مستعمل){
+  واپس;
 }
 
 /*
@@ -38,34 +38,34 @@ static void pager_test_reiniter(DbPage *pNotUsed){
 **
 ** Open a new pager
 */
-static int SQLITE_TCLAPI pager_open(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_open(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  u32 pageSize;
+  u32 صفحہ_سائز;
   Pager *pPager;
-  int nPage;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " FILENAME N-PAGE\"", NULL);
-    return TCL_ERROR;
+  صحیح n_صفحہ;
+  صحیح rc;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " FILENAME N-PAGE\"", تہی);
+    واپس TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[2], &nPage) ) return TCL_ERROR;
-  rc = sqlite3PagerOpen(sqlite3_vfs_find(0), &pPager, argv[1], 0, 0,
+  اگر( Tcl_GetInt(interp, argv[2], &n_صفحہ) ) واپس TCL_ERROR;
+  rc = sqlite3PagerOpen(sqlite3_vfs_ڈھونڈو(0), &pPager, argv[1], 0, 0,
       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_MAIN_DB,
       pager_test_reiniter);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  sqlite3PagerSetCachesize(pPager, nPage);
-  pageSize = test_pagesize;
-  sqlite3PagerSetPagesize(pPager, &pageSize, -1);
-  Tcl_AppendResult(interp, sqlite3TestPtrToText(pPager), NULL);
-  return TCL_OK;
+  sqlite3_Pager_سیٹ_Cachesize(pPager, n_صفحہ);
+  صفحہ_سائز = test_pagesize;
+  sqlite3_Pager_سیٹ_Pagesize(pPager, &صفحہ_سائز, -1);
+  Tcl_Append_نتیجہ(interp, sqlite3_Test_Ptr_مقصد_متن(pPager), تہی);
+  واپس TCL_OK;
 }
 
 /*
@@ -73,26 +73,26 @@ static int SQLITE_TCLAPI pager_open(
 **
 ** Close the given pager.
 */
-static int SQLITE_TCLAPI pager_close(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_close(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerClose(pPager, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -100,26 +100,26 @@ static int SQLITE_TCLAPI pager_close(
 **
 ** Rollback changes
 */
-static int SQLITE_TCLAPI pager_rollback(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_rollback(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerRollback(pPager);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -127,31 +127,31 @@ static int SQLITE_TCLAPI pager_rollback(
 **
 ** Commit all changes
 */
-static int SQLITE_TCLAPI pager_commit(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_commit(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerCommitPhaseOne(pPager, 0, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
   rc = sqlite3PagerCommitPhaseTwo(pPager);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -159,26 +159,26 @@ static int SQLITE_TCLAPI pager_commit(
 **
 ** Start a new checkpoint.
 */
-static int SQLITE_TCLAPI pager_stmt_begin(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_stmt_begin(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerOpenSavepoint(pPager, 1);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -186,27 +186,27 @@ static int SQLITE_TCLAPI pager_stmt_begin(
 **
 ** Rollback changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_rollback(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_stmt_rollback(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerSavepoint(pPager, SAVEPOINT_ROLLBACK, 0);
   sqlite3PagerSavepoint(pPager, SAVEPOINT_RELEASE, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -214,26 +214,26 @@ static int SQLITE_TCLAPI pager_stmt_rollback(
 **
 ** Commit changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_commit(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_stmt_commit(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   rc = sqlite3PagerSavepoint(pPager, SAVEPOINT_RELEASE, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -241,32 +241,32 @@ static int SQLITE_TCLAPI pager_stmt_commit(
 **
 ** Return pager statistics.
 */
-static int SQLITE_TCLAPI pager_stats(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_stats(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int i, *a;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  صحیح i, *a;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
   a = sqlite3PagerStats(pPager);
-  for(i=0; i<9; i++){
-    static char *zName[] = {
+  برائے(i=0; i<9; i++){
+    ساکن حرف *zName[] = {
       "ref", "page", "max", "size", "state", "err",
       "hit", "miss", "ovfl",
     };
-    char zBuf[100];
+    حرف zBuf[100];
     Tcl_AppendElement(interp, zName[i]);
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%d",a[i]);
+    sqlite3_snprintf(حجم(zBuf),zBuf,"%d",a[i]);
     Tcl_AppendElement(interp, zBuf);
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
@@ -274,25 +274,25 @@ static int SQLITE_TCLAPI pager_stats(
 **
 ** Return the size of the database file.
 */
-static int SQLITE_TCLAPI pager_pagecount(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_pagecount(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  char zBuf[100];
-  int nPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  حرف zBuf[100];
+  صحیح n_صفحہ;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  sqlite3PagerPagecount(pPager, &nPage);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", nPage);
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  sqlite3PagerPagecount(pPager, &n_صفحہ);
+  sqlite3_snprintf(حجم(zBuf), zBuf, "%d", n_صفحہ);
+  Tcl_Append_نتیجہ(interp, zBuf, تہی);
+  واپس TCL_OK;
 }
 
 /*
@@ -300,33 +300,33 @@ static int SQLITE_TCLAPI pager_pagecount(
 **
 ** Return a pointer to a page from the database.
 */
-static int SQLITE_TCLAPI page_get(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_get(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  DbPage *pPage = 0;
-  int pgno;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  Db_صفحہ *p_صفحہ = 0;
+  صحیح pgno;
+  صحیح rc;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
-  rc = sqlite3PagerSharedLock(pPager);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3PagerGet(pPager, pgno, &pPage, 0);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  اگر( Tcl_GetInt(interp, argv[2], &pgno) ) واپس TCL_ERROR;
+  rc = sqlite3_Pager_Shared_تالا(pPager);
+  اگر( rc==SQLITE_OK ){
+    rc = sqlite3PagerGet(pPager, pgno, &p_صفحہ, 0);
   }
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  Tcl_AppendResult(interp, sqlite3TestPtrToText(pPage), NULL);
-  return TCL_OK;
+  Tcl_Append_نتیجہ(interp, sqlite3_Test_Ptr_مقصد_متن(p_صفحہ), تہی);
+  واپس TCL_OK;
 }
 
 /*
@@ -335,49 +335,49 @@ static int SQLITE_TCLAPI page_get(
 ** Return a pointer to a page if the page is already in cache.
 ** If not in cache, return an empty string.
 */
-static int SQLITE_TCLAPI page_lookup(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_lookup(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  DbPage *pPage;
-  int pgno;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  Db_صفحہ *p_صفحہ;
+  صحیح pgno;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
-  pPage = sqlite3PagerLookup(pPager, pgno);
-  if( pPage ){
-    Tcl_AppendResult(interp, sqlite3TestPtrToText(pPage), NULL);
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  اگر( Tcl_GetInt(interp, argv[2], &pgno) ) واپس TCL_ERROR;
+  p_صفحہ = sqlite3PagerLookup(pPager, pgno);
+  اگر( p_صفحہ ){
+    Tcl_Append_نتیجہ(interp, sqlite3_Test_Ptr_مقصد_متن(p_صفحہ), تہی);
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 /*
 ** Usage:   pager_truncate ID PGNO
 */
-static int SQLITE_TCLAPI pager_truncate(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI pager_truncate(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int pgno;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  صحیح pgno;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
+  pPager = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  اگر( Tcl_GetInt(interp, argv[2], &pgno) ) واپس TCL_ERROR;
   sqlite3PagerTruncateImage(pPager, pgno);
-  return TCL_OK;
+  واپس TCL_OK;
 }
 
 
@@ -386,21 +386,21 @@ static int SQLITE_TCLAPI pager_truncate(
 **
 ** Drop a pointer to a page.
 */
-static int SQLITE_TCLAPI page_unref(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_unref(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  Db_صفحہ *p_صفحہ;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  sqlite3PagerUnref(pPage);
-  return TCL_OK;
+  p_صفحہ = (Db_صفحہ *)sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  sqlite3PagerUnref(p_صفحہ);
+  واپس TCL_OK;
 }
 
 /*
@@ -408,23 +408,23 @@ static int SQLITE_TCLAPI page_unref(
 **
 ** Return the content of a page
 */
-static int SQLITE_TCLAPI page_read(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_read(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  char zBuf[100];
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  حرف zBuf[100];
+  Db_صفحہ *p_صفحہ;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPage = sqlite3TestTextToPtr(argv[1]);
-  memcpy(zBuf, sqlite3PagerGetData(pPage), sizeof(zBuf));
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  p_صفحہ = sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  حافظہ_نقل(zBuf, sqlite3_Pager_Get_ڈیٹا(p_صفحہ), حجم(zBuf));
+  Tcl_Append_نتیجہ(interp, zBuf, تہی);
+  واپس TCL_OK;
 }
 
 /*
@@ -432,23 +432,23 @@ static int SQLITE_TCLAPI page_read(
 **
 ** Return the page number for a page.
 */
-static int SQLITE_TCLAPI page_number(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_نمبر(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  char zBuf[100];
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  حرف zBuf[100];
+  Db_صفحہ *p_صفحہ;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", sqlite3PagerPagenumber(pPage));
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  p_صفحہ = (Db_صفحہ *)sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  sqlite3_snprintf(حجم(zBuf), zBuf, "%d", sqlite3PagerPagenumber(p_صفحہ));
+  Tcl_Append_نتیجہ(interp, zBuf, تہی);
+  واپس TCL_OK;
 }
 
 /*
@@ -456,33 +456,33 @@ static int SQLITE_TCLAPI page_number(
 **
 ** Write something into a page.
 */
-static int SQLITE_TCLAPI page_write(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI صفحہ_write(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  DbPage *pPage;
-  char *pData;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE DATA\"", NULL);
-    return TCL_ERROR;
+  Db_صفحہ *p_صفحہ;
+  حرف *p_ڈیٹا;
+  صحیح rc;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " PAGE DATA\"", تہی);
+    واپس TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  rc = sqlite3PagerWrite(pPage);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  p_صفحہ = (Db_صفحہ *)sqlite3_Test_متن_مقصد_Ptr(argv[1]);
+  rc = sqlite3PagerWrite(p_صفحہ);
+  اگر( rc!=SQLITE_OK ){
+    Tcl_Append_نتیجہ(interp, sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  pData = sqlite3PagerGetData(pPage);
-  strncpy(pData, argv[2], test_pagesize-1);
-  pData[test_pagesize-1] = 0;
-  return TCL_OK;
+  p_ڈیٹا = sqlite3_Pager_Get_ڈیٹا(p_صفحہ);
+  strncpy(p_ڈیٹا, argv[2], test_pagesize-1);
+  p_ڈیٹا[test_pagesize-1] = 0;
+  واپس TCL_OK;
 }
 
-#ifndef SQLITE_OMIT_DISKIO
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DISKIO
 /*
 ** Usage:   fake_big_file  N  FILENAME
 **
@@ -492,60 +492,60 @@ static int SQLITE_TCLAPI page_write(
 ** new pages after N.  If N is 2096 or bigger, this will test the
 ** ability of SQLite to write to large files.
 */
-static int SQLITE_TCLAPI fake_big_file(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI fake_big_file(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
   sqlite3_vfs *pVfs;
   sqlite3_file *fd = 0;
-  int rc;
-  int n;
-  i64 offset;
-  char *zFile;
-  int nFile;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " N-MEGABYTES FILE\"", NULL);
-    return TCL_ERROR;
+  صحیح rc;
+  صحیح n;
+  i64 انحراف;
+  حرف *zFile;
+  صحیح nFile;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+       " N-MEGABYTES FILE\"", تہی);
+    واپس TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[1], &n) ) return TCL_ERROR;
-#if defined(_WIN32)
-  if( n>2 ){
-    Tcl_AppendResult(interp, "cannot create ", argv[1],
+  اگر( Tcl_GetInt(interp, argv[1], &n) ) واپس TCL_ERROR;
+#اگر defined(_WIN32)
+  اگر( n>2 ){
+    Tcl_Append_نتیجہ(interp, "cannot create ", argv[1],
        "MB file because Windows "
-       "does not support sparse files", (void*)0);
-    return TCL_ERROR;
+       "does not support sparse files", (خالی*)0);
+    واپس TCL_ERROR;
   }
-#endif
+#اگر_ختم
 
-  pVfs = sqlite3_vfs_find(0);
-  nFile = (int)strlen(argv[2]);
+  pVfs = sqlite3_vfs_ڈھونڈو(0);
+  nFile = (صحیح)لڑی_لمبائی(argv[2]);
   zFile = sqlite3_malloc( nFile+2 );
-  if( zFile==0 ) return TCL_ERROR;
-  memcpy(zFile, argv[2], nFile+1);
+  اگر( zFile==0 ) واپس TCL_ERROR;
+  حافظہ_نقل(zFile, argv[2], nFile+1);
   zFile[nFile+1] = 0;
   rc = sqlite3OsOpenMalloc(pVfs, zFile, &fd, 
       (SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_MAIN_DB), 0
   );
-  if( rc ){
-    Tcl_AppendResult(interp, "open failed: ", sqlite3ErrName(rc), NULL);
+  اگر( rc ){
+    Tcl_Append_نتیجہ(interp, "open failed: ", sqlite3ErrName(rc), تہی);
     sqlite3_free(zFile);
-    return TCL_ERROR;
+    واپس TCL_ERROR;
   }
-  offset = n;
-  offset *= 1024*1024;
-  rc = sqlite3OsWrite(fd, "Hello, World!", 14, offset);
+  انحراف = n;
+  انحراف *= 1024*1024;
+  rc = sqlite3OsWrite(fd, "Hello, World!", 14, انحراف);
   sqlite3OsCloseFree(fd);
   sqlite3_free(zFile);
-  if( rc ){
-    Tcl_AppendResult(interp, "write failed: ", sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  اگر( rc ){
+    Tcl_Append_نتیجہ(interp, "write failed: ", sqlite3ErrName(rc), تہی);
+    واپس TCL_ERROR;
   }
-  return TCL_OK;
+  واپس TCL_OK;
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -553,62 +553,62 @@ static int SQLITE_TCLAPI fake_big_file(
 **
 ** Set the PENDING_BYTE using the sqlite3_test_control() interface.
 */
-static int SQLITE_TCLAPI testPendingByte(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI testPendingByte(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  int pbyte;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " PENDING-BYTE\"", (void*)0);
-    return TCL_ERROR;
+  صحیح pbyte;
+  صحیح rc;
+  اگر( argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+                     " PENDING-BYTE\"", (خالی*)0);
+    واپس TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[1], &pbyte) ) return TCL_ERROR;
+  اگر( Tcl_GetInt(interp, argv[1], &pbyte) ) واپس TCL_ERROR;
   rc = sqlite3_test_control(SQLITE_TESTCTRL_PENDING_BYTE, pbyte);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_سیٹ_Obj_نتیجہ(interp, Tcl_NewIntObj(rc));
+  واپس TCL_OK;
 }
 
 /*
 ** The sqlite3FaultSim() callback:
 */
-static Tcl_Interp *faultSimInterp = 0;
-static int faultSimScriptSize = 0;
-static char *faultSimScript;
-static int faultSimCallback(int x){
-  char zInt[30];
-  int i;
-  int isNeg;
-  int rc;
-  if( x==0 ){
-    memcpy(faultSimScript+faultSimScriptSize, "0", 2);
-  }else{
+ساکن Tcl_Interp *faultSimInterp = 0;
+ساکن صحیح fault_Sim_Script_سائز = 0;
+ساکن حرف *faultSimScript;
+ساکن صحیح faultSimCallback(صحیح x){
+  حرف zInt[30];
+  صحیح i;
+  صحیح isNeg;
+  صحیح rc;
+  اگر( x==0 ){
+    حافظہ_نقل(faultSimScript+fault_Sim_Script_سائز, "0", 2);
+  }ورنہ{
     /* Convert x to text without using any sqlite3 routines */
-    if( x<0 ){
+    اگر( x<0 ){
       isNeg = 1;
       x = -x;
-    }else{
+    }ورنہ{
       isNeg = 0;
     }
-    zInt[sizeof(zInt)-1] = 0;
-    for(i=sizeof(zInt)-2; i>0 && x>0; i--, x /= 10){
+    zInt[حجم(zInt)-1] = 0;
+    برائے(i=حجم(zInt)-2; i>0 && x>0; i--, x /= 10){
       zInt[i] = (x%10) + '0';
     }
-    if( isNeg ) zInt[i--] = '-';
-    memcpy(faultSimScript+faultSimScriptSize, zInt+i+1, sizeof(zInt)-i-1);
+    اگر( isNeg ) zInt[i--] = '-';
+    حافظہ_نقل(faultSimScript+fault_Sim_Script_سائز, zInt+i+1, حجم(zInt)-i-1);
   }
   rc = Tcl_Eval(faultSimInterp, faultSimScript);
-  if( rc ){
+  اگر( rc ){
     fprintf(stderr, "fault simulator script failed: [%s]", faultSimScript);
     rc = SQLITE_ERROR;
-  }else{
-    rc = atoi(Tcl_GetStringResult(faultSimInterp));
+  }ورنہ{
+    rc = atoi(Tcl_Get_String_نتیجہ(faultSimInterp));
   }
-  Tcl_ResetResult(faultSimInterp);
-  return rc;
+  Tcl_Reset_نتیجہ(faultSimInterp);
+  واپس rc;
 }
 
 /*
@@ -618,42 +618,42 @@ static int faultSimCallback(int x){
 ** appended, whenever sqlite3FaultSim() is called.  Or, if SCRIPT is the
 ** empty string, cancel the sqlite3FaultSim() callback.
 */
-static int SQLITE_TCLAPI faultInstallCmd(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI faultInstallCmd(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  const char *zScript;
-  int nScript;
-  int rc;
-  if( argc!=1 && argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " SCRIPT\"", (void*)0);
-    return SQLITE_ERROR;
+  ثابت حرف *zScript;
+  صحیح nScript;
+  صحیح rc;
+  اگر( argc!=1 && argc!=2 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+                     " SCRIPT\"", (خالی*)0);
+    واپس SQLITE_ERROR;
   }
   zScript = argc==2 ? argv[1] : "";
-  nScript = (int)strlen(zScript);
-  if( faultSimScript ){
-    free(faultSimScript);
+  nScript = (صحیح)لڑی_لمبائی(zScript);
+  اگر( faultSimScript ){
+    آزاد(faultSimScript);
     faultSimScript = 0;
   }
-  if( nScript==0 ){
+  اگر( nScript==0 ){
     rc = sqlite3_test_control(SQLITE_TESTCTRL_FAULT_INSTALL, 0);
-  }else{
-    faultSimScript = malloc( nScript+100 );
-    if( faultSimScript==0 ){
-      Tcl_AppendResult(interp, "out of memory", (void*)0);
-      return SQLITE_ERROR;
+  }ورنہ{
+    faultSimScript = حافظہ_دو( nScript+100 );
+    اگر( faultSimScript==0 ){
+      Tcl_Append_نتیجہ(interp, "out of memory", (خالی*)0);
+      واپس SQLITE_ERROR;
     }
-    memcpy(faultSimScript, zScript, nScript);
+    حافظہ_نقل(faultSimScript, zScript, nScript);
     faultSimScript[nScript] = ' ';
-    faultSimScriptSize = nScript+1;
+    fault_Sim_Script_سائز = nScript+1;
     faultSimInterp = interp;
     rc = sqlite3_test_control(SQLITE_TESTCTRL_FAULT_INSTALL, faultSimCallback);
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  Tcl_سیٹ_Obj_نتیجہ(interp, Tcl_NewIntObj(rc));
+  واپس SQLITE_OK;
 }
 
 /*
@@ -662,46 +662,46 @@ static int SQLITE_TCLAPI faultInstallCmd(
 ** Invoke the SQLITE_TESTCTRL_BITVEC_TEST operator on test_control.
 ** See comments on sqlite3BitvecBuiltinTest() for additional information.
 */
-static int SQLITE_TCLAPI testBitvecBuiltinTest(
-  void *NotUsed,
+ساکن صحیح SQLITE_TCLAPI testBitvecBuiltinTest(
+  خالی *Not_مستعمل,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  صحیح argc,              /* Number of arguments */
+  ثابت حرف **argv      /* Text of each argument */
 ){
-  int sz, rc;
-  int nProg = 0;
-  int aProg[100];
-  const char *z;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " SIZE PROGRAM\"", (void*)0);
+  صحیح sz, rc;
+  صحیح nProg = 0;
+  صحیح aProg[100];
+  ثابت حرف *z;
+  اگر( argc!=3 ){
+    Tcl_Append_نتیجہ(interp, "wrong # args: should be \"", argv[0],
+                     " SIZE PROGRAM\"", (خالی*)0);
   }
-  if( Tcl_GetInt(interp, argv[1], &sz) ) return TCL_ERROR;
+  اگر( Tcl_GetInt(interp, argv[1], &sz) ) واپس TCL_ERROR;
   z = argv[2];
-  while( nProg<99 && *z ){
-    while( *z && !sqlite3Isdigit(*z) ){ z++; }
-    if( *z==0 ) break;
+  جب( nProg<99 && *z ){
+    جب( *z && !sqlite3Isdigit(*z) ){ z++; }
+    اگر( *z==0 ) توڑو;
     aProg[nProg++] = atoi(z);
-    while( sqlite3Isdigit(*z) ){ z++; }
+    جب( sqlite3Isdigit(*z) ){ z++; }
   }
   aProg[nProg] = 0;
   rc = sqlite3_test_control(SQLITE_TESTCTRL_BITVEC_TEST, sz, aProg);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_سیٹ_Obj_نتیجہ(interp, Tcl_NewIntObj(rc));
+  واپس TCL_OK;
 }  
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest2_Init(Tcl_Interp *interp){
-  extern int sqlite3_io_error_persist;
-  extern int sqlite3_io_error_pending;
-  extern int sqlite3_io_error_hit;
-  extern int sqlite3_io_error_hardhit;
-  extern int sqlite3_diskfull_pending;
-  extern int sqlite3_diskfull;
-  static struct {
-    char *zName;
+صحیح Sqlitetest2_Init(Tcl_Interp *interp){
+  خارجی صحیح sqlite3_io_error_persist;
+  خارجی صحیح sqlite3_io_error_pending;
+  خارجی صحیح sqlite3_io_error_کامیابی;
+  خارجی صحیح sqlite3_io_error_hardhit;
+  خارجی صحیح sqlite3_diskfull_pending;
+  خارجی صحیح sqlite3_diskfull;
+  ساکن ساخت {
+    حرف *zName;
     Tcl_CmdProc *xProc;
   } aCmd[] = {
     { "pager_open",              (Tcl_CmdProc*)pager_open          },
@@ -713,39 +713,39 @@ int Sqlitetest2_Init(Tcl_Interp *interp){
     { "pager_stmt_rollback",     (Tcl_CmdProc*)pager_stmt_rollback },
     { "pager_stats",             (Tcl_CmdProc*)pager_stats         },
     { "pager_pagecount",         (Tcl_CmdProc*)pager_pagecount     },
-    { "page_get",                (Tcl_CmdProc*)page_get            },
-    { "page_lookup",             (Tcl_CmdProc*)page_lookup         },
-    { "page_unref",              (Tcl_CmdProc*)page_unref          },
-    { "page_read",               (Tcl_CmdProc*)page_read           },
-    { "page_write",              (Tcl_CmdProc*)page_write          },
-    { "page_number",             (Tcl_CmdProc*)page_number         },
+    { "page_get",                (Tcl_CmdProc*)صفحہ_get            },
+    { "page_lookup",             (Tcl_CmdProc*)صفحہ_lookup         },
+    { "page_unref",              (Tcl_CmdProc*)صفحہ_unref          },
+    { "page_read",               (Tcl_CmdProc*)صفحہ_read           },
+    { "page_write",              (Tcl_CmdProc*)صفحہ_write          },
+    { "page_number",             (Tcl_CmdProc*)صفحہ_نمبر         },
     { "pager_truncate",          (Tcl_CmdProc*)pager_truncate      },
-#ifndef SQLITE_OMIT_DISKIO
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_DISKIO
     { "fake_big_file",           (Tcl_CmdProc*)fake_big_file       },
-#endif
+#اگر_ختم
     { "sqlite3BitvecBuiltinTest",(Tcl_CmdProc*)testBitvecBuiltinTest     },
     { "sqlite3_test_control_pending_byte",  (Tcl_CmdProc*)testPendingByte },
     { "sqlite3_test_control_fault_install", (Tcl_CmdProc*)faultInstallCmd },
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  صحیح i;
+  برائے(i=0; i<حجم(aCmd)/حجم(aCmd[0]); i++){
     Tcl_CreateCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
   Tcl_LinkVar(interp, "sqlite_io_error_pending",
-     (char*)&sqlite3_io_error_pending, TCL_LINK_INT);
+     (حرف*)&sqlite3_io_error_pending, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_persist",
-     (char*)&sqlite3_io_error_persist, TCL_LINK_INT);
+     (حرف*)&sqlite3_io_error_persist, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_hit",
-     (char*)&sqlite3_io_error_hit, TCL_LINK_INT);
+     (حرف*)&sqlite3_io_error_کامیابی, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_hardhit",
-     (char*)&sqlite3_io_error_hardhit, TCL_LINK_INT);
+     (حرف*)&sqlite3_io_error_hardhit, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_diskfull_pending",
-     (char*)&sqlite3_diskfull_pending, TCL_LINK_INT);
+     (حرف*)&sqlite3_diskfull_pending, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_diskfull",
-     (char*)&sqlite3_diskfull, TCL_LINK_INT);
-#ifndef SQLITE_OMIT_WSD
+     (حرف*)&sqlite3_diskfull, TCL_LINK_INT);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WSD
   Tcl_LinkVar(interp, "sqlite_pending_byte",
-     (char*)&sqlite3PendingByte, TCL_LINK_INT | TCL_LINK_READ_ONLY);
-#endif
-  return TCL_OK;
+     (حرف*)&sqlite3PendingByte, TCL_LINK_INT | TCL_LINK_READ_ONLY);
+#اگر_ختم
+  واپس TCL_OK;
 }

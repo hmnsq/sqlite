@@ -11,8 +11,8 @@
 *************************************************************************
 ** This file contains code used to help implement virtual tables.
 */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-#include "sqliteInt.h"
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+#شامل "sqliteInt.h"
 
 /*
 ** Before a virtual table xCreate() or xConnect() method is invoked, the
@@ -21,11 +21,11 @@
 ** the sqlite3_declare_vtab() and sqlite3_vtab_config() APIs, both of which
 ** are invoked only from within xCreate and xConnect methods.
 */
-struct VtabCtx {
+ساخت VtabCtx {
   VTable *pVTable;    /* The virtual table being constructed */
-  Table *pTab;        /* The Table object to which the virtual table belongs */
-  VtabCtx *pPrior;    /* Parent context (if any) */
-  int bDeclared;      /* True after sqlite3_declare_vtab() is called */
+  جدول *pTab;        /* The Table object to which the virtual table belongs */
+  VtabCtx *p_پیشگی;    /* Parent context (if any) */
+  صحیح bDeclared;      /* True after sqlite3_declare_vtab() is called */
 };
 
 /*
@@ -38,26 +38,26 @@ struct VtabCtx {
 */
 Module *sqlite3VtabCreateModule(
   sqlite3 *db,                    /* Database in which module is registered */
-  const char *zName,              /* Name assigned to this module */
-  const sqlite3_module *pModule,  /* The definition of the module */
-  void *pAux,                     /* Context pointer for xCreate/xConnect */
-  void (*xDestroy)(void *)        /* Module destructor function */
+  ثابت حرف *zName,              /* Name assigned to this module */
+  ثابت sqlite3_module *pModule,  /* The definition of the module */
+  خالی *pAux,                     /* Context pointer for xCreate/xConnect */
+  خالی (*xDestroy)(خالی *)        /* Module destructor function */
 ){
   Module *pMod;
   Module *pDel;
-  char *zCopy;
-  if( pModule==0 ){
-    zCopy = (char*)zName;
+  حرف *zCopy;
+  اگر( pModule==0 ){
+    zCopy = (حرف*)zName;
     pMod = 0;
-  }else{
-    int nName = sqlite3Strlen30(zName);
-    pMod = (Module *)sqlite3Malloc(sizeof(Module) + nName + 1);
-    if( pMod==0 ){
+  }ورنہ{
+    صحیح nName = sqlite3Strlen30(zName);
+    pMod = (Module *)sqlite3Malloc(حجم(Module) + nName + 1);
+    اگر( pMod==0 ){
       sqlite3OomFault(db);
-      return 0;
+      واپس 0;
     }
-    zCopy = (char *)(&pMod[1]);
-    memcpy(zCopy, zName, nName+1);
+    zCopy = (حرف *)(&pMod[1]);
+    حافظہ_نقل(zCopy, zName, nName+1);
     pMod->zName = zCopy;
     pMod->pModule = pModule;
     pMod->pAux = pAux;
@@ -65,18 +65,18 @@ Module *sqlite3VtabCreateModule(
     pMod->pEpoTab = 0;
     pMod->nRefModule = 1;
   }
-  pDel = (Module *)sqlite3HashInsert(&db->aModule,zCopy,(void*)pMod);
-  if( pDel ){
-    if( pDel==pMod ){
+  pDel = (Module *)sqlite3_Hash_داخل_کرو(&db->aModule,zCopy,(خالی*)pMod);
+  اگر( pDel ){
+    اگر( pDel==pMod ){
       sqlite3OomFault(db);
       sqlite3DbFree(db, pDel);
       pMod = 0;
-    }else{
-      sqlite3VtabEponymousTableClear(db, pDel);
+    }ورنہ{
+      sqlite3_Vtab_Eponymous_جدول_Clear(db, pDel);
       sqlite3VtabModuleUnref(db, pDel);
     }
   }
-  return pMod;
+  واپس pMod;
 }
 
 /*
@@ -84,91 +84,91 @@ Module *sqlite3VtabCreateModule(
 ** This function implements the sqlite3_create_module() and
 ** sqlite3_create_module_v2() interfaces.
 */
-static int createModule(
+ساکن صحیح createModule(
   sqlite3 *db,                    /* Database in which module is registered */
-  const char *zName,              /* Name assigned to this module */
-  const sqlite3_module *pModule,  /* The definition of the module */
-  void *pAux,                     /* Context pointer for xCreate/xConnect */
-  void (*xDestroy)(void *)        /* Module destructor function */
+  ثابت حرف *zName,              /* Name assigned to this module */
+  ثابت sqlite3_module *pModule,  /* The definition of the module */
+  خالی *pAux,                     /* Context pointer for xCreate/xConnect */
+  خالی (*xDestroy)(خالی *)        /* Module destructor function */
 ){
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
 
   sqlite3_mutex_enter(db->mutex);
-  (void)sqlite3VtabCreateModule(db, zName, pModule, pAux, xDestroy);
+  (خالی)sqlite3VtabCreateModule(db, zName, pModule, pAux, xDestroy);
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && xDestroy ) xDestroy(pAux);
+  اگر( rc!=SQLITE_OK && xDestroy ) xDestroy(pAux);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  واپس rc;
 }
 
 
 /*
 ** External API function used to create a new virtual-table module.
 */
-int sqlite3_create_module(
+صحیح sqlite3_create_module(
   sqlite3 *db,                    /* Database in which module is registered */
-  const char *zName,              /* Name assigned to this module */
-  const sqlite3_module *pModule,  /* The definition of the module */
-  void *pAux                      /* Context pointer for xCreate/xConnect */
+  ثابت حرف *zName,              /* Name assigned to this module */
+  ثابت sqlite3_module *pModule,  /* The definition of the module */
+  خالی *pAux                      /* Context pointer for xCreate/xConnect */
 ){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
-#endif
-  return createModule(db, zName, pModule, pAux, 0);
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) || zName==0 ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
+  واپس createModule(db, zName, pModule, pAux, 0);
 }
 
 /*
 ** External API function used to create a new virtual-table module.
 */
-int sqlite3_create_module_v2(
+صحیح sqlite3_create_module_v2(
   sqlite3 *db,                    /* Database in which module is registered */
-  const char *zName,              /* Name assigned to this module */
-  const sqlite3_module *pModule,  /* The definition of the module */
-  void *pAux,                     /* Context pointer for xCreate/xConnect */
-  void (*xDestroy)(void *)        /* Module destructor function */
+  ثابت حرف *zName,              /* Name assigned to this module */
+  ثابت sqlite3_module *pModule,  /* The definition of the module */
+  خالی *pAux,                     /* Context pointer for xCreate/xConnect */
+  خالی (*xDestroy)(خالی *)        /* Module destructor function */
 ){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
-#endif
-  return createModule(db, zName, pModule, pAux, xDestroy);
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) || zName==0 ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
+  واپس createModule(db, zName, pModule, pAux, xDestroy);
 }
 
 /*
 ** External API to drop all virtual-table modules, except those named
 ** on the azNames list.
 */
-int sqlite3_drop_modules(sqlite3 *db, const char** azNames){
-  HashElem *pThis, *pNext;
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
+صحیح sqlite3_drop_modules(sqlite3 *db, ثابت حرف** az_نام){
+  HashElem *pThis, *p_اگلا;
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
   sqlite3_mutex_enter(db->mutex);
-  for(pThis=sqliteHashFirst(&db->aModule); pThis; pThis=pNext){
-    Module *pMod = (Module*)sqliteHashData(pThis);
-    pNext = sqliteHashNext(pThis);
-    if( azNames ){
-      int ii;
-      for(ii=0; azNames[ii]!=0 && strcmp(azNames[ii],pMod->zName)!=0; ii++){}
-      if( azNames[ii]!=0 ) continue;
+  برائے(pThis=sqlite_Hash_پہلا(&db->aModule); pThis; pThis=p_اگلا){
+    Module *pMod = (Module*)sqlite_Hash_ڈیٹا(pThis);
+    p_اگلا = sqlite_Hash_اگلا(pThis);
+    اگر( az_نام ){
+      صحیح ii;
+      برائے(ii=0; az_نام[ii]!=0 && strcmp(az_نام[ii],pMod->zName)!=0; ii++){}
+      اگر( az_نام[ii]!=0 ) جاری;
     }
     createModule(db, pMod->zName, 0, 0, 0);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Decrement the reference count on a Module object.  Destroy the
 ** module when the reference count reaches zero.
 */
-void sqlite3VtabModuleUnref(sqlite3 *db, Module *pMod){
-  assert( pMod->nRefModule>0 );
+خالی sqlite3VtabModuleUnref(sqlite3 *db, Module *pMod){
+  أكد( pMod->nRefModule>0 );
   pMod->nRefModule--;
-  if( pMod->nRefModule==0 ){
-    if( pMod->xDestroy ){
+  اگر( pMod->nRefModule==0 ){
+    اگر( pMod->xDestroy ){
       pMod->xDestroy(pMod->pAux);
     }
-    assert( pMod->pEpoTab==0 );
+    أكد( pMod->pEpoTab==0 );
     sqlite3DbFree(db, pMod);
   }
 }
@@ -181,7 +181,7 @@ void sqlite3VtabModuleUnref(sqlite3 *db, Module *pMod){
 ** If a disconnect is attempted while a virtual table is locked,
 ** the disconnect is deferred until all locks have been removed.
 */
-void sqlite3VtabLock(VTable *pVTab){
+خالی sqlite3_Vtab_تالا(VTable *pVTab){
   pVTab->nRef++;
 }
 
@@ -191,29 +191,29 @@ void sqlite3VtabLock(VTable *pVTab){
 ** Return a pointer to the VTable object used by connection db to access
 ** this virtual-table, if one has been created, or NULL otherwise.
 */
-VTable *sqlite3GetVTable(sqlite3 *db, Table *pTab){
+VTable *sqlite3GetVTable(sqlite3 *db, جدول *pTab){
   VTable *pVtab;
-  assert( IsVirtual(pTab) );
-  for(pVtab=pTab->u.vtab.p; pVtab && pVtab->db!=db; pVtab=pVtab->pNext);
-  return pVtab;
+  أكد( IsVirtual(pTab) );
+  برائے(pVtab=pTab->u.vtab.p; pVtab && pVtab->db!=db; pVtab=pVtab->p_اگلا);
+  واپس pVtab;
 }
 
 /*
 ** Decrement the ref-count on a virtual table object. When the ref-count
 ** reaches zero, call the xDisconnect() method to delete the object.
 */
-void sqlite3VtabUnlock(VTable *pVTab){
+خالی sqlite3VtabUnlock(VTable *pVTab){
   sqlite3 *db = pVTab->db;
 
-  assert( db );
-  assert( pVTab->nRef>0 );
-  assert( db->eOpenState==SQLITE_STATE_OPEN
+  أكد( db );
+  أكد( pVTab->nRef>0 );
+  أكد( db->eOpenState==SQLITE_STATE_OPEN
        || db->eOpenState==SQLITE_STATE_ZOMBIE );
 
   pVTab->nRef--;
-  if( pVTab->nRef==0 ){
+  اگر( pVTab->nRef==0 ){
     sqlite3_vtab *p = pVTab->pVtab;
-    if( p ){
+    اگر( p ){
       p->pModule->xDisconnect(p);
     }
     sqlite3VtabModuleUnref(pVTab->db, pVTab->pMod);
@@ -228,11 +228,11 @@ void sqlite3VtabUnlock(VTable *pVTab){
 ** Except, if argument db is not NULL, then the entry associated with
 ** connection db is left in the p->u.vtab.p list.
 */
-static VTable *vtabDisconnectAll(sqlite3 *db, Table *p){
+ساکن VTable *vtabDisconnectAll(sqlite3 *db, جدول *p){
   VTable *pRet = 0;
   VTable *pVTable;
 
-  assert( IsVirtual(p) );
+  أكد( IsVirtual(p) );
   pVTable = p->u.vtab.p;
   p->u.vtab.p = 0;
 
@@ -242,25 +242,25 @@ static VTable *vtabDisconnectAll(sqlite3 *db, Table *p){
   ** this makes it safe to access the sqlite3.pDisconnect list of any
   ** database connection that may have an entry in the p->u.vtab.p list.
   */
-  assert( db==0 || sqlite3SchemaMutexHeld(db, 0, p->pSchema) );
+  أكد( db==0 || sqlite3SchemaMutexHeld(db, 0, p->pSchema) );
 
-  while( pVTable ){
+  جب( pVTable ){
     sqlite3 *db2 = pVTable->db;
-    VTable *pNext = pVTable->pNext;
-    assert( db2 );
-    if( db2==db ){
+    VTable *p_اگلا = pVTable->p_اگلا;
+    أكد( db2 );
+    اگر( db2==db ){
       pRet = pVTable;
       p->u.vtab.p = pRet;
-      pRet->pNext = 0;
-    }else{
-      pVTable->pNext = db2->pDisconnect;
+      pRet->p_اگلا = 0;
+    }ورنہ{
+      pVTable->p_اگلا = db2->pDisconnect;
       db2->pDisconnect = pVTable;
     }
-    pVTable = pNext;
+    pVTable = p_اگلا;
   }
 
-  assert( !db || pRet );
-  return pRet;
+  أكد( !db || pRet );
+  واپس pRet;
 }
 
 /*
@@ -271,19 +271,19 @@ static VTable *vtabDisconnectAll(sqlite3 *db, Table *p){
 ** objects without disturbing the rest of the Schema object (which may
 ** be being used by other shared-cache connections).
 */
-void sqlite3VtabDisconnect(sqlite3 *db, Table *p){
+خالی sqlite3VtabDisconnect(sqlite3 *db, جدول *p){
   VTable **ppVTab;
 
-  assert( IsVirtual(p) );
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  assert( sqlite3_mutex_held(db->mutex) );
+  أكد( IsVirtual(p) );
+  أكد( sqlite3BtreeHoldsAllMutexes(db) );
+  أكد( sqlite3_mutex_held(db->mutex) );
 
-  for(ppVTab=&p->u.vtab.p; *ppVTab; ppVTab=&(*ppVTab)->pNext){
-    if( (*ppVTab)->db==db  ){
+  برائے(ppVTab=&p->u.vtab.p; *ppVTab; ppVTab=&(*ppVTab)->p_اگلا){
+    اگر( (*ppVTab)->db==db  ){
       VTable *pVTab = *ppVTab;
-      *ppVTab = pVTab->pNext;
+      *ppVTab = pVTab->p_اگلا;
       sqlite3VtabUnlock(pVTab);
-      break;
+      توڑو;
     }
   }
 }
@@ -309,19 +309,19 @@ void sqlite3VtabDisconnect(sqlite3 *db, Table *p){
 ** As a result, a sqlite3.pDisconnect cannot be accessed simultaneously
 ** by multiple threads. It is thread-safe.
 */
-void sqlite3VtabUnlockList(sqlite3 *db){
+خالی sqlite3VtabUnlockList(sqlite3 *db){
   VTable *p = db->pDisconnect;
 
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  assert( sqlite3_mutex_held(db->mutex) );
+  أكد( sqlite3BtreeHoldsAllMutexes(db) );
+  أكد( sqlite3_mutex_held(db->mutex) );
 
-  if( p ){
+  اگر( p ){
     db->pDisconnect = 0;
-    do {
-      VTable *pNext = p->pNext;
+    کرو {
+      VTable *p_اگلا = p->p_اگلا;
       sqlite3VtabUnlock(p);
-      p = pNext;
-    }while( p );
+      p = p_اگلا;
+    }جب( p );
   }
 }
 
@@ -339,14 +339,14 @@ void sqlite3VtabUnlockList(sqlite3 *db){
 ** in the list are moved to the sqlite3.pDisconnect list of the associated
 ** database connection.
 */
-void sqlite3VtabClear(sqlite3 *db, Table *p){
-  assert( IsVirtual(p) );
-  assert( db!=0 );
-  if( db->pnBytesFreed==0 ) vtabDisconnectAll(0, p);
-  if( p->u.vtab.azArg ){
-    int i;
-    for(i=0; i<p->u.vtab.nArg; i++){
-      if( i!=1 ) sqlite3DbFree(db, p->u.vtab.azArg[i]);
+خالی sqlite3VtabClear(sqlite3 *db, جدول *p){
+  أكد( IsVirtual(p) );
+  أكد( db!=0 );
+  اگر( db->pn_بائٹیں_Freed==0 ) vtabDisconnectAll(0, p);
+  اگر( p->u.vtab.azArg ){
+    صحیح i;
+    برائے(i=0; i<p->u.vtab.nArg; i++){
+      اگر( i!=1 ) sqlite3DbFree(db, p->u.vtab.azArg[i]);
     }
     sqlite3DbFree(db, p->u.vtab.azArg);
   }
@@ -358,24 +358,24 @@ void sqlite3VtabClear(sqlite3 *db, Table *p){
 ** string will be freed automatically when the table is
 ** deleted.
 */
-static void addModuleArgument(Parse *pParse, Table *pTable, char *zArg){
-  sqlite3_int64 nBytes;
-  char **azModuleArg;
+ساکن خالی جوڑو_Module_دلیل(Parse *pParse, جدول *p_جدول, حرف *zArg){
+  sqlite3_int64 n_بائٹیں;
+  حرف **azModuleArg;
   sqlite3 *db = pParse->db;
 
-  assert( IsVirtual(pTable) );
-  nBytes = sizeof(char *)*(2+pTable->u.vtab.nArg);
-  if( pTable->u.vtab.nArg+3>=db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many columns on %s", pTable->zName);
+  أكد( IsVirtual(p_جدول) );
+  n_بائٹیں = حجم(حرف *)*(2+p_جدول->u.vtab.nArg);
+  اگر( p_جدول->u.vtab.nArg+3>=db->a_حد_بندی[SQLITE_حد_بندی_عمود] ){
+    sqlite3_Error_پیغام(pParse, "too many columns on %s", p_جدول->zName);
   }
-  azModuleArg = sqlite3DbRealloc(db, pTable->u.vtab.azArg, nBytes);
-  if( azModuleArg==0 ){
+  azModuleArg = sqlite3DbRealloc(db, p_جدول->u.vtab.azArg, n_بائٹیں);
+  اگر( azModuleArg==0 ){
     sqlite3DbFree(db, zArg);
-  }else{
-    int i = pTable->u.vtab.nArg++;
+  }ورنہ{
+    صحیح i = p_جدول->u.vtab.nArg++;
     azModuleArg[i] = zArg;
     azModuleArg[i+1] = 0;
-    pTable->u.vtab.azArg = azModuleArg;
+    p_جدول->u.vtab.azArg = azModuleArg;
   }
 }
 
@@ -384,48 +384,48 @@ static void addModuleArgument(Parse *pParse, Table *pTable, char *zArg){
 ** statement.  The module name has been parsed, but the optional list
 ** of parameters that follow the module name are still pending.
 */
-void sqlite3VtabBeginParse(
+خالی sqlite3VtabBeginParse(
   Parse *pParse,        /* Parsing context */
   Token *pName1,        /* Name of new table, or database name */
   Token *pName2,        /* Name of new table or NULL */
   Token *pModuleName,   /* Name of the module for the virtual table */
-  int ifNotExists       /* No error if the table already exists */
+  صحیح ifNotExists       /* No error if the table already exists */
 ){
-  Table *pTable;        /* The new virtual table */
+  جدول *p_جدول;        /* The new virtual table */
   sqlite3 *db;          /* Database connection */
 
-  sqlite3StartTable(pParse, pName1, pName2, 0, 0, 1, ifNotExists);
-  pTable = pParse->pNewTable;
-  if( pTable==0 ) return;
-  assert( 0==pTable->pIndex );
-  pTable->eTabType = TABTYP_VTAB;
+  sqlite3_آغاز_جدول(pParse, pName1, pName2, 0, 0, 1, ifNotExists);
+  p_جدول = pParse->p_New_جدول;
+  اگر( p_جدول==0 ) واپس;
+  أكد( 0==p_جدول->p_اشاریہ );
+  p_جدول->eTabType = TABTYP_VTAB;
 
   db = pParse->db;
 
-  assert( pTable->u.vtab.nArg==0 );
-  addModuleArgument(pParse, pTable, sqlite3NameFromToken(db, pModuleName));
-  addModuleArgument(pParse, pTable, 0);
-  addModuleArgument(pParse, pTable, sqlite3DbStrDup(db, pTable->zName));
-  assert( (pParse->sNameToken.z==pName2->z && pName2->z!=0)
+  أكد( p_جدول->u.vtab.nArg==0 );
+  جوڑو_Module_دلیل(pParse, p_جدول, sqlite3NameFromToken(db, pModuleName));
+  جوڑو_Module_دلیل(pParse, p_جدول, 0);
+  جوڑو_Module_دلیل(pParse, p_جدول, sqlite3DbStrDup(db, p_جدول->zName));
+  أكد( (pParse->sNameToken.z==pName2->z && pName2->z!=0)
        || (pParse->sNameToken.z==pName1->z && pName2->z==0)
   );
-  pParse->sNameToken.n = (int)(
+  pParse->sNameToken.n = (صحیح)(
       &pModuleName->z[pModuleName->n] - pParse->sNameToken.z
   );
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTHORIZATION
   /* Creating a virtual table invokes the authorization callback twice.
   ** The first invocation, to obtain permission to INSERT a row into the
   ** sqlite_schema table, has already been made by sqlite3StartTable().
   ** The second call, to obtain permission to create the table, is made now.
   */
-  if( pTable->u.vtab.azArg ){
-    int iDb = sqlite3SchemaToIndex(db, pTable->pSchema);
-    assert( iDb>=0 ); /* The database the table is being created in */
-    sqlite3AuthCheck(pParse, SQLITE_CREATE_VTABLE, pTable->zName,
-            pTable->u.vtab.azArg[0], pParse->db->aDb[iDb].zDbSName);
+  اگر( p_جدول->u.vtab.azArg ){
+    صحیح iDb = sqlite3_Schema_مقصد_اشاریہ(db, p_جدول->pSchema);
+    أكد( iDb>=0 ); /* The database the table is being created in */
+    sqlite3AuthCheck(pParse, SQLITE_CREATE_VTABLE, p_جدول->zName,
+            p_جدول->u.vtab.azArg[0], pParse->db->aDb[iDb].zDbSName);
   }
-#endif
+#اگر_ختم
 }
 
 /*
@@ -433,12 +433,12 @@ void sqlite3VtabBeginParse(
 ** in pParse->zArg[] and appends it to the list of arguments on the
 ** virtual table currently under construction in pParse->pTable.
 */
-static void addArgumentToVtab(Parse *pParse){
-  if( pParse->sArg.z && pParse->pNewTable ){
-    const char *z = (const char*)pParse->sArg.z;
-    int n = pParse->sArg.n;
+ساکن خالی جوڑو_دلیل_مقصد_Vtab(Parse *pParse){
+  اگر( pParse->sArg.z && pParse->p_New_جدول ){
+    ثابت حرف *z = (ثابت حرف*)pParse->sArg.z;
+    صحیح n = pParse->sArg.n;
     sqlite3 *db = pParse->db;
-    addModuleArgument(pParse, pParse->pNewTable, sqlite3DbStrNDup(db, z, n));
+    جوڑو_Module_دلیل(pParse, pParse->p_New_جدول, sqlite3DbStrNDup(db, z, n));
   }
 }
 
@@ -446,15 +446,15 @@ static void addArgumentToVtab(Parse *pParse){
 ** The parser calls this routine after the CREATE VIRTUAL TABLE statement
 ** has been completely parsed.
 */
-void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
-  Table *pTab = pParse->pNewTable;  /* The table being constructed */
+خالی sqlite3_Vtab_اختتام_Parse(Parse *pParse, Token *p_انتہا){
+  جدول *pTab = pParse->p_New_جدول;  /* The table being constructed */
   sqlite3 *db = pParse->db;         /* The database connection */
 
-  if( pTab==0 ) return;
-  assert( IsVirtual(pTab) );
-  addArgumentToVtab(pParse);
+  اگر( pTab==0 ) واپس;
+  أكد( IsVirtual(pTab) );
+  جوڑو_دلیل_مقصد_Vtab(pParse);
   pParse->sArg.z = 0;
-  if( pTab->u.vtab.nArg<1 ) return;
+  اگر( pTab->u.vtab.nArg<1 ) واپس;
 
   /* If the CREATE VIRTUAL TABLE statement is being entered for the
   ** first time (in other words if the virtual table is actually being
@@ -462,18 +462,18 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
   ** do additional initialization work and store the statement text
   ** in the sqlite_schema table.
   */
-  if( !db->init.busy ){
-    char *zStmt;
-    char *zWhere;
-    int iDb;
-    int iReg;
+  اگر( !db->init.busy ){
+    حرف *zStmt;
+    حرف *zWhere;
+    صحیح iDb;
+    صحیح iReg;
     Vdbe *v;
 
     sqlite3MayAbort(pParse);
 
     /* Compute the complete text of the CREATE VIRTUAL TABLE statement */
-    if( pEnd ){
-      pParse->sNameToken.n = (int)(pEnd->z - pParse->sNameToken.z) + pEnd->n;
+    اگر( p_انتہا ){
+      pParse->sNameToken.n = (صحیح)(p_انتہا->z - pParse->sNameToken.z) + p_انتہا->n;
     }
     zStmt = sqlite3MPrintf(db, "CREATE VIRTUAL TABLE %T", &pParse->sNameToken);
 
@@ -485,10 +485,10 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
     ** entry in the sqlite_schema table that was created for this vtab
     ** by sqlite3StartTable().
     */
-    iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-    assert( pParse->isCreate );
+    iDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
+    أكد( pParse->isCreate );
     sqlite3NestedParse(pParse,
-      "UPDATE %Q." LEGACY_SCHEMA_TABLE " "
+      "UPDATE %Q." LEGACY_SCHEMA_جدول " "
          "SET type='table', name=%Q, tbl_name=%Q, rootpage=0, sql=%Q "
        "WHERE rowid=#%d",
       db->aDb[iDb].zDbSName,
@@ -500,29 +500,29 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
     v = sqlite3GetVdbe(pParse);
     sqlite3ChangeCookie(pParse, iDb);
 
-    sqlite3VdbeAddOp0(v, OP_Expire);
+    sqlite3_Vdbe_جوڑو_Op0(v, OP_Expire);
     zWhere = sqlite3MPrintf(db, "name=%Q AND sql=%Q", pTab->zName, zStmt);
-    sqlite3VdbeAddParseSchemaOp(v, iDb, zWhere, 0);
+    sqlite3_Vdbe_جوڑو_Parse_Schema_Op(v, iDb, zWhere, 0);
     sqlite3DbFree(db, zStmt);
 
     iReg = ++pParse->nMem;
-    sqlite3VdbeLoadString(v, iReg, pTab->zName);
-    sqlite3VdbeAddOp2(v, OP_VCreate, iDb, iReg);
-  }else{
+    sqlite3_Vdbe_بھرو_String(v, iReg, pTab->zName);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_VCreate, iDb, iReg);
+  }ورنہ{
     /* If we are rereading the sqlite_schema table create the in-memory
     ** record of the table. */
-    Table *pOld;
+    جدول *pOld;
     Schema *pSchema = pTab->pSchema;
-    const char *zName = pTab->zName;
-    assert( zName!=0 );
-    sqlite3MarkAllShadowTablesOf(db, pTab);
-    pOld = sqlite3HashInsert(&pSchema->tblHash, zName, pTab);
-    if( pOld ){
+    ثابت حرف *zName = pTab->zName;
+    أكد( zName!=0 );
+    sqlite3_Mark_All_Shadow_Tables_کا(db, pTab);
+    pOld = sqlite3_Hash_داخل_کرو(&pSchema->tblHash, zName, pTab);
+    اگر( pOld ){
       sqlite3OomFault(db);
-      assert( pTab==pOld );  /* Malloc must have failed inside HashInsert() */
-      return;
+      أكد( pTab==pOld );  /* Malloc must have failed inside HashInsert() */
+      واپس;
     }
-    pParse->pNewTable = 0;
+    pParse->p_New_جدول = 0;
   }
 }
 
@@ -530,8 +530,8 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
 ** The parser calls this routine when it sees the first token
 ** of an argument to the module name in a CREATE VIRTUAL TABLE statement.
 */
-void sqlite3VtabArgInit(Parse *pParse){
-  addArgumentToVtab(pParse);
+خالی sqlite3VtabArgInit(Parse *pParse){
+  جوڑو_دلیل_مقصد_Vtab(pParse);
   pParse->sArg.z = 0;
   pParse->sArg.n = 0;
 }
@@ -540,14 +540,14 @@ void sqlite3VtabArgInit(Parse *pParse){
 ** The parser calls this routine for each token after the first token
 ** in an argument to the module name in a CREATE VIRTUAL TABLE statement.
 */
-void sqlite3VtabArgExtend(Parse *pParse, Token *p){
+خالی sqlite3VtabArgExtend(Parse *pParse, Token *p){
   Token *pArg = &pParse->sArg;
-  if( pArg->z==0 ){
+  اگر( pArg->z==0 ){
     pArg->z = p->z;
     pArg->n = p->n;
-  }else{
-    assert(pArg->z <= p->z);
-    pArg->n = (int)(&p->z[p->n] - pArg->z);
+  }ورنہ{
+    أكد(pArg->z <= p->z);
+    pArg->n = (صحیح)(&p->z[p->n] - pArg->z);
   }
 }
 
@@ -556,129 +556,129 @@ void sqlite3VtabArgExtend(Parse *pParse, Token *p){
 ** pointer to the function to invoke is passed as the fourth parameter
 ** to this procedure.
 */
-static int vtabCallConstructor(
+ساکن صحیح vtabCallConstructor(
   sqlite3 *db,
-  Table *pTab,
+  جدول *pTab,
   Module *pMod,
-  int (*xConstruct)(sqlite3*,void*,int,const char*const*,sqlite3_vtab**,char**),
-  char **pzErr
+  صحیح (*xConstruct)(sqlite3*,خالی*,صحیح,ثابت حرف*ثابت*,sqlite3_vtab**,حرف**),
+  حرف **pzErr
 ){
   VtabCtx sCtx;
   VTable *pVTable;
-  int rc;
-  const char *const*azArg;
-  int nArg = pTab->u.vtab.nArg;
-  char *zErr = 0;
-  char *zModuleName;
-  int iDb;
+  صحیح rc;
+  ثابت حرف *ثابت*azArg;
+  صحیح nArg = pTab->u.vtab.nArg;
+  حرف *zErr = 0;
+  حرف *zModuleName;
+  صحیح iDb;
   VtabCtx *pCtx;
 
-  assert( IsVirtual(pTab) );
-  azArg = (const char *const*)pTab->u.vtab.azArg;
+  أكد( IsVirtual(pTab) );
+  azArg = (ثابت حرف *ثابت*)pTab->u.vtab.azArg;
 
   /* Check that the virtual-table is not already being initialized */
-  for(pCtx=db->pVtabCtx; pCtx; pCtx=pCtx->pPrior){
-    if( pCtx->pTab==pTab ){
+  برائے(pCtx=db->pVtabCtx; pCtx; pCtx=pCtx->p_پیشگی){
+    اگر( pCtx->pTab==pTab ){
       *pzErr = sqlite3MPrintf(db,
           "vtable constructor called recursively: %s", pTab->zName
       );
-      return SQLITE_LOCKED;
+      واپس SQLITE_LOCKED;
     }
   }
 
   zModuleName = sqlite3DbStrDup(db, pTab->zName);
-  if( !zModuleName ){
-    return SQLITE_NOMEM_BKPT;
+  اگر( !zModuleName ){
+    واپس SQLITE_NOMEM_BKPT;
   }
 
-  pVTable = sqlite3MallocZero(sizeof(VTable));
-  if( !pVTable ){
+  pVTable = sqlite3MallocZero(حجم(VTable));
+  اگر( !pVTable ){
     sqlite3OomFault(db);
     sqlite3DbFree(db, zModuleName);
-    return SQLITE_NOMEM_BKPT;
+    واپس SQLITE_NOMEM_BKPT;
   }
   pVTable->db = db;
   pVTable->pMod = pMod;
-  pVTable->eVtabRisk = SQLITE_VTABRISK_Normal;
+  pVTable->eVtabRisk = SQLITE_VTABRISK_معمول;
 
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  iDb = sqlite3_Schema_مقصد_اشاریہ(db, pTab->pSchema);
   pTab->u.vtab.azArg[1] = db->aDb[iDb].zDbSName;
 
   /* Invoke the virtual table constructor */
-  assert( &db->pVtabCtx );
-  assert( xConstruct );
+  أكد( &db->pVtabCtx );
+  أكد( xConstruct );
   sCtx.pTab = pTab;
   sCtx.pVTable = pVTable;
-  sCtx.pPrior = db->pVtabCtx;
+  sCtx.p_پیشگی = db->pVtabCtx;
   sCtx.bDeclared = 0;
   db->pVtabCtx = &sCtx;
   pTab->nTabRef++;
   rc = xConstruct(db, pMod->pAux, nArg, azArg, &pVTable->pVtab, &zErr);
-  assert( pTab!=0 );
-  assert( pTab->nTabRef>1 || rc!=SQLITE_OK );
-  sqlite3DeleteTable(db, pTab);
-  db->pVtabCtx = sCtx.pPrior;
-  if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
-  assert( sCtx.pTab==pTab );
+  أكد( pTab!=0 );
+  أكد( pTab->nTabRef>1 || rc!=SQLITE_OK );
+  sqlite3_Delete_جدول(db, pTab);
+  db->pVtabCtx = sCtx.p_پیشگی;
+  اگر( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+  أكد( sCtx.pTab==pTab );
 
-  if( SQLITE_OK!=rc ){
-    if( zErr==0 ){
+  اگر( SQLITE_OK!=rc ){
+    اگر( zErr==0 ){
       *pzErr = sqlite3MPrintf(db, "vtable constructor failed: %s", zModuleName);
-    }else {
+    }ورنہ {
       *pzErr = sqlite3MPrintf(db, "%s", zErr);
       sqlite3_free(zErr);
     }
     sqlite3DbFree(db, pVTable);
-  }else if( ALWAYS(pVTable->pVtab) ){
+  }ورنہ اگر( ALWAYS(pVTable->pVtab) ){
     /* Justification of ALWAYS():  A correct vtab constructor must allocate
     ** the sqlite3_vtab object if successful.  */
-    memset(pVTable->pVtab, 0, sizeof(pVTable->pVtab[0]));
+    memset(pVTable->pVtab, 0, حجم(pVTable->pVtab[0]));
     pVTable->pVtab->pModule = pMod->pModule;
     pMod->nRefModule++;
     pVTable->nRef = 1;
-    if( sCtx.bDeclared==0 ){
-      const char *zFormat = "vtable constructor did not declare schema: %s";
+    اگر( sCtx.bDeclared==0 ){
+      ثابت حرف *zFormat = "vtable constructor did not declare schema: %s";
       *pzErr = sqlite3MPrintf(db, zFormat, zModuleName);
       sqlite3VtabUnlock(pVTable);
       rc = SQLITE_ERROR;
-    }else{
-      int iCol;
+    }ورنہ{
+      صحیح i_ستون;
       u16 oooHidden = 0;
       /* If everything went according to plan, link the new VTable structure
       ** into the linked list headed by pTab->u.vtab.p. Then loop through the
       ** columns of the table to see if any of them contain the token "hidden".
       ** If so, set the Column COLFLAG_HIDDEN flag and remove the token from
       ** the type string.  */
-      pVTable->pNext = pTab->u.vtab.p;
+      pVTable->p_اگلا = pTab->u.vtab.p;
       pTab->u.vtab.p = pVTable;
 
-      for(iCol=0; iCol<pTab->nCol; iCol++){
-        char *zType = sqlite3ColumnType(&pTab->aCol[iCol], "");
-        int nType;
-        int i = 0;
+      برائے(i_ستون=0; i_ستون<pTab->n_ستون; i_ستون++){
+        حرف *zType = sqlite3_عمود_Type(&pTab->a_ستون[i_ستون], "");
+        صحیح nType;
+        صحیح i = 0;
         nType = sqlite3Strlen30(zType);
-        for(i=0; i<nType; i++){
-          if( 0==sqlite3StrNICmp("hidden", &zType[i], 6)
+        برائے(i=0; i<nType; i++){
+          اگر( 0==sqlite3StrNICmp("hidden", &zType[i], 6)
            && (i==0 || zType[i-1]==' ')
            && (zType[i+6]=='\0' || zType[i+6]==' ')
           ){
-            break;
+            توڑو;
           }
         }
-        if( i<nType ){
-          int j;
-          int nDel = 6 + (zType[i+6] ? 1 : 0);
-          for(j=i; (j+nDel)<=nType; j++){
+        اگر( i<nType ){
+          صحیح j;
+          صحیح nDel = 6 + (zType[i+6] ? 1 : 0);
+          برائے(j=i; (j+nDel)<=nType; j++){
             zType[j] = zType[j+nDel];
           }
-          if( zType[i]=='\0' && i>0 ){
-            assert(zType[i-1]==' ');
+          اگر( zType[i]=='\0' && i>0 ){
+            أكد(zType[i-1]==' ');
             zType[i-1] = '\0';
           }
-          pTab->aCol[iCol].colFlags |= COLFLAG_HIDDEN;
+          pTab->a_ستون[i_ستون].ستون_Flags |= COLFLAG_HIDDEN;
           pTab->tabFlags |= TF_HasHidden;
           oooHidden = TF_OOOHidden;
-        }else{
+        }ورنہ{
           pTab->tabFlags |= oooHidden;
         }
       }
@@ -686,7 +686,7 @@ static int vtabCallConstructor(
   }
 
   sqlite3DbFree(db, zModuleName);
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -696,71 +696,71 @@ static int vtabCallConstructor(
 **
 ** This call is a no-op if table pTab is not a virtual table.
 */
-int sqlite3VtabCallConnect(Parse *pParse, Table *pTab){
+صحیح sqlite3VtabCallConnect(Parse *pParse, جدول *pTab){
   sqlite3 *db = pParse->db;
-  const char *zMod;
+  ثابت حرف *zMod;
   Module *pMod;
-  int rc;
+  صحیح rc;
 
-  assert( pTab );
-  assert( IsVirtual(pTab) );
-  if( sqlite3GetVTable(db, pTab) ){
-    return SQLITE_OK;
+  أكد( pTab );
+  أكد( IsVirtual(pTab) );
+  اگر( sqlite3GetVTable(db, pTab) ){
+    واپس SQLITE_OK;
   }
 
   /* Locate the required virtual table module */
   zMod = pTab->u.vtab.azArg[0];
-  pMod = (Module*)sqlite3HashFind(&db->aModule, zMod);
+  pMod = (Module*)sqlite3_Hash_ڈھونڈو(&db->aModule, zMod);
 
-  if( !pMod ){
-    const char *zModule = pTab->u.vtab.azArg[0];
-    sqlite3ErrorMsg(pParse, "no such module: %s", zModule);
+  اگر( !pMod ){
+    ثابت حرف *zModule = pTab->u.vtab.azArg[0];
+    sqlite3_Error_پیغام(pParse, "no such module: %s", zModule);
     rc = SQLITE_ERROR;
-  }else{
-    char *zErr = 0;
+  }ورنہ{
+    حرف *zErr = 0;
     rc = vtabCallConstructor(db, pTab, pMod, pMod->pModule->xConnect, &zErr);
-    if( rc!=SQLITE_OK ){
-      sqlite3ErrorMsg(pParse, "%s", zErr);
+    اگر( rc!=SQLITE_OK ){
+      sqlite3_Error_پیغام(pParse, "%s", zErr);
       pParse->rc = rc;
-    }else{
-      sqlite3MarkAllShadowTablesOf(db, pTab);
+    }ورنہ{
+      sqlite3_Mark_All_Shadow_Tables_کا(db, pTab);
     }
     sqlite3DbFree(db, zErr);
   }
 
-  return rc;
+  واپس rc;
 }
 /*
 ** Grow the db->aVTrans[] array so that there is room for at least one
 ** more v-table. Return SQLITE_NOMEM if a malloc fails, or SQLITE_OK otherwise.
 */
-static int growVTrans(sqlite3 *db){
-  const int ARRAY_INCR = 5;
+ساکن صحیح growVTrans(sqlite3 *db){
+  ثابت صحیح ARRAY_INCR = 5;
 
   /* Grow the sqlite3.aVTrans array if required */
-  if( (db->nVTrans%ARRAY_INCR)==0 ){
+  اگر( (db->nVTrans%ARRAY_INCR)==0 ){
     VTable **aVTrans;
-    sqlite3_int64 nBytes = sizeof(sqlite3_vtab*)*
+    sqlite3_int64 n_بائٹیں = حجم(sqlite3_vtab*)*
                                  ((sqlite3_int64)db->nVTrans + ARRAY_INCR);
-    aVTrans = sqlite3DbRealloc(db, (void *)db->aVTrans, nBytes);
-    if( !aVTrans ){
-      return SQLITE_NOMEM_BKPT;
+    aVTrans = sqlite3DbRealloc(db, (خالی *)db->aVTrans, n_بائٹیں);
+    اگر( !aVTrans ){
+      واپس SQLITE_NOMEM_BKPT;
     }
-    memset(&aVTrans[db->nVTrans], 0, sizeof(sqlite3_vtab *)*ARRAY_INCR);
+    memset(&aVTrans[db->nVTrans], 0, حجم(sqlite3_vtab *)*ARRAY_INCR);
     db->aVTrans = aVTrans;
   }
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Add the virtual table pVTab to the array sqlite3.aVTrans[]. Space should
 ** have already been reserved using growVTrans().
 */
-static void addToVTrans(sqlite3 *db, VTable *pVTab){
+ساکن خالی جوڑو_مقصد_VTrans(sqlite3 *db, VTable *pVTab){
   /* Add pVtab to the end of sqlite3.aVTrans */
   db->aVTrans[db->nVTrans++] = pVTab;
-  sqlite3VtabLock(pVTab);
+  sqlite3_Vtab_تالا(pVTab);
 }
 
 /*
@@ -771,50 +771,50 @@ static void addToVTrans(sqlite3 *db, VTable *pVTab){
 ** description of the error and an SQLITE_XXX error code is returned.
 ** In this case the caller must call sqlite3DbFree(db, ) on *pzErr.
 */
-int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
-  int rc = SQLITE_OK;
-  Table *pTab;
+صحیح sqlite3VtabCallCreate(sqlite3 *db, صحیح iDb, ثابت حرف *zTab, حرف **pzErr){
+  صحیح rc = SQLITE_OK;
+  جدول *pTab;
   Module *pMod;
-  const char *zMod;
+  ثابت حرف *zMod;
 
-  pTab = sqlite3FindTable(db, zTab, db->aDb[iDb].zDbSName);
-  assert( pTab && IsVirtual(pTab) && !pTab->u.vtab.p );
+  pTab = sqlite3_ڈھونڈو_جدول(db, zTab, db->aDb[iDb].zDbSName);
+  أكد( pTab && IsVirtual(pTab) && !pTab->u.vtab.p );
 
   /* Locate the required virtual table module */
   zMod = pTab->u.vtab.azArg[0];
-  pMod = (Module*)sqlite3HashFind(&db->aModule, zMod);
+  pMod = (Module*)sqlite3_Hash_ڈھونڈو(&db->aModule, zMod);
 
   /* If the module has been registered and includes a Create method,
   ** invoke it now. If the module has not been registered, return an
   ** error. Otherwise, do nothing.
   */
-  if( pMod==0 || pMod->pModule->xCreate==0 || pMod->pModule->xDestroy==0 ){
+  اگر( pMod==0 || pMod->pModule->xCreate==0 || pMod->pModule->xDestroy==0 ){
     *pzErr = sqlite3MPrintf(db, "no such module: %s", zMod);
     rc = SQLITE_ERROR;
-  }else{
+  }ورنہ{
     rc = vtabCallConstructor(db, pTab, pMod, pMod->pModule->xCreate, pzErr);
   }
 
   /* Justification of ALWAYS():  The xConstructor method is required to
   ** create a valid sqlite3_vtab if it returns SQLITE_OK. */
-  if( rc==SQLITE_OK && ALWAYS(sqlite3GetVTable(db, pTab)) ){
+  اگر( rc==SQLITE_OK && ALWAYS(sqlite3GetVTable(db, pTab)) ){
     rc = growVTrans(db);
-    if( rc==SQLITE_OK ){
+    اگر( rc==SQLITE_OK ){
       VTable *pVTab = sqlite3GetVTable(db, pTab);
-      const sqlite3_module *pModule = pMod->pModule;
-      int iSvpt = db->nStatement + db->nSavepoint;
-      addToVTrans(db, pVTab);
+      ثابت sqlite3_module *pModule = pMod->pModule;
+      صحیح iSvpt = db->nStatement + db->nSavepoint;
+      جوڑو_مقصد_VTrans(db, pVTab);
       /* As in sqlite3VtabBegin(): open the current savepoint on the new
       ** table, so that a ROLLBACK TO that undoes the CREATE also invokes
       ** its xRollbackTo method. */
-      if( iSvpt && pModule->iVersion>=2 && pModule->xSavepoint ){
+      اگر( iSvpt && pModule->i_نسخہ>=2 && pModule->xSavepoint ){
         pVTab->iSavepoint = iSvpt;
         rc = pModule->xSavepoint(pVTab->pVtab, iSvpt-1);
       }
     }
   }
 
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -822,112 +822,112 @@ int sqlite3VtabCallCreate(sqlite3 *db, int iDb, const char *zTab, char **pzErr){
 ** valid to call this function from within the xCreate() or xConnect() of a
 ** virtual table module.
 */
-int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
+صحیح sqlite3_declare_vtab(sqlite3 *db, ثابت حرف *z_Create_جدول){
   VtabCtx *pCtx;
-  int rc = SQLITE_OK;
-  Table *pTab;
+  صحیح rc = SQLITE_OK;
+  جدول *pTab;
   Parse sParse;
-  int initBusy;
-  int i;
-  const unsigned char *z;
-  static const u8 aKeyword[] = { TK_CREATE, TK_TABLE, 0 };
+  صحیح initBusy;
+  صحیح i;
+  ثابت غیرعلامتی حرف *z;
+  ساکن ثابت u8 aKeyword[] = { TK_CREATE, TK_جدول, 0 };
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zCreateTable==0 ){
-    return SQLITE_MISUSE_BKPT;
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) || z_Create_جدول==0 ){
+    واپس SQLITE_MISUSE_BKPT;
   }
-#endif
+#اگر_ختم
 
   /* Verify that the first two keywords in the CREATE TABLE statement
   ** really are "CREATE" and "TABLE".  If this is not the case, then
   ** sqlite3_declare_vtab() is being misused.
   */
-  z = (const unsigned char*)zCreateTable;
-  for(i=0; aKeyword[i]; i++){
-    int tokenType = 0;
-    do{
+  z = (ثابت غیرعلامتی حرف*)z_Create_جدول;
+  برائے(i=0; aKeyword[i]; i++){
+    صحیح tokenType = 0;
+    کرو{
       z += sqlite3GetToken(z, &tokenType);
-    }while( tokenType==TK_SPACE || tokenType==TK_COMMENT );
-    if( tokenType!=aKeyword[i] ){
-      sqlite3ErrorWithMsg(db, SQLITE_ERROR, "syntax error");
-      return SQLITE_ERROR;
+    }جب( tokenType==TK_SPACE || tokenType==TK_COMMENT );
+    اگر( tokenType!=aKeyword[i] ){
+      sqlite3_Error_With_پیغام(db, SQLITE_ERROR, "syntax error");
+      واپس SQLITE_ERROR;
     }
   }
  
   sqlite3_mutex_enter(db->mutex);
   pCtx = db->pVtabCtx;
-  if( !pCtx || pCtx->bDeclared ){
+  اگر( !pCtx || pCtx->bDeclared ){
     sqlite3Error(db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(db->mutex);
-    return SQLITE_MISUSE_BKPT;
+    واپس SQLITE_MISUSE_BKPT;
   }
 
   pTab = pCtx->pTab;
-  assert( IsVirtual(pTab) );
+  أكد( IsVirtual(pTab) );
 
   sqlite3ParseObjectInit(&sParse, db);
-  sParse.eParseMode = PARSE_MODE_DECLARE_VTAB;
+  sParse.e_Parse_منوال = PARSE_منوال_DECLARE_VTAB;
   sParse.disableTriggers = 1;
   /* We should never be able to reach this point while loading the
   ** schema.  Nevertheless, defend against that (turn off db->init.busy)
   ** in case a bug arises. */
-  assert( db->init.busy==0 );
+  أكد( db->init.busy==0 );
   initBusy = db->init.busy;
   db->init.busy = 0;
   sParse.nQueryLoop = 1;
-  if( SQLITE_OK==sqlite3RunParser(&sParse, zCreateTable) ){
-    assert( sParse.pNewTable!=0 );
-    assert( !db->mallocFailed );
-    assert( IsOrdinaryTable(sParse.pNewTable) );
-    assert( sParse.zErrMsg==0 );
-    if( !pTab->aCol ){
-      Table *pNew = sParse.pNewTable;
-      Index *pIdx;
-      pTab->aCol = pNew->aCol;
-      assert( IsOrdinaryTable(pNew) );
-      sqlite3ExprListDelete(db, pNew->u.tab.pDfltList);
-      pTab->nNVCol = pTab->nCol = pNew->nCol;
+  اگر( SQLITE_OK==sqlite3_تسلسل_Parser(&sParse, z_Create_جدول) ){
+    أكد( sParse.p_New_جدول!=0 );
+    أكد( !db->mallocFailed );
+    أكد( Is_Ordinary_جدول(sParse.p_New_جدول) );
+    أكد( sParse.z_Err_پیغام==0 );
+    اگر( !pTab->a_ستون ){
+      جدول *pNew = sParse.p_New_جدول;
+      اشاریہ *pIdx;
+      pTab->a_ستون = pNew->a_ستون;
+      أكد( Is_Ordinary_جدول(pNew) );
+      sqlite3_اظہاریہ_List_Delete(db, pNew->u.tab.pDfltList);
+      pTab->nNVCol = pTab->n_ستون = pNew->n_ستون;
       pTab->tabFlags |= pNew->tabFlags & (TF_WithoutRowid|TF_NoVisibleRowid);
-      pNew->nCol = 0;
-      pNew->aCol = 0;
-      assert( pTab->pIndex==0 );
-      assert( HasRowid(pNew) || sqlite3PrimaryKeyIndex(pNew)!=0 );
-      if( !HasRowid(pNew)
+      pNew->n_ستون = 0;
+      pNew->a_ستون = 0;
+      أكد( pTab->p_اشاریہ==0 );
+      أكد( HasRowid(pNew) || sqlite3_Primary_کلید_اشاریہ(pNew)!=0 );
+      اگر( !HasRowid(pNew)
        && pCtx->pVTable->pMod->pModule->xUpdate!=0
-       && sqlite3PrimaryKeyIndex(pNew)->nKeyCol!=1
+       && sqlite3_Primary_کلید_اشاریہ(pNew)->n_کلید_ستون!=1
       ){
         /* WITHOUT ROWID virtual tables must either be read-only (xUpdate==0)
         ** or else must have a single-column PRIMARY KEY */
         rc = SQLITE_ERROR;
       }
-      pIdx = pNew->pIndex;
-      if( pIdx ){
-        assert( pIdx->pNext==0 );
-        pTab->pIndex = pIdx;
-        pNew->pIndex = 0;
-        pIdx->pTable = pTab;
+      pIdx = pNew->p_اشاریہ;
+      اگر( pIdx ){
+        أكد( pIdx->p_اگلا==0 );
+        pTab->p_اشاریہ = pIdx;
+        pNew->p_اشاریہ = 0;
+        pIdx->p_جدول = pTab;
       }
     }
     pCtx->bDeclared = 1;
-  }else{
-    sqlite3ErrorWithMsg(db, SQLITE_ERROR,
-          (sParse.zErrMsg ? "%s" : 0), sParse.zErrMsg);
-    sqlite3DbFree(db, sParse.zErrMsg);
+  }ورنہ{
+    sqlite3_Error_With_پیغام(db, SQLITE_ERROR,
+          (sParse.z_Err_پیغام ? "%s" : 0), sParse.z_Err_پیغام);
+    sqlite3DbFree(db, sParse.z_Err_پیغام);
     rc = SQLITE_ERROR;
   }
-  sParse.eParseMode = PARSE_MODE_NORMAL;
+  sParse.e_Parse_منوال = PARSE_منوال_معمول;
 
-  if( sParse.pVdbe ){
+  اگر( sParse.pVdbe ){
     sqlite3VdbeFinalize(sParse.pVdbe);
   }
-  sqlite3DeleteTable(db, sParse.pNewTable);
+  sqlite3_Delete_جدول(db, sParse.p_New_جدول);
   sqlite3ParseObjectReset(&sParse);
   db->init.busy = initBusy;
 
-  assert( (rc&0xff)==rc );
+  أكد( (rc&0xff)==rc );
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -937,40 +937,40 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
 **
 ** This call is a no-op if zTab is not a virtual table.
 */
-int sqlite3VtabCallDestroy(sqlite3 *db, int iDb, const char *zTab){
-  int rc = SQLITE_OK;
-  Table *pTab;
+صحیح sqlite3VtabCallDestroy(sqlite3 *db, صحیح iDb, ثابت حرف *zTab){
+  صحیح rc = SQLITE_OK;
+  جدول *pTab;
 
-  pTab = sqlite3FindTable(db, zTab, db->aDb[iDb].zDbSName);
-  if( ALWAYS(pTab!=0)
+  pTab = sqlite3_ڈھونڈو_جدول(db, zTab, db->aDb[iDb].zDbSName);
+  اگر( ALWAYS(pTab!=0)
    && ALWAYS(IsVirtual(pTab))
    && ALWAYS(pTab->u.vtab.p!=0)
   ){
     VTable *p;
-    int (*xDestroy)(sqlite3_vtab *);
-    for(p=pTab->u.vtab.p; p; p=p->pNext){
-      assert( p->pVtab );
-      if( p->pVtab->nRef>0 ){
-        return SQLITE_LOCKED;
+    صحیح (*xDestroy)(sqlite3_vtab *);
+    برائے(p=pTab->u.vtab.p; p; p=p->p_اگلا){
+      أكد( p->pVtab );
+      اگر( p->pVtab->nRef>0 ){
+        واپس SQLITE_LOCKED;
       }
     }
     p = vtabDisconnectAll(db, pTab);
     xDestroy = p->pMod->pModule->xDestroy;
-    if( xDestroy==0 ) xDestroy = p->pMod->pModule->xDisconnect;
-    assert( xDestroy!=0 );
+    اگر( xDestroy==0 ) xDestroy = p->pMod->pModule->xDisconnect;
+    أكد( xDestroy!=0 );
     pTab->nTabRef++;
     rc = xDestroy(p->pVtab);
     /* Remove the sqlite3_vtab* from the aVTrans[] array, if applicable */
-    if( rc==SQLITE_OK ){
-      assert( pTab->u.vtab.p==p && p->pNext==0 );
+    اگر( rc==SQLITE_OK ){
+      أكد( pTab->u.vtab.p==p && p->p_اگلا==0 );
       p->pVtab = 0;
       pTab->u.vtab.p = 0;
       sqlite3VtabUnlock(p);
     }
-    sqlite3DeleteTable(db, pTab);
+    sqlite3_Delete_جدول(db, pTab);
   }
 
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -981,18 +981,18 @@ int sqlite3VtabCallDestroy(sqlite3 *db, int iDb, const char *zTab){
 **
 ** The array is cleared after invoking the callbacks.
 */
-static void callFinaliser(sqlite3 *db, int offset){
-  int i;
-  if( db->aVTrans ){
+ساکن خالی callFinaliser(sqlite3 *db, صحیح انحراف){
+  صحیح i;
+  اگر( db->aVTrans ){
     VTable **aVTrans = db->aVTrans;
     db->aVTrans = 0;
-    for(i=0; i<db->nVTrans; i++){
+    برائے(i=0; i<db->nVTrans; i++){
       VTable *pVTab = aVTrans[i];
       sqlite3_vtab *p = pVTab->pVtab;
-      if( p ){
-        int (*x)(sqlite3_vtab *);
-        x = *(int (**)(sqlite3_vtab *))((char *)p->pModule + offset);
-        if( x ) x(p);
+      اگر( p ){
+        صحیح (*x)(sqlite3_vtab *);
+        x = *(صحیح (**)(sqlite3_vtab *))((حرف *)p->pModule + انحراف);
+        اگر( x ) x(p);
       }
       pVTab->iSavepoint = 0;
       sqlite3VtabUnlock(pVTab);
@@ -1009,40 +1009,40 @@ static void callFinaliser(sqlite3 *db, int offset){
 **
 ** If an error message is available, leave it in p->zErrMsg.
 */
-int sqlite3VtabSync(sqlite3 *db, Vdbe *p){
-  int i;
-  int rc = SQLITE_OK;
+صحیح sqlite3VtabSync(sqlite3 *db, Vdbe *p){
+  صحیح i;
+  صحیح rc = SQLITE_OK;
   VTable **aVTrans = db->aVTrans;
 
   db->aVTrans = 0;
-  for(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
-    int (*x)(sqlite3_vtab *);
+  برائے(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
+    صحیح (*x)(sqlite3_vtab *);
     sqlite3_vtab *pVtab = aVTrans[i]->pVtab;
-    if( pVtab && (x = pVtab->pModule->xSync)!=0 ){
+    اگر( pVtab && (x = pVtab->pModule->xSync)!=0 ){
       rc = x(pVtab);
       sqlite3VtabImportErrmsg(p, pVtab);
     }
   }
   db->aVTrans = aVTrans;
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Invoke the xRollback method of all virtual tables in the
 ** sqlite3.aVTrans array. Then clear the array itself.
 */
-int sqlite3VtabRollback(sqlite3 *db){
+صحیح sqlite3VtabRollback(sqlite3 *db){
   callFinaliser(db, offsetof(sqlite3_module,xRollback));
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Invoke the xCommit method of all virtual tables in the
 ** sqlite3.aVTrans array. Then clear the array itself.
 */
-int sqlite3VtabCommit(sqlite3 *db){
+صحیح sqlite3VtabCommit(sqlite3 *db){
   callFinaliser(db, offsetof(sqlite3_module,xCommit));
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -1053,49 +1053,49 @@ int sqlite3VtabCommit(sqlite3 *db){
 ** If the xBegin call is successful, place the sqlite3_vtab pointer
 ** in the sqlite3.aVTrans array.
 */
-int sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
-  int rc = SQLITE_OK;
-  const sqlite3_module *pModule;
+صحیح sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
+  صحیح rc = SQLITE_OK;
+  ثابت sqlite3_module *pModule;
 
   /* Special case: If db->aVTrans is NULL and db->nVTrans is greater
   ** than zero, then this function is being called from within a
   ** virtual module xSync() callback. It is illegal to write to
   ** virtual module tables in this case, so return SQLITE_LOCKED.
   */
-  if( sqlite3VtabInSync(db) ){
-    return SQLITE_LOCKED;
+  اگر( sqlite3_Vtab_اندر_Sync(db) ){
+    واپس SQLITE_LOCKED;
   }
-  if( !pVTab ){
-    return SQLITE_OK;
+  اگر( !pVTab ){
+    واپس SQLITE_OK;
   }
   pModule = pVTab->pVtab->pModule;
 
-  if( pModule->xBegin ){
-    int i;
+  اگر( pModule->xBegin ){
+    صحیح i;
 
     /* If pVtab is already in the aVTrans array, return early */
-    for(i=0; i<db->nVTrans; i++){
-      if( db->aVTrans[i]==pVTab ){
-        return SQLITE_OK;
+    برائے(i=0; i<db->nVTrans; i++){
+      اگر( db->aVTrans[i]==pVTab ){
+        واپس SQLITE_OK;
       }
     }
 
     /* Invoke the xBegin method. If successful, add the vtab to the
     ** sqlite3.aVTrans[] array. */
     rc = growVTrans(db);
-    if( rc==SQLITE_OK ){
+    اگر( rc==SQLITE_OK ){
       rc = pModule->xBegin(pVTab->pVtab);
-      if( rc==SQLITE_OK ){
-        int iSvpt = db->nStatement + db->nSavepoint;
-        addToVTrans(db, pVTab);
-        if( iSvpt && pModule->xSavepoint ){
+      اگر( rc==SQLITE_OK ){
+        صحیح iSvpt = db->nStatement + db->nSavepoint;
+        جوڑو_مقصد_VTrans(db, pVTab);
+        اگر( iSvpt && pModule->xSavepoint ){
           pVTab->iSavepoint = iSvpt;
           rc = pModule->xSavepoint(pVTab->pVtab, iSvpt-1);
         }
       }
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -1113,42 +1113,42 @@ int sqlite3VtabBegin(sqlite3 *db, VTable *pVTab){
 ** function immediately. If all calls to virtual table methods are successful,
 ** SQLITE_OK is returned.
 */
-int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
-  int rc = SQLITE_OK;
+صحیح sqlite3VtabSavepoint(sqlite3 *db, صحیح op, صحیح iSavepoint){
+  صحیح rc = SQLITE_OK;
 
-  assert( op==SAVEPOINT_RELEASE||op==SAVEPOINT_ROLLBACK||op==SAVEPOINT_BEGIN );
-  assert( iSavepoint>=-1 );
-  if( db->aVTrans ){
-    int i;
-    for(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
+  أكد( op==SAVEPOINT_RELEASE||op==SAVEPOINT_ROLLBACK||op==SAVEPOINT_BEGIN );
+  أكد( iSavepoint>=-1 );
+  اگر( db->aVTrans ){
+    صحیح i;
+    برائے(i=0; rc==SQLITE_OK && i<db->nVTrans; i++){
       VTable *pVTab = db->aVTrans[i];
-      const sqlite3_module *pMod = pVTab->pMod->pModule;
-      if( pVTab->pVtab && pMod->iVersion>=2 ){
-        int (*xMethod)(sqlite3_vtab *, int);
-        sqlite3VtabLock(pVTab);
-        switch( op ){
-          case SAVEPOINT_BEGIN:
-            xMethod = pMod->xSavepoint;
+      ثابت sqlite3_module *pMod = pVTab->pMod->pModule;
+      اگر( pVTab->pVtab && pMod->i_نسخہ>=2 ){
+        صحیح (*x_طریقہ)(sqlite3_vtab *, صحیح);
+        sqlite3_Vtab_تالا(pVTab);
+        انتخاب( op ){
+          حالت SAVEPOINT_BEGIN:
+            x_طریقہ = pMod->xSavepoint;
             pVTab->iSavepoint = iSavepoint+1;
-            break;
-          case SAVEPOINT_ROLLBACK:
-            xMethod = pMod->xRollbackTo;
-            break;
-          default:
-            xMethod = pMod->xRelease;
-            break;
+            توڑو;
+          حالت SAVEPOINT_ROLLBACK:
+            x_طریقہ = pMod->x_Rollback_مقصد;
+            توڑو;
+          طےشدہ:
+            x_طریقہ = pMod->xRelease;
+            توڑو;
         }
-        if( xMethod && pVTab->iSavepoint>iSavepoint ){
+        اگر( x_طریقہ && pVTab->iSavepoint>iSavepoint ){
           u64 savedFlags = (db->flags & SQLITE_Defensive);
           db->flags &= ~(u64)SQLITE_Defensive;
-          rc = xMethod(pVTab->pVtab, iSavepoint);
+          rc = x_طریقہ(pVTab->pVtab, iSavepoint);
           db->flags |= savedFlags;
         }
         sqlite3VtabUnlock(pVTab);
       }
     }
   }
-  return rc;
+  واپس rc;
 }
 
 /*
@@ -1167,29 +1167,29 @@ int sqlite3VtabSavepoint(sqlite3 *db, int op, int iSavepoint){
 FuncDef *sqlite3VtabOverloadFunction(
   sqlite3 *db,    /* Database connection for reporting malloc problems */
   FuncDef *pDef,  /* Function to possibly overload */
-  int nArg,       /* Number of arguments to the function */
-  Expr *pExpr     /* First argument to the function */
+  صحیح nArg,       /* Number of arguments to the function */
+  اظہاریہ *p_اظہاریہ     /* First argument to the function */
 ){
-  Table *pTab;
+  جدول *pTab;
   sqlite3_vtab *pVtab;
   sqlite3_module *pMod;
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**) = 0;
-  void *pArg = 0;
+  خالی (*xSFunc)(sqlite3_context*,صحیح,sqlite3_قدر**) = 0;
+  خالی *pArg = 0;
   FuncDef *pNew;
-  int rc = 0;
+  صحیح rc = 0;
 
   /* Check to see the left operand is a column in a virtual table */
-  if( NEVER(pExpr==0) ) return pDef;
-  if( pExpr->op!=TK_COLUMN ) return pDef;
-  assert( ExprUseYTab(pExpr) );
-  pTab = pExpr->y.pTab;
-  if( NEVER(pTab==0) ) return pDef;
-  if( !IsVirtual(pTab) ) return pDef;
+  اگر( NEVER(p_اظہاریہ==0) ) واپس pDef;
+  اگر( p_اظہاریہ->op!=TK_عمود ) واپس pDef;
+  أكد( اظہاریہ_Use_YTab(p_اظہاریہ) );
+  pTab = p_اظہاریہ->y.pTab;
+  اگر( NEVER(pTab==0) ) واپس pDef;
+  اگر( !IsVirtual(pTab) ) واپس pDef;
   pVtab = sqlite3GetVTable(db, pTab)->pVtab;
-  assert( pVtab!=0 );
-  assert( pVtab->pModule!=0 );
+  أكد( pVtab!=0 );
+  أكد( pVtab->pModule!=0 );
   pMod = (sqlite3_module *)pVtab->pModule;
-  if( pMod->xFindFunction==0 ) return pDef;
+  اگر( pMod->x_ڈھونڈو_Function==0 ) واپس pDef;
 
   /* Call the xFindFunction method on the virtual table implementation
   ** to see if the implementation wants to overload this function.
@@ -1198,34 +1198,34 @@ FuncDef *sqlite3VtabOverloadFunction(
   ** with an all lower-case function name.  Continue in this tradition to
   ** avoid any chance of an incompatibility.
   */
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شدہ SQLITE_DEBUG
   {
-    int i;
-    for(i=0; pDef->zName[i]; i++){
-      unsigned char x = (unsigned char)pDef->zName[i];
-      assert( x==sqlite3UpperToLower[x] );
+    صحیح i;
+    برائے(i=0; pDef->zName[i]; i++){
+      غیرعلامتی حرف x = (غیرعلامتی حرف)pDef->zName[i];
+      أكد( x==sqlite3_بالائی_مقصد_زیریں[x] );
     }
   }
-#endif
-  rc = pMod->xFindFunction(pVtab, nArg, pDef->zName, &xSFunc, &pArg);
-  if( rc==0 ){
-    return pDef;
+#اگر_ختم
+  rc = pMod->x_ڈھونڈو_Function(pVtab, nArg, pDef->zName, &xSFunc, &pArg);
+  اگر( rc==0 ){
+    واپس pDef;
   }
 
   /* Create a new ephemeral function definition for the overloaded
   ** function */
-  pNew = sqlite3DbMallocZero(db, sizeof(*pNew)
+  pNew = sqlite3DbMallocZero(db, حجم(*pNew)
                              + sqlite3Strlen30(pDef->zName) + 1);
-  if( pNew==0 ){
-    return pDef;
+  اگر( pNew==0 ){
+    واپس pDef;
   }
   *pNew = *pDef;
-  pNew->zName = (const char*)&pNew[1];
-  memcpy((char*)&pNew[1], pDef->zName, sqlite3Strlen30(pDef->zName)+1);
+  pNew->zName = (ثابت حرف*)&pNew[1];
+  حافظہ_نقل((حرف*)&pNew[1], pDef->zName, sqlite3Strlen30(pDef->zName)+1);
   pNew->xSFunc = xSFunc;
-  pNew->pUserData = pArg;
+  pNew->p_User_ڈیٹا = pArg;
   pNew->funcFlags |= SQLITE_FUNC_EPHEM;
-  return pNew;
+  واپس pNew;
 }
 
 /*
@@ -1234,21 +1234,21 @@ FuncDef *sqlite3VtabOverloadFunction(
 ** array if it is missing.  If pTab is already in the array, this routine
 ** is a no-op.
 */
-void sqlite3VtabMakeWritable(Parse *pParse, Table *pTab){
+خالی sqlite3VtabMakeWritable(Parse *pParse, جدول *pTab){
   Parse *pToplevel = sqlite3ParseToplevel(pParse);
-  int i, n;
-  Table **apVtabLock;
+  صحیح i, n;
+  جدول **ap_Vtab_تالا;
 
-  assert( IsVirtual(pTab) );
-  for(i=0; i<pToplevel->nVtabLock; i++){
-    if( pTab==pToplevel->apVtabLock[i] ) return;
+  أكد( IsVirtual(pTab) );
+  برائے(i=0; i<pToplevel->n_Vtab_تالا; i++){
+    اگر( pTab==pToplevel->ap_Vtab_تالا[i] ) واپس;
   }
-  n = (pToplevel->nVtabLock+1)*sizeof(pToplevel->apVtabLock[0]);
-  apVtabLock = sqlite3Realloc(pToplevel->apVtabLock, n);
-  if( apVtabLock ){
-    pToplevel->apVtabLock = apVtabLock;
-    pToplevel->apVtabLock[pToplevel->nVtabLock++] = pTab;
-  }else{
+  n = (pToplevel->n_Vtab_تالا+1)*حجم(pToplevel->ap_Vtab_تالا[0]);
+  ap_Vtab_تالا = sqlite3Realloc(pToplevel->ap_Vtab_تالا, n);
+  اگر( ap_Vtab_تالا ){
+    pToplevel->ap_Vtab_تالا = ap_Vtab_تالا;
+    pToplevel->ap_Vtab_تالا[pToplevel->n_Vtab_تالا++] = pTab;
+  }ورنہ{
     sqlite3OomFault(pToplevel->db);
   }
 }
@@ -1268,55 +1268,55 @@ void sqlite3VtabMakeWritable(Parse *pParse, Table *pTab){
 ** Any virtual table module for which xConnect and xCreate are the same
 ** method can have an eponymous virtual table instance.
 */
-int sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
-  const sqlite3_module *pModule = pMod->pModule;
-  Table *pTab;
-  char *zErr = 0;
-  int rc;
+صحیح sqlite3_Vtab_Eponymous_جدول_Init(Parse *pParse, Module *pMod){
+  ثابت sqlite3_module *pModule = pMod->pModule;
+  جدول *pTab;
+  حرف *zErr = 0;
+  صحیح rc;
   sqlite3 *db = pParse->db;
-  if( pMod->pEpoTab ) return 1;
-  if( pModule->xCreate!=0 && pModule->xCreate!=pModule->xConnect ) return 0;
-  pTab = sqlite3DbMallocZero(db, sizeof(Table));
-  if( pTab==0 ) return 0;
+  اگر( pMod->pEpoTab ) واپس 1;
+  اگر( pModule->xCreate!=0 && pModule->xCreate!=pModule->xConnect ) واپس 0;
+  pTab = sqlite3DbMallocZero(db, حجم(جدول));
+  اگر( pTab==0 ) واپس 0;
   pTab->zName = sqlite3DbStrDup(db, pMod->zName);
-  if( pTab->zName==0 ){
+  اگر( pTab->zName==0 ){
     sqlite3DbFree(db, pTab);
-    return 0;
+    واپس 0;
   }
   pMod->pEpoTab = pTab;
   pTab->nTabRef = 1;
   pTab->eTabType = TABTYP_VTAB;
   pTab->pSchema = db->aDb[0].pSchema;
-  assert( pTab->u.vtab.nArg==0 );
+  أكد( pTab->u.vtab.nArg==0 );
   pTab->iPKey = -1;
   pTab->tabFlags |= TF_Eponymous;
-  addModuleArgument(pParse, pTab, sqlite3DbStrDup(db, pTab->zName));
-  addModuleArgument(pParse, pTab, 0);
-  addModuleArgument(pParse, pTab, sqlite3DbStrDup(db, pTab->zName));
-  db->nSchemaLock++;
+  جوڑو_Module_دلیل(pParse, pTab, sqlite3DbStrDup(db, pTab->zName));
+  جوڑو_Module_دلیل(pParse, pTab, 0);
+  جوڑو_Module_دلیل(pParse, pTab, sqlite3DbStrDup(db, pTab->zName));
+  db->n_Schema_تالا++;
   rc = vtabCallConstructor(db, pTab, pMod, pModule->xConnect, &zErr);
-  db->nSchemaLock--;
-  if( rc ){
-    sqlite3ErrorMsg(pParse, "%s", zErr);
+  db->n_Schema_تالا--;
+  اگر( rc ){
+    sqlite3_Error_پیغام(pParse, "%s", zErr);
     pParse->rc = rc;
     sqlite3DbFree(db, zErr);
-    sqlite3VtabEponymousTableClear(db, pMod);
+    sqlite3_Vtab_Eponymous_جدول_Clear(db, pMod);
   }
-  return 1;
+  واپس 1;
 }
 
 /*
 ** Erase the eponymous virtual table instance associated with
 ** virtual table module pMod, if it exists.
 */
-void sqlite3VtabEponymousTableClear(sqlite3 *db, Module *pMod){
-  Table *pTab = pMod->pEpoTab;
-  if( pTab!=0 ){
+خالی sqlite3_Vtab_Eponymous_جدول_Clear(sqlite3 *db, Module *pMod){
+  جدول *pTab = pMod->pEpoTab;
+  اگر( pTab!=0 ){
     /* Mark the table as Ephemeral prior to deleting it, so that the
     ** sqlite3DeleteTable() routine will know that it is not stored in
     ** the schema. */
     pTab->tabFlags |= TF_Ephemeral;
-    sqlite3DeleteTable(db, pTab);
+    sqlite3_Delete_جدول(db, pTab);
     pMod->pEpoTab = 0;
   }
 }
@@ -1325,10 +1325,10 @@ void sqlite3VtabEponymousTableClear(sqlite3 *db, Module *pMod){
 ** Erase all eponymous virtual table instances associated with database
 ** handle db.  
 */
-void sqlite3VtabEponymousTableClearAll(sqlite3 *db){
+خالی sqlite3_Vtab_Eponymous_جدول_Clear_All(sqlite3 *db){
   HashElem *pElem;
-  for(pElem=sqliteHashFirst(&db->aModule); pElem; pElem=sqliteHashNext(pElem)){
-    sqlite3VtabEponymousTableClear(db, (Module*)sqliteHashData(pElem));
+  برائے(pElem=sqlite_Hash_پہلا(&db->aModule); pElem; pElem=sqlite_Hash_اگلا(pElem)){
+    sqlite3_Vtab_Eponymous_جدول_Clear(db, (Module*)sqlite_Hash_ڈیٹا(pElem));
   }
 }
 
@@ -1339,17 +1339,17 @@ void sqlite3VtabEponymousTableClearAll(sqlite3 *db){
 ** The results of this routine are undefined unless it is called from
 ** within an xUpdate method.
 */
-int sqlite3_vtab_on_conflict(sqlite3 *db){
-  static const unsigned char aMap[] = {
+صحیح sqlite3_vtab_on_conflict(sqlite3 *db){
+  ساکن ثابت غیرعلامتی حرف aMap[] = {
     SQLITE_ROLLBACK, SQLITE_ABORT, SQLITE_FAIL, SQLITE_IGNORE, SQLITE_REPLACE
   };
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
-  assert( OE_Rollback==1 && OE_Abort==2 && OE_Fail==3 );
-  assert( OE_Ignore==4 && OE_Replace==5 );
-  assert( db->vtabOnConflict>=1 && db->vtabOnConflict<=5 );
-  return (int)aMap[db->vtabOnConflict-1];
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
+  أكد( OE_Rollback==1 && OE_Abort==2 && OE_Fail==3 );
+  أكد( OE_Ignore==4 && OE_Replace==5 );
+  أكد( db->vtabOnConflict>=1 && db->vtabOnConflict<=5 );
+  واپس (صحیح)aMap[db->vtabOnConflict-1];
 }
 
 /*
@@ -1357,49 +1357,49 @@ int sqlite3_vtab_on_conflict(sqlite3 *db){
 ** the SQLite core with additional information about the behavior
 ** of the virtual table being implemented.
 */
-int sqlite3_vtab_config(sqlite3 *db, int op, ...){
+صحیح sqlite3_vtab_config(sqlite3 *db, صحیح op, ...){
   va_list ap;
-  int rc = SQLITE_OK;
+  صحیح rc = SQLITE_OK;
   VtabCtx *p;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
   sqlite3_mutex_enter(db->mutex);
   p = db->pVtabCtx;
-  if( !p ){
+  اگر( !p ){
     rc = SQLITE_MISUSE_BKPT;
-  }else{
-    assert( p->pTab==0 || IsVirtual(p->pTab) );
+  }ورنہ{
+    أكد( p->pTab==0 || IsVirtual(p->pTab) );
     va_start(ap, op);
-    switch( op ){
-      case SQLITE_VTAB_CONSTRAINT_SUPPORT: {
-        p->pVTable->bConstraint = (u8)va_arg(ap, int);
-        break;
+    انتخاب( op ){
+      حالت SQLITE_VTAB_CONSTRAINT_SUPPORT: {
+        p->pVTable->bConstraint = (u8)va_arg(ap, صحیح);
+        توڑو;
       }
-      case SQLITE_VTAB_INNOCUOUS: {
-        p->pVTable->eVtabRisk = SQLITE_VTABRISK_Low;
-        break;
+      حالت SQLITE_VTAB_INNOCUOUS: {
+        p->pVTable->eVtabRisk = SQLITE_VTABRISK_کم;
+        توڑو;
       }
-      case SQLITE_VTAB_DIRECTONLY: {
-        p->pVTable->eVtabRisk = SQLITE_VTABRISK_High;
-        break;
+      حالت SQLITE_VTAB_DIRECTONLY: {
+        p->pVTable->eVtabRisk = SQLITE_VTABRISK_بلند;
+        توڑو;
       }
-      case SQLITE_VTAB_USES_ALL_SCHEMAS: {
+      حالت SQLITE_VTAB_استعمال_کرتا_ALL_SCHEMAS: {
         p->pVTable->bAllSchemas = 1;
-        break;
+        توڑو;
       }
-      default: {
+      طےشدہ: {
         rc = SQLITE_MISUSE_BKPT;
-        break;
+        توڑو;
       }
     }
     va_end(ap);
   }
 
-  if( rc!=SQLITE_OK ) sqlite3Error(db, rc);
+  اگر( rc!=SQLITE_OK ) sqlite3Error(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  واپس rc;
 }
 
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#اگر_ختم /* SQLITE_OMIT_VIRTUALTABLE */

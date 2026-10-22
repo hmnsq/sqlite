@@ -25,191 +25,191 @@
 ** of multiple cores can do so, while also allowing applications to stay
 ** single-threaded if desired.
 */
-#include "sqliteInt.h"
-#if SQLITE_OS_WIN
+#شامل "sqliteInt.h"
+#اگر SQLITE_OS_WIN
 #  include "os_win.h"
-#endif
+#اگر_ختم
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#اگر SQLITE_MAX_کارکن_دھاگے>0
 
 /********************************* Unix Pthreads ****************************/
-#if SQLITE_OS_UNIX && defined(SQLITE_MUTEX_PTHREADS) && SQLITE_THREADSAFE>0
+#اگر SQLITE_OS_UNIX && defined(SQLITE_MUTEX_PTHREADS) && SQLITE_THREADSAFE>0
 
-#define SQLITE_THREADS_IMPLEMENTED 1  /* Prevent the single-thread code below */
-#include <pthread.h>
+#تعریف_کرو SQLITE_دھاگے_IMPLEMENTED 1  /* Prevent the single-thread code below */
+#شامل <pthread.h>
 
 /* A running thread */
-struct SQLiteThread {
+ساخت SQLiteThread {
   pthread_t tid;                 /* Thread ID */
-  int done;                      /* Set to true when thread finishes */
-  void *pOut;                    /* Result returned by the thread */
-  void *(*xTask)(void*);         /* The thread routine */
-  void *pIn;                     /* Argument to the thread */
+  صحیح مکمل;                      /* Set to true when thread finishes */
+  خالی *p_برآمد;                    /* Result returned by the thread */
+  خالی *(*xTask)(خالی*);         /* The thread routine */
+  خالی *p_اندر;                     /* Argument to the thread */
 };
 
 /* Create a new thread */
-int sqlite3ThreadCreate(
+صحیح sqlite3ThreadCreate(
   SQLiteThread **ppThread,  /* OUT: Write the thread object here */
-  void *(*xTask)(void*),    /* Routine to run in a separate thread */
-  void *pIn                 /* Argument passed into xTask() */
+  خالی *(*xTask)(خالی*),    /* Routine to run in a separate thread */
+  خالی *p_اندر                 /* Argument passed into xTask() */
 ){
   SQLiteThread *p;
-  int rc;
+  صحیح rc;
 
-  assert( ppThread!=0 );
-  assert( xTask!=0 );
+  أكد( ppThread!=0 );
+  أكد( xTask!=0 );
   /* This routine is never used in single-threaded mode */
-  assert( sqlite3GlobalConfig.bCoreMutex!=0 );
+  أكد( sqlite3GlobalConfig.bCoreMutex!=0 );
 
   *ppThread = 0;
-  p = sqlite3Malloc(sizeof(*p));
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
-  memset(p, 0, sizeof(*p));
+  p = sqlite3Malloc(حجم(*p));
+  اگر( p==0 ) واپس SQLITE_NOMEM_BKPT;
+  memset(p, 0, حجم(*p));
   p->xTask = xTask;
-  p->pIn = pIn;
+  p->p_اندر = p_اندر;
   /* If the SQLITE_TESTCTRL_FAULT_INSTALL callback is registered to a 
   ** function that returns SQLITE_ERROR when passed the argument 200, that
   ** forces worker threads to run sequentially and deterministically 
   ** for testing purposes. */
-  if( sqlite3FaultSim(200) ){
+  اگر( sqlite3FaultSim(200) ){
     rc = 1;
-  }else{    
-    rc = pthread_create(&p->tid, 0, xTask, pIn);
+  }ورنہ{    
+    rc = pthread_create(&p->tid, 0, xTask, p_اندر);
   }
-  if( rc ){
-    p->done = 1;
-    p->pOut = xTask(pIn);
+  اگر( rc ){
+    p->مکمل = 1;
+    p->p_برآمد = xTask(p_اندر);
   }
   *ppThread = p;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Get the results of the thread */
-int sqlite3ThreadJoin(SQLiteThread *p, void **ppOut){
-  int rc;
+صحیح sqlite3ThreadJoin(SQLiteThread *p, خالی **pp_برآمد){
+  صحیح rc;
 
-  assert( ppOut!=0 );
-  if( NEVER(p==0) ) return SQLITE_NOMEM_BKPT;
-  if( p->done ){
-    *ppOut = p->pOut;
+  أكد( pp_برآمد!=0 );
+  اگر( NEVER(p==0) ) واپس SQLITE_NOMEM_BKPT;
+  اگر( p->مکمل ){
+    *pp_برآمد = p->p_برآمد;
     rc = SQLITE_OK;
-  }else{
-    rc = pthread_join(p->tid, ppOut) ? SQLITE_ERROR : SQLITE_OK;
+  }ورنہ{
+    rc = pthread_join(p->tid, pp_برآمد) ? SQLITE_ERROR : SQLITE_OK;
   }
   sqlite3_free(p);
-  return rc;
+  واپس rc;
 }
 
-#endif /* SQLITE_OS_UNIX && defined(SQLITE_MUTEX_PTHREADS) */
+#اگر_ختم /* SQLITE_OS_UNIX && defined(SQLITE_MUTEX_PTHREADS) */
 /******************************** End Unix Pthreads *************************/
 
 
 /********************************* Win32 Threads ****************************/
-#if SQLITE_OS_WIN_THREADS
+#اگر SQLITE_OS_WIN_دھاگے
 
-#define SQLITE_THREADS_IMPLEMENTED 1  /* Prevent the single-thread code below */
-#include <process.h>
+#تعریف_کرو SQLITE_دھاگے_IMPLEMENTED 1  /* Prevent the single-thread code below */
+#شامل <process.h>
 
 /* A running thread */
-struct SQLiteThread {
-  void *tid;               /* The thread handle */
-  unsigned id;             /* The thread identifier */
-  void *(*xTask)(void*);   /* The routine to run as a thread */
-  void *pIn;               /* Argument to xTask */
-  void *pResult;           /* Result of xTask */
+ساخت SQLiteThread {
+  خالی *tid;               /* The thread handle */
+  غیرعلامتی id;             /* The thread identifier */
+  خالی *(*xTask)(خالی*);   /* The routine to run as a thread */
+  خالی *p_اندر;               /* Argument to xTask */
+  خالی *p_نتیجہ;           /* Result of xTask */
 };
 
 /* Thread procedure Win32 compatibility shim */
-static unsigned __stdcall sqlite3ThreadProc(
-  void *pArg  /* IN: Pointer to the SQLiteThread structure */
+ساکن غیرعلامتی __stdcall sqlite3ThreadProc(
+  خالی *pArg  /* IN: Pointer to the SQLiteThread structure */
 ){
   SQLiteThread *p = (SQLiteThread *)pArg;
 
-  assert( p!=0 );
-#if 0
+  أكد( p!=0 );
+#اگر 0
   /*
   ** This assert appears to trigger spuriously on certain
   ** versions of Windows, possibly due to _beginthreadex()
   ** and/or CreateThread() not fully setting their thread
   ** ID parameter before starting the thread.
   */
-  assert( p->id==GetCurrentThreadId() );
-#endif
-  assert( p->xTask!=0 );
-  p->pResult = p->xTask(p->pIn);
+  أكد( p->id==GetCurrentThreadId() );
+#اگر_ختم
+  أكد( p->xTask!=0 );
+  p->p_نتیجہ = p->xTask(p->p_اندر);
 
   _endthreadex(0);
-  return 0; /* NOT REACHED */
+  واپس 0; /* NOT REACHED */
 }
 
 /* Create a new thread */
-int sqlite3ThreadCreate(
+صحیح sqlite3ThreadCreate(
   SQLiteThread **ppThread,  /* OUT: Write the thread object here */
-  void *(*xTask)(void*),    /* Routine to run in a separate thread */
-  void *pIn                 /* Argument passed into xTask() */
+  خالی *(*xTask)(خالی*),    /* Routine to run in a separate thread */
+  خالی *p_اندر                 /* Argument passed into xTask() */
 ){
   SQLiteThread *p;
 
-  assert( ppThread!=0 );
-  assert( xTask!=0 );
+  أكد( ppThread!=0 );
+  أكد( xTask!=0 );
   *ppThread = 0;
-  p = sqlite3Malloc(sizeof(*p));
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
+  p = sqlite3Malloc(حجم(*p));
+  اگر( p==0 ) واپس SQLITE_NOMEM_BKPT;
   /* If the SQLITE_TESTCTRL_FAULT_INSTALL callback is registered to a 
   ** function that returns SQLITE_ERROR when passed the argument 200, that
   ** forces worker threads to run sequentially and deterministically 
   ** (via the sqlite3FaultSim() term of the conditional) for testing
   ** purposes. */
-  if( sqlite3GlobalConfig.bCoreMutex==0 || sqlite3FaultSim(200) ){
-    memset(p, 0, sizeof(*p));
-  }else{
+  اگر( sqlite3GlobalConfig.bCoreMutex==0 || sqlite3FaultSim(200) ){
+    memset(p, 0, حجم(*p));
+  }ورنہ{
     p->xTask = xTask;
-    p->pIn = pIn;
-    p->tid = (void*)_beginthreadex(0, 0, sqlite3ThreadProc, p, 0, &p->id);
-    if( p->tid==0 ){
-      memset(p, 0, sizeof(*p));
+    p->p_اندر = p_اندر;
+    p->tid = (خالی*)_beginthreadex(0, 0, sqlite3ThreadProc, p, 0, &p->id);
+    اگر( p->tid==0 ){
+      memset(p, 0, حجم(*p));
     }
   }
-  if( p->xTask==0 ){
+  اگر( p->xTask==0 ){
     p->id = GetCurrentThreadId();
-    p->pResult = xTask(pIn);
+    p->p_نتیجہ = xTask(p_اندر);
   }
   *ppThread = p;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 DWORD sqlite3Win32Wait(HANDLE hObject); /* os_win.c */
 
 /* Get the results of the thread */
-int sqlite3ThreadJoin(SQLiteThread *p, void **ppOut){
+صحیح sqlite3ThreadJoin(SQLiteThread *p, خالی **pp_برآمد){
   DWORD rc;
   BOOL bRc;
 
-  assert( ppOut!=0 );
-  if( NEVER(p==0) ) return SQLITE_NOMEM_BKPT;
-  if( p->xTask==0 ){
+  أكد( pp_برآمد!=0 );
+  اگر( NEVER(p==0) ) واپس SQLITE_NOMEM_BKPT;
+  اگر( p->xTask==0 ){
     /* assert( p->id==GetCurrentThreadId() ); */
     rc = WAIT_OBJECT_0;
-    assert( p->tid==0 );
-  }else{
-    assert( p->id!=0 && p->id!=GetCurrentThreadId() );
+    أكد( p->tid==0 );
+  }ورنہ{
+    أكد( p->id!=0 && p->id!=GetCurrentThreadId() );
     rc = sqlite3Win32Wait((HANDLE)p->tid);
-    assert( rc!=WAIT_IO_COMPLETION );
+    أكد( rc!=WAIT_IO_COMPLETION );
     bRc = CloseHandle((HANDLE)p->tid);
-    (void)bRc;  /* Prevent warning when assert() is a no-op */
-    assert( bRc );
+    (خالی)bRc;  /* Prevent warning when assert() is a no-op */
+    أكد( bRc );
   }
-  if( rc==WAIT_OBJECT_0 ) *ppOut = p->pResult;
+  اگر( rc==WAIT_OBJECT_0 ) *pp_برآمد = p->p_نتیجہ;
   sqlite3_free(p);
-  return (rc==WAIT_OBJECT_0) ? SQLITE_OK : SQLITE_ERROR;
+  واپس (rc==WAIT_OBJECT_0) ? SQLITE_OK : SQLITE_ERROR;
 }
 
-#endif /* SQLITE_OS_WIN_THREADS */
+#اگر_ختم /* SQLITE_OS_WIN_THREADS */
 /******************************** End Win32 Threads *************************/
 
 
 /********************************* Single-Threaded **************************/
-#ifndef SQLITE_THREADS_IMPLEMENTED
+#اگر_غیر_تعریف_شدہ SQLITE_دھاگے_IMPLEMENTED
 /*
 ** This implementation does not actually create a new thread.  It does the
 ** work of the thread in the main thread, when either the thread is created
@@ -217,59 +217,59 @@ int sqlite3ThreadJoin(SQLiteThread *p, void **ppOut){
 */
 
 /* A running thread */
-struct SQLiteThread {
-  void *(*xTask)(void*);   /* The routine to run as a thread */
-  void *pIn;               /* Argument to xTask */
-  void *pResult;           /* Result of xTask */
+ساخت SQLiteThread {
+  خالی *(*xTask)(خالی*);   /* The routine to run as a thread */
+  خالی *p_اندر;               /* Argument to xTask */
+  خالی *p_نتیجہ;           /* Result of xTask */
 };
 
 /* Create a new thread */
-int sqlite3ThreadCreate(
+صحیح sqlite3ThreadCreate(
   SQLiteThread **ppThread,  /* OUT: Write the thread object here */
-  void *(*xTask)(void*),    /* Routine to run in a separate thread */
-  void *pIn                 /* Argument passed into xTask() */
+  خالی *(*xTask)(خالی*),    /* Routine to run in a separate thread */
+  خالی *p_اندر                 /* Argument passed into xTask() */
 ){
   SQLiteThread *p;
 
-  assert( ppThread!=0 );
-  assert( xTask!=0 );
+  أكد( ppThread!=0 );
+  أكد( xTask!=0 );
   *ppThread = 0;
-  p = sqlite3Malloc(sizeof(*p));
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
-  if( (SQLITE_PTR_TO_INT(p)/17)&1 ){
+  p = sqlite3Malloc(حجم(*p));
+  اگر( p==0 ) واپس SQLITE_NOMEM_BKPT;
+  اگر( (SQLITE_PTR_مقصد_INT(p)/17)&1 ){
     p->xTask = xTask;
-    p->pIn = pIn;
-  }else{
+    p->p_اندر = p_اندر;
+  }ورنہ{
     p->xTask = 0;
-    p->pResult = xTask(pIn);
+    p->p_نتیجہ = xTask(p_اندر);
   }
   *ppThread = p;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Get the results of the thread */
-int sqlite3ThreadJoin(SQLiteThread *p, void **ppOut){
+صحیح sqlite3ThreadJoin(SQLiteThread *p, خالی **pp_برآمد){
 
-  assert( ppOut!=0 );
-  if( NEVER(p==0) ) return SQLITE_NOMEM_BKPT;
-  if( p->xTask ){
-    *ppOut = p->xTask(p->pIn);
-  }else{
-    *ppOut = p->pResult;
+  أكد( pp_برآمد!=0 );
+  اگر( NEVER(p==0) ) واپس SQLITE_NOMEM_BKPT;
+  اگر( p->xTask ){
+    *pp_برآمد = p->xTask(p->p_اندر);
+  }ورنہ{
+    *pp_برآمد = p->p_نتیجہ;
   }
   sqlite3_free(p);
 
-#if defined(SQLITE_TEST)
+#اگر defined(SQLITE_TEST)
   {
-    void *pTstAlloc = sqlite3Malloc(10);
-    if (!pTstAlloc) return SQLITE_NOMEM_BKPT;
+    خالی *pTstAlloc = sqlite3Malloc(10);
+    اگر (!pTstAlloc) واپس SQLITE_NOMEM_BKPT;
     sqlite3_free(pTstAlloc);
   }
-#endif
+#اگر_ختم
 
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
-#endif /* !defined(SQLITE_THREADS_IMPLEMENTED) */
+#اگر_ختم /* !defined(SQLITE_THREADS_IMPLEMENTED) */
 /****************************** End Single-Threaded *************************/
-#endif /* SQLITE_MAX_WORKER_THREADS>0 */
+#اگر_ختم /* SQLITE_MAX_WORKER_THREADS>0 */

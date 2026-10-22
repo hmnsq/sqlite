@@ -15,70 +15,70 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#اگر defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
-#define PLS_HASHSIZE 43
+#تعریف_کرو PLS_HASHSIZE 43
 
-typedef struct ProcessLocalStorage ProcessLocalStorage;
-typedef struct ProcessLocalVar ProcessLocalVar;
+قسمتعریف ساخت ProcessLocalStorage ProcessLocalStorage;
+قسمتعریف ساخت ProcessLocalVar ProcessLocalVar;
 
-struct ProcessLocalStorage {
-  ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+ساخت ProcessLocalStorage {
+  ProcessLocalVar *a_ڈیٹا[PLS_HASHSIZE];
+  صحیح nFree;
   u8 *pFree;
 };
 
-struct ProcessLocalVar {
-  void *pKey;
-  ProcessLocalVar *pNext;
+ساخت ProcessLocalVar {
+  خالی *p_کلید;
+  ProcessLocalVar *p_اگلا;
 };
 
-static ProcessLocalStorage *pGlobal = 0;
+ساکن ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
-    pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
-      memset(pGlobal, 0, sizeof(ProcessLocalStorage));
-      pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
+صحیح sqlite3_wsd_init(صحیح N, صحیح J){
+  اگر( !pGlobal ){
+    صحیح nMalloc = N + حجم(ProcessLocalStorage) + J*حجم(ProcessLocalVar);
+    pGlobal = (ProcessLocalStorage *)حافظہ_دو(nMalloc);
+    اگر( pGlobal ){
+      memset(pGlobal, 0, حجم(ProcessLocalStorage));
+      pGlobal->nFree = nMalloc - حجم(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  واپس pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+خالی *sqlite3_wsd_ڈھونڈو(خالی *K, صحیح L){
+  صحیح i;
+  صحیح iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
-    iHash = (iHash<<3) + ((unsigned char *)&K)[i];
+  برائے(i=0; i<حجم(خالی*); i++){
+    iHash = (iHash<<3) + ((غیرعلامتی حرف *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  برائے(pVar=pGlobal->a_ڈیٹا[iHash]; pVar && pVar->p_کلید!=K; pVar=pVar->p_اگلا);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
-    assert( pGlobal->nFree>=nByte );
+  اگر( !pVar ){
+    صحیح nByte = ROUND8(حجم(ProcessLocalVar) + L);
+    أكد( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
-    pVar->pNext = pGlobal->aData[iHash];
-    pGlobal->aData[iHash] = pVar;
+    pVar->p_کلید = K;
+    pVar->p_اگلا = pGlobal->a_ڈیٹا[iHash];
+    pGlobal->a_ڈیٹا[iHash] = pVar;
     pGlobal->nFree -= nByte;
     pGlobal->pFree += nByte;
-    memcpy(&pVar[1], K, L);
+    حافظہ_نقل(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  واپس (خالی *)&pVar[1];
 }
 
-#endif
+#اگر_ختم

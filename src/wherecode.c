@@ -17,19 +17,19 @@
 ** that actually generate the bulk of the WHERE loop code.  The original where.c
 ** file retains the code that does query planning and analysis.
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#شامل "sqliteInt.h"
+#شامل "whereInt.h"
 
-#ifndef SQLITE_OMIT_EXPLAIN
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_EXPLAIN
 
 /*
 ** Return the name of the i-th column of the pIdx index.
 */
-static const char *explainIndexColumnName(Index *pIdx, int i){
-  i = pIdx->aiColumn[i];
-  if( i==XN_EXPR ) return "<expr>";
-  if( i==XN_ROWID ) return "rowid";
-  return pIdx->pTable->aCol[i].zCnName;
+ساکن ثابت حرف *explain_اشاریہ_عمود_Name(اشاریہ *pIdx, صحیح i){
+  i = pIdx->ai_عمود[i];
+  اگر( i==XN_اظہاریہ ) واپس "<expr>";
+  اگر( i==XN_ROWID ) واپس "rowid";
+  واپس pIdx->p_جدول->a_ستون[i].zCnName;
 }
 
 /*
@@ -40,34 +40,34 @@ static const char *explainIndexColumnName(Index *pIdx, int i){
 ** Terms are separated by AND so add the "AND" text for second and subsequent
 ** terms only.
 */
-static void explainAppendTerm(
+ساکن خالی explain_Append_رکن(
   StrAccum *pStr,             /* The text expression being built */
-  Index *pIdx,                /* Index to read column names from */
-  int nTerm,                  /* Number of terms */
-  int iTerm,                  /* Zero-based index of first term. */
-  int bAnd,                   /* Non-zero to append " AND " */
-  const char *zOp             /* Name of the operator */
+  اشاریہ *pIdx,                /* Index to read column names from */
+  صحیح n_رکن,                  /* Number of terms */
+  صحیح i_رکن,                  /* Zero-based index of first term. */
+  صحیح bAnd,                   /* Non-zero to append " AND " */
+  ثابت حرف *zOp             /* Name of the operator */
 ){
-  int i;
+  صحیح i;
 
-  assert( nTerm>=1 );
-  if( bAnd ) sqlite3_str_append(pStr, " AND ", 5);
+  أكد( n_رکن>=1 );
+  اگر( bAnd ) sqlite3_str_append(pStr, " AND ", 5);
 
-  if( nTerm>1 ) sqlite3_str_append(pStr, "(", 1);
-  for(i=0; i<nTerm; i++){
-    if( i ) sqlite3_str_append(pStr, ",", 1);
-    sqlite3_str_appendall(pStr, explainIndexColumnName(pIdx, iTerm+i));
+  اگر( n_رکن>1 ) sqlite3_str_append(pStr, "(", 1);
+  برائے(i=0; i<n_رکن; i++){
+    اگر( i ) sqlite3_str_append(pStr, ",", 1);
+    sqlite3_str_appendall(pStr, explain_اشاریہ_عمود_Name(pIdx, i_رکن+i));
   }
-  if( nTerm>1 ) sqlite3_str_append(pStr, ")", 1);
+  اگر( n_رکن>1 ) sqlite3_str_append(pStr, ")", 1);
 
   sqlite3_str_append(pStr, zOp, 1);
 
-  if( nTerm>1 ) sqlite3_str_append(pStr, "(", 1);
-  for(i=0; i<nTerm; i++){
-    if( i ) sqlite3_str_append(pStr, ",", 1);
+  اگر( n_رکن>1 ) sqlite3_str_append(pStr, "(", 1);
+  برائے(i=0; i<n_رکن; i++){
+    اگر( i ) sqlite3_str_append(pStr, ",", 1);
     sqlite3_str_append(pStr, "?", 1);
   }
-  if( nTerm>1 ) sqlite3_str_append(pStr, ")", 1);
+  اگر( n_رکن>1 ) sqlite3_str_append(pStr, ")", 1);
 }
 
 /*
@@ -84,27 +84,27 @@ static void explainAppendTerm(
 **
 **   "a=? AND b>?"
 */
-static void explainIndexRange(StrAccum *pStr, WhereLoop *pLoop){
-  Index *pIndex = pLoop->u.btree.pIndex;
+ساکن خالی explain_اشاریہ_Range(StrAccum *pStr, WhereLoop *pLoop){
+  اشاریہ *p_اشاریہ = pLoop->u.btree.p_اشاریہ;
   u16 nEq = pLoop->u.btree.nEq;
   u16 nSkip = pLoop->nSkip;
-  int i, j;
+  صحیح i, j;
 
-  if( nEq==0 && (pLoop->wsFlags&(WHERE_BTM_LIMIT|WHERE_TOP_LIMIT))==0 ) return;
+  اگر( nEq==0 && (pLoop->wsFlags&(WHERE_BTM_حد_بندی|WHERE_چوٹی_حد_بندی))==0 ) واپس;
   sqlite3_str_append(pStr, " (", 2);
-  for(i=0; i<nEq; i++){
-    const char *z = explainIndexColumnName(pIndex, i);
-    if( i ) sqlite3_str_append(pStr, " AND ", 5);
+  برائے(i=0; i<nEq; i++){
+    ثابت حرف *z = explain_اشاریہ_عمود_Name(p_اشاریہ, i);
+    اگر( i ) sqlite3_str_append(pStr, " AND ", 5);
     sqlite3_str_appendf(pStr, i>=nSkip ? "%s=?" : "ANY(%s)", z);
   }
 
   j = i;
-  if( pLoop->wsFlags&WHERE_BTM_LIMIT ){
-    explainAppendTerm(pStr, pIndex, pLoop->u.btree.nBtm, j, i, ">");
+  اگر( pLoop->wsFlags&WHERE_BTM_حد_بندی ){
+    explain_Append_رکن(pStr, p_اشاریہ, pLoop->u.btree.nBtm, j, i, ">");
     i = 1;
   }
-  if( pLoop->wsFlags&WHERE_TOP_LIMIT ){
-    explainAppendTerm(pStr, pIndex, pLoop->u.btree.nTop, j, i, "<");
+  اگر( pLoop->wsFlags&WHERE_چوٹی_حد_بندی ){
+    explain_Append_رکن(pStr, p_اشاریہ, pLoop->u.btree.n_چوٹی, j, i, "<");
   }
   sqlite3_str_append(pStr, ")", 1);
 }
@@ -114,121 +114,121 @@ static void explainIndexRange(StrAccum *pStr, WhereLoop *pLoop){
 ** text describing the loop in pLevel. If the OP_Explain opcode already has
 ** a P4 value, it is freed before it is overwritten.
 */
-void sqlite3WhereAddExplainText(
+خالی sqlite3_Where_جوڑو_Explain_متن(
   Parse *pParse,                  /* Parse context */
-  int addr,                       /* Address of OP_Explain opcode */
+  صحیح addr,                       /* Address of OP_Explain opcode */
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 ){
-#if !defined(SQLITE_DEBUG)
-  if( sqlite3ParseToplevel(pParse)->explain==2 || IS_STMT_SCANSTATUS(pParse->db) )
-#endif
+#اگر !defined(SQLITE_DEBUG)
+  اگر( sqlite3ParseToplevel(pParse)->explain==2 || IS_STMT_SCANSTATUS(pParse->db) )
+#اگر_ختم
   {
     VdbeOp *pOp = sqlite3VdbeGetOp(pParse->pVdbe, addr);
-    SrcItem *pItem = &pTabList->a[pLevel->iFrom];
+    Src_شے *p_شے = &pTabList->a[pLevel->iFrom];
     sqlite3 *db = pParse->db;     /* Database handle */
-    int isSearch;                 /* True for a SEARCH. False for SCAN. */
+    صحیح is_تلاش;                 /* True for a SEARCH. False for SCAN. */
     WhereLoop *pLoop;             /* The controlling WhereLoop object */
     u32 flags;                    /* Flags that describe this loop */
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_EXPLAIN)
-    char *zMsg;                   /* Text to add to EQP output */
-#endif
+#اگر defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_EXPLAIN)
+    حرف *z_پیغام;                   /* Text to add to EQP output */
+#اگر_ختم
     StrAccum str;                 /* EQP output string */
-    char zBuf[100];               /* Initial space for EQP output string */
+    حرف zBuf[100];               /* Initial space for EQP output string */
 
-    if( db->mallocFailed ) return;
+    اگر( db->mallocFailed ) واپس;
 
     pLoop = pLevel->pWLoop;
     flags = pLoop->wsFlags;
 
-    isSearch = (flags&(WHERE_BTM_LIMIT|WHERE_TOP_LIMIT))!=0
+    is_تلاش = (flags&(WHERE_BTM_حد_بندی|WHERE_چوٹی_حد_بندی))!=0
             || ((flags&WHERE_VIRTUALTABLE)==0 && (pLoop->u.btree.nEq>0))
             || (wctrlFlags&(WHERE_ORDERBY_MIN|WHERE_ORDERBY_MAX));
 
-    sqlite3StrAccumInit(&str, db, zBuf, sizeof(zBuf), SQLITE_MAX_LENGTH);
-    str.printfFlags = SQLITE_PRINTF_INTERNAL;
+    sqlite3StrAccumInit(&str, db, zBuf, حجم(zBuf), SQLITE_MAX_لمبائی);
+    str.printfFlags = SQLITE_PRINTF_اندرونی;
     sqlite3_str_appendf(&str, "%s %S%s",
-       isSearch ? "SEARCH" : "SCAN",
-       pItem,
-       pItem->fg.fromExists ? " EXISTS" : "");
-    if( (flags & (WHERE_IPK|WHERE_VIRTUALTABLE))==0 ){
-      const char *zFmt = 0;
-      Index *pIdx;
+       is_تلاش ? "SEARCH" : "SCAN",
+       p_شے,
+       p_شے->fg.fromExists ? " EXISTS" : "");
+    اگر( (flags & (WHERE_IPK|WHERE_VIRTUALTABLE))==0 ){
+      ثابت حرف *zFmt = 0;
+      اشاریہ *pIdx;
 
-      assert( pLoop->u.btree.pIndex!=0 );
-      pIdx = pLoop->u.btree.pIndex;
-      assert( !(flags&WHERE_AUTO_INDEX) || (flags&WHERE_IDX_ONLY) );
-      if( !HasRowid(pItem->pSTab) && IsPrimaryKeyIndex(pIdx) ){
-        if( isSearch ){
+      أكد( pLoop->u.btree.p_اشاریہ!=0 );
+      pIdx = pLoop->u.btree.p_اشاریہ;
+      أكد( !(flags&WHERE_AUTO_اشاریہ) || (flags&WHERE_IDX_ONLY) );
+      اگر( !HasRowid(p_شے->pSTab) && Is_Primary_کلید_اشاریہ(pIdx) ){
+        اگر( is_تلاش ){
           zFmt = "PRIMARY KEY";
         }
-      }else if( flags & WHERE_PARTIALIDX ){
+      }ورنہ اگر( flags & WHERE_PARTIALIDX ){
         zFmt = "AUTOMATIC PARTIAL COVERING INDEX";
-      }else if( flags & WHERE_AUTO_INDEX ){
+      }ورنہ اگر( flags & WHERE_AUTO_اشاریہ ){
         zFmt = "AUTOMATIC COVERING INDEX";
-      }else if( flags & (WHERE_IDX_ONLY|WHERE_EXPRIDX) ){
+      }ورنہ اگر( flags & (WHERE_IDX_ONLY|WHERE_EXPRIDX) ){
         zFmt = "COVERING INDEX %s";
-      }else{
+      }ورنہ{
         zFmt = "INDEX %s";
       }
-      if( zFmt ){
+      اگر( zFmt ){
         sqlite3_str_append(&str, " USING ", 7);
         sqlite3_str_appendf(&str, zFmt, pIdx->zName);
-        explainIndexRange(&str, pLoop);
+        explain_اشاریہ_Range(&str, pLoop);
       }
-    }else if( (flags & WHERE_IPK)!=0 && (flags & WHERE_CONSTRAINT)!=0 ){
-      char cRangeOp;
-#if 0  /* Better output, but breaks many tests */
-      const Table *pTab = pItem->pTab;
-      const char *zRowid = pTab->iPKey>=0 ? pTab->aCol[pTab->iPKey].zCnName:
+    }ورنہ اگر( (flags & WHERE_IPK)!=0 && (flags & WHERE_CONSTRAINT)!=0 ){
+      حرف cRangeOp;
+#اگر 0  /* Better output, but breaks many tests */
+      ثابت جدول *pTab = p_شے->pTab;
+      ثابت حرف *zRowid = pTab->iPKey>=0 ? pTab->a_ستون[pTab->iPKey].zCnName:
                               "rowid";
-#else
-      const char *zRowid = "rowid";
-#endif
+#ورنہ
+      ثابت حرف *zRowid = "rowid";
+#اگر_ختم
       sqlite3_str_appendf(&str, " USING INTEGER PRIMARY KEY (%s", zRowid);
-      if( flags&(WHERE_COLUMN_EQ|WHERE_COLUMN_IN) ){
+      اگر( flags&(WHERE_عمود_EQ|WHERE_عمود_اندر) ){
         cRangeOp = '=';
-      }else if( (flags&WHERE_BOTH_LIMIT)==WHERE_BOTH_LIMIT ){
+      }ورنہ اگر( (flags&WHERE_BOTH_حد_بندی)==WHERE_BOTH_حد_بندی ){
         sqlite3_str_appendf(&str, ">? AND %s", zRowid);
         cRangeOp = '<';
-      }else if( flags&WHERE_BTM_LIMIT ){
+      }ورنہ اگر( flags&WHERE_BTM_حد_بندی ){
         cRangeOp = '>';
-      }else{
-        assert( flags&WHERE_TOP_LIMIT);
+      }ورنہ{
+        أكد( flags&WHERE_چوٹی_حد_بندی);
         cRangeOp = '<';
       }
       sqlite3_str_appendf(&str, "%c?)", cRangeOp);
     }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    else if( (flags & WHERE_VIRTUALTABLE)!=0 ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+    ورنہ اگر( (flags & WHERE_VIRTUALTABLE)!=0 ){
       sqlite3_str_appendall(&str, " VIRTUAL TABLE INDEX ");
       sqlite3_str_appendf(&str,
-                  pLoop->u.vtab.bIdxNumHex ? "0x%x:%s" : "%d:%s",
-                  pLoop->u.vtab.idxNum, pLoop->u.vtab.idxStr);
+                  pLoop->u.vtab.b_Idx_عدد_Hex ? "0x%x:%s" : "%d:%s",
+                  pLoop->u.vtab.idx_عدد, pLoop->u.vtab.idxStr);
     }
-#endif
-    if( pItem->fg.jointype & JT_LEFT ){
+#اگر_ختم
+    اگر( p_شے->fg.jointype & JT_بایاں ){
       sqlite3_str_appendf(&str, " LEFT-JOIN");
     }
-#ifdef SQLITE_EXPLAIN_ESTIMATED_ROWS
-    if( pLoop->nOut>=10 ){
+#اگر_تعریف_شدہ SQLITE_EXPLAIN_ESTIMATED_صفیں
+    اگر( pLoop->n_برآمد>=10 ){
       sqlite3_str_appendf(&str, " (~%llu rows)",
-             sqlite3LogEstToInt(pLoop->nOut));
-    }else{
+             sqlite3_Log_Est_مقصد_Int(pLoop->n_برآمد));
+    }ورنہ{
       sqlite3_str_append(&str, " (~1 row)", 9);
     }
-#endif
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_EXPLAIN)
-    zMsg = sqlite3StrAccumFinish(&str);
-    sqlite3ExplainBreakpoint("",zMsg);
-#endif
+#اگر_ختم
+#اگر defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_EXPLAIN)
+    z_پیغام = sqlite3_Str_Accum_اختتام(&str);
+    sqlite3ExplainBreakpoint("",z_پیغام);
+#اگر_ختم
 
-    assert( pOp->opcode==OP_Explain );
-    assert( pOp->p4type==P4_DYNAMIC || pOp->p4.z==0 );
+    أكد( pOp->opcode==OP_Explain );
+    أكد( pOp->p4type==P4_DYNAMIC || pOp->p4.z==0 );
     sqlite3DbFree(db, pOp->p4.z);
     pOp->p4type = P4_DYNAMIC;
-    pOp->p4.z = sqlite3StrAccumFinish(&str);
+    pOp->p4.z = sqlite3_Str_Accum_اختتام(&str);
   }
 }
 
@@ -242,29 +242,29 @@ void sqlite3WhereAddExplainText(
 ** If an OP_Explain opcode is added to the VM, its address is returned.
 ** Otherwise, if no OP_Explain is coded, zero is returned.
 */
-int sqlite3WhereExplainOneScan(
+صحیح sqlite3_Where_Explain_One_جائزہ(
   Parse *pParse,                  /* Parse context */
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 ){
-  int ret = 0;
-#if !defined(SQLITE_DEBUG)
-  if( sqlite3ParseToplevel(pParse)->explain==2 || IS_STMT_SCANSTATUS(pParse->db) )
-#endif
+  صحیح ret = 0;
+#اگر !defined(SQLITE_DEBUG)
+  اگر( sqlite3ParseToplevel(pParse)->explain==2 || IS_STMT_SCANSTATUS(pParse->db) )
+#اگر_ختم
   {
-    if( (pLevel->pWLoop->wsFlags & WHERE_MULTI_OR)==0
+    اگر( (pLevel->pWLoop->wsFlags & WHERE_MULTI_OR)==0
      && (wctrlFlags & WHERE_OR_SUBCLAUSE)==0
     ){
       Vdbe *v = pParse->pVdbe;
-      int addr = sqlite3VdbeCurrentAddr(v);
-      ret = sqlite3VdbeAddOp3(
-          v, OP_Explain, addr, pParse->addrExplain, pLevel->pWLoop->rRun
+      صحیح addr = sqlite3VdbeCurrentAddr(v);
+      ret = sqlite3_Vdbe_جوڑو_Op3(
+          v, OP_Explain, addr, pParse->addrExplain, pLevel->pWLoop->r_تسلسل
       );
-      sqlite3WhereAddExplainText(pParse, addr, pTabList, pLevel, wctrlFlags);
+      sqlite3_Where_جوڑو_Explain_متن(pParse, addr, pTabList, pLevel, wctrlFlags);
     }
   }
-  return ret;
+  واپس ret;
 }
 
 /*
@@ -277,50 +277,50 @@ int sqlite3WhereExplainOneScan(
 ** If an OP_Explain opcode is added to the VM, its address is returned.
 ** Otherwise, if no OP_Explain is coded, zero is returned.
 */
-int sqlite3WhereExplainBloomFilter(
-  const Parse *pParse,               /* Parse context */
-  const WhereInfo *pWInfo,           /* WHERE clause */
-  const WhereLevel *pLevel           /* Bloom filter on this level */
+صحیح sqlite3WhereExplainBloomFilter(
+  ثابت Parse *pParse,               /* Parse context */
+  ثابت WhereInfo *pWInfo,           /* WHERE clause */
+  ثابت WhereLevel *pLevel           /* Bloom filter on this level */
 ){
-  int ret = 0;
-  SrcItem *pItem = &pWInfo->pTabList->a[pLevel->iFrom];
+  صحیح ret = 0;
+  Src_شے *p_شے = &pWInfo->pTabList->a[pLevel->iFrom];
   Vdbe *v = pParse->pVdbe;      /* VM being constructed */
   sqlite3 *db = pParse->db;     /* Database handle */
-  char *zMsg;                   /* Text to add to EQP output */
-  int i;                        /* Loop counter */
+  حرف *z_پیغام;                   /* Text to add to EQP output */
+  صحیح i;                        /* Loop counter */
   WhereLoop *pLoop;             /* The where loop */
   StrAccum str;                 /* EQP output string */
-  char zBuf[100];               /* Initial space for EQP output string */
+  حرف zBuf[100];               /* Initial space for EQP output string */
 
-  sqlite3StrAccumInit(&str, db, zBuf, sizeof(zBuf), SQLITE_MAX_LENGTH);
-  str.printfFlags = SQLITE_PRINTF_INTERNAL;
-  sqlite3_str_appendf(&str, "BLOOM FILTER ON %S (", pItem);
+  sqlite3StrAccumInit(&str, db, zBuf, حجم(zBuf), SQLITE_MAX_لمبائی);
+  str.printfFlags = SQLITE_PRINTF_اندرونی;
+  sqlite3_str_appendf(&str, "BLOOM FILTER ON %S (", p_شے);
   pLoop = pLevel->pWLoop;
-  if( pLoop->wsFlags & WHERE_IPK ){
-    const Table *pTab = pItem->pSTab;
-    if( pTab->iPKey>=0 ){
-      sqlite3_str_appendf(&str, "%s=?", pTab->aCol[pTab->iPKey].zCnName);
-    }else{
+  اگر( pLoop->wsFlags & WHERE_IPK ){
+    ثابت جدول *pTab = p_شے->pSTab;
+    اگر( pTab->iPKey>=0 ){
+      sqlite3_str_appendf(&str, "%s=?", pTab->a_ستون[pTab->iPKey].zCnName);
+    }ورنہ{
       sqlite3_str_appendf(&str, "rowid=?");
     }
-  }else{
-    for(i=pLoop->nSkip; i<pLoop->u.btree.nEq; i++){
-      const char *z = explainIndexColumnName(pLoop->u.btree.pIndex, i);
-      if( i>pLoop->nSkip ) sqlite3_str_append(&str, " AND ", 5);
+  }ورنہ{
+    برائے(i=pLoop->nSkip; i<pLoop->u.btree.nEq; i++){
+      ثابت حرف *z = explain_اشاریہ_عمود_Name(pLoop->u.btree.p_اشاریہ, i);
+      اگر( i>pLoop->nSkip ) sqlite3_str_append(&str, " AND ", 5);
       sqlite3_str_appendf(&str, "%s=?", z);
     }
   }
   sqlite3_str_append(&str, ")", 1);
-  zMsg = sqlite3StrAccumFinish(&str);
-  ret = sqlite3VdbeAddOp4(v, OP_Explain, sqlite3VdbeCurrentAddr(v),
-                          pParse->addrExplain, 0, zMsg,P4_DYNAMIC);
+  z_پیغام = sqlite3_Str_Accum_اختتام(&str);
+  ret = sqlite3_Vdbe_جوڑو_Op4(v, OP_Explain, sqlite3VdbeCurrentAddr(v),
+                          pParse->addrExplain, 0, z_پیغام,P4_DYNAMIC);
 
-  sqlite3VdbeScanStatus(v, sqlite3VdbeCurrentAddr(v)-1, 0, 0, 0, 0);
-  return ret;
+  sqlite3_Vdbe_جائزہ_حالت(v, sqlite3VdbeCurrentAddr(v)-1, 0, 0, 0, 0);
+  واپس ret;
 }
-#endif /* SQLITE_OMIT_EXPLAIN */
+#اگر_ختم /* SQLITE_OMIT_EXPLAIN */
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
+#اگر_تعریف_شدہ SQLITE_ENABLE_STMT_SCANSTATUS
 /*
 ** Configure the VM passed as the first argument with an
 ** sqlite3_stmt_scanstatus() entry corresponding to the scan used to
@@ -330,48 +330,48 @@ int sqlite3WhereExplainBloomFilter(
 ** If argument addrExplain is not 0, it must be the address of an
 ** OP_Explain instruction that describes the same loop.
 */
-void sqlite3WhereAddScanStatus(
+خالی sqlite3_Where_جوڑو_جائزہ_حالت(
   Vdbe *v,                        /* Vdbe to add scanstatus entry to */
   SrcList *pSrclist,              /* FROM clause pLvl reads data from */
   WhereLevel *pLvl,               /* Level to add scanstatus() entry for */
-  int addrExplain                 /* Address of OP_Explain (or 0) */
+  صحیح addrExplain                 /* Address of OP_Explain (or 0) */
 ){
-  if( IS_STMT_SCANSTATUS( sqlite3VdbeDb(v) ) ){
-    const char *zObj = 0;
+  اگر( IS_STMT_SCANSTATUS( sqlite3VdbeDb(v) ) ){
+    ثابت حرف *zObj = 0;
     WhereLoop *pLoop = pLvl->pWLoop;
-    int wsFlags = pLoop->wsFlags;
-    int viaCoroutine = 0;
+    صحیح wsFlags = pLoop->wsFlags;
+    صحیح بذریعہ_Coroutine = 0;
 
-    if( (wsFlags & WHERE_VIRTUALTABLE)==0  &&  pLoop->u.btree.pIndex!=0 ){
-      zObj = pLoop->u.btree.pIndex->zName;
-    }else{
+    اگر( (wsFlags & WHERE_VIRTUALTABLE)==0  &&  pLoop->u.btree.p_اشاریہ!=0 ){
+      zObj = pLoop->u.btree.p_اشاریہ->zName;
+    }ورنہ{
       zObj = pSrclist->a[pLvl->iFrom].zName;
-      viaCoroutine = pSrclist->a[pLvl->iFrom].fg.viaCoroutine;
+      بذریعہ_Coroutine = pSrclist->a[pLvl->iFrom].fg.بذریعہ_Coroutine;
     }
-    sqlite3VdbeScanStatus(
-        v, addrExplain, pLvl->addrBody, pLvl->addrVisit, pLoop->nOut, zObj
+    sqlite3_Vdbe_جائزہ_حالت(
+        v, addrExplain, pLvl->addrBody, pLvl->addr_دورہ, pLoop->n_برآمد, zObj
     );
 
-    if( viaCoroutine==0 ){
-      if( (wsFlags & (WHERE_MULTI_OR|WHERE_AUTO_INDEX))==0 ){
-        sqlite3VdbeScanStatusRange(v, addrExplain, -1, pLvl->iTabCur);
+    اگر( بذریعہ_Coroutine==0 ){
+      اگر( (wsFlags & (WHERE_MULTI_OR|WHERE_AUTO_اشاریہ))==0 ){
+        sqlite3_Vdbe_جائزہ_حالت_Range(v, addrExplain, -1, pLvl->iTabCur);
       }
-      if( wsFlags & WHERE_INDEXED ){
-        sqlite3VdbeScanStatusRange(v, addrExplain, -1, pLvl->iIdxCur);
+      اگر( wsFlags & WHERE_اشاریہ_دار ){
+        sqlite3_Vdbe_جائزہ_حالت_Range(v, addrExplain, -1, pLvl->iIdxCur);
       }
-    }else{
-      int addr;
+    }ورنہ{
+      صحیح addr;
       VdbeOp *pOp;
-      assert( pSrclist->a[pLvl->iFrom].fg.isSubquery );
+      أكد( pSrclist->a[pLvl->iFrom].fg.isSubquery );
       addr = pSrclist->a[pLvl->iFrom].u4.pSubq->addrFillSub;
       pOp = sqlite3VdbeGetOp(v, addr-1);
-      assert( sqlite3VdbeDb(v)->mallocFailed || pOp->opcode==OP_InitCoroutine );
-      assert( sqlite3VdbeDb(v)->mallocFailed || pOp->p2>addr );
-      sqlite3VdbeScanStatusRange(v, addrExplain, addr, pOp->p2-1);
+      أكد( sqlite3VdbeDb(v)->mallocFailed || pOp->opcode==OP_InitCoroutine );
+      أكد( sqlite3VdbeDb(v)->mallocFailed || pOp->p2>addr );
+      sqlite3_Vdbe_جائزہ_حالت_Range(v, addrExplain, addr, pOp->p2-1);
     }
   }
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -416,29 +416,29 @@ void sqlite3WhereAddScanStatus(
 ** a conditional such that is only evaluated on the second pass of a
 ** LIKE-optimization loop, when scanning BLOBs instead of strings.
 */
-static void disableTerm(WhereLevel *pLevel, WhereTerm *pTerm){
-  int nLoop = 0;
-  assert( pTerm!=0 );
-  while( (pTerm->wtFlags & TERM_CODED)==0
-      && (pLevel->iLeftJoin==0 || ExprHasProperty(pTerm->pExpr, EP_OuterON))
-      && (pLevel->notReady & pTerm->prereqAll)==0
+ساکن خالی disable_رکن(WhereLevel *pLevel, Where_رکن *p_رکن){
+  صحیح nLoop = 0;
+  أكد( p_رکن!=0 );
+  جب( (p_رکن->wtFlags & رکن_CODED)==0
+      && (pLevel->i_بایاں_Join==0 || اظہاریہ_Has_Property(p_رکن->p_اظہاریہ, EP_OuterON))
+      && (pLevel->notReady & p_رکن->prereqAll)==0
   ){
-    if( nLoop && (pTerm->wtFlags & TERM_LIKE)!=0 ){
-      pTerm->wtFlags |= TERM_LIKECOND;
-    }else{
-      pTerm->wtFlags |= TERM_CODED;
+    اگر( nLoop && (p_رکن->wtFlags & رکن_LIKE)!=0 ){
+      p_رکن->wtFlags |= رکن_LIKECOND;
+    }ورنہ{
+      p_رکن->wtFlags |= رکن_CODED;
     }
-#ifdef WHERETRACE_ENABLED
-    if( (sqlite3WhereTrace & 0x4001)==0x4001 ){
+#اگر_تعریف_شدہ WHERETRACE_ENABLED
+    اگر( (sqlite3WhereTrace & 0x4001)==0x4001 ){
       sqlite3DebugPrintf("DISABLE-");
-      sqlite3WhereTermPrint(pTerm, (int)(pTerm - (pTerm->pWC->a)));
+      sqlite3_Where_رکن_Print(p_رکن, (صحیح)(p_رکن - (p_رکن->pWC->a)));
     }
-#endif
-    if( pTerm->iParent<0 ) break;
-    pTerm = &pTerm->pWC->a[pTerm->iParent];
-    assert( pTerm!=0 );
-    pTerm->nChild--;
-    if( pTerm->nChild!=0 ) break;
+#اگر_ختم
+    اگر( p_رکن->i_والد<0 ) توڑو;
+    p_رکن = &p_رکن->pWC->a[p_رکن->i_والد];
+    أكد( p_رکن!=0 );
+    p_رکن->n_بچہ--;
+    اگر( p_رکن->n_بچہ!=0 ) توڑو;
     nLoop++;
   }
 }
@@ -454,30 +454,30 @@ static void disableTerm(WhereLevel *pLevel, WhereTerm *pTerm){
 ** This routine makes its own copy of zAff so that the caller is free
 ** to modify zAff after this routine returns.
 */
-static void codeApplyAffinity(Parse *pParse, int base, int n, char *zAff){
+ساکن خالی رمز_Apply_Affinity(Parse *pParse, صحیح بنیاد, صحیح n, حرف *zAff){
   Vdbe *v = pParse->pVdbe;
-  if( zAff==0 ){
-    assert( pParse->db->mallocFailed );
-    return;
+  اگر( zAff==0 ){
+    أكد( pParse->db->mallocFailed );
+    واپس;
   }
-  assert( v!=0 );
+  أكد( v!=0 );
 
   /* Adjust base and n to skip over SQLITE_AFF_BLOB and SQLITE_AFF_NONE
   ** entries at the beginning and end of the affinity string.
   */
-  assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-  while( n>0 && zAff[0]<=SQLITE_AFF_BLOB ){
+  أكد( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
+  جب( n>0 && zAff[0]<=SQLITE_AFF_BLOB ){
     n--;
-    base++;
+    بنیاد++;
     zAff++;
   }
-  while( n>1 && zAff[n-1]<=SQLITE_AFF_BLOB ){
+  جب( n>1 && zAff[n-1]<=SQLITE_AFF_BLOB ){
     n--;
   }
 
   /* Code the OP_Affinity opcode if there is anything left to do. */
-  if( n>0 ){
-    sqlite3VdbeAddOp4(v, OP_Affinity, base, n, 0, zAff, n);
+  اگر( n>0 ){
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_Affinity, بنیاد, n, 0, zAff, n);
   }
 }
 
@@ -491,16 +491,16 @@ static void codeApplyAffinity(Parse *pParse, int base, int n, char *zAff){
 **   * the comparison will be performed with no affinity, or
 **   * the affinity change in zAff is guaranteed not to change the value.
 */
-static void updateRangeAffinityStr(
-  Expr *pRight,                   /* RHS of comparison */
-  int n,                          /* Number of vector elements in comparison */
-  char *zAff                      /* Affinity string to modify */
+ساکن خالی updateRangeAffinityStr(
+  اظہاریہ *p_دایاں,                   /* RHS of comparison */
+  صحیح n,                          /* Number of vector elements in comparison */
+  حرف *zAff                      /* Affinity string to modify */
 ){
-  int i;
-  for(i=0; i<n; i++){
-    Expr *p = sqlite3VectorFieldSubexpr(pRight, i);
-    if( sqlite3CompareAffinity(p, zAff[i])==SQLITE_AFF_BLOB
-     || sqlite3ExprNeedsNoAffinityChange(p, zAff[i])
+  صحیح i;
+  برائے(i=0; i<n; i++){
+    اظہاریہ *p = sqlite3_سمتیہ_میدان_Subexpr(p_دایاں, i);
+    اگر( sqlite3CompareAffinity(p, zAff[i])==SQLITE_AFF_BLOB
+     || sqlite3_اظہاریہ_Needs_No_Affinity_Change(p, zAff[i])
     ){
       zAff[i] = SQLITE_AFF_BLOB;
     }
@@ -522,20 +522,20 @@ static void updateRangeAffinityStr(
 ** pEList->a[N].u.x.iOrderByCol into N+1.  (The "+1" is because of the 1-based
 ** indexing used by iOrderByCol.)  Or if no match, iOrderByCol is set to zero.
 */
-static void adjustOrderByCol(ExprList *pOrderBy, ExprList *pEList){
-  int i, j;
-  if( pOrderBy==0 ) return;
-  for(i=0; i<pOrderBy->nExpr; i++){
-    int t = pOrderBy->a[i].u.x.iOrderByCol;
-    if( t==0 ) continue;
-    for(j=0; j<pEList->nExpr; j++){
-      if( pEList->a[j].u.x.iOrderByCol==t ){
-        pOrderBy->a[i].u.x.iOrderByCol = j+1;
-        break;
+ساکن خالی adjust_ترتیب_By_ستون(اظہاریہ_List *p_ترتیب_By, اظہاریہ_List *pEList){
+  صحیح i, j;
+  اگر( p_ترتیب_By==0 ) واپس;
+  برائے(i=0; i<p_ترتیب_By->n_اظہاریہ; i++){
+    صحیح t = p_ترتیب_By->a[i].u.x.i_ترتیب_By_ستون;
+    اگر( t==0 ) جاری;
+    برائے(j=0; j<pEList->n_اظہاریہ; j++){
+      اگر( pEList->a[j].u.x.i_ترتیب_By_ستون==t ){
+        p_ترتیب_By->a[i].u.x.i_ترتیب_By_ستون = j+1;
+        توڑو;
       }
     }
-    if( j>=pEList->nExpr ){
-      pOrderBy->a[i].u.x.iOrderByCol = 0;
+    اگر( j>=pEList->n_اظہاریہ ){
+      p_ترتیب_By->a[i].u.x.i_ترتیب_By_ستون = 0;
     }
   }
 }
@@ -570,98 +570,98 @@ static void adjustOrderByCol(ExprList *pOrderBy, ExprList *pEList){
 ** only used for indexing, to improve performance.  The original unaltered
 ** IN expression must also be run on each output row for correctness.
 */
-static Expr *removeUnindexableInClauseTerms(
+ساکن اظہاریہ *remove_Unindexable_اندر_Clause_Terms(
   Parse *pParse,        /* The parsing context */
-  int iEq,              /* Look at loop terms starting here */
+  صحیح iEq,              /* Look at loop terms starting here */
   WhereLoop *pLoop,     /* The current loop */
-  Expr *pX              /* The IN expression to be reduced */
+  اظہاریہ *pX              /* The IN expression to be reduced */
 ){
   sqlite3 *db = pParse->db;
   Select *pSelect;            /* Pointer to the SELECT on the RHS */
-  Expr *pNew;
-  pNew = sqlite3ExprDup(db, pX, 0);
-  if( db->mallocFailed==0 ){
-    for(pSelect=pNew->x.pSelect; pSelect; pSelect=pSelect->pPrior){
-      ExprList *pOrigRhs;         /* Original unmodified RHS */
-      ExprList *pOrigLhs = 0;     /* Original unmodified LHS */
-      ExprList *pRhs = 0;         /* New RHS after modifications */
-      ExprList *pLhs = 0;         /* New LHS after mods */
-      int i;                      /* Loop counter */
-      int nRhs = 0;               /* Number of RHS terms added so far */
+  اظہاریہ *pNew;
+  pNew = sqlite3_اظہاریہ_Dup(db, pX, 0);
+  اگر( db->mallocFailed==0 ){
+    برائے(pSelect=pNew->x.pSelect; pSelect; pSelect=pSelect->p_پیشگی){
+      اظہاریہ_List *pOrigRhs;         /* Original unmodified RHS */
+      اظہاریہ_List *pOrigLhs = 0;     /* Original unmodified LHS */
+      اظہاریہ_List *pRhs = 0;         /* New RHS after modifications */
+      اظہاریہ_List *pLhs = 0;         /* New LHS after mods */
+      صحیح i;                      /* Loop counter */
+      صحیح nRhs = 0;               /* Number of RHS terms added so far */
 
-      assert( ExprUseXSelect(pNew) );
+      أكد( اظہاریہ_Use_XSelect(pNew) );
       pOrigRhs = pSelect->pEList;
-      assert( pNew->pLeft!=0 );
-      assert( ExprUseXList(pNew->pLeft) );
-      if( pSelect==pNew->x.pSelect ){
-        pOrigLhs = pNew->pLeft->x.pList;
+      أكد( pNew->p_بایاں!=0 );
+      أكد( اظہاریہ_Use_XList(pNew->p_بایاں) );
+      اگر( pSelect==pNew->x.pSelect ){
+        pOrigLhs = pNew->p_بایاں->x.pList;
       }
-      for(i=iEq; i<pLoop->nLTerm; i++){
-        if( pLoop->aLTerm[i]->pExpr==pX ){
-          int iField;
-          assert( (pLoop->aLTerm[i]->eOperator & (WO_OR|WO_AND))==0 );
-          iField = pLoop->aLTerm[i]->u.x.iField - 1;
-          if( iField!=nRhs ){
-            ExprClearProperty(pNew, EP_Subrtn);
+      برائے(i=iEq; i<pLoop->nLTerm; i++){
+        اگر( pLoop->aLTerm[i]->p_اظہاریہ==pX ){
+          صحیح i_میدان;
+          أكد( (pLoop->aLTerm[i]->eOperator & (WO_OR|WO_AND))==0 );
+          i_میدان = pLoop->aLTerm[i]->u.x.i_میدان - 1;
+          اگر( i_میدان!=nRhs ){
+            اظہاریہ_Clear_Property(pNew, EP_Subrtn);
           }
-          if( NEVER(pOrigRhs->a[iField].pExpr==0) ){
-            continue; /* Duplicate PK column */
+          اگر( NEVER(pOrigRhs->a[i_میدان].p_اظہاریہ==0) ){
+            جاری; /* Duplicate PK column */
           }
-          pRhs = sqlite3ExprListAppend(pParse, pRhs, pOrigRhs->a[iField].pExpr);
-          pOrigRhs->a[iField].pExpr = 0;
-          if( pRhs ) pRhs->a[pRhs->nExpr-1].u.x.iOrderByCol = iField+1;
-          if( pOrigLhs ){
-            assert( pOrigLhs->a[iField].pExpr!=0 );
-            pLhs = sqlite3ExprListAppend(pParse,pLhs,pOrigLhs->a[iField].pExpr);
-            pOrigLhs->a[iField].pExpr = 0;
+          pRhs = sqlite3_اظہاریہ_List_Append(pParse, pRhs, pOrigRhs->a[i_میدان].p_اظہاریہ);
+          pOrigRhs->a[i_میدان].p_اظہاریہ = 0;
+          اگر( pRhs ) pRhs->a[pRhs->n_اظہاریہ-1].u.x.i_ترتیب_By_ستون = i_میدان+1;
+          اگر( pOrigLhs ){
+            أكد( pOrigLhs->a[i_میدان].p_اظہاریہ!=0 );
+            pLhs = sqlite3_اظہاریہ_List_Append(pParse,pLhs,pOrigLhs->a[i_میدان].p_اظہاریہ);
+            pOrigLhs->a[i_میدان].p_اظہاریہ = 0;
           }
           nRhs++;
         }
       }
-      if( nRhs<pOrigRhs->nExpr ){
-        ExprClearProperty(pNew, EP_Subrtn); /* See bug 2026-10-16T22:07:15Z */
+      اگر( nRhs<pOrigRhs->n_اظہاریہ ){
+        اظہاریہ_Clear_Property(pNew, EP_Subrtn); /* See bug 2026-10-16T22:07:15Z */
       }
-      sqlite3ExprListDelete(db, pOrigRhs);
-      if( pOrigLhs ){
-        sqlite3ExprListDelete(db, pOrigLhs);
-        pNew->pLeft->x.pList = pLhs;
+      sqlite3_اظہاریہ_List_Delete(db, pOrigRhs);
+      اگر( pOrigLhs ){
+        sqlite3_اظہاریہ_List_Delete(db, pOrigLhs);
+        pNew->p_بایاں->x.pList = pLhs;
       }
       pSelect->pEList = pRhs;
       pSelect->selId = ++pParse->nSelect; /* Req'd for SubrtnSig validity */
-      if( pLhs && pLhs->nExpr==1 ){
+      اگر( pLhs && pLhs->n_اظہاریہ==1 ){
         /* Take care here not to generate a TK_VECTOR containing only a
         ** single value. Since the parser never creates such a vector, some
         ** of the subroutines do not handle this case.  */
-        Expr *p = pLhs->a[0].pExpr;
-        pLhs->a[0].pExpr = 0;
-        sqlite3ExprDelete(db, pNew->pLeft);
-        pNew->pLeft = p;
+        اظہاریہ *p = pLhs->a[0].p_اظہاریہ;
+        pLhs->a[0].p_اظہاریہ = 0;
+        sqlite3_اظہاریہ_Delete(db, pNew->p_بایاں);
+        pNew->p_بایاں = p;
       }
 
       /* If either the ORDER BY clause or the GROUP BY clause contains
       ** references to result-set columns, those references might now be
       ** obsolete.  So fix them up.
       */
-      assert( pRhs!=0 || db->mallocFailed );
-      if( pRhs ){
-        adjustOrderByCol(pSelect->pOrderBy, pRhs);
-        adjustOrderByCol(pSelect->pGroupBy, pRhs);
-        for(i=0; i<pRhs->nExpr; i++) pRhs->a[i].u.x.iOrderByCol = 0;
+      أكد( pRhs!=0 || db->mallocFailed );
+      اگر( pRhs ){
+        adjust_ترتیب_By_ستون(pSelect->p_ترتیب_By, pRhs);
+        adjust_ترتیب_By_ستون(pSelect->p_گروہ_By, pRhs);
+        برائے(i=0; i<pRhs->n_اظہاریہ; i++) pRhs->a[i].u.x.i_ترتیب_By_ستون = 0;
       }
 
-#if 0
-      printf("For indexing, change the IN expr:\n");
-      sqlite3TreeViewExpr(0, pX, 0);
-      printf("Into:\n");
-      sqlite3TreeViewExpr(0, pNew, 0);
-#endif
+#اگر 0
+      لکھو("For indexing, change the IN expr:\n");
+      sqlite3_درخت_View_اظہاریہ(0, pX, 0);
+      لکھو("Into:\n");
+      sqlite3_درخت_View_اظہاریہ(0, pNew, 0);
+#اگر_ختم
     }
   }
-  return pNew;
+  واپس pNew;
 }
 
 
-#ifndef SQLITE_OMIT_SUBQUERY
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
 /*
 ** Generate code for a single X IN (....) term of the WHERE clause.
 **
@@ -673,52 +673,52 @@ static Expr *removeUnindexableInClauseTerms(
 ** The current value for the constraint is left in  register iTarget.
 ** This routine sets up a loop that will iterate over all values of X.
 */
-static SQLITE_NOINLINE void codeINTerm(
+ساکن SQLITE_NOINLINE خالی رمز_INTerm(
   Parse *pParse,      /* The parsing context */
-  WhereTerm *pTerm,   /* The term of the WHERE clause to be coded */
+  Where_رکن *p_رکن,   /* The term of the WHERE clause to be coded */
   WhereLevel *pLevel, /* The level of the FROM clause we are working on */
-  int iEq,            /* Index of the equality term within this level */
-  int bRev,           /* True for reverse-order IN operations */
-  int iTarget         /* Attempt to leave results in this register */
+  صحیح iEq,            /* Index of the equality term within this level */
+  صحیح bRev,           /* True for reverse-order IN operations */
+  صحیح i_ہدف         /* Attempt to leave results in this register */
 ){
-  Expr *pX = pTerm->pExpr;
-  int eType = IN_INDEX_NOOP;
-  int iTab;
-  struct InLoop *pIn;
+  اظہاریہ *pX = p_رکن->p_اظہاریہ;
+  صحیح eType = اندر_اشاریہ_NOOP;
+  صحیح iTab;
+  ساخت اندر_Loop *p_اندر;
   WhereLoop *pLoop = pLevel->pWLoop;
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int nEq = 0;
-  int *aiMap = 0;
+  صحیح i;
+  صحیح nEq = 0;
+  صحیح *aiMap = 0;
 
-  if( (pLoop->wsFlags & WHERE_VIRTUALTABLE)==0
-    && pLoop->u.btree.pIndex!=0
-    && pLoop->u.btree.pIndex->aSortOrder[iEq]
+  اگر( (pLoop->wsFlags & WHERE_VIRTUALTABLE)==0
+    && pLoop->u.btree.p_اشاریہ!=0
+    && pLoop->u.btree.p_اشاریہ->a_ترتیب_دو_ترتیب[iEq]
   ){
     testcase( iEq==0 );
     testcase( bRev );
     bRev = !bRev;
   }
-  assert( pX->op==TK_IN );
+  أكد( pX->op==TK_اندر );
 
-  for(i=0; i<iEq; i++){
-    if( pLoop->aLTerm[i] && pLoop->aLTerm[i]->pExpr==pX ){
-      disableTerm(pLevel, pTerm);
-      return;
+  برائے(i=0; i<iEq; i++){
+    اگر( pLoop->aLTerm[i] && pLoop->aLTerm[i]->p_اظہاریہ==pX ){
+      disable_رکن(pLevel, p_رکن);
+      واپس;
     }
   }
-  for(i=iEq; i<pLoop->nLTerm; i++){
-    assert( pLoop->aLTerm[i]!=0 );
-    if( pLoop->aLTerm[i]->pExpr==pX ) nEq++;
+  برائے(i=iEq; i<pLoop->nLTerm; i++){
+    أكد( pLoop->aLTerm[i]!=0 );
+    اگر( pLoop->aLTerm[i]->p_اظہاریہ==pX ) nEq++;
   }
 
   iTab = 0;
-  if( !ExprUseXSelect(pX) || pX->x.pSelect->pEList->nExpr==1 ){
-    eType = sqlite3FindInIndex(pParse, pX, IN_INDEX_LOOP, 0, 0, &iTab);
-  }else{
+  اگر( !اظہاریہ_Use_XSelect(pX) || pX->x.pSelect->pEList->n_اظہاریہ==1 ){
+    eType = sqlite3_ڈھونڈو_اندر_اشاریہ(pParse, pX, اندر_اشاریہ_LOOP, 0, 0, &iTab);
+  }ورنہ{
     sqlite3 *db = pParse->db;
-    Expr *pXMod = removeUnindexableInClauseTerms(pParse, iEq, pLoop, pX);
-    if( nEq>1 ){
+    اظہاریہ *pXMod = remove_Unindexable_اندر_Clause_Terms(pParse, iEq, pLoop, pX);
+    اگر( nEq>1 ){
       /* If this IN(SELECT ...) expression drives more than one column of
       ** the index, disable the seek-scan optimization. The reasons for this
       ** are that (a) it is only possible to make this happen by populating
@@ -727,82 +727,82 @@ static SQLITE_NOINLINE void codeINTerm(
       ** only unique for the columns in question, but also delivers them
       ** in sorted order (requires checking asc/desc, and rejecting cases
       ** where the indexed columns are not in the right order).  */
-      pLoop->wsFlags &= ~WHERE_IN_SEEKSCAN;
+      pLoop->wsFlags &= ~WHERE_اندر_SEEKSCAN;
     }
-    if( !db->mallocFailed ){
-      int nCol = pX->x.pSelect->pEList->nExpr;
-      aiMap = (int*)sqlite3DbMallocZero(db, sizeof(int)*nCol);
-      eType = sqlite3FindInIndex(pParse, pXMod, IN_INDEX_LOOP, 0, aiMap, &iTab);
+    اگر( !db->mallocFailed ){
+      صحیح n_ستون = pX->x.pSelect->pEList->n_اظہاریہ;
+      aiMap = (صحیح*)sqlite3DbMallocZero(db, حجم(صحیح)*n_ستون);
+      eType = sqlite3_ڈھونڈو_اندر_اشاریہ(pParse, pXMod, اندر_اشاریہ_LOOP, 0, aiMap, &iTab);
     }
-    sqlite3ExprDelete(db, pXMod);
+    sqlite3_اظہاریہ_Delete(db, pXMod);
   }
 
-  if( eType==IN_INDEX_INDEX_DESC ){
+  اگر( eType==اندر_اشاریہ_اشاریہ_DESC ){
     testcase( bRev );
     bRev = !bRev;
   }
-  sqlite3VdbeAddOp2(v, bRev ? OP_Last : OP_Rewind, iTab, 0);
+  sqlite3_Vdbe_جوڑو_Op2(v, bRev ? OP_آخری : OP_Rewind, iTab, 0);
   VdbeCoverageIf(v, bRev);
   VdbeCoverageIf(v, !bRev);
 
-  assert( (pLoop->wsFlags & WHERE_MULTI_OR)==0 );
-  pLoop->wsFlags |= WHERE_IN_ABLE;
-  if( pLevel->u.in.nIn==0 ){
+  أكد( (pLoop->wsFlags & WHERE_MULTI_OR)==0 );
+  pLoop->wsFlags |= WHERE_اندر_ABLE;
+  اگر( pLevel->u.اندر.n_اندر==0 ){
     pLevel->addrNxt = sqlite3VdbeMakeLabel(pParse);
   }
-  if( iEq>0 && (pLoop->wsFlags & WHERE_IN_SEEKSCAN)==0 ){
-    pLoop->wsFlags |= WHERE_IN_EARLYOUT;
+  اگر( iEq>0 && (pLoop->wsFlags & WHERE_اندر_SEEKSCAN)==0 ){
+    pLoop->wsFlags |= WHERE_اندر_EARLYOUT;
   }
 
-  i = pLevel->u.in.nIn;
-  pLevel->u.in.nIn += nEq;
-  pLevel->u.in.aInLoop =
-     sqlite3WhereRealloc(pTerm->pWC->pWInfo,
-                         pLevel->u.in.aInLoop,
-                         sizeof(pLevel->u.in.aInLoop[0])*pLevel->u.in.nIn);
-  pIn = pLevel->u.in.aInLoop;
-  if( pIn ){
-    int iMap = 0;               /* Index in aiMap[] */
-    pIn += i;
-    for(i=iEq; i<pLoop->nLTerm; i++){
-      if( pLoop->aLTerm[i]->pExpr==pX ){
-        int iOut = iTarget + i - iEq;
-        if( eType==IN_INDEX_ROWID ){
-          pIn->addrInTop = sqlite3VdbeAddOp2(v, OP_Rowid, iTab, iOut);
-        }else{
-          int iCol = aiMap ? aiMap[iMap++] : 0;
-          pIn->addrInTop = sqlite3VdbeAddOp3(v,OP_Column,iTab, iCol, iOut);
+  i = pLevel->u.اندر.n_اندر;
+  pLevel->u.اندر.n_اندر += nEq;
+  pLevel->u.اندر.a_اندر_Loop =
+     sqlite3WhereRealloc(p_رکن->pWC->pWInfo,
+                         pLevel->u.اندر.a_اندر_Loop,
+                         حجم(pLevel->u.اندر.a_اندر_Loop[0])*pLevel->u.اندر.n_اندر);
+  p_اندر = pLevel->u.اندر.a_اندر_Loop;
+  اگر( p_اندر ){
+    صحیح iMap = 0;               /* Index in aiMap[] */
+    p_اندر += i;
+    برائے(i=iEq; i<pLoop->nLTerm; i++){
+      اگر( pLoop->aLTerm[i]->p_اظہاریہ==pX ){
+        صحیح i_برآمد = i_ہدف + i - iEq;
+        اگر( eType==اندر_اشاریہ_ROWID ){
+          p_اندر->addr_اندر_چوٹی = sqlite3_Vdbe_جوڑو_Op2(v, OP_Rowid, iTab, i_برآمد);
+        }ورنہ{
+          صحیح i_ستون = aiMap ? aiMap[iMap++] : 0;
+          p_اندر->addr_اندر_چوٹی = sqlite3_Vdbe_جوڑو_Op3(v,OP_عمود,iTab, i_ستون, i_برآمد);
         }
-        sqlite3VdbeAddOp1(v, OP_IsNull, iOut); VdbeCoverage(v);
-        if( i==iEq ){
-          pIn->iCur = iTab;
-          pIn->eEndLoopOp = bRev ? OP_Prev : OP_Next;
-          if( iEq>0 ){
-            pIn->iBase = iTarget - i;
-            pIn->nPrefix = i;
-          }else{
-            pIn->nPrefix = 0;
+        sqlite3_Vdbe_جوڑو_Op1(v, OP_IsNull, i_برآمد); VdbeCoverage(v);
+        اگر( i==iEq ){
+          p_اندر->iCur = iTab;
+          p_اندر->e_انتہا_Loop_Op = bRev ? OP_پچھلا : OP_اگلا;
+          اگر( iEq>0 ){
+            p_اندر->i_بنیاد = i_ہدف - i;
+            p_اندر->n_سابقہ = i;
+          }ورنہ{
+            p_اندر->n_سابقہ = 0;
           }
-        }else{
-          pIn->eEndLoopOp = OP_Noop;
+        }ورنہ{
+          p_اندر->e_انتہا_Loop_Op = OP_Noop;
         }
-        pIn++;
+        p_اندر++;
       }
     }
     testcase( iEq>0
-              && (pLoop->wsFlags & WHERE_IN_SEEKSCAN)==0
+              && (pLoop->wsFlags & WHERE_اندر_SEEKSCAN)==0
               && (pLoop->wsFlags & WHERE_VIRTUALTABLE)!=0 );
-    if( iEq>0
-     && (pLoop->wsFlags & (WHERE_IN_SEEKSCAN|WHERE_VIRTUALTABLE))==0
+    اگر( iEq>0
+     && (pLoop->wsFlags & (WHERE_اندر_SEEKSCAN|WHERE_VIRTUALTABLE))==0
     ){
-      sqlite3VdbeAddOp3(v, OP_SeekHit, pLevel->iIdxCur, 0, iEq);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Seek_کامیابی, pLevel->iIdxCur, 0, iEq);
     }
-  }else{
-    pLevel->u.in.nIn = 0;
+  }ورنہ{
+    pLevel->u.اندر.n_اندر = 0;
   }
   sqlite3DbFree(pParse->db, aiMap);
 }
-#endif
+#اگر_ختم
 
 
 /*
@@ -820,30 +820,30 @@ static SQLITE_NOINLINE void codeINTerm(
 ** straight-line code.  For constraints of the form X IN (...)
 ** this routine sets up a loop that will iterate over all values of X.
 */
-static int codeEqualityTerm(
+ساکن صحیح رمز_Equality_رکن(
   Parse *pParse,      /* The parsing context */
-  WhereTerm *pTerm,   /* The term of the WHERE clause to be coded */
+  Where_رکن *p_رکن,   /* The term of the WHERE clause to be coded */
   WhereLevel *pLevel, /* The level of the FROM clause we are working on */
-  int iEq,            /* Index of the equality term within this level */
-  int bRev,           /* True for reverse-order IN operations */
-  int iTarget         /* Attempt to leave results in this register */
+  صحیح iEq,            /* Index of the equality term within this level */
+  صحیح bRev,           /* True for reverse-order IN operations */
+  صحیح i_ہدف         /* Attempt to leave results in this register */
 ){
-  Expr *pX = pTerm->pExpr;
-  int iReg;                  /* Register holding results */
+  اظہاریہ *pX = p_رکن->p_اظہاریہ;
+  صحیح iReg;                  /* Register holding results */
 
-  assert( pLevel->pWLoop->aLTerm[iEq]==pTerm );
-  assert( iTarget>0 );
-  if( pX->op==TK_EQ || pX->op==TK_IS ){
-    iReg = sqlite3ExprCodeTarget(pParse, pX->pRight, iTarget);
-  }else if( pX->op==TK_ISNULL ){
-    iReg = iTarget;
-    sqlite3VdbeAddOp2(pParse->pVdbe, OP_Null, 0, iReg);
-#ifndef SQLITE_OMIT_SUBQUERY
-  }else{
-    assert( pX->op==TK_IN );
-    iReg = iTarget;
-    codeINTerm(pParse, pTerm, pLevel, iEq, bRev, iTarget);
-#endif
+  أكد( pLevel->pWLoop->aLTerm[iEq]==p_رکن );
+  أكد( i_ہدف>0 );
+  اگر( pX->op==TK_EQ || pX->op==TK_IS ){
+    iReg = sqlite3_اظہاریہ_رمز_ہدف(pParse, pX->p_دایاں, i_ہدف);
+  }ورنہ اگر( pX->op==TK_ISNULL ){
+    iReg = i_ہدف;
+    sqlite3_Vdbe_جوڑو_Op2(pParse->pVdbe, OP_Null, 0, iReg);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+  }ورنہ{
+    أكد( pX->op==TK_اندر );
+    iReg = i_ہدف;
+    رمز_INTerm(pParse, p_رکن, pLevel, iEq, bRev, i_ہدف);
+#اگر_ختم
   }
 
   /* As an optimization, try to disable the WHERE clause term that is
@@ -855,13 +855,13 @@ static int codeEqualityTerm(
   ** not a transitive constraint.  For an example of where that does not
   ** work, see https://sqlite.org/forum/forumpost/eb8613976a (2021-05-04)
   */
-  if( (pLevel->pWLoop->wsFlags & WHERE_TRANSCONS)==0
-   || (pTerm->eOperator & WO_EQUIV)==0
+  اگر( (pLevel->pWLoop->wsFlags & WHERE_TRANSCONS)==0
+   || (p_رکن->eOperator & WO_EQUIV)==0
   ){
-    disableTerm(pLevel, pTerm);
+    disable_رکن(pLevel, p_رکن);
   }
 
-  return iReg;
+  واپس iReg;
 }
 
 /*
@@ -909,107 +909,107 @@ static int codeEqualityTerm(
 ** a key to search the index. Hence the first byte in the returned affinity
 ** string in this example would be set to SQLITE_AFF_BLOB.
 */
-static int codeAllEqualityTerms(
+ساکن صحیح رمز_All_Equality_Terms(
   Parse *pParse,        /* Parsing context */
   WhereLevel *pLevel,   /* Which nested loop of the FROM we are coding */
-  int bRev,             /* Reverse the order of IN operators */
-  int nExtraReg,        /* Number of extra registers to allocate */
-  char **pzAff          /* OUT: Set to point to affinity string */
+  صحیح bRev,             /* Reverse the order of IN operators */
+  صحیح nExtraReg,        /* Number of extra registers to allocate */
+  حرف **pzAff          /* OUT: Set to point to affinity string */
 ){
   u16 nEq;                      /* The number of == or IN constraints to code */
   u16 nSkip;                    /* Number of left-most columns to skip */
   Vdbe *v = pParse->pVdbe;      /* The vm under construction */
-  Index *pIdx;                  /* The index being used for this loop */
-  WhereTerm *pTerm;             /* A single constraint term */
+  اشاریہ *pIdx;                  /* The index being used for this loop */
+  Where_رکن *p_رکن;             /* A single constraint term */
   WhereLoop *pLoop;             /* The WhereLoop object */
-  int j;                        /* Loop counter */
-  int regBase;                  /* Base register */
-  int nReg;                     /* Number of registers to allocate */
-  char *zAff;                   /* Affinity string to return */
+  صحیح j;                        /* Loop counter */
+  صحیح reg_بنیاد;                  /* Base register */
+  صحیح nReg;                     /* Number of registers to allocate */
+  حرف *zAff;                   /* Affinity string to return */
 
   /* This module is only called on query plans that use an index. */
   pLoop = pLevel->pWLoop;
-  assert( (pLoop->wsFlags & WHERE_VIRTUALTABLE)==0 );
+  أكد( (pLoop->wsFlags & WHERE_VIRTUALTABLE)==0 );
   nEq = pLoop->u.btree.nEq;
   nSkip = pLoop->nSkip;
-  pIdx = pLoop->u.btree.pIndex;
-  assert( pIdx!=0 );
+  pIdx = pLoop->u.btree.p_اشاریہ;
+  أكد( pIdx!=0 );
 
   /* Figure out how many memory cells we will need then allocate them.
   */
-  regBase = pParse->nMem + 1;
+  reg_بنیاد = pParse->nMem + 1;
   nReg = nEq + nExtraReg;
   pParse->nMem += nReg;
 
-  zAff = sqlite3DbStrDup(pParse->db,sqlite3IndexAffinityStr(pParse->db,pIdx));
-  assert( zAff!=0 || pParse->db->mallocFailed );
+  zAff = sqlite3DbStrDup(pParse->db,sqlite3_اشاریہ_Affinity_Str(pParse->db,pIdx));
+  أكد( zAff!=0 || pParse->db->mallocFailed );
 
-  if( nSkip ){
-    int iIdxCur = pLevel->iIdxCur;
-    sqlite3VdbeAddOp3(v, OP_Null, 0, regBase, regBase+nSkip-1);
-    sqlite3VdbeAddOp1(v, (bRev?OP_Last:OP_Rewind), iIdxCur);
+  اگر( nSkip ){
+    صحیح iIdxCur = pLevel->iIdxCur;
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Null, 0, reg_بنیاد, reg_بنیاد+nSkip-1);
+    sqlite3_Vdbe_جوڑو_Op1(v, (bRev?OP_آخری:OP_Rewind), iIdxCur);
     VdbeCoverageIf(v, bRev==0);
     VdbeCoverageIf(v, bRev!=0);
     VdbeComment((v, "begin skip-scan on %s", pIdx->zName));
-    j = sqlite3VdbeAddOp0(v, OP_Goto);
-    assert( pLevel->addrSkip==0 );
-    pLevel->addrSkip = sqlite3VdbeAddOp4Int(v, (bRev?OP_SeekLT:OP_SeekGT),
-                            iIdxCur, 0, regBase, nSkip);
+    j = sqlite3_Vdbe_جوڑو_Op0(v, OP_Goto);
+    أكد( pLevel->addrSkip==0 );
+    pLevel->addrSkip = sqlite3_Vdbe_جوڑو_Op4_Int(v, (bRev?OP_SeekLT:OP_SeekGT),
+                            iIdxCur, 0, reg_بنیاد, nSkip);
     VdbeCoverageIf(v, bRev==0);
     VdbeCoverageIf(v, bRev!=0);
-    sqlite3VdbeJumpHere(v, j);
-    for(j=0; j<nSkip; j++){
-      sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, j, regBase+j);
-      testcase( pIdx->aiColumn[j]==XN_EXPR );
-      VdbeComment((v, "%s", explainIndexColumnName(pIdx, j)));
+    sqlite3_Vdbe_Jump_یہاں(v, j);
+    برائے(j=0; j<nSkip; j++){
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iIdxCur, j, reg_بنیاد+j);
+      testcase( pIdx->ai_عمود[j]==XN_اظہاریہ );
+      VdbeComment((v, "%s", explain_اشاریہ_عمود_Name(pIdx, j)));
     }
   }
 
   /* Evaluate the equality constraints
   */
-  assert( zAff==0 || (int)strlen(zAff)>=nEq );
-  for(j=nSkip; j<nEq; j++){
-    int r1;
-    pTerm = pLoop->aLTerm[j];
-    assert( pTerm!=0 );
+  أكد( zAff==0 || (صحیح)لڑی_لمبائی(zAff)>=nEq );
+  برائے(j=nSkip; j<nEq; j++){
+    صحیح r1;
+    p_رکن = pLoop->aLTerm[j];
+    أكد( p_رکن!=0 );
     /* The following testcase is true for indices with redundant columns.
     ** Ex: CREATE INDEX i1 ON t1(a,b,a); SELECT * FROM t1 WHERE a=0 AND b=0; */
-    testcase( (pTerm->wtFlags & TERM_CODED)!=0 );
-    testcase( pTerm->wtFlags & TERM_VIRTUAL );
-    r1 = codeEqualityTerm(pParse, pTerm, pLevel, j, bRev, regBase+j);
-    if( r1!=regBase+j ){
-      sqlite3VdbeAddOp2(v, OP_Copy, r1, regBase+j);
+    testcase( (p_رکن->wtFlags & رکن_CODED)!=0 );
+    testcase( p_رکن->wtFlags & رکن_VIRTUAL );
+    r1 = رمز_Equality_رکن(pParse, p_رکن, pLevel, j, bRev, reg_بنیاد+j);
+    اگر( r1!=reg_بنیاد+j ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Copy, r1, reg_بنیاد+j);
     }
-    if( pTerm->eOperator & WO_IN ){
-      if( pTerm->pExpr->flags & EP_xIsSelect ){
+    اگر( p_رکن->eOperator & WO_اندر ){
+      اگر( p_رکن->p_اظہاریہ->flags & EP_xIsSelect ){
         /* No affinity ever needs to be (or should be) applied to a value
         ** from the RHS of an "? IN (SELECT ...)" expression. The
         ** sqlite3FindInIndex() routine has already ensured that the
         ** affinity of the comparison has been applied to the value.  */
-        if( zAff ) zAff[j] = SQLITE_AFF_BLOB;
+        اگر( zAff ) zAff[j] = SQLITE_AFF_BLOB;
       }
-    }else if( (pTerm->eOperator & WO_ISNULL)==0 ){
-      Expr *pRight = pTerm->pExpr->pRight;
-      if( (pTerm->wtFlags & TERM_IS)==0 && sqlite3ExprCanBeNull(pRight) ){
-        sqlite3VdbeAddOp2(v, OP_IsNull, regBase+j, pLevel->addrBrk);
+    }ورنہ اگر( (p_رکن->eOperator & WO_ISNULL)==0 ){
+      اظہاریہ *p_دایاں = p_رکن->p_اظہاریہ->p_دایاں;
+      اگر( (p_رکن->wtFlags & رکن_IS)==0 && sqlite3_اظہاریہ_Can_Be_Null(p_دایاں) ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, reg_بنیاد+j, pLevel->addrBrk);
         VdbeCoverage(v);
       }
-      if( pParse->nErr==0 ){
-        assert( pParse->db->mallocFailed==0 );
-        if( sqlite3CompareAffinity(pRight, zAff[j])==SQLITE_AFF_BLOB ){
+      اگر( pParse->nErr==0 ){
+        أكد( pParse->db->mallocFailed==0 );
+        اگر( sqlite3CompareAffinity(p_دایاں, zAff[j])==SQLITE_AFF_BLOB ){
           zAff[j] = SQLITE_AFF_BLOB;
         }
-        if( sqlite3ExprNeedsNoAffinityChange(pRight, zAff[j]) ){
+        اگر( sqlite3_اظہاریہ_Needs_No_Affinity_Change(p_دایاں, zAff[j]) ){
           zAff[j] = SQLITE_AFF_BLOB;
         }
       }
     }
   }
   *pzAff = zAff;
-  return regBase;
+  واپس reg_بنیاد;
 }
 
-#ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
+#اگر_غیر_تعریف_شدہ SQLITE_LIKE_DOESNT_مطابقت_BLOBS
 /*
 ** If the most recently coded instruction is a constant range constraint
 ** (a string literal) that originated from the LIKE optimization, then
@@ -1027,36 +1027,36 @@ static int codeAllEqualityTerms(
 ** only the one pass through the string space is required, so this routine
 ** becomes a no-op.
 */
-static void whereLikeOptimizationStringFixup(
+ساکن خالی whereLikeOptimizationStringFixup(
   Vdbe *v,                /* prepared statement under construction */
   WhereLevel *pLevel,     /* The loop that contains the LIKE operator */
-  WhereTerm *pTerm        /* The upper or lower bound just coded */
+  Where_رکن *p_رکن        /* The upper or lower bound just coded */
 ){
-  if( pTerm->wtFlags & TERM_LIKEOPT ){
+  اگر( p_رکن->wtFlags & رکن_LIKEOPT ){
     VdbeOp *pOp;
-    assert( pLevel->iLikeRepCntr>0 );
-    pOp = sqlite3VdbeGetLastOp(v);
-    assert( pOp!=0 );
-    assert( pOp->opcode==OP_String8
-            || pTerm->pWC->pWInfo->pParse->db->mallocFailed );
-    pOp->p3 = (int)(pLevel->iLikeRepCntr>>1);  /* Register holding counter */
+    أكد( pLevel->iLikeRepCntr>0 );
+    pOp = sqlite3_Vdbe_Get_آخری_Op(v);
+    أكد( pOp!=0 );
+    أكد( pOp->opcode==OP_String8
+            || p_رکن->pWC->pWInfo->pParse->db->mallocFailed );
+    pOp->p3 = (صحیح)(pLevel->iLikeRepCntr>>1);  /* Register holding counter */
     pOp->p5 = (u8)(pLevel->iLikeRepCntr&1);    /* ASC or DESC */
   }
 }
-#else
+#ورنہ
 # define whereLikeOptimizationStringFixup(A,B,C)
-#endif
+#اگر_ختم
 
-#ifdef SQLITE_ENABLE_CURSOR_HINTS
+#اگر_تعریف_شدہ SQLITE_ENABLE_CURSOR_HINTS
 /*
 ** Information is passed from codeCursorHint() down to individual nodes of
 ** the expression tree (by sqlite3WalkExpr()) using an instance of this
 ** structure.
 */
-struct CCurHint {
-  int iTabCur;    /* Cursor for the main table */
-  int iIdxCur;    /* Cursor for the index, if pIdx!=0.  Unused otherwise */
-  Index *pIdx;    /* The index used to access the table */
+ساخت CCurHint {
+  صحیح iTabCur;    /* Cursor for the main table */
+  صحیح iIdxCur;    /* Cursor for the index, if pIdx!=0.  Unused otherwise */
+  اشاریہ *pIdx;    /* The index used to access the table */
 };
 
 /*
@@ -1065,16 +1065,16 @@ struct CCurHint {
 ** the table CCurHint.iTabCur, verify that the same column can be
 ** accessed through the index.  If it cannot, then set pWalker->eCode to 1.
 */
-static int codeCursorHintCheckExpr(Walker *pWalker, Expr *pExpr){
-  struct CCurHint *pHint = pWalker->u.pCCurHint;
-  assert( pHint->pIdx!=0 );
-  if( pExpr->op==TK_COLUMN
-   && pExpr->iTable==pHint->iTabCur
-   && sqlite3TableColumnToIndex(pHint->pIdx, pExpr->iColumn)<0
+ساکن صحیح رمز_Cursor_Hint_Check_اظہاریہ(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  ساخت CCurHint *pHint = pWalker->u.pCCurHint;
+  أكد( pHint->pIdx!=0 );
+  اگر( p_اظہاریہ->op==TK_عمود
+   && p_اظہاریہ->i_جدول==pHint->iTabCur
+   && sqlite3_جدول_عمود_مقصد_اشاریہ(pHint->pIdx, p_اظہاریہ->i_عمود)<0
   ){
-    pWalker->eCode = 1;
+    pWalker->e_رمز = 1;
   }
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 /*
@@ -1092,21 +1092,21 @@ static int codeCursorHintCheckExpr(Walker *pWalker, Expr *pExpr){
 **   coalesce(col, 1)
 **   CASE WHEN col THEN 0 ELSE 1 END
 */
-static int codeCursorHintIsOrFunction(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_IS
-   || pExpr->op==TK_ISNULL || pExpr->op==TK_ISNOT
-   || pExpr->op==TK_NOTNULL || pExpr->op==TK_CASE
+ساکن صحیح رمز_Cursor_Hint_Is_Or_Function(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  اگر( p_اظہاریہ->op==TK_IS
+   || p_اظہاریہ->op==TK_ISNULL || p_اظہاریہ->op==TK_ISNOT
+   || p_اظہاریہ->op==TK_NOTNULL || p_اظہاریہ->op==TK_CASE
   ){
-    pWalker->eCode = 1;
-  }else if( pExpr->op==TK_FUNCTION ){
-    int d1;
-    char d2[4];
-    if( 0==sqlite3IsLikeFunction(pWalker->pParse->db, pExpr, &d1, d2) ){
-      pWalker->eCode = 1;
+    pWalker->e_رمز = 1;
+  }ورنہ اگر( p_اظہاریہ->op==TK_FUNCTION ){
+    صحیح d1;
+    حرف d2[4];
+    اگر( 0==sqlite3IsLikeFunction(pWalker->pParse->db, p_اظہاریہ, &d1, d2) ){
+      pWalker->e_رمز = 1;
     }
   }
 
-  return WRC_Continue;
+  واپس WRC_Continue;
 }
 
 
@@ -1127,69 +1127,69 @@ static int codeCursorHintIsOrFunction(Walker *pWalker, Expr *pExpr){
 ** know because CCurHint.pIdx!=0) then transform the TK_COLUMN into
 ** an access of the index rather than the original table.
 */
-static int codeCursorHintFixExpr(Walker *pWalker, Expr *pExpr){
-  int rc = WRC_Continue;
-  int reg;
-  struct CCurHint *pHint = pWalker->u.pCCurHint;
-  if( pExpr->op==TK_COLUMN ){
-    if( pExpr->iTable!=pHint->iTabCur ){
+ساکن صحیح رمز_Cursor_Hint_Fix_اظہاریہ(Walker *pWalker, اظہاریہ *p_اظہاریہ){
+  صحیح rc = WRC_Continue;
+  صحیح reg;
+  ساخت CCurHint *pHint = pWalker->u.pCCurHint;
+  اگر( p_اظہاریہ->op==TK_عمود ){
+    اگر( p_اظہاریہ->i_جدول!=pHint->iTabCur ){
       reg = ++pWalker->pParse->nMem;   /* Register for column value */
-      reg = sqlite3ExprCodeTarget(pWalker->pParse, pExpr, reg);
-      pExpr->op = TK_REGISTER;
-      pExpr->iTable = reg;
-    }else if( pHint->pIdx!=0 ){
-      pExpr->iTable = pHint->iIdxCur;
-      pExpr->iColumn = sqlite3TableColumnToIndex(pHint->pIdx, pExpr->iColumn);
-      assert( pExpr->iColumn>=0 );
+      reg = sqlite3_اظہاریہ_رمز_ہدف(pWalker->pParse, p_اظہاریہ, reg);
+      p_اظہاریہ->op = TK_رجسٹر;
+      p_اظہاریہ->i_جدول = reg;
+    }ورنہ اگر( pHint->pIdx!=0 ){
+      p_اظہاریہ->i_جدول = pHint->iIdxCur;
+      p_اظہاریہ->i_عمود = sqlite3_جدول_عمود_مقصد_اشاریہ(pHint->pIdx, p_اظہاریہ->i_عمود);
+      أكد( p_اظہاریہ->i_عمود>=0 );
     }
-  }else if( pExpr->pAggInfo ){
+  }ورنہ اگر( p_اظہاریہ->pAggInfo ){
     rc = WRC_Prune;
     reg = ++pWalker->pParse->nMem;   /* Register for column value */
-    reg = sqlite3ExprCodeTarget(pWalker->pParse, pExpr, reg);
-    pExpr->op = TK_REGISTER;
-    pExpr->iTable = reg;
-  }else if( pExpr->op==TK_TRUEFALSE ){
+    reg = sqlite3_اظہاریہ_رمز_ہدف(pWalker->pParse, p_اظہاریہ, reg);
+    p_اظہاریہ->op = TK_رجسٹر;
+    p_اظہاریہ->i_جدول = reg;
+  }ورنہ اگر( p_اظہاریہ->op==TK_TRUEFALSE ){
     /* Do not walk disabled expressions.  tag-20230504-1 */
-    return WRC_Prune;
+    واپس WRC_Prune;
   }
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Insert an OP_CursorHint instruction if it is appropriate to do so.
 */
-static void codeCursorHint(
-  SrcItem *pTabItem,  /* FROM clause item */
+ساکن خالی رمز_Cursor_Hint(
+  Src_شے *p_Tab_شے,  /* FROM clause item */
   WhereInfo *pWInfo,    /* The where clause */
   WhereLevel *pLevel,   /* Which loop to provide hints for */
-  WhereTerm *pEndRange  /* Hint this end-of-scan boundary term if not NULL */
+  Where_رکن *p_انتہا_Range  /* Hint this end-of-scan boundary term if not NULL */
 ){
   Parse *pParse = pWInfo->pParse;
   sqlite3 *db = pParse->db;
   Vdbe *v = pParse->pVdbe;
-  Expr *pExpr = 0;
+  اظہاریہ *p_اظہاریہ = 0;
   WhereLoop *pLoop = pLevel->pWLoop;
-  int iCur;
+  صحیح iCur;
   WhereClause *pWC;
-  WhereTerm *pTerm;
-  int i, j;
-  struct CCurHint sHint;
+  Where_رکن *p_رکن;
+  صحیح i, j;
+  ساخت CCurHint sHint;
   Walker sWalker;
 
-  if( OptimizationDisabled(db, SQLITE_CursorHints) ) return;
+  اگر( OptimizationDisabled(db, SQLITE_CursorHints) ) واپس;
   iCur = pLevel->iTabCur;
-  assert( iCur==pWInfo->pTabList->a[pLevel->iFrom].iCursor );
+  أكد( iCur==pWInfo->pTabList->a[pLevel->iFrom].iCursor );
   sHint.iTabCur = iCur;
   sHint.iIdxCur = pLevel->iIdxCur;
-  sHint.pIdx = pLoop->u.btree.pIndex;
-  memset(&sWalker, 0, sizeof(sWalker));
+  sHint.pIdx = pLoop->u.btree.p_اشاریہ;
+  memset(&sWalker, 0, حجم(sWalker));
   sWalker.pParse = pParse;
   sWalker.u.pCCurHint = &sHint;
   pWC = &pWInfo->sWC;
-  for(i=0; i<pWC->nBase; i++){
-    pTerm = &pWC->a[i];
-    if( pTerm->wtFlags & (TERM_VIRTUAL|TERM_CODED) ) continue;
-    if( pTerm->prereqAll & pLevel->notReady ) continue;
+  برائے(i=0; i<pWC->n_بنیاد; i++){
+    p_رکن = &pWC->a[i];
+    اگر( p_رکن->wtFlags & (رکن_VIRTUAL|رکن_CODED) ) جاری;
+    اگر( p_رکن->prereqAll & pLevel->notReady ) جاری;
 
     /* Any terms specified as part of the ON(...) clause for any LEFT
     ** JOIN for which the current table is not the rhs are omitted
@@ -1213,54 +1213,54 @@ static void codeCursorHint(
     **
     ** are also excluded. See codeCursorHintIsOrFunction() for details.
     */
-    if( pTabItem->fg.jointype & JT_LEFT ){
-      Expr *pExpr = pTerm->pExpr;
-      if( !ExprHasProperty(pExpr, EP_OuterON)
-       || pExpr->w.iJoin!=pTabItem->iCursor
+    اگر( p_Tab_شے->fg.jointype & JT_بایاں ){
+      اظہاریہ *p_اظہاریہ = p_رکن->p_اظہاریہ;
+      اگر( !اظہاریہ_Has_Property(p_اظہاریہ, EP_OuterON)
+       || p_اظہاریہ->w.iJoin!=p_Tab_شے->iCursor
       ){
-        sWalker.eCode = 0;
-        sWalker.xExprCallback = codeCursorHintIsOrFunction;
-        sqlite3WalkExpr(&sWalker, pTerm->pExpr);
-        if( sWalker.eCode ) continue;
+        sWalker.e_رمز = 0;
+        sWalker.x_اظہاریہ_Callback = رمز_Cursor_Hint_Is_Or_Function;
+        sqlite3_Walk_اظہاریہ(&sWalker, p_رکن->p_اظہاریہ);
+        اگر( sWalker.e_رمز ) جاری;
       }
-    }else{
-      if( ExprHasProperty(pTerm->pExpr, EP_OuterON) ) continue;
+    }ورنہ{
+      اگر( اظہاریہ_Has_Property(p_رکن->p_اظہاریہ, EP_OuterON) ) جاری;
     }
 
     /* All terms in pWLoop->aLTerm[] except pEndRange are used to initialize
     ** the cursor.  These terms are not needed as hints for a pure range
     ** scan (that has no == terms) so omit them. */
-    if( pLoop->u.btree.nEq==0 && pTerm!=pEndRange ){
-      for(j=0; j<pLoop->nLTerm && pLoop->aLTerm[j]!=pTerm; j++){}
-      if( j<pLoop->nLTerm ) continue;
+    اگر( pLoop->u.btree.nEq==0 && p_رکن!=p_انتہا_Range ){
+      برائے(j=0; j<pLoop->nLTerm && pLoop->aLTerm[j]!=p_رکن; j++){}
+      اگر( j<pLoop->nLTerm ) جاری;
     }
 
     /* No subqueries or non-deterministic functions allowed */
-    if( sqlite3ExprContainsSubquery(pTerm->pExpr) ) continue;
+    اگر( sqlite3_اظہاریہ_شامل_ہے_Subquery(p_رکن->p_اظہاریہ) ) جاری;
 
     /* For an index scan, make sure referenced columns are actually in
     ** the index. */
-    if( sHint.pIdx!=0 ){
-      sWalker.eCode = 0;
-      sWalker.xExprCallback = codeCursorHintCheckExpr;
-      sqlite3WalkExpr(&sWalker, pTerm->pExpr);
-      if( sWalker.eCode ) continue;
+    اگر( sHint.pIdx!=0 ){
+      sWalker.e_رمز = 0;
+      sWalker.x_اظہاریہ_Callback = رمز_Cursor_Hint_Check_اظہاریہ;
+      sqlite3_Walk_اظہاریہ(&sWalker, p_رکن->p_اظہاریہ);
+      اگر( sWalker.e_رمز ) جاری;
     }
 
     /* If we survive all prior tests, that means this term is worth hinting */
-    pExpr = sqlite3ExprAnd(pParse, pExpr, sqlite3ExprDup(db, pTerm->pExpr, 0));
+    p_اظہاریہ = sqlite3_اظہاریہ_And(pParse, p_اظہاریہ, sqlite3_اظہاریہ_Dup(db, p_رکن->p_اظہاریہ, 0));
   }
-  if( pExpr!=0 ){
-    sWalker.xExprCallback = codeCursorHintFixExpr;
-    if( pParse->nErr==0 ) sqlite3WalkExpr(&sWalker, pExpr);
-    sqlite3VdbeAddOp4(v, OP_CursorHint,
+  اگر( p_اظہاریہ!=0 ){
+    sWalker.x_اظہاریہ_Callback = رمز_Cursor_Hint_Fix_اظہاریہ;
+    اگر( pParse->nErr==0 ) sqlite3_Walk_اظہاریہ(&sWalker, p_اظہاریہ);
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_CursorHint,
                       (sHint.pIdx ? sHint.iIdxCur : sHint.iTabCur), 0, 0,
-                      (const char*)pExpr, P4_EXPR);
+                      (ثابت حرف*)p_اظہاریہ, P4_اظہاریہ);
   }
 }
-#else
-# define codeCursorHint(A,B,C,D)  /* No-op */
-#endif /* SQLITE_ENABLE_CURSOR_HINTS */
+#ورنہ
+# define رمز_Cursor_Hint(A,B,C,D)  /* No-op */
+#اگر_ختم /* SQLITE_ENABLE_CURSOR_HINTS */
 
 /*
 ** Cursor iCur is open on an intkey b-tree (a table). Register iRowid contains
@@ -1288,37 +1288,37 @@ static void codeCursorHint(
 ** and column number and continue with those new values, rather than seeking
 ** the table cursor.
 */
-static void codeDeferredSeek(
+ساکن خالی رمز_Deferred_Seek(
   WhereInfo *pWInfo,              /* Where clause context */
-  Index *pIdx,                    /* Index scan is using */
-  int iCur,                       /* Cursor for IPK b-tree */
-  int iIdxCur                     /* Index cursor */
+  اشاریہ *pIdx,                    /* Index scan is using */
+  صحیح iCur,                       /* Cursor for IPK b-tree */
+  صحیح iIdxCur                     /* Index cursor */
 ){
   Parse *pParse = pWInfo->pParse; /* Parse context */
   Vdbe *v = pParse->pVdbe;        /* Vdbe to generate code within */
 
-  assert( iIdxCur>0 );
-  assert( pIdx->aiColumn[pIdx->nColumn-1]==-1 );
+  أكد( iIdxCur>0 );
+  أكد( pIdx->ai_عمود[pIdx->n_عمود-1]==-1 );
 
   pWInfo->bDeferredSeek = 1;
-  sqlite3VdbeAddOp3(v, OP_DeferredSeek, iIdxCur, 0, iCur);
-  if( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_RIGHT_JOIN))
-   && DbMaskAllZero(sqlite3ParseToplevel(pParse)->writeMask)
+  sqlite3_Vdbe_جوڑو_Op3(v, OP_DeferredSeek, iIdxCur, 0, iCur);
+  اگر( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_دایاں_JOIN))
+   && Db_نقاب_All_Zero(sqlite3ParseToplevel(pParse)->write_نقاب)
   ){
-    int i;
-    Table *pTab = pIdx->pTable;
-    u32 *ai = (u32*)sqlite3DbMallocZero(pParse->db, sizeof(u32)*(pTab->nCol+1));
-    if( ai ){
-      ai[0] = pTab->nCol;
-      for(i=0; i<pIdx->nColumn-1; i++){
-        int x1, x2;
-        assert( pIdx->aiColumn[i]<pTab->nCol );
-        x1 = pIdx->aiColumn[i];
-        x2 = sqlite3TableColumnToStorage(pTab, x1);
+    صحیح i;
+    جدول *pTab = pIdx->p_جدول;
+    u32 *ai = (u32*)sqlite3DbMallocZero(pParse->db, حجم(u32)*(pTab->n_ستون+1));
+    اگر( ai ){
+      ai[0] = pTab->n_ستون;
+      برائے(i=0; i<pIdx->n_عمود-1; i++){
+        صحیح x1, x2;
+        أكد( pIdx->ai_عمود[i]<pTab->n_ستون );
+        x1 = pIdx->ai_عمود[i];
+        x2 = sqlite3_جدول_عمود_مقصد_Storage(pTab, x1);
         testcase( x1!=x2 );
-        if( x1>=0 ) ai[x2+1] = i+1;
+        اگر( x1>=0 ) ai[x2+1] = i+1;
       }
-      sqlite3VdbeChangeP4(v, -1, (char*)ai, P4_INTARRAY);
+      sqlite3VdbeChangeP4(v, -1, (حرف*)ai, P4_INTARRAY);
     }
   }
 }
@@ -1332,31 +1332,31 @@ static void codeDeferredSeek(
 ** this case, generate code to evaluate the expression and leave the
 ** result in register iReg.
 */
-static void codeExprOrVector(Parse *pParse, Expr *p, int iReg, int nReg){
-  assert( nReg>0 );
-  if( p && sqlite3ExprIsVector(p) ){
-#ifndef SQLITE_OMIT_SUBQUERY
-    if( ExprUseXSelect(p) ){
+ساکن خالی رمز_اظہاریہ_Or_سمتیہ(Parse *pParse, اظہاریہ *p, صحیح iReg, صحیح nReg){
+  أكد( nReg>0 );
+  اگر( p && sqlite3_اظہاریہ_Is_سمتیہ(p) ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_SUBQUERY
+    اگر( اظہاریہ_Use_XSelect(p) ){
       Vdbe *v = pParse->pVdbe;
-      int iSelect;
-      assert( p->op==TK_SELECT );
-      iSelect = sqlite3CodeSubselect(pParse, p);
-      sqlite3VdbeAddOp3(v, OP_Copy, iSelect, iReg, nReg-1);
-    }else
-#endif
+      صحیح iSelect;
+      أكد( p->op==TK_SELECT );
+      iSelect = sqlite3_رمز_Subselect(pParse, p);
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Copy, iSelect, iReg, nReg-1);
+    }ورنہ
+#اگر_ختم
     {
-      int i;
-      const ExprList *pList;
-      assert( ExprUseXList(p) );
+      صحیح i;
+      ثابت اظہاریہ_List *pList;
+      أكد( اظہاریہ_Use_XList(p) );
       pList = p->x.pList;
-      assert( nReg<=pList->nExpr );
-      for(i=0; i<nReg; i++){
-        sqlite3ExprCode(pParse, pList->a[i].pExpr, iReg+i);
+      أكد( nReg<=pList->n_اظہاریہ );
+      برائے(i=0; i<nReg; i++){
+        sqlite3_اظہاریہ_رمز(pParse, pList->a[i].p_اظہاریہ, iReg+i);
       }
     }
-  }else{
-    assert( nReg==1 || pParse->nErr );
-    sqlite3ExprCode(pParse, p, iReg);
+  }ورنہ{
+    أكد( nReg==1 || pParse->nErr );
+    sqlite3_اظہاریہ_رمز(pParse, p, iReg);
   }
 }
 
@@ -1367,23 +1367,23 @@ static void codeExprOrVector(Parse *pParse, Expr *p, int iReg, int nReg){
 ** true because pTruth is true, then mark those WHERE clause terms as
 ** coded.
 */
-static void whereApplyPartialIndexConstraints(
-  Expr *pTruth,
-  int iTabCur,
+ساکن خالی where_Apply_Partial_اشاریہ_Constraints(
+  اظہاریہ *pTruth,
+  صحیح iTabCur,
   WhereClause *pWC
 ){
-  int i;
-  WhereTerm *pTerm;
-  while( pTruth->op==TK_AND ){
-    whereApplyPartialIndexConstraints(pTruth->pLeft, iTabCur, pWC);
-    pTruth = pTruth->pRight;
+  صحیح i;
+  Where_رکن *p_رکن;
+  جب( pTruth->op==TK_AND ){
+    where_Apply_Partial_اشاریہ_Constraints(pTruth->p_بایاں, iTabCur, pWC);
+    pTruth = pTruth->p_دایاں;
   }
-  for(i=0, pTerm=pWC->a; i<pWC->nTerm; i++, pTerm++){
-    Expr *pExpr;
-    if( pTerm->wtFlags & TERM_CODED ) continue;
-    pExpr = pTerm->pExpr;
-    if( sqlite3ExprCompare(0, pExpr, pTruth, iTabCur)==0 ){
-      pTerm->wtFlags |= TERM_CODED;
+  برائے(i=0, p_رکن=pWC->a; i<pWC->n_رکن; i++, p_رکن++){
+    اظہاریہ *p_اظہاریہ;
+    اگر( p_رکن->wtFlags & رکن_CODED ) جاری;
+    p_اظہاریہ = p_رکن->p_اظہاریہ;
+    اگر( sqlite3_اظہاریہ_Compare(0, p_اظہاریہ, pTruth, iTabCur)==0 ){
+      p_رکن->wtFlags |= رکن_CODED;
     }
   }
 }
@@ -1403,50 +1403,50 @@ static void whereApplyPartialIndexConstraints(
 ** then clear the WhereLevel.regFilter value to prevent the Bloom filter
 ** from being checked a second time when the inner loop is evaluated.
 */
-static SQLITE_NOINLINE void filterPullDown(
+ساکن SQLITE_NOINLINE خالی filter_Pull_نیچے_کو(
   Parse *pParse,       /* Parsing context */
   WhereInfo *pWInfo,   /* Complete information about the WHERE clause */
-  int iLevel,          /* Which level of pWInfo->a[] should be coded */
-  int addrNxt,         /* Jump here to bypass inner loops */
+  صحیح iLevel,          /* Which level of pWInfo->a[] should be coded */
+  صحیح addrNxt,         /* Jump here to bypass inner loops */
   Bitmask notReady     /* Loops that are not ready */
 ){
-  int saved_addrBrk;
-  while( ++iLevel < pWInfo->nLevel ){
+  صحیح saved_addrBrk;
+  جب( ++iLevel < pWInfo->nLevel ){
     WhereLevel *pLevel = &pWInfo->a[iLevel];
     WhereLoop *pLoop = pLevel->pWLoop;
-    if( pLevel->regFilter==0 ) continue;
-    if( pLevel->pWLoop->nSkip ) continue;
+    اگر( pLevel->regFilter==0 ) جاری;
+    اگر( pLevel->pWLoop->nSkip ) جاری;
     /*         ,--- Because sqlite3ConstructBloomFilter() has will not have set
     **  vvvvv--'    pLevel->regFilter if this were true. */
-    if( NEVER(pLoop->prereq & notReady) ) continue;
+    اگر( NEVER(pLoop->prereq & notReady) ) جاری;
     saved_addrBrk = pLevel->addrBrk;
     pLevel->addrBrk = addrNxt;
-    if( pLoop->wsFlags & WHERE_IPK ){
-      WhereTerm *pTerm = pLoop->aLTerm[0];
-      int regRowid;
-      assert( pTerm!=0 );
-      assert( pTerm->pExpr!=0 );
-      testcase( pTerm->wtFlags & TERM_VIRTUAL );
-      regRowid = sqlite3GetTempReg(pParse);
-      regRowid = codeEqualityTerm(pParse, pTerm, pLevel, 0, 0, regRowid);
-      sqlite3VdbeAddOp2(pParse->pVdbe, OP_MustBeInt, regRowid, addrNxt);
+    اگر( pLoop->wsFlags & WHERE_IPK ){
+      Where_رکن *p_رکن = pLoop->aLTerm[0];
+      صحیح regRowid;
+      أكد( p_رکن!=0 );
+      أكد( p_رکن->p_اظہاریہ!=0 );
+      testcase( p_رکن->wtFlags & رکن_VIRTUAL );
+      regRowid = sqlite3_Get_عارضی_Reg(pParse);
+      regRowid = رمز_Equality_رکن(pParse, p_رکن, pLevel, 0, 0, regRowid);
+      sqlite3_Vdbe_جوڑو_Op2(pParse->pVdbe, OP_MustBeInt, regRowid, addrNxt);
       VdbeCoverage(pParse->pVdbe);
-      assert( sqlite3WhereLoopBloomable(pLoop) );
-      sqlite3VdbeAddOp4Int(pParse->pVdbe, OP_Filter, pLevel->regFilter,
+      أكد( sqlite3WhereLoopBloomable(pLoop) );
+      sqlite3_Vdbe_جوڑو_Op4_Int(pParse->pVdbe, OP_Filter, pLevel->regFilter,
                            addrNxt, regRowid, 1);
       VdbeCoverage(pParse->pVdbe);
-    }else{
+    }ورنہ{
       u16 nEq = pLoop->u.btree.nEq;
-      int r1;
-      char *zStartAff;
+      صحیح r1;
+      حرف *z_آغاز_Aff;
 
-      assert( pLoop->wsFlags & WHERE_INDEXED );
-      assert( (pLoop->wsFlags & WHERE_COLUMN_IN)==0 );
-      r1 = codeAllEqualityTerms(pParse,pLevel,0,0,&zStartAff);
-      codeApplyAffinity(pParse, r1, nEq, zStartAff);
-      sqlite3DbFree(pParse->db, zStartAff);
-      assert( sqlite3WhereLoopBloomable(pLoop) );
-      sqlite3VdbeAddOp4Int(pParse->pVdbe, OP_Filter, pLevel->regFilter,
+      أكد( pLoop->wsFlags & WHERE_اشاریہ_دار );
+      أكد( (pLoop->wsFlags & WHERE_عمود_اندر)==0 );
+      r1 = رمز_All_Equality_Terms(pParse,pLevel,0,0,&z_آغاز_Aff);
+      رمز_Apply_Affinity(pParse, r1, nEq, z_آغاز_Aff);
+      sqlite3DbFree(pParse->db, z_آغاز_Aff);
+      أكد( sqlite3WhereLoopBloomable(pLoop) );
+      sqlite3_Vdbe_جوڑو_Op4_Int(pParse->pVdbe, OP_Filter, pLevel->regFilter,
                            addrNxt, r1, nEq);
       VdbeCoverage(pParse->pVdbe);
     }
@@ -1460,20 +1460,20 @@ static SQLITE_NOINLINE void filterPullDown(
 ** operator. Return true if level pLoop is guaranteed to visit only one
 ** row for each key generated for the index.
 */
-static int whereLoopIsOneRow(WhereLoop *pLoop){
-  if( pLoop->u.btree.pIndex->onError
+ساکن صحیح where_Loop_Is_One_صف(WhereLoop *pLoop){
+  اگر( pLoop->u.btree.p_اشاریہ->onError
    && pLoop->nSkip==0
-   && pLoop->u.btree.nEq==pLoop->u.btree.pIndex->nKeyCol
+   && pLoop->u.btree.nEq==pLoop->u.btree.p_اشاریہ->n_کلید_ستون
   ){
-    int ii;
-    for(ii=0; ii<pLoop->u.btree.nEq; ii++){
-      if( pLoop->aLTerm[ii]->eOperator & (WO_IS|WO_ISNULL) ){
-        return 0;
+    صحیح ii;
+    برائے(ii=0; ii<pLoop->u.btree.nEq; ii++){
+      اگر( pLoop->aLTerm[ii]->eOperator & (WO_IS|WO_ISNULL) ){
+        واپس 0;
       }
     }
-    return 1;
+    واپس 1;
   }
-  return 0;
+  واپس 0;
 }
 
 /*
@@ -1494,29 +1494,29 @@ static int whereLoopIsOneRow(WhereLoop *pLoop){
 **     part of an ON clause on an OUTER join, or was part of an ON clause 
 **     on an OUTER join to the right of the join.
 */
-static int whereExprIsReady(
+ساکن صحیح where_اظہاریہ_Is_Ready(
   WhereInfo *pWInfo, 
   WhereLevel *pLevel,
-  SrcItem *pTabItem, 
-  Expr *pE
+  Src_شے *p_Tab_شے, 
+  اظہاریہ *pE
 ){
-  u8 jtype = pTabItem->fg.jointype;
-  if( jtype & (JT_LEFT|JT_LTORJ|JT_RIGHT) ){
-    if( !ExprHasProperty(pE,EP_OuterON|EP_InnerON) ){
+  u8 jtype = p_Tab_شے->fg.jointype;
+  اگر( jtype & (JT_بایاں|JT_LTORJ|JT_دایاں) ){
+    اگر( !اظہاریہ_Has_Property(pE,EP_OuterON|EP_InnerON) ){
       /* Defer processing WHERE clause constraints until after outer
       ** join processing.  tag-20220513a */
-      return 0;
-    }else if( (jtype & JT_LEFT) && !ExprHasProperty(pE,EP_OuterON) ){
-      return 0;
-    }else{
-      Bitmask m = sqlite3WhereGetMask(&pWInfo->sMaskSet, pE->w.iJoin);
-      if( m & pLevel->notReady ){
+      واپس 0;
+    }ورنہ اگر( (jtype & JT_بایاں) && !اظہاریہ_Has_Property(pE,EP_OuterON) ){
+      واپس 0;
+    }ورنہ{
+      Bitmask m = sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سیٹ, pE->w.iJoin);
+      اگر( m & pLevel->notReady ){
         /* An ON clause that is not ripe */
-        return 0;
+        واپس 0;
       }
     }
   }
-  return 1;
+  واپس 1;
 }
 
 /*
@@ -1553,20 +1553,20 @@ static int whereExprIsReady(
 ** This optimization inspired by the paper:  "TreeTracker Join: Simple,
 ** Optimal, Fast" by Hu, Wang, and Miranker, 2025.
 */
-static int findNoMatchContinuation(
+ساکن صحیح ڈھونڈو_No_مطابقت_Continuation(
   WhereInfo *pWInfo,         /* WHERE clause */
-  int iLevel                 /* Which loop we are talking about */
+  صحیح iLevel                 /* Which loop we are talking about */
 ){
   WhereLoop *pLoop;          /* Description of this loop */
-  WhereLevel *pParent;       /* Controlling parent loop */
+  WhereLevel *p_والد;       /* Controlling parent loop */
   SrcList *pTabList;         /* Complete FROM clause */
-  Bitmask mKey;              /* Mask of dependent tables */
-  int iParent;               /* Inner-most loop affecting the key to iLevel */
-  int i;                     /* Loop counter */
+  Bitmask m_کلید;              /* Mask of dependent tables */
+  صحیح i_والد;               /* Inner-most loop affecting the key to iLevel */
+  صحیح i;                     /* Loop counter */
 
-  if( iLevel<2 ){
+  اگر( iLevel<2 ){
     /* If there are less than two outer loops, this optimization is no help */
-    return 0;
+    واپس 0;
   }
 
   /* The OP_SeekGE and OP_SeekLE opcodes only work right for this
@@ -1574,21 +1574,21 @@ static int findNoMatchContinuation(
   ** for anything else.
   */
   pLoop = pWInfo->a[iLevel].pWLoop;
-  if( (pLoop->wsFlags & WHERE_CONSTRAINT)!=WHERE_COLUMN_EQ ) return 0;
-  if( pLoop->wsFlags & WHERE_SKIPSCAN ) return 0;
-  if( pLoop->wsFlags & WHERE_BIGNULL_SORT ) return 0;
-  assert( (pLoop->wsFlags & (WHERE_VIRTUALTABLE|WHERE_MULTI_OR))==0 );
-  assert( pLoop->u.btree.nEq>0 );
+  اگر( (pLoop->wsFlags & WHERE_CONSTRAINT)!=WHERE_عمود_EQ ) واپس 0;
+  اگر( pLoop->wsFlags & WHERE_SKIPSCAN ) واپس 0;
+  اگر( pLoop->wsFlags & WHERE_BIGNULL_ترتیب_دو ) واپس 0;
+  أكد( (pLoop->wsFlags & (WHERE_VIRTUALTABLE|WHERE_MULTI_OR))==0 );
+  أكد( pLoop->u.btree.nEq>0 );
 
   /* Find a mask of all outer tables that influence the key.  At the same
   ** time, check to see if any keys values are computed from subqueries and
   ** fail out (return 0) if there are any. */
-  mKey = 0;
-  for(i=0; i<pLoop->nLTerm; i++){
-    if( sqlite3ExprContainsSubquery(pLoop->aLTerm[i]->pExpr) ){
-      return 0;
+  m_کلید = 0;
+  برائے(i=0; i<pLoop->nLTerm; i++){
+    اگر( sqlite3_اظہاریہ_شامل_ہے_Subquery(pLoop->aLTerm[i]->p_اظہاریہ) ){
+      واپس 0;
     }
-    mKey |= pLoop->aLTerm[i]->prereqRight;
+    m_کلید |= pLoop->aLTerm[i]->prereq_دایاں;
   }
 
   /* Look back through outer loops.  Find the inner-most outer loop
@@ -1596,23 +1596,23 @@ static int findNoMatchContinuation(
   ** outer loop.
   */
   pTabList = pWInfo->pTabList;
-  iParent = iLevel-1;
-  while( iParent>0 && (pWInfo->a[iParent].pWLoop->maskSelf & mKey)==0 ){
-    iParent--;
+  i_والد = iLevel-1;
+  جب( i_والد>0 && (pWInfo->a[i_والد].pWLoop->نقاب_Self & m_کلید)==0 ){
+    i_والد--;
   }
-  assert( iParent>=0 && iParent<=iLevel );
+  أكد( i_والد>=0 && i_والد<=iLevel );
 
   /* Everything needs to be an INNER join.  Fail if there are any
   ** OUTER joins in between iParent and iLevel. */
-  for(i=iParent; i<=iLevel; i++){
-    if( pTabList->a[pWInfo->a[i].iFrom].fg.jointype & JT_OUTER ) return 0;
+  برائے(i=i_والد; i<=iLevel; i++){
+    اگر( pTabList->a[pWInfo->a[i].iFrom].fg.jointype & JT_OUTER ) واپس 0;
   }
 
   /* If we reach this point, that means the conditions of the optimization
   ** have been met.  Even so, disallow the optimization if it is disabled.
   */
-  if( OptimizationDisabled(pWInfo->pParse->db, SQLITE_JoinMiss) ){
-    return 0;
+  اگر( OptimizationDisabled(pWInfo->pParse->db, SQLITE_Join_ناکامی) ){
+    واپس 0;
   }
 
   /* If the inner-most outer loop that influences the key for iLevel
@@ -1620,81 +1620,81 @@ static int findNoMatchContinuation(
   ** the only outer loop that influences the key, then arrange to delete
   ** the automatic index entry if there is no match on the key.
   */
-  pParent = &pWInfo->a[iParent];
-  if( (pParent->pWLoop->wsFlags & WHERE_AUTO_INDEX)!=0
-   && (mKey & (mKey-1))==0
+  p_والد = &pWInfo->a[i_والد];
+  اگر( (p_والد->pWLoop->wsFlags & WHERE_AUTO_اشاریہ)!=0
+   && (m_کلید & (m_کلید-1))==0
   ){
-    for(i=0; i<pLoop->nLTerm; i++){
-      Expr *pX = pLoop->aLTerm[i]->pExpr;
-      if( !sqlite3ExprIsTableConstant(pX->pRight,pParent->iTabCur,0) ) break;
+    برائے(i=0; i<pLoop->nLTerm; i++){
+      اظہاریہ *pX = pLoop->aLTerm[i]->p_اظہاریہ;
+      اگر( !sqlite3_اظہاریہ_Is_جدول_Constant(pX->p_دایاں,p_والد->iTabCur,0) ) توڑو;
     }
-    if( i==pLoop->nLTerm ){    
-      if( pParent->addrDeleteCont==0 ){
-        pParent->addrDeleteCont = sqlite3VdbeMakeLabel(pWInfo->pParse);
+    اگر( i==pLoop->nLTerm ){    
+      اگر( p_والد->addrDeleteCont==0 ){
+        p_والد->addrDeleteCont = sqlite3VdbeMakeLabel(pWInfo->pParse);
       }
-      return pParent->addrDeleteCont;
+      واپس p_والد->addrDeleteCont;
     }
   }
 
-  testcase( iParent<iLevel-1 );
-  return pParent->addrCont;
+  testcase( i_والد<iLevel-1 );
+  واپس p_والد->addrCont;
 }
 
 /*
 ** Generate code for the start of the iLevel-th loop in the WHERE clause
 ** implementation described by pWInfo.
 */
-Bitmask sqlite3WhereCodeOneLoopStart(
+Bitmask sqlite3_Where_رمز_One_Loop_آغاز(
   Parse *pParse,       /* Parsing context */
   Vdbe *v,             /* Prepared statement under construction */
   WhereInfo *pWInfo,   /* Complete information about the WHERE clause */
-  int iLevel,          /* Which level of pWInfo->a[] should be coded */
+  صحیح iLevel,          /* Which level of pWInfo->a[] should be coded */
   WhereLevel *pLevel,  /* The current level pointer */
   Bitmask notReady     /* Which tables are currently available */
 ){
-  int j, k;            /* Loop counters */
-  int iCur;            /* The VDBE cursor for the table */
-  int addrNxt;         /* Where to jump to continue with the next IN case */
-  int bRev;            /* True if we need to scan in reverse order */
+  صحیح j, k;            /* Loop counters */
+  صحیح iCur;            /* The VDBE cursor for the table */
+  صحیح addrNxt;         /* Where to jump to continue with the next IN case */
+  صحیح bRev;            /* True if we need to scan in reverse order */
   WhereLoop *pLoop;    /* The WhereLoop object being coded */
   WhereClause *pWC;    /* Decomposition of the entire WHERE clause */
-  WhereTerm *pTerm;         /* A WHERE clause term */
+  Where_رکن *p_رکن;         /* A WHERE clause term */
   sqlite3 *db;              /* Database connection */
-  SrcItem *pTabItem;        /* FROM clause term being coded */
-  int addrBrk;              /* Jump here to break out of the loop */
-  int addrCont;             /* Jump here to continue with next cycle */
-  int addrMiss;             /* addrCont enhanced for no-matching rows */
-  int iRowidReg = 0;        /* Rowid is stored in this register, if not zero */
-  int iReleaseReg = 0;      /* Temp register to free before returning */
-  Index *pIdx = 0;          /* Index used by loop (if any) */
-  int iLoop;                /* Iteration of constraint generator loop */
+  Src_شے *p_Tab_شے;        /* FROM clause term being coded */
+  صحیح addrBrk;              /* Jump here to break out of the loop */
+  صحیح addrCont;             /* Jump here to continue with next cycle */
+  صحیح addr_ناکامی;             /* addrCont enhanced for no-matching rows */
+  صحیح iRowidReg = 0;        /* Rowid is stored in this register, if not zero */
+  صحیح iReleaseReg = 0;      /* Temp register to free before returning */
+  اشاریہ *pIdx = 0;          /* Index used by loop (if any) */
+  صحیح iLoop;                /* Iteration of constraint generator loop */
 
   pWC = &pWInfo->sWC;
   db = pParse->db;
   pLoop = pLevel->pWLoop;
-  pTabItem = &pWInfo->pTabList->a[pLevel->iFrom];
-  iCur = pTabItem->iCursor;
-  pLevel->notReady = notReady & ~sqlite3WhereGetMask(&pWInfo->sMaskSet, iCur);
-  bRev = (pWInfo->revMask>>iLevel)&1;
+  p_Tab_شے = &pWInfo->pTabList->a[pLevel->iFrom];
+  iCur = p_Tab_شے->iCursor;
+  pLevel->notReady = notReady & ~sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سیٹ, iCur);
+  bRev = (pWInfo->rev_نقاب>>iLevel)&1;
   VdbeModuleComment((v, "Begin WHERE-loop%d: %s",
-                     iLevel, pTabItem->pSTab->zName));
-#if WHERETRACE_ENABLED /* 0x4001 */
-  if( sqlite3WhereTrace & 0x1 ){
+                     iLevel, p_Tab_شے->pSTab->zName));
+#اگر WHERETRACE_ENABLED /* 0x4001 */
+  اگر( sqlite3WhereTrace & 0x1 ){
     sqlite3DebugPrintf("Coding level %d of %d:  notReady=%llx  iFrom=%d\n",
        iLevel, pWInfo->nLevel, (u64)notReady, pLevel->iFrom);
-    if( sqlite3WhereTrace & 0x1000 ){
+    اگر( sqlite3WhereTrace & 0x1000 ){
       sqlite3WhereLoopPrint(pLoop, pWC);
     }
   }
-  if( (sqlite3WhereTrace & 0x4001)==0x4001 ){
-    if( iLevel==0 ){
+  اگر( (sqlite3WhereTrace & 0x4001)==0x4001 ){
+    اگر( iLevel==0 ){
       sqlite3DebugPrintf("WHERE clause being coded:\n");
-      sqlite3TreeViewExpr(0, pWInfo->pWhere, 0);
+      sqlite3_درخت_View_اظہاریہ(0, pWInfo->pWhere, 0);
     }
     sqlite3DebugPrintf("All WHERE-clause terms before coding:\n");
     sqlite3WhereClausePrint(pWC);
   }
-#endif
+#اگر_ختم
 
   /* Create labels for the "break" and "continue" instructions
   ** for the current loop.  Jump to addrBrk to break out of a loop.
@@ -1708,123 +1708,123 @@ Bitmask sqlite3WhereCodeOneLoopStart(
   */
   addrBrk = pLevel->addrNxt = pLevel->addrBrk;
   addrCont = pLevel->addrCont = sqlite3VdbeMakeLabel(pParse);
-  addrMiss = findNoMatchContinuation(pWInfo, iLevel);
+  addr_ناکامی = ڈھونڈو_No_مطابقت_Continuation(pWInfo, iLevel);
 
   /* If this is the right table of a LEFT OUTER JOIN, allocate and
   ** initialize a memory cell that records if this table matches any
   ** row of the left table of the join.
   */
-  assert( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_RIGHT_JOIN))
-       || pLevel->iFrom>0 || (pTabItem[0].fg.jointype & JT_LEFT)==0
+  أكد( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_دایاں_JOIN))
+       || pLevel->iFrom>0 || (p_Tab_شے[0].fg.jointype & JT_بایاں)==0
   );
-  if( pLevel->iFrom>0 && (pTabItem[0].fg.jointype & JT_LEFT)!=0 ){
-    pLevel->iLeftJoin = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, pLevel->iLeftJoin);
+  اگر( pLevel->iFrom>0 && (p_Tab_شے[0].fg.jointype & JT_بایاں)!=0 ){
+    pLevel->i_بایاں_Join = ++pParse->nMem;
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, pLevel->i_بایاں_Join);
     VdbeComment((v, "init LEFT JOIN match flag"));
-    if( pTabItem->fg.viaCoroutine ){
-      sqlite3VdbeAddOp2(v, OP_NullRow, pTabItem->iCursor, 1);
+    اگر( p_Tab_شے->fg.بذریعہ_Coroutine ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null_صف, p_Tab_شے->iCursor, 1);
     }
   }
 
   /* Special case of a FROM clause subquery implemented as a co-routine */
-  if( pTabItem->fg.viaCoroutine ){
-    int regYield;
+  اگر( p_Tab_شے->fg.بذریعہ_Coroutine ){
+    صحیح regYield;
     Subquery *pSubq;
-    assert( pTabItem->fg.isSubquery && pTabItem->u4.pSubq!=0 );
-    pSubq = pTabItem->u4.pSubq;
+    أكد( p_Tab_شے->fg.isSubquery && p_Tab_شے->u4.pSubq!=0 );
+    pSubq = p_Tab_شے->u4.pSubq;
     regYield = pSubq->regReturn;
-    sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, pSubq->addrFillSub);
-    pLevel->p2 =  sqlite3VdbeAddOp2(v, OP_Yield, regYield, addrBrk);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_InitCoroutine, regYield, 0, pSubq->addrFillSub);
+    pLevel->p2 =  sqlite3_Vdbe_جوڑو_Op2(v, OP_Yield, regYield, addrBrk);
     VdbeCoverage(v);
-    VdbeComment((v, "next row of %s", pTabItem->pSTab->zName));
+    VdbeComment((v, "next row of %s", p_Tab_شے->pSTab->zName));
     pLevel->op = OP_Goto;
-  }else
+  }ورنہ
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if(  (pLoop->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_VIRTUALTABLE
+  اگر(  (pLoop->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
     /* Case 1:  The table is a virtual-table.  Use the VFilter and VNext
     **          to access the data.
     */
-    int iReg;   /* P3 Value for OP_VFilter */
-    int addrNotFound;
-    int nConstraint = pLoop->nLTerm;
+    صحیح iReg;   /* P3 Value for OP_VFilter */
+    صحیح addr_Not_ملا;
+    صحیح nConstraint = pLoop->nLTerm;
 
-    iReg = sqlite3GetTempRange(pParse, nConstraint+2);
-    addrNotFound = pLevel->addrBrk;
-    for(j=0; j<nConstraint; j++){
-      int iTarget = iReg+j+2;
-      pTerm = pLoop->aLTerm[j];
-      if( NEVER(pTerm==0) ) continue;
-      if( pTerm->eOperator & WO_IN ){
-        if( SMASKBIT32(j) & pLoop->u.vtab.mHandleIn ){
-          int iTab = pParse->nTab++;
-          int iCache = ++pParse->nMem;
-          sqlite3CodeRhsOfIN(pParse, pTerm->pExpr, iTab, 0);
-          sqlite3VdbeAddOp3(v, OP_VInitIn, iTab, iTarget, iCache);
-        }else{
-          codeEqualityTerm(pParse, pTerm, pLevel, j, bRev, iTarget);
-          addrNotFound = pLevel->addrNxt;
+    iReg = sqlite3_Get_عارضی_Range(pParse, nConstraint+2);
+    addr_Not_ملا = pLevel->addrBrk;
+    برائے(j=0; j<nConstraint; j++){
+      صحیح i_ہدف = iReg+j+2;
+      p_رکن = pLoop->aLTerm[j];
+      اگر( NEVER(p_رکن==0) ) جاری;
+      اگر( p_رکن->eOperator & WO_اندر ){
+        اگر( SMASKBIT32(j) & pLoop->u.vtab.m_Handle_اندر ){
+          صحیح iTab = pParse->nTab++;
+          صحیح iCache = ++pParse->nMem;
+          sqlite3_رمز_Rhs_کا_اندر(pParse, p_رکن->p_اظہاریہ, iTab, 0);
+          sqlite3_Vdbe_جوڑو_Op3(v, OP_VInit_اندر, iTab, i_ہدف, iCache);
+        }ورنہ{
+          رمز_Equality_رکن(pParse, p_رکن, pLevel, j, bRev, i_ہدف);
+          addr_Not_ملا = pLevel->addrNxt;
         }
-      }else{
-        Expr *pRight = pTerm->pExpr->pRight;
-        codeExprOrVector(pParse, pRight, iTarget, 1);
-        if( pTerm->eMatchOp==SQLITE_INDEX_CONSTRAINT_OFFSET
-         && pLoop->u.vtab.bOmitOffset
+      }ورنہ{
+        اظہاریہ *p_دایاں = p_رکن->p_اظہاریہ->p_دایاں;
+        رمز_اظہاریہ_Or_سمتیہ(pParse, p_دایاں, i_ہدف, 1);
+        اگر( p_رکن->e_مطابقت_Op==SQLITE_اشاریہ_CONSTRAINT_انحراف
+         && pLoop->u.vtab.b_Omit_انحراف
         ){
-          assert( pTerm->eOperator==WO_AUX );
-          assert( pWInfo->pSelect!=0 );
-          assert( pWInfo->pSelect->iOffset>0 );
-          sqlite3VdbeAddOp2(v, OP_Integer, 0, pWInfo->pSelect->iOffset);
+          أكد( p_رکن->eOperator==WO_AUX );
+          أكد( pWInfo->pSelect!=0 );
+          أكد( pWInfo->pSelect->i_انحراف>0 );
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, pWInfo->pSelect->i_انحراف);
           VdbeComment((v,"Zero OFFSET counter"));
         }
       }
     }
-    sqlite3VdbeAddOp2(v, OP_Integer, pLoop->u.vtab.idxNum, iReg);
-    sqlite3VdbeAddOp2(v, OP_Integer, nConstraint, iReg+1);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, pLoop->u.vtab.idx_عدد, iReg);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, nConstraint, iReg+1);
     /* The instruction immediately prior to OP_VFilter must be an OP_Integer
     ** that sets the "argc" value for xVFilter.  This is necessary for
     ** resolveP2() to work correctly.  See tag-20250207a. */
-    sqlite3VdbeAddOp4(v, OP_VFilter, iCur, addrNotFound, iReg,
+    sqlite3_Vdbe_جوڑو_Op4(v, OP_VFilter, iCur, addr_Not_ملا, iReg,
                       pLoop->u.vtab.idxStr,
                       pLoop->u.vtab.needFree ? P4_DYNAMIC : P4_STATIC);
     VdbeCoverage(v);
     pLoop->u.vtab.needFree = 0;
     /* An OOM inside of AddOp4(OP_VFilter) instruction above might have freed
     ** the u.vtab.idxStr.  NULL it out to prevent a use-after-free */
-    if( db->mallocFailed ) pLoop->u.vtab.idxStr = 0;
+    اگر( db->mallocFailed ) pLoop->u.vtab.idxStr = 0;
     pLevel->p1 = iCur;
     pLevel->op = pWInfo->eOnePass ? OP_Noop : OP_VNext;
     pLevel->p2 = sqlite3VdbeCurrentAddr(v);
-    assert( (pLoop->wsFlags & WHERE_MULTI_OR)==0 );
+    أكد( (pLoop->wsFlags & WHERE_MULTI_OR)==0 );
 
-    for(j=0; j<nConstraint; j++){
-      pTerm = pLoop->aLTerm[j];
-      if( j<16 && (pLoop->u.vtab.omitMask>>j)&1 ){
-        disableTerm(pLevel, pTerm);
-        continue;
+    برائے(j=0; j<nConstraint; j++){
+      p_رکن = pLoop->aLTerm[j];
+      اگر( j<16 && (pLoop->u.vtab.omit_نقاب>>j)&1 ){
+        disable_رکن(pLevel, p_رکن);
+        جاری;
       }
-      if( (pTerm->eOperator & WO_IN)!=0
-       && (SMASKBIT32(j) & pLoop->u.vtab.mHandleIn)==0
+      اگر( (p_رکن->eOperator & WO_اندر)!=0
+       && (SMASKBIT32(j) & pLoop->u.vtab.m_Handle_اندر)==0
        && !db->mallocFailed
       ){
-        Expr *pCompare;  /* The comparison operator */
-        Expr *pRight;    /* RHS of the comparison */
+        اظہاریہ *pCompare;  /* The comparison operator */
+        اظہاریہ *p_دایاں;    /* RHS of the comparison */
         VdbeOp *pOp;     /* Opcode to access the value of the IN constraint */
-        int iIn;         /* IN loop corresponding to the j-th constraint */
+        صحیح i_اندر;         /* IN loop corresponding to the j-th constraint */
 
         /* Reload the constraint value into reg[iReg+j+2].  The same value
         ** was loaded into the same register prior to the OP_VFilter, but
         ** the xFilter implementation might have changed the datatype or
         ** encoding of the value in the register, so it *must* be reloaded.
         */
-        for(iIn=0; ALWAYS(iIn<pLevel->u.in.nIn); iIn++){
-          pOp = sqlite3VdbeGetOp(v, pLevel->u.in.aInLoop[iIn].addrInTop);
-          if( (pOp->opcode==OP_Column && pOp->p3==iReg+j+2)
+        برائے(i_اندر=0; ALWAYS(i_اندر<pLevel->u.اندر.n_اندر); i_اندر++){
+          pOp = sqlite3VdbeGetOp(v, pLevel->u.اندر.a_اندر_Loop[i_اندر].addr_اندر_چوٹی);
+          اگر( (pOp->opcode==OP_عمود && pOp->p3==iReg+j+2)
            || (pOp->opcode==OP_Rowid && pOp->p2==iReg+j+2)
           ){
             testcase( pOp->opcode==OP_Rowid );
-            sqlite3VdbeAddOp3(v, pOp->opcode, pOp->p1, pOp->p2, pOp->p3);
-            break;
+            sqlite3_Vdbe_جوڑو_Op3(v, pOp->opcode, pOp->p1, pOp->p2, pOp->p3);
+            توڑو;
           }
         }
 
@@ -1832,28 +1832,28 @@ Bitmask sqlite3WhereCodeOneLoopStart(
         ** the IN constraint is not satisfied
         */
         pCompare = sqlite3PExpr(pParse, TK_EQ, 0, 0);
-        if( !db->mallocFailed ){
-          int iFld = pTerm->u.x.iField;
-          Expr *pLeft = pTerm->pExpr->pLeft;
-          assert( pLeft!=0 );
-          if( iFld>0 ){
-            assert( pLeft->op==TK_VECTOR );
-            assert( ExprUseXList(pLeft) );
-            assert( iFld<=pLeft->x.pList->nExpr );
-            pCompare->pLeft = pLeft->x.pList->a[iFld-1].pExpr;
-          }else{
-            pCompare->pLeft = pLeft;
+        اگر( !db->mallocFailed ){
+          صحیح iFld = p_رکن->u.x.i_میدان;
+          اظہاریہ *p_بایاں = p_رکن->p_اظہاریہ->p_بایاں;
+          أكد( p_بایاں!=0 );
+          اگر( iFld>0 ){
+            أكد( p_بایاں->op==TK_سمتیہ );
+            أكد( اظہاریہ_Use_XList(p_بایاں) );
+            أكد( iFld<=p_بایاں->x.pList->n_اظہاریہ );
+            pCompare->p_بایاں = p_بایاں->x.pList->a[iFld-1].p_اظہاریہ;
+          }ورنہ{
+            pCompare->p_بایاں = p_بایاں;
           }
-          pCompare->pRight = pRight = sqlite3Expr(db, TK_REGISTER, 0);
-          if( pRight ){
-            pRight->iTable = iReg+j+2;
-            sqlite3ExprIfFalse(
+          pCompare->p_دایاں = p_دایاں = sqlite3_اظہاریہ(db, TK_رجسٹر, 0);
+          اگر( p_دایاں ){
+            p_دایاں->i_جدول = iReg+j+2;
+            sqlite3_اظہاریہ_If_False(
                 pParse, pCompare, pLevel->addrCont, SQLITE_JUMPIFNULL
             );
           }
-          pCompare->pLeft = 0;
+          pCompare->p_بایاں = 0;
         }
-        sqlite3ExprDelete(db, pCompare);
+        sqlite3_اظہاریہ_Delete(db, pCompare);
       }
     }
 
@@ -1864,147 +1864,147 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     **
     **    sqlite3ReleaseTempRange(pParse, iReg, nConstraint+2);
     */
-  }else
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+  }ورنہ
+#اگر_ختم /* SQLITE_OMIT_VIRTUALTABLE */
 
-  if( (pLoop->wsFlags & WHERE_IPK)!=0
-   && (pLoop->wsFlags & (WHERE_COLUMN_IN|WHERE_COLUMN_EQ))!=0
+  اگر( (pLoop->wsFlags & WHERE_IPK)!=0
+   && (pLoop->wsFlags & (WHERE_عمود_اندر|WHERE_عمود_EQ))!=0
   ){
     /* Case 2:  We can directly reference a single row using an
     **          equality comparison against the ROWID field.  Or
     **          we reference multiple rows using a "rowid IN (...)"
     **          construct.
     */
-    assert( pLoop->u.btree.nEq==1 );
-    pTerm = pLoop->aLTerm[0];
-    assert( pTerm!=0 );
-    assert( pTerm->pExpr!=0 );
-    testcase( pTerm->wtFlags & TERM_VIRTUAL );
+    أكد( pLoop->u.btree.nEq==1 );
+    p_رکن = pLoop->aLTerm[0];
+    أكد( p_رکن!=0 );
+    أكد( p_رکن->p_اظہاریہ!=0 );
+    testcase( p_رکن->wtFlags & رکن_VIRTUAL );
     iReleaseReg = ++pParse->nMem;
-    iRowidReg = codeEqualityTerm(pParse, pTerm, pLevel, 0, bRev, iReleaseReg);
-    if( iRowidReg!=iReleaseReg ) sqlite3ReleaseTempReg(pParse, iReleaseReg);
+    iRowidReg = رمز_Equality_رکن(pParse, p_رکن, pLevel, 0, bRev, iReleaseReg);
+    اگر( iRowidReg!=iReleaseReg ) sqlite3_Release_عارضی_Reg(pParse, iReleaseReg);
     addrNxt = pLevel->addrNxt;
-    if( addrMiss==0 ) addrMiss = addrNxt;
-    if( pLevel->regFilter ){
-      sqlite3VdbeAddOp2(v, OP_MustBeInt, iRowidReg, addrMiss);
+    اگر( addr_ناکامی==0 ) addr_ناکامی = addrNxt;
+    اگر( pLevel->regFilter ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_MustBeInt, iRowidReg, addr_ناکامی);
       VdbeCoverage(v);
-      sqlite3VdbeAddOp4Int(v, OP_Filter, pLevel->regFilter, addrMiss,
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter, pLevel->regFilter, addr_ناکامی,
                            iRowidReg, 1);
       VdbeCoverage(v);
-      filterPullDown(pParse, pWInfo, iLevel, addrNxt, notReady);
+      filter_Pull_نیچے_کو(pParse, pWInfo, iLevel, addrNxt, notReady);
     }
-    sqlite3VdbeAddOp3(v, OP_SeekRowid, iCur, addrMiss, iRowidReg);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_SeekRowid, iCur, addr_ناکامی, iRowidReg);
     VdbeCoverage(v);
     pLevel->op = OP_Noop;
-  }else if( (pLoop->wsFlags & WHERE_IPK)!=0
-         && (pLoop->wsFlags & WHERE_COLUMN_RANGE)!=0
+  }ورنہ اگر( (pLoop->wsFlags & WHERE_IPK)!=0
+         && (pLoop->wsFlags & WHERE_عمود_RANGE)!=0
   ){
     /* Case 3:  We have an inequality comparison against the ROWID field.
     */
-    int testOp = OP_Noop;
-    int start;
-    int memEndValue = 0;
-    WhereTerm *pStart, *pEnd;
+    صحیح testOp = OP_Noop;
+    صحیح آغاز;
+    صحیح mem_انتہا_قدر = 0;
+    Where_رکن *p_آغاز, *p_انتہا;
 
     j = 0;
-    pStart = pEnd = 0;
-    if( pLoop->wsFlags & WHERE_BTM_LIMIT ) pStart = pLoop->aLTerm[j++];
-    if( pLoop->wsFlags & WHERE_TOP_LIMIT ) pEnd = pLoop->aLTerm[j++];
-    assert( pStart!=0 || pEnd!=0 );
-    if( bRev ){
-      pTerm = pStart;
-      pStart = pEnd;
-      pEnd = pTerm;
+    p_آغاز = p_انتہا = 0;
+    اگر( pLoop->wsFlags & WHERE_BTM_حد_بندی ) p_آغاز = pLoop->aLTerm[j++];
+    اگر( pLoop->wsFlags & WHERE_چوٹی_حد_بندی ) p_انتہا = pLoop->aLTerm[j++];
+    أكد( p_آغاز!=0 || p_انتہا!=0 );
+    اگر( bRev ){
+      p_رکن = p_آغاز;
+      p_آغاز = p_انتہا;
+      p_انتہا = p_رکن;
     }
-    codeCursorHint(pTabItem, pWInfo, pLevel, pEnd);
-    if( pStart ){
-      Expr *pX;             /* The expression that defines the start bound */
-      int r1, rTemp;        /* Registers for holding the start boundary */
-      int op;               /* Cursor seek operation */
+    رمز_Cursor_Hint(p_Tab_شے, pWInfo, pLevel, p_انتہا);
+    اگر( p_آغاز ){
+      اظہاریہ *pX;             /* The expression that defines the start bound */
+      صحیح r1, r_عارضی;        /* Registers for holding the start boundary */
+      صحیح op;               /* Cursor seek operation */
 
       /* The following constant maps TK_xx codes into corresponding
       ** seek opcodes.  It depends on a particular ordering of TK_xx
       */
-      const u8 aMoveOp[] = {
+      ثابت u8 aMoveOp[] = {
            /* TK_GT */  OP_SeekGT,
            /* TK_LE */  OP_SeekLE,
            /* TK_LT */  OP_SeekLT,
            /* TK_GE */  OP_SeekGE
       };
-      assert( TK_LE==TK_GT+1 );      /* Make sure the ordering.. */
-      assert( TK_LT==TK_GT+2 );      /*  ... of the TK_xx values... */
-      assert( TK_GE==TK_GT+3 );      /*  ... is correct. */
+      أكد( TK_LE==TK_GT+1 );      /* Make sure the ordering.. */
+      أكد( TK_LT==TK_GT+2 );      /*  ... of the TK_xx values... */
+      أكد( TK_GE==TK_GT+3 );      /*  ... is correct. */
 
-      assert( (pStart->wtFlags & TERM_VNULL)==0 );
-      testcase( pStart->wtFlags & TERM_VIRTUAL );
-      pX = pStart->pExpr;
-      assert( pX!=0 );
-      testcase( pStart->leftCursor!=iCur ); /* transitive constraints */
-      if( sqlite3ExprIsVector(pX->pRight) ){
-        r1 = rTemp = sqlite3GetTempReg(pParse);
-        codeExprOrVector(pParse, pX->pRight, r1, 1);
+      أكد( (p_آغاز->wtFlags & رکن_VNULL)==0 );
+      testcase( p_آغاز->wtFlags & رکن_VIRTUAL );
+      pX = p_آغاز->p_اظہاریہ;
+      أكد( pX!=0 );
+      testcase( p_آغاز->بایاں_Cursor!=iCur ); /* transitive constraints */
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(pX->p_دایاں) ){
+        r1 = r_عارضی = sqlite3_Get_عارضی_Reg(pParse);
+        رمز_اظہاریہ_Or_سمتیہ(pParse, pX->p_دایاں, r1, 1);
         testcase( pX->op==TK_GT );
         testcase( pX->op==TK_GE );
         testcase( pX->op==TK_LT );
         testcase( pX->op==TK_LE );
         op = aMoveOp[((pX->op - TK_GT - 1) & 0x3) | 0x1];
-        assert( pX->op!=TK_GT || op==OP_SeekGE );
-        assert( pX->op!=TK_GE || op==OP_SeekGE );
-        assert( pX->op!=TK_LT || op==OP_SeekLE );
-        assert( pX->op!=TK_LE || op==OP_SeekLE );
-      }else{
-        r1 = sqlite3ExprCodeTemp(pParse, pX->pRight, &rTemp);
-        disableTerm(pLevel, pStart);
+        أكد( pX->op!=TK_GT || op==OP_SeekGE );
+        أكد( pX->op!=TK_GE || op==OP_SeekGE );
+        أكد( pX->op!=TK_LT || op==OP_SeekLE );
+        أكد( pX->op!=TK_LE || op==OP_SeekLE );
+      }ورنہ{
+        r1 = sqlite3_اظہاریہ_رمز_عارضی(pParse, pX->p_دایاں, &r_عارضی);
+        disable_رکن(pLevel, p_آغاز);
         op = aMoveOp[(pX->op - TK_GT)];
       }
-      sqlite3VdbeAddOp3(v, op, iCur, addrBrk, r1);
+      sqlite3_Vdbe_جوڑو_Op3(v, op, iCur, addrBrk, r1);
       VdbeComment((v, "pk"));
       VdbeCoverageIf(v, pX->op==TK_GT);
       VdbeCoverageIf(v, pX->op==TK_LE);
       VdbeCoverageIf(v, pX->op==TK_LT);
       VdbeCoverageIf(v, pX->op==TK_GE);
-      sqlite3ReleaseTempReg(pParse, rTemp);
-    }else{
-      sqlite3VdbeAddOp2(v, bRev ? OP_Last : OP_Rewind, iCur, pLevel->addrHalt);
+      sqlite3_Release_عارضی_Reg(pParse, r_عارضی);
+    }ورنہ{
+      sqlite3_Vdbe_جوڑو_Op2(v, bRev ? OP_آخری : OP_Rewind, iCur, pLevel->addrHalt);
       VdbeCoverageIf(v, bRev==0);
       VdbeCoverageIf(v, bRev!=0);
     }
-    if( pEnd ){
-      Expr *pX;
-      pX = pEnd->pExpr;
-      assert( pX!=0 );
-      assert( (pEnd->wtFlags & TERM_VNULL)==0 );
-      testcase( pEnd->leftCursor!=iCur ); /* Transitive constraints */
-      testcase( pEnd->wtFlags & TERM_VIRTUAL );
-      memEndValue = ++pParse->nMem;
-      codeExprOrVector(pParse, pX->pRight, memEndValue, 1);
-      if( 0==sqlite3ExprIsVector(pX->pRight)
+    اگر( p_انتہا ){
+      اظہاریہ *pX;
+      pX = p_انتہا->p_اظہاریہ;
+      أكد( pX!=0 );
+      أكد( (p_انتہا->wtFlags & رکن_VNULL)==0 );
+      testcase( p_انتہا->بایاں_Cursor!=iCur ); /* Transitive constraints */
+      testcase( p_انتہا->wtFlags & رکن_VIRTUAL );
+      mem_انتہا_قدر = ++pParse->nMem;
+      رمز_اظہاریہ_Or_سمتیہ(pParse, pX->p_دایاں, mem_انتہا_قدر, 1);
+      اگر( 0==sqlite3_اظہاریہ_Is_سمتیہ(pX->p_دایاں)
        && (pX->op==TK_LT || pX->op==TK_GT)
       ){
         testOp = bRev ? OP_Le : OP_Ge;
-      }else{
+      }ورنہ{
         testOp = bRev ? OP_Lt : OP_Gt;
       }
-      if( 0==sqlite3ExprIsVector(pX->pRight) ){
-        disableTerm(pLevel, pEnd);
+      اگر( 0==sqlite3_اظہاریہ_Is_سمتیہ(pX->p_دایاں) ){
+        disable_رکن(pLevel, p_انتہا);
       }
     }
-    start = sqlite3VdbeCurrentAddr(v);
-    pLevel->op = bRev ? OP_Prev : OP_Next;
+    آغاز = sqlite3VdbeCurrentAddr(v);
+    pLevel->op = bRev ? OP_پچھلا : OP_اگلا;
     pLevel->p1 = iCur;
-    pLevel->p2 = start;
-    assert( pLevel->p5==0 );
-    if( testOp!=OP_Noop ){
+    pLevel->p2 = آغاز;
+    أكد( pLevel->p5==0 );
+    اگر( testOp!=OP_Noop ){
       iRowidReg = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Rowid, iCur, iRowidReg);
-      sqlite3VdbeAddOp3(v, testOp, memEndValue, addrBrk, iRowidReg);
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Rowid, iCur, iRowidReg);
+      sqlite3_Vdbe_جوڑو_Op3(v, testOp, mem_انتہا_قدر, addrBrk, iRowidReg);
       VdbeCoverageIf(v, testOp==OP_Le);
       VdbeCoverageIf(v, testOp==OP_Lt);
       VdbeCoverageIf(v, testOp==OP_Ge);
       VdbeCoverageIf(v, testOp==OP_Gt);
       sqlite3VdbeChangeP5(v, SQLITE_AFF_NUMERIC | SQLITE_JUMPIFNULL);
     }
-  }else if( pLoop->wsFlags & WHERE_INDEXED ){
+  }ورنہ اگر( pLoop->wsFlags & WHERE_اشاریہ_دار ){
     /* Case 4: Search using an index.
     **
     ** The WHERE clause may contain zero or more equality
@@ -2036,17 +2036,17 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** constraints but an index is selected anyway, in order
     ** to force the output order to conform to an ORDER BY.
     */
-    static const u8 aStartOp[] = {
+    ساکن ثابت u8 a_آغاز_Op[] = {
       0,
       0,
       OP_Rewind,           /* 2: (!start_constraints && startEq &&  !bRev) */
-      OP_Last,             /* 3: (!start_constraints && startEq &&   bRev) */
+      OP_آخری,             /* 3: (!start_constraints && startEq &&   bRev) */
       OP_SeekGT,           /* 4: (start_constraints  && !startEq && !bRev) */
       OP_SeekLT,           /* 5: (start_constraints  && !startEq &&  bRev) */
       OP_SeekGE,           /* 6: (start_constraints  &&  startEq && !bRev) */
       OP_SeekLE            /* 7: (start_constraints  &&  startEq &&  bRev) */
     };
-    static const u8 aEndOp[] = {
+    ساکن ثابت u8 a_انتہا_Op[] = {
       OP_IdxGE,            /* 0: (end_constraints && !bRev && !endEq) */
       OP_IdxGT,            /* 1: (end_constraints && !bRev &&  endEq) */
       OP_IdxLE,            /* 2: (end_constraints &&  bRev && !endEq) */
@@ -2054,65 +2054,65 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     };
     u16 nEq = pLoop->u.btree.nEq;     /* Number of == or IN terms */
     u16 nBtm = pLoop->u.btree.nBtm;   /* Length of BTM vector */
-    u16 nTop = pLoop->u.btree.nTop;   /* Length of TOP vector */
-    int regBase;                 /* Base register holding constraint values */
-    WhereTerm *pRangeStart = 0;  /* Inequality constraint at range start */
-    WhereTerm *pRangeEnd = 0;    /* Inequality constraint at range end */
-    int startEq;                 /* True if range start uses ==, >= or <= */
-    int endEq;                   /* True if range end uses ==, >= or <= */
-    int start_constraints;       /* Start of range is constrained */
-    int nConstraint;             /* Number of constraint terms */
-    int iIdxCur;                 /* The VDBE cursor for the index */
-    int nExtraReg = 0;           /* Number of extra registers needed */
-    int op;                      /* Instruction opcode */
-    char *zStartAff;             /* Affinity for start of range constraint */
-    char *zEndAff = 0;           /* Affinity for end of range constraint */
+    u16 n_چوٹی = pLoop->u.btree.n_چوٹی;   /* Length of TOP vector */
+    صحیح reg_بنیاد;                 /* Base register holding constraint values */
+    Where_رکن *p_Range_آغاز = 0;  /* Inequality constraint at range start */
+    Where_رکن *p_Range_انتہا = 0;    /* Inequality constraint at range end */
+    صحیح آغاز_Eq;                 /* True if range start uses ==, >= or <= */
+    صحیح انتہا_Eq;                   /* True if range end uses ==, >= or <= */
+    صحیح آغاز_constraints;       /* Start of range is constrained */
+    صحیح nConstraint;             /* Number of constraint terms */
+    صحیح iIdxCur;                 /* The VDBE cursor for the index */
+    صحیح nExtraReg = 0;           /* Number of extra registers needed */
+    صحیح op;                      /* Instruction opcode */
+    حرف *z_آغاز_Aff;             /* Affinity for start of range constraint */
+    حرف *z_انتہا_Aff = 0;           /* Affinity for end of range constraint */
     u8 bSeekPastNull = 0;        /* True to seek past initial nulls */
     u8 bStopAtNull = 0;          /* Add condition to terminate at NULLs */
-    int omitTable;               /* True if we use the index only */
-    int regBignull = 0;          /* big-null flag register */
-    int addrSeekScan = 0;        /* Opcode of the OP_SeekScan, if any */
+    صحیح omit_جدول;               /* True if we use the index only */
+    صحیح regBignull = 0;          /* big-null flag register */
+    صحیح addr_Seek_جائزہ = 0;        /* Opcode of the OP_SeekScan, if any */
 
-    pIdx = pLoop->u.btree.pIndex;
+    pIdx = pLoop->u.btree.p_اشاریہ;
     iIdxCur = pLevel->iIdxCur;
-    assert( nEq>=pLoop->nSkip );
+    أكد( nEq>=pLoop->nSkip );
 
     /* Find any inequality constraint terms for the start and end
     ** of the range.
     */
     j = nEq;
-    if( pLoop->wsFlags & WHERE_BTM_LIMIT ){
-      pRangeStart = pLoop->aLTerm[j++];
+    اگر( pLoop->wsFlags & WHERE_BTM_حد_بندی ){
+      p_Range_آغاز = pLoop->aLTerm[j++];
       nExtraReg = MAX(nExtraReg, pLoop->u.btree.nBtm);
       /* Like optimization range constraints always occur in pairs */
-      assert( (pRangeStart->wtFlags & TERM_LIKEOPT)==0 ||
-              (pLoop->wsFlags & WHERE_TOP_LIMIT)!=0 );
+      أكد( (p_Range_آغاز->wtFlags & رکن_LIKEOPT)==0 ||
+              (pLoop->wsFlags & WHERE_چوٹی_حد_بندی)!=0 );
     }
-    if( pLoop->wsFlags & WHERE_TOP_LIMIT ){
-      pRangeEnd = pLoop->aLTerm[j++];
-      nExtraReg = MAX(nExtraReg, pLoop->u.btree.nTop);
-#ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-      if( (pRangeEnd->wtFlags & TERM_LIKEOPT)!=0 ){
-        assert( pRangeStart!=0 );                     /* LIKE opt constraints */
-        assert( pRangeStart->wtFlags & TERM_LIKEOPT );   /* occur in pairs */
+    اگر( pLoop->wsFlags & WHERE_چوٹی_حد_بندی ){
+      p_Range_انتہا = pLoop->aLTerm[j++];
+      nExtraReg = MAX(nExtraReg, pLoop->u.btree.n_چوٹی);
+#اگر_غیر_تعریف_شدہ SQLITE_LIKE_DOESNT_مطابقت_BLOBS
+      اگر( (p_Range_انتہا->wtFlags & رکن_LIKEOPT)!=0 ){
+        أكد( p_Range_آغاز!=0 );                     /* LIKE opt constraints */
+        أكد( p_Range_آغاز->wtFlags & رکن_LIKEOPT );   /* occur in pairs */
         pLevel->iLikeRepCntr = (u32)++pParse->nMem;
         /* iLikeRepCntr actually stores 2x the counter register number.  The
         ** bottom bit indicates whether the search order is ASC or DESC. */
         testcase( bRev );
-        testcase( pIdx->aSortOrder[nEq]==SQLITE_SO_DESC );
-        assert( (bRev & ~1)==0 );
+        testcase( pIdx->a_ترتیب_دو_ترتیب[nEq]==SQLITE_SO_DESC );
+        أكد( (bRev & ~1)==0 );
         pLevel->iLikeRepCntr <<=1;
-        pLevel->iLikeRepCntr |= bRev ^ (pIdx->aSortOrder[nEq]==SQLITE_SO_DESC);
+        pLevel->iLikeRepCntr |= bRev ^ (pIdx->a_ترتیب_دو_ترتیب[nEq]==SQLITE_SO_DESC);
       }
-#endif
-      if( pRangeStart==0 ){
-        j = pIdx->aiColumn[nEq];
-        if( (j>=0 && pIdx->pTable->aCol[j].notNull==0) || j==XN_EXPR ){
+#اگر_ختم
+      اگر( p_Range_آغاز==0 ){
+        j = pIdx->ai_عمود[nEq];
+        اگر( (j>=0 && pIdx->p_جدول->a_ستون[j].notNull==0) || j==XN_اظہاریہ ){
           bSeekPastNull = 1;
         }
       }
     }
-    assert( pRangeEnd==0 || (pRangeEnd->wtFlags & TERM_VNULL)==0 );
+    أكد( p_Range_انتہا==0 || (p_Range_انتہا->wtFlags & رکن_VNULL)==0 );
 
     /* If the WHERE_BIGNULL_SORT flag is set, then index column nEq uses
     ** a non-default "big-null" sort (either ASC NULLS LAST or DESC NULLS
@@ -2121,17 +2121,17 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** it is not. For an ASC sort, the non-NULL entries are scanned first.
     ** For DESC, NULL entries are scanned first.
     */
-    if( (pLoop->wsFlags & (WHERE_TOP_LIMIT|WHERE_BTM_LIMIT))==0
-     && (pLoop->wsFlags & WHERE_BIGNULL_SORT)!=0
+    اگر( (pLoop->wsFlags & (WHERE_چوٹی_حد_بندی|WHERE_BTM_حد_بندی))==0
+     && (pLoop->wsFlags & WHERE_BIGNULL_ترتیب_دو)!=0
     ){
-      assert( bSeekPastNull==0 && nExtraReg==0 && nBtm==0 && nTop==0 );
-      assert( pRangeEnd==0 && pRangeStart==0 );
+      أكد( bSeekPastNull==0 && nExtraReg==0 && nBtm==0 && n_چوٹی==0 );
+      أكد( p_Range_انتہا==0 && p_Range_آغاز==0 );
       testcase( pLoop->nSkip>0 );
       nExtraReg = 1;
       bSeekPastNull = 1;
       pLevel->regBignull = regBignull = ++pParse->nMem;
-      if( pLevel->iLeftJoin ){
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, regBignull);
+      اگر( pLevel->i_بایاں_Join ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, regBignull);
       }
       pLevel->addrBignull = sqlite3VdbeMakeLabel(pParse);
     }
@@ -2140,108 +2140,108 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** a forward order scan on a descending index, interchange the
     ** start and end terms (pRangeStart and pRangeEnd).
     */
-    if( (nEq<pIdx->nColumn && bRev==(pIdx->aSortOrder[nEq]==SQLITE_SO_ASC)) ){
-      SWAP(WhereTerm *, pRangeEnd, pRangeStart);
-      SWAP(u8, bSeekPastNull, bStopAtNull);
-      SWAP(u8, nBtm, nTop);
+    اگر( (nEq<pIdx->n_عمود && bRev==(pIdx->a_ترتیب_دو_ترتیب[nEq]==SQLITE_SO_ASC)) ){
+      تبادلہ(Where_رکن *, p_Range_انتہا, p_Range_آغاز);
+      تبادلہ(u8, bSeekPastNull, bStopAtNull);
+      تبادلہ(u8, nBtm, n_چوٹی);
     }
 
-    if( iLevel>0 && (pLoop->wsFlags & WHERE_IN_SEEKSCAN)!=0 ){
+    اگر( iLevel>0 && (pLoop->wsFlags & WHERE_اندر_SEEKSCAN)!=0 ){
       /* In case OP_SeekScan is used, ensure that the index cursor does not
       ** point to a valid row for the first iteration of this loop. */
-      sqlite3VdbeAddOp1(v, OP_NullRow, iIdxCur);
+      sqlite3_Vdbe_جوڑو_Op1(v, OP_Null_صف, iIdxCur);
     }
 
     /* Generate code to evaluate all constraint terms using == or IN
     ** and store the values of those terms in an array of registers
     ** starting at regBase.
     */
-    codeCursorHint(pTabItem, pWInfo, pLevel, pRangeEnd);
-    regBase = codeAllEqualityTerms(pParse,pLevel,bRev,nExtraReg,&zStartAff);
-    assert( zStartAff==0 || sqlite3Strlen30(zStartAff)>=nEq );
-#ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-    if( pLevel->iLikeRepCntr ){
+    رمز_Cursor_Hint(p_Tab_شے, pWInfo, pLevel, p_Range_انتہا);
+    reg_بنیاد = رمز_All_Equality_Terms(pParse,pLevel,bRev,nExtraReg,&z_آغاز_Aff);
+    أكد( z_آغاز_Aff==0 || sqlite3Strlen30(z_آغاز_Aff)>=nEq );
+#اگر_غیر_تعریف_شدہ SQLITE_LIKE_DOESNT_مطابقت_BLOBS
+    اگر( pLevel->iLikeRepCntr ){
       /* The LIKE optimization loop must be the innermost of any IN(...)
       ** or skip-scan loops. Otherwise rows may not be visited in index 
       ** order. This means it needs an addrNxt label for the same reason
       ** IN(...) scans do.  */
-      if( pLevel->addrNxt==pLevel->addrBrk ){
+      اگر( pLevel->addrNxt==pLevel->addrBrk ){
         pLevel->addrNxt = sqlite3VdbeMakeLabel(pParse);
       }
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, (int)(pLevel->iLikeRepCntr>>1));
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, (صحیح)(pLevel->iLikeRepCntr>>1));
       VdbeComment((v, "LIKE loop counter"));
       pLevel->addrLikeRep = sqlite3VdbeCurrentAddr(v);
     }
-#endif
-    if( zStartAff && nTop ){
-      zEndAff = sqlite3DbStrDup(db, &zStartAff[nEq]);
+#اگر_ختم
+    اگر( z_آغاز_Aff && n_چوٹی ){
+      z_انتہا_Aff = sqlite3DbStrDup(db, &z_آغاز_Aff[nEq]);
     }
     addrNxt = (regBignull ? pLevel->addrBignull : pLevel->addrNxt);
-    if( addrMiss==0 ) addrMiss = addrNxt;
+    اگر( addr_ناکامی==0 ) addr_ناکامی = addrNxt;
 
-    testcase( pRangeStart && (pRangeStart->eOperator & WO_LE)!=0 );
-    testcase( pRangeStart && (pRangeStart->eOperator & WO_GE)!=0 );
-    testcase( pRangeEnd && (pRangeEnd->eOperator & WO_LE)!=0 );
-    testcase( pRangeEnd && (pRangeEnd->eOperator & WO_GE)!=0 );
-    startEq = !pRangeStart || pRangeStart->eOperator & (WO_LE|WO_GE);
-    endEq =   !pRangeEnd || pRangeEnd->eOperator & (WO_LE|WO_GE);
-    start_constraints = pRangeStart || nEq>0;
+    testcase( p_Range_آغاز && (p_Range_آغاز->eOperator & WO_LE)!=0 );
+    testcase( p_Range_آغاز && (p_Range_آغاز->eOperator & WO_GE)!=0 );
+    testcase( p_Range_انتہا && (p_Range_انتہا->eOperator & WO_LE)!=0 );
+    testcase( p_Range_انتہا && (p_Range_انتہا->eOperator & WO_GE)!=0 );
+    آغاز_Eq = !p_Range_آغاز || p_Range_آغاز->eOperator & (WO_LE|WO_GE);
+    انتہا_Eq =   !p_Range_انتہا || p_Range_انتہا->eOperator & (WO_LE|WO_GE);
+    آغاز_constraints = p_Range_آغاز || nEq>0;
 
     /* Seek the index cursor to the start of the range. */
     nConstraint = nEq;
-    if( pRangeStart ){
-      Expr *pRight = pRangeStart->pExpr->pRight;
-      codeExprOrVector(pParse, pRight, regBase+nEq, nBtm);
-      whereLikeOptimizationStringFixup(v, pLevel, pRangeStart);
-      if( (pRangeStart->wtFlags & TERM_VNULL)==0
-       && sqlite3ExprCanBeNull(pRight)
+    اگر( p_Range_آغاز ){
+      اظہاریہ *p_دایاں = p_Range_آغاز->p_اظہاریہ->p_دایاں;
+      رمز_اظہاریہ_Or_سمتیہ(pParse, p_دایاں, reg_بنیاد+nEq, nBtm);
+      whereLikeOptimizationStringFixup(v, pLevel, p_Range_آغاز);
+      اگر( (p_Range_آغاز->wtFlags & رکن_VNULL)==0
+       && sqlite3_اظہاریہ_Can_Be_Null(p_دایاں)
       ){
-        sqlite3VdbeAddOp2(v, OP_IsNull, regBase+nEq, addrNxt);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, reg_بنیاد+nEq, addrNxt);
         VdbeCoverage(v);
       }
-      if( zStartAff ){
-        updateRangeAffinityStr(pRight, nBtm, &zStartAff[nEq]);
+      اگر( z_آغاز_Aff ){
+        updateRangeAffinityStr(p_دایاں, nBtm, &z_آغاز_Aff[nEq]);
       }
       nConstraint += nBtm;
-      testcase( pRangeStart->wtFlags & TERM_VIRTUAL );
-      if( sqlite3ExprIsVector(pRight)==0 ){
-        disableTerm(pLevel, pRangeStart);
-      }else{
-        startEq = 1;
+      testcase( p_Range_آغاز->wtFlags & رکن_VIRTUAL );
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_دایاں)==0 ){
+        disable_رکن(pLevel, p_Range_آغاز);
+      }ورنہ{
+        آغاز_Eq = 1;
       }
       bSeekPastNull = 0;
-    }else if( bSeekPastNull ){
-      startEq = 0;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regBase+nEq);
-      start_constraints = 1;
+    }ورنہ اگر( bSeekPastNull ){
+      آغاز_Eq = 0;
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, reg_بنیاد+nEq);
+      آغاز_constraints = 1;
       nConstraint++;
-    }else if( regBignull ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regBase+nEq);
-      start_constraints = 1;
+    }ورنہ اگر( regBignull ){
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, reg_بنیاد+nEq);
+      آغاز_constraints = 1;
       nConstraint++;
     }
-    codeApplyAffinity(pParse, regBase, nConstraint - bSeekPastNull, zStartAff);
-    if( pLoop->nSkip>0 && nConstraint==pLoop->nSkip ){
+    رمز_Apply_Affinity(pParse, reg_بنیاد, nConstraint - bSeekPastNull, z_آغاز_Aff);
+    اگر( pLoop->nSkip>0 && nConstraint==pLoop->nSkip ){
       /* The skip-scan logic inside the call to codeAllEqualityConstraints()
       ** above has already left the cursor sitting on the correct row,
       ** so no further seeking is needed */
-    }else{
-      if( regBignull ){
-        sqlite3VdbeAddOp2(v, OP_Integer, 1, regBignull);
+    }ورنہ{
+      اگر( regBignull ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, regBignull);
         VdbeComment((v, "NULL-scan pass ctr"));
       }
-      if( pLevel->regFilter ){
-        assert( sqlite3WhereLoopBloomable(pLoop) );
-        sqlite3VdbeAddOp4Int(v, OP_Filter, pLevel->regFilter, addrMiss,
-                             regBase, nEq);
+      اگر( pLevel->regFilter ){
+        أكد( sqlite3WhereLoopBloomable(pLoop) );
+        sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter, pLevel->regFilter, addr_ناکامی,
+                             reg_بنیاد, nEq);
         VdbeCoverage(v);
-        filterPullDown(pParse, pWInfo, iLevel, addrNxt, notReady);
+        filter_Pull_نیچے_کو(pParse, pWInfo, iLevel, addrNxt, notReady);
       }
 
-      op = aStartOp[(start_constraints<<2) + (startEq<<1) + bRev];
-      assert( op!=0 );
-      if( (pLoop->wsFlags & WHERE_IN_SEEKSCAN)!=0 && op==OP_SeekGE ){
-        assert( regBignull==0 );
+      op = a_آغاز_Op[(آغاز_constraints<<2) + (آغاز_Eq<<1) + bRev];
+      أكد( op!=0 );
+      اگر( (pLoop->wsFlags & WHERE_اندر_SEEKSCAN)!=0 && op==OP_SeekGE ){
+        أكد( regBignull==0 );
         /* TUNING:  The OP_SeekScan opcode seeks to reduce the number
         ** of expensive seek operations by replacing a single seek with
         ** 1 or more step operations.  The question is, how many steps
@@ -2250,39 +2250,39 @@ Bitmask sqlite3WhereCodeOneLoopStart(
         ** of entries in the tree, so basing the number of steps to try
         ** on the estimated number of rows in the btree seems like a good
         ** guess. */
-        addrSeekScan = sqlite3VdbeAddOp1(v, OP_SeekScan,
-                                         (pIdx->aiRowLogEst[0]+9)/10);
-        if( pRangeStart || pRangeEnd ){
+        addr_Seek_جائزہ = sqlite3_Vdbe_جوڑو_Op1(v, OP_Seek_جائزہ,
+                                         (pIdx->ai_صف_Log_Est[0]+9)/10);
+        اگر( p_Range_آغاز || p_Range_انتہا ){
           sqlite3VdbeChangeP5(v, 1);
-          sqlite3VdbeChangeP2(v, addrSeekScan, sqlite3VdbeCurrentAddr(v)+1);
-          addrSeekScan = 0;
+          sqlite3VdbeChangeP2(v, addr_Seek_جائزہ, sqlite3VdbeCurrentAddr(v)+1);
+          addr_Seek_جائزہ = 0;
         }
         VdbeCoverage(v);
       }
-      sqlite3VdbeAddOp4Int(v, op, iIdxCur, addrMiss, regBase, nConstraint);
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, op, iIdxCur, addr_ناکامی, reg_بنیاد, nConstraint);
       VdbeCoverage(v);
       VdbeCoverageIf(v, op==OP_Rewind);  testcase( op==OP_Rewind );
-      VdbeCoverageIf(v, op==OP_Last);    testcase( op==OP_Last );
+      VdbeCoverageIf(v, op==OP_آخری);    testcase( op==OP_آخری );
       VdbeCoverageIf(v, op==OP_SeekGT);  testcase( op==OP_SeekGT );
       VdbeCoverageIf(v, op==OP_SeekGE);  testcase( op==OP_SeekGE );
       VdbeCoverageIf(v, op==OP_SeekLE);  testcase( op==OP_SeekLE );
       VdbeCoverageIf(v, op==OP_SeekLT);  testcase( op==OP_SeekLT );
 
-      assert( bSeekPastNull==0 || bStopAtNull==0 );
-      if( regBignull ){
-        assert( bSeekPastNull==1 || bStopAtNull==1 );
-        assert( bSeekPastNull==!bStopAtNull );
-        assert( bStopAtNull==startEq );
-        sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
-        op = aStartOp[(nConstraint>1)*4 + 2 + bRev];
-        sqlite3VdbeAddOp4Int(v, op, iIdxCur, addrNxt, regBase,
-                             nConstraint-startEq);
+      أكد( bSeekPastNull==0 || bStopAtNull==0 );
+      اگر( regBignull ){
+        أكد( bSeekPastNull==1 || bStopAtNull==1 );
+        أكد( bSeekPastNull==!bStopAtNull );
+        أكد( bStopAtNull==آغاز_Eq );
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
+        op = a_آغاز_Op[(nConstraint>1)*4 + 2 + bRev];
+        sqlite3_Vdbe_جوڑو_Op4_Int(v, op, iIdxCur, addrNxt, reg_بنیاد,
+                             nConstraint-آغاز_Eq);
         VdbeCoverage(v);
         VdbeCoverageIf(v, op==OP_Rewind);  testcase( op==OP_Rewind );
-        VdbeCoverageIf(v, op==OP_Last);    testcase( op==OP_Last );
+        VdbeCoverageIf(v, op==OP_آخری);    testcase( op==OP_آخری );
         VdbeCoverageIf(v, op==OP_SeekGE);  testcase( op==OP_SeekGE );
         VdbeCoverageIf(v, op==OP_SeekLE);  testcase( op==OP_SeekLE );
-        assert( op==OP_Rewind || op==OP_Last || op==OP_SeekGE || op==OP_SeekLE);
+        أكد( op==OP_Rewind || op==OP_آخری || op==OP_SeekGE || op==OP_SeekLE);
       }
     }
 
@@ -2290,72 +2290,72 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** range (if any).
     */
     nConstraint = nEq;
-    assert( pLevel->p2==0 );
-    if( pRangeEnd ){
-      Expr *pRight = pRangeEnd->pExpr->pRight;
-      assert( addrSeekScan==0 );
-      codeExprOrVector(pParse, pRight, regBase+nEq, nTop);
-      whereLikeOptimizationStringFixup(v, pLevel, pRangeEnd);
-      if( (pRangeEnd->wtFlags & TERM_VNULL)==0
-       && sqlite3ExprCanBeNull(pRight)
+    أكد( pLevel->p2==0 );
+    اگر( p_Range_انتہا ){
+      اظہاریہ *p_دایاں = p_Range_انتہا->p_اظہاریہ->p_دایاں;
+      أكد( addr_Seek_جائزہ==0 );
+      رمز_اظہاریہ_Or_سمتیہ(pParse, p_دایاں, reg_بنیاد+nEq, n_چوٹی);
+      whereLikeOptimizationStringFixup(v, pLevel, p_Range_انتہا);
+      اگر( (p_Range_انتہا->wtFlags & رکن_VNULL)==0
+       && sqlite3_اظہاریہ_Can_Be_Null(p_دایاں)
       ){
-        sqlite3VdbeAddOp2(v, OP_IsNull, regBase+nEq, addrNxt);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_IsNull, reg_بنیاد+nEq, addrNxt);
         VdbeCoverage(v);
       }
-      if( zEndAff ){
-        updateRangeAffinityStr(pRight, nTop, zEndAff);
-        codeApplyAffinity(pParse, regBase+nEq, nTop, zEndAff);
-      }else{
-        assert( pParse->db->mallocFailed );
+      اگر( z_انتہا_Aff ){
+        updateRangeAffinityStr(p_دایاں, n_چوٹی, z_انتہا_Aff);
+        رمز_Apply_Affinity(pParse, reg_بنیاد+nEq, n_چوٹی, z_انتہا_Aff);
+      }ورنہ{
+        أكد( pParse->db->mallocFailed );
       }
-      nConstraint += nTop;
-      testcase( pRangeEnd->wtFlags & TERM_VIRTUAL );
+      nConstraint += n_چوٹی;
+      testcase( p_Range_انتہا->wtFlags & رکن_VIRTUAL );
 
-      if( sqlite3ExprIsVector(pRight)==0 ){
-        disableTerm(pLevel, pRangeEnd);
-      }else{
-        endEq = 1;
+      اگر( sqlite3_اظہاریہ_Is_سمتیہ(p_دایاں)==0 ){
+        disable_رکن(pLevel, p_Range_انتہا);
+      }ورنہ{
+        انتہا_Eq = 1;
       }
-    }else if( bStopAtNull ){
-      if( regBignull==0 ){
-        sqlite3VdbeAddOp2(v, OP_Null, 0, regBase+nEq);
-        endEq = 0;
+    }ورنہ اگر( bStopAtNull ){
+      اگر( regBignull==0 ){
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, reg_بنیاد+nEq);
+        انتہا_Eq = 0;
       }
       nConstraint++;
     }
-    if( zStartAff ) sqlite3DbNNFreeNN(db, zStartAff);
-    if( zEndAff ) sqlite3DbNNFreeNN(db, zEndAff);
+    اگر( z_آغاز_Aff ) sqlite3DbNNFreeNN(db, z_آغاز_Aff);
+    اگر( z_انتہا_Aff ) sqlite3DbNNFreeNN(db, z_انتہا_Aff);
 
     /* Top of the loop body */
     pLevel->p2 = sqlite3VdbeCurrentAddr(v);
 
     /* Check if the index cursor is past the end of the range. */
-    if( nConstraint ){
-      if( regBignull ){
+    اگر( nConstraint ){
+      اگر( regBignull ){
         /* Except, skip the end-of-range check while doing the NULL-scan */
-        sqlite3VdbeAddOp2(v, OP_IfNot, regBignull, sqlite3VdbeCurrentAddr(v)+3);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_IfNot, regBignull, sqlite3VdbeCurrentAddr(v)+3);
         VdbeComment((v, "If NULL-scan 2nd pass"));
         VdbeCoverage(v);
       }
-      op = aEndOp[bRev*2 + endEq];
-      sqlite3VdbeAddOp4Int(v, op, iIdxCur, addrNxt, regBase, nConstraint);
+      op = a_انتہا_Op[bRev*2 + انتہا_Eq];
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, op, iIdxCur, addrNxt, reg_بنیاد, nConstraint);
       testcase( op==OP_IdxGT );  VdbeCoverageIf(v, op==OP_IdxGT );
       testcase( op==OP_IdxGE );  VdbeCoverageIf(v, op==OP_IdxGE );
       testcase( op==OP_IdxLT );  VdbeCoverageIf(v, op==OP_IdxLT );
       testcase( op==OP_IdxLE );  VdbeCoverageIf(v, op==OP_IdxLE );
-      if( addrSeekScan ) sqlite3VdbeJumpHere(v, addrSeekScan);
+      اگر( addr_Seek_جائزہ ) sqlite3_Vdbe_Jump_یہاں(v, addr_Seek_جائزہ);
     }
-    if( regBignull ){
+    اگر( regBignull ){
       /* During a NULL-scan, check to see if we have reached the end of
       ** the NULLs */
-      assert( bSeekPastNull==!bStopAtNull );
-      assert( bSeekPastNull+bStopAtNull==1 );
-      assert( nConstraint+bSeekPastNull>0 );
-      sqlite3VdbeAddOp2(v, OP_If, regBignull, sqlite3VdbeCurrentAddr(v)+2);
+      أكد( bSeekPastNull==!bStopAtNull );
+      أكد( bSeekPastNull+bStopAtNull==1 );
+      أكد( nConstraint+bSeekPastNull>0 );
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_If, regBignull, sqlite3VdbeCurrentAddr(v)+2);
       VdbeComment((v, "If NULL-scan 1st pass"));
       VdbeCoverage(v);
-      op = aEndOp[bRev*2 + bSeekPastNull];
-      sqlite3VdbeAddOp4Int(v, op, iIdxCur, addrNxt, regBase,
+      op = a_انتہا_Op[bRev*2 + bSeekPastNull];
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, op, iIdxCur, addrNxt, reg_بنیاد,
                            nConstraint+bSeekPastNull);
       testcase( op==OP_IdxGT );  VdbeCoverageIf(v, op==OP_IdxGT );
       testcase( op==OP_IdxGE );  VdbeCoverageIf(v, op==OP_IdxGE );
@@ -2363,29 +2363,29 @@ Bitmask sqlite3WhereCodeOneLoopStart(
       testcase( op==OP_IdxLE );  VdbeCoverageIf(v, op==OP_IdxLE );
     }
 
-    if( (pLoop->wsFlags & WHERE_IN_EARLYOUT)!=0 ){
-      sqlite3VdbeAddOp3(v, OP_SeekHit, iIdxCur, nEq, nEq);
+    اگر( (pLoop->wsFlags & WHERE_اندر_EARLYOUT)!=0 ){
+      sqlite3_Vdbe_جوڑو_Op3(v, OP_Seek_کامیابی, iIdxCur, nEq, nEq);
     }
 
     /* Seek the table cursor, if required */
-    omitTable = (pLoop->wsFlags & WHERE_IDX_ONLY)!=0
-           && (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_RIGHT_JOIN))==0;
-    if( omitTable ){
+    omit_جدول = (pLoop->wsFlags & WHERE_IDX_ONLY)!=0
+           && (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_دایاں_JOIN))==0;
+    اگر( omit_جدول ){
       /* pIdx is a covering index.  No need to access the main table. */
-    }else if( HasRowid(pIdx->pTable) ){
-      codeDeferredSeek(pWInfo, pIdx, iCur, iIdxCur);
-    }else if( iCur!=iIdxCur ){
-      Index *pPk = sqlite3PrimaryKeyIndex(pIdx->pTable);
-      iRowidReg = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-      for(j=0; j<pPk->nKeyCol; j++){
-        k = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[j]);
-        sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, k, iRowidReg+j);
+    }ورنہ اگر( HasRowid(pIdx->p_جدول) ){
+      رمز_Deferred_Seek(pWInfo, pIdx, iCur, iIdxCur);
+    }ورنہ اگر( iCur!=iIdxCur ){
+      اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pIdx->p_جدول);
+      iRowidReg = sqlite3_Get_عارضی_Range(pParse, pPk->n_کلید_ستون);
+      برائے(j=0; j<pPk->n_کلید_ستون; j++){
+        k = sqlite3_جدول_عمود_مقصد_اشاریہ(pIdx, pPk->ai_عمود[j]);
+        sqlite3_Vdbe_جوڑو_Op3(v, OP_عمود, iIdxCur, k, iRowidReg+j);
       }
-      sqlite3VdbeAddOp4Int(v, OP_NotFound, iCur, addrCont,
-                           iRowidReg, pPk->nKeyCol); VdbeCoverage(v);
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Not_ملا, iCur, addrCont,
+                           iRowidReg, pPk->n_کلید_ستون); VdbeCoverage(v);
     }
 
-    if( pLevel->iLeftJoin==0 ){
+    اگر( pLevel->i_بایاں_Join==0 ){
       /* If a partial index is driving the loop, try to eliminate WHERE clause
       ** terms from the query that must be true due to the WHERE clause of
       ** the partial index.  This optimization does not work on an outer join,
@@ -2394,39 +2394,39 @@ Bitmask sqlite3WhereCodeOneLoopStart(
       ** 2019-11-02 ticket 623eff57e76d45f6      (LEFT JOIN)
       ** 2025-05-29 forum post 7dee41d32506c4ae  (RIGHT JOIN)
       */
-      if( pIdx->pPartIdxWhere && pLevel->pRJ==0 ){
-        whereApplyPartialIndexConstraints(pIdx->pPartIdxWhere, iCur, pWC);
+      اگر( pIdx->pPartIdxWhere && pLevel->pRJ==0 ){
+        where_Apply_Partial_اشاریہ_Constraints(pIdx->pPartIdxWhere, iCur, pWC);
       }
-    }else{
+    }ورنہ{
       testcase( pIdx->pPartIdxWhere );
       /* The following assert() is not a requirement, merely an observation:
       ** The OR-optimization doesn't work for the right hand table of
       ** a LEFT JOIN: */
-      assert( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_RIGHT_JOIN))==0 );
+      أكد( (pWInfo->wctrlFlags & (WHERE_OR_SUBCLAUSE|WHERE_دایاں_JOIN))==0 );
     }
 
     /* Record the instruction used to terminate the loop. */
-    if( (pLoop->wsFlags & WHERE_ONEROW)
-     || (pLevel->u.in.nIn && regBignull==0 && whereLoopIsOneRow(pLoop))
+    اگر( (pLoop->wsFlags & WHERE_ONEROW)
+     || (pLevel->u.اندر.n_اندر && regBignull==0 && where_Loop_Is_One_صف(pLoop))
     ){
       pLevel->op = OP_Noop;
-    }else if( bRev ){
-      pLevel->op = OP_Prev;
-    }else{
-      pLevel->op = OP_Next;
+    }ورنہ اگر( bRev ){
+      pLevel->op = OP_پچھلا;
+    }ورنہ{
+      pLevel->op = OP_اگلا;
     }
     pLevel->p1 = iIdxCur;
     pLevel->p3 = (pLoop->wsFlags&WHERE_UNQ_WANTED)!=0 ? 1:0;
-    if( (pLoop->wsFlags & WHERE_CONSTRAINT)==0 ){
-      pLevel->p5 = SQLITE_STMTSTATUS_FULLSCAN_STEP;
-    }else{
-      assert( pLevel->p5==0 );
+    اگر( (pLoop->wsFlags & WHERE_CONSTRAINT)==0 ){
+      pLevel->p5 = SQLITE_STMTSTATUS_FULLSCAN_قدم;
+    }ورنہ{
+      أكد( pLevel->p5==0 );
     }
-    if( omitTable ) pIdx = 0;
-  }else
+    اگر( omit_جدول ) pIdx = 0;
+  }ورنہ
 
-#ifndef SQLITE_OMIT_OR_OPTIMIZATION
-  if( pLoop->wsFlags & WHERE_MULTI_OR ){
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_OR_OPTIMIZATION
+  اگر( pLoop->wsFlags & WHERE_MULTI_OR ){
     /* Case 5:  Two or more separately indexed terms connected by OR
     **
     ** Example:
@@ -2472,24 +2472,24 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     */
     WhereClause *pOrWc;    /* The OR-clause broken out into subterms */
     SrcList *pOrTab;       /* Shortened table list or OR-clause generation */
-    Index *pCov = 0;             /* Potential covering index (or NULL) */
-    int iCovCur = pParse->nTab++;  /* Cursor used for index scans (if any) */
+    اشاریہ *pCov = 0;             /* Potential covering index (or NULL) */
+    صحیح iCovCur = pParse->nTab++;  /* Cursor used for index scans (if any) */
 
-    int regReturn = ++pParse->nMem;           /* Register used with OP_Gosub */
-    int regRowset = 0;                        /* Register for RowSet object */
-    int regRowid = 0;                         /* Register holding rowid */
-    int iLoopBody = sqlite3VdbeMakeLabel(pParse);/* Start of loop body */
-    int iRetInit;                             /* Address of regReturn init */
-    int untestedTerms = 0;             /* Some terms not completely tested */
-    int ii;                            /* Loop counter */
-    Expr *pAndExpr = 0;                /* An ".. AND (...)" expression */
-    Table *pTab = pTabItem->pSTab;
+    صحیح regReturn = ++pParse->nMem;           /* Register used with OP_Gosub */
+    صحیح regRowset = 0;                        /* Register for RowSet object */
+    صحیح regRowid = 0;                         /* Register holding rowid */
+    صحیح iLoopBody = sqlite3VdbeMakeLabel(pParse);/* Start of loop body */
+    صحیح iRetInit;                             /* Address of regReturn init */
+    صحیح untestedTerms = 0;             /* Some terms not completely tested */
+    صحیح ii;                            /* Loop counter */
+    اظہاریہ *p_And_اظہاریہ = 0;                /* An ".. AND (...)" expression */
+    جدول *pTab = p_Tab_شے->pSTab;
 
-    pTerm = pLoop->aLTerm[0];
-    assert( pTerm!=0 );
-    assert( pTerm->eOperator & WO_OR );
-    assert( (pTerm->wtFlags & TERM_ORINFO)!=0 );
-    pOrWc = &pTerm->u.pOrInfo->wc;
+    p_رکن = pLoop->aLTerm[0];
+    أكد( p_رکن!=0 );
+    أكد( p_رکن->eOperator & WO_OR );
+    أكد( (p_رکن->wtFlags & رکن_ORINFO)!=0 );
+    pOrWc = &p_رکن->u.pOrInfo->wc;
     pLevel->op = OP_Return;
     pLevel->p1 = regReturn;
 
@@ -2497,18 +2497,18 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** by this loop in the a[0] slot and all notReady tables in a[1..] slots.
     ** This becomes the SrcList in the recursive call to sqlite3WhereBegin().
     */
-    if( pWInfo->nLevel>1 || pTabItem->fg.fromExists ){
-      int nNotReady;                 /* The number of notReady tables */
-      SrcItem *origSrc;              /* Original list of tables */
+    اگر( pWInfo->nLevel>1 || p_Tab_شے->fg.fromExists ){
+      صحیح nNotReady;                 /* The number of notReady tables */
+      Src_شے *origSrc;              /* Original list of tables */
       nNotReady = pWInfo->nLevel - iLevel - 1;
       pOrTab = sqlite3DbMallocRawNN(db, SZ_SRCLIST(nNotReady+1));
-      if( pOrTab==0 ) return notReady;
+      اگر( pOrTab==0 ) واپس notReady;
       pOrTab->nAlloc = (u8)(nNotReady + 1);
       pOrTab->nSrc = pOrTab->nAlloc;
-      memcpy(pOrTab->a, pTabItem, sizeof(*pTabItem));
+      حافظہ_نقل(pOrTab->a, p_Tab_شے, حجم(*p_Tab_شے));
       origSrc = pWInfo->pTabList->a;
-      for(k=1; k<=nNotReady; k++){
-        memcpy(&pOrTab->a[k], &origSrc[pLevel[k].iFrom], sizeof(pOrTab->a[k]));
+      برائے(k=1; k<=nNotReady; k++){
+        حافظہ_نقل(&pOrTab->a[k], &origSrc[pLevel[k].iFrom], حجم(pOrTab->a[k]));
       }
 
       /* Clear the fromExists flag on the OR-optimized table entry so that
@@ -2517,7 +2517,7 @@ Bitmask sqlite3WhereCodeOneLoopStart(
       ** overall loop - including the multiple OR branches and any WHERE
       ** conditions not passed to the sub-loops - not to the sub-loops.  */
       pOrTab->a[0].fg.fromExists = 0;
-    }else{
+    }ورنہ{
       pOrTab = pWInfo->pTabList;
     }
 
@@ -2533,19 +2533,19 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** fall through to the next instruction, just as an OP_Next does if
     ** called on an uninitialized cursor.
     */
-    if( (pWInfo->wctrlFlags & WHERE_DUPLICATES_OK)==0 ){
-      if( HasRowid(pTab) ){
+    اگر( (pWInfo->wctrlFlags & WHERE_DUPLICATES_OK)==0 ){
+      اگر( HasRowid(pTab) ){
         regRowset = ++pParse->nMem;
-        sqlite3VdbeAddOp2(v, OP_Null, 0, regRowset);
-      }else{
-        Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_Null, 0, regRowset);
+      }ورنہ{
+        اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
         regRowset = pParse->nTab++;
-        sqlite3VdbeAddOp2(v, OP_OpenEphemeral, regRowset, pPk->nKeyCol);
-        sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+        sqlite3_Vdbe_جوڑو_Op2(v, OP_OpenEphemeral, regRowset, pPk->n_کلید_ستون);
+        sqlite3_Vdbe_سیٹ_P4_کلید_Info(pParse, pPk);
       }
       regRowid = ++pParse->nMem;
     }
-    iRetInit = sqlite3VdbeAddOp2(v, OP_Integer, 0, regReturn);
+    iRetInit = sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 0, regReturn);
 
     /* If the original WHERE clause is z of the form:  (x1 OR x2 OR ...) AND y
     ** Then for every term xN, evaluate as the subexpression: xN AND y
@@ -2575,30 +2575,30 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** index-references will not work.  tag-20220303a
     ** https://sqlite.org/forum/forumpost/36937b197273d403
     */
-    if( pWC->nTerm>1 ){
-      int iTerm;
-      for(iTerm=0; iTerm<pWC->nTerm; iTerm++){
-        Expr *pExpr = pWC->a[iTerm].pExpr;
-        if( &pWC->a[iTerm] == pTerm ) continue;
-        testcase( pWC->a[iTerm].wtFlags & TERM_VIRTUAL );
-        testcase( pWC->a[iTerm].wtFlags & TERM_CODED );
-        testcase( pWC->a[iTerm].wtFlags & TERM_SLICE );
-        if( (pWC->a[iTerm].wtFlags & (TERM_VIRTUAL|TERM_CODED|TERM_SLICE))!=0 ){
-          continue;
+    اگر( pWC->n_رکن>1 ){
+      صحیح i_رکن;
+      برائے(i_رکن=0; i_رکن<pWC->n_رکن; i_رکن++){
+        اظہاریہ *p_اظہاریہ = pWC->a[i_رکن].p_اظہاریہ;
+        اگر( &pWC->a[i_رکن] == p_رکن ) جاری;
+        testcase( pWC->a[i_رکن].wtFlags & رکن_VIRTUAL );
+        testcase( pWC->a[i_رکن].wtFlags & رکن_CODED );
+        testcase( pWC->a[i_رکن].wtFlags & رکن_قاش );
+        اگر( (pWC->a[i_رکن].wtFlags & (رکن_VIRTUAL|رکن_CODED|رکن_قاش))!=0 ){
+          جاری;
         }
-        if( (pWC->a[iTerm].eOperator & WO_ALL)==0 ) continue;
-        if( ExprHasProperty(pExpr, EP_Subquery) ) continue;  /* tag-20220303a */
-        if( whereExprIsReady(pWInfo, pLevel, pTabItem, pExpr)==0 ) continue;
-        pExpr = sqlite3ExprDup(db, pExpr, 0);
-        pAndExpr = sqlite3ExprAnd(pParse, pAndExpr, pExpr);
+        اگر( (pWC->a[i_رکن].eOperator & WO_ALL)==0 ) جاری;
+        اگر( اظہاریہ_Has_Property(p_اظہاریہ, EP_Subquery) ) جاری;  /* tag-20220303a */
+        اگر( where_اظہاریہ_Is_Ready(pWInfo, pLevel, p_Tab_شے, p_اظہاریہ)==0 ) جاری;
+        p_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_اظہاریہ, 0);
+        p_And_اظہاریہ = sqlite3_اظہاریہ_And(pParse, p_And_اظہاریہ, p_اظہاریہ);
       }
-      if( pAndExpr ){
+      اگر( p_And_اظہاریہ ){
         /* The extra 0x10000 bit on the opcode is masked off and does not
         ** become part of the new Expr.op.  However, it does make the
         ** op==TK_AND comparison inside of sqlite3PExpr() false, and this
         ** prevents sqlite3PExpr() from applying the AND short-circuit
         ** optimization, which we do not want here. */
-        pAndExpr = sqlite3PExpr(pParse, TK_AND|0x10000, 0, pAndExpr);
+        p_And_اظہاریہ = sqlite3PExpr(pParse, TK_AND|0x10000, 0, p_And_اظہاریہ);
       }
     }
 
@@ -2607,61 +2607,61 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** sub-WHERE clause is to to invoke the main loop body as a subroutine.
     */
     ExplainQueryPlan((pParse, 1, "MULTI-INDEX OR"));
-    for(ii=0; ii<pOrWc->nTerm; ii++){
-      WhereTerm *pOrTerm = &pOrWc->a[ii];
-      if( pOrTerm->leftCursor==iCur || (pOrTerm->eOperator & WO_AND)!=0 ){
+    برائے(ii=0; ii<pOrWc->n_رکن; ii++){
+      Where_رکن *p_Or_رکن = &pOrWc->a[ii];
+      اگر( p_Or_رکن->بایاں_Cursor==iCur || (p_Or_رکن->eOperator & WO_AND)!=0 ){
         WhereInfo *pSubWInfo;           /* Info for single OR-term scan */
-        Expr *pOrExpr = pOrTerm->pExpr; /* Current OR clause term */
-        Expr *pDelete;                  /* Local copy of OR clause term */
-        int jmp1 = 0;                   /* Address of jump operation */
-        testcase( (pTabItem[0].fg.jointype & JT_LEFT)!=0
-               && !ExprHasProperty(pOrExpr, EP_OuterON)
+        اظہاریہ *p_Or_اظہاریہ = p_Or_رکن->p_اظہاریہ; /* Current OR clause term */
+        اظہاریہ *pDelete;                  /* Local copy of OR clause term */
+        صحیح jmp1 = 0;                   /* Address of jump operation */
+        testcase( (p_Tab_شے[0].fg.jointype & JT_بایاں)!=0
+               && !اظہاریہ_Has_Property(p_Or_اظہاریہ, EP_OuterON)
         ); /* See TH3 vtab25.400 and ticket 614b25314c766238 */
-        pDelete = pOrExpr = sqlite3ExprDup(db, pOrExpr, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDelete);
-          continue;
+        pDelete = p_Or_اظہاریہ = sqlite3_اظہاریہ_Dup(db, p_Or_اظہاریہ, 0);
+        اگر( db->mallocFailed ){
+          sqlite3_اظہاریہ_Delete(db, pDelete);
+          جاری;
         }
-        if( pAndExpr ){
-          pAndExpr->pLeft = pOrExpr;
-          pOrExpr = pAndExpr;
+        اگر( p_And_اظہاریہ ){
+          p_And_اظہاریہ->p_بایاں = p_Or_اظہاریہ;
+          p_Or_اظہاریہ = p_And_اظہاریہ;
         }
         /* Loop through table entries that match term pOrTerm. */
         ExplainQueryPlan((pParse, 1, "INDEX %d", ii+1));
         WHERETRACE(0xffffffff, ("Subplan for OR-clause:\n"));
-        pSubWInfo = sqlite3WhereBegin(pParse, pOrTab, pOrExpr, 0, 0, 0,
+        pSubWInfo = sqlite3WhereBegin(pParse, pOrTab, p_Or_اظہاریہ, 0, 0, 0,
                                       WHERE_OR_SUBCLAUSE, iCovCur);
-        assert( pSubWInfo || pParse->nErr );
-        if( pSubWInfo ){
+        أكد( pSubWInfo || pParse->nErr );
+        اگر( pSubWInfo ){
           WhereLoop *pSubLoop;
-          int addrExplain = sqlite3WhereExplainOneScan(
+          صحیح addrExplain = sqlite3_Where_Explain_One_جائزہ(
               pParse, pOrTab, &pSubWInfo->a[0], 0
           );
-          sqlite3WhereAddScanStatus(v, pOrTab, &pSubWInfo->a[0], addrExplain);
+          sqlite3_Where_جوڑو_جائزہ_حالت(v, pOrTab, &pSubWInfo->a[0], addrExplain);
 
           /* This is the sub-WHERE clause body.  First skip over
           ** duplicate rows from prior sub-WHERE clauses, and record the
           ** rowid (or PRIMARY KEY) for the current row so that the same
           ** row will be skipped in subsequent sub-WHERE clauses.
           */
-          if( (pWInfo->wctrlFlags & WHERE_DUPLICATES_OK)==0 ){
-            int iSet = ((ii==pOrWc->nTerm-1)?-1:ii);
-            if( HasRowid(pTab) ){
-              sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, -1, regRowid);
-              jmp1 = sqlite3VdbeAddOp4Int(v, OP_RowSetTest, regRowset, 0,
-                                          regRowid, iSet);
+          اگر( (pWInfo->wctrlFlags & WHERE_DUPLICATES_OK)==0 ){
+            صحیح i_سیٹ = ((ii==pOrWc->n_رکن-1)?-1:ii);
+            اگر( HasRowid(pTab) ){
+              sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iCur, -1, regRowid);
+              jmp1 = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_صف_سیٹ_Test, regRowset, 0,
+                                          regRowid, i_سیٹ);
               VdbeCoverage(v);
-            }else{
-              Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-              int nPk = pPk->nKeyCol;
-              int iPk;
-              int r;
+            }ورنہ{
+              اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+              صحیح nPk = pPk->n_کلید_ستون;
+              صحیح iPk;
+              صحیح r;
 
               /* Read the PK into an array of temp registers. */
-              r = sqlite3GetTempRange(pParse, nPk);
-              for(iPk=0; iPk<nPk; iPk++){
-                int iCol = pPk->aiColumn[iPk];
-                sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, iCol,r+iPk);
+              r = sqlite3_Get_عارضی_Range(pParse, nPk);
+              برائے(iPk=0; iPk<nPk; iPk++){
+                صحیح i_ستون = pPk->ai_عمود[iPk];
+                sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iCur, i_ستون,r+iPk);
               }
 
               /* Check if the temp table already contains this key. If so,
@@ -2675,35 +2675,35 @@ Bitmask sqlite3WhereCodeOneLoopStart(
               ** the temp table. And if iSet is -1, assume that there is no
               ** need to insert the key into the temp table, as it will never
               ** be tested for.  */
-              if( iSet ){
-                jmp1 = sqlite3VdbeAddOp4Int(v, OP_Found, regRowset, 0, r, nPk);
+              اگر( i_سیٹ ){
+                jmp1 = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, regRowset, 0, r, nPk);
                 VdbeCoverage(v);
               }
-              if( iSet>=0 ){
-                sqlite3VdbeAddOp3(v, OP_MakeRecord, r, nPk, regRowid);
-                sqlite3VdbeAddOp4Int(v, OP_IdxInsert, regRowset, regRowid,
+              اگر( i_سیٹ>=0 ){
+                sqlite3_Vdbe_جوڑو_Op3(v, OP_Make_ریکارڈ, r, nPk, regRowid);
+                sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Idx_داخل_کرو, regRowset, regRowid,
                                      r, nPk);
-                if( iSet ) sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
+                اگر( i_سیٹ ) sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
               }
 
               /* Release the array of temp registers */
-              sqlite3ReleaseTempRange(pParse, r, nPk);
+              sqlite3_Release_عارضی_Range(pParse, r, nPk);
             }
           }
 
           /* Invoke the main loop body as a subroutine */
-          sqlite3VdbeAddOp2(v, OP_Gosub, regReturn, iLoopBody);
+          sqlite3_Vdbe_جوڑو_Op2(v, OP_Gosub, regReturn, iLoopBody);
 
           /* Jump here (skipping the main loop body subroutine) if the
           ** current sub-WHERE row is a duplicate from prior sub-WHEREs. */
-          if( jmp1 ) sqlite3VdbeJumpHere(v, jmp1);
+          اگر( jmp1 ) sqlite3_Vdbe_Jump_یہاں(v, jmp1);
 
           /* The pSubWInfo->untestedTerms flag means that this OR term
           ** contained one or more AND term from a notReady table.  The
           ** terms from the notReady table could not be tested and will
           ** need to be tested later.
           */
-          if( pSubWInfo->untestedTerms ) untestedTerms = 1;
+          اگر( pSubWInfo->untestedTerms ) untestedTerms = 1;
 
           /* If all of the OR-connected terms are optimized using the same
           ** index, and the index is opened using the same cursor number
@@ -2718,36 +2718,36 @@ Bitmask sqlite3WhereCodeOneLoopStart(
           ** be available.
           */
           pSubLoop = pSubWInfo->a[0].pWLoop;
-          assert( (pSubLoop->wsFlags & WHERE_AUTO_INDEX)==0 );
-          if( (pSubLoop->wsFlags & WHERE_INDEXED)!=0
-           && (ii==0 || pSubLoop->u.btree.pIndex==pCov)
-           && (HasRowid(pTab) || !IsPrimaryKeyIndex(pSubLoop->u.btree.pIndex))
+          أكد( (pSubLoop->wsFlags & WHERE_AUTO_اشاریہ)==0 );
+          اگر( (pSubLoop->wsFlags & WHERE_اشاریہ_دار)!=0
+           && (ii==0 || pSubLoop->u.btree.p_اشاریہ==pCov)
+           && (HasRowid(pTab) || !Is_Primary_کلید_اشاریہ(pSubLoop->u.btree.p_اشاریہ))
           ){
-            assert( pSubWInfo->a[0].iIdxCur==iCovCur );
-            pCov = pSubLoop->u.btree.pIndex;
-          }else{
+            أكد( pSubWInfo->a[0].iIdxCur==iCovCur );
+            pCov = pSubLoop->u.btree.p_اشاریہ;
+          }ورنہ{
             pCov = 0;
           }
-          if( sqlite3WhereUsesDeferredSeek(pSubWInfo) ){
+          اگر( sqlite3_Where_استعمال_کرتا_Deferred_Seek(pSubWInfo) ){
             pWInfo->bDeferredSeek = 1;
           }
 
           /* Finish the loop through table entries that match term pOrTerm. */
-          sqlite3WhereEnd(pSubWInfo);
-          ExplainQueryPlanPop(pParse);
+          sqlite3_Where_انتہا(pSubWInfo);
+          Explain_Query_Plan_نکالو(pParse);
         }
-        sqlite3ExprDelete(db, pDelete);
+        sqlite3_اظہاریہ_Delete(db, pDelete);
       }
     }
-    ExplainQueryPlanPop(pParse);
-    assert( pLevel->pWLoop==pLoop );
-    assert( (pLoop->wsFlags & WHERE_MULTI_OR)!=0 );
-    assert( (pLoop->wsFlags & WHERE_IN_ABLE)==0 );
+    Explain_Query_Plan_نکالو(pParse);
+    أكد( pLevel->pWLoop==pLoop );
+    أكد( (pLoop->wsFlags & WHERE_MULTI_OR)!=0 );
+    أكد( (pLoop->wsFlags & WHERE_اندر_ABLE)==0 );
     pLevel->u.pCoveringIdx = pCov;
-    if( pCov ) pLevel->iIdxCur = iCovCur;
-    if( pAndExpr ){
-      pAndExpr->pLeft = 0;
-      sqlite3ExprDelete(db, pAndExpr);
+    اگر( pCov ) pLevel->iIdxCur = iCovCur;
+    اگر( p_And_اظہاریہ ){
+      p_And_اظہاریہ->p_بایاں = 0;
+      sqlite3_اظہاریہ_Delete(db, p_And_اظہاریہ);
     }
     sqlite3VdbeChangeP1(v, iRetInit, sqlite3VdbeCurrentAddr(v));
     sqlite3VdbeGoto(v, pLevel->addrBrk);
@@ -2758,39 +2758,39 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** loop.  The byte-code formatter will use that P2 value as a hint to
     ** indent everything in between the this point and the final OP_Return.
     ** See tag-20220407a in vdbe.c and shell.c */
-    assert( pLevel->op==OP_Return );
+    أكد( pLevel->op==OP_Return );
     pLevel->p2 = sqlite3VdbeCurrentAddr(v);
 
-    if( pWInfo->pTabList!=pOrTab ){ sqlite3DbFreeNN(db, pOrTab); }
-    if( !untestedTerms ) disableTerm(pLevel, pTerm);
-  }else
-#endif /* SQLITE_OMIT_OR_OPTIMIZATION */
+    اگر( pWInfo->pTabList!=pOrTab ){ sqlite3DbFreeNN(db, pOrTab); }
+    اگر( !untestedTerms ) disable_رکن(pLevel, p_رکن);
+  }ورنہ
+#اگر_ختم /* SQLITE_OMIT_OR_OPTIMIZATION */
 
   {
     /* Case 6:  There is no usable index.  We must do a complete
     **          scan of the entire table.
     */
-    static const u8 aStep[] = { OP_Next, OP_Prev };
-    static const u8 aStart[] = { OP_Rewind, OP_Last };
-    assert( bRev==0 || bRev==1 );
-    if( pTabItem->fg.isRecursive ){
+    ساکن ثابت u8 a_قدم[] = { OP_اگلا, OP_پچھلا };
+    ساکن ثابت u8 a_آغاز[] = { OP_Rewind, OP_آخری };
+    أكد( bRev==0 || bRev==1 );
+    اگر( p_Tab_شے->fg.isRecursive ){
       /* Tables marked isRecursive have only a single row that is stored in
       ** a pseudo-cursor.  No need to Rewind or Next such cursors. */
       pLevel->op = OP_Noop;
-    }else{
-      codeCursorHint(pTabItem, pWInfo, pLevel, 0);
-      pLevel->op = aStep[bRev];
+    }ورنہ{
+      رمز_Cursor_Hint(p_Tab_شے, pWInfo, pLevel, 0);
+      pLevel->op = a_قدم[bRev];
       pLevel->p1 = iCur;
-      pLevel->p2 = 1 + sqlite3VdbeAddOp2(v, aStart[bRev],iCur,pLevel->addrHalt);
+      pLevel->p2 = 1 + sqlite3_Vdbe_جوڑو_Op2(v, a_آغاز[bRev],iCur,pLevel->addrHalt);
       VdbeCoverageIf(v, bRev==0);
       VdbeCoverageIf(v, bRev!=0);
-      pLevel->p5 = SQLITE_STMTSTATUS_FULLSCAN_STEP;
+      pLevel->p5 = SQLITE_STMTSTATUS_FULLSCAN_قدم;
     }
   }
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  pLevel->addrVisit = sqlite3VdbeCurrentAddr(v);
-#endif
+#اگر_تعریف_شدہ SQLITE_ENABLE_STMT_SCANSTATUS
+  pLevel->addr_دورہ = sqlite3VdbeCurrentAddr(v);
+#اگر_ختم
 
   /* Insert code to test every subexpression that can be completely
   ** computed using the current set of tables.
@@ -2813,65 +2813,65 @@ Bitmask sqlite3WhereCodeOneLoopStart(
   ** Sometimes the qualifier is omitted, resulting in an ambiguity, so beware.
   */
   iLoop = (pIdx ? 1 : 2);
-  do{
-    int iNext = 0;                /* Next value for iLoop */
-    for(pTerm=pWC->a, j=pWC->nTerm; j>0; j--, pTerm++){
-      Expr *pE;
-      int skipLikeAddr = 0;
-      testcase( pTerm->wtFlags & TERM_VIRTUAL );
-      testcase( pTerm->wtFlags & TERM_CODED );
-      if( pTerm->wtFlags & (TERM_VIRTUAL|TERM_CODED) ) continue;
-      if( (pTerm->prereqAll & pLevel->notReady)!=0 ){
+  کرو{
+    صحیح i_اگلا = 0;                /* Next value for iLoop */
+    برائے(p_رکن=pWC->a, j=pWC->n_رکن; j>0; j--, p_رکن++){
+      اظہاریہ *pE;
+      صحیح skipLikeAddr = 0;
+      testcase( p_رکن->wtFlags & رکن_VIRTUAL );
+      testcase( p_رکن->wtFlags & رکن_CODED );
+      اگر( p_رکن->wtFlags & (رکن_VIRTUAL|رکن_CODED) ) جاری;
+      اگر( (p_رکن->prereqAll & pLevel->notReady)!=0 ){
         testcase( pWInfo->untestedTerms==0
             && (pWInfo->wctrlFlags & WHERE_OR_SUBCLAUSE)!=0 );
         pWInfo->untestedTerms = 1;
-        continue;
+        جاری;
       }
-      pE = pTerm->pExpr;
-      assert( pE!=0 );
-      if( whereExprIsReady(pWInfo, pLevel, pTabItem, pE)==0 ) continue;
-      if( iLoop==1 && !sqlite3ExprCoveredByIndex(pE, pLevel->iTabCur, pIdx) ){
-        iNext = 2;
-        continue;
+      pE = p_رکن->p_اظہاریہ;
+      أكد( pE!=0 );
+      اگر( where_اظہاریہ_Is_Ready(pWInfo, pLevel, p_Tab_شے, pE)==0 ) جاری;
+      اگر( iLoop==1 && !sqlite3_اظہاریہ_Covered_By_اشاریہ(pE, pLevel->iTabCur, pIdx) ){
+        i_اگلا = 2;
+        جاری;
       }
-      if( iLoop<3 && (pTerm->wtFlags & TERM_VARSELECT) ){
-        if( iNext==0 ) iNext = 3;
-        continue;
+      اگر( iLoop<3 && (p_رکن->wtFlags & رکن_VARSELECT) ){
+        اگر( i_اگلا==0 ) i_اگلا = 3;
+        جاری;
       }
 
-      if( (pTerm->wtFlags & TERM_LIKECOND)!=0 ){
+      اگر( (p_رکن->wtFlags & رکن_LIKECOND)!=0 ){
         /* If the TERM_LIKECOND flag is set, that means that the range search
         ** is sufficient to guarantee that the LIKE operator is true, so we
         ** can skip the call to the like(A,B) function.  But this only works
         ** for strings.  So do not skip the call to the function on the pass
         ** that compares BLOBs. */
-#ifdef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-        continue;
-#else
+#اگر_تعریف_شدہ SQLITE_LIKE_DOESNT_مطابقت_BLOBS
+        جاری;
+#ورنہ
         u32 x = pLevel->iLikeRepCntr;
-        if( x>0 ){
-          skipLikeAddr = sqlite3VdbeAddOp1(v, (x&1)?OP_IfNot:OP_If,(int)(x>>1));
+        اگر( x>0 ){
+          skipLikeAddr = sqlite3_Vdbe_جوڑو_Op1(v, (x&1)?OP_IfNot:OP_If,(صحیح)(x>>1));
           VdbeCoverageIf(v, (x&1)==1);
           VdbeCoverageIf(v, (x&1)==0);
         }
-#endif
+#اگر_ختم
       }
-#ifdef WHERETRACE_ENABLED /* 0xffffffff */
-      if( sqlite3WhereTrace ){
+#اگر_تعریف_شدہ WHERETRACE_ENABLED /* 0xffffffff */
+      اگر( sqlite3WhereTrace ){
         VdbeNoopComment((v, "WhereTerm[%d] (%p) priority=%d",
-                         pWC->nTerm-j, pTerm, iLoop));
+                         pWC->n_رکن-j, p_رکن, iLoop));
       }
-      if( sqlite3WhereTrace & 0x4000 ){
+      اگر( sqlite3WhereTrace & 0x4000 ){
         sqlite3DebugPrintf("Coding auxiliary constraint:\n");
-        sqlite3WhereTermPrint(pTerm, pWC->nTerm-j);
+        sqlite3_Where_رکن_Print(p_رکن, pWC->n_رکن-j);
       }
-#endif
-      sqlite3ExprIfFalse(pParse, pE, addrCont, SQLITE_JUMPIFNULL);
-      if( skipLikeAddr ) sqlite3VdbeJumpHere(v, skipLikeAddr);
-      pTerm->wtFlags |= TERM_CODED;
+#اگر_ختم
+      sqlite3_اظہاریہ_If_False(pParse, pE, addrCont, SQLITE_JUMPIFNULL);
+      اگر( skipLikeAddr ) sqlite3_Vdbe_Jump_یہاں(v, skipLikeAddr);
+      p_رکن->wtFlags |= رکن_CODED;
     }
-    iLoop = iNext;
-  }while( iLoop>0 );
+    iLoop = i_اگلا;
+  }جب( iLoop>0 );
 
   /* Insert code to test for implied constraints based on transitivity
   ** of the "==" operator.
@@ -2881,54 +2881,54 @@ Bitmask sqlite3WhereCodeOneLoopStart(
   ** then we cannot use the "t1.a=t2.b" constraint, but we can code
   ** the implied "t1.a=123" constraint.
   */
-  for(pTerm=pWC->a, j=pWC->nBase; j>0; j--, pTerm++){
-    Expr *pE, sEAlt;
-    WhereTerm *pAlt;
-    if( pTerm->wtFlags & (TERM_VIRTUAL|TERM_CODED) ) continue;
-    if( (pTerm->eOperator & (WO_EQ|WO_IS))==0 ) continue;
-    if( (pTerm->eOperator & WO_EQUIV)==0 ) continue;
-    if( pTerm->leftCursor!=iCur ) continue;
-    if( pTabItem->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT) ) continue;
-    pE = pTerm->pExpr;
-#ifdef WHERETRACE_ENABLED /* 0x4001 */
-    if( (sqlite3WhereTrace & 0x4001)==0x4001 ){
+  برائے(p_رکن=pWC->a, j=pWC->n_بنیاد; j>0; j--, p_رکن++){
+    اظہاریہ *pE, sEAlt;
+    Where_رکن *pAlt;
+    اگر( p_رکن->wtFlags & (رکن_VIRTUAL|رکن_CODED) ) جاری;
+    اگر( (p_رکن->eOperator & (WO_EQ|WO_IS))==0 ) جاری;
+    اگر( (p_رکن->eOperator & WO_EQUIV)==0 ) جاری;
+    اگر( p_رکن->بایاں_Cursor!=iCur ) جاری;
+    اگر( p_Tab_شے->fg.jointype & (JT_بایاں|JT_LTORJ|JT_دایاں) ) جاری;
+    pE = p_رکن->p_اظہاریہ;
+#اگر_تعریف_شدہ WHERETRACE_ENABLED /* 0x4001 */
+    اگر( (sqlite3WhereTrace & 0x4001)==0x4001 ){
       sqlite3DebugPrintf("Coding transitive constraint:\n");
-      sqlite3WhereTermPrint(pTerm, pWC->nTerm-j);
+      sqlite3_Where_رکن_Print(p_رکن, pWC->n_رکن-j);
     }
-#endif
-    assert( !ExprHasProperty(pE, EP_OuterON) );
-    assert( (pTerm->prereqRight & pLevel->notReady)!=0 );
-    assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-    pAlt = sqlite3WhereFindTerm(pWC, iCur, pTerm->u.x.leftColumn, notReady,
-                    WO_EQ|WO_IN|WO_IS, 0);
-    if( pAlt==0 ) continue;
-    if( pAlt->wtFlags & (TERM_CODED) ) continue;
-    if( ExprHasProperty(pAlt->pExpr, EP_Collate) ) continue;
-    if( (pAlt->eOperator & WO_IN)
-     && ExprUseXSelect(pAlt->pExpr)
-     && (pAlt->pExpr->x.pSelect->pEList->nExpr>1)
+#اگر_ختم
+    أكد( !اظہاریہ_Has_Property(pE, EP_OuterON) );
+    أكد( (p_رکن->prereq_دایاں & pLevel->notReady)!=0 );
+    أكد( (p_رکن->eOperator & (WO_OR|WO_AND))==0 );
+    pAlt = sqlite3_Where_ڈھونڈو_رکن(pWC, iCur, p_رکن->u.x.بایاں_عمود, notReady,
+                    WO_EQ|WO_اندر|WO_IS, 0);
+    اگر( pAlt==0 ) جاری;
+    اگر( pAlt->wtFlags & (رکن_CODED) ) جاری;
+    اگر( اظہاریہ_Has_Property(pAlt->p_اظہاریہ, EP_Collate) ) جاری;
+    اگر( (pAlt->eOperator & WO_اندر)
+     && اظہاریہ_Use_XSelect(pAlt->p_اظہاریہ)
+     && (pAlt->p_اظہاریہ->x.pSelect->pEList->n_اظہاریہ>1)
     ){
-      continue;
+      جاری;
     }
     testcase( pAlt->eOperator & WO_EQ );
     testcase( pAlt->eOperator & WO_IS );
-    testcase( pAlt->eOperator & WO_IN );
+    testcase( pAlt->eOperator & WO_اندر );
     VdbeModuleComment((v, "begin transitive constraint"));
-    sEAlt = *pAlt->pExpr;
-    sEAlt.pLeft = pE->pLeft;
-    sqlite3ExprIfFalse(pParse, &sEAlt, addrCont, SQLITE_JUMPIFNULL);
-    pAlt->wtFlags |= TERM_CODED;
+    sEAlt = *pAlt->p_اظہاریہ;
+    sEAlt.p_بایاں = pE->p_بایاں;
+    sqlite3_اظہاریہ_If_False(pParse, &sEAlt, addrCont, SQLITE_JUMPIFNULL);
+    pAlt->wtFlags |= رکن_CODED;
   }
 
   /* For a RIGHT OUTER JOIN, record the fact that the current row has
   ** been matched at least once.
   */
-  if( pLevel->pRJ ){
-    Table *pTab;
-    int nPk;
-    int r;
-    int jmp1 = 0;
-    WhereRightJoin *pRJ = pLevel->pRJ;
+  اگر( pLevel->pRJ ){
+    جدول *pTab;
+    صحیح nPk;
+    صحیح r;
+    صحیح jmp1 = 0;
+    Where_دایاں_Join *pRJ = pLevel->pRJ;
 
     /* pTab is the right-hand table of the RIGHT JOIN.  Generate code that
     ** will record that the current row of that table has been matched at
@@ -2936,46 +2936,46 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** both the iMatch index and the regBloom Bloom filter.
     */
     pTab = pWInfo->pTabList->a[pLevel->iFrom].pSTab;
-    if( HasRowid(pTab) ){
-      r = sqlite3GetTempRange(pParse, 2);
-      sqlite3ExprCodeGetColumnOfTable(v, pTab, pLevel->iTabCur, -1, r+1);
+    اگر( HasRowid(pTab) ){
+      r = sqlite3_Get_عارضی_Range(pParse, 2);
+      sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, pLevel->iTabCur, -1, r+1);
       nPk = 1;
-    }else{
-      int iPk;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-      nPk = pPk->nKeyCol;
-      r = sqlite3GetTempRange(pParse, nPk+1);
-      for(iPk=0; iPk<nPk; iPk++){
-        int iCol = pPk->aiColumn[iPk];
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, iCol,r+1+iPk);
+    }ورنہ{
+      صحیح iPk;
+      اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+      nPk = pPk->n_کلید_ستون;
+      r = sqlite3_Get_عارضی_Range(pParse, nPk+1);
+      برائے(iPk=0; iPk<nPk; iPk++){
+        صحیح i_ستون = pPk->ai_عمود[iPk];
+        sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iCur, i_ستون,r+1+iPk);
       }
     }
-    jmp1 = sqlite3VdbeAddOp4Int(v, OP_Found, pRJ->iMatch, 0, r+1, nPk);
+    jmp1 = sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, pRJ->i_مطابقت, 0, r+1, nPk);
     VdbeCoverage(v);
     VdbeComment((v, "match against %s", pTab->zName));
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, r+1, nPk, r);
-    sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pRJ->iMatch, r, r+1, nPk);
-    if( pRJ->regBloom ){
-      sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pRJ->regBloom, 0, r+1, nPk);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Make_ریکارڈ, r+1, nPk, r);
+    sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Idx_داخل_کرو, pRJ->i_مطابقت, r, r+1, nPk);
+    اگر( pRJ->regBloom ){
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter_جوڑو, pRJ->regBloom, 0, r+1, nPk);
       sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
     }
-    sqlite3VdbeJumpHere(v, jmp1);
-    sqlite3ReleaseTempRange(pParse, r, nPk+1);
+    sqlite3_Vdbe_Jump_یہاں(v, jmp1);
+    sqlite3_Release_عارضی_Range(pParse, r, nPk+1);
   }
 
   /* For a LEFT OUTER JOIN, generate code that will record the fact that
   ** at least one row of the right table has matched the left table.
   */
-  if( pLevel->iLeftJoin ){
-    pLevel->addrFirst = sqlite3VdbeCurrentAddr(v);
-    sqlite3VdbeAddOp2(v, OP_Integer, 1, pLevel->iLeftJoin);
+  اگر( pLevel->i_بایاں_Join ){
+    pLevel->addr_پہلا = sqlite3VdbeCurrentAddr(v);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Integer, 1, pLevel->i_بایاں_Join);
     VdbeComment((v, "record LEFT JOIN hit"));
-    if( pLevel->pRJ==0 ){
-      goto code_outer_join_constraints; /* WHERE clause constraints */
+    اگر( pLevel->pRJ==0 ){
+      جاؤ رمز_outer_join_constraints; /* WHERE clause constraints */
     }
   }
 
-  if( pLevel->pRJ ){
+  اگر( pLevel->pRJ ){
     /* Create a subroutine used to process all interior loops and code
     ** of the RIGHT JOIN.  During normal operation, the subroutine will
     ** be in-line with the rest of the code.  But at the end, a separate
@@ -2983,11 +2983,11 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** of pTab, with all tables to left begin set to NULL.
     */
     {
-      WhereRightJoin *pRJ = pLevel->pRJ;
-      sqlite3VdbeAddOp2(v, OP_BeginSubrtn, 0, pRJ->regReturn);
+      Where_دایاں_Join *pRJ = pLevel->pRJ;
+      sqlite3_Vdbe_جوڑو_Op2(v, OP_BeginSubrtn, 0, pRJ->regReturn);
       pRJ->addrSubrtn = sqlite3VdbeCurrentAddr(v);
     }
-    assert( pParse->withinRJSubrtn < 255 );
+    أكد( pParse->withinRJSubrtn < 255 );
     pParse->withinRJSubrtn++;
 
     /* WHERE clause constraints must be deferred until after outer join
@@ -2995,177 +2995,177 @@ Bitmask sqlite3WhereCodeOneLoopStart(
     ** to the results of the OUTER JOIN.  The following loop generates the
     ** appropriate WHERE clause constraint checks.  tag-20220513a.
     */
-  code_outer_join_constraints:
-    for(pTerm=pWC->a, j=0; j<pWC->nBase; j++, pTerm++){
-      testcase( pTerm->wtFlags & TERM_VIRTUAL );
-      testcase( pTerm->wtFlags & TERM_CODED );
-      if( pTerm->wtFlags & (TERM_VIRTUAL|TERM_CODED) ) continue;
-      if( (pTerm->prereqAll & pLevel->notReady)!=0 ){
-        assert( pWInfo->untestedTerms );
-        continue;
+  رمز_outer_join_constraints:
+    برائے(p_رکن=pWC->a, j=0; j<pWC->n_بنیاد; j++, p_رکن++){
+      testcase( p_رکن->wtFlags & رکن_VIRTUAL );
+      testcase( p_رکن->wtFlags & رکن_CODED );
+      اگر( p_رکن->wtFlags & (رکن_VIRTUAL|رکن_CODED) ) جاری;
+      اگر( (p_رکن->prereqAll & pLevel->notReady)!=0 ){
+        أكد( pWInfo->untestedTerms );
+        جاری;
       }
-      if( pTabItem->fg.jointype & JT_LTORJ ) continue;
-      assert( pTerm->pExpr );
-      sqlite3ExprIfFalse(pParse, pTerm->pExpr, addrCont, SQLITE_JUMPIFNULL);
-      pTerm->wtFlags |= TERM_CODED;
+      اگر( p_Tab_شے->fg.jointype & JT_LTORJ ) جاری;
+      أكد( p_رکن->p_اظہاریہ );
+      sqlite3_اظہاریہ_If_False(pParse, p_رکن->p_اظہاریہ, addrCont, SQLITE_JUMPIFNULL);
+      p_رکن->wtFlags |= رکن_CODED;
     }
   }
 
-#if WHERETRACE_ENABLED /* 0x4001 */
-  if( sqlite3WhereTrace & 0x4000 ){
+#اگر WHERETRACE_ENABLED /* 0x4001 */
+  اگر( sqlite3WhereTrace & 0x4000 ){
     sqlite3DebugPrintf("All WHERE-clause terms after coding level %d:\n",
                        iLevel);
     sqlite3WhereClausePrint(pWC);
   }
-  if( sqlite3WhereTrace & 0x1 ){
+  اگر( sqlite3WhereTrace & 0x1 ){
     sqlite3DebugPrintf("End Coding level %d:  notReady=%llx\n",
        iLevel, (u64)pLevel->notReady);
   }
-#endif
-  return pLevel->notReady;
+#اگر_ختم
+  واپس pLevel->notReady;
 }
 
 /*
 ** Generate the code for the loop that finds all non-matched terms
 ** for a RIGHT JOIN.
 */
-SQLITE_NOINLINE void sqlite3WhereRightJoinLoop(
+SQLITE_NOINLINE خالی sqlite3_Where_دایاں_Join_Loop(
   WhereInfo *pWInfo,
-  int iLevel,
+  صحیح iLevel,
   WhereLevel *pLevel
 ){
   Parse *pParse = pWInfo->pParse;
   Vdbe *v = pParse->pVdbe;
-  WhereRightJoin *pRJ = pLevel->pRJ;
-  Expr *pSubWhere = 0;
+  Where_دایاں_Join *pRJ = pLevel->pRJ;
+  اظہاریہ *pSubWhere = 0;
   WhereClause *pWC = &pWInfo->sWC;
   WhereInfo *pSubWInfo;
   WhereLoop *pLoop = pLevel->pWLoop;
-  SrcItem *pTabItem = &pWInfo->pTabList->a[pLevel->iFrom];
+  Src_شے *p_Tab_شے = &pWInfo->pTabList->a[pLevel->iFrom];
   SrcList *pFrom;
-  union {
+  اتحاد {
     SrcList sSrc;
     u8 fromSpace[SZ_SRCLIST_1];
   } uSrc;
   Bitmask mAll = 0;
-  int k;
+  صحیح k;
 
-  ExplainQueryPlan((pParse, 1, "RIGHT-JOIN %s", pTabItem->pSTab->zName));
-  sqlite3VdbeNoJumpsOutsideSubrtn(v, pRJ->addrSubrtn, pRJ->endSubrtn,
+  ExplainQueryPlan((pParse, 1, "RIGHT-JOIN %s", p_Tab_شے->pSTab->zName));
+  sqlite3VdbeNoJumpsOutsideSubrtn(v, pRJ->addrSubrtn, pRJ->انتہا_Subrtn,
                                   pRJ->regReturn);
-  for(k=0; k<iLevel; k++){
-    int iIdxCur;
-    SrcItem *pRight;
-    assert( pWInfo->a[k].pWLoop->iTab == pWInfo->a[k].iFrom );
-    pRight = &pWInfo->pTabList->a[pWInfo->a[k].iFrom];
-    mAll |= pWInfo->a[k].pWLoop->maskSelf;
-    if( pRight->fg.viaCoroutine ){
+  برائے(k=0; k<iLevel; k++){
+    صحیح iIdxCur;
+    Src_شے *p_دایاں;
+    أكد( pWInfo->a[k].pWLoop->iTab == pWInfo->a[k].iFrom );
+    p_دایاں = &pWInfo->pTabList->a[pWInfo->a[k].iFrom];
+    mAll |= pWInfo->a[k].pWLoop->نقاب_Self;
+    اگر( p_دایاں->fg.بذریعہ_Coroutine ){
       Subquery *pSubq;
-      assert( pRight->fg.isSubquery && pRight->u4.pSubq!=0 );
-      pSubq = pRight->u4.pSubq;
-      assert( pSubq->pSelect!=0 && pSubq->pSelect->pEList!=0 );
-      sqlite3VdbeAddOp3(
-          v, OP_Null, 0, pSubq->regResult,
-          pSubq->regResult + pSubq->pSelect->pEList->nExpr-1
+      أكد( p_دایاں->fg.isSubquery && p_دایاں->u4.pSubq!=0 );
+      pSubq = p_دایاں->u4.pSubq;
+      أكد( pSubq->pSelect!=0 && pSubq->pSelect->pEList!=0 );
+      sqlite3_Vdbe_جوڑو_Op3(
+          v, OP_Null, 0, pSubq->reg_نتیجہ,
+          pSubq->reg_نتیجہ + pSubq->pSelect->pEList->n_اظہاریہ-1
       );
     }
-    sqlite3VdbeAddOp1(v, OP_NullRow, pWInfo->a[k].iTabCur);
+    sqlite3_Vdbe_جوڑو_Op1(v, OP_Null_صف, pWInfo->a[k].iTabCur);
     iIdxCur = pWInfo->a[k].iIdxCur;
-    if( iIdxCur ){
-      sqlite3VdbeAddOp1(v, OP_NullRow, iIdxCur);
+    اگر( iIdxCur ){
+      sqlite3_Vdbe_جوڑو_Op1(v, OP_Null_صف, iIdxCur);
     }
   }
-  if( (pTabItem->fg.jointype & JT_LTORJ)==0 ){
-    mAll |= pLoop->maskSelf;
-    for(k=0; k<pWC->nTerm; k++){
-      WhereTerm *pTerm = &pWC->a[k];
-      if( (pTerm->wtFlags & (TERM_VIRTUAL|TERM_SLICE))!=0
-       && pTerm->eOperator!=WO_ROWVAL
+  اگر( (p_Tab_شے->fg.jointype & JT_LTORJ)==0 ){
+    mAll |= pLoop->نقاب_Self;
+    برائے(k=0; k<pWC->n_رکن; k++){
+      Where_رکن *p_رکن = &pWC->a[k];
+      اگر( (p_رکن->wtFlags & (رکن_VIRTUAL|رکن_قاش))!=0
+       && p_رکن->eOperator!=WO_ROWVAL
       ){
-        break;
+        توڑو;
       }
-      if( pTerm->prereqAll & ~mAll ) continue;
-      if( ExprHasProperty(pTerm->pExpr, EP_OuterON|EP_InnerON) ) continue;
-      pSubWhere = sqlite3ExprAnd(pParse, pSubWhere,
-                                 sqlite3ExprDup(pParse->db, pTerm->pExpr, 0));
+      اگر( p_رکن->prereqAll & ~mAll ) جاری;
+      اگر( اظہاریہ_Has_Property(p_رکن->p_اظہاریہ, EP_OuterON|EP_InnerON) ) جاری;
+      pSubWhere = sqlite3_اظہاریہ_And(pParse, pSubWhere,
+                                 sqlite3_اظہاریہ_Dup(pParse->db, p_رکن->p_اظہاریہ, 0));
     }
   }
-  if( pLevel->iIdxCur ){
+  اگر( pLevel->iIdxCur ){
     /* pSubWhere may contain expressions that read from an index on the
     ** table on the RHS of the right join. All such expressions first test
     ** if the index is pointing at a NULL row, and if so, read from the
     ** table cursor instead. So ensure that the index cursor really is 
     ** pointing at a NULL row here, so that no values are read from it during
     ** the scan of the RHS of the RIGHT join below.  */
-    sqlite3VdbeAddOp1(v, OP_NullRow, pLevel->iIdxCur);
+    sqlite3_Vdbe_جوڑو_Op1(v, OP_Null_صف, pLevel->iIdxCur);
   }
   pFrom = &uSrc.sSrc;
   pFrom->nSrc = 1;
   pFrom->nAlloc = 1;
-  memcpy(&pFrom->a[0], pTabItem, sizeof(SrcItem));
+  حافظہ_نقل(&pFrom->a[0], p_Tab_شے, حجم(Src_شے));
   pFrom->a[0].fg.jointype = 0;
-  if( pParse->withinRJSubrtn >= 100 ){
+  اگر( pParse->withinRJSubrtn >= 100 ){
     /* This limit --------------^^^
     ** is based on an historical assert().  It is not compile-time or
     ** run-time configurable.  It could perhaps be raised as high as 254,
     ** but only an attack robot would ever do even 100 RIGHT JOINS within
     ** a single query, so we'll just leave it as it is. */
-    sqlite3ErrorMsg(pParse, "too many RIGHT JOINs");
-    return;
+    sqlite3_Error_پیغام(pParse, "too many RIGHT JOINs");
+    واپس;
   }
   pParse->withinRJSubrtn++;
   pSubWInfo = sqlite3WhereBegin(pParse, pFrom, pSubWhere, 0, 0, 0,
-                                WHERE_RIGHT_JOIN, 0);
-  if( pSubWInfo ){
-    int iCur = pLevel->iTabCur;  /* Table on RHS of RIGHT JOIN &*/
-    int r = ++pParse->nMem;      /* Register range to hold primary key */
-    int nPk;                     /* Number of values in the primary key */
-    int r2;                      /* Register holding record for primary key */
-    int addrCont = sqlite3WhereContinueLabel(pSubWInfo);
-    Table *pTab = pTabItem->pSTab;  /* Table on RHS of RIGHT JOIN */
-    if( HasRowid(pTab) ){
-      sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, -1, r);
+                                WHERE_دایاں_JOIN, 0);
+  اگر( pSubWInfo ){
+    صحیح iCur = pLevel->iTabCur;  /* Table on RHS of RIGHT JOIN &*/
+    صحیح r = ++pParse->nMem;      /* Register range to hold primary key */
+    صحیح nPk;                     /* Number of values in the primary key */
+    صحیح r2;                      /* Register holding record for primary key */
+    صحیح addrCont = sqlite3WhereContinueLabel(pSubWInfo);
+    جدول *pTab = p_Tab_شے->pSTab;  /* Table on RHS of RIGHT JOIN */
+    اگر( HasRowid(pTab) ){
+      sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iCur, -1, r);
       nPk = 1;
-    }else{
-      int iPk;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-      nPk = pPk->nKeyCol;
+    }ورنہ{
+      صحیح iPk;
+      اشاریہ *pPk = sqlite3_Primary_کلید_اشاریہ(pTab);
+      nPk = pPk->n_کلید_ستون;
       pParse->nMem += nPk - 1;
-      for(iPk=0; iPk<nPk; iPk++){
-        int iCol = pPk->aiColumn[iPk];
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, iCol,r+iPk);
+      برائے(iPk=0; iPk<nPk; iPk++){
+        صحیح i_ستون = pPk->ai_عمود[iPk];
+        sqlite3_اظہاریہ_رمز_Get_عمود_کا_جدول(v, pTab, iCur, i_ستون,r+iPk);
       }
     }
 
     /* Generate code that checks to see if the current row of the RHS table
     ** has appeared in any prior output row. */
-    if( pRJ->regBloom ){
-      sqlite3VdbeAddOp4Int(v, OP_Filter, pRJ->regBloom, 
+    اگر( pRJ->regBloom ){
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter, pRJ->regBloom, 
                  sqlite3VdbeCurrentAddr(v)+2, r, nPk);
       VdbeCoverage(v);
     }
-    sqlite3VdbeAddOp4Int(v, OP_Found, pRJ->iMatch, addrCont, r, nPk);
+    sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_ملا, pRJ->i_مطابقت, addrCont, r, nPk);
     VdbeCoverage(v);
-    r2 = sqlite3GetTempReg(pParse);
+    r2 = sqlite3_Get_عارضی_Reg(pParse);
 
     /* Generate code that inserts the PK of the RHS table into the
     ** pRH->iMatch index to indicate that the current row has appeared
     ** in the output set. */
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, r, nPk, r2);
-    sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pRJ->iMatch, r2, r, nPk);
-    sqlite3ReleaseTempReg(pParse, r2);
-    if( pRJ->regBloom ){
-      sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pRJ->regBloom, 0, r, nPk);
+    sqlite3_Vdbe_جوڑو_Op3(v, OP_Make_ریکارڈ, r, nPk, r2);
+    sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Idx_داخل_کرو, pRJ->i_مطابقت, r2, r, nPk);
+    sqlite3_Release_عارضی_Reg(pParse, r2);
+    اگر( pRJ->regBloom ){
+      sqlite3_Vdbe_جوڑو_Op4_Int(v, OP_Filter_جوڑو, pRJ->regBloom, 0, r, nPk);
       sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
     }
 
     /* Invoke the subroutine that actually puts the current RHS table row
     ** into the output set, with NULLs for the LHS. */
-    sqlite3VdbeAddOp2(v, OP_Gosub, pRJ->regReturn, pRJ->addrSubrtn);
-    sqlite3WhereEnd(pSubWInfo);
+    sqlite3_Vdbe_جوڑو_Op2(v, OP_Gosub, pRJ->regReturn, pRJ->addrSubrtn);
+    sqlite3_Where_انتہا(pSubWInfo);
   }
-  sqlite3ExprDelete(pParse->db, pSubWhere);
-  ExplainQueryPlanPop(pParse);
-  assert( pParse->withinRJSubrtn>0 );
+  sqlite3_اظہاریہ_Delete(pParse->db, pSubWhere);
+  Explain_Query_Plan_نکالو(pParse);
+  أكد( pParse->withinRJSubrtn>0 );
   pParse->withinRJSubrtn--;
 }

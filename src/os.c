@@ -13,29 +13,29 @@
 ** This file contains OS interface code that is common to all
 ** architectures.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
 /*
 ** If we compile with the SQLITE_TEST macro set, then the following block
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_io_error_hit = 0;            /* Total number of I/O Errors */
-int sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
-int sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
-int sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
-int sqlite3_io_error_benign = 0;         /* True if errors are benign */
-int sqlite3_diskfull_pending = 0;
-int sqlite3_diskfull = 0;
-#endif /* defined(SQLITE_TEST) */
+#اگر defined(SQLITE_TEST)
+صحیح sqlite3_io_error_کامیابی = 0;            /* Total number of I/O Errors */
+صحیح sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
+صحیح sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
+صحیح sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
+صحیح sqlite3_io_error_benign = 0;         /* True if errors are benign */
+صحیح sqlite3_diskfull_pending = 0;
+صحیح sqlite3_diskfull = 0;
+#اگر_ختم /* defined(SQLITE_TEST) */
 
 /*
 ** When testing, also keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_open_file_count = 0;
-#endif /* defined(SQLITE_TEST) */
+#اگر defined(SQLITE_TEST)
+صحیح sqlite3_open_file_گنتی = 0;
+#اگر_ختم /* defined(SQLITE_TEST) */
 
 /*
 ** The default SQLite sqlite3_vfs implementations do not allocate
@@ -61,17 +61,17 @@ int sqlite3_open_file_count = 0;
 **     sqlite3OsFullPathname()
 **
 */
-#if defined(SQLITE_TEST)
-int sqlite3_memdebug_vfs_oom_test = 1;
-  #define DO_OS_MALLOC_TEST(x)                                       \
-  if (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3JournalIsInMemory(x))) { \
-    void *pTstAlloc = sqlite3Malloc(10);                             \
-    if (!pTstAlloc) return SQLITE_IOERR_NOMEM_BKPT;                  \
+#اگر defined(SQLITE_TEST)
+صحیح sqlite3_memdebug_vfs_oom_test = 1;
+  #تعریف_کرو DO_OS_MALLOC_TEST(x)                                       \
+  اگر (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3_Journal_Is_اندر_حافظہ(x))) { \
+    خالی *pTstAlloc = sqlite3Malloc(10);                             \
+    اگر (!pTstAlloc) واپس SQLITE_IOERR_NOMEM_BKPT;                  \
     sqlite3_free(pTstAlloc);                                         \
   }
-#else
-  #define DO_OS_MALLOC_TEST(x)
-#endif
+#ورنہ
+  #تعریف_کرو DO_OS_MALLOC_TEST(x)
+#اگر_ختم
 
 /*
 ** The following routines are convenience wrappers around methods
@@ -79,43 +79,43 @@ int sqlite3_memdebug_vfs_oom_test = 1;
 ** of this would be completely automatic if SQLite were coded using
 ** C++ instead of plain old C.
 */
-void sqlite3OsClose(sqlite3_file *pId){
-  if( pId->pMethods ){
+خالی sqlite3OsClose(sqlite3_file *pId){
+  اگر( pId->pMethods ){
     pId->pMethods->xClose(pId);
     pId->pMethods = 0;
   }
 }
-int sqlite3OsRead(sqlite3_file *id, void *pBuf, int amt, i64 offset){
+صحیح sqlite3OsRead(sqlite3_file *id, خالی *pBuf, صحیح amt, i64 انحراف){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xRead(id, pBuf, amt, offset);
+  واپس id->pMethods->xRead(id, pBuf, amt, انحراف);
 }
-int sqlite3OsWrite(sqlite3_file *id, const void *pBuf, int amt, i64 offset){
+صحیح sqlite3OsWrite(sqlite3_file *id, ثابت خالی *pBuf, صحیح amt, i64 انحراف){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xWrite(id, pBuf, amt, offset);
+  واپس id->pMethods->xWrite(id, pBuf, amt, انحراف);
 }
-int sqlite3OsTruncate(sqlite3_file *id, i64 size){
-  return id->pMethods->xTruncate(id, size);
+صحیح sqlite3OsTruncate(sqlite3_file *id, i64 سائز){
+  واپس id->pMethods->xTruncate(id, سائز);
 }
-int sqlite3OsSync(sqlite3_file *id, int flags){
+صحیح sqlite3OsSync(sqlite3_file *id, صحیح flags){
   DO_OS_MALLOC_TEST(id);
-  return flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
+  واپس flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
 }
-int sqlite3OsFileSize(sqlite3_file *id, i64 *pSize){
+صحیح sqlite3_Os_File_سائز(sqlite3_file *id, i64 *p_سائز){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFileSize(id, pSize);
+  واپس id->pMethods->x_File_سائز(id, p_سائز);
 }
-int sqlite3OsLock(sqlite3_file *id, int lockType){
+صحیح sqlite3_Os_تالا(sqlite3_file *id, صحیح تالا_Type){
   DO_OS_MALLOC_TEST(id);
-  assert( lockType>=SQLITE_LOCK_SHARED && lockType<=SQLITE_LOCK_EXCLUSIVE );
-  return id->pMethods->xLock(id, lockType);
+  أكد( تالا_Type>=SQLITE_تالا_SHARED && تالا_Type<=SQLITE_تالا_EXCLUSIVE );
+  واپس id->pMethods->x_تالا(id, تالا_Type);
 }
-int sqlite3OsUnlock(sqlite3_file *id, int lockType){
-  assert( lockType==SQLITE_LOCK_NONE || lockType==SQLITE_LOCK_SHARED );
-  return id->pMethods->xUnlock(id, lockType);
+صحیح sqlite3OsUnlock(sqlite3_file *id, صحیح تالا_Type){
+  أكد( تالا_Type==SQLITE_تالا_NONE || تالا_Type==SQLITE_تالا_SHARED );
+  واپس id->pMethods->xUnlock(id, تالا_Type);
 }
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
+صحیح sqlite3_Os_Check_Reserved_تالا(sqlite3_file *id, صحیح *p_Res_برآمد){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xCheckReservedLock(id, pResOut);
+  واپس id->pMethods->x_Check_Reserved_تالا(id, p_Res_برآمد);
 }
 
 /*
@@ -126,13 +126,13 @@ int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** is only a hint and can be safely ignored.  The sqlite3OsFileControlHint()
 ** routine has no return value since the return value would be meaningless.
 */
-int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods==0 ) return SQLITE_NOTFOUND;
-#ifdef SQLITE_TEST
-  if( op!=SQLITE_FCNTL_COMMIT_PHASETWO
-   && op!=SQLITE_FCNTL_LOCK_TIMEOUT
-   && op!=SQLITE_FCNTL_CKPT_DONE
-   && op!=SQLITE_FCNTL_CKPT_START
+صحیح sqlite3OsFileControl(sqlite3_file *id, صحیح op, خالی *pArg){
+  اگر( id->pMethods==0 ) واپس SQLITE_NOTFOUND;
+#اگر_تعریف_شدہ SQLITE_TEST
+  اگر( op!=SQLITE_FCNTL_COMMIT_PHASETWO
+   && op!=SQLITE_FCNTL_تالا_TIMEOUT
+   && op!=SQLITE_FCNTL_CKPT_مکمل
+   && op!=SQLITE_FCNTL_CKPT_آغاز
   ){
     /* Faults are not injected into COMMIT_PHASETWO because, assuming SQLite
     ** is using a regular VFS, it is called after the corresponding
@@ -151,187 +151,187 @@ int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
     */
     DO_OS_MALLOC_TEST(id);
   }
-#endif
-  return id->pMethods->xFileControl(id, op, pArg);
+#اگر_ختم
+  واپس id->pMethods->xFileControl(id, op, pArg);
 }
-void sqlite3OsFileControlHint(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods ) (void)id->pMethods->xFileControl(id, op, pArg);
+خالی sqlite3OsFileControlHint(sqlite3_file *id, صحیح op, خالی *pArg){
+  اگر( id->pMethods ) (خالی)id->pMethods->xFileControl(id, op, pArg);
 }
 
-int sqlite3OsSectorSize(sqlite3_file *id){
-  int (*xSectorSize)(sqlite3_file*) = id->pMethods->xSectorSize;
-  return (xSectorSize ? xSectorSize(id) : SQLITE_DEFAULT_SECTOR_SIZE);
+صحیح sqlite3_Os_Sector_سائز(sqlite3_file *id){
+  صحیح (*x_Sector_سائز)(sqlite3_file*) = id->pMethods->x_Sector_سائز;
+  واپس (x_Sector_سائز ? x_Sector_سائز(id) : SQLITE_DEFAULT_SECTOR_سائز);
 }
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id){
-  if( NEVER(id->pMethods==0) ) return 0;
-  return id->pMethods->xDeviceCharacteristics(id);
+صحیح sqlite3OsDeviceCharacteristics(sqlite3_file *id){
+  اگر( NEVER(id->pMethods==0) ) واپس 0;
+  واپس id->pMethods->xDeviceCharacteristics(id);
 }
-#ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmLock(sqlite3_file *id, int offset, int n, int flags){
-  return id->pMethods->xShmLock(id, offset, n, flags);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_WAL
+صحیح sqlite3_Os_Shm_تالا(sqlite3_file *id, صحیح انحراف, صحیح n, صحیح flags){
+  واپس id->pMethods->x_Shm_تالا(id, انحراف, n, flags);
 }
-void sqlite3OsShmBarrier(sqlite3_file *id){
+خالی sqlite3OsShmBarrier(sqlite3_file *id){
   id->pMethods->xShmBarrier(id);
 }
-int sqlite3OsShmUnmap(sqlite3_file *id, int deleteFlag){
-  return id->pMethods->xShmUnmap(id, deleteFlag);
+صحیح sqlite3OsShmUnmap(sqlite3_file *id, صحیح deleteFlag){
+  واپس id->pMethods->xShmUnmap(id, deleteFlag);
 }
-int sqlite3OsShmMap(
+صحیح sqlite3OsShmMap(
   sqlite3_file *id,               /* Database file handle */
-  int iPage,
-  int pgsz,
-  int bExtend,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Pointer to mapping */
+  صحیح i_صفحہ,
+  صحیح pgsz,
+  صحیح bExtend,                    /* True to extend file if necessary */
+  خالی متلون **pp              /* OUT: Pointer to mapping */
 ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xShmMap(id, iPage, pgsz, bExtend, pp);
+  واپس id->pMethods->xShmMap(id, i_صفحہ, pgsz, bExtend, pp);
 }
-#endif /* SQLITE_OMIT_WAL */
+#اگر_ختم /* SQLITE_OMIT_WAL */
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#اگر SQLITE_MAX_MMAP_سائز>0
 /* The real implementation of xFetch and xUnfetch */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+صحیح sqlite3OsFetch(sqlite3_file *id, i64 iOff, صحیح iAmt, خالی **pp){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFetch(id, iOff, iAmt, pp);
+  واپس id->pMethods->xFetch(id, iOff, iAmt, pp);
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return id->pMethods->xUnfetch(id, iOff, p);
+صحیح sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, خالی *p){
+  واپس id->pMethods->xUnfetch(id, iOff, p);
 }
-#else
+#ورنہ
 /* No-op stubs to use when memory-mapped I/O is disabled */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+صحیح sqlite3OsFetch(sqlite3_file *id, i64 iOff, صحیح iAmt, خالی **pp){
   *pp = 0;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return SQLITE_OK;
+صحیح sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, خالی *p){
+  واپس SQLITE_OK;
 }
-#endif
+#اگر_ختم
 
 /*
 ** The next group of routines are convenience wrappers around the
 ** VFS methods.
 */
-int sqlite3OsOpen(
+صحیح sqlite3OsOpen(
   sqlite3_vfs *pVfs,
-  const char *zPath,
+  ثابت حرف *z_راستہ,
   sqlite3_file *pFile,
-  int flags,
-  int *pFlagsOut
+  صحیح flags,
+  صحیح *p_Flags_برآمد
 ){
-  int rc;
+  صحیح rc;
   DO_OS_MALLOC_TEST(0);
   /* 0x87f7f is a mask of SQLITE_OPEN_ flags that are valid to be passed
   ** down into the VFS layer.  Some SQLITE_OPEN_ flags (for example,
   ** SQLITE_OPEN_FULLMUTEX or SQLITE_OPEN_SHAREDCACHE) are blocked before
   ** reaching the VFS. */
-  assert( zPath || (flags & SQLITE_OPEN_EXCLUSIVE) );
-  rc = pVfs->xOpen(pVfs, zPath, pFile, flags & 0x1087f7f, pFlagsOut);
-  assert( rc==SQLITE_OK || pFile->pMethods==0 );
-  return rc;
+  أكد( z_راستہ || (flags & SQLITE_OPEN_EXCLUSIVE) );
+  rc = pVfs->xOpen(pVfs, z_راستہ, pFile, flags & 0x1087f7f, p_Flags_برآمد);
+  أكد( rc==SQLITE_OK || pFile->pMethods==0 );
+  واپس rc;
 }
-int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+صحیح sqlite3OsDelete(sqlite3_vfs *pVfs, ثابت حرف *z_راستہ, صحیح dirSync){
   DO_OS_MALLOC_TEST(0);
-  assert( dirSync==0 || dirSync==1 );
-  return pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, zPath, dirSync) : SQLITE_OK;
+  أكد( dirSync==0 || dirSync==1 );
+  واپس pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, z_راستہ, dirSync) : SQLITE_OK;
 }
-int sqlite3OsAccess(
+صحیح sqlite3OsAccess(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int flags,
-  int *pResOut
+  ثابت حرف *z_راستہ,
+  صحیح flags,
+  صحیح *p_Res_برآمد
 ){
   DO_OS_MALLOC_TEST(0);
-  return pVfs->xAccess(pVfs, zPath, flags, pResOut);
+  واپس pVfs->xAccess(pVfs, z_راستہ, flags, p_Res_برآمد);
 }
-int sqlite3OsFullPathname(
+صحیح sqlite3_Os_بھرا_Pathname(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int nPathOut,
-  char *zPathOut
+  ثابت حرف *z_راستہ,
+  صحیح n_راستہ_برآمد,
+  حرف *z_راستہ_برآمد
 ){
   DO_OS_MALLOC_TEST(0);
-  zPathOut[0] = 0;
-  return pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
+  z_راستہ_برآمد[0] = 0;
+  واپس pVfs->x_بھرا_Pathname(pVfs, z_راستہ, n_راستہ_برآمد, z_راستہ_برآمد);
 }
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  assert( zPath!=0 );
-  assert( strlen(zPath)<=SQLITE_MAX_PATHLEN );  /* tag-20210611-1 */
-  return pVfs->xDlOpen(pVfs, zPath);
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_بھرو_EXTENSION
+خالی *sqlite3OsDlOpen(sqlite3_vfs *pVfs, ثابت حرف *z_راستہ){
+  أكد( z_راستہ!=0 );
+  أكد( لڑی_لمبائی(z_راستہ)<=SQLITE_MAX_PATHLEN );  /* tag-20210611-1 */
+  واپس pVfs->xDlOpen(pVfs, z_راستہ);
 }
-void sqlite3OsDlError(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  pVfs->xDlError(pVfs, nByte, zBufOut);
+خالی sqlite3OsDlError(sqlite3_vfs *pVfs, صحیح nByte, حرف *z_Buf_برآمد){
+  pVfs->xDlError(pVfs, nByte, z_Buf_برآمد);
 }
-void (*sqlite3OsDlSym(sqlite3_vfs *pVfs, void *pHdle, const char *zSym))(void){
-  return pVfs->xDlSym(pVfs, pHdle, zSym);
+خالی (*sqlite3OsDlSym(sqlite3_vfs *pVfs, خالی *pHdle, ثابت حرف *zSym))(خالی){
+  واپس pVfs->xDlSym(pVfs, pHdle, zSym);
 }
-void sqlite3OsDlClose(sqlite3_vfs *pVfs, void *pHandle){
+خالی sqlite3OsDlClose(sqlite3_vfs *pVfs, خالی *pHandle){
   pVfs->xDlClose(pVfs, pHandle);
 }
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  if( sqlite3Config.iPrngSeed ){
-    memset(zBufOut, 0, nByte);
-    if( ALWAYS(nByte>(signed)sizeof(unsigned)) ) nByte = sizeof(unsigned int);
-    memcpy(zBufOut, &sqlite3Config.iPrngSeed, nByte);
-    return SQLITE_OK;
-  }else{
-    return pVfs->xRandomness(pVfs, nByte, zBufOut);
+#اگر_ختم /* SQLITE_OMIT_LOAD_EXTENSION */
+صحیح sqlite3OsRandomness(sqlite3_vfs *pVfs, صحیح nByte, حرف *z_Buf_برآمد){
+  اگر( sqlite3Config.i_Prng_بیج ){
+    memset(z_Buf_برآمد, 0, nByte);
+    اگر( ALWAYS(nByte>(علامتی)حجم(غیرعلامتی)) ) nByte = حجم(غیرعلامتی صحیح);
+    حافظہ_نقل(z_Buf_برآمد, &sqlite3Config.i_Prng_بیج, nByte);
+    واپس SQLITE_OK;
+  }ورنہ{
+    واپس pVfs->xRandomness(pVfs, nByte, z_Buf_برآمد);
   }
 
 }
-int sqlite3OsSleep(sqlite3_vfs *pVfs, int nMicro){
-  return pVfs->xSleep(pVfs, nMicro);
+صحیح sqlite3OsSleep(sqlite3_vfs *pVfs, صحیح nMicro){
+  واپس pVfs->xSleep(pVfs, nMicro);
 }
-int sqlite3OsGetLastError(sqlite3_vfs *pVfs){
-  return pVfs->xGetLastError ? pVfs->xGetLastError(pVfs, 0, 0) : 0;
+صحیح sqlite3_Os_Get_آخری_Error(sqlite3_vfs *pVfs){
+  واپس pVfs->x_Get_آخری_Error ? pVfs->x_Get_آخری_Error(pVfs, 0, 0) : 0;
 }
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  int rc;
+صحیح sqlite3_Os_Current_وقت_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *p_وقت_برآمد){
+  صحیح rc;
   /* IMPLEMENTATION-OF: R-49045-42493 SQLite will use the xCurrentTimeInt64()
   ** method to get the current date and time if that method is available
   ** (if iVersion is 2 or greater and the function pointer is not NULL) and
   ** will fall back to xCurrentTime() if xCurrentTimeInt64() is
   ** unavailable.
   */
-  if( pVfs->iVersion>=2 && pVfs->xCurrentTimeInt64 ){
-    rc = pVfs->xCurrentTimeInt64(pVfs, pTimeOut);
-  }else{
-    double r;
-    rc = pVfs->xCurrentTime(pVfs, &r);
-    *pTimeOut = sqlite3RealToI64(r*86400000.0);
+  اگر( pVfs->i_نسخہ>=2 && pVfs->x_Current_وقت_Int64 ){
+    rc = pVfs->x_Current_وقت_Int64(pVfs, p_وقت_برآمد);
+  }ورنہ{
+    دوہرا r;
+    rc = pVfs->x_Current_وقت(pVfs, &r);
+    *p_وقت_برآمد = sqlite3_Real_مقصد_I64(r*86400000.0);
   }
-  return rc;
+  واپس rc;
 }
 
-int sqlite3OsOpenMalloc(
+صحیح sqlite3OsOpenMalloc(
   sqlite3_vfs *pVfs,
-  const char *zFile,
+  ثابت حرف *zFile,
   sqlite3_file **ppFile,
-  int flags,
-  int *pOutFlags
+  صحیح flags,
+  صحیح *p_برآمد_Flags
 ){
-  int rc;
+  صحیح rc;
   sqlite3_file *pFile;
   pFile = (sqlite3_file *)sqlite3MallocZero(pVfs->szOsFile);
-  if( pFile ){
-    rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
+  اگر( pFile ){
+    rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, p_برآمد_Flags);
+    اگر( rc!=SQLITE_OK ){
       sqlite3_free(pFile);
       *ppFile = 0;
-    }else{
+    }ورنہ{
       *ppFile = pFile;
     }
-  }else{
+  }ورنہ{
     *ppFile = 0;
     rc = SQLITE_NOMEM_BKPT;
   }
-  assert( *ppFile!=0 || rc!=SQLITE_OK );
-  return rc;
+  أكد( *ppFile!=0 || rc!=SQLITE_OK );
+  واپس rc;
 }
-void sqlite3OsCloseFree(sqlite3_file *pFile){
-  assert( pFile );
+خالی sqlite3OsCloseFree(sqlite3_file *pFile){
+  أكد( pFile );
   sqlite3OsClose(pFile);
   sqlite3_free(pFile);
 }
@@ -342,60 +342,60 @@ void sqlite3OsCloseFree(sqlite3_file *pFile){
 ** ability to simulate a malloc failure, so that the handling of an
 ** error in sqlite3_os_init() by the upper layers can be tested.
 */
-int sqlite3OsInit(void){
-  void *p = sqlite3_malloc(10);
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
+صحیح sqlite3OsInit(خالی){
+  خالی *p = sqlite3_malloc(10);
+  اگر( p==0 ) واپس SQLITE_NOMEM_BKPT;
   sqlite3_free(p);
-  return sqlite3_os_init();
+  واپس sqlite3_os_init();
 }
 
 /*
 ** The list of all registered VFS implementations.
 */
-static sqlite3_vfs * SQLITE_WSD vfsList = 0;
-#define vfsList GLOBAL(sqlite3_vfs *, vfsList)
+ساکن sqlite3_vfs * SQLITE_WSD vfsList = 0;
+#تعریف_کرو vfsList GLOBAL(sqlite3_vfs *, vfsList)
 
 /*
 ** Locate a VFS by name.  If no name is given, simply return the
 ** first VFS on the list.
 */
-sqlite3_vfs *sqlite3_vfs_find(const char *zVfs){
+sqlite3_vfs *sqlite3_vfs_ڈھونڈو(ثابت حرف *zVfs){
   sqlite3_vfs *pVfs = 0;
-#if SQLITE_THREADSAFE
+#اگر SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return 0;
-#endif
-#if SQLITE_THREADSAFE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOINIT
+  صحیح rc = sqlite3_initialize();
+  اگر( rc ) واپس 0;
+#اگر_ختم
+#اگر SQLITE_THREADSAFE
   mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
+#اگر_ختم
   sqlite3_mutex_enter(mutex);
-  for(pVfs = vfsList; pVfs; pVfs=pVfs->pNext){
-    if( zVfs==0 ) break;
-    if( strcmp(zVfs, pVfs->zName)==0 ) break;
+  برائے(pVfs = vfsList; pVfs; pVfs=pVfs->p_اگلا){
+    اگر( zVfs==0 ) توڑو;
+    اگر( strcmp(zVfs, pVfs->zName)==0 ) توڑو;
   }
   sqlite3_mutex_leave(mutex);
-  return pVfs;
+  واپس pVfs;
 }
 
 /*
 ** Unlink a VFS from the linked list
 */
-static void vfsUnlink(sqlite3_vfs *pVfs){
-  assert( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) );
-  if( pVfs==0 ){
+ساکن خالی vfsUnlink(sqlite3_vfs *pVfs){
+  أكد( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) );
+  اگر( pVfs==0 ){
     /* No-op */
-  }else if( vfsList==pVfs ){
-    vfsList = pVfs->pNext;
-  }else if( vfsList ){
+  }ورنہ اگر( vfsList==pVfs ){
+    vfsList = pVfs->p_اگلا;
+  }ورنہ اگر( vfsList ){
     sqlite3_vfs *p = vfsList;
-    while( p->pNext && p->pNext!=pVfs ){
-      p = p->pNext;
+    جب( p->p_اگلا && p->p_اگلا!=pVfs ){
+      p = p->p_اگلا;
     }
-    if( p->pNext==pVfs ){
-      p->pNext = pVfs->pNext;
+    اگر( p->p_اگلا==pVfs ){
+      p->p_اگلا = pVfs->p_اگلا;
     }
   }
 }
@@ -405,43 +405,43 @@ static void vfsUnlink(sqlite3_vfs *pVfs){
 ** VFS multiple times.  The new VFS becomes the default if makeDflt is
 ** true.
 */
-int sqlite3_vfs_register(sqlite3_vfs *pVfs, int makeDflt){
+صحیح sqlite3_vfs_رجسٹر(sqlite3_vfs *pVfs, صحیح makeDflt){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( pVfs==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOINIT
+  صحیح rc = sqlite3_initialize();
+  اگر( rc ) واپس rc;
+#اگر_ختم
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( pVfs==0 ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
 
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
-  if( makeDflt || vfsList==0 ){
-    pVfs->pNext = vfsList;
+  اگر( makeDflt || vfsList==0 ){
+    pVfs->p_اگلا = vfsList;
     vfsList = pVfs;
-  }else{
-    pVfs->pNext = vfsList->pNext;
-    vfsList->pNext = pVfs;
+  }ورنہ{
+    pVfs->p_اگلا = vfsList->p_اگلا;
+    vfsList->p_اگلا = pVfs;
   }
-  assert(vfsList);
+  أكد(vfsList);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Unregister a VFS so that it is no longer accessible.
 */
-int sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
+صحیح sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_AUTOINIT
+  صحیح rc = sqlite3_initialize();
+  اگر( rc ) واپس rc;
+#اگر_ختم
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }

@@ -37,78 +37,78 @@
 ** deleted and the database to be truncated.
 */
 
-#include "sqliteInt.h"   /* Requires access to internal data structures */
-#if (defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)) \
+#شامل "sqliteInt.h"   /* Requires access to internal data structures */
+#اگر (defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)) \
     && !defined(SQLITE_OMIT_VIRTUALTABLE)
 
-typedef struct DbpageTable DbpageTable;
-typedef struct DbpageCursor DbpageCursor;
+قسمتعریف ساخت Dbpage_جدول Dbpage_جدول;
+قسمتعریف ساخت DbpageCursor DbpageCursor;
 
-struct DbpageCursor {
-  sqlite3_vtab_cursor base;       /* Base class.  Must be first */
+ساخت DbpageCursor {
+  sqlite3_vtab_cursor بنیاد;       /* Base class.  Must be first */
   Pgno pgno;                      /* Current page number */
   Pgno mxPgno;                    /* Last page to visit on this scan */
   Pager *pPager;                  /* Pager being read/written */
-  DbPage *pPage1;                 /* Page 1 of the database */
-  int iDb;                        /* Index of database to analyze */
-  int szPage;                     /* Size of each page in bytes */
+  Db_صفحہ *pPage1;                 /* Page 1 of the database */
+  صحیح iDb;                        /* Index of database to analyze */
+  صحیح sz_صفحہ;                     /* Size of each page in bytes */
 };
 
-struct DbpageTable {
-  sqlite3_vtab base;              /* Base class.  Must be first */
+ساخت Dbpage_جدول {
+  sqlite3_vtab بنیاد;              /* Base class.  Must be first */
   sqlite3 *db;                    /* The database */
-  int iDbTrunc;                   /* Database to truncate */
+  صحیح iDbTrunc;                   /* Database to truncate */
   Pgno pgnoTrunc;                 /* Size to truncate to */
 };
 
 /* Columns */
-#define DBPAGE_COLUMN_PGNO    0
-#define DBPAGE_COLUMN_DATA    1
-#define DBPAGE_COLUMN_SCHEMA  2
+#تعریف_کرو DBPAGE_عمود_PGNO    0
+#تعریف_کرو DBPAGE_عمود_ڈیٹا    1
+#تعریف_کرو DBPAGE_عمود_SCHEMA  2
 
 
 /*
 ** Connect to or create a dbpagevfs virtual table.
 */
-static int dbpageConnect(
+ساکن صحیح dbpageConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  خالی *pAux,
+  صحیح argc, ثابت حرف *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  حرف **pzErr
 ){
-  DbpageTable *pTab = 0;
-  int rc = SQLITE_OK;
-  (void)pAux;
-  (void)argc;
-  (void)argv;
-  (void)pzErr;
+  Dbpage_جدول *pTab = 0;
+  صحیح rc = SQLITE_OK;
+  (خالی)pAux;
+  (خالی)argc;
+  (خالی)argv;
+  (خالی)pzErr;
 
   sqlite3_vtab_config(db, SQLITE_VTAB_DIRECTONLY);
-  sqlite3_vtab_config(db, SQLITE_VTAB_USES_ALL_SCHEMAS);
+  sqlite3_vtab_config(db, SQLITE_VTAB_استعمال_کرتا_ALL_SCHEMAS);
   rc = sqlite3_declare_vtab(db, 
           "CREATE TABLE x(pgno INTEGER PRIMARY KEY, data BLOB, schema HIDDEN)");
-  if( rc==SQLITE_OK ){
-    pTab = (DbpageTable *)sqlite3_malloc64(sizeof(DbpageTable));
-    if( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
+  اگر( rc==SQLITE_OK ){
+    pTab = (Dbpage_جدول *)sqlite3_malloc64(حجم(Dbpage_جدول));
+    اگر( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
   }
 
-  assert( rc==SQLITE_OK || pTab==0 );
-  if( rc==SQLITE_OK ){
-    memset(pTab, 0, sizeof(DbpageTable));
+  أكد( rc==SQLITE_OK || pTab==0 );
+  اگر( rc==SQLITE_OK ){
+    memset(pTab, 0, حجم(Dbpage_جدول));
     pTab->db = db;
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  واپس rc;
 }
 
 /*
 ** Disconnect from or destroy a dbpagevfs virtual table.
 */
-static int dbpageDisconnect(sqlite3_vtab *pVtab){
+ساکن صحیح dbpageDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
@@ -119,101 +119,101 @@ static int dbpageDisconnect(sqlite3_vtab *pVtab){
 **     2     schema=?1, full table scan
 **     3     schema=?1, pgno=?2
 */
-static int dbpageBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int i;
-  int iPlan = 0;
-  (void)tab;
+ساکن صحیح dbpage_بہترین_اشاریہ(sqlite3_vtab *tab, sqlite3_اشاریہ_info *pIdxInfo){
+  صحیح i;
+  صحیح iPlan = 0;
+  (خالی)tab;
 
   /* If there is a schema= constraint, it must be honored.  Report a
   ** ridiculously large estimated cost if the schema= constraint is
   ** unavailable
   */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    struct sqlite3_index_constraint *p = &pIdxInfo->aConstraint[i];
-    if( p->iColumn!=DBPAGE_COLUMN_SCHEMA ) continue;
-    if( p->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( !p->usable ){
+  برائے(i=0; i<pIdxInfo->nConstraint; i++){
+    ساخت sqlite3_اشاریہ_constraint *p = &pIdxInfo->aConstraint[i];
+    اگر( p->i_عمود!=DBPAGE_عمود_SCHEMA ) جاری;
+    اگر( p->op!=SQLITE_اشاریہ_CONSTRAINT_EQ ) جاری;
+    اگر( !p->usable ){
       /* No solution. */
-      return SQLITE_CONSTRAINT;
+      واپس SQLITE_CONSTRAINT;
     }
     iPlan = 2;
-    pIdxInfo->aConstraintUsage[i].argvIndex = 1;
+    pIdxInfo->aConstraintUsage[i].argv_اشاریہ = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
-    break;
+    توڑو;
   }
 
   /* If we reach this point, it means that either there is no schema=
   ** constraint (in which case we use the "main" schema) or else the
   ** schema constraint was accepted.  Lower the estimated cost accordingly
   */
-  pIdxInfo->estimatedCost = 1.0e6;
+  pIdxInfo->estimated_لاگت = 1.0e6;
 
   /* Check for constraints against pgno */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    struct sqlite3_index_constraint *p = &pIdxInfo->aConstraint[i];
-    if( p->usable && p->iColumn<=0 && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      pIdxInfo->estimatedRows = 1;
-      pIdxInfo->idxFlags = SQLITE_INDEX_SCAN_UNIQUE;
-      pIdxInfo->estimatedCost = 1.0;
-      pIdxInfo->aConstraintUsage[i].argvIndex = iPlan ? 2 : 1;
+  برائے(i=0; i<pIdxInfo->nConstraint; i++){
+    ساخت sqlite3_اشاریہ_constraint *p = &pIdxInfo->aConstraint[i];
+    اگر( p->usable && p->i_عمود<=0 && p->op==SQLITE_اشاریہ_CONSTRAINT_EQ ){
+      pIdxInfo->estimated_صفیں = 1;
+      pIdxInfo->idxFlags = SQLITE_اشاریہ_جائزہ_UNIQUE;
+      pIdxInfo->estimated_لاگت = 1.0;
+      pIdxInfo->aConstraintUsage[i].argv_اشاریہ = iPlan ? 2 : 1;
       pIdxInfo->aConstraintUsage[i].omit = 1;
       iPlan |= 1;
-      break;
+      توڑو;
     }
   }
-  pIdxInfo->idxNum = iPlan;
+  pIdxInfo->idx_عدد = iPlan;
 
-  if( pIdxInfo->nOrderBy>=1
-   && pIdxInfo->aOrderBy[0].iColumn<=0
-   && pIdxInfo->aOrderBy[0].desc==0
+  اگر( pIdxInfo->n_ترتیب_By>=1
+   && pIdxInfo->a_ترتیب_By[0].i_عمود<=0
+   && pIdxInfo->a_ترتیب_By[0].desc==0
   ){
-    pIdxInfo->orderByConsumed = 1;
+    pIdxInfo->ترتیب_By_Consumed = 1;
   }
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Open a new dbpagevfs cursor.
 */
-static int dbpageOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ساکن صحیح dbpageOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   DbpageCursor *pCsr;
 
-  pCsr = (DbpageCursor *)sqlite3_malloc64(sizeof(DbpageCursor));
-  if( pCsr==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
-    memset(pCsr, 0, sizeof(DbpageCursor));
-    pCsr->base.pVtab = pVTab;
+  pCsr = (DbpageCursor *)sqlite3_malloc64(حجم(DbpageCursor));
+  اگر( pCsr==0 ){
+    واپس SQLITE_NOMEM_BKPT;
+  }ورنہ{
+    memset(pCsr, 0, حجم(DbpageCursor));
+    pCsr->بنیاد.pVtab = pVTab;
     pCsr->pgno = 0;
   }
 
   *ppCursor = (sqlite3_vtab_cursor *)pCsr;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Close a dbpagevfs cursor.
 */
-static int dbpageClose(sqlite3_vtab_cursor *pCursor){
+ساکن صحیح dbpageClose(sqlite3_vtab_cursor *pCursor){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
-  if( pCsr->pPage1 ) sqlite3PagerUnrefPageOne(pCsr->pPage1);
+  اگر( pCsr->pPage1 ) sqlite3_Pager_Unref_صفحہ_One(pCsr->pPage1);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Move a dbpagevfs cursor to the next entry in the file.
 */
-static int dbpageNext(sqlite3_vtab_cursor *pCursor){
-  int rc = SQLITE_OK;
+ساکن صحیح dbpage_اگلا(sqlite3_vtab_cursor *pCursor){
+  صحیح rc = SQLITE_OK;
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
   pCsr->pgno++;
-  return rc;
+  واپس rc;
 }
 
-static int dbpageEof(sqlite3_vtab_cursor *pCursor){
+ساکن صحیح dbpageEof(sqlite3_vtab_cursor *pCursor){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
-  return pCsr->pgno > pCsr->mxPgno;
+  واپس pCsr->pgno > pCsr->mxPgno;
 }
 
 /*
@@ -226,97 +226,97 @@ static int dbpageEof(sqlite3_vtab_cursor *pCursor){
 **
 ** idxStr is not used
 */
-static int dbpageFilter(
+ساکن صحیح dbpageFilter(
   sqlite3_vtab_cursor *pCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_عدد, ثابت حرف *idxStr,
+  صحیح argc, sqlite3_قدر **argv
 ){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
-  DbpageTable *pTab = (DbpageTable *)pCursor->pVtab;
-  int rc;
+  Dbpage_جدول *pTab = (Dbpage_جدول *)pCursor->pVtab;
+  صحیح rc;
   sqlite3 *db = pTab->db;
   Btree *pBt;
 
-  UNUSED_PARAMETER(idxStr);
-  UNUSED_PARAMETER(argc);
+  غیر_مستعمل_PARAMETER(idxStr);
+  غیر_مستعمل_PARAMETER(argc);
 
   /* Default setting is no rows of result */
   pCsr->pgno = 1;
   pCsr->mxPgno = 0;
 
-  if( idxNum & 2 ){
-    const char *zSchema;
-    assert( argc>=1 );
-    zSchema = (const char*)sqlite3_value_text(argv[0]);
-    pCsr->iDb = sqlite3FindDbName(db, zSchema);
-    if( pCsr->iDb<0 ) return SQLITE_OK;
-  }else{
+  اگر( idx_عدد & 2 ){
+    ثابت حرف *zSchema;
+    أكد( argc>=1 );
+    zSchema = (ثابت حرف*)sqlite3_قدر_متن(argv[0]);
+    pCsr->iDb = sqlite3_ڈھونڈو_Db_Name(db, zSchema);
+    اگر( pCsr->iDb<0 ) واپس SQLITE_OK;
+  }ورنہ{
     pCsr->iDb = 0;
   }
   pBt = db->aDb[pCsr->iDb].pBt;
-  if( NEVER(pBt==0) ) return SQLITE_OK;
+  اگر( NEVER(pBt==0) ) واپس SQLITE_OK;
   pCsr->pPager = sqlite3BtreePager(pBt);
-  pCsr->szPage = sqlite3BtreeGetPageSize(pBt);
-  pCsr->mxPgno = sqlite3BtreeLastPage(pBt);
-  if( idxNum & 1 ){
-    i64 iPg = sqlite3_value_int64(argv[idxNum>>1]);
-    assert( argc>(idxNum>>1) );
-    if( iPg<1 || iPg>pCsr->mxPgno ){
+  pCsr->sz_صفحہ = sqlite3_Btree_Get_صفحہ_سائز(pBt);
+  pCsr->mxPgno = sqlite3_Btree_آخری_صفحہ(pBt);
+  اگر( idx_عدد & 1 ){
+    i64 iPg = sqlite3_قدر_int64(argv[idx_عدد>>1]);
+    أكد( argc>(idx_عدد>>1) );
+    اگر( iPg<1 || iPg>pCsr->mxPgno ){
       pCsr->pgno = 1;
       pCsr->mxPgno = 0;
-    }else{
+    }ورنہ{
       pCsr->pgno = (Pgno)iPg;
       pCsr->mxPgno = pCsr->pgno;
     }
-  }else{
-    assert( pCsr->pgno==1 );
+  }ورنہ{
+    أكد( pCsr->pgno==1 );
   }
-  if( pCsr->pPage1 ) sqlite3PagerUnrefPageOne(pCsr->pPage1);
+  اگر( pCsr->pPage1 ) sqlite3_Pager_Unref_صفحہ_One(pCsr->pPage1);
   rc = sqlite3PagerGet(pCsr->pPager, 1, &pCsr->pPage1, 0);
-  return rc;
+  واپس rc;
 }
 
-static int dbpageColumn(
+ساکن صحیح dbpage_عمود(
   sqlite3_vtab_cursor *pCursor,
   sqlite3_context *ctx,
-  int i
+  صحیح i
 ){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
-  int rc = SQLITE_OK;
-  switch( i ){
-    case 0: {           /* pgno */
-      sqlite3_result_int64(ctx, (sqlite3_int64)pCsr->pgno);
-      break;
+  صحیح rc = SQLITE_OK;
+  انتخاب( i ){
+    حالت 0: {           /* pgno */
+      sqlite3_نتیجہ_int64(ctx, (sqlite3_int64)pCsr->pgno);
+      توڑو;
     }
-    case 1: {           /* data */
-      DbPage *pDbPage = 0;
-      if( pCsr->pgno==(Pgno)((PENDING_BYTE/pCsr->szPage)+1) ){
+    حالت 1: {           /*ڈیٹا*/
+      Db_صفحہ *p_Db_صفحہ = 0;
+      اگر( pCsr->pgno==(Pgno)((PENDING_BYTE/pCsr->sz_صفحہ)+1) ){
         /* The pending byte page. Assume it is zeroed out. Attempting to
         ** request this page from the page is an SQLITE_CORRUPT error. */
-        sqlite3_result_zeroblob(ctx, pCsr->szPage);
-      }else{
-        rc = sqlite3PagerGet(pCsr->pPager, pCsr->pgno, (DbPage**)&pDbPage, 0);
-        if( rc==SQLITE_OK ){
-          sqlite3_result_blob(ctx, sqlite3PagerGetData(pDbPage), pCsr->szPage,
+        sqlite3_نتیجہ_zeroblob(ctx, pCsr->sz_صفحہ);
+      }ورنہ{
+        rc = sqlite3PagerGet(pCsr->pPager, pCsr->pgno, (Db_صفحہ**)&p_Db_صفحہ, 0);
+        اگر( rc==SQLITE_OK ){
+          sqlite3_نتیجہ_blob(ctx, sqlite3_Pager_Get_ڈیٹا(p_Db_صفحہ), pCsr->sz_صفحہ,
               SQLITE_TRANSIENT);
         }
-        sqlite3PagerUnref(pDbPage);
+        sqlite3PagerUnref(p_Db_صفحہ);
       }
-      break;
+      توڑو;
     }
-    default: {          /* schema */
+    طےشدہ: {          /* schema */
       sqlite3 *db = sqlite3_context_db_handle(ctx);
-      sqlite3_result_text(ctx, db->aDb[pCsr->iDb].zDbSName, -1, SQLITE_STATIC);
-      break;
+      sqlite3_نتیجہ_متن(ctx, db->aDb[pCsr->iDb].zDbSName, -1, SQLITE_STATIC);
+      توڑو;
     }
   }
-  return rc;
+  واپس rc;
 }
 
-static int dbpageRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+ساکن صحیح dbpageRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
   *pRowid = pCsr->pgno;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* 
@@ -326,164 +326,164 @@ static int dbpageRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
 **
 ** Return SQLITE_OK if successful, or an SQLite error code otherwise.
 */
-static int dbpageBeginTrans(DbpageTable *pTab){
+ساکن صحیح dbpageBeginTrans(Dbpage_جدول *pTab){
   sqlite3 *db = pTab->db;
-  int rc = SQLITE_OK;
-  int i;
-  for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
+  صحیح rc = SQLITE_OK;
+  صحیح i;
+  برائے(i=0; rc==SQLITE_OK && i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt ) rc = sqlite3BtreeBeginTrans(pBt, 1, 0);
+    اگر( pBt ) rc = sqlite3BtreeBeginTrans(pBt, 1, 0);
   }
-  return rc;
+  واپس rc;
 }
 
-static int dbpageUpdate(
+ساکن صحیح dbpageUpdate(
   sqlite3_vtab *pVtab,
-  int argc,
-  sqlite3_value **argv,
+  صحیح argc,
+  sqlite3_قدر **argv,
   sqlite_int64 *pRowid
 ){
-  DbpageTable *pTab = (DbpageTable *)pVtab;
+  Dbpage_جدول *pTab = (Dbpage_جدول *)pVtab;
   Pgno pgno;
   sqlite3_int64 pgno64;
-  DbPage *pDbPage = 0;
-  int rc = SQLITE_OK;
-  char *zErr = 0;
-  int iDb;
+  Db_صفحہ *p_Db_صفحہ = 0;
+  صحیح rc = SQLITE_OK;
+  حرف *zErr = 0;
+  صحیح iDb;
   Btree *pBt;
   Pager *pPager;
-  int szPage;
-  int isInsert;
+  صحیح sz_صفحہ;
+  صحیح is_داخل_کرو;
 
-  (void)pRowid;
-  if( pTab->db->flags & SQLITE_Defensive ){
+  (خالی)pRowid;
+  اگر( pTab->db->flags & SQLITE_Defensive ){
     zErr = "read-only";
-    goto update_fail;
+    جاؤ update_fail;
   }
-  if( argc==1 ){
+  اگر( argc==1 ){
     zErr = "cannot delete";
-    goto update_fail;
+    جاؤ update_fail;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
-    pgno64 = sqlite3_value_int64(argv[2]);
-    isInsert = 1;
-  }else{
-    pgno64 = (Pgno)sqlite3_value_int64(argv[0]);
-    if( sqlite3_value_int64(argv[1])!=pgno64 ){
+  اگر( sqlite3_قدر_type(argv[0])==SQLITE_NULL ){
+    pgno64 = sqlite3_قدر_int64(argv[2]);
+    is_داخل_کرو = 1;
+  }ورنہ{
+    pgno64 = (Pgno)sqlite3_قدر_int64(argv[0]);
+    اگر( sqlite3_قدر_int64(argv[1])!=pgno64 ){
       zErr = "cannot insert";
-      goto update_fail;
+      جاؤ update_fail;
     }
-    isInsert = 0;
+    is_داخل_کرو = 0;
   }
-  if( sqlite3_value_type(argv[4])==SQLITE_NULL ){
+  اگر( sqlite3_قدر_type(argv[4])==SQLITE_NULL ){
     iDb = 0;
-  }else{
-    const char *zSchema = (const char*)sqlite3_value_text(argv[4]);
-    iDb = sqlite3FindDbName(pTab->db, zSchema);
-    if( iDb<0 ){
+  }ورنہ{
+    ثابت حرف *zSchema = (ثابت حرف*)sqlite3_قدر_متن(argv[4]);
+    iDb = sqlite3_ڈھونڈو_Db_Name(pTab->db, zSchema);
+    اگر( iDb<0 ){
       zErr = "no such schema";
-      goto update_fail;
+      جاؤ update_fail;
     }
   }
   pBt = pTab->db->aDb[iDb].pBt;
-  if( pgno64<1 || pgno64>4294967294U || NEVER(pBt==0) ){
+  اگر( pgno64<1 || pgno64>4294967294U || NEVER(pBt==0) ){
     zErr = "bad page number";
-    goto update_fail;
+    جاؤ update_fail;
   }
   pgno = (Pgno)pgno64;
-  szPage = sqlite3BtreeGetPageSize(pBt);
-  if( sqlite3_value_type(argv[3])!=SQLITE_BLOB 
-   || sqlite3_value_bytes(argv[3])!=szPage
+  sz_صفحہ = sqlite3_Btree_Get_صفحہ_سائز(pBt);
+  اگر( sqlite3_قدر_type(argv[3])!=SQLITE_BLOB 
+   || sqlite3_قدر_بائٹیں(argv[3])!=sz_صفحہ
   ){
-    if( sqlite3_value_type(argv[3])==SQLITE_NULL && isInsert && pgno>1 ){
+    اگر( sqlite3_قدر_type(argv[3])==SQLITE_NULL && is_داخل_کرو && pgno>1 ){
       /* "INSERT INTO dbpage($PGNO,NULL)" causes page number $PGNO and
       ** all subsequent pages to be deleted. */
       pTab->iDbTrunc = iDb;
       pTab->pgnoTrunc = pgno-1;
       pgno = 1;
-    }else{
+    }ورنہ{
       zErr = "bad page value";
-      goto update_fail;
+      جاؤ update_fail;
     }
   }
 
-  if( dbpageBeginTrans(pTab)!=SQLITE_OK ){
+  اگر( dbpageBeginTrans(pTab)!=SQLITE_OK ){
     zErr = "failed to open transaction";
-    goto update_fail;
+    جاؤ update_fail;
   }
 
   pPager = sqlite3BtreePager(pBt);
-  rc = sqlite3PagerGet(pPager, pgno, (DbPage**)&pDbPage, 0);
-  if( rc==SQLITE_OK ){
-    const void *pData = sqlite3_value_blob(argv[3]);
-    if( (rc = sqlite3PagerWrite(pDbPage))==SQLITE_OK && pData ){
-      unsigned char *aPage = sqlite3PagerGetData(pDbPage);
-      memcpy(aPage, pData, szPage);
+  rc = sqlite3PagerGet(pPager, pgno, (Db_صفحہ**)&p_Db_صفحہ, 0);
+  اگر( rc==SQLITE_OK ){
+    ثابت خالی *p_ڈیٹا = sqlite3_قدر_blob(argv[3]);
+    اگر( (rc = sqlite3PagerWrite(p_Db_صفحہ))==SQLITE_OK && p_ڈیٹا ){
+      غیرعلامتی حرف *a_صفحہ = sqlite3_Pager_Get_ڈیٹا(p_Db_صفحہ);
+      حافظہ_نقل(a_صفحہ, p_ڈیٹا, sz_صفحہ);
       pTab->pgnoTrunc = 0;
     }
   }
-  if( rc!=SQLITE_OK ){
+  اگر( rc!=SQLITE_OK ){
     pTab->pgnoTrunc = 0;
   }
-  sqlite3PagerUnref(pDbPage);
-  return rc;
+  sqlite3PagerUnref(p_Db_صفحہ);
+  واپس rc;
 
 update_fail:
   pTab->pgnoTrunc = 0;
-  sqlite3_free(pVtab->zErrMsg);
-  pVtab->zErrMsg = sqlite3_mprintf("%s", zErr);
-  return SQLITE_ERROR;
+  sqlite3_free(pVtab->z_Err_پیغام);
+  pVtab->z_Err_پیغام = sqlite3_mprintf("%s", zErr);
+  واپس SQLITE_ERROR;
 }
 
-static int dbpageBegin(sqlite3_vtab *pVtab){
-  DbpageTable *pTab = (DbpageTable *)pVtab;
+ساکن صحیح dbpageBegin(sqlite3_vtab *pVtab){
+  Dbpage_جدول *pTab = (Dbpage_جدول *)pVtab;
   pTab->pgnoTrunc = 0;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Invoke sqlite3PagerTruncate() as necessary, just prior to COMMIT
 */
-static int dbpageSync(sqlite3_vtab *pVtab){
-  DbpageTable *pTab = (DbpageTable *)pVtab;
-  if( pTab->pgnoTrunc>0 ){
+ساکن صحیح dbpageSync(sqlite3_vtab *pVtab){
+  Dbpage_جدول *pTab = (Dbpage_جدول *)pVtab;
+  اگر( pTab->pgnoTrunc>0 ){
     Btree *pBt = pTab->db->aDb[pTab->iDbTrunc].pBt;
     Pager *pPager = sqlite3BtreePager(pBt);
     sqlite3BtreeEnter(pBt);
-    if( pTab->pgnoTrunc<sqlite3BtreeLastPage(pBt) ){
+    اگر( pTab->pgnoTrunc<sqlite3_Btree_آخری_صفحہ(pBt) ){
       sqlite3PagerTruncateImage(pPager, pTab->pgnoTrunc);
     }
     sqlite3BtreeLeave(pBt);
   }
   pTab->pgnoTrunc = 0;
-  return SQLITE_OK;
+  واپس SQLITE_OK;
 }
 
 /* Cancel any pending truncate.
 */
-static int dbpageRollbackTo(sqlite3_vtab *pVtab, int notUsed1){
-  DbpageTable *pTab = (DbpageTable *)pVtab;
+ساکن صحیح dbpage_Rollback_مقصد(sqlite3_vtab *pVtab, صحیح notUsed1){
+  Dbpage_جدول *pTab = (Dbpage_جدول *)pVtab;
   pTab->pgnoTrunc = 0;
-  (void)notUsed1;
-  return SQLITE_OK;
+  (خالی)notUsed1;
+  واپس SQLITE_OK;
 }
 
 /*
 ** Invoke this routine to register the "dbpage" virtual table module
 */
-int sqlite3DbpageRegister(sqlite3 *db){
-  static sqlite3_module dbpage_module = {
+صحیح sqlite3_Dbpage_رجسٹر(sqlite3 *db){
+  ساکن sqlite3_module dbpage_module = {
     2,                            /* iVersion */
     dbpageConnect,                /* xCreate */
     dbpageConnect,                /* xConnect */
-    dbpageBestIndex,              /* xBestIndex */
+    dbpage_بہترین_اشاریہ,              /* xBestIndex */
     dbpageDisconnect,             /* xDisconnect */
     dbpageDisconnect,             /* xDestroy */
     dbpageOpen,                   /* xOpen - open a cursor */
     dbpageClose,                  /* xClose - close a cursor */
     dbpageFilter,                 /* xFilter - configure scan constraints */
-    dbpageNext,                   /* xNext - advance a cursor */
+    dbpage_اگلا,                   /* xNext - advance a cursor */
     dbpageEof,                    /* xEof - check for end of scan */
-    dbpageColumn,                 /* xColumn - read data */
+    dbpage_عمود,                 /* xColumn - read data */
     dbpageRowid,                  /* xRowid - read data */
     dbpageUpdate,                 /* xUpdate */
     dbpageBegin,                  /* xBegin */
@@ -494,12 +494,12 @@ int sqlite3DbpageRegister(sqlite3 *db){
     0,                            /* xRename */
     0,                            /* xSavepoint */
     0,                            /* xRelease */
-    dbpageRollbackTo,             /* xRollbackTo */
+    dbpage_Rollback_مقصد,             /* xRollbackTo */
     0,                            /* xShadowName */
     0                             /* xIntegrity */
   };
-  return sqlite3_create_module(db, "sqlite_dbpage", &dbpage_module, 0);
+  واپس sqlite3_create_module(db, "sqlite_dbpage", &dbpage_module, 0);
 }
-#elif defined(SQLITE_ENABLE_DBPAGE_VTAB)
-int sqlite3DbpageRegister(sqlite3 *db){ return SQLITE_OK; }
-#endif /* SQLITE_ENABLE_DBSTAT_VTAB */
+#وگرنہ_اگر defined(SQLITE_ENABLE_DBPAGE_VTAB)
+صحیح sqlite3_Dbpage_رجسٹر(sqlite3 *db){ واپس SQLITE_OK; }
+#اگر_ختم /* SQLITE_ENABLE_DBSTAT_VTAB */

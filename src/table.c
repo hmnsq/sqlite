@@ -16,91 +16,91 @@
 ** These routines are in a separate files so that they will not be linked
 ** if they are not used.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_GET_TABLE
+#اگر_غیر_تعریف_شدہ SQLITE_OMIT_GET_جدول
 
 /*
 ** This structure is used to pass data from sqlite3_get_table() through
 ** to the callback function is uses to build the result.
 */
-typedef struct TabResult {
-  char **azResult;   /* Accumulated output */
-  char *zErrMsg;     /* Error message text, if an error occurs */
+قسمتعریف ساخت Tab_نتیجہ {
+  حرف **az_نتیجہ;   /* Accumulated output */
+  حرف *z_Err_پیغام;     /* Error message text, if an error occurs */
   u32 nAlloc;        /* Slots allocated for azResult[] */
-  u32 nRow;          /* Number of rows in the result */
-  u32 nColumn;       /* Number of columns in the result */
-  u32 nData;         /* Slots used in azResult[].  (nRow+1)*nColumn */
-  int rc;            /* Return code from sqlite3_exec() */
-} TabResult;
+  u32 n_صف;          /* Number of rows in the result */
+  u32 n_عمود;       /* Number of columns in the result */
+  u32 n_ڈیٹا;         /* Slots used in azResult[].  (nRow+1)*nColumn */
+  صحیح rc;            /* Return code from sqlite3_exec() */
+} Tab_نتیجہ;
 
 /*
 ** This routine is called once for each row in the result table.  Its job
 ** is to fill in the TabResult structure appropriately, allocating new
 ** memory as necessary.
 */
-static int sqlite3_get_table_cb(void *pArg, int nCol, char **argv, char **colv){
-  TabResult *p = (TabResult*)pArg;  /* Result accumulator */
-  int need;                         /* Slots needed in p->azResult[] */
-  int i;                            /* Loop counter */
-  char *z;                          /* A single column of result */
+ساکن صحیح sqlite3_get_جدول_cb(خالی *pArg, صحیح n_ستون, حرف **argv, حرف **colv){
+  Tab_نتیجہ *p = (Tab_نتیجہ*)pArg;  /* Result accumulator */
+  صحیح need;                         /* Slots needed in p->azResult[] */
+  صحیح i;                            /* Loop counter */
+  حرف *z;                          /* A single column of result */
 
   /* Make sure there is enough space in p->azResult to hold everything
   ** we need to remember from this invocation of the callback.
   */
-  if( p->nRow==0 && argv!=0 ){
-    need = nCol*2;
-  }else{
-    need = nCol;
+  اگر( p->n_صف==0 && argv!=0 ){
+    need = n_ستون*2;
+  }ورنہ{
+    need = n_ستون;
   }
-  if( p->nData + need > p->nAlloc ){
-    char **azNew;
+  اگر( p->n_ڈیٹا + need > p->nAlloc ){
+    حرف **azNew;
     p->nAlloc = p->nAlloc*2 + need;
-    azNew = sqlite3Realloc( p->azResult, sizeof(char*)*p->nAlloc );
-    if( azNew==0 ) goto malloc_failed;
-    p->azResult = azNew;
+    azNew = sqlite3Realloc( p->az_نتیجہ, حجم(حرف*)*p->nAlloc );
+    اگر( azNew==0 ) جاؤ malloc_failed;
+    p->az_نتیجہ = azNew;
   }
 
   /* If this is the first row, then generate an extra row containing
   ** the names of all columns.
   */
-  if( p->nRow==0 ){
-    p->nColumn = nCol;
-    for(i=0; i<nCol; i++){
+  اگر( p->n_صف==0 ){
+    p->n_عمود = n_ستون;
+    برائے(i=0; i<n_ستون; i++){
       z = sqlite3_mprintf("%s", colv[i]);
-      if( z==0 ) goto malloc_failed;
-      p->azResult[p->nData++] = z;
+      اگر( z==0 ) جاؤ malloc_failed;
+      p->az_نتیجہ[p->n_ڈیٹا++] = z;
     }
-  }else if( (int)p->nColumn!=nCol ){
-    sqlite3_free(p->zErrMsg);
-    p->zErrMsg = sqlite3_mprintf(
+  }ورنہ اگر( (صحیح)p->n_عمود!=n_ستون ){
+    sqlite3_free(p->z_Err_پیغام);
+    p->z_Err_پیغام = sqlite3_mprintf(
        "sqlite3_get_table() called with two or more incompatible queries"
     );
     p->rc = SQLITE_ERROR;
-    return 1;
+    واپس 1;
   }
 
   /* Copy over the row data
   */
-  if( argv!=0 ){
-    for(i=0; i<nCol; i++){
-      if( argv[i]==0 ){
+  اگر( argv!=0 ){
+    برائے(i=0; i<n_ستون; i++){
+      اگر( argv[i]==0 ){
         z = 0;
-      }else{
-        int n = sqlite3Strlen30(argv[i])+1;
+      }ورنہ{
+        صحیح n = sqlite3Strlen30(argv[i])+1;
         z = sqlite3_malloc64( n );
-        if( z==0 ) goto malloc_failed;
-        memcpy(z, argv[i], n);
+        اگر( z==0 ) جاؤ malloc_failed;
+        حافظہ_نقل(z, argv[i], n);
       }
-      p->azResult[p->nData++] = z;
+      p->az_نتیجہ[p->n_ڈیٹا++] = z;
     }
-    p->nRow++;
+    p->n_صف++;
   }
-  return 0;
+  واپس 0;
 
 malloc_failed:
   p->rc = SQLITE_NOMEM_BKPT;
-  return 1;
+  واپس 1;
 }
 
 /*
@@ -113,86 +113,86 @@ malloc_failed:
 ** Instead, the entire table should be passed to sqlite3_free_table() when
 ** the calling procedure is finished using it.
 */
-int sqlite3_get_table(
+صحیح sqlite3_get_جدول(
   sqlite3 *db,                /* The database on which the SQL executes */
-  const char *zSql,           /* The SQL to be executed */
-  char ***pazResult,          /* Write the result table here */
-  int *pnRow,                 /* Write the number of rows in the result here */
-  int *pnColumn,              /* Write the number of columns of result here */
-  char **pzErrMsg             /* Write error messages here */
+  ثابت حرف *zSql,           /* The SQL to be executed */
+  حرف ***paz_نتیجہ,          /* Write the result table here */
+  صحیح *pn_صف,                 /* Write the number of rows in the result here */
+  صحیح *pn_عمود,              /* Write the number of columns of result here */
+  حرف **pz_Err_پیغام             /* Write error messages here */
 ){
-  int rc;
-  TabResult res;
+  صحیح rc;
+  Tab_نتیجہ res;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pazResult==0 ) return SQLITE_MISUSE_BKPT;
-#endif
-  *pazResult = 0;
-  if( pnColumn ) *pnColumn = 0;
-  if( pnRow ) *pnRow = 0;
-  if( pzErrMsg ) *pzErrMsg = 0;
-  res.zErrMsg = 0;
-  res.nRow = 0;
-  res.nColumn = 0;
-  res.nData = 1;
+#اگر_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  اگر( !sqlite3SafetyCheckOk(db) || paz_نتیجہ==0 ) واپس SQLITE_MISUSE_BKPT;
+#اگر_ختم
+  *paz_نتیجہ = 0;
+  اگر( pn_عمود ) *pn_عمود = 0;
+  اگر( pn_صف ) *pn_صف = 0;
+  اگر( pz_Err_پیغام ) *pz_Err_پیغام = 0;
+  res.z_Err_پیغام = 0;
+  res.n_صف = 0;
+  res.n_عمود = 0;
+  res.n_ڈیٹا = 1;
   res.nAlloc = 20;
   res.rc = SQLITE_OK;
-  res.azResult = sqlite3_malloc64(sizeof(char*)*res.nAlloc );
-  if( res.azResult==0 ){
-     db->errCode = SQLITE_NOMEM;
-     return SQLITE_NOMEM_BKPT;
+  res.az_نتیجہ = sqlite3_malloc64(حجم(حرف*)*res.nAlloc );
+  اگر( res.az_نتیجہ==0 ){
+     db->err_رمز = SQLITE_NOMEM;
+     واپس SQLITE_NOMEM_BKPT;
   }
-  res.azResult[0] = 0;
-  rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pzErrMsg);
-  assert( sizeof(res.azResult[0])>= sizeof(res.nData) );
-  res.azResult[0] = SQLITE_INT_TO_PTR(res.nData);
-  if( (rc&0xff)==SQLITE_ABORT ){
-    sqlite3_free_table(&res.azResult[1]);
-    if( res.zErrMsg ){
-      if( pzErrMsg ){
-        sqlite3_free(*pzErrMsg);
-        *pzErrMsg = sqlite3_mprintf("%s",res.zErrMsg);
+  res.az_نتیجہ[0] = 0;
+  rc = sqlite3_exec(db, zSql, sqlite3_get_جدول_cb, &res, pz_Err_پیغام);
+  أكد( حجم(res.az_نتیجہ[0])>= حجم(res.n_ڈیٹا) );
+  res.az_نتیجہ[0] = SQLITE_INT_مقصد_PTR(res.n_ڈیٹا);
+  اگر( (rc&0xff)==SQLITE_ABORT ){
+    sqlite3_free_جدول(&res.az_نتیجہ[1]);
+    اگر( res.z_Err_پیغام ){
+      اگر( pz_Err_پیغام ){
+        sqlite3_free(*pz_Err_پیغام);
+        *pz_Err_پیغام = sqlite3_mprintf("%s",res.z_Err_پیغام);
       }
-      sqlite3_free(res.zErrMsg);
+      sqlite3_free(res.z_Err_پیغام);
     }
-    db->errCode = res.rc;  /* Assume 32-bit assignment is atomic */
-    return res.rc;
+    db->err_رمز = res.rc;  /* Assume 32-bit assignment is atomic */
+    واپس res.rc;
   }
-  sqlite3_free(res.zErrMsg);
-  if( rc!=SQLITE_OK ){
-    sqlite3_free_table(&res.azResult[1]);
-    return rc;
+  sqlite3_free(res.z_Err_پیغام);
+  اگر( rc!=SQLITE_OK ){
+    sqlite3_free_جدول(&res.az_نتیجہ[1]);
+    واپس rc;
   }
-  if( res.nAlloc>res.nData ){
-    char **azNew;
-    azNew = sqlite3Realloc( res.azResult, sizeof(char*)*res.nData );
-    if( azNew==0 ){
-      sqlite3_free_table(&res.azResult[1]);
-      db->errCode = SQLITE_NOMEM;
-      return SQLITE_NOMEM_BKPT;
+  اگر( res.nAlloc>res.n_ڈیٹا ){
+    حرف **azNew;
+    azNew = sqlite3Realloc( res.az_نتیجہ, حجم(حرف*)*res.n_ڈیٹا );
+    اگر( azNew==0 ){
+      sqlite3_free_جدول(&res.az_نتیجہ[1]);
+      db->err_رمز = SQLITE_NOMEM;
+      واپس SQLITE_NOMEM_BKPT;
     }
-    res.azResult = azNew;
+    res.az_نتیجہ = azNew;
   }
-  *pazResult = &res.azResult[1];
-  if( pnColumn ) *pnColumn = res.nColumn;
-  if( pnRow ) *pnRow = res.nRow;
-  return rc;
+  *paz_نتیجہ = &res.az_نتیجہ[1];
+  اگر( pn_عمود ) *pn_عمود = res.n_عمود;
+  اگر( pn_صف ) *pn_صف = res.n_صف;
+  واپس rc;
 }
 
 /*
 ** This routine frees the space the sqlite3_get_table() malloced.
 */
-void sqlite3_free_table(
-  char **azResult            /* Result returned from sqlite3_get_table() */
+خالی sqlite3_free_جدول(
+  حرف **az_نتیجہ            /* Result returned from sqlite3_get_table() */
 ){
-  if( azResult ){
-    int i, n;
-    azResult--;
-    assert( azResult!=0 );
-    n = SQLITE_PTR_TO_INT(azResult[0]);
-    for(i=1; i<n; i++){ if( azResult[i] ) sqlite3_free(azResult[i]); }
-    sqlite3_free(azResult);
+  اگر( az_نتیجہ ){
+    صحیح i, n;
+    az_نتیجہ--;
+    أكد( az_نتیجہ!=0 );
+    n = SQLITE_PTR_مقصد_INT(az_نتیجہ[0]);
+    برائے(i=1; i<n; i++){ اگر( az_نتیجہ[i] ) sqlite3_free(az_نتیجہ[i]); }
+    sqlite3_free(az_نتیجہ);
   }
 }
 
-#endif /* SQLITE_OMIT_GET_TABLE */
+#اگر_ختم /* SQLITE_OMIT_GET_TABLE */
