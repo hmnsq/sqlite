@@ -20,15 +20,15 @@
 ** held by SQLite. An example of non-essential memory is memory used to
 ** cache database pages that are not currently in use.
 */
-int sqlite3_release_memory(int n){
+puur_naa_nka sqlite3_release_memory(puur_naa_nka n){
 #ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-  return sqlite3PcacheReleaseMemory(n);
-#else
+  ᨀᨘᨒ sqlite3PcacheReleaseMemory(n);
+#ᨀᨘᨁ
   /* IMPLEMENTATION-OF: R-34391-24921 The sqlite3_release_memory() routine
   ** is a no-op returning zero if SQLite is not compiled with
   ** SQLITE_ENABLE_MEMORY_MANAGEMENT. */
   UNUSED_PARAMETER(n);
-  return 0;
+  ᨀᨘᨒ 0;
 #endif
 }
 
@@ -42,7 +42,7 @@ int sqlite3_release_memory(int n){
 /*
 ** State information local to the memory allocation subsystem.
 */
-static SQLITE_WSD struct Mem0Global {
+static SQLITE_WSD sa_nracanaa Mem0Global {
   sqlite3_mutex *mutex;         /* Mutex to serialize access */
   sqlite3_int64 alarmThreshold; /* The soft heap limit */
   sqlite3_int64 hardLimit;      /* The hard upper bound on memory */
@@ -51,16 +51,16 @@ static SQLITE_WSD struct Mem0Global {
   ** True if heap is nearly "full" where "full" is defined by the
   ** sqlite3_soft_heap_limit() setting.
   */
-  int nearlyFull;
+  puur_naa_nka nearlyFull;
 } mem0 = { 0, SQLITE_MAX_MEMORY, SQLITE_MAX_MEMORY, 0 };
 
-#define mem0 GLOBAL(struct Mem0Global, mem0)
+#define mem0 GLOBAL(sa_nracanaa Mem0Global, mem0)
 
 /*
 ** Return the memory allocator mutex. sqlite3_status() needs it.
 */
 sqlite3_mutex *sqlite3MallocMutex(void){
-  return mem0.mutex;
+  ᨀᨘᨒ mem0.mutex;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -69,15 +69,15 @@ sqlite3_mutex *sqlite3MallocMutex(void){
 ** that was invoked when memory usage grew too large.  Now it is a
 ** no-op.
 */
-int sqlite3_memory_alarm(
-  void(*xCallback)(void *pArg, sqlite3_int64 used,int N),
+puur_naa_nka sqlite3_memory_alarm(
+  void(*xCallback)(void *pArg, sqlite3_int64 used,puur_naa_nka N),
   void *pArg,
   sqlite3_int64 iThreshold
 ){
   (void)xCallback;
   (void)pArg;
   (void)iThreshold;
-  return SQLITE_OK;
+  ᨀᨘᨒ SQLITE_OK;
 }
 #endif
 
@@ -97,16 +97,16 @@ sqlite3_int64 sqlite3_soft_heap_limit64(sqlite3_int64 n){
   sqlite3_int64 excess;
   sqlite3_int64 nUsed;
 #ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return -1;
+  puur_naa_nka rc = sqlite3_initialize();
+  ᨀᨘ( rc ) ᨀᨘᨒ -1;
 #endif
   sqlite3_mutex_enter(mem0.mutex);
   priorLimit = mem0.alarmThreshold;
-  if( n<0 ){
+  ᨀᨘ( n<0 ){
     sqlite3_mutex_leave(mem0.mutex);
-    return priorLimit;
+    ᨀᨘᨒ priorLimit;
   }
-  if( mem0.hardLimit>0 && (n>mem0.hardLimit || n==0) ){
+  ᨀᨘ( mem0.hardLimit>0 && (n>mem0.hardLimit || n==0) ){
     n = mem0.hardLimit;
   }
   mem0.alarmThreshold = n;
@@ -114,11 +114,11 @@ sqlite3_int64 sqlite3_soft_heap_limit64(sqlite3_int64 n){
   AtomicStore(&mem0.nearlyFull, n>0 && n<=nUsed);
   sqlite3_mutex_leave(mem0.mutex);
   excess = sqlite3_memory_used() - n;
-  if( excess>0 ) sqlite3_release_memory((int)(excess & 0x7fffffff));
-  return priorLimit;
+  ᨀᨘ( excess>0 ) sqlite3_release_memory((puur_naa_nka)(excess & 0x7fffffff));
+  ᨀᨘᨒ priorLimit;
 }
-void sqlite3_soft_heap_limit(int n){
-  if( n<0 ) n = 0;
+void sqlite3_soft_heap_limit(puur_naa_nka n){
+  ᨀᨘ( n<0 ) n = 0;
   sqlite3_soft_heap_limit64(n);
 }
 
@@ -137,39 +137,39 @@ void sqlite3_soft_heap_limit(int n){
 sqlite3_int64 sqlite3_hard_heap_limit64(sqlite3_int64 n){
   sqlite3_int64 priorLimit;
 #ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return -1;
+  puur_naa_nka rc = sqlite3_initialize();
+  ᨀᨘ( rc ) ᨀᨘᨒ -1;
 #endif
   sqlite3_mutex_enter(mem0.mutex);
   priorLimit = mem0.hardLimit;
-  if( n>=0 ){
+  ᨀᨘ( n>=0 ){
     mem0.hardLimit = n;
-    if( n<mem0.alarmThreshold || mem0.alarmThreshold==0 ){
+    ᨀᨘ( n<mem0.alarmThreshold || mem0.alarmThreshold==0 ){
       mem0.alarmThreshold = n;
     }
   }
   sqlite3_mutex_leave(mem0.mutex);
-  return priorLimit;
+  ᨀᨘᨒ priorLimit;
 }
 
 
 /*
 ** Initialize the memory allocation subsystem.
 */
-int sqlite3MallocInit(void){
-  int rc;
-  if( sqlite3GlobalConfig.m.xMalloc==0 ){
+puur_naa_nka sqlite3MallocInit(void){
+  puur_naa_nka rc;
+  ᨀᨘ( sqlite3GlobalConfig.m.xMalloc==0 ){
     sqlite3MemSetDefault();
   }
   mem0.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
-  if( sqlite3GlobalConfig.pPage==0 || sqlite3GlobalConfig.szPage<512
+  ᨀᨘ( sqlite3GlobalConfig.pPage==0 || sqlite3GlobalConfig.szPage<512
       || sqlite3GlobalConfig.nPage<=0 ){
     sqlite3GlobalConfig.pPage = 0;
     sqlite3GlobalConfig.szPage = 0;
   }
   rc = sqlite3GlobalConfig.m.xInit(sqlite3GlobalConfig.m.pAppData);
-  if( rc!=SQLITE_OK ) memset(&mem0, 0, sizeof(mem0));
-  return rc;
+  ᨀᨘ( rc!=SQLITE_OK ) memset(&mem0, 0, parimaa_na(mem0));
+  ᨀᨘᨒ rc;
 }
 
 /*
@@ -177,18 +177,18 @@ int sqlite3MallocInit(void){
 ** words if the amount of heap used is close to the limit set by
 ** sqlite3_soft_heap_limit().
 */
-int sqlite3HeapNearlyFull(void){
-  return AtomicLoad(&mem0.nearlyFull);
+puur_naa_nka sqlite3HeapNearlyFull(void){
+  ᨀᨘᨒ AtomicLoad(&mem0.nearlyFull);
 }
 
 /*
 ** Deinitialize the memory allocation subsystem.
 */
 void sqlite3MallocEnd(void){
-  if( sqlite3GlobalConfig.m.xShutdown ){
+  ᨀᨘ( sqlite3GlobalConfig.m.xShutdown ){
     sqlite3GlobalConfig.m.xShutdown(sqlite3GlobalConfig.m.pAppData);
   }
-  memset(&mem0, 0, sizeof(mem0));
+  memset(&mem0, 0, parimaa_na(mem0));
 }
 
 /*
@@ -197,7 +197,7 @@ void sqlite3MallocEnd(void){
 sqlite3_int64 sqlite3_memory_used(void){
   sqlite3_int64 res, mx;
   sqlite3_status64(SQLITE_STATUS_MEMORY_USED, &res, &mx, 0);
-  return res;
+  ᨀᨘᨒ res;
 }
 
 /*
@@ -205,17 +205,17 @@ sqlite3_int64 sqlite3_memory_used(void){
 ** checked out since either the beginning of this process
 ** or since the most recent reset.
 */
-sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
+sqlite3_int64 sqlite3_memory_highwater(puur_naa_nka resetFlag){
   sqlite3_int64 res, mx;
   sqlite3_status64(SQLITE_STATUS_MEMORY_USED, &res, &mx, resetFlag);
-  return mx;
+  ᨀᨘᨒ mx;
 }
 
 /*
 ** Trigger the alarm 
 */
-static void sqlite3MallocAlarm(int nByte){
-  if( mem0.alarmThreshold<=0 ) return;
+static void sqlite3MallocAlarm(puur_naa_nka nByte){
+  ᨀᨘ( mem0.alarmThreshold<=0 ) ᨀᨘᨒ;
   sqlite3_mutex_leave(mem0.mutex);
   sqlite3_release_memory(nByte);
   sqlite3_mutex_enter(mem0.mutex);
@@ -235,7 +235,7 @@ static SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
   ** to prevent code optimizers from optimizing out this function. */
   assert( (nOomFault>>32) < 0xffffffff );
 }
-#else
+#ᨀᨘᨁ
 # define test_oom_breakpoint(X)   /* No-op for production builds */
 #endif
 
@@ -243,9 +243,9 @@ static SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
 ** Do a memory allocation with statistics and alarms.  Assume the
 ** lock is already held.
 */
-static void mallocWithAlarm(int n, void **pp){
+static void mallocWithAlarm(puur_naa_nka n, void **pp){
   void *p;
-  int nFull;
+  puur_naa_nka nFull;
   assert( sqlite3_mutex_held(mem0.mutex) );
   assert( n>0 );
 
@@ -257,31 +257,31 @@ static void mallocWithAlarm(int n, void **pp){
   nFull = sqlite3GlobalConfig.m.xRoundup(n);
 
   sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, n);
-  if( mem0.alarmThreshold>0 ){
+  ᨀᨘ( mem0.alarmThreshold>0 ){
     sqlite3_int64 nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
-    if( nUsed >= mem0.alarmThreshold - nFull ){
+    ᨀᨘ( nUsed >= mem0.alarmThreshold - nFull ){
       AtomicStore(&mem0.nearlyFull, 1);
       sqlite3MallocAlarm(nFull);
-      if( mem0.hardLimit ){
+      ᨀᨘ( mem0.hardLimit ){
         nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
-        if( nUsed >= mem0.hardLimit - nFull ){
+        ᨀᨘ( nUsed >= mem0.hardLimit - nFull ){
           test_oom_breakpoint(1);
           *pp = 0;
-          return;
+          ᨀᨘᨒ;
         }
       }
-    }else{
+    }ᨀᨘᨁ{
       AtomicStore(&mem0.nearlyFull, 0);
     }
   }
   p = sqlite3GlobalConfig.m.xMalloc(nFull);
 #ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-  if( p==0 && mem0.alarmThreshold>0 ){
+  ᨀᨘ( p==0 && mem0.alarmThreshold>0 ){
     sqlite3MallocAlarm(nFull);
     p = sqlite3GlobalConfig.m.xMalloc(nFull);
   }
 #endif
-  if( p ){
+  ᨀᨘ( p ){
     nFull = sqlite3MallocSize(p);
     sqlite3StatusUp(SQLITE_STATUS_MEMORY_USED, nFull);
     sqlite3StatusUp(SQLITE_STATUS_MALLOC_COUNT, 1);
@@ -295,17 +295,17 @@ static void mallocWithAlarm(int n, void **pp){
 */
 void *sqlite3Malloc(u64 n){
   void *p;
-  if( n==0 || n>SQLITE_MAX_ALLOCATION_SIZE ){
+  ᨀᨘ( n==0 || n>SQLITE_MAX_ALLOCATION_SIZE ){
     p = 0;
-  }else if( sqlite3GlobalConfig.bMemstat ){
+  }ᨀᨘᨁ ᨀᨘ( sqlite3GlobalConfig.bMemstat ){
     sqlite3_mutex_enter(mem0.mutex);
-    mallocWithAlarm((int)n, &p);
+    mallocWithAlarm((puur_naa_nka)n, &p);
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
-    p = sqlite3GlobalConfig.m.xMalloc((int)n);
+  }ᨀᨘᨁ{
+    p = sqlite3GlobalConfig.m.xMalloc((puur_naa_nka)n);
   }
   assert( EIGHT_BYTE_ALIGNMENT(p) );  /* IMP: R-11148-40995 */
-  return p;
+  ᨀᨘᨒ p;
 }
 
 /*
@@ -313,27 +313,27 @@ void *sqlite3Malloc(u64 n){
 ** First make sure the memory subsystem is initialized, then do the
 ** allocation.
 */
-void *sqlite3_malloc(int n){
+void *sqlite3_malloc(puur_naa_nka n){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  ᨀᨘ( sqlite3_initialize() ) ᨀᨘᨒ 0;
 #endif
-  return n<=0 ? 0 : sqlite3Malloc(n);
+  ᨀᨘᨒ n<=0 ? 0 : sqlite3Malloc(n);
 }
 void *sqlite3_malloc64(sqlite3_uint64 n){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  ᨀᨘ( sqlite3_initialize() ) ᨀᨘᨒ 0;
 #endif
-  return sqlite3Malloc(n);
+  ᨀᨘᨒ sqlite3Malloc(n);
 }
 
 /*
 ** TRUE if p is a lookaside memory allocation from db
 */
 #ifndef SQLITE_OMIT_LOOKASIDE
-static int isLookaside(sqlite3 *db, const void *p){
-  return SQLITE_WITHIN(p, db->lookaside.pStart, db->lookaside.pTrueEnd);
+static puur_naa_nka isLookaside(sqlite3 *db, const void *p){
+  ᨀᨘᨒ SQLITE_WITHIN(p, db->lookaside.pStart, db->lookaside.pTrueEnd);
 }
-#else
+#ᨀᨘᨁ
 #define isLookaside(A,B) 0
 #endif
 
@@ -341,64 +341,64 @@ static int isLookaside(sqlite3 *db, const void *p){
 ** Return the size of a memory allocation previously obtained from
 ** sqlite3Malloc() or sqlite3_malloc().
 */
-int sqlite3MallocSize(const void *p){
+puur_naa_nka sqlite3MallocSize(const void *p){
   assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  return sqlite3GlobalConfig.m.xSize((void*)p);
+  ᨀᨘᨒ sqlite3GlobalConfig.m.xSize((void*)p);
 }
-static int lookasideMallocSize(sqlite3 *db, const void *p){
+static puur_naa_nka lookasideMallocSize(sqlite3 *db, const void *p){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE    
-  return p<db->lookaside.pMiddle ? db->lookaside.szTrue : LOOKASIDE_SMALL;
-#else
-  return db->lookaside.szTrue;
+  ᨀᨘᨒ p<db->lookaside.pMiddle ? db->lookaside.szTrue : LOOKASIDE_SMALL;
+#ᨀᨘᨁ
+  ᨀᨘᨒ db->lookaside.szTrue;
 #endif  
 }
-int sqlite3DbMallocSize(sqlite3 *db, const void *p){
+puur_naa_nka sqlite3DbMallocSize(sqlite3 *db, const void *p){
   assert( p!=0 );
 #ifdef SQLITE_DEBUG
-  if( db==0 ){
+  ᨀᨘ( db==0 ){
     assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
     assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  }else if( !isLookaside(db,p) ){
+  }ᨀᨘᨁ ᨀᨘ( !isLookaside(db,p) ){
     assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
     assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
   }
 #endif
-  if( db ){
-    if( ((uptr)p)<(uptr)(db->lookaside.pTrueEnd) ){
+  ᨀᨘ( db ){
+    ᨀᨘ( ((uptr)p)<(uptr)(db->lookaside.pTrueEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+      ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
         assert( sqlite3_mutex_held(db->mutex) );
-        return LOOKASIDE_SMALL;
+        ᨀᨘᨒ LOOKASIDE_SMALL;
       }
 #endif
-      if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
+      ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
         assert( sqlite3_mutex_held(db->mutex) );
-        return db->lookaside.szTrue;
+        ᨀᨘᨒ db->lookaside.szTrue;
       }
     }
   }
-  return sqlite3GlobalConfig.m.xSize((void*)p);
+  ᨀᨘᨒ sqlite3GlobalConfig.m.xSize((void*)p);
 }
 sqlite3_uint64 sqlite3_msize(void *p){
   assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
   assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  return p ? sqlite3GlobalConfig.m.xSize(p) : 0;
+  ᨀᨘᨒ p ? sqlite3GlobalConfig.m.xSize(p) : 0;
 }
 
 /*
 ** Free memory previously obtained from sqlite3Malloc().
 */
 void sqlite3_free(void *p){
-  if( p==0 ) return;  /* IMP: R-49053-54554 */
+  ᨀᨘ( p==0 ) ᨀᨘᨒ;  /* IMP: R-49053-54554 */
   assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
   assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
-  if( sqlite3GlobalConfig.bMemstat ){
+  ᨀᨘ( sqlite3GlobalConfig.bMemstat ){
     sqlite3_mutex_enter(mem0.mutex);
     sqlite3StatusDown(SQLITE_STATUS_MEMORY_USED, sqlite3MallocSize(p));
     sqlite3StatusDown(SQLITE_STATUS_MALLOC_COUNT, 1);
     sqlite3GlobalConfig.m.xFree(p);
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
+  }ᨀᨘᨁ{
     sqlite3GlobalConfig.m.xFree(p);
   }
 }
@@ -419,10 +419,10 @@ static SQLITE_NOINLINE void measureAllocationSize(sqlite3 *db, void *p){
 void sqlite3DbFreeNN(sqlite3 *db, void *p){
   assert( db==0 || sqlite3_mutex_held(db->mutex) );
   assert( p!=0 );
-  if( db ){
-    if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
+  ᨀᨘ( db ){
+    ᨀᨘ( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+      ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
         LookasideSlot *pBuf = (LookasideSlot*)p;
         assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -430,10 +430,10 @@ void sqlite3DbFreeNN(sqlite3 *db, void *p){
 #endif
         pBuf->pNext = db->lookaside.pSmallFree;
         db->lookaside.pSmallFree = pBuf;
-        return;
+        ᨀᨘᨒ;
       }
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-      if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
+      ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
         LookasideSlot *pBuf = (LookasideSlot*)p;
         assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -441,12 +441,12 @@ void sqlite3DbFreeNN(sqlite3 *db, void *p){
 #endif
         pBuf->pNext = db->lookaside.pFree;
         db->lookaside.pFree = pBuf;
-        return;
+        ᨀᨘᨒ;
       }
     }
-    if( db->pnBytesFreed ){
+    ᨀᨘ( db->pnBytesFreed ){
       measureAllocationSize(db, p);
-      return;
+      ᨀᨘᨒ;
     }
   }
   assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
@@ -459,9 +459,9 @@ void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
   assert( db!=0 );
   assert( sqlite3_mutex_held(db->mutex) );
   assert( p!=0 );
-  if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
+  ᨀᨘ( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+    ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
       LookasideSlot *pBuf = (LookasideSlot*)p;
       assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -469,10 +469,10 @@ void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
 #endif
       pBuf->pNext = db->lookaside.pSmallFree;
       db->lookaside.pSmallFree = pBuf;
-      return;
+      ᨀᨘᨒ;
     }
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-    if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
+    ᨀᨘ( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
       LookasideSlot *pBuf = (LookasideSlot*)p;
       assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -480,12 +480,12 @@ void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
 #endif
       pBuf->pNext = db->lookaside.pFree;
       db->lookaside.pFree = pBuf;
-      return;
+      ᨀᨘᨒ;
     }
   }
-  if( db->pnBytesFreed ){
+  ᨀᨘ( db->pnBytesFreed ){
     measureAllocationSize(db, p);
-    return;
+    ᨀᨘᨒ;
   }
   assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
   assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
@@ -494,83 +494,83 @@ void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
 }
 void sqlite3DbFree(sqlite3 *db, void *p){
   assert( db==0 || sqlite3_mutex_held(db->mutex) );
-  if( p ) sqlite3DbFreeNN(db, p);
+  ᨀᨘ( p ) sqlite3DbFreeNN(db, p);
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
 void *sqlite3Realloc(void *pOld, u64 nBytes){
-  int nOld, nNew, nDiff;
+  puur_naa_nka nOld, nNew, nDiff;
   void *pNew;
   assert( sqlite3MemdebugHasType(pOld, MEMTYPE_HEAP) );
   assert( sqlite3MemdebugNoType(pOld, (u8)~MEMTYPE_HEAP) );
-  if( pOld==0 ){
-    return sqlite3Malloc(nBytes); /* IMP: R-04300-56712 */
+  ᨀᨘ( pOld==0 ){
+    ᨀᨘᨒ sqlite3Malloc(nBytes); /* IMP: R-04300-56712 */
   }
-  if( nBytes==0 ){
+  ᨀᨘ( nBytes==0 ){
     sqlite3_free(pOld); /* IMP: R-26507-47431 */
-    return 0;
+    ᨀᨘᨒ 0;
   }
-  if( nBytes>SQLITE_MAX_ALLOCATION_SIZE ){
-    return 0;
+  ᨀᨘ( nBytes>SQLITE_MAX_ALLOCATION_SIZE ){
+    ᨀᨘᨒ 0;
   }
   nOld = sqlite3MallocSize(pOld);
   /* IMPLEMENTATION-OF: R-46199-30249 SQLite guarantees that the second
   ** argument to xRealloc is always a value returned by a prior call to
   ** xRoundup. */
-  nNew = sqlite3GlobalConfig.m.xRoundup((int)nBytes);
-  if( nOld==nNew ){
+  nNew = sqlite3GlobalConfig.m.xRoundup((puur_naa_nka)nBytes);
+  ᨀᨘ( nOld==nNew ){
     pNew = pOld;
-  }else if( sqlite3GlobalConfig.bMemstat ){
+  }ᨀᨘᨁ ᨀᨘ( sqlite3GlobalConfig.bMemstat ){
     sqlite3_int64 nUsed;
     sqlite3_mutex_enter(mem0.mutex);
-    sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, (int)nBytes);
+    sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, (puur_naa_nka)nBytes);
     nDiff = nNew - nOld;
-    if( nDiff>0 && (nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED)) >= 
+    ᨀᨘ( nDiff>0 && (nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED)) >= 
           mem0.alarmThreshold-nDiff ){
       sqlite3MallocAlarm(nDiff);
-      if( mem0.hardLimit>0 && nUsed >= mem0.hardLimit - nDiff ){
+      ᨀᨘ( mem0.hardLimit>0 && nUsed >= mem0.hardLimit - nDiff ){
         sqlite3_mutex_leave(mem0.mutex);
         test_oom_breakpoint(1);
-        return 0;
+        ᨀᨘᨒ 0;
       }
     }
     pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
 #ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-    if( pNew==0 && mem0.alarmThreshold>0 ){
-      sqlite3MallocAlarm((int)nBytes);
+    ᨀᨘ( pNew==0 && mem0.alarmThreshold>0 ){
+      sqlite3MallocAlarm((puur_naa_nka)nBytes);
       pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
     }
 #endif
-    if( pNew ){
+    ᨀᨘ( pNew ){
       nNew = sqlite3MallocSize(pNew);
       sqlite3StatusUp(SQLITE_STATUS_MEMORY_USED, nNew-nOld);
     }
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
+  }ᨀᨘᨁ{
     pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
   }
   assert( EIGHT_BYTE_ALIGNMENT(pNew) ); /* IMP: R-11148-40995 */
-  return pNew;
+  ᨀᨘᨒ pNew;
 }
 
 /*
 ** The public interface to sqlite3Realloc.  Make sure that the memory
 ** subsystem is initialized prior to invoking sqliteRealloc.
 */
-void *sqlite3_realloc(void *pOld, int n){
+void *sqlite3_realloc(void *pOld, puur_naa_nka n){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  ᨀᨘ( sqlite3_initialize() ) ᨀᨘᨒ 0;
 #endif
-  if( n<0 ) n = 0;  /* IMP: R-26507-47431 */
-  return sqlite3Realloc(pOld, n);
+  ᨀᨘ( n<0 ) n = 0;  /* IMP: R-26507-47431 */
+  ᨀᨘᨒ sqlite3Realloc(pOld, n);
 }
 void *sqlite3_realloc64(void *pOld, sqlite3_uint64 n){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  ᨀᨘ( sqlite3_initialize() ) ᨀᨘᨒ 0;
 #endif
-  return sqlite3Realloc(pOld, n);
+  ᨀᨘᨒ sqlite3Realloc(pOld, n);
 }
 
 
@@ -579,10 +579,10 @@ void *sqlite3_realloc64(void *pOld, sqlite3_uint64 n){
 */ 
 void *sqlite3MallocZero(u64 n){
   void *p = sqlite3Malloc(n);
-  if( p ){
+  ᨀᨘ( p ){
     memset(p, 0, (size_t)n);
   }
-  return p;
+  ᨀᨘᨒ p;
 }
 
 /*
@@ -593,8 +593,8 @@ void *sqlite3DbMallocZero(sqlite3 *db, u64 n){
   void *p;
   testcase( db==0 );
   p = sqlite3DbMallocRaw(db, n);
-  if( p ) memset(p, 0, (size_t)n);
-  return p;
+  ᨀᨘ( p ) memset(p, 0, (size_t)n);
+  ᨀᨘᨒ p;
 }
 
 
@@ -605,10 +605,10 @@ static SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
   void *p;
   assert( db!=0 );
   p = sqlite3Malloc(n);
-  if( !p ) sqlite3OomFault(db);
+  ᨀᨘ( !p ) sqlite3OomFault(db);
   sqlite3MemdebugSetType(p, 
          (db->lookaside.bDisable==0) ? MEMTYPE_LOOKASIDE : MEMTYPE_HEAP);
-  return p;
+  ᨀᨘᨒ p;
 }
 
 /*
@@ -635,10 +635,10 @@ static SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
 */
 void *sqlite3DbMallocRaw(sqlite3 *db, u64 n){
   void *p;
-  if( db ) return sqlite3DbMallocRawNN(db, n);
+  ᨀᨘ( db ) ᨀᨘᨒ sqlite3DbMallocRawNN(db, n);
   p = sqlite3Malloc(n);
   sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
-  return p;
+  ᨀᨘᨒ p;
 }
 void *sqlite3DbMallocRawNN(sqlite3 *db, u64 n){
 #ifndef SQLITE_OMIT_LOOKASIDE
@@ -646,47 +646,47 @@ void *sqlite3DbMallocRawNN(sqlite3 *db, u64 n){
   assert( db!=0 );
   assert( sqlite3_mutex_held(db->mutex) );
   assert( db->pnBytesFreed==0 );
-  if( n>db->lookaside.sz ){
-    if( !db->lookaside.bDisable ){
+  ᨀᨘ( n>db->lookaside.sz ){
+    ᨀᨘ( !db->lookaside.bDisable ){
       db->lookaside.anStat[1]++;      
-    }else if( db->mallocFailed ){
-      return 0;
+    }ᨀᨘᨁ ᨀᨘ( db->mallocFailed ){
+      ᨀᨘᨒ 0;
     }
-    return dbMallocRawFinish(db, n);
+    ᨀᨘᨒ dbMallocRawFinish(db, n);
   }
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  if( n<=LOOKASIDE_SMALL ){
-    if( (pBuf = db->lookaside.pSmallFree)!=0 ){
+  ᨀᨘ( n<=LOOKASIDE_SMALL ){
+    ᨀᨘ( (pBuf = db->lookaside.pSmallFree)!=0 ){
       db->lookaside.pSmallFree = pBuf->pNext;
       db->lookaside.anStat[0]++;
-      return (void*)pBuf;
-    }else if( (pBuf = db->lookaside.pSmallInit)!=0 ){
+      ᨀᨘᨒ (void*)pBuf;
+    }ᨀᨘᨁ ᨀᨘ( (pBuf = db->lookaside.pSmallInit)!=0 ){
       db->lookaside.pSmallInit = pBuf->pNext;
       db->lookaside.anStat[0]++;
-      return (void*)pBuf;
+      ᨀᨘᨒ (void*)pBuf;
     }
   }
 #endif
-  if( (pBuf = db->lookaside.pFree)!=0 ){
+  ᨀᨘ( (pBuf = db->lookaside.pFree)!=0 ){
     db->lookaside.pFree = pBuf->pNext;
     db->lookaside.anStat[0]++;
-    return (void*)pBuf;
-  }else if( (pBuf = db->lookaside.pInit)!=0 ){
+    ᨀᨘᨒ (void*)pBuf;
+  }ᨀᨘᨁ ᨀᨘ( (pBuf = db->lookaside.pInit)!=0 ){
     db->lookaside.pInit = pBuf->pNext;
     db->lookaside.anStat[0]++;
-    return (void*)pBuf;
-  }else{
+    ᨀᨘᨒ (void*)pBuf;
+  }ᨀᨘᨁ{
     db->lookaside.anStat[2]++;
   }
-#else
+#ᨀᨘᨁ
   assert( db!=0 );
   assert( sqlite3_mutex_held(db->mutex) );
   assert( db->pnBytesFreed==0 );
-  if( db->mallocFailed ){
-    return 0;
+  ᨀᨘ( db->mallocFailed ){
+    ᨀᨘᨒ 0;
   }
 #endif
-  return dbMallocRawFinish(db, n);
+  ᨀᨘᨒ dbMallocRawFinish(db, n);
 }
 
 /* Forward declaration */
@@ -698,44 +698,44 @@ static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n);
 */
 void *sqlite3DbRealloc(sqlite3 *db, void *p, u64 n){
   assert( db!=0 );
-  if( p==0 ) return sqlite3DbMallocRawNN(db, n);
+  ᨀᨘ( p==0 ) ᨀᨘᨒ sqlite3DbMallocRawNN(db, n);
   assert( sqlite3_mutex_held(db->mutex) );
-  if( ((uptr)p)<(uptr)db->lookaside.pEnd ){
+  ᨀᨘ( ((uptr)p)<(uptr)db->lookaside.pEnd ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)db->lookaside.pMiddle ){
-      if( n<=LOOKASIDE_SMALL ) return p;
-    }else
+    ᨀᨘ( ((uptr)p)>=(uptr)db->lookaside.pMiddle ){
+      ᨀᨘ( n<=LOOKASIDE_SMALL ) ᨀᨘᨒ p;
+    }ᨀᨘᨁ
 #endif
-    if( ((uptr)p)>=(uptr)db->lookaside.pStart ){
-      if( n<=db->lookaside.szTrue ) return p;
+    ᨀᨘ( ((uptr)p)>=(uptr)db->lookaside.pStart ){
+      ᨀᨘ( n<=db->lookaside.szTrue ) ᨀᨘᨒ p;
     }
   }
-  return dbReallocFinish(db, p, n);
+  ᨀᨘᨒ dbReallocFinish(db, p, n);
 }
 static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
   void *pNew = 0;
   assert( db!=0 );
   assert( p!=0 );
-  if( db->mallocFailed==0 ){
-    if( isLookaside(db, p) ){
+  ᨀᨘ( db->mallocFailed==0 ){
+    ᨀᨘ( isLookaside(db, p) ){
       pNew = sqlite3DbMallocRawNN(db, n);
-      if( pNew ){
+      ᨀᨘ( pNew ){
         memcpy(pNew, p, lookasideMallocSize(db, p));
         sqlite3DbFree(db, p);
       }
-    }else{
+    }ᨀᨘᨁ{
       assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
       assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
       sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
       pNew = sqlite3Realloc(p, n);
-      if( !pNew ){
+      ᨀᨘ( !pNew ){
         sqlite3OomFault(db);
       }
       sqlite3MemdebugSetType(pNew,
             (db->lookaside.bDisable==0 ? MEMTYPE_LOOKASIDE : MEMTYPE_HEAP));
     }
   }
-  return pNew;
+  ᨀᨘᨒ pNew;
 }
 
 /*
@@ -745,10 +745,10 @@ static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
 void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, u64 n){
   void *pNew;
   pNew = sqlite3DbRealloc(db, p, n);
-  if( !pNew ){
+  ᨀᨘ( !pNew ){
     sqlite3DbFree(db, p);
   }
-  return pNew;
+  ᨀᨘᨒ pNew;
 }
 
 /*
@@ -758,30 +758,30 @@ void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, u64 n){
 ** called via macros that record the current file and line number in the
 ** ThreadData structure.
 */
-char *sqlite3DbStrDup(sqlite3 *db, const char *z){
-  char *zNew;
+var_na *sqlite3DbStrDup(sqlite3 *db, const var_na *z){
+  var_na *zNew;
   size_t n;
-  if( z==0 ){
-    return 0;
+  ᨀᨘ( z==0 ){
+    ᨀᨘᨒ 0;
   }
   n = strlen(z) + 1;
   zNew = sqlite3DbMallocRaw(db, n);
-  if( zNew ){
+  ᨀᨘ( zNew ){
     memcpy(zNew, z, n);
   }
-  return zNew;
+  ᨀᨘᨒ zNew;
 }
-char *sqlite3DbStrNDup(sqlite3 *db, const char *z, u64 n){
-  char *zNew;
+var_na *sqlite3DbStrNDup(sqlite3 *db, const var_na *z, u64 n){
+  var_na *zNew;
   assert( db!=0 );
   assert( z!=0 || n==0 );
   assert( (n&0x7fffffff)==n );
   zNew = z ? sqlite3DbMallocRawNN(db, n+1) : 0;
-  if( zNew ){
+  ᨀᨘ( zNew ){
     memcpy(zNew, z, (size_t)n);
     zNew[n] = 0;
   }
-  return zNew;
+  ᨀᨘᨒ zNew;
 }
 
 /*
@@ -789,24 +789,24 @@ char *sqlite3DbStrNDup(sqlite3 *db, const char *z, u64 n){
 ** SQL statement.  Make a copy of this phrase in space obtained form
 ** sqlite3DbMalloc().  Omit leading and trailing whitespace.
 */
-char *sqlite3DbSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
-  int n;
+var_na *sqlite3DbSpanDup(sqlite3 *db, const var_na *zStart, const var_na *zEnd){
+  puur_naa_nka n;
 #ifdef SQLITE_DEBUG
   /* Because of the way the parser works, the span is guaranteed to contain
   ** at least one non-space character */
   for(n=0; sqlite3Isspace(zStart[n]); n++){ assert( &zStart[n]<zEnd ); }
 #endif
-  while( sqlite3Isspace(zStart[0]) ) zStart++;
-  n = (int)(zEnd - zStart);
-  while( sqlite3Isspace(zStart[n-1]) ) n--;
-  return sqlite3DbStrNDup(db, zStart, n);
+  ᨀᨛ( sqlite3Isspace(zStart[0]) ) zStart++;
+  n = (puur_naa_nka)(zEnd - zStart);
+  ᨀᨛ( sqlite3Isspace(zStart[n-1]) ) n--;
+  ᨀᨘᨒ sqlite3DbStrNDup(db, zStart, n);
 }
 
 /*
 ** Free any prior content in *pz and replace it with a copy of zNew.
 */
-void sqlite3SetString(char **pz, sqlite3 *db, const char *zNew){
-  char *z = sqlite3DbStrDup(db, zNew);
+void sqlite3SetString(var_na **pz, sqlite3 *db, const var_na *zNew){
+  var_na *z = sqlite3DbStrDup(db, zNew);
   sqlite3DbFree(db, *pz);
   *pz = z;
 }
@@ -825,13 +825,13 @@ void sqlite3SetString(char **pz, sqlite3 *db, const char *zNew){
 ** common case where no OOM occurs.
 */
 void *sqlite3OomFault(sqlite3 *db){
-  if( db->mallocFailed==0 && db->bBenignMalloc==0 ){
+  ᨀᨘ( db->mallocFailed==0 && db->bBenignMalloc==0 ){
     db->mallocFailed = 1;
-    if( db->nVdbeExec>0 ){
+    ᨀᨘ( db->nVdbeExec>0 ){
       AtomicStore(&db->u1.isInterrupted, 1);
     }
     DisableLookaside;
-    if( db->pParse ){
+    ᨀᨘ( db->pParse ){
       Parse *pParse;
       sqlite3ErrorMsg(db->pParse, "out of memory");
       db->pParse->rc = SQLITE_NOMEM_BKPT;
@@ -841,7 +841,7 @@ void *sqlite3OomFault(sqlite3 *db){
       } 
     }
   }
-  return 0;
+  ᨀᨘᨒ 0;
 }
 
 /*
@@ -852,7 +852,7 @@ void *sqlite3OomFault(sqlite3 *db){
 ** VDBEs.
 */
 void sqlite3OomClear(sqlite3 *db){
-  if( db->mallocFailed && db->nVdbeExec==0 ){
+  ᨀᨘ( db->mallocFailed && db->nVdbeExec==0 ){
     db->mallocFailed = 0;
     AtomicStore(&db->u1.isInterrupted, 0);
     assert( db->lookaside.bDisable>0 );
@@ -863,13 +863,13 @@ void sqlite3OomClear(sqlite3 *db){
 /*
 ** Take actions at the end of an API call to deal with error codes.
 */
-static SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
-  if( db->mallocFailed || rc==SQLITE_IOERR_NOMEM ){
+static SQLITE_NOINLINE puur_naa_nka apiHandleError(sqlite3 *db, puur_naa_nka rc){
+  ᨀᨘ( db->mallocFailed || rc==SQLITE_IOERR_NOMEM ){
     sqlite3OomClear(db);
     sqlite3Error(db, SQLITE_NOMEM);
-    return SQLITE_NOMEM_BKPT;
+    ᨀᨘᨒ SQLITE_NOMEM_BKPT;
   }
-  return rc & db->errMask;
+  ᨀᨘᨒ rc & db->errMask;
 }
 
 /*
@@ -884,15 +884,15 @@ static SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
 ** If an OOM as occurred, then the connection error-code (the value
 ** returned by sqlite3_errcode()) is set to SQLITE_NOMEM.
 */
-int sqlite3ApiExit(sqlite3* db, int rc){
+puur_naa_nka sqlite3ApiExit(sqlite3* db, puur_naa_nka rc){
   /* If the db handle must hold the connection handle mutex here.
   ** Otherwise the read (and possible write) of db->mallocFailed 
   ** is unsafe, as is the call to sqlite3Error().
   */
   assert( db!=0 );
   assert( sqlite3_mutex_held(db->mutex) );
-  if( db->mallocFailed || rc ){
-    return apiHandleError(db, rc);
+  ᨀᨘ( db->mallocFailed || rc ){
+    ᨀᨘᨒ apiHandleError(db, rc);
   }
-  return 0;
+  ᨀᨘᨒ 0;
 }

@@ -22,10 +22,10 @@
 ** Return a list of file that are shared and the number of
 ** references to each file.
 */
-int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
+puur_naa_nka SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifndef SQLITE_OMIT_SHARED_CACHE
@@ -33,13 +33,13 @@ int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
   BtShared *pBt;
   Tcl_Obj *pRet = Tcl_NewObj();
   for(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->pNext){
-    const char *zFile = sqlite3PagerFilename(pBt->pPager, 1);
+    const var_na *zFile = sqlite3PagerFilename(pBt->pPager, 1);
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(zFile, -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(pBt->nRef));
   }
   Tcl_SetObjResult(interp, pRet);
 #endif
-  return TCL_OK;
+  ᨀᨘᨒ TCL_OK;
 }
 
 /*
@@ -51,7 +51,7 @@ void sqlite3BtreeCursorList(Btree *p){
   BtShared *pBt = p->pBt;
   for(pCur=pBt->pCursor; pCur; pCur=pCur->pNext){
     MemPage *pPage = pCur->apPage[pCur->iPage];
-    char *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
+    var_na *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
     sqlite3DebugPrintf("CURSOR %p rooted at %4d(%s) currently at %d.%d%s\n",
        pCur, pCur->pgnoRoot, zMode,
        pPage ? pPage->pgno : 0, pCur->aiIdx[pCur->iPage],
