@@ -41,11 +41,11 @@ typedef struct HashElem HashElem;
 ** the hash table.
 */
 struct Hash {
-  unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
+  unsigned số_nguyên htsize;      /* Number of buckets in the hash table */
+  unsigned số_nguyên count;       /* Number of entries in this table */
   HashElem *first;          /* The first element of the array */
   struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+    unsigned số_nguyên count;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -60,7 +60,7 @@ struct HashElem {
   HashElem *next, *prev;       /* Next and previous elements in the table */
   void *data;                  /* Data associated with this element */
   const char *pKey;            /* Key associated with this element */
-  unsigned int h;              /* hash for pKey */
+  unsigned số_nguyên h;              /* hash for pKey */
 };
 
 /*

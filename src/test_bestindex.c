@@ -138,25 +138,25 @@ static void tclDequote(char *z){
   char q = z[0];
 
   /* Set stack variable q to the close-quote character */
-  if( q=='[' || q=='\'' || q=='"' || q=='`' ){
-    int iIn = 1;
-    int iOut = 0;
-    if( q=='[' ) q = ']';  
+  nếu( q=='[' || q=='\'' || q=='"' || q=='`' ){
+    số_nguyên iIn = 1;
+    số_nguyên iOut = 0;
+    nếu( q=='[' ) q = ']';  
 
-    while( ALWAYS(z[iIn]) ){
-      if( z[iIn]==q ){
-        if( z[iIn+1]!=q ){
+    trong_khi( ALWAYS(z[iIn]) ){
+      nếu( z[iIn]==q ){
+        nếu( z[iIn+1]!=q ){
           /* Character iIn was the close quote. */
           iIn++;
           break;
-        }else{
+        }không_thì{
           /* Character iIn and iIn+1 form an escaped quote character. Skip
           ** the input cursor past both and copy a single quote character 
           ** to the output buffer. */
           iIn += 2;
           z[iOut++] = q;
         }
-      }else{
+      }không_thì{
         z[iOut++] = z[iIn++];
       }
     }
@@ -176,10 +176,10 @@ static void tclDequote(char *z){
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int tclConnect(
+static số_nguyên tclConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  số_nguyên argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
@@ -188,25 +188,25 @@ static int tclConnect(
   tcl_vtab *pTab = 0;
   char *zCmd = 0;
   Tcl_Obj *pScript = 0;
-  int rc = SQLITE_OK;
+  số_nguyên rc = SQLITE_OK;
 
-  if( argc!=4 && (argc!=3 || pCtx->pDefault==0) ){
+  nếu( argc!=4 && (argc!=3 || pCtx->pDefault==0) ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    trả_về SQLITE_ERROR;
   }
 
-  if( argc==4 ){
+  nếu( argc==4 ){
     zCmd = sqlite3_malloc64(strlen(argv[3])+1);
   }
   pTab = (tcl_vtab*)sqlite3_malloc64(sizeof(tcl_vtab));
-  if( (zCmd || argc==3) && pTab ){
+  nếu( (zCmd || argc==3) && pTab ){
     memset(pTab, 0, sizeof(tcl_vtab));
 
-    if( zCmd ){
+    nếu( zCmd ){
       memcpy(zCmd, argv[3], strlen(argv[3])+1);
       tclDequote(zCmd);
       pTab->pCmd = Tcl_NewStringObj(zCmd, -1);
-    }else{
+    }không_thì{
       pTab->pCmd = Tcl_DuplicateObj(pCtx->pDefault);
     }
 
@@ -219,100 +219,100 @@ static int tclConnect(
     Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("xConnect", -1));
 
     rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-    if( rc!=TCL_OK ){
+    nếu( rc!=TCL_OK ){
       *pzErr = sqlite3_mprintf("%s", Tcl_GetStringResult(interp));
-      if( sqlite3_stricmp(*pzErr, "database schema has changed")==0 ){
+      nếu( sqlite3_stricmp(*pzErr, "database schema has changed")==0 ){
         rc = SQLITE_SCHEMA;
-      }else{
+      }không_thì{
         rc = SQLITE_ERROR;
       }
-    }else{
+    }không_thì{
       rc = sqlite3_declare_vtab(db, Tcl_GetStringResult(interp));
-      if( rc!=SQLITE_OK ){
+      nếu( rc!=SQLITE_OK ){
         *pzErr = sqlite3_mprintf("declare_vtab: %s", sqlite3_errmsg(db));
       }
     }
 
-    if( rc!=SQLITE_OK ){
+    nếu( rc!=SQLITE_OK ){
       sqlite3_free(pTab);
       pTab = 0;
     }
-  }else{
+  }không_thì{
     rc = SQLITE_NOMEM;
   }
 
   sqlite3_free(zCmd);
   *ppVtab = pTab ? &pTab->base : 0;
-  return rc;
+  trả_về rc;
 }
 
 /* The xDisconnect and xDestroy methods are also the same */
-static int tclDisconnect(sqlite3_vtab *pVtab){
+static số_nguyên tclDisconnect(sqlite3_vtab *pVtab){
   tcl_vtab *pTab = (tcl_vtab*)pVtab;
-  while( pTab->pFindFunctionList ){
+  trong_khi( pTab->pFindFunctionList ){
     TestFindFunction *p = pTab->pFindFunctionList;
     pTab->pFindFunctionList = p->pNext;
     sqlite3_free(p);
   }
   Tcl_DecrRefCount(pTab->pCmd);
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /*
 ** Open a new tcl cursor.
 */
-static int tclOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static số_nguyên tclOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   tcl_cursor *pCur;
   pCur = sqlite3_malloc(sizeof(tcl_cursor));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  nếu( pCur==0 ) trả_về SQLITE_NOMEM;
   memset(pCur, 0, sizeof(tcl_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /*
 ** Close a tcl cursor.
 */
-static int tclClose(sqlite3_vtab_cursor *cur){
+static số_nguyên tclClose(sqlite3_vtab_cursor *cur){
   tcl_cursor *pCur = (tcl_cursor *)cur;
-  if( pCur ){
+  nếu( pCur ){
     sqlite3_finalize(pCur->pStmt);
     sqlite3_free(pCur);
   }
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
-static int tclNext(sqlite3_vtab_cursor *pVtabCursor){
+static số_nguyên tclNext(sqlite3_vtab_cursor *pVtabCursor){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
-  if( pCsr->pStmt ){
+  nếu( pCsr->pStmt ){
     tcl_vtab *pTab = (tcl_vtab*)(pVtabCursor->pVtab);
-    int rc = sqlite3_step(pCsr->pStmt);
-    if( rc!=SQLITE_ROW ){
+    số_nguyên rc = sqlite3_step(pCsr->pStmt);
+    nếu( rc!=SQLITE_ROW ){
       const char *zErr;
       rc = sqlite3_finalize(pCsr->pStmt);
       pCsr->pStmt = 0;
-      if( rc!=SQLITE_OK ){
+      nếu( rc!=SQLITE_OK ){
         zErr = sqlite3_errmsg(pTab->db);
         pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
       }
     }
   }
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
-static int tclFilter(
+static số_nguyên tclFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  số_nguyên idxNum, const char *idxStr,
+  số_nguyên argc, sqlite3_value **argv
 ){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
   tcl_vtab *pTab = (tcl_vtab*)(pVtabCursor->pVtab);
   Tcl_Interp *interp = pTab->interp;
   Tcl_Obj *pScript;
   Tcl_Obj *pArg;
-  int ii;
-  int rc;
+  số_nguyên ii;
+  số_nguyên rc;
 
   pScript = Tcl_DuplicateObj(pTab->pCmd);
   Tcl_IncrRefCount(pScript);
@@ -324,26 +324,26 @@ static int tclFilter(
 
   pArg = Tcl_NewObj();
   Tcl_IncrRefCount(pArg);
-  for(ii=0; ii<argc; ii++){
+  cho(ii=0; ii<argc; ii++){
     const char *zVal = (const char*)sqlite3_value_text(argv[ii]);
     Tcl_Obj *pVal;
-    if( zVal==0 ){
+    nếu( zVal==0 ){
       sqlite3_value *pMem;
       pVal = Tcl_NewObj();
-      for(rc=sqlite3_vtab_in_first(argv[ii], &pMem); 
+      cho(rc=sqlite3_vtab_in_first(argv[ii], &pMem); 
           rc==SQLITE_OK && pMem;
           rc=sqlite3_vtab_in_next(argv[ii], &pMem)
       ){
         Tcl_Obj *pVal2 = 0;
         zVal = (const char*)sqlite3_value_text(pMem);
-        if( zVal ){
+        nếu( zVal ){
           pVal2 = Tcl_NewStringObj(zVal, -1);
-        }else{
+        }không_thì{
           pVal2 = Tcl_NewObj();
         }
         Tcl_ListObjAppendElement(interp, pVal, pVal2);
       }
-    }else{
+    }không_thì{
       pVal = Tcl_NewStringObj(zVal, -1);
     }
     Tcl_ListObjAppendElement(interp, pArg, pVal);
@@ -352,11 +352,11 @@ static int tclFilter(
   Tcl_DecrRefCount(pArg);
 
   rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     const char *zErr = Tcl_GetStringResult(interp);
     rc = SQLITE_ERROR;
     pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-  }else{
+  }không_thì{
     /* Analyze the scripts return value. The return value should be a tcl 
     ** list object with an even number of elements. The first element of each
     ** pair must be one of:
@@ -367,22 +367,22 @@ static int tclFilter(
     Tcl_Obj **apElem = 0;
     Tcl_Size nElem;
     rc = Tcl_ListObjGetElements(interp, pRes, &nElem, &apElem);
-    if( rc!=TCL_OK ){
+    nếu( rc!=TCL_OK ){
       const char *zErr = Tcl_GetStringResult(interp);
       rc = SQLITE_ERROR;
       pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-    }else{
-      for(ii=0; rc==SQLITE_OK && ii<(int)nElem; ii+=2){
+    }không_thì{
+      cho(ii=0; rc==SQLITE_OK && ii<(số_nguyên)nElem; ii+=2){
         const char *zCmd = Tcl_GetString(apElem[ii]);
         Tcl_Obj *p = apElem[ii+1];
-        if( sqlite3_stricmp("sql", zCmd)==0 ){
+        nếu( sqlite3_stricmp("sql", zCmd)==0 ){
           const char *zSql = Tcl_GetString(p);
           rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
-          if( rc!=SQLITE_OK ){
+          nếu( rc!=SQLITE_OK ){
             const char *zErr = sqlite3_errmsg(pTab->db);
             pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zErr);
           }
-        }else{
+        }không_thì{
           rc = SQLITE_ERROR;
           pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zCmd);
         }
@@ -390,41 +390,41 @@ static int tclFilter(
     }
   }
 
-  if( rc==SQLITE_OK ){
+  nếu( rc==SQLITE_OK ){
     rc = tclNext(pVtabCursor);
   }
-  return rc;
+  trả_về rc;
 }
 
-static int tclColumn(
+static số_nguyên tclColumn(
   sqlite3_vtab_cursor *pVtabCursor, 
   sqlite3_context *ctx, 
-  int i
+  số_nguyên i
 ){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
   sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, i+1));
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
-static int tclRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *pRowid){
+static số_nguyên tclRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *pRowid){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
   *pRowid = sqlite3_column_int64(pCsr->pStmt, 0);
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
-static int tclEof(sqlite3_vtab_cursor *pVtabCursor){
+static số_nguyên tclEof(sqlite3_vtab_cursor *pVtabCursor){
   tcl_cursor *pCsr = (tcl_cursor*)pVtabCursor;
-  return (pCsr->pStmt==0);
+  trả_về (pCsr->pStmt==0);
 }
 
 static void testBestIndexObjConstraints(
   Tcl_Interp *interp, 
   sqlite3_index_info *pIdxInfo
 ){
-  int ii;
+  số_nguyên ii;
   Tcl_Obj *pRes = Tcl_NewObj();
   Tcl_IncrRefCount(pRes);
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
+  cho(ii=0; ii<pIdxInfo->nConstraint; ii++){
     struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
     Tcl_Obj *pElem = Tcl_NewObj();
     const char *zOp = 0;
@@ -467,9 +467,9 @@ static void testBestIndexObjConstraints(
     }
 
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj("op", -1));
-    if( zOp ){
+    nếu( zOp ){
       Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj(zOp, -1));
-    }else{
+    }không_thì{
       Tcl_ListObjAppendElement(0, pElem, Tcl_NewIntObj(pCons->op));
     }
     Tcl_ListObjAppendElement(0, pElem, Tcl_NewStringObj("column", -1));
@@ -489,10 +489,10 @@ static void testBestIndexObjOrderby(
   Tcl_Interp *interp, 
   sqlite3_index_info *pIdxInfo
 ){
-  int ii;
+  số_nguyên ii;
   Tcl_Obj *pRes = Tcl_NewObj();
   Tcl_IncrRefCount(pRes);
-  for(ii=0; ii<pIdxInfo->nOrderBy; ii++){
+  cho(ii=0; ii<pIdxInfo->nOrderBy; ii++){
     struct sqlite3_index_orderby const *pOrder = &pIdxInfo->aOrderBy[ii];
     Tcl_Obj *pElem = Tcl_NewObj();
     Tcl_IncrRefCount(pElem);
@@ -528,10 +528,10 @@ static void testBestIndexObjOrderby(
 **    $hdl rhs_value IDX ?DEFAULT?
 **      Wrapper around sqlite3_vtab_rhs_value().
 */
-static int SQLITE_TCLAPI testBestIndexObj(
+static số_nguyên SQLITE_TCLAPI testBestIndexObj(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  số_nguyên objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   const char *azSub[] = {
@@ -544,28 +544,28 @@ static int SQLITE_TCLAPI testBestIndexObj(
     "collation",                  /* 6 */
     0
   };
-  int ii;
+  số_nguyên ii;
   sqlite3_index_info *pIdxInfo = (sqlite3_index_info*)clientData;
 
-  if( objc<2 ){
+  nếu( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], azSub, "sub-command", 0, &ii) ){
-    return TCL_ERROR;
+  nếu( Tcl_GetIndexFromObj(interp, objv[1], azSub, "sub-command", 0, &ii) ){
+    trả_về TCL_ERROR;
   }
 
-  if( ii<4 && objc!=2 ){
+  nếu( ii<4 && objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( ii==4 && objc!=4 ){
+  nếu( ii==4 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "INDEX BOOLEAN");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( ii==5 && objc!=3 && objc!=4 ){
+  nếu( ii==5 && objc!=3 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "INDEX ?DEFAULT?");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
   switch( ii ){
@@ -582,18 +582,18 @@ static int SQLITE_TCLAPI testBestIndexObj(
       break;
 
     case 3: assert( sqlite3_stricmp(azSub[ii], "distinct")==0 ); {
-      int bDistinct = sqlite3_vtab_distinct(pIdxInfo);
+      số_nguyên bDistinct = sqlite3_vtab_distinct(pIdxInfo);
       Tcl_SetObjResult(interp, Tcl_NewIntObj(bDistinct));
       break;
     }
 
     case 4: assert( sqlite3_stricmp(azSub[ii], "in")==0 ); {
-      int iCons;
-      int bHandle;
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) 
+      số_nguyên iCons;
+      số_nguyên bHandle;
+      nếu( Tcl_GetIntFromObj(interp, objv[2], &iCons) 
        || Tcl_GetBooleanFromObj(interp, objv[3], &bHandle) 
       ){
-        return TCL_ERROR;
+        trả_về TCL_ERROR;
       }
       Tcl_SetObjResult(interp, 
           Tcl_NewIntObj(sqlite3_vtab_in(pIdxInfo, iCons, bHandle))
@@ -602,21 +602,21 @@ static int SQLITE_TCLAPI testBestIndexObj(
     }
 
     case 5: assert( sqlite3_stricmp(azSub[ii], "rhs_value")==0 ); {
-      int iCons = 0;
-      int rc;
+      số_nguyên iCons = 0;
+      số_nguyên rc;
       sqlite3_value *pVal = 0;
       const char *zVal = "";
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
-        return TCL_ERROR;
+      nếu( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
+        trả_về TCL_ERROR;
       }
       rc = sqlite3_vtab_rhs_value(pIdxInfo, iCons, &pVal);
-      if( rc!=SQLITE_OK && rc!=SQLITE_NOTFOUND ){
+      nếu( rc!=SQLITE_OK && rc!=SQLITE_NOTFOUND ){
         Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-        return TCL_ERROR;
+        trả_về TCL_ERROR;
       }
-      if( pVal ){
+      nếu( pVal ){
         zVal = (const char*)sqlite3_value_text(pVal);
-      }else if( objc==4 ){
+      }không_thì nếu( objc==4 ){
         zVal = Tcl_GetString(objv[3]);
       }
       Tcl_SetObjResult(interp, Tcl_NewStringObj(zVal, -1));
@@ -624,10 +624,10 @@ static int SQLITE_TCLAPI testBestIndexObj(
     }
 
     case 6: assert( sqlite3_stricmp(azSub[ii], "collation")==0 ); {
-      int iCons = 0;
+      số_nguyên iCons = 0;
       const char *zColl = "";
-      if( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
-        return TCL_ERROR;
+      nếu( Tcl_GetIntFromObj(interp, objv[2], &iCons) ){
+        trả_về TCL_ERROR;
       }
       zColl = sqlite3_vtab_collation(pIdxInfo, iCons);
       Tcl_SetObjResult(interp, Tcl_NewStringObj(zColl, -1));
@@ -635,15 +635,15 @@ static int SQLITE_TCLAPI testBestIndexObj(
     }
   }
 
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
-static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+static số_nguyên tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp;
-  int rc = SQLITE_OK;
+  số_nguyên rc = SQLITE_OK;
 
-  static int iNext = 43;
+  static số_nguyên iNext = 43;
   char zHdl[24];
   Tcl_Obj *pScript;
 
@@ -658,11 +658,11 @@ static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   Tcl_DeleteCommand(interp, zHdl);
   Tcl_DecrRefCount(pScript);
 
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     const char *zErr = Tcl_GetStringResult(interp);
     rc = SQLITE_ERROR;
     pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-  }else{
+  }không_thì{
     /* Analyze the scripts return value. The return value should be a tcl 
     ** list object with an even number of elements. The first element of each
     ** pair must be one of:
@@ -679,59 +679,59 @@ static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     Tcl_Obj **apElem = 0;
     Tcl_Size nElem;
     rc = Tcl_ListObjGetElements(interp, pRes, &nElem, &apElem);
-    if( rc!=TCL_OK ){
+    nếu( rc!=TCL_OK ){
       const char *zErr = Tcl_GetStringResult(interp);
       rc = SQLITE_ERROR;
       pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
-    }else{
-      int ii;
-      int iArgv = 1;
-      for(ii=0; rc==SQLITE_OK && ii<(int)nElem; ii+=2){
+    }không_thì{
+      số_nguyên ii;
+      số_nguyên iArgv = 1;
+      cho(ii=0; rc==SQLITE_OK && ii<(số_nguyên)nElem; ii+=2){
         const char *zCmd = Tcl_GetString(apElem[ii]);
         Tcl_Obj *p = apElem[ii+1];
-        if( sqlite3_stricmp("cost", zCmd)==0 ){
+        nếu( sqlite3_stricmp("cost", zCmd)==0 ){
           rc = Tcl_GetDoubleFromObj(interp, p, &pIdxInfo->estimatedCost);
-        }else
-        if( sqlite3_stricmp("orderby", zCmd)==0 ){
+        }không_thì
+        nếu( sqlite3_stricmp("orderby", zCmd)==0 ){
           rc = Tcl_GetIntFromObj(interp, p, &pIdxInfo->orderByConsumed);
-        }else
-        if( sqlite3_stricmp("idxnum", zCmd)==0 ){
+        }không_thì
+        nếu( sqlite3_stricmp("idxnum", zCmd)==0 ){
           rc = Tcl_GetIntFromObj(interp, p, &pIdxInfo->idxNum);
-        }else
-        if( sqlite3_stricmp("idxstr", zCmd)==0 ){
+        }không_thì
+        nếu( sqlite3_stricmp("idxstr", zCmd)==0 ){
           sqlite3_free(pIdxInfo->idxStr);
           pIdxInfo->idxStr = sqlite3_mprintf("%s", Tcl_GetString(p));
           pIdxInfo->needToFreeIdxStr = 1;
-        }else
-        if( sqlite3_stricmp("rows", zCmd)==0 ){
+        }không_thì
+        nếu( sqlite3_stricmp("rows", zCmd)==0 ){
           Tcl_WideInt x = 0;
           rc = Tcl_GetWideIntFromObj(interp, p, &x);
           pIdxInfo->estimatedRows = (tRowcnt)x;
-        }else
-        if( sqlite3_stricmp("use", zCmd)==0 
+        }không_thì
+        nếu( sqlite3_stricmp("use", zCmd)==0 
          || sqlite3_stricmp("omit", zCmd)==0 
         ){
-          int iCons;
+          số_nguyên iCons;
           rc = Tcl_GetIntFromObj(interp, p, &iCons);
-          if( rc==SQLITE_OK ){
-            if( iCons<0 || iCons>=pIdxInfo->nConstraint ){
+          nếu( rc==SQLITE_OK ){
+            nếu( iCons<0 || iCons>=pIdxInfo->nConstraint ){
               rc = SQLITE_ERROR;
               pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %d", iCons);
-            }else{
-              int bOmit = (zCmd[0]=='o' || zCmd[0]=='O');
+            }không_thì{
+              số_nguyên bOmit = (zCmd[0]=='o' || zCmd[0]=='O');
               pIdxInfo->aConstraintUsage[iCons].argvIndex = iArgv++;
               pIdxInfo->aConstraintUsage[iCons].omit = bOmit;
             }
           }
-        }else
-        if( sqlite3_stricmp("constraint", zCmd)==0 ){
+        }không_thì
+        nếu( sqlite3_stricmp("constraint", zCmd)==0 ){
           rc = SQLITE_CONSTRAINT;
           pTab->base.zErrMsg = sqlite3_mprintf("%s", Tcl_GetString(p));
-        }else{
+        }không_thì{
           rc = SQLITE_ERROR;
           pTab->base.zErrMsg = sqlite3_mprintf("unexpected: %s", zCmd);
         }
-        if( rc!=SQLITE_OK && pTab->base.zErrMsg==0 ){
+        nếu( rc!=SQLITE_OK && pTab->base.zErrMsg==0 ){
           const char *zErr = Tcl_GetStringResult(interp);
           pTab->base.zErrMsg = sqlite3_mprintf("%s", zErr);
         }
@@ -739,22 +739,22 @@ static int tclBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     }
   }
 
-  return rc;
+  trả_về rc;
 }
 
-static void tclFunction(sqlite3_context *pCtx, int nArg, sqlite3_value **apArg){
+static void tclFunction(sqlite3_context *pCtx, số_nguyên nArg, sqlite3_value **apArg){
   TestFindFunction *p = (TestFindFunction*)sqlite3_user_data(pCtx);
   Tcl_Interp *interp = p->pTab->interp;
   Tcl_Obj *pScript = 0;
   Tcl_Obj *pRet = 0;
-  int ii;
+  số_nguyên ii;
 
   pScript = Tcl_DuplicateObj(p->pTab->pCmd);
   Tcl_IncrRefCount(pScript);
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj("function", -1));
   Tcl_ListObjAppendElement(interp, pScript, Tcl_NewStringObj(p->zName, -1));
 
-  for(ii=0; ii<nArg; ii++){
+  cho(ii=0; ii<nArg; ii++){
     const char *zArg = (const char*)sqlite3_value_text(apArg[ii]);
     Tcl_ListObjAppendElement(interp, pScript,
         (zArg ? Tcl_NewStringObj(zArg, -1) : Tcl_NewObj())
@@ -767,18 +767,18 @@ static void tclFunction(sqlite3_context *pCtx, int nArg, sqlite3_value **apArg){
   sqlite3_result_text(pCtx, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
 }
 
-static int tclFindFunction(
+static số_nguyên tclFindFunction(
   sqlite3_vtab *tab, 
-  int nArg, 
+  số_nguyên nArg, 
   const char *zName,
-  void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),   /* OUT */
+  void (**pxFunc)(sqlite3_context*,số_nguyên,sqlite3_value**),   /* OUT */
   void **ppArg                                             /* OUT */
 ){
-  int iRet = 0;
+  số_nguyên iRet = 0;
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp;
   Tcl_Obj *pScript = 0;
-  int rc = SQLITE_OK;
+  số_nguyên rc = SQLITE_OK;
 
   pScript = Tcl_DuplicateObj(pTab->pCmd);
   Tcl_IncrRefCount(pScript);
@@ -790,20 +790,20 @@ static int tclFindFunction(
   rc = Tcl_EvalObjEx(interp, pScript, TCL_EVAL_GLOBAL);
   Tcl_DecrRefCount(pScript);
 
-  if( rc==SQLITE_OK ){
+  nếu( rc==SQLITE_OK ){
     Tcl_Obj *pObj = Tcl_GetObjResult(interp);
 
-    if( Tcl_GetIntFromObj(interp, pObj, &iRet) ){
+    nếu( Tcl_GetIntFromObj(interp, pObj, &iRet) ){
       rc = SQLITE_ERROR;
-    }else if( iRet>0 ){
+    }không_thì nếu( iRet>0 ){
       sqlite3_int64 nName = strlen(zName);
       sqlite3_int64 nByte = nName + 1 + sizeof(TestFindFunction);
       TestFindFunction *pNew = 0;
 
       pNew = (TestFindFunction*)sqlite3_malloc64(nByte);
-      if( pNew==0 ){
+      nếu( pNew==0 ){
         iRet = 0;
-      }else{
+      }không_thì{
         memset(pNew, 0, nByte);
         pNew->zName = (const char*)&pNew[1];
         memcpy((char*)pNew->zName, zName, nName);
@@ -816,19 +816,19 @@ static int tclFindFunction(
     }
   }
 
-  return iRet;
+  trả_về iRet;
 }
 
-static int tclUpdate(
+static số_nguyên tclUpdate(
   sqlite3_vtab *tab, 
-  int nArg, 
+  số_nguyên nArg, 
   sqlite3_value **apVal, 
   sqlite3_int64 *piRowid
 ){
   tcl_vtab *pTab = (tcl_vtab*)tab;
   Tcl_Interp *interp = pTab->interp; 
   Tcl_Obj *pEval = Tcl_DuplicateObj(pTab->pCmd);
-  int rc = TCL_OK;
+  số_nguyên rc = TCL_OK;
 
   Tcl_IncrRefCount(pEval);
   Tcl_ListObjAppendElement(interp, pEval, Tcl_NewStringObj("xUpdate",-1));
@@ -836,19 +836,19 @@ static int tclUpdate(
   rc = Tcl_EvalObjEx(interp, pEval, TCL_EVAL_GLOBAL);
   Tcl_DecrRefCount(pEval);
 
-  if( rc==TCL_OK ){
+  nếu( rc==TCL_OK ){
     Tcl_Obj *pRes = Tcl_GetObjResult(interp);
     Tcl_WideInt v;
     rc = Tcl_GetWideIntFromObj(interp, pRes, &v);
     *piRowid = (sqlite3_int64)v;
   }
 
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     tab->zErrMsg = sqlite3_mprintf("%s", Tcl_GetStringResult(pTab->interp));
-    return rc;
+    trả_về rc;
   }
 
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /*
@@ -913,11 +913,11 @@ static sqlite3_module tclModuleUpdate = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern số_nguyên getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
 
 static void delTestVtabCtx(void *p){
   TestVtabContext *pCtx = (TestVtabContext*)p;
-  if( pCtx->pDefault ){
+  nếu( pCtx->pDefault ){
     Tcl_DecrRefCount(pCtx->pDefault);
   }
   ckfree(pCtx);
@@ -926,34 +926,34 @@ static void delTestVtabCtx(void *p){
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_tcl_module(
+static số_nguyên SQLITE_TCLAPI register_tcl_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  số_nguyên objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 && objc!=3 ){
+  nếu( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB ?DEFAULT-CMD?");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  nếu( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) trả_về TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   {
     sqlite3_module *pMod = &tclModule;
     TestVtabContext *pCtx = (TestVtabContext*)ckalloc(sizeof(TestVtabContext));
     pCtx->interp = interp;
     pCtx->pDefault = 0;
-    if( objc==3 ){
+    nếu( objc==3 ){
       pCtx->pDefault = objv[2];
       Tcl_IncrRefCount(pCtx->pDefault);
     }
 
-    if( objc==3 ){ pMod = &tclModuleUpdate; }
+    nếu( objc==3 ){ pMod = &tclModuleUpdate; }
     sqlite3_create_module_v2(db, "tcl", pMod, (void*)pCtx, delTestVtabCtx);
   }
 #endif
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 #endif
@@ -962,7 +962,7 @@ static int SQLITE_TCLAPI register_tcl_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetesttcl_Init(Tcl_Interp *interp){
+số_nguyên Sqlitetesttcl_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   static struct {
      char *zName;
@@ -971,11 +971,11 @@ int Sqlitetesttcl_Init(Tcl_Interp *interp){
   } aObjCmd[] = {
      { "register_tcl_module",   register_tcl_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  số_nguyên i;
+  cho(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  trả_về TCL_OK;
 }

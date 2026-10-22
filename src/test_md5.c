@@ -44,11 +44,11 @@
  *
  */
 #ifndef uint32
-#  define uint32 unsigned int
+#  define uint32 unsigned số_nguyên
 #endif
 
 struct MD5Context {
-  int isInit;
+  số_nguyên isInit;
   uint32 buf[4];
   uint32 bits[2];
   unsigned char in[64];
@@ -65,7 +65,7 @@ static void byteReverse (unsigned char *buf, unsigned longs){
                             ((unsigned)buf[1]<<8 | buf[0]);
                 *(uint32 *)buf = t;
                 buf += 4;
-        } while (--longs);
+        } trong_khi (--longs);
 }
 /* The four core functions - F1 is optimized somewhat */
 
@@ -185,13 +185,13 @@ static void MD5Init(MD5Context *ctx){
  * of bytes.
  */
 static
-void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
+void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned số_nguyên len){
         uint32 t;
 
         /* Update bitcount */
 
         t = ctx->bits[0];
-        if ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
+        nếu ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
                 ctx->bits[1]++; /* Carry from low to high */
         ctx->bits[1] += len >> 29;
 
@@ -199,13 +199,13 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Handle any leading odd-sized chunks */
 
-        if ( t ) {
+        nếu ( t ) {
                 unsigned char *p = (unsigned char *)ctx->in + t;
 
                 t = 64-t;
-                if (len < t) {
+                nếu (len < t) {
                         memcpy(p, buf, len);
-                        return;
+                        trả_về;
                 }
                 memcpy(p, buf, t);
                 byteReverse(ctx->in, 16);
@@ -216,7 +216,7 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Process data in 64-byte chunks */
 
-        while (len >= 64) {
+        trong_khi (len >= 64) {
                 memcpy(ctx->in, buf, 64);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
@@ -249,7 +249,7 @@ static void MD5Final(unsigned char digest[16], MD5Context *ctx){
         count = 64 - 1 - count;
 
         /* Pad out to 56 mod 64 */
-        if (count < 8) {
+        nếu (count < 8) {
                 /* Two lots of padding:  Pad the first block to 64 bytes */
                 memset(p, 0, count);
                 byteReverse(ctx->in, 16);
@@ -257,7 +257,7 @@ static void MD5Final(unsigned char digest[16], MD5Context *ctx){
 
                 /* Now fill the next block with 56 bytes */
                 memset(ctx->in, 0, 56);
-        } else {
+        } không_thì {
                 /* Pad block to 56 bytes */
                 memset(p, 0, count-8);
         }
@@ -276,10 +276,10 @@ static void MD5Final(unsigned char digest[16], MD5Context *ctx){
 */
 static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
   static char const zEncode[] = "0123456789abcdef";
-  int i, j;
+  số_nguyên i, j;
 
-  for(j=i=0; i<16; i++){
-    int a = digest[i];
+  cho(j=i=0; i<16; i++){
+    số_nguyên a = digest[i];
     zBuf[j++] = zEncode[(a>>4)&0xf];
     zBuf[j++] = zEncode[a & 0xf];
   }
@@ -293,11 +293,11 @@ static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
 ** other by a "-" character.
 */
 static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
-  int i, j;
-  unsigned int x;
-  for(i=j=0; i<16; i+=2){
+  số_nguyên i, j;
+  unsigned số_nguyên x;
+  cho(i=j=0; i<16; i+=2){
     x = digest[i]*256 + digest[i+1];
-    if( i>0 ) zDigest[j++] = '-';
+    nếu( i>0 ) zDigest[j++] = '-';
     sqlite3_snprintf(50-j, &zDigest[j], "%05u", x);
     j += 5;
   }
@@ -308,10 +308,10 @@ static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
 ** A TCL command for md5.  The argument is the text to be hashed.  The
 ** Result is the hash in base64.
 */
-static int SQLITE_TCLAPI md5_cmd(
+static số_nguyên SQLITE_TCLAPI md5_cmd(
   void*cd,
   Tcl_Interp *interp,
-  int argc,
+  số_nguyên argc,
   const char **argv
 ){
   MD5Context ctx;
@@ -319,10 +319,10 @@ static int SQLITE_TCLAPI md5_cmd(
   char zBuf[50];
   void (*converter)(unsigned char*, char*);
 
-  if( argc!=2 ){
+  nếu( argc!=2 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
         " TEXT\"", (char*)0);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
   MD5Init(&ctx);
   MD5Update(&ctx, (unsigned char*)argv[1], (unsigned)strlen(argv[1]));
@@ -330,51 +330,51 @@ static int SQLITE_TCLAPI md5_cmd(
   converter = (void(*)(unsigned char*,char*))cd;
   converter(digest, zBuf);
   Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
 ** A TCL command to take the md5 hash of a file.  The argument is the
 ** name of the file.
 */
-static int SQLITE_TCLAPI md5file_cmd(
+static số_nguyên SQLITE_TCLAPI md5file_cmd(
   void*cd,
   Tcl_Interp *interp,
-  int argc,
+  số_nguyên argc,
   const char **argv
 ){
   FILE *in;
-  int ofst;
-  int amt;
+  số_nguyên ofst;
+  số_nguyên amt;
   MD5Context ctx;
   void (*converter)(unsigned char*, char*);
   unsigned char digest[16];
   char zBuf[10240];
 
-  if( argc!=2 && argc!=4 ){
+  nếu( argc!=2 && argc!=4 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
         " FILENAME [OFFSET AMT]\"", (char*)0);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( argc==4 ){
+  nếu( argc==4 ){
     ofst = atoi(argv[2]);
     amt = atoi(argv[3]);
-  }else{
+  }không_thì{
     ofst = 0;
     amt = 2147483647;
   }
   in = fopen(argv[1],"rb");
-  if( in==0 ){
+  nếu( in==0 ){
     Tcl_AppendResult(interp,"unable to open file \"", argv[1],
          "\" for reading", (char*)0);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
   fseek(in, ofst, SEEK_SET);
   MD5Init(&ctx);
-  while( amt>0 ){
-    int n;
-    n = (int)fread(zBuf, 1, sizeof(zBuf)<=amt ? sizeof(zBuf) : amt, in);
-    if( n<=0 ) break;
+  trong_khi( amt>0 ){
+    số_nguyên n;
+    n = (số_nguyên)fread(zBuf, 1, sizeof(zBuf)<=amt ? sizeof(zBuf) : amt, in);
+    nếu( n<=0 ) break;
     MD5Update(&ctx, (unsigned char*)zBuf, (unsigned)n);
     amt -= n;
   }
@@ -383,14 +383,14 @@ static int SQLITE_TCLAPI md5file_cmd(
   converter = (void(*)(unsigned char*,char*))cd;
   converter(digest, zBuf);
   Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
 ** Register the four new TCL commands for generating MD5 checksums
 ** with the TCL interpreter.
 */
-int Md5_Init(Tcl_Interp *interp){
+số_nguyên Md5_Init(Tcl_Interp *interp){
   Tcl_CreateCommand(interp, "md5", (Tcl_CmdProc*)md5_cmd,
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5-10x8", (Tcl_CmdProc*)md5_cmd,
@@ -399,26 +399,26 @@ int Md5_Init(Tcl_Interp *interp){
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5file-10x8", (Tcl_CmdProc*)md5file_cmd,
                     MD5DigestToBase10x8, 0);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
 ** During testing, the special md5sum() aggregate function is available.
 ** inside SQLite.  The following routines implement that function.
 */
-static void md5step(sqlite3_context *context, int argc, sqlite3_value **argv){
+static void md5step(sqlite3_context *context, số_nguyên argc, sqlite3_value **argv){
   MD5Context *p;
-  int i;
-  if( argc<1 ) return;
+  số_nguyên i;
+  nếu( argc<1 ) trả_về;
   p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( p==0 ) return;
-  if( !p->isInit ){
+  nếu( p==0 ) trả_về;
+  nếu( !p->isInit ){
     MD5Init(p);
   }
-  for(i=0; i<argc; i++){
+  cho(i=0; i<argc; i++){
     const char *zData = (char*)sqlite3_value_text(argv[i]);
-    if( zData ){
-      MD5Update(p, (unsigned char*)zData, (int)strlen(zData));
+    nếu( zData ){
+      MD5Update(p, (unsigned char*)zData, (số_nguyên)strlen(zData));
     }
   }
 }
@@ -431,13 +431,13 @@ static void md5finalize(sqlite3_context *context){
   MD5DigestToBase16(digest, zBuf);
   sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
-int Md5_Register(
+số_nguyên Md5_Register(
   sqlite3 *db,
   char **pzErrMsg,
   const sqlite3_api_routines *pThunk
 ){
-  int rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
+  số_nguyên rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
                                  md5step, md5finalize);
   sqlite3_overload_function(db, "md5sum", -1);  /* To exercise this API */
-  return rc;
+  trả_về rc;
 }

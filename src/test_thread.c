@@ -18,11 +18,11 @@
 #include "sqliteInt.h"
 #include "tclsqlite.h"
 
-#if SQLITE_THREADSAFE
+#nếu SQLITE_THREADSAFE
 
 #include <errno.h>
 
-#if !defined(_MSC_VER)
+#nếu !defined(_MSC_VER)
 #include <unistd.h>
 #endif
 
@@ -53,34 +53,34 @@ struct EvalEvent {
 
 static Tcl_ObjCmdProc sqlthread_proc;
 static Tcl_ObjCmdProc clock_seconds_proc;
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#nếu SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
 static Tcl_ObjCmdProc blocking_step_proc;
 static Tcl_ObjCmdProc blocking_prepare_v2_proc;
 #endif
-int Sqlitetest1_Init(Tcl_Interp *);
-int Sqlite3_Init(Tcl_Interp *);
+số_nguyên Sqlitetest1_Init(Tcl_Interp *);
+số_nguyên Sqlite3_Init(Tcl_Interp *);
 
 /* Functions from main.c */
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(số_nguyên);
 
 /* Functions from test1.c */
 extern void *sqlite3TestTextToPtr(const char *);
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
-extern int sqlite3TestMakePointerStr(Tcl_Interp *, char *, void *);
-extern int sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, int);
+extern số_nguyên getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
+extern số_nguyên sqlite3TestMakePointerStr(Tcl_Interp *, char *, void *);
+extern số_nguyên sqlite3TestErrCode(Tcl_Interp *, sqlite3 *, số_nguyên);
 
 /*
 ** Handler for events of type EvalEvent.
 */
-static int SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, int flags){
-  int rc;
+static số_nguyên SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, số_nguyên flags){
+  số_nguyên rc;
   EvalEvent *p = (EvalEvent *)evPtr;
   rc = Tcl_Eval(p->interp, p->zScript);
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
   }
   UNUSED_PARAMETER(flags);
-  return 1;
+  trả_về 1;
 }
 
 /*
@@ -111,14 +111,14 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_Interp *interp;
   Tcl_Obj *pRes;
   Tcl_Obj *pList;
-  int rc;
+  số_nguyên rc;
   SqlThread *p = (SqlThread *)pSqlThread;
-  extern int Sqlitetest_mutex_Init(Tcl_Interp*);
+  extern số_nguyên Sqlitetest_mutex_Init(Tcl_Interp*);
 
   interp = Tcl_CreateInterp();
   Tcl_CreateObjCommand(interp, "clock_seconds", clock_seconds_proc, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlthread", sqlthread_proc, pSqlThread, 0);
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#nếu SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
   Tcl_CreateObjCommand(interp, "sqlite3_blocking_step", blocking_step_proc,0,0);
   Tcl_CreateObjCommand(interp, 
       "sqlite3_blocking_prepare_v2", blocking_prepare_v2_proc, (void *)1, 0);
@@ -135,7 +135,7 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_IncrRefCount(pList);
   Tcl_IncrRefCount(pRes);
 
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     Tcl_ListObjAppendElement(interp, pList, Tcl_NewStringObj("error", -1));
     Tcl_ListObjAppendElement(interp, pList, pRes);
     postToParent(p, pList);
@@ -152,7 +152,7 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   Tcl_DecrRefCount(pList);
   Tcl_DecrRefCount(pRes);
   Tcl_DeleteInterp(interp);
-  while( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
+  trong_khi( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
   Tcl_ExitThread(0);
   TCL_THREAD_CREATE_RETURN;
 }
@@ -167,22 +167,22 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
 **
 **     The caller can wait for the script to terminate using [vwait VARNAME].
 */
-static int SQLITE_TCLAPI sqlthread_spawn(
+static số_nguyên SQLITE_TCLAPI sqlthread_spawn(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId x;
   SqlThread *pNew;
-  int rc;
+  số_nguyên rc;
 
   Tcl_Size nVarname; char *zVarname;
   Tcl_Size nScript; char *zScript;
 
   /* Parameters for thread creation */
-  const int nStack = TCL_THREAD_STACK_DEFAULT;
-  const int flags = TCL_THREAD_NOFLAGS;
+  const số_nguyên nStack = TCL_THREAD_STACK_DEFAULT;
+  const số_nguyên flags = TCL_THREAD_NOFLAGS;
 
   assert(objc==4);
   UNUSED_PARAMETER(clientData);
@@ -200,13 +200,13 @@ static int SQLITE_TCLAPI sqlthread_spawn(
   pNew->interp = interp;
 
   rc = Tcl_CreateThread(&x, tclScriptThread, (void *)pNew, nStack, flags);
-  if( rc!=TCL_OK ){
+  nếu( rc!=TCL_OK ){
     Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", NULL);
     ckfree((char *)pNew);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
@@ -220,10 +220,10 @@ static int SQLITE_TCLAPI sqlthread_spawn(
 **
 **     NOTE: At the moment, this doesn't work. FIXME.
 */
-static int SQLITE_TCLAPI sqlthread_parent(
+static số_nguyên SQLITE_TCLAPI sqlthread_parent(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   EvalEvent *pEvent;
@@ -234,9 +234,9 @@ static int SQLITE_TCLAPI sqlthread_parent(
   assert(objc==3);
   UNUSED_PARAMETER(objc);
 
-  if( p==0 ){
+  nếu( p==0 ){
     Tcl_AppendResult(interp, "no parent thread", NULL);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
   zMsg = Tcl_GetStringFromObj(objv[2], &nMsg);
@@ -249,14 +249,14 @@ static int SQLITE_TCLAPI sqlthread_parent(
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
   Tcl_ThreadAlert(p->parent);
 
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
-static int xBusy(void *pArg, int nBusy){
+static số_nguyên xBusy(void *pArg, số_nguyên nBusy){
   UNUSED_PARAMETER(pArg);
   UNUSED_PARAMETER(nBusy);
   sqlite3_sleep(50);
-  return 1;             /* Try again... */
+  trả_về 1;             /* Try again... */
 }
 
 /*
@@ -265,18 +265,18 @@ static int xBusy(void *pArg, int nBusy){
 **     Open a database handle and return the string representation of
 **     the pointer value.
 */
-static int SQLITE_TCLAPI sqlthread_open(
+static số_nguyên SQLITE_TCLAPI sqlthread_open(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sqlite3TestMakePointerStr(Tcl_Interp *interp, char *zPtr, void *p);
+  số_nguyên sqlite3TestMakePointerStr(Tcl_Interp *interp, char *zPtr, void *p);
 
   const char *zFilename;
   sqlite3 *db;
   char zBuf[100];
-  extern int Md5_Register(sqlite3*,char**,const sqlite3_api_routines*);
+  extern số_nguyên Md5_Register(sqlite3*,char**,const sqlite3_api_routines*);
 
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
@@ -286,10 +286,10 @@ static int SQLITE_TCLAPI sqlthread_open(
   Md5_Register(db, 0, 0);
   sqlite3_busy_handler(db, xBusy, 0);
   
-  if( sqlite3TestMakePointerStr(interp, zBuf, db) ) return TCL_ERROR;
+  nếu( sqlite3TestMakePointerStr(interp, zBuf, db) ) trả_về TCL_ERROR;
   Tcl_AppendResult(interp, zBuf, NULL);
 
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 
@@ -299,10 +299,10 @@ static int SQLITE_TCLAPI sqlthread_open(
 **     Return the current thread-id (Tcl_GetCurrentThread()) cast to
 **     an integer.
 */
-static int SQLITE_TCLAPI sqlthread_id(
+static số_nguyên SQLITE_TCLAPI sqlthread_id(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_ThreadId id = Tcl_GetCurrentThread();
@@ -310,23 +310,23 @@ static int SQLITE_TCLAPI sqlthread_id(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 
 /*
 ** Dispatch routine for the sub-commands of [sqlthread].
 */
-static int SQLITE_TCLAPI sqlthread_proc(
+static số_nguyên SQLITE_TCLAPI sqlthread_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   struct SubCommand {
     char *zName;
     Tcl_ObjCmdProc *xProc;
-    int nArg;
+    số_nguyên nArg;
     char *zUsage;
   } aSub[] = {
     {"parent", sqlthread_parent, 1, "SCRIPT"},
@@ -336,26 +336,26 @@ static int SQLITE_TCLAPI sqlthread_proc(
     {0, 0, 0}
   };
   struct SubCommand *pSub;
-  int rc;
-  int iIndex;
+  số_nguyên rc;
+  số_nguyên iIndex;
 
-  if( objc<2 ){
+  nếu( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(
       interp, objv[1], aSub, sizeof(aSub[0]), "sub-command", 0, &iIndex
   );
-  if( rc!=TCL_OK ) return rc;
+  nếu( rc!=TCL_OK ) trả_về rc;
   pSub = &aSub[iIndex];
 
-  if( objc<(pSub->nArg+2) ){
+  nếu( objc<(pSub->nArg+2) ){
     Tcl_WrongNumArgs(interp, 2, objv, pSub->zUsage);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
-  return pSub->xProc(clientData, interp, objc, objv);
+  trả_về pSub->xProc(clientData, interp, objc, objv);
 }
 
 /*
@@ -365,10 +365,10 @@ static int SQLITE_TCLAPI sqlthread_proc(
 ** implemented as a script in Tcl 8.5, it is not usually available to
 ** testfixture.
 */ 
-static int SQLITE_TCLAPI clock_seconds_proc(
+static số_nguyên SQLITE_TCLAPI clock_seconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -377,17 +377,17 @@ static int SQLITE_TCLAPI clock_seconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
 ** The [clock_milliseconds] command. This is more or less the same as the
 ** regular tcl [clock milliseconds]. 
 */ 
-static int SQLITE_TCLAPI clock_milliseconds_proc(
+static số_nguyên SQLITE_TCLAPI clock_milliseconds_proc(
   ClientData clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Time now;
@@ -398,7 +398,7 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
   UNUSED_PARAMETER(clientData);
   UNUSED_PARAMETER(objc);
   UNUSED_PARAMETER(objv);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*************************************************************************
@@ -414,7 +414,7 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
 ** should be considered if these functions are to be extended (i.e. to 
 ** support windows) in the future.
 */ 
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#nếu SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
 
 /* BEGIN_SQLITE_BLOCKING_STEP */
 /* This example uses the pthreads API */
@@ -426,7 +426,7 @@ static int SQLITE_TCLAPI clock_milliseconds_proc(
 */
 typedef struct UnlockNotification UnlockNotification;
 struct UnlockNotification {
-  int fired;                         /* True after unlock event has occurred */
+  số_nguyên fired;                         /* True after unlock event has occurred */
   pthread_cond_t cond;               /* Condition variable to wait on */
   pthread_mutex_t mutex;             /* Mutex to protect structure */
 };
@@ -434,9 +434,9 @@ struct UnlockNotification {
 /*
 ** This function is an unlock-notify callback registered with SQLite.
 */
-static void unlock_notify_cb(void **apArg, int nArg){
-  int i;
-  for(i=0; i<nArg; i++){
+static void unlock_notify_cb(void **apArg, số_nguyên nArg){
+  số_nguyên i;
+  cho(i=0; i<nArg; i++){
     UnlockNotification *p = (UnlockNotification *)apArg[i];
     pthread_mutex_lock(&p->mutex);
     p->fired = 1;
@@ -459,8 +459,8 @@ static void unlock_notify_cb(void **apArg, int nArg){
 ** this case the caller should not retry the operation and should roll 
 ** back the current transaction (if any).
 */
-static int wait_for_unlock_notify(sqlite3 *db){
-  int rc;
+static số_nguyên wait_for_unlock_notify(sqlite3 *db){
+  số_nguyên rc;
   UnlockNotification un;
 
   /* Initialize the UnlockNotification structure. */
@@ -480,9 +480,9 @@ static int wait_for_unlock_notify(sqlite3 *db){
   ** that the current transaction can be rolled back. Otherwise, block
   ** until the unlock-notify callback is invoked, then return SQLITE_OK.
   */
-  if( rc==SQLITE_OK ){
+  nếu( rc==SQLITE_OK ){
     pthread_mutex_lock(&un.mutex);
-    if( !un.fired ){
+    nếu( !un.fired ){
       pthread_cond_wait(&un.cond, &un.mutex);
     }
     pthread_mutex_unlock(&un.mutex);
@@ -492,7 +492,7 @@ static int wait_for_unlock_notify(sqlite3 *db){
   pthread_cond_destroy(&un.cond);
   pthread_mutex_destroy(&un.mutex);
 
-  return rc;
+  trả_về rc;
 }
 
 /*
@@ -506,14 +506,14 @@ static int wait_for_unlock_notify(sqlite3 *db){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_step(sqlite3_stmt *pStmt){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
+số_nguyên sqlite3_blocking_step(sqlite3_stmt *pStmt){
+  số_nguyên rc;
+  trong_khi( SQLITE_LOCKED==(rc = sqlite3_step(pStmt)) ){
     rc = wait_for_unlock_notify(sqlite3_db_handle(pStmt));
-    if( rc!=SQLITE_OK ) break;
+    nếu( rc!=SQLITE_OK ) break;
     sqlite3_reset(pStmt);
   }
-  return rc;
+  trả_về rc;
 }
 
 /*
@@ -527,19 +527,19 @@ int sqlite3_blocking_step(sqlite3_stmt *pStmt){
 ** the current transaction (if any) and try again later. Otherwise, the
 ** system may become deadlocked.
 */
-int sqlite3_blocking_prepare_v2(
+số_nguyên sqlite3_blocking_prepare_v2(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nSql,                 /* Length of zSql in bytes. */
+  số_nguyên nSql,                 /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
   const char **pz           /* OUT: End of parsed string */
 ){
-  int rc;
-  while( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
+  số_nguyên rc;
+  trong_khi( SQLITE_LOCKED==(rc = sqlite3_prepare_v2(db, zSql, nSql, ppStmt, pz)) ){
     rc = wait_for_unlock_notify(db);
-    if( rc!=SQLITE_OK ) break;
+    nếu( rc!=SQLITE_OK ) break;
   }
-  return rc;
+  trả_về rc;
 }
 /* END_SQLITE_BLOCKING_STEP */
 
@@ -548,81 +548,81 @@ int sqlite3_blocking_prepare_v2(
 **
 ** Advance the statement to the next row.
 */
-static int SQLITE_TCLAPI blocking_step_proc(
+static số_nguyên SQLITE_TCLAPI blocking_step_proc(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
 
   sqlite3_stmt *pStmt;
-  int rc;
+  số_nguyên rc;
 
-  if( objc!=2 ){
+  nếu( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "STMT");
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
   pStmt = (sqlite3_stmt*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   rc = sqlite3_blocking_step(pStmt);
 
   Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), 0);
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 /*
 ** Usage: sqlite3_blocking_prepare_v2 DB sql bytes ?tailvar?
 ** Usage: sqlite3_nonblocking_prepare_v2 DB sql bytes ?tailvar?
 */
-static int SQLITE_TCLAPI blocking_prepare_v2_proc(
+static số_nguyên SQLITE_TCLAPI blocking_prepare_v2_proc(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  số_nguyên objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
   const char *zSql;
-  int bytes;
+  số_nguyên bytes;
   const char *zTail = 0;
   sqlite3_stmt *pStmt = 0;
   char zBuf[50];
-  int rc;
-  int isBlocking = !(clientData==0);
+  số_nguyên rc;
+  số_nguyên isBlocking = !(clientData==0);
 
-  if( objc!=5 && objc!=4 ){
+  nếu( objc!=5 && objc!=4 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"", 
        Tcl_GetString(objv[0]), " DB sql bytes tailvar", 0);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  nếu( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) trả_về TCL_ERROR;
   zSql = Tcl_GetString(objv[2]);
-  if( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) return TCL_ERROR;
+  nếu( Tcl_GetIntFromObj(interp, objv[3], &bytes) ) trả_về TCL_ERROR;
 
-  if( isBlocking ){
+  nếu( isBlocking ){
     rc = sqlite3_blocking_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
-  }else{
+  }không_thì{
     rc = sqlite3_prepare_v2(db, zSql, bytes, &pStmt, &zTail);
   }
 
   assert(rc==SQLITE_OK || pStmt==0);
-  if( zTail && objc>=5 ){
-    if( bytes>=0 ){
+  nếu( zTail && objc>=5 ){
+    nếu( bytes>=0 ){
       bytes = bytes - (zTail-zSql);
     }
     Tcl_ObjSetVar2(interp, objv[4], 0, Tcl_NewStringObj(zTail, bytes), 0);
   }
-  if( rc!=SQLITE_OK ){
+  nếu( rc!=SQLITE_OK ){
     assert( pStmt==0 );
     sqlite3_snprintf(sizeof(zBuf), zBuf, "%s ", (char *)sqlite3ErrName(rc));
     Tcl_AppendResult(interp, zBuf, sqlite3_errmsg(db), NULL);
-    return TCL_ERROR;
+    trả_về TCL_ERROR;
   }
 
-  if( pStmt ){
-    if( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) return TCL_ERROR;
+  nếu( pStmt ){
+    nếu( sqlite3TestMakePointerStr(interp, zBuf, pStmt) ) trả_về TCL_ERROR;
     Tcl_AppendResult(interp, zBuf, NULL);
   }
-  return TCL_OK;
+  trả_về TCL_OK;
 }
 
 #endif /* SQLITE_OS_UNIX && SQLITE_ENABLE_UNLOCK_NOTIFY */
@@ -633,31 +633,31 @@ static int SQLITE_TCLAPI blocking_prepare_v2_proc(
 /*
 ** Register commands with the TCL interpreter.
 */
-int SqlitetestThread_Init(Tcl_Interp *interp){
+số_nguyên SqlitetestThread_Init(Tcl_Interp *interp){
   struct TclCmd {
-    int (*xProc)(void*, Tcl_Interp*, int, Tcl_Obj*const*);
+    số_nguyên (*xProc)(void*, Tcl_Interp*, số_nguyên, Tcl_Obj*const*);
     const char *zName;
-    int iCtx;
+    số_nguyên iCtx;
   } aCmd[] = {
     { sqlthread_proc,           "sqlthread",                      0 },
     { clock_seconds_proc,       "clock_second",                   0 },
     { clock_milliseconds_proc,  "clock_milliseconds",             0 },
-#if SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+#nếu SQLITE_OS_UNIX && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
     { blocking_step_proc,       "sqlite3_blocking_step",          0 },
     { blocking_prepare_v2_proc, "sqlite3_blocking_prepare_v2",    1 },
     { blocking_prepare_v2_proc, "sqlite3_nonblocking_prepare_v2", 0 },
 #endif
   };
-  int ii;
+  số_nguyên ii;
 
-  for(ii=0; ii<sizeof(aCmd)/sizeof(aCmd[0]); ii++){
+  cho(ii=0; ii<sizeof(aCmd)/sizeof(aCmd[0]); ii++){
     void *p = SQLITE_INT_TO_PTR(aCmd[ii].iCtx);
     Tcl_CreateObjCommand(interp, aCmd[ii].zName, aCmd[ii].xProc, p, 0);
   }
-  return TCL_OK;
+  trả_về TCL_OK;
 }
-#else
-int SqlitetestThread_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#không_thì
+số_nguyên SqlitetestThread_Init(Tcl_Interp *interp){
+  trả_về TCL_OK;
 }
 #endif

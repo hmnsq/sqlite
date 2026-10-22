@@ -15,7 +15,7 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#nếu defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
 #include "sqliteInt.h"
 
@@ -26,7 +26,7 @@ typedef struct ProcessLocalVar ProcessLocalVar;
 
 struct ProcessLocalStorage {
   ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+  số_nguyên nFree;
   u8 *pFree;
 };
 
@@ -37,37 +37,37 @@ struct ProcessLocalVar {
 
 static ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
+số_nguyên sqlite3_wsd_init(số_nguyên N, số_nguyên J){
+  nếu( !pGlobal ){
+    số_nguyên nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
     pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
+    nếu( pGlobal ){
       memset(pGlobal, 0, sizeof(ProcessLocalStorage));
       pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  trả_về pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+void *sqlite3_wsd_find(void *K, số_nguyên L){
+  số_nguyên i;
+  số_nguyên iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
+  cho(i=0; i<sizeof(void*); i++){
     iHash = (iHash<<3) + ((unsigned char *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  cho(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
+  nếu( !pVar ){
+    số_nguyên nByte = ROUND8(sizeof(ProcessLocalVar) + L);
     assert( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
     pVar->pKey = K;
@@ -78,7 +78,7 @@ void *sqlite3_wsd_find(void *K, int L){
     memcpy(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  trả_về (void *)&pVar[1];
 }
 
 #endif

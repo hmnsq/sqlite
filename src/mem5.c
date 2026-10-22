@@ -66,8 +66,8 @@
 */
 typedef struct Mem5Link Mem5Link;
 struct Mem5Link {
-  int next;       /* Index of next free chunk */
-  int prev;       /* Index of previous free chunk */
+  số_nguyên next;       /* Index of next free chunk */
+  số_nguyên prev;       /* Index of previous free chunk */
 };
 
 /*
@@ -93,8 +93,8 @@ static SQLITE_WSD struct Mem5Global {
   /*
   ** Memory available for allocation
   */
-  int szAtom;      /* Smallest possible allocation in bytes */
-  int nBlock;      /* Number of szAtom sized blocks in zPool */
+  số_nguyên szAtom;      /* Smallest possible allocation in bytes */
+  số_nguyên nBlock;      /* Number of szAtom sized blocks in zPool */
   u8 *zPool;       /* Memory available to be allocated */
   
   /*
@@ -102,7 +102,7 @@ static SQLITE_WSD struct Mem5Global {
   */
   sqlite3_mutex *mutex;
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#nếu defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /*
   ** Performance statistics
   */
@@ -121,7 +121,7 @@ static SQLITE_WSD struct Mem5Global {
   ** size mem5.szAtom.  aiFreelist[1] holds blocks of size szAtom*2.
   ** aiFreelist[2] holds free blocks of size szAtom*4.  And so forth.
   */
-  int aiFreelist[LOGMAX+1];
+  số_nguyên aiFreelist[LOGMAX+1];
 
   /*
   ** Space for tracking which blocks are checked out and the size
@@ -146,20 +146,20 @@ static SQLITE_WSD struct Mem5Global {
 ** Unlink the chunk at mem5.aPool[i] from list it is currently
 ** on.  It should be found on mem5.aiFreelist[iLogsize].
 */
-static void memsys5Unlink(int i, int iLogsize){
-  int next, prev;
+static void memsys5Unlink(số_nguyên i, số_nguyên iLogsize){
+  số_nguyên next, prev;
   assert( i>=0 && i<mem5.nBlock );
   assert( iLogsize>=0 && iLogsize<=LOGMAX );
   assert( (mem5.aCtrl[i] & CTRL_LOGSIZE)==iLogsize );
 
   next = MEM5LINK(i)->next;
   prev = MEM5LINK(i)->prev;
-  if( prev<0 ){
+  nếu( prev<0 ){
     mem5.aiFreelist[iLogsize] = next;
-  }else{
+  }không_thì{
     MEM5LINK(prev)->next = next;
   }
-  if( next>=0 ){
+  nếu( next>=0 ){
     MEM5LINK(next)->prev = prev;
   }
 }
@@ -168,8 +168,8 @@ static void memsys5Unlink(int i, int iLogsize){
 ** Link the chunk at mem5.aPool[i] so that is on the iLogsize
 ** free list.
 */
-static void memsys5Link(int i, int iLogsize){
-  int x;
+static void memsys5Link(số_nguyên i, số_nguyên iLogsize){
+  số_nguyên x;
   assert( sqlite3_mutex_held(mem5.mutex) );
   assert( i>=0 && i<mem5.nBlock );
   assert( iLogsize>=0 && iLogsize<=LOGMAX );
@@ -177,7 +177,7 @@ static void memsys5Link(int i, int iLogsize){
 
   x = MEM5LINK(i)->next = mem5.aiFreelist[iLogsize];
   MEM5LINK(i)->prev = -1;
-  if( x>=0 ){
+  nếu( x>=0 ){
     assert( x<mem5.nBlock );
     MEM5LINK(x)->prev = i;
   }
@@ -198,13 +198,13 @@ static void memsys5Leave(void){
 ** Return the size of an outstanding allocation, in bytes.
 ** This only works for chunks that are currently checked out.
 */
-static int memsys5Size(void *p){
-  int iSize, i;
+static số_nguyên memsys5Size(void *p){
+  số_nguyên iSize, i;
   assert( p!=0 );
-  i = (int)(((u8 *)p-mem5.zPool)/mem5.szAtom);
+  i = (số_nguyên)(((u8 *)p-mem5.zPool)/mem5.szAtom);
   assert( i>=0 && i<mem5.nBlock );
   iSize = mem5.szAtom * (1 << (mem5.aCtrl[i]&CTRL_LOGSIZE));
-  return iSize;
+  trả_về iSize;
 }
 
 /*
@@ -217,44 +217,44 @@ static int memsys5Size(void *p){
 ** routine so there is never any chance that two or more
 ** threads can be in this routine at the same time.
 */
-static void *memsys5MallocUnsafe(int nByte){
-  int i;           /* Index of a mem5.aPool[] slot */
-  int iBin;        /* Index into mem5.aiFreelist[] */
-  int iFullSz;     /* Size of allocation rounded up to power of 2 */
-  int iLogsize;    /* Log2 of iFullSz/POW2_MIN */
+static void *memsys5MallocUnsafe(số_nguyên nByte){
+  số_nguyên i;           /* Index of a mem5.aPool[] slot */
+  số_nguyên iBin;        /* Index into mem5.aiFreelist[] */
+  số_nguyên iFullSz;     /* Size of allocation rounded up to power of 2 */
+  số_nguyên iLogsize;    /* Log2 of iFullSz/POW2_MIN */
 
   /* nByte must be a positive */
   assert( nByte>0 );
 
   /* No more than 1GiB per allocation */
-  if( nByte > 0x40000000 ) return 0;
+  nếu( nByte > 0x40000000 ) trả_về 0;
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#nếu defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /* Keep track of the maximum allocation request.  Even unfulfilled
   ** requests are counted */
-  if( (u32)nByte>mem5.maxRequest ){
+  nếu( (u32)nByte>mem5.maxRequest ){
     mem5.maxRequest = nByte;
   }
 #endif
 
 
   /* Round nByte up to the next valid power of two */
-  for(iFullSz=mem5.szAtom,iLogsize=0; iFullSz<nByte; iFullSz*=2,iLogsize++){}
+  cho(iFullSz=mem5.szAtom,iLogsize=0; iFullSz<nByte; iFullSz*=2,iLogsize++){}
 
   /* Make sure mem5.aiFreelist[iLogsize] contains at least one free
   ** block.  If not, then split a block of the next larger power of
   ** two in order to create a new free block of size iLogsize.
   */
-  for(iBin=iLogsize; iBin<=LOGMAX && mem5.aiFreelist[iBin]<0; iBin++){}
-  if( iBin>LOGMAX ){
+  cho(iBin=iLogsize; iBin<=LOGMAX && mem5.aiFreelist[iBin]<0; iBin++){}
+  nếu( iBin>LOGMAX ){
     testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes", nByte);
-    return 0;
+    trả_về 0;
   }
   i = mem5.aiFreelist[iBin];
   memsys5Unlink(i, iBin);
-  while( iBin>iLogsize ){
-    int newSize;
+  trong_khi( iBin>iLogsize ){
+    số_nguyên newSize;
 
     iBin--;
     newSize = 1 << iBin;
@@ -263,15 +263,15 @@ static void *memsys5MallocUnsafe(int nByte){
   }
   mem5.aCtrl[i] = iLogsize;
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#nếu defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /* Update allocator performance statistics. */
   mem5.nAlloc++;
   mem5.totalAlloc += iFullSz;
   mem5.totalExcess += iFullSz - nByte;
   mem5.currentCount++;
   mem5.currentOut += iFullSz;
-  if( mem5.maxCount<mem5.currentCount ) mem5.maxCount = mem5.currentCount;
-  if( mem5.maxOut<mem5.currentOut ) mem5.maxOut = mem5.currentOut;
+  nếu( mem5.maxCount<mem5.currentCount ) mem5.maxCount = mem5.currentCount;
+  nếu( mem5.maxOut<mem5.currentOut ) mem5.maxOut = mem5.currentOut;
 #endif
 
 #ifdef SQLITE_DEBUG
@@ -281,7 +281,7 @@ static void *memsys5MallocUnsafe(int nByte){
 #endif
 
   /* Return a pointer to the allocated memory. */
-  return (void*)&mem5.zPool[i*mem5.szAtom];
+  trả_về (void*)&mem5.zPool[i*mem5.szAtom];
 }
 
 /*
@@ -289,12 +289,12 @@ static void *memsys5MallocUnsafe(int nByte){
 */
 static void memsys5FreeUnsafe(void *pOld){
   u32 size, iLogsize;
-  int iBlock;
+  số_nguyên iBlock;
 
   /* Set iBlock to the index of the block pointed to by pOld in 
   ** the array of mem5.szAtom byte blocks pointed to by mem5.zPool.
   */
-  iBlock = (int)(((u8 *)pOld-mem5.zPool)/mem5.szAtom);
+  iBlock = (số_nguyên)(((u8 *)pOld-mem5.zPool)/mem5.szAtom);
 
   /* Check that the pointer pOld points to a valid, non-free block. */
   assert( iBlock>=0 && iBlock<mem5.nBlock );
@@ -308,7 +308,7 @@ static void memsys5FreeUnsafe(void *pOld){
   mem5.aCtrl[iBlock] |= CTRL_FREE;
   mem5.aCtrl[iBlock+size-1] |= CTRL_FREE;
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#nếu defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   assert( mem5.currentCount>0 );
   assert( mem5.currentOut>=(size*mem5.szAtom) );
   mem5.currentCount--;
@@ -318,23 +318,23 @@ static void memsys5FreeUnsafe(void *pOld){
 #endif
 
   mem5.aCtrl[iBlock] = CTRL_FREE | iLogsize;
-  while( ALWAYS(iLogsize<LOGMAX) ){
-    int iBuddy;
-    if( (iBlock>>iLogsize) & 1 ){
+  trong_khi( ALWAYS(iLogsize<LOGMAX) ){
+    số_nguyên iBuddy;
+    nếu( (iBlock>>iLogsize) & 1 ){
       iBuddy = iBlock - size;
       assert( iBuddy>=0 );
-    }else{
+    }không_thì{
       iBuddy = iBlock + size;
-      if( iBuddy>=mem5.nBlock ) break;
+      nếu( iBuddy>=mem5.nBlock ) break;
     }
-    if( mem5.aCtrl[iBuddy]!=(CTRL_FREE | iLogsize) ) break;
+    nếu( mem5.aCtrl[iBuddy]!=(CTRL_FREE | iLogsize) ) break;
     memsys5Unlink(iBuddy, iLogsize);
     iLogsize++;
-    if( iBuddy<iBlock ){
+    nếu( iBuddy<iBlock ){
       mem5.aCtrl[iBuddy] = CTRL_FREE | iLogsize;
       mem5.aCtrl[iBlock] = 0;
       iBlock = iBuddy;
-    }else{
+    }không_thì{
       mem5.aCtrl[iBlock] = CTRL_FREE | iLogsize;
       mem5.aCtrl[iBuddy] = 0;
     }
@@ -353,14 +353,14 @@ static void memsys5FreeUnsafe(void *pOld){
 /*
 ** Allocate nBytes of memory.
 */
-static void *memsys5Malloc(int nBytes){
+static void *memsys5Malloc(số_nguyên nBytes){
   sqlite3_int64 *p = 0;
-  if( nBytes>0 ){
+  nếu( nBytes>0 ){
     memsys5Enter();
     p = memsys5MallocUnsafe(nBytes);
     memsys5Leave();
   }
-  return (void*)p; 
+  trả_về (void*)p; 
 }
 
 /*
@@ -388,25 +388,25 @@ static void memsys5Free(void *pPrior){
 ** (an allocation larger than 0x40000000) was requested and this
 ** routine should return 0 without freeing pPrior.
 */
-static void *memsys5Realloc(void *pPrior, int nBytes){
-  int nOld;
+static void *memsys5Realloc(void *pPrior, số_nguyên nBytes){
+  số_nguyên nOld;
   void *p;
   assert( pPrior!=0 );
   assert( (nBytes&(nBytes-1))==0 );  /* EV: R-46199-30249 */
   assert( nBytes>=0 );
-  if( nBytes==0 ){
-    return 0;
+  nếu( nBytes==0 ){
+    trả_về 0;
   }
   nOld = memsys5Size(pPrior);
-  if( nBytes<=nOld ){
-    return pPrior;
+  nếu( nBytes<=nOld ){
+    trả_về pPrior;
   }
   p = memsys5Malloc(nBytes);
-  if( p ){
+  nếu( p ){
     memcpy(p, pPrior, nOld);
     memsys5Free(pPrior);
   }
-  return p;
+  trả_về p;
 }
 
 /*
@@ -418,20 +418,20 @@ static void *memsys5Realloc(void *pPrior, int nBytes){
 ** 32-bit signed integer.  Hence the largest allocation is 0x40000000
 ** or 1073741824 bytes.
 */
-static int memsys5Roundup(int n){
-  int iFullSz;
-  if( n<=mem5.szAtom*2 ){
-    if( n<=mem5.szAtom ) return mem5.szAtom;
-    return mem5.szAtom*2;
+static số_nguyên memsys5Roundup(số_nguyên n){
+  số_nguyên iFullSz;
+  nếu( n<=mem5.szAtom*2 ){
+    nếu( n<=mem5.szAtom ) trả_về mem5.szAtom;
+    trả_về mem5.szAtom*2;
   }
-  if( n>0x10000000 ){
-    if( n>0x40000000 ) return 0;
-    if( n>0x20000000 ) return 0x40000000;
-    return 0x20000000;
+  nếu( n>0x10000000 ){
+    nếu( n>0x40000000 ) trả_về 0;
+    nếu( n>0x20000000 ) trả_về 0x40000000;
+    trả_về 0x20000000;
   }
-  for(iFullSz=mem5.szAtom*8; iFullSz<n; iFullSz *= 4);
-  if( (iFullSz/2)>=(i64)n ) return iFullSz/2;
-  return iFullSz;
+  cho(iFullSz=mem5.szAtom*8; iFullSz<n; iFullSz *= 4);
+  nếu( (iFullSz/2)>=(i64)n ) trả_về iFullSz/2;
+  trả_về iFullSz;
 }
 
 /*
@@ -444,10 +444,10 @@ static int memsys5Roundup(int n){
 **             memsys5Log(8) -> 3
 **             memsys5Log(9) -> 4
 */
-static int memsys5Log(int iValue){
-  int iLog;
-  for(iLog=0; (iLog<(int)((sizeof(int)*8)-1)) && (1<<iLog)<iValue; iLog++);
-  return iLog;
+static số_nguyên memsys5Log(số_nguyên iValue){
+  số_nguyên iLog;
+  cho(iLog=0; (iLog<(số_nguyên)((sizeof(số_nguyên)*8)-1)) && (1<<iLog)<iValue; iLog++);
+  trả_về iLog;
 }
 
 /*
@@ -456,12 +456,12 @@ static int memsys5Log(int iValue){
 ** This routine is not threadsafe.  The caller must be holding a mutex
 ** to prevent multiple threads from entering at the same time.
 */
-static int memsys5Init(void *NotUsed){
-  int ii;            /* Loop counter */
-  int nByte;         /* Number of bytes of memory available to this allocator */
+static số_nguyên memsys5Init(void *NotUsed){
+  số_nguyên ii;            /* Loop counter */
+  số_nguyên nByte;         /* Number of bytes of memory available to this allocator */
   u8 *zByte;         /* Memory usable by this allocator */
-  int nMinLog;       /* Log base 2 of minimum allocation size in bytes */
-  int iOffset;       /* An offset into mem5.aCtrl[] */
+  số_nguyên nMinLog;       /* Log base 2 of minimum allocation size in bytes */
+  số_nguyên iOffset;       /* An offset into mem5.aCtrl[] */
 
   UNUSED_PARAMETER(NotUsed);
 
@@ -480,7 +480,7 @@ static int memsys5Init(void *NotUsed){
   /* boundaries on sqlite3GlobalConfig.mnReq are enforced in sqlite3_config() */
   nMinLog = memsys5Log(sqlite3GlobalConfig.mnReq);
   mem5.szAtom = (1<<nMinLog);
-  while( (int)sizeof(Mem5Link)>mem5.szAtom ){
+  trong_khi( (số_nguyên)sizeof(Mem5Link)>mem5.szAtom ){
     mem5.szAtom = mem5.szAtom << 1;
   }
 
@@ -488,14 +488,14 @@ static int memsys5Init(void *NotUsed){
   mem5.zPool = zByte;
   mem5.aCtrl = (u8 *)&mem5.zPool[mem5.nBlock*mem5.szAtom];
 
-  for(ii=0; ii<=LOGMAX; ii++){
+  cho(ii=0; ii<=LOGMAX; ii++){
     mem5.aiFreelist[ii] = -1;
   }
 
   iOffset = 0;
-  for(ii=LOGMAX; ii>=0; ii--){
-    int nAlloc = (1<<ii);
-    if( (iOffset+nAlloc)<=mem5.nBlock ){
+  cho(ii=LOGMAX; ii>=0; ii--){
+    số_nguyên nAlloc = (1<<ii);
+    nếu( (iOffset+nAlloc)<=mem5.nBlock ){
       mem5.aCtrl[iOffset] = ii | CTRL_FREE;
       memsys5Link(iOffset, ii);
       iOffset += nAlloc;
@@ -504,11 +504,11 @@ static int memsys5Init(void *NotUsed){
   }
 
   /* If a mutex is required for normal operation, allocate one */
-  if( sqlite3GlobalConfig.bMemstat==0 ){
+  nếu( sqlite3GlobalConfig.bMemstat==0 ){
     mem5.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
 
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /*
@@ -517,7 +517,7 @@ static int memsys5Init(void *NotUsed){
 static void memsys5Shutdown(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   mem5.mutex = 0;
-  return;
+  trả_về;
 }
 
 #ifdef SQLITE_TEST
@@ -527,23 +527,23 @@ static void memsys5Shutdown(void *NotUsed){
 */
 void sqlite3Memsys5Dump(const char *zFilename){
   FILE *out;
-  int i, j, n;
-  int nMinLog;
+  số_nguyên i, j, n;
+  số_nguyên nMinLog;
 
-  if( zFilename==0 || zFilename[0]==0 ){
+  nếu( zFilename==0 || zFilename[0]==0 ){
     out = stdout;
-  }else{
+  }không_thì{
     out = fopen(zFilename, "w");
-    if( out==0 ){
+    nếu( out==0 ){
       fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                       zFilename);
-      return;
+      trả_về;
     }
   }
   memsys5Enter();
   nMinLog = memsys5Log(mem5.szAtom);
-  for(i=0; i<=LOGMAX && i+nMinLog<32; i++){
-    for(n=0, j=mem5.aiFreelist[i]; j>=0; j = MEM5LINK(j)->next, n++){}
+  cho(i=0; i<=LOGMAX && i+nMinLog<32; i++){
+    cho(n=0, j=mem5.aiFreelist[i]; j>=0; j = MEM5LINK(j)->next, n++){}
     fprintf(out, "freelist items of size %d: %d\n", mem5.szAtom << i, n);
   }
   fprintf(out, "mem5.nAlloc       = %llu\n", mem5.nAlloc);
@@ -555,9 +555,9 @@ void sqlite3Memsys5Dump(const char *zFilename){
   fprintf(out, "mem5.maxCount     = %u\n", mem5.maxCount);
   fprintf(out, "mem5.maxRequest   = %u\n", mem5.maxRequest);
   memsys5Leave();
-  if( out==stdout ){
+  nếu( out==stdout ){
     fflush(stdout);
-  }else{
+  }không_thì{
     fclose(out);
   }
 }
@@ -579,7 +579,7 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys5(void){
      memsys5Shutdown,
      0
   };
-  return &memsys5Methods;
+  trả_về &memsys5Methods;
 }
 
 #endif /* SQLITE_ENABLE_MEMSYS5 */

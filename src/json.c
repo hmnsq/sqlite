@@ -288,7 +288,7 @@ typedef struct JsonParse JsonParse;
 */
 struct JsonCache {
   sqlite3 *db;                    /* Database connection */
-  int nUsed;                      /* Number of active entries in the cache */
+  số_nguyên nUsed;                      /* Number of active entries in the cache */
   JsonParse *a[JSON_CACHE_SIZE];  /* One line for each cache entry */
 };
 
@@ -356,7 +356,7 @@ struct JsonParse {
   u32 nBlobAlloc;    /* Bytes allocated to aBlob[].  0 if aBlob is external */
   char *zJson;       /* Json text used for parsing */
   sqlite3 *db;       /* The database connection to which this object belongs */
-  int nJson;         /* Length of the zJson string in bytes */
+  số_nguyên nJson;         /* Length of the zJson string in bytes */
   u32 nJPRef;        /* Number of references to this object */
   u32 iErr;          /* Error location in zJson[] */
   u16 iDepth;        /* Nesting depth */
@@ -367,7 +367,7 @@ struct JsonParse {
   u8 bReadOnly;      /* Do not modify. */
   /* Search and edit information.  See jsonLookupStep() */
   u8 eEdit;          /* Edit operation to apply */
-  int delta;         /* Size change due to the edit */
+  số_nguyên delta;         /* Size change due to the edit */
   u32 nIns;          /* Number of bytes to insert */
   u32 iLabel;        /* Location of label if search landed on an object value */
   u8 *aIns;          /* Content to be inserted */
@@ -389,7 +389,7 @@ struct JsonParse {
 */
 #ifndef SQLITE_JSON_MAX_DEPTH
 # define JSON_MAX_DEPTH  1000
-#else
+#không_thì
 # define JSON_MAX_DEPTH SQLITE_JSON_MAX_DEPTH
 #endif
 
@@ -404,7 +404,7 @@ struct JsonParse {
 ** Forward references
 **************************************************************************/
 static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
+static số_nguyên jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
 static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
 static void jsonReturnParse(sqlite3_context*,JsonParse*);
 static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
@@ -420,8 +420,8 @@ static u32 jsonUnescapeOneChar(const char*, u32, u32*);
 ** Free a JsonCache object.
 */
 static void jsonCacheDelete(JsonCache *p){
-  int i;
-  for(i=0; i<p->nUsed; i++){
+  số_nguyên i;
+  cho(i=0; i<p->nUsed; i++){
     jsonParseFree(p->a[i]);
   }
   sqlite3DbFree(p->db, p);
@@ -437,7 +437,7 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+static số_nguyên jsonCacheInsert(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
@@ -447,16 +447,16 @@ static int jsonCacheInsert(
   assert( pParse->bJsonIsRCStr );
   assert( pParse->delta==0 );
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
+  nếu( p==0 ){
     sqlite3 *db = sqlite3_context_db_handle(ctx);
     p = sqlite3DbMallocZero(db, sizeof(*p));
-    if( p==0 ) return SQLITE_NOMEM;
+    nếu( p==0 ) trả_về SQLITE_NOMEM;
     p->db = db;
     sqlite3_set_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
     p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-    if( p==0 ) return SQLITE_NOMEM;
+    nếu( p==0 ) trả_về SQLITE_NOMEM;
   }
-  if( p->nUsed >= JSON_CACHE_SIZE ){
+  nếu( p->nUsed >= JSON_CACHE_SIZE ){
     jsonParseFree(p->a[0]);
     memmove(p->a, &p->a[1], (JSON_CACHE_SIZE-1)*sizeof(p->a[0]));
     p->nUsed = JSON_CACHE_SIZE-1;
@@ -467,7 +467,7 @@ static int jsonCacheInsert(
   pParse->bReadOnly = 1;
   p->a[p->nUsed] = pParse;
   p->nUsed++;
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /*
@@ -486,32 +486,32 @@ static JsonParse *jsonCacheSearch(
   sqlite3_value *pArg      /* Function argument containing SQL text */
 ){
   JsonCache *p;
-  int i;
+  số_nguyên i;
   const char *zJson;
-  int nJson;
+  số_nguyên nJson;
 
-  if( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
-    return 0;
+  nếu( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
+    trả_về 0;
   }
   zJson = (const char*)sqlite3_value_text(pArg);
-  if( zJson==0 ) return 0;
+  nếu( zJson==0 ) trả_về 0;
   nJson = sqlite3_value_bytes(pArg);
 
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
-    return 0;
+  nếu( p==0 ){
+    trả_về 0;
   }
-  for(i=0; i<p->nUsed; i++){
-    if( p->a[i]->zJson==zJson ) break;
+  cho(i=0; i<p->nUsed; i++){
+    nếu( p->a[i]->zJson==zJson ) break;
   }
-  if( i>=p->nUsed ){
-    for(i=0; i<p->nUsed; i++){
-      if( p->a[i]->nJson!=nJson ) continue;
-      if( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) break;
+  nếu( i>=p->nUsed ){
+    cho(i=0; i<p->nUsed; i++){
+      nếu( p->a[i]->nJson!=nJson ) continue;
+      nếu( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) break;
     }
   }
-  if( i<p->nUsed ){
-    if( i<p->nUsed-1 ){
+  nếu( i<p->nUsed ){
+    nếu( i<p->nUsed-1 ){
       /* Make the matching entry the most recently used entry */
       JsonParse *tmp = p->a[i];
       memmove(&p->a[i], &p->a[i+1], (p->nUsed-i-1)*sizeof(tmp));
@@ -519,9 +519,9 @@ static JsonParse *jsonCacheSearch(
       i = p->nUsed - 1;
     }
     assert( p->a[i]->delta==0 );
-    return p->a[i];
-  }else{
-    return 0;
+    trả_về p->a[i];
+  }không_thì{
+    trả_về 0;
   }
 }
 
@@ -551,7 +551,7 @@ static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
 ** initial state.
 */
 static void jsonStringReset(JsonString *p){
-  if( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
+  nếu( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
   jsonStringZero(p);
 }
 
@@ -559,7 +559,7 @@ static void jsonStringReset(JsonString *p){
 */
 static void jsonStringOom(JsonString *p){
   p->eErr |= JSTRING_OOM;
-  if( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
+  nếu( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
   jsonStringReset(p);
 }
 
@@ -575,29 +575,29 @@ static void jsonStringTooDeep(JsonString *p){
 /* Enlarge pJson->zBuf so that it can hold at least N more bytes.
 ** Return zero on success.  Return non-zero on an OOM error
 */
-static int jsonStringGrow(JsonString *p, u32 N){
+static số_nguyên jsonStringGrow(JsonString *p, u32 N){
   u64 nTotal = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
   char *zNew;
-  if( p->bStatic ){
-    if( p->eErr ) return 1;
+  nếu( p->bStatic ){
+    nếu( p->eErr ) trả_về 1;
     zNew = sqlite3RCStrNew(nTotal);
-    if( zNew==0 ){
+    nếu( zNew==0 ){
       jsonStringOom(p);
-      return SQLITE_NOMEM;
+      trả_về SQLITE_NOMEM;
     }
     memcpy(zNew, p->zBuf, (size_t)p->nUsed);
     p->zBuf = zNew;
     p->bStatic = 0;
-  }else{
+  }không_thì{
     p->zBuf = sqlite3RCStrResize(p->zBuf, nTotal);
-    if( p->zBuf==0 ){
+    nếu( p->zBuf==0 ){
       p->eErr |= JSTRING_OOM;
       jsonStringZero(p);
-      return SQLITE_NOMEM;
+      trả_về SQLITE_NOMEM;
     }
   }
   p->nAlloc = nTotal;
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* Append N bytes from zIn onto the end of the JsonString string.
@@ -608,24 +608,24 @@ static SQLITE_NOINLINE void jsonStringExpandAndAppend(
   u32 N
 ){
   assert( N>0 );
-  if( jsonStringGrow(p,N) ) return;
+  nếu( jsonStringGrow(p,N) ) trả_về;
   memcpy(p->zBuf+p->nUsed, zIn, N);
   p->nUsed += N;
 }
 static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
-  if( N==0 ) return;
-  if( N+p->nUsed >= p->nAlloc ){
+  nếu( N==0 ) trả_về;
+  nếu( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
-  }else{
+  }không_thì{
     memcpy(p->zBuf+p->nUsed, zIn, N);
     p->nUsed += N;
   }
 }
 static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
   assert( N>0 );
-  if( N+p->nUsed >= p->nAlloc ){
+  nếu( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
-  }else{
+  }không_thì{
     memcpy(p->zBuf+p->nUsed, zIn, N);
     p->nUsed += N;
   }
@@ -633,25 +633,25 @@ static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
 
 /* Append formatted text (not to exceed N bytes) to the JsonString.
 */
-static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
+static void jsonPrintf(số_nguyên N, JsonString *p, const char *zFormat, ...){
   va_list ap;
-  if( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) return;
+  nếu( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) trả_về;
   va_start(ap, zFormat);
   sqlite3_vsnprintf(N, p->zBuf+p->nUsed, zFormat, ap);
   va_end(ap);
-  p->nUsed += (int)strlen(p->zBuf+p->nUsed);
+  p->nUsed += (số_nguyên)strlen(p->zBuf+p->nUsed);
 }
 
 /* Append a single character
 */
 static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
-  if( jsonStringGrow(p,1) ) return;
+  nếu( jsonStringGrow(p,1) ) trả_về;
   p->zBuf[p->nUsed++] = c;
 }
 static void jsonAppendChar(JsonString *p, char c){
-  if( p->nUsed>=p->nAlloc ){
+  nếu( p->nUsed>=p->nAlloc ){
     jsonAppendCharExpand(p,c);
-  }else{
+  }không_thì{
     p->zBuf[p->nUsed++] = c;
   }
 }
@@ -659,7 +659,7 @@ static void jsonAppendChar(JsonString *p, char c){
 /* Remove a single character from the end of the string
 */
 static void jsonStringTrimOneChar(JsonString *p){
-  if( p->eErr==0 ){
+  nếu( p->eErr==0 ){
     assert( p->nUsed>0 );
     p->nUsed--;
   }
@@ -671,10 +671,10 @@ static void jsonStringTrimOneChar(JsonString *p){
 ** Return true on success.  Return false if an OOM prevents this
 ** from happening.
 */
-static int jsonStringTerminate(JsonString *p){
+static số_nguyên jsonStringTerminate(JsonString *p){
   jsonAppendChar(p, 0);
   jsonStringTrimOneChar(p);
-  return p->eErr==0;
+  trả_về p->eErr==0;
 }
 
 /* Append a comma separator to the output buffer, if the previous
@@ -682,9 +682,9 @@ static int jsonStringTerminate(JsonString *p){
 */
 static void jsonAppendSeparator(JsonString *p){
   char c;
-  if( p->nUsed==0 ) return;
+  nếu( p->nUsed==0 ) trả_về;
   c = p->zBuf[p->nUsed-1];
-  if( c=='[' || c=='{' ) return;
+  nếu( c=='[' || c=='{' ) trả_về;
   jsonAppendChar(p, ',');
 }
 
@@ -707,11 +707,11 @@ static void jsonAppendControlChar(JsonString *p, u8 c){
   assert( aSpecial['\t']=='t' );
   assert( c>=0 && c<sizeof(aSpecial) );
   assert( p->nUsed+7 <= p->nAlloc );
-  if( aSpecial[c] ){
+  nếu( aSpecial[c] ){
     p->zBuf[p->nUsed] = '\\';
     p->zBuf[p->nUsed+1] = aSpecial[c];
     p->nUsed += 2;
-  }else{
+  }không_thì{
     p->zBuf[p->nUsed] = '\\';
     p->zBuf[p->nUsed+1] = 'u';
     p->zBuf[p->nUsed+2] = '0';
@@ -734,60 +734,60 @@ static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
   u32 k;
   u8 c;
   const u8 *z = (const u8*)zIn;
-  if( z==0 ) return;
-  if( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) return;
+  nếu( z==0 ) trả_về;
+  nếu( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) trả_về;
   p->zBuf[p->nUsed++] = '"';
-  while( 1 /*exit-by-break*/ ){
+  trong_khi( 1 /*exit-by-break*/ ){
     k = 0;
     /* The following while() is the 4-way unwound equivalent of
     **
     **     while( k<N && jsonIsOk[z[k]] ){ k++; }
     */
-    while( 1 /* Exit by break */ ){
-      if( k+3>=N ){
-        while( k<N && jsonIsOk[z[k]] ){ k++; }
+    trong_khi( 1 /* Exit by break */ ){
+      nếu( k+3>=N ){
+        trong_khi( k<N && jsonIsOk[z[k]] ){ k++; }
         break;
       }
-      if( !jsonIsOk[z[k]] ){
+      nếu( !jsonIsOk[z[k]] ){
         break;
       }
-      if( !jsonIsOk[z[k+1]] ){
+      nếu( !jsonIsOk[z[k+1]] ){
         k += 1;
         break;
       }
-      if( !jsonIsOk[z[k+2]] ){
+      nếu( !jsonIsOk[z[k+2]] ){
         k += 2;
         break;
       }
-      if( !jsonIsOk[z[k+3]] ){
+      nếu( !jsonIsOk[z[k+3]] ){
         k += 3;
         break;
-      }else{
+      }không_thì{
         k += 4;
       }
     }
-    if( k>=N ){
-      if( k>0 ){
+    nếu( k>=N ){
+      nếu( k>0 ){
         memcpy(&p->zBuf[p->nUsed], z, k);
         p->nUsed += k;
       }
       break;
     }
-    if( k>0 ){
+    nếu( k>0 ){
       memcpy(&p->zBuf[p->nUsed], z, k);
       p->nUsed += k;
       z += k;
       N -= k;
     }
     c = z[0];
-    if( c=='"' || c=='\\' ){
-      if( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) return;
+    nếu( c=='"' || c=='\\' ){
+      nếu( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) trả_về;
       p->zBuf[p->nUsed++] = '\\';
       p->zBuf[p->nUsed++] = c;
-    }else if( c=='\'' ){
+    }không_thì nếu( c=='\'' ){
       p->zBuf[p->nUsed++] = c;
-    }else{
-      if( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) return;
+    }không_thì{
+      nếu( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) trả_về;
       jsonAppendControlChar(p, c);
     }
     z++;
@@ -823,9 +823,9 @@ static void jsonAppendSqlValue(
     case SQLITE_TEXT: {
       const char *z = (const char*)sqlite3_value_text(pValue);
       u32 n = (u32)sqlite3_value_bytes(pValue);
-      if( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
+      nếu( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
         jsonAppendRaw(p, z, n);
-      }else{
+      }không_thì{
         jsonAppendString(p, z, n);
       }
       break;
@@ -833,9 +833,9 @@ static void jsonAppendSqlValue(
     default: {
       JsonParse px;
       memset(&px, 0, sizeof(px));
-      if( jsonArgIsJsonb(pValue, &px) ){
+      nếu( jsonArgIsJsonb(pValue, &px) ){
         jsonTranslateBlobToText(&px, 0, p);
-      }else if( p->eErr==0 ){
+      }không_thì nếu( p->eErr==0 ){
         sqlite3_result_error(p->pCtx, "JSON cannot hold BLOB values", -1);
         p->eErr = JSTRING_ERR;
         jsonStringReset(p);
@@ -862,35 +862,35 @@ static void jsonReturnString(
   assert( (pParse!=0)==(ctx!=0) );
   assert( ctx==0 || ctx==p->pCtx );
   jsonStringTerminate(p);
-  if( p->eErr==0 ){
-    int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
-    if( flags & JSON_BLOB ){
+  nếu( p->eErr==0 ){
+    số_nguyên flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
+    nếu( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(p);
-    }else if( p->bStatic ){
+    }không_thì nếu( p->bStatic ){
       sqlite3_result_text64(p->pCtx, p->zBuf, p->nUsed,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-    }else{
-      if( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
-        int rc;
+    }không_thì{
+      nếu( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
+        số_nguyên rc;
         pParse->zJson = sqlite3RCStrRef(p->zBuf);
         pParse->nJson = p->nUsed;
         pParse->bJsonIsRCStr = 1;
         rc = jsonCacheInsert(ctx, pParse);
-        if( rc==SQLITE_NOMEM ){
+        nếu( rc==SQLITE_NOMEM ){
           sqlite3_result_error_nomem(ctx);
           jsonStringReset(p);
-          return;
+          trả_về;
         }
       }
       sqlite3_result_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->nUsed,
                             sqlite3RCStrUnref,
                             SQLITE_UTF8);
     }
-  }else if( p->eErr & JSTRING_OOM ){
+  }không_thì nếu( p->eErr & JSTRING_OOM ){
     sqlite3_result_error_nomem(p->pCtx);
-  }else if( p->eErr & JSTRING_TOODEEP ){
+  }không_thì nếu( p->eErr & JSTRING_TOODEEP ){
     /* error already in p->pCtx */
-  }else if( p->eErr & JSTRING_MALFORMED ){
+  }không_thì nếu( p->eErr & JSTRING_MALFORMED ){
     sqlite3_result_error(p->pCtx, "malformed JSON", -1);
   }
   jsonStringReset(p);
@@ -906,13 +906,13 @@ static void jsonReturnString(
 */
 static void jsonParseReset(JsonParse *pParse){
   assert( pParse->nJPRef<=1 );
-  if( pParse->bJsonIsRCStr ){
+  nếu( pParse->bJsonIsRCStr ){
     sqlite3RCStrUnref(pParse->zJson);
     pParse->zJson = 0;
     pParse->nJson = 0;
     pParse->bJsonIsRCStr = 0;
   }
-  if( pParse->nBlobAlloc ){
+  nếu( pParse->nBlobAlloc ){
     sqlite3DbFree(pParse->db, pParse->aBlob);
     pParse->aBlob = 0;
     pParse->nBlob = 0;
@@ -925,10 +925,10 @@ static void jsonParseReset(JsonParse *pParse){
 ** count reaches zero, free the object.
 */
 static void jsonParseFree(JsonParse *pParse){
-  if( pParse ){
-    if( pParse->nJPRef>1 ){
+  nếu( pParse ){
+    nếu( pParse->nJPRef>1 ){
       pParse->nJPRef--;
-    }else{
+    }không_thì{
       jsonParseReset(pParse);
       sqlite3DbFree(pParse->db, pParse);
     }
@@ -945,14 +945,14 @@ static void jsonParseFree(JsonParse *pParse){
 ** character:  0..9a..fA..F.  But unlike sqlite3HexToInt(), it does not
 ** assert() if the digit is not hex.
 */
-static u8 jsonHexToInt(int h){
+static u8 jsonHexToInt(số_nguyên h){
 #ifdef SQLITE_ASCII
   h += 9*(1&(h>>6));
 #endif
 #ifdef SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
 #endif
-  return (u8)(h & 0xf);
+  trả_về (u8)(h & 0xf);
 }
 
 /*
@@ -964,21 +964,21 @@ static u32 jsonHexToInt4(const char *z){
     + (jsonHexToInt(z[1])<<8)
     + (jsonHexToInt(z[2])<<4)
     + jsonHexToInt(z[3]);
-  return v;
+  trả_về v;
 }
 
 /*
 ** Return true if z[] begins with 2 (or more) hexadecimal digits
 */
-static int jsonIs2Hex(const char *z){
-  return sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
+static số_nguyên jsonIs2Hex(const char *z){
+  trả_về sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
 }
 
 /*
 ** Return true if z[] begins with 4 (or more) hexadecimal digits
 */
-static int jsonIs4Hex(const char *z){
-  return jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
+static số_nguyên jsonIs4Hex(const char *z){
+  trả_về jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
 }
 
 /*
@@ -1017,10 +1017,10 @@ static int jsonIs4Hex(const char *z){
 ** In addition, comments between '/', '*' and '*', '/' and
 ** from '/', '/' to end-of-line are also considered to be whitespace.
 */
-static int json5Whitespace(const char *zIn){
-  int n = 0;
+static số_nguyên json5Whitespace(const char *zIn){
+  số_nguyên n = 0;
   const u8 *z = (u8*)zIn;
-  while( 1 /*exit by "goto whitespace_done"*/ ){
+  trong_khi( 1 /*exit by "goto whitespace_done"*/ ){
     switch( z[n] ){
       case 0x09:
       case 0x0a:
@@ -1032,19 +1032,19 @@ static int json5Whitespace(const char *zIn){
         break;
       }
       case '/': {
-        if( z[n+1]=='*' && z[n+2]!=0 ){
-          int j;
-          for(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
-            if( z[j]==0 ) goto whitespace_done;
+        nếu( z[n+1]=='*' && z[n+2]!=0 ){
+          số_nguyên j;
+          cho(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
+            nếu( z[j]==0 ) goto whitespace_done;
           }
           n = j+1;
           break;
-        }else if( z[n+1]=='/' ){
-          int j;
+        }không_thì nếu( z[n+1]=='/' ){
+          số_nguyên j;
           char c;
-          for(j=n+2; (c = z[j])!=0; j++){
-            if( c=='\n' || c=='\r' ) break;
-            if( 0xe2==(u8)c && 0x80==(u8)z[j+1]
+          cho(j=n+2; (c = z[j])!=0; j++){
+            nếu( c=='\n' || c=='\r' ) break;
+            nếu( 0xe2==(u8)c && 0x80==(u8)z[j+1]
              && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2])
             ){
               j += 2;
@@ -1052,48 +1052,48 @@ static int json5Whitespace(const char *zIn){
             }
           }
           n = j;
-          if( z[n] ) n++;
+          nếu( z[n] ) n++;
           break;
         }
         goto whitespace_done;
       }
       case 0xc2: {
-        if( z[n+1]==0xa0 ){
+        nếu( z[n+1]==0xa0 ){
           n += 2;
           break;
         }
         goto whitespace_done;
       }
       case 0xe1: {
-        if( z[n+1]==0x9a && z[n+2]==0x80 ){
+        nếu( z[n+1]==0x9a && z[n+2]==0x80 ){
           n += 3;
           break;
         }
         goto whitespace_done;
       }
       case 0xe2: {
-        if( z[n+1]==0x80 ){
+        nếu( z[n+1]==0x80 ){
           u8 c = z[n+2];
-          if( c<0x80 ) goto whitespace_done;
-          if( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
+          nếu( c<0x80 ) goto whitespace_done;
+          nếu( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
             n += 3;
             break;
           }
-        }else if( z[n+1]==0x81 && z[n+2]==0x9f ){
+        }không_thì nếu( z[n+1]==0x81 && z[n+2]==0x9f ){
           n += 3;
           break;
         }
         goto whitespace_done;
       }
       case 0xe3: {
-        if( z[n+1]==0x80 && z[n+2]==0x80 ){
+        nếu( z[n+1]==0x80 && z[n+2]==0x80 ){
           n += 3;
           break;
         }
         goto whitespace_done;
       }
       case 0xef: {
-        if( z[n+1]==0xbb && z[n+2]==0xbf ){
+        nếu( z[n+1]==0xbb && z[n+2]==0xbf ){
           n += 3;
           break;
         }
@@ -1105,7 +1105,7 @@ static int json5Whitespace(const char *zIn){
     }
   }
   whitespace_done:
-  return n;
+  trả_về n;
 }
 
 /*
@@ -1151,22 +1151,22 @@ static void jsonWrongNumArgs(
 **
 ** Return the number of errors.
 */
-static int jsonBlobExpand(JsonParse *pParse, u64 N){
+static số_nguyên jsonBlobExpand(JsonParse *pParse, u64 N){
   u8 *aNew;
   u64 t;
   assert( N>pParse->nBlobAlloc );
-  if( pParse->nBlobAlloc==0 ){
+  nếu( pParse->nBlobAlloc==0 ){
     t = 100;
-  }else{
+  }không_thì{
     t = pParse->nBlobAlloc*2;
   }
-  if( t<N ) t = N+100;
+  nếu( t<N ) t = N+100;
   aNew = sqlite3DbRealloc(pParse->db, pParse->aBlob, t);
-  if( aNew==0 ){ pParse->oom = 1; return 1; }
+  nếu( aNew==0 ){ pParse->oom = 1; trả_về 1; }
   assert( t<0x7fffffff );
   pParse->aBlob = aNew;
   pParse->nBlobAlloc = (u32)t;
-  return 0;
+  trả_về 0;
 }
 
 /*
@@ -1177,21 +1177,21 @@ static int jsonBlobExpand(JsonParse *pParse, u64 N){
 **
 ** Return true on success.  Return false on OOM.
 */
-static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
+static số_nguyên jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
   u8 *aOld;
   u64 nSize;
   assert( !pParse->bReadOnly );
-  if( pParse->oom ) return 0;
-  if( pParse->nBlobAlloc>0 ) return 1;
+  nếu( pParse->oom ) trả_về 0;
+  nếu( pParse->nBlobAlloc>0 ) trả_về 1;
   aOld = pParse->aBlob;
   nSize = pParse->nBlob + nExtra;
   pParse->aBlob = 0;
-  if( jsonBlobExpand(pParse, nSize) ){
-    return 0;
+  nếu( jsonBlobExpand(pParse, nSize) ){
+    trả_về 0;
   }
   assert( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
   memcpy(pParse->aBlob, aOld, pParse->nBlob);
-  return 1;
+  trả_về 1;
 }
 
 /* Expand pParse->aBlob and append one bytes.
@@ -1201,7 +1201,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
   u8 c
 ){
   jsonBlobExpand(pParse, (u64)pParse->nBlob+1);
-  if( pParse->oom==0 ){
+  nếu( pParse->oom==0 ){
     assert( pParse->nBlob+1<=pParse->nBlobAlloc );
     pParse->aBlob[pParse->nBlob++] = c;
   }
@@ -1210,9 +1210,9 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
 /* Append a single character.
 */
 static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
-  if( pParse->nBlob >= pParse->nBlobAlloc ){
+  nếu( pParse->nBlob >= pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendOneByte(pParse, c);
-  }else{
+  }không_thì{
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
@@ -1227,7 +1227,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
   u64 szPayload,
   const void *aPayload
 ){
-  if( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) return;
+  nếu( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) trả_về;
   jsonBlobAppendNode(pParse, eType, szPayload, aPayload);
 }
 
@@ -1248,25 +1248,25 @@ static void jsonBlobAppendNode(
   const void *aPayload        /* The payload.  Might be NULL */
 ){
   u8 *a;
-  if( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
+  nếu( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendNode(pParse,eType,szPayload,aPayload);
-    return;
+    trả_về;
   }
   assert( pParse->aBlob!=0 );
   a = &pParse->aBlob[pParse->nBlob];
-  if( szPayload<=11 ){
+  nếu( szPayload<=11 ){
     a[0] = eType | (szPayload<<4);
     pParse->nBlob += 1;
-  }else if( szPayload<=0xff ){
+  }không_thì nếu( szPayload<=0xff ){
     a[0] = eType | 0xc0;
     a[1] = szPayload & 0xff;
     pParse->nBlob += 2;
-  }else if( szPayload<=0xffff ){
+  }không_thì nếu( szPayload<=0xffff ){
     a[0] = eType | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
     pParse->nBlob += 3;
-  }else{
+  }không_thì{
     a[0] = eType | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
@@ -1274,7 +1274,7 @@ static void jsonBlobAppendNode(
     a[4] = szPayload & 0xff;
     pParse->nBlob += 5;
   }
-  if( aPayload ){
+  nếu( aPayload ){
     pParse->nBlob += szPayload;
     memcpy(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
   }
@@ -1282,7 +1282,7 @@ static void jsonBlobAppendNode(
 
 /* Change the payload size for the node at index i to be szPayload.
 */
-static int jsonBlobChangePayloadSize(
+static số_nguyên jsonBlobChangePayloadSize(
   JsonParse *pParse,
   u32 i,
   u32 szPayload
@@ -1291,61 +1291,61 @@ static int jsonBlobChangePayloadSize(
   u8 szType;
   u8 nExtra;
   u8 nNeeded;
-  int delta;
-  if( pParse->oom ) return 0;
+  số_nguyên delta;
+  nếu( pParse->oom ) trả_về 0;
   a = &pParse->aBlob[i];
   szType = a[0]>>4;
-  if( szType<=11 ){
+  nếu( szType<=11 ){
     nExtra = 0;
-  }else if( szType==12 ){
+  }không_thì nếu( szType==12 ){
     nExtra = 1;
-  }else if( szType==13 ){
+  }không_thì nếu( szType==13 ){
     nExtra = 2;
-  }else if( szType==14 ){
+  }không_thì nếu( szType==14 ){
     nExtra = 4;
-  }else{
+  }không_thì{
     nExtra = 8;
   }
-  if( szPayload<=11 ){
+  nếu( szPayload<=11 ){
     nNeeded = 0;
-  }else if( szPayload<=0xff ){
+  }không_thì nếu( szPayload<=0xff ){
     nNeeded = 1;
-  }else if( szPayload<=0xffff ){
+  }không_thì nếu( szPayload<=0xffff ){
     nNeeded = 2;
-  }else{
+  }không_thì{
     nNeeded = 4;
   }
   delta = nNeeded - nExtra;
-  if( delta ){
+  nếu( delta ){
     u64 newSize = (u64)pParse->nBlob + delta;
-    if( delta>0 ){
-      if( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
-        return 0;  /* OOM error.  Error state recorded in pParse->oom. */
+    nếu( delta>0 ){
+      nếu( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
+        trả_về 0;  /* OOM error.  Error state recorded in pParse->oom. */
       }
       a = &pParse->aBlob[i];
       memmove(&a[1+delta], &a[1], pParse->nBlob - (i+1));
-    }else{
+    }không_thì{
       memmove(&a[1], &a[1-delta], pParse->nBlob - (i+1-delta));
     }
     pParse->nBlob = newSize;
   }
-  if( nNeeded==0 ){
+  nếu( nNeeded==0 ){
     a[0] = (a[0] & 0x0f) | (szPayload<<4);
-  }else if( nNeeded==1 ){
+  }không_thì nếu( nNeeded==1 ){
     a[0] = (a[0] & 0x0f) | 0xc0;
     a[1] = szPayload & 0xff;
-  }else if( nNeeded==2 ){
+  }không_thì nếu( nNeeded==2 ){
     a[0] = (a[0] & 0x0f) | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
-  }else{
+  }không_thì{
     a[0] = (a[0] & 0x0f) | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
     a[3] = (szPayload >> 8) & 0xff;
     a[4] = szPayload & 0xff;
   }
-  return delta;
+  trả_về delta;
 }
 
 /*
@@ -1353,11 +1353,11 @@ static int jsonBlobChangePayloadSize(
 ** then set *pOp to JSONB_TEXTJ and return true.  If not, do not make
 ** any changes to *pOp and return false.
 */
-static int jsonIs4HexB(const char *z, int *pOp){
-  if( z[0]!='u' ) return 0;
-  if( !jsonIs4Hex(&z[1]) ) return 0;
+static số_nguyên jsonIs4HexB(const char *z, số_nguyên *pOp){
+  nếu( z[0]!='u' ) trả_về 0;
+  nếu( !jsonIs4Hex(&z[1]) ) trả_về 0;
   *pOp = JSONB_TEXTJ;
-  return 1;
+  trả_về 1;
 }
 
 /*
@@ -1379,186 +1379,186 @@ static u32 jsonbValidityCheck(
   u32 n, sz, j, k;
   const u8 *z;
   u8 x;
-  if( iDepth>JSON_MAX_DEPTH ) return i+1;
+  nếu( iDepth>JSON_MAX_DEPTH ) trả_về i+1;
   sz = 0;
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( NEVER(n==0) ) return i+1;          /* Checked by caller */
-  if( NEVER(i+n+sz!=iEnd) ) return i+1;  /* Checked by caller */
+  nếu( NEVER(n==0) ) trả_về i+1;          /* Checked by caller */
+  nếu( NEVER(i+n+sz!=iEnd) ) trả_về i+1;  /* Checked by caller */
   z = pParse->aBlob;
   x = z[i] & 0x0f;
   switch( x ){
     case JSONB_NULL:
     case JSONB_TRUE:
     case JSONB_FALSE: {
-      return n+sz==1 ? 0 : i+1;
+      trả_về n+sz==1 ? 0 : i+1;
     }
     case JSONB_INT: {
-      if( sz<1 ) return i+1;
+      nếu( sz<1 ) trả_về i+1;
       j = i+n;
-      if( z[j]=='-' ){
+      nếu( z[j]=='-' ){
         j++;
-        if( sz<2 ) return i+1;
+        nếu( sz<2 ) trả_về i+1;
       }
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isdigit(z[j]) ){
+      trong_khi( j<k ){
+        nếu( sqlite3Isdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }không_thì{
+          trả_về j+1;
         }
       }
-      return 0;
+      trả_về 0;
     }
     case JSONB_INT5: {
-      if( sz<3 ) return i+1;
+      nếu( sz<3 ) trả_về i+1;
       j = i+n;
-      if( z[j]=='-' ){
-        if( sz<4 ) return i+1;
+      nếu( z[j]=='-' ){
+        nếu( sz<4 ) trả_về i+1;
         j++;
       }
-      if( z[j]!='0' ) return i+1;
-      if( z[j+1]!='x' && z[j+1]!='X' ) return j+2;
+      nếu( z[j]!='0' ) trả_về i+1;
+      nếu( z[j+1]!='x' && z[j+1]!='X' ) trả_về j+2;
       j += 2;
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isxdigit(z[j]) ){
+      trong_khi( j<k ){
+        nếu( sqlite3Isxdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }không_thì{
+          trả_về j+1;
         }
       }
-      return 0;
+      trả_về 0;
     }
     case JSONB_FLOAT:
     case JSONB_FLOAT5: {
       u8 seen = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
-      if( sz<2 ) return i+1;
+      nếu( sz<2 ) trả_về i+1;
       j = i+n;
       k = j+sz;
-      if( z[j]=='-' ){
+      nếu( z[j]=='-' ){
         j++;
-        if( sz<3 ) return i+1;
+        nếu( sz<3 ) trả_về i+1;
       }
-      if( z[j]=='.' ){
-        if( x==JSONB_FLOAT ) return j+1;
-        if( !sqlite3Isdigit(z[j+1]) ) return j+1;
+      nếu( z[j]=='.' ){
+        nếu( x==JSONB_FLOAT ) trả_về j+1;
+        nếu( !sqlite3Isdigit(z[j+1]) ) trả_về j+1;
         j += 2;
         seen = 1;
-      }else if( z[j]=='0' && x==JSONB_FLOAT ){
-        if( j+3>k ) return j+1;
-        if( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) return j+1;
+      }không_thì nếu( z[j]=='0' && x==JSONB_FLOAT ){
+        nếu( j+3>k ) trả_về j+1;
+        nếu( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) trả_về j+1;
         j++;
       }
-      for(; j<k; j++){
-        if( sqlite3Isdigit(z[j]) ) continue;
-        if( z[j]=='.' ){
-          if( seen>0 ) return j+1;
-          if( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
-            return j+1;
+      cho(; j<k; j++){
+        nếu( sqlite3Isdigit(z[j]) ) continue;
+        nếu( z[j]=='.' ){
+          nếu( seen>0 ) trả_về j+1;
+          nếu( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
+            trả_về j+1;
           }
           seen = 1;
           continue;
         }
-        if( z[j]=='e' || z[j]=='E' ){
-          if( seen==2 ) return j+1;
-          if( j==k-1 ) return j+1;
-          if( z[j+1]=='+' || z[j+1]=='-' ){
+        nếu( z[j]=='e' || z[j]=='E' ){
+          nếu( seen==2 ) trả_về j+1;
+          nếu( j==k-1 ) trả_về j+1;
+          nếu( z[j+1]=='+' || z[j+1]=='-' ){
             j++;
-            if( j==k-1 ) return j+1;
+            nếu( j==k-1 ) trả_về j+1;
           }
           seen = 2;
           continue;
         }
-        return j+1;
+        trả_về j+1;
       }
-      if( seen==0 ) return i+1;
-      return 0;
+      nếu( seen==0 ) trả_về i+1;
+      trả_về 0;
     }
     case JSONB_TEXT: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ) return j+1;
+      trong_khi( j<k ){
+        nếu( !jsonIsOk[z[j]] && z[j]!='\'' ) trả_về j+1;
         j++;
       }
-      return 0;
+      trả_về 0;
     }
     case JSONB_TEXTJ:
     case JSONB_TEXT5: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ){
-          if( z[j]=='"' ){
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( z[j]<=0x1f ){
+      trong_khi( j<k ){
+        nếu( !jsonIsOk[z[j]] && z[j]!='\'' ){
+          nếu( z[j]=='"' ){
+            nếu( x==JSONB_TEXTJ ) trả_về j+1;
+          }không_thì nếu( z[j]<=0x1f ){
             /* Control characters in JSON5 string literals are ok */
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( NEVER(z[j]!='\\') || j+1>=k ){
-            return j+1;
-          }else if( strchr("\"\\/bfnrt",z[j+1])!=0 ){
+            nếu( x==JSONB_TEXTJ ) trả_về j+1;
+          }không_thì nếu( NEVER(z[j]!='\\') || j+1>=k ){
+            trả_về j+1;
+          }không_thì nếu( strchr("\"\\/bfnrt",z[j+1])!=0 ){
             j++;
-          }else if( z[j+1]=='u' ){
-            if( j+5>=k ) return j+1;
-            if( !jsonIs4Hex((const char*)&z[j+2]) ) return j+1;
+          }không_thì nếu( z[j+1]=='u' ){
+            nếu( j+5>=k ) trả_về j+1;
+            nếu( !jsonIs4Hex((const char*)&z[j+2]) ) trả_về j+1;
             j++;
-          }else if( x!=JSONB_TEXT5 ){
-            return j+1;
-          }else{
+          }không_thì nếu( x!=JSONB_TEXT5 ){
+            trả_về j+1;
+          }không_thì{
             u32 c = 0;
             u32 szC = jsonUnescapeOneChar((const char*)&z[j], k-j, &c);
-            if( c==JSON_INVALID_CHAR ) return j+1;
+            nếu( c==JSON_INVALID_CHAR ) trả_về j+1;
             j += szC - 1;
           }
         }
         j++;
       }
-      return 0;
+      trả_về 0;
     }
     case JSONB_TEXTRAW: {
-      return 0;
+      trả_về 0;
     }
     case JSONB_ARRAY: {
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      trong_khi( j<k ){
         sz = 0;
         n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
+        nếu( n==0 ) trả_về j+1;
+        nếu( j+n+sz>k ) trả_về j+1;
         sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        nếu( sub ) trả_về sub;
         j += n + sz;
       }
       assert( j==k );
-      return 0;
+      trả_về 0;
     }
     case JSONB_OBJECT: {
       u32 cnt = 0;
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      trong_khi( j<k ){
         sz = 0;
         n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        if( (cnt & 1)==0 ){
+        nếu( n==0 ) trả_về j+1;
+        nếu( j+n+sz>k ) trả_về j+1;
+        nếu( (cnt & 1)==0 ){
           x = z[j] & 0x0f;
-          if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return j+1;
+          nếu( x<JSONB_TEXT || x>JSONB_TEXTRAW ) trả_về j+1;
         }
         sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        nếu( sub ) trả_về sub;
         cnt++;
         j += n + sz;
       }
       assert( j==k );
-      if( (cnt & 1)!=0 ) return j+1;
-      return 0;
+      nếu( (cnt & 1)!=0 ) trả_về j+1;
+      trả_về 0;
     }
     default: {
-      return i+1;
+      trả_về i+1;
     }
   }
 }
@@ -1579,11 +1579,11 @@ static u32 jsonbValidityCheck(
 **     -4    ',' seen    /     the index in zJson[] of the seen character
 **     -5    ':' seen   /
 */
-static int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
+static số_nguyên jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
   char c;
   u32 j;
   u32 iThis, iStart;
-  int x;
+  số_nguyên x;
   u8 t;
   const char *z = pParse->zJson;
 json_parse_restart:
@@ -1592,28 +1592,28 @@ json_parse_restart:
     /* Parse object */
     iThis = pParse->nBlob;
     jsonBlobAppendNode(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    nếu( ++pParse->iDepth > JSON_MAX_DEPTH ){
       pParse->iErr = i;
-      return -1;
+      trả_về -1;
     }
     iStart = pParse->nBlob;
-    for(j=i+1;;j++){
+    cho(j=i+1;;j++){
       u32 iBlob = pParse->nBlob;
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        int op;
-        if( x==(-2) ){
+      nếu( x<=0 ){
+        số_nguyên op;
+        nếu( x==(-2) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
+          nếu( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
           break;
         }
         j += json5Whitespace(&z[j]);
         op = JSONB_TEXT;
-        if( sqlite3JsonId1(z[j]) 
+        nếu( sqlite3JsonId1(z[j]) 
          || (z[j]=='\\' && jsonIs4HexB(&z[j+1], &op))
         ){
-          int k = j+1;
-          while( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
+          số_nguyên k = j+1;
+          trong_khi( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
             || (z[k]=='\\' && jsonIs4HexB(&z[k+1], &op))
           ){
             k++;
@@ -1622,72 +1622,72 @@ json_parse_restart:
           jsonBlobAppendNode(pParse, op, k-j, &z[j]);
           pParse->hasNonstd = 1;
           x = k;
-        }else{
-          if( x!=-1 ) pParse->iErr = j;
-          return -1;
+        }không_thì{
+          nếu( x!=-1 ) pParse->iErr = j;
+          trả_về -1;
         }
       }
-      if( pParse->oom ) return -1;
+      nếu( pParse->oom ) trả_về -1;
       t = pParse->aBlob[iBlob] & 0x0f;
-      if( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
+      nếu( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
         pParse->iErr = j;
-        return -1;
+        trả_về -1;
       }
       j = x;
-      if( z[j]==':' ){
+      nếu( z[j]==':' ){
         j++;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }không_thì{
+        nếu( jsonIsspace(z[j]) ){
           /* strspn() is not helpful here */
-          do{ j++; }while( jsonIsspace(z[j]) );
-          if( z[j]==':' ){
+          do{ j++; }trong_khi( jsonIsspace(z[j]) );
+          nếu( z[j]==':' ){
             j++;
             goto parse_object_value;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x!=(-5) ){
-          if( x!=(-1) ) pParse->iErr = j;
-          return -1;
+        nếu( x!=(-5) ){
+          nếu( x!=(-1) ) pParse->iErr = j;
+          trả_về -1;
         }
         j = pParse->iErr+1;
       }
     parse_object_value:
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+      nếu( x<=0 ){
+        nếu( x!=(-1) ) pParse->iErr = j;
+        trả_về -1;
       }
       j = x;
-      if( z[j]==',' ){
+      nếu( z[j]==',' ){
         continue;
-      }else if( z[j]=='}' ){
+      }không_thì nếu( z[j]=='}' ){
         break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }không_thì{
+        nếu( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
+          nếu( z[j]==',' ){
             continue;
-          }else if( z[j]=='}' ){
+          }không_thì nếu( z[j]=='}' ){
             break;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        nếu( x==(-4) ){
           j = pParse->iErr;
           continue;
         }
-        if( x==(-2) ){
+        nếu( x==(-2) ){
           j = pParse->iErr;
           break;
         }
       }
       pParse->iErr = j;
-      return -1;
+      trả_về -1;
     }
     jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
     pParse->iDepth--;
-    return j+1;
+    trả_về j+1;
   }
   case '[': {
     /* Parse array */
@@ -1695,52 +1695,52 @@ json_parse_restart:
     assert( i<=(u32)pParse->nJson );
     jsonBlobAppendNode(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
     iStart = pParse->nBlob;
-    if( pParse->oom ) return -1;
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    nếu( pParse->oom ) trả_về -1;
+    nếu( ++pParse->iDepth > JSON_MAX_DEPTH ){
       pParse->iErr = i;
-      return -1;
+      trả_về -1;
     }
-    for(j=i+1;;j++){
+    cho(j=i+1;;j++){
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x==(-3) ){
+      nếu( x<=0 ){
+        nếu( x==(-3) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
+          nếu( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
           break;
         }
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+        nếu( x!=(-1) ) pParse->iErr = j;
+        trả_về -1;
       }
       j = x;
-      if( z[j]==',' ){
+      nếu( z[j]==',' ){
         continue;
-      }else if( z[j]==']' ){
+      }không_thì nếu( z[j]==']' ){
         break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }không_thì{
+        nếu( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
+          nếu( z[j]==',' ){
             continue;
-          }else if( z[j]==']' ){
+          }không_thì nếu( z[j]==']' ){
             break;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        nếu( x==(-4) ){
           j = pParse->iErr;
           continue;
         }
-        if( x==(-3) ){
+        nếu( x==(-3) ){
           j = pParse->iErr;
           break;
         }
       }
       pParse->iErr = j;
-      return -1;
+      trả_về -1;
     }
     jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
     pParse->iDepth--;
-    return j+1;
+    trả_về j+1;
   }
   case '\'': {
     u8 opcode;
@@ -1754,30 +1754,30 @@ json_parse_restart:
   parse_string:
     cDelim = z[i];
     j = i+1;
-    while( 1 /*exit-by-break*/ ){
-      if( jsonIsOk[(u8)z[j]] ){
-        if( !jsonIsOk[(u8)z[j+1]] ){
+    trong_khi( 1 /*exit-by-break*/ ){
+      nếu( jsonIsOk[(u8)z[j]] ){
+        nếu( !jsonIsOk[(u8)z[j+1]] ){
           j += 1;
-        }else if( !jsonIsOk[(u8)z[j+2]] ){
+        }không_thì nếu( !jsonIsOk[(u8)z[j+2]] ){
           j += 2;
-        }else{
+        }không_thì{
           j += 3;
           continue;
         }
       }
       c = z[j];
-      if( c==cDelim ){
+      nếu( c==cDelim ){
         break;
-      }else if( c=='\\' ){
+      }không_thì nếu( c=='\\' ){
         c = z[++j];
-        if( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
+        nếu( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
            || c=='n' || c=='r' || c=='t'
            || (c=='u' && jsonIs4Hex(&z[j+1])) ){
-          if( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
-        }else if( c=='\'' ||  c=='v' || c=='\n'
+          nếu( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
+        }không_thì nếu( c=='\'' ||  c=='v' || c=='\n'
 #ifdef SQLITE_BUG_COMPATIBLE_20250510
            || (c=='0')                            /* Legacy bug compatible */
-#else
+#không_thì
            || (c=='0' && !sqlite3Isdigit(z[j+1])) /* Correct implementation */
 #endif
            || (0xe2==(u8)c && 0x80==(u8)z[j+1]
@@ -1785,46 +1785,46 @@ json_parse_restart:
            || (c=='x' && jsonIs2Hex(&z[j+1])) ){
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else if( c=='\r' ){
-          if( z[j+1]=='\n' ) j++;
+        }không_thì nếu( c=='\r' ){
+          nếu( z[j+1]=='\n' ) j++;
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else{
+        }không_thì{
           pParse->iErr = j;
-          return -1;
+          trả_về -1;
         }
-      }else if( c<=0x1f ){
-        if( c==0 ){
+      }không_thì nếu( c<=0x1f ){
+        nếu( c==0 ){
           pParse->iErr = j;
-          return -1;
+          trả_về -1;
         }
         /* Control characters are not allowed in canonical JSON string
         ** literals, but are allowed in JSON5 string literals. */
         opcode = JSONB_TEXT5;
         pParse->hasNonstd = 1;
-      }else if( c=='"' ){
+      }không_thì nếu( c=='"' ){
         opcode = JSONB_TEXT5;
       }
       j++;
     }
     jsonBlobAppendNode(pParse, opcode, j-1-i, &z[i+1]);
-    return j+1;
+    trả_về j+1;
   }
   case 't': {
-    if( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+    nếu( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_TRUE);
-      return i+4;
+      trả_về i+4;
     }
     pParse->iErr = i;
-    return -1;
+    trả_về -1;
   }
   case 'f': {
-    if( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
+    nếu( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
       jsonBlobAppendOneByte(pParse, JSONB_FALSE);
-      return i+5;
+      trả_về i+5;
     }
     pParse->iErr = i;
-    return -1;
+    trả_về -1;
   }
   case '+': {
     u8 seenE;
@@ -1832,14 +1832,14 @@ json_parse_restart:
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
     goto parse_number;
   case '.':
-    if( sqlite3Isdigit(z[i+1]) ){
+    nếu( sqlite3Isdigit(z[i+1]) ){
       pParse->hasNonstd = 1;
       t = 0x03;          /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
       seenE = 0;
       goto parse_number_2;
     }
     pParse->iErr = i;
-    return -1;
+    trả_về -1;
   case '-':
   case '0':
   case '1':
@@ -1860,50 +1860,50 @@ json_parse_restart:
     assert( '.' < '0' );
     c = z[i];
 
-    if( c<='0' ){
-      if( c=='0' ){
-        if( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
+    nếu( c<='0' ){
+      nếu( c=='0' ){
+        nếu( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
           assert( t==0x00 );
           pParse->hasNonstd = 1;
           t = 0x01;
-          for(j=i+3; sqlite3Isxdigit(z[j]); j++){}
+          cho(j=i+3; sqlite3Isxdigit(z[j]); j++){}
           goto parse_number_finish;
-        }else if( sqlite3Isdigit(z[i+1]) ){
+        }không_thì nếu( sqlite3Isdigit(z[i+1]) ){
           pParse->iErr = i+1;
-          return -1;
+          trả_về -1;
         }
-      }else{
-        if( !sqlite3Isdigit(z[i+1]) ){
+      }không_thì{
+        nếu( !sqlite3Isdigit(z[i+1]) ){
           /* JSON5 allows for "+Infinity" and "-Infinity" using exactly
           ** that case.  SQLite also allows these in any case and it allows
           ** "+inf" and "-inf". */
-          if( (z[i+1]=='I' || z[i+1]=='i')
+          nếu( (z[i+1]=='I' || z[i+1]=='i')
            && sqlite3StrNICmp(&z[i+1], "inf",3)==0
           ){
             pParse->hasNonstd = 1;
-            if( z[i]=='-' ){
+            nếu( z[i]=='-' ){
               jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-            }else{
+            }không_thì{
               jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
             }
-            return i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
+            trả_về i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
           }
-          if( z[i+1]=='.' ){
+          nếu( z[i+1]=='.' ){
             pParse->hasNonstd = 1;
             t |= 0x01;
             goto parse_number_2;
           }
           pParse->iErr = i;
-          return -1;
+          trả_về -1;
         }
-        if( z[i+1]=='0' ){
-          if( sqlite3Isdigit(z[i+2]) ){
+        nếu( z[i+1]=='0' ){
+          nếu( sqlite3Isdigit(z[i+2]) ){
             pParse->iErr = i+1;
-            return -1;
-          }else if( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
+            trả_về -1;
+          }không_thì nếu( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            for(j=i+4; sqlite3Isxdigit(z[j]); j++){}
+            cho(j=i+4; sqlite3Isxdigit(z[j]); j++){}
             goto parse_number_finish;
           }
         }
@@ -1911,81 +1911,81 @@ json_parse_restart:
     }
 
   parse_number_2:
-    for(j=i+1;; j++){
+    cho(j=i+1;; j++){
       c = z[j];
-      if( sqlite3Isdigit(c) ) continue;
-      if( c=='.' ){
-        if( (t & 0x02)!=0 ){
+      nếu( sqlite3Isdigit(c) ) continue;
+      nếu( c=='.' ){
+        nếu( (t & 0x02)!=0 ){
           pParse->iErr = j;
-          return -1;
+          trả_về -1;
         }
         t |= 0x02;
         continue;
       }
-      if( c=='e' || c=='E' ){
-        if( z[j-1]<'0' ){
-          if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+      nếu( c=='e' || c=='E' ){
+        nếu( z[j-1]<'0' ){
+          nếu( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-          }else{
+          }không_thì{
             pParse->iErr = j;
-            return -1;
+            trả_về -1;
           }
         }
-        if( seenE ){
+        nếu( seenE ){
           pParse->iErr = j;
-          return -1;
+          trả_về -1;
         }
         t |= 0x02;
         seenE = 1;
         c = z[j+1];
-        if( c=='+' || c=='-' ){
+        nếu( c=='+' || c=='-' ){
           j++;
           c = z[j+1];
         }
-        if( c<'0' || c>'9' ){
+        nếu( c<'0' || c>'9' ){
           pParse->iErr = j;
-          return -1;
+          trả_về -1;
         }
         continue;
       }
       break;
     }
-    if( z[j-1]<'0' ){
-      if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+    nếu( z[j-1]<'0' ){
+      nếu( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
         pParse->hasNonstd = 1;
         t |= 0x01;
-      }else{
+      }không_thì{
         pParse->iErr = j;
-        return -1;
+        trả_về -1;
       }
     }
   parse_number_finish:
     assert( JSONB_INT+0x01==JSONB_INT5 );
     assert( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
     assert( JSONB_INT+0x02==JSONB_FLOAT );
-    if( z[i]=='+' ) i++;
+    nếu( z[i]=='+' ) i++;
     jsonBlobAppendNode(pParse, JSONB_INT+t, j-i, &z[i]);
-    return j;
+    trả_về j;
   }
   case '}': {
     pParse->iErr = i;
-    return -2;  /* End of {...} */
+    trả_về -2;  /* End of {...} */
   }
   case ']': {
     pParse->iErr = i;
-    return -3;  /* End of [...] */
+    trả_về -3;  /* End of [...] */
   }
   case ',': {
     pParse->iErr = i;
-    return -4;  /* List separator */
+    trả_về -4;  /* List separator */
   }
   case ':': {
     pParse->iErr = i;
-    return -5;  /* Object label/value separator */
+    trả_về -5;  /* Object label/value separator */
   }
   case 0: {
-    return 0;   /* End of file */
+    trả_về 0;   /* End of file */
   }
   case 0x09:
   case 0x0a:
@@ -2003,43 +2003,43 @@ json_parse_restart:
   case 0xe3:
   case 0xef: {
     j = json5Whitespace(&z[i]);
-    if( j>0 ){
+    nếu( j>0 ){
       i += j;
       pParse->hasNonstd = 1;
       goto json_parse_restart;
     }
     pParse->iErr = i;
-    return -1;
+    trả_về -1;
   }
   case 'n': {
-    if( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+    nếu( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_NULL);
-      return i+4;
+      trả_về i+4;
     }
     /* fall-through into the default case that checks for NaN */
     /* no break */ deliberate_fall_through
   }
   default: {
     u32 k;
-    int nn;
+    số_nguyên nn;
     c = z[i];
-    for(k=0; k<sizeof(aNanInfName)/sizeof(aNanInfName[0]); k++){
-      if( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
+    cho(k=0; k<sizeof(aNanInfName)/sizeof(aNanInfName[0]); k++){
+      nếu( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
       nn = aNanInfName[k].n;
-      if( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
+      nếu( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
         continue;
       }
-      if( sqlite3Isalnum(z[i+nn]) ) continue;
-      if( aNanInfName[k].eType==JSONB_FLOAT ){
+      nếu( sqlite3Isalnum(z[i+nn]) ) continue;
+      nếu( aNanInfName[k].eType==JSONB_FLOAT ){
         jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-      }else{
+      }không_thì{
         jsonBlobAppendOneByte(pParse, JSONB_NULL);
       }
       pParse->hasNonstd = 1;
-      return i + nn;
+      trả_về i + nn;
     }
     pParse->iErr = i;
-    return -1;  /* Syntax error */
+    trả_về -1;  /* Syntax error */
   }
   } /* End switch(z[i]) */
 }
@@ -2053,44 +2053,44 @@ json_parse_restart:
 ** pParse must be initialized to an empty parse object prior to calling
 ** this routine.
 */
-static int jsonConvertTextToBlob(
+static số_nguyên jsonConvertTextToBlob(
   JsonParse *pParse,           /* Initialize and fill this JsonParse object */
   sqlite3_context *pCtx        /* Report errors here */
 ){
-  int i;
+  số_nguyên i;
   const char *zJson = pParse->zJson;
   i = jsonTranslateTextToBlob(pParse, 0);
-  if( pParse->oom ) i = -1;
-  if( i>0 ){
+  nếu( pParse->oom ) i = -1;
+  nếu( i>0 ){
 #ifdef SQLITE_DEBUG
     assert( pParse->iDepth==0 );
-    if( sqlite3Config.bJsonSelfcheck ){
+    nếu( sqlite3Config.bJsonSelfcheck ){
       assert( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
     }   
 #endif
-    while( jsonIsspace(zJson[i]) ) i++;
-    if( zJson[i] ){
+    trong_khi( jsonIsspace(zJson[i]) ) i++;
+    nếu( zJson[i] ){
       i += json5Whitespace(&zJson[i]);
-      if( zJson[i] ){
-        if( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
+      nếu( zJson[i] ){
+        nếu( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
         jsonParseReset(pParse);
-        return 1;
+        trả_về 1;
       }
       pParse->hasNonstd = 1;
     }
   }
-  if( i<=0 ){
-    if( pCtx!=0 ){
-      if( pParse->oom ){
+  nếu( i<=0 ){
+    nếu( pCtx!=0 ){
+      nếu( pParse->oom ){
         sqlite3_result_error_nomem(pCtx);
-      }else{
+      }không_thì{
         sqlite3_result_error(pCtx, "malformed JSON", -1);
       }
     }
     jsonParseReset(pParse);
-    return 1;
+    trả_về 1;
   }
-  return 0;
+  trả_về 0;
 }
 
 /*
@@ -2106,10 +2106,10 @@ static void jsonReturnStringAsBlob(JsonString *pStr){
   px.nJson = pStr->nUsed;
   px.db = sqlite3_context_db_handle(pStr->pCtx);
   (void)jsonTranslateTextToBlob(&px, 0);
-  if( px.oom ){
+  nếu( px.oom ){
     sqlite3DbFree(px.db, px.aBlob);
     sqlite3_result_error_nomem(pStr->pCtx);
-  }else{
+  }không_thì{
     assert( px.nBlobAlloc>0 );
     assert( !px.bReadOnly );
     sqlite3_result_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
@@ -2133,30 +2133,30 @@ static u32 jsonbPayloadSizeWide(
   assert( i<pParse->nBlob );
   assert( x==(pParse->aBlob[i]>>4) );
   assert( x>=13 );
-  if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  nếu( x==13 ){
+    nếu( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }không_thì nếu( x==14 ){
+    nếu( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }không_thì{
+    nếu( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
@@ -2170,14 +2170,14 @@ static u32 jsonbPayloadSizeWide(
   /* Quirks with -Os and gcov cause the NO_TEST line below to show up as
   ** false-positive coverage miss.  The testcases() macros above are
   ** sufficient to prove that the branch is in fact covered */
-  if( (i64)i+sz+n > pParse->nBlob
+  nếu( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta  /*NO_TEST*/
   ){
     *pSz = 0;
-    return 0;
+    trả_về 0;
   }
   *pSz = sz;
-  return n;
+  trả_về n;
 }
 
 /*
@@ -2200,33 +2200,33 @@ static u32 jsonbPayloadSize(
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  nếu( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    trả_về 0;
+  }không_thì nếu( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }không_thì nếu( x==12 ){
+    nếu( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse, i, pSz, x);
+  }không_thì{
+    trả_về jsonbPayloadSizeWide(pParse, i, pSz, x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  nếu( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    trả_về 0;
   }
   *pSz = sz;
-  return n;
+  trả_về n;
 }
 
-#if SQLITE_USES_INLINE
+#nếu SQLITE_USES_INLINE
 /* A separate inline version of jsonbPayloadSize(), used in one particulary
 ** performance-critical place.
 */
@@ -2238,65 +2238,65 @@ static SQLITE_INLINE u32 jsonbPayloadSizeInline(
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  nếu( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    trả_về 0;
+  }không_thì nếu( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }không_thì nếu( x==12 ){
+    nếu( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  }không_thì nếu( x==13 ){
+    nếu( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }không_thì nếu( x==14 ){
+    nếu( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }không_thì{
+    nếu( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
     n = 9;
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  nếu( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    trả_về 0;
   }
   *pSz = sz;
-  return n;
+  trả_về n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#không_thì /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
 # define jsonbPayloadSizeInline(a,b,c) jsonbPayloadSize(a,b,c)
 #endif
 
 
-#if SQLITE_USES_INLINE
+#nếu SQLITE_USES_INLINE
 /* A separate inline version of jsonbPayloadSize() that implements the more
 ** common paths inline but then calls out to a subroutine for the uncommon
 ** paths.
@@ -2317,29 +2317,29 @@ static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
   u32 sz;
   u32 n;
   assert( i<pParse->nBlob );
-  if( (x = pParse->aBlob[i]>>4)<=11 ){
+  nếu( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }không_thì nếu( x==12 ){
+    nếu( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      trả_về 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse,i,pSz,x);
+  }không_thì{
+    trả_về jsonbPayloadSizeWide(pParse,i,pSz,x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  nếu( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    trả_về 0;
   }
   *pSz = sz;
-  return n;
+  trả_về n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#không_thì /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
 # define jsonbPayloadSizeSemiInline(a,b,c) jsonbPayloadSize(a,b,c)
@@ -2366,26 +2366,26 @@ static u32 jsonTranslateBlobToText(
   u32 sz, n, j, iEnd;
 
   n = jsonbPayloadSizeInline(pParse, i, &sz);
-  if( n==0 ){
+  nếu( n==0 ){
     pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+    trả_về pParse->nBlob+1;
   }
   switch( pParse->aBlob[i] & 0x0f ){
     case JSONB_NULL: {
       jsonAppendRawNZ(pOut, "null", 4);
-      return i+1;
+      trả_về i+1;
     }
     case JSONB_TRUE: {
       jsonAppendRawNZ(pOut, "true", 4);
-      return i+1;
+      trả_về i+1;
     }
     case JSONB_FALSE: {
       jsonAppendRawNZ(pOut, "false", 5);
-      return i+1;
+      trả_về i+1;
     }
     case JSONB_INT:
     case JSONB_FLOAT: {
-      if( sz==0 ) goto malformed_jsonb;
+      nếu( sz==0 ) goto malformed_jsonb;
       jsonAppendRaw(pOut, (const char*)&pParse->aBlob[i+n], sz);
       break;
     }
@@ -2393,21 +2393,21 @@ static u32 jsonTranslateBlobToText(
       u32 k = 2;
       sqlite3_uint64 u = 0;
       const char *zIn = (const char*)&pParse->aBlob[i+n];
-      int bOverflow = 0;
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
+      số_nguyên bOverflow = 0;
+      nếu( sz==0 ) goto malformed_jsonb;
+      nếu( zIn[0]=='-' ){
         jsonAppendChar(pOut, '-');
         k++;
-      }else if( zIn[0]=='+' ){
+      }không_thì nếu( zIn[0]=='+' ){
         k++;
       }
-      for(; k<sz; k++){
-        if( !sqlite3Isxdigit(zIn[k]) ){
+      cho(; k<sz; k++){
+        nếu( !sqlite3Isxdigit(zIn[k]) ){
           pOut->eErr |= JSTRING_MALFORMED;
           break;
-        }else if( (u>>60)!=0 ){
+        }không_thì nếu( (u>>60)!=0 ){
           bOverflow = 1;
-        }else{
+        }không_thì{
           u = u*16 + sqlite3HexToInt(zIn[k]);
         }
       }
@@ -2417,18 +2417,18 @@ static u32 jsonTranslateBlobToText(
     case JSONB_FLOAT5: { /* Float literal missing digits beside "." */
       u32 k = 0;
       const char *zIn = (const char*)&pParse->aBlob[i+n];
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
+      nếu( sz==0 ) goto malformed_jsonb;
+      nếu( zIn[0]=='-' ){
         jsonAppendChar(pOut, '-');
-        if( sz<=1 ) goto malformed_jsonb;
+        nếu( sz<=1 ) goto malformed_jsonb;
         k = 1;
       }
-      if( zIn[k]=='.' ){
+      nếu( zIn[k]=='.' ){
         jsonAppendChar(pOut, '0');
       }
-      for(; k<sz; k++){
+      cho(; k<sz; k++){
         jsonAppendChar(pOut, zIn[k]);
-        if( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
+        nếu( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
           jsonAppendChar(pOut, '0');
         }
       }
@@ -2436,7 +2436,7 @@ static u32 jsonTranslateBlobToText(
     }
     case JSONB_TEXT:
     case JSONB_TEXTJ: {
-      if( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
+      nếu( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
         pOut->zBuf[pOut->nUsed] = '"';
         memcpy(pOut->zBuf+pOut->nUsed+1,(const char*)&pParse->aBlob[i+n],sz);
         pOut->zBuf[pOut->nUsed+sz+1] = '"';
@@ -2450,24 +2450,24 @@ static u32 jsonTranslateBlobToText(
       u32 sz2 = sz;
       zIn = (const char*)&pParse->aBlob[i+n];
       jsonAppendChar(pOut, '"');
-      while( sz2>0 ){
-        for(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
-        if( k>0 ){
+      trong_khi( sz2>0 ){
+        cho(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
+        nếu( k>0 ){
           jsonAppendRawNZ(pOut, zIn, k);
-          if( k>=sz2 ){
+          nếu( k>=sz2 ){
             break;
           }
           zIn += k;
           sz2 -= k;
         }
-        if( zIn[0]=='"' ){
+        nếu( zIn[0]=='"' ){
           jsonAppendRawNZ(pOut, "\\\"", 2);
           zIn++;
           sz2--;
           continue;
         }
-        if( zIn[0]<=0x1f ){
-          if( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) break;
+        nếu( zIn[0]<=0x1f ){
+          nếu( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) break;
           jsonAppendControlChar(pOut, zIn[0]);
           zIn++;
           sz2--;
@@ -2475,7 +2475,7 @@ static u32 jsonTranslateBlobToText(
         }
         assert( zIn[0]=='\\' );
         assert( sz2>=1 );
-        if( sz2<2 ){
+        nếu( sz2<2 ){
           pOut->eErr |= JSTRING_MALFORMED;
           break;
         }
@@ -2487,7 +2487,7 @@ static u32 jsonTranslateBlobToText(
             jsonAppendRawNZ(pOut, "\\u000b", 6);
             break;
           case 'x':
-            if( sz2<4 ){
+            nếu( sz2<4 ){
               pOut->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
               break;
@@ -2501,7 +2501,7 @@ static u32 jsonTranslateBlobToText(
             jsonAppendRawNZ(pOut, "\\u0000", 6);
             break;
           case '\r':
-            if( sz2>2 && zIn[2]=='\n' ){
+            nếu( sz2>2 && zIn[2]=='\n' ){
               zIn++;
               sz2--;
             }
@@ -2512,7 +2512,7 @@ static u32 jsonTranslateBlobToText(
             /* '\' followed by either U+2028 or U+2029 is ignored as
             ** whitespace.  Note that in UTF8, U+2028 is 0xe2 0x80 0x29.
             ** U+2029 is the same except for the last byte */
-            if( sz2<4
+            nếu( sz2<4
              || 0x80!=(u8)zIn[2]
              || (0xa8!=(u8)zIn[3] && 0xa9!=(u8)zIn[3])
             ){
@@ -2542,34 +2542,34 @@ static u32 jsonTranslateBlobToText(
       jsonAppendChar(pOut, '[');
       j = i+n;
       iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+      nếu( ++pParse->iDepth > JSON_MAX_DEPTH ){
         jsonStringTooDeep(pOut);
       }
-      while( j<iEnd && pOut->eErr==0 ){
+      trong_khi( j<iEnd && pOut->eErr==0 ){
         j = jsonTranslateBlobToText(pParse, j, pOut);
         jsonAppendChar(pOut, ',');
       }
       pParse->iDepth--;
-      if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
+      nếu( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+      nếu( sz>0 ) jsonStringTrimOneChar(pOut);
       jsonAppendChar(pOut, ']');
       break;
     }
     case JSONB_OBJECT: {
-      int x = 0;
+      số_nguyên x = 0;
       jsonAppendChar(pOut, '{');
       j = i+n;
       iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+      nếu( ++pParse->iDepth > JSON_MAX_DEPTH ){
         jsonStringTooDeep(pOut);
       }
-      while( j<iEnd && pOut->eErr==0 ){
+      trong_khi( j<iEnd && pOut->eErr==0 ){
         j = jsonTranslateBlobToText(pParse, j, pOut);
         jsonAppendChar(pOut, (x++ & 1) ? ',' : ':');
       }
       pParse->iDepth--;
-      if( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
+      nếu( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+      nếu( sz>0 ) jsonStringTrimOneChar(pOut);
       jsonAppendChar(pOut, '}');
       break;
     }
@@ -2580,7 +2580,7 @@ static u32 jsonTranslateBlobToText(
       break;
     }
   }
-  return i+n+sz;
+  trả_về i+n+sz;
 }
 
 /* Context for recursion of json_pretty()
@@ -2597,7 +2597,7 @@ struct JsonPretty {
 /* Append indentation to the pretty JSON under construction */
 static void jsonPrettyIndent(JsonPretty *pPretty){
   u32 jj;
-  for(jj=0; jj<pPretty->nIndent; jj++){
+  cho(jj=0; jj<pPretty->nIndent; jj++){
     jsonAppendRaw(pPretty->pOut, pPretty->zIndent, pPretty->szIndent);
   }
 }
@@ -2627,26 +2627,26 @@ static u32 jsonTranslateBlobToPrettyText(
   JsonParse *pParse = pPretty->pParse;
   JsonString *pOut = pPretty->pOut;
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
+  nếu( n==0 ){
     pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+    trả_về pParse->nBlob+1;
   }
   switch( pParse->aBlob[i] & 0x0f ){
     case JSONB_ARRAY: {
       j = i+n;
       iEnd = j+sz;
       jsonAppendChar(pOut, '[');
-      if( j<iEnd ){
+      nếu( j<iEnd ){
         jsonAppendChar(pOut, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
+        nếu( pPretty->nIndent >= JSON_MAX_DEPTH ){
           jsonStringTooDeep(pOut);
         }
-        while( pOut->eErr==0 ){
+        trong_khi( pOut->eErr==0 ){
           jsonPrettyIndent(pPretty);
           j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ){
-            if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+          nếu( j>=iEnd ){
+            nếu( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
             break;
           }
           jsonAppendRawNZ(pOut, ",\n", 2);
@@ -2663,23 +2663,23 @@ static u32 jsonTranslateBlobToPrettyText(
       j = i+n;
       iEnd = j+sz;
       jsonAppendChar(pOut, '{');
-      if( j<iEnd ){
+      nếu( j<iEnd ){
         jsonAppendChar(pOut, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
+        nếu( pPretty->nIndent >= JSON_MAX_DEPTH ){
           jsonStringTooDeep(pOut);
         }
         pParse->iDepth = pPretty->nIndent;
-        while( pOut->eErr==0 ){
+        trong_khi( pOut->eErr==0 ){
           jsonPrettyIndent(pPretty);
           j = jsonTranslateBlobToText(pParse, j, pOut);
-          if( j>iEnd ){
+          nếu( j>iEnd ){
             pOut->eErr |= JSTRING_MALFORMED;
             break;
           }
           jsonAppendRawNZ(pOut, ": ", 2);
           j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ) break;
+          nếu( j>=iEnd ) break;
           jsonAppendRawNZ(pOut, ",\n", 2);
         }
         jsonAppendChar(pOut, '\n');
@@ -2695,7 +2695,7 @@ static u32 jsonTranslateBlobToPrettyText(
       break;
     }
   }
-  return i;
+  trả_về i;
 }
 
 /*
@@ -2707,10 +2707,10 @@ static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
   u32 k = 0;
   n = jsonbPayloadSize(pParse, iRoot, &sz);
   iEnd = iRoot+n+sz;
-  for(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
+  cho(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
     n = jsonbPayloadSizeSemiInline(pParse, i, &sz);
   }
-  return k;
+  trả_về k;
 }
 
 /*
@@ -2746,7 +2746,7 @@ static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
 ** This routine is an optimization.  A correct answer is obtained if it
 ** always leaves the output unchanged and returns false.
 */
-static int jsonBlobOverwrite(
+static số_nguyên jsonBlobOverwrite(
   u8 *aOut,                 /* Overwrite here */
   const u8 *aIns,           /* New content */
   u32 nIns,                 /* Bytes of new content */
@@ -2762,48 +2762,48 @@ static int jsonBlobOverwrite(
   **                             2     3  4     5  6  7  8     9 */
   static const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
 
-  if( (aIns[0]&0x0f)<=2 ) return 0;    /* Cannot enlarge NULL, true, false */
+  nếu( (aIns[0]&0x0f)<=2 ) trả_về 0;    /* Cannot enlarge NULL, true, false */
   switch( aIns[0]>>4 ){
     default: {                         /* aIns[] header size 1 */
-      if( ((1<<d)&0x116)==0 ) return 0;  /* d must be 1, 2, 4, or 8 */
+      nếu( ((1<<d)&0x116)==0 ) trả_về 0;  /* d must be 1, 2, 4, or 8 */
       i = d + 1;                         /* New hdr sz: 2, 3, 5, or 9 */
       szHdr = 1;
       break;
     }
     case 12: {                         /* aIns[] header size is 2 */
-      if( ((1<<d)&0x8a)==0) return 0;    /* d must be 1, 3, or 7 */
+      nếu( ((1<<d)&0x8a)==0) trả_về 0;    /* d must be 1, 3, or 7 */
       i = d + 2;                         /* New hdr sz: 2, 5, or 9 */
       szHdr = 2;
       break;
     }
     case 13: {                         /* aIns[] header size is 3 */
-      if( d!=2 && d!=6 ) return 0;       /* d must be 2 or 6 */
+      nếu( d!=2 && d!=6 ) trả_về 0;       /* d must be 2 or 6 */
       i = d + 3;                         /* New hdr sz: 5 or 9 */
       szHdr = 3;
       break;
     }
     case 14: {                         /* aIns[] header size is 5 */
-      if( d!=4 ) return 0;               /* d must be 4 */
+      nếu( d!=4 ) trả_về 0;               /* d must be 4 */
       i = 9;                             /* New hdr sz: 9 */
       szHdr = 5;
       break;
     }
     case 15: {                         /* aIns[] header size is 9 */
-      return 0;                          /* No solution */
+      trả_về 0;                          /* No solution */
     }
   }
   assert( i>=2 && i<=9 && aType[i-2]!=0 );
   aOut[0] = (aIns[0] & 0x0f) | aType[i-2];
   memcpy(&aOut[i], &aIns[szHdr], nIns-szHdr);
   szPayload = nIns - szHdr;
-  while( 1/*edit-by-break*/ ){
+  trong_khi( 1/*edit-by-break*/ ){
     i--;
     aOut[i] = szPayload & 0xff;
-    if( i==1 ) break;
+    nếu( i==1 ) break;
     szPayload >>= 8;
   }
   assert( (szPayload>>8)==0 );
-  return 1;
+  trả_về 1;
 }
 
 /*
@@ -2828,15 +2828,15 @@ static void jsonBlobEdit(
 ){
   i64 d = (i64)nIns - (i64)nDel;
   assert( pParse->nBlob >= (u64)iDel + (u64)nDel );
-  if( d<0 && d>=(-8) && aIns!=0
-   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (int)-d)
+  nếu( d<0 && d>=(-8) && aIns!=0
+   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (số_nguyên)-d)
   ){
-    return;
+    trả_về;
   }
-  if( d!=0 ){
-    if( pParse->nBlob + d > pParse->nBlobAlloc ){
+  nếu( d!=0 ){
+    nếu( pParse->nBlob + d > pParse->nBlobAlloc ){
       jsonBlobExpand(pParse, (u64)pParse->nBlob+d);
-      if( pParse->oom ) return;
+      nếu( pParse->oom ) trả_về;
     }
     memmove(&pParse->aBlob[iDel+nIns],
             &pParse->aBlob[iDel+nDel],
@@ -2844,7 +2844,7 @@ static void jsonBlobEdit(
     pParse->nBlob += d;
     pParse->delta += d;
   }
-  if( nIns && aIns ){
+  nếu( nIns && aIns ){
     memcpy(&pParse->aBlob[iDel], aIns, nIns);
   }
 }
@@ -2861,21 +2861,21 @@ static void jsonBlobEdit(
 */
 static u32 jsonBytesToBypass(const char *z, u32 n){
   u32 i = 0;
-  while( i+1<n ){
-    if( z[i]!='\\' ) return i;
-    if( z[i+1]=='\n' ){
+  trong_khi( i+1<n ){
+    nếu( z[i]!='\\' ) trả_về i;
+    nếu( z[i+1]=='\n' ){
       i += 2;
       continue;
     }
-    if( z[i+1]=='\r' ){
-      if( i+2<n && z[i+2]=='\n' ){
+    nếu( z[i+1]=='\r' ){
+      nếu( i+2<n && z[i+2]=='\n' ){
         i += 3;
-      }else{
+      }không_thì{
         i += 2;
       }
       continue;
     }
-    if( 0xe2==(u8)z[i+1]
+    nếu( 0xe2==(u8)z[i+1]
      && i+3<n
      && 0x80==(u8)z[i+2]
      && (0xa8==(u8)z[i+3] || 0xa9==(u8)z[i+3])
@@ -2885,7 +2885,7 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
     }
     break;
   }
-  return i;
+  trả_về i;
 }
 
 /*
@@ -2900,37 +2900,37 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
 static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
   assert( n>0 );
   assert( z[0]=='\\' );
-  if( n<2 ){
+  nếu( n<2 ){
     *piOut = JSON_INVALID_CHAR;
-    return n;
+    trả_về n;
   }
   switch( (u8)z[1] ){
     case 'u': {
       u32 v, vlo;
-      if( n<6 ){
+      nếu( n<6 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
+        trả_về n;
       }
       v = jsonHexToInt4(&z[2]);
-      if( (v & 0xfc00)==0xd800
+      nếu( (v & 0xfc00)==0xd800
        && n>=12
        && z[6]=='\\'
        && z[7]=='u'
        && ((vlo = jsonHexToInt4(&z[8]))&0xfc00)==0xdc00
       ){
         *piOut = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
-        return 12;
-      }else{
+        trả_về 12;
+      }không_thì{
         *piOut = v;
-        return 6;
+        trả_về 6;
       }
     }
-    case 'b': {   *piOut = '\b';  return 2; }
-    case 'f': {   *piOut = '\f';  return 2; }
-    case 'n': {   *piOut = '\n';  return 2; }
-    case 'r': {   *piOut = '\r';  return 2; }
-    case 't': {   *piOut = '\t';  return 2; }
-    case 'v': {   *piOut = '\v';  return 2; }
+    case 'b': {   *piOut = '\b';  trả_về 2; }
+    case 'f': {   *piOut = '\f';  trả_về 2; }
+    case 'n': {   *piOut = '\n';  trả_về 2; }
+    case 'r': {   *piOut = '\r';  trả_về 2; }
+    case 't': {   *piOut = '\t';  trả_về 2; }
+    case 'v': {   *piOut = '\v';  trả_về 2; }
     case '0': {
       /* JSON5 requires that the \0 escape not be followed by a digit.
       ** But SQLite did not enforce this restriction in versions 3.42.0
@@ -2940,44 +2940,44 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 #ifdef SQLITE_BUG_COMPATIBLE_20250510
       /* Legacy bug-compatible behavior */
       *piOut = 0;
-#else
+#không_thì
       /* Correct behavior */
       *piOut = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
 #endif
-      return 2;
+      trả_về 2;
     }
     case '\'':
     case '"':
     case '/':
-    case '\\':{   *piOut = z[1];  return 2; }
+    case '\\':{   *piOut = z[1];  trả_về 2; }
     case 'x': {
-      if( n<4 ){
+      nếu( n<4 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
+        trả_về n;
       }
       *piOut = (jsonHexToInt(z[2])<<4) | jsonHexToInt(z[3]);
-      return 4;
+      trả_về 4;
     }
     case 0xe2:
     case '\r':
     case '\n': {
       u32 nSkip = jsonBytesToBypass(z, n);
-      if( nSkip==0 ){
+      nếu( nSkip==0 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
-      }else if( nSkip==n ){
+        trả_về n;
+      }không_thì nếu( nSkip==n ){
         *piOut = 0;
-        return n;
-      }else if( z[nSkip]=='\\' ){
-        return nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
-      }else{
-        int sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
-        return nSkip + sz;
+        trả_về n;
+      }không_thì nếu( z[nSkip]=='\\' ){
+        trả_về nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
+      }không_thì{
+        số_nguyên sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
+        trả_về nSkip + sz;
       }
     }
     default: {
       *piOut = JSON_INVALID_CHAR;
-      return 2;
+      trả_về 2;
     }
   }
 }
@@ -2990,55 +2990,55 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** In this version, we know that one or the other or both of the
 ** two comparands contains an escape sequence.
 */
-static SQLITE_NOINLINE int jsonLabelCompareEscaped(
+static SQLITE_NOINLINE số_nguyên jsonLabelCompareEscaped(
   const char *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
+  số_nguyên rawLeft,                /* True if zLeft contains no escapes */
   const char *zRight,         /* The right label */
   u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  số_nguyên rawRight                /* True if zRight is escape-free */
 ){
   u32 cLeft, cRight;
   assert( rawLeft==0 || rawRight==0 );
-  while( 1 /*exit-by-return*/ ){
-    if( nLeft==0 ){
+  trong_khi( 1 /*exit-by-return*/ ){
+    nếu( nLeft==0 ){
       cLeft = 0;
-    }else if( rawLeft || zLeft[0]!='\\' ){
+    }không_thì nếu( rawLeft || zLeft[0]!='\\' ){
       cLeft = ((u8*)zLeft)[0];
-      if( cLeft>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
+      nếu( cLeft>=0xc0 ){
+        số_nguyên sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
         zLeft += sz;
         nLeft -= sz;
-      }else{
+      }không_thì{
         zLeft++;
         nLeft--;
       }
-    }else{
+    }không_thì{
       u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
       zLeft += n;
       assert( n<=nLeft );
       nLeft -= n;
     }
-    if( nRight==0 ){
+    nếu( nRight==0 ){
       cRight = 0;
-    }else if( rawRight || zRight[0]!='\\' ){
+    }không_thì nếu( rawRight || zRight[0]!='\\' ){
       cRight = ((u8*)zRight)[0];
-      if( cRight>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
+      nếu( cRight>=0xc0 ){
+        số_nguyên sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
         zRight += sz;
         nRight -= sz;
-      }else{
+      }không_thì{
         zRight++;
         nRight--;
       }
-    }else{
+    }không_thì{
       u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
       zRight += n;
       assert( n<=nRight );
       nRight -= n;
     }
-    if( cLeft!=cRight ) return 0;
-    if( cLeft==0 ) return 1;
+    nếu( cLeft!=cRight ) trả_về 0;
+    nếu( cLeft==0 ) trả_về 1;
   }
 }
 
@@ -3046,21 +3046,21 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** Compare two object labels.  Return 1 if they are equal and
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
-static int jsonLabelCompare(
+static số_nguyên jsonLabelCompare(
   const char *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
+  số_nguyên rawLeft,                /* True if zLeft contains no escapes */
   const char *zRight,         /* The right label */
   u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  số_nguyên rawRight                /* True if zRight is escape-free */
 ){
-  if( rawLeft && rawRight ){
+  nếu( rawLeft && rawRight ){
     /* Simpliest case:  Neither label contains escapes.  A simple
     ** memcmp() is sufficient. */
-    if( nLeft!=nRight ) return 0;
-    return memcmp(zLeft, zRight, nLeft)==0;
-  }else{
-    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
+    nếu( nLeft!=nRight ) trả_về 0;
+    trả_về memcmp(zLeft, zRight, nLeft)==0;
+  }không_thì{
+    trả_về jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
                                    zRight, nRight, rawRight);
   }
 }
@@ -3104,15 +3104,15 @@ static u32 jsonCreateEditSubstructure(
   const char *zTail   /* Tail of the path that determines substructure */
 ){
   static const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
-  int rc;
+  số_nguyên rc;
   memset(pIns, 0, sizeof(*pIns));
   pIns->db = pParse->db;
-  if( zTail[0]==0 ){
+  nếu( zTail[0]==0 ){
     /* No substructure.  Just insert what is given in pParse. */
     pIns->aBlob = pParse->aIns;
     pIns->nBlob = pParse->nIns;
     rc = 0;
-  }else{
+  }không_thì{
     /* Construct the binary substructure */
     pIns->nBlob = 1;
     pIns->aBlob = (u8*)&emptyObject[zTail[0]=='.'];
@@ -3120,14 +3120,14 @@ static u32 jsonCreateEditSubstructure(
     pIns->nIns = pParse->nIns;
     pIns->aIns = pParse->aIns;
     pIns->iDepth = pParse->iDepth+1;
-    if( pIns->iDepth >= JSON_MAX_DEPTH ){
-      return JSON_LOOKUP_TOODEEP;
+    nếu( pIns->iDepth >= JSON_MAX_DEPTH ){
+      trả_về JSON_LOOKUP_TOODEEP;
     }
     rc = jsonLookupStep(pIns, 0, zTail, 0);
     pParse->iDepth--;
     pParse->oom |= pIns->oom;
   }
-  return rc;  /* Error code only */
+  trả_về rc;  /* Error code only */
 }
 
 /*
@@ -3157,116 +3157,116 @@ static u32 jsonLookupStep(
   const char *zKey;
   u8 x;
 
-  if( zPath[0]==0 ){
-    if( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
+  nếu( zPath[0]==0 ){
+    nếu( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
       n = jsonbPayloadSize(pParse, iRoot, &sz);
       sz += n;
-      if( pParse->eEdit==JEDIT_DEL ){
-        if( iLabel>0 ){
+      nếu( pParse->eEdit==JEDIT_DEL ){
+        nếu( iLabel>0 ){
           sz += iRoot - iLabel;
           iRoot = iLabel;
         }
         jsonBlobEdit(pParse, iRoot, sz, 0, 0);
-      }else if( pParse->eEdit==JEDIT_INS ){
+      }không_thì nếu( pParse->eEdit==JEDIT_INS ){
         /* Already exists, so json_insert() is a no-op */
-      }else if( pParse->eEdit==JEDIT_AINS ){
+      }không_thì nếu( pParse->eEdit==JEDIT_AINS ){
         /* json_array_insert() */
-        if( zPath[-1]!=']' ){
-          return JSON_LOOKUP_NOTARRAY;
-        }else{
+        nếu( zPath[-1]!=']' ){
+          trả_về JSON_LOOKUP_NOTARRAY;
+        }không_thì{
           jsonBlobEdit(pParse, iRoot, 0, pParse->aIns, pParse->nIns);
         }
-      }else{
+      }không_thì{
         /* json_set() or json_replace() */
         jsonBlobEdit(pParse, iRoot, sz, pParse->aIns, pParse->nIns);
       }
     }
     pParse->iLabel = iLabel;
-    return iRoot;
+    trả_về iRoot;
   }
-  if( zPath[0]=='.' ){
-    int rawKey = 1;
+  nếu( zPath[0]=='.' ){
+    số_nguyên rawKey = 1;
     x = pParse->aBlob[iRoot];
     zPath++;
-    if( zPath[0]=='"' ){
+    nếu( zPath[0]=='"' ){
       zKey = zPath + 1;
-      for(i=1; zPath[i] && zPath[i]!='"'; i++){
-        if( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
+      cho(i=1; zPath[i] && zPath[i]!='"'; i++){
+        nếu( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
       }
       nKey = i-1;
-      if( zPath[i] ){
+      nếu( zPath[i] ){
         i++;
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }không_thì{
+        trả_về JSON_LOOKUP_PATHERROR;
       }
       testcase( nKey==0 );
       rawKey = memchr(zKey, '\\', nKey)==0;
-    }else{
+    }không_thì{
       zKey = zPath;
-      for(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
+      cho(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
       nKey = i;
-      if( nKey==0 ){
-        return JSON_LOOKUP_PATHERROR;
+      nếu( nKey==0 ){
+        trả_về JSON_LOOKUP_PATHERROR;
       }
     }
-    if( (x & 0x0f)!=JSONB_OBJECT ) return JSON_LOOKUP_NOTFOUND;
+    nếu( (x & 0x0f)!=JSONB_OBJECT ) trả_về JSON_LOOKUP_NOTFOUND;
     n = jsonbPayloadSize(pParse, iRoot, &sz);
     j = iRoot + n;  /* j is the index of a label */
     iEnd = j+sz;
-    while( j<iEnd ){
-      int rawLabel;
+    trong_khi( j<iEnd ){
+      số_nguyên rawLabel;
       const char *zLabel;
       x = pParse->aBlob[j] & 0x0f;
-      if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return JSON_LOOKUP_ERROR;
+      nếu( x<JSONB_TEXT || x>JSONB_TEXTRAW ) trả_về JSON_LOOKUP_ERROR;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      nếu( n==0 ) trả_về JSON_LOOKUP_ERROR;
       k = j+n;  /* k is the index of the label text */
-      if( k+sz>=iEnd ) return JSON_LOOKUP_ERROR;
+      nếu( k+sz>=iEnd ) trả_về JSON_LOOKUP_ERROR;
       zLabel = (const char*)&pParse->aBlob[k];
       rawLabel = x==JSONB_TEXT || x==JSONB_TEXTRAW;
-      if( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
+      nếu( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
         u32 v = k+sz;  /* v is the index of the value */
-        if( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
+        nếu( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) trả_về JSON_LOOKUP_ERROR;
         n = jsonbPayloadSize(pParse, v, &sz);
-        if( n==0 || v+n+sz>iEnd ) return JSON_LOOKUP_ERROR;
+        nếu( n==0 || v+n+sz>iEnd ) trả_về JSON_LOOKUP_ERROR;
         assert( j>0 );
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+        nếu( ++pParse->iDepth >= JSON_MAX_DEPTH ){
+          trả_về JSON_LOOKUP_TOODEEP;
         }
         rc = jsonLookupStep(pParse, v, &zPath[i], j);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        nếu( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        trả_về rc;
       }
       j = k+sz;
-      if( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
+      nếu( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) trả_về JSON_LOOKUP_ERROR;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      nếu( n==0 ) trả_về JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( pParse->eEdit>=JEDIT_INS ){
+    nếu( j>iEnd ) trả_về JSON_LOOKUP_ERROR;
+    nếu( pParse->eEdit>=JEDIT_INS ){
       u32 nIns;          /* Total bytes to insert (label+value) */
       JsonParse v;       /* BLOB encoding of the value to be inserted */
       JsonParse ix;      /* Header of the label to be inserted */
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_SET );
       testcase( pParse->eEdit==JEDIT_AINS );
-      if( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
-        return JSON_LOOKUP_NOTARRAY;
+      nếu( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
+        trả_về JSON_LOOKUP_NOTARRAY;
       }
       memset(&ix, 0, sizeof(ix));
       ix.db = pParse->db;
       jsonBlobAppendNode(&ix, rawKey?JSONB_TEXTRAW:JSONB_TEXT5, nKey, 0);
       pParse->oom |= ix.oom;
       rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      nếu( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, ix.nBlob+nKey+v.nBlob)
       ){
         assert( !pParse->oom );
         nIns = ix.nBlob + nKey + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
-        if( !pParse->oom ){
+        nếu( !pParse->oom ){
           assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
           assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
           memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
@@ -3274,87 +3274,87 @@ static u32 jsonLookupStep(
           memcpy(&pParse->aBlob[k], zKey, nKey);
           k += nKey;
           memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          nếu( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
         }
       }
       jsonParseReset(&v);
       jsonParseReset(&ix);
-      return rc;
+      trả_về rc;
     }
-  }else if( zPath[0]=='[' ){
+  }không_thì nếu( zPath[0]=='[' ){
     u64 kk = 0;
     x = pParse->aBlob[iRoot] & 0x0f;
-    if( x!=JSONB_ARRAY )  return JSON_LOOKUP_NOTFOUND;
+    nếu( x!=JSONB_ARRAY )  trả_về JSON_LOOKUP_NOTFOUND;
     n = jsonbPayloadSize(pParse, iRoot, &sz);
     i = 1;
-    while( sqlite3Isdigit(zPath[i]) ){
-      if( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
+    trong_khi( sqlite3Isdigit(zPath[i]) ){
+      nếu( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
       /*     ^^^^^^^^^^--- Allow kk to be bigger than any JSON array so that
       ** we get NOTFOUND instead of PATHERROR, without overflowing kk. */
       i++;
     }
-    if( i<2 || zPath[i]!=']' ){
-      if( zPath[1]=='#' ){
+    nếu( i<2 || zPath[i]!=']' ){
+      nếu( zPath[1]=='#' ){
         kk = jsonbArrayCount(pParse, iRoot);
         i = 2;
-        if( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
+        nếu( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
           u64 nn = 0;
           i = 3;
           do{
-            if( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
+            nếu( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
             /*     ^^^^^^^^^^--- Allow nn to be bigger than any JSON array to
             ** get NOTFOUND instead of PATHERROR, without overflowing nn. */
             i++;
-          }while( sqlite3Isdigit(zPath[i]) );
-          if( nn>kk ) return JSON_LOOKUP_NOTFOUND;
+          }trong_khi( sqlite3Isdigit(zPath[i]) );
+          nếu( nn>kk ) trả_về JSON_LOOKUP_NOTFOUND;
           kk -= nn;
         }
-        if( zPath[i]!=']' ){
-          return JSON_LOOKUP_PATHERROR;
+        nếu( zPath[i]!=']' ){
+          trả_về JSON_LOOKUP_PATHERROR;
         }
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }không_thì{
+        trả_về JSON_LOOKUP_PATHERROR;
       }
     }
     j = iRoot+n;
     iEnd = j+sz;
-    while( j<iEnd ){
-      if( kk==0 ){
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+    trong_khi( j<iEnd ){
+      nếu( kk==0 ){
+        nếu( ++pParse->iDepth >= JSON_MAX_DEPTH ){
+          trả_về JSON_LOOKUP_TOODEEP;
         }
         rc = jsonLookupStep(pParse, j, &zPath[i+1], 0);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        nếu( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        trả_về rc;
       }
       kk--;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      nếu( n==0 ) trả_về JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( kk>0 ) return JSON_LOOKUP_NOTFOUND;
-    if( pParse->eEdit>=JEDIT_INS ){
+    nếu( j>iEnd ) trả_về JSON_LOOKUP_ERROR;
+    nếu( kk>0 ) trả_về JSON_LOOKUP_NOTFOUND;
+    nếu( pParse->eEdit>=JEDIT_INS ){
       JsonParse v;
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_AINS );
       testcase( pParse->eEdit==JEDIT_SET );
       rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i+1]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      nếu( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, v.nBlob)
       ){
         assert( !pParse->oom );
         jsonBlobEdit(pParse, j, 0, v.aBlob, v.nBlob);
       }
       jsonParseReset(&v);
-      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-      return rc;
+      nếu( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+      trả_về rc;
     }
-  }else{
-    return JSON_LOOKUP_PATHERROR; 
+  }không_thì{
+    trả_về JSON_LOOKUP_PATHERROR; 
   }
-  return JSON_LOOKUP_NOTFOUND;
+  trả_về JSON_LOOKUP_NOTFOUND;
 }
 
 /*
@@ -3369,7 +3369,7 @@ static void jsonReturnTextJsonFromBlob(
   JsonParse x;
   JsonString s;
 
-  if( NEVER(aBlob==0) ) return;
+  nếu( NEVER(aBlob==0) ) trả_về;
   memset(&x, 0, sizeof(x));
   x.aBlob = (u8*)aBlob;
   x.nBlob = nBlob;
@@ -3398,31 +3398,31 @@ static void jsonReturnFromBlob(
   JsonParse *pParse,          /* Complete JSON parse tree */
   u32 i,                      /* Index of the node */
   sqlite3_context *pCtx,      /* Return value for this function */
-  int eMode                   /* Format of return: text of JSONB */
+  số_nguyên eMode                   /* Format of return: text of JSONB */
 ){
   u32 n, sz;
-  int rc;
+  số_nguyên rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
 
   assert( eMode>=0 && eMode<=2 );
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
+  nếu( n==0 ){
     sqlite3_result_error(pCtx, "malformed JSON", -1);
-    return;
+    trả_về;
   }
   switch( pParse->aBlob[i] & 0x0f ){
     case JSONB_NULL: {
-      if( sz ) goto returnfromblob_malformed;
+      nếu( sz ) goto returnfromblob_malformed;
       sqlite3_result_null(pCtx);
       break;
     }
     case JSONB_TRUE: {
-      if( sz ) goto returnfromblob_malformed;
+      nếu( sz ) goto returnfromblob_malformed;
       sqlite3_result_int(pCtx, 1);
       break;
     }
     case JSONB_FALSE: {
-      if( sz ) goto returnfromblob_malformed;
+      nếu( sz ) goto returnfromblob_malformed;
       sqlite3_result_int(pCtx, 0);
       break;
     }
@@ -3430,22 +3430,22 @@ static void jsonReturnFromBlob(
     case JSONB_INT: {
       sqlite3_int64 iRes = 0;
       char *z;
-      int bNeg = 0;
+      số_nguyên bNeg = 0;
       char x;
-      if( sz==0 ) goto returnfromblob_malformed;
+      nếu( sz==0 ) goto returnfromblob_malformed;
       x = (char)pParse->aBlob[i+n];
-      if( x=='-' ){
-        if( sz<2 ) goto returnfromblob_malformed;
+      nếu( x=='-' ){
+        nếu( sz<2 ) goto returnfromblob_malformed;
         n++;
         sz--;
         bNeg = 1;
       }
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (số_nguyên)sz);
+      nếu( z==0 ) goto returnfromblob_oom;
       rc = sqlite3DecOrHexToI64(z, &iRes);
       sqlite3DbFree(db, z);
-      if( rc==0 ){
-        if( iRes<0 ){
+      nếu( rc==0 ){
+        nếu( iRes<0 ){
           /* A hexadecimal literal with 16 significant digits and with the
           ** high-order bit set is a negative integer in SQLite (and hence
           ** iRes comes back as negative) but should be interpreted as a
@@ -3455,15 +3455,15 @@ static void jsonReturnFromBlob(
           double r;
           r = (double)*(sqlite3_uint64*)&iRes;
           sqlite3_result_double(pCtx, bNeg ? -r : r);
-        }else{
+        }không_thì{
           sqlite3_result_int64(pCtx, bNeg ? -iRes : iRes);
         }
-      }else if( rc==3 && bNeg ){
+      }không_thì nếu( rc==3 && bNeg ){
         sqlite3_result_int64(pCtx, SMALLEST_INT64);
-      }else if( rc==1 ){
+      }không_thì nếu( rc==1 ){
         goto returnfromblob_malformed;
-      }else{
-        if( bNeg ){ n--; sz++; }
+      }không_thì{
+        nếu( bNeg ){ n--; sz++; }
         goto to_double;
       }
       break;
@@ -3472,13 +3472,13 @@ static void jsonReturnFromBlob(
     case JSONB_FLOAT: {
       double r;
       char *z;
-      if( sz==0 ) goto returnfromblob_malformed;
+      nếu( sz==0 ) goto returnfromblob_malformed;
     to_double:
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (số_nguyên)sz);
+      nếu( z==0 ) goto returnfromblob_oom;
       rc = sqlite3AtoF(z, &r);
       sqlite3DbFree(db, z);
-      if( rc<=0 ) goto returnfromblob_malformed;
+      nếu( rc<=0 ) goto returnfromblob_malformed;
       sqlite3_result_double(pCtx, r);
       break;
     }
@@ -3497,31 +3497,31 @@ static void jsonReturnFromBlob(
       u32 nOut = sz;
       z = (const char*)&pParse->aBlob[i+n];
       zOut = sqlite3DbMallocRaw(db, ((u64)nOut)+1);
-      if( zOut==0 ) goto returnfromblob_oom;
-      for(iIn=iOut=0; iIn<sz; iIn++){
+      nếu( zOut==0 ) goto returnfromblob_oom;
+      cho(iIn=iOut=0; iIn<sz; iIn++){
         char c = z[iIn];
-        if( c=='\\' ){
+        nếu( c=='\\' ){
           u32 v;
           u32 szEscape = jsonUnescapeOneChar(&z[iIn], sz-iIn, &v);
-          if( v==0 && iIn+szEscape==sz
+          nếu( v==0 && iIn+szEscape==sz
            && (z[iIn+1]=='\n' || z[iIn+1]=='\r' || (u8)z[iIn+1]==0xe2)
           ){
             /* A JSON5 line continuation at the end of the string
             ** contributes no characters */
-          }else if( v<=0x7f ){
+          }không_thì nếu( v<=0x7f ){
             zOut[iOut++] = (char)v;
-          }else if( v<=0x7ff ){
+          }không_thì nếu( v<=0x7ff ){
             assert( szEscape>=2 );
             zOut[iOut++] = (char)(0xc0 | (v>>6));
             zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v<0x10000 ){
+          }không_thì nếu( v<0x10000 ){
             assert( szEscape>=3 );
             zOut[iOut++] = 0xe0 | (v>>12);
             zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
             zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v==JSON_INVALID_CHAR ){
+          }không_thì nếu( v==JSON_INVALID_CHAR ){
             /* Silently ignore illegal unicode */
-          }else{
+          }không_thì{
             assert( szEscape>=4 );
             zOut[iOut++] = 0xf0 | (v>>18);
             zOut[iOut++] = 0x80 | ((v>>12)&0x3f);
@@ -3529,7 +3529,7 @@ static void jsonReturnFromBlob(
             zOut[iOut++] = 0x80 | (v&0x3f);
           }
           iIn += szEscape - 1;
-        }else{
+        }không_thì{
           zOut[iOut++] = c;
         }
       } /* end for() */
@@ -3540,16 +3540,16 @@ static void jsonReturnFromBlob(
     }
     case JSONB_ARRAY:
     case JSONB_OBJECT: {
-      if( eMode==0 ){
-        if( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
+      nếu( eMode==0 ){
+        nếu( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
           eMode = 2;
-        }else{
+        }không_thì{
           eMode = 1;
         }
       }
-      if( eMode==2 ){
+      nếu( eMode==2 ){
         sqlite3_result_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
-      }else{
+      }không_thì{
         jsonReturnTextJsonFromBlob(pCtx, &pParse->aBlob[i], sz+n);
       }
       break;
@@ -3558,15 +3558,15 @@ static void jsonReturnFromBlob(
       goto returnfromblob_malformed;
     }
   }
-  return;
+  trả_về;
 
 returnfromblob_oom:
   sqlite3_result_error_nomem(pCtx);
-  return;
+  trả_về;
 
 returnfromblob_malformed:
   sqlite3_result_error(pCtx, "malformed JSON", -1);
-  return;
+  trả_về;
 }
 
 /*
@@ -3586,12 +3586,12 @@ returnfromblob_malformed:
 ** function might set an error message in ctx and return non-zero.
 ** It might also set an error message and return non-zero on an OOM error.
 */
-static int jsonFunctionArgToBlob(
+static số_nguyên jsonFunctionArgToBlob(
   sqlite3_context *ctx,
   sqlite3_value *pArg,
   JsonParse *pParse
 ){
-  int eType = sqlite3_value_type(pArg);
+  số_nguyên eType = sqlite3_value_type(pArg);
   static u8 aNull[] = { 0x00 };
   memset(pParse, 0, sizeof(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
@@ -3599,63 +3599,63 @@ static int jsonFunctionArgToBlob(
     default: {
       pParse->aBlob = aNull;
       pParse->nBlob = 1;
-      return 0;
+      trả_về 0;
     }
     case SQLITE_BLOB: {
-      if( !jsonArgIsJsonb(pArg, pParse) ){
+      nếu( !jsonArgIsJsonb(pArg, pParse) ){
         sqlite3_result_error(ctx, "JSON cannot hold BLOB values", -1);
-        return 1;
+        trả_về 1;
       }
       break;
     }
     case SQLITE_TEXT: {
       const char *zJson = (const char*)sqlite3_value_text(pArg);
-      int nJson = sqlite3_value_bytes(pArg);
-      if( zJson==0 ) return 1;
-      if( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
+      số_nguyên nJson = sqlite3_value_bytes(pArg);
+      nếu( zJson==0 ) trả_về 1;
+      nếu( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
         pParse->zJson = (char*)zJson;
         pParse->nJson = nJson;
-        if( jsonConvertTextToBlob(pParse, ctx) ){
+        nếu( jsonConvertTextToBlob(pParse, ctx) ){
           sqlite3_result_error(ctx, "malformed JSON", -1);
           sqlite3DbFree(pParse->db, pParse->aBlob);
           memset(pParse, 0, sizeof(pParse[0]));
-          return 1;
+          trả_về 1;
         }
-      }else{
+      }không_thì{
         jsonBlobAppendNode(pParse, JSONB_TEXTRAW, nJson, zJson);
       }
       break;
     }
     case SQLITE_FLOAT: {
-      if( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
+      nếu( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
         jsonBlobAppendNode(pParse, JSONB_NULL, 0, 0);
-      }else{
-        int n = sqlite3_value_bytes(pArg);
+      }không_thì{
+        số_nguyên n = sqlite3_value_bytes(pArg);
         const char *z = (const char*)sqlite3_value_text(pArg);
-        if( z==0 ) return 1;
-        if( z[0]=='I' ){
+        nếu( z==0 ) trả_về 1;
+        nếu( z[0]=='I' ){
           jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-        }else if( z[0]=='-' && z[1]=='I' ){
+        }không_thì nếu( z[0]=='-' && z[1]=='I' ){
           jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-        }else{
+        }không_thì{
           jsonBlobAppendNode(pParse, JSONB_FLOAT, n, z);
         }
       }
       break;
     }
     case SQLITE_INTEGER: {
-      int n = sqlite3_value_bytes(pArg);
+      số_nguyên n = sqlite3_value_bytes(pArg);
       const char *z = (const char*)sqlite3_value_text(pArg);
-      if( z==0 ) return 1;
+      nếu( z==0 ) trả_về 1;
       jsonBlobAppendNode(pParse, JSONB_INT, n, z);
       break;
     }
   }
-  if( pParse->oom ){
+  nếu( pParse->oom ){
     sqlite3_result_error_nomem(ctx);
-    return 1;
-  }else{
-    return 0;
+    trả_về 1;
+  }không_thì{
+    trả_về 0;
   }
 }
 
@@ -3677,26 +3677,26 @@ static int jsonFunctionArgToBlob(
 static char *jsonBadPathError(
   sqlite3_context *ctx,     /* The function call containing the error */
   const char *zPath,        /* The path with the problem */
-  int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
+  số_nguyên rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
 ){
   char *zMsg;
-  if( rc==(int)JSON_LOOKUP_NOTARRAY ){
+  nếu( rc==(số_nguyên)JSON_LOOKUP_NOTARRAY ){
     zMsg = sqlite3_mprintf("not an array element: %Q", zPath);
-  }else if( rc==(int)JSON_LOOKUP_ERROR ){
+  }không_thì nếu( rc==(số_nguyên)JSON_LOOKUP_ERROR ){
     zMsg = sqlite3_mprintf("malformed JSON");
-  }else if( rc==(int)JSON_LOOKUP_TOODEEP ){
+  }không_thì nếu( rc==(số_nguyên)JSON_LOOKUP_TOODEEP ){
     zMsg = sqlite3_mprintf("JSON path too deep");
-  }else{
+  }không_thì{
     zMsg = sqlite3_mprintf("bad JSON path: %Q", zPath);
   }
-  if( ctx==0 ) return zMsg;
-  if( zMsg ){
+  nếu( ctx==0 ) trả_về zMsg;
+  nếu( zMsg ){
     sqlite3_result_error(ctx, zMsg, -1);
     sqlite3_free(zMsg);
-  }else{
+  }không_thì{
     sqlite3_result_error_nomem(ctx);
   }
-  return 0;
+  trả_về 0;
 }
 
 /* argv[0] is a BLOB that seems likely to be a JSONB.  Subsequent
@@ -3709,41 +3709,41 @@ static char *jsonBadPathError(
 */
 static void jsonInsertIntoBlob(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv,
-  int eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
+  số_nguyên eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
 ){
-  int i;
+  số_nguyên i;
   u32 rc = 0;
   const char *zPath = 0;
-  int flgs;
+  số_nguyên flgs;
   JsonParse *p;
   JsonParse ax;
 
   assert( (argc&1)==1 );
   flgs = argc==1 ? 0 : JSON_EDITABLE;
   p = jsonParseFuncArg(ctx, argv[0], flgs);
-  if( p==0 ) return;
-  for(i=1; i<argc-1; i+=2){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
+  nếu( p==0 ) trả_về;
+  cho(i=1; i<argc-1; i+=2){
+    nếu( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
     zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
+    nếu( zPath==0 ){
       sqlite3_result_error_nomem(ctx);
       jsonParseFree(p);
-      return;
+      trả_về;
     }
-    if( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
-    if( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
+    nếu( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
+    nếu( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
       jsonParseReset(&ax);
       jsonParseFree(p);
-      return;
+      trả_về;
     }
-    if( zPath[1]==0 ){
-      if( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
+    nếu( zPath[1]==0 ){
+      nếu( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
         jsonBlobEdit(p, 0, p->nBlob, ax.aBlob, ax.nBlob);
       }
       rc = 0;
-   }else{
+   }không_thì{
       p->eEdit = eEdit;
       p->nIns = ax.nBlob;
       p->aIns = ax.aBlob;
@@ -3752,17 +3752,17 @@ static void jsonInsertIntoBlob(
       rc = jsonLookupStep(p, 0, zPath+1, 0);
     }
     jsonParseReset(&ax);
-    if( rc==JSON_LOOKUP_NOTFOUND ) continue;
-    if( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
+    nếu( rc==JSON_LOOKUP_NOTFOUND ) continue;
+    nếu( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  trả_về;
 
 jsonInsertIntoBlob_patherror:
   jsonParseFree(p);
   jsonBadPathError(ctx, zPath, rc);
-  return;
+  trả_về;
 }
 
 /*
@@ -3793,13 +3793,13 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+static số_nguyên jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
-  if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
+  nếu( sqlite3_value_type(pArg)!=SQLITE_BLOB ) trả_về 0;
   p->aBlob = (u8*)sqlite3_value_blob(pArg);
   p->nBlob = (u32)sqlite3_value_bytes(pArg);
-  if( p->nBlob>0
+  nếu( p->nBlob>0
    && ALWAYS(p->aBlob!=0)
    && ((c = p->aBlob[0]) & 0x0f)<=JSONB_OBJECT
    && (n = jsonbPayloadSize(p, 0, &sz))>0
@@ -3809,11 +3809,11 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
       || (c!=0x7b && c!=0x5b && !sqlite3Isdigit(c))
       || jsonbValidityCheck(p, 0, p->nBlob, 1)==0)
   ){
-    return 1;
+    trả_về 1;
   }
   p->aBlob = 0;
   p->nBlob = 0;
-  return 0;
+  trả_về 0;
 }
 
 /*
@@ -3837,48 +3837,48 @@ static JsonParse *jsonParseFuncArg(
   sqlite3_value *pArg,
   u32 flgs
 ){
-  int eType;                   /* Datatype of pArg */
+  số_nguyên eType;                   /* Datatype of pArg */
   JsonParse *p = 0;            /* Value to be returned */
   JsonParse *pFromCache = 0;   /* Value taken from cache */
   sqlite3 *db;                 /* The database connection */
   
   assert( ctx!=0 );
   eType = sqlite3_value_type(pArg);
-  if( eType==SQLITE_NULL ){
-    return 0;
+  nếu( eType==SQLITE_NULL ){
+    trả_về 0;
   }
-  if( (flgs & JSON_NOCACHE)==0 ){
+  nếu( (flgs & JSON_NOCACHE)==0 ){
     pFromCache = jsonCacheSearch(ctx, pArg);
   }
-  if( pFromCache ){
+  nếu( pFromCache ){
     pFromCache->nJPRef++;
-    if( (flgs & JSON_EDITABLE)==0 ){
-      return pFromCache;
+    nếu( (flgs & JSON_EDITABLE)==0 ){
+      trả_về pFromCache;
     }
   }
   db = sqlite3_context_db_handle(ctx);
 rebuild_from_cache:
   p = sqlite3DbMallocZero(db, sizeof(*p));
-  if( p==0 ) goto json_pfa_oom;
+  nếu( p==0 ) goto json_pfa_oom;
   memset(p, 0, sizeof(*p));
   p->db = db;
   p->nJPRef = 1;
-  if( pFromCache!=0 ){
+  nếu( pFromCache!=0 ){
     u32 nBlob = pFromCache->nBlob;
     p->aBlob = sqlite3DbMallocRaw(db, nBlob);
-    if( p->aBlob==0 ) goto json_pfa_oom;
+    nếu( p->aBlob==0 ) goto json_pfa_oom;
     memcpy(p->aBlob, pFromCache->aBlob, nBlob);
     p->nBlobAlloc = p->nBlob = nBlob;
     p->hasNonstd = pFromCache->hasNonstd;
     jsonParseFree(pFromCache);
-    return p;
+    trả_về p;
   }
-  if( eType==SQLITE_BLOB ){
-    if( jsonArgIsJsonb(pArg,p) ){
-      if( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
+  nếu( eType==SQLITE_BLOB ){
+    nếu( jsonArgIsJsonb(pArg,p) ){
+      nếu( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
         goto json_pfa_oom;
       }
-      return p;
+      trả_về p;
     }
     /* If the blob is not valid JSONB, fall through into trying to cast
     ** the blob into text which is then interpreted as JSON.  (tag-20240123-a)
@@ -3895,55 +3895,55 @@ rebuild_from_cache:
   }
   p->zJson = (char*)sqlite3_value_text(pArg);
   p->nJson = sqlite3_value_bytes(pArg);
-  if( db->mallocFailed ) goto json_pfa_oom;
-  if( p->nJson==0 ) goto json_pfa_malformed;
+  nếu( db->mallocFailed ) goto json_pfa_oom;
+  nếu( p->nJson==0 ) goto json_pfa_malformed;
   assert( p->zJson!=0 );
-  if( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
-    if( flgs & JSON_KEEPERROR ){
+  nếu( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
+    nếu( flgs & JSON_KEEPERROR ){
       p->nErr = 1;
-      return p;
-    }else{
+      trả_về p;
+    }không_thì{
       jsonParseFree(p);
-      return 0;
+      trả_về 0;
     }
-  }else{
-    int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
-    int rc;
-    if( !isRCStr ){
+  }không_thì{
+    số_nguyên isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
+    số_nguyên rc;
+    nếu( !isRCStr ){
       char *zNew = sqlite3RCStrNew( p->nJson );
-      if( zNew==0 ) goto json_pfa_oom;
+      nếu( zNew==0 ) goto json_pfa_oom;
       memcpy(zNew, p->zJson, p->nJson);
       p->zJson = zNew;
       p->zJson[p->nJson] = 0;
-    }else{
+    }không_thì{
       sqlite3RCStrRef(p->zJson);
     }
     p->bJsonIsRCStr = 1;
     rc = jsonCacheInsert(ctx, p);
-    if( rc==SQLITE_NOMEM ) goto json_pfa_oom;
-    if( flgs & JSON_EDITABLE ){
+    nếu( rc==SQLITE_NOMEM ) goto json_pfa_oom;
+    nếu( flgs & JSON_EDITABLE ){
       pFromCache = p;
       p = 0;
       goto rebuild_from_cache;
     }
   }
-  return p;
+  trả_về p;
 
 json_pfa_malformed:
-  if( flgs & JSON_KEEPERROR ){
+  nếu( flgs & JSON_KEEPERROR ){
     p->nErr = 1;
-    return p;
-  }else{
+    trả_về p;
+  }không_thì{
     jsonParseFree(p);
     sqlite3_result_error(ctx, "malformed JSON", -1);
-    return 0;
+    trả_về 0;
   }
 
 json_pfa_oom:
   jsonParseFree(pFromCache);
   jsonParseFree(p);
   sqlite3_result_error_nomem(ctx);
-  return 0;
+  trả_về 0;
 }
 
 /*
@@ -3955,20 +3955,20 @@ static void jsonReturnParse(
   sqlite3_context *ctx,
   JsonParse *p
 ){
-  int flgs;
-  if( p->oom ){
+  số_nguyên flgs;
+  nếu( p->oom ){
     sqlite3_result_error_nomem(ctx);
-    return;
+    trả_về;
   }
   flgs = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  if( flgs & JSON_BLOB ){
-    if( p->nBlobAlloc>0 && !p->bReadOnly ){
+  nếu( flgs & JSON_BLOB ){
+    nếu( p->nBlobAlloc>0 && !p->bReadOnly ){
       sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
       p->nBlobAlloc = 0;
-    }else{
+    }không_thì{
       sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
     }
-  }else{
+  }không_thì{
     JsonString s;
     jsonStringInit(&s, ctx);
     p->delta = 0;
@@ -3982,7 +3982,7 @@ static void jsonReturnParse(
 ** SQL functions used for testing and debugging
 ****************************************************************************/
 
-#if SQLITE_DEBUG
+#nếu SQLITE_DEBUG
 /*
 ** Decode JSONB bytes in aBlob[] starting at iStart through but not 
 ** including iEnd.  Indent the
@@ -3992,38 +3992,38 @@ static void jsonDebugPrintBlob(
   JsonParse *pParse, /* JSON content */
   u32 iStart,        /* Start rendering here */
   u32 iEnd,          /* Do not render this byte or any byte after this one */
-  int nIndent,       /* Indent by this many spaces */
+  số_nguyên nIndent,       /* Indent by this many spaces */
   sqlite3_str *pOut  /* Generate output into this sqlite3_str object */
 ){
-  while( iStart<iEnd ){
+  trong_khi( iStart<iEnd ){
     u32 i, n, nn, sz = 0;
-    int showContent = 1;
+    số_nguyên showContent = 1;
     u8 x = pParse->aBlob[iStart] & 0x0f;
     u32 savedNBlob = pParse->nBlob;
     sqlite3_str_appendf(pOut, "%5d:%*s", iStart, nIndent, "");
-    if( pParse->nBlobAlloc>pParse->nBlob ){
+    nếu( pParse->nBlobAlloc>pParse->nBlob ){
       pParse->nBlob = pParse->nBlobAlloc;
     }
     nn = n = jsonbPayloadSize(pParse, iStart, &sz);
-    if( nn==0 ) nn = 1;
-    if( sz>0 && x<JSONB_ARRAY ){
+    nếu( nn==0 ) nn = 1;
+    nếu( sz>0 && x<JSONB_ARRAY ){
       nn += sz;
     }
-    for(i=0; i<nn; i++){
+    cho(i=0; i<nn; i++){
       sqlite3_str_appendf(pOut, " %02x", pParse->aBlob[iStart+i]);
     }
-    if( n==0 ){
+    nếu( n==0 ){
       sqlite3_str_appendf(pOut, "   ERROR invalid node size\n");
       iStart = n==0 ? iStart+1 : iEnd;
       continue;
     }
     pParse->nBlob = savedNBlob;
-    if( iStart+n+sz>iEnd ){
+    nếu( iStart+n+sz>iEnd ){
       iEnd = iStart+n+sz;
-      if( iEnd>pParse->nBlob ){
-        if( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
+      nếu( iEnd>pParse->nBlob ){
+        nếu( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
           iEnd = pParse->nBlobAlloc;
-        }else{
+        }không_thì{
           iEnd = pParse->nBlob;
         }
       }
@@ -4059,15 +4059,15 @@ static void jsonDebugPrintBlob(
         break;
       }
     }
-    if( showContent ){
-      if( sz==0 && x<=JSONB_FALSE ){
+    nếu( showContent ){
+      nếu( sz==0 && x<=JSONB_FALSE ){
         sqlite3_str_append(pOut, "\n", 1);
-      }else{
+      }không_thì{
         u32 j;
         sqlite3_str_appendall(pOut, ": \"");
-        for(j=iStart+n; j<iStart+n+sz; j++){
+        cho(j=iStart+n; j<iStart+n+sz; j++){
           u8 c = pParse->aBlob[j];
-          if( c<0x20 || c>=0x7f ) c = '.';
+          nếu( c<0x20 || c>=0x7f ) c = '.';
           sqlite3_str_append(pOut, (char*)&c, 1);
         }
         sqlite3_str_append(pOut, "\"\n", 2);
@@ -4079,14 +4079,14 @@ static void jsonDebugPrintBlob(
 static void jsonShowParse(JsonParse *pParse){
   sqlite3_str out;
   char zBuf[1000];
-  if( pParse==0 ){
+  nếu( pParse==0 ){
     printf("NULL pointer\n");
-    return;
-  }else{
+    trả_về;
+  }không_thì{
     printf("nBlobAlloc = %u\n", pParse->nBlobAlloc);
     printf("nBlob = %u\n", pParse->nBlob);
     printf("delta = %d\n", pParse->delta);
-    if( pParse->nBlob==0 ) return;
+    nếu( pParse->nBlob==0 ) trả_về;
     printf("content (bytes 0..%u):\n", pParse->nBlob-1);
   }
   sqlite3StrAccumInit(&out, 0, zBuf, sizeof(zBuf), 1000000);
@@ -4105,7 +4105,7 @@ static void jsonShowParse(JsonParse *pParse){
 */
 static void jsonParseFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p;        /* The parse */
@@ -4114,11 +4114,11 @@ static void jsonParseFunc(
   assert( argc>=1 );
   sqlite3StrAccumInit(&out, 0, 0, 0, 1000000);
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==1 ){
+  nếu( p==0 ) trả_về;
+  nếu( argc==1 ){
     jsonDebugPrintBlob(p, 0, p->nBlob, 0, &out);
     sqlite3_result_text64(ctx,out.zText,out.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
-  }else{
+  }không_thì{
     jsonShowParse(p);
   }
   jsonParseFree(p);
@@ -4138,7 +4138,7 @@ static void jsonParseFunc(
 */
 static void jsonQuoteFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonString jx;
@@ -4157,15 +4157,15 @@ static void jsonQuoteFunc(
 */
 static void jsonArrayFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
-  int i;
+  số_nguyên i;
   JsonString jx;
 
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '[');
-  for(i=0; i<argc; i++){
+  cho(i=0; i<argc; i++){
     jsonAppendSeparator(&jx);
     jsonAppendSqlValue(&jx, argv[i]);
   }
@@ -4183,7 +4183,7 @@ static void jsonArrayFunc(
 */
 static void jsonArrayLengthFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
@@ -4192,38 +4192,38 @@ static void jsonArrayLengthFunc(
   u8 eErr = 0;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
+  nếu( p==0 ) trả_về;
+  nếu( argc==2 ){
     const char *zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ){
+    nếu( zPath==0 ){
       jsonParseFree(p);
-      return;
+      trả_về;
     }
     i = jsonLookupStep(p, 0, zPath[0]=='$' ? zPath+1 : "@", 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    nếu( JSON_LOOKUP_ISERROR(i) ){
+      nếu( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
+      }không_thì{
         jsonBadPathError(ctx, zPath, i);
       }
       eErr = 1;
       i = 0;
     }
-  }else{
+  }không_thì{
     i = 0;
   }
-  if( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
+  nếu( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
     cnt = jsonbArrayCount(p, i);
   }
-  if( !eErr ) sqlite3_result_int64(ctx, cnt);
+  nếu( !eErr ) sqlite3_result_int64(ctx, cnt);
   jsonParseFree(p);
 }
 
 /* True if the string is all alphanumerics and underscores */
-static int jsonAllAlphanum(const char *z, int n){
-  int i;
-  for(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
-  return i==n;
+static số_nguyên jsonAllAlphanum(const char *z, số_nguyên n){
+  số_nguyên i;
+  cho(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
+  trả_về i==n;
 }
 
 /*
@@ -4248,32 +4248,32 @@ static int jsonAllAlphanum(const char *z, int n){
 */
 static void jsonExtractFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p = 0;      /* The parse */
-  int flags;             /* Flags associated with the function */
-  int i;                 /* Loop counter */
+  số_nguyên flags;             /* Flags associated with the function */
+  số_nguyên i;                 /* Loop counter */
   JsonString jx;         /* String for array result */
 
-  if( argc<2 ) return;
+  nếu( argc<2 ) trả_về;
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
+  nếu( p==0 ) trả_về;
   flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   jsonStringInit(&jx, ctx);
-  if( argc>2 ){
+  nếu( argc>2 ){
     jsonAppendChar(&jx, '[');
   }
-  for(i=1; i<argc; i++){
+  cho(i=1; i<argc; i++){
     /* With a single PATH argument */
     const char *zPath = (const char*)sqlite3_value_text(argv[i]);
-    int nPath;
+    số_nguyên nPath;
     u32 j;
-    if( zPath==0 ) goto json_extract_error;
+    nếu( zPath==0 ) goto json_extract_error;
     nPath = sqlite3Strlen30(zPath);
-    if( zPath[0]=='$' ){
+    nếu( zPath[0]=='$' ){
       j = jsonLookupStep(p, 0, zPath+1, 0);
-    }else if( (flags & JSON_ABPATH) ){
+    }không_thì nếu( (flags & JSON_ABPATH) ){
       /* The -> and ->> operators accept abbreviated PATH arguments.  This
       ** is mostly for compatibility with PostgreSQL, but also for
       ** convenience.
@@ -4288,17 +4288,17 @@ static void jsonExtractFunc(
       **     NUMBER   ==>  $[#NUMBER]    // PG compatible
       */
       jsonStringInit(&jx, ctx);
-      if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
+      nếu( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
         jsonAppendRawNZ(&jx, "[", 1);
-        if( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
+        nếu( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
         jsonAppendRaw(&jx, zPath, nPath);
         jsonAppendRawNZ(&jx, "]", 2);
-      }else if( jsonAllAlphanum(zPath, nPath) ){
+      }không_thì nếu( jsonAllAlphanum(zPath, nPath) ){
         jsonAppendRawNZ(&jx, ".", 1);
         jsonAppendRaw(&jx, zPath, nPath);
-      }else if( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
+      }không_thì nếu( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
         jsonAppendRaw(&jx, zPath, nPath);
-      }else{
+      }không_thì{
         jsonAppendRawNZ(&jx, ".\"", 2);
         jsonAppendRaw(&jx, zPath, nPath);
         jsonAppendRawNZ(&jx, "\"", 1);
@@ -4306,54 +4306,54 @@ static void jsonExtractFunc(
       jsonStringTerminate(&jx);
       j = jsonLookupStep(p, 0, jx.zBuf, 0);
       jsonStringReset(&jx);
-    }else{
+    }không_thì{
       jsonBadPathError(ctx, zPath, 0);
       goto json_extract_error;
     }
-    if( j<p->nBlob ){
-      if( argc==2 ){
-        if( flags & JSON_JSON ){
+    nếu( j<p->nBlob ){
+      nếu( argc==2 ){
+        nếu( flags & JSON_JSON ){
           jsonStringInit(&jx, ctx);
           jsonTranslateBlobToText(p, j, &jx);
           jsonReturnString(&jx, 0, 0);
           jsonStringReset(&jx);
           assert( (flags & JSON_BLOB)==0 );
           sqlite3_result_subtype(ctx, JSON_SUBTYPE);
-        }else{
+        }không_thì{
           jsonReturnFromBlob(p, j, ctx, 0);
-          if( (flags & (JSON_SQL|JSON_BLOB))==0
+          nếu( (flags & (JSON_SQL|JSON_BLOB))==0
            && (p->aBlob[j]&0x0f)>=JSONB_ARRAY
           ){
             sqlite3_result_subtype(ctx, JSON_SUBTYPE);
           }
         }
-      }else{
+      }không_thì{
         jsonAppendSeparator(&jx);
         jsonTranslateBlobToText(p, j, &jx);
       }
-    }else if( j==JSON_LOOKUP_NOTFOUND ){
-      if( argc==2 ){
+    }không_thì nếu( j==JSON_LOOKUP_NOTFOUND ){
+      nếu( argc==2 ){
         goto json_extract_error;  /* Return NULL if not found */
-      }else{
+      }không_thì{
         jsonAppendSeparator(&jx);
         jsonAppendRawNZ(&jx, "null", 4);
       }
-    }else{
+    }không_thì{
       jsonBadPathError(ctx, zPath, j);
       goto json_extract_error;
     }
   }
-  if( argc>2 ){
+  nếu( argc>2 ){
     jsonAppendChar(&jx, ']');
     jsonReturnString(&jx, 0, 0);
-    if( (flags & JSON_BLOB)==0 ){
+    nếu( (flags & JSON_BLOB)==0 ){
       sqlite3_result_subtype(ctx, JSON_SUBTYPE);
     }
   }
 json_extract_error:
   jsonStringReset(&jx);
   jsonParseFree(p);
-  return;
+  trả_về;
 }
 
 /*
@@ -4411,7 +4411,7 @@ json_extract_error:
 **  |
 **  ^---- Line numbers referenced in comments in the implementation
 */
-static int jsonMergePatch(
+static số_nguyên jsonMergePatch(
   JsonParse *pTarget,      /* The JSON parser that contains the TARGET */
   u32 iTarget,             /* Index of TARGET in pTarget->aBlob[] */
   const JsonParse *pPatch, /* The PATCH */
@@ -4445,7 +4445,7 @@ static int jsonMergePatch(
   assert( iTarget>=0 && iTarget<pTarget->nBlob );
   assert( iPatch>=0 && iPatch<pPatch->nBlob );
   x = pPatch->aBlob[iPatch] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
+  nếu( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
     u32 szPatch;        /* Total size of the patch, header+payload */
     u32 szTarget;       /* Total size of the target, header+payload */
     n = jsonbPayloadSize(pPatch, iPatch, &sz);
@@ -4454,55 +4454,55 @@ static int jsonMergePatch(
     n = jsonbPayloadSize(pTarget, iTarget, &sz);
     szTarget = n+sz;
     jsonBlobEdit(pTarget, iTarget, szTarget, pPatch->aBlob+iPatch, szPatch);
-    return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
+    trả_về pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
   }
   x = pTarget->aBlob[iTarget] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
+  nếu( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
     n = jsonbPayloadSize(pTarget, iTarget, &sz);
     jsonBlobEdit(pTarget, iTarget+n, sz, 0, 0);
     x = pTarget->aBlob[iTarget];
     pTarget->aBlob[iTarget] = (x & 0xf0) | JSONB_OBJECT;
   }
   n = jsonbPayloadSize(pPatch, iPatch, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADPATCH;
+  nếu( NEVER(n==0) ) trả_về JSON_MERGE_BADPATCH;
   iPCursor = iPatch+n;
   iPEnd = iPCursor+sz;
   n = jsonbPayloadSize(pTarget, iTarget, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADTARGET;
+  nếu( NEVER(n==0) ) trả_về JSON_MERGE_BADTARGET;
   iTStart = iTarget+n;
   iTEndBE = iTStart+sz;
 
-  while( iPCursor<iPEnd ){  /* Algorithm line 07 */
+  trong_khi( iPCursor<iPEnd ){  /* Algorithm line 07 */
     iPLabel = iPCursor;
     ePLabel = pPatch->aBlob[iPCursor] & 0x0f;
-    if( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
-      return JSON_MERGE_BADPATCH;
+    nếu( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
+      trả_về JSON_MERGE_BADPATCH;
     }
     nPLabel = jsonbPayloadSize(pPatch, iPCursor, &szPLabel);
-    if( nPLabel==0 ) return JSON_MERGE_BADPATCH;
+    nếu( nPLabel==0 ) trả_về JSON_MERGE_BADPATCH;
     iPValue = iPCursor + nPLabel + szPLabel;
-    if( iPValue>=iPEnd ) return JSON_MERGE_BADPATCH;
+    nếu( iPValue>=iPEnd ) trả_về JSON_MERGE_BADPATCH;
     nPValue = jsonbPayloadSize(pPatch, iPValue, &szPValue);
-    if( nPValue==0 ) return JSON_MERGE_BADPATCH;
+    nếu( nPValue==0 ) trả_về JSON_MERGE_BADPATCH;
     iPCursor = iPValue + nPValue + szPValue;
-    if( iPCursor>iPEnd ) return JSON_MERGE_BADPATCH;
+    nếu( iPCursor>iPEnd ) trả_về JSON_MERGE_BADPATCH;
 
     iTCursor = iTStart;
     iTEnd = iTEndBE + pTarget->delta;
-    while( iTCursor<iTEnd ){
-      int isEqual;   /* true if the patch and target labels match */
+    trong_khi( iTCursor<iTEnd ){
+      số_nguyên isEqual;   /* true if the patch and target labels match */
       iTLabel = iTCursor;
       eTLabel = pTarget->aBlob[iTCursor] & 0x0f;
-      if( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
-        return JSON_MERGE_BADTARGET;
+      nếu( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
+        trả_về JSON_MERGE_BADTARGET;
       }
       nTLabel = jsonbPayloadSize(pTarget, iTCursor, &szTLabel);
-      if( nTLabel==0 ) return JSON_MERGE_BADTARGET;
+      nếu( nTLabel==0 ) trả_về JSON_MERGE_BADTARGET;
       iTValue = iTLabel + nTLabel + szTLabel;
-      if( iTValue>=iTEnd ) return JSON_MERGE_BADTARGET;
+      nếu( iTValue>=iTEnd ) trả_về JSON_MERGE_BADTARGET;
       nTValue = jsonbPayloadSize(pTarget, iTValue, &szTValue);
-      if( nTValue==0 ) return JSON_MERGE_BADTARGET;
-      if( iTValue + nTValue + szTValue > iTEnd ) return JSON_MERGE_BADTARGET;
+      nếu( nTValue==0 ) trả_về JSON_MERGE_BADTARGET;
+      nếu( iTValue + nTValue + szTValue > iTEnd ) trả_về JSON_MERGE_BADTARGET;
       isEqual = jsonLabelCompare(
                    (const char*)&pPatch->aBlob[iPLabel+nPLabel],
                    szPLabel,
@@ -4510,52 +4510,52 @@ static int jsonMergePatch(
                    (const char*)&pTarget->aBlob[iTLabel+nTLabel],
                    szTLabel,
                    (eTLabel==JSONB_TEXT || eTLabel==JSONB_TEXTRAW));
-      if( isEqual ) break;
+      nếu( isEqual ) break;
       iTCursor = iTValue + nTValue + szTValue;
     }
     x = pPatch->aBlob[iPValue] & 0x0f;
-    if( iTCursor<iTEnd ){
+    nếu( iTCursor<iTEnd ){
       /* A match was found.  Algorithm line 08 */
-      if( x==0 ){
+      nếu( x==0 ){
         /* Patch value is NULL.  Algorithm line 09 */
         jsonBlobEdit(pTarget, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
         /*  vvvvvv----- No OOM on a delete-only edit */
-        if( NEVER(pTarget->oom) ) return JSON_MERGE_OOM;
-      }else{
+        nếu( NEVER(pTarget->oom) ) trả_về JSON_MERGE_OOM;
+      }không_thì{
         /* Algorithm line 12 */
-        int rc, savedDelta = pTarget->delta;
+        số_nguyên rc, savedDelta = pTarget->delta;
         pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
+        nếu( iDepth>=JSON_MAX_DEPTH ) trả_về JSON_MERGE_TOODEEP;
         rc = jsonMergePatch(pTarget, iTValue, pPatch, iPValue, iDepth+1);
-        if( rc ) return rc;
+        nếu( rc ) trả_về rc;
         pTarget->delta += savedDelta;
       }        
-    }else if( x>0 ){  /* Algorithm line 13 */
+    }không_thì nếu( x>0 ){  /* Algorithm line 13 */
       /* No match and patch value is not NULL */
       u32 szNew = szPLabel+nPLabel;
-      if( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
+      nếu( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
         jsonBlobEdit(pTarget, iTEnd, 0, 0, szPValue+nPValue+szNew);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
+        nếu( pTarget->oom ) trả_về JSON_MERGE_OOM;
         memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
         memcpy(&pTarget->aBlob[iTEnd+szNew], 
                &pPatch->aBlob[iPValue], szPValue+nPValue);
-      }else{
-        int rc, savedDelta;
+      }không_thì{
+        số_nguyên rc, savedDelta;
         jsonBlobEdit(pTarget, iTEnd, 0, 0, szNew+1);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
+        nếu( pTarget->oom ) trả_về JSON_MERGE_OOM;
         memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
         pTarget->aBlob[iTEnd+szNew] = 0x00;
         savedDelta = pTarget->delta;
         pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
+        nếu( iDepth>=JSON_MAX_DEPTH ) trả_về JSON_MERGE_TOODEEP;
         rc = jsonMergePatch(pTarget, iTEnd+szNew,pPatch,iPValue,iDepth+1);
-        if( rc ) return rc;
+        nếu( rc ) trả_về rc;
         pTarget->delta += savedDelta;
       }
     }
   }
-  if( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
-  return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
+  nếu( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
+  trả_về pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
 }
 
 
@@ -4566,27 +4566,27 @@ static int jsonMergePatch(
 */
 static void jsonPatchFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *pTarget;    /* The TARGET */
   JsonParse *pPatch;     /* The PATCH */
-  int rc;                /* Result code */
+  số_nguyên rc;                /* Result code */
 
   UNUSED_PARAMETER(argc);
   assert( argc==2 );
   pTarget = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
-  if( pTarget==0 ) return;
+  nếu( pTarget==0 ) trả_về;
   pPatch = jsonParseFuncArg(ctx, argv[1], 0);
-  if( pPatch ){
+  nếu( pPatch ){
     rc = jsonMergePatch(pTarget, 0, pPatch, 0, 0);
-    if( rc==JSON_MERGE_OK ){
+    nếu( rc==JSON_MERGE_OK ){
       jsonReturnParse(ctx, pTarget);
-    }else if( rc==JSON_MERGE_OOM ){
+    }không_thì nếu( rc==JSON_MERGE_OOM ){
       sqlite3_result_error_nomem(ctx);
-    }else if( rc==JSON_MERGE_TOODEEP ){
+    }không_thì nếu( rc==JSON_MERGE_TOODEEP ){
       sqlite3_result_error(ctx, "JSON nested too deep", -1);
-    }else{
+    }không_thì{
       sqlite3_result_error(ctx, "malformed JSON", -1);
     }
     jsonParseFree(pPatch);
@@ -4602,26 +4602,26 @@ static void jsonPatchFunc(
 */
 static void jsonObjectFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
-  int i;
+  số_nguyên i;
   JsonString jx;
   const char *z;
   u32 n;
 
-  if( argc&1 ){
+  nếu( argc&1 ){
     sqlite3_result_error(ctx, "json_object() requires an even number "
                                   "of arguments", -1);
-    return;
+    trả_về;
   }
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '{');
-  for(i=0; i<argc; i+=2){
-    if( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
+  cho(i=0; i<argc; i+=2){
+    nếu( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
       sqlite3_result_error(ctx, "json_object() labels must be TEXT", -1);
       jsonStringReset(&jx);
-      return;
+      trả_về;
     }
     jsonAppendSeparator(&jx);
     z = (const char*)sqlite3_value_text(argv[i]);
@@ -4644,36 +4644,36 @@ static void jsonObjectFunc(
 */
 static void jsonRemoveFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
   const char *zPath = 0; /* Path of element to be removed */
-  int i;                 /* Loop counter */
+  số_nguyên i;                 /* Loop counter */
   u32 rc;                /* Subroutine return code */
 
-  if( argc<1 ) return;
+  nếu( argc<1 ) trả_về;
   p = jsonParseFuncArg(ctx, argv[0], argc>1 ? JSON_EDITABLE : 0);
-  if( p==0 ) return;
-  for(i=1; i<argc; i++){
+  nếu( p==0 ) trả_về;
+  cho(i=1; i<argc; i++){
     zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
+    nếu( zPath==0 ){
       goto json_remove_done;
     }
-    if( zPath[0]!='$' ){
+    nếu( zPath[0]!='$' ){
       goto json_remove_patherror;
     }
-    if( zPath[1]==0 ){
+    nếu( zPath[1]==0 ){
       /* json_remove(j,'$') returns NULL */
       goto json_remove_done;
     }
     p->eEdit = JEDIT_DEL;
     p->delta = 0;
     rc = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(rc) ){
-      if( rc==JSON_LOOKUP_NOTFOUND ){
+    nếu( JSON_LOOKUP_ISERROR(rc) ){
+      nếu( rc==JSON_LOOKUP_NOTFOUND ){
         continue;  /* No-op */
-      }else{
+      }không_thì{
         jsonBadPathError(ctx, zPath, rc);
       }
       goto json_remove_done;
@@ -4681,14 +4681,14 @@ static void jsonRemoveFunc(
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  trả_về;
 
 json_remove_patherror:
   jsonBadPathError(ctx, zPath, 0);
 
 json_remove_done:
   jsonParseFree(p);
-  return;
+  trả_về;
 }
 
 /*
@@ -4699,13 +4699,13 @@ json_remove_done:
 */
 static void jsonReplaceFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
-  if( argc<1 ) return;
-  if( (argc&1)==0 ) {
+  nếu( argc<1 ) trả_về;
+  nếu( (argc&1)==0 ) {
     jsonWrongNumArgs(ctx, "replace");
-    return;
+    trả_về;
   }
   jsonInsertIntoBlob(ctx, argc, argv, JEDIT_REPL);
 }
@@ -4725,19 +4725,19 @@ static void jsonReplaceFunc(
 */
 static void jsonSetFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  int eInsType = JSON_INSERT_TYPE(flags);
+  số_nguyên flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  số_nguyên eInsType = JSON_INSERT_TYPE(flags);
   static const char *azInsType[] = { "insert", "set", "array_insert" };
   static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
 
-  if( argc<1 ) return;
+  nếu( argc<1 ) trả_về;
   assert( eInsType>=0 && eInsType<=2 );
-  if( (argc&1)==0 ) {
+  nếu( (argc&1)==0 ) {
     jsonWrongNumArgs(ctx, azInsType[eInsType]);
-    return;
+    trả_về;
   }
   jsonInsertIntoBlob(ctx, argc, argv, aEditType[eInsType]);
 }
@@ -4751,7 +4751,7 @@ static void jsonSetFunc(
 */
 static void jsonTypeFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
@@ -4759,24 +4759,24 @@ static void jsonTypeFunc(
   u32 i;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
+  nếu( p==0 ) trả_về;
+  nếu( argc==2 ){
     zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ) goto json_type_done;
-    if( zPath[0]!='$' ){
+    nếu( zPath==0 ) goto json_type_done;
+    nếu( zPath[0]!='$' ){
       jsonBadPathError(ctx, zPath, 0);
       goto json_type_done;
     }
     i = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    nếu( JSON_LOOKUP_ISERROR(i) ){
+      nếu( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
+      }không_thì{
         jsonBadPathError(ctx, zPath, i);
       }
       goto json_type_done;
     }
-  }else{
+  }không_thì{
     i = 0;
   }
   sqlite3_result_text(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
@@ -4796,7 +4796,7 @@ json_type_done:
 */
 static void jsonPrettyFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonString s;          /* The output string */
@@ -4804,13 +4804,13 @@ static void jsonPrettyFunc(
 
   memset(&x, 0, sizeof(x));
   x.pParse = jsonParseFuncArg(ctx, argv[0], 0);
-  if( x.pParse==0 ) return;
+  nếu( x.pParse==0 ) trả_về;
   x.pOut = &s;
   jsonStringInit(&s, ctx);
-  if( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
+  nếu( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
     x.zIndent = "    ";
     x.szIndent = 4;
-  }else{
+  }không_thì{
     x.szIndent = (u32)strlen(x.zIndent);
   }
   jsonTranslateBlobToPrettyText(&x, 0);
@@ -4877,18 +4877,18 @@ static void jsonPrettyFunc(
 */
 static void jsonValidFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
   u8 flags = 1;
   u8 res = 0;
-  if( argc==2 ){
+  nếu( argc==2 ){
     i64 f = sqlite3_value_int64(argv[1]);
-    if( f<1 || f>15 ){
+    nếu( f<1 || f>15 ){
       sqlite3_result_error(ctx, "FLAGS parameter to json_valid() must be"
                                 " between 1 and 15", -1);
-      return;
+      trả_về;
     }
     flags = f & 0x0f;
   }
@@ -4898,17 +4898,17 @@ static void jsonValidFunc(
       /* Incorrect legacy behavior was to return FALSE for a NULL input */
       sqlite3_result_int(ctx, 0);
 #endif
-      return;
+      trả_về;
     }
     case SQLITE_BLOB: {
       JsonParse py;
       memset(&py, 0, sizeof(py));
-      if( jsonArgIsJsonb(argv[0], &py) ){
-        if( flags & 0x04 ){
+      nếu( jsonArgIsJsonb(argv[0], &py) ){
+        nếu( flags & 0x04 ){
           /* Superficial checking only - accomplished by the
           ** jsonArgIsJsonb() call above. */
           res = 1;
-        }else if( flags & 0x08 ){
+        }không_thì nếu( flags & 0x08 ){
           /* Strict checking.  Check by translating BLOB->TEXT->BLOB.  If
           ** no errors occur, call that a "strict check". */
           res = 0==jsonbValidityCheck(&py, 0, py.nBlob, 1);
@@ -4921,20 +4921,20 @@ static void jsonValidFunc(
     }
     default: {
       JsonParse px;
-      if( (flags & 0x3)==0 ) break;
+      nếu( (flags & 0x3)==0 ) break;
       memset(&px, 0, sizeof(px));
      
       p = jsonParseFuncArg(ctx, argv[0], JSON_KEEPERROR|JSON_NOCACHE);
-      if( p ){
-        if( p->oom ){
+      nếu( p ){
+        nếu( p->oom ){
           sqlite3_result_error_nomem(ctx);
-        }else if( p->nErr ){
+        }không_thì nếu( p->nErr ){
           /* no-op */
-        }else if( (flags & 0x02)!=0 || p->hasNonstd==0 ){
+        }không_thì nếu( (flags & 0x02)!=0 || p->hasNonstd==0 ){
           res = 1;
         }
         jsonParseFree(p);
-      }else{
+      }không_thì{
         sqlite3_result_error_nomem(ctx);
       }
       break;
@@ -4959,7 +4959,7 @@ static void jsonValidFunc(
 */
 static void jsonErrorFunc(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   i64 iErrPos = 0;       /* Error position to be returned */
@@ -4969,30 +4969,30 @@ static void jsonErrorFunc(
   UNUSED_PARAMETER(argc);
   memset(&s, 0, sizeof(s));
   s.db = sqlite3_context_db_handle(ctx);
-  if( jsonArgIsJsonb(argv[0], &s) ){
+  nếu( jsonArgIsJsonb(argv[0], &s) ){
     iErrPos = (i64)jsonbValidityCheck(&s, 0, s.nBlob, 1);
-  }else{
+  }không_thì{
     s.zJson = (char*)sqlite3_value_text(argv[0]);
-    if( s.zJson==0 ) return;  /* NULL input or OOM */
+    nếu( s.zJson==0 ) trả_về;  /* NULL input or OOM */
     s.nJson = sqlite3_value_bytes(argv[0]);
-    if( jsonConvertTextToBlob(&s,0) ){
-      if( s.oom ){
+    nếu( jsonConvertTextToBlob(&s,0) ){
+      nếu( s.oom ){
         iErrPos = -1;
-      }else{
+      }không_thì{
         /* Convert byte-offset s.iErr into a character offset */
         u32 k;
         assert( s.zJson!=0 );  /* Because s.oom is false */
-        for(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
-          if( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
+        cho(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
+          nếu( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
         }
         iErrPos++;
       }
     }
   }
   jsonParseReset(&s);
-  if( iErrPos<0 ){
+  nếu( iErrPos<0 ){
     sqlite3_result_error_nomem(ctx);
-  }else{
+  }không_thì{
     sqlite3_result_int64(ctx, iErrPos);
   }
 }
@@ -5007,55 +5007,55 @@ static void jsonErrorFunc(
 */
 static void jsonArrayStep(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonString *pStr;
   UNUSED_PARAMETER(argc);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    if( pStr->zBuf==0 ){
+  nếu( pStr ){
+    nếu( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '[');
-    }else if( pStr->nUsed>1 ){
+    }không_thì nếu( pStr->nUsed>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
     jsonAppendSqlValue(pStr, argv[0]);
   }
 }
-static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
+static void jsonArrayCompute(sqlite3_context *ctx, số_nguyên isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  số_nguyên flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  nếu( pStr ){
     pStr->pCtx = ctx;
     jsonAppendRawNZ(pStr, "]", 2);
     jsonStringTrimOneChar(pStr);
-    if( pStr->eErr ){
+    nếu( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
-    }else if( flags & JSON_BLOB ){
+      trả_về;
+    }không_thì nếu( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      nếu( isFinal ){
+        nếu( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }không_thì{
         jsonStringTrimOneChar(pStr);
       }
-      return;
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+      trả_về;
+    }không_thì nếu( isFinal ){
+      sqlite3_result_text(ctx, pStr->zBuf, (số_nguyên)pStr->nUsed,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                               sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }không_thì{
+      sqlite3_result_text(ctx, pStr->zBuf, (số_nguyên)pStr->nUsed, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pStr);
     }
-  }else if( flags & JSON_BLOB ){
+  }không_thì nếu( flags & JSON_BLOB ){
     static const u8 emptyArray = 0x0b;
     sqlite3_result_blob(ctx, &emptyArray, 1, SQLITE_STATIC);
-  }else{
+  }không_thì{
     sqlite3_result_text(ctx, "[]", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
@@ -5076,12 +5076,12 @@ static void jsonArrayFinal(sqlite3_context *ctx){
 */
 static void jsonGroupInverse(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
-  unsigned int i;
-  int inStr = 0;
-  int nNest = 0;
+  unsigned số_nguyên i;
+  số_nguyên inStr = 0;
+  số_nguyên nNest = 0;
   char *z;
   char c;
   JsonString *pStr;
@@ -5090,27 +5090,27 @@ static void jsonGroupInverse(
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
   /* pStr is always non-NULL since jsonArrayStep() or jsonObjectStep() will
   ** always have been called to initialize it */
-  if( NEVER(!pStr) ) return;
+  nếu( NEVER(!pStr) ) trả_về;
   z = pStr->zBuf;
-  for(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
-    if( c=='"' ){
+  cho(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
+    nếu( c=='"' ){
       inStr = !inStr;
-    }else if( c=='\\' ){
+    }không_thì nếu( c=='\\' ){
       i++;
-    }else if( !inStr ){
-      if( c=='{' || c=='[' ) nNest++;
-      if( c=='}' || c==']' ) nNest--;
+    }không_thì nếu( !inStr ){
+      nếu( c=='{' || c=='[' ) nNest++;
+      nếu( c=='}' || c==']' ) nNest--;
     }
   }
-  if( i<pStr->nUsed ){
+  nếu( i<pStr->nUsed ){
     pStr->nUsed -= i;
     memmove(&z[1], &z[i+1], (size_t)pStr->nUsed-1);
     z[pStr->nUsed] = 0;
-  }else{
+  }không_thì{
     pStr->nUsed = 1;
   }
 }
-#else
+#không_thì
 # define jsonGroupInverse 0
 #endif
 
@@ -5129,7 +5129,7 @@ static void jsonGroupInverse(
 */
 static void jsonObjectStep(
   sqlite3_context *ctx,
-  int argc,
+  số_nguyên argc,
   sqlite3_value **argv
 ){
   JsonString *pStr;
@@ -5137,53 +5137,53 @@ static void jsonObjectStep(
   u32 n;
   UNUSED_PARAMETER(argc);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
+  nếu( pStr ){
     z = (const char*)sqlite3_value_text(argv[0]);
     n = sqlite3Strlen30(z);
-    if( pStr->zBuf==0 ){
+    nếu( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '{');
-    }else if( pStr->nUsed>1 ){
+    }không_thì nếu( pStr->nUsed>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    if( z!=0 ){
+    nếu( z!=0 ){
       jsonAppendString(pStr, z, n);
       jsonAppendChar(pStr, ':');
       jsonAppendSqlValue(pStr, argv[1]);
-    }else{
+    }không_thì{
       pStr->zBuf[0] = '@';
       jsonAppendRawNZ(pStr, "@", 1);
     }
   }
 }
-static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
+static void jsonObjectCompute(sqlite3_context *ctx, số_nguyên isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  số_nguyên flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  nếu( pStr ){
     JsonString *pOgStr = pStr;
     JsonString tmpStr;
     jsonAppendRawNZ(pOgStr, "}", 2);  /* Ensure it is zero-terminated */
     jsonStringTrimOneChar(pOgStr);    /* Remove the zero terminator */
     pStr->pCtx = ctx;
-    if( pStr->eErr ){
+    nếu( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
+      trả_về;
     }
-    if( pStr->zBuf[0]!='{' ){
+    nếu( pStr->zBuf[0]!='{' ){
       /* The string contains null entries that need to be removed */
       u64 i, j;
-      int inStr = 0;
-      if( !isFinal ){
+      số_nguyên inStr = 0;
+      nếu( !isFinal ){
         /* Work with a temporary copy of the string if this is not the
         ** final result */
         jsonStringInit(&tmpStr, ctx);
         jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->nUsed+1);
         pStr = &tmpStr;
-        if( pStr->eErr ){
+        nếu( pStr->eErr ){
           jsonReturnString(pStr, 0, 0);
-          return;
+          trả_về;
         }
         jsonStringTrimOneChar(pStr);  /* Remove zero terminator */
       }
@@ -5191,49 +5191,49 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
       ** to "{" and removing all subsequence "@" entries, with their
       ** associated comma delimeters. */
       pStr->zBuf[0] = '{';
-      for(i=j=1; i<pStr->nUsed; i++){
+      cho(i=j=1; i<pStr->nUsed; i++){
         char c = pStr->zBuf[i];
-        if( c=='"' ){
+        nếu( c=='"' ){
           inStr = !inStr;
           pStr->zBuf[j++] = '"';
-        }else if( c=='\\' ){
+        }không_thì nếu( c=='\\' ){
           pStr->zBuf[j++] = '\\';
           pStr->zBuf[j++] = pStr->zBuf[++i];
-        }else if( c=='@' && !inStr ){
+        }không_thì nếu( c=='@' && !inStr ){
           assert( i+1<pStr->nUsed );
-          if( pStr->zBuf[i+1]==',' ){
+          nếu( pStr->zBuf[i+1]==',' ){
             i++;
-          }else if( pStr->zBuf[j-1]==',' ){
+          }không_thì nếu( pStr->zBuf[j-1]==',' ){
             j--;
           }
-        }else{
+        }không_thì{
           pStr->zBuf[j++] = c;
         }
       }
       pStr->zBuf[j] = 0;  /* Restore zero terminator */
       pStr->nUsed = j;    /* Truncate the string */
     }
-    if( flags & JSON_BLOB ){
+    nếu( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      nếu( isFinal ){
+        nếu( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }không_thì{
         jsonStringTrimOneChar(pOgStr);
       }
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+    }không_thì nếu( isFinal ){
+      sqlite3_result_text(ctx, pStr->zBuf, (số_nguyên)pStr->nUsed,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                           sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }không_thì{
+      sqlite3_result_text(ctx, pStr->zBuf, (số_nguyên)pStr->nUsed, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pOgStr);
     }
-    if( pStr!=pOgStr ) jsonStringReset(pStr);
-  }else if( flags & JSON_BLOB ){
+    nếu( pStr!=pOgStr ) jsonStringReset(pStr);
+  }không_thì nếu( flags & JSON_BLOB ){
     static const unsigned char emptyObject = 0x0c;
     sqlite3_result_blob(ctx, &emptyObject, 1, SQLITE_STATIC); 
-  }else{
+  }không_thì{
     sqlite3_result_text(ctx, "{}", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
@@ -5287,15 +5287,15 @@ struct JsonEachConnection {
 
 
 /* Constructor for the json_each virtual table */
-static int jsonEachConnect(
+static số_nguyên jsonEachConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  số_nguyên argc, const char *const*argv,
   sqlite3_vtab **ppVtab,
   char **pzErr
 ){
   JsonEachConnection *pNew;
-  int rc;
+  số_nguyên rc;
 
 /* Column numbers */
 #define JEACH_KEY     0
@@ -5319,39 +5319,39 @@ static int jsonEachConnect(
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(key,value,type,atom,id,parent,fullkey,path,"
                     "json HIDDEN,root HIDDEN)");
-  if( rc==SQLITE_OK ){
+  nếu( rc==SQLITE_OK ){
     pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, sizeof(*pNew));
     *ppVtab = (sqlite3_vtab*)pNew;
-    if( pNew==0 ) return SQLITE_NOMEM;
+    nếu( pNew==0 ) trả_về SQLITE_NOMEM;
     sqlite3_vtab_config(db, SQLITE_VTAB_INNOCUOUS);
     pNew->db = db;
     pNew->eMode = argv[0][4]=='b' ? 2 : 1;
     pNew->bRecursive = argv[0][4+pNew->eMode]=='t';
   }
-  return rc;
+  trả_về rc;
 }
 
 /* destructor for json_each virtual table */
-static int jsonEachDisconnect(sqlite3_vtab *pVtab){
+static số_nguyên jsonEachDisconnect(sqlite3_vtab *pVtab){
   JsonEachConnection *p = (JsonEachConnection*)pVtab;
   sqlite3DbFree(p->db, pVtab);
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* constructor for a JsonEachCursor object for json_each()/json_tree(). */
-static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+static số_nguyên jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   JsonEachConnection *pVtab = (JsonEachConnection*)p;
   JsonEachCursor *pCur;
 
   UNUSED_PARAMETER(p);
   pCur = sqlite3DbMallocZero(pVtab->db, sizeof(*pCur));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  nếu( pCur==0 ) trả_về SQLITE_NOMEM;
   pCur->db = pVtab->db;
   pCur->eMode = pVtab->eMode;
   pCur->bRecursive = pVtab->bRecursive;
   jsonStringZero(&pCur->path);
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* Reset a JsonEachCursor back to its original state.  Free any memory
@@ -5370,19 +5370,19 @@ static void jsonEachCursorReset(JsonEachCursor *p){
 }
 
 /* Destructor for a jsonEachCursor object */
-static int jsonEachClose(sqlite3_vtab_cursor *cur){
+static số_nguyên jsonEachClose(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   jsonEachCursorReset(p);
   
   sqlite3DbFree(p->db, cur);
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* Return TRUE if the jsonEachCursor object has been advanced off the end
 ** of the JSON object */
-static int jsonEachEof(sqlite3_vtab_cursor *cur){
+static số_nguyên jsonEachEof(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  return p->i >= p->iEnd;
+  trả_về p->i >= p->iEnd;
 }
 
 /*
@@ -5390,15 +5390,15 @@ static int jsonEachEof(sqlite3_vtab_cursor *cur){
 ** then return the index of the value.  For all other cases, return the
 ** current pointer position, which is the value.
 */
-static int jsonSkipLabel(JsonEachCursor *p){
-  if( p->eType==JSONB_OBJECT ){
+static số_nguyên jsonSkipLabel(JsonEachCursor *p){
+  nếu( p->eType==JSONB_OBJECT ){
     u32 sz = 0;
     u32 n = jsonbPayloadSize(&p->sParse, p->i, &sz);
     sz += p->i + n;
-    if( sz >= p->sParse.nBlob ) sz = p->i;
-    return sz;
-  }else{
-    return p->i;
+    nếu( sz >= p->sParse.nBlob ) sz = p->i;
+    trả_về sz;
+  }không_thì{
+    trả_về p->i;
   }
 }
 
@@ -5408,28 +5408,28 @@ static int jsonSkipLabel(JsonEachCursor *p){
 static void jsonAppendPathName(JsonEachCursor *p){
   assert( p->nParent>0 );
   assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
-  if( p->eType==JSONB_ARRAY ){
+  nếu( p->eType==JSONB_ARRAY ){
     jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].iKey);
-  }else{
+  }không_thì{
     u32 n, sz = 0, k, i;
     const char *z;
-    int needQuote = 0;
+    số_nguyên needQuote = 0;
     n = jsonbPayloadSize(&p->sParse, p->i, &sz);
     k = p->i + n;
     z = (const char*)&p->sParse.aBlob[k];
-    if( sz==0 || !sqlite3Isalpha(z[0]) ){
+    nếu( sz==0 || !sqlite3Isalpha(z[0]) ){
       needQuote = 1;
-    }else{
-      for(i=0; i<sz; i++){
-        if( !sqlite3Isalnum(z[i]) ){
+    }không_thì{
+      cho(i=0; i<sz; i++){
+        nếu( !sqlite3Isalnum(z[i]) ){
           needQuote = 1;
           break;
         }
       }
     }
-    if( needQuote ){
+    nếu( needQuote ){
       jsonPrintf(sz+4,&p->path,".\"%.*s\"", sz, z);
-    }else{
+    }không_thì{
       jsonPrintf(sz+2,&p->path,".%.*s", sz, z);
     }
   }
@@ -5437,33 +5437,33 @@ static void jsonAppendPathName(JsonEachCursor *p){
 
 /* Report a "malformed JSON" or OOM error against the cursor.
 */
-static int jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
+static số_nguyên jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur->pVtab->zErrMsg);
   cur->pVtab->zErrMsg = sqlite3_mprintf("malformed JSON");
   jsonEachCursorReset((JsonEachCursor*)cur);
-  return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+  trả_về cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
 }
 
 /* Advance the cursor to the next element for json_tree() */
-static int jsonEachNext(sqlite3_vtab_cursor *cur){
+static số_nguyên jsonEachNext(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  int rc = SQLITE_OK;
-  if( p->bRecursive ){
+  số_nguyên rc = SQLITE_OK;
+  nếu( p->bRecursive ){
     u8 x;
     u8 levelChange = 0;
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     x = p->sParse.aBlob[i] & 0x0f;
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
-    if( x==JSONB_OBJECT || x==JSONB_ARRAY ){
+    nếu( n==0 )trả_về jsonEachMalformedInput(cur);
+    nếu( x==JSONB_OBJECT || x==JSONB_ARRAY ){
       JsonParent *pParent;
-      if( p->nParent>=p->nParentAlloc ){
+      nếu( p->nParent>=p->nParentAlloc ){
         JsonParent *pNew;
         u64 nNew;
         nNew = p->nParentAlloc*2 + 3;
         pNew = sqlite3DbRealloc(p->db, p->aParent, sizeof(JsonParent)*nNew);
-        if( pNew==0 ) return SQLITE_NOMEM;
+        nếu( pNew==0 ) trả_về SQLITE_NOMEM;
         p->nParentAlloc = (u32)nNew;
         p->aParent = pNew;
       }
@@ -5474,95 +5474,95 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
       pParent->iEnd = i + n + sz;
       pParent->iKey = -1;
       pParent->nPath = (u32)p->path.nUsed;
-      if( p->eType && p->nParent ){
+      nếu( p->eType && p->nParent ){
         jsonAppendPathName(p);
-        if( p->path.eErr ) rc = SQLITE_NOMEM;
+        nếu( p->path.eErr ) rc = SQLITE_NOMEM;
       }
       p->nParent++;
       p->i = i + n;
-    }else{
+    }không_thì{
       p->i = i + n + sz;
     }
-    while( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
+    trong_khi( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
       p->nParent--;
       p->path.nUsed = p->aParent[p->nParent].nPath;
       levelChange = 1;
     }
-    if( levelChange ){
-      if( p->nParent>0 ){
+    nếu( levelChange ){
+      nếu( p->nParent>0 ){
         JsonParent *pParent = &p->aParent[p->nParent-1];
         u32 iVal = pParent->iValue;
         p->eType = p->sParse.aBlob[iVal] & 0x0f;
-      }else{
+      }không_thì{
         p->eType = 0;
       }
     }
-  }else{
+  }không_thì{
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    nếu( n==0 )trả_về jsonEachMalformedInput(cur);
     p->i = i + n + sz;
   }
-  if( p->eType==JSONB_ARRAY && p->nParent ){
+  nếu( p->eType==JSONB_ARRAY && p->nParent ){
     p->aParent[p->nParent-1].iKey++;
   }
   p->iRowid++;
-  return rc;
+  trả_về rc;
 }
 
 /* Length of the path for rowid==0 in bRecursive mode.
 */
-static int jsonEachPathLength(JsonEachCursor *p){
+static số_nguyên jsonEachPathLength(JsonEachCursor *p){
   u32 n = p->path.nUsed;
   char *z = p->path.zBuf;
-  if( p->iRowid==0 && p->bRecursive && n>=2 ){
-    while( ALWAYS(n>1) ){
+  nếu( p->iRowid==0 && p->bRecursive && n>=2 ){
+    trong_khi( ALWAYS(n>1) ){
       n--;
-      if( z[n]=='[' || z[n]=='.' ){
+      nếu( z[n]=='[' || z[n]=='.' ){
         u32 x;
         char cSaved = z[n];
         z[n] = 0;
         assert( p->sParse.eEdit==0 );
         x = jsonLookupStep(&p->sParse, 0, z+1, 0);
         z[n] = cSaved;
-        if( !JSON_LOOKUP_ISERROR(x) ) break;
+        nếu( !JSON_LOOKUP_ISERROR(x) ) break;
       }
     }
   }
-  return n;
+  trả_về n;
 }
 
 /* Return the value of a column */
-static int jsonEachColumn(
+static số_nguyên jsonEachColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int iColumn                 /* Which column to return */
+  số_nguyên iColumn                 /* Which column to return */
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   switch( iColumn ){
     case JEACH_KEY: {
-      if( p->nParent==0 ){
+      nếu( p->nParent==0 ){
         u32 n, j;
-        if( p->nRoot==1 ) break;
+        nếu( p->nRoot==1 ) break;
         j = jsonEachPathLength(p);
         n = p->nRoot - j;
-        if( n==0 ){
+        nếu( n==0 ){
           break;
-        }else if( p->path.zBuf[j]=='[' ){
+        }không_thì nếu( p->path.zBuf[j]=='[' ){
           i64 x;
           sqlite3Atoi64(&p->path.zBuf[j+1], &x, n-1, SQLITE_UTF8);
           sqlite3_result_int64(ctx, x);
-        }else if( p->path.zBuf[j+1]=='"' ){
+        }không_thì nếu( p->path.zBuf[j+1]=='"' ){
           sqlite3_result_text(ctx, &p->path.zBuf[j+2], n-3, SQLITE_TRANSIENT);
-        }else{
+        }không_thì{
           sqlite3_result_text(ctx, &p->path.zBuf[j+1], n-1, SQLITE_TRANSIENT);
         }
         break;
       }
-      if( p->eType==JSONB_OBJECT ){
+      nếu( p->eType==JSONB_OBJECT ){
         jsonReturnFromBlob(&p->sParse, p->i, ctx, 1);
-      }else{
+      }không_thì{
         assert( p->eType==JSONB_ARRAY );
         sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iKey);
       }
@@ -5571,7 +5571,7 @@ static int jsonEachColumn(
     case JEACH_VALUE: {
       u32 i = jsonSkipLabel(p);
       jsonReturnFromBlob(&p->sParse, i, ctx, p->eMode);
-      if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
+      nếu( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
         sqlite3_result_subtype(ctx, JSON_SUBTYPE);
       }
       break;
@@ -5584,7 +5584,7 @@ static int jsonEachColumn(
     }
     case JEACH_ATOM: {
       u32 i = jsonSkipLabel(p);
-      if( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
+      nếu( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
         jsonReturnFromBlob(&p->sParse, i, ctx, 1);
       }
       break;
@@ -5594,14 +5594,14 @@ static int jsonEachColumn(
       break;
     }
     case JEACH_PARENT: {
-      if( p->nParent>0 && p->bRecursive ){
+      nếu( p->nParent>0 && p->bRecursive ){
         sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iHead);
       }
       break;
     }
     case JEACH_FULLKEY: {
       u64 nBase = p->path.nUsed;
-      if( p->nParent ) jsonAppendPathName(p);
+      nếu( p->nParent ) jsonAppendPathName(p);
       sqlite3_result_text64(ctx, p->path.zBuf, p->path.nUsed,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
       p->path.nUsed = nBase;
@@ -5618,23 +5618,23 @@ static int jsonEachColumn(
       break;
     }
     case JEACH_JSON: {
-      if( p->sParse.zJson==0 ){
+      nếu( p->sParse.zJson==0 ){
         sqlite3_result_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
                             SQLITE_TRANSIENT);
-      }else{
+      }không_thì{
         sqlite3_result_text(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
       }
       break;
     }
   }
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* Return the current rowid value */
-static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static số_nguyên jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   *pRowid = p->iRowid;
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* The query strategy is to look for an equality constraint on the json
@@ -5642,14 +5642,14 @@ static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** 1 if the constraint is found, 3 if the constraint and zRoot are found,
 ** and 0 otherwise.
 */
-static int jsonEachBestIndex(
+static số_nguyên jsonEachBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
-  int i;                     /* Loop counter or computed array index */
-  int aIdx[2];               /* Index of constraints for JSON and ROOT */
-  int unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
-  int idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
+  số_nguyên i;                     /* Loop counter or computed array index */
+  số_nguyên aIdx[2];               /* Index of constraints for JSON and ROOT */
+  số_nguyên unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
+  số_nguyên idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
   const struct sqlite3_index_constraint *pConstraint;
 
   /* This implementation assumes that JSON and ROOT are the last two
@@ -5658,60 +5658,60 @@ static int jsonEachBestIndex(
   UNUSED_PARAMETER(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    int iCol;
-    int iMask;
-    if( pConstraint->iColumn < JEACH_JSON ) continue;
+  cho(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    số_nguyên iCol;
+    số_nguyên iMask;
+    nếu( pConstraint->iColumn < JEACH_JSON ) continue;
     iCol = pConstraint->iColumn - JEACH_JSON;
     assert( iCol==0 || iCol==1 );
     testcase( iCol==0 );
     iMask = 1 << iCol;
-    if( pConstraint->usable==0 ){
+    nếu( pConstraint->usable==0 ){
       unusableMask |= iMask;
-    }else if( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
+    }không_thì nếu( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
       aIdx[iCol] = i;
       idxMask |= iMask;
     }
   }
-  if( pIdxInfo->nOrderBy>0
+  nếu( pIdxInfo->nOrderBy>0
    && pIdxInfo->aOrderBy[0].iColumn<0
    && pIdxInfo->aOrderBy[0].desc==0
   ){
     pIdxInfo->orderByConsumed = 1;
   }
 
-  if( (unusableMask & ~idxMask)!=0 ){
+  nếu( (unusableMask & ~idxMask)!=0 ){
     /* If there are any unusable constraints on JSON or ROOT, then reject
     ** this entire plan */
-    return SQLITE_CONSTRAINT;
+    trả_về SQLITE_CONSTRAINT;
   }
-  if( aIdx[0]<0 ){
+  nếu( aIdx[0]<0 ){
     /* No JSON input.  Leave estimatedCost at the huge value that it was
     ** initialized to to discourage the query planner from selecting this
     ** plan. */
     pIdxInfo->idxNum = 0;
-  }else{
+  }không_thì{
     pIdxInfo->estimatedCost = 1.0;
     i = aIdx[0];
     pIdxInfo->aConstraintUsage[i].argvIndex = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
-    if( aIdx[1]<0 ){
+    nếu( aIdx[1]<0 ){
       pIdxInfo->idxNum = 1;  /* Only JSON supplied.  Plan 1 */
-    }else{
+    }không_thì{
       i = aIdx[1];
       pIdxInfo->aConstraintUsage[i].argvIndex = 2;
       pIdxInfo->aConstraintUsage[i].omit = 1;
       pIdxInfo->idxNum = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
     }
   }
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* Start a search on a new JSON string */
-static int jsonEachFilter(
+static số_nguyên jsonEachFilter(
   sqlite3_vtab_cursor *cur,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  số_nguyên idxNum, const char *idxStr,
+  số_nguyên argc, sqlite3_value **argv
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   const char *zRoot = 0;
@@ -5720,63 +5720,63 @@ static int jsonEachFilter(
   UNUSED_PARAMETER(idxStr);
   UNUSED_PARAMETER(argc);
   jsonEachCursorReset(p);
-  if( idxNum==0 ) return SQLITE_OK;
+  nếu( idxNum==0 ) trả_về SQLITE_OK;
   memset(&p->sParse, 0, sizeof(p->sParse));
   p->sParse.nJPRef = 1;
   p->sParse.db = p->db;
-  if( jsonArgIsJsonb(argv[0], &p->sParse) ){
+  nếu( jsonArgIsJsonb(argv[0], &p->sParse) ){
     /* We have JSONB */
-  }else{
+  }không_thì{
     p->sParse.zJson = (char*)sqlite3_value_text(argv[0]);
     p->sParse.nJson = sqlite3_value_bytes(argv[0]);
-    if( p->sParse.zJson==0 ){
+    nếu( p->sParse.zJson==0 ){
       p->i = p->iEnd = 0;
-      return SQLITE_OK;
+      trả_về SQLITE_OK;
     }      
-    if( jsonConvertTextToBlob(&p->sParse, 0) ){
-      if( p->sParse.oom ){
-        return SQLITE_NOMEM;
+    nếu( jsonConvertTextToBlob(&p->sParse, 0) ){
+      nếu( p->sParse.oom ){
+        trả_về SQLITE_NOMEM;
       }
-      return jsonEachMalformedInput(cur);
+      trả_về jsonEachMalformedInput(cur);
     }
   }
-  if( idxNum==3 ){
+  nếu( idxNum==3 ){
     zRoot = (const char*)sqlite3_value_text(argv[1]);
-    if( zRoot==0 ) return SQLITE_OK;
-    if( zRoot[0]!='$' ){
+    nếu( zRoot==0 ) trả_về SQLITE_OK;
+    nếu( zRoot[0]!='$' ){
       sqlite3_free(cur->pVtab->zErrMsg);
       cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
       jsonEachCursorReset(p);
-      return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+      trả_về cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
     }
     p->nRoot = sqlite3Strlen30(zRoot);
-    if( zRoot[1]==0 ){
+    nếu( zRoot[1]==0 ){
       i = p->i = 0;
       p->eType = 0;
-    }else{
+    }không_thì{
       i = jsonLookupStep(&p->sParse, 0, zRoot+1, 0);
-      if( JSON_LOOKUP_ISERROR(i) ){
-        if( i==JSON_LOOKUP_NOTFOUND ){
+      nếu( JSON_LOOKUP_ISERROR(i) ){
+        nếu( i==JSON_LOOKUP_NOTFOUND ){
           p->i = 0;
           p->eType = 0;
           p->iEnd = 0;
-          return SQLITE_OK;
+          trả_về SQLITE_OK;
         }
         sqlite3_free(cur->pVtab->zErrMsg);
         cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
         jsonEachCursorReset(p);
-        return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+        trả_về cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
       }
-      if( p->sParse.iLabel ){
+      nếu( p->sParse.iLabel ){
         p->i = p->sParse.iLabel;
         p->eType = JSONB_OBJECT;
-      }else{
+      }không_thì{
         p->i = i;
         p->eType = JSONB_ARRAY;
       }
     }
     jsonAppendRaw(&p->path, zRoot, p->nRoot);
-  }else{
+  }không_thì{
     i = p->i = 0;
     p->eType = 0;
     p->nRoot = 1;
@@ -5785,11 +5785,11 @@ static int jsonEachFilter(
   p->nParent = 0;
   n = jsonbPayloadSize(&p->sParse, i, &sz);
   p->iEnd = i+n+sz;
-  if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
+  nếu( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
     p->i = i + n;
     p->eType = p->sParse.aBlob[i] & 0x0f;
     p->aParent = sqlite3DbMallocZero(p->db, sizeof(JsonParent));
-    if( p->aParent==0 ) return SQLITE_NOMEM;
+    nếu( p->aParent==0 ) trả_về SQLITE_NOMEM;
     p->nParent = 1;
     p->nParentAlloc = 1;
     p->aParent[0].iKey = 0;
@@ -5797,7 +5797,7 @@ static int jsonEachFilter(
     p->aParent[0].iHead = p->i;
     p->aParent[0].iValue = i;
   }
-  return SQLITE_OK;
+  trả_về SQLITE_OK;
 }
 
 /* The methods of the json_each virtual table */
@@ -5875,7 +5875,7 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(json_type,          2,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_valid,         1,1,0, 0,0,0,          jsonValidFunc),
     JFUNCTION(json_valid,         2,1,0, 0,0,0,          jsonValidFunc),
-#if SQLITE_DEBUG
+#nếu SQLITE_DEBUG
     JFUNCTION(json_parse,         1,1,0, 0,0,0,          jsonParseFunc),
 #endif
     WAGGREGATE(json_group_array,  1, 0, 0,
@@ -5897,22 +5897,22 @@ void sqlite3RegisterJsonFunctions(void){
 #endif
 }
 
-#if  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+#nếu  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
 /*
 ** Register the JSON table-valued function named zName and return a
 ** pointer to its Module object.  Return NULL if something goes wrong.
 */
 Module *sqlite3JsonVtabRegister(sqlite3 *db, const char *zName){
-  unsigned int i;
+  unsigned số_nguyên i;
   static const char *azModule[] = {
     "json_each", "json_tree", "jsonb_each", "jsonb_tree"
   };
   assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  for(i=0; i<sizeof(azModule)/sizeof(azModule[0]); i++){
-    if( sqlite3StrICmp(azModule[i],zName)==0 ){
-      return sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
+  cho(i=0; i<sizeof(azModule)/sizeof(azModule[0]); i++){
+    nếu( sqlite3StrICmp(azModule[i],zName)==0 ){
+      trả_về sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
     }
   }
-  return 0;
+  trả_về 0;
 }
 #endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */

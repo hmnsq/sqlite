@@ -48,11 +48,11 @@ struct WhereMemBlock {
 ** Extra information attached to a WhereLevel that is a RIGHT JOIN.
 */
 struct WhereRightJoin {
-  int iMatch;          /* Cursor used to determine prior matched rows */
-  int regBloom;        /* Bloom filter for iRJMatch */
-  int regReturn;       /* Return register for the interior subroutine */
-  int addrSubrtn;      /* Starting address for the interior subroutine */
-  int endSubrtn;       /* The last opcode in the interior subroutine */
+  số_nguyên iMatch;          /* Cursor used to determine prior matched rows */
+  số_nguyên regBloom;        /* Bloom filter for iRJMatch */
+  số_nguyên regReturn;       /* Return register for the interior subroutine */
+  số_nguyên addrSubrtn;      /* Starting address for the interior subroutine */
+  số_nguyên endSubrtn;       /* The last opcode in the interior subroutine */
 };
 
 /*
@@ -71,36 +71,36 @@ struct WhereRightJoin {
 ** WhereInfo.a[WhereInfo.nLevel-1] being the inner loop.
 */
 struct WhereLevel {
-  int iLeftJoin;        /* Memory cell used to implement LEFT OUTER JOIN */
-  int iTabCur;          /* The VDBE cursor used to access the table */
-  int iIdxCur;          /* The VDBE cursor used to access pIdx */
-  int addrBrk;          /* Jump here to break out of the loop */
-  int addrHalt;         /* Abort the query due to empty table or similar */
-  int addrNxt;          /* Jump here to start the next IN combination */
-  int addrSkip;         /* Jump here for next iteration of skip-scan */
-  int addrCont;         /* Jump here to continue with the next loop cycle */
-  int addrDeleteCont;   /* Delete auto-index entry then same as addrCont */
-  int addrFirst;        /* First instruction of interior of the loop */
-  int addrBody;         /* Beginning of the body of this loop */
-  int regBignull;       /* big-null flag reg. True if a NULL-scan is needed */
-  int addrBignull;      /* Jump here for next part of big-null scan */
+  số_nguyên iLeftJoin;        /* Memory cell used to implement LEFT OUTER JOIN */
+  số_nguyên iTabCur;          /* The VDBE cursor used to access the table */
+  số_nguyên iIdxCur;          /* The VDBE cursor used to access pIdx */
+  số_nguyên addrBrk;          /* Jump here to break out of the loop */
+  số_nguyên addrHalt;         /* Abort the query due to empty table or similar */
+  số_nguyên addrNxt;          /* Jump here to start the next IN combination */
+  số_nguyên addrSkip;         /* Jump here for next iteration of skip-scan */
+  số_nguyên addrCont;         /* Jump here to continue with the next loop cycle */
+  số_nguyên addrDeleteCont;   /* Delete auto-index entry then same as addrCont */
+  số_nguyên addrFirst;        /* First instruction of interior of the loop */
+  số_nguyên addrBody;         /* Beginning of the body of this loop */
+  số_nguyên regBignull;       /* big-null flag reg. True if a NULL-scan is needed */
+  số_nguyên addrBignull;      /* Jump here for next part of big-null scan */
 #ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
   u32 iLikeRepCntr;     /* LIKE range processing counter register (times 2) */
-  int addrLikeRep;      /* LIKE range processing address */
+  số_nguyên addrLikeRep;      /* LIKE range processing address */
 #endif
-  int regFilter;        /* Bloom filter */
+  số_nguyên regFilter;        /* Bloom filter */
   WhereRightJoin *pRJ;  /* Extra information for RIGHT JOIN */
   u8 iFrom;             /* Which entry in the FROM clause */
   u8 op, p3, p5;        /* Opcode, P3 & P5 of the opcode that ends the loop */
-  int p1, p2;           /* Operands of the opcode used to end the loop */
+  số_nguyên p1, p2;           /* Operands of the opcode used to end the loop */
   union {               /* Information that depends on pWLoop->wsFlags */
     struct {
-      int nIn;              /* Number of entries in aInLoop[] */
+      số_nguyên nIn;              /* Number of entries in aInLoop[] */
       struct InLoop {
-        int iCur;              /* The VDBE cursor used by this IN operator */
-        int addrInTop;         /* Top of the IN loop */
-        int iBase;             /* Base register of multi-key index record */
-        int nPrefix;           /* Number of prior entries in the key */
+        số_nguyên iCur;              /* The VDBE cursor used by this IN operator */
+        số_nguyên addrInTop;         /* Top of the IN loop */
+        số_nguyên iBase;             /* Base register of multi-key index record */
+        số_nguyên nPrefix;           /* Number of prior entries in the key */
         u8 eEndLoopOp;         /* IN Loop terminator. OP_Next or OP_Prev */
       } *aInLoop;           /* Information about each nested IN operator */
     } in;                 /* Used when pWLoop->wsFlags&WHERE_IN_ABLE */
@@ -109,7 +109,7 @@ struct WhereLevel {
   struct WhereLoop *pWLoop;  /* The selected WhereLoop object */
   Bitmask notReady;          /* FROM entries not usable at this level */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrVisit;        /* Address at which row is visited */
+  số_nguyên addrVisit;        /* Address at which row is visited */
 #endif
 };
 
@@ -148,7 +148,7 @@ struct WhereLoop {
       ExprList *pOrderBy;    /* ORDER BY clause if this is really a subquery */
     } btree;
     struct {               /* Information for virtual tables */
-      int idxNum;            /* Index number */
+      số_nguyên idxNum;            /* Index number */
       u32 needFree : 1;      /* True if sqlite3_free(idxStr) is needed */
       u32 bOmitOffset : 1;   /* True to let virtual table handle offset */
       u32 bIdxNumHex : 1;    /* Show idxNum as hex in EXPLAIN QUERY PLAN */
@@ -280,15 +280,15 @@ struct WhereTerm {
   u16 eOperator;          /* A WO_xx value describing <op> */
   u8 nChild;              /* Number of children that must disable us */
   u8 eMatchOp;            /* Op for vtab MATCH/LIKE/GLOB/REGEXP terms */
-  int iParent;            /* Disable pWC->a[iParent] when this term disabled */
-  int leftCursor;         /* Cursor number of X in "X <op> <expr>" */
+  số_nguyên iParent;            /* Disable pWC->a[iParent] when this term disabled */
+  số_nguyên leftCursor;         /* Cursor number of X in "X <op> <expr>" */
 #ifdef SQLITE_DEBUG
-  int iTerm;              /* Which WhereTerm is this, for debug purposes */
+  số_nguyên iTerm;              /* Which WhereTerm is this, for debug purposes */
 #endif
   union {
     struct {
-      int leftColumn;         /* Column number of X in "X <op> <expr>" */
-      int iField;             /* Field in (?,?,?) IN (SELECT...) vector */
+      số_nguyên leftColumn;         /* Column number of X in "X <op> <expr>" */
+      số_nguyên iField;             /* Field in (?,?,?) IN (SELECT...) vector */
     } x;                    /* Opcode other than OP_OR or OP_AND */
     WhereOrInfo *pOrInfo;   /* Extra information if (eOperator & WO_OR)!=0 */
     WhereAndInfo *pAndInfo; /* Extra information if (eOperator& WO_AND)!=0 */
@@ -316,7 +316,7 @@ struct WhereTerm {
 #define TERM_HEURTRUTH  0x2000 /* Heuristic truthProb used */
 #ifdef SQLITE_ENABLE_STAT4
 #  define TERM_HIGHTRUTH  0x4000 /* Term excludes few rows */
-#else
+#không_thì
 #  define TERM_HIGHTRUTH  0      /* Only used with STAT4 */
 #endif
 #define TERM_SLICE      0x8000 /* One slice of a row-value/vector comparison */
@@ -330,12 +330,12 @@ struct WhereScan {
   WhereClause *pWC;          /* WhereClause currently being scanned */
   const char *zCollName;     /* Required collating sequence, if not NULL */
   Expr *pIdxExpr;            /* Search for this index expression */
-  int k;                     /* Resume scanning at this->pWC->a[this->k] */
+  số_nguyên k;                     /* Resume scanning at this->pWC->a[this->k] */
   u32 opMask;                /* Acceptable operators */
   char idxaff;               /* Must match this affinity, if zCollName!=NULL */
   unsigned char iEquiv;      /* Current slot in aiCur[] and aiColumn[] */
   unsigned char nEquiv;      /* Number of entries in aiCur[] and aiColumn[] */
-  int aiCur[11];             /* Cursors in the equivalence class */
+  số_nguyên aiCur[11];             /* Cursors in the equivalence class */
   i16 aiColumn[11];          /* Corresponding column number in the eq-class */
 };
 
@@ -356,13 +356,13 @@ struct WhereClause {
   WhereClause *pOuter;     /* Outer conjunction */
   u8 op;                   /* Split operator.  TK_AND or TK_OR */
   u8 hasOr;                /* True if any a[].eOperator is WO_OR */
-  int nTerm;               /* Number of terms */
-  int nSlot;               /* Number of entries in a[] */
-  int nBase;               /* Number of terms through the last non-Virtual */
+  số_nguyên nTerm;               /* Number of terms */
+  số_nguyên nSlot;               /* Number of entries in a[] */
+  số_nguyên nBase;               /* Number of terms through the last non-Virtual */
   WhereTerm *a;            /* Each a[] describes a term of the WHERE clause */
-#if defined(SQLITE_SMALL_STACK)
+#nếu defined(SQLITE_SMALL_STACK)
   WhereTerm aStatic[1];    /* Initial static space for a[] */
-#else
+#không_thì
   WhereTerm aStatic[8];    /* Initial static space for a[] */
 #endif
 };
@@ -411,9 +411,9 @@ struct WhereAndInfo {
 ** no gaps.
 */
 struct WhereMaskSet {
-  int bVarSelect;               /* Used by sqlite3WhereExprUsage() */
-  int n;                        /* Number of assigned cursor values */
-  int ix[BMS];                  /* Cursor assigned to each bit */
+  số_nguyên bVarSelect;               /* Used by sqlite3WhereExprUsage() */
+  số_nguyên n;                        /* Number of assigned cursor values */
+  số_nguyên ix[BMS];                  /* Cursor assigned to each bit */
 };
 
 /*
@@ -427,11 +427,11 @@ struct WhereLoopBuilder {
   WhereOrSet *pOrSet;       /* Record best loops here, if not NULL */
 #ifdef SQLITE_ENABLE_STAT4
   UnpackedRecord *pRec;     /* Probe for stat4 (if required) */
-  int nRecValid;            /* Number of valid fields currently in pRec */
+  số_nguyên nRecValid;            /* Number of valid fields currently in pRec */
 #endif
   unsigned char bldFlags1;  /* First set of SQLITE_BLDF_* flags */
   unsigned char bldFlags2;  /* Second set of SQLITE_BLDF_* flags */
-  unsigned int iPlanLimit;  /* Search limiter */
+  unsigned số_nguyên iPlanLimit;  /* Search limiter */
 };
 
 /* Allowed values for WhereLoopBuider.bldFlags */
@@ -475,14 +475,14 @@ struct WhereInfo {
   SrcList *pTabList;        /* List of tables in the join */
   ExprList *pOrderBy;       /* The ORDER BY clause or NULL */
   ExprList *pResultSet;     /* Result set of the query */
-#if WHERETRACE_ENABLED
+#nếu WHERETRACE_ENABLED
   Expr *pWhere;             /* The complete WHERE clause */
 #endif
   Select *pSelect;          /* The entire SELECT statement containing WHERE */
-  int aiCurOnePass[2];      /* OP_OpenWrite cursors for the ONEPASS opt */
-  int iContinue;            /* Jump here to continue with next record */
-  int iBreak;               /* Jump here to break out of the loop */
-  int savedNQueryLoop;      /* pParse->nQueryLoop outside the WHERE loop */
+  số_nguyên aiCurOnePass[2];      /* OP_OpenWrite cursors for the ONEPASS opt */
+  số_nguyên iContinue;            /* Jump here to continue with next record */
+  số_nguyên iBreak;               /* Jump here to break out of the loop */
+  số_nguyên savedNQueryLoop;      /* pParse->nQueryLoop outside the WHERE loop */
   u16 wctrlFlags;           /* Flags originally passed to sqlite3WhereBegin() */
   LogEst iLimit;            /* LIMIT if wctrlFlags has WHERE_USE_LIMIT */
   u8 nLevel;                /* Number of nested loop */
@@ -499,8 +499,8 @@ struct WhereInfo {
 #ifdef WHERETRACE_ENABLED
   LogEst rTotalCost;        /* Total cost of the solution */
 #endif
-  int iTop;                 /* The very beginning of the WHERE loop */
-  int iEndWhere;            /* End of the WHERE clause itself */
+  số_nguyên iTop;                 /* The very beginning of the WHERE loop */
+  số_nguyên iEndWhere;            /* End of the WHERE clause itself */
   WhereLoop *pLoops;        /* List of all WhereLoop objects */
   WhereMemBlock *pMemToFree;/* Memory to free when this object destroyed */
   Bitmask revMask;          /* Mask of ORDER BY terms that need reversing */
@@ -519,16 +519,16 @@ struct WhereInfo {
 **
 ** where.c:
 */
-Bitmask sqlite3WhereGetMask(WhereMaskSet*,int);
+Bitmask sqlite3WhereGetMask(WhereMaskSet*,số_nguyên);
 #ifdef WHERETRACE_ENABLED
 void sqlite3WhereClausePrint(WhereClause *pWC);
-void sqlite3WhereTermPrint(WhereTerm *pTerm, int iTerm);
+void sqlite3WhereTermPrint(WhereTerm *pTerm, số_nguyên iTerm);
 void sqlite3WhereLoopPrint(const WhereLoop *p, const WhereClause *pWC);
 #endif
 WhereTerm *sqlite3WhereFindTerm(
   WhereClause *pWC,     /* The WHERE clause to be searched */
-  int iCur,             /* Cursor number of LHS */
-  int iColumn,          /* Column number of LHS */
+  số_nguyên iCur,             /* Cursor number of LHS */
+  số_nguyên iColumn,          /* Column number of LHS */
   Bitmask notReady,     /* RHS must not overlap with this mask */
   u32 op,               /* Mask of WO_xx values describing operator */
   Index *pIdx           /* Must be compatible with this index, if not NULL */
@@ -538,25 +538,25 @@ void *sqlite3WhereRealloc(WhereInfo *pWInfo, void *pOld, u64 nByte);
 
 /* wherecode.c: */
 #ifndef SQLITE_OMIT_EXPLAIN
-int sqlite3WhereExplainOneScan(
+số_nguyên sqlite3WhereExplainOneScan(
   Parse *pParse,                  /* Parse context */
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 );
-int sqlite3WhereExplainBloomFilter(
+số_nguyên sqlite3WhereExplainBloomFilter(
   const Parse *pParse,            /* Parse context */
   const WhereInfo *pWInfo,        /* WHERE clause */
   const WhereLevel *pLevel        /* Bloom filter on this level */
 );
 void sqlite3WhereAddExplainText(
   Parse *pParse,                  /* Parse context */
-  int addr, 
+  số_nguyên addr, 
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 );
-#else
+#không_thì
 # define sqlite3WhereExplainOneScan(u,v,w,x) 0
 # define sqlite3WhereExplainBloomFilter(u,v,w) 0
 # define  sqlite3WhereAddExplainText(u,v,w,x,y)
@@ -566,22 +566,22 @@ void sqlite3WhereAddScanStatus(
   Vdbe *v,                        /* Vdbe to add scanstatus entry to */
   SrcList *pSrclist,              /* FROM clause pLvl reads data from */
   WhereLevel *pLvl,               /* Level to add scanstatus() entry for */
-  int addrExplain                 /* Address of OP_Explain (or 0) */
+  số_nguyên addrExplain                 /* Address of OP_Explain (or 0) */
 );
-#else
+#không_thì
 # define sqlite3WhereAddScanStatus(a, b, c, d) ((void)d)
 #endif
 Bitmask sqlite3WhereCodeOneLoopStart(
   Parse *pParse,       /* Parsing context */
   Vdbe *v,             /* Prepared statement under construction */
   WhereInfo *pWInfo,   /* Complete information about the WHERE clause */
-  int iLevel,          /* Which level of pWInfo->a[] should be coded */
+  số_nguyên iLevel,          /* Which level of pWInfo->a[] should be coded */
   WhereLevel *pLevel,  /* The current level pointer */
   Bitmask notReady     /* Which tables are currently available */
 );
 SQLITE_NOINLINE void sqlite3WhereRightJoinLoop(
   WhereInfo *pWInfo,
-  int iLevel,
+  số_nguyên iLevel,
   WhereLevel *pLevel
 );
 
@@ -595,7 +595,7 @@ Bitmask sqlite3WhereExprUsageNN(WhereMaskSet*, Expr*);
 Bitmask sqlite3WhereExprListUsage(WhereMaskSet*, ExprList*);
 void sqlite3WhereExprAnalyze(SrcList*, WhereClause*);
 void sqlite3WhereTabFuncArgs(Parse*, SrcItem*, WhereClause*);
-int sqlite3WhereLoopBloomable(const WhereLoop*);
+số_nguyên sqlite3WhereLoopBloomable(const WhereLoop*);
 
 /*
 ** Bitmasks for the operators on WhereTerm objects.  These are all
