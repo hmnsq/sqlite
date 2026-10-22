@@ -13,32 +13,32 @@
 ** functions of SQLite.  (Some function, and in particular the date and
 ** time functions, are implemented separately.)
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
+#ضمن "sqliteInt.h"
+#ضمن <stdlib.h>
+#ضمن <assert.h>
 #ifndef SQLITE_OMIT_FLOATING_POINT
-#include <math.h>
+#ضمن <math.h>
 #endif
-#include "vdbeInt.h"
+#ضمن "vdbeInt.h"
 
 /*
 ** Return the collating function associated with a function.
 */
-static CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
+ساكن CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
   VdbeOp *pOp;
-  assert( context->pVdbe!=0 );
+  أكد( context->pVdbe!=0 );
   pOp = &context->pVdbe->aOp[context->iOp-1];
-  assert( pOp->opcode==OP_CollSeq );
-  assert( pOp->p4type==P4_COLLSEQ );
-  return pOp->p4.pColl;
+  أكد( pOp->opcode==OP_CollSeq );
+  أكد( pOp->p4type==P4_COLLSEQ );
+  إرجاع pOp->p4.pColl;
 }
 
 /*
 ** Indicate that the accumulator load should be skipped on this
 ** iteration of the aggregate loop.
 */
-static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
-  assert( context->isError<=0 );
+ساكن فراغ sqlite3SkipAccumulatorLoad(sqlite3_context *context){
+  أكد( context->isError<=0 );
   context->isError = -1;
   context->skipFlag = 1;
 }
@@ -46,50 +46,50 @@ static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
 /*
 ** Implementation of the non-aggregate min() and max() functions
 */
-static void minmaxFunc(
+ساكن فراغ minmaxFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int i;
-  int mask;    /* 0 for min() or 0xffffffff for max() */
-  int iBest;
+  صحيح i;
+  صحيح mask;    /* 0 for min() or 0xffffffff for max() */
+  صحيح iBest;
   CollSeq *pColl;
 
-  assert( argc>1 );
+  أكد( argc>1 );
   mask = sqlite3_user_data(context)==0 ? 0 : -1;
   pColl = sqlite3GetFuncCollSeq(context);
-  assert( pColl );
-  assert( mask==-1 || mask==0 );
+  أكد( pColl );
+  أكد( mask==-1 || mask==0 );
   iBest = 0;
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  for(i=1; i<argc; i++){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) return;
-    if( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_NULL ) إرجاع;
+  لكل(i=1; i<argc; i++){
+    إذا( sqlite3_قيمة_type(argv[i])==SQLITE_NULL ) إرجاع;
+    إذا( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
       testcase( mask==0 );
       iBest = i;
     }
   }
-  sqlite3_result_value(context, argv[iBest]);
+  sqlite3_result_قيمة(context, argv[iBest]);
 }
 
 /*
 ** Return the type of the argument.
 */
-static void typeofFunc(
+ساكن فراغ typeofFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  صحيح NotUsed,
+  sqlite3_قيمة **argv
 ){
-  static const char *azType[] = { "integer", "real", "text", "blob", "null" };
-  int i = sqlite3_value_type(argv[0]) - 1;
+  ساكن ثابت حرف *azType[] = { "integer", "real", "text", "blob", "null" };
+  صحيح i = sqlite3_قيمة_type(argv[0]) - 1;
   UNUSED_PARAMETER(NotUsed);
-  assert( i>=0 && i<ArraySize(azType) );
-  assert( SQLITE_INTEGER==1 );
-  assert( SQLITE_FLOAT==2 );
-  assert( SQLITE_TEXT==3 );
-  assert( SQLITE_BLOB==4 );
-  assert( SQLITE_NULL==5 );
+  أكد( i>=0 && i<ArraySize(azType) );
+  أكد( SQLITE_INTEGER==1 );
+  أكد( SQLITE_FLOAT==2 );
+  أكد( SQLITE_TEXT==3 );
+  أكد( SQLITE_BLOB==4 );
+  أكد( SQLITE_NULL==5 );
   /* EVIDENCE-OF: R-01470-60482 The sqlite3_value_type(V) interface returns
   ** the datatype code for the initial datatype of the sqlite3_value object
   ** V. The returned value is one of SQLITE_INTEGER, SQLITE_FLOAT,
@@ -101,54 +101,54 @@ static void typeofFunc(
 **
 ** Return the subtype of X
 */
-static void subtypeFunc(
+ساكن فراغ subtypeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   UNUSED_PARAMETER(argc);
-  sqlite3_result_int(context, sqlite3_value_subtype(argv[0]));
+  sqlite3_result_int(context, sqlite3_قيمة_subtype(argv[0]));
 }
 
 /*
 ** Implementation of the length() function
 */
-static void lengthFunc(
+ساكن فراغ lengthFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  assert( argc==1 );
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB:
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  بدل( sqlite3_قيمة_type(argv[0]) ){
+    حالة SQLITE_BLOB:
+    حالة SQLITE_INTEGER:
+    حالة SQLITE_FLOAT: {
+      sqlite3_result_int(context, sqlite3_قيمة_bytes(argv[0]));
+      اكسر;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *z = sqlite3_value_text(argv[0]);
-      const unsigned char *z0;
-      if( z==0 ) return;
+    حالة SQLITE_TEXT: {
+      ثابت unsigned حرف *z = sqlite3_قيمة_text(argv[0]);
+      ثابت unsigned حرف *z0;
+      إذا( z==0 ) إرجاع;
       z0 = z;
-      while( 1 /*exit-by-break*/ ){
+      بينما( 1 /*exit-by-break*/ ){
                       /*  vvvvvv----  See tag-20260418-01 */
-        if( (u8)(z[0]-1)<(0x80-1) ){
+        إذا( (u8)(z[0]-1)<(0x80-1) ){
           z++;
-        }else if( z[0]==0 ){
-          break;
-        }else{
+        }وإلا إذا( z[0]==0 ){
+          اكسر;
+        }وإلا{
           z++;
-          while( (z[0]&0xc0)==0x80 ){ z++; z0++; }
+          بينما( (z[0]&0xc0)==0x80 ){ z++; z0++; }
         }
       }
-      sqlite3_result_int(context, (int)(z-z0));
-      break;
+      sqlite3_result_int(context, (صحيح)(z-z0));
+      اكسر;
     }
-    default: {
+    افتراضي: {
       sqlite3_result_null(context);
-      break;
+      اكسر;
     }
   }
 }
@@ -156,35 +156,35 @@ static void lengthFunc(
 /*
 ** Implementation of the octet_length() function
 */
-static void bytelengthFunc(
+ساكن فراغ bytelengthFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  assert( argc==1 );
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  بدل( sqlite3_قيمة_type(argv[0]) ){
+    حالة SQLITE_BLOB: {
+      sqlite3_result_int(context, sqlite3_قيمة_bytes(argv[0]));
+      اكسر;
     }
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
+    حالة SQLITE_INTEGER:
+    حالة SQLITE_FLOAT: {
       i64 m = sqlite3_context_db_handle(context)->enc<=SQLITE_UTF8 ? 1 : 2;
-      sqlite3_result_int64(context, sqlite3_value_bytes(argv[0])*m);
-      break;
+      sqlite3_result_int64(context, sqlite3_قيمة_bytes(argv[0])*m);
+      اكسر;
     }
-    case SQLITE_TEXT: {
-      if( sqlite3_value_encoding(argv[0])<=SQLITE_UTF8 ){
-        sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      }else{
-        sqlite3_result_int(context, sqlite3_value_bytes16(argv[0]));
+    حالة SQLITE_TEXT: {
+      إذا( sqlite3_قيمة_encoding(argv[0])<=SQLITE_UTF8 ){
+        sqlite3_result_int(context, sqlite3_قيمة_bytes(argv[0]));
+      }وإلا{
+        sqlite3_result_int(context, sqlite3_قيمة_bytes16(argv[0]));
       }
-      break;
+      اكسر;
     }
-    default: {
+    افتراضي: {
       sqlite3_result_null(context);
-      break;
+      اكسر;
     }
   }
 }
@@ -195,40 +195,40 @@ static void bytelengthFunc(
 ** IMP: R-23979-26855 The abs(X) function returns the absolute value of
 ** the numeric argument X.
 */
-static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  assert( argc==1 );
+ساكن فراغ absFunc(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal<0 ){
-        if( iVal==SMALLEST_INT64 ){
+  بدل( sqlite3_قيمة_type(argv[0]) ){
+    حالة SQLITE_INTEGER: {
+      i64 iVal = sqlite3_قيمة_int64(argv[0]);
+      إذا( iVal<0 ){
+        إذا( iVal==SMALLEST_INT64 ){
           /* IMP: R-31676-45509 If X is the integer -9223372036854775808
           ** then abs(X) throws an integer overflow error since there is no
           ** equivalent positive 64-bit two complement value. */
           sqlite3_result_error(context, "integer overflow", -1);
-          return;
+          إرجاع;
         }
         iVal = -iVal;
       }
       sqlite3_result_int64(context, iVal);
-      break;
+      اكسر;
     }
-    case SQLITE_NULL: {
+    حالة SQLITE_NULL: {
       /* IMP: R-37434-19929 Abs(X) returns NULL if X is NULL. */
       sqlite3_result_null(context);
-      break;
+      اكسر;
     }
-    default: {
+    افتراضي: {
       /* Because sqlite3_value_double() returns 0.0 if the argument is not
       ** something that can be converted into a number, we have:
       ** IMP: R-01992-00519 Abs(X) returns 0.0 if X is a string or blob
       ** that cannot be converted to a numeric value.
       */
-      double rVal = sqlite3_value_double(argv[0]);
-      if( rVal<0 ) rVal = -rVal;
+      مزدوج rVal = sqlite3_قيمة_double(argv[0]);
+      إذا( rVal<0 ) rVal = -rVal;
       sqlite3_result_double(context, rVal);
-      break;
+      اكسر;
     }
   }
 }
@@ -244,85 +244,85 @@ static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** the number of bytes in haystack prior to the first occurrence of needle,
 ** or 0 if needle never occurs in haystack.
 */
-static void instrFunc(
+ساكن فراغ instrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *zHaystack;
-  const unsigned char *zNeedle;
-  int nHaystack;
-  int nNeedle;
-  int typeHaystack, typeNeedle;
-  int N = 1;
-  int isText;
-  unsigned char firstChar;
-  sqlite3_value *pC1 = 0;
-  sqlite3_value *pC2 = 0;
+  ثابت unsigned حرف *zHaystack;
+  ثابت unsigned حرف *zNeedle;
+  صحيح nHaystack;
+  صحيح nNeedle;
+  صحيح typeHaystack, typeNeedle;
+  صحيح N = 1;
+  صحيح isText;
+  unsigned حرف firstChar;
+  sqlite3_قيمة *pC1 = 0;
+  sqlite3_قيمة *pC2 = 0;
 
   UNUSED_PARAMETER(argc);
-  typeHaystack = sqlite3_value_type(argv[0]);
-  typeNeedle = sqlite3_value_type(argv[1]);
-  if( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) return;
-  nHaystack = sqlite3_value_bytes(argv[0]);
-  nNeedle = sqlite3_value_bytes(argv[1]);
-  if( nNeedle>0 ){
-    if( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
-      zHaystack = sqlite3_value_blob(argv[0]);
-      zNeedle = sqlite3_value_blob(argv[1]);
+  typeHaystack = sqlite3_قيمة_type(argv[0]);
+  typeNeedle = sqlite3_قيمة_type(argv[1]);
+  إذا( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) إرجاع;
+  nHaystack = sqlite3_قيمة_bytes(argv[0]);
+  nNeedle = sqlite3_قيمة_bytes(argv[1]);
+  إذا( nNeedle>0 ){
+    إذا( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
+      zHaystack = sqlite3_قيمة_blob(argv[0]);
+      zNeedle = sqlite3_قيمة_blob(argv[1]);
       isText = 0;
-    }else if( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
-      zHaystack = sqlite3_value_text(argv[0]);
-      zNeedle = sqlite3_value_text(argv[1]);
+    }وإلا إذا( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
+      zHaystack = sqlite3_قيمة_text(argv[0]);
+      zNeedle = sqlite3_قيمة_text(argv[1]);
       isText = 1;
-    }else{
-      pC1 = sqlite3_value_dup(argv[0]);
-      zHaystack = sqlite3_value_text(pC1);
-      if( zHaystack==0 ) goto endInstrOOM;
-      nHaystack = sqlite3_value_bytes(pC1);
-      pC2 = sqlite3_value_dup(argv[1]);
-      zNeedle = sqlite3_value_text(pC2);
-      if( zNeedle==0 ) goto endInstrOOM;
-      nNeedle = sqlite3_value_bytes(pC2);
+    }وإلا{
+      pC1 = sqlite3_قيمة_dup(argv[0]);
+      zHaystack = sqlite3_قيمة_text(pC1);
+      إذا( zHaystack==0 ) اذهب endInstrOOM;
+      nHaystack = sqlite3_قيمة_bytes(pC1);
+      pC2 = sqlite3_قيمة_dup(argv[1]);
+      zNeedle = sqlite3_قيمة_text(pC2);
+      إذا( zNeedle==0 ) اذهب endInstrOOM;
+      nNeedle = sqlite3_قيمة_bytes(pC2);
       isText = 1;
     }
-    if( zNeedle==0 || (nHaystack && zHaystack==0) ) goto endInstrOOM;
+    إذا( zNeedle==0 || (nHaystack && zHaystack==0) ) اذهب endInstrOOM;
     firstChar = zNeedle[0];
-    while( nNeedle<=nHaystack
+    بينما( nNeedle<=nHaystack
        && (zHaystack[0]!=firstChar || memcmp(zHaystack, zNeedle, nNeedle)!=0)
     ){
       N++;
-      do{
+      افعل{
         nHaystack--;
         zHaystack++;
-      }while( isText && (zHaystack[0]&0xc0)==0x80 );
+      }بينما( isText && (zHaystack[0]&0xc0)==0x80 );
     }
-    if( nNeedle>nHaystack ) N = 0;
+    إذا( nNeedle>nHaystack ) N = 0;
   }
   sqlite3_result_int(context, N);
 endInstr:
-  sqlite3_value_free(pC1);
-  sqlite3_value_free(pC2);
-  return;
+  sqlite3_قيمة_free(pC1);
+  sqlite3_قيمة_free(pC2);
+  إرجاع;
 endInstrOOM:
   sqlite3_result_error_nomem(context);
-  goto endInstr;
+  اذهب endInstr;
 }
 
 /*
 ** Implementation of the printf() (a.k.a. format()) SQL function.
 */
-static void printfFunc(
+ساكن فراغ printfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   PrintfArguments x;
   StrAccum str;
-  const char *zFormat;
+  ثابت حرف *zFormat;
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  if( argc>=1 && (zFormat = (const char*)sqlite3_value_text(argv[0]))!=0 ){
+  إذا( argc>=1 && (zFormat = (ثابت حرف*)sqlite3_قيمة_text(argv[0]))!=0 ){
     x.nArg = argc-1;
     x.nUsed = 0;
     x.apArg = argv+1;
@@ -334,11 +334,11 @@ static void printfFunc(
 }
 
 /* Return true if any of the eight bytes in word is NUL or non-ASCII. */
-static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
-  const u64 byteOnes = UINT64_C(0x0101010101010101);
-  const u64 byteHighBits = UINT64_C(0x8080808080808080);
+ساكن SQLITE_INLINE صحيح containsNulOrNonAscii(u64 word){
+  ثابت u64 byteOnes = UINT64_C(0x0101010101010101);
+  ثابت u64 byte_أعلى_Bits = UINT64_C(0x8080808080808080);
   /* NUL causes a borrow into a high bit; non-ASCII already has one set. */
-  return ((word | (word - byteOnes)) & byteHighBits)!=0;
+  إرجاع ((word | (word - byteOnes)) & byte_أعلى_Bits)!=0;
 }
 
 /*
@@ -353,42 +353,42 @@ static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
 **
 ** If p2 is negative, return the p2 characters preceding p1.
 */
-static void substrFunc(
+ساكن فراغ substrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *z;
-  const unsigned char *z2;
-  int len;
-  int p0type;
+  ثابت unsigned حرف *z;
+  ثابت unsigned حرف *z2;
+  صحيح len;
+  صحيح p0type;
   i64 p1, p2;
 
-  assert( argc==3 || argc==2 );
-  p0type = sqlite3_value_type(argv[0]);
-  p1 = sqlite3_value_int64(argv[1]);
-  if( p0type==SQLITE_BLOB ){
-    len = sqlite3_value_bytes(argv[0]);
-    z = sqlite3_value_blob(argv[0]);
-    if( z==0 ) return;
-    assert( len==sqlite3_value_bytes(argv[0]) );
-  }else{
-    z = sqlite3_value_text(argv[0]);
-    if( z==0 ) return;
+  أكد( argc==3 || argc==2 );
+  p0type = sqlite3_قيمة_type(argv[0]);
+  p1 = sqlite3_قيمة_int64(argv[1]);
+  إذا( p0type==SQLITE_BLOB ){
+    len = sqlite3_قيمة_bytes(argv[0]);
+    z = sqlite3_قيمة_blob(argv[0]);
+    إذا( z==0 ) إرجاع;
+    أكد( len==sqlite3_قيمة_bytes(argv[0]) );
+  }وإلا{
+    z = sqlite3_قيمة_text(argv[0]);
+    إذا( z==0 ) إرجاع;
     len = 0;
-    if( p1<0 ){
-      for(z2=z; *z2; len++){
+    إذا( p1<0 ){
+      لكل(z2=z; *z2; len++){
         SQLITE_SKIP_UTF8(z2);
       }
     }
   }
-  if( argc==3 ){
-    p2 = sqlite3_value_int64(argv[2]);
-    if( p2==0 && sqlite3_value_type(argv[2])==SQLITE_NULL ) return;
-  }else{
+  إذا( argc==3 ){
+    p2 = sqlite3_قيمة_int64(argv[2]);
+    إذا( p2==0 && sqlite3_قيمة_type(argv[2])==SQLITE_NULL ) إرجاع;
+  }وإلا{
     p2 = LARGEST_INT64;
   }
-  if( p1==0 ){
+  إذا( p1==0 ){
 #ifdef SQLITE_SUBSTR_COMPATIBILITY
     /* If SUBSTR_COMPATIBILITY is defined then substr(X,0,N) work the same as
     ** as substr(X,1,N) - it returns the first N characters of X.  This
@@ -397,77 +397,77 @@ static void substrFunc(
     ** old buggy behavior. */
     p1 = 1; /* <rdar://problem/6778339> */
 #endif
-    if( sqlite3_value_type(argv[1])==SQLITE_NULL ) return;
+    إذا( sqlite3_قيمة_type(argv[1])==SQLITE_NULL ) إرجاع;
   }
-  if( p1<0 ){
+  إذا( p1<0 ){
     p1 += len;
-    if( p1<0 ){
-      if( p2<0 ){
+    إذا( p1<0 ){
+      إذا( p2<0 ){
         p2 = 0;
-      }else{
+      }وإلا{
         p2 += p1;
       }
       p1 = 0;
     }
-  }else if( p1>0 ){
+  }وإلا إذا( p1>0 ){
     p1--;
-  }else if( p2>0 ){
+  }وإلا إذا( p2>0 ){
     p2--;
   }
-  if( p2<0 ){
-    if( p2<-p1 ){
+  إذا( p2<0 ){
+    إذا( p2<-p1 ){
       p2 = p1;
-    }else{
+    }وإلا{
       p2 = -p2;
     }
     p1 -= p2;
   }
-  assert( p1>=0 && p2>=0 );
-  if( p0type!=SQLITE_BLOB ){
-    if( p1>=8 ){
+  أكد( p1>=0 && p2>=0 );
+  إذا( p0type!=SQLITE_BLOB ){
+    إذا( p1>=8 ){
       /* Skip 8 characters at a time while all 8 bytes are in 0x01..0x7f */
-      const unsigned char *zEnd = z + sqlite3_value_bytes(argv[0]);
-      while( p1>=8 && zEnd-z>=8 ){
+      ثابت unsigned حرف *zEnd = z + sqlite3_قيمة_bytes(argv[0]);
+      بينما( p1>=8 && zEnd-z>=8 ){
         u64 word;
-        memcpy(&word, z, sizeof(word));
+        memcpy(&word, z, حجم(word));
         /* Handle NUL and UTF-8 with the scalar loop below. */
-        if( containsNulOrNonAscii(word) ){
-          break;
+        إذا( containsNulOrNonAscii(word) ){
+          اكسر;
         }
         z += 8;
         p1 -= 8;
       }
     }
-    for( ; p1>0; p1--){
+    لكل( ; p1>0; p1--){
                     /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z[0]-1)<(0x80-1) ){
+      إذا( (u8)(z[0]-1)<(0x80-1) ){
         z++;
-      }else if( z[0]==0 ){
-        break;
-      }else{
-        do{ z++; }while( (z[0]&0xc0)==0x80 );
+      }وإلا إذا( z[0]==0 ){
+        اكسر;
+      }وإلا{
+        افعل{ z++; }بينما( (z[0]&0xc0)==0x80 );
       }
     }
-    for(z2=z; p2>0; p2--){
+    لكل(z2=z; p2>0; p2--){
                      /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z2[0]-1)<(0x80-1) ){
+      إذا( (u8)(z2[0]-1)<(0x80-1) ){
         z2++;
-      }else if( z2[0]==0 ){
-        break;
-      }else{
-        do{ z2++; }while( (z2[0]&0xc0)==0x80 );
+      }وإلا إذا( z2[0]==0 ){
+        اكسر;
+      }وإلا{
+        افعل{ z2++; }بينما( (z2[0]&0xc0)==0x80 );
       }
     }
-    sqlite3_result_text64(context, (char*)z, z2-z, SQLITE_TRANSIENT,
+    sqlite3_result_text64(context, (حرف*)z, z2-z, SQLITE_TRANSIENT,
                           SQLITE_UTF8);
-  }else{
-    if( p1>=len ){
+  }وإلا{
+    إذا( p1>=len ){
       p1 = p2 = 0;
-    }else if( p2>len-p1 ){
+    }وإلا إذا( p2>len-p1 ){
       p2 = len-p1;
-      assert( p2>0 );
+      أكد( p2>0 );
     }
-    sqlite3_result_blob64(context, (char*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
+    sqlite3_result_blob64(context, (حرف*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
   }
 }
 
@@ -475,32 +475,32 @@ static void substrFunc(
 ** Implementation of the round() function
 */
 #ifndef SQLITE_OMIT_FLOATING_POINT
-static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+ساكن فراغ roundFunc(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
   i64 n = 0;
-  double r;
-  char *zBuf;
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    if( SQLITE_NULL==sqlite3_value_type(argv[1]) ) return;
-    n = sqlite3_value_int64(argv[1]);
-    if( n>30 ) n = 30;
-    if( n<0 ) n = 0;
+  مزدوج r;
+  حرف *zBuf;
+  أكد( argc==1 || argc==2 );
+  إذا( argc==2 ){
+    إذا( SQLITE_NULL==sqlite3_قيمة_type(argv[1]) ) إرجاع;
+    n = sqlite3_قيمة_int64(argv[1]);
+    إذا( n>30 ) n = 30;
+    إذا( n<0 ) n = 0;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  r = sqlite3_value_double(argv[0]);
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_NULL ) إرجاع;
+  r = sqlite3_قيمة_double(argv[0]);
   /* If Y==0 and X will fit in a 64-bit int,
   ** handle the rounding directly,
   ** otherwise use printf.
   */
-  if( r<-4503599627370496.0 || r>+4503599627370496.0 ){
+  إذا( r<-4503599627370496.0 || r>+4503599627370496.0 ){
     /* The value has no fractional part so there is nothing to round */
-  }else if( n==0 ){ 
-    r = (double)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
-  }else{
-    zBuf = sqlite3_mprintf("%!.*f",(int)n,r);
-    if( zBuf==0 ){
+  }وإلا إذا( n==0 ){ 
+    r = (مزدوج)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
+  }وإلا{
+    zBuf = sqlite3_mprintf("%!.*f",(صحيح)n,r);
+    إذا( zBuf==0 ){
       sqlite3_result_error_nomem(context);
-      return;
+      إرجاع;
     }
     sqlite3AtoF(zBuf, &r);
     sqlite3_free(zBuf);
@@ -516,59 +516,59 @@ static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** If nByte is larger than the maximum string or blob length, then
 ** raise an SQLITE_TOOBIG exception and return NULL.
 */
-static void *contextMalloc(sqlite3_context *context, i64 nByte){
-  char *z;
+ساكن فراغ *contextMalloc(sqlite3_context *context, i64 nByte){
+  حرف *z;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( nByte>0 );
+  أكد( nByte>0 );
   testcase( nByte==db->aLimit[SQLITE_LIMIT_LENGTH] );
   testcase( nByte==(i64)db->aLimit[SQLITE_LIMIT_LENGTH]+1 );
-  if( nByte>db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  إذا( nByte>db->aLimit[SQLITE_LIMIT_LENGTH] ){
     sqlite3_result_error_toobig(context);
     z = 0;
-  }else{
+  }وإلا{
     z = sqlite3Malloc(nByte);
-    if( !z ){
+    إذا( !z ){
       sqlite3_result_error_nomem(context);
     }
   }
-  return z;
+  إرجاع z;
 }
 
 /*
 ** Implementation of the upper() and lower() SQL functions.
 */
-static void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+ساكن فراغ upperFunc(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
+  حرف *z1;
+  ثابت حرف *z2;
+  صحيح i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (حرف*)sqlite3_قيمة_text(argv[0]);
+  n = sqlite3_قيمة_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  أكد( z2==(حرف*)sqlite3_قيمة_text(argv[0]) );
+  إذا( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
-        z1[i] = (char)sqlite3Toupper(z2[i]);
+    إذا( z1 ){
+      لكل(i=0; i<n; i++){
+        z1[i] = (حرف)sqlite3Toupper(z2[i]);
       }
       sqlite3_result_text(context, z1, n, sqlite3_free);
     }
   }
 }
-static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+ساكن فراغ lowerFunc(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
+  حرف *z1;
+  ثابت حرف *z2;
+  صحيح i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (حرف*)sqlite3_قيمة_text(argv[0]);
+  n = sqlite3_قيمة_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  أكد( z2==(حرف*)sqlite3_قيمة_text(argv[0]) );
+  إذا( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
+    إذا( z1 ){
+      لكل(i=0; i<n; i++){
         z1[i] = sqlite3Tolower(z2[i]);
       }
       sqlite3_result_text(context, z1, n, sqlite3_free);
@@ -589,15 +589,15 @@ static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 /*
 ** Implementation of random().  Return a random integer. 
 */
-static void randomFunc(
+ساكن فراغ randomFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   sqlite_int64 r;
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  sqlite3_randomness(sizeof(r), &r);
-  if( r<0 ){
+  sqlite3_randomness(حجم(r), &r);
+  إذا( r<0 ){
     /* We need to prevent a random number of 0x8000000000000000
     ** (or -9223372036854775808) since when you do abs() of that
     ** number of you get the same value back again.  To do this
@@ -615,23 +615,23 @@ static void randomFunc(
 ** Implementation of randomblob(N).  Return a random blob
 ** that is N bytes long.
 */
-static void randomBlob(
+ساكن فراغ randomBlob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   sqlite3_int64 n;
-  unsigned char *p;
-  assert( argc==1 );
+  unsigned حرف *p;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<1 ){
+  n = sqlite3_قيمة_int64(argv[0]);
+  إذا( n<1 ){
     n = 1;
   }
   p = contextMalloc(context, n);
-  if( p ){
+  إذا( p ){
     sqlite3_randomness(n, p);
-    sqlite3_result_blob(context, (char*)p, n, sqlite3_free);
+    sqlite3_result_blob(context, (حرف*)p, n, sqlite3_free);
   }
 }
 
@@ -639,17 +639,17 @@ static void randomBlob(
 ** Implementation of the last_insert_rowid() SQL function.  The return
 ** value is the same as the sqlite3_last_insert_rowid() API function.
 */
-static void last_insert_rowid(
+ساكن فراغ last_أدرج_rowid(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-51513-12026 The last_insert_rowid() SQL function is a
   ** wrapper around the sqlite3_last_insert_rowid() C/C++ interface
   ** function. */
-  sqlite3_result_int64(context, sqlite3_last_insert_rowid(db));
+  sqlite3_result_int64(context, sqlite3_last_أدرج_rowid(db));
 }
 
 /*
@@ -659,10 +659,10 @@ static void last_insert_rowid(
 ** around the sqlite3_changes64() C/C++ function and hence follows the
 ** same rules for counting changes.
 */
-static void changes(
+ساكن فراغ changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -673,10 +673,10 @@ static void changes(
 ** Implementation of the total_changes() SQL function.  The return value is
 ** the same as the sqlite3_total_changes64() API function.
 */
-static void total_changes(
+ساكن فراغ total_changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -688,7 +688,7 @@ static void total_changes(
 /*
 ** A structure defining how to do GLOB-style comparisons.
 */
-struct compareInfo {
+بنية compareInfo {
   u8 matchAll;          /* "*" or "%" */
   u8 matchOne;          /* "?" or "_" */
   u8 matchSet;          /* "[" or 0 */
@@ -701,20 +701,20 @@ struct compareInfo {
 ** macro for fast reading of the next character in the common case where
 ** the next character is ASCII.
 */
-#if defined(SQLITE_EBCDIC)
+#إذا defined(SQLITE_EBCDIC)
 # define sqlite3Utf8Read(A)        (*((*A)++))
 # define Utf8Read(A)               (*(A++))
-#else
+#وإلا
 # define Utf8Read(A)               (A[0]<0x80?*(A++):sqlite3Utf8Read(&A))
 #endif
 
-static const struct compareInfo globInfo = { '*', '?', '[', 0 };
+ساكن ثابت بنية compareInfo globInfo = { '*', '?', '[', 0 };
 /* The correct SQL-92 behavior is for the LIKE operator to ignore
 ** case.  Thus  'a' LIKE 'A' would be true. */
-static const struct compareInfo likeInfoNorm = { '%', '_',   0, 1 };
+ساكن ثابت بنية compareInfo likeInfoNorm = { '%', '_',   0, 1 };
 /* If SQLITE_CASE_SENSITIVE_LIKE is defined, then the LIKE operator
 ** is case sensitive causing 'a' LIKE 'A' to be false */
-static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
+ساكن ثابت بنية compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 
 /*
 ** Possible error returns from patternMatch()
@@ -761,45 +761,45 @@ static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 **
 ** This routine is usually quick, but can be N**2 in the worst case.
 */
-static int patternCompare(
-  const u8 *zPattern,              /* The glob pattern */
-  const u8 *zString,               /* The string to compare against the glob */
-  const struct compareInfo *pInfo, /* Information about how to do the compare */
+ساكن صحيح patternCompare(
+  ثابت u8 *zPattern,              /* The glob pattern */
+  ثابت u8 *zString,               /* The string to compare against the glob */
+  ثابت بنية compareInfo *pInfo, /* Information about how to do the compare */
   u32 matchOther                   /* The escape char (LIKE) or '[' (GLOB) */
 ){
   u32 c, c2;                       /* Next pattern and input string chars */
   u32 matchOne = pInfo->matchOne;  /* "?" or "_" */
   u32 matchAll = pInfo->matchAll;  /* "*" or "%" */
   u8 noCase = pInfo->noCase;       /* True if uppercase==lowercase */
-  const u8 *zEscaped = 0;          /* One past the last escaped input char */
+  ثابت u8 *zEscaped = 0;          /* One past the last escaped input char */
  
-  while( (c = Utf8Read(zPattern))!=0 ){
-    if( c==matchAll ){  /* Match "*" */
+  بينما( (c = Utf8Read(zPattern))!=0 ){
+    إذا( c==matchAll ){  /* Match "*" */
       /* Skip over multiple "*" characters in the pattern.  If there
       ** are also "?" characters, skip those as well, but consume a
       ** single character of the input string for each "?" skipped */
-      while( (c=Utf8Read(zPattern)) == matchAll
+      بينما( (c=Utf8Read(zPattern)) == matchAll
              || (c == matchOne && matchOne!=0) ){
-        if( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
-          return SQLITE_NOWILDCARDMATCH;
+        إذا( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
+          إرجاع SQLITE_NOWILDCARDMATCH;
         }
       }
-      if( c==0 ){
-        return SQLITE_MATCH;   /* "*" at the end of the pattern matches */
-      }else if( c==matchOther ){
-        if( pInfo->matchSet==0 ){
+      إذا( c==0 ){
+        إرجاع SQLITE_MATCH;   /* "*" at the end of the pattern matches */
+      }وإلا إذا( c==matchOther ){
+        إذا( pInfo->matchSet==0 ){
           c = sqlite3Utf8Read(&zPattern);
-          if( c==0 ) return SQLITE_NOWILDCARDMATCH;
-        }else{
+          إذا( c==0 ) إرجاع SQLITE_NOWILDCARDMATCH;
+        }وإلا{
           /* "[...]" immediately follows the "*".  We have to do a slow
           ** recursive search in this case, but it is an unusual case. */
-          assert( matchOther<0x80 );  /* '[' is a single-byte character */
-          while( *zString ){
-            int bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
-            if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          أكد( matchOther<0x80 );  /* '[' is a single-byte character */
+          بينما( *zString ){
+            صحيح bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
+            إذا( bMatch!=SQLITE_NOMATCH ) إرجاع bMatch;
             SQLITE_SKIP_UTF8(zString);
           }
-          return SQLITE_NOWILDCARDMATCH;
+          إرجاع SQLITE_NOWILDCARDMATCH;
         }
       }
 
@@ -812,106 +812,106 @@ static int patternCompare(
       ** c but in the other case and search the input string for either
       ** c or cx.
       */
-      if( c<0x80 ){
-        char zStop[3];
-        int bMatch;
+      إذا( c<0x80 ){
+        حرف zStop[3];
+        صحيح bMatch;
         /* If the next pattern character is an ordinary ASCII character,
         ** then a candidate position can only match if the next input
         ** character is nx or ny.  Check that inline, to avoid most of the
         ** recursive calls.  nx==0 disables this check. */
         u8 nx = zPattern[0], ny = nx;
-        if( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
+        إذا( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
           nx = 0;
         }
-        if( noCase ){
+        إذا( noCase ){
           zStop[0] = sqlite3Toupper(c);
           zStop[1] = sqlite3Tolower(c);
           zStop[2] = 0;
           nx = sqlite3Toupper(nx);
           ny = sqlite3Tolower(ny);
-        }else{
+        }وإلا{
           zStop[0] = c;
           zStop[1] = 0;
         }
-        while(1){
-          zString += strcspn((const char*)zString, zStop);
-          if( zString[0]==0 ) break;
+        بينما(1){
+          zString += strcspn((ثابت حرف*)zString, zStop);
+          إذا( zString[0]==0 ) اكسر;
           zString++;
-          if( nx && zString[0]!=nx && zString[0]!=ny ) continue;
+          إذا( nx && zString[0]!=nx && zString[0]!=ny ) استمر;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          إذا( bMatch!=SQLITE_NOMATCH ) إرجاع bMatch;
         }
-      }else{
-        int bMatch;
-        while( (c2 = Utf8Read(zString))!=0 ){
-          if( c2!=c ) continue;
+      }وإلا{
+        صحيح bMatch;
+        بينما( (c2 = Utf8Read(zString))!=0 ){
+          إذا( c2!=c ) استمر;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          إذا( bMatch!=SQLITE_NOMATCH ) إرجاع bMatch;
         }
       }
-      return SQLITE_NOWILDCARDMATCH;
+      إرجاع SQLITE_NOWILDCARDMATCH;
     }
-    if( c==matchOther ){
-      if( pInfo->matchSet==0 ){
+    إذا( c==matchOther ){
+      إذا( pInfo->matchSet==0 ){
         c = sqlite3Utf8Read(&zPattern);
-        if( c==0 ) return SQLITE_NOMATCH;
+        إذا( c==0 ) إرجاع SQLITE_NOMATCH;
         zEscaped = zPattern;
-      }else{
+      }وإلا{
         u32 prior_c = 0;
-        int seen = 0;
-        int invert = 0;
+        صحيح seen = 0;
+        صحيح invert = 0;
         c = sqlite3Utf8Read(&zString);
-        if( c==0 ) return SQLITE_NOMATCH;
+        إذا( c==0 ) إرجاع SQLITE_NOMATCH;
         c2 = sqlite3Utf8Read(&zPattern);
-        if( c2=='^' ){
+        إذا( c2=='^' ){
           invert = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==']' ){
-          if( c==']' ) seen = 1;
+        إذا( c2==']' ){
+          إذا( c==']' ) seen = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        while( c2 && c2!=']' ){
-          if( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
+        بينما( c2 && c2!=']' ){
+          إذا( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
             c2 = sqlite3Utf8Read(&zPattern);
-            if( c>=prior_c && c<=c2 ) seen = 1;
+            إذا( c>=prior_c && c<=c2 ) seen = 1;
             prior_c = 0;
-          }else{
-            if( c==c2 ){
+          }وإلا{
+            إذا( c==c2 ){
               seen = 1;
             }
             prior_c = c2;
           }
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==0 || (seen ^ invert)==0 ){
-          return SQLITE_NOMATCH;
+        إذا( c2==0 || (seen ^ invert)==0 ){
+          إرجاع SQLITE_NOMATCH;
         }
-        continue;
+        استمر;
       }
     }
     c2 = Utf8Read(zString);
-    if( c==c2 ) continue;
-    if( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
-      continue;
+    إذا( c==c2 ) استمر;
+    إذا( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
+      استمر;
     }
-    if( c==matchOne && zPattern!=zEscaped && c2!=0 ) continue;
-    return SQLITE_NOMATCH;
+    إذا( c==matchOne && zPattern!=zEscaped && c2!=0 ) استمر;
+    إرجاع SQLITE_NOMATCH;
   }
-  return *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
+  إرجاع *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
 }
 
 /*
 ** The sqlite3_strglob() interface.  Return 0 on a match (like strcmp()) and
 ** non-zero if there is no match.
 */
-int sqlite3_strglob(const char *zGlobPattern, const char *zString){
-  if( zString==0 ){
-    return zGlobPattern!=0;
-  }else if( zGlobPattern==0 ){
-    return 1;
-  }else {
-    return patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
+صحيح sqlite3_strglob(ثابت حرف *zGlobPattern, ثابت حرف *zString){
+  إذا( zString==0 ){
+    إرجاع zGlobPattern!=0;
+  }وإلا إذا( zGlobPattern==0 ){
+    إرجاع 1;
+  }وإلا {
+    إرجاع patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
   }
 }
 
@@ -919,13 +919,13 @@ int sqlite3_strglob(const char *zGlobPattern, const char *zString){
 ** The sqlite3_strlike() interface.  Return 0 on a match and non-zero for
 ** a miss - like strcmp().
 */
-int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
-  if( zStr==0 ){
-    return zPattern!=0;
-  }else if( zPattern==0 ){
-    return 1;
-  }else{
-    return patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
+صحيح sqlite3_strlike(ثابت حرف *zPattern, ثابت حرف *zStr, unsigned صحيح esc){
+  إذا( zStr==0 ){
+    إرجاع zPattern!=0;
+  }وإلا إذا( zPattern==0 ){
+    إرجاع 1;
+  }وإلا{
+    إرجاع patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
   }
 }
 
@@ -935,7 +935,7 @@ int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
 ** only.
 */
 #ifdef SQLITE_TEST
-int sqlite3_like_count = 0;
+صحيح sqlite3_like_تعداد = 0;
 #endif
 
 
@@ -951,66 +951,66 @@ int sqlite3_like_count = 0;
 ** This same function (with a different compareInfo structure) computes
 ** the GLOB operator.
 */
-static void likeFunc(
+ساكن فراغ likeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *zA, *zB;
+  ثابت unsigned حرف *zA, *zB;
   u32 escape;
-  int nPat;
+  صحيح nPat;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  struct compareInfo *pInfo = sqlite3_user_data(context);
-  struct compareInfo backupInfo;
+  بنية compareInfo *pInfo = sqlite3_user_data(context);
+  بنية compareInfo backupInfo;
 
 #ifdef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-  if( sqlite3_value_type(argv[0])==SQLITE_BLOB
-   || sqlite3_value_type(argv[1])==SQLITE_BLOB
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_BLOB
+   || sqlite3_قيمة_type(argv[1])==SQLITE_BLOB
   ){
 #ifdef SQLITE_TEST
-    sqlite3_like_count++;
+    sqlite3_like_تعداد++;
 #endif
     sqlite3_result_int(context, 0);
-    return;
+    إرجاع;
   }
 #endif
 
   /* Limit the length of the LIKE or GLOB pattern to avoid problems
   ** of deep recursion and N*N behavior in patternCompare().
   */
-  nPat = sqlite3_value_bytes(argv[0]);
+  nPat = sqlite3_قيمة_bytes(argv[0]);
   testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] );
   testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]+1 );
-  if( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] ){
+  إذا( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] ){
     sqlite3_result_error(context, "LIKE or GLOB pattern too complex", -1);
-    return;
+    إرجاع;
   }
-  if( argc==3 ){
+  إذا( argc==3 ){
     /* The escape character string must consist of a single UTF-8 character.
     ** Otherwise, return an error.
     */
-    const unsigned char *zEsc = sqlite3_value_text(argv[2]);
-    if( zEsc==0 ) return;
-    if( sqlite3Utf8CharLen((char*)zEsc, -1)!=1 ){
+    ثابت unsigned حرف *zEsc = sqlite3_قيمة_text(argv[2]);
+    إذا( zEsc==0 ) إرجاع;
+    إذا( sqlite3Utf8CharLen((حرف*)zEsc, -1)!=1 ){
       sqlite3_result_error(context,
           "ESCAPE expression must be a single character", -1);
-      return;
+      إرجاع;
     }
     escape = sqlite3Utf8Read(&zEsc);
-    if( escape==pInfo->matchAll || escape==pInfo->matchOne ){
-      memcpy(&backupInfo, pInfo, sizeof(backupInfo));
+    إذا( escape==pInfo->matchAll || escape==pInfo->matchOne ){
+      memcpy(&backupInfo, pInfo, حجم(backupInfo));
       pInfo = &backupInfo;
-      if( escape==pInfo->matchAll ) pInfo->matchAll = 0;
-      if( escape==pInfo->matchOne ) pInfo->matchOne = 0;
+      إذا( escape==pInfo->matchAll ) pInfo->matchAll = 0;
+      إذا( escape==pInfo->matchOne ) pInfo->matchOne = 0;
     }
-  }else{
+  }وإلا{
     escape = pInfo->matchSet;
   }
-  zB = sqlite3_value_text(argv[0]);
-  zA = sqlite3_value_text(argv[1]);
-  if( zA && zB ){
+  zB = sqlite3_قيمة_text(argv[0]);
+  zA = sqlite3_قيمة_text(argv[1]);
+  إذا( zA && zB ){
 #ifdef SQLITE_TEST
-    sqlite3_like_count++;
+    sqlite3_like_تعداد++;
 #endif
     sqlite3_result_int(context,
                       patternCompare(zB, zA, pInfo, escape)==SQLITE_MATCH);
@@ -1022,15 +1022,15 @@ static void likeFunc(
 ** argument if the arguments are different.  The result is NULL if the
 ** arguments are equal to each other.
 */
-static void nullifFunc(
+ساكن فراغ nullifFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  صحيح NotUsed,
+  sqlite3_قيمة **argv
 ){
   CollSeq *pColl = sqlite3GetFuncCollSeq(context);
   UNUSED_PARAMETER(NotUsed);
-  if( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
-    sqlite3_result_value(context, argv[0]);
+  إذا( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
+    sqlite3_result_قيمة(context, argv[0]);
   }
 }
 
@@ -1038,10 +1038,10 @@ static void nullifFunc(
 ** Implementation of the sqlite_version() function.  The result is the version
 ** of the SQLite library that is running.
 */
-static void versionFunc(
+ساكن فراغ versionFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-48699-48617 This function is an SQL wrapper around the
@@ -1054,10 +1054,10 @@ static void versionFunc(
 ** that identifies the particular version of the source code used to build
 ** SQLite.
 */
-static void sourceidFunc(
+ساكن فراغ sourceidFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  صحيح NotUsed,
+  sqlite3_قيمة **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-24470-31136 This function is an SQL wrapper around the
@@ -1070,14 +1070,14 @@ static void sourceidFunc(
 ** sqlite3_log().  The return value is NULL.  The function exists purely for
 ** its side-effects.
 */
-static void errlogFunc(
+ساكن فراغ errlogFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(context);
-  sqlite3_log(sqlite3_value_int(argv[0]), "%s", sqlite3_value_text(argv[1]));
+  sqlite3_log(sqlite3_قيمة_int(argv[0]), "%s", sqlite3_قيمة_text(argv[1]));
 }
 
 /*
@@ -1086,19 +1086,19 @@ static void errlogFunc(
 ** was used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptionusedFunc(
+ساكن فراغ compileoptionusedFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const char *zOptName;
-  assert( argc==1 );
+  ثابت حرف *zOptName;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-39564-36305 The sqlite_compileoption_used() SQL
   ** function is a wrapper around the sqlite3_compileoption_used() C/C++
   ** function.
   */
-  if( (zOptName = (const char*)sqlite3_value_text(argv[0]))!=0 ){
+  إذا( (zOptName = (ثابت حرف*)sqlite3_قيمة_text(argv[0]))!=0 ){
     sqlite3_result_int(context, sqlite3_compileoption_used(zOptName));
   }
 }
@@ -1110,31 +1110,31 @@ static void compileoptionusedFunc(
 ** used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptiongetFunc(
+ساكن فراغ compileoptiongetFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   i64 n;
-  const char *zRes;
-  assert( argc==1 );
+  ثابت حرف *zRes;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-04922-24076 The sqlite_compileoption_get() SQL function
   ** is a wrapper around the sqlite3_compileoption_get() C/C++ function.
   */
-  n = sqlite3_value_int64(argv[0]);
+  n = sqlite3_قيمة_int64(argv[0]);
   /* Use a negative lower bound to assist testing of the
   ** sqlite3_compileoption_get() C-language interface and its handling
   ** of negative inputs.
   **         vvvvv */
-  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((int)n) : 0;
+  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((صحيح)n) : 0;
   sqlite3_result_text(context, zRes, -1, SQLITE_STATIC);
 }
 #endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
 /* Array for converting from half-bytes (nybbles) into ASCII hex
 ** digits. */
-static const char hexdigits[] = {
+ساكن ثابت حرف hexdigits[] = {
   '0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
@@ -1143,34 +1143,34 @@ static const char hexdigits[] = {
 ** Append to pStr text that is the SQL literal representation of the
 ** value contained in pValue.
 */
-void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
+فراغ sqlite3_Quote_قيمة(StrAccum *pStr, sqlite3_قيمة *p_قيمة, صحيح bEscape){
   /* As currently implemented, the string must be initially empty.
   ** we might relax this requirement in the future, but that will
   ** require enhancements to the implementation. */
-  assert( pStr!=0 && pStr->nChar==0 );
+  أكد( pStr!=0 && pStr->nChar==0 );
 
-  switch( sqlite3_value_type(pValue) ){
-    case SQLITE_FLOAT: {
+  بدل( sqlite3_قيمة_type(p_قيمة) ){
+    حالة SQLITE_FLOAT: {
                              /*    ,---  Show infinity as 9.0e+999
                              **    |   
                              **    | ,--- 17 precision guarantees round-trip
                              **    v v                                       */
-      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_قيمة_double(p_قيمة));
+      اكسر;
     }
-    case SQLITE_INTEGER: {
-      sqlite3_str_appendf(pStr, "%lld", sqlite3_value_int64(pValue));
-      break;
+    حالة SQLITE_INTEGER: {
+      sqlite3_str_appendf(pStr, "%lld", sqlite3_قيمة_int64(p_قيمة));
+      اكسر;
     }
-    case SQLITE_BLOB: {
-      char const *zBlob = sqlite3_value_blob(pValue);
-      i64 nBlob = sqlite3_value_bytes(pValue);
-      assert( zBlob==sqlite3_value_blob(pValue) ); /* No encoding change */
+    حالة SQLITE_BLOB: {
+      حرف ثابت *zBlob = sqlite3_قيمة_blob(p_قيمة);
+      i64 nBlob = sqlite3_قيمة_bytes(p_قيمة);
+      أكد( zBlob==sqlite3_قيمة_blob(p_قيمة) ); /* No encoding change */
       sqlite3StrAccumEnlarge(pStr, nBlob*2 + 4);
-      if( pStr->accError==0 ){
-        char *zText = pStr->zText;
-        int i;
-        for(i=0; i<nBlob; i++){
+      إذا( pStr->accError==0 ){
+        حرف *zText = pStr->zText;
+        صحيح i;
+        لكل(i=0; i<nBlob; i++){
           zText[(i*2)+2] = hexdigits[(zBlob[i]>>4)&0x0F];
           zText[(i*2)+3] = hexdigits[(zBlob[i])&0x0F];
         }
@@ -1180,17 +1180,17 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
         zText[1] = '\'';
         pStr->nChar = nBlob*2 + 3;
       }
-      break;
+      اكسر;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *zArg = sqlite3_value_text(pValue);
+    حالة SQLITE_TEXT: {
+      ثابت unsigned حرف *zArg = sqlite3_قيمة_text(p_قيمة);
       sqlite3_str_appendf(pStr, bEscape ? "%#Q" : "%Q", zArg);
-      break;
+      اكسر;
     }
-    default: {
-      assert( sqlite3_value_type(pValue)==SQLITE_NULL );
+    افتراضي: {
+      أكد( sqlite3_قيمة_type(p_قيمة)==SQLITE_NULL );
       sqlite3_str_append(pStr, "NULL", 4);
-      break;
+      اكسر;
     }
   }
 }
@@ -1200,15 +1200,15 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
 ** a decoding of those digits into *pVal.  Or return false if any
 ** one of the first N characters in z[] is not a hexadecimal digit.
 */
-static int isNHex(const char *z, int N, u32 *pVal){
-  int i;
+ساكن صحيح isNHex(ثابت حرف *z, صحيح N, u32 *pVal){
+  صحيح i;
   u32 v = 0;
-  for(i=0; i<N; i++){
-    if( !sqlite3Isxdigit(z[i]) ) return 0;
+  لكل(i=0; i<N; i++){
+    إذا( !sqlite3Isxdigit(z[i]) ) إرجاع 0;
     v = (v<<4) + sqlite3HexToInt(z[i]);
   }
   *pVal = v;
-  return 1;
+  إرجاع 1;
 }
 
 /*
@@ -1224,73 +1224,73 @@ static int isNHex(const char *z, int N, u32 *pVal){
 **    or \UXXXXXXXX (8 hexadecimal digits). To specify a backslash,
 **    write two backslashes. All other characters are taken literally.
 */
-static void unistrFunc(
+ساكن فراغ unistrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  char *zOut;
-  const char *zIn;
-  int nIn;
-  int i, j, n;
+  حرف *zOut;
+  ثابت حرف *zIn;
+  صحيح nIn;
+  صحيح i, j, n;
   u32 v;
 
-  assert( argc==1 );
+  أكد( argc==1 );
   UNUSED_PARAMETER( argc );
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = sqlite3_value_bytes(argv[0]);
+  zIn = (ثابت حرف*)sqlite3_قيمة_text(argv[0]);
+  إذا( zIn==0 ) إرجاع;
+  nIn = sqlite3_قيمة_bytes(argv[0]);
   zOut = sqlite3_malloc64(nIn+1);
-  if( zOut==0 ){
+  إذا( zOut==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    إرجاع;
   }
   i = j = 0;
-  while( i<nIn ){
-    const char *z = strchr(&zIn[i],'\\');
-    if( z==0 ){
+  بينما( i<nIn ){
+    ثابت حرف *z = strchr(&zIn[i],'\\');
+    إذا( z==0 ){
       n = nIn - i;
       memmove(&zOut[j], &zIn[i], n);
       j += n;
-      break;
+      اكسر;
     }
     n = z - &zIn[i];
-    if( n>0 ){
+    إذا( n>0 ){
       memmove(&zOut[j], &zIn[i], n);
       j += n;
       i += n;
     }
-    if( zIn[i+1]=='\\' ){
+    إذا( zIn[i+1]=='\\' ){
       i += 2;
       zOut[j++] = '\\';
-    }else if( sqlite3Isxdigit(zIn[i+1]) ){
-      if( !isNHex(&zIn[i+1], 4, &v) ) goto unistr_error;
+    }وإلا إذا( sqlite3Isxdigit(zIn[i+1]) ){
+      إذا( !isNHex(&zIn[i+1], 4, &v) ) اذهب unistr_error;
       i += 5;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='+' ){
-      if( !isNHex(&zIn[i+2], 6, &v) ) goto unistr_error;
+    }وإلا إذا( zIn[i+1]=='+' ){
+      إذا( !isNHex(&zIn[i+2], 6, &v) ) اذهب unistr_error;
       i += 8;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='u' ){
-      if( !isNHex(&zIn[i+2], 4, &v) ) goto unistr_error;
+    }وإلا إذا( zIn[i+1]=='u' ){
+      إذا( !isNHex(&zIn[i+2], 4, &v) ) اذهب unistr_error;
       i += 6;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='U' ){
-      if( !isNHex(&zIn[i+2], 8, &v) ) goto unistr_error;
+    }وإلا إذا( zIn[i+1]=='U' ){
+      إذا( !isNHex(&zIn[i+2], 8, &v) ) اذهب unistr_error;
       i += 10;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else{
-      goto unistr_error;
+    }وإلا{
+      اذهب unistr_error;
     }
   }
   zOut[j] = 0;
   sqlite3_result_text64(context, zOut, j, sqlite3_free, SQLITE_UTF8_ZT);
-  return;
+  إرجاع;
 
 unistr_error:
   sqlite3_free(zOut);
   sqlite3_result_error(context, "invalid Unicode escape", -1);
-  return;
+  إرجاع;
 }
 
 
@@ -1308,13 +1308,13 @@ unistr_error:
 ** implemented instead.  The difference is that UNISTR_QUOTE() uses the
 ** UNISTR() function to escape control characters.
 */
-static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+ساكن فراغ quoteFunc(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
   sqlite3_str str;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( argc==1 );
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
   sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  sqlite3QuoteValue(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_data(context)));
+  sqlite3_Quote_قيمة(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_data(context)));
   sqlite3_result_str(context, &str, SQLITE_XFER);
 }
 
@@ -1322,14 +1322,14 @@ static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** The unicode() function.  Return the integer unicode code-point value
 ** for the first character of the input string.
 */
-static void unicodeFunc(
+ساكن فراغ unicodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *z = sqlite3_value_text(argv[0]);
-  (void)argc;
-  if( z && z[0] ) sqlite3_result_int(context, sqlite3Utf8Read(&z));
+  ثابت unsigned حرف *z = sqlite3_قيمة_text(argv[0]);
+  (فراغ)argc;
+  إذا( z && z[0] ) sqlite3_result_int(context, sqlite3Utf8Read(&z));
 }
 
 /*
@@ -1337,34 +1337,34 @@ static void unicodeFunc(
 ** an integer.  It constructs a string where each character of the string
 ** is the unicode character for the corresponding integer argument.
 */
-static void charFunc(
+ساكن فراغ charFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  unsigned char *z, *zOut;
-  int i;
+  unsigned حرف *z, *zOut;
+  صحيح i;
   zOut = z = sqlite3_malloc64( argc*4+1 );
-  if( z==0 ){
+  إذا( z==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    إرجاع;
   }
-  for(i=0; i<argc; i++){
+  لكل(i=0; i<argc; i++){
     sqlite3_int64 x;
     unsigned c;
-    x = sqlite3_value_int64(argv[i]);
-    if( x<0 || x>0x10ffff ) x = 0xfffd;
+    x = sqlite3_قيمة_int64(argv[i]);
+    إذا( x<0 || x>0x10ffff ) x = 0xfffd;
     c = (unsigned)(x & 0x1fffff);
-    if( c<0x00080 ){
+    إذا( c<0x00080 ){
       *zOut++ = (u8)(c&0xFF);
-    }else if( c<0x00800 ){
+    }وإلا إذا( c<0x00800 ){
       *zOut++ = 0xC0 + (u8)((c>>6)&0x1F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else if( c<0x10000 ){
+    }وإلا إذا( c<0x10000 ){
       *zOut++ = 0xE0 + (u8)((c>>12)&0x0F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else{
+    }وإلا{
       *zOut++ = 0xF0 + (u8)((c>>18) & 0x07);
       *zOut++ = 0x80 + (u8)((c>>12) & 0x3F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
@@ -1372,30 +1372,30 @@ static void charFunc(
     }                                                    \
   }
   *zOut = 0;
-  sqlite3_result_text64(context, (char*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
+  sqlite3_result_text64(context, (حرف*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
 }
 
 /*
 ** The hex() function.  Interpret the argument as a blob.  Return
 ** a hexadecimal rendering as text.
 */
-static void hexFunc(
+ساكن فراغ hexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int i, n;
-  const unsigned char *pBlob;
-  char *zHex, *z;
-  assert( argc==1 );
+  صحيح i, n;
+  ثابت unsigned حرف *pBlob;
+  حرف *zHex, *z;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  pBlob = sqlite3_value_blob(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
-  assert( pBlob==sqlite3_value_blob(argv[0]) );  /* No encoding change */
+  pBlob = sqlite3_قيمة_blob(argv[0]);
+  n = sqlite3_قيمة_bytes(argv[0]);
+  أكد( pBlob==sqlite3_قيمة_blob(argv[0]) );  /* No encoding change */
   z = zHex = contextMalloc(context, ((i64)n)*2 + 1);
-  if( zHex ){
-    for(i=0; i<n; i++, pBlob++){
-      unsigned char c = *pBlob;
+  إذا( zHex ){
+    لكل(i=0; i<n; i++, pBlob++){
+      unsigned حرف c = *pBlob;
       *(z++) = hexdigits[(c>>4)&0xf];
       *(z++) = hexdigits[c&0xf];
     }
@@ -1409,14 +1409,14 @@ static void hexFunc(
 ** Buffer zStr contains nStr bytes of utf-8 encoded text. Return 1 if zStr
 ** contains character ch, or 0 if it does not.
 */
-static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
-  const u8 *zEnd = &zStr[nStr];
-  const u8 *z = zStr;
-  while( z<zEnd ){
+ساكن صحيح strContainsChar(ثابت u8 *zStr, صحيح nStr, u32 ch){
+  ثابت u8 *zEnd = &zStr[nStr];
+  ثابت u8 *z = zStr;
+  بينما( z<zEnd ){
     u32 tst = Utf8Read(z);
-    if( tst==ch ) return 1;
+    إذا( tst==ch ) إرجاع 1;
   }
-  return 0;
+  إرجاع 0;
 }
 
 /*
@@ -1441,76 +1441,76 @@ static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
 **     unhex('AB CD', ' ') IS x'ABCD'
 **     unhex('A BCD', ' ') IS NULL
 */
-static void unhexFunc(
+ساكن فراغ unhexFunc(
   sqlite3_context *pCtx,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const u8 *zPass = (const u8*)"";
-  int nPass = 0;
-  const u8 *zHex = sqlite3_value_text(argv[0]);
-  int nHex = sqlite3_value_bytes(argv[0]);
+  ثابت u8 *zPass = (ثابت u8*)"";
+  صحيح nPass = 0;
+  ثابت u8 *zHex = sqlite3_قيمة_text(argv[0]);
+  صحيح nHex = sqlite3_قيمة_bytes(argv[0]);
 #ifdef SQLITE_DEBUG
-  const u8 *zEnd = zHex ? &zHex[nHex] : 0;
+  ثابت u8 *zEnd = zHex ? &zHex[nHex] : 0;
 #endif
   u8 *pBlob = 0;
   u8 *p = 0;
 
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    zPass = sqlite3_value_text(argv[1]);
-    nPass = sqlite3_value_bytes(argv[1]);
+  أكد( argc==1 || argc==2 );
+  إذا( argc==2 ){
+    zPass = sqlite3_قيمة_text(argv[1]);
+    nPass = sqlite3_قيمة_bytes(argv[1]);
   }
-  if( !zHex || !zPass ) return;
+  إذا( !zHex || !zPass ) إرجاع;
 
   p = pBlob = contextMalloc(pCtx, (nHex/2)+1);
-  if( pBlob ){
+  إذا( pBlob ){
     u8 c;                         /* Most significant digit of next byte */
     u8 d;                         /* Least significant digit of next byte */
 
-    while( (c = *zHex)!=0x00 ){
-      while( !sqlite3Isxdigit(c) ){
+    بينما( (c = *zHex)!=0x00 ){
+      بينما( !sqlite3Isxdigit(c) ){
         u32 ch = Utf8Read(zHex);
-        assert( zHex<=zEnd );
-        if( !strContainsChar(zPass, nPass, ch) ) goto unhex_null;
+        أكد( zHex<=zEnd );
+        إذا( !strContainsChar(zPass, nPass, ch) ) اذهب unhex_null;
         c = *zHex;
-        if( c==0x00 ) goto unhex_done;
+        إذا( c==0x00 ) اذهب unhex_done;
       }
       zHex++;
-      assert( *zEnd==0x00 );
-      assert( zHex<=zEnd );
+      أكد( *zEnd==0x00 );
+      أكد( zHex<=zEnd );
       d = *(zHex++);
-      if( !sqlite3Isxdigit(d) ) goto unhex_null;
+      إذا( !sqlite3Isxdigit(d) ) اذهب unhex_null;
       *(p++) = (sqlite3HexToInt(c)<<4) | sqlite3HexToInt(d);
     }
   }
 
  unhex_done:
   sqlite3_result_blob(pCtx, pBlob, (p - pBlob), sqlite3_free);
-  return;
+  إرجاع;
 
  unhex_null:
   sqlite3_free(pBlob);
-  return;
+  إرجاع;
 }
 
 
 /*
 ** The zeroblob(N) function returns a zero-filled blob of size N bytes.
 */
-static void zeroblobFunc(
+ساكن فراغ zeroblobFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   i64 n;
-  int rc;
-  assert( argc==1 );
+  صحيح rc;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<0 ) n = 0;
+  n = sqlite3_قيمة_int64(argv[0]);
+  إذا( n<0 ) n = 0;
   rc = sqlite3_result_zeroblob64(context, n); /* IMP: R-00293-64994 */
-  if( rc ){
+  إذا( rc ){
     sqlite3_result_error_code(context, rc);
   }
 }
@@ -1521,79 +1521,79 @@ static void zeroblobFunc(
 ** from A by replacing every occurrence of B with C.  The match
 ** must be exact.  Collating sequences are not used.
 */
-static void replaceFunc(
+ساكن فراغ replaceFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *zStr;        /* The input string A */
-  const unsigned char *zPattern;    /* The pattern string B */
-  const unsigned char *zRep;        /* The replacement string C */
-  unsigned char *zOut;              /* The output */
-  int nStr;                /* Size of zStr */
-  int nPattern;            /* Size of zPattern */
-  int nRep;                /* Size of zRep */
+  ثابت unsigned حرف *zStr;        /* The input string A */
+  ثابت unsigned حرف *zPattern;    /* The pattern string B */
+  ثابت unsigned حرف *zRep;        /* The replacement string C */
+  unsigned حرف *zOut;              /* The output */
+  صحيح nStr;                /* Size of zStr */
+  صحيح nPattern;            /* Size of zPattern */
+  صحيح nRep;                /* Size of zRep */
   i64 nOut;                /* Maximum size of zOut */
-  int loopLimit;           /* Last zStr[] that might match zPattern[] */
+  صحيح loopLimit;           /* Last zStr[] that might match zPattern[] */
   i64 i, j;                /* Loop counters */
   unsigned cntExpand;      /* Number zOut expansions */
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  assert( argc==3 );
+  أكد( argc==3 );
   UNUSED_PARAMETER(argc);
-  zStr = sqlite3_value_text(argv[0]);
-  if( zStr==0 ) return;
-  nStr = sqlite3_value_bytes(argv[0]);
-  assert( zStr==sqlite3_value_text(argv[0]) );  /* No encoding change */
-  zPattern = sqlite3_value_text(argv[1]);
-  if( zPattern==0 ){
-    assert( sqlite3_value_type(argv[1])==SQLITE_NULL
+  zStr = sqlite3_قيمة_text(argv[0]);
+  إذا( zStr==0 ) إرجاع;
+  nStr = sqlite3_قيمة_bytes(argv[0]);
+  أكد( zStr==sqlite3_قيمة_text(argv[0]) );  /* No encoding change */
+  zPattern = sqlite3_قيمة_text(argv[1]);
+  إذا( zPattern==0 ){
+    أكد( sqlite3_قيمة_type(argv[1])==SQLITE_NULL
             || sqlite3_context_db_handle(context)->mallocFailed );
-    return;
+    إرجاع;
   }
-  if( zPattern[0]==0 ){
-    assert( sqlite3_value_type(argv[1])!=SQLITE_NULL );
-    sqlite3_result_text(context, (const char*)zStr, nStr, SQLITE_TRANSIENT);
-    return;
+  إذا( zPattern[0]==0 ){
+    أكد( sqlite3_قيمة_type(argv[1])!=SQLITE_NULL );
+    sqlite3_result_text(context, (ثابت حرف*)zStr, nStr, SQLITE_TRANSIENT);
+    إرجاع;
   }
-  nPattern = sqlite3_value_bytes(argv[1]);
-  assert( zPattern==sqlite3_value_text(argv[1]) );  /* No encoding change */
-  zRep = sqlite3_value_text(argv[2]);
-  if( zRep==0 ) return;
-  nRep = sqlite3_value_bytes(argv[2]);
-  assert( zRep==sqlite3_value_text(argv[2]) );
+  nPattern = sqlite3_قيمة_bytes(argv[1]);
+  أكد( zPattern==sqlite3_قيمة_text(argv[1]) );  /* No encoding change */
+  zRep = sqlite3_قيمة_text(argv[2]);
+  إذا( zRep==0 ) إرجاع;
+  nRep = sqlite3_قيمة_bytes(argv[2]);
+  أكد( zRep==sqlite3_قيمة_text(argv[2]) );
   nOut = nStr + 1;
-  assert( nOut<SQLITE_MAX_LENGTH );
+  أكد( nOut<SQLITE_MAX_LENGTH );
   zOut = contextMalloc(context, nOut);
-  if( zOut==0 ){
-    return;
+  إذا( zOut==0 ){
+    إرجاع;
   }
   loopLimit = nStr - nPattern; 
   cntExpand = 0;
-  for(i=j=0; i<=loopLimit; i++){
-    if( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
+  لكل(i=j=0; i<=loopLimit; i++){
+    إذا( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
       zOut[j++] = zStr[i];
-    }else{
-      if( nRep>nPattern ){
+    }وإلا{
+      إذا( nRep>nPattern ){
         nOut += nRep - nPattern;
         testcase( nOut-1==db->aLimit[SQLITE_LIMIT_LENGTH] );
         testcase( nOut-2==db->aLimit[SQLITE_LIMIT_LENGTH] );
-        if( nOut-1>db->aLimit[SQLITE_LIMIT_LENGTH] ){
+        إذا( nOut-1>db->aLimit[SQLITE_LIMIT_LENGTH] ){
           sqlite3_result_error_toobig(context);
           sqlite3_free(zOut);
-          return;
+          إرجاع;
         }
         cntExpand++;
-        if( (cntExpand&(cntExpand-1))==0 ){
+        إذا( (cntExpand&(cntExpand-1))==0 ){
           /* Grow the size of the output buffer only on substitutions
           ** whose index is a power of two: 1, 2, 4, 8, 16, 32, ... */
           u8 *zOld;
           zOld = zOut;
-          zOut = sqlite3Realloc(zOut, (int)nOut + (nOut - nStr - 1));
-          if( zOut==0 ){
+          zOut = sqlite3Realloc(zOut, (صحيح)nOut + (nOut - nStr - 1));
+          إذا( zOut==0 ){
             sqlite3_result_error_nomem(context);
             sqlite3_free(zOld);
-            return;
+            إرجاع;
           }
         }
       }
@@ -1602,97 +1602,97 @@ static void replaceFunc(
       i += nPattern-1;
     }
   }
-  assert( j+nStr-i+1<=nOut );
+  أكد( j+nStr-i+1<=nOut );
   memcpy(&zOut[j], &zStr[i], nStr-i);
   j += nStr - i;
-  assert( j<=nOut );
+  أكد( j<=nOut );
   zOut[j] = 0;
-  sqlite3_result_text(context, (char*)zOut, j, sqlite3_free);
+  sqlite3_result_text(context, (حرف*)zOut, j, sqlite3_free);
 }
 
 /*
 ** Implementation of the TRIM(), LTRIM(), and RTRIM() functions.
 ** The userdata is 0x1 for left trim, 0x2 for right trim, 0x3 for both.
 */
-static void trimFunc(
+ساكن فراغ trimFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const unsigned char *zIn;         /* Input string */
-  const unsigned char *zCharSet;    /* Set of characters to trim */
-  unsigned int nIn;                 /* Number of bytes in input */
-  int flags;                        /* 1: trimleft  2: trimright  3: trim */
-  int i;                            /* Loop counter */
-  unsigned int *aLen = 0;           /* Length of each character in zCharSet */
-  unsigned char **azChar = 0;       /* Individual characters in zCharSet */
-  int nChar;                        /* Number of characters in zCharSet */
+  ثابت unsigned حرف *zIn;         /* Input string */
+  ثابت unsigned حرف *zCharSet;    /* Set of characters to trim */
+  unsigned صحيح nIn;                 /* Number of bytes in input */
+  صحيح flags;                        /* 1: trimleft  2: trimright  3: trim */
+  صحيح i;                            /* Loop counter */
+  unsigned صحيح *aLen = 0;           /* Length of each character in zCharSet */
+  unsigned حرف **azChar = 0;       /* Individual characters in zCharSet */
+  صحيح nChar;                        /* Number of characters in zCharSet */
 
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
-    return;
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_NULL ){
+    إرجاع;
   }
-  zIn = sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = (unsigned)sqlite3_value_bytes(argv[0]);
-  assert( zIn==sqlite3_value_text(argv[0]) );
-  if( argc==1 ){
-    static const unsigned lenOne[] = { 1 };
-    static unsigned char * const azOne[] = { (u8*)" " };
+  zIn = sqlite3_قيمة_text(argv[0]);
+  إذا( zIn==0 ) إرجاع;
+  nIn = (unsigned)sqlite3_قيمة_bytes(argv[0]);
+  أكد( zIn==sqlite3_قيمة_text(argv[0]) );
+  إذا( argc==1 ){
+    ساكن ثابت unsigned lenOne[] = { 1 };
+    ساكن unsigned حرف * ثابت azOne[] = { (u8*)" " };
     nChar = 1;
     aLen = (unsigned*)lenOne;
-    azChar = (unsigned char **)azOne;
+    azChar = (unsigned حرف **)azOne;
     zCharSet = 0;
-  }else if( (zCharSet = sqlite3_value_text(argv[1]))==0 ){
-    return;
-  }else{
-    const unsigned char *z;
-    for(z=zCharSet, nChar=0; *z; nChar++){
+  }وإلا إذا( (zCharSet = sqlite3_قيمة_text(argv[1]))==0 ){
+    إرجاع;
+  }وإلا{
+    ثابت unsigned حرف *z;
+    لكل(z=zCharSet, nChar=0; *z; nChar++){
       SQLITE_SKIP_UTF8(z);
     }
-    if( nChar>0 ){
+    إذا( nChar>0 ){
       azChar = contextMalloc(context,
-                     ((i64)nChar)*(sizeof(char*)+sizeof(unsigned)));
-      if( azChar==0 ){
-        return;
+                     ((i64)nChar)*(حجم(حرف*)+حجم(unsigned)));
+      إذا( azChar==0 ){
+        إرجاع;
       }
       aLen = (unsigned*)&azChar[nChar];
-      for(z=zCharSet, nChar=0; *z; nChar++){
-        azChar[nChar] = (unsigned char *)z;
+      لكل(z=zCharSet, nChar=0; *z; nChar++){
+        azChar[nChar] = (unsigned حرف *)z;
         SQLITE_SKIP_UTF8(z);
         aLen[nChar] = (unsigned)(z - azChar[nChar]);
       }
     }
   }
-  if( nChar>0 ){
+  إذا( nChar>0 ){
     flags = SQLITE_PTR_TO_INT(sqlite3_user_data(context));
-    if( flags & 1 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+    إذا( flags & 1 ){
+      بينما( nIn>0 ){
+        unsigned صحيح len = 0;
+        لكل(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(zIn, azChar[i], len)==0 ) break;
+          إذا( len<=nIn && memcmp(zIn, azChar[i], len)==0 ) اكسر;
         }
-        if( i>=nChar ) break;
+        إذا( i>=nChar ) اكسر;
         zIn += len;
         nIn -= len;
       }
     }
-    if( flags & 2 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+    إذا( flags & 2 ){
+      بينما( nIn>0 ){
+        unsigned صحيح len = 0;
+        لكل(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(&zIn[nIn-len],azChar[i],len)==0 ) break;
+          إذا( len<=nIn && memcmp(&zIn[nIn-len],azChar[i],len)==0 ) اكسر;
         }
-        if( i>=nChar ) break;
+        إذا( i>=nChar ) اكسر;
         nIn -= len;
       }
     }
-    if( zCharSet ){
+    إذا( zCharSet ){
       sqlite3_free(azChar);
     }
   }
-  sqlite3_result_text(context, (char*)zIn, nIn, SQLITE_TRANSIENT);
+  sqlite3_result_text(context, (حرف*)zIn, nIn, SQLITE_TRANSIENT);
 }
 
 /* The core implementation of the CONCAT(...) and CONCAT_WS(SEP,...)
@@ -1701,33 +1701,33 @@ static void trimFunc(
 ** Return a string value that is the concatenation of all non-null
 ** entries in argv[].  Use zSep as the separator.
 */
-static void concatFuncCore(
+ساكن فراغ concatFuncCore(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv,
-  int nSep,
-  const char *zSep
+  صحيح argc,
+  sqlite3_قيمة **argv,
+  صحيح nSep,
+  ثابت حرف *zSep
 ){
   i64 j, n = 0;
-  int i;
-  int bNotNull = 0;   /* True after at least NOT NULL argument seen */
-  char *z;
-  for(i=0; i<argc; i++){
-    n += sqlite3_value_bytes(argv[i]);
+  صحيح i;
+  صحيح bNotNull = 0;   /* True after at least NOT NULL argument seen */
+  حرف *z;
+  لكل(i=0; i<argc; i++){
+    n += sqlite3_قيمة_bytes(argv[i]);
   }
   n += (argc-1)*(i64)nSep;
   z = sqlite3_malloc64(n+1);
-  if( z==0 ){
+  إذا( z==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    إرجاع;
   }
   j = 0;
-  for(i=0; i<argc; i++){
-    if( sqlite3_value_type(argv[i])!=SQLITE_NULL ){
-      int k = sqlite3_value_bytes(argv[i]);
-      const char *v = (const char*)sqlite3_value_text(argv[i]);
-      if( v!=0 ){
-        if( bNotNull && nSep>0 ){
+  لكل(i=0; i<argc; i++){
+    إذا( sqlite3_قيمة_type(argv[i])!=SQLITE_NULL ){
+      صحيح k = sqlite3_قيمة_bytes(argv[i]);
+      ثابت حرف *v = (ثابت حرف*)sqlite3_قيمة_text(argv[i]);
+      إذا( v!=0 ){
+        إذا( bNotNull && nSep>0 ){
           memcpy(&z[j], zSep, nSep);
           j += nSep;
         }
@@ -1738,7 +1738,7 @@ static void concatFuncCore(
     }
   }
   z[j] = 0;
-  assert( j<=n );
+  أكد( j<=n );
   sqlite3_result_text64(context, z, j, sqlite3_free, SQLITE_UTF8_ZT);
 }
 
@@ -1746,10 +1746,10 @@ static void concatFuncCore(
 ** The CONCAT(...) function.  Generate a string result that is the
 ** concatentation of all non-null arguments.
 */
-static void concatFunc(
+ساكن فراغ concatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   concatFuncCore(context, argc, argv, 0, "");
 }
@@ -1761,14 +1761,14 @@ static void concatFunc(
 ** argument.  Use the first argument (which must be non-NULL) as the
 ** separator.
 */
-static void concatwsFunc(
+ساكن فراغ concatwsFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int nSep = sqlite3_value_bytes(argv[0]);
-  const char *zSep = (const char*)sqlite3_value_text(argv[0]);
-  if( zSep==0 ) return;
+  صحيح nSep = sqlite3_قيمة_bytes(argv[0]);
+  ثابت حرف *zSep = (ثابت حرف*)sqlite3_قيمة_text(argv[0]);
+  إذا( zSep==0 ) إرجاع;
   concatFuncCore(context, argc-1, argv+1, nSep, zSep);
 }
 
@@ -1783,15 +1783,15 @@ static void concatwsFunc(
 ** involving application-defined functions to be examined in a generic
 ** sqlite3 shell.
 */
-static void unknownFunc(
+ساكن فراغ unknownFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   /* no-op */
-  (void)context;
-  (void)argc;
-  (void)argv;
+  (فراغ)context;
+  (فراغ)argc;
+  (فراغ)argv;
 }
 #endif /*SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION*/
 
@@ -1807,15 +1807,15 @@ static void unknownFunc(
 ** IMP: R-59782-00072 The soundex(X) function returns a string that is the
 ** soundex encoding of the string X.
 */
-static void soundexFunc(
+ساكن فراغ soundexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  char zResult[8];
-  const u8 *zIn;
-  int i, j;
-  static const unsigned char iCode[] = {
+  حرف zResult[8];
+  ثابت u8 *zIn;
+  صحيح i, j;
+  ساكن ثابت unsigned حرف iCode[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1825,30 +1825,30 @@ static void soundexFunc(
     0, 0, 1, 2, 3, 0, 1, 2, 0, 0, 2, 2, 4, 5, 5, 0,
     1, 2, 6, 2, 3, 0, 1, 0, 2, 0, 2, 0, 0, 0, 0, 0,
   };
-  assert( argc==1 );
-  zIn = (u8*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) zIn = (u8*)"";
-  for(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
-  if( zIn[i] ){
+  أكد( argc==1 );
+  zIn = (u8*)sqlite3_قيمة_text(argv[0]);
+  إذا( zIn==0 ) zIn = (u8*)"";
+  لكل(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
+  إذا( zIn[i] ){
     u8 prevcode = iCode[zIn[i]&0x7f];
     zResult[0] = sqlite3Toupper(zIn[i]);
-    for(j=1; j<4 && zIn[i]; i++){
-      int code = iCode[zIn[i]&0x7f];
-      if( code>0 ){
-        if( code!=prevcode ){
+    لكل(j=1; j<4 && zIn[i]; i++){
+      صحيح code = iCode[zIn[i]&0x7f];
+      إذا( code>0 ){
+        إذا( code!=prevcode ){
           prevcode = code;
           zResult[j++] = code + '0';
         }
-      }else{
+      }وإلا{
         prevcode = 0;
       }
     }
-    while( j<4 ){
+    بينما( j<4 ){
       zResult[j++] = '0';
     }
     zResult[j] = 0;
     sqlite3_result_text(context, zResult, 4, SQLITE_TRANSIENT);
-  }else{
+  }وإلا{
     /* IMP: R-64894-50321 The string "?000" is returned if the argument
     ** is NULL or contains no ASCII alphabetic characters. */
     sqlite3_result_text(context, "?000", 4, SQLITE_STATIC);
@@ -1856,15 +1856,15 @@ static void soundexFunc(
 }
 #endif /* SQLITE_SOUNDEX */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
 /*
 ** This SQL function just invokes sqlite3OomFault() and then returns
 ** NULL.  Used for testing only.
 */
-static void oomFunc(
+ساكن فراغ oomFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   sqlite3OomFault(db);
@@ -1875,28 +1875,28 @@ static void oomFunc(
 /*
 ** A function that loads a shared-library extension then returns NULL.
 */
-static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
-  const char *zFile = (const char *)sqlite3_value_text(argv[0]);
-  const char *zProc;
+ساكن فراغ loadExt(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
+  ثابت حرف *zFile = (ثابت حرف *)sqlite3_قيمة_text(argv[0]);
+  ثابت حرف *zProc;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char *zErrMsg = 0;
+  حرف *z_Err_رسالة = 0;
 
   /* Disallow the load_extension() SQL function unless the SQLITE_LoadExtFunc
   ** flag is set.  See the sqlite3_enable_load_extension() API.
   */
-  if( (db->flags & SQLITE_LoadExtFunc)==0 ){
+  إذا( (db->flags & SQLITE_LoadExtFunc)==0 ){
     sqlite3_result_error(context, "not authorized", -1);
-    return;
+    إرجاع;
   }
 
-  if( argc==2 ){
-    zProc = (const char *)sqlite3_value_text(argv[1]);
-  }else{
+  إذا( argc==2 ){
+    zProc = (ثابت حرف *)sqlite3_قيمة_text(argv[1]);
+  }وإلا{
     zProc = 0;
   }
-  if( zFile && sqlite3_load_extension(db, zFile, zProc, &zErrMsg) ){
-    sqlite3_result_error(context, zErrMsg, -1);
-    sqlite3_free(zErrMsg);
+  إذا( zFile && sqlite3_load_extension(db, zFile, zProc, &z_Err_رسالة) ){
+    sqlite3_result_error(context, z_Err_رسالة, -1);
+    sqlite3_free(z_Err_رسالة);
   }
 }
 #endif
@@ -1906,10 +1906,10 @@ static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** An instance of the following structure holds the context of a
 ** sum() or avg() aggregate computation.
 */
-typedef struct SumCtx SumCtx;
-struct SumCtx {
-  double rSum;      /* Running sum as as a double */
-  double rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
+تعريفنوع بنية SumCtx SumCtx;
+بنية SumCtx {
+  مزدوج rSum;      /* Running sum as as a double */
+  مزدوج rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
   i64 iSum;         /* Running sum as a signed integer */
   i64 cnt;          /* Number of elements summed */
   u8 approx;        /* True if any non-integer value was input to the sum */
@@ -1924,15 +1924,15 @@ struct SumCtx {
 ** Variables are marked "volatile" to defeat c89 x86 floating point
 ** optimizations can mess up this algorithm.
 */
-static void kahanBabuskaNeumaierStep(
-  volatile SumCtx *pSum,
-  volatile double r
+ساكن فراغ kahanBabuskaNeumaierStep(
+  متطاير SumCtx *pSum,
+  متطاير مزدوج r
 ){
-  volatile double s = pSum->rSum;
-  volatile double t = s + r;
-  if( fabs(s) > fabs(r) ){
+  متطاير مزدوج s = pSum->rSum;
+  متطاير مزدوج t = s + r;
+  إذا( fabs(s) > fabs(r) ){
     pSum->rErr += (s - t) + r;
-  }else{
+  }وإلا{
     pSum->rErr += (r - t) + s;
   }
   pSum->rSum = t;
@@ -1941,31 +1941,31 @@ static void kahanBabuskaNeumaierStep(
 /*
 ** Add a (possibly large) integer to the running sum.
 */
-static void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+ساكن فراغ kahanBabuskaNeumaierStepInt64(متطاير SumCtx *pSum, i64 iVal){
+  إذا( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iBig, iSm;
     iSm = iVal % 16384;
     iBig = iVal - iSm;
     kahanBabuskaNeumaierStep(pSum, iBig);
     kahanBabuskaNeumaierStep(pSum, iSm);
-  }else{
-    kahanBabuskaNeumaierStep(pSum, (double)iVal);
+  }وإلا{
+    kahanBabuskaNeumaierStep(pSum, (مزدوج)iVal);
   }
 }
 
 /*
 ** Initialize the Kahan-Babaska-Neumaier sum from a 64-bit integer
 */
-static void kahanBabuskaNeumaierInit(
-  volatile SumCtx *p,
+ساكن فراغ kahanBabuskaNeumaierInit(
+  متطاير SumCtx *p,
   i64 iVal
 ){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+  إذا( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iSm = iVal % 16384;
-    p->rSum = (double)(iVal - iSm);
-    p->rErr = (double)iSm;
-  }else{
-    p->rSum = (double)iVal;
+    p->rSum = (مزدوج)(iVal - iSm);
+    p->rErr = (مزدوج)iSm;
+  }وإلا{
+    p->rSum = (مزدوج)iVal;
     p->rErr = 0.0;
   }
 }
@@ -1980,121 +1980,121 @@ static void kahanBabuskaNeumaierInit(
 ** value.  TOTAL never fails, but SUM might throw an exception if
 ** it overflows an integer.
 */
-static void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
+ساكن فراغ sumStep(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
   SumCtx *p;
-  int type;
-  assert( argc==1 );
+  صحيح type;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
-  if( p && type!=SQLITE_NULL ){
+  p = sqlite3_aggregate_context(context, حجم(*p));
+  type = sqlite3_قيمة_numeric_type(argv[0]);
+  إذا( p && type!=SQLITE_NULL ){
     p->cnt++;
-    if( p->approx==0 ){
-      if( type!=SQLITE_INTEGER ){
+    إذا( p->approx==0 ){
+      إذا( type!=SQLITE_INTEGER ){
         kahanBabuskaNeumaierInit(p, p->iSum);
         p->approx = 1;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
-      }else{
+        kahanBabuskaNeumaierStep(p, sqlite3_قيمة_double(argv[0]));
+      }وإلا{
         i64 x = p->iSum;
-        if( sqlite3AddInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
+        إذا( sqlite3AddInt64(&x, sqlite3_قيمة_int64(argv[0]))==0 ){
           p->iSum = x;
-        }else{
+        }وإلا{
           p->ovrfl = 1;
           kahanBabuskaNeumaierInit(p, p->iSum);
           p->approx = 1;
-          kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
+          kahanBabuskaNeumaierStepInt64(p, sqlite3_قيمة_int64(argv[0]));
         }
       }
-    }else{
-      if( type==SQLITE_INTEGER ){
-        kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
-      }else{
+    }وإلا{
+      إذا( type==SQLITE_INTEGER ){
+        kahanBabuskaNeumaierStepInt64(p, sqlite3_قيمة_int64(argv[0]));
+      }وإلا{
         p->ovrfl = 0;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
+        kahanBabuskaNeumaierStep(p, sqlite3_قيمة_double(argv[0]));
       }
     }
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
+ساكن فراغ sumInverse(sqlite3_context *context, صحيح argc, sqlite3_قيمة**argv){
   SumCtx *p;
-  int type;
-  assert( argc==1 );
+  صحيح type;
+  أكد( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
+  p = sqlite3_aggregate_context(context, حجم(*p));
+  type = sqlite3_قيمة_numeric_type(argv[0]);
   /* p is always non-NULL because sumStep() will have been called first
   ** to initialize it */
-  if( ALWAYS(p) && type!=SQLITE_NULL ){
-    assert( p->cnt>0 );
+  إذا( ALWAYS(p) && type!=SQLITE_NULL ){
+    أكد( p->cnt>0 );
     p->cnt--;
-    if( !p->approx ){
+    إذا( !p->approx ){
       i64 x = p->iSum;
-      if( sqlite3SubInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
+      إذا( sqlite3SubInt64(&x, sqlite3_قيمة_int64(argv[0]))==0 ){
         p->iSum = x;
-        return;
+        إرجاع;
       }
       p->ovrfl = 1;
       p->approx = 1;
       kahanBabuskaNeumaierInit(p, p->iSum);
     }
-    if( type==SQLITE_INTEGER ){
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal!=SMALLEST_INT64 ){
+    إذا( type==SQLITE_INTEGER ){
+      i64 iVal = sqlite3_قيمة_int64(argv[0]);
+      إذا( iVal!=SMALLEST_INT64 ){
         kahanBabuskaNeumaierStepInt64(p, -iVal);
-      }else{
+      }وإلا{
         kahanBabuskaNeumaierStepInt64(p, LARGEST_INT64);
         kahanBabuskaNeumaierStepInt64(p, 1);
       }       
-    }else{
-      kahanBabuskaNeumaierStep(p, -sqlite3_value_double(argv[0]));
+    }وإلا{
+      kahanBabuskaNeumaierStep(p, -sqlite3_قيمة_double(argv[0]));
     }
   }
 }
-#else
+#وإلا
 # define sumInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void sumFinalize(sqlite3_context *context){
+ساكن فراغ sumFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    if( p->approx ){
-      if( p->ovrfl ){
+  إذا( p && p->cnt>0 ){
+    إذا( p->approx ){
+      إذا( p->ovrfl ){
         sqlite3_result_error(context,"integer overflow",-1);
-      }else if( !sqlite3IsOverflow(p->rErr) ){
+      }وإلا إذا( !sqlite3IsOverflow(p->rErr) ){
         sqlite3_result_double(context, p->rSum+p->rErr);
-      }else{
+      }وإلا{
         sqlite3_result_double(context, p->rSum);
       }
-    }else{
+    }وإلا{
       sqlite3_result_int64(context, p->iSum);
     }
   }
 }
-static void avgFinalize(sqlite3_context *context){
+ساكن فراغ avgFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    double r;
-    if( p->approx ){
+  إذا( p && p->cnt>0 ){
+    مزدوج r;
+    إذا( p->approx ){
       r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+      إذا( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }وإلا{
+      r = (مزدوج)(p->iSum);
     }
-    sqlite3_result_double(context, r/(double)p->cnt);
+    sqlite3_result_double(context, r/(مزدوج)p->cnt);
   }
 }
-static void totalFinalize(sqlite3_context *context){
+ساكن فراغ totalFinalize(sqlite3_context *context){
   SumCtx *p;
-  double r = 0.0;
+  مزدوج r = 0.0;
   p = sqlite3_aggregate_context(context, 0);
-  if( p ){
-    if( p->approx ){
+  إذا( p ){
+    إذا( p->approx ){
       r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+      إذا( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }وإلا{
+      r = (مزدوج)(p->iSum);
     }
   }
   sqlite3_result_double(context, r);
@@ -2104,21 +2104,21 @@ static void totalFinalize(sqlite3_context *context){
 ** The following structure keeps track of state information for the
 ** count() aggregate function.
 */
-typedef struct CountCtx CountCtx;
-struct CountCtx {
+تعريفنوع بنية تعداد_Ctx تعداد_Ctx;
+بنية تعداد_Ctx {
   i64 n;
 #ifdef SQLITE_DEBUG
-  int bInverse;                   /* True if xInverse() ever called */
+  صحيح bInverse;                   /* True if xInverse() ever called */
 #endif
 };
 
 /*
 ** Routines to implement the count() aggregate function.
 */
-static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && p ){
+ساكن فراغ تعداد_Step(sqlite3_context *context, صحيح argc, sqlite3_قيمة **argv){
+  تعداد_Ctx *p;
+  p = sqlite3_aggregate_context(context, حجم(*p));
+  إذا( (argc==0 || SQLITE_NULL!=sqlite3_قيمة_type(argv[0])) && p ){
     p->n++;
   }
 
@@ -2127,51 +2127,51 @@ static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
   ** sure it still operates correctly, verify that its count agrees with our
   ** internal count when using count(*) and when the total count can be
   ** expressed as a 32-bit integer. */
-  assert( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
-          || p->n==sqlite3_aggregate_count(context) );
+  أكد( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
+          || p->n==sqlite3_aggregate_تعداد(context) );
 #endif
 }  
-static void countFinalize(sqlite3_context *context){
-  CountCtx *p;
+ساكن فراغ تعداد_Finalize(sqlite3_context *context){
+  تعداد_Ctx *p;
   p = sqlite3_aggregate_context(context, 0);
   sqlite3_result_int64(context, p ? p->n : 0);
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(ctx, sizeof(*p));
+ساكن فراغ تعداد_Inverse(sqlite3_context *ctx, صحيح argc, sqlite3_قيمة **argv){
+  تعداد_Ctx *p;
+  p = sqlite3_aggregate_context(ctx, حجم(*p));
   /* p is always non-NULL since countStep() will have been called first */
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && ALWAYS(p) ){
+  إذا( (argc==0 || SQLITE_NULL!=sqlite3_قيمة_type(argv[0])) && ALWAYS(p) ){
     p->n--;
 #ifdef SQLITE_DEBUG
     p->bInverse = 1;
 #endif
   }
 }  
-#else
-# define countInverse 0
+#وإلا
+# define تعداد_Inverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Routines to implement min() and max() aggregate functions.
 */
-static void minmaxStep(
+ساكن فراغ minmaxStep(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  صحيح NotUsed,
+  sqlite3_قيمة **argv
 ){
   Mem *pArg  = (Mem *)argv[0];
   Mem *pBest;
   UNUSED_PARAMETER(NotUsed);
 
-  pBest = (Mem *)sqlite3_aggregate_context(context, sizeof(*pBest));
-  if( !pBest ) return;
+  pBest = (Mem *)sqlite3_aggregate_context(context, حجم(*pBest));
+  إذا( !pBest ) إرجاع;
 
-  if( sqlite3_value_type(pArg)==SQLITE_NULL ){
-    if( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
-  }else if( pBest->flags ){
-    int max;
-    int cmp;
+  إذا( sqlite3_قيمة_type(pArg)==SQLITE_NULL ){
+    إذا( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
+  }وإلا إذا( pBest->flags ){
+    صحيح max;
+    صحيح cmp;
     CollSeq *pColl = sqlite3GetFuncCollSeq(context);
     /* This step function is used for both the min() and max() aggregates,
     ** the only difference between the two being that the sense of the
@@ -2183,35 +2183,35 @@ static void minmaxStep(
     */
     max = sqlite3_user_data(context)!=0;
     cmp = sqlite3MemCompare(pBest, pArg, pColl);
-    if( (max && cmp<0) || (!max && cmp>0) ){
+    إذا( (max && cmp<0) || (!max && cmp>0) ){
       sqlite3VdbeMemCopy(pBest, pArg);
-    }else{
+    }وإلا{
       sqlite3SkipAccumulatorLoad(context);
     }
-  }else{
+  }وإلا{
     pBest->db = sqlite3_context_db_handle(context);
     sqlite3VdbeMemCopy(pBest, pArg);
   }
 }
-static void minMaxValueFinalize(sqlite3_context *context, int bValue){
-  sqlite3_value *pRes;
-  pRes = (sqlite3_value *)sqlite3_aggregate_context(context, 0);
-  if( pRes ){
-    if( pRes->flags ){
-      sqlite3_result_value(context, pRes);
+ساكن فراغ min_Max_قيمة_Finalize(sqlite3_context *context, صحيح b_قيمة){
+  sqlite3_قيمة *pRes;
+  pRes = (sqlite3_قيمة *)sqlite3_aggregate_context(context, 0);
+  إذا( pRes ){
+    إذا( pRes->flags ){
+      sqlite3_result_قيمة(context, pRes);
     }
-    if( bValue==0 ) sqlite3VdbeMemRelease(pRes);
+    إذا( b_قيمة==0 ) sqlite3VdbeMemRelease(pRes);
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void minMaxValue(sqlite3_context *context){
-  minMaxValueFinalize(context, 1);
+ساكن فراغ min_Max_قيمة(sqlite3_context *context){
+  min_Max_قيمة_Finalize(context, 1);
 }
-#else
-# define minMaxValue 0
+#وإلا
+# define min_Max_قيمة 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void minMaxFinalize(sqlite3_context *context){
-  minMaxValueFinalize(context, 0);
+ساكن فراغ minMaxFinalize(sqlite3_context *context){
+  min_Max_قيمة_Finalize(context, 0);
 }
 
 /*
@@ -2228,141 +2228,141 @@ static void minMaxFinalize(sqlite3_context *context){
 ** so we could change it, in theory.  But the old behavior has been
 ** around for so long that we dare not, for fear of breaking something.
 */
-typedef struct {
+تعريفنوع بنية {
   StrAccum str;          /* The accumulated concatenation */
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  int nAccum;            /* Number of strings presently concatenated */
-  int nFirstSepLength;   /* Used to detect separator length change */
+  صحيح nAccum;            /* Number of strings presently concatenated */
+  صحيح nFirstSepLength;   /* Used to detect separator length change */
   /* If pnSepLengths!=0, refs an array of inter-string separator lengths,
   ** stored as actually incorporated into presently accumulated result.
   ** (Hence, its slots in use number nAccum-1 between method calls.)
   ** If pnSepLengths==0, nFirstSepLength is the length used throughout.
   */
-  int *pnSepLengths;
+  صحيح *pnSepLengths;
 #endif
 } GroupConcatCtx;
 
-static void groupConcatStep(
+ساكن فراغ groupConcatStep(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  const char *zVal;
+  ثابت حرف *zVal;
   GroupConcatCtx *pGCC;
-  const char *zSep;
-  int nVal, nSep;
-  assert( argc==1 || argc==2 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
-  if( pGCC ){
+  ثابت حرف *zSep;
+  صحيح nVal, nSep;
+  أكد( argc==1 || argc==2 );
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_NULL ) إرجاع;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, حجم(*pGCC));
+  إذا( pGCC ){
     sqlite3 *db = sqlite3_context_db_handle(context);
-    int firstTerm = pGCC->str.mxAlloc==0;
+    صحيح firstTerm = pGCC->str.mxAlloc==0;
     pGCC->str.mxAlloc = db->aLimit[SQLITE_LIMIT_LENGTH];
-    if( argc==1 ){
-      if( !firstTerm ){
+    إذا( argc==1 ){
+      إذا( !firstTerm ){
         sqlite3_str_appendchar(&pGCC->str, 1, ',');
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
+      وإلا{
         pGCC->nFirstSepLength = 1;
       }
 #endif
-    }else if( !firstTerm ){
-      zSep = (char*)sqlite3_value_text(argv[1]);
-      nSep = sqlite3_value_bytes(argv[1]);
-      if( zSep ){
+    }وإلا إذا( !firstTerm ){
+      zSep = (حرف*)sqlite3_قيمة_text(argv[1]);
+      nSep = sqlite3_قيمة_bytes(argv[1]);
+      إذا( zSep ){
         sqlite3_str_append(&pGCC->str, zSep, nSep);
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
+      وإلا{
         nSep = 0;
       }
-      if( nSep != pGCC->nFirstSepLength || pGCC->pnSepLengths != 0 ){
-        int *pnsl = pGCC->pnSepLengths;
-        if( pnsl == 0 ){
+      إذا( nSep != pGCC->nFirstSepLength || pGCC->pnSepLengths != 0 ){
+        صحيح *pnsl = pGCC->pnSepLengths;
+        إذا( pnsl == 0 ){
           /* First separator length variation seen, start tracking them. */
-          pnsl = (int*)sqlite3_malloc64((pGCC->nAccum+1) * sizeof(int));
-          if( pnsl!=0 ){
-            int i = 0, nA = pGCC->nAccum-1;
-            while( i<nA ) pnsl[i++] = pGCC->nFirstSepLength;
+          pnsl = (صحيح*)sqlite3_malloc64((pGCC->nAccum+1) * حجم(صحيح));
+          إذا( pnsl!=0 ){
+            صحيح i = 0, nA = pGCC->nAccum-1;
+            بينما( i<nA ) pnsl[i++] = pGCC->nFirstSepLength;
           }
-        }else{
-          pnsl = (int*)sqlite3_realloc64(pnsl, pGCC->nAccum * sizeof(int));
+        }وإلا{
+          pnsl = (صحيح*)sqlite3_realloc64(pnsl, pGCC->nAccum * حجم(صحيح));
         }
-        if( pnsl!=0 ){
-          if( ALWAYS(pGCC->nAccum>0) ){
+        إذا( pnsl!=0 ){
+          إذا( ALWAYS(pGCC->nAccum>0) ){
             pnsl[pGCC->nAccum-1] = nSep;
           }
           pGCC->pnSepLengths = pnsl;
-        }else{
+        }وإلا{
           sqlite3StrAccumSetError(&pGCC->str, SQLITE_NOMEM);
         }
       }
 #endif
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    else{
-      pGCC->nFirstSepLength = sqlite3_value_bytes(argv[1]);
+    وإلا{
+      pGCC->nFirstSepLength = sqlite3_قيمة_bytes(argv[1]);
     }
     pGCC->nAccum += 1;
 #endif
-    zVal = (char*)sqlite3_value_text(argv[0]);
-    nVal = sqlite3_value_bytes(argv[0]);
-    if( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
+    zVal = (حرف*)sqlite3_قيمة_text(argv[0]);
+    nVal = sqlite3_قيمة_bytes(argv[0]);
+    إذا( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
   }
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatInverse(
+ساكن فراغ groupConcatInverse(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   GroupConcatCtx *pGCC;
-  assert( argc==1 || argc==2 );
-  (void)argc;  /* Suppress unused parameter warning */
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
+  أكد( argc==1 || argc==2 );
+  (فراغ)argc;  /* Suppress unused parameter warning */
+  إذا( sqlite3_قيمة_type(argv[0])==SQLITE_NULL ) إرجاع;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, حجم(*pGCC));
   /* pGCC is always non-NULL since groupConcatStep() will have always
   ** run first to initialize it */
-  if( ALWAYS(pGCC) ){
-    int nVS;  /* Number of characters to remove */
+  إذا( ALWAYS(pGCC) ){
+    صحيح nVS;  /* Number of characters to remove */
     /* Must call sqlite3_value_text() to convert the argument into text prior
     ** to invoking sqlite3_value_bytes(), in case the text encoding is UTF16 */
-    (void)sqlite3_value_text(argv[0]);
-    nVS = sqlite3_value_bytes(argv[0]);
+    (فراغ)sqlite3_قيمة_text(argv[0]);
+    nVS = sqlite3_قيمة_bytes(argv[0]);
     pGCC->nAccum -= 1;
-    if( pGCC->pnSepLengths!=0 ){
-      assert(pGCC->nAccum >= 0);
-      if( pGCC->nAccum>0 ){
+    إذا( pGCC->pnSepLengths!=0 ){
+      أكد(pGCC->nAccum >= 0);
+      إذا( pGCC->nAccum>0 ){
         nVS += *pGCC->pnSepLengths;
         memmove(pGCC->pnSepLengths, pGCC->pnSepLengths+1,
-               (pGCC->nAccum-1)*sizeof(int));
+               (pGCC->nAccum-1)*حجم(صحيح));
       }
-    }else{
+    }وإلا{
       /* If removing single accumulated string, harmlessly over-do. */
       nVS += pGCC->nFirstSepLength;
     }
-    if( nVS>=(int)pGCC->str.nChar ){
+    إذا( nVS>=(صحيح)pGCC->str.nChar ){
       pGCC->str.nChar = 0;
-    }else{
+    }وإلا{
       pGCC->str.nChar -= nVS;
       memmove(pGCC->str.zText, &pGCC->str.zText[nVS], pGCC->str.nChar);
     }
-    if( pGCC->nAccum==0 ){
+    إذا( pGCC->nAccum==0 ){
       pGCC->str.mxAlloc = 0;
       sqlite3_free(pGCC->pnSepLengths);
       pGCC->pnSepLengths = 0;
     }
   }
 }
-#else
+#وإلا
 # define groupConcatInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void groupConcatFinalize(sqlite3_context *context){
+ساكن فراغ groupConcatFinalize(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC ){
+  إذا( pGCC ){
     sqlite3_result_str(context, &pGCC->str, SQLITE_XFER);
 #ifndef SQLITE_OMIT_WINDOWFUNC
     sqlite3_free(pGCC->pnSepLengths);
@@ -2370,15 +2370,15 @@ static void groupConcatFinalize(sqlite3_context *context){
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatValue(sqlite3_context *context){
+ساكن فراغ group_Concat_قيمة(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC && pGCC->nAccum>0 ){
+  إذا( pGCC && pGCC->nAccum>0 ){
     sqlite3_result_str(context, &pGCC->str, SQLITE_COPY);
   }
 }
-#else
-# define groupConcatValue 0
+#وإلا
+# define group_Concat_قيمة 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
@@ -2386,10 +2386,10 @@ static void groupConcatValue(sqlite3_context *context){
 ** of the built-in functions above are part of the global function set.
 ** This routine only deals with those that are not global.
 */
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
-  int rc = sqlite3_overload_function(db, "MATCH", 2);
-  assert( rc==SQLITE_NOMEM || rc==SQLITE_OK );
-  if( rc==SQLITE_NOMEM ){
+فراغ sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
+  صحيح rc = sqlite3_overload_function(db, "MATCH", 2);
+  أكد( rc==SQLITE_NOMEM || rc==SQLITE_OK );
+  إذا( rc==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
 }
@@ -2399,23 +2399,23 @@ void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
 ** parameter determines whether or not the LIKE operator is case
 ** sensitive.
 */
-void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
+فراغ sqlite3RegisterLikeFunctions(sqlite3 *db, صحيح caseSensitive){
   FuncDef *pDef;
-  struct compareInfo *pInfo;
-  int flags;
-  int nArg;
-  if( caseSensitive ){
-    pInfo = (struct compareInfo*)&likeInfoAlt;
+  بنية compareInfo *pInfo;
+  صحيح flags;
+  صحيح nArg;
+  إذا( caseSensitive ){
+    pInfo = (بنية compareInfo*)&likeInfoAlt;
     flags = SQLITE_FUNC_LIKE | SQLITE_FUNC_CASE;
-  }else{
-    pInfo = (struct compareInfo*)&likeInfoNorm;
+  }وإلا{
+    pInfo = (بنية compareInfo*)&likeInfoNorm;
     flags = SQLITE_FUNC_LIKE;
   }
-  for(nArg=2; nArg<=3; nArg++){
+  لكل(nArg=2; nArg<=3; nArg++){
     sqlite3CreateFunc(db, "like", nArg, SQLITE_UTF8, pInfo, likeFunc, 
                       0, 0, 0, 0, 0);
     pDef = sqlite3FindFunction(db, "like", nArg, SQLITE_UTF8, 0);
-    assert( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
+    أكد( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
                        ** because the "like" SQL-function already exists */
     pDef->funcFlags |= flags;
     pDef->funcFlags &= ~SQLITE_FUNC_UNSAFE;
@@ -2439,23 +2439,23 @@ void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
 ** between uppercase and lowercase (as does GLOB) then *pIsNocase is set to
 ** false.
 */
-int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
+صحيح sqlite3IsLikeFunction(sqlite3 *db, تعبير *p_تعبير, صحيح *pIsNocase, حرف *aWc){
   FuncDef *pDef;
-  int nExpr;
-  assert( pExpr!=0 );
-  assert( pExpr->op==TK_FUNCTION );
-  assert( ExprUseXList(pExpr) );
-  if( !pExpr->x.pList ){
-    return 0;
+  صحيح n_تعبير;
+  أكد( p_تعبير!=0 );
+  أكد( p_تعبير->op==TK_FUNCTION );
+  أكد( تعبير_Use_XList(p_تعبير) );
+  إذا( !p_تعبير->x.pList ){
+    إرجاع 0;
   }
-  nExpr = pExpr->x.pList->nExpr;
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  pDef = sqlite3FindFunction(db, pExpr->u.zToken, nExpr, SQLITE_UTF8, 0);
+  n_تعبير = p_تعبير->x.pList->n_تعبير;
+  أكد( !تعبير_Has_Property(p_تعبير, EP_Int_قيمة) );
+  pDef = sqlite3FindFunction(db, p_تعبير->u.zToken, n_تعبير, SQLITE_UTF8, 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return 0;
+  إذا( pDef==0 ) إرجاع 0;
 #endif
-  if( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
-    return 0;
+  إذا( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
+    إرجاع 0;
   }
 
   /* The memcpy() statement assumes that the wildcard characters are
@@ -2463,26 +2463,26 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
   ** asserts() that follow verify that assumption
   */
   memcpy(aWc, pDef->pUserData, 3);
-  assert( (char*)&likeInfoAlt == (char*)&likeInfoAlt.matchAll );
-  assert( &((char*)&likeInfoAlt)[1] == (char*)&likeInfoAlt.matchOne );
-  assert( &((char*)&likeInfoAlt)[2] == (char*)&likeInfoAlt.matchSet );
+  أكد( (حرف*)&likeInfoAlt == (حرف*)&likeInfoAlt.matchAll );
+  أكد( &((حرف*)&likeInfoAlt)[1] == (حرف*)&likeInfoAlt.matchOne );
+  أكد( &((حرف*)&likeInfoAlt)[2] == (حرف*)&likeInfoAlt.matchSet );
 
-  if( nExpr<3 ){
+  إذا( n_تعبير<3 ){
     aWc[3] = 0;
-  }else{
-    Expr *pEscape = pExpr->x.pList->a[2].pExpr;
-    char *zEscape;
-    if( pEscape->op!=TK_STRING ) return 0;
-    assert( !ExprHasProperty(pEscape, EP_IntValue) );
+  }وإلا{
+    تعبير *pEscape = p_تعبير->x.pList->a[2].p_تعبير;
+    حرف *zEscape;
+    إذا( pEscape->op!=TK_STRING ) إرجاع 0;
+    أكد( !تعبير_Has_Property(pEscape, EP_Int_قيمة) );
     zEscape = pEscape->u.zToken;
-    if( zEscape[0]==0 || zEscape[1]!=0 ) return 0;
-    if( zEscape[0]==aWc[0] ) return 0;
-    if( zEscape[0]==aWc[1] ) return 0;
+    إذا( zEscape[0]==0 || zEscape[1]!=0 ) إرجاع 0;
+    إذا( zEscape[0]==aWc[0] ) إرجاع 0;
+    إذا( zEscape[0]==aWc[1] ) إرجاع 0;
     aWc[3] = zEscape[0];
   }
 
   *pIsNocase = (pDef->funcFlags & SQLITE_FUNC_CASE)==0;
-  return 1;
+  إرجاع 1;
 }
 
 /* Mathematical Constants */
@@ -2510,24 +2510,24 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
 ** The sqlite3_user_data() pointer is a pointer to the libm implementation
 ** of the underlying C function.
 */
-static void ceilingFunc(
+ساكن فراغ ceilingFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  assert( argc==1 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-       sqlite3_result_int64(context, sqlite3_value_int64(argv[0]));
-       break;
+  أكد( argc==1 );
+  بدل( sqlite3_قيمة_numeric_type(argv[0]) ){
+    حالة SQLITE_INTEGER: {
+       sqlite3_result_int64(context, sqlite3_قيمة_int64(argv[0]));
+       اكسر;
     }
-    case SQLITE_FLOAT: {
-       double (*x)(double) = (double(*)(double))sqlite3_user_data(context);
-       sqlite3_result_double(context, x(sqlite3_value_double(argv[0])));
-       break;
+    حالة SQLITE_FLOAT: {
+       مزدوج (*x)(مزدوج) = (مزدوج(*)(مزدوج))sqlite3_user_data(context);
+       sqlite3_result_double(context, x(sqlite3_قيمة_double(argv[0])));
+       اكسر;
     }
-    default: {
-       break;
+    افتراضي: {
+       اكسر;
     }
   }
 }
@@ -2537,17 +2537,17 @@ static void ceilingFunc(
 ** unable to take a pointer to these functions.  Hence, we here wrap them
 ** in our own actual functions.
 */
-static double xCeil(double x){ return ceil(x); }
-static double xFloor(double x){ return floor(x); }
+ساكن مزدوج xCeil(مزدوج x){ إرجاع ceil(x); }
+ساكن مزدوج xFloor(مزدوج x){ إرجاع floor(x); }
 
 /*
 ** Some systems do not have log2() and log10() in their standard math
 ** libraries.
 */
-#if defined(HAVE_LOG10) && HAVE_LOG10==0
+#إذا defined(HAVE_LOG10) && HAVE_LOG10==0
 # define log10(X) (0.4342944819032517867*log(X))
 #endif
-#if defined(HAVE_LOG2) && HAVE_LOG2==0
+#إذا defined(HAVE_LOG2) && HAVE_LOG2==0
 # define log2(X) (1.442695040888963456*log(X))
 #endif
 
@@ -2560,46 +2560,46 @@ static double xFloor(double x){ return floor(x); }
 **   log10(X)    - log X base 10
 **   log(B,X)    - log X base B
 */
-static void logFunc(
+ساكن فراغ logFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  double x, b, ans;
-  assert( argc==1 || argc==2 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT:
-      x = sqlite3_value_double(argv[0]);
-      if( x<=0.0 ) return;
-      break;
-    default:
-      return;
+  مزدوج x, b, ans;
+  أكد( argc==1 || argc==2 );
+  بدل( sqlite3_قيمة_numeric_type(argv[0]) ){
+    حالة SQLITE_INTEGER:
+    حالة SQLITE_FLOAT:
+      x = sqlite3_قيمة_double(argv[0]);
+      إذا( x<=0.0 ) إرجاع;
+      اكسر;
+    افتراضي:
+      إرجاع;
   }
-  if( argc==2 ){
-    switch( sqlite3_value_numeric_type(argv[1]) ){
-      case SQLITE_INTEGER:
-      case SQLITE_FLOAT:
+  إذا( argc==2 ){
+    بدل( sqlite3_قيمة_numeric_type(argv[1]) ){
+      حالة SQLITE_INTEGER:
+      حالة SQLITE_FLOAT:
         b = log(x);
-        if( b<=0.0 ) return;
-        x = sqlite3_value_double(argv[1]);
-        if( x<=0.0 ) return;
-        break;
-     default:
-        return;
+        إذا( b<=0.0 ) إرجاع;
+        x = sqlite3_قيمة_double(argv[1]);
+        إذا( x<=0.0 ) إرجاع;
+        اكسر;
+     افتراضي:
+        إرجاع;
     }
     ans = log(x)/b;
-  }else{
-    switch( SQLITE_PTR_TO_INT(sqlite3_user_data(context)) ){
-      case 1:
+  }وإلا{
+    بدل( SQLITE_PTR_TO_INT(sqlite3_user_data(context)) ){
+      حالة 1:
         ans = log10(x);
-        break;
-      case 2:
+        اكسر;
+      حالة 2:
         ans = log2(x);
-        break;
-      default:
+        اكسر;
+      افتراضي:
         ans = log(x);
-        break;
+        اكسر;
     }
   }
   sqlite3_result_double(context, ans);
@@ -2608,27 +2608,27 @@ static void logFunc(
 /*
 ** Functions to converts degrees to radians and radians to degrees.
 */
-static double degToRad(double x){ return x*(M_PI/180.0); }
-static double radToDeg(double x){ return x*(180.0/M_PI); }
+ساكن مزدوج degToRad(مزدوج x){ إرجاع x*(M_PI/180.0); }
+ساكن مزدوج radToDeg(مزدوج x){ إرجاع x*(180.0/M_PI); }
 
 /*
 ** Implementation of 1-argument SQL math functions:
 **
 **   exp(X)  - Compute e to the X-th power
 */
-static void math1Func(
+ساكن فراغ math1Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int type0;
-  double v0, ans;
-  double (*x)(double);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  x = (double(*)(double))sqlite3_user_data(context);
+  صحيح type0;
+  مزدوج v0, ans;
+  مزدوج (*x)(مزدوج);
+  أكد( argc==1 );
+  type0 = sqlite3_قيمة_numeric_type(argv[0]);
+  إذا( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) إرجاع;
+  v0 = sqlite3_قيمة_double(argv[0]);
+  x = (مزدوج(*)(مزدوج))sqlite3_user_data(context);
   ans = x(v0);
   sqlite3_result_double(context, ans);
 }
@@ -2638,22 +2638,22 @@ static void math1Func(
 **
 **   power(X,Y)  - Compute X to the Y-th power
 */
-static void math2Func(
+ساكن فراغ math2Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int type0, type1;
-  double v0, v1, ans;
-  double (*x)(double,double);
-  assert( argc==2 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  type1 = sqlite3_value_numeric_type(argv[1]);
-  if( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  v1 = sqlite3_value_double(argv[1]);
-  x = (double(*)(double,double))sqlite3_user_data(context);
+  صحيح type0, type1;
+  مزدوج v0, v1, ans;
+  مزدوج (*x)(مزدوج,مزدوج);
+  أكد( argc==2 );
+  type0 = sqlite3_قيمة_numeric_type(argv[0]);
+  إذا( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) إرجاع;
+  type1 = sqlite3_قيمة_numeric_type(argv[1]);
+  إذا( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) إرجاع;
+  v0 = sqlite3_قيمة_double(argv[0]);
+  v1 = sqlite3_قيمة_double(argv[1]);
+  x = (مزدوج(*)(مزدوج,مزدوج))sqlite3_user_data(context);
   ans = x(v0, v1);
   sqlite3_result_double(context, ans);
 }
@@ -2661,13 +2661,13 @@ static void math2Func(
 /*
 ** Implementation of 0-argument pi() function.
 */
-static void piFunc(
+ساكن فراغ piFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  assert( argc==0 );
-  (void)argv;
+  أكد( argc==0 );
+  (فراغ)argv;
   sqlite3_result_double(context, M_PI);
 }
 
@@ -2676,22 +2676,22 @@ static void piFunc(
 /*
 ** Implementation of sign(X) function.
 */
-static void signFunc(
+ساكن فراغ signFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
-  int type0;
-  double x;
+  صحيح type0;
+  مزدوج x;
   UNUSED_PARAMETER(argc);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  x = sqlite3_value_double(argv[0]);
+  أكد( argc==1 );
+  type0 = sqlite3_قيمة_numeric_type(argv[0]);
+  إذا( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) إرجاع;
+  x = sqlite3_قيمة_double(argv[0]);
   sqlite3_result_int(context, x<0.0 ? -1 : x>0.0 ? +1 : 0);
 }
 
-#if defined(SQLITE_ENABLE_PERCENTILE)
+#إذا defined(SQLITE_ENABLE_PERCENTILE)
 /***********************************************************************
 ** This section implements the percentile(Y,P) SQL function and similar.
 ** Requirements:
@@ -2801,33 +2801,33 @@ static void signFunc(
 ** aggregate.  Remember all input Y values until the very end.
 ** Those values are accumulated in the Percentile.a[] array.
 */
-typedef struct Percentile Percentile;
-struct Percentile {
+تعريفنوع بنية Percentile Percentile;
+بنية Percentile {
   u64 nAlloc;          /* Number of slots allocated for a[] */
   u64 nUsed;           /* Number of slots actually used in a[] */
-  char bSorted;        /* True if a[] is already in sorted order */
-  char bKeepSorted;    /* True if advantageous to keep a[] sorted */
-  char bPctValid;      /* True if rPct is valid */
-  double rPct;         /* Fraction.  0.0 to 1.0 */
-  double *a;           /* Array of Y values */
+  حرف bSorted;        /* True if a[] is already in sorted order */
+  حرف bKeepSorted;    /* True if advantageous to keep a[] sorted */
+  حرف bPctValid;      /* True if rPct is valid */
+  مزدوج rPct;         /* Fraction.  0.0 to 1.0 */
+  مزدوج *a;           /* Array of Y values */
 };
 
 /*
 ** Return TRUE if the input floating-point number is an infinity.
 */
-static int percentIsInfinity(double r){
+ساكن صحيح percentIsInfinity(مزدوج r){
   sqlite3_uint64 u;
-  assert( sizeof(u)==sizeof(r) );
-  memcpy(&u, &r, sizeof(u));
-  return ((u>>52)&0x7ff)==0x7ff;
+  أكد( حجم(u)==حجم(r) );
+  memcpy(&u, &r, حجم(u));
+  إرجاع ((u>>52)&0x7ff)==0x7ff;
 }
 
 /*
 ** Return TRUE if two doubles differ by 0.001 or less.
 */
-static int percentSameValue(double a, double b){
+ساكن صحيح percent_Same_قيمة(مزدوج a, مزدوج b){
   a -= b;
-  return a>=-0.001 && a<=0.001;
+  إرجاع a>=-0.001 && a<=0.001;
 }
 
 /*
@@ -2841,22 +2841,22 @@ static int percentSameValue(double a, double b){
 ** order.  The smallest return value in this case will be 0, and
 ** the largest return value will be p->nUsed.
 */
-static i64 percentBinarySearch(Percentile *p, double y, int bExact){
+ساكن i64 percent_ثنائي_بحث(Percentile *p, مزدوج y, صحيح bExact){
   i64 iFirst = 0;                   /* First element of search range */
   i64 iLast = (i64)p->nUsed - 1;    /* Last element of search range */
-  while( iLast>=iFirst ){
+  بينما( iLast>=iFirst ){
     i64 iMid = (iFirst+iLast)/2;
-    double x = p->a[iMid];
-    if( x<y ){
+    مزدوج x = p->a[iMid];
+    إذا( x<y ){
       iFirst = iMid + 1;
-    }else if( x>y ){
+    }وإلا إذا( x>y ){
       iLast = iMid - 1;
-    }else{
-      return iMid;
+    }وإلا{
+      إرجاع iMid;
     }
   }
-  if( bExact ) return -1;
-  return iFirst;
+  إذا( bExact ) إرجاع -1;
+  إرجاع iFirst;
 }
 
 /*
@@ -2866,9 +2866,9 @@ static i64 percentBinarySearch(Percentile *p, double y, int bExact){
 ** (with two '%' characters).  That substring will be replaced by the name
 ** of the function.
 */
-static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
-  char *zMsg1;
-  char *zMsg2;
+ساكن فراغ percentError(sqlite3_context *pCtx, ثابت حرف *zFormat, ...){
+  حرف *zMsg1;
+  حرف *zMsg2;
   va_list ap;
 
   va_start(ap, zFormat);
@@ -2884,95 +2884,95 @@ static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
 ** The "step" function for percentile(Y,P) is called once for each
 ** input row.
 */
-static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
+ساكن فراغ percentStep(sqlite3_context *pCtx, صحيح argc, sqlite3_قيمة **argv){
   Percentile *p;
-  double rPct;
-  int eType;
-  double y;
-  assert( argc==2 || argc==1 );
+  مزدوج rPct;
+  صحيح eType;
+  مزدوج y;
+  أكد( argc==2 || argc==1 );
 
-  if( argc==1 ){
+  إذا( argc==1 ){
     /* Requirement 13:  median(Y) is the same as percentile(Y,50). */
     rPct = 0.5;
-  }else{
+  }وإلا{
     /* P must be a number between 0 and 100 for percentile() or between
     ** 0.0 and 1.0 for percentile_cont() and percentile_disc().
     **
     ** The user-data is an integer which is 10 times the upper bound.
     */
-    double mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&2)? 100.0 : 1.0;
-    eType = sqlite3_value_numeric_type(argv[1]);
-    rPct = sqlite3_value_double(argv[1])/mxFrac;
-    if( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
+    مزدوج mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&2)? 100.0 : 1.0;
+    eType = sqlite3_قيمة_numeric_type(argv[1]);
+    rPct = sqlite3_قيمة_double(argv[1])/mxFrac;
+    إذا( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
      || rPct<0.0 || rPct>1.0
     ){
       percentError(pCtx, "the fraction argument to %%s()"
                         " is not between 0.0 and %.1f",
-                        (double)mxFrac);
-      return;
+                        (مزدوج)mxFrac);
+      إرجاع;
     }
   }
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p==0 ) return;
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p==0 ) إرجاع;
 
   /* Remember the P value.  Throw an error if the P value is different
   ** from any prior row, per Requirement (2). */
-  if( !p->bPctValid ){
+  إذا( !p->bPctValid ){
     p->rPct = rPct;
     p->bPctValid = 1;
-  }else if( !percentSameValue(p->rPct,rPct) ){
+  }وإلا إذا( !percent_Same_قيمة(p->rPct,rPct) ){
     percentError(pCtx, "the fraction argument to %%s()"
                       " is not the same for all input rows");
-    return;
+    إرجاع;
   }
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_قيمة_type(argv[0]);
+  إذا( eType==SQLITE_NULL ) إرجاع;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+  إذا( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
     percentError(pCtx, "input to %%s() is not numeric");
-    return;
+    إرجاع;
   }
 
   /* Throw an error if the Y value is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
+  y = sqlite3_قيمة_double(argv[0]);
+  إذا( percentIsInfinity(y) ){
     percentError(pCtx, "Inf input to %%s()");
-    return;
+    إرجاع;
   }
 
   /* Allocate and store the Y */
-  if( p->nUsed>=p->nAlloc ){
+  إذا( p->nUsed>=p->nAlloc ){
     u64 n = p->nAlloc*2 + 250;
-    double *a = sqlite3_realloc64(p->a, sizeof(double)*n);
-    if( a==0 ){
+    مزدوج *a = sqlite3_realloc64(p->a, حجم(مزدوج)*n);
+    إذا( a==0 ){
       sqlite3_free(p->a);
-      memset(p, 0, sizeof(*p));
+      memset(p, 0, حجم(*p));
       sqlite3_result_error_nomem(pCtx);
-      return;
+      إرجاع;
     }
     p->nAlloc = n;
     p->a = a;
   }
-  if( p->nUsed==0 ){
+  إذا( p->nUsed==0 ){
     p->a[p->nUsed++] = y;
     p->bSorted = 1;
-  }else if( !p->bSorted || y>=p->a[p->nUsed-1] ){
+  }وإلا إذا( !p->bSorted || y>=p->a[p->nUsed-1] ){
     p->a[p->nUsed++] = y;
-  }else if( p->bKeepSorted ){
+  }وإلا إذا( p->bKeepSorted ){
     i64 i;
-    i = percentBinarySearch(p, y, 0);
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i+1], &p->a[i], (p->nUsed-i)*sizeof(p->a[0]));
+    i = percent_ثنائي_بحث(p, y, 0);
+    إذا( i<(صحيح)p->nUsed ){
+      memmove(&p->a[i+1], &p->a[i], (p->nUsed-i)*حجم(p->a[0]));
     }
     p->a[i] = y;
     p->nUsed++;
-  }else{
+  }وإلا{
     p->a[p->nUsed++] = y;
     p->bSorted = 0;
   }
@@ -2981,7 +2981,7 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 /*
 ** Interchange two doubles.
 */
-#define SWAP_DOUBLE(X,Y)  {double ttt=(X);(X)=(Y);(Y)=ttt;}
+#define SWAP_DOUBLE(X,Y)  {مزدوج ttt=(X);(X)=(Y);(Y)=ttt;}
 
 /*
 ** Sort an array of doubles.
@@ -3000,34 +3000,34 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 ** so it is not necessary to position any other elements. Or if iReq is
 ** negative, then the final array must be fully sorted.
 */
-static void percentSort(
-  double *a,                      /* Array to sort */
-  unsigned int n,                 /* Number of elements in array a[] */
-  int iReq                        /* Element caller cares about (or -ve) */
+ساكن فراغ percentSort(
+  مزدوج *a,                      /* Array to sort */
+  unsigned صحيح n,                 /* Number of elements in array a[] */
+  صحيح iReq                        /* Element caller cares about (or -ve) */
 ){
-  int iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
-  int iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
-  int i;         /* Loop counter */
-  double rPivot; /* The pivot value */
+  صحيح iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
+  صحيح iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
+  صحيح i;         /* Loop counter */
+  مزدوج rPivot; /* The pivot value */
 
-  assert( n>=2 );
-  do{
+  أكد( n>=2 );
+  افعل{
     /* Put the first, middle, and last elements in sorted order.
     ** After doing so, return immediately if the array contains
     ** three or fewer elements as there is nothing more to do.
     */
-    if( a[0]>a[n-1] ){
+    إذا( a[0]>a[n-1] ){
       SWAP_DOUBLE(a[0],a[n-1])
     }
-    if( n==2 ) return;
+    إذا( n==2 ) إرجاع;
     iGt = n-1;
     i = n/2;
-    if( a[0]>a[i] ){
+    إذا( a[0]>a[i] ){
       SWAP_DOUBLE(a[0],a[i])
-    }else if( a[i]>a[iGt] ){
+    }وإلا إذا( a[i]>a[iGt] ){
       SWAP_DOUBLE(a[i],a[iGt])
     }
-    if( n==3 ) return;
+    إذا( n==3 ) إرجاع;
 
     /* Take the value of the middle element as the pivot.  Shuffle
     ** values around so that all elements less than the pivot come
@@ -3035,29 +3035,29 @@ static void percentSort(
     */
     rPivot = a[i];
     iLt = i = 1;
-    do{
-      if( a[i]<rPivot ){
-        if( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
+    افعل{
+      إذا( a[i]<rPivot ){
+        إذا( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
         iLt++;
         i++;
-      }else if( a[i]>rPivot ){
-        do{
+      }وإلا إذا( a[i]>rPivot ){
+        افعل{
           iGt--;
-        }while( iGt>i && a[iGt]>rPivot );
+        }بينما( iGt>i && a[iGt]>rPivot );
         SWAP_DOUBLE(a[i],a[iGt])
-      }else{
+      }وإلا{
         i++;
       }
-    }while( i<iGt );
+    }بينما( i<iGt );
 
-    assert( iLt>0 && iLt<iGt && (unsigned)iGt<n );
+    أكد( iLt>0 && iLt<iGt && (unsigned)iGt<n );
     testcase( iGt>iLt+1 );
-    assert( a[iLt]==rPivot );
-    assert( a[iLt-1]<=rPivot );
-    assert( a[iGt]>=rPivot );
-    assert( a[iLt+1]>=rPivot );
+    أكد( a[iLt]==rPivot );
+    أكد( a[iLt-1]<=rPivot );
+    أكد( a[iGt]>=rPivot );
+    أكد( a[iLt+1]>=rPivot );
 
-    if( iReq>=0 ){
+    إذا( iReq>=0 ){
       /* In this case, the only elements that the caller requires sorted into 
       ** the correct positions are elements a[iReq] and a[iReq+1]. At this
       ** point we know that element a[iLt] is in the correct position and
@@ -3069,73 +3069,73 @@ static void percentSort(
       ** right partition or the equal partition (elements for which 
       ** iLt<=iElem<iGt). Therefore it is always sufficient to sort only
       ** the right partition in this case.  */
-      if( iReq<iLt ){
+      إذا( iReq<iLt ){
         n = iLt;
-      }else{
+      }وإلا{
         a += iGt;
         n -= iGt;
         iReq = MAX(0, iReq-iGt);
       }
-    }else{
+    }وإلا{
       /* Recurse on the smaller partition only.  The smaller partition
       ** will hold n/2 or fewer entries, which assures that the stack
       ** depth will not exceed O(log(n)), even for pathological cases.
       ** Loop without recursion for the larger partition. */
-      if( iLt>(int)(n/2) ){
-        if( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
+      إذا( iLt>(صحيح)(n/2) ){
+        إذا( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
         n = iLt;
-      }else{
-        if( iLt>=2 ) percentSort(a, iLt, -1);
+      }وإلا{
+        إذا( iLt>=2 ) percentSort(a, iLt, -1);
         a += iGt;
         n -= iGt;
       }
     }
-  }while( n>=2 );
+  }بينما( n>=2 );
 }
 
 /*
 ** The "inverse" function for percentile(Y,P) is called to remove a
 ** row that was previously inserted by "step".
 */
-static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
+ساكن فراغ percentInverse(sqlite3_context *pCtx,صحيح argc,sqlite3_قيمة **argv){
   Percentile *p;
-  int eType;
-  double y;
+  صحيح eType;
+  مزدوج y;
   i64 i;
-  assert( argc==2 || argc==1 );
+  أكد( argc==2 || argc==1 );
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  أكد( p!=0 );
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_قيمة_type(argv[0]);
+  إذا( eType==SQLITE_NULL ) إرجاع;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
-    return;
+  إذا( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+    إرجاع;
   }
 
   /* Ignore the Y value if it is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
-    return;
+  y = sqlite3_قيمة_double(argv[0]);
+  إذا( percentIsInfinity(y) ){
+    إرجاع;
   }
-  if( p->bSorted==0 ){
-    assert( p->nUsed>1 );
+  إذا( p->bSorted==0 ){
+    أكد( p->nUsed>1 );
     percentSort(p->a, p->nUsed, -1);
     p->bSorted = 1;
   }
   p->bKeepSorted = 1;
 
   /* Find and remove the row */
-  i = percentBinarySearch(p, y, 1);
-  if( i>=0 ){
+  i = percent_ثنائي_بحث(p, y, 1);
+  إذا( i>=0 ){
     p->nUsed--;
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed - i)*sizeof(p->a[0]));
+    إذا( i<(صحيح)p->nUsed ){
+      memmove(&p->a[i], &p->a[i+1], (p->nUsed - i)*حجم(p->a[0]));
     }
   }
 }
@@ -3144,104 +3144,104 @@ static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
 ** Compute the final output of percentile().  Clean up all allocated
 ** memory if and only if bIsFinal is true.
 */
-static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
+ساكن فراغ percentCompute(sqlite3_context *pCtx, صحيح bIsFinal){
   Percentile *p;
-  int settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
+  صحيح settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
   unsigned i1, i2;
-  double v1, v2;
-  double ix, vx;
+  مزدوج v1, v2;
+  مزدوج ix, vx;
   p = (Percentile*)sqlite3_aggregate_context(pCtx, 0);
-  if( p==0 ) return;
-  if( p->a==0 ) return;
-  if( p->nUsed ){
+  إذا( p==0 ) إرجاع;
+  إذا( p->a==0 ) إرجاع;
+  إذا( p->nUsed ){
     ix = p->rPct*(p->nUsed-1);
     i1 = (unsigned)ix;
-    if( p->bSorted==0 ){
+    إذا( p->bSorted==0 ){
       /* In cases where bIsFinal is non-zero, setting Percentile.bSorted 
       ** after the percentSort() call here is not technically correct, as 
       ** the array is not fully sorted. But in this case the object will be 
       ** freed below anyway, so it doesn't matter.  */
-      assert( p->nUsed>1 );
-      percentSort(p->a, p->nUsed, (bIsFinal ? (int)i1 : -1));
+      أكد( p->nUsed>1 );
+      percentSort(p->a, p->nUsed, (bIsFinal ? (صحيح)i1 : -1));
       p->bSorted = 1;
     }
-    if( settings & 1 ){
+    إذا( settings & 1 ){
       vx = p->a[i1];
-    }else{
-      i2 = ix==(double)i1 || i1==p->nUsed-1 ? i1 : i1+1;
+    }وإلا{
+      i2 = ix==(مزدوج)i1 || i1==p->nUsed-1 ? i1 : i1+1;
       v1 = p->a[i1];
       v2 = p->a[i2];
       vx = v1 + (v2-v1)*(ix-i1);
     }
     sqlite3_result_double(pCtx, vx);
   }
-  if( bIsFinal ){
+  إذا( bIsFinal ){
     sqlite3_free(p->a);
-    memset(p, 0, sizeof(*p));
-  }else{
+    memset(p, 0, حجم(*p));
+  }وإلا{
     p->bKeepSorted = 1;
   }
 }
-static void percentFinal(sqlite3_context *pCtx){
+ساكن فراغ percentFinal(sqlite3_context *pCtx){
   percentCompute(pCtx, 1);
 }
-static void percentValue(sqlite3_context *pCtx){
+ساكن فراغ percent_قيمة(sqlite3_context *pCtx){
   percentCompute(pCtx, 0);
 }
 /****** End of percentile family of functions ******/
 #endif /* SQLITE_ENABLE_PERCENTILE */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Implementation of sqlite_filestat(SCHEMA).
 **
 ** Return JSON text that describes low-level debug/diagnostic information
 ** about the sqlite3_file object associated with SCHEMA.
 */
-static void filestatFunc(
+ساكن فراغ filestatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  ثابت حرف *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (ثابت حرف*)sqlite3_قيمة_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  إذا( pBtree ){
     Pager *pPager;
     sqlite3_file *fd;
-    int rc;
+    صحيح rc;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    أكد( pPager!=0 );
     fd = sqlite3PagerFile(pPager);
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
+    إذا( sqlite3_str_errcode(pStr) ){
       sqlite3_result_error_nomem(context);
-    }else{
+    }وإلا{
       sqlite3_str_append(pStr, "{\"db\":", 6);
       rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-      if( rc ) sqlite3_str_append(pStr, "null", 4);
+      إذا( rc ) sqlite3_str_append(pStr, "null", 4);
       fd = sqlite3PagerJrnlFile(pPager);
-      if( fd && fd->pMethods!=0 ){
+      إذا( fd && fd->pMethods!=0 ){
         sqlite3_str_appendall(pStr, ",\"journal\":");
         rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-        if( rc ) sqlite3_str_append(pStr, "null", 4);
+        إذا( rc ) sqlite3_str_append(pStr, "null", 4);
       }
       sqlite3_str_append(pStr, "}", 1);
       sqlite3_result_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
+  }وإلا{
     sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
 #endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
 /*
 ** Implementation of sqlite_walstat(SCHEMA).
 **
@@ -3250,34 +3250,34 @@ static void filestatFunc(
 ** of production builds.  This function is not part of the SQLite API
 ** and is likely to change or be removed in future versions of SQLite.
 */
-static void walstatFunc(
+ساكن فراغ walstatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  ثابت حرف *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (ثابت حرف*)sqlite3_قيمة_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  إذا( pBtree ){
     Pager *pPager;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    أكد( pPager!=0 );
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
+    إذا( sqlite3_str_errcode(pStr) ){
       sqlite3_result_error_nomem(context);
-    }else{
+    }وإلا{
       sqlite3_str_append(pStr, "{", 1);
       sqlite3PagerWalStat(pPager, pStr);
       sqlite3_str_append(pStr, "}", 1);
       sqlite3_result_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
+  }وإلا{
     sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
@@ -3296,27 +3296,27 @@ static void walstatFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void fpdecodeFunc(
+ساكن فراغ fpdecodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   FpDecode s;
-  double x;
-  int y, z;
-  char zBuf[100];
+  مزدوج x;
+  صحيح y, z;
+  حرف zBuf[100];
   UNUSED_PARAMETER(argc);
-  assert( argc==3 );
-  x = sqlite3_value_double(argv[0]);
-  y = sqlite3_value_int(argv[1]);
-  z = sqlite3_value_int(argv[2]);
-  if( z<=0 ) z = 1;
-  if( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
+  أكد( argc==3 );
+  x = sqlite3_قيمة_double(argv[0]);
+  y = sqlite3_قيمة_int(argv[1]);
+  z = sqlite3_قيمة_int(argv[2]);
+  إذا( z<=0 ) z = 1;
+  إذا( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
   sqlite3FpDecode(&s, x, y, z);
-  if( s.isSpecial==2 ){
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "NaN");
-  }else{
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
+  إذا( s.isSpecial==2 ){
+    sqlite3_snprintf(حجم(zBuf), zBuf, "NaN");
+  }وإلا{
+    sqlite3_snprintf(حجم(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
   }
   sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
@@ -3341,52 +3341,52 @@ static void fpdecodeFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void parseuriFunc(
+ساكن فراغ parseuriFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  صحيح argc,
+  sqlite3_قيمة **argv
 ){
   sqlite3_str *pResult;
-  const char *zVfs;
-  const char *zUri;
-  unsigned int flgs;
-  int rc;
+  ثابت حرف *zVfs;
+  ثابت حرف *zUri;
+  unsigned صحيح flgs;
+  صحيح rc;
   sqlite3_vfs *pVfs = 0;
-  char *zFile = 0;
-  char *zErr = 0;
+  حرف *zFile = 0;
+  حرف *zErr = 0;
 
-  if( argc<2 ) return;
+  إذا( argc<2 ) إرجاع;
   pVfs = sqlite3_vfs_find(0);
-  assert( pVfs );
+  أكد( pVfs );
   zVfs = pVfs->zName;
-  zUri = (const char*)sqlite3_value_text(argv[0]);
-  if( zUri==0 ) return;
-  flgs = (unsigned int)sqlite3_value_int(argv[1]);
+  zUri = (ثابت حرف*)sqlite3_قيمة_text(argv[0]);
+  إذا( zUri==0 ) إرجاع;
+  flgs = (unsigned صحيح)sqlite3_قيمة_int(argv[1]);
   rc = sqlite3ParseUri(zVfs, zUri, &flgs, &pVfs, &zFile, &zErr);
   pResult = sqlite3_str_new(0);
-  if( !sqlite3_str_errcode(pResult) ){
-    int i;
+  إذا( !sqlite3_str_errcode(pResult) ){
+    صحيح i;
     sqlite3_str_appendf(pResult, "rc=%d", rc);
     sqlite3_str_appendf(pResult, ", flags=0x%x", flgs);
     sqlite3_str_appendf(pResult, ", vfs=%Q", pVfs ? pVfs->zName: 0);
     sqlite3_str_appendf(pResult, ", err=%Q", zErr);
     sqlite3_str_appendf(pResult, ", file=%Q", zFile);
-    if( zFile ){
-      const char *z = zFile;
+    إذا( zFile ){
+      ثابت حرف *z = zFile;
       z += sqlite3Strlen30(z)+1;
-      while( z[0] ){
+      بينما( z[0] ){
         sqlite3_str_appendf(pResult, ", %Q", z);
         z += sqlite3Strlen30(z)+1;
       }
-      for(i=2; i<argc; i++){
-        const char *zArg;
-        if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
-          int k = sqlite3_value_int(argv[i]);
-          sqlite3_str_appendf(pResult, ", '%d:%q'",k,sqlite3_uri_key(zFile, k));
-        }else if( (zArg = (const char*)sqlite3_value_text(argv[i]))!=0 ){
+      لكل(i=2; i<argc; i++){
+        ثابت حرف *zArg;
+        إذا( sqlite3_قيمة_type(argv[i])==SQLITE_INTEGER ){
+          صحيح k = sqlite3_قيمة_int(argv[i]);
+          sqlite3_str_appendf(pResult, ", '%d:%q'",k,sqlite3_uri_مفتاح(zFile, k));
+        }وإلا إذا( (zArg = (ثابت حرف*)sqlite3_قيمة_text(argv[i]))!=0 ){
           sqlite3_str_appendf(pResult, ", '%q:%q'",
                  zArg, sqlite3_uri_parameter(zFile,zArg));
-        }else{
+        }وإلا{
           sqlite3_str_appendf(pResult, ", NULL");
         }
       }
@@ -3405,7 +3405,7 @@ static void parseuriFunc(
 **
 ** After this routine runs
 */
-void sqlite3RegisterBuiltinFunctions(void){
+فراغ sqlite3RegisterBuiltinFunctions(فراغ){
   /*
   ** The following array holds FuncDef structures for all of the functions
   ** defined in this file.
@@ -3416,12 +3416,12 @@ void sqlite3RegisterBuiltinFunctions(void){
   **
   ** For peak efficiency, put the most frequently used function last.
   */
-  static FuncDef aBuiltinFunc[] = {
+  ساكن FuncDef aBuiltinFunc[] = {
 /***** Functions only available with SQLITE_TESTCTRL_INTERNAL_FUNCTIONS *****/
-#if !defined(SQLITE_UNTESTABLE)
+#إذا !defined(SQLITE_UNTESTABLE)
     TEST_FUNC(implies_nonnull_row, 2, INLINEFUNC_implies_nonnull_row, 0),
-    TEST_FUNC(expr_compare,        2, INLINEFUNC_expr_compare,        0),
-    TEST_FUNC(expr_implies_expr,   2, INLINEFUNC_expr_implies_expr,   0),
+    TEST_FUNC(تعبير_compare,        2, INLINEFUNC_تعبير_compare,        0),
+    TEST_FUNC(تعبير_implies_تعبير,   2, INLINEFUNC_تعبير_implies_تعبير,   0),
     TEST_FUNC(affinity,            1, INLINEFUNC_affinity,            0),
 #endif /* !defined(SQLITE_UNTESTABLE) */
 /***** Regular functions *****/
@@ -3442,7 +3442,7 @@ void sqlite3RegisterBuiltinFunctions(void){
 #ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
     INLINE_FUNC(sqlite_offset,   1, INLINEFUNC_sqlite_offset, 0 ),
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
     FUNCTION(sqlite_filestat,    1, 0, 0, filestatFunc     ),
     FUNCTION(sqlite_walstat,     1, 0, 0, walstatFunc      ),
 #endif
@@ -3453,10 +3453,10 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(trim,               1, 3, 0, trimFunc         ),
     FUNCTION(trim,               2, 3, 0, trimFunc         ),
     FUNCTION(min,               -3, 0, 1, minmaxFunc       ),
-    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, min_Max_قيمة, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION(max,               -3, 1, 1, minmaxFunc       ),
-    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, min_Max_قيمة, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION2(typeof,            1, 0, 0, typeofFunc,  SQLITE_FUNC_TYPEOF),
     FUNCTION2(subtype,           1, 0, 0, subtypeFunc,
@@ -3467,13 +3467,13 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(printf,            -1, 0, 0, printfFunc       ),
     FUNCTION(format,            -1, 0, 0, printfFunc       ),
     FUNCTION(unicode,            1, 0, 0, unicodeFunc      ),
-    FUNCTION(char,              -1, 0, 0, charFunc         ),
+    FUNCTION(حرف,              -1, 0, 0, charFunc         ),
     FUNCTION(abs,                1, 0, 0, absFunc          ),
 #ifdef SQLITE_DEBUG
     FUNCTION(fpdecode,           3, 0, 0, fpdecodeFunc     ),
     FUNCTION(parseuri,          -1, 0, 0, parseuriFunc     ),
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
     FUNCTION(oom,               -1, 0, 0, oomFunc          ),
 #endif
 #ifndef SQLITE_OMIT_FLOATING_POINT
@@ -3497,7 +3497,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(unistr,             1, 0, 0, unistrFunc       ),
     FUNCTION(quote,              1, 0, 0, quoteFunc        ),
     FUNCTION(unistr_quote,       1, 1, 0, quoteFunc        ),
-    VFUNCTION(last_insert_rowid, 0, 0, 0, last_insert_rowid),
+    VFUNCTION(last_أدرج_rowid, 0, 0, 0, last_أدرج_rowid),
     VFUNCTION(changes,           0, 0, 0, changes          ),
     VFUNCTION(total_changes,     0, 0, 0, total_changes    ),
     FUNCTION(replace,            3, 0, 0, replaceFunc      ),
@@ -3509,30 +3509,30 @@ void sqlite3RegisterBuiltinFunctions(void){
     WAGGREGATE(sum,   1,0,0, sumStep, sumFinalize, sumFinalize, sumInverse, 0),
     WAGGREGATE(total, 1,0,0, sumStep,totalFinalize,totalFinalize,sumInverse, 0),
     WAGGREGATE(avg,   1,0,0, sumStep, avgFinalize, avgFinalize, sumInverse, 0),
-    WAGGREGATE(count, 0,0,0, countStep,
-        countFinalize, countFinalize, countInverse,
-        SQLITE_FUNC_COUNT|SQLITE_FUNC_ANYORDER  ),
-    WAGGREGATE(count, 1,0,0, countStep,
-        countFinalize, countFinalize, countInverse, SQLITE_FUNC_ANYORDER ),
+    WAGGREGATE(تعداد_2, 0,0,0, تعداد_Step,
+        تعداد_Finalize, تعداد_Finalize, تعداد_Inverse,
+        SQLITE_FUNC_تعداد|SQLITE_FUNC_ANYORDER  ),
+    WAGGREGATE(تعداد_2, 1,0,0, تعداد_Step,
+        تعداد_Finalize, تعداد_Finalize, تعداد_Inverse, SQLITE_FUNC_ANYORDER ),
     WAGGREGATE(group_concat, 1, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_قيمة, groupConcatInverse, 0),
     WAGGREGATE(group_concat, 2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_قيمة, groupConcatInverse, 0),
     WAGGREGATE(string_agg,   2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_قيمة, groupConcatInverse, 0),
 
 #ifdef SQLITE_ENABLE_PERCENTILE
     WAGGREGATE(median,          1,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_قيمة, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile,      2, 0x2,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_قيمة, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_cont, 2,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_قيمة, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_disc, 2, 0x1,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_قيمة, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
 #endif /* SQLITE_ENABLE_PERCENTILE */
  
@@ -3540,7 +3540,7 @@ void sqlite3RegisterBuiltinFunctions(void){
 #ifdef SQLITE_CASE_SENSITIVE_LIKE
     LIKEFUNC(like, 2, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
     LIKEFUNC(like, 3, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
-#else
+#وإلا
     LIKEFUNC(like, 2, &likeInfoNorm, SQLITE_FUNC_LIKE),
     LIKEFUNC(like, 3, &likeInfoNorm, SQLITE_FUNC_LIKE),
 #endif
@@ -3551,7 +3551,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     MFUNCTION(ceil,              1, xCeil,     ceilingFunc ),
     MFUNCTION(ceiling,           1, xCeil,     ceilingFunc ),
     MFUNCTION(floor,             1, xFloor,    ceilingFunc ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+#إذا SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(trunc,             1, trunc,     ceilingFunc ),
 #endif
     FUNCTION(ln,                 1, 0, 0,      logFunc     ),
@@ -3573,7 +3573,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     MFUNCTION(cosh,              1, cosh,      math1Func   ),
     MFUNCTION(sinh,              1, sinh,      math1Func   ),
     MFUNCTION(tanh,              1, tanh,      math1Func   ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+#إذا SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(acosh,             1, acosh,     math1Func   ),
     MFUNCTION(asinh,             1, asinh,     math1Func   ),
     MFUNCTION(atanh,             1, atanh,     math1Func   ),
@@ -3586,7 +3586,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(sign,               1, 0, 0,      signFunc    ),
     INLINE_FUNC(coalesce,       -4, INLINEFUNC_coalesce, 0 ),
     INLINE_FUNC(iif,            -4, INLINEFUNC_iif,      0 ),
-    INLINE_FUNC(if,             -4, INLINEFUNC_iif,      0 ),
+    INLINE_FUNC(إذا,             -4, INLINEFUNC_iif,      0 ),
   };
 #ifndef SQLITE_OMIT_ALTERTABLE
   sqlite3AlterFunctions();
@@ -3594,18 +3594,18 @@ void sqlite3RegisterBuiltinFunctions(void){
   sqlite3WindowFunctions();
   sqlite3RegisterDateTimeFunctions();
   sqlite3RegisterJsonFunctions();
-  sqlite3InsertBuiltinFuncs(aBuiltinFunc, ArraySize(aBuiltinFunc));
+  sqlite3_أدرج_Builtin_Funcs(aBuiltinFunc, ArraySize(aBuiltinFunc));
 
-#if 0  /* Enable to print out how the built-in functions are hashed */
+#إذا 0  /* Enable to print out how the built-in functions are hashed */
   {
-    int i;
+    صحيح i;
     FuncDef *p;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+    لكل(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
       printf("FUNC-HASH %02d:", i);
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
-        int n = sqlite3Strlen30(p->zName);
-        int h = p->zName[0] + n;
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
+      لكل(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
+        صحيح n = sqlite3Strlen30(p->zName);
+        صحيح h = p->zName[0] + n;
+        أكد( p->funcFlags & SQLITE_FUNC_BUILTIN );
         printf(" %s(%d)", p->zName, h);
       }
       printf("\n");
