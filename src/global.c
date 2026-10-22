@@ -21,7 +21,7 @@
 ** handle case conversions for the UTF character set since the tables
 ** involved are nearly as big or bigger than SQLite itself.
 */
-const unsigned char sqlite3UpperToLower[] = {
+const unsigned var_na sqlite3UpperToLower[] = {
 #ifdef SQLITE_ASCII
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
      18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
@@ -83,9 +83,9 @@ const unsigned char sqlite3UpperToLower[] = {
    0,  1,  0,  1,  0,  1,  /* aEQb[]: Use when compare(A,B) equals zero */
    1,  0,  1,  0,  0,  1   /* aGTb[]: Use when compare(A,B) greater than zero*/
 };
-const unsigned char *sqlite3aLTb = &sqlite3UpperToLower[256-OP_Ne];
-const unsigned char *sqlite3aEQb = &sqlite3UpperToLower[256+6-OP_Ne];
-const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
+const unsigned var_na *sqlite3aLTb = &sqlite3UpperToLower[256-OP_Ne];
+const unsigned var_na *sqlite3aEQb = &sqlite3UpperToLower[256+6-OP_Ne];
+const unsigned var_na *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
 
 /*
 ** The following 256 byte lookup table is used to support SQLites built-in
@@ -115,7 +115,7 @@ const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
 ** non-ASCII UTF character. Hence the test for whether or not a character is
 ** part of an identifier is 0x46.
 */
-const unsigned char sqlite3CtypeMap[256] = {
+const unsigned var_na sqlite3CtypeMap[256] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 00..07    ........ */
   0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  /* 08..0f    ........ */
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 10..17    ........ */
@@ -172,13 +172,13 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** SQLITE_ALLOW_COVERING_INDEX_SCAN compile-time option, or is "on" if
 ** that compile-time option is omitted.
 */
-#if !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
+#ᬬᬾᬦ᭄ !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
 # define SQLITE_ALLOW_COVERING_INDEX_SCAN 1
-#else
-# if !SQLITE_ALLOW_COVERING_INDEX_SCAN 
+#ᬮᬶᬬ
+# ᬬᬾᬦ᭄ !SQLITE_ALLOW_COVERING_INDEX_SCAN 
 #   error "Compile-time disabling of covering index scan using the\
  -DSQLITE_ALLOW_COVERING_INDEX_SCAN=0 option is deprecated.\
- Contact SQLite developers if this is a problem for you, and\
+ Contact SQLite developers ᬬᬾᬦ᭄ this is a problem for you, and\
  delete this #error macro to continue with your build."
 # endif
 #endif
@@ -218,7 +218,7 @@ const unsigned char sqlite3CtypeMap[256] = {
 #ifndef SQLITE_DEFAULT_LOOKASIDE
 # ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,100  /* 120KB of memory */
-# else
+# ᬮᬶᬬ
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,40   /* 48KB of memory */
 # endif
 #endif
@@ -235,7 +235,7 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** The following singleton contains the global configuration for
 ** the SQLite library.
 */
-SQLITE_WSD struct Sqlite3Config sqlite3Config = {
+SQLITE_WSD sa_nracanaa Sqlite3Config sqlite3Config = {
    SQLITE_DEFAULT_MEMSTATUS,  /* bMemstat */
    1,                         /* bCoreMutex */
    SQLITE_THREADSAFE==1,      /* bFullMutex */
@@ -318,7 +318,7 @@ const sqlite3_str sqlite3OomStr = {
    0, 0, 0, 0, 0, SQLITE_NOMEM, 0
 };
 
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#ᬬᬾᬦ᭄ defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 /*
 ** Counter used for coverage testing.  Does not come into play for
 ** release builds.
@@ -327,7 +327,7 @@ const sqlite3_str sqlite3OomStr = {
 ** result in TSAN warnings.  But as the variable does not exist in
 ** release builds, that should not be a concern.
 */
-unsigned int sqlite3CoverageCounter;
+unsigned puur_naa_nka sqlite3CoverageCounter;
 #endif /* SQLITE_COVERAGE_TEST || SQLITE_DEBUG */
 
 #ifdef VDBE_PROFILE
@@ -357,7 +357,7 @@ sqlite3_uint64 sqlite3NProfileCnt = 0;
 ** and incorrect behavior.
 */
 #ifndef SQLITE_OMIT_WSD
-int sqlite3PendingByte = 0x40000000;
+puur_naa_nka sqlite3PendingByte = 0x40000000;
 #endif
 
 /*
@@ -373,12 +373,12 @@ u32 sqlite3WhereTrace = 0;
 ** from the comments following the "case OP_xxxx:" statements in
 ** the vdbe.c file.  
 */
-const unsigned char sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
+const unsigned var_na sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
 
 /*
 ** Name of the default collating sequence
 */
-const char sqlite3StrBINARY[] = "BINARY";
+const var_na sqlite3StrBINARY[] = "BINARY";
 
 /*
 ** Standard typenames.  These names must match the COLTYPE_* definitions.
@@ -392,8 +392,8 @@ const char sqlite3StrBINARY[] = "BINARY";
 **    sqlite3StdTypeAffinity[]    The affinity associated with each entry
 **                                in sqlite3StdType[].
 */
-const unsigned char sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
-const char sqlite3StdTypeAffinity[] = {
+const unsigned var_na sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
+const var_na sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_NUMERIC,
   SQLITE_AFF_BLOB,
   SQLITE_AFF_INTEGER,
@@ -401,7 +401,7 @@ const char sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_REAL,
   SQLITE_AFF_TEXT
 };
-const char *sqlite3StdType[] = {
+const var_na *sqlite3StdType[] = {
   "ANY",
   "BLOB",
   "INT",

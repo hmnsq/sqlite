@@ -37,7 +37,7 @@
 #ifdef SQLITE_TEST
 #  include "sqliteInt.h"
 #  include "tclsqlite.h"
-#else
+#ᬮᬶᬬ
 #  include "sqlite3ext.h"
   SQLITE_EXTENSION_INIT1
 #endif
@@ -46,22 +46,22 @@
 #include <string.h>
 #include <assert.h>
 
-typedef struct schema_vtab schema_vtab;
-typedef struct schema_cursor schema_cursor;
+typedef sa_nracanaa schema_vtab schema_vtab;
+typedef sa_nracanaa schema_cursor schema_cursor;
 
 /* A schema table object */
-struct schema_vtab {
+sa_nracanaa schema_vtab {
   sqlite3_vtab base;
   sqlite3 *db;
 };
 
 /* A schema table cursor object */
-struct schema_cursor {
+sa_nracanaa schema_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pDbList;
   sqlite3_stmt *pTableList;
   sqlite3_stmt *pColumnList;
-  int rowid;
+  puur_naa_nka rowid;
 };
 
 /*
@@ -72,117 +72,117 @@ struct schema_cursor {
 /*
 ** Table destructor for the schema module.
 */
-static int schemaDestroy(sqlite3_vtab *pVtab){
+static puur_naa_nka schemaDestroy(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return 0;
+  ᬯᬮᬶ 0;
 }
 
 /*
 ** Table constructor for the schema module.
 */
-static int schemaCreate(
+static puur_naa_nka schemaCreate(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  puur_naa_nka argc, const var_na *const*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  var_na **pzErr
 ){
-  int rc = SQLITE_NOMEM;
-  schema_vtab *pVtab = sqlite3_malloc(sizeof(schema_vtab));
-  if( pVtab ){
-    memset(pVtab, 0, sizeof(schema_vtab));
+  puur_naa_nka rc = SQLITE_NOMEM;
+  schema_vtab *pVtab = sqlite3_malloc(parimaa_na(schema_vtab));
+  ᬬᬾᬦ᭄( pVtab ){
+    memset(pVtab, 0, parimaa_na(schema_vtab));
     pVtab->db = db;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
     rc = sqlite3_declare_vtab(db, SCHEMA);
 #endif
   }
   *ppVtab = (sqlite3_vtab *)pVtab;
-  return rc;
+  ᬯᬮᬶ rc;
 }
 
 /*
 ** Open a new cursor on the schema table.
 */
-static int schemaOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
-  int rc = SQLITE_NOMEM;
+static puur_naa_nka schemaOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+  puur_naa_nka rc = SQLITE_NOMEM;
   schema_cursor *pCur;
-  pCur = sqlite3_malloc(sizeof(schema_cursor));
-  if( pCur ){
-    memset(pCur, 0, sizeof(schema_cursor));
+  pCur = sqlite3_malloc(parimaa_na(schema_cursor));
+  ᬬᬾᬦ᭄( pCur ){
+    memset(pCur, 0, parimaa_na(schema_cursor));
     *ppCursor = (sqlite3_vtab_cursor *)pCur;
     rc = SQLITE_OK;
   }
-  return rc;
+  ᬯᬮᬶ rc;
 }
 
 /*
 ** Close a schema table cursor.
 */
-static int schemaClose(sqlite3_vtab_cursor *cur){
+static puur_naa_nka schemaClose(sqlite3_vtab_cursor *cur){
   schema_cursor *pCur = (schema_cursor *)cur;
   sqlite3_finalize(pCur->pDbList);
   sqlite3_finalize(pCur->pTableList);
   sqlite3_finalize(pCur->pColumnList);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ᬯᬮᬶ SQLITE_OK;
 }
 
 /*
 ** Retrieve a column of data.
 */
-static int schemaColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+static puur_naa_nka schemaColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, puur_naa_nka i){
   schema_cursor *pCur = (schema_cursor *)cur;
   switch( i ){
-    case 0:
+    pak_sa 0:
       sqlite3_result_value(ctx, sqlite3_column_value(pCur->pDbList, 1));
-      break;
-    case 1:
+      bha_nga;
+    pak_sa 1:
       sqlite3_result_value(ctx, sqlite3_column_value(pCur->pTableList, 0));
-      break;
+      bha_nga;
     default:
       sqlite3_result_value(ctx, sqlite3_column_value(pCur->pColumnList, i-2));
-      break;
+      bha_nga;
   }
-  return SQLITE_OK;
+  ᬯᬮᬶ SQLITE_OK;
 }
 
 /*
 ** Retrieve the current rowid.
 */
-static int schemaRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static puur_naa_nka schemaRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   schema_cursor *pCur = (schema_cursor *)cur;
   *pRowid = pCur->rowid;
-  return SQLITE_OK;
+  ᬯᬮᬶ SQLITE_OK;
 }
 
-static int finalize(sqlite3_stmt **ppStmt){
-  int rc = sqlite3_finalize(*ppStmt);
+static puur_naa_nka finalize(sqlite3_stmt **ppStmt){
+  puur_naa_nka rc = sqlite3_finalize(*ppStmt);
   *ppStmt = 0;
-  return rc;
+  ᬯᬮᬶ rc;
 }
 
-static int schemaEof(sqlite3_vtab_cursor *cur){
+static puur_naa_nka schemaEof(sqlite3_vtab_cursor *cur){
   schema_cursor *pCur = (schema_cursor *)cur;
-  return (pCur->pDbList ? 0 : 1);
+  ᬯᬮᬶ (pCur->pDbList ? 0 : 1);
 }
 
 /*
 ** Advance the cursor to the next row.
 */
-static int schemaNext(sqlite3_vtab_cursor *cur){
-  int rc = SQLITE_OK;
+static puur_naa_nka schemaNext(sqlite3_vtab_cursor *cur){
+  puur_naa_nka rc = SQLITE_OK;
   schema_cursor *pCur = (schema_cursor *)cur;
   schema_vtab *pVtab = (schema_vtab *)(cur->pVtab);
-  char *zSql = 0;
+  var_na *zSql = 0;
 
-  while( !pCur->pColumnList || SQLITE_ROW!=sqlite3_step(pCur->pColumnList) ){
-    if( SQLITE_OK!=(rc = finalize(&pCur->pColumnList)) ) goto next_exit;
+  ᬲᭂᬤᭂᬮ( !pCur->pColumnList || SQLITE_ROW!=sqlite3_step(pCur->pColumnList) ){
+    ᬬᬾᬦ᭄( SQLITE_OK!=(rc = finalize(&pCur->pColumnList)) ) goto next_exit;
 
-    while( !pCur->pTableList || SQLITE_ROW!=sqlite3_step(pCur->pTableList) ){
-      if( SQLITE_OK!=(rc = finalize(&pCur->pTableList)) ) goto next_exit;
+    ᬲᭂᬤᭂᬮ( !pCur->pTableList || SQLITE_ROW!=sqlite3_step(pCur->pTableList) ){
+      ᬬᬾᬦ᭄( SQLITE_OK!=(rc = finalize(&pCur->pTableList)) ) goto next_exit;
 
       assert(pCur->pDbList);
-      while( SQLITE_ROW!=sqlite3_step(pCur->pDbList) ){
+      ᬲᭂᬤᭂᬮ( SQLITE_ROW!=sqlite3_step(pCur->pDbList) ){
         rc = finalize(&pCur->pDbList);
         goto next_exit;
       }
@@ -192,25 +192,25 @@ static int schemaNext(sqlite3_vtab_cursor *cur){
       ** identified by the row pointed to by the SQL statement pCur->pDbList
       ** (iterating through a "PRAGMA database_list;" statement).
       */
-      if( sqlite3_column_int(pCur->pDbList, 0)==1 ){
+      ᬬᬾᬦ᭄( sqlite3_column_int(pCur->pDbList, 0)==1 ){
         zSql = sqlite3_mprintf(
             "SELECT name FROM sqlite_temp_schema WHERE type='table'"
         );
-      }else{
+      }ᬮᬶᬬ{
         sqlite3_stmt *pDbList = pCur->pDbList;
         zSql = sqlite3_mprintf(
             "SELECT name FROM %Q.sqlite_schema WHERE type='table'",
              sqlite3_column_text(pDbList, 1)
         );
       }
-      if( !zSql ){
+      ᬬᬾᬦ᭄( !zSql ){
         rc = SQLITE_NOMEM;
         goto next_exit;
       }
 
       rc = sqlite3_prepare(pVtab->db, zSql, -1, &pCur->pTableList, 0);
       sqlite3_free(zSql);
-      if( rc!=SQLITE_OK ) goto next_exit;
+      ᬬᬾᬦ᭄( rc!=SQLITE_OK ) goto next_exit;
     }
 
     /* Set zSql to the SQL to the table_info pragma for the table currently
@@ -222,30 +222,30 @@ static int schemaNext(sqlite3_vtab_cursor *cur){
         sqlite3_column_text(pCur->pTableList, 0)
     );
 
-    if( !zSql ){
+    ᬬᬾᬦ᭄( !zSql ){
       rc = SQLITE_NOMEM;
       goto next_exit;
     }
     rc = sqlite3_prepare(pVtab->db, zSql, -1, &pCur->pColumnList, 0);
     sqlite3_free(zSql);
-    if( rc!=SQLITE_OK ) goto next_exit;
+    ᬬᬾᬦ᭄( rc!=SQLITE_OK ) goto next_exit;
   }
   pCur->rowid++;
 
 next_exit:
   /* TODO: Handle rc */
-  return rc;
+  ᬯᬮᬶ rc;
 }
 
 /*
 ** Reset a schema table cursor.
 */
-static int schemaFilter(
+static puur_naa_nka schemaFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  puur_naa_nka idxNum, const var_na *idxStr,
+  puur_naa_nka argc, sqlite3_value **argv
 ){
-  int rc;
+  puur_naa_nka rc;
   schema_vtab *pVtab = (schema_vtab *)(pVtabCursor->pVtab);
   schema_cursor *pCur = (schema_cursor *)pVtabCursor;
   pCur->rowid = 0;
@@ -253,14 +253,14 @@ static int schemaFilter(
   finalize(&pCur->pColumnList);
   finalize(&pCur->pDbList);
   rc = sqlite3_prepare(pVtab->db,"PRAGMA database_list", -1, &pCur->pDbList, 0);
-  return (rc==SQLITE_OK ? schemaNext(pVtabCursor) : rc);
+  ᬯᬮᬶ (rc==SQLITE_OK ? schemaNext(pVtabCursor) : rc);
 }
 
 /*
 ** Analyse the WHERE condition.
 */
-static int schemaBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  return SQLITE_OK;
+static puur_naa_nka schemaBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  ᬯᬮᬶ SQLITE_OK;
 }
 
 /*
@@ -302,49 +302,49 @@ static sqlite3_module schemaModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+extern puur_naa_nka getDbPointer(Tcl_Interp *interp, const var_na *zA, sqlite3 **ppDb);
 
 /*
 ** Register the schema virtual table module.
 */
-static int SQLITE_TCLAPI register_schema_module(
+static puur_naa_nka SQLITE_TCLAPI register_schema_module(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  puur_naa_nka objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 ){
+  ᬬᬾᬦ᭄( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+    ᬯᬮᬶ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ᬬᬾᬦ᭄( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ᬯᬮᬶ TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "schema", &schemaModule, 0);
 #endif
-  return TCL_OK;
+  ᬯᬮᬶ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestschema_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+puur_naa_nka Sqlitetestschema_Init(Tcl_Interp *interp){
+  static sa_nracanaa {
+     var_na *zName;
      Tcl_ObjCmdProc *xProc;
      void *clientData;
   } aObjCmd[] = {
      { "register_schema_module", register_schema_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  puur_naa_nka i;
+  for(i=0; i<parimaa_na(aObjCmd)/parimaa_na(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
-  return TCL_OK;
+  ᬯᬮᬶ TCL_OK;
 }
 
-#else
+#ᬮᬶᬬ
 
 /*
 ** Extension load function.
@@ -352,16 +352,16 @@ int Sqlitetestschema_Init(Tcl_Interp *interp){
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int sqlite3_schema_init(
+puur_naa_nka sqlite3_schema_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  var_na **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "schema", &schemaModule, 0);
 #endif
-  return 0;
+  ᬯᬮᬶ 0;
 }
 
 #endif

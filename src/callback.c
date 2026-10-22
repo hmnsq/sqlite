@@ -20,22 +20,22 @@
 ** Invoke the 'collation needed' callback to request a collation sequence
 ** in the encoding enc of name zName, length nName.
 */
-static void callCollNeeded(sqlite3 *db, int enc, const char *zName){
+static void callCollNeeded(sqlite3 *db, puur_naa_nka enc, const var_na *zName){
   assert( !db->xCollNeeded || !db->xCollNeeded16 );
-  if( db->xCollNeeded ){
-    char *zExternal = sqlite3DbStrDup(db, zName);
-    if( !zExternal ) return;
+  ᬬᬾᬦ᭄( db->xCollNeeded ){
+    var_na *zExternal = sqlite3DbStrDup(db, zName);
+    ᬬᬾᬦ᭄( !zExternal ) ᬯᬮᬶ;
     db->xCollNeeded(db->pCollNeededArg, db, enc, zExternal);
     sqlite3DbFree(db, zExternal);
   }
 #ifndef SQLITE_OMIT_UTF16
-  if( db->xCollNeeded16 ){
-    char const *zExternal;
+  ᬬᬾᬦ᭄( db->xCollNeeded16 ){
+    var_na const *zExternal;
     sqlite3_value *pTmp = sqlite3ValueNew(db);
     sqlite3ValueSetStr(pTmp, -1, zName, SQLITE_UTF8, SQLITE_STATIC);
     zExternal = sqlite3ValueText(pTmp, SQLITE_UTF16NATIVE);
-    if( zExternal ){
-      db->xCollNeeded16(db->pCollNeededArg, db, (int)ENC(db), zExternal);
+    ᬬᬾᬦ᭄( zExternal ){
+      db->xCollNeeded16(db->pCollNeededArg, db, (puur_naa_nka)ENC(db), zExternal);
     }
     sqlite3ValueFree(pTmp);
   }
@@ -49,20 +49,20 @@ static void callCollNeeded(sqlite3 *db, int enc, const char *zName){
 ** of these instead if they exist. Avoid a UTF-8 <-> UTF-16 conversion if
 ** possible.
 */
-static int synthCollSeq(sqlite3 *db, CollSeq *pColl){
+static puur_naa_nka synthCollSeq(sqlite3 *db, CollSeq *pColl){
   CollSeq *pColl2;
-  char *z = pColl->zName;
-  int i;
+  var_na *z = pColl->zName;
+  puur_naa_nka i;
   static const u8 aEnc[] = { SQLITE_UTF16BE, SQLITE_UTF16LE, SQLITE_UTF8 };
   for(i=0; i<3; i++){
     pColl2 = sqlite3FindCollSeq(db, aEnc[i], z, 0);
-    if( pColl2->xCmp!=0 ){
-      memcpy(pColl, pColl2, sizeof(CollSeq));
+    ᬬᬾᬦ᭄( pColl2->xCmp!=0 ){
+      memcpy(pColl, pColl2, parimaa_na(CollSeq));
       pColl->xDel = 0;         /* Do not copy the destructor */
-      return SQLITE_OK;
+      ᬯᬮᬶ SQLITE_OK;
     }
   }
-  return SQLITE_ERROR;
+  ᬯᬮᬶ SQLITE_ERROR;
 }
 
 /*
@@ -76,17 +76,17 @@ static int synthCollSeq(sqlite3 *db, CollSeq *pColl){
 ** an equivalent collating sequence that uses a text encoding different
 ** from the main database is substituted, if one is available.
 */
-int sqlite3CheckCollSeq(Parse *pParse, CollSeq *pColl){
-  if( pColl && pColl->xCmp==0 ){
-    const char *zName = pColl->zName;
+puur_naa_nka sqlite3CheckCollSeq(Parse *pParse, CollSeq *pColl){
+  ᬬᬾᬦ᭄( pColl && pColl->xCmp==0 ){
+    const var_na *zName = pColl->zName;
     sqlite3 *db = pParse->db;
     CollSeq *p = sqlite3GetCollSeq(pParse, ENC(db), pColl, zName);
-    if( !p ){
-      return SQLITE_ERROR;
+    ᬬᬾᬦ᭄( !p ){
+      ᬯᬮᬶ SQLITE_ERROR;
     }
     assert( p==pColl );
   }
-  return SQLITE_OK;
+  ᬯᬮᬶ SQLITE_OK;
 }
 
 
@@ -106,22 +106,22 @@ int sqlite3CheckCollSeq(Parse *pParse, CollSeq *pColl){
 */
 static CollSeq *findCollSeqEntry(
   sqlite3 *db,          /* Database connection */
-  const char *zName,    /* Name of the collating sequence */
-  int create            /* Create a new entry if true */
+  const var_na *zName,    /* Name of the collating sequence */
+  puur_naa_nka create            /* Create a new entry if true */
 ){
   CollSeq *pColl;
   pColl = sqlite3HashFind(&db->aCollSeq, zName);
 
-  if( 0==pColl && create ){
-    int nName = sqlite3Strlen30(zName) + 1;
-    pColl = sqlite3DbMallocZero(db, 3*sizeof(*pColl) + nName);
-    if( pColl ){
+  ᬬᬾᬦ᭄( 0==pColl && create ){
+    puur_naa_nka nName = sqlite3Strlen30(zName) + 1;
+    pColl = sqlite3DbMallocZero(db, 3*parimaa_na(*pColl) + nName);
+    ᬬᬾᬦ᭄( pColl ){
       CollSeq *pDel = 0;
-      pColl[0].zName = (char*)&pColl[3];
+      pColl[0].zName = (var_na*)&pColl[3];
       pColl[0].enc = SQLITE_UTF8;
-      pColl[1].zName = (char*)&pColl[3];
+      pColl[1].zName = (var_na*)&pColl[3];
       pColl[1].enc = SQLITE_UTF16LE;
-      pColl[2].zName = (char*)&pColl[3];
+      pColl[2].zName = (var_na*)&pColl[3];
       pColl[2].enc = SQLITE_UTF16BE;
       memcpy(pColl[0].zName, zName, nName);
       pDel = sqlite3HashInsert(&db->aCollSeq, pColl[0].zName, pColl);
@@ -131,14 +131,14 @@ static CollSeq *findCollSeqEntry(
       ** to the hash table).
       */
       assert( pDel==0 || pDel==pColl );
-      if( pDel!=0 ){
+      ᬬᬾᬦ᭄( pDel!=0 ){
         sqlite3OomFault(db);
         sqlite3DbFree(db, pDel);
         pColl = 0;
       }
     }
   }
-  return pColl;
+  ᬯᬮᬶ pColl;
 }
 
 /*
@@ -159,19 +159,19 @@ static CollSeq *findCollSeqEntry(
 CollSeq *sqlite3FindCollSeq(
   sqlite3 *db,          /* Database connection to search */
   u8 enc,               /* Desired text encoding */
-  const char *zName,    /* Name of the collating sequence.  Might be NULL */
-  int create            /* True to create CollSeq if doesn't already exist */
+  const var_na *zName,    /* Name of the collating sequence.  Might be NULL */
+  puur_naa_nka create            /* True to create CollSeq if doesn't already exist */
 ){
   CollSeq *pColl;
   assert( SQLITE_UTF8==1 && SQLITE_UTF16LE==2 && SQLITE_UTF16BE==3 );
   assert( enc>=SQLITE_UTF8 && enc<=SQLITE_UTF16BE );
-  if( zName ){
+  ᬬᬾᬦ᭄( zName ){
     pColl = findCollSeqEntry(db, zName, create);
-    if( pColl ) pColl += enc-1;
-  }else{
+    ᬬᬾᬦ᭄( pColl ) pColl += enc-1;
+  }ᬮᬶᬬ{
     pColl = db->pDfltColl;
   }
-  return pColl;
+  ᬯᬮᬶ pColl;
 }
 
 /*
@@ -206,31 +206,31 @@ CollSeq *sqlite3GetCollSeq(
   Parse *pParse,        /* Parsing context */
   u8 enc,               /* The desired encoding for the collating sequence */
   CollSeq *pColl,       /* Collating sequence with native encoding, or NULL */
-  const char *zName     /* Collating sequence name */
+  const var_na *zName     /* Collating sequence name */
 ){
   CollSeq *p;
   sqlite3 *db = pParse->db;
 
   p = pColl;
-  if( !p ){
+  ᬬᬾᬦ᭄( !p ){
     p = sqlite3FindCollSeq(db, enc, zName, 0);
   }
-  if( !p || !p->xCmp ){
+  ᬬᬾᬦ᭄( !p || !p->xCmp ){
     /* No collation sequence of this type for this encoding is registered.
     ** Call the collation factory to see if it can supply us with one.
     */
     callCollNeeded(db, enc, zName);
     p = sqlite3FindCollSeq(db, enc, zName, 0);
   }
-  if( p && !p->xCmp && synthCollSeq(db, p) ){
+  ᬬᬾᬦ᭄( p && !p->xCmp && synthCollSeq(db, p) ){
     p = 0;
   }
   assert( !p || p->xCmp );
-  if( p==0 ){
+  ᬬᬾᬦ᭄( p==0 ){
     sqlite3ErrorMsg(pParse, "no such collation sequence: %s", zName);
     pParse->rc = SQLITE_ERROR_MISSING_COLLSEQ;
   }
-  return p;
+  ᬯᬮᬶ p;
 }
 
 /*
@@ -253,18 +253,18 @@ CollSeq *sqlite3GetCollSeq(
 **
 ** See also: sqlite3FindCollSeq(), sqlite3GetCollSeq()
 */
-CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char *zName){
+CollSeq *sqlite3LocateCollSeq(Parse *pParse, const var_na *zName){
   sqlite3 *db = pParse->db;
   u8 enc = ENC(db);
   u8 initbusy = db->init.busy;
   CollSeq *pColl;
 
   pColl = sqlite3FindCollSeq(db, enc, zName, initbusy);
-  if( !initbusy && (!pColl || !pColl->xCmp) ){
+  ᬬᬾᬦ᭄( !initbusy && (!pColl || !pColl->xCmp) ){
     pColl = sqlite3GetCollSeq(pParse, enc, pColl, zName);
   }
 
-  return pColl;
+  ᬯᬮᬶ pColl;
 }
 
 /* During the search for the best function definition, this procedure
@@ -296,42 +296,42 @@ CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char *zName){
 ** a non-match.
 */
 #define FUNC_PERFECT_MATCH 6  /* The score for a perfect match */
-static int matchQuality(
+static puur_naa_nka matchQuality(
   FuncDef *p,     /* The function we are evaluating for match quality */
-  int nArg,       /* Desired number of arguments.  (-1)==any */
+  puur_naa_nka nArg,       /* Desired number of arguments.  (-1)==any */
   u8 enc          /* Desired text encoding */
 ){
-  int match;
+  puur_naa_nka match;
   assert( p->nArg>=(-4) && p->nArg!=(-2) );
   assert( nArg>=(-2) );
 
   /* Wrong number of arguments means "no match" */
-  if( p->nArg!=nArg ){
-    if( nArg==(-2) ) return p->xSFunc==0 ? 0 : FUNC_PERFECT_MATCH;
-    if( p->nArg>=0 ) return 0;
+  ᬬᬾᬦ᭄( p->nArg!=nArg ){
+    ᬬᬾᬦ᭄( nArg==(-2) ) ᬯᬮᬶ p->xSFunc==0 ? 0 : FUNC_PERFECT_MATCH;
+    ᬬᬾᬦ᭄( p->nArg>=0 ) ᬯᬮᬶ 0;
     /* Special p->nArg values available to built-in functions only:
     **    -3     1 or more arguments required
     **    -4     2 or more arguments required
     */
-    if( p->nArg<(-2) && nArg<(-2-p->nArg) ) return 0;
+    ᬬᬾᬦ᭄( p->nArg<(-2) && nArg<(-2-p->nArg) ) ᬯᬮᬶ 0;
   }
 
   /* Give a better score to a function with a specific number of arguments
   ** than to function that accepts any number of arguments. */
-  if( p->nArg==nArg ){
+  ᬬᬾᬦ᭄( p->nArg==nArg ){
     match = 4;
-  }else{
+  }ᬮᬶᬬ{
     match = 1;
   }
 
   /* Bonus points if the text encoding matches */
-  if( enc==(p->funcFlags & SQLITE_FUNC_ENCMASK) ){
+  ᬬᬾᬦ᭄( enc==(p->funcFlags & SQLITE_FUNC_ENCMASK) ){
     match += 2;  /* Exact encoding match */
-  }else if( (enc & p->funcFlags & 2)!=0 ){
+  }ᬮᬶᬬ ᬬᬾᬦ᭄( (enc & p->funcFlags & 2)!=0 ){
     match += 1;  /* Both are UTF16, but with different byte orders */
   }
 
-  return match;
+  ᬯᬮᬶ match;
 }
 
 /*
@@ -339,17 +339,17 @@ static int matchQuality(
 ** a pointer to the matching FuncDef if found, or 0 if there is no match.
 */
 FuncDef *sqlite3FunctionSearch(
-  int h,               /* Hash of the name */
-  const char *zFunc    /* Name of function */
+  puur_naa_nka h,               /* Hash of the name */
+  const var_na *zFunc    /* Name of function */
 ){
   FuncDef *p;
   for(p=sqlite3BuiltinFunctions.a[h]; p; p=p->u.pHash){
     assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-    if( sqlite3StrICmp(p->zName, zFunc)==0 ){
-      return p;
+    ᬬᬾᬦ᭄( sqlite3StrICmp(p->zName, zFunc)==0 ){
+      ᬯᬮᬶ p;
     }
   }
-  return 0;
+  ᬯᬮᬶ 0;
 }
 
 /*
@@ -357,21 +357,21 @@ FuncDef *sqlite3FunctionSearch(
 */
 void sqlite3InsertBuiltinFuncs(
   FuncDef *aDef,      /* List of global functions to be inserted */
-  int nDef            /* Length of the apDef[] list */
+  puur_naa_nka nDef            /* Length of the apDef[] list */
 ){
-  int i;
+  puur_naa_nka i;
   for(i=0; i<nDef; i++){
     FuncDef *pOther;
-    const char *zName = aDef[i].zName;
-    int nName = sqlite3Strlen30(zName);
-    int h = SQLITE_FUNC_HASH(zName[0], nName);
+    const var_na *zName = aDef[i].zName;
+    puur_naa_nka nName = sqlite3Strlen30(zName);
+    puur_naa_nka h = SQLITE_FUNC_HASH(zName[0], nName);
     assert( aDef[i].funcFlags & SQLITE_FUNC_BUILTIN );
     pOther = sqlite3FunctionSearch(h, zName);
-    if( pOther ){
+    ᬬᬾᬦ᭄( pOther ){
       assert( pOther!=&aDef[i] && pOther->pNext!=&aDef[i] );
       aDef[i].pNext = pOther->pNext;
       pOther->pNext = &aDef[i];
-    }else{
+    }ᬮᬶᬬ{
       aDef[i].pNext = 0;
       aDef[i].u.pHash = sqlite3BuiltinFunctions.a[h];
       sqlite3BuiltinFunctions.a[h] = &aDef[i];
@@ -402,16 +402,16 @@ void sqlite3InsertBuiltinFuncs(
 */
 FuncDef *sqlite3FindFunction(
   sqlite3 *db,       /* An open database */
-  const char *zName, /* Name of the function.  zero-terminated */
-  int nArg,          /* Number of arguments.  -1 means any number */
+  const var_na *zName, /* Name of the function.  zero-terminated */
+  puur_naa_nka nArg,          /* Number of arguments.  -1 means any number */
   u8 enc,            /* Preferred text encoding */
   u8 createFlag      /* Create new entry if true and does not otherwise exist */
 ){
   FuncDef *p;         /* Iterator variable */
   FuncDef *pBest = 0; /* Best match found so far */
-  int bestScore = 0;  /* Score of best match */
-  int h;              /* Hash value */
-  int nName;          /* Length of the name */
+  puur_naa_nka bestScore = 0;  /* Score of best match */
+  puur_naa_nka h;              /* Hash value */
+  puur_naa_nka nName;          /* Length of the name */
 
   assert( nArg>=(-2) );
   assert( nArg>=(-1) || createFlag==0 );
@@ -420,9 +420,9 @@ FuncDef *sqlite3FindFunction(
   /* First search for a match amongst the application-defined functions.
   */
   p = (FuncDef*)sqlite3HashFind(&db->aFunc, zName);
-  while( p ){
-    int score = matchQuality(p, nArg, enc);
-    if( score>bestScore ){
+  ᬲᭂᬤᭂᬮ( p ){
+    puur_naa_nka score = matchQuality(p, nArg, enc);
+    ᬬᬾᬦ᭄( score>bestScore ){
       pBest = p;
       bestScore = score;
     }
@@ -441,13 +441,13 @@ FuncDef *sqlite3FindFunction(
   ** new function.  But the FuncDefs for built-in functions are read-only.
   ** So we must not search for built-ins when creating a new function.
   */ 
-  if( !createFlag && (pBest==0 || (db->mDbFlags & DBFLAG_PreferBuiltin)!=0) ){
+  ᬬᬾᬦ᭄( !createFlag && (pBest==0 || (db->mDbFlags & DBFLAG_PreferBuiltin)!=0) ){
     bestScore = 0;
     h = SQLITE_FUNC_HASH(sqlite3UpperToLower[(u8)zName[0]], nName);
     p = sqlite3FunctionSearch(h, zName);
-    while( p ){
-      int score = matchQuality(p, nArg, enc);
-      if( score>bestScore ){
+    ᬲᭂᬤᭂᬮ( p ){
+      puur_naa_nka score = matchQuality(p, nArg, enc);
+      ᬬᬾᬦ᭄( score>bestScore ){
         pBest = p;
         bestScore = score;
       }
@@ -459,29 +459,29 @@ FuncDef *sqlite3FindFunction(
   ** exact match for the name, number of arguments and encoding, then add a
   ** new entry to the hash table and return it.
   */
-  if( createFlag && bestScore<FUNC_PERFECT_MATCH && 
-      (pBest = sqlite3DbMallocZero(db, sizeof(*pBest)+nName+1))!=0 ){
+  ᬬᬾᬦ᭄( createFlag && bestScore<FUNC_PERFECT_MATCH && 
+      (pBest = sqlite3DbMallocZero(db, parimaa_na(*pBest)+nName+1))!=0 ){
     FuncDef *pOther;
     u8 *z;
-    pBest->zName = (const char*)&pBest[1];
+    pBest->zName = (const var_na*)&pBest[1];
     pBest->nArg = (u16)nArg;
     pBest->funcFlags = enc;
-    memcpy((char*)&pBest[1], zName, nName+1);
+    memcpy((var_na*)&pBest[1], zName, nName+1);
     for(z=(u8*)pBest->zName; *z; z++) *z = sqlite3UpperToLower[*z];
     pOther = (FuncDef*)sqlite3HashInsert(&db->aFunc, pBest->zName, pBest);
-    if( pOther==pBest ){
+    ᬬᬾᬦ᭄( pOther==pBest ){
       sqlite3DbFree(db, pBest);
       sqlite3OomFault(db);
-      return 0;
-    }else{
+      ᬯᬮᬶ 0;
+    }ᬮᬶᬬ{
       pBest->pNext = pOther;
     }
   }
 
-  if( pBest && (pBest->xSFunc || createFlag) ){
-    return pBest;
+  ᬬᬾᬦ᭄( pBest && (pBest->xSFunc || createFlag) ){
+    ᬯᬮᬶ pBest;
   }
-  return 0;
+  ᬯᬮᬶ 0;
 }
 
 /*
@@ -499,7 +499,7 @@ void sqlite3SchemaClear(void *p){
   Schema *pSchema = (Schema *)p;
   sqlite3 xdb;
 
-  memset(&xdb, 0, sizeof(xdb));
+  memset(&xdb, 0, parimaa_na(xdb));
   temp1 = pSchema->tblHash;
   temp2 = pSchema->trigHash;
   sqlite3HashInit(&pSchema->trigHash);
@@ -517,7 +517,7 @@ void sqlite3SchemaClear(void *p){
   sqlite3HashClear(&temp1);
   sqlite3HashClear(&pSchema->fkeyHash);
   pSchema->pSeqTab = 0;
-  if( pSchema->schemaFlags & DB_SchemaLoaded ){
+  ᬬᬾᬦ᭄( pSchema->schemaFlags & DB_SchemaLoaded ){
     pSchema->iGeneration++;
   }
   pSchema->schemaFlags &= ~(DB_SchemaLoaded|DB_ResetWanted);
@@ -529,19 +529,19 @@ void sqlite3SchemaClear(void *p){
 */
 Schema *sqlite3SchemaGet(sqlite3 *db, Btree *pBt){
   Schema * p;
-  if( pBt ){
-    p = (Schema *)sqlite3BtreeSchema(pBt, sizeof(Schema), sqlite3SchemaClear);
-  }else{
-    p = (Schema *)sqlite3DbMallocZero(0, sizeof(Schema));
+  ᬬᬾᬦ᭄( pBt ){
+    p = (Schema *)sqlite3BtreeSchema(pBt, parimaa_na(Schema), sqlite3SchemaClear);
+  }ᬮᬶᬬ{
+    p = (Schema *)sqlite3DbMallocZero(0, parimaa_na(Schema));
   }
-  if( !p ){
+  ᬬᬾᬦ᭄( !p ){
     sqlite3OomFault(db);
-  }else if ( 0==p->file_format ){
+  }ᬮᬶᬬ ᬬᬾᬦ᭄ ( 0==p->file_format ){
     sqlite3HashInit(&p->tblHash);
     sqlite3HashInit(&p->idxHash);
     sqlite3HashInit(&p->trigHash);
     sqlite3HashInit(&p->fkeyHash);
     p->enc = SQLITE_UTF8;
   }
-  return p;
+  ᬯᬮᬶ p;
 }

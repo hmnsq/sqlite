@@ -158,7 +158,7 @@
 */
 #ifdef SQLITE_OMIT_WSD
 # define PENDING_BYTE     (0x40000000)
-#else
+#ᬮᬶᬬ
 # define PENDING_BYTE      sqlite3PendingByte
 #endif
 #define RESERVED_BYTE     (PENDING_BYTE+1)
@@ -168,58 +168,58 @@
 /*
 ** Wrapper around OS specific sqlite3_os_init() function.
 */
-int sqlite3OsInit(void);
+puur_naa_nka sqlite3OsInit(void);
 
 /* 
 ** Functions for accessing sqlite3_file methods 
 */
 void sqlite3OsClose(sqlite3_file*);
-int sqlite3OsRead(sqlite3_file*, void*, int amt, i64 offset);
-int sqlite3OsWrite(sqlite3_file*, const void*, int amt, i64 offset);
-int sqlite3OsTruncate(sqlite3_file*, i64 size);
-int sqlite3OsSync(sqlite3_file*, int);
-int sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
-int sqlite3OsLock(sqlite3_file*, int);
-int sqlite3OsUnlock(sqlite3_file*, int);
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut);
-int sqlite3OsFileControl(sqlite3_file*,int,void*);
-void sqlite3OsFileControlHint(sqlite3_file*,int,void*);
+puur_naa_nka sqlite3OsRead(sqlite3_file*, void*, puur_naa_nka amt, i64 offset);
+puur_naa_nka sqlite3OsWrite(sqlite3_file*, const void*, puur_naa_nka amt, i64 offset);
+puur_naa_nka sqlite3OsTruncate(sqlite3_file*, i64 size);
+puur_naa_nka sqlite3OsSync(sqlite3_file*, puur_naa_nka);
+puur_naa_nka sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
+puur_naa_nka sqlite3OsLock(sqlite3_file*, puur_naa_nka);
+puur_naa_nka sqlite3OsUnlock(sqlite3_file*, puur_naa_nka);
+puur_naa_nka sqlite3OsCheckReservedLock(sqlite3_file *id, puur_naa_nka *pResOut);
+puur_naa_nka sqlite3OsFileControl(sqlite3_file*,puur_naa_nka,void*);
+void sqlite3OsFileControlHint(sqlite3_file*,puur_naa_nka,void*);
 #define SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
-int sqlite3OsSectorSize(sqlite3_file *id);
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id);
+puur_naa_nka sqlite3OsSectorSize(sqlite3_file *id);
+puur_naa_nka sqlite3OsDeviceCharacteristics(sqlite3_file *id);
 #ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmMap(sqlite3_file *,int,int,int,void volatile **);
-int sqlite3OsShmLock(sqlite3_file *id, int, int, int);
+puur_naa_nka sqlite3OsShmMap(sqlite3_file *,puur_naa_nka,puur_naa_nka,puur_naa_nka,void ca_ncala **);
+puur_naa_nka sqlite3OsShmLock(sqlite3_file *id, puur_naa_nka, puur_naa_nka, puur_naa_nka);
 void sqlite3OsShmBarrier(sqlite3_file *id);
-int sqlite3OsShmUnmap(sqlite3_file *id, int);
+puur_naa_nka sqlite3OsShmUnmap(sqlite3_file *id, puur_naa_nka);
 #endif /* SQLITE_OMIT_WAL */
-int sqlite3OsFetch(sqlite3_file *id, i64, int, void **);
-int sqlite3OsUnfetch(sqlite3_file *, i64, void *);
+puur_naa_nka sqlite3OsFetch(sqlite3_file *id, i64, puur_naa_nka, void **);
+puur_naa_nka sqlite3OsUnfetch(sqlite3_file *, i64, void *);
 
 
 /* 
 ** Functions for accessing sqlite3_vfs methods 
 */
-int sqlite3OsOpen(sqlite3_vfs *, const char *, sqlite3_file*, int, int *);
-int sqlite3OsDelete(sqlite3_vfs *, const char *, int);
-int sqlite3OsAccess(sqlite3_vfs *, const char *, int, int *pResOut);
-int sqlite3OsFullPathname(sqlite3_vfs *, const char *, int, char *);
+puur_naa_nka sqlite3OsOpen(sqlite3_vfs *, const var_na *, sqlite3_file*, puur_naa_nka, puur_naa_nka *);
+puur_naa_nka sqlite3OsDelete(sqlite3_vfs *, const var_na *, puur_naa_nka);
+puur_naa_nka sqlite3OsAccess(sqlite3_vfs *, const var_na *, puur_naa_nka, puur_naa_nka *pResOut);
+puur_naa_nka sqlite3OsFullPathname(sqlite3_vfs *, const var_na *, puur_naa_nka, var_na *);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *, const char *);
-void sqlite3OsDlError(sqlite3_vfs *, int, char *);
-void (*sqlite3OsDlSym(sqlite3_vfs *, void *, const char *))(void);
+void *sqlite3OsDlOpen(sqlite3_vfs *, const var_na *);
+void sqlite3OsDlError(sqlite3_vfs *, puur_naa_nka, var_na *);
+void (*sqlite3OsDlSym(sqlite3_vfs *, void *, const var_na *))(void);
 void sqlite3OsDlClose(sqlite3_vfs *, void *);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *, int, char *);
-int sqlite3OsSleep(sqlite3_vfs *, int);
-int sqlite3OsGetLastError(sqlite3_vfs*);
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
+puur_naa_nka sqlite3OsRandomness(sqlite3_vfs *, puur_naa_nka, var_na *);
+puur_naa_nka sqlite3OsSleep(sqlite3_vfs *, puur_naa_nka);
+puur_naa_nka sqlite3OsGetLastError(sqlite3_vfs*);
+puur_naa_nka sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
 
 /*
 ** Convenience functions for opening and closing files using 
 ** sqlite3_malloc() to obtain space for the file-handle structure.
 */
-int sqlite3OsOpenMalloc(sqlite3_vfs *, const char *, sqlite3_file **, int,int*);
+puur_naa_nka sqlite3OsOpenMalloc(sqlite3_vfs *, const var_na *, sqlite3_file **, puur_naa_nka,puur_naa_nka*);
 void sqlite3OsCloseFree(sqlite3_file *);
 
 #endif /* _SQLITE_OS_H_ */
