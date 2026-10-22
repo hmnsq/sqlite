@@ -13,8 +13,8 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "btreeInt.h"
-#include "tclsqlite.h"
+#अन्तर्भाव "btreeInt.h"
+#अन्तर्भाव "tclsqlite.h"
 
 /*
 ** Usage: sqlite3_shared_cache_report
@@ -22,38 +22,38 @@
 ** Return a list of file that are shared and the number of
 ** references to each file.
 */
-int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
-  void * clientData,
+पूर्णाङ्क SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  extern BtShared *sqlite3SharedCacheList;
+  बाह्य BtShared *sqlite3SharedCacheList;
   BtShared *pBt;
   Tcl_Obj *pRet = Tcl_NewObj();
-  for(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->pNext){
-    const char *zFile = sqlite3PagerFilename(pBt->pPager, 1);
+  अत्थाय(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->pNext){
+    ध्रुव वर्ण *zFile = sqlite3PagerFilename(pBt->pPager, 1);
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(zFile, -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(pBt->nRef));
   }
   Tcl_SetObjResult(interp, pRet);
 #endif
-  return TCL_OK;
+  पटिनिवत्त TCL_OK;
 }
 
 /*
 ** Print debugging information about all cursors to standard output.
 */
-void sqlite3BtreeCursorList(Btree *p){
+शून्य sqlite3BtreeCursorList(Btree *p){
 #ifdef SQLITE_DEBUG
   BtCursor *pCur;
   BtShared *pBt = p->pBt;
-  for(pCur=pBt->pCursor; pCur; pCur=pCur->pNext){
+  अत्थाय(pCur=pBt->pCursor; pCur; pCur=pCur->pNext){
     MemPage *pPage = pCur->apPage[pCur->iPage];
-    char *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
+    वर्ण *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
     sqlite3DebugPrintf("CURSOR %p rooted at %4d(%s) currently at %d.%d%s\n",
-       pCur, pCur->pgnoRoot, zMode,
+       pCur, pCur->pgno_मूलम्, zMode,
        pPage ? pPage->pgno : 0, pCur->aiIdx[pCur->iPage],
        (pCur->eState==CURSOR_VALID) ? "" : " eof"
     );

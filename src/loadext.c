@@ -16,8 +16,8 @@
 #ifndef SQLITE_CORE
   #define SQLITE_CORE 1  /* Disable the API redefinition in sqlite3ext.h */
 #endif
-#include "sqlite3ext.h"
-#include "sqliteInt.h"
+#अन्तर्भाव "sqlite3ext.h"
+#अन्तर्भाव "sqliteInt.h"
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 /*
@@ -56,9 +56,9 @@
 # define sqlite3_result_text16          0
 # define sqlite3_result_text16be        0
 # define sqlite3_result_text16le        0
-# define sqlite3_value_text16           0
-# define sqlite3_value_text16be         0
-# define sqlite3_value_text16le         0
+# define sqlite3_मानम्_text16           0
+# define sqlite3_मानम्_text16be         0
+# define sqlite3_मानम्_text16le         0
 # define sqlite3_column_database_name16 0
 # define sqlite3_column_table_name16    0
 # define sqlite3_column_origin_name16   0
@@ -91,7 +91,7 @@
 # define sqlite3_enable_shared_cache 0
 #endif
 
-#if defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
+#सचे defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
 # define sqlite3_profile       0
 # define sqlite3_trace         0
 #endif
@@ -111,7 +111,7 @@
 #define sqlite3_blob_reopen    0
 #endif
 
-#if defined(SQLITE_OMIT_TRACE)
+#सचे defined(SQLITE_OMIT_TRACE)
 # define sqlite3_trace_v2      0
 #endif
 
@@ -130,11 +130,11 @@
 ** also check to make sure that the pointer to the function is
 ** not NULL before calling it.
 */
-static const sqlite3_api_routines sqlite3Apis = {
+स्थिर ध्रुव sqlite3_api_routines sqlite3Apis = {
   sqlite3_aggregate_context,
 #ifndef SQLITE_OMIT_DEPRECATED
-  sqlite3_aggregate_count,
-#else
+  sqlite3_aggregate_गणनम्,
+#अञ्ञथा
   0,
 #endif
   sqlite3_bind_blob,
@@ -142,12 +142,12 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_bind_int,
   sqlite3_bind_int64,
   sqlite3_bind_null,
-  sqlite3_bind_parameter_count,
+  sqlite3_bind_parameter_गणनम्,
   sqlite3_bind_parameter_index,
   sqlite3_bind_parameter_name,
   sqlite3_bind_text,
   sqlite3_bind_text16,
-  sqlite3_bind_value,
+  sqlite3_bind_मानम्,
   sqlite3_busy_handler,
   sqlite3_busy_timeout,
   sqlite3_changes,
@@ -157,7 +157,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_column_blob,
   sqlite3_column_bytes,
   sqlite3_column_bytes16,
-  sqlite3_column_count,
+  sqlite3_column_गणनम्,
   sqlite3_column_database_name,
   sqlite3_column_database_name16,
   sqlite3_column_decltype,
@@ -174,7 +174,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_column_text,
   sqlite3_column_text16,
   sqlite3_column_type,
-  sqlite3_column_value,
+  sqlite3_column_मानम्,
   sqlite3_commit_hook,
   sqlite3_complete,
   sqlite3_complete16,
@@ -183,7 +183,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_create_function,
   sqlite3_create_function16,
   sqlite3_create_module,
-  sqlite3_data_count,
+  sqlite3_data_गणनम्,
   sqlite3_db_handle,
   sqlite3_declare_vtab,
   sqlite3_enable_shared_cache,
@@ -193,7 +193,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_exec,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_expired,
-#else
+#अञ्ञथा
   0,
 #endif
   sqlite3_finalize,
@@ -204,9 +204,9 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_get_table,
   0,     /* Was sqlite3_global_recover(), but that function is deprecated */
   sqlite3_interrupt,
-  sqlite3_last_insert_rowid,
+  sqlite3_last_निवेशय_rowid,
   sqlite3_libversion,
-  sqlite3_libversion_number,
+  sqlite3_libversion_सङ्ख्या,
   sqlite3_malloc,
   sqlite3_mprintf,
   sqlite3_open,
@@ -228,7 +228,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_result_text16,
   sqlite3_result_text16be,
   sqlite3_result_text16le,
-  sqlite3_result_value,
+  sqlite3_result_मानम्,
   sqlite3_rollback_hook,
   sqlite3_set_authorizer,
   sqlite3_set_auxdata,
@@ -237,30 +237,30 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_table_column_metadata,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_thread_cleanup,
-#else
+#अञ्ञथा
   0,
 #endif
   sqlite3_total_changes,
   sqlite3_trace,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_transfer_bindings,
-#else
+#अञ्ञथा
   0,
 #endif
   sqlite3_update_hook,
   sqlite3_user_data,
-  sqlite3_value_blob,
-  sqlite3_value_bytes,
-  sqlite3_value_bytes16,
-  sqlite3_value_double,
-  sqlite3_value_int,
-  sqlite3_value_int64,
-  sqlite3_value_numeric_type,
-  sqlite3_value_text,
-  sqlite3_value_text16,
-  sqlite3_value_text16be,
-  sqlite3_value_text16le,
-  sqlite3_value_type,
+  sqlite3_मानम्_blob,
+  sqlite3_मानम्_bytes,
+  sqlite3_मानम्_bytes16,
+  sqlite3_मानम्_double,
+  sqlite3_मानम्_int,
+  sqlite3_मानम्_int64,
+  sqlite3_मानम्_numeric_type,
+  sqlite3_मानम्_text,
+  sqlite3_मानम्_text16,
+  sqlite3_मानम्_text16be,
+  sqlite3_मानम्_text16le,
+  sqlite3_मानम्_type,
   sqlite3_vmprintf,
   /*
   ** The original API set ends here.  All extensions can call any
@@ -303,7 +303,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   0,
   0,
   0,
-#else
+#अञ्ञथा
   sqlite3_mutex_alloc,
   sqlite3_mutex_enter,
   sqlite3_mutex_free,
@@ -350,7 +350,7 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
   sqlite3_compileoption_get,
   sqlite3_compileoption_used,
-#else
+#अञ्ञथा
   0,
   0,
 #endif
@@ -366,14 +366,14 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_strnicmp,
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
   sqlite3_unlock_notify,
-#else
+#अञ्ञथा
   0,
 #endif
 #ifndef SQLITE_OMIT_WAL
   sqlite3_wal_autocheckpoint,
   sqlite3_wal_checkpoint,
   sqlite3_wal_hook,
-#else
+#अञ्ञथा
   0,
   0,
   0,
@@ -408,12 +408,12 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_result_text64,
   sqlite3_strglob,
   /* Version 3.8.11 and later */
-  (sqlite3_value*(*)(const sqlite3_value*))sqlite3_value_dup,
-  sqlite3_value_free,
+  (sqlite3_मानम्*(*)(ध्रुव sqlite3_मानम्*))sqlite3_मानम्_dup,
+  sqlite3_मानम्_free,
   sqlite3_result_zeroblob64,
   sqlite3_bind_zeroblob64,
   /* Version 3.9.0 and later */
-  sqlite3_value_subtype,
+  sqlite3_मानम्_subtype,
   sqlite3_result_subtype,
   /* Version 3.10.0 and later */
   sqlite3_status64,
@@ -425,19 +425,19 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_trace_v2,
   sqlite3_expanded_sql,
   /* Version 3.18.0 and later */
-  sqlite3_set_last_insert_rowid,
+  sqlite3_set_last_निवेशय_rowid,
   /* Version 3.20.0 and later */
   sqlite3_prepare_v3,
   sqlite3_prepare16_v3,
   sqlite3_bind_pointer,
   sqlite3_result_pointer,
-  sqlite3_value_pointer,
+  sqlite3_मानम्_pointer,
   /* Version 3.22.0 and later */
   sqlite3_vtab_nochange,
-  sqlite3_value_nochange,
+  sqlite3_मानम्_nochange,
   sqlite3_vtab_collation,
   /* Version 3.24.0 and later */
-  sqlite3_keyword_count,
+  sqlite3_keyword_गणनम्,
   sqlite3_keyword_name,
   sqlite3_keyword_check,
   sqlite3_str_new,
@@ -450,27 +450,27 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_str_reset,
   sqlite3_str_errcode,
   sqlite3_str_length,
-  sqlite3_str_value,
+  sqlite3_str_मानम्,
   /* Version 3.25.0 and later */
   sqlite3_create_window_function,
   /* Version 3.26.0 and later */
 #ifdef SQLITE_ENABLE_NORMALIZE
   sqlite3_normalized_sql,
-#else
+#अञ्ञथा
   0,
 #endif
   /* Version 3.28.0 and later */
   sqlite3_stmt_isexplain,
-  sqlite3_value_frombind,
+  sqlite3_मानम्_frombind,
   /* Version 3.30.0 and later */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_drop_modules,
-#else
+#अञ्ञथा
   0,
 #endif
   /* Version 3.31.0 and later */
   sqlite3_hard_heap_limit64,
-  sqlite3_uri_key,
+  sqlite3_uri_कुञ्चिका,
   sqlite3_filename_database,
   sqlite3_filename_journal,
   sqlite3_filename_wal,
@@ -488,12 +488,12 @@ static const sqlite3_api_routines sqlite3Apis = {
   /* Version 3.38.0 and later */
   sqlite3_error_offset,
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_vtab_rhs_value,
+  sqlite3_vtab_rhs_मानम्,
   sqlite3_vtab_distinct,
   sqlite3_vtab_in,
   sqlite3_vtab_in_first,
   sqlite3_vtab_in_next,
-#else
+#अञ्ञथा
   0,
   0,
   0,
@@ -504,13 +504,13 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifndef SQLITE_OMIT_DESERIALIZE
   sqlite3_deserialize,
   sqlite3_serialize,
-#else
+#अञ्ञथा
   0,
   0,
 #endif
   sqlite3_db_name,
   /* Version 3.40.0 and later */
-  sqlite3_value_encoding,
+  sqlite3_मानम्_encoding,
   /* Version 3.41.0 and later */
   sqlite3_is_interrupted,
   /* Version 3.43.0 and later */
@@ -529,7 +529,7 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifdef SQLITE_ENABLE_CARRAY
   sqlite3_carray_bind,
   sqlite3_carray_bind_v2,
-#else
+#अञ्ञथा
   0,
   0,
 #endif
@@ -540,9 +540,9 @@ static const sqlite3_api_routines sqlite3Apis = {
 
 /* True if x is the directory separator character
 */
-#if SQLITE_OS_WIN
+#सचे SQLITE_OS_WIN
 # define DirSep(X)  ((X)=='/'||(X)=='\\')
-#else
+#अञ्ञथा
 # define DirSep(X)  ((X)=='/')
 #endif
 
@@ -558,36 +558,36 @@ static const sqlite3_api_routines sqlite3Apis = {
 ** error message text.  The calling function should free this memory
 ** by calling sqlite3DbFree(db, ).
 */
-static int sqlite3LoadExtension(
+स्थिर पूर्णाङ्क sqlite3LoadExtension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  ध्रुव वर्ण *zFile,    /* Name of the shared library containing extension */
+  ध्रुव वर्ण *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  वर्ण **pz_Err_सन्देशः       /* Put error message here if not 0 */
 ){
   sqlite3_vfs *pVfs = db->pVfs;
-  void *handle;
+  शून्य *handle;
   sqlite3_loadext_entry xInit;
-  char *zErrmsg = 0;
-  const char *zEntry;
-  char *zAltEntry = 0;
-  void **aHandle;
-  u64 nMsg = strlen(zFile);
-  int ii;
-  int rc;
+  वर्ण *zErrmsg = 0;
+  ध्रुव वर्ण *zEntry;
+  वर्ण *zAltEntry = 0;
+  शून्य **aHandle;
+  u64 n_सन्देशः = strlen(zFile);
+  पूर्णाङ्क ii;
+  पूर्णाङ्क rc;
 
   /* Shared library endings to try if zFile cannot be loaded as written */
-  static const char *azEndings[] = {
-#if SQLITE_OS_WIN
+  स्थिर ध्रुव वर्ण *azEndings[] = {
+#सचे SQLITE_OS_WIN
      "dll"   
-#elif defined(__APPLE__)
+#नोचेद्यदि defined(__APPLE__)
      "dylib"
-#else
+#अञ्ञथा
      "so"
 #endif
   };
 
 
-  if( pzErrMsg ) *pzErrMsg = 0;
+  सचे( pz_Err_सन्देशः ) *pz_Err_सन्देशः = 0;
 
   /* Ticket #1863.  To avoid a creating security problems for older
   ** applications that relink against newer versions of SQLite, the
@@ -596,11 +596,11 @@ static int sqlite3LoadExtension(
   ** sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 1, 0)
   ** to turn on extension loading.
   */
-  if( (db->flags & SQLITE_LoadExtension)==0 ){
-    if( pzErrMsg ){
-      *pzErrMsg = sqlite3_mprintf("not authorized");
+  सचे( (db->flags & SQLITE_LoadExtension)==0 ){
+    सचे( pz_Err_सन्देशः ){
+      *pz_Err_सन्देशः = sqlite3_mprintf("not authorized");
     }
-    return SQLITE_ERROR;
+    पटिनिवत्त SQLITE_ERROR;
   }
 
   zEntry = zProc ? zProc : "sqlite3_extension_init";
@@ -613,24 +613,24 @@ static int sqlite3LoadExtension(
   ** Later (2023-03-25): Save an extra 6 bytes for the filename suffix.
   ** See https://sqlite.org/forum/forumpost/24083b579d.
   */
-  if( nMsg>SQLITE_MAX_PATHLEN ) goto extension_not_found;
+  सचे( n_सन्देशः>SQLITE_MAX_PATHLEN ) गच्छ extension_not_found;
 
   /* Do not allow sqlite3_load_extension() to link to a copy of the
   ** running application, by passing in an empty filename. */
-  if( nMsg==0 ) goto extension_not_found;
+  सचे( n_सन्देशः==0 ) गच्छ extension_not_found;
     
   handle = sqlite3OsDlOpen(pVfs, zFile);
-#if SQLITE_OS_UNIX || SQLITE_OS_WIN
-  for(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
-    char *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
-    if( zAltFile==0 ) return SQLITE_NOMEM_BKPT;
-    if( nMsg+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
+#सचे SQLITE_OS_UNIX || SQLITE_OS_WIN
+  अत्थाय(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
+    वर्ण *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
+    सचे( zAltFile==0 ) पटिनिवत्त SQLITE_NOMEM_BKPT;
+    सचे( n_सन्देशः+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
       handle = sqlite3OsDlOpen(pVfs, zAltFile);
     }
     sqlite3_free(zAltFile);
   }
 #endif
-  if( handle==0 ) goto extension_not_found;
+  सचे( handle==0 ) गच्छ extension_not_found;
   xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
 
   /* If no entry point was specified and the default legacy
@@ -650,106 +650,106 @@ static int sqlite3LoadExtension(
   **
   **    /usr/local/lib/libExample5.4.3.so ==>  sqlite3_example5_init
   */
-  if( xInit==0 && zProc==0 ){
-    int iFile, iEntry, c;
-    int ncFile = sqlite3Strlen30(zFile);
-    int cnt = 0;
+  सचे( xInit==0 && zProc==0 ){
+    पूर्णाङ्क iFile, iEntry, c;
+    पूर्णाङ्क ncFile = sqlite3Strlen30(zFile);
+    पूर्णाङ्क cnt = 0;
     zAltEntry = sqlite3_malloc64(ncFile+30);
-    if( zAltEntry==0 ){
+    सचे( zAltEntry==0 ){
       sqlite3OsDlClose(pVfs, handle);
-      return SQLITE_NOMEM_BKPT;
+      पटिनिवत्त SQLITE_NOMEM_BKPT;
     }
-    do{
+    करोहि{
       memcpy(zAltEntry, "sqlite3_", 8);
-      for(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
+      अत्थाय(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
       iFile++;
-      if( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
-      for(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
-        if( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
-          zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
+      सचे( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
+      अत्थाय(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
+        सचे( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
+          zAltEntry[iEntry++] = (वर्ण)sqlite3UpperToLower[(unsigned)c];
         }
       }
       memcpy(zAltEntry+iEntry, "_init", 6);
       zEntry = zAltEntry;
       xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
-    }while( xInit==0 && (++cnt)<2 );
+    }याव( xInit==0 && (++cnt)<2 );
   }
-  if( xInit==0 ){
-    if( pzErrMsg ){
-      nMsg += strlen(zEntry) + 300;
-      *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-      if( zErrmsg ){
-        assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-        sqlite3_snprintf((int)nMsg, zErrmsg,
+  सचे( xInit==0 ){
+    सचे( pz_Err_सन्देशः ){
+      n_सन्देशः += strlen(zEntry) + 300;
+      *pz_Err_सन्देशः = zErrmsg = sqlite3_malloc64(n_सन्देशः);
+      सचे( zErrmsg ){
+        प्रतिज्ञा( n_सन्देशः<0x7fffffff );  /* zErrmsg would be NULL if not so */
+        sqlite3_snprintf((पूर्णाङ्क)n_सन्देशः, zErrmsg,
             "no entry point [%s] in shared library [%s]", zEntry, zFile);
-        sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
+        sqlite3OsDlError(pVfs, n_सन्देशः-1, zErrmsg);
       }
     }
     sqlite3OsDlClose(pVfs, handle);
     sqlite3_free(zAltEntry);
-    return SQLITE_ERROR;
+    पटिनिवत्त SQLITE_ERROR;
   }
   sqlite3_free(zAltEntry);
   rc = xInit(db, &zErrmsg, &sqlite3Apis);
-  if( rc ){
-    if( rc==SQLITE_OK_LOAD_PERMANENTLY ) return SQLITE_OK;
-    if( pzErrMsg ){
-      *pzErrMsg = sqlite3_mprintf("error during initialization: %s", zErrmsg);
+  सचे( rc ){
+    सचे( rc==SQLITE_OK_LOAD_PERMANENTLY ) पटिनिवत्त SQLITE_OK;
+    सचे( pz_Err_सन्देशः ){
+      *pz_Err_सन्देशः = sqlite3_mprintf("error during initialization: %s", zErrmsg);
     }
     sqlite3_free(zErrmsg);
     sqlite3OsDlClose(pVfs, handle);
-    return SQLITE_ERROR;
+    पटिनिवत्त SQLITE_ERROR;
   }
 
   /* Append the new shared library handle to the db->aExtension array. */
-  aHandle = sqlite3DbMallocZero(db, sizeof(handle)*(db->nExtension+1));
-  if( aHandle==0 ){
-    return SQLITE_NOMEM_BKPT;
+  aHandle = sqlite3DbMallocZero(db, परिमाण(handle)*(db->nExtension+1));
+  सचे( aHandle==0 ){
+    पटिनिवत्त SQLITE_NOMEM_BKPT;
   }
-  if( db->nExtension>0 ){
-    memcpy(aHandle, db->aExtension, sizeof(handle)*db->nExtension);
+  सचे( db->nExtension>0 ){
+    memcpy(aHandle, db->aExtension, परिमाण(handle)*db->nExtension);
   }
   sqlite3DbFree(db, db->aExtension);
   db->aExtension = aHandle;
 
   db->aExtension[db->nExtension++] = handle;
-  return SQLITE_OK;
+  पटिनिवत्त SQLITE_OK;
 
 extension_not_found:
-  if( pzErrMsg ){
-    nMsg += 300;
-    *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-    if( zErrmsg ){
-      assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-      sqlite3_snprintf((int)nMsg, zErrmsg,
+  सचे( pz_Err_सन्देशः ){
+    n_सन्देशः += 300;
+    *pz_Err_सन्देशः = zErrmsg = sqlite3_malloc64(n_सन्देशः);
+    सचे( zErrmsg ){
+      प्रतिज्ञा( n_सन्देशः<0x7fffffff );  /* zErrmsg would be NULL if not so */
+      sqlite3_snprintf((पूर्णाङ्क)n_सन्देशः, zErrmsg,
           "unable to open shared library [%.*s]", SQLITE_MAX_PATHLEN, zFile);
-      sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
+      sqlite3OsDlError(pVfs, n_सन्देशः-1, zErrmsg);
     }
   }
-  return SQLITE_ERROR;
+  पटिनिवत्त SQLITE_ERROR;
 }
-int sqlite3_load_extension(
+पूर्णाङ्क sqlite3_load_extension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  ध्रुव वर्ण *zFile,    /* Name of the shared library containing extension */
+  ध्रुव वर्ण *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  वर्ण **pz_Err_सन्देशः       /* Put error message here if not 0 */
 ){
-  int rc;
+  पूर्णाङ्क rc;
   sqlite3_mutex_enter(db->mutex);
-  rc = sqlite3LoadExtension(db, zFile, zProc, pzErrMsg);
+  rc = sqlite3LoadExtension(db, zFile, zProc, pz_Err_सन्देशः);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  पटिनिवत्त rc;
 }
 
 /*
 ** Call this routine when the database connection is closing in order
 ** to clean up loaded extensions
 */
-void sqlite3CloseExtensions(sqlite3 *db){
-  int i;
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nExtension; i++){
+शून्य sqlite3CloseExtensions(sqlite3 *db){
+  पूर्णाङ्क i;
+  प्रतिज्ञा( sqlite3_mutex_held(db->mutex) );
+  अत्थाय(i=0; i<db->nExtension; i++){
     sqlite3OsDlClose(db->pVfs, db->aExtension[i]);
   }
   sqlite3DbFree(db, db->aExtension);
@@ -759,18 +759,18 @@ void sqlite3CloseExtensions(sqlite3 *db){
 ** Enable or disable extension loading.  Extension loading is disabled by
 ** default so as not to open security holes in older applications.
 */
-int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
+पूर्णाङ्क sqlite3_enable_load_extension(sqlite3 *db, पूर्णाङ्क onoff){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  सचे( !sqlite3SafetyCheckOk(db) ) पटिनिवत्त SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( onoff ){
+  सचे( onoff ){
     db->flags |= SQLITE_LoadExtension|SQLITE_LoadExtFunc;
-  }else{
+  }अञ्ञथा{
     db->flags &= ~(u64)(SQLITE_LoadExtension|SQLITE_LoadExtFunc);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  पटिनिवत्त SQLITE_OK;
 }
 
 #endif /* !defined(SQLITE_OMIT_LOAD_EXTENSION) */
@@ -782,10 +782,10 @@ int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
 ** This list is shared across threads.  The SQLITE_MUTEX_STATIC_MAIN
 ** mutex must be held while accessing this list.
 */
-typedef struct sqlite3AutoExtList sqlite3AutoExtList;
-static SQLITE_WSD struct sqlite3AutoExtList {
+प्रकारनिर्देश संरचना sqlite3AutoExtList sqlite3AutoExtList;
+स्थिर SQLITE_WSD संरचना sqlite3AutoExtList {
   u32 nExt;              /* Number of entries in aExt[] */
-  void (**aExt)(void);   /* Pointers to the extension init functions */
+  शून्य (**aExt)(शून्य);   /* Pointers to the extension init functions */
 } sqlite3Autoext = { 0, 0 };
 
 /* The "wsdAutoext" macro will resolve to the autoextension
@@ -798,7 +798,7 @@ static SQLITE_WSD struct sqlite3AutoExtList {
 # define wsdAutoextInit \
   sqlite3AutoExtList *x = &GLOBAL(sqlite3AutoExtList,sqlite3Autoext)
 # define wsdAutoext x[0]
-#else
+#अञ्ञथा
 # define wsdAutoextInit
 # define wsdAutoext sqlite3Autoext
 #endif
@@ -808,44 +808,44 @@ static SQLITE_WSD struct sqlite3AutoExtList {
 ** Register a statically linked extension that is automatically
 ** loaded by every new database connection.
 */
-int sqlite3_auto_extension(
-  void (*xInit)(void)
+पूर्णाङ्क sqlite3_auto_extension(
+  शून्य (*xInit)(शून्य)
 ){
-  int rc = SQLITE_OK;
+  पूर्णाङ्क rc = SQLITE_OK;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( xInit==0 ) return SQLITE_MISUSE_BKPT;
+  सचे( xInit==0 ) पटिनिवत्त SQLITE_MISUSE_BKPT;
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ){
-    return rc;
-  }else
+  सचे( rc ){
+    पटिनिवत्त rc;
+  }अञ्ञथा
 #endif
   {
     u32 i;
-#if SQLITE_THREADSAFE
+#सचे SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
     wsdAutoextInit;
     sqlite3_mutex_enter(mutex);
-    for(i=0; i<wsdAutoext.nExt; i++){
-      if( wsdAutoext.aExt[i]==xInit ) break;
+    अत्थाय(i=0; i<wsdAutoext.nExt; i++){
+      सचे( wsdAutoext.aExt[i]==xInit ) भङ्ग;
     }
-    if( i==wsdAutoext.nExt ){
-      u64 nByte = (wsdAutoext.nExt+1)*sizeof(wsdAutoext.aExt[0]);
-      void (**aNew)(void);
+    सचे( i==wsdAutoext.nExt ){
+      u64 nByte = (wsdAutoext.nExt+1)*परिमाण(wsdAutoext.aExt[0]);
+      शून्य (**aNew)(शून्य);
       aNew = sqlite3_realloc64(wsdAutoext.aExt, nByte);
-      if( aNew==0 ){
+      सचे( aNew==0 ){
         rc = SQLITE_NOMEM_BKPT;
-      }else{
+      }अञ्ञथा{
         wsdAutoext.aExt = aNew;
         wsdAutoext.aExt[wsdAutoext.nExt] = xInit;
         wsdAutoext.nExt++;
       }
     }
     sqlite3_mutex_leave(mutex);
-    assert( (rc&0xff)==rc );
-    return rc;
+    प्रतिज्ञा( (rc&0xff)==rc );
+    पटिनिवत्त rc;
   }
 }
 
@@ -858,47 +858,47 @@ int sqlite3_auto_extension(
 ** Return 1 if xInit was found on the list and removed.  Return 0 if xInit
 ** was not on the list.
 */
-int sqlite3_cancel_auto_extension(
-  void (*xInit)(void)
+पूर्णाङ्क sqlite3_cancel_auto_extension(
+  शून्य (*xInit)(शून्य)
 ){
-  int n = 0;
+  पूर्णाङ्क n = 0;
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ){
-    return 0;
-  }else
+  सचे( sqlite3_initialize() ){
+    पटिनिवत्त 0;
+  }अञ्ञथा
 #endif
   {
-#if SQLITE_THREADSAFE
+#सचे SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
-    int i;
+    पूर्णाङ्क i;
     wsdAutoextInit;
 #ifdef SQLITE_ENABLE_API_ARMOR
-    if( xInit==0 ) return 0;
+    सचे( xInit==0 ) पटिनिवत्त 0;
 #endif
     sqlite3_mutex_enter(mutex);
-    for(i=(int)wsdAutoext.nExt-1; i>=0; i--){
-      if( wsdAutoext.aExt[i]==xInit ){
+    अत्थाय(i=(पूर्णाङ्क)wsdAutoext.nExt-1; i>=0; i--){
+      सचे( wsdAutoext.aExt[i]==xInit ){
         wsdAutoext.nExt--;
         wsdAutoext.aExt[i] = wsdAutoext.aExt[wsdAutoext.nExt];
         n++;
-        break;
+        भङ्ग;
       }
     }
     sqlite3_mutex_leave(mutex);
   }
-  return n;
+  पटिनिवत्त n;
 }
 
 /*
 ** Reset the automatic extension loading mechanism.
 */
-void sqlite3_reset_auto_extension(void){
+शून्य sqlite3_reset_auto_extension(शून्य){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize()==SQLITE_OK )
+  सचे( sqlite3_initialize()==SQLITE_OK )
 #endif
   {
-#if SQLITE_THREADSAFE
+#सचे SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
     wsdAutoextInit;
@@ -915,38 +915,38 @@ void sqlite3_reset_auto_extension(void){
 **
 ** If anything goes wrong, set an error in the database connection.
 */
-void sqlite3AutoLoadExtensions(sqlite3 *db){
+शून्य sqlite3AutoLoadExtensions(sqlite3 *db){
   u32 i;
-  int go = 1;
-  int rc;
+  पूर्णाङ्क go = 1;
+  पूर्णाङ्क rc;
   sqlite3_loadext_entry xInit;
 
   wsdAutoextInit;
-  if( wsdAutoext.nExt==0 ){
+  सचे( wsdAutoext.nExt==0 ){
     /* Common case: early out without every having to acquire a mutex */
-    return;
+    पटिनिवत्त;
   }
-  for(i=0; go; i++){
-    char *zErrmsg;
-#if SQLITE_THREADSAFE
+  अत्थाय(i=0; go; i++){
+    वर्ण *zErrmsg;
+#सचे SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
 #ifdef SQLITE_OMIT_LOAD_EXTENSION
-    const sqlite3_api_routines *pThunk = 0;
-#else
-    const sqlite3_api_routines *pThunk = &sqlite3Apis;
+    ध्रुव sqlite3_api_routines *pThunk = 0;
+#अञ्ञथा
+    ध्रुव sqlite3_api_routines *pThunk = &sqlite3Apis;
 #endif
     sqlite3_mutex_enter(mutex);
-    if( i>=wsdAutoext.nExt ){
+    सचे( i>=wsdAutoext.nExt ){
       xInit = 0;
       go = 0;
-    }else{
+    }अञ्ञथा{
       xInit = (sqlite3_loadext_entry)wsdAutoext.aExt[i];
     }
     sqlite3_mutex_leave(mutex);
     zErrmsg = 0;
-    if( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
-      sqlite3ErrorWithMsg(db, rc,
+    सचे( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
+      sqlite3_Error_With_सन्देशः(db, rc,
             "automatic extension loading failed: %s", zErrmsg);
       go = 0;
     }
