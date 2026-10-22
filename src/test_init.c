@@ -29,61 +29,61 @@
 #include <string.h>
 #include "tclsqlite.h"
 
-static struct Wrapped {
+static sa_nracanaa Wrapped {
   sqlite3_pcache_methods2 pcache;
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  ကိန်းပြည့် mem_init;              /* True if mem subsystem is initialized */
+  ကိန်းပြည့် mem_fail;              /* True to fail mem subsystem initialization */
+  ကိန်းပြည့် mutex_init;            /* True if mutex subsystem is initialized */
+  ကိန်းပြည့် mutex_fail;            /* True to fail mutex subsystem initialization */
+  ကိန်းပြည့် pcache_init;           /* True if pcache subsystem is initialized */
+  ကိန်းပြည့် pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+static ကိန်းပြည့် wrMemInit(void *pAppData){
+  ကိန်းပြည့် rc;
+  အကယ်၍( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }မဟုတ်ပါက{
     rc = wrapped.mem.xInit(wrapped.mem.pAppData);
   }
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 static void wrMemShutdown(void *pAppData){
   wrapped.mem.xShutdown(wrapped.mem.pAppData);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
+static void *wrMemMalloc(ကိန်းပြည့် n)           {ပြန်ပေး wrapped.mem.xMalloc(n);}
 static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+static void *wrMemRealloc(void *p, ကိန်းပြည့် n) {ပြန်ပေး wrapped.mem.xRealloc(p, n);}
+static ကိန်းပြည့် wrMemSize(void *p)             {ပြန်ပေး wrapped.mem.xSize(p);}
+static ကိန်းပြည့် wrMemRoundup(ကိန်းပြည့် n)            {ပြန်ပေး wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+static ကိန်းပြည့် wrMutexInit(void){
+  ကိန်းပြည့် rc;
+  အကယ်၍( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }မဟုတ်ပါက{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-static int wrMutexEnd(void){
+static ကိန်းပြည့် wrMutexEnd(void){
   wrapped.mutex.xMutexEnd();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  ပြန်ပေး SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+static sqlite3_mutex *wrMutexAlloc(ကိန်းပြည့် e){
+  ပြန်ပေး wrapped.mutex.xMutexAlloc(e);
 }
 static void wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
@@ -91,51 +91,51 @@ static void wrMutexFree(sqlite3_mutex *p){
 static void wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+static ကိန်းပြည့် wrMutexTry(sqlite3_mutex *p){
+  ပြန်ပေး wrapped.mutex.xMutexTry(p);
 }
 static void wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+static ကိန်းပြည့် wrMutexHeld(sqlite3_mutex *p){
+  ပြန်ပေး wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+static ကိန်းပြည့် wrMutexNotheld(sqlite3_mutex *p){
+  ပြန်ပေး wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+static ကိန်းပြည့် wrPCacheInit(void *pArg){
+  ကိန်းပြည့် rc;
+  အကယ်၍( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }မဟုတ်ပါက{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 static void wrPCacheShutdown(void *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+static sqlite3_pcache *wrPCacheCreate(ကိန်းပြည့် a, ကိန်းပြည့် b, ကိန်းပြည့် c){
+  ပြန်ပေး wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+static void wrPCacheCachesize(sqlite3_pcache *p, ကိန်းပြည့် n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+static ကိန်းပြည့် wrPCachePagecount(sqlite3_pcache *p){
+  ပြန်ပေး wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, ကိန်းပြည့် b){
+  ပြန်ပေး wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, ကိန်းပြည့် b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
 static void wrPCacheRekey(
@@ -173,7 +173,7 @@ static void installInitWrappers(void){
     0
   };
 
-  memset(&wrapped, 0, sizeof(wrapped));
+  memset(&wrapped, 0, parimaa_na(wrapped));
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_GETMUTEX, &wrapped.mutex);
@@ -184,96 +184,96 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
+static ကိန်းပြည့် SQLITE_TCLAPI init_wrapper_install(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ကိန်းပြည့် objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  ကိန်းပြည့် i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
-    char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+  အတွက်(i=1; i<objc; i++){
+    var_na *z = Tcl_GetString(objv[i]);
+    အကယ်၍( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }မဟုတ်ပါက အကယ်၍( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }မဟုတ်ပါက အကယ်၍( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
+    }မဟုတ်ပါက{
       Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+      ပြန်ပေး TCL_ERROR;
     }
   }
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
+static ကိန်းပြည့် SQLITE_TCLAPI init_wrapper_uninstall(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ကိန်းပြည့် objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  အကယ်၍( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
+static ကိန်းပြည့် SQLITE_TCLAPI init_wrapper_clear(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ကိန်းပြည့် objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  အကယ်၍( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
+static ကိန်းပြည့် SQLITE_TCLAPI init_wrapper_query(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ကိန်းပြည့် objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
+  အကယ်၍( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  အကယ်၍( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  အကယ်၍( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  အကယ်၍( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+ကိန်းပြည့် Sqlitetest_init_Init(Tcl_Interp *interp){
+  static sa_nracanaa {
+     var_na *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
     {"init_wrapper_install",   init_wrapper_install},
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  ကိန်းပြည့် i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  အတွက်(i=0; i<parimaa_na(aObjCmd)/parimaa_na(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }

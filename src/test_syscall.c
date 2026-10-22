@@ -81,51 +81,51 @@
 #include <string.h>
 #include <assert.h>
 
-#if SQLITE_OS_UNIX
+#အကယ်၍ SQLITE_OS_UNIX
 
 /* From main.c */
-extern const char *sqlite3ErrName(int);
+extern const var_na *sqlite3ErrName(ကိန်းပြည့်);
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <errno.h>
 
-static struct TestSyscallGlobal {
-  int bPersist;                   /* 1 for persistent errors, 0 for transient */
-  int nCount;                     /* Fail after this many more calls */
-  int nFail;                      /* Number of failures that have occurred */
-  int pgsz;
+static sa_nracanaa TestSyscallGlobal {
+  ကိန်းပြည့် bPersist;                   /* 1 for persistent errors, 0 for transient */
+  ကိန်းပြည့် nCount;                     /* Fail after this many more calls */
+  ကိန်းပြည့် nFail;                      /* Number of failures that have occurred */
+  ကိန်းပြည့် pgsz;
   sqlite3_syscall_ptr orig_getpagesize;
 } gSyscall = { 0, 0, 0, 0, 0 };
 
-static int ts_open(const char *, int, int);
-static int ts_close(int fd);
-static int ts_access(const char *zPath, int mode);
-static char *ts_getcwd(char *zPath, size_t nPath);
-static int ts_stat(const char *zPath, struct stat *p);
-static int ts_fstat(int fd, struct stat *p);
-static int ts_ftruncate(int fd, off_t n);
-static int ts_fcntl(int fd, int cmd, ... );
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf);
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off);
+static ကိန်းပြည့် ts_open(const var_na *, ကိန်းပြည့်, ကိန်းပြည့်);
+static ကိန်းပြည့် ts_close(ကိန်းပြည့် fd);
+static ကိန်းပြည့် ts_access(const var_na *zPath, ကိန်းပြည့် mode);
+static var_na *ts_getcwd(var_na *zPath, size_t nPath);
+static ကိန်းပြည့် ts_stat(const var_na *zPath, sa_nracanaa stat *p);
+static ကိန်းပြည့် ts_fstat(ကိန်းပြည့် fd, sa_nracanaa stat *p);
+static ကိန်းပြည့် ts_ftruncate(ကိန်းပြည့် fd, off_t n);
+static ကိန်းပြည့် ts_fcntl(ကိန်းပြည့် fd, ကိန်းပြည့် cmd, ... );
+static ssize_t ts_read(ကိန်းပြည့် fd, void *aBuf, size_t nBuf);
+static ssize_t ts_pread(ကိန်းပြည့် fd, void *aBuf, size_t nBuf, off_t off);
 /* Note:  pread64() and pwrite64() actually use off64_t as the type on their
 ** last parameter.  But that datatype is not defined on many systems 
 ** (ex: Mac, OpenBSD).  So substitute a likely equivalent: sqlite3_uint64 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf);
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off);
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static int ts_fchmod(int fd, mode_t mode);
-static int ts_fallocate(int fd, off_t off, off_t len);
-static void *ts_mmap(void *, size_t, int, int, int, off_t);
-static void *ts_mremap(void*, size_t, size_t, int, ...);
+static ssize_t ts_pread64(ကိန်းပြည့် fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static ssize_t ts_write(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf);
+static ssize_t ts_pwrite(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf, off_t off);
+static ssize_t ts_pwrite64(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static ကိန်းပြည့် ts_fchmod(ကိန်းပြည့် fd, mode_t mode);
+static ကိန်းပြည့် ts_fallocate(ကိန်းပြည့် fd, off_t off, off_t len);
+static void *ts_mmap(void *, size_t, ကိန်းပြည့်, ကိန်းပြည့်, ကိန်းပြည့်, off_t);
+static void *ts_mremap(void*, size_t, size_t, ကိန်းပြည့်, ...);
 
-struct TestSyscallArray {
-  const char *zName;
+sa_nracanaa TestSyscallArray {
+  const var_na *zName;
   sqlite3_syscall_ptr xTest;
   sqlite3_syscall_ptr xOrig;
-  int default_errno;              /* Default value for errno following errors */
-  int custom_errno;               /* Current value for errno if error */
+  ကိန်းပြည့် default_errno;              /* Default value for errno following errors */
+  ကိန်းပြည့် custom_errno;               /* Current value for errno if error */
 } aSyscall[] = {
   /*  0 */ { "open",      (sqlite3_syscall_ptr)ts_open,      0, EACCES, 0 },
   /*  1 */ { "close",     (sqlite3_syscall_ptr)ts_close,     0, 0, 0 },
@@ -148,39 +148,39 @@ struct TestSyscallArray {
            { 0, 0, 0, 0, 0 }
 };
 
-#define orig_open      ((int(*)(const char *, int, int))aSyscall[0].xOrig)
-#define orig_close     ((int(*)(int))aSyscall[1].xOrig)
-#define orig_access    ((int(*)(const char*,int))aSyscall[2].xOrig)
-#define orig_getcwd    ((char*(*)(char*,size_t))aSyscall[3].xOrig)
-#define orig_stat      ((int(*)(const char*,struct stat*))aSyscall[4].xOrig)
-#define orig_fstat     ((int(*)(int,struct stat*))aSyscall[5].xOrig)
-#define orig_ftruncate ((int(*)(int,off_t))aSyscall[6].xOrig)
-#define orig_fcntl     ((int(*)(int,int,...))aSyscall[7].xOrig)
-#define orig_read      ((ssize_t(*)(int,void*,size_t))aSyscall[8].xOrig)
-#define orig_pread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].xOrig)
-#define orig_pread64   ((ssize_t(*)(int,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
-#define orig_write     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].xOrig)
-#define orig_pwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#define orig_open      ((ကိန်းပြည့်(*)(const var_na *, ကိန်းပြည့်, ကိန်းပြည့်))aSyscall[0].xOrig)
+#define orig_close     ((ကိန်းပြည့်(*)(ကိန်းပြည့်))aSyscall[1].xOrig)
+#define orig_access    ((ကိန်းပြည့်(*)(const var_na*,ကိန်းပြည့်))aSyscall[2].xOrig)
+#define orig_getcwd    ((var_na*(*)(var_na*,size_t))aSyscall[3].xOrig)
+#define orig_stat      ((ကိန်းပြည့်(*)(const var_na*,sa_nracanaa stat*))aSyscall[4].xOrig)
+#define orig_fstat     ((ကိန်းပြည့်(*)(ကိန်းပြည့်,sa_nracanaa stat*))aSyscall[5].xOrig)
+#define orig_ftruncate ((ကိန်းပြည့်(*)(ကိန်းပြည့်,off_t))aSyscall[6].xOrig)
+#define orig_fcntl     ((ကိန်းပြည့်(*)(ကိန်းပြည့်,ကိန်းပြည့်,...))aSyscall[7].xOrig)
+#define orig_read      ((ssize_t(*)(ကိန်းပြည့်,void*,size_t))aSyscall[8].xOrig)
+#define orig_pread     ((ssize_t(*)(ကိန်းပြည့်,void*,size_t,off_t))aSyscall[9].xOrig)
+#define orig_pread64   ((ssize_t(*)(ကိန်းပြည့်,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
+#define orig_write     ((ssize_t(*)(ကိန်းပြည့်,const void*,size_t))aSyscall[11].xOrig)
+#define orig_pwrite    ((ssize_t(*)(ကိန်းပြည့်,const void*,size_t,off_t))\
                        aSyscall[12].xOrig)
-#define orig_pwrite64  ((ssize_t(*)(int,const void*,size_t,sqlite3_uint64))\
+#define orig_pwrite64  ((ssize_t(*)(ကိန်းပြည့်,const void*,size_t,sqlite3_uint64))\
                        aSyscall[13].xOrig)
-#define orig_fchmod    ((int(*)(int,mode_t))aSyscall[14].xOrig)
-#define orig_fallocate ((int(*)(int,off_t,off_t))aSyscall[15].xOrig)
-#define orig_mmap      ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[16].xOrig)
-#define orig_mremap    ((void*(*)(void*,size_t,size_t,int,...))aSyscall[17].xOrig)
+#define orig_fchmod    ((ကိန်းပြည့်(*)(ကိန်းပြည့်,mode_t))aSyscall[14].xOrig)
+#define orig_fallocate ((ကိန်းပြည့်(*)(ကိန်းပြည့်,off_t,off_t))aSyscall[15].xOrig)
+#define orig_mmap      ((void*(*)(void*,size_t,ကိန်းပြည့်,ကိန်းပြည့်,ကိန်းပြည့်,off_t))aSyscall[16].xOrig)
+#define orig_mremap    ((void*(*)(void*,size_t,size_t,ကိန်းပြည့်,...))aSyscall[17].xOrig)
 
 /*
 ** This function is called exactly once from within each invocation of a
 ** system call wrapper in this file. It returns 1 if the function should
 ** fail, or 0 if it should succeed.
 */
-static int tsIsFail(void){
+static ကိန်းပြည့် tsIsFail(void){
   gSyscall.nCount--;
-  if( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
+  အကယ်၍( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
     gSyscall.nFail++;
-    return 1;
+    ပြန်ပေး 1;
   }
-  return 0;
+  ပြန်ပေး 0;
 }
 
 /*
@@ -191,190 +191,190 @@ static int tsIsFail(void){
 ** to if the named system call fails. The exception is "fallocate". See 
 ** comments above the implementation of ts_fallocate() for details.
 */
-static int tsErrno(const char *zFunc){
-  int i;
+static ကိန်းပြည့် tsErrno(const var_na *zFunc){
+  ကိန်းပြည့် i;
   size_t nFunc = strlen(zFunc);
-  for(i=0; aSyscall[i].zName; i++){
-    if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-    if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
-    return aSyscall[i].custom_errno;
+  အတွက်(i=0; aSyscall[i].zName; i++){
+    အကယ်၍( strlen(aSyscall[i].zName)!=nFunc ) continue;
+    အကယ်၍( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    ပြန်ပေး aSyscall[i].custom_errno;
   }
 
   assert(0);
-  return 0;
+  ပြန်ပေး 0;
 }
 
 /*
 ** A wrapper around tsIsFail(). If tsIsFail() returns non-zero, set the
 ** value of errno before returning.
 */
-static int tsIsFailErrno(const char *zFunc){
-  if( tsIsFail() ){
+static ကိန်းပြည့် tsIsFailErrno(const var_na *zFunc){
+  အကယ်၍( tsIsFail() ){
     errno = tsErrno(zFunc);
-    return 1;
+    ပြန်ပေး 1;
   }
-  return 0;
+  ပြန်ပေး 0;
 }
 
 /*
 ** A wrapper around open().
 */
-static int ts_open(const char *zFile, int flags, int mode){
-  if( tsIsFailErrno("open") ){
-    return -1;
+static ကိန်းပြည့် ts_open(const var_na *zFile, ကိန်းပြည့် flags, ကိန်းပြည့် mode){
+  အကယ်၍( tsIsFailErrno("open") ){
+    ပြန်ပေး -1;
   }
-  return orig_open(zFile, flags, mode);
+  ပြန်ပေး orig_open(zFile, flags, mode);
 }
 
 /*
 ** A wrapper around close().
 */
-static int ts_close(int fd){
-  if( tsIsFail() ){
+static ကိန်းပြည့် ts_close(ကိန်းပြည့် fd){
+  အကယ်၍( tsIsFail() ){
     /* Even if simulating an error, close the original file-descriptor. 
     ** This is to stop the test process from running out of file-descriptors
     ** when running a long test. If a call to close() appears to fail, SQLite
     ** never attempts to use the file-descriptor afterwards (or even to close
     ** it a second time).  */
     orig_close(fd);
-    return -1;
+    ပြန်ပေး -1;
   }
-  return orig_close(fd);
+  ပြန်ပေး orig_close(fd);
 }
 
 /*
 ** A wrapper around access().
 */
-static int ts_access(const char *zPath, int mode){
-  if( tsIsFail() ){
-    return -1;
+static ကိန်းပြည့် ts_access(const var_na *zPath, ကိန်းပြည့် mode){
+  အကယ်၍( tsIsFail() ){
+    ပြန်ပေး -1;
   }
-  return orig_access(zPath, mode);
+  ပြန်ပေး orig_access(zPath, mode);
 }
 
 /*
 ** A wrapper around getcwd().
 */
-static char *ts_getcwd(char *zPath, size_t nPath){
-  if( tsIsFail() ){
-    return NULL;
+static var_na *ts_getcwd(var_na *zPath, size_t nPath){
+  အကယ်၍( tsIsFail() ){
+    ပြန်ပေး NULL;
   }
-  return orig_getcwd(zPath, nPath);
+  ပြန်ပေး orig_getcwd(zPath, nPath);
 }
 
 /*
 ** A wrapper around stat().
 */
-static int ts_stat(const char *zPath, struct stat *p){
-  if( tsIsFail() ){
-    return -1;
+static ကိန်းပြည့် ts_stat(const var_na *zPath, sa_nracanaa stat *p){
+  အကယ်၍( tsIsFail() ){
+    ပြန်ပေး -1;
   }
-  return orig_stat(zPath, p);
+  ပြန်ပေး orig_stat(zPath, p);
 }
 
 /*
 ** A wrapper around fstat().
 */
-static int ts_fstat(int fd, struct stat *p){
-  if( tsIsFailErrno("fstat") ){
-    return -1;
+static ကိန်းပြည့် ts_fstat(ကိန်းပြည့် fd, sa_nracanaa stat *p){
+  အကယ်၍( tsIsFailErrno("fstat") ){
+    ပြန်ပေး -1;
   }
-  return orig_fstat(fd, p);
+  ပြန်ပေး orig_fstat(fd, p);
 }
 
 /*
 ** A wrapper around ftruncate().
 */
-static int ts_ftruncate(int fd, off_t n){
-  if( tsIsFailErrno("ftruncate") ){
-    return -1;
+static ကိန်းပြည့် ts_ftruncate(ကိန်းပြည့် fd, off_t n){
+  အကယ်၍( tsIsFailErrno("ftruncate") ){
+    ပြန်ပေး -1;
   }
-  return orig_ftruncate(fd, n);
+  ပြန်ပေး orig_ftruncate(fd, n);
 }
 
 /*
 ** A wrapper around fcntl().
 */
-static int ts_fcntl(int fd, int cmd, ... ){
+static ကိန်းပြည့် ts_fcntl(ကိန်းပြည့် fd, ကိန်းပြည့် cmd, ... ){
   va_list ap;
   void *pArg;
-  if( tsIsFailErrno("fcntl") ){
-    return -1;
+  အကယ်၍( tsIsFailErrno("fcntl") ){
+    ပြန်ပေး -1;
   }
   va_start(ap, cmd);
   pArg = va_arg(ap, void *);
-  return orig_fcntl(fd, cmd, pArg);
+  ပြန်ပေး orig_fcntl(fd, cmd, pArg);
 }
 
 /*
 ** A wrapper around read().
 */
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("read") ){
-    return -1;
+static ssize_t ts_read(ကိန်းပြည့် fd, void *aBuf, size_t nBuf){
+  အကယ်၍( tsIsFailErrno("read") ){
+    ပြန်ပေး -1;
   }
-  return orig_read(fd, aBuf, nBuf);
+  ပြန်ပေး orig_read(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pread().
 */
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pread") ){
-    return -1;
+static ssize_t ts_pread(ကိန်းပြည့် fd, void *aBuf, size_t nBuf, off_t off){
+  အကယ်၍( tsIsFailErrno("pread") ){
+    ပြန်ပေး -1;
   }
-  return orig_pread(fd, aBuf, nBuf, off);
+  ပြန်ပေး orig_pread(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pread64().
 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pread64") ){
-    return -1;
+static ssize_t ts_pread64(ကိန်းပြည့် fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  အကယ်၍( tsIsFailErrno("pread64") ){
+    ပြန်ပေး -1;
   }
-  return orig_pread64(fd, aBuf, nBuf, off);
+  ပြန်ပေး orig_pread64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around write().
 */
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("write") ){
-    if( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
-    return -1;
+static ssize_t ts_write(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf){
+  အကယ်၍( tsIsFailErrno("write") ){
+    အကယ်၍( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
+    ပြန်ပေး -1;
   }
-  return orig_write(fd, aBuf, nBuf);
+  ပြန်ပေး orig_write(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pwrite().
 */
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pwrite") ){
-    return -1;
+static ssize_t ts_pwrite(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf, off_t off){
+  အကယ်၍( tsIsFailErrno("pwrite") ){
+    ပြန်ပေး -1;
   }
-  return orig_pwrite(fd, aBuf, nBuf, off);
+  ပြန်ပေး orig_pwrite(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pwrite64().
 */
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pwrite64") ){
-    return -1;
+static ssize_t ts_pwrite64(ကိန်းပြည့် fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  အကယ်၍( tsIsFailErrno("pwrite64") ){
+    ပြန်ပေး -1;
   }
-  return orig_pwrite64(fd, aBuf, nBuf, off);
+  ပြန်ပေး orig_pwrite64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around fchmod().
 */
-static int ts_fchmod(int fd, mode_t mode){
-  if( tsIsFail() ){
-    return -1;
+static ကိန်းပြည့် ts_fchmod(ကိန်းပြည့် fd, mode_t mode){
+  အကယ်၍( tsIsFail() ){
+    ပြန်ပေး -1;
   }
-  return orig_fchmod(fd, mode);
+  ပြန်ပေး orig_fchmod(fd, mode);
 }
 
 /*
@@ -386,30 +386,30 @@ static int ts_fchmod(int fd, mode_t mode){
 **   posix_fallocate() returns  zero on success, or an error number on
 **   failure. Note that errno is not set.
 */
-static int ts_fallocate(int fd, off_t off, off_t len){
-  if( tsIsFail() ){
-    return tsErrno("fallocate");
+static ကိန်းပြည့် ts_fallocate(ကိန်းပြည့် fd, off_t off, off_t len){
+  အကယ်၍( tsIsFail() ){
+    ပြန်ပေး tsErrno("fallocate");
   }
-  return orig_fallocate(fd, off, len);
+  ပြန်ပေး orig_fallocate(fd, off, len);
 }
 
 static void *ts_mmap(
   void *pAddr, 
   size_t nByte, 
-  int prot, 
-  int flags, 
-  int fd, 
+  ကိန်းပြည့် prot, 
+  ကိန်းပြည့် flags, 
+  ကိန်းပြည့် fd, 
   off_t iOff
 ){
-  if( tsIsFailErrno("mmap") ){
-    return MAP_FAILED;
+  အကယ်၍( tsIsFailErrno("mmap") ){
+    ပြန်ပေး MAP_FAILED;
   }
-  return orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
+  ပြန်ပေး orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
 }
 
-static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
-  if( tsIsFailErrno("mremap") ){
-    return MAP_FAILED;
+static void *ts_mremap(void *a, size_t b, size_t c, ကိန်းပြည့် d, ...){
+  အကယ်၍( tsIsFailErrno("mremap") ){
+    ပြန်ပေး MAP_FAILED;
   }
   /* mremap() may be called with 4 or 5 arguments (when MREMAP_FIXED) is
   ** set. But SQLite only ever calls the 4 argument form, and attempting to
@@ -418,147 +418,147 @@ static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
 #ifdef MREMAP_FIXED
   assert( (d & MREMAP_FIXED)==0 );
 #endif
-  return orig_mremap(a, b, c, d);
+  ပြန်ပေး orig_mremap(a, b, c, d);
 }
 
-static int SQLITE_TCLAPI test_syscall_install(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_install(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   Tcl_Size nElem;
-  int i;
+  ကိန်းပြည့် i;
   Tcl_Obj **apElem;
 
-  if( objc!=3 ){
+  အကယ်၍( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL-LIST");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-    return TCL_ERROR;
+  အကယ်၍( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+    ပြန်ပေး TCL_ERROR;
   }
   pVfs = sqlite3_vfs_find(0);
 
-  for(i=0; i<(int)nElem; i++){
-    int iCall;
-    int rc = Tcl_GetIndexFromObjStruct(interp, 
-        apElem[i], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
+  အတွက်(i=0; i<(ကိန်းပြည့်)nElem; i++){
+    ကိန်းပြည့် iCall;
+    ကိန်းပြည့် rc = Tcl_GetIndexFromObjStruct(interp, 
+        apElem[i], aSyscall, parimaa_na(aSyscall[0]), "system-call", 0, &iCall
     );
-    if( rc ) return rc;
-    if( aSyscall[iCall].xOrig==0 ){
+    အကယ်၍( rc ) ပြန်ပေး rc;
+    အကယ်၍( aSyscall[iCall].xOrig==0 ){
       aSyscall[iCall].xOrig = pVfs->xGetSystemCall(pVfs, aSyscall[iCall].zName);
       pVfs->xSetSystemCall(pVfs, aSyscall[iCall].zName, aSyscall[iCall].xTest);
     }
     aSyscall[iCall].custom_errno = aSyscall[iCall].default_errno;
   }
 
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_uninstall(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_uninstall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
+  ကိန်းပြည့် i;
 
-  if( objc!=2 ){
+  အကယ်၍( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  for(i=0; aSyscall[i].zName; i++){
-    if( aSyscall[i].xOrig ){
+  အတွက်(i=0; aSyscall[i].zName; i++){
+    အကယ်၍( aSyscall[i].xOrig ){
       pVfs->xSetSystemCall(pVfs, aSyscall[i].zName, 0);
       aSyscall[i].xOrig = 0;
     }
   }
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_reset(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_reset(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
-  int rc;
+  ကိန်းပြည့် i;
+  ကိန်းပြည့် rc;
 
-  if( objc!=2 && objc!=3 ){
+  အကယ်၍( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  if( objc==2 ){
+  အကယ်၍( objc==2 ){
     rc = pVfs->xSetSystemCall(pVfs, 0, 0);
-    for(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
-  }else{
+    အတွက်(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
+  }မဟုတ်ပါက{
     Tcl_Size nFunc;
-    char *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
+    var_na *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
     rc = pVfs->xSetSystemCall(pVfs, Tcl_GetString(objv[2]), 0);
-    for(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
-      if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-      if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    အတွက်(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
+      အကယ်၍( strlen(aSyscall[i].zName)!=nFunc ) continue;
+      အကယ်၍( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
       aSyscall[i].xOrig = 0;
     }
   }
-  if( rc!=SQLITE_OK ){
+  အကယ်၍( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_exists(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_exists(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   sqlite3_syscall_ptr x;
 
-  if( objc!=3 ){
+  အကယ်၍( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   x = pVfs->xGetSystemCall(pVfs, Tcl_GetString(objv[2]));
 
   Tcl_SetObjResult(interp, Tcl_NewBooleanObj(x!=0));
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_fault(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_fault(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nCount = 0;
-  int bPersist = 0;
+  ကိန်းပြည့် nCount = 0;
+  ကိန်းပြည့် bPersist = 0;
 
-  if( objc!=2 && objc!=4 ){
+  အကယ်၍( objc!=2 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "?COUNT PERSIST?");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
-  if( objc==4 ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &nCount)
+  အကယ်၍( objc==4 ){
+    အကယ်၍( Tcl_GetIntFromObj(interp, objv[2], &nCount)
      || Tcl_GetBooleanFromObj(interp, objv[3], &bPersist)
     ){
-      return TCL_ERROR;
+      ပြန်ပေး TCL_ERROR;
     }
   }
 
@@ -566,22 +566,22 @@ static int SQLITE_TCLAPI test_syscall_fault(
   gSyscall.nCount = nCount;
   gSyscall.bPersist = bPersist;
   gSyscall.nFail = 0;
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_errno(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_errno(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iCall;
-  int iErrno;
-  int rc;
+  ကိန်းပြည့် iCall;
+  ကိန်းပြည့် iErrno;
+  ကိန်းပြည့် rc;
 
-  struct Errno {
-    const char *z;
-    int i;
+  sa_nracanaa Errno {
+    const var_na *z;
+    ကိန်းပြည့် i;
   } aErrno[] = {
     { "EACCES",    EACCES },
     { "EINTR",     EINTR },
@@ -597,43 +597,43 @@ static int SQLITE_TCLAPI test_syscall_errno(
     { 0, 0 }
   };
 
-  if( objc!=4 ){
+  အကယ်၍( objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL ERRNO");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(interp, 
-      objv[2], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
+      objv[2], aSyscall, parimaa_na(aSyscall[0]), "system-call", 0, &iCall
   );
-  if( rc!=TCL_OK ) return rc;
+  အကယ်၍( rc!=TCL_OK ) ပြန်ပေး rc;
   rc = Tcl_GetIndexFromObjStruct(interp, 
-      objv[3], aErrno, sizeof(aErrno[0]), "errno", 0, &iErrno
+      objv[3], aErrno, parimaa_na(aErrno[0]), "errno", 0, &iErrno
   );
-  if( rc!=TCL_OK ) return rc;
+  အကယ်၍( rc!=TCL_OK ) ပြန်ပေး rc;
 
   aSyscall[iCall].custom_errno = aErrno[iErrno].i;
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_list(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_list(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *zSys;
+  const var_na *zSys;
   sqlite3_vfs *pVfs; 
   Tcl_Obj *pList;
 
-  if( objc!=2 ){
+  အကယ်၍( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   pList = Tcl_NewObj();
   Tcl_IncrRefCount(pList);
-  for(zSys = pVfs->xNextSystemCall(pVfs, 0); 
+  အတွက်(zSys = pVfs->xNextSystemCall(pVfs, 0); 
       zSys!=0;
       zSys = pVfs->xNextSystemCall(pVfs, zSys)
   ){
@@ -642,55 +642,55 @@ static int SQLITE_TCLAPI test_syscall_list(
 
   Tcl_SetObjResult(interp, pList);
   Tcl_DecrRefCount(pList);
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_defaultvfs(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_defaultvfs(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
 
-  if( objc!=2 ){
+  အကယ်၍( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(pVfs->zName, -1));
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int ts_getpagesize(void){
-  return gSyscall.pgsz;
+static ကိန်းပြည့် ts_getpagesize(void){
+  ပြန်ပေး gSyscall.pgsz;
 }
 
-static int SQLITE_TCLAPI test_syscall_pagesize(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall_pagesize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-  int pgsz;
-  if( objc!=3 ){
+  ကိန်းပြည့် pgsz;
+  အကယ်၍( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "PGSZ");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
-    return TCL_ERROR;
+  အကယ်၍( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
+    ပြန်ပေး TCL_ERROR;
   }
 
-  if( pgsz<0 ){
-    if( gSyscall.orig_getpagesize ){
+  အကယ်၍( pgsz<0 ){
+    အကယ်၍( gSyscall.orig_getpagesize ){
       pVfs->xSetSystemCall(pVfs, "getpagesize", gSyscall.orig_getpagesize);
     }
-  }else{
-    if( pgsz<512 || (pgsz & (pgsz-1)) ){
+  }မဟုတ်ပါက{
+    အကယ်၍( pgsz<512 || (pgsz & (pgsz-1)) ){
       Tcl_AppendResult(interp, "pgsz out of range", NULL);
-      return TCL_ERROR;
+      ပြန်ပေး TCL_ERROR;
     }
     gSyscall.orig_getpagesize = pVfs->xGetSystemCall(pVfs, "getpagesize");
     gSyscall.pgsz = pgsz;
@@ -699,17 +699,17 @@ static int SQLITE_TCLAPI test_syscall_pagesize(
     );
   }
 
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall(
+static ကိန်းပြည့် SQLITE_TCLAPI test_syscall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ကိန်းပြည့် objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct SyscallCmd {
-    const char *zName;
+  sa_nracanaa SyscallCmd {
+    const var_na *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "fault",      test_syscall_fault },
@@ -723,42 +723,42 @@ static int SQLITE_TCLAPI test_syscall(
     { "pagesize",   test_syscall_pagesize },
     { 0, 0 }
   };
-  int iCmd;
-  int rc;
+  ကိန်းပြည့် iCmd;
+  ကိန်းပြည့် rc;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
 
-  if( objc<2 ){
+  အကယ်၍( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
-    return TCL_ERROR;
+    ပြန်ပေး TCL_ERROR;
   }
-  if( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
+  အကယ်၍( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
     Tcl_AppendResult(interp, "VFS does not support xSetSystemCall", NULL);
     rc = TCL_ERROR;
-  }else{
+  }မဟုတ်ပါက{
     rc = Tcl_GetIndexFromObjStruct(interp, 
-        objv[1], aCmd, sizeof(aCmd[0]), "sub-command", 0, &iCmd
+        objv[1], aCmd, parimaa_na(aCmd[0]), "sub-command", 0, &iCmd
     );
   }
-  if( rc!=TCL_OK ) return rc;
-  return aCmd[iCmd].xCmd(clientData, interp, objc, objv);
+  အကယ်၍( rc!=TCL_OK ) ပြန်ပေး rc;
+  ပြန်ပေး aCmd[iCmd].xCmd(clientData, interp, objc, objv);
 }
 
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  struct SyscallCmd {
-    const char *zName;
+ကိန်းပြည့် SqlitetestSyscall_Init(Tcl_Interp *interp){
+  sa_nracanaa SyscallCmd {
+    const var_na *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "test_syscall",     test_syscall},
   };
-  int i;
+  ကိန်းပြည့် i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  အတွက်(i=0; i<parimaa_na(aCmd)/parimaa_na(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xCmd, 0, 0);
   }
-  return TCL_OK;
+  ပြန်ပေး TCL_OK;
 }
-#else
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#မဟုတ်ပါက
+ကိန်းပြည့် SqlitetestSyscall_Init(Tcl_Interp *interp){
+  ပြန်ပေး TCL_OK;
 }
 #endif

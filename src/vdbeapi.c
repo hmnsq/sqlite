@@ -26,15 +26,15 @@
 ** collating sequences are registered or if an authorizer function is
 ** added or changed.
 */
-int sqlite3_expired(sqlite3_stmt *pStmt){
-  int iRet = 1;
-  if( pStmt ){
+ကိန်းပြည့် sqlite3_expired(sqlite3_stmt *pStmt){
+  ကိန်းပြည့် iRet = 1;
+  အကယ်၍( pStmt ){
     Vdbe *p = (Vdbe*)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     iRet = p->expired;
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return iRet;
+  ပြန်ပေး iRet;
 }
 #endif
 
@@ -43,20 +43,20 @@ int sqlite3_expired(sqlite3_stmt *pStmt){
 ** an error and return true if it has been finalized (or is otherwise
 ** invalid).  Return false if it is ok.
 */
-static int vdbeSafety(Vdbe *p){
-  if( p->db==0 ){
+static ကိန်းပြည့် vdbeSafety(Vdbe *p){
+  အကယ်၍( p->db==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with finalized prepared statement");
-    return 1;
-  }else{
-    return 0;
+    ပြန်ပေး 1;
+  }မဟုတ်ပါက{
+    ပြန်ပေး 0;
   }
 }
-static int vdbeSafetyNotNull(Vdbe *p){
-  if( p==0 ){
+static ကိန်းပြည့် vdbeSafetyNotNull(Vdbe *p){
+  အကယ်၍( p==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with NULL prepared statement");
-    return 1;
-  }else{
-    return vdbeSafety(p);
+    ပြန်ပေး 1;
+  }မဟုတ်ပါက{
+    ပြန်ပေး vdbeSafety(p);
   }
 }
 
@@ -74,11 +74,11 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
   sqlite3OsCurrentTimeInt64(db->pVfs, &iNow);
   iElapse = (iNow - p->startTime)*1000000;
 #ifndef SQLITE_OMIT_DEPRECATED
-  if( db->xProfile ){
+  အကယ်၍( db->xProfile ){
     db->xProfile(db->pProfileArg, p->zSql, iElapse);
   }
 #endif
-  if( db->mTrace & SQLITE_TRACE_PROFILE ){
+  အကယ်၍( db->mTrace & SQLITE_TRACE_PROFILE ){
     db->trace.xV2(SQLITE_TRACE_PROFILE, db->pTraceArg, p, (void*)&iElapse);
   }
   p->startTime = 0;
@@ -88,8 +88,8 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** is needed, and it invokes the callback if it is needed.
 */
 # define checkProfileCallback(DB,P) \
-   if( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
-#else
+   အကယ်၍( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
+#မဟုတ်ပါက
 # define checkProfileCallback(DB,P)  /*no-op*/
 #endif
 
@@ -102,16 +102,16 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_finalize(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+ကိန်းပြည့် sqlite3_finalize(sqlite3_stmt *pStmt){
+  ကိန်းပြည့် rc;
+  အကယ်၍( pStmt==0 ){
     /* IMPLEMENTATION-OF: R-57228-12904 Invoking sqlite3_finalize() on a NULL
     ** pointer is a harmless no-op. */
     rc = SQLITE_OK;
-  }else{
+  }မဟုတ်ပါက{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
-    if( vdbeSafety(v) ) return SQLITE_MISUSE_BKPT;
+    အကယ်၍( vdbeSafety(v) ) ပြန်ပေး SQLITE_MISUSE_BKPT;
     sqlite3_mutex_enter(db->mutex);
     checkProfileCallback(db, v);
     assert( v->eVdbeState>=VDBE_READY_STATE );
@@ -120,7 +120,7 @@ int sqlite3_finalize(sqlite3_stmt *pStmt){
     rc = sqlite3ApiExit(db, rc);
     sqlite3LeaveMutexAndCloseZombie(db);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 
 /*
@@ -131,11 +131,11 @@ int sqlite3_finalize(sqlite3_stmt *pStmt){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_reset(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+ကိန်းပြည့် sqlite3_reset(sqlite3_stmt *pStmt){
+  ကိန်းပြည့် rc;
+  အကယ်၍( pStmt==0 ){
     rc = SQLITE_OK;
-  }else{
+  }မဟုတ်ပါက{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
     sqlite3_mutex_enter(db->mutex);
@@ -146,44 +146,44 @@ int sqlite3_reset(sqlite3_stmt *pStmt){
     rc = sqlite3ApiExit(db, rc);
     sqlite3_mutex_leave(db->mutex);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 
 /*
 ** Set all the parameters in the compiled SQL statement to NULL.
 */
-int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
-  int i;
-  int rc = SQLITE_OK;
+ကိန်းပြည့် sqlite3_clear_bindings(sqlite3_stmt *pStmt){
+  ကိန်းပြည့် i;
+  ကိန်းပြည့် rc = SQLITE_OK;
   Vdbe *p = (Vdbe*)pStmt;
   u32 maskSmallInt = 0;  /* Bitmask of bindings with value 0 or 1 */
-#if SQLITE_THREADSAFE
+#အကယ်၍ SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
 #endif
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( pStmt==0 ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
 #endif
-#if SQLITE_THREADSAFE
+#အကယ်၍ SQLITE_THREADSAFE
   mutex = p->db->mutex;
 #endif
 
   sqlite3_mutex_enter(mutex);
-  for(i=0; i<p->nVar; i++){
+  အတွက်(i=0; i<p->nVar; i++){
     Mem *pVar = &p->aVar[i];
-    if( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
+    အကယ်၍( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
       maskSmallInt |= i>=31 ? 0x80000000 : ((u32)1)<<i;
     }
     sqlite3VdbeMemRelease(pVar);
     pVar->flags = MEM_Null;
   }
   assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
-  if( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
+  အကယ်၍( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
     p->expired = 1;
   }
   sqlite3_mutex_leave(mutex);
-  return rc;
+  ပြန်ပေး rc;
 }
 
 
@@ -193,68 +193,68 @@ int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
 */
 const void *sqlite3_value_blob(sqlite3_value *pVal){
   Mem *p = (Mem*)pVal;
-  if( p->flags & (MEM_Blob|MEM_Str) ){
-    if( ExpandBlob(p)!=SQLITE_OK ){
+  အကယ်၍( p->flags & (MEM_Blob|MEM_Str) ){
+    အကယ်၍( ExpandBlob(p)!=SQLITE_OK ){
       assert( p->flags==MEM_Null && p->z==0 );
-      return 0;
+      ပြန်ပေး 0;
     }
     p->flags |= MEM_Blob;
-    return p->n ? p->z : 0;
-  }else{
-    return sqlite3_value_text(pVal);
+    ပြန်ပေး p->n ? p->z : 0;
+  }မဟုတ်ပါက{
+    ပြန်ပေး sqlite3_value_text(pVal);
   }
 }
-int sqlite3_value_bytes(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF8);
+ကိန်းပြည့် sqlite3_value_bytes(sqlite3_value *pVal){
+  ပြန်ပေး sqlite3ValueBytes(pVal, SQLITE_UTF8);
 }
-int sqlite3_value_bytes16(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
+ကိန်းပြည့် sqlite3_value_bytes16(sqlite3_value *pVal){
+  ပြန်ပေး sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
 }
-double sqlite3_value_double(sqlite3_value *pVal){
-  return sqlite3VdbeRealValue((Mem*)pVal);
+dviguu_na sqlite3_value_double(sqlite3_value *pVal){
+  ပြန်ပေး sqlite3VdbeRealValue((Mem*)pVal);
 }
-int sqlite3_value_int(sqlite3_value *pVal){
-  return (int)sqlite3VdbeIntValue((Mem*)pVal);
+ကိန်းပြည့် sqlite3_value_int(sqlite3_value *pVal){
+  ပြန်ပေး (ကိန်းပြည့်)sqlite3VdbeIntValue((Mem*)pVal);
 }
 sqlite_int64 sqlite3_value_int64(sqlite3_value *pVal){
-  return sqlite3VdbeIntValue((Mem*)pVal);
+  ပြန်ပေး sqlite3VdbeIntValue((Mem*)pVal);
 }
-unsigned int sqlite3_value_subtype(sqlite3_value *pVal){
+unsigned ကိန်းပြည့် sqlite3_value_subtype(sqlite3_value *pVal){
   Mem *pMem = (Mem*)pVal;
-  return ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
+  ပြန်ပေး ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
 }
-void *sqlite3_value_pointer(sqlite3_value *pVal, const char *zPType){
+void *sqlite3_value_pointer(sqlite3_value *pVal, const var_na *zPType){
   Mem *p = (Mem*)pVal;
-  if( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
+  အကယ်၍( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype)
    && zPType!=0
    && p->eSubtype=='p'
    && strcmp(p->u.zPType, zPType)==0
   ){
-    return (void*)p->z;
-  }else{
-    return 0;
+    ပြန်ပေး (void*)p->z;
+  }မဟုတ်ပါက{
+    ပြန်ပေး 0;
   }
 }
-const unsigned char *sqlite3_value_text(sqlite3_value *pVal){
-  return (const unsigned char *)sqlite3ValueText(pVal, SQLITE_UTF8);
+const unsigned var_na *sqlite3_value_text(sqlite3_value *pVal){
+  ပြန်ပေး (const unsigned var_na *)sqlite3ValueText(pVal, SQLITE_UTF8);
 }
 #ifndef SQLITE_OMIT_UTF16
 const void *sqlite3_value_text16(sqlite3_value* pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
+  ပြန်ပေး sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
 }
 const void *sqlite3_value_text16be(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16BE);
+  ပြန်ပေး sqlite3ValueText(pVal, SQLITE_UTF16BE);
 }
 const void *sqlite3_value_text16le(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16LE);
+  ပြန်ပေး sqlite3ValueText(pVal, SQLITE_UTF16LE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 /* EVIDENCE-OF: R-12793-43283 Every value in SQLite has one of five
 ** fundamental datatypes: 64-bit signed integer 64-bit IEEE floating
 ** point number string BLOB NULL
 */
-int sqlite3_value_type(sqlite3_value* pVal){
+ကိန်းပြည့် sqlite3_value_type(sqlite3_value* pVal){
   static const u8 aType[] = {
      SQLITE_BLOB,     /* 0x00 (not possible) */
      SQLITE_NULL,     /* 0x01 NULL */
@@ -323,58 +323,58 @@ int sqlite3_value_type(sqlite3_value* pVal){
   };
 #ifdef SQLITE_DEBUG
   {
-    int eType = SQLITE_BLOB;
-    if( pVal->flags & MEM_Null ){
+    ကိန်းပြည့် eType = SQLITE_BLOB;
+    အကယ်၍( pVal->flags & MEM_Null ){
       eType = SQLITE_NULL;
-    }else if( pVal->flags & (MEM_Real|MEM_IntReal) ){
+    }မဟုတ်ပါက အကယ်၍( pVal->flags & (MEM_Real|MEM_IntReal) ){
       eType = SQLITE_FLOAT;
-    }else if( pVal->flags & MEM_Int ){
+    }မဟုတ်ပါက အကယ်၍( pVal->flags & MEM_Int ){
       eType = SQLITE_INTEGER;
-    }else if( pVal->flags & MEM_Str ){
+    }မဟုတ်ပါက အကယ်၍( pVal->flags & MEM_Str ){
       eType = SQLITE_TEXT;
     }
     assert( eType == aType[pVal->flags&MEM_AffMask] );
   }
 #endif
-  return aType[pVal->flags&MEM_AffMask];
+  ပြန်ပေး aType[pVal->flags&MEM_AffMask];
 }
-int sqlite3_value_encoding(sqlite3_value *pVal){
-  return pVal->enc;
+ကိန်းပြည့် sqlite3_value_encoding(sqlite3_value *pVal){
+  ပြန်ပေး pVal->enc;
 }
 
 /* Return true if a parameter to xUpdate represents an unchanged column */
-int sqlite3_value_nochange(sqlite3_value *pVal){
-  return (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
+ကိန်းပြည့် sqlite3_value_nochange(sqlite3_value *pVal){
+  ပြန်ပေး (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
 }
 
 /* Return true if a parameter value originated from an sqlite3_bind() */
-int sqlite3_value_frombind(sqlite3_value *pVal){
-  return (pVal->flags&MEM_FromBind)!=0;
+ကိန်းပြည့် sqlite3_value_frombind(sqlite3_value *pVal){
+  ပြန်ပေး (pVal->flags&MEM_FromBind)!=0;
 }
 
 /* Make a copy of an sqlite3_value object
 */
 sqlite3_value *sqlite3_value_dup(const sqlite3_value *pOrig){
   sqlite3_value *pNew;
-  if( pOrig==0 ) return 0;
-  pNew = sqlite3_malloc( sizeof(*pNew) );
-  if( pNew==0 ) return 0;
-  memset(pNew, 0, sizeof(*pNew));
+  အကယ်၍( pOrig==0 ) ပြန်ပေး 0;
+  pNew = sqlite3_malloc( parimaa_na(*pNew) );
+  အကယ်၍( pNew==0 ) ပြန်ပေး 0;
+  memset(pNew, 0, parimaa_na(*pNew));
   memcpy(pNew, pOrig, MEMCELLSIZE);
   pNew->flags &= ~MEM_Dyn;
   pNew->db = 0;
-  if( pNew->flags&(MEM_Str|MEM_Blob) ){
+  အကယ်၍( pNew->flags&(MEM_Str|MEM_Blob) ){
     pNew->flags &= ~(MEM_Static|MEM_Dyn);
     pNew->flags |= MEM_Ephem;
-    if( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
+    အကယ်၍( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
       sqlite3ValueFree(pNew);
       pNew = 0;
     }
-  }else if( pNew->flags & MEM_Null ){
+  }မဟုတ်ပါက အကယ်၍( pNew->flags & MEM_Null ){
     /* Do not duplicate pointer values */
     pNew->flags &= ~(MEM_Term|MEM_Subtype);
   }
-  return pNew;
+  ပြန်ပေး pNew;
 }
 
 /* Destroy an sqlite3_value object previously obtained from
@@ -401,16 +401,16 @@ void sqlite3_value_free(sqlite3_value *pOld){
 */
 static void setResultStrOrError(
   sqlite3_context *pCtx,  /* Function context */
-  const char *z,          /* String pointer */
-  int n,                  /* Bytes in string, or negative */
+  const var_na *z,          /* String pointer */
+  ကိန်းပြည့် n,                  /* Bytes in string, or negative */
   u8 enc,                 /* Encoding of z.  0 for BLOBs */
   void (*xDel)(void*)     /* Destructor function */
 ){
   Mem *pOut = pCtx->pOut;
-  int rc;
-  if( enc==SQLITE_UTF8 ){
+  ကိန်းပြည့် rc;
+  အကယ်၍( enc==SQLITE_UTF8 ){
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
-  }else if( enc==SQLITE_UTF8_ZT ){
+  }မဟုတ်ပါက အကယ်၍( enc==SQLITE_UTF8_ZT ){
     /* It is usually considered improper to assert() on an input. However,
     ** the following assert() is checking for inputs that are documented
     ** to result in undefined behavior. */
@@ -421,58 +421,58 @@ static void setResultStrOrError(
     );
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
     pOut->flags |= MEM_Term;
-  }else{
+  }မဟုတ်ပါက{
     rc = sqlite3VdbeMemSetStr(pOut, z, n, enc, xDel);
   }
-  if( rc ){
-    if( rc==SQLITE_TOOBIG ){
+  အကယ်၍( rc ){
+    အကယ်၍( rc==SQLITE_TOOBIG ){
       sqlite3_result_error_toobig(pCtx);
-    }else{
+    }မဟုတ်ပါက{
       /* The only errors possible from sqlite3VdbeMemSetStr are
       ** SQLITE_TOOBIG and SQLITE_NOMEM */
       assert( rc==SQLITE_NOMEM );
       sqlite3_result_error_nomem(pCtx);
     }
-    return;
+    ပြန်ပေး;
   }
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
+  အကယ်၍( sqlite3VdbeMemTooBig(pOut) ){
     sqlite3_result_error_toobig(pCtx);
   }
 }
-static int invokeValueDestructor(
+static ကိန်းပြည့် invokeValueDestructor(
   const void *p,             /* Value to destroy */
   void (*xDel)(void*),       /* The destructor */
   sqlite3_context *pCtx      /* Set a SQLITE_TOOBIG error if not NULL */
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  if( xDel==0 ){
+  အကယ်၍( xDel==0 ){
     /* noop */
-  }else if( xDel==SQLITE_TRANSIENT ){
+  }မဟုတ်ပါက အကယ်၍( xDel==SQLITE_TRANSIENT ){
     /* noop */
-  }else{
+  }မဟုတ်ပါက{
     xDel((void*)p);
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx!=0 ){
+  အကယ်၍( pCtx!=0 ){
     sqlite3_result_error_toobig(pCtx);
   }
-#else
+#မဟုတ်ပါက
   assert( pCtx!=0 );
   sqlite3_result_error_toobig(pCtx);
 #endif
-  return SQLITE_TOOBIG;
+  ပြန်ပေး SQLITE_TOOBIG;
 }
 void sqlite3_result_blob(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  ကိန်းပြည့် n,
   void (*xDel)(void *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 || n<0 ){
+  အကယ်၍( pCtx==0 || n<0 ){
     invokeValueDestructor(z, xDel, pCtx);
-    return;
+    ပြန်ပေး;
   }
 #endif
   assert( n>=0 );
@@ -487,60 +487,60 @@ void sqlite3_result_blob64(
 ){
   assert( xDel!=SQLITE_DYNAMIC );
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  အကယ်၍( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    ပြန်ပေး;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( n>0x7fffffff ){
+  အကယ်၍( n>0x7fffffff ){
     (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, 0, xDel);
+  }မဟုတ်ပါက{
+    setResultStrOrError(pCtx, z, (ကိန်းပြည့်)n, 0, xDel);
   }
 }
-void sqlite3_result_double(sqlite3_context *pCtx, double rVal){
+void sqlite3_result_double(sqlite3_context *pCtx, dviguu_na rVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetDouble(pCtx->pOut, rVal);
 }
-void sqlite3_result_error(sqlite3_context *pCtx, const char *z, int n){
+void sqlite3_result_error(sqlite3_context *pCtx, const var_na *z, ကိန်းပြည့် n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF8, SQLITE_TRANSIENT);
 }
 #ifndef SQLITE_OMIT_UTF16
-void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, int n){
+void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, ကိန်းပြည့် n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF16NATIVE, SQLITE_TRANSIENT);
 }
 #endif
-void sqlite3_result_int(sqlite3_context *pCtx, int iVal){
+void sqlite3_result_int(sqlite3_context *pCtx, ကိန်းပြည့် iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, (i64)iVal);
 }
 void sqlite3_result_int64(sqlite3_context *pCtx, i64 iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, iVal);
 }
 void sqlite3_result_null(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
@@ -548,14 +548,14 @@ void sqlite3_result_null(sqlite3_context *pCtx){
 void sqlite3_result_pointer(
   sqlite3_context *pCtx,
   void *pPtr,
-  const char *zPType,
+  const var_na *zPType,
   void (*xDestructor)(void*)
 ){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  အကယ်၍( pCtx==0 ){
     invokeValueDestructor(pPtr, xDestructor, 0);
-    return;
+    ပြန်ပေး;
   }
 #endif
   pOut = pCtx->pOut;
@@ -564,21 +564,21 @@ void sqlite3_result_pointer(
   pOut->flags = MEM_Null;
   sqlite3VdbeMemSetPointer(pOut, pPtr, zPType, xDestructor);
 }
-void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
+void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned ကိန်းပြည့် eSubtype){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
-#if defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
-  if( pCtx->pFunc!=0
+#အကယ်၍ defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
+  အကယ်၍( pCtx->pFunc!=0
    && (pCtx->pFunc->funcFlags & SQLITE_RESULT_SUBTYPE)==0
   ){
-    char zErr[200];
-    sqlite3_snprintf(sizeof(zErr), zErr,
+    var_na zErr[200];
+    sqlite3_snprintf(parimaa_na(zErr), zErr,
                      "misuse of sqlite3_result_subtype() by %s()", 
                      pCtx->pFunc->zName);
     sqlite3_result_error(pCtx, zErr, -1);
-    return;
+    ပြန်ပေး;
   }
 #endif /* SQLITE_STRICT_SUBTYPE */
   pOut = pCtx->pOut;
@@ -588,14 +588,14 @@ void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
 }
 void sqlite3_result_text(
   sqlite3_context *pCtx,
-  const char *z,
-  int n,
+  const var_na *z,
+  ကိန်းပြည့် n,
   void (*xDel)(void *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  အကယ်၍( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    ပြန်ပေး;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -603,27 +603,27 @@ void sqlite3_result_text(
 }
 void sqlite3_result_text64(
   sqlite3_context *pCtx,
-  const char *z,
+  const var_na *z,
   sqlite3_uint64 n,
   void (*xDel)(void *),
-  unsigned char enc
+  unsigned var_na enc
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  အကယ်၍( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    ပြန်ပေး;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+  အကယ်၍( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    အကယ်၍( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
     n &= ~(u64)1;
   }
-  if( n>0x7fffffff ){
+  အကယ်၍( n>0x7fffffff ){
     (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, enc, xDel);
+  }မဟုတ်ပါက{
+    setResultStrOrError(pCtx, z, (ကိန်းပြည့်)n, enc, xDel);
     sqlite3VdbeMemZeroTerminateIfAble(pCtx->pOut);
   }
 }
@@ -631,7 +631,7 @@ void sqlite3_result_text64(
 void sqlite3_result_text16(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  ကိန်းပြည့် n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -640,7 +640,7 @@ void sqlite3_result_text16(
 void sqlite3_result_text16be(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  ကိန်းပြည့် n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -649,7 +649,7 @@ void sqlite3_result_text16be(
 void sqlite3_result_text16le(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  ကိန်းပြည့် n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -660,51 +660,51 @@ void sqlite3_result_value(sqlite3_context *pCtx, sqlite3_value *pValue){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pValue==0 ){
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
+  အကယ်၍( pValue==0 ){
     sqlite3_result_null(pCtx);
-    return;
+    ပြန်ပေး;
   }
 #endif
   pOut = pCtx->pOut;
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemCopy(pOut, pValue);
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
+  အကယ်၍( sqlite3VdbeMemTooBig(pOut) ){
     sqlite3_result_error_toobig(pCtx);
   }
 }
-void sqlite3_result_zeroblob(sqlite3_context *pCtx, int n){
+void sqlite3_result_zeroblob(sqlite3_context *pCtx, ကိန်းပြည့် n){
   sqlite3_result_zeroblob64(pCtx, n>0 ? n : 0);
 }
-int sqlite3_result_zeroblob64(sqlite3_context *pCtx, u64 n){
+ကိန်းပြည့် sqlite3_result_zeroblob64(sqlite3_context *pCtx, u64 n){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return SQLITE_MISUSE_BKPT;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး SQLITE_MISUSE_BKPT;
 #endif
   pOut = pCtx->pOut;
   assert( sqlite3_mutex_held(pOut->db->mutex) );
-  if( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  အကယ်၍( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_LENGTH] ){
     sqlite3_result_error_toobig(pCtx);
-    return SQLITE_TOOBIG;
+    ပြန်ပေး SQLITE_TOOBIG;
   }
 #ifndef SQLITE_OMIT_INCRBLOB
-  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
-  return SQLITE_OK;
-#else
-  return sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
+  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (ကိန်းပြည့်)n);
+  ပြန်ပေး SQLITE_OK;
+#မဟုတ်ပါက
+  ပြန်ပေး sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (ကိန်းပြည့်)n);
 #endif
 }
-void sqlite3_result_error_code(sqlite3_context *pCtx, int errCode){
+void sqlite3_result_error_code(sqlite3_context *pCtx, ကိန်းပြည့် errCode){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   pCtx->isError = errCode ? errCode : -1;
 #ifdef SQLITE_DEBUG
-  if( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
+  အကယ်၍( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
 #endif
-  if( pCtx->pOut->flags & MEM_Null ){
+  အကယ်၍( pCtx->pOut->flags & MEM_Null ){
     setResultStrOrError(pCtx, sqlite3ErrStr(errCode), -1, SQLITE_UTF8,
                         SQLITE_STATIC);
   }
@@ -713,7 +713,7 @@ void sqlite3_result_error_code(sqlite3_context *pCtx, int errCode){
 /* Cause the SQL function to raise an SQLITE_TOOBIG error. */
 void sqlite3_result_error_toobig(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_TOOBIG;
@@ -724,7 +724,7 @@ void sqlite3_result_error_toobig(sqlite3_context *pCtx){
 /* Cause the SQL function to raise an SQLITE_NOMEM error. */
 void sqlite3_result_error_nomem(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
@@ -752,40 +752,40 @@ void sqlite3_result_error_nomem(sqlite3_context *pCtx){
 **    SQLITE_FINISH    Like SQLITE_XFER except that the pStr is also
 **                     freed using sqlite3_str_free().
 */
-void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
+void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, ကိန်းပြည့် eOwn){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pStr==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
+  အကယ်၍( pStr==0 ) ပြန်ပေး;
 #endif
   testcase( pStr==(sqlite3_str*)&sqlite3OomStr );
-  if( pStr->accError==0 ){
-    if( pStr->nChar==0 ){
+  အကယ်၍( pStr->accError==0 ){
+    အကယ်၍( pStr->nChar==0 ){
       setResultStrOrError(pCtx, "", 0, SQLITE_UTF8_ZT, SQLITE_STATIC);
       sqlite3_str_reset(pStr);
-    }else{
-      const char *zText = sqlite3_str_value(pStr);
+    }မဟုတ်ပါက{
+      const var_na *zText = sqlite3_str_value(pStr);
       /* Only internal code has the ability to capture a pointer to
       ** an sqlite3_str object that uses static buffer.  And none of
       ** those internal use cases every invoke the sqlite3_result_str()
       ** interface on a static-buffer sqlite3_str.  Should this change
       ** in the future, the following assert() will let us know. */
       assert( isMalloced(pStr) );
-      if( eOwn==SQLITE_COPY ){
+      အကယ်၍( eOwn==SQLITE_COPY ){
         setResultStrOrError(pCtx, zText, pStr->nChar, 
                             SQLITE_UTF8, SQLITE_TRANSIENT);
-      }else{
+      }မဟုတ်ပါက{
         setResultStrOrError(pCtx, zText, pStr->nChar,
                             SQLITE_UTF8_ZT, SQLITE_DYNAMIC);
         sqlite3StrAccumInit(pStr, pStr->db, 0, 0, pStr->mxAlloc);
       }
     }
-  }else if( pStr->accError==SQLITE_NOMEM ){
+  }မဟုတ်ပါက အကယ်၍( pStr->accError==SQLITE_NOMEM ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }မဟုတ်ပါက{
     assert( pStr->accError==SQLITE_TOOBIG );
     sqlite3_result_error_toobig(pCtx);
   }
-  if( eOwn==SQLITE_FINISH ){
+  အကယ်၍( eOwn==SQLITE_FINISH ){
     sqlite3_str_free(pStr);
   }
 }
@@ -797,7 +797,7 @@ void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
 */
 void sqlite3ResultIntReal(sqlite3_context *pCtx){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( pCtx->pOut->flags & MEM_Int ){
+  အကယ်၍( pCtx->pOut->flags & MEM_Int ){
     pCtx->pOut->flags &= ~MEM_Int;
     pCtx->pOut->flags |= MEM_IntReal;
   }
@@ -809,26 +809,26 @@ void sqlite3ResultIntReal(sqlite3_context *pCtx){
 ** This function is called after a transaction has been committed. It
 ** invokes callbacks registered with sqlite3_wal_hook() as required.
 */
-static int doWalCallbacks(sqlite3 *db){
-  int rc = SQLITE_OK;
+static ကိန်းပြည့် doWalCallbacks(sqlite3 *db){
+  ကိန်းပြည့် rc = SQLITE_OK;
 #ifndef SQLITE_OMIT_WAL
-  int i;
-  for(i=0; i<db->nDb; i++){
+  ကိန်းပြည့် i;
+  အတွက်(i=0; i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt ){
-      int nEntry;
+    အကယ်၍( pBt ){
+      ကိန်းပြည့် nEntry;
       sqlite3BtreeEnter(pBt);
       nEntry = sqlite3PagerWalCallback(sqlite3BtreePager(pBt));
       sqlite3BtreeLeave(pBt);
-      if( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
+      အကယ်၍( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
         rc = db->xWalCallback(db->pWalArg, db, db->aDb[i].zDbSName, nEntry);
       }
     }
   }
-#else
+#မဟုတ်ပါက
   UNUSED_PARAMETER(db);
 #endif
-  return rc;
+  ပြန်ပေး rc;
 }
 
 
@@ -841,19 +841,19 @@ static int doWalCallbacks(sqlite3 *db){
 ** schema change has occurred.  That detail is handled by the
 ** outer sqlite3_step() wrapper procedure.
 */
-static int sqlite3Step(Vdbe *p){
+static ကိန်းပြည့် sqlite3Step(Vdbe *p){
   sqlite3 *db;
-  int rc;
+  ကိန်းပြည့် rc;
 
   assert(p);
   db = p->db;
-  if( p->eVdbeState!=VDBE_RUN_STATE ){
+  အကယ်၍( p->eVdbeState!=VDBE_RUN_STATE ){
     restart_step:
-    if( p->eVdbeState==VDBE_READY_STATE ){
-      if( p->expired ){
+    အကယ်၍( p->eVdbeState==VDBE_READY_STATE ){
+      အကယ်၍( p->expired ){
         p->rc = SQLITE_SCHEMA;
         rc = SQLITE_ERROR;
-        if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+        အကယ်၍( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
           /* If this statement was prepared using saved SQL and an
           ** error has occurred, then return the error code in p->rc to the
           ** caller. Set the error code in the database handle to the same
@@ -868,7 +868,7 @@ static int sqlite3Step(Vdbe *p){
       ** reset the interrupt flag.  This prevents a call to sqlite3_interrupt
       ** from interrupting a statement that has not yet started.
       */
-      if( db->nVdbeActive==0 ){
+      အကယ်၍( db->nVdbeActive==0 ){
         AtomicStore(&db->u1.isInterrupted, 0);
       }
 
@@ -877,22 +877,22 @@ static int sqlite3Step(Vdbe *p){
       );
 
 #ifndef SQLITE_OMIT_TRACE
-      if( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
+      အကယ်၍( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
           && !db->init.busy && p->zSql ){
         sqlite3OsCurrentTimeInt64(db->pVfs, &p->startTime);
-      }else{
+      }မဟုတ်ပါက{
         assert( p->startTime==0 );
       }
 #endif
 
       db->nVdbeActive++;
-      if( p->readOnly==0 ) db->nVdbeWrite++;
-      if( p->bIsReader ) db->nVdbeRead++;
+      အကယ်၍( p->readOnly==0 ) db->nVdbeWrite++;
+      အကယ်၍( p->bIsReader ) db->nVdbeRead++;
       p->pc = 0;
       p->eVdbeState = VDBE_RUN_STATE;
-    }else
+    }မဟုတ်ပါက
 
-    if( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
+    အကယ်၍( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
       /* We used to require that sqlite3_reset() be called before retrying
       ** sqlite3_step() after any error or after SQLITE_DONE.  But beginning
       ** with version 3.7.0, we changed this so that sqlite3_reset() would
@@ -910,12 +910,12 @@ static int sqlite3Step(Vdbe *p){
       ** or SQLITE_BUSY error.
       */
 #ifdef SQLITE_OMIT_AUTORESET
-      if( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
+      အကယ်၍( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
         sqlite3_reset((sqlite3_stmt*)p);
-      }else{
-        return SQLITE_MISUSE_BKPT;
+      }မဟုတ်ပါက{
+        ပြန်ပေး SQLITE_MISUSE_BKPT;
       }
-#else
+#မဟုတ်ပါက
       sqlite3_reset((sqlite3_stmt*)p);
 #endif
       assert( p->eVdbeState==VDBE_READY_STATE );
@@ -927,9 +927,9 @@ static int sqlite3Step(Vdbe *p){
   p->rcApp = SQLITE_OK;
 #endif
 #ifndef SQLITE_OMIT_EXPLAIN
-  if( p->explain ){
+  အကယ်၍( p->explain ){
     rc = sqlite3VdbeList(p);
-  }else
+  }မဟုတ်ပါက
 #endif /* SQLITE_OMIT_EXPLAIN */
   {
     db->nVdbeExec++;
@@ -937,24 +937,24 @@ static int sqlite3Step(Vdbe *p){
     db->nVdbeExec--;
   }
 
-  if( rc==SQLITE_ROW ){
+  အကယ်၍( rc==SQLITE_ROW ){
     assert( p->rc==SQLITE_OK );
     assert( db->mallocFailed==0 );
     db->errCode = SQLITE_ROW;
-    return SQLITE_ROW;
-  }else{
+    ပြန်ပေး SQLITE_ROW;
+  }မဟုတ်ပါက{
 #ifndef SQLITE_OMIT_TRACE
     /* If the statement completed successfully, invoke the profile callback */
     checkProfileCallback(db, p);
 #endif
     p->pResultRow = 0;
-    if( rc==SQLITE_DONE && db->autoCommit ){
+    အကယ်၍( rc==SQLITE_DONE && db->autoCommit ){
       assert( p->rc==SQLITE_OK );
       p->rc = doWalCallbacks(db);
-      if( p->rc!=SQLITE_OK ){
+      အကယ်၍( p->rc!=SQLITE_OK ){
         rc = SQLITE_ERROR;
       }
-    }else if( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+    }မဟုတ်ပါက အကယ်၍( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
       /* If this statement was prepared using saved SQL and an
       ** error has occurred, then return the error code in p->rc to the
       ** caller. Set the error code in the database handle to the same value.
@@ -964,9 +964,9 @@ static int sqlite3Step(Vdbe *p){
   }
 
   db->errCode = rc;
-  if( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
+  အကယ်၍( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
     p->rc = SQLITE_NOMEM_BKPT;
-    if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
+    အကယ်၍( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
   }
 end_of_step:
   /* There are only a limited number of result codes allowed from the
@@ -975,7 +975,7 @@ end_of_step:
        || rc==SQLITE_ROW  || rc==SQLITE_DONE   || rc==SQLITE_ERROR
        || (rc&0xff)==SQLITE_BUSY || rc==SQLITE_MISUSE
   );
-  return (rc&db->errMask);
+  ပြန်ပေး (rc&db->errMask);
 }
 
 /*
@@ -983,22 +983,22 @@ end_of_step:
 ** sqlite3Step() to do most of the work.  If a schema error occurs,
 ** call sqlite3Reprepare() and try again.
 */
-int sqlite3_step(sqlite3_stmt *pStmt){
-  int rc = SQLITE_OK;      /* Result from sqlite3Step() */
+ကိန်းပြည့် sqlite3_step(sqlite3_stmt *pStmt){
+  ကိန်းပြည့် rc = SQLITE_OK;      /* Result from sqlite3Step() */
   Vdbe *v = (Vdbe*)pStmt;  /* the prepared statement */
-  int cnt = 0;             /* Counter to prevent infinite loop of reprepares */
+  ကိန်းပြည့် cnt = 0;             /* Counter to prevent infinite loop of reprepares */
   sqlite3 *db;             /* The database connection */
 
-  if( vdbeSafetyNotNull(v) ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( vdbeSafetyNotNull(v) ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
   db = v->db;
   sqlite3_mutex_enter(db->mutex);
-  while( (rc = sqlite3Step(v))==SQLITE_SCHEMA
+  နေစဉ်( (rc = sqlite3Step(v))==SQLITE_SCHEMA
          && cnt++ < SQLITE_MAX_SCHEMA_RETRY ){
-    int savedPc = v->pc;
+    ကိန်းပြည့် savedPc = v->pc;
     rc = sqlite3Reprepare(v);
-    if( rc!=SQLITE_OK ){
+    အကယ်၍( rc!=SQLITE_OK ){
       /* This case occurs after failing to recompile an sql statement.
       ** The error message from the SQL compiler has already been loaded
       ** into the database handle. This block copies the error message
@@ -1007,19 +1007,19 @@ int sqlite3_step(sqlite3_stmt *pStmt){
       ** finalized or reset the parser error message is available via
       ** sqlite3_errmsg() and sqlite3_errcode().
       */
-      const char *zErr = (const char *)sqlite3_value_text(db->pErr);
+      const var_na *zErr = (const var_na *)sqlite3_value_text(db->pErr);
       sqlite3DbFree(db, v->zErrMsg);
-      if( !db->mallocFailed ){
+      အကယ်၍( !db->mallocFailed ){
         v->zErrMsg = sqlite3DbStrDup(db, zErr);
         v->rc = rc = sqlite3ApiExit(db, rc);
-      } else {
+      } မဟုတ်ပါက {
         v->zErrMsg = 0;
         v->rc = rc = SQLITE_NOMEM_BKPT;
       }
-      break;
+      bha_nga;
     }
     sqlite3_reset(pStmt);
-    if( savedPc>=0 ){
+    အကယ်၍( savedPc>=0 ){
       /* Setting minWriteFileFormat to 254 is a signal to the OP_Init and
       ** OP_Trace opcodes to *not* perform SQLITE_TRACE_STMT because it has
       ** already been done once on a prior invocation that failed due to
@@ -1029,7 +1029,7 @@ int sqlite3_step(sqlite3_stmt *pStmt){
     assert( v->expired==0 );
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  ပြန်ပေး rc;
 }
 
 
@@ -1039,10 +1039,10 @@ int sqlite3_step(sqlite3_stmt *pStmt){
 */
 void *sqlite3_user_data(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
+  အကယ်၍( p==0 ) ပြန်ပေး 0;
 #endif
   assert( p && p->pFunc );
-  return p->pFunc->pUserData;
+  ပြန်ပေး p->pFunc->pUserData;
 }
 
 /*
@@ -1057,11 +1057,11 @@ void *sqlite3_user_data(sqlite3_context *p){
 */
 sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
+  အကယ်၍( p==0 ) ပြန်ပေး 0;
+#မဟုတ်ပါက
   assert( p && p->pOut );
 #endif
-  return p->pOut->db;
+  ပြန်ပေး p->pOut->db;
 }
 
 /*
@@ -1078,13 +1078,13 @@ sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 ** performance by substituting a NULL result, or some other light-weight
 ** value, as a signal to the xUpdate routine that the column is unchanged.
 */
-int sqlite3_vtab_nochange(sqlite3_context *p){
+ကိန်းပြည့် sqlite3_vtab_nochange(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
+  အကယ်၍( p==0 ) ပြန်ပေး 0;
+#မဟုတ်ပါက
   assert( p );
 #endif
-  return sqlite3_value_nochange(p->pOut);
+  ပြန်ပေး sqlite3_value_nochange(p->pOut);
 }
 
 /*
@@ -1102,71 +1102,71 @@ void sqlite3VdbeValueListFree(void *pToDelete){
 ** Implementation of sqlite3_vtab_in_first() (if bNext==0) and
 ** sqlite3_vtab_in_next() (if bNext!=0).
 */
-static int valueFromValueList(
+static ကိန်းပြည့် valueFromValueList(
   sqlite3_value *pVal,        /* Pointer to the ValueList object */
   sqlite3_value **ppOut,      /* Store the next value from the list here */
-  int bNext                   /* 1 for _next(). 0 for _first() */
+  ကိန်းပြည့် bNext                   /* 1 for _next(). 0 for _first() */
 ){
-  int rc;
+  ကိန်းပြည့် rc;
   ValueList *pRhs;
 
   *ppOut = 0;
-  if( pVal==0 ) return SQLITE_MISUSE_BKPT;
-  if( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3VdbeValueListFree ){
-    return SQLITE_ERROR;
-  }else{
+  အကယ်၍( pVal==0 ) ပြန်ပေး SQLITE_MISUSE_BKPT;
+  အကယ်၍( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3VdbeValueListFree ){
+    ပြန်ပေး SQLITE_ERROR;
+  }မဟုတ်ပါက{
     assert( (pVal->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype) );
     assert( pVal->eSubtype=='p' );
     assert( pVal->u.zPType!=0 && strcmp(pVal->u.zPType,"ValueList")==0 );
     pRhs = (ValueList*)pVal->z;
   }
-  if( bNext ){
+  အကယ်၍( bNext ){
     rc = sqlite3BtreeNext(pRhs->pCsr, 0);
-  }else{
-    int dummy = 0;
+  }မဟုတ်ပါက{
+    ကိန်းပြည့် dummy = 0;
     rc = sqlite3BtreeFirst(pRhs->pCsr, &dummy);
     assert( rc==SQLITE_OK || sqlite3BtreeEof(pRhs->pCsr) );
-    if( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
+    အကယ်၍( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
   }
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     u32 sz;       /* Size of current row in bytes */
     Mem sMem;     /* Raw content of current row */
-    memset(&sMem, 0, sizeof(sMem));
+    memset(&sMem, 0, parimaa_na(sMem));
     sz = sqlite3BtreePayloadSize(pRhs->pCsr);
     rc = sqlite3VdbeMemFromBtreeZeroOffset(pRhs->pCsr,sz,&sMem);
-    if( rc==SQLITE_OK ){
+    အကယ်၍( rc==SQLITE_OK ){
       u8 *zBuf = (u8*)sMem.z;
       u32 iSerial;
       sqlite3_value *pOut = pRhs->pOut;
-      int iOff = 1 + getVarint32(&zBuf[1], iSerial);
+      ကိန်းပြည့် iOff = 1 + getVarint32(&zBuf[1], iSerial);
       sqlite3VdbeSerialGet(&zBuf[iOff], iSerial, pOut);
       pOut->enc = ENC(pOut->db);
-      if( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
+      အကယ်၍( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
         rc = SQLITE_NOMEM;
-      }else{
+      }မဟုတ်ပါက{
         *ppOut = pOut;
       }
     }
     sqlite3VdbeMemRelease(&sMem);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 
 /*
 ** Set the iterator value pVal to point to the first value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_first(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 0);
+ကိန်းပြည့် sqlite3_vtab_in_first(sqlite3_value *pVal, sqlite3_value **ppOut){
+  ပြန်ပေး valueFromValueList(pVal, ppOut, 0);
 }
 
 /*
 ** Set the iterator value pVal to point to the next value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 1);
+ကိန်းပြည့် sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
+  ပြန်ပေး valueFromValueList(pVal, ppOut, 1);
 }
 
 /*
@@ -1177,40 +1177,40 @@ int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
 ** the time returned is always the time of the first call.
 */
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context *p){
-  int rc;
+  ကိန်းပြည့် rc;
 #ifndef SQLITE_ENABLE_STAT4
   sqlite3_int64 *piTime = &p->pVdbe->iCurrentTime;
   assert( p->pVdbe!=0 );
-#else
+#မဟုတ်ပါက
   sqlite3_int64 iTime = 0;
   sqlite3_int64 *piTime = p->pVdbe!=0 ? &p->pVdbe->iCurrentTime : &iTime;
 #endif
-  if( *piTime==0 ){
+  အကယ်၍( *piTime==0 ){
     rc = sqlite3OsCurrentTimeInt64(p->pOut->db->pVfs, piTime);
-    if( rc ) *piTime = 0;
+    အကယ်၍( rc ) *piTime = 0;
   }
-  return *piTime;
+  ပြန်ပေး *piTime;
 }
 
 /*
 ** Create a new aggregate context for p and return a pointer to
 ** its pMem->z element.
 */
-static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
+static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, ကိန်းပြည့် nByte){
   Mem *pMem = p->pMem;
   assert( (pMem->flags & MEM_Agg)==0 );
-  if( nByte<=0 ){
+  အကယ်၍( nByte<=0 ){
     sqlite3VdbeMemSetNull(pMem);
     pMem->z = 0;
-  }else{
+  }မဟုတ်ပါက{
     sqlite3VdbeMemClearAndResize(pMem, nByte);
     pMem->flags = MEM_Agg;
     pMem->u.pDef = p->pFunc;
-    if( pMem->z ){
+    အကယ်၍( pMem->z ){
       memset(pMem->z, 0, nByte);
     }
   }
-  return (void*)pMem->z;
+  ပြန်ပေး (void*)pMem->z;
 }
 
 /*
@@ -1218,14 +1218,14 @@ static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
 ** context is allocated on the first call.  Subsequent calls return the
 ** same context that was returned on prior calls.
 */
-void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
+void *sqlite3_aggregate_context(sqlite3_context *p, ကိန်းပြည့် nByte){
   assert( p && p->pFunc && p->pFunc->xFinalize );
   assert( sqlite3_mutex_held(p->pOut->db->mutex) );
   testcase( nByte<0 );
-  if( (p->pMem->flags & MEM_Agg)==0 ){
-    return createAggContext(p, nByte);
-  }else{
-    return (void*)p->pMem->z;
+  အကယ်၍( (p->pMem->flags & MEM_Agg)==0 ){
+    ပြန်ပေး createAggContext(p, nByte);
+  }မဟုတ်ပါက{
+    ပြန်ပေး (void*)p->pMem->z;
   }
 }
 
@@ -1239,24 +1239,24 @@ void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
 ** auxiliary data pointers that is available to all functions within a
 ** single prepared statement.  The iArg values must match.
 */
-void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
+void *sqlite3_get_auxdata(sqlite3_context *pCtx, ကိန်းပြည့် iArg){
   AuxData *pAuxData;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return 0;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး 0;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-#if SQLITE_ENABLE_STAT4
-  if( pCtx->pVdbe==0 ) return 0;
-#else
+#အကယ်၍ SQLITE_ENABLE_STAT4
+  အကယ်၍( pCtx->pVdbe==0 ) ပြန်ပေး 0;
+#မဟုတ်ပါက
   assert( pCtx->pVdbe!=0 );
 #endif
-  for(pAuxData=pCtx->pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if(  pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
-      return pAuxData->pAux;
+  အတွက်(pAuxData=pCtx->pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
+    အကယ်၍(  pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
+      ပြန်ပေး pAuxData->pAux;
     }
   }
-  return 0;
+  ပြန်ပေး 0;
 }
 
 /*
@@ -1272,7 +1272,7 @@ void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
 */
 void sqlite3_set_auxdata(
   sqlite3_context *pCtx,
-  int iArg,
+  ကိန်းပြည့် iArg,
   void *pAux,
   void (*xDelete)(void*)
 ){
@@ -1280,39 +1280,39 @@ void sqlite3_set_auxdata(
   Vdbe *pVdbe;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  အကယ်၍( pCtx==0 ) ပြန်ပေး;
 #endif
   pVdbe= pCtx->pVdbe;
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
 #ifdef SQLITE_ENABLE_STAT4
-  if( pVdbe==0 ) goto failed;
-#else
+  အကယ်၍( pVdbe==0 ) goto failed;
+#မဟုတ်ပါက
   assert( pVdbe!=0 );
 #endif
 
-  for(pAuxData=pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if( pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
-      break;
+  အတွက်(pAuxData=pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
+    အကယ်၍( pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
+      bha_nga;
     }
   }
-  if( pAuxData==0 ){
-    pAuxData = sqlite3DbMallocZero(pVdbe->db, sizeof(AuxData));
-    if( !pAuxData ) goto failed;
+  အကယ်၍( pAuxData==0 ){
+    pAuxData = sqlite3DbMallocZero(pVdbe->db, parimaa_na(AuxData));
+    အကယ်၍( !pAuxData ) goto failed;
     pAuxData->iAuxOp = pCtx->iOp;
     pAuxData->iAuxArg = iArg;
     pAuxData->pNextAux = pVdbe->pAuxData;
     pVdbe->pAuxData = pAuxData;
-    if( pCtx->isError==0 ) pCtx->isError = -1;
-  }else if( pAuxData->xDeleteAux ){
+    အကယ်၍( pCtx->isError==0 ) pCtx->isError = -1;
+  }မဟုတ်ပါက အကယ်၍( pAuxData->xDeleteAux ){
     pAuxData->xDeleteAux(pAuxData->pAux);
   }
 
   pAuxData->pAux = pAux;
   pAuxData->xDeleteAux = xDelete;
-  return;
+  ပြန်ပေး;
 
 failed:
-  if( xDelete ){
+  အကယ်၍( xDelete ){
     xDelete(pAux);
   }
 }
@@ -1327,29 +1327,29 @@ failed:
 ** implementations should keep their own counts within their aggregate
 ** context.
 */
-int sqlite3_aggregate_count(sqlite3_context *p){
+ကိန်းပြည့် sqlite3_aggregate_count(sqlite3_context *p){
   assert( p && p->pMem && p->pFunc && p->pFunc->xFinalize );
-  return p->pMem->n;
+  ပြန်ပေး p->pMem->n;
 }
 #endif
 
 /*
 ** Return the number of columns in the result set for the statement pStmt.
 */
-int sqlite3_column_count(sqlite3_stmt *pStmt){
+ကိန်းပြည့် sqlite3_column_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return 0;
-  return pVm->nResColumn;
+  အကယ်၍( pVm==0 ) ပြန်ပေး 0;
+  ပြန်ပေး pVm->nResColumn;
 }
 
 /*
 ** Return the number of values available from the current row of the
 ** currently executing statement pStmt.
 */
-int sqlite3_data_count(sqlite3_stmt *pStmt){
+ကိန်းပြည့် sqlite3_data_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 || pVm->pResultRow==0 ) return 0;
-  return pVm->nResColumn;
+  အကယ်၍( pVm==0 || pVm->pResultRow==0 ) ပြန်ပေး 0;
+  ပြန်ပေး pVm->nResColumn;
 }
 
 /*
@@ -1366,20 +1366,20 @@ static const Mem *columnNullValue(void){
   ** using gcc, we force nullMem to be 8-byte aligned using the magical
   ** __attribute__((aligned(8))) macro.  */
   static const Mem nullMem
-#if defined(SQLITE_DEBUG) && defined(__GNUC__)
+#အကယ်၍ defined(SQLITE_DEBUG) && defined(__GNUC__)
     __attribute__((aligned(8)))
 #endif
     = {
         /* .u          = */ {0},
-        /* .z          = */ (char*)0,
-        /* .n          = */ (int)0,
+        /* .z          = */ (var_na*)0,
+        /* .n          = */ (ကိန်းပြည့်)0,
         /* .flags      = */ (u16)MEM_Null,
         /* .enc        = */ (u8)0,
         /* .eSubtype   = */ (u8)0,
         /* .db         = */ (sqlite3*)0,
-        /* .szMalloc   = */ (int)0,
+        /* .szMalloc   = */ (ကိန်းပြည့်)0,
         /* .uTemp      = */ (u32)0,
-        /* .zMalloc    = */ (char*)0,
+        /* .zMalloc    = */ (var_na*)0,
         /* .xDel       = */ (void(*)(void*))0,
 #ifdef SQLITE_DEBUG
         /* .pScopyFrom = */ (Mem*)0,
@@ -1387,7 +1387,7 @@ static const Mem *columnNullValue(void){
         /* .bScopy     = */ 0,
 #endif
       };
-  return &nullMem;
+  ပြန်ပေး &nullMem;
 }
 
 /*
@@ -1396,21 +1396,21 @@ static const Mem *columnNullValue(void){
 ** If iCol is not valid, return a pointer to a Mem which has a value
 ** of NULL.
 */
-static Mem *columnMem(sqlite3_stmt *pStmt, int i){
+static Mem *columnMem(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   Vdbe *pVm;
   Mem *pOut;
 
   pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return (Mem*)columnNullValue();
+  အကယ်၍( pVm==0 ) ပြန်ပေး (Mem*)columnNullValue();
   assert( pVm->db );
   sqlite3_mutex_enter(pVm->db->mutex);
-  if( pVm->pResultRow!=0 && i<pVm->nResColumn && i>=0 ){
+  အကယ်၍( pVm->pResultRow!=0 && i<pVm->nResColumn && i>=0 ){
     pOut = &pVm->pResultRow[i];
-  }else{
+  }မဟုတ်ပါက{
     sqlite3Error(pVm->db, SQLITE_RANGE);
     pOut = (Mem*)columnNullValue();
   }
-  return pOut;
+  ပြန်ပေး pOut;
 }
 
 /*
@@ -1439,7 +1439,7 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
   ** and _finalize() will return NOMEM.
   */
   Vdbe *p = (Vdbe *)pStmt;
-  if( p ){
+  အကယ်၍( p ){
     assert( p->db!=0 );
     assert( sqlite3_mutex_held(p->db->mutex) );
     p->rc = sqlite3ApiExit(p->db, p->rc);
@@ -1451,7 +1451,7 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
 ** The following routines are used to access elements of the current row
 ** in the result set.
 */
-const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
+const void *sqlite3_column_blob(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   const void *val;
   val = sqlite3_value_blob( columnMem(pStmt,i) );
   /* Even though there is no encoding conversion, value_blob() might
@@ -1459,64 +1459,64 @@ const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
   ** expression.
   */
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-int sqlite3_column_bytes(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes( columnMem(pStmt,i) );
+ကိန်းပြည့် sqlite3_column_bytes(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  ကိန်းပြည့် val = sqlite3_value_bytes( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-int sqlite3_column_bytes16(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes16( columnMem(pStmt,i) );
+ကိန်းပြည့် sqlite3_column_bytes16(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  ကိန်းပြည့် val = sqlite3_value_bytes16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-double sqlite3_column_double(sqlite3_stmt *pStmt, int i){
-  double val = sqlite3_value_double( columnMem(pStmt,i) );
+dviguu_na sqlite3_column_double(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  dviguu_na val = sqlite3_value_double( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-int sqlite3_column_int(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_int( columnMem(pStmt,i) );
+ကိန်းပြည့် sqlite3_column_int(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  ကိန်းပြည့် val = sqlite3_value_int( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, int i){
+sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   sqlite_int64 val = sqlite3_value_int64( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, int i){
-  const unsigned char *val = sqlite3_value_text( columnMem(pStmt,i) );
+const unsigned var_na *sqlite3_column_text(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  const unsigned var_na *val = sqlite3_value_text( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
-sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, int i){
+sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   Mem *pOut = columnMem(pStmt, i);
-  if( pOut->flags&MEM_Static ){
+  အကယ်၍( pOut->flags&MEM_Static ){
     pOut->flags &= ~MEM_Static;
     pOut->flags |= MEM_Ephem;
   }
   columnMallocFailure(pStmt);
-  return (sqlite3_value *)pOut;
+  ပြန်ပေး (sqlite3_value *)pOut;
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_text16(sqlite3_stmt *pStmt, int i){
+const void *sqlite3_column_text16(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   const void *val = sqlite3_value_text16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  ပြန်ပေး val;
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_column_type(sqlite3_stmt *pStmt, int i){
-  int iType = sqlite3_value_type( columnMem(pStmt,i) );
+ကိန်းပြည့် sqlite3_column_type(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  ကိန်းပြည့် iType = sqlite3_value_type( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return iType;
+  ပြန်ပေး iType;
 }
 
 /*
 ** Column names appropriate for EXPLAIN or EXPLAIN QUERY PLAN.
 */
-static const char * const azExplainColNames8[] = {
+static const var_na * const azExplainColNames8[] = {
    "addr", "opcode", "p1", "p2", "p3", "p4", "p5", "comment",  /* EXPLAIN */
    "id", "parent", "notused", "detail"                         /* EQP */
 };
@@ -1557,47 +1557,47 @@ static const u8 iExplainColNames16[] = {
 */
 static const void *columnName(
   sqlite3_stmt *pStmt,     /* The statement */
-  int N,                   /* Which column to get the name for */
-  int useUtf16,            /* True to return the name as UTF16 */
-  int useType              /* What type of name */
+  ကိန်းပြည့် N,                   /* Which column to get the name for */
+  ကိန်းပြည့် useUtf16,            /* True to return the name as UTF16 */
+  ကိန်းပြည့် useType              /* What type of name */
 ){
   const void *ret;
   Vdbe *p;
-  int n;
+  ကိန်းပြည့် n;
   sqlite3 *db;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
+  အကယ်၍( pStmt==0 ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    ပြန်ပေး 0;
   }
 #endif
-  if( N<0 ) return 0;
+  အကယ်၍( N<0 ) ပြန်ပေး 0;
   ret = 0;
   p = (Vdbe *)pStmt;
   db = p->db;
   assert( db!=0 );
   sqlite3_mutex_enter(db->mutex);
 
-  if( p->explain ){
-    if( useType>0 ) goto columnName_end;
+  အကယ်၍( p->explain ){
+    အကယ်၍( useType>0 ) goto columnName_end;
     n = p->explain==1 ? 8 : 4;
-    if( N>=n ) goto columnName_end;
-    if( useUtf16 ){
-      int i = iExplainColNames16[N + 8*p->explain - 8];
+    အကယ်၍( N>=n ) goto columnName_end;
+    အကယ်၍( useUtf16 ){
+      ကိန်းပြည့် i = iExplainColNames16[N + 8*p->explain - 8];
       ret = (void*)&azExplainColNames16data[i];
-    }else{
+    }မဟုတ်ပါက{
       ret = (void*)azExplainColNames8[N + 8*p->explain - 8];
     }
     goto columnName_end;
   }
   n = p->nResColumn;
-  if( N<n ){
+  အကယ်၍( N<n ){
     u8 prior_mallocFailed = db->mallocFailed;
     N += useType*n;
 #ifndef SQLITE_OMIT_UTF16
-    if( useUtf16 ){
+    အကယ်၍( useUtf16 ){
       ret = sqlite3_value_text16((sqlite3_value*)&p->aColName[N]);
-    }else
+    }မဟုတ်ပါက
 #endif
     {
       ret = sqlite3_value_text((sqlite3_value*)&p->aColName[N]);
@@ -1606,26 +1606,26 @@ static const void *columnName(
     ** is the case, clear the mallocFailed flag and return NULL.
     */
     assert( db->mallocFailed==0 || db->mallocFailed==1 );
-    if( db->mallocFailed > prior_mallocFailed ){
+    အကယ်၍( db->mallocFailed > prior_mallocFailed ){
       sqlite3OomClear(db);
       ret = 0;
     }
   }
 columnName_end:
   sqlite3_mutex_leave(db->mutex);
-  return ret;
+  ပြန်ပေး ret;
 }
 
 /*
 ** Return the name of the Nth column of the result set returned by SQL
 ** statement pStmt.
 */
-const char *sqlite3_column_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_NAME);
+const var_na *sqlite3_column_name(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 0, COLNAME_NAME);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_NAME);
+const void *sqlite3_column_name16(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 1, COLNAME_NAME);
 }
 #endif
 
@@ -1633,7 +1633,7 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Constraint:  If you have ENABLE_COLUMN_METADATA then you must
 ** not define OMIT_DECLTYPE.
 */
-#if defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
+#အကယ်၍ defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
 # error "Must not define both SQLITE_OMIT_DECLTYPE \
          and SQLITE_ENABLE_COLUMN_METADATA"
 #endif
@@ -1643,12 +1643,12 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Return the column declaration type (if applicable) of the 'i'th column
 ** of the result set of SQL statement pStmt.
 */
-const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DECLTYPE);
+const var_na *sqlite3_column_decltype(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 0, COLNAME_DECLTYPE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DECLTYPE);
+const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 1, COLNAME_DECLTYPE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_DECLTYPE */
@@ -1659,12 +1659,12 @@ const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_database_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DATABASE);
+const var_na *sqlite3_column_database_name(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 0, COLNAME_DATABASE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DATABASE);
+const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 1, COLNAME_DATABASE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1673,12 +1673,12 @@ const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_table_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_TABLE);
+const var_na *sqlite3_column_table_name(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 0, COLNAME_TABLE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_TABLE);
+const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 1, COLNAME_TABLE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1687,12 +1687,12 @@ const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_origin_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_COLUMN);
+const var_na *sqlite3_column_origin_name(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 0, COLNAME_COLUMN);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_COLUMN);
+const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, ကိန်းပြည့် N){
+  ပြန်ပေး columnName(pStmt, N, 1, COLNAME_COLUMN);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_ENABLE_COLUMN_METADATA */
@@ -1724,23 +1724,23 @@ const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
 ** An assert() is normally added after vdbeUnbind() to help static analyzers
 ** realize this.
 */
-static int vdbeUnbind(Vdbe *p, unsigned int i){
+static ကိန်းပြည့် vdbeUnbind(Vdbe *p, unsigned ကိန်းပြည့် i){
   Mem *pVar;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( vdbeSafetyNotNull(p) ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  အကယ်၍( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
-  if( i>=(unsigned int)p->nVar ){
+  အကယ်၍( i>=(unsigned ကိန်းပြည့်)p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    ပြန်ပေး SQLITE_RANGE;
   }
 
   pVar = &p->aVar[i];
@@ -1756,10 +1756,10 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   */
   assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
   assert( (p->expmask & p->smimask)==p->smimask );
-  if( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
+  အကယ်၍( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
     /* If the p->smimask bit is also set, then only expire the statement if
     ** the value being clobbered was integer value 0 or 1. */
-    if( (p->smimask==0) 
+    အကယ်၍( (p->smimask==0) 
      || (p->smimask & (i>=31 ? 0x80000000 : (u32)1<<i))==0 
      || ((pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1)
     ){
@@ -1771,15 +1771,15 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   pVar->flags = MEM_Null;
   p->db->errCode = SQLITE_OK;
 
-  return SQLITE_OK;
+  ပြန်ပေး SQLITE_OK;
 }
 
 /*
 ** Bind a text or BLOB value.
 */
-static int bindText(
+static ကိန်းပြည့် bindText(
   sqlite3_stmt *pStmt,   /* The statement to bind against */
-  int i,                 /* Index of the parameter to bind */
+  ကိန်းပြည့် i,                 /* Index of the parameter to bind */
   const void *zData,     /* Pointer to the data to be bound */
   i64 nData,             /* Number of bytes of data to be bound */
   void (*xDel)(void*),   /* Destructor for the data */
@@ -1787,16 +1787,16 @@ static int bindText(
 ){
   Vdbe *p = (Vdbe *)pStmt;
   Mem *pVar;
-  int rc;
+  ကိန်းပြည့် rc;
 
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
-    if( zData!=0 ){
+    အကယ်၍( zData!=0 ){
       pVar = &p->aVar[i-1];
-      if( encoding==SQLITE_UTF8 ){
+      အကယ်၍( encoding==SQLITE_UTF8 ){
         rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
-      }else if( encoding==SQLITE_UTF8_ZT ){
+      }မဟုတ်ပါက အကယ်၍( encoding==SQLITE_UTF8_ZT ){
         /* It is usually consider improper to assert() on an input.
         ** However, the following assert() is checking for inputs
         ** that are documented to result in undefined behavior. */
@@ -1807,98 +1807,98 @@ static int bindText(
         );
         rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
         pVar->flags |= MEM_Term;
-      }else{
+      }မဟုတ်ပါက{
         rc = sqlite3VdbeMemSetStr(pVar, zData, nData, encoding, xDel);
-        if( encoding==0 ) pVar->enc = ENC(p->db);
+        အကယ်၍( encoding==0 ) pVar->enc = ENC(p->db);
       }
-      if( rc==SQLITE_OK && encoding!=0 ){
+      အကယ်၍( rc==SQLITE_OK && encoding!=0 ){
         rc = sqlite3VdbeChangeEncoding(pVar, ENC(p->db));
       }
-      if( rc ){
+      အကယ်၍( rc ){
         sqlite3Error(p->db, rc);
         rc = sqlite3ApiExit(p->db, rc);
       }
     }
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
+  }မဟုတ်ပါက အကယ်၍( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
     xDel((void*)zData);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
 
 
 /*
 ** Bind a blob value to an SQL statement variable.
 */
-int sqlite3_bind_blob(
+ကိန်းပြည့် sqlite3_bind_blob(
   sqlite3_stmt *pStmt,
-  int i,
+  ကိန်းပြည့် i,
   const void *zData,
-  int nData,
+  ကိန်းပြည့် nData,
   void (*xDel)(void*)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( nData<0 ) return SQLITE_MISUSE_BKPT;
+  အကယ်၍( nData<0 ) ပြန်ပေး SQLITE_MISUSE_BKPT;
 #endif
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  ပြန်ပေး bindText(pStmt, i, zData, nData, xDel, 0);
 }
-int sqlite3_bind_blob64(
+ကိန်းပြည့် sqlite3_bind_blob64(
   sqlite3_stmt *pStmt,
-  int i,
+  ကိန်းပြည့် i,
   const void *zData,
   sqlite3_uint64 nData,
   void (*xDel)(void*)
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  ပြန်ပေး bindText(pStmt, i, zData, nData, xDel, 0);
 }
-int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
-  int rc;
+ကိန်းပြည့် sqlite3_bind_double(sqlite3_stmt *pStmt, ကိန်းပြည့် i, dviguu_na rValue){
+  ကိန်းပြည့် rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3VdbeMemSetDouble(&p->aVar[i-1], rValue);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-int sqlite3_bind_int(sqlite3_stmt *p, int i, int iValue){
-  return sqlite3_bind_int64(p, i, (i64)iValue);
+ကိန်းပြည့် sqlite3_bind_int(sqlite3_stmt *p, ကိန်းပြည့် i, ကိန်းပြည့် iValue){
+  ပြန်ပေး sqlite3_bind_int64(p, i, (i64)iValue);
 }
-int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
+ကိန်းပြည့် sqlite3_bind_int64(sqlite3_stmt *pStmt, ကိန်းပြည့် i, sqlite_int64 iValue){
   Mem *pVar;
   Vdbe *p = (Vdbe*)pStmt;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( vdbeSafetyNotNull(p) ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  အကယ်၍( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
-  if( i<=0 || (--i)>=p->nVar ){
+  အကယ်၍( i<=0 || (--i)>=p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    ပြန်ပေး SQLITE_RANGE;
   }
   pVar = &p->aVar[i];
-  if( p->expmask!=0 ){
+  အကယ်၍( p->expmask!=0 ){
     u32 expireMask = i>=32 ? 0x80000000 : (u32)1 << i;
     assert( (p->expmask & p->smimask)==p->smimask );
-    if( (p->expmask & expireMask)!=0 ){
-      if( (p->smimask & expireMask)!=0 ){
+    အကယ်၍( (p->expmask & expireMask)!=0 ){
+      အကယ်၍( (p->smimask & expireMask)!=0 ){
         /* If the smimask bit is set, only expire the prepared statement
         ** if the value is changing to or from (0,1) and something else */
-        int sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
-        int sm2 = iValue>=0 && iValue<=1;
-        if( sm1!=sm2 ){
+        ကိန်းပြည့် sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
+        ကိန်းပြည့် sm2 = iValue>=0 && iValue<=1;
+        အကယ်၍( sm1!=sm2 ){
           p->expired = 1;
         }
-      }else if( (pVar->flags & MEM_Int)==0 || iValue!=pVar->u.i ){
+      }မဟုတ်ပါက အကယ်၍( (pVar->flags & MEM_Int)==0 || iValue!=pVar->u.i ){
         /* Always expire if the smimask bit is clear */
         p->expired = 1;
       }
@@ -1906,146 +1906,146 @@ int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
   }
   sqlite3VdbeMemSetInt64(pVar, iValue);
   sqlite3_mutex_leave(p->db->mutex);
-  return SQLITE_OK;
+  ပြန်ပေး SQLITE_OK;
 }
-int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
-  int rc;
+ကိန်းပြည့် sqlite3_bind_null(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
+  ကိန်းပြည့် rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-int sqlite3_bind_pointer(
+ကိန်းပြည့် sqlite3_bind_pointer(
   sqlite3_stmt *pStmt,
-  int i,
+  ကိန်းပြည့် i,
   void *pPtr,
-  const char *zPTtype,
+  const var_na *zPTtype,
   void (*xDestructor)(void*)
 ){
-  int rc;
+  ကိန်းပြည့် rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3VdbeMemSetPointer(&p->aVar[i-1], pPtr, zPTtype, xDestructor);
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDestructor ){
+  }မဟုတ်ပါက အကယ်၍( xDestructor ){
     xDestructor(pPtr);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-int sqlite3_bind_text(
+ကိန်းပြည့် sqlite3_bind_text(
   sqlite3_stmt *pStmt,
-  int i,
-  const char *zData,
-  int nData,
+  ကိန်းပြည့် i,
+  const var_na *zData,
+  ကိန်းပြည့် nData,
   void (*xDel)(void*)
 ){
-  return bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
+  ပြန်ပေး bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
 }
-int sqlite3_bind_text64(
+ကိန်းပြည့် sqlite3_bind_text64(
   sqlite3_stmt *pStmt,
-  int i,
-  const char *zData,
+  ကိန်းပြည့် i,
+  const var_na *zData,
   sqlite3_uint64 nData,
   void (*xDel)(void*),
-  unsigned char enc
+  unsigned var_na enc
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+  အကယ်၍( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    အကယ်၍( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
     nData &= ~(u64)1;
   }
-  return bindText(pStmt, i, zData, nData, xDel, enc);
+  ပြန်ပေး bindText(pStmt, i, zData, nData, xDel, enc);
 }
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3_bind_text16(
+ကိန်းပြည့် sqlite3_bind_text16(
   sqlite3_stmt *pStmt,
-  int i,
+  ကိန်းပြည့် i,
   const void *zData,
-  int n,
+  ကိန်းပြည့် n,
   void (*xDel)(void*)
 ){
-  return bindText(pStmt, i, zData, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
+  ပြန်ပေး bindText(pStmt, i, zData, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
-  int rc;
+ကိန်းပြည့် sqlite3_bind_value(sqlite3_stmt *pStmt, ကိန်းပြည့် i, const sqlite3_value *pValue){
+  ကိန်းပြည့် rc;
   switch( sqlite3_value_type((sqlite3_value*)pValue) ){
-    case SQLITE_INTEGER: {
+    pak_sa SQLITE_INTEGER: {
       rc = sqlite3_bind_int64(pStmt, i, pValue->u.i);
-      break;
+      bha_nga;
     }
-    case SQLITE_FLOAT: {
+    pak_sa SQLITE_FLOAT: {
       assert( pValue->flags & (MEM_Real|MEM_IntReal) );
       rc = sqlite3_bind_double(pStmt, i,
-          (pValue->flags & MEM_Real) ? pValue->u.r : (double)pValue->u.i
+          (pValue->flags & MEM_Real) ? pValue->u.r : (dviguu_na)pValue->u.i
       );
-      break;
+      bha_nga;
     }
-    case SQLITE_BLOB: {
-      if( pValue->flags & MEM_Zero ){
+    pak_sa SQLITE_BLOB: {
+      အကယ်၍( pValue->flags & MEM_Zero ){
         rc = sqlite3_bind_zeroblob(pStmt, i, pValue->u.nZero);
-      }else{
+      }မဟုတ်ပါက{
         rc = sqlite3_bind_blob(pStmt, i, pValue->z, pValue->n,SQLITE_TRANSIENT);
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_TEXT: {
+    pak_sa SQLITE_TEXT: {
       rc = bindText(pStmt,i,  pValue->z, pValue->n, SQLITE_TRANSIENT,
                               pValue->enc);
-      break;
+      bha_nga;
     }
     default: {
       rc = sqlite3_bind_null(pStmt, i);
-      break;
+      bha_nga;
     }
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
-  int rc;
+ကိန်းပြည့် sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, ကိန်းပြည့် i, ကိန်းပြည့် n){
+  ကိန်းပြည့် rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  အကယ်၍( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
 #ifndef SQLITE_OMIT_INCRBLOB
     sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
-#else
+#မဟုတ်ပါက
     rc = sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
 #endif
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  ပြန်ပေး rc;
 }
-int sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, int i, sqlite3_uint64 n){
-  int rc;
+ကိန်းပြည့် sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, ကိန်းပြည့် i, sqlite3_uint64 n){
+  ကိန်းပြည့် rc;
   Vdbe *p = (Vdbe *)pStmt;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  အကယ်၍( p==0 ) ပြန်ပေး SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(p->db->mutex);
-  if( n>(u64)p->db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  အကယ်၍( n>(u64)p->db->aLimit[SQLITE_LIMIT_LENGTH] ){
     rc = SQLITE_TOOBIG;
-  }else{
+  }မဟုတ်ပါက{
     assert( (n & 0x7FFFFFFF)==n );
     rc = sqlite3_bind_zeroblob(pStmt, i, n);
   }
   rc = sqlite3ApiExit(p->db, rc);
   sqlite3_mutex_leave(p->db->mutex);
-  return rc;
+  ပြန်ပေး rc;
 }
 
 /*
 ** Return the number of wildcards that can be potentially bound to.
 ** This routine is added to support DBD::SQLite. 
 */
-int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
+ကိန်းပြည့် sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  return p ? p->nVar : 0;
+  ပြန်ပေး p ? p->nVar : 0;
 }
 
 /*
@@ -2054,10 +2054,10 @@ int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
 **
 ** The result is always UTF-8.
 */
-const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
+const var_na *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, ကိန်းပြည့် i){
   Vdbe *p = (Vdbe*)pStmt;
-  if( p==0 ) return 0;
-  return sqlite3VListNumToName(p->pVList, i);
+  အကယ်၍( p==0 ) ပြန်ပေး 0;
+  ပြန်ပေး sqlite3VListNumToName(p->pVList, i);
 }
 
 /*
@@ -2065,29 +2065,29 @@ const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
 ** with that name.  If there is no variable with the given name,
 ** return 0.
 */
-int sqlite3VdbeParameterIndex(Vdbe *p, const char *zName, int nName){
-  if( p==0 || zName==0 ) return 0;
-  return sqlite3VListNameToNum(p->pVList, zName, nName);
+ကိန်းပြည့် sqlite3VdbeParameterIndex(Vdbe *p, const var_na *zName, ကိန်းပြည့် nName){
+  အကယ်၍( p==0 || zName==0 ) ပြန်ပေး 0;
+  ပြန်ပေး sqlite3VListNameToNum(p->pVList, zName, nName);
 }
-int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
-  return sqlite3VdbeParameterIndex((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
+ကိန်းပြည့် sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const var_na *zName){
+  ပြန်ပေး sqlite3VdbeParameterIndex((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
 }
 
 /*
 ** Transfer all bindings from the first statement over to the second.
 */
-int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+ကိန်းပြည့် sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  int i;
+  ကိန်းပြည့် i;
   assert( pTo->db==pFrom->db );
   assert( pTo->nVar==pFrom->nVar );
   sqlite3_mutex_enter(pTo->db->mutex);
-  for(i=0; i<pFrom->nVar; i++){
+  အတွက်(i=0; i<pFrom->nVar; i++){
     sqlite3VdbeMemMove(&pTo->aVar[i], &pFrom->aVar[i]);
   }
   sqlite3_mutex_leave(pTo->db->mutex);
-  return SQLITE_OK;
+  ပြန်ပေး SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -2103,21 +2103,21 @@ int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** an SQLITE_ERROR is returned.  Nothing else can go wrong, so otherwise
 ** SQLITE_OK is returned.
 */
-int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+ကိန်းပြည့် sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  if( pFrom->nVar!=pTo->nVar ){
-    return SQLITE_ERROR;
+  အကယ်၍( pFrom->nVar!=pTo->nVar ){
+    ပြန်ပေး SQLITE_ERROR;
   }
   assert( (pTo->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pTo->expmask==0 );
-  if( pTo->expmask ){
+  အကယ်၍( pTo->expmask ){
     pTo->expired = 1;
   }
   assert( (pFrom->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pFrom->expmask==0 );
-  if( pFrom->expmask ){
+  အကယ်၍( pFrom->expmask ){
     pFrom->expired = 1;
   }
-  return sqlite3TransferBindings(pFromStmt, pToStmt);
+  ပြန်ပေး sqlite3TransferBindings(pFromStmt, pToStmt);
 }
 #endif
 
@@ -2128,72 +2128,72 @@ int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** the statement in the first place.
 */
 sqlite3 *sqlite3_db_handle(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->db : 0;
+  ပြန်ပေး pStmt ? ((Vdbe*)pStmt)->db : 0;
 }
 
 /*
 ** Return true if the prepared statement is guaranteed to not modify the
 ** database.
 */
-int sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
+ကိန်းပြည့် sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
+  ပြန်ပေး pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
 }
 
 /*
 ** Return 1 if the statement is an EXPLAIN and return 2 if the
 ** statement is an EXPLAIN QUERY PLAN
 */
-int sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->explain : 0;
+ကိန်းပြည့် sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
+  ပြန်ပေး pStmt ? ((Vdbe*)pStmt)->explain : 0;
 }
 
 /*
 ** Set the explain mode for a statement.
 */
-int sqlite3_stmt_explain(sqlite3_stmt *pStmt, int eMode){
+ကိန်းပြည့် sqlite3_stmt_explain(sqlite3_stmt *pStmt, ကိန်းပြည့် eMode){
   Vdbe *v = (Vdbe*)pStmt;
-  int rc;
+  ကိန်းပြည့် rc;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ) return SQLITE_MISUSE_BKPT;
+  အကယ်၍( pStmt==0 ) ပြန်ပေး SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(v->db->mutex);
-  if( ((int)v->explain)==eMode ){
+  အကယ်၍( ((ကိန်းပြည့်)v->explain)==eMode ){
     rc = SQLITE_OK;
-  }else if( eMode<0 || eMode>2 ){
+  }မဟုတ်ပါက အကယ်၍( eMode<0 || eMode>2 ){
     rc = SQLITE_ERROR;
-  }else if( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
+  }မဟုတ်ပါက အကယ်၍( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
     rc = SQLITE_ERROR;
-  }else if( v->eVdbeState!=VDBE_READY_STATE ){
+  }မဟုတ်ပါက အကယ်၍( v->eVdbeState!=VDBE_READY_STATE ){
     rc = SQLITE_BUSY;
-  }else if( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
+  }မဟုတ်ပါက အကယ်၍( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
     /* No reprepare necessary */
     v->explain = eMode;
     rc = SQLITE_OK;
-  }else{
-    int savedMode = v->explain;
+  }မဟုတ်ပါက{
+    ကိန်းပြည့် savedMode = v->explain;
     v->explain = eMode;
     rc = sqlite3Reprepare(v);
-    if( rc ){
+    အကယ်၍( rc ){
       v->explain = savedMode;
-    }else{
+    }မဟုတ်ပါက{
       v->haveEqpOps = eMode==2;
     }
   }
-  if( v->explain ){
+  အကယ်၍( v->explain ){
     v->nResColumn = 12 - 4*v->explain;
-  }else{
+  }မဟုတ်ပါက{
     v->nResColumn = v->nResAlloc;
   }
   sqlite3_mutex_leave(v->db->mutex);
-  return rc;
+  ပြန်ပေး rc;
 }
 
 /*
 ** Return true if the prepared statement is in need of being reset.
 */
-int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
+ကိန်းပြည့် sqlite3_stmt_busy(sqlite3_stmt *pStmt){
   Vdbe *v = (Vdbe*)pStmt;
-  return v!=0 && v->eVdbeState==VDBE_RUN_STATE;
+  ပြန်ပေး v!=0 && v->eVdbeState==VDBE_RUN_STATE;
 }
 
 /*
@@ -2205,59 +2205,59 @@ int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
 sqlite3_stmt *sqlite3_next_stmt(sqlite3 *pDb, sqlite3_stmt *pStmt){
   sqlite3_stmt *pNext;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(pDb) ){
+  အကယ်၍( !sqlite3SafetyCheckOk(pDb) ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    ပြန်ပေး 0;
   }
 #endif
   sqlite3_mutex_enter(pDb->mutex);
-  if( pStmt==0 ){
+  အကယ်၍( pStmt==0 ){
     pNext = (sqlite3_stmt*)pDb->pVdbe;
-  }else{
+  }မဟုတ်ပါက{
     pNext = (sqlite3_stmt*)((Vdbe*)pStmt)->pVNext;
   }
   sqlite3_mutex_leave(pDb->mutex);
-  return pNext;
+  ပြန်ပေး pNext;
 }
 
 /*
 ** Return the value of a status counter for a prepared statement
 */
-int sqlite3_stmt_status(sqlite3_stmt *pStmt, int op, int resetFlag){
+ကိန်းပြည့် sqlite3_stmt_status(sqlite3_stmt *pStmt, ကိန်းပြည့် op, ကိန်းပြည့် resetFlag){
   Vdbe *pVdbe = (Vdbe*)pStmt;
   u32 v;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !pStmt
+  အကယ်၍( !pStmt
    || (op!=SQLITE_STMTSTATUS_MEMUSED && (op<0||op>=ArraySize(pVdbe->aCounter)))
   ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    ပြန်ပေး 0;
   }
 #endif
-  if( op==SQLITE_STMTSTATUS_MEMUSED ){
+  အကယ်၍( op==SQLITE_STMTSTATUS_MEMUSED ){
     sqlite3 *db = pVdbe->db;
     sqlite3_mutex_enter(db->mutex);
     v = 0;
-    db->pnBytesFreed = (int*)&v;
+    db->pnBytesFreed = (ကိန်းပြည့်*)&v;
     assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
     db->lookaside.pEnd = db->lookaside.pStart;
     sqlite3VdbeDelete(pVdbe);
     db->pnBytesFreed = 0;
     db->lookaside.pEnd = db->lookaside.pTrueEnd;
     sqlite3_mutex_leave(db->mutex);
-  }else{
+  }မဟုတ်ပါက{
     v = pVdbe->aCounter[op];
-    if( resetFlag ) pVdbe->aCounter[op] = 0;
+    အကယ်၍( resetFlag ) pVdbe->aCounter[op] = 0;
   }
-  return (int)v;
+  ပြန်ပေး (ကိန်းပြည့်)v;
 }
 
 /*
 ** Return the SQL associated with a prepared statement
 */
-const char *sqlite3_sql(sqlite3_stmt *pStmt){
+const var_na *sqlite3_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  return p ? p->zSql : 0;
+  ပြန်ပေး p ? p->zSql : 0;
 }
 
 /*
@@ -2269,19 +2269,19 @@ const char *sqlite3_sql(sqlite3_stmt *pStmt){
 ** The SQLITE_TRACE_SIZE_LIMIT puts an upper bound on the size of
 ** expanded bound parameters.
 */
-char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
+var_na *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 #ifdef SQLITE_OMIT_TRACE
-  return 0;
-#else
-  char *z = 0;
-  const char *zSql = sqlite3_sql(pStmt);
-  if( zSql ){
+  ပြန်ပေး 0;
+#မဟုတ်ပါက
+  var_na *z = 0;
+  const var_na *zSql = sqlite3_sql(pStmt);
+  အကယ်၍( zSql ){
     Vdbe *p = (Vdbe *)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     z = sqlite3VdbeExpandSql(p, zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return z;
+  ပြန်ပေး z;
 #endif
 }
 
@@ -2289,15 +2289,15 @@ char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 /*
 ** Return the normalized SQL associated with a prepared statement.
 */
-const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
+const var_na *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  if( p==0 ) return 0;
-  if( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
+  အကယ်၍( p==0 ) ပြန်ပေး 0;
+  အကယ်၍( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
     sqlite3_mutex_enter(p->db->mutex);
     p->zNormSql = sqlite3Normalize(p, p->zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return p->zNormSql;
+  ပြန်ပေး p->zNormSql;
 }
 #endif /* SQLITE_ENABLE_NORMALIZE */
 
@@ -2309,75 +2309,75 @@ const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
 */
 static UnpackedRecord *vdbeUnpackRecord(
   KeyInfo *pKeyInfo,
-  int nKey,
+  ကိန်းပြည့် nKey,
   const void *pKey
 ){
   UnpackedRecord *pRet;           /* Return value */
 
   pRet = sqlite3VdbeAllocUnpackedRecord(pKeyInfo);
-  if( pRet ){
-    memset(pRet->aMem, 0, sizeof(Mem)*(pKeyInfo->nKeyField+1));
+  အကယ်၍( pRet ){
+    memset(pRet->aMem, 0, parimaa_na(Mem)*(pKeyInfo->nKeyField+1));
     sqlite3VdbeRecordUnpack(nKey, pKey, pRet);
   }
-  return pRet;
+  ပြန်ပေး pRet;
 }
 
 /*
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or deleted.
 */
-int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+ကိန်းပြည့် sqlite3_preupdate_old(sqlite3 *db, ကိန်းပြည့် iIdx, sqlite3_value **ppValue){
   PreUpdate *p;
   Mem *pMem;
-  int rc = SQLITE_OK;
-  int iStore = 0;
+  ကိန်းပြည့် rc = SQLITE_OK;
+  ကိန်းပြည့် iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( db==0 || ppValue==0 ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
   /* Test that this call is being made from within an SQLITE_DELETE or
   ** SQLITE_UPDATE pre-update callback, and that iIdx is within range. */
-  if( !p || p->op==SQLITE_INSERT ){
+  အကယ်၍( !p || p->op==SQLITE_INSERT ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_old_out;
   }
-  if( p->pPk ){
+  အကယ်၍( p->pPk ){
     iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
+  }မဟုတ်ပါက အကယ်၍( iIdx >= p->pTab->nCol ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_old_out;
-  }else{
+  }မဟုတ်ပါက{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  အကယ်၍( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
     goto preupdate_old_out;
   }
 
-  if( iIdx==p->pTab->iPKey ){
+  အကယ်၍( iIdx==p->pTab->iPKey ){
     *ppValue = pMem = &p->oldipk;
     sqlite3VdbeMemSetInt64(pMem, p->iKey1);
-  }else{
+  }မဟုတ်ပါက{
 
     /* If the old.* record has not yet been loaded into memory, do so now. */
-    if( p->pUnpacked==0 ){
+    အကယ်၍( p->pUnpacked==0 ){
       u32 nRec;
       u8 *aRec;
 
       assert( p->pCsr->eCurType==CURTYPE_BTREE );
       nRec = sqlite3BtreePayloadSize(p->pCsr->uc.pCursor);
       aRec = sqlite3DbMallocRaw(db, (u64)nRec+8);
-      if( !aRec ) goto preupdate_old_out;
+      အကယ်၍( !aRec ) goto preupdate_old_out;
       rc = sqlite3BtreePayload(p->pCsr->uc.pCursor, 0, nRec, aRec);
-      if( rc==SQLITE_OK ){
+      အကယ်၍( rc==SQLITE_OK ){
         memset(aRec+nRec, 0, 8);
         p->pUnpacked = vdbeUnpackRecord(p->pKeyinfo, nRec, aRec);
-        if( !p->pUnpacked ) rc = SQLITE_NOMEM;
+        အကယ်၍( !p->pUnpacked ) rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ){
+      အကယ်၍( rc!=SQLITE_OK ){
         sqlite3DbFree(db, aRec);
         goto preupdate_old_out;
       }
@@ -2385,35 +2385,35 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
     }
 
     pMem = *ppValue = &p->pUnpacked->aMem[iStore];
-    if( iStore>=p->pUnpacked->nField ){
+    အကယ်၍( iStore>=p->pUnpacked->nField ){
       /* This occurs when the table has been extended using ALTER TABLE
       ** ADD COLUMN. The value to return is the default value of the column. */
       Column *pCol = &p->pTab->aCol[iIdx];
-      if( pCol->iDflt>0 ){
-        if( p->apDflt==0 ){
-          int nByte;
-          assert( sizeof(sqlite3_value*)*UMXV(p->pTab->nCol) < 0x7fffffff );
-          nByte = sizeof(sqlite3_value*)*p->pTab->nCol;
+      အကယ်၍( pCol->iDflt>0 ){
+        အကယ်၍( p->apDflt==0 ){
+          ကိန်းပြည့် nByte;
+          assert( parimaa_na(sqlite3_value*)*UMXV(p->pTab->nCol) < 0x7fffffff );
+          nByte = parimaa_na(sqlite3_value*)*p->pTab->nCol;
           p->apDflt = (sqlite3_value**)sqlite3DbMallocZero(db, nByte);
-          if( p->apDflt==0 ) goto preupdate_old_out;
+          အကယ်၍( p->apDflt==0 ) goto preupdate_old_out;
         }
-        if( p->apDflt[iIdx]==0 ){
+        အကယ်၍( p->apDflt[iIdx]==0 ){
           sqlite3_value *pVal = 0;
           Expr *pDflt;
           assert( p->pTab!=0 && IsOrdinaryTable(p->pTab) );
           pDflt = p->pTab->u.tab.pDfltList->a[pCol->iDflt-1].pExpr;
           rc = sqlite3ValueFromExpr(db, pDflt, ENC(db), pCol->affinity, &pVal);
-          if( rc==SQLITE_OK && pVal==0 ){
+          အကယ်၍( rc==SQLITE_OK && pVal==0 ){
             rc = SQLITE_CORRUPT_BKPT;
           }
           p->apDflt[iIdx] = pVal;
         }
         *ppValue = p->apDflt[iIdx];
-      }else{
+      }မဟုတ်ပါက{
         *ppValue = (sqlite3_value *)columnNullValue();
       }
-    }else if( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
-      if( pMem->flags & (MEM_Int|MEM_IntReal) ){
+    }မဟုတ်ပါက အကယ်၍( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
+      အကယ်၍( pMem->flags & (MEM_Int|MEM_IntReal) ){
         testcase( pMem->flags & MEM_Int );
         testcase( pMem->flags & MEM_IntReal );
         sqlite3VdbeMemRealify(pMem);
@@ -2423,7 +2423,7 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 
  preupdate_old_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  ပြန်ပေး sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2432,14 +2432,14 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 ** This function is called from within a pre-update callback to retrieve
 ** the number of columns in the row being updated, deleted or inserted.
 */
-int sqlite3_preupdate_count(sqlite3 *db){
+ကိန်းပြည့် sqlite3_preupdate_count(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#မဟုတ်ပါက
   p = db->pPreUpdate;
 #endif
-  return (p ? p->pKeyinfo->nKeyField : 0);
+  ပြန်ပေး (p ? p->pKeyinfo->nKeyField : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2455,14 +2455,14 @@ int sqlite3_preupdate_count(sqlite3 *db){
 ** For the purposes of the previous paragraph, a foreign key CASCADE, SET NULL
 ** or SET DEFAULT action is considered a trigger.
 */
-int sqlite3_preupdate_depth(sqlite3 *db){
+ကိန်းပြည့် sqlite3_preupdate_depth(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#မဟုတ်ပါက
   p = db->pPreUpdate;
 #endif
-  return (p ? p->v->nFrame : 0);
+  ပြန်ပေး (p ? p->v->nFrame : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2471,14 +2471,14 @@ int sqlite3_preupdate_depth(sqlite3 *db){
 ** This function is designed to be called from within a pre-update callback
 ** only.
 */
-int sqlite3_preupdate_blobwrite(sqlite3 *db){
+ကိန်းပြည့် sqlite3_preupdate_blobwrite(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#မဟုတ်ပါက
   p = db->pPreUpdate;
 #endif
-  return (p ? p->iBlobWrite : -1);
+  ပြန်ပေး (p ? p->iBlobWrite : -1);
 }
 #endif
 
@@ -2487,84 +2487,84 @@ int sqlite3_preupdate_blobwrite(sqlite3 *db){
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or inserted.
 */
-int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+ကိန်းပြည့် sqlite3_preupdate_new(sqlite3 *db, ကိန်းပြည့် iIdx, sqlite3_value **ppValue){
   PreUpdate *p;
-  int rc = SQLITE_OK;
+  ကိန်းပြည့် rc = SQLITE_OK;
   Mem *pMem;
-  int iStore = 0;
+  ကိန်းပြည့် iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  အကယ်၍( db==0 || ppValue==0 ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
-  if( !p || p->op==SQLITE_DELETE ){
+  အကယ်၍( !p || p->op==SQLITE_DELETE ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_new_out;
   }
-  if( p->pPk && p->op!=SQLITE_UPDATE ){
+  အကယ်၍( p->pPk && p->op!=SQLITE_UPDATE ){
     iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
-    return SQLITE_MISUSE_BKPT;
-  }else{
+  }မဟုတ်ပါက အကယ်၍( iIdx >= p->pTab->nCol ){
+    ပြန်ပေး SQLITE_MISUSE_BKPT;
+  }မဟုတ်ပါက{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
 
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  အကယ်၍( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
     goto preupdate_new_out;
   }
 
-  if( p->op==SQLITE_INSERT ){
+  အကယ်၍( p->op==SQLITE_INSERT ){
     /* For an INSERT, memory cell p->iNewReg contains the serialized record
     ** that is being inserted. Deserialize it. */
     UnpackedRecord *pUnpack = p->pNewUnpacked;
-    if( !pUnpack ){
+    အကယ်၍( !pUnpack ){
       Mem *pData = &p->v->aMem[p->iNewReg];
       rc = ExpandBlob(pData);
-      if( rc!=SQLITE_OK ) goto preupdate_new_out;
+      အကယ်၍( rc!=SQLITE_OK ) goto preupdate_new_out;
       pUnpack = vdbeUnpackRecord(p->pKeyinfo, pData->n, pData->z);
-      if( !pUnpack ){
+      အကယ်၍( !pUnpack ){
         rc = SQLITE_NOMEM;
         goto preupdate_new_out;
       }
       p->pNewUnpacked = pUnpack;
     }
     pMem = &pUnpack->aMem[iStore];
-    if( iIdx==p->pTab->iPKey ){
+    အကယ်၍( iIdx==p->pTab->iPKey ){
       sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-    }else if( iStore>=pUnpack->nField ){
+    }မဟုတ်ပါက အကယ်၍( iStore>=pUnpack->nField ){
       pMem = (sqlite3_value *)columnNullValue();
-    }else if( (p->pTab->aCol)
+    }မဟုတ်ပါက အကယ်၍( (p->pTab->aCol)
            && (p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL)
            && (pMem->flags & (MEM_Int|MEM_IntReal))
     ){
       sqlite3VdbeMemRealify(pMem);
     }
-  }else{
+  }မဟုတ်ပါက{
     /* For an UPDATE, memory cell (p->iNewReg+1+iStore) contains the required
     ** value. Make a copy of the cell contents and return a pointer to it.
     ** It is not safe to return a pointer to the memory cell itself as the
     ** caller may modify the value text encoding.
     */
     assert( p->op==SQLITE_UPDATE );
-    if( !p->aNew ){
-      assert( sizeof(Mem)*UMXV(p->pCsr->nField) < 0x7fffffff );
-      p->aNew = (Mem *)sqlite3DbMallocZero(db, sizeof(Mem)*p->pCsr->nField);
-      if( !p->aNew ){
+    အကယ်၍( !p->aNew ){
+      assert( parimaa_na(Mem)*UMXV(p->pCsr->nField) < 0x7fffffff );
+      p->aNew = (Mem *)sqlite3DbMallocZero(db, parimaa_na(Mem)*p->pCsr->nField);
+      အကယ်၍( !p->aNew ){
         rc = SQLITE_NOMEM;
         goto preupdate_new_out;
       }
     }
     assert( iStore>=0 && iStore<p->pCsr->nField );
     pMem = &p->aNew[iStore];
-    if( pMem->flags==0 ){
-      if( iIdx==p->pTab->iPKey ){
+    အကယ်၍( pMem->flags==0 ){
+      အကယ်၍( iIdx==p->pTab->iPKey ){
         sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-      }else{
+      }မဟုတ်ပါက{
         rc = sqlite3VdbeMemCopy(pMem, &p->v->aMem[p->iNewReg+1+iStore]);
-        if( rc!=SQLITE_OK ) goto preupdate_new_out;
+        အကယ်၍( rc!=SQLITE_OK ) goto preupdate_new_out;
       }
     }
   }
@@ -2572,7 +2572,7 @@ int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 
  preupdate_new_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  ပြန်ပေး sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2580,140 +2580,140 @@ int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus_v2(
+ကိန်းပြည့် sqlite3_stmt_scanstatus_v2(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
-  int flags,
+  ကိန်းပြည့် iScan,                      /* Index of loop to report on */
+  ကိန်းပြည့် iScanStatusOp,              /* Which metric to return */
+  ကိန်းပြည့် flags,
   void *pOut                      /* OUT: Write the answer here */
 ){
   Vdbe *p = (Vdbe*)pStmt;
   VdbeOp *aOp;
-  int nOp;
+  ကိန်းပြည့် nOp;
   ScanStatus *pScan = 0;
-  int idx;
+  ကိန်းပြည့် idx;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 || pOut==0
+  အကယ်၍( p==0 || pOut==0
       || iScanStatusOp<SQLITE_SCANSTAT_NLOOP
       || iScanStatusOp>SQLITE_SCANSTAT_NCYCLE ){
-    return 1;
+    ပြန်ပေး 1;
   }
 #endif
   aOp = p->aOp;
   nOp = p->nOp;
-  if( p->pFrame ){
+  အကယ်၍( p->pFrame ){
     VdbeFrame *pFrame;
-    for(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
+    အတွက်(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
     aOp = pFrame->aOp;
     nOp = pFrame->nOp;
   }
 
-  if( iScan<0 ){
-    int ii;
-    if( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
+  အကယ်၍( iScan<0 ){
+    ကိန်းပြည့် ii;
+    အကယ်၍( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
       i64 res = 0;
-      for(ii=0; ii<nOp; ii++){
+      အတွက်(ii=0; ii<nOp; ii++){
         res += aOp[ii].nCycle;
       }
       *(i64*)pOut = res;
-      return 0;
+      ပြန်ပေး 0;
     }
-    return 1;
+    ပြန်ပေး 1;
   }
-  if( flags & SQLITE_SCANSTAT_COMPLEX ){
+  အကယ်၍( flags & SQLITE_SCANSTAT_COMPLEX ){
     idx = iScan;
-  }else{
+  }မဟုတ်ပါက{
     /* If the COMPLEX flag is clear, then this function must ignore any
     ** ScanStatus structures with ScanStatus.addrLoop set to 0. */
-    for(idx=0; idx<p->nScan; idx++){
+    အတွက်(idx=0; idx<p->nScan; idx++){
       pScan = &p->aScan[idx];
-      if( pScan->zName ){
+      အကယ်၍( pScan->zName ){
         iScan--;
-        if( iScan<0 ) break;
+        အကယ်၍( iScan<0 ) bha_nga;
       }
     }
   }
-  if( idx>=p->nScan ) return 1;
+  အကယ်၍( idx>=p->nScan ) ပြန်ပေး 1;
   assert( pScan==0 || pScan==&p->aScan[idx] );
   pScan = &p->aScan[idx];
 
   switch( iScanStatusOp ){
-    case SQLITE_SCANSTAT_NLOOP: {
-      if( pScan->addrLoop>0 ){
+    pak_sa SQLITE_SCANSTAT_NLOOP: {
+      အကယ်၍( pScan->addrLoop>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrLoop].nExec;
-      }else{
+      }မဟုတ်ပါက{
         *(sqlite3_int64*)pOut = -1;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_NVISIT: {
-      if( pScan->addrVisit>0 ){
+    pak_sa SQLITE_SCANSTAT_NVISIT: {
+      အကယ်၍( pScan->addrVisit>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrVisit].nExec;
-      }else{
+      }မဟုတ်ပါက{
         *(sqlite3_int64*)pOut = -1;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_EST: {
-      double r = 1.0;
+    pak_sa SQLITE_SCANSTAT_EST: {
+      dviguu_na r = 1.0;
       LogEst x = pScan->nEst;
-      while( x<100 ){
+      နေစဉ်( x<100 ){
         x += 10;
         r *= 0.5;
       }
-      *(double*)pOut = r*sqlite3LogEstToInt(x);
-      break;
+      *(dviguu_na*)pOut = r*sqlite3LogEstToInt(x);
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_NAME: {
-      *(const char**)pOut = pScan->zName;
-      break;
+    pak_sa SQLITE_SCANSTAT_NAME: {
+      *(const var_na**)pOut = pScan->zName;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_EXPLAIN: {
-      if( pScan->addrExplain ){
-        *(const char**)pOut = aOp[ pScan->addrExplain ].p4.z;
-      }else{
-        *(const char**)pOut = 0;
+    pak_sa SQLITE_SCANSTAT_EXPLAIN: {
+      အကယ်၍( pScan->addrExplain ){
+        *(const var_na**)pOut = aOp[ pScan->addrExplain ].p4.z;
+      }မဟုတ်ပါက{
+        *(const var_na**)pOut = 0;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_SELECTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p1;
-      }else{
-        *(int*)pOut = -1;
+    pak_sa SQLITE_SCANSTAT_SELECTID: {
+      အကယ်၍( pScan->addrExplain ){
+        *(ကိန်းပြည့်*)pOut = aOp[ pScan->addrExplain ].p1;
+      }မဟုတ်ပါက{
+        *(ကိန်းပြည့်*)pOut = -1;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_PARENTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p2;
-      }else{
-        *(int*)pOut = -1;
+    pak_sa SQLITE_SCANSTAT_PARENTID: {
+      အကယ်၍( pScan->addrExplain ){
+        *(ကိန်းပြည့်*)pOut = aOp[ pScan->addrExplain ].p2;
+      }မဟုတ်ပါက{
+        *(ကိန်းပြည့်*)pOut = -1;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_SCANSTAT_NCYCLE: {
+    pak_sa SQLITE_SCANSTAT_NCYCLE: {
       i64 res = 0;
-      if( pScan->aAddrRange[0]==0 ){
+      အကယ်၍( pScan->aAddrRange[0]==0 ){
         res = -1;
-      }else{
-        int ii;
-        for(ii=0; ii<ArraySize(pScan->aAddrRange); ii+=2){
-          int iIns = pScan->aAddrRange[ii];
-          int iEnd = pScan->aAddrRange[ii+1];
-          if( iIns==0 ) break;
-          if( iIns>0 ){
-            while( iIns<=iEnd ){
+      }မဟုတ်ပါက{
+        ကိန်းပြည့် ii;
+        အတွက်(ii=0; ii<ArraySize(pScan->aAddrRange); ii+=2){
+          ကိန်းပြည့် iIns = pScan->aAddrRange[ii];
+          ကိန်းပြည့် iEnd = pScan->aAddrRange[ii+1];
+          အကယ်၍( iIns==0 ) bha_nga;
+          အကယ်၍( iIns>0 ){
+            နေစဉ်( iIns<=iEnd ){
               res += aOp[iIns].nCycle;
               iIns++;
             }
-          }else{
-            int iOp;
-            for(iOp=0; iOp<nOp; iOp++){
+          }မဟုတ်ပါက{
+            ကိန်းပြည့် iOp;
+            အတွက်(iOp=0; iOp<nOp; iOp++){
               Op *pOp = &aOp[iOp];
-              if( pOp->p1!=iEnd ) continue;
-              if( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
+              အကယ်၍( pOp->p1!=iEnd ) continue;
+              အကယ်၍( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
                 continue;
               }
               res += aOp[iOp].nCycle;
@@ -2722,25 +2722,25 @@ int sqlite3_stmt_scanstatus_v2(
         }
       }
       *(i64*)pOut = res;
-      break;
+      bha_nga;
     }
     default: {
-      return 1;
+      ပြန်ပေး 1;
     }
   }
-  return 0;
+  ပြန်ပေး 0;
 }
 
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus(
+ကိန်းပြည့် sqlite3_stmt_scanstatus(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
+  ကိန်းပြည့် iScan,                      /* Index of loop to report on */
+  ကိန်းပြည့် iScanStatusOp,              /* Which metric to return */
   void *pOut                      /* OUT: Write the answer here */
 ){
-  return sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
+  ပြန်ပေး sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
 }
 
 /*
@@ -2748,8 +2748,8 @@ int sqlite3_stmt_scanstatus(
 */
 void sqlite3_stmt_scanstatus_reset(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  int ii;
-  for(ii=0; p!=0 && ii<p->nOp; ii++){
+  ကိန်းပြည့် ii;
+  အတွက်(ii=0; p!=0 && ii<p->nOp; ii++){
     Op *pOp = &p->aOp[ii];
     pOp->nExec = 0;
     pOp->nCycle = 0;

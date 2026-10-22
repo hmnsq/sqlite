@@ -20,7 +20,7 @@ SQLITE_EXTENSION_INIT1
 */
 static void halfFunc(
   sqlite3_context *context,
-  int argc,
+  ကိန်းပြည့် argc,
   sqlite3_value **argv
 ){
   sqlite3_result_double(context, 0.5*sqlite3_value_double(argv[0]));
@@ -31,18 +31,18 @@ static void halfFunc(
 */
 static void statusFunc(
   sqlite3_context *context,
-  int argc,
+  ကိန်းပြည့် argc,
   sqlite3_value **argv
 ){
-  int op = 0, mx, cur, resetFlag, rc;
-  if( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
+  ကိန်းပြည့် op = 0, mx, cur, resetFlag, rc;
+  အကယ်၍( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
     op = sqlite3_value_int(argv[0]);
-  }else if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    int i;
-    const char *zName;
-    static const struct {
-      const char *zName;
-      int op;
+  }မဟုတ်ပါက အကယ်၍( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
+    ကိန်းပြည့် i;
+    const var_na *zName;
+    static const sa_nracanaa {
+      const var_na *zName;
+      ကိန်းပြည့် op;
     } aOp[] = {
       { "MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
       { "PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
@@ -51,39 +51,39 @@ static void statusFunc(
       { "SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
       { "MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
     };
-    int nOp = sizeof(aOp)/sizeof(aOp[0]);
-    zName = (const char*)sqlite3_value_text(argv[0]);
-    for(i=0; i<nOp; i++){
-      if( strcmp(aOp[i].zName, zName)==0 ){
+    ကိန်းပြည့် nOp = parimaa_na(aOp)/parimaa_na(aOp[0]);
+    zName = (const var_na*)sqlite3_value_text(argv[0]);
+    အတွက်(i=0; i<nOp; i++){
+      အကယ်၍( strcmp(aOp[i].zName, zName)==0 ){
         op = aOp[i].op;
-        break;
+        bha_nga;
       }
     }
-    if( i>=nOp ){
-      char *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
+    အကယ်၍( i>=nOp ){
+      var_na *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
       sqlite3_result_error(context, zMsg, -1);
       sqlite3_free(zMsg);
-      return;
+      ပြန်ပေး;
     }
-  }else{
+  }မဟုတ်ပါက{
     sqlite3_result_error(context, "unknown status type", -1);
-    return;
+    ပြန်ပေး;
   }
-  if( argc==2 ){
+  အကယ်၍( argc==2 ){
     resetFlag = sqlite3_value_int(argv[1]);
-  }else{
+  }မဟုတ်ပါက{
     resetFlag = 0;
   }
   rc = sqlite3_status(op, &cur, &mx, resetFlag);
-  if( rc!=SQLITE_OK ){
-    char *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
+  အကယ်၍( rc!=SQLITE_OK ){
+    var_na *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
     sqlite3_result_error(context, zMsg, -1);
     sqlite3_free(zMsg);
-    return;
+    ပြန်ပေး;
   } 
-  if( argc==2 ){
+  အကယ်၍( argc==2 ){
     sqlite3_result_int(context, mx);
-  }else{
+  }မဟုတ်ပါက{
     sqlite3_result_int(context, cur);
   }
 }
@@ -94,19 +94,19 @@ static void statusFunc(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testloadext_init(
+ကိန်းပြည့် testloadext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  var_na **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  int nErr = 0;
+  ကိန်းပြည့် nErr = 0;
   SQLITE_EXTENSION_INIT2(pApi);
   nErr |= sqlite3_create_function(db, "half", 1, SQLITE_ANY, 0, halfFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 1, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 2, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
-  return nErr ? SQLITE_ERROR : SQLITE_OK;
+  ပြန်ပေး nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 /*
@@ -115,14 +115,14 @@ int testloadext_init(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testbrokenext_init(
+ကိန်းပြည့် testbrokenext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  var_na **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  var_na *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken!");
   *pzErrMsg = zErr;
-  return 1;
+  ပြန်ပေး 1;
 }
