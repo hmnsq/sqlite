@@ -16,15 +16,15 @@
 ** This file also implements interface sqlite3_serialize() and
 ** sqlite3_deserialize().
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 #ifndef SQLITE_OMIT_DESERIALIZE
 
 /*
 ** Forward declaration of objects used by this utility
 */
-typedef struct sqlite3_vfs MemVfs;
-typedef struct MemFile MemFile;
-typedef struct MemStore MemStore;
+തരനിർവചനം ഘടന sqlite3_vfs MemVfs;
+തരനിർവചനം ഘടന MemFile MemFile;
+തരനിർവചനം ഘടന MemStore MemStore;
 
 /* Access to a lower-level VFS that (might) implement dynamic loading,
 ** access to randomness, etc.
@@ -67,25 +67,25 @@ typedef struct MemStore MemStore;
 **      be changed (for resizing) when nMmap is zero.
 **      
 */
-struct MemStore {
+ഘടന MemStore {
   sqlite3_int64 sz;               /* Size of the file */
   sqlite3_int64 szAlloc;          /* Space allocated to aData */
   sqlite3_int64 szMax;            /* Maximum allowed size of the file */
-  unsigned char *aData;           /* content of the file */
+  unsigned അക്ഷരം *aData;           /* content of the file */
   sqlite3_mutex *pMutex;          /* Used by shared stores only */
-  int nMmap;                      /* Number of memory mapped pages */
+  പൂർണ്ണസംഖ്യ nMmap;                      /* Number of memory mapped pages */
   unsigned mFlags;                /* Flags */
-  int nRdLock;                    /* Number of readers */
-  int nWrLock;                    /* Number of writers.  (Always 0 or 1) */
-  int nRef;                       /* Number of users of this MemStore */
-  char *zFName;                   /* The filename for shared stores */
+  പൂർണ്ണസംഖ്യ nRdLock;                    /* Number of readers */
+  പൂർണ്ണസംഖ്യ nWrLock;                    /* Number of writers.  (Always 0 or 1) */
+  പൂർണ്ണസംഖ്യ nRef;                       /* Number of users of this MemStore */
+  അക്ഷരം *zFName;                   /* The filename for shared stores */
 };
 
 /* An open file */
-struct MemFile {
+ഘടന MemFile {
   sqlite3_file base;              /* IO methods */
   MemStore *pStore;               /* The storage */
-  int eLock;                      /* Most recent lock against this file */
+  പൂർണ്ണസംഖ്യ eLock;                      /* Most recent lock against this file */
 };
 
 /*
@@ -94,47 +94,47 @@ struct MemFile {
 **
 ** Must hold SQLITE_MUTEX_STATIC_VFS1 to access any part of this object.
 */
-static struct MemFS {
-  int nMemStore;                  /* Number of shared MemStore objects */
+സ്ഥിതം ഘടന MemFS {
+  പൂർണ്ണസംഖ്യ nMemStore;                  /* Number of shared MemStore objects */
   MemStore **apMemStore;          /* Array of all shared MemStore objects */
 } memdb_g;
 
 /*
 ** Methods for MemFile
 */
-static int memdbClose(sqlite3_file*);
-static int memdbRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int memdbWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int memdbTruncate(sqlite3_file*, sqlite3_int64 size);
-static int memdbSync(sqlite3_file*, int flags);
-static int memdbFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int memdbLock(sqlite3_file*, int);
-static int memdbUnlock(sqlite3_file*, int);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbClose(sqlite3_file*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbRead(sqlite3_file*, ശൂന്യം*, പൂർണ്ണസംഖ്യ iAmt, sqlite3_int64 iOfst);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbWrite(sqlite3_file*,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ iAmt, sqlite3_int64 iOfst);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbTruncate(sqlite3_file*, sqlite3_int64 size);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbSync(sqlite3_file*, പൂർണ്ണസംഖ്യ flags);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbLock(sqlite3_file*, പൂർണ്ണസംഖ്യ);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbUnlock(sqlite3_file*, പൂർണ്ണസംഖ്യ);
 /* static int memdbCheckReservedLock(sqlite3_file*, int *pResOut);// not used */
-static int memdbFileControl(sqlite3_file*, int op, void *pArg);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFileControl(sqlite3_file*, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg);
 /* static int memdbSectorSize(sqlite3_file*); // not used */
-static int memdbDeviceCharacteristics(sqlite3_file*);
-static int memdbFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
-static int memdbUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbDeviceCharacteristics(sqlite3_file*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFetch(sqlite3_file*, sqlite3_int64 iOfst, പൂർണ്ണസംഖ്യ iAmt, ശൂന്യം **pp);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbUnfetch(sqlite3_file*, sqlite3_int64 iOfst, ശൂന്യം *p);
 
 /*
 ** Methods for MemVfs
 */
-static int memdbOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbOpen(sqlite3_vfs*, സ്ഥിരം അക്ഷരം *, sqlite3_file*, പൂർണ്ണസംഖ്യ , പൂർണ്ണസംഖ്യ *);
 /* static int memdbDelete(sqlite3_vfs*, const char *zName, int syncDir); */
-static int memdbAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int memdbFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *memdbDlOpen(sqlite3_vfs*, const char *zFilename);
-static void memdbDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void memdbDlClose(sqlite3_vfs*, void*);
-static int memdbRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int memdbSleep(sqlite3_vfs*, int microseconds);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbAccess(sqlite3_vfs*, സ്ഥിരം അക്ഷരം *zName, പൂർണ്ണസംഖ്യ flags, പൂർണ്ണസംഖ്യ *);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFullPathname(sqlite3_vfs*, സ്ഥിരം അക്ഷരം *zName, പൂർണ്ണസംഖ്യ, അക്ഷരം *zOut);
+സ്ഥിതം ശൂന്യം *memdbDlOpen(sqlite3_vfs*, സ്ഥിരം അക്ഷരം *zFilename);
+സ്ഥിതം ശൂന്യം memdbDlError(sqlite3_vfs*, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *z_Err_സന്ദേശം);
+സ്ഥിതം ശൂന്യം (*memdbDlSym(sqlite3_vfs *pVfs, ശൂന്യം *p, സ്ഥിരം അക്ഷരം*zSym))(ശൂന്യം);
+സ്ഥിതം ശൂന്യം memdbDlClose(sqlite3_vfs*, ശൂന്യം*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbRandomness(sqlite3_vfs*, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *zOut);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbSleep(sqlite3_vfs*, പൂർണ്ണസംഖ്യ microseconds);
 /* static int memdbCurrentTime(sqlite3_vfs*, double*); */
-static int memdbGetLastError(sqlite3_vfs*, int, char *);
-static int memdbCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbGetLastError(sqlite3_vfs*, പൂർണ്ണസംഖ്യ, അക്ഷരം *);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
 
-static sqlite3_vfs memdb_vfs = {
+സ്ഥിതം sqlite3_vfs memdb_vfs = {
   2,                           /* iVersion */
   0,                           /* szOsFile (set when registered) */
   1024,                        /* mxPathname */
@@ -159,7 +159,7 @@ static sqlite3_vfs memdb_vfs = {
   0,                           /* xNextSystemCall */
 };
 
-static const sqlite3_io_methods memdb_io_methods = {
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods memdb_io_methods = {
   3,                              /* iVersion */
   memdbClose,                      /* xClose */
   memdbRead,                       /* xRead */
@@ -184,18 +184,18 @@ static const sqlite3_io_methods memdb_io_methods = {
 /*
 ** Enter/leave the mutex on a MemStore
 */
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
-static void memdbEnter(MemStore *p){
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE==0
+സ്ഥിതം ശൂന്യം memdbEnter(MemStore *p){
   UNUSED_PARAMETER(p);
 }
-static void memdbLeave(MemStore *p){
+സ്ഥിതം ശൂന്യം memdbLeave(MemStore *p){
   UNUSED_PARAMETER(p);
 }
-#else
-static void memdbEnter(MemStore *p){
+#അല്ലെങ്കിൽ
+സ്ഥിതം ശൂന്യം memdbEnter(MemStore *p){
   sqlite3_mutex_enter(p->pMutex);
 }
-static void memdbLeave(MemStore *p){
+സ്ഥിതം ശൂന്യം memdbLeave(MemStore *p){
   sqlite3_mutex_leave(p->pMutex);
 }
 #endif
@@ -207,118 +207,118 @@ static void memdbLeave(MemStore *p){
 ** Free the underlying MemStore object when its refcount drops to zero
 ** or less.
 */
-static int memdbClose(sqlite3_file *pFile){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbClose(sqlite3_file *pFile){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  if( p->zFName ){
-    int i;
+  എങ്കിൽ( p->zFName ){
+    പൂർണ്ണസംഖ്യ i;
 #ifndef SQLITE_MUTEX_OMIT
     sqlite3_mutex *pVfsMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
 #endif
     sqlite3_mutex_enter(pVfsMutex);
-    for(i=0; ALWAYS(i<memdb_g.nMemStore); i++){
-      if( memdb_g.apMemStore[i]==p ){
+    വേണ്ടി(i=0; ALWAYS(i<memdb_g.nMemStore); i++){
+      എങ്കിൽ( memdb_g.apMemStore[i]==p ){
         memdbEnter(p);
-        if( p->nRef==1 ){
+        എങ്കിൽ( p->nRef==1 ){
           memdb_g.apMemStore[i] = memdb_g.apMemStore[--memdb_g.nMemStore];
-          if( memdb_g.nMemStore==0 ){
+          എങ്കിൽ( memdb_g.nMemStore==0 ){
             sqlite3_free(memdb_g.apMemStore);
             memdb_g.apMemStore = 0;
           }
         }
-        break;
+        നിർത്തുക;
       }
     }
     sqlite3_mutex_leave(pVfsMutex);
-  }else{
+  }അല്ലെങ്കിൽ{
     memdbEnter(p);
   }
   p->nRef--;
-  if( p->nRef<=0 ){
-    if( p->mFlags & SQLITE_DESERIALIZE_FREEONCLOSE ){
+  എങ്കിൽ( p->nRef<=0 ){
+    എങ്കിൽ( p->mFlags & SQLITE_DESERIALIZE_FREEONCLOSE ){
       sqlite3_free(p->aData);
     }
     memdbLeave(p);
     sqlite3_mutex_free(p->pMutex);
     sqlite3_free(p);
-  }else{
+  }അല്ലെങ്കിൽ{
     memdbLeave(p);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Read data from an memdb-file.
 */
-static int memdbRead(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ശൂന്യം *zBuf, 
+  പൂർണ്ണസംഖ്യ iAmt, 
   sqlite_int64 iOfst
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( iOfst+iAmt>p->sz ){
+  എങ്കിൽ( iOfst+iAmt>p->sz ){
     memset(zBuf, 0, iAmt);
-    if( iOfst<p->sz ) memcpy(zBuf, p->aData+iOfst, p->sz - iOfst);
+    എങ്കിൽ( iOfst<p->sz ) memcpy(zBuf, p->aData+iOfst, p->sz - iOfst);
     memdbLeave(p);
-    return SQLITE_IOERR_SHORT_READ;
+    തിരികെ SQLITE_IOERR_SHORT_READ;
   }
   memcpy(zBuf, p->aData+iOfst, iAmt);
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Try to enlarge the memory allocation to hold at least sz bytes
 */
-static int memdbEnlarge(MemStore *p, sqlite3_int64 newSz){
-  unsigned char *pNew;
-  if( (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)==0 || NEVER(p->nMmap>0) ){
-    return SQLITE_FULL;
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbEnlarge(MemStore *p, sqlite3_int64 newSz){
+  unsigned അക്ഷരം *pNew;
+  എങ്കിൽ( (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)==0 || NEVER(p->nMmap>0) ){
+    തിരികെ SQLITE_FULL;
   }
-  if( newSz>p->szMax ){
-    return SQLITE_FULL;
+  എങ്കിൽ( newSz>p->szMax ){
+    തിരികെ SQLITE_FULL;
   }
   newSz *= 2;
-  if( newSz>p->szMax ) newSz = p->szMax;
+  എങ്കിൽ( newSz>p->szMax ) newSz = p->szMax;
   pNew = sqlite3Realloc(p->aData, newSz);
-  if( pNew==0 ) return SQLITE_IOERR_NOMEM;
+  എങ്കിൽ( pNew==0 ) തിരികെ SQLITE_IOERR_NOMEM;
   p->aData = pNew;
   p->szAlloc = newSz;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Write data to an memdb-file.
 */
-static int memdbWrite(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbWrite(
   sqlite3_file *pFile,
-  const void *z,
-  int iAmt,
+  സ്ഥിരം ശൂന്യം *z,
+  പൂർണ്ണസംഖ്യ iAmt,
   sqlite_int64 iOfst
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( NEVER(p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
+  എങ്കിൽ( NEVER(p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
     /* Can't happen: memdbLock() will return SQLITE_READONLY before
     ** reaching this point */
     memdbLeave(p);
-    return SQLITE_IOERR_WRITE;
+    തിരികെ SQLITE_IOERR_WRITE;
   }
-  if( iOfst+iAmt>p->sz ){
-    int rc;
-    if( iOfst+iAmt>p->szAlloc
+  എങ്കിൽ( iOfst+iAmt>p->sz ){
+    പൂർണ്ണസംഖ്യ rc;
+    എങ്കിൽ( iOfst+iAmt>p->szAlloc
      && (rc = memdbEnlarge(p, iOfst+iAmt))!=SQLITE_OK
     ){
       memdbLeave(p);
-      return rc;
+      തിരികെ rc;
     }
-    if( iOfst>p->sz ) memset(p->aData+p->sz, 0, iOfst-p->sz);
+    എങ്കിൽ( iOfst>p->sz ) memset(p->aData+p->sz, 0, iOfst-p->sz);
     p->sz = iOfst+iAmt;
   }
   memcpy(p->aData+iOfst, z, iAmt);
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -328,114 +328,114 @@ static int memdbWrite(
 ** support WAL mode) the truncate() method is only used to reduce
 ** the size of a file, never to increase the size.
 */
-static int memdbTruncate(sqlite3_file *pFile, sqlite_int64 size){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbTruncate(sqlite3_file *pFile, sqlite_int64 size){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   memdbEnter(p);
-  if( size>p->sz ){
+  എങ്കിൽ( size>p->sz ){
     /* This can only happen with a corrupt wal mode db */
     rc = SQLITE_CORRUPT;
-  }else{
+  }അല്ലെങ്കിൽ{
     p->sz = size; 
   }
   memdbLeave(p);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Sync an memdb-file.
 */
-static int memdbSync(sqlite3_file *pFile, int flags){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbSync(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ flags){
   UNUSED_PARAMETER(pFile);
   UNUSED_PARAMETER(flags);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of an memdb-file.
 */
-static int memdbFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
   *pSize = p->sz;
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Lock an memdb-file.
 */
-static int memdbLock(sqlite3_file *pFile, int eLock){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbLock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ eLock){
   MemFile *pThis = (MemFile*)pFile;
   MemStore *p = pThis->pStore;
-  int rc = SQLITE_OK;
-  if( eLock<=pThis->eLock ) return SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  എങ്കിൽ( eLock<=pThis->eLock ) തിരികെ SQLITE_OK;
   memdbEnter(p);
 
-  assert( p->nWrLock==0 || p->nWrLock==1 );
-  assert( pThis->eLock<=SQLITE_LOCK_SHARED || p->nWrLock==1 );
-  assert( pThis->eLock==SQLITE_LOCK_NONE || p->nRdLock>=1 );
+  പ്രതിജ്ഞാ( p->nWrLock==0 || p->nWrLock==1 );
+  പ്രതിജ്ഞാ( pThis->eLock<=SQLITE_LOCK_SHARED || p->nWrLock==1 );
+  പ്രതിജ്ഞാ( pThis->eLock==SQLITE_LOCK_NONE || p->nRdLock>=1 );
 
-  if( eLock>SQLITE_LOCK_SHARED && (p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
+  എങ്കിൽ( eLock>SQLITE_LOCK_SHARED && (p->mFlags & SQLITE_DESERIALIZE_READONLY) ){
     rc = SQLITE_READONLY;
-  }else{
-    switch( eLock ){
-      case SQLITE_LOCK_SHARED: {
-        assert( pThis->eLock==SQLITE_LOCK_NONE );
-        if( p->nWrLock>0 ){
+  }അല്ലെങ്കിൽ{
+    തിരഞ്ഞെടുപ്പ്( eLock ){
+      അവസ്ഥ SQLITE_LOCK_SHARED: {
+        പ്രതിജ്ഞാ( pThis->eLock==SQLITE_LOCK_NONE );
+        എങ്കിൽ( p->nWrLock>0 ){
           rc = SQLITE_BUSY;
-        }else{
+        }അല്ലെങ്കിൽ{
           p->nRdLock++;
         }
-        break;
+        നിർത്തുക;
       };
   
-      case SQLITE_LOCK_RESERVED:
-      case SQLITE_LOCK_PENDING: {
-        assert( pThis->eLock>=SQLITE_LOCK_SHARED );
-        if( ALWAYS(pThis->eLock==SQLITE_LOCK_SHARED) ){
-          if( p->nWrLock>0 ){
+      അവസ്ഥ SQLITE_LOCK_RESERVED:
+      അവസ്ഥ SQLITE_LOCK_PENDING: {
+        പ്രതിജ്ഞാ( pThis->eLock>=SQLITE_LOCK_SHARED );
+        എങ്കിൽ( ALWAYS(pThis->eLock==SQLITE_LOCK_SHARED) ){
+          എങ്കിൽ( p->nWrLock>0 ){
             rc = SQLITE_BUSY;
-          }else{
+          }അല്ലെങ്കിൽ{
             p->nWrLock = 1;
           }
         }
-        break;
+        നിർത്തുക;
       }
   
-      default: {
-        assert(  eLock==SQLITE_LOCK_EXCLUSIVE );
-        assert( pThis->eLock>=SQLITE_LOCK_SHARED );
-        if( p->nRdLock>1 ){
+      സ്ഥിരസ്ഥിതി: {
+        പ്രതിജ്ഞാ(  eLock==SQLITE_LOCK_EXCLUSIVE );
+        പ്രതിജ്ഞാ( pThis->eLock>=SQLITE_LOCK_SHARED );
+        എങ്കിൽ( p->nRdLock>1 ){
           rc = SQLITE_BUSY;
-        }else if( pThis->eLock==SQLITE_LOCK_SHARED ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( pThis->eLock==SQLITE_LOCK_SHARED ){
           p->nWrLock = 1;
         }
-        break;
+        നിർത്തുക;
       }
     }
   }
-  if( rc==SQLITE_OK ) pThis->eLock = eLock;
+  എങ്കിൽ( rc==SQLITE_OK ) pThis->eLock = eLock;
   memdbLeave(p);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Unlock an memdb-file.
 */
-static int memdbUnlock(sqlite3_file *pFile, int eLock){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbUnlock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ eLock){
   MemFile *pThis = (MemFile*)pFile;
   MemStore *p = pThis->pStore;
-  if( eLock>=pThis->eLock ) return SQLITE_OK;
+  എങ്കിൽ( eLock>=pThis->eLock ) തിരികെ SQLITE_OK;
   memdbEnter(p);
 
-  assert( eLock==SQLITE_LOCK_SHARED || eLock==SQLITE_LOCK_NONE );
-  if( eLock==SQLITE_LOCK_SHARED ){
-    if( ALWAYS(pThis->eLock>SQLITE_LOCK_SHARED) ){
+  പ്രതിജ്ഞാ( eLock==SQLITE_LOCK_SHARED || eLock==SQLITE_LOCK_NONE );
+  എങ്കിൽ( eLock==SQLITE_LOCK_SHARED ){
+    എങ്കിൽ( ALWAYS(pThis->eLock>SQLITE_LOCK_SHARED) ){
       p->nWrLock--;
     }
-  }else{
-    if( pThis->eLock>SQLITE_LOCK_SHARED ){
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( pThis->eLock>SQLITE_LOCK_SHARED ){
       p->nWrLock--;
     }
     p->nRdLock--;
@@ -443,17 +443,17 @@ static int memdbUnlock(sqlite3_file *pFile, int eLock){
 
   pThis->eLock = eLock;
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
-#if 0
+#എങ്കിൽ 0
 /*
 ** This interface is only used for crash recovery, which does not
 ** occur on an in-memory database.
 */
-static int memdbCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbCheckReservedLock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif
 
@@ -461,20 +461,20 @@ static int memdbCheckReservedLock(sqlite3_file *pFile, int *pResOut){
 /*
 ** File control method. For custom operations on an memdb-file.
 */
-static int memdbFileControl(sqlite3_file *pFile, int op, void *pArg){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFileControl(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg){
   MemStore *p = ((MemFile*)pFile)->pStore;
-  int rc = SQLITE_NOTFOUND;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_NOTFOUND;
   memdbEnter(p);
-  if( op==SQLITE_FCNTL_VFSNAME ){
-    *(char**)pArg = sqlite3_mprintf("memdb(%p,%lld)", p->aData, p->sz);
+  എങ്കിൽ( op==SQLITE_FCNTL_VFSNAME ){
+    *(അക്ഷരം**)pArg = sqlite3_mprintf("memdb(%p,%lld)", p->aData, p->sz);
     rc = SQLITE_OK;
   }
-  if( op==SQLITE_FCNTL_SIZE_LIMIT ){
+  എങ്കിൽ( op==SQLITE_FCNTL_SIZE_LIMIT ){
     sqlite3_int64 iLimit = *(sqlite3_int64*)pArg;
-    if( iLimit<p->sz ){
-      if( iLimit<0 ){
+    എങ്കിൽ( iLimit<p->sz ){
+      എങ്കിൽ( iLimit<0 ){
         iLimit = p->szMax;
-      }else{
+      }അല്ലെങ്കിൽ{
         iLimit = p->sz;
       }
     }
@@ -483,150 +483,150 @@ static int memdbFileControl(sqlite3_file *pFile, int op, void *pArg){
     rc = SQLITE_OK;
   }
   memdbLeave(p);
-  return rc;
+  തിരികെ rc;
 }
 
-#if 0  /* Not used because of SQLITE_IOCAP_POWERSAFE_OVERWRITE */
+#എങ്കിൽ 0  /* Not used because of SQLITE_IOCAP_POWERSAFE_OVERWRITE */
 /*
 ** Return the sector-size in bytes for an memdb-file.
 */
-static int memdbSectorSize(sqlite3_file *pFile){
-  return 1024;
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbSectorSize(sqlite3_file *pFile){
+  തിരികെ 1024;
 }
 #endif
 
 /*
 ** Return the device characteristic flags supported by an memdb-file.
 */
-static int memdbDeviceCharacteristics(sqlite3_file *pFile){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbDeviceCharacteristics(sqlite3_file *pFile){
   UNUSED_PARAMETER(pFile);
-  return SQLITE_IOCAP_ATOMIC | 
+  തിരികെ SQLITE_IOCAP_ATOMIC | 
          SQLITE_IOCAP_POWERSAFE_OVERWRITE |
          SQLITE_IOCAP_SAFE_APPEND |
          SQLITE_IOCAP_SEQUENTIAL;
 }
 
 /* Fetch a page of a memory-mapped file */
-static int memdbFetch(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFetch(
   sqlite3_file *pFile,
   sqlite3_int64 iOfst,
-  int iAmt,
-  void **pp
+  പൂർണ്ണസംഖ്യ iAmt,
+  ശൂന്യം **pp
 ){
   MemStore *p = ((MemFile*)pFile)->pStore;
   memdbEnter(p);
-  if( iOfst+iAmt>p->sz || (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)!=0 ){
+  എങ്കിൽ( iOfst+iAmt>p->sz || (p->mFlags & SQLITE_DESERIALIZE_RESIZEABLE)!=0 ){
     *pp = 0;
-  }else{
+  }അല്ലെങ്കിൽ{
     p->nMmap++;
-    *pp = (void*)(p->aData + iOfst);
+    *pp = (ശൂന്യം*)(p->aData + iOfst);
   }
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* Release a memory-mapped page */
-static int memdbUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, ശൂന്യം *pPage){
   MemStore *p = ((MemFile*)pFile)->pStore;
   UNUSED_PARAMETER(iOfst);
   UNUSED_PARAMETER(pPage);
   memdbEnter(p);
   p->nMmap--;
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Open an mem file handle.
 */
-static int memdbOpen(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  സ്ഥിരം അക്ഷരം *zName,
   sqlite3_file *pFd,
-  int flags,
-  int *pOutFlags
+  പൂർണ്ണസംഖ്യ flags,
+  പൂർണ്ണസംഖ്യ *pOutFlags
 ){
   MemFile *pFile = (MemFile*)pFd;
   MemStore *p = 0;
-  int szName;
+  പൂർണ്ണസംഖ്യ szName;
   UNUSED_PARAMETER(pVfs);
 
-  memset(pFile, 0, sizeof(*pFile));
+  memset(pFile, 0, വലുപ്പം(*pFile));
   szName = sqlite3Strlen30(zName);
-  if( szName>1 && (zName[0]=='/' || zName[0]=='\\') ){
-    int i;
+  എങ്കിൽ( szName>1 && (zName[0]=='/' || zName[0]=='\\') ){
+    പൂർണ്ണസംഖ്യ i;
 #ifndef SQLITE_MUTEX_OMIT
     sqlite3_mutex *pVfsMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
 #endif
     sqlite3_mutex_enter(pVfsMutex);
-    for(i=0; i<memdb_g.nMemStore; i++){
-      if( strcmp(memdb_g.apMemStore[i]->zFName,zName)==0 ){
+    വേണ്ടി(i=0; i<memdb_g.nMemStore; i++){
+      എങ്കിൽ( strcmp(memdb_g.apMemStore[i]->zFName,zName)==0 ){
         p = memdb_g.apMemStore[i];
-        break;
+        നിർത്തുക;
       }
     }
-    if( p==0 ){
+    എങ്കിൽ( p==0 ){
       MemStore **apNew;
-      p = sqlite3Malloc( sizeof(*p) + (i64)szName + 3 );
-      if( p==0 ){
+      p = sqlite3Malloc( വലുപ്പം(*p) + (i64)szName + 3 );
+      എങ്കിൽ( p==0 ){
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        തിരികെ SQLITE_NOMEM;
       }
       apNew = sqlite3Realloc(memdb_g.apMemStore,
-                             sizeof(apNew[0])*(1+(i64)memdb_g.nMemStore) );
-      if( apNew==0 ){
+                             വലുപ്പം(apNew[0])*(1+(i64)memdb_g.nMemStore) );
+      എങ്കിൽ( apNew==0 ){
         sqlite3_free(p);
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        തിരികെ SQLITE_NOMEM;
       }
       apNew[memdb_g.nMemStore++] = p;
       memdb_g.apMemStore = apNew;
-      memset(p, 0, sizeof(*p));
+      memset(p, 0, വലുപ്പം(*p));
       p->mFlags = SQLITE_DESERIALIZE_RESIZEABLE|SQLITE_DESERIALIZE_FREEONCLOSE;
       p->szMax = sqlite3GlobalConfig.mxMemdbSize;
-      p->zFName = (char*)&p[1];
+      p->zFName = (അക്ഷരം*)&p[1];
       memcpy(p->zFName, zName, szName+1);
       p->pMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( p->pMutex==0 ){
+      എങ്കിൽ( p->pMutex==0 ){
         memdb_g.nMemStore--;
         sqlite3_free(p);
         sqlite3_mutex_leave(pVfsMutex);
-        return SQLITE_NOMEM;
+        തിരികെ SQLITE_NOMEM;
       }
       p->nRef = 1;
       memdbEnter(p);
-    }else{
+    }അല്ലെങ്കിൽ{
       memdbEnter(p);
       p->nRef++;
     }
     sqlite3_mutex_leave(pVfsMutex);
-  }else{
-    p = sqlite3Malloc( sizeof(*p) );
-    if( p==0 ){
-      return SQLITE_NOMEM;
+  }അല്ലെങ്കിൽ{
+    p = sqlite3Malloc( വലുപ്പം(*p) );
+    എങ്കിൽ( p==0 ){
+      തിരികെ SQLITE_NOMEM;
     }
-    memset(p, 0, sizeof(*p));
+    memset(p, 0, വലുപ്പം(*p));
     p->mFlags = SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE;
     p->szMax = sqlite3GlobalConfig.mxMemdbSize;
   }
   pFile->pStore = p;
-  if( pOutFlags!=0 ){
+  എങ്കിൽ( pOutFlags!=0 ){
     *pOutFlags = flags | SQLITE_OPEN_MEMORY;
   }
   pFd->pMethods = &memdb_io_methods;
   memdbLeave(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
-#if 0 /* Only used to delete rollback journals, super-journals, and WAL
+#എങ്കിൽ 0 /* Only used to delete rollback journals, super-journals, and WAL
       ** files, none of which exist in memdb.  So this routine is never used */
 /*
 ** Delete the file located at zPath. If the dirSync argument is true,
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int memdbDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return SQLITE_IOERR_DELETE;
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbDelete(sqlite3_vfs *pVfs, സ്ഥിരം അക്ഷരം *zPath, പൂർണ്ണസംഖ്യ dirSync){
+  തിരികെ SQLITE_IOERR_DELETE;
 }
 #endif
 
@@ -636,17 +636,17 @@ static int memdbDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 **
 ** With memdb, no files ever exist on disk.  So always return false.
 */
-static int memdbAccess(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  സ്ഥിരം അക്ഷരം *zPath, 
+  പൂർണ്ണസംഖ്യ flags, 
+  പൂർണ്ണസംഖ്യ *pResOut
 ){
   UNUSED_PARAMETER(pVfs);
   UNUSED_PARAMETER(zPath);
   UNUSED_PARAMETER(flags);
   *pResOut = 0;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -654,22 +654,22 @@ static int memdbAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int memdbFullPathname(
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbFullPathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  സ്ഥിരം അക്ഷരം *zPath, 
+  പൂർണ്ണസംഖ്യ nOut, 
+  അക്ഷരം *zOut
 ){
   UNUSED_PARAMETER(pVfs);
   sqlite3_snprintf(nOut, zOut, "%s", zPath);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *memdbDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return ORIGVFS(pVfs)->xDlOpen(ORIGVFS(pVfs), zPath);
+സ്ഥിതം ശൂന്യം *memdbDlOpen(sqlite3_vfs *pVfs, സ്ഥിരം അക്ഷരം *zPath){
+  തിരികെ ORIGVFS(pVfs)->xDlOpen(ORIGVFS(pVfs), zPath);
 }
 
 /*
@@ -677,21 +677,21 @@ static void *memdbDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void memdbDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, zErrMsg);
+സ്ഥിതം ശൂന്യം memdbDlError(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *z_Err_സന്ദേശം){
+  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, z_Err_സന്ദേശം);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return ORIGVFS(pVfs)->xDlSym(ORIGVFS(pVfs), p, zSym);
+സ്ഥിതം ശൂന്യം (*memdbDlSym(sqlite3_vfs *pVfs, ശൂന്യം *p, സ്ഥിരം അക്ഷരം *zSym))(ശൂന്യം){
+  തിരികെ ORIGVFS(pVfs)->xDlSym(ORIGVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void memdbDlClose(sqlite3_vfs *pVfs, void *pHandle){
+സ്ഥിതം ശൂന്യം memdbDlClose(sqlite3_vfs *pVfs, ശൂന്യം *pHandle){
   ORIGVFS(pVfs)->xDlClose(ORIGVFS(pVfs), pHandle);
 }
 
@@ -699,132 +699,132 @@ static void memdbDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int memdbRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return ORIGVFS(pVfs)->xRandomness(ORIGVFS(pVfs), nByte, zBufOut);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbRandomness(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *zBufOut){
+  തിരികെ ORIGVFS(pVfs)->xRandomness(ORIGVFS(pVfs), nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int memdbSleep(sqlite3_vfs *pVfs, int nMicro){
-  return ORIGVFS(pVfs)->xSleep(ORIGVFS(pVfs), nMicro);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbSleep(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nMicro){
+  തിരികെ ORIGVFS(pVfs)->xSleep(ORIGVFS(pVfs), nMicro);
 }
 
-#if 0  /* Never used.  Modern cores only call xCurrentTimeInt64() */
+#എങ്കിൽ 0  /* Never used.  Modern cores only call xCurrentTimeInt64() */
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int memdbCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return ORIGVFS(pVfs)->xCurrentTime(ORIGVFS(pVfs), pTimeOut);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbCurrentTime(sqlite3_vfs *pVfs, ഇരട്ട *pTimeOut){
+  തിരികെ ORIGVFS(pVfs)->xCurrentTime(ORIGVFS(pVfs), pTimeOut);
 }
 #endif
 
-static int memdbGetLastError(sqlite3_vfs *pVfs, int a, char *b){
-  return ORIGVFS(pVfs)->xGetLastError(ORIGVFS(pVfs), a, b);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbGetLastError(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ a, അക്ഷരം *b){
+  തിരികെ ORIGVFS(pVfs)->xGetLastError(ORIGVFS(pVfs), a, b);
 }
-static int memdbCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
-  return ORIGVFS(pVfs)->xCurrentTimeInt64(ORIGVFS(pVfs), p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ memdbCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+  തിരികെ ORIGVFS(pVfs)->xCurrentTimeInt64(ORIGVFS(pVfs), p);
 }
 
 /*
 ** Translate a database connection pointer and schema name into a
 ** MemFile pointer.
 */
-static MemFile *memdbFromDbSchema(sqlite3 *db, const char *zSchema){
+സ്ഥിതം MemFile *memdbFromDbSchema(sqlite3 *db, സ്ഥിരം അക്ഷരം *zSchema){
   MemFile *p = 0;
   MemStore *pStore;
-  int rc = sqlite3_file_control(db, zSchema, SQLITE_FCNTL_FILE_POINTER, &p);
-  if( rc ) return 0;
-  if( p->base.pMethods!=&memdb_io_methods ) return 0;
+  പൂർണ്ണസംഖ്യ rc = sqlite3_file_control(db, zSchema, SQLITE_FCNTL_FILE_POINTER, &p);
+  എങ്കിൽ( rc ) തിരികെ 0;
+  എങ്കിൽ( p->base.pMethods!=&memdb_io_methods ) തിരികെ 0;
   pStore = p->pStore;
   memdbEnter(pStore);
-  if( pStore->zFName!=0 ) p = 0;
+  എങ്കിൽ( pStore->zFName!=0 ) p = 0;
   memdbLeave(pStore);
-  return p;
+  തിരികെ p;
 }
 
 /*
 ** Return the serialization of a database.  Or return NULL if there
 ** is an OOM or I/O error.
 */
-unsigned char *sqlite3_serialize(
+unsigned അക്ഷരം *sqlite3_serialize(
   sqlite3 *db,              /* The database connection */
-  const char *zSchema,      /* Which database within the connection */
+  സ്ഥിരം അക്ഷരം *zSchema,      /* Which database within the connection */
   sqlite3_int64 *piSize,    /* Write size here, if not NULL */
-  unsigned int mFlags       /* Maybe SQLITE_SERIALIZE_NOCOPY */
+  unsigned പൂർണ്ണസംഖ്യ mFlags       /* Maybe SQLITE_SERIALIZE_NOCOPY */
 ){
   MemFile *p;
-  int iDb;
+  പൂർണ്ണസംഖ്യ iDb;
   Btree *pBt;
   sqlite3_int64 sz;
-  int szPage = 0;
+  പൂർണ്ണസംഖ്യ szPage = 0;
   sqlite3_stmt *pStmt = 0;
-  unsigned char *pOut = 0;
-  char *zSql;
-  int rc;
+  unsigned അക്ഷരം *pOut = 0;
+  അക്ഷരം *zSql;
+  പൂർണ്ണസംഖ്യ rc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
 
-  if( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
+  എങ്കിൽ( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
   p = memdbFromDbSchema(db, zSchema);
   iDb = sqlite3FindDbName(db, zSchema);
-  if( piSize ) *piSize = -1;
-  if( iDb<0 ) goto serialize_out;
-  if( p ){
+  എങ്കിൽ( piSize ) *piSize = -1;
+  എങ്കിൽ( iDb<0 ) പോകുക serialize_out;
+  എങ്കിൽ( p ){
     MemStore *pStore = p->pStore;
-    assert( pStore->pMutex==0 );
-    if( piSize ) *piSize = pStore->sz;
-    if( mFlags & SQLITE_SERIALIZE_NOCOPY ){
+    പ്രതിജ്ഞാ( pStore->pMutex==0 );
+    എങ്കിൽ( piSize ) *piSize = pStore->sz;
+    എങ്കിൽ( mFlags & SQLITE_SERIALIZE_NOCOPY ){
       pOut = pStore->aData;
-    }else{
+    }അല്ലെങ്കിൽ{
       pOut = sqlite3_malloc64( pStore->sz );
-      if( pOut ) memcpy(pOut, pStore->aData, pStore->sz);
+      എങ്കിൽ( pOut ) memcpy(pOut, pStore->aData, pStore->sz);
     }
-    goto serialize_out;
+    പോകുക serialize_out;
   }
   pBt = db->aDb[iDb].pBt;
-  if( pBt==0 ) goto serialize_out;
+  എങ്കിൽ( pBt==0 ) പോകുക serialize_out;
   szPage = sqlite3BtreeGetPageSize(pBt);
   zSql = sqlite3_mprintf("PRAGMA \"%w\".page_count", zSchema);
   rc = zSql ? sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0) : SQLITE_NOMEM;
   sqlite3_free(zSql);
-  if( rc ) goto serialize_out;
+  എങ്കിൽ( rc ) പോകുക serialize_out;
   rc = sqlite3_step(pStmt);
-  if( rc==SQLITE_ROW ){
+  എങ്കിൽ( rc==SQLITE_ROW ){
     sz = sqlite3_column_int64(pStmt, 0)*szPage;
-    if( sz==0 ){
+    എങ്കിൽ( sz==0 ){
       sqlite3_reset(pStmt);
       sqlite3_exec(db, "BEGIN IMMEDIATE; COMMIT;", 0, 0, 0);
       rc = sqlite3_step(pStmt);
-      if( rc==SQLITE_ROW ){
+      എങ്കിൽ( rc==SQLITE_ROW ){
         sz = sqlite3_column_int64(pStmt, 0)*szPage;
       }
     }
-    if( piSize ) *piSize = sz;
-    if( mFlags & SQLITE_SERIALIZE_NOCOPY ){
+    എങ്കിൽ( piSize ) *piSize = sz;
+    എങ്കിൽ( mFlags & SQLITE_SERIALIZE_NOCOPY ){
       pOut = 0;
-    }else{
+    }അല്ലെങ്കിൽ{
       pOut = sqlite3_malloc64( sz );
-      if( pOut ){
-        int nPage = sqlite3_column_int(pStmt, 0);
+      എങ്കിൽ( pOut ){
+        പൂർണ്ണസംഖ്യ nPage = sqlite3_column_int(pStmt, 0);
         Pager *pPager = sqlite3BtreePager(pBt);
-        int pgno;
-        for(pgno=1; pgno<=nPage; pgno++){
+        പൂർണ്ണസംഖ്യ pgno;
+        വേണ്ടി(pgno=1; pgno<=nPage; pgno++){
           DbPage *pPage = 0;
-          unsigned char *pTo = pOut + szPage*(sqlite3_int64)(pgno-1);
+          unsigned അക്ഷരം *pTo = pOut + szPage*(sqlite3_int64)(pgno-1);
           rc = sqlite3PagerGet(pPager, pgno, (DbPage**)&pPage, 0);
-          if( rc==SQLITE_OK ){
+          എങ്കിൽ( rc==SQLITE_OK ){
             memcpy(pTo, sqlite3PagerGetData(pPage), szPage);
-          }else if( pgno==PENDING_BYTE/szPage+1 ){
+          }അല്ലെങ്കിൽ എങ്കിൽ( pgno==PENDING_BYTE/szPage+1 ){
             memset(pTo, 0, szPage);
-          }else{
+          }അല്ലെങ്കിൽ{
             sqlite3_free(pOut);
             pOut = 0;
             nPage = 0;            
@@ -838,68 +838,68 @@ unsigned char *sqlite3_serialize(
 
  serialize_out:
   sqlite3_mutex_leave(db->mutex);
-  return pOut;
+  തിരികെ pOut;
 }
 
 /* Convert zSchema to a MemDB and initialize its content.
 */
-int sqlite3_deserialize(
+പൂർണ്ണസംഖ്യ sqlite3_deserialize(
   sqlite3 *db,            /* The database connection */
-  const char *zSchema,    /* Which DB to reopen with the deserialization */
-  unsigned char *pData,   /* The serialized database content */
+  സ്ഥിരം അക്ഷരം *zSchema,    /* Which DB to reopen with the deserialization */
+  unsigned അക്ഷരം *pData,   /* The serialized database content */
   sqlite3_int64 szDb,     /* Number bytes in the deserialization */
   sqlite3_int64 szBuf,    /* Total size of buffer pData[] */
   unsigned mFlags         /* Zero or more SQLITE_DESERIALIZE_* flags */
 ){
   MemFile *p;
-  char *zSql;
+  അക്ഷരം *zSql;
   sqlite3_stmt *pStmt = 0;
-  int rc;
-  int iDb;
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ iDb;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
-  if( szDb<0 ) return SQLITE_MISUSE_BKPT;
-  if( szBuf<0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( szDb<0 ) തിരികെ SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( szBuf<0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
 
   sqlite3_mutex_enter(db->mutex);
-  if( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
+  എങ്കിൽ( zSchema==0 ) zSchema = db->aDb[0].zDbSName;
   iDb = sqlite3FindDbName(db, zSchema);
   testcase( iDb==1 );
-  if( iDb<2 && iDb!=0 ){
+  എങ്കിൽ( iDb<2 && iDb!=0 ){
     rc = SQLITE_ERROR;
-    goto end_deserialize;
+    പോകുക end_deserialize;
   }
   zSql = sqlite3_mprintf("ATTACH x AS %Q", zSchema);
-  if( zSql==0 ){
+  എങ്കിൽ( zSql==0 ){
     rc = SQLITE_NOMEM;
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
     sqlite3_free(zSql);
   }
-  if( rc ) goto end_deserialize;
+  എങ്കിൽ( rc ) പോകുക end_deserialize;
   db->init.iDb = (u8)iDb;
   db->init.reopenMemdb = 1;
   sqlite3_step(pStmt);
   db->init.reopenMemdb = 0;
   rc = sqlite3_finalize(pStmt);
-  if( rc!=SQLITE_OK ){
-    goto end_deserialize;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    പോകുക end_deserialize;
   }
   p = memdbFromDbSchema(db, zSchema);
-  if( p==0 ){
+  എങ്കിൽ( p==0 ){
     rc = SQLITE_ERROR;
-  }else{
+  }അല്ലെങ്കിൽ{
     MemStore *pStore = p->pStore;
     pStore->aData = pData;
     pData = 0;
     pStore->sz = szDb;
     pStore->szAlloc = szBuf;
     pStore->szMax = szBuf;
-    if( pStore->szMax<sqlite3GlobalConfig.mxMemdbSize ){
+    എങ്കിൽ( pStore->szMax<sqlite3GlobalConfig.mxMemdbSize ){
       pStore->szMax = sqlite3GlobalConfig.mxMemdbSize;
     }
     pStore->mFlags = mFlags;
@@ -907,36 +907,36 @@ int sqlite3_deserialize(
   }
 
 end_deserialize:
-  if( pData && (mFlags & SQLITE_DESERIALIZE_FREEONCLOSE)!=0 ){
+  എങ്കിൽ( pData && (mFlags & SQLITE_DESERIALIZE_FREEONCLOSE)!=0 ){
     sqlite3_free(pData);
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Return true if the VFS is the memvfs.
 */
-int sqlite3IsMemdb(const sqlite3_vfs *pVfs){
-  return pVfs==&memdb_vfs;
+പൂർണ്ണസംഖ്യ sqlite3IsMemdb(സ്ഥിരം sqlite3_vfs *pVfs){
+  തിരികെ pVfs==&memdb_vfs;
 }
 
 /* 
 ** This routine is called when the extension is loaded.
 ** Register the new VFS.
 */
-int sqlite3MemdbInit(void){
+പൂർണ്ണസംഖ്യ sqlite3MemdbInit(ശൂന്യം){
   sqlite3_vfs *pLower = sqlite3_vfs_find(0);
-  unsigned int sz;
-  if( NEVER(pLower==0) ) return SQLITE_ERROR;
+  unsigned പൂർണ്ണസംഖ്യ sz;
+  എങ്കിൽ( NEVER(pLower==0) ) തിരികെ SQLITE_ERROR;
   sz = pLower->szOsFile;
   memdb_vfs.pAppData = pLower;
   /* The following conditional can only be true when compiled for
   ** Windows x86 and SQLITE_MAX_MMAP_SIZE=0.  We always leave
   ** it in, to be safe, but it is marked as NO_TEST since there
   ** is no way to reach it under most builds. */
-  if( sz<sizeof(MemFile) ) sz = sizeof(MemFile); /*NO_TEST*/
+  എങ്കിൽ( sz<വലുപ്പം(MemFile) ) sz = വലുപ്പം(MemFile); /*NO_TEST*/
   memdb_vfs.szOsFile = sz;
-  return sqlite3_vfs_register(&memdb_vfs, 0);
+  തിരികെ sqlite3_vfs_register(&memdb_vfs, 0);
 }
 #endif /* SQLITE_OMIT_DESERIALIZE */

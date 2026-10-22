@@ -12,33 +12,33 @@
 ** This file contains routines used for walking the parser tree for
 ** an SQL statement.
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <string.h>
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ <stdlib.h>
+#അന്തര്ഭാവ <string.h>
 
 
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
+#എങ്കിൽ !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** Walk all expressions linked into the list of Window objects passed
 ** as the second argument.
 */
-static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
+സ്ഥിതം പൂർണ്ണസംഖ്യ walkWindowList(Walker *pWalker, Window *pList, പൂർണ്ണസംഖ്യ bOneOnly){
   Window *pWin;
-  for(pWin=pList; pWin; pWin=pWin->pNextWin){
-    int rc;
-    rc = sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExprList(pWalker, pWin->pPartition);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pFilter);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pStart);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pEnd);
-    if( rc ) return WRC_Abort;
-    if( bOneOnly ) break;
+  വേണ്ടി(pWin=pList; pWin; pWin=pWin->pNextWin){
+    പൂർണ്ണസംഖ്യ rc;
+    rc = sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pWin->pOrderBy);
+    എങ്കിൽ( rc ) തിരികെ WRC_Abort;
+    rc = sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pWin->pPartition);
+    എങ്കിൽ( rc ) തിരികെ WRC_Abort;
+    rc = sqlite3_Walk_വ്യഞ്ജകം(pWalker, pWin->pFilter);
+    എങ്കിൽ( rc ) തിരികെ WRC_Abort;
+    rc = sqlite3_Walk_വ്യഞ്ജകം(pWalker, pWin->pStart);
+    എങ്കിൽ( rc ) തിരികെ WRC_Abort;
+    rc = sqlite3_Walk_വ്യഞ്ജകം(pWalker, pWin->pEnd);
+    എങ്കിൽ( rc ) തിരികെ WRC_Abort;
+    എങ്കിൽ( bOneOnly ) നിർത്തുക;
   }
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 #endif
 
@@ -61,64 +61,64 @@ static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
 ** The return value from this routine is WRC_Abort to abandon the tree walk
 ** and WRC_Continue to continue.
 */
-SQLITE_NOINLINE int sqlite3WalkExprNN(Walker *pWalker, Expr *pExpr){
-  int rc;
-  testcase( ExprHasProperty(pExpr, EP_TokenOnly) );
-  testcase( ExprHasProperty(pExpr, EP_Reduced) );
-  while(1){
-    rc = pWalker->xExprCallback(pWalker, pExpr);
-    if( rc ) return rc & WRC_Abort;
-    if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
-      assert( pExpr->x.pList==0 || pExpr->pRight==0 );
-      if( pExpr->pLeft && sqlite3WalkExprNN(pWalker, pExpr->pLeft) ){
-        return WRC_Abort;
+SQLITE_NOINLINE പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം_NN(Walker *pWalker, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  പൂർണ്ണസംഖ്യ rc;
+  testcase( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_TokenOnly) );
+  testcase( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Reduced) );
+  ആകുമ്പോൾ(1){
+    rc = pWalker->x_വ്യഞ്ജകം_Callback(pWalker, p_വ്യഞ്ജകം);
+    എങ്കിൽ( rc ) തിരികെ rc & WRC_Abort;
+    എങ്കിൽ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം,(EP_TokenOnly|EP_Leaf)) ){
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->x.pList==0 || p_വ്യഞ്ജകം->p_വലത്==0 );
+      എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത് && sqlite3_Walk_വ്യഞ്ജകം_NN(pWalker, p_വ്യഞ്ജകം->p_ഇടത്) ){
+        തിരികെ WRC_Abort;
       }
-      if( pExpr->pRight ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        pExpr = pExpr->pRight;
-        continue;
-      }else if( ExprUseXSelect(pExpr) ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        if( sqlite3WalkSelect(pWalker, pExpr->x.pSelect) ) return WRC_Abort;
-      }else{
-        if( pExpr->x.pList ){
-          if( sqlite3WalkExprList(pWalker, pExpr->x.pList) ) return WRC_Abort;
+      എങ്കിൽ( p_വ്യഞ്ജകം->p_വലത് ){
+        പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) );
+        p_വ്യഞ്ജകം = p_വ്യഞ്ജകം->p_വലത്;
+        തുടരുക;
+      }അല്ലെങ്കിൽ എങ്കിൽ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) ){
+        പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) );
+        എങ്കിൽ( sqlite3WalkSelect(pWalker, p_വ്യഞ്ജകം->x.pSelect) ) തിരികെ WRC_Abort;
+      }അല്ലെങ്കിൽ{
+        എങ്കിൽ( p_വ്യഞ്ജകം->x.pList ){
+          എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, p_വ്യഞ്ജകം->x.pList) ) തിരികെ WRC_Abort;
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        if( ExprHasProperty(pExpr, EP_WinFunc) ){
-          if( walkWindowList(pWalker, pExpr->y.pWin, 1) ) return WRC_Abort;
+        എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) ){
+          എങ്കിൽ( walkWindowList(pWalker, p_വ്യഞ്ജകം->y.pWin, 1) ) തിരികെ WRC_Abort;
         }
 #endif
       }
     }
-    break;
+    നിർത്തുക;
   }
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
-int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){
-  return pExpr ? sqlite3WalkExprNN(pWalker,pExpr) : WRC_Continue;
+പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം(Walker *pWalker, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  തിരികെ p_വ്യഞ്ജകം ? sqlite3_Walk_വ്യഞ്ജകം_NN(pWalker,p_വ്യഞ്ജകം) : WRC_Continue;
 }
 
 /*
 ** Call sqlite3WalkExpr() for every expression in list p or until
 ** an abort request is seen.
 */
-int sqlite3WalkExprList(Walker *pWalker, ExprList *p){
-  int i;
-  struct ExprList_item *pItem;
-  if( p ){
-    for(i=p->nExpr, pItem=p->a; i>0; i--, pItem++){
-      if( sqlite3WalkExpr(pWalker, pItem->pExpr) ) return WRC_Abort;
+പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം_List(Walker *pWalker, വ്യഞ്ജകം_List *p){
+  പൂർണ്ണസംഖ്യ i;
+  ഘടന വ്യഞ്ജകം_List_item *pItem;
+  എങ്കിൽ( p ){
+    വേണ്ടി(i=p->n_വ്യഞ്ജകം, pItem=p->a; i>0; i--, pItem++){
+      എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം(pWalker, pItem->p_വ്യഞ്ജകം) ) തിരികെ WRC_Abort;
     }
   }
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 
 /*
 ** This is a no-op callback for Walker->xSelectCallback2.  If this
 ** callback is set, then the Select->pWinDefn list is traversed.
 */
-void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
+ശൂന്യം sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
   UNUSED_PARAMETER(pWalker);
   UNUSED_PARAMETER(p);
   /* No-op */
@@ -130,30 +130,30 @@ void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
 ** any expr callbacks and SELECT callbacks that come from subqueries.
 ** Return WRC_Abort or WRC_Continue.
 */
-int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
-  if( sqlite3WalkExprList(pWalker, p->pEList) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pWhere) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pGroupBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pHaving) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pOrderBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pLimit) ) return WRC_Abort;
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
-  if( p->pWinDefn ){
+പൂർണ്ണസംഖ്യ sqlite3_Walk_Select_വ്യഞ്ജകം(Walker *pWalker, Select *p){
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, p->pEList) ) തിരികെ WRC_Abort;
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം(pWalker, p->pWhere) ) തിരികെ WRC_Abort;
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, p->pGroupBy) ) തിരികെ WRC_Abort;
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം(pWalker, p->pHaving) ) തിരികെ WRC_Abort;
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, p->pOrderBy) ) തിരികെ WRC_Abort;
+  എങ്കിൽ( sqlite3_Walk_വ്യഞ്ജകം(pWalker, p->pLimit) ) തിരികെ WRC_Abort;
+#എങ്കിൽ !defined(SQLITE_OMIT_WINDOWFUNC)
+  എങ്കിൽ( p->pWinDefn ){
     Parse *pParse;
-    if( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
+    എങ്കിൽ( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
      || ((pParse = pWalker->pParse)!=0 && IN_RENAME_OBJECT)
 #ifndef SQLITE_OMIT_CTE
-     || pWalker->xSelectCallback2==sqlite3SelectPopWith
+     || pWalker->xSelectCallback2==sqlite3_Select_എടുക്കുക_With
 #endif
     ){
       /* The following may return WRC_Abort if there are unresolvable
       ** symbols (e.g. a table that does not exist) in a window definition. */
-      int rc = walkWindowList(pWalker, p->pWinDefn, 0);
-      return rc;
+      പൂർണ്ണസംഖ്യ rc = walkWindowList(pWalker, p->pWinDefn, 0);
+      തിരികെ rc;
     }
   }
 #endif
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 
 /*
@@ -163,27 +163,27 @@ int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
 ** and on any subqueries further down in the tree.  Return 
 ** WRC_Abort or WRC_Continue;
 */
-int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
+പൂർണ്ണസംഖ്യ sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
   SrcList *pSrc;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   SrcItem *pItem;
 
   pSrc = p->pSrc;
-  if( ALWAYS(pSrc) ){
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery
+  എങ്കിൽ( ALWAYS(pSrc) ){
+    വേണ്ടി(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
+      എങ്കിൽ( pItem->fg.isSubquery
        && sqlite3WalkSelect(pWalker, pItem->u4.pSubq->pSelect)
       ){
-        return WRC_Abort;
+        തിരികെ WRC_Abort;
       }
-      if( pItem->fg.isTabFunc
-       && sqlite3WalkExprList(pWalker, pItem->u1.pFuncArg)
+      എങ്കിൽ( pItem->fg.isTabFunc
+       && sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pItem->u1.pFuncArg)
       ){
-        return WRC_Abort;
+        തിരികെ WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 
 /*
@@ -203,35 +203,35 @@ int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
 ** If the Walker does not have an xSelectCallback() then this routine
 ** is a no-op returning WRC_Continue.
 */
-int sqlite3WalkSelect(Walker *pWalker, Select *p){
-  int rc;
-  if( p==0 ) return WRC_Continue;
-  if( pWalker->xSelectCallback==0 ) return WRC_Continue;
-  do{
+പൂർണ്ണസംഖ്യ sqlite3WalkSelect(Walker *pWalker, Select *p){
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( p==0 ) തിരികെ WRC_Continue;
+  എങ്കിൽ( pWalker->xSelectCallback==0 ) തിരികെ WRC_Continue;
+  ചെയ്യുക{
     rc = pWalker->xSelectCallback(pWalker, p);
-    if( rc ) return rc & WRC_Abort;
-    if( sqlite3WalkSelectExpr(pWalker, p)
+    എങ്കിൽ( rc ) തിരികെ rc & WRC_Abort;
+    എങ്കിൽ( sqlite3_Walk_Select_വ്യഞ്ജകം(pWalker, p)
      || sqlite3WalkSelectFrom(pWalker, p)
     ){
-      return WRC_Abort;
+      തിരികെ WRC_Abort;
     }
-    if( pWalker->xSelectCallback2 ){
+    എങ്കിൽ( pWalker->xSelectCallback2 ){
       pWalker->xSelectCallback2(pWalker, p);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  return WRC_Continue;
+  }ആകുമ്പോൾ( p!=0 );
+  തിരികെ WRC_Continue;
 }
 
 /* Increase the walkerDepth when entering a subquery, and
 ** decrease when leaving the subquery.
 */
-int sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
+പൂർണ്ണസംഖ്യ sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
   pWalker->walkerDepth++;
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
-void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
+ശൂന്യം sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
   pWalker->walkerDepth--;
 }
@@ -246,16 +246,16 @@ void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
 ** Walker.xSelectCallback is set to do something useful for every 
 ** subquery in the parser tree.
 */
-int sqlite3ExprWalkNoop(Walker *NotUsed, Expr *NotUsed2){
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Walk_Noop(Walker *NotUsed, വ്യഞ്ജകം *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 
 /*
 ** No-op routine for the parse-tree walker for SELECT statements.
 ** subquery in the parser tree.
 */
-int sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
+പൂർണ്ണസംഖ്യ sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }

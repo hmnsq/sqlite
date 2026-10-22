@@ -11,12 +11,12 @@
 *************************************************************************
 ** This file contains code used to implement the PRAGMA command.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#എങ്കിൽ !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  എങ്കിൽ defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  അല്ലെങ്കിൽ
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
 #endif
@@ -28,7 +28,7 @@
 ** lexicographical order to facility a binary search of the pragma name.
 ** Do not edit pragma.h directly.  Edit and rerun the script in at
 ** ../tool/mkpragmatab.tcl. */
-#include "pragma.h"
+#അന്തര്ഭാവ "pragma.h"
 
 /*
 ** When the 0x10 bit of PRAGMA optimize is set, any ANALYZE commands
@@ -69,50 +69,50 @@
 ** to support legacy SQL code.  The safety level used to be boolean
 ** and older scripts may have used numbers 0 for OFF and 1 for ON.
 */
-static u8 getSafetyLevel(const char *z, int omitFull, u8 dflt){
+സ്ഥിതം u8 getSafetyLevel(സ്ഥിരം അക്ഷരം *z, പൂർണ്ണസംഖ്യ omitFull, u8 dflt){
                              /* 123456789 123456789 123 */
-  static const char zText[] = "onoffalseyestruextrafull";
-  static const u8 iOffset[] = {0, 1, 2,  4,    9,  12,  15,   20};
-  static const u8 iLength[] = {2, 2, 3,  5,    3,   4,   5,    4};
-  static const u8 iValue[] =  {1, 0, 0,  0,    1,   1,   3,    2};
+  സ്ഥിതം സ്ഥിരം അക്ഷരം zText[] = "onoffalseyestruextrafull";
+  സ്ഥിതം സ്ഥിരം u8 iOffset[] = {0, 1, 2,  4,    9,  12,  15,   20};
+  സ്ഥിതം സ്ഥിരം u8 iLength[] = {2, 2, 3,  5,    3,   4,   5,    4};
+  സ്ഥിതം സ്ഥിരം u8 i_മൂല്യം[] =  {1, 0, 0,  0,    1,   1,   3,    2};
                             /* on no off false yes true extra full */
-  int i, n;
-  if( sqlite3Isdigit(*z) ){
-    return sqlite3Atoi(z)!=0;
+  പൂർണ്ണസംഖ്യ i, n;
+  എങ്കിൽ( sqlite3Isdigit(*z) ){
+    തിരികെ sqlite3Atoi(z)!=0;
   }
   n = sqlite3Strlen30(z);
-  for(i=0; i<ArraySize(iLength); i++){
-    if( iLength[i]==n && sqlite3StrNICmp(&zText[iOffset[i]],z,n)==0
-     && (!omitFull || iValue[i]<=1)
+  വേണ്ടി(i=0; i<ArraySize(iLength); i++){
+    എങ്കിൽ( iLength[i]==n && sqlite3StrNICmp(&zText[iOffset[i]],z,n)==0
+     && (!omitFull || i_മൂല്യം[i]<=1)
     ){
-      return iValue[i];
+      തിരികെ i_മൂല്യം[i];
     }
   }
-  return dflt;
+  തിരികെ dflt;
 }
 
 /*
 ** Interpret the given string as a boolean value.
 */
-u8 sqlite3GetBoolean(const char *z, u8 dflt){
-  return getSafetyLevel(z,1,dflt)!=0;
+u8 sqlite3GetBoolean(സ്ഥിരം അക്ഷരം *z, u8 dflt){
+  തിരികെ getSafetyLevel(z,1,dflt)!=0;
 }
 
 /* The sqlite3GetBoolean() function is used by other modules but the
 ** remainder of this file is specific to PRAGMA processing.  So omit
 ** the rest of the file if PRAGMAs are omitted from the build.
 */
-#if !defined(SQLITE_OMIT_PRAGMA)
+#എങ്കിൽ !defined(SQLITE_OMIT_PRAGMA)
 
 /*
 ** Interpret the given string as a locking mode value.
 */
-static int getLockingMode(const char *z){
-  if( z ){
-    if( 0==sqlite3StrICmp(z, "exclusive") ) return PAGER_LOCKINGMODE_EXCLUSIVE;
-    if( 0==sqlite3StrICmp(z, "normal") ) return PAGER_LOCKINGMODE_NORMAL;
+സ്ഥിതം പൂർണ്ണസംഖ്യ getLockingMode(സ്ഥിരം അക്ഷരം *z){
+  എങ്കിൽ( z ){
+    എങ്കിൽ( 0==sqlite3StrICmp(z, "exclusive") ) തിരികെ PAGER_LOCKINGMODE_EXCLUSIVE;
+    എങ്കിൽ( 0==sqlite3StrICmp(z, "normal") ) തിരികെ PAGER_LOCKINGMODE_NORMAL;
   }
-  return PAGER_LOCKINGMODE_QUERY;
+  തിരികെ PAGER_LOCKINGMODE_QUERY;
 }
 
 #ifndef SQLITE_OMIT_AUTOVACUUM
@@ -122,13 +122,13 @@ static int getLockingMode(const char *z){
 ** The following strings, "none", "full" and "incremental" are
 ** acceptable, as are their numeric equivalents: 0, 1 and 2 respectively.
 */
-static int getAutoVacuum(const char *z){
-  int i;
-  if( 0==sqlite3StrICmp(z, "none") ) return BTREE_AUTOVACUUM_NONE;
-  if( 0==sqlite3StrICmp(z, "full") ) return BTREE_AUTOVACUUM_FULL;
-  if( 0==sqlite3StrICmp(z, "incremental") ) return BTREE_AUTOVACUUM_INCR;
+സ്ഥിതം പൂർണ്ണസംഖ്യ getAutoVacuum(സ്ഥിരം അക്ഷരം *z){
+  പൂർണ്ണസംഖ്യ i;
+  എങ്കിൽ( 0==sqlite3StrICmp(z, "none") ) തിരികെ BTREE_AUTOVACUUM_NONE;
+  എങ്കിൽ( 0==sqlite3StrICmp(z, "full") ) തിരികെ BTREE_AUTOVACUUM_FULL;
+  എങ്കിൽ( 0==sqlite3StrICmp(z, "incremental") ) തിരികെ BTREE_AUTOVACUUM_INCR;
   i = sqlite3Atoi(z);
-  return (u8)((i>=0&&i<=2)?i:0);
+  തിരികെ (u8)((i>=0&&i<=2)?i:0);
 }
 #endif /* ifndef SQLITE_OMIT_AUTOVACUUM */
 
@@ -138,15 +138,15 @@ static int getAutoVacuum(const char *z){
 ** backed temporary databases, 2 for the Red-Black tree in memory database
 ** and 0 to use the compile-time default.
 */
-static int getTempStore(const char *z){
-  if( z[0]>='0' && z[0]<='2' ){
-    return z[0] - '0';
-  }else if( sqlite3StrICmp(z, "file")==0 ){
-    return 1;
-  }else if( sqlite3StrICmp(z, "memory")==0 ){
-    return 2;
-  }else{
-    return 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ getTempStore(സ്ഥിരം അക്ഷരം *z){
+  എങ്കിൽ( z[0]>='0' && z[0]<='2' ){
+    തിരികെ z[0] - '0';
+  }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(z, "file")==0 ){
+    തിരികെ 1;
+  }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(z, "memory")==0 ){
+    തിരികെ 2;
+  }അല്ലെങ്കിൽ{
+    തിരികെ 0;
   }
 }
 #endif /* SQLITE_PAGER_PRAGMAS */
@@ -156,21 +156,21 @@ static int getTempStore(const char *z){
 ** Invalidate temp storage, either when the temp storage is changed
 ** from default, or when 'file' and the temp_store_directory has changed
 */
-static int invalidateTempStorage(Parse *pParse){
+സ്ഥിതം പൂർണ്ണസംഖ്യ invalidateTempStorage(Parse *pParse){
   sqlite3 *db = pParse->db;
-  if( db->aDb[1].pBt!=0 ){
-    if( !db->autoCommit
+  എങ്കിൽ( db->aDb[1].pBt!=0 ){
+    എങ്കിൽ( !db->autoCommit
      || sqlite3BtreeTxnState(db->aDb[1].pBt)!=SQLITE_TXN_NONE
     ){
-      sqlite3ErrorMsg(pParse, "temporary storage cannot be changed "
+      sqlite3_Error_സന്ദേശം(pParse, "temporary storage cannot be changed "
         "from within a transaction");
-      return SQLITE_ERROR;
+      തിരികെ SQLITE_ERROR;
     }
     sqlite3BtreeClose(db->aDb[1].pBt);
     db->aDb[1].pBt = 0;
     sqlite3ResetAllSchemasOfConnection(db);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif /* SQLITE_PAGER_PRAGMAS */
 
@@ -180,32 +180,32 @@ static int invalidateTempStorage(Parse *pParse){
 ** as needing reloading.  This must be done when using the SQLITE_TEMP_STORE
 ** or DEFAULT_TEMP_STORE pragmas.
 */
-static int changeTempStorage(Parse *pParse, const char *zStorageType){
-  int ts = getTempStore(zStorageType);
+സ്ഥിതം പൂർണ്ണസംഖ്യ changeTempStorage(Parse *pParse, സ്ഥിരം അക്ഷരം *zStorageType){
+  പൂർണ്ണസംഖ്യ ts = getTempStore(zStorageType);
   sqlite3 *db = pParse->db;
-  if( db->temp_store==ts ) return SQLITE_OK;
-  if( invalidateTempStorage( pParse ) != SQLITE_OK ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( db->temp_store==ts ) തിരികെ SQLITE_OK;
+  എങ്കിൽ( invalidateTempStorage( pParse ) != SQLITE_OK ){
+    തിരികെ SQLITE_ERROR;
   }
   db->temp_store = (u8)ts;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif /* SQLITE_PAGER_PRAGMAS */
 
 /*
 ** Set result column names for a pragma.
 */
-static void setPragmaResultColumnNames(
+സ്ഥിതം ശൂന്യം setPragmaResultColumnNames(
   Vdbe *v,                     /* The query under construction */
-  const PragmaName *pPragma    /* The pragma */
+  സ്ഥിരം PragmaName *pPragma    /* The pragma */
 ){
   u8 n = pPragma->nPragCName;
-  sqlite3VdbeSetNumCols(v, n==0 ? 1 : n);
-  if( n==0 ){
+  sqlite3_Vdbe_Set_അക്കം_Cols(v, n==0 ? 1 : n);
+  എങ്കിൽ( n==0 ){
     sqlite3VdbeSetColName(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
-  }else{
-    int i, j;
-    for(i=0, j=pPragma->iPragCName; i<n; i++, j++){
+  }അല്ലെങ്കിൽ{
+    പൂർണ്ണസംഖ്യ i, j;
+    വേണ്ടി(i=0, j=pPragma->iPragCName; i<n; i++, j++){
       sqlite3VdbeSetColName(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
     }
   }
@@ -214,20 +214,20 @@ static void setPragmaResultColumnNames(
 /*
 ** Generate code to return a single integer value.
 */
-static void returnSingleInt(Vdbe *v, i64 value){
-  sqlite3VdbeAddInt64(v, 1, value);
+സ്ഥിതം ശൂന്യം returnSingleInt(Vdbe *v, i64 മൂല്യം){
+  sqlite3VdbeAddInt64(v, 1, മൂല്യം);
   sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
 }
 
 /*
 ** Generate code to return a single text value.
 */
-static void returnSingleText(
+സ്ഥിതം ശൂന്യം returnSingleText(
   Vdbe *v,                /* Prepared statement under construction */
-  const char *zValue      /* Value to be returned */
+  സ്ഥിരം അക്ഷരം *z_മൂല്യം      /* Value to be returned */
 ){
-  if( zValue ){
-    sqlite3VdbeLoadString(v, 1, (const char*)zValue);
+  എങ്കിൽ( z_മൂല്യം ){
+    sqlite3VdbeLoadString(v, 1, (സ്ഥിരം അക്ഷരം*)z_മൂല്യം);
     sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
   }
 }
@@ -238,18 +238,18 @@ static void returnSingleText(
 ** set these values for all pagers.
 */
 #ifndef SQLITE_OMIT_PAGER_PRAGMAS
-static void setAllPagerFlags(sqlite3 *db){
-  if( db->autoCommit ){
+സ്ഥിതം ശൂന്യം setAllPagerFlags(sqlite3 *db){
+  എങ്കിൽ( db->autoCommit ){
     Db *pDb = db->aDb;
-    int n = db->nDb;
-    assert( SQLITE_FullFSync==PAGER_FULLFSYNC );
-    assert( SQLITE_CkptFullFSync==PAGER_CKPT_FULLFSYNC );
-    assert( SQLITE_CacheSpill==PAGER_CACHESPILL );
-    assert( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
+    പൂർണ്ണസംഖ്യ n = db->nDb;
+    പ്രതിജ്ഞാ( SQLITE_FullFSync==PAGER_FULLFSYNC );
+    പ്രതിജ്ഞാ( SQLITE_CkptFullFSync==PAGER_CKPT_FULLFSYNC );
+    പ്രതിജ്ഞാ( SQLITE_CacheSpill==PAGER_CACHESPILL );
+    പ്രതിജ്ഞാ( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
              ==  PAGER_FLAGS_MASK );
-    assert( (pDb->safety_level & PAGER_SYNCHRONOUS_MASK)==pDb->safety_level );
-    while( (n--) > 0 ){
-      if( pDb->pBt ){
+    പ്രതിജ്ഞാ( (pDb->safety_level & PAGER_SYNCHRONOUS_MASK)==pDb->safety_level );
+    ആകുമ്പോൾ( (n--) > 0 ){
+      എങ്കിൽ( pDb->pBt ){
         sqlite3BtreeSetPagerFlags(pDb->pBt,
                  pDb->safety_level | (db->flags & PAGER_FLAGS_MASK) );
       }
@@ -257,7 +257,7 @@ static void setAllPagerFlags(sqlite3 *db){
     }
   }
 }
-#else
+#അല്ലെങ്കിൽ
 # define setAllPagerFlags(X)  /* no-op */
 #endif
 
@@ -265,18 +265,18 @@ static void setAllPagerFlags(sqlite3 *db){
 /*
 ** Return a human-readable name for a constraint resolution action.
 */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-static const char *actionName(u8 action){
-  const char *zName;
-  switch( action ){
-    case OE_SetNull:  zName = "SET NULL";        break;
-    case OE_SetDflt:  zName = "SET DEFAULT";     break;
-    case OE_Cascade:  zName = "CASCADE";         break;
-    case OE_Restrict: zName = "RESTRICT";        break;
-    default:          zName = "NO ACTION"; 
-                      assert( action==OE_None ); break;
+#ifndef SQLITE_OMIT_FOREIGN_താക്കോൽ
+സ്ഥിതം സ്ഥിരം അക്ഷരം *actionName(u8 action){
+  സ്ഥിരം അക്ഷരം *zName;
+  തിരഞ്ഞെടുപ്പ്( action ){
+    അവസ്ഥ OE_SetNull:  zName = "SET NULL";        നിർത്തുക;
+    അവസ്ഥ OE_SetDflt:  zName = "SET DEFAULT";     നിർത്തുക;
+    അവസ്ഥ OE_Cascade:  zName = "CASCADE";         നിർത്തുക;
+    അവസ്ഥ OE_Restrict: zName = "RESTRICT";        നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:          zName = "NO ACTION"; 
+                      പ്രതിജ്ഞാ( action==OE_None ); നിർത്തുക;
   }
-  return zName;
+  തിരികെ zName;
 }
 #endif
 
@@ -286,54 +286,54 @@ static const char *actionName(u8 action){
 ** defined in pager.h. This function returns the associated lowercase
 ** journal-mode name.
 */
-const char *sqlite3JournalModename(int eMode){
-  static char * const azModeName[] = {
+സ്ഥിരം അക്ഷരം *sqlite3JournalModename(പൂർണ്ണസംഖ്യ eMode){
+  സ്ഥിതം അക്ഷരം * സ്ഥിരം azModeName[] = {
     "delete", "persist", "off", "truncate", "memory"
 #ifndef SQLITE_OMIT_WAL
      , "wal"
 #endif
   };
-  assert( PAGER_JOURNALMODE_DELETE==0 );
-  assert( PAGER_JOURNALMODE_PERSIST==1 );
-  assert( PAGER_JOURNALMODE_OFF==2 );
-  assert( PAGER_JOURNALMODE_TRUNCATE==3 );
-  assert( PAGER_JOURNALMODE_MEMORY==4 );
-  assert( PAGER_JOURNALMODE_WAL==5 );
-  assert( eMode>=0 && eMode<=ArraySize(azModeName) );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_DELETE==0 );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_PERSIST==1 );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_OFF==2 );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_TRUNCATE==3 );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_MEMORY==4 );
+  പ്രതിജ്ഞാ( PAGER_JOURNALMODE_WAL==5 );
+  പ്രതിജ്ഞാ( eMode>=0 && eMode<=ArraySize(azModeName) );
 
-  if( eMode==ArraySize(azModeName) ) return 0;
-  return azModeName[eMode];
+  എങ്കിൽ( eMode==ArraySize(azModeName) ) തിരികെ 0;
+  തിരികെ azModeName[eMode];
 }
 
 /*
 ** Locate a pragma in the aPragmaName[] array.
 */
-static const PragmaName *pragmaLocate(const char *zName){
-  int upr, lwr, mid = 0, rc;
+സ്ഥിതം സ്ഥിരം PragmaName *pragmaLocate(സ്ഥിരം അക്ഷരം *zName){
+  പൂർണ്ണസംഖ്യ upr, lwr, mid = 0, rc;
   lwr = 0;
   upr = ArraySize(aPragmaName)-1;
-  while( lwr<=upr ){
+  ആകുമ്പോൾ( lwr<=upr ){
     mid = (lwr+upr)/2;
     rc = sqlite3_stricmp(zName, aPragmaName[mid].zName);
-    if( rc==0 ) break;
-    if( rc<0 ){
+    എങ്കിൽ( rc==0 ) നിർത്തുക;
+    എങ്കിൽ( rc<0 ){
       upr = mid - 1;
-    }else{
+    }അല്ലെങ്കിൽ{
       lwr = mid + 1;
     }
   }
-  return lwr>upr ? 0 : &aPragmaName[mid];
+  തിരികെ lwr>upr ? 0 : &aPragmaName[mid];
 }
 
 /*
 ** Create zero or more entries in the output for the SQL functions
 ** defined by FuncDef p.
 */
-static void pragmaFunclistLine(
+സ്ഥിതം ശൂന്യം pragma_Funclist_വരി(
   Vdbe *v,               /* The prepared statement being created */
   FuncDef *p,            /* A particular function definition */
-  int isBuiltin,         /* True if this is a built-in function */
-  int showInternFuncs    /* True if showing internal functions */
+  പൂർണ്ണസംഖ്യ isBuiltin,         /* True if this is a built-in function */
+  പൂർണ്ണസംഖ്യ showInternFuncs    /* True if showing internal functions */
 ){
   u32 mask =
       SQLITE_DETERMINISTIC |
@@ -342,27 +342,27 @@ static void pragmaFunclistLine(
       SQLITE_INNOCUOUS |
       SQLITE_FUNC_INTERNAL
   ;
-  if( showInternFuncs ) mask = 0xffffffff;
-  for(; p; p=p->pNext){
-    const char *zType;
-    static const char *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
+  എങ്കിൽ( showInternFuncs ) mask = 0xffffffff;
+  വേണ്ടി(; p; p=p->pNext){
+    സ്ഥിരം അക്ഷരം *zType;
+    സ്ഥിതം സ്ഥിരം അക്ഷരം *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
 
-    assert( SQLITE_FUNC_ENCMASK==0x3 );
-    assert( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
+    പ്രതിജ്ഞാ( SQLITE_FUNC_ENCMASK==0x3 );
+    പ്രതിജ്ഞാ( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
+    പ്രതിജ്ഞാ( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
+    പ്രതിജ്ഞാ( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
 
-    if( p->xSFunc==0 ) continue;
-    if( (p->funcFlags & SQLITE_FUNC_INTERNAL)!=0
+    എങ്കിൽ( p->xSFunc==0 ) തുടരുക;
+    എങ്കിൽ( (p->funcFlags & SQLITE_FUNC_INTERNAL)!=0
      && showInternFuncs==0
     ){
-      continue;
+      തുടരുക;
     }   
-    if( p->xValue!=0 ){
+    എങ്കിൽ( p->x_മൂല്യം!=0 ){
       zType = "w";
-    }else if( p->xFinalize!=0 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( p->xFinalize!=0 ){
       zType = "a";
-    }else{
+    }അല്ലെങ്കിൽ{
       zType = "s";
     }
     sqlite3VdbeMultiLoad(v, 1, "sissii",
@@ -382,13 +382,13 @@ static void pragmaFunclistLine(
 ** string held in register 3.  Decrement the result count in register 1
 ** and halt if the maximum number of result rows have been issued.
 */
-static int integrityCheckResultRow(Vdbe *v){
-  int addr;
+സ്ഥിതം പൂർണ്ണസംഖ്യ integrityCheckResultRow(Vdbe *v){
+  പൂർണ്ണസംഖ്യ addr;
   sqlite3VdbeAddOp2(v, OP_ResultRow, 3, 1);
   addr = sqlite3VdbeAddOp3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
   VdbeCoverage(v);
   sqlite3VdbeAddOp0(v, OP_Halt);
-  return addr;
+  തിരികെ addr;
 }
 
 /*
@@ -399,11 +399,11 @@ static int integrityCheckResultRow(Vdbe *v){
 **
 ** If pObjTab is null, then return true only if pTab is an imposter table.
 */
-static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
-  if( pObjTab ){
-    return pTab!=pObjTab;
-  }else{
-    return (pTab->tabFlags & TF_Imposter)!=0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ tableSkipIntegrityCheck(സ്ഥിരം Table *pTab, സ്ഥിരം Table *pObjTab){
+  എങ്കിൽ( pObjTab ){
+    തിരികെ pTab!=pObjTab;
+  }അല്ലെങ്കിൽ{
+    തിരികെ (pTab->tabFlags & TF_Imposter)!=0;
   }
 }
 
@@ -422,54 +422,54 @@ static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
 ** and pId2 is the id.  If the left side is just "id" then pId1 is the
 ** id and pId2 is any empty string.
 */
-void sqlite3Pragma(
+ശൂന്യം sqlite3Pragma(
   Parse *pParse,
   Token *pId1,        /* First part of [schema.]id field */
   Token *pId2,        /* Second part of [schema.]id field, or NULL */
-  Token *pValue,      /* Token for <value>, or NULL */
-  int minusFlag       /* True if a '-' sign preceded <value> */
+  Token *p_മൂല്യം,      /* Token for <value>, or NULL */
+  പൂർണ്ണസംഖ്യ minusFlag       /* True if a '-' sign preceded <value> */
 ){
-  char *zLeft = 0;       /* Nul-terminated UTF-8 string <id> */
-  char *zRight = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
-  const char *zDb = 0;   /* The database name */
+  അക്ഷരം *z_ഇടത് = 0;       /* Nul-terminated UTF-8 string <id> */
+  അക്ഷരം *z_വലത് = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
+  സ്ഥിരം അക്ഷരം *zDb = 0;   /* The database name */
   Token *pId;            /* Pointer to <id> token */
-  char *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
-  int iDb;               /* Database index for <database> */
-  int rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
+  അക്ഷരം *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
+  പൂർണ്ണസംഖ്യ iDb;               /* Database index for <database> */
+  പൂർണ്ണസംഖ്യ rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
   sqlite3 *db = pParse->db;    /* The database connection */
   Db *pDb;                     /* The specific database being pragmaed */
   Vdbe *v = sqlite3GetVdbe(pParse);  /* Prepared statement */
-  const PragmaName *pPragma;   /* The pragma */
+  സ്ഥിരം PragmaName *pPragma;   /* The pragma */
 
-  if( v==0 ) return;
+  എങ്കിൽ( v==0 ) തിരികെ;
   sqlite3VdbeRunOnlyOnce(v);
   pParse->nMem = 2;
 
   /* Interpret the [schema.] part of the pragma statement. iDb is the
   ** index of the database this pragma is being applied to in db.aDb[]. */
   iDb = sqlite3TwoPartName(pParse, pId1, pId2, &pId);
-  if( iDb<0 ) return;
+  എങ്കിൽ( iDb<0 ) തിരികെ;
   pDb = &db->aDb[iDb];
 
   /* If the temp database has been explicitly named as part of the
   ** pragma, make sure it is open.
   */
-  if( iDb==1 && sqlite3OpenTempDatabase(pParse) ){
-    return;
+  എങ്കിൽ( iDb==1 && sqlite3OpenTempDatabase(pParse) ){
+    തിരികെ;
   }
 
-  zLeft = sqlite3NameFromToken(db, pId);
-  if( !zLeft ) return;
-  if( minusFlag ){
-    zRight = sqlite3MPrintf(db, "-%T", pValue);
-  }else{
-    zRight = sqlite3NameFromToken(db, pValue);
+  z_ഇടത് = sqlite3NameFromToken(db, pId);
+  എങ്കിൽ( !z_ഇടത് ) തിരികെ;
+  എങ്കിൽ( minusFlag ){
+    z_വലത് = sqlite3MPrintf(db, "-%T", p_മൂല്യം);
+  }അല്ലെങ്കിൽ{
+    z_വലത് = sqlite3NameFromToken(db, p_മൂല്യം);
   }
 
-  assert( pId2 );
+  പ്രതിജ്ഞാ( pId2 );
   zDb = pId2->n>0 ? pDb->zDbSName : 0;
-  if( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, zLeft, zRight, zDb) ){
-    goto pragma_out;
+  എങ്കിൽ( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, z_ഇടത്, z_വലത്, zDb) ){
+    പോകുക pragma_out;
   }
 
   /* Send an SQLITE_FCNTL_PRAGMA file-control to the underlying VFS
@@ -488,52 +488,52 @@ void sqlite3Pragma(
   ** argument.
   */
   aFcntl[0] = 0;
-  aFcntl[1] = zLeft;
-  aFcntl[2] = zRight;
+  aFcntl[1] = z_ഇടത്;
+  aFcntl[2] = z_വലത്;
   aFcntl[3] = 0;
   db->busyHandler.nBusy = 0;
-  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (void*)aFcntl);
-  if( rc==SQLITE_OK ){
-    sqlite3VdbeSetNumCols(v, 1);
+  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (ശൂന്യം*)aFcntl);
+  എങ്കിൽ( rc==SQLITE_OK ){
+    sqlite3_Vdbe_Set_അക്കം_Cols(v, 1);
     sqlite3VdbeSetColName(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
     returnSingleText(v, aFcntl[0]);
     sqlite3_free(aFcntl[0]);
-    goto pragma_out;
+    പോകുക pragma_out;
   }
-  if( rc!=SQLITE_NOTFOUND ){
-    if( aFcntl[0] ){
-      sqlite3ErrorMsg(pParse, "%s", aFcntl[0]);
+  എങ്കിൽ( rc!=SQLITE_NOTFOUND ){
+    എങ്കിൽ( aFcntl[0] ){
+      sqlite3_Error_സന്ദേശം(pParse, "%s", aFcntl[0]);
       sqlite3_free(aFcntl[0]);
     }
     pParse->nErr++;
     pParse->rc = rc;
-    goto pragma_out;
+    പോകുക pragma_out;
   }
 
   /* Locate the pragma in the lookup table */
-  pPragma = pragmaLocate(zLeft);
-  if( pPragma==0 ){
+  pPragma = pragmaLocate(z_ഇടത്);
+  എങ്കിൽ( pPragma==0 ){
     /* IMP: R-43042-22504 No error messages are generated if an
     ** unknown pragma is issued. */
-    goto pragma_out;
+    പോകുക pragma_out;
   }
 
   /* Make sure the database schema is loaded if the pragma requires that */
-  if( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
-    if( sqlite3ReadSchema(pParse) ) goto pragma_out;
+  എങ്കിൽ( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
+    എങ്കിൽ( sqlite3ReadSchema(pParse) ) പോകുക pragma_out;
   }
 
   /* Register the result column names for pragmas that return results */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns)==0
-   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || zRight==0)
+  എങ്കിൽ( (pPragma->mPragFlg & PragFlg_NoColumns)==0
+   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || z_വലത്==0)
   ){
     setPragmaResultColumnNames(v, pPragma);
   }
 
   /* Jump to the appropriate pragma handler */
-  switch( pPragma->ePragTyp ){
+  തിരഞ്ഞെടുപ്പ്( pPragma->ePragTyp ){
  
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
+#എങ്കിൽ !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
   /*
   **  PRAGMA [schema.]default_cache_size
   **  PRAGMA [schema.]default_cache_size=N
@@ -550,9 +550,9 @@ void sqlite3Pragma(
   ** size.  But continue to take the absolute value of the default cache
   ** size of historical compatibility.
   */
-  case PragTyp_DEFAULT_CACHE_SIZE: {
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList getCacheSize[] = {
+  അവസ്ഥ PragTyp_DEFAULT_CACHE_SIZE: {
+    സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ iLn = VDBE_OFFSET_LINENO(2);
+    സ്ഥിതം സ്ഥിരം VdbeOpList getCacheSize[] = {
       { OP_Transaction, 0, 0,        0},                         /* 0 */
       { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_SIZE},  /* 1 */
       { OP_IfPos,       1, 8,        0},
@@ -565,27 +565,27 @@ void sqlite3Pragma(
     };
     VdbeOp *aOp;
     sqlite3VdbeUsesBtree(v, iDb);
-    if( !zRight ){
+    എങ്കിൽ( !z_വലത് ){
       pParse->nMem += 2;
       sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(getCacheSize));
       aOp = sqlite3VdbeAddOpList(v, ArraySize(getCacheSize), getCacheSize, iLn);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      എങ്കിൽ( ONLY_IF_REALLOC_STRESS(aOp==0) ) നിർത്തുക;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[6].p1 = SQLITE_DEFAULT_CACHE_SIZE;
-    }else{
-      int size = sqlite3AbsInt32(sqlite3Atoi(zRight));
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ size = sqlite3AbsInt32(sqlite3Atoi(z_വലത്));
       sqlite3BeginWriteOperation(pParse, 0, iDb);
       sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_DEFAULT_CACHE_SIZE, size);
-      assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
+      പ്രതിജ്ഞാ( sqlite3SchemaMutexHeld(db, iDb, 0) );
       pDb->pSchema->cache_size = size;
       sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
     }
-    break;
+    നിർത്തുക;
   }
 #endif /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
 
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS)
+#എങ്കിൽ !defined(SQLITE_OMIT_PAGER_PRAGMAS)
   /*
   **  PRAGMA [schema.]page_size
   **  PRAGMA [schema.]page_size=N
@@ -595,22 +595,22 @@ void sqlite3Pragma(
   ** database page size value.  The value can only be set if
   ** the database has not yet been created.
   */
-  case PragTyp_PAGE_SIZE: {
+  അവസ്ഥ PragTyp_PAGE_SIZE: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
-      int size = ALWAYS(pBt) ? sqlite3BtreeGetPageSize(pBt) : 0;
+    പ്രതിജ്ഞാ( pBt!=0 );
+    എങ്കിൽ( !z_വലത് ){
+      പൂർണ്ണസംഖ്യ size = ALWAYS(pBt) ? sqlite3BtreeGetPageSize(pBt) : 0;
       returnSingleInt(v, size);
-    }else{
+    }അല്ലെങ്കിൽ{
       /* Malloc may fail when setting the page-size, as there is an internal
       ** buffer that the pager module resizes using sqlite3_realloc().
       */
-      db->nextPagesize = sqlite3Atoi(zRight);
-      if( SQLITE_NOMEM==sqlite3BtreeSetPageSize(pBt, db->nextPagesize,0,0) ){
+      db->nextPagesize = sqlite3Atoi(z_വലത്);
+      എങ്കിൽ( SQLITE_NOMEM==sqlite3BtreeSetPageSize(pBt, db->nextPagesize,0,0) ){
         sqlite3OomFault(db);
       }
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -621,26 +621,26 @@ void sqlite3Pragma(
   ** secure_delete flag.  The second form changes the secure_delete
   ** flag setting and reports the new value.
   */
-  case PragTyp_SECURE_DELETE: {
+  അവസ്ഥ PragTyp_SECURE_DELETE: {
     Btree *pBt = pDb->pBt;
-    int b = -1;
-    assert( pBt!=0 );
-    if( zRight ){
-      if( sqlite3_stricmp(zRight, "fast")==0 ){
+    പൂർണ്ണസംഖ്യ b = -1;
+    പ്രതിജ്ഞാ( pBt!=0 );
+    എങ്കിൽ( z_വലത് ){
+      എങ്കിൽ( sqlite3_stricmp(z_വലത്, "fast")==0 ){
         b = 2;
-      }else{
-        b = sqlite3GetBoolean(zRight, 0);
+      }അല്ലെങ്കിൽ{
+        b = sqlite3GetBoolean(z_വലത്, 0);
       }
     }
-    if( pId2->n==0 && b>=0 ){
-      int ii;
-      for(ii=0; ii<db->nDb; ii++){
+    എങ്കിൽ( pId2->n==0 && b>=0 ){
+      പൂർണ്ണസംഖ്യ ii;
+      വേണ്ടി(ii=0; ii<db->nDb; ii++){
         sqlite3BtreeSecureDelete(db->aDb[ii].pBt, b);
       }
     }
     b = sqlite3BtreeSecureDelete(pBt, b);
     returnSingleInt(v, b);
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -660,43 +660,43 @@ void sqlite3Pragma(
   **
   ** Return the number of pages in the specified database.
   */
-  case PragTyp_PAGE_COUNT: {
-    int iReg;
+  അവസ്ഥ Prag_Typ_PAGE_എണ്ണം: {
+    പൂർണ്ണസംഖ്യ iReg;
     i64 x = 0;
     sqlite3CodeVerifySchema(pParse, iDb);
     iReg = ++pParse->nMem;
-    if( sqlite3Tolower(zLeft[0])=='p' ){
+    എങ്കിൽ( sqlite3Tolower(z_ഇടത്[0])=='p' ){
       sqlite3VdbeAddOp2(v, OP_Pagecount, iDb, iReg);
-    }else{
-      if( zRight && sqlite3DecOrHexToI64(zRight,&x)==0 ){
-        if( x<0 ) x = 0;
-        else if( x>0xfffffffe ) x = 0xfffffffe;
-      }else{
+    }അല്ലെങ്കിൽ{
+      എങ്കിൽ( z_വലത് && sqlite3DecOrHexToI64(z_വലത്,&x)==0 ){
+        എങ്കിൽ( x<0 ) x = 0;
+        അല്ലെങ്കിൽ എങ്കിൽ( x>0xfffffffe ) x = 0xfffffffe;
+      }അല്ലെങ്കിൽ{
         x = 0;
       }
-      sqlite3VdbeAddOp3(v, OP_MaxPgcnt, iDb, iReg, (int)x);
+      sqlite3VdbeAddOp3(v, OP_MaxPgcnt, iDb, iReg, (പൂർണ്ണസംഖ്യ)x);
     }
     sqlite3VdbeAddOp2(v, OP_ResultRow, iReg, 1);
-    break;
+    നിർത്തുക;
   }
 
   /*
   **  PRAGMA [schema.]locking_mode
   **  PRAGMA [schema.]locking_mode = (normal|exclusive)
   */
-  case PragTyp_LOCKING_MODE: {
-    const char *zRet = "normal";
-    int eMode = getLockingMode(zRight);
+  അവസ്ഥ PragTyp_LOCKING_MODE: {
+    സ്ഥിരം അക്ഷരം *zRet = "normal";
+    പൂർണ്ണസംഖ്യ eMode = getLockingMode(z_വലത്);
 
-    if( pId2->n==0 && eMode==PAGER_LOCKINGMODE_QUERY ){
+    എങ്കിൽ( pId2->n==0 && eMode==PAGER_LOCKINGMODE_QUERY ){
       /* Simple "PRAGMA locking_mode;" statement. This is a query for
       ** the current default locking mode (which may be different to
       ** the locking-mode of the main database).
       */
       eMode = db->dfltLockMode;
-    }else{
+    }അല്ലെങ്കിൽ{
       Pager *pPager;
-      if( pId2->n==0 ){
+      എങ്കിൽ( pId2->n==0 ){
         /* This indicates that no database name was specified as part
         ** of the PRAGMA command. In this case the locking-mode must be
         ** set on all attached databases, as well as the main db file.
@@ -705,9 +705,9 @@ void sqlite3Pragma(
         ** any subsequently attached databases also use the specified
         ** locking mode.
         */
-        int ii;
-        assert(pDb==&db->aDb[0]);
-        for(ii=2; ii<db->nDb; ii++){
+        പൂർണ്ണസംഖ്യ ii;
+        പ്രതിജ്ഞാ(pDb==&db->aDb[0]);
+        വേണ്ടി(ii=2; ii<db->nDb; ii++){
           pPager = sqlite3BtreePager(db->aDb[ii].pBt);
           sqlite3PagerLockingMode(pPager, eMode);
         }
@@ -717,13 +717,13 @@ void sqlite3Pragma(
       eMode = sqlite3PagerLockingMode(pPager, eMode);
     }
 
-    assert( eMode==PAGER_LOCKINGMODE_NORMAL
+    പ്രതിജ്ഞാ( eMode==PAGER_LOCKINGMODE_NORMAL
             || eMode==PAGER_LOCKINGMODE_EXCLUSIVE );
-    if( eMode==PAGER_LOCKINGMODE_EXCLUSIVE ){
+    എങ്കിൽ( eMode==PAGER_LOCKINGMODE_EXCLUSIVE ){
       zRet = "exclusive";
     }
     returnSingleText(v, zRet);
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -731,44 +731,44 @@ void sqlite3Pragma(
   **  PRAGMA [schema.]journal_mode =
   **                      (delete|persist|off|truncate|memory|wal|off)
   */
-  case PragTyp_JOURNAL_MODE: {
-    int eMode;        /* One of the PAGER_JOURNALMODE_XXX symbols */
-    int ii;           /* Loop counter */
+  അവസ്ഥ PragTyp_JOURNAL_MODE: {
+    പൂർണ്ണസംഖ്യ eMode;        /* One of the PAGER_JOURNALMODE_XXX symbols */
+    പൂർണ്ണസംഖ്യ ii;           /* Loop counter */
 
-    if( zRight==0 ){
+    എങ്കിൽ( z_വലത്==0 ){
       /* If there is no "=MODE" part of the pragma, do a query for the
       ** current mode */
       eMode = PAGER_JOURNALMODE_QUERY;
-    }else{
-      const char *zMode;
-      int n = sqlite3Strlen30(zRight);
-      for(eMode=0; (zMode = sqlite3JournalModename(eMode))!=0; eMode++){
-        if( sqlite3StrNICmp(zRight, zMode, n)==0 ) break;
+    }അല്ലെങ്കിൽ{
+      സ്ഥിരം അക്ഷരം *zMode;
+      പൂർണ്ണസംഖ്യ n = sqlite3Strlen30(z_വലത്);
+      വേണ്ടി(eMode=0; (zMode = sqlite3JournalModename(eMode))!=0; eMode++){
+        എങ്കിൽ( sqlite3StrNICmp(z_വലത്, zMode, n)==0 ) നിർത്തുക;
       }
-      if( !zMode ){
+      എങ്കിൽ( !zMode ){
         /* If the "=MODE" part does not match any known journal mode,
         ** then do a query */
         eMode = PAGER_JOURNALMODE_QUERY;
       }
-      if( eMode==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
+      എങ്കിൽ( eMode==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow journal-mode "OFF" in defensive since the database
         ** can become corrupted using ordinary SQL when the journal is off */
         eMode = PAGER_JOURNALMODE_QUERY;
       }
     }
-    if( eMode==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
+    എങ്കിൽ( eMode==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
       /* Convert "PRAGMA journal_mode" into "PRAGMA main.journal_mode" */
       iDb = 0;
       pId2->n = 1;
     }
-    for(ii=db->nDb-1; ii>=0; ii--){
-      if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+    വേണ്ടി(ii=db->nDb-1; ii>=0; ii--){
+      എങ്കിൽ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
         sqlite3VdbeUsesBtree(v, ii);
         sqlite3VdbeAddOp3(v, OP_JournalMode, ii, 1, eMode);
       }
     }
     sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -777,16 +777,16 @@ void sqlite3Pragma(
   **
   ** Get or set the size limit on rollback journal files.
   */
-  case PragTyp_JOURNAL_SIZE_LIMIT: {
+  അവസ്ഥ PragTyp_JOURNAL_SIZE_LIMIT: {
     Pager *pPager = sqlite3BtreePager(pDb->pBt);
     i64 iLimit = -2;
-    if( zRight ){
-      sqlite3DecOrHexToI64(zRight, &iLimit);
-      if( iLimit<-1 ) iLimit = -1;
+    എങ്കിൽ( z_വലത് ){
+      sqlite3DecOrHexToI64(z_വലത്, &iLimit);
+      എങ്കിൽ( iLimit<-1 ) iLimit = -1;
     }
     iLimit = sqlite3PagerJournalSizeLimit(pPager, iLimit);
     returnSingleInt(v, iLimit);
-    break;
+    നിർത്തുക;
   }
 
 #endif /* SQLITE_OMIT_PAGER_PRAGMAS */
@@ -799,14 +799,14 @@ void sqlite3Pragma(
   ** The value is one of:  0 NONE 1 FULL 2 INCREMENTAL
   */
 #ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_AUTO_VACUUM: {
+  അവസ്ഥ PragTyp_AUTO_VACUUM: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
+    പ്രതിജ്ഞാ( pBt!=0 );
+    എങ്കിൽ( !z_വലത് ){
       returnSingleInt(v, sqlite3BtreeGetAutoVacuum(pBt));
-    }else{
-      int eAuto = getAutoVacuum(zRight);
-      assert( eAuto>=0 && eAuto<=2 );
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ eAuto = getAutoVacuum(z_വലത്);
+      പ്രതിജ്ഞാ( eAuto>=0 && eAuto<=2 );
       db->nextAutovac = (u8)eAuto;
       /* Call SetAutoVacuum() to set initialize the internal auto and
       ** incr-vacuum flags. This is required in case this connection
@@ -814,25 +814,25 @@ void sqlite3Pragma(
       ** as an auto-vacuum capable db.
       */
       rc = sqlite3BtreeSetAutoVacuum(pBt, eAuto);
-      if( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
+      എങ്കിൽ( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
         /* When setting the auto_vacuum mode to either "full" or
         ** "incremental", write the value of meta[6] in the database
         ** file. Before writing to meta[6], check that meta[3] indicates
         ** that this really is an auto-vacuum capable database.
         */
-        static const int iLn = VDBE_OFFSET_LINENO(2);
-        static const VdbeOpList setMeta6[] = {
+        സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ iLn = VDBE_OFFSET_LINENO(2);
+        സ്ഥിതം സ്ഥിരം VdbeOpList setMeta6[] = {
           { OP_Transaction,    0,         1,                 0},    /* 0 */
-          { OP_ReadCookie,     0,         1,         BTREE_LARGEST_ROOT_PAGE},
+          { OP_ReadCookie,     0,         1,         BTREE_LARGEST_വേര്_PAGE},
           { OP_If,             1,         0,                 0},    /* 2 */
           { OP_Halt,           SQLITE_OK, OE_Abort,          0},    /* 3 */
           { OP_SetCookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
         };
         VdbeOp *aOp;
-        int iAddr = sqlite3VdbeCurrentAddr(v);
+        പൂർണ്ണസംഖ്യ iAddr = sqlite3VdbeCurrentAddr(v);
         sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setMeta6));
         aOp = sqlite3VdbeAddOpList(v, ArraySize(setMeta6), setMeta6, iLn);
-        if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+        എങ്കിൽ( ONLY_IF_REALLOC_STRESS(aOp==0) ) നിർത്തുക;
         aOp[0].p1 = iDb;
         aOp[1].p1 = iDb;
         aOp[2].p2 = iAddr+4;
@@ -841,7 +841,7 @@ void sqlite3Pragma(
         sqlite3VdbeUsesBtree(v, iDb);
       }
     }
-    break;
+    നിർത്തുക;
   }
 #endif
 
@@ -851,9 +851,9 @@ void sqlite3Pragma(
   ** Do N steps of incremental vacuuming on a database.
   */
 #ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_INCREMENTAL_VACUUM: {
-    int iLimit = 0, addr;
-    if( zRight==0 || !sqlite3GetInt32(zRight, &iLimit) || iLimit<=0 ){
+  അവസ്ഥ PragTyp_INCREMENTAL_VACUUM: {
+    പൂർണ്ണസംഖ്യ iLimit = 0, addr;
+    എങ്കിൽ( z_വലത്==0 || !sqlite3GetInt32(z_വലത്, &iLimit) || iLimit<=0 ){
       iLimit = 0x7fffffff;
     }
     sqlite3BeginWriteOperation(pParse, 0, iDb);
@@ -863,7 +863,7 @@ void sqlite3Pragma(
     sqlite3VdbeAddOp2(v, OP_AddImm, 1, -1);
     sqlite3VdbeAddOp2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
     sqlite3VdbeJumpHere(v, addr);
-    break;
+    നിർത്തുക;
   }
 #endif
 
@@ -879,16 +879,16 @@ void sqlite3Pragma(
   ** number of pages is adjusted so that the cache uses -N kibibytes
   ** of memory.
   */
-  case PragTyp_CACHE_SIZE: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
+  അവസ്ഥ PragTyp_CACHE_SIZE: {
+    പ്രതിജ്ഞാ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    എങ്കിൽ( !z_വലത് ){
       returnSingleInt(v, pDb->pSchema->cache_size);
-    }else{
-      int size = sqlite3Atoi(zRight);
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ size = sqlite3Atoi(z_വലത്);
       pDb->pSchema->cache_size = size;
       sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -913,25 +913,25 @@ void sqlite3Pragma(
   ** The cache_spill=BOOLEAN setting applies to all attached schemas,
   ** not just the schema specified.
   */
-  case PragTyp_CACHE_SPILL: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
+  അവസ്ഥ PragTyp_CACHE_SPILL: {
+    പ്രതിജ്ഞാ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    എങ്കിൽ( !z_വലത് ){
       returnSingleInt(v,
          (db->flags & SQLITE_CacheSpill)==0 ? 0 :
             sqlite3BtreeSetSpillSize(pDb->pBt,0));
-    }else{
-      int size = 1;
-      if( sqlite3GetInt32(zRight, &size) ){
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ size = 1;
+      എങ്കിൽ( sqlite3GetInt32(z_വലത്, &size) ){
         sqlite3BtreeSetSpillSize(pDb->pBt, size);
       }
-      if( sqlite3GetBoolean(zRight, size!=0) ){
+      എങ്കിൽ( sqlite3GetBoolean(z_വലത്, size!=0) ){
         db->flags |= SQLITE_CacheSpill;
-      }else{
+      }അല്ലെങ്കിൽ{
         db->flags &= ~(u64)SQLITE_CacheSpill;
       }
       setAllPagerFlags(db);
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -948,34 +948,34 @@ void sqlite3Pragma(
   ** as little or as much as it wants.  Except, if N is set to 0 then the
   ** upper layers will never invoke the xFetch interfaces to the VFS.
   */
-  case PragTyp_MMAP_SIZE: {
+  അവസ്ഥ PragTyp_MMAP_SIZE: {
     sqlite3_int64 sz;
-#if SQLITE_MAX_MMAP_SIZE>0
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( zRight ){
-      int ii;
-      sqlite3DecOrHexToI64(zRight, &sz);
-      if( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
-      if( pId2->n==0 ) db->szMmap = sz;
-      for(ii=db->nDb-1; ii>=0; ii--){
-        if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+    പ്രതിജ്ഞാ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    എങ്കിൽ( z_വലത് ){
+      പൂർണ്ണസംഖ്യ ii;
+      sqlite3DecOrHexToI64(z_വലത്, &sz);
+      എങ്കിൽ( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
+      എങ്കിൽ( pId2->n==0 ) db->szMmap = sz;
+      വേണ്ടി(ii=db->nDb-1; ii>=0; ii--){
+        എങ്കിൽ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
           sqlite3BtreeSetMmapLimit(db->aDb[ii].pBt, sz);
         }
       }
     }
     sz = -1;
     rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_SIZE, &sz);
-#else
+#അല്ലെങ്കിൽ
     sz = 0;
     rc = SQLITE_OK;
 #endif
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       returnSingleInt(v, sz);
-    }else if( rc!=SQLITE_NOTFOUND ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( rc!=SQLITE_NOTFOUND ){
       pParse->nErr++;
       pParse->rc = rc;
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -989,13 +989,13 @@ void sqlite3Pragma(
   ** Note that it is possible for the library compile-time options to
   ** override this setting
   */
-  case PragTyp_TEMP_STORE: {
-    if( !zRight ){
+  അവസ്ഥ PragTyp_TEMP_STORE: {
+    എങ്കിൽ( !z_വലത് ){
       returnSingleInt(v, db->temp_store);
-    }else{
-      changeTempStorage(pParse, zRight);
+    }അല്ലെങ്കിൽ{
+      changeTempStorage(pParse, z_വലത്);
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -1008,40 +1008,40 @@ void sqlite3Pragma(
   ** If temporary directory is changed, then invalidateTempStorage.
   **
   */
-  case PragTyp_TEMP_STORE_DIRECTORY: {
+  അവസ്ഥ PragTyp_TEMP_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
+    എങ്കിൽ( !z_വലത് ){
       returnSingleText(v, sqlite3_temp_directory);
-    }else{
+    }അല്ലെങ്കിൽ{
 #ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+      എങ്കിൽ( z_വലത്[0] ){
+        പൂർണ്ണസംഖ്യ res;
+        rc = sqlite3OsAccess(db->pVfs, z_വലത്, SQLITE_ACCESS_READWRITE, &res);
+        എങ്കിൽ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_സന്ദേശം(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          പോകുക pragma_out;
         }
       }
-      if( SQLITE_TEMP_STORE==0
+      എങ്കിൽ( SQLITE_TEMP_STORE==0
        || (SQLITE_TEMP_STORE==1 && db->temp_store<=1)
        || (SQLITE_TEMP_STORE==2 && db->temp_store==1)
       ){
         invalidateTempStorage(pParse);
       }
       sqlite3_free(sqlite3_temp_directory);
-      if( zRight[0] ){
-        sqlite3_temp_directory = sqlite3_mprintf("%s", zRight);
-      }else{
+      എങ്കിൽ( z_വലത്[0] ){
+        sqlite3_temp_directory = sqlite3_mprintf("%s", z_വലത്);
+      }അല്ലെങ്കിൽ{
         sqlite3_temp_directory = 0;
       }
 #endif /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    നിർത്തുക;
   }
 
-#if SQLITE_OS_WIN
+#എങ്കിൽ SQLITE_OS_WIN
   /*
   **   PRAGMA data_store_directory
   **   PRAGMA data_store_directory = ""|"directory_name"
@@ -1055,35 +1055,35 @@ void sqlite3Pragma(
   ** by this setting, regardless of its value.
   **
   */
-  case PragTyp_DATA_STORE_DIRECTORY: {
+  അവസ്ഥ PragTyp_DATA_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
+    എങ്കിൽ( !z_വലത് ){
       returnSingleText(v, sqlite3_data_directory);
-    }else{
+    }അല്ലെങ്കിൽ{
 #ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+      എങ്കിൽ( z_വലത്[0] ){
+        പൂർണ്ണസംഖ്യ res;
+        rc = sqlite3OsAccess(db->pVfs, z_വലത്, SQLITE_ACCESS_READWRITE, &res);
+        എങ്കിൽ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_സന്ദേശം(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          പോകുക pragma_out;
         }
       }
       sqlite3_free(sqlite3_data_directory);
-      if( zRight[0] ){
-        sqlite3_data_directory = sqlite3_mprintf("%s", zRight);
-      }else{
+      എങ്കിൽ( z_വലത്[0] ){
+        sqlite3_data_directory = sqlite3_mprintf("%s", z_വലത്);
+      }അല്ലെങ്കിൽ{
         sqlite3_data_directory = 0;
       }
 #endif /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    നിർത്തുക;
   }
 #endif
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
   /*
   **   PRAGMA [schema.]lock_proxy_file
   **   PRAGMA [schema.]lock_proxy_file = ":auto:"|"lock_file_path"
@@ -1092,31 +1092,31 @@ void sqlite3Pragma(
   ** the value sets a specific file to be used for database access locks.
   **
   */
-  case PragTyp_LOCK_PROXY_FILE: {
-    if( !zRight ){
+  അവസ്ഥ PragTyp_LOCK_PROXY_FILE: {
+    എങ്കിൽ( !z_വലത് ){
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
-      char *proxy_file_path = NULL;
+      അക്ഷരം *proxy_file_path = ശൂന്യ;
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
       sqlite3OsFileControlHint(pFile, SQLITE_GET_LOCKPROXYFILE,
                            &proxy_file_path);
       returnSingleText(v, proxy_file_path);
-    }else{
+    }അല്ലെങ്കിൽ{
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
-      int res;
-      if( zRight[0] ){
+      പൂർണ്ണസംഖ്യ res;
+      എങ്കിൽ( z_വലത്[0] ){
         res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     zRight);
-      } else {
+                                     z_വലത്);
+      } അല്ലെങ്കിൽ {
         res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     NULL);
+                                     ശൂന്യ);
       }
-      if( res!=SQLITE_OK ){
-        sqlite3ErrorMsg(pParse, "failed to set lock proxy file");
-        goto pragma_out;
+      എങ്കിൽ( res!=SQLITE_OK ){
+        sqlite3_Error_സന്ദേശം(pParse, "failed to set lock proxy file");
+        പോകുക pragma_out;
       }
     }
-    break;
+    നിർത്തുക;
   }
 #endif /* SQLITE_ENABLE_LOCKING_STYLE */     
    
@@ -1129,58 +1129,58 @@ void sqlite3Pragma(
   ** default value will be restored the next time the database is
   ** opened.
   */
-  case PragTyp_SYNCHRONOUS: {
-    if( !zRight ){
+  അവസ്ഥ PragTyp_SYNCHRONOUS: {
+    എങ്കിൽ( !z_വലത് ){
       returnSingleInt(v, pDb->safety_level-1);
-    }else{
-      if( !db->autoCommit ){
-        sqlite3ErrorMsg(pParse,
+    }അല്ലെങ്കിൽ{
+      എങ്കിൽ( !db->autoCommit ){
+        sqlite3_Error_സന്ദേശം(pParse,
             "Safety level may not be changed inside a transaction");
-      }else if( iDb!=1 ){
-        int iLevel;
-        if( sqlite3Isdigit(zRight[0]) ){
-          iLevel = sqlite3Atoi(zRight);
-        }else{
-          iLevel = getSafetyLevel(zRight,0,1);
+      }അല്ലെങ്കിൽ എങ്കിൽ( iDb!=1 ){
+        പൂർണ്ണസംഖ്യ iLevel;
+        എങ്കിൽ( sqlite3Isdigit(z_വലത്[0]) ){
+          iLevel = sqlite3Atoi(z_വലത്);
+        }അല്ലെങ്കിൽ{
+          iLevel = getSafetyLevel(z_വലത്,0,1);
         }
         iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_MASK;
-        if( iLevel==0 ) iLevel = 1;
+        എങ്കിൽ( iLevel==0 ) iLevel = 1;
         pDb->safety_level = iLevel;
         pDb->bSyncSet = 1;
         setAllPagerFlags(db);
       }
     }
-    break;
+    നിർത്തുക;
   }
 #endif /* SQLITE_OMIT_PAGER_PRAGMAS */
 
 #ifndef SQLITE_OMIT_FLAG_PRAGMAS
-  case PragTyp_FLAG: {
-    if( zRight==0 ){
+  അവസ്ഥ PragTyp_FLAG: {
+    എങ്കിൽ( z_വലത്==0 ){
       setPragmaResultColumnNames(v, pPragma);
       returnSingleInt(v, (db->flags & pPragma->iArg)!=0 );
-    }else{
+    }അല്ലെങ്കിൽ{
       u64 mask = pPragma->iArg;    /* Mask of bits to set or clear. */
-      if( db->autoCommit==0 ){
+      എങ്കിൽ( db->autoCommit==0 ){
         /* Foreign key support may not be enabled or disabled while not
         ** in auto-commit mode.  */
-        mask &= ~(SQLITE_ForeignKeys);
+        mask &= ~(SQLITE_Foreign_താക്കോലുകൾ);
       }
 
-      if( sqlite3GetBoolean(zRight, 0) ){
-        if( (mask & SQLITE_WriteSchema)==0
+      എങ്കിൽ( sqlite3GetBoolean(z_വലത്, 0) ){
+        എങ്കിൽ( (mask & SQLITE_WriteSchema)==0
          || (db->flags & SQLITE_Defensive)==0
         ){
           db->flags |= mask;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         db->flags &= ~mask;
-        if( mask==SQLITE_DeferFKs ){
+        എങ്കിൽ( mask==SQLITE_DeferFKs ){
           db->nDeferredImmCons = 0;
           db->nDeferredCons = 0;
         }
-        if( (mask & SQLITE_WriteSchema)!=0
-         && sqlite3_stricmp(zRight, "reset")==0
+        എങ്കിൽ( (mask & SQLITE_WriteSchema)!=0
+         && sqlite3_stricmp(z_വലത്, "reset")==0
         ){
           /* IMP: R-60817-01178 If the argument is "RESET" then schema
           ** writing is disabled (as with "PRAGMA writable_schema=OFF") and,
@@ -1196,7 +1196,7 @@ void sqlite3Pragma(
       sqlite3VdbeAddOp0(v, OP_Expire);
       setAllPagerFlags(db);
     }
-    break;
+    നിർത്തുക;
   }
 #endif /* SQLITE_OMIT_FLAG_PRAGMAS */
 
@@ -1214,56 +1214,56 @@ void sqlite3Pragma(
   ** dflt_value: The default value for the column, if any.
   ** pk:         Non-zero for PK fields.
   */
-  case PragTyp_TABLE_INFO: if( zRight ){
+  അവസ്ഥ PragTyp_TABLE_INFO: എങ്കിൽ( z_വലത് ){
     Table *pTab;
     sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-    if( pTab ){
-      int i, k;
-      int nHidden = 0;
+    pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, z_വലത്, zDb);
+    എങ്കിൽ( pTab ){
+      പൂർണ്ണസംഖ്യ i, k;
+      പൂർണ്ണസംഖ്യ nHidden = 0;
       Column *pCol;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+      Index *pPk = sqlite3_Primary_താക്കോൽ_Index(pTab);
       pParse->nMem = 7;
       sqlite3ViewGetColumnNames(pParse, pTab);
-      for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-        int isHidden = 0;
-        const Expr *pColExpr;
-        if( pCol->colFlags & COLFLAG_NOINSERT ){
-          if( pPragma->iArg==0 ){
+      വേണ്ടി(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
+        പൂർണ്ണസംഖ്യ isHidden = 0;
+        സ്ഥിരം വ്യഞ്ജകം *p_Col_വ്യഞ്ജകം;
+        എങ്കിൽ( pCol->colFlags & COLFLAG_NOINSERT ){
+          എങ്കിൽ( pPragma->iArg==0 ){
             nHidden++;
-            continue;
+            തുടരുക;
           }
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
+          എങ്കിൽ( pCol->colFlags & COLFLAG_VIRTUAL ){
             isHidden = 2;  /* GENERATED ALWAYS AS ... VIRTUAL */
-          }else if( pCol->colFlags & COLFLAG_STORED ){
+          }അല്ലെങ്കിൽ എങ്കിൽ( pCol->colFlags & COLFLAG_STORED ){
             isHidden = 3;  /* GENERATED ALWAYS AS ... STORED */
-          }else{ assert( pCol->colFlags & COLFLAG_HIDDEN );
+          }അല്ലെങ്കിൽ{ പ്രതിജ്ഞാ( pCol->colFlags & COLFLAG_HIDDEN );
             isHidden = 1;  /* HIDDEN */
           }
         }
-        if( (pCol->colFlags & COLFLAG_PRIMKEY)==0 ){
+        എങ്കിൽ( (pCol->colFlags & COLFLAG_PRIMKEY)==0 ){
           k = 0;
-        }else if( pPk==0 ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( pPk==0 ){
           k = 1;
-        }else{
-          for(k=1; k<=pTab->nCol && pPk->aiColumn[k-1]!=i; k++){}
+        }അല്ലെങ്കിൽ{
+          വേണ്ടി(k=1; k<=pTab->nCol && pPk->aiColumn[k-1]!=i; k++){}
         }
-        pColExpr = sqlite3ColumnExpr(pTab,pCol);
-        assert( pColExpr==0 || pColExpr->op==TK_SPAN || isHidden>=2 );
-        assert( pColExpr==0 || !ExprHasProperty(pColExpr, EP_IntValue)
+        p_Col_വ്യഞ്ജകം = sqlite3_Column_വ്യഞ്ജകം(pTab,pCol);
+        പ്രതിജ്ഞാ( p_Col_വ്യഞ്ജകം==0 || p_Col_വ്യഞ്ജകം->op==TK_SPAN || isHidden>=2 );
+        പ്രതിജ്ഞാ( p_Col_വ്യഞ്ജകം==0 || !വ്യഞ്ജകം_Has_Property(p_Col_വ്യഞ്ജകം, EP_Int_മൂല്യം)
                   || isHidden>=2 );
         sqlite3VdbeMultiLoad(v, 1, pPragma->iArg ? "issisii" : "issisi",
                i-nHidden,
                pCol->zCnName,
                sqlite3ColumnType(pCol,""),
                pCol->notNull ? 1 : 0,
-               (isHidden>=2 || pColExpr==0) ? 0 : pColExpr->u.zToken,
+               (isHidden>=2 || p_Col_വ്യഞ്ജകം==0) ? 0 : p_Col_വ്യഞ്ജകം->u.zToken,
                k,
                isHidden);
       }
     }
   }
-  break;
+  നിർത്തുക;
 
   /*
   **   PRAGMA table_list
@@ -1278,15 +1278,15 @@ void sqlite3Pragma(
   ** wr:         True for a WITHOUT ROWID table
   ** strict:     True for a STRICT table
   */
-  case PragTyp_TABLE_LIST: {
-    int ii;
+  അവസ്ഥ PragTyp_TABLE_LIST: {
+    പൂർണ്ണസംഖ്യ ii;
     pParse->nMem = 6;
     sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    for(ii=0; ii<db->nDb; ii++){
+    വേണ്ടി(ii=0; ii<db->nDb; ii++){
       HashElem *k;
       Hash *pHash;
-      int initNCol;
-      if( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) continue;
+      പൂർണ്ണസംഖ്യ initNCol;
+      എങ്കിൽ( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) തുടരുക;
 
       /* Ensure that the Table.nCol field is initialized for all views
       ** and virtual tables.  Each time we initialize a Table.nCol value
@@ -1294,42 +1294,42 @@ void sqlite3Pragma(
       ** the initialization scan.
       */
       pHash = &db->aDb[ii].pSchema->tblHash;
-      initNCol = sqliteHashCount(pHash);
-      while( initNCol-- ){
-        for(k=sqliteHashFirst(pHash); 1; k=sqliteHashNext(k) ){
+      initNCol = sqlite_Hash_എണ്ണം(pHash);
+      ആകുമ്പോൾ( initNCol-- ){
+        വേണ്ടി(k=sqliteHashFirst(pHash); 1; k=sqliteHashNext(k) ){
           Table *pTab;
-          if( k==0 ){ initNCol = 0; break; }
+          എങ്കിൽ( k==0 ){ initNCol = 0; നിർത്തുക; }
           pTab = sqliteHashData(k);
-          if( pTab->nCol==0 ){
-            char *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
-            if( zSql ){
+          എങ്കിൽ( pTab->nCol==0 ){
+            അക്ഷരം *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
+            എങ്കിൽ( zSql ){
               sqlite3_stmt *pDummy = 0;
-              (void)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
+              (ശൂന്യം)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
                                        &pDummy, 0);
-              (void)sqlite3_finalize(pDummy);
+              (ശൂന്യം)sqlite3_finalize(pDummy);
               sqlite3DbFree(db, zSql);
             }
-            if( db->mallocFailed ){
-              sqlite3ErrorMsg(db->pParse, "out of memory");
+            എങ്കിൽ( db->mallocFailed ){
+              sqlite3_Error_സന്ദേശം(db->pParse, "out of memory");
               db->pParse->rc = SQLITE_NOMEM_BKPT;
             }
             pHash = &db->aDb[ii].pSchema->tblHash;
-            break;
+            നിർത്തുക;
           }
         }
       }
 
-      for(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k) ){
+      വേണ്ടി(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k) ){
         Table *pTab = sqliteHashData(k);
-        const char *zType;
-        if( zRight && sqlite3_stricmp(zRight, pTab->zName)!=0 ) continue;
-        if( IsView(pTab) ){
+        സ്ഥിരം അക്ഷരം *zType;
+        എങ്കിൽ( z_വലത് && sqlite3_stricmp(z_വലത്, pTab->zName)!=0 ) തുടരുക;
+        എങ്കിൽ( IsView(pTab) ){
           zType = "view";
-        }else if( IsVirtual(pTab) ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( IsVirtual(pTab) ){
           zType = "virtual";
-        }else if( pTab->tabFlags & TF_Shadow ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( pTab->tabFlags & TF_Shadow ){
           zType = "shadow";
-        }else{
+        }അല്ലെങ്കിൽ{
           zType = "table";
         }
         sqlite3VdbeMultiLoad(v, 1, "sssiii",
@@ -1343,15 +1343,15 @@ void sqlite3Pragma(
       }
     }
   }
-  break;
+  നിർത്തുക;
 
 #ifdef SQLITE_DEBUG
-  case PragTyp_STATS: {
+  അവസ്ഥ PragTyp_STATS: {
     Index *pIdx;
     HashElem *i;
     pParse->nMem = 5;
     sqlite3CodeVerifySchema(pParse, iDb);
-    for(i=sqliteHashFirst(&pDb->pSchema->tblHash); i; i=sqliteHashNext(i)){
+    വേണ്ടി(i=sqliteHashFirst(&pDb->pSchema->tblHash); i; i=sqliteHashNext(i)){
       Table *pTab = sqliteHashData(i);
       sqlite3VdbeMultiLoad(v, 1, "ssiii",
            sqlite3PreferredTableName(pTab->zName),
@@ -1359,7 +1359,7 @@ void sqlite3Pragma(
            pTab->szTabRow,
            pTab->nRowLogEst,
            pTab->tabFlags);
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
         sqlite3VdbeMultiLoad(v, 2, "siiiX",
            pIdx->zName,
            pIdx->szIdxRow,
@@ -1369,65 +1369,65 @@ void sqlite3Pragma(
       }
     }
   }
-  break;
+  നിർത്തുക;
 #endif
 
-  case PragTyp_INDEX_INFO: if( zRight ){
+  അവസ്ഥ PragTyp_INDEX_INFO: എങ്കിൽ( z_വലത് ){
     Index *pIdx;
     Table *pTab;
-    pIdx = sqlite3FindIndex(db, zRight, zDb);
-    if( pIdx==0 ){
+    pIdx = sqlite3FindIndex(db, z_വലത്, zDb);
+    എങ്കിൽ( pIdx==0 ){
       /* If there is no index named zRight, check to see if there is a
       ** WITHOUT ROWID table named zRight, and if there is, show the
       ** structure of the PRIMARY KEY index for that table. */
-      pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-      if( pTab && !HasRowid(pTab) ){
-        pIdx = sqlite3PrimaryKeyIndex(pTab);
+      pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, z_വലത്, zDb);
+      എങ്കിൽ( pTab && !HasRowid(pTab) ){
+        pIdx = sqlite3_Primary_താക്കോൽ_Index(pTab);
       }
     }
-    if( pIdx ){
-      int iIdxDb = sqlite3SchemaToIndex(db, pIdx->pSchema);
-      int i;
-      int mx;
-      if( pPragma->iArg ){
+    എങ്കിൽ( pIdx ){
+      പൂർണ്ണസംഖ്യ iIdxDb = sqlite3SchemaToIndex(db, pIdx->pSchema);
+      പൂർണ്ണസംഖ്യ i;
+      പൂർണ്ണസംഖ്യ mx;
+      എങ്കിൽ( pPragma->iArg ){
         /* PRAGMA index_xinfo (newer version with more rows and columns) */
         mx = pIdx->nColumn;
         pParse->nMem = 6;
-      }else{
+      }അല്ലെങ്കിൽ{
         /* PRAGMA index_info (legacy version) */
-        mx = pIdx->nKeyCol;
+        mx = pIdx->n_താക്കോൽ_Col;
         pParse->nMem = 3;
       }
       pTab = pIdx->pTable;
       sqlite3CodeVerifySchema(pParse, iIdxDb);
-      assert( pParse->nMem<=pPragma->nPragCName );
-      for(i=0; i<mx; i++){
+      പ്രതിജ്ഞാ( pParse->nMem<=pPragma->nPragCName );
+      വേണ്ടി(i=0; i<mx; i++){
         i16 cnum = pIdx->aiColumn[i];
         sqlite3VdbeMultiLoad(v, 1, "iisX", i, cnum,
                              cnum<0 ? 0 : pTab->aCol[cnum].zCnName);
-        if( pPragma->iArg ){
+        എങ്കിൽ( pPragma->iArg ){
           sqlite3VdbeMultiLoad(v, 4, "isiX",
             pIdx->aSortOrder[i],
             pIdx->azColl[i],
-            i<pIdx->nKeyCol);
+            i<pIdx->n_താക്കോൽ_Col);
         }
         sqlite3VdbeAddOp2(v, OP_ResultRow, 1, pParse->nMem);
       }
     }
   }
-  break;
+  നിർത്തുക;
 
-  case PragTyp_INDEX_LIST: if( zRight ){
+  അവസ്ഥ PragTyp_INDEX_LIST: എങ്കിൽ( z_വലത് ){
     Index *pIdx;
     Table *pTab;
-    int i;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab ){
-      int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+    പൂർണ്ണസംഖ്യ i;
+    pTab = sqlite3FindTable(db, z_വലത്, zDb);
+    എങ്കിൽ( pTab ){
+      പൂർണ്ണസംഖ്യ iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
       pParse->nMem = 5;
       sqlite3CodeVerifySchema(pParse, iTabDb);
-      for(pIdx=pTab->pIndex, i=0; pIdx; pIdx=pIdx->pNext, i++){
-        const char *azOrigin[] = { "c", "u", "pk" };
+      വേണ്ടി(pIdx=pTab->pIndex, i=0; pIdx; pIdx=pIdx->pNext, i++){
+        സ്ഥിരം അക്ഷരം *azOrigin[] = { "c", "u", "pk" };
         sqlite3VdbeMultiLoad(v, 1, "isisi",
            i,
            pIdx->zName,
@@ -1437,92 +1437,92 @@ void sqlite3Pragma(
       }
     }
   }
-  break;
+  നിർത്തുക;
 
-  case PragTyp_DATABASE_LIST: {
-    int i;
+  അവസ്ഥ PragTyp_DATABASE_LIST: {
+    പൂർണ്ണസംഖ്യ i;
     pParse->nMem = 3;
-    for(i=0; i<db->nDb; i++){
-      if( db->aDb[i].pBt==0 ) continue;
-      assert( db->aDb[i].zDbSName!=0 );
+    വേണ്ടി(i=0; i<db->nDb; i++){
+      എങ്കിൽ( db->aDb[i].pBt==0 ) തുടരുക;
+      പ്രതിജ്ഞാ( db->aDb[i].zDbSName!=0 );
       sqlite3VdbeMultiLoad(v, 1, "iss",
          i,
          db->aDb[i].zDbSName,
          sqlite3BtreeGetFilename(db->aDb[i].pBt));
     }
   }
-  break;
+  നിർത്തുക;
 
-  case PragTyp_COLLATION_LIST: {
-    int i = 0;
+  അവസ്ഥ PragTyp_COLLATION_LIST: {
+    പൂർണ്ണസംഖ്യ i = 0;
     HashElem *p;
     pParse->nMem = 2;
-    for(p=sqliteHashFirst(&db->aCollSeq); p; p=sqliteHashNext(p)){
+    വേണ്ടി(p=sqliteHashFirst(&db->aCollSeq); p; p=sqliteHashNext(p)){
       CollSeq *pColl = (CollSeq *)sqliteHashData(p);
       sqlite3VdbeMultiLoad(v, 1, "is", i++, pColl->zName);
     }
   }
-  break;
+  നിർത്തുക;
 
 #ifndef SQLITE_OMIT_INTROSPECTION_PRAGMAS
-  case PragTyp_FUNCTION_LIST: {
-    int i;
+  അവസ്ഥ PragTyp_FUNCTION_LIST: {
+    പൂർണ്ണസംഖ്യ i;
     HashElem *j;
     FuncDef *p;
-    int showInternFunc = (db->mDbFlags & DBFLAG_InternalFunc)!=0;
+    പൂർണ്ണസംഖ്യ showInternFunc = (db->mDbFlags & DBFLAG_InternalFunc)!=0;
     pParse->nMem = 6;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-        pragmaFunclistLine(v, p, 1, showInternFunc);
+    വേണ്ടി(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+      വേണ്ടി(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
+        പ്രതിജ്ഞാ( p->funcFlags & SQLITE_FUNC_BUILTIN );
+        pragma_Funclist_വരി(v, p, 1, showInternFunc);
       }
     }
-    for(j=sqliteHashFirst(&db->aFunc); j; j=sqliteHashNext(j)){
+    വേണ്ടി(j=sqliteHashFirst(&db->aFunc); j; j=sqliteHashNext(j)){
       p = (FuncDef*)sqliteHashData(j);
-      assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
-      pragmaFunclistLine(v, p, 0, showInternFunc);
+      പ്രതിജ്ഞാ( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
+      pragma_Funclist_വരി(v, p, 0, showInternFunc);
     }
   }
-  break;
+  നിർത്തുക;
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  case PragTyp_MODULE_LIST: {
+  അവസ്ഥ PragTyp_MODULE_LIST: {
     HashElem *j;
     pParse->nMem = 1;
-    for(j=sqliteHashFirst(&db->aModule); j; j=sqliteHashNext(j)){
+    വേണ്ടി(j=sqliteHashFirst(&db->aModule); j; j=sqliteHashNext(j)){
       Module *pMod = (Module*)sqliteHashData(j);
       sqlite3VdbeMultiLoad(v, 1, "s", pMod->zName);
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
 
-  case PragTyp_PRAGMA_LIST: {
-    int i;
-    for(i=0; i<ArraySize(aPragmaName); i++){
+  അവസ്ഥ PragTyp_PRAGMA_LIST: {
+    പൂർണ്ണസംഖ്യ i;
+    വേണ്ടി(i=0; i<ArraySize(aPragmaName); i++){
       sqlite3VdbeMultiLoad(v, 1, "s", aPragmaName[i].zName);
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_INTROSPECTION_PRAGMAS */
 
 #endif /* SQLITE_OMIT_SCHEMA_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  case PragTyp_FOREIGN_KEY_LIST: if( zRight ){
+#ifndef SQLITE_OMIT_FOREIGN_താക്കോൽ
+  അവസ്ഥ Prag_Typ_FOREIGN_താക്കോൽ_LIST: എങ്കിൽ( z_വലത് ){
     FKey *pFK;
     Table *pTab;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab && IsOrdinaryTable(pTab) ){
+    pTab = sqlite3FindTable(db, z_വലത്, zDb);
+    എങ്കിൽ( pTab && IsOrdinaryTable(pTab) ){
       pFK = pTab->u.tab.pFKey;
-      if( pFK ){
-        int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-        int i = 0;
+      എങ്കിൽ( pFK ){
+        പൂർണ്ണസംഖ്യ iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+        പൂർണ്ണസംഖ്യ i = 0;
         pParse->nMem = 8;
         sqlite3CodeVerifySchema(pParse, iTabDb);
-        while(pFK){
-          int j;
-          for(j=0; j<pFK->nCol; j++){
+        ആകുമ്പോൾ(pFK){
+          പൂർണ്ണസംഖ്യ j;
+          വേണ്ടി(j=0; j<pFK->nCol; j++){
             sqlite3VdbeMultiLoad(v, 1, "iissssss",
                    i,
                    j,
@@ -1539,39 +1539,39 @@ void sqlite3Pragma(
       }
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ifndef SQLITE_OMIT_FOREIGN_താക്കോൽ
 #ifndef SQLITE_OMIT_TRIGGER
-  case PragTyp_FOREIGN_KEY_CHECK: {
+  അവസ്ഥ Prag_Typ_FOREIGN_താക്കോൽ_CHECK: {
     FKey *pFK;             /* A foreign key constraint */
     Table *pTab;           /* Child table contain "REFERENCES" keyword */
     Table *pParent;        /* Parent table that child points to */
     Index *pIdx;           /* Index in the parent table */
-    int i;                 /* Loop counter:  Foreign key number for pTab */
-    int j;                 /* Loop counter:  Field of the foreign key */
+    പൂർണ്ണസംഖ്യ i;                 /* Loop counter:  Foreign key number for pTab */
+    പൂർണ്ണസംഖ്യ j;                 /* Loop counter:  Field of the foreign key */
     HashElem *k;           /* Loop counter:  Next table in schema */
-    int x;                 /* result variable */
-    int regResult;         /* 3 registers to hold a result row */
-    int regRow;            /* Registers to hold a row from pTab */
-    int addrTop;           /* Top of a loop checking foreign keys */
-    int addrOk;            /* Jump here if the key is OK */
-    int *aiCols;           /* child to parent column mapping */
+    പൂർണ്ണസംഖ്യ x;                 /* result variable */
+    പൂർണ്ണസംഖ്യ regResult;         /* 3 registers to hold a result row */
+    പൂർണ്ണസംഖ്യ regRow;            /* Registers to hold a row from pTab */
+    പൂർണ്ണസംഖ്യ addr_മുകൾ;           /* Top of a loop checking foreign keys */
+    പൂർണ്ണസംഖ്യ addrOk;            /* Jump here if the key is OK */
+    പൂർണ്ണസംഖ്യ *aiCols;           /* child to parent column mapping */
 
     regResult = pParse->nMem+1;
     pParse->nMem += 4;
     regRow = ++pParse->nMem;
     k = sqliteHashFirst(&db->aDb[iDb].pSchema->tblHash);
-    while( k ){
-      if( zRight ){
-        pTab = sqlite3LocateTable(pParse, 0, zRight, zDb);
+    ആകുമ്പോൾ( k ){
+      എങ്കിൽ( z_വലത് ){
+        pTab = sqlite3LocateTable(pParse, 0, z_വലത്, zDb);
         k = 0;
-      }else{
+      }അല്ലെങ്കിൽ{
         pTab = (Table*)sqliteHashData(k);
         k = sqliteHashNext(k);
       }
-      if( pTab==0 || !IsOrdinaryTable(pTab) || pTab->u.tab.pFKey==0 ) continue;
+      എങ്കിൽ( pTab==0 || !IsOrdinaryTable(pTab) || pTab->u.tab.pFKey==0 ) തുടരുക;
       iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
       zDb = db->aDb[iDb].zDbSName;
       sqlite3CodeVerifySchema(pParse, iDb);
@@ -1579,37 +1579,37 @@ void sqlite3Pragma(
       sqlite3TouchRegister(pParse, pTab->nCol+regRow);
       sqlite3OpenTable(pParse, 0, iDb, pTab, OP_OpenRead);
       sqlite3VdbeLoadString(v, regResult, pTab->zName);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
+      പ്രതിജ്ഞാ( IsOrdinaryTable(pTab) );
+      വേണ്ടി(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
         pParent = sqlite3FindTable(db, pFK->zTo, zDb);
-        if( pParent==0 ) continue;
+        എങ്കിൽ( pParent==0 ) തുടരുക;
         pIdx = 0;
         sqlite3TableLock(pParse, iDb, pParent->tnum, 0, pParent->zName);
         x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, 0);
-        if( x==0 ){
-          if( pIdx==0 ){
+        എങ്കിൽ( x==0 ){
+          എങ്കിൽ( pIdx==0 ){
             sqlite3OpenTable(pParse, i, iDb, pParent, OP_OpenRead);
-          }else{
+          }അല്ലെങ്കിൽ{
             sqlite3VdbeAddOp3(v, OP_OpenRead, i, pIdx->tnum, iDb);
-            sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+            sqlite3_Vdbe_Set_P4_താക്കോൽ_Info(pParse, pIdx);
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           k = 0;
-          break;
+          നിർത്തുക;
         }
       }
-      assert( pParse->nErr>0 || pFK==0 );
-      if( pFK ) break;
-      if( pParse->nTab<i ) pParse->nTab = i;
-      addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, 0); VdbeCoverage(v);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
+      പ്രതിജ്ഞാ( pParse->nErr>0 || pFK==0 );
+      എങ്കിൽ( pFK ) നിർത്തുക;
+      എങ്കിൽ( pParse->nTab<i ) pParse->nTab = i;
+      addr_മുകൾ = sqlite3VdbeAddOp1(v, OP_Rewind, 0); VdbeCoverage(v);
+      പ്രതിജ്ഞാ( IsOrdinaryTable(pTab) );
+      വേണ്ടി(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
         pParent = sqlite3FindTable(db, pFK->zTo, zDb);
         pIdx = 0;
         aiCols = 0;
-        if( pParent ){
+        എങ്കിൽ( pParent ){
           x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, &aiCols);
-          assert( x==0 || db->mallocFailed );
+          പ്രതിജ്ഞാ( x==0 || db->mallocFailed );
         }
         addrOk = sqlite3VdbeMakeLabel(pParse);
 
@@ -1618,30 +1618,30 @@ void sqlite3Pragma(
         ** row cannot cause an FK violation. Jump directly to addrOk in
         ** this case. */
         sqlite3TouchRegister(pParse, regRow + pFK->nCol);
-        for(j=0; j<pFK->nCol; j++){
-          int iCol = aiCols ? aiCols[j] : pFK->aCol[j].iFrom;
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, 0, iCol, regRow+j);
+        വേണ്ടി(j=0; j<pFK->nCol; j++){
+          പൂർണ്ണസംഖ്യ iCol = aiCols ? aiCols[j] : pFK->aCol[j].iFrom;
+          sqlite3_വ്യഞ്ജകം_Code_Get_Column_Of_Table(v, pTab, 0, iCol, regRow+j);
           sqlite3VdbeAddOp2(v, OP_IsNull, regRow+j, addrOk); VdbeCoverage(v);
         }
 
         /* Generate code to query the parent index for a matching parent
         ** key. If a match is found, jump to addrOk. */
-        if( pIdx ){
+        എങ്കിൽ( pIdx ){
           sqlite3VdbeAddOp4(v, OP_Affinity, regRow, pFK->nCol, 0,
               sqlite3IndexAffinityStr(db,pIdx), pFK->nCol);
           sqlite3VdbeAddOp4Int(v, OP_Found, i, addrOk, regRow, pFK->nCol);
           VdbeCoverage(v);
-        }else if( pParent ){
-          int jmp = sqlite3VdbeCurrentAddr(v)+2;
+        }അല്ലെങ്കിൽ എങ്കിൽ( pParent ){
+          പൂർണ്ണസംഖ്യ jmp = sqlite3VdbeCurrentAddr(v)+2;
           sqlite3VdbeAddOp3(v, OP_SeekRowid, i, jmp, regRow); VdbeCoverage(v);
           sqlite3VdbeGoto(v, addrOk);
-          assert( pFK->nCol==1 || db->mallocFailed );
+          പ്രതിജ്ഞാ( pFK->nCol==1 || db->mallocFailed );
         }
 
         /* Generate code to report an FK violation to the caller. */
-        if( HasRowid(pTab) ){
+        എങ്കിൽ( HasRowid(pTab) ){
           sqlite3VdbeAddOp2(v, OP_Rowid, 0, regResult+1);
-        }else{
+        }അല്ലെങ്കിൽ{
           sqlite3VdbeAddOp2(v, OP_Null, 0, regResult+1);
         }
         sqlite3VdbeMultiLoad(v, regResult+2, "siX", pFK->zTo, i-1);
@@ -1649,11 +1649,11 @@ void sqlite3Pragma(
         sqlite3VdbeResolveLabel(v, addrOk);
         sqlite3DbFree(db, aiCols);
       }
-      sqlite3VdbeAddOp2(v, OP_Next, 0, addrTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrTop);
+      sqlite3VdbeAddOp2(v, OP_Next, 0, addr_മുകൾ+1); VdbeCoverage(v);
+      sqlite3VdbeJumpHere(v, addr_മുകൾ);
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* !defined(SQLITE_OMIT_TRIGGER) */
 #endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
@@ -1661,12 +1661,12 @@ void sqlite3Pragma(
   /* Reinstall the LIKE and GLOB functions.  The variant of LIKE
   ** used will be case sensitive or not depending on the RHS.
   */
-  case PragTyp_CASE_SENSITIVE_LIKE: {
-    if( zRight ){
-      sqlite3RegisterLikeFunctions(db, sqlite3GetBoolean(zRight, 0));
+  അവസ്ഥ PragTyp_CASE_SENSITIVE_LIKE: {
+    എങ്കിൽ( z_വലത് ){
+      sqlite3RegisterLikeFunctions(db, sqlite3GetBoolean(z_വലത്, 0));
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
 
 #ifndef SQLITE_INTEGRITY_CHECK_ERROR_MAX
@@ -1698,11 +1698,11 @@ void sqlite3Pragma(
   **
   **      PRAGMA schema.integrity_check;
   */
-  case PragTyp_INTEGRITY_CHECK: {
-    int i, j, addr, mxErr;
+  അവസ്ഥ PragTyp_INTEGRITY_CHECK: {
+    പൂർണ്ണസംഖ്യ i, j, addr, mxErr;
     Table *pObjTab = 0;     /* Check only this one table, if not NULL */
 
-    int isQuick = (sqlite3Tolower(zLeft[0])=='q');
+    പൂർണ്ണസംഖ്യ isQuick = (sqlite3Tolower(z_ഇടത്[0])=='q');
 
     /* If the PRAGMA command was of the form "PRAGMA <db>.integrity_check",
     ** then iDb is set to the index of the database identified by <db>.
@@ -1713,36 +1713,36 @@ void sqlite3Pragma(
     ** "PRAGMA quick_check"), then iDb is set to 0. In this case, set iDb
     ** to -1 here, to indicate that the VDBE should verify the integrity
     ** of all attached databases.  */
-    assert( iDb>=0 );
-    assert( iDb==0 || pId2->z );
-    if( pId2->z==0 ) iDb = -1;
+    പ്രതിജ്ഞാ( iDb>=0 );
+    പ്രതിജ്ഞാ( iDb==0 || pId2->z );
+    എങ്കിൽ( pId2->z==0 ) iDb = -1;
 
     /* Initialize the VDBE program */
     pParse->nMem = 6;
 
     /* Set the maximum error count */
     mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
-    if( zRight ){
-      if( sqlite3GetInt32(pValue->z, &mxErr) ){
-        if( mxErr<=0 ){
+    എങ്കിൽ( z_വലത് ){
+      എങ്കിൽ( sqlite3GetInt32(p_മൂല്യം->z, &mxErr) ){
+        എങ്കിൽ( mxErr<=0 ){
           mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
         }
-      }else{
-        pObjTab = sqlite3LocateTable(pParse, 0, zRight,
+      }അല്ലെങ്കിൽ{
+        pObjTab = sqlite3LocateTable(pParse, 0, z_വലത്,
                       iDb>=0 ? db->aDb[iDb].zDbSName : 0);
       }
     }
     sqlite3VdbeAddOp2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
 
     /* Do an integrity check on each database file */
-    for(i=0; i<db->nDb; i++){
+    വേണ്ടി(i=0; i<db->nDb; i++){
       HashElem *x;     /* For looping over tables in the schema */
       Hash *pTbls;     /* Set of all tables in the schema */
-      int *aRoot;      /* Array of root page numbers of all btrees */
-      int cnt = 0;     /* Number of entries in aRoot[] */
+      പൂർണ്ണസംഖ്യ *a_വേര്;      /* Array of root page numbers of all btrees */
+      പൂർണ്ണസംഖ്യ cnt = 0;     /* Number of entries in aRoot[] */
 
-      if( OMIT_TEMPDB && i==1 ) continue;
-      if( iDb>=0 && i!=iDb ) continue;
+      എങ്കിൽ( OMIT_TEMPDB && i==1 ) തുടരുക;
+      എങ്കിൽ( iDb>=0 && i!=iDb ) തുടരുക;
 
       sqlite3CodeVerifySchema(pParse, i);
       pParse->okConstFactor = 0;  /* tag-20230327-1 */
@@ -1752,31 +1752,31 @@ void sqlite3Pragma(
       ** Begin by finding the root pages numbers
       ** for all tables and indices in the database.
       */
-      assert( sqlite3SchemaMutexHeld(db, i, 0) );
+      പ്രതിജ്ഞാ( sqlite3SchemaMutexHeld(db, i, 0) );
       pTbls = &db->aDb[i].pSchema->tblHash;
-      for(cnt=0, x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
+      വേണ്ടി(cnt=0, x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
         Table *pTab = sqliteHashData(x);  /* Current table */
         Index *pIdx;                      /* An index on pTab */
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) cnt++;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){ cnt++; }
+        എങ്കിൽ( tableSkipIntegrityCheck(pTab,pObjTab) ) തുടരുക;
+        എങ്കിൽ( HasRowid(pTab) ) cnt++;
+        വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){ cnt++; }
       }
-      if( cnt==0 ) continue;
-      if( pObjTab ) cnt++;
-      aRoot = sqlite3DbMallocRawNN(db, sizeof(int)*(cnt+1));
-      if( aRoot==0 ) break;
+      എങ്കിൽ( cnt==0 ) തുടരുക;
+      എങ്കിൽ( pObjTab ) cnt++;
+      a_വേര് = sqlite3DbMallocRawNN(db, വലുപ്പം(പൂർണ്ണസംഖ്യ)*(cnt+1));
+      എങ്കിൽ( a_വേര്==0 ) നിർത്തുക;
       cnt = 0;
-      if( pObjTab ) aRoot[++cnt] = 0;
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
+      എങ്കിൽ( pObjTab ) a_വേര്[++cnt] = 0;
+      വേണ്ടി(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
         Table *pTab = sqliteHashData(x);
         Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) aRoot[++cnt] = pTab->tnum;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          aRoot[++cnt] = pIdx->tnum;
+        എങ്കിൽ( tableSkipIntegrityCheck(pTab,pObjTab) ) തുടരുക;
+        എങ്കിൽ( HasRowid(pTab) ) a_വേര്[++cnt] = pTab->tnum;
+        വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+          a_വേര്[++cnt] = pIdx->tnum;
         }
       }
-      aRoot[0] = cnt;
+      a_വേര്[0] = cnt;
 
       /* Make sure sufficient number of registers have been allocated */
       sqlite3TouchRegister(pParse, 8+cnt);
@@ -1784,7 +1784,7 @@ void sqlite3Pragma(
       sqlite3ClearTempRegCache(pParse);
 
       /* Do the b-tree integrity checks */
-      sqlite3VdbeAddOp4(v, OP_IntegrityCk, 1, cnt, 8, (char*)aRoot,P4_INTARRAY);
+      sqlite3VdbeAddOp4(v, OP_IntegrityCk, 1, cnt, 8, (അക്ഷരം*)a_വേര്,P4_INTARRAY);
       sqlite3VdbeChangeP5(v, (u16)i);
       addr = sqlite3VdbeAddOp1(v, OP_IsNull, 2); VdbeCoverage(v);
       sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
@@ -1797,22 +1797,22 @@ void sqlite3Pragma(
       /* Check that the indexes all have the right number of rows */
       cnt = pObjTab ? 1 : 0;
       sqlite3VdbeLoadString(v, 2, "wrong # of entries in index ");
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        int iTab = 0;
+      വേണ്ടി(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
+        പൂർണ്ണസംഖ്യ iTab = 0;
         Table *pTab = sqliteHashData(x);
         Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ){
+        എങ്കിൽ( tableSkipIntegrityCheck(pTab,pObjTab) ) തുടരുക;
+        എങ്കിൽ( HasRowid(pTab) ){
           iTab = cnt++;
-        }else{
+        }അല്ലെങ്കിൽ{
           iTab = cnt;
-          for(pIdx=pTab->pIndex; ALWAYS(pIdx); pIdx=pIdx->pNext){
-            if( IsPrimaryKeyIndex(pIdx) ) break;
+          വേണ്ടി(pIdx=pTab->pIndex; ALWAYS(pIdx); pIdx=pIdx->pNext){
+            എങ്കിൽ( Is_Primary_താക്കോൽ_Index(pIdx) ) നിർത്തുക;
             iTab++;
           }
         }
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          if( pIdx->pPartIdxWhere==0 ){
+        വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+          എങ്കിൽ( pIdx->pPartIdxWhere==0 ){
             addr = sqlite3VdbeAddOp3(v, OP_Eq, 8+cnt, 0, 8+iTab);
             VdbeCoverageNeverNull(v);
             sqlite3VdbeLoadString(v, 4, pIdx->zName);
@@ -1826,26 +1826,26 @@ void sqlite3Pragma(
 
       /* Make sure all the indices are constructed correctly.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
+      വേണ്ടി(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
         Table *pTab = sqliteHashData(x);
         Index *pIdx, *pPk;
         Index *pPrior = 0;      /* Previous index */
-        int loopTop;
-        int iDataCur, iIdxCur;
-        int r1 = -1;
-        int bStrict;            /* True for a STRICT table */
-        int r2;                 /* Previous key for WITHOUT ROWID tables */
-        int mxCol;              /* Maximum non-virtual column number */
+        പൂർണ്ണസംഖ്യ loop_മുകൾ;
+        പൂർണ്ണസംഖ്യ iDataCur, iIdxCur;
+        പൂർണ്ണസംഖ്യ r1 = -1;
+        പൂർണ്ണസംഖ്യ bStrict;            /* True for a STRICT table */
+        പൂർണ്ണസംഖ്യ r2;                 /* Previous key for WITHOUT ROWID tables */
+        പൂർണ്ണസംഖ്യ mxCol;              /* Maximum non-virtual column number */
 
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( !IsOrdinaryTable(pTab) ) continue;
-        if( isQuick || HasRowid(pTab) ){
+        എങ്കിൽ( tableSkipIntegrityCheck(pTab,pObjTab) ) തുടരുക;
+        എങ്കിൽ( !IsOrdinaryTable(pTab) ) തുടരുക;
+        എങ്കിൽ( isQuick || HasRowid(pTab) ){
           pPk = 0;
           r2 = 0;
-        }else{
-          pPk = sqlite3PrimaryKeyIndex(pTab);
-          r2 = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-          sqlite3VdbeAddOp3(v, OP_Null, 1, r2, r2+pPk->nKeyCol-1);
+        }അല്ലെങ്കിൽ{
+          pPk = sqlite3_Primary_താക്കോൽ_Index(pTab);
+          r2 = sqlite3GetTempRange(pParse, pPk->n_താക്കോൽ_Col);
+          sqlite3VdbeAddOp3(v, OP_Null, 1, r2, r2+pPk->n_താക്കോൽ_Col-1);
         }
         sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenRead, 0,
                                    1, 0, &iDataCur, &iIdxCur);
@@ -1853,43 +1853,43 @@ void sqlite3Pragma(
         ** reg[8+i] counts the number of entries in the i-th index
         */
         sqlite3VdbeAddOp2(v, OP_Integer, 0, 7);
-        for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
+        വേണ്ടി(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
           sqlite3VdbeAddOp2(v, OP_Integer, 0, 8+j); /* index entries counter */
         }
-        assert( pParse->nMem>=8+j );
-        assert( sqlite3NoTempsInRange(pParse,1,7+j) );
+        പ്രതിജ്ഞാ( pParse->nMem>=8+j );
+        പ്രതിജ്ഞാ( sqlite3NoTempsInRange(pParse,1,7+j) );
         sqlite3VdbeAddOp2(v, OP_Rewind, iDataCur, 0); VdbeCoverage(v);
-        loopTop = sqlite3VdbeAddOp2(v, OP_AddImm, 7, 1);
+        loop_മുകൾ = sqlite3VdbeAddOp2(v, OP_AddImm, 7, 1);
 
         /* Fetch the right-most column from the table.  This will cause
         ** the entire record header to be parsed and sanity checked.  It
         ** will also prepopulate the cursor column cache that is used
         ** by the OP_IsType code, so it is a required step.
         */
-        assert( !IsVirtual(pTab) );
-        if( HasRowid(pTab) ){
+        പ്രതിജ്ഞാ( !IsVirtual(pTab) );
+        എങ്കിൽ( HasRowid(pTab) ){
           mxCol = -1;
-          for(j=0; j<pTab->nCol; j++){
-            if( (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)==0 ) mxCol++;
+          വേണ്ടി(j=0; j<pTab->nCol; j++){
+            എങ്കിൽ( (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)==0 ) mxCol++;
           }
-          if( mxCol==pTab->iPKey ) mxCol--;
-        }else{
+          എങ്കിൽ( mxCol==pTab->iPKey ) mxCol--;
+        }അല്ലെങ്കിൽ{
           /* COLFLAG_VIRTUAL columns are not included in the WITHOUT ROWID
           ** PK index column-count, so there is no need to account for them
           ** in this case. */
-          mxCol = sqlite3PrimaryKeyIndex(pTab)->nColumn-1;
+          mxCol = sqlite3_Primary_താക്കോൽ_Index(pTab)->nColumn-1;
         }
-        if( mxCol>=0 ){
+        എങ്കിൽ( mxCol>=0 ){
           sqlite3VdbeAddOp3(v, OP_Column, iDataCur, mxCol, 3);
           sqlite3VdbeTypeofColumn(v, 3);
         }
 
-        if( !isQuick ){
-          if( pPk ){
+        എങ്കിൽ( !isQuick ){
+          എങ്കിൽ( pPk ){
             /* Verify WITHOUT ROWID keys are in ascending order */
-            int a1;
-            char *zErr;
-            a1 = sqlite3VdbeAddOp4Int(v, OP_IdxGT, iDataCur, 0,r2,pPk->nKeyCol);
+            പൂർണ്ണസംഖ്യ a1;
+            അക്ഷരം *zErr;
+            a1 = sqlite3VdbeAddOp4Int(v, OP_IdxGT, iDataCur, 0,r2,pPk->n_താക്കോൽ_Col);
             VdbeCoverage(v);
             sqlite3VdbeAddOp1(v, OP_IsNull, r2); VdbeCoverage(v);
             zErr = sqlite3MPrintf(db,
@@ -1899,8 +1899,8 @@ void sqlite3Pragma(
             integrityCheckResultRow(v);
             sqlite3VdbeJumpHere(v, a1);
             sqlite3VdbeJumpHere(v, a1+1);
-            for(j=0; j<pPk->nKeyCol; j++){
-              sqlite3ExprCodeLoadIndexColumn(pParse, pPk, iDataCur, j, r2+j);
+            വേണ്ടി(j=0; j<pPk->n_താക്കോൽ_Col; j++){
+              sqlite3_വ്യഞ്ജകം_Code_Load_Index_Column(pParse, pPk, iDataCur, j, r2+j);
             }
           }
         }
@@ -1914,43 +1914,43 @@ void sqlite3Pragma(
         **       be a TEXT value that can be losslessly converted to numeric.
         */
         bStrict = (pTab->tabFlags & TF_Strict)!=0;
-        for(j=0; j<pTab->nCol; j++){
-          char *zErr;
+        വേണ്ടി(j=0; j<pTab->nCol; j++){
+          അക്ഷരം *zErr;
           Column *pCol = pTab->aCol + j;  /* The column to be checked */
-          int labelError;               /* Jump here to report an error */
-          int labelOk;                  /* Jump here if all looks ok */
-          int p1, p3, p4;               /* Operands to the OP_IsType opcode */
-          int doTypeCheck;              /* Check datatypes (besides NOT NULL) */
+          പൂർണ്ണസംഖ്യ labelError;               /* Jump here to report an error */
+          പൂർണ്ണസംഖ്യ labelOk;                  /* Jump here if all looks ok */
+          പൂർണ്ണസംഖ്യ p1, p3, p4;               /* Operands to the OP_IsType opcode */
+          പൂർണ്ണസംഖ്യ doTypeCheck;              /* Check datatypes (besides NOT NULL) */
 
-          if( j==pTab->iPKey ) continue;
-          if( bStrict ){
+          എങ്കിൽ( j==pTab->iPKey ) തുടരുക;
+          എങ്കിൽ( bStrict ){
             doTypeCheck = pCol->eCType>COLTYPE_ANY;
-          }else{
+          }അല്ലെങ്കിൽ{
             doTypeCheck = pCol->affinity>SQLITE_AFF_BLOB;
           }
-          if( pCol->notNull==0 && !doTypeCheck ) continue;
+          എങ്കിൽ( pCol->notNull==0 && !doTypeCheck ) തുടരുക;
 
           /* Compute the operands that will be needed for OP_IsType */
           p4 = SQLITE_NULL;
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
-            sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+          എങ്കിൽ( pCol->colFlags & COLFLAG_VIRTUAL ){
+            sqlite3_വ്യഞ്ജകം_Code_Get_Column_Of_Table(v, pTab, iDataCur, j, 3);
             p1 = -1;
             p3 = 3;
-          }else{
-            if( pCol->iDflt ){
-              sqlite3_value *pDfltValue = 0;
-              sqlite3ValueFromExpr(db, sqlite3ColumnExprAuth(pTab,pCol,pParse),
-                                   ENC(db), pCol->affinity, &pDfltValue);
-              if( pDfltValue ){
-                p4 = sqlite3_value_type(pDfltValue);
-                sqlite3ValueFree(pDfltValue);
+          }അല്ലെങ്കിൽ{
+            എങ്കിൽ( pCol->iDflt ){
+              sqlite3_മൂല്യം *p_Dflt_മൂല്യം = 0;
+              sqlite3_മൂല്യം_From_വ്യഞ്ജകം(db, sqlite3_Column_വ്യഞ്ജകം_Auth(pTab,pCol,pParse),
+                                   ENC(db), pCol->affinity, &p_Dflt_മൂല്യം);
+              എങ്കിൽ( p_Dflt_മൂല്യം ){
+                p4 = sqlite3_മൂല്യം_type(p_Dflt_മൂല്യം);
+                sqlite3_മൂല്യം_Free(p_Dflt_മൂല്യം);
               }
             }
             p1 = iDataCur;
-            if( !HasRowid(pTab) ){
+            എങ്കിൽ( !HasRowid(pTab) ){
               testcase( j!=sqlite3TableColumnToStorage(pTab, j) );
-              p3 = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), j);
-            }else{
+              p3 = sqlite3TableColumnToIndex(sqlite3_Primary_താക്കോൽ_Index(pTab), j);
+            }അല്ലെങ്കിൽ{
               p3 = sqlite3TableColumnToStorage(pTab,j);
               testcase( p3!=j);
             }
@@ -1958,15 +1958,15 @@ void sqlite3Pragma(
 
           labelError = sqlite3VdbeMakeLabel(pParse);
           labelOk = sqlite3VdbeMakeLabel(pParse);
-          if( pCol->notNull ){
+          എങ്കിൽ( pCol->notNull ){
             /* (1) NOT NULL columns may not contain a NULL */
-            int jmp3;
-            int jmp2 = sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            പൂർണ്ണസംഖ്യ jmp3;
+            പൂർണ്ണസംഖ്യ jmp2 = sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
             VdbeCoverage(v);
-            if( p1<0 ){
+            എങ്കിൽ( p1<0 ){
               sqlite3VdbeChangeP5(v, 0x0f); /* INT, REAL, TEXT, or BLOB */
               jmp3 = jmp2;
-            }else{
+            }അല്ലെങ്കിൽ{
               sqlite3VdbeChangeP5(v, 0x0d); /* INT, TEXT, or BLOB */
               /* OP_IsType does not detect NaN values in the database file
               ** which should be treated as a NULL.  So if the header type
@@ -1980,17 +1980,17 @@ void sqlite3Pragma(
             zErr = sqlite3MPrintf(db, "NULL value in %s.%s", pTab->zName,
                                 pCol->zCnName);
             sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            if( doTypeCheck ){
+            എങ്കിൽ( doTypeCheck ){
               sqlite3VdbeGoto(v, labelError);
               sqlite3VdbeJumpHere(v, jmp2);
               sqlite3VdbeJumpHere(v, jmp3);
-            }else{
+            }അല്ലെങ്കിൽ{
               /* VDBE byte code will fall thru */
             }
           }
-          if( bStrict && doTypeCheck ){
+          എങ്കിൽ( bStrict && doTypeCheck ){
             /* (2) Datatype must be exact for non-ANY columns in STRICT tables*/
-            static unsigned char aStdTypeMask[] = {
+            സ്ഥിതം unsigned അക്ഷരം aStdTypeMask[] = {
                0x1f,    /* ANY */
                0x18,    /* BLOB */
                0x11,    /* INT */
@@ -1999,14 +1999,14 @@ void sqlite3Pragma(
                0x14     /* TEXT */
             };
             sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
-            assert( pCol->eCType>=1 && pCol->eCType<=sizeof(aStdTypeMask) );
+            പ്രതിജ്ഞാ( pCol->eCType>=1 && pCol->eCType<=വലുപ്പം(aStdTypeMask) );
             sqlite3VdbeChangeP5(v, aStdTypeMask[pCol->eCType-1]);
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "non-%s value in %s.%s",
                                   sqlite3StdType[pCol->eCType-1],
                                   pTab->zName, pTab->aCol[j].zCnName);
             sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity==SQLITE_AFF_TEXT ){
+          }അല്ലെങ്കിൽ എങ്കിൽ( !bStrict && pCol->affinity==SQLITE_AFF_TEXT ){
             /* (3) Datatype for TEXT columns in non-STRICT tables must be
             **     NULL, TEXT, or BLOB. */
             sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
@@ -2015,14 +2015,14 @@ void sqlite3Pragma(
             zErr = sqlite3MPrintf(db, "NUMERIC value in %s.%s",
                                   pTab->zName, pTab->aCol[j].zCnName);
             sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity>=SQLITE_AFF_NUMERIC ){
+          }അല്ലെങ്കിൽ എങ്കിൽ( !bStrict && pCol->affinity>=SQLITE_AFF_NUMERIC ){
             /* (4) Datatype for numeric columns in non-STRICT tables must not
             **     be a TEXT value that can be converted to numeric. */
             sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1b); /* NULL, INT, FLOAT, or BLOB */
             VdbeCoverage(v);
-            if( p1>=0 ){
-              sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+            എങ്കിൽ( p1>=0 ){
+              sqlite3_വ്യഞ്ജകം_Code_Get_Column_Of_Table(v, pTab, iDataCur, j, 3);
             }
             sqlite3VdbeAddOp4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
             sqlite3VdbeAddOp4Int(v, OP_IsType, -1, labelOk, 3, p4);
@@ -2037,18 +2037,18 @@ void sqlite3Pragma(
           sqlite3VdbeResolveLabel(v, labelOk);
         }
         /* Verify CHECK constraints */
-        if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-          ExprList *pCheck = sqlite3ExprListDup(db, pTab->pCheck, 0);
-          if( db->mallocFailed==0 ){
-            int addrCkFault = sqlite3VdbeMakeLabel(pParse);
-            int addrCkOk = sqlite3VdbeMakeLabel(pParse);
-            char *zErr;
-            int k;
+        എങ്കിൽ( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+          വ്യഞ്ജകം_List *pCheck = sqlite3_വ്യഞ്ജകം_List_Dup(db, pTab->pCheck, 0);
+          എങ്കിൽ( db->mallocFailed==0 ){
+            പൂർണ്ണസംഖ്യ addrCkFault = sqlite3VdbeMakeLabel(pParse);
+            പൂർണ്ണസംഖ്യ addrCkOk = sqlite3VdbeMakeLabel(pParse);
+            അക്ഷരം *zErr;
+            പൂർണ്ണസംഖ്യ k;
             pParse->iSelfTab = iDataCur + 1;
-            for(k=pCheck->nExpr-1; k>0; k--){
-              sqlite3ExprIfFalse(pParse, pCheck->a[k].pExpr, addrCkFault, 0);
+            വേണ്ടി(k=pCheck->n_വ്യഞ്ജകം-1; k>0; k--){
+              sqlite3_വ്യഞ്ജകം_If_False(pParse, pCheck->a[k].p_വ്യഞ്ജകം, addrCkFault, 0);
             }
-            sqlite3ExprIfTrue(pParse, pCheck->a[0].pExpr, addrCkOk,
+            sqlite3_വ്യഞ്ജകം_If_True(pParse, pCheck->a[0].p_വ്യഞ്ജകം, addrCkOk,
                 SQLITE_JUMPIFNULL);
             sqlite3VdbeResolveLabel(v, addrCkFault);
             pParse->iSelfTab = 0;
@@ -2058,25 +2058,25 @@ void sqlite3Pragma(
             integrityCheckResultRow(v);
             sqlite3VdbeResolveLabel(v, addrCkOk);
           }
-          sqlite3ExprListDelete(db, pCheck);
+          sqlite3_വ്യഞ്ജകം_List_Delete(db, pCheck);
         }
-        if( !isQuick ){ /* Omit the remaining tests for quick_check */
+        എങ്കിൽ( !isQuick ){ /* Omit the remaining tests for quick_check */
           /* Validate index entries for the current row */
-          for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-            int jmp2, jmp3, jmp4, jmp5, label6;
-            int kk;
-            int ckUniq = sqlite3VdbeMakeLabel(pParse);
-            if( pPk==pIdx ) continue;
-            r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 0, &jmp3,
+          വേണ്ടി(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
+            പൂർണ്ണസംഖ്യ jmp2, jmp3, jmp4, jmp5, label6;
+            പൂർണ്ണസംഖ്യ kk;
+            പൂർണ്ണസംഖ്യ ckUniq = sqlite3VdbeMakeLabel(pParse);
+            എങ്കിൽ( pPk==pIdx ) തുടരുക;
+            r1 = sqlite3_Generate_Index_താക്കോൽ(pParse, pIdx, iDataCur, 0, 0, &jmp3,
                                          pPrior, r1);
             pPrior = pIdx;
             sqlite3VdbeAddOp2(v, OP_AddImm, 8+j, 1);/* increment entry count */
             /* Verify that an index entry exists for the current table row */
             sqlite3VdbeAddOp4Int(v, OP_Found, iIdxCur+j, ckUniq, r1,
                                         pIdx->nColumn); VdbeCoverage(v);
-            jmp2 = sqlite3VdbeAddOp3(v, OP_IFindKey, iIdxCur+j, ckUniq, r1); 
+            jmp2 = sqlite3VdbeAddOp3(v, OP_IFind_താക്കോൽ, iIdxCur+j, ckUniq, r1); 
             VdbeCoverage(v);
-            sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
+            sqlite3VdbeChangeP4(v, -1, (സ്ഥിരം അക്ഷരം*)pIdx, P4_INDEX);
             sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
               sqlite3MPrintf(db, "index %s stores an imprecise floating-point "
                                  "value for row ", pIdx->zName),
@@ -2099,8 +2099,8 @@ void sqlite3Pragma(
             ** that extracts the rowid off the end of the index record.
             ** But it only works correctly if index record does not have
             ** any extra bytes at the end.  Verify that this is the case. */
-            if( HasRowid(pTab) ){
-              int jmp7;
+            എങ്കിൽ( HasRowid(pTab) ){
+              പൂർണ്ണസംഖ്യ jmp7;
               sqlite3VdbeAddOp2(v, OP_IdxRowid, iIdxCur+j, 3);
               jmp7 = sqlite3VdbeAddOp3(v, OP_Eq, 3, 0, r1+pIdx->nColumn-1);
               VdbeCoverageNeverNull(v);
@@ -2115,14 +2115,14 @@ void sqlite3Pragma(
             /* Any indexed columns with non-BINARY collations must still hold
             ** the exact same text value as the table. */
             label6 = 0;
-            for(kk=0; kk<pIdx->nKeyCol; kk++){
-              if( pIdx->azColl[kk]==sqlite3StrBINARY ) continue;
-              if( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
+            വേണ്ടി(kk=0; kk<pIdx->n_താക്കോൽ_Col; kk++){
+              എങ്കിൽ( pIdx->azColl[kk]==sqlite3_Str_ദ്വിമാന ) തുടരുക;
+              എങ്കിൽ( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
               sqlite3VdbeAddOp3(v, OP_Column, iIdxCur+j, kk, 3);
               sqlite3VdbeAddOp3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
             }
-            if( label6 ){
-              int jmp6 = sqlite3VdbeAddOp0(v, OP_Goto);
+            എങ്കിൽ( label6 ){
+              പൂർണ്ണസംഖ്യ jmp6 = sqlite3VdbeAddOp0(v, OP_Goto);
               sqlite3VdbeResolveLabel(v, label6);
               sqlite3VdbeLoadString(v, 3, "row ");
               sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
@@ -2134,13 +2134,13 @@ void sqlite3Pragma(
             /* For UNIQUE indexes, verify that only one entry exists with the
             ** current key.  The entry is unique if (1) any column is NULL
             ** or (2) the next entry has a different key */
-            if( IsUniqueIndex(pIdx) ){
-              int uniqOk = sqlite3VdbeMakeLabel(pParse);
-              int jmp6;
-              for(kk=0; kk<pIdx->nKeyCol; kk++){
-                int iCol = pIdx->aiColumn[kk];
-                assert( iCol!=XN_ROWID && iCol<pTab->nCol );
-                if( iCol>=0 && pTab->aCol[iCol].notNull ) continue;
+            എങ്കിൽ( IsUniqueIndex(pIdx) ){
+              പൂർണ്ണസംഖ്യ uniqOk = sqlite3VdbeMakeLabel(pParse);
+              പൂർണ്ണസംഖ്യ jmp6;
+              വേണ്ടി(kk=0; kk<pIdx->n_താക്കോൽ_Col; kk++){
+                പൂർണ്ണസംഖ്യ iCol = pIdx->aiColumn[kk];
+                പ്രതിജ്ഞാ( iCol!=XN_ROWID && iCol<pTab->nCol );
+                എങ്കിൽ( iCol>=0 && pTab->aCol[iCol].notNull ) തുടരുക;
                 sqlite3VdbeAddOp2(v, OP_IsNull, r1+kk, uniqOk);
                 VdbeCoverage(v);
               }
@@ -2148,7 +2148,7 @@ void sqlite3Pragma(
               sqlite3VdbeGoto(v, uniqOk);
               sqlite3VdbeJumpHere(v, jmp6);
               sqlite3VdbeAddOp4Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
-                                   pIdx->nKeyCol); VdbeCoverage(v);
+                                   pIdx->n_താക്കോൽ_Col); VdbeCoverage(v);
               sqlite3VdbeLoadString(v, 3, "non-unique entry in index ");
               sqlite3VdbeGoto(v, jmp5);
               sqlite3VdbeResolveLabel(v, uniqOk);
@@ -2157,11 +2157,11 @@ void sqlite3Pragma(
             sqlite3ResolvePartIdxLabel(pParse, jmp3);
           }
         }
-        sqlite3VdbeAddOp2(v, OP_Next, iDataCur, loopTop); VdbeCoverage(v);
-        sqlite3VdbeJumpHere(v, loopTop-1);
-        if( pPk ){
-          assert( !isQuick );
-          sqlite3ReleaseTempRange(pParse, r2, pPk->nKeyCol);
+        sqlite3VdbeAddOp2(v, OP_Next, iDataCur, loop_മുകൾ); VdbeCoverage(v);
+        sqlite3VdbeJumpHere(v, loop_മുകൾ-1);
+        എങ്കിൽ( pPk ){
+          പ്രതിജ്ഞാ( !isQuick );
+          sqlite3ReleaseTempRange(pParse, r2, pPk->n_താക്കോൽ_Col);
         }
       }
 
@@ -2169,37 +2169,37 @@ void sqlite3Pragma(
       /* Second pass to invoke the xIntegrity method on all virtual
       ** tables.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
+      വേണ്ടി(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
         Table *pTab = sqliteHashData(x);
         sqlite3_vtab *pVTab;
-        int a1;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( IsOrdinaryTable(pTab) ) continue;
-        if( !IsVirtual(pTab) ) continue;
-        if( pTab->nCol<=0 ){
-          const char *zMod = pTab->u.vtab.azArg[0];
-          if( sqlite3HashFind(&db->aModule, zMod)==0 ) continue;
+        പൂർണ്ണസംഖ്യ a1;
+        എങ്കിൽ( tableSkipIntegrityCheck(pTab,pObjTab) ) തുടരുക;
+        എങ്കിൽ( IsOrdinaryTable(pTab) ) തുടരുക;
+        എങ്കിൽ( !IsVirtual(pTab) ) തുടരുക;
+        എങ്കിൽ( pTab->nCol<=0 ){
+          സ്ഥിരം അക്ഷരം *zMod = pTab->u.vtab.azArg[0];
+          എങ്കിൽ( sqlite3HashFind(&db->aModule, zMod)==0 ) തുടരുക;
         }
         sqlite3ViewGetColumnNames(pParse, pTab);
-        if( pTab->u.vtab.p==0 ) continue;
+        എങ്കിൽ( pTab->u.vtab.p==0 ) തുടരുക;
         pVTab = pTab->u.vtab.p->pVtab;
-        if( NEVER(pVTab==0) ) continue;
-        if( NEVER(pVTab->pModule==0) ) continue;
-        if( pVTab->pModule->iVersion<4 ) continue;
-        if( pVTab->pModule->xIntegrity==0 ) continue;
+        എങ്കിൽ( NEVER(pVTab==0) ) തുടരുക;
+        എങ്കിൽ( NEVER(pVTab->pModule==0) ) തുടരുക;
+        എങ്കിൽ( pVTab->pModule->iVersion<4 ) തുടരുക;
+        എങ്കിൽ( pVTab->pModule->xIntegrity==0 ) തുടരുക;
         sqlite3VdbeAddOp3(v, OP_VCheck, i, 3, isQuick);
         pTab->nTabRef++;
         sqlite3VdbeAppendP4(v, pTab, P4_TABLEREF);
         a1 = sqlite3VdbeAddOp1(v, OP_IsNull, 3); VdbeCoverage(v);
         integrityCheckResultRow(v);
         sqlite3VdbeJumpHere(v, a1);
-        continue;
+        തുടരുക;
       }
 #endif
     }
     {
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList endCode[] = {
+      സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ iLn = VDBE_OFFSET_LINENO(2);
+      സ്ഥിതം സ്ഥിരം VdbeOpList endCode[] = {
         { OP_AddImm,      1, 0,        0},    /* 0 */
         { OP_IfNotZero,   1, 4,        0},    /* 1 */
         { OP_String8,     0, 3,        0},    /* 2 */
@@ -2211,17 +2211,17 @@ void sqlite3Pragma(
       VdbeOp *aOp;
 
       aOp = sqlite3VdbeAddOpList(v, ArraySize(endCode), endCode, iLn);
-      if( aOp ){
+      എങ്കിൽ( aOp ){
         aOp[0].p2 = 1-mxErr;
         aOp[2].p4type = P4_STATIC;
         aOp[2].p4.z = "ok";
         aOp[5].p4type = P4_STATIC;
-        aOp[5].p4.z = (char*)sqlite3ErrStr(SQLITE_CORRUPT);
+        aOp[5].p4.z = (അക്ഷരം*)sqlite3ErrStr(SQLITE_CORRUPT);
       }
       sqlite3VdbeChangeP3(v, 0, sqlite3VdbeCurrentAddr(v)-2);
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_INTEGRITY_CHECK */
 
 #ifndef SQLITE_OMIT_UTF16
@@ -2247,9 +2247,9 @@ void sqlite3Pragma(
   ** new database files created using this database handle. It is only
   ** useful if invoked immediately after the main database i
   */
-  case PragTyp_ENCODING: {
-    static const struct EncName {
-      char *zName;
+  അവസ്ഥ PragTyp_ENCODING: {
+    സ്ഥിതം സ്ഥിരം ഘടന EncName {
+      അക്ഷരം *zName;
       u8 enc;
     } encnames[] = {
       { "UTF8",     SQLITE_UTF8        },
@@ -2262,35 +2262,35 @@ void sqlite3Pragma(
       { "UTF16",    0                  }, /* SQLITE_UTF16NATIVE */
       { 0, 0 }
     };
-    const struct EncName *pEnc;
-    if( !zRight ){    /* "PRAGMA encoding" */
-      if( sqlite3ReadSchema(pParse) ) goto pragma_out;
-      assert( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
-      assert( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
-      assert( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
+    സ്ഥിരം ഘടന EncName *pEnc;
+    എങ്കിൽ( !z_വലത് ){    /* "PRAGMA encoding" */
+      എങ്കിൽ( sqlite3ReadSchema(pParse) ) പോകുക pragma_out;
+      പ്രതിജ്ഞാ( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
+      പ്രതിജ്ഞാ( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
+      പ്രതിജ്ഞാ( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
       returnSingleText(v, encnames[ENC(pParse->db)].zName);
-    }else{                        /* "PRAGMA encoding = XXX" */
+    }അല്ലെങ്കിൽ{                        /* "PRAGMA encoding = XXX" */
       /* Only change the value of sqlite.enc if the database handle is not
       ** initialized. If the main database exists, the new sqlite.enc value
       ** will be overwritten when the schema is next loaded. If it does not
       ** already exists, it will be created to use the new encoding value.
       */
-      if( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
-        for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-          if( 0==sqlite3StrICmp(zRight, pEnc->zName) ){
+      എങ്കിൽ( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+        വേണ്ടി(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+          എങ്കിൽ( 0==sqlite3StrICmp(z_വലത്, pEnc->zName) ){
             u8 enc = pEnc->enc ? pEnc->enc : SQLITE_UTF16NATIVE;
             SCHEMA_ENC(db) = enc;
             sqlite3SetTextEncoding(db, enc);
-            break;
+            നിർത്തുക;
           }
         }
-        if( !pEnc->zName ){
-          sqlite3ErrorMsg(pParse, "unsupported encoding: %s", zRight);
+        എങ്കിൽ( !pEnc->zName ){
+          sqlite3_Error_സന്ദേശം(pParse, "unsupported encoding: %s", z_വലത്);
         }
       }
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_UTF16 */
 
 #ifndef SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS
@@ -2326,32 +2326,32 @@ void sqlite3Pragma(
   ** The user-version is not used internally by SQLite. It may be used by
   ** applications for any purpose.
   */
-  case PragTyp_HEADER_VALUE: {
-    int iCookie = pPragma->iArg;  /* Which cookie to read or write */
+  അവസ്ഥ Prag_Typ_HEADER_മൂല്യം: {
+    പൂർണ്ണസംഖ്യ iCookie = pPragma->iArg;  /* Which cookie to read or write */
     sqlite3VdbeUsesBtree(v, iDb);
-    if( zRight && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
+    എങ്കിൽ( z_വലത് && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
       /* Write the specified cookie value */
-      static const VdbeOpList setCookie[] = {
+      സ്ഥിതം സ്ഥിരം VdbeOpList setCookie[] = {
         { OP_Transaction,    0,  1,  0},    /* 0 */
         { OP_SetCookie,      0,  0,  0},    /* 1 */
       };
       VdbeOp *aOp;
       sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setCookie));
       aOp = sqlite3VdbeAddOpList(v, ArraySize(setCookie), setCookie, 0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      എങ്കിൽ( ONLY_IF_REALLOC_STRESS(aOp==0) ) നിർത്തുക;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p2 = iCookie;
-      aOp[1].p3 = sqlite3Atoi(zRight);
+      aOp[1].p3 = sqlite3Atoi(z_വലത്);
       aOp[1].p5 = 1;
-      if( iCookie==BTREE_SCHEMA_VERSION && (db->flags & SQLITE_Defensive)!=0 ){
+      എങ്കിൽ( iCookie==BTREE_SCHEMA_VERSION && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow the use of PRAGMA schema_version=VALUE in defensive
         ** mode.  Change the OP_SetCookie opcode into a no-op.  */
         aOp[1].opcode = OP_Noop;
       }
-    }else{
+    }അല്ലെങ്കിൽ{
       /* Read the specified cookie value */
-      static const VdbeOpList readCookie[] = {
+      സ്ഥിതം സ്ഥിരം VdbeOpList readCookie[] = {
         { OP_Transaction,     0,  0,  0},    /* 0 */
         { OP_ReadCookie,      0,  1,  0},    /* 1 */
         { OP_ResultRow,       1,  1,  0}
@@ -2359,14 +2359,14 @@ void sqlite3Pragma(
       VdbeOp *aOp;
       sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(readCookie));
       aOp = sqlite3VdbeAddOpList(v, ArraySize(readCookie),readCookie,0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      എങ്കിൽ( ONLY_IF_REALLOC_STRESS(aOp==0) ) നിർത്തുക;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p3 = iCookie;
       sqlite3VdbeReusable(v);
     }
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
 
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
@@ -2376,17 +2376,17 @@ void sqlite3Pragma(
   ** Return the names of all compile-time options used in this build,
   ** one option per row.
   */
-  case PragTyp_COMPILE_OPTIONS: {
-    int i = 0;
-    const char *zOpt;
+  അവസ്ഥ PragTyp_COMPILE_OPTIONS: {
+    പൂർണ്ണസംഖ്യ i = 0;
+    സ്ഥിരം അക്ഷരം *zOpt;
     pParse->nMem = 1;
-    while( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
+    ആകുമ്പോൾ( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
       sqlite3VdbeLoadString(v, 1, zOpt);
       sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
     }
     sqlite3VdbeReusable(v);
   }
-  break;
+  നിർത്തുക;
 #endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
 #ifndef SQLITE_OMIT_WAL
@@ -2395,17 +2395,17 @@ void sqlite3Pragma(
   **
   ** Checkpoint the database.
   */
-  case PragTyp_WAL_CHECKPOINT: {
-    int iBt = (pId2->z?iDb:SQLITE_MAX_DB);
-    int eMode = SQLITE_CHECKPOINT_PASSIVE;
-    if( zRight ){
-      if( sqlite3StrICmp(zRight, "full")==0 ){
+  അവസ്ഥ PragTyp_WAL_CHECKPOINT: {
+    പൂർണ്ണസംഖ്യ iBt = (pId2->z?iDb:SQLITE_MAX_DB);
+    പൂർണ്ണസംഖ്യ eMode = SQLITE_CHECKPOINT_PASSIVE;
+    എങ്കിൽ( z_വലത് ){
+      എങ്കിൽ( sqlite3StrICmp(z_വലത്, "full")==0 ){
         eMode = SQLITE_CHECKPOINT_FULL;
-      }else if( sqlite3StrICmp(zRight, "restart")==0 ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(z_വലത്, "restart")==0 ){
         eMode = SQLITE_CHECKPOINT_RESTART;
-      }else if( sqlite3StrICmp(zRight, "truncate")==0 ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(z_വലത്, "truncate")==0 ){
         eMode = SQLITE_CHECKPOINT_TRUNCATE;
-      }else if( sqlite3StrICmp(zRight, "noop")==0 ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(z_വലത്, "noop")==0 ){
         eMode = SQLITE_CHECKPOINT_NOOP;
       }
     }
@@ -2413,7 +2413,7 @@ void sqlite3Pragma(
     sqlite3VdbeAddOp3(v, OP_Checkpoint, iBt, eMode, 1);
     sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 3);
   }
-  break;
+  നിർത്തുക;
 
   /*
   **   PRAGMA wal_autocheckpoint
@@ -2423,15 +2423,15 @@ void sqlite3Pragma(
   ** after accumulating N frames in the log. Or query for the current value
   ** of N.
   */
-  case PragTyp_WAL_AUTOCHECKPOINT: {
-    if( zRight ){
-      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(zRight));
+  അവസ്ഥ PragTyp_WAL_AUTOCHECKPOINT: {
+    എങ്കിൽ( z_വലത് ){
+      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(z_വലത്));
     }
     returnSingleInt(v,
        db->xWalCallback==sqlite3WalDefaultHook ?
            SQLITE_PTR_TO_INT(db->pWalArg) : 0);
   }
-  break;
+  നിർത്തുക;
 #endif
 
   /*
@@ -2441,9 +2441,9 @@ void sqlite3Pragma(
   ** connection on which it is invoked to free up as much memory as it
   ** can, by calling sqlite3_db_release_memory().
   */
-  case PragTyp_SHRINK_MEMORY: {
+  അവസ്ഥ PragTyp_SHRINK_MEMORY: {
     sqlite3_db_release_memory(db);
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2519,48 +2519,48 @@ void sqlite3Pragma(
   ** literal argument to this pragma that contains a mnemonic description
   ** of the options rather than a bitmap.
   */
-  case PragTyp_OPTIMIZE: {
-    int iDbLast;           /* Loop termination point for the schema loop */
-    int iTabCur;           /* Cursor for a table whose size needs checking */
+  അവസ്ഥ PragTyp_OPTIMIZE: {
+    പൂർണ്ണസംഖ്യ iDbLast;           /* Loop termination point for the schema loop */
+    പൂർണ്ണസംഖ്യ iTabCur;           /* Cursor for a table whose size needs checking */
     HashElem *k;           /* Loop over tables of a schema */
     Schema *pSchema;       /* The current schema */
     Table *pTab;           /* A table in the schema */
     Index *pIdx;           /* An index of the table */
     LogEst szThreshold;    /* Size threshold above which reanalysis needed */
-    char *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
+    അക്ഷരം *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
     u32 opMask;            /* Mask of operations to perform */
-    int nLimit;            /* Analysis limit to use */
-    int nCheck = 0;        /* Number of tables to be optimized */
-    int nBtree = 0;        /* Number of btrees to scan */
-    int nIndex;            /* Number of indexes on the current table */
+    പൂർണ്ണസംഖ്യ nLimit;            /* Analysis limit to use */
+    പൂർണ്ണസംഖ്യ nCheck = 0;        /* Number of tables to be optimized */
+    പൂർണ്ണസംഖ്യ nBtree = 0;        /* Number of btrees to scan */
+    പൂർണ്ണസംഖ്യ nIndex;            /* Number of indexes on the current table */
 
-    if( zRight ){
-      opMask = (u32)sqlite3Atoi(zRight);
-      if( (opMask & 0x02)==0 ) break;
-    }else{
+    എങ്കിൽ( z_വലത് ){
+      opMask = (u32)sqlite3Atoi(z_വലത്);
+      എങ്കിൽ( (opMask & 0x02)==0 ) നിർത്തുക;
+    }അല്ലെങ്കിൽ{
       opMask = 0xfffe;
     }
-    if( (opMask & 0x10)==0 ){
+    എങ്കിൽ( (opMask & 0x10)==0 ){
       nLimit = 0;
-    }else if( db->nAnalysisLimit>0
+    }അല്ലെങ്കിൽ എങ്കിൽ( db->nAnalysisLimit>0
            && db->nAnalysisLimit<SQLITE_DEFAULT_OPTIMIZE_LIMIT ){
       nLimit = 0;
-    }else{
+    }അല്ലെങ്കിൽ{
       nLimit = SQLITE_DEFAULT_OPTIMIZE_LIMIT;
     }
     iTabCur = pParse->nTab++;
-    for(iDbLast = zDb?iDb:db->nDb-1; iDb<=iDbLast; iDb++){
-      if( iDb==1 ) continue;
+    വേണ്ടി(iDbLast = zDb?iDb:db->nDb-1; iDb<=iDbLast; iDb++){
+      എങ്കിൽ( iDb==1 ) തുടരുക;
       sqlite3CodeVerifySchema(pParse, iDb);
       pSchema = db->aDb[iDb].pSchema;
-      for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
+      വേണ്ടി(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
         pTab = (Table*)sqliteHashData(k);
 
         /* This only works for ordinary tables */
-        if( !IsOrdinaryTable(pTab) ) continue;
+        എങ്കിൽ( !IsOrdinaryTable(pTab) ) തുടരുക;
 
         /* Do not scan system tables */
-        if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) continue;
+        എങ്കിൽ( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) തുടരുക;
 
         /* Find the size of the table as last recorded in sqlite_stat1.
         ** If any index is unanalyzed, then the threshold is -1 to
@@ -2568,9 +2568,9 @@ void sqlite3Pragma(
         */
         szThreshold = pTab->nRowLogEst;
         nIndex = 0;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+        വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
           nIndex++;
-          if( !pIdx->hasStat1 ){
+          എങ്കിൽ( !pIdx->hasStat1 ){
             szThreshold = -1; /* Always analyze if any index lacks statistics */
           }
         }
@@ -2578,19 +2578,19 @@ void sqlite3Pragma(
         /* If table pTab has not been used in a way that would benefit from
         ** having analysis statistics during the current session, then skip it,
         ** unless the 0x10000 MASK bit is set. */
-        if( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
+        എങ്കിൽ( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
           /* Check for size change if stat1 has been used for a query */
-        }else if( opMask & 0x10000 ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( opMask & 0x10000 ){
           /* Check for size change if 0x10000 is set */
-        }else if( pTab->pIndex!=0 && szThreshold<0 ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( pTab->pIndex!=0 && szThreshold<0 ){
           /* Do analysis if unanalyzed indexes exists */
-        }else{
+        }അല്ലെങ്കിൽ{
           /* Otherwise, we can skip this table */
-          continue;
+          തുടരുക;
         }
 
         nCheck++;
-        if( nCheck==2 ){
+        എങ്കിൽ( nCheck==2 ){
           /* If ANALYZE might be invoked two or more times, hold a write
           ** transaction for efficiency */
           sqlite3BeginWriteOperation(pParse, 0, iDb);
@@ -2601,25 +2601,25 @@ void sqlite3Pragma(
         ** the last analysis.  Unconditional reanalysis if there are
         ** unanalyzed indexes. */
         sqlite3OpenTable(pParse, iTabCur, iDb, pTab, OP_OpenRead);
-        if( szThreshold>=0 ){
-          const LogEst iRange = 33;   /* 10x size change */
+        എങ്കിൽ( szThreshold>=0 ){
+          സ്ഥിരം LogEst iRange = 33;   /* 10x size change */
           sqlite3VdbeAddOp4Int(v, OP_IfSizeBetween, iTabCur,
                          sqlite3VdbeCurrentAddr(v)+2+(opMask&1),
                          szThreshold>=iRange ? szThreshold-iRange : -1,
                          szThreshold+iRange);
           VdbeCoverage(v);
-        }else{
+        }അല്ലെങ്കിൽ{
           sqlite3VdbeAddOp2(v, OP_Rewind, iTabCur,
                          sqlite3VdbeCurrentAddr(v)+2+(opMask&1));
           VdbeCoverage(v);
         }
         zSubSql = sqlite3MPrintf(db, "ANALYZE \"%w\".\"%w\"",
                                  db->aDb[iDb].zDbSName, pTab->zName);
-        if( opMask & 0x01 ){
-          int r1 = sqlite3GetTempReg(pParse);
+        എങ്കിൽ( opMask & 0x01 ){
+          പൂർണ്ണസംഖ്യ r1 = sqlite3GetTempReg(pParse);
           sqlite3VdbeAddOp4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
           sqlite3VdbeAddOp2(v, OP_ResultRow, r1, 1);
-        }else{
+        }അല്ലെങ്കിൽ{
           sqlite3VdbeAddOp4(v, OP_SqlExec, nLimit ? 0x02 : 00, nLimit, 0,
                             zSubSql, P4_DYNAMIC);
         }
@@ -2630,18 +2630,18 @@ void sqlite3Pragma(
     /* In a schema with a large number of tables and indexes, scale back
     ** the analysis_limit to avoid excess run-time in the worst case.
     */
-    if( !db->mallocFailed && nLimit>0 && nBtree>100 ){
-      int iAddr, iEnd;
+    എങ്കിൽ( !db->mallocFailed && nLimit>0 && nBtree>100 ){
+      പൂർണ്ണസംഖ്യ iAddr, iEnd;
       VdbeOp *aOp;
       nLimit = 100*nLimit/nBtree;
-      if( nLimit<100 ) nLimit = 100;
+      എങ്കിൽ( nLimit<100 ) nLimit = 100;
       aOp = sqlite3VdbeGetOp(v, 0);
       iEnd = sqlite3VdbeCurrentAddr(v);
-      for(iAddr=0; iAddr<iEnd; iAddr++){
-        if( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = nLimit;
+      വേണ്ടി(iAddr=0; iAddr<iEnd; iAddr++){
+        എങ്കിൽ( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = nLimit;
       }
     }
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2653,14 +2653,14 @@ void sqlite3Pragma(
   ** then 0 is returned.  Setting the busy_timeout to 0 or negative
   ** disables the timeout.
   */
-  /*case PragTyp_BUSY_TIMEOUT*/ default: {
-    int n = 0;
-    assert( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
-    if( zRight && sqlite3GetInt32(zRight,&n) ){
+  /*case PragTyp_BUSY_TIMEOUT*/ സ്ഥിരസ്ഥിതി: {
+    പൂർണ്ണസംഖ്യ n = 0;
+    പ്രതിജ്ഞാ( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
+    എങ്കിൽ( z_വലത് && sqlite3GetInt32(z_വലത്,&n) ){
       sqlite3_busy_timeout(db, n);
     }
     returnSingleInt(v, db->busyTimeout);
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2674,13 +2674,13 @@ void sqlite3Pragma(
   ** returns the same integer that would be returned by the
   ** sqlite3_soft_heap_limit64(-1) C-language function.
   */
-  case PragTyp_SOFT_HEAP_LIMIT: {
+  അവസ്ഥ PragTyp_SOFT_HEAP_LIMIT: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
+    എങ്കിൽ( z_വലത് && sqlite3DecOrHexToI64(z_വലത്, &N)==SQLITE_OK ){
       sqlite3_soft_heap_limit64(N);
     }
     returnSingleInt(v, sqlite3_soft_heap_limit64(-1));
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2694,14 +2694,14 @@ void sqlite3Pragma(
   ** the hard heap limit.  This allows an application to set a heap limit
   ** constraint that cannot be relaxed by an untrusted SQL script.
   */
-  case PragTyp_HARD_HEAP_LIMIT: {
+  അവസ്ഥ PragTyp_HARD_HEAP_LIMIT: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
+    എങ്കിൽ( z_വലത് && sqlite3DecOrHexToI64(z_വലത്, &N)==SQLITE_OK ){
       sqlite3_int64 iPrior = sqlite3_hard_heap_limit64(-1);
-      if( N>0 && (iPrior==0 || iPrior>N) ) sqlite3_hard_heap_limit64(N);
+      എങ്കിൽ( N>0 && (iPrior==0 || iPrior>N) ) sqlite3_hard_heap_limit64(N);
     }
     returnSingleInt(v, sqlite3_hard_heap_limit64(-1));
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2711,16 +2711,16 @@ void sqlite3Pragma(
   ** Configure the maximum number of worker threads.  Return the new
   ** maximum, which might be less than requested.
   */
-  case PragTyp_THREADS: {
+  അവസ്ഥ PragTyp_THREADS: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK
+    എങ്കിൽ( z_വലത്
+     && sqlite3DecOrHexToI64(z_വലത്, &N)==SQLITE_OK
      && N>=0
     ){
-      sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, (int)(N&0x7fffffff));
+      sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, (പൂർണ്ണസംഖ്യ)(N&0x7fffffff));
     }
     returnSingleInt(v, sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, -1));
-    break;
+    നിർത്തുക;
   }
 
   /*
@@ -2730,53 +2730,53 @@ void sqlite3Pragma(
   ** Configure the maximum number of rows that ANALYZE will examine
   ** in each index that it looks at.  Return the new limit.
   */
-  case PragTyp_ANALYSIS_LIMIT: {
+  അവസ്ഥ PragTyp_ANALYSIS_LIMIT: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK /* IMP: R-40975-20399 */
+    എങ്കിൽ( z_വലത്
+     && sqlite3DecOrHexToI64(z_വലത്, &N)==SQLITE_OK /* IMP: R-40975-20399 */
      && N>=0
     ){
-      db->nAnalysisLimit = (int)(N&0x7fffffff);
+      db->nAnalysisLimit = (പൂർണ്ണസംഖ്യ)(N&0x7fffffff);
     }
     returnSingleInt(v, db->nAnalysisLimit); /* IMP: R-57594-65522 */
-    break;
+    നിർത്തുക;
   }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /*
   ** Report the current state of file logs for all databases
   */
-  case PragTyp_LOCK_STATUS: {
-    static const char *const azLockName[] = {
+  അവസ്ഥ PragTyp_LOCK_STATUS: {
+    സ്ഥിതം സ്ഥിരം അക്ഷരം *സ്ഥിരം azLockName[] = {
       "unlocked", "shared", "reserved", "pending", "exclusive"
     };
-    int i;
+    പൂർണ്ണസംഖ്യ i;
     pParse->nMem = 2;
-    for(i=0; i<db->nDb; i++){
+    വേണ്ടി(i=0; i<db->nDb; i++){
       Btree *pBt;
-      const char *zState = "unknown";
-      int j;
-      if( db->aDb[i].zDbSName==0 ) continue;
+      സ്ഥിരം അക്ഷരം *zState = "unknown";
+      പൂർണ്ണസംഖ്യ j;
+      എങ്കിൽ( db->aDb[i].zDbSName==0 ) തുടരുക;
       pBt = db->aDb[i].pBt;
-      if( pBt==0 || sqlite3BtreePager(pBt)==0 ){
+      എങ്കിൽ( pBt==0 || sqlite3BtreePager(pBt)==0 ){
         zState = "closed";
-      }else if( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
+      }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
                                      SQLITE_FCNTL_LOCKSTATE, &j)==SQLITE_OK ){
          zState = azLockName[j];
       }
       sqlite3VdbeMultiLoad(v, 1, "ss", db->aDb[i].zDbSName, zState);
     }
-    break;
+    നിർത്തുക;
   }
 #endif
 
-#if defined(SQLITE_ENABLE_CEROD)
-  case PragTyp_ACTIVATE_EXTENSIONS: if( zRight ){
-    if( sqlite3StrNICmp(zRight, "cerod-", 6)==0 ){
-      sqlite3_activate_cerod(&zRight[6]);
+#എങ്കിൽ defined(SQLITE_ENABLE_CEROD)
+  അവസ്ഥ PragTyp_ACTIVATE_EXTENSIONS: എങ്കിൽ( z_വലത് ){
+    എങ്കിൽ( sqlite3StrNICmp(z_വലത്, "cerod-", 6)==0 ){
+      sqlite3_activate_cerod(&z_വലത്[6]);
     }
   }
-  break;
+  നിർത്തുക;
 #endif
 
   } /* End of the PRAGMA switch */
@@ -2786,104 +2786,104 @@ void sqlite3Pragma(
   ** PragFlg_NoColumns1 flag is set and the caller specified an argument
   ** to the PRAGMA, the implementation has not added any OP_ResultRow
   ** instructions to the VM.  */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns1) && zRight ){
+  എങ്കിൽ( (pPragma->mPragFlg & PragFlg_NoColumns1) && z_വലത് ){
     sqlite3VdbeVerifyNoResultRow(v);
   }
 
 pragma_out:
-  sqlite3DbFree(db, zLeft);
-  sqlite3DbFree(db, zRight);
+  sqlite3DbFree(db, z_ഇടത്);
+  sqlite3DbFree(db, z_വലത്);
 }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 /*****************************************************************************
 ** Implementation of an eponymous virtual table that runs a pragma.
 **
 */
-typedef struct PragmaVtab PragmaVtab;
-typedef struct PragmaVtabCursor PragmaVtabCursor;
-struct PragmaVtab {
+തരനിർവചനം ഘടന PragmaVtab PragmaVtab;
+തരനിർവചനം ഘടന PragmaVtabCursor PragmaVtabCursor;
+ഘടന PragmaVtab {
   sqlite3_vtab base;        /* Base class.  Must be first */
   sqlite3 *db;              /* The database connection to which it belongs */
-  const PragmaName *pName;  /* Name of the pragma */
+  സ്ഥിരം PragmaName *pName;  /* Name of the pragma */
   u8 nHidden;               /* Number of hidden columns */
   u8 iHidden;               /* Index of the first hidden column */
 };
-struct PragmaVtabCursor {
+ഘടന PragmaVtabCursor {
   sqlite3_vtab_cursor base; /* Base class.  Must be first */
   sqlite3_stmt *pPragma;    /* The pragma statement to run */
   sqlite_int64 iRowid;      /* Current rowid */
-  char *azArg[2];           /* Value of the argument and schema */
+  അക്ഷരം *azArg[2];           /* Value of the argument and schema */
 };
 
 /*
 ** Pragma virtual table module xConnect method.
 */
-static int pragmaVtabConnect(
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ശൂന്യം *pAux,
+  പൂർണ്ണസംഖ്യ argc, സ്ഥിരം അക്ഷരം *സ്ഥിരം*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  അക്ഷരം **pzErr
 ){
-  const PragmaName *pPragma = (const PragmaName*)pAux;
+  സ്ഥിരം PragmaName *pPragma = (സ്ഥിരം PragmaName*)pAux;
   PragmaVtab *pTab = 0;
-  int rc;
-  int i, j;
-  char cSep = '(';
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ i, j;
+  അക്ഷരം cSep = '(';
   StrAccum acc;
-  char zBuf[200];
+  അക്ഷരം zBuf[200];
 
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(argv);
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
+  sqlite3StrAccumInit(&acc, 0, zBuf, വലുപ്പം(zBuf), 0);
   sqlite3_str_appendall(&acc, "CREATE TABLE x");
-  for(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
+  വേണ്ടി(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
     sqlite3_str_appendf(&acc, "%c\"%s\"", cSep, pragCName[j]);
     cSep = ',';
   }
-  if( i==0 ){
+  എങ്കിൽ( i==0 ){
     sqlite3_str_appendf(&acc, "(\"%s\"", pPragma->zName);
     i++;
   }
   j = 0;
-  if( pPragma->mPragFlg & PragFlg_Result1 ){
+  എങ്കിൽ( pPragma->mPragFlg & PragFlg_Result1 ){
     sqlite3_str_appendall(&acc, ",arg HIDDEN");
     j++;
   }
-  if( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
+  എങ്കിൽ( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
     sqlite3_str_appendall(&acc, ",schema HIDDEN");
     j++;
   }
   sqlite3_str_append(&acc, ")", 1);
   sqlite3StrAccumFinish(&acc);
-  assert( strlen(zBuf) < sizeof(zBuf)-1 );
+  പ്രതിജ്ഞാ( strlen(zBuf) < വലുപ്പം(zBuf)-1 );
   rc = sqlite3_declare_vtab(db, zBuf);
-  if( rc==SQLITE_OK ){
-    pTab = (PragmaVtab*)sqlite3_malloc(sizeof(PragmaVtab));
-    if( pTab==0 ){
+  എങ്കിൽ( rc==SQLITE_OK ){
+    pTab = (PragmaVtab*)sqlite3_malloc(വലുപ്പം(PragmaVtab));
+    എങ്കിൽ( pTab==0 ){
       rc = SQLITE_NOMEM;
-    }else{
-      memset(pTab, 0, sizeof(PragmaVtab));
+    }അല്ലെങ്കിൽ{
+      memset(pTab, 0, വലുപ്പം(PragmaVtab));
       pTab->pName = pPragma;
       pTab->db = db;
       pTab->iHidden = i;
       pTab->nHidden = j;
     }
-  }else{
+  }അല്ലെങ്കിൽ{
     *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Pragma virtual table module xDisconnect method.
 */
-static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabDisconnect(sqlite3_vtab *pVtab){
   PragmaVtab *pTab = (PragmaVtab*)pVtab;
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* Figure out the best index to use to search a pragma virtual table.
@@ -2893,177 +2893,177 @@ static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
 ** possible, and especially on the first hidden parameter.  So return a
 ** high cost if hidden parameters are unconstrained.
 */
-static int pragmaVtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   PragmaVtab *pTab = (PragmaVtab*)tab;
-  const struct sqlite3_index_constraint *pConstraint;
-  int i, j;
-  int seen[2];
+  സ്ഥിരം ഘടന sqlite3_index_constraint *pConstraint;
+  പൂർണ്ണസംഖ്യ i, j;
+  പൂർണ്ണസംഖ്യ seen[2];
 
-  pIdxInfo->estimatedCost = (double)1;
-  if( pTab->nHidden==0 ){ return SQLITE_OK; }
+  pIdxInfo->estimatedCost = (ഇരട്ട)1;
+  എങ്കിൽ( pTab->nHidden==0 ){ തിരികെ SQLITE_OK; }
   pConstraint = pIdxInfo->aConstraint;
   seen[0] = 0;
   seen[1] = 0;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->iColumn < pTab->iHidden ) continue;
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->usable==0 ) return SQLITE_CONSTRAINT;
+  വേണ്ടി(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    എങ്കിൽ( pConstraint->iColumn < pTab->iHidden ) തുടരുക;
+    എങ്കിൽ( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) തുടരുക;
+    എങ്കിൽ( pConstraint->usable==0 ) തിരികെ SQLITE_CONSTRAINT;
     j = pConstraint->iColumn - pTab->iHidden;
-    assert( j < 2 );
+    പ്രതിജ്ഞാ( j < 2 );
     seen[j] = i+1;
   }
-  if( seen[0]==0 ){
-    pIdxInfo->estimatedCost = (double)2147483647;
+  എങ്കിൽ( seen[0]==0 ){
+    pIdxInfo->estimatedCost = (ഇരട്ട)2147483647;
     pIdxInfo->estimatedRows = 2147483647;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
   j = seen[0]-1;
   pIdxInfo->aConstraintUsage[j].argvIndex = 1;
   pIdxInfo->aConstraintUsage[j].omit = 1;
-  pIdxInfo->estimatedCost = (double)20;
+  pIdxInfo->estimatedCost = (ഇരട്ട)20;
   pIdxInfo->estimatedRows = 20;
-  if( seen[1] ){
+  എങ്കിൽ( seen[1] ){
     j = seen[1]-1;
     pIdxInfo->aConstraintUsage[j].argvIndex = 2;
     pIdxInfo->aConstraintUsage[j].omit = 1;
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* Create a new cursor for the pragma virtual table */
-static int pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
   PragmaVtabCursor *pCsr;
-  pCsr = (PragmaVtabCursor*)sqlite3_malloc(sizeof(*pCsr));
-  if( pCsr==0 ) return SQLITE_NOMEM;
-  memset(pCsr, 0, sizeof(PragmaVtabCursor));
+  pCsr = (PragmaVtabCursor*)sqlite3_malloc(വലുപ്പം(*pCsr));
+  എങ്കിൽ( pCsr==0 ) തിരികെ SQLITE_NOMEM;
+  memset(pCsr, 0, വലുപ്പം(PragmaVtabCursor));
   pCsr->base.pVtab = pVtab;
   *ppCursor = &pCsr->base;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* Clear all content from pragma virtual table cursor. */
-static void pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
-  int i;
+സ്ഥിതം ശൂന്യം pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
+  പൂർണ്ണസംഖ്യ i;
   sqlite3_finalize(pCsr->pPragma);
   pCsr->pPragma = 0;
   pCsr->iRowid = 0;
-  for(i=0; i<ArraySize(pCsr->azArg); i++){
+  വേണ്ടി(i=0; i<ArraySize(pCsr->azArg); i++){
     sqlite3_free(pCsr->azArg[i]);
     pCsr->azArg[i] = 0;
   }
 }
 
 /* Close a pragma virtual table cursor */
-static int pragmaVtabClose(sqlite3_vtab_cursor *cur){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabClose(sqlite3_vtab_cursor *cur){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)cur;
   pragmaVtabCursorClear(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* Advance the pragma virtual table cursor to the next row */
-static int pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   /* Increment the xRowid value */
   pCsr->iRowid++;
-  assert( pCsr->pPragma );
-  if( SQLITE_ROW!=sqlite3_step(pCsr->pPragma) ){
+  പ്രതിജ്ഞാ( pCsr->pPragma );
+  എങ്കിൽ( SQLITE_ROW!=sqlite3_step(pCsr->pPragma) ){
     rc = sqlite3_finalize(pCsr->pPragma);
     pCsr->pPragma = 0;
     pragmaVtabCursorClear(pCsr);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Pragma virtual table module xFilter method.
 */
-static int pragmaVtabFilter(
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabFilter(
   sqlite3_vtab_cursor *pVtabCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ idx_അക്കം, സ്ഥിരം അക്ഷരം *idxStr,
+  പൂർണ്ണസംഖ്യ argc, sqlite3_മൂല്യം **argv
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  int rc;
-  int i, j;
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ i, j;
   StrAccum acc;
-  char *zSql;
+  അക്ഷരം *zSql;
 
-  UNUSED_PARAMETER(idxNum);
+  UNUSED_PARAMETER(idx_അക്കം);
   UNUSED_PARAMETER(idxStr);
   pragmaVtabCursorClear(pCsr);
   j = (pTab->pName->mPragFlg & PragFlg_Result1)!=0 ? 0 : 1;
-  for(i=0; i<argc; i++, j++){
-    const char *zText = (const char*)sqlite3_value_text(argv[i]);
-    assert( j<ArraySize(pCsr->azArg) );
-    assert( pCsr->azArg[j]==0 );
-    if( zText ){
+  വേണ്ടി(i=0; i<argc; i++, j++){
+    സ്ഥിരം അക്ഷരം *zText = (സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(argv[i]);
+    പ്രതിജ്ഞാ( j<ArraySize(pCsr->azArg) );
+    പ്രതിജ്ഞാ( pCsr->azArg[j]==0 );
+    എങ്കിൽ( zText ){
       pCsr->azArg[j] = sqlite3_mprintf("%s", zText);
-      if( pCsr->azArg[j]==0 ){
-        return SQLITE_NOMEM;
+      എങ്കിൽ( pCsr->azArg[j]==0 ){
+        തിരികെ SQLITE_NOMEM;
       }
     }
   }
   sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->aLimit[SQLITE_LIMIT_SQL_LENGTH]);
   sqlite3_str_appendall(&acc, "PRAGMA ");
-  if( pCsr->azArg[1] ){
+  എങ്കിൽ( pCsr->azArg[1] ){
     sqlite3_str_appendf(&acc, "%Q.", pCsr->azArg[1]);
   }
   sqlite3_str_appendall(&acc, pTab->pName->zName);
-  if( pCsr->azArg[0] ){
+  എങ്കിൽ( pCsr->azArg[0] ){
     sqlite3_str_appendf(&acc, "=%Q", pCsr->azArg[0]);
   }
   zSql = sqlite3StrAccumFinish(&acc);
-  if( zSql==0 ) return SQLITE_NOMEM;
+  എങ്കിൽ( zSql==0 ) തിരികെ SQLITE_NOMEM;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pPragma, 0);
   sqlite3_free(zSql);
-  if( rc!=SQLITE_OK ){
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
-    return rc;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    pTab->base.z_Err_സന്ദേശം = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
+    തിരികെ rc;
   }
-  return pragmaVtabNext(pVtabCursor);
+  തിരികെ pragmaVtabNext(pVtabCursor);
 }
 
 /*
 ** Pragma virtual table module xEof method.
 */
-static int pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  return (pCsr->pPragma==0);
+  തിരികെ (pCsr->pPragma==0);
 }
 
 /* The xColumn method simply returns the corresponding column from
 ** the PRAGMA. 
 */
-static int pragmaVtabColumn(
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabColumn(
   sqlite3_vtab_cursor *pVtabCursor,
   sqlite3_context *ctx,
-  int i
+  പൂർണ്ണസംഖ്യ i
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  if( i<pTab->iHidden ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pPragma, i));
-  }else{
+  എങ്കിൽ( i<pTab->iHidden ){
+    sqlite3_result_മൂല്യം(ctx, sqlite3_column_മൂല്യം(pCsr->pPragma, i));
+  }അല്ലെങ്കിൽ{
     sqlite3_result_text(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Pragma virtual table module xRowid method.
 */
-static int pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
+സ്ഥിതം പൂർണ്ണസംഖ്യ pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   *p = pCsr->iRowid;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* The pragma virtual table object */
-static const sqlite3_module pragmaVtabModule = {
+സ്ഥിതം സ്ഥിരം sqlite3_module pragmaVtabModule = {
   0,                           /* iVersion */
   0,                           /* xCreate - create a table */
   pragmaVtabConnect,           /* xConnect - connect to an existing table */
@@ -3096,14 +3096,14 @@ static const sqlite3_module pragmaVtabModule = {
 ** then register an eponymous virtual table for that pragma and return
 ** a pointer to the Module object for the new virtual table.
 */
-Module *sqlite3PragmaVtabRegister(sqlite3 *db, const char *zName){
-  const PragmaName *pName;
-  assert( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
+Module *sqlite3PragmaVtabRegister(sqlite3 *db, സ്ഥിരം അക്ഷരം *zName){
+  സ്ഥിരം PragmaName *pName;
+  പ്രതിജ്ഞാ( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
   pName = pragmaLocate(zName+7);
-  if( pName==0 ) return 0;
-  if( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) return 0;
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  return sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (void*)pName, 0);
+  എങ്കിൽ( pName==0 ) തിരികെ 0;
+  എങ്കിൽ( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) തിരികെ 0;
+  പ്രതിജ്ഞാ( sqlite3HashFind(&db->aModule, zName)==0 );
+  തിരികെ sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (ശൂന്യം*)pName, 0);
 }
 
 #endif /* SQLITE_OMIT_VIRTUALTABLE */

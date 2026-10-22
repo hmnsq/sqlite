@@ -25,120 +25,120 @@
 **      the remaining, uninitialized, subsystems.
 */
 
-#include "sqliteInt.h"
-#include <string.h>
-#include "tclsqlite.h"
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ "tclsqlite.h"
 
-static struct Wrapped {
+സ്ഥിതം ഘടന Wrapped {
   sqlite3_pcache_methods2 pcache;
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  പൂർണ്ണസംഖ്യ mem_init;              /* True if mem subsystem is initialized */
+  പൂർണ്ണസംഖ്യ mem_fail;              /* True to fail mem subsystem initialization */
+  പൂർണ്ണസംഖ്യ mutex_init;            /* True if mutex subsystem is initialized */
+  പൂർണ്ണസംഖ്യ mutex_fail;            /* True to fail mutex subsystem initialization */
+  പൂർണ്ണസംഖ്യ pcache_init;           /* True if pcache subsystem is initialized */
+  പൂർണ്ണസംഖ്യ pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMemInit(ശൂന്യം *pAppData){
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = wrapped.mem.xInit(wrapped.mem.pAppData);
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  തിരികെ rc;
 }
-static void wrMemShutdown(void *pAppData){
+സ്ഥിതം ശൂന്യം wrMemShutdown(ശൂന്യം *pAppData){
   wrapped.mem.xShutdown(wrapped.mem.pAppData);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
-static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+സ്ഥിതം ശൂന്യം *wrMemMalloc(പൂർണ്ണസംഖ്യ n)           {തിരികെ wrapped.mem.xMalloc(n);}
+സ്ഥിതം ശൂന്യം wrMemFree(ശൂന്യം *p)            {wrapped.mem.xFree(p);}
+സ്ഥിതം ശൂന്യം *wrMemRealloc(ശൂന്യം *p, പൂർണ്ണസംഖ്യ n) {തിരികെ wrapped.mem.xRealloc(p, n);}
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMemSize(ശൂന്യം *p)             {തിരികെ wrapped.mem.xSize(p);}
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMemRoundup(പൂർണ്ണസംഖ്യ n)            {തിരികെ wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMutexInit(ശൂന്യം){
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  തിരികെ rc;
 }
-static int wrMutexEnd(void){
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMutexEnd(ശൂന്യം){
   wrapped.mutex.xMutexEnd();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+സ്ഥിതം sqlite3_mutex *wrMutexAlloc(പൂർണ്ണസംഖ്യ e){
+  തിരികെ wrapped.mutex.xMutexAlloc(e);
 }
-static void wrMutexFree(sqlite3_mutex *p){
+സ്ഥിതം ശൂന്യം wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
 }
-static void wrMutexEnter(sqlite3_mutex *p){
+സ്ഥിതം ശൂന്യം wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMutexTry(sqlite3_mutex *p){
+  തിരികെ wrapped.mutex.xMutexTry(p);
 }
-static void wrMutexLeave(sqlite3_mutex *p){
+സ്ഥിതം ശൂന്യം wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMutexHeld(sqlite3_mutex *p){
+  തിരികെ wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrMutexNotheld(sqlite3_mutex *p){
+  തിരികെ wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrPCacheInit(ശൂന്യം *pArg){
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  തിരികെ rc;
 }
-static void wrPCacheShutdown(void *pArg){
+സ്ഥിതം ശൂന്യം wrPCacheShutdown(ശൂന്യം *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+സ്ഥിതം sqlite3_pcache *wrPCacheCreate(പൂർണ്ണസംഖ്യ a, പൂർണ്ണസംഖ്യ b, പൂർണ്ണസംഖ്യ c){
+  തിരികെ wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+സ്ഥിതം ശൂന്യം wrPCacheCachesize(sqlite3_pcache *p, പൂർണ്ണസംഖ്യ n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ wrPCachePagecount(sqlite3_pcache *p){
+  തിരികെ wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+സ്ഥിതം sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, പൂർണ്ണസംഖ്യ b){
+  തിരികെ wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+സ്ഥിതം ശൂന്യം wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, പൂർണ്ണസംഖ്യ b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
-static void wrPCacheRekey(
+സ്ഥിതം ശൂന്യം wrPCacheRekey(
   sqlite3_pcache *p, 
   sqlite3_pcache_page *a, 
   unsigned b, 
@@ -146,14 +146,14 @@ static void wrPCacheRekey(
 ){
   wrapped.pcache.xRekey(p, a, b, c);
 }  
-static void wrPCacheTruncate(sqlite3_pcache *p, unsigned a){
+സ്ഥിതം ശൂന്യം wrPCacheTruncate(sqlite3_pcache *p, unsigned a){
   wrapped.pcache.xTruncate(p, a);
 }  
-static void wrPCacheDestroy(sqlite3_pcache *p){
+സ്ഥിതം ശൂന്യം wrPCacheDestroy(sqlite3_pcache *p){
   wrapped.pcache.xDestroy(p);
 }  
 
-static void installInitWrappers(void){
+സ്ഥിതം ശൂന്യം installInitWrappers(ശൂന്യം){
   sqlite3_mutex_methods mutexmethods = {
     wrMutexInit,  wrMutexEnd,   wrMutexAlloc,
     wrMutexFree,  wrMutexEnter, wrMutexTry,
@@ -173,7 +173,7 @@ static void installInitWrappers(void){
     0
   };
 
-  memset(&wrapped, 0, sizeof(wrapped));
+  memset(&wrapped, 0, വലുപ്പം(wrapped));
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_GETMUTEX, &wrapped.mutex);
@@ -184,96 +184,96 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI init_wrapper_install(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
-    char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+  വേണ്ടി(i=1; i<objc; i++){
+    അക്ഷരം *z = Tcl_GetString(objv[i]);
+    എങ്കിൽ( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
-      Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+    }അല്ലെങ്കിൽ{
+      Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", ശൂന്യ);
+      തിരികെ TCL_ERROR;
     }
   }
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI init_wrapper_uninstall(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  എങ്കിൽ( objc!=1 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "");
+    തിരികെ TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI init_wrapper_clear(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  എങ്കിൽ( objc!=1 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "");
+    തിരികെ TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI init_wrapper_query(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  എങ്കിൽ( objc!=1 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "");
+    തിരികെ TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  എങ്കിൽ( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  എങ്കിൽ( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  എങ്കിൽ( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+പൂർണ്ണസംഖ്യ Sqlitetest_init_Init(Tcl_Interp *interp){
+  സ്ഥിതം ഘടന {
+     അക്ഷരം *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
     {"init_wrapper_install",   init_wrapper_install},
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  വേണ്ടി(i=0; i<വലുപ്പം(aObjCmd)/വലുപ്പം(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }

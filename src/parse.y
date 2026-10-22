@@ -23,9 +23,9 @@
 
 // Setup for the parser stack
 %stack_size        50                        // Initial stack size
-%stack_size_limit  parserStackSizeLimit      // Function returning max stack size
-%realloc           parserStackRealloc        // realloc() for the stack
-%free              parserStackFree           // free() for the stack
+%stack_size_limit  parser_അട്ടി_Size_Limit      // Function returning max stack size
+%realloc           parser_അട്ടി_Realloc        // realloc() for the stack
+%സ്വതന്ത്രം              parser_അട്ടി_Free           // free() for the stack
 
 // All token codes are small integers with #defines that begin with "TK_"
 %token_prefix TK_
@@ -44,14 +44,14 @@
 //
 %syntax_error {
   UNUSED_PARAMETER(yymajor);  /* Silence some compiler warnings */
-  if( TOKEN.z[0] ){
+  എങ്കിൽ( TOKEN.z[0] ){
     parserSyntaxError(pParse, &TOKEN);
-  }else{
-    sqlite3ErrorMsg(pParse, "incomplete input");
+  }അല്ലെങ്കിൽ{
+    sqlite3_Error_സന്ദേശം(pParse, "incomplete input");
   }
 }
 %stack_overflow {
-  if( pParse->nErr==0 ) sqlite3ErrorMsg(pParse, "Recursion limit");
+  എങ്കിൽ( pParse->nErr==0 ) sqlite3_Error_സന്ദേശം(pParse, "Recursion limit");
 }
 
 // The name of the generated procedure that implements the parser
@@ -62,12 +62,12 @@
 // code file that implements the parser.
 //
 %include {
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 /*
 ** Verify that the pParse->isCreate field is set
 */
-#define ASSERT_IS_CREATE   assert(pParse->isCreate)
+#define ASSERT_IS_CREATE   പ്രതിജ്ഞാ(pParse->isCreate)
 
 /*
 ** Disable all error recovery processing in the parser push-down
@@ -114,64 +114,64 @@
 **
 ** Then the "b" IdList records the list "a,b,c".
 */
-struct TrigEvent { int a; IdList * b; };
+ഘടന TrigEvent { പൂർണ്ണസംഖ്യ a; IdList * b; };
 
-struct FrameBound     { int eType; Expr *pExpr; };
+ഘടന FrameBound     { പൂർണ്ണസംഖ്യ eType; വ്യഞ്ജകം *p_വ്യഞ്ജകം; };
 
 /*
 ** Generate a syntax error
 */
-static void parserSyntaxError(Parse *pParse, Token *p){
-  sqlite3ErrorMsg(pParse, "near \"%T\": syntax error", p);
+സ്ഥിതം ശൂന്യം parserSyntaxError(Parse *pParse, Token *p){
+  sqlite3_Error_സന്ദേശം(pParse, "near \"%T\": syntax error", p);
 }
 
 /*
 ** Disable lookaside memory allocation for objects that might be
 ** shared across database connections.
 */
-static void disableLookaside(Parse *pParse){
+സ്ഥിതം ശൂന്യം disableLookaside(Parse *pParse){
   sqlite3 *db = pParse->db;
   pParse->disableLookaside++;
 #ifdef SQLITE_DEBUG
   pParse->isCreate = 1;
 #endif
-  memset(&pParse->u1.cr, 0, sizeof(pParse->u1.cr));
+  memset(&pParse->u1.cr, 0, വലുപ്പം(pParse->u1.cr));
   DisableLookaside;
 }
 
-#if !defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) \
+#എങ്കിൽ !defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) \
  && defined(SQLITE_UDL_CAPABLE_PARSER)
 /*
 ** Issue an error message if an ORDER BY or LIMIT clause occurs on an
 ** UPDATE or DELETE statement.
 */
-static void updateDeleteLimitError(
+സ്ഥിതം ശൂന്യം updateDeleteLimitError(
   Parse *pParse,
-  ExprList *pOrderBy,
-  Expr *pLimit
+  വ്യഞ്ജകം_List *pOrderBy,
+  വ്യഞ്ജകം *pLimit
 ){
-  if( pOrderBy ){
-    sqlite3ErrorMsg(pParse, "syntax error near \"ORDER BY\"");
-  }else{
-    sqlite3ErrorMsg(pParse, "syntax error near \"LIMIT\"");
+  എങ്കിൽ( pOrderBy ){
+    sqlite3_Error_സന്ദേശം(pParse, "syntax error near \"ORDER BY\"");
+  }അല്ലെങ്കിൽ{
+    sqlite3_Error_സന്ദേശം(pParse, "syntax error near \"LIMIT\"");
   }
-  sqlite3ExprListDelete(pParse->db, pOrderBy);
-  sqlite3ExprDelete(pParse->db, pLimit);
+  sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, pOrderBy);
+  sqlite3_വ്യഞ്ജകം_Delete(pParse->db, pLimit);
 }
 #endif /* SQLITE_ENABLE_UPDATE_DELETE_LIMIT */
 
 } // end %include
 
 // Input is a single SQL command
-input ::= cmdlist.
+നിവേശം ::= cmdlist.
 cmdlist ::= cmdlist ecmd.
 cmdlist ::= ecmd.
 ecmd ::= SEMI.
 ecmd ::= cmdx SEMI.
 %ifndef SQLITE_OMIT_EXPLAIN
 ecmd ::= explain cmdx SEMI.       {NEVER-REDUCE}
-explain ::= EXPLAIN.              { if( pParse->pReprepare==0 ) pParse->explain = 1; }
-explain ::= EXPLAIN QUERY PLAN.   { if( pParse->pReprepare==0 ) pParse->explain = 2; }
+explain ::= EXPLAIN.              { എങ്കിൽ( pParse->pReprepare==0 ) pParse->explain = 1; }
+explain ::= EXPLAIN QUERY PLAN.   { എങ്കിൽ( pParse->pReprepare==0 ) pParse->explain = 2; }
 %endif  SQLITE_OMIT_EXPLAIN
 cmdx ::= cmd.           { sqlite3FinishCoding(pParse); }
 
@@ -182,7 +182,7 @@ cmd ::= BEGIN transtype(Y) trans_opt.  {sqlite3BeginTransaction(pParse, Y);}
 trans_opt ::= .
 trans_opt ::= TRANSACTION.
 trans_opt ::= TRANSACTION nm.
-%type transtype {int}
+%തരം transtype {പൂർണ്ണസംഖ്യ}
 transtype(A) ::= .             {A = TK_DEFERRED;}
 transtype(A) ::= DEFERRED(X).  {A = @X; /*A-overwrites-X*/}
 transtype(A) ::= IMMEDIATE(X). {A = @X; /*A-overwrites-X*/}
@@ -212,10 +212,10 @@ createkw(A) ::= CREATE(A).  {
   disableLookaside(pParse);
 }
 
-%type ifnotexists {int}
+%തരം ifnotexists {പൂർണ്ണസംഖ്യ}
 ifnotexists(A) ::= .              {A = 0;}
 ifnotexists(A) ::= IF NOT EXISTS. {A = 1;}
-%type temp {int}
+%തരം temp {പൂർണ്ണസംഖ്യ}
 %ifndef SQLITE_OMIT_TEMPDB
 temp(A) ::= TEMP.  {A = pParse->db->init.busy==0;}
 %endif  SQLITE_OMIT_TEMPDB
@@ -227,25 +227,25 @@ create_table_args ::= AS select(S). {
   sqlite3EndTable(pParse,0,0,0,S);
   sqlite3SelectDelete(pParse->db, S);
 }
-%type table_option_set {u32}
-%type table_option {u32}
+%തരം table_option_set {u32}
+%തരം table_option {u32}
 table_option_set(A) ::= .    {A = 0;}
 table_option_set(A) ::= table_option(A).
 table_option_set(A) ::= table_option_set(X) COMMA table_option(Y). {A = X|Y;}
 table_option(A) ::= WITHOUT nm(X). {
-  if( X.n==5 && sqlite3_strnicmp(X.z,"rowid",5)==0 ){
+  എങ്കിൽ( X.n==5 && sqlite3_strnicmp(X.z,"rowid",5)==0 ){
     A = TF_WithoutRowid | TF_NoVisibleRowid;
-  }else{
+  }അല്ലെങ്കിൽ{
     A = 0;
-    sqlite3ErrorMsg(pParse, "unknown table option: %.*s", X.n, X.z);
+    sqlite3_Error_സന്ദേശം(pParse, "unknown table option: %.*s", X.n, X.z);
   }
 }
 table_option(A) ::= nm(X). {
-  if( X.n==6 && sqlite3_strnicmp(X.z,"strict",6)==0 ){
+  എങ്കിൽ( X.n==6 && sqlite3_strnicmp(X.z,"strict",6)==0 ){
     A = TF_Strict;
-  }else{
+  }അല്ലെങ്കിൽ{
     A = 0;
-    sqlite3ErrorMsg(pParse, "unknown table option: %.*s", X.n, X.z);
+    sqlite3_Error_സന്ദേശം(pParse, "unknown table option: %.*s", X.n, X.z);
   }
 }
 columnlist ::= columnlist COMMA columnname carglist.
@@ -274,7 +274,7 @@ columnname(A) ::= nm(A) typetoken(Y). {sqlite3AddColumn(pParse,A,Y);}
   CONFLICT DATABASE DEFERRED DESC DETACH DO
   EACH END EXCLUSIVE EXPLAIN FAIL FOR
   IGNORE IMMEDIATE INITIALLY INSTEAD LIKE_KW MATCH NO PLAN
-  QUERY KEY OF OFFSET PRAGMA RAISE RECURSIVE RELEASE REPLACE RESTRICT ROW ROWS
+  QUERY താക്കോൽ_2 OF OFFSET PRAGMA RAISE RECURSIVE RELEASE REPLACE RESTRICT ROW ROWS
   ROLLBACK SAVEPOINT TEMP TRIGGER VACUUM VIEW VIRTUAL WITH WITHOUT
   NULLS FIRST LAST
 %ifdef SQLITE_OMIT_COMPOUND_SELECT
@@ -335,7 +335,7 @@ columnname(A) ::= nm(A) typetoken(Y). {sqlite3AddColumn(pParse,A,Y);}
 
 // The name of a column or table can be any of the following:
 //
-%type nm {Token}
+%തരം nm {Token}
 nm(A) ::= idj(A).
 nm(A) ::= STRING(A).
 
@@ -343,20 +343,20 @@ nm(A) ::= STRING(A).
 // as can be found after the column name in a CREATE TABLE statement.
 // Multiple tokens are concatenated to form the value of the typetoken.
 //
-%type typetoken {Token}
+%തരം typetoken {Token}
 typetoken(A) ::= .   {A.n = 0; A.z = 0;}
 typetoken(A) ::= typename(A).
 typetoken(A) ::= typename(A) LP signed RP(Y). {
-  A.n = (int)(&Y.z[Y.n] - A.z);
+  A.n = (പൂർണ്ണസംഖ്യ)(&Y.z[Y.n] - A.z);
 }
 typetoken(A) ::= typename(A) LP signed COMMA signed RP(Y). {
-  A.n = (int)(&Y.z[Y.n] - A.z);
+  A.n = (പൂർണ്ണസംഖ്യ)(&Y.z[Y.n] - A.z);
 }
-%type typename {Token}
+%തരം typename {Token}
 typename(A) ::= ids(A).
-typename(A) ::= typename(A) ids(Y). {A.n=Y.n+(int)(Y.z-A.z);}
-signed ::= plus_num.
-signed ::= minus_num.
+typename(A) ::= typename(A) ids(Y). {A.n=Y.n+(പൂർണ്ണസംഖ്യ)(Y.z-A.z);}
+signed ::= plus_അക്കം.
+signed ::= minus_അക്കം.
 
 // The scanpt non-terminal takes a value which is a pointer to the
 // input text just past the last token that has been shifted into
@@ -371,13 +371,13 @@ signed ::= minus_num.
 // whitespace on either end of the text, but that can be removed in
 // post-processing, if needed.
 //
-%type scanpt {const char*}
+%തരം scanpt {സ്ഥിരം അക്ഷരം*}
 scanpt(A) ::= . {
-  assert( yyLookahead!=YYNOCODE );
+  പ്രതിജ്ഞാ( yyLookahead!=YYNOCODE );
   A = yyLookaheadToken.z;
 }
 scantok(A) ::= . {
-  assert( yyLookahead!=YYNOCODE );
+  പ്രതിജ്ഞാ( yyLookahead!=YYNOCODE );
   A = yyLookaheadToken;
 }
 
@@ -388,45 +388,45 @@ carglist ::= carglist ccons.
 carglist ::= .
 ccons ::= CONSTRAINT nm(X). {ASSERT_IS_CREATE; pParse->u1.cr.constraintName = X;}
 ccons ::= DEFAULT scantok(A) term(X).
-                            {sqlite3AddDefaultValue(pParse,X,A.z,&A.z[A.n]);}
-ccons ::= DEFAULT LP(A) expr(X) RP(Z).
-                            {sqlite3AddDefaultValue(pParse,X,A.z+1,Z.z);}
+                            {sqlite3_Add_Default_മൂല്യം(pParse,X,A.z,&A.z[A.n]);}
+ccons ::= DEFAULT LP(A) വ്യഞ്ജകം_2(X) RP(Z).
+                            {sqlite3_Add_Default_മൂല്യം(pParse,X,A.z+1,Z.z);}
 ccons ::= DEFAULT PLUS(A) scantok(Z) term(X).
-                            {sqlite3AddDefaultValue(pParse,X,A.z,&Z.z[Z.n]);}
+                            {sqlite3_Add_Default_മൂല്യം(pParse,X,A.z,&Z.z[Z.n]);}
 ccons ::= DEFAULT MINUS(A) scantok(Z) term(X). {
-  Expr *p = sqlite3PExpr(pParse, TK_UMINUS, X, 0);
-  sqlite3AddDefaultValue(pParse,p,A.z,&Z.z[Z.n]);
+  വ്യഞ്ജകം *p = sqlite3PExpr(pParse, TK_UMINUS, X, 0);
+  sqlite3_Add_Default_മൂല്യം(pParse,p,A.z,&Z.z[Z.n]);
 }
 ccons ::= DEFAULT scantok id(X).       {
-  Expr *p = tokenExpr(pParse, TK_STRING, X);
-  if( p ){
-    sqlite3ExprIdToTrueFalse(p);
-    testcase( p->op==TK_TRUEFALSE && sqlite3ExprTruthValue(p) );
+  വ്യഞ്ജകം *p = token_വ്യഞ്ജകം(pParse, TK_STRING, X);
+  എങ്കിൽ( p ){
+    sqlite3_വ്യഞ്ജകം_Id_To_True_False(p);
+    testcase( p->op==TK_TRUEFALSE && sqlite3_വ്യഞ്ജകം_Truth_മൂല്യം(p) );
   }
-    sqlite3AddDefaultValue(pParse,p,X.z,X.z+X.n);
+    sqlite3_Add_Default_മൂല്യം(pParse,p,X.z,X.z+X.n);
 }
 
 // In addition to the type name, we also care about the primary key and
 // UNIQUE constraints.
 //
-ccons ::= NULL onconf.
-ccons ::= NOT NULL onconf(R).    {sqlite3AddNotNull(pParse, R);}
-ccons ::= PRIMARY KEY sortorder(Z) onconf(R) autoinc(I).
-                                 {sqlite3AddPrimaryKey(pParse,0,R,I,Z);}
+ccons ::= ശൂന്യ onconf.
+ccons ::= NOT ശൂന്യ onconf(R).    {sqlite3AddNotNull(pParse, R);}
+ccons ::= PRIMARY താക്കോൽ_2 sortorder(Z) onconf(R) autoinc(I).
+                                 {sqlite3_Add_Primary_താക്കോൽ(pParse,0,R,I,Z);}
 ccons ::= UNIQUE onconf(R).      {sqlite3CreateIndex(pParse,0,0,0,0,R,0,0,0,0,
                                    SQLITE_IDXTYPE_UNIQUE);}
-ccons ::= CHECK LP(A) expr(X) RP(B).  {sqlite3AddCheckConstraint(pParse,X,A.z,B.z);}
+ccons ::= CHECK LP(A) വ്യഞ്ജകം_2(X) RP(B).  {sqlite3AddCheckConstraint(pParse,X,A.z,B.z);}
 ccons ::= REFERENCES nm(T) eidlist_opt(TA) refargs(R).
-                                 {sqlite3CreateForeignKey(pParse,0,&T,TA,R);}
-ccons ::= defer_subclause(D).    {sqlite3DeferForeignKey(pParse,D);}
+                                 {sqlite3_Create_Foreign_താക്കോൽ(pParse,0,&T,TA,R);}
+ccons ::= defer_subclause(D).    {sqlite3_Defer_Foreign_താക്കോൽ(pParse,D);}
 ccons ::= COLLATE ids(C).        {sqlite3AddCollateType(pParse, &C);}
 ccons ::= GENERATED ALWAYS AS generated.
 ccons ::= AS generated.
-generated ::= LP expr(E) RP.          {sqlite3AddGenerated(pParse,E,0);}
-generated ::= LP expr(E) RP ID(TYPE). {sqlite3AddGenerated(pParse,E,&TYPE);}
+generated ::= LP വ്യഞ്ജകം_2(E) RP.          {sqlite3AddGenerated(pParse,E,0);}
+generated ::= LP വ്യഞ്ജകം_2(E) RP ID(TYPE). {sqlite3AddGenerated(pParse,E,&TYPE);}
 
 // The optional AUTOINCREMENT keyword
-%type autoinc {int}
+%തരം autoinc {പൂർണ്ണസംഖ്യ}
 autoinc(X) ::= .          {X = 0;}
 autoinc(X) ::= AUTOINCR.  {X = 1;}
 
@@ -435,24 +435,24 @@ autoinc(X) ::= AUTOINCR.  {X = 1;}
 // or immediate and which determine what action to take if a ref-integ
 // check fails.
 //
-%type refargs {int}
+%തരം refargs {പൂർണ്ണസംഖ്യ}
 refargs(A) ::= .                  { A = OE_None*0x0101; /* EV: R-19803-45884 */}
-refargs(A) ::= refargs(A) refarg(Y). { A = (A & ~Y.mask) | Y.value; }
-%type refarg {struct {int value; int mask;}}
-refarg(A) ::= MATCH nm.              { A.value = 0;     A.mask = 0x000000; }
-refarg(A) ::= ON INSERT refact.      { A.value = 0;     A.mask = 0x000000; }
-refarg(A) ::= ON DELETE refact(X).   { A.value = X;     A.mask = 0x0000ff; }
-refarg(A) ::= ON UPDATE refact(X).   { A.value = X<<8;  A.mask = 0x00ff00; }
-%type refact {int}
-refact(A) ::= SET NULL.              { A = OE_SetNull;  /* EV: R-33326-45252 */}
+refargs(A) ::= refargs(A) refarg(Y). { A = (A & ~Y.mask) | Y.മൂല്യം; }
+%തരം refarg {ഘടന {പൂർണ്ണസംഖ്യ മൂല്യം; പൂർണ്ണസംഖ്യ mask;}}
+refarg(A) ::= MATCH nm.              { A.മൂല്യം = 0;     A.mask = 0x000000; }
+refarg(A) ::= ON തിരുകുക refact.      { A.മൂല്യം = 0;     A.mask = 0x000000; }
+refarg(A) ::= ON DELETE refact(X).   { A.മൂല്യം = X;     A.mask = 0x0000ff; }
+refarg(A) ::= ON UPDATE refact(X).   { A.മൂല്യം = X<<8;  A.mask = 0x00ff00; }
+%തരം refact {പൂർണ്ണസംഖ്യ}
+refact(A) ::= SET ശൂന്യ.              { A = OE_SetNull;  /* EV: R-33326-45252 */}
 refact(A) ::= SET DEFAULT.           { A = OE_SetDflt;  /* EV: R-33326-45252 */}
 refact(A) ::= CASCADE.               { A = OE_Cascade;  /* EV: R-33326-45252 */}
 refact(A) ::= RESTRICT.              { A = OE_Restrict; /* EV: R-33326-45252 */}
 refact(A) ::= NO ACTION.             { A = OE_None;     /* EV: R-33326-45252 */}
-%type defer_subclause {int}
+%തരം defer_subclause {പൂർണ്ണസംഖ്യ}
 defer_subclause(A) ::= NOT DEFERRABLE init_deferred_pred_opt.     {A = 0;}
 defer_subclause(A) ::= DEFERRABLE init_deferred_pred_opt(X).      {A = X;}
-%type init_deferred_pred_opt {int}
+%തരം init_deferred_pred_opt {പൂർണ്ണസംഖ്യ}
 init_deferred_pred_opt(A) ::= .                       {A = 0;}
 init_deferred_pred_opt(A) ::= INITIALLY DEFERRED.     {A = 1;}
 init_deferred_pred_opt(A) ::= INITIALLY IMMEDIATE.    {A = 0;}
@@ -464,28 +464,28 @@ conslist ::= tcons.
 tconscomma ::= COMMA.          {ASSERT_IS_CREATE; pParse->u1.cr.constraintName.n = 0;}
 tconscomma ::= .
 tcons ::= CONSTRAINT nm(X).    {ASSERT_IS_CREATE; pParse->u1.cr.constraintName = X;}
-tcons ::= PRIMARY KEY LP sortlist(X) autoinc(I) RP onconf(R).
-                                 {sqlite3AddPrimaryKey(pParse,X,R,I,0);}
+tcons ::= PRIMARY താക്കോൽ_2 LP sortlist(X) autoinc(I) RP onconf(R).
+                                 {sqlite3_Add_Primary_താക്കോൽ(pParse,X,R,I,0);}
 tcons ::= UNIQUE LP sortlist(X) RP onconf(R).
                                  {sqlite3CreateIndex(pParse,0,0,0,X,R,0,0,0,0,
                                        SQLITE_IDXTYPE_UNIQUE);}
-tcons ::= CHECK LP(A) expr(E) RP(B) onconf.
+tcons ::= CHECK LP(A) വ്യഞ്ജകം_2(E) RP(B) onconf.
                                  {sqlite3AddCheckConstraint(pParse,E,A.z,B.z);}
-tcons ::= FOREIGN KEY LP eidlist(FA) RP
+tcons ::= FOREIGN താക്കോൽ_2 LP eidlist(FA) RP
           REFERENCES nm(T) eidlist_opt(TA) refargs(R) defer_subclause_opt(D). {
-    sqlite3CreateForeignKey(pParse, FA, &T, TA, R);
-    sqlite3DeferForeignKey(pParse, D);
+    sqlite3_Create_Foreign_താക്കോൽ(pParse, FA, &T, TA, R);
+    sqlite3_Defer_Foreign_താക്കോൽ(pParse, D);
 }
-%type defer_subclause_opt {int}
+%തരം defer_subclause_opt {പൂർണ്ണസംഖ്യ}
 defer_subclause_opt(A) ::= .                    {A = 0;}
 defer_subclause_opt(A) ::= defer_subclause(A).
 
 // The following is a non-standard extension that allows us to declare the
 // default behavior when there is a constraint conflict.
 //
-%type onconf {int}
-%type orconf {int}
-%type resolvetype {int}
+%തരം onconf {പൂർണ്ണസംഖ്യ}
+%തരം orconf {പൂർണ്ണസംഖ്യ}
+%തരം resolvetype {പൂർണ്ണസംഖ്യ}
 onconf(A) ::= .                              {A = OE_Default;}
 onconf(A) ::= ON CONFLICT resolvetype(X).    {A = X;}
 orconf(A) ::= .                              {A = OE_Default;}
@@ -499,7 +499,7 @@ resolvetype(A) ::= REPLACE.                  {A = OE_Replace;}
 cmd ::= DROP TABLE ifexists(E) fullname(X). {
   sqlite3DropTable(pParse, X, 0, E);
 }
-%type ifexists {int}
+%തരം ifexists {പൂർണ്ണസംഖ്യ}
 ifexists(A) ::= IF EXISTS.   {A = 1;}
 ifexists(A) ::= .            {A = 0;}
 
@@ -519,7 +519,7 @@ cmd ::= DROP VIEW ifexists(E) fullname(X). {
 //
 cmd ::= select(X).  {
   SelectDest dest = {SRT_Output, 0, 0, 0, 0, 0, 0};
-  if( (pParse->db->mDbFlags & DBFLAG_EncodingFixed)!=0
+  എങ്കിൽ( (pParse->db->mDbFlags & DBFLAG_EncodingFixed)!=0
    || sqlite3ReadSchema(pParse)==SQLITE_OK
   ){
     sqlite3Select(pParse, X, &dest);
@@ -527,11 +527,11 @@ cmd ::= select(X).  {
   sqlite3SelectDelete(pParse->db, X);
 }
 
-%type select {Select*}
+%തരം select {Select*}
 %destructor select {sqlite3SelectDelete(pParse->db, $$);}
-%type selectnowith {Select*}
+%തരം selectnowith {Select*}
 %destructor selectnowith {sqlite3SelectDelete(pParse->db, $$);}
-%type oneselect {Select*}
+%തരം oneselect {Select*}
 %destructor oneselect {sqlite3SelectDelete(pParse->db, $$);}
 
 %include {
@@ -540,30 +540,30 @@ cmd ::= select(X).  {
   ** all elements in the list.  And make sure list length does not exceed
   ** SQLITE_LIMIT_COMPOUND_SELECT.
   */
-  static void parserDoubleLinkSelect(Parse *pParse, Select *p){
-    assert( p!=0 );
-    if( p->pPrior ){
+  സ്ഥിതം ശൂന്യം parserDoubleLinkSelect(Parse *pParse, Select *p){
+    പ്രതിജ്ഞാ( p!=0 );
+    എങ്കിൽ( p->pPrior ){
       Select *pNext = 0, *pLoop = p;
-      int mxSelect, cnt = 1;
-      while(1){
+      പൂർണ്ണസംഖ്യ mxSelect, cnt = 1;
+      ആകുമ്പോൾ(1){
         pLoop->pNext = pNext;
         pLoop->selFlags |= SF_Compound;
         pNext = pLoop;
         pLoop = pLoop->pPrior;
-        if( pLoop==0 ) break;
+        എങ്കിൽ( pLoop==0 ) നിർത്തുക;
         cnt++;        
-        if( pLoop->pOrderBy || pLoop->pLimit ){
-          sqlite3ErrorMsg(pParse,"%s clause should come after %s not before",
+        എങ്കിൽ( pLoop->pOrderBy || pLoop->pLimit ){
+          sqlite3_Error_സന്ദേശം(pParse,"%s clause should come after %s not before",
              pLoop->pOrderBy!=0 ? "ORDER BY" : "LIMIT",
              sqlite3SelectOpName(pNext->op));
-          break;
+          നിർത്തുക;
         }
       }
-      if( (p->selFlags & (SF_MultiValue|SF_Values))==0
+      എങ്കിൽ( (p->selFlags & (SF_Multi_മൂല്യം|SF_മൂല്യങ്ങൾ))==0
        && (mxSelect = pParse->db->aLimit[SQLITE_LIMIT_COMPOUND_SELECT])>0
        && cnt>mxSelect
       ){
-        sqlite3ErrorMsg(pParse, "too many terms in compound SELECT");
+        sqlite3_Error_സന്ദേശം(pParse, "too many terms in compound SELECT");
       }
     }
   }
@@ -571,37 +571,37 @@ cmd ::= select(X).  {
   /* Attach a With object describing the WITH clause to a Select
   ** object describing the query for which the WITH clause is a prefix.
   */
-  static Select *attachWithToSelect(Parse *pParse, Select *pSelect, With *pWith){
-    if( pSelect ){
+  സ്ഥിതം Select *attachWithToSelect(Parse *pParse, Select *pSelect, With *pWith){
+    എങ്കിൽ( pSelect ){
       pSelect->pWith = pWith;
       parserDoubleLinkSelect(pParse, pSelect);
-    }else{
+    }അല്ലെങ്കിൽ{
       sqlite3WithDelete(pParse->db, pWith);
     }
-    return pSelect;
+    തിരികെ pSelect;
   }
 
   /* Memory allocator for parser stack resizing.  This is a thin wrapper around
   ** sqlite3_realloc() that includes a call to sqlite3FaultSim() to facilitate
   ** testing.
   */
-  static void *parserStackRealloc(
-    void *pOld,               /* Prior allocation */
+  സ്ഥിതം ശൂന്യം *parser_അട്ടി_Realloc(
+    ശൂന്യം *pOld,               /* Prior allocation */
     sqlite3_uint64 newSize,   /* Requested new alloation size */
     Parse *pParse             /* Parsing context */
   ){
-    void *p = sqlite3FaultSim(700) ? 0 : sqlite3_realloc(pOld, newSize);
-    if( p==0 ) sqlite3OomFault(pParse->db);
-    return p;
+    ശൂന്യം *p = sqlite3FaultSim(700) ? 0 : sqlite3_realloc(pOld, newSize);
+    എങ്കിൽ( p==0 ) sqlite3OomFault(pParse->db);
+    തിരികെ p;
   }
-  static void parserStackFree(void *pOld, Parse *pParse){
-    (void)pParse;
+  സ്ഥിതം ശൂന്യം parser_അട്ടി_Free(ശൂന്യം *pOld, Parse *pParse){
+    (ശൂന്യം)pParse;
     sqlite3_free(pOld); 
   }
 
   /* Return an integer that is the maximum allowed stack size */
-  static int parserStackSizeLimit(Parse *pParse){
-    return pParse->db->aLimit[SQLITE_LIMIT_PARSER_DEPTH];
+  സ്ഥിതം പൂർണ്ണസംഖ്യ parser_അട്ടി_Size_Limit(Parse *pParse){
+    തിരികെ pParse->db->aLimit[SQLITE_LIMIT_PARSER_DEPTH];
   }
 }
 
@@ -613,7 +613,7 @@ select(A) ::= WITH RECURSIVE wqlist(W) selectnowith(X).
 %endif /* SQLITE_OMIT_CTE */
 select(A) ::= selectnowith(A). {
   Select *p = A;
-  if( p ){
+  എങ്കിൽ( p ){
     parserDoubleLinkSelect(pParse, p);
   }
 }
@@ -623,7 +623,7 @@ selectnowith(A) ::= oneselect(A).
 selectnowith(A) ::= selectnowith(A) multiselect_op(Y) oneselect(Z).  {
   Select *pRhs = Z;
   Select *pLhs = A;
-  if( pRhs && pRhs->pPrior ){
+  എങ്കിൽ( pRhs && pRhs->pPrior ){
     SrcList *pFrom;
     Token x;
     x.n = 0;
@@ -631,18 +631,18 @@ selectnowith(A) ::= selectnowith(A) multiselect_op(Y) oneselect(Z).  {
     pFrom = sqlite3SrcListAppendFromTerm(pParse,0,0,0,&x,pRhs,0);
     pRhs = sqlite3SelectNew(pParse,0,pFrom,0,0,0,0,0,0);
   }
-  if( pRhs ){
+  എങ്കിൽ( pRhs ){
     pRhs->op = (u8)Y;
     pRhs->pPrior = pLhs;
-    if( ALWAYS(pLhs) ) pLhs->selFlags &= ~(u32)SF_MultiValue;
-    pRhs->selFlags &= ~(u32)SF_MultiValue;
-    if( Y!=TK_ALL ) pParse->hasCompound = 1;
-  }else{
+    എങ്കിൽ( ALWAYS(pLhs) ) pLhs->selFlags &= ~(u32)SF_Multi_മൂല്യം;
+    pRhs->selFlags &= ~(u32)SF_Multi_മൂല്യം;
+    എങ്കിൽ( Y!=TK_ALL ) pParse->hasCompound = 1;
+  }അല്ലെങ്കിൽ{
     sqlite3SelectDelete(pParse->db, pLhs);
   }
   A = pRhs;
 }
-%type multiselect_op {int}
+%തരം multiselect_op {പൂർണ്ണസംഖ്യ}
 multiselect_op(A) ::= UNION(OP).             {A = @OP; /*A-overwrites-OP*/}
 multiselect_op(A) ::= UNION ALL.             {A = TK_ALL;}
 multiselect_op(A) ::= EXCEPT|INTERSECT(OP).  {A = @OP; /*A-overwrites-OP*/}
@@ -658,9 +658,9 @@ oneselect(A) ::= SELECT distinct(D) selcollist(W) from(X) where_opt(Y)
                  groupby_opt(P) having_opt(Q) window_clause(R)
                  orderby_opt(Z) limit_opt(L). {
   A = sqlite3SelectNew(pParse,W,X,Y,P,Q,Z,D,L);
-  if( A ){
+  എങ്കിൽ( A ){
     A->pWinDefn = R;
-  }else{
+  }അല്ലെങ്കിൽ{
     sqlite3WindowListDelete(pParse->db, R);
   }
 }
@@ -669,31 +669,31 @@ oneselect(A) ::= SELECT distinct(D) selcollist(W) from(X) where_opt(Y)
 
 // Single row VALUES clause.
 //
-%type values {Select*}
-oneselect(A) ::= values(A).
-%destructor values {sqlite3SelectDelete(pParse->db, $$);}
-values(A) ::= VALUES LP nexprlist(X) RP. {
-  A = sqlite3SelectNew(pParse,X,0,0,0,0,0,SF_Values,0);
+%തരം മൂല്യങ്ങൾ {Select*}
+oneselect(A) ::= മൂല്യങ്ങൾ(A).
+%destructor മൂല്യങ്ങൾ {sqlite3SelectDelete(pParse->db, $$);}
+മൂല്യങ്ങൾ(A) ::= മൂല്യങ്ങൾ_2 LP nexprlist(X) RP. {
+  A = sqlite3SelectNew(pParse,X,0,0,0,0,0,SF_മൂല്യങ്ങൾ,0);
 }
 
 // Multiple row VALUES clause.
 //
-%type mvalues {Select*}
+%തരം mvalues {Select*}
 oneselect(A) ::= mvalues(A). {
-  sqlite3MultiValuesEnd(pParse, A);
+  sqlite3_Multi_മൂല്യങ്ങൾ_End(pParse, A);
 }
 %destructor mvalues {sqlite3SelectDelete(pParse->db, $$);}
-mvalues(A) ::= values(A) COMMA LP nexprlist(Y) RP. {
-  A = sqlite3MultiValues(pParse, A, Y);
+mvalues(A) ::= മൂല്യങ്ങൾ(A) COMMA LP nexprlist(Y) RP. {
+  A = sqlite3_Multi_മൂല്യങ്ങൾ(pParse, A, Y);
 }
 mvalues(A) ::= mvalues(A) COMMA LP nexprlist(Y) RP. {
-  A = sqlite3MultiValues(pParse, A, Y);
+  A = sqlite3_Multi_മൂല്യങ്ങൾ(pParse, A, Y);
 }
 
 // The "distinct" nonterminal is true (1) if the DISTINCT keyword is
 // present and false (0) if it is not.
 //
-%type distinct {int}
+%തരം distinct {പൂർണ്ണസംഖ്യ}
 distinct(A) ::= DISTINCT.   {A = SF_Distinct;}
 distinct(A) ::= ALL.        {A = SF_All;}
 distinct(A) ::= .           {A = 0;}
@@ -703,45 +703,45 @@ distinct(A) ::= .           {A = 0;}
 // "SELECT * FROM ..." is encoded as a special expression with an
 // opcode of TK_ASTERISK.
 //
-%type selcollist {ExprList*}
-%destructor selcollist {sqlite3ExprListDelete(pParse->db, $$);}
-%type sclp {ExprList*}
-%destructor sclp {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം selcollist {വ്യഞ്ജകം_List*}
+%destructor selcollist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
+%തരം sclp {വ്യഞ്ജകം_List*}
+%destructor sclp {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 sclp(A) ::= selcollist(A) COMMA.
 sclp(A) ::= .                                {A = 0;}
-selcollist(A) ::= sclp(A) scanpt(B) expr(X) scanpt(Z) as(Y).     {
-   A = sqlite3ExprListAppend(pParse, A, X);
-   if( Y.n>0 ) sqlite3ExprListSetName(pParse, A, &Y, 1);
-   sqlite3ExprListSetSpan(pParse,A,B,Z);
+selcollist(A) ::= sclp(A) scanpt(B) വ്യഞ്ജകം_2(X) scanpt(Z) as(Y).     {
+   A = sqlite3_വ്യഞ്ജകം_List_Append(pParse, A, X);
+   എങ്കിൽ( Y.n>0 ) sqlite3_വ്യഞ്ജകം_List_Set_Name(pParse, A, &Y, 1);
+   sqlite3_വ്യഞ്ജകം_List_Set_Span(pParse,A,B,Z);
 }
 selcollist(A) ::= sclp(A) scanpt STAR(X). {
-  Expr *p = sqlite3Expr(pParse->db, TK_ASTERISK, 0);
-  sqlite3ExprSetErrorOffset(p, (int)(X.z - pParse->zTail));
-  A = sqlite3ExprListAppend(pParse, A, p);
+  വ്യഞ്ജകം *p = sqlite3_വ്യഞ്ജകം(pParse->db, TK_ASTERISK, 0);
+  sqlite3_വ്യഞ്ജകം_Set_Error_Offset(p, (പൂർണ്ണസംഖ്യ)(X.z - pParse->zTail));
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse, A, p);
 }
 selcollist(A) ::= sclp(A) scanpt nm(X) DOT STAR(Y). {
-  Expr *pRight, *pLeft, *pDot;
-  pRight = sqlite3PExpr(pParse, TK_ASTERISK, 0, 0);
-  sqlite3ExprSetErrorOffset(pRight, (int)(Y.z - pParse->zTail));
-  pLeft = tokenExpr(pParse, TK_ID, X);
-  pDot = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight);
-  A = sqlite3ExprListAppend(pParse,A, pDot);
+  വ്യഞ്ജകം *p_വലത്, *p_ഇടത്, *pDot;
+  p_വലത് = sqlite3PExpr(pParse, TK_ASTERISK, 0, 0);
+  sqlite3_വ്യഞ്ജകം_Set_Error_Offset(p_വലത്, (പൂർണ്ണസംഖ്യ)(Y.z - pParse->zTail));
+  p_ഇടത് = token_വ്യഞ്ജകം(pParse, TK_ID, X);
+  pDot = sqlite3PExpr(pParse, TK_DOT, p_ഇടത്, p_വലത്);
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A, pDot);
 }
 
 // An option "AS <id>" phrase that can follow one of the expressions that
 // define the result set, or one of the tables in the FROM clause.
 //
-%type as {Token}
+%തരം as {Token}
 as(X) ::= AS nm(Y).    {X = Y;}
 as(X) ::= ids(X).
 as(X) ::= .            {X.n = 0; X.z = 0;}
 
 
-%type seltablist {SrcList*}
+%തരം seltablist {SrcList*}
 %destructor seltablist {sqlite3SrcListDelete(pParse->db, $$);}
-%type stl_prefix {SrcList*}
+%തരം stl_prefix {SrcList*}
 %destructor stl_prefix {sqlite3SrcListDelete(pParse->db, $$);}
-%type from {SrcList*}
+%തരം from {SrcList*}
 %destructor from {sqlite3SrcListDelete(pParse->db, $$);}
 
 // A complete FROM clause.
@@ -756,7 +756,7 @@ from(A) ::= FROM seltablist(X). {
 // in a SELECT statement.  "stl_prefix" is a prefix of this list.
 //
 stl_prefix(A) ::= seltablist(A) joinop(Y).    {
-   if( ALWAYS(A && A->nSrc>0) ) A->a[A->nSrc-1].fg.jointype = (u8)Y;
+   എങ്കിൽ( ALWAYS(A && A->nSrc>0) ) A->a[A->nSrc-1].fg.jointype = (u8)Y;
 }
 stl_prefix(A) ::= .                           {A = 0;}
 seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) as(Z) on_using(N). {
@@ -775,36 +775,36 @@ seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) LP exprlist(E) RP as(Z) on_using(N
     A = sqlite3SrcListAppendFromTerm(pParse,A,0,0,&Z,S,&N);
   }
   seltablist(A) ::= stl_prefix(A) LP seltablist(F) RP as(Z) on_using(N). {
-    if( A==0 && Z.n==0 && N.pOn==0 && N.pUsing==0 ){
+    എങ്കിൽ( A==0 && Z.n==0 && N.pOn==0 && N.pUsing==0 ){
       A = F;
-    }else if( ALWAYS(F!=0) && F->nSrc==1 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( ALWAYS(F!=0) && F->nSrc==1 ){
       A = sqlite3SrcListAppendFromTerm(pParse,A,0,0,&Z,0,&N);
-      if( A ){
+      എങ്കിൽ( A ){
         SrcItem *pNew = &A->a[A->nSrc-1];
         SrcItem *pOld = F->a;
-        assert( pOld->fg.fixedSchema==0 );
+        പ്രതിജ്ഞാ( pOld->fg.fixedSchema==0 );
         pNew->zName = pOld->zName;
         pOld->zName = 0;
-        assert( pOld->fg.fixedSchema==0 );
-        if( pOld->fg.isSubquery ){
+        പ്രതിജ്ഞാ( pOld->fg.fixedSchema==0 );
+        എങ്കിൽ( pOld->fg.isSubquery ){
           pNew->fg.isSubquery = 1;
           pNew->u4.pSubq = pOld->u4.pSubq;
           pOld->u4.pSubq = 0;
           pOld->fg.isSubquery = 0;
-          assert( pNew->u4.pSubq!=0 && pNew->u4.pSubq->pSelect!=0 );
-          if( (pNew->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0 ){
+          പ്രതിജ്ഞാ( pNew->u4.pSubq!=0 && pNew->u4.pSubq->pSelect!=0 );
+          എങ്കിൽ( (pNew->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0 ){
             pNew->fg.isNestedFrom = 1;
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           pNew->u4.zDatabase = pOld->u4.zDatabase;
           pOld->u4.zDatabase = 0;
         }
-        if( pOld->fg.isTabFunc ){
+        എങ്കിൽ( pOld->fg.isTabFunc ){
           pNew->u1.pFuncArg = pOld->u1.pFuncArg;
           pOld->u1.pFuncArg = 0;
           pOld->fg.isTabFunc = 0;
           pNew->fg.isTabFunc = 1;
-        }else if( pOld->fg.isIndexedBy ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( pOld->fg.isIndexedBy ){
           pNew->u1.zIndexedBy = pOld->u1.zIndexedBy;
           pOld->u1.zIndexedBy = 0;
           pOld->fg.isIndexedBy = 0;
@@ -813,7 +813,7 @@ seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) LP exprlist(E) RP as(Z) on_using(N
         pNew->fg.notIndexed = pOld->fg.notIndexed;
       }
       sqlite3SrcListDelete(pParse->db, F);
-    }else{
+    }അല്ലെങ്കിൽ{
       Select *pSubquery;
       sqlite3SrcListShiftJoinType(pParse,F);
       pSubquery = sqlite3SelectNew(pParse,0,F,0,0,0,0,SF_NestedFrom,0);
@@ -822,54 +822,54 @@ seltablist(A) ::= stl_prefix(A) nm(Y) dbnm(D) LP exprlist(E) RP as(Z) on_using(N
   }
 %endif  SQLITE_OMIT_SUBQUERY
 
-%type dbnm {Token}
+%തരം dbnm {Token}
 dbnm(A) ::= .          {A.z=0; A.n=0;}
 dbnm(A) ::= DOT nm(X). {A = X;}
 
-%type fullname {SrcList*}
+%തരം fullname {SrcList*}
 %destructor fullname {sqlite3SrcListDelete(pParse->db, $$);}
 fullname(A) ::= nm(X).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
+  എങ്കിൽ( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
 }
 fullname(A) ::= nm(X) DOT nm(Y). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
+  എങ്കിൽ( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
 }
 
-%type xfullname {SrcList*}
+%തരം xfullname {SrcList*}
 %destructor xfullname {sqlite3SrcListDelete(pParse->db, $$);}
 xfullname(A) ::= nm(X).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
+  എങ്കിൽ( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
 }
 xfullname(A) ::= nm(X) DOT nm(Y). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
+  എങ്കിൽ( IN_RENAME_OBJECT && A ) sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
 }
 xfullname(A) ::= nm(X) AS nm(Z).  {
   A = sqlite3SrcListAppend(pParse,0,&X,0);
-  if( A ){
-    if( IN_RENAME_OBJECT ){
+  എങ്കിൽ( A ){
+    എങ്കിൽ( IN_RENAME_OBJECT ){
       sqlite3RenameTokenMap(pParse, A->a[0].zName, &X);
-    }else{
+    }അല്ലെങ്കിൽ{
       A->a[0].zAlias = sqlite3NameFromToken(pParse->db, &Z);
     }
   }
 }
 xfullname(A) ::= nm(X) DOT nm(Y) AS nm(Z). {
   A = sqlite3SrcListAppend(pParse,0,&X,&Y);
-  if( A ){
-    if( IN_RENAME_OBJECT ){
+  എങ്കിൽ( A ){
+    എങ്കിൽ( IN_RENAME_OBJECT ){
       sqlite3RenameTokenMap(pParse, A->a[0].zName, &Y);
-    }else{
+    }അല്ലെങ്കിൽ{
       A->a[0].zAlias = sqlite3NameFromToken(pParse->db, &Z);
     }
   }
 }
 
 
-%type joinop {int}
+%തരം joinop {പൂർണ്ണസംഖ്യ}
 joinop(X) ::= COMMA|JOIN.              { X = JT_INNER; }
 joinop(X) ::= JOIN_KW(A) JOIN.
                   {X = sqlite3JoinType(pParse,&A,0,0);  /*X-overwrites-A*/}
@@ -895,9 +895,9 @@ joinop(X) ::= JOIN_KW(A) nm(B) nm(C) JOIN.
 // The [AND] and [OR] precedence marks in the rules for on_using cause the
 // ON in this context to always be interpreted as belonging to the JOIN.
 //
-%type on_using {OnOrUsing}
+%തരം on_using {OnOrUsing}
 //%destructor on_using {sqlite3ClearOnOrUsing(pParse->db, &$$);}
-on_using(N) ::= ON expr(E).            {N.pOn = E; N.pUsing = 0;}
+on_using(N) ::= ON വ്യഞ്ജകം_2(E).            {N.pOn = E; N.pUsing = 0;}
 on_using(N) ::= USING LP idlist(L) RP. {N.pOn = 0; N.pUsing = L;}
 on_using(N) ::= .                 [OR] {N.pOn = 0; N.pUsing = 0;}
 
@@ -911,56 +911,56 @@ on_using(N) ::= .                 [OR] {N.pOn = 0; N.pUsing = 0;}
 // normally illegal. The sqlite3SrcListIndexedBy() function 
 // recognizes and interprets this as a special case.
 //
-%type indexed_opt {Token}
-%type indexed_by  {Token}
+%തരം indexed_opt {Token}
+%തരം indexed_by  {Token}
 indexed_opt(A) ::= .                 {A.z=0; A.n=0;}
 indexed_opt(A) ::= indexed_by(A).
 indexed_by(A)  ::= INDEXED BY nm(X). {A = X;}
 indexed_by(A)  ::= NOT INDEXED.      {A.z=0; A.n=1;}
 
-%type orderby_opt {ExprList*}
-%destructor orderby_opt {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം orderby_opt {വ്യഞ്ജകം_List*}
+%destructor orderby_opt {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
 // the sortlist non-terminal stores a list of expression where each
 // expression is optionally followed by ASC or DESC to indicate the
 // sort order.
 //
-%type sortlist {ExprList*}
-%destructor sortlist {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം sortlist {വ്യഞ്ജകം_List*}
+%destructor sortlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
 orderby_opt(A) ::= .                          {A = 0;}
 orderby_opt(A) ::= ORDER BY sortlist(X).      {A = X;}
-sortlist(A) ::= sortlist(A) COMMA expr(Y) sortorder(Z) nulls(X). {
-  A = sqlite3ExprListAppend(pParse,A,Y);
-  sqlite3ExprListSetSortOrder(A,Z,X);
+sortlist(A) ::= sortlist(A) COMMA വ്യഞ്ജകം_2(Y) sortorder(Z) nulls(X). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A,Y);
+  sqlite3_വ്യഞ്ജകം_List_Set_Sort_Order(A,Z,X);
 }
-sortlist(A) ::= expr(Y) sortorder(Z) nulls(X). {
-  A = sqlite3ExprListAppend(pParse,0,Y); /*A-overwrites-Y*/
-  sqlite3ExprListSetSortOrder(A,Z,X);
+sortlist(A) ::= വ്യഞ്ജകം_2(Y) sortorder(Z) nulls(X). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0,Y); /*A-overwrites-Y*/
+  sqlite3_വ്യഞ്ജകം_List_Set_Sort_Order(A,Z,X);
 }
 
-%type sortorder {int}
+%തരം sortorder {പൂർണ്ണസംഖ്യ}
 
 sortorder(A) ::= ASC.           {A = SQLITE_SO_ASC;}
 sortorder(A) ::= DESC.          {A = SQLITE_SO_DESC;}
 sortorder(A) ::= .              {A = SQLITE_SO_UNDEFINED;}
 
-%type nulls {int}
+%തരം nulls {പൂർണ്ണസംഖ്യ}
 nulls(A) ::= NULLS FIRST.       {A = SQLITE_SO_ASC;}
 nulls(A) ::= NULLS LAST.        {A = SQLITE_SO_DESC;}
 nulls(A) ::= .                  {A = SQLITE_SO_UNDEFINED;}
 
-%type groupby_opt {ExprList*}
-%destructor groupby_opt {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം groupby_opt {വ്യഞ്ജകം_List*}
+%destructor groupby_opt {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 groupby_opt(A) ::= .                      {A = 0;}
 groupby_opt(A) ::= GROUP BY nexprlist(X). {A = X;}
 
-%type having_opt {Expr*}
-%destructor having_opt {sqlite3ExprDelete(pParse->db, $$);}
+%തരം having_opt {വ്യഞ്ജകം*}
+%destructor having_opt {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 having_opt(A) ::= .                {A = 0;}
-having_opt(A) ::= HAVING expr(X).  {A = X;}
+having_opt(A) ::= HAVING വ്യഞ്ജകം_2(X).  {A = X;}
 
-%type limit_opt {Expr*}
+%തരം limit_opt {വ്യഞ്ജകം*}
 
 // The destructor for limit_opt will never fire in the current grammar.
 // The limit_opt non-terminal only occurs at the end of a single production
@@ -971,21 +971,21 @@ having_opt(A) ::= HAVING expr(X).  {A = X;}
 //
 //%destructor limit_opt {sqlite3ExprDelete(pParse->db, $$);}
 limit_opt(A) ::= .       {A = 0;}
-limit_opt(A) ::= LIMIT expr(X).
+limit_opt(A) ::= LIMIT വ്യഞ്ജകം_2(X).
                          {A = sqlite3PExpr(pParse,TK_LIMIT,X,0);}
-limit_opt(A) ::= LIMIT expr(X) OFFSET expr(Y). 
+limit_opt(A) ::= LIMIT വ്യഞ്ജകം_2(X) OFFSET വ്യഞ്ജകം_2(Y). 
                          {A = sqlite3PExpr(pParse,TK_LIMIT,X,Y);}
-limit_opt(A) ::= LIMIT expr(X) COMMA expr(Y). 
+limit_opt(A) ::= LIMIT വ്യഞ്ജകം_2(X) COMMA വ്യഞ്ജകം_2(Y). 
                          {A = sqlite3PExpr(pParse,TK_LIMIT,Y,X);}
 
 /////////////////////////// The DELETE statement /////////////////////////////
 //
-%if SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
+%എങ്കിൽ SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
 cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W)
         orderby_opt(O) limit_opt(L). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
 #ifndef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( O || L ){
+  എങ്കിൽ( O || L ){
     updateDeleteLimitError(pParse,O,L);
     O = 0;
     L = 0;
@@ -993,36 +993,36 @@ cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W)
 #endif
   sqlite3DeleteFrom(pParse,X,W,O,L);
 }
-%else
+%അല്ലെങ്കിൽ
 cmd ::= with DELETE FROM xfullname(X) indexed_opt(I) where_opt_ret(W). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
   sqlite3DeleteFrom(pParse,X,W,0,0);
 }
 %endif
 
-%type where_opt {Expr*}
-%destructor where_opt {sqlite3ExprDelete(pParse->db, $$);}
-%type where_opt_ret {Expr*}
-%destructor where_opt_ret {sqlite3ExprDelete(pParse->db, $$);}
+%തരം where_opt {വ്യഞ്ജകം*}
+%destructor where_opt {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
+%തരം where_opt_ret {വ്യഞ്ജകം*}
+%destructor where_opt_ret {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 
 where_opt(A) ::= .                    {A = 0;}
-where_opt(A) ::= WHERE expr(X).       {A = X;}
+where_opt(A) ::= WHERE വ്യഞ്ജകം_2(X).       {A = X;}
 where_opt_ret(A) ::= .                                      {A = 0;}
-where_opt_ret(A) ::= WHERE expr(X).                         {A = X;}
+where_opt_ret(A) ::= WHERE വ്യഞ്ജകം_2(X).                         {A = X;}
 where_opt_ret(A) ::= RETURNING selcollist(X).               
        {sqlite3AddReturning(pParse,X); A = 0;}
-where_opt_ret(A) ::= WHERE expr(X) RETURNING selcollist(Y).
+where_opt_ret(A) ::= WHERE വ്യഞ്ജകം_2(X) RETURNING selcollist(Y).
        {sqlite3AddReturning(pParse,Y); A = X;}
 
 ////////////////////////// The UPDATE command ////////////////////////////////
 //
-%if SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
+%എങ്കിൽ SQLITE_ENABLE_UPDATE_DELETE_LIMIT || SQLITE_UDL_CAPABLE_PARSER
 cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
         where_opt_ret(W) orderby_opt(O) limit_opt(L).  {
   sqlite3SrcListIndexedBy(pParse, X, &I);
-  if( F ){
+  എങ്കിൽ( F ){
     SrcList *pFromClause = F;
-    if( pFromClause->nSrc>1 ){
+    എങ്കിൽ( pFromClause->nSrc>1 ){
       Select *pSubquery;
       Token as;
       pSubquery = sqlite3SelectNew(pParse,0,pFromClause,0,0,0,0,SF_NestedFrom,0);
@@ -1032,9 +1032,9 @@ cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
     }
     X = sqlite3SrcListAppendList(pParse, X, pFromClause);
   }
-  sqlite3ExprListCheckLength(pParse,Y,"set list"); 
+  sqlite3_വ്യഞ്ജകം_List_Check_Length(pParse,Y,"set list"); 
 #ifndef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( O || L ){
+  എങ്കിൽ( O || L ){
     updateDeleteLimitError(pParse,O,L);
     O = 0;
     L = 0;
@@ -1042,14 +1042,14 @@ cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
 #endif
   sqlite3Update(pParse,X,Y,W,R,O,L,0);
 }
-%else
+%അല്ലെങ്കിൽ
 cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
         where_opt_ret(W). {
   sqlite3SrcListIndexedBy(pParse, X, &I);
-  sqlite3ExprListCheckLength(pParse,Y,"set list"); 
-  if( F ){
+  sqlite3_വ്യഞ്ജകം_List_Check_Length(pParse,Y,"set list"); 
+  എങ്കിൽ( F ){
     SrcList *pFromClause = F;
-    if( pFromClause->nSrc>1 ){
+    എങ്കിൽ( pFromClause->nSrc>1 ){
       Select *pSubquery;
       Token as;
       pSubquery = sqlite3SelectNew(pParse,0,pFromClause,0,0,0,0,SF_NestedFrom,0);
@@ -1065,36 +1065,36 @@ cmd ::= with UPDATE orconf(R) xfullname(X) indexed_opt(I) SET setlist(Y) from(F)
 
 
 
-%type setlist {ExprList*}
-%destructor setlist {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം setlist {വ്യഞ്ജകം_List*}
+%destructor setlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
-setlist(A) ::= setlist(A) COMMA nm(X) EQ expr(Y). {
-  A = sqlite3ExprListAppend(pParse, A, Y);
-  sqlite3ExprListSetName(pParse, A, &X, 1);
+setlist(A) ::= setlist(A) COMMA nm(X) EQ വ്യഞ്ജകം_2(Y). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse, A, Y);
+  sqlite3_വ്യഞ്ജകം_List_Set_Name(pParse, A, &X, 1);
 }
-setlist(A) ::= setlist(A) COMMA LP idlist(X) RP EQ expr(Y). {
-  A = sqlite3ExprListAppendVector(pParse, A, X, Y);
+setlist(A) ::= setlist(A) COMMA LP idlist(X) RP EQ വ്യഞ്ജകം_2(Y). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append_Vector(pParse, A, X, Y);
 }
-setlist(A) ::= nm(X) EQ expr(Y). {
-  A = sqlite3ExprListAppend(pParse, 0, Y);
-  sqlite3ExprListSetName(pParse, A, &X, 1);
+setlist(A) ::= nm(X) EQ വ്യഞ്ജകം_2(Y). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse, 0, Y);
+  sqlite3_വ്യഞ്ജകം_List_Set_Name(pParse, A, &X, 1);
 }
-setlist(A) ::= LP idlist(X) RP EQ expr(Y). {
-  A = sqlite3ExprListAppendVector(pParse, 0, X, Y);
+setlist(A) ::= LP idlist(X) RP EQ വ്യഞ്ജകം_2(Y). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append_Vector(pParse, 0, X, Y);
 }
 
 ////////////////////////// The INSERT command /////////////////////////////////
 //
-cmd ::= with insert_cmd(R) INTO xfullname(X) idlist_opt(F) select(S)
+cmd ::= with തിരുകുക_cmd(R) INTO xfullname(X) idlist_opt(F) select(S)
         upsert(U). {
-  sqlite3Insert(pParse, X, S, F, R, U);
+  sqlite3_തിരുകുക(pParse, X, S, F, R, U);
 }
-cmd ::= with insert_cmd(R) INTO xfullname(X) idlist_opt(F) DEFAULT VALUES returning.
+cmd ::= with തിരുകുക_cmd(R) INTO xfullname(X) idlist_opt(F) DEFAULT മൂല്യങ്ങൾ_2 returning.
 {
-  sqlite3Insert(pParse, X, 0, F, R, 0);
+  sqlite3_തിരുകുക(pParse, X, 0, F, R, 0);
 }
 
-%type upsert {Upsert*}
+%തരം upsert {Upsert*}
 
 // Because upsert only occurs at the tip end of the INSERT rule for cmd,
 // there is never a case where the value of the upsert pointer will not
@@ -1116,13 +1116,13 @@ upsert(A) ::= ON CONFLICT DO UPDATE SET setlist(Z) where_opt(W) returning.
 returning ::= RETURNING selcollist(X).  {sqlite3AddReturning(pParse,X);}
 returning ::= .
 
-%type insert_cmd {int}
-insert_cmd(A) ::= INSERT orconf(R).   {A = R;}
-insert_cmd(A) ::= REPLACE.            {A = OE_Replace;}
+%തരം തിരുകുക_cmd {പൂർണ്ണസംഖ്യ}
+തിരുകുക_cmd(A) ::= തിരുകുക orconf(R).   {A = R;}
+തിരുകുക_cmd(A) ::= REPLACE.            {A = OE_Replace;}
 
-%type idlist_opt {IdList*}
+%തരം idlist_opt {IdList*}
 %destructor idlist_opt {sqlite3IdListDelete(pParse->db, $$);}
-%type idlist {IdList*}
+%തരം idlist {IdList*}
 %destructor idlist {sqlite3IdListDelete(pParse->db, $$);}
 
 idlist_opt(A) ::= .                       {A = 0;}
@@ -1135,118 +1135,118 @@ idlist(A) ::= nm(Y).
 /////////////////////////// Expression Processing /////////////////////////////
 //
 
-%type expr {Expr*}
-%destructor expr {sqlite3ExprDelete(pParse->db, $$);}
-%type term {Expr*}
-%destructor term {sqlite3ExprDelete(pParse->db, $$);}
+%തരം വ്യഞ്ജകം_2 {വ്യഞ്ജകം*}
+%destructor വ്യഞ്ജകം_2 {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
+%തരം term {വ്യഞ്ജകം*}
+%destructor term {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 
 %include {
 
   /* Construct a new Expr object from a single token */
-  static Expr *tokenExpr(Parse *pParse, int op, Token t){
-    Expr *p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr)+t.n+1);
-    if( p ){
+  സ്ഥിതം വ്യഞ്ജകം *token_വ്യഞ്ജകം(Parse *pParse, പൂർണ്ണസംഖ്യ op, Token t){
+    വ്യഞ്ജകം *p = sqlite3DbMallocRawNN(pParse->db, വലുപ്പം(വ്യഞ്ജകം)+t.n+1);
+    എങ്കിൽ( p ){
       /* memset(p, 0, sizeof(Expr)); */
       p->op = (u8)op;
-      p->affExpr = 0;
+      p->aff_വ്യഞ്ജകം = 0;
       p->flags = EP_Leaf;
-      ExprClearVVAProperties(p);
+      വ്യഞ്ജകം_Clear_VVAProperties(p);
       /* p->iAgg = -1; // Not required */
-      p->pLeft = p->pRight = 0;
+      p->p_ഇടത് = p->p_വലത് = 0;
       p->pAggInfo = 0;
-      memset(&p->x, 0, sizeof(p->x));
-      memset(&p->y, 0, sizeof(p->y));
+      memset(&p->x, 0, വലുപ്പം(p->x));
+      memset(&p->y, 0, വലുപ്പം(p->y));
       p->op2 = 0;
       p->iTable = 0;
       p->iColumn = 0;
-      p->u.zToken = (char*)&p[1];
+      p->u.zToken = (അക്ഷരം*)&p[1];
       memcpy(p->u.zToken, t.z, t.n);
       p->u.zToken[t.n] = 0;
-      p->w.iOfst = (int)(t.z - pParse->zTail);
-      if( sqlite3Isquote(p->u.zToken[0]) ){
-        sqlite3DequoteExpr(p);
+      p->w.iOfst = (പൂർണ്ണസംഖ്യ)(t.z - pParse->zTail);
+      എങ്കിൽ( sqlite3Isquote(p->u.zToken[0]) ){
+        sqlite3_Dequote_വ്യഞ്ജകം(p);
       }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
       p->nHeight = 1;
 #endif  
-      if( IN_RENAME_OBJECT ){
-        return (Expr*)sqlite3RenameTokenMap(pParse, (void*)p, &t);
+      എങ്കിൽ( IN_RENAME_OBJECT ){
+        തിരികെ (വ്യഞ്ജകം*)sqlite3RenameTokenMap(pParse, (ശൂന്യം*)p, &t);
       }
     }
-    return p;
+    തിരികെ p;
   }
 
 }
 
-expr(A) ::= term(A).
-expr(A) ::= LP expr(X) RP. {A = X;}
-expr(A) ::= idj(X).          {A=tokenExpr(pParse,TK_ID,X); /*A-overwrites-X*/}
-expr(A) ::= nm(X) DOT nm(Y). {
-  Expr *temp1 = tokenExpr(pParse,TK_ID,X);
-  Expr *temp2 = tokenExpr(pParse,TK_ID,Y);
+വ്യഞ്ജകം_2(A) ::= term(A).
+വ്യഞ്ജകം_2(A) ::= LP വ്യഞ്ജകം_2(X) RP. {A = X;}
+വ്യഞ്ജകം_2(A) ::= idj(X).          {A=token_വ്യഞ്ജകം(pParse,TK_ID,X); /*A-overwrites-X*/}
+വ്യഞ്ജകം_2(A) ::= nm(X) DOT nm(Y). {
+  വ്യഞ്ജകം *temp1 = token_വ്യഞ്ജകം(pParse,TK_ID,X);
+  വ്യഞ്ജകം *temp2 = token_വ്യഞ്ജകം(pParse,TK_ID,Y);
   A = sqlite3PExpr(pParse, TK_DOT, temp1, temp2);
 }
-expr(A) ::= nm(X) DOT nm(Y) DOT nm(Z). {
-  Expr *temp1 = tokenExpr(pParse,TK_ID,X);
-  Expr *temp2 = tokenExpr(pParse,TK_ID,Y);
-  Expr *temp3 = tokenExpr(pParse,TK_ID,Z);
-  Expr *temp4 = sqlite3PExpr(pParse, TK_DOT, temp2, temp3);
-  if( IN_RENAME_OBJECT ){
+വ്യഞ്ജകം_2(A) ::= nm(X) DOT nm(Y) DOT nm(Z). {
+  വ്യഞ്ജകം *temp1 = token_വ്യഞ്ജകം(pParse,TK_ID,X);
+  വ്യഞ്ജകം *temp2 = token_വ്യഞ്ജകം(pParse,TK_ID,Y);
+  വ്യഞ്ജകം *temp3 = token_വ്യഞ്ജകം(pParse,TK_ID,Z);
+  വ്യഞ്ജകം *temp4 = sqlite3PExpr(pParse, TK_DOT, temp2, temp3);
+  എങ്കിൽ( IN_RENAME_OBJECT ){
     sqlite3RenameTokenRemap(pParse, 0, temp1);
   }
   A = sqlite3PExpr(pParse, TK_DOT, temp1, temp4);
 }
-term(A) ::= NULL|FLOAT|BLOB(X). {A=tokenExpr(pParse,@X,X); /*A-overwrites-X*/}
-term(A) ::= STRING(X).          {A=tokenExpr(pParse,@X,X); /*A-overwrites-X*/}
+term(A) ::= ശൂന്യ|FLOAT|BLOB(X). {A=token_വ്യഞ്ജകം(pParse,@X,X); /*A-overwrites-X*/}
+term(A) ::= STRING(X).          {A=token_വ്യഞ്ജകം(pParse,@X,X); /*A-overwrites-X*/}
 term(A) ::= INTEGER(X). {
-  int iValue;
-  if( sqlite3GetInt32(X.z, &iValue)==0 ){
-    A = sqlite3ExprAlloc(pParse->db, TK_INTEGER, &X, 0);
-  }else{
-    A = sqlite3ExprInt32(pParse->db, iValue);
+  പൂർണ്ണസംഖ്യ i_മൂല്യം;
+  എങ്കിൽ( sqlite3GetInt32(X.z, &i_മൂല്യം)==0 ){
+    A = sqlite3_വ്യഞ്ജകം_Alloc(pParse->db, TK_INTEGER, &X, 0);
+  }അല്ലെങ്കിൽ{
+    A = sqlite3_വ്യഞ്ജകം_Int32(pParse->db, i_മൂല്യം);
   }
-  if( A ) A->w.iOfst = (int)(X.z - pParse->zTail);
+  എങ്കിൽ( A ) A->w.iOfst = (പൂർണ്ണസംഖ്യ)(X.z - pParse->zTail);
 }
-expr(A) ::= VARIABLE(X).     {
-  if( !(X.z[0]=='#' && sqlite3Isdigit(X.z[1])) ){
+വ്യഞ്ജകം_2(A) ::= VARIABLE(X).     {
+  എങ്കിൽ( !(X.z[0]=='#' && sqlite3Isdigit(X.z[1])) ){
     u32 n = X.n;
-    A = tokenExpr(pParse, TK_VARIABLE, X);
-    sqlite3ExprAssignVarNumber(pParse, A, n);
-  }else{
+    A = token_വ്യഞ്ജകം(pParse, TK_VARIABLE, X);
+    sqlite3_വ്യഞ്ജകം_Assign_Var_സംഖ്യ(pParse, A, n);
+  }അല്ലെങ്കിൽ{
     /* When doing a nested parse, one can include terms in an expression
     ** that look like this:   #1 #2 ...  These terms refer to registers
     ** in the virtual machine.  #N is the N-th register. */
     Token t = X; /*A-overwrites-X*/
-    assert( t.n>=2 );
-    if( pParse->nested==0 ){
+    പ്രതിജ്ഞാ( t.n>=2 );
+    എങ്കിൽ( pParse->nested==0 ){
       parserSyntaxError(pParse, &t);
       A = 0;
-    }else{
+    }അല്ലെങ്കിൽ{
       A = sqlite3PExpr(pParse, TK_REGISTER, 0, 0);
-      if( A ) sqlite3GetInt32(&t.z[1], &A->iTable);
+      എങ്കിൽ( A ) sqlite3GetInt32(&t.z[1], &A->iTable);
     }
   }
 }
-expr(A) ::= expr(A) COLLATE ids(C). {
-  A = sqlite3ExprAddCollateToken(pParse, A, &C, 1);
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) COLLATE ids(C). {
+  A = sqlite3_വ്യഞ്ജകം_Add_Collate_Token(pParse, A, &C, 1);
 }
 %ifndef SQLITE_OMIT_CAST
-expr(A) ::= CAST LP expr(E) AS typetoken(T) RP. {
-  A = sqlite3ExprAlloc(pParse->db, TK_CAST, &T, 1);
-  sqlite3ExprAttachSubtrees(pParse->db, A, E, 0);
+വ്യഞ്ജകം_2(A) ::= CAST LP വ്യഞ്ജകം_2(E) AS typetoken(T) RP. {
+  A = sqlite3_വ്യഞ്ജകം_Alloc(pParse->db, TK_CAST, &T, 1);
+  sqlite3_വ്യഞ്ജകം_Attach_Subtrees(pParse->db, A, E, 0);
 }
 %endif  SQLITE_OMIT_CAST
 
 
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP. {
-  A = sqlite3ExprFunction(pParse, Y, &X, D);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) RP. {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, Y, &X, D);
 }
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) ORDER BY sortlist(O) RP. {
-  A = sqlite3ExprFunction(pParse, Y, &X, D);
-  sqlite3ExprAddFunctionOrderBy(pParse, A, O);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) ORDER BY sortlist(O) RP. {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, Y, &X, D);
+  sqlite3_വ്യഞ്ജകം_Add_Function_Order_By(pParse, A, O);
 }
-expr(A) ::= idj(X) LP STAR RP. {
-  A = sqlite3ExprFunction(pParse, 0, &X, 0);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP STAR RP. {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, 0, &X, 0);
 }
 
 %ifdef SQLITE_ENABLE_ORDERED_SET_AGGREGATES
@@ -1268,64 +1268,64 @@ expr(A) ::= idj(X) LP STAR RP. {
   ** transformation.  Because DISTINCT is not allowed in the ordered-set aggregate
   ** syntax, an error is raised if DISTINCT is used.
   */
-  static Expr *sqlite3ExprAddOrderedsetFunction(
+  സ്ഥിതം വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Add_Orderedset_Function(
     Parse *pParse,         /* Parsing context */
     Token *pFuncname,      /* Name of the function */
-    int isDistinct,        /* DISTINCT or ALL qualifier */
-    ExprList *pOrig,       /* Arguments to the function */
-    Expr *pOrderby         /* Expression in the ORDER BY clause */                
+    പൂർണ്ണസംഖ്യ isDistinct,        /* DISTINCT or ALL qualifier */
+    വ്യഞ്ജകം_List *pOrig,       /* Arguments to the function */
+    വ്യഞ്ജകം *pOrderby         /* Expression in the ORDER BY clause */                
   ){
-    ExprList *p;           /* Modified argument list */
-    Expr *pExpr;           /* Final result */
-    p = sqlite3ExprListAppend(pParse, 0, pOrderby);
-    if( pOrig ){
-      int i;
-      for(i=0; i<pOrig->nExpr; i++){
-        p = sqlite3ExprListAppend(pParse, p, pOrig->a[i].pExpr);
-        pOrig->a[i].pExpr = 0;
+    വ്യഞ്ജകം_List *p;           /* Modified argument list */
+    വ്യഞ്ജകം *p_വ്യഞ്ജകം;           /* Final result */
+    p = sqlite3_വ്യഞ്ജകം_List_Append(pParse, 0, pOrderby);
+    എങ്കിൽ( pOrig ){
+      പൂർണ്ണസംഖ്യ i;
+      വേണ്ടി(i=0; i<pOrig->n_വ്യഞ്ജകം; i++){
+        p = sqlite3_വ്യഞ്ജകം_List_Append(pParse, p, pOrig->a[i].p_വ്യഞ്ജകം);
+        pOrig->a[i].p_വ്യഞ്ജകം = 0;
       }
-      sqlite3ExprListDelete(pParse->db, pOrig);
+      sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, pOrig);
     }
-    pExpr = sqlite3ExprFunction(pParse, p, pFuncname, 0);
-    if( pParse->nErr==0 ){
+    p_വ്യഞ്ജകം = sqlite3_വ്യഞ്ജകം_Function(pParse, p, pFuncname, 0);
+    എങ്കിൽ( pParse->nErr==0 ){
       FuncDef *pDef;
       u8 enc = ENC(pParse->db);
-      assert( pExpr!=0 );  /* Because otherwise pParse->nErr would not be zero */
-      assert( p!=0 );      /* Because otherwise pParse->nErr would not be zero */
-      pDef = sqlite3FindFunction(pParse->db, pExpr->u.zToken, -2, enc, 0);
-      if( pDef==0 || (pDef->funcFlags & SQLITE_SELFORDER1)==0 ){
-        sqlite3ErrorMsg(pParse, "%#T() is not an ordered-set aggregate", pExpr);
-      }else if( isDistinct==SF_Distinct ){
-        sqlite3ErrorMsg(pParse, "DISTINCT not allowed on ordered-set aggregate %T()",
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം!=0 );  /* Because otherwise pParse->nErr would not be zero */
+      പ്രതിജ്ഞാ( p!=0 );      /* Because otherwise pParse->nErr would not be zero */
+      pDef = sqlite3FindFunction(pParse->db, p_വ്യഞ്ജകം->u.zToken, -2, enc, 0);
+      എങ്കിൽ( pDef==0 || (pDef->funcFlags & SQLITE_SELFORDER1)==0 ){
+        sqlite3_Error_സന്ദേശം(pParse, "%#T() is not an ordered-set aggregate", p_വ്യഞ്ജകം);
+      }അല്ലെങ്കിൽ എങ്കിൽ( isDistinct==SF_Distinct ){
+        sqlite3_Error_സന്ദേശം(pParse, "DISTINCT not allowed on ordered-set aggregate %T()",
                         pFuncname);
       }
     }
-    return pExpr;
+    തിരികെ p_വ്യഞ്ജകം;
   }
 }
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY expr(E) RP. {
-  A = sqlite3ExprAddOrderedsetFunction(pParse, &X, D, Y, E);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY വ്യഞ്ജകം_2(E) RP. {
+  A = sqlite3_വ്യഞ്ജകം_Add_Orderedset_Function(pParse, &X, D, Y, E);
 }
 %endif SQLITE_ENABLE_ORDERED_SET_AGGREGATES
 
 %ifndef SQLITE_OMIT_WINDOWFUNC
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP filter_over(Z). {
-  A = sqlite3ExprFunction(pParse, Y, &X, D);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) RP filter_over(Z). {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, Y, &X, D);
   sqlite3WindowAttach(pParse, A, Z);
 }
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) ORDER BY sortlist(O) RP filter_over(Z). {
-  A = sqlite3ExprFunction(pParse, Y, &X, D);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) ORDER BY sortlist(O) RP filter_over(Z). {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, Y, &X, D);
   sqlite3WindowAttach(pParse, A, Z);
-  sqlite3ExprAddFunctionOrderBy(pParse, A, O);
+  sqlite3_വ്യഞ്ജകം_Add_Function_Order_By(pParse, A, O);
 }
-expr(A) ::= idj(X) LP STAR RP filter_over(Z). {
-  A = sqlite3ExprFunction(pParse, 0, &X, 0);
+വ്യഞ്ജകം_2(A) ::= idj(X) LP STAR RP filter_over(Z). {
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, 0, &X, 0);
   sqlite3WindowAttach(pParse, A, Z);
 }
 %ifdef SQLITE_ENABLE_ORDERED_SET_AGGREGATES
-expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY expr(E) RP
+വ്യഞ്ജകം_2(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY വ്യഞ്ജകം_2(E) RP
             filter_over(Z). {
-  A = sqlite3ExprAddOrderedsetFunction(pParse, &X, D, Y, E);
+  A = sqlite3_വ്യഞ്ജകം_Add_Orderedset_Function(pParse, &X, D, Y, E);
   sqlite3WindowAttach(pParse, A, Z);
 }
 %endif SQLITE_ENABLE_ORDERED_SET_AGGREGATES
@@ -1333,171 +1333,171 @@ expr(A) ::= idj(X) LP distinct(D) exprlist(Y) RP WITHIN GROUP LP ORDER BY expr(E
 %endif SQLITE_OMIT_WINDOWFUNC
 
 term(A) ::= CTIME_KW(OP). {
-  A = sqlite3ExprFunction(pParse, 0, &OP, 0);
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, 0, &OP, 0);
 }
 
-expr(A) ::= LP nexprlist(X) COMMA expr(Y) RP. {
-  ExprList *pList = sqlite3ExprListAppend(pParse, X, Y);
+വ്യഞ്ജകം_2(A) ::= LP nexprlist(X) COMMA വ്യഞ്ജകം_2(Y) RP. {
+  വ്യഞ്ജകം_List *pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse, X, Y);
   A = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
-  if( A ){
-    int i;
+  എങ്കിൽ( A ){
+    പൂർണ്ണസംഖ്യ i;
     A->x.pList = pList;
-    for(i=0; i<pList->nExpr; i++){
-      assert( pList->a[i].pExpr!=0 );
-      A->flags |= pList->a[i].pExpr->flags & EP_Propagate;
+    വേണ്ടി(i=0; i<pList->n_വ്യഞ്ജകം; i++){
+      പ്രതിജ്ഞാ( pList->a[i].p_വ്യഞ്ജകം!=0 );
+      A->flags |= pList->a[i].p_വ്യഞ്ജകം->flags & EP_Propagate;
     }
-  }else{
-    sqlite3ExprListDelete(pParse->db, pList);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, pList);
   }
 }
 
-expr(A) ::= expr(A) AND expr(Y).        {A=sqlite3ExprAnd(pParse,A,Y);}
-expr(A) ::= expr(A) OR(OP) expr(Y).     {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) LT|GT|GE|LE(OP) expr(Y).
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) AND വ്യഞ്ജകം_2(Y).        {A=sqlite3_വ്യഞ്ജകം_And(pParse,A,Y);}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) OR(OP) വ്യഞ്ജകം_2(Y).     {A=sqlite3PExpr(pParse,@OP,A,Y);}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) LT|GT|GE|LE(OP) വ്യഞ്ജകം_2(Y).
                                         {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) EQ|NE(OP) expr(Y).  {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) BITAND|BITOR|LSHIFT|RSHIFT(OP) expr(Y).
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) EQ|NE(OP) വ്യഞ്ജകം_2(Y).  {A=sqlite3PExpr(pParse,@OP,A,Y);}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) BITAND|BITOR|LSHIFT|RSHIFT(OP) വ്യഞ്ജകം_2(Y).
                                         {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) PLUS|MINUS(OP) expr(Y).
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) PLUS|MINUS(OP) വ്യഞ്ജകം_2(Y).
                                         {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) STAR|SLASH|REM(OP) expr(Y).
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) STAR|SLASH|REM(OP) വ്യഞ്ജകം_2(Y).
                                         {A=sqlite3PExpr(pParse,@OP,A,Y);}
-expr(A) ::= expr(A) CONCAT(OP) expr(Y). {A=sqlite3PExpr(pParse,@OP,A,Y);}
-%type likeop {Token}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) CONCAT(OP) വ്യഞ്ജകം_2(Y). {A=sqlite3PExpr(pParse,@OP,A,Y);}
+%തരം likeop {Token}
 likeop(A) ::= LIKE_KW|MATCH(A).
 likeop(A) ::= NOT LIKE_KW|MATCH(X). {A=X; A.n|=0x80000000; /*A-overwrite-X*/}
-expr(A) ::= expr(A) likeop(OP) expr(Y).  [LIKE_KW]  {
-  ExprList *pList;
-  int bNot = OP.n & 0x80000000;
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) likeop(OP) വ്യഞ്ജകം_2(Y).  [LIKE_KW]  {
+  വ്യഞ്ജകം_List *pList;
+  പൂർണ്ണസംഖ്യ bNot = OP.n & 0x80000000;
   OP.n &= 0x7fffffff;
-  pList = sqlite3ExprListAppend(pParse,0, Y);
-  pList = sqlite3ExprListAppend(pParse,pList, A);
-  A = sqlite3ExprFunction(pParse, pList, &OP, 0);
-  if( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
-  if( A ) A->flags |= EP_InfixFunc;
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0, Y);
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,pList, A);
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, pList, &OP, 0);
+  എങ്കിൽ( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  എങ്കിൽ( A ) A->flags |= EP_InfixFunc;
 }
-expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
-  ExprList *pList;
-  int bNot = OP.n & 0x80000000;
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) likeop(OP) വ്യഞ്ജകം_2(Y) ESCAPE വ്യഞ്ജകം_2(E).  [LIKE_KW]  {
+  വ്യഞ്ജകം_List *pList;
+  പൂർണ്ണസംഖ്യ bNot = OP.n & 0x80000000;
   OP.n &= 0x7fffffff;
-  pList = sqlite3ExprListAppend(pParse,0, Y);
-  pList = sqlite3ExprListAppend(pParse,pList, A);
-  pList = sqlite3ExprListAppend(pParse,pList, E);
-  A = sqlite3ExprFunction(pParse, pList, &OP, 0);
-  if( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
-  if( A ) A->flags |= EP_InfixFunc;
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0, Y);
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,pList, A);
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,pList, E);
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, pList, &OP, 0);
+  എങ്കിൽ( bNot ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  എങ്കിൽ( A ) A->flags |= EP_InfixFunc;
 }
 
 %include {
   /* Create a TK_ISNULL or TK_NOTNULL expression, perhaps optimized to
   ** to TK_TRUEFALSE, if possible */
-  static Expr *sqlite3PExprIsNull(
+  സ്ഥിതം വ്യഞ്ജകം *sqlite3PExprIsNull(
     Parse *pParse,  /* Parsing context */
-    int op,         /* TK_ISNULL or TK_NOTNULL */
-    Expr *pLeft     /* Operand */
+    പൂർണ്ണസംഖ്യ op,         /* TK_ISNULL or TK_NOTNULL */
+    വ്യഞ്ജകം *p_ഇടത്     /* Operand */
   ){
-    Expr *p = pLeft;
-    assert( op==TK_ISNULL || op==TK_NOTNULL );
-    assert( pLeft!=0 );
-    while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
-      p = p->pLeft;
-      assert( p!=0 );
+    വ്യഞ്ജകം *p = p_ഇടത്;
+    പ്രതിജ്ഞാ( op==TK_ISNULL || op==TK_NOTNULL );
+    പ്രതിജ്ഞാ( p_ഇടത്!=0 );
+    ആകുമ്പോൾ( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+      p = p->p_ഇടത്;
+      പ്രതിജ്ഞാ( p!=0 );
     }
-    switch( p->op ){
-      case TK_INTEGER:
-      case TK_STRING:
-      case TK_FLOAT:
-      case TK_BLOB: 
-        sqlite3ExprDeferredDelete(pParse, pLeft);
-        p = sqlite3ExprInt32(pParse->db, op==TK_NOTNULL);
-        if( p ) p->op2 = 1;
-        return p;
-      default:
-        break;
+    തിരഞ്ഞെടുപ്പ്( p->op ){
+      അവസ്ഥ TK_INTEGER:
+      അവസ്ഥ TK_STRING:
+      അവസ്ഥ TK_FLOAT:
+      അവസ്ഥ TK_BLOB: 
+        sqlite3_വ്യഞ്ജകം_Deferred_Delete(pParse, p_ഇടത്);
+        p = sqlite3_വ്യഞ്ജകം_Int32(pParse->db, op==TK_NOTNULL);
+        എങ്കിൽ( p ) p->op2 = 1;
+        തിരികെ p;
+      സ്ഥിരസ്ഥിതി:
+        നിർത്തുക;
     }
-    return sqlite3PExpr(pParse, op, pLeft, 0);
+    തിരികെ sqlite3PExpr(pParse, op, p_ഇടത്, 0);
   }
 
   /* Create a TK_IS or TK_ISNOT operator, perhaps optimized to
   ** TK_ISNULL or TK_NOTNULL or TK_TRUEFALSE. */
-  static Expr *sqlite3PExprIs(
+  സ്ഥിതം വ്യഞ്ജകം *sqlite3PExprIs(
     Parse *pParse,  /* Parsing context */
-    int op,         /* TK_IS or TK_ISNOT */
-    Expr *pLeft,    /* Left operand */
-    Expr *pRight    /* Right operand */
+    പൂർണ്ണസംഖ്യ op,         /* TK_IS or TK_ISNOT */
+    വ്യഞ്ജകം *p_ഇടത്,    /* Left operand */
+    വ്യഞ്ജകം *p_വലത്    /* Right operand */
   ){
-    if( pRight && pRight->op==TK_NULL ){
-      sqlite3ExprDeferredDelete(pParse, pRight);
-      return sqlite3PExprIsNull(pParse, op==TK_IS ? TK_ISNULL : TK_NOTNULL, pLeft);
+    എങ്കിൽ( p_വലത് && p_വലത്->op==TK_NULL ){
+      sqlite3_വ്യഞ്ജകം_Deferred_Delete(pParse, p_വലത്);
+      തിരികെ sqlite3PExprIsNull(pParse, op==TK_IS ? TK_ISNULL : TK_NOTNULL, p_ഇടത്);
     }
-    return sqlite3PExpr(pParse, op, pLeft, pRight);
+    തിരികെ sqlite3PExpr(pParse, op, p_ഇടത്, p_വലത്);
   }
 }
 
-expr(A) ::= expr(A) ISNULL|NOTNULL(E).   {A = sqlite3PExprIsNull(pParse,@E,A);}
-expr(A) ::= expr(A) NOT NULL.    {A = sqlite3PExprIsNull(pParse,TK_NOTNULL,A);}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) ISNULL|NOTNULL(E).   {A = sqlite3PExprIsNull(pParse,@E,A);}
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) NOT ശൂന്യ.    {A = sqlite3PExprIsNull(pParse,TK_NOTNULL,A);}
 
 //    expr1 IS expr2       same as    expr1 IS NOT DISTINCT FROM expr2
 //    expr1 IS NOT expr2   same as    expr1 IS DISTINCT FROM expr2
 //
-expr(A) ::= expr(A) IS expr(Y).     {
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) IS വ്യഞ്ജകം_2(Y).     {
   A = sqlite3PExprIs(pParse, TK_IS, A, Y);
 }
-expr(A) ::= expr(A) IS NOT expr(Y). {
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) IS NOT വ്യഞ്ജകം_2(Y). {
   A = sqlite3PExprIs(pParse, TK_ISNOT, A, Y);
 }
-expr(A) ::= expr(A) IS NOT DISTINCT FROM expr(Y).     {
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) IS NOT DISTINCT FROM വ്യഞ്ജകം_2(Y).     {
   A = sqlite3PExprIs(pParse, TK_IS, A, Y);
 }
-expr(A) ::= expr(A) IS DISTINCT FROM expr(Y). {
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) IS DISTINCT FROM വ്യഞ്ജകം_2(Y). {
   A = sqlite3PExprIs(pParse, TK_ISNOT, A, Y);
 }
 
-expr(A) ::= NOT(B) expr(X).  
+വ്യഞ്ജകം_2(A) ::= NOT(B) വ്യഞ്ജകം_2(X).  
               {A = sqlite3PExpr(pParse, @B, X, 0);/*A-overwrites-B*/}
-expr(A) ::= BITNOT(B) expr(X).
+വ്യഞ്ജകം_2(A) ::= BITNOT(B) വ്യഞ്ജകം_2(X).
               {A = sqlite3PExpr(pParse, @B, X, 0);/*A-overwrites-B*/}
-expr(A) ::= PLUS|MINUS(B) expr(X). [BITNOT] {
-  Expr *p = X;
+വ്യഞ്ജകം_2(A) ::= PLUS|MINUS(B) വ്യഞ്ജകം_2(X). [BITNOT] {
+  വ്യഞ്ജകം *p = X;
   u8 op = @B + (TK_UPLUS-TK_PLUS);
-  assert( TK_UPLUS>TK_PLUS );
-  assert( TK_UMINUS == TK_MINUS + (TK_UPLUS - TK_PLUS) );
-  if( p && p->op==TK_UPLUS ){
+  പ്രതിജ്ഞാ( TK_UPLUS>TK_PLUS );
+  പ്രതിജ്ഞാ( TK_UMINUS == TK_MINUS + (TK_UPLUS - TK_PLUS) );
+  എങ്കിൽ( p && p->op==TK_UPLUS ){
     p->op = op;
     A = p;
-  }else{
+  }അല്ലെങ്കിൽ{
     A = sqlite3PExpr(pParse, op, p, 0);
     /*A-overwrites-B*/
   }
 }
 
-expr(A) ::= expr(B) PTR(C) expr(D). {
-  ExprList *pList = sqlite3ExprListAppend(pParse, 0, B);
-  pList = sqlite3ExprListAppend(pParse, pList, D);
-  A = sqlite3ExprFunction(pParse, pList, &C, 0);
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(B) PTR(C) വ്യഞ്ജകം_2(D). {
+  വ്യഞ്ജകം_List *pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse, 0, B);
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse, pList, D);
+  A = sqlite3_വ്യഞ്ജകം_Function(pParse, pList, &C, 0);
 }
 
-%type between_op {int}
+%തരം between_op {പൂർണ്ണസംഖ്യ}
 between_op(A) ::= BETWEEN.     {A = 0;}
 between_op(A) ::= NOT BETWEEN. {A = 1;}
-expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
-  ExprList *pList = sqlite3ExprListAppend(pParse,0, X);
-  pList = sqlite3ExprListAppend(pParse,pList, Y);
+വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) between_op(N) വ്യഞ്ജകം_2(X) AND വ്യഞ്ജകം_2(Y). [BETWEEN] {
+  വ്യഞ്ജകം_List *pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0, X);
+  pList = sqlite3_വ്യഞ്ജകം_List_Append(pParse,pList, Y);
   A = sqlite3PExpr(pParse, TK_BETWEEN, A, 0);
-  if( A ){
+  എങ്കിൽ( A ){
     A->x.pList = pList;
-    sqlite3ExprSetHeightAndFlags(pParse, A);
-  }else{
-    sqlite3ExprListDelete(pParse->db, pList);
+    sqlite3_വ്യഞ്ജകം_Set_Height_And_Flags(pParse, A);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, pList);
   } 
-  if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+  എങ്കിൽ( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
 }
 %ifndef SQLITE_OMIT_SUBQUERY
-  %type in_op {int}
+  %തരം in_op {പൂർണ്ണസംഖ്യ}
   in_op(A) ::= IN.      {A = 0;}
   in_op(A) ::= NOT IN.  {A = 1;}
-  expr(A) ::= expr(A) in_op(N) LP exprlist(Y) RP. [IN] {
-    if( Y==0 ){
+  വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) in_op(N) LP exprlist(Y) RP. [IN] {
+    എങ്കിൽ( Y==0 ){
       /* Expressions of the form
       **
       **      expr1 IN ()
@@ -1510,120 +1510,120 @@ expr(A) ::= expr(A) between_op(N) expr(X) AND expr(Y). [BETWEEN] {
       ** it is or not) and if it is an aggregate, that could change the meaning
       ** of the whole query.
       */
-      Expr *pB = sqlite3Expr(pParse->db, TK_STRING, N ? "true" : "false");
-      if( pB ) sqlite3ExprIdToTrueFalse(pB);
-      if( !ExprHasProperty(A, EP_HasFunc) ){
-        sqlite3ExprUnmapAndDelete(pParse, A);
+      വ്യഞ്ജകം *pB = sqlite3_വ്യഞ്ജകം(pParse->db, TK_STRING, N ? "true" : "false");
+      എങ്കിൽ( pB ) sqlite3_വ്യഞ്ജകം_Id_To_True_False(pB);
+      എങ്കിൽ( !വ്യഞ്ജകം_Has_Property(A, EP_HasFunc) ){
+        sqlite3_വ്യഞ്ജകം_Unmap_And_Delete(pParse, A);
         A = pB;
-      }else{
+      }അല്ലെങ്കിൽ{
         A = sqlite3PExpr(pParse, N ? TK_OR : TK_AND, pB, A);
       }
-    }else{
-      Expr *pRHS = Y->a[0].pExpr;
-      if( Y->nExpr==1
-       && sqlite3ExprIsConstant(pParse,pRHS)
+    }അല്ലെങ്കിൽ{
+      വ്യഞ്ജകം *pRHS = Y->a[0].p_വ്യഞ്ജകം;
+      എങ്കിൽ( Y->n_വ്യഞ്ജകം==1
+       && sqlite3_വ്യഞ്ജകം_Is_Constant(pParse,pRHS)
        && pRHS->op!=TK_COLLATE
        && A->op!=TK_VECTOR
       ){
-        Y->a[0].pExpr = 0;
-        sqlite3ExprListDelete(pParse->db, Y);
+        Y->a[0].p_വ്യഞ്ജകം = 0;
+        sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, Y);
         pRHS = sqlite3PExpr(pParse, TK_UPLUS, pRHS, 0);
         A = sqlite3PExpr(pParse, TK_EQ, A, pRHS);
-      }else if( Y->nExpr==1 && pRHS->op==TK_SELECT ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( Y->n_വ്യഞ്ജകം==1 && pRHS->op==TK_SELECT ){
         A = sqlite3PExpr(pParse, TK_IN, A, 0);
         sqlite3PExprAddSelect(pParse, A, pRHS->x.pSelect);
         pRHS->x.pSelect = 0;
-        sqlite3ExprListDelete(pParse->db, Y);
-      }else{
+        sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, Y);
+      }അല്ലെങ്കിൽ{
         A = sqlite3PExpr(pParse, TK_IN, A, 0);
-        if( A==0 ){
-          sqlite3ExprListDelete(pParse->db, Y);
-        }else if( A->pLeft->op==TK_VECTOR ){
-          int nExpr = A->pLeft->x.pList->nExpr;
-          Select *pSelectRHS = sqlite3ExprListToValues(pParse, nExpr, Y);
-          if( pSelectRHS ){
+        എങ്കിൽ( A==0 ){
+          sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, Y);
+        }അല്ലെങ്കിൽ എങ്കിൽ( A->p_ഇടത്->op==TK_VECTOR ){
+          പൂർണ്ണസംഖ്യ n_വ്യഞ്ജകം = A->p_ഇടത്->x.pList->n_വ്യഞ്ജകം;
+          Select *pSelectRHS = sqlite3_വ്യഞ്ജകം_List_To_മൂല്യങ്ങൾ(pParse, n_വ്യഞ്ജകം, Y);
+          എങ്കിൽ( pSelectRHS ){
             parserDoubleLinkSelect(pParse, pSelectRHS);
             sqlite3PExprAddSelect(pParse, A, pSelectRHS);
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           A->x.pList = Y;
-          sqlite3ExprSetHeightAndFlags(pParse, A);
+          sqlite3_വ്യഞ്ജകം_Set_Height_And_Flags(pParse, A);
         }
       }
-      if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+      എങ്കിൽ( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
     }
   }
-  expr(A) ::= LP select(X) RP. {
+  വ്യഞ്ജകം_2(A) ::= LP select(X) RP. {
     A = sqlite3PExpr(pParse, TK_SELECT, 0, 0);
     sqlite3PExprAddSelect(pParse, A, X);
   }
-  expr(A) ::= expr(A) in_op(N) LP select(Y) RP.  [IN] {
+  വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) in_op(N) LP select(Y) RP.  [IN] {
     A = sqlite3PExpr(pParse, TK_IN, A, 0);
     sqlite3PExprAddSelect(pParse, A, Y);
-    if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+    എങ്കിൽ( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
   }
-  expr(A) ::= expr(A) in_op(N) nm(Y) dbnm(Z) paren_exprlist(E). [IN] {
+  വ്യഞ്ജകം_2(A) ::= വ്യഞ്ജകം_2(A) in_op(N) nm(Y) dbnm(Z) paren_exprlist(E). [IN] {
     SrcList *pSrc = sqlite3SrcListAppend(pParse, 0,&Y,&Z);
     Select *pSelect = sqlite3SelectNew(pParse, 0,pSrc,0,0,0,0,0,0);
-    if( E )  sqlite3SrcListFuncArgs(pParse, pSelect ? pSrc : 0, E);
+    എങ്കിൽ( E )  sqlite3SrcListFuncArgs(pParse, pSelect ? pSrc : 0, E);
     A = sqlite3PExpr(pParse, TK_IN, A, 0);
     sqlite3PExprAddSelect(pParse, A, pSelect);
-    if( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
+    എങ്കിൽ( N ) A = sqlite3PExpr(pParse, TK_NOT, A, 0);
   }
-  expr(A) ::= EXISTS LP select(Y) RP. {
-    Expr *p;
+  വ്യഞ്ജകം_2(A) ::= EXISTS LP select(Y) RP. {
+    വ്യഞ്ജകം *p;
     p = A = sqlite3PExpr(pParse, TK_EXISTS, 0, 0);
     sqlite3PExprAddSelect(pParse, p, Y);
   }
 %endif SQLITE_OMIT_SUBQUERY
 
 /* CASE expressions */
-expr(A) ::= CASE case_operand(X) case_exprlist(Y) case_else(Z) END. {
+വ്യഞ്ജകം_2(A) ::= CASE case_operand(X) case_exprlist(Y) case_else(Z) END. {
   A = sqlite3PExpr(pParse, TK_CASE, X, 0);
-  if( A ){
-    A->x.pList = Z ? sqlite3ExprListAppend(pParse,Y,Z) : Y;
-    sqlite3ExprSetHeightAndFlags(pParse, A);
-  }else{
-    sqlite3ExprListDelete(pParse->db, Y);
-    sqlite3ExprDelete(pParse->db, Z);
+  എങ്കിൽ( A ){
+    A->x.pList = Z ? sqlite3_വ്യഞ്ജകം_List_Append(pParse,Y,Z) : Y;
+    sqlite3_വ്യഞ്ജകം_Set_Height_And_Flags(pParse, A);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, Y);
+    sqlite3_വ്യഞ്ജകം_Delete(pParse->db, Z);
   }
 }
-%type case_exprlist {ExprList*}
-%destructor case_exprlist {sqlite3ExprListDelete(pParse->db, $$);}
-case_exprlist(A) ::= case_exprlist(A) WHEN expr(Y) THEN expr(Z). {
-  A = sqlite3ExprListAppend(pParse,A, Y);
-  A = sqlite3ExprListAppend(pParse,A, Z);
+%തരം case_exprlist {വ്യഞ്ജകം_List*}
+%destructor case_exprlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
+case_exprlist(A) ::= case_exprlist(A) WHEN വ്യഞ്ജകം_2(Y) THEN വ്യഞ്ജകം_2(Z). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A, Y);
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A, Z);
 }
-case_exprlist(A) ::= WHEN expr(Y) THEN expr(Z). {
-  A = sqlite3ExprListAppend(pParse,0, Y);
-  A = sqlite3ExprListAppend(pParse,A, Z);
+case_exprlist(A) ::= WHEN വ്യഞ്ജകം_2(Y) THEN വ്യഞ്ജകം_2(Z). {
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0, Y);
+  A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A, Z);
 }
-%type case_else {Expr*}
-%destructor case_else {sqlite3ExprDelete(pParse->db, $$);}
-case_else(A) ::=  ELSE expr(X).         {A = X;}
+%തരം case_else {വ്യഞ്ജകം*}
+%destructor case_else {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
+case_else(A) ::=  ELSE വ്യഞ്ജകം_2(X).         {A = X;}
 case_else(A) ::=  .                     {A = 0;} 
-%type case_operand {Expr*}
-%destructor case_operand {sqlite3ExprDelete(pParse->db, $$);}
-case_operand(A) ::= expr(A).
+%തരം case_operand {വ്യഞ്ജകം*}
+%destructor case_operand {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
+case_operand(A) ::= വ്യഞ്ജകം_2(A).
 case_operand(A) ::= .                   {A = 0;} 
 
-%type exprlist {ExprList*}
-%destructor exprlist {sqlite3ExprListDelete(pParse->db, $$);}
-%type nexprlist {ExprList*}
-%destructor nexprlist {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം exprlist {വ്യഞ്ജകം_List*}
+%destructor exprlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
+%തരം nexprlist {വ്യഞ്ജകം_List*}
+%destructor nexprlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
 exprlist(A) ::= nexprlist(A).
 exprlist(A) ::= .                            {A = 0;}
-nexprlist(A) ::= nexprlist(A) COMMA expr(Y).
-    {A = sqlite3ExprListAppend(pParse,A,Y);}
-nexprlist(A) ::= expr(Y).
-    {A = sqlite3ExprListAppend(pParse,0,Y); /*A-overwrites-Y*/}
+nexprlist(A) ::= nexprlist(A) COMMA വ്യഞ്ജകം_2(Y).
+    {A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,A,Y);}
+nexprlist(A) ::= വ്യഞ്ജകം_2(Y).
+    {A = sqlite3_വ്യഞ്ജകം_List_Append(pParse,0,Y); /*A-overwrites-Y*/}
 
 %ifndef SQLITE_OMIT_SUBQUERY
 /* A paren_exprlist is an optional expression list contained inside
 ** of parenthesis */
-%type paren_exprlist {ExprList*}
-%destructor paren_exprlist {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം paren_exprlist {വ്യഞ്ജകം_List*}
+%destructor paren_exprlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 paren_exprlist(A) ::= .   {A = 0;}
 paren_exprlist(A) ::= LP exprlist(X) RP.  {A = X;}
 %endif SQLITE_OMIT_SUBQUERY
@@ -1636,12 +1636,12 @@ cmd ::= createkw(S) uniqueflag(U) INDEX ifnotexists(NE) nm(X) dbnm(D)
   sqlite3CreateIndex(pParse, &X, &D, 
                      sqlite3SrcListAppend(pParse,0,&Y,0), Z, U,
                       &S, W, SQLITE_SO_ASC, NE, SQLITE_IDXTYPE_APPDEF);
-  if( IN_RENAME_OBJECT && pParse->pNewIndex ){
+  എങ്കിൽ( IN_RENAME_OBJECT && pParse->pNewIndex ){
     sqlite3RenameTokenMap(pParse, pParse->pNewIndex->zName, &Y);
   }
 }
 
-%type uniqueflag {int}
+%തരം uniqueflag {പൂർണ്ണസംഖ്യ}
 uniqueflag(A) ::= UNIQUE.  {A = OE_Abort;}
 uniqueflag(A) ::= .        {A = OE_None;}
 
@@ -1661,10 +1661,10 @@ uniqueflag(A) ::= .        {A = OE_None;}
 // (busted) old databases, we need to continue parsing them when loading
 // historical schemas.
 //
-%type eidlist {ExprList*}
-%destructor eidlist {sqlite3ExprListDelete(pParse->db, $$);}
-%type eidlist_opt {ExprList*}
-%destructor eidlist_opt {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം eidlist {വ്യഞ്ജകം_List*}
+%destructor eidlist {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
+%തരം eidlist_opt {വ്യഞ്ജകം_List*}
+%destructor eidlist_opt {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
 %include {
   /* Add a single new term to an ExprList that is used to store a
@@ -1672,35 +1672,35 @@ uniqueflag(A) ::= .        {A = OE_None;}
   ** a COLLATE clause or an ASC or DESC keyword, except ignore the
   ** error while parsing a legacy schema.
   */
-  static ExprList *parserAddExprIdListTerm(
+  സ്ഥിതം വ്യഞ്ജകം_List *parser_Add_വ്യഞ്ജകം_Id_List_Term(
     Parse *pParse,
-    ExprList *pPrior,
+    വ്യഞ്ജകം_List *pPrior,
     Token *pIdToken,
-    int hasCollate,
-    int sortOrder
+    പൂർണ്ണസംഖ്യ hasCollate,
+    പൂർണ്ണസംഖ്യ sortOrder
   ){
-    ExprList *p = sqlite3ExprListAppend(pParse, pPrior, 0);
-    if( (hasCollate || sortOrder!=SQLITE_SO_UNDEFINED)
+    വ്യഞ്ജകം_List *p = sqlite3_വ്യഞ്ജകം_List_Append(pParse, pPrior, 0);
+    എങ്കിൽ( (hasCollate || sortOrder!=SQLITE_SO_UNDEFINED)
         && pParse->db->init.busy==0
     ){
-      sqlite3ErrorMsg(pParse, "syntax error after column name \"%.*s\"",
+      sqlite3_Error_സന്ദേശം(pParse, "syntax error after column name \"%.*s\"",
                          pIdToken->n, pIdToken->z);
     }
-    sqlite3ExprListSetName(pParse, p, pIdToken, 1);
-    return p;
+    sqlite3_വ്യഞ്ജകം_List_Set_Name(pParse, p, pIdToken, 1);
+    തിരികെ p;
   }
 } // end %include
 
 eidlist_opt(A) ::= .                         {A = 0;}
 eidlist_opt(A) ::= LP eidlist(X) RP.         {A = X;}
 eidlist(A) ::= eidlist(A) COMMA nm(Y) collate(C) sortorder(Z).  {
-  A = parserAddExprIdListTerm(pParse, A, &Y, C, Z);
+  A = parser_Add_വ്യഞ്ജകം_Id_List_Term(pParse, A, &Y, C, Z);
 }
 eidlist(A) ::= nm(Y) collate(C) sortorder(Z). {
-  A = parserAddExprIdListTerm(pParse, 0, &Y, C, Z); /*A-overwrites-Y*/
+  A = parser_Add_വ്യഞ്ജകം_Id_List_Term(pParse, 0, &Y, C, Z); /*A-overwrites-Y*/
 }
 
-%type collate {int}
+%തരം collate {പൂർണ്ണസംഖ്യ}
 collate(C) ::= .              {C = 0;}
 collate(C) ::= COLLATE ids.   {C = 1;}
 
@@ -1711,12 +1711,12 @@ cmd ::= DROP INDEX ifexists(E) fullname(X).   {sqlite3DropIndex(pParse, X, E);}
 
 ///////////////////////////// The VACUUM command /////////////////////////////
 //
-%if !SQLITE_OMIT_VACUUM && !SQLITE_OMIT_ATTACH
-%type vinto {Expr*}
-%destructor vinto {sqlite3ExprDelete(pParse->db, $$);}
+%എങ്കിൽ !SQLITE_OMIT_VACUUM && !SQLITE_OMIT_ATTACH
+%തരം vinto {വ്യഞ്ജകം*}
+%destructor vinto {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 cmd ::= VACUUM vinto(Y).                {sqlite3Vacuum(pParse,0,Y);}
 cmd ::= VACUUM nm(X) vinto(Y).          {sqlite3Vacuum(pParse,&X,Y);}
-vinto(A) ::= INTO expr(X).              {A = X;}
+vinto(A) ::= INTO വ്യഞ്ജകം_2(X).              {A = X;}
 vinto(A) ::= .                          {A = 0;}
 %endif
 
@@ -1726,21 +1726,21 @@ vinto(A) ::= .                          {A = 0;}
 cmd ::= PRAGMA nm(X) dbnm(Z).                {sqlite3Pragma(pParse,&X,&Z,0,0);}
 cmd ::= PRAGMA nm(X) dbnm(Z) EQ nmnum(Y).    {sqlite3Pragma(pParse,&X,&Z,&Y,0);}
 cmd ::= PRAGMA nm(X) dbnm(Z) LP nmnum(Y) RP. {sqlite3Pragma(pParse,&X,&Z,&Y,0);}
-cmd ::= PRAGMA nm(X) dbnm(Z) EQ minus_num(Y). 
+cmd ::= PRAGMA nm(X) dbnm(Z) EQ minus_അക്കം(Y). 
                                              {sqlite3Pragma(pParse,&X,&Z,&Y,1);}
-cmd ::= PRAGMA nm(X) dbnm(Z) LP minus_num(Y) RP.
+cmd ::= PRAGMA nm(X) dbnm(Z) LP minus_അക്കം(Y) RP.
                                              {sqlite3Pragma(pParse,&X,&Z,&Y,1);}
 
-nmnum(A) ::= plus_num(A).
+nmnum(A) ::= plus_അക്കം(A).
 nmnum(A) ::= nm(A).
 nmnum(A) ::= ON(A).
 nmnum(A) ::= DELETE(A).
 nmnum(A) ::= DEFAULT(A).
 %endif SQLITE_OMIT_PRAGMA
-%token_class number INTEGER|FLOAT.
-plus_num(A) ::= PLUS number(X).       {A = X;}
-plus_num(A) ::= number(A).
-minus_num(A) ::= MINUS number(X).     {A = X;}
+%token_class സംഖ്യ INTEGER|FLOAT.
+plus_അക്കം(A) ::= PLUS സംഖ്യ(X).       {A = X;}
+plus_അക്കം(A) ::= സംഖ്യ(A).
+minus_അക്കം(A) ::= MINUS സംഖ്യ(X).     {A = X;}
 //////////////////////////// The CREATE TRIGGER command /////////////////////
 
 %ifndef SQLITE_OMIT_TRIGGER
@@ -1748,7 +1748,7 @@ minus_num(A) ::= MINUS number(X).     {A = X;}
 cmd ::= createkw trigger_decl(A) BEGIN trigger_cmd_list(S) END(Z). {
   Token all;
   all.z = A.z;
-  all.n = (int)(Z.z - A.z) + Z.n;
+  all.n = (പൂർണ്ണസംഖ്യ)(Z.z - A.z) + Z.n;
   sqlite3FinishTrigger(pParse, S, &all);
 }
 
@@ -1758,31 +1758,31 @@ trigger_decl(A) ::= temp(T) TRIGGER ifnotexists(NOERR) nm(B) dbnm(Z)
   sqlite3BeginTrigger(pParse, &B, &Z, C, D.a, D.b, E, G, T, NOERR);
   A = (Z.n==0?B:Z); /*A-overwrites-T*/
 #ifdef SQLITE_DEBUG
-  assert( pParse->isCreate ); /* Set by createkw reduce action */
+  പ്രതിജ്ഞാ( pParse->isCreate ); /* Set by createkw reduce action */
   pParse->isCreate = 0;       /* But, should not be set for CREATE TRIGGER */
 #endif
 }
 
-%type trigger_time {int}
+%തരം trigger_time {പൂർണ്ണസംഖ്യ}
 trigger_time(A) ::= BEFORE|AFTER(X).  { A = @X; /*A-overwrites-X*/ }
 trigger_time(A) ::= INSTEAD OF.  { A = TK_INSTEAD;}
 trigger_time(A) ::= .            { A = TK_BEFORE; }
 
-%type trigger_event {struct TrigEvent}
+%തരം trigger_event {ഘടന TrigEvent}
 %destructor trigger_event {sqlite3IdListDelete(pParse->db, $$.b);}
-trigger_event(A) ::= DELETE|INSERT(X).   {A.a = @X; /*A-overwrites-X*/ A.b = 0;}
+trigger_event(A) ::= DELETE|തിരുകുക(X).   {A.a = @X; /*A-overwrites-X*/ A.b = 0;}
 trigger_event(A) ::= UPDATE(X).          {A.a = @X; /*A-overwrites-X*/ A.b = 0;}
 trigger_event(A) ::= UPDATE OF idlist(X).{A.a = TK_UPDATE; A.b = X;}
 
 foreach_clause ::= .
 foreach_clause ::= FOR EACH ROW.
 
-%type when_clause {Expr*}
-%destructor when_clause {sqlite3ExprDelete(pParse->db, $$);}
+%തരം when_clause {വ്യഞ്ജകം*}
+%destructor when_clause {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 when_clause(A) ::= .             { A = 0; }
-when_clause(A) ::= WHEN expr(X). { A = X; }
+when_clause(A) ::= WHEN വ്യഞ്ജകം_2(X). { A = X; }
 
-%type trigger_cmd_list {TriggerStep*}
+%തരം trigger_cmd_list {TriggerStep*}
 %destructor trigger_cmd_list {sqlite3DeleteTriggerStep(pParse->db, $$);}
 trigger_cmd_list(A) ::= trigger_cmd_list(A) trigger_cmd(X) SEMI. {
   A->pLast->pNext = X;
@@ -1798,29 +1798,29 @@ trigger_cmd_list(A) ::= trigger_cmd(A) SEMI. {
 //
 tridxby ::= .
 tridxby ::= INDEXED BY nm. {
-  sqlite3ErrorMsg(pParse,
+  sqlite3_Error_സന്ദേശം(pParse,
         "the INDEXED BY clause is not allowed on UPDATE or DELETE statements "
         "within triggers");
 }
 tridxby ::= NOT INDEXED. {
-  sqlite3ErrorMsg(pParse,
+  sqlite3_Error_സന്ദേശം(pParse,
         "the NOT INDEXED clause is not allowed on UPDATE or DELETE statements "
         "within triggers");
 }
 
 
 
-%type trigger_cmd {TriggerStep*}
+%തരം trigger_cmd {TriggerStep*}
 %destructor trigger_cmd {sqlite3DeleteTriggerStep(pParse->db, $$);}
 // UPDATE 
 trigger_cmd(A) ::=
    UPDATE(B) orconf(R) xfullname(X) tridxby SET setlist(Y) from(F) where_opt(Z) scanpt(E).  
    {A = sqlite3TriggerUpdateStep(pParse, X, F, Y, Z, R, B.z, E);}
 
-// INSERT
-trigger_cmd(A) ::= scanpt(B) insert_cmd(R) INTO
+//തിരുകുക
+trigger_cmd(A) ::= scanpt(B) തിരുകുക_cmd(R) INTO
                    xfullname(X) idlist_opt(F) select(S) upsert(U) scanpt(Z). {
-   A = sqlite3TriggerInsertStep(pParse,X,F,S,R,U,B,Z);/*A-overwrites-R*/
+   A = sqlite3_Trigger_തിരുകുക_Step(pParse,X,F,S,R,U,B,Z);/*A-overwrites-R*/
 }
 // DELETE
 trigger_cmd(A) ::= DELETE(B) FROM xfullname(X) tridxby where_opt(Y) scanpt(E).
@@ -1831,21 +1831,21 @@ trigger_cmd(A) ::= scanpt(B) select(X) scanpt(E).
    {A = sqlite3TriggerSelectStep(pParse->db, X, B, E); /*A-overwrites-X*/}
 
 // The special RAISE expression that may occur in trigger programs
-expr(A) ::= RAISE LP IGNORE RP.  {
+വ്യഞ്ജകം_2(A) ::= RAISE LP IGNORE RP.  {
   A = sqlite3PExpr(pParse, TK_RAISE, 0, 0); 
-  if( A ){
-    A->affExpr = OE_Ignore;
+  എങ്കിൽ( A ){
+    A->aff_വ്യഞ്ജകം = OE_Ignore;
   }
 }
-expr(A) ::= RAISE LP raisetype(T) COMMA expr(Z) RP.  {
+വ്യഞ്ജകം_2(A) ::= RAISE LP raisetype(T) COMMA വ്യഞ്ജകം_2(Z) RP.  {
   A = sqlite3PExpr(pParse, TK_RAISE, Z, 0);
-  if( A ) {
-    A->affExpr = (char)T;
+  എങ്കിൽ( A ) {
+    A->aff_വ്യഞ്ജകം = (അക്ഷരം)T;
   }
 }
 %endif  !SQLITE_OMIT_TRIGGER
 
-%type raisetype {int}
+%തരം raisetype {പൂർണ്ണസംഖ്യ}
 raisetype(A) ::= ROLLBACK.  {A = OE_Rollback;}
 raisetype(A) ::= ABORT.     {A = OE_Abort;}
 raisetype(A) ::= FAIL.      {A = OE_Fail;}
@@ -1860,17 +1860,17 @@ cmd ::= DROP TRIGGER ifexists(NOERR) fullname(X). {
 
 //////////////////////// ATTACH DATABASE file AS name /////////////////////////
 %ifndef SQLITE_OMIT_ATTACH
-cmd ::= ATTACH database_kw_opt expr(F) AS expr(D) key_opt(K). {
+cmd ::= ATTACH database_kw_opt വ്യഞ്ജകം_2(F) AS വ്യഞ്ജകം_2(D) താക്കോൽ_opt(K). {
   sqlite3Attach(pParse, F, D, K);
 }
-cmd ::= DETACH database_kw_opt expr(D). {
+cmd ::= DETACH database_kw_opt വ്യഞ്ജകം_2(D). {
   sqlite3Detach(pParse, D);
 }
 
-%type key_opt {Expr*}
-%destructor key_opt {sqlite3ExprDelete(pParse->db, $$);}
-key_opt(A) ::= .                     { A = 0; }
-key_opt(A) ::= KEY expr(X).          { A = X; }
+%തരം താക്കോൽ_opt {വ്യഞ്ജകം*}
+%destructor താക്കോൽ_opt {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
+താക്കോൽ_opt(A) ::= .                     { A = 0; }
+താക്കോൽ_opt(A) ::= താക്കോൽ_2 വ്യഞ്ജകം_2(X).          { A = X; }
 
 database_kw_opt ::= DATABASE.
 database_kw_opt ::= .
@@ -1899,7 +1899,7 @@ cmd ::= ALTER TABLE fullname(X) RENAME TO nm(Z). {
 // that sqlite3AlterBeginAddColumn() is called before parsing the various
 // constraints and so on (carglist) attached to the new column definition.
 cmd ::= alter_add(Y) carglist. {
-  Y.n = (int)(pParse->sLastToken.z-Y.z) + pParse->sLastToken.n;
+  Y.n = (പൂർണ്ണസംഖ്യ)(pParse->sLastToken.z-Y.z) + pParse->sLastToken.n;
   sqlite3AlterFinishAddColumn(pParse, &Y);
 }
 alter_add(A) ::= ALTER TABLE fullname(X) ADD kwcolumn_opt nm(Y) typetoken(Z). {
@@ -1918,16 +1918,16 @@ cmd ::= ALTER TABLE fullname(X) RENAME kwcolumn_opt nm(Y) TO nm(Z). {
 cmd ::= ALTER TABLE fullname(X) DROP CONSTRAINT nm(Y). {
   sqlite3AlterDropConstraint(pParse, X, &Y, 0);
 }
-cmd ::= ALTER TABLE fullname(X) ALTER kwcolumn_opt nm(Y) DROP NOT NULL. {
+cmd ::= ALTER TABLE fullname(X) ALTER kwcolumn_opt nm(Y) DROP NOT ശൂന്യ. {
   sqlite3AlterDropConstraint(pParse, X, 0, &Y);
 }
-cmd ::= ALTER TABLE fullname(X) ALTER kwcolumn_opt nm(Y) SET NOT(Z) NULL onconf. {
+cmd ::= ALTER TABLE fullname(X) ALTER kwcolumn_opt nm(Y) SET NOT(Z) ശൂന്യ onconf. {
   sqlite3AlterSetNotNull(pParse, X, &Y, &Z);
 }
-cmd ::= ALTER TABLE fullname(X) ADD CONSTRAINT(Y) nm(Z) CHECK LP(A) expr(E) RP(B) onconf. {
+cmd ::= ALTER TABLE fullname(X) ADD CONSTRAINT(Y) nm(Z) CHECK LP(A) വ്യഞ്ജകം_2(E) RP(B) onconf. {
   sqlite3AlterAddConstraint(pParse, X, &Y, &Z, A.z+1, (B.z-A.z-1), E);
 }
-cmd ::= ALTER TABLE fullname(X) ADD CHECK(Y) LP(A) expr(E) RP(B) onconf. {
+cmd ::= ALTER TABLE fullname(X) ADD CHECK(Y) LP(A) വ്യഞ്ജകം_2(E) RP(B) onconf. {
   sqlite3AlterAddConstraint(pParse, X, &Y, 0, A.z+1, (B.z-A.z-1), E);
 }
 
@@ -1959,17 +1959,17 @@ anylist ::= anylist ANY.
 
 
 //////////////////////// COMMON TABLE EXPRESSIONS ////////////////////////////
-%type wqlist {With*}
+%തരം wqlist {With*}
 %destructor wqlist {sqlite3WithDelete(pParse->db, $$);}
-%type wqitem {Cte*}
+%തരം wqitem {Cte*}
 // %destructor wqitem {sqlite3CteDelete(pParse->db, $$);} // not reachable
 
 with ::= .
 %ifndef SQLITE_OMIT_CTE
-with ::= WITH wqlist(W).              { sqlite3WithPush(pParse, W, 1); }
-with ::= WITH RECURSIVE wqlist(W).    { sqlite3WithPush(pParse, W, 1); }
+with ::= WITH wqlist(W).              { sqlite3_With_തള്ളുക(pParse, W, 1); }
+with ::= WITH RECURSIVE wqlist(W).    { sqlite3_With_തള്ളുക(pParse, W, 1); }
 
-%type wqas {u8}
+%തരം wqas {u8}
 wqas(A)   ::= AS.                  {A = M10d_Any;}
 wqas(A)   ::= AS MATERIALIZED.     {A = M10d_Yes;}
 wqas(A)   ::= AS NOT MATERIALIZED. {A = M10d_No;}
@@ -1993,51 +1993,51 @@ wqlist(A) ::= wqlist(A) COMMA wqitem(X). {
 // and TK_ILLEGAL.
 //
 %ifndef SQLITE_OMIT_WINDOWFUNC
-%type windowdefn_list {Window*}
+%തരം windowdefn_list {Window*}
 %destructor windowdefn_list {sqlite3WindowListDelete(pParse->db, $$);}
 windowdefn_list(A) ::= windowdefn(A).
 windowdefn_list(A) ::= windowdefn_list(Y) COMMA windowdefn(Z). {
-  assert( Z!=0 );
+  പ്രതിജ്ഞാ( Z!=0 );
   sqlite3WindowChain(pParse, Z, Y);
   Z->pNextWin = Y;
   A = Z;
 }
 
-%type windowdefn {Window*}
+%തരം windowdefn {Window*}
 %destructor windowdefn {sqlite3WindowDelete(pParse->db, $$);}
 windowdefn(A) ::= nm(X) AS LP window(Y) RP. {
-  if( ALWAYS(Y) ){
+  എങ്കിൽ( ALWAYS(Y) ){
     Y->zName = sqlite3DbStrNDup(pParse->db, X.z, X.n);
   }
   A = Y;
 }
 
-%type window {Window*}
+%തരം window {Window*}
 %destructor window {sqlite3WindowDelete(pParse->db, $$);}
 
-%type frame_opt {Window*}
+%തരം frame_opt {Window*}
 %destructor frame_opt {sqlite3WindowDelete(pParse->db, $$);}
 
-%type part_opt {ExprList*}
-%destructor part_opt {sqlite3ExprListDelete(pParse->db, $$);}
+%തരം part_opt {വ്യഞ്ജകം_List*}
+%destructor part_opt {sqlite3_വ്യഞ്ജകം_List_Delete(pParse->db, $$);}
 
-%type filter_clause {Expr*}
-%destructor filter_clause {sqlite3ExprDelete(pParse->db, $$);}
+%തരം filter_clause {വ്യഞ്ജകം*}
+%destructor filter_clause {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$);}
 
-%type over_clause {Window*}
+%തരം over_clause {Window*}
 %destructor over_clause {sqlite3WindowDelete(pParse->db, $$);}
 
-%type filter_over {Window*}
+%തരം filter_over {Window*}
 %destructor filter_over {sqlite3WindowDelete(pParse->db, $$);}
 
-%type range_or_rows {int}
+%തരം range_or_rows {പൂർണ്ണസംഖ്യ}
 
-%type frame_bound {struct FrameBound}
-%destructor frame_bound {sqlite3ExprDelete(pParse->db, $$.pExpr);}
-%type frame_bound_s {struct FrameBound}
-%destructor frame_bound_s {sqlite3ExprDelete(pParse->db, $$.pExpr);}
-%type frame_bound_e {struct FrameBound}
-%destructor frame_bound_e {sqlite3ExprDelete(pParse->db, $$.pExpr);}
+%തരം frame_bound {ഘടന FrameBound}
+%destructor frame_bound {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$.p_വ്യഞ്ജകം);}
+%തരം frame_bound_s {ഘടന FrameBound}
+%destructor frame_bound_s {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$.p_വ്യഞ്ജകം);}
+%തരം frame_bound_e {ഘടന FrameBound}
+%destructor frame_bound_e {sqlite3_വ്യഞ്ജകം_Delete(pParse->db, $$.p_വ്യഞ്ജകം);}
 
 window(A) ::= PARTITION BY nexprlist(X) orderby_opt(Y) frame_opt(Z). {
   A = sqlite3WindowAssemble(pParse, Z, X, Y, 0);
@@ -2060,43 +2060,43 @@ frame_opt(A) ::= .                             {
   A = sqlite3WindowAlloc(pParse, 0, TK_UNBOUNDED, 0, TK_CURRENT, 0, 0);
 }
 frame_opt(A) ::= range_or_rows(X) frame_bound_s(Y) frame_exclude_opt(Z). { 
-  A = sqlite3WindowAlloc(pParse, X, Y.eType, Y.pExpr, TK_CURRENT, 0, Z);
+  A = sqlite3WindowAlloc(pParse, X, Y.eType, Y.p_വ്യഞ്ജകം, TK_CURRENT, 0, Z);
 }
 frame_opt(A) ::= range_or_rows(X) BETWEEN frame_bound_s(Y) AND
                           frame_bound_e(Z) frame_exclude_opt(W). { 
-  A = sqlite3WindowAlloc(pParse, X, Y.eType, Y.pExpr, Z.eType, Z.pExpr, W);
+  A = sqlite3WindowAlloc(pParse, X, Y.eType, Y.p_വ്യഞ്ജകം, Z.eType, Z.p_വ്യഞ്ജകം, W);
 }
 
 range_or_rows(A) ::= RANGE|ROWS|GROUPS(X).   {A = @X; /*A-overwrites-X*/}
 
 frame_bound_s(A) ::= frame_bound(X).         {A = X;}
-frame_bound_s(A) ::= UNBOUNDED(X) PRECEDING. {A.eType = @X; A.pExpr = 0;}
+frame_bound_s(A) ::= UNBOUNDED(X) PRECEDING. {A.eType = @X; A.p_വ്യഞ്ജകം = 0;}
 frame_bound_e(A) ::= frame_bound(X).         {A = X;}
-frame_bound_e(A) ::= UNBOUNDED(X) FOLLOWING. {A.eType = @X; A.pExpr = 0;}
+frame_bound_e(A) ::= UNBOUNDED(X) FOLLOWING. {A.eType = @X; A.p_വ്യഞ്ജകം = 0;}
 
-frame_bound(A) ::= expr(X) PRECEDING|FOLLOWING(Y).
-                                             {A.eType = @Y; A.pExpr = X;}
-frame_bound(A) ::= CURRENT(X) ROW.           {A.eType = @X; A.pExpr = 0;}
+frame_bound(A) ::= വ്യഞ്ജകം_2(X) PRECEDING|FOLLOWING(Y).
+                                             {A.eType = @Y; A.p_വ്യഞ്ജകം = X;}
+frame_bound(A) ::= CURRENT(X) ROW.           {A.eType = @X; A.p_വ്യഞ്ജകം = 0;}
 
-%type frame_exclude_opt {u8}
+%തരം frame_exclude_opt {u8}
 frame_exclude_opt(A) ::= . {A = 0;}
 frame_exclude_opt(A) ::= EXCLUDE frame_exclude(X). {A = X;}
 
-%type frame_exclude {u8}
+%തരം frame_exclude {u8}
 frame_exclude(A) ::= NO(X) OTHERS.   {A = @X; /*A-overwrites-X*/}
 frame_exclude(A) ::= CURRENT(X) ROW. {A = @X; /*A-overwrites-X*/}
 frame_exclude(A) ::= GROUP|TIES(X).  {A = @X; /*A-overwrites-X*/}
 
 
-%type window_clause {Window*}
+%തരം window_clause {Window*}
 %destructor window_clause {sqlite3WindowListDelete(pParse->db, $$);}
 window_clause(A) ::= WINDOW windowdefn_list(B). { A = B; }
 
 filter_over(A) ::= filter_clause(F) over_clause(O). {
-  if( O ){
+  എങ്കിൽ( O ){
     O->pFilter = F;
-  }else{
-    sqlite3ExprDelete(pParse->db, F);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വ്യഞ്ജകം_Delete(pParse->db, F);
   }
   A = O;
 }
@@ -2104,27 +2104,27 @@ filter_over(A) ::= over_clause(O). {
   A = O;
 }
 filter_over(A) ::= filter_clause(F). {
-  A = (Window*)sqlite3DbMallocZero(pParse->db, sizeof(Window));
-  if( A ){
+  A = (Window*)sqlite3DbMallocZero(pParse->db, വലുപ്പം(Window));
+  എങ്കിൽ( A ){
     A->eFrmType = TK_FILTER;
     A->pFilter = F;
-  }else{
-    sqlite3ExprDelete(pParse->db, F);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വ്യഞ്ജകം_Delete(pParse->db, F);
   }
 }
 
 over_clause(A) ::= OVER LP window(Z) RP. {
   A = Z;
-  assert( A!=0 );
+  പ്രതിജ്ഞാ( A!=0 );
 }
 over_clause(A) ::= OVER nm(Z). {
-  A = (Window*)sqlite3DbMallocZero(pParse->db, sizeof(Window));
-  if( A ){
+  A = (Window*)sqlite3DbMallocZero(pParse->db, വലുപ്പം(Window));
+  എങ്കിൽ( A ){
     A->zName = sqlite3DbStrNDup(pParse->db, Z.z, Z.n);
   }
 }
 
-filter_clause(A) ::= FILTER LP WHERE expr(X) RP.  { A = X; }
+filter_clause(A) ::= FILTER LP WHERE വ്യഞ്ജകം_2(X) RP.  { A = X; }
 %endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
@@ -2151,8 +2151,8 @@ filter_clause(A) ::= FILTER LP WHERE expr(X) RP.  { A = X; }
 .
 
 term(A) ::= QNUMBER(X). {
-  A=tokenExpr(pParse,@X,X);
-  sqlite3DequoteNumber(pParse, A);
+  A=token_വ്യഞ്ജകം(pParse,@X,X);
+  sqlite3_Dequote_സംഖ്യ(pParse, A);
 }
 
 /* There must be no more than 255 tokens defined above.  If this grammar
@@ -2161,7 +2161,7 @@ term(A) ::= QNUMBER(X). {
 ** appear after this line.
 */
 %include {
-#if TK_SPAN>255
+#എങ്കിൽ TK_SPAN>255
 # error too many tokens in the grammar
 #endif
 }

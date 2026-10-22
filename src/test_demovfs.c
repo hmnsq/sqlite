@@ -113,20 +113,20 @@
 **   operations.
 */
 
-#if !defined(SQLITE_TEST) || SQLITE_OS_UNIX
+#എങ്കിൽ !defined(SQLITE_TEST) || SQLITE_OS_UNIX
 
-#include "sqlite3.h"
+#അന്തര്ഭാവ "sqlite3.h"
 
-#include <assert.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
-#include <sys/param.h>
-#include <unistd.h>
-#include <time.h>
-#include <errno.h>
-#include <fcntl.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <sys/stat.h>
+#അന്തര്ഭാവ <sys/file.h>
+#അന്തര്ഭാവ <sys/param.h>
+#അന്തര്ഭാവ <unistd.h>
+#അന്തര്ഭാവ <time.h>
+#അന്തര്ഭാവ <errno.h>
+#അന്തര്ഭാവ <fcntl.h>
 
 /*
 ** Size of the write buffer used by journal files in bytes.
@@ -144,13 +144,13 @@
 ** When using this VFS, the sqlite3_file* handles that SQLite uses are
 ** actually pointers to instances of type DemoFile.
 */
-typedef struct DemoFile DemoFile;
-struct DemoFile {
+തരനിർവചനം ഘടന DemoFile DemoFile;
+ഘടന DemoFile {
   sqlite3_file base;              /* Base class. Must be first. */
-  int fd;                         /* File descriptor */
+  പൂർണ്ണസംഖ്യ fd;                         /* File descriptor */
 
-  char *aBuffer;                  /* Pointer to malloc'd buffer */
-  int nBuffer;                    /* Valid bytes of data in zBuffer */
+  അക്ഷരം *aBuffer;                  /* Pointer to malloc'd buffer */
+  പൂർണ്ണസംഖ്യ nBuffer;                    /* Valid bytes of data in zBuffer */
   sqlite3_int64 iBufferOfst;      /* Offset in file of zBuffer[0] */
 };
 
@@ -158,26 +158,26 @@ struct DemoFile {
 ** Write directly to the file passed as the first argument. Even if the
 ** file has a write-buffer (DemoFile.aBuffer), ignore it.
 */
-static int demoDirectWrite(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoDirectWrite(
   DemoFile *p,                    /* File handle */
-  const void *zBuf,               /* Buffer containing data to write */
-  int iAmt,                       /* Size of data to write in bytes */
+  സ്ഥിരം ശൂന്യം *zBuf,               /* Buffer containing data to write */
+  പൂർണ്ണസംഖ്യ iAmt,                       /* Size of data to write in bytes */
   sqlite_int64 iOfst              /* File offset to write to */
 ){
   off_t ofst;                     /* Return value from lseek() */
   size_t nWrite;                  /* Return value from write() */
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_WRITE;
+  എങ്കിൽ( ofst!=iOfst ){
+    തിരികെ SQLITE_IOERR_WRITE;
   }
 
-  nWrite = write(p->fd, zBuf, iAmt);
-  if( nWrite!=iAmt ){
-    return SQLITE_IOERR_WRITE;
+  nWrite = ലിഖ(p->fd, zBuf, iAmt);
+  എങ്കിൽ( nWrite!=iAmt ){
+    തിരികെ SQLITE_IOERR_WRITE;
   }
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -185,40 +185,40 @@ static int demoDirectWrite(
 ** no-op if this particular file does not have a buffer (i.e. it is not
 ** a journal file) or if the buffer is currently empty.
 */
-static int demoFlushBuffer(DemoFile *p){
-  int rc = SQLITE_OK;
-  if( p->nBuffer ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoFlushBuffer(DemoFile *p){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  എങ്കിൽ( p->nBuffer ){
     rc = demoDirectWrite(p, p->aBuffer, p->nBuffer, p->iBufferOfst);
     p->nBuffer = 0;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Close a file.
 */
-static int demoClose(sqlite3_file *pFile){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoClose(sqlite3_file *pFile){
+  പൂർണ്ണസംഖ്യ rc;
   DemoFile *p = (DemoFile*)pFile;
   rc = demoFlushBuffer(p);
   sqlite3_free(p->aBuffer);
   close(p->fd);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Read data from a file.
 */
-static int demoRead(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ശൂന്യം *zBuf, 
+  പൂർണ്ണസംഖ്യ iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   off_t ofst;                     /* Return value from lseek() */
-  int nRead;                      /* Return value from read() */
-  int rc;                         /* Return code from demoFlushBuffer() */
+  പൂർണ്ണസംഖ്യ nRead;                      /* Return value from read() */
+  പൂർണ്ണസംഖ്യ rc;                         /* Return code from demoFlushBuffer() */
 
   /* Flush any data in the write buffer to disk in case this operation
   ** is trying to read data the file-region currently cached in the buffer.
@@ -227,63 +227,63 @@ static int demoRead(
   ** a journal file when there is data cached in the write-buffer.
   */
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_READ;
+  എങ്കിൽ( ofst!=iOfst ){
+    തിരികെ SQLITE_IOERR_READ;
   }
-  nRead = read(p->fd, zBuf, iAmt);
+  nRead = പഠ(p->fd, zBuf, iAmt);
 
-  if( nRead==iAmt ){
-    return SQLITE_OK;
-  }else if( nRead>=0 ){
-    if( nRead<iAmt ){
-      memset(&((char*)zBuf)[nRead], 0, iAmt-nRead);
+  എങ്കിൽ( nRead==iAmt ){
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ എങ്കിൽ( nRead>=0 ){
+    എങ്കിൽ( nRead<iAmt ){
+      memset(&((അക്ഷരം*)zBuf)[nRead], 0, iAmt-nRead);
     }
-    return SQLITE_IOERR_SHORT_READ;
+    തിരികെ SQLITE_IOERR_SHORT_READ;
   }
 
-  return SQLITE_IOERR_READ;
+  തിരികെ SQLITE_IOERR_READ;
 }
 
 /*
 ** Write data to a crash-file.
 */
-static int demoWrite(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  സ്ഥിരം ശൂന്യം *zBuf, 
+  പൂർണ്ണസംഖ്യ iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   
-  if( p->aBuffer ){
-    char *z = (char *)zBuf;       /* Pointer to remaining data to write */
-    int n = iAmt;                 /* Number of bytes at z */
+  എങ്കിൽ( p->aBuffer ){
+    അക്ഷരം *z = (അക്ഷരം *)zBuf;       /* Pointer to remaining data to write */
+    പൂർണ്ണസംഖ്യ n = iAmt;                 /* Number of bytes at z */
     sqlite3_int64 i = iOfst;      /* File offset to write to */
 
-    while( n>0 ){
-      int nCopy;                  /* Number of bytes to copy into buffer */
+    ആകുമ്പോൾ( n>0 ){
+      പൂർണ്ണസംഖ്യ nCopy;                  /* Number of bytes to copy into buffer */
 
       /* If the buffer is full, or if this data is not being written directly
       ** following the data already buffered, flush the buffer. Flushing
       ** the buffer is a no-op if it is empty.  
       */
-      if( p->nBuffer==SQLITE_DEMOVFS_BUFFERSZ || p->iBufferOfst+p->nBuffer!=i ){
-        int rc = demoFlushBuffer(p);
-        if( rc!=SQLITE_OK ){
-          return rc;
+      എങ്കിൽ( p->nBuffer==SQLITE_DEMOVFS_BUFFERSZ || p->iBufferOfst+p->nBuffer!=i ){
+        പൂർണ്ണസംഖ്യ rc = demoFlushBuffer(p);
+        എങ്കിൽ( rc!=SQLITE_OK ){
+          തിരികെ rc;
         }
       }
-      assert( p->nBuffer==0 || p->iBufferOfst+p->nBuffer==i );
+      പ്രതിജ്ഞാ( p->nBuffer==0 || p->iBufferOfst+p->nBuffer==i );
       p->iBufferOfst = i - p->nBuffer;
 
       /* Copy as much data as possible into the buffer. */
       nCopy = SQLITE_DEMOVFS_BUFFERSZ - p->nBuffer;
-      if( nCopy>n ){
+      എങ്കിൽ( nCopy>n ){
         nCopy = n;
       }
       memcpy(&p->aBuffer[p->nBuffer], z, nCopy);
@@ -293,47 +293,47 @@ static int demoWrite(
       i += nCopy;
       z += nCopy;
     }
-  }else{
-    return demoDirectWrite(p, zBuf, iAmt, iOfst);
+  }അല്ലെങ്കിൽ{
+    തിരികെ demoDirectWrite(p, zBuf, iAmt, iOfst);
   }
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Truncate a file. This is a no-op for this VFS (see header comments at
 ** the top of the file).
 */
-static int demoTruncate(sqlite3_file *pFile, sqlite_int64 size){
-#if 0
-  if( ftruncate(((DemoFile *)pFile)->fd, size) ) return SQLITE_IOERR_TRUNCATE;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoTruncate(sqlite3_file *pFile, sqlite_int64 size){
+#എങ്കിൽ 0
+  എങ്കിൽ( ftruncate(((DemoFile *)pFile)->fd, size) ) തിരികെ SQLITE_IOERR_TRUNCATE;
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Sync the contents of the file to the persistent media.
 */
-static int demoSync(sqlite3_file *pFile, int flags){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoSync(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ flags){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
 
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 
   rc = fsync(p->fd);
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+  തിരികെ (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
 }
 
 /*
 ** Write the size of the file in bytes to *pSize.
 */
-static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;                         /* Return code from fstat() call */
-  struct stat sStat;              /* Output of fstat() call */
+  പൂർണ്ണസംഖ്യ rc;                         /* Return code from fstat() call */
+  ഘടന stat sStat;              /* Output of fstat() call */
 
   /* Flush the contents of the buffer to disk. As with the flush in the
   ** demoRead() method, it would be possible to avoid this and save a write
@@ -341,14 +341,14 @@ static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   ** not worth the trouble.
   */
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 
   rc = fstat(p->fd, &sStat);
-  if( rc!=0 ) return SQLITE_IOERR_FSTAT;
+  എങ്കിൽ( rc!=0 ) തിരികെ SQLITE_IOERR_FSTAT;
   *pSize = sStat.st_size;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -357,22 +357,22 @@ static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 ** a reserved lock on the database file. This ensures that if a hot-journal
 ** file is found in the file-system it is rolled back.
 */
-static int demoLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoLock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ eLock){
+  തിരികെ SQLITE_OK;
 }
-static int demoUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoUnlock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ eLock){
+  തിരികെ SQLITE_OK;
 }
-static int demoCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoCheckReservedLock(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** No xFileControl() verbs are implemented by this VFS.
 */
-static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_NOTFOUND;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoFileControl(sqlite3_file *pFile, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg){
+  തിരികെ SQLITE_NOTFOUND;
 }
 
 /*
@@ -380,24 +380,24 @@ static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
 ** may return special values allowing SQLite to optimize file-system 
 ** access to some extent. But it is also safe to simply return 0.
 */
-static int demoSectorSize(sqlite3_file *pFile){
-  return 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoSectorSize(sqlite3_file *pFile){
+  തിരികെ 0;
 }
-static int demoDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoDeviceCharacteristics(sqlite3_file *pFile){
+  തിരികെ 0;
 }
 
 /*
 ** Open a file handle.
 */
-static int demoOpen(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoOpen(
   sqlite3_vfs *pVfs,              /* VFS */
-  const char *zName,              /* File to open, or 0 for a temp file */
+  സ്ഥിരം അക്ഷരം *zName,              /* File to open, or 0 for a temp file */
   sqlite3_file *pFile,            /* Pointer to DemoFile struct to populate */
-  int flags,                      /* Input SQLITE_OPEN_XXX flags */
-  int *pOutFlags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
+  പൂർണ്ണസംഖ്യ flags,                      /* Input SQLITE_OPEN_XXX flags */
+  പൂർണ്ണസംഖ്യ *pOutFlags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
 ){
-  static const sqlite3_io_methods demoio = {
+  സ്ഥിതം സ്ഥിരം sqlite3_io_methods demoio = {
     1,                            /* iVersion */
     demoClose,                    /* xClose */
     demoRead,                     /* xRead */
@@ -414,38 +414,38 @@ static int demoOpen(
   };
 
   DemoFile *p = (DemoFile*)pFile; /* Populate this structure */
-  int oflags = 0;                 /* flags to pass to open() call */
-  char *aBuf = 0;
+  പൂർണ്ണസംഖ്യ oflags = 0;                 /* flags to pass to open() call */
+  അക്ഷരം *aBuf = 0;
 
-  if( zName==0 ){
-    return SQLITE_IOERR;
+  എങ്കിൽ( zName==0 ){
+    തിരികെ SQLITE_IOERR;
   }
 
-  if( flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    aBuf = (char *)sqlite3_malloc(SQLITE_DEMOVFS_BUFFERSZ);
-    if( !aBuf ){
-      return SQLITE_NOMEM;
+  എങ്കിൽ( flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    aBuf = (അക്ഷരം *)sqlite3_malloc(SQLITE_DEMOVFS_BUFFERSZ);
+    എങ്കിൽ( !aBuf ){
+      തിരികെ SQLITE_NOMEM;
     }
   }
 
-  if( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
-  if( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
-  if( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
-  if( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
+  എങ്കിൽ( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
+  എങ്കിൽ( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
+  എങ്കിൽ( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
+  എങ്കിൽ( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
 
-  memset(p, 0, sizeof(DemoFile));
+  memset(p, 0, വലുപ്പം(DemoFile));
   p->fd = open(zName, oflags, 0600);
-  if( p->fd<0 ){
+  എങ്കിൽ( p->fd<0 ){
     sqlite3_free(aBuf);
-    return SQLITE_CANTOPEN;
+    തിരികെ SQLITE_CANTOPEN;
   }
   p->aBuffer = aBuf;
 
-  if( pOutFlags ){
+  എങ്കിൽ( pOutFlags ){
     *pOutFlags = flags;
   }
   p->base.pMethods = &demoio;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -453,34 +453,34 @@ static int demoOpen(
 ** is non-zero, then ensure the file-system modification to delete the
 ** file has been synced to disk before returning.
 */
-static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc;                         /* Return code */
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoDelete(sqlite3_vfs *pVfs, സ്ഥിരം അക്ഷരം *zPath, പൂർണ്ണസംഖ്യ dirSync){
+  പൂർണ്ണസംഖ്യ rc;                         /* Return code */
 
   rc = unlink(zPath);
-  if( rc!=0 && errno==ENOENT ) return SQLITE_OK;
+  എങ്കിൽ( rc!=0 && errno==ENOENT ) തിരികെ SQLITE_OK;
 
-  if( rc==0 && dirSync ){
-    int dfd;                      /* File descriptor open on directory */
-    char *zSlash;
-    char zDir[MAXPATHNAME+1];     /* Name of directory containing file zPath */
+  എങ്കിൽ( rc==0 && dirSync ){
+    പൂർണ്ണസംഖ്യ dfd;                      /* File descriptor open on directory */
+    അക്ഷരം *zSlash;
+    അക്ഷരം zDir[MAXPATHNAME+1];     /* Name of directory containing file zPath */
 
     /* Figure out the directory name from the path of the file deleted. */
     sqlite3_snprintf(MAXPATHNAME, zDir, "%s", zPath);
     zDir[MAXPATHNAME] = '\0';
     zSlash = strrchr(zDir,'/');
-    if( zSlash ){
+    എങ്കിൽ( zSlash ){
       /* Open a file-descriptor on the directory. Sync. Close. */
       zSlash[0] = 0;
       dfd = open(zDir, O_RDONLY, 0);
-      if( dfd<0 ){
+      എങ്കിൽ( dfd<0 ){
         rc = -1;
-      }else{
+      }അല്ലെങ്കിൽ{
         rc = fsync(dfd);
         close(dfd);
       }
     }
   }
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
+  തിരികെ (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
 }
 
 #ifndef F_OK
@@ -497,26 +497,26 @@ static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 ** Query the file-system to see if the named file exists, is readable or
 ** is both readable and writable.
 */
-static int demoAccess(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  സ്ഥിരം അക്ഷരം *zPath, 
+  പൂർണ്ണസംഖ്യ flags, 
+  പൂർണ്ണസംഖ്യ *pResOut
 ){
-  int rc;                         /* access() return code */
-  int eAccess = F_OK;             /* Second argument to access() */
+  പൂർണ്ണസംഖ്യ rc;                         /* access() return code */
+  പൂർണ്ണസംഖ്യ eAccess = F_OK;             /* Second argument to access() */
 
-  assert( flags==SQLITE_ACCESS_EXISTS       /* access(zPath, F_OK) */
+  പ്രതിജ്ഞാ( flags==SQLITE_ACCESS_EXISTS       /* access(zPath, F_OK) */
        || flags==SQLITE_ACCESS_READ         /* access(zPath, R_OK) */
        || flags==SQLITE_ACCESS_READWRITE    /* access(zPath, R_OK|W_OK) */
   );
 
-  if( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
-  if( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
+  എങ്കിൽ( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
+  എങ്കിൽ( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
 
   rc = access(zPath, eAccess);
   *pResOut = (rc==0);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -530,24 +530,24 @@ static int demoAccess(
 **   1. Path components are separated by a '/'. and 
 **   2. Full paths begin with a '/' character.
 */
-static int demoFullPathname(
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoFullPathname(
   sqlite3_vfs *pVfs,              /* VFS */
-  const char *zPath,              /* Input path (possibly a relative path) */
-  int nPathOut,                   /* Size of output buffer in bytes */
-  char *zPathOut                  /* Pointer to output buffer */
+  സ്ഥിരം അക്ഷരം *zPath,              /* Input path (possibly a relative path) */
+  പൂർണ്ണസംഖ്യ nPathOut,                   /* Size of output buffer in bytes */
+  അക്ഷരം *zPathOut                  /* Pointer to output buffer */
 ){
-  char zDir[MAXPATHNAME+1];
-  if( zPath[0]=='/' ){
+  അക്ഷരം zDir[MAXPATHNAME+1];
+  എങ്കിൽ( zPath[0]=='/' ){
     zDir[0] = '\0';
-  }else{
-    if( getcwd(zDir, sizeof(zDir))==0 ) return SQLITE_IOERR;
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( getcwd(zDir, വലുപ്പം(zDir))==0 ) തിരികെ SQLITE_IOERR;
   }
   zDir[MAXPATHNAME] = '\0';
 
   sqlite3_snprintf(nPathOut, zPathOut, "%s/%s", zDir, zPath);
   zPathOut[nPathOut-1] = '\0';
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -562,36 +562,36 @@ static int demoFullPathname(
 ** extensions compiled as shared objects. This simple VFS does not support
 ** this functionality, so the following functions are no-ops.
 */
-static void *demoDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return 0;
+സ്ഥിതം ശൂന്യം *demoDlOpen(sqlite3_vfs *pVfs, സ്ഥിരം അക്ഷരം *zPath){
+  തിരികെ 0;
 }
-static void demoDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3_snprintf(nByte, zErrMsg, "Loadable extensions are not supported");
-  zErrMsg[nByte-1] = '\0';
+സ്ഥിതം ശൂന്യം demoDlError(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *z_Err_സന്ദേശം){
+  sqlite3_snprintf(nByte, z_Err_സന്ദേശം, "Loadable extensions are not supported");
+  z_Err_സന്ദേശം[nByte-1] = '\0';
 }
-static void (*demoDlSym(sqlite3_vfs *pVfs, void *pH, const char *z))(void){
-  return 0;
+സ്ഥിതം ശൂന്യം (*demoDlSym(sqlite3_vfs *pVfs, ശൂന്യം *pH, സ്ഥിരം അക്ഷരം *z))(ശൂന്യം){
+  തിരികെ 0;
 }
-static void demoDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  return;
+സ്ഥിതം ശൂന്യം demoDlClose(sqlite3_vfs *pVfs, ശൂന്യം *pHandle){
+  തിരികെ;
 }
 
 /*
 ** Parameter zByte points to a buffer nByte bytes in size. Populate this
 ** buffer with pseudo-random data.
 */
-static int demoRandomness(sqlite3_vfs *pVfs, int nByte, char *zByte){
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoRandomness(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nByte, അക്ഷരം *zByte){
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Sleep for at least nMicro microseconds. Return the (approximate) number 
 ** of microseconds slept for.
 */
-static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoSleep(sqlite3_vfs *pVfs, പൂർണ്ണസംഖ്യ nMicro){
   sleep(nMicro / 1000000);
   usleep(nMicro % 1000000);
-  return nMicro;
+  തിരികെ nMicro;
 }
 
 /*
@@ -605,10 +605,10 @@ static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
 ** value, it will stop working some time in the year 2038 AD (the so-called
 ** "year 2038" problem that afflicts systems that store time this way). 
 */
-static int demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
+സ്ഥിതം പൂർണ്ണസംഖ്യ demoCurrentTime(sqlite3_vfs *pVfs, ഇരട്ട *pTime){
   time_t t = time(0);
   *pTime = t/86400.0 + 2440587.5; 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -617,10 +617,10 @@ static int demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
 **
 **   sqlite3_vfs_register(sqlite3_demovfs(), 0);
 */
-sqlite3_vfs *sqlite3_demovfs(void){
-  static sqlite3_vfs demovfs = {
+sqlite3_vfs *sqlite3_demovfs(ശൂന്യം){
+  സ്ഥിതം sqlite3_vfs demovfs = {
     1,                            /* iVersion */
-    sizeof(DemoFile),             /* szOsFile */
+    വലുപ്പം(DemoFile),             /* szOsFile */
     MAXPATHNAME,                  /* mxPathname */
     0,                            /* pNext */
     "demo",                       /* zName */
@@ -637,7 +637,7 @@ sqlite3_vfs *sqlite3_demovfs(void){
     demoSleep,                    /* xSleep */
     demoCurrentTime,              /* xCurrentTime */
   };
-  return &demovfs;
+  തിരികെ &demovfs;
 }
 
 #endif /* !defined(SQLITE_TEST) || SQLITE_OS_UNIX */
@@ -645,39 +645,39 @@ sqlite3_vfs *sqlite3_demovfs(void){
 
 #ifdef SQLITE_TEST
 
-#include "tclsqlite.h"
+#അന്തര്ഭാവ "tclsqlite.h"
 
-#if SQLITE_OS_UNIX
-static int SQLITE_TCLAPI register_demovfs(
+#എങ്കിൽ SQLITE_OS_UNIX
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI register_demovfs(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_vfs_register(sqlite3_demovfs(), 1);
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
-static int SQLITE_TCLAPI unregister_demovfs(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI unregister_demovfs(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_vfs_unregister(sqlite3_demovfs());
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){
+പൂർണ്ണസംഖ്യ Sqlitetest_demovfs_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "register_demovfs", register_demovfs, 0, 0);
   Tcl_CreateObjCommand(interp, "unregister_demovfs", unregister_demovfs, 0, 0);
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
-#else
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){ return TCL_OK; }
+#അല്ലെങ്കിൽ
+പൂർണ്ണസംഖ്യ Sqlitetest_demovfs_Init(Tcl_Interp *interp){ തിരികെ TCL_OK; }
 #endif
 
 #endif /* SQLITE_TEST */

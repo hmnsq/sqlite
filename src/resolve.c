@@ -14,12 +14,12 @@
 ** resolve all identifiers by associating them with a particular
 ** table and column.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 /*
 ** Magic table number to mean the EXCLUDED table in an UPSERT statement.
 */
-#define EXCLUDED_TABLE_NUMBER  2
+#define EXCLUDED_TABLE_സംഖ്യ  2
 
 /*
 ** Walk the expression tree pExpr and increase the aggregate function
@@ -32,17 +32,17 @@
 **
 ** See also the sqlite3WindowExtraAggFuncDepth() routine in window.c
 */
-static int incrAggDepth(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION ) pExpr->op2 += pWalker->u.n;
-  return WRC_Continue;
+സ്ഥിതം പൂർണ്ണസംഖ്യ incrAggDepth(Walker *pWalker, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_AGG_FUNCTION ) p_വ്യഞ്ജകം->op2 += pWalker->u.n;
+  തിരികെ WRC_Continue;
 }
-static void incrAggFunctionDepth(Expr *pExpr, int N){
-  if( N>0 ){
+സ്ഥിതം ശൂന്യം incrAggFunctionDepth(വ്യഞ്ജകം *p_വ്യഞ്ജകം, പൂർണ്ണസംഖ്യ N){
+  എങ്കിൽ( N>0 ){
     Walker w;
-    memset(&w, 0, sizeof(w));
-    w.xExprCallback = incrAggDepth;
+    memset(&w, 0, വലുപ്പം(w));
+    w.x_വ്യഞ്ജകം_Callback = incrAggDepth;
     w.u.n = N;
-    sqlite3WalkExpr(&w, pExpr);
+    sqlite3_Walk_വ്യഞ്ജകം(&w, p_വ്യഞ്ജകം);
   }
 }
 
@@ -65,43 +65,43 @@ static void incrAggFunctionDepth(Expr *pExpr, int N){
 ** of the original expression.  The Expr.op2 field of TK_AGG_FUNCTION
 ** structures must be increased by the nSubquery amount.
 */
-static void resolveAlias(
+സ്ഥിതം ശൂന്യം resolveAlias(
   Parse *pParse,         /* Parsing context */
-  ExprList *pEList,      /* A result set */
-  int iCol,              /* A column in the result set.  0..pEList->nExpr-1 */
-  Expr *pExpr,           /* Transform this into an alias to the result set */
-  int nSubquery          /* Number of subqueries that the label is moving */
+  വ്യഞ്ജകം_List *pEList,      /* A result set */
+  പൂർണ്ണസംഖ്യ iCol,              /* A column in the result set.  0..pEList->nExpr-1 */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,           /* Transform this into an alias to the result set */
+  പൂർണ്ണസംഖ്യ nSubquery          /* Number of subqueries that the label is moving */
 ){
-  Expr *pOrig;           /* The iCol-th column of the result set */
-  Expr *pDup;            /* Copy of pOrig */
+  വ്യഞ്ജകം *pOrig;           /* The iCol-th column of the result set */
+  വ്യഞ്ജകം *pDup;            /* Copy of pOrig */
   sqlite3 *db;           /* The database connection */
 
-  assert( iCol>=0 && iCol<pEList->nExpr );
-  pOrig = pEList->a[iCol].pExpr;
-  assert( pOrig!=0 );
-  assert( !ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) );
-  if( pExpr->pAggInfo ) return;
+  പ്രതിജ്ഞാ( iCol>=0 && iCol<pEList->n_വ്യഞ്ജകം );
+  pOrig = pEList->a[iCol].p_വ്യഞ്ജകം;
+  പ്രതിജ്ഞാ( pOrig!=0 );
+  പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Reduced|EP_TokenOnly) );
+  എങ്കിൽ( p_വ്യഞ്ജകം->pAggInfo ) തിരികെ;
   db = pParse->db;
-  pDup = sqlite3ExprDup(db, pOrig, 0);
-  if( db->mallocFailed ){
-    sqlite3ExprDelete(db, pDup);
+  pDup = sqlite3_വ്യഞ്ജകം_Dup(db, pOrig, 0);
+  എങ്കിൽ( db->mallocFailed ){
+    sqlite3_വ്യഞ്ജകം_Delete(db, pDup);
     pDup = 0;
-  }else{
-    Expr temp;
+  }അല്ലെങ്കിൽ{
+    വ്യഞ്ജകം temp;
     incrAggFunctionDepth(pDup, nSubquery);
-    if( pExpr->op==TK_COLLATE ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pDup = sqlite3ExprAddCollateString(pParse, pDup, pExpr->u.zToken);
+    എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_COLLATE ){
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      pDup = sqlite3_വ്യഞ്ജകം_Add_Collate_String(pParse, pDup, p_വ്യഞ്ജകം->u.zToken);
     }
-    memcpy(&temp, pDup, sizeof(Expr));
-    memcpy(pDup, pExpr, sizeof(Expr));
-    memcpy(pExpr, &temp, sizeof(Expr));
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      if( ALWAYS(pExpr->y.pWin!=0) ){
-        pExpr->y.pWin->pOwner = pExpr;
+    memcpy(&temp, pDup, വലുപ്പം(വ്യഞ്ജകം));
+    memcpy(pDup, p_വ്യഞ്ജകം, വലുപ്പം(വ്യഞ്ജകം));
+    memcpy(p_വ്യഞ്ജകം, &temp, വലുപ്പം(വ്യഞ്ജകം));
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) ){
+      എങ്കിൽ( ALWAYS(p_വ്യഞ്ജകം->y.pWin!=0) ){
+        p_വ്യഞ്ജകം->y.pWin->pOwner = p_വ്യഞ്ജകം;
       }
     }
-    sqlite3ExprDeferredDelete(pParse, pDup);
+    sqlite3_വ്യഞ്ജകം_Deferred_Delete(pParse, pDup);
   }
 }
 
@@ -122,53 +122,53 @@ static void resolveAlias(
 ** argument matches if zCol is a rowid alias. If it is not NULL, (*pbRowid)
 ** is set to 1 if there is this kind of match.
 */
-int sqlite3MatchEName(
-  const struct ExprList_item *pItem,
-  const char *zCol,
-  const char *zTab,
-  const char *zDb,
-  int *pbRowid
+പൂർണ്ണസംഖ്യ sqlite3MatchEName(
+  സ്ഥിരം ഘടന വ്യഞ്ജകം_List_item *pItem,
+  സ്ഥിരം അക്ഷരം *zCol,
+  സ്ഥിരം അക്ഷരം *zTab,
+  സ്ഥിരം അക്ഷരം *zDb,
+  പൂർണ്ണസംഖ്യ *pbRowid
 ){
-  int n;
-  const char *zSpan;
-  int eEName = pItem->fg.eEName;
-  if( eEName!=ENAME_TAB && (eEName!=ENAME_ROWID || NEVER(pbRowid==0)) ){
-    return 0;
+  പൂർണ്ണസംഖ്യ n;
+  സ്ഥിരം അക്ഷരം *zSpan;
+  പൂർണ്ണസംഖ്യ eEName = pItem->fg.eEName;
+  എങ്കിൽ( eEName!=ENAME_TAB && (eEName!=ENAME_ROWID || NEVER(pbRowid==0)) ){
+    തിരികെ 0;
   }
-  assert( pbRowid==0 || *pbRowid==0 );
+  പ്രതിജ്ഞാ( pbRowid==0 || *pbRowid==0 );
   zSpan = pItem->zEName;
-  for(n=0; ALWAYS(zSpan[n]) && zSpan[n]!='.'; n++){}
-  if( zDb && (sqlite3StrNICmp(zSpan, zDb, n)!=0 || zDb[n]!=0) ){
-    return 0;
+  വേണ്ടി(n=0; ALWAYS(zSpan[n]) && zSpan[n]!='.'; n++){}
+  എങ്കിൽ( zDb && (sqlite3StrNICmp(zSpan, zDb, n)!=0 || zDb[n]!=0) ){
+    തിരികെ 0;
   }
   zSpan += n+1;
-  for(n=0; ALWAYS(zSpan[n]) && zSpan[n]!='.'; n++){}
-  if( zTab && (sqlite3StrNICmp(zSpan, zTab, n)!=0 || zTab[n]!=0) ){
-    return 0;
+  വേണ്ടി(n=0; ALWAYS(zSpan[n]) && zSpan[n]!='.'; n++){}
+  എങ്കിൽ( zTab && (sqlite3StrNICmp(zSpan, zTab, n)!=0 || zTab[n]!=0) ){
+    തിരികെ 0;
   }
   zSpan += n+1;
-  if( zCol ){
-    if( eEName==ENAME_TAB && sqlite3StrICmp(zSpan, zCol)!=0 ) return 0;
-    if( eEName==ENAME_ROWID && sqlite3IsRowid(zCol)==0 ) return 0;
+  എങ്കിൽ( zCol ){
+    എങ്കിൽ( eEName==ENAME_TAB && sqlite3StrICmp(zSpan, zCol)!=0 ) തിരികെ 0;
+    എങ്കിൽ( eEName==ENAME_ROWID && sqlite3IsRowid(zCol)==0 ) തിരികെ 0;
   }
-  if( eEName==ENAME_ROWID ) *pbRowid = 1;
-  return 1;
+  എങ്കിൽ( eEName==ENAME_ROWID ) *pbRowid = 1;
+  തിരികെ 1;
 }
 
 /*
 ** Return TRUE if the double-quoted string  mis-feature should be supported.
 */
-static int areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *pTopNC){
-  if( db->init.busy ) return 1;  /* Always support for legacy schemas */
-  if( pTopNC->ncFlags & NC_IsDDL ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *p_മുകൾ_NC){
+  എങ്കിൽ( db->init.busy ) തിരികെ 1;  /* Always support for legacy schemas */
+  എങ്കിൽ( p_മുകൾ_NC->ncFlags & NC_IsDDL ){
     /* Currently parsing a DDL statement */
-    if( sqlite3WritableSchema(db) && (db->flags & SQLITE_DqsDML)!=0 ){
-      return 1;
+    എങ്കിൽ( sqlite3WritableSchema(db) && (db->flags & SQLITE_DqsDML)!=0 ){
+      തിരികെ 1;
     }
-    return (db->flags & SQLITE_DqsDDL)!=0;
-  }else{
+    തിരികെ (db->flags & SQLITE_DqsDDL)!=0;
+  }അല്ലെങ്കിൽ{
     /* Currently parsing a DML statement */
-    return (db->flags & SQLITE_DqsDML)!=0;
+    തിരികെ (db->flags & SQLITE_DqsDML)!=0;
   }
 }
 
@@ -176,26 +176,26 @@ static int areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *pTopNC){
 ** The argument is guaranteed to be a non-NULL Expr node of type TK_COLUMN.
 ** return the appropriate colUsed mask.
 */
-Bitmask sqlite3ExprColUsed(Expr *pExpr){
-  int n;
+Bitmask sqlite3_വ്യഞ്ജകം_Col_Used(വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  പൂർണ്ണസംഖ്യ n;
   Table *pExTab;
 
-  n = pExpr->iColumn;
-  assert( ExprUseYTab(pExpr) );
-  pExTab = pExpr->y.pTab;
-  assert( pExTab!=0 );
-  assert( n < pExTab->nCol );
-  if( (pExTab->tabFlags & TF_HasGenerated)!=0
+  n = p_വ്യഞ്ജകം->iColumn;
+  പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+  pExTab = p_വ്യഞ്ജകം->y.pTab;
+  പ്രതിജ്ഞാ( pExTab!=0 );
+  പ്രതിജ്ഞാ( n < pExTab->nCol );
+  എങ്കിൽ( (pExTab->tabFlags & TF_HasGenerated)!=0
    && (pExTab->aCol[n].colFlags & COLFLAG_GENERATED)!=0
   ){
     testcase( pExTab->nCol==BMS-1 );
     testcase( pExTab->nCol==BMS );
-    return pExTab->nCol>=BMS ? ALLBITS : MASKBIT(pExTab->nCol)-1;
-  }else{
+    തിരികെ pExTab->nCol>=BMS ? ALLBITS : MASKBIT(pExTab->nCol)-1;
+  }അല്ലെങ്കിൽ{
     testcase( n==BMS-1 );
     testcase( n==BMS );
-    if( n>=BMS ) n = BMS-1;
-    return ((Bitmask)1)<<n;
+    എങ്കിൽ( n>=BMS ) n = BMS-1;
+    തിരികെ ((Bitmask)1)<<n;
   }
 }
 
@@ -205,47 +205,47 @@ Bitmask sqlite3ExprColUsed(Expr *pExpr){
 ** in *ppList.  Create a new *ppList if this is the first term in the
 ** set.
 */
-static void extendFJMatch(
+സ്ഥിതം ശൂന്യം extendFJMatch(
   Parse *pParse,          /* Parsing context */
-  ExprList **ppList,      /* ExprList to extend */
+  വ്യഞ്ജകം_List **ppList,      /* ExprList to extend */
   SrcItem *pMatch,        /* Source table containing the column */
   i16 iColumn             /* The column number */
 ){
-  Expr *pNew = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-  if( pNew ){
+  വ്യഞ്ജകം *pNew = sqlite3_വ്യഞ്ജകം_Alloc(pParse->db, TK_COLUMN, 0, 0);
+  എങ്കിൽ( pNew ){
     pNew->iTable = pMatch->iCursor;
     pNew->iColumn = iColumn;
     pNew->y.pTab = pMatch->pSTab;
-    assert( (pMatch->fg.jointype & (JT_LEFT|JT_LTORJ))!=0 );
-    ExprSetProperty(pNew, EP_CanBeNull);
-    *ppList = sqlite3ExprListAppend(pParse, *ppList, pNew);
+    പ്രതിജ്ഞാ( (pMatch->fg.jointype & (JT_ഇടത്|JT_LTORJ))!=0 );
+    വ്യഞ്ജകം_Set_Property(pNew, EP_CanBeNull);
+    *ppList = sqlite3_വ്യഞ്ജകം_List_Append(pParse, *ppList, pNew);
   }
 }
 
 /*
 ** Return TRUE (non-zero) if zTab is a valid name for the schema table pTab.
 */
-static SQLITE_NOINLINE int isValidSchemaTableName(
-  const char *zTab,         /* Name as it appears in the SQL */
+സ്ഥിതം SQLITE_NOINLINE പൂർണ്ണസംഖ്യ isValidSchemaTableName(
+  സ്ഥിരം അക്ഷരം *zTab,         /* Name as it appears in the SQL */
   Table *pTab,              /* The schema table we are trying to match */
-  const char *zDb           /* non-NULL if a database qualifier is present */
+  സ്ഥിരം അക്ഷരം *zDb           /* non-NULL if a database qualifier is present */
 ){
-  const char *zLegacy;
-  assert( pTab!=0 );
-  assert( pTab->tnum==1 );
-  if( sqlite3StrNICmp(zTab, "sqlite_", 7)!=0 ) return 0;
+  സ്ഥിരം അക്ഷരം *zLegacy;
+  പ്രതിജ്ഞാ( pTab!=0 );
+  പ്രതിജ്ഞാ( pTab->tnum==1 );
+  എങ്കിൽ( sqlite3StrNICmp(zTab, "sqlite_", 7)!=0 ) തിരികെ 0;
   zLegacy = pTab->zName;
-  if( strcmp(zLegacy+7, &LEGACY_TEMP_SCHEMA_TABLE[7])==0 ){
-    if( sqlite3StrICmp(zTab+7, &PREFERRED_TEMP_SCHEMA_TABLE[7])==0 ){
-      return 1;
+  എങ്കിൽ( strcmp(zLegacy+7, &LEGACY_TEMP_SCHEMA_TABLE[7])==0 ){
+    എങ്കിൽ( sqlite3StrICmp(zTab+7, &PREFERRED_TEMP_SCHEMA_TABLE[7])==0 ){
+      തിരികെ 1;
     }
-    if( zDb==0 ) return 0;
-    if( sqlite3StrICmp(zTab+7, &LEGACY_SCHEMA_TABLE[7])==0 ) return 1;
-    if( sqlite3StrICmp(zTab+7, &PREFERRED_SCHEMA_TABLE[7])==0 ) return 1;
-  }else{
-    if( sqlite3StrICmp(zTab+7, &PREFERRED_SCHEMA_TABLE[7])==0 ) return 1;
+    എങ്കിൽ( zDb==0 ) തിരികെ 0;
+    എങ്കിൽ( sqlite3StrICmp(zTab+7, &LEGACY_SCHEMA_TABLE[7])==0 ) തിരികെ 1;
+    എങ്കിൽ( sqlite3StrICmp(zTab+7, &PREFERRED_SCHEMA_TABLE[7])==0 ) തിരികെ 1;
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( sqlite3StrICmp(zTab+7, &PREFERRED_SCHEMA_TABLE[7])==0 ) തിരികെ 1;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -275,59 +275,59 @@ static SQLITE_NOINLINE int isValidSchemaTableName(
 ** If the name cannot be resolved unambiguously, leave an error message
 ** in pParse and return WRC_Abort.  Return WRC_Prune on success.
 */
-static int lookupName(
+സ്ഥിതം പൂർണ്ണസംഖ്യ lookupName(
   Parse *pParse,       /* The parsing context */
-  const char *zDb,     /* Name of the database containing table, or NULL */
-  const char *zTab,    /* Name of table containing column, or NULL */
-  const Expr *pRight,  /* Name of the column. */
+  സ്ഥിരം അക്ഷരം *zDb,     /* Name of the database containing table, or NULL */
+  സ്ഥിരം അക്ഷരം *zTab,    /* Name of table containing column, or NULL */
+  സ്ഥിരം വ്യഞ്ജകം *p_വലത്,  /* Name of the column. */
   NameContext *pNC,    /* The name context used to resolve the name */
-  Expr *pExpr          /* Make this EXPR node point to the selected column */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം          /* Make this EXPR node point to the selected column */
 ){
-  int i, j;                         /* Loop counters */
-  int cnt = 0;                      /* Number of matching column names */
-  int cntTab = 0;                   /* Number of potential "rowid" matches */
-  int nSubquery = 0;                /* How many levels of subquery */
+  പൂർണ്ണസംഖ്യ i, j;                         /* Loop counters */
+  പൂർണ്ണസംഖ്യ cnt = 0;                      /* Number of matching column names */
+  പൂർണ്ണസംഖ്യ cntTab = 0;                   /* Number of potential "rowid" matches */
+  പൂർണ്ണസംഖ്യ nSubquery = 0;                /* How many levels of subquery */
   sqlite3 *db = pParse->db;         /* The database connection */
   SrcItem *pItem;                   /* Use for looping over pSrcList items */
   SrcItem *pMatch = 0;              /* The matching pSrcList item */
-  NameContext *pTopNC = pNC;        /* First namecontext in the list */
+  NameContext *p_മുകൾ_NC = pNC;        /* First namecontext in the list */
   Schema *pSchema = 0;              /* Schema of the expression */
-  int eNewExprOp = TK_COLUMN;       /* New value for pExpr->op on success */
+  പൂർണ്ണസംഖ്യ e_New_വ്യഞ്ജകം_Op = TK_COLUMN;       /* New value for pExpr->op on success */
   Table *pTab = 0;                  /* Table holding the row */
-  ExprList *pFJMatch = 0;           /* Matches for FULL JOIN .. USING */
-  const char *zCol = pRight->u.zToken;
+  വ്യഞ്ജകം_List *pFJMatch = 0;           /* Matches for FULL JOIN .. USING */
+  സ്ഥിരം അക്ഷരം *zCol = p_വലത്->u.zToken;
 
-  assert( pNC );     /* the name context cannot be NULL. */
-  assert( zCol );    /* The Z in X.Y.Z cannot be NULL */
-  assert( zDb==0 || zTab!=0 );
-  assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
+  പ്രതിജ്ഞാ( pNC );     /* the name context cannot be NULL. */
+  പ്രതിജ്ഞാ( zCol );    /* The Z in X.Y.Z cannot be NULL */
+  പ്രതിജ്ഞാ( zDb==0 || zTab!=0 );
+  പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_TokenOnly|EP_Reduced) );
 
   /* Initialize the node to no-match */
-  pExpr->iTable = -1;
-  ExprSetVVAProperty(pExpr, EP_NoReduce);
+  p_വ്യഞ്ജകം->iTable = -1;
+  വ്യഞ്ജകം_Set_VVAProperty(p_വ്യഞ്ജകം, EP_NoReduce);
 
   /* Translate the schema name in zDb into a pointer to the corresponding
   ** schema.  If not found, pSchema will remain NULL and nothing will match
   ** resulting in an appropriate error message toward the end of this routine
   */
-  if( zDb ){
+  എങ്കിൽ( zDb ){
     testcase( pNC->ncFlags & NC_PartIdx );
     testcase( pNC->ncFlags & NC_IsCheck );
-    if( (pNC->ncFlags & (NC_PartIdx|NC_IsCheck))!=0 ){
+    എങ്കിൽ( (pNC->ncFlags & (NC_PartIdx|NC_IsCheck))!=0 ){
       /* Silently ignore database qualifiers inside CHECK constraints and
       ** partial indices.  Do not raise errors because that might break
       ** legacy and because it does not hurt anything to just ignore the
       ** database name. */
       zDb = 0;
-    }else{
-      for(i=0; i<db->nDb; i++){
-        assert( db->aDb[i].zDbSName );
-        if( sqlite3StrICmp(db->aDb[i].zDbSName,zDb)==0 ){
+    }അല്ലെങ്കിൽ{
+      വേണ്ടി(i=0; i<db->nDb; i++){
+        പ്രതിജ്ഞാ( db->aDb[i].zDbSName );
+        എങ്കിൽ( sqlite3StrICmp(db->aDb[i].zDbSName,zDb)==0 ){
           pSchema = db->aDb[i].pSchema;
-          break;
+          നിർത്തുക;
         }
       }
-      if( i==db->nDb && sqlite3StrICmp("main", zDb)==0 ){
+      എങ്കിൽ( i==db->nDb && sqlite3StrICmp("main", zDb)==0 ){
         /* This branch is taken when the main database has been renamed
         ** using SQLITE_DBCONFIG_MAINDBNAME. */
         pSchema = db->aDb[0].pSchema;
@@ -337,41 +337,41 @@ static int lookupName(
   }
 
   /* Start at the inner-most context and move outward until a match is found */
-  assert( pNC && cnt==0 );
-  do{
-    ExprList *pEList;
+  പ്രതിജ്ഞാ( pNC && cnt==0 );
+  ചെയ്യുക{
+    വ്യഞ്ജകം_List *pEList;
     SrcList *pSrcList = pNC->pSrcList;
 
-    if( pSrcList ){
-      for(i=0, pItem=pSrcList->a; i<pSrcList->nSrc; i++, pItem++){
+    എങ്കിൽ( pSrcList ){
+      വേണ്ടി(i=0, pItem=pSrcList->a; i<pSrcList->nSrc; i++, pItem++){
         pTab = pItem->pSTab;
-        assert( pTab!=0 && pTab->zName!=0 );
-        assert( pTab->nCol>0 || pParse->nErr );
-        assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem));
-        if( pItem->fg.isNestedFrom ){
+        പ്രതിജ്ഞാ( pTab!=0 && pTab->zName!=0 );
+        പ്രതിജ്ഞാ( pTab->nCol>0 || pParse->nErr );
+        പ്രതിജ്ഞാ( (പൂർണ്ണസംഖ്യ)pItem->fg.isNestedFrom == IsNestedFrom(pItem));
+        എങ്കിൽ( pItem->fg.isNestedFrom ){
           /* In this case, pItem is a subquery that has been formed from a
           ** parenthesized subset of the FROM clause terms.  Example:
           **   .... FROM t1 LEFT JOIN (t2 RIGHT JOIN t3 USING(x)) USING(y) ...
           **                          \_________________________/
           **             This pItem -------------^
           */
-          int hit = 0;
+          പൂർണ്ണസംഖ്യ hit = 0;
           Select *pSel;
-          assert( pItem->fg.isSubquery );
-          assert( pItem->u4.pSubq!=0 );
+          പ്രതിജ്ഞാ( pItem->fg.isSubquery );
+          പ്രതിജ്ഞാ( pItem->u4.pSubq!=0 );
           pSel = pItem->u4.pSubq->pSelect;
-          assert( pSel!=0 );
+          പ്രതിജ്ഞാ( pSel!=0 );
           pEList = pSel->pEList;
-          assert( pEList!=0 );
-          assert( pEList->nExpr==pTab->nCol );
-          for(j=0; j<pEList->nExpr; j++){
-            int bRowid = 0;       /* True if possible rowid match */
-            if( !sqlite3MatchEName(&pEList->a[j], zCol, zTab, zDb, &bRowid) ){
-              continue;
+          പ്രതിജ്ഞാ( pEList!=0 );
+          പ്രതിജ്ഞാ( pEList->n_വ്യഞ്ജകം==pTab->nCol );
+          വേണ്ടി(j=0; j<pEList->n_വ്യഞ്ജകം; j++){
+            പൂർണ്ണസംഖ്യ bRowid = 0;       /* True if possible rowid match */
+            എങ്കിൽ( !sqlite3MatchEName(&pEList->a[j], zCol, zTab, zDb, &bRowid) ){
+              തുടരുക;
             }
-            if( bRowid==0 ){
-              if( cnt>0 ){
-                if( pItem->fg.isUsing==0
+            എങ്കിൽ( bRowid==0 ){
+              എങ്കിൽ( cnt>0 ){
+                എങ്കിൽ( pItem->fg.isUsing==0
                  || sqlite3IdListIndex(pItem->u3.pUsing, zCol)<0
                  || pMatch==pItem
                 ){
@@ -380,95 +380,95 @@ static int lookupName(
                   ** that match a USING term (if pMatch==pItem). These are both
                   ** "ambiguous column name" errors. Signal as much by clearing
                   ** pFJMatch and letting cnt go above 1. */
-                  sqlite3ExprListDelete(db, pFJMatch);
+                  sqlite3_വ്യഞ്ജകം_List_Delete(db, pFJMatch);
                   pFJMatch = 0;
-                }else
-                if( (pItem->fg.jointype & JT_RIGHT)==0 ){
+                }അല്ലെങ്കിൽ
+                എങ്കിൽ( (pItem->fg.jointype & JT_വലത്)==0 ){
                   /* An INNER or LEFT JOIN.  Use the left-most table */
-                  continue;
-                }else
-                if( (pItem->fg.jointype & JT_LEFT)==0 ){
+                  തുടരുക;
+                }അല്ലെങ്കിൽ
+                എങ്കിൽ( (pItem->fg.jointype & JT_ഇടത്)==0 ){
                   /* A RIGHT JOIN.  Use the right-most table */
                   cnt = 0;
-                  sqlite3ExprListDelete(db, pFJMatch);
+                  sqlite3_വ്യഞ്ജകം_List_Delete(db, pFJMatch);
                   pFJMatch = 0;
-                }else{
+                }അല്ലെങ്കിൽ{
                   /* For a FULL JOIN, we must construct a coalesce() func */
-                  extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
+                  extendFJMatch(pParse, &pFJMatch, pMatch, p_വ്യഞ്ജകം->iColumn);
                 }
               }
               cnt++;
               hit = 1;
-            }else if( cnt>0 ){
+            }അല്ലെങ്കിൽ എങ്കിൽ( cnt>0 ){
               /* This is a potential rowid match, but there has already been
               ** a real match found. So this can be ignored.  */
-              continue;
+              തുടരുക;
             }
             cntTab++;
             pMatch = pItem;
-            pExpr->iColumn = j;
+            p_വ്യഞ്ജകം->iColumn = j;
             pEList->a[j].fg.bUsed = 1;
 
             /* rowid cannot be part of a USING clause - assert() this. */
-            assert( bRowid==0 || pEList->a[j].fg.bUsingTerm==0 );
-            if( pEList->a[j].fg.bUsingTerm ) break;
+            പ്രതിജ്ഞാ( bRowid==0 || pEList->a[j].fg.bUsingTerm==0 );
+            എങ്കിൽ( pEList->a[j].fg.bUsingTerm ) നിർത്തുക;
           }
-          if( hit || zTab==0 ) continue;
+          എങ്കിൽ( hit || zTab==0 ) തുടരുക;
         }
-        assert( zDb==0 || zTab!=0 );
-        if( zTab ){
-          if( zDb ){
-            if( pTab->pSchema!=pSchema ) continue;
-            if( pSchema==0 && strcmp(zDb,"*")!=0 ) continue;
+        പ്രതിജ്ഞാ( zDb==0 || zTab!=0 );
+        എങ്കിൽ( zTab ){
+          എങ്കിൽ( zDb ){
+            എങ്കിൽ( pTab->pSchema!=pSchema ) തുടരുക;
+            എങ്കിൽ( pSchema==0 && strcmp(zDb,"*")!=0 ) തുടരുക;
           }
-          if( pItem->zAlias!=0 ){
-            if( sqlite3StrICmp(zTab, pItem->zAlias)!=0 ){
-              continue;
+          എങ്കിൽ( pItem->zAlias!=0 ){
+            എങ്കിൽ( sqlite3StrICmp(zTab, pItem->zAlias)!=0 ){
+              തുടരുക;
             }
-          }else if( sqlite3StrICmp(zTab, pTab->zName)!=0 ){
-            if( pTab->tnum!=1 ) continue;
-            if( !isValidSchemaTableName(zTab, pTab, zDb) ) continue;
+          }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3StrICmp(zTab, pTab->zName)!=0 ){
+            എങ്കിൽ( pTab->tnum!=1 ) തുടരുക;
+            എങ്കിൽ( !isValidSchemaTableName(zTab, pTab, zDb) ) തുടരുക;
           }
-          assert( ExprUseYTab(pExpr) );
-          if( IN_RENAME_OBJECT && pItem->zAlias ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)&pExpr->y.pTab);
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+          എങ്കിൽ( IN_RENAME_OBJECT && pItem->zAlias ){
+            sqlite3RenameTokenRemap(pParse, 0, (ശൂന്യം*)&p_വ്യഞ്ജകം->y.pTab);
           }
         }
         j = sqlite3ColumnIndex(pTab, zCol);
-        if( j>=0 ){
-          if( cnt>0 ){
-            if( pItem->fg.isUsing==0
+        എങ്കിൽ( j>=0 ){
+          എങ്കിൽ( cnt>0 ){
+            എങ്കിൽ( pItem->fg.isUsing==0
              || sqlite3IdListIndex(pItem->u3.pUsing, zCol)<0
             ){
               /* Two or more tables have the same column name which is
               ** not joined by USING.  This is an error.  Signal as much
               ** by clearing pFJMatch and letting cnt go above 1. */
-              sqlite3ExprListDelete(db, pFJMatch);
+              sqlite3_വ്യഞ്ജകം_List_Delete(db, pFJMatch);
               pFJMatch = 0;
-            }else
-            if( (pItem->fg.jointype & JT_RIGHT)==0 ){
+            }അല്ലെങ്കിൽ
+            എങ്കിൽ( (pItem->fg.jointype & JT_വലത്)==0 ){
               /* An INNER or LEFT JOIN.  Use the left-most table */
-              continue;
-            }else
-            if( (pItem->fg.jointype & JT_LEFT)==0 ){
+              തുടരുക;
+            }അല്ലെങ്കിൽ
+            എങ്കിൽ( (pItem->fg.jointype & JT_ഇടത്)==0 ){
               /* A RIGHT JOIN.  Use the right-most table */
               cnt = 0;
-              sqlite3ExprListDelete(db, pFJMatch);
+              sqlite3_വ്യഞ്ജകം_List_Delete(db, pFJMatch);
               pFJMatch = 0;
-            }else{
+            }അല്ലെങ്കിൽ{
               /* For a FULL JOIN, we must construct a coalesce() func */
-              extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
+              extendFJMatch(pParse, &pFJMatch, pMatch, p_വ്യഞ്ജകം->iColumn);
             }
           }
           cnt++;
           pMatch = pItem;
           /* Substitute the rowid (column -1) for the INTEGER PRIMARY KEY */
-          pExpr->iColumn = j==pTab->iPKey ? -1 : (i16)j;
-          if( pItem->fg.isNestedFrom ){
+          p_വ്യഞ്ജകം->iColumn = j==pTab->iPKey ? -1 : (i16)j;
+          എങ്കിൽ( pItem->fg.isNestedFrom ){
             sqlite3SrcItemColumnUsed(pItem, j);
           }
         }
-        if( 0==cnt && VisibleRowid(pTab) ){
+        എങ്കിൽ( 0==cnt && VisibleRowid(pTab) ){
           /* pTab is a potential ROWID match.  Keep track of it and match
           ** the ROWID later if that seems appropriate.  (Search for "cntTab"
           ** to find related code.)  Only allow a ROWID match if there is
@@ -480,7 +480,7 @@ static int lookupName(
           ** non-VIEW candidate plus multiple VIEW candidates.  In other
           ** words non-VIEW candidate terms take precedence over VIEWs.
           */
-          if( cntTab==0
+          എങ്കിൽ( cntTab==0
            || (cntTab==1
                && pMatch!=0
                && ALWAYS(pMatch->pSTab!=0)
@@ -489,10 +489,10 @@ static int lookupName(
           ){
             cntTab = 1;
             pMatch = pItem;
-          }else{
+          }അല്ലെങ്കിൽ{
             cntTab++;
           }
-#else
+#അല്ലെങ്കിൽ
           /* The (much more common) non-SQLITE_ALLOW_ROWID_IN_VIEW case is
           ** simpler since we require exactly one candidate, which will
           ** always be a non-VIEW
@@ -502,112 +502,112 @@ static int lookupName(
 #endif
         }
       }
-      if( pMatch ){
-        pExpr->iTable = pMatch->iCursor;
-        assert( ExprUseYTab(pExpr) );
-        pExpr->y.pTab = pMatch->pSTab;
-        if( (pMatch->fg.jointype & (JT_LEFT|JT_LTORJ))!=0 ){
-          ExprSetProperty(pExpr, EP_CanBeNull);
+      എങ്കിൽ( pMatch ){
+        p_വ്യഞ്ജകം->iTable = pMatch->iCursor;
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+        p_വ്യഞ്ജകം->y.pTab = pMatch->pSTab;
+        എങ്കിൽ( (pMatch->fg.jointype & (JT_ഇടത്|JT_LTORJ))!=0 ){
+          വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_CanBeNull);
         }
-        pSchema = pExpr->y.pTab->pSchema;
+        pSchema = p_വ്യഞ്ജകം->y.pTab->pSchema;
       }
     } /* if( pSrcList ) */
 
-#if !defined(SQLITE_OMIT_TRIGGER) || !defined(SQLITE_OMIT_UPSERT)
+#എങ്കിൽ !defined(SQLITE_OMIT_TRIGGER) || !defined(SQLITE_OMIT_UPSERT)
     /* If we have not already resolved the name, then maybe
     ** it is a new.* or old.* trigger argument reference.  Or
     ** maybe it is an excluded.* from an upsert.  Or maybe it is
     ** a reference in the RETURNING clause to a table being modified.
     */
-    if( cnt==0 && zDb==0 ){
+    എങ്കിൽ( cnt==0 && zDb==0 ){
       pTab = 0;
 #ifndef SQLITE_OMIT_TRIGGER
-      if( pParse->pTriggerTab!=0 ){
-        int op = pParse->eTriggerOp;
-        assert( op==TK_DELETE || op==TK_UPDATE || op==TK_INSERT );
-        if( pParse->bReturning ){
-          if( (pNC->ncFlags & NC_UBaseReg)!=0
+      എങ്കിൽ( pParse->pTriggerTab!=0 ){
+        പൂർണ്ണസംഖ്യ op = pParse->eTriggerOp;
+        പ്രതിജ്ഞാ( op==TK_DELETE || op==TK_UPDATE || op==TK_തിരുകുക );
+        എങ്കിൽ( pParse->bReturning ){
+          എങ്കിൽ( (pNC->ncFlags & NC_UBaseReg)!=0
            && ALWAYS(zTab==0
                      || sqlite3StrICmp(zTab,pParse->pTriggerTab->zName)==0
                      || isValidSchemaTableName(zTab, pParse->pTriggerTab, 0))
           ){
-            pExpr->iTable = op!=TK_DELETE;
+            p_വ്യഞ്ജകം->iTable = op!=TK_DELETE;
             pTab = pParse->pTriggerTab;
           }
-        }else if( op!=TK_DELETE && zTab && sqlite3StrICmp("new",zTab) == 0 ){
-          pExpr->iTable = 1;
+        }അല്ലെങ്കിൽ എങ്കിൽ( op!=TK_DELETE && zTab && sqlite3StrICmp("new",zTab) == 0 ){
+          p_വ്യഞ്ജകം->iTable = 1;
           pTab = pParse->pTriggerTab;
-        }else if( op!=TK_INSERT && zTab && sqlite3StrICmp("old",zTab)==0 ){
-          pExpr->iTable = 0;
+        }അല്ലെങ്കിൽ എങ്കിൽ( op!=TK_തിരുകുക && zTab && sqlite3StrICmp("old",zTab)==0 ){
+          p_വ്യഞ്ജകം->iTable = 0;
           pTab = pParse->pTriggerTab;
         }
       }
 #endif /* SQLITE_OMIT_TRIGGER */
 #ifndef SQLITE_OMIT_UPSERT
-      if( (pNC->ncFlags & NC_UUpsert)!=0 && zTab!=0 ){
+      എങ്കിൽ( (pNC->ncFlags & NC_UUpsert)!=0 && zTab!=0 ){
         Upsert *pUpsert = pNC->uNC.pUpsert;
-        if( pUpsert && sqlite3StrICmp("excluded",zTab)==0 ){
+        എങ്കിൽ( pUpsert && sqlite3StrICmp("excluded",zTab)==0 ){
           pTab = pUpsert->pUpsertSrc->a[0].pSTab;
-          pExpr->iTable = EXCLUDED_TABLE_NUMBER;
-          if( IN_RENAME_OBJECT ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)&pExpr->y.pTab);
+          p_വ്യഞ്ജകം->iTable = EXCLUDED_TABLE_സംഖ്യ;
+          എങ്കിൽ( IN_RENAME_OBJECT ){
+            sqlite3RenameTokenRemap(pParse, 0, (ശൂന്യം*)&p_വ്യഞ്ജകം->y.pTab);
           }
         }
       }
 #endif /* SQLITE_OMIT_UPSERT */
 
-      if( pTab ){
-        int iCol;
+      എങ്കിൽ( pTab ){
+        പൂർണ്ണസംഖ്യ iCol;
         pSchema = pTab->pSchema;
         cntTab++;
         iCol = sqlite3ColumnIndex(pTab, zCol);
-        if( iCol>=0 ){
-          if( pTab->iPKey==iCol ) iCol = -1;
-        }else{
-          if( sqlite3IsRowid(zCol) && VisibleRowid(pTab) ){
+        എങ്കിൽ( iCol>=0 ){
+          എങ്കിൽ( pTab->iPKey==iCol ) iCol = -1;
+        }അല്ലെങ്കിൽ{
+          എങ്കിൽ( sqlite3IsRowid(zCol) && VisibleRowid(pTab) ){
             iCol = -1;
-          }else{
+          }അല്ലെങ്കിൽ{
             iCol = pTab->nCol;
           }
         }
-        if( iCol<pTab->nCol ){
+        എങ്കിൽ( iCol<pTab->nCol ){
           cnt++;
           pMatch = 0;
 #ifndef SQLITE_OMIT_UPSERT
-          if( pExpr->iTable==EXCLUDED_TABLE_NUMBER ){
+          എങ്കിൽ( p_വ്യഞ്ജകം->iTable==EXCLUDED_TABLE_സംഖ്യ ){
             testcase( iCol==(-1) );
-            assert( ExprUseYTab(pExpr) );
-            if( IN_RENAME_OBJECT ){
-              pExpr->iColumn = iCol;
-              pExpr->y.pTab = pTab;
-              eNewExprOp = TK_COLUMN;
-            }else{
-              pExpr->iTable = pNC->uNC.pUpsert->regData +
+            പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+            എങ്കിൽ( IN_RENAME_OBJECT ){
+              p_വ്യഞ്ജകം->iColumn = iCol;
+              p_വ്യഞ്ജകം->y.pTab = pTab;
+              e_New_വ്യഞ്ജകം_Op = TK_COLUMN;
+            }അല്ലെങ്കിൽ{
+              p_വ്യഞ്ജകം->iTable = pNC->uNC.pUpsert->regData +
                  sqlite3TableColumnToStorage(pTab, iCol);
-              eNewExprOp = TK_REGISTER;
+              e_New_വ്യഞ്ജകം_Op = TK_REGISTER;
             }
-          }else
+          }അല്ലെങ്കിൽ
 #endif /* SQLITE_OMIT_UPSERT */
           {
-            assert( ExprUseYTab(pExpr) );
-            pExpr->y.pTab = pTab;
-            if( pParse->bReturning ){
-              eNewExprOp = TK_REGISTER;
-              pExpr->op2 = TK_COLUMN;
-              pExpr->iColumn = iCol;
-              pExpr->iTable = pNC->uNC.iBaseReg + (pTab->nCol+1)*pExpr->iTable +
+            പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+            p_വ്യഞ്ജകം->y.pTab = pTab;
+            എങ്കിൽ( pParse->bReturning ){
+              e_New_വ്യഞ്ജകം_Op = TK_REGISTER;
+              p_വ്യഞ്ജകം->op2 = TK_COLUMN;
+              p_വ്യഞ്ജകം->iColumn = iCol;
+              p_വ്യഞ്ജകം->iTable = pNC->uNC.iBaseReg + (pTab->nCol+1)*p_വ്യഞ്ജകം->iTable +
                  sqlite3TableColumnToStorage(pTab, iCol) + 1;
-            }else{
-              pExpr->iColumn = (i16)iCol;
-              eNewExprOp = TK_TRIGGER;
+            }അല്ലെങ്കിൽ{
+              p_വ്യഞ്ജകം->iColumn = (i16)iCol;
+              e_New_വ്യഞ്ജകം_Op = TK_TRIGGER;
 #ifndef SQLITE_OMIT_TRIGGER
-              if( iCol<0 ){
-                pExpr->affExpr = SQLITE_AFF_INTEGER;
-              }else if( pExpr->iTable==0 ){
+              എങ്കിൽ( iCol<0 ){
+                p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം = SQLITE_AFF_INTEGER;
+              }അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->iTable==0 ){
                 testcase( iCol==31 );
                 testcase( iCol==32 );
                 pParse->oldmask |= (iCol>=32 ? 0xffffffff : (((u32)1)<<iCol));
-              }else{
+              }അല്ലെങ്കിൽ{
                 testcase( iCol==31 );
                 testcase( iCol==32 );
                 pParse->newmask |= (iCol>=32 ? 0xffffffff : (((u32)1)<<iCol));
@@ -623,21 +623,21 @@ static int lookupName(
     /*
     ** Perhaps the name is a reference to the ROWID
     */
-    if( cnt==0
+    എങ്കിൽ( cnt==0
      && cntTab>=1
      && pMatch
-     && (pNC->ncFlags & (NC_IdxExpr|NC_GenCol))==0
+     && (pNC->ncFlags & (NC_Idx_വ്യഞ്ജകം|NC_GenCol))==0
      && sqlite3IsRowid(zCol)
      && ALWAYS(VisibleRowid(pMatch->pSTab) || pMatch->fg.isNestedFrom)
     ){
       cnt = cntTab;
-#if SQLITE_ALLOW_ROWID_IN_VIEW+0==2
-      if( pMatch->pSTab!=0 && IsView(pMatch->pSTab) ){
-        eNewExprOp = TK_NULL;
+#എങ്കിൽ SQLITE_ALLOW_ROWID_IN_VIEW+0==2
+      എങ്കിൽ( pMatch->pSTab!=0 && IsView(pMatch->pSTab) ){
+        e_New_വ്യഞ്ജകം_Op = TK_NULL;
       }
 #endif
-      if( pMatch->fg.isNestedFrom==0 ) pExpr->iColumn = -1;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
+      എങ്കിൽ( pMatch->fg.isNestedFrom==0 ) p_വ്യഞ്ജകം->iColumn = -1;
+      p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം = SQLITE_AFF_INTEGER;
     }
 
     /*
@@ -658,44 +658,44 @@ static int lookupName(
     ** is supported for backwards compatibility only. Hence, we issue a warning
     ** on sqlite3_log() whenever the capability is used.
     */
-    if( cnt==0
+    എങ്കിൽ( cnt==0
      && (pNC->ncFlags & NC_UEList)!=0
      && zTab==0
     ){
       pEList = pNC->uNC.pEList;
-      assert( pEList!=0 );
-      for(j=0; j<pEList->nExpr; j++){
-        char *zAs = pEList->a[j].zEName;
-        if( pEList->a[j].fg.eEName==ENAME_NAME
+      പ്രതിജ്ഞാ( pEList!=0 );
+      വേണ്ടി(j=0; j<pEList->n_വ്യഞ്ജകം; j++){
+        അക്ഷരം *zAs = pEList->a[j].zEName;
+        എങ്കിൽ( pEList->a[j].fg.eEName==ENAME_NAME
          && sqlite3_stricmp(zAs, zCol)==0
         ){
-          Expr *pOrig;
-          assert( pExpr->pLeft==0 && pExpr->pRight==0 );
-          assert( ExprUseXList(pExpr)==0 || pExpr->x.pList==0 );
-          assert( ExprUseXSelect(pExpr)==0 || pExpr->x.pSelect==0 );
-          pOrig = pEList->a[j].pExpr;
-          if( (pNC->ncFlags&NC_AllowAgg)==0 && ExprHasProperty(pOrig, EP_Agg) ){
-            sqlite3ErrorMsg(pParse, "misuse of aliased aggregate %s", zAs);
-            return WRC_Abort;
+          വ്യഞ്ജകം *pOrig;
+          പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_ഇടത്==0 && p_വ്യഞ്ജകം->p_വലത്==0 );
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം)==0 || p_വ്യഞ്ജകം->x.pList==0 );
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം)==0 || p_വ്യഞ്ജകം->x.pSelect==0 );
+          pOrig = pEList->a[j].p_വ്യഞ്ജകം;
+          എങ്കിൽ( (pNC->ncFlags&NC_AllowAgg)==0 && വ്യഞ്ജകം_Has_Property(pOrig, EP_Agg) ){
+            sqlite3_Error_സന്ദേശം(pParse, "misuse of aliased aggregate %s", zAs);
+            തിരികെ WRC_Abort;
           }
-          if( ExprHasProperty(pOrig, EP_Win)
-           && ((pNC->ncFlags&NC_AllowWin)==0 || pNC!=pTopNC )
+          എങ്കിൽ( വ്യഞ്ജകം_Has_Property(pOrig, EP_Win)
+           && ((pNC->ncFlags&NC_AllowWin)==0 || pNC!=p_മുകൾ_NC )
           ){
-            sqlite3ErrorMsg(pParse, "misuse of aliased window function %s",zAs);
-            return WRC_Abort;
+            sqlite3_Error_സന്ദേശം(pParse, "misuse of aliased window function %s",zAs);
+            തിരികെ WRC_Abort;
           }
-          if( sqlite3ExprVectorSize(pOrig)!=1 ){
-            sqlite3ErrorMsg(pParse, "row value misused");
-            return WRC_Abort;
+          എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Vector_Size(pOrig)!=1 ){
+            sqlite3_Error_സന്ദേശം(pParse, "row value misused");
+            തിരികെ WRC_Abort;
           }
-          resolveAlias(pParse, pEList, j, pExpr, nSubquery);
+          resolveAlias(pParse, pEList, j, p_വ്യഞ്ജകം, nSubquery);
           cnt = 1;
           pMatch = 0;
-          assert( zTab==0 && zDb==0 );
-          if( IN_RENAME_OBJECT ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)pExpr);
+          പ്രതിജ്ഞാ( zTab==0 && zDb==0 );
+          എങ്കിൽ( IN_RENAME_OBJECT ){
+            sqlite3RenameTokenRemap(pParse, 0, (ശൂന്യം*)p_വ്യഞ്ജകം);
           }
-          goto lookupname_end;
+          പോകുക lookupname_end;
         }
       }
     }
@@ -703,10 +703,10 @@ static int lookupName(
     /* Advance to the next name context.  The loop will exit when either
     ** we have a match (cnt>0) or when we run out of name contexts.
     */
-    if( cnt ) break;
+    എങ്കിൽ( cnt ) നിർത്തുക;
     pNC = pNC->pNext;
     nSubquery++;
-  }while( pNC );
+  }ആകുമ്പോൾ( pNC );
 
 
   /*
@@ -719,10 +719,10 @@ static int lookupName(
   ** Because no reference was made to outer contexts, the pNC->nRef
   ** fields are not changed in any context.
   */
-  if( cnt==0 && zTab==0 ){
-    assert( pExpr->op==TK_ID );
-    if( ExprHasProperty(pExpr,EP_DblQuoted)
-     && areDoubleQuotedStringsEnabled(db, pTopNC)
+  എങ്കിൽ( cnt==0 && zTab==0 ){
+    പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op==TK_ID );
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം,EP_DblQuoted)
+     && areDoubleQuotedStringsEnabled(db, p_മുകൾ_NC)
     ){
       /* If a double-quoted identifier does not match any known column name,
       ** then treat it as a string.
@@ -743,12 +743,12 @@ static int lookupName(
 #ifdef SQLITE_ENABLE_NORMALIZE
       sqlite3VdbeAddDblquoteStr(db, pParse->pVdbe, zCol);
 #endif
-      pExpr->op = TK_STRING;
-      memset(&pExpr->y, 0, sizeof(pExpr->y));
-      return WRC_Prune;
+      p_വ്യഞ്ജകം->op = TK_STRING;
+      memset(&p_വ്യഞ്ജകം->y, 0, വലുപ്പം(p_വ്യഞ്ജകം->y));
+      തിരികെ WRC_Prune;
     }
-    if( sqlite3ExprIdToTrueFalse(pExpr) ){
-      return WRC_Prune;
+    എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Id_To_True_False(p_വ്യഞ്ജകം) ){
+      തിരികെ WRC_Prune;
     }
   }
 
@@ -759,58 +759,58 @@ static int lookupName(
   ** cnt==0 is always an error.  cnt>1 is often an error, but might
   ** be multiple matches for a NATURAL OUTER JOIN or a OUTER JOIN USING.
   */
-  assert( pFJMatch==0 || cnt>0 );
-  assert( !ExprHasProperty(pExpr, EP_xIsSelect|EP_IntValue) );
-  if( cnt!=1 ){
-    const char *zErr;
-    if( pFJMatch ){
-      if( pFJMatch->nExpr==cnt-1 ){
-        if( ExprHasProperty(pExpr,EP_Leaf) ){
-          ExprClearProperty(pExpr,EP_Leaf);
-        }else{
-          sqlite3ExprDelete(db, pExpr->pLeft);
-          pExpr->pLeft = 0;
-          sqlite3ExprDelete(db, pExpr->pRight);
-          pExpr->pRight = 0;
+  പ്രതിജ്ഞാ( pFJMatch==0 || cnt>0 );
+  പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_xIsSelect|EP_Int_മൂല്യം) );
+  എങ്കിൽ( cnt!=1 ){
+    സ്ഥിരം അക്ഷരം *zErr;
+    എങ്കിൽ( pFJMatch ){
+      എങ്കിൽ( pFJMatch->n_വ്യഞ്ജകം==cnt-1 ){
+        എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം,EP_Leaf) ){
+          വ്യഞ്ജകം_Clear_Property(p_വ്യഞ്ജകം,EP_Leaf);
+        }അല്ലെങ്കിൽ{
+          sqlite3_വ്യഞ്ജകം_Delete(db, p_വ്യഞ്ജകം->p_ഇടത്);
+          p_വ്യഞ്ജകം->p_ഇടത് = 0;
+          sqlite3_വ്യഞ്ജകം_Delete(db, p_വ്യഞ്ജകം->p_വലത്);
+          p_വ്യഞ്ജകം->p_വലത് = 0;
         }
-        extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
-        pExpr->op = TK_FUNCTION;
-        pExpr->u.zToken = "coalesce";
-        pExpr->x.pList = pFJMatch;
-        pExpr->affExpr = SQLITE_AFF_DEFER;
+        extendFJMatch(pParse, &pFJMatch, pMatch, p_വ്യഞ്ജകം->iColumn);
+        p_വ്യഞ്ജകം->op = TK_FUNCTION;
+        p_വ്യഞ്ജകം->u.zToken = "coalesce";
+        p_വ്യഞ്ജകം->x.pList = pFJMatch;
+        p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം = SQLITE_AFF_DEFER;
         cnt = 1;
-        goto lookupname_end;
-      }else{
-        sqlite3ExprListDelete(db, pFJMatch);
+        പോകുക lookupname_end;
+      }അല്ലെങ്കിൽ{
+        sqlite3_വ്യഞ്ജകം_List_Delete(db, pFJMatch);
         pFJMatch = 0;
       }
     }
     zErr = cnt==0 ? "no such column" : "ambiguous column name";
-    if( zDb ){
-      sqlite3ErrorMsg(pParse, "%s: %s.%s.%s", zErr, zDb, zTab, zCol);
-    }else if( zTab ){
-      sqlite3ErrorMsg(pParse, "%s: %s.%s", zErr, zTab, zCol);
-    }else if( cnt==0 && ExprHasProperty(pRight,EP_DblQuoted) ){
-      sqlite3ErrorMsg(pParse, "%s: \"%s\" - should this be a"
+    എങ്കിൽ( zDb ){
+      sqlite3_Error_സന്ദേശം(pParse, "%s: %s.%s.%s", zErr, zDb, zTab, zCol);
+    }അല്ലെങ്കിൽ എങ്കിൽ( zTab ){
+      sqlite3_Error_സന്ദേശം(pParse, "%s: %s.%s", zErr, zTab, zCol);
+    }അല്ലെങ്കിൽ എങ്കിൽ( cnt==0 && വ്യഞ്ജകം_Has_Property(p_വലത്,EP_DblQuoted) ){
+      sqlite3_Error_സന്ദേശം(pParse, "%s: \"%s\" - should this be a"
                               " string literal in single-quotes?",
                               zErr, zCol);
-    }else{
-      sqlite3ErrorMsg(pParse, "%s: %s", zErr, zCol);
+    }അല്ലെങ്കിൽ{
+      sqlite3_Error_സന്ദേശം(pParse, "%s: %s", zErr, zCol);
     }
-    sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
+    sqlite3_Record_Error_Offset_Of_വ്യഞ്ജകം(pParse->db, p_വ്യഞ്ജകം);
     pParse->checkSchema = 1;
-    pTopNC->nNcErr++;
-    eNewExprOp = TK_NULL;
+    p_മുകൾ_NC->nNcErr++;
+    e_New_വ്യഞ്ജകം_Op = TK_NULL;
   }
-  assert( pFJMatch==0 );
+  പ്രതിജ്ഞാ( pFJMatch==0 );
 
   /* Remove all substructure from pExpr */
-  if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
-    sqlite3ExprDelete(db, pExpr->pLeft);
-    pExpr->pLeft = 0;
-    sqlite3ExprDelete(db, pExpr->pRight);
-    pExpr->pRight = 0;
-    ExprSetProperty(pExpr, EP_Leaf);
+  എങ്കിൽ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം,(EP_TokenOnly|EP_Leaf)) ){
+    sqlite3_വ്യഞ്ജകം_Delete(db, p_വ്യഞ്ജകം->p_ഇടത്);
+    p_വ്യഞ്ജകം->p_ഇടത് = 0;
+    sqlite3_വ്യഞ്ജകം_Delete(db, p_വ്യഞ്ജകം->p_വലത്);
+    p_വ്യഞ്ജകം->p_വലത് = 0;
+    വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_Leaf);
   }
 
   /* If a column from a table in pSrcList is referenced, then record
@@ -827,45 +827,45 @@ static int lookupName(
   ** If a generated column is referenced, set bits for every column
   ** of the table.
   */
-  if( pMatch ){
-    if( pExpr->iColumn>=0 ){
-      pMatch->colUsed |= sqlite3ExprColUsed(pExpr);
-    }else{
+  എങ്കിൽ( pMatch ){
+    എങ്കിൽ( p_വ്യഞ്ജകം->iColumn>=0 ){
+      pMatch->colUsed |= sqlite3_വ്യഞ്ജകം_Col_Used(p_വ്യഞ്ജകം);
+    }അല്ലെങ്കിൽ{
       pMatch->fg.rowidUsed = 1;
     }
   }
 
-  pExpr->op = eNewExprOp;
+  p_വ്യഞ്ജകം->op = e_New_വ്യഞ്ജകം_Op;
 lookupname_end:
-  if( cnt==1 ){
-    assert( pNC!=0 );
+  എങ്കിൽ( cnt==1 ){
+    പ്രതിജ്ഞാ( pNC!=0 );
 #ifndef SQLITE_OMIT_AUTHORIZATION
-    if( db->xAuth ){
-      if( pFJMatch ){
-        assert( pExpr->op==TK_FUNCTION );
-        assert( sqlite3_stricmp(pExpr->u.zToken,"coalesce")==0 );
-        assert( pExpr->x.pList==pFJMatch );
-        assert( pFJMatch->nExpr>0 );
-        for(i=0; i<pFJMatch->nExpr; i++){
-          assert( pFJMatch->a[i].pExpr->op==TK_COLUMN );
-          sqlite3AuthRead(pParse,pFJMatch->a[i].pExpr,pSchema,pNC->pSrcList);
+    എങ്കിൽ( db->xAuth ){
+      എങ്കിൽ( pFJMatch ){
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op==TK_FUNCTION );
+        പ്രതിജ്ഞാ( sqlite3_stricmp(p_വ്യഞ്ജകം->u.zToken,"coalesce")==0 );
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->x.pList==pFJMatch );
+        പ്രതിജ്ഞാ( pFJMatch->n_വ്യഞ്ജകം>0 );
+        വേണ്ടി(i=0; i<pFJMatch->n_വ്യഞ്ജകം; i++){
+          പ്രതിജ്ഞാ( pFJMatch->a[i].p_വ്യഞ്ജകം->op==TK_COLUMN );
+          sqlite3AuthRead(pParse,pFJMatch->a[i].p_വ്യഞ്ജകം,pSchema,pNC->pSrcList);
         }
-      }else if( pExpr->op==TK_COLUMN || pExpr->op==TK_TRIGGER ){
-        sqlite3AuthRead(pParse, pExpr, pSchema, pNC->pSrcList);
+      }അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_COLUMN || p_വ്യഞ്ജകം->op==TK_TRIGGER ){
+        sqlite3AuthRead(pParse, p_വ്യഞ്ജകം, pSchema, pNC->pSrcList);
       }
     } 
 #endif
     /* Increment the nRef value on all name contexts from TopNC up to
     ** the point where the name matched. */
-    for(;;){
-      assert( pTopNC!=0 );
-      pTopNC->nRef++;
-      if( pTopNC==pNC ) break;
-      pTopNC = pTopNC->pNext;
+    വേണ്ടി(;;){
+      പ്രതിജ്ഞാ( p_മുകൾ_NC!=0 );
+      p_മുകൾ_NC->nRef++;
+      എങ്കിൽ( p_മുകൾ_NC==pNC ) നിർത്തുക;
+      p_മുകൾ_NC = p_മുകൾ_NC->pNext;
     }
-    return WRC_Prune;
-  } else {
-    return WRC_Abort;
+    തിരികെ WRC_Prune;
+  } അല്ലെങ്കിൽ {
+    തിരികെ WRC_Abort;
   }
 }
 
@@ -873,32 +873,32 @@ lookupname_end:
 ** Allocate and return a pointer to an expression to load the column iCol
 ** from datasource iSrc in SrcList pSrc.
 */
-Expr *sqlite3CreateColumnExpr(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){
-  Expr *p = sqlite3ExprAlloc(db, TK_COLUMN, 0, 0);
-  if( p ){
+വ്യഞ്ജകം *sqlite3_Create_Column_വ്യഞ്ജകം(sqlite3 *db, SrcList *pSrc, പൂർണ്ണസംഖ്യ iSrc, പൂർണ്ണസംഖ്യ iCol){
+  വ്യഞ്ജകം *p = sqlite3_വ്യഞ്ജകം_Alloc(db, TK_COLUMN, 0, 0);
+  എങ്കിൽ( p ){
     SrcItem *pItem = &pSrc->a[iSrc];
     Table *pTab;
-    assert( ExprUseYTab(p) );
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p) );
     pTab = p->y.pTab = pItem->pSTab;
     p->iTable = pItem->iCursor;
-    if( p->y.pTab->iPKey==iCol ){
+    എങ്കിൽ( p->y.pTab->iPKey==iCol ){
       p->iColumn = -1;
-    }else{
+    }അല്ലെങ്കിൽ{
       p->iColumn = (ynVar)iCol;
-      if( (pTab->tabFlags & TF_HasGenerated)!=0
+      എങ്കിൽ( (pTab->tabFlags & TF_HasGenerated)!=0
        && (pTab->aCol[iCol].colFlags & COLFLAG_GENERATED)!=0
       ){
         testcase( pTab->nCol==63 );
         testcase( pTab->nCol==64 );
         pItem->colUsed = pTab->nCol>=64 ? ALLBITS : MASKBIT(pTab->nCol)-1;
-      }else{
+      }അല്ലെങ്കിൽ{
         testcase( iCol==BMS );
         testcase( iCol==BMS-1 );
         pItem->colUsed |= ((Bitmask)1)<<(iCol>=BMS ? BMS-1 : iCol);
       }
     }
   }
-  return p;
+  തിരികെ p;
 }
 
 /*
@@ -917,42 +917,42 @@ Expr *sqlite3CreateColumnExpr(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){
 ** (because errors are rare), the conditional is moved outside of the
 ** function call using a macro.
 */
-static void notValidImpl(
+സ്ഥിതം ശൂന്യം notValidImpl(
    Parse *pParse,       /* Leave error message here */
    NameContext *pNC,    /* The name context */
-   const char *zMsg,    /* Type of error */
-   Expr *pExpr,         /* Invalidate this expression on error */
-   Expr *pError         /* Associate error with this expression */
+   സ്ഥിരം അക്ഷരം *z_സന്ദേശം,    /* Type of error */
+   വ്യഞ്ജകം *p_വ്യഞ്ജകം,         /* Invalidate this expression on error */
+   വ്യഞ്ജകം *pError         /* Associate error with this expression */
 ){
-  const char *zIn = "partial index WHERE clauses";
-  if( pNC->ncFlags & NC_IdxExpr )      zIn = "index expressions";
+  സ്ഥിരം അക്ഷരം *zIn = "partial index WHERE clauses";
+  എങ്കിൽ( pNC->ncFlags & NC_Idx_വ്യഞ്ജകം )      zIn = "index expressions";
 #ifndef SQLITE_OMIT_CHECK
-  else if( pNC->ncFlags & NC_IsCheck ) zIn = "CHECK constraints";
+  അല്ലെങ്കിൽ എങ്കിൽ( pNC->ncFlags & NC_IsCheck ) zIn = "CHECK constraints";
 #endif
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  else if( pNC->ncFlags & NC_GenCol ) zIn = "generated columns";
+  അല്ലെങ്കിൽ എങ്കിൽ( pNC->ncFlags & NC_GenCol ) zIn = "generated columns";
 #endif
-  sqlite3ErrorMsg(pParse, "%s prohibited in %s", zMsg, zIn);
-  if( pExpr ) pExpr->op = TK_NULL;
-  sqlite3RecordErrorOffsetOfExpr(pParse->db, pError);
+  sqlite3_Error_സന്ദേശം(pParse, "%s prohibited in %s", z_സന്ദേശം, zIn);
+  എങ്കിൽ( p_വ്യഞ്ജകം ) p_വ്യഞ്ജകം->op = TK_NULL;
+  sqlite3_Record_Error_Offset_Of_വ്യഞ്ജകം(pParse->db, pError);
 }
 #define sqlite3ResolveNotValid(P,N,M,X,E,R) \
-  assert( ((X)&~(NC_IsCheck|NC_PartIdx|NC_IdxExpr|NC_GenCol))==0 ); \
-  if( ((N)->ncFlags & (X))!=0 ) notValidImpl(P,N,M,E,R);
+  പ്രതിജ്ഞാ( ((X)&~(NC_IsCheck|NC_PartIdx|NC_Idx_വ്യഞ്ജകം|NC_GenCol))==0 ); \
+  എങ്കിൽ( ((N)->ncFlags & (X))!=0 ) notValidImpl(P,N,M,E,R);
 
 /*
 ** Expression p should encode a floating point value between 1.0 and 0.0.
 ** Return 134,217,728 (2^27) times this value.  Or return -1 if p is not
 ** a floating point value between 1.0 and 0.0.
 */
-static int exprProbability(Expr *p){
-  double r = -1.0;
-  if( p->op!=TK_FLOAT ) return -1;
-  assert( !ExprHasProperty(p, EP_IntValue) );
+സ്ഥിതം പൂർണ്ണസംഖ്യ വ്യഞ്ജകം_Probability(വ്യഞ്ജകം *p){
+  ഇരട്ട r = -1.0;
+  എങ്കിൽ( p->op!=TK_FLOAT ) തിരികെ -1;
+  പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p, EP_Int_മൂല്യം) );
   sqlite3AtoF(p->u.zToken, &r);
-  assert( r>=0.0 );
-  if( r>1.0 ) return -1;
-  return (int)(r*134217728.0);
+  പ്രതിജ്ഞാ( r>=0.0 );
+  എങ്കിൽ( r>1.0 ) തിരികെ -1;
+  തിരികെ (പൂർണ്ണസംഖ്യ)(r*134217728.0);
 }
 
 /*
@@ -961,24 +961,24 @@ static int exprProbability(Expr *p){
 ** also set the EP_SubtArg property on the first result-set
 ** column of that subquery.
 */
-static SQLITE_NOINLINE void resolveSetExprSubtypeArg(ExprList *pList){
-  int nn, ii;
-  nn = pList ? pList->nExpr : 0;
-  for(ii=0; ii<nn; ii++){
-    Expr *pExpr = pList->a[ii].pExpr;
-    while( 1 /*exit-by-break*/ ){
-      ExprSetProperty(pExpr, EP_SubtArg);
-      if( pExpr->op==TK_SELECT ){
-        assert( ExprUseXSelect(pExpr) );
-        assert( pExpr->x.pSelect!=0 );
-        resolveSetExprSubtypeArg(pExpr->x.pSelect->pEList);
-        break;
+സ്ഥിതം SQLITE_NOINLINE ശൂന്യം resolve_Set_വ്യഞ്ജകം_Subtype_Arg(വ്യഞ്ജകം_List *pList){
+  പൂർണ്ണസംഖ്യ nn, ii;
+  nn = pList ? pList->n_വ്യഞ്ജകം : 0;
+  വേണ്ടി(ii=0; ii<nn; ii++){
+    വ്യഞ്ജകം *p_വ്യഞ്ജകം = pList->a[ii].p_വ്യഞ്ജകം;
+    ആകുമ്പോൾ( 1 /*exit-by-break*/ ){
+      വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_SubtArg);
+      എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_SELECT ){
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) );
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->x.pSelect!=0 );
+        resolve_Set_വ്യഞ്ജകം_Subtype_Arg(p_വ്യഞ്ജകം->x.pSelect->pEList);
+        നിർത്തുക;
       }
-      if( pExpr->op==TK_UPLUS ){
-        pExpr = pExpr->pLeft;
-        assert( pExpr!=0 );
-      }else{
-        break;
+      എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_UPLUS ){
+        p_വ്യഞ്ജകം = p_വ്യഞ്ജകം->p_ഇടത്;
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം!=0 );
+      }അല്ലെങ്കിൽ{
+        നിർത്തുക;
       }
     }
   }
@@ -995,43 +995,43 @@ static SQLITE_NOINLINE void resolveSetExprSubtypeArg(ExprList *pList){
 ** function names.  The operator for aggregate functions is changed
 ** to TK_AGG_FUNCTION.
 */
-static int resolveExprStep(Walker *pWalker, Expr *pExpr){
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolve_വ്യഞ്ജകം_Step(Walker *pWalker, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
   NameContext *pNC;
   Parse *pParse;
 
   pNC = pWalker->u.pNC;
-  assert( pNC!=0 );
+  പ്രതിജ്ഞാ( pNC!=0 );
   pParse = pNC->pParse;
-  assert( pParse==pWalker->pParse );
+  പ്രതിജ്ഞാ( pParse==pWalker->pParse );
 
 #ifndef NDEBUG
-  if( pNC->pSrcList && pNC->pSrcList->nAlloc>0 ){
+  എങ്കിൽ( pNC->pSrcList && pNC->pSrcList->nAlloc>0 ){
     SrcList *pSrcList = pNC->pSrcList;
-    int i;
-    for(i=0; i<pNC->pSrcList->nSrc; i++){
-      assert( pSrcList->a[i].iCursor>=0 && pSrcList->a[i].iCursor<pParse->nTab);
+    പൂർണ്ണസംഖ്യ i;
+    വേണ്ടി(i=0; i<pNC->pSrcList->nSrc; i++){
+      പ്രതിജ്ഞാ( pSrcList->a[i].iCursor>=0 && pSrcList->a[i].iCursor<pParse->nTab);
     }
   }
 #endif
-  switch( pExpr->op ){
+  തിരഞ്ഞെടുപ്പ്( p_വ്യഞ്ജകം->op ){
 
     /* The special operator TK_ROW means use the rowid for the first
     ** column in the FROM clause.  This is used by the LIMIT and ORDER BY
     ** clause processing on UPDATE and DELETE statements, and by
     ** UPDATE ... FROM statement processing.
     */
-    case TK_ROW: {
+    അവസ്ഥ TK_ROW: {
       SrcList *pSrcList = pNC->pSrcList;
       SrcItem *pItem;
-      assert( pSrcList && pSrcList->nSrc>=1 );
+      പ്രതിജ്ഞാ( pSrcList && pSrcList->nSrc>=1 );
       pItem = pSrcList->a;
-      pExpr->op = TK_COLUMN;
-      assert( ExprUseYTab(pExpr) );
-      pExpr->y.pTab = pItem->pSTab;
-      pExpr->iTable = pItem->iCursor;
-      pExpr->iColumn--;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
-      break;
+      p_വ്യഞ്ജകം->op = TK_COLUMN;
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+      p_വ്യഞ്ജകം->y.pTab = pItem->pSTab;
+      p_വ്യഞ്ജകം->iTable = pItem->iCursor;
+      p_വ്യഞ്ജകം->iColumn--;
+      p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം = SQLITE_AFF_INTEGER;
+      നിർത്തുക;
     }
 
     /* An optimization:  Attempt to convert
@@ -1061,46 +1061,46 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     ** the optimization.  The only time it is safe to apply this optimization
     ** is within the WHERE clause.
     */
-    case TK_NOTNULL:
-    case TK_ISNULL: {
-      int anRef[8];
+    അവസ്ഥ TK_NOTNULL:
+    അവസ്ഥ TK_ISNULL: {
+      പൂർണ്ണസംഖ്യ anRef[8];
       NameContext *p;
-      int i;
-      for(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
+      പൂർണ്ണസംഖ്യ i;
+      വേണ്ടി(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
         anRef[i] = p->nRef;
       }
-      sqlite3WalkExpr(pWalker, pExpr->pLeft);
-      if( IN_RENAME_OBJECT ) return WRC_Prune;
-      if( sqlite3ExprCanBeNull(pExpr->pLeft) ){
+      sqlite3_Walk_വ്യഞ്ജകം(pWalker, p_വ്യഞ്ജകം->p_ഇടത്);
+      എങ്കിൽ( IN_RENAME_OBJECT ) തിരികെ WRC_Prune;
+      എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Can_Be_Null(p_വ്യഞ്ജകം->p_ഇടത്) ){
         /* The expression can be NULL.  So the optimization does not apply */
-        return WRC_Prune;
+        തിരികെ WRC_Prune;
       }
 
-      for(i=0, p=pNC; p; p=p->pNext, i++){
-        if( (p->ncFlags & NC_Where)==0 ){
-          return WRC_Prune;  /* Not in a WHERE clause.  Unsafe to optimize. */
+      വേണ്ടി(i=0, p=pNC; p; p=p->pNext, i++){
+        എങ്കിൽ( (p->ncFlags & NC_Where)==0 ){
+          തിരികെ WRC_Prune;  /* Not in a WHERE clause.  Unsafe to optimize. */
         }
       }
-      testcase( ExprHasProperty(pExpr, EP_OuterON) );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x80000 ){
+      testcase( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON) );
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+#എങ്കിൽ TREETRACE_ENABLED
+      എങ്കിൽ( sqlite3_വൃക്ഷം_Trace & 0x80000 ){
         sqlite3DebugPrintf(
            "NOT NULL strength reduction converts the following to %d:\n",
-           pExpr->op==TK_NOTNULL
+           p_വ്യഞ്ജകം->op==TK_NOTNULL
         );
-        sqlite3ShowExpr(pExpr);
+        sqlite3_Show_വ്യഞ്ജകം(p_വ്യഞ്ജകം);
       }
 #endif /* TREETRACE_ENABLED */
-      pExpr->u.iValue = (pExpr->op==TK_NOTNULL);
-      pExpr->flags |= EP_IntValue;
-      pExpr->op = TK_INTEGER;
-      for(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
+      p_വ്യഞ്ജകം->u.i_മൂല്യം = (p_വ്യഞ്ജകം->op==TK_NOTNULL);
+      p_വ്യഞ്ജകം->flags |= EP_Int_മൂല്യം;
+      p_വ്യഞ്ജകം->op = TK_INTEGER;
+      വേണ്ടി(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
         p->nRef = anRef[i];
       }
-      sqlite3ExprDelete(pParse->db, pExpr->pLeft);
-      pExpr->pLeft = 0;
-      return WRC_Prune;
+      sqlite3_വ്യഞ്ജകം_Delete(pParse->db, p_വ്യഞ്ജകം->p_ഇടത്);
+      p_വ്യഞ്ജകം->p_ഇടത് = 0;
+      തിരികെ WRC_Prune;
     }
 
     /* A column name:                    ID
@@ -1111,85 +1111,85 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     ** be one call to lookupName().  Then the compiler will in-line
     ** lookupName() for a size reduction and performance increase.
     */
-    case TK_ID:
-    case TK_DOT: {
-      const char *zTable;
-      const char *zDb;
-      Expr *pRight;
+    അവസ്ഥ TK_ID:
+    അവസ്ഥ TK_DOT: {
+      സ്ഥിരം അക്ഷരം *zTable;
+      സ്ഥിരം അക്ഷരം *zDb;
+      വ്യഞ്ജകം *p_വലത്;
 
-      if( pExpr->op==TK_ID ){
+      എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_ID ){
         zDb = 0;
         zTable = 0;
-        assert( !ExprHasProperty(pExpr, EP_IntValue) );
-        pRight = pExpr;
-      }else{
-        Expr *pLeft = pExpr->pLeft;
-        testcase( pNC->ncFlags & NC_IdxExpr );
+        പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+        p_വലത് = p_വ്യഞ്ജകം;
+      }അല്ലെങ്കിൽ{
+        വ്യഞ്ജകം *p_ഇടത് = p_വ്യഞ്ജകം->p_ഇടത്;
+        testcase( pNC->ncFlags & NC_Idx_വ്യഞ്ജകം );
         testcase( pNC->ncFlags & NC_GenCol );
         sqlite3ResolveNotValid(pParse, pNC, "the \".\" operator",
-                               NC_IdxExpr|NC_GenCol, 0, pExpr);
-        pRight = pExpr->pRight;
-        if( pRight->op==TK_ID ){
+                               NC_Idx_വ്യഞ്ജകം|NC_GenCol, 0, p_വ്യഞ്ജകം);
+        p_വലത് = p_വ്യഞ്ജകം->p_വലത്;
+        എങ്കിൽ( p_വലത്->op==TK_ID ){
           zDb = 0;
-        }else{
-          assert( pRight->op==TK_DOT );
-          assert( !ExprHasProperty(pRight, EP_IntValue) );
-          zDb = pLeft->u.zToken;
-          pLeft = pRight->pLeft;
-          pRight = pRight->pRight;
+        }അല്ലെങ്കിൽ{
+          പ്രതിജ്ഞാ( p_വലത്->op==TK_DOT );
+          പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വലത്, EP_Int_മൂല്യം) );
+          zDb = p_ഇടത്->u.zToken;
+          p_ഇടത് = p_വലത്->p_ഇടത്;
+          p_വലത് = p_വലത്->p_വലത്;
         }
-        assert( ExprUseUToken(pLeft) && ExprUseUToken(pRight) );
-        zTable = pLeft->u.zToken;
-        assert( ExprUseYTab(pExpr) );
-        if( IN_RENAME_OBJECT ){
-          sqlite3RenameTokenRemap(pParse, (void*)pExpr, (void*)pRight);
-          sqlite3RenameTokenRemap(pParse, (void*)&pExpr->y.pTab, (void*)pLeft);
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_UToken(p_ഇടത്) && വ്യഞ്ജകം_Use_UToken(p_വലത്) );
+        zTable = p_ഇടത്->u.zToken;
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+        എങ്കിൽ( IN_RENAME_OBJECT ){
+          sqlite3RenameTokenRemap(pParse, (ശൂന്യം*)p_വ്യഞ്ജകം, (ശൂന്യം*)p_വലത്);
+          sqlite3RenameTokenRemap(pParse, (ശൂന്യം*)&p_വ്യഞ്ജകം->y.pTab, (ശൂന്യം*)p_ഇടത്);
         }
       }
-      return lookupName(pParse, zDb, zTable, pRight, pNC, pExpr);
+      തിരികെ lookupName(pParse, zDb, zTable, p_വലത്, pNC, p_വ്യഞ്ജകം);
     }
 
     /* Resolve function names
     */
-    case TK_FUNCTION: {
-      ExprList *pList;            /* The argument list */
-      int n;                      /* Number of arguments */
-      int no_such_func = 0;       /* True if no such function exists */
-      int wrong_num_args = 0;     /* True if wrong number of arguments */
-      int is_agg = 0;             /* True if is an aggregate function */
-      const char *zId;            /* The function name. */
+    അവസ്ഥ TK_FUNCTION: {
+      വ്യഞ്ജകം_List *pList;            /* The argument list */
+      പൂർണ്ണസംഖ്യ n;                      /* Number of arguments */
+      പൂർണ്ണസംഖ്യ no_such_func = 0;       /* True if no such function exists */
+      പൂർണ്ണസംഖ്യ wrong_അക്കം_args = 0;     /* True if wrong number of arguments */
+      പൂർണ്ണസംഖ്യ is_agg = 0;             /* True if is an aggregate function */
+      സ്ഥിരം അക്ഷരം *zId;            /* The function name. */
       FuncDef *pDef;              /* Information about the function */
       u8 enc = ENC(pParse->db);   /* The database encoding */
-      int savedAllowFlags = (pNC->ncFlags & (NC_AllowAgg | NC_AllowWin));
+      പൂർണ്ണസംഖ്യ savedAllowFlags = (pNC->ncFlags & (NC_AllowAgg | NC_AllowWin));
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      Window *pWin = (IsWindowFunc(pExpr) ? pExpr->y.pWin : 0);
+      Window *pWin = (IsWindowFunc(p_വ്യഞ്ജകം) ? p_വ്യഞ്ജകം->y.pWin : 0);
 #endif
-      assert( !ExprHasProperty(pExpr, EP_xIsSelect|EP_IntValue) );
-      assert( pExpr->pLeft==0 || pExpr->pLeft->op==TK_ORDER );
-      pList = pExpr->x.pList;
-      n = pList ? pList->nExpr : 0;
-      zId = pExpr->u.zToken;
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_xIsSelect|EP_Int_മൂല്യം) );
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_ഇടത്==0 || p_വ്യഞ്ജകം->p_ഇടത്->op==TK_ORDER );
+      pList = p_വ്യഞ്ജകം->x.pList;
+      n = pList ? pList->n_വ്യഞ്ജകം : 0;
+      zId = p_വ്യഞ്ജകം->u.zToken;
       pDef = sqlite3FindFunction(pParse->db, zId, n, enc, 0);
-      if( pDef==0 ){
+      എങ്കിൽ( pDef==0 ){
         pDef = sqlite3FindFunction(pParse->db, zId, -2, enc, 0);
-        if( pDef==0 ){
+        എങ്കിൽ( pDef==0 ){
           no_such_func = 1;
-        }else{
-          wrong_num_args = 1;
+        }അല്ലെങ്കിൽ{
+          wrong_അക്കം_args = 1;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         is_agg = pDef->xFinalize!=0;
-        if( pDef->funcFlags & SQLITE_FUNC_UNLIKELY ){
-          ExprSetProperty(pExpr, EP_Unlikely);
-          if( n==2 ){
-            pExpr->iTable = exprProbability(pList->a[1].pExpr);
-            if( pExpr->iTable<0 ){
-              sqlite3ErrorMsg(pParse,
+        എങ്കിൽ( pDef->funcFlags & SQLITE_FUNC_UNLIKELY ){
+          വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_Unlikely);
+          എങ്കിൽ( n==2 ){
+            p_വ്യഞ്ജകം->iTable = വ്യഞ്ജകം_Probability(pList->a[1].p_വ്യഞ്ജകം);
+            എങ്കിൽ( p_വ്യഞ്ജകം->iTable<0 ){
+              sqlite3_Error_സന്ദേശം(pParse,
                 "second argument to %#T() must be a "
-                "constant between 0.0 and 1.0", pExpr);
+                "constant between 0.0 and 1.0", p_വ്യഞ്ജകം);
               pNC->nNcErr++;
             }
-          }else{
+          }അല്ലെങ്കിൽ{
             /* EVIDENCE-OF: R-61304-29449 The unlikely(X) function is
             ** equivalent to likelihood(X, 0.0625).
             ** EVIDENCE-OF: R-01283-11636 The unlikely(X) function is
@@ -1199,20 +1199,20 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
             ** EVIDENCE-OF: R-53436-40973 The likely(X) function is equivalent
             ** to likelihood(X,0.9375). */
             /* TUNING: unlikely() probability is 0.0625.  likely() is 0.9375 */
-            pExpr->iTable = pDef->zName[0]=='u' ? 8388608 : 125829120;
+            p_വ്യഞ്ജകം->iTable = pDef->zName[0]=='u' ? 8388608 : 125829120;
           }            
         }
 #ifndef SQLITE_OMIT_AUTHORIZATION
         {
-          int auth = sqlite3AuthCheck(pParse, SQLITE_FUNCTION, 0,pDef->zName,0);
-          if( auth!=SQLITE_OK ){
-            if( auth==SQLITE_DENY ){
-              sqlite3ErrorMsg(pParse, "not authorized to use function: %#T",
-                                      pExpr);
+          പൂർണ്ണസംഖ്യ auth = sqlite3AuthCheck(pParse, SQLITE_FUNCTION, 0,pDef->zName,0);
+          എങ്കിൽ( auth!=SQLITE_OK ){
+            എങ്കിൽ( auth==SQLITE_DENY ){
+              sqlite3_Error_സന്ദേശം(pParse, "not authorized to use function: %#T",
+                                      p_വ്യഞ്ജകം);
               pNC->nNcErr++;
             }
-            pExpr->op = TK_NULL;
-            return WRC_Prune;
+            p_വ്യഞ്ജകം->op = TK_NULL;
+            തിരികെ WRC_Prune;
           }
         }
 #endif
@@ -1225,20 +1225,20 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
         ** an EP_SubtArg expression. In this case subtypes are required as 
         ** the function may return a value with a subtype back to its 
         ** caller using sqlite3_result_value().  */
-        if( (pDef->funcFlags & SQLITE_SUBTYPE) 
-         || ExprHasProperty(pExpr, EP_SubtArg) 
+        എങ്കിൽ( (pDef->funcFlags & SQLITE_SUBTYPE) 
+         || വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_SubtArg) 
         ){
-          resolveSetExprSubtypeArg(pList);
+          resolve_Set_വ്യഞ്ജകം_Subtype_Arg(pList);
         }
 
-        if( pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG) ){
+        എങ്കിൽ( pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG) ){
           /* For the purposes of the EP_ConstFunc flag, date and time
           ** functions and other functions that change slowly are considered
           ** constant because they are constant for the duration of one query.
           ** This allows them to be factored out of inner loops. */
-          ExprSetProperty(pExpr,EP_ConstFunc);
+          വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം,EP_ConstFunc);
         }
-        if( (pDef->funcFlags & SQLITE_FUNC_CONSTANT)==0 ){
+        എങ്കിൽ( (pDef->funcFlags & SQLITE_FUNC_CONSTANT)==0 ){
           /* Clearly non-deterministic functions like random(), but also
           ** date/time functions that use 'now', and other functions like
           ** sqlite_version() that might change over time cannot be used
@@ -1246,12 +1246,12 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           ** in a CHECK constraint.  SQLServer, MySQL, and PostgreSQL all
           ** allow this. */
           sqlite3ResolveNotValid(pParse, pNC, "non-deterministic functions",
-                                 NC_IdxExpr|NC_PartIdx|NC_GenCol, 0, pExpr);
-        }else{
-          assert( (NC_SelfRef & 0xff)==NC_SelfRef ); /* Must fit in 8 bits */
-          pExpr->op2 = pNC->ncFlags & NC_SelfRef;
+                                 NC_Idx_വ്യഞ്ജകം|NC_PartIdx|NC_GenCol, 0, p_വ്യഞ്ജകം);
+        }അല്ലെങ്കിൽ{
+          പ്രതിജ്ഞാ( (NC_SelfRef & 0xff)==NC_SelfRef ); /* Must fit in 8 bits */
+          p_വ്യഞ്ജകം->op2 = pNC->ncFlags & NC_SelfRef;
         }
-        if( (pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0
+        എങ്കിൽ( (pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0
          && pParse->nested==0
          && (pParse->db->mDbFlags & DBFLAG_InternalFunc)==0
         ){
@@ -1266,49 +1266,49 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           */
           no_such_func = 2;
           pDef = 0;
-        }else
-        if( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0
+        }അല്ലെങ്കിൽ
+        എങ്കിൽ( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0
          && !IN_RENAME_OBJECT
         ){
-          if( pNC->ncFlags & NC_FromDDL ) ExprSetProperty(pExpr, EP_FromDDL);
-          sqlite3ExprFunctionUsable(pParse, pExpr, pDef);
+          എങ്കിൽ( pNC->ncFlags & NC_FromDDL ) വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_FromDDL);
+          sqlite3_വ്യഞ്ജകം_Function_Usable(pParse, p_വ്യഞ്ജകം, pDef);
         }
       }
 
-      if( 0==IN_RENAME_OBJECT ){
+      എങ്കിൽ( 0==IN_RENAME_OBJECT ){
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        assert( is_agg==0 || (pDef->funcFlags & SQLITE_FUNC_MINMAX)
-          || (pDef->xValue==0 && pDef->xInverse==0)
-          || (pDef->xValue && pDef->xInverse && pDef->xSFunc && pDef->xFinalize)
+        പ്രതിജ്ഞാ( is_agg==0 || (pDef->funcFlags & SQLITE_FUNC_MINMAX)
+          || (pDef->x_മൂല്യം==0 && pDef->xInverse==0)
+          || (pDef->x_മൂല്യം && pDef->xInverse && pDef->xSFunc && pDef->xFinalize)
         );
-        if( pDef && pDef->xValue==0 && pWin ){
-          sqlite3ErrorMsg(pParse,
-              "%#T() may not be used as a window function", pExpr
+        എങ്കിൽ( pDef && pDef->x_മൂല്യം==0 && pWin ){
+          sqlite3_Error_സന്ദേശം(pParse,
+              "%#T() may not be used as a window function", p_വ്യഞ്ജകം
           );
           pNC->nNcErr++;
-        }else if(
+        }അല്ലെങ്കിൽ എങ്കിൽ(
               (is_agg && (pNC->ncFlags & NC_AllowAgg)==0)
            || (is_agg && (pDef->funcFlags&SQLITE_FUNC_WINDOW) && !pWin)
            || (is_agg && pWin && (pNC->ncFlags & NC_AllowWin)==0)
         ){
-          const char *zType;
-          if( (pDef->funcFlags & SQLITE_FUNC_WINDOW) || pWin ){
+          സ്ഥിരം അക്ഷരം *zType;
+          എങ്കിൽ( (pDef->funcFlags & SQLITE_FUNC_WINDOW) || pWin ){
             zType = "window";
-          }else{
+          }അല്ലെങ്കിൽ{
             zType = "aggregate";
           }
-          sqlite3ErrorMsg(pParse, "misuse of %s function %#T()",zType,pExpr);
+          sqlite3_Error_സന്ദേശം(pParse, "misuse of %s function %#T()",zType,p_വ്യഞ്ജകം);
           pNC->nNcErr++;
           is_agg = 0;
         }
-#else
-        if( (is_agg && (pNC->ncFlags & NC_AllowAgg)==0) ){
-          sqlite3ErrorMsg(pParse,"misuse of aggregate function %#T()",pExpr);
+#അല്ലെങ്കിൽ
+        എങ്കിൽ( (is_agg && (pNC->ncFlags & NC_AllowAgg)==0) ){
+          sqlite3_Error_സന്ദേശം(pParse,"misuse of aggregate function %#T()",p_വ്യഞ്ജകം);
           pNC->nNcErr++;
           is_agg = 0;
         }
 #endif
-        else if( no_such_func
+        അല്ലെങ്കിൽ എങ്കിൽ( no_such_func
               && (pParse->db->init.busy==0 ||
                   (no_such_func==2 && pParse->db->init.busy==2))
               /* Suppress "no such function" errors when reading
@@ -1320,83 +1320,83 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
               && pParse->explain==0
 #endif
         ){
-          sqlite3ErrorMsg(pParse, "no such function: %#T", pExpr);
+          sqlite3_Error_സന്ദേശം(pParse, "no such function: %#T", p_വ്യഞ്ജകം);
           pNC->nNcErr++;
-        }else if( wrong_num_args ){
-          sqlite3ErrorMsg(pParse,"wrong number of arguments to function %#T()",
-               pExpr);
+        }അല്ലെങ്കിൽ എങ്കിൽ( wrong_അക്കം_args ){
+          sqlite3_Error_സന്ദേശം(pParse,"wrong number of arguments to function %#T()",
+               p_വ്യഞ്ജകം);
           pNC->nNcErr++;
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        else if( is_agg==0 && ExprHasProperty(pExpr, EP_WinFunc) ){
-          sqlite3ErrorMsg(pParse,
+        അല്ലെങ്കിൽ എങ്കിൽ( is_agg==0 && വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) ){
+          sqlite3_Error_സന്ദേശം(pParse,
               "FILTER may not be used with non-aggregate %#T()",
-              pExpr
+              p_വ്യഞ്ജകം
           );
           pNC->nNcErr++;
         }
 #endif
-        else if( is_agg==0 && pExpr->pLeft ){
-          sqlite3ExprOrderByAggregateError(pParse, pExpr);
+        അല്ലെങ്കിൽ എങ്കിൽ( is_agg==0 && p_വ്യഞ്ജകം->p_ഇടത് ){
+          sqlite3_വ്യഞ്ജകം_Order_By_Aggregate_Error(pParse, p_വ്യഞ്ജകം);
           pNC->nNcErr++;
         }
-        if( is_agg ){
+        എങ്കിൽ( is_agg ){
           /* Window functions may not be arguments of aggregate functions.
           ** Or arguments of other window functions. But aggregate functions
           ** may be arguments for window functions.  */
 #ifndef SQLITE_OMIT_WINDOWFUNC
           pNC->ncFlags &= ~(NC_AllowWin | (!pWin ? NC_AllowAgg : 0));
-#else
+#അല്ലെങ്കിൽ
           pNC->ncFlags &= ~NC_AllowAgg;
 #endif
         }
       }
-      else if( ExprHasProperty(pExpr, EP_WinFunc) || pExpr->pLeft ){
+      അല്ലെങ്കിൽ എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) || p_വ്യഞ്ജകം->p_ഇടത് ){
         is_agg = 1;
       }
-      sqlite3WalkExprList(pWalker, pList);
-      if( is_agg ){
-        if( pExpr->pLeft ){
-          assert( pExpr->pLeft->op==TK_ORDER );
-          assert( ExprUseXList(pExpr->pLeft) );
-          sqlite3WalkExprList(pWalker, pExpr->pLeft->x.pList);
+      sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pList);
+      എങ്കിൽ( is_agg ){
+        എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത് ){
+          പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_ഇടത്->op==TK_ORDER );
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം->p_ഇടത്) );
+          sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, p_വ്യഞ്ജകം->p_ഇടത്->x.pList);
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        if( pWin && pParse->nErr==0 ){
+        എങ്കിൽ( pWin && pParse->nErr==0 ){
           Select *pSel = pNC->pWinSelect;
-          assert( ExprUseYWin(pExpr) && pWin==pExpr->y.pWin );
-          if( IN_RENAME_OBJECT==0 ){
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YWin(p_വ്യഞ്ജകം) && pWin==p_വ്യഞ്ജകം->y.pWin );
+          എങ്കിൽ( IN_RENAME_OBJECT==0 ){
             sqlite3WindowUpdate(pParse, pSel ? pSel->pWinDefn : 0, pWin, pDef);
-            if( pParse->db->mallocFailed ) break;
+            എങ്കിൽ( pParse->db->mallocFailed ) നിർത്തുക;
           }
-          sqlite3WalkExprList(pWalker, pWin->pPartition);
-          sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-          sqlite3WalkExpr(pWalker, pWin->pFilter);
+          sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pWin->pPartition);
+          sqlite3_Walk_വ്യഞ്ജകം_List(pWalker, pWin->pOrderBy);
+          sqlite3_Walk_വ്യഞ്ജകം(pWalker, pWin->pFilter);
           sqlite3WindowLink(pSel, pWin);
           pNC->ncFlags |= NC_HasWin;
-        }else
+        }അല്ലെങ്കിൽ
 #endif /* SQLITE_OMIT_WINDOWFUNC */
         {
           NameContext *pNC2;          /* For looping up thru outer contexts */
-          pExpr->op = TK_AGG_FUNCTION;
-          pExpr->op2 = 0;
+          p_വ്യഞ്ജകം->op = TK_AGG_FUNCTION;
+          p_വ്യഞ്ജകം->op2 = 0;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-          if( ExprHasProperty(pExpr, EP_WinFunc) ){
-            sqlite3WalkExpr(pWalker, pExpr->y.pWin->pFilter);
+          എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) ){
+            sqlite3_Walk_വ്യഞ്ജകം(pWalker, p_വ്യഞ്ജകം->y.pWin->pFilter);
           }
 #endif
           pNC2 = pNC;
-          while( pNC2
-              && sqlite3ReferencesSrcList(pParse, pExpr, pNC2->pSrcList)==0
+          ആകുമ്പോൾ( pNC2
+              && sqlite3ReferencesSrcList(pParse, p_വ്യഞ്ജകം, pNC2->pSrcList)==0
           ){
-            pExpr->op2 += (1 + pNC2->nNestedSelect);
+            p_വ്യഞ്ജകം->op2 += (1 + pNC2->nNestedSelect);
             pNC2 = pNC2->pNext;
           }
-          assert( pDef!=0 || IN_RENAME_OBJECT );
-          if( pNC2 && pDef ){
-            pExpr->op2 += pNC2->nNestedSelect;
-            assert( SQLITE_FUNC_MINMAX==NC_MinMaxAgg );
-            assert( SQLITE_FUNC_ANYORDER==NC_OrderAgg );
+          പ്രതിജ്ഞാ( pDef!=0 || IN_RENAME_OBJECT );
+          എങ്കിൽ( pNC2 && pDef ){
+            p_വ്യഞ്ജകം->op2 += pNC2->nNestedSelect;
+            പ്രതിജ്ഞാ( SQLITE_FUNC_MINMAX==NC_MinMaxAgg );
+            പ്രതിജ്ഞാ( SQLITE_FUNC_ANYORDER==NC_OrderAgg );
             testcase( (pDef->funcFlags & SQLITE_FUNC_MINMAX)!=0 );
             testcase( (pDef->funcFlags & SQLITE_FUNC_ANYORDER)!=0 );
             pNC2->ncFlags |= NC_HasAgg
@@ -1409,103 +1409,103 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
       /* FIX ME:  Compute pExpr->affinity based on the expected return
       ** type of the function
       */
-      return WRC_Prune;
+      തിരികെ WRC_Prune;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS:
-    case TK_SELECT:
+    അവസ്ഥ TK_EXISTS:
+    അവസ്ഥ TK_SELECT:
 #endif
-    case TK_IN: {
-      testcase( pExpr->op==TK_IN );
-      testcase( pExpr->op==TK_EXISTS );
-      testcase( pExpr->op==TK_SELECT );
-      if( ExprUseXSelect(pExpr) ){
-        int nRef = pNC->nRef;
+    അവസ്ഥ TK_IN: {
+      testcase( p_വ്യഞ്ജകം->op==TK_IN );
+      testcase( p_വ്യഞ്ജകം->op==TK_EXISTS );
+      testcase( p_വ്യഞ്ജകം->op==TK_SELECT );
+      എങ്കിൽ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) ){
+        പൂർണ്ണസംഖ്യ nRef = pNC->nRef;
         testcase( pNC->ncFlags & NC_IsCheck );
         testcase( pNC->ncFlags & NC_PartIdx );
-        testcase( pNC->ncFlags & NC_IdxExpr );
+        testcase( pNC->ncFlags & NC_Idx_വ്യഞ്ജകം );
         testcase( pNC->ncFlags & NC_GenCol );
-        assert( pExpr->x.pSelect );
-        if( pExpr->op==TK_EXISTS )  pParse->bHasExists = 1;
-        if( pNC->ncFlags & NC_SelfRef ){
-          notValidImpl(pParse, pNC, "subqueries", pExpr, pExpr);
-        }else{
-          sqlite3WalkSelect(pWalker, pExpr->x.pSelect);
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->x.pSelect );
+        എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_EXISTS )  pParse->bHasExists = 1;
+        എങ്കിൽ( pNC->ncFlags & NC_SelfRef ){
+          notValidImpl(pParse, pNC, "subqueries", p_വ്യഞ്ജകം, p_വ്യഞ്ജകം);
+        }അല്ലെങ്കിൽ{
+          sqlite3WalkSelect(pWalker, p_വ്യഞ്ജകം->x.pSelect);
         }
-        assert( pNC->nRef>=nRef );
-        if( nRef!=pNC->nRef ){
-          ExprSetProperty(pExpr, EP_VarSelect);
-          pExpr->x.pSelect->selFlags |= SF_Correlated;
+        പ്രതിജ്ഞാ( pNC->nRef>=nRef );
+        എങ്കിൽ( nRef!=pNC->nRef ){
+          വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_VarSelect);
+          p_വ്യഞ്ജകം->x.pSelect->selFlags |= SF_Correlated;
         }
         pNC->ncFlags |= NC_Subquery;
       }
-      break;
+      നിർത്തുക;
     }
-    case TK_VARIABLE: {
+    അവസ്ഥ TK_VARIABLE: {
       testcase( pNC->ncFlags & NC_IsCheck );
       testcase( pNC->ncFlags & NC_PartIdx );
-      testcase( pNC->ncFlags & NC_IdxExpr );
+      testcase( pNC->ncFlags & NC_Idx_വ്യഞ്ജകം );
       testcase( pNC->ncFlags & NC_GenCol );
       sqlite3ResolveNotValid(pParse, pNC, "parameters",
-               NC_IsCheck|NC_PartIdx|NC_IdxExpr|NC_GenCol, pExpr, pExpr);
-      break;
+               NC_IsCheck|NC_PartIdx|NC_Idx_വ്യഞ്ജകം|NC_GenCol, p_വ്യഞ്ജകം, p_വ്യഞ്ജകം);
+      നിർത്തുക;
     }
-    case TK_IS:
-    case TK_ISNOT: {
-      Expr *pRight = sqlite3ExprSkipCollateAndLikely(pExpr->pRight);
-      assert( !ExprHasProperty(pExpr, EP_Reduced) );
+    അവസ്ഥ TK_IS:
+    അവസ്ഥ TK_ISNOT: {
+      വ്യഞ്ജകം *p_വലത് = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(p_വ്യഞ്ജകം->p_വലത്);
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Reduced) );
       /* Handle special cases of "x IS TRUE", "x IS FALSE", "x IS NOT TRUE",
       ** and "x IS NOT FALSE". */
-      if( ALWAYS(pRight) && (pRight->op==TK_ID || pRight->op==TK_TRUEFALSE) ){
-        int rc = resolveExprStep(pWalker, pRight);
-        if( rc==WRC_Abort ) return WRC_Abort;
-        if( pRight->op==TK_TRUEFALSE ){
-          pExpr->op2 = pExpr->op;
-          pExpr->op = TK_TRUTH;
-          return WRC_Continue;
+      എങ്കിൽ( ALWAYS(p_വലത്) && (p_വലത്->op==TK_ID || p_വലത്->op==TK_TRUEFALSE) ){
+        പൂർണ്ണസംഖ്യ rc = resolve_വ്യഞ്ജകം_Step(pWalker, p_വലത്);
+        എങ്കിൽ( rc==WRC_Abort ) തിരികെ WRC_Abort;
+        എങ്കിൽ( p_വലത്->op==TK_TRUEFALSE ){
+          p_വ്യഞ്ജകം->op2 = p_വ്യഞ്ജകം->op;
+          p_വ്യഞ്ജകം->op = TK_TRUTH;
+          തിരികെ WRC_Continue;
         }
       }
       /* no break */ deliberate_fall_through
     }
-    case TK_BETWEEN:
-    case TK_EQ:
-    case TK_NE:
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE: {
-      int nLeft, nRight;
-      if( pParse->db->mallocFailed ) break;
-      assert( pExpr->pLeft!=0 );
-      nLeft = sqlite3ExprVectorSize(pExpr->pLeft);
-      if( pExpr->op==TK_BETWEEN ){
-        assert( ExprUseXList(pExpr) );
-        nRight = sqlite3ExprVectorSize(pExpr->x.pList->a[0].pExpr);
-        if( nRight==nLeft ){
-          nRight = sqlite3ExprVectorSize(pExpr->x.pList->a[1].pExpr);
+    അവസ്ഥ TK_BETWEEN:
+    അവസ്ഥ TK_EQ:
+    അവസ്ഥ TK_NE:
+    അവസ്ഥ TK_LT:
+    അവസ്ഥ TK_LE:
+    അവസ്ഥ TK_GT:
+    അവസ്ഥ TK_GE: {
+      പൂർണ്ണസംഖ്യ n_ഇടത്, n_വലത്;
+      എങ്കിൽ( pParse->db->mallocFailed ) നിർത്തുക;
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_ഇടത്!=0 );
+      n_ഇടത് = sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->p_ഇടത്);
+      എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_BETWEEN ){
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+        n_വലത് = sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->x.pList->a[0].p_വ്യഞ്ജകം);
+        എങ്കിൽ( n_വലത്==n_ഇടത് ){
+          n_വലത് = sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->x.pList->a[1].p_വ്യഞ്ജകം);
         }
-      }else{
-        assert( pExpr->pRight!=0 );
-        nRight = sqlite3ExprVectorSize(pExpr->pRight);
+      }അല്ലെങ്കിൽ{
+        പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_വലത്!=0 );
+        n_വലത് = sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->p_വലത്);
       }
-      if( nLeft!=nRight ){
-        testcase( pExpr->op==TK_EQ );
-        testcase( pExpr->op==TK_NE );
-        testcase( pExpr->op==TK_LT );
-        testcase( pExpr->op==TK_LE );
-        testcase( pExpr->op==TK_GT );
-        testcase( pExpr->op==TK_GE );
-        testcase( pExpr->op==TK_IS );
-        testcase( pExpr->op==TK_ISNOT );
-        testcase( pExpr->op==TK_BETWEEN );
-        sqlite3ErrorMsg(pParse, "row value misused");
-        sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
+      എങ്കിൽ( n_ഇടത്!=n_വലത് ){
+        testcase( p_വ്യഞ്ജകം->op==TK_EQ );
+        testcase( p_വ്യഞ്ജകം->op==TK_NE );
+        testcase( p_വ്യഞ്ജകം->op==TK_LT );
+        testcase( p_വ്യഞ്ജകം->op==TK_LE );
+        testcase( p_വ്യഞ്ജകം->op==TK_GT );
+        testcase( p_വ്യഞ്ജകം->op==TK_GE );
+        testcase( p_വ്യഞ്ജകം->op==TK_IS );
+        testcase( p_വ്യഞ്ജകം->op==TK_ISNOT );
+        testcase( p_വ്യഞ്ജകം->op==TK_BETWEEN );
+        sqlite3_Error_സന്ദേശം(pParse, "row value misused");
+        sqlite3_Record_Error_Offset_Of_വ്യഞ്ജകം(pParse->db, p_വ്യഞ്ജകം);
       }
-      break;
+      നിർത്തുക;
     }
   }
-  assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  return pParse->nErr ? WRC_Abort : WRC_Continue;
+  പ്രതിജ്ഞാ( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
+  തിരികെ pParse->nErr ? WRC_Abort : WRC_Continue;
 }
 
 /*
@@ -1520,28 +1520,28 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
 **
 ** pEList has been resolved.  pE has not.
 */
-static int resolveAsName(
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolveAsName(
   Parse *pParse,     /* Parsing context for error messages */
-  ExprList *pEList,  /* List of expressions to scan */
-  Expr *pE           /* Expression we are trying to match */
+  വ്യഞ്ജകം_List *pEList,  /* List of expressions to scan */
+  വ്യഞ്ജകം *pE           /* Expression we are trying to match */
 ){
-  int i;             /* Loop counter */
+  പൂർണ്ണസംഖ്യ i;             /* Loop counter */
 
   UNUSED_PARAMETER(pParse);
 
-  if( pE->op==TK_ID ){
-    const char *zCol;
-    assert( !ExprHasProperty(pE, EP_IntValue) );
+  എങ്കിൽ( pE->op==TK_ID ){
+    സ്ഥിരം അക്ഷരം *zCol;
+    പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(pE, EP_Int_മൂല്യം) );
     zCol = pE->u.zToken;
-    for(i=0; i<pEList->nExpr; i++){
-      if( pEList->a[i].fg.eEName==ENAME_NAME
+    വേണ്ടി(i=0; i<pEList->n_വ്യഞ്ജകം; i++){
+      എങ്കിൽ( pEList->a[i].fg.eEName==ENAME_NAME
        && sqlite3_stricmp(pEList->a[i].zEName, zCol)==0
       ){
-        return i+1;
+        തിരികെ i+1;
       }
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -1562,24 +1562,24 @@ static int resolveAsName(
 **
 ** If there is no match, return 0.  Return -1 if an error occurs.
 */
-static int resolveOrderByTermToExprList(
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolve_Order_By_Term_To_വ്യഞ്ജകം_List(
   Parse *pParse,     /* Parsing context for error messages */
   Select *pSelect,   /* The SELECT statement with the ORDER BY clause */
-  Expr *pE           /* The specific ORDER BY term */
+  വ്യഞ്ജകം *pE           /* The specific ORDER BY term */
 ){
-  int i;             /* Loop counter */
-  ExprList *pEList;  /* The columns of the result set */
+  പൂർണ്ണസംഖ്യ i;             /* Loop counter */
+  വ്യഞ്ജകം_List *pEList;  /* The columns of the result set */
   NameContext nc;    /* Name context for resolving pE */
   sqlite3 *db;       /* Database connection */
-  int rc;            /* Return code from subprocedures */
+  പൂർണ്ണസംഖ്യ rc;            /* Return code from subprocedures */
   u8 savedSuppErr;   /* Saved value of db->suppressErr */
 
-  assert( sqlite3ExprIsInteger(pE, &i, 0, 1)==0 );
+  പ്രതിജ്ഞാ( sqlite3_വ്യഞ്ജകം_Is_Integer(pE, &i, 0, 1)==0 );
   pEList = pSelect->pEList;
 
   /* Resolve all names in the ORDER BY term expression
   */
-  memset(&nc, 0, sizeof(nc));
+  memset(&nc, 0, വലുപ്പം(nc));
   nc.pParse = pParse;
   nc.pSrcList = pSelect->pSrc;
   nc.uNC.pEList = pEList;
@@ -1588,38 +1588,38 @@ static int resolveOrderByTermToExprList(
   db = pParse->db;
   savedSuppErr = db->suppressErr;
   db->suppressErr = 1;
-  rc = sqlite3ResolveExprNames(&nc, pE);
+  rc = sqlite3_Resolve_വ്യഞ്ജകം_Names(&nc, pE);
   db->suppressErr = savedSuppErr;
-  if( rc ) return 0;
+  എങ്കിൽ( rc ) തിരികെ 0;
 
   /* Try to match the ORDER BY expression against an expression
   ** in the result set.  Return an 1-based index of the matching
   ** result-set entry.
   */
-  for(i=0; i<pEList->nExpr; i++){
-    if( sqlite3ExprCompare(0, pEList->a[i].pExpr, pE, -1)<2 ){
-      return i+1;
+  വേണ്ടി(i=0; i<pEList->n_വ്യഞ്ജകം; i++){
+    എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(0, pEList->a[i].p_വ്യഞ്ജകം, pE, -1)<2 ){
+      തിരികെ i+1;
     }
   }
 
   /* If no match, return 0. */
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Generate an ORDER BY or GROUP BY term out-of-range error.
 */
-static void resolveOutOfRangeError(
+സ്ഥിതം ശൂന്യം resolveOutOfRangeError(
   Parse *pParse,         /* The error context into which to write the error */
-  const char *zType,     /* "ORDER" or "GROUP" */
-  int i,                 /* The index (1-based) of the term out of range */
-  int mx,                /* Largest permissible value of i */
-  Expr *pError           /* Associate the error with the expression */
+  സ്ഥിരം അക്ഷരം *zType,     /* "ORDER" or "GROUP" */
+  പൂർണ്ണസംഖ്യ i,                 /* The index (1-based) of the term out of range */
+  പൂർണ്ണസംഖ്യ mx,                /* Largest permissible value of i */
+  വ്യഞ്ജകം *pError           /* Associate the error with the expression */
 ){
-  sqlite3ErrorMsg(pParse,
+  sqlite3_Error_സന്ദേശം(pParse,
     "%r %s BY term out of range - should be "
     "between 1 and %d", i, zType, mx);
-  sqlite3RecordErrorOffsetOfExpr(pParse->db, pError);
+  sqlite3_Record_Error_Offset_Of_വ്യഞ്ജകം(pParse->db, pError);
 }
 
 /*
@@ -1637,50 +1637,50 @@ static void resolveOutOfRangeError(
 **
 ** Return the number of errors seen.
 */
-static int resolveCompoundOrderBy(
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolveCompoundOrderBy(
   Parse *pParse,        /* Parsing context.  Leave error messages here */
   Select *pSelect       /* The SELECT statement containing the ORDER BY */
 ){
-  int i;
-  ExprList *pOrderBy;
-  ExprList *pEList;
+  പൂർണ്ണസംഖ്യ i;
+  വ്യഞ്ജകം_List *pOrderBy;
+  വ്യഞ്ജകം_List *pEList;
   sqlite3 *db;
-  int moreToDo = 1;
+  പൂർണ്ണസംഖ്യ moreToDo = 1;
 
   pOrderBy = pSelect->pOrderBy;
-  if( pOrderBy==0 ) return 0;
+  എങ്കിൽ( pOrderBy==0 ) തിരികെ 0;
   db = pParse->db;
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many terms in ORDER BY clause");
-    return 1;
+  എങ്കിൽ( pOrderBy->n_വ്യഞ്ജകം>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+    sqlite3_Error_സന്ദേശം(pParse, "too many terms in ORDER BY clause");
+    തിരികെ 1;
   }
-  for(i=0; i<pOrderBy->nExpr; i++){
+  വേണ്ടി(i=0; i<pOrderBy->n_വ്യഞ്ജകം; i++){
     pOrderBy->a[i].fg.done = 0;
   }
   pSelect->pNext = 0;
-  while( pSelect->pPrior ){
+  ആകുമ്പോൾ( pSelect->pPrior ){
     pSelect->pPrior->pNext = pSelect;
     pSelect = pSelect->pPrior;
   }
-  while( pSelect && moreToDo ){
-    struct ExprList_item *pItem;
+  ആകുമ്പോൾ( pSelect && moreToDo ){
+    ഘടന വ്യഞ്ജകം_List_item *pItem;
     moreToDo = 0;
     pEList = pSelect->pEList;
-    assert( pEList!=0 );
-    for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
-      int iCol = -1;
-      Expr *pE, *pDup;
-      if( pItem->fg.done ) continue;
-      pE = sqlite3ExprSkipCollateAndLikely(pItem->pExpr);
-      if( NEVER(pE==0) ) continue;
-      if( sqlite3ExprIsInteger(pE, &iCol, 0, 1) ){
-        if( iCol<=0 || iCol>pEList->nExpr ){
-          resolveOutOfRangeError(pParse, "ORDER", i+1, pEList->nExpr, pE);
-          return 1;
+    പ്രതിജ്ഞാ( pEList!=0 );
+    വേണ്ടി(i=0, pItem=pOrderBy->a; i<pOrderBy->n_വ്യഞ്ജകം; i++, pItem++){
+      പൂർണ്ണസംഖ്യ iCol = -1;
+      വ്യഞ്ജകം *pE, *pDup;
+      എങ്കിൽ( pItem->fg.done ) തുടരുക;
+      pE = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(pItem->p_വ്യഞ്ജകം);
+      എങ്കിൽ( NEVER(pE==0) ) തുടരുക;
+      എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Is_Integer(pE, &iCol, 0, 1) ){
+        എങ്കിൽ( iCol<=0 || iCol>pEList->n_വ്യഞ്ജകം ){
+          resolveOutOfRangeError(pParse, "ORDER", i+1, pEList->n_വ്യഞ്ജകം, pE);
+          തിരികെ 1;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         iCol = resolveAsName(pParse, pEList, pE);
-        if( iCol==0 ){
+        എങ്കിൽ( iCol==0 ){
           /* Now test if expression pE matches one of the values returned
           ** by pSelect. In the usual case this is done by duplicating the
           ** expression, resolving any symbols in it, and then comparing
@@ -1692,50 +1692,50 @@ static int resolveCompoundOrderBy(
           ** the symbols resolve successfully, also resolve the symbols in the
           ** actual expression. This allows the code in alter.c to modify
           ** column references within the ORDER BY expression as required.  */
-          pDup = sqlite3ExprDup(db, pE, 0);
-          if( !db->mallocFailed ){
-            assert(pDup);
-            iCol = resolveOrderByTermToExprList(pParse, pSelect, pDup);
-            if( IN_RENAME_OBJECT && iCol>0 ){
-              resolveOrderByTermToExprList(pParse, pSelect, pE);
+          pDup = sqlite3_വ്യഞ്ജകം_Dup(db, pE, 0);
+          എങ്കിൽ( !db->mallocFailed ){
+            പ്രതിജ്ഞാ(pDup);
+            iCol = resolve_Order_By_Term_To_വ്യഞ്ജകം_List(pParse, pSelect, pDup);
+            എങ്കിൽ( IN_RENAME_OBJECT && iCol>0 ){
+              resolve_Order_By_Term_To_വ്യഞ്ജകം_List(pParse, pSelect, pE);
             }
           }
-          sqlite3ExprDelete(db, pDup);
+          sqlite3_വ്യഞ്ജകം_Delete(db, pDup);
         }
       }
-      if( iCol>0 ){
+      എങ്കിൽ( iCol>0 ){
         /* Convert the ORDER BY term into an integer column number iCol,
         ** taking care to preserve the COLLATE clause if it exists. */
-        if( !IN_RENAME_OBJECT ){
-          Expr *pNew = sqlite3ExprInt32(db, iCol);
-          if( pNew==0 ) return 1;
-          if( pItem->pExpr==pE ){
-            pItem->pExpr = pNew;
-          }else{
-            Expr *pParent = pItem->pExpr;
-            assert( pParent->op==TK_COLLATE );
-            while( pParent->pLeft->op==TK_COLLATE ) pParent = pParent->pLeft;
-            assert( pParent->pLeft==pE );
-            pParent->pLeft = pNew;
+        എങ്കിൽ( !IN_RENAME_OBJECT ){
+          വ്യഞ്ജകം *pNew = sqlite3_വ്യഞ്ജകം_Int32(db, iCol);
+          എങ്കിൽ( pNew==0 ) തിരികെ 1;
+          എങ്കിൽ( pItem->p_വ്യഞ്ജകം==pE ){
+            pItem->p_വ്യഞ്ജകം = pNew;
+          }അല്ലെങ്കിൽ{
+            വ്യഞ്ജകം *pParent = pItem->p_വ്യഞ്ജകം;
+            പ്രതിജ്ഞാ( pParent->op==TK_COLLATE );
+            ആകുമ്പോൾ( pParent->p_ഇടത്->op==TK_COLLATE ) pParent = pParent->p_ഇടത്;
+            പ്രതിജ്ഞാ( pParent->p_ഇടത്==pE );
+            pParent->p_ഇടത് = pNew;
           }
-          sqlite3ExprDelete(db, pE);
+          sqlite3_വ്യഞ്ജകം_Delete(db, pE);
           pItem->u.x.iOrderByCol = (u16)iCol;
         }
         pItem->fg.done = 1;
-      }else{
+      }അല്ലെങ്കിൽ{
         moreToDo = 1;
       }
     }
     pSelect = pSelect->pNext;
   }
-  for(i=0; i<pOrderBy->nExpr; i++){
-    if( pOrderBy->a[i].fg.done==0 ){
-      sqlite3ErrorMsg(pParse, "%r ORDER BY term does not match any "
+  വേണ്ടി(i=0; i<pOrderBy->n_വ്യഞ്ജകം; i++){
+    എങ്കിൽ( pOrderBy->a[i].fg.done==0 ){
+      sqlite3_Error_സന്ദേശം(pParse, "%r ORDER BY term does not match any "
             "column in the result set", i+1);
-      return 1;
+      തിരികെ 1;
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -1748,64 +1748,64 @@ static int resolveCompoundOrderBy(
 ** If any errors are detected, add an error message to pParse and
 ** return non-zero.  Return zero if no errors are seen.
 */
-int sqlite3ResolveOrderGroupBy(
+പൂർണ്ണസംഖ്യ sqlite3ResolveOrderGroupBy(
   Parse *pParse,        /* Parsing context.  Leave error messages here */
   Select *pSelect,      /* The SELECT statement containing the clause */
-  ExprList *pOrderBy,   /* The ORDER BY or GROUP BY clause to be processed */
-  const char *zType     /* "ORDER" or "GROUP" */
+  വ്യഞ്ജകം_List *pOrderBy,   /* The ORDER BY or GROUP BY clause to be processed */
+  സ്ഥിരം അക്ഷരം *zType     /* "ORDER" or "GROUP" */
 ){
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   sqlite3 *db = pParse->db;
-  ExprList *pEList;
-  struct ExprList_item *pItem;
+  വ്യഞ്ജകം_List *pEList;
+  ഘടന വ്യഞ്ജകം_List_item *pItem;
 
-  if( pOrderBy==0 || pParse->db->mallocFailed || IN_RENAME_OBJECT ) return 0;
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many terms in %s BY clause", zType);
-    return 1;
+  എങ്കിൽ( pOrderBy==0 || pParse->db->mallocFailed || IN_RENAME_OBJECT ) തിരികെ 0;
+  എങ്കിൽ( pOrderBy->n_വ്യഞ്ജകം>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+    sqlite3_Error_സന്ദേശം(pParse, "too many terms in %s BY clause", zType);
+    തിരികെ 1;
   }
   pEList = pSelect->pEList;
-  assert( pEList!=0 );  /* sqlite3SelectNew() guarantees this */
-  for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
-    if( pItem->u.x.iOrderByCol ){
-      if( pItem->u.x.iOrderByCol>pEList->nExpr ){
-        resolveOutOfRangeError(pParse, zType, i+1, pEList->nExpr, 0);
-        return 1;
+  പ്രതിജ്ഞാ( pEList!=0 );  /* sqlite3SelectNew() guarantees this */
+  വേണ്ടി(i=0, pItem=pOrderBy->a; i<pOrderBy->n_വ്യഞ്ജകം; i++, pItem++){
+    എങ്കിൽ( pItem->u.x.iOrderByCol ){
+      എങ്കിൽ( pItem->u.x.iOrderByCol>pEList->n_വ്യഞ്ജകം ){
+        resolveOutOfRangeError(pParse, zType, i+1, pEList->n_വ്യഞ്ജകം, 0);
+        തിരികെ 1;
       }
-      resolveAlias(pParse, pEList, pItem->u.x.iOrderByCol-1, pItem->pExpr,0);
+      resolveAlias(pParse, pEList, pItem->u.x.iOrderByCol-1, pItem->p_വ്യഞ്ജകം,0);
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 /*
 ** Walker callback for windowRemoveExprFromSelect().
 */
-static int resolveRemoveWindowsCb(Walker *pWalker, Expr *pExpr){
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolveRemoveWindowsCb(Walker *pWalker, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
   UNUSED_PARAMETER(pWalker);
-  if( ExprHasProperty(pExpr, EP_WinFunc) ){
-    Window *pWin = pExpr->y.pWin;
+  എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_WinFunc) ){
+    Window *pWin = p_വ്യഞ്ജകം->y.pWin;
     sqlite3WindowUnlinkFromSelect(pWin);
   }
-  return WRC_Continue;
+  തിരികെ WRC_Continue;
 }
 
 /*
 ** Remove any Window objects owned by the expression pExpr from the
 ** Select.pWin list of Select object pSelect.
 */
-static void windowRemoveExprFromSelect(Select *pSelect, Expr *pExpr){
-  if( pSelect->pWin ){
+സ്ഥിതം ശൂന്യം window_Remove_വ്യഞ്ജകം_From_Select(Select *pSelect, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  എങ്കിൽ( pSelect->pWin ){
     Walker sWalker;
-    memset(&sWalker, 0, sizeof(Walker));
-    sWalker.xExprCallback = resolveRemoveWindowsCb;
+    memset(&sWalker, 0, വലുപ്പം(Walker));
+    sWalker.x_വ്യഞ്ജകം_Callback = resolveRemoveWindowsCb;
     sWalker.u.pSelect = pSelect;
-    sqlite3WalkExpr(&sWalker, pExpr);
+    sqlite3_Walk_വ്യഞ്ജകം(&sWalker, p_വ്യഞ്ജകം);
   }
 }
-#else
-# define windowRemoveExprFromSelect(a, b)
+#അല്ലെങ്കിൽ
+# define window_Remove_വ്യഞ്ജകം_From_Select(a, b)
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
@@ -1826,84 +1826,84 @@ static void windowRemoveExprFromSelect(Select *pSelect, Expr *pExpr){
 ** an appropriate error message might be left in pParse.  (OOM errors
 ** excepted.)
 */
-static int resolveOrderGroupBy(
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolveOrderGroupBy(
   NameContext *pNC,     /* The name context of the SELECT statement */
   Select *pSelect,      /* The SELECT statement holding pOrderBy */
-  ExprList *pOrderBy,   /* An ORDER BY or GROUP BY clause to resolve */
-  const char *zType     /* Either "ORDER" or "GROUP", as appropriate */
+  വ്യഞ്ജകം_List *pOrderBy,   /* An ORDER BY or GROUP BY clause to resolve */
+  സ്ഥിരം അക്ഷരം *zType     /* Either "ORDER" or "GROUP", as appropriate */
 ){
-  int i, j;                      /* Loop counters */
-  int iCol;                      /* Column number */
-  struct ExprList_item *pItem;   /* A term of the ORDER BY clause */
+  പൂർണ്ണസംഖ്യ i, j;                      /* Loop counters */
+  പൂർണ്ണസംഖ്യ iCol;                      /* Column number */
+  ഘടന വ്യഞ്ജകം_List_item *pItem;   /* A term of the ORDER BY clause */
   Parse *pParse;                 /* Parsing context */
-  int nResult;                   /* Number of terms in the result set */
+  പൂർണ്ണസംഖ്യ nResult;                   /* Number of terms in the result set */
 
-  assert( pOrderBy!=0 );
-  nResult = pSelect->pEList->nExpr;
+  പ്രതിജ്ഞാ( pOrderBy!=0 );
+  nResult = pSelect->pEList->n_വ്യഞ്ജകം;
   pParse = pNC->pParse;
-  for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
-    Expr *pE = pItem->pExpr;
-    Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pE);
-    if( NEVER(pE2==0) ) continue;
-    if( zType[0]!='G' ){
+  വേണ്ടി(i=0, pItem=pOrderBy->a; i<pOrderBy->n_വ്യഞ്ജകം; i++, pItem++){
+    വ്യഞ്ജകം *pE = pItem->p_വ്യഞ്ജകം;
+    വ്യഞ്ജകം *pE2 = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(pE);
+    എങ്കിൽ( NEVER(pE2==0) ) തുടരുക;
+    എങ്കിൽ( zType[0]!='G' ){
       iCol = resolveAsName(pParse, pSelect->pEList, pE2);
-      if( iCol>0 ){
+      എങ്കിൽ( iCol>0 ){
         /* If an AS-name match is found, mark this ORDER BY column as being
         ** a copy of the iCol-th result-set column.  The subsequent call to
         ** sqlite3ResolveOrderGroupBy() will convert the expression to a
         ** copy of the iCol-th result-set expression. */
         pItem->u.x.iOrderByCol = (u16)iCol;
-        continue;
+        തുടരുക;
       }
     }
-    if( sqlite3ExprIsInteger(pE2, &iCol, 0, 1) ){
+    എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Is_Integer(pE2, &iCol, 0, 1) ){
       /* The ORDER BY term is an integer constant.  Again, set the column
       ** number so that sqlite3ResolveOrderGroupBy() will convert the
       ** order-by term to a copy of the result-set expression */
-      if( iCol<1 || iCol>0xffff ){
+      എങ്കിൽ( iCol<1 || iCol>0xffff ){
         resolveOutOfRangeError(pParse, zType, i+1, nResult, pE2);
-        return 1;
+        തിരികെ 1;
       }
       pItem->u.x.iOrderByCol = (u16)iCol;
-      continue;
+      തുടരുക;
     }
 
     /* Otherwise, treat the ORDER BY term as an ordinary expression */
     pItem->u.x.iOrderByCol = 0;
-    if( sqlite3ResolveExprNames(pNC, pE) ){
-      return 1;
+    എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_Names(pNC, pE) ){
+      തിരികെ 1;
     }
-    for(j=0; j<pSelect->pEList->nExpr; j++){
-      if( sqlite3ExprCompare(0, pE, pSelect->pEList->a[j].pExpr, -1)==0 ){
+    വേണ്ടി(j=0; j<pSelect->pEList->n_വ്യഞ്ജകം; j++){
+      എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(0, pE, pSelect->pEList->a[j].p_വ്യഞ്ജകം, -1)==0 ){
         /* Since this expression is being changed into a reference
         ** to an identical expression in the result set, remove all Window
         ** objects belonging to the expression from the Select.pWin list. */
-        windowRemoveExprFromSelect(pSelect, pE);
+        window_Remove_വ്യഞ്ജകം_From_Select(pSelect, pE);
         pItem->u.x.iOrderByCol = j+1;
       }
     }
   }
-  return sqlite3ResolveOrderGroupBy(pParse, pSelect, pOrderBy, zType);
+  തിരികെ sqlite3ResolveOrderGroupBy(pParse, pSelect, pOrderBy, zType);
 }
 
 /*
 ** Resolve names in the SELECT statement p and all of its descendants.
 */
-static int resolveSelectStep(Walker *pWalker, Select *p){
+സ്ഥിതം പൂർണ്ണസംഖ്യ resolveSelectStep(Walker *pWalker, Select *p){
   NameContext *pOuterNC;  /* Context that contains this SELECT */
   NameContext sNC;        /* Name context of this SELECT */
-  int isCompound;         /* True if p is a compound select */
-  int nCompound;          /* Number of compound terms processed so far */
+  പൂർണ്ണസംഖ്യ isCompound;         /* True if p is a compound select */
+  പൂർണ്ണസംഖ്യ nCompound;          /* Number of compound terms processed so far */
   Parse *pParse;          /* Parsing context */
-  int i;                  /* Loop counter */
-  ExprList *pGroupBy;     /* The GROUP BY clause */
+  പൂർണ്ണസംഖ്യ i;                  /* Loop counter */
+  വ്യഞ്ജകം_List *pGroupBy;     /* The GROUP BY clause */
   Select *pLeftmost;      /* Left-most of SELECT of a compound */
   sqlite3 *db;            /* Database connection */
  
 
-  assert( p!=0 );
-  if( p->selFlags & SF_Resolved ){
-    return WRC_Prune;
+  പ്രതിജ്ഞാ( p!=0 );
+  എങ്കിൽ( p->selFlags & SF_Resolved ){
+    തിരികെ WRC_Prune;
   }
   pOuterNC = pWalker->u.pNC;
   pParse = pWalker->pParse;
@@ -1917,27 +1917,27 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
   ** sqlite3SelectPrep() will invoke both sqlite3SelectExpand() and
   ** this routine in the correct order.
   */
-  if( (p->selFlags & SF_Expanded)==0 ){
+  എങ്കിൽ( (p->selFlags & SF_Expanded)==0 ){
     sqlite3SelectPrep(pParse, p, pOuterNC);
-    return pParse->nErr ? WRC_Abort : WRC_Prune;
+    തിരികെ pParse->nErr ? WRC_Abort : WRC_Prune;
   }
 
   isCompound = p->pPrior!=0;
   nCompound = 0;
   pLeftmost = p;
-  while( p ){
-    assert( (p->selFlags & SF_Expanded)!=0 );
-    assert( (p->selFlags & SF_Resolved)==0 );
+  ആകുമ്പോൾ( p ){
+    പ്രതിജ്ഞാ( (p->selFlags & SF_Expanded)!=0 );
+    പ്രതിജ്ഞാ( (p->selFlags & SF_Resolved)==0 );
     p->selFlags |= SF_Resolved;
 
     /* Resolve the expressions in the LIMIT and OFFSET clauses. These
     ** are not allowed to refer to any names, so pass an empty NameContext.
     */
-    memset(&sNC, 0, sizeof(sNC));
+    memset(&sNC, 0, വലുപ്പം(sNC));
     sNC.pParse = pParse;
     sNC.pWinSelect = p;
-    if( sqlite3ResolveExprNames(&sNC, p->pLimit) ){
-      return WRC_Abort;
+    എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_Names(&sNC, p->pLimit) ){
+      തിരികെ WRC_Abort;
     }
 
     /* If the SF_Converted flags is set, then this Select object was
@@ -1946,36 +1946,36 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     ** as if it were part of the sub-query, not the parent. This block
     ** moves the pOrderBy down to the sub-query. It will be moved back
     ** after the names have been resolved.  */
-    if( p->selFlags & SF_Converted ){
+    എങ്കിൽ( p->selFlags & SF_Converted ){
       Select *pSub;
-      assert( p->pSrc->a[0].fg.isSubquery );
-      assert( p->pSrc->a[0].u4.pSubq!=0 );
+      പ്രതിജ്ഞാ( p->pSrc->a[0].fg.isSubquery );
+      പ്രതിജ്ഞാ( p->pSrc->a[0].u4.pSubq!=0 );
       pSub = p->pSrc->a[0].u4.pSubq->pSelect;
-      assert( pSub!=0 );
-      assert( p->pSrc->nSrc==1 && p->pOrderBy );
-      assert( pSub->pPrior && pSub->pOrderBy==0 );
+      പ്രതിജ്ഞാ( pSub!=0 );
+      പ്രതിജ്ഞാ( p->pSrc->nSrc==1 && p->pOrderBy );
+      പ്രതിജ്ഞാ( pSub->pPrior && pSub->pOrderBy==0 );
       pSub->pOrderBy = p->pOrderBy;
       p->pOrderBy = 0;
     }
  
     /* Recursively resolve names in all subqueries in the FROM clause
     */
-    if( pOuterNC ) pOuterNC->nNestedSelect++;
-    for(i=0; i<p->pSrc->nSrc; i++){
+    എങ്കിൽ( pOuterNC ) pOuterNC->nNestedSelect++;
+    വേണ്ടി(i=0; i<p->pSrc->nSrc; i++){
       SrcItem *pItem = &p->pSrc->a[i];
-      assert( pItem->zName!=0
+      പ്രതിജ്ഞാ( pItem->zName!=0
               || pItem->fg.isSubquery );  /* Test of tag-20240424-1*/
-      if( pItem->fg.isSubquery
+      എങ്കിൽ( pItem->fg.isSubquery
        && (pItem->u4.pSubq->pSelect->selFlags & SF_Resolved)==0
       ){
-        int nRef = pOuterNC ? pOuterNC->nRef : 0;
-        const char *zSavedContext = pParse->zAuthContext;
+        പൂർണ്ണസംഖ്യ nRef = pOuterNC ? pOuterNC->nRef : 0;
+        സ്ഥിരം അക്ഷരം *zSavedContext = pParse->zAuthContext;
 
-        if( pItem->zName ) pParse->zAuthContext = pItem->zName;
+        എങ്കിൽ( pItem->zName ) pParse->zAuthContext = pItem->zName;
         sqlite3ResolveSelectNames(pParse, pItem->u4.pSubq->pSelect, pOuterNC);
         pParse->zAuthContext = zSavedContext;
-        if( pParse->nErr ) return WRC_Abort;
-        assert( db->mallocFailed==0 );
+        എങ്കിൽ( pParse->nErr ) തിരികെ WRC_Abort;
+        പ്രതിജ്ഞാ( db->mallocFailed==0 );
 
         /* If the number of references to the outer context changed when
         ** expressions in the sub-select were resolved, the sub-select
@@ -1983,13 +1983,13 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
         ** but the innermost outer context object, as lookupName() increments
         ** the refcount on all contexts between the current one and the
         ** context containing the column when it resolves a name. */
-        if( pOuterNC ){
-          assert( pItem->fg.isCorrelated==0 && pOuterNC->nRef>=nRef );
+        എങ്കിൽ( pOuterNC ){
+          പ്രതിജ്ഞാ( pItem->fg.isCorrelated==0 && pOuterNC->nRef>=nRef );
           pItem->fg.isCorrelated = (pOuterNC->nRef>nRef);
         }
       }
     }
-    if( pOuterNC && ALWAYS(pOuterNC->nNestedSelect>0) ){
+    എങ്കിൽ( pOuterNC && ALWAYS(pOuterNC->nNestedSelect>0) ){
       pOuterNC->nNestedSelect--;
     }
  
@@ -2001,19 +2001,19 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     sNC.pNext = pOuterNC;
  
     /* Resolve names in the result set. */
-    if( sqlite3ResolveExprListNames(&sNC, p->pEList) ) return WRC_Abort;
+    എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, p->pEList) ) തിരികെ WRC_Abort;
     sNC.ncFlags &= ~NC_AllowWin;
  
     /* If there are no aggregate functions in the result-set, and no GROUP BY
     ** expression, do not allow aggregates in any of the other expressions.
     */
-    assert( (p->selFlags & SF_Aggregate)==0 );
+    പ്രതിജ്ഞാ( (p->selFlags & SF_Aggregate)==0 );
     pGroupBy = p->pGroupBy;
-    if( pGroupBy || (sNC.ncFlags & NC_HasAgg)!=0 ){
-      assert( NC_MinMaxAgg==SF_MinMaxAgg );
-      assert( NC_OrderAgg==SF_OrderByReqd );
+    എങ്കിൽ( pGroupBy || (sNC.ncFlags & NC_HasAgg)!=0 ){
+      പ്രതിജ്ഞാ( NC_MinMaxAgg==SF_MinMaxAgg );
+      പ്രതിജ്ഞാ( NC_OrderAgg==SF_OrderByReqd );
       p->selFlags |= SF_Aggregate | (sNC.ncFlags&(NC_MinMaxAgg|NC_OrderAgg));
-    }else{
+    }അല്ലെങ്കിൽ{
       sNC.ncFlags &= ~NC_AllowAgg;
     }
  
@@ -2025,38 +2025,38 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     ** Minor point: If this is the case, then the expression will be
     ** re-evaluated for each reference to it.
     */
-    assert( (sNC.ncFlags & (NC_UAggInfo|NC_UUpsert|NC_UBaseReg))==0 );
+    പ്രതിജ്ഞാ( (sNC.ncFlags & (NC_UAggInfo|NC_UUpsert|NC_UBaseReg))==0 );
     sNC.uNC.pEList = p->pEList;
     sNC.ncFlags |= NC_UEList;
-    if( p->pHaving ){
-      if( (p->selFlags & SF_Aggregate)==0 ){
-        sqlite3ErrorMsg(pParse, "HAVING clause on a non-aggregate query");
-        return WRC_Abort;
+    എങ്കിൽ( p->pHaving ){
+      എങ്കിൽ( (p->selFlags & SF_Aggregate)==0 ){
+        sqlite3_Error_സന്ദേശം(pParse, "HAVING clause on a non-aggregate query");
+        തിരികെ WRC_Abort;
       }
-      if( sqlite3ResolveExprNames(&sNC, p->pHaving) ) return WRC_Abort;
+      എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_Names(&sNC, p->pHaving) ) തിരികെ WRC_Abort;
     }
     sNC.ncFlags |= NC_Where;
-    if( sqlite3ResolveExprNames(&sNC, p->pWhere) ) return WRC_Abort;
+    എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_Names(&sNC, p->pWhere) ) തിരികെ WRC_Abort;
     sNC.ncFlags &= ~NC_Where;
 
     /* Resolve names in table-valued-function arguments */
-    for(i=0; i<p->pSrc->nSrc; i++){
+    വേണ്ടി(i=0; i<p->pSrc->nSrc; i++){
       SrcItem *pItem = &p->pSrc->a[i];
-      if( pItem->fg.isTabFunc
-       && sqlite3ResolveExprListNames(&sNC, pItem->u1.pFuncArg)
+      എങ്കിൽ( pItem->fg.isTabFunc
+       && sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, pItem->u1.pFuncArg)
       ){
-        return WRC_Abort;
+        തിരികെ WRC_Abort;
       }
     }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( IN_RENAME_OBJECT ){
+    എങ്കിൽ( IN_RENAME_OBJECT ){
       Window *pWin;
-      for(pWin=p->pWinDefn; pWin; pWin=pWin->pNextWin){
-        if( sqlite3ResolveExprListNames(&sNC, pWin->pOrderBy)
-         || sqlite3ResolveExprListNames(&sNC, pWin->pPartition)
+      വേണ്ടി(pWin=p->pWinDefn; pWin; pWin=pWin->pNextWin){
+        എങ്കിൽ( sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, pWin->pOrderBy)
+         || sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, pWin->pPartition)
         ){
-          return WRC_Abort;
+          തിരികെ WRC_Abort;
         }
       }
     }
@@ -2069,11 +2069,11 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     ** within the ORDER BY clause has been transformed to an integer value.
     ** These integers will be replaced by copies of the corresponding result
     ** set expressions by the call to resolveOrderGroupBy() below.  */
-    if( p->selFlags & SF_Converted ){
+    എങ്കിൽ( p->selFlags & SF_Converted ){
       Select *pSub;
-      assert( p->pSrc->a[0].fg.isSubquery );
+      പ്രതിജ്ഞാ( p->pSrc->a[0].fg.isSubquery );
       pSub = p->pSrc->a[0].u4.pSubq->pSelect;
-      assert( pSub!=0 );
+      പ്രതിജ്ഞാ( pSub!=0 );
       p->pOrderBy = pSub->pOrderBy;
       pSub->pOrderBy = 0;
     }
@@ -2088,48 +2088,48 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     ** is not detected until much later, and so we need to go ahead and
     ** resolve those symbols on the incorrect ORDER BY for consistency.
     */
-    if( p->pOrderBy!=0
+    എങ്കിൽ( p->pOrderBy!=0
      && isCompound<=nCompound  /* Defer right-most ORDER BY of a compound */
      && resolveOrderGroupBy(&sNC, p, p->pOrderBy, "ORDER")
     ){
-      return WRC_Abort;
+      തിരികെ WRC_Abort;
     }
-    if( db->mallocFailed ){
-      return WRC_Abort;
+    എങ്കിൽ( db->mallocFailed ){
+      തിരികെ WRC_Abort;
     }
     sNC.ncFlags &= ~NC_AllowWin;
  
     /* Resolve the GROUP BY clause.  At the same time, make sure
     ** the GROUP BY clause does not contain aggregate functions.
     */
-    if( pGroupBy ){
-      struct ExprList_item *pItem;
+    എങ്കിൽ( pGroupBy ){
+      ഘടന വ്യഞ്ജകം_List_item *pItem;
    
-      if( resolveOrderGroupBy(&sNC, p, pGroupBy, "GROUP") || db->mallocFailed ){
-        return WRC_Abort;
+      എങ്കിൽ( resolveOrderGroupBy(&sNC, p, pGroupBy, "GROUP") || db->mallocFailed ){
+        തിരികെ WRC_Abort;
       }
-      for(i=0, pItem=pGroupBy->a; i<pGroupBy->nExpr; i++, pItem++){
-        if( ExprHasProperty(pItem->pExpr, EP_Agg) ){
-          sqlite3ErrorMsg(pParse, "aggregate functions are not allowed in "
+      വേണ്ടി(i=0, pItem=pGroupBy->a; i<pGroupBy->n_വ്യഞ്ജകം; i++, pItem++){
+        എങ്കിൽ( വ്യഞ്ജകം_Has_Property(pItem->p_വ്യഞ്ജകം, EP_Agg) ){
+          sqlite3_Error_സന്ദേശം(pParse, "aggregate functions are not allowed in "
               "the GROUP BY clause");
-          return WRC_Abort;
+          തിരികെ WRC_Abort;
         }
       }
     }
 
     /* If this is part of a compound SELECT, check that it has the right
     ** number of expressions in the select list. */
-    if( p->pNext && p->pEList->nExpr!=p->pNext->pEList->nExpr ){
-      sqlite3SelectWrongNumTermsError(pParse, p->pNext);
-      return WRC_Abort;
+    എങ്കിൽ( p->pNext && p->pEList->n_വ്യഞ്ജകം!=p->pNext->pEList->n_വ്യഞ്ജകം ){
+      sqlite3_Select_Wrong_അക്കം_Terms_Error(pParse, p->pNext);
+      തിരികെ WRC_Abort;
     }
 
     /* If the SELECT statement contains ON clauses that were moved into
     ** the WHERE clause, go through and verify that none of the terms
     ** in the ON clauses reference tables to the right of the ON clause. */
-    if( (p->selFlags & SF_OnToWhere) ){
+    എങ്കിൽ( (p->selFlags & SF_OnToWhere) ){
       sqlite3SelectCheckOnClauses(pParse, p);
-      if( pParse->nErr ) return WRC_Abort;
+      എങ്കിൽ( pParse->nErr ) തിരികെ WRC_Abort;
     }
 
     /* Advance to the next term of the compound
@@ -2141,11 +2141,11 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
   /* Resolve the ORDER BY on a compound SELECT after all terms of
   ** the compound have been resolved.
   */
-  if( isCompound && resolveCompoundOrderBy(pParse, pLeftmost) ){
-    return WRC_Abort;
+  എങ്കിൽ( isCompound && resolveCompoundOrderBy(pParse, pLeftmost) ){
+    തിരികെ WRC_Abort;
   }
 
-  return WRC_Prune;
+  തിരികെ WRC_Prune;
 }
 
 /*
@@ -2196,39 +2196,39 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
 ** An error message is left in pParse if anything is amiss.  The number
 ** if errors is returned.
 */
-int sqlite3ResolveExprNames(
+പൂർണ്ണസംഖ്യ sqlite3_Resolve_വ്യഞ്ജകം_Names(
   NameContext *pNC,       /* Namespace to resolve expressions in. */
-  Expr *pExpr             /* The expression to be analyzed. */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം             /* The expression to be analyzed. */
 ){
-  int savedHasAgg;
+  പൂർണ്ണസംഖ്യ savedHasAgg;
   Walker w;
 
-  if( pExpr==0 ) return SQLITE_OK;
+  എങ്കിൽ( p_വ്യഞ്ജകം==0 ) തിരികെ SQLITE_OK;
   savedHasAgg = pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   w.pParse = pNC->pParse;
-  w.xExprCallback = resolveExprStep;
+  w.x_വ്യഞ്ജകം_Callback = resolve_വ്യഞ്ജകം_Step;
   w.xSelectCallback = (pNC->ncFlags & NC_NoSelect) ? 0 : resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.u.pNC = pNC;
-#if SQLITE_MAX_EXPR_DEPTH>0
-  w.pParse->nHeight += pExpr->nHeight;
-  if( sqlite3ExprCheckHeight(w.pParse, w.pParse->nHeight) ){
-    return SQLITE_ERROR;
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+  w.pParse->nHeight += p_വ്യഞ്ജകം->nHeight;
+  എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Check_Height(w.pParse, w.pParse->nHeight) ){
+    തിരികെ SQLITE_ERROR;
   }
 #endif
-  assert( pExpr!=0 );
-  sqlite3WalkExprNN(&w, pExpr);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  w.pParse->nHeight -= pExpr->nHeight;
+  പ്രതിജ്ഞാ( p_വ്യഞ്ജകം!=0 );
+  sqlite3_Walk_വ്യഞ്ജകം_NN(&w, p_വ്യഞ്ജകം);
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+  w.pParse->nHeight -= p_വ്യഞ്ജകം->nHeight;
 #endif
-  assert( EP_Agg==NC_HasAgg );
-  assert( EP_Win==NC_HasWin );
+  പ്രതിജ്ഞാ( EP_Agg==NC_HasAgg );
+  പ്രതിജ്ഞാ( EP_Win==NC_HasWin );
   testcase( pNC->ncFlags & NC_HasAgg );
   testcase( pNC->ncFlags & NC_HasWin );
-  ExprSetProperty(pExpr, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
+  വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
   pNC->ncFlags |= savedHasAgg;
-  return pNC->nNcErr>0 || w.pParse->nErr>0;
+  തിരികെ pNC->nNcErr>0 || w.pParse->nErr>0;
 }
 
 /*
@@ -2239,48 +2239,48 @@ int sqlite3ResolveExprNames(
 ** The return value is SQLITE_OK (0) for success or SQLITE_ERROR (1) for a
 ** failure.
 */
-int sqlite3ResolveExprListNames(
+പൂർണ്ണസംഖ്യ sqlite3_Resolve_വ്യഞ്ജകം_List_Names(
   NameContext *pNC,       /* Namespace to resolve expressions in. */
-  ExprList *pList         /* The expression list to be analyzed. */
+  വ്യഞ്ജകം_List *pList         /* The expression list to be analyzed. */
 ){
-  int i;
-  int savedHasAgg = 0;
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ savedHasAgg = 0;
   Walker w;
-  if( pList==0 ) return SQLITE_OK;
+  എങ്കിൽ( pList==0 ) തിരികെ SQLITE_OK;
   w.pParse = pNC->pParse;
-  w.xExprCallback = resolveExprStep;
+  w.x_വ്യഞ്ജകം_Callback = resolve_വ്യഞ്ജകം_Step;
   w.xSelectCallback = resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.u.pNC = pNC;
   savedHasAgg = pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
-  for(i=0; i<pList->nExpr; i++){
-    Expr *pExpr = pList->a[i].pExpr;
-    if( pExpr==0 ) continue;
-#if SQLITE_MAX_EXPR_DEPTH>0
-    w.pParse->nHeight += pExpr->nHeight;
-    if( sqlite3ExprCheckHeight(w.pParse, w.pParse->nHeight) ){
-      return SQLITE_ERROR;
+  വേണ്ടി(i=0; i<pList->n_വ്യഞ്ജകം; i++){
+    വ്യഞ്ജകം *p_വ്യഞ്ജകം = pList->a[i].p_വ്യഞ്ജകം;
+    എങ്കിൽ( p_വ്യഞ്ജകം==0 ) തുടരുക;
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+    w.pParse->nHeight += p_വ്യഞ്ജകം->nHeight;
+    എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Check_Height(w.pParse, w.pParse->nHeight) ){
+      തിരികെ SQLITE_ERROR;
     }
 #endif
-    sqlite3WalkExprNN(&w, pExpr);
-#if SQLITE_MAX_EXPR_DEPTH>0
-    w.pParse->nHeight -= pExpr->nHeight;
+    sqlite3_Walk_വ്യഞ്ജകം_NN(&w, p_വ്യഞ്ജകം);
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+    w.pParse->nHeight -= p_വ്യഞ്ജകം->nHeight;
 #endif
-    assert( EP_Agg==NC_HasAgg );
-    assert( EP_Win==NC_HasWin );
+    പ്രതിജ്ഞാ( EP_Agg==NC_HasAgg );
+    പ്രതിജ്ഞാ( EP_Win==NC_HasWin );
     testcase( pNC->ncFlags & NC_HasAgg );
     testcase( pNC->ncFlags & NC_HasWin );
-    if( pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg) ){
-      ExprSetProperty(pExpr, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
+    എങ്കിൽ( pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg) ){
+      വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
       savedHasAgg |= pNC->ncFlags &
                           (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
       pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
     }
-    if( w.pParse->nErr>0 ) return SQLITE_ERROR;
+    എങ്കിൽ( w.pParse->nErr>0 ) തിരികെ SQLITE_ERROR;
   }
   pNC->ncFlags |= savedHasAgg;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -2295,15 +2295,15 @@ int sqlite3ResolveExprListNames(
 ** All SELECT statements should have been expanded using
 ** sqlite3SelectExpand() prior to invoking this routine.
 */
-void sqlite3ResolveSelectNames(
+ശൂന്യം sqlite3ResolveSelectNames(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   NameContext *pOuterNC  /* Name context for parent SELECT statement */
 ){
   Walker w;
 
-  assert( p!=0 );
-  w.xExprCallback = resolveExprStep;
+  പ്രതിജ്ഞാ( p!=0 );
+  w.x_വ്യഞ്ജകം_Callback = resolve_വ്യഞ്ജകം_Step;
   w.xSelectCallback = resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.pParse = pParse;
@@ -2329,33 +2329,33 @@ void sqlite3ResolveSelectNames(
 **
 ** Any errors cause an error message to be set in pParse.
 */
-int sqlite3ResolveSelfReference(
+പൂർണ്ണസംഖ്യ sqlite3ResolveSelfReference(
   Parse *pParse,   /* Parsing context */
   Table *pTab,     /* The table being referenced, or NULL */
-  int type,        /* NC_IsCheck, NC_PartIdx, NC_IdxExpr, NC_GenCol, or 0 */
-  Expr *pExpr,     /* Expression to resolve.  May be NULL. */
-  ExprList *pList  /* Expression list to resolve.  May be NULL. */
+  പൂർണ്ണസംഖ്യ type,        /* NC_IsCheck, NC_PartIdx, NC_IdxExpr, NC_GenCol, or 0 */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,     /* Expression to resolve.  May be NULL. */
+  വ്യഞ്ജകം_List *pList  /* Expression list to resolve.  May be NULL. */
 ){
   SrcList *pSrc;                  /* Fake SrcList for pParse->pNewTable */
   NameContext sNC;                /* Name context for pParse->pNewTable */
-  int rc;
-  union {
+  പൂർണ്ണസംഖ്യ rc;
+  സംഘം {
     SrcList sSrc;
     u8 srcSpace[SZ_SRCLIST_1];     /* Memory space for the fake SrcList */
   } uSrc;
 
-  assert( type==0 || pTab!=0 );
-  assert( type==NC_IsCheck || type==NC_PartIdx || type==NC_IdxExpr
+  പ്രതിജ്ഞാ( type==0 || pTab!=0 );
+  പ്രതിജ്ഞാ( type==NC_IsCheck || type==NC_PartIdx || type==NC_Idx_വ്യഞ്ജകം
           || type==NC_GenCol || pTab==0 );
-  memset(&sNC, 0, sizeof(sNC));
-  memset(&uSrc, 0, sizeof(uSrc));
+  memset(&sNC, 0, വലുപ്പം(sNC));
+  memset(&uSrc, 0, വലുപ്പം(uSrc));
   pSrc = &uSrc.sSrc;
-  if( pTab ){
+  എങ്കിൽ( pTab ){
     pSrc->nSrc = 1;
     pSrc->a[0].zName = pTab->zName;
     pSrc->a[0].pSTab = pTab;
     pSrc->a[0].iCursor = -1;
-    if( pTab->pSchema!=pParse->db->aDb[1].pSchema ){
+    എങ്കിൽ( pTab->pSchema!=pParse->db->aDb[1].pSchema ){
       /* Cause EP_FromDDL to be set on TK_FUNCTION nodes of non-TEMP
       ** schema elements */
       type |= NC_FromDDL;
@@ -2364,7 +2364,7 @@ int sqlite3ResolveSelfReference(
   sNC.pParse = pParse;
   sNC.pSrcList = pSrc;
   sNC.ncFlags = type | NC_IsDDL;
-  if( (rc = sqlite3ResolveExprNames(&sNC, pExpr))!=SQLITE_OK ) return rc;
-  if( pList ) rc = sqlite3ResolveExprListNames(&sNC, pList);
-  return rc;
+  എങ്കിൽ( (rc = sqlite3_Resolve_വ്യഞ്ജകം_Names(&sNC, p_വ്യഞ്ജകം))!=SQLITE_OK ) തിരികെ rc;
+  എങ്കിൽ( pList ) rc = sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, pList);
+  തിരികെ rc;
 }

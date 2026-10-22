@@ -14,7 +14,7 @@
 ** other files are for internal use by SQLite and should not be
 ** accessed by users of the library.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 #ifdef SQLITE_ENABLE_FTS3
 # include "fts3.h"
@@ -22,7 +22,7 @@
 #ifdef SQLITE_ENABLE_RTREE
 # include "rtree.h"
 #endif
-#if defined(SQLITE_ENABLE_ICU) || defined(SQLITE_ENABLE_ICU_COLLATIONS)
+#എങ്കിൽ defined(SQLITE_ENABLE_ICU) || defined(SQLITE_ENABLE_ICU_COLLATIONS)
 # include "sqliteicu.h"
 #endif
 
@@ -31,9 +31,9 @@
 ** succeeds, except that it fails if the fault-simulation is set
 ** to 500.
 */
-static int sqlite3TestExtInit(sqlite3 *db){
-  (void)db;
-  return sqlite3FaultSim(500);
+സ്ഥിതം പൂർണ്ണസംഖ്യ sqlite3TestExtInit(sqlite3 *db){
+  (ശൂന്യം)db;
+  തിരികെ sqlite3FaultSim(500);
 }
 
 
@@ -42,26 +42,26 @@ static int sqlite3TestExtInit(sqlite3 *db){
 ** for modules that need them.
 */
 #ifdef SQLITE_ENABLE_FTS5
-int sqlite3Fts5Init(sqlite3*);
+പൂർണ്ണസംഖ്യ sqlite3Fts5Init(sqlite3*);
 #endif
 #ifdef SQLITE_ENABLE_STMTVTAB
-int sqlite3StmtVtabInit(sqlite3*);
+പൂർണ്ണസംഖ്യ sqlite3StmtVtabInit(sqlite3*);
 #endif
 #ifdef SQLITE_EXTRA_AUTOEXT
-int SQLITE_EXTRA_AUTOEXT(sqlite3*);
+പൂർണ്ണസംഖ്യ SQLITE_EXTRA_AUTOEXT(sqlite3*);
 #endif
 /*
 ** An array of pointers to extension initializer functions for
 ** built-in extensions.
 */
-static int (*const sqlite3BuiltinExtensions[])(sqlite3*) = {
+സ്ഥിതം പൂർണ്ണസംഖ്യ (*സ്ഥിരം sqlite3BuiltinExtensions[])(sqlite3*) = {
 #ifdef SQLITE_ENABLE_FTS3
   sqlite3Fts3Init,
 #endif
 #ifdef SQLITE_ENABLE_FTS5
   sqlite3Fts5Init,
 #endif
-#if defined(SQLITE_ENABLE_ICU) || defined(SQLITE_ENABLE_ICU_COLLATIONS)
+#എങ്കിൽ defined(SQLITE_ENABLE_ICU) || defined(SQLITE_ENABLE_ICU_COLLATIONS)
   sqlite3IcuInit,
 #endif
 #ifdef SQLITE_ENABLE_RTREE
@@ -89,13 +89,13 @@ static int (*const sqlite3BuiltinExtensions[])(sqlite3*) = {
 /* IMPLEMENTATION-OF: R-46656-45156 The sqlite3_version[] string constant
 ** contains the text of SQLITE_VERSION macro.
 */
-const char sqlite3_version[] = SQLITE_VERSION;
+സ്ഥിരം അക്ഷരം sqlite3_version[] = SQLITE_VERSION;
 #endif
 
 /* IMPLEMENTATION-OF: R-53536-42575 The sqlite3_libversion() function returns
 ** a pointer to the to the sqlite3_version[] string constant.
 */
-const char *sqlite3_libversion(void){ return sqlite3_version; }
+സ്ഥിരം അക്ഷരം *sqlite3_libversion(ശൂന്യം){ തിരികെ sqlite3_version; }
 
 /* IMPLEMENTATION-OF: R-25063-23286 The sqlite3_sourceid() function returns a
 ** pointer to a string constant whose value is the same as the
@@ -103,18 +103,18 @@ const char *sqlite3_libversion(void){ return sqlite3_version; }
 ** an edited copy of the amalgamation, then the last four characters of
 ** the hash might be different from SQLITE_SOURCE_ID.
 */
-const char *sqlite3_sourceid(void){ return SQLITE_SOURCE_ID; }
+സ്ഥിരം അക്ഷരം *sqlite3_sourceid(ശൂന്യം){ തിരികെ SQLITE_SOURCE_ID; }
 
 /* IMPLEMENTATION-OF: R-35210-63508 The sqlite3_libversion_number() function
 ** returns an integer equal to SQLITE_VERSION_NUMBER.
 */
-int sqlite3_libversion_number(void){ return SQLITE_VERSION_NUMBER; }
+പൂർണ്ണസംഖ്യ sqlite3_libversion_സംഖ്യ(ശൂന്യം){ തിരികെ SQLITE_VERSION_സംഖ്യ; }
 
 /* IMPLEMENTATION-OF: R-20790-14025 The sqlite3_threadsafe() function returns
 ** zero if and only if SQLite was compiled with mutexing code omitted due to
 ** the SQLITE_THREADSAFE compile-time option being set to 0.
 */
-int sqlite3_threadsafe(void){ return SQLITE_THREADSAFE; }
+പൂർണ്ണസംഖ്യ sqlite3_threadsafe(ശൂന്യം){ തിരികെ SQLITE_THREADSAFE; }
 
 /*
 ** When compiling the test fixture or with debugging enabled (on Win32),
@@ -125,17 +125,17 @@ int sqlite3_threadsafe(void){ return SQLITE_THREADSAFE; }
 # ifndef SQLITE_DEBUG_OS_TRACE
 #   define SQLITE_DEBUG_OS_TRACE 0
 # endif
-  int sqlite3OSTrace = SQLITE_DEBUG_OS_TRACE;
+  പൂർണ്ണസംഖ്യ sqlite3OSTrace = SQLITE_DEBUG_OS_TRACE;
 #endif
 
-#if !defined(SQLITE_OMIT_TRACE) && defined(SQLITE_ENABLE_IOTRACE)
+#എങ്കിൽ !defined(SQLITE_OMIT_TRACE) && defined(SQLITE_ENABLE_IOTRACE)
 /*
 ** If the following function pointer is not NULL and if
 ** SQLITE_ENABLE_IOTRACE is enabled, then messages describing
 ** I/O active are written using this function.  These messages
 ** are intended for debugging activity only.
 */
-SQLITE_API void (SQLITE_CDECL *sqlite3IoTrace)(const char*, ...) = 0;
+SQLITE_API ശൂന്യം (SQLITE_CDECL *sqlite3IoTrace)(സ്ഥിരം അക്ഷരം*, ...) = 0;
 #endif
 
 /*
@@ -145,7 +145,7 @@ SQLITE_API void (SQLITE_CDECL *sqlite3IoTrace)(const char*, ...) = 0;
 **
 ** See also the "PRAGMA temp_store_directory" SQL command.
 */
-char *sqlite3_temp_directory = 0;
+അക്ഷരം *sqlite3_temp_directory = 0;
 
 /*
 ** If the following global variable points to a string which is the
@@ -154,7 +154,7 @@ char *sqlite3_temp_directory = 0;
 **
 ** See also the "PRAGMA data_store_directory" SQL command.
 */
-char *sqlite3_data_directory = 0;
+അക്ഷരം *sqlite3_data_directory = 0;
 
 /*
 ** Initialize SQLite. 
@@ -199,11 +199,11 @@ char *sqlite3_data_directory = 0;
 **    *  Recursive calls to sqlite3_initialize() from thread X return
 **       immediately without blocking.
 */
-static SQLITE_NOINLINE int sqlite3Initialize(void){
+സ്ഥിതം SQLITE_NOINLINE പൂർണ്ണസംഖ്യ sqlite3Initialize(ശൂന്യം){
   MUTEX_LOGIC( sqlite3_mutex *pMainMtx; )   /* The main static mutex */
-  int rc;                                   /* Result code */
+  പൂർണ്ണസംഖ്യ rc;                                   /* Result code */
 #ifdef SQLITE_EXTRA_INIT
-  int bRunExtraInit = 0;                    /* Extra initialization needed */
+  പൂർണ്ണസംഖ്യ bRunExtraInit = 0;                    /* Extra initialization needed */
 #endif
 
   /* If the following assert() fails on some obscure processor/compiler
@@ -211,7 +211,7 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   ** this assert(), that means you need to recompile with the
   ** -DSQLITE_PTRSIZE=n compile-time option to set the correct pointer size.
   */
-  assert( SQLITE_PTRSIZE==sizeof(char*) );
+  പ്രതിജ്ഞാ( SQLITE_PTRSIZE==വലുപ്പം(അക്ഷരം*) );
 
   /* Make sure the mutex subsystem is initialized.  If unable to
   ** initialize the mutex subsystem, return early with the error.
@@ -222,7 +222,7 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   ** initialization.
   */
   rc = sqlite3MutexInit();
-  if( rc ) return rc;
+  എങ്കിൽ( rc ) തിരികെ rc;
 
   /* Initialize the malloc() system and the recursive pInitMutex mutex.
   ** This operation is protected by the STATIC_MAIN mutex.  Note that
@@ -233,20 +233,20 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   MUTEX_LOGIC( pMainMtx = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(pMainMtx);
   sqlite3GlobalConfig.isMutexInit = 1;
-  if( !sqlite3GlobalConfig.isMallocInit ){
+  എങ്കിൽ( !sqlite3GlobalConfig.isMallocInit ){
     rc = sqlite3MallocInit();
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     sqlite3GlobalConfig.isMallocInit = 1;
-    if( !sqlite3GlobalConfig.pInitMutex ){
+    എങ്കിൽ( !sqlite3GlobalConfig.pInitMutex ){
       sqlite3GlobalConfig.pInitMutex =
            sqlite3MutexAlloc(SQLITE_MUTEX_RECURSIVE);
-      if( sqlite3GlobalConfig.bCoreMutex && !sqlite3GlobalConfig.pInitMutex ){
+      എങ്കിൽ( sqlite3GlobalConfig.bCoreMutex && !sqlite3GlobalConfig.pInitMutex ){
         rc = SQLITE_NOMEM_BKPT;
       }
     }
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     sqlite3GlobalConfig.nRefInitMutex++;
   }
   sqlite3_mutex_leave(pMainMtx);
@@ -254,8 +254,8 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   /* If rc is not SQLITE_OK at this point, then either the malloc
   ** subsystem could not be initialized or the system failed to allocate
   ** the pInitMutex mutex. Return an error in either case.  */
-  if( rc!=SQLITE_OK ){
-    return rc;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 
   /* Do the rest of the initialization under the recursive mutex so
@@ -272,39 +272,39 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   ** call to sqlite3PcacheInitialize().
   */
   sqlite3_mutex_enter(sqlite3GlobalConfig.pInitMutex);
-  if( sqlite3GlobalConfig.isInit==0 && sqlite3GlobalConfig.inProgress==0 ){
+  എങ്കിൽ( sqlite3GlobalConfig.isInit==0 && sqlite3GlobalConfig.inProgress==0 ){
     sqlite3GlobalConfig.inProgress = 1;
 #ifdef SQLITE_ENABLE_SQLLOG
     {
-      extern void sqlite3_init_sqllog(void);
+      ബാഹ്യ ശൂന്യം sqlite3_init_sqllog(ശൂന്യം);
       sqlite3_init_sqllog();
     }
 #endif
-    memset(&sqlite3BuiltinFunctions, 0, sizeof(sqlite3BuiltinFunctions));
+    memset(&sqlite3BuiltinFunctions, 0, വലുപ്പം(sqlite3BuiltinFunctions));
     sqlite3RegisterBuiltinFunctions();
-    if( sqlite3GlobalConfig.isPCacheInit==0 ){
+    എങ്കിൽ( sqlite3GlobalConfig.isPCacheInit==0 ){
       rc = sqlite3PcacheInitialize();
     }
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       sqlite3GlobalConfig.isPCacheInit = 1;
       rc = sqlite3OsInit();
     }
 #ifndef SQLITE_OMIT_DESERIALIZE
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       rc = sqlite3MemdbInit();
     }
 #endif
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       sqlite3PCacheBufferSetup( sqlite3GlobalConfig.pPage,
           sqlite3GlobalConfig.szPage, sqlite3GlobalConfig.nPage);
 #ifdef SQLITE_EXTRA_INIT_MUTEXED
       {
-        int SQLITE_EXTRA_INIT_MUTEXED(const char*);
+        പൂർണ്ണസംഖ്യ SQLITE_EXTRA_INIT_MUTEXED(സ്ഥിരം അക്ഷരം*);
         rc = SQLITE_EXTRA_INIT_MUTEXED(0);
       }
 #endif
     }
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       sqlite3MemoryBarrier();
       sqlite3GlobalConfig.isInit = 1;
 #ifdef SQLITE_EXTRA_INIT
@@ -320,8 +320,8 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   */
   sqlite3_mutex_enter(pMainMtx);
   sqlite3GlobalConfig.nRefInitMutex--;
-  if( sqlite3GlobalConfig.nRefInitMutex<=0 ){
-    assert( sqlite3GlobalConfig.nRefInitMutex==0 );
+  എങ്കിൽ( sqlite3GlobalConfig.nRefInitMutex<=0 ){
+    പ്രതിജ്ഞാ( sqlite3GlobalConfig.nRefInitMutex==0 );
     sqlite3_mutex_free(sqlite3GlobalConfig.pInitMutex);
     sqlite3GlobalConfig.pInitMutex = 0;
   }
@@ -335,13 +335,13 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
 #ifndef NDEBUG
 #ifndef SQLITE_OMIT_FLOATING_POINT
   /* This section of code's only "output" is via assert() statements. */
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     u64 x = (((u64)1)<<63)-1;
-    double y;
-    assert(sizeof(x)==8);
-    assert(sizeof(x)==sizeof(y));
+    ഇരട്ട y;
+    പ്രതിജ്ഞാ(വലുപ്പം(x)==8);
+    പ്രതിജ്ഞാ(വലുപ്പം(x)==വലുപ്പം(y));
     memcpy(&y, &x, 8);
-    assert( sqlite3IsNaN(y) );
+    പ്രതിജ്ഞാ( sqlite3IsNaN(y) );
   }
 #endif
 #endif
@@ -350,31 +350,31 @@ static SQLITE_NOINLINE int sqlite3Initialize(void){
   ** compile-time option.
   */
 #ifdef SQLITE_EXTRA_INIT
-  if( bRunExtraInit ){
-    int SQLITE_EXTRA_INIT(const char*);
+  എങ്കിൽ( bRunExtraInit ){
+    പൂർണ്ണസംഖ്യ SQLITE_EXTRA_INIT(സ്ഥിരം അക്ഷരം*);
     rc = SQLITE_EXTRA_INIT(0);
   }
 #endif
-  return rc;
+  തിരികെ rc;
 }
-SQLITE_API int sqlite3_initialize(void){
+SQLITE_API പൂർണ്ണസംഖ്യ sqlite3_initialize(ശൂന്യം){
   /* If this build does not support writable static data (WSD) natively
   ** then we have to invoke the (application-supplied) WSD initialization
   ** routine before doing anything else. */
 #ifdef SQLITE_OMIT_WSD
-  int rc = sqlite3_wsd_init(4096, 24);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  പൂർണ്ണസംഖ്യ rc = sqlite3_wsd_init(4096, 24);
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 #endif
 
-  if( sqlite3GlobalConfig.isInit ){
+  എങ്കിൽ( sqlite3GlobalConfig.isInit ){
     /* SQLite has already been initialized.  Fast early-out. */
     sqlite3MemoryBarrier();
-    return SQLITE_OK;
-  }else{
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ{
     /* Invoke sqlite3Initialize() to do the actual work. */
-    return sqlite3Initialize();
+    തിരികെ sqlite3Initialize();
   }
 }
 
@@ -386,28 +386,28 @@ SQLITE_API int sqlite3_initialize(void){
 ** on when SQLite is already shut down.  If SQLite is already shut down
 ** when this routine is invoked, then this routine is a harmless no-op.
 */
-int sqlite3_shutdown(void){
+പൂർണ്ണസംഖ്യ sqlite3_shutdown(ശൂന്യം){
 #ifdef SQLITE_OMIT_WSD
-  int rc = sqlite3_wsd_init(4096, 24);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  പൂർണ്ണസംഖ്യ rc = sqlite3_wsd_init(4096, 24);
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    തിരികെ rc;
   }
 #endif
 
-  if( sqlite3GlobalConfig.isInit ){
+  എങ്കിൽ( sqlite3GlobalConfig.isInit ){
 #ifdef SQLITE_EXTRA_SHUTDOWN
-    void SQLITE_EXTRA_SHUTDOWN(void);
+    ശൂന്യം SQLITE_EXTRA_SHUTDOWN(ശൂന്യം);
     SQLITE_EXTRA_SHUTDOWN();
 #endif
     sqlite3_os_end();
     sqlite3_reset_auto_extension();
     sqlite3GlobalConfig.isInit = 0;
   }
-  if( sqlite3GlobalConfig.isPCacheInit ){
+  എങ്കിൽ( sqlite3GlobalConfig.isPCacheInit ){
     sqlite3PcacheShutdown();
     sqlite3GlobalConfig.isPCacheInit = 0;
   }
-  if( sqlite3GlobalConfig.isMallocInit ){
+  എങ്കിൽ( sqlite3GlobalConfig.isMallocInit ){
     sqlite3MallocEnd();
     sqlite3GlobalConfig.isMallocInit = 0;
 
@@ -423,12 +423,12 @@ int sqlite3_shutdown(void){
     sqlite3_temp_directory = 0;
 #endif
   }
-  if( sqlite3GlobalConfig.isMutexInit ){
+  എങ്കിൽ( sqlite3GlobalConfig.isMutexInit ){
     sqlite3MutexEnd();
     sqlite3GlobalConfig.isMutexInit = 0;
   }
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -440,177 +440,177 @@ int sqlite3_shutdown(void){
 ** threadsafe.  Failure to heed these warnings can lead to unpredictable
 ** behavior.
 */
-int sqlite3_config(int op, ...){
+പൂർണ്ണസംഖ്യ sqlite3_config(പൂർണ്ണസംഖ്യ op, ...){
   va_list ap;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   /* sqlite3_config() normally returns SQLITE_MISUSE if it is invoked while
   ** the SQLite library is in use.  Except, a few selected opcodes
   ** are allowed.
   */
-  if( sqlite3GlobalConfig.isInit ){
-    static const u64 mAnytimeConfigOption = 0
+  എങ്കിൽ( sqlite3GlobalConfig.isInit ){
+    സ്ഥിതം സ്ഥിരം u64 mAnytimeConfigOption = 0
        | MASKBIT64( SQLITE_CONFIG_LOG )
        | MASKBIT64( SQLITE_CONFIG_PCACHE_HDRSZ )
     ;
-    if( op<0 || op>63 || (MASKBIT64(op) & mAnytimeConfigOption)==0 ){
-      return SQLITE_MISUSE_BKPT;
+    എങ്കിൽ( op<0 || op>63 || (MASKBIT64(op) & mAnytimeConfigOption)==0 ){
+      തിരികെ SQLITE_MISUSE_BKPT;
     }
     testcase( op==SQLITE_CONFIG_LOG );
     testcase( op==SQLITE_CONFIG_PCACHE_HDRSZ );
   }
 
   va_start(ap, op);
-  switch( op ){
+  തിരഞ്ഞെടുപ്പ്( op ){
 
     /* Mutex configuration options are only available in a threadsafe
     ** compile.
     */
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0  /* IMP: R-54466-46756 */
-    case SQLITE_CONFIG_SINGLETHREAD: {
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0  /* IMP: R-54466-46756 */
+    അവസ്ഥ SQLITE_CONFIG_SINGLETHREAD: {
       /* EVIDENCE-OF: R-02748-19096 This option sets the threading mode to
       ** Single-thread. */
       sqlite3GlobalConfig.bCoreMutex = 0;  /* Disable mutex on core */
       sqlite3GlobalConfig.bFullMutex = 0;  /* Disable mutex on connections */
-      break;
+      നിർത്തുക;
     }
 #endif
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-20520-54086 */
-    case SQLITE_CONFIG_MULTITHREAD: {
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-20520-54086 */
+    അവസ്ഥ SQLITE_CONFIG_MULTITHREAD: {
       /* EVIDENCE-OF: R-14374-42468 This option sets the threading mode to
       ** Multi-thread. */
       sqlite3GlobalConfig.bCoreMutex = 1;  /* Enable mutex on core */
       sqlite3GlobalConfig.bFullMutex = 0;  /* Disable mutex on connections */
-      break;
+      നിർത്തുക;
     }
 #endif
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-59593-21810 */
-    case SQLITE_CONFIG_SERIALIZED: {
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-59593-21810 */
+    അവസ്ഥ SQLITE_CONFIG_SERIALIZED: {
       /* EVIDENCE-OF: R-41220-51800 This option sets the threading mode to
       ** Serialized. */
       sqlite3GlobalConfig.bCoreMutex = 1;  /* Enable mutex on core */
       sqlite3GlobalConfig.bFullMutex = 1;  /* Enable mutex on connections */
-      break;
+      നിർത്തുക;
     }
 #endif
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-63666-48755 */
-    case SQLITE_CONFIG_MUTEX: {
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-63666-48755 */
+    അവസ്ഥ SQLITE_CONFIG_MUTEX: {
       /* Specify an alternative mutex implementation */
       sqlite3GlobalConfig.mutex = *va_arg(ap, sqlite3_mutex_methods*);
-      break;
+      നിർത്തുക;
     }
 #endif
-#if defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-14450-37597 */
-    case SQLITE_CONFIG_GETMUTEX: {
+#എങ്കിൽ defined(SQLITE_THREADSAFE) && SQLITE_THREADSAFE>0 /* IMP: R-14450-37597 */
+    അവസ്ഥ SQLITE_CONFIG_GETMUTEX: {
       /* Retrieve the current mutex implementation */
       *va_arg(ap, sqlite3_mutex_methods*) = sqlite3GlobalConfig.mutex;
-      break;
+      നിർത്തുക;
     }
 #endif
 
-    case SQLITE_CONFIG_MALLOC: {
+    അവസ്ഥ SQLITE_CONFIG_MALLOC: {
       /* EVIDENCE-OF: R-55594-21030 The SQLITE_CONFIG_MALLOC option takes a
       ** single argument which is a pointer to an instance of the
       ** sqlite3_mem_methods structure. The argument specifies alternative
       ** low-level memory allocation routines to be used in place of the memory
       ** allocation routines built into SQLite. */
       sqlite3GlobalConfig.m = *va_arg(ap, sqlite3_mem_methods*);
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_GETMALLOC: {
+    അവസ്ഥ SQLITE_CONFIG_GETMALLOC: {
       /* EVIDENCE-OF: R-51213-46414 The SQLITE_CONFIG_GETMALLOC option takes a
       ** single argument which is a pointer to an instance of the
       ** sqlite3_mem_methods structure. The sqlite3_mem_methods structure is
       ** filled with the currently defined memory allocation routines. */
-      if( sqlite3GlobalConfig.m.xMalloc==0 ) sqlite3MemSetDefault();
+      എങ്കിൽ( sqlite3GlobalConfig.m.xMalloc==0 ) sqlite3MemSetDefault();
       *va_arg(ap, sqlite3_mem_methods*) = sqlite3GlobalConfig.m;
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_MEMSTATUS: {
-      assert( !sqlite3GlobalConfig.isInit );  /* Cannot change at runtime */
+    അവസ്ഥ SQLITE_CONFIG_MEMSTATUS: {
+      പ്രതിജ്ഞാ( !sqlite3GlobalConfig.isInit );  /* Cannot change at runtime */
       /* EVIDENCE-OF: R-61275-35157 The SQLITE_CONFIG_MEMSTATUS option takes
       ** single argument of type int, interpreted as a boolean, which enables
       ** or disables the collection of memory allocation statistics. */
-      sqlite3GlobalConfig.bMemstat = va_arg(ap, int);
-      break;
+      sqlite3GlobalConfig.bMemstat = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_SMALL_MALLOC: {
-      sqlite3GlobalConfig.bSmallMalloc = va_arg(ap, int)!=0;
-      break;
+    അവസ്ഥ SQLITE_CONFIG_SMALL_MALLOC: {
+      sqlite3GlobalConfig.bSmallMalloc = va_arg(ap, പൂർണ്ണസംഖ്യ)!=0;
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_PAGECACHE: {
+    അവസ്ഥ SQLITE_CONFIG_PAGECACHE: {
       /* EVIDENCE-OF: R-18761-36601 There are three arguments to
       ** SQLITE_CONFIG_PAGECACHE: A pointer to 8-byte aligned memory (pMem),
       ** the size of each page cache line (sz), and the number of cache lines
       ** (N). */
-      sqlite3GlobalConfig.pPage = va_arg(ap, void*);
-      sqlite3GlobalConfig.szPage = va_arg(ap, int);
-      sqlite3GlobalConfig.nPage = va_arg(ap, int);
-      break;
+      sqlite3GlobalConfig.pPage = va_arg(ap, ശൂന്യം*);
+      sqlite3GlobalConfig.szPage = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      sqlite3GlobalConfig.nPage = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_PCACHE_HDRSZ: {
+    അവസ്ഥ SQLITE_CONFIG_PCACHE_HDRSZ: {
       /* EVIDENCE-OF: R-39100-27317 The SQLITE_CONFIG_PCACHE_HDRSZ option takes
       ** a single parameter which is a pointer to an integer and writes into
       ** that integer the number of extra bytes per page required for each page
       ** in SQLITE_CONFIG_PAGECACHE. */
-      *va_arg(ap, int*) =
+      *va_arg(ap, പൂർണ്ണസംഖ്യ*) =
           sqlite3HeaderSizeBtree() +
           sqlite3HeaderSizePcache() +
           sqlite3HeaderSizePcache1();
-      break;
+      നിർത്തുക;
     }
 
-    case SQLITE_CONFIG_PCACHE: {
+    അവസ്ഥ SQLITE_CONFIG_PCACHE: {
       /* no-op */
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_GETPCACHE: {
+    അവസ്ഥ SQLITE_CONFIG_GETPCACHE: {
       /* now an error */
       rc = SQLITE_ERROR;
-      break;
+      നിർത്തുക;
     }
 
-    case SQLITE_CONFIG_PCACHE2: {
+    അവസ്ഥ SQLITE_CONFIG_PCACHE2: {
       /* EVIDENCE-OF: R-63325-48378 The SQLITE_CONFIG_PCACHE2 option takes a
       ** single argument which is a pointer to an sqlite3_pcache_methods2
       ** object. This object specifies the interface to a custom page cache
       ** implementation. */
       sqlite3GlobalConfig.pcache2 = *va_arg(ap, sqlite3_pcache_methods2*);
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_CONFIG_GETPCACHE2: {
+    അവസ്ഥ SQLITE_CONFIG_GETPCACHE2: {
       /* EVIDENCE-OF: R-22035-46182 The SQLITE_CONFIG_GETPCACHE2 option takes a
       ** single argument which is a pointer to an sqlite3_pcache_methods2
       ** object. SQLite copies of the current page cache implementation into
       ** that object. */
-      if( sqlite3GlobalConfig.pcache2.xInit==0 ){
+      എങ്കിൽ( sqlite3GlobalConfig.pcache2.xInit==0 ){
         sqlite3PCacheSetDefault();
       }
       *va_arg(ap, sqlite3_pcache_methods2*) = sqlite3GlobalConfig.pcache2;
-      break;
+      നിർത്തുക;
     }
 
 /* EVIDENCE-OF: R-06626-12911 The SQLITE_CONFIG_HEAP option is only
 ** available if SQLite is compiled with either SQLITE_ENABLE_MEMSYS3 or
 ** SQLITE_ENABLE_MEMSYS5 and returns SQLITE_ERROR if invoked otherwise. */
-#if defined(SQLITE_ENABLE_MEMSYS3) || defined(SQLITE_ENABLE_MEMSYS5)
-    case SQLITE_CONFIG_HEAP: {
+#എങ്കിൽ defined(SQLITE_ENABLE_MEMSYS3) || defined(SQLITE_ENABLE_MEMSYS5)
+    അവസ്ഥ SQLITE_CONFIG_HEAP: {
       /* EVIDENCE-OF: R-19854-42126 There are three arguments to
       ** SQLITE_CONFIG_HEAP: An 8-byte aligned pointer to the memory, the
       ** number of bytes in the memory buffer, and the minimum allocation size.
       */
-      sqlite3GlobalConfig.pHeap = va_arg(ap, void*);
-      sqlite3GlobalConfig.nHeap = va_arg(ap, int);
-      sqlite3GlobalConfig.mnReq = va_arg(ap, int);
+      sqlite3GlobalConfig.pHeap = va_arg(ap, ശൂന്യം*);
+      sqlite3GlobalConfig.nHeap = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      sqlite3GlobalConfig.mnReq = va_arg(ap, പൂർണ്ണസംഖ്യ);
 
-      if( sqlite3GlobalConfig.mnReq<1 ){
+      എങ്കിൽ( sqlite3GlobalConfig.mnReq<1 ){
         sqlite3GlobalConfig.mnReq = 1;
-      }else if( sqlite3GlobalConfig.mnReq>(1<<12) ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3GlobalConfig.mnReq>(1<<12) ){
         /* cap min request size at 2^12 */
         sqlite3GlobalConfig.mnReq = (1<<12);
       }
 
-      if( sqlite3GlobalConfig.pHeap==0 ){
+      എങ്കിൽ( sqlite3GlobalConfig.pHeap==0 ){
         /* EVIDENCE-OF: R-49920-60189 If the first pointer (the memory pointer)
         ** is NULL, then SQLite reverts to using its default memory allocator
         ** (the system malloc() implementation), undoing any prior invocation of
@@ -619,8 +619,8 @@ int sqlite3_config(int op, ...){
         ** Setting sqlite3GlobalConfig.m to all zeros will cause malloc to
         ** revert to its default implementation when sqlite3_initialize() is run
         */
-        memset(&sqlite3GlobalConfig.m, 0, sizeof(sqlite3GlobalConfig.m));
-      }else{
+        memset(&sqlite3GlobalConfig.m, 0, വലുപ്പം(sqlite3GlobalConfig.m));
+      }അല്ലെങ്കിൽ{
         /* EVIDENCE-OF: R-61006-08918 If the memory pointer is not NULL then the
         ** alternative memory allocator is engaged to handle all of SQLites
         ** memory allocation needs. */
@@ -631,31 +631,31 @@ int sqlite3_config(int op, ...){
         sqlite3GlobalConfig.m = *sqlite3MemGetMemsys5();
 #endif
       }
-      break;
+      നിർത്തുക;
     }
 #endif
 
-    case SQLITE_CONFIG_LOOKASIDE: {
-      sqlite3GlobalConfig.szLookaside = va_arg(ap, int);
-      sqlite3GlobalConfig.nLookaside = va_arg(ap, int);
-      break;
+    അവസ്ഥ SQLITE_CONFIG_LOOKASIDE: {
+      sqlite3GlobalConfig.szLookaside = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      sqlite3GlobalConfig.nLookaside = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
    
     /* Record a pointer to the logger function and its first argument.
     ** The default is NULL.  Logging is disabled if the function pointer is
     ** NULL.
     */
-    case SQLITE_CONFIG_LOG: {
+    അവസ്ഥ SQLITE_CONFIG_LOG: {
       /* MSVC is picky about pulling func ptrs from va lists.
       ** http://support.microsoft.com/kb/47961
       ** sqlite3GlobalConfig.xLog = va_arg(ap, void(*)(void*,int,const char*));
       */
-      typedef void(*LOGFUNC_t)(void*,int,const char*);
+      തരനിർവചനം ശൂന്യം(*LOGFUNC_t)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
       LOGFUNC_t xLog = va_arg(ap, LOGFUNC_t);
-      void *pLogArg = va_arg(ap, void*);
+      ശൂന്യം *pLogArg = va_arg(ap, ശൂന്യം*);
       AtomicStore(&sqlite3GlobalConfig.xLog, xLog);
       AtomicStore(&sqlite3GlobalConfig.pLogArg, pLogArg);
-      break;
+      നിർത്തുക;
     }
 
     /* EVIDENCE-OF: R-55548-33817 The compile-time setting for URI filenames
@@ -663,35 +663,35 @@ int sqlite3_config(int op, ...){
     ** sqlite3_config(SQLITE_CONFIG_URI,1) or
     ** sqlite3_config(SQLITE_CONFIG_URI,0) configuration calls.
     */
-    case SQLITE_CONFIG_URI: {
+    അവസ്ഥ SQLITE_CONFIG_URI: {
       /* EVIDENCE-OF: R-25451-61125 The SQLITE_CONFIG_URI option takes a single
       ** argument of type int. If non-zero, then URI handling is globally
       ** enabled. If the parameter is zero, then URI handling is globally
       ** disabled. */
-      int bOpenUri = va_arg(ap, int);
+      പൂർണ്ണസംഖ്യ bOpenUri = va_arg(ap, പൂർണ്ണസംഖ്യ);
       AtomicStore(&sqlite3GlobalConfig.bOpenUri, bOpenUri);
-      break;
+      നിർത്തുക;
     }
 
-    case SQLITE_CONFIG_COVERING_INDEX_SCAN: {
+    അവസ്ഥ SQLITE_CONFIG_COVERING_INDEX_SCAN: {
       /* EVIDENCE-OF: R-36592-02772 The SQLITE_CONFIG_COVERING_INDEX_SCAN
       ** option takes a single integer argument which is interpreted as a
       ** boolean in order to enable or disable the use of covering indices for
       ** full table scans in the query optimizer. */
-      sqlite3GlobalConfig.bUseCis = va_arg(ap, int);
-      break;
+      sqlite3GlobalConfig.bUseCis = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
 #ifdef SQLITE_ENABLE_SQLLOG
-    case SQLITE_CONFIG_SQLLOG: {
-      typedef void(*SQLLOGFUNC_t)(void*, sqlite3*, const char*, int);
+    അവസ്ഥ SQLITE_CONFIG_SQLLOG: {
+      തരനിർവചനം ശൂന്യം(*SQLLOGFUNC_t)(ശൂന്യം*, sqlite3*, സ്ഥിരം അക്ഷരം*, പൂർണ്ണസംഖ്യ);
       sqlite3GlobalConfig.xSqllog = va_arg(ap, SQLLOGFUNC_t);
-      sqlite3GlobalConfig.pSqllogArg = va_arg(ap, void *);
-      break;
+      sqlite3GlobalConfig.pSqllogArg = va_arg(ap, ശൂന്യം *);
+      നിർത്തുക;
     }
 #endif
 
-    case SQLITE_CONFIG_MMAP_SIZE: {
+    അവസ്ഥ SQLITE_CONFIG_MMAP_SIZE: {
       /* EVIDENCE-OF: R-58063-38258 SQLITE_CONFIG_MMAP_SIZE takes two 64-bit
       ** integer (sqlite3_int64) values that are the default mmap size limit
       ** (the default setting for PRAGMA mmap_size) and the maximum allowed
@@ -706,73 +706,73 @@ int sqlite3_config(int op, ...){
       ** compile-time maximum mmap size set by the SQLITE_MAX_MMAP_SIZE
       ** compile-time option.
       */
-      if( mxMmap<0 || mxMmap>SQLITE_MAX_MMAP_SIZE ){
+      എങ്കിൽ( mxMmap<0 || mxMmap>SQLITE_MAX_MMAP_SIZE ){
         mxMmap = SQLITE_MAX_MMAP_SIZE;
       }
-      if( szMmap<0 ) szMmap = SQLITE_DEFAULT_MMAP_SIZE;
-      if( szMmap>mxMmap) szMmap = mxMmap;
+      എങ്കിൽ( szMmap<0 ) szMmap = SQLITE_DEFAULT_MMAP_SIZE;
+      എങ്കിൽ( szMmap>mxMmap) szMmap = mxMmap;
       sqlite3GlobalConfig.mxMmap = mxMmap;
       sqlite3GlobalConfig.szMmap = szMmap;
-      break;
+      നിർത്തുക;
     }
 
-#if SQLITE_OS_WIN && defined(SQLITE_WIN32_MALLOC) /* IMP: R-04780-55815 */
-    case SQLITE_CONFIG_WIN32_HEAPSIZE: {
+#എങ്കിൽ SQLITE_OS_WIN && defined(SQLITE_WIN32_MALLOC) /* IMP: R-04780-55815 */
+    അവസ്ഥ SQLITE_CONFIG_WIN32_HEAPSIZE: {
       /* EVIDENCE-OF: R-34926-03360 SQLITE_CONFIG_WIN32_HEAPSIZE takes a 32-bit
       ** unsigned integer value that specifies the maximum size of the created
       ** heap. */
-      sqlite3GlobalConfig.nHeap = va_arg(ap, int);
-      break;
+      sqlite3GlobalConfig.nHeap = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 #endif
 
-    case SQLITE_CONFIG_PMASZ: {
-      sqlite3GlobalConfig.szPma = va_arg(ap, unsigned int);
-      break;
+    അവസ്ഥ SQLITE_CONFIG_PMASZ: {
+      sqlite3GlobalConfig.szPma = va_arg(ap, unsigned പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
-    case SQLITE_CONFIG_STMTJRNL_SPILL: {
-      sqlite3GlobalConfig.nStmtSpill = va_arg(ap, int);
-      break;
+    അവസ്ഥ SQLITE_CONFIG_STMTJRNL_SPILL: {
+      sqlite3GlobalConfig.nStmtSpill = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    case SQLITE_CONFIG_SORTERREF_SIZE: {
-      int iVal = va_arg(ap, int);
-      if( iVal<0 ){
+    അവസ്ഥ SQLITE_CONFIG_SORTERREF_SIZE: {
+      പൂർണ്ണസംഖ്യ iVal = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      എങ്കിൽ( iVal<0 ){
         iVal = SQLITE_DEFAULT_SORTERREF_SIZE;
       }
       sqlite3GlobalConfig.szSorterRef = (u32)iVal;
-      break;
+      നിർത്തുക;
     }
 #endif /* SQLITE_ENABLE_SORTER_REFERENCES */
 
 #ifndef SQLITE_OMIT_DESERIALIZE
-    case SQLITE_CONFIG_MEMDB_MAXSIZE: {
+    അവസ്ഥ SQLITE_CONFIG_MEMDB_MAXSIZE: {
       sqlite3GlobalConfig.mxMemdbSize = va_arg(ap, sqlite3_int64);
-      break;
+      നിർത്തുക;
     }
 #endif /* SQLITE_OMIT_DESERIALIZE */
 
-    case SQLITE_CONFIG_ROWID_IN_VIEW: {
-      int *pVal = va_arg(ap,int*);
+    അവസ്ഥ SQLITE_CONFIG_ROWID_IN_VIEW: {
+      പൂർണ്ണസംഖ്യ *pVal = va_arg(ap,പൂർണ്ണസംഖ്യ*);
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-      if( 0==*pVal ) sqlite3GlobalConfig.mNoVisibleRowid = TF_NoVisibleRowid;
-      if( 1==*pVal ) sqlite3GlobalConfig.mNoVisibleRowid = 0;
+      എങ്കിൽ( 0==*pVal ) sqlite3GlobalConfig.mNoVisibleRowid = TF_NoVisibleRowid;
+      എങ്കിൽ( 1==*pVal ) sqlite3GlobalConfig.mNoVisibleRowid = 0;
       *pVal = (sqlite3GlobalConfig.mNoVisibleRowid==0);
-#else
+#അല്ലെങ്കിൽ
       *pVal = 0;
 #endif
-      break;
+      നിർത്തുക;
     }
 
-    default: {
+    സ്ഥിരസ്ഥിതി: {
       rc = SQLITE_ERROR;
-      break;
+      നിർത്തുക;
     }
   }
   va_end(ap);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -786,63 +786,63 @@ int sqlite3_config(int op, ...){
 ** or similar.  If pBuf is not NULL then it is sz*cnt bytes of memory
 ** to use for the lookaside memory.
 */
-static int setupLookaside(
+സ്ഥിതം പൂർണ്ണസംഖ്യ setupLookaside(
   sqlite3 *db,    /* Database connection being configured */
-  void *pBuf,     /* Memory to use for lookaside.  May be NULL */
-  int sz,         /* Desired size of each lookaside memory slot */
-  int cnt         /* Number of slots to allocate */
+  ശൂന്യം *pBuf,     /* Memory to use for lookaside.  May be NULL */
+  പൂർണ്ണസംഖ്യ sz,         /* Desired size of each lookaside memory slot */
+  പൂർണ്ണസംഖ്യ cnt         /* Number of slots to allocate */
 ){
 #ifndef SQLITE_OMIT_LOOKASIDE
-  void *pStart;          /* Start of the lookaside buffer */
+  ശൂന്യം *pStart;          /* Start of the lookaside buffer */
   sqlite3_int64 szAlloc; /* Total space set aside for lookaside memory */
-  int nBig;              /* Number of full-size slots */
-  int nSm;               /* Number smaller LOOKASIDE_SMALL-byte slots */
+  പൂർണ്ണസംഖ്യ nBig;              /* Number of full-size slots */
+  പൂർണ്ണസംഖ്യ nSm;               /* Number smaller LOOKASIDE_SMALL-byte slots */
  
-  if( sqlite3LookasideUsed(db,0)>0 ){
-    return SQLITE_BUSY;
+  എങ്കിൽ( sqlite3LookasideUsed(db,0)>0 ){
+    തിരികെ SQLITE_BUSY;
   }
   /* Free any existing lookaside buffer for this handle before
   ** allocating a new one so we don't have to have space for
   ** both at the same time.
   */
-  if( db->lookaside.bMalloced ){
+  എങ്കിൽ( db->lookaside.bMalloced ){
     sqlite3_free(db->lookaside.pStart);
   }
   /* The size of a lookaside slot after ROUNDDOWN8 needs to be larger
   ** than a pointer and small enough to fit in a u16.
   */
   sz = ROUNDDOWN8(sz);
-  if( sz<=(int)sizeof(LookasideSlot*) ) sz = 0;
-  if( sz>65528 ) sz = 65528;
+  എങ്കിൽ( sz<=(പൂർണ്ണസംഖ്യ)വലുപ്പം(LookasideSlot*) ) sz = 0;
+  എങ്കിൽ( sz>65528 ) sz = 65528;
   /* Count must be at least 1 to be useful, but not so large as to use
   ** more than 0x7fff0000 total bytes for lookaside. */
-  if( cnt<1 ) cnt = 0;
-  if( sz>0 && cnt>(0x7fff0000/sz) ) cnt = 0x7fff0000/sz;
+  എങ്കിൽ( cnt<1 ) cnt = 0;
+  എങ്കിൽ( sz>0 && cnt>(0x7fff0000/sz) ) cnt = 0x7fff0000/sz;
   szAlloc = (i64)sz*(i64)cnt;
-  if( szAlloc==0 ){
+  എങ്കിൽ( szAlloc==0 ){
     sz = 0;
     pStart = 0;
-  }else if( pBuf==0 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( pBuf==0 ){
     sqlite3BeginBenignMalloc();
     pStart = sqlite3Malloc( szAlloc );
     sqlite3EndBenignMalloc();
-    if( pStart ) szAlloc = sqlite3MallocSize(pStart);
-  }else{
+    എങ്കിൽ( pStart ) szAlloc = sqlite3MallocSize(pStart);
+  }അല്ലെങ്കിൽ{
     pStart = pBuf;
   }
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  if( sz>=LOOKASIDE_SMALL*3 ){
+  എങ്കിൽ( sz>=LOOKASIDE_SMALL*3 ){
     nBig = szAlloc/(3*LOOKASIDE_SMALL+sz);
     nSm = (szAlloc - (i64)sz*(i64)nBig)/LOOKASIDE_SMALL;
-  }else if( sz>=LOOKASIDE_SMALL*2 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( sz>=LOOKASIDE_SMALL*2 ){
     nBig = szAlloc/(LOOKASIDE_SMALL+sz);
     nSm = (szAlloc - (i64)sz*(i64)nBig)/LOOKASIDE_SMALL;
-  }else
+  }അല്ലെങ്കിൽ
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-  if( sz>0 ){
+  എങ്കിൽ( sz>0 ){
     nBig = szAlloc/sz;
     nSm = 0;
-  }else{
+  }അല്ലെങ്കിൽ{
     nBig = nSm = 0;
   }
   db->lookaside.pStart = pStart;
@@ -850,12 +850,12 @@ static int setupLookaside(
   db->lookaside.pFree = 0;
   db->lookaside.sz = (u16)sz;
   db->lookaside.szTrue = (u16)sz;
-  if( pStart ){
-    int i;
+  എങ്കിൽ( pStart ){
+    പൂർണ്ണസംഖ്യ i;
     LookasideSlot *p;
-    assert( sz > (int)sizeof(LookasideSlot*) );
+    പ്രതിജ്ഞാ( sz > (പൂർണ്ണസംഖ്യ)വലുപ്പം(LookasideSlot*) );
     p = (LookasideSlot*)pStart;
-    for(i=0; i<nBig; i++){
+    വേണ്ടി(i=0; i<nBig; i++){
       p->pNext = db->lookaside.pInit;
       db->lookaside.pInit = p;
       p = (LookasideSlot*)&((u8*)p)[sz];
@@ -863,24 +863,24 @@ static int setupLookaside(
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
     db->lookaside.pSmallInit = 0;
     db->lookaside.pSmallFree = 0;
-    db->lookaside.pMiddle = p;
-    for(i=0; i<nSm; i++){
+    db->lookaside.p_നടുവ് = p;
+    വേണ്ടി(i=0; i<nSm; i++){
       p->pNext = db->lookaside.pSmallInit;
       db->lookaside.pSmallInit = p;
       p = (LookasideSlot*)&((u8*)p)[LOOKASIDE_SMALL];
     }
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-    assert( ((uptr)p)<=szAlloc + (uptr)pStart );
+    പ്രതിജ്ഞാ( ((uptr)p)<=szAlloc + (uptr)pStart );
     db->lookaside.pEnd = p;
     db->lookaside.bDisable = 0;
     db->lookaside.bMalloced = pBuf==0 ?1:0;
     db->lookaside.nSlot = nBig+nSm;
-  }else{
+  }അല്ലെങ്കിൽ{
     db->lookaside.pStart = 0;
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
     db->lookaside.pSmallInit = 0;
     db->lookaside.pSmallFree = 0;
-    db->lookaside.pMiddle = 0;
+    db->lookaside.p_നടുവ് = 0;
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
     db->lookaside.pEnd = 0;
     db->lookaside.bDisable = 1;
@@ -889,9 +889,9 @@ static int setupLookaside(
     db->lookaside.nSlot = 0;
   }
   db->lookaside.pTrueEnd = db->lookaside.pEnd;
-  assert( sqlite3LookasideUsed(db,0)==0 );
+  പ്രതിജ്ഞാ( sqlite3LookasideUsed(db,0)==0 );
 #endif /* SQLITE_OMIT_LOOKASIDE */
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -899,58 +899,58 @@ static int setupLookaside(
 */
 sqlite3_mutex *sqlite3_db_mutex(sqlite3 *db){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
-  return db->mutex;
+  തിരികെ db->mutex;
 }
 
 /*
 ** Free up as much memory as we can from the given database
 ** connection.
 */
-int sqlite3_db_release_memory(sqlite3 *db){
-  int i;
+പൂർണ്ണസംഖ്യ sqlite3_db_release_memory(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ i;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  for(i=0; i<db->nDb; i++){
+  വേണ്ടി(i=0; i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt ){
+    എങ്കിൽ( pBt ){
       Pager *pPager = sqlite3BtreePager(pBt);
       sqlite3PagerShrink(pPager);
     }
   }
   sqlite3BtreeLeaveAll(db);
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Flush any dirty pages in the pager-cache for any attached database
 ** to disk.
 */
-int sqlite3_db_cacheflush(sqlite3 *db){
-  int i;
-  int rc = SQLITE_OK;
-  int bSeenBusy = 0;
+പൂർണ്ണസംഖ്യ sqlite3_db_cacheflush(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ bSeenBusy = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
+  വേണ്ടി(i=0; rc==SQLITE_OK && i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt && sqlite3BtreeTxnState(pBt)==SQLITE_TXN_WRITE ){
+    എങ്കിൽ( pBt && sqlite3BtreeTxnState(pBt)==SQLITE_TXN_WRITE ){
       Pager *pPager = sqlite3BtreePager(pBt);
       rc = sqlite3PagerFlush(pPager);
-      if( rc==SQLITE_BUSY ){
+      എങ്കിൽ( rc==SQLITE_BUSY ){
         bSeenBusy = 1;
         rc = SQLITE_OK;
       }
@@ -958,50 +958,50 @@ int sqlite3_db_cacheflush(sqlite3 *db){
   }
   sqlite3BtreeLeaveAll(db);
   sqlite3_mutex_leave(db->mutex);
-  return ((rc==SQLITE_OK && bSeenBusy) ? SQLITE_BUSY : rc);
+  തിരികെ ((rc==SQLITE_OK && bSeenBusy) ? SQLITE_BUSY : rc);
 }
 
 /*
 ** Configuration settings for an individual database connection
 */
-int sqlite3_db_config(sqlite3 *db, int op, ...){
+പൂർണ്ണസംഖ്യ sqlite3_db_config(sqlite3 *db, പൂർണ്ണസംഖ്യ op, ...){
   va_list ap;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   va_start(ap, op);
-  switch( op ){
-    case SQLITE_DBCONFIG_MAINDBNAME: {
+  തിരഞ്ഞെടുപ്പ്( op ){
+    അവസ്ഥ SQLITE_DBCONFIG_MAINDBNAME: {
       /* IMP: R-06824-28531 */
       /* IMP: R-36257-52125 */
-      db->aDb[0].zDbSName = va_arg(ap,char*);
+      db->aDb[0].zDbSName = va_arg(ap,അക്ഷരം*);
       rc = SQLITE_OK;
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_DBCONFIG_LOOKASIDE: {
-      void *pBuf = va_arg(ap, void*); /* IMP: R-26835-10964 */
-      int sz = va_arg(ap, int);       /* IMP: R-47871-25994 */
-      int cnt = va_arg(ap, int);      /* IMP: R-04460-53386 */
+    അവസ്ഥ SQLITE_DBCONFIG_LOOKASIDE: {
+      ശൂന്യം *pBuf = va_arg(ap, ശൂന്യം*); /* IMP: R-26835-10964 */
+      പൂർണ്ണസംഖ്യ sz = va_arg(ap, പൂർണ്ണസംഖ്യ);       /* IMP: R-47871-25994 */
+      പൂർണ്ണസംഖ്യ cnt = va_arg(ap, പൂർണ്ണസംഖ്യ);      /* IMP: R-04460-53386 */
       rc = setupLookaside(db, pBuf, sz, cnt);
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_DBCONFIG_FP_DIGITS: {
-      int nIn = va_arg(ap, int);
-      int *pOut = va_arg(ap, int*);
-      if( nIn>3 && nIn<24 ) db->nFpDigit = (u8)nIn;
-      if( pOut ) *pOut = db->nFpDigit;
+    അവസ്ഥ SQLITE_DBCONFIG_FP_DIGITS: {
+      പൂർണ്ണസംഖ്യ nIn = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      പൂർണ്ണസംഖ്യ *pOut = va_arg(ap, പൂർണ്ണസംഖ്യ*);
+      എങ്കിൽ( nIn>3 && nIn<24 ) db->nFpDigit = (u8)nIn;
+      എങ്കിൽ( pOut ) *pOut = db->nFpDigit;
       rc = SQLITE_OK;
-      break;
+      നിർത്തുക;
     }
-    default: {
-      static const struct {
-        int op;      /* The opcode */
+    സ്ഥിരസ്ഥിതി: {
+      സ്ഥിതം സ്ഥിരം ഘടന {
+        പൂർണ്ണസംഖ്യ op;      /* The opcode */
         u64 mask;    /* Mask of the bit in sqlite3.flags to set/clear */
       } aFlagOp[] = {
-        { SQLITE_DBCONFIG_ENABLE_FKEY,           SQLITE_ForeignKeys    },
+        { SQLITE_DBCONFIG_ENABLE_FKEY,           SQLITE_Foreign_താക്കോലുകൾ    },
         { SQLITE_DBCONFIG_ENABLE_TRIGGER,        SQLITE_EnableTrigger  },
         { SQLITE_DBCONFIG_ENABLE_VIEW,           SQLITE_EnableView     },
         { SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER, SQLITE_Fts3Tokenizer  },
@@ -1024,83 +1024,83 @@ int sqlite3_db_config(sqlite3 *db, int op, ...){
         { SQLITE_DBCONFIG_ENABLE_ATTACH_WRITE,   SQLITE_AttachWrite    },
         { SQLITE_DBCONFIG_ENABLE_COMMENTS,       SQLITE_Comments       },
       };
-      unsigned int i;
+      unsigned പൂർണ്ണസംഖ്യ i;
       rc = SQLITE_ERROR; /* IMP: R-42790-23372 */
-      for(i=0; i<ArraySize(aFlagOp); i++){
-        if( aFlagOp[i].op==op ){
-          int onoff = va_arg(ap, int);
-          int *pRes = va_arg(ap, int*);
+      വേണ്ടി(i=0; i<ArraySize(aFlagOp); i++){
+        എങ്കിൽ( aFlagOp[i].op==op ){
+          പൂർണ്ണസംഖ്യ onoff = va_arg(ap, പൂർണ്ണസംഖ്യ);
+          പൂർണ്ണസംഖ്യ *pRes = va_arg(ap, പൂർണ്ണസംഖ്യ*);
           u64 oldFlags = db->flags;
-          if( onoff>0 ){
+          എങ്കിൽ( onoff>0 ){
             db->flags |= aFlagOp[i].mask;
-          }else if( onoff==0 ){
+          }അല്ലെങ്കിൽ എങ്കിൽ( onoff==0 ){
             db->flags &= ~(u64)aFlagOp[i].mask;
           }
-          if( oldFlags!=db->flags ){
+          എങ്കിൽ( oldFlags!=db->flags ){
             sqlite3ExpirePreparedStatements(db, 0);
           }
-          if( pRes ){
+          എങ്കിൽ( pRes ){
             *pRes = (db->flags & aFlagOp[i].mask)!=0;
           }
           rc = SQLITE_OK;
-          break;
+          നിർത്തുക;
         }
       }
-      break;
+      നിർത്തുക;
     }
   }
   va_end(ap);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** This is the default collating function named "BINARY" which is always
 ** available.
 */
-int sqlite3BinaryCompare(
-  void *NotUsed,
-  int nKey1, const void *pKey1,
-  int nKey2, const void *pKey2
+പൂർണ്ണസംഖ്യ sqlite3_ദ്വിമാന_Compare(
+  ശൂന്യം *NotUsed,
+  പൂർണ്ണസംഖ്യ nKey1, സ്ഥിരം ശൂന്യം *pKey1,
+  പൂർണ്ണസംഖ്യ nKey2, സ്ഥിരം ശൂന്യം *pKey2
 ){
-  int rc, n;
+  പൂർണ്ണസംഖ്യ rc, n;
   UNUSED_PARAMETER(NotUsed);
   n = nKey1<nKey2 ? nKey1 : nKey2;
   /* EVIDENCE-OF: R-65033-28449 The built-in BINARY collation compares
   ** strings byte by byte using the memcmp() function from the standard C
   ** library. */
-  assert( pKey1 && pKey2 );
+  പ്രതിജ്ഞാ( pKey1 && pKey2 );
   rc = memcmp(pKey1, pKey2, n);
-  if( rc==0 ){
+  എങ്കിൽ( rc==0 ){
     rc = nKey1 - nKey2;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** This is the collating function named "RTRIM" which is always
 ** available.  Ignore trailing spaces.
 */
-static int rtrimCollFunc(
-  void *pUser,
-  int nKey1, const void *pKey1,
-  int nKey2, const void *pKey2
+സ്ഥിതം പൂർണ്ണസംഖ്യ rtrimCollFunc(
+  ശൂന്യം *pUser,
+  പൂർണ്ണസംഖ്യ nKey1, സ്ഥിരം ശൂന്യം *pKey1,
+  പൂർണ്ണസംഖ്യ nKey2, സ്ഥിരം ശൂന്യം *pKey2
 ){
-  const u8 *pK1 = (const u8*)pKey1;
-  const u8 *pK2 = (const u8*)pKey2;
-  while( nKey1 && pK1[nKey1-1]==' ' ) nKey1--;
-  while( nKey2 && pK2[nKey2-1]==' ' ) nKey2--;
-  return sqlite3BinaryCompare(pUser, nKey1, pKey1, nKey2, pKey2);
+  സ്ഥിരം u8 *pK1 = (സ്ഥിരം u8*)pKey1;
+  സ്ഥിരം u8 *pK2 = (സ്ഥിരം u8*)pKey2;
+  ആകുമ്പോൾ( nKey1 && pK1[nKey1-1]==' ' ) nKey1--;
+  ആകുമ്പോൾ( nKey2 && pK2[nKey2-1]==' ' ) nKey2--;
+  തിരികെ sqlite3_ദ്വിമാന_Compare(pUser, nKey1, pKey1, nKey2, pKey2);
 }
 
 /*
 ** Return true if CollSeq is the default built-in BINARY.
 */
-#if !SQLITE_USES_INLINE
-int sqlite3IsBinary(const CollSeq *p){
-  assert( p==0 || p->xCmp!=sqlite3BinaryCompare
+#എങ്കിൽ !SQLITE_USES_INLINE
+പൂർണ്ണസംഖ്യ sqlite3_Is_ദ്വിമാന(സ്ഥിരം CollSeq *p){
+  പ്രതിജ്ഞാ( p==0 || p->xCmp!=sqlite3_ദ്വിമാന_Compare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  തിരികെ p==0 || p->xCmp==sqlite3_ദ്വിമാന_Compare;
 }
 #endif
 
@@ -1113,45 +1113,45 @@ int sqlite3IsBinary(const CollSeq *p){
 **
 ** At the moment there is only a UTF-8 implementation.
 */
-static int nocaseCollatingFunc(
-  void *NotUsed,
-  int nKey1, const void *pKey1,
-  int nKey2, const void *pKey2
+സ്ഥിതം പൂർണ്ണസംഖ്യ nocaseCollatingFunc(
+  ശൂന്യം *NotUsed,
+  പൂർണ്ണസംഖ്യ nKey1, സ്ഥിരം ശൂന്യം *pKey1,
+  പൂർണ്ണസംഖ്യ nKey2, സ്ഥിരം ശൂന്യം *pKey2
 ){
-  int r = sqlite3StrNICmp(
-      (const char *)pKey1, (const char *)pKey2, (nKey1<nKey2)?nKey1:nKey2);
+  പൂർണ്ണസംഖ്യ r = sqlite3StrNICmp(
+      (സ്ഥിരം അക്ഷരം *)pKey1, (സ്ഥിരം അക്ഷരം *)pKey2, (nKey1<nKey2)?nKey1:nKey2);
   UNUSED_PARAMETER(NotUsed);
-  if( 0==r ){
+  എങ്കിൽ( 0==r ){
     r = nKey1-nKey2;
   }
-  return r;
+  തിരികെ r;
 }
 
 /*
 ** Return the ROWID of the most recent insert
 */
-sqlite_int64 sqlite3_last_insert_rowid(sqlite3 *db){
+sqlite_int64 sqlite3_last_തിരുകുക_rowid(sqlite3 *db){
   i64 iRet;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   iRet = db->lastRowid;
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
 
 /*
 ** Set the value returned by the sqlite3_last_insert_rowid() API function.
 */
-void sqlite3_set_last_insert_rowid(sqlite3 *db, sqlite3_int64 iRowid){
+ശൂന്യം sqlite3_set_last_തിരുകുക_rowid(sqlite3 *db, sqlite3_int64 iRowid){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -1166,18 +1166,18 @@ void sqlite3_set_last_insert_rowid(sqlite3 *db, sqlite3_int64 iRowid){
 sqlite3_int64 sqlite3_changes64(sqlite3 *db){
   i64 iRet;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   iRet = db->nChange;
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
-int sqlite3_changes(sqlite3 *db){
-  return (int)sqlite3_changes64(db);
+പൂർണ്ണസംഖ്യ sqlite3_changes(sqlite3 *db){
+  തിരികെ (പൂർണ്ണസംഖ്യ)sqlite3_changes64(db);
 }
 
 /*
@@ -1186,18 +1186,18 @@ int sqlite3_changes(sqlite3 *db){
 sqlite3_int64 sqlite3_total_changes64(sqlite3 *db){
   i64 iRet;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   iRet = db->nTotalChange;
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
-int sqlite3_total_changes(sqlite3 *db){
-  return (int)sqlite3_total_changes64(db);
+പൂർണ്ണസംഖ്യ sqlite3_total_changes(sqlite3 *db){
+  തിരികെ (പൂർണ്ണസംഖ്യ)sqlite3_total_changes64(db);
 }
 
 /*
@@ -1205,8 +1205,8 @@ int sqlite3_total_changes(sqlite3 *db){
 ** database handle object, it does not close any savepoints that may be open
 ** at the b-tree/pager level.
 */
-void sqlite3CloseSavepoints(sqlite3 *db){
-  while( db->pSavepoint ){
+ശൂന്യം sqlite3CloseSavepoints(sqlite3 *db){
+  ആകുമ്പോൾ( db->pSavepoint ){
     Savepoint *pTmp = db->pSavepoint;
     db->pSavepoint = pTmp->pNext;
     sqlite3DbFree(db, pTmp);
@@ -1222,13 +1222,13 @@ void sqlite3CloseSavepoints(sqlite3 *db){
 ** copies of a single function are created when create_function() is called
 ** with SQLITE_ANY as the encoding.
 */
-static void functionDestroy(sqlite3 *db, FuncDef *p){
+സ്ഥിതം ശൂന്യം functionDestroy(sqlite3 *db, FuncDef *p){
   FuncDestructor *pDestructor;
-  assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
+  പ്രതിജ്ഞാ( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
   pDestructor = p->u.pDestructor;
-  if( pDestructor ){
+  എങ്കിൽ( pDestructor ){
     pDestructor->nRef--;
-    if( pDestructor->nRef==0 ){
+    എങ്കിൽ( pDestructor->nRef==0 ){
       pDestructor->xDestroy(pDestructor->pUserData);
       sqlite3DbFree(db, pDestructor);
     }
@@ -1239,29 +1239,29 @@ static void functionDestroy(sqlite3 *db, FuncDef *p){
 ** Disconnect all sqlite3_vtab objects that belong to database connection
 ** db. This is called when db is being closed.
 */
-static void disconnectAllVtab(sqlite3 *db){
+സ്ഥിതം ശൂന്യം disconnectAllVtab(sqlite3 *db){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   HashElem *p;
   sqlite3BtreeEnterAll(db);
-  for(i=0; i<db->nDb; i++){
+  വേണ്ടി(i=0; i<db->nDb; i++){
     Schema *pSchema = db->aDb[i].pSchema;
-    if( pSchema ){
-      for(p=sqliteHashFirst(&pSchema->tblHash); p; p=sqliteHashNext(p)){
+    എങ്കിൽ( pSchema ){
+      വേണ്ടി(p=sqliteHashFirst(&pSchema->tblHash); p; p=sqliteHashNext(p)){
         Table *pTab = (Table *)sqliteHashData(p);
-        if( IsVirtual(pTab) ) sqlite3VtabDisconnect(db, pTab);
+        എങ്കിൽ( IsVirtual(pTab) ) sqlite3VtabDisconnect(db, pTab);
       }
     }
   }
-  for(p=sqliteHashFirst(&db->aModule); p; p=sqliteHashNext(p)){
+  വേണ്ടി(p=sqliteHashFirst(&db->aModule); p; p=sqliteHashNext(p)){
     Module *pMod = (Module *)sqliteHashData(p);
-    if( pMod->pEpoTab ){
+    എങ്കിൽ( pMod->pEpoTab ){
       sqlite3VtabDisconnect(db, pMod->pEpoTab);
     }
   }
   sqlite3VtabUnlockList(db);
   sqlite3BtreeLeaveAll(db);
-#else
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(db);
 #endif
 }
@@ -1270,31 +1270,31 @@ static void disconnectAllVtab(sqlite3 *db){
 ** Return TRUE if database connection db has unfinalized prepared
 ** statements or unfinished sqlite3_backup objects. 
 */
-static int connectionIsBusy(sqlite3 *db){
-  int j;
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( db->pVdbe ) return 1;
-  for(j=0; j<db->nDb; j++){
+സ്ഥിതം പൂർണ്ണസംഖ്യ connectionIsBusy(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ j;
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(db->mutex) );
+  എങ്കിൽ( db->pVdbe ) തിരികെ 1;
+  വേണ്ടി(j=0; j<db->nDb; j++){
     Btree *pBt = db->aDb[j].pBt;
-    if( pBt && sqlite3BtreeIsInBackup(pBt) ) return 1;
+    എങ്കിൽ( pBt && sqlite3BtreeIsInBackup(pBt) ) തിരികെ 1;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Close an existing SQLite database
 */
-static int sqlite3Close(sqlite3 *db, int forceZombie){
-  if( !db ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ sqlite3Close(sqlite3 *db, പൂർണ്ണസംഖ്യ forceZombie){
+  എങ്കിൽ( !db ){
     /* EVIDENCE-OF: R-63257-11740 Calling sqlite3_close() or
     ** sqlite3_close_v2() with a NULL pointer argument is a harmless no-op. */
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
-  if( !sqlite3SafetyCheckSickOrOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckSickOrOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
-  if( db->mTrace & SQLITE_TRACE_CLOSE ){
+  എങ്കിൽ( db->mTrace & SQLITE_TRACE_CLOSE ){
     db->trace.xV2(SQLITE_TRACE_CLOSE, db->pTraceArg, db, 0);
   }
 
@@ -1313,25 +1313,25 @@ static int sqlite3Close(sqlite3 *db, int forceZombie){
   /* Legacy behavior (sqlite3_close() behavior) is to return
   ** SQLITE_BUSY if the connection can not be closed immediately.
   */
-  if( !forceZombie && connectionIsBusy(db) ){
-    sqlite3ErrorWithMsg(db, SQLITE_BUSY, "unable to close due to unfinalized "
+  എങ്കിൽ( !forceZombie && connectionIsBusy(db) ){
+    sqlite3_Error_With_സന്ദേശം(db, SQLITE_BUSY, "unable to close due to unfinalized "
        "statements or unfinished backups");
     sqlite3_mutex_leave(db->mutex);
-    return SQLITE_BUSY;
+    തിരികെ SQLITE_BUSY;
   }
 
 #ifdef SQLITE_ENABLE_SQLLOG
-  if( sqlite3GlobalConfig.xSqllog ){
+  എങ്കിൽ( sqlite3GlobalConfig.xSqllog ){
     /* Closing the handle. Fourth parameter is passed the value 2. */
     sqlite3GlobalConfig.xSqllog(sqlite3GlobalConfig.pSqllogArg, db, 0, 2);
   }
 #endif
 
-  while( db->pDbData ){
+  ആകുമ്പോൾ( db->pDbData ){
     DbClientData *p = db->pDbData;
     db->pDbData = p->pNext;
-    assert( p->pData!=0 );
-    if( p->xDestructor ) p->xDestructor(p->pData);
+    പ്രതിജ്ഞാ( p->pData!=0 );
+    എങ്കിൽ( p->xDestructor ) p->xDestructor(p->pData);
     sqlite3_free(p);
   }
 
@@ -1339,37 +1339,37 @@ static int sqlite3Close(sqlite3 *db, int forceZombie){
   */
   db->eOpenState = SQLITE_STATE_ZOMBIE;
   sqlite3LeaveMutexAndCloseZombie(db);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Return the transaction state for a single databse, or the maximum
 ** transaction state over all attached databases if zSchema is null.
 */
-int sqlite3_txn_state(sqlite3 *db, const char *zSchema){
-  int iDb, nDb;
-  int iTxn = -1;
+പൂർണ്ണസംഖ്യ sqlite3_txn_state(sqlite3 *db, സ്ഥിരം അക്ഷരം *zSchema){
+  പൂർണ്ണസംഖ്യ iDb, nDb;
+  പൂർണ്ണസംഖ്യ iTxn = -1;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return -1;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ -1;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( zSchema ){
+  എങ്കിൽ( zSchema ){
     nDb = iDb = sqlite3FindDbName(db, zSchema);
-    if( iDb<0 ) nDb--;
-  }else{
+    എങ്കിൽ( iDb<0 ) nDb--;
+  }അല്ലെങ്കിൽ{
     iDb = 0;
     nDb = db->nDb-1;
   }
-  for(; iDb<=nDb; iDb++){
+  വേണ്ടി(; iDb<=nDb; iDb++){
     Btree *pBt = db->aDb[iDb].pBt;
-    int x = pBt!=0 ? sqlite3BtreeTxnState(pBt) : SQLITE_TXN_NONE;
-    if( x>iTxn ) iTxn = x;
+    പൂർണ്ണസംഖ്യ x = pBt!=0 ? sqlite3BtreeTxnState(pBt) : SQLITE_TXN_NONE;
+    എങ്കിൽ( x>iTxn ) iTxn = x;
   }
   sqlite3_mutex_leave(db->mutex);
-  return iTxn;
+  തിരികെ iTxn;
 }
 
 /*
@@ -1381,8 +1381,8 @@ int sqlite3_txn_state(sqlite3 *db, const char *zSchema){
 ** unclosed resources, and arranges for deallocation when the last
 ** prepare statement or sqlite3_backup closes.
 */
-int sqlite3_close(sqlite3 *db){ return sqlite3Close(db,0); }
-int sqlite3_close_v2(sqlite3 *db){ return sqlite3Close(db,1); }
+പൂർണ്ണസംഖ്യ sqlite3_close(sqlite3 *db){ തിരികെ sqlite3Close(db,0); }
+പൂർണ്ണസംഖ്യ sqlite3_close_v2(sqlite3 *db){ തിരികെ sqlite3Close(db,1); }
 
 
 /*
@@ -1393,17 +1393,17 @@ int sqlite3_close_v2(sqlite3 *db){ return sqlite3Close(db,1); }
 ** every sqlite3_stmt has now been finalized and every sqlite3_backup has
 ** finished, then free all resources.
 */
-void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
+ശൂന്യം sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
   HashElem *i;                    /* Hash table iterator */
-  int j;
+  പൂർണ്ണസംഖ്യ j;
 
   /* If there are outstanding sqlite3_stmt or sqlite3_backup objects
   ** or if the connection has not yet been closed by sqlite3_close_v2(),
   ** then just leave the mutex and return.
   */
-  if( db->eOpenState!=SQLITE_STATE_ZOMBIE || connectionIsBusy(db) ){
+  എങ്കിൽ( db->eOpenState!=SQLITE_STATE_ZOMBIE || connectionIsBusy(db) ){
     sqlite3_mutex_leave(db->mutex);
-    return;
+    തിരികെ;
   }
 
   /* If we reach this point, it means that the database connection has
@@ -1422,49 +1422,49 @@ void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
   sqlite3CloseSavepoints(db);
 
   /* Close all database connections */
-  for(j=0; j<db->nDb; j++){
-    struct Db *pDb = &db->aDb[j];
-    if( pDb->pBt ){
+  വേണ്ടി(j=0; j<db->nDb; j++){
+    ഘടന Db *pDb = &db->aDb[j];
+    എങ്കിൽ( pDb->pBt ){
       sqlite3BtreeClose(pDb->pBt);
       pDb->pBt = 0;
-      if( j!=1 ){
+      എങ്കിൽ( j!=1 ){
         pDb->pSchema = 0;
       }
     }
   }
   /* Clear the TEMP schema separately and last */
-  if( db->aDb[1].pSchema ){
+  എങ്കിൽ( db->aDb[1].pSchema ){
     sqlite3SchemaClear(db->aDb[1].pSchema);
-    assert( db->aDb[1].pSchema->trigHash.count==0 );
+    പ്രതിജ്ഞാ( db->aDb[1].pSchema->trigHash.എണ്ണം==0 );
   }
   sqlite3VtabUnlockList(db);
 
   /* Free up the array of auxiliary databases */
   sqlite3CollapseDatabaseArray(db);
-  assert( db->nDb<=2 );
-  assert( db->aDb==db->aDbStatic );
+  പ്രതിജ്ഞാ( db->nDb<=2 );
+  പ്രതിജ്ഞാ( db->aDb==db->aDbStatic );
 
   /* Tell the code in notify.c that the connection no longer holds any
   ** locks and does not require any further unlock-notify callbacks.
   */
   sqlite3ConnectionClosed(db);
 
-  for(i=sqliteHashFirst(&db->aFunc); i; i=sqliteHashNext(i)){
+  വേണ്ടി(i=sqliteHashFirst(&db->aFunc); i; i=sqliteHashNext(i)){
     FuncDef *pNext, *p;
     p = sqliteHashData(i);
-    do{
+    ചെയ്യുക{
       functionDestroy(db, p);
       pNext = p->pNext;
       sqlite3DbFree(db, p);
       p = pNext;
-    }while( p );
+    }ആകുമ്പോൾ( p );
   }
   sqlite3HashClear(&db->aFunc);
-  for(i=sqliteHashFirst(&db->aCollSeq); i; i=sqliteHashNext(i)){
+  വേണ്ടി(i=sqliteHashFirst(&db->aCollSeq); i; i=sqliteHashNext(i)){
     CollSeq *pColl = (CollSeq *)sqliteHashData(i);
     /* Invoke any destructors registered for collation sequence user data. */
-    for(j=0; j<3; j++){
-      if( pColl[j].xDel ){
+    വേണ്ടി(j=0; j<3; j++){
+      എങ്കിൽ( pColl[j].xDel ){
         pColl[j].xDel(pColl[j].pUser);
       }
     }
@@ -1472,7 +1472,7 @@ void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
   }
   sqlite3HashClear(&db->aCollSeq);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  for(i=sqliteHashFirst(&db->aModule); i; i=sqliteHashNext(i)){
+  വേണ്ടി(i=sqliteHashFirst(&db->aModule); i; i=sqliteHashNext(i)){
     Module *pMod = (Module *)sqliteHashData(i);
     sqlite3VtabEponymousTableClear(db, pMod);
     sqlite3VtabModuleUnref(db, pMod);
@@ -1481,7 +1481,7 @@ void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
 #endif
 
   sqlite3Error(db, SQLITE_OK); /* Deallocates any cached error strings. */
-  sqlite3ValueFree(db->pErr);
+  sqlite3_മൂല്യം_Free(db->pErr);
   sqlite3CloseExtensions(db);
 
   db->eOpenState = SQLITE_STATE_ERROR;
@@ -1493,14 +1493,14 @@ void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
   ** structure?
   */
   sqlite3DbFree(db, db->aDb[1].pSchema);
-  if( db->xAutovacDestr ){
+  എങ്കിൽ( db->xAutovacDestr ){
     db->xAutovacDestr(db->pAutovacPagesArg);
   }
   sqlite3_mutex_leave(db->mutex);
   db->eOpenState = SQLITE_STATE_CLOSED;
   sqlite3_mutex_free(db->mutex);
-  assert( sqlite3LookasideUsed(db,0)==0 );
-  if( db->lookaside.bMalloced ){
+  പ്രതിജ്ഞാ( sqlite3LookasideUsed(db,0)==0 );
+  എങ്കിൽ( db->lookaside.bMalloced ){
     sqlite3_free(db->lookaside.pStart);
   }
   sqlite3_free(db);
@@ -1513,11 +1513,11 @@ void sqlite3LeaveMutexAndCloseZombie(sqlite3 *db){
 ** attempts to use that cursor.  Read cursors remain open and valid
 ** but are "saved" in case the table pages are moved around.
 */
-void sqlite3RollbackAll(sqlite3 *db, int tripCode){
-  int i;
-  int inTrans = 0;
-  int schemaChange;
-  assert( sqlite3_mutex_held(db->mutex) );
+ശൂന്യം sqlite3RollbackAll(sqlite3 *db, പൂർണ്ണസംഖ്യ tripCode){
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ inTrans = 0;
+  പൂർണ്ണസംഖ്യ schemaChange;
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(db->mutex) );
   sqlite3BeginBenignMalloc();
 
   /* Obtain all b-tree mutexes before making any calls to BtreeRollback().
@@ -1529,10 +1529,10 @@ void sqlite3RollbackAll(sqlite3 *db, int tripCode){
   sqlite3BtreeEnterAll(db);
   schemaChange = (db->mDbFlags & DBFLAG_SchemaChange)!=0 && db->init.busy==0;
 
-  for(i=0; i<db->nDb; i++){
+  വേണ്ടി(i=0; i<db->nDb; i++){
     Btree *p = db->aDb[i].pBt;
-    if( p ){
-      if( sqlite3BtreeTxnState(p)==SQLITE_TXN_WRITE ){
+    എങ്കിൽ( p ){
+      എങ്കിൽ( sqlite3BtreeTxnState(p)==SQLITE_TXN_WRITE ){
         inTrans = 1;
       }
       sqlite3BtreeRollback(p, tripCode, !schemaChange);
@@ -1541,7 +1541,7 @@ void sqlite3RollbackAll(sqlite3 *db, int tripCode){
   sqlite3VtabRollback(db);
   sqlite3EndBenignMalloc();
 
-  if( schemaChange ){
+  എങ്കിൽ( schemaChange ){
     sqlite3ExpirePreparedStatements(db, 0);
     sqlite3ResetAllSchemasOfConnection(db);
   }
@@ -1553,7 +1553,7 @@ void sqlite3RollbackAll(sqlite3 *db, int tripCode){
   db->flags &= ~(u64)(SQLITE_DeferFKs|SQLITE_CorruptRdOnly);
 
   /* If one has been configured, invoke the rollback-hook callback */
-  if( db->xRollbackCallback && (inTrans || !db->autoCommit) ){
+  എങ്കിൽ( db->xRollbackCallback && (inTrans || !db->autoCommit) ){
     db->xRollbackCallback(db->pRollbackArg);
   }
 }
@@ -1562,115 +1562,115 @@ void sqlite3RollbackAll(sqlite3 *db, int tripCode){
 ** Return a static string containing the name corresponding to the error code
 ** specified in the argument.
 */
-#if defined(SQLITE_NEED_ERR_NAME)
-const char *sqlite3ErrName(int rc){
-  const char *zName = 0;
-  int i, origRc = rc;
-  for(i=0; i<2 && zName==0; i++, rc &= 0xff){
-    switch( rc ){
-      case SQLITE_OK:                 zName = "SQLITE_OK";                break;
-      case SQLITE_ERROR:              zName = "SQLITE_ERROR";             break;
-      case SQLITE_ERROR_SNAPSHOT:     zName = "SQLITE_ERROR_SNAPSHOT";    break;
-      case SQLITE_ERROR_RETRY:        zName = "SQLITE_ERROR_RETRY";       break;
-      case SQLITE_ERROR_MISSING_COLLSEQ:
-                                zName = "SQLITE_ERROR_MISSING_COLLSEQ";   break;
-      case SQLITE_INTERNAL:           zName = "SQLITE_INTERNAL";          break;
-      case SQLITE_PERM:               zName = "SQLITE_PERM";              break;
-      case SQLITE_ABORT:              zName = "SQLITE_ABORT";             break;
-      case SQLITE_ABORT_ROLLBACK:     zName = "SQLITE_ABORT_ROLLBACK";    break;
-      case SQLITE_BUSY:               zName = "SQLITE_BUSY";              break;
-      case SQLITE_BUSY_RECOVERY:      zName = "SQLITE_BUSY_RECOVERY";     break;
-      case SQLITE_BUSY_SNAPSHOT:      zName = "SQLITE_BUSY_SNAPSHOT";     break;
-      case SQLITE_LOCKED:             zName = "SQLITE_LOCKED";            break;
-      case SQLITE_LOCKED_SHAREDCACHE: zName = "SQLITE_LOCKED_SHAREDCACHE";break;
-      case SQLITE_NOMEM:              zName = "SQLITE_NOMEM";             break;
-      case SQLITE_READONLY:           zName = "SQLITE_READONLY";          break;
-      case SQLITE_READONLY_RECOVERY:  zName = "SQLITE_READONLY_RECOVERY"; break;
-      case SQLITE_READONLY_CANTINIT:  zName = "SQLITE_READONLY_CANTINIT"; break;
-      case SQLITE_READONLY_ROLLBACK:  zName = "SQLITE_READONLY_ROLLBACK"; break;
-      case SQLITE_READONLY_DBMOVED:   zName = "SQLITE_READONLY_DBMOVED";  break;
-      case SQLITE_READONLY_DIRECTORY: zName = "SQLITE_READONLY_DIRECTORY";break;
-      case SQLITE_INTERRUPT:          zName = "SQLITE_INTERRUPT";         break;
-      case SQLITE_IOERR:              zName = "SQLITE_IOERR";             break;
-      case SQLITE_IOERR_READ:         zName = "SQLITE_IOERR_READ";        break;
-      case SQLITE_IOERR_SHORT_READ:   zName = "SQLITE_IOERR_SHORT_READ";  break;
-      case SQLITE_IOERR_WRITE:        zName = "SQLITE_IOERR_WRITE";       break;
-      case SQLITE_IOERR_FSYNC:        zName = "SQLITE_IOERR_FSYNC";       break;
-      case SQLITE_IOERR_DIR_FSYNC:    zName = "SQLITE_IOERR_DIR_FSYNC";   break;
-      case SQLITE_IOERR_TRUNCATE:     zName = "SQLITE_IOERR_TRUNCATE";    break;
-      case SQLITE_IOERR_FSTAT:        zName = "SQLITE_IOERR_FSTAT";       break;
-      case SQLITE_IOERR_UNLOCK:       zName = "SQLITE_IOERR_UNLOCK";      break;
-      case SQLITE_IOERR_RDLOCK:       zName = "SQLITE_IOERR_RDLOCK";      break;
-      case SQLITE_IOERR_DELETE:       zName = "SQLITE_IOERR_DELETE";      break;
-      case SQLITE_IOERR_NOMEM:        zName = "SQLITE_IOERR_NOMEM";       break;
-      case SQLITE_IOERR_ACCESS:       zName = "SQLITE_IOERR_ACCESS";      break;
-      case SQLITE_IOERR_CHECKRESERVEDLOCK:
-                                zName = "SQLITE_IOERR_CHECKRESERVEDLOCK"; break;
-      case SQLITE_IOERR_LOCK:         zName = "SQLITE_IOERR_LOCK";        break;
-      case SQLITE_IOERR_CLOSE:        zName = "SQLITE_IOERR_CLOSE";       break;
-      case SQLITE_IOERR_DIR_CLOSE:    zName = "SQLITE_IOERR_DIR_CLOSE";   break;
-      case SQLITE_IOERR_SHMOPEN:      zName = "SQLITE_IOERR_SHMOPEN";     break;
-      case SQLITE_IOERR_SHMSIZE:      zName = "SQLITE_IOERR_SHMSIZE";     break;
-      case SQLITE_IOERR_SHMLOCK:      zName = "SQLITE_IOERR_SHMLOCK";     break;
-      case SQLITE_IOERR_SHMMAP:       zName = "SQLITE_IOERR_SHMMAP";      break;
-      case SQLITE_IOERR_SEEK:         zName = "SQLITE_IOERR_SEEK";        break;
-      case SQLITE_IOERR_DELETE_NOENT: zName = "SQLITE_IOERR_DELETE_NOENT";break;
-      case SQLITE_IOERR_MMAP:         zName = "SQLITE_IOERR_MMAP";        break;
-      case SQLITE_IOERR_GETTEMPPATH:  zName = "SQLITE_IOERR_GETTEMPPATH"; break;
-      case SQLITE_IOERR_CONVPATH:     zName = "SQLITE_IOERR_CONVPATH";    break;
-      case SQLITE_CORRUPT:            zName = "SQLITE_CORRUPT";           break;
-      case SQLITE_CORRUPT_VTAB:       zName = "SQLITE_CORRUPT_VTAB";      break;
-      case SQLITE_NOTFOUND:           zName = "SQLITE_NOTFOUND";          break;
-      case SQLITE_FULL:               zName = "SQLITE_FULL";              break;
-      case SQLITE_CANTOPEN:           zName = "SQLITE_CANTOPEN";          break;
-      case SQLITE_CANTOPEN_NOTEMPDIR: zName = "SQLITE_CANTOPEN_NOTEMPDIR";break;
-      case SQLITE_CANTOPEN_ISDIR:     zName = "SQLITE_CANTOPEN_ISDIR";    break;
-      case SQLITE_CANTOPEN_FULLPATH:  zName = "SQLITE_CANTOPEN_FULLPATH"; break;
-      case SQLITE_CANTOPEN_CONVPATH:  zName = "SQLITE_CANTOPEN_CONVPATH"; break;
-      case SQLITE_CANTOPEN_SYMLINK:   zName = "SQLITE_CANTOPEN_SYMLINK";  break;
-      case SQLITE_PROTOCOL:           zName = "SQLITE_PROTOCOL";          break;
-      case SQLITE_EMPTY:              zName = "SQLITE_EMPTY";             break;
-      case SQLITE_SCHEMA:             zName = "SQLITE_SCHEMA";            break;
-      case SQLITE_TOOBIG:             zName = "SQLITE_TOOBIG";            break;
-      case SQLITE_CONSTRAINT:         zName = "SQLITE_CONSTRAINT";        break;
-      case SQLITE_CONSTRAINT_UNIQUE:  zName = "SQLITE_CONSTRAINT_UNIQUE"; break;
-      case SQLITE_CONSTRAINT_TRIGGER: zName = "SQLITE_CONSTRAINT_TRIGGER";break;
-      case SQLITE_CONSTRAINT_FOREIGNKEY:
-                                zName = "SQLITE_CONSTRAINT_FOREIGNKEY";   break;
-      case SQLITE_CONSTRAINT_CHECK:   zName = "SQLITE_CONSTRAINT_CHECK";  break;
-      case SQLITE_CONSTRAINT_PRIMARYKEY:
-                                zName = "SQLITE_CONSTRAINT_PRIMARYKEY";   break;
-      case SQLITE_CONSTRAINT_NOTNULL: zName = "SQLITE_CONSTRAINT_NOTNULL";break;
-      case SQLITE_CONSTRAINT_COMMITHOOK:
-                                zName = "SQLITE_CONSTRAINT_COMMITHOOK";   break;
-      case SQLITE_CONSTRAINT_VTAB:    zName = "SQLITE_CONSTRAINT_VTAB";   break;
-      case SQLITE_CONSTRAINT_FUNCTION:
-                                zName = "SQLITE_CONSTRAINT_FUNCTION";     break;
-      case SQLITE_CONSTRAINT_ROWID:   zName = "SQLITE_CONSTRAINT_ROWID";  break;
-      case SQLITE_MISMATCH:           zName = "SQLITE_MISMATCH";          break;
-      case SQLITE_MISUSE:             zName = "SQLITE_MISUSE";            break;
-      case SQLITE_NOLFS:              zName = "SQLITE_NOLFS";             break;
-      case SQLITE_AUTH:               zName = "SQLITE_AUTH";              break;
-      case SQLITE_FORMAT:             zName = "SQLITE_FORMAT";            break;
-      case SQLITE_RANGE:              zName = "SQLITE_RANGE";             break;
-      case SQLITE_NOTADB:             zName = "SQLITE_NOTADB";            break;
-      case SQLITE_ROW:                zName = "SQLITE_ROW";               break;
-      case SQLITE_NOTICE:             zName = "SQLITE_NOTICE";            break;
-      case SQLITE_NOTICE_RECOVER_WAL: zName = "SQLITE_NOTICE_RECOVER_WAL";break;
-      case SQLITE_NOTICE_RECOVER_ROLLBACK:
-                                zName = "SQLITE_NOTICE_RECOVER_ROLLBACK"; break;
-      case SQLITE_NOTICE_RBU:         zName = "SQLITE_NOTICE_RBU"; break;
-      case SQLITE_WARNING:            zName = "SQLITE_WARNING";           break;
-      case SQLITE_WARNING_AUTOINDEX:  zName = "SQLITE_WARNING_AUTOINDEX"; break;
-      case SQLITE_DONE:               zName = "SQLITE_DONE";              break;
+#എങ്കിൽ defined(SQLITE_NEED_ERR_NAME)
+സ്ഥിരം അക്ഷരം *sqlite3ErrName(പൂർണ്ണസംഖ്യ rc){
+  സ്ഥിരം അക്ഷരം *zName = 0;
+  പൂർണ്ണസംഖ്യ i, origRc = rc;
+  വേണ്ടി(i=0; i<2 && zName==0; i++, rc &= 0xff){
+    തിരഞ്ഞെടുപ്പ്( rc ){
+      അവസ്ഥ SQLITE_OK:                 zName = "SQLITE_OK";                നിർത്തുക;
+      അവസ്ഥ SQLITE_ERROR:              zName = "SQLITE_ERROR";             നിർത്തുക;
+      അവസ്ഥ SQLITE_ERROR_SNAPSHOT:     zName = "SQLITE_ERROR_SNAPSHOT";    നിർത്തുക;
+      അവസ്ഥ SQLITE_ERROR_RETRY:        zName = "SQLITE_ERROR_RETRY";       നിർത്തുക;
+      അവസ്ഥ SQLITE_ERROR_MISSING_COLLSEQ:
+                                zName = "SQLITE_ERROR_MISSING_COLLSEQ";   നിർത്തുക;
+      അവസ്ഥ SQLITE_INTERNAL:           zName = "SQLITE_INTERNAL";          നിർത്തുക;
+      അവസ്ഥ SQLITE_PERM:               zName = "SQLITE_PERM";              നിർത്തുക;
+      അവസ്ഥ SQLITE_ABORT:              zName = "SQLITE_ABORT";             നിർത്തുക;
+      അവസ്ഥ SQLITE_ABORT_ROLLBACK:     zName = "SQLITE_ABORT_ROLLBACK";    നിർത്തുക;
+      അവസ്ഥ SQLITE_BUSY:               zName = "SQLITE_BUSY";              നിർത്തുക;
+      അവസ്ഥ SQLITE_BUSY_RECOVERY:      zName = "SQLITE_BUSY_RECOVERY";     നിർത്തുക;
+      അവസ്ഥ SQLITE_BUSY_SNAPSHOT:      zName = "SQLITE_BUSY_SNAPSHOT";     നിർത്തുക;
+      അവസ്ഥ SQLITE_LOCKED:             zName = "SQLITE_LOCKED";            നിർത്തുക;
+      അവസ്ഥ SQLITE_LOCKED_SHAREDCACHE: zName = "SQLITE_LOCKED_SHAREDCACHE";നിർത്തുക;
+      അവസ്ഥ SQLITE_NOMEM:              zName = "SQLITE_NOMEM";             നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY:           zName = "SQLITE_READONLY";          നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY_RECOVERY:  zName = "SQLITE_READONLY_RECOVERY"; നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY_CANTINIT:  zName = "SQLITE_READONLY_CANTINIT"; നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY_ROLLBACK:  zName = "SQLITE_READONLY_ROLLBACK"; നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY_DBMOVED:   zName = "SQLITE_READONLY_DBMOVED";  നിർത്തുക;
+      അവസ്ഥ SQLITE_READONLY_DIRECTORY: zName = "SQLITE_READONLY_DIRECTORY";നിർത്തുക;
+      അവസ്ഥ SQLITE_INTERRUPT:          zName = "SQLITE_INTERRUPT";         നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR:              zName = "SQLITE_IOERR";             നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_READ:         zName = "SQLITE_IOERR_READ";        നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SHORT_READ:   zName = "SQLITE_IOERR_SHORT_READ";  നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_WRITE:        zName = "SQLITE_IOERR_WRITE";       നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_FSYNC:        zName = "SQLITE_IOERR_FSYNC";       നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_DIR_FSYNC:    zName = "SQLITE_IOERR_DIR_FSYNC";   നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_TRUNCATE:     zName = "SQLITE_IOERR_TRUNCATE";    നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_FSTAT:        zName = "SQLITE_IOERR_FSTAT";       നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_UNLOCK:       zName = "SQLITE_IOERR_UNLOCK";      നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_RDLOCK:       zName = "SQLITE_IOERR_RDLOCK";      നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_DELETE:       zName = "SQLITE_IOERR_DELETE";      നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_NOMEM:        zName = "SQLITE_IOERR_NOMEM";       നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_ACCESS:       zName = "SQLITE_IOERR_ACCESS";      നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_CHECKRESERVEDLOCK:
+                                zName = "SQLITE_IOERR_CHECKRESERVEDLOCK"; നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_LOCK:         zName = "SQLITE_IOERR_LOCK";        നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_CLOSE:        zName = "SQLITE_IOERR_CLOSE";       നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_DIR_CLOSE:    zName = "SQLITE_IOERR_DIR_CLOSE";   നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SHMOPEN:      zName = "SQLITE_IOERR_SHMOPEN";     നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SHMSIZE:      zName = "SQLITE_IOERR_SHMSIZE";     നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SHMLOCK:      zName = "SQLITE_IOERR_SHMLOCK";     നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SHMMAP:       zName = "SQLITE_IOERR_SHMMAP";      നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_SEEK:         zName = "SQLITE_IOERR_SEEK";        നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_DELETE_NOENT: zName = "SQLITE_IOERR_DELETE_NOENT";നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_MMAP:         zName = "SQLITE_IOERR_MMAP";        നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_GETTEMPPATH:  zName = "SQLITE_IOERR_GETTEMPPATH"; നിർത്തുക;
+      അവസ്ഥ SQLITE_IOERR_CONVPATH:     zName = "SQLITE_IOERR_CONVPATH";    നിർത്തുക;
+      അവസ്ഥ SQLITE_CORRUPT:            zName = "SQLITE_CORRUPT";           നിർത്തുക;
+      അവസ്ഥ SQLITE_CORRUPT_VTAB:       zName = "SQLITE_CORRUPT_VTAB";      നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTFOUND:           zName = "SQLITE_NOTFOUND";          നിർത്തുക;
+      അവസ്ഥ SQLITE_FULL:               zName = "SQLITE_FULL";              നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN:           zName = "SQLITE_CANTOPEN";          നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN_NOTEMPDIR: zName = "SQLITE_CANTOPEN_NOTEMPDIR";നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN_ISDIR:     zName = "SQLITE_CANTOPEN_ISDIR";    നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN_FULLPATH:  zName = "SQLITE_CANTOPEN_FULLPATH"; നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN_CONVPATH:  zName = "SQLITE_CANTOPEN_CONVPATH"; നിർത്തുക;
+      അവസ്ഥ SQLITE_CANTOPEN_SYMLINK:   zName = "SQLITE_CANTOPEN_SYMLINK";  നിർത്തുക;
+      അവസ്ഥ SQLITE_PROTOCOL:           zName = "SQLITE_PROTOCOL";          നിർത്തുക;
+      അവസ്ഥ SQLITE_EMPTY:              zName = "SQLITE_EMPTY";             നിർത്തുക;
+      അവസ്ഥ SQLITE_SCHEMA:             zName = "SQLITE_SCHEMA";            നിർത്തുക;
+      അവസ്ഥ SQLITE_TOOBIG:             zName = "SQLITE_TOOBIG";            നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT:         zName = "SQLITE_CONSTRAINT";        നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_UNIQUE:  zName = "SQLITE_CONSTRAINT_UNIQUE"; നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_TRIGGER: zName = "SQLITE_CONSTRAINT_TRIGGER";നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_FOREIGNKEY:
+                                zName = "SQLITE_CONSTRAINT_FOREIGNKEY";   നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_CHECK:   zName = "SQLITE_CONSTRAINT_CHECK";  നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_PRIMARYKEY:
+                                zName = "SQLITE_CONSTRAINT_PRIMARYKEY";   നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_NOTNULL: zName = "SQLITE_CONSTRAINT_NOTNULL";നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_COMMITHOOK:
+                                zName = "SQLITE_CONSTRAINT_COMMITHOOK";   നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_VTAB:    zName = "SQLITE_CONSTRAINT_VTAB";   നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_FUNCTION:
+                                zName = "SQLITE_CONSTRAINT_FUNCTION";     നിർത്തുക;
+      അവസ്ഥ SQLITE_CONSTRAINT_ROWID:   zName = "SQLITE_CONSTRAINT_ROWID";  നിർത്തുക;
+      അവസ്ഥ SQLITE_MISMATCH:           zName = "SQLITE_MISMATCH";          നിർത്തുക;
+      അവസ്ഥ SQLITE_MISUSE:             zName = "SQLITE_MISUSE";            നിർത്തുക;
+      അവസ്ഥ SQLITE_NOLFS:              zName = "SQLITE_NOLFS";             നിർത്തുക;
+      അവസ്ഥ SQLITE_AUTH:               zName = "SQLITE_AUTH";              നിർത്തുക;
+      അവസ്ഥ SQLITE_FORMAT:             zName = "SQLITE_FORMAT";            നിർത്തുക;
+      അവസ്ഥ SQLITE_RANGE:              zName = "SQLITE_RANGE";             നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTADB:             zName = "SQLITE_NOTADB";            നിർത്തുക;
+      അവസ്ഥ SQLITE_ROW:                zName = "SQLITE_ROW";               നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTICE:             zName = "SQLITE_NOTICE";            നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTICE_RECOVER_WAL: zName = "SQLITE_NOTICE_RECOVER_WAL";നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTICE_RECOVER_ROLLBACK:
+                                zName = "SQLITE_NOTICE_RECOVER_ROLLBACK"; നിർത്തുക;
+      അവസ്ഥ SQLITE_NOTICE_RBU:         zName = "SQLITE_NOTICE_RBU"; നിർത്തുക;
+      അവസ്ഥ SQLITE_WARNING:            zName = "SQLITE_WARNING";           നിർത്തുക;
+      അവസ്ഥ SQLITE_WARNING_AUTOINDEX:  zName = "SQLITE_WARNING_AUTOINDEX"; നിർത്തുക;
+      അവസ്ഥ SQLITE_DONE:               zName = "SQLITE_DONE";              നിർത്തുക;
     }
   }
-  if( zName==0 ){
-    static char zBuf[50];
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "SQLITE_UNKNOWN(%d)", origRc);
+  എങ്കിൽ( zName==0 ){
+    സ്ഥിതം അക്ഷരം zBuf[50];
+    sqlite3_snprintf(വലുപ്പം(zBuf), zBuf, "SQLITE_UNKNOWN(%d)", origRc);
     zName = zBuf;
   }
-  return zName;
+  തിരികെ zName;
 }
 #endif
 
@@ -1678,8 +1678,8 @@ const char *sqlite3ErrName(int rc){
 ** Return a static string that describes the kind of error specified in the
 ** argument.
 */
-const char *sqlite3ErrStr(int rc){
-  static const char* const aMsg[] = {
+സ്ഥിരം അക്ഷരം *sqlite3ErrStr(പൂർണ്ണസംഖ്യ rc){
+  സ്ഥിതം സ്ഥിരം അക്ഷരം* സ്ഥിരം a_സന്ദേശം[] = {
     /* SQLITE_OK          */ "not an error",
     /* SQLITE_ERROR       */ "SQL logic error",
     /* SQLITE_INTERNAL    */ 0,
@@ -1704,7 +1704,7 @@ const char *sqlite3ErrStr(int rc){
     /* SQLITE_MISUSE      */ "bad parameter or other API misuse",
 #ifdef SQLITE_DISABLE_LFS
     /* SQLITE_NOLFS       */ "large file support is disabled",
-#else
+#അല്ലെങ്കിൽ
     /* SQLITE_NOLFS       */ 0,
 #endif
     /* SQLITE_AUTH        */ "authorization denied",
@@ -1714,29 +1714,29 @@ const char *sqlite3ErrStr(int rc){
     /* SQLITE_NOTICE      */ "notification message",
     /* SQLITE_WARNING     */ "warning message",
   };
-  const char *zErr = "unknown error";
-  switch( rc ){
-    case SQLITE_ABORT_ROLLBACK: {
+  സ്ഥിരം അക്ഷരം *zErr = "unknown error";
+  തിരഞ്ഞെടുപ്പ്( rc ){
+    അവസ്ഥ SQLITE_ABORT_ROLLBACK: {
       zErr = "abort due to ROLLBACK";
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_ROW: {
+    അവസ്ഥ SQLITE_ROW: {
       zErr = "another row available";
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_DONE: {
+    അവസ്ഥ SQLITE_DONE: {
       zErr = "no more rows available";
-      break;
+      നിർത്തുക;
     }
-    default: {
+    സ്ഥിരസ്ഥിതി: {
       rc &= 0xff;
-      if( ALWAYS(rc>=0) && rc<ArraySize(aMsg) && aMsg[rc]!=0 ){
-        zErr = aMsg[rc];
+      എങ്കിൽ( ALWAYS(rc>=0) && rc<ArraySize(a_സന്ദേശം) && a_സന്ദേശം[rc]!=0 ){
+        zErr = a_സന്ദേശം[rc];
       }
-      break;
+      നിർത്തുക;
     }
   }
-  return zErr;
+  തിരികെ zErr;
 }
 
 /*
@@ -1748,46 +1748,46 @@ const char *sqlite3ErrStr(int rc){
 ** Return non-zero to retry the lock.  Return zero to stop trying
 ** and cause SQLite to return SQLITE_BUSY.
 */
-static int sqliteDefaultBusyCallback(
-  void *ptr,               /* Database connection */
-  int count                /* Number of times table has been busy */
+സ്ഥിതം പൂർണ്ണസംഖ്യ sqliteDefaultBusyCallback(
+  ശൂന്യം *ptr,               /* Database connection */
+  പൂർണ്ണസംഖ്യ എണ്ണം                /* Number of times table has been busy */
 ){
-#if SQLITE_OS_WIN || !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP
+#എങ്കിൽ SQLITE_OS_WIN || !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP
   /* This case is for systems that have support for sleeping for fractions of
   ** a second.  Examples:  All windows systems, unix systems with nanosleep() */
-  static const u8 delays[] =
+  സ്ഥിതം സ്ഥിരം u8 delays[] =
      { 1, 2, 5, 10, 15, 20, 25, 25,  25,  50,  50, 100 };
-  static const u8 totals[] =
+  സ്ഥിതം സ്ഥിരം u8 totals[] =
      { 0, 1, 3,  8, 18, 33, 53, 78, 103, 128, 178, 228 };
 # define NDELAY ArraySize(delays)
   sqlite3 *db = (sqlite3 *)ptr;
-  int tmout = db->busyTimeout;
-  int delay, prior;
+  പൂർണ്ണസംഖ്യ tmout = db->busyTimeout;
+  പൂർണ്ണസംഖ്യ delay, prior;
 
-  assert( count>=0 );
-  if( count < NDELAY ){
-    delay = delays[count];
-    prior = totals[count];
-  }else{
+  പ്രതിജ്ഞാ( എണ്ണം>=0 );
+  എങ്കിൽ( എണ്ണം < NDELAY ){
+    delay = delays[എണ്ണം];
+    prior = totals[എണ്ണം];
+  }അല്ലെങ്കിൽ{
     delay = delays[NDELAY-1];
-    prior = totals[NDELAY-1] + delay*(count-(NDELAY-1));
+    prior = totals[NDELAY-1] + delay*(എണ്ണം-(NDELAY-1));
   }
-  if( prior + delay > tmout ){
+  എങ്കിൽ( prior + delay > tmout ){
     delay = tmout - prior;
-    if( delay<=0 ) return 0;
+    എങ്കിൽ( delay<=0 ) തിരികെ 0;
   }
   sqlite3OsSleep(db->pVfs, delay*1000);
-  return 1;
-#else
+  തിരികെ 1;
+#അല്ലെങ്കിൽ
   /* This case for unix systems that lack usleep() support.  Sleeping
   ** must be done in increments of whole seconds */
   sqlite3 *db = (sqlite3 *)ptr;
-  int tmout = ((sqlite3 *)ptr)->busyTimeout;
-  if( (count+1)*1000 > tmout ){
-    return 0;
+  പൂർണ്ണസംഖ്യ tmout = ((sqlite3 *)ptr)->busyTimeout;
+  എങ്കിൽ( (എണ്ണം+1)*1000 > tmout ){
+    തിരികെ 0;
   }
   sqlite3OsSleep(db->pVfs, 1000000);
-  return 1;
+  തിരികെ 1;
 #endif
 }
 
@@ -1800,29 +1800,29 @@ static int sqliteDefaultBusyCallback(
 ** If this routine returns non-zero, the lock is retried.  If it
 ** returns 0, the operation aborts with an SQLITE_BUSY error.
 */
-int sqlite3InvokeBusyHandler(BusyHandler *p){
-  int rc;
-  if( p->xBusyHandler==0 || p->nBusy<0 ) return 0;
+പൂർണ്ണസംഖ്യ sqlite3InvokeBusyHandler(BusyHandler *p){
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( p->xBusyHandler==0 || p->nBusy<0 ) തിരികെ 0;
   rc = p->xBusyHandler(p->pBusyArg, p->nBusy);
-  if( rc==0 ){
+  എങ്കിൽ( rc==0 ){
     p->nBusy = -1;
-  }else{
+  }അല്ലെങ്കിൽ{
     p->nBusy++;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** This routine sets the busy callback for an Sqlite database to the
 ** given callback function with the given argument.
 */
-int sqlite3_busy_handler(
+പൂർണ്ണസംഖ്യ sqlite3_busy_handler(
   sqlite3 *db,
-  int (*xBusy)(void*,int),
-  void *pArg
+  പൂർണ്ണസംഖ്യ (*xBusy)(ശൂന്യം*,പൂർണ്ണസംഖ്യ),
+  ശൂന്യം *pArg
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->busyHandler.xBusyHandler = xBusy;
@@ -1833,7 +1833,7 @@ int sqlite3_busy_handler(
   db->setlkTimeout = 0;
 #endif
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
@@ -1842,24 +1842,24 @@ int sqlite3_busy_handler(
 ** given callback function with the given argument. The progress callback will
 ** be invoked every nOps opcodes.
 */
-void sqlite3_progress_handler(
+ശൂന്യം sqlite3_progress_handler(
   sqlite3 *db,
-  int nOps,
-  int (*xProgress)(void*),
-  void *pArg
+  പൂർണ്ണസംഖ്യ nOps,
+  പൂർണ്ണസംഖ്യ (*xProgress)(ശൂന്യം*),
+  ശൂന്യം *pArg
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( nOps>0 ){
+  എങ്കിൽ( nOps>0 ){
     db->xProgress = xProgress;
     db->nProgressOps = (unsigned)nOps;
     db->pProgressArg = pArg;
-  }else{
+  }അല്ലെങ്കിൽ{
     db->xProgress = 0;
     db->nProgressOps = 0;
     db->pProgressArg = 0;
@@ -1873,69 +1873,69 @@ void sqlite3_progress_handler(
 ** This routine installs a default busy handler that waits for the
 ** specified number of milliseconds before returning 0.
 */
-int sqlite3_busy_timeout(sqlite3 *db, int ms){
+പൂർണ്ണസംഖ്യ sqlite3_busy_timeout(sqlite3 *db, പൂർണ്ണസംഖ്യ ms){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( ms>0 ){
-    sqlite3_busy_handler(db, (int(*)(void*,int))sqliteDefaultBusyCallback,
-                             (void*)db);
+  എങ്കിൽ( ms>0 ){
+    sqlite3_busy_handler(db, (പൂർണ്ണസംഖ്യ(*)(ശൂന്യം*,പൂർണ്ണസംഖ്യ))sqliteDefaultBusyCallback,
+                             (ശൂന്യം*)db);
     db->busyTimeout = ms;
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
     db->setlkTimeout = ms;
 #endif
-  }else{
+  }അല്ലെങ്കിൽ{
     sqlite3_busy_handler(db, 0, 0);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Set the setlk timeout value.
 */
-int sqlite3_setlk_timeout(sqlite3 *db, int ms, int flags){
+പൂർണ്ണസംഖ്യ sqlite3_setlk_timeout(sqlite3 *db, പൂർണ്ണസംഖ്യ ms, പൂർണ്ണസംഖ്യ flags){
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  int iDb;
-  int bBOC = ((flags & SQLITE_SETLK_BLOCK_ON_CONNECT) ? 1 : 0);
+  പൂർണ്ണസംഖ്യ iDb;
+  പൂർണ്ണസംഖ്യ bBOC = ((flags & SQLITE_SETLK_BLOCK_ON_CONNECT) ? 1 : 0);
 #endif
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
-  if( ms<-1 ) return SQLITE_RANGE;
+  എങ്കിൽ( ms<-1 ) തിരികെ SQLITE_RANGE;
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   sqlite3_mutex_enter(db->mutex);
   db->setlkTimeout = ms;
   db->setlkFlags = flags;
   sqlite3BtreeEnterAll(db);
-  for(iDb=0; iDb<db->nDb; iDb++){
+  വേണ്ടി(iDb=0; iDb<db->nDb; iDb++){
     Btree *pBt = db->aDb[iDb].pBt;
-    if( pBt ){
+    എങ്കിൽ( pBt ){
       sqlite3_file *fd = sqlite3PagerFile(sqlite3BtreePager(pBt));
-      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_BLOCK_ON_CONNECT, (void*)&bBOC);
+      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_BLOCK_ON_CONNECT, (ശൂന്യം*)&bBOC);
     }
   }
   sqlite3BtreeLeaveAll(db);
   sqlite3_mutex_leave(db->mutex);
 #endif
-#if !defined(SQLITE_ENABLE_API_ARMOR) && !defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+#എങ്കിൽ !defined(SQLITE_ENABLE_API_ARMOR) && !defined(SQLITE_ENABLE_SETLK_TIMEOUT)
   UNUSED_PARAMETER(db);
   UNUSED_PARAMETER(flags);
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Cause any pending operation to stop at its earliest opportunity.
 */
-void sqlite3_interrupt(sqlite3 *db){
+ശൂന്യം sqlite3_interrupt(sqlite3 *db){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db)
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db)
    && (db==0 || db->eOpenState!=SQLITE_STATE_ZOMBIE)
   ){
-    (void)SQLITE_MISUSE_BKPT;
-    return;
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ;
   }
 #endif
   AtomicStore(&db->u1.isInterrupted, 1);
@@ -1945,16 +1945,16 @@ void sqlite3_interrupt(sqlite3 *db){
 ** Return true or false depending on whether or not an interrupt is
 ** pending on connection db.
 */
-int sqlite3_is_interrupted(sqlite3 *db){
+പൂർണ്ണസംഖ്യ sqlite3_is_interrupted(sqlite3 *db){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db)
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db)
    && (db==0 || db->eOpenState!=SQLITE_STATE_ZOMBIE)
   ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
-  return AtomicLoad(&db->u1.isInterrupted)!=0;
+  തിരികെ AtomicLoad(&db->u1.isInterrupted)!=0;
 }
 
 /*
@@ -1963,36 +1963,36 @@ int sqlite3_is_interrupted(sqlite3 *db){
 ** that if a malloc() fails in sqlite3_create_function(), an error code
 ** is returned and the mallocFailed flag cleared.
 */
-int sqlite3CreateFunc(
+പൂർണ്ണസംഖ്യ sqlite3CreateFunc(
   sqlite3 *db,
-  const char *zFunctionName,
-  int nArg,
-  int enc,
-  void *pUserData,
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value **),
-  void (*xStep)(sqlite3_context*,int,sqlite3_value **),
-  void (*xFinal)(sqlite3_context*),
-  void (*xValue)(sqlite3_context*),
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value **),
+  സ്ഥിരം അക്ഷരം *zFunctionName,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം *pUserData,
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xFinal)(sqlite3_context*),
+  ശൂന്യം (*x_മൂല്യം)(sqlite3_context*),
+  ശൂന്യം (*xInverse)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
   FuncDestructor *pDestructor
 ){
   FuncDef *p;
-  int extraFlags;
+  പൂർണ്ണസംഖ്യ extraFlags;
 
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( xValue==0 || xSFunc==0 );
-  if( zFunctionName==0                /* Must have a valid name */
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(db->mutex) );
+  പ്രതിജ്ഞാ( x_മൂല്യം==0 || xSFunc==0 );
+  എങ്കിൽ( zFunctionName==0                /* Must have a valid name */
    || (xSFunc!=0 && xFinal!=0)        /* Not both xSFunc and xFinal */
    || ((xFinal==0)!=(xStep==0))       /* Both or neither of xFinal and xStep */
-   || ((xValue==0)!=(xInverse==0))    /* Both or neither of xValue, xInverse */
+   || ((x_മൂല്യം==0)!=(xInverse==0))    /* Both or neither of xValue, xInverse */
    || (nArg<-1 || nArg>SQLITE_MAX_FUNCTION_ARG)
    || (255<sqlite3Strlen30(zFunctionName))
   ){
-    return SQLITE_MISUSE_BKPT;
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 
-  assert( SQLITE_FUNC_CONSTANT==SQLITE_DETERMINISTIC );
-  assert( SQLITE_FUNC_DIRECT==SQLITE_DIRECTONLY );
+  പ്രതിജ്ഞാ( SQLITE_FUNC_CONSTANT==SQLITE_DETERMINISTIC );
+  പ്രതിജ്ഞാ( SQLITE_FUNC_DIRECT==SQLITE_DIRECTONLY );
   extraFlags = enc &  (SQLITE_DETERMINISTIC|SQLITE_DIRECTONLY|
                        SQLITE_SUBTYPE|SQLITE_INNOCUOUS|
                        SQLITE_RESULT_SUBTYPE|SQLITE_SELFORDER1);
@@ -2000,7 +2000,7 @@ int sqlite3CreateFunc(
 
   /* The SQLITE_INNOCUOUS flag is the same bit as SQLITE_FUNC_UNSAFE.  But
   ** the meaning is inverted.  So flip the bit. */
-  assert( SQLITE_FUNC_UNSAFE==SQLITE_INNOCUOUS );
+  പ്രതിജ്ഞാ( SQLITE_FUNC_UNSAFE==SQLITE_INNOCUOUS );
   extraFlags ^= SQLITE_FUNC_UNSAFE;  /* tag-20230109-1 */
 
  
@@ -2012,35 +2012,35 @@ int sqlite3CreateFunc(
   ** If SQLITE_ANY is specified, add three versions of the function
   ** to the hash table.
   */
-  switch( enc ){
-    case SQLITE_UTF16:
+  തിരഞ്ഞെടുപ്പ്( enc ){
+    അവസ്ഥ SQLITE_UTF16:
       enc = SQLITE_UTF16NATIVE;
-      break;
-    case SQLITE_ANY: {
-      int rc;
+      നിർത്തുക;
+    അവസ്ഥ SQLITE_ANY: {
+      പൂർണ്ണസംഖ്യ rc;
       rc = sqlite3CreateFunc(db, zFunctionName, nArg,
            (SQLITE_UTF8|extraFlags)^SQLITE_FUNC_UNSAFE, /* tag-20230109-1 */
-           pUserData, xSFunc, xStep, xFinal, xValue, xInverse, pDestructor);
-      if( rc==SQLITE_OK ){
+           pUserData, xSFunc, xStep, xFinal, x_മൂല്യം, xInverse, pDestructor);
+      എങ്കിൽ( rc==SQLITE_OK ){
         rc = sqlite3CreateFunc(db, zFunctionName, nArg,
              (SQLITE_UTF16LE|extraFlags)^SQLITE_FUNC_UNSAFE, /* tag-20230109-1*/
-             pUserData, xSFunc, xStep, xFinal, xValue, xInverse, pDestructor);
+             pUserData, xSFunc, xStep, xFinal, x_മൂല്യം, xInverse, pDestructor);
       }
-      if( rc!=SQLITE_OK ){
-        return rc;
+      എങ്കിൽ( rc!=SQLITE_OK ){
+        തിരികെ rc;
       }
       enc = SQLITE_UTF16BE;
-      break;
+      നിർത്തുക;
     }
-    case SQLITE_UTF8:
-    case SQLITE_UTF16LE:
-    case SQLITE_UTF16BE:
-      break;
-    default:
+    അവസ്ഥ SQLITE_UTF8:
+    അവസ്ഥ SQLITE_UTF16LE:
+    അവസ്ഥ SQLITE_UTF16BE:
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       enc = SQLITE_UTF8;
-      break;
+      നിർത്തുക;
   }
-#else
+#അല്ലെങ്കിൽ
   enc = SQLITE_UTF8;
 #endif
  
@@ -2050,32 +2050,32 @@ int sqlite3CreateFunc(
   ** operation to continue but invalidate all precompiled statements.
   */
   p = sqlite3FindFunction(db, zFunctionName, nArg, (u8)enc, 0);
-  if( p && (p->funcFlags & SQLITE_FUNC_ENCMASK)==(u32)enc && p->nArg==nArg ){
-    if( db->nVdbeActive ){
-      sqlite3ErrorWithMsg(db, SQLITE_BUSY,
+  എങ്കിൽ( p && (p->funcFlags & SQLITE_FUNC_ENCMASK)==(u32)enc && p->nArg==nArg ){
+    എങ്കിൽ( db->nVdbeActive ){
+      sqlite3_Error_With_സന്ദേശം(db, SQLITE_BUSY,
         "unable to delete/modify user-function due to active statements");
-      assert( !db->mallocFailed || db->nVdbeExec>0 );
-      return SQLITE_BUSY;
-    }else{
+      പ്രതിജ്ഞാ( !db->mallocFailed || db->nVdbeExec>0 );
+      തിരികെ SQLITE_BUSY;
+    }അല്ലെങ്കിൽ{
       sqlite3ExpirePreparedStatements(db, 0);
     }
-  }else if( xSFunc==0 && xFinal==0 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( xSFunc==0 && xFinal==0 ){
     /* Trying to delete a function that does not exist.  This is a no-op.
     ** https://sqlite.org/forum/forumpost/726219164b */
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   p = sqlite3FindFunction(db, zFunctionName, nArg, (u8)enc, 1);
-  assert(p || db->mallocFailed);
-  if( !p ){
-    return SQLITE_NOMEM_BKPT;
+  പ്രതിജ്ഞാ(p || db->mallocFailed);
+  എങ്കിൽ( !p ){
+    തിരികെ SQLITE_NOMEM_BKPT;
   }
 
   /* If an older version of the function with a configured destructor is
   ** being replaced invoke the destructor function here. */
   functionDestroy(db, p);
 
-  if( pDestructor ){
+  എങ്കിൽ( pDestructor ){
     pDestructor->nRef++;
   }
   p->u.pDestructor = pDestructor;
@@ -2084,11 +2084,11 @@ int sqlite3CreateFunc(
   testcase( p->funcFlags & SQLITE_DIRECTONLY );
   p->xSFunc = xSFunc ? xSFunc : xStep;
   p->xFinalize = xFinal;
-  p->xValue = xValue;
+  p->x_മൂല്യം = x_മൂല്യം;
   p->xInverse = xInverse;
   p->pUserData = pUserData;
   p->nArg = (u16)nArg;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -2098,44 +2098,44 @@ int sqlite3CreateFunc(
 **    sqlite3_create_function_v2()
 **    sqlite3_create_window_function()
 */
-static int createFunctionApi(
+സ്ഥിതം പൂർണ്ണസംഖ്യ createFunctionApi(
   sqlite3 *db,
-  const char *zFunc,
-  int nArg,
-  int enc,
-  void *p,
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**),
-  void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-  void (*xFinal)(sqlite3_context*),
-  void (*xValue)(sqlite3_context*),
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**),
-  void(*xDestroy)(void*)
+  സ്ഥിരം അക്ഷരം *zFunc,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം *p,
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം (*xFinal)(sqlite3_context*),
+  ശൂന്യം (*x_മൂല്യം)(sqlite3_context*),
+  ശൂന്യം (*xInverse)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം(*xDestroy)(ശൂന്യം*)
 ){
-  int rc = SQLITE_ERROR;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_ERROR;
   FuncDestructor *pArg = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( xDestroy ){
-    pArg = (FuncDestructor *)sqlite3Malloc(sizeof(FuncDestructor));
-    if( !pArg ){
+  എങ്കിൽ( xDestroy ){
+    pArg = (FuncDestructor *)sqlite3Malloc(വലുപ്പം(FuncDestructor));
+    എങ്കിൽ( !pArg ){
       sqlite3OomFault(db);
       xDestroy(p);
-      goto out;
+      പോകുക out;
     }
     pArg->nRef = 0;
     pArg->xDestroy = xDestroy;
     pArg->pUserData = p;
   }
   rc = sqlite3CreateFunc(db, zFunc, nArg, enc, p,
-      xSFunc, xStep, xFinal, xValue, xInverse, pArg
+      xSFunc, xStep, xFinal, x_മൂല്യം, xInverse, pArg
   );
-  if( pArg && pArg->nRef==0 ){
-    assert( rc!=SQLITE_OK || (xStep==0 && xFinal==0) );
+  എങ്കിൽ( pArg && pArg->nRef==0 ){
+    പ്രതിജ്ഞാ( rc!=SQLITE_OK || (xStep==0 && xFinal==0) );
     xDestroy(p);
     sqlite3_free(pArg);
   }
@@ -2143,80 +2143,80 @@ static int createFunctionApi(
  out:
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Create new user functions.
 */
-int sqlite3_create_function(
+പൂർണ്ണസംഖ്യ sqlite3_create_function(
   sqlite3 *db,
-  const char *zFunc,
-  int nArg,
-  int enc,
-  void *p,
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value **),
-  void (*xStep)(sqlite3_context*,int,sqlite3_value **),
-  void (*xFinal)(sqlite3_context*)
+  സ്ഥിരം അക്ഷരം *zFunc,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം *p,
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xFinal)(sqlite3_context*)
 ){
-  return createFunctionApi(db, zFunc, nArg, enc, p, xSFunc, xStep,
+  തിരികെ createFunctionApi(db, zFunc, nArg, enc, p, xSFunc, xStep,
                                     xFinal, 0, 0, 0);
 }
-int sqlite3_create_function_v2(
+പൂർണ്ണസംഖ്യ sqlite3_create_function_v2(
   sqlite3 *db,
-  const char *zFunc,
-  int nArg,
-  int enc,
-  void *p,
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value **),
-  void (*xStep)(sqlite3_context*,int,sqlite3_value **),
-  void (*xFinal)(sqlite3_context*),
-  void (*xDestroy)(void *)
+  സ്ഥിരം അക്ഷരം *zFunc,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം *p,
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xFinal)(sqlite3_context*),
+  ശൂന്യം (*xDestroy)(ശൂന്യം *)
 ){
-  return createFunctionApi(db, zFunc, nArg, enc, p, xSFunc, xStep,
+  തിരികെ createFunctionApi(db, zFunc, nArg, enc, p, xSFunc, xStep,
                                     xFinal, 0, 0, xDestroy);
 }
-int sqlite3_create_window_function(
+പൂർണ്ണസംഖ്യ sqlite3_create_window_function(
   sqlite3 *db,
-  const char *zFunc,
-  int nArg,
-  int enc,
-  void *p,
-  void (*xStep)(sqlite3_context*,int,sqlite3_value **),
-  void (*xFinal)(sqlite3_context*),
-  void (*xValue)(sqlite3_context*),
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value **),
-  void (*xDestroy)(void *)
+  സ്ഥിരം അക്ഷരം *zFunc,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം *p,
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xFinal)(sqlite3_context*),
+  ശൂന്യം (*x_മൂല്യം)(sqlite3_context*),
+  ശൂന്യം (*xInverse)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*xDestroy)(ശൂന്യം *)
 ){
-  return createFunctionApi(db, zFunc, nArg, enc, p, 0, xStep,
-                                    xFinal, xValue, xInverse, xDestroy);
+  തിരികെ createFunctionApi(db, zFunc, nArg, enc, p, 0, xStep,
+                                    xFinal, x_മൂല്യം, xInverse, xDestroy);
 }
 
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3_create_function16(
+പൂർണ്ണസംഖ്യ sqlite3_create_function16(
   sqlite3 *db,
-  const void *zFunctionName,
-  int nArg,
-  int eTextRep,
-  void *p,
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**),
-  void (*xStep)(sqlite3_context*,int,sqlite3_value**),
-  void (*xFinal)(sqlite3_context*)
+  സ്ഥിരം ശൂന്യം *zFunctionName,
+  പൂർണ്ണസംഖ്യ nArg,
+  പൂർണ്ണസംഖ്യ eTextRep,
+  ശൂന്യം *p,
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം (*xStep)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം (*xFinal)(sqlite3_context*)
 ){
-  int rc;
-  char *zFunc8;
+  പൂർണ്ണസംഖ്യ rc;
+  അക്ഷരം *zFunc8;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zFunctionName==0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) || zFunctionName==0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  assert( !db->mallocFailed );
+  പ്രതിജ്ഞാ( !db->mallocFailed );
   zFunc8 = sqlite3Utf16to8(db, zFunctionName, -1, SQLITE_UTF16NATIVE);
   rc = sqlite3CreateFunc(db, zFunc8, nArg, eTextRep, p, xSFunc,xStep,xFinal,0,0,0);
   sqlite3DbFree(db, zFunc8);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 #endif
 
@@ -2229,13 +2229,13 @@ int sqlite3_create_function16(
 ** for name resolution but are actually overloaded by the xFindFunction
 ** method of virtual tables.
 */
-static void sqlite3InvalidFunction(
+സ്ഥിതം ശൂന്യം sqlite3InvalidFunction(
   sqlite3_context *context,  /* The function calling context */
-  int NotUsed,               /* Number of arguments to the function */
-  sqlite3_value **NotUsed2   /* Value of each argument */
+  പൂർണ്ണസംഖ്യ NotUsed,               /* Number of arguments to the function */
+  sqlite3_മൂല്യം **NotUsed2   /* Value of each argument */
 ){
-  const char *zName = (const char*)sqlite3_user_data(context);
-  char *zErr;
+  സ്ഥിരം അക്ഷരം *zName = (സ്ഥിരം അക്ഷരം*)sqlite3_user_data(context);
+  അക്ഷരം *zErr;
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   zErr = sqlite3_mprintf(
       "unable to use function %s in the requested context", zName);
@@ -2255,26 +2255,26 @@ static void sqlite3InvalidFunction(
 ** A global function must exist in order for name resolution to work
 ** properly.
 */
-int sqlite3_overload_function(
+പൂർണ്ണസംഖ്യ sqlite3_overload_function(
   sqlite3 *db,
-  const char *zName,
-  int nArg
+  സ്ഥിരം അക്ഷരം *zName,
+  പൂർണ്ണസംഖ്യ nArg
 ){
-  int rc;
-  char *zCopy;
+  പൂർണ്ണസംഖ്യ rc;
+  അക്ഷരം *zCopy;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 || nArg<-2 ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) || zName==0 || nArg<-2 ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   rc = sqlite3FindFunction(db, zName, nArg, SQLITE_UTF8, 0)!=0;
   sqlite3_mutex_leave(db->mutex);
-  if( rc ) return SQLITE_OK;
+  എങ്കിൽ( rc ) തിരികെ SQLITE_OK;
   zCopy = sqlite3_mprintf("%s", zName);
-  if( zCopy==0 ) return SQLITE_NOMEM;
-  return sqlite3_create_function_v2(db, zName, nArg, SQLITE_UTF8,
+  എങ്കിൽ( zCopy==0 ) തിരികെ SQLITE_NOMEM;
+  തിരികെ sqlite3_create_function_v2(db, zName, nArg, SQLITE_UTF8,
                            zCopy, sqlite3InvalidFunction, 0, 0, sqlite3_free);
 }
 
@@ -2288,13 +2288,13 @@ int sqlite3_overload_function(
 ** SQL statement.
 */
 #ifndef SQLITE_OMIT_DEPRECATED
-void *sqlite3_trace(sqlite3 *db, void(*xTrace)(void*,const char*), void *pArg){
-  void *pOld;
+ശൂന്യം *sqlite3_trace(sqlite3 *db, ശൂന്യം(*xTrace)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*), ശൂന്യം *pArg){
+  ശൂന്യം *pOld;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2303,31 +2303,31 @@ void *sqlite3_trace(sqlite3 *db, void(*xTrace)(void*,const char*), void *pArg){
   db->trace.xLegacy = xTrace;
   db->pTraceArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pOld;
+  തിരികെ pOld;
 }
 #endif /* SQLITE_OMIT_DEPRECATED */
 
 /* Register a trace callback using the version-2 interface.
 */
-int sqlite3_trace_v2(
+പൂർണ്ണസംഖ്യ sqlite3_trace_v2(
   sqlite3 *db,                               /* Trace this connection */
   unsigned mTrace,                           /* Mask of events to be traced */
-  int(*xTrace)(unsigned,void*,void*,void*),  /* Callback to invoke */
-  void *pArg                                 /* Context */
+  പൂർണ്ണസംഖ്യ(*xTrace)(unsigned,ശൂന്യം*,ശൂന്യം*,ശൂന്യം*),  /* Callback to invoke */
+  ശൂന്യം *pArg                                 /* Context */
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( mTrace==0 ) xTrace = 0;
-  if( xTrace==0 ) mTrace = 0;
+  എങ്കിൽ( mTrace==0 ) xTrace = 0;
+  എങ്കിൽ( xTrace==0 ) mTrace = 0;
   db->mTrace = mTrace;
   db->trace.xV2 = xTrace;
   db->pTraceArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -2339,17 +2339,17 @@ int sqlite3_trace_v2(
 ** profile is a pointer to a function that is invoked at the conclusion of
 ** each SQL statement that is run.
 */
-void *sqlite3_profile(
+ശൂന്യം *sqlite3_profile(
   sqlite3 *db,
-  void (*xProfile)(void*,const char*,sqlite_uint64),
-  void *pArg
+  ശൂന്യം (*xProfile)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*,sqlite_uint64),
+  ശൂന്യം *pArg
 ){
-  void *pOld;
+  ശൂന്യം *pOld;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2357,9 +2357,9 @@ void *sqlite3_profile(
   db->xProfile = xProfile;
   db->pProfileArg = pArg;
   db->mTrace &= SQLITE_TRACE_NONLEGACY_MASK;
-  if( db->xProfile ) db->mTrace |= SQLITE_TRACE_XPROFILE;
+  എങ്കിൽ( db->xProfile ) db->mTrace |= SQLITE_TRACE_XPROFILE;
   sqlite3_mutex_leave(db->mutex);
-  return pOld;
+  തിരികെ pOld;
 }
 #endif /* SQLITE_OMIT_DEPRECATED */
 #endif /* SQLITE_OMIT_TRACE */
@@ -2369,17 +2369,17 @@ void *sqlite3_profile(
 ** If the invoked function returns non-zero, then the commit becomes a
 ** rollback.
 */
-void *sqlite3_commit_hook(
+ശൂന്യം *sqlite3_commit_hook(
   sqlite3 *db,              /* Attach the hook to this database */
-  int (*xCallback)(void*),  /* Function to invoke on each commit */
-  void *pArg                /* Argument to the function */
+  പൂർണ്ണസംഖ്യ (*xCallback)(ശൂന്യം*),  /* Function to invoke on each commit */
+  ശൂന്യം *pArg                /* Argument to the function */
 ){
-  void *pOld;
+  ശൂന്യം *pOld;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2387,24 +2387,24 @@ void *sqlite3_commit_hook(
   db->xCommitCallback = xCallback;
   db->pCommitArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pOld;
+  തിരികെ pOld;
 }
 
 /*
 ** Register a callback to be invoked each time a row is updated,
 ** inserted or deleted using this database connection.
 */
-void *sqlite3_update_hook(
+ശൂന്യം *sqlite3_update_hook(
   sqlite3 *db,              /* Attach the hook to this database */
-  void (*xCallback)(void*,int,char const *,char const *,sqlite_int64),
-  void *pArg                /* Argument to the function */
+  ശൂന്യം (*xCallback)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,അക്ഷരം സ്ഥിരം *,അക്ഷരം സ്ഥിരം *,sqlite_int64),
+  ശൂന്യം *pArg                /* Argument to the function */
 ){
-  void *pRet;
+  ശൂന്യം *pRet;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2412,24 +2412,24 @@ void *sqlite3_update_hook(
   db->xUpdateCallback = xCallback;
   db->pUpdateArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pRet;
+  തിരികെ pRet;
 }
 
 /*
 ** Register a callback to be invoked each time a transaction is rolled
 ** back by this database connection.
 */
-void *sqlite3_rollback_hook(
+ശൂന്യം *sqlite3_rollback_hook(
   sqlite3 *db,              /* Attach the hook to this database */
-  void (*xCallback)(void*), /* Callback function */
-  void *pArg                /* Argument to the function */
+  ശൂന്യം (*xCallback)(ശൂന്യം*), /* Callback function */
+  ശൂന്യം *pArg                /* Argument to the function */
 ){
-  void *pRet;
+  ശൂന്യം *pRet;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2437,7 +2437,7 @@ void *sqlite3_rollback_hook(
   db->xRollbackCallback = xCallback;
   db->pRollbackArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pRet;
+  തിരികെ pRet;
 }
 
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
@@ -2445,17 +2445,17 @@ void *sqlite3_rollback_hook(
 ** Register a callback to be invoked each time a row is updated,
 ** inserted or deleted using this database connection.
 */
-void *sqlite3_preupdate_hook(
+ശൂന്യം *sqlite3_preupdate_hook(
   sqlite3 *db,              /* Attach the hook to this database */
-  void(*xCallback)(         /* Callback function */
-    void*,sqlite3*,int,char const*,char const*,sqlite3_int64,sqlite3_int64),
-  void *pArg                /* First callback argument */
+  ശൂന്യം(*xCallback)(         /* Callback function */
+    ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ,അക്ഷരം സ്ഥിരം*,അക്ഷരം സ്ഥിരം*,sqlite3_int64,sqlite3_int64),
+  ശൂന്യം *pArg                /* First callback argument */
 ){
-  void *pRet;
+  ശൂന്യം *pRet;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 ){
-    return 0;
+  എങ്കിൽ( db==0 ){
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2463,7 +2463,7 @@ void *sqlite3_preupdate_hook(
   db->xPreUpdateCallback = xCallback;
   db->pPreUpdateArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pRet;
+  തിരികെ pRet;
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2471,27 +2471,27 @@ void *sqlite3_preupdate_hook(
 ** Register a function to be invoked prior to each autovacuum that
 ** determines the number of pages to vacuum.
 */
-int sqlite3_autovacuum_pages(
+പൂർണ്ണസംഖ്യ sqlite3_autovacuum_pages(
   sqlite3 *db,                 /* Attach the hook to this database */
-  unsigned int (*xCallback)(void*,const char*,u32,u32,u32),
-  void *pArg,                  /* Argument to the function */
-  void (*xDestructor)(void*)   /* Destructor for pArg */
+  unsigned പൂർണ്ണസംഖ്യ (*xCallback)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*,u32,u32,u32),
+  ശൂന്യം *pArg,                  /* Argument to the function */
+  ശൂന്യം (*xDestructor)(ശൂന്യം*)   /* Destructor for pArg */
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    if( xDestructor ) xDestructor(pArg);
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    എങ്കിൽ( xDestructor ) xDestructor(pArg);
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( db->xAutovacDestr ){
+  എങ്കിൽ( db->xAutovacDestr ){
     db->xAutovacDestr(db->pAutovacPagesArg);
   }
   db->xAutovacPages = xCallback;
   db->pAutovacPagesArg = pArg;
   db->xAutovacDestr = xDestructor;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
@@ -2502,18 +2502,18 @@ int sqlite3_autovacuum_pages(
 ** is greater than sqlite3.pWalArg cast to an integer (the value configured by
 ** wal_autocheckpoint()).
 */
-int sqlite3WalDefaultHook(
-  void *pClientData,     /* Argument */
+പൂർണ്ണസംഖ്യ sqlite3WalDefaultHook(
+  ശൂന്യം *pClientData,     /* Argument */
   sqlite3 *db,           /* Connection */
-  const char *zDb,       /* Database */
-  int nFrame             /* Size of WAL */
+  സ്ഥിരം അക്ഷരം *zDb,       /* Database */
+  പൂർണ്ണസംഖ്യ nFrame             /* Size of WAL */
 ){
-  if( nFrame>=SQLITE_PTR_TO_INT(pClientData) ){
+  എങ്കിൽ( nFrame>=SQLITE_PTR_TO_INT(pClientData) ){
     sqlite3BeginBenignMalloc();
     sqlite3_wal_checkpoint(db, zDb);
     sqlite3EndBenignMalloc();
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif /* SQLITE_OMIT_WAL */
 
@@ -2528,38 +2528,38 @@ int sqlite3WalDefaultHook(
 ** using sqlite3_wal_hook() disables the automatic checkpoint mechanism
 ** configured by this function.
 */
-int sqlite3_wal_autocheckpoint(sqlite3 *db, int nFrame){
+പൂർണ്ണസംഖ്യ sqlite3_wal_autocheckpoint(sqlite3 *db, പൂർണ്ണസംഖ്യ nFrame){
 #ifdef SQLITE_OMIT_WAL
   UNUSED_PARAMETER(db);
   UNUSED_PARAMETER(nFrame);
-#else
+#അല്ലെങ്കിൽ
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
-  if( nFrame>0 ){
+  എങ്കിൽ( nFrame>0 ){
     sqlite3_wal_hook(db, sqlite3WalDefaultHook, SQLITE_INT_TO_PTR(nFrame));
-  }else{
+  }അല്ലെങ്കിൽ{
     sqlite3_wal_hook(db, 0, 0);
   }
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Register a callback to be invoked each time a transaction is written
 ** into the write-ahead-log by this database connection.
 */
-void *sqlite3_wal_hook(
+ശൂന്യം *sqlite3_wal_hook(
   sqlite3 *db,                    /* Attach the hook to this db handle */
-  int(*xCallback)(void *, sqlite3*, const char*, int),
-  void *pArg                      /* First argument passed to xCallback() */
+  പൂർണ്ണസംഖ്യ(*xCallback)(ശൂന്യം *, sqlite3*, സ്ഥിരം അക്ഷരം*, പൂർണ്ണസംഖ്യ),
+  ശൂന്യം *pArg                      /* First argument passed to xCallback() */
 ){
 #ifndef SQLITE_OMIT_WAL
-  void *pRet;
+  ശൂന്യം *pRet;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
@@ -2567,24 +2567,24 @@ void *sqlite3_wal_hook(
   db->xWalCallback = xCallback;
   db->pWalArg = pArg;
   sqlite3_mutex_leave(db->mutex);
-  return pRet;
-#else
+  തിരികെ pRet;
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(db);
   UNUSED_PARAMETER(xCallback);
   UNUSED_PARAMETER(pArg);
-  return 0;
+  തിരികെ 0;
 #endif
 }
 
 /*
 ** Checkpoint database zDb.
 */
-int sqlite3_wal_checkpoint_v2(
+പൂർണ്ണസംഖ്യ sqlite3_wal_checkpoint_v2(
   sqlite3 *db,                    /* Database handle */
-  const char *zDb,                /* Name of attached database (or NULL) */
-  int eMode,                      /* SQLITE_CHECKPOINT_* value */
-  int *pnLog,                     /* OUT: Size of WAL log in frames */
-  int *pnCkpt                     /* OUT: Total number of frames checkpointed */
+  സ്ഥിരം അക്ഷരം *zDb,                /* Name of attached database (or NULL) */
+  പൂർണ്ണസംഖ്യ eMode,                      /* SQLITE_CHECKPOINT_* value */
+  പൂർണ്ണസംഖ്യ *pnLog,                     /* OUT: Size of WAL log in frames */
+  പൂർണ്ണസംഖ്യ *pnCkpt                     /* OUT: Total number of frames checkpointed */
 ){
 #ifdef SQLITE_OMIT_WAL
   UNUSED_PARAMETER(db);
@@ -2592,40 +2592,40 @@ int sqlite3_wal_checkpoint_v2(
   UNUSED_PARAMETER(eMode);
   UNUSED_PARAMETER(pnLog);
   UNUSED_PARAMETER(pnCkpt);
-  return SQLITE_OK;
-#else
-  int rc;                         /* Return code */
-  int iDb;                        /* Schema to checkpoint */
+  തിരികെ SQLITE_OK;
+#അല്ലെങ്കിൽ
+  പൂർണ്ണസംഖ്യ rc;                         /* Return code */
+  പൂർണ്ണസംഖ്യ iDb;                        /* Schema to checkpoint */
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
 
   /* Initialize the output variables to -1 in case an error occurs. */
-  if( pnLog ) *pnLog = -1;
-  if( pnCkpt ) *pnCkpt = -1;
+  എങ്കിൽ( pnLog ) *pnLog = -1;
+  എങ്കിൽ( pnCkpt ) *pnCkpt = -1;
 
-  assert( SQLITE_CHECKPOINT_NOOP==-1 );
-  assert( SQLITE_CHECKPOINT_PASSIVE==0 );
-  assert( SQLITE_CHECKPOINT_FULL==1 );
-  assert( SQLITE_CHECKPOINT_RESTART==2 );
-  assert( SQLITE_CHECKPOINT_TRUNCATE==3 );
-  if( eMode<SQLITE_CHECKPOINT_NOOP || eMode>SQLITE_CHECKPOINT_TRUNCATE ){
+  പ്രതിജ്ഞാ( SQLITE_CHECKPOINT_NOOP==-1 );
+  പ്രതിജ്ഞാ( SQLITE_CHECKPOINT_PASSIVE==0 );
+  പ്രതിജ്ഞാ( SQLITE_CHECKPOINT_FULL==1 );
+  പ്രതിജ്ഞാ( SQLITE_CHECKPOINT_RESTART==2 );
+  പ്രതിജ്ഞാ( SQLITE_CHECKPOINT_TRUNCATE==3 );
+  എങ്കിൽ( eMode<SQLITE_CHECKPOINT_NOOP || eMode>SQLITE_CHECKPOINT_TRUNCATE ){
     /* EVIDENCE-OF: R-03996-12088 The M parameter must be a valid checkpoint
     ** mode: */
-    return SQLITE_MISUSE_BKPT;
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 
   sqlite3_mutex_enter(db->mutex);
-  if( zDb && zDb[0] ){
+  എങ്കിൽ( zDb && zDb[0] ){
     iDb = sqlite3FindDbName(db, zDb);
-  }else{
+  }അല്ലെങ്കിൽ{
     iDb = SQLITE_MAX_DB;   /* This means process all schemas */
   }
-  if( iDb<0 ){
+  എങ്കിൽ( iDb<0 ){
     rc = SQLITE_ERROR;
-    sqlite3ErrorWithMsg(db, SQLITE_ERROR, "unknown database: %s", zDb);
-  }else{
+    sqlite3_Error_With_സന്ദേശം(db, SQLITE_ERROR, "unknown database: %s", zDb);
+  }അല്ലെങ്കിൽ{
     db->busyHandler.nBusy = 0;
     rc = sqlite3Checkpoint(db, iDb, eMode, pnLog, pnCkpt);
     sqlite3Error(db, rc);
@@ -2634,12 +2634,12 @@ int sqlite3_wal_checkpoint_v2(
 
   /* If there are no active statements, clear the interrupt flag at this
   ** point.  */
-  if( db->nVdbeActive==0 ){
+  എങ്കിൽ( db->nVdbeActive==0 ){
     AtomicStore(&db->u1.isInterrupted, 0);
   }
 
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 #endif
 }
 
@@ -2649,10 +2649,10 @@ int sqlite3_wal_checkpoint_v2(
 ** to contains a zero-length string, all attached databases are
 ** checkpointed.
 */
-int sqlite3_wal_checkpoint(sqlite3 *db, const char *zDb){
+പൂർണ്ണസംഖ്യ sqlite3_wal_checkpoint(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDb){
   /* EVIDENCE-OF: R-41613-20553 The sqlite3_wal_checkpoint(D,X) is equivalent to
   ** sqlite3_wal_checkpoint_v2(D,X,SQLITE_CHECKPOINT_PASSIVE,0,0). */
-  return sqlite3_wal_checkpoint_v2(db,zDb,SQLITE_CHECKPOINT_PASSIVE,0,0);
+  തിരികെ sqlite3_wal_checkpoint_v2(db,zDb,SQLITE_CHECKPOINT_PASSIVE,0,0);
 }
 
 #ifndef SQLITE_OMIT_WAL
@@ -2676,30 +2676,30 @@ int sqlite3_wal_checkpoint(sqlite3 *db, const char *zDb){
 ** Parameter eMode is one of SQLITE_CHECKPOINT_PASSIVE, FULL, RESTART
 ** or TRUNCATE.
 */
-int sqlite3Checkpoint(sqlite3 *db, int iDb, int eMode, int *pnLog, int *pnCkpt){
-  int rc = SQLITE_OK;             /* Return code */
-  int i;                          /* Used to iterate through attached dbs */
-  int bBusy = 0;                  /* True if SQLITE_BUSY has been encountered */
+പൂർണ്ണസംഖ്യ sqlite3Checkpoint(sqlite3 *db, പൂർണ്ണസംഖ്യ iDb, പൂർണ്ണസംഖ്യ eMode, പൂർണ്ണസംഖ്യ *pnLog, പൂർണ്ണസംഖ്യ *pnCkpt){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;             /* Return code */
+  പൂർണ്ണസംഖ്യ i;                          /* Used to iterate through attached dbs */
+  പൂർണ്ണസംഖ്യ bBusy = 0;                  /* True if SQLITE_BUSY has been encountered */
 
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( !pnLog || *pnLog==-1 );
-  assert( !pnCkpt || *pnCkpt==-1 );
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(db->mutex) );
+  പ്രതിജ്ഞാ( !pnLog || *pnLog==-1 );
+  പ്രതിജ്ഞാ( !pnCkpt || *pnCkpt==-1 );
   testcase( iDb==SQLITE_MAX_ATTACHED ); /* See forum post a006d86f72 */
   testcase( iDb==SQLITE_MAX_DB );
 
-  for(i=0; i<db->nDb && rc==SQLITE_OK; i++){
-    if( i==iDb || iDb==SQLITE_MAX_DB ){
+  വേണ്ടി(i=0; i<db->nDb && rc==SQLITE_OK; i++){
+    എങ്കിൽ( i==iDb || iDb==SQLITE_MAX_DB ){
       rc = sqlite3BtreeCheckpoint(db->aDb[i].pBt, eMode, pnLog, pnCkpt);
       pnLog = 0;
       pnCkpt = 0;
-      if( rc==SQLITE_BUSY ){
+      എങ്കിൽ( rc==SQLITE_BUSY ){
         bBusy = 1;
         rc = SQLITE_OK;
       }
     }
   }
 
-  return (rc==SQLITE_OK && bBusy) ? SQLITE_BUSY : rc;
+  തിരികെ (rc==SQLITE_OK && bBusy) ? SQLITE_BUSY : rc;
 }
 #endif /* SQLITE_OMIT_WAL */
 
@@ -2722,20 +2722,20 @@ int sqlite3Checkpoint(sqlite3 *db, int iDb, int eMode, int *pnLog, int *pnCkpt){
 **   2                     0                  memory    (return 1)
 **   3                     any                memory    (return 1)
 */
-int sqlite3TempInMemory(const sqlite3 *db){
-#if SQLITE_TEMP_STORE==1
-  return ( db->temp_store==2 );
+പൂർണ്ണസംഖ്യ sqlite3TempInMemory(സ്ഥിരം sqlite3 *db){
+#എങ്കിൽ SQLITE_TEMP_STORE==1
+  തിരികെ ( db->temp_store==2 );
 #endif
-#if SQLITE_TEMP_STORE==2
-  return ( db->temp_store!=1 );
+#എങ്കിൽ SQLITE_TEMP_STORE==2
+  തിരികെ ( db->temp_store!=1 );
 #endif
-#if SQLITE_TEMP_STORE==3
+#എങ്കിൽ SQLITE_TEMP_STORE==3
   UNUSED_PARAMETER(db);
-  return 1;
+  തിരികെ 1;
 #endif
-#if SQLITE_TEMP_STORE<1 || SQLITE_TEMP_STORE>3
+#എങ്കിൽ SQLITE_TEMP_STORE<1 || SQLITE_TEMP_STORE>3
   UNUSED_PARAMETER(db);
-  return 0;
+  തിരികെ 0;
 #endif
 }
 
@@ -2743,27 +2743,27 @@ int sqlite3TempInMemory(const sqlite3 *db){
 ** Return UTF-8 encoded English language explanation of the most recent
 ** error.
 */
-const char *sqlite3_errmsg(sqlite3 *db){
-  const char *z;
-  if( !db ){
-    return sqlite3ErrStr(SQLITE_NOMEM_BKPT);
+സ്ഥിരം അക്ഷരം *sqlite3_errmsg(sqlite3 *db){
+  സ്ഥിരം അക്ഷരം *z;
+  എങ്കിൽ( !db ){
+    തിരികെ sqlite3ErrStr(SQLITE_NOMEM_BKPT);
   }
-  if( !sqlite3SafetyCheckSickOrOk(db) ){
-    return sqlite3ErrStr(SQLITE_MISUSE_BKPT);
+  എങ്കിൽ( !sqlite3SafetyCheckSickOrOk(db) ){
+    തിരികെ sqlite3ErrStr(SQLITE_MISUSE_BKPT);
   }
   sqlite3_mutex_enter(db->mutex);
-  if( db->mallocFailed ){
+  എങ്കിൽ( db->mallocFailed ){
     z = sqlite3ErrStr(SQLITE_NOMEM_BKPT);
-  }else{
+  }അല്ലെങ്കിൽ{
     testcase( db->pErr==0 );
-    z = db->errCode ? (char*)sqlite3_value_text(db->pErr) : 0;
-    assert( !db->mallocFailed );
-    if( z==0 ){
+    z = db->errCode ? (അക്ഷരം*)sqlite3_മൂല്യം_text(db->pErr) : 0;
+    പ്രതിജ്ഞാ( !db->mallocFailed );
+    എങ്കിൽ( z==0 ){
       z = sqlite3ErrStr(db->errCode);
     }
   }
   sqlite3_mutex_leave(db->mutex);
-  return z;
+  തിരികെ z;
 }
 
 /*
@@ -2773,35 +2773,35 @@ const char *sqlite3_errmsg(sqlite3 *db){
 ** Session extension). Internal logic should invoke sqlite3Error() or
 ** sqlite3ErrorWithMsg() directly.
 */
-int sqlite3_set_errmsg(sqlite3 *db, int errcode, const char *zMsg){
-  int rc = SQLITE_OK;
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+പൂർണ്ണസംഖ്യ sqlite3_set_errmsg(sqlite3 *db, പൂർണ്ണസംഖ്യ errcode, സ്ഥിരം അക്ഷരം *z_സന്ദേശം){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
-  if( zMsg ){
-    sqlite3ErrorWithMsg(db, errcode, "%s", zMsg);
-  }else{
+  എങ്കിൽ( z_സന്ദേശം ){
+    sqlite3_Error_With_സന്ദേശം(db, errcode, "%s", z_സന്ദേശം);
+  }അല്ലെങ്കിൽ{
     sqlite3Error(db, errcode);
   }
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Return the byte offset of the most recent error
 */
-int sqlite3_error_offset(sqlite3 *db){
-  int iOffset = -1;
-  if( db && sqlite3SafetyCheckSickOrOk(db) ){
+പൂർണ്ണസംഖ്യ sqlite3_error_offset(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ iOffset = -1;
+  എങ്കിൽ( db && sqlite3SafetyCheckSickOrOk(db) ){
     sqlite3_mutex_enter(db->mutex);
-    if( db->errCode ){
+    എങ്കിൽ( db->errCode ){
       iOffset = db->errByteOffset;
     }
     sqlite3_mutex_leave(db->mutex);
   }
-  return iOffset;
+  തിരികെ iOffset;
 }
 
 #ifndef SQLITE_OMIT_UTF16
@@ -2809,31 +2809,31 @@ int sqlite3_error_offset(sqlite3 *db){
 ** Return UTF-16 encoded English language explanation of the most recent
 ** error.
 */
-const void *sqlite3_errmsg16(sqlite3 *db){
-  static const u16 outOfMem[] = {
+സ്ഥിരം ശൂന്യം *sqlite3_errmsg16(sqlite3 *db){
+  സ്ഥിതം സ്ഥിരം u16 outOfMem[] = {
     'o', 'u', 't', ' ', 'o', 'f', ' ', 'm', 'e', 'm', 'o', 'r', 'y', 0
   };
-  static const u16 misuse[] = {
+  സ്ഥിതം സ്ഥിരം u16 misuse[] = {
     'b', 'a', 'd', ' ', 'p', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', ' ',
     'o', 'r', ' ', 'o', 't', 'h', 'e', 'r', ' ', 'A', 'P', 'I', ' ',
     'm', 'i', 's', 'u', 's', 'e', 0
   };
 
-  const void *z;
-  if( !db ){
-    return (void *)outOfMem;
+  സ്ഥിരം ശൂന്യം *z;
+  എങ്കിൽ( !db ){
+    തിരികെ (ശൂന്യം *)outOfMem;
   }
-  if( !sqlite3SafetyCheckSickOrOk(db) ){
-    return (void *)misuse;
+  എങ്കിൽ( !sqlite3SafetyCheckSickOrOk(db) ){
+    തിരികെ (ശൂന്യം *)misuse;
   }
   sqlite3_mutex_enter(db->mutex);
-  if( db->mallocFailed ){
-    z = (void *)outOfMem;
-  }else{
-    z = sqlite3_value_text16(db->pErr);
-    if( z==0 ){
-      sqlite3ErrorWithMsg(db, db->errCode, sqlite3ErrStr(db->errCode));
-      z = sqlite3_value_text16(db->pErr);
+  എങ്കിൽ( db->mallocFailed ){
+    z = (ശൂന്യം *)outOfMem;
+  }അല്ലെങ്കിൽ{
+    z = sqlite3_മൂല്യം_text16(db->pErr);
+    എങ്കിൽ( z==0 ){
+      sqlite3_Error_With_സന്ദേശം(db, db->errCode, sqlite3ErrStr(db->errCode));
+      z = sqlite3_മൂല്യം_text16(db->pErr);
     }
     /* A malloc() may have failed within the call to sqlite3_value_text16()
     ** above. If this is the case, then the db->mallocFailed flag needs to
@@ -2843,7 +2843,7 @@ const void *sqlite3_errmsg16(sqlite3 *db){
     sqlite3OomClear(db);
   }
   sqlite3_mutex_leave(db->mutex);
-  return z;
+  തിരികെ z;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -2851,44 +2851,44 @@ const void *sqlite3_errmsg16(sqlite3 *db){
 ** Return the most recent error code generated by an SQLite routine. If NULL is
 ** passed to this function, we assume a malloc() failed during sqlite3_open().
 */
-int sqlite3_errcode(sqlite3 *db){
-  int iRet;
-  if( !db ) return SQLITE_NOMEM_BKPT;
-  if( !sqlite3SafetyCheckSickOrOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+പൂർണ്ണസംഖ്യ sqlite3_errcode(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ iRet;
+  എങ്കിൽ( !db ) തിരികെ SQLITE_NOMEM_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckSickOrOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
-  if( db->mallocFailed ){
+  എങ്കിൽ( db->mallocFailed ){
     iRet = SQLITE_NOMEM_BKPT;
-  }else{
+  }അല്ലെങ്കിൽ{
     iRet = db->errCode & db->errMask;
   }
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
-int sqlite3_extended_errcode(sqlite3 *db){
-  int iRet;
-  if( !db ) return SQLITE_NOMEM_BKPT;
-  if( !sqlite3SafetyCheckSickOrOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+പൂർണ്ണസംഖ്യ sqlite3_extended_errcode(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ iRet;
+  എങ്കിൽ( !db ) തിരികെ SQLITE_NOMEM_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckSickOrOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
-  if( db->mallocFailed ){
+  എങ്കിൽ( db->mallocFailed ){
     iRet = SQLITE_NOMEM_BKPT;
-  }else{
+  }അല്ലെങ്കിൽ{
     iRet = db->errCode;
   }
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
-int sqlite3_system_errno(sqlite3 *db){
-  int iRet = 0;
-  if( db ){
+പൂർണ്ണസംഖ്യ sqlite3_system_errno(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ iRet = 0;
+  എങ്കിൽ( db ){
     sqlite3_mutex_enter(db->mutex);
     iRet = db->iSysErrno;
     sqlite3_mutex_leave(db->mutex);
   }
-  return iRet;
+  തിരികെ iRet;
 } 
 
 /*
@@ -2896,26 +2896,26 @@ int sqlite3_system_errno(sqlite3 *db){
 ** argument.  For now, this simply calls the internal sqlite3ErrStr()
 ** function.
 */
-const char *sqlite3_errstr(int rc){
-  return sqlite3ErrStr(rc);
+സ്ഥിരം അക്ഷരം *sqlite3_errstr(പൂർണ്ണസംഖ്യ rc){
+  തിരികെ sqlite3ErrStr(rc);
 }
 
 /*
 ** Create a new collating function for database "db".  The name is zName
 ** and the encoding is enc.
 */
-static int createCollation(
+സ്ഥിതം പൂർണ്ണസംഖ്യ createCollation(
   sqlite3* db,
-  const char *zName,
+  സ്ഥിരം അക്ഷരം *zName,
   u8 enc,
-  void* pCtx,
-  int(*xCompare)(void*,int,const void*,int,const void*),
-  void(*xDel)(void*)
+  ശൂന്യം* pCtx,
+  പൂർണ്ണസംഖ്യ(*xCompare)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*),
+  ശൂന്യം(*xDel)(ശൂന്യം*)
 ){
   CollSeq *pColl;
-  int enc2;
+  പൂർണ്ണസംഖ്യ enc2;
  
-  assert( sqlite3_mutex_held(db->mutex) );
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(db->mutex) );
 
   /* If SQLITE_UTF16 is specified as the encoding type, transform this
   ** to one of SQLITE_UTF16LE or SQLITE_UTF16BE using the
@@ -2924,11 +2924,11 @@ static int createCollation(
   enc2 = enc;
   testcase( enc2==SQLITE_UTF16 );
   testcase( enc2==SQLITE_UTF16_ALIGNED );
-  if( enc2==SQLITE_UTF16 || enc2==SQLITE_UTF16_ALIGNED ){
+  എങ്കിൽ( enc2==SQLITE_UTF16 || enc2==SQLITE_UTF16_ALIGNED ){
     enc2 = SQLITE_UTF16NATIVE;
   }
-  if( enc2<SQLITE_UTF8 || enc2>SQLITE_UTF16BE ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( enc2<SQLITE_UTF8 || enc2>SQLITE_UTF16BE ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 
   /* Check if this call is removing or replacing an existing collation
@@ -2936,11 +2936,11 @@ static int createCollation(
   ** are no active VMs, invalidate any pre-compiled statements.
   */
   pColl = sqlite3FindCollSeq(db, (u8)enc2, zName, 0);
-  if( pColl && pColl->xCmp ){
-    if( db->nVdbeActive ){
-      sqlite3ErrorWithMsg(db, SQLITE_BUSY,
+  എങ്കിൽ( pColl && pColl->xCmp ){
+    എങ്കിൽ( db->nVdbeActive ){
+      sqlite3_Error_With_സന്ദേശം(db, SQLITE_BUSY,
         "unable to delete/modify collation sequence due to active statements");
-      return SQLITE_BUSY;
+      തിരികെ SQLITE_BUSY;
     }
     sqlite3ExpirePreparedStatements(db, 0);
 
@@ -2950,13 +2950,13 @@ static int createCollation(
     ** Also, collation destructor - CollSeq.xDel() - function may need
     ** to be called.
     */
-    if( (pColl->enc & ~SQLITE_UTF16_ALIGNED)==enc2 ){
+    എങ്കിൽ( (pColl->enc & ~SQLITE_UTF16_ALIGNED)==enc2 ){
       CollSeq *aColl = sqlite3HashFind(&db->aCollSeq, zName);
-      int j;
-      for(j=0; j<3; j++){
+      പൂർണ്ണസംഖ്യ j;
+      വേണ്ടി(j=0; j<3; j++){
         CollSeq *p = &aColl[j];
-        if( p->enc==pColl->enc ){
-          if( p->xDel ){
+        എങ്കിൽ( p->enc==pColl->enc ){
+          എങ്കിൽ( p->xDel ){
             p->xDel(p->pUser);
           }
           p->xCmp = 0;
@@ -2966,13 +2966,13 @@ static int createCollation(
   }
 
   pColl = sqlite3FindCollSeq(db, (u8)enc2, zName, 1);
-  if( pColl==0 ) return SQLITE_NOMEM_BKPT;
+  എങ്കിൽ( pColl==0 ) തിരികെ SQLITE_NOMEM_BKPT;
   pColl->xCmp = xCompare;
   pColl->pUser = pCtx;
   pColl->xDel = xDel;
   pColl->enc = (u8)(enc2 | (enc & SQLITE_UTF16_ALIGNED));
   sqlite3Error(db, SQLITE_OK);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
@@ -2981,17 +2981,17 @@ static int createCollation(
 ** initializer must be kept in sync with the SQLITE_LIMIT_*
 ** #defines in sqlite3.h.
 */
-static const int aHardLimit[] = {
+സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ aHardLimit[] = {
   SQLITE_MAX_LENGTH,
   SQLITE_MAX_SQL_LENGTH,
   SQLITE_MAX_COLUMN,
-  SQLITE_MAX_EXPR_DEPTH,
+  SQLITE_MAX_വ്യഞ്ജകം_DEPTH,
   SQLITE_MAX_COMPOUND_SELECT,
   SQLITE_MAX_VDBE_OP,
   SQLITE_MAX_FUNCTION_ARG,
   SQLITE_MAX_ATTACHED,
   SQLITE_MAX_LIKE_PATTERN_LENGTH,
-  SQLITE_MAX_VARIABLE_NUMBER,      /* IMP: R-38091-32352 */
+  SQLITE_MAX_VARIABLE_സംഖ്യ,      /* IMP: R-38091-32352 */
   SQLITE_MAX_TRIGGER_DEPTH,
   SQLITE_MAX_WORKER_THREADS,
   SQLITE_MAX_PARSER_DEPTH,
@@ -3003,43 +3003,43 @@ static const int aHardLimit[] = {
 /*
 ** Make sure the hard limits are set to reasonable values
 */
-#if SQLITE_MAX_LENGTH<100
+#എങ്കിൽ SQLITE_MAX_LENGTH<100
 # error SQLITE_MAX_LENGTH must be at least 100
 #endif
-#if SQLITE_MAX_SQL_LENGTH<100
+#എങ്കിൽ SQLITE_MAX_SQL_LENGTH<100
 # error SQLITE_MAX_SQL_LENGTH must be at least 100
 #endif
-#if SQLITE_MAX_SQL_LENGTH>SQLITE_MAX_LENGTH
+#എങ്കിൽ SQLITE_MAX_SQL_LENGTH>SQLITE_MAX_LENGTH
 # error SQLITE_MAX_SQL_LENGTH must not be greater than SQLITE_MAX_LENGTH
 #endif
-#if SQLITE_MAX_SQL_LENGTH>2147482624     /* 1024 less than 2^31 */
+#എങ്കിൽ SQLITE_MAX_SQL_LENGTH>2147482624     /* 1024 less than 2^31 */
 # error SQLITE_MAX_SQL_LENGTH must not be greater than 2147482624
 #endif
-#if SQLITE_MAX_COMPOUND_SELECT<2
+#എങ്കിൽ SQLITE_MAX_COMPOUND_SELECT<2
 # error SQLITE_MAX_COMPOUND_SELECT must be at least 2
 #endif
-#if SQLITE_MAX_VDBE_OP<40
+#എങ്കിൽ SQLITE_MAX_VDBE_OP<40
 # error SQLITE_MAX_VDBE_OP must be at least 40
 #endif
-#if SQLITE_MAX_FUNCTION_ARG<0 || SQLITE_MAX_FUNCTION_ARG>32767
+#എങ്കിൽ SQLITE_MAX_FUNCTION_ARG<0 || SQLITE_MAX_FUNCTION_ARG>32767
 # error SQLITE_MAX_FUNCTION_ARG must be between 0 and 32767
 #endif
-#if SQLITE_MAX_ATTACHED<0 || SQLITE_MAX_ATTACHED>125
+#എങ്കിൽ SQLITE_MAX_ATTACHED<0 || SQLITE_MAX_ATTACHED>125
 # error SQLITE_MAX_ATTACHED must be between 0 and 125
 #endif
-#if SQLITE_MAX_LIKE_PATTERN_LENGTH<1
+#എങ്കിൽ SQLITE_MAX_LIKE_PATTERN_LENGTH<1
 # error SQLITE_MAX_LIKE_PATTERN_LENGTH must be at least 1
 #endif
-#if SQLITE_MAX_COLUMN>32767
+#എങ്കിൽ SQLITE_MAX_COLUMN>32767
 # error SQLITE_MAX_COLUMN must not exceed 32767
 #endif
-#if SQLITE_MAX_TRIGGER_DEPTH<1
+#എങ്കിൽ SQLITE_MAX_TRIGGER_DEPTH<1
 # error SQLITE_MAX_TRIGGER_DEPTH must be at least 1
 #endif
-#if SQLITE_MAX_WORKER_THREADS<0 || SQLITE_MAX_WORKER_THREADS>50
+#എങ്കിൽ SQLITE_MAX_WORKER_THREADS<0 || SQLITE_MAX_WORKER_THREADS>50
 # error SQLITE_MAX_WORKER_THREADS must be between 0 and 50
 #endif
-#if SQLITE_MAX_TRIGGER_STEPS<0 || SQLITE_MAX_TRIGGER_STEPS>65535
+#എങ്കിൽ SQLITE_MAX_TRIGGER_STEPS<0 || SQLITE_MAX_TRIGGER_STEPS>65535
 # error SQLITE_MAX_TRIGGER_STEPS must be between 0 and 65535
 #endif
 
@@ -3054,13 +3054,13 @@ static const int aHardLimit[] = {
 ** It merely prevents new constructs that exceed the limit
 ** from forming.
 */
-int sqlite3_limit(sqlite3 *db, int limitId, int newLimit){
-  int oldLimit;
+പൂർണ്ണസംഖ്യ sqlite3_limit(sqlite3 *db, പൂർണ്ണസംഖ്യ limitId, പൂർണ്ണസംഖ്യ newLimit){
+  പൂർണ്ണസംഖ്യ oldLimit;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return -1;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ -1;
   }
 #endif
 
@@ -3069,41 +3069,41 @@ int sqlite3_limit(sqlite3 *db, int limitId, int newLimit){
   ** macro called SQLITE_MAX_NAME. (The "_LIMIT_" in the name is changed to
   ** "_MAX_".)
   */
-  assert( aHardLimit[SQLITE_LIMIT_LENGTH]==SQLITE_MAX_LENGTH );
-  assert( aHardLimit[SQLITE_LIMIT_SQL_LENGTH]==SQLITE_MAX_SQL_LENGTH );
-  assert( aHardLimit[SQLITE_LIMIT_COLUMN]==SQLITE_MAX_COLUMN );
-  assert( aHardLimit[SQLITE_LIMIT_EXPR_DEPTH]==SQLITE_MAX_EXPR_DEPTH );
-  assert( aHardLimit[SQLITE_LIMIT_PARSER_DEPTH]==SQLITE_MAX_PARSER_DEPTH );
-  assert( aHardLimit[SQLITE_LIMIT_COMPOUND_SELECT]==SQLITE_MAX_COMPOUND_SELECT);
-  assert( aHardLimit[SQLITE_LIMIT_VDBE_OP]==SQLITE_MAX_VDBE_OP );
-  assert( aHardLimit[SQLITE_LIMIT_FUNCTION_ARG]==SQLITE_MAX_FUNCTION_ARG );
-  assert( aHardLimit[SQLITE_LIMIT_ATTACHED]==SQLITE_MAX_ATTACHED );
-  assert( aHardLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]==
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_LENGTH]==SQLITE_MAX_LENGTH );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_SQL_LENGTH]==SQLITE_MAX_SQL_LENGTH );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_COLUMN]==SQLITE_MAX_COLUMN );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_വ്യഞ്ജകം_DEPTH]==SQLITE_MAX_വ്യഞ്ജകം_DEPTH );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_PARSER_DEPTH]==SQLITE_MAX_PARSER_DEPTH );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_COMPOUND_SELECT]==SQLITE_MAX_COMPOUND_SELECT);
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_VDBE_OP]==SQLITE_MAX_VDBE_OP );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_FUNCTION_ARG]==SQLITE_MAX_FUNCTION_ARG );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_ATTACHED]==SQLITE_MAX_ATTACHED );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]==
                                                SQLITE_MAX_LIKE_PATTERN_LENGTH );
-  assert( aHardLimit[SQLITE_LIMIT_VARIABLE_NUMBER]==SQLITE_MAX_VARIABLE_NUMBER);
-  assert( aHardLimit[SQLITE_LIMIT_TRIGGER_DEPTH]==SQLITE_MAX_TRIGGER_DEPTH );
-  assert( aHardLimit[SQLITE_LIMIT_WORKER_THREADS]==SQLITE_MAX_WORKER_THREADS );
-  assert( aHardLimit[SQLITE_LIMIT_SCHEMA]==SQLITE_MAX_SCHEMA );
-  assert( aHardLimit[SQLITE_LIMIT_TRIGGER_STEPS]==SQLITE_MAX_TRIGGER_STEPS );
-  assert( aHardLimit[SQLITE_LIMIT_CTES]==SQLITE_MAX_CTES );
-  assert( SQLITE_LIMIT_CTES==(SQLITE_N_LIMIT-1) );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_VARIABLE_സംഖ്യ]==SQLITE_MAX_VARIABLE_സംഖ്യ);
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_TRIGGER_DEPTH]==SQLITE_MAX_TRIGGER_DEPTH );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_WORKER_THREADS]==SQLITE_MAX_WORKER_THREADS );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_SCHEMA]==SQLITE_MAX_SCHEMA );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_TRIGGER_STEPS]==SQLITE_MAX_TRIGGER_STEPS );
+  പ്രതിജ്ഞാ( aHardLimit[SQLITE_LIMIT_CTES]==SQLITE_MAX_CTES );
+  പ്രതിജ്ഞാ( SQLITE_LIMIT_CTES==(SQLITE_N_LIMIT-1) );
 
 
-  if( limitId<0 || limitId>=SQLITE_N_LIMIT ){
-    return -1;
+  എങ്കിൽ( limitId<0 || limitId>=SQLITE_N_LIMIT ){
+    തിരികെ -1;
   }
   sqlite3_mutex_enter(db->mutex);
   oldLimit = db->aLimit[limitId];
-  if( newLimit>=0 ){                   /* IMP: R-52476-28732 */
-    if( newLimit>aHardLimit[limitId] ){
+  എങ്കിൽ( newLimit>=0 ){                   /* IMP: R-52476-28732 */
+    എങ്കിൽ( newLimit>aHardLimit[limitId] ){
       newLimit = aHardLimit[limitId];  /* IMP: R-51463-25634 */
-    }else if( newLimit<SQLITE_MIN_LENGTH && limitId==SQLITE_LIMIT_LENGTH ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( newLimit<SQLITE_MIN_LENGTH && limitId==SQLITE_LIMIT_LENGTH ){
       newLimit = SQLITE_MIN_LENGTH;
     }
     db->aLimit[limitId] = newLimit;
   }
   sqlite3_mutex_leave(db->mutex);
-  return oldLimit;                     /* IMP: R-53341-35419 */
+  തിരികെ oldLimit;                     /* IMP: R-53341-35419 */
 }
 
 /*
@@ -3132,29 +3132,29 @@ int sqlite3_limit(sqlite3 *db, int limitId, int newLimit){
 ** message. It is the responsibility of the caller to eventually release
 ** this buffer by calling sqlite3_free().
 */
-int sqlite3ParseUri(
-  const char *zDefaultVfs,        /* VFS to use if no "vfs=xxx" query option */
-  const char *zUri,               /* Nul-terminated URI to parse */
-  unsigned int *pFlags,           /* IN/OUT: SQLITE_OPEN_XXX flags */
+പൂർണ്ണസംഖ്യ sqlite3ParseUri(
+  സ്ഥിരം അക്ഷരം *zDefaultVfs,        /* VFS to use if no "vfs=xxx" query option */
+  സ്ഥിരം അക്ഷരം *zUri,               /* Nul-terminated URI to parse */
+  unsigned പൂർണ്ണസംഖ്യ *pFlags,           /* IN/OUT: SQLITE_OPEN_XXX flags */
   sqlite3_vfs **ppVfs,            /* OUT: VFS to use */
-  char **pzFile,                  /* OUT: Filename component of URI */
-  char **pzErrMsg                 /* OUT: Error message (if rc!=SQLITE_OK) */
+  അക്ഷരം **pzFile,                  /* OUT: Filename component of URI */
+  അക്ഷരം **pz_Err_സന്ദേശം                 /* OUT: Error message (if rc!=SQLITE_OK) */
 ){
-  int rc = SQLITE_OK;
-  unsigned int flags = *pFlags;
-  const char *zVfs = zDefaultVfs;
-  char *zFile;
-  char c;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  unsigned പൂർണ്ണസംഖ്യ flags = *pFlags;
+  സ്ഥിരം അക്ഷരം *zVfs = zDefaultVfs;
+  അക്ഷരം *zFile;
+  അക്ഷരം c;
   i64 nUri = strlen(zUri);
 
-  assert( *pzErrMsg==0 );
+  പ്രതിജ്ഞാ( *pz_Err_സന്ദേശം==0 );
 
-  if( ((flags & SQLITE_OPEN_URI)                     /* IMP: R-48725-32206 */
+  എങ്കിൽ( ((flags & SQLITE_OPEN_URI)                     /* IMP: R-48725-32206 */
        || AtomicLoad(&sqlite3GlobalConfig.bOpenUri)) /* IMP: R-51689-46548 */
    && nUri>=5 && memcmp(zUri, "file:", 5)==0         /* IMP: R-57884-37496 */
   ){
-    char *zOpt;
-    int eState;                   /* Parser state when parsing URI */
+    അക്ഷരം *zOpt;
+    പൂർണ്ണസംഖ്യ eState;                   /* Parser state when parsing URI */
     i64 iIn;                      /* Input character index */
     i64 iOut = 0;                 /* Output character index */
     u64 nByte = nUri+8;           /* Bytes of space to allocate */
@@ -3163,36 +3163,36 @@ int sqlite3ParseUri(
     ** method that there may be extra parameters following the file-name.  */
     flags |= SQLITE_OPEN_URI;
 
-    for(iIn=0; iIn<nUri; iIn++) nByte += (zUri[iIn]=='&');
+    വേണ്ടി(iIn=0; iIn<nUri; iIn++) nByte += (zUri[iIn]=='&');
     zFile = sqlite3_malloc64(nByte);
-    if( !zFile ) return SQLITE_NOMEM_BKPT;
+    എങ്കിൽ( !zFile ) തിരികെ SQLITE_NOMEM_BKPT;
 
     memset(zFile, 0, 4);  /* 4-byte of 0x00 is the start of DB name marker */
     zFile += 4;
 
     iIn = 5;
 #ifdef SQLITE_ALLOW_URI_AUTHORITY
-    if( strncmp(zUri+5, "///", 3)==0 ){
+    എങ്കിൽ( strncmp(zUri+5, "///", 3)==0 ){
       iIn = 7;
       /* The following condition causes URIs with five leading / characters
       ** like file://///host/path to be converted into UNCs like //host/path.
       ** The correct URI for that UNC has only two or four leading / characters
       ** file://host/path or file:////host/path.  But 5 leading slashes is a
       ** common error, we are told, so we handle it as a special case. */
-      if( strncmp(zUri+7, "///", 3)==0 ){ iIn++; }
-    }else if( strncmp(zUri+5, "//localhost/", 12)==0 ){
+      എങ്കിൽ( strncmp(zUri+7, "///", 3)==0 ){ iIn++; }
+    }അല്ലെങ്കിൽ എങ്കിൽ( strncmp(zUri+5, "//localhost/", 12)==0 ){
       iIn = 16;
     }
-#else
+#അല്ലെങ്കിൽ
     /* Discard the scheme and authority segments of the URI. */
-    if( zUri[5]=='/' && zUri[6]=='/' ){
+    എങ്കിൽ( zUri[5]=='/' && zUri[6]=='/' ){
       iIn = 7;
-      while( zUri[iIn] && zUri[iIn]!='/' ) iIn++;
-      if( iIn!=7 && (iIn!=16 || memcmp("localhost", &zUri[7], 9)) ){
-        *pzErrMsg = sqlite3_mprintf("invalid uri authority: %.*s",
-            (int)(iIn-7), &zUri[7]);
+      ആകുമ്പോൾ( zUri[iIn] && zUri[iIn]!='/' ) iIn++;
+      എങ്കിൽ( iIn!=7 && (iIn!=16 || memcmp("localhost", &zUri[7], 9)) ){
+        *pz_Err_സന്ദേശം = sqlite3_mprintf("invalid uri authority: %.*s",
+            (പൂർണ്ണസംഖ്യ)(iIn-7), &zUri[7]);
         rc = SQLITE_ERROR;
-        goto parse_uri_out;
+        പോകുക parse_uri_out;
       }
     }
 #endif
@@ -3208,57 +3208,57 @@ int sqlite3ParseUri(
     **   2: Parsing value section of a name=value query parameter.
     */
     eState = 0;
-    while( (c = zUri[iIn])!=0 && c!='#' ){
+    ആകുമ്പോൾ( (c = zUri[iIn])!=0 && c!='#' ){
       iIn++;
-      if( c=='%'
+      എങ്കിൽ( c=='%'
        && sqlite3Isxdigit(zUri[iIn])
        && sqlite3Isxdigit(zUri[iIn+1])
       ){
-        int octet = (sqlite3HexToInt(zUri[iIn++]) << 4);
+        പൂർണ്ണസംഖ്യ octet = (sqlite3HexToInt(zUri[iIn++]) << 4);
         octet += sqlite3HexToInt(zUri[iIn++]);
 
-        assert( octet>=0 && octet<256 );
-        if( octet==0 ){
+        പ്രതിജ്ഞാ( octet>=0 && octet<256 );
+        എങ്കിൽ( octet==0 ){
 #ifndef SQLITE_ENABLE_URI_00_ERROR
           /* This branch is taken when "%00" appears within the URI. In this
           ** case we ignore all text in the remainder of the path, name or
           ** value currently being parsed. So ignore the current character
           ** and skip to the next "?", "=" or "&", as appropriate. */
-          while( (c = zUri[iIn])!=0 && c!='#'
+          ആകുമ്പോൾ( (c = zUri[iIn])!=0 && c!='#'
               && (eState!=0 || c!='?')
               && (eState!=1 || (c!='=' && c!='&'))
               && (eState!=2 || c!='&')
           ){
             iIn++;
           }
-          continue;
-#else
+          തുടരുക;
+#അല്ലെങ്കിൽ
           /* If ENABLE_URI_00_ERROR is defined, "%00" in a URI is an error. */
-          *pzErrMsg = sqlite3_mprintf("unexpected %%00 in uri");
+          *pz_Err_സന്ദേശം = sqlite3_mprintf("unexpected %%00 in uri");
           rc = SQLITE_ERROR;
-          goto parse_uri_out;
+          പോകുക parse_uri_out;
 #endif
         }
         c = octet;
-      }else if( eState==1 && (c=='&' || c=='=') ){
-        if( zFile[iOut-1]==0 ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( eState==1 && (c=='&' || c=='=') ){
+        എങ്കിൽ( zFile[iOut-1]==0 ){
           /* An empty option name. Ignore this option altogether. */
-          while( zUri[iIn] && zUri[iIn]!='#' && zUri[iIn-1]!='&' ) iIn++;
-          continue;
+          ആകുമ്പോൾ( zUri[iIn] && zUri[iIn]!='#' && zUri[iIn-1]!='&' ) iIn++;
+          തുടരുക;
         }
-        if( c=='&' ){
+        എങ്കിൽ( c=='&' ){
           zFile[iOut++] = '\0';
-        }else{
+        }അല്ലെങ്കിൽ{
           eState = 2;
         }
         c = 0;
-      }else if( (eState==0 && c=='?') || (eState==2 && c=='&') ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( (eState==0 && c=='?') || (eState==2 && c=='&') ){
         c = 0;
         eState = 1;
       }
       zFile[iOut++] = c;
     }
-    if( eState==1 ) zFile[iOut++] = '\0';
+    എങ്കിൽ( eState==1 ) zFile[iOut++] = '\0';
     memset(zFile+iOut, 0, 4); /* end-of-options + empty journal filenames */
 
     /* Check if there were any options specified that should be interpreted
@@ -3266,24 +3266,24 @@ int sqlite3ParseUri(
     ** correspond to flags that may be passed to the sqlite3_open_v2()
     ** method. */
     zOpt = &zFile[strlen(zFile)+1];
-    while( zOpt[0] ){
+    ആകുമ്പോൾ( zOpt[0] ){
       i64 nOpt = strlen(zOpt);
-      char *zVal = &zOpt[nOpt+1];
+      അക്ഷരം *zVal = &zOpt[nOpt+1];
       i64 nVal = strlen(zVal);
 
-      if( nOpt==3 && memcmp("vfs", zOpt, 3)==0 ){
+      എങ്കിൽ( nOpt==3 && memcmp("vfs", zOpt, 3)==0 ){
         zVfs = zVal;
-      }else{
-        struct OpenMode {
-          const char *z;
-          int mode;
+      }അല്ലെങ്കിൽ{
+        ഘടന OpenMode {
+          സ്ഥിരം അക്ഷരം *z;
+          പൂർണ്ണസംഖ്യ mode;
         } *aMode = 0;
-        char *zModeType = 0;
-        int mask = 0;
-        int limit = 0;
+        അക്ഷരം *zModeType = 0;
+        പൂർണ്ണസംഖ്യ mask = 0;
+        പൂർണ്ണസംഖ്യ limit = 0;
 
-        if( nOpt==5 && memcmp("cache", zOpt, 5)==0 ){
-          static struct OpenMode aCacheMode[] = {
+        എങ്കിൽ( nOpt==5 && memcmp("cache", zOpt, 5)==0 ){
+          സ്ഥിതം ഘടന OpenMode aCacheMode[] = {
             { "shared",  SQLITE_OPEN_SHAREDCACHE },
             { "private", SQLITE_OPEN_PRIVATECACHE },
             { 0, 0 }
@@ -3294,8 +3294,8 @@ int sqlite3ParseUri(
           limit = mask;
           zModeType = "cache";
         }
-        if( nOpt==4 && memcmp("mode", zOpt, 4)==0 ){
-          static struct OpenMode aOpenMode[] = {
+        എങ്കിൽ( nOpt==4 && memcmp("mode", zOpt, 4)==0 ){
+          സ്ഥിതം ഘടന OpenMode aOpenMode[] = {
             { "ro",  SQLITE_OPEN_READONLY },
             { "rw",  SQLITE_OPEN_READWRITE },
             { "rwc", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE },
@@ -3310,26 +3310,26 @@ int sqlite3ParseUri(
           zModeType = "access";
         }
 
-        if( aMode ){
-          int i;
-          int mode = 0;
-          for(i=0; aMode[i].z; i++){
-            const char *z = aMode[i].z;
-            if( nVal==(i64)strlen(z) && 0==memcmp(zVal, z, nVal) ){
+        എങ്കിൽ( aMode ){
+          പൂർണ്ണസംഖ്യ i;
+          പൂർണ്ണസംഖ്യ mode = 0;
+          വേണ്ടി(i=0; aMode[i].z; i++){
+            സ്ഥിരം അക്ഷരം *z = aMode[i].z;
+            എങ്കിൽ( nVal==(i64)strlen(z) && 0==memcmp(zVal, z, nVal) ){
               mode = aMode[i].mode;
-              break;
+              നിർത്തുക;
             }
           }
-          if( mode==0 ){
-            *pzErrMsg = sqlite3_mprintf("no such %s mode: %s", zModeType, zVal);
+          എങ്കിൽ( mode==0 ){
+            *pz_Err_സന്ദേശം = sqlite3_mprintf("no such %s mode: %s", zModeType, zVal);
             rc = SQLITE_ERROR;
-            goto parse_uri_out;
+            പോകുക parse_uri_out;
           }
-          if( (mode & ~SQLITE_OPEN_MEMORY)>limit ){
-            *pzErrMsg = sqlite3_mprintf("%s mode not allowed: %s",
+          എങ്കിൽ( (mode & ~SQLITE_OPEN_MEMORY)>limit ){
+            *pz_Err_സന്ദേശം = sqlite3_mprintf("%s mode not allowed: %s",
                                         zModeType, zVal);
             rc = SQLITE_PERM;
-            goto parse_uri_out;
+            പോകുക parse_uri_out;
           }
           flags = (flags & ~mask) | mode;
         }
@@ -3338,12 +3338,12 @@ int sqlite3ParseUri(
       zOpt = &zVal[nVal+1];
     }
 
-  }else{
+  }അല്ലെങ്കിൽ{
     zFile = sqlite3_malloc64(nUri+8);
-    if( !zFile ) return SQLITE_NOMEM_BKPT;
+    എങ്കിൽ( !zFile ) തിരികെ SQLITE_NOMEM_BKPT;
     memset(zFile, 0, 4);
     zFile += 4;
-    if( nUri ){
+    എങ്കിൽ( nUri ){
       memcpy(zFile, zUri, nUri);
     }
     memset(zFile+nUri, 0, 4);
@@ -3351,33 +3351,33 @@ int sqlite3ParseUri(
   }
 
   *ppVfs = sqlite3_vfs_find(zVfs);
-  if( *ppVfs==0 ){
-    *pzErrMsg = sqlite3_mprintf("no such vfs: %s", zVfs);
+  എങ്കിൽ( *ppVfs==0 ){
+    *pz_Err_സന്ദേശം = sqlite3_mprintf("no such vfs: %s", zVfs);
     rc = SQLITE_ERROR;
   }
  parse_uri_out:
-  if( rc!=SQLITE_OK ){
+  എങ്കിൽ( rc!=SQLITE_OK ){
     sqlite3_free_filename(zFile);
     zFile = 0;
   }
   *pFlags = flags;
   *pzFile = zFile;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** This routine does the core work of extracting URI parameters from a
 ** database filename for the sqlite3_uri_parameter() interface.
 */
-static const char *uriParameter(const char *zFilename, const char *zParam){
+സ്ഥിതം സ്ഥിരം അക്ഷരം *uriParameter(സ്ഥിരം അക്ഷരം *zFilename, സ്ഥിരം അക്ഷരം *zParam){
   zFilename += sqlite3Strlen30(zFilename) + 1;
-  while( ALWAYS(zFilename!=0) && zFilename[0] ){
-    int x = strcmp(zFilename, zParam);
+  ആകുമ്പോൾ( ALWAYS(zFilename!=0) && zFilename[0] ){
+    പൂർണ്ണസംഖ്യ x = strcmp(zFilename, zParam);
     zFilename += sqlite3Strlen30(zFilename) + 1;
-    if( x==0 ) return zFilename;
+    എങ്കിൽ( x==0 ) തിരികെ zFilename;
     zFilename += sqlite3Strlen30(zFilename) + 1;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 
@@ -3387,41 +3387,41 @@ static const char *uriParameter(const char *zFilename, const char *zParam){
 ** sqlite3_open() and sqlite3_open16(). The database filename "zFilename" 
 ** is UTF-8 encoded.
 */
-static int openDatabase(
-  const char *zFilename, /* Database filename UTF-8 encoded */
+സ്ഥിതം പൂർണ്ണസംഖ്യ openDatabase(
+  സ്ഥിരം അക്ഷരം *zFilename, /* Database filename UTF-8 encoded */
   sqlite3 **ppDb,        /* OUT: Returned database handle */
-  unsigned int flags,    /* Operational flags */
-  const char *zVfs       /* Name of the VFS to use */
+  unsigned പൂർണ്ണസംഖ്യ flags,    /* Operational flags */
+  സ്ഥിരം അക്ഷരം *zVfs       /* Name of the VFS to use */
 ){
   sqlite3 *db;                    /* Store allocated handle here */
-  int rc;                         /* Return code */
-  int isThreadsafe;               /* True for threadsafe connections */
-  char *zOpen = 0;                /* Filename argument to pass to BtreeOpen() */
-  char *zErrMsg = 0;              /* Error message from sqlite3ParseUri() */
-  int i;                          /* Loop counter */
+  പൂർണ്ണസംഖ്യ rc;                         /* Return code */
+  പൂർണ്ണസംഖ്യ isThreadsafe;               /* True for threadsafe connections */
+  അക്ഷരം *zOpen = 0;                /* Filename argument to pass to BtreeOpen() */
+  അക്ഷരം *z_Err_സന്ദേശം = 0;              /* Error message from sqlite3ParseUri() */
+  പൂർണ്ണസംഖ്യ i;                          /* Loop counter */
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppDb==0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( ppDb==0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   *ppDb = 0;
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
+  എങ്കിൽ( rc ) തിരികെ rc;
 #endif
 
-  if( sqlite3GlobalConfig.bCoreMutex==0 ){
+  എങ്കിൽ( sqlite3GlobalConfig.bCoreMutex==0 ){
     isThreadsafe = 0;
-  }else if( flags & SQLITE_OPEN_NOMUTEX ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( flags & SQLITE_OPEN_NOMUTEX ){
     isThreadsafe = 0;
-  }else if( flags & SQLITE_OPEN_FULLMUTEX ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( flags & SQLITE_OPEN_FULLMUTEX ){
     isThreadsafe = 1;
-  }else{
+  }അല്ലെങ്കിൽ{
     isThreadsafe = sqlite3GlobalConfig.bFullMutex;
   }
 
-  if( flags & SQLITE_OPEN_PRIVATECACHE ){
+  എങ്കിൽ( flags & SQLITE_OPEN_PRIVATECACHE ){
     flags &= ~SQLITE_OPEN_SHAREDCACHE;
-  }else if( sqlite3GlobalConfig.sharedCacheEnabled ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( sqlite3GlobalConfig.sharedCacheEnabled ){
     flags |= SQLITE_OPEN_SHAREDCACHE;
   }
 
@@ -3449,20 +3449,20 @@ static int openDatabase(
              );
 
   /* Allocate the sqlite data structure */
-  db = sqlite3MallocZero( sizeof(sqlite3) );
-  if( db==0 ) goto opendb_out;
-  if( isThreadsafe
-#if defined(SQLITE_THREAD_MISUSE_WARNINGS)
+  db = sqlite3MallocZero( വലുപ്പം(sqlite3) );
+  എങ്കിൽ( db==0 ) പോകുക opendb_out;
+  എങ്കിൽ( isThreadsafe
+#എങ്കിൽ defined(SQLITE_THREAD_MISUSE_WARNINGS)
    || sqlite3GlobalConfig.bCoreMutex
 #endif
   ){
     db->mutex = sqlite3MutexAlloc(SQLITE_MUTEX_RECURSIVE);
-    if( db->mutex==0 ){
+    എങ്കിൽ( db->mutex==0 ){
       sqlite3_free(db);
       db = 0;
-      goto opendb_out;
+      പോകുക opendb_out;
     }
-    if( isThreadsafe==0 ){
+    എങ്കിൽ( isThreadsafe==0 ){
       sqlite3MutexWarnOnContention(db->mutex);
     }
   }
@@ -3475,8 +3475,8 @@ static int openDatabase(
   db->lookaside.sz = 0;
   db->nFpDigit = 17;
 
-  assert( sizeof(db->aLimit)==sizeof(aHardLimit) );
-  memcpy(db->aLimit, aHardLimit, sizeof(db->aLimit));
+  പ്രതിജ്ഞാ( വലുപ്പം(db->aLimit)==വലുപ്പം(aHardLimit) );
+  memcpy(db->aLimit, aHardLimit, വലുപ്പം(db->aLimit));
   db->aLimit[SQLITE_LIMIT_WORKER_THREADS] = SQLITE_DEFAULT_WORKER_THREADS;
   db->autoCommit = 1;
   db->nextAutovac = -1;
@@ -3498,7 +3498,7 @@ static int openDatabase(
                  | SQLITE_AttachCreate
                  | SQLITE_AttachWrite
                  | SQLITE_Comments
-#if !defined(SQLITE_TRUSTED_SCHEMA) || SQLITE_TRUSTED_SCHEMA+0!=0
+#എങ്കിൽ !defined(SQLITE_TRUSTED_SCHEMA) || SQLITE_TRUSTED_SCHEMA+0!=0
                  | SQLITE_TrustedSchema
 #endif
 /* The SQLITE_DQS compile-time option determines the default settings
@@ -3516,53 +3516,53 @@ static int openDatabase(
 ** and so that is the default.  But developers are encouraged to use
 ** -DSQLITE_DQS=0 (best) or -DSQLITE_DQS=1 (second choice) if possible.
 */
-#if !defined(SQLITE_DQS)
+#എങ്കിൽ !defined(SQLITE_DQS)
 # define SQLITE_DQS 3
 #endif
-#if (SQLITE_DQS&1)==1
+#എങ്കിൽ (SQLITE_DQS&1)==1
                  | SQLITE_DqsDML
 #endif
-#if (SQLITE_DQS&2)==2
+#എങ്കിൽ (SQLITE_DQS&2)==2
                  | SQLITE_DqsDDL
 #endif
 
-#if !defined(SQLITE_DEFAULT_AUTOMATIC_INDEX) || SQLITE_DEFAULT_AUTOMATIC_INDEX
+#എങ്കിൽ !defined(SQLITE_DEFAULT_AUTOMATIC_INDEX) || SQLITE_DEFAULT_AUTOMATIC_INDEX
                  | SQLITE_AutoIndex
 #endif
-#if SQLITE_DEFAULT_CKPTFULLFSYNC
+#എങ്കിൽ SQLITE_DEFAULT_CKPTFULLFSYNC
                  | SQLITE_CkptFullFSync
 #endif
-#if SQLITE_DEFAULT_FILE_FORMAT<4
+#എങ്കിൽ SQLITE_DEFAULT_FILE_FORMAT<4
                  | SQLITE_LegacyFileFmt
 #endif
 #ifdef SQLITE_ENABLE_LOAD_EXTENSION
                  | SQLITE_LoadExtension
 #endif
-#if SQLITE_DEFAULT_RECURSIVE_TRIGGERS
+#എങ്കിൽ SQLITE_DEFAULT_RECURSIVE_TRIGGERS
                  | SQLITE_RecTriggers
 #endif
-#if defined(SQLITE_DEFAULT_FOREIGN_KEYS) && SQLITE_DEFAULT_FOREIGN_KEYS
-                 | SQLITE_ForeignKeys
+#എങ്കിൽ defined(SQLITE_DEFAULT_FOREIGN_താക്കോലുകൾ) && SQLITE_DEFAULT_FOREIGN_താക്കോലുകൾ
+                 | SQLITE_Foreign_താക്കോലുകൾ
 #endif
-#if defined(SQLITE_REVERSE_UNORDERED_SELECTS)
+#എങ്കിൽ defined(SQLITE_REVERSE_UNORDERED_SELECTS)
                  | SQLITE_ReverseOrder
 #endif
-#if defined(SQLITE_ENABLE_OVERSIZE_CELL_CHECK)
+#എങ്കിൽ defined(SQLITE_ENABLE_OVERSIZE_CELL_CHECK)
                  | SQLITE_CellSizeCk
 #endif
-#if defined(SQLITE_ENABLE_FTS3_TOKENIZER)
+#എങ്കിൽ defined(SQLITE_ENABLE_FTS3_TOKENIZER)
                  | SQLITE_Fts3Tokenizer
 #endif
-#if defined(SQLITE_ENABLE_QPSG)
+#എങ്കിൽ defined(SQLITE_ENABLE_QPSG)
                  | SQLITE_EnableQPSG
 #endif
-#if defined(SQLITE_DEFAULT_DEFENSIVE)
+#എങ്കിൽ defined(SQLITE_DEFAULT_DEFENSIVE)
                  | SQLITE_Defensive
 #endif
-#if defined(SQLITE_DEFAULT_LEGACY_ALTER_TABLE)
+#എങ്കിൽ defined(SQLITE_DEFAULT_LEGACY_ALTER_TABLE)
                  | SQLITE_LegacyAlter
 #endif
-#if defined(SQLITE_ENABLE_STMT_SCANSTATUS)
+#എങ്കിൽ defined(SQLITE_ENABLE_STMT_SCANSTATUS)
                  | SQLITE_StmtScanStatus
 #endif
       ;
@@ -3578,25 +3578,25 @@ static int openDatabase(
   ** EVIDENCE-OF: R-52786-44878 SQLite defines three built-in collating
   ** functions:
   */
-  createCollation(db, sqlite3StrBINARY, SQLITE_UTF8, 0,
-                  sqlite3BinaryCompare, 0);
-  createCollation(db, sqlite3StrBINARY, SQLITE_UTF16BE, 0,
-                  sqlite3BinaryCompare, 0);
-  createCollation(db, sqlite3StrBINARY, SQLITE_UTF16LE, 0,
-                  sqlite3BinaryCompare, 0);
+  createCollation(db, sqlite3_Str_ദ്വിമാന, SQLITE_UTF8, 0,
+                  sqlite3_ദ്വിമാന_Compare, 0);
+  createCollation(db, sqlite3_Str_ദ്വിമാന, SQLITE_UTF16BE, 0,
+                  sqlite3_ദ്വിമാന_Compare, 0);
+  createCollation(db, sqlite3_Str_ദ്വിമാന, SQLITE_UTF16LE, 0,
+                  sqlite3_ദ്വിമാന_Compare, 0);
   createCollation(db, "NOCASE", SQLITE_UTF8, 0, nocaseCollatingFunc, 0);
   createCollation(db, "RTRIM", SQLITE_UTF8, 0, rtrimCollFunc, 0);
-  if( db->mallocFailed ){
-    goto opendb_out;
+  എങ്കിൽ( db->mallocFailed ){
+    പോകുക opendb_out;
   }
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+#എങ്കിൽ SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
   /* Process magic filenames ":localStorage:" and ":sessionStorage:" */
-  if( zFilename && zFilename[0]==':' ){
-    if( strcmp(zFilename, ":localStorage:")==0 ){
+  എങ്കിൽ( zFilename && zFilename[0]==':' ){
+    എങ്കിൽ( strcmp(zFilename, ":localStorage:")==0 ){
       zFilename = "file:local?vfs=kvvfs";
       flags |= SQLITE_OPEN_URI;
-    }else if( strcmp(zFilename, ":sessionStorage:")==0 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( strcmp(zFilename, ":sessionStorage:")==0 ){
       zFilename = "file:session?vfs=kvvfs";
       flags |= SQLITE_OPEN_URI;
     }
@@ -3616,27 +3616,27 @@ static int openDatabase(
   **  6:  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE
   */
   db->openFlags = flags;
-  assert( SQLITE_OPEN_READONLY  == 0x01 );
-  assert( SQLITE_OPEN_READWRITE == 0x02 );
-  assert( SQLITE_OPEN_CREATE    == 0x04 );
+  പ്രതിജ്ഞാ( SQLITE_OPEN_READONLY  == 0x01 );
+  പ്രതിജ്ഞാ( SQLITE_OPEN_READWRITE == 0x02 );
+  പ്രതിജ്ഞാ( SQLITE_OPEN_CREATE    == 0x04 );
   testcase( (1<<(flags&7))==0x02 ); /* READONLY */
   testcase( (1<<(flags&7))==0x04 ); /* READWRITE */
   testcase( (1<<(flags&7))==0x40 ); /* READWRITE | CREATE */
-  if( ((1<<(flags&7)) & 0x46)==0 ){
+  എങ്കിൽ( ((1<<(flags&7)) & 0x46)==0 ){
     rc = SQLITE_MISUSE_BKPT;  /* IMP: R-18321-05872 */
-  }else{
-    if( zFilename==0 ) zFilename = ":memory:";
-    rc = sqlite3ParseUri(zVfs, zFilename, &flags, &db->pVfs, &zOpen, &zErrMsg);
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( zFilename==0 ) zFilename = ":memory:";
+    rc = sqlite3ParseUri(zVfs, zFilename, &flags, &db->pVfs, &zOpen, &z_Err_സന്ദേശം);
   }
-  if( rc!=SQLITE_OK ){
-    if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
-    sqlite3ErrorWithMsg(db, rc, zErrMsg ? "%s" : 0, zErrMsg);
-    sqlite3_free(zErrMsg);
-    goto opendb_out;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+    sqlite3_Error_With_സന്ദേശം(db, rc, z_Err_സന്ദേശം ? "%s" : 0, z_Err_സന്ദേശം);
+    sqlite3_free(z_Err_സന്ദേശം);
+    പോകുക opendb_out;
   }
-  assert( db->pVfs!=0 );
-#if SQLITE_OS_KV || defined(SQLITE_OS_KV_OPTIONAL)
-  if( sqlite3_stricmp(db->pVfs->zName, "kvvfs")==0 ){
+  പ്രതിജ്ഞാ( db->pVfs!=0 );
+#എങ്കിൽ SQLITE_OS_KV || defined(SQLITE_OS_KV_OPTIONAL)
+  എങ്കിൽ( sqlite3_stricmp(db->pVfs->zName, "kvvfs")==0 ){
     db->temp_store = 2;
   }
 #endif
@@ -3644,16 +3644,16 @@ static int openDatabase(
   /* Open the backend database driver */
   rc = sqlite3BtreeOpen(db->pVfs, zOpen, db, &db->aDb[0].pBt, 0,
                         flags | SQLITE_OPEN_MAIN_DB);
-  if( rc!=SQLITE_OK ){
-    if( rc==SQLITE_IOERR_NOMEM ){
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_IOERR_NOMEM ){
       rc = SQLITE_NOMEM_BKPT;
     }
     sqlite3Error(db, rc);
-    goto opendb_out;
+    പോകുക opendb_out;
   }
   sqlite3BtreeEnter(db->aDb[0].pBt);
   db->aDb[0].pSchema = sqlite3SchemaGet(db, db->aDb[0].pBt);
-  if( !db->mallocFailed ){
+  എങ്കിൽ( !db->mallocFailed ){
     sqlite3SetTextEncoding(db, SCHEMA_ENC(db));
   }
   sqlite3BtreeLeave(db->aDb[0].pBt);
@@ -3668,8 +3668,8 @@ static int openDatabase(
   db->aDb[1].safety_level = PAGER_SYNCHRONOUS_OFF;
 
   db->eOpenState = SQLITE_STATE_OPEN;
-  if( db->mallocFailed ){
-    goto opendb_out;
+  എങ്കിൽ( db->mallocFailed ){
+    പോകുക opendb_out;
   }
 
   /* Register all built-in functions, but do not attempt to read the
@@ -3682,18 +3682,18 @@ static int openDatabase(
 
 
   /* Load compiled-in extensions */
-  for(i=0; rc==SQLITE_OK && i<ArraySize(sqlite3BuiltinExtensions); i++){
+  വേണ്ടി(i=0; rc==SQLITE_OK && i<ArraySize(sqlite3BuiltinExtensions); i++){
     rc = sqlite3BuiltinExtensions[i](db);
   }
 
   /* Load automatic extensions - extensions that have been registered
   ** using the sqlite3_automatic_extension() API.
   */
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     sqlite3AutoLoadExtensions(db);
     rc = sqlite3_errcode(db);
-    if( rc!=SQLITE_OK ){
-      goto opendb_out;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      പോകുക opendb_out;
     }
   }
 
@@ -3714,7 +3714,7 @@ static int openDatabase(
                           SQLITE_DEFAULT_LOCKING_MODE);
 #endif
 
-  if( rc ) sqlite3Error(db, rc);
+  എങ്കിൽ( rc ) sqlite3Error(db, rc);
 
   /* Enable the lookaside-malloc subsystem */
   setupLookaside(db, 0, sqlite3GlobalConfig.szLookaside,
@@ -3723,155 +3723,155 @@ static int openDatabase(
   sqlite3_wal_autocheckpoint(db, SQLITE_DEFAULT_WAL_AUTOCHECKPOINT);
 
 opendb_out:
-  if( db ){
-    assert( db->mutex!=0 || isThreadsafe==0
+  എങ്കിൽ( db ){
+    പ്രതിജ്ഞാ( db->mutex!=0 || isThreadsafe==0
            || sqlite3GlobalConfig.bFullMutex==0 );
     sqlite3_mutex_leave(db->mutex);
   }
   rc = sqlite3_errcode(db);
-  assert( db!=0 || (rc&0xff)==SQLITE_NOMEM );
-  if( (rc&0xff)==SQLITE_NOMEM ){
+  പ്രതിജ്ഞാ( db!=0 || (rc&0xff)==SQLITE_NOMEM );
+  എങ്കിൽ( (rc&0xff)==SQLITE_NOMEM ){
     sqlite3_close(db);
     db = 0;
-  }else if( rc!=SQLITE_OK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( rc!=SQLITE_OK ){
     db->eOpenState = SQLITE_STATE_SICK;
   }
   *ppDb = db;
 #ifdef SQLITE_ENABLE_SQLLOG
-  if( sqlite3GlobalConfig.xSqllog ){
+  എങ്കിൽ( sqlite3GlobalConfig.xSqllog ){
     /* Opening a db handle. Fourth parameter is passed 0. */
-    void *pArg = sqlite3GlobalConfig.pSqllogArg;
+    ശൂന്യം *pArg = sqlite3GlobalConfig.pSqllogArg;
     sqlite3GlobalConfig.xSqllog(pArg, db, zFilename, 0);
   }
 #endif
   sqlite3_free_filename(zOpen);
-  return rc;
+  തിരികെ rc;
 }
 
 
 /*
 ** Open a new database handle.
 */
-int sqlite3_open(
-  const char *zFilename,
+പൂർണ്ണസംഖ്യ sqlite3_open(
+  സ്ഥിരം അക്ഷരം *zFilename,
   sqlite3 **ppDb
 ){
-  return openDatabase(zFilename, ppDb,
+  തിരികെ openDatabase(zFilename, ppDb,
                       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
 }
-int sqlite3_open_v2(
-  const char *filename,   /* Database filename (UTF-8) */
+പൂർണ്ണസംഖ്യ sqlite3_open_v2(
+  സ്ഥിരം അക്ഷരം *filename,   /* Database filename (UTF-8) */
   sqlite3 **ppDb,         /* OUT: SQLite db handle */
-  int flags,              /* Flags */
-  const char *zVfs        /* Name of VFS module to use */
+  പൂർണ്ണസംഖ്യ flags,              /* Flags */
+  സ്ഥിരം അക്ഷരം *zVfs        /* Name of VFS module to use */
 ){
-  return openDatabase(filename, ppDb, (unsigned int)flags, zVfs);
+  തിരികെ openDatabase(filename, ppDb, (unsigned പൂർണ്ണസംഖ്യ)flags, zVfs);
 }
 
 #ifndef SQLITE_OMIT_UTF16
 /*
 ** Open a new database handle.
 */
-int sqlite3_open16(
-  const void *zFilename,
+പൂർണ്ണസംഖ്യ sqlite3_open16(
+  സ്ഥിരം ശൂന്യം *zFilename,
   sqlite3 **ppDb
 ){
-  char const *zFilename8;   /* zFilename encoded in UTF-8 instead of UTF-16 */
-  sqlite3_value *pVal;
-  int rc;
+  അക്ഷരം സ്ഥിരം *zFilename8;   /* zFilename encoded in UTF-8 instead of UTF-16 */
+  sqlite3_മൂല്യം *pVal;
+  പൂർണ്ണസംഖ്യ rc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppDb==0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( ppDb==0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   *ppDb = 0;
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
+  എങ്കിൽ( rc ) തിരികെ rc;
 #endif
-  if( zFilename==0 ) zFilename = "\000\000";
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, zFilename, SQLITE_UTF16NATIVE, SQLITE_STATIC);
-  zFilename8 = sqlite3ValueText(pVal, SQLITE_UTF8);
-  if( zFilename8 ){
+  എങ്കിൽ( zFilename==0 ) zFilename = "\000\000";
+  pVal = sqlite3_മൂല്യം_New(0);
+  sqlite3_മൂല്യം_Set_Str(pVal, -1, zFilename, SQLITE_UTF16NATIVE, SQLITE_STATIC);
+  zFilename8 = sqlite3_മൂല്യം_Text(pVal, SQLITE_UTF8);
+  എങ്കിൽ( zFilename8 ){
     rc = openDatabase(zFilename8, ppDb,
                       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
-    assert( *ppDb || rc==SQLITE_NOMEM );
-    if( rc==SQLITE_OK && !DbHasProperty(*ppDb, 0, DB_SchemaLoaded) ){
+    പ്രതിജ്ഞാ( *ppDb || rc==SQLITE_NOMEM );
+    എങ്കിൽ( rc==SQLITE_OK && !DbHasProperty(*ppDb, 0, DB_SchemaLoaded) ){
       SCHEMA_ENC(*ppDb) = ENC(*ppDb) = SQLITE_UTF16NATIVE;
     }
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = SQLITE_NOMEM_BKPT;
   }
-  sqlite3ValueFree(pVal);
+  sqlite3_മൂല്യം_Free(pVal);
 
-  return rc & 0xff;
+  തിരികെ rc & 0xff;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
 /*
 ** Register a new collation sequence with the database handle db.
 */
-int sqlite3_create_collation(
+പൂർണ്ണസംഖ്യ sqlite3_create_collation(
   sqlite3* db,
-  const char *zName,
-  int enc,
-  void* pCtx,
-  int(*xCompare)(void*,int,const void*,int,const void*)
+  സ്ഥിരം അക്ഷരം *zName,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം* pCtx,
+  പൂർണ്ണസംഖ്യ(*xCompare)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*)
 ){
-  return sqlite3_create_collation_v2(db, zName, enc, pCtx, xCompare, 0);
+  തിരികെ sqlite3_create_collation_v2(db, zName, enc, pCtx, xCompare, 0);
 }
 
 /*
 ** Register a new collation sequence with the database handle db.
 */
-int sqlite3_create_collation_v2(
+പൂർണ്ണസംഖ്യ sqlite3_create_collation_v2(
   sqlite3* db,
-  const char *zName,
-  int enc,
-  void* pCtx,
-  int(*xCompare)(void*,int,const void*,int,const void*),
-  void(*xDel)(void*)
+  സ്ഥിരം അക്ഷരം *zName,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം* pCtx,
+  പൂർണ്ണസംഖ്യ(*xCompare)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*),
+  ശൂന്യം(*xDel)(ശൂന്യം*)
 ){
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) || zName==0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  assert( !db->mallocFailed );
+  പ്രതിജ്ഞാ( !db->mallocFailed );
   rc = createCollation(db, zName, (u8)enc, pCtx, xCompare, xDel);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 #ifndef SQLITE_OMIT_UTF16
 /*
 ** Register a new collation sequence with the database handle db.
 */
-int sqlite3_create_collation16(
+പൂർണ്ണസംഖ്യ sqlite3_create_collation16(
   sqlite3* db,
-  const void *zName,
-  int enc,
-  void* pCtx,
-  int(*xCompare)(void*,int,const void*,int,const void*)
+  സ്ഥിരം ശൂന്യം *zName,
+  പൂർണ്ണസംഖ്യ enc,
+  ശൂന്യം* pCtx,
+  പൂർണ്ണസംഖ്യ(*xCompare)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*)
 ){
-  int rc = SQLITE_OK;
-  char *zName8;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  അക്ഷരം *zName8;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zName==0 ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) || zName==0 ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  assert( !db->mallocFailed );
+  പ്രതിജ്ഞാ( !db->mallocFailed );
   zName8 = sqlite3Utf16to8(db, zName, -1, SQLITE_UTF16NATIVE);
-  if( zName8 ){
+  എങ്കിൽ( zName8 ){
     rc = createCollation(db, zName8, (u8)enc, pCtx, xCompare, 0);
     sqlite3DbFree(db, zName8);
   }
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -3879,20 +3879,20 @@ int sqlite3_create_collation16(
 ** Register a collation sequence factory callback with the database handle
 ** db. Replace any previously installed collation sequence factory.
 */
-int sqlite3_collation_needed(
+പൂർണ്ണസംഖ്യ sqlite3_collation_needed(
   sqlite3 *db,
-  void *pCollNeededArg,
-  void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*)
+  ശൂന്യം *pCollNeededArg,
+  ശൂന്യം(*xCollNeeded)(ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ eTextRep,സ്ഥിരം അക്ഷരം*)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->xCollNeeded = xCollNeeded;
   db->xCollNeeded16 = 0;
   db->pCollNeededArg = pCollNeededArg;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_UTF16
@@ -3900,80 +3900,80 @@ int sqlite3_collation_needed(
 ** Register a collation sequence factory callback with the database handle
 ** db. Replace any previously installed collation sequence factory.
 */
-int sqlite3_collation_needed16(
+പൂർണ്ണസംഖ്യ sqlite3_collation_needed16(
   sqlite3 *db,
-  void *pCollNeededArg,
-  void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*)
+  ശൂന്യം *pCollNeededArg,
+  ശൂന്യം(*xCollNeeded16)(ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ eTextRep,സ്ഥിരം ശൂന്യം*)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->xCollNeeded = 0;
   db->xCollNeeded16 = xCollNeeded16;
   db->pCollNeededArg = pCollNeededArg;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
 /*
 ** Find existing client data.
 */
-void *sqlite3_get_clientdata(sqlite3 *db, const char *zName){
+ശൂന്യം *sqlite3_get_clientdata(sqlite3 *db, സ്ഥിരം അക്ഷരം *zName){
   DbClientData *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zName || !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !zName || !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  for(p=db->pDbData; p; p=p->pNext){
-    if( strcmp(p->zName, zName)==0 ){
-      void *pResult = p->pData;
+  വേണ്ടി(p=db->pDbData; p; p=p->pNext){
+    എങ്കിൽ( strcmp(p->zName, zName)==0 ){
+      ശൂന്യം *pResult = p->pData;
       sqlite3_mutex_leave(db->mutex);
-      return pResult;
+      തിരികെ pResult;
     }
   }
   sqlite3_mutex_leave(db->mutex);
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Add new client data to a database connection.
 */
-int sqlite3_set_clientdata(
+പൂർണ്ണസംഖ്യ sqlite3_set_clientdata(
   sqlite3 *db,                   /* Attach client data to this connection */
-  const char *zName,             /* Name of the client data */
-  void *pData,                   /* The client data itself */
-  void (*xDestructor)(void*)     /* Destructor */
+  സ്ഥിരം അക്ഷരം *zName,             /* Name of the client data */
+  ശൂന്യം *pData,                   /* The client data itself */
+  ശൂന്യം (*xDestructor)(ശൂന്യം*)     /* Destructor */
 ){
   DbClientData *p, **pp;
   sqlite3_mutex_enter(db->mutex);
   pp = &db->pDbData;
-  for(p=db->pDbData; p && strcmp(p->zName,zName); p=p->pNext){
+  വേണ്ടി(p=db->pDbData; p && strcmp(p->zName,zName); p=p->pNext){
     pp = &p->pNext;
   }
-  if( p ){
-    assert( p->pData!=0 );
-    if( p->xDestructor ) p->xDestructor(p->pData);
-    if( pData==0 ){
+  എങ്കിൽ( p ){
+    പ്രതിജ്ഞാ( p->pData!=0 );
+    എങ്കിൽ( p->xDestructor ) p->xDestructor(p->pData);
+    എങ്കിൽ( pData==0 ){
       *pp = p->pNext;
       sqlite3_free(p);
       sqlite3_mutex_leave(db->mutex);
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
-  }else if( pData==0 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( pData==0 ){
     sqlite3_mutex_leave(db->mutex);
-    return SQLITE_OK;
-  }else{
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ{
     size_t n = strlen(zName);
     p = sqlite3_malloc64( SZ_DBCLIENTDATA(n+1) );
-    if( p==0 ){
-      if( xDestructor ) xDestructor(pData);
+    എങ്കിൽ( p==0 ){
+      എങ്കിൽ( xDestructor ) xDestructor(pData);
       sqlite3_mutex_leave(db->mutex);
-      return SQLITE_NOMEM;
+      തിരികെ SQLITE_NOMEM;
     }
     memcpy(p->zName, zName, n+1);
     p->pNext = db->pDbData;
@@ -3982,7 +3982,7 @@ int sqlite3_set_clientdata(
   p->pData = pData;
   p->xDestructor = xDestructor;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
@@ -3991,8 +3991,8 @@ int sqlite3_set_clientdata(
 ** This function is now an anachronism. It used to be used to recover from a
 ** malloc() failure, but SQLite now does this automatically.
 */
-int sqlite3_global_recover(void){
-  return SQLITE_OK;
+പൂർണ്ണസംഖ്യ sqlite3_global_recover(ശൂന്യം){
+  തിരികെ SQLITE_OK;
 }
 #endif
 
@@ -4002,18 +4002,18 @@ int sqlite3_global_recover(void){
 ** by default.  Autocommit is disabled by a BEGIN statement and reenabled
 ** by the next COMMIT or ROLLBACK.
 */
-int sqlite3_get_autocommit(sqlite3 *db){
-  int iRet;
+പൂർണ്ണസംഖ്യ sqlite3_get_autocommit(sqlite3 *db){
+  പൂർണ്ണസംഖ്യ iRet;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
   iRet = db->autoCommit;
   sqlite3_mutex_leave(db->mutex);
-  return iRet;
+  തിരികെ iRet;
 }
 
 /*
@@ -4027,39 +4027,39 @@ int sqlite3_get_autocommit(sqlite3 *db){
 **   2.  Invoke sqlite3_log() to provide the source code location where
 **       a low-level error is first detected.
 */
-int sqlite3ReportError(int iErr, int lineno, const char *zType){
+പൂർണ്ണസംഖ്യ sqlite3ReportError(പൂർണ്ണസംഖ്യ iErr, പൂർണ്ണസംഖ്യ lineno, സ്ഥിരം അക്ഷരം *zType){
   sqlite3_log(iErr, "%s at line %d of [%.10s]",
               zType, lineno, 20+sqlite3_sourceid());
-  return iErr;
+  തിരികെ iErr;
 }
-int sqlite3CorruptError(int lineno){
+പൂർണ്ണസംഖ്യ sqlite3CorruptError(പൂർണ്ണസംഖ്യ lineno){
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_CORRUPT, lineno, "database corruption");
+  തിരികെ sqlite3ReportError(SQLITE_CORRUPT, lineno, "database corruption");
 }
-int sqlite3MisuseError(int lineno){
+പൂർണ്ണസംഖ്യ sqlite3MisuseError(പൂർണ്ണസംഖ്യ lineno){
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_MISUSE, lineno, "misuse");
+  തിരികെ sqlite3ReportError(SQLITE_MISUSE, lineno, "misuse");
 }
-int sqlite3CantopenError(int lineno){
+പൂർണ്ണസംഖ്യ sqlite3CantopenError(പൂർണ്ണസംഖ്യ lineno){
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_CANTOPEN, lineno, "cannot open file");
+  തിരികെ sqlite3ReportError(SQLITE_CANTOPEN, lineno, "cannot open file");
 }
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
-int sqlite3CorruptPgnoError(int lineno, Pgno pgno){
-  char zMsg[100];
-  sqlite3_snprintf(sizeof(zMsg), zMsg, "database corruption page %d", pgno);
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
+പൂർണ്ണസംഖ്യ sqlite3CorruptPgnoError(പൂർണ്ണസംഖ്യ lineno, Pgno pgno){
+  അക്ഷരം z_സന്ദേശം[100];
+  sqlite3_snprintf(വലുപ്പം(z_സന്ദേശം), z_സന്ദേശം, "database corruption page %d", pgno);
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_CORRUPT, lineno, zMsg);
+  തിരികെ sqlite3ReportError(SQLITE_CORRUPT, lineno, z_സന്ദേശം);
 }
 #endif
 #ifdef SQLITE_DEBUG
-int sqlite3NomemError(int lineno){
+പൂർണ്ണസംഖ്യ sqlite3NomemError(പൂർണ്ണസംഖ്യ lineno){
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_NOMEM, lineno, "OOM");
+  തിരികെ sqlite3ReportError(SQLITE_NOMEM, lineno, "OOM");
 }
-int sqlite3IoerrnomemError(int lineno){
+പൂർണ്ണസംഖ്യ sqlite3IoerrnomemError(പൂർണ്ണസംഖ്യ lineno){
   testcase( sqlite3GlobalConfig.xLog!=0 );
-  return sqlite3ReportError(SQLITE_IOERR_NOMEM, lineno, "I/O OOM error");
+  തിരികെ sqlite3ReportError(SQLITE_IOERR_NOMEM, lineno, "I/O OOM error");
 }
 #endif
 
@@ -4071,7 +4071,7 @@ int sqlite3IoerrnomemError(int lineno){
 ** SQLite no longer uses thread-specific data so this routine is now a
 ** no-op.  It is retained for historical compatibility.
 */
-void sqlite3_thread_cleanup(void){
+ശൂന്യം sqlite3_thread_cleanup(ശൂന്യം){
 }
 #endif
 
@@ -4079,64 +4079,64 @@ void sqlite3_thread_cleanup(void){
 ** Return meta information about a specific column of a database table.
 ** See comment in sqlite3.h (sqlite.h.in) for details.
 */
-int sqlite3_table_column_metadata(
+പൂർണ്ണസംഖ്യ sqlite3_table_column_metadata(
   sqlite3 *db,                /* Connection handle */
-  const char *zDbName,        /* Database name or NULL */
-  const char *zTableName,     /* Table name */
-  const char *zColumnName,    /* Column name */
-  char const **pzDataType,    /* OUTPUT: Declared data type */
-  char const **pzCollSeq,     /* OUTPUT: Collation sequence name */
-  int *pNotNull,              /* OUTPUT: True if NOT NULL constraint exists */
-  int *pPrimaryKey,           /* OUTPUT: True if column part of PK */
-  int *pAutoinc               /* OUTPUT: True if column is auto-increment */
+  സ്ഥിരം അക്ഷരം *zDbName,        /* Database name or NULL */
+  സ്ഥിരം അക്ഷരം *zTableName,     /* Table name */
+  സ്ഥിരം അക്ഷരം *zColumnName,    /* Column name */
+  അക്ഷരം സ്ഥിരം **pzDataType,    /* OUTPUT: Declared data type */
+  അക്ഷരം സ്ഥിരം **pzCollSeq,     /* OUTPUT: Collation sequence name */
+  പൂർണ്ണസംഖ്യ *pNotNull,              /* OUTPUT: True if NOT NULL constraint exists */
+  പൂർണ്ണസംഖ്യ *p_Primary_താക്കോൽ,           /* OUTPUT: True if column part of PK */
+  പൂർണ്ണസംഖ്യ *pAutoinc               /* OUTPUT: True if column is auto-increment */
 ){
-  int rc;
-  char *zErrMsg = 0;
+  പൂർണ്ണസംഖ്യ rc;
+  അക്ഷരം *z_Err_സന്ദേശം = 0;
   Table *pTab = 0;
   Column *pCol = 0;
-  int iCol = 0;
-  char const *zDataType = 0;
-  char const *zCollSeq = 0;
-  int notnull = 0;
-  int primarykey = 0;
-  int autoinc = 0;
+  പൂർണ്ണസംഖ്യ iCol = 0;
+  അക്ഷരം സ്ഥിരം *zDataType = 0;
+  അക്ഷരം സ്ഥിരം *zCollSeq = 0;
+  പൂർണ്ണസംഖ്യ notnull = 0;
+  പൂർണ്ണസംഖ്യ primarykey = 0;
+  പൂർണ്ണസംഖ്യ autoinc = 0;
 
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zTableName==0 ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) || zTableName==0 ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
 
   /* Ensure the database schema has been loaded */
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  rc = sqlite3Init(db, &zErrMsg);
-  if( SQLITE_OK!=rc ){
-    goto error_out;
+  rc = sqlite3Init(db, &z_Err_സന്ദേശം);
+  എങ്കിൽ( SQLITE_OK!=rc ){
+    പോകുക error_out;
   }
 
   /* Locate the table in question */
   pTab = sqlite3FindTable(db, zTableName, zDbName);
-  if( !pTab || IsView(pTab) ){
+  എങ്കിൽ( !pTab || IsView(pTab) ){
     pTab = 0;
-    goto error_out;
+    പോകുക error_out;
   }
 
   /* Find the column for which info is requested */
-  if( zColumnName==0 ){
+  എങ്കിൽ( zColumnName==0 ){
     /* Query for existence of table only */
-  }else{
+  }അല്ലെങ്കിൽ{
     iCol = sqlite3ColumnIndex(pTab, zColumnName);
-    if( iCol>=0 ){
+    എങ്കിൽ( iCol>=0 ){
       pCol = &pTab->aCol[iCol];
-    }else{
-      if( HasRowid(pTab) && sqlite3IsRowid(zColumnName) ){
+    }അല്ലെങ്കിൽ{
+      എങ്കിൽ( HasRowid(pTab) && sqlite3IsRowid(zColumnName) ){
         iCol = pTab->iPKey;
         pCol = iCol>=0 ? &pTab->aCol[iCol] : 0;
-      }else{
+      }അല്ലെങ്കിൽ{
         pTab = 0;
-        goto error_out;
+        പോകുക error_out;
       }
     }
   }
@@ -4151,18 +4151,18 @@ int sqlite3_table_column_metadata(
   **     2. The table is not a view and the column name identified an
   **        explicitly declared column. Copy meta information from *pCol.
   */
-  if( pCol ){
+  എങ്കിൽ( pCol ){
     zDataType = sqlite3ColumnType(pCol,0);
     zCollSeq = sqlite3ColumnColl(pCol);
     notnull = pCol->notNull!=0;
     primarykey  = (pCol->colFlags & COLFLAG_PRIMKEY)!=0;
     autoinc = pTab->iPKey==iCol && (pTab->tabFlags & TF_Autoincrement)!=0;
-  }else{
+  }അല്ലെങ്കിൽ{
     zDataType = "INTEGER";
     primarykey = 1;
   }
-  if( !zCollSeq ){
-    zCollSeq = sqlite3StrBINARY;
+  എങ്കിൽ( !zCollSeq ){
+    zCollSeq = sqlite3_Str_ദ്വിമാന;
   }
 
 error_out:
@@ -4172,125 +4172,125 @@ error_out:
   ** to whatever their local counterparts contain. If an error did occur,
   ** this has the effect of zeroing all output parameters.
   */
-  if( pzDataType ) *pzDataType = zDataType;
-  if( pzCollSeq ) *pzCollSeq = zCollSeq;
-  if( pNotNull ) *pNotNull = notnull;
-  if( pPrimaryKey ) *pPrimaryKey = primarykey;
-  if( pAutoinc ) *pAutoinc = autoinc;
+  എങ്കിൽ( pzDataType ) *pzDataType = zDataType;
+  എങ്കിൽ( pzCollSeq ) *pzCollSeq = zCollSeq;
+  എങ്കിൽ( pNotNull ) *pNotNull = notnull;
+  എങ്കിൽ( p_Primary_താക്കോൽ ) *p_Primary_താക്കോൽ = primarykey;
+  എങ്കിൽ( pAutoinc ) *pAutoinc = autoinc;
 
-  if( SQLITE_OK==rc && !pTab ){
-    sqlite3DbFree(db, zErrMsg);
-    zErrMsg = sqlite3MPrintf(db, "no such table column: %s.%s", zTableName,
+  എങ്കിൽ( SQLITE_OK==rc && !pTab ){
+    sqlite3DbFree(db, z_Err_സന്ദേശം);
+    z_Err_സന്ദേശം = sqlite3MPrintf(db, "no such table column: %s.%s", zTableName,
         zColumnName);
     rc = SQLITE_ERROR;
   }
-  sqlite3ErrorWithMsg(db, rc, (zErrMsg?"%s":0), zErrMsg);
-  sqlite3DbFree(db, zErrMsg);
+  sqlite3_Error_With_സന്ദേശം(db, rc, (z_Err_സന്ദേശം?"%s":0), z_Err_സന്ദേശം);
+  sqlite3DbFree(db, z_Err_സന്ദേശം);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Sleep for a little while.  Return the amount of time slept.
 */
-int sqlite3_sleep(int ms){
+പൂർണ്ണസംഖ്യ sqlite3_sleep(പൂർണ്ണസംഖ്യ ms){
   sqlite3_vfs *pVfs;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
   pVfs = sqlite3_vfs_find(0);
-  if( pVfs==0 ) return 0;
+  എങ്കിൽ( pVfs==0 ) തിരികെ 0;
 
   /* This function works in milliseconds, but the underlying OsSleep()
   ** API uses microseconds. Hence the 1000's.
   */
   rc = (sqlite3OsSleep(pVfs, ms<0 ? 0 : 1000*ms)/1000);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Enable or disable the extended result codes.
 */
-int sqlite3_extended_result_codes(sqlite3 *db, int onoff){
+പൂർണ്ണസംഖ്യ sqlite3_extended_result_codes(sqlite3 *db, പൂർണ്ണസംഖ്യ onoff){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->errMask = onoff ? 0xffffffff : 0xff;
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Invoke the xFileControl method on a particular database.
 */
-int sqlite3_file_control(sqlite3 *db, const char *zDbName, int op, void *pArg){
-  int rc = SQLITE_ERROR;
+പൂർണ്ണസംഖ്യ sqlite3_file_control(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDbName, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_ERROR;
   Btree *pBtree;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  എങ്കിൽ( pBtree ){
     Pager *pPager;
     sqlite3_file *fd;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    പ്രതിജ്ഞാ( pPager!=0 );
     fd = sqlite3PagerFile(pPager);
-    assert( fd!=0 );
-    if( op==SQLITE_FCNTL_FILE_POINTER ){
+    പ്രതിജ്ഞാ( fd!=0 );
+    എങ്കിൽ( op==SQLITE_FCNTL_FILE_POINTER ){
       *(sqlite3_file**)pArg = fd;
       rc = SQLITE_OK;
-    }else if( op==SQLITE_FCNTL_VFS_POINTER ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( op==SQLITE_FCNTL_VFS_POINTER ){
       *(sqlite3_vfs**)pArg = sqlite3PagerVfs(pPager);
       rc = SQLITE_OK;
-    }else if( op==SQLITE_FCNTL_JOURNAL_POINTER ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( op==SQLITE_FCNTL_JOURNAL_POINTER ){
       *(sqlite3_file**)pArg = sqlite3PagerJrnlFile(pPager);
       rc = SQLITE_OK;
-    }else if( op==SQLITE_FCNTL_DATA_VERSION ){
-      *(unsigned int*)pArg = sqlite3PagerDataVersion(pPager);
+    }അല്ലെങ്കിൽ എങ്കിൽ( op==SQLITE_FCNTL_DATA_VERSION ){
+      *(unsigned പൂർണ്ണസംഖ്യ*)pArg = sqlite3PagerDataVersion(pPager);
       rc = SQLITE_OK;
-    }else if( op==SQLITE_FCNTL_RESERVE_BYTES ){
-      int iNew = *(int*)pArg;
-      *(int*)pArg = sqlite3BtreeGetRequestedReserve(pBtree);
-      if( iNew>=0 && iNew<=255 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( op==SQLITE_FCNTL_RESERVE_BYTES ){
+      പൂർണ്ണസംഖ്യ iNew = *(പൂർണ്ണസംഖ്യ*)pArg;
+      *(പൂർണ്ണസംഖ്യ*)pArg = sqlite3BtreeGetRequestedReserve(pBtree);
+      എങ്കിൽ( iNew>=0 && iNew<=255 ){
         sqlite3BtreeSetPageSize(pBtree, 0, iNew, 0);
       }
       rc = SQLITE_OK;
-    }else if( op==SQLITE_FCNTL_RESET_CACHE ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( op==SQLITE_FCNTL_RESET_CACHE ){
       sqlite3BtreeClearCache(pBtree);
       rc = SQLITE_OK;
-    }else{
-      int nSave = db->busyHandler.nBusy;
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ nSave = db->busyHandler.nBusy;
       rc = sqlite3OsFileControl(fd, op, pArg);
       db->busyHandler.nBusy = nSave;
     }
     sqlite3BtreeLeave(pBtree);
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Interface to the testing logic.
 */
-int sqlite3_test_control(int op, ...){
-  int rc = 0;
+പൂർണ്ണസംഖ്യ sqlite3_test_control(പൂർണ്ണസംഖ്യ op, ...){
+  പൂർണ്ണസംഖ്യ rc = 0;
 #ifdef SQLITE_UNTESTABLE
   UNUSED_PARAMETER(op);
-#else
+#അല്ലെങ്കിൽ
   va_list ap;
   va_start(ap, op);
-  switch( op ){
+  തിരഞ്ഞെടുപ്പ്( op ){
 
     /*
     ** Save the current state of the PRNG.
     */
-    case SQLITE_TESTCTRL_PRNG_SAVE: {
+    അവസ്ഥ SQLITE_TESTCTRL_PRNG_SAVE: {
       sqlite3PrngSaveState();
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4298,9 +4298,9 @@ int sqlite3_test_control(int op, ...){
     ** PRNG_SAVE.  If PRNG_SAVE has never before been called, then
     ** this verb acts like PRNG_RESET.
     */
-    case SQLITE_TESTCTRL_PRNG_RESTORE: {
+    അവസ്ഥ SQLITE_TESTCTRL_PRNG_RESTORE: {
       sqlite3PrngRestoreState();
-      break;
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_PRNG_SEED, int x, sqlite3 *db);
@@ -4324,15 +4324,15 @@ int sqlite3_test_control(int op, ...){
     ** be used for the next call to sqlite3_randomness().
     */
 #ifndef SQLITE_OMIT_WSD
-    case SQLITE_TESTCTRL_PRNG_SEED: {
-      int x = va_arg(ap, int);
-      int y;
+    അവസ്ഥ SQLITE_TESTCTRL_PRNG_SEED: {
+      പൂർണ്ണസംഖ്യ x = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      പൂർണ്ണസംഖ്യ y;
       sqlite3 *db = va_arg(ap, sqlite3*);
-      assert( db==0 || db->aDb[0].pSchema!=0 );
-      if( db && (y = db->aDb[0].pSchema->schema_cookie)!=0 ){ x = y; }
+      പ്രതിജ്ഞാ( db==0 || db->aDb[0].pSchema!=0 );
+      എങ്കിൽ( db && (y = db->aDb[0].pSchema->schema_cookie)!=0 ){ x = y; }
       sqlite3Config.iPrngSeed = x;
       sqlite3_randomness(0,0);
-      break;
+      നിർത്തുക;
     }
 #endif
 
@@ -4347,15 +4347,15 @@ int sqlite3_test_control(int op, ...){
     ** using this test-control, before it will take full effect.  failing
     ** to reset the schema can result in some unexpected behavior.
     */
-    case SQLITE_TESTCTRL_FK_NO_ACTION: {
+    അവസ്ഥ SQLITE_TESTCTRL_FK_NO_ACTION: {
       sqlite3 *db = va_arg(ap, sqlite3*);
-      int b = va_arg(ap, int);
-      if( b ){
+      പൂർണ്ണസംഖ്യ b = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      എങ്കിൽ( b ){
         db->flags |= SQLITE_FkNoAction;
-      }else{
+      }അല്ലെങ്കിൽ{
         db->flags &= ~SQLITE_FkNoAction;
       }
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4366,11 +4366,11 @@ int sqlite3_test_control(int op, ...){
     ** memory allocation error, 0 on success, or non-zero for an error.
     ** See the sqlite3BitvecBuiltinTest() for additional information.
     */
-    case SQLITE_TESTCTRL_BITVEC_TEST: {
-      int sz = va_arg(ap, int);
-      int *aProg = va_arg(ap, int*);
+    അവസ്ഥ SQLITE_TESTCTRL_BITVEC_TEST: {
+      പൂർണ്ണസംഖ്യ sz = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      പൂർണ്ണസംഖ്യ *aProg = va_arg(ap, പൂർണ്ണസംഖ്യ*);
       rc = sqlite3BitvecBuiltinTest(sz, aProg);
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4384,7 +4384,7 @@ int sqlite3_test_control(int op, ...){
     ** value from sqlite3FaultSim(0) becomes the return from
     ** sqlite3_test_control().
     */
-    case SQLITE_TESTCTRL_FAULT_INSTALL: {
+    അവസ്ഥ SQLITE_TESTCTRL_FAULT_INSTALL: {
       /* A bug in MSVC prevents it from understanding pointers to functions
       ** types in the second argument to va_arg().  Work around the problem
       ** using a typedef.
@@ -4393,10 +4393,10 @@ int sqlite3_test_control(int op, ...){
       ** of the link above to see the original text.
       ** sqlite3GlobalConfig.xTestCallback = va_arg(ap, int(*)(int));
       */
-      typedef int(*sqlite3FaultFuncType)(int);
+      തരനിർവചനം പൂർണ്ണസംഖ്യ(*sqlite3FaultFuncType)(പൂർണ്ണസംഖ്യ);
       sqlite3GlobalConfig.xTestCallback = va_arg(ap, sqlite3FaultFuncType);
       rc = sqlite3FaultSim(0);
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4405,14 +4405,14 @@ int sqlite3_test_control(int op, ...){
     ** Register hooks to call to indicate which malloc() failures
     ** are benign.
     */
-    case SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS: {
-      typedef void (*void_function)(void);
+    അവസ്ഥ SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS: {
+      തരനിർവചനം ശൂന്യം (*void_function)(ശൂന്യം);
       void_function xBenignBegin;
       void_function xBenignEnd;
       xBenignBegin = va_arg(ap, void_function);
       xBenignEnd = va_arg(ap, void_function);
       sqlite3BenignMallocHooks(xBenignBegin, xBenignEnd);
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4427,15 +4427,15 @@ int sqlite3_test_control(int op, ...){
     ** while any database connection is open results in undefined and
     ** deleterious behavior.
     */
-    case SQLITE_TESTCTRL_PENDING_BYTE: {
+    അവസ്ഥ SQLITE_TESTCTRL_PENDING_BYTE: {
       rc = PENDING_BYTE;
 #ifndef SQLITE_OMIT_WSD
       {
-        unsigned int newVal = va_arg(ap, unsigned int);
-        if( newVal ) sqlite3PendingByte = newVal;
+        unsigned പൂർണ്ണസംഖ്യ newVal = va_arg(ap, unsigned പൂർണ്ണസംഖ്യ);
+        എങ്കിൽ( newVal ) sqlite3PendingByte = newVal;
       }
 #endif
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4449,16 +4449,16 @@ int sqlite3_test_control(int op, ...){
     ** process aborts.  If X is false and assert() is disabled, then the
     ** return value is zero.
     */
-    case SQLITE_TESTCTRL_ASSERT: {
-      volatile int x = 0;
-      assert( /*side-effects-ok*/ (x = va_arg(ap,int))!=0 );
+    അവസ്ഥ SQLITE_TESTCTRL_ASSERT: {
+      അസ്ഥിര പൂർണ്ണസംഖ്യ x = 0;
+      പ്രതിജ്ഞാ( /*side-effects-ok*/ (x = va_arg(ap,പൂർണ്ണസംഖ്യ))!=0 );
       rc = x;
-#if defined(SQLITE_DEBUG)
+#എങ്കിൽ defined(SQLITE_DEBUG)
       /* Invoke these debugging routines so that the compiler does not
       ** issue "defined but not used" warnings. */
-      if( x==9999 ){
-        sqlite3ShowExpr(0);
-        sqlite3ShowExprList(0);
+      എങ്കിൽ( x==9999 ){
+        sqlite3_Show_വ്യഞ്ജകം(0);
+        sqlite3_Show_വ്യഞ്ജകം_List(0);
         sqlite3ShowIdList(0);
         sqlite3ShowSrcList(0);
         sqlite3ShowWith(0);
@@ -4476,7 +4476,7 @@ int sqlite3_test_control(int op, ...){
         sqlite3ShowSelect(0);
       }
 #endif
-      break;
+      നിർത്തുക;
     }
 
 
@@ -4507,10 +4507,10 @@ int sqlite3_test_control(int op, ...){
     **      // ALWAYS(x) is a constant 1.  NEVER(x) is a constant 0.
     **    }
     */
-    case SQLITE_TESTCTRL_ALWAYS: {
-      int x = va_arg(ap,int);
+    അവസ്ഥ SQLITE_TESTCTRL_ALWAYS: {
+      പൂർണ്ണസംഖ്യ x = va_arg(ap,പൂർണ്ണസംഖ്യ);
       rc = x ? ALWAYS(x) : 0;
-      break;
+      നിർത്തുക;
     }
 
     /*
@@ -4524,9 +4524,9 @@ int sqlite3_test_control(int op, ...){
     **  432101     big-endian,    determined at compile-time
     **  123410     little-endian, determined at compile-time
     */
-    case SQLITE_TESTCTRL_BYTEORDER: {
+    അവസ്ഥ SQLITE_TESTCTRL_BYTEORDER: {
       rc = SQLITE_BYTEORDER*100 + SQLITE_LITTLEENDIAN*10 + SQLITE_BIGENDIAN;
-      break;
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_OPTIMIZATIONS, sqlite3 *db, int N)
@@ -4538,10 +4538,10 @@ int sqlite3_test_control(int op, ...){
     ** with various optimizations disabled to verify that the same answer
     ** is obtained in every case.
     */
-    case SQLITE_TESTCTRL_OPTIMIZATIONS: {
+    അവസ്ഥ SQLITE_TESTCTRL_OPTIMIZATIONS: {
       sqlite3 *db = va_arg(ap, sqlite3*);
       db->dbOptFlags = va_arg(ap, u32);
-      break;
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_GETOPT, sqlite3 *db, int *N)
@@ -4549,11 +4549,11 @@ int sqlite3_test_control(int op, ...){
     ** Write the current optimization settings into *N.  A zero bit means that
     ** the optimization is on, and a 1 bit means that the optimization is off.
     */
-    case SQLITE_TESTCTRL_GETOPT: {
+    അവസ്ഥ SQLITE_TESTCTRL_GETOPT: {
       sqlite3 *db = va_arg(ap, sqlite3*);
-      int *pN = va_arg(ap, int*);
+      പൂർണ്ണസംഖ്യ *pN = va_arg(ap, പൂർണ്ണസംഖ്യ*);
       *pN = db->dbOptFlags;
-      break;
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_LOCALTIME_FAULT, onoff, xAlt);
@@ -4569,15 +4569,15 @@ int sqlite3_test_control(int op, ...){
     ** xAlt should write results in to struct tm object of its 2nd argument
     ** and return zero on success, or return non-zero on failure.
     */
-    case SQLITE_TESTCTRL_LOCALTIME_FAULT: {
-      sqlite3GlobalConfig.bLocaltimeFault = va_arg(ap, int);
-      if( sqlite3GlobalConfig.bLocaltimeFault==2 ){
-        typedef int(*sqlite3LocaltimeType)(const void*,void*);
+    അവസ്ഥ SQLITE_TESTCTRL_LOCALTIME_FAULT: {
+      sqlite3GlobalConfig.bLocaltimeFault = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      എങ്കിൽ( sqlite3GlobalConfig.bLocaltimeFault==2 ){
+        തരനിർവചനം പൂർണ്ണസംഖ്യ(*sqlite3LocaltimeType)(സ്ഥിരം ശൂന്യം*,ശൂന്യം*);
         sqlite3GlobalConfig.xAltLocaltime = va_arg(ap, sqlite3LocaltimeType);
-      }else{
+      }അല്ലെങ്കിൽ{
         sqlite3GlobalConfig.xAltLocaltime = 0;
       }
-      break;
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_INTERNAL_FUNCTIONS, sqlite3*);
@@ -4585,10 +4585,10 @@ int sqlite3_test_control(int op, ...){
     ** Toggle the ability to use internal functions on or off for
     ** the database connection given in the argument.
     */
-    case SQLITE_TESTCTRL_INTERNAL_FUNCTIONS: {
+    അവസ്ഥ SQLITE_TESTCTRL_INTERNAL_FUNCTIONS: {
       sqlite3 *db = va_arg(ap, sqlite3*);
       db->mDbFlags ^= DBFLAG_InternalFunc;
-      break;
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_NEVER_CORRUPT, int);
@@ -4599,9 +4599,9 @@ int sqlite3_test_control(int op, ...){
     ** testing causes certain assert() statements in the code to be activated
     ** that demonstrate invariants on well-formed database files.
     */
-    case SQLITE_TESTCTRL_NEVER_CORRUPT: {
-      sqlite3GlobalConfig.neverCorrupt = va_arg(ap, int);
-      break;
+    അവസ്ഥ SQLITE_TESTCTRL_NEVER_CORRUPT: {
+      sqlite3GlobalConfig.neverCorrupt = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_EXTRA_SCHEMA_CHECKS, int);
@@ -4616,9 +4616,9 @@ int sqlite3_test_control(int op, ...){
     ** during testing.  The EXTRA_SCHEMA_CHECKS setting is always enabled
     ** in production.
     */
-    case SQLITE_TESTCTRL_EXTRA_SCHEMA_CHECKS: {
-      sqlite3GlobalConfig.bExtraSchemaChecks = va_arg(ap, int);
-      break;
+    അവസ്ഥ SQLITE_TESTCTRL_EXTRA_SCHEMA_CHECKS: {
+      sqlite3GlobalConfig.bExtraSchemaChecks = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
     /* Set the threshold at which OP_Once counters reset back to zero.
@@ -4626,9 +4626,9 @@ int sqlite3_test_control(int op, ...){
     ** too big to test in a reasonable amount of time, so this control is
     ** provided to set a small and easily reachable reset value.
     */
-    case SQLITE_TESTCTRL_ONCE_RESET_THRESHOLD: {
-      sqlite3GlobalConfig.iOnceResetThreshold = va_arg(ap, int);
-      break;
+    അവസ്ഥ SQLITE_TESTCTRL_ONCE_RESET_THRESHOLD: {
+      sqlite3GlobalConfig.iOnceResetThreshold = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, xCallback, ptr);
@@ -4636,21 +4636,21 @@ int sqlite3_test_control(int op, ...){
     ** Set the VDBE coverage callback function to xCallback with context
     ** pointer ptr.
     */
-    case SQLITE_TESTCTRL_VDBE_COVERAGE: {
+    അവസ്ഥ SQLITE_TESTCTRL_VDBE_COVERAGE: {
 #ifdef SQLITE_VDBE_COVERAGE
-      typedef void (*branch_callback)(void*,unsigned int,
-                                      unsigned char,unsigned char);
+      തരനിർവചനം ശൂന്യം (*branch_callback)(ശൂന്യം*,unsigned പൂർണ്ണസംഖ്യ,
+                                      unsigned അക്ഷരം,unsigned അക്ഷരം);
       sqlite3GlobalConfig.xVdbeBranch = va_arg(ap,branch_callback);
-      sqlite3GlobalConfig.pVdbeBranchArg = va_arg(ap,void*);
+      sqlite3GlobalConfig.pVdbeBranchArg = va_arg(ap,ശൂന്യം*);
 #endif
-      break;
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_SORTER_MMAP, db, nMax); */
-    case SQLITE_TESTCTRL_SORTER_MMAP: {
+    അവസ്ഥ SQLITE_TESTCTRL_SORTER_MMAP: {
       sqlite3 *db = va_arg(ap, sqlite3*);
-      db->nMaxSorterMmap = va_arg(ap, int);
-      break;
+      db->nMaxSorterMmap = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      നിർത്തുക;
     }
 
     /*   sqlite3_test_control(SQLITE_TESTCTRL_ISINIT);
@@ -4658,9 +4658,9 @@ int sqlite3_test_control(int op, ...){
     ** Return SQLITE_OK if SQLite has been initialized and SQLITE_ERROR if
     ** not.
     */
-    case SQLITE_TESTCTRL_ISINIT: {
-      if( sqlite3GlobalConfig.isInit==0 ) rc = SQLITE_ERROR;
-      break;
+    അവസ്ഥ SQLITE_TESTCTRL_ISINIT: {
+      എങ്കിൽ( sqlite3GlobalConfig.isInit==0 ) rc = SQLITE_ERROR;
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_IMPOSTER, db, dbName, mode, tnum);
@@ -4681,24 +4681,24 @@ int sqlite3_test_control(int op, ...){
     ** the schema to be reparsed the next time it is needed.  This has the
     ** effect of erasing all imposter tables.
     */
-    case SQLITE_TESTCTRL_IMPOSTER: {
+    അവസ്ഥ SQLITE_TESTCTRL_IMPOSTER: {
       sqlite3 *db = va_arg(ap, sqlite3*);
-      int iDb;
+      പൂർണ്ണസംഖ്യ iDb;
       sqlite3_mutex_enter(db->mutex);
-      iDb = sqlite3FindDbName(db, va_arg(ap,const char*));
-      if( iDb>=0 ){
+      iDb = sqlite3FindDbName(db, va_arg(ap,സ്ഥിരം അക്ഷരം*));
+      എങ്കിൽ( iDb>=0 ){
         db->init.iDb = iDb;
-        db->init.busy = db->init.imposterTable = va_arg(ap,int);
-        db->init.newTnum = va_arg(ap,int);
-        if( db->init.busy==0 && db->init.newTnum>0 ){
+        db->init.busy = db->init.imposterTable = va_arg(ap,പൂർണ്ണസംഖ്യ);
+        db->init.newTnum = va_arg(ap,പൂർണ്ണസംഖ്യ);
+        എങ്കിൽ( db->init.busy==0 && db->init.newTnum>0 ){
           sqlite3ResetAllSchemasOfConnection(db);
         }
       }
       sqlite3_mutex_leave(db->mutex);
-      break;
+      നിർത്തുക;
     }
 
-#if defined(YYCOVERAGE)
+#എങ്കിൽ defined(YYCOVERAGE)
     /*  sqlite3_test_control(SQLITE_TESTCTRL_PARSER_COVERAGE, FILE *out)
     **
     ** This test control (only available when SQLite is compiled with
@@ -4707,10 +4707,10 @@ int sqlite3_test_control(int op, ...){
     ** which are never exercised.  If any state is missed, make the
     ** return code SQLITE_ERROR.
     */
-    case SQLITE_TESTCTRL_PARSER_COVERAGE: {
+    അവസ്ഥ SQLITE_TESTCTRL_PARSER_COVERAGE: {
       FILE *out = va_arg(ap, FILE*);
-      if( sqlite3ParserCoverage(out) ) rc = SQLITE_ERROR;
-      break;
+      എങ്കിൽ( sqlite3ParserCoverage(out) ) rc = SQLITE_ERROR;
+      നിർത്തുക;
     }
 #endif /* defined(YYCOVERAGE) */
 
@@ -4724,10 +4724,10 @@ int sqlite3_test_control(int op, ...){
     ** inject an intreal() value at arbitrary places in an SQL statement,
     ** for testing purposes.
     */
-    case SQLITE_TESTCTRL_RESULT_INTREAL: {
+    അവസ്ഥ SQLITE_TESTCTRL_RESULT_INTREAL: {
       sqlite3_context *pCtx = va_arg(ap, sqlite3_context*);
       sqlite3ResultIntReal(pCtx);
-      break;
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_SEEK_COUNT,
@@ -4739,12 +4739,12 @@ int sqlite3_test_control(int op, ...){
     ** file.  The seek-counter is written into *pnSeek and is then reset.
     ** The seek-count is only available if compiled with SQLITE_DEBUG.
     */
-    case SQLITE_TESTCTRL_SEEK_COUNT: {
+    അവസ്ഥ SQLITE_TESTCTRL_SEEK_എണ്ണം: {
       sqlite3 *db = va_arg(ap, sqlite3*);
       u64 *pn = va_arg(ap, sqlite3_uint64*);
-      *pn = sqlite3BtreeSeekCount(db->aDb->pBt);
-      (void)db;  /* Silence harmless unused variable warning */
-      break;
+      *pn = sqlite3_Btree_Seek_എണ്ണം(db->aDb->pBt);
+      (ശൂന്യം)db;  /* Silence harmless unused variable warning */
+      നിർത്തുക;
     }
 
     /*  sqlite3_test_control(SQLITE_TESTCTRL_TRACEFLAGS, op, ptr)
@@ -4756,16 +4756,16 @@ int sqlite3_test_control(int op, ...){
     **   op==2       Store the current sqlite3WhereTrace in *ptr
     **   op==3       Set sqlite3WhereTrace to the value *ptr
     */
-    case SQLITE_TESTCTRL_TRACEFLAGS: {
-       int opTrace = va_arg(ap, int);
+    അവസ്ഥ SQLITE_TESTCTRL_TRACEFLAGS: {
+       പൂർണ്ണസംഖ്യ opTrace = va_arg(ap, പൂർണ്ണസംഖ്യ);
        u32 *ptr = va_arg(ap, u32*);
-       switch( opTrace ){
-         case 0:   *ptr = sqlite3TreeTrace;      break;
-         case 1:   sqlite3TreeTrace = *ptr;      break;
-         case 2:   *ptr = sqlite3WhereTrace;     break;
-         case 3:   sqlite3WhereTrace = *ptr;     break;
+       തിരഞ്ഞെടുപ്പ്( opTrace ){
+         അവസ്ഥ 0:   *ptr = sqlite3_വൃക്ഷം_Trace;      നിർത്തുക;
+         അവസ്ഥ 1:   sqlite3_വൃക്ഷം_Trace = *ptr;      നിർത്തുക;
+         അവസ്ഥ 2:   *ptr = sqlite3WhereTrace;     നിർത്തുക;
+         അവസ്ഥ 3:   sqlite3WhereTrace = *ptr;     നിർത്തുക;
        }
-       break;
+       നിർത്തുക;
     }
 
     /* sqlite3_test_control(SQLITE_TESTCTRL_LOGEST,
@@ -4777,30 +4777,30 @@ int sqlite3_test_control(int op, ...){
     **
     ** Test access for the LogEst conversion routines.
     */
-    case SQLITE_TESTCTRL_LOGEST: {
-      double rIn = va_arg(ap, double);
+    അവസ്ഥ SQLITE_TESTCTRL_LOGEST: {
+      ഇരട്ട rIn = va_arg(ap, ഇരട്ട);
       LogEst rLogEst = sqlite3LogEstFromDouble(rIn);
-      int *pI1 = va_arg(ap,int*);
+      പൂർണ്ണസംഖ്യ *pI1 = va_arg(ap,പൂർണ്ണസംഖ്യ*);
       u64 *pU64 = va_arg(ap,u64*);
-      int *pI2 = va_arg(ap,int*);
+      പൂർണ്ണസംഖ്യ *pI2 = va_arg(ap,പൂർണ്ണസംഖ്യ*);
       *pI1 = rLogEst;
       *pU64 = sqlite3LogEstToInt(rLogEst);
       *pI2 = sqlite3LogEst(*pU64);
-      break;
+      നിർത്തുക;
     }
 
     /* sqlite3_test_control(SQLITE_TESTCTRL_ATOF, const char *z, double *p);
     **
     ** Test access to the sqlite3AtoF() routine.
     */
-    case SQLITE_TESTCTRL_ATOF: {
-      const char *z = va_arg(ap,const char*);
-      double *pR = va_arg(ap,double*);
+    അവസ്ഥ SQLITE_TESTCTRL_ATOF: {
+      സ്ഥിരം അക്ഷരം *z = va_arg(ap,സ്ഥിരം അക്ഷരം*);
+      ഇരട്ട *pR = va_arg(ap,ഇരട്ട*);
       rc = sqlite3AtoF(z,pR);
-      break;
+      നിർത്തുക;
     }
 
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_WSD)
+#എങ്കിൽ defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_WSD)
     /* sqlite3_test_control(SQLITE_TESTCTRL_TUNE, id, *piValue)
     **
     ** If "id" is an integer between 1 and SQLITE_NTUNE then set the value
@@ -4816,17 +4816,17 @@ int sqlite3_test_control(int op, ...){
     ** Transient use only.  Tuning parameters should not be used in
     ** checked-in code.
     */
-    case SQLITE_TESTCTRL_TUNE: {
-      int id = va_arg(ap, int);
-      int *piValue = va_arg(ap, int*);
-      if( id>0 && id<=SQLITE_NTUNE ){
-        Tuning(id) = *piValue;
-      }else if( id<0 && id>=-SQLITE_NTUNE ){
-        *piValue = Tuning(-id);
-      }else{
+    അവസ്ഥ SQLITE_TESTCTRL_TUNE: {
+      പൂർണ്ണസംഖ്യ id = va_arg(ap, പൂർണ്ണസംഖ്യ);
+      പൂർണ്ണസംഖ്യ *pi_മൂല്യം = va_arg(ap, പൂർണ്ണസംഖ്യ*);
+      എങ്കിൽ( id>0 && id<=SQLITE_NTUNE ){
+        Tuning(id) = *pi_മൂല്യം;
+      }അല്ലെങ്കിൽ എങ്കിൽ( id<0 && id>=-SQLITE_NTUNE ){
+        *pi_മൂല്യം = Tuning(-id);
+      }അല്ലെങ്കിൽ{
         rc = SQLITE_NOTFOUND;
       }
-      break;
+      നിർത്തുക;
     }
 #endif
 
@@ -4840,21 +4840,21 @@ int sqlite3_test_control(int op, ...){
     ** off, turn it off.  If onOff is initially -1, then change onOff
     ** to be the current setting.
     */
-    case SQLITE_TESTCTRL_JSON_SELFCHECK: {
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_WSD)
-      int *pOnOff = va_arg(ap, int*);
-      if( *pOnOff<0 ){
+    അവസ്ഥ SQLITE_TESTCTRL_JSON_SELFCHECK: {
+#എങ്കിൽ defined(SQLITE_DEBUG) && !defined(SQLITE_OMIT_WSD)
+      പൂർണ്ണസംഖ്യ *pOnOff = va_arg(ap, പൂർണ്ണസംഖ്യ*);
+      എങ്കിൽ( *pOnOff<0 ){
         *pOnOff = sqlite3Config.bJsonSelfcheck;
-      }else{
+      }അല്ലെങ്കിൽ{
         sqlite3Config.bJsonSelfcheck = (u8)((*pOnOff)&0xff);
       }
 #endif
-      break;
+      നിർത്തുക;
     }
   }
   va_end(ap);
 #endif /* SQLITE_UNTESTABLE */
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -4865,21 +4865,21 @@ int sqlite3_test_control(int op, ...){
 **
 ** This only works if the filename passed in was obtained from the Pager.
 */
-static const char *databaseName(const char *zName){
-  while( zName[-1]!=0 || zName[-2]!=0 || zName[-3]!=0 || zName[-4]!=0 ){
+സ്ഥിതം സ്ഥിരം അക്ഷരം *databaseName(സ്ഥിരം അക്ഷരം *zName){
+  ആകുമ്പോൾ( zName[-1]!=0 || zName[-2]!=0 || zName[-3]!=0 || zName[-4]!=0 ){
     zName--;
   }
-  return zName;
+  തിരികെ zName;
 }
 
 /*
 ** Append text z[] to the end of p[].  Return a pointer to the first
 ** character after then zero terminator on the new text in p[].
 */
-static char *appendText(char *p, const char *z){
+സ്ഥിതം അക്ഷരം *appendText(അക്ഷരം *p, സ്ഥിരം അക്ഷരം *z){
   size_t n = strlen(z);
   memcpy(p, z, n+1);
-  return p+n+1;
+  തിരികെ p+n+1;
 }
 
 /*
@@ -4891,26 +4891,26 @@ static char *appendText(char *p, const char *z){
 ** Memory layout must be compatible with that generated by the pager
 ** and expected by sqlite3_uri_parameter() and databaseName().
 */
-const char *sqlite3_create_filename(
-  const char *zDatabase,
-  const char *zJournal,
-  const char *zWal,
-  int nParam,
-  const char **azParam
+സ്ഥിരം അക്ഷരം *sqlite3_create_filename(
+  സ്ഥിരം അക്ഷരം *zDatabase,
+  സ്ഥിരം അക്ഷരം *zJournal,
+  സ്ഥിരം അക്ഷരം *zWal,
+  പൂർണ്ണസംഖ്യ nParam,
+  സ്ഥിരം അക്ഷരം **azParam
 ){
   sqlite3_int64 nByte;
-  int i;
-  char *pResult, *p;
+  പൂർണ്ണസംഖ്യ i;
+  അക്ഷരം *pResult, *p;
   nByte = strlen(zDatabase) + strlen(zJournal) + strlen(zWal) + 10;
-  for(i=0; i<nParam*2; i++){
+  വേണ്ടി(i=0; i<nParam*2; i++){
     nByte += strlen(azParam[i])+1;
   }
   pResult = p = sqlite3_malloc64( nByte );
-  if( p==0 ) return 0;
+  എങ്കിൽ( p==0 ) തിരികെ 0;
   memset(p, 0, 4);
   p += 4;
   p = appendText(p, zDatabase);
-  for(i=0; i<nParam*2; i++){
+  വേണ്ടി(i=0; i<nParam*2; i++){
     p = appendText(p, azParam[i]);
   }
   *(p++) = 0;
@@ -4918,8 +4918,8 @@ const char *sqlite3_create_filename(
   p = appendText(p, zWal);
   *(p++) = 0;
   *(p++) = 0;
-  assert( (sqlite3_int64)(p - pResult)==nByte );
-  return pResult + 4;
+  പ്രതിജ്ഞാ( (sqlite3_int64)(p - pResult)==nByte );
+  തിരികെ pResult + 4;
 }
 
 /*
@@ -4927,10 +4927,10 @@ const char *sqlite3_create_filename(
 ** error to call this routine with any parameter other than a pointer
 ** previously obtained from sqlite3_create_filename() or a NULL pointer.
 */
-void sqlite3_free_filename(const char *p){
-  if( p==0 ) return;
+ശൂന്യം sqlite3_free_filename(സ്ഥിരം അക്ഷരം *p){
+  എങ്കിൽ( p==0 ) തിരികെ;
   p = databaseName(p);
-  sqlite3_free((char*)p - 4);
+  sqlite3_free((അക്ഷരം*)p - 4);
 }
 
 
@@ -4945,49 +4945,49 @@ void sqlite3_free_filename(const char *p){
 ** parameter if it exists.  If the parameter does not exist, this routine
 ** returns a NULL pointer.
 */
-const char *sqlite3_uri_parameter(const char *zFilename, const char *zParam){
-  if( zFilename==0 || zParam==0 ) return 0;
+സ്ഥിരം അക്ഷരം *sqlite3_uri_parameter(സ്ഥിരം അക്ഷരം *zFilename, സ്ഥിരം അക്ഷരം *zParam){
+  എങ്കിൽ( zFilename==0 || zParam==0 ) തിരികെ 0;
   zFilename = databaseName(zFilename);
-  return uriParameter(zFilename, zParam);
+  തിരികെ uriParameter(zFilename, zParam);
 }
 
 /*
 ** Return a pointer to the name of Nth query parameter of the filename.
 */
-const char *sqlite3_uri_key(const char *zFilename, int N){
-  if( zFilename==0 || N<0 ) return 0;
+സ്ഥിരം അക്ഷരം *sqlite3_uri_താക്കോൽ(സ്ഥിരം അക്ഷരം *zFilename, പൂർണ്ണസംഖ്യ N){
+  എങ്കിൽ( zFilename==0 || N<0 ) തിരികെ 0;
   zFilename = databaseName(zFilename);
   zFilename += sqlite3Strlen30(zFilename) + 1;
-  while( ALWAYS(zFilename) && zFilename[0] && (N--)>0 ){
+  ആകുമ്പോൾ( ALWAYS(zFilename) && zFilename[0] && (N--)>0 ){
     zFilename += sqlite3Strlen30(zFilename) + 1;
     zFilename += sqlite3Strlen30(zFilename) + 1;
   }
-  return zFilename[0] ? zFilename : 0;
+  തിരികെ zFilename[0] ? zFilename : 0;
 }
 
 /*
 ** Return a boolean value for a query parameter.
 */
-int sqlite3_uri_boolean(const char *zFilename, const char *zParam, int bDflt){
-  const char *z = sqlite3_uri_parameter(zFilename, zParam);
+പൂർണ്ണസംഖ്യ sqlite3_uri_boolean(സ്ഥിരം അക്ഷരം *zFilename, സ്ഥിരം അക്ഷരം *zParam, പൂർണ്ണസംഖ്യ bDflt){
+  സ്ഥിരം അക്ഷരം *z = sqlite3_uri_parameter(zFilename, zParam);
   bDflt = bDflt!=0;
-  return z ? sqlite3GetBoolean(z, bDflt) : bDflt;
+  തിരികെ z ? sqlite3GetBoolean(z, bDflt) : bDflt;
 }
 
 /*
 ** Return a 64-bit integer value for a query parameter.
 */
 sqlite3_int64 sqlite3_uri_int64(
-  const char *zFilename,    /* Filename as passed to xOpen */
-  const char *zParam,       /* URI parameter sought */
+  സ്ഥിരം അക്ഷരം *zFilename,    /* Filename as passed to xOpen */
+  സ്ഥിരം അക്ഷരം *zParam,       /* URI parameter sought */
   sqlite3_int64 bDflt       /* return if parameter is missing */
 ){
-  const char *z = sqlite3_uri_parameter(zFilename, zParam);
+  സ്ഥിരം അക്ഷരം *z = sqlite3_uri_parameter(zFilename, zParam);
   sqlite3_int64 v;
-  if( z && sqlite3DecOrHexToI64(z, &v)==0 ){
+  എങ്കിൽ( z && sqlite3DecOrHexToI64(z, &v)==0 ){
     bDflt = v;
   }
-  return bDflt;
+  തിരികെ bDflt;
 }
 
 /*
@@ -5000,89 +5000,89 @@ sqlite3_int64 sqlite3_uri_int64(
 ** an error that we cannot easily detect but that will likely cause memory
 ** corruption.
 */
-const char *sqlite3_filename_database(const char *zFilename){
-  if( zFilename==0 ) return 0;
-  return databaseName(zFilename);
+സ്ഥിരം അക്ഷരം *sqlite3_filename_database(സ്ഥിരം അക്ഷരം *zFilename){
+  എങ്കിൽ( zFilename==0 ) തിരികെ 0;
+  തിരികെ databaseName(zFilename);
 }
-const char *sqlite3_filename_journal(const char *zFilename){
-  if( zFilename==0 ) return 0;
+സ്ഥിരം അക്ഷരം *sqlite3_filename_journal(സ്ഥിരം അക്ഷരം *zFilename){
+  എങ്കിൽ( zFilename==0 ) തിരികെ 0;
   zFilename = databaseName(zFilename);
   zFilename += sqlite3Strlen30(zFilename) + 1;
-  while( ALWAYS(zFilename) && zFilename[0] ){
+  ആകുമ്പോൾ( ALWAYS(zFilename) && zFilename[0] ){
     zFilename += sqlite3Strlen30(zFilename) + 1;
     zFilename += sqlite3Strlen30(zFilename) + 1;
   }
-  return zFilename + 1;
+  തിരികെ zFilename + 1;
 }
-const char *sqlite3_filename_wal(const char *zFilename){
+സ്ഥിരം അക്ഷരം *sqlite3_filename_wal(സ്ഥിരം അക്ഷരം *zFilename){
 #ifdef SQLITE_OMIT_WAL
   UNUSED_PARAMETER(zFilename);
-  return 0;
-#else
+  തിരികെ 0;
+#അല്ലെങ്കിൽ
   zFilename = sqlite3_filename_journal(zFilename);
-  if( zFilename ) zFilename += sqlite3Strlen30(zFilename) + 1;
-  return zFilename;
+  എങ്കിൽ( zFilename ) zFilename += sqlite3Strlen30(zFilename) + 1;
+  തിരികെ zFilename;
 #endif
 }
 
 /*
 ** Return the Btree pointer identified by zDbName.  Return NULL if not found.
 */
-Btree *sqlite3DbNameToBtree(sqlite3 *db, const char *zDbName){
-  int iDb = zDbName ? sqlite3FindDbName(db, zDbName) : 0;
-  return iDb<0 ? 0 : db->aDb[iDb].pBt;
+Btree *sqlite3DbNameToBtree(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDbName){
+  പൂർണ്ണസംഖ്യ iDb = zDbName ? sqlite3FindDbName(db, zDbName) : 0;
+  തിരികെ iDb<0 ? 0 : db->aDb[iDb].pBt;
 }
 
 /*
 ** Return the name of the N-th database schema.  Return NULL if N is out
 ** of range.
 */
-const char *sqlite3_db_name(sqlite3 *db, int N){
-  const char *zRet = 0;
+സ്ഥിരം അക്ഷരം *sqlite3_db_name(sqlite3 *db, പൂർണ്ണസംഖ്യ N){
+  സ്ഥിരം അക്ഷരം *zRet = 0;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( N>=0 && N<db->nDb ){
+  എങ്കിൽ( N>=0 && N<db->nDb ){
     zRet = db->aDb[N].zDbSName;
   }
   sqlite3_mutex_leave(db->mutex);
-  return zRet;
+  തിരികെ zRet;
 }
 
 /*
 ** Return the filename of the database associated with a database
 ** connection.
 */
-const char *sqlite3_db_filename(sqlite3 *db, const char *zDbName){
+സ്ഥിരം അക്ഷരം *sqlite3_db_filename(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDbName){
   Btree *pBt;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
   pBt = sqlite3DbNameToBtree(db, zDbName);
-  return pBt ? sqlite3BtreeGetFilename(pBt) : 0;
+  തിരികെ pBt ? sqlite3BtreeGetFilename(pBt) : 0;
 }
 
 /*
 ** Return 1 if database is read-only or 0 if read/write.  Return -1 if
 ** no such database exists.
 */
-int sqlite3_db_readonly(sqlite3 *db, const char *zDbName){
+പൂർണ്ണസംഖ്യ sqlite3_db_readonly(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDbName){
   Btree *pBt;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return -1;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ -1;
   }
 #endif
   pBt = sqlite3DbNameToBtree(db, zDbName);
-  return pBt ? sqlite3BtreeIsReadonly(pBt) : -1;
+  തിരികെ pBt ? sqlite3BtreeIsReadonly(pBt) : -1;
 }
 
 #ifdef SQLITE_ENABLE_SNAPSHOT
@@ -5090,32 +5090,32 @@ int sqlite3_db_readonly(sqlite3 *db, const char *zDbName){
 ** Obtain a snapshot handle for the snapshot of database zDb currently
 ** being read by handle db.
 */
-int sqlite3_snapshot_get(
+പൂർണ്ണസംഖ്യ sqlite3_snapshot_get(
   sqlite3 *db,
-  const char *zDb,
+  സ്ഥിരം അക്ഷരം *zDb,
   sqlite3_snapshot **ppSnapshot
 ){
-  int rc = SQLITE_ERROR;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_ERROR;
 #ifndef SQLITE_OMIT_WAL
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
 
-  if( db->autoCommit==0 ){
-    int iDb = sqlite3FindDbName(db, zDb);
-    if( iDb==0 || iDb>1 ){
+  എങ്കിൽ( db->autoCommit==0 ){
+    പൂർണ്ണസംഖ്യ iDb = sqlite3FindDbName(db, zDb);
+    എങ്കിൽ( iDb==0 || iDb>1 ){
       Btree *pBt = db->aDb[iDb].pBt;
-      if( SQLITE_TXN_WRITE!=sqlite3BtreeTxnState(pBt) ){
+      എങ്കിൽ( SQLITE_TXN_WRITE!=sqlite3BtreeTxnState(pBt) ){
         Pager *pPager = sqlite3BtreePager(pBt);
         i64 dummy = 0;
         sqlite3PagerSnapshotOpen(pPager, (sqlite3_snapshot*)&dummy);
         rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
         sqlite3PagerSnapshotOpen(pPager, 0);
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           rc = sqlite3PagerSnapshotGet(sqlite3BtreePager(pBt), ppSnapshot);
         }
       }
@@ -5124,53 +5124,53 @@ int sqlite3_snapshot_get(
 
   sqlite3_mutex_leave(db->mutex);
 #endif   /* SQLITE_OMIT_WAL */
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Open a read-transaction on the snapshot identified by pSnapshot.
 */
-int sqlite3_snapshot_open(
+പൂർണ്ണസംഖ്യ sqlite3_snapshot_open(
   sqlite3 *db,
-  const char *zDb,
+  സ്ഥിരം അക്ഷരം *zDb,
   sqlite3_snapshot *pSnapshot
 ){
-  int rc = SQLITE_ERROR;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_ERROR;
 #ifndef SQLITE_OMIT_WAL
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( db->autoCommit==0 ){
-    int iDb;
+  എങ്കിൽ( db->autoCommit==0 ){
+    പൂർണ്ണസംഖ്യ iDb;
     iDb = sqlite3FindDbName(db, zDb);
-    if( iDb==0 || iDb>1 ){
+    എങ്കിൽ( iDb==0 || iDb>1 ){
       Btree *pBt = db->aDb[iDb].pBt;
-      if( sqlite3BtreeTxnState(pBt)!=SQLITE_TXN_WRITE ){
+      എങ്കിൽ( sqlite3BtreeTxnState(pBt)!=SQLITE_TXN_WRITE ){
         Pager *pPager = sqlite3BtreePager(pBt);
-        int bUnlock = 0;
-        if( sqlite3BtreeTxnState(pBt)!=SQLITE_TXN_NONE ){
-          if( db->nVdbeActive==0 ){
+        പൂർണ്ണസംഖ്യ bUnlock = 0;
+        എങ്കിൽ( sqlite3BtreeTxnState(pBt)!=SQLITE_TXN_NONE ){
+          എങ്കിൽ( db->nVdbeActive==0 ){
             rc = sqlite3PagerSnapshotCheck(pPager, pSnapshot);
-            if( rc==SQLITE_OK ){
+            എങ്കിൽ( rc==SQLITE_OK ){
               bUnlock = 1;
               rc = sqlite3BtreeCommit(pBt);
             }
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           rc = SQLITE_OK;
         }
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           rc = sqlite3PagerSnapshotOpen(pPager, pSnapshot);
         }
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
           sqlite3PagerSnapshotOpen(pPager, 0);
         }
-        if( bUnlock ){
+        എങ്കിൽ( bUnlock ){
           sqlite3PagerSnapshotUnlock(pPager);
         }
       }
@@ -5179,31 +5179,31 @@ int sqlite3_snapshot_open(
 
   sqlite3_mutex_leave(db->mutex);
 #endif   /* SQLITE_OMIT_WAL */
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Recover as many snapshots as possible from the wal file associated with
 ** schema zDb of database db.
 */
-int sqlite3_snapshot_recover(sqlite3 *db, const char *zDb){
-  int rc = SQLITE_ERROR;
+പൂർണ്ണസംഖ്യ sqlite3_snapshot_recover(sqlite3 *db, സ്ഥിരം അക്ഷരം *zDb){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_ERROR;
 #ifndef SQLITE_OMIT_WAL
-  int iDb;
+  പൂർണ്ണസംഖ്യ iDb;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ){
-    return SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ){
+    തിരികെ SQLITE_MISUSE_BKPT;
   }
 #endif
 
   sqlite3_mutex_enter(db->mutex);
   iDb = sqlite3FindDbName(db, zDb);
-  if( iDb==0 || iDb>1 ){
+  എങ്കിൽ( iDb==0 || iDb>1 ){
     Btree *pBt = db->aDb[iDb].pBt;
-    if( SQLITE_TXN_NONE==sqlite3BtreeTxnState(pBt) ){
+    എങ്കിൽ( SQLITE_TXN_NONE==sqlite3BtreeTxnState(pBt) ){
       rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         rc = sqlite3PagerSnapshotRecover(sqlite3BtreePager(pBt));
         sqlite3BtreeCommit(pBt);
       }
@@ -5211,13 +5211,13 @@ int sqlite3_snapshot_recover(sqlite3 *db, const char *zDb){
   }
   sqlite3_mutex_leave(db->mutex);
 #endif   /* SQLITE_OMIT_WAL */
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Free a snapshot handle obtained from sqlite3_snapshot_get().
 */
-void sqlite3_snapshot_free(sqlite3_snapshot *pSnapshot){
+ശൂന്യം sqlite3_snapshot_free(sqlite3_snapshot *pSnapshot){
   sqlite3_free(pSnapshot);
 }
 #endif /* SQLITE_ENABLE_SNAPSHOT */
@@ -5230,46 +5230,46 @@ void sqlite3_snapshot_free(sqlite3_snapshot *pSnapshot){
 ** The name can optionally begin with "SQLITE_" but the "SQLITE_" prefix
 ** is not required for a match.
 */
-int sqlite3_compileoption_used(const char *zOptName){
-  int i, n;
-  int nOpt;
-  const char **azCompileOpt;
+പൂർണ്ണസംഖ്യ sqlite3_compileoption_used(സ്ഥിരം അക്ഷരം *zOptName){
+  പൂർണ്ണസംഖ്യ i, n;
+  പൂർണ്ണസംഖ്യ nOpt;
+  സ്ഥിരം അക്ഷരം **azCompileOpt;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zOptName==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  എങ്കിൽ( zOptName==0 ){
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
+    തിരികെ 0;
   }
 #endif
 
   azCompileOpt = sqlite3CompileOptions(&nOpt);
 
-  if( sqlite3StrNICmp(zOptName, "SQLITE_", 7)==0 ) zOptName += 7;
+  എങ്കിൽ( sqlite3StrNICmp(zOptName, "SQLITE_", 7)==0 ) zOptName += 7;
   n = sqlite3Strlen30(zOptName);
 
   /* Since nOpt is normally in single digits, a linear search is
   ** adequate. No need for a binary search. */
-  for(i=0; i<nOpt; i++){
-    if( sqlite3StrNICmp(zOptName, azCompileOpt[i], n)==0
-     && sqlite3IsIdChar((unsigned char)azCompileOpt[i][n])==0
+  വേണ്ടി(i=0; i<nOpt; i++){
+    എങ്കിൽ( sqlite3StrNICmp(zOptName, azCompileOpt[i], n)==0
+     && sqlite3IsIdChar((unsigned അക്ഷരം)azCompileOpt[i][n])==0
     ){
-      return 1;
+      തിരികെ 1;
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Return the N-th compile-time option string.  If N is out of range,
 ** return a NULL pointer.
 */
-const char *sqlite3_compileoption_get(int N){
-  int nOpt;
-  const char **azCompileOpt;
+സ്ഥിരം അക്ഷരം *sqlite3_compileoption_get(പൂർണ്ണസംഖ്യ N){
+  പൂർണ്ണസംഖ്യ nOpt;
+  സ്ഥിരം അക്ഷരം **azCompileOpt;
   azCompileOpt = sqlite3CompileOptions(&nOpt);
-  if( N>=0 && N<nOpt ){
-    return azCompileOpt[N];
+  എങ്കിൽ( N>=0 && N<nOpt ){
+    തിരികെ azCompileOpt[N];
   }
-  return 0;
+  തിരികെ 0;
 }
 #endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */

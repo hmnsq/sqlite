@@ -25,7 +25,7 @@
 ** that does error checking on mutexes to make sure they are being
 ** called correctly.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 #ifndef SQLITE_MUTEX_OMIT
 
@@ -35,22 +35,22 @@
 **
 ** This routines provide no mutual exclusion or error checking.
 */
-static int noopMutexInit(void){ return SQLITE_OK; }
-static int noopMutexEnd(void){ return SQLITE_OK; }
-static sqlite3_mutex *noopMutexAlloc(int id){ 
+സ്ഥിതം പൂർണ്ണസംഖ്യ noopMutexInit(ശൂന്യം){ തിരികെ SQLITE_OK; }
+സ്ഥിതം പൂർണ്ണസംഖ്യ noopMutexEnd(ശൂന്യം){ തിരികെ SQLITE_OK; }
+സ്ഥിതം sqlite3_mutex *noopMutexAlloc(പൂർണ്ണസംഖ്യ id){ 
   UNUSED_PARAMETER(id);
-  return (sqlite3_mutex*)8; 
+  തിരികെ (sqlite3_mutex*)8; 
 }
-static void noopMutexFree(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
-static void noopMutexEnter(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
-static int noopMutexTry(sqlite3_mutex *p){
+സ്ഥിതം ശൂന്യം noopMutexFree(sqlite3_mutex *p){ UNUSED_PARAMETER(p); തിരികെ; }
+സ്ഥിതം ശൂന്യം noopMutexEnter(sqlite3_mutex *p){ UNUSED_PARAMETER(p); തിരികെ; }
+സ്ഥിതം പൂർണ്ണസംഖ്യ noopMutexTry(sqlite3_mutex *p){
   UNUSED_PARAMETER(p);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-static void noopMutexLeave(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
+സ്ഥിതം ശൂന്യം noopMutexLeave(sqlite3_mutex *p){ UNUSED_PARAMETER(p); തിരികെ; }
 
-sqlite3_mutex_methods const *sqlite3NoopMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods സ്ഥിരം *sqlite3NoopMutex(ശൂന്യം){
+  സ്ഥിതം സ്ഥിരം sqlite3_mutex_methods sMutex = {
     noopMutexInit,
     noopMutexEnd,
     noopMutexAlloc,
@@ -63,7 +63,7 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
     0,
   };
 
-  return &sMutex;
+  തിരികെ &sMutex;
 }
 #endif /* !SQLITE_DEBUG */
 
@@ -77,74 +77,74 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
 /*
 ** The mutex object
 */
-typedef struct sqlite3_debug_mutex {
-  int id;     /* The mutex type */
-  int cnt;    /* Number of entries without a matching leave */
+തരനിർവചനം ഘടന sqlite3_debug_mutex {
+  പൂർണ്ണസംഖ്യ id;     /* The mutex type */
+  പൂർണ്ണസംഖ്യ cnt;    /* Number of entries without a matching leave */
 } sqlite3_debug_mutex;
 
 /*
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
 ** intended for use inside assert() statements.
 */
-static int debugMutexHeld(sqlite3_mutex *pX){
+സ്ഥിതം പൂർണ്ണസംഖ്യ debugMutexHeld(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  return p==0 || p->cnt>0;
+  തിരികെ p==0 || p->cnt>0;
 }
-static int debugMutexNotheld(sqlite3_mutex *pX){
+സ്ഥിതം പൂർണ്ണസംഖ്യ debugMutexNotheld(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  return p==0 || p->cnt==0;
+  തിരികെ p==0 || p->cnt==0;
 }
 
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int debugMutexInit(void){ return SQLITE_OK; }
-static int debugMutexEnd(void){ return SQLITE_OK; }
+സ്ഥിതം പൂർണ്ണസംഖ്യ debugMutexInit(ശൂന്യം){ തിരികെ SQLITE_OK; }
+സ്ഥിതം പൂർണ്ണസംഖ്യ debugMutexEnd(ശൂന്യം){ തിരികെ SQLITE_OK; }
 
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
 ** mutex and returns a pointer to it.  If it returns NULL
 ** that means that a mutex could not be allocated. 
 */
-static sqlite3_mutex *debugMutexAlloc(int id){
-  static sqlite3_debug_mutex aStatic[SQLITE_MUTEX_STATIC_VFS3 - 1];
+സ്ഥിതം sqlite3_mutex *debugMutexAlloc(പൂർണ്ണസംഖ്യ id){
+  സ്ഥിതം sqlite3_debug_mutex aStatic[SQLITE_MUTEX_STATIC_VFS3 - 1];
   sqlite3_debug_mutex *pNew = 0;
-  switch( id ){
-    case SQLITE_MUTEX_FAST:
-    case SQLITE_MUTEX_RECURSIVE: {
-      pNew = sqlite3Malloc(sizeof(*pNew));
-      if( pNew ){
+  തിരഞ്ഞെടുപ്പ്( id ){
+    അവസ്ഥ SQLITE_MUTEX_FAST:
+    അവസ്ഥ SQLITE_MUTEX_RECURSIVE: {
+      pNew = sqlite3Malloc(വലുപ്പം(*pNew));
+      എങ്കിൽ( pNew ){
         pNew->id = id;
         pNew->cnt = 0;
       }
-      break;
+      നിർത്തുക;
     }
-    default: {
+    സ്ഥിരസ്ഥിതി: {
 #ifdef SQLITE_ENABLE_API_ARMOR
-      if( id-2<0 || id-2>=ArraySize(aStatic) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+      എങ്കിൽ( id-2<0 || id-2>=ArraySize(aStatic) ){
+        (ശൂന്യം)SQLITE_MISUSE_BKPT;
+        തിരികെ 0;
       }
 #endif
       pNew = &aStatic[id-2];
       pNew->id = id;
-      break;
+      നിർത്തുക;
     }
   }
-  return (sqlite3_mutex*)pNew;
+  തിരികെ (sqlite3_mutex*)pNew;
 }
 
 /*
 ** This routine deallocates a previously allocated mutex.
 */
-static void debugMutexFree(sqlite3_mutex *pX){
+സ്ഥിതം ശൂന്യം debugMutexFree(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->cnt==0 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE || p->id==SQLITE_MUTEX_FAST ){
+  പ്രതിജ്ഞാ( p->cnt==0 );
+  എങ്കിൽ( p->id==SQLITE_MUTEX_RECURSIVE || p->id==SQLITE_MUTEX_FAST ){
     sqlite3_free(p);
-  }else{
+  }അല്ലെങ്കിൽ{
 #ifdef SQLITE_ENABLE_API_ARMOR
-    (void)SQLITE_MISUSE_BKPT;
+    (ശൂന്യം)SQLITE_MISUSE_BKPT;
 #endif
   }
 }
@@ -160,16 +160,16 @@ static void debugMutexFree(sqlite3_mutex *pX){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void debugMutexEnter(sqlite3_mutex *pX){
+സ്ഥിതം ശൂന്യം debugMutexEnter(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  പ്രതിജ്ഞാ( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
   p->cnt++;
 }
-static int debugMutexTry(sqlite3_mutex *pX){
+സ്ഥിതം പൂർണ്ണസംഖ്യ debugMutexTry(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  പ്രതിജ്ഞാ( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
   p->cnt++;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -178,15 +178,15 @@ static int debugMutexTry(sqlite3_mutex *pX){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void debugMutexLeave(sqlite3_mutex *pX){
+സ്ഥിതം ശൂന്യം debugMutexLeave(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( debugMutexHeld(pX) );
+  പ്രതിജ്ഞാ( debugMutexHeld(pX) );
   p->cnt--;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  പ്രതിജ്ഞാ( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
 }
 
-sqlite3_mutex_methods const *sqlite3NoopMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods സ്ഥിരം *sqlite3NoopMutex(ശൂന്യം){
+  സ്ഥിതം സ്ഥിരം sqlite3_mutex_methods sMutex = {
     debugMutexInit,
     debugMutexEnd,
     debugMutexAlloc,
@@ -199,7 +199,7 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
     debugMutexNotheld
   };
 
-  return &sMutex;
+  തിരികെ &sMutex;
 }
 #endif /* SQLITE_DEBUG */
 
@@ -208,8 +208,8 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
 ** is used regardless of the run-time threadsafety setting.
 */
 #ifdef SQLITE_MUTEX_NOOP
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  return sqlite3NoopMutex();
+sqlite3_mutex_methods സ്ഥിരം *sqlite3DefaultMutex(ശൂന്യം){
+  തിരികെ sqlite3NoopMutex();
 }
 #endif /* defined(SQLITE_MUTEX_NOOP) */
 #endif /* !defined(SQLITE_MUTEX_OMIT) */

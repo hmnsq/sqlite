@@ -16,17 +16,17 @@
 #ifndef _PCACHE_H_
 #define _PCACHE_H_
 
-typedef struct PgHdr PgHdr;
-typedef struct PCache PCache;
+തരനിർവചനം ഘടന PgHdr PgHdr;
+തരനിർവചനം ഘടന PCache PCache;
 
 /*
 ** Every page in the cache is controlled by an instance of the following
 ** structure.
 */
-struct PgHdr {
+ഘടന PgHdr {
   sqlite3_pcache_page *pPage;    /* Pcache object page handle */
-  void *pData;                   /* Page data */
-  void *pExtra;                  /* Extra content */
+  ശൂന്യം *pData;                   /* Page data */
+  ശൂന്യം *pExtra;                  /* Extra content */
   PCache *pCache;                /* PRIVATE: Cache that owns this page */
   PgHdr *pDirty;                 /* Transient list of dirty sorted by pgno */
   Pager *pPager;                 /* The pager this page is part of */
@@ -60,89 +60,89 @@ struct PgHdr {
 #define PGHDR_WAL_APPEND      0x040  /* Appended to wal file */
 
 /* Initialize and shutdown the page cache subsystem */
-int sqlite3PcacheInitialize(void);
-void sqlite3PcacheShutdown(void);
+പൂർണ്ണസംഖ്യ sqlite3PcacheInitialize(ശൂന്യം);
+ശൂന്യം sqlite3PcacheShutdown(ശൂന്യം);
 
 /* Page cache buffer management:
 ** These routines implement SQLITE_CONFIG_PAGECACHE.
 */
-void sqlite3PCacheBufferSetup(void *, int sz, int n);
+ശൂന്യം sqlite3PCacheBufferSetup(ശൂന്യം *, പൂർണ്ണസംഖ്യ sz, പൂർണ്ണസംഖ്യ n);
 
 /* Create a new pager cache.
 ** Under memory stress, invoke xStress to try to make pages clean.
 ** Only clean and unpinned pages can be reclaimed.
 */
-int sqlite3PcacheOpen(
-  int szPage,                    /* Size of every page */
-  int szExtra,                   /* Extra space associated with each page */
-  int bPurgeable,                /* True if pages are on backing store */
-  int (*xStress)(void*, PgHdr*), /* Call to try to make pages clean */
-  void *pStress,                 /* Argument to xStress */
+പൂർണ്ണസംഖ്യ sqlite3PcacheOpen(
+  പൂർണ്ണസംഖ്യ szPage,                    /* Size of every page */
+  പൂർണ്ണസംഖ്യ szExtra,                   /* Extra space associated with each page */
+  പൂർണ്ണസംഖ്യ bPurgeable,                /* True if pages are on backing store */
+  പൂർണ്ണസംഖ്യ (*xStress)(ശൂന്യം*, PgHdr*), /* Call to try to make pages clean */
+  ശൂന്യം *pStress,                 /* Argument to xStress */
   PCache *pToInit                /* Preallocated space for the PCache */
 );
 
 /* Modify the page-size after the cache has been created. */
-int sqlite3PcacheSetPageSize(PCache *, int);
+പൂർണ്ണസംഖ്യ sqlite3PcacheSetPageSize(PCache *, പൂർണ്ണസംഖ്യ);
 
 /* Return the size in bytes of a PCache object.  Used to preallocate
 ** storage space.
 */
-int sqlite3PcacheSize(void);
+പൂർണ്ണസംഖ്യ sqlite3PcacheSize(ശൂന്യം);
 
 /* One release per successful fetch.  Page is pinned until released.
 ** Reference counted. 
 */
-sqlite3_pcache_page *sqlite3PcacheFetch(PCache*, Pgno, int createFlag);
-int sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_page**);
+sqlite3_pcache_page *sqlite3PcacheFetch(PCache*, Pgno, പൂർണ്ണസംഖ്യ createFlag);
+പൂർണ്ണസംഖ്യ sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_page**);
 PgHdr *sqlite3PcacheFetchFinish(PCache*, Pgno, sqlite3_pcache_page *pPage);
-void sqlite3PcacheRelease(PgHdr*);
+ശൂന്യം sqlite3PcacheRelease(PgHdr*);
 
-void sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
-void sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
-void sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
-void sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
-void sqlite3PcacheClearWritable(PCache*);
+ശൂന്യം sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
+ശൂന്യം sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
+ശൂന്യം sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
+ശൂന്യം sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
+ശൂന്യം sqlite3PcacheClearWritable(PCache*);
 
 /* Change a page number.  Used by incr-vacuum. */
-void sqlite3PcacheMove(PgHdr*, Pgno);
+ശൂന്യം sqlite3PcacheMove(PgHdr*, Pgno);
 
 /* Remove all pages with pgno>x.  Reset the cache if x==0 */
-void sqlite3PcacheTruncate(PCache*, Pgno x);
+ശൂന്യം sqlite3PcacheTruncate(PCache*, Pgno x);
 
 /* Get a list of all dirty pages in the cache, sorted by page number */
 PgHdr *sqlite3PcacheDirtyList(PCache*);
 
 /* Reset and close the cache object */
-void sqlite3PcacheClose(PCache*);
+ശൂന്യം sqlite3PcacheClose(PCache*);
 
 /* Clear flags from pages of the page cache */
-void sqlite3PcacheClearSyncFlags(PCache *);
+ശൂന്യം sqlite3PcacheClearSyncFlags(PCache *);
 
 /* Discard the contents of the cache */
-void sqlite3PcacheClear(PCache*);
+ശൂന്യം sqlite3PcacheClear(PCache*);
 
 /* Return the total number of outstanding page references */
-i64 sqlite3PcacheRefCount(PCache*);
+i64 sqlite3_Pcache_Ref_എണ്ണം(PCache*);
 
 /* Increment the reference count of an existing page */
-void sqlite3PcacheRef(PgHdr*);
+ശൂന്യം sqlite3PcacheRef(PgHdr*);
 
 i64 sqlite3PcachePageRefcount(PgHdr*);
 
 /* Return the total number of pages stored in the cache */
-int sqlite3PcachePagecount(PCache*);
+പൂർണ്ണസംഖ്യ sqlite3PcachePagecount(PCache*);
 
-#if defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
+#എങ്കിൽ defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
 /* Iterate through all dirty pages currently stored in the cache. This
 ** interface is only available if SQLITE_CHECK_PAGES is defined when the 
 ** library is built.
 */
-void sqlite3PcacheIterateDirty(PCache *pCache, void (*xIter)(PgHdr *));
+ശൂന്യം sqlite3PcacheIterateDirty(PCache *pCache, ശൂന്യം (*xIter)(PgHdr *));
 #endif
 
-#if defined(SQLITE_DEBUG)
+#എങ്കിൽ defined(SQLITE_DEBUG)
 /* Check invariants on a PgHdr object */
-int sqlite3PcachePageSanity(PgHdr*);
+പൂർണ്ണസംഖ്യ sqlite3PcachePageSanity(PgHdr*);
 #endif
 
 /* Set and get the suggested cache-size for the specified pager-cache.
@@ -151,9 +151,9 @@ int sqlite3PcachePageSanity(PgHdr*);
 ** the total number of pages cached by purgeable pager-caches to the sum
 ** of the suggested cache-sizes.
 */
-void sqlite3PcacheSetCachesize(PCache *, int);
+ശൂന്യം sqlite3PcacheSetCachesize(PCache *, പൂർണ്ണസംഖ്യ);
 #ifdef SQLITE_TEST
-int sqlite3PcacheGetCachesize(PCache *);
+പൂർണ്ണസംഖ്യ sqlite3PcacheGetCachesize(PCache *);
 #endif
 
 /* Set or get the suggested spill-size for the specified pager-cache.
@@ -161,31 +161,31 @@ int sqlite3PcacheGetCachesize(PCache *);
 ** The spill-size is the minimum number of pages in cache before the cache
 ** will attempt to spill dirty pages by calling xStress.
 */
-int sqlite3PcacheSetSpillsize(PCache *, int);
+പൂർണ്ണസംഖ്യ sqlite3PcacheSetSpillsize(PCache *, പൂർണ്ണസംഖ്യ);
 
 /* Free up as much memory as possible from the page cache */
-void sqlite3PcacheShrink(PCache*);
+ശൂന്യം sqlite3PcacheShrink(PCache*);
 
 #ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
 /* Try to return memory used by the pcache module to the main memory heap */
-int sqlite3PcacheReleaseMemory(int);
+പൂർണ്ണസംഖ്യ sqlite3PcacheReleaseMemory(പൂർണ്ണസംഖ്യ);
 #endif
 
 #ifdef SQLITE_TEST
-void sqlite3PcacheStats(int*,int*,int*,int*);
+ശൂന്യം sqlite3PcacheStats(പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ*);
 #endif
 
-void sqlite3PCacheSetDefault(void);
+ശൂന്യം sqlite3PCacheSetDefault(ശൂന്യം);
 
 /* Return the header size */
-int sqlite3HeaderSizePcache(void);
-int sqlite3HeaderSizePcache1(void);
+പൂർണ്ണസംഖ്യ sqlite3HeaderSizePcache(ശൂന്യം);
+പൂർണ്ണസംഖ്യ sqlite3HeaderSizePcache1(ശൂന്യം);
 
 /* Number of dirty pages as a percentage of the configured cache size */
-int sqlite3PCachePercentDirty(PCache*);
+പൂർണ്ണസംഖ്യ sqlite3PCachePercentDirty(PCache*);
 
 #ifdef SQLITE_DIRECT_OVERFLOW_READ
-int sqlite3PCacheIsDirty(PCache *pCache);
+പൂർണ്ണസംഖ്യ sqlite3PCacheIsDirty(PCache *pCache);
 #endif
 
 #endif /* _PCACHE_H_ */

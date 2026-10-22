@@ -15,7 +15,7 @@
 ** accessed by users of the library.
 */
 
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 /*
 ** Execute SQL code.  Return one of the SQLITE_ success/failure
@@ -27,75 +27,75 @@
 ** argument to xCallback().  If xCallback=NULL then no callback
 ** is invoked, even for queries.
 */
-int sqlite3_exec(
+പൂർണ്ണസംഖ്യ sqlite3_exec(
   sqlite3 *db,                /* The database on which the SQL executes */
-  const char *zSql,           /* The SQL to be executed */
+  സ്ഥിരം അക്ഷരം *zSql,           /* The SQL to be executed */
   sqlite3_callback xCallback, /* Invoke this callback routine */
-  void *pArg,                 /* First argument to xCallback() */
-  char **pzErrMsg             /* Write error messages here */
+  ശൂന്യം *pArg,                 /* First argument to xCallback() */
+  അക്ഷരം **pz_Err_സന്ദേശം             /* Write error messages here */
 ){
-  int rc = SQLITE_OK;         /* Return code */
-  const char *zLeftover;      /* Tail of unprocessed SQL */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;         /* Return code */
+  സ്ഥിരം അക്ഷരം *zLeftover;      /* Tail of unprocessed SQL */
   sqlite3_stmt *pStmt = 0;    /* The current SQL statement */
-  char **azCols = 0;          /* Names of result columns */
-  int callbackIsInit;         /* True if callback data is initialized */
+  അക്ഷരം **azCols = 0;          /* Names of result columns */
+  പൂർണ്ണസംഖ്യ callbackIsInit;         /* True if callback data is initialized */
 
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-  if( zSql==0 ) zSql = "";
+  എങ്കിൽ( !sqlite3SafetyCheckOk(db) ) തിരികെ SQLITE_MISUSE_BKPT;
+  എങ്കിൽ( zSql==0 ) zSql = "";
 
   sqlite3_mutex_enter(db->mutex);
   sqlite3Error(db, SQLITE_OK);
-  while( rc==SQLITE_OK && zSql[0] ){
-    int nCol = 0;
-    char **azVals = 0;
+  ആകുമ്പോൾ( rc==SQLITE_OK && zSql[0] ){
+    പൂർണ്ണസംഖ്യ nCol = 0;
+    അക്ഷരം **azVals = 0;
 
     pStmt = 0;
     rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
-    assert( rc==SQLITE_OK || pStmt==0 );
-    if( rc!=SQLITE_OK ){
-      continue;
+    പ്രതിജ്ഞാ( rc==SQLITE_OK || pStmt==0 );
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      തുടരുക;
     }
-    if( !pStmt ){
+    എങ്കിൽ( !pStmt ){
       /* this happens for a comment or white-space */
       zSql = zLeftover;
-      continue;
+      തുടരുക;
     }
     callbackIsInit = 0;
 
-    while( 1 ){
-      int i;
+    ആകുമ്പോൾ( 1 ){
+      പൂർണ്ണസംഖ്യ i;
       rc = sqlite3_step(pStmt);
 
       /* Invoke the callback function if required */
-      if( xCallback && (SQLITE_ROW==rc || 
+      എങ്കിൽ( xCallback && (SQLITE_ROW==rc || 
           (SQLITE_DONE==rc && !callbackIsInit
                            && db->flags&SQLITE_NullCallback)) ){
-        if( !callbackIsInit ){
-          nCol = sqlite3_column_count(pStmt);
-          azCols = sqlite3DbMallocRaw(db, (2*nCol+1)*sizeof(const char*));
-          if( azCols==0 ){
-            goto exec_out;
+        എങ്കിൽ( !callbackIsInit ){
+          nCol = sqlite3_column_എണ്ണം(pStmt);
+          azCols = sqlite3DbMallocRaw(db, (2*nCol+1)*വലുപ്പം(സ്ഥിരം അക്ഷരം*));
+          എങ്കിൽ( azCols==0 ){
+            പോകുക exec_out;
           }
-          for(i=0; i<nCol; i++){
-            azCols[i] = (char *)sqlite3_column_name(pStmt, i);
+          വേണ്ടി(i=0; i<nCol; i++){
+            azCols[i] = (അക്ഷരം *)sqlite3_column_name(pStmt, i);
             /* sqlite3VdbeSetColName() installs column names as UTF8
             ** strings so there is no way for sqlite3_column_name() to fail. */
-            assert( azCols[i]!=0 );
+            പ്രതിജ്ഞാ( azCols[i]!=0 );
           }
           callbackIsInit = 1;
         }
-        if( rc==SQLITE_ROW ){
+        എങ്കിൽ( rc==SQLITE_ROW ){
           azVals = &azCols[nCol];
-          for(i=0; i<nCol; i++){
-            azVals[i] = (char *)sqlite3_column_text(pStmt, i);
-            if( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
+          വേണ്ടി(i=0; i<nCol; i++){
+            azVals[i] = (അക്ഷരം *)sqlite3_column_text(pStmt, i);
+            എങ്കിൽ( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
               sqlite3OomFault(db);
-              goto exec_out;
+              പോകുക exec_out;
             }
           }
           azVals[i] = 0;
         }
-        if( xCallback(pArg, nCol, azVals, azCols) ){
+        എങ്കിൽ( xCallback(pArg, nCol, azVals, azCols) ){
           /* EVIDENCE-OF: R-38229-40159 If the callback function to
           ** sqlite3_exec() returns non-zero, then sqlite3_exec() will
           ** return SQLITE_ABORT. */
@@ -103,16 +103,16 @@ int sqlite3_exec(
           sqlite3VdbeFinalize((Vdbe *)pStmt);
           pStmt = 0;
           sqlite3Error(db, SQLITE_ABORT);
-          goto exec_out;
+          പോകുക exec_out;
         }
       }
 
-      if( rc!=SQLITE_ROW ){
+      എങ്കിൽ( rc!=SQLITE_ROW ){
         rc = sqlite3VdbeFinalize((Vdbe *)pStmt);
         pStmt = 0;
         zSql = zLeftover;
-        while( sqlite3Isspace(zSql[0]) ) zSql++;
-        break;
+        ആകുമ്പോൾ( sqlite3Isspace(zSql[0]) ) zSql++;
+        നിർത്തുക;
       }
     }
 
@@ -121,21 +121,21 @@ int sqlite3_exec(
   }
 
 exec_out:
-  if( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
+  എങ്കിൽ( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
   sqlite3DbFree(db, azCols);
 
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && pzErrMsg ){
-    *pzErrMsg = sqlite3DbStrDup(0, sqlite3_errmsg(db));
-    if( *pzErrMsg==0 ){
+  എങ്കിൽ( rc!=SQLITE_OK && pz_Err_സന്ദേശം ){
+    *pz_Err_സന്ദേശം = sqlite3DbStrDup(0, sqlite3_errmsg(db));
+    എങ്കിൽ( *pz_Err_സന്ദേശം==0 ){
       rc = SQLITE_NOMEM_BKPT;
       sqlite3Error(db, SQLITE_NOMEM);
     }
-  }else if( pzErrMsg ){
-    *pzErrMsg = 0;
+  }അല്ലെങ്കിൽ എങ്കിൽ( pz_Err_സന്ദേശം ){
+    *pz_Err_സന്ദേശം = 0;
   }
 
-  assert( (rc&db->errMask)==rc );
+  പ്രതിജ്ഞാ( (rc&db->errMask)==rc );
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  തിരികെ rc;
 }

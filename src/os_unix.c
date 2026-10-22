@@ -43,8 +43,8 @@
 **   *  Definitions of sqlite3_vfs objects for all locking methods
 **      plus implementations of sqlite3_os_init() and sqlite3_os_end().
 */
-#include "sqliteInt.h"
-#if SQLITE_OS_UNIX              /* This file is used on unix only */
+#അന്തര്ഭാവ "sqliteInt.h"
+#എങ്കിൽ SQLITE_OS_UNIX              /* This file is used on unix only */
 
 /*
 ** There are various methods for file locking used for concurrency
@@ -63,23 +63,23 @@
 ** selection of the appropriate locking style based on the filesystem
 ** where the database is located.
 */
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#എങ്കിൽ !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  എങ്കിൽ defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  അല്ലെങ്കിൽ
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
 #endif
 
 /* Use pread() and pwrite() if they are available */
-#if defined(__APPLE__) || defined(__linux__)
+#എങ്കിൽ defined(__APPLE__) || defined(__linux__)
 # define HAVE_PREAD 1
 # define HAVE_PWRITE 1
 #endif
-#if defined(HAVE_PREAD64) && defined(HAVE_PWRITE64)
+#എങ്കിൽ defined(HAVE_PREAD64) && defined(HAVE_PWRITE64)
 # undef USE_PREAD
 # define USE_PREAD64 1
-#elif defined(HAVE_PREAD) && defined(HAVE_PWRITE)
+#അല്ലെങ്കിലെങ്കിൽ defined(HAVE_PREAD) && defined(HAVE_PWRITE)
 # undef USE_PREAD64
 # define USE_PREAD 1
 #endif
@@ -87,20 +87,20 @@
 /*
 ** standard include files.
 */
-#include <sys/types.h>   /* amalgamator: keep */
-#include <sys/stat.h>    /* amalgamator: keep */
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <unistd.h>      /* amalgamator: keep */
-#include <time.h>
-#include <sys/time.h>    /* amalgamator: keep */
-#include <errno.h>
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#അന്തര്ഭാവ <sys/types.h>   /* amalgamator: keep */
+#അന്തര്ഭാവ <sys/stat.h>    /* amalgamator: keep */
+#അന്തര്ഭാവ <fcntl.h>
+#അന്തര്ഭാവ <sys/ioctl.h>
+#അന്തര്ഭാവ <unistd.h>      /* amalgamator: keep */
+#അന്തര്ഭാവ <time.h>
+#അന്തര്ഭാവ <sys/time.h>    /* amalgamator: keep */
+#അന്തര്ഭാവ <errno.h>
+#എങ്കിൽ (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
   && !defined(SQLITE_WASI)
 # include <sys/mman.h>
 #endif
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
 # include <sys/ioctl.h>
 # include <sys/file.h>
 # include <sys/param.h>
@@ -120,27 +120,27 @@
 */
 #ifndef HAVE_GETHOSTUUID
 # define HAVE_GETHOSTUUID 0
-# if defined(__APPLE__) && ((__MAC_OS_X_VERSION_MIN_REQUIRED > 1050) || \
+# എങ്കിൽ defined(__APPLE__) && ((__MAC_OS_X_VERSION_MIN_REQUIRED > 1050) || \
                             (__IPHONE_OS_VERSION_MIN_REQUIRED > 2000))
-#    if (!defined(TARGET_OS_EMBEDDED) || (TARGET_OS_EMBEDDED==0)) \
+#    എങ്കിൽ (!defined(TARGET_OS_EMBEDDED) || (TARGET_OS_EMBEDDED==0)) \
         && (!defined(TARGET_IPHONE_SIMULATOR) || (TARGET_IPHONE_SIMULATOR==0))\
         && (!defined(TARGET_OS_MACCATALYST) || (TARGET_OS_MACCATALYST==0))
 #      undef HAVE_GETHOSTUUID
 #      define HAVE_GETHOSTUUID 1
-#    else
+#    അല്ലെങ്കിൽ
 #      warning "gethostuuid() is disabled."
 #    endif
 #  endif
 #endif
 
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
 # include <sys/ioctl.h>
 # include <semaphore.h>
 # include <limits.h>
 #endif /* OS_VXWORKS */
 
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
 # include <sys/mount.h>
 #endif
 
@@ -156,7 +156,7 @@
 /*
 ** If we are to be thread-safe, include the pthreads header.
 */
-#if SQLITE_THREADSAFE
+#എങ്കിൽ SQLITE_THREADSAFE
 # include <pthread.h>
 #endif
 
@@ -201,17 +201,17 @@
 #  define F_RDLCK 0
 #  define F_WRLCK 1
 #  define F_UNLCK 2
-#  if __LONG_MAX == 0x7fffffffL
+#  എങ്കിൽ __LONG_MAX == 0x7fffffffL
 #   define F_GETLK 12
 #   define F_SETLK 13
 #   define F_SETLKW 14
-#  else
+#  അല്ലെങ്കിൽ
 #   define F_GETLK 5
 #   define F_SETLK 6
 #   define F_SETLKW 7
 #  endif
 # endif
-#else /* !SQLITE_WASI */
+#അല്ലെങ്കിൽ /* !SQLITE_WASI */
 # ifndef HAVE_FCHMOD
 #  define HAVE_FCHMOD 1
 # endif
@@ -219,7 +219,7 @@
 
 #ifdef SQLITE_WASI
 # define osGetpid(X) (pid_t)1
-#else
+#അല്ലെങ്കിൽ
 /* Always cast the getpid() return type for compatibility with
 ** kernel modules in VxWorks. */
 # define osGetpid(X) (pid_t)getpid()
@@ -232,10 +232,10 @@
 #define IS_LOCK_ERROR(x)  ((x != SQLITE_OK) && (x != SQLITE_BUSY))
 
 /* Forward references */
-typedef struct unixShm unixShm;               /* Connection shared memory */
-typedef struct unixShmNode unixShmNode;       /* Shared memory instance */
-typedef struct unixInodeInfo unixInodeInfo;   /* An i-node */
-typedef struct UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
+തരനിർവചനം ഘടന unixShm unixShm;               /* Connection shared memory */
+തരനിർവചനം ഘടന unix_Shm_കണ്ണി unix_Shm_കണ്ണി;       /* Shared memory instance */
+തരനിർവചനം ഘടന unixInodeInfo unixInodeInfo;   /* An i-node */
+തരനിർവചനം ഘടന UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
 
 /*
 ** Sometimes, after a file handle is closed by SQLite, the file descriptor
@@ -243,9 +243,9 @@ typedef struct UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
 ** structure are used to store the file descriptor while waiting for an
 ** opportunity to either close or reuse it.
 */
-struct UnixUnusedFd {
-  int fd;                   /* File descriptor to close */
-  int flags;                /* Flags this file descriptor was opened with */
+ഘടന UnixUnusedFd {
+  പൂർണ്ണസംഖ്യ fd;                   /* File descriptor to close */
+  പൂർണ്ണസംഖ്യ flags;                /* Flags this file descriptor was opened with */
   UnixUnusedFd *pNext;      /* Next unused file descriptor on same file */
 };
 
@@ -253,41 +253,41 @@ struct UnixUnusedFd {
 ** The unixFile structure is subclass of sqlite3_file specific to the unix
 ** VFS implementations.
 */
-typedef struct unixFile unixFile;
-struct unixFile {
-  sqlite3_io_methods const *pMethod;  /* Always the first entry */
+തരനിർവചനം ഘടന unixFile unixFile;
+ഘടന unixFile {
+  sqlite3_io_methods സ്ഥിരം *pMethod;  /* Always the first entry */
   sqlite3_vfs *pVfs;                  /* The VFS that created this unixFile */
   unixInodeInfo *pInode;              /* Info about locks on this inode */
-  int h;                              /* The file descriptor */
-  unsigned char eFileLock;            /* The type of lock held on this fd */
-  unsigned short int ctrlFlags;       /* Behavioral bits.  UNIXFILE_* flags */
-  int lastErrno;                      /* The unix errno from last I/O error */
-  void *lockingContext;               /* Locking style specific state */
+  പൂർണ്ണസംഖ്യ h;                              /* The file descriptor */
+  unsigned അക്ഷരം eFileLock;            /* The type of lock held on this fd */
+  unsigned short പൂർണ്ണസംഖ്യ ctrlFlags;       /* Behavioral bits.  UNIXFILE_* flags */
+  പൂർണ്ണസംഖ്യ lastErrno;                      /* The unix errno from last I/O error */
+  ശൂന്യം *lockingContext;               /* Locking style specific state */
   UnixUnusedFd *pPreallocatedUnused;  /* Pre-allocated UnixUnusedFd */
-  const char *zPath;                  /* Name of the file */
+  സ്ഥിരം അക്ഷരം *zPath;                  /* Name of the file */
   unixShm *pShm;                      /* Shared memory segment information */
-  int szChunk;                        /* Configured by FCNTL_CHUNK_SIZE */
-#if SQLITE_MAX_MMAP_SIZE>0
-  int nFetchOut;                      /* Number of outstanding xFetch refs */
+  പൂർണ്ണസംഖ്യ szChunk;                        /* Configured by FCNTL_CHUNK_SIZE */
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+  പൂർണ്ണസംഖ്യ nFetchOut;                      /* Number of outstanding xFetch refs */
   sqlite3_int64 mmapSize;             /* Usable size of mapping at pMapRegion */
   sqlite3_int64 mmapSizeActual;       /* Actual size of mapping at pMapRegion */
   sqlite3_int64 mmapSizeMax;          /* Configured FCNTL_MMAP_SIZE value */
-  void *pMapRegion;                   /* Memory mapped region */
+  ശൂന്യം *pMapRegion;                   /* Memory mapped region */
 #endif
-  int sectorSize;                     /* Device sector size */
-  int deviceCharacteristics;          /* Precomputed device characteristics */
-#if SQLITE_ENABLE_LOCKING_STYLE
-  int openFlags;                      /* The flags specified at open() */
+  പൂർണ്ണസംഖ്യ sectorSize;                     /* Device sector size */
+  പൂർണ്ണസംഖ്യ deviceCharacteristics;          /* Precomputed device characteristics */
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
+  പൂർണ്ണസംഖ്യ openFlags;                      /* The flags specified at open() */
 #endif
-#if SQLITE_ENABLE_LOCKING_STYLE || defined(__APPLE__)
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE || defined(__APPLE__)
   unsigned fsFlags;                   /* cached details from statfs() */
 #endif
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   unsigned iBusyTimeout;              /* Wait this many millisec on locks */
-  int bBlockOnConnect;                /* True to block for SHARED locks */
+  പൂർണ്ണസംഖ്യ bBlockOnConnect;                /* True to block for SHARED locks */
 #endif
-#if OS_VXWORKS
-  struct vxworksFileId *pId;          /* Unique file ID */
+#എങ്കിൽ OS_VXWORKS
+  ഘടന vxworksFileId *pId;          /* Unique file ID */
 #endif
 #ifdef SQLITE_DEBUG
   /* The next group of variables are used to track whether or not the
@@ -297,9 +297,9 @@ struct unixFile {
   ** counter.  This test is made to avoid new problems similar to the
   ** one described by ticket #3584.
   */
-  unsigned char transCntrChng;   /* True if the transaction counter changed */
-  unsigned char dbUpdate;        /* True if any part of database file changed */
-  unsigned char inNormalWrite;   /* True if in a normal write operation */
+  unsigned അക്ഷരം transCntrChng;   /* True if the transaction counter changed */
+  unsigned അക്ഷരം dbUpdate;        /* True if any part of database file changed */
+  unsigned അക്ഷരം inNormalWrite;   /* True if in a normal write operation */
 
 #endif
 
@@ -307,7 +307,7 @@ struct unixFile {
   /* In test mode, increase the size of this structure a bit so that
   ** it is larger than the struct CrashFile defined in test6.c.
   */
-  char aPadding[32];
+  അക്ഷരം aPadding[32];
 #endif
 };
 
@@ -315,7 +315,7 @@ struct unixFile {
 ** method was called.  If xOpen() is called from a different process id,
 ** indicating that a fork() has occurred, the PRNG will be reset.
 */
-static pid_t randomnessPid = 0;
+സ്ഥിതം pid_t randomnessPid = 0;
 
 /*
 ** Allowed values for the unixFile.ctrlFlags bitmask:
@@ -323,9 +323,9 @@ static pid_t randomnessPid = 0;
 #define UNIXFILE_EXCL        0x01     /* Connections from one process only */
 #define UNIXFILE_RDONLY      0x02     /* Connection is read only */
 #define UNIXFILE_PERSIST_WAL 0x04     /* Persistent WAL mode */
-#if !defined(SQLITE_DISABLE_DIRSYNC) && !defined(_AIX)
+#എങ്കിൽ !defined(SQLITE_DISABLE_DIRSYNC) && !defined(_AIX)
 # define UNIXFILE_DIRSYNC    0x08     /* Directory sync needed */
-#else
+#അല്ലെങ്കിൽ
 # define UNIXFILE_DIRSYNC    0x00
 #endif
 #define UNIXFILE_PSOW        0x10     /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
@@ -336,7 +336,7 @@ static pid_t randomnessPid = 0;
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#അന്തര്ഭാവ "os_common.h"
 
 /*
 ** Define various macros that are missing from some systems.
@@ -351,27 +351,27 @@ static pid_t randomnessPid = 0;
 #ifndef O_NOFOLLOW
 # define O_NOFOLLOW 0
 #endif
-#ifndef O_BINARY
-# define O_BINARY 0
+#ifndef O_ദ്വിമാന
+# define O_ദ്വിമാന 0
 #endif
 
 /*
 ** The threadid macro resolves to the thread-id or to 0.  Used for
 ** testing and debugging only.
 */
-#if SQLITE_THREADSAFE
+#എങ്കിൽ SQLITE_THREADSAFE
 #define threadid pthread_self()
-#else
+#അല്ലെങ്കിൽ
 #define threadid 0
 #endif
 
 /*
 ** HAVE_MREMAP defaults to true on Linux and false everywhere else.
 */
-#if !defined(HAVE_MREMAP)
-# if defined(__linux__) && defined(_GNU_SOURCE)
+#എങ്കിൽ !defined(HAVE_MREMAP)
+# എങ്കിൽ defined(__linux__) && defined(_GNU_SOURCE)
 #  define HAVE_MREMAP 1
-# else
+# അല്ലെങ്കിൽ
 #  define HAVE_MREMAP 0
 # endif
 #endif
@@ -406,13 +406,13 @@ static pid_t randomnessPid = 0;
 ** The safest way to deal with the problem is to always use this wrapper
 ** which always has the same well-defined interface.
 */
-static int posixOpen(const char *zFile, int flags, int mode){
-  return open(zFile, flags, mode);
+സ്ഥിതം പൂർണ്ണസംഖ്യ posixOpen(സ്ഥിരം അക്ഷരം *zFile, പൂർണ്ണസംഖ്യ flags, പൂർണ്ണസംഖ്യ mode){
+  തിരികെ open(zFile, flags, mode);
 }
 
 /* Forward reference */
-static int openDirectory(const char*, int*);
-static int unixGetpagesize(void);
+സ്ഥിതം പൂർണ്ണസംഖ്യ openDirectory(സ്ഥിരം അക്ഷരം*, പൂർണ്ണസംഖ്യ*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixGetpagesize(ശൂന്യം);
 
 /*
 ** Many system calls are accessed through pointer-to-functions so that
@@ -420,25 +420,25 @@ static int unixGetpagesize(void);
 ** testing and sandboxing.  The following array holds the names and pointers
 ** to all overrideable system calls.
 */
-static struct unix_syscall {
-  const char *zName;            /* Name of the system call */
+സ്ഥിതം ഘടന unix_syscall {
+  സ്ഥിരം അക്ഷരം *zName;            /* Name of the system call */
   sqlite3_syscall_ptr pCurrent; /* Current value of the system call */
   sqlite3_syscall_ptr pDefault; /* Default value */
 } aSyscall[] = {
   { "open",         (sqlite3_syscall_ptr)posixOpen,  0  },
-#define osOpen      ((int(*)(const char*,int,int))aSyscall[0].pCurrent)
+#define osOpen      ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ))aSyscall[0].pCurrent)
 
   { "close",        (sqlite3_syscall_ptr)close,      0  },
-#define osClose     ((int(*)(int))aSyscall[1].pCurrent)
+#define osClose     ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ))aSyscall[1].pCurrent)
 
   { "access",       (sqlite3_syscall_ptr)access,     0  },
-#define osAccess    ((int(*)(const char*,int))aSyscall[2].pCurrent)
+#define osAccess    ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ))aSyscall[2].pCurrent)
 
   { "getcwd",       (sqlite3_syscall_ptr)getcwd,     0  },
-#define osGetcwd    ((char*(*)(char*,size_t))aSyscall[3].pCurrent)
+#define osGetcwd    ((അക്ഷരം*(*)(അക്ഷരം*,size_t))aSyscall[3].pCurrent)
 
   { "stat",         (sqlite3_syscall_ptr)stat,       0  },
-#define osStat      ((int(*)(const char*,struct stat*))aSyscall[4].pCurrent)
+#define osStat      ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,ഘടന stat*))aSyscall[4].pCurrent)
 
 /*
 ** The DJGPP compiler environment looks mostly like Unix, but it
@@ -449,154 +449,154 @@ static struct unix_syscall {
 #ifdef __DJGPP__
   { "fstat",        0,                 0  },
 #define osFstat(a,b,c)    0
-#else   
+#അല്ലെങ്കിൽ   
   { "fstat",        (sqlite3_syscall_ptr)fstat,      0  },
-#define osFstat     ((int(*)(int,struct stat*))aSyscall[5].pCurrent)
+#define osFstat     ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,ഘടന stat*))aSyscall[5].pCurrent)
 #endif
 
   { "ftruncate",    (sqlite3_syscall_ptr)ftruncate,  0  },
-#define osFtruncate ((int(*)(int,off_t))aSyscall[6].pCurrent)
+#define osFtruncate ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,off_t))aSyscall[6].pCurrent)
 
   { "fcntl",        (sqlite3_syscall_ptr)fcntl,      0  },
-#define osFcntl     ((int(*)(int,int,...))aSyscall[7].pCurrent)
+#define osFcntl     ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,...))aSyscall[7].pCurrent)
 
-  { "read",         (sqlite3_syscall_ptr)read,       0  },
-#define osRead      ((ssize_t(*)(int,void*,size_t))aSyscall[8].pCurrent)
+  { "read",         (sqlite3_syscall_ptr)പഠ,       0  },
+#define osRead      ((ssize_t(*)(പൂർണ്ണസംഖ്യ,ശൂന്യം*,size_t))aSyscall[8].pCurrent)
 
-#if defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
   { "pread",        (sqlite3_syscall_ptr)pread,      0  },
-#else
+#അല്ലെങ്കിൽ
   { "pread",        (sqlite3_syscall_ptr)0,          0  },
 #endif
-#define osPread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].pCurrent)
+#define osPread     ((ssize_t(*)(പൂർണ്ണസംഖ്യ,ശൂന്യം*,size_t,off_t))aSyscall[9].pCurrent)
 
-#if defined(USE_PREAD64)
+#എങ്കിൽ defined(USE_PREAD64)
   { "pread64",      (sqlite3_syscall_ptr)pread64,    0  },
-#else
+#അല്ലെങ്കിൽ
   { "pread64",      (sqlite3_syscall_ptr)0,          0  },
 #endif
-#define osPread64 ((ssize_t(*)(int,void*,size_t,off64_t))aSyscall[10].pCurrent)
+#define osPread64 ((ssize_t(*)(പൂർണ്ണസംഖ്യ,ശൂന്യം*,size_t,off64_t))aSyscall[10].pCurrent)
 
-  { "write",        (sqlite3_syscall_ptr)write,      0  },
-#define osWrite     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].pCurrent)
+  { "write",        (sqlite3_syscall_ptr)ലിഖ,      0  },
+#define osWrite     ((ssize_t(*)(പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,size_t))aSyscall[11].pCurrent)
 
-#if defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(USE_PREAD) || SQLITE_ENABLE_LOCKING_STYLE
   { "pwrite",       (sqlite3_syscall_ptr)pwrite,     0  },
-#else
+#അല്ലെങ്കിൽ
   { "pwrite",       (sqlite3_syscall_ptr)0,          0  },
 #endif
-#define osPwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#define osPwrite    ((ssize_t(*)(പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,size_t,off_t))\
                     aSyscall[12].pCurrent)
 
-#if defined(USE_PREAD64)
+#എങ്കിൽ defined(USE_PREAD64)
   { "pwrite64",     (sqlite3_syscall_ptr)pwrite64,   0  },
-#else
+#അല്ലെങ്കിൽ
   { "pwrite64",     (sqlite3_syscall_ptr)0,          0  },
 #endif
-#define osPwrite64  ((ssize_t(*)(int,const void*,size_t,off64_t))\
+#define osPwrite64  ((ssize_t(*)(പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,size_t,off64_t))\
                     aSyscall[13].pCurrent)
 
-#if defined(HAVE_FCHMOD)
+#എങ്കിൽ defined(HAVE_FCHMOD)
   { "fchmod",       (sqlite3_syscall_ptr)fchmod,          0  },
-#define osFchmod    ((int(*)(int,mode_t))aSyscall[14].pCurrent)
-#else
+#define osFchmod    ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,mode_t))aSyscall[14].pCurrent)
+#അല്ലെങ്കിൽ
   { "fchmod",       (sqlite3_syscall_ptr)0,               0  },
 #define osFchmod(FID,MODE) 0
 #endif
 
-#if defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
+#എങ്കിൽ defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
   { "fallocate",    (sqlite3_syscall_ptr)posix_fallocate,  0 },
-#else
+#അല്ലെങ്കിൽ
   { "fallocate",    (sqlite3_syscall_ptr)0,                0 },
 #endif
-#define osFallocate ((int(*)(int,off_t,off_t))aSyscall[15].pCurrent)
+#define osFallocate ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,off_t,off_t))aSyscall[15].pCurrent)
 
   { "unlink",       (sqlite3_syscall_ptr)unlink,           0 },
-#define osUnlink    ((int(*)(const char*))aSyscall[16].pCurrent)
+#define osUnlink    ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*))aSyscall[16].pCurrent)
 
   { "openDirectory",    (sqlite3_syscall_ptr)openDirectory,      0 },
-#define osOpenDirectory ((int(*)(const char*,int*))aSyscall[17].pCurrent)
+#define osOpenDirectory ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ*))aSyscall[17].pCurrent)
 
   { "mkdir",        (sqlite3_syscall_ptr)mkdir,           0 },
-#define osMkdir     ((int(*)(const char*,mode_t))aSyscall[18].pCurrent)
+#define osMkdir     ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,mode_t))aSyscall[18].pCurrent)
 
   { "rmdir",        (sqlite3_syscall_ptr)rmdir,           0 },
-#define osRmdir     ((int(*)(const char*))aSyscall[19].pCurrent)
+#define osRmdir     ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*))aSyscall[19].pCurrent)
 
-#if defined(HAVE_FCHOWN)
+#എങ്കിൽ defined(HAVE_FCHOWN)
   { "fchown",       (sqlite3_syscall_ptr)fchown,          0 },
-#else
+#അല്ലെങ്കിൽ
   { "fchown",       (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osFchown    ((int(*)(int,uid_t,gid_t))aSyscall[20].pCurrent)
+#define osFchown    ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,uid_t,gid_t))aSyscall[20].pCurrent)
 
-#if defined(HAVE_FCHOWN)
+#എങ്കിൽ defined(HAVE_FCHOWN)
   { "geteuid",      (sqlite3_syscall_ptr)geteuid,         0 },
-#else
+#അല്ലെങ്കിൽ
   { "geteuid",      (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osGeteuid   ((uid_t(*)(void))aSyscall[21].pCurrent)
+#define osGeteuid   ((uid_t(*)(ശൂന്യം))aSyscall[21].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#എങ്കിൽ (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
   && !defined(SQLITE_WASI)
   { "mmap",         (sqlite3_syscall_ptr)mmap,            0 },
-#else
+#അല്ലെങ്കിൽ
   { "mmap",         (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osMmap ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[22].pCurrent)
+#define osMmap ((ശൂന്യം*(*)(ശൂന്യം*,size_t,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,off_t))aSyscall[22].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#എങ്കിൽ (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
   && !defined(SQLITE_WASI)
   { "munmap",       (sqlite3_syscall_ptr)munmap,          0 },
-#else
+#അല്ലെങ്കിൽ
   { "munmap",       (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osMunmap ((int(*)(void*,size_t))aSyscall[23].pCurrent)
+#define osMunmap ((പൂർണ്ണസംഖ്യ(*)(ശൂന്യം*,size_t))aSyscall[23].pCurrent)
 
-#if HAVE_MREMAP && (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0)
+#എങ്കിൽ HAVE_MREMAP && (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0)
   { "mremap",       (sqlite3_syscall_ptr)mremap,          0 },
-#else
+#അല്ലെങ്കിൽ
   { "mremap",       (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osMremap ((void*(*)(void*,size_t,size_t,int,...))aSyscall[24].pCurrent)
+#define osMremap ((ശൂന്യം*(*)(ശൂന്യം*,size_t,size_t,പൂർണ്ണസംഖ്യ,...))aSyscall[24].pCurrent)
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
   { "getpagesize",  (sqlite3_syscall_ptr)unixGetpagesize, 0 },
-#else
+#അല്ലെങ്കിൽ
   { "getpagesize",  (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osGetpagesize ((int(*)(void))aSyscall[25].pCurrent)
+#define osGetpagesize ((പൂർണ്ണസംഖ്യ(*)(ശൂന്യം))aSyscall[25].pCurrent)
 
-#if defined(HAVE_READLINK)
+#എങ്കിൽ defined(HAVE_READLINK)
   { "readlink",     (sqlite3_syscall_ptr)readlink,        0 },
-#else
+#അല്ലെങ്കിൽ
   { "readlink",     (sqlite3_syscall_ptr)0,               0 },
 #endif
-#define osReadlink ((ssize_t(*)(const char*,char*,size_t))aSyscall[26].pCurrent)
+#define osReadlink ((ssize_t(*)(സ്ഥിരം അക്ഷരം*,അക്ഷരം*,size_t))aSyscall[26].pCurrent)
 
-#if defined(HAVE_LSTAT)
+#എങ്കിൽ defined(HAVE_LSTAT)
   { "lstat",         (sqlite3_syscall_ptr)lstat,          0 },
-#else
+#അല്ലെങ്കിൽ
   { "lstat",         (sqlite3_syscall_ptr)0,              0 },
 #endif
-#define osLstat      ((int(*)(const char*,struct stat*))aSyscall[27].pCurrent)
+#define osLstat      ((പൂർണ്ണസംഖ്യ(*)(സ്ഥിരം അക്ഷരം*,ഘടന stat*))aSyscall[27].pCurrent)
 
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#എങ്കിൽ defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
 # ifdef __ANDROID__
-  { "ioctl", (sqlite3_syscall_ptr)(int(*)(int, int, ...))ioctl, 0 },
-#define osIoctl ((int(*)(int,int,...))aSyscall[28].pCurrent)
-# else
+  { "ioctl", (sqlite3_syscall_ptr)(പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, ...))ioctl, 0 },
+#define osIoctl ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,...))aSyscall[28].pCurrent)
+# അല്ലെങ്കിൽ
   { "ioctl",         (sqlite3_syscall_ptr)ioctl,          0 },
-#define osIoctl ((int(*)(int,unsigned long,...))aSyscall[28].pCurrent)
+#define osIoctl ((പൂർണ്ണസംഖ്യ(*)(പൂർണ്ണസംഖ്യ,unsigned long,...))aSyscall[28].pCurrent)
 # endif
-#else
+#അല്ലെങ്കിൽ
   { "ioctl",         (sqlite3_syscall_ptr)0,              0 },
 #endif
 
 }; /* End of the overrideable system calls */
 
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Extract Posix Advisory Locking information about file description fd
 ** from the /proc/PID/fdinfo/FD pseudo-file.  Fill the string buffer a[16]
@@ -635,26 +635,26 @@ static struct unix_syscall {
 ** Return SQLITE_OK on success and SQLITE_ERROR_UNABLE if the /proc
 ** pseudo-filesystem is unavailable.
 */
-static int unixPosixAdvisoryLocks(
-  int fd,        /* The file descriptor to analyze */
-  char a[16]     /* Write a text description of PALs here */
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixPosixAdvisoryLocks(
+  പൂർണ്ണസംഖ്യ fd,        /* The file descriptor to analyze */
+  അക്ഷരം a[16]     /* Write a text description of PALs here */
 ){
-  int in;
+  പൂർണ്ണസംഖ്യ in;
   ssize_t n;
-  char *p, *pNext, *x;
-  char z[2000];
+  അക്ഷരം *p, *pNext, *x;
+  അക്ഷരം z[2000];
 
         /*             1     */
         /*   012 4 678 01234 */
   memcpy(a, "---/-.---.-----", 16);
-  sqlite3_snprintf(sizeof(z), z, "/proc/%d/fdinfo/%d", getpid(), fd);
+  sqlite3_snprintf(വലുപ്പം(z), z, "/proc/%d/fdinfo/%d", getpid(), fd);
   in = osOpen(z, O_RDONLY, 0);
-  if( in<0 ){
-    return SQLITE_ERROR_UNABLE;
+  എങ്കിൽ( in<0 ){
+    തിരികെ SQLITE_ERROR_UNABLE;
   }
-  n = osRead(in, z, sizeof(z)-1);
+  n = osRead(in, z, വലുപ്പം(z)-1);
   osClose(in);
-  if( n<=0 ) return SQLITE_ERROR_UNABLE;
+  എങ്കിൽ( n<=0 ) തിരികെ SQLITE_ERROR_UNABLE;
   z[n] = 0;
 
   /* We are looking for lines that begin with "lock:\t".  Examples:
@@ -665,47 +665,47 @@ static int unixPosixAdvisoryLocks(
   ** lock: 3: POSIX  ADVISORY  READ 494716 08:02:5282282 128 128
   */
   pNext = strstr(z, "lock:\t");
-  while( pNext ){
-    char cType = 0;
+  ആകുമ്പോൾ( pNext ){
+    അക്ഷരം cType = 0;
     sqlite3_int64 iFirst, iLast;
     p = pNext+6;
     pNext = strstr(p, "lock:\t");
-    if( pNext ) pNext[-1] = 0;
-    if( (x = strstr(p, " READ "))!=0 ){
+    എങ്കിൽ( pNext ) pNext[-1] = 0;
+    എങ്കിൽ( (x = strstr(p, " READ "))!=0 ){
       cType = 'r';
       x += 6;
-    }else if( (x = strstr(p, " WRITE "))!=0 ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( (x = strstr(p, " WRITE "))!=0 ){
       cType = 'w';
       x += 7;
-    }else{
-      continue;
+    }അല്ലെങ്കിൽ{
+      തുടരുക;
     }
     x = strrchr(x, ' ');
-    if( x==0 ) continue;
+    എങ്കിൽ( x==0 ) തുടരുക;
     iLast = strtoll(x+1, 0, 10);
     *x = 0;
     x = strrchr(p, ' ');
-    if( x==0 ) continue;
+    എങ്കിൽ( x==0 ) തുടരുക;
     iFirst = strtoll(x+1, 0, 10);
-    if( iLast>=PENDING_BYTE ){
-      if( iFirst<=PENDING_BYTE && iLast>=PENDING_BYTE )     a[0] = cType;
-      if( iFirst<=PENDING_BYTE+1 && iLast>=PENDING_BYTE+1 ) a[1] = cType;
-      if( iFirst<=PENDING_BYTE+2 && iLast>=PENDING_BYTE+510 ) a[2] = cType;
-    }else if( iLast<=128 ){
-      if( iFirst<=128 && iLast>=128 ) a[4] = cType;
-      if( iFirst<=120 && iLast>=120 ) a[6] = cType;
-      if( iFirst<=121 && iLast>=121 ) a[7] = cType;
-      if( iFirst<=122 && iLast>=122 ) a[8] = cType;
-      if( iFirst<=123 && iLast>=123 ) a[10] = cType;
-      if( iFirst<=124 && iLast>=124 ) a[11] = cType;
-      if( iFirst<=125 && iLast>=125 ) a[12] = cType;
-      if( iFirst<=126 && iLast>=126 ) a[13] = cType;
-      if( iFirst<=127 && iLast>=127 ) a[14] = cType;
+    എങ്കിൽ( iLast>=PENDING_BYTE ){
+      എങ്കിൽ( iFirst<=PENDING_BYTE && iLast>=PENDING_BYTE )     a[0] = cType;
+      എങ്കിൽ( iFirst<=PENDING_BYTE+1 && iLast>=PENDING_BYTE+1 ) a[1] = cType;
+      എങ്കിൽ( iFirst<=PENDING_BYTE+2 && iLast>=PENDING_BYTE+510 ) a[2] = cType;
+    }അല്ലെങ്കിൽ എങ്കിൽ( iLast<=128 ){
+      എങ്കിൽ( iFirst<=128 && iLast>=128 ) a[4] = cType;
+      എങ്കിൽ( iFirst<=120 && iLast>=120 ) a[6] = cType;
+      എങ്കിൽ( iFirst<=121 && iLast>=121 ) a[7] = cType;
+      എങ്കിൽ( iFirst<=122 && iLast>=122 ) a[8] = cType;
+      എങ്കിൽ( iFirst<=123 && iLast>=123 ) a[10] = cType;
+      എങ്കിൽ( iFirst<=124 && iLast>=124 ) a[11] = cType;
+      എങ്കിൽ( iFirst<=125 && iLast>=125 ) a[12] = cType;
+      എങ്കിൽ( iFirst<=126 && iLast>=126 ) a[13] = cType;
+      എങ്കിൽ( iFirst<=127 && iLast>=127 ) a[14] = cType;
     }
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-#else
+#അല്ലെങ്കിൽ
 #  define unixPosixAdvisoryLocks(A,B) SQLITE_ERROR_UNABLE
 #endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
@@ -714,11 +714,11 @@ static int unixPosixAdvisoryLocks(
 ** log if they come from non-root processes.  So avoid calling fchown() if
 ** we are not running as root.
 */
-static int robustFchown(int fd, uid_t uid, gid_t gid){
-#if defined(HAVE_FCHOWN)
-  return osGeteuid() ? 0 : osFchown(fd,uid,gid);
-#else
-  return 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ robustFchown(പൂർണ്ണസംഖ്യ fd, uid_t uid, gid_t gid){
+#എങ്കിൽ defined(HAVE_FCHOWN)
+  തിരികെ osGeteuid() ? 0 : osFchown(fd,uid,gid);
+#അല്ലെങ്കിൽ
+  തിരികെ 0;
 #endif
 }
 
@@ -728,42 +728,42 @@ static int robustFchown(int fd, uid_t uid, gid_t gid){
 ** system call pointer, or SQLITE_NOTFOUND if there is no configurable
 ** system call named zName.
 */
-static int unixSetSystemCall(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixSetSystemCall(
   sqlite3_vfs *pNotUsed,        /* The VFS pointer.  Not used */
-  const char *zName,            /* Name of system call to override */
+  സ്ഥിരം അക്ഷരം *zName,            /* Name of system call to override */
   sqlite3_syscall_ptr pNewFunc  /* Pointer to new system call value */
 ){
-  unsigned int i;
-  int rc = SQLITE_NOTFOUND;
+  unsigned പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_NOTFOUND;
 
   UNUSED_PARAMETER(pNotUsed);
-  if( zName==0 ){
+  എങ്കിൽ( zName==0 ){
     /* If no zName is given, restore all system calls to their default
     ** settings and return NULL
     */
     rc = SQLITE_OK;
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( aSyscall[i].pDefault ){
+    വേണ്ടി(i=0; i<വലുപ്പം(aSyscall)/വലുപ്പം(aSyscall[0]); i++){
+      എങ്കിൽ( aSyscall[i].pDefault ){
         aSyscall[i].pCurrent = aSyscall[i].pDefault;
       }
     }
-  }else{
+  }അല്ലെങ്കിൽ{
     /* If zName is specified, operate on only the one system call
     ** specified.
     */
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ){
-        if( aSyscall[i].pDefault==0 ){
+    വേണ്ടി(i=0; i<വലുപ്പം(aSyscall)/വലുപ്പം(aSyscall[0]); i++){
+      എങ്കിൽ( strcmp(zName, aSyscall[i].zName)==0 ){
+        എങ്കിൽ( aSyscall[i].pDefault==0 ){
           aSyscall[i].pDefault = aSyscall[i].pCurrent;
         }
         rc = SQLITE_OK;
-        if( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
+        എങ്കിൽ( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
         aSyscall[i].pCurrent = pNewFunc;
-        break;
+        നിർത്തുക;
       }
     }
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -771,17 +771,17 @@ static int unixSetSystemCall(
 ** recognized system call name.  NULL is also returned if the system call
 ** is currently undefined.
 */
-static sqlite3_syscall_ptr unixGetSystemCall(
+സ്ഥിതം sqlite3_syscall_ptr unixGetSystemCall(
   sqlite3_vfs *pNotUsed,
-  const char *zName
+  സ്ഥിരം അക്ഷരം *zName
 ){
-  unsigned int i;
+  unsigned പൂർണ്ണസംഖ്യ i;
 
   UNUSED_PARAMETER(pNotUsed);
-  for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-    if( strcmp(zName, aSyscall[i].zName)==0 ) return aSyscall[i].pCurrent;
+  വേണ്ടി(i=0; i<വലുപ്പം(aSyscall)/വലുപ്പം(aSyscall[0]); i++){
+    എങ്കിൽ( strcmp(zName, aSyscall[i].zName)==0 ) തിരികെ aSyscall[i].pCurrent;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -790,19 +790,19 @@ static sqlite3_syscall_ptr unixGetSystemCall(
 ** is the last system call or if zName is not the name of a valid
 ** system call.
 */
-static const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName){
-  int i = -1;
+സ്ഥിതം സ്ഥിരം അക്ഷരം *unixNextSystemCall(sqlite3_vfs *p, സ്ഥിരം അക്ഷരം *zName){
+  പൂർണ്ണസംഖ്യ i = -1;
 
   UNUSED_PARAMETER(p);
-  if( zName ){
-    for(i=0; i<ArraySize(aSyscall)-1; i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ) break;
+  എങ്കിൽ( zName ){
+    വേണ്ടി(i=0; i<ArraySize(aSyscall)-1; i++){
+      എങ്കിൽ( strcmp(zName, aSyscall[i].zName)==0 ) നിർത്തുക;
     }
   }
-  for(i++; i<ArraySize(aSyscall); i++){
-    if( aSyscall[i].pCurrent!=0 ) return aSyscall[i].zName;
+  വേണ്ടി(i++; i<ArraySize(aSyscall); i++){
+    എങ്കിൽ( aSyscall[i].pCurrent!=0 ) തിരികെ aSyscall[i].zName;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -831,44 +831,44 @@ static const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName){
 ** process that is able to write to the database will also be able to
 ** recover the hot journals.
 */
-static int robust_open(const char *z, int f, mode_t m){
-  int fd;
+സ്ഥിതം പൂർണ്ണസംഖ്യ robust_open(സ്ഥിരം അക്ഷരം *z, പൂർണ്ണസംഖ്യ f, mode_t m){
+  പൂർണ്ണസംഖ്യ fd;
   mode_t m2 = m ? m : SQLITE_DEFAULT_FILE_PERMISSIONS;
-  while(1){
-#if defined(O_CLOEXEC)
+  ആകുമ്പോൾ(1){
+#എങ്കിൽ defined(O_CLOEXEC)
     fd = osOpen(z,f|O_CLOEXEC,m2);
-#else
+#അല്ലെങ്കിൽ
     fd = osOpen(z,f,m2);
 #endif
-    if( fd<0 ){
-      if( errno==EINTR ) continue;
-      break;
+    എങ്കിൽ( fd<0 ){
+      എങ്കിൽ( errno==EINTR ) തുടരുക;
+      നിർത്തുക;
     }
-    if( fd>=SQLITE_MINIMUM_FILE_DESCRIPTOR ) break;
-    if( (f & (O_EXCL|O_CREAT))==(O_EXCL|O_CREAT) ){
-      (void)osUnlink(z);
+    എങ്കിൽ( fd>=SQLITE_MINIMUM_FILE_DESCRIPTOR ) നിർത്തുക;
+    എങ്കിൽ( (f & (O_EXCL|O_CREAT))==(O_EXCL|O_CREAT) ){
+      (ശൂന്യം)osUnlink(z);
     }
     osClose(fd);
     sqlite3_log(SQLITE_WARNING,
                 "attempt to open \"%s\" as file descriptor %d", z, fd);
     fd = -1;
-    if( osOpen("/dev/null", O_RDONLY, m)<0 ) break;
+    എങ്കിൽ( osOpen("/dev/null", O_RDONLY, m)<0 ) നിർത്തുക;
   }
-  if( fd>=0 ){
-    if( m!=0 ){
-      struct stat statbuf;
-      if( osFstat(fd, &statbuf)==0
+  എങ്കിൽ( fd>=0 ){
+    എങ്കിൽ( m!=0 ){
+      ഘടന stat statbuf;
+      എങ്കിൽ( osFstat(fd, &statbuf)==0
        && statbuf.st_size==0
        && (statbuf.st_mode&0777)!=m
       ){
         osFchmod(fd, m);
       }
     }
-#if defined(FD_CLOEXEC) && (!defined(O_CLOEXEC) || O_CLOEXEC==0)
+#എങ്കിൽ defined(FD_CLOEXEC) && (!defined(O_CLOEXEC) || O_CLOEXEC==0)
     osFcntl(fd, F_SETFD, osFcntl(fd, F_GETFD, 0) | FD_CLOEXEC);
 #endif
   }
-  return fd;
+  തിരികെ fd;
 }
 
 /*
@@ -895,18 +895,18 @@ static int robust_open(const char *z, int f, mode_t m){
 **      OK:     enter(pLockInfo)
 **   ERROR:     enter(pLockInfo), enter(unixBigLock)
 */
-static sqlite3_mutex *unixBigLock = 0;
-static void unixEnterMutex(void){
-  assert( sqlite3_mutex_notheld(unixBigLock) );  /* Not a recursive mutex */
+സ്ഥിതം sqlite3_mutex *unixBigLock = 0;
+സ്ഥിതം ശൂന്യം unixEnterMutex(ശൂന്യം){
+  പ്രതിജ്ഞാ( sqlite3_mutex_notheld(unixBigLock) );  /* Not a recursive mutex */
   sqlite3_mutex_enter(unixBigLock);
 }
-static void unixLeaveMutex(void){
-  assert( sqlite3_mutex_held(unixBigLock) );
+സ്ഥിതം ശൂന്യം unixLeaveMutex(ശൂന്യം){
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(unixBigLock) );
   sqlite3_mutex_leave(unixBigLock);
 }
 #ifdef SQLITE_DEBUG
-static int unixMutexHeld(void) {
-  return sqlite3_mutex_held(unixBigLock);
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixMutexHeld(ശൂന്യം) {
+  തിരികെ sqlite3_mutex_held(unixBigLock);
 }
 #endif
 
@@ -917,15 +917,15 @@ static int unixMutexHeld(void) {
 ** binaries. This returns the string representation of the supplied
 ** integer lock-type.
 */
-static const char *azFileLock(int eFileLock){
-  switch( eFileLock ){
-    case NO_LOCK: return "NONE";
-    case SHARED_LOCK: return "SHARED";
-    case RESERVED_LOCK: return "RESERVED";
-    case PENDING_LOCK: return "PENDING";
-    case EXCLUSIVE_LOCK: return "EXCLUSIVE";
+സ്ഥിതം സ്ഥിരം അക്ഷരം *azFileLock(പൂർണ്ണസംഖ്യ eFileLock){
+  തിരഞ്ഞെടുപ്പ്( eFileLock ){
+    അവസ്ഥ NO_LOCK: തിരികെ "NONE";
+    അവസ്ഥ SHARED_LOCK: തിരികെ "SHARED";
+    അവസ്ഥ RESERVED_LOCK: തിരികെ "RESERVED";
+    അവസ്ഥ PENDING_LOCK: തിരികെ "PENDING";
+    അവസ്ഥ EXCLUSIVE_LOCK: തിരികെ "EXCLUSIVE";
   }
-  return "ERROR";
+  തിരികെ "ERROR";
 }
 #endif
 
@@ -938,52 +938,52 @@ static const char *azFileLock(int eFileLock){
 ** command-line option on the compiler.  This code is normally
 ** turned off.
 */
-static int lockTrace(int fd, int op, struct flock *p){
-  char *zOpName, *zType;
-  int s;
-  int savedErrno;
-  if( op==F_GETLK ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ lockTrace(പൂർണ്ണസംഖ്യ fd, പൂർണ്ണസംഖ്യ op, ഘടന flock *p){
+  അക്ഷരം *zOpName, *zType;
+  പൂർണ്ണസംഖ്യ s;
+  പൂർണ്ണസംഖ്യ savedErrno;
+  എങ്കിൽ( op==F_GETLK ){
     zOpName = "GETLK";
-  }else if( op==F_SETLK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( op==F_SETLK ){
     zOpName = "SETLK";
-  }else{
+  }അല്ലെങ്കിൽ{
     s = osFcntl(fd, op, p);
     sqlite3DebugPrintf("fcntl unknown %d %d %d\n", fd, op, s);
-    return s;
+    തിരികെ s;
   }
-  if( p->l_type==F_RDLCK ){
+  എങ്കിൽ( p->l_type==F_RDLCK ){
     zType = "RDLCK";
-  }else if( p->l_type==F_WRLCK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( p->l_type==F_WRLCK ){
     zType = "WRLCK";
-  }else if( p->l_type==F_UNLCK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( p->l_type==F_UNLCK ){
     zType = "UNLCK";
-  }else{
-    assert( 0 );
+  }അല്ലെങ്കിൽ{
+    പ്രതിജ്ഞാ( 0 );
   }
-  assert( p->l_whence==SEEK_SET );
+  പ്രതിജ്ഞാ( p->l_whence==SEEK_SET );
   s = osFcntl(fd, op, p);
   savedErrno = errno;
   sqlite3DebugPrintf("fcntl %d %d %s %s %d %d %d %d\n",
-     threadid, fd, zOpName, zType, (int)p->l_start, (int)p->l_len,
-     (int)p->l_pid, s);
-  if( s==(-1) && op==F_SETLK && (p->l_type==F_RDLCK || p->l_type==F_WRLCK) ){
-    struct flock l2;
+     threadid, fd, zOpName, zType, (പൂർണ്ണസംഖ്യ)p->l_start, (പൂർണ്ണസംഖ്യ)p->l_len,
+     (പൂർണ്ണസംഖ്യ)p->l_pid, s);
+  എങ്കിൽ( s==(-1) && op==F_SETLK && (p->l_type==F_RDLCK || p->l_type==F_WRLCK) ){
+    ഘടന flock l2;
     l2 = *p;
     osFcntl(fd, F_GETLK, &l2);
-    if( l2.l_type==F_RDLCK ){
+    എങ്കിൽ( l2.l_type==F_RDLCK ){
       zType = "RDLCK";
-    }else if( l2.l_type==F_WRLCK ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( l2.l_type==F_WRLCK ){
       zType = "WRLCK";
-    }else if( l2.l_type==F_UNLCK ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( l2.l_type==F_UNLCK ){
       zType = "UNLCK";
-    }else{
-      assert( 0 );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( 0 );
     }
     sqlite3DebugPrintf("fcntl-failure-reason: %s %d %d %d\n",
-       zType, (int)l2.l_start, (int)l2.l_len, (int)l2.l_pid);
+       zType, (പൂർണ്ണസംഖ്യ)l2.l_start, (പൂർണ്ണസംഖ്യ)l2.l_len, (പൂർണ്ണസംഖ്യ)l2.l_pid);
   }
   errno = savedErrno;
-  return s;
+  തിരികെ s;
 }
 #undef osFcntl
 #define osFcntl lockTrace
@@ -996,19 +996,19 @@ static int lockTrace(int fd, int op, struct flock *p){
 ** this wrapper.  On the Android platform, bypassing the logic below
 ** could lead to a corrupt database.
 */
-static int robust_ftruncate(int h, sqlite3_int64 sz){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ robust_ftruncate(പൂർണ്ണസംഖ്യ h, sqlite3_int64 sz){
+  പൂർണ്ണസംഖ്യ rc;
 #ifdef __ANDROID__
   /* On Android, ftruncate() always uses 32-bit offsets, even if
   ** _FILE_OFFSET_BITS=64 is defined. This means it is unsafe to attempt to
   ** truncate a file to any size larger than 2GiB. Silently ignore any
   ** such attempts.  */
-  if( sz>(sqlite3_int64)0x7FFFFFFF ){
+  എങ്കിൽ( sz>(sqlite3_int64)0x7FFFFFFF ){
     rc = SQLITE_OK;
-  }else
+  }അല്ലെങ്കിൽ
 #endif
-  do{ rc = osFtruncate(h,sz); }while( rc<0 && errno==EINTR );
-  return rc;
+  ചെയ്യുക{ rc = osFtruncate(h,sz); }ആകുമ്പോൾ( rc<0 && errno==EINTR );
+  തിരികെ rc;
 }
 
 /*
@@ -1021,27 +1021,27 @@ static int robust_ftruncate(int h, sqlite3_int64 sz){
 ** Errors during initialization of locks, or file system support for locks,
 ** should handle ENOLCK, ENOTSUP, EOPNOTSUPP separately.
 */
-static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
-  assert( (sqliteIOErr == SQLITE_IOERR_LOCK) ||
+സ്ഥിതം പൂർണ്ണസംഖ്യ sqliteErrorFromPosixError(പൂർണ്ണസംഖ്യ posixError, പൂർണ്ണസംഖ്യ sqliteIOErr) {
+  പ്രതിജ്ഞാ( (sqliteIOErr == SQLITE_IOERR_LOCK) ||
           (sqliteIOErr == SQLITE_IOERR_UNLOCK) ||
           (sqliteIOErr == SQLITE_IOERR_RDLOCK) ||
           (sqliteIOErr == SQLITE_IOERR_CHECKRESERVEDLOCK) );
-  switch (posixError) {
-  case EACCES:
-  case EAGAIN:
-  case ETIMEDOUT:
-  case EBUSY:
-  case EINTR:
-  case ENOLCK:
+  തിരഞ്ഞെടുപ്പ് (posixError) {
+  അവസ്ഥ EACCES:
+  അവസ്ഥ EAGAIN:
+  അവസ്ഥ ETIMEDOUT:
+  അവസ്ഥ EBUSY:
+  അവസ്ഥ EINTR:
+  അവസ്ഥ ENOLCK:
     /* random NFS retry error, unless during file system support
      * introspection, in which it actually means what it says */
-    return SQLITE_BUSY;
+    തിരികെ SQLITE_BUSY;
   
-  case EPERM:
-    return SQLITE_PERM;
+  അവസ്ഥ EPERM:
+    തിരികെ SQLITE_PERM;
   
-  default:
-    return sqliteIOErr;
+  സ്ഥിരസ്ഥിതി:
+    തിരികെ sqliteIOErr;
   }
 }
 
@@ -1063,20 +1063,20 @@ static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
 ** a performance-critical path, so it is sufficient to put these
 ** structures on a linked list.
 */
-struct vxworksFileId {
-  struct vxworksFileId *pNext;  /* Next in a list of them all */
-  int nRef;                     /* Number of references to this one */
-  int nName;                    /* Length of the zCanonicalName[] string */
-  char *zCanonicalName;         /* Canonical filename */
+ഘടന vxworksFileId {
+  ഘടന vxworksFileId *pNext;  /* Next in a list of them all */
+  പൂർണ്ണസംഖ്യ nRef;                     /* Number of references to this one */
+  പൂർണ്ണസംഖ്യ nName;                    /* Length of the zCanonicalName[] string */
+  അക്ഷരം *zCanonicalName;         /* Canonical filename */
 };
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
 /*
 ** All unique filenames are held on a linked list headed by this
 ** variable:
 */
-static struct vxworksFileId *vxworksFileList = 0;
-static sqlite3_mutex *vxworksMutex = 0;
+സ്ഥിതം ഘടന vxworksFileId *vxworksFileList = 0;
+സ്ഥിതം sqlite3_mutex *vxworksMutex = 0;
 
 /*
 ** Simplify a filename into its canonical form
@@ -1091,27 +1091,27 @@ static sqlite3_mutex *vxworksMutex = 0;
 ** The original filename is in z[0..n-1].  Return the number of
 ** characters in the simplified name.
 */
-static int vxworksSimplifyName(char *z, int n){
-  int i, j;
-  while( n>1 && z[n-1]=='/' ){ n--; }
-  for(i=j=0; i<n; i++){
-    if( z[i]=='/' ){
-      if( z[i+1]=='/' ) continue;
-      if( z[i+1]=='.' && i+2<n && z[i+2]=='/' ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ vxworksSimplifyName(അക്ഷരം *z, പൂർണ്ണസംഖ്യ n){
+  പൂർണ്ണസംഖ്യ i, j;
+  ആകുമ്പോൾ( n>1 && z[n-1]=='/' ){ n--; }
+  വേണ്ടി(i=j=0; i<n; i++){
+    എങ്കിൽ( z[i]=='/' ){
+      എങ്കിൽ( z[i+1]=='/' ) തുടരുക;
+      എങ്കിൽ( z[i+1]=='.' && i+2<n && z[i+2]=='/' ){
         i += 1;
-        continue;
+        തുടരുക;
       }
-      if( z[i+1]=='.' && i+3<n && z[i+2]=='.' && z[i+3]=='/' ){
-        while( j>0 && z[j-1]!='/' ){ j--; }
-        if( j>0 ){ j--; }
+      എങ്കിൽ( z[i+1]=='.' && i+3<n && z[i+2]=='.' && z[i+3]=='/' ){
+        ആകുമ്പോൾ( j>0 && z[j-1]!='/' ){ j--; }
+        എങ്കിൽ( j>0 ){ j--; }
         i += 2;
-        continue;
+        തുടരുക;
       }
     }
     z[j++] = z[i];
   }
   z[j] = 0;
-  return j;
+  തിരികെ j;
 }
 
 /*
@@ -1125,16 +1125,16 @@ static int vxworksSimplifyName(char *z, int n){
 **
 ** If a memory allocation error occurs, return NULL.
 */
-static struct vxworksFileId *vxworksFindFileId(const char *zAbsoluteName){
-  struct vxworksFileId *pNew;         /* search key and new file ID */
-  struct vxworksFileId *pCandidate;   /* For looping over existing file IDs */
-  int n;                              /* Length of zAbsoluteName string */
+സ്ഥിതം ഘടന vxworksFileId *vxworksFindFileId(സ്ഥിരം അക്ഷരം *zAbsoluteName){
+  ഘടന vxworksFileId *pNew;         /* search key and new file ID */
+  ഘടന vxworksFileId *pCandidate;   /* For looping over existing file IDs */
+  പൂർണ്ണസംഖ്യ n;                              /* Length of zAbsoluteName string */
 
-  assert( zAbsoluteName[0]=='/' );
-  n = (int)strlen(zAbsoluteName);
-  pNew = sqlite3_malloc64( sizeof(*pNew) + (n+1) );
-  if( pNew==0 ) return 0;
-  pNew->zCanonicalName = (char*)&pNew[1];
+  പ്രതിജ്ഞാ( zAbsoluteName[0]=='/' );
+  n = (പൂർണ്ണസംഖ്യ)strlen(zAbsoluteName);
+  pNew = sqlite3_malloc64( വലുപ്പം(*pNew) + (n+1) );
+  എങ്കിൽ( pNew==0 ) തിരികെ 0;
+  pNew->zCanonicalName = (അക്ഷരം*)&pNew[1];
   memcpy(pNew->zCanonicalName, zAbsoluteName, n+1);
   n = vxworksSimplifyName(pNew->zCanonicalName, n);
 
@@ -1143,14 +1143,14 @@ static struct vxworksFileId *vxworksFindFileId(const char *zAbsoluteName){
   ** the existing file ID.
   */
   sqlite3_mutex_enter(vxworksMutex);
-  for(pCandidate=vxworksFileList; pCandidate; pCandidate=pCandidate->pNext){
-    if( pCandidate->nName==n
+  വേണ്ടി(pCandidate=vxworksFileList; pCandidate; pCandidate=pCandidate->pNext){
+    എങ്കിൽ( pCandidate->nName==n
      && memcmp(pCandidate->zCanonicalName, pNew->zCanonicalName, n)==0
     ){
        sqlite3_free(pNew);
        pCandidate->nRef++;
        sqlite3_mutex_leave(vxworksMutex);
-       return pCandidate;
+       തിരികെ pCandidate;
     }
   }
 
@@ -1160,21 +1160,21 @@ static struct vxworksFileId *vxworksFindFileId(const char *zAbsoluteName){
   pNew->pNext = vxworksFileList;
   vxworksFileList = pNew;
   sqlite3_mutex_leave(vxworksMutex);
-  return pNew;
+  തിരികെ pNew;
 }
 
 /*
 ** Decrement the reference count on a vxworksFileId object.  Free
 ** the object when the reference count reaches zero.
 */
-static void vxworksReleaseFileId(struct vxworksFileId *pId){
+സ്ഥിതം ശൂന്യം vxworksReleaseFileId(ഘടന vxworksFileId *pId){
   sqlite3_mutex_enter(vxworksMutex);
-  assert( pId->nRef>0 );
+  പ്രതിജ്ഞാ( pId->nRef>0 );
   pId->nRef--;
-  if( pId->nRef==0 ){
-    struct vxworksFileId **pp;
-    for(pp=&vxworksFileList; *pp && *pp!=pId; pp = &((*pp)->pNext)){}
-    assert( *pp==pId );
+  എങ്കിൽ( pId->nRef==0 ){
+    ഘടന vxworksFileId **pp;
+    വേണ്ടി(pp=&vxworksFileList; *pp && *pp!=pId; pp = &((*pp)->pNext)){}
+    പ്രതിജ്ഞാ( *pp==pId );
     *pp = pId->pNext;
     sqlite3_free(pId);
   }
@@ -1279,11 +1279,11 @@ static void vxworksReleaseFileId(struct vxworksFileId *pId){
 ** An instance of the following structure serves as the key used
 ** to locate a particular unixInodeInfo object.
 */
-struct unixFileId {
+ഘടന unixFileId {
   dev_t dev;                  /* Device number */
-#if OS_VXWORKS
-  struct vxworksFileId *pId;  /* Unique file ID for vxworks. */
-#else
+#എങ്കിൽ OS_VXWORKS
+  ഘടന vxworksFileId *pId;  /* Unique file ID for vxworks. */
+#അല്ലെങ്കിൽ
   /* We are told that some versions of Android contain a bug that
   ** sizes ino_t at only 32-bits instead of 64-bits. (See
   ** https://android-review.googlesource.com/#/c/115351/3/dist/sqlite3.c)
@@ -1320,24 +1320,24 @@ struct unixFileId {
 ** be acquired while holding the pLockMutex mutex.  If both unixBigLock
 ** and pLockMutex are needed, then unixBigLock must be acquired first.
 */
-struct unixInodeInfo {
-  struct unixFileId fileId;       /* The lookup key */
+ഘടന unixInodeInfo {
+  ഘടന unixFileId fileId;       /* The lookup key */
   sqlite3_mutex *pLockMutex;      /* Hold this mutex for... */
-  int nShared;                      /* Number of SHARED locks held */
-  int nLock;                        /* Number of outstanding file locks */
-  unsigned char eFileLock;          /* One of SHARED_LOCK, RESERVED_LOCK etc. */
-  unsigned char bProcessLock;       /* An exclusive process lock is held */
+  പൂർണ്ണസംഖ്യ nShared;                      /* Number of SHARED locks held */
+  പൂർണ്ണസംഖ്യ nLock;                        /* Number of outstanding file locks */
+  unsigned അക്ഷരം eFileLock;          /* One of SHARED_LOCK, RESERVED_LOCK etc. */
+  unsigned അക്ഷരം bProcessLock;       /* An exclusive process lock is held */
   UnixUnusedFd *pUnused;            /* Unused file descriptors to close */
-  int nRef;                       /* Number of pointers to this structure */
-  unixShmNode *pShmNode;          /* Shared memory associated with this inode */
+  പൂർണ്ണസംഖ്യ nRef;                       /* Number of pointers to this structure */
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;          /* Shared memory associated with this inode */
   unixInodeInfo *pNext;           /* List of all unixInodeInfo objects */
   unixInodeInfo *pPrev;           /*    .... doubly linked */
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
   unsigned long long sharedByte;  /* for AFP simulated shared lock */
 #endif
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   sem_t *pSem;                    /* Named POSIX semaphore */
-  char aSemName[MAX_PATHNAME+2];  /* Name of that semaphore */
+  അക്ഷരം aSemName[MAX_PATHNAME+2];  /* Name of that semaphore */
 #endif
 };
 
@@ -1346,7 +1346,7 @@ struct unixInodeInfo {
 **
 ** Must hold unixBigLock in order to read or write this variable.
 */
-static unixInodeInfo *inodeList = 0;  /* All unixInodeInfo objects */
+സ്ഥിതം unixInodeInfo *inodeList = 0;  /* All unixInodeInfo objects */
 
 #ifdef SQLITE_DEBUG
 /*
@@ -1354,13 +1354,13 @@ static unixInodeInfo *inodeList = 0;  /* All unixInodeInfo objects */
 ** This routine is used only within assert() to help verify correct mutex
 ** usage.
 */
-int unixFileMutexHeld(unixFile *pFile){
-  assert( pFile->pInode );
-  return sqlite3_mutex_held(pFile->pInode->pLockMutex);
+പൂർണ്ണസംഖ്യ unixFileMutexHeld(unixFile *pFile){
+  പ്രതിജ്ഞാ( pFile->pInode );
+  തിരികെ sqlite3_mutex_held(pFile->pInode->pLockMutex);
 }
-int unixFileMutexNotheld(unixFile *pFile){
-  assert( pFile->pInode );
-  return sqlite3_mutex_notheld(pFile->pInode->pLockMutex);
+പൂർണ്ണസംഖ്യ unixFileMutexNotheld(unixFile *pFile){
+  പ്രതിജ്ഞാ( pFile->pInode );
+  തിരികെ sqlite3_mutex_notheld(pFile->pInode->pLockMutex);
 }
 #endif
 
@@ -1380,23 +1380,23 @@ int unixFileMutexNotheld(unixFile *pFile){
 ** failed (e.g. "unlink", "open") and the associated file-system path,
 ** if any.
 */
-#define unixLogError(a,b,c)     unixLogErrorAtLine(a,b,c,__LINE__)
-static int unixLogErrorAtLine(
-  int errcode,                    /* SQLite error code */
-  const char *zFunc,              /* Name of OS function that failed */
-  const char *zPath,              /* File path associated with error */
-  int iLine                       /* Source line number where error occurred */
+#define unixLogError(a,b,c)     unix_Log_Error_At_വരി(a,b,c,__LINE__)
+സ്ഥിതം പൂർണ്ണസംഖ്യ unix_Log_Error_At_വരി(
+  പൂർണ്ണസംഖ്യ errcode,                    /* SQLite error code */
+  സ്ഥിരം അക്ഷരം *zFunc,              /* Name of OS function that failed */
+  സ്ഥിരം അക്ഷരം *zPath,              /* File path associated with error */
+  പൂർണ്ണസംഖ്യ i_വരി                       /* Source line number where error occurred */
 ){
-  char *zErr;                     /* Message from strerror() or equivalent */
-  int iErrno = errno;             /* Saved syscall error number */
+  അക്ഷരം *zErr;                     /* Message from strerror() or equivalent */
+  പൂർണ്ണസംഖ്യ iErrno = errno;             /* Saved syscall error number */
 
   /* If this is not a threadsafe build (SQLITE_THREADSAFE==0), then use
   ** the strerror() function to obtain the human-readable error message
   ** equivalent to errno. Otherwise, use strerror_r().
   */
-#if SQLITE_THREADSAFE && defined(HAVE_STRERROR_R)
-  char aErr[80];
-  memset(aErr, 0, sizeof(aErr));
+#എങ്കിൽ SQLITE_THREADSAFE && defined(HAVE_STRERROR_R)
+  അക്ഷരം aErr[80];
+  memset(aErr, 0, വലുപ്പം(aErr));
   zErr = aErr;
 
   /* If STRERROR_R_CHAR_P (set by autoconf scripts) or __USE_GNU is defined,
@@ -1414,27 +1414,27 @@ static int unixLogErrorAtLine(
   ** Forum post 3f13857fa4062301 reports that the Android SDK may use
   ** int-type return, depending on its version.
   */
-#if (defined(STRERROR_R_CHAR_P) || defined(__USE_GNU)) \
+#എങ്കിൽ (defined(STRERROR_R_CHAR_P) || defined(__USE_GNU)) \
   && !defined(ANDROID) && !defined(__ANDROID__)
   zErr =
 # endif
-  strerror_r(iErrno, aErr, sizeof(aErr)-1);
+  strerror_r(iErrno, aErr, വലുപ്പം(aErr)-1);
 
-#elif SQLITE_THREADSAFE
+#അല്ലെങ്കിലെങ്കിൽ SQLITE_THREADSAFE
   /* This is a threadsafe build, but strerror_r() is not available. */
   zErr = "";
-#else
+#അല്ലെങ്കിൽ
   /* Non-threadsafe build, use strerror(). */
   zErr = strerror(iErrno);
 #endif
 
-  if( zPath==0 ) zPath = "";
+  എങ്കിൽ( zPath==0 ) zPath = "";
   sqlite3_log(errcode,
       "os_unix.c:%d: (%d) %s(%s) - %s",
-      iLine, iErrno, zFunc, zPath, zErr
+      i_വരി, iErrno, zFunc, zPath, zErr
   );
 
-  return errcode;
+  തിരികെ errcode;
 }
 
 /*
@@ -1450,9 +1450,9 @@ static int unixLogErrorAtLine(
 ** So we don't even try to recover from an EINTR.  Just log the error
 ** and move on.
 */
-static void robust_close(unixFile *pFile, int h, int lineno){
-  if( osClose(h) ){
-    unixLogErrorAtLine(SQLITE_IOERR_CLOSE, "close",
+സ്ഥിതം ശൂന്യം robust_close(unixFile *pFile, പൂർണ്ണസംഖ്യ h, പൂർണ്ണസംഖ്യ lineno){
+  എങ്കിൽ( osClose(h) ){
+    unix_Log_Error_At_വരി(SQLITE_IOERR_CLOSE, "close",
                        pFile ? pFile->zPath : 0, lineno);
   }
 }
@@ -1461,19 +1461,19 @@ static void robust_close(unixFile *pFile, int h, int lineno){
 ** Set the pFile->lastErrno.  Do this in a subroutine as that provides
 ** a convenient place to set a breakpoint.
 */
-static void storeLastErrno(unixFile *pFile, int error){
+സ്ഥിതം ശൂന്യം storeLastErrno(unixFile *pFile, പൂർണ്ണസംഖ്യ error){
   pFile->lastErrno = error;
 }
 
 /*
 ** Close all file descriptors accumulated in the unixInodeInfo->pUnused list.
 */
-static void closePendingFds(unixFile *pFile){
+സ്ഥിതം ശൂന്യം closePendingFds(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
   UnixUnusedFd *p;
   UnixUnusedFd *pNext;
-  assert( unixFileMutexHeld(pFile) );
-  for(p=pInode->pUnused; p; p=pNext){
+  പ്രതിജ്ഞാ( unixFileMutexHeld(pFile) );
+  വേണ്ടി(p=pInode->pUnused; p; p=pNext){
     pNext = p->pNext;
     robust_close(pFile, p->fd, __LINE__);
     sqlite3_free(p);
@@ -1487,26 +1487,26 @@ static void closePendingFds(unixFile *pFile){
 ** The global mutex must be held when this routine is called, but the mutex
 ** on the inode being deleted must NOT be held.
 */
-static void releaseInodeInfo(unixFile *pFile){
+സ്ഥിതം ശൂന്യം releaseInodeInfo(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
-  assert( unixMutexHeld() );
-  assert( unixFileMutexNotheld(pFile) );
-  if( ALWAYS(pInode) ){
+  പ്രതിജ്ഞാ( unixMutexHeld() );
+  പ്രതിജ്ഞാ( unixFileMutexNotheld(pFile) );
+  എങ്കിൽ( ALWAYS(pInode) ){
     pInode->nRef--;
-    if( pInode->nRef==0 ){
-      assert( pInode->pShmNode==0 );
+    എങ്കിൽ( pInode->nRef==0 ){
+      പ്രതിജ്ഞാ( pInode->p_Shm_കണ്ണി==0 );
       sqlite3_mutex_enter(pInode->pLockMutex);
       closePendingFds(pFile);
       sqlite3_mutex_leave(pInode->pLockMutex);
-      if( pInode->pPrev ){
-        assert( pInode->pPrev->pNext==pInode );
+      എങ്കിൽ( pInode->pPrev ){
+        പ്രതിജ്ഞാ( pInode->pPrev->pNext==pInode );
         pInode->pPrev->pNext = pInode->pNext;
-      }else{
-        assert( inodeList==pInode );
+      }അല്ലെങ്കിൽ{
+        പ്രതിജ്ഞാ( inodeList==pInode );
         inodeList = pInode->pNext;
       }
-      if( pInode->pNext ){
-        assert( pInode->pNext->pPrev==pInode );
+      എങ്കിൽ( pInode->pNext ){
+        പ്രതിജ്ഞാ( pInode->pNext->pPrev==pInode );
         pInode->pNext->pPrev = pInode->pPrev;
       }
       sqlite3_mutex_free(pInode->pLockMutex);
@@ -1524,29 +1524,29 @@ static void releaseInodeInfo(unixFile *pFile){
 **
 ** Return an appropriate error code.
 */
-static int findInodeInfo(
+സ്ഥിതം പൂർണ്ണസംഖ്യ findInodeInfo(
   unixFile *pFile,               /* Unix file with file desc used in the key */
   unixInodeInfo **ppInode        /* Return the unixInodeInfo object here */
 ){
-  int rc;                        /* System call return code */
-  int fd;                        /* The file descriptor for pFile */
-  struct unixFileId fileId;      /* Lookup key for the unixInodeInfo */
-  struct stat statbuf;           /* Low-level file information */
+  പൂർണ്ണസംഖ്യ rc;                        /* System call return code */
+  പൂർണ്ണസംഖ്യ fd;                        /* The file descriptor for pFile */
+  ഘടന unixFileId fileId;      /* Lookup key for the unixInodeInfo */
+  ഘടന stat statbuf;           /* Low-level file information */
   unixInodeInfo *pInode = 0;     /* Candidate unixInodeInfo object */
 
-  assert( unixMutexHeld() );
+  പ്രതിജ്ഞാ( unixMutexHeld() );
 
   /* Get low-level information about the file that we can used to
   ** create a unique name for the file.
   */
   fd = pFile->h;
   rc = osFstat(fd, &statbuf);
-  if( rc!=0 ){
+  എങ്കിൽ( rc!=0 ){
     storeLastErrno(pFile, errno);
-#if defined(EOVERFLOW) && defined(SQLITE_DISABLE_LFS)
-    if( pFile->lastErrno==EOVERFLOW ) return SQLITE_NOLFS;
+#എങ്കിൽ defined(EOVERFLOW) && defined(SQLITE_DISABLE_LFS)
+    എങ്കിൽ( pFile->lastErrno==EOVERFLOW ) തിരികെ SQLITE_NOLFS;
 #endif
-    return SQLITE_IOERR;
+    തിരികെ SQLITE_IOERR;
   }
 
 #ifdef __APPLE__
@@ -1560,72 +1560,72 @@ static int findInodeInfo(
   ** is a race condition such that another thread has already populated
   ** the first page of the database, no damage is done.
   */
-  if( statbuf.st_size==0 && (pFile->fsFlags & SQLITE_FSFLAGS_IS_MSDOS)!=0 ){
-    do{ rc = osWrite(fd, "S", 1); }while( rc<0 && errno==EINTR );
-    if( rc!=1 ){
+  എങ്കിൽ( statbuf.st_size==0 && (pFile->fsFlags & SQLITE_FSFLAGS_IS_MSDOS)!=0 ){
+    ചെയ്യുക{ rc = osWrite(fd, "S", 1); }ആകുമ്പോൾ( rc<0 && errno==EINTR );
+    എങ്കിൽ( rc!=1 ){
       storeLastErrno(pFile, errno);
-      return SQLITE_IOERR;
+      തിരികെ SQLITE_IOERR;
     }
-    if( fsync(fd) ){
+    എങ്കിൽ( fsync(fd) ){
       storeLastErrno(pFile, errno);
-      return SQLITE_IOERR_FSYNC;
+      തിരികെ SQLITE_IOERR_FSYNC;
     }
     rc = osFstat(fd, &statbuf);
-    if( rc!=0 ){
+    എങ്കിൽ( rc!=0 ){
       storeLastErrno(pFile, errno);
-      return SQLITE_IOERR;
+      തിരികെ SQLITE_IOERR;
     }
   }
 #endif
 
-  memset(&fileId, 0, sizeof(fileId));
+  memset(&fileId, 0, വലുപ്പം(fileId));
   fileId.dev = statbuf.st_dev;
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   fileId.pId = pFile->pId;
-#else
+#അല്ലെങ്കിൽ
   fileId.ino = (u64)statbuf.st_ino;
 #endif
-  assert( unixMutexHeld() );
+  പ്രതിജ്ഞാ( unixMutexHeld() );
   pInode = inodeList;
-  while( pInode && memcmp(&fileId, &pInode->fileId, sizeof(fileId)) ){
+  ആകുമ്പോൾ( pInode && memcmp(&fileId, &pInode->fileId, വലുപ്പം(fileId)) ){
     pInode = pInode->pNext;
   }
-  if( pInode==0 ){
-    pInode = sqlite3_malloc64( sizeof(*pInode) );
-    if( pInode==0 ){
-      return SQLITE_NOMEM_BKPT;
+  എങ്കിൽ( pInode==0 ){
+    pInode = sqlite3_malloc64( വലുപ്പം(*pInode) );
+    എങ്കിൽ( pInode==0 ){
+      തിരികെ SQLITE_NOMEM_BKPT;
     }
-    memset(pInode, 0, sizeof(*pInode));
-    memcpy(&pInode->fileId, &fileId, sizeof(fileId));
-    if( sqlite3GlobalConfig.bCoreMutex ){
+    memset(pInode, 0, വലുപ്പം(*pInode));
+    memcpy(&pInode->fileId, &fileId, വലുപ്പം(fileId));
+    എങ്കിൽ( sqlite3GlobalConfig.bCoreMutex ){
       pInode->pLockMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pInode->pLockMutex==0 ){
+      എങ്കിൽ( pInode->pLockMutex==0 ){
         sqlite3_free(pInode);
-        return SQLITE_NOMEM_BKPT;
+        തിരികെ SQLITE_NOMEM_BKPT;
       }
     }
     pInode->nRef = 1;
-    assert( unixMutexHeld() );
+    പ്രതിജ്ഞാ( unixMutexHeld() );
     pInode->pNext = inodeList;
     pInode->pPrev = 0;
-    if( inodeList ) inodeList->pPrev = pInode;
+    എങ്കിൽ( inodeList ) inodeList->pPrev = pInode;
     inodeList = pInode;
-  }else{
+  }അല്ലെങ്കിൽ{
     pInode->nRef++;
   }
   *ppInode = pInode;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Return TRUE if pFile has been renamed or unlinked since it was first opened.
 */
-static int fileHasMoved(unixFile *pFile){
-#if OS_VXWORKS
-  return pFile->pInode!=0 && pFile->pId!=pFile->pInode->fileId.pId;
-#else
-  struct stat buf;
-  return pFile->pInode!=0 &&
+സ്ഥിതം പൂർണ്ണസംഖ്യ fileHasMoved(unixFile *pFile){
+#എങ്കിൽ OS_VXWORKS
+  തിരികെ pFile->pInode!=0 && pFile->pId!=pFile->pInode->fileId.pId;
+#അല്ലെങ്കിൽ
+  ഘടന stat buf;
+  തിരികെ pFile->pInode!=0 &&
       (osStat(pFile->zPath, &buf)!=0
          || (u64)buf.st_ino!=pFile->pInode->fileId.ino);
 #endif
@@ -1641,29 +1641,29 @@ static int fileHasMoved(unixFile *pFile){
 **
 ** Issue sqlite3_log(SQLITE_WARNING,...) messages if anything is not right.
 */
-static void verifyDbFile(unixFile *pFile){
-  struct stat buf;
-  int rc;
+സ്ഥിതം ശൂന്യം verifyDbFile(unixFile *pFile){
+  ഘടന stat buf;
+  പൂർണ്ണസംഖ്യ rc;
 
   /* These verifications occurs for the main database only */
-  if( pFile->ctrlFlags & UNIXFILE_NOLOCK ) return;
+  എങ്കിൽ( pFile->ctrlFlags & UNIXFILE_NOLOCK ) തിരികെ;
 
   rc = osFstat(pFile->h, &buf);
-  if( rc!=0 ){
+  എങ്കിൽ( rc!=0 ){
     sqlite3_log(SQLITE_WARNING, "cannot fstat db file %s", pFile->zPath);
-    return;
+    തിരികെ;
   }
-  if( buf.st_nlink==0 ){
+  എങ്കിൽ( buf.st_nlink==0 ){
     sqlite3_log(SQLITE_WARNING, "file unlinked while open: %s", pFile->zPath);
-    return;
+    തിരികെ;
   }
-  if( buf.st_nlink>1 ){
+  എങ്കിൽ( buf.st_nlink>1 ){
     sqlite3_log(SQLITE_WARNING, "multiple links to file: %s", pFile->zPath);
-    return;
+    തിരികെ;
   }
-  if( fileHasMoved(pFile) ){
+  എങ്കിൽ( fileHasMoved(pFile) ){
     sqlite3_log(SQLITE_WARNING, "file renamed while open: %s", pFile->zPath);
-    return;
+    തിരികെ;
   }
 }
 
@@ -1674,35 +1674,35 @@ static void verifyDbFile(unixFile *pFile){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int unixCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int rc = SQLITE_OK;
-  int reserved = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ reserved = 0;
   unixFile *pFile = (unixFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( തിരികെ SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
-  assert( pFile->eFileLock<=SHARED_LOCK );
+  പ്രതിജ്ഞാ( pFile );
+  പ്രതിജ്ഞാ( pFile->eFileLock<=SHARED_LOCK );
   sqlite3_mutex_enter(pFile->pInode->pLockMutex);
 
   /* Check if a thread in this process holds such a lock */
-  if( pFile->pInode->eFileLock>SHARED_LOCK ){
+  എങ്കിൽ( pFile->pInode->eFileLock>SHARED_LOCK ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it.
   */
 #ifndef __DJGPP__
-  if( !reserved && !pFile->pInode->bProcessLock ){
-    struct flock lock;
+  എങ്കിൽ( !reserved && !pFile->pInode->bProcessLock ){
+    ഘടന flock lock;
     lock.l_whence = SEEK_SET;
     lock.l_start = RESERVED_BYTE;
     lock.l_len = 1;
     lock.l_type = F_WRLCK;
-    if( osFcntl(pFile->h, F_GETLK, &lock) ){
+    എങ്കിൽ( osFcntl(pFile->h, F_GETLK, &lock) ){
       rc = SQLITE_IOERR_CHECKRESERVEDLOCK;
       storeLastErrno(pFile, errno);
-    } else if( lock.l_type!=F_UNLCK ){
+    } അല്ലെങ്കിൽ എങ്കിൽ( lock.l_type!=F_UNLCK ){
       reserved = 1;
     }
   }
@@ -1712,11 +1712,11 @@ static int unixCheckReservedLock(sqlite3_file *id, int *pResOut){
   OSTRACE(("TEST WR-LOCK %d %d %d (unix)\n", pFile->h, rc, reserved));
 
   *pResOut = reserved;
-  return rc;
+  തിരികെ rc;
 }
 
 /* Forward declaration*/
-static int unixSleep(sqlite3_vfs*,int);
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixSleep(sqlite3_vfs*,പൂർണ്ണസംഖ്യ);
 
 /*
 ** Set a posix-advisory-lock.
@@ -1733,19 +1733,19 @@ static int unixSleep(sqlite3_vfs*,int);
 */
 #ifndef SQLITE_ENABLE_SETLK_TIMEOUT
 # define osSetPosixAdvisoryLock(h,x,t) osFcntl(h,F_SETLK,x)
-#else
-static int osSetPosixAdvisoryLock(
-  int h,                /* The file descriptor on which to take the lock */
-  struct flock *pLock,  /* The description of the lock */
+#അല്ലെങ്കിൽ
+സ്ഥിതം പൂർണ്ണസംഖ്യ osSetPosixAdvisoryLock(
+  പൂർണ്ണസംഖ്യ h,                /* The file descriptor on which to take the lock */
+  ഘടന flock *pLock,  /* The description of the lock */
   unixFile *pFile       /* Structure holding timeout value */
 ){
-  int rc = 0;
+  പൂർണ്ണസംഖ്യ rc = 0;
 
-  if( pFile->iBusyTimeout==0 ){
+  എങ്കിൽ( pFile->iBusyTimeout==0 ){
     /* unixFile->iBusyTimeout is set to 0. In this case, attempt a 
     ** non-blocking lock. */
     rc = osFcntl(h,F_SETLK,pLock);
-  }else{
+  }അല്ലെങ്കിൽ{
     /* unixFile->iBusyTimeout is set to greater than zero. In this case,
     ** attempt a blocking-lock with a unixFile->iBusyTimeout ms timeout.
     **
@@ -1761,21 +1761,21 @@ static int osSetPosixAdvisoryLock(
     ** support blocking locks.
     */
 #ifdef SQLITE_TEST
-    int tm = pFile->iBusyTimeout;
-    while( tm>0 ){
+    പൂർണ്ണസംഖ്യ tm = pFile->iBusyTimeout;
+    ആകുമ്പോൾ( tm>0 ){
       rc = osFcntl(h,F_SETLK,pLock);
-      if( rc==0 ) break;
+      എങ്കിൽ( rc==0 ) നിർത്തുക;
       unixSleep(0,1000);
       tm--;
     }
-#else
+#അല്ലെങ്കിൽ
     rc = osFcntl(h,F_SETLK,pLock);
     pFile->iBusyTimeout = 0;
 #endif
     /* End of code to replace with real blocking-locks code. */
   }
 
-  return rc;
+  തിരികെ rc;
 }
 #endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
 
@@ -1799,44 +1799,44 @@ static int osSetPosixAdvisoryLock(
 ** Zero is returned if the call completes successfully, or -1 if a call
 ** to fcntl() fails. In this case, errno is set appropriately (by fcntl()).
 */
-static int unixFileLock(unixFile *pFile, struct flock *pLock){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFileLock(unixFile *pFile, ഘടന flock *pLock){
+  പൂർണ്ണസംഖ്യ rc;
   unixInodeInfo *pInode = pFile->pInode;
-  assert( pInode!=0 );
-  assert( sqlite3_mutex_held(pInode->pLockMutex) );
-  if( (pFile->ctrlFlags & (UNIXFILE_EXCL|UNIXFILE_RDONLY))==UNIXFILE_EXCL ){
-    if( pInode->bProcessLock==0 ){
-      struct flock lock;
+  പ്രതിജ്ഞാ( pInode!=0 );
+  പ്രതിജ്ഞാ( sqlite3_mutex_held(pInode->pLockMutex) );
+  എങ്കിൽ( (pFile->ctrlFlags & (UNIXFILE_EXCL|UNIXFILE_RDONLY))==UNIXFILE_EXCL ){
+    എങ്കിൽ( pInode->bProcessLock==0 ){
+      ഘടന flock lock;
       /* assert( pInode->nLock==0 ); <-- Not true if unix-excl READONLY used */
       lock.l_whence = SEEK_SET;
       lock.l_start = SHARED_FIRST;
       lock.l_len = SHARED_SIZE;
       lock.l_type = F_WRLCK;
       rc = osSetPosixAdvisoryLock(pFile->h, &lock, pFile);
-      if( rc<0 ) return rc;
+      എങ്കിൽ( rc<0 ) തിരികെ rc;
       pInode->bProcessLock = 1;
       pInode->nLock++;
-    }else{
+    }അല്ലെങ്കിൽ{
       rc = 0;
     }
-  }else{
+  }അല്ലെങ്കിൽ{
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    if( pFile->bBlockOnConnect && pLock->l_type==F_RDLCK
+    എങ്കിൽ( pFile->bBlockOnConnect && pLock->l_type==F_RDLCK
      && pLock->l_start==SHARED_FIRST && pLock->l_len==SHARED_SIZE
     ){
       rc = osFcntl(pFile->h, F_SETLKW, pLock);
-    }else
+    }അല്ലെങ്കിൽ
 #endif
     rc = osSetPosixAdvisoryLock(pFile->h, pLock, pFile);
   }
-  return rc;
+  തിരികെ rc;
 }
 
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+#എങ്കിൽ !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
 /* Forward reference */
-static int unixIsSharingShmNode(unixFile*);
-#else
-#define unixIsSharingShmNode(pFile) (0)
+സ്ഥിതം പൂർണ്ണസംഖ്യ unix_Is_Sharing_Shm_കണ്ണി(unixFile*);
+#അല്ലെങ്കിൽ
+#define unix_Is_Sharing_Shm_കണ്ണി(pFile) (0)
 #endif
 
 /*
@@ -1863,7 +1863,7 @@ static int unixIsSharingShmNode(unixFile*);
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int unixLock(sqlite3_file *id, int eFileLock){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock){
   /* The following describes the implementation of the various locks and
   ** lock transitions in terms of the POSIX advisory shared and exclusive
   ** lock primitives (called read-locks and write-locks below, to avoid
@@ -1904,13 +1904,13 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   ** then re-attempt the EXCLUSIVE lock later on, after existing SHARED
   ** locks have cleared.
   */
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
-  struct flock lock;
-  int tErrno = 0;
+  ഘടന flock lock;
+  പൂർണ്ണസംഖ്യ tErrno = 0;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (unix)\n", pFile->h,
       azFileLock(eFileLock), azFileLock(pFile->eFileLock),
       azFileLock(pFile->pInode->eFileLock), pFile->pInode->nShared,
@@ -1920,10 +1920,10 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   ** unixFile, do nothing. Don't use the end_lock: exit path, as
   ** unixEnterMutex() hasn't been called yet.
   */
-  if( pFile->eFileLock>=eFileLock ){
+  എങ്കിൽ( pFile->eFileLock>=eFileLock ){
     OSTRACE(("LOCK    %d %s ok (already held) (unix)\n", pFile->h,
             azFileLock(eFileLock)));
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* Make sure the locking sequence is correct.
@@ -1931,9 +1931,9 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   **  (2) SQLite never explicitly requests a pending lock.
   **  (3) A shared lock is always held when a reserve lock is requested.
   */
-  assert( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
-  assert( eFileLock!=PENDING_LOCK );
-  assert( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
+  പ്രതിജ്ഞാ( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
+  പ്രതിജ്ഞാ( eFileLock!=PENDING_LOCK );
+  പ്രതിജ്ഞാ( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
 
   /* This mutex is needed because pFile->pInode is shared across threads
   */
@@ -1943,26 +1943,26 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   /* If some thread using this PID has a lock via a different unixFile*
   ** handle that precludes the requested lock, return BUSY.
   */
-  if( (pFile->eFileLock!=pInode->eFileLock &&
+  എങ്കിൽ( (pFile->eFileLock!=pInode->eFileLock &&
           (pInode->eFileLock>=PENDING_LOCK || eFileLock>SHARED_LOCK))
   ){
     rc = SQLITE_BUSY;
-    goto end_lock;
+    പോകുക end_lock;
   }
 
   /* If a SHARED lock is requested, and some thread using this PID already
   ** has a SHARED or RESERVED lock, then increment reference counts and
   ** return SQLITE_OK.
   */
-  if( eFileLock==SHARED_LOCK &&
+  എങ്കിൽ( eFileLock==SHARED_LOCK &&
       (pInode->eFileLock==SHARED_LOCK || pInode->eFileLock==RESERVED_LOCK) ){
-    assert( eFileLock==SHARED_LOCK );
-    assert( pFile->eFileLock==0 );
-    assert( pInode->nShared>0 );
+    പ്രതിജ്ഞാ( eFileLock==SHARED_LOCK );
+    പ്രതിജ്ഞാ( pFile->eFileLock==0 );
+    പ്രതിജ്ഞാ( pInode->nShared>0 );
     pFile->eFileLock = SHARED_LOCK;
     pInode->nShared++;
     pInode->nLock++;
-    goto end_lock;
+    പോകുക end_lock;
   }
 
 
@@ -1972,19 +1972,19 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   */
   lock.l_len = 1L;
   lock.l_whence = SEEK_SET;
-  if( eFileLock==SHARED_LOCK
+  എങ്കിൽ( eFileLock==SHARED_LOCK
    || (eFileLock==EXCLUSIVE_LOCK && pFile->eFileLock==RESERVED_LOCK)
   ){
     lock.l_type = (eFileLock==SHARED_LOCK?F_RDLCK:F_WRLCK);
     lock.l_start = PENDING_BYTE;
-    if( unixFileLock(pFile, &lock) ){
+    എങ്കിൽ( unixFileLock(pFile, &lock) ){
       tErrno = errno;
       rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
+      എങ്കിൽ( rc!=SQLITE_BUSY ){
         storeLastErrno(pFile, tErrno);
       }
-      goto end_lock;
-    }else if( eFileLock==EXCLUSIVE_LOCK ){
+      പോകുക end_lock;
+    }അല്ലെങ്കിൽ എങ്കിൽ( eFileLock==EXCLUSIVE_LOCK ){
       pFile->eFileLock = PENDING_LOCK;
       pInode->eFileLock = PENDING_LOCK;
     }
@@ -1994,15 +1994,15 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   /* If control gets to this point, then actually go ahead and make
   ** operating system calls for the specified lock.
   */
-  if( eFileLock==SHARED_LOCK ){
-    assert( pInode->nShared==0 );
-    assert( pInode->eFileLock==0 );
-    assert( rc==SQLITE_OK );
+  എങ്കിൽ( eFileLock==SHARED_LOCK ){
+    പ്രതിജ്ഞാ( pInode->nShared==0 );
+    പ്രതിജ്ഞാ( pInode->eFileLock==0 );
+    പ്രതിജ്ഞാ( rc==SQLITE_OK );
 
     /* Now get the read-lock */
     lock.l_start = SHARED_FIRST;
     lock.l_len = SHARED_SIZE;
-    if( unixFileLock(pFile, &lock) ){
+    എങ്കിൽ( unixFileLock(pFile, &lock) ){
       tErrno = errno;
       rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
     }
@@ -2011,27 +2011,27 @@ static int unixLock(sqlite3_file *id, int eFileLock){
     lock.l_start = PENDING_BYTE;
     lock.l_len = 1L;
     lock.l_type = F_UNLCK;
-    if( unixFileLock(pFile, &lock) && rc==SQLITE_OK ){
+    എങ്കിൽ( unixFileLock(pFile, &lock) && rc==SQLITE_OK ){
       /* This could happen with a network mount */
       tErrno = errno;
       rc = SQLITE_IOERR_UNLOCK;
     }
 
-    if( rc ){
-      if( rc!=SQLITE_BUSY ){
+    എങ്കിൽ( rc ){
+      എങ്കിൽ( rc!=SQLITE_BUSY ){
         storeLastErrno(pFile, tErrno);
       }
-      goto end_lock;
-    }else{
+      പോകുക end_lock;
+    }അല്ലെങ്കിൽ{
       pFile->eFileLock = SHARED_LOCK;
       pInode->nLock++;
       pInode->nShared = 1;
     }
-  }else if( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
     /* We are trying for an exclusive lock but another thread in this
     ** same process is still holding a shared lock. */
     rc = SQLITE_BUSY;
-  }else if( unixIsSharingShmNode(pFile) ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( unix_Is_Sharing_Shm_കണ്ണി(pFile) ){
     /* We are in WAL mode and attempting to delete the SHM and WAL
     ** files due to closing the connection or changing out of WAL mode,
     ** but another process still holds locks on the SHM file, thus
@@ -2039,27 +2039,27 @@ static int unixLock(sqlite3_file *id, int eFileLock){
     ** to a rogue close(open(dbFile)) or similar.
     */
     rc = SQLITE_BUSY;
-  }else{
+  }അല്ലെങ്കിൽ{
     /* The request was for a RESERVED or EXCLUSIVE lock.  It is
     ** assumed that there is a SHARED or greater lock on the file
     ** already.
     */
-    assert( 0!=pFile->eFileLock );
+    പ്രതിജ്ഞാ( 0!=pFile->eFileLock );
     lock.l_type = F_WRLCK;
 
-    assert( eFileLock==RESERVED_LOCK || eFileLock==EXCLUSIVE_LOCK );
-    if( eFileLock==RESERVED_LOCK ){
+    പ്രതിജ്ഞാ( eFileLock==RESERVED_LOCK || eFileLock==EXCLUSIVE_LOCK );
+    എങ്കിൽ( eFileLock==RESERVED_LOCK ){
       lock.l_start = RESERVED_BYTE;
       lock.l_len = 1L;
-    }else{
+    }അല്ലെങ്കിൽ{
       lock.l_start = SHARED_FIRST;
       lock.l_len = SHARED_SIZE;
     }
 
-    if( unixFileLock(pFile, &lock) ){
+    എങ്കിൽ( unixFileLock(pFile, &lock) ){
       tErrno = errno;
       rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
+      എങ്കിൽ( rc!=SQLITE_BUSY ){
         storeLastErrno(pFile, tErrno);
       }
     }
@@ -2072,7 +2072,7 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   ** from SHARED to RESERVED marks the beginning of a normal
   ** write operation (not a hot journal rollback).
   */
-  if( rc==SQLITE_OK
+  എങ്കിൽ( rc==SQLITE_OK
    && pFile->eFileLock<=SHARED_LOCK
    && eFileLock==RESERVED_LOCK
   ){
@@ -2082,7 +2082,7 @@ static int unixLock(sqlite3_file *id, int eFileLock){
   }
 #endif
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pFile->eFileLock = eFileLock;
     pInode->eFileLock = eFileLock;
   }
@@ -2091,17 +2091,17 @@ end_lock:
   sqlite3_mutex_leave(pInode->pLockMutex);
   OSTRACE(("LOCK    %d %s %s (unix)\n", pFile->h, azFileLock(eFileLock),
       rc==SQLITE_OK ? "ok" : "failed"));
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Add the file descriptor used by file handle pFile to the corresponding
 ** pUnused list.
 */
-static void setPendingFd(unixFile *pFile){
+സ്ഥിതം ശൂന്യം setPendingFd(unixFile *pFile){
   unixInodeInfo *pInode = pFile->pInode;
   UnixUnusedFd *p = pFile->pPreallocatedUnused;
-  assert( unixFileMutexHeld(pFile) );
+  പ്രതിജ്ഞാ( unixFileMutexHeld(pFile) );
   p->pNext = pInode->pUnused;
   pInode->pUnused = p;
   pFile->h = -1;
@@ -2121,26 +2121,26 @@ static void setPendingFd(unixFile *pFile){
 ** around a bug in BSD NFS lockd (also seen on MacOSX 10.3+) that fails to
 ** remove the write lock on a region when a read lock is set.
 */
-static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
+സ്ഥിതം പൂർണ്ണസംഖ്യ posixUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock, പൂർണ്ണസംഖ്യ handleNFSUnlock){
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
-  struct flock lock;
-  int rc = SQLITE_OK;
+  ഘടന flock lock;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (unix)\n", pFile->h, eFileLock,
       pFile->eFileLock, pFile->pInode->eFileLock, pFile->pInode->nShared,
       osGetpid(0)));
 
-  assert( eFileLock<=SHARED_LOCK );
-  if( pFile->eFileLock<=eFileLock ){
-    return SQLITE_OK;
+  പ്രതിജ്ഞാ( eFileLock<=SHARED_LOCK );
+  എങ്കിൽ( pFile->eFileLock<=eFileLock ){
+    തിരികെ SQLITE_OK;
   }
   pInode = pFile->pInode;
   sqlite3_mutex_enter(pInode->pLockMutex);
-  assert( pInode->nShared!=0 );
-  if( pFile->eFileLock>SHARED_LOCK ){
-    assert( pInode->eFileLock==pFile->eFileLock );
+  പ്രതിജ്ഞാ( pInode->nShared!=0 );
+  എങ്കിൽ( pFile->eFileLock>SHARED_LOCK ){
+    പ്രതിജ്ഞാ( pInode->eFileLock==pFile->eFileLock );
 
 #ifdef SQLITE_DEBUG
     /* When reducing a lock such that other processes can start
@@ -2163,56 +2163,56 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
     **  3:   [RRRRW]
     **  4:   [RRRR.]
     */
-    if( eFileLock==SHARED_LOCK ){
-#if !defined(__APPLE__) || !SQLITE_ENABLE_LOCKING_STYLE
-      (void)handleNFSUnlock;
-      assert( handleNFSUnlock==0 );
+    എങ്കിൽ( eFileLock==SHARED_LOCK ){
+#എങ്കിൽ !defined(__APPLE__) || !SQLITE_ENABLE_LOCKING_STYLE
+      (ശൂന്യം)handleNFSUnlock;
+      പ്രതിജ്ഞാ( handleNFSUnlock==0 );
 #endif
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
-      if( handleNFSUnlock ){
-        int tErrno;               /* Error code from system call errors */
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+      എങ്കിൽ( handleNFSUnlock ){
+        പൂർണ്ണസംഖ്യ tErrno;               /* Error code from system call errors */
         off_t divSize = SHARED_SIZE - 1;
       
         lock.l_type = F_UNLCK;
         lock.l_whence = SEEK_SET;
         lock.l_start = SHARED_FIRST;
         lock.l_len = divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        എങ്കിൽ( unixFileLock(pFile, &lock)==(-1) ){
           tErrno = errno;
           rc = SQLITE_IOERR_UNLOCK;
           storeLastErrno(pFile, tErrno);
-          goto end_unlock;
+          പോകുക end_unlock;
         }
         lock.l_type = F_RDLCK;
         lock.l_whence = SEEK_SET;
         lock.l_start = SHARED_FIRST;
         lock.l_len = divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        എങ്കിൽ( unixFileLock(pFile, &lock)==(-1) ){
           tErrno = errno;
           rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_RDLOCK);
-          if( IS_LOCK_ERROR(rc) ){
+          എങ്കിൽ( IS_LOCK_ERROR(rc) ){
             storeLastErrno(pFile, tErrno);
           }
-          goto end_unlock;
+          പോകുക end_unlock;
         }
         lock.l_type = F_UNLCK;
         lock.l_whence = SEEK_SET;
         lock.l_start = SHARED_FIRST+divSize;
         lock.l_len = SHARED_SIZE-divSize;
-        if( unixFileLock(pFile, &lock)==(-1) ){
+        എങ്കിൽ( unixFileLock(pFile, &lock)==(-1) ){
           tErrno = errno;
           rc = SQLITE_IOERR_UNLOCK;
           storeLastErrno(pFile, tErrno);
-          goto end_unlock;
+          പോകുക end_unlock;
         }
-      }else
+      }അല്ലെങ്കിൽ
 #endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
       {
         lock.l_type = F_RDLCK;
         lock.l_whence = SEEK_SET;
         lock.l_start = SHARED_FIRST;
         lock.l_len = SHARED_SIZE;
-        if( unixFileLock(pFile, &lock) ){
+        എങ്കിൽ( unixFileLock(pFile, &lock) ){
           /* In theory, the call to unixFileLock() cannot fail because another
           ** process is holding an incompatible lock. If it does, this
           ** indicates that the other process is not following the locking
@@ -2221,35 +2221,35 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
           ** an assert to fail). */
           rc = SQLITE_IOERR_RDLOCK;
           storeLastErrno(pFile, errno);
-          goto end_unlock;
+          പോകുക end_unlock;
         }
       }
     }
     lock.l_type = F_UNLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = PENDING_BYTE;
-    lock.l_len = 2L;  assert( PENDING_BYTE+1==RESERVED_BYTE );
-    if( unixFileLock(pFile, &lock)==0 ){
+    lock.l_len = 2L;  പ്രതിജ്ഞാ( PENDING_BYTE+1==RESERVED_BYTE );
+    എങ്കിൽ( unixFileLock(pFile, &lock)==0 ){
       pInode->eFileLock = SHARED_LOCK;
-    }else{
+    }അല്ലെങ്കിൽ{
       rc = SQLITE_IOERR_UNLOCK;
       storeLastErrno(pFile, errno);
-      goto end_unlock;
+      പോകുക end_unlock;
     }
   }
-  if( eFileLock==NO_LOCK ){
+  എങ്കിൽ( eFileLock==NO_LOCK ){
     /* Decrement the shared lock counter.  Release the lock using an
     ** OS call only when all threads in this same process have released
     ** the lock.
     */
     pInode->nShared--;
-    if( pInode->nShared==0 ){
+    എങ്കിൽ( pInode->nShared==0 ){
       lock.l_type = F_UNLCK;
       lock.l_whence = SEEK_SET;
       lock.l_start = lock.l_len = 0L;
-      if( unixFileLock(pFile, &lock)==0 ){
+      എങ്കിൽ( unixFileLock(pFile, &lock)==0 ){
         pInode->eFileLock = NO_LOCK;
-      }else{
+      }അല്ലെങ്കിൽ{
         rc = SQLITE_IOERR_UNLOCK;
         storeLastErrno(pFile, errno);
         pInode->eFileLock = NO_LOCK;
@@ -2262,16 +2262,16 @@ static int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock){
     ** was deferred because of outstanding locks.
     */
     pInode->nLock--;
-    assert( pInode->nLock>=0 );
-    if( pInode->nLock==0 ) closePendingFds(pFile);
+    പ്രതിജ്ഞാ( pInode->nLock>=0 );
+    എങ്കിൽ( pInode->nLock==0 ) closePendingFds(pFile);
   }
 
 end_unlock:
   sqlite3_mutex_leave(pInode->pLockMutex);
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pFile->eFileLock = eFileLock;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -2281,16 +2281,16 @@ end_unlock:
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int unixUnlock(sqlite3_file *id, int eFileLock){
-#if SQLITE_MAX_MMAP_SIZE>0
-  assert( eFileLock==SHARED_LOCK || ((unixFile *)id)->nFetchOut==0 );
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+  പ്രതിജ്ഞാ( eFileLock==SHARED_LOCK || ((unixFile *)id)->nFetchOut==0 );
 #endif
-  return posixUnlock(id, eFileLock, 0);
+  തിരികെ posixUnlock(id, eFileLock, 0);
 }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-static int unixMapfile(unixFile *pFd, i64 nByte);
-static void unixUnmapfile(unixFile *pFd);
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixMapfile(unixFile *pFd, i64 nByte);
+സ്ഥിതം ശൂന്യം unixUnmapfile(unixFile *pFd);
 #endif
 
 /*
@@ -2303,18 +2303,18 @@ static void unixUnmapfile(unixFile *pFd);
 ** even on VxWorks.  A mutex will be acquired on VxWorks by the
 ** vxworksReleaseFileId() routine.
 */
-static int closeUnixFile(sqlite3_file *id){
+സ്ഥിതം പൂർണ്ണസംഖ്യ closeUnixFile(sqlite3_file *id){
   unixFile *pFile = (unixFile*)id;
-#if SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
   unixUnmapfile(pFile);
 #endif
-  if( pFile->h>=0 ){
+  എങ്കിൽ( pFile->h>=0 ){
     robust_close(pFile, pFile->h, __LINE__);
     pFile->h = -1;
   }
-#if OS_VXWORKS
-  if( pFile->pId ){
-    if( pFile->ctrlFlags & UNIXFILE_DELETE ){
+#എങ്കിൽ OS_VXWORKS
+  എങ്കിൽ( pFile->pId ){
+    എങ്കിൽ( pFile->ctrlFlags & UNIXFILE_DELETE ){
       osUnlink(pFile->pId->zCanonicalName);
     }
     vxworksReleaseFileId(pFile->pId);
@@ -2322,39 +2322,39 @@ static int closeUnixFile(sqlite3_file *id){
   }
 #endif
 #ifdef SQLITE_UNLINK_AFTER_CLOSE
-  if( pFile->ctrlFlags & UNIXFILE_DELETE ){
+  എങ്കിൽ( pFile->ctrlFlags & UNIXFILE_DELETE ){
     osUnlink(pFile->zPath);
-    sqlite3_free(*(char**)&pFile->zPath);
+    sqlite3_free(*(അക്ഷരം**)&pFile->zPath);
     pFile->zPath = 0;
   }
 #endif
   OSTRACE(("CLOSE   %-3d\n", pFile->h));
   OpenCounter(-1);
   sqlite3_free(pFile->pPreallocatedUnused);
-  memset(pFile, 0, sizeof(unixFile));
-  return SQLITE_OK;
+  memset(pFile, 0, വലുപ്പം(unixFile));
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Close a file.
 */
-static int unixClose(sqlite3_file *id){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixClose(sqlite3_file *id){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile *)id;
   unixInodeInfo *pInode = pFile->pInode;
 
-  assert( pInode!=0 );
+  പ്രതിജ്ഞാ( pInode!=0 );
   verifyDbFile(pFile);
   unixUnlock(id, NO_LOCK);
-  assert( unixFileMutexNotheld(pFile) );
+  പ്രതിജ്ഞാ( unixFileMutexNotheld(pFile) );
   unixEnterMutex();
 
   /* unixFile.pInode is always valid here. Otherwise, a different close
   ** routine (e.g. nolockClose()) would be called instead.
   */
-  assert( pFile->pInode->nLock>0 || pFile->pInode->bProcessLock==0 );
+  പ്രതിജ്ഞാ( pFile->pInode->nLock>0 || pFile->pInode->bProcessLock==0 );
   sqlite3_mutex_enter(pInode->pLockMutex);
-  if( pInode->nLock ){
+  എങ്കിൽ( pInode->nLock ){
     /* If there are outstanding locks, do not actually close the file just
     ** yet because that would clear those locks.  Instead, add the file
     ** descriptor to pInode->pUnused list.  It will be automatically closed
@@ -2364,10 +2364,10 @@ static int unixClose(sqlite3_file *id){
   }
   sqlite3_mutex_leave(pInode->pLockMutex);
   releaseInodeInfo(pFile);
-  assert( pFile->pShm==0 );
+  പ്രതിജ്ഞാ( pFile->pShm==0 );
   rc = closeUnixFile(id);
   unixLeaveMutex();
-  return rc;
+  തിരികെ rc;
 }
 
 /************** End of the posix advisory lock implementation *****************
@@ -2390,25 +2390,25 @@ static int unixClose(sqlite3_file *id){
 ** time and one or more of those connections are writing.
 */
 
-static int nolockCheckReservedLock(sqlite3_file *NotUsed, int *pResOut){
+സ്ഥിതം പൂർണ്ണസംഖ്യ nolockCheckReservedLock(sqlite3_file *NotUsed, പൂർണ്ണസംഖ്യ *pResOut){
   UNUSED_PARAMETER(NotUsed);
   *pResOut = 0;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-static int nolockLock(sqlite3_file *NotUsed, int NotUsed2){
+സ്ഥിതം പൂർണ്ണസംഖ്യ nolockLock(sqlite3_file *NotUsed, പൂർണ്ണസംഖ്യ NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-static int nolockUnlock(sqlite3_file *NotUsed, int NotUsed2){
+സ്ഥിതം പൂർണ്ണസംഖ്യ nolockUnlock(sqlite3_file *NotUsed, പൂർണ്ണസംഖ്യ NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Close the file.
 */
-static int nolockClose(sqlite3_file *id) {
-  return closeUnixFile(id);
+സ്ഥിതം പൂർണ്ണസംഖ്യ nolockClose(sqlite3_file *id) {
+  തിരികെ closeUnixFile(id);
 }
 
 /******************* End of the no-op lock implementation *********************
@@ -2449,17 +2449,17 @@ static int nolockClose(sqlite3_file *id) {
 ** client may hold RESERVED. Or, if the caller holds no lock, then it
 ** is assumed another client holds RESERVED if the lock-file exists.
 */
-static int dotlockCheckReservedLock(sqlite3_file *id, int *pResOut) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ dotlockCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut) {
   unixFile *pFile = (unixFile*)id;
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( തിരികെ SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  if( pFile->eFileLock>=SHARED_LOCK ){
+  എങ്കിൽ( pFile->eFileLock>=SHARED_LOCK ){
     *pResOut = 0;
-  }else{
-    *pResOut = osAccess((const char*)pFile->lockingContext, 0)==0;
+  }അല്ലെങ്കിൽ{
+    *pResOut = osAccess((സ്ഥിരം അക്ഷരം*)pFile->lockingContext, 0)==0;
   }
   OSTRACE(("TEST WR-LOCK %d %d %d (dotlock)\n", pFile->h, 0, *pResOut));
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -2489,45 +2489,45 @@ static int dotlockCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** With dotfile locking, we really only support state (4): EXCLUSIVE.
 ** But we track the other locking levels internally.
 */
-static int dotlockLock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ dotlockLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
-  char *zLockFile = (char *)pFile->lockingContext;
-  int rc = SQLITE_OK;
+  അക്ഷരം *zLockFile = (അക്ഷരം *)pFile->lockingContext;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
 
   /* If we have any lock, then the lock file already exists.  All we have
   ** to do is adjust our internal record of the lock level.
   */
-  if( pFile->eFileLock > NO_LOCK ){
+  എങ്കിൽ( pFile->eFileLock > NO_LOCK ){
     pFile->eFileLock = eFileLock;
     /* Always update the timestamp on the old file */
 #ifdef HAVE_UTIME
-    utime(zLockFile, NULL);
-#else
-    utimes(zLockFile, NULL);
+    utime(zLockFile, ശൂന്യ);
+#അല്ലെങ്കിൽ
+    utimes(zLockFile, ശൂന്യ);
 #endif
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* grab an exclusive lock */
   rc = osMkdir(zLockFile, 0777);
-  if( rc<0 ){
+  എങ്കിൽ( rc<0 ){
     /* failed to open/create the lock directory */
-    int tErrno = errno;
-    if( EEXIST == tErrno ){
+    പൂർണ്ണസംഖ്യ tErrno = errno;
+    എങ്കിൽ( EEXIST == tErrno ){
       rc = SQLITE_BUSY;
-    } else {
+    } അല്ലെങ്കിൽ {
       rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-      if( rc!=SQLITE_BUSY ){
+      എങ്കിൽ( rc!=SQLITE_BUSY ){
         storeLastErrno(pFile, tErrno);
       }
     }
-    return rc;
+    തിരികെ rc;
   }
 
   /* got it, set the type and return ok */
   pFile->eFileLock = eFileLock;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -2539,55 +2539,55 @@ static int dotlockLock(sqlite3_file *id, int eFileLock) {
 **
 ** When the locking level reaches NO_LOCK, delete the lock file.
 */
-static int dotlockUnlock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ dotlockUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
-  char *zLockFile = (char *)pFile->lockingContext;
-  int rc;
+  അക്ഷരം *zLockFile = (അക്ഷരം *)pFile->lockingContext;
+  പൂർണ്ണസംഖ്യ rc;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("UNLOCK  %d %d was %d pid=%d (dotlock)\n", pFile->h, eFileLock,
            pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  പ്രതിജ്ഞാ( eFileLock<=SHARED_LOCK );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  എങ്കിൽ( pFile->eFileLock==eFileLock ){
+    തിരികെ SQLITE_OK;
   }
 
   /* To downgrade to shared, simply update our internal notion of the
   ** lock state.  No need to mess with the file on disk.
   */
-  if( eFileLock==SHARED_LOCK ){
+  എങ്കിൽ( eFileLock==SHARED_LOCK ){
     pFile->eFileLock = SHARED_LOCK;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* To fully unlock the database, delete the lock file */
-  assert( eFileLock==NO_LOCK );
+  പ്രതിജ്ഞാ( eFileLock==NO_LOCK );
   rc = osRmdir(zLockFile);
-  if( rc<0 ){
-    int tErrno = errno;
-    if( tErrno==ENOENT ){
+  എങ്കിൽ( rc<0 ){
+    പൂർണ്ണസംഖ്യ tErrno = errno;
+    എങ്കിൽ( tErrno==ENOENT ){
       rc = SQLITE_OK;
-    }else{
+    }അല്ലെങ്കിൽ{
       rc = SQLITE_IOERR_UNLOCK;
       storeLastErrno(pFile, tErrno);
     }
-    return rc;
+    തിരികെ rc;
   }
   pFile->eFileLock = NO_LOCK;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** Close a file.  Make sure the lock has been released before closing.
 */
-static int dotlockClose(sqlite3_file *id) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ dotlockClose(sqlite3_file *id) {
   unixFile *pFile = (unixFile*)id;
-  assert( id!=0 );
+  പ്രതിജ്ഞാ( id!=0 );
   dotlockUnlock(id, NO_LOCK);
   sqlite3_free(pFile->lockingContext);
-  return closeUnixFile(id);
+  തിരികെ closeUnixFile(id);
 }
 /****************** End of the dot-file lock implementation *******************
 ******************************************************************************/
@@ -2606,18 +2606,18 @@ static int dotlockClose(sqlite3_file *id) {
 **
 ** Omit this section if SQLITE_ENABLE_LOCKING_STYLE is turned off
 */
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
 
 /*
 ** Retry flock() calls that fail with EINTR
 */
 #ifdef EINTR
-static int robust_flock(int fd, int op){
-  int rc;
-  do{ rc = flock(fd,op); }while( rc<0 && errno==EINTR );
-  return rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ robust_flock(പൂർണ്ണസംഖ്യ fd, പൂർണ്ണസംഖ്യ op){
+  പൂർണ്ണസംഖ്യ rc;
+  ചെയ്യുക{ rc = flock(fd,op); }ആകുമ്പോൾ( rc<0 && errno==EINTR );
+  തിരികെ rc;
 }
-#else
+#അല്ലെങ്കിൽ
 # define robust_flock(a,b) flock(a,b)
 #endif
    
@@ -2628,17 +2628,17 @@ static int robust_flock(int fd, int op){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
+സ്ഥിതം പൂർണ്ണസംഖ്യ flockCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut){
 #ifdef SQLITE_DEBUG
   unixFile *pFile = (unixFile*)id;
-#else
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(id);
 #endif
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( തിരികെ SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
-  assert( pFile->eFileLock<=SHARED_LOCK );
+  പ്രതിജ്ഞാ( pFile );
+  പ്രതിജ്ഞാ( pFile->eFileLock<=SHARED_LOCK );
 
   /* The flock VFS only ever takes exclusive locks (see function flockLock).
   ** Therefore, if this connection is holding any lock at all, no other
@@ -2655,7 +2655,7 @@ static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
   ** not a problem in this case.  */
   *pResOut = 0;
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -2687,40 +2687,40 @@ static int flockCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int flockLock(sqlite3_file *id, int eFileLock) {
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ flockLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
 
   /* if we already have a lock, it is exclusive.
   ** Just adjust level and punt on outta here. */
-  if (pFile->eFileLock > NO_LOCK) {
+  എങ്കിൽ (pFile->eFileLock > NO_LOCK) {
     pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* grab an exclusive lock */
 
-  if (robust_flock(pFile->h, LOCK_EX | LOCK_NB)) {
-    int tErrno = errno;
+  എങ്കിൽ (robust_flock(pFile->h, LOCK_EX | LOCK_NB)) {
+    പൂർണ്ണസംഖ്യ tErrno = errno;
     /* didn't get, must be busy */
     rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_LOCK);
-    if( IS_LOCK_ERROR(rc) ){
+    എങ്കിൽ( IS_LOCK_ERROR(rc) ){
       storeLastErrno(pFile, tErrno);
     }
-  } else {
+  } അല്ലെങ്കിൽ {
     /* got it, set the type and return ok */
     pFile->eFileLock = eFileLock;
   }
   OSTRACE(("LOCK    %d %s %s (flock)\n", pFile->h, azFileLock(eFileLock),
            rc==SQLITE_OK ? "ok" : "failed"));
 #ifdef SQLITE_IGNORE_FLOCK_LOCK_ERRORS
-  if( (rc & 0xff) == SQLITE_IOERR ){
+  എങ്കിൽ( (rc & 0xff) == SQLITE_IOERR ){
     rc = SQLITE_BUSY;
   }
 #endif /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
-  return rc;
+  തിരികെ rc;
 }
 
 
@@ -2731,44 +2731,44 @@ static int flockLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int flockUnlock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ flockUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("UNLOCK  %d %d was %d pid=%d (flock)\n", pFile->h, eFileLock,
            pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  പ്രതിജ്ഞാ( eFileLock<=SHARED_LOCK );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  എങ്കിൽ( pFile->eFileLock==eFileLock ){
+    തിരികെ SQLITE_OK;
   }
 
   /* shared can just be set because we always have an exclusive */
-  if (eFileLock==SHARED_LOCK) {
+  എങ്കിൽ (eFileLock==SHARED_LOCK) {
     pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* no, really, unlock. */
-  if( robust_flock(pFile->h, LOCK_UN) ){
+  എങ്കിൽ( robust_flock(pFile->h, LOCK_UN) ){
 #ifdef SQLITE_IGNORE_FLOCK_LOCK_ERRORS
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
 #endif /* SQLITE_IGNORE_FLOCK_LOCK_ERRORS */
-    return SQLITE_IOERR_UNLOCK;
-  }else{
+    തിരികെ SQLITE_IOERR_UNLOCK;
+  }അല്ലെങ്കിൽ{
     pFile->eFileLock = NO_LOCK;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 }
 
 /*
 ** Close a file.
 */
-static int flockClose(sqlite3_file *id) {
-  assert( id!=0 );
+സ്ഥിതം പൂർണ്ണസംഖ്യ flockClose(sqlite3_file *id) {
+  പ്രതിജ്ഞാ( id!=0 );
   flockUnlock(id, NO_LOCK);
-  return closeUnixFile(id);
+  തിരികെ closeUnixFile(id);
 }
 
 #endif /* SQLITE_ENABLE_LOCKING_STYLE && !OS_VXWORK */
@@ -2786,7 +2786,7 @@ static int flockClose(sqlite3_file *id) {
 ** the database file at a time.  This reduces potential concurrency, but
 ** makes the lock implementation much easier.
 */
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
 
 /*
 ** This routine checks if there is a RESERVED lock held on the specified
@@ -2794,34 +2794,34 @@ static int flockClose(sqlite3_file *id) {
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int semXCheckReservedLock(sqlite3_file *id, int *pResOut) {
-  int rc = SQLITE_OK;
-  int reserved = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ semXCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut) {
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ reserved = 0;
   unixFile *pFile = (unixFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( തിരികെ SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
 
   /* Check if a thread in this process holds such a lock */
-  if( pFile->eFileLock>SHARED_LOCK ){
+  എങ്കിൽ( pFile->eFileLock>SHARED_LOCK ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it. */
-  if( !reserved ){
+  എങ്കിൽ( !reserved ){
     sem_t *pSem = pFile->pInode->pSem;
 
-    if( sem_trywait(pSem)==-1 ){
-      int tErrno = errno;
-      if( EAGAIN != tErrno ){
+    എങ്കിൽ( sem_trywait(pSem)==-1 ){
+      പൂർണ്ണസംഖ്യ tErrno = errno;
+      എങ്കിൽ( EAGAIN != tErrno ){
         rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_CHECKRESERVEDLOCK);
         storeLastErrno(pFile, tErrno);
-      } else {
+      } അല്ലെങ്കിൽ {
         /* someone else has the lock when we are in NO_LOCK */
         reserved = (pFile->eFileLock < SHARED_LOCK);
       }
-    }else{
+    }അല്ലെങ്കിൽ{
       /* we could have it if we want it */
       sem_post(pSem);
     }
@@ -2829,7 +2829,7 @@ static int semXCheckReservedLock(sqlite3_file *id, int *pResOut) {
   OSTRACE(("TEST WR-LOCK %d %d %d (sem)\n", pFile->h, rc, reserved));
 
   *pResOut = reserved;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -2861,30 +2861,30 @@ static int semXCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int semXLock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ semXLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
   sem_t *pSem = pFile->pInode->pSem;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   /* if we already have a lock, it is exclusive.
   ** Just adjust level and punt on outta here. */
-  if (pFile->eFileLock > NO_LOCK) {
+  എങ്കിൽ (pFile->eFileLock > NO_LOCK) {
     pFile->eFileLock = eFileLock;
     rc = SQLITE_OK;
-    goto sem_end_lock;
+    പോകുക sem_end_lock;
   }
 
   /* lock semaphore now but bail out when already locked. */
-  if( sem_trywait(pSem)==-1 ){
+  എങ്കിൽ( sem_trywait(pSem)==-1 ){
     rc = SQLITE_BUSY;
-    goto sem_end_lock;
+    പോകുക sem_end_lock;
   }
 
   /* got it, set the type and return ok */
   pFile->eFileLock = eFileLock;
 
  sem_end_lock:
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -2894,55 +2894,55 @@ static int semXLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int semXUnlock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ semXUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
   sem_t *pSem = pFile->pInode->pSem;
 
-  assert( pFile );
-  assert( pSem );
+  പ്രതിജ്ഞാ( pFile );
+  പ്രതിജ്ഞാ( pSem );
   OSTRACE(("UNLOCK  %d %d was %d pid=%d (sem)\n", pFile->h, eFileLock,
            pFile->eFileLock, osGetpid(0)));
-  assert( eFileLock<=SHARED_LOCK );
+  പ്രതിജ്ഞാ( eFileLock<=SHARED_LOCK );
 
   /* no-op if possible */
-  if( pFile->eFileLock==eFileLock ){
-    return SQLITE_OK;
+  എങ്കിൽ( pFile->eFileLock==eFileLock ){
+    തിരികെ SQLITE_OK;
   }
 
   /* shared can just be set because we always have an exclusive */
-  if (eFileLock==SHARED_LOCK) {
+  എങ്കിൽ (eFileLock==SHARED_LOCK) {
     pFile->eFileLock = eFileLock;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* no, really unlock. */
-  if ( sem_post(pSem)==-1 ) {
-    int rc, tErrno = errno;
+  എങ്കിൽ ( sem_post(pSem)==-1 ) {
+    പൂർണ്ണസംഖ്യ rc, tErrno = errno;
     rc = sqliteErrorFromPosixError(tErrno, SQLITE_IOERR_UNLOCK);
-    if( IS_LOCK_ERROR(rc) ){
+    എങ്കിൽ( IS_LOCK_ERROR(rc) ){
       storeLastErrno(pFile, tErrno);
     }
-    return rc;
+    തിരികെ rc;
   }
   pFile->eFileLock = NO_LOCK;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
  ** Close a file.
  */
-static int semXClose(sqlite3_file *id) {
-  if( id ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ semXClose(sqlite3_file *id) {
+  എങ്കിൽ( id ){
     unixFile *pFile = (unixFile*)id;
     semXUnlock(id, NO_LOCK);
-    assert( pFile );
-    assert( unixFileMutexNotheld(pFile) );
+    പ്രതിജ്ഞാ( pFile );
+    പ്രതിജ്ഞാ( unixFileMutexNotheld(pFile) );
     unixEnterMutex();
     releaseInodeInfo(pFile);
     unixLeaveMutex();
     closeUnixFile(id);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #endif /* OS_VXWORKS */
@@ -2963,27 +2963,27 @@ static int semXClose(sqlite3_file *id) {
 ** only works on OSX.
 */
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
 ** The afpLockingContext structure contains all afp lock specific state
 */
-typedef struct afpLockingContext afpLockingContext;
-struct afpLockingContext {
-  int reserved;
-  const char *dbPath;             /* Name of the open file */
+തരനിർവചനം ഘടന afpLockingContext afpLockingContext;
+ഘടന afpLockingContext {
+  പൂർണ്ണസംഖ്യ reserved;
+  സ്ഥിരം അക്ഷരം *dbPath;             /* Name of the open file */
 };
 
-struct ByteRangeLockPB2
+ഘടന ByteRangeLockPB2
 {
   unsigned long long offset;        /* offset to first byte to lock */
   unsigned long long length;        /* nbr of bytes to lock */
   unsigned long long retRangeStart; /* nbr of 1st byte locked if successful */
-  unsigned char unLockFlag;         /* 1 = unlock, 0 = lock */
-  unsigned char startEndFlag;       /* 1=rel to end of fork, 0=rel to start */
-  int fd;                           /* file desc to assoc this lock with */
+  unsigned അക്ഷരം unLockFlag;         /* 1 = unlock, 0 = lock */
+  unsigned അക്ഷരം startEndFlag;       /* 1=rel to end of fork, 0=rel to start */
+  പൂർണ്ണസംഖ്യ fd;                           /* file desc to assoc this lock with */
 };
 
-#define afpfsByteRangeLock2FSCTL        _IOWR('z', 23, struct ByteRangeLockPB2)
+#define afpfsByteRangeLock2FSCTL        _IOWR('z', 23, ഘടന ByteRangeLockPB2)
 
 /*
 ** This is a utility for setting or clearing a bit-range lock on an
@@ -2991,15 +2991,15 @@ struct ByteRangeLockPB2
 **
 ** Return SQLITE_OK on success, SQLITE_BUSY on failure.
 */
-static int afpSetLock(
-  const char *path,              /* Name of the file to be locked or unlocked */
+സ്ഥിതം പൂർണ്ണസംഖ്യ afpSetLock(
+  സ്ഥിരം അക്ഷരം *path,              /* Name of the file to be locked or unlocked */
   unixFile *pFile,               /* Open file descriptor on path */
   unsigned long long offset,     /* First byte to be locked */
   unsigned long long length,     /* Number of bytes to lock */
-  int setLockFlag                /* True to set lock.  False to clear lock */
+  പൂർണ്ണസംഖ്യ setLockFlag                /* True to set lock.  False to clear lock */
 ){
-  struct ByteRangeLockPB2 pb;
-  int err;
+  ഘടന ByteRangeLockPB2 pb;
+  പൂർണ്ണസംഖ്യ err;
 
   pb.unLockFlag = setLockFlag ? 0 : 1;
   pb.startEndFlag = 0;
@@ -3011,23 +3011,23 @@ static int afpSetLock(
     (setLockFlag?"ON":"OFF"), pFile->h, (pb.fd==-1?"[testval-1]":""),
     offset, length));
   err = fsctl(path, afpfsByteRangeLock2FSCTL, &pb, 0);
-  if ( err==-1 ) {
-    int rc;
-    int tErrno = errno;
+  എങ്കിൽ ( err==-1 ) {
+    പൂർണ്ണസംഖ്യ rc;
+    പൂർണ്ണസംഖ്യ tErrno = errno;
     OSTRACE(("AFPSETLOCK failed to fsctl() '%s' %d %s\n",
              path, tErrno, strerror(tErrno)));
 #ifdef SQLITE_IGNORE_AFP_LOCK_ERRORS
     rc = SQLITE_BUSY;
-#else
+#അല്ലെങ്കിൽ
     rc = sqliteErrorFromPosixError(tErrno,
                     setLockFlag ? SQLITE_IOERR_LOCK : SQLITE_IOERR_UNLOCK);
 #endif /* SQLITE_IGNORE_AFP_LOCK_ERRORS */
-    if( IS_LOCK_ERROR(rc) ){
+    എങ്കിൽ( IS_LOCK_ERROR(rc) ){
       storeLastErrno(pFile, tErrno);
     }
-    return rc;
-  } else {
-    return SQLITE_OK;
+    തിരികെ rc;
+  } അല്ലെങ്കിൽ {
+    തിരികെ SQLITE_OK;
   }
 }
 
@@ -3037,40 +3037,40 @@ static int afpSetLock(
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int afpCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int rc = SQLITE_OK;
-  int reserved = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ afpCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ reserved = 0;
   unixFile *pFile = (unixFile*)id;
   afpLockingContext *context;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  SimulateIOError( തിരികെ SQLITE_IOERR_CHECKRESERVEDLOCK; );
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   context = (afpLockingContext *) pFile->lockingContext;
-  if( context->reserved ){
+  എങ്കിൽ( context->reserved ){
     *pResOut = 1;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
   sqlite3_mutex_enter(pFile->pInode->pLockMutex);
   /* Check if a thread in this process holds such a lock */
-  if( pFile->pInode->eFileLock>SHARED_LOCK ){
+  എങ്കിൽ( pFile->pInode->eFileLock>SHARED_LOCK ){
     reserved = 1;
   }
 
   /* Otherwise see if some other process holds it.
    */
-  if( !reserved ){
+  എങ്കിൽ( !reserved ){
     /* lock the RESERVED byte */
-    int lrc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1,1);
-    if( SQLITE_OK==lrc ){
+    പൂർണ്ണസംഖ്യ lrc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1,1);
+    എങ്കിൽ( SQLITE_OK==lrc ){
       /* if we succeeded in taking the reserved lock, unlock it to restore
       ** the original state */
       lrc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1, 0);
-    } else {
+    } അല്ലെങ്കിൽ {
       /* if we failed to get the lock then someone else must have it */
       reserved = 1;
     }
-    if( IS_LOCK_ERROR(lrc) ){
+    എങ്കിൽ( IS_LOCK_ERROR(lrc) ){
       rc=lrc;
     }
   }
@@ -3079,7 +3079,7 @@ static int afpCheckReservedLock(sqlite3_file *id, int *pResOut){
   OSTRACE(("TEST WR-LOCK %d %d %d (afp)\n", pFile->h, rc, reserved));
 
   *pResOut = reserved;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -3106,13 +3106,13 @@ static int afpCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int afpLock(sqlite3_file *id, int eFileLock){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ afpLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode = pFile->pInode;
   afpLockingContext *context = (afpLockingContext *) pFile->lockingContext;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (afp)\n", pFile->h,
            azFileLock(eFileLock), azFileLock(pFile->eFileLock),
            azFileLock(pInode->eFileLock), pInode->nShared , osGetpid(0)));
@@ -3121,10 +3121,10 @@ static int afpLock(sqlite3_file *id, int eFileLock){
   ** unixFile, do nothing. Don't use the afp_end_lock: exit path, as
   ** unixEnterMutex() hasn't been called yet.
   */
-  if( pFile->eFileLock>=eFileLock ){
+  എങ്കിൽ( pFile->eFileLock>=eFileLock ){
     OSTRACE(("LOCK    %d %s ok (already held) (afp)\n", pFile->h,
            azFileLock(eFileLock)));
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 
   /* Make sure the locking sequence is correct
@@ -3132,9 +3132,9 @@ static int afpLock(sqlite3_file *id, int eFileLock){
   **  (2) SQLite never explicitly requests a pending lock.
   **  (3) A shared lock is always held when a reserve lock is requested.
   */
-  assert( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
-  assert( eFileLock!=PENDING_LOCK );
-  assert( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
+  പ്രതിജ്ഞാ( pFile->eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );
+  പ്രതിജ്ഞാ( eFileLock!=PENDING_LOCK );
+  പ്രതിജ്ഞാ( eFileLock!=RESERVED_LOCK || pFile->eFileLock==SHARED_LOCK );
 
   /* This mutex is needed because pFile->pInode is shared across threads
   */
@@ -3144,132 +3144,132 @@ static int afpLock(sqlite3_file *id, int eFileLock){
   /* If some thread using this PID has a lock via a different unixFile*
   ** handle that precludes the requested lock, return BUSY.
   */
-  if( (pFile->eFileLock!=pInode->eFileLock &&
+  എങ്കിൽ( (pFile->eFileLock!=pInode->eFileLock &&
        (pInode->eFileLock>=PENDING_LOCK || eFileLock>SHARED_LOCK))
      ){
     rc = SQLITE_BUSY;
-    goto afp_end_lock;
+    പോകുക afp_end_lock;
   }
 
   /* If a SHARED lock is requested, and some thread using this PID already
   ** has a SHARED or RESERVED lock, then increment reference counts and
   ** return SQLITE_OK.
   */
-  if( eFileLock==SHARED_LOCK &&
+  എങ്കിൽ( eFileLock==SHARED_LOCK &&
      (pInode->eFileLock==SHARED_LOCK || pInode->eFileLock==RESERVED_LOCK) ){
-    assert( eFileLock==SHARED_LOCK );
-    assert( pFile->eFileLock==0 );
-    assert( pInode->nShared>0 );
+    പ്രതിജ്ഞാ( eFileLock==SHARED_LOCK );
+    പ്രതിജ്ഞാ( pFile->eFileLock==0 );
+    പ്രതിജ്ഞാ( pInode->nShared>0 );
     pFile->eFileLock = SHARED_LOCK;
     pInode->nShared++;
     pInode->nLock++;
-    goto afp_end_lock;
+    പോകുക afp_end_lock;
   }
   
   /* A PENDING lock is needed before acquiring a SHARED lock and before
   ** acquiring an EXCLUSIVE lock.  For the SHARED lock, the PENDING will
   ** be released.
   */
-  if( eFileLock==SHARED_LOCK
+  എങ്കിൽ( eFileLock==SHARED_LOCK
       || (eFileLock==EXCLUSIVE_LOCK && pFile->eFileLock<PENDING_LOCK)
   ){
-    int failed;
+    പൂർണ്ണസംഖ്യ failed;
     failed = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 1);
-    if (failed) {
+    എങ്കിൽ (failed) {
       rc = failed;
-      goto afp_end_lock;
+      പോകുക afp_end_lock;
     }
   }
 
   /* If control gets to this point, then actually go ahead and make
   ** operating system calls for the specified lock.
   */
-  if( eFileLock==SHARED_LOCK ){
-    int lrc1, lrc2, lrc1Errno = 0;
+  എങ്കിൽ( eFileLock==SHARED_LOCK ){
+    പൂർണ്ണസംഖ്യ lrc1, lrc2, lrc1Errno = 0;
     long lk, mask;
   
-    assert( pInode->nShared==0 );
-    assert( pInode->eFileLock==0 );
+    പ്രതിജ്ഞാ( pInode->nShared==0 );
+    പ്രതിജ്ഞാ( pInode->eFileLock==0 );
       
-    mask = (sizeof(long)==8) ? LARGEST_INT64 : 0x7fffffff;
+    mask = (വലുപ്പം(long)==8) ? LARGEST_INT64 : 0x7fffffff;
     /* Now get the read-lock SHARED_LOCK */
     /* note that the quality of the randomness doesn't matter that much */
     lk = random();
     pInode->sharedByte = (lk & mask)%(SHARED_SIZE - 1);
     lrc1 = afpSetLock(context->dbPath, pFile,
           SHARED_FIRST+pInode->sharedByte, 1, 1);
-    if( IS_LOCK_ERROR(lrc1) ){
+    എങ്കിൽ( IS_LOCK_ERROR(lrc1) ){
       lrc1Errno = pFile->lastErrno;
     }
     /* Drop the temporary PENDING lock */
     lrc2 = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 0);
   
-    if( IS_LOCK_ERROR(lrc1) ) {
+    എങ്കിൽ( IS_LOCK_ERROR(lrc1) ) {
       storeLastErrno(pFile, lrc1Errno);
       rc = lrc1;
-      goto afp_end_lock;
-    } else if( IS_LOCK_ERROR(lrc2) ){
+      പോകുക afp_end_lock;
+    } അല്ലെങ്കിൽ എങ്കിൽ( IS_LOCK_ERROR(lrc2) ){
       rc = lrc2;
-      goto afp_end_lock;
-    } else if( lrc1 != SQLITE_OK ) {
+      പോകുക afp_end_lock;
+    } അല്ലെങ്കിൽ എങ്കിൽ( lrc1 != SQLITE_OK ) {
       rc = lrc1;
-    } else {
+    } അല്ലെങ്കിൽ {
       pFile->eFileLock = SHARED_LOCK;
       pInode->nLock++;
       pInode->nShared = 1;
     }
-  }else if( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( eFileLock==EXCLUSIVE_LOCK && pInode->nShared>1 ){
     /* We are trying for an exclusive lock but another thread in this
      ** same process is still holding a shared lock. */
     rc = SQLITE_BUSY;
-  }else{
+  }അല്ലെങ്കിൽ{
     /* The request was for a RESERVED or EXCLUSIVE lock.  It is
     ** assumed that there is a SHARED or greater lock on the file
     ** already.
     */
-    int failed = 0;
-    assert( 0!=pFile->eFileLock );
-    if (eFileLock >= RESERVED_LOCK && pFile->eFileLock < RESERVED_LOCK) {
+    പൂർണ്ണസംഖ്യ failed = 0;
+    പ്രതിജ്ഞാ( 0!=pFile->eFileLock );
+    എങ്കിൽ (eFileLock >= RESERVED_LOCK && pFile->eFileLock < RESERVED_LOCK) {
         /* Acquire a RESERVED lock */
         failed = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1,1);
-      if( !failed ){
+      എങ്കിൽ( !failed ){
         context->reserved = 1;
       }
     }
-    if (!failed && eFileLock == EXCLUSIVE_LOCK) {
+    എങ്കിൽ (!failed && eFileLock == EXCLUSIVE_LOCK) {
       /* Acquire an EXCLUSIVE lock */
 
       /* Remove the shared lock before trying the range.  we'll need to
       ** reestablish the shared lock if we can't get the  afpUnlock
       */
-      if( !(failed = afpSetLock(context->dbPath, pFile, SHARED_FIRST +
+      എങ്കിൽ( !(failed = afpSetLock(context->dbPath, pFile, SHARED_FIRST +
                          pInode->sharedByte, 1, 0)) ){
-        int failed2 = SQLITE_OK;
+        പൂർണ്ണസംഖ്യ failed2 = SQLITE_OK;
         /* now attempt to get the exclusive lock range */
         failed = afpSetLock(context->dbPath, pFile, SHARED_FIRST,
                                SHARED_SIZE, 1);
-        if( failed && (failed2 = afpSetLock(context->dbPath, pFile,
+        എങ്കിൽ( failed && (failed2 = afpSetLock(context->dbPath, pFile,
                        SHARED_FIRST + pInode->sharedByte, 1, 1)) ){
           /* Can't reestablish the shared lock.  Sqlite can't deal, this is
           ** a critical I/O error
           */
           rc = ((failed & 0xff) == SQLITE_IOERR) ? failed2 :
                SQLITE_IOERR_LOCK;
-          goto afp_end_lock;
+          പോകുക afp_end_lock;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         rc = failed;
       }
     }
-    if( failed ){
+    എങ്കിൽ( failed ){
       rc = failed;
     }
   }
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pFile->eFileLock = eFileLock;
     pInode->eFileLock = eFileLock;
-  }else if( eFileLock==EXCLUSIVE_LOCK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( eFileLock==EXCLUSIVE_LOCK ){
     pFile->eFileLock = PENDING_LOCK;
     pInode->eFileLock = PENDING_LOCK;
   }
@@ -3278,7 +3278,7 @@ afp_end_lock:
   sqlite3_mutex_leave(pInode->pLockMutex);
   OSTRACE(("LOCK    %d %s %s (afp)\n", pFile->h, azFileLock(eFileLock),
          rc==SQLITE_OK ? "ok" : "failed"));
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -3288,27 +3288,27 @@ afp_end_lock:
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int afpUnlock(sqlite3_file *id, int eFileLock) {
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ afpUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
   unixInodeInfo *pInode;
   afpLockingContext *context = (afpLockingContext *) pFile->lockingContext;
-  int skipShared = 0;
+  പൂർണ്ണസംഖ്യ skipShared = 0;
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (afp)\n", pFile->h, eFileLock,
            pFile->eFileLock, pFile->pInode->eFileLock, pFile->pInode->nShared,
            osGetpid(0)));
 
-  assert( eFileLock<=SHARED_LOCK );
-  if( pFile->eFileLock<=eFileLock ){
-    return SQLITE_OK;
+  പ്രതിജ്ഞാ( eFileLock<=SHARED_LOCK );
+  എങ്കിൽ( pFile->eFileLock<=eFileLock ){
+    തിരികെ SQLITE_OK;
   }
   pInode = pFile->pInode;
   sqlite3_mutex_enter(pInode->pLockMutex);
-  assert( pInode->nShared!=0 );
-  if( pFile->eFileLock>SHARED_LOCK ){
-    assert( pInode->eFileLock==pFile->eFileLock );
+  പ്രതിജ്ഞാ( pInode->nShared!=0 );
+  എങ്കിൽ( pFile->eFileLock>SHARED_LOCK ){
+    പ്രതിജ്ഞാ( pInode->eFileLock==pFile->eFileLock );
   
 #ifdef SQLITE_DEBUG
     /* When reducing a lock such that other processes can start
@@ -3319,36 +3319,36 @@ static int afpUnlock(sqlite3_file *id, int eFileLock) {
     ** the file has changed and hence might not know to flush their
     ** cache.  The use of a stale cache can lead to database corruption.
     */
-    assert( pFile->inNormalWrite==0
+    പ്രതിജ്ഞാ( pFile->inNormalWrite==0
            || pFile->dbUpdate==0
            || pFile->transCntrChng==1 );
     pFile->inNormalWrite = 0;
 #endif
   
-    if( pFile->eFileLock==EXCLUSIVE_LOCK ){
+    എങ്കിൽ( pFile->eFileLock==EXCLUSIVE_LOCK ){
       rc = afpSetLock(context->dbPath, pFile, SHARED_FIRST, SHARED_SIZE, 0);
-      if( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1) ){
+      എങ്കിൽ( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1) ){
         /* only re-establish the shared lock if necessary */
-        int sharedLockByte = SHARED_FIRST+pInode->sharedByte;
+        പൂർണ്ണസംഖ്യ sharedLockByte = SHARED_FIRST+pInode->sharedByte;
         rc = afpSetLock(context->dbPath, pFile, sharedLockByte, 1, 1);
-      } else {
+      } അല്ലെങ്കിൽ {
         skipShared = 1;
       }
     }
-    if( rc==SQLITE_OK && pFile->eFileLock>=PENDING_LOCK ){
+    എങ്കിൽ( rc==SQLITE_OK && pFile->eFileLock>=PENDING_LOCK ){
       rc = afpSetLock(context->dbPath, pFile, PENDING_BYTE, 1, 0);
     }
-    if( rc==SQLITE_OK && pFile->eFileLock>=RESERVED_LOCK && context->reserved ){
+    എങ്കിൽ( rc==SQLITE_OK && pFile->eFileLock>=RESERVED_LOCK && context->reserved ){
       rc = afpSetLock(context->dbPath, pFile, RESERVED_BYTE, 1, 0);
-      if( !rc ){
+      എങ്കിൽ( !rc ){
         context->reserved = 0;
       }
     }
-    if( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1)){
+    എങ്കിൽ( rc==SQLITE_OK && (eFileLock==SHARED_LOCK || pInode->nShared>1)){
       pInode->eFileLock = SHARED_LOCK;
     }
   }
-  if( rc==SQLITE_OK && eFileLock==NO_LOCK ){
+  എങ്കിൽ( rc==SQLITE_OK && eFileLock==NO_LOCK ){
 
     /* Decrement the shared lock counter.  Release the lock using an
     ** OS call only when all threads in this same process have released
@@ -3356,43 +3356,43 @@ static int afpUnlock(sqlite3_file *id, int eFileLock) {
     */
     unsigned long long sharedLockByte = SHARED_FIRST+pInode->sharedByte;
     pInode->nShared--;
-    if( pInode->nShared==0 ){
-      if( !skipShared ){
+    എങ്കിൽ( pInode->nShared==0 ){
+      എങ്കിൽ( !skipShared ){
         rc = afpSetLock(context->dbPath, pFile, sharedLockByte, 1, 0);
       }
-      if( !rc ){
+      എങ്കിൽ( !rc ){
         pInode->eFileLock = NO_LOCK;
         pFile->eFileLock = NO_LOCK;
       }
     }
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       pInode->nLock--;
-      assert( pInode->nLock>=0 );
-      if( pInode->nLock==0 ) closePendingFds(pFile);
+      പ്രതിജ്ഞാ( pInode->nLock>=0 );
+      എങ്കിൽ( pInode->nLock==0 ) closePendingFds(pFile);
     }
   }
 
   sqlite3_mutex_leave(pInode->pLockMutex);
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pFile->eFileLock = eFileLock;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Close a file & cleanup AFP specific locking context
 */
-static int afpClose(sqlite3_file *id) {
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ afpClose(sqlite3_file *id) {
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   unixFile *pFile = (unixFile*)id;
-  assert( id!=0 );
+  പ്രതിജ്ഞാ( id!=0 );
   afpUnlock(id, NO_LOCK);
-  assert( unixFileMutexNotheld(pFile) );
+  പ്രതിജ്ഞാ( unixFileMutexNotheld(pFile) );
   unixEnterMutex();
-  if( pFile->pInode ){
+  എങ്കിൽ( pFile->pInode ){
     unixInodeInfo *pInode = pFile->pInode;
     sqlite3_mutex_enter(pInode->pLockMutex);
-    if( pInode->nLock ){
+    എങ്കിൽ( pInode->nLock ){
       /* If there are outstanding locks, do not actually close the file just
       ** yet because that would clear those locks.  Instead, add the file
       ** descriptor to pInode->aPending.  It will be automatically closed when
@@ -3406,7 +3406,7 @@ static int afpClose(sqlite3_file *id) {
   sqlite3_free(pFile->lockingContext);
   rc = closeUnixFile(id);
   unixLeaveMutex();
-  return rc;
+  തിരികെ rc;
 }
 
 #endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
@@ -3422,7 +3422,7 @@ static int afpClose(sqlite3_file *id) {
 /******************************************************************************
 *************************** Begin NFS Locking ********************************/
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
  ** Lower the locking level on file descriptor pFile to eFileLock.  eFileLock
  ** must be either NO_LOCK or SHARED_LOCK.
@@ -3430,8 +3430,8 @@ static int afpClose(sqlite3_file *id) {
  ** If the locking level of the file descriptor is already at or below
  ** the requested locking level, this routine is a no-op.
  */
-static int nfsUnlock(sqlite3_file *id, int eFileLock){
-  return posixUnlock(id, eFileLock, 1);
+സ്ഥിതം പൂർണ്ണസംഖ്യ nfsUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock){
+  തിരികെ posixUnlock(id, eFileLock, 1);
 }
 
 #endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
@@ -3460,48 +3460,48 @@ static int nfsUnlock(sqlite3_file *id, int eFileLock){
 ** To avoid stomping the errno value on a failed read the lastErrno value
 ** is set before returning.
 */
-static int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt){
-  int got;
-  int prior = 0;
-#if (!defined(USE_PREAD) && !defined(USE_PREAD64))
+സ്ഥിതം പൂർണ്ണസംഖ്യ seekAndRead(unixFile *id, sqlite3_int64 offset, ശൂന്യം *pBuf, പൂർണ്ണസംഖ്യ cnt){
+  പൂർണ്ണസംഖ്യ got;
+  പൂർണ്ണസംഖ്യ prior = 0;
+#എങ്കിൽ (!defined(USE_PREAD) && !defined(USE_PREAD64))
   i64 newOffset;
 #endif
   TIMER_START;
-  assert( cnt==(cnt&0x1ffff) );
-  assert( id->h>2 );
-  do{
-#if defined(USE_PREAD)
+  പ്രതിജ്ഞാ( cnt==(cnt&0x1ffff) );
+  പ്രതിജ്ഞാ( id->h>2 );
+  ചെയ്യുക{
+#എങ്കിൽ defined(USE_PREAD)
     got = osPread(id->h, pBuf, cnt, offset);
     SimulateIOError( got = -1 );
-#elif defined(USE_PREAD64)
+#അല്ലെങ്കിലെങ്കിൽ defined(USE_PREAD64)
     got = osPread64(id->h, pBuf, cnt, offset);
     SimulateIOError( got = -1 );
-#else
+#അല്ലെങ്കിൽ
     newOffset = lseek(id->h, offset, SEEK_SET);
     SimulateIOError( newOffset = -1 );
-    if( newOffset<0 ){
+    എങ്കിൽ( newOffset<0 ){
       storeLastErrno((unixFile*)id, errno);
-      return -1;
+      തിരികെ -1;
     }
     got = osRead(id->h, pBuf, cnt);
 #endif
-    if( got==cnt ) break;
-    if( got<0 ){
-      if( errno==EINTR ){ got = 1; continue; }
+    എങ്കിൽ( got==cnt ) നിർത്തുക;
+    എങ്കിൽ( got<0 ){
+      എങ്കിൽ( errno==EINTR ){ got = 1; തുടരുക; }
       prior = 0;
       storeLastErrno((unixFile*)id,  errno);
-      break;
-    }else if( got>0 ){
+      നിർത്തുക;
+    }അല്ലെങ്കിൽ എങ്കിൽ( got>0 ){
       cnt -= got;
       offset += got;
       prior += got;
-      pBuf = (void*)(got + (char*)pBuf);
+      pBuf = (ശൂന്യം*)(got + (അക്ഷരം*)pBuf);
     }
-  }while( got>0 );
+  }ആകുമ്പോൾ( got>0 );
   TIMER_END;
   OSTRACE(("READ    %-3d %5d %7lld %llu\n",
             id->h, got+prior, offset-prior, TIMER_ELAPSED));
-  return got+prior;
+  തിരികെ got+prior;
 }
 
 /*
@@ -3509,36 +3509,36 @@ static int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-static int unixRead(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixRead(
   sqlite3_file *id,
-  void *pBuf,
-  int amt,
+  ശൂന്യം *pBuf,
+  പൂർണ്ണസംഖ്യ amt,
   sqlite3_int64 offset
 ){
   unixFile *pFile = (unixFile *)id;
-  int got;
-  assert( id );
-  assert( offset>=0 );
-  assert( amt>0 );
+  പൂർണ്ണസംഖ്യ got;
+  പ്രതിജ്ഞാ( id );
+  പ്രതിജ്ഞാ( offset>=0 );
+  പ്രതിജ്ഞാ( amt>0 );
 
   /* If this is a database file (not a journal, super-journal or temp
   ** file), the bytes in the locking range should never be read or written. */
-#if 0
-  assert( pFile->pPreallocatedUnused==0
+#എങ്കിൽ 0
+  പ്രതിജ്ഞാ( pFile->pPreallocatedUnused==0
        || offset>=PENDING_BYTE+512
        || offset+amt<=PENDING_BYTE
   );
 #endif
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
   /* Deal with as much of this read request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
+  എങ്കിൽ( offset<pFile->mmapSize ){
+    എങ്കിൽ( offset+amt <= pFile->mmapSize ){
       memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], amt);
-      return SQLITE_OK;
-    }else{
-      int nCopy = pFile->mmapSize - offset;
+      തിരികെ SQLITE_OK;
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ nCopy = pFile->mmapSize - offset;
       memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
@@ -3548,9 +3548,9 @@ static int unixRead(
 #endif
 
   got = seekAndRead(pFile, offset, pBuf, amt);
-  if( got==amt ){
-    return SQLITE_OK;
-  }else if( got<0 ){
+  എങ്കിൽ( got==amt ){
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ എങ്കിൽ( got<0 ){
     /* pFile->lastErrno has been set by seekAndRead().
     ** Usually we return SQLITE_IOERR_READ here, though for some
     ** kinds of errors we return SQLITE_IOERR_CORRUPTFS.  The
@@ -3558,23 +3558,23 @@ static int unixRead(
     ** prior to returning to the application by the sqlite3ApiExit()
     ** routine.
     */
-    switch( pFile->lastErrno ){
-      case ERANGE:
-      case EIO:
+    തിരഞ്ഞെടുപ്പ്( pFile->lastErrno ){
+      അവസ്ഥ ERANGE:
+      അവസ്ഥ EIO:
 #ifdef ENXIO
-      case ENXIO:
+      അവസ്ഥ ENXIO:
 #endif
 #ifdef EDEVERR
-      case EDEVERR:
+      അവസ്ഥ EDEVERR:
 #endif
-        return SQLITE_IOERR_CORRUPTFS;
+        തിരികെ SQLITE_IOERR_CORRUPTFS;
     }
-    return SQLITE_IOERR_READ;
-  }else{
+    തിരികെ SQLITE_IOERR_READ;
+  }അല്ലെങ്കിൽ{
     storeLastErrno(pFile, 0);   /* not a system error */
     /* Unread parts of the buffer must be zero-filled */
-    memset(&((char*)pBuf)[got], 0, amt-got);
-    return SQLITE_IOERR_SHORT_READ;
+    memset(&((അക്ഷരം*)pBuf)[got], 0, amt-got);
+    തിരികെ SQLITE_IOERR_SHORT_READ;
   }
 }
 
@@ -3585,42 +3585,42 @@ static int unixRead(
 ** return the actual number of bytes written (which may be less than
 ** nBuf).
 */
-static int seekAndWriteFd(
-  int fd,                         /* File descriptor to write to */
+സ്ഥിതം പൂർണ്ണസംഖ്യ seekAndWriteFd(
+  പൂർണ്ണസംഖ്യ fd,                         /* File descriptor to write to */
   i64 iOff,                       /* File offset to begin writing at */
-  const void *pBuf,               /* Copy data from this buffer to the file */
-  int nBuf,                       /* Size of buffer pBuf in bytes */
-  int *piErrno                    /* OUT: Error number if error occurs */
+  സ്ഥിരം ശൂന്യം *pBuf,               /* Copy data from this buffer to the file */
+  പൂർണ്ണസംഖ്യ nBuf,                       /* Size of buffer pBuf in bytes */
+  പൂർണ്ണസംഖ്യ *piErrno                    /* OUT: Error number if error occurs */
 ){
-  int rc = 0;                     /* Value returned by system call */
+  പൂർണ്ണസംഖ്യ rc = 0;                     /* Value returned by system call */
 
-  assert( nBuf==(nBuf&0x1ffff) );
-  assert( fd>2 );
-  assert( piErrno!=0 );
+  പ്രതിജ്ഞാ( nBuf==(nBuf&0x1ffff) );
+  പ്രതിജ്ഞാ( fd>2 );
+  പ്രതിജ്ഞാ( piErrno!=0 );
   nBuf &= 0x1ffff;
   TIMER_START;
 
-#if defined(USE_PREAD)
-  do{ rc = (int)osPwrite(fd, pBuf, nBuf, iOff); }while( rc<0 && errno==EINTR );
-#elif defined(USE_PREAD64)
-  do{ rc = (int)osPwrite64(fd, pBuf, nBuf, iOff);}while( rc<0 && errno==EINTR);
-#else
-  do{
+#എങ്കിൽ defined(USE_PREAD)
+  ചെയ്യുക{ rc = (പൂർണ്ണസംഖ്യ)osPwrite(fd, pBuf, nBuf, iOff); }ആകുമ്പോൾ( rc<0 && errno==EINTR );
+#അല്ലെങ്കിലെങ്കിൽ defined(USE_PREAD64)
+  ചെയ്യുക{ rc = (പൂർണ്ണസംഖ്യ)osPwrite64(fd, pBuf, nBuf, iOff);}ആകുമ്പോൾ( rc<0 && errno==EINTR);
+#അല്ലെങ്കിൽ
+  ചെയ്യുക{
     i64 iSeek = lseek(fd, iOff, SEEK_SET);
     SimulateIOError( iSeek = -1 );
-    if( iSeek<0 ){
+    എങ്കിൽ( iSeek<0 ){
       rc = -1;
-      break;
+      നിർത്തുക;
     }
     rc = osWrite(fd, pBuf, nBuf);
-  }while( rc<0 && errno==EINTR );
+  }ആകുമ്പോൾ( rc<0 && errno==EINTR );
 #endif
 
   TIMER_END;
   OSTRACE(("WRITE   %-3d %5d %7lld %llu\n", fd, rc, iOff, TIMER_ELAPSED));
 
-  if( rc<0 ) *piErrno = errno;
-  return rc;
+  എങ്കിൽ( rc<0 ) *piErrno = errno;
+  തിരികെ rc;
 }
 
 
@@ -3631,8 +3631,8 @@ static int seekAndWriteFd(
 ** To avoid stomping the errno value on a failed write the lastErrno value
 ** is set before returning.
 */
-static int seekAndWrite(unixFile *id, i64 offset, const void *pBuf, int cnt){
-  return seekAndWriteFd(id->h, offset, pBuf, cnt, &id->lastErrno);
+സ്ഥിതം പൂർണ്ണസംഖ്യ seekAndWrite(unixFile *id, i64 offset, സ്ഥിരം ശൂന്യം *pBuf, പൂർണ്ണസംഖ്യ cnt){
+  തിരികെ seekAndWriteFd(id->h, offset, pBuf, cnt, &id->lastErrno);
 }
 
 
@@ -3640,21 +3640,21 @@ static int seekAndWrite(unixFile *id, i64 offset, const void *pBuf, int cnt){
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-static int unixWrite(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixWrite(
   sqlite3_file *id,
-  const void *pBuf,
-  int amt,
+  സ്ഥിരം ശൂന്യം *pBuf,
+  പൂർണ്ണസംഖ്യ amt,
   sqlite3_int64 offset
 ){
   unixFile *pFile = (unixFile*)id;
-  int wrote = 0;
-  assert( id );
-  assert( amt>0 );
+  പൂർണ്ണസംഖ്യ wrote = 0;
+  പ്രതിജ്ഞാ( id );
+  പ്രതിജ്ഞാ( amt>0 );
 
   /* If this is a database file (not a journal, super-journal or temp
   ** file), the bytes in the locking range should never be read or written. */
-#if 0
-  assert( pFile->pPreallocatedUnused==0
+#എങ്കിൽ 0
+  പ്രതിജ്ഞാ( pFile->pPreallocatedUnused==0
        || offset>=PENDING_BYTE+512
        || offset+amt<=PENDING_BYTE
   );
@@ -3667,30 +3667,30 @@ static int unixWrite(
   ** has changed.  If the transaction counter is modified, record that
   ** fact too.
   */
-  if( pFile->inNormalWrite ){
+  എങ്കിൽ( pFile->inNormalWrite ){
     pFile->dbUpdate = 1;  /* The database has been modified */
-    if( offset<=24 && offset+amt>=27 ){
-      int rc;
-      char oldCntr[4];
+    എങ്കിൽ( offset<=24 && offset+amt>=27 ){
+      പൂർണ്ണസംഖ്യ rc;
+      അക്ഷരം oldCntr[4];
       SimulateIOErrorBenign(1);
       rc = seekAndRead(pFile, 24, oldCntr, 4);
       SimulateIOErrorBenign(0);
-      if( rc!=4 || memcmp(oldCntr, &((char*)pBuf)[24-offset], 4)!=0 ){
+      എങ്കിൽ( rc!=4 || memcmp(oldCntr, &((അക്ഷരം*)pBuf)[24-offset], 4)!=0 ){
         pFile->transCntrChng = 1;  /* The transaction counter has changed */
       }
     }
   }
 #endif
 
-#if defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_SIZE>0
   /* Deal with as much of this write request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
+  എങ്കിൽ( offset<pFile->mmapSize ){
+    എങ്കിൽ( offset+amt <= pFile->mmapSize ){
       memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, amt);
-      return SQLITE_OK;
-    }else{
-      int nCopy = pFile->mmapSize - offset;
+      തിരികെ SQLITE_OK;
+    }അല്ലെങ്കിൽ{
+      പൂർണ്ണസംഖ്യ nCopy = pFile->mmapSize - offset;
       memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
@@ -3699,25 +3699,25 @@ static int unixWrite(
   }
 #endif
 
-  while( (wrote = seekAndWrite(pFile, offset, pBuf, amt))<amt && wrote>0 ){
+  ആകുമ്പോൾ( (wrote = seekAndWrite(pFile, offset, pBuf, amt))<amt && wrote>0 ){
     amt -= wrote;
     offset += wrote;
-    pBuf = &((char*)pBuf)[wrote];
+    pBuf = &((അക്ഷരം*)pBuf)[wrote];
   }
   SimulateIOError(( wrote=(-1), amt=1 ));
   SimulateDiskfullError(( wrote=0, amt=1 ));
 
-  if( amt>wrote ){
-    if( wrote<0 && pFile->lastErrno!=ENOSPC ){
+  എങ്കിൽ( amt>wrote ){
+    എങ്കിൽ( wrote<0 && pFile->lastErrno!=ENOSPC ){
       /* lastErrno set by seekAndWrite */
-      return SQLITE_IOERR_WRITE;
-    }else{
+      തിരികെ SQLITE_IOERR_WRITE;
+    }അല്ലെങ്കിൽ{
       storeLastErrno(pFile, 0); /* not a system error */
-      return SQLITE_FULL;
+      തിരികെ SQLITE_FULL;
     }
   }
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #ifdef SQLITE_TEST
@@ -3725,8 +3725,8 @@ static int unixWrite(
 ** Count the number of fullsyncs and normal syncs.  This is used to test
 ** that syncs and fullsyncs are occurring at the right times.
 */
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
+പൂർണ്ണസംഖ്യ sqlite3_sync_എണ്ണം = 0;
+പൂർണ്ണസംഖ്യ sqlite3_fullsync_എണ്ണം = 0;
 #endif
 
 /*
@@ -3735,7 +3735,7 @@ int sqlite3_fullsync_count = 0;
 ** fsync(). If you know that your system does support fdatasync() correctly,
 ** then simply compile with -Dfdatasync=fdatasync or -DHAVE_FDATASYNC
 */
-#if !defined(fdatasync) && !HAVE_FDATASYNC
+#എങ്കിൽ !defined(fdatasync) && !HAVE_FDATASYNC
 # define fdatasync fsync
 #endif
 
@@ -3746,7 +3746,7 @@ int sqlite3_fullsync_count = 0;
 */
 #ifdef F_FULLFSYNC
 # define HAVE_FULLFSYNC 1
-#else
+#അല്ലെങ്കിൽ
 # define HAVE_FULLFSYNC 0
 #endif
 
@@ -3775,8 +3775,8 @@ int sqlite3_fullsync_count = 0;
 ** So, we always use fdatasync() if it is available, regardless of
 ** the value of the dataOnly flag.
 */
-static int full_fsync(int fd, int fullSync, int dataOnly){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ full_fsync(പൂർണ്ണസംഖ്യ fd, പൂർണ്ണസംഖ്യ fullSync, പൂർണ്ണസംഖ്യ dataOnly){
+  പൂർണ്ണസംഖ്യ rc;
 
   /* The following "ifdef/elif/else/" block has the same structure as
   ** the one below. It is replicated here solely to avoid cluttering
@@ -3786,9 +3786,9 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   UNUSED_PARAMETER(fd);
   UNUSED_PARAMETER(fullSync);
   UNUSED_PARAMETER(dataOnly);
-#elif HAVE_FULLFSYNC
+#അല്ലെങ്കിലെങ്കിൽ HAVE_FULLFSYNC
   UNUSED_PARAMETER(dataOnly);
-#else
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(fullSync);
   UNUSED_PARAMETER(dataOnly);
 #endif
@@ -3798,8 +3798,8 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   ** gets called with the correct arguments.
   */
 #ifdef SQLITE_TEST
-  if( fullSync ) sqlite3_fullsync_count++;
-  sqlite3_sync_count++;
+  എങ്കിൽ( fullSync ) sqlite3_fullsync_എണ്ണം++;
+  sqlite3_sync_എണ്ണം++;
 #endif
 
   /* If we compiled with the SQLITE_NO_SYNC flag, then syncing is a
@@ -3809,13 +3809,13 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   */
 #ifdef SQLITE_NO_SYNC
   {
-    struct stat buf;
+    ഘടന stat buf;
     rc = osFstat(fd, &buf);
   }
-#elif HAVE_FULLFSYNC
-  if( fullSync ){
+#അല്ലെങ്കിലെങ്കിൽ HAVE_FULLFSYNC
+  എങ്കിൽ( fullSync ){
     rc = osFcntl(fd, F_FULLFSYNC, 0);
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = 1;
   }
   /* If the FULLFSYNC failed, fall back to attempting an fsync().
@@ -3826,26 +3826,26 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   ** It'd be better to detect fullfsync support once and avoid
   ** the fcntl call every time sync is called.
   */
-  if( rc ) rc = fsync(fd);
+  എങ്കിൽ( rc ) rc = fsync(fd);
 
-#elif defined(__APPLE__)
+#അല്ലെങ്കിലെങ്കിൽ defined(__APPLE__)
   /* fdatasync() on HFS+ doesn't yet flush the file size if it changed correctly
   ** so currently we default to the macro that redefines fdatasync to fsync
   */
   rc = fsync(fd);
-#else
+#അല്ലെങ്കിൽ
   rc = fdatasync(fd);
-#if OS_VXWORKS
-  if( rc==-1 && errno==ENOTSUP ){
+#എങ്കിൽ OS_VXWORKS
+  എങ്കിൽ( rc==-1 && errno==ENOTSUP ){
     rc = fsync(fd);
   }
 #endif /* OS_VXWORKS */
 #endif /* ifdef SQLITE_NO_SYNC elif HAVE_FULLFSYNC */
 
-  if( OS_VXWORKS && rc!= -1 ){
+  എങ്കിൽ( OS_VXWORKS && rc!= -1 ){
     rc = 0;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -3871,26 +3871,26 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
 ** If SQLITE_OK is returned, the caller is responsible for closing
 ** the file descriptor *pFd using close().
 */
-static int openDirectory(const char *zFilename, int *pFd){
-  int ii;
-  int fd = -1;
-  char zDirname[MAX_PATHNAME+1];
+സ്ഥിതം പൂർണ്ണസംഖ്യ openDirectory(സ്ഥിരം അക്ഷരം *zFilename, പൂർണ്ണസംഖ്യ *pFd){
+  പൂർണ്ണസംഖ്യ ii;
+  പൂർണ്ണസംഖ്യ fd = -1;
+  അക്ഷരം zDirname[MAX_PATHNAME+1];
 
   sqlite3_snprintf(MAX_PATHNAME, zDirname, "%s", zFilename);
-  for(ii=(int)strlen(zDirname); ii>0 && zDirname[ii]!='/'; ii--);
-  if( ii>0 ){
+  വേണ്ടി(ii=(പൂർണ്ണസംഖ്യ)strlen(zDirname); ii>0 && zDirname[ii]!='/'; ii--);
+  എങ്കിൽ( ii>0 ){
     zDirname[ii] = '\0';
-  }else{
-    if( zDirname[0]!='/' ) zDirname[0] = '.';
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( zDirname[0]!='/' ) zDirname[0] = '.';
     zDirname[1] = 0;
   }
-  fd = robust_open(zDirname, O_RDONLY|O_BINARY, 0);
-  if( fd>=0 ){
+  fd = robust_open(zDirname, O_RDONLY|O_ദ്വിമാന, 0);
+  എങ്കിൽ( fd>=0 ){
     OSTRACE(("OPENDIR %-3d %s\n", fd, zDirname));
   }
   *pFd = fd;
-  if( fd>=0 ) return SQLITE_OK;
-  return unixLogError(SQLITE_CANTOPEN_BKPT, "openDirectory", zDirname);
+  എങ്കിൽ( fd>=0 ) തിരികെ SQLITE_OK;
+  തിരികെ unixLogError(SQLITE_CANTOPEN_BKPT, "openDirectory", zDirname);
 }
 
 /*
@@ -3908,76 +3908,76 @@ static int openDirectory(const char *zFilename, int *pFd){
 ** the directory entry for the journal was never created) and the transaction
 ** will not roll back - possibly leading to database corruption.
 */
-static int unixSync(sqlite3_file *id, int flags){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixSync(sqlite3_file *id, പൂർണ്ണസംഖ്യ flags){
+  പൂർണ്ണസംഖ്യ rc;
   unixFile *pFile = (unixFile*)id;
 
-  int isDataOnly = (flags&SQLITE_SYNC_DATAONLY);
-  int isFullsync = (flags&0x0F)==SQLITE_SYNC_FULL;
+  പൂർണ്ണസംഖ്യ isDataOnly = (flags&SQLITE_SYNC_DATAONLY);
+  പൂർണ്ണസംഖ്യ isFullsync = (flags&0x0F)==SQLITE_SYNC_FULL;
 
   /* Check that one of SQLITE_SYNC_NORMAL or FULL was passed */
-  assert((flags&0x0F)==SQLITE_SYNC_NORMAL
+  പ്രതിജ്ഞാ((flags&0x0F)==SQLITE_SYNC_NORMAL
       || (flags&0x0F)==SQLITE_SYNC_FULL
   );
 
   /* Unix cannot, but some systems may return SQLITE_FULL from here. This
   ** line is to test that doing so does not cause any problems.
   */
-  SimulateDiskfullError( return SQLITE_FULL );
+  SimulateDiskfullError( തിരികെ SQLITE_FULL );
 
-  assert( pFile );
+  പ്രതിജ്ഞാ( pFile );
   OSTRACE(("SYNC    %-3d\n", pFile->h));
   rc = full_fsync(pFile->h, isFullsync, isDataOnly);
   SimulateIOError( rc=1 );
-  if( rc ){
+  എങ്കിൽ( rc ){
     storeLastErrno(pFile, errno);
-    return unixLogError(SQLITE_IOERR_FSYNC, "full_fsync", pFile->zPath);
+    തിരികെ unixLogError(SQLITE_IOERR_FSYNC, "full_fsync", pFile->zPath);
   }
 
   /* Also fsync the directory containing the file if the DIRSYNC flag
   ** is set.  This is a one-time occurrence.  Many systems (examples: AIX)
   ** are unable to fsync a directory, so ignore errors on the fsync.
   */
-  if( pFile->ctrlFlags & UNIXFILE_DIRSYNC ){
-    int dirfd;
+  എങ്കിൽ( pFile->ctrlFlags & UNIXFILE_DIRSYNC ){
+    പൂർണ്ണസംഖ്യ dirfd;
     OSTRACE(("DIRSYNC %s (have_fullfsync=%d fullsync=%d)\n", pFile->zPath,
             HAVE_FULLFSYNC, isFullsync));
     rc = osOpenDirectory(pFile->zPath, &dirfd);
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       full_fsync(dirfd, 0, 0);
       robust_close(pFile, dirfd, __LINE__);
-    }else{
-      assert( rc==SQLITE_CANTOPEN );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( rc==SQLITE_CANTOPEN );
       rc = SQLITE_OK;
     }
     pFile->ctrlFlags &= ~UNIXFILE_DIRSYNC;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Truncate an open file to a specified size
 */
-static int unixTruncate(sqlite3_file *id, i64 nByte){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixTruncate(sqlite3_file *id, i64 nByte){
   unixFile *pFile = (unixFile *)id;
-  int rc;
-  assert( pFile );
-  SimulateIOError( return SQLITE_IOERR_TRUNCATE );
+  പൂർണ്ണസംഖ്യ rc;
+  പ്രതിജ്ഞാ( pFile );
+  SimulateIOError( തിരികെ SQLITE_IOERR_TRUNCATE );
 
   /* If the user has configured a chunk-size for this file, truncate the
   ** file so that it consists of an integer number of chunks (i.e. the
   ** actual file size after the operation may be larger than the requested
   ** size).
   */
-  if( pFile->szChunk>0 ){
+  എങ്കിൽ( pFile->szChunk>0 ){
     nByte = ((nByte + pFile->szChunk - 1)/pFile->szChunk) * pFile->szChunk;
   }
 
   rc = robust_ftruncate(pFile->h, nByte);
-  if( rc ){
+  എങ്കിൽ( rc ){
     storeLastErrno(pFile, errno);
-    return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
-  }else{
+    തിരികെ unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
+  }അല്ലെങ്കിൽ{
 #ifdef SQLITE_DEBUG
     /* If we are doing a normal write to a database file (as opposed to
     ** doing a hot-journal rollback or a write to some file other than a
@@ -3986,37 +3986,37 @@ static int unixTruncate(sqlite3_file *id, i64 nByte){
     ** when restoring a database using the backup API from a zero-length
     ** source.
     */
-    if( pFile->inNormalWrite && nByte==0 ){
+    എങ്കിൽ( pFile->inNormalWrite && nByte==0 ){
       pFile->transCntrChng = 1;
     }
 #endif
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
     /* If the file was just truncated to a size smaller than the currently
     ** mapped region, reduce the effective mapping size as well. SQLite will
     ** use read() and write() to access data beyond this point from now on.
     */
-    if( nByte<pFile->mmapSize ){
+    എങ്കിൽ( nByte<pFile->mmapSize ){
       pFile->mmapSize = nByte;
     }
 #endif
 
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 }
 
 /*
 ** Determine the current size of a file in bytes
 */
-static int unixFileSize(sqlite3_file *id, i64 *pSize){
-  int rc;
-  struct stat buf;
-  assert( id );
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFileSize(sqlite3_file *id, i64 *pSize){
+  പൂർണ്ണസംഖ്യ rc;
+  ഘടന stat buf;
+  പ്രതിജ്ഞാ( id );
   rc = osFstat(((unixFile*)id)->h, &buf);
   SimulateIOError( rc=1 );
-  if( rc!=0 ){
+  എങ്കിൽ( rc!=0 ){
     storeLastErrno((unixFile*)id, errno);
-    return SQLITE_IOERR_FSTAT;
+    തിരികെ SQLITE_IOERR_FSTAT;
   }
   *pSize = buf.st_size;
 
@@ -4026,18 +4026,18 @@ static int unixFileSize(sqlite3_file *id, i64 *pSize){
   ** layers, we need to report this file size as zero even though it is
   ** really 1.   Ticket #3260.
   */
-  if( *pSize==1 ) *pSize = 0;
+  എങ്കിൽ( *pSize==1 ) *pSize = 0;
 
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
 /*
 ** Handler for proxy-locking file-control verbs.  Defined below in the
 ** proxying locking division.
 */
-static int proxyFileControl(sqlite3_file*,int,void*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyFileControl(sqlite3_file*,പൂർണ്ണസംഖ്യ,ശൂന്യം*);
 #endif
 
 /*
@@ -4046,28 +4046,28 @@ static int proxyFileControl(sqlite3_file*,int,void*);
 ** (rounded up to the next chunk-size).  If the database is already
 ** nBytes or larger, this routine is a no-op.
 */
-static int fcntlSizeHint(unixFile *pFile, i64 nByte){
-  if( pFile->szChunk>0 ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ fcntlSizeHint(unixFile *pFile, i64 nByte){
+  എങ്കിൽ( pFile->szChunk>0 ){
     i64 nSize;                    /* Required file size */
-    struct stat buf;              /* Used to hold return values of fstat() */
+    ഘടന stat buf;              /* Used to hold return values of fstat() */
  
-    if( osFstat(pFile->h, &buf) ){
-      return SQLITE_IOERR_FSTAT;
+    എങ്കിൽ( osFstat(pFile->h, &buf) ){
+      തിരികെ SQLITE_IOERR_FSTAT;
     }
 
     nSize = ((nByte+pFile->szChunk-1) / pFile->szChunk) * pFile->szChunk;
-    if( nSize>(i64)buf.st_size ){
+    എങ്കിൽ( nSize>(i64)buf.st_size ){
 
-#if defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
+#എങ്കിൽ defined(HAVE_POSIX_FALLOCATE) && HAVE_POSIX_FALLOCATE
       /* The code below is handling the return value of osFallocate()
       ** correctly. posix_fallocate() is defined to "returns zero on success,
       ** or an error number on  failure". See the manpage for details. */
-      int err;
-      do{
+      പൂർണ്ണസംഖ്യ err;
+      ചെയ്യുക{
         err = osFallocate(pFile->h, buf.st_size, nSize-buf.st_size);
-      }while( err==EINTR );
-      if( err && err!=EINVAL ) return SQLITE_IOERR_WRITE;
-#else
+      }ആകുമ്പോൾ( err==EINTR );
+      എങ്കിൽ( err && err!=EINVAL ) തിരികെ SQLITE_IOERR_WRITE;
+#അല്ലെങ്കിൽ
       /* If the OS does not have posix_fallocate(), fake it. Write a
       ** single byte to the last byte in each block that falls entirely
       ** within the extended region. Then, if required, a single byte
@@ -4075,38 +4075,38 @@ static int fcntlSizeHint(unixFile *pFile, i64 nByte){
       ** This is a similar technique to that used by glibc on systems
       ** that do not have a real fallocate() call.
       */
-      int nBlk = buf.st_blksize;  /* File-system block size */
-      int nWrite = 0;             /* Number of bytes written by seekAndWrite */
+      പൂർണ്ണസംഖ്യ nBlk = buf.st_blksize;  /* File-system block size */
+      പൂർണ്ണസംഖ്യ nWrite = 0;             /* Number of bytes written by seekAndWrite */
       i64 iWrite;                 /* Next offset to write to */
 
       iWrite = (buf.st_size/nBlk)*nBlk + nBlk - 1;
-      assert( iWrite>=buf.st_size );
-      assert( ((iWrite+1)%nBlk)==0 );
-      for(/*no-op*/; iWrite<nSize+nBlk-1; iWrite+=nBlk ){
-        if( iWrite>=nSize ) iWrite = nSize - 1;
+      പ്രതിജ്ഞാ( iWrite>=buf.st_size );
+      പ്രതിജ്ഞാ( ((iWrite+1)%nBlk)==0 );
+      വേണ്ടി(/*no-op*/; iWrite<nSize+nBlk-1; iWrite+=nBlk ){
+        എങ്കിൽ( iWrite>=nSize ) iWrite = nSize - 1;
         nWrite = seekAndWrite(pFile, iWrite, "", 1);
-        if( nWrite!=1 ) return SQLITE_IOERR_WRITE;
+        എങ്കിൽ( nWrite!=1 ) തിരികെ SQLITE_IOERR_WRITE;
       }
 #endif
     }
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->mmapSizeMax>0 && nByte>pFile->mmapSize ){
-    int rc;
-    if( pFile->szChunk<=0 ){
-      if( robust_ftruncate(pFile->h, nByte) ){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+  എങ്കിൽ( pFile->mmapSizeMax>0 && nByte>pFile->mmapSize ){
+    പൂർണ്ണസംഖ്യ rc;
+    എങ്കിൽ( pFile->szChunk<=0 ){
+      എങ്കിൽ( robust_ftruncate(pFile->h, nByte) ){
         storeLastErrno(pFile, errno);
-        return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
+        തിരികെ unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile->zPath);
       }
     }
 
     rc = unixMapfile(pFile, nByte);
-    return rc;
+    തിരികെ rc;
   }
 #endif
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -4115,139 +4115,139 @@ static int fcntlSizeHint(unixFile *pFile, i64 nByte){
 **
 ** If *pArg is 0 or 1, then clear or set the mask bit of pFile->ctrlFlags.
 */
-static void unixModeBit(unixFile *pFile, unsigned char mask, int *pArg){
-  if( *pArg<0 ){
+സ്ഥിതം ശൂന്യം unixModeBit(unixFile *pFile, unsigned അക്ഷരം mask, പൂർണ്ണസംഖ്യ *pArg){
+  എങ്കിൽ( *pArg<0 ){
     *pArg = (pFile->ctrlFlags & mask)!=0;
-  }else if( (*pArg)==0 ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( (*pArg)==0 ){
     pFile->ctrlFlags &= ~mask;
-  }else{
+  }അല്ലെങ്കിൽ{
     pFile->ctrlFlags |= mask;
   }
 }
 
 /* Forward declaration */
-static int unixGetTempname(int nBuf, char *zBuf);
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
- static int unixFcntlExternalReader(unixFile*, int*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixGetTempname(പൂർണ്ണസംഖ്യ nBuf, അക്ഷരം *zBuf);
+#എങ്കിൽ !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+ സ്ഥിതം പൂർണ്ണസംഖ്യ unixFcntlExternalReader(unixFile*, പൂർണ്ണസംഖ്യ*);
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
- static void unixDescribeShm(sqlite3_str*,unixShm*);
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+ സ്ഥിതം ശൂന്യം unixDescribeShm(sqlite3_str*,unixShm*);
 #endif
 
 
 /*
 ** Information and control of an open file handle.
 */
-static int unixFileControl(sqlite3_file *id, int op, void *pArg){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFileControl(sqlite3_file *id, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg){
   unixFile *pFile = (unixFile*)id;
-  switch( op ){
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-    case SQLITE_FCNTL_BEGIN_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_START_ATOMIC_WRITE);
-      return rc ? SQLITE_IOERR_BEGIN_ATOMIC : SQLITE_OK;
+  തിരഞ്ഞെടുപ്പ്( op ){
+#എങ്കിൽ defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+    അവസ്ഥ SQLITE_FCNTL_BEGIN_ATOMIC_WRITE: {
+      പൂർണ്ണസംഖ്യ rc = osIoctl(pFile->h, F2FS_IOC_START_ATOMIC_WRITE);
+      തിരികെ rc ? SQLITE_IOERR_BEGIN_ATOMIC : SQLITE_OK;
     }
-    case SQLITE_FCNTL_COMMIT_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_COMMIT_ATOMIC_WRITE);
-      return rc ? SQLITE_IOERR_COMMIT_ATOMIC : SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_COMMIT_ATOMIC_WRITE: {
+      പൂർണ്ണസംഖ്യ rc = osIoctl(pFile->h, F2FS_IOC_COMMIT_ATOMIC_WRITE);
+      തിരികെ rc ? SQLITE_IOERR_COMMIT_ATOMIC : SQLITE_OK;
     }
-    case SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE: {
-      int rc = osIoctl(pFile->h, F2FS_IOC_ABORT_VOLATILE_WRITE);
-      return rc ? SQLITE_IOERR_ROLLBACK_ATOMIC : SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE: {
+      പൂർണ്ണസംഖ്യ rc = osIoctl(pFile->h, F2FS_IOC_ABORT_VOLATILE_WRITE);
+      തിരികെ rc ? SQLITE_IOERR_ROLLBACK_ATOMIC : SQLITE_OK;
     }
 #endif /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
 
-    case SQLITE_FCNTL_NULL_IO: {
+    അവസ്ഥ SQLITE_FCNTL_NULL_IO: {
       osClose(pFile->h);
       pFile->h = -1;
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_LOCKSTATE: {
-      *(int*)pArg = pFile->eFileLock;
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_LOCKSTATE: {
+      *(പൂർണ്ണസംഖ്യ*)pArg = pFile->eFileLock;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_LAST_ERRNO: {
-      *(int*)pArg = pFile->lastErrno;
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_LAST_ERRNO: {
+      *(പൂർണ്ണസംഖ്യ*)pArg = pFile->lastErrno;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_CHUNK_SIZE: {
-      pFile->szChunk = *(int *)pArg;
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_CHUNK_SIZE: {
+      pFile->szChunk = *(പൂർണ്ണസംഖ്യ *)pArg;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_SIZE_HINT: {
-      int rc;
+    അവസ്ഥ SQLITE_FCNTL_SIZE_HINT: {
+      പൂർണ്ണസംഖ്യ rc;
       SimulateIOErrorBenign(1);
       rc = fcntlSizeHint(pFile, *(i64 *)pArg);
       SimulateIOErrorBenign(0);
-      return rc;
+      തിരികെ rc;
     }
-    case SQLITE_FCNTL_PERSIST_WAL: {
-      unixModeBit(pFile, UNIXFILE_PERSIST_WAL, (int*)pArg);
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_PERSIST_WAL: {
+      unixModeBit(pFile, UNIXFILE_PERSIST_WAL, (പൂർണ്ണസംഖ്യ*)pArg);
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
-      unixModeBit(pFile, UNIXFILE_PSOW, (int*)pArg);
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
+      unixModeBit(pFile, UNIXFILE_PSOW, (പൂർണ്ണസംഖ്യ*)pArg);
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_VFSNAME: {
-      *(char**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_VFSNAME: {
+      *(അക്ഷരം**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_TEMPFILENAME: {
-      char *zTFile = sqlite3_malloc64( pFile->pVfs->mxPathname );
-      if( zTFile ){
+    അവസ്ഥ SQLITE_FCNTL_TEMPFILENAME: {
+      അക്ഷരം *zTFile = sqlite3_malloc64( pFile->pVfs->mxPathname );
+      എങ്കിൽ( zTFile ){
         unixGetTempname(pFile->pVfs->mxPathname, zTFile);
-        *(char**)pArg = zTFile;
+        *(അക്ഷരം**)pArg = zTFile;
       }
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_HAS_MOVED: {
-      *(int*)pArg = fileHasMoved(pFile);
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_HAS_MOVED: {
+      *(പൂർണ്ണസംഖ്യ*)pArg = fileHasMoved(pFile);
+      തിരികെ SQLITE_OK;
     }
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    case SQLITE_FCNTL_LOCK_TIMEOUT: {
-      int iOld = pFile->iBusyTimeout;
-      int iNew = *(int*)pArg;
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
+    അവസ്ഥ SQLITE_FCNTL_LOCK_TIMEOUT: {
+      പൂർണ്ണസംഖ്യ iOld = pFile->iBusyTimeout;
+      പൂർണ്ണസംഖ്യ iNew = *(പൂർണ്ണസംഖ്യ*)pArg;
+#എങ്കിൽ SQLITE_ENABLE_SETLK_TIMEOUT==1
       pFile->iBusyTimeout = iNew<0 ? 0x7FFFFFFF : (unsigned)iNew;
-#elif SQLITE_ENABLE_SETLK_TIMEOUT==2
-      pFile->iBusyTimeout = !!(*(int*)pArg);
-#else
+#അല്ലെങ്കിലെങ്കിൽ SQLITE_ENABLE_SETLK_TIMEOUT==2
+      pFile->iBusyTimeout = !!(*(പൂർണ്ണസംഖ്യ*)pArg);
+#അല്ലെങ്കിൽ
 # error "SQLITE_ENABLE_SETLK_TIMEOUT must be set to 1 or 2"
 #endif
-      *(int*)pArg = iOld;
-      return SQLITE_OK;
+      *(പൂർണ്ണസംഖ്യ*)pArg = iOld;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_BLOCK_ON_CONNECT: {
-      int iNew = *(int*)pArg;
+    അവസ്ഥ SQLITE_FCNTL_BLOCK_ON_CONNECT: {
+      പൂർണ്ണസംഖ്യ iNew = *(പൂർണ്ണസംഖ്യ*)pArg;
       pFile->bBlockOnConnect = iNew;
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
 #endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
-#if SQLITE_MAX_MMAP_SIZE>0
-    case SQLITE_FCNTL_MMAP_SIZE: {
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+    അവസ്ഥ SQLITE_FCNTL_MMAP_SIZE: {
       i64 newLimit = *(i64*)pArg;
-      int rc = SQLITE_OK;
-      if( newLimit>sqlite3GlobalConfig.mxMmap ){
+      പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+      എങ്കിൽ( newLimit>sqlite3GlobalConfig.mxMmap ){
         newLimit = sqlite3GlobalConfig.mxMmap;
       }
 
       /* The value of newLimit may be eventually cast to (size_t) and passed
       ** to mmap(). Restrict its value to 2GB if (size_t) is not at least a
       ** 64-bit type. */
-      if( newLimit>0 && sizeof(size_t)<8 ){
+      എങ്കിൽ( newLimit>0 && വലുപ്പം(size_t)<8 ){
         newLimit = (newLimit & 0x7FFFFFFF);
       }
 
       *(i64*)pArg = pFile->mmapSizeMax;
-      if( newLimit>=0 && newLimit!=pFile->mmapSizeMax && pFile->nFetchOut==0 ){
+      എങ്കിൽ( newLimit>=0 && newLimit!=pFile->mmapSizeMax && pFile->nFetchOut==0 ){
         pFile->mmapSizeMax = newLimit;
-        if( pFile->mmapSize>0 ){
+        എങ്കിൽ( pFile->mmapSize>0 ){
           unixUnmapfile(pFile);
           rc = unixMapfile(pFile, -1);
         }
       }
-      return rc;
+      തിരികെ rc;
     }
 #endif
 #ifdef SQLITE_DEBUG
@@ -4256,71 +4256,71 @@ static int unixFileControl(sqlite3_file *id, int op, void *pArg){
     ** it hence it is OK for the transaction change counter to be
     ** unchanged.
     */
-    case SQLITE_FCNTL_DB_UNCHANGED: {
+    അവസ്ഥ SQLITE_FCNTL_DB_UNCHANGED: {
       ((unixFile*)id)->dbUpdate = 0;
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
 #endif
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-    case SQLITE_FCNTL_SET_LOCKPROXYFILE:
-    case SQLITE_FCNTL_GET_LOCKPROXYFILE: {
-      return proxyFileControl(id,op,pArg);
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+    അവസ്ഥ SQLITE_FCNTL_SET_LOCKPROXYFILE:
+    അവസ്ഥ SQLITE_FCNTL_GET_LOCKPROXYFILE: {
+      തിരികെ proxyFileControl(id,op,pArg);
     }
 #endif /* SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__) */
 
-    case SQLITE_FCNTL_EXTERNAL_READER: {
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
-      return unixFcntlExternalReader((unixFile*)id, (int*)pArg);
-#else
-      *(int*)pArg = 0;
-      return SQLITE_OK;
+    അവസ്ഥ SQLITE_FCNTL_EXTERNAL_READER: {
+#എങ്കിൽ !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+      തിരികെ unixFcntlExternalReader((unixFile*)id, (പൂർണ്ണസംഖ്യ*)pArg);
+#അല്ലെങ്കിൽ
+      *(പൂർണ്ണസംഖ്യ*)pArg = 0;
+      തിരികെ SQLITE_OK;
 #endif
     }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
-    case SQLITE_FCNTL_FILESTAT: {
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+    അവസ്ഥ SQLITE_FCNTL_FILESTAT: {
       sqlite3_str *pStr = (sqlite3_str*)pArg;
-      char aLck[16];
+      അക്ഷരം aLck[16];
       unixInodeInfo *pInode;
-      static const char *azLock[] = { "SHARED", "RESERVED",
+      സ്ഥിതം സ്ഥിരം അക്ഷരം *azLock[] = { "SHARED", "RESERVED",
                                       "PENDING", "EXCLUSIVE" };
       sqlite3_str_appendf(pStr, "{\"h\":%d", pFile->h);
       sqlite3_str_appendf(pStr, ",\"vfs\":\"%s\"", pFile->pVfs->zName);
-      if( pFile->eFileLock ){
+      എങ്കിൽ( pFile->eFileLock ){
         sqlite3_str_appendf(pStr, ",\"eFileLock\":\"%s\"", 
                                   azLock[pFile->eFileLock-1]);
-        if( unixPosixAdvisoryLocks(pFile->h, aLck)==SQLITE_OK ){
+        എങ്കിൽ( unixPosixAdvisoryLocks(pFile->h, aLck)==SQLITE_OK ){
           sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
         }
       }
       unixEnterMutex();
-      if( pFile->pShm ){
+      എങ്കിൽ( pFile->pShm ){
         sqlite3_str_appendall(pStr, ",\"shm\":");
         unixDescribeShm(pStr, pFile->pShm);
       }
-#if SQLITE_MAX_MMAP_SIZE>0
-      if( pFile->mmapSize ){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+      എങ്കിൽ( pFile->mmapSize ){
         sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmapSize);
         sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->nFetchOut);
       }
 #endif
-      if( (pInode = pFile->pInode)!=0 ){
+      എങ്കിൽ( (pInode = pFile->pInode)!=0 ){
         sqlite3_str_appendf(pStr, ",\"inode\":{\"nRef\":%d",pInode->nRef);
         sqlite3_mutex_enter(pInode->pLockMutex);
         sqlite3_str_appendf(pStr, ",\"nShared\":%d", pInode->nShared);
-        if( pInode->eFileLock ){
+        എങ്കിൽ( pInode->eFileLock ){
           sqlite3_str_appendf(pStr, ",\"eFileLock\":\"%s\"", 
                                   azLock[pInode->eFileLock-1]);
         }
-        if( pInode->pUnused ){
-          char cSep = '[';
+        എങ്കിൽ( pInode->pUnused ){
+          അക്ഷരം cSep = '[';
           UnixUnusedFd *pUFd = pFile->pInode->pUnused;
           sqlite3_str_appendall(pStr, ",\"unusedFd\":");
-          while( pUFd ){
+          ആകുമ്പോൾ( pUFd ){
             sqlite3_str_appendf(pStr, "%c{\"fd\":%d,\"flags\":%d",
                                 cSep, pUFd->fd, pUFd->flags);
             cSep = ',';
-            if( unixPosixAdvisoryLocks(pUFd->fd, aLck)==SQLITE_OK ){
+            എങ്കിൽ( unixPosixAdvisoryLocks(pUFd->fd, aLck)==SQLITE_OK ){
               sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
             }
             sqlite3_str_append(pStr, "}", 1);
@@ -4333,11 +4333,11 @@ static int unixFileControl(sqlite3_file *id, int op, void *pArg){
       }
       unixLeaveMutex();
       sqlite3_str_append(pStr, "}", 1);
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
 #endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
   }
-  return SQLITE_NOTFOUND;
+  തിരികെ SQLITE_NOTFOUND;
 }
 
 /*
@@ -4350,22 +4350,22 @@ static int unixFileControl(sqlite3_file *id, int op, void *pArg){
 ** other systems.
 */
 #ifndef __QNXNTO__
-static void setDeviceCharacteristics(unixFile *pFd){
-  assert( pFd->deviceCharacteristics==0 || pFd->sectorSize!=0 );
-  if( pFd->sectorSize==0 ){
-#if defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-    int res;
+സ്ഥിതം ശൂന്യം setDeviceCharacteristics(unixFile *pFd){
+  പ്രതിജ്ഞാ( pFd->deviceCharacteristics==0 || pFd->sectorSize!=0 );
+  എങ്കിൽ( pFd->sectorSize==0 ){
+#എങ്കിൽ defined(__linux__) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+    പൂർണ്ണസംഖ്യ res;
     u32 f = 0;
 
     /* Check for support for F2FS atomic batch writes. */
     res = osIoctl(pFd->h, F2FS_IOC_GET_FEATURES, &f);
-    if( res==0 && (f & F2FS_FEATURE_ATOMIC_WRITE) ){
+    എങ്കിൽ( res==0 && (f & F2FS_FEATURE_ATOMIC_WRITE) ){
       pFd->deviceCharacteristics = SQLITE_IOCAP_BATCH_ATOMIC;
     }
 #endif /* __linux__ && SQLITE_ENABLE_BATCH_ATOMIC_WRITE */
 
     /* Set the POWERSAFE_OVERWRITE flag if requested. */
-    if( pFd->ctrlFlags & UNIXFILE_PSOW ){
+    എങ്കിൽ( pFd->ctrlFlags & UNIXFILE_PSOW ){
       pFd->deviceCharacteristics |= SQLITE_IOCAP_POWERSAFE_OVERWRITE;
     }
     pFd->deviceCharacteristics |= SQLITE_IOCAP_SUBPAGE_READ;
@@ -4373,21 +4373,21 @@ static void setDeviceCharacteristics(unixFile *pFd){
     pFd->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
   }
 }
-#else
-#include <sys/dcmd_blk.h>
-#include <sys/statvfs.h>
-static void setDeviceCharacteristics(unixFile *pFile){
-  if( pFile->sectorSize == 0 ){
-    struct statvfs fsInfo;
+#അല്ലെങ്കിൽ
+#അന്തര്ഭാവ <sys/dcmd_blk.h>
+#അന്തര്ഭാവ <sys/statvfs.h>
+സ്ഥിതം ശൂന്യം setDeviceCharacteristics(unixFile *pFile){
+  എങ്കിൽ( pFile->sectorSize == 0 ){
+    ഘടന statvfs fsInfo;
 
     /* Set defaults for non-supported filesystems */
     pFile->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
     pFile->deviceCharacteristics = 0;
-    if( fstatvfs(pFile->h, &fsInfo) == -1 ) {
-      return;
+    എങ്കിൽ( fstatvfs(pFile->h, &fsInfo) == -1 ) {
+      തിരികെ;
     }
 
-    if( !strcmp(fsInfo.f_basetype, "tmp") ) {
+    എങ്കിൽ( !strcmp(fsInfo.f_basetype, "tmp") ) {
       pFile->sectorSize = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC4K |       /* All ram filesystem writes are atomic */
@@ -4396,7 +4396,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( strstr(fsInfo.f_basetype, "etfs") ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( strstr(fsInfo.f_basetype, "etfs") ){
       pFile->sectorSize = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* etfs cluster size writes are atomic */
@@ -4406,7 +4406,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( !strcmp(fsInfo.f_basetype, "qnx6") ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( !strcmp(fsInfo.f_basetype, "qnx6") ){
       pFile->sectorSize = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC |         /* All filesystem writes are atomic */
@@ -4415,7 +4415,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( !strcmp(fsInfo.f_basetype, "qnx4") ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( !strcmp(fsInfo.f_basetype, "qnx4") ){
       pFile->sectorSize = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* full bitset of atomics from max sector size and smaller */
@@ -4423,7 +4423,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else if( strstr(fsInfo.f_basetype, "dos") ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( strstr(fsInfo.f_basetype, "dos") ){
       pFile->sectorSize = fsInfo.f_bsize;
       pFile->deviceCharacteristics =
         /* full bitset of atomics from max sector size and smaller */
@@ -4431,7 +4431,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
         SQLITE_IOCAP_SEQUENTIAL |     /* The ram filesystem has no write behind
                                       ** so it is ordered */
         0;
-    }else{
+    }അല്ലെങ്കിൽ{
       pFile->deviceCharacteristics =
         SQLITE_IOCAP_ATOMIC512 |      /* blocks are atomic */
         SQLITE_IOCAP_SAFE_APPEND |    /* growing the file does not occur until
@@ -4441,7 +4441,7 @@ static void setDeviceCharacteristics(unixFile *pFile){
   }
   /* Last chance verification.  If the sector size isn't a multiple of 512
   ** then it isn't valid.*/
-  if( pFile->sectorSize % 512 != 0 ){
+  എങ്കിൽ( pFile->sectorSize % 512 != 0 ){
     pFile->deviceCharacteristics = 0;
     pFile->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
   }
@@ -4458,10 +4458,10 @@ static void setDeviceCharacteristics(unixFile *pFile){
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-static int unixSectorSize(sqlite3_file *id){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixSectorSize(sqlite3_file *id){
   unixFile *pFd = (unixFile*)id;
   setDeviceCharacteristics(pFd);
-  return pFd->sectorSize;
+  തിരികെ pFd->sectorSize;
 }
 
 /*
@@ -4477,13 +4477,13 @@ static int unixSectorSize(sqlite3_file *id){
 **  Hence, while POWERSAFE_OVERWRITE is on by default, there is a file-control
 ** available to turn it off and URI query parameter available to turn it off.
 */
-static int unixDeviceCharacteristics(sqlite3_file *id){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixDeviceCharacteristics(sqlite3_file *id){
   unixFile *pFd = (unixFile*)id;
   setDeviceCharacteristics(pFd);
-  return pFd->deviceCharacteristics;
+  തിരികെ pFd->deviceCharacteristics;
 }
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
 
 /*
 ** Return the system page size.
@@ -4491,19 +4491,19 @@ static int unixDeviceCharacteristics(sqlite3_file *id){
 ** This function should not be called directly by other code in this file.
 ** Instead, it should be called via macro osGetpagesize().
 */
-static int unixGetpagesize(void){
-#if OS_VXWORKS
-  return 1024;
-#elif defined(_BSD_SOURCE)
-  return getpagesize();
-#else
-  return (int)sysconf(_SC_PAGESIZE);
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixGetpagesize(ശൂന്യം){
+#എങ്കിൽ OS_VXWORKS
+  തിരികെ 1024;
+#അല്ലെങ്കിലെങ്കിൽ defined(_BSD_SOURCE)
+  തിരികെ getpagesize();
+#അല്ലെങ്കിൽ
+  തിരികെ (പൂർണ്ണസംഖ്യ)sysconf(_SC_PAGESIZE);
 #endif
 }
 
 #endif /* !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0 */
 
-#if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
+#എങ്കിൽ !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
 
 /*
 ** Object used to represent an shared memory buffer.
@@ -4553,22 +4553,22 @@ static int unixGetpagesize(void){
 **   aMutex[iSlot]. Similarly, to call fcntl() to obtain or release a
 **   lock corresponding to slot iSlot, mutex aMutex[iSlot] must be held.
 */
-struct unixShmNode {
+ഘടന unix_Shm_കണ്ണി {
   unixInodeInfo *pInode;     /* unixInodeInfo that owns this SHM node */
   sqlite3_mutex *pShmMutex;  /* Mutex to access this object */
-  char *zFilename;           /* Name of the mmapped file */
-  int hShm;                  /* Open file descriptor */
-  int szRegion;              /* Size of shared-memory regions */
+  അക്ഷരം *zFilename;           /* Name of the mmapped file */
+  പൂർണ്ണസംഖ്യ hShm;                  /* Open file descriptor */
+  പൂർണ്ണസംഖ്യ szRegion;              /* Size of shared-memory regions */
   u16 nRegion;               /* Size of array apRegion */
   u8 isReadonly;             /* True if read-only */
   u8 isUnlocked;             /* True if no DMS lock held */
-  char **apRegion;           /* Array of mapped shared-memory regions */
-  int nRef;                  /* Number of unixShm objects pointing to this */
+  അക്ഷരം **apRegion;           /* Array of mapped shared-memory regions */
+  പൂർണ്ണസംഖ്യ nRef;                  /* Number of unixShm objects pointing to this */
   unixShm *pFirst;           /* All unixShm objects pointing to this */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   sqlite3_mutex *aMutex[SQLITE_SHM_NLOCK];
 #endif
-  int aLock[SQLITE_SHM_NLOCK];  /* # shared locks on slot, -1==excl lock */
+  പൂർണ്ണസംഖ്യ aLock[SQLITE_SHM_NLOCK];  /* # shared locks on slot, -1==excl lock */
 #ifdef SQLITE_DEBUG
   u8 nextShmId;              /* Next available unixShm.id value */
 #endif
@@ -4587,8 +4587,8 @@ struct unixShmNode {
 ** All other fields are read/write.  The unixShm.pShmNode->pShmMutex must
 ** be held while accessing any read/write fields.
 */
-struct unixShm {
-  unixShmNode *pShmNode;     /* The underlying unixShmNode object */
+ഘടന unixShm {
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;     /* The underlying unixShmNode object */
   unixShm *pNext;            /* Next unixShm with the same unixShmNode */
   u8 hasMutex;               /* True if holding the unixShmNode->pShmMutex */
   u8 id;                     /* Id of this connection within its unixShmNode */
@@ -4602,20 +4602,20 @@ struct unixShm {
 #define UNIX_SHM_BASE   ((22+SQLITE_SHM_NLOCK)*4)         /* first lock byte */
 #define UNIX_SHM_DMS    (UNIX_SHM_BASE+SQLITE_SHM_NLOCK)  /* deadman switch */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Describe the pShm object using JSON.  Used for diagnostics only.
 */
-static void unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
-  unixShmNode *pNode = pShm->pShmNode;
-  char aLck[16];
-  sqlite3_str_appendf(pStr, "{\"h\":%d", pNode->hShm);
-  assert( unixMutexHeld() );
-  sqlite3_str_appendf(pStr, ",\"nRef\":%d", pNode->nRef);
+സ്ഥിതം ശൂന്യം unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
+  unix_Shm_കണ്ണി *p_കണ്ണി = pShm->p_Shm_കണ്ണി;
+  അക്ഷരം aLck[16];
+  sqlite3_str_appendf(pStr, "{\"h\":%d", p_കണ്ണി->hShm);
+  പ്രതിജ്ഞാ( unixMutexHeld() );
+  sqlite3_str_appendf(pStr, ",\"nRef\":%d", p_കണ്ണി->nRef);
   sqlite3_str_appendf(pStr, ",\"id\":%d", pShm->id);
   sqlite3_str_appendf(pStr, ",\"sharedMask\":%d", pShm->sharedMask);
   sqlite3_str_appendf(pStr, ",\"exclMask\":%d", pShm->exclMask);
-  if( unixPosixAdvisoryLocks(pNode->hShm, aLck)==SQLITE_OK ){
+  എങ്കിൽ( unixPosixAdvisoryLocks(p_കണ്ണി->hShm, aLck)==SQLITE_OK ){
     sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
   }
   sqlite3_str_append(pStr, "}", 1);
@@ -4630,29 +4630,29 @@ static void unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
 ** SQLite error code. The final value of *piOut is undefined in this
 ** case.
 */
-static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFcntlExternalReader(unixFile *pFile, പൂർണ്ണസംഖ്യ *piOut){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   *piOut = 0;
-  if( pFile->pShm){
-    unixShmNode *pShmNode = pFile->pShm->pShmNode;
-    struct flock f;
+  എങ്കിൽ( pFile->pShm){
+    unix_Shm_കണ്ണി *p_Shm_കണ്ണി = pFile->pShm->p_Shm_കണ്ണി;
+    ഘടന flock f;
 
-    memset(&f, 0, sizeof(f));
+    memset(&f, 0, വലുപ്പം(f));
     f.l_type = F_WRLCK;
     f.l_whence = SEEK_SET;
     f.l_start = UNIX_SHM_BASE + 3;
     f.l_len = SQLITE_SHM_NLOCK - 3;
 
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
-    if( osFcntl(pShmNode->hShm, F_GETLK, &f)<0 ){
+    sqlite3_mutex_enter(p_Shm_കണ്ണി->pShmMutex);
+    എങ്കിൽ( osFcntl(p_Shm_കണ്ണി->hShm, F_GETLK, &f)<0 ){
       rc = SQLITE_IOERR_LOCK;
-    }else{
+    }അല്ലെങ്കിൽ{
       *piOut = (f.l_type!=F_UNLCK);
     }
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
+    sqlite3_mutex_leave(p_Shm_കണ്ണി->pShmMutex);
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -4676,22 +4676,22 @@ static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
 ** the database out of WAL mode, which is perhaps more serious, but is
 ** still not a disaster.
 */
-static int unixIsSharingShmNode(unixFile *pFile){
-  unixShmNode *pShmNode;
-  struct flock lock;
-  if( pFile->pShm==0 ) return 0;
-  if( pFile->ctrlFlags & UNIXFILE_EXCL ) return 0;
-  pShmNode = pFile->pShm->pShmNode;
-#if SQLITE_ATOMIC_INTRINSICS
-  assert( AtomicLoad(&pShmNode->nRef)==1 );
+സ്ഥിതം പൂർണ്ണസംഖ്യ unix_Is_Sharing_Shm_കണ്ണി(unixFile *pFile){
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;
+  ഘടന flock lock;
+  എങ്കിൽ( pFile->pShm==0 ) തിരികെ 0;
+  എങ്കിൽ( pFile->ctrlFlags & UNIXFILE_EXCL ) തിരികെ 0;
+  p_Shm_കണ്ണി = pFile->pShm->p_Shm_കണ്ണി;
+#എങ്കിൽ SQLITE_ATOMIC_INTRINSICS
+  പ്രതിജ്ഞാ( AtomicLoad(&p_Shm_കണ്ണി->nRef)==1 );
 #endif
-  memset(&lock, 0, sizeof(lock));
+  memset(&lock, 0, വലുപ്പം(lock));
   lock.l_whence = SEEK_SET;
   lock.l_start = UNIX_SHM_DMS;
   lock.l_len = 1;
   lock.l_type = F_WRLCK;
-  osFcntl(pShmNode->hShm, F_GETLK, &lock);
-  return (lock.l_type!=F_UNLCK);
+  osFcntl(p_Shm_കണ്ണി->hShm, F_GETLK, &lock);
+  തിരികെ (lock.l_type!=F_UNLCK);
 }
 
 /*
@@ -4700,59 +4700,59 @@ static int unixIsSharingShmNode(unixFile *pFile){
 ** Locks block if the mask is exactly UNIX_SHM_C and are non-blocking
 ** otherwise.
 */
-static int unixShmSystemLock(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixShmSystemLock(
   unixFile *pFile,       /* Open connection to the WAL file */
-  int lockType,          /* F_UNLCK, F_RDLCK, or F_WRLCK */
-  int ofst,              /* First byte of the locking range */
-  int n                  /* Number of bytes to lock */
+  പൂർണ്ണസംഖ്യ lockType,          /* F_UNLCK, F_RDLCK, or F_WRLCK */
+  പൂർണ്ണസംഖ്യ ofst,              /* First byte of the locking range */
+  പൂർണ്ണസംഖ്യ n                  /* Number of bytes to lock */
 ){
-  unixShmNode *pShmNode; /* Apply locks to this open shared-memory segment */
-  struct flock f;        /* The posix advisory locking structure */
-  int rc = SQLITE_OK;    /* Result code form fcntl() */
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി; /* Apply locks to this open shared-memory segment */
+  ഘടന flock f;        /* The posix advisory locking structure */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;    /* Result code form fcntl() */
 
-  pShmNode = pFile->pInode->pShmNode;
+  p_Shm_കണ്ണി = pFile->pInode->p_Shm_കണ്ണി;
 
   /* Assert that the parameters are within expected range and that the
   ** correct mutex or mutexes are held. */
-  assert( pShmNode->nRef>=0 );
-  assert( (ofst==UNIX_SHM_DMS && n==1)
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->nRef>=0 );
+  പ്രതിജ്ഞാ( (ofst==UNIX_SHM_DMS && n==1)
        || (ofst>=UNIX_SHM_BASE && ofst+n<=(UNIX_SHM_BASE+SQLITE_SHM_NLOCK))
   );
-  if( ofst==UNIX_SHM_DMS ){
-    assert( pShmNode->nRef>0 || unixMutexHeld() );
-    assert( pShmNode->nRef==0 || sqlite3_mutex_held(pShmNode->pShmMutex) );
-  }else{
+  എങ്കിൽ( ofst==UNIX_SHM_DMS ){
+    പ്രതിജ്ഞാ( p_Shm_കണ്ണി->nRef>0 || unixMutexHeld() );
+    പ്രതിജ്ഞാ( p_Shm_കണ്ണി->nRef==0 || sqlite3_mutex_held(p_Shm_കണ്ണി->pShmMutex) );
+  }അല്ലെങ്കിൽ{
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    int ii;
-    for(ii=ofst-UNIX_SHM_BASE; ii<ofst-UNIX_SHM_BASE+n; ii++){
-      assert( sqlite3_mutex_held(pShmNode->aMutex[ii]) );
+    പൂർണ്ണസംഖ്യ ii;
+    വേണ്ടി(ii=ofst-UNIX_SHM_BASE; ii<ofst-UNIX_SHM_BASE+n; ii++){
+      പ്രതിജ്ഞാ( sqlite3_mutex_held(p_Shm_കണ്ണി->aMutex[ii]) );
     }
-#else
-    assert( sqlite3_mutex_held(pShmNode->pShmMutex) );
-    assert( pShmNode->nRef>0 );
+#അല്ലെങ്കിൽ
+    പ്രതിജ്ഞാ( sqlite3_mutex_held(p_Shm_കണ്ണി->pShmMutex) );
+    പ്രതിജ്ഞാ( p_Shm_കണ്ണി->nRef>0 );
 #endif
   }
 
   /* Shared locks never span more than one byte */
-  assert( n==1 || lockType!=F_RDLCK );
+  പ്രതിജ്ഞാ( n==1 || lockType!=F_RDLCK );
 
   /* Locks are within range */
-  assert( n>=1 && n<=SQLITE_SHM_NLOCK );
-  assert( ofst>=UNIX_SHM_BASE && ofst<=UNIX_SHM_DMS );
-  assert( ofst+n-1<=UNIX_SHM_DMS );
+  പ്രതിജ്ഞാ( n>=1 && n<=SQLITE_SHM_NLOCK );
+  പ്രതിജ്ഞാ( ofst>=UNIX_SHM_BASE && ofst<=UNIX_SHM_DMS );
+  പ്രതിജ്ഞാ( ofst+n-1<=UNIX_SHM_DMS );
 
-  if( pShmNode->hShm>=0 ){
-    int res;
+  എങ്കിൽ( p_Shm_കണ്ണി->hShm>=0 ){
+    പൂർണ്ണസംഖ്യ res;
     /* Initialize the locking parameters */
     f.l_type = lockType;
     f.l_whence = SEEK_SET;
     f.l_start = ofst;
     f.l_len = n;
-    res = osSetPosixAdvisoryLock(pShmNode->hShm, &f, pFile);
-    if( res==-1 ){
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && SQLITE_ENABLE_SETLK_TIMEOUT==1
+    res = osSetPosixAdvisoryLock(p_Shm_കണ്ണി->hShm, &f, pFile);
+    എങ്കിൽ( res==-1 ){
+#എങ്കിൽ defined(SQLITE_ENABLE_SETLK_TIMEOUT) && SQLITE_ENABLE_SETLK_TIMEOUT==1
       rc = (pFile->iBusyTimeout ? SQLITE_BUSY_TIMEOUT : SQLITE_BUSY);
-#else
+#അല്ലെങ്കിൽ
       rc = SQLITE_BUSY;
 #endif
     }
@@ -4761,28 +4761,28 @@ static int unixShmSystemLock(
   /* Do debug tracing */
 #ifdef SQLITE_DEBUG
   OSTRACE(("SHM-LOCK "));
-  if( rc==SQLITE_OK ){
-    if( lockType==F_UNLCK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
+    എങ്കിൽ( lockType==F_UNLCK ){
       OSTRACE(("unlock %d..%d ok\n", ofst, ofst+n-1));
-    }else if( lockType==F_RDLCK ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( lockType==F_RDLCK ){
       OSTRACE(("read-lock %d..%d ok\n", ofst, ofst+n-1));
-    }else{
-      assert( lockType==F_WRLCK );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( lockType==F_WRLCK );
       OSTRACE(("write-lock %d..%d ok\n", ofst, ofst+n-1));
     }
-  }else{
-    if( lockType==F_UNLCK ){
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( lockType==F_UNLCK ){
       OSTRACE(("unlock %d..%d failed\n", ofst, ofst+n-1));
-    }else if( lockType==F_RDLCK ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( lockType==F_RDLCK ){
       OSTRACE(("read-lock %d..%d failed\n", ofst, ofst+n-1));
-    }else{
-      assert( lockType==F_WRLCK );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( lockType==F_WRLCK );
       OSTRACE(("write-lock %d..%d failed\n", ofst, ofst+n-1));
     }
   }
 #endif
 
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -4794,12 +4794,12 @@ static int unixShmSystemLock(
 ** to use 64KB pages - in this case each mapping must cover at least two
 ** shm regions.
 */
-static int unixShmRegionPerMap(void){
-  int shmsz = 32*1024;            /* SHM region size */
-  int pgsz = osGetpagesize();   /* System page size */
-  assert( ((pgsz-1)&pgsz)==0 );   /* Page size must be a power of 2 */
-  if( pgsz<shmsz ) return 1;
-  return pgsz/shmsz;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixShmRegionPerMap(ശൂന്യം){
+  പൂർണ്ണസംഖ്യ shmsz = 32*1024;            /* SHM region size */
+  പൂർണ്ണസംഖ്യ pgsz = osGetpagesize();   /* System page size */
+  പ്രതിജ്ഞാ( ((pgsz-1)&pgsz)==0 );   /* Page size must be a power of 2 */
+  എങ്കിൽ( pgsz<shmsz ) തിരികെ 1;
+  തിരികെ pgsz/shmsz;
 }
 
 /*
@@ -4808,32 +4808,32 @@ static int unixShmRegionPerMap(void){
 ** This is not a VFS shared-memory method; it is a utility function called
 ** by VFS shared-memory methods.
 */
-static void unixShmPurge(unixFile *pFd){
-  unixShmNode *p = pFd->pInode->pShmNode;
-  assert( unixMutexHeld() );
-  if( p && ALWAYS(p->nRef==0) ){
-    int nShmPerMap = unixShmRegionPerMap();
-    int i;
-    assert( p->pInode==pFd->pInode );
+സ്ഥിതം ശൂന്യം unixShmPurge(unixFile *pFd){
+  unix_Shm_കണ്ണി *p = pFd->pInode->p_Shm_കണ്ണി;
+  പ്രതിജ്ഞാ( unixMutexHeld() );
+  എങ്കിൽ( p && ALWAYS(p->nRef==0) ){
+    പൂർണ്ണസംഖ്യ nShmPerMap = unixShmRegionPerMap();
+    പൂർണ്ണസംഖ്യ i;
+    പ്രതിജ്ഞാ( p->pInode==pFd->pInode );
     sqlite3_mutex_free(p->pShmMutex);
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    for(i=0; i<SQLITE_SHM_NLOCK; i++){
+    വേണ്ടി(i=0; i<SQLITE_SHM_NLOCK; i++){
       sqlite3_mutex_free(p->aMutex[i]);
     }
 #endif
-    for(i=0; i<p->nRegion; i+=nShmPerMap){
-      if( p->hShm>=0 ){
+    വേണ്ടി(i=0; i<p->nRegion; i+=nShmPerMap){
+      എങ്കിൽ( p->hShm>=0 ){
         osMunmap(p->apRegion[i], p->szRegion);
-      }else{
+      }അല്ലെങ്കിൽ{
         sqlite3_free(p->apRegion[i]);
       }
     }
     sqlite3_free(p->apRegion);
-    if( p->hShm>=0 ){
+    എങ്കിൽ( p->hShm>=0 ){
       robust_close(pFd, p->hShm, __LINE__);
       p->hShm = -1;
     }
-    p->pInode->pShmNode = 0;
+    p->pInode->p_Shm_കണ്ണി = 0;
     sqlite3_free(p);
   }
 }
@@ -4847,9 +4847,9 @@ static void unixShmPurge(unixFile *pFd){
 ** connection and no other process already holds a lock, return
 ** SQLITE_READONLY_CANTINIT and set pShmNode->isUnlocked=1.
 */
-static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
-  struct flock lock;
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixLockSharedMemory(unixFile *pDbFd, unix_Shm_കണ്ണി *p_Shm_കണ്ണി){
+  ഘടന flock lock;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   /* Use F_GETLK to determine the locks other processes are holding
   ** on the DMS byte. If it indicates that another process is holding
@@ -4873,13 +4873,13 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
   lock.l_start = UNIX_SHM_DMS;
   lock.l_len = 1;
   lock.l_type = F_WRLCK;
-  if( osFcntl(pShmNode->hShm, F_GETLK, &lock)!=0 ) {
+  എങ്കിൽ( osFcntl(p_Shm_കണ്ണി->hShm, F_GETLK, &lock)!=0 ) {
     rc = SQLITE_IOERR_LOCK;
-  }else if( lock.l_type==F_UNLCK ){
-    if( pShmNode->isReadonly ){
-      pShmNode->isUnlocked = 1;
+  }അല്ലെങ്കിൽ എങ്കിൽ( lock.l_type==F_UNLCK ){
+    എങ്കിൽ( p_Shm_കണ്ണി->isReadonly ){
+      p_Shm_കണ്ണി->isUnlocked = 1;
       rc = SQLITE_READONLY_CANTINIT;
-    }else{
+    }അല്ലെങ്കിൽ{
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
       /* Do not use a blocking lock here. If the lock cannot be obtained
       ** immediately, it means some other connection is truncating the
@@ -4887,7 +4887,7 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
       ** lock, but only downgrade it to a shared lock. So no point in
       ** blocking here. The call below to obtain the shared DMS lock may 
       ** use a blocking lock. */
-      int iSaveTimeout = pDbFd->iBusyTimeout;
+      പൂർണ്ണസംഖ്യ iSaveTimeout = pDbFd->iBusyTimeout;
       pDbFd->iBusyTimeout = 0;
 #endif
       rc = unixShmSystemLock(pDbFd, F_WRLCK, UNIX_SHM_DMS, 1);
@@ -4899,19 +4899,19 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
       ** -shm header size) rather than 0 as a system debugging aid, to
       ** help detect if a -shm file truncation is legitimate or is the work
       ** or a rogue process. */
-      if( rc==SQLITE_OK && robust_ftruncate(pShmNode->hShm, 3) ){
-        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",pShmNode->zFilename);
+      എങ്കിൽ( rc==SQLITE_OK && robust_ftruncate(p_Shm_കണ്ണി->hShm, 3) ){
+        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",p_Shm_കണ്ണി->zFilename);
       }
     }
-  }else if( lock.l_type==F_WRLCK ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( lock.l_type==F_WRLCK ){
     rc = SQLITE_BUSY;
   }
 
-  if( rc==SQLITE_OK ){
-    assert( lock.l_type==F_UNLCK || lock.l_type==F_RDLCK );
+  എങ്കിൽ( rc==SQLITE_OK ){
+    പ്രതിജ്ഞാ( lock.l_type==F_UNLCK || lock.l_type==F_RDLCK );
     rc = unixShmSystemLock(pDbFd, F_RDLCK, UNIX_SHM_DMS, 1);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -4949,117 +4949,117 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
 ** that case, we do not really need shared memory.  No shared memory
 ** file is created.  The shared memory will be simulated with heap memory.
 */
-static int unixOpenSharedMemory(unixFile *pDbFd){
-  struct unixShm *p = 0;          /* The connection to be opened */
-  struct unixShmNode *pShmNode;   /* The underlying mmapped file */
-  int rc = SQLITE_OK;             /* Result code */
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixOpenSharedMemory(unixFile *pDbFd){
+  ഘടന unixShm *p = 0;          /* The connection to be opened */
+  ഘടന unix_Shm_കണ്ണി *p_Shm_കണ്ണി;   /* The underlying mmapped file */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;             /* Result code */
   unixInodeInfo *pInode;          /* The inode of fd */
-  char *zShm;             /* Name of the file used for SHM */
-  int nShmFilename;               /* Size of the SHM filename in bytes */
+  അക്ഷരം *zShm;             /* Name of the file used for SHM */
+  പൂർണ്ണസംഖ്യ nShmFilename;               /* Size of the SHM filename in bytes */
 
   /* Allocate space for the new unixShm object. */
-  p = sqlite3_malloc64( sizeof(*p) );
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
-  memset(p, 0, sizeof(*p));
-  assert( pDbFd->pShm==0 );
+  p = sqlite3_malloc64( വലുപ്പം(*p) );
+  എങ്കിൽ( p==0 ) തിരികെ SQLITE_NOMEM_BKPT;
+  memset(p, 0, വലുപ്പം(*p));
+  പ്രതിജ്ഞാ( pDbFd->pShm==0 );
 
   /* Check to see if a unixShmNode object already exists. Reuse an existing
   ** one if present. Create a new one if necessary.
   */
-  assert( unixFileMutexNotheld(pDbFd) );
+  പ്രതിജ്ഞാ( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
   pInode = pDbFd->pInode;
-  pShmNode = pInode->pShmNode;
-  if( pShmNode==0 ){
-    struct stat sStat;                 /* fstat() info for database file */
+  p_Shm_കണ്ണി = pInode->p_Shm_കണ്ണി;
+  എങ്കിൽ( p_Shm_കണ്ണി==0 ){
+    ഘടന stat sStat;                 /* fstat() info for database file */
 #ifndef SQLITE_SHM_DIRECTORY
-    const char *zBasePath = pDbFd->zPath;
+    സ്ഥിരം അക്ഷരം *zBasePath = pDbFd->zPath;
 #endif
 
     /* Call fstat() to figure out the permissions on the database file. If
     ** a new *-shm file is created, an attempt will be made to create it
     ** with the same permissions.
     */
-    if( osFstat(pDbFd->h, &sStat) ){
+    എങ്കിൽ( osFstat(pDbFd->h, &sStat) ){
       rc = SQLITE_IOERR_FSTAT;
-      goto shm_open_err;
+      പോകുക shm_open_err;
     }
 
 #ifdef SQLITE_SHM_DIRECTORY
-    nShmFilename = sizeof(SQLITE_SHM_DIRECTORY) + 31;
-#else
-    nShmFilename = 6 + (int)strlen(zBasePath);
+    nShmFilename = വലുപ്പം(SQLITE_SHM_DIRECTORY) + 31;
+#അല്ലെങ്കിൽ
+    nShmFilename = 6 + (പൂർണ്ണസംഖ്യ)strlen(zBasePath);
 #endif
-    pShmNode = sqlite3_malloc64( sizeof(*pShmNode) + nShmFilename );
-    if( pShmNode==0 ){
+    p_Shm_കണ്ണി = sqlite3_malloc64( വലുപ്പം(*p_Shm_കണ്ണി) + nShmFilename );
+    എങ്കിൽ( p_Shm_കണ്ണി==0 ){
       rc = SQLITE_NOMEM_BKPT;
-      goto shm_open_err;
+      പോകുക shm_open_err;
     }
-    memset(pShmNode, 0, sizeof(*pShmNode)+nShmFilename);
-    zShm = pShmNode->zFilename = (char*)&pShmNode[1];
+    memset(p_Shm_കണ്ണി, 0, വലുപ്പം(*p_Shm_കണ്ണി)+nShmFilename);
+    zShm = p_Shm_കണ്ണി->zFilename = (അക്ഷരം*)&p_Shm_കണ്ണി[1];
 #ifdef SQLITE_SHM_DIRECTORY
     sqlite3_snprintf(nShmFilename, zShm,
                      SQLITE_SHM_DIRECTORY "/sqlite-shm-%x-%x",
                      (u32)sStat.st_ino, (u32)sStat.st_dev);
-#else
+#അല്ലെങ്കിൽ
     sqlite3_snprintf(nShmFilename, zShm, "%s-shm", zBasePath);
     sqlite3FileSuffix3(pDbFd->zPath, zShm);
 #endif
-    pShmNode->hShm = -1;
-    pDbFd->pInode->pShmNode = pShmNode;
-    pShmNode->pInode = pDbFd->pInode;
-    if( sqlite3GlobalConfig.bCoreMutex ){
-      pShmNode->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pShmNode->pShmMutex==0 ){
+    p_Shm_കണ്ണി->hShm = -1;
+    pDbFd->pInode->p_Shm_കണ്ണി = p_Shm_കണ്ണി;
+    p_Shm_കണ്ണി->pInode = pDbFd->pInode;
+    എങ്കിൽ( sqlite3GlobalConfig.bCoreMutex ){
+      p_Shm_കണ്ണി->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      എങ്കിൽ( p_Shm_കണ്ണി->pShmMutex==0 ){
         rc = SQLITE_NOMEM_BKPT;
-        goto shm_open_err;
+        പോകുക shm_open_err;
       }
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
       {
-        int ii;
-        for(ii=0; ii<SQLITE_SHM_NLOCK; ii++){
-          pShmNode->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-          if( pShmNode->aMutex[ii]==0 ){
+        പൂർണ്ണസംഖ്യ ii;
+        വേണ്ടി(ii=0; ii<SQLITE_SHM_NLOCK; ii++){
+          p_Shm_കണ്ണി->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+          എങ്കിൽ( p_Shm_കണ്ണി->aMutex[ii]==0 ){
             rc = SQLITE_NOMEM_BKPT;
-            goto shm_open_err;
+            പോകുക shm_open_err;
           }
         }
       }
 #endif
     }
 
-    if( pInode->bProcessLock==0 ){
-      if( 0==sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0) ){
-        pShmNode->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
+    എങ്കിൽ( pInode->bProcessLock==0 ){
+      എങ്കിൽ( 0==sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0) ){
+        p_Shm_കണ്ണി->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
                                      (sStat.st_mode&0777));
       }
-      if( pShmNode->hShm<0 ){
-        pShmNode->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
+      എങ്കിൽ( p_Shm_കണ്ണി->hShm<0 ){
+        p_Shm_കണ്ണി->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
                                      (sStat.st_mode&0777));
-        if( pShmNode->hShm<0 ){
+        എങ്കിൽ( p_Shm_കണ്ണി->hShm<0 ){
           rc = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zShm);
-          goto shm_open_err;
+          പോകുക shm_open_err;
         }
-        pShmNode->isReadonly = 1;
+        p_Shm_കണ്ണി->isReadonly = 1;
       }
 
       /* If this process is running as root, make sure that the SHM file
       ** is owned by the same user that owns the original database.  Otherwise,
       ** the original owner will not be able to connect.
       */
-      robustFchown(pShmNode->hShm, sStat.st_uid, sStat.st_gid);
+      robustFchown(p_Shm_കണ്ണി->hShm, sStat.st_uid, sStat.st_gid);
 
-      rc = unixLockSharedMemory(pDbFd, pShmNode);
-      if( rc!=SQLITE_OK && rc!=SQLITE_READONLY_CANTINIT ) goto shm_open_err;
+      rc = unixLockSharedMemory(pDbFd, p_Shm_കണ്ണി);
+      എങ്കിൽ( rc!=SQLITE_OK && rc!=SQLITE_READONLY_CANTINIT ) പോകുക shm_open_err;
     }
   }
 
   /* Make the new connection a child of the unixShmNode */
-  p->pShmNode = pShmNode;
+  p->p_Shm_കണ്ണി = p_Shm_കണ്ണി;
 #ifdef SQLITE_DEBUG
-  p->id = pShmNode->nextShmId++;
+  p->id = p_Shm_കണ്ണി->nextShmId++;
 #endif
-  pShmNode->nRef++;
+  p_Shm_കണ്ണി->nRef++;
   pDbFd->pShm = p;
   unixLeaveMutex();
 
@@ -5070,18 +5070,18 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
   ** at pShmNode->pFirst. This must be done while holding the
   ** pShmNode->pShmMutex.
   */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  p->pNext = pShmNode->pFirst;
-  pShmNode->pFirst = p;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
-  return rc;
+  sqlite3_mutex_enter(p_Shm_കണ്ണി->pShmMutex);
+  p->pNext = p_Shm_കണ്ണി->pFirst;
+  p_Shm_കണ്ണി->pFirst = p;
+  sqlite3_mutex_leave(p_Shm_കണ്ണി->pShmMutex);
+  തിരികെ rc;
 
   /* Jump here on any error */
 shm_open_err:
   unixShmPurge(pDbFd);       /* This call frees pShmNode if required */
   sqlite3_free(p);
   unixLeaveMutex();
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -5103,65 +5103,65 @@ shm_open_err:
 ** address space (if it is not already), *pp is set to point to the mapped
 ** memory and SQLITE_OK returned.
 */
-static int unixShmMap(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixShmMap(
   sqlite3_file *fd,               /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int szRegion,                   /* Size of regions */
-  int bExtend,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  പൂർണ്ണസംഖ്യ iRegion,                    /* Region to retrieve */
+  പൂർണ്ണസംഖ്യ szRegion,                   /* Size of regions */
+  പൂർണ്ണസംഖ്യ bExtend,                    /* True to extend file if necessary */
+  ശൂന്യം അസ്ഥിര **pp              /* OUT: Mapped memory */
 ){
   unixFile *pDbFd = (unixFile*)fd;
   unixShm *p;
-  unixShmNode *pShmNode;
-  int rc = SQLITE_OK;
-  int nShmPerMap = unixShmRegionPerMap();
-  int nReqRegion;
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ nShmPerMap = unixShmRegionPerMap();
+  പൂർണ്ണസംഖ്യ nReqRegion;
 
   /* If the shared-memory file has not yet been opened, open it now. */
-  if( pDbFd->pShm==0 ){
+  എങ്കിൽ( pDbFd->pShm==0 ){
     rc = unixOpenSharedMemory(pDbFd);
-    if( rc!=SQLITE_OK ) return rc;
+    എങ്കിൽ( rc!=SQLITE_OK ) തിരികെ rc;
   }
 
   p = pDbFd->pShm;
-  pShmNode = p->pShmNode;
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  if( pShmNode->isUnlocked ){
-    rc = unixLockSharedMemory(pDbFd, pShmNode);
-    if( rc!=SQLITE_OK ) goto shmpage_out;
-    pShmNode->isUnlocked = 0;
+  p_Shm_കണ്ണി = p->p_Shm_കണ്ണി;
+  sqlite3_mutex_enter(p_Shm_കണ്ണി->pShmMutex);
+  എങ്കിൽ( p_Shm_കണ്ണി->isUnlocked ){
+    rc = unixLockSharedMemory(pDbFd, p_Shm_കണ്ണി);
+    എങ്കിൽ( rc!=SQLITE_OK ) പോകുക shmpage_out;
+    p_Shm_കണ്ണി->isUnlocked = 0;
   }
-  assert( szRegion==pShmNode->szRegion || pShmNode->nRegion==0 );
-  assert( pShmNode->pInode==pDbFd->pInode );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  പ്രതിജ്ഞാ( szRegion==p_Shm_കണ്ണി->szRegion || p_Shm_കണ്ണി->nRegion==0 );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->pInode==pDbFd->pInode );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->hShm<0 || pDbFd->pInode->bProcessLock==0 );
 
   /* Minimum number of regions required to be mapped. */
   nReqRegion = ((iRegion+nShmPerMap) / nShmPerMap) * nShmPerMap;
 
-  if( pShmNode->nRegion<nReqRegion ){
-    char **apNew;                         /* New apRegion[] array */
+  എങ്കിൽ( p_Shm_കണ്ണി->nRegion<nReqRegion ){
+    അക്ഷരം **apNew;                         /* New apRegion[] array */
     i64 nByte = nReqRegion*(i64)szRegion; /* Minimum required file size */
-    struct stat sStat;                    /* Used by fstat() */
+    ഘടന stat sStat;                    /* Used by fstat() */
 
-    pShmNode->szRegion = szRegion;
+    p_Shm_കണ്ണി->szRegion = szRegion;
 
-    if( pShmNode->hShm>=0 ){
+    എങ്കിൽ( p_Shm_കണ്ണി->hShm>=0 ){
       /* The requested region is not mapped into this processes address space.
       ** Check to see if it has been allocated (i.e. if the wal-index file is
       ** large enough to contain the requested region).
       */
-      if( osFstat(pShmNode->hShm, &sStat) ){
+      എങ്കിൽ( osFstat(p_Shm_കണ്ണി->hShm, &sStat) ){
         rc = SQLITE_IOERR_SHMSIZE;
-        goto shmpage_out;
+        പോകുക shmpage_out;
       }
 
-      if( sStat.st_size<nByte ){
+      എങ്കിൽ( sStat.st_size<nByte ){
         /* The requested memory region does not exist. If bExtend is set to
         ** false, exit early. *pp will be set to NULL and SQLITE_OK returned.
         */
-        if( !bExtend ){
-          goto shmpage_out;
+        എങ്കിൽ( !bExtend ){
+          പോകുക shmpage_out;
         }
 
         /* Alternatively, if bExtend is true, extend the file. Do this by
@@ -5171,18 +5171,18 @@ static int unixShmMap(
         ** pages forces the OS to allocate them immediately, which reduces
         ** the chances of SIGBUS while accessing the mapped region later on.
         */
-        else{
-          static const int pgsz = 4096;
+        അല്ലെങ്കിൽ{
+          സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ pgsz = 4096;
           i64 iPg;
 
           /* Write to the last byte of each newly allocated or extended page */
-          assert( (nByte % pgsz)==0 );
-          for(iPg=(sStat.st_size/pgsz); iPg<(nByte/pgsz); iPg++){
-            int x = 0;
-            if( seekAndWriteFd(pShmNode->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
-              const char *zFile = pShmNode->zFilename;
+          പ്രതിജ്ഞാ( (nByte % pgsz)==0 );
+          വേണ്ടി(iPg=(sStat.st_size/pgsz); iPg<(nByte/pgsz); iPg++){
+            പൂർണ്ണസംഖ്യ x = 0;
+            എങ്കിൽ( seekAndWriteFd(p_Shm_കണ്ണി->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
+              സ്ഥിരം അക്ഷരം *zFile = p_Shm_കണ്ണി->zFilename;
               rc = unixLogError(SQLITE_IOERR_SHMSIZE, "write", zFile);
-              goto shmpage_out;
+              പോകുക shmpage_out;
             }
           }
         }
@@ -5190,52 +5190,52 @@ static int unixShmMap(
     }
 
     /* Map the requested memory region into this processes address space. */
-    apNew = (char **)sqlite3_realloc64(
-        pShmNode->apRegion, nReqRegion*sizeof(char *)
+    apNew = (അക്ഷരം **)sqlite3_realloc64(
+        p_Shm_കണ്ണി->apRegion, nReqRegion*വലുപ്പം(അക്ഷരം *)
     );
-    if( !apNew ){
+    എങ്കിൽ( !apNew ){
       rc = SQLITE_IOERR_NOMEM_BKPT;
-      goto shmpage_out;
+      പോകുക shmpage_out;
     }
-    pShmNode->apRegion = apNew;
-    while( pShmNode->nRegion<nReqRegion ){
+    p_Shm_കണ്ണി->apRegion = apNew;
+    ആകുമ്പോൾ( p_Shm_കണ്ണി->nRegion<nReqRegion ){
       i64 nMap = (i64)szRegion*(i64)nShmPerMap;
       i64 i;
-      void *pMem;
-      if( pShmNode->hShm>=0 ){
+      ശൂന്യം *pMem;
+      എങ്കിൽ( p_Shm_കണ്ണി->hShm>=0 ){
         pMem = osMmap(0, nMap,
-            pShmNode->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
-            MAP_SHARED, pShmNode->hShm, szRegion*(i64)pShmNode->nRegion
+            p_Shm_കണ്ണി->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
+            MAP_SHARED, p_Shm_കണ്ണി->hShm, szRegion*(i64)p_Shm_കണ്ണി->nRegion
         );
-        if( pMem==MAP_FAILED ){
-          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", pShmNode->zFilename);
-          goto shmpage_out;
+        എങ്കിൽ( pMem==MAP_FAILED ){
+          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", p_Shm_കണ്ണി->zFilename);
+          പോകുക shmpage_out;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         pMem = sqlite3_malloc64(nMap);
-        if( pMem==0 ){
+        എങ്കിൽ( pMem==0 ){
           rc = SQLITE_NOMEM_BKPT;
-          goto shmpage_out;
+          പോകുക shmpage_out;
         }
         memset(pMem, 0, nMap);
       }
 
-      for(i=0; i<nShmPerMap; i++){
-        pShmNode->apRegion[pShmNode->nRegion+i] = &((char*)pMem)[szRegion*i];
+      വേണ്ടി(i=0; i<nShmPerMap; i++){
+        p_Shm_കണ്ണി->apRegion[p_Shm_കണ്ണി->nRegion+i] = &((അക്ഷരം*)pMem)[szRegion*i];
       }
-      pShmNode->nRegion += nShmPerMap;
+      p_Shm_കണ്ണി->nRegion += nShmPerMap;
     }
   }
 
 shmpage_out:
-  if( pShmNode->nRegion>iRegion ){
-    *pp = pShmNode->apRegion[iRegion];
-  }else{
+  എങ്കിൽ( p_Shm_കണ്ണി->nRegion>iRegion ){
+    *pp = p_Shm_കണ്ണി->apRegion[iRegion];
+  }അല്ലെങ്കിൽ{
     *pp = 0;
   }
-  if( pShmNode->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
-  return rc;
+  എങ്കിൽ( p_Shm_കണ്ണി->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
+  sqlite3_mutex_leave(p_Shm_കണ്ണി->pShmMutex);
+  തിരികെ rc;
 }
 
 /*
@@ -5246,29 +5246,29 @@ shmpage_out:
 **     assert( assertLockingArrayOk(pShmNode) );
 */
 #ifdef SQLITE_DEBUG
-static int assertLockingArrayOk(unixShmNode *pShmNode){
+സ്ഥിതം പൂർണ്ണസംഖ്യ assertLockingArrayOk(unix_Shm_കണ്ണി *p_Shm_കണ്ണി){
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  return 1;
-#else
+  തിരികെ 1;
+#അല്ലെങ്കിൽ
   unixShm *pX;
-  int aLock[SQLITE_SHM_NLOCK];
+  പൂർണ്ണസംഖ്യ aLock[SQLITE_SHM_NLOCK];
 
-  memset(aLock, 0, sizeof(aLock));
-  for(pX=pShmNode->pFirst; pX; pX=pX->pNext){
-    int i;
-    for(i=0; i<SQLITE_SHM_NLOCK; i++){
-      if( pX->exclMask & (1<<i) ){
-        assert( aLock[i]==0 );
+  memset(aLock, 0, വലുപ്പം(aLock));
+  വേണ്ടി(pX=p_Shm_കണ്ണി->pFirst; pX; pX=pX->pNext){
+    പൂർണ്ണസംഖ്യ i;
+    വേണ്ടി(i=0; i<SQLITE_SHM_NLOCK; i++){
+      എങ്കിൽ( pX->exclMask & (1<<i) ){
+        പ്രതിജ്ഞാ( aLock[i]==0 );
         aLock[i] = -1;
-      }else if( pX->sharedMask & (1<<i) ){
-        assert( aLock[i]>=0 );
+      }അല്ലെങ്കിൽ എങ്കിൽ( pX->sharedMask & (1<<i) ){
+        പ്രതിജ്ഞാ( aLock[i]>=0 );
         aLock[i]++;
       }
     }
   }
 
-  assert( 0==memcmp(pShmNode->aLock, aLock, sizeof(aLock)) );
-  return (memcmp(pShmNode->aLock, aLock, sizeof(aLock))==0);
+  പ്രതിജ്ഞാ( 0==memcmp(p_Shm_കണ്ണി->aLock, aLock, വലുപ്പം(aLock)) );
+  തിരികെ (memcmp(p_Shm_കണ്ണി->aLock, aLock, വലുപ്പം(aLock))==0);
 #endif
 }
 #endif /* !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL) */
@@ -5281,36 +5281,36 @@ static int assertLockingArrayOk(unixShmNode *pShmNode){
 ** to shared and back or from unlocked to exclusive and back.  But one may
 ** not go from shared to exclusive or from exclusive to shared.
 */
-static int unixShmLock(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixShmLock(
   sqlite3_file *fd,          /* Database file holding the shared memory */
-  int ofst,                  /* First lock to acquire or release */
-  int n,                     /* Number of locks to acquire or release */
-  int flags                  /* What to do with the lock */
+  പൂർണ്ണസംഖ്യ ofst,                  /* First lock to acquire or release */
+  പൂർണ്ണസംഖ്യ n,                     /* Number of locks to acquire or release */
+  പൂർണ്ണസംഖ്യ flags                  /* What to do with the lock */
 ){
   unixFile *pDbFd = (unixFile*)fd;      /* Connection holding shared memory */
   unixShm *p;                           /* The shared memory being locked */
-  unixShmNode *pShmNode;                /* The underlying file iNode */
-  int rc = SQLITE_OK;                   /* Result code */
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;                /* The underlying file iNode */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;                   /* Result code */
   u16 mask = (1<<(ofst+n)) - (1<<ofst); /* Mask of locks to take or release */
-  int *aLock;
+  പൂർണ്ണസംഖ്യ *aLock;
 
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_IOERR_SHMLOCK;
-  pShmNode = p->pShmNode;
-  if( NEVER(pShmNode==0) ) return SQLITE_IOERR_SHMLOCK;
-  aLock = pShmNode->aLock;
+  എങ്കിൽ( p==0 ) തിരികെ SQLITE_IOERR_SHMLOCK;
+  p_Shm_കണ്ണി = p->p_Shm_കണ്ണി;
+  എങ്കിൽ( NEVER(p_Shm_കണ്ണി==0) ) തിരികെ SQLITE_IOERR_SHMLOCK;
+  aLock = p_Shm_കണ്ണി->aLock;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
-  assert( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
-  assert( n>=1 );
-  assert( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി==pDbFd->pInode->p_Shm_കണ്ണി );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->pInode==pDbFd->pInode );
+  പ്രതിജ്ഞാ( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
+  പ്രതിജ്ഞാ( n>=1 );
+  പ്രതിജ്ഞാ( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_LOCK | SQLITE_SHM_EXCLUSIVE)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE) );
-  assert( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  പ്രതിജ്ഞാ( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->hShm<0 || pDbFd->pInode->bProcessLock==0 );
 
   /* Check that, if this to be a blocking lock, no locks that occur later
   ** in the following list than the lock being obtained are already held:
@@ -5324,10 +5324,10 @@ static int unixShmLock(
   ** occur later in the above list than the lock being obtained may be
   ** held.
   */
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
+#എങ്കിൽ defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
   {
     u16 lockMask = (p->exclMask|p->sharedMask);
-    assert( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
+    പ്രതിജ്ഞാ( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
           (ofst!=2 || lockMask==0)
        && (ofst!=1 || lockMask==0 || lockMask==2)
        && (ofst!=0 || lockMask<3)
@@ -5345,10 +5345,10 @@ static int unixShmLock(
   ** The SQLite core never requests an exclusive lock that it already holds.
   ** This is assert()ed below.
   */
-  assert( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK) 
+  പ്രതിജ്ഞാ( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK) 
        || 0==(p->exclMask & mask) 
   );
-  if( ((flags & SQLITE_SHM_UNLOCK) && ((p->exclMask|p->sharedMask) & mask))
+  എങ്കിൽ( ((flags & SQLITE_SHM_UNLOCK) && ((p->exclMask|p->sharedMask) & mask))
    || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_LOCK) && 0==(p->sharedMask & mask))
    || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK))
   ){
@@ -5369,110 +5369,110 @@ static int unixShmLock(
     ** a lock on a read-locking slot at this point, this breaks the
     ** anti-deadlock rules (see above).  */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    int iMutex;
-    for(iMutex=ofst; iMutex<ofst+n; iMutex++){
-      if( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) ){
-        rc = sqlite3_mutex_try(pShmNode->aMutex[iMutex]);
-        if( rc!=SQLITE_OK ) goto leave_shmnode_mutexes;
-      }else{
-        sqlite3_mutex_enter(pShmNode->aMutex[iMutex]);
+    പൂർണ്ണസംഖ്യ iMutex;
+    വേണ്ടി(iMutex=ofst; iMutex<ofst+n; iMutex++){
+      എങ്കിൽ( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) ){
+        rc = sqlite3_mutex_try(p_Shm_കണ്ണി->aMutex[iMutex]);
+        എങ്കിൽ( rc!=SQLITE_OK ) പോകുക leave_shmnode_mutexes;
+      }അല്ലെങ്കിൽ{
+        sqlite3_mutex_enter(p_Shm_കണ്ണി->aMutex[iMutex]);
       }
     }
-#else
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
+#അല്ലെങ്കിൽ
+    sqlite3_mutex_enter(p_Shm_കണ്ണി->pShmMutex);
 #endif
 
-    if( ALWAYS(rc==SQLITE_OK) ){
-      if( flags & SQLITE_SHM_UNLOCK ){
+    എങ്കിൽ( ALWAYS(rc==SQLITE_OK) ){
+      എങ്കിൽ( flags & SQLITE_SHM_UNLOCK ){
         /* Case (a) - unlock.  */
-        int bUnlock = 1;
-        assert( (p->exclMask & p->sharedMask)==0 );
-        assert( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->exclMask & mask)==mask );
-        assert( !(flags & SQLITE_SHM_SHARED) || (p->sharedMask & mask)==mask );
+        പൂർണ്ണസംഖ്യ bUnlock = 1;
+        പ്രതിജ്ഞാ( (p->exclMask & p->sharedMask)==0 );
+        പ്രതിജ്ഞാ( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->exclMask & mask)==mask );
+        പ്രതിജ്ഞാ( !(flags & SQLITE_SHM_SHARED) || (p->sharedMask & mask)==mask );
   
         /* If this is a SHARED lock being unlocked, it is possible that other
         ** clients within this process are holding the same SHARED lock. In
         ** this case, set bUnlock to 0 so that the posix lock is not removed
         ** from the file-descriptor below.  */
-        if( flags & SQLITE_SHM_SHARED ){
-          assert( n==1 );
-          assert( aLock[ofst]>=1 );
-          if( aLock[ofst]>1 ){
+        എങ്കിൽ( flags & SQLITE_SHM_SHARED ){
+          പ്രതിജ്ഞാ( n==1 );
+          പ്രതിജ്ഞാ( aLock[ofst]>=1 );
+          എങ്കിൽ( aLock[ofst]>1 ){
             bUnlock = 0;
             aLock[ofst]--;
             p->sharedMask &= ~mask;
           }
         }
   
-        if( bUnlock ){
+        എങ്കിൽ( bUnlock ){
           rc = unixShmSystemLock(pDbFd, F_UNLCK, ofst+UNIX_SHM_BASE, n);
-          if( rc==SQLITE_OK ){
-            memset(&aLock[ofst], 0, sizeof(int)*n);
+          എങ്കിൽ( rc==SQLITE_OK ){
+            memset(&aLock[ofst], 0, വലുപ്പം(പൂർണ്ണസംഖ്യ)*n);
             p->sharedMask &= ~mask;
             p->exclMask &= ~mask;
           }
         }
-      }else if( flags & SQLITE_SHM_SHARED ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( flags & SQLITE_SHM_SHARED ){
         /* Case (b) - a shared lock.  */
   
-        if( aLock[ofst]<0 ){
+        എങ്കിൽ( aLock[ofst]<0 ){
           /* An exclusive lock is held by some other connection. BUSY. */ 
           rc = SQLITE_BUSY;
-        }else if( aLock[ofst]==0 ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( aLock[ofst]==0 ){
           rc = unixShmSystemLock(pDbFd, F_RDLCK, ofst+UNIX_SHM_BASE, n);
         }
   
         /* Get the local shared locks */
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           p->sharedMask |= mask;
           aLock[ofst]++;
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         /* Case (c) - an exclusive lock.  */
-        int ii;
+        പൂർണ്ണസംഖ്യ ii;
   
-        assert( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) );
-        assert( (p->sharedMask & mask)==0 );
-        assert( (p->exclMask & mask)==0 );
+        പ്രതിജ്ഞാ( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) );
+        പ്രതിജ്ഞാ( (p->sharedMask & mask)==0 );
+        പ്രതിജ്ഞാ( (p->exclMask & mask)==0 );
   
         /* Make sure no sibling connections hold locks that will block this
         ** lock.  If any do, return SQLITE_BUSY right away.  */
-        for(ii=ofst; ii<ofst+n; ii++){
-          if( aLock[ii] ){
+        വേണ്ടി(ii=ofst; ii<ofst+n; ii++){
+          എങ്കിൽ( aLock[ii] ){
             rc = SQLITE_BUSY;
-            break;
+            നിർത്തുക;
           }
         }
   
         /* Get the exclusive locks at the system level. Then if successful
         ** also update the in-memory values. */
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           rc = unixShmSystemLock(pDbFd, F_WRLCK, ofst+UNIX_SHM_BASE, n);
-          if( rc==SQLITE_OK ){
+          എങ്കിൽ( rc==SQLITE_OK ){
             p->exclMask |= mask;
-            for(ii=ofst; ii<ofst+n; ii++){
+            വേണ്ടി(ii=ofst; ii<ofst+n; ii++){
               aLock[ii] = -1;
             }
           }
         }
       }
-      assert( assertLockingArrayOk(pShmNode) );
+      പ്രതിജ്ഞാ( assertLockingArrayOk(p_Shm_കണ്ണി) );
     }
 
     /* Drop the mutexes acquired above. */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   leave_shmnode_mutexes:
-    for(iMutex--; iMutex>=ofst; iMutex--){
-      sqlite3_mutex_leave(pShmNode->aMutex[iMutex]);
+    വേണ്ടി(iMutex--; iMutex>=ofst; iMutex--){
+      sqlite3_mutex_leave(p_Shm_കണ്ണി->aMutex[iMutex]);
     }
-#else
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
+#അല്ലെങ്കിൽ
+    sqlite3_mutex_leave(p_Shm_കണ്ണി->pShmMutex);
 #endif
   }
 
   OSTRACE(("SHM-LOCK shmid-%d, pid-%d got %03x,%03x\n",
            p->id, osGetpid(0), p->sharedMask, p->exclMask));
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -5481,12 +5481,12 @@ static int unixShmLock(
 ** All loads and stores begun before the barrier must complete before
 ** any load or store begun after the barrier.
 */
-static void unixShmBarrier(
+സ്ഥിതം ശൂന്യം unixShmBarrier(
   sqlite3_file *fd                /* Database file holding the shared memory */
 ){
   UNUSED_PARAMETER(fd);
   sqlite3MemoryBarrier();         /* compiler-defined memory barrier */
-  assert( fd->pMethods->xLock==nolockLock
+  പ്രതിജ്ഞാ( fd->pMethods->xLock==nolockLock
        || unixFileMutexNotheld((unixFile*)fd)
   );
   unixEnterMutex();               /* Also mutex, for redundancy */
@@ -5500,66 +5500,66 @@ static void unixShmBarrier(
 ** If there is no shared memory associated with the connection then this
 ** routine is a harmless no-op.
 */
-static int unixShmUnmap(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixShmUnmap(
   sqlite3_file *fd,               /* The underlying database file */
-  int deleteFlag                  /* Delete shared-memory if true */
+  പൂർണ്ണസംഖ്യ deleteFlag                  /* Delete shared-memory if true */
 ){
   unixShm *p;                     /* The connection to be closed */
-  unixShmNode *pShmNode;          /* The underlying shared-memory file */
+  unix_Shm_കണ്ണി *p_Shm_കണ്ണി;          /* The underlying shared-memory file */
   unixShm **pp;                   /* For looping over sibling connections */
   unixFile *pDbFd;                /* The underlying database file */
 
   pDbFd = (unixFile*)fd;
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_OK;
-  pShmNode = p->pShmNode;
+  എങ്കിൽ( p==0 ) തിരികെ SQLITE_OK;
+  p_Shm_കണ്ണി = p->p_Shm_കണ്ണി;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി==pDbFd->pInode->p_Shm_കണ്ണി );
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->pInode==pDbFd->pInode );
 
   /* Remove connection p from the set of connections associated
   ** with pShmNode */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  for(pp=&pShmNode->pFirst; (*pp)!=p; pp = &(*pp)->pNext){}
+  sqlite3_mutex_enter(p_Shm_കണ്ണി->pShmMutex);
+  വേണ്ടി(pp=&p_Shm_കണ്ണി->pFirst; (*pp)!=p; pp = &(*pp)->pNext){}
   *pp = p->pNext;
 
   /* Free the connection p */
   sqlite3_free(p);
   pDbFd->pShm = 0;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
+  sqlite3_mutex_leave(p_Shm_കണ്ണി->pShmMutex);
 
   /* If pShmNode->nRef has reached 0, then close the underlying
   ** shared-memory file, too */
-  assert( unixFileMutexNotheld(pDbFd) );
+  പ്രതിജ്ഞാ( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
-  assert( pShmNode->nRef>0 );
-  pShmNode->nRef--;
-  if( pShmNode->nRef==0 ){
-    if( deleteFlag && pShmNode->hShm>=0 ){
-      osUnlink(pShmNode->zFilename);
+  പ്രതിജ്ഞാ( p_Shm_കണ്ണി->nRef>0 );
+  p_Shm_കണ്ണി->nRef--;
+  എങ്കിൽ( p_Shm_കണ്ണി->nRef==0 ){
+    എങ്കിൽ( deleteFlag && p_Shm_കണ്ണി->hShm>=0 ){
+      osUnlink(p_Shm_കണ്ണി->zFilename);
     }
     unixShmPurge(pDbFd);
   }
   unixLeaveMutex();
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
-#else
+#അല്ലെങ്കിൽ
 # define unixShmMap     0
 # define unixShmLock    0
 # define unixShmBarrier 0
 # define unixShmUnmap   0
 #endif /* #ifndef SQLITE_OMIT_WAL */
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
 /*
 ** If it is currently memory mapped, unmap file pFd.
 */
-static void unixUnmapfile(unixFile *pFd){
-  assert( pFd->nFetchOut==0 );
-  if( pFd->pMapRegion ){
+സ്ഥിതം ശൂന്യം unixUnmapfile(unixFile *pFd){
+  പ്രതിജ്ഞാ( pFd->nFetchOut==0 );
+  എങ്കിൽ( pFd->pMapRegion ){
     osMunmap(pFd->pMapRegion, pFd->mmapSizeActual);
     pFd->pMapRegion = 0;
     pFd->mmapSize = 0;
@@ -5582,66 +5582,66 @@ static void unixUnmapfile(unixFile *pFd){
 ** continue accessing the database using the xRead() and xWrite()
 ** methods.
 */
-static void unixRemapfile(
+സ്ഥിതം ശൂന്യം unixRemapfile(
   unixFile *pFd,                  /* File descriptor object */
   i64 nNew                        /* Required mapping size */
 ){
-  const char *zErr = "mmap";
-  int h = pFd->h;                      /* File descriptor open on db file */
+  സ്ഥിരം അക്ഷരം *zErr = "mmap";
+  പൂർണ്ണസംഖ്യ h = pFd->h;                      /* File descriptor open on db file */
   u8 *pOrig = (u8 *)pFd->pMapRegion;   /* Pointer to current file mapping */
   u8 *pNew = 0;                        /* Location of new mapping */
-  int flags = PROT_READ;               /* Flags to pass to mmap() */
+  പൂർണ്ണസംഖ്യ flags = PROT_READ;               /* Flags to pass to mmap() */
 
-  assert( pFd->nFetchOut==0 );
-  assert( nNew>pFd->mmapSize );
-  assert( nNew<=pFd->mmapSizeMax );
-  assert( nNew>0 );
-  assert( pFd->mmapSizeActual>=pFd->mmapSize );
-  assert( MAP_FAILED!=0 );
+  പ്രതിജ്ഞാ( pFd->nFetchOut==0 );
+  പ്രതിജ്ഞാ( nNew>pFd->mmapSize );
+  പ്രതിജ്ഞാ( nNew<=pFd->mmapSizeMax );
+  പ്രതിജ്ഞാ( nNew>0 );
+  പ്രതിജ്ഞാ( pFd->mmapSizeActual>=pFd->mmapSize );
+  പ്രതിജ്ഞാ( MAP_FAILED!=0 );
 
 #ifdef SQLITE_MMAP_READWRITE
-  if( (pFd->ctrlFlags & UNIXFILE_RDONLY)==0 ) flags |= PROT_WRITE;
+  എങ്കിൽ( (pFd->ctrlFlags & UNIXFILE_RDONLY)==0 ) flags |= PROT_WRITE;
 #endif
 
-  if( pOrig ){
-    i64 nReuse = pFd->mmapSize & ~((int)osGetpagesize()-1);
+  എങ്കിൽ( pOrig ){
+    i64 nReuse = pFd->mmapSize & ~((പൂർണ്ണസംഖ്യ)osGetpagesize()-1);
 
     /* Unmap any part of the current mapping that will not be reused */
-    if( nReuse<pFd->mmapSizeActual ){
+    എങ്കിൽ( nReuse<pFd->mmapSizeActual ){
       osMunmap(&pOrig[nReuse], pFd->mmapSizeActual - nReuse);
     }
 
     /* If nReuse is now zero, then the entire mapping was unmapped by the
     ** call above. In this case do not attempt to extend pOrig. */
-    if( nReuse>0 ){
-#if HAVE_MREMAP
+    എങ്കിൽ( nReuse>0 ){
+#എങ്കിൽ HAVE_MREMAP
       pNew = osMremap(pOrig, nReuse, nNew, MREMAP_MAYMOVE);
       zErr = "mremap";
-#else
+#അല്ലെങ്കിൽ
       pNew = osMmap(&pOrig[nReuse], nNew-nReuse, flags, MAP_SHARED, h, nReuse);
-      if( pNew!=MAP_FAILED ){
-        if( pNew!=&pOrig[nReuse] ){
+      എങ്കിൽ( pNew!=MAP_FAILED ){
+        എങ്കിൽ( pNew!=&pOrig[nReuse] ){
           osMunmap(pNew, nNew - nReuse);
           pNew = 0;
-        }else{
+        }അല്ലെങ്കിൽ{
           pNew = pOrig;
         }
       }
 #endif
 
       /* The attempt to extend the existing mapping failed. Free it. */
-      if( pNew==MAP_FAILED || pNew==0 ){
+      എങ്കിൽ( pNew==MAP_FAILED || pNew==0 ){
         osMunmap(pOrig, nReuse);
       }
     }
   }
 
   /* If pNew is still NULL, try to create an entirely new mapping. */
-  if( pNew==0 ){
+  എങ്കിൽ( pNew==0 ){
     pNew = osMmap(0, nNew, flags, MAP_SHARED, h, 0);
   }
 
-  if( pNew==MAP_FAILED ){
+  എങ്കിൽ( pNew==MAP_FAILED ){
     pNew = 0;
     nNew = 0;
     unixLogError(SQLITE_OK, zErr, pFd->zPath);
@@ -5651,7 +5651,7 @@ static void unixRemapfile(
     ** in this case.  */
     pFd->mmapSizeMax = 0;
   }
-  pFd->pMapRegion = (void *)pNew;
+  pFd->pMapRegion = (ശൂന്യം *)pNew;
   pFd->mmapSize = pFd->mmapSizeActual = nNew;
 }
 
@@ -5671,28 +5671,28 @@ static void unixRemapfile(
 ** recreated as a result of outstanding references) or an SQLite error
 ** code otherwise.
 */
-static int unixMapfile(unixFile *pFd, i64 nMap){
-  assert( nMap>=0 || pFd->nFetchOut==0 );
-  assert( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
-  if( pFd->nFetchOut>0 ) return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixMapfile(unixFile *pFd, i64 nMap){
+  പ്രതിജ്ഞാ( nMap>=0 || pFd->nFetchOut==0 );
+  പ്രതിജ്ഞാ( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
+  എങ്കിൽ( pFd->nFetchOut>0 ) തിരികെ SQLITE_OK;
 
-  if( nMap<0 ){
-    struct stat statbuf;          /* Low-level file information */
-    if( osFstat(pFd->h, &statbuf) ){
-      return SQLITE_IOERR_FSTAT;
+  എങ്കിൽ( nMap<0 ){
+    ഘടന stat statbuf;          /* Low-level file information */
+    എങ്കിൽ( osFstat(pFd->h, &statbuf) ){
+      തിരികെ SQLITE_IOERR_FSTAT;
     }
     nMap = statbuf.st_size;
   }
-  if( nMap>pFd->mmapSizeMax ){
+  എങ്കിൽ( nMap>pFd->mmapSizeMax ){
     nMap = pFd->mmapSizeMax;
   }
 
-  assert( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
-  if( nMap!=pFd->mmapSize ){
+  പ്രതിജ്ഞാ( nMap>0 || (pFd->mmapSize==0 && pFd->pMapRegion==0) );
+  എങ്കിൽ( nMap!=pFd->mmapSize ){
     unixRemapfile(pFd, nMap);
   }
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 #endif /* SQLITE_MAX_MMAP_SIZE>0 */
 
@@ -5708,30 +5708,30 @@ static int unixMapfile(unixFile *pFd, i64 nMap){
 ** If this function does return a pointer, the caller must eventually
 ** release the reference by calling unixUnfetch().
 */
-static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
-#if SQLITE_MAX_MMAP_SIZE>0
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFetch(sqlite3_file *fd, i64 iOff, പൂർണ്ണസംഖ്യ nAmt, ശൂന്യം **pp){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
   unixFile *pFd = (unixFile *)fd;   /* The underlying database file */
 #endif
   *pp = 0;
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFd->mmapSizeMax>0 ){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
+  എങ്കിൽ( pFd->mmapSizeMax>0 ){
     /* Ensure that there is always at least a 256 byte buffer of addressable
     ** memory following the returned page. If the database is corrupt,
     ** SQLite may overread the page slightly (in practice only a few bytes,
     ** but 256 is safe, round, number).  */
-    const int nEofBuffer = 256;
-    if( pFd->pMapRegion==0 ){
-      int rc = unixMapfile(pFd, -1);
-      if( rc!=SQLITE_OK ) return rc;
+    സ്ഥിരം പൂർണ്ണസംഖ്യ nEofBuffer = 256;
+    എങ്കിൽ( pFd->pMapRegion==0 ){
+      പൂർണ്ണസംഖ്യ rc = unixMapfile(pFd, -1);
+      എങ്കിൽ( rc!=SQLITE_OK ) തിരികെ rc;
     }
-    if( pFd->mmapSize >= (iOff+nAmt+nEofBuffer) ){
+    എങ്കിൽ( pFd->mmapSize >= (iOff+nAmt+nEofBuffer) ){
       *pp = &((u8 *)pFd->pMapRegion)[iOff];
       pFd->nFetchOut++;
     }
   }
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -5744,32 +5744,32 @@ static int unixFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
 ** to inform the VFS layer that, according to POSIX, any existing mapping
 ** may now be invalid and should be unmapped.
 */
-static int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p){
-#if SQLITE_MAX_MMAP_SIZE>0
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixUnfetch(sqlite3_file *fd, i64 iOff, ശൂന്യം *p){
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
   unixFile *pFd = (unixFile *)fd;   /* The underlying database file */
   UNUSED_PARAMETER(iOff);
 
   /* If p==0 (unmap the entire file) then there must be no outstanding
   ** xFetch references. Or, if p!=0 (meaning it is an xFetch reference),
   ** then there must be at least one outstanding.  */
-  assert( (p==0)==(pFd->nFetchOut==0) );
+  പ്രതിജ്ഞാ( (p==0)==(pFd->nFetchOut==0) );
 
   /* If p!=0, it must match the iOff value. */
-  assert( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
+  പ്രതിജ്ഞാ( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
 
-  if( p ){
+  എങ്കിൽ( p ){
     pFd->nFetchOut--;
-  }else{
+  }അല്ലെങ്കിൽ{
     unixUnmapfile(pFd);
   }
 
-  assert( pFd->nFetchOut>=0 );
-#else
+  പ്രതിജ്ഞാ( pFd->nFetchOut>=0 );
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(fd);
   UNUSED_PARAMETER(p);
   UNUSED_PARAMETER(iOff);
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -5813,7 +5813,7 @@ static int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p){
 **      to the METHOD object in the previous bullet.
 */
 #define IOMETHODS(FINDER,METHOD,VERSION,CLOSE,LOCK,UNLOCK,CKLOCK,SHMMAP)     \
-static const sqlite3_io_methods METHOD = {                                   \
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods METHOD = {                                   \
    VERSION,                    /* iVersion */                                \
    CLOSE,                      /* xClose */                                  \
    unixRead,                   /* xRead */                                   \
@@ -5834,11 +5834,11 @@ static const sqlite3_io_methods METHOD = {                                   \
    unixFetch,                  /* xFetch */                                  \
    unixUnfetch,                /* xUnfetch */                                \
 };                                                                           \
-static const sqlite3_io_methods *FINDER##Impl(const char *z, unixFile *p){   \
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods *FINDER##Impl(സ്ഥിരം അക്ഷരം *z, unixFile *p){   \
   UNUSED_PARAMETER(z); UNUSED_PARAMETER(p);                                  \
-  return &METHOD;                                                            \
+  തിരികെ &METHOD;                                                            \
 }                                                                            \
-static const sqlite3_io_methods *(*const FINDER)(const char*,unixFile *p)    \
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods *(*സ്ഥിരം FINDER)(സ്ഥിരം അക്ഷരം*,unixFile *p)    \
     = FINDER##Impl;
 
 /*
@@ -5877,7 +5877,7 @@ IOMETHODS(
   0                         /* xShmMap method */
 )
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   flockIoFinder,            /* Finder function name */
   flockIoMethods,           /* sqlite3_io_methods object name */
@@ -5890,7 +5890,7 @@ IOMETHODS(
 )
 #endif
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
 IOMETHODS(
   semIoFinder,              /* Finder function name */
   semIoMethods,             /* sqlite3_io_methods object name */
@@ -5903,7 +5903,7 @@ IOMETHODS(
 )
 #endif
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   afpIoFinder,              /* Finder function name */
   afpIoMethods,             /* sqlite3_io_methods object name */
@@ -5925,11 +5925,11 @@ IOMETHODS(
 ** to go ahead and define the sqlite3_io_methods and finder function
 ** for proxy locking here.  So we forward declare the I/O methods.
 */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
-static int proxyClose(sqlite3_file*);
-static int proxyLock(sqlite3_file*, int);
-static int proxyUnlock(sqlite3_file*, int);
-static int proxyCheckReservedLock(sqlite3_file*, int*);
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyClose(sqlite3_file*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyLock(sqlite3_file*, പൂർണ്ണസംഖ്യ);
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyUnlock(sqlite3_file*, പൂർണ്ണസംഖ്യ);
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyCheckReservedLock(sqlite3_file*, പൂർണ്ണസംഖ്യ*);
 IOMETHODS(
   proxyIoFinder,            /* Finder function name */
   proxyIoMethods,           /* sqlite3_io_methods object name */
@@ -5943,7 +5943,7 @@ IOMETHODS(
 #endif
 
 /* nfs lockd on OSX 10.3+ doesn't clear write locks when a read lock is set */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 IOMETHODS(
   nfsIoFinder,               /* Finder function name */
   nfsIoMethods,              /* sqlite3_io_methods object name */
@@ -5956,7 +5956,7 @@ IOMETHODS(
 )
 #endif
 
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 /*
 ** This "finder" function attempts to determine the best locking strategy
 ** for the database file "filePath".  It then returns the sqlite3_io_methods
@@ -5964,13 +5964,13 @@ IOMETHODS(
 **
 ** This is for MacOSX only.
 */
-static const sqlite3_io_methods *autolockIoFinderImpl(
-  const char *filePath,    /* name of the database file */
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods *autolockIoFinderImpl(
+  സ്ഥിരം അക്ഷരം *filePath,    /* name of the database file */
   unixFile *pNew           /* open file object for the database file */
 ){
-  static const struct Mapping {
-    const char *zFilesystem;              /* Filesystem type name */
-    const sqlite3_io_methods *pMethods;   /* Appropriate locking method */
+  സ്ഥിതം സ്ഥിരം ഘടന Mapping {
+    സ്ഥിരം അക്ഷരം *zFilesystem;              /* Filesystem type name */
+    സ്ഥിരം sqlite3_io_methods *pMethods;   /* Appropriate locking method */
   } aMap[] = {
     { "hfs",    &posixIoMethods },
     { "ufs",    &posixIoMethods },
@@ -5979,22 +5979,22 @@ static const sqlite3_io_methods *autolockIoFinderImpl(
     { "webdav", &nolockIoMethods },
     { 0, 0 }
   };
-  int i;
-  struct statfs fsInfo;
-  struct flock lockInfo;
+  പൂർണ്ണസംഖ്യ i;
+  ഘടന statfs fsInfo;
+  ഘടന flock lockInfo;
 
-  if( !filePath ){
+  എങ്കിൽ( !filePath ){
     /* If filePath==NULL that means we are dealing with a transient file
     ** that does not need to be locked. */
-    return &nolockIoMethods;
+    തിരികെ &nolockIoMethods;
   }
-  if( statfs(filePath, &fsInfo) != -1 ){
-    if( fsInfo.f_flags & MNT_RDONLY ){
-      return &nolockIoMethods;
+  എങ്കിൽ( statfs(filePath, &fsInfo) != -1 ){
+    എങ്കിൽ( fsInfo.f_flags & MNT_RDONLY ){
+      തിരികെ &nolockIoMethods;
     }
-    for(i=0; aMap[i].zFilesystem; i++){
-      if( strcmp(fsInfo.f_fstypename, aMap[i].zFilesystem)==0 ){
-        return aMap[i].pMethods;
+    വേണ്ടി(i=0; aMap[i].zFilesystem; i++){
+      എങ്കിൽ( strcmp(fsInfo.f_fstypename, aMap[i].zFilesystem)==0 ){
+        തിരികെ aMap[i].pMethods;
       }
     }
   }
@@ -6007,37 +6007,37 @@ static const sqlite3_io_methods *autolockIoFinderImpl(
   lockInfo.l_start = 0;
   lockInfo.l_whence = SEEK_SET;
   lockInfo.l_type = F_RDLCK;
-  if( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
-    if( strcmp(fsInfo.f_fstypename, "nfs")==0 ){
-      return &nfsIoMethods;
-    } else {
-      return &posixIoMethods;
+  എങ്കിൽ( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
+    എങ്കിൽ( strcmp(fsInfo.f_fstypename, "nfs")==0 ){
+      തിരികെ &nfsIoMethods;
+    } അല്ലെങ്കിൽ {
+      തിരികെ &posixIoMethods;
     }
-  }else{
-    return &dotlockIoMethods;
+  }അല്ലെങ്കിൽ{
+    തിരികെ &dotlockIoMethods;
   }
 }
-static const sqlite3_io_methods
-  *(*const autolockIoFinder)(const char*,unixFile*) = autolockIoFinderImpl;
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods
+  *(*സ്ഥിരം autolockIoFinder)(സ്ഥിരം അക്ഷരം*,unixFile*) = autolockIoFinderImpl;
 
 #endif /* defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE */
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
 /*
 ** This "finder" function for VxWorks checks to see if posix advisory
 ** locking works.  If it does, then that is what is used.  If it does not
 ** work, then fallback to named semaphore locking.
 */
-static const sqlite3_io_methods *vxworksIoFinderImpl(
-  const char *filePath,    /* name of the database file */
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods *vxworksIoFinderImpl(
+  സ്ഥിരം അക്ഷരം *filePath,    /* name of the database file */
   unixFile *pNew           /* the open file object */
 ){
-  struct flock lockInfo;
+  ഘടന flock lockInfo;
 
-  if( !filePath ){
+  എങ്കിൽ( !filePath ){
     /* If filePath==NULL that means we are dealing with a transient file
     ** that does not need to be locked. */
-    return &nolockIoMethods;
+    തിരികെ &nolockIoMethods;
   }
 
   /* Test if fcntl() is supported and use POSIX style locks.
@@ -6047,21 +6047,21 @@ static const sqlite3_io_methods *vxworksIoFinderImpl(
   lockInfo.l_start = 0;
   lockInfo.l_whence = SEEK_SET;
   lockInfo.l_type = F_RDLCK;
-  if( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
-    return &posixIoMethods;
-  }else{
-    return &semIoMethods;
+  എങ്കിൽ( osFcntl(pNew->h, F_GETLK, &lockInfo)!=-1 ) {
+    തിരികെ &posixIoMethods;
+  }അല്ലെങ്കിൽ{
+    തിരികെ &semIoMethods;
   }
 }
-static const sqlite3_io_methods
-  *(*const vxworksIoFinder)(const char*,unixFile*) = vxworksIoFinderImpl;
+സ്ഥിതം സ്ഥിരം sqlite3_io_methods
+  *(*സ്ഥിരം vxworksIoFinder)(സ്ഥിരം അക്ഷരം*,unixFile*) = vxworksIoFinderImpl;
 
 #endif /* OS_VXWORKS */
 
 /*
 ** An abstract type for a pointer to an IO method finder function:
 */
-typedef const sqlite3_io_methods *(*finder_type)(const char*,unixFile*);
+തരനിർവചനം സ്ഥിരം sqlite3_io_methods *(*finder_type)(സ്ഥിരം അക്ഷരം*,unixFile*);
 
 
 /****************************************************************************
@@ -6074,66 +6074,66 @@ typedef const sqlite3_io_methods *(*finder_type)(const char*,unixFile*);
 /*
 ** Initialize the contents of the unixFile structure pointed to by pId.
 */
-static int fillInUnixFile(
+സ്ഥിതം പൂർണ്ണസംഖ്യ fillInUnixFile(
   sqlite3_vfs *pVfs,      /* Pointer to vfs object */
-  int h,                  /* Open file descriptor of file being opened */
+  പൂർണ്ണസംഖ്യ h,                  /* Open file descriptor of file being opened */
   sqlite3_file *pId,      /* Write to the unixFile structure here */
-  const char *zFilename,  /* Name of the file being opened */
-  int ctrlFlags           /* Zero or more UNIXFILE_* values */
+  സ്ഥിരം അക്ഷരം *zFilename,  /* Name of the file being opened */
+  പൂർണ്ണസംഖ്യ ctrlFlags           /* Zero or more UNIXFILE_* values */
 ){
-  const sqlite3_io_methods *pLockingStyle;
+  സ്ഥിരം sqlite3_io_methods *pLockingStyle;
   unixFile *pNew = (unixFile *)pId;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-  assert( pNew->pInode==NULL );
+  പ്രതിജ്ഞാ( pNew->pInode==ശൂന്യ );
 
   /* No locking occurs in temporary files */
-  assert( zFilename!=0 || (ctrlFlags & UNIXFILE_NOLOCK)!=0 );
+  പ്രതിജ്ഞാ( zFilename!=0 || (ctrlFlags & UNIXFILE_NOLOCK)!=0 );
 
   OSTRACE(("OPEN    %-3d %s\n", h, zFilename));
   pNew->h = h;
   pNew->pVfs = pVfs;
   pNew->zPath = zFilename;
   pNew->ctrlFlags = (u8)ctrlFlags;
-#if SQLITE_MAX_MMAP_SIZE>0
+#എങ്കിൽ SQLITE_MAX_MMAP_SIZE>0
   pNew->mmapSizeMax = sqlite3GlobalConfig.szMmap;
 #endif
-  if( sqlite3_uri_boolean(((ctrlFlags & UNIXFILE_URI) ? zFilename : 0),
+  എങ്കിൽ( sqlite3_uri_boolean(((ctrlFlags & UNIXFILE_URI) ? zFilename : 0),
                            "psow", SQLITE_POWERSAFE_OVERWRITE) ){
     pNew->ctrlFlags |= UNIXFILE_PSOW;
   }
-  if( strcmp(pVfs->zName,"unix-excl")==0 ){
+  എങ്കിൽ( strcmp(pVfs->zName,"unix-excl")==0 ){
     pNew->ctrlFlags |= UNIXFILE_EXCL;
   }
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   pNew->pId = vxworksFindFileId(zFilename);
-  if( pNew->pId==0 ){
+  എങ്കിൽ( pNew->pId==0 ){
     ctrlFlags |= UNIXFILE_NOLOCK;
     rc = SQLITE_NOMEM_BKPT;
   }
 #endif
 
-  if( ctrlFlags & UNIXFILE_NOLOCK ){
+  എങ്കിൽ( ctrlFlags & UNIXFILE_NOLOCK ){
     pLockingStyle = &nolockIoMethods;
-  }else{
+  }അല്ലെങ്കിൽ{
     pLockingStyle = (**(finder_type*)pVfs->pAppData)(zFilename, pNew);
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
     /* Cache zFilename in the locking context (AFP and dotlock override) for
     ** proxyLock activation is possible (remote proxy is based on db name)
     ** zFilename remains valid until file is closed, to support */
-    pNew->lockingContext = (void*)zFilename;
+    pNew->lockingContext = (ശൂന്യം*)zFilename;
 #endif
   }
 
-  if( pLockingStyle == &posixIoMethods
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+  എങ്കിൽ( pLockingStyle == &posixIoMethods
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
     || pLockingStyle == &nfsIoMethods
 #endif
   ){
     unixEnterMutex();
     rc = findInodeInfo(pNew, &pNew->pInode);
-    if( rc!=SQLITE_OK ){
+    എങ്കിൽ( rc!=SQLITE_OK ){
       /* If an error occurred in findInodeInfo(), close the file descriptor
       ** immediately, before releasing the mutex. findInodeInfo() may fail
       ** in two scenarios:
@@ -6158,16 +6158,16 @@ static int fillInUnixFile(
     unixLeaveMutex();
   }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
-  else if( pLockingStyle == &afpIoMethods ){
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+  അല്ലെങ്കിൽ എങ്കിൽ( pLockingStyle == &afpIoMethods ){
     /* AFP locking uses the file path so it needs to be included in
     ** the afpLockingContext.
     */
     afpLockingContext *pCtx;
-    pNew->lockingContext = pCtx = sqlite3_malloc64( sizeof(*pCtx) );
-    if( pCtx==0 ){
+    pNew->lockingContext = pCtx = sqlite3_malloc64( വലുപ്പം(*pCtx) );
+    എങ്കിൽ( pCtx==0 ){
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }അല്ലെങ്കിൽ{
       /* NB: zFilename exists and remains valid until the file is closed
       ** according to requirement F11141.  So we do not need to make a
       ** copy of the filename. */
@@ -6176,7 +6176,7 @@ static int fillInUnixFile(
       srandomdev();
       unixEnterMutex();
       rc = findInodeInfo(pNew, &pNew->pInode);
-      if( rc!=SQLITE_OK ){
+      എങ്കിൽ( rc!=SQLITE_OK ){
         sqlite3_free(pNew->lockingContext);
         robust_close(pNew, h, __LINE__);
         h = -1;
@@ -6186,39 +6186,39 @@ static int fillInUnixFile(
   }
 #endif
 
-  else if( pLockingStyle == &dotlockIoMethods ){
+  അല്ലെങ്കിൽ എങ്കിൽ( pLockingStyle == &dotlockIoMethods ){
     /* Dotfile locking uses the file path so it needs to be included in
     ** the dotlockLockingContext
     */
-    char *zLockFile;
-    int nFilename;
-    assert( zFilename!=0 );
-    nFilename = (int)strlen(zFilename) + 6;
-    zLockFile = (char *)sqlite3_malloc64(nFilename);
-    if( zLockFile==0 ){
+    അക്ഷരം *zLockFile;
+    പൂർണ്ണസംഖ്യ nFilename;
+    പ്രതിജ്ഞാ( zFilename!=0 );
+    nFilename = (പൂർണ്ണസംഖ്യ)strlen(zFilename) + 6;
+    zLockFile = (അക്ഷരം *)sqlite3_malloc64(nFilename);
+    എങ്കിൽ( zLockFile==0 ){
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }അല്ലെങ്കിൽ{
       sqlite3_snprintf(nFilename, zLockFile, "%s" DOTLOCK_SUFFIX, zFilename);
     }
     pNew->lockingContext = zLockFile;
   }
 
-#if OS_VXWORKS
-  else if( pLockingStyle == &semIoMethods ){
+#എങ്കിൽ OS_VXWORKS
+  അല്ലെങ്കിൽ എങ്കിൽ( pLockingStyle == &semIoMethods ){
     /* Named semaphore locking uses the file path so it needs to be
     ** included in the semLockingContext
     */
     unixEnterMutex();
     rc = findInodeInfo(pNew, &pNew->pInode);
-    if( (rc==SQLITE_OK) && (pNew->pInode->pSem==NULL) ){
-      char *zSemName = pNew->pInode->aSemName;
-      int n;
+    എങ്കിൽ( (rc==SQLITE_OK) && (pNew->pInode->pSem==ശൂന്യ) ){
+      അക്ഷരം *zSemName = pNew->pInode->aSemName;
+      പൂർണ്ണസംഖ്യ n;
       sqlite3_snprintf(MAX_PATHNAME, zSemName, "/%s.sem",
                        pNew->pId->zCanonicalName);
-      for( n=1; zSemName[n]; n++ )
-        if( zSemName[n]=='/' ) zSemName[n] = '_';
+      വേണ്ടി( n=1; zSemName[n]; n++ )
+        എങ്കിൽ( zSemName[n]=='/' ) zSemName[n] = '_';
       pNew->pInode->pSem = sem_open(zSemName, O_CREAT, 0666, 1);
-      if( pNew->pInode->pSem == SEM_FAILED ){
+      എങ്കിൽ( pNew->pInode->pSem == SEM_FAILED ){
         rc = SQLITE_NOMEM_BKPT;
         pNew->pInode->aSemName[0] = '\0';
       }
@@ -6228,29 +6228,29 @@ static int fillInUnixFile(
 #endif
 
   storeLastErrno(pNew, 0);
-#if OS_VXWORKS
-  if( rc!=SQLITE_OK ){
-    if( h>=0 ){
+#എങ്കിൽ OS_VXWORKS
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    എങ്കിൽ( h>=0 ){
       robust_close(pNew, h, __LINE__);
       h = -1;
     }
-    if( pNew->ctrlFlags & UNIXFILE_DELETE ){
+    എങ്കിൽ( pNew->ctrlFlags & UNIXFILE_DELETE ){
       osUnlink(zFilename);
     }
-    if( pNew->pId ){
+    എങ്കിൽ( pNew->pId ){
       vxworksReleaseFileId(pNew->pId);
       pNew->pId = 0;
     }
   }
 #endif
-  if( rc!=SQLITE_OK ){
-    if( h>=0 ) robust_close(pNew, h, __LINE__);
-  }else{
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    എങ്കിൽ( h>=0 ) robust_close(pNew, h, __LINE__);
+  }അല്ലെങ്കിൽ{
     pId->pMethods = pLockingStyle;
     OpenCounter(+1);
     verifyDbFile(pNew);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -6261,33 +6261,33 @@ static int fillInUnixFile(
 ** the return value should not be used after any call to setenv() or
 ** putenv() as that value might have been freed.
 */
-static const char *unixTempFileDir(void){
-  unsigned int i;
-  struct stat buf;
-  const char *zDir;
+സ്ഥിതം സ്ഥിരം അക്ഷരം *unixTempFileDir(ശൂന്യം){
+  unsigned പൂർണ്ണസംഖ്യ i;
+  ഘടന stat buf;
+  സ്ഥിരം അക്ഷരം *zDir;
 
-  for(i=0; i<7; i++){
-    switch( i ){
-      case 0:  zDir = sqlite3_temp_directory;   break;
-      case 1:  zDir = getenv("SQLITE_TMPDIR");  break;
-      case 2:  zDir = getenv("TMPDIR");         break;
-      case 3:  zDir = "/var/tmp";               break;
-      case 4:  zDir = "/usr/tmp";               break;
-      case 5:  zDir = "/tmp";                   break;
-      default: zDir = ".";                      break;
+  വേണ്ടി(i=0; i<7; i++){
+    തിരഞ്ഞെടുപ്പ്( i ){
+      അവസ്ഥ 0:  zDir = sqlite3_temp_directory;   നിർത്തുക;
+      അവസ്ഥ 1:  zDir = getenv("SQLITE_TMPDIR");  നിർത്തുക;
+      അവസ്ഥ 2:  zDir = getenv("TMPDIR");         നിർത്തുക;
+      അവസ്ഥ 3:  zDir = "/var/tmp";               നിർത്തുക;
+      അവസ്ഥ 4:  zDir = "/usr/tmp";               നിർത്തുക;
+      അവസ്ഥ 5:  zDir = "/tmp";                   നിർത്തുക;
+      സ്ഥിരസ്ഥിതി: zDir = ".";                      നിർത്തുക;
     }
-    if( zDir!=0
-#if OS_VXWORKS
+    എങ്കിൽ( zDir!=0
+#എങ്കിൽ OS_VXWORKS
      && zDir[0]=='/'
 #endif
      && osStat(zDir, &buf)==0
      && S_ISDIR(buf.st_mode)
      && osAccess(zDir, 03)==0
     ){
-      return zDir;
+      തിരികെ zDir;
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -6295,47 +6295,47 @@ static const char *unixTempFileDir(void){
 ** by the calling process and must be big enough to hold at least
 ** pVfs->mxPathname bytes.
 */
-static int unixGetTempname(int nBuf, char *zBuf){
-  const char *zDir;
-  int iLimit = 0;
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixGetTempname(പൂർണ്ണസംഖ്യ nBuf, അക്ഷരം *zBuf){
+  സ്ഥിരം അക്ഷരം *zDir;
+  പൂർണ്ണസംഖ്യ iLimit = 0;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing.
   */
   zBuf[0] = 0;
-  SimulateIOError( return SQLITE_IOERR );
+  SimulateIOError( തിരികെ SQLITE_IOERR );
 
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
   zDir = unixTempFileDir();
-  if( zDir==0 ){
+  എങ്കിൽ( zDir==0 ){
     rc = SQLITE_IOERR_GETTEMPPATH;
-  }else{
-    do{
+  }അല്ലെങ്കിൽ{
+    ചെയ്യുക{
       u64 r;
-      sqlite3_randomness(sizeof(r), &r);
-      assert( nBuf>2 );
+      sqlite3_randomness(വലുപ്പം(r), &r);
+      പ്രതിജ്ഞാ( nBuf>2 );
       zBuf[nBuf-2] = 0;
       sqlite3_snprintf(nBuf, zBuf, "%s/"SQLITE_TEMP_FILE_PREFIX"%llx%c",
                        zDir, r, 0);
-      if( zBuf[nBuf-2]!=0 || (iLimit++)>10 ){
+      എങ്കിൽ( zBuf[nBuf-2]!=0 || (iLimit++)>10 ){
         rc = SQLITE_ERROR;
-        break;
+        നിർത്തുക;
       }
-    }while( osAccess(zBuf,0)==0 );
+    }ആകുമ്പോൾ( osAccess(zBuf,0)==0 );
   }
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return rc;
+  തിരികെ rc;
 }
 
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
 /*
 ** Routine to transform a unixFile into a proxy-locking unixFile.
 ** Implementation in the proxy-lock division, but used by unixOpen()
 ** if SQLITE_PREFER_PROXY_LOCKING is defined.
 */
-static int proxyTransformUnixFile(unixFile*, const char*);
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyTransformUnixFile(unixFile*, സ്ഥിരം അക്ഷരം*);
 #endif
 
 /*
@@ -6354,7 +6354,7 @@ static int proxyTransformUnixFile(unixFile*, const char*);
 ** If a suitable file descriptor is found, then it is returned. If no
 ** such file descriptor is located, -1 is returned.
 */
-static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
+സ്ഥിതം UnixUnusedFd *findReusableFd(സ്ഥിരം അക്ഷരം *zPath, പൂർണ്ണസംഖ്യ flags){
   UnixUnusedFd *pUnused = 0;
 
   /* Do not search for an unused file descriptor on vxworks. Not because
@@ -6362,8 +6362,8 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
   ** but because no way to test it is currently available. It is better
   ** not to risk breaking vxworks support for the sake of such an obscure
   ** feature.  */
-#if !OS_VXWORKS
-  struct stat sStat;                   /* Results of stat() call */
+#എങ്കിൽ !OS_VXWORKS
+  ഘടന stat sStat;                   /* Results of stat() call */
 
   unixEnterMutex();
 
@@ -6375,22 +6375,22 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
   **
   ** Even if a subsequent open() call does succeed, the consequences of
   ** not searching for a reusable file descriptor are not dire.  */
-  if( inodeList!=0 && 0==osStat(zPath, &sStat) ){
+  എങ്കിൽ( inodeList!=0 && 0==osStat(zPath, &sStat) ){
     unixInodeInfo *pInode;
 
     pInode = inodeList;
-    while( pInode && (pInode->fileId.dev!=sStat.st_dev
+    ആകുമ്പോൾ( pInode && (pInode->fileId.dev!=sStat.st_dev
                      || pInode->fileId.ino!=(u64)sStat.st_ino) ){
        pInode = pInode->pNext;
     }
-    if( pInode ){
+    എങ്കിൽ( pInode ){
       UnixUnusedFd **pp;
-      assert( sqlite3_mutex_notheld(pInode->pLockMutex) );
+      പ്രതിജ്ഞാ( sqlite3_mutex_notheld(pInode->pLockMutex) );
       sqlite3_mutex_enter(pInode->pLockMutex);
       flags &= (SQLITE_OPEN_READONLY|SQLITE_OPEN_READWRITE);
-      for(pp=&pInode->pUnused; *pp && (*pp)->flags!=flags; pp=&((*pp)->pNext));
+      വേണ്ടി(pp=&pInode->pUnused; *pp && (*pp)->flags!=flags; pp=&((*pp)->pNext));
       pUnused = *pp;
-      if( pUnused ){
+      എങ്കിൽ( pUnused ){
         *pp = pUnused->pNext;
       }
       sqlite3_mutex_leave(pInode->pLockMutex);
@@ -6398,28 +6398,28 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags){
   }
   unixLeaveMutex();
 #endif    /* if !OS_VXWORKS */
-  return pUnused;
+  തിരികെ pUnused;
 }
 
 /*
 ** Find the mode, uid and gid of file zFile.
 */
-static int getFileMode(
-  const char *zFile,              /* File name */
+സ്ഥിതം പൂർണ്ണസംഖ്യ getFileMode(
+  സ്ഥിരം അക്ഷരം *zFile,              /* File name */
   mode_t *pMode,                  /* OUT: Permissions of zFile */
   uid_t *pUid,                    /* OUT: uid of zFile. */
   gid_t *pGid                     /* OUT: gid of zFile. */
 ){
-  struct stat sStat;              /* Output of stat() on database file */
-  int rc = SQLITE_OK;
-  if( 0==osStat(zFile, &sStat) ){
+  ഘടന stat sStat;              /* Output of stat() on database file */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  എങ്കിൽ( 0==osStat(zFile, &sStat) ){
     *pMode = sStat.st_mode & 0777;
     *pUid = sStat.st_uid;
     *pGid = sStat.st_gid;
-  }else{
+  }അല്ലെങ്കിൽ{
     rc = SQLITE_IOERR_FSTAT;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -6443,20 +6443,20 @@ static int getFileMode(
 ** FAT filesystems and permissions do not matter there, so just use
 ** the default permissions.  In 8_3_NAMES mode, leave *pMode set to zero.
 */
-static int findCreateFileMode(
-  const char *zPath,              /* Path of file (possibly) being created */
-  int flags,                      /* Flags passed as 4th argument to xOpen() */
+സ്ഥിതം പൂർണ്ണസംഖ്യ findCreateFileMode(
+  സ്ഥിരം അക്ഷരം *zPath,              /* Path of file (possibly) being created */
+  പൂർണ്ണസംഖ്യ flags,                      /* Flags passed as 4th argument to xOpen() */
   mode_t *pMode,                  /* OUT: Permissions to open file with */
   uid_t *pUid,                    /* OUT: uid to set on the file */
   gid_t *pGid                     /* OUT: gid to set on the file */
 ){
-  int rc = SQLITE_OK;             /* Return Code */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;             /* Return Code */
   *pMode = 0;
   *pUid = 0;
   *pGid = 0;
-  if( flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL) ){
-    char zDb[MAX_PATHNAME+1];     /* Database file path */
-    int nDb;                      /* Number of valid bytes in zDb */
+  എങ്കിൽ( flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL) ){
+    അക്ഷരം zDb[MAX_PATHNAME+1];     /* Database file path */
+    പൂർണ്ണസംഖ്യ nDb;                      /* Number of valid bytes in zDb */
 
     /* zPath is a path to a WAL or journal file. The following block derives
     ** the path to the associated database file from zPath. This block handles
@@ -6477,28 +6477,28 @@ static int findCreateFileMode(
     ** the filename.  In that case, just return SQLITE_OK with *pMode==0.
     */
     nDb = sqlite3Strlen30(zPath) - 1;
-    while( nDb>0 && zPath[nDb]!='.' ){
-      if( zPath[nDb]=='-' ){
+    ആകുമ്പോൾ( nDb>0 && zPath[nDb]!='.' ){
+      എങ്കിൽ( zPath[nDb]=='-' ){
         memcpy(zDb, zPath, nDb);
         zDb[nDb] = '\0';
         rc = getFileMode(zDb, pMode, pUid, pGid);
-        break;
+        നിർത്തുക;
       }
       nDb--;
     }
-  }else if( flags & SQLITE_OPEN_DELETEONCLOSE ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( flags & SQLITE_OPEN_DELETEONCLOSE ){
     *pMode = 0600;
-  }else if( flags & SQLITE_OPEN_URI ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( flags & SQLITE_OPEN_URI ){
     /* If this is a main database file and the file was opened using a URI
     ** filename, check for the "modeof" parameter. If present, interpret
     ** its value as a filename and try to copy the mode, uid and gid from
     ** that file.  */
-    const char *z = sqlite3_uri_parameter(zPath, "modeof");
-    if( z ){
+    സ്ഥിരം അക്ഷരം *z = sqlite3_uri_parameter(zPath, "modeof");
+    എങ്കിൽ( z ){
       rc = getFileMode(z, pMode, pUid, pGid);
     }
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -6523,38 +6523,38 @@ static int findCreateFileMode(
 ** interface, add the DELETEONCLOSE flag to those specified above for
 ** OpenExclusive().
 */
-static int unixOpen(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixOpen(
   sqlite3_vfs *pVfs,           /* The VFS for which this is the xOpen method */
-  const char *zPath,           /* Pathname of file to be opened */
+  സ്ഥിരം അക്ഷരം *zPath,           /* Pathname of file to be opened */
   sqlite3_file *pFile,         /* The file descriptor to be filled in */
-  int flags,                   /* Input flags to control the opening */
-  int *pOutFlags               /* Output flags returned to SQLite core */
+  പൂർണ്ണസംഖ്യ flags,                   /* Input flags to control the opening */
+  പൂർണ്ണസംഖ്യ *pOutFlags               /* Output flags returned to SQLite core */
 ){
   unixFile *p = (unixFile *)pFile;
-  int fd = -1;                   /* File descriptor returned by open() */
-  int openFlags = 0;             /* Flags to pass to open() */
-  int eType = flags&0x0FFF00;  /* Type of file to open */
-  int noLock;                    /* True to omit locking primitives */
-  int rc = SQLITE_OK;            /* Function Return Code */
-  int ctrlFlags = 0;             /* UNIXFILE_* flags */
+  പൂർണ്ണസംഖ്യ fd = -1;                   /* File descriptor returned by open() */
+  പൂർണ്ണസംഖ്യ openFlags = 0;             /* Flags to pass to open() */
+  പൂർണ്ണസംഖ്യ eType = flags&0x0FFF00;  /* Type of file to open */
+  പൂർണ്ണസംഖ്യ noLock;                    /* True to omit locking primitives */
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;            /* Function Return Code */
+  പൂർണ്ണസംഖ്യ ctrlFlags = 0;             /* UNIXFILE_* flags */
 
-  int isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
-  int isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
-  int isCreate     = (flags & SQLITE_OPEN_CREATE);
-  int isReadonly   = (flags & SQLITE_OPEN_READONLY);
-  int isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
-#if SQLITE_ENABLE_LOCKING_STYLE
-  int isAutoProxy  = (flags & SQLITE_OPEN_AUTOPROXY);
+  പൂർണ്ണസംഖ്യ isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
+  പൂർണ്ണസംഖ്യ isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
+  പൂർണ്ണസംഖ്യ isCreate     = (flags & SQLITE_OPEN_CREATE);
+  പൂർണ്ണസംഖ്യ isReadonly   = (flags & SQLITE_OPEN_READONLY);
+  പൂർണ്ണസംഖ്യ isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
+  പൂർണ്ണസംഖ്യ isAutoProxy  = (flags & SQLITE_OPEN_AUTOPROXY);
 #endif
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
-  struct statfs fsInfo;
+#എങ്കിൽ defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+  ഘടന statfs fsInfo;
 #endif
 
   /* If creating a super- or main-file journal, this function will open
   ** a file-descriptor on the directory too. The first time unixSync()
   ** is called the directory file descriptor will be fsync()ed and close()d.
   */
-  int isNewJrnl = (isCreate && (
+  പൂർണ്ണസംഖ്യ isNewJrnl = (isCreate && (
         eType==SQLITE_OPEN_SUPER_JOURNAL
      || eType==SQLITE_OPEN_MAIN_JOURNAL
      || eType==SQLITE_OPEN_WAL
@@ -6563,8 +6563,8 @@ static int unixOpen(
   /* If argument zPath is a NULL pointer, this function is required to open
   ** a temporary file. Use this buffer to store the file name in.
   */
-  char zTmpname[MAX_PATHNAME+2];
-  const char *zName = zPath;
+  അക്ഷരം zTmpname[MAX_PATHNAME+2];
+  സ്ഥിരം അക്ഷരം *zName = zPath;
 
   /* Check the following statements are true:
   **
@@ -6573,29 +6573,29 @@ static int unixOpen(
   **   (c) if EXCLUSIVE is set, then CREATE must also be set.
   **   (d) if DELETEONCLOSE is set, then CREATE must also be set.
   */
-  assert((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
-  assert(isCreate==0 || isReadWrite);
-  assert(isExclusive==0 || isCreate);
-  assert(isDelete==0 || isCreate);
+  പ്രതിജ്ഞാ((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
+  പ്രതിജ്ഞാ(isCreate==0 || isReadWrite);
+  പ്രതിജ്ഞാ(isExclusive==0 || isCreate);
+  പ്രതിജ്ഞാ(isDelete==0 || isCreate);
 
   /* The main DB, main journal, WAL file and super-journal are never
   ** automatically deleted. Nor are they ever temporary files.  */
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
+  പ്രതിജ്ഞാ( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
+  പ്രതിജ്ഞാ( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
+  പ്രതിജ്ഞാ( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
+  പ്രതിജ്ഞാ( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
 
   /* Assert that the upper layer has set one of the "file-type" flags. */
-  assert( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_TEMP_DB
+  പ്രതിജ്ഞാ( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_TEMP_DB
        || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_TEMP_JOURNAL
        || eType==SQLITE_OPEN_SUBJOURNAL   || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_TRANSIENT_DB || eType==SQLITE_OPEN_WAL
   );
 
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   /* The file-ID mechanism used in Vxworks requires that all pathnames
   ** provided to unixOpen must be absolute pathnames. */
-  if( zPath!=0 && zPath[0]!='/' ){ return SQLITE_CANTOPEN; }
+  എങ്കിൽ( zPath!=0 && zPath[0]!='/' ){ തിരികെ SQLITE_CANTOPEN; }
 #endif
 
   /* Detect a pid change and reset the PRNG.  There is a race condition
@@ -6603,26 +6603,26 @@ static int unixOpen(
   ** the same instant might all reset the PRNG.  But multiple resets
   ** are harmless.
   */
-  if( randomnessPid!=osGetpid(0) ){
+  എങ്കിൽ( randomnessPid!=osGetpid(0) ){
     randomnessPid = osGetpid(0);
     sqlite3_randomness(0,0);
   }
-  memset(p, 0, sizeof(unixFile));
+  memset(p, 0, വലുപ്പം(unixFile));
 
 #ifdef SQLITE_ASSERT_NO_FILES
   /* Applications that never read or write a persistent disk files */
-  assert( zName==0 );
+  പ്രതിജ്ഞാ( zName==0 );
 #endif
 
-  if( eType==SQLITE_OPEN_MAIN_DB ){
+  എങ്കിൽ( eType==SQLITE_OPEN_MAIN_DB ){
     UnixUnusedFd *pUnused;
     pUnused = findReusableFd(zName, flags);
-    if( pUnused ){
+    എങ്കിൽ( pUnused ){
       fd = pUnused->fd;
-    }else{
-      pUnused = sqlite3_malloc64(sizeof(*pUnused));
-      if( !pUnused ){
-        return SQLITE_NOMEM_BKPT;
+    }അല്ലെങ്കിൽ{
+      pUnused = sqlite3_malloc64(വലുപ്പം(*pUnused));
+      എങ്കിൽ( !pUnused ){
+        തിരികെ SQLITE_NOMEM_BKPT;
       }
     }
     p->pPreallocatedUnused = pUnused;
@@ -6630,66 +6630,66 @@ static int unixOpen(
     /* Database filenames are double-zero terminated if they are not
     ** URIs with parameters.  Hence, they can always be passed into
     ** sqlite3_uri_parameter(). */
-    assert( (flags & SQLITE_OPEN_URI) || zName[strlen(zName)+1]==0 );
+    പ്രതിജ്ഞാ( (flags & SQLITE_OPEN_URI) || zName[strlen(zName)+1]==0 );
 
-  }else if( !zName ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( !zName ){
     /* If zName is NULL, the upper layer is requesting a temp file. */
-    assert( isDelete );
-    assert( !isNewJrnl );
-    assert( isExclusive );
-    assert( isReadWrite );
-#if defined(__linux__) && defined(O_TMPFILE)
+    പ്രതിജ്ഞാ( isDelete );
+    പ്രതിജ്ഞാ( !isNewJrnl );
+    പ്രതിജ്ഞാ( isExclusive );
+    പ്രതിജ്ഞാ( isReadWrite );
+#എങ്കിൽ defined(__linux__) && defined(O_TMPFILE)
     /* On systems that support O_TMPFILE, use that flag to create a more
     ** secure temporary file that cannot be accessed by other processes
     */
     zName = unixTempFileDir();
-    if( zName
+    എങ്കിൽ( zName
      && (fd = robust_open(zName, O_RDWR|O_EXCL|O_TMPFILE, 0600))>=0
     ){
       rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags|UNIXFILE_NOLOCK);
-      goto open_finished;
+      പോകുക open_finished;
     }
 #endif
     rc = unixGetTempname(pVfs->mxPathname, zTmpname);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      തിരികെ rc;
     }
     zName = zTmpname;
 
     /* Generated temporary filenames are always double-zero terminated
     ** for use by sqlite3_uri_parameter(). */
-    assert( zName[strlen(zName)+1]==0 );
+    പ്രതിജ്ഞാ( zName[strlen(zName)+1]==0 );
   }
 
   /* Determine the value of the flags parameter passed to POSIX function
   ** open(). These must be calculated even if open() is not called, as
   ** they may be stored as part of the file handle and used by the
   ** 'conch file' locking functions later on.  */
-  if( isReadonly )  openFlags |= O_RDONLY;
-  if( isReadWrite ) openFlags |= O_RDWR;
-  if( isCreate )    openFlags |= O_CREAT;
-  if( isExclusive ) openFlags |= (O_EXCL|O_NOFOLLOW);
-  openFlags |= (O_LARGEFILE|O_BINARY|O_NOFOLLOW);
+  എങ്കിൽ( isReadonly )  openFlags |= O_RDONLY;
+  എങ്കിൽ( isReadWrite ) openFlags |= O_RDWR;
+  എങ്കിൽ( isCreate )    openFlags |= O_CREAT;
+  എങ്കിൽ( isExclusive ) openFlags |= (O_EXCL|O_NOFOLLOW);
+  openFlags |= (O_LARGEFILE|O_ദ്വിമാന|O_NOFOLLOW);
 
-  if( fd<0 ){
+  എങ്കിൽ( fd<0 ){
     mode_t openMode;              /* Permissions to create file with */
     uid_t uid;                    /* Userid for the file */
     gid_t gid;                    /* Groupid for the file */
     rc = findCreateFileMode(zName, flags, &openMode, &uid, &gid);
-    if( rc!=SQLITE_OK ){
-      assert( !p->pPreallocatedUnused );
-      assert( eType==SQLITE_OPEN_WAL || eType==SQLITE_OPEN_MAIN_JOURNAL );
-      return rc;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      പ്രതിജ്ഞാ( !p->pPreallocatedUnused );
+      പ്രതിജ്ഞാ( eType==SQLITE_OPEN_WAL || eType==SQLITE_OPEN_MAIN_JOURNAL );
+      തിരികെ rc;
     }
     fd = robust_open(zName, openFlags, openMode);
     OSTRACE(("OPENX   %-3d %s 0%o\n", fd, zName, openFlags));
-    assert( !isExclusive || (openFlags & O_CREAT)!=0 );
-    if( fd<0 ){
-      if( isNewJrnl && errno==EACCES && osAccess(zName, F_OK) ){
+    പ്രതിജ്ഞാ( !isExclusive || (openFlags & O_CREAT)!=0 );
+    എങ്കിൽ( fd<0 ){
+      എങ്കിൽ( isNewJrnl && errno==EACCES && osAccess(zName, F_OK) ){
         /* If unable to create a journal because the directory is not
         ** writable, change the error code to indicate that. */
         rc = SQLITE_READONLY_DIRECTORY;
-      }else if( errno!=EISDIR && isReadWrite ){
+      }അല്ലെങ്കിൽ എങ്കിൽ( errno!=EISDIR && isReadWrite ){
         /* Failed to open the file for read/write access. Try read-only. */
         UnixUnusedFd *pReadonly = 0;
         flags &= ~(SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE);
@@ -6698,18 +6698,18 @@ static int unixOpen(
         openFlags |= O_RDONLY;
         isReadonly = 1;
         pReadonly = findReusableFd(zName, flags);
-        if( pReadonly ){
+        എങ്കിൽ( pReadonly ){
           fd = pReadonly->fd;
           sqlite3_free(pReadonly);
-        }else{
+        }അല്ലെങ്കിൽ{
           fd = robust_open(zName, openFlags, openMode);
         }
       }
     }
-    if( fd<0 ){
-      int rc2 = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zName);
-      if( rc==SQLITE_OK ) rc = rc2;
-      goto open_finished;
+    എങ്കിൽ( fd<0 ){
+      പൂർണ്ണസംഖ്യ rc2 = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zName);
+      എങ്കിൽ( rc==SQLITE_OK ) rc = rc2;
+      പോകുക open_finished;
     }
 
     /* The owner of the rollback journal or WAL file should always be the
@@ -6724,96 +6724,96 @@ static int unixOpen(
     ** (probably because SQLite is configured to use 8+3 filename mode) and
     ** in that case we do not want to attempt the chown().
     */
-    if( openMode && (flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL))!=0 ){
+    എങ്കിൽ( openMode && (flags & (SQLITE_OPEN_WAL|SQLITE_OPEN_MAIN_JOURNAL))!=0 ){
       robustFchown(fd, uid, gid);
     }
   }
-  assert( fd>=0 );
-  if( pOutFlags ){
+  പ്രതിജ്ഞാ( fd>=0 );
+  എങ്കിൽ( pOutFlags ){
     *pOutFlags = flags;
   }
 
-  if( p->pPreallocatedUnused ){
+  എങ്കിൽ( p->pPreallocatedUnused ){
     p->pPreallocatedUnused->fd = fd;
     p->pPreallocatedUnused->flags =
                           flags & (SQLITE_OPEN_READONLY|SQLITE_OPEN_READWRITE);
   }
 
-  if( isDelete ){
-#if OS_VXWORKS
+  എങ്കിൽ( isDelete ){
+#എങ്കിൽ OS_VXWORKS
     zPath = zName;
-#elif defined(SQLITE_UNLINK_AFTER_CLOSE)
+#അല്ലെങ്കിലെങ്കിൽ defined(SQLITE_UNLINK_AFTER_CLOSE)
     zPath = sqlite3_mprintf("%s", zName);
-    if( zPath==0 ){
+    എങ്കിൽ( zPath==0 ){
       robust_close(p, fd, __LINE__);
-      return SQLITE_NOMEM_BKPT;
+      തിരികെ SQLITE_NOMEM_BKPT;
     }
-#else
+#അല്ലെങ്കിൽ
     osUnlink(zName);
 #endif
   }
-#if SQLITE_ENABLE_LOCKING_STYLE
-  else{
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
+  അല്ലെങ്കിൽ{
     p->openFlags = openFlags;
   }
 #endif
 
-#if defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
-  if( fstatfs(fd, &fsInfo) == -1 ){
+#എങ്കിൽ defined(__APPLE__) || SQLITE_ENABLE_LOCKING_STYLE
+  എങ്കിൽ( fstatfs(fd, &fsInfo) == -1 ){
     storeLastErrno(p, errno);
     robust_close(p, fd, __LINE__);
-    return SQLITE_IOERR_ACCESS;
+    തിരികെ SQLITE_IOERR_ACCESS;
   }
-  if (0 == strncmp("msdos", fsInfo.f_fstypename, 5)) {
+  എങ്കിൽ (0 == strncmp("msdos", fsInfo.f_fstypename, 5)) {
     ((unixFile*)pFile)->fsFlags |= SQLITE_FSFLAGS_IS_MSDOS;
   }
-  if (0 == strncmp("exfat", fsInfo.f_fstypename, 5)) {
+  എങ്കിൽ (0 == strncmp("exfat", fsInfo.f_fstypename, 5)) {
     ((unixFile*)pFile)->fsFlags |= SQLITE_FSFLAGS_IS_MSDOS;
   }
 #endif
 
   /* Set up appropriate ctrlFlags */
-  if( isDelete )                ctrlFlags |= UNIXFILE_DELETE;
-  if( isReadonly )              ctrlFlags |= UNIXFILE_RDONLY;
+  എങ്കിൽ( isDelete )                ctrlFlags |= UNIXFILE_DELETE;
+  എങ്കിൽ( isReadonly )              ctrlFlags |= UNIXFILE_RDONLY;
   noLock = eType!=SQLITE_OPEN_MAIN_DB;
-  if( noLock )                  ctrlFlags |= UNIXFILE_NOLOCK;
-  if( isNewJrnl )               ctrlFlags |= UNIXFILE_DIRSYNC;
-  if( flags & SQLITE_OPEN_URI ) ctrlFlags |= UNIXFILE_URI;
+  എങ്കിൽ( noLock )                  ctrlFlags |= UNIXFILE_NOLOCK;
+  എങ്കിൽ( isNewJrnl )               ctrlFlags |= UNIXFILE_DIRSYNC;
+  എങ്കിൽ( flags & SQLITE_OPEN_URI ) ctrlFlags |= UNIXFILE_URI;
 
-#if SQLITE_ENABLE_LOCKING_STYLE
-#if SQLITE_PREFER_PROXY_LOCKING
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_PREFER_PROXY_LOCKING
   isAutoProxy = 1;
 #endif
-  if( isAutoProxy && (zPath!=NULL) && (!noLock) && pVfs->xOpen ){
-    char *envforce = getenv("SQLITE_FORCE_PROXY_LOCKING");
-    int useProxy = 0;
+  എങ്കിൽ( isAutoProxy && (zPath!=ശൂന്യ) && (!noLock) && pVfs->xOpen ){
+    അക്ഷരം *envforce = getenv("SQLITE_FORCE_PROXY_LOCKING");
+    പൂർണ്ണസംഖ്യ useProxy = 0;
 
     /* SQLITE_FORCE_PROXY_LOCKING==1 means force always use proxy, 0 means
     ** never use proxy, NULL means use proxy for non-local files only.  */
-    if( envforce!=NULL ){
+    എങ്കിൽ( envforce!=ശൂന്യ ){
       useProxy = atoi(envforce)>0;
-    }else{
+    }അല്ലെങ്കിൽ{
       useProxy = !(fsInfo.f_flags&MNT_LOCAL);
     }
-    if( useProxy ){
+    എങ്കിൽ( useProxy ){
       rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         rc = proxyTransformUnixFile((unixFile*)pFile, ":auto:");
-        if( rc!=SQLITE_OK ){
+        എങ്കിൽ( rc!=SQLITE_OK ){
           /* Use unixClose to clean up the resources added in fillInUnixFile
           ** and clear all the structure's references.  Specifically,
           ** pFile->pMethods will be NULL so sqlite3OsClose will be a no-op
           */
           unixClose(pFile);
-          return rc;
+          തിരികെ rc;
         }
       }
-      goto open_finished;
+      പോകുക open_finished;
     }
   }
 #endif
 
-  assert( zPath==0
+  പ്രതിജ്ഞാ( zPath==0
        || zPath[0]=='/'
        || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_MAIN_JOURNAL
@@ -6822,10 +6822,10 @@ static int unixOpen(
   rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);
 
 open_finished:
-  if( rc!=SQLITE_OK ){
+  എങ്കിൽ( rc!=SQLITE_OK ){
     sqlite3_free(p->pPreallocatedUnused);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 
@@ -6833,42 +6833,42 @@ open_finished:
 ** Delete the file at zPath. If the dirSync argument is true, fsync()
 ** the directory after deleting the file.
 */
-static int unixDelete(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixDelete(
   sqlite3_vfs *NotUsed,     /* VFS containing this as the xDelete method */
-  const char *zPath,        /* Name of file to be deleted */
-  int dirSync               /* If true, fsync() directory after deleting file */
+  സ്ഥിരം അക്ഷരം *zPath,        /* Name of file to be deleted */
+  പൂർണ്ണസംഖ്യ dirSync               /* If true, fsync() directory after deleting file */
 ){
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   UNUSED_PARAMETER(NotUsed);
-  SimulateIOError(return SQLITE_IOERR_DELETE);
-  if( osUnlink(zPath)==(-1) ){
-    if( errno==ENOENT
-#if OS_VXWORKS
+  SimulateIOError(തിരികെ SQLITE_IOERR_DELETE);
+  എങ്കിൽ( osUnlink(zPath)==(-1) ){
+    എങ്കിൽ( errno==ENOENT
+#എങ്കിൽ OS_VXWORKS
         || osAccess(zPath,0)!=0
 #endif
     ){
       rc = SQLITE_IOERR_DELETE_NOENT;
-    }else{
+    }അല്ലെങ്കിൽ{
       rc = unixLogError(SQLITE_IOERR_DELETE, "unlink", zPath);
     }
-    return rc;
+    തിരികെ rc;
   }
 #ifndef SQLITE_DISABLE_DIRSYNC
-  if( (dirSync & 1)!=0 ){
-    int fd;
+  എങ്കിൽ( (dirSync & 1)!=0 ){
+    പൂർണ്ണസംഖ്യ fd;
     rc = osOpenDirectory(zPath, &fd);
-    if( rc==SQLITE_OK ){
-      if( full_fsync(fd,0,0) ){
+    എങ്കിൽ( rc==SQLITE_OK ){
+      എങ്കിൽ( full_fsync(fd,0,0) ){
         rc = unixLogError(SQLITE_IOERR_DIR_FSYNC, "fsync", zPath);
       }
       robust_close(0, fd, __LINE__);
-    }else{
-      assert( rc==SQLITE_CANTOPEN );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( rc==SQLITE_CANTOPEN );
       rc = SQLITE_OK;
     }
   }
 #endif
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -6881,98 +6881,98 @@ static int unixDelete(
 **
 ** Otherwise return 0.
 */
-static int unixAccess(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixAccess(
   sqlite3_vfs *NotUsed,   /* The VFS containing this xAccess method */
-  const char *zPath,      /* Path of the file to examine */
-  int flags,              /* What do we want to learn about the zPath file? */
-  int *pResOut            /* Write result boolean here */
+  സ്ഥിരം അക്ഷരം *zPath,      /* Path of the file to examine */
+  പൂർണ്ണസംഖ്യ flags,              /* What do we want to learn about the zPath file? */
+  പൂർണ്ണസംഖ്യ *pResOut            /* Write result boolean here */
 ){
   UNUSED_PARAMETER(NotUsed);
-  SimulateIOError( return SQLITE_IOERR_ACCESS; );
-  assert( pResOut!=0 );
+  SimulateIOError( തിരികെ SQLITE_IOERR_ACCESS; );
+  പ്രതിജ്ഞാ( pResOut!=0 );
 
   /* The spec says there are three possible values for flags.  But only
   ** two of them are actually used */
-  assert( flags==SQLITE_ACCESS_EXISTS || flags==SQLITE_ACCESS_READWRITE );
+  പ്രതിജ്ഞാ( flags==SQLITE_ACCESS_EXISTS || flags==SQLITE_ACCESS_READWRITE );
 
-  if( flags==SQLITE_ACCESS_EXISTS ){
-    struct stat buf;
+  എങ്കിൽ( flags==SQLITE_ACCESS_EXISTS ){
+    ഘടന stat buf;
     *pResOut = 0==osStat(zPath, &buf) &&
                 (!S_ISREG(buf.st_mode) || buf.st_size>0);
-  }else{
+  }അല്ലെങ്കിൽ{
     *pResOut = osAccess(zPath, W_OK|R_OK)==0;
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** A pathname under construction
 */
-typedef struct DbPath DbPath;
-struct DbPath {
-  int rc;           /* Non-zero following any error */
-  int nSymlink;     /* Number of symlinks resolved */
-  char *zOut;       /* Write the pathname here */
-  int nOut;         /* Bytes of space available to zOut[] */
-  int nUsed;        /* Bytes of zOut[] currently being used */
+തരനിർവചനം ഘടന DbPath DbPath;
+ഘടന DbPath {
+  പൂർണ്ണസംഖ്യ rc;           /* Non-zero following any error */
+  പൂർണ്ണസംഖ്യ nSymlink;     /* Number of symlinks resolved */
+  അക്ഷരം *zOut;       /* Write the pathname here */
+  പൂർണ്ണസംഖ്യ nOut;         /* Bytes of space available to zOut[] */
+  പൂർണ്ണസംഖ്യ nUsed;        /* Bytes of zOut[] currently being used */
 };
 
 /* Forward reference */
-static void appendAllPathElements(DbPath*,const char*);
+സ്ഥിതം ശൂന്യം appendAllPathElements(DbPath*,സ്ഥിരം അക്ഷരം*);
 
 /*
 ** Append a single path element to the DbPath under construction
 */
-static void appendOnePathElement(
+സ്ഥിതം ശൂന്യം appendOnePathElement(
   DbPath *pPath,       /* Path under construction, to which to append zName */
-  const char *zName,   /* Name to append to pPath.  Not zero-terminated */
-  int nName            /* Number of significant bytes in zName */
+  സ്ഥിരം അക്ഷരം *zName,   /* Name to append to pPath.  Not zero-terminated */
+  പൂർണ്ണസംഖ്യ nName            /* Number of significant bytes in zName */
 ){
-  assert( nName>0 );
-  assert( zName!=0 );
-  if( zName[0]=='.' ){
-    if( nName==1 ) return;
-    if( zName[1]=='.' && nName==2 ){
-      if( pPath->nUsed>1 ){
-        assert( pPath->zOut[0]=='/' );
-        while( pPath->zOut[--pPath->nUsed]!='/' ){}
+  പ്രതിജ്ഞാ( nName>0 );
+  പ്രതിജ്ഞാ( zName!=0 );
+  എങ്കിൽ( zName[0]=='.' ){
+    എങ്കിൽ( nName==1 ) തിരികെ;
+    എങ്കിൽ( zName[1]=='.' && nName==2 ){
+      എങ്കിൽ( pPath->nUsed>1 ){
+        പ്രതിജ്ഞാ( pPath->zOut[0]=='/' );
+        ആകുമ്പോൾ( pPath->zOut[--pPath->nUsed]!='/' ){}
       }
-      return;
+      തിരികെ;
     }
   }
-  if( pPath->nUsed + nName + 2 >= pPath->nOut ){
+  എങ്കിൽ( pPath->nUsed + nName + 2 >= pPath->nOut ){
     pPath->rc = SQLITE_ERROR;
-    return;
+    തിരികെ;
   }
   pPath->zOut[pPath->nUsed++] = '/';
   memcpy(&pPath->zOut[pPath->nUsed], zName, nName);
   pPath->nUsed += nName;
-#if defined(HAVE_READLINK) && defined(HAVE_LSTAT)
-  if( pPath->rc==SQLITE_OK ){
-    const char *zIn;
-    struct stat buf;
+#എങ്കിൽ defined(HAVE_READLINK) && defined(HAVE_LSTAT)
+  എങ്കിൽ( pPath->rc==SQLITE_OK ){
+    സ്ഥിരം അക്ഷരം *zIn;
+    ഘടന stat buf;
     pPath->zOut[pPath->nUsed] = 0;
     zIn = pPath->zOut;
-    if( osLstat(zIn, &buf)!=0 ){
-      if( errno!=ENOENT ){
+    എങ്കിൽ( osLstat(zIn, &buf)!=0 ){
+      എങ്കിൽ( errno!=ENOENT ){
         pPath->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "lstat", zIn);
       }
-    }else if( S_ISLNK(buf.st_mode) ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( S_ISLNK(buf.st_mode) ){
       ssize_t got;
-      char zLnk[SQLITE_MAX_PATHLEN+2];
-      if( pPath->nSymlink++ > SQLITE_MAX_SYMLINK ){
+      അക്ഷരം zLnk[SQLITE_MAX_PATHLEN+2];
+      എങ്കിൽ( pPath->nSymlink++ > SQLITE_MAX_SYMLINK ){
         pPath->rc = SQLITE_CANTOPEN_BKPT;
-        return;
+        തിരികെ;
       }
-      got = osReadlink(zIn, zLnk, sizeof(zLnk)-2);
-      if( got<=0 || got>=(ssize_t)sizeof(zLnk)-2 ){
+      got = osReadlink(zIn, zLnk, വലുപ്പം(zLnk)-2);
+      എങ്കിൽ( got<=0 || got>=(ssize_t)വലുപ്പം(zLnk)-2 ){
         pPath->rc = unixLogError(SQLITE_CANTOPEN_BKPT, "readlink", zIn);
-        return;
+        തിരികെ;
       }
       zLnk[got] = 0;
-      if( zLnk[0]=='/' ){
+      എങ്കിൽ( zLnk[0]=='/' ){
         pPath->nUsed = 0;
-      }else{
+      }അല്ലെങ്കിൽ{
         pPath->nUsed -= nName + 1;
       }
       appendAllPathElements(pPath, zLnk);
@@ -6984,19 +6984,19 @@ static void appendOnePathElement(
 /*
 ** Append all path elements in zPath to the DbPath under construction.
 */
-static void appendAllPathElements(
+സ്ഥിതം ശൂന്യം appendAllPathElements(
   DbPath *pPath,       /* Path under construction, to which to append zName */
-  const char *zPath    /* Path to append to pPath.  Is zero-terminated */
+  സ്ഥിരം അക്ഷരം *zPath    /* Path to append to pPath.  Is zero-terminated */
 ){
-  int i = 0;
-  int j = 0;
-  do{
-    while( zPath[i] && zPath[i]!='/' ){ i++; }
-    if( i>j ){
+  പൂർണ്ണസംഖ്യ i = 0;
+  പൂർണ്ണസംഖ്യ j = 0;
+  ചെയ്യുക{
+    ആകുമ്പോൾ( zPath[i] && zPath[i]!='/' ){ i++; }
+    എങ്കിൽ( i>j ){
       appendOnePathElement(pPath, &zPath[j], i-j);
     }
     j = i+1;
-  }while( zPath[i++] );
+  }ആകുമ്പോൾ( zPath[i++] );
 }
 
 /*
@@ -7008,11 +7008,11 @@ static void appendAllPathElements(
 ** (in this case, MAX_PATHNAME bytes). The full-path is written to
 ** this buffer before returning.
 */
-static int unixFullPathname(
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixFullPathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zPath,            /* Possibly relative input path */
-  int nOut,                     /* Size of output buffer in bytes */
-  char *zOut                    /* Output buffer */
+  സ്ഥിരം അക്ഷരം *zPath,            /* Possibly relative input path */
+  പൂർണ്ണസംഖ്യ nOut,                     /* Size of output buffer in bytes */
+  അക്ഷരം *zOut                    /* Output buffer */
 ){
   DbPath path;
   UNUSED_PARAMETER(pVfs);
@@ -7021,18 +7021,18 @@ static int unixFullPathname(
   path.nSymlink = 0;
   path.nOut = nOut;
   path.zOut = zOut;
-  if( zPath[0]!='/' ){
-    char zPwd[SQLITE_MAX_PATHLEN+2];
-    if( osGetcwd(zPwd, sizeof(zPwd)-2)==0 ){
-      return unixLogError(SQLITE_CANTOPEN_BKPT, "getcwd", zPath);
+  എങ്കിൽ( zPath[0]!='/' ){
+    അക്ഷരം zPwd[SQLITE_MAX_PATHLEN+2];
+    എങ്കിൽ( osGetcwd(zPwd, വലുപ്പം(zPwd)-2)==0 ){
+      തിരികെ unixLogError(SQLITE_CANTOPEN_BKPT, "getcwd", zPath);
     }
     appendAllPathElements(&path, zPwd);
   }
   appendAllPathElements(&path, zPath);
   zOut[path.nUsed] = 0;
-  if( path.rc || path.nUsed<2 ) return SQLITE_CANTOPEN_BKPT;
-  if( path.nSymlink ) return SQLITE_OK_SYMLINK;
-  return SQLITE_OK;
+  എങ്കിൽ( path.rc || path.nUsed<2 ) തിരികെ SQLITE_CANTOPEN_BKPT;
+  എങ്കിൽ( path.nSymlink ) തിരികെ SQLITE_OK_SYMLINK;
+  തിരികെ SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
@@ -7040,10 +7040,10 @@ static int unixFullPathname(
 ** Interfaces for opening a shared library, finding entry points
 ** within the shared library, and closing the shared library.
 */
-#include <dlfcn.h>
-static void *unixDlOpen(sqlite3_vfs *NotUsed, const char *zFilename){
+#അന്തര്ഭാവ <dlfcn.h>
+സ്ഥിതം ശൂന്യം *unixDlOpen(sqlite3_vfs *NotUsed, സ്ഥിരം അക്ഷരം *zFilename){
   UNUSED_PARAMETER(NotUsed);
-  return dlopen(zFilename, RTLD_NOW | RTLD_GLOBAL);
+  തിരികെ dlopen(zFilename, RTLD_NOW | RTLD_GLOBAL);
 }
 
 /*
@@ -7053,17 +7053,17 @@ static void *unixDlOpen(sqlite3_vfs *NotUsed, const char *zFilename){
 ** is available, zBufOut is left unmodified and SQLite uses a default
 ** error message.
 */
-static void unixDlError(sqlite3_vfs *NotUsed, int nBuf, char *zBufOut){
-  const char *zErr;
+സ്ഥിതം ശൂന്യം unixDlError(sqlite3_vfs *NotUsed, പൂർണ്ണസംഖ്യ nBuf, അക്ഷരം *zBufOut){
+  സ്ഥിരം അക്ഷരം *zErr;
   UNUSED_PARAMETER(NotUsed);
   unixEnterMutex();
   zErr = dlerror();
-  if( zErr ){
+  എങ്കിൽ( zErr ){
     sqlite3_snprintf(nBuf, zBufOut, "%s", zErr);
   }
   unixLeaveMutex();
 }
-static void (*unixDlSym(sqlite3_vfs *NotUsed, void *p, const char*zSym))(void){
+സ്ഥിതം ശൂന്യം (*unixDlSym(sqlite3_vfs *NotUsed, ശൂന്യം *p, സ്ഥിരം അക്ഷരം*zSym))(ശൂന്യം){
   /*
   ** GCC with -pedantic-errors says that C90 does not allow a void* to be
   ** cast into a pointer to a function.  And yet the library dlsym() routine
@@ -7081,16 +7081,16 @@ static void (*unixDlSym(sqlite3_vfs *NotUsed, void *p, const char*zSym))(void){
   ** other hand, dlsym() will not work on such a system either, so we have
   ** not really lost anything.
   */
-  void (*(*x)(void*,const char*))(void);
+  ശൂന്യം (*(*x)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*))(ശൂന്യം);
   UNUSED_PARAMETER(NotUsed);
-  x = (void(*(*)(void*,const char*))(void))dlsym;
-  return (*x)(p, zSym);
+  x = (ശൂന്യം(*(*)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*))(ശൂന്യം))dlsym;
+  തിരികെ (*x)(p, zSym);
 }
-static void unixDlClose(sqlite3_vfs *NotUsed, void *pHandle){
+സ്ഥിതം ശൂന്യം unixDlClose(sqlite3_vfs *NotUsed, ശൂന്യം *pHandle){
   UNUSED_PARAMETER(NotUsed);
   dlclose(pHandle);
 }
-#else /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
+#അല്ലെങ്കിൽ /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
   #define unixDlOpen  0
   #define unixDlError 0
   #define unixDlSym   0
@@ -7100,9 +7100,9 @@ static void unixDlClose(sqlite3_vfs *NotUsed, void *pHandle){
 /*
 ** Write nBuf bytes of random data to the supplied buffer zBuf.
 */
-static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixRandomness(sqlite3_vfs *NotUsed, പൂർണ്ണസംഖ്യ nBuf, അക്ഷരം *zBuf){
   UNUSED_PARAMETER(NotUsed);
-  assert((size_t)nBuf>=(sizeof(time_t)+sizeof(int)));
+  പ്രതിജ്ഞാ((size_t)nBuf>=(വലുപ്പം(time_t)+വലുപ്പം(പൂർണ്ണസംഖ്യ)));
 
   /* We have to initialize zBuf to prevent valgrind from reporting
   ** errors.  The reports issued by valgrind are incorrect - we would
@@ -7118,24 +7118,24 @@ static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
   */
   memset(zBuf, 0, nBuf);
   randomnessPid = osGetpid(0);
-#if !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
+#എങ്കിൽ !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
   {
-    int fd, got;
+    പൂർണ്ണസംഖ്യ fd, got;
     fd = robust_open("/dev/urandom", O_RDONLY, 0);
-    if( fd<0 ){
+    എങ്കിൽ( fd<0 ){
       time_t t;
       time(&t);
-      memcpy(zBuf, &t, sizeof(t));
-      memcpy(&zBuf[sizeof(t)], &randomnessPid, sizeof(randomnessPid));
-      assert( sizeof(t)+sizeof(randomnessPid)<=(size_t)nBuf );
-      nBuf = sizeof(t) + sizeof(randomnessPid);
-    }else{
-      do{ got = osRead(fd, zBuf, nBuf); }while( got<0 && errno==EINTR );
+      memcpy(zBuf, &t, വലുപ്പം(t));
+      memcpy(&zBuf[വലുപ്പം(t)], &randomnessPid, വലുപ്പം(randomnessPid));
+      പ്രതിജ്ഞാ( വലുപ്പം(t)+വലുപ്പം(randomnessPid)<=(size_t)nBuf );
+      nBuf = വലുപ്പം(t) + വലുപ്പം(randomnessPid);
+    }അല്ലെങ്കിൽ{
+      ചെയ്യുക{ got = osRead(fd, zBuf, nBuf); }ആകുമ്പോൾ( got<0 && errno==EINTR );
       robust_close(0, fd, __LINE__);
     }
   }
 #endif
-  return nBuf;
+  തിരികെ nBuf;
 }
 
 
@@ -7147,9 +7147,9 @@ static int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
 ** might be greater than or equal to the argument, but not less
 ** than the argument.
 */
-static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
-#if !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP+0
-  struct timespec sp;
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixSleep(sqlite3_vfs *NotUsed, പൂർണ്ണസംഖ്യ microseconds){
+#എങ്കിൽ !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP+0
+  ഘടന timespec sp;
   sp.tv_sec = microseconds / 1000000;
   sp.tv_nsec = (microseconds % 1000000) * 1000;
 
@@ -7157,20 +7157,20 @@ static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
   ** compiling for one of the rare exceptions, you can use
   ** -DHAVE_NANOSLEEP=0 (perhaps in conjunction with -DHAVE_USLEEP if
   ** usleep() is available) in order to bypass the use of nanosleep() */
-  nanosleep(&sp, NULL);
+  nanosleep(&sp, ശൂന്യ);
 
   UNUSED_PARAMETER(NotUsed);
-  return microseconds;
-#elif defined(HAVE_USLEEP) && HAVE_USLEEP
-  if( microseconds>=1000000 ) sleep(microseconds/1000000);
-  if( microseconds%1000000 ) usleep(microseconds%1000000);
+  തിരികെ microseconds;
+#അല്ലെങ്കിലെങ്കിൽ defined(HAVE_USLEEP) && HAVE_USLEEP
+  എങ്കിൽ( microseconds>=1000000 ) sleep(microseconds/1000000);
+  എങ്കിൽ( microseconds%1000000 ) usleep(microseconds%1000000);
   UNUSED_PARAMETER(NotUsed);
-  return microseconds;
-#else
-  int seconds = (microseconds+999999)/1000000;
+  തിരികെ microseconds;
+#അല്ലെങ്കിൽ
+  പൂർണ്ണസംഖ്യ seconds = (microseconds+999999)/1000000;
   sleep(seconds);
   UNUSED_PARAMETER(NotUsed);
-  return seconds*1000000;
+  തിരികെ seconds*1000000;
 #endif
 }
 
@@ -7180,7 +7180,7 @@ static int unixSleep(sqlite3_vfs *NotUsed, int microseconds){
 ** sqlite3OsCurrentTime() during testing.
 */
 #ifdef SQLITE_TEST
-int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
+പൂർണ്ണസംഖ്യ sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 #endif
 
 /*
@@ -7193,30 +7193,30 @@ int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 ** On success, return SQLITE_OK.  Return SQLITE_ERROR if the time and date
 ** cannot be found.
 */
-static int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow){
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-  int rc = SQLITE_OK;
-#if defined(NO_GETTOD)
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow){
+  സ്ഥിതം സ്ഥിരം sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+#എങ്കിൽ defined(NO_GETTOD)
   time_t t;
   time(&t);
   *piNow = ((sqlite3_int64)t)*1000 + unixEpoch;
-#elif OS_VXWORKS
-  struct timespec sNow;
+#അല്ലെങ്കിലെങ്കിൽ OS_VXWORKS
+  ഘടന timespec sNow;
   clock_gettime(CLOCK_REALTIME, &sNow);
   *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_nsec/1000000;
-#else
-  struct timeval sNow;
-  (void)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
+#അല്ലെങ്കിൽ
+  ഘടന timeval sNow;
+  (ശൂന്യം)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
   *piNow = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_usec/1000;
 #endif
 
 #ifdef SQLITE_TEST
-  if( sqlite3_current_time ){
+  എങ്കിൽ( sqlite3_current_time ){
     *piNow = 1000*(sqlite3_int64)sqlite3_current_time + unixEpoch;
   }
 #endif
   UNUSED_PARAMETER(NotUsed);
-  return rc;
+  തിരികെ rc;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -7225,15 +7225,15 @@ static int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow){
 ** current time and date as a Julian Day number into *prNow and
 ** return 0.  Return 1 if the time and date cannot be found.
 */
-static int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixCurrentTime(sqlite3_vfs *NotUsed, ഇരട്ട *prNow){
   sqlite3_int64 i = 0;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
   UNUSED_PARAMETER(NotUsed);
   rc = unixCurrentTimeInt64(0, &i);
   *prNow = i/86400000.0;
-  return rc;
+  തിരികെ rc;
 }
-#else
+#അല്ലെങ്കിൽ
 # define unixCurrentTime 0
 #endif
 
@@ -7243,11 +7243,11 @@ static int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow){
 ** during SQLite operation.  Only the integer return code is currently
 ** used.
 */
-static int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3){
+സ്ഥിതം പൂർണ്ണസംഖ്യ unixGetLastError(sqlite3_vfs *NotUsed, പൂർണ്ണസംഖ്യ NotUsed2, അക്ഷരം *NotUsed3){
   UNUSED_PARAMETER(NotUsed);
   UNUSED_PARAMETER(NotUsed2);
   UNUSED_PARAMETER(NotUsed3);
-  return errno;
+  തിരികെ errno;
 }
 
 
@@ -7408,23 +7408,23 @@ static int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3){
 /*
 ** Proxy locking is only available on MacOSX
 */
-#if defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
 
 /*
 ** The proxyLockingContext has the path and file structures for the remote
 ** and local proxy files in it
 */
-typedef struct proxyLockingContext proxyLockingContext;
-struct proxyLockingContext {
+തരനിർവചനം ഘടന proxyLockingContext proxyLockingContext;
+ഘടന proxyLockingContext {
   unixFile *conchFile;         /* Open conch file */
-  char *conchFilePath;         /* Name of the conch file */
+  അക്ഷരം *conchFilePath;         /* Name of the conch file */
   unixFile *lockProxy;         /* Open proxy lock file */
-  char *lockProxyPath;         /* Name of the proxy lock file */
-  char *dbPath;                /* Name of the open file */
-  int conchHeld;               /* 1 if the conch is held, -1 if lockless */
-  int nFails;                  /* Number of conch taking failures */
-  void *oldLockingContext;     /* Original lockingcontext to restore on close */
-  sqlite3_io_methods const *pOldMethod;     /* Original I/O methods for close */
+  അക്ഷരം *lockProxyPath;         /* Name of the proxy lock file */
+  അക്ഷരം *dbPath;                /* Name of the open file */
+  പൂർണ്ണസംഖ്യ conchHeld;               /* 1 if the conch is held, -1 if lockless */
+  പൂർണ്ണസംഖ്യ nFails;                  /* Number of conch taking failures */
+  ശൂന്യം *oldLockingContext;     /* Original lockingcontext to restore on close */
+  sqlite3_io_methods സ്ഥിരം *pOldMethod;     /* Original I/O methods for close */
 };
 
 /*
@@ -7432,69 +7432,69 @@ struct proxyLockingContext {
 ** which must point to valid, writable memory large enough for a maxLen length
 ** file path.
 */
-static int proxyGetLockPath(const char *dbPath, char *lPath, size_t maxLen){
-  int len;
-  int dbLen;
-  int i;
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyGetLockPath(സ്ഥിരം അക്ഷരം *dbPath, അക്ഷരം *lPath, size_t maxLen){
+  പൂർണ്ണസംഖ്യ len;
+  പൂർണ്ണസംഖ്യ dbLen;
+  പൂർണ്ണസംഖ്യ i;
 
 #ifdef LOCKPROXYDIR
   len = strlcpy(lPath, LOCKPROXYDIR, maxLen);
-#else
+#അല്ലെങ്കിൽ
 # ifdef _CS_DARWIN_USER_TEMP_DIR
   {
-    if( !confstr(_CS_DARWIN_USER_TEMP_DIR, lPath, maxLen) ){
+    എങ്കിൽ( !confstr(_CS_DARWIN_USER_TEMP_DIR, lPath, maxLen) ){
       OSTRACE(("GETLOCKPATH  failed %s errno=%d pid=%d\n",
                lPath, errno, osGetpid(0)));
-      return SQLITE_IOERR_LOCK;
+      തിരികെ SQLITE_IOERR_LOCK;
     }
     len = strlcat(lPath, "sqliteplocks", maxLen);  
   }
-# else
+# അല്ലെങ്കിൽ
   len = strlcpy(lPath, "/tmp/", maxLen);
 # endif
 #endif
 
-  if( lPath[len-1]!='/' ){
+  എങ്കിൽ( lPath[len-1]!='/' ){
     len = strlcat(lPath, "/", maxLen);
   }
 
   /* transform the db path to a unique cache name */
-  dbLen = (int)strlen(dbPath);
-  for( i=0; i<dbLen && (i+len+7)<(int)maxLen; i++){
-    char c = dbPath[i];
+  dbLen = (പൂർണ്ണസംഖ്യ)strlen(dbPath);
+  വേണ്ടി( i=0; i<dbLen && (i+len+7)<(പൂർണ്ണസംഖ്യ)maxLen; i++){
+    അക്ഷരം c = dbPath[i];
     lPath[i+len] = (c=='/')?'_':c;
   }
   lPath[i+len]='\0';
   strlcat(lPath, ":auto:", maxLen);
   OSTRACE(("GETLOCKPATH  proxy lock path=%s pid=%d\n", lPath, osGetpid(0)));
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
  ** Creates the lock file and any missing directories in lockPath
  */
-static int proxyCreateLockPath(const char *lockPath){
-  int i, len;
-  char buf[MAXPATHLEN];
-  int start = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyCreateLockPath(സ്ഥിരം അക്ഷരം *lockPath){
+  പൂർണ്ണസംഖ്യ i, len;
+  അക്ഷരം buf[MAXPATHLEN];
+  പൂർണ്ണസംഖ്യ start = 0;
 
-  assert(lockPath!=NULL);
+  പ്രതിജ്ഞാ(lockPath!=ശൂന്യ);
   /* try to create all the intermediate directories */
-  len = (int)strlen(lockPath);
+  len = (പൂർണ്ണസംഖ്യ)strlen(lockPath);
   buf[0] = lockPath[0];
-  for( i=1; i<len; i++ ){
-    if( lockPath[i] == '/' && (i - start > 0) ){
+  വേണ്ടി( i=1; i<len; i++ ){
+    എങ്കിൽ( lockPath[i] == '/' && (i - start > 0) ){
       /* only mkdir if leaf dir != "." or "/" or ".." */
-      if( i-start>2 || (i-start==1 && buf[start] != '.' && buf[start] != '/')
+      എങ്കിൽ( i-start>2 || (i-start==1 && buf[start] != '.' && buf[start] != '/')
          || (i-start==2 && buf[start] != '.' && buf[start+1] != '.') ){
         buf[i]='\0';
-        if( osMkdir(buf, SQLITE_DEFAULT_PROXYDIR_PERMISSIONS) ){
-          int err=errno;
-          if( err!=EEXIST ) {
+        എങ്കിൽ( osMkdir(buf, SQLITE_DEFAULT_PROXYDIR_PERMISSIONS) ){
+          പൂർണ്ണസംഖ്യ err=errno;
+          എങ്കിൽ( err!=EEXIST ) {
             OSTRACE(("CREATELOCKPATH  FAILED creating %s, "
                      "'%s' proxy lock path=%s pid=%d\n",
                      buf, strerror(err), lockPath, osGetpid(0)));
-            return err;
+            തിരികെ err;
           }
         }
       }
@@ -7503,7 +7503,7 @@ static int proxyCreateLockPath(const char *lockPath){
     buf[i] = lockPath[i];
   }
   OSTRACE(("CREATELOCKPATH  proxy lock path=%s pid=%d\n",lockPath,osGetpid(0)));
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -7513,18 +7513,18 @@ static int proxyCreateLockPath(const char *lockPath){
 ** The caller is responsible not only for closing the file descriptor
 ** but also for freeing the memory associated with the file descriptor.
 */
-static int proxyCreateUnixFile(
-    const char *path,        /* path for the new unixFile */
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyCreateUnixFile(
+    സ്ഥിരം അക്ഷരം *path,        /* path for the new unixFile */
     unixFile **ppFile,       /* unixFile created and returned by ref */
-    int islockfile           /* if non zero missing dirs will be created */
+    പൂർണ്ണസംഖ്യ islockfile           /* if non zero missing dirs will be created */
 ) {
-  int fd = -1;
+  പൂർണ്ണസംഖ്യ fd = -1;
   unixFile *pNew;
-  int rc = SQLITE_OK;
-  int openFlags = O_RDWR | O_CREAT | O_NOFOLLOW;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ openFlags = O_RDWR | O_CREAT | O_NOFOLLOW;
   sqlite3_vfs dummyVfs;
-  int terrno = 0;
-  UnixUnusedFd *pUnused = NULL;
+  പൂർണ്ണസംഖ്യ terrno = 0;
+  UnixUnusedFd *pUnused = ശൂന്യ;
 
   /* 1. first try to open/create the file
   ** 2. if that fails, and this is a lock file (not-conch), try creating
@@ -7533,108 +7533,108 @@ static int proxyCreateUnixFile(
   ** otherwise return BUSY (if lock file) or CANTOPEN for the conch file
   */
   pUnused = findReusableFd(path, openFlags);
-  if( pUnused ){
+  എങ്കിൽ( pUnused ){
     fd = pUnused->fd;
-  }else{
-    pUnused = sqlite3_malloc64(sizeof(*pUnused));
-    if( !pUnused ){
-      return SQLITE_NOMEM_BKPT;
+  }അല്ലെങ്കിൽ{
+    pUnused = sqlite3_malloc64(വലുപ്പം(*pUnused));
+    എങ്കിൽ( !pUnused ){
+      തിരികെ SQLITE_NOMEM_BKPT;
     }
   }
-  if( fd<0 ){
+  എങ്കിൽ( fd<0 ){
     fd = robust_open(path, openFlags, 0);
     terrno = errno;
-    if( fd<0 && errno==ENOENT && islockfile ){
-      if( proxyCreateLockPath(path) == SQLITE_OK ){
+    എങ്കിൽ( fd<0 && errno==ENOENT && islockfile ){
+      എങ്കിൽ( proxyCreateLockPath(path) == SQLITE_OK ){
         fd = robust_open(path, openFlags, 0);
       }
     }
   }
-  if( fd<0 ){
+  എങ്കിൽ( fd<0 ){
     openFlags = O_RDONLY | O_NOFOLLOW;
     fd = robust_open(path, openFlags, 0);
     terrno = errno;
   }
-  if( fd<0 ){
-    if( islockfile ){
-      return SQLITE_BUSY;
+  എങ്കിൽ( fd<0 ){
+    എങ്കിൽ( islockfile ){
+      തിരികെ SQLITE_BUSY;
     }
-    switch (terrno) {
-      case EACCES:
-        return SQLITE_PERM;
-      case EIO:
-        return SQLITE_IOERR_LOCK; /* even though it is the conch */
-      default:
-        return SQLITE_CANTOPEN_BKPT;
+    തിരഞ്ഞെടുപ്പ് (terrno) {
+      അവസ്ഥ EACCES:
+        തിരികെ SQLITE_PERM;
+      അവസ്ഥ EIO:
+        തിരികെ SQLITE_IOERR_LOCK; /* even though it is the conch */
+      സ്ഥിരസ്ഥിതി:
+        തിരികെ SQLITE_CANTOPEN_BKPT;
     }
   }
 
-  pNew = (unixFile *)sqlite3_malloc64(sizeof(*pNew));
-  if( pNew==NULL ){
+  pNew = (unixFile *)sqlite3_malloc64(വലുപ്പം(*pNew));
+  എങ്കിൽ( pNew==ശൂന്യ ){
     rc = SQLITE_NOMEM_BKPT;
-    goto end_create_proxy;
+    പോകുക end_create_proxy;
   }
-  memset(pNew, 0, sizeof(unixFile));
+  memset(pNew, 0, വലുപ്പം(unixFile));
   pNew->openFlags = openFlags;
-  memset(&dummyVfs, 0, sizeof(dummyVfs));
-  dummyVfs.pAppData = (void*)&autolockIoFinder;
+  memset(&dummyVfs, 0, വലുപ്പം(dummyVfs));
+  dummyVfs.pAppData = (ശൂന്യം*)&autolockIoFinder;
   dummyVfs.zName = "dummy";
   pUnused->fd = fd;
   pUnused->flags = openFlags;
   pNew->pPreallocatedUnused = pUnused;
 
   rc = fillInUnixFile(&dummyVfs, fd, (sqlite3_file*)pNew, path, 0);
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     *ppFile = pNew;
-    return SQLITE_OK;
+    തിരികെ SQLITE_OK;
   }
 end_create_proxy:  
   robust_close(pNew, fd, __LINE__);
   sqlite3_free(pNew);
   sqlite3_free(pUnused);
-  return rc;
+  തിരികെ rc;
 }
 
 #ifdef SQLITE_TEST
 /* simulate multiple hosts by creating unique hostid file paths */
-int sqlite3_hostid_num = 0;
+പൂർണ്ണസംഖ്യ sqlite3_hostid_അക്കം = 0;
 #endif
 
 #define PROXY_HOSTIDLEN    16  /* conch file host id length */
 
-#if HAVE_GETHOSTUUID
+#എങ്കിൽ HAVE_GETHOSTUUID
 /* Not always defined in the headers as it ought to be */
-extern int gethostuuid(uuid_t id, const struct timespec *wait);
+ബാഹ്യ പൂർണ്ണസംഖ്യ gethostuuid(uuid_t id, സ്ഥിരം ഘടന timespec *wait);
 #endif
 
 /* get the host ID via gethostuuid(), pHostID must point to PROXY_HOSTIDLEN
 ** bytes of writable memory.
 */
-static int proxyGetHostID(unsigned char *pHostID, int *pError){
-  assert(PROXY_HOSTIDLEN == sizeof(uuid_t));
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyGetHostID(unsigned അക്ഷരം *pHostID, പൂർണ്ണസംഖ്യ *pError){
+  പ്രതിജ്ഞാ(PROXY_HOSTIDLEN == വലുപ്പം(uuid_t));
   memset(pHostID, 0, PROXY_HOSTIDLEN);
-#if HAVE_GETHOSTUUID
+#എങ്കിൽ HAVE_GETHOSTUUID
   {
-    struct timespec timeout = {1, 0}; /* 1 sec timeout */
-    if( gethostuuid(pHostID, &timeout) ){
-      int err = errno;
-      if( pError ){
+    ഘടന timespec timeout = {1, 0}; /* 1 sec timeout */
+    എങ്കിൽ( gethostuuid(pHostID, &timeout) ){
+      പൂർണ്ണസംഖ്യ err = errno;
+      എങ്കിൽ( pError ){
         *pError = err;
       }
-      return SQLITE_IOERR;
+      തിരികെ SQLITE_IOERR;
     }
   }
-#else
+#അല്ലെങ്കിൽ
   UNUSED_PARAMETER(pError);
 #endif
 #ifdef SQLITE_TEST
   /* simulate multiple hosts by creating unique hostid file paths */
-  if( sqlite3_hostid_num != 0){
-    pHostID[0] = (char)(pHostID[0] + (char)(sqlite3_hostid_num & 0xFF));
+  എങ്കിൽ( sqlite3_hostid_അക്കം != 0){
+    pHostID[0] = (അക്ഷരം)(pHostID[0] + (അക്ഷരം)(sqlite3_hostid_അക്കം & 0xFF));
   }
 #endif
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* The conch file contains the header, host id and lock file path
@@ -7650,45 +7650,45 @@ static int proxyGetHostID(unsigned char *pHostID, int *pError){
 ** conch file structure and finally the original conch file descriptor is
 ** closed.  Returns zero if successful.
 */
-static int proxyBreakConchLock(unixFile *pFile, uuid_t myHostID){
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyBreakConchLock(unixFile *pFile, uuid_t myHostID){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
   unixFile *conchFile = pCtx->conchFile;
-  char tPath[MAXPATHLEN];
-  char buf[PROXY_MAXCONCHLEN];
-  char *cPath = pCtx->conchFilePath;
+  അക്ഷരം tPath[MAXPATHLEN];
+  അക്ഷരം buf[PROXY_MAXCONCHLEN];
+  അക്ഷരം *cPath = pCtx->conchFilePath;
   size_t readLen = 0;
   size_t pathLen = 0;
-  char errmsg[64] = "";
-  int fd = -1;
-  int rc = -1;
+  അക്ഷരം errmsg[64] = "";
+  പൂർണ്ണസംഖ്യ fd = -1;
+  പൂർണ്ണസംഖ്യ rc = -1;
   UNUSED_PARAMETER(myHostID);
 
   /* create a new path by replace the trailing '-conch' with '-break' */
   pathLen = strlcpy(tPath, cPath, MAXPATHLEN);
-  if( pathLen>MAXPATHLEN || pathLen<6 ||
+  എങ്കിൽ( pathLen>MAXPATHLEN || pathLen<6 ||
      (strlcpy(&tPath[pathLen-5], "break", 6) != 5) ){
-    sqlite3_snprintf(sizeof(errmsg),errmsg,"path error (len %d)",(int)pathLen);
-    goto end_breaklock;
+    sqlite3_snprintf(വലുപ്പം(errmsg),errmsg,"path error (len %d)",(പൂർണ്ണസംഖ്യ)pathLen);
+    പോകുക end_breaklock;
   }
   /* read the conch content */
   readLen = osPread(conchFile->h, buf, PROXY_MAXCONCHLEN, 0);
-  if( readLen<PROXY_PATHINDEX ){
-    sqlite3_snprintf(sizeof(errmsg),errmsg,"read error (len %d)",(int)readLen);
-    goto end_breaklock;
+  എങ്കിൽ( readLen<PROXY_PATHINDEX ){
+    sqlite3_snprintf(വലുപ്പം(errmsg),errmsg,"read error (len %d)",(പൂർണ്ണസംഖ്യ)readLen);
+    പോകുക end_breaklock;
   }
   /* write it out to the temporary break file */
   fd = robust_open(tPath, (O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW), 0);
-  if( fd<0 ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "create failed (%d)", errno);
-    goto end_breaklock;
+  എങ്കിൽ( fd<0 ){
+    sqlite3_snprintf(വലുപ്പം(errmsg), errmsg, "create failed (%d)", errno);
+    പോകുക end_breaklock;
   }
-  if( osPwrite(fd, buf, readLen, 0) != (ssize_t)readLen ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "write failed (%d)", errno);
-    goto end_breaklock;
+  എങ്കിൽ( osPwrite(fd, buf, readLen, 0) != (ssize_t)readLen ){
+    sqlite3_snprintf(വലുപ്പം(errmsg), errmsg, "write failed (%d)", errno);
+    പോകുക end_breaklock;
   }
-  if( rename(tPath, cPath) ){
-    sqlite3_snprintf(sizeof(errmsg), errmsg, "rename failed (%d)", errno);
-    goto end_breaklock;
+  എങ്കിൽ( rename(tPath, cPath) ){
+    sqlite3_snprintf(വലുപ്പം(errmsg), errmsg, "rename failed (%d)", errno);
+    പോകുക end_breaklock;
   }
   rc = 0;
   fprintf(stderr, "broke stale lock on %s\n", cPath);
@@ -7697,89 +7697,89 @@ static int proxyBreakConchLock(unixFile *pFile, uuid_t myHostID){
   conchFile->openFlags = O_RDWR | O_CREAT;
 
 end_breaklock:
-  if( rc ){
-    if( fd>=0 ){
+  എങ്കിൽ( rc ){
+    എങ്കിൽ( fd>=0 ){
       osUnlink(tPath);
       robust_close(pFile, fd, __LINE__);
     }
     fprintf(stderr, "failed to break stale lock on %s, %s\n", cPath, errmsg);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /* Take the requested lock on the conch file and break a stale lock if the
 ** host id matches.
 */
-static int proxyConchLock(unixFile *pFile, uuid_t myHostID, int lockType){
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyConchLock(unixFile *pFile, uuid_t myHostID, പൂർണ്ണസംഖ്യ lockType){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
   unixFile *conchFile = pCtx->conchFile;
-  int rc = SQLITE_OK;
-  int nTries = 0;
-  struct timespec conchModTime;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ nTries = 0;
+  ഘടന timespec conchModTime;
 
-  memset(&conchModTime, 0, sizeof(conchModTime));
-  do {
+  memset(&conchModTime, 0, വലുപ്പം(conchModTime));
+  ചെയ്യുക {
     rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, lockType);
     nTries ++;
-    if( rc==SQLITE_BUSY ){
+    എങ്കിൽ( rc==SQLITE_BUSY ){
       /* If the lock failed (busy):
        * 1st try: get the mod time of the conch, wait 0.5s and try again.
        * 2nd try: fail if the mod time changed or host id is different, wait
        *           10 sec and try again
        * 3rd try: break the lock unless the mod time has changed.
        */
-      struct stat buf;
-      if( osFstat(conchFile->h, &buf) ){
+      ഘടന stat buf;
+      എങ്കിൽ( osFstat(conchFile->h, &buf) ){
         storeLastErrno(pFile, errno);
-        return SQLITE_IOERR_LOCK;
+        തിരികെ SQLITE_IOERR_LOCK;
       }
     
-      if( nTries==1 ){
+      എങ്കിൽ( nTries==1 ){
         conchModTime = buf.st_mtimespec;
         unixSleep(0,500000); /* wait 0.5 sec and try the lock again*/
-        continue;
+        തുടരുക;
       }
 
-      assert( nTries>1 );
-      if( conchModTime.tv_sec != buf.st_mtimespec.tv_sec ||
+      പ്രതിജ്ഞാ( nTries>1 );
+      എങ്കിൽ( conchModTime.tv_sec != buf.st_mtimespec.tv_sec ||
          conchModTime.tv_nsec != buf.st_mtimespec.tv_nsec ){
-        return SQLITE_BUSY;
+        തിരികെ SQLITE_BUSY;
       }
     
-      if( nTries==2 ){
-        char tBuf[PROXY_MAXCONCHLEN];
-        int len = osPread(conchFile->h, tBuf, PROXY_MAXCONCHLEN, 0);
-        if( len<0 ){
+      എങ്കിൽ( nTries==2 ){
+        അക്ഷരം tBuf[PROXY_MAXCONCHLEN];
+        പൂർണ്ണസംഖ്യ len = osPread(conchFile->h, tBuf, PROXY_MAXCONCHLEN, 0);
+        എങ്കിൽ( len<0 ){
           storeLastErrno(pFile, errno);
-          return SQLITE_IOERR_LOCK;
+          തിരികെ SQLITE_IOERR_LOCK;
         }
-        if( len>PROXY_PATHINDEX && tBuf[0]==(char)PROXY_CONCHVERSION){
+        എങ്കിൽ( len>PROXY_PATHINDEX && tBuf[0]==(അക്ഷരം)PROXY_CONCHVERSION){
           /* don't break the lock if the host id doesn't match */
-          if( 0!=memcmp(&tBuf[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN) ){
-            return SQLITE_BUSY;
+          എങ്കിൽ( 0!=memcmp(&tBuf[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN) ){
+            തിരികെ SQLITE_BUSY;
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           /* don't break the lock on short read or a version mismatch */
-          return SQLITE_BUSY;
+          തിരികെ SQLITE_BUSY;
         }
         unixSleep(0,10000000); /* wait 10 sec and try the lock again */
-        continue;
+        തുടരുക;
       }
     
-      assert( nTries==3 );
-      if( 0==proxyBreakConchLock(pFile, myHostID) ){
+      പ്രതിജ്ഞാ( nTries==3 );
+      എങ്കിൽ( 0==proxyBreakConchLock(pFile, myHostID) ){
         rc = SQLITE_OK;
-        if( lockType==EXCLUSIVE_LOCK ){
+        എങ്കിൽ( lockType==EXCLUSIVE_LOCK ){
           rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, SHARED_LOCK);
         }
-        if( !rc ){
+        എങ്കിൽ( !rc ){
           rc = conchFile->pMethod->xLock((sqlite3_file*)conchFile, lockType);
         }
       }
     }
-  } while( rc==SQLITE_BUSY && nTries<3 );
+  } ആകുമ്പോൾ( rc==SQLITE_BUSY && nTries<3 );
 
-  return rc;
+  തിരികെ rc;
 }
 
 /* Takes the conch by taking a shared lock and read the contents conch, if
@@ -7788,47 +7788,47 @@ static int proxyConchLock(unixFile *pFile, uuid_t myHostID, int lockType){
 ** host IDs match, or a new lock path will be generated automatically
 ** and written to the conch file.
 */
-static int proxyTakeConch(unixFile *pFile){
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyTakeConch(unixFile *pFile){
   proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
 
-  if( pCtx->conchHeld!=0 ){
-    return SQLITE_OK;
-  }else{
+  എങ്കിൽ( pCtx->conchHeld!=0 ){
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ{
     unixFile *conchFile = pCtx->conchFile;
     uuid_t myHostID;
-    int pError = 0;
-    char readBuf[PROXY_MAXCONCHLEN];
-    char lockPath[MAXPATHLEN];
-    char *tempLockPath = NULL;
-    int rc = SQLITE_OK;
-    int createConch = 0;
-    int hostIdMatch = 0;
-    int readLen = 0;
-    int tryOldLockPath = 0;
-    int forceNewLockPath = 0;
+    പൂർണ്ണസംഖ്യ pError = 0;
+    അക്ഷരം readBuf[PROXY_MAXCONCHLEN];
+    അക്ഷരം lockPath[MAXPATHLEN];
+    അക്ഷരം *tempLockPath = ശൂന്യ;
+    പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+    പൂർണ്ണസംഖ്യ createConch = 0;
+    പൂർണ്ണസംഖ്യ hostIdMatch = 0;
+    പൂർണ്ണസംഖ്യ readLen = 0;
+    പൂർണ്ണസംഖ്യ tryOldLockPath = 0;
+    പൂർണ്ണസംഖ്യ forceNewLockPath = 0;
   
     OSTRACE(("TAKECONCH  %d for %s pid=%d\n", conchFile->h,
              (pCtx->lockProxyPath ? pCtx->lockProxyPath : ":auto:"),
              osGetpid(0)));
 
     rc = proxyGetHostID(myHostID, &pError);
-    if( (rc&0xff)==SQLITE_IOERR ){
+    എങ്കിൽ( (rc&0xff)==SQLITE_IOERR ){
       storeLastErrno(pFile, pError);
-      goto end_takeconch;
+      പോകുക end_takeconch;
     }
     rc = proxyConchLock(pFile, myHostID, SHARED_LOCK);
-    if( rc!=SQLITE_OK ){
-      goto end_takeconch;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      പോകുക end_takeconch;
     }
     /* read the existing conch file */
     readLen = seekAndRead((unixFile*)conchFile, 0, readBuf, PROXY_MAXCONCHLEN);
-    if( readLen<0 ){
+    എങ്കിൽ( readLen<0 ){
       /* I/O error: lastErrno set by seekAndRead */
       storeLastErrno(pFile, conchFile->lastErrno);
       rc = SQLITE_IOERR_READ;
-      goto end_takeconch;
-    }else if( readLen<=(PROXY_HEADERLEN+PROXY_HOSTIDLEN) ||
-             readBuf[0]!=(char)PROXY_CONCHVERSION ){
+      പോകുക end_takeconch;
+    }അല്ലെങ്കിൽ എങ്കിൽ( readLen<=(PROXY_HEADERLEN+PROXY_HOSTIDLEN) ||
+             readBuf[0]!=(അക്ഷരം)PROXY_CONCHVERSION ){
       /* a short read or version format mismatch means we need to create a new
       ** conch file.
       */
@@ -7838,20 +7838,20 @@ static int proxyTakeConch(unixFile *pFile){
     ** we'll try to use the path there, if we can't open that path, we'll
     ** retry with a new auto-generated path
     */
-    do { /* in case we need to try again for an :auto: named lock file */
+    ചെയ്യുക { /* in case we need to try again for an :auto: named lock file */
 
-      if( !createConch && !forceNewLockPath ){
+      എങ്കിൽ( !createConch && !forceNewLockPath ){
         hostIdMatch = !memcmp(&readBuf[PROXY_HEADERLEN], myHostID,
                                   PROXY_HOSTIDLEN);
         /* if the conch has data compare the contents */
-        if( !pCtx->lockProxyPath ){
+        എങ്കിൽ( !pCtx->lockProxyPath ){
           /* for auto-named local lock file, just check the host ID and we'll
            ** use the local lock file path that's already in there
            */
-          if( hostIdMatch ){
+          എങ്കിൽ( hostIdMatch ){
             size_t pathLen = (readLen - PROXY_PATHINDEX);
           
-            if( pathLen>=MAXPATHLEN ){
+            എങ്കിൽ( pathLen>=MAXPATHLEN ){
               pathLen=MAXPATHLEN-1;
             }
             memcpy(lockPath, &readBuf[PROXY_PATHINDEX], pathLen);
@@ -7859,25 +7859,25 @@ static int proxyTakeConch(unixFile *pFile){
             tempLockPath = lockPath;
             tryOldLockPath = 1;
             /* create a copy of the lock path if the conch is taken */
-            goto end_takeconch;
+            പോകുക end_takeconch;
           }
-        }else if( hostIdMatch
+        }അല്ലെങ്കിൽ എങ്കിൽ( hostIdMatch
                && !strncmp(pCtx->lockProxyPath, &readBuf[PROXY_PATHINDEX],
                            readLen-PROXY_PATHINDEX)
         ){
           /* conch host and lock path match */
-          goto end_takeconch;
+          പോകുക end_takeconch;
         }
       }
     
       /* if the conch isn't writable and doesn't match, we can't take it */
-      if( (conchFile->openFlags&O_RDWR) == 0 ){
+      എങ്കിൽ( (conchFile->openFlags&O_RDWR) == 0 ){
         rc = SQLITE_BUSY;
-        goto end_takeconch;
+        പോകുക end_takeconch;
       }
     
       /* either the conch didn't match or we need to create a new one */
-      if( !pCtx->lockProxyPath ){
+      എങ്കിൽ( !pCtx->lockProxyPath ){
         proxyGetLockPath(pCtx->dbPath, lockPath, MAXPATHLEN);
         tempLockPath = lockPath;
         /* create a copy of the lock path _only_ if the conch is taken */
@@ -7887,28 +7887,28 @@ static int proxyTakeConch(unixFile *pFile){
       ** has a shared lock already), if the host id matches, use the big
       ** stick.
       */
-      futimes(conchFile->h, NULL);
-      if( hostIdMatch && !createConch ){
-        if( conchFile->pInode && conchFile->pInode->nShared>1 ){
+      futimes(conchFile->h, ശൂന്യ);
+      എങ്കിൽ( hostIdMatch && !createConch ){
+        എങ്കിൽ( conchFile->pInode && conchFile->pInode->nShared>1 ){
           /* We are trying for an exclusive lock but another thread in this
            ** same process is still holding a shared lock. */
           rc = SQLITE_BUSY;
-        } else {        
+        } അല്ലെങ്കിൽ {        
           rc = proxyConchLock(pFile, myHostID, EXCLUSIVE_LOCK);
         }
-      }else{
+      }അല്ലെങ്കിൽ{
         rc = proxyConchLock(pFile, myHostID, EXCLUSIVE_LOCK);
       }
-      if( rc==SQLITE_OK ){
-        char writeBuffer[PROXY_MAXCONCHLEN];
-        int writeSize = 0;
+      എങ്കിൽ( rc==SQLITE_OK ){
+        അക്ഷരം writeBuffer[PROXY_MAXCONCHLEN];
+        പൂർണ്ണസംഖ്യ writeSize = 0;
       
-        writeBuffer[0] = (char)PROXY_CONCHVERSION;
+        writeBuffer[0] = (അക്ഷരം)PROXY_CONCHVERSION;
         memcpy(&writeBuffer[PROXY_HEADERLEN], myHostID, PROXY_HOSTIDLEN);
-        if( pCtx->lockProxyPath!=NULL ){
+        എങ്കിൽ( pCtx->lockProxyPath!=ശൂന്യ ){
           strlcpy(&writeBuffer[PROXY_PATHINDEX], pCtx->lockProxyPath,
                   MAXPATHLEN);
-        }else{
+        }അല്ലെങ്കിൽ{
           strlcpy(&writeBuffer[PROXY_PATHINDEX], tempLockPath, MAXPATHLEN);
         }
         writeSize = PROXY_PATHINDEX + strlen(&writeBuffer[PROXY_PATHINDEX]);
@@ -7918,28 +7918,28 @@ static int proxyTakeConch(unixFile *pFile){
         /* If we created a new conch file (not just updated the contents of a
          ** valid conch file), try to match the permissions of the database
          */
-        if( rc==SQLITE_OK && createConch ){
-          struct stat buf;
-          int err = osFstat(pFile->h, &buf);
-          if( err==0 ){
+        എങ്കിൽ( rc==SQLITE_OK && createConch ){
+          ഘടന stat buf;
+          പൂർണ്ണസംഖ്യ err = osFstat(pFile->h, &buf);
+          എങ്കിൽ( err==0 ){
             mode_t cmode = buf.st_mode&(S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP |
                                         S_IROTH|S_IWOTH);
             /* try to match the database file R/W permissions, ignore failure */
 #ifndef SQLITE_PROXY_DEBUG
             osFchmod(conchFile->h, cmode);
-#else
-            do{
+#അല്ലെങ്കിൽ
+            ചെയ്യുക{
               rc = osFchmod(conchFile->h, cmode);
-            }while( rc==(-1) && errno==EINTR );
-            if( rc!=0 ){
-              int code = errno;
+            }ആകുമ്പോൾ( rc==(-1) && errno==EINTR );
+            എങ്കിൽ( rc!=0 ){
+              പൂർണ്ണസംഖ്യ code = errno;
               fprintf(stderr, "fchmod %o FAILED with %d %s\n",
                       cmode, code, strerror(code));
-            } else {
+            } അല്ലെങ്കിൽ {
               fprintf(stderr, "fchmod %o SUCCEDED\n",cmode);
             }
-          }else{
-            int code = errno;
+          }അല്ലെങ്കിൽ{
+            പൂർണ്ണസംഖ്യ code = errno;
             fprintf(stderr, "STAT FAILED[%d] with %d %s\n",
                     err, code, strerror(code));
 #endif
@@ -7950,59 +7950,59 @@ static int proxyTakeConch(unixFile *pFile){
     
     end_takeconch:
       OSTRACE(("TRANSPROXY: CLOSE  %d\n", pFile->h));
-      if( rc==SQLITE_OK && pFile->openFlags ){
-        int fd;
-        if( pFile->h>=0 ){
+      എങ്കിൽ( rc==SQLITE_OK && pFile->openFlags ){
+        പൂർണ്ണസംഖ്യ fd;
+        എങ്കിൽ( pFile->h>=0 ){
           robust_close(pFile, pFile->h, __LINE__);
         }
         pFile->h = -1;
         fd = robust_open(pCtx->dbPath, pFile->openFlags, 0);
         OSTRACE(("TRANSPROXY: OPEN  %d\n", fd));
-        if( fd>=0 ){
+        എങ്കിൽ( fd>=0 ){
           pFile->h = fd;
-        }else{
+        }അല്ലെങ്കിൽ{
           rc=SQLITE_CANTOPEN_BKPT; /* SQLITE_BUSY? proxyTakeConch called
            during locking */
         }
       }
-      if( rc==SQLITE_OK && !pCtx->lockProxy ){
-        char *path = tempLockPath ? tempLockPath : pCtx->lockProxyPath;
+      എങ്കിൽ( rc==SQLITE_OK && !pCtx->lockProxy ){
+        അക്ഷരം *path = tempLockPath ? tempLockPath : pCtx->lockProxyPath;
         rc = proxyCreateUnixFile(path, &pCtx->lockProxy, 1);
-        if( rc!=SQLITE_OK && rc!=SQLITE_NOMEM && tryOldLockPath ){
+        എങ്കിൽ( rc!=SQLITE_OK && rc!=SQLITE_NOMEM && tryOldLockPath ){
           /* we couldn't create the proxy lock file with the old lock file path
            ** so try again via auto-naming
            */
           forceNewLockPath = 1;
           tryOldLockPath = 0;
-          continue; /* go back to the do {} while start point, try again */
+          തുടരുക; /* go back to the do {} while start point, try again */
         }
       }
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         /* Need to make a copy of path if we extracted the value
          ** from the conch file or the path was allocated on the stack
          */
-        if( tempLockPath ){
+        എങ്കിൽ( tempLockPath ){
           pCtx->lockProxyPath = sqlite3DbStrDup(0, tempLockPath);
-          if( !pCtx->lockProxyPath ){
+          എങ്കിൽ( !pCtx->lockProxyPath ){
             rc = SQLITE_NOMEM_BKPT;
           }
         }
       }
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         pCtx->conchHeld = 1;
       
-        if( pCtx->lockProxy->pMethod == &afpIoMethods ){
+        എങ്കിൽ( pCtx->lockProxy->pMethod == &afpIoMethods ){
           afpLockingContext *afpCtx;
           afpCtx = (afpLockingContext *)pCtx->lockProxy->lockingContext;
           afpCtx->dbPath = pCtx->lockProxyPath;
         }
-      } else {
+      } അല്ലെങ്കിൽ {
         conchFile->pMethod->xUnlock((sqlite3_file*)conchFile, NO_LOCK);
       }
       OSTRACE(("TAKECONCH  %d %s\n", conchFile->h,
                rc==SQLITE_OK?"ok":"failed"));
-      return rc;
-    } while (1); /* in case we need to retry the :auto: lock file -
+      തിരികെ rc;
+    } ആകുമ്പോൾ (1); /* in case we need to retry the :auto: lock file -
                  ** we should never get here except via the 'continue' call. */
   }
 }
@@ -8010,8 +8010,8 @@ static int proxyTakeConch(unixFile *pFile){
 /*
 ** If pFile holds a lock on a conch file, then release that lock.
 */
-static int proxyReleaseConch(unixFile *pFile){
-  int rc = SQLITE_OK;         /* Subroutine return code */
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyReleaseConch(unixFile *pFile){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;         /* Subroutine return code */
   proxyLockingContext *pCtx;  /* The locking context for the proxy lock */
   unixFile *conchFile;        /* Name of the conch file */
 
@@ -8020,13 +8020,13 @@ static int proxyReleaseConch(unixFile *pFile){
   OSTRACE(("RELEASECONCH  %d for %s pid=%d\n", conchFile->h,
            (pCtx->lockProxyPath ? pCtx->lockProxyPath : ":auto:"),
            osGetpid(0)));
-  if( pCtx->conchHeld>0 ){
+  എങ്കിൽ( pCtx->conchHeld>0 ){
     rc = conchFile->pMethod->xUnlock((sqlite3_file*)conchFile, NO_LOCK);
   }
   pCtx->conchHeld = 0;
   OSTRACE(("RELEASECONCH  %d %s\n", conchFile->h,
            (rc==SQLITE_OK ? "ok" : "failed")));
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -8040,70 +8040,70 @@ static int proxyReleaseConch(unixFile *pFile){
 **
 ** *pConchPath is set to NULL if a memory allocation error occurs.
 */
-static int proxyCreateConchPathname(char *dbPath, char **pConchPath){
-  int i;                        /* Loop counter */
-  int len = (int)strlen(dbPath); /* Length of database filename - dbPath */
-  char *conchPath;              /* buffer in which to construct conch name */
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyCreateConchPathname(അക്ഷരം *dbPath, അക്ഷരം **pConchPath){
+  പൂർണ്ണസംഖ്യ i;                        /* Loop counter */
+  പൂർണ്ണസംഖ്യ len = (പൂർണ്ണസംഖ്യ)strlen(dbPath); /* Length of database filename - dbPath */
+  അക്ഷരം *conchPath;              /* buffer in which to construct conch name */
 
   /* Allocate space for the conch filename and initialize the name to
   ** the name of the original database file. */
-  *pConchPath = conchPath = (char *)sqlite3_malloc64(len + 8);
-  if( conchPath==0 ){
-    return SQLITE_NOMEM_BKPT;
+  *pConchPath = conchPath = (അക്ഷരം *)sqlite3_malloc64(len + 8);
+  എങ്കിൽ( conchPath==0 ){
+    തിരികെ SQLITE_NOMEM_BKPT;
   }
   memcpy(conchPath, dbPath, len+1);
 
   /* now insert a "." before the last / character */
-  for( i=(len-1); i>=0; i-- ){
-    if( conchPath[i]=='/' ){
+  വേണ്ടി( i=(len-1); i>=0; i-- ){
+    എങ്കിൽ( conchPath[i]=='/' ){
       i++;
-      break;
+      നിർത്തുക;
     }
   }
   conchPath[i]='.';
-  while ( i<len ){
+  ആകുമ്പോൾ ( i<len ){
     conchPath[i+1]=dbPath[i];
     i++;
   }
 
   /* append the "-conch" suffix to the file */
   memcpy(&conchPath[i+1], "-conch", 7);
-  assert( (int)strlen(conchPath) == len+7 );
+  പ്രതിജ്ഞാ( (പൂർണ്ണസംഖ്യ)strlen(conchPath) == len+7 );
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
 /* Takes a fully configured proxy locking-style unix file and switches
 ** the local lock file path
 */
-static int switchLockProxyPath(unixFile *pFile, const char *path) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ switchLockProxyPath(unixFile *pFile, സ്ഥിരം അക്ഷരം *path) {
   proxyLockingContext *pCtx = (proxyLockingContext*)pFile->lockingContext;
-  char *oldPath = pCtx->lockProxyPath;
-  int rc = SQLITE_OK;
+  അക്ഷരം *oldPath = pCtx->lockProxyPath;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-  if( pFile->eFileLock!=NO_LOCK ){
-    return SQLITE_BUSY;
+  എങ്കിൽ( pFile->eFileLock!=NO_LOCK ){
+    തിരികെ SQLITE_BUSY;
   }
 
   /* nothing to do if the path is NULL, :auto: or matches the existing path */
-  if( !path || path[0]=='\0' || !strcmp(path, ":auto:") ||
+  എങ്കിൽ( !path || path[0]=='\0' || !strcmp(path, ":auto:") ||
     (oldPath && !strncmp(oldPath, path, MAXPATHLEN)) ){
-    return SQLITE_OK;
-  }else{
+    തിരികെ SQLITE_OK;
+  }അല്ലെങ്കിൽ{
     unixFile *lockProxy = pCtx->lockProxy;
-    pCtx->lockProxy=NULL;
+    pCtx->lockProxy=ശൂന്യ;
     pCtx->conchHeld = 0;
-    if( lockProxy!=NULL ){
+    എങ്കിൽ( lockProxy!=ശൂന്യ ){
       rc=lockProxy->pMethod->xClose((sqlite3_file *)lockProxy);
-      if( rc ) return rc;
+      എങ്കിൽ( rc ) തിരികെ rc;
       sqlite3_free(lockProxy);
     }
     sqlite3_free(oldPath);
     pCtx->lockProxyPath = sqlite3DbStrDup(0, path);
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -8113,27 +8113,27 @@ static int switchLockProxyPath(unixFile *pFile, const char *path) {
 ** This routine find the filename associated with pFile and writes it
 ** int dbPath.
 */
-static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
-#if defined(__APPLE__)
-  if( pFile->pMethod == &afpIoMethods ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyGetDbPathForUnixFile(unixFile *pFile, അക്ഷരം *dbPath){
+#എങ്കിൽ defined(__APPLE__)
+  എങ്കിൽ( pFile->pMethod == &afpIoMethods ){
     /* afp style keeps a reference to the db path in the filePath field
     ** of the struct */
-    assert( (int)strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
+    പ്രതിജ്ഞാ( (പൂർണ്ണസംഖ്യ)strlen((അക്ഷരം*)pFile->lockingContext)<=MAXPATHLEN );
     strlcpy(dbPath, ((afpLockingContext *)pFile->lockingContext)->dbPath,
             MAXPATHLEN);
-  } else
+  } അല്ലെങ്കിൽ
 #endif
-  if( pFile->pMethod == &dotlockIoMethods ){
+  എങ്കിൽ( pFile->pMethod == &dotlockIoMethods ){
     /* dot lock style uses the locking context to store the dot lock
     ** file path */
-    int len = strlen((char *)pFile->lockingContext) - strlen(DOTLOCK_SUFFIX);
-    memcpy(dbPath, (char *)pFile->lockingContext, len + 1);
-  }else{
+    പൂർണ്ണസംഖ്യ len = strlen((അക്ഷരം *)pFile->lockingContext) - strlen(DOTLOCK_SUFFIX);
+    memcpy(dbPath, (അക്ഷരം *)pFile->lockingContext, len + 1);
+  }അല്ലെങ്കിൽ{
     /* all other styles use the locking context to store the db file path */
-    assert( strlen((char*)pFile->lockingContext)<=MAXPATHLEN );
-    strlcpy(dbPath, (char *)pFile->lockingContext, MAXPATHLEN);
+    പ്രതിജ്ഞാ( strlen((അക്ഷരം*)pFile->lockingContext)<=MAXPATHLEN );
+    strlcpy(dbPath, (അക്ഷരം *)pFile->lockingContext, MAXPATHLEN);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -8144,67 +8144,67 @@ static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){
 **  ->lockingContext
 **  ->pMethod
 */
-static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyTransformUnixFile(unixFile *pFile, സ്ഥിരം അക്ഷരം *path) {
   proxyLockingContext *pCtx;
-  char dbPath[MAXPATHLEN+1];       /* Name of the database file */
-  char *lockPath=NULL;
-  int rc = SQLITE_OK;
+  അക്ഷരം dbPath[MAXPATHLEN+1];       /* Name of the database file */
+  അക്ഷരം *lockPath=ശൂന്യ;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-  if( pFile->eFileLock!=NO_LOCK ){
-    return SQLITE_BUSY;
+  എങ്കിൽ( pFile->eFileLock!=NO_LOCK ){
+    തിരികെ SQLITE_BUSY;
   }
   proxyGetDbPathForUnixFile(pFile, dbPath);
-  if( !path || path[0]=='\0' || !strcmp(path, ":auto:") ){
-    lockPath=NULL;
-  }else{
-    lockPath=(char *)path;
+  എങ്കിൽ( !path || path[0]=='\0' || !strcmp(path, ":auto:") ){
+    lockPath=ശൂന്യ;
+  }അല്ലെങ്കിൽ{
+    lockPath=(അക്ഷരം *)path;
   }
 
   OSTRACE(("TRANSPROXY  %d for %s pid=%d\n", pFile->h,
            (lockPath ? lockPath : ":auto:"), osGetpid(0)));
 
-  pCtx = sqlite3_malloc64( sizeof(*pCtx) );
-  if( pCtx==0 ){
-    return SQLITE_NOMEM_BKPT;
+  pCtx = sqlite3_malloc64( വലുപ്പം(*pCtx) );
+  എങ്കിൽ( pCtx==0 ){
+    തിരികെ SQLITE_NOMEM_BKPT;
   }
-  memset(pCtx, 0, sizeof(*pCtx));
+  memset(pCtx, 0, വലുപ്പം(*pCtx));
 
   rc = proxyCreateConchPathname(dbPath, &pCtx->conchFilePath);
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     rc = proxyCreateUnixFile(pCtx->conchFilePath, &pCtx->conchFile, 0);
-    if( rc==SQLITE_CANTOPEN && ((pFile->openFlags&O_RDWR) == 0) ){
+    എങ്കിൽ( rc==SQLITE_CANTOPEN && ((pFile->openFlags&O_RDWR) == 0) ){
       /* if (a) the open flags are not O_RDWR, (b) the conch isn't there, and
       ** (c) the file system is read-only, then enable no-locking access.
       ** Ugh, since O_RDONLY==0x0000 we test for !O_RDWR since unixOpen asserts
       ** that openFlags will have only one of O_RDONLY or O_RDWR.
       */
-      struct statfs fsInfo;
-      struct stat conchInfo;
-      int goLockless = 0;
+      ഘടന statfs fsInfo;
+      ഘടന stat conchInfo;
+      പൂർണ്ണസംഖ്യ goLockless = 0;
 
-      if( osStat(pCtx->conchFilePath, &conchInfo) == -1 ) {
-        int err = errno;
-        if( (err==ENOENT) && (statfs(dbPath, &fsInfo) != -1) ){
+      എങ്കിൽ( osStat(pCtx->conchFilePath, &conchInfo) == -1 ) {
+        പൂർണ്ണസംഖ്യ err = errno;
+        എങ്കിൽ( (err==ENOENT) && (statfs(dbPath, &fsInfo) != -1) ){
           goLockless = (fsInfo.f_flags&MNT_RDONLY) == MNT_RDONLY;
         }
       }
-      if( goLockless ){
+      എങ്കിൽ( goLockless ){
         pCtx->conchHeld = -1; /* read only FS/ lockless */
         rc = SQLITE_OK;
       }
     }
   }
-  if( rc==SQLITE_OK && lockPath ){
+  എങ്കിൽ( rc==SQLITE_OK && lockPath ){
     pCtx->lockProxyPath = sqlite3DbStrDup(0, lockPath);
   }
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pCtx->dbPath = sqlite3DbStrDup(0, dbPath);
-    if( pCtx->dbPath==NULL ){
+    എങ്കിൽ( pCtx->dbPath==ശൂന്യ ){
       rc = SQLITE_NOMEM_BKPT;
     }
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     /* all memory is allocated, proxys are created and assigned,
     ** switch the locking context and pMethod then return.
     */
@@ -8212,8 +8212,8 @@ static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
     pFile->lockingContext = pCtx;
     pCtx->pOldMethod = pFile->pMethod;
     pFile->pMethod = &proxyIoMethods;
-  }else{
-    if( pCtx->conchFile ){
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( pCtx->conchFile ){
       pCtx->conchFile->pMethod->xClose((sqlite3_file *)pCtx->conchFile);
       sqlite3_free(pCtx->conchFile);
     }
@@ -8223,7 +8223,7 @@ static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
   }
   OSTRACE(("TRANSPROXY  %d %s\n", pFile->h,
            (rc==SQLITE_OK ? "ok" : "failed")));
-  return rc;
+  തിരികെ rc;
 }
 
 
@@ -8231,64 +8231,64 @@ static int proxyTransformUnixFile(unixFile *pFile, const char *path) {
 ** This routine handles sqlite3_file_control() calls that are specific
 ** to proxy locking.
 */
-static int proxyFileControl(sqlite3_file *id, int op, void *pArg){
-  switch( op ){
-    case SQLITE_FCNTL_GET_LOCKPROXYFILE: {
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyFileControl(sqlite3_file *id, പൂർണ്ണസംഖ്യ op, ശൂന്യം *pArg){
+  തിരഞ്ഞെടുപ്പ്( op ){
+    അവസ്ഥ SQLITE_FCNTL_GET_LOCKPROXYFILE: {
       unixFile *pFile = (unixFile*)id;
-      if( pFile->pMethod == &proxyIoMethods ){
+      എങ്കിൽ( pFile->pMethod == &proxyIoMethods ){
         proxyLockingContext *pCtx = (proxyLockingContext*)pFile->lockingContext;
         proxyTakeConch(pFile);
-        if( pCtx->lockProxyPath ){
-          *(const char **)pArg = pCtx->lockProxyPath;
-        }else{
-          *(const char **)pArg = ":auto: (not held)";
+        എങ്കിൽ( pCtx->lockProxyPath ){
+          *(സ്ഥിരം അക്ഷരം **)pArg = pCtx->lockProxyPath;
+        }അല്ലെങ്കിൽ{
+          *(സ്ഥിരം അക്ഷരം **)pArg = ":auto: (not held)";
         }
-      } else {
-        *(const char **)pArg = NULL;
+      } അല്ലെങ്കിൽ {
+        *(സ്ഥിരം അക്ഷരം **)pArg = ശൂന്യ;
       }
-      return SQLITE_OK;
+      തിരികെ SQLITE_OK;
     }
-    case SQLITE_FCNTL_SET_LOCKPROXYFILE: {
+    അവസ്ഥ SQLITE_FCNTL_SET_LOCKPROXYFILE: {
       unixFile *pFile = (unixFile*)id;
-      int rc = SQLITE_OK;
-      int isProxyStyle = (pFile->pMethod == &proxyIoMethods);
-      if( pArg==NULL || (const char *)pArg==0 ){
-        if( isProxyStyle ){
+      പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+      പൂർണ്ണസംഖ്യ isProxyStyle = (pFile->pMethod == &proxyIoMethods);
+      എങ്കിൽ( pArg==ശൂന്യ || (സ്ഥിരം അക്ഷരം *)pArg==0 ){
+        എങ്കിൽ( isProxyStyle ){
           /* turn off proxy locking - not supported.  If support is added for
           ** switching proxy locking mode off then it will need to fail if
           ** the journal mode is WAL mode.
           */
           rc = SQLITE_ERROR /*SQLITE_PROTOCOL? SQLITE_MISUSE?*/;
-        }else{
+        }അല്ലെങ്കിൽ{
           /* turn off proxy locking - already off - NOOP */
           rc = SQLITE_OK;
         }
-      }else{
-        const char *proxyPath = (const char *)pArg;
-        if( isProxyStyle ){
+      }അല്ലെങ്കിൽ{
+        സ്ഥിരം അക്ഷരം *proxyPath = (സ്ഥിരം അക്ഷരം *)pArg;
+        എങ്കിൽ( isProxyStyle ){
           proxyLockingContext *pCtx =
             (proxyLockingContext*)pFile->lockingContext;
-          if( !strcmp(pArg, ":auto:")
+          എങ്കിൽ( !strcmp(pArg, ":auto:")
            || (pCtx->lockProxyPath &&
                !strncmp(pCtx->lockProxyPath, proxyPath, MAXPATHLEN))
           ){
             rc = SQLITE_OK;
-          }else{
+          }അല്ലെങ്കിൽ{
             rc = switchLockProxyPath(pFile, proxyPath);
           }
-        }else{
+        }അല്ലെങ്കിൽ{
           /* turn on proxy file locking */
           rc = proxyTransformUnixFile(pFile, proxyPath);
         }
       }
-      return rc;
+      തിരികെ rc;
     }
-    default: {
-      assert( 0 );  /* The call assures that only valid opcodes are sent */
+    സ്ഥിരസ്ഥിതി: {
+      പ്രതിജ്ഞാ( 0 );  /* The call assures that only valid opcodes are sent */
     }
   }
-  /*NOTREACHED*/ assert(0);
-  return SQLITE_ERROR;
+  /*NOTREACHED*/ പ്രതിജ്ഞാ(0);
+  തിരികെ SQLITE_ERROR;
 }
 
 /*
@@ -8304,19 +8304,19 @@ static int proxyFileControl(sqlite3_file *id, int op, void *pArg){
 ** to a non-zero value otherwise *pResOut is set to zero.  The return value
 ** is set to SQLITE_OK unless an I/O error occurs during lock checking.
 */
-static int proxyCheckReservedLock(sqlite3_file *id, int *pResOut) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyCheckReservedLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ *pResOut) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  പൂർണ്ണസംഖ്യ rc = proxyTakeConch(pFile);
+  എങ്കിൽ( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
+    എങ്കിൽ( pCtx->conchHeld>0 ){
       unixFile *proxy = pCtx->lockProxy;
-      return proxy->pMethod->xCheckReservedLock((sqlite3_file*)proxy, pResOut);
-    }else{ /* conchHeld < 0 is lockless */
+      തിരികെ proxy->pMethod->xCheckReservedLock((sqlite3_file*)proxy, pResOut);
+    }അല്ലെങ്കിൽ{ /* conchHeld < 0 is lockless */
       pResOut=0;
     }
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -8343,20 +8343,20 @@ static int proxyCheckReservedLock(sqlite3_file *id, int *pResOut) {
 ** This routine will only increase a lock.  Use the sqlite3OsUnlock()
 ** routine to lower a locking level.
 */
-static int proxyLock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyLock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  പൂർണ്ണസംഖ്യ rc = proxyTakeConch(pFile);
+  എങ്കിൽ( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
+    എങ്കിൽ( pCtx->conchHeld>0 ){
       unixFile *proxy = pCtx->lockProxy;
       rc = proxy->pMethod->xLock((sqlite3_file*)proxy, eFileLock);
       pFile->eFileLock = proxy->eFileLock;
-    }else{
+    }അല്ലെങ്കിൽ{
       /* conchHeld < 0 is lockless */
     }
   }
-  return rc;
+  തിരികെ rc;
 }
 
 
@@ -8367,48 +8367,48 @@ static int proxyLock(sqlite3_file *id, int eFileLock) {
 ** If the locking level of the file descriptor is already at or below
 ** the requested locking level, this routine is a no-op.
 */
-static int proxyUnlock(sqlite3_file *id, int eFileLock) {
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyUnlock(sqlite3_file *id, പൂർണ്ണസംഖ്യ eFileLock) {
   unixFile *pFile = (unixFile*)id;
-  int rc = proxyTakeConch(pFile);
-  if( rc==SQLITE_OK ){
+  പൂർണ്ണസംഖ്യ rc = proxyTakeConch(pFile);
+  എങ്കിൽ( rc==SQLITE_OK ){
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
-    if( pCtx->conchHeld>0 ){
+    എങ്കിൽ( pCtx->conchHeld>0 ){
       unixFile *proxy = pCtx->lockProxy;
       rc = proxy->pMethod->xUnlock((sqlite3_file*)proxy, eFileLock);
       pFile->eFileLock = proxy->eFileLock;
-    }else{
+    }അല്ലെങ്കിൽ{
       /* conchHeld < 0 is lockless */
     }
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Close a file that uses proxy locks.
 */
-static int proxyClose(sqlite3_file *id) {
-  if( ALWAYS(id) ){
+സ്ഥിതം പൂർണ്ണസംഖ്യ proxyClose(sqlite3_file *id) {
+  എങ്കിൽ( ALWAYS(id) ){
     unixFile *pFile = (unixFile*)id;
     proxyLockingContext *pCtx = (proxyLockingContext *)pFile->lockingContext;
     unixFile *lockProxy = pCtx->lockProxy;
     unixFile *conchFile = pCtx->conchFile;
-    int rc = SQLITE_OK;
+    പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-    if( lockProxy ){
+    എങ്കിൽ( lockProxy ){
       rc = lockProxy->pMethod->xUnlock((sqlite3_file*)lockProxy, NO_LOCK);
-      if( rc ) return rc;
+      എങ്കിൽ( rc ) തിരികെ rc;
       rc = lockProxy->pMethod->xClose((sqlite3_file*)lockProxy);
-      if( rc ) return rc;
+      എങ്കിൽ( rc ) തിരികെ rc;
       sqlite3_free(lockProxy);
       pCtx->lockProxy = 0;
     }
-    if( conchFile ){
-      if( pCtx->conchHeld ){
+    എങ്കിൽ( conchFile ){
+      എങ്കിൽ( pCtx->conchHeld ){
         rc = proxyReleaseConch(pFile);
-        if( rc ) return rc;
+        എങ്കിൽ( rc ) തിരികെ rc;
       }
       rc = conchFile->pMethod->xClose((sqlite3_file*)conchFile);
-      if( rc ) return rc;
+      എങ്കിൽ( rc ) തിരികെ rc;
       sqlite3_free(conchFile);
     }
     sqlite3DbFree(0, pCtx->lockProxyPath);
@@ -8418,9 +8418,9 @@ static int proxyClose(sqlite3_file *id) {
     pFile->lockingContext = pCtx->oldLockingContext;
     pFile->pMethod = pCtx->pOldMethod;
     sqlite3_free(pCtx);
-    return pFile->pMethod->xClose(id);
+    തിരികെ pFile->pMethod->xClose(id);
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 
@@ -8448,7 +8448,7 @@ static int proxyClose(sqlite3_file *id) {
 ** necessarily been initialized when this routine is called, and so they
 ** should not be used.
 */
-int sqlite3_os_init(void){
+പൂർണ്ണസംഖ്യ sqlite3_os_init(ശൂന്യം){
   /*
   ** The following macro defines an initializer for an sqlite3_vfs object.
   ** The name of the VFS is NAME.  The pAppData is a pointer to a pointer
@@ -8471,11 +8471,11 @@ int sqlite3_os_init(void){
   */
   #define UNIXVFS(VFSNAME, FINDER) {                        \
     3,                    /* iVersion */                    \
-    sizeof(unixFile),     /* szOsFile */                    \
+    വലുപ്പം(unixFile),     /* szOsFile */                    \
     MAX_PATHNAME,         /* mxPathname */                  \
     0,                    /* pNext */                       \
     VFSNAME,              /* zName */                       \
-    (void*)&FINDER,       /* pAppData */                    \
+    (ശൂന്യം*)&FINDER,       /* pAppData */                    \
     unixOpen,             /* xOpen */                       \
     unixDelete,           /* xDelete */                     \
     unixAccess,           /* xAccess */                     \
@@ -8501,44 +8501,44 @@ int sqlite3_os_init(void){
   ** by the SQLite core when the VFS is registered.  So the following
   ** array cannot be const.
   */
-  static sqlite3_vfs aVfs[] = {
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+  സ്ഥിതം sqlite3_vfs aVfs[] = {
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
     UNIXVFS("unix",          autolockIoFinder ),
-#elif OS_VXWORKS
+#അല്ലെങ്കിലെങ്കിൽ OS_VXWORKS
     UNIXVFS("unix",          vxworksIoFinder ),
-#else
+#അല്ലെങ്കിൽ
     UNIXVFS("unix",          posixIoFinder ),
 #endif
     UNIXVFS("unix-none",     nolockIoFinder ),
     UNIXVFS("unix-dotfile",  dotlockIoFinder ),
     UNIXVFS("unix-excl",     posixIoFinder ),
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
     UNIXVFS("unix-namedsem", semIoFinder ),
 #endif
-#if SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE || OS_VXWORKS
     UNIXVFS("unix-posix",    posixIoFinder ),
 #endif
-#if SQLITE_ENABLE_LOCKING_STYLE
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE
     UNIXVFS("unix-flock",    flockIoFinder ),
 #endif
-#if SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
+#എങ്കിൽ SQLITE_ENABLE_LOCKING_STYLE && defined(__APPLE__)
     UNIXVFS("unix-afp",      afpIoFinder ),
     UNIXVFS("unix-nfs",      nfsIoFinder ),
     UNIXVFS("unix-proxy",    proxyIoFinder ),
 #endif
   };
-  unsigned int i;          /* Loop counter */
+  unsigned പൂർണ്ണസംഖ്യ i;          /* Loop counter */
 
   /* Double-check that the aSyscall[] array has been constructed
   ** correctly.  See ticket [bb3a86e890c8e96ab] */
-  assert( ArraySize(aSyscall)==29 );
+  പ്രതിജ്ഞാ( ArraySize(aSyscall)==29 );
 
   /* Register all VFSes defined in the aVfs[] array */
-  for(i=0; i<(sizeof(aVfs)/sizeof(sqlite3_vfs)); i++){
+  വേണ്ടി(i=0; i<(വലുപ്പം(aVfs)/വലുപ്പം(sqlite3_vfs)); i++){
 #ifdef SQLITE_DEFAULT_UNIX_VFS
     sqlite3_vfs_register(&aVfs[i],
            0==strcmp(aVfs[i].zName,SQLITE_DEFAULT_UNIX_VFS));
-#else
+#അല്ലെങ്കിൽ
     sqlite3_vfs_register(&aVfs[i], i==0);
 #endif
   }
@@ -8546,14 +8546,14 @@ int sqlite3_os_init(void){
   sqlite3KvvfsInit();
 #endif
   unixBigLock = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   vxworksMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS2);
 #endif
 
 #ifndef SQLITE_OMIT_WAL
   /* Validate lock assumptions */
-  assert( SQLITE_SHM_NLOCK==8 );  /* Number of available locks */
-  assert( UNIX_SHM_BASE==120  );  /* Start of locking area */
+  പ്രതിജ്ഞാ( SQLITE_SHM_NLOCK==8 );  /* Number of available locks */
+  പ്രതിജ്ഞാ( UNIX_SHM_BASE==120  );  /* Start of locking area */
   /* Locks:
   **    WRITE       UNIX_SHM_BASE      120
   **    CKPT        UNIX_SHM_BASE+1    121
@@ -8565,10 +8565,10 @@ int sqlite3_os_init(void){
   **    READ-4      UNIX_SHM_BASE+7    127
   **    DMS         UNIX_SHM_BASE+8    128
   */
-  assert( UNIX_SHM_DMS==128   );  /* Byte offset of the deadman-switch */
+  പ്രതിജ്ഞാ( UNIX_SHM_DMS==128   );  /* Byte offset of the deadman-switch */
 #endif
 
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -8578,12 +8578,12 @@ int sqlite3_os_init(void){
 ** to release dynamically allocated objects.  But not on unix.
 ** This routine is a no-op for unix.
 */
-int sqlite3_os_end(void){
+പൂർണ്ണസംഖ്യ sqlite3_os_end(ശൂന്യം){
   unixBigLock = 0;
-#if OS_VXWORKS
+#എങ്കിൽ OS_VXWORKS
   vxworksMutex = 0;
 #endif
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 #endif /* SQLITE_OS_UNIX */

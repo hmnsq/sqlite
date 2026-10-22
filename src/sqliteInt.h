@@ -56,12 +56,12 @@
 ** compiler warnings due to subsequent content in this file and other files
 ** that are included by this file.
 */
-#include "msvc.h"
+#അന്തര്ഭാവ "msvc.h"
 
 /*
 ** Special setup for VxWorks
 */
-#include "vxworks.h"
+#അന്തര്ഭാവ "vxworks.h"
 
 /*
 ** These #defines should enable >2GB file support on POSIX if the
@@ -108,14 +108,14 @@
 ** so the GCC_VERSION macro will be set to a correct non-zero value even
 ** when compiling with clang.
 */
-#if defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
+#എങ്കിൽ defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
 # define GCC_VERSION (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
-#else
+#അല്ലെങ്കിൽ
 # define GCC_VERSION 0
 #endif
-#if defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
+#എങ്കിൽ defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
 # define MSVC_VERSION _MSC_VER
-#else
+#അല്ലെങ്കിൽ
 # define MSVC_VERSION 0
 #endif
 
@@ -124,31 +124,31 @@
 ** is associated with Visual Studio 2013 or higher.
 */
 #ifndef SQLITE_HAVE_C99_MATH_FUNCS
-# if MSVC_VERSION==0 || MSVC_VERSION>=1800
+# എങ്കിൽ MSVC_VERSION==0 || MSVC_VERSION>=1800
 #  define SQLITE_HAVE_C99_MATH_FUNCS (1)
-# else
+# അല്ലെങ്കിൽ
 #  define SQLITE_HAVE_C99_MATH_FUNCS (0)
 # endif
 #endif
 
 /* Needed for various definitions... */
-#if defined(__GNUC__) && !defined(_GNU_SOURCE)
+#എങ്കിൽ defined(__GNUC__) && !defined(_GNU_SOURCE)
 # define _GNU_SOURCE
 #endif
 
-#if defined(__OpenBSD__) && !defined(_BSD_SOURCE)
+#എങ്കിൽ defined(__OpenBSD__) && !defined(_BSD_SOURCE)
 # define _BSD_SOURCE
 #endif
 
 /*
 ** Macro to disable warnings about missing "break" at the end of a "case".
 */
-#if defined(__has_attribute)
-#  if __has_attribute(fallthrough)
+#എങ്കിൽ defined(__has_attribute)
+#  എങ്കിൽ __has_attribute(fallthrough)
 #    define deliberate_fall_through __attribute__((fallthrough));
 #  endif
 #endif
-#if !defined(deliberate_fall_through)
+#എങ്കിൽ !defined(deliberate_fall_through)
 #  define deliberate_fall_through
 #endif
 
@@ -166,9 +166,9 @@
 ** defined; otherwise, detection of conditions specific to MinGW will be
 ** disabled.
 */
-#if defined(_HAVE_MINGW_H)
+#എങ്കിൽ defined(_HAVE_MINGW_H)
 # include "mingw.h"
-#elif defined(_HAVE__MINGW_H)
+#അല്ലെങ്കിലെങ്കിൽ defined(_HAVE__MINGW_H)
 # include "_mingw.h"
 #endif
 
@@ -177,7 +177,7 @@
 ** define is required to maintain binary compatibility with the MSVC runtime
 ** library in use (e.g. for Windows XP).
 */
-#if !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
+#എങ്കിൽ !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
     defined(_WIN32) && !defined(_WIN64) && \
     defined(__MINGW_MAJOR_VERSION) && __MINGW_MAJOR_VERSION >= 4 && \
     defined(__MSVCRT__)
@@ -199,7 +199,7 @@
 ** first in QNX.  Also, the _USE_32BIT_TIME_T macro must appear first for
 ** MinGW.
 */
-#include "sqlite3.h"
+#അന്തര്ഭാവ "sqlite3.h"
 
 /*
 ** Reuse the STATIC_VFS1 for mutex access to sqlite3_temp_directory.
@@ -210,15 +210,15 @@
 ** Include the configuration header output by 'configure' if we're using the
 ** autoconf-based build
 */
-#if defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
-#include "sqlite_cfg.h"
+#എങ്കിൽ defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
+#അന്തര്ഭാവ "sqlite_cfg.h"
 #define SQLITECONFIG_H 1
 #endif
 
-#include "sqliteLimit.h"
+#അന്തര്ഭാവ "sqliteLimit.h"
 
 /* Disable nuisance warnings on Borland compilers */
-#if defined(__BORLANDC__)
+#എങ്കിൽ defined(__BORLANDC__)
 #pragma warn -rch /* unreachable code */
 #pragma warn -ccc /* Condition is always true or false */
 #pragma warn -aus /* Assigned value is never used */
@@ -233,11 +233,11 @@
 #ifndef __has_extension
 # define __has_extension(x) 0     /* compatibility with non-clang compilers */
 #endif
-#if GCC_VERSION>=4007000 || __has_extension(c_atomic)
+#എങ്കിൽ GCC_VERSION>=4007000 || __has_extension(c_atomic)
 # define SQLITE_ATOMIC_INTRINSICS 1
 # define AtomicLoad(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
 # define AtomicStore(PTR,VAL)  __atomic_store_n((PTR),(VAL),__ATOMIC_RELAXED)
-#else
+#അല്ലെങ്കിൽ
 # define SQLITE_ATOMIC_INTRINSICS 0
 # define AtomicLoad(PTR)       (*(PTR))
 # define AtomicStore(PTR,VAL)  (*(PTR) = (VAL))
@@ -246,9 +246,9 @@
 /*
 ** Include standard header files as necessary
 */
-#include <stdint.h>
+#അന്തര്ഭാവ <stdint.h>
 #ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
+#അന്തര്ഭാവ <inttypes.h>
 #endif
 
 /*
@@ -267,18 +267,18 @@
 ** So we have to define the macros in different ways depending on the
 ** compiler.
 */
-#if defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(intptr_t)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(intptr_t)(X))
-#elif defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(__PTRDIFF_TYPE__)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(__PTRDIFF_TYPE__)(X))
-#elif !defined(__GNUC__)       /* Works for compilers other than LLVM */
-# define SQLITE_INT_TO_PTR(X)  ((void*)&((char*)0)[X])
-# define SQLITE_PTR_TO_INT(X)  ((int)(((char*)X)-(char*)0))
-#else                          /* Generates a warning - but it always works */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(X))
+#എങ്കിൽ defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
+# define SQLITE_INT_TO_PTR(X)  ((ശൂന്യം*)(intptr_t)(X))
+# define SQLITE_PTR_TO_INT(X)  ((പൂർണ്ണസംഖ്യ)(intptr_t)(X))
+#അല്ലെങ്കിലെങ്കിൽ defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
+# define SQLITE_INT_TO_PTR(X)  ((ശൂന്യം*)(__PTRDIFF_TYPE__)(X))
+# define SQLITE_PTR_TO_INT(X)  ((പൂർണ്ണസംഖ്യ)(__PTRDIFF_TYPE__)(X))
+#അല്ലെങ്കിലെങ്കിൽ !defined(__GNUC__)       /* Works for compilers other than LLVM */
+# define SQLITE_INT_TO_PTR(X)  ((ശൂന്യം*)&((അക്ഷരം*)0)[X])
+# define SQLITE_PTR_TO_INT(X)  ((പൂർണ്ണസംഖ്യ)(((അക്ഷരം*)X)-(അക്ഷരം*)0))
+#അല്ലെങ്കിൽ                          /* Generates a warning - but it always works */
+# define SQLITE_INT_TO_PTR(X)  ((ശൂന്യം*)(X))
+# define SQLITE_PTR_TO_INT(X)  ((പൂർണ്ണസംഖ്യ)(X))
 #endif
 
 /*
@@ -294,28 +294,28 @@
 **    SQLITE_USES_INLINE      Set to 1 or 0 according to whether or not
 **                            inline functions are supported.
 */
-#if defined(SQLITE_DISABLE_INLINE)
+#എങ്കിൽ defined(SQLITE_DISABLE_INLINE)
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
 #  define SQLITE_USES_INLINE 0
-#elif defined(__GNUC__)
+#അല്ലെങ്കിലെങ്കിൽ defined(__GNUC__)
 #  define SQLITE_NOINLINE    __attribute__((noinline))
-#  define SQLITE_INLINE      __attribute__((always_inline)) inline
-#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) inline
+#  define SQLITE_INLINE      __attribute__((always_inline)) വരിയിൽ
+#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) വരിയിൽ
 #  define SQLITE_USES_INLINE 1
-#elif defined(_MSC_VER) && _MSC_VER>=1310
+#അല്ലെങ്കിലെങ്കിൽ defined(_MSC_VER) && _MSC_VER>=1310
 #  define SQLITE_NOINLINE    __declspec(noinline)
 #  define SQLITE_INLINE      __forceinline
 #  define SQLITE_OPT_INLINE  __forceinline
 #  define SQLITE_USES_INLINE 1
-#else
+#അല്ലെങ്കിൽ
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
 #  define SQLITE_USES_INLINE 0
 #endif
-#if defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
+#എങ്കിൽ defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
 # undef SQLITE_INLINE
 # define SQLITE_INLINE
 # undef SQLITE_OPT_INLINE
@@ -323,7 +323,7 @@
 # undef SQLITE_USES_INLINE
 # define SQLITE_USES_INLINE 0
 #endif
-#if !defined(SQLITE_AMALGAMATION)
+#എങ്കിൽ !defined(SQLITE_AMALGAMATION)
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
 #endif
@@ -333,15 +333,15 @@
 ** compiling with an appropriate version of MSVC unless prevented by
 ** the SQLITE_DISABLE_INTRINSIC define.
 */
-#if !defined(SQLITE_DISABLE_INTRINSIC)
-#  if defined(_MSC_VER) && _MSC_VER>=1400
-#    if !defined(_WIN32_WCE)
+#എങ്കിൽ !defined(SQLITE_DISABLE_INTRINSIC)
+#  എങ്കിൽ defined(_MSC_VER) && _MSC_VER>=1400
+#    എങ്കിൽ !defined(_WIN32_WCE)
 #      include <intrin.h>
 #      pragma intrinsic(_byteswap_ushort)
 #      pragma intrinsic(_byteswap_ulong)
 #      pragma intrinsic(_byteswap_uint64)
 #      pragma intrinsic(_ReadWriteBarrier)
-#    else
+#    അല്ലെങ്കിൽ
 #      include <cmnintrin.h>
 #    endif
 #  endif
@@ -351,9 +351,9 @@
 ** Enable SQLITE_USE_SEH by default on MSVC builds.  Only omit
 ** SEH support if the -DSQLITE_OMIT_SEH option is given.
 */
-#if defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
+#എങ്കിൽ defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
 # define SQLITE_USE_SEH 1
-#else
+#അല്ലെങ്കിൽ
 # undef SQLITE_USE_SEH
 #endif
 
@@ -361,10 +361,10 @@
 ** Enable SQLITE_DIRECT_OVERFLOW_READ, unless the build explicitly
 ** disables it using -DSQLITE_DIRECT_OVERFLOW_READ=0
 */
-#if defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
+#എങ്കിൽ defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
   /* Disable if -DSQLITE_DIRECT_OVERFLOW_READ=0 */
 # undef SQLITE_DIRECT_OVERFLOW_READ
-#else
+#അല്ലെങ്കിൽ
   /* In all other cases, enable */
 # define SQLITE_DIRECT_OVERFLOW_READ 1
 #endif
@@ -386,10 +386,10 @@
 ** logic is partially replicated in ctime.c. If it is updated here, it should
 ** also be updated there.
 */
-#if !defined(SQLITE_THREADSAFE)
-# if defined(THREADSAFE)
+#എങ്കിൽ !defined(SQLITE_THREADSAFE)
+# എങ്കിൽ defined(THREADSAFE)
 #   define SQLITE_THREADSAFE THREADSAFE
-# else
+# അല്ലെങ്കിൽ
 #   define SQLITE_THREADSAFE 1 /* IMP: R-07272-22309 */
 # endif
 #endif
@@ -407,7 +407,7 @@
 ** default unless SQLite is compiled with SQLITE_DEFAULT_MEMSTATUS=0 in
 ** which case memory allocation statistics are disabled by default.
 */
-#if !defined(SQLITE_DEFAULT_MEMSTATUS)
+#എങ്കിൽ !defined(SQLITE_DEFAULT_MEMSTATUS)
 # define SQLITE_DEFAULT_MEMSTATUS 1
 #endif
 
@@ -428,7 +428,7 @@
 ** If none of the above are defined, then set SQLITE_SYSTEM_MALLOC as
 ** the default.
 */
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#എങ്കിൽ defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)>1
@@ -437,7 +437,7 @@
  SQLITE_SYSTEM_MALLOC, SQLITE_WIN32_MALLOC, SQLITE_MEMDEBUG,\
  SQLITE_ZERO_MALLOC"
 #endif
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#എങ്കിൽ defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)==0
@@ -448,7 +448,7 @@
 ** If SQLITE_MALLOC_SOFT_LIMIT is not zero, then try to keep the
 ** sizes of memory allocations below this value where possible.
 */
-#if !defined(SQLITE_MALLOC_SOFT_LIMIT)
+#എങ്കിൽ !defined(SQLITE_MALLOC_SOFT_LIMIT)
 # define SQLITE_MALLOC_SOFT_LIMIT 1024
 #endif
 
@@ -458,7 +458,7 @@
 ** But _XOPEN_SOURCE define causes problems for Mac OS X, so omit
 ** it.
 */
-#if !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
+#എങ്കിൽ !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
 #  define _XOPEN_SOURCE 600
 #endif
 
@@ -473,17 +473,17 @@
 ** is set.  Thus NDEBUG becomes an opt-in rather than an opt-out
 ** feature.
 */
-#if !defined(NDEBUG) && !defined(SQLITE_DEBUG)
+#എങ്കിൽ !defined(NDEBUG) && !defined(SQLITE_DEBUG)
 # define NDEBUG 1
 #endif
-#if defined(NDEBUG) && defined(SQLITE_DEBUG)
+#എങ്കിൽ defined(NDEBUG) && defined(SQLITE_DEBUG)
 # undef NDEBUG
 #endif
 
 /*
 ** Enable SQLITE_ENABLE_EXPLAIN_COMMENTS if SQLITE_DEBUG is turned on.
 */
-#if !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
+#എങ്കിൽ !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
 # define SQLITE_ENABLE_EXPLAIN_COMMENTS 1
 #endif
 
@@ -500,14 +500,14 @@
 ** where multiple cases go to the same block of code, testcase()
 ** can insure that all cases are evaluated.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#എങ്കിൽ defined(SQLITE_MUTATION_TEST)
 # define testcase(X)
-#elif defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#അല്ലെങ്കിലെങ്കിൽ defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 # ifndef SQLITE_AMALGAMATION
-    extern unsigned int sqlite3CoverageCounter;
+    ബാഹ്യ unsigned പൂർണ്ണസംഖ്യ sqlite3CoverageCounter;
 # endif
-# define testcase(X)  if( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
-#else
+# define testcase(X)  എങ്കിൽ( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
+#അല്ലെങ്കിൽ
 # define testcase(X)
 #endif
 
@@ -516,9 +516,9 @@
 ** other bits of code that are needed to support the arguments
 ** within testcase() and assert() macros.
 */
-#if !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
+#എങ്കിൽ !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
 # define TESTONLY(X)  X
-#else
+#അല്ലെങ്കിൽ
 # define TESTONLY(X)
 #endif
 
@@ -532,7 +532,7 @@
 */
 #ifndef NDEBUG
 # define VVA_ONLY(X)  X
-#else
+#അല്ലെങ്കിൽ
 # define VVA_ONLY(X)
 #endif
 
@@ -540,7 +540,7 @@
 ** Disable ALWAYS() and NEVER() (make them pass-throughs) for coverage
 ** and mutation testing
 */
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
+#എങ്കിൽ defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
 # define SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS  1
 #endif
 
@@ -559,13 +559,13 @@
 ** be true and false so that the unreachable code they specify will
 ** not be counted as untested code.
 */
-#if defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
+#എങ്കിൽ defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
 # define ALWAYS(X)      (1)
 # define NEVER(X)       (0)
-#elif !defined(NDEBUG)
-# define ALWAYS(X)      ((X)?1:(assert(0),0))
-# define NEVER(X)       ((X)?(assert(0),1):0)
-#else
+#അല്ലെങ്കിലെങ്കിൽ !defined(NDEBUG)
+# define ALWAYS(X)      ((X)?1:(പ്രതിജ്ഞാ(0),0))
+# define NEVER(X)       ((X)?(പ്രതിജ്ഞാ(0),1):0)
+#അല്ലെങ്കിൽ
 # define ALWAYS(X)      (X)
 # define NEVER(X)       (X)
 #endif
@@ -577,10 +577,10 @@
 **
 ** The following macros mark these optimizations conditionals.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#എങ്കിൽ defined(SQLITE_MUTATION_TEST)
 # define OK_IF_ALWAYS_TRUE(X)  (1)
 # define OK_IF_ALWAYS_FALSE(X) (0)
-#else
+#അല്ലെങ്കിൽ
 # define OK_IF_ALWAYS_TRUE(X)  (X)
 # define OK_IF_ALWAYS_FALSE(X) (X)
 #endif
@@ -592,23 +592,23 @@
 ** during a normal build.  The following macro can be used to disable tests
 ** that are always false except when SQLITE_TEST_REALLOC_STRESS is set.
 */
-#if defined(SQLITE_TEST_REALLOC_STRESS)
+#എങ്കിൽ defined(SQLITE_TEST_REALLOC_STRESS)
 # define ONLY_IF_REALLOC_STRESS(X)  (X)
-#elif !defined(NDEBUG)
-# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(assert(0),1):0)
-#else
+#അല്ലെങ്കിലെങ്കിൽ !defined(NDEBUG)
+# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(പ്രതിജ്ഞാ(0),1):0)
+#അല്ലെങ്കിൽ
 # define ONLY_IF_REALLOC_STRESS(X)  (0)
 #endif
 
 /*
 ** Declarations used for tracing the operating system interfaces.
 */
-#if defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
+#എങ്കിൽ defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
-  extern int sqlite3OSTrace;
-# define OSTRACE(X)          if( sqlite3OSTrace ) sqlite3DebugPrintf X
+  ബാഹ്യ പൂർണ്ണസംഖ്യ sqlite3OSTrace;
+# define OSTRACE(X)          എങ്കിൽ( sqlite3OSTrace ) sqlite3DebugPrintf X
 # define SQLITE_HAVE_OS_TRACE
-#else
+#അല്ലെങ്കിൽ
 # define OSTRACE(X)
 # undef  SQLITE_HAVE_OS_TRACE
 #endif
@@ -619,10 +619,10 @@
 ** OSTRACE is enabled), and by several "test*.c" files (which are
 ** compiled using SQLITE_TEST).
 */
-#if defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
+#എങ്കിൽ defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
 # define SQLITE_NEED_ERR_NAME
-#else
+#അല്ലെങ്കിൽ
 # undef  SQLITE_NEED_ERR_NAME
 #endif
 
@@ -636,7 +636,7 @@
 /*
 ** SQLITE_OMIT_VIRTUALTABLE implies SQLITE_OMIT_ALTERTABLE
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
+#എങ്കിൽ defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
 # define SQLITE_OMIT_ALTERTABLE
 #endif
 
@@ -659,14 +659,14 @@
 #define likely(X)    (X)
 #define unlikely(X)  (X)
 
-#include "hash.h"
-#include "parse.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stddef.h>
-#include <ctype.h>
+#അന്തര്ഭാവ "hash.h"
+#അന്തര്ഭാവ "parse.h"
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <stdlib.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <stddef.h>
+#അന്തര്ഭാവ <ctype.h>
 
 /*
 ** Use a macro to replace memcpy() if compiled with SQLITE_INLINE_MEMCPY.
@@ -676,8 +676,8 @@
 ** hack only.
 */
 #ifdef SQLITE_INLINE_MEMCPY
-# define memcpy(D,S,N) {char*xxd=(char*)(D);const char*xxs=(const char*)(S);\
-                        int xxn=(N);while(xxn-->0)*(xxd++)=*(xxs++);}
+# define memcpy(D,S,N) {അക്ഷരം*xxd=(അക്ഷരം*)(D);സ്ഥിരം അക്ഷരം*xxs=(സ്ഥിരം അക്ഷരം*)(S);\
+                        പൂർണ്ണസംഖ്യ xxn=(N);ആകുമ്പോൾ(xxn-->0)*(xxd++)=*(xxs++);}
 #endif
 
 /*
@@ -685,8 +685,8 @@
 ** substitute integer for floating-point
 */
 #ifdef SQLITE_OMIT_FLOATING_POINT
-# define double sqlite_int64
-# define float sqlite_int64
+# define ഇരട്ട sqlite_int64
+# define ദശാംശം sqlite_int64
 # define fabs(X) ((X)<0?-(X):(X))
 # define sqlite3IsOverflow(X) 0
 # define INFINITY (9223372036854775807LL)
@@ -709,7 +709,7 @@
 */
 #ifdef SQLITE_OMIT_TEMPDB
 #define OMIT_TEMPDB 1
-#else
+#അല്ലെങ്കിൽ
 #define OMIT_TEMPDB 0
 #endif
 
@@ -745,7 +745,7 @@
 ** SQLITE_TEMP_STORE is set to 3 (never use temporary files), set it
 ** to zero.
 */
-#if SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
+#എങ്കിൽ SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
 # undef SQLITE_MAX_WORKER_THREADS
 # define SQLITE_MAX_WORKER_THREADS 0
 #endif
@@ -755,7 +755,7 @@
 #ifndef SQLITE_DEFAULT_WORKER_THREADS
 # define SQLITE_DEFAULT_WORKER_THREADS 0
 #endif
-#if SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
+#എങ്കിൽ SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
 # undef SQLITE_MAX_WORKER_THREADS
 # define SQLITE_MAX_WORKER_THREADS SQLITE_DEFAULT_WORKER_THREADS
 #endif
@@ -785,7 +785,7 @@
 ** SQLITE_ENABLE_BATCH_ATOMIC_WRITE are not compatible with one another.
 ** You must choose one or the other (or neither) but not both.
 */
-#if defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#എങ്കിൽ defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
 #error Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
 #endif
 
@@ -794,7 +794,7 @@
 ** ourselves.
 */
 #ifndef offsetof
-# define offsetof(ST,M) ((size_t)((char*)&((ST*)0)->M - (char*)0))
+# define offsetof(ST,M) ((size_t)((അക്ഷരം*)&((ST*)0)->M - (അക്ഷരം*)0))
 #endif
 
 /*
@@ -802,15 +802,15 @@
 ** on 32-bit builds. This can help to avoid overflow by ensuring 64-bit
 ** arithmetic is used consistently in both 32-bit and 64-bit builds.
 */
-#define sizeof64(X) ((sqlite3_int64)sizeof(X))
+#define sizeof64(X) ((sqlite3_int64)വലുപ്പം(X))
 
 /*
 ** Work around C99 "flex-array" syntax for pre-C99 compilers, so as
 ** to avoid complaints from -fsanitize=strict-bounds.
 */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#എങ്കിൽ defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 # define FLEXARRAY
-#else
+#അല്ലെങ്കിൽ
 # define FLEXARRAY 1
 #endif
 
@@ -833,9 +833,9 @@
 ** Check to see if this machine uses EBCDIC.  (Yes, believe it or
 ** not, there are still machines out there that use EBCDIC.)
 */
-#if 'A' == '\301'
+#എങ്കിൽ 'A' == '\301'
 # define SQLITE_EBCDIC 1
-#else
+#അല്ലെങ്കിൽ
 # define SQLITE_ASCII 1
 #endif
 
@@ -849,50 +849,50 @@
 #ifndef UINT32_TYPE
 # ifdef HAVE_UINT32_T
 #  define UINT32_TYPE uint32_t
-# else
-#  define UINT32_TYPE unsigned int
+# അല്ലെങ്കിൽ
+#  define UINT32_TYPE unsigned പൂർണ്ണസംഖ്യ
 # endif
 #endif
 #ifndef UINT16_TYPE
 # ifdef HAVE_UINT16_T
 #  define UINT16_TYPE uint16_t
-# else
-#  define UINT16_TYPE unsigned short int
+# അല്ലെങ്കിൽ
+#  define UINT16_TYPE unsigned short പൂർണ്ണസംഖ്യ
 # endif
 #endif
 #ifndef INT16_TYPE
 # ifdef HAVE_INT16_T
 #  define INT16_TYPE int16_t
-# else
-#  define INT16_TYPE short int
+# അല്ലെങ്കിൽ
+#  define INT16_TYPE short പൂർണ്ണസംഖ്യ
 # endif
 #endif
 #ifndef UINT8_TYPE
 # ifdef HAVE_UINT8_T
 #  define UINT8_TYPE uint8_t
-# else
-#  define UINT8_TYPE unsigned char
+# അല്ലെങ്കിൽ
+#  define UINT8_TYPE unsigned അക്ഷരം
 # endif
 #endif
 #ifndef INT8_TYPE
 # ifdef HAVE_INT8_T
 #  define INT8_TYPE int8_t
-# else
-#  define INT8_TYPE signed char
+# അല്ലെങ്കിൽ
+#  define INT8_TYPE signed അക്ഷരം
 # endif
 #endif
-typedef sqlite_int64 i64;          /* 8-byte signed integer */
-typedef sqlite_uint64 u64;         /* 8-byte unsigned integer */
-typedef UINT32_TYPE u32;           /* 4-byte unsigned integer */
-typedef UINT16_TYPE u16;           /* 2-byte unsigned integer */
-typedef INT16_TYPE i16;            /* 2-byte signed integer */
-typedef UINT8_TYPE u8;             /* 1-byte unsigned integer */
-typedef INT8_TYPE i8;              /* 1-byte signed integer */
+തരനിർവചനം sqlite_int64 i64;          /* 8-byte signed integer */
+തരനിർവചനം sqlite_uint64 u64;         /* 8-byte unsigned integer */
+തരനിർവചനം UINT32_TYPE u32;           /* 4-byte unsigned integer */
+തരനിർവചനം UINT16_TYPE u16;           /* 2-byte unsigned integer */
+തരനിർവചനം INT16_TYPE i16;            /* 2-byte signed integer */
+തരനിർവചനം UINT8_TYPE u8;             /* 1-byte unsigned integer */
+തരനിർവചനം INT8_TYPE i8;              /* 1-byte signed integer */
 
 /* A bitfield type for use inside of structures.  Always follow with :N where
 ** N is the number of bits.
 */
-typedef unsigned bft;  /* Bit Field Type */
+തരനിർവചനം unsigned bft;  /* Bit Field Type */
 
 /*
 ** SQLITE_MAX_U32 is a u64 constant that is the maximum u64 value
@@ -906,7 +906,7 @@ typedef unsigned bft;  /* Bit Field Type */
 ** The datatype used to store estimates of the number of rows in a
 ** table or index.
 */
-typedef u64 tRowcnt;
+തരനിർവചനം u64 tRowcnt;
 
 /*
 ** Estimated quantities used for query planning are stored as 16-bit
@@ -931,7 +931,7 @@ typedef u64 tRowcnt;
 **
 **    0.5 -> -10           0.1 -> -33        0.0625 -> -40
 */
-typedef INT16_TYPE LogEst;
+തരനിർവചനം INT16_TYPE LogEst;
 #define LOGEST_MIN (-32768)
 #define LOGEST_MAX (32767)
 
@@ -939,26 +939,26 @@ typedef INT16_TYPE LogEst;
 ** Set the SQLITE_PTRSIZE macro to the number of bytes in a pointer
 */
 #ifndef SQLITE_PTRSIZE
-# if defined(__SIZEOF_POINTER__)
+# എങ്കിൽ defined(__SIZEOF_POINTER__)
 #   define SQLITE_PTRSIZE __SIZEOF_POINTER__
 # elif defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
        defined(_M_ARM)   || defined(__arm__)    || defined(__x86)   ||    \
       (defined(__APPLE__) && defined(__ppc__)) ||                         \
       (defined(__TOS_AIX__) && !defined(__64BIT__))
 #   define SQLITE_PTRSIZE 4
-# else
+# അല്ലെങ്കിൽ
 #   define SQLITE_PTRSIZE 8
 # endif
 #endif
 
 /* The uptr type is an unsigned integer large enough to hold a pointer
 */
-#if defined(HAVE_STDINT_H)
-  typedef uintptr_t uptr;
-#elif SQLITE_PTRSIZE==4
-  typedef u32 uptr;
-#else
-  typedef u64 uptr;
+#എങ്കിൽ defined(HAVE_STDINT_H)
+  തരനിർവചനം uintptr_t uptr;
+#അല്ലെങ്കിലെങ്കിൽ SQLITE_PTRSIZE==4
+  തരനിർവചനം u32 uptr;
+#അല്ലെങ്കിൽ
+  തരനിർവചനം u64 uptr;
 #endif
 
 /*
@@ -1017,7 +1017,7 @@ typedef INT16_TYPE LogEst;
 ** respectively.
 */
 #ifndef SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
-# if defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
+# എങ്കിൽ defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
 #   define SQLITE_BYTEORDER 4321
 # elif defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__
 #   define SQLITE_BYTEORDER 1234
@@ -1030,26 +1030,26 @@ typedef INT16_TYPE LogEst;
 #   define SQLITE_BYTEORDER 1234
 # elif defined(sparc)   || defined(__ARMEB__)     || defined(__AARCH64EB__)
 #   define SQLITE_BYTEORDER 4321
-# else
+# അല്ലെങ്കിൽ
 #   define SQLITE_BYTEORDER 0
 # endif
 #endif
-#if SQLITE_BYTEORDER==4321
+#എങ്കിൽ SQLITE_BYTEORDER==4321
 # define SQLITE_BIGENDIAN    1
 # define SQLITE_LITTLEENDIAN 0
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16BE
-#elif SQLITE_BYTEORDER==1234
+#അല്ലെങ്കിലെങ്കിൽ SQLITE_BYTEORDER==1234
 # define SQLITE_BIGENDIAN    0
 # define SQLITE_LITTLEENDIAN 1
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16LE
-#else
+#അല്ലെങ്കിൽ
 # ifdef SQLITE_AMALGAMATION
-  const int sqlite3one = 1;
-# else
-  extern const int sqlite3one;
+  സ്ഥിരം പൂർണ്ണസംഖ്യ sqlite3one = 1;
+# അല്ലെങ്കിൽ
+  ബാഹ്യ സ്ഥിരം പൂർണ്ണസംഖ്യ sqlite3one;
 # endif
-# define SQLITE_BIGENDIAN    (*(char *)(&sqlite3one)==0)
-# define SQLITE_LITTLEENDIAN (*(char *)(&sqlite3one)==1)
+# define SQLITE_BIGENDIAN    (*(അക്ഷരം *)(&sqlite3one)==0)
+# define SQLITE_LITTLEENDIAN (*(അക്ഷരം *)(&sqlite3one)==1)
 # define SQLITE_UTF16NATIVE  (SQLITE_BIGENDIAN?SQLITE_UTF16BE:SQLITE_UTF16LE)
 #endif
 
@@ -1067,8 +1067,8 @@ typedef INT16_TYPE LogEst;
 ** assuming n is a signed integer type.  UMXV(n) is similar for unsigned
 ** integer types.
 */
-#define SMXV(n) ((((i64)1)<<(sizeof(n)*8-1))-1)
-#define UMXV(n) ((((i64)1)<<(sizeof(n)*8))-1)
+#define SMXV(n) ((((i64)1)<<(വലുപ്പം(n)*8-1))-1)
+#define UMXV(n) ((((i64)1)<<(വലുപ്പം(n)*8))-1)
 
 /*
 ** Round up a number to the next larger multiple of 8.  This is used
@@ -1081,9 +1081,9 @@ typedef INT16_TYPE LogEst;
 ** size is 8.
 */
 #define ROUND8(x)     (((x)+7)&~7)
-#if SQLITE_PTRSIZE==8
+#എങ്കിൽ SQLITE_PTRSIZE==8
 # define ROUND8P(x)   (x)
-#else
+#അല്ലെങ്കിൽ
 # define ROUND8P(x)   (((x)+7)&~7)
 #endif
 
@@ -1103,7 +1103,7 @@ typedef INT16_TYPE LogEst;
 */
 #ifdef SQLITE_4_BYTE_ALIGNED_MALLOC
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&3)==0)
-#else
+#അല്ലെങ്കിൽ
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&7)==0)
 #endif
 #define TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
@@ -1111,7 +1111,7 @@ typedef INT16_TYPE LogEst;
 /*
 ** Disable MMAP on platforms where it is known to not work
 */
-#if defined(__OpenBSD__) || defined(__QNXNTO__)
+#എങ്കിൽ defined(__OpenBSD__) || defined(__QNXNTO__)
 # undef SQLITE_MAX_MMAP_SIZE
 # define SQLITE_MAX_MMAP_SIZE 0
 #endif
@@ -1123,14 +1123,14 @@ typedef INT16_TYPE LogEst;
 # include <TargetConditionals.h>
 #endif
 #ifndef SQLITE_MAX_MMAP_SIZE
-# if defined(__linux__) \
+# എങ്കിൽ defined(__linux__) \
   || defined(_WIN32) \
   || (defined(__APPLE__) && defined(__MACH__)) \
   || defined(__sun) \
   || defined(__FreeBSD__) \
   || defined(__DragonFly__)
 #   define SQLITE_MAX_MMAP_SIZE 0x7fff0000  /* 2147418112 */
-# else
+# അല്ലെങ്കിൽ
 #   define SQLITE_MAX_MMAP_SIZE 0
 # endif
 #endif
@@ -1143,7 +1143,7 @@ typedef INT16_TYPE LogEst;
 #ifndef SQLITE_DEFAULT_MMAP_SIZE
 # define SQLITE_DEFAULT_MMAP_SIZE 0
 #endif
-#if SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
+#എങ്കിൽ SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
 # undef SQLITE_DEFAULT_MMAP_SIZE
 # define SQLITE_DEFAULT_MMAP_SIZE SQLITE_MAX_MMAP_SIZE
 #endif
@@ -1152,18 +1152,18 @@ typedef INT16_TYPE LogEst;
 ** TREETRACE_ENABLED will be either 1 or 0 depending on whether or not
 ** the Abstract Syntax Tree tracing logic is turned on.
 */
-#if !defined(SQLITE_AMALGAMATION)
-extern u32 sqlite3TreeTrace;
+#എങ്കിൽ !defined(SQLITE_AMALGAMATION)
+ബാഹ്യ u32 sqlite3_വൃക്ഷം_Trace;
 #endif
-#if defined(SQLITE_DEBUG) \
+#എങ്കിൽ defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_SELECTTRACE) \
                              || defined(SQLITE_ENABLE_TREETRACE))
 # define TREETRACE_ENABLED 1
 # define TREETRACE(K,P,S,X)  \
-  if(sqlite3TreeTrace&(K))   \
+  എങ്കിൽ(sqlite3_വൃക്ഷം_Trace&(K))   \
     sqlite3DebugPrintf("%u/%d/%p: ",(S)->selId,(P)->addrExplain,(S)),\
     sqlite3DebugPrintf X
-#else
+#അല്ലെങ്കിൽ
 # define TREETRACE(K,P,S,X)
 # define TREETRACE_ENABLED 0
 #endif
@@ -1197,12 +1197,12 @@ extern u32 sqlite3TreeTrace;
 /*
 ** Macros for "wheretrace"
 */
-extern u32 sqlite3WhereTrace;
-#if defined(SQLITE_DEBUG) \
+ബാഹ്യ u32 sqlite3WhereTrace;
+#എങ്കിൽ defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_WHERETRACE))
-# define WHERETRACE(K,X)  if(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
+# define WHERETRACE(K,X)  എങ്കിൽ(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
 # define WHERETRACE_ENABLED 1
-#else
+#അല്ലെങ്കിൽ
 # define WHERETRACE(K,X)
 #endif
 
@@ -1249,11 +1249,11 @@ extern u32 sqlite3WhereTrace;
 ** handle is passed a pointer to sqlite.busyHandler. The busy-handler
 ** callback is currently invoked only from within pager.c.
 */
-typedef struct BusyHandler BusyHandler;
-struct BusyHandler {
-  int (*xBusyHandler)(void *,int);  /* The busy callback */
-  void *pBusyArg;                   /* First arg to busy callback */
-  int nBusy;                        /* Incremented with each busy call */
+തരനിർവചനം ഘടന BusyHandler BusyHandler;
+ഘടന BusyHandler {
+  പൂർണ്ണസംഖ്യ (*xBusyHandler)(ശൂന്യം *,പൂർണ്ണസംഖ്യ);  /* The busy callback */
+  ശൂന്യം *pBusyArg;                   /* First arg to busy callback */
+  പൂർണ്ണസംഖ്യ nBusy;                        /* Incremented with each busy call */
 };
 
 /*
@@ -1282,7 +1282,7 @@ struct BusyHandler {
 /*
 ** The root-page of the schema table.
 */
-#define SCHEMA_ROOT    1
+#define SCHEMA_വേര്    1
 
 /*
 ** The name of the schema table.  The name is different for TEMP.
@@ -1294,7 +1294,7 @@ struct BusyHandler {
 ** A convenience macro that returns the number of elements in
 ** an array.
 */
-#define ArraySize(X)    ((int)(sizeof(X)/sizeof(X[0])))
+#define ArraySize(X)    ((പൂർണ്ണസംഖ്യ)(വലുപ്പം(X)/വലുപ്പം(X[0])))
 
 /*
 ** Determine if the argument is a power of two
@@ -1326,12 +1326,12 @@ struct BusyHandler {
 ** macros become no-ops and have zero performance impact.
 */
 #ifdef SQLITE_OMIT_WSD
-  #define SQLITE_WSD const
-  #define GLOBAL(t,v) (*(t*)sqlite3_wsd_find((void*)&(v), sizeof(v)))
-  #define sqlite3GlobalConfig GLOBAL(struct Sqlite3Config, sqlite3Config)
-  int sqlite3_wsd_init(int N, int J);
-  void *sqlite3_wsd_find(void *K, int L);
-#else
+  #define SQLITE_WSD സ്ഥിരം
+  #define GLOBAL(t,v) (*(t*)sqlite3_wsd_find((ശൂന്യം*)&(v), വലുപ്പം(v)))
+  #define sqlite3GlobalConfig GLOBAL(ഘടന Sqlite3Config, sqlite3Config)
+  പൂർണ്ണസംഖ്യ sqlite3_wsd_init(പൂർണ്ണസംഖ്യ N, പൂർണ്ണസംഖ്യ J);
+  ശൂന്യം *sqlite3_wsd_find(ശൂന്യം *K, പൂർണ്ണസംഖ്യ L);
+#അല്ലെങ്കിൽ
   #define SQLITE_WSD
   #define GLOBAL(t,v) v
   #define sqlite3GlobalConfig sqlite3Config
@@ -1353,73 +1353,73 @@ struct BusyHandler {
 ** For example those parameters only used in assert() statements. In these
 ** cases the parameters are named as per the usual conventions.
 */
-#define UNUSED_PARAMETER(x) (void)(x)
+#define UNUSED_PARAMETER(x) (ശൂന്യം)(x)
 #define UNUSED_PARAMETER2(x,y) UNUSED_PARAMETER(x),UNUSED_PARAMETER(y)
 
 /*
 ** Forward references to structures
 */
-typedef struct AggInfo AggInfo;
-typedef struct AuthContext AuthContext;
-typedef struct AutoincInfo AutoincInfo;
-typedef struct Bitvec Bitvec;
-typedef struct CollSeq CollSeq;
-typedef struct Column Column;
-typedef struct Cte Cte;
-typedef struct CteUse CteUse;
-typedef struct Db Db;
-typedef struct DbClientData DbClientData;
-typedef struct DbFixer DbFixer;
-typedef struct Schema Schema;
-typedef struct Expr Expr;
-typedef struct ExprList ExprList;
-typedef struct FKey FKey;
-typedef struct FpDecode FpDecode;
-typedef struct FuncDestructor FuncDestructor;
-typedef struct FuncDef FuncDef;
-typedef struct FuncDefHash FuncDefHash;
-typedef struct IdList IdList;
-typedef struct Index Index;
-typedef struct IndexedExpr IndexedExpr;
-typedef struct IndexSample IndexSample;
-typedef struct KeyClass KeyClass;
-typedef struct KeyInfo KeyInfo;
-typedef struct Lookaside Lookaside;
-typedef struct LookasideSlot LookasideSlot;
-typedef struct Module Module;
-typedef struct NameContext NameContext;
-typedef struct OnOrUsing OnOrUsing;
-typedef struct Parse Parse;
-typedef struct ParseCleanup ParseCleanup;
-typedef struct PreUpdate PreUpdate;
-typedef struct PrintfArguments PrintfArguments;
-typedef struct RCStr RCStr;
-typedef struct RenameToken RenameToken;
-typedef struct Returning Returning;
-typedef struct RowSet RowSet;
-typedef struct Savepoint Savepoint;
-typedef struct Select Select;
-typedef struct SQLiteThread SQLiteThread;
-typedef struct SelectDest SelectDest;
-typedef struct Subquery Subquery;
-typedef struct SrcItem SrcItem;
-typedef struct SrcList SrcList;
-typedef struct sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
-typedef struct Table Table;
-typedef struct TableLock TableLock;
-typedef struct Token Token;
-typedef struct TreeView TreeView;
-typedef struct Trigger Trigger;
-typedef struct TriggerPrg TriggerPrg;
-typedef struct TriggerStep TriggerStep;
-typedef struct UnpackedRecord UnpackedRecord;
-typedef struct Upsert Upsert;
-typedef struct VTable VTable;
-typedef struct VtabCtx VtabCtx;
-typedef struct Walker Walker;
-typedef struct WhereInfo WhereInfo;
-typedef struct Window Window;
-typedef struct With With;
+തരനിർവചനം ഘടന AggInfo AggInfo;
+തരനിർവചനം ഘടന AuthContext AuthContext;
+തരനിർവചനം ഘടന AutoincInfo AutoincInfo;
+തരനിർവചനം ഘടന Bitvec Bitvec;
+തരനിർവചനം ഘടന CollSeq CollSeq;
+തരനിർവചനം ഘടന Column Column;
+തരനിർവചനം ഘടന Cte Cte;
+തരനിർവചനം ഘടന CteUse CteUse;
+തരനിർവചനം ഘടന Db Db;
+തരനിർവചനം ഘടന DbClientData DbClientData;
+തരനിർവചനം ഘടന DbFixer DbFixer;
+തരനിർവചനം ഘടന Schema Schema;
+തരനിർവചനം ഘടന വ്യഞ്ജകം വ്യഞ്ജകം;
+തരനിർവചനം ഘടന വ്യഞ്ജകം_List വ്യഞ്ജകം_List;
+തരനിർവചനം ഘടന FKey FKey;
+തരനിർവചനം ഘടന FpDecode FpDecode;
+തരനിർവചനം ഘടന FuncDestructor FuncDestructor;
+തരനിർവചനം ഘടന FuncDef FuncDef;
+തരനിർവചനം ഘടന FuncDefHash FuncDefHash;
+തരനിർവചനം ഘടന IdList IdList;
+തരനിർവചനം ഘടന Index Index;
+തരനിർവചനം ഘടന Indexed_വ്യഞ്ജകം Indexed_വ്യഞ്ജകം;
+തരനിർവചനം ഘടന IndexSample IndexSample;
+തരനിർവചനം ഘടന താക്കോൽ_Class താക്കോൽ_Class;
+തരനിർവചനം ഘടന താക്കോൽ_Info താക്കോൽ_Info;
+തരനിർവചനം ഘടന Lookaside Lookaside;
+തരനിർവചനം ഘടന LookasideSlot LookasideSlot;
+തരനിർവചനം ഘടന Module Module;
+തരനിർവചനം ഘടന NameContext NameContext;
+തരനിർവചനം ഘടന OnOrUsing OnOrUsing;
+തരനിർവചനം ഘടന Parse Parse;
+തരനിർവചനം ഘടന ParseCleanup ParseCleanup;
+തരനിർവചനം ഘടന PreUpdate PreUpdate;
+തരനിർവചനം ഘടന PrintfArguments PrintfArguments;
+തരനിർവചനം ഘടന RCStr RCStr;
+തരനിർവചനം ഘടന RenameToken RenameToken;
+തരനിർവചനം ഘടന Returning Returning;
+തരനിർവചനം ഘടന RowSet RowSet;
+തരനിർവചനം ഘടന Savepoint Savepoint;
+തരനിർവചനം ഘടന Select Select;
+തരനിർവചനം ഘടന SQLiteThread SQLiteThread;
+തരനിർവചനം ഘടന SelectDest SelectDest;
+തരനിർവചനം ഘടന Subquery Subquery;
+തരനിർവചനം ഘടന SrcItem SrcItem;
+തരനിർവചനം ഘടന SrcList SrcList;
+തരനിർവചനം ഘടന sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
+തരനിർവചനം ഘടന Table Table;
+തരനിർവചനം ഘടന TableLock TableLock;
+തരനിർവചനം ഘടന Token Token;
+തരനിർവചനം ഘടന വൃക്ഷം_View വൃക്ഷം_View;
+തരനിർവചനം ഘടന Trigger Trigger;
+തരനിർവചനം ഘടന TriggerPrg TriggerPrg;
+തരനിർവചനം ഘടന TriggerStep TriggerStep;
+തരനിർവചനം ഘടന UnpackedRecord UnpackedRecord;
+തരനിർവചനം ഘടന Upsert Upsert;
+തരനിർവചനം ഘടന VTable VTable;
+തരനിർവചനം ഘടന VtabCtx VtabCtx;
+തരനിർവചനം ഘടന Walker Walker;
+തരനിർവചനം ഘടന WhereInfo WhereInfo;
+തരനിർവചനം ഘടന Window Window;
+തരനിർവചനം ഘടന With With;
 
 
 /*
@@ -1430,23 +1430,23 @@ typedef struct With With;
 ** of the library by 738 bytes on ix86.
 */
 #ifdef SQLITE_BITMASK_TYPE
-  typedef SQLITE_BITMASK_TYPE Bitmask;
-#else
-  typedef u64 Bitmask;
+  തരനിർവചനം SQLITE_BITMASK_TYPE Bitmask;
+#അല്ലെങ്കിൽ
+  തരനിർവചനം u64 Bitmask;
 #endif
 
 /*
 ** The number of bits in a Bitmask.  "BMS" means "BitMask Size".
 */
-#define BMS  ((int)(sizeof(Bitmask)*8))
+#define BMS  ((പൂർണ്ണസംഖ്യ)(വലുപ്പം(Bitmask)*8))
 
 /*
 ** A bit in a Bitmask
 */
 #define MASKBIT(n)    (((Bitmask)1)<<(n))
 #define MASKBIT64(n)  (((u64)1)<<(n))
-#define MASKBIT32(n)  (((unsigned int)1)<<(n))
-#define SMASKBIT32(n) ((n)<=31?((unsigned int)1)<<(n):0)
+#define MASKBIT32(n)  (((unsigned പൂർണ്ണസംഖ്യ)1)<<(n))
+#define SMASKBIT32(n) ((n)<=31?((unsigned പൂർണ്ണസംഖ്യ)1)<<(n):0)
 #define ALLBITS       ((Bitmask)-1)
 #define TOPBIT        (((Bitmask)1)<<(BMS-1))
 
@@ -1456,19 +1456,19 @@ typedef struct With With;
 ** on the sqlite3VListAdd() routine for more information.  A VList is really
 ** just an array of integers.
 */
-typedef int VList;
+തരനിർവചനം പൂർണ്ണസംഖ്യ VList;
 
 /*
 ** Defer sourcing vdbe.h and btree.h until after the "u8" and
 ** "BusyHandler" typedefs. vdbe.h also requires a few of the opaque
 ** pointer types (i.e. FuncDef) defined above.
 */
-#include "os.h"
-#include "pager.h"
-#include "btree.h"
-#include "vdbe.h"
-#include "pcache.h"
-#include "mutex.h"
+#അന്തര്ഭാവ "os.h"
+#അന്തര്ഭാവ "pager.h"
+#അന്തര്ഭാവ "btree.h"
+#അന്തര്ഭാവ "vdbe.h"
+#അന്തര്ഭാവ "pcache.h"
+#അന്തര്ഭാവ "mutex.h"
 
 /* The SQLITE_EXTRA_DURABLE compile-time option used to set the default
 ** synchronous setting to EXTRA.  It is no longer supported.
@@ -1508,8 +1508,8 @@ typedef int VList;
 ** aDb[1] is the database file used to hold temporary tables.  Additional
 ** databases may be attached.
 */
-struct Db {
-  char *zDbSName;      /* Name of this database. (schema name, not filename) */
+ഘടന Db {
+  അക്ഷരം *zDbSName;      /* Name of this database. (schema name, not filename) */
   Btree *pBt;          /* The B*Tree structure for this database file */
   u8 safety_level;     /* How aggressive at syncing data to disk */
   u8 bSyncSet;         /* True if "PRAGMA synchronous=N" has been run */
@@ -1533,9 +1533,9 @@ struct Db {
 ** holding a mutex on the sqlite3 connection pointer that owns the Btree.
 ** For a TEMP Schema, only the connection mutex is required.
 */
-struct Schema {
-  int schema_cookie;   /* Database schema version number for this file */
-  int iGeneration;     /* Generation counter.  Incremented with each change */
+ഘടന Schema {
+  പൂർണ്ണസംഖ്യ schema_cookie;   /* Database schema version number for this file */
+  പൂർണ്ണസംഖ്യ iGeneration;     /* Generation counter.  Incremented with each change */
   Hash tblHash;        /* All tables indexed by name */
   Hash idxHash;        /* All (named) indices indexed by name */
   Hash trigHash;       /* All triggers indexed by name */
@@ -1544,7 +1544,7 @@ struct Schema {
   u8 file_format;      /* Schema format version for this file */
   u8 enc;              /* Text encoding used by this database */
   u16 schemaFlags;     /* Flags associated with this schema */
-  int cache_size;      /* Number of pages to use in the cache */
+  പൂർണ്ണസംഖ്യ cache_size;      /* Number of pages to use in the cache */
 };
 
 /*
@@ -1621,7 +1621,7 @@ struct Schema {
 ** This enhancement can be omitted by compiling with
 ** SQLITE_OMIT_TWOSIZE_LOOKASIDE.
 */
-struct Lookaside {
+ഘടന Lookaside {
   u32 bDisable;           /* Only operate the lookaside when zero */
   u16 sz;                 /* Size of each buffer in bytes */
   u16 szTrue;             /* True value of sz, even if disabled */
@@ -1633,14 +1633,14 @@ struct Lookaside {
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
   LookasideSlot *pSmallInit; /* List of small buffers not previously used */
   LookasideSlot *pSmallFree; /* List of available small buffers */
-  void *pMiddle;          /* First byte past end of full-size buffers and
+  ശൂന്യം *p_നടുവ്;          /* First byte past end of full-size buffers and
                           ** the first byte of LOOKASIDE_SMALL buffers */
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-  void *pStart;           /* First byte of available memory space */
-  void *pEnd;             /* First byte past end of available space */
-  void *pTrueEnd;         /* True value of pEnd, when db->pnBytesFreed!=0 */
+  ശൂന്യം *pStart;           /* First byte of available memory space */
+  ശൂന്യം *pEnd;             /* First byte past end of available space */
+  ശൂന്യം *pTrueEnd;         /* True value of pEnd, when db->pnBytesFreed!=0 */
 };
-struct LookasideSlot {
+ഘടന LookasideSlot {
   LookasideSlot *pNext;    /* Next buffer in the list of free buffers */
 };
 
@@ -1651,7 +1651,7 @@ struct LookasideSlot {
 /* Size of the smaller allocations in two-size lookaside */
 #ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #  define LOOKASIDE_SMALL           0
-#else
+#അല്ലെങ്കിൽ
 #  define LOOKASIDE_SMALL         128
 #endif
 
@@ -1664,7 +1664,7 @@ struct LookasideSlot {
 ** macro to compute a hash on the function name.
 */
 #define SQLITE_FUNC_HASH_SZ 23
-struct FuncDefHash {
+ഘടന FuncDefHash {
   FuncDef *a[SQLITE_FUNC_HASH_SZ];       /* Hash table for functions */
 };
 #define SQLITE_FUNC_HASH(C,L) (((C)+(L))%SQLITE_FUNC_HASH_SZ)
@@ -1672,8 +1672,8 @@ struct FuncDefHash {
 /*
 ** typedef for the authorization callback function.
 */
-typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
-                             const char*);
+തരനിർവചനം പൂർണ്ണസംഖ്യ (*sqlite3_xauth)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*,
+                             സ്ഥിരം അക്ഷരം*);
 
 #ifndef SQLITE_OMIT_DEPRECATED
 /* This is an extra SQLITE_TRACE macro that indicates "legacy" tracing
@@ -1681,7 +1681,7 @@ typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
 */
 #define SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
 #define SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
-#else
+#അല്ലെങ്കിൽ
 #define SQLITE_TRACE_LEGACY          0
 #define SQLITE_TRACE_XPROFILE        0
 #endif /* SQLITE_OMIT_DEPRECATED */
@@ -1696,30 +1696,30 @@ typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
 /*
 ** Each database connection is an instance of the following structure.
 */
-struct sqlite3 {
+ഘടന sqlite3 {
   sqlite3_vfs *pVfs;            /* OS Interface */
-  struct Vdbe *pVdbe;           /* List of active virtual machines */
+  ഘടന Vdbe *pVdbe;           /* List of active virtual machines */
   CollSeq *pDfltColl;           /* BINARY collseq for the database encoding */
   sqlite3_mutex *mutex;         /* Connection mutex */
   Db *aDb;                      /* All backends */
-  int nDb;                      /* Number of backends currently in use */
+  പൂർണ്ണസംഖ്യ nDb;                      /* Number of backends currently in use */
   u32 mDbFlags;                 /* flags recording internal state */
   u64 flags;                    /* flags settable by pragmas. See below */
   i64 lastRowid;                /* ROWID of most recent insert (see above) */
   i64 szMmap;                   /* Default mmap_size setting */
   u32 nSchemaLock;              /* Do not reset the schema when non-zero */
-  unsigned int openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
-  int errCode;                  /* Most recent error code (SQLITE_*) */
-  int errByteOffset;            /* Byte offset of error in SQL statement */
-  int errMask;                  /* & result codes with this before returning */
-  int iSysErrno;                /* Errno value from last system error */
+  unsigned പൂർണ്ണസംഖ്യ openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
+  പൂർണ്ണസംഖ്യ errCode;                  /* Most recent error code (SQLITE_*) */
+  പൂർണ്ണസംഖ്യ errByteOffset;            /* Byte offset of error in SQL statement */
+  പൂർണ്ണസംഖ്യ errMask;                  /* & result codes with this before returning */
+  പൂർണ്ണസംഖ്യ iSysErrno;                /* Errno value from last system error */
   u8 enc;                       /* Text encoding */
   u8 autoCommit;                /* The auto-commit flag. */
   u8 temp_store;                /* 1: file 2: memory 0: default */
   u8 mallocFailed;              /* True if we have seen a malloc failure */
   u8 bBenignMalloc;             /* Do not require OOMs if true */
   u8 dfltLockMode;              /* Default locking-mode for attached dbs */
-  signed char nextAutovac;      /* Autovac setting after VACUUM if >=0 */
+  signed അക്ഷരം nextAutovac;      /* Autovac setting after VACUUM if >=0 */
   u8 suppressErr;               /* Do not issue error messages if true */
   u8 vtabOnConflict;            /* Value to return for s3_vtab_on_conflict() */
   u8 isTransactionSavepoint;    /* True if the outermost savepoint is a TS */
@@ -1728,78 +1728,78 @@ struct sqlite3 {
   u8 nSqlExec;                  /* Number of pending OP_SqlExec opcodes */
   u8 eOpenState;                /* Current condition of the connection */
   u8 nFpDigit;                  /* Significant digits to keep on double->text */
-  int nextPagesize;             /* Pagesize after VACUUM if >0 */
+  പൂർണ്ണസംഖ്യ nextPagesize;             /* Pagesize after VACUUM if >0 */
   i64 nChange;                  /* Value returned by sqlite3_changes() */
   i64 nTotalChange;             /* Value returned by sqlite3_total_changes() */
   u32 dbOptFlags;               /* Flags to enable/disable optimizations */
-  int aLimit[SQLITE_N_LIMIT];   /* Limits */
-  int nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
-  struct sqlite3InitInfo {      /* Information used during initialization */
+  പൂർണ്ണസംഖ്യ aLimit[SQLITE_N_LIMIT];   /* Limits */
+  പൂർണ്ണസംഖ്യ nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
+  ഘടന sqlite3InitInfo {      /* Information used during initialization */
     Pgno newTnum;               /* Rootpage of table being initialized */
     u8 iDb;                     /* Which db file is being initialized */
     u8 busy;                    /* TRUE if initing. 2 if due to ADD COLUMN */
     unsigned orphanTrigger : 1; /* Last statement is orphaned TEMP trigger */
     unsigned imposterTable : 2; /* Building an imposter table */
     unsigned reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
-    const char **azInit;        /* "type", "name", and "tbl_name" columns */
+    സ്ഥിരം അക്ഷരം **azInit;        /* "type", "name", and "tbl_name" columns */
   } init;
-  int nVdbeActive;              /* Number of VDBEs currently running */
-  int nVdbeRead;                /* Number of active VDBEs that read or write */
-  int nVdbeWrite;               /* Number of active VDBEs that read and write */
-  int nVdbeExec;                /* Number of nested calls to VdbeExec() */
-  int nVDestroy;                /* Number of active OP_VDestroy operations */
-  int nExtension;               /* Number of loaded extensions */
-  void **aExtension;            /* Array of shared library handles */
-  union {
-    void (*xLegacy)(void*,const char*);   /* mTrace==SQLITE_TRACE_LEGACY */
-    int (*xV2)(u32,void*,void*,void*);    /* All other mTrace values */
+  പൂർണ്ണസംഖ്യ nVdbeActive;              /* Number of VDBEs currently running */
+  പൂർണ്ണസംഖ്യ nVdbeRead;                /* Number of active VDBEs that read or write */
+  പൂർണ്ണസംഖ്യ nVdbeWrite;               /* Number of active VDBEs that read and write */
+  പൂർണ്ണസംഖ്യ nVdbeExec;                /* Number of nested calls to VdbeExec() */
+  പൂർണ്ണസംഖ്യ nVDestroy;                /* Number of active OP_VDestroy operations */
+  പൂർണ്ണസംഖ്യ nExtension;               /* Number of loaded extensions */
+  ശൂന്യം **aExtension;            /* Array of shared library handles */
+  സംഘം {
+    ശൂന്യം (*xLegacy)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*);   /* mTrace==SQLITE_TRACE_LEGACY */
+    പൂർണ്ണസംഖ്യ (*xV2)(u32,ശൂന്യം*,ശൂന്യം*,ശൂന്യം*);    /* All other mTrace values */
   } trace;
-  void *pTraceArg;                        /* Argument to the trace function */
+  ശൂന്യം *pTraceArg;                        /* Argument to the trace function */
 #ifndef SQLITE_OMIT_DEPRECATED
-  void (*xProfile)(void*,const char*,u64);  /* Profiling function */
-  void *pProfileArg;                        /* Argument to profile function */
+  ശൂന്യം (*xProfile)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*,u64);  /* Profiling function */
+  ശൂന്യം *pProfileArg;                        /* Argument to profile function */
 #endif
-  void *pCommitArg;                 /* Argument to xCommitCallback() */
-  int (*xCommitCallback)(void*);    /* Invoked at every commit. */
-  void *pRollbackArg;               /* Argument to xRollbackCallback() */
-  void (*xRollbackCallback)(void*); /* Invoked at every commit. */
-  void *pUpdateArg;
-  void (*xUpdateCallback)(void*,int, const char*,const char*,sqlite_int64);
-  void *pAutovacPagesArg;           /* Client argument to autovac_pages */
-  void (*xAutovacDestr)(void*);     /* Destructor for pAutovacPAgesArg */
-  unsigned int (*xAutovacPages)(void*,const char*,u32,u32,u32);
+  ശൂന്യം *pCommitArg;                 /* Argument to xCommitCallback() */
+  പൂർണ്ണസംഖ്യ (*xCommitCallback)(ശൂന്യം*);    /* Invoked at every commit. */
+  ശൂന്യം *pRollbackArg;               /* Argument to xRollbackCallback() */
+  ശൂന്യം (*xRollbackCallback)(ശൂന്യം*); /* Invoked at every commit. */
+  ശൂന്യം *pUpdateArg;
+  ശൂന്യം (*xUpdateCallback)(ശൂന്യം*,പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*,sqlite_int64);
+  ശൂന്യം *pAutovacPagesArg;           /* Client argument to autovac_pages */
+  ശൂന്യം (*xAutovacDestr)(ശൂന്യം*);     /* Destructor for pAutovacPAgesArg */
+  unsigned പൂർണ്ണസംഖ്യ (*xAutovacPages)(ശൂന്യം*,സ്ഥിരം അക്ഷരം*,u32,u32,u32);
   Parse *pParse;                /* Current parse */
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-  void *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
-  void (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
-    void*,sqlite3*,int,char const*,char const*,sqlite3_int64,sqlite3_int64
+  ശൂന്യം *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
+  ശൂന്യം (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
+    ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ,അക്ഷരം സ്ഥിരം*,അക്ഷരം സ്ഥിരം*,sqlite3_int64,sqlite3_int64
   );
   PreUpdate *pPreUpdate;        /* Context for active pre-update callback */
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 #ifndef SQLITE_OMIT_WAL
-  int (*xWalCallback)(void *, sqlite3 *, const char *, int);
-  void *pWalArg;
+  പൂർണ്ണസംഖ്യ (*xWalCallback)(ശൂന്യം *, sqlite3 *, സ്ഥിരം അക്ഷരം *, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം *pWalArg;
 #endif
-  void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*);
-  void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*);
-  void *pCollNeededArg;
-  sqlite3_value *pErr;          /* Most recent error message */
-  union {
-    volatile int isInterrupted; /* True if sqlite3_interrupt has been called */
-    double notUsed1;            /* Spacer */
+  ശൂന്യം(*xCollNeeded)(ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ eTextRep,സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം(*xCollNeeded16)(ശൂന്യം*,sqlite3*,പൂർണ്ണസംഖ്യ eTextRep,സ്ഥിരം ശൂന്യം*);
+  ശൂന്യം *pCollNeededArg;
+  sqlite3_മൂല്യം *pErr;          /* Most recent error message */
+  സംഘം {
+    അസ്ഥിര പൂർണ്ണസംഖ്യ isInterrupted; /* True if sqlite3_interrupt has been called */
+    ഇരട്ട notUsed1;            /* Spacer */
   } u1;
   Lookaside lookaside;          /* Lookaside malloc configuration */
 #ifndef SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth;          /* Access authorization function */
-  void *pAuthArg;               /* 1st argument to the access auth function */
+  ശൂന്യം *pAuthArg;               /* 1st argument to the access auth function */
 #endif
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  int (*xProgress)(void *);     /* The progress callback */
-  void *pProgressArg;           /* Argument to the progress callback */
+  പൂർണ്ണസംഖ്യ (*xProgress)(ശൂന്യം *);     /* The progress callback */
+  ശൂന്യം *pProgressArg;           /* Argument to the progress callback */
   unsigned nProgressOps;        /* Number of opcodes for progress callback */
 #endif
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVTrans;                  /* Allocated size of aVTrans */
+  പൂർണ്ണസംഖ്യ nVTrans;                  /* Allocated size of aVTrans */
   Hash aModule;                 /* populated by sqlite3_create_module() */
   VtabCtx *pVtabCtx;            /* Context for active vtab connect/create */
   VTable **aVTrans;             /* Virtual tables with open transactions */
@@ -1810,17 +1810,17 @@ struct sqlite3 {
   BusyHandler busyHandler;      /* Busy callback */
   Db aDbStatic[2];              /* Static space for the 2 default backends */
   Savepoint *pSavepoint;        /* List of active savepoints */
-  int nAnalysisLimit;           /* Number of index rows to ANALYZE */
-  int busyTimeout;              /* Busy handler timeout, in msec */
+  പൂർണ്ണസംഖ്യ nAnalysisLimit;           /* Number of index rows to ANALYZE */
+  പൂർണ്ണസംഖ്യ busyTimeout;              /* Busy handler timeout, in msec */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  int setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
-  int setlkFlags;               /* Flags passed to setlk_timeout() */
+  പൂർണ്ണസംഖ്യ setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
+  പൂർണ്ണസംഖ്യ setlkFlags;               /* Flags passed to setlk_timeout() */
 #endif
-  int nSavepoint;               /* Number of non-transaction savepoints */
-  int nStatement;               /* Number of nested statement-transactions  */
+  പൂർണ്ണസംഖ്യ nSavepoint;               /* Number of non-transaction savepoints */
+  പൂർണ്ണസംഖ്യ nStatement;               /* Number of nested statement-transactions  */
   i64 nDeferredCons;            /* Net deferred constraints this transaction. */
   i64 nDeferredImmCons;         /* Net deferred immediate constraints */
-  int *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
+  പൂർണ്ണസംഖ്യ *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
   DbClientData *pDbData;        /* sqlite3_set_clientdata() content */
   u64 nSpill;                   /* TEMP content spilled to disk */
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
@@ -1836,8 +1836,8 @@ struct sqlite3 {
   */
   sqlite3 *pBlockingConnection; /* Connection that caused SQLITE_LOCKED */
   sqlite3 *pUnlockConnection;           /* Connection to watch for unlock */
-  void *pUnlockArg;                     /* Argument to xUnlockNotify */
-  void (*xUnlockNotify)(void **, int);  /* Unlock notify callback */
+  ശൂന്യം *pUnlockArg;                     /* Argument to xUnlockNotify */
+  ശൂന്യം (*xUnlockNotify)(ശൂന്യം **, പൂർണ്ണസംഖ്യ);  /* Unlock notify callback */
   sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
 #endif
 };
@@ -1879,7 +1879,7 @@ struct sqlite3 {
 #define SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
 #define SQLITE_ReverseOrder   0x00001000  /* Reverse unordered SELECTs */
 #define SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
-#define SQLITE_ForeignKeys    0x00004000  /* Enforce foreign key constraints  */
+#define SQLITE_Foreign_താക്കോലുകൾ    0x00004000  /* Enforce foreign key constraints  */
 #define SQLITE_AutoIndex      0x00008000  /* Enable automatic indexes */
 #define SQLITE_LoadExtension  0x00010000  /* Enable load_extension */
 #define SQLITE_LoadExtFunc    0x00020000  /* Enable load_extension() SQL func */
@@ -1897,7 +1897,7 @@ struct sqlite3 {
 #define SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
 #define SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
 #define SQLITE_EnableView     0x80000000  /* Enable the use of views */
-#define SQLITE_CountRows      HI(0x00001) /* Count rows changed by INSERT, */
+#define SQLITE_എണ്ണം_Rows      HI(0x00001) /* Count rows changed by INSERT, */
                                           /*   DELETE, or UPDATE and return */
                                           /*   the count using a callback. */
 #define SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
@@ -1945,10 +1945,10 @@ struct sqlite3 {
 #define SQLITE_OrderByIdxJoin  7 /* ORDER BY of joins via index */
 #define SQLITE_Transitive      8 /* Transitive constraints */
 #define SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
-#define SQLITE_CountOfView    10 /* The count-of-view optimization */
+#define SQLITE_എണ്ണം_Of_View    10 /* The count-of-view optimization */
 #define SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
 #define SQLITE_Stat4          12 /* Use STAT4 data */
-#define SQLITE_PushDown       13 /* WHERE-clause push-down opt */
+#define SQLITE_തള്ളുക_Down       13 /* WHERE-clause push-down opt */
 #define SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
 #define SQLITE_SkipScan       15 /* Skip-scans */
 #define SQLITE_PropagateConst 16 /* The constant propagation opt */
@@ -1960,7 +1960,7 @@ struct sqlite3 {
 #define SQLITE_BalancedMerge  22 /* Balance multi-way merges */
 #define SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
 #define SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
-#define SQLITE_IndexedExpr    25 /* Pull exprs from index when able */
+#define SQLITE_Indexed_വ്യഞ്ജകം    25 /* Pull exprs from index when able */
 #define SQLITE_Coroutines     26 /* Co-routines for subqueries */
 #define SQLITE_NullUnusedCols 27 /* NULL unused columns in subqueries */
 #define SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
@@ -2002,17 +2002,17 @@ struct sqlite3 {
 ** The u.pHash field is used by the global built-ins.  The u.pDestructor
 ** field is used by per-connection app-def functions.
 */
-struct FuncDef {
+ഘടന FuncDef {
   i16 nArg;            /* Number of arguments.  -1 means unlimited */
   u32 funcFlags;       /* Some combination of SQLITE_FUNC_* */
-  void *pUserData;     /* User data parameter */
+  ശൂന്യം *pUserData;     /* User data parameter */
   FuncDef *pNext;      /* Next function with same name */
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**); /* func or agg-step */
-  void (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
-  void (*xValue)(sqlite3_context*);                     /* Current agg value */
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**); /* inverse agg-step */
-  const char *zName;   /* SQL name of the function. */
-  union {
+  ശൂന്യം (*xSFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**); /* func or agg-step */
+  ശൂന്യം (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
+  ശൂന്യം (*x_മൂല്യം)(sqlite3_context*);                     /* Current agg value */
+  ശൂന്യം (*xInverse)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**); /* inverse agg-step */
+  സ്ഥിരം അക്ഷരം *zName;   /* SQL name of the function. */
+  സംഘം {
     FuncDef *pHash;      /* Next with a different name but the same hash */
     FuncDestructor *pDestructor;   /* Reference counted destructor function */
   } u; /* pHash if SQLITE_FUNC_BUILTIN, pDestructor otherwise */
@@ -2032,10 +2032,10 @@ struct FuncDef {
 ** count on this object is decremented. When it reaches 0, the destructor
 ** is invoked and the FuncDestructor structure freed.
 */
-struct FuncDestructor {
-  int nRef;
-  void (*xDestroy)(void *);
-  void *pUserData;
+ഘടന FuncDestructor {
+  പൂർണ്ണസംഖ്യ nRef;
+  ശൂന്യം (*xDestroy)(ശൂന്യം *);
+  ശൂന്യം *pUserData;
 };
 
 /*
@@ -2069,7 +2069,7 @@ struct FuncDestructor {
 #define SQLITE_FUNC_LENGTH   0x0040 /* Built-in length() function */
 #define SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
 #define SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
-#define SQLITE_FUNC_COUNT    0x0100 /* Built-in count(*) aggregate */
+#define SQLITE_FUNC_എണ്ണം    0x0100 /* Built-in count(*) aggregate */
 /*                           0x0200 -- available for reuse */
 #define SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
 #define SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
@@ -2091,8 +2091,8 @@ struct FuncDestructor {
 /* Identifier numbers for each in-line function */
 #define INLINEFUNC_coalesce             0
 #define INLINEFUNC_implies_nonnull_row  1
-#define INLINEFUNC_expr_implies_expr    2
-#define INLINEFUNC_expr_compare         3
+#define INLINEFUNC_വ്യഞ്ജകം_implies_വ്യഞ്ജകം    2
+#define INLINEFUNC_വ്യഞ്ജകം_compare         3
 #define INLINEFUNC_affinity             4
 #define INLINEFUNC_iif                  5
 #define INLINEFUNC_sqlite_offset        6
@@ -2197,7 +2197,7 @@ struct FuncDestructor {
 #define PURE_DATE(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
          SQLITE_FUNC_SLOCHNG|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
-   (void*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
+   (ശൂന്യം*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
 #define FUNCTION2(zName, nArg, iArg, bNC, xFunc, extraFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_CONSTANT|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL)|extraFlags,\
@@ -2208,10 +2208,10 @@ struct FuncDestructor {
    pArg, 0, xFunc, 0, 0, 0, #zName, {0} }
 #define LIKEFUNC(zName, nArg, arg, flags) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8|flags, \
-   (void *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
-#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, xValue, xInverse, f) \
+   (ശൂന്യം *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
+#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, x_മൂല്യം, xInverse, f) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(nc*SQLITE_FUNC_NEEDCOLL)|f, \
-   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,xValue,xInverse,#zName, {0}}
+   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,x_മൂല്യം,xInverse,#zName, {0}}
 #define INTERNAL_FUNCTION(zName, nArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_INTERNAL|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
@@ -2224,8 +2224,8 @@ struct FuncDestructor {
 ** opened savepoint. Savepoints are added to the list by the vdbe
 ** OP_Savepoint instruction.
 */
-struct Savepoint {
-  char *zName;                        /* Savepoint name (nul-terminated) */
+ഘടന Savepoint {
+  അക്ഷരം *zName;                        /* Savepoint name (nul-terminated) */
   i64 nDeferredCons;                  /* Number of deferred fk violations */
   i64 nDeferredImmCons;               /* Number of deferred imm fk. */
   Savepoint *pNext;                   /* Parent savepoint (if any) */
@@ -2245,12 +2245,12 @@ struct Savepoint {
 ** instance of the following structure, stored in the sqlite3.aModule
 ** hash table.
 */
-struct Module {
-  const sqlite3_module *pModule;       /* Callback pointers */
-  const char *zName;                   /* Name passed to create_module() */
-  int nRefModule;                      /* Number of pointers to this object */
-  void *pAux;                          /* pAux passed to create_module() */
-  void (*xDestroy)(void *);            /* Module destructor function */
+ഘടന Module {
+  സ്ഥിരം sqlite3_module *pModule;       /* Callback pointers */
+  സ്ഥിരം അക്ഷരം *zName;                   /* Name passed to create_module() */
+  പൂർണ്ണസംഖ്യ nRefModule;                      /* Number of pointers to this object */
+  ശൂന്യം *pAux;                          /* pAux passed to create_module() */
+  ശൂന്യം (*xDestroy)(ശൂന്യം *);            /* Module destructor function */
   Table *pEpoTab;                      /* Eponymous table for this module */
 };
 
@@ -2279,11 +2279,11 @@ struct Module {
 ** collating sequence name is only included if the COLFLAG_HASCOLL bit is
 ** set.
 */
-struct Column {
-  char *zCnName;        /* Name of this column */
+ഘടന Column {
+  അക്ഷരം *zCnName;        /* Name of this column */
   unsigned notNull :4;  /* An OE_ code for handling a NOT NULL constraint */
   unsigned eCType :4;   /* One of the standard types */
-  char affinity;        /* One of the SQLITE_AFF_... values */
+  അക്ഷരം affinity;        /* One of the SQLITE_AFF_... values */
   u8 szEst;             /* Est size of value in this column. sizeof(INT)==1 */
   u8 hName;             /* Column name hash for faster lookup */
   u16 iDflt;            /* 1-based index of DEFAULT.  0 means "none" */
@@ -2336,12 +2336,12 @@ struct Column {
 ** collating sequence is undefined.  Indices built on an undefined
 ** collating sequence may not be read or written.
 */
-struct CollSeq {
-  char *zName;          /* Name of the collating sequence, UTF-8 encoded */
+ഘടന CollSeq {
+  അക്ഷരം *zName;          /* Name of the collating sequence, UTF-8 encoded */
   u8 enc;               /* Text encoding handled by xCmp() */
-  void *pUser;          /* First argument to xCmp() */
-  int (*xCmp)(void*,int, const void*, int, const void*);
-  void (*xDel)(void*);  /* Destructor for pUser */
+  ശൂന്യം *pUser;          /* First argument to xCmp() */
+  പൂർണ്ണസംഖ്യ (*xCmp)(ശൂന്യം*,പൂർണ്ണസംഖ്യ, സ്ഥിരം ശൂന്യം*, പൂർണ്ണസംഖ്യ, സ്ഥിരം ശൂന്യം*);
+  ശൂന്യം (*xDel)(ശൂന്യം*);  /* Destructor for pUser */
 };
 
 /*
@@ -2437,34 +2437,34 @@ struct CollSeq {
 ** sqlite3DbMalloc(), using the connection handle stored in VTable.db as
 ** the first argument.
 */
-struct VTable {
+ഘടന VTable {
   sqlite3 *db;              /* Database connection associated with this table */
   Module *pMod;             /* Pointer to module implementation */
   sqlite3_vtab *pVtab;      /* Pointer to vtab instance */
-  int nRef;                 /* Number of pointers to this structure */
+  പൂർണ്ണസംഖ്യ nRef;                 /* Number of pointers to this structure */
   u8 bConstraint;           /* True if constraints are supported */
   u8 bAllSchemas;           /* True if might use any attached schema */
   u8 eVtabRisk;             /* Riskiness of allowing hacker access */
-  int iSavepoint;           /* Depth of the SAVEPOINT stack */
+  പൂർണ്ണസംഖ്യ iSavepoint;           /* Depth of the SAVEPOINT stack */
   VTable *pNext;            /* Next in linked list (see above) */
 };
 
 /* Allowed values for VTable.eVtabRisk
 */
-#define SQLITE_VTABRISK_Low          0
+#define SQLITE_VTABRISK_താഴെയുള്ള          0
 #define SQLITE_VTABRISK_Normal       1
-#define SQLITE_VTABRISK_High         2
+#define SQLITE_VTABRISK_മുകളിലെ         2
 
 /*
 ** The schema for each SQL table, virtual table, and view is represented
 ** in memory by an instance of the following structure.
 */
-struct Table {
-  char *zName;         /* Name of the table or view */
+ഘടന Table {
+  അക്ഷരം *zName;         /* Name of the table or view */
   Column *aCol;        /* Information about each column */
   Index *pIndex;       /* List of SQL indexes on this table. */
-  char *zColAff;       /* String defining the affinity of each column */
-  ExprList *pCheck;    /* All CHECK constraints */
+  അക്ഷരം *zColAff;       /* String defining the affinity of each column */
+  വ്യഞ്ജകം_List *pCheck;    /* All CHECK constraints */
                        /*   ... also used as column name list in a VIEW */
   Pgno tnum;           /* Root BTree page for this table */
   u32 nTabRef;         /* Number of pointers to this Table */
@@ -2477,21 +2477,21 @@ struct Table {
 #ifdef SQLITE_ENABLE_COSTMULT
   LogEst costMult;     /* Cost multiplier for using this table */
 #endif
-  u8 keyConf;          /* What to do in case of uniqueness conflict on iPKey */
+  u8 താക്കോൽ_Conf;          /* What to do in case of uniqueness conflict on iPKey */
   u8 eTabType;         /* 0: normal, 1: virtual, 2: view */
-  union {
-    struct {             /* Used by ordinary tables: */
-      int addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
+  സംഘം {
+    ഘടന {             /* Used by ordinary tables: */
+      പൂർണ്ണസംഖ്യ addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
       FKey *pFKey;         /* Linked list of all foreign keys in this table */
-      ExprList *pDfltList; /* DEFAULT clauses on various columns.
+      വ്യഞ്ജകം_List *pDfltList; /* DEFAULT clauses on various columns.
                            ** Or the AS clause for generated columns. */
     } tab;
-    struct {             /* Used by views: */
+    ഘടന {             /* Used by views: */
       Select *pSelect;     /* View definition */
     } view;
-    struct {             /* Used by virtual tables only: */
-      int nArg;            /* Number of arguments to the module */
-      char **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
+    ഘടന {             /* Used by virtual tables only: */
+      പൂർണ്ണസംഖ്യ nArg;            /* Number of arguments to the module */
+      അക്ഷരം **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
       VTable *p;           /* List of VTable objects. */
     } vtab;
   } u;
@@ -2517,7 +2517,7 @@ struct Table {
 */
 #define TF_Readonly       0x00000001 /* Read-only system table */
 #define TF_HasHidden      0x00000002 /* Has one or more hidden columns */
-#define TF_HasPrimaryKey  0x00000004 /* Table has a primary key */
+#define TF_Has_Primary_താക്കോൽ  0x00000004 /* Table has a primary key */
 #define TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
 #define TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
 #define TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
@@ -2552,11 +2552,11 @@ struct Table {
 */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 #  define IsVirtual(X)      ((X)->eTabType==TABTYP_VTAB)
-#  define ExprIsVtab(X)  \
+#  define വ്യഞ്ജകം_Is_Vtab(X)  \
    ((X)->op==TK_COLUMN && (X)->y.pTab->eTabType==TABTYP_VTAB)
-#else
+#അല്ലെങ്കിൽ
 #  define IsVirtual(X)      0
-#  define ExprIsVtab(X)     0
+#  define വ്യഞ്ജകം_Is_Vtab(X)     0
 #endif
 
 /*
@@ -2565,13 +2565,13 @@ struct Table {
 ** always false unless SQLITE_ENABLE_HIDDEN_COLUMNS is defined.  The
 ** IsHiddenColumn() macro is general purpose.
 */
-#if defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
+#എങ്കിൽ defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
 #  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
 #  define IsOrdinaryHiddenColumn(X) (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#elif !defined(SQLITE_OMIT_VIRTUALTABLE)
+#അല്ലെങ്കിലെങ്കിൽ !defined(SQLITE_OMIT_VIRTUALTABLE)
 #  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
 #  define IsOrdinaryHiddenColumn(X) 0
-#else
+#അല്ലെങ്കിൽ
 #  define IsHiddenColumn(X)         0
 #  define IsOrdinaryHiddenColumn(X) 0
 #endif
@@ -2586,7 +2586,7 @@ struct Table {
 */
 #ifndef SQLITE_ALLOW_ROWID_IN_VIEW
 # define ViewCanHaveRowid     0
-#else
+#അല്ലെങ്കിൽ
 # define ViewCanHaveRowid     (sqlite3Config.mNoVisibleRowid==0)
 #endif
 
@@ -2618,26 +2618,26 @@ struct Table {
 ** A list of all children for a table named Z (which might not even exist)
 ** is held in Schema.fkeyHash with a hash key of Z.
 */
-struct FKey {
+ഘടന FKey {
   Table *pFrom;     /* Table containing the REFERENCES clause (aka: Child) */
   FKey *pNextFrom;  /* Next FKey with the same in pFrom. Next parent of pFrom */
-  char *zTo;        /* Name of table that the key points to (aka: Parent) */
+  അക്ഷരം *zTo;        /* Name of table that the key points to (aka: Parent) */
   FKey *pNextTo;    /* Next with the same zTo. Next child of zTo. */
   FKey *pPrevTo;    /* Previous with the same zTo */
-  int nCol;         /* Number of columns in this key */
+  പൂർണ്ണസംഖ്യ nCol;         /* Number of columns in this key */
   /* EV: R-30323-21917 */
   u8 isDeferred;       /* True if constraint checking is deferred till COMMIT */
   u8 aAction[2];        /* ON DELETE and ON UPDATE actions, respectively */
   Trigger *apTrigger[2];/* Triggers for aAction[] actions */
-  struct sColMap {      /* Mapping of columns in pFrom to columns in zTo */
-    int iFrom;            /* Index of column in pFrom */
-    char *zCol;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
+  ഘടന sColMap {      /* Mapping of columns in pFrom to columns in zTo */
+    പൂർണ്ണസംഖ്യ iFrom;            /* Index of column in pFrom */
+    അക്ഷരം *zCol;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
   } aCol[FLEXARRAY];      /* One entry for each of nCol columns */
 };
 
 /* The size (in bytes) of an FKey object holding N columns.  The answer
 ** does NOT include space to hold the zTo name. */
-#define SZ_FKEY(N)  (offsetof(FKey,aCol)+(N)*sizeof(struct sColMap))
+#define SZ_FKEY(N)  (offsetof(FKey,aCol)+(N)*വലുപ്പം(ഘടന sColMap))
 
 /*
 ** SQLite supports many different ways to resolve a constraint
@@ -2699,10 +2699,10 @@ struct FKey {
 ** is NULL, then nAllField is uninitialized and no space is allocated for
 ** aColl[], so those fields may not be used.
 */
-struct KeyInfo {
+ഘടന താക്കോൽ_Info {
   u32 nRef;           /* Number of references to this KeyInfo object */
   u8 enc;             /* Text encoding - one of the SQLITE_UTF* values */
-  u16 nKeyField;      /* Number of key columns in the index */
+  u16 n_താക്കോൽ_Field;      /* Number of key columns in the index */
   u16 nAllField;      /* Total columns, including key plus others */
   sqlite3 *db;        /* The database connection */
   u8 *aSortFlags;     /* Sort order for each column. */
@@ -2712,13 +2712,13 @@ struct KeyInfo {
 /* The size (in bytes) of a KeyInfo object with up to N fields.  This includes
 ** the main body of the KeyInfo object and the aColl[] array of N elements,
 ** but does not count the memory used to hold aSortFlags[]. */
-#define SZ_KEYINFO(N)  (offsetof(KeyInfo,aColl) + (N)*sizeof(CollSeq*))
+#define SZ_KEYINFO(N)  (offsetof(താക്കോൽ_Info,aColl) + (N)*വലുപ്പം(CollSeq*))
 
 /* The size of a bare KeyInfo with no aColl[] entries */
-#if FLEXARRAY+1 > 1
-# define SZ_KEYINFO_0   offsetof(KeyInfo,aColl)
-#else
-# define SZ_KEYINFO_0   sizeof(KeyInfo)
+#എങ്കിൽ FLEXARRAY+1 > 1
+# define SZ_KEYINFO_0   offsetof(താക്കോൽ_Info,aColl)
+#അല്ലെങ്കിൽ
+# define SZ_KEYINFO_0   വലുപ്പം(താക്കോൽ_Info)
 #endif
 
 /*
@@ -2761,14 +2761,14 @@ struct KeyInfo {
 ** eqSeen field will indicate whether or not an exact match exists in the
 ** b-tree.
 */
-struct UnpackedRecord {
-  KeyInfo *pKeyInfo;  /* Comparison info for the index that is unpacked */
+ഘടന UnpackedRecord {
+  താക്കോൽ_Info *p_താക്കോൽ_Info;  /* Comparison info for the index that is unpacked */
   Mem *aMem;          /* Values for columns of the index */
-  union {
-    char *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
+  സംഘം {
+    അക്ഷരം *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
     i64 i;              /* Cache of aMem[0].u.i for vdbeRecordCompareInt() */
   } u;
-  int n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
+  പൂർണ്ണസംഖ്യ n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
   u16 nField;         /* Number of entries in apMem[] */
   i8 default_rc;      /* Comparison result if keys are equal */
   u8 errCode;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
@@ -2824,21 +2824,21 @@ struct UnpackedRecord {
 ** number (it cannot - the database page is not allocated until the VDBE
 ** program is executed). See convertToWithoutRowidTable() for details.
 */
-struct Index {
-  char *zName;             /* Name of this index */
+ഘടന Index {
+  അക്ഷരം *zName;             /* Name of this index */
   i16 *aiColumn;           /* Which columns are used by this index.  1st is 0 */
   LogEst *aiRowLogEst;     /* From ANALYZE: Est. rows selected by each column */
   Table *pTable;           /* The SQL table being indexed */
-  char *zColAff;           /* String defining the affinity of each column */
+  അക്ഷരം *zColAff;           /* String defining the affinity of each column */
   Index *pNext;            /* The next index associated with the same table */
   Schema *pSchema;         /* Schema containing this index */
   u8 *aSortOrder;          /* for each column: True==DESC, False==ASC */
-  const char **azColl;     /* Array of collation sequence names for index */
-  Expr *pPartIdxWhere;     /* WHERE clause for partial indices */
-  ExprList *aColExpr;      /* Column expressions */
+  സ്ഥിരം അക്ഷരം **azColl;     /* Array of collation sequence names for index */
+  വ്യഞ്ജകം *pPartIdxWhere;     /* WHERE clause for partial indices */
+  വ്യഞ്ജകം_List *a_Col_വ്യഞ്ജകം;      /* Column expressions */
   Pgno tnum;               /* DB Page containing root of this index */
   LogEst szIdxRow;         /* Estimated average row size in bytes */
-  u16 nKeyCol;             /* Number of columns forming the key */
+  u16 n_താക്കോൽ_Col;             /* Number of columns forming the key */
   u16 nColumn;             /* Nr columns in btree. Can be 2*Table.nCol */
   u8 onError;              /* OE_Abort, OE_Ignore, OE_Replace, or OE_None */
   unsigned idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
@@ -2849,14 +2849,14 @@ struct Index {
   unsigned noSkipScan:1;   /* Do not try to use skip-scan if true */
   unsigned hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
   unsigned bNoQuery:1;     /* Do not use this index to optimize queries */
-  unsigned bAscKeyBug:1;   /* True if the bba7b69f9849b5bf bug applies */
+  unsigned b_Asc_താക്കോൽ_Bug:1;   /* True if the bba7b69f9849b5bf bug applies */
   unsigned bHasVCol:1;     /* Index references one or more VIRTUAL columns */
-  unsigned bHasExpr:1;     /* Index contains an expression, either a literal
+  unsigned b_Has_വ്യഞ്ജകം:1;     /* Index contains an expression, either a literal
                            ** expression, or a reference to a VIRTUAL column */
 #ifdef SQLITE_ENABLE_STAT4
-  int nSample;             /* Number of elements in aSample[] */
-  int mxSample;            /* Number of slots allocated to aSample[] */
-  int nSampleCol;          /* Size of IndexSample.anEq[] and so on */
+  പൂർണ്ണസംഖ്യ nSample;             /* Number of elements in aSample[] */
+  പൂർണ്ണസംഖ്യ mxSample;            /* Number of slots allocated to aSample[] */
+  പൂർണ്ണസംഖ്യ nSampleCol;          /* Size of IndexSample.anEq[] and so on */
   tRowcnt *aAvgEq;         /* Average nEq values for keys not in aSample */
   IndexSample *aSample;    /* Samples of the left-most key */
   tRowcnt *aiRowEst;       /* Non-logarithmic stat1 data for this index */
@@ -2874,7 +2874,7 @@ struct Index {
 #define SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
 
 /* Return true if index X is a PRIMARY KEY index */
-#define IsPrimaryKeyIndex(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
+#define Is_Primary_താക്കോൽ_Index(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
 
 /* Return true if index X is a UNIQUE index */
 #define IsUniqueIndex(X)      ((X)->onError!=OE_None)
@@ -2883,16 +2883,16 @@ struct Index {
 ** there are some negative values that have special meaning:
 */
 #define XN_ROWID     (-1)     /* Indexed column is the rowid */
-#define XN_EXPR      (-2)     /* Indexed column is an expression */
+#define XN_വ്യഞ്ജകം      (-2)     /* Indexed column is an expression */
 
 /*
 ** Each sample stored in the sqlite_stat4 table is represented in memory
 ** using a structure of this type.  See documentation at the top of the
 ** analyze.c source file for additional information.
 */
-struct IndexSample {
-  void *p;          /* Pointer to sampled record */
-  int n;            /* Size of record in bytes */
+ഘടന IndexSample {
+  ശൂന്യം *p;          /* Pointer to sampled record */
+  പൂർണ്ണസംഖ്യ n;            /* Size of record in bytes */
   tRowcnt *anEq;    /* Est. number of rows where the key equals this sample */
   tRowcnt *anLt;    /* Est. number of rows where key is less than this sample */
   tRowcnt *anDLt;   /* Est. number of distinct keys less than this sample */
@@ -2914,9 +2914,9 @@ struct IndexSample {
 ** in the middle of the Parse.zSql text.  But it might also point to a
 ** static string.
 */
-struct Token {
-  const char *z;     /* Text of the token.  Not NULL-terminated! */
-  unsigned int n;    /* Number of characters in this token */
+ഘടന Token {
+  സ്ഥിരം അക്ഷരം *z;     /* Text of the token.  Not NULL-terminated! */
+  unsigned പൂർണ്ണസംഖ്യ n;    /* Number of characters in this token */
 };
 
 /*
@@ -2932,38 +2932,38 @@ struct Token {
 ** original Select structure that describes the SELECT statement.  These
 ** fields do not need to be freed when deallocating the AggInfo structure.
 */
-struct AggInfo {
+ഘടന AggInfo {
   u8 directMode;          /* Direct rendering mode means take data directly
                           ** from source tables rather than from accumulators */
   u8 useSortingIdx;       /* In direct mode, reference the sorting index rather
                           ** than the source table */
   u32 nSortingColumn;     /* Number of columns in the sorting index */
-  int sortingIdx;         /* Cursor number of the sorting index */
-  int sortingIdxPTab;     /* Cursor number of pseudo-table */
-  int iFirstReg;          /* First register in range for aCol[] and aFunc[] */
-  ExprList *pGroupBy;     /* The group by clause */
-  struct AggInfo_col {    /* For each column used in source tables */
+  പൂർണ്ണസംഖ്യ sortingIdx;         /* Cursor number of the sorting index */
+  പൂർണ്ണസംഖ്യ sortingIdxPTab;     /* Cursor number of pseudo-table */
+  പൂർണ്ണസംഖ്യ iFirstReg;          /* First register in range for aCol[] and aFunc[] */
+  വ്യഞ്ജകം_List *pGroupBy;     /* The group by clause */
+  ഘടന AggInfo_col {    /* For each column used in source tables */
     Table *pTab;             /* Source table */
-    Expr *pCExpr;            /* The original expression */
-    int iTable;              /* Cursor number of the source table */
-    int iColumn;             /* Column number within the source table */
-    int iSorterColumn;       /* Column number in the sorting index */
+    വ്യഞ്ജകം *pCExpr;            /* The original expression */
+    പൂർണ്ണസംഖ്യ iTable;              /* Cursor number of the source table */
+    പൂർണ്ണസംഖ്യ iColumn;             /* Column number within the source table */
+    പൂർണ്ണസംഖ്യ iSorterColumn;       /* Column number in the sorting index */
   } *aCol;
-  int nColumn;            /* Number of used entries in aCol[] */
-  int nAccumulator;       /* Number of columns that show through to the output.
+  പൂർണ്ണസംഖ്യ nColumn;            /* Number of used entries in aCol[] */
+  പൂർണ്ണസംഖ്യ nAccumulator;       /* Number of columns that show through to the output.
                           ** Additional columns are used only as parameters to
                           ** aggregate functions */
-  struct AggInfo_func {   /* For each aggregate function */
-    Expr *pFExpr;            /* Expression encoding the function */
+  ഘടന AggInfo_func {   /* For each aggregate function */
+    വ്യഞ്ജകം *pFExpr;            /* Expression encoding the function */
     FuncDef *pFunc;          /* The aggregate function implementation */
-    int iDistinct;           /* Ephemeral table used to enforce DISTINCT */
-    int iDistAddr;           /* Address of OP_OpenEphemeral */
-    int iOBTab;              /* Ephemeral table to implement ORDER BY */
+    പൂർണ്ണസംഖ്യ iDistinct;           /* Ephemeral table used to enforce DISTINCT */
+    പൂർണ്ണസംഖ്യ iDistAddr;           /* Address of OP_OpenEphemeral */
+    പൂർണ്ണസംഖ്യ iOBTab;              /* Ephemeral table to implement ORDER BY */
     u8 bOBPayload;           /* iOBTab has payload columns separate from key */
     u8 bOBUnique;            /* Enforce uniqueness on iOBTab keys */
     u8 bUseSubtype;          /* Transfer subtype info through sorter */
   } *aFunc;
-  int nFunc;              /* Number of entries in aFunc[] */
+  പൂർണ്ണസംഖ്യ nFunc;              /* Number of entries in aFunc[] */
   u32 selId;              /* Select to which this AggInfo belongs */
 #ifdef SQLITE_DEBUG
   Select *pSelect;        /* SELECT statement that this AggInfo supports */
@@ -2978,10 +2978,10 @@ struct AggInfo {
 ** The assert()s that are part of this macro verify that constraint.
 */
 #ifndef NDEBUG
-#define AggInfoColumnReg(A,I)  (assert((A)->iFirstReg),(A)->iFirstReg+(I))
+#define AggInfoColumnReg(A,I)  (പ്രതിജ്ഞാ((A)->iFirstReg),(A)->iFirstReg+(I))
 #define AggInfoFuncReg(A,I)    \
-                      (assert((A)->iFirstReg),(A)->iFirstReg+(A)->nColumn+(I))
-#else
+                      (പ്രതിജ്ഞാ((A)->iFirstReg),(A)->iFirstReg+(A)->nColumn+(I))
+#അല്ലെങ്കിൽ
 #define AggInfoColumnReg(A,I)  ((A)->iFirstReg+(I))
 #define AggInfoFuncReg(A,I)    \
                       ((A)->iFirstReg+(A)->nColumn+(I))
@@ -2997,10 +2997,10 @@ struct AggInfo {
 ** to have prepared statements with over 32766 variables, and for them
 ** the option is available (at compile-time).
 */
-#if SQLITE_MAX_VARIABLE_NUMBER<32767
-typedef i16 ynVar;
-#else
-typedef int ynVar;
+#എങ്കിൽ SQLITE_MAX_VARIABLE_സംഖ്യ<32767
+തരനിർവചനം i16 ynVar;
+#അല്ലെങ്കിൽ
+തരനിർവചനം പൂർണ്ണസംഖ്യ ynVar;
 #endif
 
 /*
@@ -3066,9 +3066,9 @@ typedef int ynVar;
 ** the subtrees in Expr.x.pList or Expr.x.pSelect are always separately
 ** allocated, regardless of whether or not EP_Reduced is set.
 */
-struct Expr {
+ഘടന വ്യഞ്ജകം {
   u8 op;                 /* Operation performed by this node */
-  char affExpr;          /* affinity, or RAISE type */
+  അക്ഷരം aff_വ്യഞ്ജകം;          /* affinity, or RAISE type */
   u8 op2;                /* TK_REGISTER/TK_TRUTH: original value of Expr.op
                          ** TK_COLUMN: the value of p5 for OP_Column
                          ** TK_AGG_FUNCTION: nesting depth
@@ -3077,9 +3077,9 @@ struct Expr {
   u8 vvaFlags;           /* Verification flags. */
 #endif
   u32 flags;             /* Various flags.  EP_* See below */
-  union {
-    char *zToken;          /* Token value. Zero terminated and dequoted */
-    int iValue;            /* Non-negative integer value if EP_IntValue */
+  സംഘം {
+    അക്ഷരം *zToken;          /* Token value. Zero terminated and dequoted */
+    പൂർണ്ണസംഖ്യ i_മൂല്യം;            /* Non-negative integer value if EP_IntValue */
   } u;
 
   /* If the EP_TokenOnly flag is set in the Expr.flags mask, then no
@@ -3087,10 +3087,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-  Expr *pLeft;           /* Left subnode */
-  Expr *pRight;          /* Right subnode */
-  union {
-    ExprList *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
+  വ്യഞ്ജകം *p_ഇടത്;           /* Left subnode */
+  വ്യഞ്ജകം *p_വലത്;          /* Right subnode */
+  സംഘം {
+    വ്യഞ്ജകം_List *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
     Select *pSelect;     /* EP_xIsSelect and op = IN, EXISTS, SELECT */
   } x;
 
@@ -3099,10 +3099,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int nHeight;           /* Height of the tree headed by this node */
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+  പൂർണ്ണസംഖ്യ nHeight;           /* Height of the tree headed by this node */
 #endif
-  int iTable;            /* TK_COLUMN: cursor number of table holding column
+  പൂർണ്ണസംഖ്യ iTable;            /* TK_COLUMN: cursor number of table holding column
                          ** TK_REGISTER: register number
                          ** TK_TRIGGER: 1 -> new, 0 -> old
                          ** EP_Unlikely:  134217728 times likelihood
@@ -3113,19 +3113,19 @@ struct Expr {
                          ** TK_VARIABLE: variable number (always >= 1).
                          ** TK_SELECT_COLUMN: column of the result vector */
   i16 iAgg;              /* Which entry in pAggInfo->aCol[] or ->aFunc[] */
-  union {
-    int iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
-    int iOfst;             /* else: start of token from start of statement */
+  സംഘം {
+    പൂർണ്ണസംഖ്യ iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
+    പൂർണ്ണസംഖ്യ iOfst;             /* else: start of token from start of statement */
   } w;
   AggInfo *pAggInfo;     /* Used by TK_AGG_COLUMN and TK_AGG_FUNCTION */
-  union {
+  സംഘം {
     Table *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
                            ** for a column of an index on an expression */
     Window *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
-    int nReg;              /* TK_NULLS: Number of registers to NULL out */
-    struct {               /* TK_IN, TK_SELECT, and TK_EXISTS */
-      int iAddr;             /* Subroutine entry address */
-      int regReturn;         /* Register used to hold return address */
+    പൂർണ്ണസംഖ്യ nReg;              /* TK_NULLS: Number of registers to NULL out */
+    ഘടന {               /* TK_IN, TK_SELECT, and TK_EXISTS */
+      പൂർണ്ണസംഖ്യ iAddr;             /* Subroutine entry address */
+      പൂർണ്ണസംഖ്യ regReturn;         /* Register used to hold return address */
     } sub;
   } y;
 };
@@ -3147,7 +3147,7 @@ struct Expr {
 #define EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
 #define EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
 #define EP_Commuted   0x000400 /* Comparison operator has been commuted */
-#define EP_IntValue   0x000800 /* Integer value contained in u.iValue */
+#define EP_Int_മൂല്യം   0x000800 /* Integer value contained in u.iValue */
 #define EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
 #define EP_Skip       0x002000 /* Operator does not contribute to affinity */
 #define EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
@@ -3177,26 +3177,26 @@ struct Expr {
 /* Macros can be used to test, set, or clear bits in the
 ** Expr.flags field.
 */
-#define ExprHasProperty(E,P)     (((E)->flags&(u32)(P))!=0)
-#define ExprHasAllProperty(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
-#define ExprSetProperty(E,P)     (E)->flags|=(u32)(P)
-#define ExprClearProperty(E,P)   (E)->flags&=~(u32)(P)
-#define ExprAlwaysTrue(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
-#define ExprAlwaysFalse(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
-#define ExprIsFullSize(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
+#define വ്യഞ്ജകം_Has_Property(E,P)     (((E)->flags&(u32)(P))!=0)
+#define വ്യഞ്ജകം_Has_All_Property(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
+#define വ്യഞ്ജകം_Set_Property(E,P)     (E)->flags|=(u32)(P)
+#define വ്യഞ്ജകം_Clear_Property(E,P)   (E)->flags&=~(u32)(P)
+#define വ്യഞ്ജകം_Always_True(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
+#define വ്യഞ്ജകം_Always_False(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
+#define വ്യഞ്ജകം_Is_Full_Size(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
 
 /* Macros used to ensure that the correct members of unions are accessed
 ** in Expr.
 */
-#define ExprUseUToken(E)    (((E)->flags&EP_IntValue)==0)
-#define ExprUseUValue(E)    (((E)->flags&EP_IntValue)!=0)
-#define ExprUseWOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
-#define ExprUseWJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
-#define ExprUseXList(E)     (((E)->flags&EP_xIsSelect)==0)
-#define ExprUseXSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
-#define ExprUseYTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
-#define ExprUseYWin(E)      (((E)->flags&EP_WinFunc)!=0)
-#define ExprUseYSub(E)      (((E)->flags&EP_Subrtn)!=0)
+#define വ്യഞ്ജകം_Use_UToken(E)    (((E)->flags&EP_Int_മൂല്യം)==0)
+#define വ്യഞ്ജകം_Use_UValue(E)    (((E)->flags&EP_Int_മൂല്യം)!=0)
+#define വ്യഞ്ജകം_Use_WOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
+#define വ്യഞ്ജകം_Use_WJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
+#define വ്യഞ്ജകം_Use_XList(E)     (((E)->flags&EP_xIsSelect)==0)
+#define വ്യഞ്ജകം_Use_XSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
+#define വ്യഞ്ജകം_Use_YTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
+#define വ്യഞ്ജകം_Use_YWin(E)      (((E)->flags&EP_WinFunc)!=0)
+#define വ്യഞ്ജകം_Use_YSub(E)      (((E)->flags&EP_Subrtn)!=0)
 
 /* Flags for use with Expr.vvaFlags
 */
@@ -3208,13 +3208,13 @@ struct Expr {
 ** processes but is a no-op for delivery.
 */
 #ifdef SQLITE_DEBUG
-# define ExprSetVVAProperty(E,P)   (E)->vvaFlags|=(P)
-# define ExprHasVVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
-# define ExprClearVVAProperties(E) (E)->vvaFlags = 0
-#else
-# define ExprSetVVAProperty(E,P)
-# define ExprHasVVAProperty(E,P)   0
-# define ExprClearVVAProperties(E)
+# define വ്യഞ്ജകം_Set_VVAProperty(E,P)   (E)->vvaFlags|=(P)
+# define വ്യഞ്ജകം_Has_VVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
+# define വ്യഞ്ജകം_Clear_VVAProperties(E) (E)->vvaFlags = 0
+#അല്ലെങ്കിൽ
+# define വ്യഞ്ജകം_Set_VVAProperty(E,P)
+# define വ്യഞ്ജകം_Has_VVAProperty(E,P)   0
+# define വ്യഞ്ജകം_Clear_VVAProperties(E)
 #endif
 
 /*
@@ -3222,9 +3222,9 @@ struct Expr {
 ** struct, an Expr struct with the EP_Reduced flag set in Expr.flags
 ** and an Expr struct with the EP_TokenOnly flag set.
 */
-#define EXPR_FULLSIZE           sizeof(Expr)           /* Full size */
-#define EXPR_REDUCEDSIZE        offsetof(Expr,iTable)  /* Common features */
-#define EXPR_TOKENONLYSIZE      offsetof(Expr,pLeft)   /* Fewer features */
+#define വ്യഞ്ജകം_FULLSIZE           വലുപ്പം(വ്യഞ്ജകം)           /* Full size */
+#define വ്യഞ്ജകം_REDUCEDSIZE        offsetof(വ്യഞ്ജകം,iTable)  /* Common features */
+#define വ്യഞ്ജകം_TOKENONLYSIZE      offsetof(വ്യഞ്ജകം,p_ഇടത്)   /* Fewer features */
 
 /*
 ** Flags passed to the sqlite3ExprDup() function. See the header comment
@@ -3238,9 +3238,9 @@ struct Expr {
 */
 #ifdef SQLITE_OMIT_WINDOWFUNC
 # define IsWindowFunc(p) 0
-#else
+#അല്ലെങ്കിൽ
 # define IsWindowFunc(p) ( \
-    ExprHasProperty((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
+    വ്യഞ്ജകം_Has_Property((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
  )
 #endif
 
@@ -3266,13 +3266,13 @@ struct Expr {
 **    ENAME_SPAN       Text of the original result set
 **                     expression.
 */
-struct ExprList {
-  int nExpr;             /* Number of expressions on the list */
-  int nAlloc;            /* Number of a[] slots allocated */
-  struct ExprList_item { /* For each expression in the list */
-    Expr *pExpr;            /* The parse tree for this expression */
-    char *zEName;           /* Token associated with this expression */
-    struct {
+ഘടന വ്യഞ്ജകം_List {
+  പൂർണ്ണസംഖ്യ n_വ്യഞ്ജകം;             /* Number of expressions on the list */
+  പൂർണ്ണസംഖ്യ nAlloc;            /* Number of a[] slots allocated */
+  ഘടന വ്യഞ്ജകം_List_item { /* For each expression in the list */
+    വ്യഞ്ജകം *p_വ്യഞ്ജകം;            /* The parse tree for this expression */
+    അക്ഷരം *zEName;           /* Token associated with this expression */
+    ഘടന {
       u8 sortFlags;           /* Mask of KEYINFO_ORDER_* flags */
       unsigned eEName :2;     /* Meaning of zEName */
       unsigned done :1;       /* Indicates when processing is finished */
@@ -3284,12 +3284,12 @@ struct ExprList {
       unsigned bNoExpand: 1;  /* Term is an auxiliary in NestedFrom and should
                               ** not be expanded by "*" in parent queries */
     } fg;
-    union {
-      struct {             /* Used by any ExprList other than Parse.pConsExpr */
+    സംഘം {
+      ഘടന {             /* Used by any ExprList other than Parse.pConsExpr */
         u16 iOrderByCol;      /* For ORDER BY, column number in result set */
         u16 iAlias;           /* Index into Parse.aAlias[] for zName */
       } x;
-      int iConstExprReg;   /* Register in which Expr value is cached. Used only
+      പൂർണ്ണസംഖ്യ i_Const_വ്യഞ്ജകം_Reg;   /* Register in which Expr value is cached. Used only
                            ** by Parse.pConstExpr */
     } u;
   } a[FLEXARRAY];          /* One slot for each expression in the list */
@@ -3298,7 +3298,7 @@ struct ExprList {
 /* The size (in bytes) of an ExprList object that is big enough to hold
 ** as many as N expressions. */
 #define SZ_EXPRLIST(N)  \
-             (offsetof(ExprList,a) + (N)*sizeof(struct ExprList_item))
+             (offsetof(വ്യഞ്ജകം_List,a) + (N)*വലുപ്പം(ഘടന വ്യഞ്ജകം_List_item))
 
 /*
 ** Allowed values for Expr.a.eEName
@@ -3323,15 +3323,15 @@ struct ExprList {
 **
 ** If "a" is the k-th column of table "t", then IdList.a[0].idx==k.
 */
-struct IdList {
-  int nId;         /* Number of identifiers on the list */
-  struct IdList_item {
-    char *zName;      /* Name of the identifier */
+ഘടന IdList {
+  പൂർണ്ണസംഖ്യ nId;         /* Number of identifiers on the list */
+  ഘടന IdList_item {
+    അക്ഷരം *zName;      /* Name of the identifier */
   } a[FLEXARRAY];
 };
 
 /* The size (in bytes) of an IdList object that can hold up to N IDs. */
-#define SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*sizeof(struct IdList_item))
+#define SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*വലുപ്പം(ഘടന IdList_item))
 
 /*
 ** Allowed values for IdList.eType, which determines which value of the a.u4
@@ -3339,16 +3339,16 @@ struct IdList {
 */
 #define EU4_NONE   0   /* Does not use IdList.a.u4 */
 #define EU4_IDX    1   /* Uses IdList.a.u4.idx */
-#define EU4_EXPR   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
+#define EU4_വ്യഞ്ജകം   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
 
 /*
 ** Details of the implementation of a subquery.
 */
-struct Subquery {
+ഘടന Subquery {
   Select *pSelect;  /* A SELECT statement used in place of a table name */
-  int addrFillSub;  /* Address of subroutine to initialize a subquery */
-  int regReturn;    /* Register holding return address of addrFillSub */
-  int regResult;    /* Registers holding results of a co-routine */
+  പൂർണ്ണസംഖ്യ addrFillSub;  /* Address of subroutine to initialize a subquery */
+  പൂർണ്ണസംഖ്യ regReturn;    /* Register holding return address of addrFillSub */
+  പൂർണ്ണസംഖ്യ regResult;    /* Registers holding results of a co-routine */
 };
 
 /*
@@ -3388,11 +3388,11 @@ struct Subquery {
 ** check invariants on the fields of this object, especially the flags
 ** inside the fg struct.
 */
-struct SrcItem {
-  char *zName;      /* Name of the table */
-  char *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
+ഘടന SrcItem {
+  അക്ഷരം *zName;      /* Name of the table */
+  അക്ഷരം *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
   Table *pSTab;     /* Table object for zName. Mnemonic: Srcitem-TABle */
-  struct {
+  ഘടന {
     u8 jointype;      /* Type of join between this table and the previous */
     unsigned notIndexed :1;    /* True if there is a NOT INDEXED clause */
     unsigned isIndexedBy :1;   /* True if there is an INDEXED BY clause */
@@ -3414,24 +3414,24 @@ struct SrcItem {
     unsigned hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
     unsigned fromExists :1;    /* Comes from WHERE EXISTS(...) */
   } fg;
-  int iCursor;      /* The VDBE cursor number used to access this table */
+  പൂർണ്ണസംഖ്യ iCursor;      /* The VDBE cursor number used to access this table */
   Bitmask colUsed;  /* Bit N set if column N used. Details above for N>62 */
-  union {
-    char *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
-    ExprList *pFuncArg;  /* Arguments to table-valued-function */
+  സംഘം {
+    അക്ഷരം *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
+    വ്യഞ്ജകം_List *pFuncArg;  /* Arguments to table-valued-function */
     u32 nRow;            /* Number of rows in a VALUES clause */
   } u1;
-  union {
+  സംഘം {
     Index *pIBIndex;  /* Index structure corresponding to u1.zIndexedBy */
     CteUse *pCteUse;  /* CTE Usage info when fg.isCte is true */
   } u2;
-  union {
-    Expr *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
+  സംഘം {
+    വ്യഞ്ജകം *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
     IdList *pUsing;   /* fg.isUsing==1 =>  The USING clause of a join */
   } u3;
-  union {
+  സംഘം {
     Schema *pSchema;  /* Schema to which this item is fixed */
-    char *zDatabase;  /* Name of database holding this table */
+    അക്ഷരം *zDatabase;  /* Name of database holding this table */
     Subquery *pSubq;  /* Description of a subquery */
   } u4;
 };
@@ -3440,8 +3440,8 @@ struct SrcItem {
 ** The OnOrUsing object represents either an ON clause or a USING clause.
 ** It can never be both at the same time, but it can be neither.
 */
-struct OnOrUsing {
-  Expr *pOn;         /* The ON clause of a join */
+ഘടന OnOrUsing {
+  വ്യഞ്ജകം *pOn;         /* The ON clause of a join */
   IdList *pUsing;    /* The USING clause of a join */
 };
 
@@ -3452,19 +3452,19 @@ struct OnOrUsing {
 ** represents the target tables for DELETE, INSERT, and UPDATE statements.
 **
 */
-struct SrcList {
-  int nSrc;             /* Number of tables or subqueries in the FROM clause */
+ഘടന SrcList {
+  പൂർണ്ണസംഖ്യ nSrc;             /* Number of tables or subqueries in the FROM clause */
   u32 nAlloc;           /* Number of entries allocated in a[] below */
   SrcItem a[FLEXARRAY]; /* One entry for each identifier on the list */
 };
 
 /* Size (in bytes) of a SrcList object that can hold as many as N
 ** SrcItem objects. */
-#define SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*sizeof(SrcItem))
+#define SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*വലുപ്പം(SrcItem))
 
 /* Size (in bytes( of a SrcList object that holds 1 SrcItem.  This is a
 ** special case of SZ_SRCITEM(1) that comes up often. */
-#define SZ_SRCLIST_1  (offsetof(SrcList,a)+sizeof(SrcItem))
+#define SZ_SRCLIST_1  (offsetof(SrcList,a)+വലുപ്പം(SrcItem))
 
 /*
 ** Permitted values of the SrcList.a.jointype field
@@ -3472,8 +3472,8 @@ struct SrcList {
 #define JT_INNER     0x01    /* Any kind of inner or cross join */
 #define JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
 #define JT_NATURAL   0x04    /* True for a "natural" join */
-#define JT_LEFT      0x08    /* Left outer join */
-#define JT_RIGHT     0x10    /* Right outer join */
+#define JT_ഇടത്      0x08    /* Left outer join */
+#define JT_വലത്     0x10    /* Right outer join */
 #define JT_OUTER     0x20    /* The "OUTER" keyword is present */
 #define JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
                              ** Mnemonic: Left Table Of Right Join */
@@ -3500,7 +3500,7 @@ struct SrcList {
 #define WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
 #define WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
 #define WHERE_ORDERBY_LIMIT    0x0800 /* ORDERBY+LIMIT on the inner loop */
-#define WHERE_RIGHT_JOIN       0x1000 /* Processing a RIGHT JOIN */
+#define WHERE_വലത്_JOIN       0x1000 /* Processing a RIGHT JOIN */
 #define WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
 #define WHERE_USE_LIMIT        0x4000 /* Use the LIMIT in cost estimates */
                         /*     0x8000    not currently used */
@@ -3533,19 +3533,19 @@ struct SrcList {
 ** NameContext list corresponds to searching through successively outer
 ** subqueries looking for a match.
 */
-struct NameContext {
+ഘടന NameContext {
   Parse *pParse;       /* The parser */
   SrcList *pSrcList;   /* One or more tables used to resolve names */
-  union {
-    ExprList *pEList;    /* Optional list of result-set columns */
+  സംഘം {
+    വ്യഞ്ജകം_List *pEList;    /* Optional list of result-set columns */
     AggInfo *pAggInfo;   /* Information about aggregates at this level */
     Upsert *pUpsert;     /* ON CONFLICT clause information from an upsert */
-    int iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
+    പൂർണ്ണസംഖ്യ iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
   } uNC;
   NameContext *pNext;  /* Next outer name context.  NULL for outermost */
-  int nRef;            /* Number of names resolved by this context */
-  int nNcErr;          /* Number of errors encountered while resolving names */
-  int ncFlags;         /* Zero or more NC_* flags defined below */
+  പൂർണ്ണസംഖ്യ nRef;            /* Number of names resolved by this context */
+  പൂർണ്ണസംഖ്യ nNcErr;          /* Number of errors encountered while resolving names */
+  പൂർണ്ണസംഖ്യ ncFlags;         /* Zero or more NC_* flags defined below */
   u32 nNestedSelect;   /* Number of nested selects using this NC */
   Select *pWinSelect;  /* SELECT statement for any window functions */
 };
@@ -3565,7 +3565,7 @@ struct NameContext {
 #define NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
 #define NC_GenCol    0x000008 /* True for a GENERATED ALWAYS AS clause */
 #define NC_HasAgg    0x000010 /* One or more aggregate functions seen */
-#define NC_IdxExpr   0x000020 /* True if resolving columns of CREATE INDEX */
+#define NC_Idx_വ്യഞ്ജകം   0x000020 /* True if resolving columns of CREATE INDEX */
 #define NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
 #define NC_Subquery  0x000040 /* A subquery has been seen */
 #define NC_UEList    0x000080 /* True if uNC.pEList is used */
@@ -3597,17 +3597,17 @@ struct NameContext {
 ** pUpsertWhere is the WHERE clause for the UPDATE and is NULL if the
 ** WHERE clause is omitted.
 */
-struct Upsert {
-  ExprList *pUpsertTarget;  /* Optional description of conflict target */
-  Expr *pUpsertTargetWhere; /* WHERE clause for partial index targets */
-  ExprList *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
-  Expr *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
+ഘടന Upsert {
+  വ്യഞ്ജകം_List *pUpsertTarget;  /* Optional description of conflict target */
+  വ്യഞ്ജകം *pUpsertTargetWhere; /* WHERE clause for partial index targets */
+  വ്യഞ്ജകം_List *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
+  വ്യഞ്ജകം *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
   Upsert *pNextUpsert;      /* Next ON CONFLICT clause in the list */
   u8 isDoUpdate;            /* True for DO UPDATE.  False for DO NOTHING */
   u8 isDup;                 /* True if 2nd or later with same pUpsertIdx */
   /* Above this point is the parse tree for the ON CONFLICT clauses.
   ** The next group of fields stores intermediate data. */
-  void *pToFree;            /* Free memory when deleting the Upsert object */
+  ശൂന്യം *pToFree;            /* Free memory when deleting the Upsert object */
   /* All fields above are owned by the Upsert object and must be freed
   ** when the Upsert is destroyed.  The fields below are used to transfer
   ** information from the INSERT processing down into the UPDATE processing
@@ -3615,30 +3615,30 @@ struct Upsert {
   ** statement and will be freed by INSERT processing. */
   Index *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
   SrcList *pUpsertSrc;      /* Table to be updated */
-  int regData;              /* First register holding array of VALUES */
-  int iDataCur;             /* Index of the data cursor */
-  int iIdxCur;              /* Index of the first index cursor */
+  പൂർണ്ണസംഖ്യ regData;              /* First register holding array of VALUES */
+  പൂർണ്ണസംഖ്യ iDataCur;             /* Index of the data cursor */
+  പൂർണ്ണസംഖ്യ iIdxCur;              /* Index of the first index cursor */
 };
 
 /*
 ** An instance of the following structure contains all information
 ** needed to generate code for a single SELECT statement.
 */
-struct Select {
+ഘടന Select {
   u8 op;                 /* One of: TK_UNION TK_ALL TK_INTERSECT TK_EXCEPT */
   LogEst nSelectRow;     /* Estimated number of result rows */
   u32 selFlags;          /* Various SF_* values */
-  int iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
+  പൂർണ്ണസംഖ്യ iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
   u32 selId;             /* Unique identifier number for this SELECT */
-  ExprList *pEList;      /* The fields of the result */
+  വ്യഞ്ജകം_List *pEList;      /* The fields of the result */
   SrcList *pSrc;         /* The FROM clause */
-  Expr *pWhere;          /* The WHERE clause */
-  ExprList *pGroupBy;    /* The GROUP BY clause */
-  Expr *pHaving;         /* The HAVING clause */
-  ExprList *pOrderBy;    /* The ORDER BY clause */
+  വ്യഞ്ജകം *pWhere;          /* The WHERE clause */
+  വ്യഞ്ജകം_List *pGroupBy;    /* The GROUP BY clause */
+  വ്യഞ്ജകം *pHaving;         /* The HAVING clause */
+  വ്യഞ്ജകം_List *pOrderBy;    /* The ORDER BY clause */
   Select *pPrior;        /* Prior select in a compound select statement */
   Select *pNext;         /* Next select to the left in a compound */
-  Expr *pLimit;          /* LIMIT expression. NULL means not used. */
+  വ്യഞ്ജകം *pLimit;          /* LIMIT expression. NULL means not used. */
   With *pWith;           /* WITH clause attached to this select. Or NULL. */
 #ifndef SQLITE_OMIT_WINDOWFUNC
   Window *pWin;          /* List of window functions */
@@ -3665,8 +3665,8 @@ struct Select {
 #define SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
 #define SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
 #define SF_Compound      0x0000100 /* Part of a compound query */
-#define SF_Values        0x0000200 /* Synthesized from VALUES clause */
-#define SF_MultiValue    0x0000400 /* Single VALUES term with multiple rows */
+#define SF_മൂല്യങ്ങൾ        0x0000200 /* Synthesized from VALUES clause */
+#define SF_Multi_മൂല്യം    0x0000400 /* Single VALUES term with multiple rows */
 #define SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
 #define SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
 #define SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
@@ -3680,7 +3680,7 @@ struct Select {
 #define SF_View          0x0200000 /* SELECT statement is a view */
 /*                       0x0400000 // available for reuse */
 #define SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
-#define SF_PushDown      0x1000000 /* Modified by WHERE-clause push-down opt */
+#define SF_തള്ളുക_Down      0x1000000 /* Modified by WHERE-clause push-down opt */
 #define SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
 #define SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
 #define SF_OrderByReqd   0x8000000 /* The ORDER BY clause may not be omitted */
@@ -3788,14 +3788,14 @@ struct Select {
 ** An instance of this object describes where to put of the results of
 ** a SELECT statement.
 */
-struct SelectDest {
+ഘടന SelectDest {
   u8 eDest;            /* How to dispose of the results.  One of SRT_* above. */
-  int iSDParm;         /* A parameter used by the eDest disposal method */
-  int iSDParm2;        /* A second parameter for the eDest disposal method */
-  int iSdst;           /* Base register where results are written */
-  int nSdst;           /* Number of registers allocated */
-  char *zAffSdst;      /* Affinity used for SRT_Set */
-  ExprList *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
+  പൂർണ്ണസംഖ്യ iSDParm;         /* A parameter used by the eDest disposal method */
+  പൂർണ്ണസംഖ്യ iSDParm2;        /* A second parameter for the eDest disposal method */
+  പൂർണ്ണസംഖ്യ iSdst;           /* Base register where results are written */
+  പൂർണ്ണസംഖ്യ nSdst;           /* Number of registers allocated */
+  അക്ഷരം *zAffSdst;      /* Affinity used for SRT_Set */
+  വ്യഞ്ജകം_List *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
 };
 
 /*
@@ -3807,11 +3807,11 @@ struct SelectDest {
 ** normally coordinate their activities, but we do need to coordinate the
 ** loading and saving of autoincrement information.
 */
-struct AutoincInfo {
+ഘടന AutoincInfo {
   AutoincInfo *pNext;   /* Next info block in a list of them all */
   Table *pTab;          /* Table this info block refers to */
-  int iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
-  int regCtr;           /* Memory register holding the rowid counter */
+  പൂർണ്ണസംഖ്യ iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
+  പൂർണ്ണസംഖ്യ regCtr;           /* Memory register holding the rowid counter */
 };
 
 /*
@@ -3832,26 +3832,26 @@ struct AutoincInfo {
 ** statements). Similarly, the TriggerPrg.aColmask[1] variable is set to
 ** a mask of new.* columns used by the program.
 */
-struct TriggerPrg {
+ഘടന TriggerPrg {
   Trigger *pTrigger;      /* Trigger this program was coded from */
   TriggerPrg *pNext;      /* Next entry in Parse.pTriggerPrg list */
   SubProgram *pProgram;   /* Program implementing pTrigger/orconf */
-  int orconf;             /* Default ON CONFLICT policy */
+  പൂർണ്ണസംഖ്യ orconf;             /* Default ON CONFLICT policy */
   u32 aColmask[2];        /* Masks of old.*, new.* columns accessed */
 };
 
 /*
 ** The yDbMask datatype for the bitmask of all attached databases.
 */
-#if SQLITE_MAX_ATTACHED>30
-  typedef unsigned char yDbMask[(SQLITE_MAX_ATTACHED+9)/8];
+#എങ്കിൽ SQLITE_MAX_ATTACHED>30
+  തരനിർവചനം unsigned അക്ഷരം yDbMask[(SQLITE_MAX_ATTACHED+9)/8];
 # define DbMaskTest(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
-# define DbMaskZero(M)      memset((M),0,sizeof(M))
+# define DbMaskZero(M)      memset((M),0,വലുപ്പം(M))
 # define DbMaskSet(M,I)     (M)[(I)/8]|=(1<<((I)&7))
 # define DbMaskAllZero(M)   sqlite3DbMaskAllZero(M)
 # define DbMaskNonZero(M)   (sqlite3DbMaskAllZero(M)==0)
-#else
-  typedef unsigned int yDbMask;
+#അല്ലെങ്കിൽ
+  തരനിർവചനം unsigned പൂർണ്ണസംഖ്യ yDbMask;
 # define DbMaskTest(M,I)    (((M)&(((yDbMask)1)<<(I)))!=0)
 # define DbMaskZero(M)      ((M)=0)
 # define DbMaskSet(M,I)     ((M)|=(((yDbMask)1)<<(I)))
@@ -3869,16 +3869,16 @@ struct TriggerPrg {
 ** this list is consulted and if a matching expression is found, the value
 ** is read from the index rather than being recomputed.
 */
-struct IndexedExpr {
-  Expr *pExpr;            /* The expression contained in the index */
-  int iDataCur;           /* The data cursor associated with the index */
-  int iIdxCur;            /* The index cursor */
-  int iIdxCol;            /* The index column that contains value of pExpr */
+ഘടന Indexed_വ്യഞ്ജകം {
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം;            /* The expression contained in the index */
+  പൂർണ്ണസംഖ്യ iDataCur;           /* The data cursor associated with the index */
+  പൂർണ്ണസംഖ്യ iIdxCur;            /* The index cursor */
+  പൂർണ്ണസംഖ്യ iIdxCol;            /* The index column that contains value of pExpr */
   u8 bMaybeNullRow;       /* True if we need an OP_IfNullRow check */
   u8 aff;                 /* Affinity of the pExpr expression */
-  IndexedExpr *pIENext;   /* Next in a list of all indexed expressions */
+  Indexed_വ്യഞ്ജകം *pIENext;   /* Next in a list of all indexed expressions */
 #ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  const char *zIdxName;   /* Name of index, used only for bytecode comments */
+  സ്ഥിരം അക്ഷരം *zIdxName;   /* Name of index, used only for bytecode comments */
 #endif
 };
 
@@ -3887,10 +3887,10 @@ struct IndexedExpr {
 ** should be performed after parsing to deallocation resources obtained
 ** during the parse and which are no longer needed.
 */
-struct ParseCleanup {
+ഘടന ParseCleanup {
   ParseCleanup *pNext;               /* Next cleanup task */
-  void *pPtr;                        /* Pointer to object to deallocate */
-  void (*xCleanup)(sqlite3*,void*);  /* Deallocation routine */
+  ശൂന്യം *pPtr;                        /* Pointer to object to deallocate */
+  ശൂന്യം (*xCleanup)(sqlite3*,ശൂന്യം*);  /* Deallocation routine */
 };
 
 /*
@@ -3916,11 +3916,11 @@ struct ParseCleanup {
 ** compiled. Function sqlite3TableLock() is used to add entries to the
 ** list.
 */
-struct Parse {
+ഘടന Parse {
   sqlite3 *db;         /* The main database structure */
-  char *zErrMsg;       /* An error message */
+  അക്ഷരം *z_Err_സന്ദേശം;       /* An error message */
   Vdbe *pVdbe;         /* An engine for executing database bytecode */
-  int rc;              /* Return code from execution */
+  പൂർണ്ണസംഖ്യ rc;              /* Return code from execution */
   LogEst nQueryLoop;   /* Est number of iterations of a query (10*log2(N)) */
   u8 nested;           /* Number of nested calls to the parser/code generator */
   u8 nTempReg;         /* Number of temporary registers in aTempReg[] */
@@ -3931,7 +3931,7 @@ struct Parse {
   u8 mSubrtnSig;       /* mini Bloom filter on available SubrtnSig.selId */
   u8 eTriggerOp;       /* TK_UPDATE, TK_INSERT or TK_DELETE */
   u8 eOrconf;          /* Default ON CONFLICT policy for trigger steps */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
   u8 earlyCleanup;     /* OOM inside sqlite3ParserAddCleanup() */
 #endif
 #ifdef SQLITE_DEBUG
@@ -3949,30 +3949,30 @@ struct Parse {
   bft okConstFactor:1; /* OK to factor out constants */
   bft checkSchema :1;  /* Causes schema cookie check after an error */
   bft usesAinc :1;     /* True if pAinc is valid */
-  int nRangeReg;       /* Size of the temporary register block */
-  int iRangeReg;       /* First register in temporary register block */
-  int nErr;            /* Number of errors seen */
-  int nTab;            /* Number of previously allocated VDBE cursors */
-  int nMem;            /* Number of memory cells used so far */
-  int szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
-  int iSelfTab;        /* Table associated with an index on expr, or negative
+  പൂർണ്ണസംഖ്യ nRangeReg;       /* Size of the temporary register block */
+  പൂർണ്ണസംഖ്യ iRangeReg;       /* First register in temporary register block */
+  പൂർണ്ണസംഖ്യ nErr;            /* Number of errors seen */
+  പൂർണ്ണസംഖ്യ nTab;            /* Number of previously allocated VDBE cursors */
+  പൂർണ്ണസംഖ്യ nMem;            /* Number of memory cells used so far */
+  പൂർണ്ണസംഖ്യ szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
+  പൂർണ്ണസംഖ്യ iSelfTab;        /* Table associated with an index on expr, or negative
                        ** of the base register during check-constraint eval */
-  int nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
-  int nLabel;          /* The *negative* of the number of labels used */
-  int nLabelAlloc;     /* Number of slots in aLabel */
-  int *aLabel;         /* Space to hold the labels */
-  ExprList *pConstExpr;/* Constant expressions */
-  IndexedExpr *pIdxEpr;/* List of expressions used by active indexes */
-  IndexedExpr *pIdxPartExpr; /* Exprs constrained by index WHERE clauses */
+  പൂർണ്ണസംഖ്യ nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
+  പൂർണ്ണസംഖ്യ nLabel;          /* The *negative* of the number of labels used */
+  പൂർണ്ണസംഖ്യ nLabelAlloc;     /* Number of slots in aLabel */
+  പൂർണ്ണസംഖ്യ *aLabel;         /* Space to hold the labels */
+  വ്യഞ്ജകം_List *p_Const_വ്യഞ്ജകം;/* Constant expressions */
+  Indexed_വ്യഞ്ജകം *pIdxEpr;/* List of expressions used by active indexes */
+  Indexed_വ്യഞ്ജകം *p_Idx_Part_വ്യഞ്ജകം; /* Exprs constrained by index WHERE clauses */
   yDbMask writeMask;   /* Start a write transaction on these databases */
   yDbMask cookieMask;  /* Bitmask of schema verified databases */
-  int nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
-  int nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
+  പൂർണ്ണസംഖ്യ nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
+  പൂർണ്ണസംഖ്യ nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
   u32 nProgressSteps;  /* xProgress steps taken during sqlite3_prepare() */
 #endif
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  int nTableLock;        /* Number of locks in aTableLock */
+  പൂർണ്ണസംഖ്യ nTableLock;        /* Number of locks in aTableLock */
 #endif
   Parse *pToplevel;    /* Parse structure for main program (or NULL) */
   Table *pTriggerTab;  /* Table triggers are being coded for */
@@ -3987,19 +3987,19 @@ struct Parse {
   ** determined by offsetof(Parse,aTempReg).
   **************************************************************************/
 
-  int aTempReg[8];        /* Holding area for temporary registers */
+  പൂർണ്ണസംഖ്യ aTempReg[8];        /* Holding area for temporary registers */
   Parse *pOuterParse;     /* Outer Parse object when nested */
   Token sNameToken;       /* Token with unqualified schema object name */
   u32 oldmask;            /* Mask of old.* columns referenced */
   u32 newmask;            /* Mask of new.* columns referenced */
-  union {
-    struct {  /* These fields available when isCreate is true */
-      int addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
-      int regRowid;         /* Register holding rowid of CREATE TABLE entry */
-      int regRoot;          /* Register holding root page for new objects */
+  സംഘം {
+    ഘടന {  /* These fields available when isCreate is true */
+      പൂർണ്ണസംഖ്യ addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
+      പൂർണ്ണസംഖ്യ regRowid;         /* Register holding rowid of CREATE TABLE entry */
+      പൂർണ്ണസംഖ്യ reg_വേര്;          /* Register holding root page for new objects */
       Token constraintName; /* Name of the constraint currently being parsed */
     } cr;
-    struct {  /* These fields available to all other statements */
+    ഘടന {  /* These fields available to all other statements */
       Returning *pReturning; /* The RETURNING clause */
     } d;
   } u1;
@@ -4025,19 +4025,19 @@ struct Parse {
   u8 explain;               /* True if the EXPLAIN flag is found on the query */
   u8 eParseMode;            /* PARSE_MODE_XXX constant */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVtabLock;            /* Number of virtual tables to lock */
+  പൂർണ്ണസംഖ്യ nVtabLock;            /* Number of virtual tables to lock */
 #endif
-  int nHeight;              /* Expression tree height of current sub-select */
-  int addrExplain;          /* Address of current OP_Explain opcode */
+  പൂർണ്ണസംഖ്യ nHeight;              /* Expression tree height of current sub-select */
+  പൂർണ്ണസംഖ്യ addrExplain;          /* Address of current OP_Explain opcode */
   VList *pVList;            /* Mapping between variable names and numbers */
   Vdbe *pReprepare;         /* VM being reprepared (sqlite3Reprepare()) */
-  const char *zTail;        /* All SQL text past the last semicolon parsed */
+  സ്ഥിരം അക്ഷരം *zTail;        /* All SQL text past the last semicolon parsed */
   Table *pNewTable;         /* A table being constructed by CREATE TABLE */
   Index *pNewIndex;         /* An index being constructed by CREATE INDEX.
                             ** Also used to hold redundant UNIQUE constraints
                             ** during a RENAME COLUMN */
   Trigger *pNewTrigger;     /* Trigger under construct by a CREATE TRIGGER */
-  const char *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
+  സ്ഥിരം അക്ഷരം *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   Token sArg;               /* Complete text of a module argument */
   Table **apVtabLock;       /* Pointer to virtual tables needing locking */
@@ -4058,30 +4058,30 @@ struct Parse {
 /*
 ** Sizes and pointers of various parts of the Parse object.
 */
-#define PARSE_HDR(X)  (((char*)(X))+offsetof(Parse,zErrMsg))
-#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,zErrMsg)) /* Recursive part w/o aColCache*/
+#define PARSE_HDR(X)  (((അക്ഷരം*)(X))+offsetof(Parse,z_Err_സന്ദേശം))
+#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,z_Err_സന്ദേശം)) /* Recursive part w/o aColCache*/
 #define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
-#define PARSE_TAIL_SZ (sizeof(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
-#define PARSE_TAIL(X) (((char*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
+#define PARSE_TAIL_SZ (വലുപ്പം(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
+#define PARSE_TAIL(X) (((അക്ഷരം*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
 
 /*
 ** Return true if currently inside an sqlite3_declare_vtab() call.
 */
 #ifdef SQLITE_OMIT_VIRTUALTABLE
   #define IN_DECLARE_VTAB 0
-#else
+#അല്ലെങ്കിൽ
   #define IN_DECLARE_VTAB (pParse->eParseMode==PARSE_MODE_DECLARE_VTAB)
 #endif
 
-#if defined(SQLITE_OMIT_ALTERTABLE)
+#എങ്കിൽ defined(SQLITE_OMIT_ALTERTABLE)
   #define IN_RENAME_OBJECT 0
-#else
+#അല്ലെങ്കിൽ
   #define IN_RENAME_OBJECT (pParse->eParseMode>=PARSE_MODE_RENAME)
 #endif
 
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
+#എങ്കിൽ defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
   #define IN_SPECIAL_PARSE 0
-#else
+#അല്ലെങ്കിൽ
   #define IN_SPECIAL_PARSE (pParse->eParseMode!=PARSE_MODE_NORMAL)
 #endif
 
@@ -4089,8 +4089,8 @@ struct Parse {
 ** An instance of the following structure can be declared on a stack and used
 ** to save the Parse.zAuthContext value so that it can be restored later.
 */
-struct AuthContext {
-  const char *zAuthContext;   /* Put saved Parse.zAuthContext here */
+ഘടന AuthContext {
+  സ്ഥിരം അക്ഷരം *zAuthContext;   /* Put saved Parse.zAuthContext here */
   Parse *pParse;              /* The Parse structure */
 };
 
@@ -4143,13 +4143,13 @@ struct AuthContext {
 ** The "step_list" member points to the first element of a linked list
 ** containing the SQL statements specified as the trigger program.
 */
-struct Trigger {
-  char *zName;            /* The name of the trigger                        */
-  char *table;            /* The table or view to which the trigger applies */
+ഘടന Trigger {
+  അക്ഷരം *zName;            /* The name of the trigger                        */
+  അക്ഷരം *table;            /* The table or view to which the trigger applies */
   u8 op;                  /* One of TK_DELETE, TK_UPDATE, TK_INSERT         */
   u8 tr_tm;               /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
   u8 bReturning;          /* This trigger implements a RETURNING clause */
-  Expr *pWhen;            /* The WHEN clause of the expression (may be NULL) */
+  വ്യഞ്ജകം *pWhen;            /* The WHEN clause of the expression (may be NULL) */
   IdList *pColumns;       /* If this is an UPDATE OF <column-list> trigger,
                              the <column-list> is stored here */
   Schema *pSchema;        /* Schema containing the trigger */
@@ -4211,18 +4211,18 @@ struct Trigger {
 ** pExprList -> The list of expressions that follow the RETURNING keyword.
 **
 */
-struct TriggerStep {
+ഘടന TriggerStep {
   u8 op;               /* One of TK_DELETE, TK_UPDATE, TK_INSERT, TK_SELECT,
                        ** or TK_RETURNING */
   u8 orconf;           /* OE_Rollback etc. */
   Trigger *pTrig;      /* The trigger that this step is a part of */
   Select *pSelect;     /* SELECT statement or RHS of INSERT INTO SELECT ... */
   SrcList *pSrc;       /* Table to insert/update/delete */
-  Expr *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
-  ExprList *pExprList; /* SET clause for UPDATE, or RETURNING clause */
+  വ്യഞ്ജകം *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
+  വ്യഞ്ജകം_List *p_വ്യഞ്ജകം_List; /* SET clause for UPDATE, or RETURNING clause */
   IdList *pIdList;     /* Column names for INSERT */
   Upsert *pUpsert;     /* Upsert clauses on an INSERT */
-  char *zSpan;         /* Original SQL text of this command */
+  അക്ഷരം *zSpan;         /* Original SQL text of this command */
   TriggerStep *pNext;  /* Next in the link-list */
   TriggerStep *pLast;  /* Last element in link-list. Valid for 1st elem only */
 };
@@ -4230,24 +4230,24 @@ struct TriggerStep {
 /*
 ** Information about a RETURNING clause
 */
-struct Returning {
+ഘടന Returning {
   Parse *pParse;        /* The parse that includes the RETURNING clause */
-  ExprList *pReturnEL;  /* List of expressions to return */
+  വ്യഞ്ജകം_List *pReturnEL;  /* List of expressions to return */
   Trigger retTrig;      /* The transient trigger that implements RETURNING */
   TriggerStep retTStep; /* The trigger step */
-  int iRetCur;          /* Transient table holding RETURNING results */
-  int nRetCol;          /* Number of in pReturnEL after expansion */
-  int iRetReg;          /* Register array for holding a row of RETURNING */
-  char zName[40];       /* Name of trigger: "sqlite_returning_%p" */
+  പൂർണ്ണസംഖ്യ iRetCur;          /* Transient table holding RETURNING results */
+  പൂർണ്ണസംഖ്യ nRetCol;          /* Number of in pReturnEL after expansion */
+  പൂർണ്ണസംഖ്യ iRetReg;          /* Register array for holding a row of RETURNING */
+  അക്ഷരം zName[40];       /* Name of trigger: "sqlite_returning_%p" */
 };
 
 /*
 ** An object used to accumulate the text of a string where we
 ** do not necessarily know how big the string will be in the end.
 */
-struct sqlite3_str {
+ഘടന sqlite3_str {
   sqlite3 *db;         /* Optional database for lookaside.  Can be NULL */
-  char *zText;         /* The string collected so far */
+  അക്ഷരം *zText;         /* The string collected so far */
   u32  nAlloc;         /* Amount of space allocated in zText */
   u32  mxAlloc;        /* Maximum allowed allocation.  0 for no malloc usage */
   u32  nChar;          /* Length of the string so far */
@@ -4278,7 +4278,7 @@ struct sqlite3_str {
 ** "String" is in the name, but an RCStr object can also be used to hold
 ** binary data.
 */
-struct RCStr {
+ഘടന RCStr {
   u64 nRCRef;            /* Number of references */
   /* Total structure size should be a multiple of 8 bytes for alignment */
 };
@@ -4287,11 +4287,11 @@ struct RCStr {
 ** A pointer to this structure is used to communicate information
 ** from sqlite3Init and OP_ParseSchema into the sqlite3InitCallback.
 */
-typedef struct {
+തരനിർവചനം ഘടന {
   sqlite3 *db;        /* The database being initialized */
-  char **pzErrMsg;    /* Error message stored here */
-  int iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
-  int rc;             /* Result code stored here */
+  അക്ഷരം **pz_Err_സന്ദേശം;    /* Error message stored here */
+  പൂർണ്ണസംഖ്യ iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
+  പൂർണ്ണസംഖ്യ rc;             /* Result code stored here */
   u32 mInitFlags;     /* Flags controlling error messages */
   u32 nInitRow;       /* Number of rows processed */
   Pgno mxPage;        /* Maximum page number.  0 for no limit. */
@@ -4318,7 +4318,7 @@ typedef struct {
 #define SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
 #ifdef SQLITE_DEBUG
 # define Tuning(X)  (sqlite3Config.aTune[(X)-1])
-#else
+#അല്ലെങ്കിൽ
 # define Tuning(X)  0
 #endif
 
@@ -4327,8 +4327,8 @@ typedef struct {
 **
 ** This structure also contains some state information.
 */
-struct Sqlite3Config {
-  int bMemstat;                     /* True to enable memory status */
+ഘടന Sqlite3Config {
+  പൂർണ്ണസംഖ്യ bMemstat;                     /* True to enable memory status */
   u8 bCoreMutex;                    /* True to enable core mutexing */
   u8 bFullMutex;                    /* True to enable full mutexing */
   u8 bOpenUri;                      /* True to interpret filenames as URIs */
@@ -4338,63 +4338,63 @@ struct Sqlite3Config {
 #ifdef SQLITE_DEBUG
   u8 bJsonSelfcheck;                /* Double-check JSON parsing */
 #endif
-  int mxStrlen;                     /* Maximum string length */
-  int neverCorrupt;                 /* Database is always well-formed */
-  int szLookaside;                  /* Default lookaside buffer size */
-  int nLookaside;                   /* Default lookaside buffer count */
-  int nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
+  പൂർണ്ണസംഖ്യ mxStrlen;                     /* Maximum string length */
+  പൂർണ്ണസംഖ്യ neverCorrupt;                 /* Database is always well-formed */
+  പൂർണ്ണസംഖ്യ szLookaside;                  /* Default lookaside buffer size */
+  പൂർണ്ണസംഖ്യ nLookaside;                   /* Default lookaside buffer count */
+  പൂർണ്ണസംഖ്യ nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
   sqlite3_mem_methods m;            /* Low-level memory allocation interface */
   sqlite3_mutex_methods mutex;      /* Low-level mutex interface */
   sqlite3_pcache_methods2 pcache2;  /* Low-level page-cache interface */
-  void *pHeap;                      /* Heap storage space */
-  int nHeap;                        /* Size of pHeap[] */
-  int mnReq, mxReq;                 /* Min and max heap requests sizes */
+  ശൂന്യം *pHeap;                      /* Heap storage space */
+  പൂർണ്ണസംഖ്യ nHeap;                        /* Size of pHeap[] */
+  പൂർണ്ണസംഖ്യ mnReq, mxReq;                 /* Min and max heap requests sizes */
   sqlite3_int64 szMmap;             /* mmap() space per open file */
   sqlite3_int64 mxMmap;             /* Maximum value for szMmap */
-  void *pPage;                      /* Page cache memory */
-  int szPage;                       /* Size of each page in pPage[] */
-  int nPage;                        /* Number of pages in pPage[] */
-  int mxParserStack;                /* maximum depth of the parser stack */
-  int sharedCacheEnabled;           /* true if shared-cache mode enabled */
+  ശൂന്യം *pPage;                      /* Page cache memory */
+  പൂർണ്ണസംഖ്യ szPage;                       /* Size of each page in pPage[] */
+  പൂർണ്ണസംഖ്യ nPage;                        /* Number of pages in pPage[] */
+  പൂർണ്ണസംഖ്യ mx_Parser_അട്ടി;                /* maximum depth of the parser stack */
+  പൂർണ്ണസംഖ്യ sharedCacheEnabled;           /* true if shared-cache mode enabled */
   u32 szPma;                        /* Maximum Sorter PMA size */
   /* The above might be initialized to non-zero.  The following need to always
   ** initially be zero, however. */
-  int isInit;                       /* True after initialization has finished */
-  int inProgress;                   /* True while initialization in progress */
-  int isMutexInit;                  /* True after mutexes are initialized */
-  int isMallocInit;                 /* True after malloc is initialized */
-  int isPCacheInit;                 /* True after malloc is initialized */
-  int nRefInitMutex;                /* Number of users of pInitMutex */
+  പൂർണ്ണസംഖ്യ isInit;                       /* True after initialization has finished */
+  പൂർണ്ണസംഖ്യ inProgress;                   /* True while initialization in progress */
+  പൂർണ്ണസംഖ്യ isMutexInit;                  /* True after mutexes are initialized */
+  പൂർണ്ണസംഖ്യ isMallocInit;                 /* True after malloc is initialized */
+  പൂർണ്ണസംഖ്യ isPCacheInit;                 /* True after malloc is initialized */
+  പൂർണ്ണസംഖ്യ nRefInitMutex;                /* Number of users of pInitMutex */
   sqlite3_mutex *pInitMutex;        /* Mutex used by sqlite3_initialize() */
-  void (*xLog)(void*,int,const char*); /* Function for logging */
-  void *pLogArg;                       /* First argument to xLog() */
+  ശൂന്യം (*xLog)(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*); /* Function for logging */
+  ശൂന്യം *pLogArg;                       /* First argument to xLog() */
 #ifdef SQLITE_ENABLE_SQLLOG
-  void(*xSqllog)(void*,sqlite3*,const char*, int);
-  void *pSqllogArg;
+  ശൂന്യം(*xSqllog)(ശൂന്യം*,sqlite3*,സ്ഥിരം അക്ഷരം*, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം *pSqllogArg;
 #endif
 #ifdef SQLITE_VDBE_COVERAGE
   /* The following callback (if not NULL) is invoked on every VDBE branch
   ** operation.  Set the callback using SQLITE_TESTCTRL_VDBE_COVERAGE.
   */
-  void (*xVdbeBranch)(void*,unsigned iSrcLine,u8 eThis,u8 eMx);  /* Callback */
-  void *pVdbeBranchArg;                                     /* 1st argument */
+  ശൂന്യം (*xVdbeBranch)(ശൂന്യം*,unsigned i_Src_വരി,u8 eThis,u8 eMx);  /* Callback */
+  ശൂന്യം *pVdbeBranchArg;                                     /* 1st argument */
 #endif
 #ifndef SQLITE_OMIT_DESERIALIZE
   sqlite3_int64 mxMemdbSize;        /* Default max memdb size */
 #endif
 #ifndef SQLITE_UNTESTABLE
-  int (*xTestCallback)(int);        /* Invoked by sqlite3FaultSim() */
+  പൂർണ്ണസംഖ്യ (*xTestCallback)(പൂർണ്ണസംഖ്യ);        /* Invoked by sqlite3FaultSim() */
 #endif
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
   u32 mNoVisibleRowid;              /* TF_NoVisibleRowid if the ROWID_IN_VIEW
                                     ** feature is disabled.  0 if rowids can
                                     ** occur in views. */
 #endif
-  int bLocaltimeFault;              /* True to fail localtime() calls */
-  int (*xAltLocaltime)(const void*,void*); /* Alternative localtime() routine */
-  int iOnceResetThreshold;          /* When to reset OP_Once counters */
+  പൂർണ്ണസംഖ്യ bLocaltimeFault;              /* True to fail localtime() calls */
+  പൂർണ്ണസംഖ്യ (*xAltLocaltime)(സ്ഥിരം ശൂന്യം*,ശൂന്യം*); /* Alternative localtime() routine */
+  പൂർണ്ണസംഖ്യ iOnceResetThreshold;          /* When to reset OP_Once counters */
   u32 szSorterRef;                  /* Min size in bytes to use sorter-refs */
-  unsigned int iPrngSeed;           /* Alternative fixed seed for the PRNG */
+  unsigned പൂർണ്ണസംഖ്യ iPrngSeed;           /* Alternative fixed seed for the PRNG */
   /* vvvv--- must be last ---vvv */
 #ifdef SQLITE_DEBUG
   sqlite3_int64 aTune[SQLITE_NTUNE]; /* Tuning parameters */
@@ -4422,35 +4422,35 @@ struct Sqlite3Config {
 /*
 ** Context pointer passed down through the tree-walk.
 */
-struct Walker {
+ഘടന Walker {
   Parse *pParse;                            /* Parser context.  */
-  int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
-  int (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
-  void (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
-  int walkerDepth;                          /* Number of subqueries */
+  പൂർണ്ണസംഖ്യ (*x_വ്യഞ്ജകം_Callback)(Walker*, വ്യഞ്ജകം*);     /* Callback for expressions */
+  പൂർണ്ണസംഖ്യ (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
+  ശൂന്യം (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
+  പൂർണ്ണസംഖ്യ walkerDepth;                          /* Number of subqueries */
   u16 eCode;                                /* A small processing code */
   u16 mWFlags;                              /* Use-dependent flags */
-  union {                                   /* Extra data for callback */
+  സംഘം {                                   /* Extra data for callback */
     NameContext *pNC;                         /* Naming context */
-    int n;                                    /* A counter */
-    int iCur;                                 /* A cursor number */
-    int sz;                                   /* String literal length */
+    പൂർണ്ണസംഖ്യ n;                                    /* A counter */
+    പൂർണ്ണസംഖ്യ iCur;                                 /* A cursor number */
+    പൂർണ്ണസംഖ്യ sz;                                   /* String literal length */
     SrcList *pSrcList;                        /* FROM clause */
-    struct CCurHint *pCCurHint;               /* Used by codeCursorHint() */
-    struct RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
-    int *aiCol;                               /* array of column indexes */
-    struct IdxCover *pIdxCover;               /* Check for index coverage */
-    ExprList *pGroupBy;                       /* GROUP BY clause */
+    ഘടന CCurHint *pCCurHint;               /* Used by codeCursorHint() */
+    ഘടന RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
+    പൂർണ്ണസംഖ്യ *aiCol;                               /* array of column indexes */
+    ഘടന IdxCover *pIdxCover;               /* Check for index coverage */
+    വ്യഞ്ജകം_List *pGroupBy;                       /* GROUP BY clause */
     Select *pSelect;                          /* HAVING to WHERE clause ctx */
-    struct WindowRewrite *pRewrite;           /* Window rewrite context */
-    struct WhereConst *pConst;                /* WHERE clause constants */
-    struct RenameCtx *pRename;                /* RENAME COLUMN context */
-    struct Table *pTab;                       /* Table of generated column */
-    struct CoveringIndexCheck *pCovIdxCk;     /* Check for covering index */
+    ഘടന WindowRewrite *pRewrite;           /* Window rewrite context */
+    ഘടന WhereConst *pConst;                /* WHERE clause constants */
+    ഘടന RenameCtx *pRename;                /* RENAME COLUMN context */
+    ഘടന Table *pTab;                       /* Table of generated column */
+    ഘടന CoveringIndexCheck *pCovIdxCk;     /* Check for covering index */
     SrcItem *pSrcItem;                        /* A single FROM clause item */
     DbFixer *pFix;                            /* See sqlite3FixSelect() */
     Mem *aMem;                                /* See sqlite3BtreeCursorHint() */
-    struct CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
+    ഘടന CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
   } u;
 };
 
@@ -4459,38 +4459,38 @@ struct Walker {
 ** routines as they walk the parse tree to make database references
 ** explicit.
 */
-struct DbFixer {
+ഘടന DbFixer {
   Parse *pParse;      /* The parsing context.  Error messages written here */
   Walker w;           /* Walker object */
   Schema *pSchema;    /* Fix items to this schema */
   u8 bTemp;           /* True for TEMP schema entries */
-  const char *zDb;    /* Make sure all objects are contained in this database */
-  const char *zType;  /* Type of the container - used for error messages */
-  const Token *pName; /* Name of the container - used for error messages */
+  സ്ഥിരം അക്ഷരം *zDb;    /* Make sure all objects are contained in this database */
+  സ്ഥിരം അക്ഷരം *zType;  /* Type of the container - used for error messages */
+  സ്ഥിരം Token *pName; /* Name of the container - used for error messages */
 };
 
 /* Forward declarations */
-int sqlite3WalkExpr(Walker*, Expr*);
-int sqlite3WalkExprNN(Walker*, Expr*);
-int sqlite3WalkExprList(Walker*, ExprList*);
-int sqlite3WalkSelect(Walker*, Select*);
-int sqlite3WalkSelectExpr(Walker*, Select*);
-int sqlite3WalkSelectFrom(Walker*, Select*);
-int sqlite3ExprWalkNoop(Walker*, Expr*);
-int sqlite3SelectWalkNoop(Walker*, Select*);
-int sqlite3SelectWalkFail(Walker*, Select*);
-int sqlite3WalkerDepthIncrease(Walker*,Select*);
-void sqlite3WalkerDepthDecrease(Walker*,Select*);
-void sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
+പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം(Walker*, വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം_NN(Walker*, വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_Walk_വ്യഞ്ജകം_List(Walker*, വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3WalkSelect(Walker*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3_Walk_Select_വ്യഞ്ജകം(Walker*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3WalkSelectFrom(Walker*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Walk_Noop(Walker*, വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3SelectWalkNoop(Walker*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3SelectWalkFail(Walker*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3WalkerDepthIncrease(Walker*,Select*);
+ശൂന്യം sqlite3WalkerDepthDecrease(Walker*,Select*);
+ശൂന്യം sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
 
 #ifdef SQLITE_DEBUG
-void sqlite3SelectWalkAssert2(Walker*, Select*);
+ശൂന്യം sqlite3SelectWalkAssert2(Walker*, Select*);
 #endif
 
 #ifndef SQLITE_OMIT_CTE
-void sqlite3SelectPopWith(Walker*, Select*);
-#else
-# define sqlite3SelectPopWith 0
+ശൂന്യം sqlite3_Select_എടുക്കുക_With(Walker*, Select*);
+#അല്ലെങ്കിൽ
+# define sqlite3_Select_എടുക്കുക_With 0
 #endif
 
 /*
@@ -4504,11 +4504,11 @@ void sqlite3SelectPopWith(Walker*, Select*);
 /*
 ** A single common table expression
 */
-struct Cte {
-  char *zName;            /* Name of this CTE */
-  ExprList *pCols;        /* List of explicit column names, or NULL */
+ഘടന Cte {
+  അക്ഷരം *zName;            /* Name of this CTE */
+  വ്യഞ്ജകം_List *pCols;        /* List of explicit column names, or NULL */
   Select *pSelect;        /* The definition of this CTE */
-  const char *zCteErr;    /* Error message for circular references */
+  സ്ഥിരം അക്ഷരം *zCteErr;    /* Error message for circular references */
   CteUse *pUse;           /* Usage information for this CTE */
   u8 eM10d;               /* The MATERIALIZED flag */
 };
@@ -4524,16 +4524,16 @@ struct Cte {
 ** An instance of the With object represents a WITH clause containing
 ** one or more CTEs (common table expressions).
 */
-struct With {
-  int nCte;               /* Number of CTEs in the WITH clause */
-  int bView;              /* Belongs to the outermost Select of a view */
+ഘടന With {
+  പൂർണ്ണസംഖ്യ nCte;               /* Number of CTEs in the WITH clause */
+  പൂർണ്ണസംഖ്യ bView;              /* Belongs to the outermost Select of a view */
   With *pOuter;           /* Containing WITH clause, or NULL */
   Cte a[FLEXARRAY];       /* For each CTE in the WITH clause.... */
 };
 
 /* The size (in bytes) of a With object that can hold as many
 ** as N different CTEs. */
-#define SZ_WITH(N)  (offsetof(With,a) + (N)*sizeof(Cte))
+#define SZ_WITH(N)  (offsetof(With,a) + (N)*വലുപ്പം(Cte))
 
 /*
 ** The Cte object is not guaranteed to persist for the entire duration
@@ -4546,11 +4546,11 @@ struct With {
 ** than sqlite3SelectDelete(), which is what enables them to persist
 ** until the end of code generation.
 */
-struct CteUse {
-  int nUse;              /* Number of users of this CTE */
-  int addrM9e;           /* Start of subroutine to compute materialization */
-  int regRtn;            /* Return address register for addrM9e subroutine */
-  int iCur;              /* Ephemeral table holding the materialization */
+ഘടന CteUse {
+  പൂർണ്ണസംഖ്യ nUse;              /* Number of users of this CTE */
+  പൂർണ്ണസംഖ്യ addrM9e;           /* Start of subroutine to compute materialization */
+  പൂർണ്ണസംഖ്യ regRtn;            /* Return address register for addrM9e subroutine */
+  പൂർണ്ണസംഖ്യ iCur;              /* Ephemeral table holding the materialization */
   LogEst nRowEst;        /* Estimated number of rows in the table */
   u8 eM10d;              /* The MATERIALIZED flag */
 };
@@ -4559,11 +4559,11 @@ struct CteUse {
 /* Client data associated with sqlite3_set_clientdata() and
 ** sqlite3_get_clientdata().
 */
-struct DbClientData {
+ഘടന DbClientData {
   DbClientData *pNext;        /* Next in a linked list */
-  void *pData;                /* The data */
-  void (*xDestructor)(void*); /* Destructor.  Might be NULL */
-  char zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
+  ശൂന്യം *pData;                /* The data */
+  ശൂന്യം (*xDestructor)(ശൂന്യം*); /* Destructor.  Might be NULL */
+  അക്ഷരം zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
 };
 
 /* The size (in bytes) of a DbClientData object that can has a name
@@ -4575,9 +4575,9 @@ struct DbClientData {
 ** An instance of the TreeView object is used for printing the content of
 ** data structures on sqlite3DebugPrintf() using a tree-like view.
 */
-struct TreeView {
-  int iLevel;             /* Which level of the tree we are on */
-  u8  bLine[100];         /* Draw vertical in column i if bLine[i] is true */
+ഘടന വൃക്ഷം_View {
+  പൂർണ്ണസംഖ്യ iLevel;             /* Which level of the tree we are on */
+  u8  b_വരി[100];         /* Draw vertical in column i if bLine[i] is true */
 };
 #endif /* SQLITE_DEBUG */
 
@@ -4604,59 +4604,59 @@ struct TreeView {
 ** The uses (1) and (2) are really the same Window object that just happens
 ** to be accessible in two different ways.  Use case (3) are separate objects.
 */
-struct Window {
-  char *zName;            /* Name of window (may be NULL) */
-  char *zBase;            /* Name of base window for chaining (may be NULL) */
-  ExprList *pPartition;   /* PARTITION BY clause */
-  ExprList *pOrderBy;     /* ORDER BY clause */
+ഘടന Window {
+  അക്ഷരം *zName;            /* Name of window (may be NULL) */
+  അക്ഷരം *zBase;            /* Name of base window for chaining (may be NULL) */
+  വ്യഞ്ജകം_List *pPartition;   /* PARTITION BY clause */
+  വ്യഞ്ജകം_List *pOrderBy;     /* ORDER BY clause */
   u8 eFrmType;            /* TK_RANGE, TK_GROUPS, TK_ROWS, or 0 */
   u8 eStart;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
   u8 eEnd;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
   u8 bImplicitFrame;      /* True if frame was implicitly specified */
   u8 eExclude;            /* TK_NO, TK_CURRENT, TK_TIES, TK_GROUP, or 0 */
-  Expr *pStart;           /* Expression for "<expr> PRECEDING" */
-  Expr *pEnd;             /* Expression for "<expr> FOLLOWING" */
+  വ്യഞ്ജകം *pStart;           /* Expression for "<expr> PRECEDING" */
+  വ്യഞ്ജകം *pEnd;             /* Expression for "<expr> FOLLOWING" */
   Window **ppThis;        /* Pointer to this object in Select.pWin list */
   Window *pNextWin;       /* Next window function belonging to this SELECT */
-  Expr *pFilter;          /* The FILTER expression */
+  വ്യഞ്ജകം *pFilter;          /* The FILTER expression */
   FuncDef *pWFunc;        /* The function */
-  int iEphCsr;            /* Partition buffer or Peer buffer */
-  int regAccum;           /* Accumulator */
-  int regResult;          /* Interim result */
-  int csrApp;             /* Function cursor (used by min/max) */
-  int regApp;             /* Function register (also used by min/max) */
-  int regPart;            /* Array of registers for PARTITION BY values */
-  Expr *pOwner;           /* Expression object this window is attached to */
-  int nBufferCol;         /* Number of columns in buffer table */
-  int iArgCol;            /* Offset of first argument for this function */
-  int regOne;             /* Register containing constant value 1 */
-  int regStartRowid;
-  int regEndRowid;
-  u8 bExprArgs;           /* Defer evaluation of window function arguments
+  പൂർണ്ണസംഖ്യ iEphCsr;            /* Partition buffer or Peer buffer */
+  പൂർണ്ണസംഖ്യ regAccum;           /* Accumulator */
+  പൂർണ്ണസംഖ്യ regResult;          /* Interim result */
+  പൂർണ്ണസംഖ്യ csrApp;             /* Function cursor (used by min/max) */
+  പൂർണ്ണസംഖ്യ regApp;             /* Function register (also used by min/max) */
+  പൂർണ്ണസംഖ്യ regPart;            /* Array of registers for PARTITION BY values */
+  വ്യഞ്ജകം *pOwner;           /* Expression object this window is attached to */
+  പൂർണ്ണസംഖ്യ nBufferCol;         /* Number of columns in buffer table */
+  പൂർണ്ണസംഖ്യ iArgCol;            /* Offset of first argument for this function */
+  പൂർണ്ണസംഖ്യ regOne;             /* Register containing constant value 1 */
+  പൂർണ്ണസംഖ്യ regStartRowid;
+  പൂർണ്ണസംഖ്യ regEndRowid;
+  u8 b_വ്യഞ്ജകം_Args;           /* Defer evaluation of window function arguments
                           ** due to the SQLITE_SUBTYPE flag */
 };
 
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow);
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal);
+Select *sqlite3_Multi_മൂല്യങ്ങൾ(Parse *pParse, Select *p_ഇടത്, വ്യഞ്ജകം_List *pRow);
+ശൂന്യം sqlite3_Multi_മൂല്യങ്ങൾ_End(Parse *pParse, Select *pVal);
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3WindowDelete(sqlite3*, Window*);
-void sqlite3WindowUnlinkFromSelect(Window*);
-void sqlite3WindowListDelete(sqlite3 *db, Window *p);
-Window *sqlite3WindowAlloc(Parse*, int, int, Expr*, int , Expr*, u8);
-void sqlite3WindowAttach(Parse*, Expr*, Window*);
-void sqlite3WindowLink(Select *pSel, Window *pWin);
-int sqlite3WindowCompare(const Parse*, const Window*, const Window*, int);
-void sqlite3WindowCodeInit(Parse*, Select*);
-void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, int, int);
-int sqlite3WindowRewrite(Parse*, Select*);
-void sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p);
+ശൂന്യം sqlite3WindowDelete(sqlite3*, Window*);
+ശൂന്യം sqlite3WindowUnlinkFromSelect(Window*);
+ശൂന്യം sqlite3WindowListDelete(sqlite3 *db, Window *p);
+Window *sqlite3WindowAlloc(Parse*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ , വ്യഞ്ജകം*, u8);
+ശൂന്യം sqlite3WindowAttach(Parse*, വ്യഞ്ജകം*, Window*);
+ശൂന്യം sqlite3WindowLink(Select *pSel, Window *pWin);
+പൂർണ്ണസംഖ്യ sqlite3WindowCompare(സ്ഥിരം Parse*, സ്ഥിരം Window*, സ്ഥിരം Window*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3WindowCodeInit(Parse*, Select*);
+ശൂന്യം sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3WindowRewrite(Parse*, Select*);
+ശൂന്യം sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
+Window *sqlite3WindowDup(sqlite3 *db, വ്യഞ്ജകം *pOwner, Window *p);
 Window *sqlite3WindowListDup(sqlite3 *db, Window *p);
-void sqlite3WindowFunctions(void);
-void sqlite3WindowChain(Parse*, Window*, Window*);
-Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
-#else
+ശൂന്യം sqlite3WindowFunctions(ശൂന്യം);
+ശൂന്യം sqlite3WindowChain(Parse*, Window*, Window*);
+Window *sqlite3WindowAssemble(Parse*, Window*, വ്യഞ്ജകം_List*, വ്യഞ്ജകം_List*, Token*);
+#അല്ലെങ്കിൽ
 # define sqlite3WindowDelete(a,b)
 # define sqlite3WindowFunctions()
 # define sqlite3WindowAttach(a,b,c)
@@ -4718,8 +4718,8 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** So the (0x80-1) constant is used for substr() and length().
 */
 #define SQLITE_SKIP_UTF8(zIn) {                        \
-  if( (*(zIn++))>=0xc0 ){                              \
-    while( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
+  എങ്കിൽ( (*(zIn++))>=0xc0 ){                              \
+    ആകുമ്പോൾ( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
   }                                                    \
 }
 
@@ -4730,33 +4730,33 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** using sqlite3_log().  The routines also provide a convenient place
 ** to set a debugger breakpoint.
 */
-int sqlite3ReportError(int iErr, int lineno, const char *zType);
-int sqlite3CorruptError(int);
-int sqlite3MisuseError(int);
-int sqlite3CantopenError(int);
+പൂർണ്ണസംഖ്യ sqlite3ReportError(പൂർണ്ണസംഖ്യ iErr, പൂർണ്ണസംഖ്യ lineno, സ്ഥിരം അക്ഷരം *zType);
+പൂർണ്ണസംഖ്യ sqlite3CorruptError(പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3MisuseError(പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3CantopenError(പൂർണ്ണസംഖ്യ);
 #define SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
 #define SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
 #define SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
 #ifdef SQLITE_DEBUG
-  int sqlite3NomemError(int);
-  int sqlite3IoerrnomemError(int);
+  പൂർണ്ണസംഖ്യ sqlite3NomemError(പൂർണ്ണസംഖ്യ);
+  പൂർണ്ണസംഖ്യ sqlite3IoerrnomemError(പൂർണ്ണസംഖ്യ);
 # define SQLITE_NOMEM_BKPT sqlite3NomemError(__LINE__)
 # define SQLITE_IOERR_NOMEM_BKPT sqlite3IoerrnomemError(__LINE__)
-#else
+#അല്ലെങ്കിൽ
 # define SQLITE_NOMEM_BKPT SQLITE_NOMEM
 # define SQLITE_IOERR_NOMEM_BKPT SQLITE_IOERR_NOMEM
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
-  int sqlite3CorruptPgnoError(int,Pgno);
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
+  പൂർണ്ണസംഖ്യ sqlite3CorruptPgnoError(പൂർണ്ണസംഖ്യ,Pgno);
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptPgnoError(__LINE__,(P))
-#else
+#അല്ലെങ്കിൽ
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptError(__LINE__)
 #endif
 
 /*
 ** FTS3 and FTS4 both require virtual table support
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE)
+#എങ്കിൽ defined(SQLITE_OMIT_VIRTUALTABLE)
 # undef SQLITE_ENABLE_FTS3
 # undef SQLITE_ENABLE_FTS4
 #endif
@@ -4766,7 +4766,7 @@ int sqlite3CantopenError(int);
 ** SQLITE_ENABLE_FTS3 macro.  But to avoid confusion we also call
 ** the SQLITE_ENABLE_FTS4 macro to serve as an alias for SQLITE_ENABLE_FTS3.
 */
-#if defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
+#എങ്കിൽ defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
 # define SQLITE_ENABLE_FTS3 1
 #endif
 
@@ -4776,64 +4776,64 @@ int sqlite3CantopenError(int);
 ** sqlite versions only work for ASCII characters, regardless of locale.
 */
 #ifdef SQLITE_ASCII
-# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(unsigned char)(x)]&0x20))
-# define sqlite3Isspace(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x01)
-# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x06)
-# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x02)
-# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x04)
-# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(unsigned char)(x)]&0x08)
-# define sqlite3Tolower(x)   (sqlite3UpperToLower[(unsigned char)(x)])
-# define sqlite3Isquote(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x80)
-# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x42)
-# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x46)
-#else
-# define sqlite3Toupper(x)   toupper((unsigned char)(x))
-# define sqlite3Isspace(x)   isspace((unsigned char)(x))
-# define sqlite3Isalnum(x)   isalnum((unsigned char)(x))
-# define sqlite3Isalpha(x)   isalpha((unsigned char)(x))
-# define sqlite3Isdigit(x)   isdigit((unsigned char)(x))
-# define sqlite3Isxdigit(x)  isxdigit((unsigned char)(x))
-# define sqlite3Tolower(x)   tolower((unsigned char)(x))
+# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x20))
+# define sqlite3Isspace(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x01)
+# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x06)
+# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x02)
+# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x04)
+# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x08)
+# define sqlite3Tolower(x)   (sqlite3UpperToLower[(unsigned അക്ഷരം)(x)])
+# define sqlite3Isquote(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x80)
+# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x42)
+# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(unsigned അക്ഷരം)(x)]&0x46)
+#അല്ലെങ്കിൽ
+# define sqlite3Toupper(x)   toupper((unsigned അക്ഷരം)(x))
+# define sqlite3Isspace(x)   isspace((unsigned അക്ഷരം)(x))
+# define sqlite3Isalnum(x)   isalnum((unsigned അക്ഷരം)(x))
+# define sqlite3Isalpha(x)   isalpha((unsigned അക്ഷരം)(x))
+# define sqlite3Isdigit(x)   isdigit((unsigned അക്ഷരം)(x))
+# define sqlite3Isxdigit(x)  isxdigit((unsigned അക്ഷരം)(x))
+# define sqlite3Tolower(x)   tolower((unsigned അക്ഷരം)(x))
 # define sqlite3Isquote(x)   ((x)=='"'||(x)=='\''||(x)=='['||(x)=='`')
 # define sqlite3JsonId1(x)   (sqlite3IsIdChar(x)&&(x)<'0')
 # define sqlite3JsonId2(x)   sqlite3IsIdChar(x)
 #endif
-int sqlite3IsIdChar(u8);
+പൂർണ്ണസംഖ്യ sqlite3IsIdChar(u8);
 
 /*
 ** Internal function prototypes
 */
-int sqlite3StrICmp(const char*,const char*);
-int sqlite3Strlen30(const char*);
+പൂർണ്ണസംഖ്യ sqlite3StrICmp(സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+പൂർണ്ണസംഖ്യ sqlite3Strlen30(സ്ഥിരം അക്ഷരം*);
 #define sqlite3Strlen30NN(C) (strlen(C)&0x3fffffff)
-char *sqlite3ColumnType(Column*,char*);
+അക്ഷരം *sqlite3ColumnType(Column*,അക്ഷരം*);
 #define sqlite3StrNICmp sqlite3_strnicmp
 
-int sqlite3MallocInit(void);
-void sqlite3MallocEnd(void);
-void *sqlite3Malloc(u64);
-void *sqlite3MallocZero(u64);
-void *sqlite3DbMallocZero(sqlite3*, u64);
-void *sqlite3DbMallocRaw(sqlite3*, u64);
-void *sqlite3DbMallocRawNN(sqlite3*, u64);
-char *sqlite3DbStrDup(sqlite3*,const char*);
-char *sqlite3DbStrNDup(sqlite3*,const char*, u64);
-char *sqlite3DbSpanDup(sqlite3*,const char*,const char*);
-void *sqlite3Realloc(void*, u64);
-void *sqlite3DbReallocOrFree(sqlite3 *, void *, u64);
-void *sqlite3DbRealloc(sqlite3 *, void *, u64);
-void sqlite3DbFree(sqlite3*, void*);
-void sqlite3DbFreeNN(sqlite3*, void*);
-void sqlite3DbNNFreeNN(sqlite3*, void*);
-int sqlite3MallocSize(const void*);
-int sqlite3DbMallocSize(sqlite3*, const void*);
-void *sqlite3PageMalloc(int);
-void sqlite3PageFree(void*);
-void sqlite3MemSetDefault(void);
+പൂർണ്ണസംഖ്യ sqlite3MallocInit(ശൂന്യം);
+ശൂന്യം sqlite3MallocEnd(ശൂന്യം);
+ശൂന്യം *sqlite3Malloc(u64);
+ശൂന്യം *sqlite3MallocZero(u64);
+ശൂന്യം *sqlite3DbMallocZero(sqlite3*, u64);
+ശൂന്യം *sqlite3DbMallocRaw(sqlite3*, u64);
+ശൂന്യം *sqlite3DbMallocRawNN(sqlite3*, u64);
+അക്ഷരം *sqlite3DbStrDup(sqlite3*,സ്ഥിരം അക്ഷരം*);
+അക്ഷരം *sqlite3DbStrNDup(sqlite3*,സ്ഥിരം അക്ഷരം*, u64);
+അക്ഷരം *sqlite3DbSpanDup(sqlite3*,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം *sqlite3Realloc(ശൂന്യം*, u64);
+ശൂന്യം *sqlite3DbReallocOrFree(sqlite3 *, ശൂന്യം *, u64);
+ശൂന്യം *sqlite3DbRealloc(sqlite3 *, ശൂന്യം *, u64);
+ശൂന്യം sqlite3DbFree(sqlite3*, ശൂന്യം*);
+ശൂന്യം sqlite3DbFreeNN(sqlite3*, ശൂന്യം*);
+ശൂന്യം sqlite3DbNNFreeNN(sqlite3*, ശൂന്യം*);
+പൂർണ്ണസംഖ്യ sqlite3MallocSize(സ്ഥിരം ശൂന്യം*);
+പൂർണ്ണസംഖ്യ sqlite3DbMallocSize(sqlite3*, സ്ഥിരം ശൂന്യം*);
+ശൂന്യം *sqlite3PageMalloc(പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3PageFree(ശൂന്യം*);
+ശൂന്യം sqlite3MemSetDefault(ശൂന്യം);
 #ifndef SQLITE_UNTESTABLE
-void sqlite3BenignMallocHooks(void (*)(void), void (*)(void));
+ശൂന്യം sqlite3BenignMallocHooks(ശൂന്യം (*)(ശൂന്യം), ശൂന്യം (*)(ശൂന്യം));
 #endif
-int sqlite3HeapNearlyFull(void);
+പൂർണ്ണസംഖ്യ sqlite3HeapNearlyFull(ശൂന്യം);
 
 /*
 ** On systems with ample stack space and that support alloca(), make
@@ -4844,51 +4844,51 @@ int sqlite3HeapNearlyFull(void);
 ** that deal with sqlite3StackAlloc() failures to be unreachable.
 */
 #ifdef SQLITE_USE_ALLOCA
-# define sqlite3StackAllocRaw(D,N)   alloca(N)
-# define sqlite3StackAllocRawNN(D,N) alloca(N)
-# define sqlite3StackFree(D,P)
-# define sqlite3StackFreeNN(D,P)
-#else
-# define sqlite3StackAllocRaw(D,N)   sqlite3DbMallocRaw(D,N)
-# define sqlite3StackAllocRawNN(D,N) sqlite3DbMallocRawNN(D,N)
-# define sqlite3StackFree(D,P)       sqlite3DbFree(D,P)
-# define sqlite3StackFreeNN(D,P)     sqlite3DbFreeNN(D,P)
+# define sqlite3_അട്ടി_Alloc_Raw(D,N)   alloca(N)
+# define sqlite3_അട്ടി_Alloc_Raw_NN(D,N) alloca(N)
+# define sqlite3_അട്ടി_Free(D,P)
+# define sqlite3_അട്ടി_Free_NN(D,P)
+#അല്ലെങ്കിൽ
+# define sqlite3_അട്ടി_Alloc_Raw(D,N)   sqlite3DbMallocRaw(D,N)
+# define sqlite3_അട്ടി_Alloc_Raw_NN(D,N) sqlite3DbMallocRawNN(D,N)
+# define sqlite3_അട്ടി_Free(D,P)       sqlite3DbFree(D,P)
+# define sqlite3_അട്ടി_Free_NN(D,P)     sqlite3DbFreeNN(D,P)
 #endif
 
 /* Do not allow both MEMSYS5 and MEMSYS3 to be defined together.  If they
 ** are, disable MEMSYS3
 */
 #ifdef SQLITE_ENABLE_MEMSYS5
-const sqlite3_mem_methods *sqlite3MemGetMemsys5(void);
+സ്ഥിരം sqlite3_mem_methods *sqlite3MemGetMemsys5(ശൂന്യം);
 #undef SQLITE_ENABLE_MEMSYS3
 #endif
 #ifdef SQLITE_ENABLE_MEMSYS3
-const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
+സ്ഥിരം sqlite3_mem_methods *sqlite3MemGetMemsys3(ശൂന്യം);
 #endif
 
 
 #ifndef SQLITE_MUTEX_OMIT
-  sqlite3_mutex_methods const *sqlite3DefaultMutex(void);
-  sqlite3_mutex_methods const *sqlite3NoopMutex(void);
-  sqlite3_mutex *sqlite3MutexAlloc(int);
-  int sqlite3MutexInit(void);
-  int sqlite3MutexEnd(void);
+  sqlite3_mutex_methods സ്ഥിരം *sqlite3DefaultMutex(ശൂന്യം);
+  sqlite3_mutex_methods സ്ഥിരം *sqlite3NoopMutex(ശൂന്യം);
+  sqlite3_mutex *sqlite3MutexAlloc(പൂർണ്ണസംഖ്യ);
+  പൂർണ്ണസംഖ്യ sqlite3MutexInit(ശൂന്യം);
+  പൂർണ്ണസംഖ്യ sqlite3MutexEnd(ശൂന്യം);
 #endif
-#if !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
-  void sqlite3MemoryBarrier(void);
-#else
+#എങ്കിൽ !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
+  ശൂന്യം sqlite3MemoryBarrier(ശൂന്യം);
+#അല്ലെങ്കിൽ
 # define sqlite3MemoryBarrier()
 #endif
 
-sqlite3_int64 sqlite3StatusValue(int);
-void sqlite3StatusUp(int, int);
-void sqlite3StatusDown(int, int);
-void sqlite3StatusHighwater(int, int);
-int sqlite3LookasideUsed(sqlite3*,int*);
+sqlite3_int64 sqlite3_Status_മൂല്യം(പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3StatusUp(പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3StatusDown(പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3StatusHighwater(പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3LookasideUsed(sqlite3*,പൂർണ്ണസംഖ്യ*);
 
 /* Access to mutexes used by sqlite3_status() */
-sqlite3_mutex *sqlite3Pcache1Mutex(void);
-sqlite3_mutex *sqlite3MallocMutex(void);
+sqlite3_mutex *sqlite3Pcache1Mutex(ശൂന്യം);
+sqlite3_mutex *sqlite3MallocMutex(ശൂന്യം);
 
 
 /* The SQLITE_THREAD_MISUSE_WARNINGS compile-time option used to be called
@@ -4903,9 +4903,9 @@ sqlite3_mutex *sqlite3MallocMutex(void);
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
 #endif
 
-#if defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
-void sqlite3MutexWarnOnContention(sqlite3_mutex*);
-#else
+#എങ്കിൽ defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
+ശൂന്യം sqlite3MutexWarnOnContention(sqlite3_mutex*);
+#അല്ലെങ്കിൽ
 # define sqlite3MutexWarnOnContention(x)
 #endif
 
@@ -4914,9 +4914,9 @@ void sqlite3MutexWarnOnContention(sqlite3_mutex*);
 # define MAN754 ((((u64)1)<<52)-1)
 # define IsNaN(X) (((X)&EXP754)==EXP754 && ((X)&MAN754)!=0)
 # define IsOvfl(X) (((X)&EXP754)==EXP754)
-  int sqlite3IsNaN(double);
-  int sqlite3IsOverflow(double);
-#else
+  പൂർണ്ണസംഖ്യ sqlite3IsNaN(ഇരട്ട);
+  പൂർണ്ണസംഖ്യ sqlite3IsOverflow(ഇരട്ട);
+#അല്ലെങ്കിൽ
 # define IsNaN(X)             0
 # define sqlite3IsNaN(X)      0
 # define sqlite3IsOVerflow(X) 0
@@ -4926,10 +4926,10 @@ void sqlite3MutexWarnOnContention(sqlite3_mutex*);
 ** An instance of the following structure holds information about SQL
 ** functions arguments that are the parameters to the printf() function.
 */
-struct PrintfArguments {
-  int nArg;                /* Total number of arguments */
-  int nUsed;               /* Number of arguments used so far */
-  sqlite3_value **apArg;   /* The argument values */
+ഘടന PrintfArguments {
+  പൂർണ്ണസംഖ്യ nArg;                /* Total number of arguments */
+  പൂർണ്ണസംഖ്യ nUsed;               /* Number of arguments used so far */
+  sqlite3_മൂല്യം **apArg;   /* The argument values */
 };
 
 /*
@@ -4941,439 +4941,439 @@ struct PrintfArguments {
 ** An instance of this object receives the decoding of a floating point
 ** value into an approximate decimal representation.
 */
-struct FpDecode {
-  int n;                           /* Significant digits in the decode */
-  int iDP;                         /* Location of the decimal point */
-  char *z;                         /* Start of significant digits */
-  char zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
-  char sign;                       /* '+' or '-' */
-  char isSpecial;                  /* 1: Infinity  2: NaN */
+ഘടന FpDecode {
+  പൂർണ്ണസംഖ്യ n;                           /* Significant digits in the decode */
+  പൂർണ്ണസംഖ്യ iDP;                         /* Location of the decimal point */
+  അക്ഷരം *z;                         /* Start of significant digits */
+  അക്ഷരം zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
+  അക്ഷരം sign;                       /* '+' or '-' */
+  അക്ഷരം isSpecial;                  /* 1: Infinity  2: NaN */
 };
 
-void sqlite3FpDecode(FpDecode*,double,int,int);
-char *sqlite3MPrintf(sqlite3*,const char*, ...);
-char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-  void sqlite3DebugPrintf(const char*, ...);
+ശൂന്യം sqlite3FpDecode(FpDecode*,ഇരട്ട,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+അക്ഷരം *sqlite3MPrintf(sqlite3*,സ്ഥിരം അക്ഷരം*, ...);
+അക്ഷരം *sqlite3VMPrintf(sqlite3*,സ്ഥിരം അക്ഷരം*, va_list);
+#എങ്കിൽ defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  ശൂന്യം sqlite3DebugPrintf(സ്ഥിരം അക്ഷരം*, ...);
 #endif
-#if defined(SQLITE_TEST)
-  void *sqlite3TestTextToPtr(const char*);
-  const char *sqlite3TestPtrToText(void*);
-#endif
-
-#if defined(SQLITE_DEBUG)
-  void sqlite3TreeViewLine(TreeView*, const char *zFormat, ...);
-  void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);
-  void sqlite3TreeViewBareExprList(TreeView*, const ExprList*, const char*);
-  void sqlite3TreeViewExprList(TreeView*, const ExprList*, u8, const char*);
-  void sqlite3TreeViewBareIdList(TreeView*, const IdList*, const char*);
-  void sqlite3TreeViewIdList(TreeView*, const IdList*, u8, const char*);
-  void sqlite3TreeViewColumnList(TreeView*, const Column*, int, u8);
-  void sqlite3TreeViewSrcList(TreeView*, const SrcList*);
-  void sqlite3TreeViewSelect(TreeView*, const Select*, u8);
-  void sqlite3TreeViewWith(TreeView*, const With*, u8);
-  void sqlite3TreeViewUpsert(TreeView*, const Upsert*, u8);
-#if TREETRACE_ENABLED
-  void sqlite3TreeViewDelete(const With*, const SrcList*, const Expr*,
-                             const ExprList*,const Expr*, const Trigger*);
-  void sqlite3TreeViewInsert(const With*, const SrcList*,
-                             const IdList*, const Select*, const ExprList*,
-                             int, const Upsert*, const Trigger*);
-  void sqlite3TreeViewUpdate(const With*, const SrcList*, const ExprList*,
-                             const Expr*, int, const ExprList*, const Expr*,
-                             const Upsert*, const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3TreeViewTriggerStep(TreeView*, const TriggerStep*, u8, u8);
-  void sqlite3TreeViewTrigger(TreeView*, const Trigger*, u8, u8);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3TreeViewWindow(TreeView*, const Window*, u8);
-  void sqlite3TreeViewWinFunc(TreeView*, const Window*, u8);
-#endif
-  void sqlite3ShowExpr(const Expr*);
-  void sqlite3ShowExprList(const ExprList*);
-  void sqlite3ShowIdList(const IdList*);
-  void sqlite3ShowSrcList(const SrcList*);
-  void sqlite3ShowSelect(const Select*);
-  void sqlite3ShowWith(const With*);
-  void sqlite3ShowUpsert(const Upsert*);
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3ShowTriggerStep(const TriggerStep*);
-  void sqlite3ShowTriggerStepList(const TriggerStep*);
-  void sqlite3ShowTrigger(const Trigger*);
-  void sqlite3ShowTriggerList(const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3ShowWindow(const Window*);
-  void sqlite3ShowWinFunc(const Window*);
-#endif
-  void sqlite3ShowBitvec(Bitvec*);
+#എങ്കിൽ defined(SQLITE_TEST)
+  ശൂന്യം *sqlite3TestTextToPtr(സ്ഥിരം അക്ഷരം*);
+  സ്ഥിരം അക്ഷരം *sqlite3TestPtrToText(ശൂന്യം*);
 #endif
 
-void sqlite3SetString(char **, sqlite3*, const char*);
-void sqlite3ProgressCheck(Parse*);
-void sqlite3ErrorMsg(Parse*, const char*, ...);
-int sqlite3ErrorToParser(sqlite3*,int);
-void sqlite3Dequote(char*);
-void sqlite3DequoteExpr(Expr*);
-void sqlite3DequoteToken(Token*);
-void sqlite3DequoteNumber(Parse*, Expr*);
-void sqlite3TokenInit(Token*,char*);
-int sqlite3KeywordCode(const unsigned char*, int);
-int sqlite3RunParser(Parse*, const char*);
-void sqlite3FinishCoding(Parse*);
-int sqlite3GetTempReg(Parse*);
-void sqlite3ReleaseTempReg(Parse*,int);
-int sqlite3GetTempRange(Parse*,int);
-void sqlite3ReleaseTempRange(Parse*,int,int);
-void sqlite3ClearTempRegCache(Parse*);
-void sqlite3TouchRegister(Parse*,int);
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
-int sqlite3FirstAvailableRegister(Parse*,int);
+#എങ്കിൽ defined(SQLITE_DEBUG)
+  ശൂന്യം sqlite3_വൃക്ഷം_View_വരി(വൃക്ഷം_View*, സ്ഥിരം അക്ഷരം *zFormat, ...);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(വൃക്ഷം_View*, സ്ഥിരം വ്യഞ്ജകം*, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Bare_വ്യഞ്ജകം_List(വൃക്ഷം_View*, സ്ഥിരം വ്യഞ്ജകം_List*, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(വൃക്ഷം_View*, സ്ഥിരം വ്യഞ്ജകം_List*, u8, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Bare_Id_List(വൃക്ഷം_View*, സ്ഥിരം IdList*, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Id_List(വൃക്ഷം_View*, സ്ഥിരം IdList*, u8, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Column_List(വൃക്ഷം_View*, സ്ഥിരം Column*, പൂർണ്ണസംഖ്യ, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Src_List(വൃക്ഷം_View*, സ്ഥിരം SrcList*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Select(വൃക്ഷം_View*, സ്ഥിരം Select*, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_With(വൃക്ഷം_View*, സ്ഥിരം With*, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Upsert(വൃക്ഷം_View*, സ്ഥിരം Upsert*, u8);
+#എങ്കിൽ TREETRACE_ENABLED
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Delete(സ്ഥിരം With*, സ്ഥിരം SrcList*, സ്ഥിരം വ്യഞ്ജകം*,
+                             സ്ഥിരം വ്യഞ്ജകം_List*,സ്ഥിരം വ്യഞ്ജകം*, സ്ഥിരം Trigger*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_തിരുകുക(സ്ഥിരം With*, സ്ഥിരം SrcList*,
+                             സ്ഥിരം IdList*, സ്ഥിരം Select*, സ്ഥിരം വ്യഞ്ജകം_List*,
+                             പൂർണ്ണസംഖ്യ, സ്ഥിരം Upsert*, സ്ഥിരം Trigger*);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Update(സ്ഥിരം With*, സ്ഥിരം SrcList*, സ്ഥിരം വ്യഞ്ജകം_List*,
+                             സ്ഥിരം വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, സ്ഥിരം വ്യഞ്ജകം_List*, സ്ഥിരം വ്യഞ്ജകം*,
+                             സ്ഥിരം Upsert*, സ്ഥിരം Trigger*);
+#endif
+#ifndef SQLITE_OMIT_TRIGGER
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Trigger_Step(വൃക്ഷം_View*, സ്ഥിരം TriggerStep*, u8, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Trigger(വൃക്ഷം_View*, സ്ഥിരം Trigger*, u8, u8);
+#endif
+#ifndef SQLITE_OMIT_WINDOWFUNC
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Window(വൃക്ഷം_View*, സ്ഥിരം Window*, u8);
+  ശൂന്യം sqlite3_വൃക്ഷം_View_Win_Func(വൃക്ഷം_View*, സ്ഥിരം Window*, u8);
+#endif
+  ശൂന്യം sqlite3_Show_വ്യഞ്ജകം(സ്ഥിരം വ്യഞ്ജകം*);
+  ശൂന്യം sqlite3_Show_വ്യഞ്ജകം_List(സ്ഥിരം വ്യഞ്ജകം_List*);
+  ശൂന്യം sqlite3ShowIdList(സ്ഥിരം IdList*);
+  ശൂന്യം sqlite3ShowSrcList(സ്ഥിരം SrcList*);
+  ശൂന്യം sqlite3ShowSelect(സ്ഥിരം Select*);
+  ശൂന്യം sqlite3ShowWith(സ്ഥിരം With*);
+  ശൂന്യം sqlite3ShowUpsert(സ്ഥിരം Upsert*);
+#ifndef SQLITE_OMIT_TRIGGER
+  ശൂന്യം sqlite3ShowTriggerStep(സ്ഥിരം TriggerStep*);
+  ശൂന്യം sqlite3ShowTriggerStepList(സ്ഥിരം TriggerStep*);
+  ശൂന്യം sqlite3ShowTrigger(സ്ഥിരം Trigger*);
+  ശൂന്യം sqlite3ShowTriggerList(സ്ഥിരം Trigger*);
+#endif
+#ifndef SQLITE_OMIT_WINDOWFUNC
+  ശൂന്യം sqlite3ShowWindow(സ്ഥിരം Window*);
+  ശൂന്യം sqlite3ShowWinFunc(സ്ഥിരം Window*);
+#endif
+  ശൂന്യം sqlite3ShowBitvec(Bitvec*);
+#endif
+
+ശൂന്യം sqlite3SetString(അക്ഷരം **, sqlite3*, സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3ProgressCheck(Parse*);
+ശൂന്യം sqlite3_Error_സന്ദേശം(Parse*, സ്ഥിരം അക്ഷരം*, ...);
+പൂർണ്ണസംഖ്യ sqlite3ErrorToParser(sqlite3*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3Dequote(അക്ഷരം*);
+ശൂന്യം sqlite3_Dequote_വ്യഞ്ജകം(വ്യഞ്ജകം*);
+ശൂന്യം sqlite3DequoteToken(Token*);
+ശൂന്യം sqlite3_Dequote_സംഖ്യ(Parse*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3TokenInit(Token*,അക്ഷരം*);
+പൂർണ്ണസംഖ്യ sqlite3KeywordCode(സ്ഥിരം unsigned അക്ഷരം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3RunParser(Parse*, സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3FinishCoding(Parse*);
+പൂർണ്ണസംഖ്യ sqlite3GetTempReg(Parse*);
+ശൂന്യം sqlite3ReleaseTempReg(Parse*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3GetTempRange(Parse*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3ReleaseTempRange(Parse*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3ClearTempRegCache(Parse*);
+ശൂന്യം sqlite3TouchRegister(Parse*,പൂർണ്ണസംഖ്യ);
+#എങ്കിൽ defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+പൂർണ്ണസംഖ്യ sqlite3FirstAvailableRegister(Parse*,പൂർണ്ണസംഖ്യ);
 #endif
 #ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse*,int,int);
+പൂർണ്ണസംഖ്യ sqlite3NoTempsInRange(Parse*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
 #endif
-Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);
-Expr *sqlite3Expr(sqlite3*,int,const char*);
-Expr *sqlite3ExprInt32(sqlite3*,int);
-void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);
-Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*);
-void sqlite3PExprAddSelect(Parse*, Expr*, Select*);
-Expr *sqlite3ExprAnd(Parse*,Expr*, Expr*);
-Expr *sqlite3ExprSimplifiedAndOr(Expr*);
-Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, int);
-void sqlite3ExprAddFunctionOrderBy(Parse*,Expr*,ExprList*);
-void sqlite3ExprOrderByAggregateError(Parse*,Expr*);
-void sqlite3ExprFunctionUsable(Parse*,const Expr*,const FuncDef*);
-void sqlite3ExprAssignVarNumber(Parse*, Expr*, u32);
-void sqlite3ExprDelete(sqlite3*, Expr*);
-void sqlite3ExprDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprDeferredDelete(Parse*, Expr*);
-void sqlite3ExprUnmapAndDelete(Parse*, Expr*);
-ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);
-ExprList *sqlite3ExprListAppendVector(Parse*,ExprList*,IdList*,Expr*);
-Select *sqlite3ExprListToValues(Parse*, int, ExprList*);
-void sqlite3ExprListSetSortOrder(ExprList*,int,int);
-void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,int);
-void sqlite3ExprListSetSpan(Parse*,ExprList*,const char*,const char*);
-void sqlite3ExprListDelete(sqlite3*, ExprList*);
-void sqlite3ExprListDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprCanReturnSubtype(Parse*,Expr*);
-u32 sqlite3ExprListFlags(const ExprList*);
-int sqlite3IndexHasDuplicateRootPage(Index*);
-int sqlite3Init(sqlite3*, char**);
-int sqlite3InitCallback(void*, int, char**, char**);
-int sqlite3InitOne(sqlite3*, int, char**, u32);
-void sqlite3Pragma(Parse*,Token*,Token*,Token*,int);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Alloc(sqlite3*,പൂർണ്ണസംഖ്യ,സ്ഥിരം Token*,പൂർണ്ണസംഖ്യ);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം(sqlite3*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Int32(sqlite3*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Attach_Subtrees(sqlite3*,വ്യഞ്ജകം*,വ്യഞ്ജകം*,വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3PExpr(Parse*, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3PExprAddSelect(Parse*, വ്യഞ്ജകം*, Select*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_And(Parse*,വ്യഞ്ജകം*, വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Simplified_And_Or(വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Function(Parse*,വ്യഞ്ജകം_List*, സ്ഥിരം Token*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Add_Function_Order_By(Parse*,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Order_By_Aggregate_Error(Parse*,വ്യഞ്ജകം*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Function_Usable(Parse*,സ്ഥിരം വ്യഞ്ജകം*,സ്ഥിരം FuncDef*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Assign_Var_സംഖ്യ(Parse*, വ്യഞ്ജകം*, u32);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Delete(sqlite3*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Delete_Generic(sqlite3*,ശൂന്യം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Deferred_Delete(Parse*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Unmap_And_Delete(Parse*, വ്യഞ്ജകം*);
+വ്യഞ്ജകം_List *sqlite3_വ്യഞ്ജകം_List_Append(Parse*,വ്യഞ്ജകം_List*,വ്യഞ്ജകം*);
+വ്യഞ്ജകം_List *sqlite3_വ്യഞ്ജകം_List_Append_Vector(Parse*,വ്യഞ്ജകം_List*,IdList*,വ്യഞ്ജകം*);
+Select *sqlite3_വ്യഞ്ജകം_List_To_മൂല്യങ്ങൾ(Parse*, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം_List*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Set_Sort_Order(വ്യഞ്ജകം_List*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Set_Name(Parse*,വ്യഞ്ജകം_List*,സ്ഥിരം Token*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Set_Span(Parse*,വ്യഞ്ജകം_List*,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Delete(sqlite3*, വ്യഞ്ജകം_List*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Delete_Generic(sqlite3*,ശൂന്യം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Can_Return_Subtype(Parse*,വ്യഞ്ജകം*);
+u32 sqlite3_വ്യഞ്ജകം_List_Flags(സ്ഥിരം വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3_Index_Has_Duplicate_വേര്_Page(Index*);
+പൂർണ്ണസംഖ്യ sqlite3Init(sqlite3*, അക്ഷരം**);
+പൂർണ്ണസംഖ്യ sqlite3InitCallback(ശൂന്യം*, പൂർണ്ണസംഖ്യ, അക്ഷരം**, അക്ഷരം**);
+പൂർണ്ണസംഖ്യ sqlite3InitOne(sqlite3*, പൂർണ്ണസംഖ്യ, അക്ഷരം**, u32);
+ശൂന്യം sqlite3Pragma(Parse*,Token*,Token*,Token*,പൂർണ്ണസംഖ്യ);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-Module *sqlite3PragmaVtabRegister(sqlite3*,const char *zName);
+Module *sqlite3PragmaVtabRegister(sqlite3*,സ്ഥിരം അക്ഷരം *zName);
 #endif
-void sqlite3ResetAllSchemasOfConnection(sqlite3*);
-void sqlite3ResetOneSchema(sqlite3*,int);
-void sqlite3CollapseDatabaseArray(sqlite3*);
-void sqlite3CommitInternalChanges(sqlite3*);
-void sqlite3ColumnSetExpr(Parse*,Table*,Column*,Expr*);
-Expr *sqlite3ColumnExpr(Table*,Column*);
-Expr *sqlite3ColumnExprAuth(Table*,Column*,Parse*);
-void sqlite3ColumnSetColl(sqlite3*,Column*,const char*zColl);
-const char *sqlite3ColumnColl(Column*);
-void sqlite3DeleteColumnNames(sqlite3*,Table*);
-void sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
-int sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
-void sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,char);
-Table *sqlite3ResultSetOfSelect(Parse*,Select*,char);
-void sqlite3OpenSchemaTable(Parse *, int);
-Index *sqlite3PrimaryKeyIndex(Table*);
-int sqlite3TableColumnToIndex(Index*, int);
+ശൂന്യം sqlite3ResetAllSchemasOfConnection(sqlite3*);
+ശൂന്യം sqlite3ResetOneSchema(sqlite3*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CollapseDatabaseArray(sqlite3*);
+ശൂന്യം sqlite3CommitInternalChanges(sqlite3*);
+ശൂന്യം sqlite3_Column_Set_വ്യഞ്ജകം(Parse*,Table*,Column*,വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3_Column_വ്യഞ്ജകം(Table*,Column*);
+വ്യഞ്ജകം *sqlite3_Column_വ്യഞ്ജകം_Auth(Table*,Column*,Parse*);
+ശൂന്യം sqlite3ColumnSetColl(sqlite3*,Column*,സ്ഥിരം അക്ഷരം*zColl);
+സ്ഥിരം അക്ഷരം *sqlite3ColumnColl(Column*);
+ശൂന്യം sqlite3DeleteColumnNames(sqlite3*,Table*);
+ശൂന്യം sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
+പൂർണ്ണസംഖ്യ sqlite3_Columns_From_വ്യഞ്ജകം_List(Parse*,വ്യഞ്ജകം_List*,i16*,Column**);
+ശൂന്യം sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,അക്ഷരം);
+Table *sqlite3ResultSetOfSelect(Parse*,Select*,അക്ഷരം);
+ശൂന്യം sqlite3OpenSchemaTable(Parse *, പൂർണ്ണസംഖ്യ);
+Index *sqlite3_Primary_താക്കോൽ_Index(Table*);
+പൂർണ്ണസംഖ്യ sqlite3TableColumnToIndex(Index*, പൂർണ്ണസംഖ്യ);
 #ifdef SQLITE_OMIT_GENERATED_COLUMNS
 # define sqlite3TableColumnToStorage(T,X) (X)  /* No-op pass-through */
 # define sqlite3StorageColumnToTable(T,X) (X)  /* No-op pass-through */
-#else
+#അല്ലെങ്കിൽ
   i16 sqlite3TableColumnToStorage(Table*, i16);
   i16 sqlite3StorageColumnToTable(Table*, i16);
 #endif
-void sqlite3StartTable(Parse*,Token*,Token*,int,int,int,int);
-#if SQLITE_ENABLE_HIDDEN_COLUMNS
-  void sqlite3ColumnPropertiesFromName(Table*, Column*);
-#else
+ശൂന്യം sqlite3StartTable(Parse*,Token*,Token*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+#എങ്കിൽ SQLITE_ENABLE_HIDDEN_COLUMNS
+  ശൂന്യം sqlite3ColumnPropertiesFromName(Table*, Column*);
+#അല്ലെങ്കിൽ
 # define sqlite3ColumnPropertiesFromName(T,C) /* no-op */
 #endif
-void sqlite3AddColumn(Parse*,Token,Token);
-void sqlite3AddNotNull(Parse*, int);
-void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
-void sqlite3AddCheckConstraint(Parse*, Expr*, const char*, const char*);
-void sqlite3AddDefaultValue(Parse*,Expr*,const char*,const char*);
-void sqlite3AddCollateType(Parse*, Token*);
-void sqlite3AddGenerated(Parse*,Expr*,Token*);
-void sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
-void sqlite3AddReturning(Parse*,ExprList*);
-int sqlite3ParseUri(const char*,const char*,unsigned int*,
-                    sqlite3_vfs**,char**,char **);
+ശൂന്യം sqlite3AddColumn(Parse*,Token,Token);
+ശൂന്യം sqlite3AddNotNull(Parse*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_Add_Primary_താക്കോൽ(Parse*, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3AddCheckConstraint(Parse*, വ്യഞ്ജകം*, സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3_Add_Default_മൂല്യം(Parse*,വ്യഞ്ജകം*,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3AddCollateType(Parse*, Token*);
+ശൂന്യം sqlite3AddGenerated(Parse*,വ്യഞ്ജകം*,Token*);
+ശൂന്യം sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
+ശൂന്യം sqlite3AddReturning(Parse*,വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3ParseUri(സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*,unsigned പൂർണ്ണസംഖ്യ*,
+                    sqlite3_vfs**,അക്ഷരം**,അക്ഷരം **);
 #define sqlite3CodecQueryParameters(A,B,C) 0
-Btree *sqlite3DbNameToBtree(sqlite3*,const char*);
+Btree *sqlite3DbNameToBtree(sqlite3*,സ്ഥിരം അക്ഷരം*);
 
 #ifdef SQLITE_UNTESTABLE
 # define sqlite3FaultSim(X) SQLITE_OK
-#else
-  int sqlite3FaultSim(int);
+#അല്ലെങ്കിൽ
+  പൂർണ്ണസംഖ്യ sqlite3FaultSim(പൂർണ്ണസംഖ്യ);
 #endif
 
 Bitvec *sqlite3BitvecCreate(u32);
-int sqlite3BitvecTest(Bitvec*, u32);
-int sqlite3BitvecTestNotNull(Bitvec*, u32);
-int sqlite3BitvecSet(Bitvec*, u32);
-void sqlite3BitvecClear(Bitvec*, u32, void*);
-void sqlite3BitvecDestroy(Bitvec*);
+പൂർണ്ണസംഖ്യ sqlite3BitvecTest(Bitvec*, u32);
+പൂർണ്ണസംഖ്യ sqlite3BitvecTestNotNull(Bitvec*, u32);
+പൂർണ്ണസംഖ്യ sqlite3BitvecSet(Bitvec*, u32);
+ശൂന്യം sqlite3BitvecClear(Bitvec*, u32, ശൂന്യം*);
+ശൂന്യം sqlite3BitvecDestroy(Bitvec*);
 u32 sqlite3BitvecSize(Bitvec*);
 #ifndef SQLITE_UNTESTABLE
-int sqlite3BitvecBuiltinTest(int,int*);
+പൂർണ്ണസംഖ്യ sqlite3BitvecBuiltinTest(പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ*);
 #endif
 
 RowSet *sqlite3RowSetInit(sqlite3*);
-void sqlite3RowSetDelete(void*);
-void sqlite3RowSetClear(void*);
-void sqlite3RowSetInsert(RowSet*, i64);
-int sqlite3RowSetTest(RowSet*, int iBatch, i64);
-int sqlite3RowSetNext(RowSet*, i64*);
+ശൂന്യം sqlite3RowSetDelete(ശൂന്യം*);
+ശൂന്യം sqlite3RowSetClear(ശൂന്യം*);
+ശൂന്യം sqlite3_Row_Set_തിരുകുക(RowSet*, i64);
+പൂർണ്ണസംഖ്യ sqlite3RowSetTest(RowSet*, പൂർണ്ണസംഖ്യ iBatch, i64);
+പൂർണ്ണസംഖ്യ sqlite3RowSetNext(RowSet*, i64*);
 
-void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,int,int);
+ശൂന്യം sqlite3CreateView(Parse*,Token*,Token*,Token*,വ്യഞ്ജകം_List*,Select*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
 
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-  int sqlite3ViewGetColumnNames(Parse*,Table*);
-#else
+#എങ്കിൽ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+  പൂർണ്ണസംഖ്യ sqlite3ViewGetColumnNames(Parse*,Table*);
+#അല്ലെങ്കിൽ
 # define sqlite3ViewGetColumnNames(A,B) 0
 #endif
 
-#if SQLITE_MAX_ATTACHED>30
-  int sqlite3DbMaskAllZero(yDbMask);
+#എങ്കിൽ SQLITE_MAX_ATTACHED>30
+  പൂർണ്ണസംഖ്യ sqlite3DbMaskAllZero(yDbMask);
 #endif
-void sqlite3DropTable(Parse*, SrcList*, int, int);
-void sqlite3CodeDropTable(Parse*, Table*, int, int);
-void sqlite3DeleteTable(sqlite3*, Table*);
-void sqlite3DeleteTableGeneric(sqlite3*, void*);
-void sqlite3FreeIndex(sqlite3*, Index*);
+ശൂന്യം sqlite3DropTable(Parse*, SrcList*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CodeDropTable(Parse*, Table*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3DeleteTable(sqlite3*, Table*);
+ശൂന്യം sqlite3DeleteTableGeneric(sqlite3*, ശൂന്യം*);
+ശൂന്യം sqlite3FreeIndex(sqlite3*, Index*);
 #ifndef SQLITE_OMIT_AUTOINCREMENT
-  void sqlite3AutoincrementBegin(Parse *pParse);
-  void sqlite3AutoincrementEnd(Parse *pParse);
-#else
+  ശൂന്യം sqlite3AutoincrementBegin(Parse *pParse);
+  ശൂന്യം sqlite3AutoincrementEnd(Parse *pParse);
+#അല്ലെങ്കിൽ
 # define sqlite3AutoincrementBegin(X)
 # define sqlite3AutoincrementEnd(X)
 #endif
-void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
+ശൂന്യം sqlite3_തിരുകുക(Parse*, SrcList*, Select*, IdList*, പൂർണ്ണസംഖ്യ, Upsert*);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  void sqlite3ComputeGeneratedColumns(Parse*, int, Table*);
+  ശൂന്യം sqlite3ComputeGeneratedColumns(Parse*, പൂർണ്ണസംഖ്യ, Table*);
 #endif
-void *sqlite3ArrayAllocate(sqlite3*,void*,int,int*,int*);
+ശൂന്യം *sqlite3ArrayAllocate(sqlite3*,ശൂന്യം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ*);
 IdList *sqlite3IdListAppend(Parse*, IdList*, Token*);
-int sqlite3IdListIndex(IdList*,const char*);
-SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, int, int);
+പൂർണ്ണസംഖ്യ sqlite3IdListIndex(IdList*,സ്ഥിരം അക്ഷരം*);
+SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
 SrcList *sqlite3SrcListAppendList(Parse *pParse, SrcList *p1, SrcList *p2);
 SrcList *sqlite3SrcListAppend(Parse*, SrcList*, Token*, Token*);
-void sqlite3SubqueryDelete(sqlite3*,Subquery*);
+ശൂന്യം sqlite3SubqueryDelete(sqlite3*,Subquery*);
 Select *sqlite3SubqueryDetach(sqlite3*,SrcItem*);
-int sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, int);
+പൂർണ്ണസംഖ്യ sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, പൂർണ്ണസംഖ്യ);
 SrcList *sqlite3SrcListAppendFromTerm(Parse*, SrcList*, Token*, Token*,
                                       Token*, Select*, OnOrUsing*);
-void sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
-void sqlite3SrcListFuncArgs(Parse*, SrcList*, ExprList*);
-int sqlite3IndexedByLookup(Parse *, SrcItem *);
-void sqlite3SrcListShiftJoinType(Parse*,SrcList*);
-void sqlite3SrcListAssignCursors(Parse*, SrcList*);
-void sqlite3IdListDelete(sqlite3*, IdList*);
-void sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
-void sqlite3SrcListDelete(sqlite3*, SrcList*);
-Index *sqlite3AllocateIndexObject(sqlite3*,int,int,char**);
-int sqlite3IndexBloomable(const Index*,int);
-void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,int,Token*,
-                          Expr*, int, int, u8);
-void sqlite3DropIndex(Parse*, SrcList*, int);
-int sqlite3Select(Parse*, Select*, SelectDest*);
-Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,
-                         Expr*,ExprList*,u32,Expr*);
-void sqlite3SelectDelete(sqlite3*, Select*);
-void sqlite3SelectDeleteGeneric(sqlite3*,void*);
-void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
+ശൂന്യം sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
+ശൂന്യം sqlite3SrcListFuncArgs(Parse*, SrcList*, വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3IndexedByLookup(Parse *, SrcItem *);
+ശൂന്യം sqlite3SrcListShiftJoinType(Parse*,SrcList*);
+ശൂന്യം sqlite3SrcListAssignCursors(Parse*, SrcList*);
+ശൂന്യം sqlite3IdListDelete(sqlite3*, IdList*);
+ശൂന്യം sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
+ശൂന്യം sqlite3SrcListDelete(sqlite3*, SrcList*);
+Index *sqlite3AllocateIndexObject(sqlite3*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,അക്ഷരം**);
+പൂർണ്ണസംഖ്യ sqlite3IndexBloomable(സ്ഥിരം Index*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,വ്യഞ്ജകം_List*,പൂർണ്ണസംഖ്യ,Token*,
+                          വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, u8);
+ശൂന്യം sqlite3DropIndex(Parse*, SrcList*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3Select(Parse*, Select*, SelectDest*);
+Select *sqlite3SelectNew(Parse*,വ്യഞ്ജകം_List*,SrcList*,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*,
+                         വ്യഞ്ജകം*,വ്യഞ്ജകം_List*,u32,വ്യഞ്ജകം*);
+ശൂന്യം sqlite3SelectDelete(sqlite3*, Select*);
+ശൂന്യം sqlite3SelectDeleteGeneric(sqlite3*,ശൂന്യം*);
+ശൂന്യം sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
 Table *sqlite3SrcListLookup(Parse*, SrcList*);
-int sqlite3IsReadOnly(Parse*, Table*, Trigger*);
-void sqlite3OpenTable(Parse*, int iCur, int iDb, Table*, int);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
-Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,char*);
+പൂർണ്ണസംഖ്യ sqlite3IsReadOnly(Parse*, Table*, Trigger*);
+ശൂന്യം sqlite3OpenTable(Parse*, പൂർണ്ണസംഖ്യ iCur, പൂർണ്ണസംഖ്യ iDb, Table*, പൂർണ്ണസംഖ്യ);
+#എങ്കിൽ defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
+വ്യഞ്ജകം *sqlite3LimitWhere(Parse*,SrcList*,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,അക്ഷരം*);
 #endif
-void sqlite3CodeChangeCount(Vdbe*,int,const char*);
-void sqlite3DeleteFrom(Parse*, SrcList*, Expr*, ExprList*, Expr*);
-void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,int,ExprList*,Expr*,
+ശൂന്യം sqlite3_Code_Change_എണ്ണം(Vdbe*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3DeleteFrom(Parse*, SrcList*, വ്യഞ്ജകം*, വ്യഞ്ജകം_List*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3Update(Parse*, SrcList*, വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,
                    Upsert*);
-WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,
-                             ExprList*,Select*,u16,int);
-void sqlite3WhereEnd(WhereInfo*);
-LogEst sqlite3WhereOutputRowCount(WhereInfo*);
-int sqlite3WhereIsDistinct(WhereInfo*);
-int sqlite3WhereIsOrdered(WhereInfo*);
-int sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
-void sqlite3WhereMinMaxOptEarlyOut(Vdbe*,WhereInfo*);
-int sqlite3WhereIsSorted(WhereInfo*);
-int sqlite3WhereContinueLabel(WhereInfo*);
-int sqlite3WhereBreakLabel(WhereInfo*);
-int sqlite3WhereOkOnePass(WhereInfo*, int*);
+WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*,
+                             വ്യഞ്ജകം_List*,Select*,u16,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3WhereEnd(WhereInfo*);
+LogEst sqlite3_Where_Output_Row_എണ്ണം(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereIsDistinct(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereIsOrdered(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
+ശൂന്യം sqlite3WhereMinMaxOptEarlyOut(Vdbe*,WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereIsSorted(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereContinueLabel(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereBreakLabel(WhereInfo*);
+പൂർണ്ണസംഖ്യ sqlite3WhereOkOnePass(WhereInfo*, പൂർണ്ണസംഖ്യ*);
 #define ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
 #define ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
 #define ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
-int sqlite3WhereUsesDeferredSeek(WhereInfo*);
-void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, int, int, int);
-int sqlite3ExprCodeGetColumn(Parse*, Table*, int, int, int, u8);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, int, int, int);
-void sqlite3ExprCodeMove(Parse*, int, int, int);
-void sqlite3ExprToRegister(Expr *pExpr, int iReg);
-void sqlite3ExprCode(Parse*, Expr*, int);
+പൂർണ്ണസംഖ്യ sqlite3WhereUsesDeferredSeek(WhereInfo*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Load_Index_Column(Parse*, Index*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Code_Get_Column(Parse*, Table*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, u8);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Get_Column_Of_Table(Vdbe*, Table*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Move(Parse*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_To_Register(വ്യഞ്ജകം *p_വ്യഞ്ജകം, പൂർണ്ണസംഖ്യ iReg);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, int);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Generated_Column(Parse*, Table*, Column*, പൂർണ്ണസംഖ്യ);
 #endif
-void sqlite3ExprCodeCopy(Parse*, Expr*, int);
-void sqlite3ExprCodeFactorable(Parse*, Expr*, int);
-int sqlite3ExprCodeRunJustOnce(Parse*, Expr*, int);
-void sqlite3ExprNullRegisterRange(Parse*, int, int);
-int sqlite3ExprCodeTemp(Parse*, Expr*, int*);
-int sqlite3ExprCodeTarget(Parse*, Expr*, int);
-int sqlite3ExprCodeExprList(Parse*, ExprList*, int, int, u8);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Copy(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Code_Factorable(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Code_Run_Just_Once(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Null_Register_Range(Parse*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Code_Temp(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Code_Target(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Code_വ്യഞ്ജകം_List(Parse*, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, u8);
 #define SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
 #define SQLITE_ECEL_FACTOR   0x02  /* Factor out constant terms */
 #define SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
 #define SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
-void sqlite3ExprIfTrue(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalse(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalseDup(Parse*, Expr*, int, int);
-Table *sqlite3FindTable(sqlite3*,const char*, const char*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_If_True(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_If_False(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_If_False_Dup(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+Table *sqlite3FindTable(sqlite3*,സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*);
 #define LOCATE_VIEW    0x01
 #define LOCATE_NOERR   0x02
-Table *sqlite3LocateTable(Parse*,u32 flags,const char*, const char*);
-const char *sqlite3PreferredTableName(const char*);
+Table *sqlite3LocateTable(Parse*,u32 flags,സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*);
+സ്ഥിരം അക്ഷരം *sqlite3PreferredTableName(സ്ഥിരം അക്ഷരം*);
 Table *sqlite3LocateTableItem(Parse*,u32 flags,SrcItem *);
-Index *sqlite3FindIndex(sqlite3*,const char*, const char*);
-void sqlite3UnlinkAndDeleteTable(sqlite3*,int,const char*);
-void sqlite3UnlinkAndDeleteIndex(sqlite3*,int,const char*);
-void sqlite3Vacuum(Parse*,Token*,Expr*);
-int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_value*);
-char *sqlite3NameFromToken(sqlite3*, const Token*);
-int sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprCompareSkip(Expr*,Expr*,int);
-int sqlite3ExprListCompare(const ExprList*,const ExprList*, int);
-int sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprImpliesNonNullRow(Expr*,int,int);
-void sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
-void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);
-void sqlite3ExprAnalyzeAggList(NameContext*,ExprList*);
-int sqlite3ExprCoveredByIndex(Expr*, int iCur, Index *pIdx);
-int sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
+Index *sqlite3FindIndex(sqlite3*,സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3UnlinkAndDeleteTable(sqlite3*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3UnlinkAndDeleteIndex(sqlite3*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3Vacuum(Parse*,Token*,വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3RunVacuum(അക്ഷരം**, sqlite3*, പൂർണ്ണസംഖ്യ, sqlite3_മൂല്യം*);
+അക്ഷരം *sqlite3NameFromToken(sqlite3*, സ്ഥിരം Token*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Compare(സ്ഥിരം Parse*,സ്ഥിരം വ്യഞ്ജകം*,സ്ഥിരം വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Compare_Skip(വ്യഞ്ജകം*,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_List_Compare(സ്ഥിരം വ്യഞ്ജകം_List*,സ്ഥിരം വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Implies_വ്യഞ്ജകം(സ്ഥിരം Parse*,സ്ഥിരം വ്യഞ്ജകം*,സ്ഥിരം വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Implies_Non_Null_Row(വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Analyze_Aggregates(NameContext*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Analyze_Agg_List(NameContext*,വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Covered_By_Index(വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ iCur, Index *pIdx);
+പൂർണ്ണസംഖ്യ sqlite3ReferencesSrcList(Parse*, വ്യഞ്ജകം*, SrcList*);
 Vdbe *sqlite3GetVdbe(Parse*);
 #ifndef SQLITE_UNTESTABLE
-void sqlite3PrngSaveState(void);
-void sqlite3PrngRestoreState(void);
+ശൂന്യം sqlite3PrngSaveState(ശൂന്യം);
+ശൂന്യം sqlite3PrngRestoreState(ശൂന്യം);
 #endif
-void sqlite3RollbackAll(sqlite3*,int);
-void sqlite3CodeVerifySchema(Parse*, int);
-void sqlite3CodeVerifyNamedSchema(Parse*, const char *zDb);
-void sqlite3BeginTransaction(Parse*, int);
-void sqlite3EndTransaction(Parse*,int);
-void sqlite3Savepoint(Parse*, int, Token*);
-void sqlite3CloseSavepoints(sqlite3 *);
-void sqlite3LeaveMutexAndCloseZombie(sqlite3*);
-u32 sqlite3IsTrueOrFalse(const char*);
-int sqlite3ExprIdToTrueFalse(Expr*);
-int sqlite3ExprTruthValue(const Expr*);
-int sqlite3ExprIsConstant(Parse*,Expr*);
-int sqlite3ExprIsConstantOrFunction(Expr*, u8);
-int sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
-int sqlite3ExprIsTableConstant(Expr*,int,int);
-int sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,int,int);
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs);
-int sqlite3ExprContainsSubquery(Expr*);
-int sqlite3ExprIsInteger(const Expr*, int*, Parse*, int);
-int sqlite3ExprCanBeNull(const Expr*);
-int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
-int sqlite3ExprIsLikeOperator(const Expr*);
-int sqlite3IsRowid(const char*);
-const char *sqlite3RowidAlias(Table *pTab);
-void sqlite3GenerateRowDelete(
-    Parse*,Table*,Trigger*,int,int,int,i16,u8,u8,u8,int);
-void sqlite3GenerateRowIndexDelete(Parse*, Table*, int, int, int*, int);
-int sqlite3GenerateIndexKey(Parse*, Index*, int, int, int, int*,Index*,int);
-void sqlite3ResolvePartIdxLabel(Parse*,int);
-int sqlite3ExprReferencesUpdatedColumn(Expr*,int*,int);
-void sqlite3GenerateConstraintChecks(Parse*,Table*,int*,int,int,int,int,
-                                     u8,u8,int,int*,int*,Upsert*);
+ശൂന്യം sqlite3RollbackAll(sqlite3*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CodeVerifySchema(Parse*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CodeVerifyNamedSchema(Parse*, സ്ഥിരം അക്ഷരം *zDb);
+ശൂന്യം sqlite3BeginTransaction(Parse*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3EndTransaction(Parse*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3Savepoint(Parse*, പൂർണ്ണസംഖ്യ, Token*);
+ശൂന്യം sqlite3CloseSavepoints(sqlite3 *);
+ശൂന്യം sqlite3LeaveMutexAndCloseZombie(sqlite3*);
+u32 sqlite3IsTrueOrFalse(സ്ഥിരം അക്ഷരം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Id_To_True_False(വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Truth_മൂല്യം(സ്ഥിരം വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Constant(Parse*,വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Constant_Or_Function(വ്യഞ്ജകം*, u8);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Constant_Or_Group_By(Parse*, വ്യഞ്ജകം*, വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Table_Constant(വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Single_Table_Constraint(വ്യഞ്ജകം*,സ്ഥിരം SrcList*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_List_Is_Constant(Parse *pParse, വ്യഞ്ജകം_List *pList, പൂർണ്ണസംഖ്യ bNoIs);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Contains_Subquery(വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Integer(സ്ഥിരം വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ*, Parse*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Can_Be_Null(സ്ഥിരം വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Needs_No_Affinity_Change(സ്ഥിരം വ്യഞ്ജകം*, അക്ഷരം);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Like_Operator(സ്ഥിരം വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3IsRowid(സ്ഥിരം അക്ഷരം*);
+സ്ഥിരം അക്ഷരം *sqlite3RowidAlias(Table *pTab);
+ശൂന്യം sqlite3GenerateRowDelete(
+    Parse*,Table*,Trigger*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,i16,u8,u8,u8,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3GenerateRowIndexDelete(Parse*, Table*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_Generate_Index_താക്കോൽ(Parse*, Index*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ*,Index*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3ResolvePartIdxLabel(Parse*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_References_Updated_Column(വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3GenerateConstraintChecks(Parse*,Table*,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,
+                                     u8,u8,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ*,Upsert*);
 #ifdef SQLITE_ENABLE_NULL_TRIM
-  void sqlite3SetMakeRecordP5(Vdbe*,Table*);
-#else
+  ശൂന്യം sqlite3SetMakeRecordP5(Vdbe*,Table*);
+#അല്ലെങ്കിൽ
 # define sqlite3SetMakeRecordP5(A,B)
 #endif
-void sqlite3CompleteInsertion(Parse*,Table*,int,int,int,int*,int,int,int);
-int sqlite3OpenTableAndIndices(Parse*, Table*, int, u8, int, u8*, int*, int*);
-void sqlite3BeginWriteOperation(Parse*, int, int);
-void sqlite3MultiWrite(Parse*);
-void sqlite3MayAbort(Parse*);
-void sqlite3HaltConstraint(Parse*, int, int, char*, i8, u8);
-void sqlite3UniqueConstraint(Parse*, int, Index*);
-void sqlite3RowidConstraint(Parse*, int, Table*);
-Expr *sqlite3ExprDup(sqlite3*,const Expr*,int);
-ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,int);
-SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,int);
-IdList *sqlite3IdListDup(sqlite3*,const IdList*);
-Select *sqlite3SelectDup(sqlite3*,const Select*,int);
-FuncDef *sqlite3FunctionSearch(int,const char*);
-void sqlite3InsertBuiltinFuncs(FuncDef*,int);
-FuncDef *sqlite3FindFunction(sqlite3*,const char*,int,u8,u8);
-void sqlite3QuoteValue(StrAccum*,sqlite3_value*,int);
-int sqlite3AppendOneUtf8Character(char*, u32);
-void sqlite3RegisterBuiltinFunctions(void);
-void sqlite3RegisterDateTimeFunctions(void);
-void sqlite3RegisterJsonFunctions(void);
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3*);
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
-  Module *sqlite3JsonVtabRegister(sqlite3*,const char*);
+ശൂന്യം sqlite3CompleteInsertion(Parse*,Table*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3OpenTableAndIndices(Parse*, Table*, പൂർണ്ണസംഖ്യ, u8, പൂർണ്ണസംഖ്യ, u8*, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ*);
+ശൂന്യം sqlite3BeginWriteOperation(Parse*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3MultiWrite(Parse*);
+ശൂന്യം sqlite3MayAbort(Parse*);
+ശൂന്യം sqlite3HaltConstraint(Parse*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, അക്ഷരം*, i8, u8);
+ശൂന്യം sqlite3UniqueConstraint(Parse*, പൂർണ്ണസംഖ്യ, Index*);
+ശൂന്യം sqlite3RowidConstraint(Parse*, പൂർണ്ണസംഖ്യ, Table*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Dup(sqlite3*,സ്ഥിരം വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ);
+വ്യഞ്ജകം_List *sqlite3_വ്യഞ്ജകം_List_Dup(sqlite3*,സ്ഥിരം വ്യഞ്ജകം_List*,പൂർണ്ണസംഖ്യ);
+SrcList *sqlite3SrcListDup(sqlite3*,സ്ഥിരം SrcList*,പൂർണ്ണസംഖ്യ);
+IdList *sqlite3IdListDup(sqlite3*,സ്ഥിരം IdList*);
+Select *sqlite3SelectDup(sqlite3*,സ്ഥിരം Select*,പൂർണ്ണസംഖ്യ);
+FuncDef *sqlite3_Function_തിരയൽ(പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3_തിരുകുക_Builtin_Funcs(FuncDef*,പൂർണ്ണസംഖ്യ);
+FuncDef *sqlite3FindFunction(sqlite3*,സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ,u8,u8);
+ശൂന്യം sqlite3_Quote_മൂല്യം(StrAccum*,sqlite3_മൂല്യം*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3AppendOneUtf8Character(അക്ഷരം*, u32);
+ശൂന്യം sqlite3RegisterBuiltinFunctions(ശൂന്യം);
+ശൂന്യം sqlite3RegisterDateTimeFunctions(ശൂന്യം);
+ശൂന്യം sqlite3RegisterJsonFunctions(ശൂന്യം);
+ശൂന്യം sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3*);
+#എങ്കിൽ !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+  Module *sqlite3JsonVtabRegister(sqlite3*,സ്ഥിരം അക്ഷരം*);
 #endif
-int sqlite3SafetyCheckOk(sqlite3*);
-int sqlite3SafetyCheckSickOrOk(sqlite3*);
-void sqlite3ChangeCookie(Parse*, int);
+പൂർണ്ണസംഖ്യ sqlite3SafetyCheckOk(sqlite3*);
+പൂർണ്ണസംഖ്യ sqlite3SafetyCheckSickOrOk(sqlite3*);
+ശൂന്യം sqlite3ChangeCookie(Parse*, പൂർണ്ണസംഖ്യ);
 With *sqlite3WithDup(sqlite3 *db, With *p);
 
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+#എങ്കിൽ !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
   Module *sqlite3CarrayRegister(sqlite3*);
 #endif
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
+#എങ്കിൽ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+ശൂന്യം sqlite3MaterializeView(Parse*, Table*, വ്യഞ്ജകം*, വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ);
 #endif
 
 #ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3BeginTrigger(Parse*, Token*,Token*,int,int,IdList*,SrcList*,
-                           Expr*,int, int);
-  void sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
-  void sqlite3DropTrigger(Parse*, SrcList*, int);
-  void sqlite3DropTriggerPtr(Parse*, Trigger*);
-  Trigger *sqlite3TriggersExist(Parse *, Table*, int, ExprList*, int *pMask);
+  ശൂന്യം sqlite3BeginTrigger(Parse*, Token*,Token*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,IdList*,SrcList*,
+                           വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
+  ശൂന്യം sqlite3DropTrigger(Parse*, SrcList*, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം sqlite3DropTriggerPtr(Parse*, Trigger*);
+  Trigger *sqlite3TriggersExist(Parse *, Table*, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ *pMask);
   Trigger *sqlite3TriggerList(Parse *, Table *);
-  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, ExprList*, int, Table *,
-                            int, int, int);
-  void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, int, int, int);
-  void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);
-  void sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
+  ശൂന്യം sqlite3CodeRowTrigger(Parse*, Trigger *, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ, Table *,
+                            പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം sqliteViewTriggers(Parse*, Table*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, വ്യഞ്ജകം_List*);
+  ശൂന്യം sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
   TriggerStep *sqlite3TriggerSelectStep(sqlite3*,Select*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerInsertStep(Parse*,SrcList*, IdList*,
+                                        സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+  TriggerStep *sqlite3_Trigger_തിരുകുക_Step(Parse*,SrcList*, IdList*,
                                         Select*,u8,Upsert*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,ExprList*,
-                                        Expr*, u8, const char*,const char*);
-  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, Expr*,
-                                        const char*,const char*);
-  void sqlite3DeleteTrigger(sqlite3*, Trigger*);
-  void sqlite3UnlinkAndDeleteTrigger(sqlite3*,int,const char*);
-  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,int,int,Table*,int);
+                                        സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,വ്യഞ്ജകം_List*,
+                                        വ്യഞ്ജകം*, u8, സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, വ്യഞ്ജകം*,
+                                        സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3DeleteTrigger(sqlite3*, Trigger*);
+  ശൂന്യം sqlite3UnlinkAndDeleteTrigger(sqlite3*,പൂർണ്ണസംഖ്യ,സ്ഥിരം അക്ഷരം*);
+  u32 sqlite3TriggerColmask(Parse*,Trigger*,വ്യഞ്ജകം_List*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,Table*,പൂർണ്ണസംഖ്യ);
 # define sqlite3ParseToplevel(p) ((p)->pToplevel ? (p)->pToplevel : (p))
 # define sqlite3IsToplevel(p) ((p)->pToplevel==0)
-#else
+#അല്ലെങ്കിൽ
 # define sqlite3TriggersExist(B,C,D,E,F) 0
 # define sqlite3DeleteTrigger(A,B)
 # define sqlite3DropTriggerPtr(A,B)
@@ -5386,64 +5386,64 @@ void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
 # define sqlite3TriggerColmask(A,B,C,D,E,F,G) 0
 #endif
 
-int sqlite3JoinType(Parse*, Token*, Token*, Token*);
-int sqlite3ColumnIndex(Table *pTab, const char *zCol);
-void sqlite3SrcItemColumnUsed(SrcItem*,int);
-void sqlite3SetJoinExpr(Expr*,int,u32);
-void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, int);
-void sqlite3DeferForeignKey(Parse*, int);
+പൂർണ്ണസംഖ്യ sqlite3JoinType(Parse*, Token*, Token*, Token*);
+പൂർണ്ണസംഖ്യ sqlite3ColumnIndex(Table *pTab, സ്ഥിരം അക്ഷരം *zCol);
+ശൂന്യം sqlite3SrcItemColumnUsed(SrcItem*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_Set_Join_വ്യഞ്ജകം(വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,u32);
+ശൂന്യം sqlite3_Create_Foreign_താക്കോൽ(Parse*, വ്യഞ്ജകം_List*, Token*, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_Defer_Foreign_താക്കോൽ(Parse*, പൂർണ്ണസംഖ്യ);
 #ifndef SQLITE_OMIT_AUTHORIZATION
-  void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);
-  int sqlite3AuthCheck(Parse*,int, const char*, const char*, const char*);
-  void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
-  void sqlite3AuthContextPop(AuthContext*);
-  int sqlite3AuthReadCol(Parse*, const char *, const char *, int);
-#else
+  ശൂന്യം sqlite3AuthRead(Parse*,വ്യഞ്ജകം*,Schema*,SrcList*);
+  പൂർണ്ണസംഖ്യ sqlite3AuthCheck(Parse*,പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_Auth_Context_തള്ളുക(Parse*, AuthContext*, സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3_Auth_Context_എടുക്കുക(AuthContext*);
+  പൂർണ്ണസംഖ്യ sqlite3AuthReadCol(Parse*, സ്ഥിരം അക്ഷരം *, സ്ഥിരം അക്ഷരം *, പൂർണ്ണസംഖ്യ);
+#അല്ലെങ്കിൽ
 # define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
-# define sqlite3AuthContextPush(a,b,c)
-# define sqlite3AuthContextPop(a)  ((void)(a))
+# define sqlite3_Auth_Context_തള്ളുക(a,b,c)
+# define sqlite3_Auth_Context_എടുക്കുക(a)  ((ശൂന്യം)(a))
 #endif
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName);
-void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);
-void sqlite3Detach(Parse*, Expr*);
-void sqlite3FixInit(DbFixer*, Parse*, int, const char*, const Token*);
-int sqlite3FixSrcList(DbFixer*, SrcList*);
-int sqlite3FixSelect(DbFixer*, Select*);
-int sqlite3FixExpr(DbFixer*, Expr*);
-int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
+പൂർണ്ണസംഖ്യ sqlite3DbIsNamed(sqlite3 *db, പൂർണ്ണസംഖ്യ iDb, സ്ഥിരം അക്ഷരം *zName);
+ശൂന്യം sqlite3Attach(Parse*, വ്യഞ്ജകം*, വ്യഞ്ജകം*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3Detach(Parse*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3FixInit(DbFixer*, Parse*, പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം*, സ്ഥിരം Token*);
+പൂർണ്ണസംഖ്യ sqlite3FixSrcList(DbFixer*, SrcList*);
+പൂർണ്ണസംഖ്യ sqlite3FixSelect(DbFixer*, Select*);
+പൂർണ്ണസംഖ്യ sqlite3_Fix_വ്യഞ്ജകം(DbFixer*, വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
 
-int sqlite3RealSameAsInt(double,sqlite3_int64);
-i64 sqlite3RealToI64(double);
-int sqlite3Int64ToText(i64,char*);
-int sqlite3AtoF(const char *z, double*);
-int sqlite3GetInt32(const char *, int*);
-int sqlite3GetUInt32(const char*, u32*);
-int sqlite3Atoi(const char*);
+പൂർണ്ണസംഖ്യ sqlite3RealSameAsInt(ഇരട്ട,sqlite3_int64);
+i64 sqlite3RealToI64(ഇരട്ട);
+പൂർണ്ണസംഖ്യ sqlite3Int64ToText(i64,അക്ഷരം*);
+പൂർണ്ണസംഖ്യ sqlite3AtoF(സ്ഥിരം അക്ഷരം *z, ഇരട്ട*);
+പൂർണ്ണസംഖ്യ sqlite3GetInt32(സ്ഥിരം അക്ഷരം *, പൂർണ്ണസംഖ്യ*);
+പൂർണ്ണസംഖ്യ sqlite3GetUInt32(സ്ഥിരം അക്ഷരം*, u32*);
+പൂർണ്ണസംഖ്യ sqlite3Atoi(സ്ഥിരം അക്ഷരം*);
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3Utf16ByteLen(const void *pData, int nByte, int nChar);
+പൂർണ്ണസംഖ്യ sqlite3Utf16ByteLen(സ്ഥിരം ശൂന്യം *pData, പൂർണ്ണസംഖ്യ nByte, പൂർണ്ണസംഖ്യ nChar);
 #endif
-int sqlite3Utf8CharLen(const char *pData, int nByte);
-u32 sqlite3Utf8Read(const u8**);
-int sqlite3Utf8ReadLimited(const u8*, int, u32*);
+പൂർണ്ണസംഖ്യ sqlite3Utf8CharLen(സ്ഥിരം അക്ഷരം *pData, പൂർണ്ണസംഖ്യ nByte);
+u32 sqlite3Utf8Read(സ്ഥിരം u8**);
+പൂർണ്ണസംഖ്യ sqlite3Utf8ReadLimited(സ്ഥിരം u8*, പൂർണ്ണസംഖ്യ, u32*);
 LogEst sqlite3LogEst(u64);
 LogEst sqlite3LogEstAdd(LogEst,LogEst);
-LogEst sqlite3LogEstFromDouble(double);
+LogEst sqlite3LogEstFromDouble(ഇരട്ട);
 u64 sqlite3LogEstToInt(LogEst);
-VList *sqlite3VListAdd(sqlite3*,VList*,const char*,int,int);
-const char *sqlite3VListNumToName(VList*,int);
-int sqlite3VListNameToNum(VList*,const char*,int);
+VList *sqlite3VListAdd(sqlite3*,VList*,സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+സ്ഥിരം അക്ഷരം *sqlite3_VList_അക്കം_To_Name(VList*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_VList_Name_To_അക്കം(VList*,സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ);
 
 /*
 ** Routines to read and write variable-length integers.  These used to
 ** be defined locally, but now we use the varint routines in the util.c
 ** file.
 */
-int sqlite3PutVarint(unsigned char*, u64);
-u8 sqlite3GetVarint(const unsigned char *, u64 *);
-i64 sqlite3VarintValue(const unsigned char*);
-u8 sqlite3GetVarint32(const unsigned char *, u32 *);
-int sqlite3VarintLen(u64 v);
+പൂർണ്ണസംഖ്യ sqlite3PutVarint(unsigned അക്ഷരം*, u64);
+u8 sqlite3GetVarint(സ്ഥിരം unsigned അക്ഷരം *, u64 *);
+i64 sqlite3_Varint_മൂല്യം(സ്ഥിരം unsigned അക്ഷരം*);
+u8 sqlite3GetVarint32(സ്ഥിരം unsigned അക്ഷരം *, u32 *);
+പൂർണ്ണസംഖ്യ sqlite3VarintLen(u64 v);
 
 /*
 ** The common case is for a varint to be a single byte.  They following
@@ -5453,262 +5453,262 @@ int sqlite3VarintLen(u64 v);
 #define getVarint32(A,B)  \
   (u8)((*(A)<(u8)0x80)?((B)=(u32)*(A)),1:sqlite3GetVarint32((A),(u32 *)&(B)))
 #define getVarint32NR(A,B) \
-  B=(u32)*(A);if(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
+  B=(u32)*(A);എങ്കിൽ(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
 #define putVarint32(A,B)  \
-  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(unsigned char)(B)),1:\
+  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(unsigned അക്ഷരം)(B)),1:\
   sqlite3PutVarint((A),(B)))
 
-const char *sqlite3IndexAffinityStr(sqlite3*, Index*);
-char *sqlite3TableAffinityStr(sqlite3*,const Table*);
-void sqlite3TableAffinity(Vdbe*, Table*, int);
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2);
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
-char sqlite3TableColumnAffinity(const Table*,int);
-char sqlite3ExprAffinity(const Expr *pExpr);
-int sqlite3ExprDataType(const Expr *pExpr);
-int sqlite3Atoi64(const char*, i64*, int, u8);
-int sqlite3DecOrHexToI64(const char*, i64*);
-void sqlite3ErrorWithMsg(sqlite3*, int, const char*,...);
-void sqlite3Error(sqlite3*,int);
-void sqlite3ErrorClear(sqlite3*);
-void sqlite3SystemError(sqlite3*,int);
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
-void *sqlite3HexToBlob(sqlite3*, const char *z, int n);
+സ്ഥിരം അക്ഷരം *sqlite3IndexAffinityStr(sqlite3*, Index*);
+അക്ഷരം *sqlite3TableAffinityStr(sqlite3*,സ്ഥിരം Table*);
+ശൂന്യം sqlite3TableAffinity(Vdbe*, Table*, പൂർണ്ണസംഖ്യ);
+അക്ഷരം sqlite3CompareAffinity(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം, അക്ഷരം aff2);
+പൂർണ്ണസംഖ്യ sqlite3IndexAffinityOk(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം, അക്ഷരം idx_affinity);
+അക്ഷരം sqlite3TableColumnAffinity(സ്ഥിരം Table*,പൂർണ്ണസംഖ്യ);
+അക്ഷരം sqlite3_വ്യഞ്ജകം_Affinity(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Data_Type(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+പൂർണ്ണസംഖ്യ sqlite3Atoi64(സ്ഥിരം അക്ഷരം*, i64*, പൂർണ്ണസംഖ്യ, u8);
+പൂർണ്ണസംഖ്യ sqlite3DecOrHexToI64(സ്ഥിരം അക്ഷരം*, i64*);
+ശൂന്യം sqlite3_Error_With_സന്ദേശം(sqlite3*, പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം*,...);
+ശൂന്യം sqlite3Error(sqlite3*,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3ErrorClear(sqlite3*);
+ശൂന്യം sqlite3SystemError(sqlite3*,പൂർണ്ണസംഖ്യ);
+#എങ്കിൽ !defined(SQLITE_OMIT_BLOB_LITERAL)
+ശൂന്യം *sqlite3HexToBlob(sqlite3*, സ്ഥിരം അക്ഷരം *z, പൂർണ്ണസംഖ്യ n);
 #endif
-u8 sqlite3HexToInt(int h);
-int sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
+u8 sqlite3HexToInt(പൂർണ്ണസംഖ്യ h);
+പൂർണ്ണസംഖ്യ sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
 
-#if defined(SQLITE_NEED_ERR_NAME)
-const char *sqlite3ErrName(int);
+#എങ്കിൽ defined(SQLITE_NEED_ERR_NAME)
+സ്ഥിരം അക്ഷരം *sqlite3ErrName(പൂർണ്ണസംഖ്യ);
 #endif
 
 #ifndef SQLITE_OMIT_DESERIALIZE
-int sqlite3MemdbInit(void);
-int sqlite3IsMemdb(const sqlite3_vfs*);
-#else
+പൂർണ്ണസംഖ്യ sqlite3MemdbInit(ശൂന്യം);
+പൂർണ്ണസംഖ്യ sqlite3IsMemdb(സ്ഥിരം sqlite3_vfs*);
+#അല്ലെങ്കിൽ
 # define sqlite3IsMemdb(X) 0
 #endif
 
-const char *sqlite3ErrStr(int);
-int sqlite3ReadSchema(Parse *pParse);
-CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,int);
-int sqlite3BinaryCompare(void*,int,const void*,int,const void*);
-#if SQLITE_USES_INLINE
-static SQLITE_INLINE int sqlite3IsBinary(const CollSeq *p){
-  assert( p==0 || p->xCmp!=sqlite3BinaryCompare
+സ്ഥിരം അക്ഷരം *sqlite3ErrStr(പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3ReadSchema(Parse *pParse);
+CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3_ദ്വിമാന_Compare(ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*,പൂർണ്ണസംഖ്യ,സ്ഥിരം ശൂന്യം*);
+#എങ്കിൽ SQLITE_USES_INLINE
+സ്ഥിതം SQLITE_INLINE പൂർണ്ണസംഖ്യ sqlite3_Is_ദ്വിമാന(സ്ഥിരം CollSeq *p){
+  പ്രതിജ്ഞാ( p==0 || p->xCmp!=sqlite3_ദ്വിമാന_Compare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  തിരികെ p==0 || p->xCmp==sqlite3_ദ്വിമാന_Compare;
 }
-#else
-int sqlite3IsBinary(const CollSeq*);
+#അല്ലെങ്കിൽ
+പൂർണ്ണസംഖ്യ sqlite3_Is_ദ്വിമാന(സ്ഥിരം CollSeq*);
 #endif
-CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char*zName);
-void sqlite3SetTextEncoding(sqlite3 *db, u8);
-CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr);
-CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr);
-int sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
-Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, int);
-Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);
-Expr *sqlite3ExprSkipCollate(Expr*);
-Expr *sqlite3ExprSkipCollateAndLikely(Expr*);
-int sqlite3CheckCollSeq(Parse *, CollSeq *);
-int sqlite3WritableSchema(sqlite3*);
-int sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
-void sqlite3VdbeSetChanges(sqlite3 *, i64);
-int sqlite3AddInt64(i64*,i64);
-int sqlite3SubInt64(i64*,i64);
-int sqlite3MulInt64(i64*,i64);
-int sqlite3AbsInt32(int);
+CollSeq *sqlite3LocateCollSeq(Parse *pParse, സ്ഥിരം അക്ഷരം*zName);
+ശൂന്യം sqlite3SetTextEncoding(sqlite3 *db, u8);
+CollSeq *sqlite3_വ്യഞ്ജകം_Coll_Seq(Parse *pParse, സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+CollSeq *sqlite3_വ്യഞ്ജകം_NNColl_Seq(Parse *pParse, സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Coll_Seq_Match(Parse*,സ്ഥിരം വ്യഞ്ജകം*,സ്ഥിരം വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Add_Collate_Token(Parse *pParse, വ്യഞ്ജകം*, സ്ഥിരം Token*, പൂർണ്ണസംഖ്യ);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Add_Collate_String(Parse*,വ്യഞ്ജകം*,സ്ഥിരം അക്ഷരം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Skip_Collate(വ്യഞ്ജകം*);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3CheckCollSeq(Parse *, CollSeq *);
+പൂർണ്ണസംഖ്യ sqlite3WritableSchema(sqlite3*);
+പൂർണ്ണസംഖ്യ sqlite3CheckObjectName(Parse*, സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3VdbeSetChanges(sqlite3 *, i64);
+പൂർണ്ണസംഖ്യ sqlite3AddInt64(i64*,i64);
+പൂർണ്ണസംഖ്യ sqlite3SubInt64(i64*,i64);
+പൂർണ്ണസംഖ്യ sqlite3MulInt64(i64*,i64);
+പൂർണ്ണസംഖ്യ sqlite3AbsInt32(പൂർണ്ണസംഖ്യ);
 #ifdef SQLITE_ENABLE_8_3_NAMES
-void sqlite3FileSuffix3(const char*, char*);
-#else
+ശൂന്യം sqlite3FileSuffix3(സ്ഥിരം അക്ഷരം*, അക്ഷരം*);
+#അല്ലെങ്കിൽ
 # define sqlite3FileSuffix3(X,Y)
 #endif
-u8 sqlite3GetBoolean(const char *z,u8);
+u8 sqlite3GetBoolean(സ്ഥിരം അക്ഷരം *z,u8);
 
-const void *sqlite3ValueText(sqlite3_value*, u8);
-int sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
-int sqlite3ValueBytes(sqlite3_value*, u8);
-void sqlite3ValueSetStr(sqlite3_value*, int, const void *,u8,
-                        void(*)(void*));
-void sqlite3ValueSetNull(sqlite3_value*);
-void sqlite3ValueFree(sqlite3_value*);
+സ്ഥിരം ശൂന്യം *sqlite3_മൂല്യം_Text(sqlite3_മൂല്യം*, u8);
+പൂർണ്ണസംഖ്യ sqlite3_മൂല്യം_Is_Of_Class(സ്ഥിരം sqlite3_മൂല്യം*, ശൂന്യം(*)(ശൂന്യം*));
+പൂർണ്ണസംഖ്യ sqlite3_മൂല്യം_Bytes(sqlite3_മൂല്യം*, u8);
+ശൂന്യം sqlite3_മൂല്യം_Set_Str(sqlite3_മൂല്യം*, പൂർണ്ണസംഖ്യ, സ്ഥിരം ശൂന്യം *,u8,
+                        ശൂന്യം(*)(ശൂന്യം*));
+ശൂന്യം sqlite3_മൂല്യം_Set_Null(sqlite3_മൂല്യം*);
+ശൂന്യം sqlite3_മൂല്യം_Free(sqlite3_മൂല്യം*);
 #ifndef SQLITE_UNTESTABLE
-void sqlite3ResultIntReal(sqlite3_context*);
+ശൂന്യം sqlite3ResultIntReal(sqlite3_context*);
 #endif
-sqlite3_value *sqlite3ValueNew(sqlite3 *);
+sqlite3_മൂല്യം *sqlite3_മൂല്യം_New(sqlite3 *);
 #ifndef SQLITE_OMIT_UTF16
-char *sqlite3Utf16to8(sqlite3 *, const void*, int, u8);
+അക്ഷരം *sqlite3Utf16to8(sqlite3 *, സ്ഥിരം ശൂന്യം*, പൂർണ്ണസംഖ്യ, u8);
 #endif
-int sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
-void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
+പൂർണ്ണസംഖ്യ sqlite3_മൂല്യം_From_വ്യഞ്ജകം(sqlite3 *, സ്ഥിരം വ്യഞ്ജകം *, u8, u8, sqlite3_മൂല്യം **);
+ശൂന്യം sqlite3_മൂല്യം_Apply_Affinity(sqlite3_മൂല്യം *, u8, u8);
 #ifndef SQLITE_AMALGAMATION
-extern const unsigned char sqlite3OpcodeProperty[];
-extern const char sqlite3StrBINARY[];
-extern const unsigned char sqlite3StdTypeLen[];
-extern const char sqlite3StdTypeAffinity[];
-extern const char *sqlite3StdType[];
-extern const unsigned char sqlite3UpperToLower[];
-extern const unsigned char *sqlite3aLTb;
-extern const unsigned char *sqlite3aEQb;
-extern const unsigned char *sqlite3aGTb;
-extern const unsigned char sqlite3CtypeMap[];
-extern SQLITE_WSD struct Sqlite3Config sqlite3Config;
-extern FuncDefHash sqlite3BuiltinFunctions;
-extern const sqlite3_str sqlite3OomStr;
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം sqlite3OpcodeProperty[];
+ബാഹ്യ സ്ഥിരം അക്ഷരം sqlite3_Str_ദ്വിമാന[];
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം sqlite3StdTypeLen[];
+ബാഹ്യ സ്ഥിരം അക്ഷരം sqlite3StdTypeAffinity[];
+ബാഹ്യ സ്ഥിരം അക്ഷരം *sqlite3StdType[];
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം sqlite3UpperToLower[];
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം *sqlite3aLTb;
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം *sqlite3aEQb;
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം *sqlite3aGTb;
+ബാഹ്യ സ്ഥിരം unsigned അക്ഷരം sqlite3CtypeMap[];
+ബാഹ്യ SQLITE_WSD ഘടന Sqlite3Config sqlite3Config;
+ബാഹ്യ FuncDefHash sqlite3BuiltinFunctions;
+ബാഹ്യ സ്ഥിരം sqlite3_str sqlite3OomStr;
 #ifndef SQLITE_OMIT_WSD
-extern int sqlite3PendingByte;
+ബാഹ്യ പൂർണ്ണസംഖ്യ sqlite3PendingByte;
 #endif
 #endif /* SQLITE_AMALGAMATION */
 #ifdef VDBE_PROFILE
-extern sqlite3_uint64 sqlite3NProfileCnt;
+ബാഹ്യ sqlite3_uint64 sqlite3NProfileCnt;
 #endif
-void sqlite3RootPageMoved(sqlite3*, int, Pgno, Pgno);
-void sqlite3Reindex(Parse*, Token*, Token*);
-void sqlite3AlterFunctions(void);
-void sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
-void sqlite3AlterRenameColumn(Parse*, SrcList*, Token*, Token*);
-void sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
-void sqlite3AlterAddConstraint(
+ശൂന്യം sqlite3_വേര്_Page_Moved(sqlite3*, പൂർണ്ണസംഖ്യ, Pgno, Pgno);
+ശൂന്യം sqlite3Reindex(Parse*, Token*, Token*);
+ശൂന്യം sqlite3AlterFunctions(ശൂന്യം);
+ശൂന്യം sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
+ശൂന്യം sqlite3AlterRenameColumn(Parse*, SrcList*, Token*, Token*);
+ശൂന്യം sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
+ശൂന്യം sqlite3AlterAddConstraint(
   Parse *pParse,           /* Parse context */
   SrcList *pSrc,           /* Table to add constraint to */
   Token *pFirst,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  സ്ഥിരം അക്ഷരം *z_വ്യഞ്ജകം,       /* Text of CHECK expression */
+  പൂർണ്ണസംഖ്യ n_വ്യഞ്ജകം,               /* Size of pExpr in bytes */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം              /* The parsed CHECK expression */
 );
-void sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
-i64 sqlite3GetToken(const unsigned char *, int *);
-void sqlite3NestedParse(Parse*, const char*, ...);
-void sqlite3ExpirePreparedStatements(sqlite3*, int);
-void sqlite3CodeRhsOfIN(Parse*, Expr*, int, int);
-int sqlite3CodeSubselect(Parse*, Expr*);
-void sqlite3SelectPrep(Parse*, Select*, NameContext*);
-int sqlite3ExpandSubquery(Parse*, SrcItem*);
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p);
-int sqlite3MatchEName(
-  const struct ExprList_item*,
-  const char*,
-  const char*,
-  const char*,
-  int*
+ശൂന്യം sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
+i64 sqlite3GetToken(സ്ഥിരം unsigned അക്ഷരം *, പൂർണ്ണസംഖ്യ *);
+ശൂന്യം sqlite3NestedParse(Parse*, സ്ഥിരം അക്ഷരം*, ...);
+ശൂന്യം sqlite3ExpirePreparedStatements(sqlite3*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3CodeRhsOfIN(Parse*, വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3CodeSubselect(Parse*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3SelectPrep(Parse*, Select*, NameContext*);
+പൂർണ്ണസംഖ്യ sqlite3ExpandSubquery(Parse*, SrcItem*);
+ശൂന്യം sqlite3_Select_Wrong_അക്കം_Terms_Error(Parse *pParse, Select *p);
+പൂർണ്ണസംഖ്യ sqlite3MatchEName(
+  സ്ഥിരം ഘടന വ്യഞ്ജകം_List_item*,
+  സ്ഥിരം അക്ഷരം*,
+  സ്ഥിരം അക്ഷരം*,
+  സ്ഥിരം അക്ഷരം*,
+  പൂർണ്ണസംഖ്യ*
 );
-Bitmask sqlite3ExprColUsed(Expr*);
-u8 sqlite3StrIHash(const char*);
-int sqlite3ResolveExprNames(NameContext*, Expr*);
-int sqlite3ResolveExprListNames(NameContext*, ExprList*);
-void sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
-int sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);
-int sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
-void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
-void sqlite3AlterFinishAddColumn(Parse *, Token *);
-void sqlite3AlterBeginAddColumn(Parse *, SrcList *);
-void sqlite3AlterDropColumn(Parse*, SrcList*, const Token*);
-const void *sqlite3RenameTokenMap(Parse*, const void*, const Token*);
-void sqlite3RenameTokenRemap(Parse*, const void *pTo, const void *pFrom);
-void sqlite3RenameExprUnmap(Parse*, Expr*);
-void sqlite3RenameExprlistUnmap(Parse*, ExprList*);
-CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, const char*);
-char sqlite3AffinityType(const char*, Column*);
-void sqlite3Analyze(Parse*, Token*, Token*);
-int sqlite3InvokeBusyHandler(BusyHandler*);
-int sqlite3FindDb(sqlite3*, Token*);
-int sqlite3FindDbName(sqlite3 *, const char *);
-int sqlite3AnalysisLoad(sqlite3*,int iDB);
-void sqlite3DeleteIndexSamples(sqlite3*,Index*);
-void sqlite3DefaultRowEst(Index*);
-void sqlite3RegisterLikeFunctions(sqlite3*, int);
-int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);
-void sqlite3SchemaClear(void *);
+Bitmask sqlite3_വ്യഞ്ജകം_Col_Used(വ്യഞ്ജകം*);
+u8 sqlite3StrIHash(സ്ഥിരം അക്ഷരം*);
+പൂർണ്ണസംഖ്യ sqlite3_Resolve_വ്യഞ്ജകം_Names(NameContext*, വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3_Resolve_വ്യഞ്ജകം_List_Names(NameContext*, വ്യഞ്ജകം_List*);
+ശൂന്യം sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
+പൂർണ്ണസംഖ്യ sqlite3ResolveSelfReference(Parse*,Table*,പൂർണ്ണസംഖ്യ,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*);
+പൂർണ്ണസംഖ്യ sqlite3ResolveOrderGroupBy(Parse*, Select*, വ്യഞ്ജകം_List*, സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3ColumnDefault(Vdbe *, Table *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3AlterFinishAddColumn(Parse *, Token *);
+ശൂന്യം sqlite3AlterBeginAddColumn(Parse *, SrcList *);
+ശൂന്യം sqlite3AlterDropColumn(Parse*, SrcList*, സ്ഥിരം Token*);
+സ്ഥിരം ശൂന്യം *sqlite3RenameTokenMap(Parse*, സ്ഥിരം ശൂന്യം*, സ്ഥിരം Token*);
+ശൂന്യം sqlite3RenameTokenRemap(Parse*, സ്ഥിരം ശൂന്യം *pTo, സ്ഥിരം ശൂന്യം *pFrom);
+ശൂന്യം sqlite3_Rename_വ്യഞ്ജകം_Unmap(Parse*, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3RenameExprlistUnmap(Parse*, വ്യഞ്ജകം_List*);
+CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, സ്ഥിരം അക്ഷരം*);
+അക്ഷരം sqlite3AffinityType(സ്ഥിരം അക്ഷരം*, Column*);
+ശൂന്യം sqlite3Analyze(Parse*, Token*, Token*);
+പൂർണ്ണസംഖ്യ sqlite3InvokeBusyHandler(BusyHandler*);
+പൂർണ്ണസംഖ്യ sqlite3FindDb(sqlite3*, Token*);
+പൂർണ്ണസംഖ്യ sqlite3FindDbName(sqlite3 *, സ്ഥിരം അക്ഷരം *);
+പൂർണ്ണസംഖ്യ sqlite3AnalysisLoad(sqlite3*,പൂർണ്ണസംഖ്യ iDB);
+ശൂന്യം sqlite3DeleteIndexSamples(sqlite3*,Index*);
+ശൂന്യം sqlite3DefaultRowEst(Index*);
+ശൂന്യം sqlite3RegisterLikeFunctions(sqlite3*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3IsLikeFunction(sqlite3*,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ*,അക്ഷരം*);
+ശൂന്യം sqlite3SchemaClear(ശൂന്യം *);
 Schema *sqlite3SchemaGet(sqlite3 *, Btree *);
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *);
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,int,int);
-void sqlite3KeyInfoUnref(KeyInfo*);
-KeyInfo *sqlite3KeyInfoRef(KeyInfo*);
-KeyInfo *sqlite3KeyInfoOfIndex(Parse*, Index*);
-KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, int, int);
-const char *sqlite3SelectOpName(int);
-int sqlite3HasExplicitNulls(Parse*, ExprList*);
+പൂർണ്ണസംഖ്യ sqlite3SchemaToIndex(sqlite3 *db, Schema *);
+താക്കോൽ_Info *sqlite3_താക്കോൽ_Info_Alloc(sqlite3*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_താക്കോൽ_Info_Unref(താക്കോൽ_Info*);
+താക്കോൽ_Info *sqlite3_താക്കോൽ_Info_Ref(താക്കോൽ_Info*);
+താക്കോൽ_Info *sqlite3_താക്കോൽ_Info_Of_Index(Parse*, Index*);
+താക്കോൽ_Info *sqlite3_താക്കോൽ_Info_From_വ്യഞ്ജകം_List(Parse*, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+സ്ഥിരം അക്ഷരം *sqlite3SelectOpName(പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3HasExplicitNulls(Parse*, വ്യഞ്ജകം_List*);
 
 #ifdef SQLITE_DEBUG
-int sqlite3KeyInfoIsWriteable(KeyInfo*);
+പൂർണ്ണസംഖ്യ sqlite3_താക്കോൽ_Info_Is_Writeable(താക്കോൽ_Info*);
 #endif
-int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+പൂർണ്ണസംഖ്യ sqlite3CreateFunc(sqlite3 *, സ്ഥിരം അക്ഷരം *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, ശൂന്യം *,
+  ശൂന്യം (*)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
+  ശൂന്യം (*)(sqlite3_context*),
+  ശൂന്യം (*)(sqlite3_context*),
+  ശൂന്യം (*)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **),
   FuncDestructor *pDestructor
 );
-void sqlite3NoopDestructor(void*);
-void *sqlite3OomFault(sqlite3*);
-void sqlite3OomClear(sqlite3*);
-int sqlite3ApiExit(sqlite3 *db, int);
-int sqlite3OpenTempDatabase(Parse *);
+ശൂന്യം sqlite3NoopDestructor(ശൂന്യം*);
+ശൂന്യം *sqlite3OomFault(sqlite3*);
+ശൂന്യം sqlite3OomClear(sqlite3*);
+പൂർണ്ണസംഖ്യ sqlite3ApiExit(sqlite3 *db, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3OpenTempDatabase(Parse *);
 
-char *sqlite3RCStrRef(char*);
-void sqlite3RCStrUnref(void*);
-char *sqlite3RCStrNew(u64);
-char *sqlite3RCStrResize(char*,u64);
+അക്ഷരം *sqlite3RCStrRef(അക്ഷരം*);
+ശൂന്യം sqlite3RCStrUnref(ശൂന്യം*);
+അക്ഷരം *sqlite3RCStrNew(u64);
+അക്ഷരം *sqlite3RCStrResize(അക്ഷരം*,u64);
 
-void sqlite3StrAccumInit(StrAccum*, sqlite3*, char*, int, int);
-int sqlite3StrAccumEnlarge(StrAccum*, i64);
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
-char *sqlite3StrAccumFinish(StrAccum*);
-void sqlite3StrAccumSetError(StrAccum*, u8);
-void sqlite3SelectDestInit(SelectDest*,int,int);
-Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);
-void sqlite3RecordErrorByteOffset(sqlite3*,const char*);
-void sqlite3RecordErrorOffsetOfExpr(sqlite3*,const Expr*);
+ശൂന്യം sqlite3StrAccumInit(StrAccum*, sqlite3*, അക്ഷരം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3StrAccumEnlarge(StrAccum*, i64);
+പൂർണ്ണസംഖ്യ sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
+അക്ഷരം *sqlite3StrAccumFinish(StrAccum*);
+ശൂന്യം sqlite3StrAccumSetError(StrAccum*, u8);
+ശൂന്യം sqlite3SelectDestInit(SelectDest*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+വ്യഞ്ജകം *sqlite3_Create_Column_വ്യഞ്ജകം(sqlite3 *, SrcList *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3RecordErrorByteOffset(sqlite3*,സ്ഥിരം അക്ഷരം*);
+ശൂന്യം sqlite3_Record_Error_Offset_Of_വ്യഞ്ജകം(sqlite3*,സ്ഥിരം വ്യഞ്ജകം*);
 
-void sqlite3BackupRestart(sqlite3_backup *);
-void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
+ശൂന്യം sqlite3BackupRestart(sqlite3_backup *);
+ശൂന്യം sqlite3BackupUpdate(sqlite3_backup *, Pgno, സ്ഥിരം u8 *);
 
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3ExprCheckIN(Parse*, Expr*);
-#else
-# define sqlite3ExprCheckIN(x,y) SQLITE_OK
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Check_IN(Parse*, വ്യഞ്ജകം*);
+#അല്ലെങ്കിൽ
+# define sqlite3_വ്യഞ്ജകം_Check_IN(x,y) SQLITE_OK
 #endif
 
 #ifdef SQLITE_ENABLE_STAT4
-int sqlite3Stat4ProbeSetValue(
-    Parse*,Index*,UnpackedRecord**,Expr*,int,int,int*);
-int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
-void sqlite3Stat4ProbeFree(UnpackedRecord*);
-int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_value**);
-char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
+പൂർണ്ണസംഖ്യ sqlite3_Stat4_Probe_Set_മൂല്യം(
+    Parse*,Index*,UnpackedRecord**,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ*);
+പൂർണ്ണസംഖ്യ sqlite3_Stat4_മൂല്യം_From_വ്യഞ്ജകം(Parse*, വ്യഞ്ജകം*, u8, sqlite3_മൂല്യം**);
+ശൂന്യം sqlite3Stat4ProbeFree(UnpackedRecord*);
+പൂർണ്ണസംഖ്യ sqlite3Stat4Column(sqlite3*, സ്ഥിരം ശൂന്യം*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, sqlite3_മൂല്യം**);
+അക്ഷരം sqlite3IndexColumnAffinity(sqlite3*, Index*, പൂർണ്ണസംഖ്യ);
 #endif
 
 /*
 ** The interface to the LEMON-generated parser
 */
 #ifndef SQLITE_AMALGAMATION
-  void *sqlite3ParserAlloc(void*(*)(u64), Parse*);
-  void sqlite3ParserFree(void*, void(*)(void*));
+  ശൂന്യം *sqlite3ParserAlloc(ശൂന്യം*(*)(u64), Parse*);
+  ശൂന്യം sqlite3ParserFree(ശൂന്യം*, ശൂന്യം(*)(ശൂന്യം*));
 #endif
-void sqlite3Parser(void*, int, Token);
-int sqlite3ParserFallback(int);
+ശൂന്യം sqlite3Parser(ശൂന്യം*, പൂർണ്ണസംഖ്യ, Token);
+പൂർണ്ണസംഖ്യ sqlite3ParserFallback(പൂർണ്ണസംഖ്യ);
 #ifdef YYTRACKMAXSTACKDEPTH
-  int sqlite3ParserStackPeak(void*);
+  പൂർണ്ണസംഖ്യ sqlite3_Parser_അട്ടി_Peak(ശൂന്യം*);
 #endif
 
-void sqlite3AutoLoadExtensions(sqlite3*);
+ശൂന്യം sqlite3AutoLoadExtensions(sqlite3*);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-  void sqlite3CloseExtensions(sqlite3*);
-#else
+  ശൂന്യം sqlite3CloseExtensions(sqlite3*);
+#അല്ലെങ്കിൽ
 # define sqlite3CloseExtensions(X)
 #endif
 
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3TableLock(Parse *, int, Pgno, u8, const char *);
-#else
+  ശൂന്യം sqlite3TableLock(Parse *, പൂർണ്ണസംഖ്യ, Pgno, u8, സ്ഥിരം അക്ഷരം *);
+#അല്ലെങ്കിൽ
   #define sqlite3TableLock(v,w,x,y,z)
 #endif
 
 #ifdef SQLITE_TEST
-  int sqlite3Utf8To8(unsigned char*);
+  പൂർണ്ണസംഖ്യ sqlite3Utf8To8(unsigned അക്ഷരം*);
 #endif
 
 #ifdef SQLITE_OMIT_VIRTUALTABLE
@@ -5723,96 +5723,96 @@ void sqlite3AutoLoadExtensions(sqlite3*);
 #  define sqlite3VtabUnlockList(X)
 #  define sqlite3VtabSavepoint(X, Y, Z) SQLITE_OK
 #  define sqlite3GetVTable(X,Y)  ((VTable*)0)
-#else
-   void sqlite3VtabClear(sqlite3 *db, Table*);
-   void sqlite3VtabDisconnect(sqlite3 *db, Table *p);
-   int sqlite3VtabSync(sqlite3 *db, Vdbe*);
-   int sqlite3VtabRollback(sqlite3 *db);
-   int sqlite3VtabCommit(sqlite3 *db);
-   void sqlite3VtabLock(VTable *);
-   void sqlite3VtabUnlock(VTable *);
-   void sqlite3VtabModuleUnref(sqlite3*,Module*);
-   void sqlite3VtabUnlockList(sqlite3*);
-   int sqlite3VtabSavepoint(sqlite3 *, int, int);
-   void sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
+#അല്ലെങ്കിൽ
+   ശൂന്യം sqlite3VtabClear(sqlite3 *db, Table*);
+   ശൂന്യം sqlite3VtabDisconnect(sqlite3 *db, Table *p);
+   പൂർണ്ണസംഖ്യ sqlite3VtabSync(sqlite3 *db, Vdbe*);
+   പൂർണ്ണസംഖ്യ sqlite3VtabRollback(sqlite3 *db);
+   പൂർണ്ണസംഖ്യ sqlite3VtabCommit(sqlite3 *db);
+   ശൂന്യം sqlite3VtabLock(VTable *);
+   ശൂന്യം sqlite3VtabUnlock(VTable *);
+   ശൂന്യം sqlite3VtabModuleUnref(sqlite3*,Module*);
+   ശൂന്യം sqlite3VtabUnlockList(sqlite3*);
+   പൂർണ്ണസംഖ്യ sqlite3VtabSavepoint(sqlite3 *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+   ശൂന്യം sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
    VTable *sqlite3GetVTable(sqlite3*, Table*);
    Module *sqlite3VtabCreateModule(
      sqlite3*,
-     const char*,
-     const sqlite3_module*,
-     void*,
-     void(*)(void*)
+     സ്ഥിരം അക്ഷരം*,
+     സ്ഥിരം sqlite3_module*,
+     ശൂന്യം*,
+     ശൂന്യം(*)(ശൂന്യം*)
    );
 #  define sqlite3VtabInSync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
 #endif
-int sqlite3ReadOnlyShadowTables(sqlite3 *db);
+പൂർണ്ണസംഖ്യ sqlite3ReadOnlyShadowTables(sqlite3 *db);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  int sqlite3ShadowTableName(sqlite3 *db, const char *zName);
-  int sqlite3IsShadowTableOf(sqlite3*,Table*,const char*);
-  void sqlite3MarkAllShadowTablesOf(sqlite3*, Table*);
-  void sqlite3VtabEponymousTableClearAll(sqlite3*);
-#else
+  പൂർണ്ണസംഖ്യ sqlite3ShadowTableName(sqlite3 *db, സ്ഥിരം അക്ഷരം *zName);
+  പൂർണ്ണസംഖ്യ sqlite3IsShadowTableOf(sqlite3*,Table*,സ്ഥിരം അക്ഷരം*);
+  ശൂന്യം sqlite3MarkAllShadowTablesOf(sqlite3*, Table*);
+  ശൂന്യം sqlite3VtabEponymousTableClearAll(sqlite3*);
+#അല്ലെങ്കിൽ
 # define sqlite3ShadowTableName(A,B) 0
 # define sqlite3IsShadowTableOf(A,B,C) 0
 # define sqlite3MarkAllShadowTablesOf(A,B)
 # define sqlite3VtabEponymousTableClearAll(X)
 #endif
-int sqlite3VtabEponymousTableInit(Parse*,Module*);
-void sqlite3VtabEponymousTableClear(sqlite3*,Module*);
-void sqlite3VtabMakeWritable(Parse*,Table*);
-void sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, int);
-void sqlite3VtabFinishParse(Parse*, Token*);
-void sqlite3VtabArgInit(Parse*);
-void sqlite3VtabArgExtend(Parse*, Token*);
-int sqlite3VtabCallCreate(sqlite3*, int, const char *, char **);
-int sqlite3VtabCallConnect(Parse*, Table*);
-int sqlite3VtabCallDestroy(sqlite3*, int, const char *);
-int sqlite3VtabBegin(sqlite3 *, VTable *);
+പൂർണ്ണസംഖ്യ sqlite3VtabEponymousTableInit(Parse*,Module*);
+ശൂന്യം sqlite3VtabEponymousTableClear(sqlite3*,Module*);
+ശൂന്യം sqlite3VtabMakeWritable(Parse*,Table*);
+ശൂന്യം sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3VtabFinishParse(Parse*, Token*);
+ശൂന്യം sqlite3VtabArgInit(Parse*);
+ശൂന്യം sqlite3VtabArgExtend(Parse*, Token*);
+പൂർണ്ണസംഖ്യ sqlite3VtabCallCreate(sqlite3*, പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം *, അക്ഷരം **);
+പൂർണ്ണസംഖ്യ sqlite3VtabCallConnect(Parse*, Table*);
+പൂർണ്ണസംഖ്യ sqlite3VtabCallDestroy(sqlite3*, പൂർണ്ണസംഖ്യ, സ്ഥിരം അക്ഷരം *);
+പൂർണ്ണസംഖ്യ sqlite3VtabBegin(sqlite3 *, VTable *);
 
-FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);
-void sqlite3VtabUsesAllSchemas(Parse*);
+FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, പൂർണ്ണസംഖ്യ nArg, വ്യഞ്ജകം*);
+ശൂന്യം sqlite3VtabUsesAllSchemas(Parse*);
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context*);
-int sqlite3VdbeParameterIndex(Vdbe*, const char*, int);
-int sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
-void sqlite3ParseObjectInit(Parse*,sqlite3*);
-void sqlite3ParseObjectReset(Parse*);
-void *sqlite3ParserAddCleanup(Parse*,void(*)(sqlite3*,void*),void*);
+പൂർണ്ണസംഖ്യ sqlite3VdbeParameterIndex(Vdbe*, സ്ഥിരം അക്ഷരം*, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
+ശൂന്യം sqlite3ParseObjectInit(Parse*,sqlite3*);
+ശൂന്യം sqlite3ParseObjectReset(Parse*);
+ശൂന്യം *sqlite3ParserAddCleanup(Parse*,ശൂന്യം(*)(sqlite3*,ശൂന്യം*),ശൂന്യം*);
 #ifdef SQLITE_ENABLE_NORMALIZE
-char *sqlite3Normalize(Vdbe*, const char*);
+അക്ഷരം *sqlite3Normalize(Vdbe*, സ്ഥിരം അക്ഷരം*);
 #endif
-int sqlite3Reprepare(Vdbe*);
-void sqlite3ExprListCheckLength(Parse*, ExprList*, const char*);
-CollSeq *sqlite3ExprCompareCollSeq(Parse*,const Expr*);
-CollSeq *sqlite3BinaryCompareCollSeq(Parse *, const Expr*, const Expr*);
-int sqlite3TempInMemory(const sqlite3*);
-const char *sqlite3JournalModename(int);
+പൂർണ്ണസംഖ്യ sqlite3Reprepare(Vdbe*);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_List_Check_Length(Parse*, വ്യഞ്ജകം_List*, സ്ഥിരം അക്ഷരം*);
+CollSeq *sqlite3_വ്യഞ്ജകം_Compare_Coll_Seq(Parse*,സ്ഥിരം വ്യഞ്ജകം*);
+CollSeq *sqlite3_ദ്വിമാന_Compare_Coll_Seq(Parse *, സ്ഥിരം വ്യഞ്ജകം*, സ്ഥിരം വ്യഞ്ജകം*);
+പൂർണ്ണസംഖ്യ sqlite3TempInMemory(സ്ഥിരം sqlite3*);
+സ്ഥിരം അക്ഷരം *sqlite3JournalModename(പൂർണ്ണസംഖ്യ);
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3Checkpoint(sqlite3*, int, int, int*, int*);
-  int sqlite3WalDefaultHook(void*,sqlite3*,const char*,int);
+  പൂർണ്ണസംഖ്യ sqlite3Checkpoint(sqlite3*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ*);
+  പൂർണ്ണസംഖ്യ sqlite3WalDefaultHook(ശൂന്യം*,sqlite3*,സ്ഥിരം അക്ഷരം*,പൂർണ്ണസംഖ്യ);
 #endif
 #ifndef SQLITE_OMIT_CTE
-  Cte *sqlite3CteNew(Parse*,Token*,ExprList*,Select*,u8);
-  void sqlite3CteDelete(sqlite3*,Cte*);
+  Cte *sqlite3CteNew(Parse*,Token*,വ്യഞ്ജകം_List*,Select*,u8);
+  ശൂന്യം sqlite3CteDelete(sqlite3*,Cte*);
   With *sqlite3WithAdd(Parse*,With*,Cte*);
-  void sqlite3WithDelete(sqlite3*,With*);
-  void sqlite3WithDeleteGeneric(sqlite3*,void*);
-  With *sqlite3WithPush(Parse*, With*, u8);
-#else
-# define sqlite3CteNew(P,T,E,S)   ((void*)0)
+  ശൂന്യം sqlite3WithDelete(sqlite3*,With*);
+  ശൂന്യം sqlite3WithDeleteGeneric(sqlite3*,ശൂന്യം*);
+  With *sqlite3_With_തള്ളുക(Parse*, With*, u8);
+#അല്ലെങ്കിൽ
+# define sqlite3CteNew(P,T,E,S)   ((ശൂന്യം*)0)
 # define sqlite3CteDelete(D,C)
-# define sqlite3CteWithAdd(P,W,C) ((void*)0)
+# define sqlite3CteWithAdd(P,W,C) ((ശൂന്യം*)0)
 # define sqlite3WithDelete(x,y)
-# define sqlite3WithPush(x,y,z) ((void*)0)
+# define sqlite3_With_തള്ളുക(x,y,z) ((ശൂന്യം*)0)
 #endif
 #ifndef SQLITE_OMIT_UPSERT
-  Upsert *sqlite3UpsertNew(sqlite3*,ExprList*,Expr*,ExprList*,Expr*,Upsert*);
-  void sqlite3UpsertDelete(sqlite3*,Upsert*);
+  Upsert *sqlite3UpsertNew(sqlite3*,വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,വ്യഞ്ജകം_List*,വ്യഞ്ജകം*,Upsert*);
+  ശൂന്യം sqlite3UpsertDelete(sqlite3*,Upsert*);
   Upsert *sqlite3UpsertDup(sqlite3*,Upsert*);
-  int sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
-  void sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,int);
+  പൂർണ്ണസംഖ്യ sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
+  ശൂന്യം sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,പൂർണ്ണസംഖ്യ);
   Upsert *sqlite3UpsertOfIndex(Upsert*,Index*);
-  int sqlite3UpsertNextIsIPK(Upsert*);
-#else
+  പൂർണ്ണസംഖ്യ sqlite3UpsertNextIsIPK(Upsert*);
+#അല്ലെങ്കിൽ
 #define sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
 #define sqlite3UpsertDelete(x,y)
 #define sqlite3UpsertDup(x,y)         ((Upsert*)0)
@@ -5828,15 +5828,15 @@ const char *sqlite3JournalModename(int);
 ** this case foreign keys are parsed, but no other functionality is
 ** provided (enforcement of FK constraints requires the triggers sub-system).
 */
-#if !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
-  void sqlite3FkCheck(Parse*, Table*, int, int, int*, int);
-  void sqlite3FkDropTable(Parse*, SrcList *, Table*);
-  void sqlite3FkActions(Parse*, Table*, ExprList*, int, int*, int);
-  int sqlite3FkRequired(Parse*, Table*, int*, int);
+#എങ്കിൽ !defined(SQLITE_OMIT_FOREIGN_താക്കോൽ) && !defined(SQLITE_OMIT_TRIGGER)
+  ശൂന്യം sqlite3FkCheck(Parse*, Table*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ);
+  ശൂന്യം sqlite3FkDropTable(Parse*, SrcList *, Table*);
+  ശൂന്യം sqlite3FkActions(Parse*, Table*, വ്യഞ്ജകം_List*, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ);
+  പൂർണ്ണസംഖ്യ sqlite3FkRequired(Parse*, Table*, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ);
   u32 sqlite3FkOldmask(Parse*, Table*);
   FKey *sqlite3FkReferences(Table *);
-  void sqlite3FkClearTriggerCache(sqlite3*,int);
-#else
+  ശൂന്യം sqlite3FkClearTriggerCache(sqlite3*,പൂർണ്ണസംഖ്യ);
+#അല്ലെങ്കിൽ
   #define sqlite3FkActions(a,b,c,d,e,f)
   #define sqlite3FkCheck(a,b,c,d,e,f)
   #define sqlite3FkDropTable(a,b,c)
@@ -5845,10 +5845,10 @@ const char *sqlite3JournalModename(int);
   #define sqlite3FkReferences(a)        0
   #define sqlite3FkClearTriggerCache(a,b)
 #endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  void sqlite3FkDelete(sqlite3 *, Table*);
-  int sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,int**);
-#else
+#ifndef SQLITE_OMIT_FOREIGN_താക്കോൽ
+  ശൂന്യം sqlite3FkDelete(sqlite3 *, Table*);
+  പൂർണ്ണസംഖ്യ sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,പൂർണ്ണസംഖ്യ**);
+#അല്ലെങ്കിൽ
   #define sqlite3FkDelete(a,b)
   #define sqlite3FkLocateIndex(a,b,c,d,e)
 #endif
@@ -5858,7 +5858,7 @@ const char *sqlite3JournalModename(int);
 ** Available fault injectors.  Should be numbered beginning with 0.
 */
 #define SQLITE_FAULTINJECTOR_MALLOC     0
-#define SQLITE_FAULTINJECTOR_COUNT      1
+#define SQLITE_FAULTINJECTOR_എണ്ണം      1
 
 /*
 ** The interface to the code in fault.c used for identifying "benign"
@@ -5866,9 +5866,9 @@ const char *sqlite3JournalModename(int);
 ** is not defined.
 */
 #ifndef SQLITE_UNTESTABLE
-  void sqlite3BeginBenignMalloc(void);
-  void sqlite3EndBenignMalloc(void);
-#else
+  ശൂന്യം sqlite3BeginBenignMalloc(ശൂന്യം);
+  ശൂന്യം sqlite3EndBenignMalloc(ശൂന്യം);
+#അല്ലെങ്കിൽ
   #define sqlite3BeginBenignMalloc()
   #define sqlite3EndBenignMalloc()
 #endif
@@ -5887,50 +5887,50 @@ const char *sqlite3JournalModename(int);
 #define IN_INDEX_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
 #define IN_INDEX_MEMBERSHIP  0x0002  /* IN operator used for membership test */
 #define IN_INDEX_LOOP        0x0004  /* IN operator used as a loop */
-int sqlite3FindInIndex(Parse *, Expr *, u32, int*, int*, int*);
+പൂർണ്ണസംഖ്യ sqlite3FindInIndex(Parse *, വ്യഞ്ജകം *, u32, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ*, പൂർണ്ണസംഖ്യ*);
 
-int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
-int sqlite3JournalSize(sqlite3_vfs *);
-#if defined(SQLITE_ENABLE_ATOMIC_WRITE) \
+പൂർണ്ണസംഖ്യ sqlite3JournalOpen(sqlite3_vfs *, സ്ഥിരം അക്ഷരം *, sqlite3_file *, പൂർണ്ണസംഖ്യ, പൂർണ്ണസംഖ്യ);
+പൂർണ്ണസംഖ്യ sqlite3JournalSize(sqlite3_vfs *);
+#എങ്കിൽ defined(SQLITE_ENABLE_ATOMIC_WRITE) \
  || defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-  int sqlite3JournalCreate(sqlite3_file *);
+  പൂർണ്ണസംഖ്യ sqlite3JournalCreate(sqlite3_file *);
 #endif
 
-int sqlite3JournalIsInMemory(sqlite3_file *p);
-void sqlite3MemJournalOpen(sqlite3_file *);
+പൂർണ്ണസംഖ്യ sqlite3JournalIsInMemory(sqlite3_file *p);
+ശൂന്യം sqlite3MemJournalOpen(sqlite3_file *);
 
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int sqlite3SelectExprHeight(const Select *);
-  int sqlite3ExprCheckHeight(Parse*, int);
-#else
-  #define sqlite3SelectExprHeight(x) 0
-  #define sqlite3ExprCheckHeight(x,y)
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Set_Height_And_Flags(Parse *pParse, വ്യഞ്ജകം *p);
+#എങ്കിൽ SQLITE_MAX_വ്യഞ്ജകം_DEPTH>0
+  പൂർണ്ണസംഖ്യ sqlite3_Select_വ്യഞ്ജകം_Height(സ്ഥിരം Select *);
+  പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Check_Height(Parse*, പൂർണ്ണസംഖ്യ);
+#അല്ലെങ്കിൽ
+  #define sqlite3_Select_വ്യഞ്ജകം_Height(x) 0
+  #define sqlite3_വ്യഞ്ജകം_Check_Height(x,y)
 #endif
-void sqlite3ExprSetErrorOffset(Expr*,int);
+ശൂന്യം sqlite3_വ്യഞ്ജകം_Set_Error_Offset(വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ);
 
-u32 sqlite3Get4byte(const u8*);
-SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8*);
-#if SQLITE_BYTEORDER!=4321
+u32 sqlite3Get4byte(സ്ഥിരം u8*);
+SQLITE_OPT_INLINE u64 sqlite3Get8byte(സ്ഥിരം u8*);
+#എങ്കിൽ SQLITE_BYTEORDER!=4321
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64);
 #endif
-void sqlite3Put4byte(u8*, u32);
+ശൂന്യം sqlite3Put4byte(u8*, u32);
 
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
-  void sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
-  void sqlite3ConnectionUnlocked(sqlite3 *db);
-  void sqlite3ConnectionClosed(sqlite3 *db);
-#else
+  ശൂന്യം sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
+  ശൂന്യം sqlite3ConnectionUnlocked(sqlite3 *db);
+  ശൂന്യം sqlite3ConnectionClosed(sqlite3 *db);
+#അല്ലെങ്കിൽ
   #define sqlite3ConnectionBlocked(x,y)
   #define sqlite3ConnectionUnlocked(x)
   #define sqlite3ConnectionClosed(x)
 #endif
 
 #ifdef SQLITE_DEBUG
-  void sqlite3ParserTrace(FILE*, char *);
+  ശൂന്യം sqlite3ParserTrace(FILE*, അക്ഷരം *);
 #endif
-#if defined(YYCOVERAGE)
-  int sqlite3ParserCoverage(FILE*);
+#എങ്കിൽ defined(YYCOVERAGE)
+  പൂർണ്ണസംഖ്യ sqlite3ParserCoverage(FILE*);
 #endif
 
 /*
@@ -5939,10 +5939,10 @@ void sqlite3Put4byte(u8*, u32);
 ** print I/O tracing messages.
 */
 #ifdef SQLITE_ENABLE_IOTRACE
-# define IOTRACE(A)  if( sqlite3IoTrace ){ sqlite3IoTrace A; }
-  void sqlite3VdbeIOTraceSql(Vdbe*);
-SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
-#else
+# define IOTRACE(A)  എങ്കിൽ( sqlite3IoTrace ){ sqlite3IoTrace A; }
+  ശൂന്യം sqlite3VdbeIOTraceSql(Vdbe*);
+SQLITE_API SQLITE_EXTERN ശൂന്യം (SQLITE_CDECL *sqlite3IoTrace)(സ്ഥിരം അക്ഷരം*,...);
+#അല്ലെങ്കിൽ
 # define IOTRACE(A)
 # define sqlite3VdbeIOTraceSql(X)
 #endif
@@ -5976,10 +5976,10 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 ** play when the SQLITE_MEMDEBUG compile-time option is used.
 */
 #ifdef SQLITE_MEMDEBUG
-  void sqlite3MemdebugSetType(void*,u8);
-  int sqlite3MemdebugHasType(const void*,u8);
-  int sqlite3MemdebugNoType(const void*,u8);
-#else
+  ശൂന്യം sqlite3MemdebugSetType(ശൂന്യം*,u8);
+  പൂർണ്ണസംഖ്യ sqlite3MemdebugHasType(സ്ഥിരം ശൂന്യം*,u8);
+  പൂർണ്ണസംഖ്യ sqlite3MemdebugNoType(സ്ഥിരം ശൂന്യം*,u8);
+#അല്ലെങ്കിൽ
 # define sqlite3MemdebugSetType(X,Y)  /* no-op */
 # define sqlite3MemdebugHasType(X,Y)  1
 # define sqlite3MemdebugNoType(X,Y)   1
@@ -5991,41 +5991,41 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 /*
 ** Threading interface
 */
-#if SQLITE_MAX_WORKER_THREADS>0
-int sqlite3ThreadCreate(SQLiteThread**,void*(*)(void*),void*);
-int sqlite3ThreadJoin(SQLiteThread*, void**);
+#എങ്കിൽ SQLITE_MAX_WORKER_THREADS>0
+പൂർണ്ണസംഖ്യ sqlite3ThreadCreate(SQLiteThread**,ശൂന്യം*(*)(ശൂന്യം*),ശൂന്യം*);
+പൂർണ്ണസംഖ്യ sqlite3ThreadJoin(SQLiteThread*, ശൂന്യം**);
 #endif
 
-#if defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbpageRegister(sqlite3*);
+#എങ്കിൽ defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
+പൂർണ്ണസംഖ്യ sqlite3DbpageRegister(sqlite3*);
 #endif
-#if defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbstatRegister(sqlite3*);
+#എങ്കിൽ defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
+പൂർണ്ണസംഖ്യ sqlite3DbstatRegister(sqlite3*);
 #endif
 
-int sqlite3ExprVectorSize(const Expr *pExpr);
-int sqlite3ExprIsVector(const Expr *pExpr);
-Expr *sqlite3VectorFieldSubexpr(Expr*, int);
-Expr *sqlite3ExprForVectorField(Parse*,Expr*,int,int);
-void sqlite3VectorErrorMsg(Parse*, Expr*);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Vector_Size(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Vector(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം);
+വ്യഞ്ജകം *sqlite3VectorFieldSubexpr(വ്യഞ്ജകം*, പൂർണ്ണസംഖ്യ);
+വ്യഞ്ജകം *sqlite3_വ്യഞ്ജകം_For_Vector_Field(Parse*,വ്യഞ്ജകം*,പൂർണ്ണസംഖ്യ,പൂർണ്ണസംഖ്യ);
+ശൂന്യം sqlite3_Vector_Error_സന്ദേശം(Parse*, വ്യഞ്ജകം*);
 
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-const char **sqlite3CompileOptions(int *pnOpt);
+സ്ഥിരം അക്ഷരം **sqlite3CompileOptions(പൂർണ്ണസംഖ്യ *pnOpt);
 #endif
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void);
+#എങ്കിൽ SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+പൂർണ്ണസംഖ്യ sqlite3KvvfsInit(ശൂന്യം);
 #endif
 
-#if defined(VDBE_PROFILE) \
+#എങ്കിൽ defined(VDBE_PROFILE) \
  || defined(SQLITE_PERFORMANCE_TRACE) \
  || defined(SQLITE_ENABLE_STMT_SCANSTATUS)
-sqlite3_uint64 sqlite3Hwtime(void);
+sqlite3_uint64 sqlite3Hwtime(ശൂന്യം);
 #endif
 
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
 # define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_StmtScanStatus)
-#else
+#അല്ലെങ്കിൽ
 # define IS_STMT_SCANSTATUS(db) 0
 #endif
 

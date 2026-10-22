@@ -16,8 +16,8 @@
 #define SQLITE_HASH_H
 
 /* Forward declarations of structures. */
-typedef struct Hash Hash;
-typedef struct HashElem HashElem;
+തരനിർവചനം ഘടന Hash Hash;
+തരനിർവചനം ഘടന HashElem HashElem;
 
 /* A complete hash table is an instance of the following structure.
 ** The internals of this structure are intended to be opaque -- client
@@ -40,12 +40,12 @@ typedef struct HashElem HashElem;
 ** in the table, it is faster to do a linear search than to manage
 ** the hash table.
 */
-struct Hash {
-  unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
+ഘടന Hash {
+  unsigned പൂർണ്ണസംഖ്യ htsize;      /* Number of buckets in the hash table */
+  unsigned പൂർണ്ണസംഖ്യ എണ്ണം;       /* Number of entries in this table */
   HashElem *first;          /* The first element of the array */
-  struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+  ഘടന _ht {              /* the hash table */
+    unsigned പൂർണ്ണസംഖ്യ എണ്ണം;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -56,20 +56,20 @@ struct Hash {
 ** Again, this structure is intended to be opaque, but it can't really
 ** be opaque because it is used by macros.
 */
-struct HashElem {
+ഘടന HashElem {
   HashElem *next, *prev;       /* Next and previous elements in the table */
-  void *data;                  /* Data associated with this element */
-  const char *pKey;            /* Key associated with this element */
-  unsigned int h;              /* hash for pKey */
+  ശൂന്യം *data;                  /* Data associated with this element */
+  സ്ഥിരം അക്ഷരം *p_താക്കോൽ;            /* Key associated with this element */
+  unsigned പൂർണ്ണസംഖ്യ h;              /* hash for pKey */
 };
 
 /*
 ** Access routines.  To delete, insert a NULL pointer.
 */
-void sqlite3HashInit(Hash*);
-void *sqlite3HashInsert(Hash*, const char *pKey, void *pData);
-void *sqlite3HashFind(const Hash*, const char *pKey);
-void sqlite3HashClear(Hash*);
+ശൂന്യം sqlite3HashInit(Hash*);
+ശൂന്യം *sqlite3_Hash_തിരുകുക(Hash*, സ്ഥിരം അക്ഷരം *p_താക്കോൽ, ശൂന്യം *pData);
+ശൂന്യം *sqlite3HashFind(സ്ഥിരം Hash*, സ്ഥിരം അക്ഷരം *p_താക്കോൽ);
+ശൂന്യം sqlite3HashClear(Hash*);
 
 /*
 ** Macros for looping over all elements of a hash table.  The idiom is
@@ -92,6 +92,6 @@ void sqlite3HashClear(Hash*);
 /*
 ** Number of entries in a hash table
 */
-#define sqliteHashCount(H)  ((H)->count)
+#define sqlite_Hash_എണ്ണം(H)  ((H)->എണ്ണം)
 
 #endif /* SQLITE_HASH_H */

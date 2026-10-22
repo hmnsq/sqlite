@@ -13,15 +13,15 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ "tclsqlite.h"
+#അന്തര്ഭാവ <stdlib.h>
+#അന്തര്ഭാവ <string.h>
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 
-typedef struct echo_vtab echo_vtab;
-typedef struct echo_cursor echo_cursor;
+തരനിർവചനം ഘടന echo_vtab echo_vtab;
+തരനിർവചനം ഘടന echo_cursor echo_cursor;
 
 /*
 ** The test module defined in this file uses four global Tcl variables to
@@ -69,37 +69,37 @@ typedef struct echo_cursor echo_cursor;
 ** Member variable aCol[] contains copies of the column names of the real
 ** table.
 */
-struct echo_vtab {
+ഘടന echo_vtab {
   sqlite3_vtab base;
   Tcl_Interp *interp;     /* Tcl interpreter containing debug variables */
   sqlite3 *db;            /* Database connection */
 
-  int isPattern;
-  int inTransaction;      /* True if within a transaction */
-  char *zThis;            /* Name of the echo table */
-  char *zTableName;       /* Name of the real table */
-  char *zLogName;         /* Name of the log table */
-  int nCol;               /* Number of columns in the real table */
-  int *aIndex;            /* Array of size nCol. True if column has an index */
-  char **aCol;            /* Array of size nCol. Column names */
+  പൂർണ്ണസംഖ്യ isPattern;
+  പൂർണ്ണസംഖ്യ inTransaction;      /* True if within a transaction */
+  അക്ഷരം *zThis;            /* Name of the echo table */
+  അക്ഷരം *zTableName;       /* Name of the real table */
+  അക്ഷരം *zLogName;         /* Name of the log table */
+  പൂർണ്ണസംഖ്യ nCol;               /* Number of columns in the real table */
+  പൂർണ്ണസംഖ്യ *aIndex;            /* Array of size nCol. True if column has an index */
+  അക്ഷരം **aCol;            /* Array of size nCol. Column names */
 };
 
 /* An echo cursor object */
-struct echo_cursor {
+ഘടന echo_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;
 };
 
-static int simulateVtabError(echo_vtab *p, const char *zMethod){
-  const char *zErr;
-  char zVarname[128];
+സ്ഥിതം പൂർണ്ണസംഖ്യ simulateVtabError(echo_vtab *p, സ്ഥിരം അക്ഷരം *zMethod){
+  സ്ഥിരം അക്ഷരം *zErr;
+  അക്ഷരം zVarname[128];
   zVarname[127] = '\0';
   sqlite3_snprintf(127, zVarname, "echo_module_fail(%s,%s)", zMethod, p->zTableName);
   zErr = Tcl_GetVar(p->interp, zVarname, TCL_GLOBAL_ONLY);
-  if( zErr ){
-    p->base.zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", zErr);
+  എങ്കിൽ( zErr ){
+    p->base.z_Err_സന്ദേശം = sqlite3_mprintf("echo-vtab-error: %s", zErr);
   }
-  return (zErr!=0);
+  തിരികെ (zErr!=0);
 }
 
 /*
@@ -115,28 +115,28 @@ static int simulateVtabError(echo_vtab *p, const char *zMethod){
 **     [pqr]   becomes   pqr
 **     `mno`   becomes   mno
 */
-static void dequoteString(char *z){
-  int quote;
-  int i, j;
-  if( z==0 ) return;
+സ്ഥിതം ശൂന്യം dequoteString(അക്ഷരം *z){
+  പൂർണ്ണസംഖ്യ quote;
+  പൂർണ്ണസംഖ്യ i, j;
+  എങ്കിൽ( z==0 ) തിരികെ;
   quote = z[0];
-  switch( quote ){
-    case '\'':  break;
-    case '"':   break;
-    case '`':   break;                /* For MySQL compatibility */
-    case '[':   quote = ']';  break;  /* For MS SqlServer compatibility */
-    default:    return;
+  തിരഞ്ഞെടുപ്പ്( quote ){
+    അവസ്ഥ '\'':  നിർത്തുക;
+    അവസ്ഥ '"':   നിർത്തുക;
+    അവസ്ഥ '`':   നിർത്തുക;                /* For MySQL compatibility */
+    അവസ്ഥ '[':   quote = ']';  നിർത്തുക;  /* For MS SqlServer compatibility */
+    സ്ഥിരസ്ഥിതി:    തിരികെ;
   }
-  for(i=1, j=0; z[i]; i++){
-    if( z[i]==quote ){
-      if( z[i+1]==quote ){
+  വേണ്ടി(i=1, j=0; z[i]; i++){
+    എങ്കിൽ( z[i]==quote ){
+      എങ്കിൽ( z[i+1]==quote ){
         z[j++] = quote;
         i++;
-      }else{
+      }അല്ലെങ്കിൽ{
         z[j++] = 0;
-        break;
+        നിർത്തുക;
       }
-    }else{
+    }അല്ലെങ്കിൽ{
       z[j++] = z[i];
     }
   }
@@ -152,64 +152,64 @@ static void dequoteString(char *z){
 ** nCol column names. The caller is responsible for calling sqlite3_free
 ** on *paCol.
 */
-static int getColumnNames(
+സ്ഥിതം പൂർണ്ണസംഖ്യ getColumnNames(
   sqlite3 *db, 
-  const char *zTab,
-  char ***paCol, 
-  int *pnCol
+  സ്ഥിരം അക്ഷരം *zTab,
+  അക്ഷരം ***paCol, 
+  പൂർണ്ണസംഖ്യ *pnCol
 ){
-  char **aCol = 0;
-  char *zSql;
+  അക്ഷരം **aCol = 0;
+  അക്ഷരം *zSql;
   sqlite3_stmt *pStmt = 0;
-  int rc = SQLITE_OK;
-  int nCol = 0;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ nCol = 0;
 
   /* Prepare the statement "SELECT * FROM <tbl>". The column names
   ** of the result set of the compiled SELECT will be the same as
   ** the column names of table <tbl>.
   */
   zSql = sqlite3_mprintf("SELECT * FROM %Q", zTab);
-  if( !zSql ){
+  എങ്കിൽ( !zSql ){
     rc = SQLITE_NOMEM;
-    goto out;
+    പോകുക out;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3_free(zSql);
 
-  if( rc==SQLITE_OK ){
-    int ii;
-    int nBytes;
-    char *zSpace;
-    nCol = sqlite3_column_count(pStmt);
+  എങ്കിൽ( rc==SQLITE_OK ){
+    പൂർണ്ണസംഖ്യ ii;
+    പൂർണ്ണസംഖ്യ nBytes;
+    അക്ഷരം *zSpace;
+    nCol = sqlite3_column_എണ്ണം(pStmt);
 
     /* Figure out how much space to allocate for the array of column names 
     ** (including space for the strings themselves). Then allocate it.
     */
-    nBytes = sizeof(char *) * nCol;
-    for(ii=0; ii<nCol; ii++){
-      const char *zName = sqlite3_column_name(pStmt, ii);
-      if( !zName ){
+    nBytes = വലുപ്പം(അക്ഷരം *) * nCol;
+    വേണ്ടി(ii=0; ii<nCol; ii++){
+      സ്ഥിരം അക്ഷരം *zName = sqlite3_column_name(pStmt, ii);
+      എങ്കിൽ( !zName ){
         rc = SQLITE_NOMEM;
-        goto out;
+        പോകുക out;
       }
-      nBytes += (int)strlen(zName)+1;
+      nBytes += (പൂർണ്ണസംഖ്യ)strlen(zName)+1;
     }
-    aCol = (char **)sqlite3MallocZero(nBytes);
-    if( !aCol ){
+    aCol = (അക്ഷരം **)sqlite3MallocZero(nBytes);
+    എങ്കിൽ( !aCol ){
       rc = SQLITE_NOMEM;
-      goto out;
+      പോകുക out;
     }
 
     /* Copy the column names into the allocated space and set up the
     ** pointers in the aCol[] array.
     */
-    zSpace = (char *)(&aCol[nCol]);
-    for(ii=0; ii<nCol; ii++){
+    zSpace = (അക്ഷരം *)(&aCol[nCol]);
+    വേണ്ടി(ii=0; ii<nCol; ii++){
       aCol[ii] = zSpace;
       sqlite3_snprintf(nBytes, zSpace, "%s", sqlite3_column_name(pStmt,ii));
-      zSpace += (int)strlen(zSpace) + 1;
+      zSpace += (പൂർണ്ണസംഖ്യ)strlen(zSpace) + 1;
     }
-    assert( (zSpace-nBytes)==(char *)aCol );
+    പ്രതിജ്ഞാ( (zSpace-nBytes)==(അക്ഷരം *)aCol );
   }
 
   *paCol = aCol;
@@ -217,7 +217,7 @@ static int getColumnNames(
 
 out:
   sqlite3_finalize(pStmt);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -232,29 +232,29 @@ out:
 ** See comments associated with the member variable aIndex above 
 ** "struct echo_vtab" for details of the contents of the array.
 */
-static int getIndexArray(
+സ്ഥിതം പൂർണ്ണസംഖ്യ getIndexArray(
   sqlite3 *db,             /* Database connection */
-  const char *zTab,        /* Name of table in database db */
-  int nCol,
-  int **paIndex
+  സ്ഥിരം അക്ഷരം *zTab,        /* Name of table in database db */
+  പൂർണ്ണസംഖ്യ nCol,
+  പൂർണ്ണസംഖ്യ **paIndex
 ){
   sqlite3_stmt *pStmt = 0;
-  int *aIndex = 0;
-  int rc;
-  char *zSql;
+  പൂർണ്ണസംഖ്യ *aIndex = 0;
+  പൂർണ്ണസംഖ്യ rc;
+  അക്ഷരം *zSql;
 
   /* Allocate space for the index array */
-  aIndex = (int *)sqlite3MallocZero(sizeof(int) * nCol);
-  if( !aIndex ){
+  aIndex = (പൂർണ്ണസംഖ്യ *)sqlite3MallocZero(വലുപ്പം(പൂർണ്ണസംഖ്യ) * nCol);
+  എങ്കിൽ( !aIndex ){
     rc = SQLITE_NOMEM;
-    goto get_index_array_out;
+    പോകുക get_index_array_out;
   }
 
   /* Compile an sqlite pragma to loop through all indices on table zTab */
   zSql = sqlite3_mprintf("PRAGMA index_list(%s)", zTab);
-  if( !zSql ){
+  എങ്കിൽ( !zSql ){
     rc = SQLITE_NOMEM;
-    goto get_index_array_out;
+    പോകുക get_index_array_out;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3_free(zSql);
@@ -262,52 +262,52 @@ static int getIndexArray(
   /* For each index, figure out the left-most column and set the 
   ** corresponding entry in aIndex[] to 1.
   */
-  while( pStmt && sqlite3_step(pStmt)==SQLITE_ROW ){
-    const char *zIdx = (const char *)sqlite3_column_text(pStmt, 1);
+  ആകുമ്പോൾ( pStmt && sqlite3_step(pStmt)==SQLITE_ROW ){
+    സ്ഥിരം അക്ഷരം *zIdx = (സ്ഥിരം അക്ഷരം *)sqlite3_column_text(pStmt, 1);
     sqlite3_stmt *pStmt2 = 0;
-    if( zIdx==0 ) continue;
+    എങ്കിൽ( zIdx==0 ) തുടരുക;
     zSql = sqlite3_mprintf("PRAGMA index_info(%s)", zIdx);
-    if( !zSql ){
+    എങ്കിൽ( !zSql ){
       rc = SQLITE_NOMEM;
-      goto get_index_array_out;
+      പോകുക get_index_array_out;
     }
     rc = sqlite3_prepare(db, zSql, -1, &pStmt2, 0);
     sqlite3_free(zSql);
-    if( pStmt2 && sqlite3_step(pStmt2)==SQLITE_ROW ){
-      int cid = sqlite3_column_int(pStmt2, 1);
-      assert( cid>=0 && cid<nCol );
+    എങ്കിൽ( pStmt2 && sqlite3_step(pStmt2)==SQLITE_ROW ){
+      പൂർണ്ണസംഖ്യ cid = sqlite3_column_int(pStmt2, 1);
+      പ്രതിജ്ഞാ( cid>=0 && cid<nCol );
       aIndex[cid] = 1;
     }
-    if( pStmt2 ){
+    എങ്കിൽ( pStmt2 ){
       rc = sqlite3_finalize(pStmt2);
     }
-    if( rc!=SQLITE_OK ){
-      goto get_index_array_out;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      പോകുക get_index_array_out;
     }
   }
 
 
 get_index_array_out:
-  if( pStmt ){
-    int rc2 = sqlite3_finalize(pStmt);
-    if( rc==SQLITE_OK ){
+  എങ്കിൽ( pStmt ){
+    പൂർണ്ണസംഖ്യ rc2 = sqlite3_finalize(pStmt);
+    എങ്കിൽ( rc==SQLITE_OK ){
       rc = rc2;
     }
   }
-  if( rc!=SQLITE_OK ){
+  എങ്കിൽ( rc!=SQLITE_OK ){
     sqlite3_free(aIndex);
     aIndex = 0;
   }
   *paIndex = aIndex;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Global Tcl variable $echo_module is a list. This routine appends
 ** the string element zArg to that list in interpreter interp.
 */
-static void appendToEchoModule(Tcl_Interp *interp, const char *zArg){
-  int flags = (TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
+സ്ഥിതം ശൂന്യം appendToEchoModule(Tcl_Interp *interp, സ്ഥിരം അക്ഷരം *zArg){
+  പൂർണ്ണസംഖ്യ flags = (TCL_APPEND_മൂല്യം | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
   Tcl_SetVar(interp, "echo_module", (zArg?zArg:""), flags);
 }
 
@@ -328,50 +328,50 @@ static void appendToEchoModule(Tcl_Interp *interp, const char *zArg){
 ** Hence, the virtual table should have exactly the same column names and 
 ** types as the real table.
 */
-static int echoDeclareVtab(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoDeclareVtab(
   echo_vtab *pVtab, 
   sqlite3 *db 
 ){
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
-  if( pVtab->zTableName ){
+  എങ്കിൽ( pVtab->zTableName ){
     sqlite3_stmt *pStmt = 0;
     rc = sqlite3_prepare(db, 
         "SELECT sql FROM sqlite_schema WHERE type = 'table' AND name = ?",
         -1, &pStmt, 0);
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       sqlite3_bind_text(pStmt, 1, pVtab->zTableName, -1, 0);
-      if( sqlite3_step(pStmt)==SQLITE_ROW ){
-        int rc2;
-        const char *zCreateTable = (const char *)sqlite3_column_text(pStmt, 0);
+      എങ്കിൽ( sqlite3_step(pStmt)==SQLITE_ROW ){
+        പൂർണ്ണസംഖ്യ rc2;
+        സ്ഥിരം അക്ഷരം *zCreateTable = (സ്ഥിരം അക്ഷരം *)sqlite3_column_text(pStmt, 0);
         rc = sqlite3_declare_vtab(db, zCreateTable);
         rc2 = sqlite3_finalize(pStmt);
-        if( rc==SQLITE_OK ){
+        എങ്കിൽ( rc==SQLITE_OK ){
           rc = rc2;
         }
-      } else {
+      } അല്ലെങ്കിൽ {
         rc = sqlite3_finalize(pStmt);
-        if( rc==SQLITE_OK ){ 
+        എങ്കിൽ( rc==SQLITE_OK ){ 
           rc = SQLITE_ERROR;
         }
       }
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         rc = getColumnNames(db, pVtab->zTableName, &pVtab->aCol, &pVtab->nCol);
       }
-      if( rc==SQLITE_OK ){
+      എങ്കിൽ( rc==SQLITE_OK ){
         rc = getIndexArray(db, pVtab->zTableName, pVtab->nCol, &pVtab->aIndex);
       }
     }
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** This function frees all runtime structures associated with the virtual
 ** table pVtab.
 */
-static int echoDestructor(sqlite3_vtab *pVtab){
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoDestructor(sqlite3_vtab *pVtab){
   echo_vtab *p = (echo_vtab*)pVtab;
   sqlite3_free(p->aIndex);
   sqlite3_free(p->aCol);
@@ -379,11 +379,11 @@ static int echoDestructor(sqlite3_vtab *pVtab){
   sqlite3_free(p->zTableName);
   sqlite3_free(p->zLogName);
   sqlite3_free(p);
-  return 0;
+  തിരികെ 0;
 }
 
-typedef struct EchoModule EchoModule;
-struct EchoModule {
+തരനിർവചനം ഘടന EchoModule EchoModule;
+ഘടന EchoModule {
   Tcl_Interp *interp;
   sqlite3 *db;
 };
@@ -393,50 +393,50 @@ struct EchoModule {
 ** to allocate the required in-memory structures for a newly connected
 ** virtual table.
 */
-static int echoConstructor(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoConstructor(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ശൂന്യം *pAux,
+  പൂർണ്ണസംഖ്യ argc, സ്ഥിരം അക്ഷരം *സ്ഥിരം*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  അക്ഷരം **pzErr
 ){
-  int rc;
-  int i;
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ i;
   echo_vtab *pVtab;
 
   /* Allocate the sqlite3_vtab/echo_vtab structure itself */
-  pVtab = sqlite3MallocZero( sizeof(*pVtab) );
-  if( !pVtab ){
-    return SQLITE_NOMEM;
+  pVtab = sqlite3MallocZero( വലുപ്പം(*pVtab) );
+  എങ്കിൽ( !pVtab ){
+    തിരികെ SQLITE_NOMEM;
   }
   pVtab->interp = ((EchoModule *)pAux)->interp;
   pVtab->db = db;
 
   /* Allocate echo_vtab.zThis */
   pVtab->zThis = sqlite3_mprintf("%s", argv[2]);
-  if( !pVtab->zThis ){
+  എങ്കിൽ( !pVtab->zThis ){
     echoDestructor((sqlite3_vtab *)pVtab);
-    return SQLITE_NOMEM;
+    തിരികെ SQLITE_NOMEM;
   }
 
   /* Allocate echo_vtab.zTableName */
-  if( argc>3 ){
+  എങ്കിൽ( argc>3 ){
     pVtab->zTableName = sqlite3_mprintf("%s", argv[3]);
     dequoteString(pVtab->zTableName);
-    if( pVtab->zTableName && pVtab->zTableName[0]=='*' ){
-      char *z = sqlite3_mprintf("%s%s", argv[2], &(pVtab->zTableName[1]));
+    എങ്കിൽ( pVtab->zTableName && pVtab->zTableName[0]=='*' ){
+      അക്ഷരം *z = sqlite3_mprintf("%s%s", argv[2], &(pVtab->zTableName[1]));
       sqlite3_free(pVtab->zTableName);
       pVtab->zTableName = z;
       pVtab->isPattern = 1;
     }
-    if( !pVtab->zTableName ){
+    എങ്കിൽ( !pVtab->zTableName ){
       echoDestructor((sqlite3_vtab *)pVtab);
-      return SQLITE_NOMEM;
+      തിരികെ SQLITE_NOMEM;
     }
   }
 
   /* Log the arguments to this function to Tcl var ::echo_module */
-  for(i=0; i<argc; i++){
+  വേണ്ടി(i=0; i<argc; i++){
     appendToEchoModule(pVtab->interp, argv[i]);
   }
 
@@ -445,27 +445,27 @@ static int echoConstructor(
   ** return an error code.
   */
   rc = echoDeclareVtab(pVtab, db);
-  if( rc!=SQLITE_OK ){
+  എങ്കിൽ( rc!=SQLITE_OK ){
     echoDestructor((sqlite3_vtab *)pVtab);
-    return rc;
+    തിരികെ rc;
   }
 
   /* Success. Set *ppVtab and return */
   *ppVtab = &pVtab->base;
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* 
 ** Echo virtual table module xCreate method.
 */
-static int echoCreate(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoCreate(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ശൂന്യം *pAux,
+  പൂർണ്ണസംഖ്യ argc, സ്ഥിരം അക്ഷരം *സ്ഥിരം*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  അക്ഷരം **pzErr
 ){
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   appendToEchoModule(((EchoModule *)pAux)->interp, "xCreate");
   rc = echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
 
@@ -479,164 +479,164 @@ static int echoCreate(
   ** Note: The main point of this is to test that we can drop tables
   ** from within an xDestroy method call.
   */
-  if( rc==SQLITE_OK && argc==5 ){
-    char *zSql;
+  എങ്കിൽ( rc==SQLITE_OK && argc==5 ){
+    അക്ഷരം *zSql;
     echo_vtab *pVtab = *(echo_vtab **)ppVtab;
     pVtab->zLogName = sqlite3_mprintf("%s", argv[4]);
     zSql = sqlite3_mprintf("CREATE TABLE %Q(logmsg)", pVtab->zLogName);
     rc = sqlite3_exec(db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
-    if( rc!=SQLITE_OK ){
+    എങ്കിൽ( rc!=SQLITE_OK ){
       *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
     }
   }
 
-  if( *ppVtab && rc!=SQLITE_OK ){
+  എങ്കിൽ( *ppVtab && rc!=SQLITE_OK ){
     echoDestructor(*ppVtab);
     *ppVtab = 0;
   }
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     (*(echo_vtab**)ppVtab)->inTransaction = 1;
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /* 
 ** Echo virtual table module xConnect method.
 */
-static int echoConnect(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ശൂന്യം *pAux,
+  പൂർണ്ണസംഖ്യ argc, സ്ഥിരം അക്ഷരം *സ്ഥിരം*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  അക്ഷരം **pzErr
 ){
   appendToEchoModule(((EchoModule *)pAux)->interp, "xConnect");
-  return echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
+  തിരികെ echoConstructor(db, pAux, argc, argv, ppVtab, pzErr);
 }
 
 /* 
 ** Echo virtual table module xDisconnect method.
 */
-static int echoDisconnect(sqlite3_vtab *pVtab){
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoDisconnect(sqlite3_vtab *pVtab){
   appendToEchoModule(((echo_vtab *)pVtab)->interp, "xDisconnect");
-  return echoDestructor(pVtab);
+  തിരികെ echoDestructor(pVtab);
 }
 
 /* 
 ** Echo virtual table module xDestroy method.
 */
-static int echoDestroy(sqlite3_vtab *pVtab){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoDestroy(sqlite3_vtab *pVtab){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   echo_vtab *p = (echo_vtab *)pVtab;
   appendToEchoModule(((echo_vtab *)pVtab)->interp, "xDestroy");
 
   /* Drop the "log" table, if one exists (see echoCreate() for details) */
-  if( p && p->zLogName ){
-    char *zSql;
+  എങ്കിൽ( p && p->zLogName ){
+    അക്ഷരം *zSql;
     zSql = sqlite3_mprintf("DROP TABLE %Q", p->zLogName);
     rc = sqlite3_exec(p->db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     rc = echoDestructor(pVtab);
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /* 
 ** Echo virtual table module xOpen method.
 */
-static int echoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   echo_cursor *pCur;
-  if( simulateVtabError((echo_vtab *)pVTab, "xOpen") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError((echo_vtab *)pVTab, "xOpen") ){
+    തിരികെ SQLITE_ERROR;
   }
-  pCur = sqlite3MallocZero(sizeof(echo_cursor));
+  pCur = sqlite3MallocZero(വലുപ്പം(echo_cursor));
   *ppCursor = (sqlite3_vtab_cursor *)pCur;
-  return (pCur ? SQLITE_OK : SQLITE_NOMEM);
+  തിരികെ (pCur ? SQLITE_OK : SQLITE_NOMEM);
 }
 
 /* 
 ** Echo virtual table module xClose method.
 */
-static int echoClose(sqlite3_vtab_cursor *cur){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoClose(sqlite3_vtab_cursor *cur){
+  പൂർണ്ണസംഖ്യ rc;
   echo_cursor *pCur = (echo_cursor *)cur;
   sqlite3_stmt *pStmt = pCur->pStmt;
   pCur->pStmt = 0;
   sqlite3_free(pCur);
   rc = sqlite3_finalize(pStmt);
-  return rc;
+  തിരികെ rc;
 }
 
 /*
 ** Return non-zero if the cursor does not currently point to a valid record
 ** (i.e if the scan has finished), or zero otherwise.
 */
-static int echoEof(sqlite3_vtab_cursor *cur){
-  return (((echo_cursor *)cur)->pStmt ? 0 : 1);
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoEof(sqlite3_vtab_cursor *cur){
+  തിരികെ (((echo_cursor *)cur)->pStmt ? 0 : 1);
 }
 
 /* 
 ** Echo virtual table module xNext method.
 */
-static int echoNext(sqlite3_vtab_cursor *cur){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoNext(sqlite3_vtab_cursor *cur){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   echo_cursor *pCur = (echo_cursor *)cur;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xNext") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError((echo_vtab *)(cur->pVtab), "xNext") ){
+    തിരികെ SQLITE_ERROR;
   }
 
-  if( pCur->pStmt ){
+  എങ്കിൽ( pCur->pStmt ){
     rc = sqlite3_step(pCur->pStmt);
-    if( rc==SQLITE_ROW ){
+    എങ്കിൽ( rc==SQLITE_ROW ){
       rc = SQLITE_OK;
-    }else{
+    }അല്ലെങ്കിൽ{
       rc = sqlite3_finalize(pCur->pStmt);
       pCur->pStmt = 0;
     }
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /* 
 ** Echo virtual table module xColumn method.
 */
-static int echoColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
-  int iCol = i + 1;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, പൂർണ്ണസംഖ്യ i){
+  പൂർണ്ണസംഖ്യ iCol = i + 1;
   sqlite3_stmt *pStmt = ((echo_cursor *)cur)->pStmt;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xColumn") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError((echo_vtab *)(cur->pVtab), "xColumn") ){
+    തിരികെ SQLITE_ERROR;
   }
 
-  if( !pStmt ){
+  എങ്കിൽ( !pStmt ){
     sqlite3_result_null(ctx);
-  }else{
-    assert( sqlite3_data_count(pStmt)>iCol );
-    sqlite3_result_value(ctx, sqlite3_column_value(pStmt, iCol));
+  }അല്ലെങ്കിൽ{
+    പ്രതിജ്ഞാ( sqlite3_data_എണ്ണം(pStmt)>iCol );
+    sqlite3_result_മൂല്യം(ctx, sqlite3_column_മൂല്യം(pStmt, iCol));
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /* 
 ** Echo virtual table module xRowid method.
 */
-static int echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   sqlite3_stmt *pStmt = ((echo_cursor *)cur)->pStmt;
 
-  if( simulateVtabError((echo_vtab *)(cur->pVtab), "xRowid") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError((echo_vtab *)(cur->pVtab), "xRowid") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   *pRowid = sqlite3_column_int64(pStmt, 0);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -648,42 +648,42 @@ static int echoRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** In echoFilter(), code assert()s that the supplied idxNum value is
 ** indeed the hash of the supplied idxStr.
 */
-static int hashString(const char *zString){
+സ്ഥിതം പൂർണ്ണസംഖ്യ hashString(സ്ഥിരം അക്ഷരം *zString){
   u32 val = 0;
-  int ii;
-  for(ii=0; zString[ii]; ii++){
-    val = (val << 3) + (int)zString[ii];
+  പൂർണ്ണസംഖ്യ ii;
+  വേണ്ടി(ii=0; zString[ii]; ii++){
+    val = (val << 3) + (പൂർണ്ണസംഖ്യ)zString[ii];
   }
-  return (int)(val&0x7fffffff);
+  തിരികെ (പൂർണ്ണസംഖ്യ)(val&0x7fffffff);
 }
 
 /* 
 ** Echo virtual table module xFilter method.
 */
-static int echoFilter(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ idx_അക്കം, സ്ഥിരം അക്ഷരം *idxStr,
+  പൂർണ്ണസംഖ്യ argc, sqlite3_മൂല്യം **argv
 ){
-  int rc;
-  int i;
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ i;
 
   echo_cursor *pCur = (echo_cursor *)pVtabCursor;
   echo_vtab *pVtab = (echo_vtab *)pVtabCursor->pVtab;
   sqlite3 *db = pVtab->db;
 
-  if( simulateVtabError(pVtab, "xFilter") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xFilter") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   /* Check that idxNum matches idxStr */
-  assert( idxNum==hashString(idxStr) );
+  പ്രതിജ്ഞാ( idx_അക്കം==hashString(idxStr) );
 
   /* Log arguments to the ::echo_module Tcl variable */
   appendToEchoModule(pVtab->interp, "xFilter");
   appendToEchoModule(pVtab->interp, idxStr);
-  for(i=0; i<argc; i++){
-    appendToEchoModule(pVtab->interp, (const char*)sqlite3_value_text(argv[i]));
+  വേണ്ടി(i=0; i<argc; i++){
+    appendToEchoModule(pVtab->interp, (സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(argv[i]));
   }
 
   sqlite3_finalize(pCur->pStmt);
@@ -693,17 +693,17 @@ static int echoFilter(
   ** runtime parameters passed to this function to it.
   */
   rc = sqlite3_prepare(db, idxStr, -1, &pCur->pStmt, 0);
-  assert( pCur->pStmt || rc!=SQLITE_OK );
-  for(i=0; rc==SQLITE_OK && i<argc; i++){
-    rc = sqlite3_bind_value(pCur->pStmt, i+1, argv[i]);
+  പ്രതിജ്ഞാ( pCur->pStmt || rc!=SQLITE_OK );
+  വേണ്ടി(i=0; rc==SQLITE_OK && i<argc; i++){
+    rc = sqlite3_bind_മൂല്യം(pCur->pStmt, i+1, argv[i]);
   }
 
   /* If everything was successful, advance to the first row of the scan */
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     rc = echoNext(pVtabCursor);
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 
@@ -720,28 +720,28 @@ static int echoFilter(
 ** If the third argument, doFree, is true, then sqlite3_free() is
 ** also called to free the buffer pointed to by zAppend.
 */
-static void string_concat(char **pzStr, char *zAppend, int doFree, int *pRc){
-  char *zIn = *pzStr;
-  if( !zAppend && doFree && *pRc==SQLITE_OK ){
+സ്ഥിതം ശൂന്യം string_concat(അക്ഷരം **pzStr, അക്ഷരം *zAppend, പൂർണ്ണസംഖ്യ doFree, പൂർണ്ണസംഖ്യ *pRc){
+  അക്ഷരം *zIn = *pzStr;
+  എങ്കിൽ( !zAppend && doFree && *pRc==SQLITE_OK ){
     *pRc = SQLITE_NOMEM;
   }
-  if( *pRc!=SQLITE_OK ){
+  എങ്കിൽ( *pRc!=SQLITE_OK ){
     sqlite3_free(zIn);
     zIn = 0;
-  }else{
-    if( zIn ){
-      char *zTemp = zIn;
+  }അല്ലെങ്കിൽ{
+    എങ്കിൽ( zIn ){
+      അക്ഷരം *zTemp = zIn;
       zIn = sqlite3_mprintf("%s%s", zIn, zAppend);
       sqlite3_free(zTemp);
-    }else{
+    }അല്ലെങ്കിൽ{
       zIn = sqlite3_mprintf("%s", zAppend);
     }
-    if( !zIn ){
+    എങ്കിൽ( !zIn ){
       *pRc = SQLITE_NOMEM;
     }
   }
   *pzStr = zIn;
-  if( doFree ){
+  എങ്കിൽ( doFree ){
     sqlite3_free(zAppend);
   }
 }
@@ -756,22 +756,22 @@ static void string_concat(char **pzStr, char *zAppend, int doFree, int *pRc){
 ** (select all columns). Or, for version 3.10.0 and greater, the list of
 ** columns identified by the pIdxInfo->colUsed mask.
 */
-static char *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
-  char *zRet = 0;
-  if( sqlite3_libversion_number()<3010000 ){
+സ്ഥിതം അക്ഷരം *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
+  അക്ഷരം *zRet = 0;
+  എങ്കിൽ( sqlite3_libversion_സംഖ്യ()<3010000 ){
     zRet = sqlite3_mprintf(", *");
-  }else{
-    int i;
-    for(i=0; i<pTab->nCol; i++){
-      if( pIdxInfo->colUsed & ((sqlite3_uint64)1 << (i>=63 ? 63 : i)) ){
+  }അല്ലെങ്കിൽ{
+    പൂർണ്ണസംഖ്യ i;
+    വേണ്ടി(i=0; i<pTab->nCol; i++){
+      എങ്കിൽ( pIdxInfo->colUsed & ((sqlite3_uint64)1 << (i>=63 ? 63 : i)) ){
         zRet = sqlite3_mprintf("%z, %s", zRet, pTab->aCol[i]);
-      }else{
+      }അല്ലെങ്കിൽ{
         zRet = sqlite3_mprintf("%z, NULL", zRet);
       }
-      if( !zRet ) break;
+      എങ്കിൽ( !zRet ) നിർത്തുക;
     }
   }
-  return zRet;
+  തിരികെ zRet;
 }
 
 /*
@@ -796,29 +796,29 @@ static char *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
 ** where the <where-clause> and <order-by-clause> are determined
 ** by the contents of the structure pointed to by the pIdxInfo argument.
 */
-static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
-  char *zQuery = 0;
-  char *zCol = 0;
-  char *zNew;
-  int nArg = 0;
-  const char *zSep = "WHERE";
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  പൂർണ്ണസംഖ്യ ii;
+  അക്ഷരം *zQuery = 0;
+  അക്ഷരം *zCol = 0;
+  അക്ഷരം *zNew;
+  പൂർണ്ണസംഖ്യ nArg = 0;
+  സ്ഥിരം അക്ഷരം *zSep = "WHERE";
   echo_vtab *pVtab = (echo_vtab *)tab;
   sqlite3_stmt *pStmt = 0;
   Tcl_Interp *interp = pVtab->interp;
 
-  int nRow = 0;
-  int useIdx = 0;
-  int rc = SQLITE_OK;
-  int useCost = 0;
-  double cost = 0;
-  int isIgnoreUsable = 0;
-  if( Tcl_GetVar(interp, "echo_module_ignore_usable", TCL_GLOBAL_ONLY) ){
+  പൂർണ്ണസംഖ്യ nRow = 0;
+  പൂർണ്ണസംഖ്യ useIdx = 0;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ useCost = 0;
+  ഇരട്ട cost = 0;
+  പൂർണ്ണസംഖ്യ isIgnoreUsable = 0;
+  എങ്കിൽ( Tcl_GetVar(interp, "echo_module_ignore_usable", TCL_GLOBAL_ONLY) ){
     isIgnoreUsable = 1;
   }
 
-  if( simulateVtabError(pVtab, "xBestIndex") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xBestIndex") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   /* Determine the number of rows in the table and store this value in local
@@ -826,59 +826,59 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** rows in the table for a linear scan, or the log (base 2) of the 
   ** number of rows if the proposed scan uses an index.  
   */
-  if( Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY) ){
+  എങ്കിൽ( Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY) ){
     cost = atof(Tcl_GetVar(interp, "echo_module_cost", TCL_GLOBAL_ONLY));
     useCost = 1;
-  } else {
+  } അല്ലെങ്കിൽ {
     zQuery = sqlite3_mprintf("SELECT count(*) FROM %Q", pVtab->zTableName);
-    if( !zQuery ){
-      return SQLITE_NOMEM;
+    എങ്കിൽ( !zQuery ){
+      തിരികെ SQLITE_NOMEM;
     }
     rc = sqlite3_prepare(pVtab->db, zQuery, -1, &pStmt, 0);
     sqlite3_free(zQuery);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      തിരികെ rc;
     }
     sqlite3_step(pStmt);
     nRow = sqlite3_column_int(pStmt, 0);
     rc = sqlite3_finalize(pStmt);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    എങ്കിൽ( rc!=SQLITE_OK ){
+      തിരികെ rc;
     }
   }
 
   zCol = echoSelectList(pVtab, pIdxInfo);
-  if( !zCol ) return SQLITE_NOMEM;
+  എങ്കിൽ( !zCol ) തിരികെ SQLITE_NOMEM;
   zQuery = sqlite3_mprintf("SELECT rowid%z FROM %Q", zCol, pVtab->zTableName);
-  if( !zQuery ) return SQLITE_NOMEM;
+  എങ്കിൽ( !zQuery ) തിരികെ SQLITE_NOMEM;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    const struct sqlite3_index_constraint *pConstraint;
-    struct sqlite3_index_constraint_usage *pUsage;
-    int iCol;
+  വേണ്ടി(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    സ്ഥിരം ഘടന sqlite3_index_constraint *pConstraint;
+    ഘടന sqlite3_index_constraint_usage *pUsage;
+    പൂർണ്ണസംഖ്യ iCol;
 
     pConstraint = &pIdxInfo->aConstraint[ii];
     pUsage = &pIdxInfo->aConstraintUsage[ii];
 
-    if( !isIgnoreUsable && !pConstraint->usable ) continue;
+    എങ്കിൽ( !isIgnoreUsable && !pConstraint->usable ) തുടരുക;
 
     iCol = pConstraint->iColumn;
-    if( iCol<0 || pVtab->aIndex[iCol] ){
-      char *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
-      char *zOp = 0;
+    എങ്കിൽ( iCol<0 || pVtab->aIndex[iCol] ){
+      അക്ഷരം *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
+      അക്ഷരം *zOp = 0;
       useIdx = 1;
-      switch( pConstraint->op ){
-        case SQLITE_INDEX_CONSTRAINT_EQ:
-          zOp = "="; break;
-        case SQLITE_INDEX_CONSTRAINT_LT:
-          zOp = "<"; break;
-        case SQLITE_INDEX_CONSTRAINT_GT:
-          zOp = ">"; break;
-        case SQLITE_INDEX_CONSTRAINT_LE:
-          zOp = "<="; break;
-        case SQLITE_INDEX_CONSTRAINT_GE:
-          zOp = ">="; break;
-        case SQLITE_INDEX_CONSTRAINT_MATCH:
+      തിരഞ്ഞെടുപ്പ്( pConstraint->op ){
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_EQ:
+          zOp = "="; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_LT:
+          zOp = "<"; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_GT:
+          zOp = ">"; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_LE:
+          zOp = "<="; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_GE:
+          zOp = ">="; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_MATCH:
           /* Purposely translate the MATCH operator into a LIKE, which
           ** will be used by the next block of code to construct a new
           ** query.  It should also be noted here that the next block
@@ -886,19 +886,19 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
           ** in upper-case to trigger the special MATCH handling (i.e.
           ** wrapping the bound parameter with literal '%'s).
           */
-          zOp = "LIKE"; break;
-        case SQLITE_INDEX_CONSTRAINT_LIKE:
-          zOp = "like"; break;
-        case SQLITE_INDEX_CONSTRAINT_GLOB:
-          zOp = "glob"; break;
-        case SQLITE_INDEX_CONSTRAINT_REGEXP:
-          zOp = "regexp"; break;
+          zOp = "LIKE"; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_LIKE:
+          zOp = "like"; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_GLOB:
+          zOp = "glob"; നിർത്തുക;
+        അവസ്ഥ SQLITE_INDEX_CONSTRAINT_REGEXP:
+          zOp = "regexp"; നിർത്തുക;
       }
-      if( zOp ){
-        if( zOp[0]=='L' ){
+      എങ്കിൽ( zOp ){
+        എങ്കിൽ( zOp[0]=='L' ){
           zNew = sqlite3_mprintf(" %s %s LIKE (SELECT '%%'||?||'%%')", 
               zSep, zNewCol);
-        } else {
+        } അല്ലെങ്കിൽ {
           zNew = sqlite3_mprintf(" %s %s %s ?", zSep, zNewCol, zOp);
         }
         string_concat(&zQuery, zNew, 1, &rc);
@@ -913,12 +913,12 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** on a column that this virtual table has an index for, then consume 
   ** the ORDER BY clause.
   */
-  if( pIdxInfo->nOrderBy==1 && (
+  എങ്കിൽ( pIdxInfo->nOrderBy==1 && (
         pIdxInfo->aOrderBy->iColumn<0 ||
         pVtab->aIndex[pIdxInfo->aOrderBy->iColumn]) ){
-    int iCol = pIdxInfo->aOrderBy->iColumn;
-    char *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
-    char *zDir = pIdxInfo->aOrderBy->desc?"DESC":"ASC";
+    പൂർണ്ണസംഖ്യ iCol = pIdxInfo->aOrderBy->iColumn;
+    അക്ഷരം *zNewCol = iCol>=0 ? pVtab->aCol[iCol] : "rowid";
+    അക്ഷരം *zDir = pIdxInfo->aOrderBy->desc?"DESC":"ASC";
     zNew = sqlite3_mprintf(" ORDER BY %s %s", zNewCol, zDir);
     string_concat(&zQuery, zNew, 1, &rc);
     pIdxInfo->orderByConsumed = 1;
@@ -927,25 +927,25 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   appendToEchoModule(pVtab->interp, "xBestIndex");;
   appendToEchoModule(pVtab->interp, zQuery);
 
-  if( !zQuery ){
-    return rc;
+  എങ്കിൽ( !zQuery ){
+    തിരികെ rc;
   }
-  pIdxInfo->idxNum = hashString(zQuery);
+  pIdxInfo->idx_അക്കം = hashString(zQuery);
   pIdxInfo->idxStr = zQuery;
   pIdxInfo->needToFreeIdxStr = 1;
-  if( useCost ){
+  എങ്കിൽ( useCost ){
     pIdxInfo->estimatedCost = cost;
-  }else if( useIdx ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( useIdx ){
     /* Approximation of log2(nRow). */
-    for( ii=0; ii<(sizeof(int)*8)-1; ii++ ){
-      if( nRow & (1<<ii) ){
-        pIdxInfo->estimatedCost = (double)ii;
+    വേണ്ടി( ii=0; ii<(വലുപ്പം(പൂർണ്ണസംഖ്യ)*8)-1; ii++ ){
+      എങ്കിൽ( nRow & (1<<ii) ){
+        pIdxInfo->estimatedCost = (ഇരട്ട)ii;
       }
     }
-  }else{
-    pIdxInfo->estimatedCost = (double)nRow;
+  }അല്ലെങ്കിൽ{
+    pIdxInfo->estimatedCost = (ഇരട്ട)nRow;
   }
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -962,49 +962,49 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **    NULL       INTEGER    (nCol args)    INSERT (incl. rowid value)
 **
 */
-int echoUpdate(
+പൂർണ്ണസംഖ്യ echoUpdate(
   sqlite3_vtab *tab, 
-  int nData, 
-  sqlite3_value **apData, 
+  പൂർണ്ണസംഖ്യ nData, 
+  sqlite3_മൂല്യം **apData, 
   sqlite_int64 *pRowid
 ){
   echo_vtab *pVtab = (echo_vtab *)tab;
   sqlite3 *db = pVtab->db;
-  int rc = SQLITE_OK;
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
 
   sqlite3_stmt *pStmt = 0;
-  char *z = 0;               /* SQL statement to execute */
-  int bindArgZero = 0;       /* True to bind apData[0] to sql var no. nData */
-  int bindArgOne = 0;        /* True to bind apData[1] to sql var no. 1 */
-  int i;                     /* Counter variable used by for loops */
+  അക്ഷരം *z = 0;               /* SQL statement to execute */
+  പൂർണ്ണസംഖ്യ bindArgZero = 0;       /* True to bind apData[0] to sql var no. nData */
+  പൂർണ്ണസംഖ്യ bindArgOne = 0;        /* True to bind apData[1] to sql var no. 1 */
+  പൂർണ്ണസംഖ്യ i;                     /* Counter variable used by for loops */
 
-  assert( nData==pVtab->nCol+2 || nData==1 );
+  പ്രതിജ്ഞാ( nData==pVtab->nCol+2 || nData==1 );
 
   /* Ticket #3083 - make sure we always start a transaction prior to
   ** making any changes to a virtual table */
-  assert( pVtab->inTransaction );
+  പ്രതിജ്ഞാ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xUpdate") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xUpdate") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   /* If apData[0] is an integer and nData>1 then do an UPDATE */
-  if( nData>1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
-    char *zSep = " SET";
+  എങ്കിൽ( nData>1 && sqlite3_മൂല്യം_type(apData[0])==SQLITE_INTEGER ){
+    അക്ഷരം *zSep = " SET";
     z = sqlite3_mprintf("UPDATE %Q", pVtab->zTableName);
-    if( !z ){
+    എങ്കിൽ( !z ){
       rc = SQLITE_NOMEM;
     }
 
-    bindArgOne = (apData[1] && sqlite3_value_type(apData[1])==SQLITE_INTEGER);
+    bindArgOne = (apData[1] && sqlite3_മൂല്യം_type(apData[1])==SQLITE_INTEGER);
     bindArgZero = 1;
 
-    if( bindArgOne ){
+    എങ്കിൽ( bindArgOne ){
        string_concat(&z, " SET rowid=?1 ", 0, &rc);
        zSep = ",";
     }
-    for(i=2; i<nData; i++){
-      if( apData[i]==0 ) continue;
+    വേണ്ടി(i=2; i<nData; i++){
+      എങ്കിൽ( apData[i]==0 ) തുടരുക;
       string_concat(&z, sqlite3_mprintf(
           "%s %Q=?%d", zSep, pVtab->aCol[i-2], i), 1, &rc);
       zSep = ",";
@@ -1013,81 +1013,81 @@ int echoUpdate(
   }
 
   /* If apData[0] is an integer and nData==1 then do a DELETE */
-  else if( nData==1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
+  അല്ലെങ്കിൽ എങ്കിൽ( nData==1 && sqlite3_മൂല്യം_type(apData[0])==SQLITE_INTEGER ){
     z = sqlite3_mprintf("DELETE FROM %Q WHERE rowid = ?1", pVtab->zTableName);
-    if( !z ){
+    എങ്കിൽ( !z ){
       rc = SQLITE_NOMEM;
     }
     bindArgZero = 1;
   }
 
   /* If the first argument is NULL and there are more than two args, INSERT */
-  else if( nData>2 && sqlite3_value_type(apData[0])==SQLITE_NULL ){
-    int ii;
-    char *zInsert = 0;
-    char *zValues = 0;
+  അല്ലെങ്കിൽ എങ്കിൽ( nData>2 && sqlite3_മൂല്യം_type(apData[0])==SQLITE_NULL ){
+    പൂർണ്ണസംഖ്യ ii;
+    അക്ഷരം *z_തിരുകുക = 0;
+    അക്ഷരം *z_മൂല്യങ്ങൾ = 0;
   
-    zInsert = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
-    if( !zInsert ){
+    z_തിരുകുക = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
+    എങ്കിൽ( !z_തിരുകുക ){
       rc = SQLITE_NOMEM;
     }
-    if( sqlite3_value_type(apData[1])==SQLITE_INTEGER ){
+    എങ്കിൽ( sqlite3_മൂല്യം_type(apData[1])==SQLITE_INTEGER ){
       bindArgOne = 1;
-      zValues = sqlite3_mprintf("?");
-      string_concat(&zInsert, "rowid", 0, &rc);
+      z_മൂല്യങ്ങൾ = sqlite3_mprintf("?");
+      string_concat(&z_തിരുകുക, "rowid", 0, &rc);
     }
 
-    assert((pVtab->nCol+2)==nData);
-    for(ii=2; ii<nData; ii++){
-      string_concat(&zInsert, 
-          sqlite3_mprintf("%s%Q", zValues?", ":"", pVtab->aCol[ii-2]), 1, &rc);
-      string_concat(&zValues, 
-          sqlite3_mprintf("%s?%d", zValues?", ":"", ii), 1, &rc);
+    പ്രതിജ്ഞാ((pVtab->nCol+2)==nData);
+    വേണ്ടി(ii=2; ii<nData; ii++){
+      string_concat(&z_തിരുകുക, 
+          sqlite3_mprintf("%s%Q", z_മൂല്യങ്ങൾ?", ":"", pVtab->aCol[ii-2]), 1, &rc);
+      string_concat(&z_മൂല്യങ്ങൾ, 
+          sqlite3_mprintf("%s?%d", z_മൂല്യങ്ങൾ?", ":"", ii), 1, &rc);
     }
 
-    string_concat(&z, zInsert, 1, &rc);
+    string_concat(&z, z_തിരുകുക, 1, &rc);
     string_concat(&z, ") VALUES(", 0, &rc);
-    string_concat(&z, zValues, 1, &rc);
+    string_concat(&z, z_മൂല്യങ്ങൾ, 1, &rc);
     string_concat(&z, ")", 0, &rc);
   }
 
   /* Anything else is an error */
-  else{
-    assert(0);
-    return SQLITE_ERROR;
+  അല്ലെങ്കിൽ{
+    പ്രതിജ്ഞാ(0);
+    തിരികെ SQLITE_ERROR;
   }
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     rc = sqlite3_prepare(db, z, -1, &pStmt, 0);
   }
-  assert( rc!=SQLITE_OK || pStmt );
+  പ്രതിജ്ഞാ( rc!=SQLITE_OK || pStmt );
   sqlite3_free(z);
-  if( rc==SQLITE_OK ) {
-    if( bindArgZero ){
-      sqlite3_bind_value(pStmt, nData, apData[0]);
+  എങ്കിൽ( rc==SQLITE_OK ) {
+    എങ്കിൽ( bindArgZero ){
+      sqlite3_bind_മൂല്യം(pStmt, nData, apData[0]);
     }
-    if( bindArgOne ){
-      sqlite3_bind_value(pStmt, 1, apData[1]);
+    എങ്കിൽ( bindArgOne ){
+      sqlite3_bind_മൂല്യം(pStmt, 1, apData[1]);
     }
-    for(i=2; i<nData && rc==SQLITE_OK; i++){
-      if( apData[i] ) rc = sqlite3_bind_value(pStmt, i, apData[i]);
+    വേണ്ടി(i=2; i<nData && rc==SQLITE_OK; i++){
+      എങ്കിൽ( apData[i] ) rc = sqlite3_bind_മൂല്യം(pStmt, i, apData[i]);
     }
-    if( rc==SQLITE_OK ){
+    എങ്കിൽ( rc==SQLITE_OK ){
       sqlite3_step(pStmt);
       rc = sqlite3_finalize(pStmt);
-    }else{
+    }അല്ലെങ്കിൽ{
       sqlite3_finalize(pStmt);
     }
   }
 
-  if( pRowid && rc==SQLITE_OK ){
-    *pRowid = sqlite3_last_insert_rowid(db);
+  എങ്കിൽ( pRowid && rc==SQLITE_OK ){
+    *pRowid = sqlite3_last_തിരുകുക_rowid(db);
   }
-  if( rc!=SQLITE_OK ){
-    tab->zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    tab->z_Err_സന്ദേശം = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -1095,104 +1095,104 @@ int echoUpdate(
 ** virtual tables. Do nothing other than add the name of the callback
 ** to the $::echo_module Tcl variable.
 */
-static int echoTransactionCall(sqlite3_vtab *tab, const char *zCall){
-  char *z;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoTransactionCall(sqlite3_vtab *tab, സ്ഥിരം അക്ഷരം *zCall){
+  അക്ഷരം *z;
   echo_vtab *pVtab = (echo_vtab *)tab;
   z = sqlite3_mprintf("echo(%s)", pVtab->zTableName);
-  if( z==0 ) return SQLITE_NOMEM;
+  എങ്കിൽ( z==0 ) തിരികെ SQLITE_NOMEM;
   appendToEchoModule(pVtab->interp, zCall);
   appendToEchoModule(pVtab->interp, z);
   sqlite3_free(z);
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
-static int echoBegin(sqlite3_vtab *tab){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoBegin(sqlite3_vtab *tab){
+  പൂർണ്ണസംഖ്യ rc;
   echo_vtab *pVtab = (echo_vtab *)tab;
   Tcl_Interp *interp = pVtab->interp;
-  const char *zVal; 
+  സ്ഥിരം അക്ഷരം *zVal; 
 
   /* Ticket #3083 - do not start a transaction if we are already in
   ** a transaction */
-  assert( !pVtab->inTransaction );
+  പ്രതിജ്ഞാ( !pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xBegin") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xBegin") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   rc = echoTransactionCall(tab, "xBegin");
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     /* Check if the $::echo_module_begin_fail variable is defined. If it is,
     ** and it is set to the name of the real table underlying this virtual
     ** echo module table, then cause this xSync operation to fail.
     */
     zVal = Tcl_GetVar(interp, "echo_module_begin_fail", TCL_GLOBAL_ONLY);
-    if( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
+    എങ്കിൽ( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
       rc = SQLITE_ERROR;
     }
   }
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     pVtab->inTransaction = 1;
   }
-  return rc;
+  തിരികെ rc;
 }
-static int echoSync(sqlite3_vtab *tab){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoSync(sqlite3_vtab *tab){
+  പൂർണ്ണസംഖ്യ rc;
   echo_vtab *pVtab = (echo_vtab *)tab;
   Tcl_Interp *interp = pVtab->interp;
-  const char *zVal; 
+  സ്ഥിരം അക്ഷരം *zVal; 
 
   /* Ticket #3083 - Only call xSync if we have previously started a
   ** transaction */
-  assert( pVtab->inTransaction );
+  പ്രതിജ്ഞാ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xSync") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xSync") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   rc = echoTransactionCall(tab, "xSync");
 
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     /* Check if the $::echo_module_sync_fail variable is defined. If it is,
     ** and it is set to the name of the real table underlying this virtual
     ** echo module table, then cause this xSync operation to fail.
     */
     zVal = Tcl_GetVar(interp, "echo_module_sync_fail", TCL_GLOBAL_ONLY);
-    if( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
+    എങ്കിൽ( zVal && 0==strcmp(zVal, pVtab->zTableName) ){
       rc = -1;
     }
   }
-  return rc;
+  തിരികെ rc;
 }
-static int echoCommit(sqlite3_vtab *tab){
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoCommit(sqlite3_vtab *tab){
   echo_vtab *pVtab = (echo_vtab*)tab;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
 
   /* Ticket #3083 - Only call xCommit if we have previously started
   ** a transaction */
-  assert( pVtab->inTransaction );
+  പ്രതിജ്ഞാ( pVtab->inTransaction );
 
-  if( simulateVtabError(pVtab, "xCommit") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(pVtab, "xCommit") ){
+    തിരികെ SQLITE_ERROR;
   }
 
   sqlite3BeginBenignMalloc();
   rc = echoTransactionCall(tab, "xCommit");
   sqlite3EndBenignMalloc();
   pVtab->inTransaction = 0;
-  return rc;
+  തിരികെ rc;
 }
-static int echoRollback(sqlite3_vtab *tab){
-  int rc;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoRollback(sqlite3_vtab *tab){
+  പൂർണ്ണസംഖ്യ rc;
   echo_vtab *pVtab = (echo_vtab*)tab;
 
   /* Ticket #3083 - Only call xRollback if we have previously started
   ** a transaction */
-  assert( pVtab->inTransaction );
+  പ്രതിജ്ഞാ( pVtab->inTransaction );
 
   rc = echoTransactionCall(tab, "xRollback");
   pVtab->inTransaction = 0;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -1200,25 +1200,25 @@ static int echoRollback(sqlite3_vtab *tab){
 ** all arguments to the ::echo_glob_overload procedure of TCL
 ** and return the result of that procedure as a string.
 */
-static void overloadedGlobFunction(
+സ്ഥിതം ശൂന്യം overloadedGlobFunction(
   sqlite3_context *pContext,
-  int nArg,
-  sqlite3_value **apArg
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **apArg
 ){
   Tcl_Interp *interp = sqlite3_user_data(pContext);
   Tcl_DString str;
-  int i;
-  int rc;
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ rc;
   Tcl_DStringInit(&str);
   Tcl_DStringAppendElement(&str, "::echo_glob_overload");
-  for(i=0; i<nArg; i++){
-    Tcl_DStringAppendElement(&str, (char*)sqlite3_value_text(apArg[i]));
+  വേണ്ടി(i=0; i<nArg; i++){
+    Tcl_DStringAppendElement(&str, (അക്ഷരം*)sqlite3_മൂല്യം_text(apArg[i]));
   }
-  rc = Tcl_Eval(interp, Tcl_DStringValue(&str));
+  rc = Tcl_Eval(interp, Tcl_DString_മൂല്യം(&str));
   Tcl_DStringFree(&str);
-  if( rc ){
+  എങ്കിൽ( rc ){
     sqlite3_result_error(pContext, Tcl_GetStringResult(interp), -1);
-  }else{
+  }അല്ലെങ്കിൽ{
     sqlite3_result_text(pContext, Tcl_GetStringResult(interp),
                         -1, SQLITE_TRANSIENT);
   }
@@ -1233,67 +1233,67 @@ static void overloadedGlobFunction(
 ** do so if the function is named "glob", and a TCL command named
 ** ::echo_glob_overload exists.
 */
-static int echoFindFunction(
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoFindFunction(
   sqlite3_vtab *vtab,
-  int nArg,
-  const char *zFuncName,
-  void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),
-  void **ppArg
+  പൂർണ്ണസംഖ്യ nArg,
+  സ്ഥിരം അക്ഷരം *zFuncName,
+  ശൂന്യം (**pxFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**),
+  ശൂന്യം **ppArg
 ){
   echo_vtab *pVtab = (echo_vtab *)vtab;
   Tcl_Interp *interp = pVtab->interp;
   Tcl_CmdInfo info;
-  if( strcmp(zFuncName,"glob")!=0 ){
-    return 0;
+  എങ്കിൽ( strcmp(zFuncName,"glob")!=0 ){
+    തിരികെ 0;
   }
-  if( Tcl_GetCommandInfo(interp, "::echo_glob_overload", &info)==0 ){
-    return 0;
+  എങ്കിൽ( Tcl_GetCommandInfo(interp, "::echo_glob_overload", &info)==0 ){
+    തിരികെ 0;
   }
   *pxFunc = overloadedGlobFunction;
   *ppArg = interp;
-  return 1;
+  തിരികെ 1;
 }
 
-static int echoRename(sqlite3_vtab *vtab, const char *zNewName){
-  int rc = SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoRename(sqlite3_vtab *vtab, സ്ഥിരം അക്ഷരം *zNewName){
+  പൂർണ്ണസംഖ്യ rc = SQLITE_OK;
   echo_vtab *p = (echo_vtab *)vtab;
 
-  if( simulateVtabError(p, "xRename") ){
-    return SQLITE_ERROR;
+  എങ്കിൽ( simulateVtabError(p, "xRename") ){
+    തിരികെ SQLITE_ERROR;
   }
 
-  if( p->isPattern ){
-    int nThis = (int)strlen(p->zThis);
-    char *zSql = sqlite3_mprintf("ALTER TABLE %s RENAME TO %s%s", 
+  എങ്കിൽ( p->isPattern ){
+    പൂർണ്ണസംഖ്യ nThis = (പൂർണ്ണസംഖ്യ)strlen(p->zThis);
+    അക്ഷരം *zSql = sqlite3_mprintf("ALTER TABLE %s RENAME TO %s%s", 
         p->zTableName, zNewName, &p->zTableName[nThis]
     );
     rc = sqlite3_exec(p->db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
 
-  return rc;
+  തിരികെ rc;
 }
 
-static int echoSavepoint(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoSavepoint(sqlite3_vtab *pVTab, പൂർണ്ണസംഖ്യ iSavepoint){
+  പ്രതിജ്ഞാ( pVTab );
+  തിരികെ SQLITE_OK;
 }
 
-static int echoRelease(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoRelease(sqlite3_vtab *pVTab, പൂർണ്ണസംഖ്യ iSavepoint){
+  പ്രതിജ്ഞാ( pVTab );
+  തിരികെ SQLITE_OK;
 }
 
-static int echoRollbackTo(sqlite3_vtab *pVTab, int iSavepoint){
-  assert( pVTab );
-  return SQLITE_OK;
+സ്ഥിതം പൂർണ്ണസംഖ്യ echoRollbackTo(sqlite3_vtab *pVTab, പൂർണ്ണസംഖ്യ iSavepoint){
+  പ്രതിജ്ഞാ( pVTab );
+  തിരികെ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that merely "echos" the contents of another
 ** table (like an SQL VIEW).
 */
-static sqlite3_module echoModule = {
+സ്ഥിതം sqlite3_module echoModule = {
   1,                         /* iVersion */
   echoCreate,
   echoConnect,
@@ -1321,7 +1321,7 @@ static sqlite3_module echoModule = {
   0                          /* xIntegrity */
 };
 
-static sqlite3_module echoModuleV2 = {
+സ്ഥിതം sqlite3_module echoModuleV2 = {
   2,                         /* iVersion */
   echoCreate,
   echoConnect,
@@ -1352,10 +1352,10 @@ static sqlite3_module echoModuleV2 = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern const char *sqlite3ErrName(int);
+ബാഹ്യ പൂർണ്ണസംഖ്യ getDbPointer(Tcl_Interp *interp, സ്ഥിരം അക്ഷരം *zA, sqlite3 **ppDb);
+ബാഹ്യ സ്ഥിരം അക്ഷരം *sqlite3ErrName(പൂർണ്ണസംഖ്യ);
 
-static void moduleDestroy(void *p){
+സ്ഥിതം ശൂന്യം moduleDestroy(ശൂന്യം *p){
   EchoModule *pMod = (EchoModule*)p;
   sqlite3_create_function(pMod->db, "function_that_does_not_exist_0982ma98",
                           SQLITE_ANY, 1, 0, 0, 0, 0);
@@ -1365,41 +1365,41 @@ static void moduleDestroy(void *p){
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_echo_module(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI register_echo_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
   sqlite3 *db;
   EchoModule *pMod;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  എങ്കിൽ( objc!=2 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "DB");
+    തിരികെ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  എങ്കിൽ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) തിരികെ TCL_ERROR;
 
   /* Virtual table module "echo" */
-  pMod = sqlite3_malloc(sizeof(EchoModule));
+  pMod = sqlite3_malloc(വലുപ്പം(EchoModule));
   pMod->interp = interp;
   pMod->db = db;
   rc = sqlite3_create_module_v2(
-      db, "echo", &echoModule, (void*)pMod, moduleDestroy
+      db, "echo", &echoModule, (ശൂന്യം*)pMod, moduleDestroy
   );
 
   /* Virtual table module "echo_v2" */
-  if( rc==SQLITE_OK ){
-    pMod = sqlite3_malloc(sizeof(EchoModule));
+  എങ്കിൽ( rc==SQLITE_OK ){
+    pMod = sqlite3_malloc(വലുപ്പം(EchoModule));
     pMod->interp = interp;
     pMod->db = db;
     rc = sqlite3_create_module_v2(db, "echo_v2", 
-        &echoModuleV2, (void*)pMod, moduleDestroy
+        &echoModuleV2, (ശൂന്യം*)pMod, moduleDestroy
     );
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-  return TCL_OK;
+  Tcl_SetResult(interp, (അക്ഷരം *)sqlite3ErrName(rc), TCL_STATIC);
+  തിരികെ TCL_OK;
 }
 
 /*
@@ -1407,25 +1407,25 @@ static int SQLITE_TCLAPI register_echo_module(
 **
 ** sqlite3_declare_vtab DB SQL
 */
-static int SQLITE_TCLAPI declare_vtab(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI declare_vtab(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  പൂർണ്ണസംഖ്യ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  int rc;
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB SQL");
-    return TCL_ERROR;
+  പൂർണ്ണസംഖ്യ rc;
+  എങ്കിൽ( objc!=3 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "DB SQL");
+    തിരികെ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  എങ്കിൽ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) തിരികെ TCL_ERROR;
   rc = sqlite3_declare_vtab(db, Tcl_GetString(objv[2]));
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3_errmsg(db), TCL_VOLATILE);
-    return TCL_ERROR;
+  എങ്കിൽ( rc!=SQLITE_OK ){
+    Tcl_SetResult(interp, (അക്ഷരം *)sqlite3_errmsg(db), TCL_VOLATILE);
+    തിരികെ TCL_ERROR;
   }
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 #endif /* ifndef SQLITE_OMIT_VIRTUALTABLE */
@@ -1433,21 +1433,21 @@ static int SQLITE_TCLAPI declare_vtab(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest8_Init(Tcl_Interp *interp){
+പൂർണ്ണസംഖ്യ Sqlitetest8_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+  സ്ഥിതം ഘടന {
+     അക്ഷരം *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ശൂന്യം *clientData;
   } aObjCmd[] = {
      { "register_echo_module",       register_echo_module, 0 },
      { "sqlite3_declare_vtab",       declare_vtab, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  പൂർണ്ണസംഖ്യ i;
+  വേണ്ടി(i=0; i<വലുപ്പം(aObjCmd)/വലുപ്പം(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }

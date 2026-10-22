@@ -12,65 +12,65 @@
 ** Code for testing all sorts of SQLite interfaces.  This code
 ** implements new SQL functions used by the test scripts.
 */
-#include "sqlite3.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#അന്തര്ഭാവ "sqlite3.h"
+#അന്തര്ഭാവ "tclsqlite.h"
+#അന്തര്ഭാവ <stdlib.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <assert.h>
 
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ "vdbeInt.h"
 
 /*
 ** Allocate nByte bytes of space using sqlite3_malloc(). If the
 ** allocation fails, call sqlite3_result_error_nomem() to notify
 ** the database handle that malloc() has failed.
 */
-static void *testContextMalloc(sqlite3_context *context, int nByte){
-  char *z = sqlite3_malloc(nByte);
-  if( !z && nByte>0 ){
+സ്ഥിതം ശൂന്യം *testContextMalloc(sqlite3_context *context, പൂർണ്ണസംഖ്യ nByte){
+  അക്ഷരം *z = sqlite3_malloc(nByte);
+  എങ്കിൽ( !z && nByte>0 ){
     sqlite3_result_error_nomem(context);
   }
-  return z;
+  തിരികെ z;
 }
 
 /*
 ** This function generates a string of random characters.  Used for
 ** generating test data.
 */
-static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
-  static const unsigned char zSrc[] = 
+സ്ഥിതം ശൂന്യം randStr(sqlite3_context *context, പൂർണ്ണസംഖ്യ argc, sqlite3_മൂല്യം **argv){
+  സ്ഥിതം സ്ഥിരം unsigned അക്ഷരം zSrc[] = 
      "abcdefghijklmnopqrstuvwxyz"
      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
      "0123456789"
      ".-!,:*^+=_|?/<> ";
-  int iMin, iMax, n, r, i;
-  unsigned char zBuf[1000];
+  പൂർണ്ണസംഖ്യ iMin, iMax, n, r, i;
+  unsigned അക്ഷരം zBuf[1000];
 
   /* It used to be possible to call randstr() with any number of arguments,
   ** but now it is registered with SQLite as requiring exactly 2.
   */
-  assert(argc==2);
+  പ്രതിജ്ഞാ(argc==2);
 
-  iMin = sqlite3_value_int(argv[0]);
-  if( iMin<0 ) iMin = 0;
-  if( iMin>=sizeof(zBuf) ) iMin = sizeof(zBuf)-1;
-  iMax = sqlite3_value_int(argv[1]);
-  if( iMax<iMin ) iMax = iMin;
-  if( iMax>=sizeof(zBuf) ) iMax = sizeof(zBuf)-1;
+  iMin = sqlite3_മൂല്യം_int(argv[0]);
+  എങ്കിൽ( iMin<0 ) iMin = 0;
+  എങ്കിൽ( iMin>=വലുപ്പം(zBuf) ) iMin = വലുപ്പം(zBuf)-1;
+  iMax = sqlite3_മൂല്യം_int(argv[1]);
+  എങ്കിൽ( iMax<iMin ) iMax = iMin;
+  എങ്കിൽ( iMax>=വലുപ്പം(zBuf) ) iMax = വലുപ്പം(zBuf)-1;
   n = iMin;
-  if( iMax>iMin ){
-    sqlite3_randomness(sizeof(r), &r);
+  എങ്കിൽ( iMax>iMin ){
+    sqlite3_randomness(വലുപ്പം(r), &r);
     r &= 0x7fffffff;
     n += r%(iMax + 1 - iMin);
   }
-  assert( n<sizeof(zBuf) );
+  പ്രതിജ്ഞാ( n<വലുപ്പം(zBuf) );
   sqlite3_randomness(n, zBuf);
-  for(i=0; i<n; i++){
-    zBuf[i] = zSrc[zBuf[i]%(sizeof(zSrc)-1)];
+  വേണ്ടി(i=0; i<n; i++){
+    zBuf[i] = zSrc[zBuf[i]%(വലുപ്പം(zSrc)-1)];
   }
   zBuf[n] = 0;
-  sqlite3_result_text(context, (char*)zBuf, n, SQLITE_TRANSIENT);
+  sqlite3_result_text(context, (അക്ഷരം*)zBuf, n, SQLITE_TRANSIENT);
 }
 
 /*
@@ -84,66 +84,66 @@ static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
 **
 ** WARNING: Not threadsafe.
 */
-static int test_destructor_count_var = 0;
-static void destructor(void *p){
-  char *zVal = (char *)p;
-  assert(zVal);
+സ്ഥിതം പൂർണ്ണസംഖ്യ test_destructor_എണ്ണം_var = 0;
+സ്ഥിതം ശൂന്യം destructor(ശൂന്യം *p){
+  അക്ഷരം *zVal = (അക്ഷരം *)p;
+  പ്രതിജ്ഞാ(zVal);
   zVal--;
   sqlite3_free(zVal);
-  test_destructor_count_var--;
+  test_destructor_എണ്ണം_var--;
 }
-static void test_destructor(
+സ്ഥിതം ശൂന്യം test_destructor(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  char *zVal;
-  int len;
+  അക്ഷരം *zVal;
+  പൂർണ്ണസംഖ്യ len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes(argv[0]); 
+  test_destructor_എണ്ണം_var++;
+  പ്രതിജ്ഞാ( nArg==1 );
+  എങ്കിൽ( sqlite3_മൂല്യം_type(argv[0])==SQLITE_NULL ) തിരികെ;
+  len = sqlite3_മൂല്യം_bytes(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  എങ്കിൽ( !zVal ){
+    തിരികെ;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text(argv[0]), len);
+  memcpy(zVal, sqlite3_മൂല്യം_text(argv[0]), len);
   sqlite3_result_text(pCtx, zVal, -1, destructor);
 }
 #ifndef SQLITE_OMIT_UTF16
-static void test_destructor16(
+സ്ഥിതം ശൂന്യം test_destructor16(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  char *zVal;
-  int len;
+  അക്ഷരം *zVal;
+  പൂർണ്ണസംഖ്യ len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes16(argv[0]); 
+  test_destructor_എണ്ണം_var++;
+  പ്രതിജ്ഞാ( nArg==1 );
+  എങ്കിൽ( sqlite3_മൂല്യം_type(argv[0])==SQLITE_NULL ) തിരികെ;
+  len = sqlite3_മൂല്യം_bytes16(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  എങ്കിൽ( !zVal ){
+    തിരികെ;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text16(argv[0]), len);
+  memcpy(zVal, sqlite3_മൂല്യം_text16(argv[0]), len);
   sqlite3_result_text16(pCtx, zVal, -1, destructor);
 }
 #endif
-static void test_destructor_count(
+സ്ഥിതം ശൂന്യം test_destructor_എണ്ണം(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  sqlite3_result_int(pCtx, test_destructor_count_var);
+  sqlite3_result_int(pCtx, test_destructor_എണ്ണം_var);
 }
 
 /*
@@ -152,17 +152,17 @@ static void test_destructor_count(
 ** API function.
 */
 #ifndef SQLITE_UNTESTABLE
-void sqlite3BeginBenignMalloc(void);
-void sqlite3EndBenignMalloc(void);
-#else
+ശൂന്യം sqlite3BeginBenignMalloc(ശൂന്യം);
+ശൂന്യം sqlite3EndBenignMalloc(ശൂന്യം);
+#അല്ലെങ്കിൽ
   #define sqlite3BeginBenignMalloc()
   #define sqlite3EndBenignMalloc()
 #endif
-static void test_agg_errmsg16_step(sqlite3_context *a, int b,sqlite3_value **c){
+സ്ഥിതം ശൂന്യം test_agg_errmsg16_step(sqlite3_context *a, പൂർണ്ണസംഖ്യ b,sqlite3_മൂല്യം **c){
 }
-static void test_agg_errmsg16_final(sqlite3_context *ctx){
+സ്ഥിതം ശൂന്യം test_agg_errmsg16_final(sqlite3_context *ctx){
 #ifndef SQLITE_OMIT_UTF16
-  const void *z;
+  സ്ഥിരം ശൂന്യം *z;
   sqlite3 * db = sqlite3_context_db_handle(ctx);
   sqlite3_aggregate_context(ctx, 2048);
   z = sqlite3_errmsg16(db);
@@ -181,30 +181,30 @@ static void test_agg_errmsg16_final(sqlite3_context *ctx){
 ** registration, the result for that argument is 1.  The overall result
 ** is the individual argument results separated by spaces.
 */
-static void free_test_auxdata(void *p) {sqlite3_free(p);}
-static void test_auxdata(
+സ്ഥിതം ശൂന്യം free_test_auxdata(ശൂന്യം *p) {sqlite3_free(p);}
+സ്ഥിതം ശൂന്യം test_auxdata(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  int i;
-  char *zRet = testContextMalloc(pCtx, nArg*2);
-  if( !zRet ) return;
+  പൂർണ്ണസംഖ്യ i;
+  അക്ഷരം *zRet = testContextMalloc(pCtx, nArg*2);
+  എങ്കിൽ( !zRet ) തിരികെ;
   memset(zRet, 0, nArg*2);
-  for(i=0; i<nArg; i++){
-    char const *z = (char*)sqlite3_value_text(argv[i]);
-    if( z ){
-      int n;
-      char *zAux = sqlite3_get_auxdata(pCtx, i);
-      if( zAux ){
+  വേണ്ടി(i=0; i<nArg; i++){
+    അക്ഷരം സ്ഥിരം *z = (അക്ഷരം*)sqlite3_മൂല്യം_text(argv[i]);
+    എങ്കിൽ( z ){
+      പൂർണ്ണസംഖ്യ n;
+      അക്ഷരം *zAux = sqlite3_get_auxdata(pCtx, i);
+      എങ്കിൽ( zAux ){
         zRet[i*2] = '1';
-        assert( strcmp(zAux,z)==0 );
-      }else {
+        പ്രതിജ്ഞാ( strcmp(zAux,z)==0 );
+      }അല്ലെങ്കിൽ {
         zRet[i*2] = '0';
       }
-      n = (int)strlen(z) + 1;
+      n = (പൂർണ്ണസംഖ്യ)strlen(z) + 1;
       zAux = testContextMalloc(pCtx, n);
-      if( zAux ){
+      എങ്കിൽ( zAux ){
         memcpy(zAux, z, n);
         sqlite3_set_auxdata(pCtx, i, zAux, free_test_auxdata);
       }
@@ -219,14 +219,14 @@ static void test_auxdata(
 ** returns a copy of its first argument as the error message.  If the
 ** second argument exists, it becomes the error code.
 */
-static void test_error(
+സ്ഥിതം ശൂന്യം test_error(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  sqlite3_result_error(pCtx, (char*)sqlite3_value_text(argv[0]), -1);
-  if( nArg==2 ){
-    sqlite3_result_error_code(pCtx, sqlite3_value_int(argv[1]));
+  sqlite3_result_error(pCtx, (അക്ഷരം*)sqlite3_മൂല്യം_text(argv[0]), -1);
+  എങ്കിൽ( nArg==2 ){
+    sqlite3_result_error_code(pCtx, sqlite3_മൂല്യം_int(argv[1]));
   }
 }
 
@@ -236,21 +236,21 @@ static void test_error(
 ** and so forth.  Can be used (for example) to provide a sequence number
 ** in a result set.
 */
-static void counterFunc(
+സ്ഥിതം ശൂന്യം counterFunc(
   sqlite3_context *pCtx,   /* Function context */
-  int nArg,                /* Number of function arguments */
-  sqlite3_value **argv     /* Values for all function arguments */
+  പൂർണ്ണസംഖ്യ nArg,                /* Number of function arguments */
+  sqlite3_മൂല്യം **argv     /* Values for all function arguments */
 ){
-  int *pCounter = (int*)sqlite3_get_auxdata(pCtx, 0);
-  if( pCounter==0 ){
-    pCounter = sqlite3_malloc( sizeof(*pCounter) );
-    if( pCounter==0 ){
+  പൂർണ്ണസംഖ്യ *pCounter = (പൂർണ്ണസംഖ്യ*)sqlite3_get_auxdata(pCtx, 0);
+  എങ്കിൽ( pCounter==0 ){
+    pCounter = sqlite3_malloc( വലുപ്പം(*pCounter) );
+    എങ്കിൽ( pCounter==0 ){
       sqlite3_result_error_nomem(pCtx);
-      return;
+      തിരികെ;
     }
-    *pCounter = sqlite3_value_int(argv[0]);
+    *pCounter = sqlite3_മൂല്യം_int(argv[0]);
     sqlite3_set_auxdata(pCtx, 0, pCounter, sqlite3_free);
-  }else{
+  }അല്ലെങ്കിൽ{
     ++*pCounter;
   }
   sqlite3_result_int(pCtx, *pCounter);
@@ -269,52 +269,52 @@ static void counterFunc(
 ** We want to verify that the type conversions that occur on the
 ** first argument do not invalidate the second argument.
 */
-static void test_isolation(
+സ്ഥിതം ശൂന്യം test_isolation(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
 #ifndef SQLITE_OMIT_UTF16
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
+  sqlite3_മൂല്യം_text16(argv[0]);
+  sqlite3_മൂല്യം_text(argv[0]);
+  sqlite3_മൂല്യം_text16(argv[0]);
+  sqlite3_മൂല്യം_text(argv[0]);
 #endif
-  sqlite3_result_value(pCtx, argv[1]);
+  sqlite3_result_മൂല്യം(pCtx, argv[1]);
 }
 
 /*
 ** Invoke an SQL statement recursively.  The function result is the 
 ** first column of the first row of the result set.
 */
-static void test_eval(
+സ്ഥിതം ശൂന്യം test_eval(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
   sqlite3_stmt *pStmt;
-  int rc;
+  പൂർണ്ണസംഖ്യ rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  const char *zSql;
-  static const char zTag[] = "test_eval()";
+  സ്ഥിരം അക്ഷരം *zSql;
+  സ്ഥിതം സ്ഥിരം അക്ഷരം zTag[] = "test_eval()";
 
-  if( sqlite3_get_clientdata(db, zTag) ){
+  എങ്കിൽ( sqlite3_get_clientdata(db, zTag) ){
     sqlite3_result_error(pCtx, "nested test_eval()", -1);
-    return;
+    തിരികെ;
   }
-  zSql = (char*)sqlite3_value_text(argv[0]);
+  zSql = (അക്ഷരം*)sqlite3_മൂല്യം_text(argv[0]);
   sqlite3_set_clientdata(db, zTag, &rc, 0);
   rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
-  if( rc==SQLITE_OK ){
+  എങ്കിൽ( rc==SQLITE_OK ){
     rc = sqlite3_step(pStmt);
-    if( rc==SQLITE_ROW ){
-      sqlite3_result_value(pCtx, sqlite3_column_value(pStmt, 0));
+    എങ്കിൽ( rc==SQLITE_ROW ){
+      sqlite3_result_മൂല്യം(pCtx, sqlite3_column_മൂല്യം(pStmt, 0));
     }
     rc = sqlite3_finalize(pStmt);
   }
   sqlite3_set_clientdata(db, zTag, 0, 0);
-  if( rc ){
-    char *zErr;
+  എങ്കിൽ( rc ){
+    അക്ഷരം *zErr;
     zErr = sqlite3_mprintf("sqlite3_prepare_v2() error: %s",sqlite3_errmsg(db));
     sqlite3_result_text(pCtx, zErr, -1, sqlite3_free);
     sqlite3_result_error_code(pCtx, rc);
@@ -325,22 +325,22 @@ static void test_eval(
 /*
 ** convert one character from hex to binary
 */
-static int testHexChar(char c){
-  if( c>='0' && c<='9' ){
-    return c - '0';
-  }else if( c>='a' && c<='f' ){
-    return c - 'a' + 10;
-  }else if( c>='A' && c<='F' ){
-    return c - 'A' + 10;
+സ്ഥിതം പൂർണ്ണസംഖ്യ testHexChar(അക്ഷരം c){
+  എങ്കിൽ( c>='0' && c<='9' ){
+    തിരികെ c - '0';
+  }അല്ലെങ്കിൽ എങ്കിൽ( c>='a' && c<='f' ){
+    തിരികെ c - 'a' + 10;
+  }അല്ലെങ്കിൽ എങ്കിൽ( c>='A' && c<='F' ){
+    തിരികെ c - 'A' + 10;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Convert hex to binary.
 */
-static void testHexToBin(const char *zIn, char *zOut){
-  while( zIn[0] && zIn[1] ){
+സ്ഥിതം ശൂന്യം testHexToBin(സ്ഥിരം അക്ഷരം *zIn, അക്ഷരം *zOut){
+  ആകുമ്പോൾ( zIn[0] && zIn[1] ){
     *(zOut++) = (testHexChar(zIn[0])<<4) + testHexChar(zIn[1]);
     zIn += 2;
   }
@@ -353,21 +353,21 @@ static void testHexToBin(const char *zIn, char *zOut){
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16be(
+സ്ഥിതം ശൂന്യം testHexToUtf16be(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  പൂർണ്ണസംഖ്യ n;
+  സ്ഥിരം അക്ഷരം *zIn;
+  അക്ഷരം *zOut;
+  പ്രതിജ്ഞാ( nArg==1 );
+  n = sqlite3_മൂല്യം_bytes(argv[0]);
+  zIn = (സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  എങ്കിൽ( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }അല്ലെങ്കിൽ{
     testHexToBin(zIn, zOut);
     sqlite3_result_text16be(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -380,21 +380,21 @@ static void testHexToUtf16be(
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-static void testHexToUtf8(
+സ്ഥിതം ശൂന്യം testHexToUtf8(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  പൂർണ്ണസംഖ്യ n;
+  സ്ഥിരം അക്ഷരം *zIn;
+  അക്ഷരം *zOut;
+  പ്രതിജ്ഞാ( nArg==1 );
+  n = sqlite3_മൂല്യം_bytes(argv[0]);
+  zIn = (സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  എങ്കിൽ( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }അല്ലെങ്കിൽ{
     testHexToBin(zIn, zOut);
     sqlite3_result_text(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -407,21 +407,21 @@ static void testHexToUtf8(
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16le(
+സ്ഥിതം ശൂന്യം testHexToUtf16le(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ nArg,
+  sqlite3_മൂല്യം **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  പൂർണ്ണസംഖ്യ n;
+  സ്ഥിരം അക്ഷരം *zIn;
+  അക്ഷരം *zOut;
+  പ്രതിജ്ഞാ( nArg==1 );
+  n = sqlite3_മൂല്യം_bytes(argv[0]);
+  zIn = (സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  എങ്കിൽ( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }അല്ലെങ്കിൽ{
     testHexToBin(zIn, zOut);
     sqlite3_result_text16le(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -435,27 +435,27 @@ static void testHexToUtf16le(
 ** the big-endian hexadecimal representation of the ieee754 encoding of
 ** that number.  If X is not a real number, return NULL.
 */
-static void real2hex(
+സ്ഥിതം ശൂന്യം real2hex(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
-  union {
+  സംഘം {
     sqlite3_uint64 i;
-    double r;
-    unsigned char x[8];
+    ഇരട്ട r;
+    unsigned അക്ഷരം x[8];
   } v;
-  char zOut[20];
-  int i;
-  int bigEndian;
+  അക്ഷരം zOut[20];
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ bigEndian;
   v.i = 1;
   bigEndian = v.x[0]==0;
-  v.r = sqlite3_value_double(argv[0]);
-  for(i=0; i<8; i++){
-    if( bigEndian ){
+  v.r = sqlite3_മൂല്യം_double(argv[0]);
+  വേണ്ടി(i=0; i<8; i++){
+    എങ്കിൽ( bigEndian ){
       zOut[i*2]   = "0123456789abcdef"[v.x[i]>>4];
       zOut[i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
-    }else{
+    }അല്ലെങ്കിൽ{
       zOut[14-i*2]   = "0123456789abcdef"[v.x[i]>>4];
       zOut[14-i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
     }
@@ -472,10 +472,10 @@ static void real2hex(
 ** second argument is the index of the field within that record to
 ** extract and return.
 */
-static void test_extract(
+സ്ഥിതം ശൂന്യം test_extract(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
@@ -483,32 +483,32 @@ static void test_extract(
   u8 *pHdr;                       /* Current point in record header */
   u8 *pBody;                      /* Current point in record data */
   u64 nHdr;                       /* Bytes in record header */
-  int iIdx;                       /* Required field */
-  int iCurrent = 0;               /* Current field */
+  പൂർണ്ണസംഖ്യ iIdx;                       /* Required field */
+  പൂർണ്ണസംഖ്യ iCurrent = 0;               /* Current field */
 
-  assert( argc==2 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
-  iIdx = sqlite3_value_int(argv[1]);
+  പ്രതിജ്ഞാ( argc==2 );
+  pRec = (u8*)sqlite3_മൂല്യം_blob(argv[0]);
+  iIdx = sqlite3_മൂല്യം_int(argv[1]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
   pBody = pEndHdr = &pRec[nHdr];
 
-  for(iCurrent=0; pHdr<pEndHdr && iCurrent<=iIdx; iCurrent++){
+  വേണ്ടി(iCurrent=0; pHdr<pEndHdr && iCurrent<=iIdx; iCurrent++){
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, വലുപ്പം(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    if( iCurrent==iIdx ){
-      sqlite3_result_value(context, &mem);
+    എങ്കിൽ( iCurrent==iIdx ){
+      sqlite3_result_മൂല്യം(context, &mem);
     }
 
-    if( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
+    എങ്കിൽ( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
   }
 }
 
@@ -520,10 +520,10 @@ static void test_extract(
 ** a tcl list (type SQLITE_TEXT) containing each of the values stored
 ** in the record.
 */
-static void test_decode(
+സ്ഥിതം ശൂന്യം test_decode(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
@@ -534,75 +534,75 @@ static void test_decode(
   Tcl_Obj *pRet;                  /* Return value */
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
+  Tcl_Incr_Ref_എണ്ണം(pRet);
 
-  assert( argc==1 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
+  പ്രതിജ്ഞാ( argc==1 );
+  pRec = (u8*)sqlite3_മൂല്യം_blob(argv[0]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
   pBody = pEndHdr = &pRec[nHdr];
-  while( pHdr<pEndHdr ){
+  ആകുമ്പോൾ( pHdr<pEndHdr ){
     Tcl_Obj *pVal = 0;
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, വലുപ്പം(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    switch( sqlite3_value_type(&mem) ){
-      case SQLITE_TEXT:
-        pVal = Tcl_NewStringObj((const char*)sqlite3_value_text(&mem), -1);
-        break;
+    തിരഞ്ഞെടുപ്പ്( sqlite3_മൂല്യം_type(&mem) ){
+      അവസ്ഥ SQLITE_TEXT:
+        pVal = Tcl_NewStringObj((സ്ഥിരം അക്ഷരം*)sqlite3_മൂല്യം_text(&mem), -1);
+        നിർത്തുക;
 
-      case SQLITE_BLOB: {
-        char hexdigit[] = {
+      അവസ്ഥ SQLITE_BLOB: {
+        അക്ഷരം hexdigit[] = {
           '0', '1', '2', '3', '4', '5', '6', '7',
           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
         };
-        int n = sqlite3_value_bytes(&mem);
-        u8 *z = (u8*)sqlite3_value_blob(&mem);
-        int i;
+        പൂർണ്ണസംഖ്യ n = sqlite3_മൂല്യം_bytes(&mem);
+        u8 *z = (u8*)sqlite3_മൂല്യം_blob(&mem);
+        പൂർണ്ണസംഖ്യ i;
         pVal = Tcl_NewStringObj("x'", -1);
-        for(i=0; i<n; i++){
-          char hex[3];
+        വേണ്ടി(i=0; i<n; i++){
+          അക്ഷരം hex[3];
           hex[0] = hexdigit[((z[i] >> 4) & 0x0F)];
           hex[1] = hexdigit[(z[i] & 0x0F)];
           hex[2] = '\0';
           Tcl_AppendStringsToObj(pVal, hex, 0);
         }
         Tcl_AppendStringsToObj(pVal, "'", 0);
-        break;
+        നിർത്തുക;
       }
 
-      case SQLITE_FLOAT:
-        pVal = Tcl_NewDoubleObj(sqlite3_value_double(&mem));
-        break;
+      അവസ്ഥ SQLITE_FLOAT:
+        pVal = Tcl_NewDoubleObj(sqlite3_മൂല്യം_double(&mem));
+        നിർത്തുക;
 
-      case SQLITE_INTEGER:
-        pVal = Tcl_NewWideIntObj(sqlite3_value_int64(&mem));
-        break;
+      അവസ്ഥ SQLITE_INTEGER:
+        pVal = Tcl_NewWideIntObj(sqlite3_മൂല്യം_int64(&mem));
+        നിർത്തുക;
 
-      case SQLITE_NULL:
+      അവസ്ഥ SQLITE_NULL:
         pVal = Tcl_NewStringObj("NULL", -1);
-        break;
+        നിർത്തുക;
 
-      default:
-        assert( 0 );
+      സ്ഥിരസ്ഥിതി:
+        പ്രതിജ്ഞാ( 0 );
     }
 
     Tcl_ListObjAppendElement(0, pRet, pVal);
 
-    if( mem.szMalloc ){
+    എങ്കിൽ( mem.szMalloc ){
       sqlite3DbFree(db, mem.zMalloc);
     }
   }
 
   sqlite3_result_text(context, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
-  Tcl_DecrRefCount(pRet);
+  Tcl_Decr_Ref_എണ്ണം(pRet);
 }
 
 /*
@@ -613,12 +613,12 @@ static void test_decode(
 ** check that the integer parameter is within range before passing it
 ** to sqlite3_result_zeroblob().
 */
-static void test_zeroblob(
+സ്ഥിതം ശൂന്യം test_zeroblob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
-  int nZero = sqlite3_value_int(argv[0]);
+  പൂർണ്ണസംഖ്യ nZero = sqlite3_മൂല്യം_int(argv[0]);
   sqlite3_result_zeroblob(context, nZero);
 }
 
@@ -626,12 +626,12 @@ static void test_zeroblob(
 **
 ** Return the subtype for value V.
 */
-static void test_getsubtype(
+സ്ഥിതം ശൂന്യം test_getsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
-  sqlite3_result_int(context, (int)sqlite3_value_subtype(argv[0]));
+  sqlite3_result_int(context, (പൂർണ്ണസംഖ്യ)sqlite3_മൂല്യം_subtype(argv[0]));
 }
 
 /*         test_frombind(A,B,C,...)
@@ -639,15 +639,15 @@ static void test_getsubtype(
 ** Return an integer bitmask that has a bit set for every argument
 ** (up to the first 63 arguments) that originates from a bind a parameter.
 */
-static void test_frombind(
+സ്ഥിതം ശൂന്യം test_frombind(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
   sqlite3_uint64 m = 0;
-  int i;
-  for(i=0; i<argc && i<63; i++){
-    if( sqlite3_value_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
+  പൂർണ്ണസംഖ്യ i;
+  വേണ്ടി(i=0; i<argc && i<63; i++){
+    എങ്കിൽ( sqlite3_മൂല്യം_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
   }
   sqlite3_result_int64(context, (sqlite3_int64)m);
 }
@@ -656,25 +656,25 @@ static void test_frombind(
 **
 ** Return the value V with its subtype changed to T
 */
-static void test_setsubtype(
+സ്ഥിതം ശൂന്യം test_setsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  പൂർണ്ണസംഖ്യ argc,
+  sqlite3_മൂല്യം **argv
 ){
-  sqlite3_result_value(context, argv[0]);
-  sqlite3_result_subtype(context, (unsigned int)sqlite3_value_int(argv[1]));
+  sqlite3_result_മൂല്യം(context, argv[0]);
+  sqlite3_result_subtype(context, (unsigned പൂർണ്ണസംഖ്യ)sqlite3_മൂല്യം_int(argv[1]));
 }
 
-static int registerTestFunctions(
+സ്ഥിതം പൂർണ്ണസംഖ്യ registerTestFunctions(
   sqlite3 *db,
-  char **pzErrMsg,
-  const sqlite3_api_routines *pThunk
+  അക്ഷരം **pz_Err_സന്ദേശം,
+  സ്ഥിരം sqlite3_api_routines *pThunk
 ){
-  static const struct {
-     char *zName;
-     signed char nArg;
-     unsigned int eTextRep; /* 1: UTF-16.  0: UTF-8 */
-     void (*xFunc)(sqlite3_context*,int,sqlite3_value **);
+  സ്ഥിതം സ്ഥിരം ഘടന {
+     അക്ഷരം *zName;
+     signed അക്ഷരം nArg;
+     unsigned പൂർണ്ണസംഖ്യ eTextRep; /* 1: UTF-16.  0: UTF-8 */
+     ശൂന്യം (*xFunc)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം **);
   } aFuncs[] = {
     { "randstr",               2, SQLITE_UTF8, randStr    },
     { "test_destructor",       1, SQLITE_UTF8, test_destructor},
@@ -684,7 +684,7 @@ static int registerTestFunctions(
     { "hex_to_utf16le",        1, SQLITE_UTF8, testHexToUtf16le},
 #endif
     { "hex_to_utf8",           1, SQLITE_UTF8, testHexToUtf8},
-    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_count},
+    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_എണ്ണം},
     { "test_auxdata",         -1, SQLITE_UTF8, test_auxdata},
     { "test_error",            1, SQLITE_UTF8, test_error},
     { "test_error",            2, SQLITE_UTF8, test_error},
@@ -700,9 +700,9 @@ static int registerTestFunctions(
                                                test_setsubtype},
     { "test_frombind",        -1, SQLITE_UTF8, test_frombind},
   };
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
-  for(i=0; i<sizeof(aFuncs)/sizeof(aFuncs[0]); i++){
+  വേണ്ടി(i=0; i<വലുപ്പം(aFuncs)/വലുപ്പം(aFuncs[0]); i++){
     sqlite3_create_function(db, aFuncs[i].zName, aFuncs[i].nArg,
         aFuncs[i].eTextRep, 0, aFuncs[i].xFunc, 0, 0);
   }
@@ -710,7 +710,7 @@ static int registerTestFunctions(
   sqlite3_create_function(db, "test_agg_errmsg16", 0, SQLITE_ANY, 0, 0, 
       test_agg_errmsg16_step, test_agg_errmsg16_final);
       
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -720,26 +720,26 @@ static int registerTestFunctions(
 ** the standard set of test functions to be loaded into each new
 ** database connection.
 */
-static int SQLITE_TCLAPI autoinstall_test_funcs(
-  void * clientData,
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI autoinstall_test_funcs(
+  ശൂന്യം * clientData,
   Tcl_Interp *interp,
-  int objc,
+  പൂർണ്ണസംഖ്യ objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
-  int rc = sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3_auto_extension((void(*)(void))Md5_Register);
+  ബാഹ്യ പൂർണ്ണസംഖ്യ Md5_Register(sqlite3 *, അക്ഷരം **, സ്ഥിരം sqlite3_api_routines *);
+  പൂർണ്ണസംഖ്യ rc = sqlite3_auto_extension((ശൂന്യം(*)(ശൂന്യം))registerTestFunctions);
+  എങ്കിൽ( rc==SQLITE_OK ){
+    rc = sqlite3_auto_extension((ശൂന്യം(*)(ശൂന്യം))Md5_Register);
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 /*
 ** A bogus step function and finalizer function.
 */
-static void tStep(sqlite3_context *a, int b, sqlite3_value **c){}
-static void tFinal(sqlite3_context *a){}
+സ്ഥിതം ശൂന്യം tStep(sqlite3_context *a, പൂർണ്ണസംഖ്യ b, sqlite3_മൂല്യം **c){}
+സ്ഥിതം ശൂന്യം tFinal(sqlite3_context *a){}
 
 
 /*
@@ -748,39 +748,39 @@ static void tFinal(sqlite3_context *a){}
 ** Make various calls to sqlite3_create_function that do not have valid
 ** parameters.  Verify that the error condition is detected and reported.
 */
-static int SQLITE_TCLAPI abuse_create_function(
-  void * clientData,
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI abuse_create_function(
+  ശൂന്യം * clientData,
   Tcl_Interp *interp,
-  int objc,
+  പൂർണ്ണസംഖ്യ objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  ബാഹ്യ പൂർണ്ണസംഖ്യ getDbPointer(Tcl_Interp*, സ്ഥിരം അക്ഷരം*, sqlite3**);
   sqlite3 *db;
-  int rc;
-  int mxArg;
+  പൂർണ്ണസംഖ്യ rc;
+  പൂർണ്ണസംഖ്യ mxArg;
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  എങ്കിൽ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) തിരികെ TCL_ERROR;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep,tStep,tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, 0, tFinal);
-  if( rc!=SQLITE_MISUSE) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, 0, tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", -2, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 32768, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   rc = sqlite3_create_function(db, "funcxx"
        "_123456789_123456789_123456789_123456789_123456789"
@@ -789,7 +789,7 @@ static int SQLITE_TCLAPI abuse_create_function(
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
        1, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_MISUSE ) പോകുക abuse_err;
 
   /* This last function registration should actually work.  Generate
   ** a no-op function (that always returns NULL) and which has the
@@ -804,14 +804,14 @@ static int SQLITE_TCLAPI abuse_create_function(
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
        mxArg, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_OK ) goto abuse_err;
+  എങ്കിൽ( rc!=SQLITE_OK ) പോകുക abuse_err;
                                 
-  return TCL_OK;
+  തിരികെ TCL_OK;
 
 abuse_err:
   Tcl_AppendResult(interp, "sqlite3_create_function abused test failed", 
-                   (char*)0);
-  return TCL_ERROR;
+                   (അക്ഷരം*)0);
+  തിരികെ TCL_ERROR;
 }
 
 
@@ -849,15 +849,15 @@ abuse_err:
 **     WHERE documents MATCH <query> 
 **     ORDER BY rank(matchinfo(documents), 1.0, 0.5) DESC
 */
-static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
-  int *aMatchinfo;                /* Return value of matchinfo() */
-  int nMatchinfo;                 /* Number of elements in aMatchinfo[] */
-  int nCol = 0;                   /* Number of columns in the table */
-  int nPhrase = 0;                /* Number of phrases in the query */
-  int iPhrase;                    /* Current phrase */
-  double score = 0.0;             /* Value to return */
+സ്ഥിതം ശൂന്യം rankfunc(sqlite3_context *pCtx, പൂർണ്ണസംഖ്യ nVal, sqlite3_മൂല്യം **apVal){
+  പൂർണ്ണസംഖ്യ *aMatchinfo;                /* Return value of matchinfo() */
+  പൂർണ്ണസംഖ്യ nMatchinfo;                 /* Number of elements in aMatchinfo[] */
+  പൂർണ്ണസംഖ്യ nCol = 0;                   /* Number of columns in the table */
+  പൂർണ്ണസംഖ്യ nPhrase = 0;                /* Number of phrases in the query */
+  പൂർണ്ണസംഖ്യ iPhrase;                    /* Current phrase */
+  ഇരട്ട score = 0.0;             /* Value to return */
 
-  assert( sizeof(int)==4 );
+  പ്രതിജ്ഞാ( വലുപ്പം(പൂർണ്ണസംഖ്യ)==4 );
 
   /* Check that the number of arguments passed to this function is correct.
   ** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
@@ -866,23 +866,23 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
   ** query, and nCol to the number of columns in the table. Then check that the
   ** size of the matchinfo blob is as expected. Return an error if it is not.
   */
-  if( nVal<1 ) goto wrong_number_args;
-  aMatchinfo = (int*)sqlite3_value_blob(apVal[0]);
-  nMatchinfo = sqlite3_value_bytes(apVal[0]) / sizeof(int);
-  if( nMatchinfo>=2 ){
+  എങ്കിൽ( nVal<1 ) പോകുക wrong_സംഖ്യ_args;
+  aMatchinfo = (പൂർണ്ണസംഖ്യ*)sqlite3_മൂല്യം_blob(apVal[0]);
+  nMatchinfo = sqlite3_മൂല്യം_bytes(apVal[0]) / വലുപ്പം(പൂർണ്ണസംഖ്യ);
+  എങ്കിൽ( nMatchinfo>=2 ){
     nPhrase = aMatchinfo[0];
     nCol = aMatchinfo[1];
   }
-  if( nMatchinfo!=(2+3*nCol*nPhrase) ){
+  എങ്കിൽ( nMatchinfo!=(2+3*nCol*nPhrase) ){
     sqlite3_result_error(pCtx,
         "invalid matchinfo blob passed to function rank()", -1);
-    return;
+    തിരികെ;
   }
-  if( nVal!=(1+nCol) ) goto wrong_number_args;
+  എങ്കിൽ( nVal!=(1+nCol) ) പോകുക wrong_സംഖ്യ_args;
 
   /* Iterate through each phrase in the users query. */
-  for(iPhrase=0; iPhrase<nPhrase; iPhrase++){
-    int iCol;                     /* Current column */
+  വേണ്ടി(iPhrase=0; iPhrase<nPhrase; iPhrase++){
+    പൂർണ്ണസംഖ്യ iCol;                     /* Current column */
 
     /* Now iterate through each column in the users query. For each column,
     ** increment the relevancy score by:
@@ -893,65 +893,65 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
     ** the hit count and global hit counts for each column are found in 
     ** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
     */
-    int *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
-    for(iCol=0; iCol<nCol; iCol++){
-      int nHitCount = aPhraseinfo[3*iCol];
-      int nGlobalHitCount = aPhraseinfo[3*iCol+1];
-      double weight = sqlite3_value_double(apVal[iCol+1]);
-      if( nHitCount>0 ){
-        score += ((double)nHitCount / (double)nGlobalHitCount) * weight;
+    പൂർണ്ണസംഖ്യ *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
+    വേണ്ടി(iCol=0; iCol<nCol; iCol++){
+      പൂർണ്ണസംഖ്യ n_Hit_എണ്ണം = aPhraseinfo[3*iCol];
+      പൂർണ്ണസംഖ്യ n_Global_Hit_എണ്ണം = aPhraseinfo[3*iCol+1];
+      ഇരട്ട weight = sqlite3_മൂല്യം_double(apVal[iCol+1]);
+      എങ്കിൽ( n_Hit_എണ്ണം>0 ){
+        score += ((ഇരട്ട)n_Hit_എണ്ണം / (ഇരട്ട)n_Global_Hit_എണ്ണം) * weight;
       }
     }
   }
 
   sqlite3_result_double(pCtx, score);
-  return;
+  തിരികെ;
 
   /* Jump here if the wrong number of arguments are passed to this function */
-wrong_number_args:
+wrong_സംഖ്യ_args:
   sqlite3_result_error(pCtx, "wrong number of arguments to function rank()", -1);
 }
 
-static int SQLITE_TCLAPI install_fts3_rank_function(
-  void * clientData,
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI install_fts3_rank_function(
+  ശൂന്യം * clientData,
   Tcl_Interp *interp,
-  int objc,
+  പൂർണ്ണസംഖ്യ objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  ബാഹ്യ പൂർണ്ണസംഖ്യ getDbPointer(Tcl_Interp*, സ്ഥിരം അക്ഷരം*, sqlite3**);
   sqlite3 *db;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  എങ്കിൽ( objc!=2 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "DB");
+    തിരികെ TCL_ERROR;
   }
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  എങ്കിൽ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) തിരികെ TCL_ERROR;
   sqlite3_create_function(db, "rank", -1, SQLITE_UTF8, 0, rankfunc, 0, 0);
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_func_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+പൂർണ്ണസംഖ്യ Sqlitetest_func_Init(Tcl_Interp *interp){
+  സ്ഥിതം ഘടന {
+     അക്ഷരം *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "autoinstall_test_functions",    autoinstall_test_funcs },
      { "abuse_create_function",         abuse_create_function  },
      { "install_fts3_rank_function",    install_fts3_rank_function  },
   };
-  int i;
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
+  പൂർണ്ണസംഖ്യ i;
+  ബാഹ്യ പൂർണ്ണസംഖ്യ Md5_Register(sqlite3 *, അക്ഷരം **, സ്ഥിരം sqlite3_api_routines *);
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  വേണ്ടി(i=0; i<വലുപ്പം(aObjCmd)/വലുപ്പം(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
   sqlite3_initialize();
-  sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  sqlite3_auto_extension((void(*)(void))Md5_Register);
-  return TCL_OK;
+  sqlite3_auto_extension((ശൂന്യം(*)(ശൂന്യം))registerTestFunctions);
+  sqlite3_auto_extension((ശൂന്യം(*)(ശൂന്യം))Md5_Register);
+  തിരികെ TCL_OK;
 }

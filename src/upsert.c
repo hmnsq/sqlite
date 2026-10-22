@@ -12,26 +12,26 @@
 ** This file contains code to implement various aspects of UPSERT
 ** processing and handling of the Upsert object.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 
 #ifndef SQLITE_OMIT_UPSERT
 /*
 ** Free a list of Upsert objects
 */
-static void SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
-  do{
+സ്ഥിതം ശൂന്യം SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
+  ചെയ്യുക{
     Upsert *pNext = p->pNextUpsert;
-    sqlite3ExprListDelete(db, p->pUpsertTarget);
-    sqlite3ExprDelete(db, p->pUpsertTargetWhere);
-    sqlite3ExprListDelete(db, p->pUpsertSet);
-    sqlite3ExprDelete(db, p->pUpsertWhere);
+    sqlite3_വ്യഞ്ജകം_List_Delete(db, p->pUpsertTarget);
+    sqlite3_വ്യഞ്ജകം_Delete(db, p->pUpsertTargetWhere);
+    sqlite3_വ്യഞ്ജകം_List_Delete(db, p->pUpsertSet);
+    sqlite3_വ്യഞ്ജകം_Delete(db, p->pUpsertWhere);
     sqlite3DbFree(db, p->pToFree);
     sqlite3DbFree(db, p);
     p = pNext;
-  }while( p );
+  }ആകുമ്പോൾ( p );
 }
-void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
-  if( p ) upsertDelete(db, p);
+ശൂന്യം sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
+  എങ്കിൽ( p ) upsertDelete(db, p);
 }
 
 
@@ -39,12 +39,12 @@ void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
 ** Duplicate an Upsert object.
 */
 Upsert *sqlite3UpsertDup(sqlite3 *db, Upsert *p){
-  if( p==0 ) return 0;
-  return sqlite3UpsertNew(db,
-           sqlite3ExprListDup(db, p->pUpsertTarget, 0),
-           sqlite3ExprDup(db, p->pUpsertTargetWhere, 0),
-           sqlite3ExprListDup(db, p->pUpsertSet, 0),
-           sqlite3ExprDup(db, p->pUpsertWhere, 0),
+  എങ്കിൽ( p==0 ) തിരികെ 0;
+  തിരികെ sqlite3UpsertNew(db,
+           sqlite3_വ്യഞ്ജകം_List_Dup(db, p->pUpsertTarget, 0),
+           sqlite3_വ്യഞ്ജകം_Dup(db, p->pUpsertTargetWhere, 0),
+           sqlite3_വ്യഞ്ജകം_List_Dup(db, p->pUpsertSet, 0),
+           sqlite3_വ്യഞ്ജകം_Dup(db, p->pUpsertWhere, 0),
            sqlite3UpsertDup(db, p->pNextUpsert)
          );
 }
@@ -54,22 +54,22 @@ Upsert *sqlite3UpsertDup(sqlite3 *db, Upsert *p){
 */
 Upsert *sqlite3UpsertNew(
   sqlite3 *db,           /* Determines which memory allocator to use */
-  ExprList *pTarget,     /* Target argument to ON CONFLICT, or NULL */
-  Expr *pTargetWhere,    /* Optional WHERE clause on the target */
-  ExprList *pSet,        /* UPDATE columns, or NULL for a DO NOTHING */
-  Expr *pWhere,          /* WHERE clause for the ON CONFLICT UPDATE */
+  വ്യഞ്ജകം_List *pTarget,     /* Target argument to ON CONFLICT, or NULL */
+  വ്യഞ്ജകം *pTargetWhere,    /* Optional WHERE clause on the target */
+  വ്യഞ്ജകം_List *pSet,        /* UPDATE columns, or NULL for a DO NOTHING */
+  വ്യഞ്ജകം *pWhere,          /* WHERE clause for the ON CONFLICT UPDATE */
   Upsert *pNext          /* Next ON CONFLICT clause in the list */
 ){
   Upsert *pNew;
-  pNew = sqlite3DbMallocZero(db, sizeof(Upsert));
-  if( pNew==0 ){
-    sqlite3ExprListDelete(db, pTarget);
-    sqlite3ExprDelete(db, pTargetWhere);
-    sqlite3ExprListDelete(db, pSet);
-    sqlite3ExprDelete(db, pWhere);
+  pNew = sqlite3DbMallocZero(db, വലുപ്പം(Upsert));
+  എങ്കിൽ( pNew==0 ){
+    sqlite3_വ്യഞ്ജകം_List_Delete(db, pTarget);
+    sqlite3_വ്യഞ്ജകം_Delete(db, pTargetWhere);
+    sqlite3_വ്യഞ്ജകം_List_Delete(db, pSet);
+    sqlite3_വ്യഞ്ജകം_Delete(db, pWhere);
     sqlite3UpsertDelete(db, pNext);
-    return 0;
-  }else{
+    തിരികെ 0;
+  }അല്ലെങ്കിൽ{
     pNew->pUpsertTarget = pTarget;
     pNew->pUpsertTargetWhere = pTargetWhere;
     pNew->pUpsertSet = pSet;
@@ -77,7 +77,7 @@ Upsert *sqlite3UpsertNew(
     pNew->isDoUpdate = pSet!=0;
     pNew->pNextUpsert = pNext;
   }
-  return pNew;
+  തിരികെ pNew;
 }
 
 /*
@@ -87,53 +87,53 @@ Upsert *sqlite3UpsertNew(
 ** Return SQLITE_OK if everything works, or an error code is something
 ** is wrong.
 */
-int sqlite3UpsertAnalyzeTarget(
+പൂർണ്ണസംഖ്യ sqlite3UpsertAnalyzeTarget(
   Parse *pParse,     /* The parsing context */
   SrcList *pTabList, /* Table into which we are inserting */
   Upsert *pUpsert,   /* The ON CONFLICT clauses */
   Upsert *pAll       /* Complete list of all ON CONFLICT clauses */
 ){
   Table *pTab;            /* That table into which we are inserting */
-  int rc;                 /* Result code */
-  int iCursor;            /* Cursor used by pTab */
+  പൂർണ്ണസംഖ്യ rc;                 /* Result code */
+  പൂർണ്ണസംഖ്യ iCursor;            /* Cursor used by pTab */
   Index *pIdx;            /* One of the indexes of pTab */
-  ExprList *pTarget;      /* The conflict-target clause */
-  Expr *pTerm;            /* One term of the conflict-target clause */
+  വ്യഞ്ജകം_List *pTarget;      /* The conflict-target clause */
+  വ്യഞ്ജകം *pTerm;            /* One term of the conflict-target clause */
   NameContext sNC;        /* Context for resolving symbolic names */
-  Expr sCol[2];           /* Index column converted into an Expr */
-  int nClause = 0;        /* Counter of ON CONFLICT clauses */
+  വ്യഞ്ജകം sCol[2];           /* Index column converted into an Expr */
+  പൂർണ്ണസംഖ്യ nClause = 0;        /* Counter of ON CONFLICT clauses */
 
-  assert( pTabList->nSrc==1 );
-  assert( pTabList->a[0].pSTab!=0 );
-  assert( pUpsert!=0 );
-  assert( pUpsert->pUpsertTarget!=0 );
+  പ്രതിജ്ഞാ( pTabList->nSrc==1 );
+  പ്രതിജ്ഞാ( pTabList->a[0].pSTab!=0 );
+  പ്രതിജ്ഞാ( pUpsert!=0 );
+  പ്രതിജ്ഞാ( pUpsert->pUpsertTarget!=0 );
 
   /* Resolve all symbolic names in the conflict-target clause, which
   ** includes both the list of columns and the optional partial-index
   ** WHERE clause.
   */
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, വലുപ്പം(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  for(; pUpsert && pUpsert->pUpsertTarget;
+  വേണ്ടി(; pUpsert && pUpsert->pUpsertTarget;
         pUpsert=pUpsert->pNextUpsert, nClause++){
-    rc = sqlite3ResolveExprListNames(&sNC, pUpsert->pUpsertTarget);
-    if( rc ) return rc;
-    rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertTargetWhere);
-    if( rc ) return rc;
+    rc = sqlite3_Resolve_വ്യഞ്ജകം_List_Names(&sNC, pUpsert->pUpsertTarget);
+    എങ്കിൽ( rc ) തിരികെ rc;
+    rc = sqlite3_Resolve_വ്യഞ്ജകം_Names(&sNC, pUpsert->pUpsertTargetWhere);
+    എങ്കിൽ( rc ) തിരികെ rc;
   
     /* Check to see if the conflict target matches the rowid. */  
     pTab = pTabList->a[0].pSTab;
     pTarget = pUpsert->pUpsertTarget;
     iCursor = pTabList->a[0].iCursor;
-    if( HasRowid(pTab) 
-     && pTarget->nExpr==1
-     && (pTerm = pTarget->a[0].pExpr)->op==TK_COLUMN
+    എങ്കിൽ( HasRowid(pTab) 
+     && pTarget->n_വ്യഞ്ജകം==1
+     && (pTerm = pTarget->a[0].p_വ്യഞ്ജകം)->op==TK_COLUMN
      && pTerm->iColumn==XN_ROWID
     ){
       /* The conflict-target is the rowid of the primary table */
-      assert( pUpsert->pUpsertIdx==0 );
-      continue;
+      പ്രതിജ്ഞാ( pUpsert->pUpsertIdx==0 );
+      തുടരുക;
     }
   
     /* Initialize sCol[0..1] to be an expression parse tree for a
@@ -142,59 +142,59 @@ int sqlite3UpsertAnalyzeTarget(
     ** will populate the specific collation and column number values
     ** prior to comparing against the conflict-target expression.
     */
-    memset(sCol, 0, sizeof(sCol));
+    memset(sCol, 0, വലുപ്പം(sCol));
     sCol[0].op = TK_COLLATE;
-    sCol[0].pLeft = &sCol[1];
+    sCol[0].p_ഇടത് = &sCol[1];
     sCol[1].op = TK_COLUMN;
     sCol[1].iTable = pTabList->a[0].iCursor;
   
     /* Check for matches against other indexes */
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      int ii, jj, nn;
-      if( !IsUniqueIndex(pIdx) ) continue;
-      if( pTarget->nExpr!=pIdx->nKeyCol ) continue;
-      if( pIdx->pPartIdxWhere ){
-        if( pUpsert->pUpsertTargetWhere==0 ) continue;
-        if( sqlite3ExprCompare(pParse, pUpsert->pUpsertTargetWhere,
+    വേണ്ടി(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      പൂർണ്ണസംഖ്യ ii, jj, nn;
+      എങ്കിൽ( !IsUniqueIndex(pIdx) ) തുടരുക;
+      എങ്കിൽ( pTarget->n_വ്യഞ്ജകം!=pIdx->n_താക്കോൽ_Col ) തുടരുക;
+      എങ്കിൽ( pIdx->pPartIdxWhere ){
+        എങ്കിൽ( pUpsert->pUpsertTargetWhere==0 ) തുടരുക;
+        എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(pParse, pUpsert->pUpsertTargetWhere,
                                pIdx->pPartIdxWhere, iCursor)!=0 ){
-          continue;
+          തുടരുക;
         }
       }
-      nn = pIdx->nKeyCol;
-      for(ii=0; ii<nn; ii++){
-        Expr *pExpr;
-        sCol[0].u.zToken = (char*)pIdx->azColl[ii];
-        if( pIdx->aiColumn[ii]==XN_EXPR ){
-          assert( pIdx->aColExpr!=0 );
-          assert( pIdx->aColExpr->nExpr>ii );
-          assert( pIdx->bHasExpr );
-          pExpr = pIdx->aColExpr->a[ii].pExpr;
-          if( pExpr->op!=TK_COLLATE ){
-            sCol[0].pLeft = pExpr;
-            pExpr = &sCol[0];
+      nn = pIdx->n_താക്കോൽ_Col;
+      വേണ്ടി(ii=0; ii<nn; ii++){
+        വ്യഞ്ജകം *p_വ്യഞ്ജകം;
+        sCol[0].u.zToken = (അക്ഷരം*)pIdx->azColl[ii];
+        എങ്കിൽ( pIdx->aiColumn[ii]==XN_വ്യഞ്ജകം ){
+          പ്രതിജ്ഞാ( pIdx->a_Col_വ്യഞ്ജകം!=0 );
+          പ്രതിജ്ഞാ( pIdx->a_Col_വ്യഞ്ജകം->n_വ്യഞ്ജകം>ii );
+          പ്രതിജ്ഞാ( pIdx->b_Has_വ്യഞ്ജകം );
+          p_വ്യഞ്ജകം = pIdx->a_Col_വ്യഞ്ജകം->a[ii].p_വ്യഞ്ജകം;
+          എങ്കിൽ( p_വ്യഞ്ജകം->op!=TK_COLLATE ){
+            sCol[0].p_ഇടത് = p_വ്യഞ്ജകം;
+            p_വ്യഞ്ജകം = &sCol[0];
           }
-        }else{
-          sCol[0].pLeft = &sCol[1];
+        }അല്ലെങ്കിൽ{
+          sCol[0].p_ഇടത് = &sCol[1];
           sCol[1].iColumn = pIdx->aiColumn[ii];
-          pExpr = &sCol[0];
+          p_വ്യഞ്ജകം = &sCol[0];
         }
-        for(jj=0; jj<nn; jj++){
-          if( sqlite3ExprCompare(0,pTarget->a[jj].pExpr,pExpr,iCursor)<2 ){
-            break;  /* Column ii of the index matches column jj of target */
+        വേണ്ടി(jj=0; jj<nn; jj++){
+          എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(0,pTarget->a[jj].p_വ്യഞ്ജകം,p_വ്യഞ്ജകം,iCursor)<2 ){
+            നിർത്തുക;  /* Column ii of the index matches column jj of target */
           }
         }
-        if( jj>=nn ){
+        എങ്കിൽ( jj>=nn ){
           /* The target contains no match for column jj of the index */
-          break;
+          നിർത്തുക;
         }
       }
-      if( ii<nn ){
+      എങ്കിൽ( ii<nn ){
         /* Column ii of the index did not match any term of the conflict target.
         ** Continue the search with the next index. */
-        continue;
+        തുടരുക;
       }
       pUpsert->pUpsertIdx = pIdx;
-      if( sqlite3UpsertOfIndex(pAll,pIdx)!=pUpsert ){
+      എങ്കിൽ( sqlite3UpsertOfIndex(pAll,pIdx)!=pUpsert ){
         /* Really this should be an error.  The isDup ON CONFLICT clause will
         ** never fire.  But this problem was not discovered until three years
         ** after multi-CONFLICT upsert was added, and so we silently ignore
@@ -202,21 +202,21 @@ int sqlite3UpsertAnalyzeTarget(
         ** have redundant ON CONFLICT clauses. */
         pUpsert->isDup = 1;
       }
-      break;
+      നിർത്തുക;
     }
-    if( pUpsert->pUpsertIdx==0 ){
-      char zWhich[16];
-      if( nClause==0 && pUpsert->pNextUpsert==0 ){
+    എങ്കിൽ( pUpsert->pUpsertIdx==0 ){
+      അക്ഷരം zWhich[16];
+      എങ്കിൽ( nClause==0 && pUpsert->pNextUpsert==0 ){
         zWhich[0] = 0;
-      }else{
-        sqlite3_snprintf(sizeof(zWhich),zWhich,"%r ", nClause+1);
+      }അല്ലെങ്കിൽ{
+        sqlite3_snprintf(വലുപ്പം(zWhich),zWhich,"%r ", nClause+1);
       }
-      sqlite3ErrorMsg(pParse, "%sON CONFLICT clause does not match any "
+      sqlite3_Error_സന്ദേശം(pParse, "%sON CONFLICT clause does not match any "
                               "PRIMARY KEY or UNIQUE constraint", zWhich);
-      return SQLITE_ERROR;
+      തിരികെ SQLITE_ERROR;
     }
   }
-  return SQLITE_OK;
+  തിരികെ SQLITE_OK;
 }
 
 /*
@@ -224,18 +224,18 @@ int sqlite3UpsertAnalyzeTarget(
 ** conflict target, or if pUpsert is followed by another ON CONFLICT
 ** clause that targets the INTEGER PRIMARY KEY.
 */
-int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
+പൂർണ്ണസംഖ്യ sqlite3UpsertNextIsIPK(Upsert *pUpsert){
   Upsert *pNext;
-  if( NEVER(pUpsert==0) ) return 0;
+  എങ്കിൽ( NEVER(pUpsert==0) ) തിരികെ 0;
   pNext = pUpsert->pNextUpsert;
-  while( 1 /*exit-by-return*/ ){
-    if( pNext==0 ) return 1;
-    if( pNext->pUpsertTarget==0 ) return 1;
-    if( pNext->pUpsertIdx==0 ) return 1;
-    if( !pNext->isDup ) return 0;
+  ആകുമ്പോൾ( 1 /*exit-by-return*/ ){
+    എങ്കിൽ( pNext==0 ) തിരികെ 1;
+    എങ്കിൽ( pNext->pUpsertTarget==0 ) തിരികെ 1;
+    എങ്കിൽ( pNext->pUpsertIdx==0 ) തിരികെ 1;
+    എങ്കിൽ( !pNext->isDup ) തിരികെ 0;
     pNext = pNext->pNextUpsert;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -245,14 +245,14 @@ int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
 ** any ON CONFLICT clause, return NULL.
 */
 Upsert *sqlite3UpsertOfIndex(Upsert *pUpsert, Index *pIdx){
-  while(
+  ആകുമ്പോൾ(
       pUpsert
    && pUpsert->pUpsertTarget!=0
    && pUpsert->pUpsertIdx!=pIdx
   ){
      pUpsert = pUpsert->pNextUpsert;
   }
-  return pUpsert;
+  തിരികെ pUpsert;
 }
 
 /*
@@ -264,40 +264,40 @@ Upsert *sqlite3UpsertOfIndex(Upsert *pUpsert, Index *pIdx){
 ** is not NULL, then pIdx is the constraint that failed and iCur is a
 ** cursor points to the conflicting row.
 */
-void sqlite3UpsertDoUpdate(
+ശൂന്യം sqlite3UpsertDoUpdate(
   Parse *pParse,        /* The parsing and code-generating context */
   Upsert *pUpsert,      /* The ON CONFLICT clause for the upsert */
   Table *pTab,          /* The table being updated */
   Index *pIdx,          /* The UNIQUE constraint that failed */
-  int iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
+  പൂർണ്ണസംഖ്യ iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
 ){
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
   SrcList *pSrc;            /* FROM clause for the UPDATE */
-  int iDataCur;
-  int i;
-  Upsert *pTop = pUpsert;
+  പൂർണ്ണസംഖ്യ iDataCur;
+  പൂർണ്ണസംഖ്യ i;
+  Upsert *p_മുകൾ = pUpsert;
 
-  assert( v!=0 );
-  assert( pUpsert!=0 );
+  പ്രതിജ്ഞാ( v!=0 );
+  പ്രതിജ്ഞാ( pUpsert!=0 );
   iDataCur = pUpsert->iDataCur;
-  pUpsert = sqlite3UpsertOfIndex(pTop, pIdx);
+  pUpsert = sqlite3UpsertOfIndex(p_മുകൾ, pIdx);
   VdbeNoopComment((v, "Begin DO UPDATE of UPSERT"));
-  if( pIdx && iCur!=iDataCur ){
-    if( HasRowid(pTab) ){
-      int regRowid = sqlite3GetTempReg(pParse);
+  എങ്കിൽ( pIdx && iCur!=iDataCur ){
+    എങ്കിൽ( HasRowid(pTab) ){
+      പൂർണ്ണസംഖ്യ regRowid = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp2(v, OP_IdxRowid, iCur, regRowid);
       sqlite3VdbeAddOp3(v, OP_SeekRowid, iDataCur, 0, regRowid);
       VdbeCoverage(v);
       sqlite3ReleaseTempReg(pParse, regRowid);
-    }else{
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-      int nPk = pPk->nKeyCol;
-      int iPk = pParse->nMem+1;
+    }അല്ലെങ്കിൽ{
+      Index *pPk = sqlite3_Primary_താക്കോൽ_Index(pTab);
+      പൂർണ്ണസംഖ്യ nPk = pPk->n_താക്കോൽ_Col;
+      പൂർണ്ണസംഖ്യ iPk = pParse->nMem+1;
       pParse->nMem += nPk;
-      for(i=0; i<nPk; i++){
-        int k;
-        assert( pPk->aiColumn[i]>=0 );
+      വേണ്ടി(i=0; i<nPk; i++){
+        പൂർണ്ണസംഖ്യ k;
+        പ്രതിജ്ഞാ( pPk->aiColumn[i]>=0 );
         k = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
         sqlite3VdbeAddOp3(v, OP_Column, iCur, k, iPk+i);
         VdbeComment((v, "%s.%s", pIdx->zName,
@@ -314,16 +314,16 @@ void sqlite3UpsertDoUpdate(
   }
   /* pUpsert does not own pTop->pUpsertSrc - the outer INSERT statement does.
   ** So we have to make a copy before passing it down into sqlite3Update() */
-  pSrc = sqlite3SrcListDup(db, pTop->pUpsertSrc, 0);
+  pSrc = sqlite3SrcListDup(db, p_മുകൾ->pUpsertSrc, 0);
   /* excluded.* columns of type REAL need to be converted to a hard real */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
-      int iStorage = pTop->regData + sqlite3TableColumnToStorage(pTab, i);
+  വേണ്ടി(i=0; i<pTab->nCol; i++){
+    എങ്കിൽ( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
+      പൂർണ്ണസംഖ്യ iStorage = p_മുകൾ->regData + sqlite3TableColumnToStorage(pTab, i);
       sqlite3VdbeAddOp1(v, OP_RealAffinity, iStorage);
     }
   }
-  sqlite3Update(pParse, pSrc, sqlite3ExprListDup(db,pUpsert->pUpsertSet,0),
-      sqlite3ExprDup(db,pUpsert->pUpsertWhere,0), OE_Abort, 0, 0, pUpsert);
+  sqlite3Update(pParse, pSrc, sqlite3_വ്യഞ്ജകം_List_Dup(db,pUpsert->pUpsertSet,0),
+      sqlite3_വ്യഞ്ജകം_Dup(db,pUpsert->pUpsertWhere,0), OE_Abort, 0, 0, pUpsert);
   VdbeNoopComment((v, "End DO UPDATE of UPSERT"));
 }
 

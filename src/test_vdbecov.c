@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#എങ്കിൽ SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#അന്തര്ഭാവ "sqlite3.h"
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ "tclsqlite.h"
 
 #ifdef SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+സ്ഥിതം u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+സ്ഥിതം ശൂന്യം test_vdbe_branch(
+  ശൂന്യം *pCtx, 
+  unsigned പൂർണ്ണസംഖ്യ iSrc, 
+  unsigned അക്ഷരം iBranch, 
+  unsigned അക്ഷരം iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  എങ്കിൽ( iSrc<വലുപ്പം(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+സ്ഥിതം ശൂന്യം appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  പൂർണ്ണസംഖ്യ i_വരി, 
+  പൂർണ്ണസംഖ്യ iPath, 
+  സ്ഥിരം അക്ഷരം *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
+  Tcl_Incr_Ref_എണ്ണം(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_വരി));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_എണ്ണം(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
+സ്ഥിതം പൂർണ്ണസംഖ്യ SQLITE_TCLAPI test_vdbe_coverage(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  പൂർണ്ണസംഖ്യ objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  സ്ഥിരം അക്ഷരം *aSub[] = { "start", "report", "stop", 0 };
+  പൂർണ്ണസംഖ്യ iSub = -1;
+  എങ്കിൽ( objc!=2 ){
+    Tcl_Wrong_അക്കം_Args(interp, 1, objv, "sub-command");
+    തിരികെ TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  എങ്കിൽ( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    തിരികെ TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  പ്രതിജ്ഞാ( iSub==0 || iSub==1 || iSub==2 );
+  തിരഞ്ഞെടുപ്പ്( iSub ){
+    അവസ്ഥ 0:       /* start */
+      memset(aBranchArray, 0, വലുപ്പം(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      നിർത്തുക;
+    അവസ്ഥ 1: {     /* report */
+      പൂർണ്ണസംഖ്യ i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_എണ്ണം(pRes);
+      വേണ്ടി(i=0; i<വലുപ്പം(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
+        പൂർണ്ണസംഖ്യ bFlag = ((b >> 4)==4);
+        എങ്കിൽ( b ){
+          എങ്കിൽ( (b & 0x01)==0 ){
             appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
+          എങ്കിൽ( (b & 0x02)==0 ){
             appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
+          എങ്കിൽ( (b & 0x04)==0 ){
             appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
       Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_Decr_Ref_എണ്ണം(pRes);
+      നിർത്തുക;
     };
       
-    default:      /* stop */         
+    സ്ഥിരസ്ഥിതി:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      നിർത്തുക;
   }
 
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 #endif  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+പൂർണ്ണസംഖ്യ Sqlitetestvdbecov_Init(Tcl_Interp *interp){
 #ifdef SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
 #endif
-  return TCL_OK;
+  തിരികെ TCL_OK;
 }
 
 #endif

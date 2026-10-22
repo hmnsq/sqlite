@@ -17,34 +17,34 @@
 ** The interfaces in this file is only available when compiling
 ** with SQLITE_DEBUG.
 */
-#include "sqliteInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
 #ifdef SQLITE_DEBUG
 
 /*
 ** Add a new subitem to the tree.  The moreToFollow flag indicates that this
 ** is not the last item in the tree.
 */
-static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
-  TreeView *p = *pp;
-  if( p==0 ){
-    *pp = p = sqlite3_malloc64( sizeof(*p) );
-    if( p==0 ) return;
-    memset(p, 0, sizeof(*p));
-  }else{
+സ്ഥിതം ശൂന്യം sqlite3_വൃക്ഷം_View_തള്ളുക(വൃക്ഷം_View **pp, u8 moreToFollow){
+  വൃക്ഷം_View *p = *pp;
+  എങ്കിൽ( p==0 ){
+    *pp = p = sqlite3_malloc64( വലുപ്പം(*p) );
+    എങ്കിൽ( p==0 ) തിരികെ;
+    memset(p, 0, വലുപ്പം(*p));
+  }അല്ലെങ്കിൽ{
     p->iLevel++;
   }
-  assert( moreToFollow==0 || moreToFollow==1 );
-  if( p->iLevel<(int)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
+  പ്രതിജ്ഞാ( moreToFollow==0 || moreToFollow==1 );
+  എങ്കിൽ( p->iLevel<(പൂർണ്ണസംഖ്യ)വലുപ്പം(p->b_വരി) ) p->b_വരി[p->iLevel] = moreToFollow;
 }
 
 /*
 ** Finished with one layer of the tree
 */
-static void sqlite3TreeViewPop(TreeView **pp){
-  TreeView *p = *pp;
-  if( p==0 ) return;
+സ്ഥിതം ശൂന്യം sqlite3_വൃക്ഷം_View_എടുക്കുക(വൃക്ഷം_View **pp){
+  വൃക്ഷം_View *p = *pp;
+  എങ്കിൽ( p==0 ) തിരികെ;
   p->iLevel--;
-  if( p->iLevel<0 ){
+  എങ്കിൽ( p->iLevel<0 ){
     sqlite3_free(p);
     *pp = 0;
   }
@@ -54,23 +54,23 @@ static void sqlite3TreeViewPop(TreeView **pp){
 ** Generate a single line of output for the tree, with a prefix that contains
 ** all the appropriate tree lines
 */
-void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
+ശൂന്യം sqlite3_വൃക്ഷം_View_വരി(വൃക്ഷം_View *p, സ്ഥിരം അക്ഷരം *zFormat, ...){
   va_list ap;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   StrAccum acc;
-  char zBuf[1000];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  if( p ){
-    for(i=0; i<p->iLevel && i<(int)sizeof(p->bLine)-1; i++){
-      sqlite3_str_append(&acc, p->bLine[i] ? "|   " : "    ", 4);
+  അക്ഷരം zBuf[1000];
+  sqlite3StrAccumInit(&acc, 0, zBuf, വലുപ്പം(zBuf), 0);
+  എങ്കിൽ( p ){
+    വേണ്ടി(i=0; i<p->iLevel && i<(പൂർണ്ണസംഖ്യ)വലുപ്പം(p->b_വരി)-1; i++){
+      sqlite3_str_append(&acc, p->b_വരി[i] ? "|   " : "    ", 4);
     }
-    sqlite3_str_append(&acc, p->bLine[i] ? "|-- " : "'-- ", 4);
+    sqlite3_str_append(&acc, p->b_വരി[i] ? "|-- " : "'-- ", 4);
   }
-  if( zFormat!=0 ){
+  എങ്കിൽ( zFormat!=0 ){
     va_start(ap, zFormat);
     sqlite3_str_vappendf(&acc, zFormat, ap);
     va_end(ap);
-    assert( acc.nChar>0 || acc.accError );
+    പ്രതിജ്ഞാ( acc.nChar>0 || acc.accError );
     sqlite3_str_append(&acc, "\n", 1);
   }
   sqlite3StrAccumFinish(&acc);
@@ -81,334 +81,334 @@ void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
 /*
 ** Shorthand for starting a new tree item that consists of a single label
 */
-static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
-  sqlite3TreeViewPush(&p, moreFollows);
-  sqlite3TreeViewLine(p, "%s", zLabel);
+സ്ഥിതം ശൂന്യം sqlite3_വൃക്ഷം_View_Item(വൃക്ഷം_View *p, സ്ഥിരം അക്ഷരം *zLabel,u8 moreFollows){
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&p, moreFollows);
+  sqlite3_വൃക്ഷം_View_വരി(p, "%s", zLabel);
 }
 
 /*
 ** Show a list of Column objects in tree format.
 */
-void sqlite3TreeViewColumnList(
-  TreeView *pView,
-  const Column *aCol,
-  int nCol,
+ശൂന്യം sqlite3_വൃക്ഷം_View_Column_List(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം Column *aCol,
+  പൂർണ്ണസംഖ്യ nCol,
   u8 moreToFollow
 ){
-  int i;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewLine(pView, "COLUMNS");
-  for(i=0; i<nCol; i++){
+  പൂർണ്ണസംഖ്യ i;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  sqlite3_വൃക്ഷം_View_വരി(pView, "COLUMNS");
+  വേണ്ടി(i=0; i<nCol; i++){
     u16 flg = aCol[i].colFlags;
-    int colMoreToFollow = i<(nCol - 1);
-    sqlite3TreeViewPush(&pView, colMoreToFollow);
-    sqlite3TreeViewLine(pView, 0);
+    പൂർണ്ണസംഖ്യ colMoreToFollow = i<(nCol - 1);
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, colMoreToFollow);
+    sqlite3_വൃക്ഷം_View_വരി(pView, 0);
     printf(" %s", aCol[i].zCnName);
-    switch( aCol[i].eCType ){
-      case COLTYPE_ANY:      printf(" ANY");        break;
-      case COLTYPE_BLOB:     printf(" BLOB");       break;
-      case COLTYPE_INT:      printf(" INT");        break;
-      case COLTYPE_INTEGER:  printf(" INTEGER");    break;
-      case COLTYPE_REAL:     printf(" REAL");       break;
-      case COLTYPE_TEXT:     printf(" TEXT");       break;
-      case COLTYPE_CUSTOM: {
-        if( flg & COLFLAG_HASTYPE ){
-          const char *z = aCol[i].zCnName;
+    തിരഞ്ഞെടുപ്പ്( aCol[i].eCType ){
+      അവസ്ഥ COLTYPE_ANY:      printf(" ANY");        നിർത്തുക;
+      അവസ്ഥ COLTYPE_BLOB:     printf(" BLOB");       നിർത്തുക;
+      അവസ്ഥ COLTYPE_INT:      printf(" INT");        നിർത്തുക;
+      അവസ്ഥ COLTYPE_INTEGER:  printf(" INTEGER");    നിർത്തുക;
+      അവസ്ഥ COLTYPE_REAL:     printf(" REAL");       നിർത്തുക;
+      അവസ്ഥ COLTYPE_TEXT:     printf(" TEXT");       നിർത്തുക;
+      അവസ്ഥ COLTYPE_CUSTOM: {
+        എങ്കിൽ( flg & COLFLAG_HASTYPE ){
+          സ്ഥിരം അക്ഷരം *z = aCol[i].zCnName;
           z += strlen(z)+1;
           printf(" X-%s", z);
-          break;
+          നിർത്തുക;
         }
       }
     }
-    if( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
-    if( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
+    എങ്കിൽ( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
+    എങ്കിൽ( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
 #ifdef COLFLAG_NOEXPAND
-    if( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
+    എങ്കിൽ( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
 #endif
-    if( flg ) printf(" flags=%04x", flg);
+    എങ്കിൽ( flg ) printf(" flags=%04x", flg);
     printf("\n");      
     fflush(stdout);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
 /*
 ** Generate a human-readable description of a WITH clause.
 */
-void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
-  int i;
-  if( pWith==0 ) return;
-  if( pWith->nCte==0 ) return;
-  if( pWith->pOuter ){
-    sqlite3TreeViewLine(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
-  }else{
-    sqlite3TreeViewLine(pView, "WITH (0x%p)", pWith);
+ശൂന്യം sqlite3_വൃക്ഷം_View_With(വൃക്ഷം_View *pView, സ്ഥിരം With *pWith, u8 moreToFollow){
+  പൂർണ്ണസംഖ്യ i;
+  എങ്കിൽ( pWith==0 ) തിരികെ;
+  എങ്കിൽ( pWith->nCte==0 ) തിരികെ;
+  എങ്കിൽ( pWith->pOuter ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വൃക്ഷം_View_വരി(pView, "WITH (0x%p)", pWith);
   }
-  if( pWith->nCte>0 ){
-    sqlite3TreeViewPush(&pView, moreToFollow);
-    for(i=0; i<pWith->nCte; i++){
+  എങ്കിൽ( pWith->nCte>0 ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+    വേണ്ടി(i=0; i<pWith->nCte; i++){
       StrAccum x;
-      char zLine[1000];
-      const struct Cte *pCte = &pWith->a[i];
-      sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+      അക്ഷരം z_വരി[1000];
+      സ്ഥിരം ഘടന Cte *pCte = &pWith->a[i];
+      sqlite3StrAccumInit(&x, 0, z_വരി, വലുപ്പം(z_വരി), 0);
       sqlite3_str_appendf(&x, "%s", pCte->zName);
-      if( pCte->pCols && pCte->pCols->nExpr>0 ){
-        char cSep = '(';
-        int j;
-        for(j=0; j<pCte->pCols->nExpr; j++){
+      എങ്കിൽ( pCte->pCols && pCte->pCols->n_വ്യഞ്ജകം>0 ){
+        അക്ഷരം cSep = '(';
+        പൂർണ്ണസംഖ്യ j;
+        വേണ്ടി(j=0; j<pCte->pCols->n_വ്യഞ്ജകം; j++){
           sqlite3_str_appendf(&x, "%c%s", cSep, pCte->pCols->a[j].zEName);
           cSep = ',';
         }
         sqlite3_str_appendf(&x, ")");
       }
-      if( pCte->eM10d!=M10d_Any ){
+      എങ്കിൽ( pCte->eM10d!=M10d_Any ){
         sqlite3_str_appendf(&x, " %sMATERIALIZED", 
            pCte->eM10d==M10d_No ? "NOT " : "");
       }
-      if( pCte->pUse ){
+      എങ്കിൽ( pCte->pUse ){
         sqlite3_str_appendf(&x, " (pUse=0x%p, nUse=%d)", pCte->pUse,
                  pCte->pUse->nUse);
       }
       sqlite3StrAccumFinish(&x);
-      sqlite3TreeViewItem(pView, zLine, i<pWith->nCte-1);
-      sqlite3TreeViewSelect(pView, pCte->pSelect, 0);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_Item(pView, z_വരി, i<pWith->nCte-1);
+      sqlite3_വൃക്ഷം_View_Select(pView, pCte->pSelect, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a SrcList object.
 */
-void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
-  int i;
-  if( pSrc==0 ) return;
-  for(i=0; i<pSrc->nSrc; i++){
-    const SrcItem *pItem = &pSrc->a[i];
+ശൂന്യം sqlite3_വൃക്ഷം_View_Src_List(വൃക്ഷം_View *pView, സ്ഥിരം SrcList *pSrc){
+  പൂർണ്ണസംഖ്യ i;
+  എങ്കിൽ( pSrc==0 ) തിരികെ;
+  വേണ്ടി(i=0; i<pSrc->nSrc; i++){
+    സ്ഥിരം SrcItem *pItem = &pSrc->a[i];
     StrAccum x;
-    int n = 0;
-    char zLine[1000];
-    sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+    പൂർണ്ണസംഖ്യ n = 0;
+    അക്ഷരം z_വരി[1000];
+    sqlite3StrAccumInit(&x, 0, z_വരി, വലുപ്പം(z_വരി), 0);
     x.printfFlags |= SQLITE_PRINTF_INTERNAL;
     sqlite3_str_appendf(&x, "{%d:*} %!S", pItem->iCursor, pItem);
-    if( pItem->pSTab ){
+    എങ്കിൽ( pItem->pSTab ){
       sqlite3_str_appendf(&x, " tab=%Q nCol=%d ptr=%p used=%llx%s",
            pItem->pSTab->zName, pItem->pSTab->nCol, pItem->pSTab, 
            pItem->colUsed,
            pItem->fg.rowidUsed ? "+rowid" : "");
     }
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
+    എങ്കിൽ( (pItem->fg.jointype & (JT_ഇടത്|JT_വലത്))==(JT_ഇടത്|JT_വലത്) ){
       sqlite3_str_appendf(&x, " FULL-OUTER-JOIN");
-    }else if( pItem->fg.jointype & JT_LEFT ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( pItem->fg.jointype & JT_ഇടത് ){
       sqlite3_str_appendf(&x, " LEFT-JOIN");
-    }else if( pItem->fg.jointype & JT_RIGHT ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( pItem->fg.jointype & JT_വലത് ){
       sqlite3_str_appendf(&x, " RIGHT-JOIN");
-    }else if( pItem->fg.jointype & JT_CROSS ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( pItem->fg.jointype & JT_CROSS ){
       sqlite3_str_appendf(&x, " CROSS-JOIN");
     }
-    if( pItem->fg.jointype & JT_LTORJ ){
+    എങ്കിൽ( pItem->fg.jointype & JT_LTORJ ){
       sqlite3_str_appendf(&x, " LTORJ");
     }
-    if( pItem->fg.fromDDL ){
+    എങ്കിൽ( pItem->fg.fromDDL ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( pItem->fg.isCte ){
-      static const char *aMat[] = {",MAT", "", ",NO-MAT"};
+    എങ്കിൽ( pItem->fg.isCte ){
+      സ്ഥിതം സ്ഥിരം അക്ഷരം *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);
     }
-    if( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
+    എങ്കിൽ( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
       sqlite3_str_appendf(&x, " isOn");
     }
-    if( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
-    if( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
-    if( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
-    if( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
-    if( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
-    if( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
-    if( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
-    if( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
-    if( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
+    എങ്കിൽ( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
+    എങ്കിൽ( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
+    എങ്കിൽ( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
+    എങ്കിൽ( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
+    എങ്കിൽ( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
+    എങ്കിൽ( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
+    എങ്കിൽ( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
+    എങ്കിൽ( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
+    എങ്കിൽ( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
 
     sqlite3StrAccumFinish(&x);
-    sqlite3TreeViewItem(pView, zLine, i<pSrc->nSrc-1);
+    sqlite3_വൃക്ഷം_View_Item(pView, z_വരി, i<pSrc->nSrc-1);
     n = 0;
-    if( pItem->fg.isSubquery ) n++;
-    if( pItem->fg.isTabFunc ) n++;
-    if( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
-    if( pItem->fg.isUsing ){
-      sqlite3TreeViewIdList(pView, pItem->u3.pUsing, (--n)>0, "USING");
-    }else if( pItem->u3.pOn!=0 ){
-      sqlite3TreeViewItem(pView, "ON", (--n)>0);
-      sqlite3TreeViewExpr(pView, pItem->u3.pOn, 0);
-      sqlite3TreeViewPop(&pView);
+    എങ്കിൽ( pItem->fg.isSubquery ) n++;
+    എങ്കിൽ( pItem->fg.isTabFunc ) n++;
+    എങ്കിൽ( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
+    എങ്കിൽ( pItem->fg.isUsing ){
+      sqlite3_വൃക്ഷം_View_Id_List(pView, pItem->u3.pUsing, (--n)>0, "USING");
+    }അല്ലെങ്കിൽ എങ്കിൽ( pItem->u3.pOn!=0 ){
+      sqlite3_വൃക്ഷം_View_Item(pView, "ON", (--n)>0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pItem->u3.pOn, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    if( pItem->fg.isSubquery ){
-      assert( n==1 );
-      if( pItem->pSTab ){
+    എങ്കിൽ( pItem->fg.isSubquery ){
+      പ്രതിജ്ഞാ( n==1 );
+      എങ്കിൽ( pItem->pSTab ){
         Table *pTab = pItem->pSTab;
-        sqlite3TreeViewColumnList(pView, pTab->aCol, pTab->nCol, 1);
+        sqlite3_വൃക്ഷം_View_Column_List(pView, pTab->aCol, pTab->nCol, 1);
       }
-      assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-      sqlite3TreeViewSelect(pView, pItem->u4.pSubq->pSelect, 0);
+      പ്രതിജ്ഞാ( (പൂർണ്ണസംഖ്യ)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+      sqlite3_വൃക്ഷം_View_Select(pView, pItem->u4.pSubq->pSelect, 0);
     }
-    if( pItem->fg.isTabFunc ){
-      sqlite3TreeViewExprList(pView, pItem->u1.pFuncArg, 0, "func-args:");
+    എങ്കിൽ( pItem->fg.isTabFunc ){
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pItem->u1.pFuncArg, 0, "func-args:");
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a Select object.
 */
-void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
-  int n = 0;
-  int cnt = 0;
-  if( p==0 ){
-    sqlite3TreeViewLine(pView, "nil-SELECT");
-    return;
+ശൂന്യം sqlite3_വൃക്ഷം_View_Select(വൃക്ഷം_View *pView, സ്ഥിരം Select *p, u8 moreToFollow){
+  പൂർണ്ണസംഖ്യ n = 0;
+  പൂർണ്ണസംഖ്യ cnt = 0;
+  എങ്കിൽ( p==0 ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "nil-SELECT");
+    തിരികെ;
   } 
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( p->pWith ){
-    sqlite3TreeViewWith(pView, p->pWith, 1);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  എങ്കിൽ( p->pWith ){
+    sqlite3_വൃക്ഷം_View_With(pView, p->pWith, 1);
     cnt = 1;
-    sqlite3TreeViewPush(&pView, 1);
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 1);
   }
-  do{
-    if( p->selFlags & SF_WhereBegin ){
-      sqlite3TreeViewLine(pView, "sqlite3WhereBegin()");
-    }else{
-      sqlite3TreeViewLine(pView,
+  ചെയ്യുക{
+    എങ്കിൽ( p->selFlags & SF_WhereBegin ){
+      sqlite3_വൃക്ഷം_View_വരി(pView, "sqlite3WhereBegin()");
+    }അല്ലെങ്കിൽ{
+      sqlite3_വൃക്ഷം_View_വരി(pView,
         "SELECT%s%s (%u/%p) selFlags=0x%x nSelectRow=%d",
         ((p->selFlags & SF_Distinct) ? " DISTINCT" : ""),
         ((p->selFlags & SF_Aggregate) ? " agg_flag" : ""),
         p->selId, p, p->selFlags,
-        (int)p->nSelectRow
+        (പൂർണ്ണസംഖ്യ)p->nSelectRow
       );
     }
-    if( cnt++ ) sqlite3TreeViewPop(&pView);
-    if( p->pPrior ){
+    എങ്കിൽ( cnt++ ) sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+    എങ്കിൽ( p->pPrior ){
       n = 1000;
-    }else{
+    }അല്ലെങ്കിൽ{
       n = 0;
-      if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
-      if( p->pWhere ) n++;
-      if( p->pGroupBy ) n++;
-      if( p->pHaving ) n++;
-      if( p->pOrderBy ) n++;
-      if( p->pLimit ) n++;
+      എങ്കിൽ( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
+      എങ്കിൽ( p->pWhere ) n++;
+      എങ്കിൽ( p->pGroupBy ) n++;
+      എങ്കിൽ( p->pHaving ) n++;
+      എങ്കിൽ( p->pOrderBy ) n++;
+      എങ്കിൽ( p->pLimit ) n++;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( p->pWin ) n++;
-      if( p->pWinDefn ) n++;
+      എങ്കിൽ( p->pWin ) n++;
+      എങ്കിൽ( p->pWinDefn ) n++;
 #endif
     }
-    if( p->pEList ){
-      sqlite3TreeViewExprList(pView, p->pEList, n>0, "result-set");
+    എങ്കിൽ( p->pEList ){
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p->pEList, n>0, "result-set");
     }
     n--;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ){
+    എങ്കിൽ( p->pWin ){
       Window *pX;
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "window-functions");
-      for(pX=p->pWin; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWinFunc(pView, pX, pX->pNextWin!=0);
+      sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (n--)>0);
+      sqlite3_വൃക്ഷം_View_വരി(pView, "window-functions");
+      വേണ്ടി(pX=p->pWin; pX; pX=pX->pNextWin){
+        sqlite3_വൃക്ഷം_View_Win_Func(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
 #endif
-    if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "FROM");
-      sqlite3TreeViewSrcList(pView, p->pSrc);
-      sqlite3TreeViewPop(&pView);
+    എങ്കിൽ( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
+      sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (n--)>0);
+      sqlite3_വൃക്ഷം_View_വരി(pView, "FROM");
+      sqlite3_വൃക്ഷം_View_Src_List(pView, p->pSrc);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    if( p->pWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    എങ്കിൽ( p->pWhere ){
+      sqlite3_വൃക്ഷം_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p->pWhere, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    if( p->pGroupBy ){
-      sqlite3TreeViewExprList(pView, p->pGroupBy, (n--)>0, "GROUPBY");
+    എങ്കിൽ( p->pGroupBy ){
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p->pGroupBy, (n--)>0, "GROUPBY");
     }
-    if( p->pHaving ){
-      sqlite3TreeViewItem(pView, "HAVING", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pHaving, 0);
-      sqlite3TreeViewPop(&pView);
+    എങ്കിൽ( p->pHaving ){
+      sqlite3_വൃക്ഷം_View_Item(pView, "HAVING", (n--)>0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p->pHaving, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWinDefn ){
+    എങ്കിൽ( p->pWinDefn ){
       Window *pX;
-      sqlite3TreeViewItem(pView, "WINDOW", (n--)>0);
-      for(pX=p->pWinDefn; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWindow(pView, pX, pX->pNextWin!=0);
+      sqlite3_വൃക്ഷം_View_Item(pView, "WINDOW", (n--)>0);
+      വേണ്ടി(pX=p->pWinDefn; pX; pX=pX->pNextWin){
+        sqlite3_വൃക്ഷം_View_Window(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
 #endif
-    if( p->pOrderBy ){
-      sqlite3TreeViewExprList(pView, p->pOrderBy, (n--)>0, "ORDERBY");
+    എങ്കിൽ( p->pOrderBy ){
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p->pOrderBy, (n--)>0, "ORDERBY");
     }
-    if( p->pLimit ){
-      sqlite3TreeViewItem(pView, "LIMIT", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pLimit->pLeft, p->pLimit->pRight!=0);
-      if( p->pLimit->pRight ){
-        sqlite3TreeViewItem(pView, "OFFSET", 0);
-        sqlite3TreeViewExpr(pView, p->pLimit->pRight, 0);
-        sqlite3TreeViewPop(&pView);
+    എങ്കിൽ( p->pLimit ){
+      sqlite3_വൃക്ഷം_View_Item(pView, "LIMIT", (n--)>0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p->pLimit->p_ഇടത്, p->pLimit->p_വലത്!=0);
+      എങ്കിൽ( p->pLimit->p_വലത് ){
+        sqlite3_വൃക്ഷം_View_Item(pView, "OFFSET", 0);
+        sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p->pLimit->p_വലത്, 0);
+        sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    if( p->pPrior ){
-      const char *zOp = "UNION";
-      switch( p->op ){
-        case TK_ALL:         zOp = "UNION ALL";  break;
-        case TK_INTERSECT:   zOp = "INTERSECT";  break;
-        case TK_EXCEPT:      zOp = "EXCEPT";     break;
+    എങ്കിൽ( p->pPrior ){
+      സ്ഥിരം അക്ഷരം *zOp = "UNION";
+      തിരഞ്ഞെടുപ്പ്( p->op ){
+        അവസ്ഥ TK_ALL:         zOp = "UNION ALL";  നിർത്തുക;
+        അവസ്ഥ TK_INTERSECT:   zOp = "INTERSECT";  നിർത്തുക;
+        അവസ്ഥ TK_EXCEPT:      zOp = "EXCEPT";     നിർത്തുക;
       }
-      sqlite3TreeViewItem(pView, zOp, 1);
+      sqlite3_വൃക്ഷം_View_Item(pView, zOp, 1);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  sqlite3TreeViewPop(&pView);
+  }ആകുമ്പോൾ( p!=0 );
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a description of starting or stopping bounds
 */
-void sqlite3TreeViewBound(
-  TreeView *pView,        /* View context */
+ശൂന്യം sqlite3_വൃക്ഷം_View_Bound(
+  വൃക്ഷം_View *pView,        /* View context */
   u8 eBound,              /* UNBOUNDED, CURRENT, PRECEDING, FOLLOWING */
-  Expr *pExpr,            /* Value for PRECEDING or FOLLOWING */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,            /* Value for PRECEDING or FOLLOWING */
   u8 moreToFollow         /* True if more to follow */
 ){
-  switch( eBound ){
-    case TK_UNBOUNDED: {
-      sqlite3TreeViewItem(pView, "UNBOUNDED", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+  തിരഞ്ഞെടുപ്പ്( eBound ){
+    അവസ്ഥ TK_UNBOUNDED: {
+      sqlite3_വൃക്ഷം_View_Item(pView, "UNBOUNDED", moreToFollow);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      നിർത്തുക;
     }
-    case TK_CURRENT: {
-      sqlite3TreeViewItem(pView, "CURRENT", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+    അവസ്ഥ TK_CURRENT: {
+      sqlite3_വൃക്ഷം_View_Item(pView, "CURRENT", moreToFollow);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      നിർത്തുക;
     }
-    case TK_PRECEDING: {
-      sqlite3TreeViewItem(pView, "PRECEDING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    അവസ്ഥ TK_PRECEDING: {
+      sqlite3_വൃക്ഷം_View_Item(pView, "PRECEDING", moreToFollow);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      നിർത്തുക;
     }
-    case TK_FOLLOWING: {
-      sqlite3TreeViewItem(pView, "FOLLOWING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    അവസ്ഥ TK_FOLLOWING: {
+      sqlite3_വൃക്ഷം_View_Item(pView, "FOLLOWING", moreToFollow);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      നിർത്തുക;
     }
   }
 }
@@ -418,66 +418,66 @@ void sqlite3TreeViewBound(
 /*
 ** Generate a human-readable explanation for a Window object
 */
-void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
-  int nElement = 0;
-  if( pWin==0 ) return;
-  if( pWin->pFilter ){
-    sqlite3TreeViewItem(pView, "FILTER", 1);
-    sqlite3TreeViewExpr(pView, pWin->pFilter, 0);
-    sqlite3TreeViewPop(&pView);
-    if( pWin->eFrmType==TK_FILTER ) return;
+ശൂന്യം sqlite3_വൃക്ഷം_View_Window(വൃക്ഷം_View *pView, സ്ഥിരം Window *pWin, u8 more){
+  പൂർണ്ണസംഖ്യ nElement = 0;
+  എങ്കിൽ( pWin==0 ) തിരികെ;
+  എങ്കിൽ( pWin->pFilter ){
+    sqlite3_വൃക്ഷം_View_Item(pView, "FILTER", 1);
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pWin->pFilter, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+    എങ്കിൽ( pWin->eFrmType==TK_FILTER ) തിരികെ;
   }
-  sqlite3TreeViewPush(&pView, more);
-  if( pWin->zName ){
-    sqlite3TreeViewLine(pView, "OVER %s (%p)", pWin->zName, pWin);
-  }else{
-    sqlite3TreeViewLine(pView, "OVER (%p)", pWin);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, more);
+  എങ്കിൽ( pWin->zName ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "OVER %s (%p)", pWin->zName, pWin);
+  }അല്ലെങ്കിൽ{
+    sqlite3_വൃക്ഷം_View_വരി(pView, "OVER (%p)", pWin);
   }
-  if( pWin->zBase )    nElement++;
-  if( pWin->pOrderBy ) nElement++;
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
-  if( pWin->eExclude ) nElement++;
-  if( pWin->zBase ){
-    sqlite3TreeViewPush(&pView, (--nElement)>0);
-    sqlite3TreeViewLine(pView, "window: %s", pWin->zBase);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pWin->zBase )    nElement++;
+  എങ്കിൽ( pWin->pOrderBy ) nElement++;
+  എങ്കിൽ( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
+  എങ്കിൽ( pWin->eExclude ) nElement++;
+  എങ്കിൽ( pWin->zBase ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--nElement)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "window: %s", pWin->zBase);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pWin->pPartition ){
-    sqlite3TreeViewExprList(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
+  എങ്കിൽ( pWin->pPartition ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
   }
-  if( pWin->pOrderBy ){
-    sqlite3TreeViewExprList(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
+  എങ്കിൽ( pWin->pOrderBy ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
   }
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
-    char zBuf[30];
-    const char *zFrmType = "ROWS";
-    if( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
-    if( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%s%s",zFrmType,
+  എങ്കിൽ( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
+    അക്ഷരം zBuf[30];
+    സ്ഥിരം അക്ഷരം *zFrmType = "ROWS";
+    എങ്കിൽ( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
+    എങ്കിൽ( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
+    sqlite3_snprintf(വലുപ്പം(zBuf),zBuf,"%s%s",zFrmType,
         pWin->bImplicitFrame ? " (implied)" : "");
-    sqlite3TreeViewItem(pView, zBuf, (--nElement)>0);
-    sqlite3TreeViewBound(pView, pWin->eStart, pWin->pStart, 1);
-    sqlite3TreeViewBound(pView, pWin->eEnd, pWin->pEnd, 0);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_Item(pView, zBuf, (--nElement)>0);
+    sqlite3_വൃക്ഷം_View_Bound(pView, pWin->eStart, pWin->pStart, 1);
+    sqlite3_വൃക്ഷം_View_Bound(pView, pWin->eEnd, pWin->pEnd, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pWin->eExclude ){
-    char zBuf[30];
-    const char *zExclude;
-    switch( pWin->eExclude ){
-      case TK_NO:      zExclude = "NO OTHERS";   break;
-      case TK_CURRENT: zExclude = "CURRENT ROW"; break;
-      case TK_GROUP:   zExclude = "GROUP";       break;
-      case TK_TIES:    zExclude = "TIES";        break;
-      default:
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
+  എങ്കിൽ( pWin->eExclude ){
+    അക്ഷരം zBuf[30];
+    സ്ഥിരം അക്ഷരം *zExclude;
+    തിരഞ്ഞെടുപ്പ്( pWin->eExclude ){
+      അവസ്ഥ TK_NO:      zExclude = "NO OTHERS";   നിർത്തുക;
+      അവസ്ഥ TK_CURRENT: zExclude = "CURRENT ROW"; നിർത്തുക;
+      അവസ്ഥ TK_GROUP:   zExclude = "GROUP";       നിർത്തുക;
+      അവസ്ഥ TK_TIES:    zExclude = "TIES";        നിർത്തുക;
+      സ്ഥിരസ്ഥിതി:
+        sqlite3_snprintf(വലുപ്പം(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
         zExclude = zBuf;
-        break;
+        നിർത്തുക;
     }
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewLine(pView, "EXCLUDE %s", zExclude);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "EXCLUDE %s", zExclude);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
@@ -485,298 +485,298 @@ void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
 /*
 ** Generate a human-readable explanation for a Window Function object
 */
-void sqlite3TreeViewWinFunc(TreeView *pView, const Window *pWin, u8 more){
-  if( pWin==0 ) return;
-  sqlite3TreeViewPush(&pView, more);
-  sqlite3TreeViewLine(pView, "WINFUNC %s(%d)",
+ശൂന്യം sqlite3_വൃക്ഷം_View_Win_Func(വൃക്ഷം_View *pView, സ്ഥിരം Window *pWin, u8 more){
+  എങ്കിൽ( pWin==0 ) തിരികെ;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, more);
+  sqlite3_വൃക്ഷം_View_വരി(pView, "WINFUNC %s(%d)",
                        pWin->pWFunc->zName, pWin->pWFunc->nArg);
-  sqlite3TreeViewWindow(pView, pWin, 0);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_Window(pView, pWin, 0);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Generate a human-readable explanation of an expression tree.
 */
-void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
-  const char *zBinOp = 0;   /* Binary operator */
-  const char *zUniOp = 0;   /* Unary operator */
-  char zFlgs[200];
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( pExpr==0 ){
-    sqlite3TreeViewLine(pView, "nil");
-    sqlite3TreeViewPop(&pView);
-    return;
+ശൂന്യം sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(വൃക്ഷം_View *pView, സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം, u8 moreToFollow){
+  സ്ഥിരം അക്ഷരം *zBinOp = 0;   /* Binary operator */
+  സ്ഥിരം അക്ഷരം *zUniOp = 0;   /* Unary operator */
+  അക്ഷരം zFlgs[200];
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  എങ്കിൽ( p_വ്യഞ്ജകം==0 ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "nil");
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+    തിരികെ;
   }
-  if( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
+  എങ്കിൽ( p_വ്യഞ്ജകം->flags || p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം || p_വ്യഞ്ജകം->vvaFlags || p_വ്യഞ്ജകം->pAggInfo ){
     StrAccum x;
-    sqlite3StrAccumInit(&x, 0, zFlgs, sizeof(zFlgs), 0);
+    sqlite3StrAccumInit(&x, 0, zFlgs, വലുപ്പം(zFlgs), 0);
     sqlite3_str_appendf(&x, " fg.af=%x.%c",
-      pExpr->flags, pExpr->affExpr ? pExpr->affExpr : 'n');
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
-      sqlite3_str_appendf(&x, " outer.iJoin=%d", pExpr->w.iJoin);
+      p_വ്യഞ്ജകം->flags, p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം ? p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം : 'n');
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON) ){
+      sqlite3_str_appendf(&x, " outer.iJoin=%d", p_വ്യഞ്ജകം->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_InnerON) ){
-      sqlite3_str_appendf(&x, " inner.iJoin=%d", pExpr->w.iJoin);
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_InnerON) ){
+      sqlite3_str_appendf(&x, " inner.iJoin=%d", p_വ്യഞ്ജകം->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_FromDDL) ){
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_FromDDL) ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( ExprHasVVAProperty(pExpr, EP_Immutable) ){
+    എങ്കിൽ( വ്യഞ്ജകം_Has_VVAProperty(p_വ്യഞ്ജകം, EP_Immutable) ){
       sqlite3_str_appendf(&x, " IMMUTABLE");
     }
-    if( pExpr->pAggInfo!=0 ){
-      sqlite3_str_appendf(&x, " agg-column[%d]", pExpr->iAgg);
+    എങ്കിൽ( p_വ്യഞ്ജകം->pAggInfo!=0 ){
+      sqlite3_str_appendf(&x, " agg-column[%d]", p_വ്യഞ്ജകം->iAgg);
     }
     sqlite3StrAccumFinish(&x);
-  }else{
+  }അല്ലെങ്കിൽ{
     zFlgs[0] = 0;
   }
-  switch( pExpr->op ){
-    case TK_AGG_COLUMN: {
-      sqlite3TreeViewLine(pView, "AGG{%d:%d}%s",
-            pExpr->iTable, pExpr->iColumn, zFlgs);
-      break;
+  തിരഞ്ഞെടുപ്പ്( p_വ്യഞ്ജകം->op ){
+    അവസ്ഥ TK_AGG_COLUMN: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "AGG{%d:%d}%s",
+            p_വ്യഞ്ജകം->iTable, p_വ്യഞ്ജകം->iColumn, zFlgs);
+      നിർത്തുക;
     }
-    case TK_COLUMN: {
-      if( pExpr->iTable<0 ){
+    അവസ്ഥ TK_COLUMN: {
+      എങ്കിൽ( p_വ്യഞ്ജകം->iTable<0 ){
         /* This only happens when coding check constraints */
-        char zOp2[16];
-        if( pExpr->op2 ){
-          sqlite3_snprintf(sizeof(zOp2),zOp2," op2=0x%02x",pExpr->op2);
-        }else{
+        അക്ഷരം zOp2[16];
+        എങ്കിൽ( p_വ്യഞ്ജകം->op2 ){
+          sqlite3_snprintf(വലുപ്പം(zOp2),zOp2," op2=0x%02x",p_വ്യഞ്ജകം->op2);
+        }അല്ലെങ്കിൽ{
           zOp2[0] = 0;
         }
-        sqlite3TreeViewLine(pView, "COLUMN(%d)%s%s",
-                                    pExpr->iColumn, zFlgs, zOp2);
-      }else{
-        assert( ExprUseYTab(pExpr) );
-        sqlite3TreeViewLine(pView, "{%d:%d} pTab=%p%s",
-                        pExpr->iTable, pExpr->iColumn,
-                        pExpr->y.pTab, zFlgs);
+        sqlite3_വൃക്ഷം_View_വരി(pView, "COLUMN(%d)%s%s",
+                                    p_വ്യഞ്ജകം->iColumn, zFlgs, zOp2);
+      }അല്ലെങ്കിൽ{
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(p_വ്യഞ്ജകം) );
+        sqlite3_വൃക്ഷം_View_വരി(pView, "{%d:%d} pTab=%p%s",
+                        p_വ്യഞ്ജകം->iTable, p_വ്യഞ്ജകം->iColumn,
+                        p_വ്യഞ്ജകം->y.pTab, zFlgs);
       }
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
-        sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+      എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_FixedCol) ){
+        sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
       }
-      break;
+      നിർത്തുക;
     }
-    case TK_INTEGER: {
-      if( pExpr->flags & EP_IntValue ){
-        sqlite3TreeViewLine(pView, "%d", pExpr->u.iValue);
-      }else{
-        sqlite3TreeViewLine(pView, "%s", pExpr->u.zToken);
+    അവസ്ഥ TK_INTEGER: {
+      എങ്കിൽ( p_വ്യഞ്ജകം->flags & EP_Int_മൂല്യം ){
+        sqlite3_വൃക്ഷം_View_വരി(pView, "%d", p_വ്യഞ്ജകം->u.i_മൂല്യം);
+      }അല്ലെങ്കിൽ{
+        sqlite3_വൃക്ഷം_View_വരി(pView, "%s", p_വ്യഞ്ജകം->u.zToken);
       }
-      break;
+      നിർത്തുക;
     }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    അവസ്ഥ TK_FLOAT: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"%s", p_വ്യഞ്ജകം->u.zToken);
+      നിർത്തുക;
     }
 #endif
-    case TK_STRING: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%Q", pExpr->u.zToken);
-      break;
+    അവസ്ഥ TK_STRING: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"%Q", p_വ്യഞ്ജകം->u.zToken);
+      നിർത്തുക;
     }
-    case TK_NULL: {
-      sqlite3TreeViewLine(pView,"NULL");
-      break;
+    അവസ്ഥ TK_NULL: {
+      sqlite3_വൃക്ഷം_View_വരി(pView,"NULL");
+      നിർത്തുക;
     }
-    case TK_TRUEFALSE: {
-      sqlite3TreeViewLine(pView,"%s%s",
-         sqlite3ExprTruthValue(pExpr) ? "TRUE" : "FALSE", zFlgs);
-      break;
+    അവസ്ഥ TK_TRUEFALSE: {
+      sqlite3_വൃക്ഷം_View_വരി(pView,"%s%s",
+         sqlite3_വ്യഞ്ജകം_Truth_മൂല്യം(p_വ്യഞ്ജകം) ? "TRUE" : "FALSE", zFlgs);
+      നിർത്തുക;
     }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    അവസ്ഥ TK_BLOB: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"%s", p_വ്യഞ്ജകം->u.zToken);
+      നിർത്തുക;
     }
 #endif
-    case TK_VARIABLE: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"VARIABLE(%s,%d)",
-                          pExpr->u.zToken, pExpr->iColumn);
-      break;
+    അവസ്ഥ TK_VARIABLE: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"VARIABLE(%s,%d)",
+                          p_വ്യഞ്ജകം->u.zToken, p_വ്യഞ്ജകം->iColumn);
+      നിർത്തുക;
     }
-    case TK_REGISTER: {
-      sqlite3TreeViewLine(pView,"REGISTER(%d)", pExpr->iTable);
-      break;
+    അവസ്ഥ TK_REGISTER: {
+      sqlite3_വൃക്ഷം_View_വരി(pView,"REGISTER(%d)", p_വ്യഞ്ജകം->iTable);
+      നിർത്തുക;
     }
-    case TK_ID: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"ID \"%w\"", pExpr->u.zToken);
-      break;
+    അവസ്ഥ TK_ID: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"ID \"%w\"", p_വ്യഞ്ജകം->u.zToken);
+      നിർത്തുക;
     }
-    case TK_ASTERISK: {
-      sqlite3TreeViewLine(pView,"ASKTERISK");
-      break;
+    അവസ്ഥ TK_ASTERISK: {
+      sqlite3_വൃക്ഷം_View_വരി(pView,"ASKTERISK");
+      നിർത്തുക;
     }
 #ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+    അവസ്ഥ TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"CAST %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView,"CAST %Q", p_വ്യഞ്ജകം->u.zToken);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
+      നിർത്തുക;
     }
 #endif /* SQLITE_OMIT_CAST */
-    case TK_LT:      zBinOp = "LT";     break;
-    case TK_LE:      zBinOp = "LE";     break;
-    case TK_GT:      zBinOp = "GT";     break;
-    case TK_GE:      zBinOp = "GE";     break;
-    case TK_NE:      zBinOp = "NE";     break;
-    case TK_EQ:      zBinOp = "EQ";     break;
-    case TK_IS:      zBinOp = "IS";     break;
-    case TK_ISNOT:   zBinOp = "ISNOT";  break;
-    case TK_AND:     zBinOp = "AND";    break;
-    case TK_OR:      zBinOp = "OR";     break;
-    case TK_PLUS:    zBinOp = "ADD";    break;
-    case TK_STAR:    zBinOp = "MUL";    break;
-    case TK_MINUS:   zBinOp = "SUB";    break;
-    case TK_REM:     zBinOp = "REM";    break;
-    case TK_BITAND:  zBinOp = "BITAND"; break;
-    case TK_BITOR:   zBinOp = "BITOR";  break;
-    case TK_SLASH:   zBinOp = "DIV";    break;
-    case TK_LSHIFT:  zBinOp = "LSHIFT"; break;
-    case TK_RSHIFT:  zBinOp = "RSHIFT"; break;
-    case TK_CONCAT:  zBinOp = "CONCAT"; break;
-    case TK_DOT:     zBinOp = "DOT";    break;
-    case TK_LIMIT:   zBinOp = "LIMIT";  break;
+    അവസ്ഥ TK_LT:      zBinOp = "LT";     നിർത്തുക;
+    അവസ്ഥ TK_LE:      zBinOp = "LE";     നിർത്തുക;
+    അവസ്ഥ TK_GT:      zBinOp = "GT";     നിർത്തുക;
+    അവസ്ഥ TK_GE:      zBinOp = "GE";     നിർത്തുക;
+    അവസ്ഥ TK_NE:      zBinOp = "NE";     നിർത്തുക;
+    അവസ്ഥ TK_EQ:      zBinOp = "EQ";     നിർത്തുക;
+    അവസ്ഥ TK_IS:      zBinOp = "IS";     നിർത്തുക;
+    അവസ്ഥ TK_ISNOT:   zBinOp = "ISNOT";  നിർത്തുക;
+    അവസ്ഥ TK_AND:     zBinOp = "AND";    നിർത്തുക;
+    അവസ്ഥ TK_OR:      zBinOp = "OR";     നിർത്തുക;
+    അവസ്ഥ TK_PLUS:    zBinOp = "ADD";    നിർത്തുക;
+    അവസ്ഥ TK_STAR:    zBinOp = "MUL";    നിർത്തുക;
+    അവസ്ഥ TK_MINUS:   zBinOp = "SUB";    നിർത്തുക;
+    അവസ്ഥ TK_REM:     zBinOp = "REM";    നിർത്തുക;
+    അവസ്ഥ TK_BITAND:  zBinOp = "BITAND"; നിർത്തുക;
+    അവസ്ഥ TK_BITOR:   zBinOp = "BITOR";  നിർത്തുക;
+    അവസ്ഥ TK_SLASH:   zBinOp = "DIV";    നിർത്തുക;
+    അവസ്ഥ TK_LSHIFT:  zBinOp = "LSHIFT"; നിർത്തുക;
+    അവസ്ഥ TK_RSHIFT:  zBinOp = "RSHIFT"; നിർത്തുക;
+    അവസ്ഥ TK_CONCAT:  zBinOp = "CONCAT"; നിർത്തുക;
+    അവസ്ഥ TK_DOT:     zBinOp = "DOT";    നിർത്തുക;
+    അവസ്ഥ TK_LIMIT:   zBinOp = "LIMIT";  നിർത്തുക;
 
-    case TK_UMINUS:  zUniOp = "UMINUS"; break;
-    case TK_UPLUS:   zUniOp = "UPLUS";  break;
-    case TK_BITNOT:  zUniOp = "BITNOT"; break;
-    case TK_NOT:     zUniOp = "NOT";    break;
-    case TK_ISNULL:  zUniOp = "ISNULL"; break;
-    case TK_NOTNULL: zUniOp = "NOTNULL"; break;
+    അവസ്ഥ TK_UMINUS:  zUniOp = "UMINUS"; നിർത്തുക;
+    അവസ്ഥ TK_UPLUS:   zUniOp = "UPLUS";  നിർത്തുക;
+    അവസ്ഥ TK_BITNOT:  zUniOp = "BITNOT"; നിർത്തുക;
+    അവസ്ഥ TK_NOT:     zUniOp = "NOT";    നിർത്തുക;
+    അവസ്ഥ TK_ISNULL:  zUniOp = "ISNULL"; നിർത്തുക;
+    അവസ്ഥ TK_NOTNULL: zUniOp = "NOTNULL"; നിർത്തുക;
 
-    case TK_TRUTH: {
-      int x;
-      const char *azOp[] = {
+    അവസ്ഥ TK_TRUTH: {
+      പൂർണ്ണസംഖ്യ x;
+      സ്ഥിരം അക്ഷരം *azOp[] = {
          "IS-FALSE", "IS-TRUE", "IS-NOT-FALSE", "IS-NOT-TRUE"
       };
-      assert( pExpr->op2==TK_IS || pExpr->op2==TK_ISNOT );
-      assert( pExpr->pRight );
-      assert( sqlite3ExprSkipCollateAndLikely(pExpr->pRight)->op
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op2==TK_IS || p_വ്യഞ്ജകം->op2==TK_ISNOT );
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_വലത് );
+      പ്രതിജ്ഞാ( sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(p_വ്യഞ്ജകം->p_വലത്)->op
                   == TK_TRUEFALSE );
-      x = (pExpr->op2==TK_ISNOT)*2 + sqlite3ExprTruthValue(pExpr->pRight);
+      x = (p_വ്യഞ്ജകം->op2==TK_ISNOT)*2 + sqlite3_വ്യഞ്ജകം_Truth_മൂല്യം(p_വ്യഞ്ജകം->p_വലത്);
       zUniOp = azOp[x];
-      break;
+      നിർത്തുക;
     }
 
-    case TK_SPAN: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "SPAN %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    അവസ്ഥ TK_SPAN: {
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView, "SPAN %Q", p_വ്യഞ്ജകം->u.zToken);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
+      നിർത്തുക;
     }
 
-    case TK_COLLATE: {
+    അവസ്ഥ TK_COLLATE: {
       /* COLLATE operators without the EP_Collate flag are intended to
       ** emulate collation associated with a table column.  These show
       ** up in the treeview output as "SOFT-COLLATE".  Explicit COLLATE
       ** operators that appear in the original SQL always have the
       ** EP_Collate bit set and appear in treeview output as just "COLLATE" */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "%sCOLLATE %Q%s",
-        !ExprHasProperty(pExpr, EP_Collate) ? "SOFT-" : "",
-        pExpr->u.zToken, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView, "%sCOLLATE %Q%s",
+        !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Collate) ? "SOFT-" : "",
+        p_വ്യഞ്ജകം->u.zToken, zFlgs);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
+      നിർത്തുക;
     }
 
-    case TK_AGG_FUNCTION:
-    case TK_FUNCTION: {
-      ExprList *pFarg;       /* List of function arguments */
+    അവസ്ഥ TK_AGG_FUNCTION:
+    അവസ്ഥ TK_FUNCTION: {
+      വ്യഞ്ജകം_List *pFarg;       /* List of function arguments */
       Window *pWin;
-      if( ExprHasProperty(pExpr, EP_TokenOnly) ){
+      എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_TokenOnly) ){
         pFarg = 0;
         pWin = 0;
-      }else{
-        assert( ExprUseXList(pExpr) );
-        pFarg = pExpr->x.pList;
+      }അല്ലെങ്കിൽ{
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+        pFarg = p_വ്യഞ്ജകം->x.pList;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        pWin = IsWindowFunc(pExpr) ? pExpr->y.pWin : 0;
-#else
+        pWin = IsWindowFunc(p_വ്യഞ്ജകം) ? p_വ്യഞ്ജകം->y.pWin : 0;
+#അല്ലെങ്കിൽ
         pWin = 0;
 #endif 
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->op==TK_AGG_FUNCTION ){
-        sqlite3TreeViewLine(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
-                             pExpr->op2, pExpr->u.zToken, zFlgs,
-                             pExpr->pAggInfo ? pExpr->pAggInfo->selId : 0,
-                             pExpr->iAgg, pExpr->pAggInfo);
-      }else if( pExpr->op2!=0 ){
-        const char *zOp2;
-        char zBuf[8];
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"0x%02x",pExpr->op2);
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_AGG_FUNCTION ){
+        sqlite3_വൃക്ഷം_View_വരി(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
+                             p_വ്യഞ്ജകം->op2, p_വ്യഞ്ജകം->u.zToken, zFlgs,
+                             p_വ്യഞ്ജകം->pAggInfo ? p_വ്യഞ്ജകം->pAggInfo->selId : 0,
+                             p_വ്യഞ്ജകം->iAgg, p_വ്യഞ്ജകം->pAggInfo);
+      }അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op2!=0 ){
+        സ്ഥിരം അക്ഷരം *zOp2;
+        അക്ഷരം zBuf[8];
+        sqlite3_snprintf(വലുപ്പം(zBuf),zBuf,"0x%02x",p_വ്യഞ്ജകം->op2);
         zOp2 = zBuf;
-        if( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
-        if( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
-        if( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
-        if( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s op2=%s",
-                            pExpr->u.zToken, zFlgs, zOp2);
-      }else{
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s", pExpr->u.zToken, zFlgs);
+        എങ്കിൽ( p_വ്യഞ്ജകം->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
+        എങ്കിൽ( p_വ്യഞ്ജകം->op2==NC_Idx_വ്യഞ്ജകം ) zOp2 = "NC_IdxExpr";
+        എങ്കിൽ( p_വ്യഞ്ജകം->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
+        എങ്കിൽ( p_വ്യഞ്ജകം->op2==NC_GenCol ) zOp2 = "NC_GenCol";
+        sqlite3_വൃക്ഷം_View_വരി(pView, "FUNCTION %Q%s op2=%s",
+                            p_വ്യഞ്ജകം->u.zToken, zFlgs, zOp2);
+      }അല്ലെങ്കിൽ{
+        sqlite3_വൃക്ഷം_View_വരി(pView, "FUNCTION %Q%s", p_വ്യഞ്ജകം->u.zToken, zFlgs);
       }
-      if( pFarg ){
-        sqlite3TreeViewExprList(pView, pFarg, pWin!=0 || pExpr->pLeft, 0);
-        if( pExpr->pLeft ){
-          Expr *pOB = pExpr->pLeft;
-          assert( pOB->op==TK_ORDER );
-          assert( ExprUseXList(pOB) );
-          sqlite3TreeViewExprList(pView, pOB->x.pList, pWin!=0, "ORDERBY");
+      എങ്കിൽ( pFarg ){
+        sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pFarg, pWin!=0 || p_വ്യഞ്ജകം->p_ഇടത്, 0);
+        എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത് ){
+          വ്യഞ്ജകം *pOB = p_വ്യഞ്ജകം->p_ഇടത്;
+          പ്രതിജ്ഞാ( pOB->op==TK_ORDER );
+          പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(pOB) );
+          sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pOB->x.pList, pWin!=0, "ORDERBY");
         }
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pWin ){
-        sqlite3TreeViewWindow(pView, pWin, 0);
+      എങ്കിൽ( pWin ){
+        sqlite3_വൃക്ഷം_View_Window(pView, pWin, 0);
       }
 #endif
-      break;
+      നിർത്തുക;
     }
-    case TK_ORDER: {
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, "ORDERBY");
-      break;
+    അവസ്ഥ TK_ORDER: {
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p_വ്യഞ്ജകം->x.pList, 0, "ORDERBY");
+      നിർത്തുക;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "EXISTS-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    അവസ്ഥ TK_EXISTS: {
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView, "EXISTS-expr flags=0x%x", p_വ്യഞ്ജകം->flags);
+      sqlite3_വൃക്ഷം_View_Select(pView, p_വ്യഞ്ജകം->x.pSelect, 0);
+      നിർത്തുക;
     }
-    case TK_SELECT: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "subquery-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    അവസ്ഥ TK_SELECT: {
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView, "subquery-expr flags=0x%x", p_വ്യഞ്ജകം->flags);
+      sqlite3_വൃക്ഷം_View_Select(pView, p_വ്യഞ്ജകം->x.pSelect, 0);
+      നിർത്തുക;
     }
-    case TK_IN: {
+    അവസ്ഥ TK_IN: {
       sqlite3_str *pStr = sqlite3_str_new(0);
-      char *z;
-      sqlite3_str_appendf(pStr, "IN flags=0x%x", pExpr->flags);
-      if( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      അക്ഷരം *z;
+      sqlite3_str_appendf(pStr, "IN flags=0x%x", p_വ്യഞ്ജകം->flags);
+      എങ്കിൽ( p_വ്യഞ്ജകം->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",p_വ്യഞ്ജകം->iTable);
+      എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Subrtn) ){
         sqlite3_str_appendf(pStr, " subrtn(%d,%d)",
-            pExpr->y.sub.regReturn, pExpr->y.sub.iAddr);
+            p_വ്യഞ്ജകം->y.sub.regReturn, p_വ്യഞ്ജകം->y.sub.iAddr);
       }
       z = sqlite3_str_finish(pStr);
-      sqlite3TreeViewLine(pView, z);
+      sqlite3_വൃക്ഷം_View_വരി(pView, z);
       sqlite3_free(z);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      if( ExprUseXSelect(pExpr) ){
-        sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      }else{
-        sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 1);
+      എങ്കിൽ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) ){
+        sqlite3_വൃക്ഷം_View_Select(pView, p_വ്യഞ്ജകം->x.pSelect, 0);
+      }അല്ലെങ്കിൽ{
+        sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p_വ്യഞ്ജകം->x.pList, 0, 0);
       }
-      break;
+      നിർത്തുക;
     }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -791,20 +791,20 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
-      const Expr *pX, *pY, *pZ;
-      pX = pExpr->pLeft;
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr==2 );
-      pY = pExpr->x.pList->a[0].pExpr;
-      pZ = pExpr->x.pList->a[1].pExpr;
-      sqlite3TreeViewLine(pView, "BETWEEN%s", zFlgs);
-      sqlite3TreeViewExpr(pView, pX, 1);
-      sqlite3TreeViewExpr(pView, pY, 1);
-      sqlite3TreeViewExpr(pView, pZ, 0);
-      break;
+    അവസ്ഥ TK_BETWEEN: {
+      സ്ഥിരം വ്യഞ്ജകം *pX, *pY, *pZ;
+      pX = p_വ്യഞ്ജകം->p_ഇടത്;
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+      പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->x.pList->n_വ്യഞ്ജകം==2 );
+      pY = p_വ്യഞ്ജകം->x.pList->a[0].p_വ്യഞ്ജകം;
+      pZ = p_വ്യഞ്ജകം->x.pList->a[1].p_വ്യഞ്ജകം;
+      sqlite3_വൃക്ഷം_View_വരി(pView, "BETWEEN%s", zFlgs);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pX, 1);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pY, 1);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pZ, 0);
+      നിർത്തുക;
     }
-    case TK_TRIGGER: {
+    അവസ്ഥ TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -812,426 +812,426 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       ** is set to the column of the pseudo-table to read, or to -1 to
       ** read the rowid field.
       */
-      sqlite3TreeViewLine(pView, "%s(%d)", 
-          pExpr->iTable ? "NEW" : "OLD", pExpr->iColumn);
-      break;
+      sqlite3_വൃക്ഷം_View_വരി(pView, "%s(%d)", 
+          p_വ്യഞ്ജകം->iTable ? "NEW" : "OLD", p_വ്യഞ്ജകം->iColumn);
+      നിർത്തുക;
     }
-    case TK_CASE: {
-      sqlite3TreeViewLine(pView, "CASE");
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
-      break;
+    അവസ്ഥ TK_CASE: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "CASE");
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 1);
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p_വ്യഞ്ജകം->x.pList, 0, 0);
+      നിർത്തുക;
     }
 #ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
-      const char *zType = "unk";
-      switch( pExpr->affExpr ){
-        case OE_Rollback:   zType = "rollback";  break;
-        case OE_Abort:      zType = "abort";     break;
-        case OE_Fail:       zType = "fail";      break;
-        case OE_Ignore:     zType = "ignore";    break;
+    അവസ്ഥ TK_RAISE: {
+      സ്ഥിരം അക്ഷരം *zType = "unk";
+      തിരഞ്ഞെടുപ്പ്( p_വ്യഞ്ജകം->aff_വ്യഞ്ജകം ){
+        അവസ്ഥ OE_Rollback:   zType = "rollback";  നിർത്തുക;
+        അവസ്ഥ OE_Abort:      zType = "abort";     നിർത്തുക;
+        അവസ്ഥ OE_Fail:       zType = "fail";      നിർത്തുക;
+        അവസ്ഥ OE_Ignore:     zType = "ignore";    നിർത്തുക;
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "RAISE %s", zType);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      sqlite3_വൃക്ഷം_View_വരി(pView, "RAISE %s", zType);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
+      നിർത്തുക;
     }
 #endif
-    case TK_MATCH: {
-      sqlite3TreeViewLine(pView, "MATCH {%d:%d}%s",
-                          pExpr->iTable, pExpr->iColumn, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-      break;
+    അവസ്ഥ TK_MATCH: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "MATCH {%d:%d}%s",
+                          p_വ്യഞ്ജകം->iTable, p_വ്യഞ്ജകം->iColumn, zFlgs);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_വലത്, 0);
+      നിർത്തുക;
     }
-    case TK_VECTOR: {
-      char *z = sqlite3_mprintf("VECTOR%s",zFlgs);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewBareExprList(pView, pExpr->x.pList, z);
+    അവസ്ഥ TK_VECTOR: {
+      അക്ഷരം *z = sqlite3_mprintf("VECTOR%s",zFlgs);
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+      sqlite3_വൃക്ഷം_View_Bare_വ്യഞ്ജകം_List(pView, p_വ്യഞ്ജകം->x.pList, z);
       sqlite3_free(z);
-      break;
+      നിർത്തുക;
     }
-    case TK_SELECT_COLUMN: {
-      sqlite3TreeViewLine(pView, "SELECT-COLUMN %d of [0..%d]%s",
-              pExpr->iColumn, pExpr->iTable-1,
-              pExpr->pRight==pExpr->pLeft ? " (SELECT-owner)" : "");
-      assert( ExprUseXSelect(pExpr->pLeft) );
-      sqlite3TreeViewSelect(pView, pExpr->pLeft->x.pSelect, 0);
-      break;
+    അവസ്ഥ TK_SELECT_COLUMN: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "SELECT-COLUMN %d of [0..%d]%s",
+              p_വ്യഞ്ജകം->iColumn, p_വ്യഞ്ജകം->iTable-1,
+              p_വ്യഞ്ജകം->p_വലത്==p_വ്യഞ്ജകം->p_ഇടത് ? " (SELECT-owner)" : "");
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം->p_ഇടത്) );
+      sqlite3_വൃക്ഷം_View_Select(pView, p_വ്യഞ്ജകം->p_ഇടത്->x.pSelect, 0);
+      നിർത്തുക;
     }
-    case TK_IF_NULL_ROW: {
-      sqlite3TreeViewLine(pView, "IF-NULL-ROW %d", pExpr->iTable);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    അവസ്ഥ TK_IF_NULL_ROW: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "IF-NULL-ROW %d", p_വ്യഞ്ജകം->iTable);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
+      നിർത്തുക;
     }
-    case TK_ERROR: {
-      Expr tmp;
-      sqlite3TreeViewLine(pView, "ERROR");
-      tmp = *pExpr;
-      tmp.op = pExpr->op2;
-      sqlite3TreeViewExpr(pView, &tmp, 0);
-      break;
+    അവസ്ഥ TK_ERROR: {
+      വ്യഞ്ജകം tmp;
+      sqlite3_വൃക്ഷം_View_വരി(pView, "ERROR");
+      tmp = *p_വ്യഞ്ജകം;
+      tmp.op = p_വ്യഞ്ജകം->op2;
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, &tmp, 0);
+      നിർത്തുക;
     }
-    case TK_ROW: {
-      if( pExpr->iColumn<=0 ){
-        sqlite3TreeViewLine(pView, "First FROM table rowid");
-      }else{
-        sqlite3TreeViewLine(pView, "First FROM table column %d",
-            pExpr->iColumn-1);
+    അവസ്ഥ TK_ROW: {
+      എങ്കിൽ( p_വ്യഞ്ജകം->iColumn<=0 ){
+        sqlite3_വൃക്ഷം_View_വരി(pView, "First FROM table rowid");
+      }അല്ലെങ്കിൽ{
+        sqlite3_വൃക്ഷം_View_വരി(pView, "First FROM table column %d",
+            p_വ്യഞ്ജകം->iColumn-1);
       }
-      break;
+      നിർത്തുക;
     }
-    default: {
-      sqlite3TreeViewLine(pView, "op=%d", pExpr->op);
-      break;
+    സ്ഥിരസ്ഥിതി: {
+      sqlite3_വൃക്ഷം_View_വരി(pView, "op=%d", p_വ്യഞ്ജകം->op);
+      നിർത്തുക;
     }
   }
-  if( zBinOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zBinOp, zFlgs);
-    sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-    sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-  }else if( zUniOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zUniOp, zFlgs);
-   sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+  എങ്കിൽ( zBinOp ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s%s", zBinOp, zFlgs);
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 1);
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_വലത്, 0);
+  }അല്ലെങ്കിൽ എങ്കിൽ( zUniOp ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s%s", zUniOp, zFlgs);
+   sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, p_വ്യഞ്ജകം->p_ഇടത്, 0);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
 
 /*
 ** Generate a human-readable explanation of an expression list.
 */
-void sqlite3TreeViewBareExprList(
-  TreeView *pView,
-  const ExprList *pList,
-  const char *zLabel
+ശൂന്യം sqlite3_വൃക്ഷം_View_Bare_വ്യഞ്ജകം_List(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം വ്യഞ്ജകം_List *pList,
+  സ്ഥിരം അക്ഷരം *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nExpr; i++){
-      int j = pList->a[i].u.x.iOrderByCol;
+  എങ്കിൽ( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  എങ്കിൽ( pList==0 ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s (empty)", zLabel);
+  }അല്ലെങ്കിൽ{
+    പൂർണ്ണസംഖ്യ i;
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s", zLabel);
+    വേണ്ടി(i=0; i<pList->n_വ്യഞ്ജകം; i++){
+      പൂർണ്ണസംഖ്യ j = pList->a[i].u.x.iOrderByCol;
       u8 sortFlags = pList->a[i].fg.sortFlags;
-      char *zName = pList->a[i].zEName;
-      int moreToFollow = i<pList->nExpr - 1;
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPush(&pView, moreToFollow);
+      അക്ഷരം *zName = pList->a[i].zEName;
+      പൂർണ്ണസംഖ്യ moreToFollow = i<pList->n_വ്യഞ്ജകം - 1;
+      എങ്കിൽ( j || zName || sortFlags ){
+        sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
         moreToFollow = 0;
-        sqlite3TreeViewLine(pView, 0);
-        if( zName ){
-          switch( pList->a[i].fg.eEName ){
-            default:
+        sqlite3_വൃക്ഷം_View_വരി(pView, 0);
+        എങ്കിൽ( zName ){
+          തിരഞ്ഞെടുപ്പ്( pList->a[i].fg.eEName ){
+            സ്ഥിരസ്ഥിതി:
               fprintf(stdout, "AS %s ", zName);
-              break;
-            case ENAME_TAB:
+              നിർത്തുക;
+            അവസ്ഥ ENAME_TAB:
               fprintf(stdout, "TABLE-ALIAS-NAME(\"%s\") ", zName);
-              if( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
-              if( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
-              if( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
-              break;
-            case ENAME_SPAN:
+              എങ്കിൽ( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
+              എങ്കിൽ( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
+              എങ്കിൽ( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
+              നിർത്തുക;
+            അവസ്ഥ ENAME_SPAN:
               fprintf(stdout, "SPAN(\"%s\") ", zName);
-              break;
+              നിർത്തുക;
           }
         }
-        if( j ){
+        എങ്കിൽ( j ){
           fprintf(stdout, "iOrderByCol=%d ", j);
         }
-        if( sortFlags & KEYINFO_ORDER_DESC ){
+        എങ്കിൽ( sortFlags & KEYINFO_ORDER_DESC ){
           fprintf(stdout, "DESC ");
-        }else if( sortFlags & KEYINFO_ORDER_BIGNULL ){
+        }അല്ലെങ്കിൽ എങ്കിൽ( sortFlags & KEYINFO_ORDER_BIGNULL ){
           fprintf(stdout, "NULLS-LAST");
         }
         fprintf(stdout, "\n");
         fflush(stdout);
       }
-      sqlite3TreeViewExpr(pView, pList->a[i].pExpr, moreToFollow);
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pList->a[i].p_വ്യഞ്ജകം, moreToFollow);
+      എങ്കിൽ( j || zName || sortFlags ){
+        sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
       }
     }
   }
 }
-void sqlite3TreeViewExprList(
-  TreeView *pView,
-  const ExprList *pList,
+ശൂന്യം sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം വ്യഞ്ജകം_List *pList,
   u8 moreToFollow,
-  const char *zLabel
+  സ്ഥിരം അക്ഷരം *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareExprList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  sqlite3_വൃക്ഷം_View_Bare_വ്യഞ്ജകം_List(pView, pList, zLabel);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of an id-list.
 */
-void sqlite3TreeViewBareIdList(
-  TreeView *pView,
-  const IdList *pList,
-  const char *zLabel
+ശൂന്യം sqlite3_വൃക്ഷം_View_Bare_Id_List(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം IdList *pList,
+  സ്ഥിരം അക്ഷരം *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nId; i++){
-      char *zName = pList->a[i].zName;
-      int moreToFollow = i<pList->nId - 1;
-      if( zName==0 ) zName = "(null)";
-      sqlite3TreeViewPush(&pView, moreToFollow);
-      sqlite3TreeViewLine(pView, 0);
+  എങ്കിൽ( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  എങ്കിൽ( pList==0 ){
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s (empty)", zLabel);
+  }അല്ലെങ്കിൽ{
+    പൂർണ്ണസംഖ്യ i;
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s", zLabel);
+    വേണ്ടി(i=0; i<pList->nId; i++){
+      അക്ഷരം *zName = pList->a[i].zName;
+      പൂർണ്ണസംഖ്യ moreToFollow = i<pList->nId - 1;
+      എങ്കിൽ( zName==0 ) zName = "(null)";
+      sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+      sqlite3_വൃക്ഷം_View_വരി(pView, 0);
       fprintf(stdout, "%s\n", zName);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
   }
 }
-void sqlite3TreeViewIdList(
-  TreeView *pView,
-  const IdList *pList,
+ശൂന്യം sqlite3_വൃക്ഷം_View_Id_List(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം IdList *pList,
   u8 moreToFollow,
-  const char *zLabel
+  സ്ഥിരം അക്ഷരം *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareIdList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  sqlite3_വൃക്ഷം_View_Bare_Id_List(pView, pList, zLabel);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of a list of Upsert objects
 */
-void sqlite3TreeViewUpsert(
-  TreeView *pView,
-  const Upsert *pUpsert,
+ശൂന്യം sqlite3_വൃക്ഷം_View_Upsert(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം Upsert *pUpsert,
   u8 moreToFollow
 ){
-  if( pUpsert==0 ) return;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  while( pUpsert ){
-    int n;
-    sqlite3TreeViewPush(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
-    sqlite3TreeViewLine(pView, "ON CONFLICT DO %s", 
+  എങ്കിൽ( pUpsert==0 ) തിരികെ;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, moreToFollow);
+  ആകുമ്പോൾ( pUpsert ){
+    പൂർണ്ണസംഖ്യ n;
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "ON CONFLICT DO %s", 
          pUpsert->isDoUpdate ? "UPDATE" : "NOTHING");
     n = (pUpsert->pUpsertSet!=0) + (pUpsert->pUpsertWhere!=0);
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
-    if( pUpsert->pUpsertWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, pUpsert->pUpsertWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
+    എങ്കിൽ( pUpsert->pUpsertWhere ){
+      sqlite3_വൃക്ഷം_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pUpsert->pUpsertWhere, 0);
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
     pUpsert = pUpsert->pNextUpsert;
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 
-#if TREETRACE_ENABLED
+#എങ്കിൽ TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an DELETE statement.
 */
-void sqlite3TreeViewDelete(
-  const With *pWith,
-  const SrcList *pTabList,
-  const Expr *pWhere,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Trigger *pTrigger
+ശൂന്യം sqlite3_വൃക്ഷം_View_Delete(
+  സ്ഥിരം With *pWith,
+  സ്ഥിരം SrcList *pTabList,
+  സ്ഥിരം വ്യഞ്ജകം *pWhere,
+  സ്ഥിരം വ്യഞ്ജകം_List *pOrderBy,
+  സ്ഥിരം വ്യഞ്ജകം *pLimit,
+  സ്ഥിരം Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "DELETE");
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  പൂർണ്ണസംഖ്യ n = 0;
+  വൃക്ഷം_View *pView = 0;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+  sqlite3_വൃക്ഷം_View_വരി(pView, "DELETE");
+  എങ്കിൽ( pWith ) n++;
+  എങ്കിൽ( pTabList ) n++;
+  എങ്കിൽ( pWhere ) n++;
+  എങ്കിൽ( pOrderBy ) n++;
+  എങ്കിൽ( pLimit ) n++;
+  എങ്കിൽ( pTrigger ) n++;
+  എങ്കിൽ( pWith ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_With(pView, pWith, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pTabList ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "FROM");
+    sqlite3_വൃക്ഷം_View_Src_List(pView, pTabList);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pWhere ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "WHERE");
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pWhere, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  എങ്കിൽ( pOrderBy ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pLimit ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "LIMIT");
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pLimit, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  എങ്കിൽ( pTrigger ){
+    sqlite3_വൃക്ഷം_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#എങ്കിൽ TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an INSERT statement.
 */
-void sqlite3TreeViewInsert(
-  const With *pWith,
-  const SrcList *pTabList,
-  const IdList *pColumnList,
-  const Select *pSelect,
-  const ExprList *pExprList,
-  int onError,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+ശൂന്യം sqlite3_വൃക്ഷം_View_തിരുകുക(
+  സ്ഥിരം With *pWith,
+  സ്ഥിരം SrcList *pTabList,
+  സ്ഥിരം IdList *pColumnList,
+  സ്ഥിരം Select *pSelect,
+  സ്ഥിരം വ്യഞ്ജകം_List *p_വ്യഞ്ജകം_List,
+  പൂർണ്ണസംഖ്യ onError,
+  സ്ഥിരം Upsert *pUpsert,
+  സ്ഥിരം Trigger *pTrigger
 ){
-  TreeView *pView = 0;
-  int n = 0;
-  const char *zLabel = "INSERT";
-  switch( onError ){
-    case OE_Replace:  zLabel = "REPLACE";             break;
-    case OE_Ignore:   zLabel = "INSERT OR IGNORE";    break;
-    case OE_Rollback: zLabel = "INSERT OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "INSERT OR ABORT";     break;
-    case OE_Fail:     zLabel = "INSERT OR FAIL";      break;
+  വൃക്ഷം_View *pView = 0;
+  പൂർണ്ണസംഖ്യ n = 0;
+  സ്ഥിരം അക്ഷരം *zLabel = "INSERT";
+  തിരഞ്ഞെടുപ്പ്( onError ){
+    അവസ്ഥ OE_Replace:  zLabel = "REPLACE";             നിർത്തുക;
+    അവസ്ഥ OE_Ignore:   zLabel = "INSERT OR IGNORE";    നിർത്തുക;
+    അവസ്ഥ OE_Rollback: zLabel = "INSERT OR ROLLBACK";  നിർത്തുക;
+    അവസ്ഥ OE_Abort:    zLabel = "INSERT OR ABORT";     നിർത്തുക;
+    അവസ്ഥ OE_Fail:     zLabel = "INSERT OR FAIL";      നിർത്തുക;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pColumnList ) n++;
-  if( pSelect ) n++;
-  if( pExprList ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+  sqlite3_വൃക്ഷം_View_വരി(pView, zLabel);
+  എങ്കിൽ( pWith ) n++;
+  എങ്കിൽ( pTabList ) n++;
+  എങ്കിൽ( pColumnList ) n++;
+  എങ്കിൽ( pSelect ) n++;
+  എങ്കിൽ( p_വ്യഞ്ജകം_List ) n++;
+  എങ്കിൽ( pUpsert ) n++;
+  എങ്കിൽ( pTrigger ) n++;
+  എങ്കിൽ( pWith ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_With(pView, pWith, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "INTO");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pTabList ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "INTO");
+    sqlite3_വൃക്ഷം_View_Src_List(pView, pTabList);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pColumnList ){
-    sqlite3TreeViewIdList(pView, pColumnList, (--n)>0, "COLUMNS");
+  എങ്കിൽ( pColumnList ){
+    sqlite3_വൃക്ഷം_View_Id_List(pView, pColumnList, (--n)>0, "COLUMNS");
   }
-  if( pSelect ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "DATA-SOURCE");
-    sqlite3TreeViewSelect(pView, pSelect, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pSelect ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "DATA-SOURCE");
+    sqlite3_വൃക്ഷം_View_Select(pView, pSelect, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pExprList ){
-    sqlite3TreeViewExprList(pView, pExprList, (--n)>0, "VALUES");
+  എങ്കിൽ( p_വ്യഞ്ജകം_List ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, p_വ്യഞ്ജകം_List, (--n)>0, "VALUES");
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pUpsert ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "UPSERT");
+    sqlite3_വൃക്ഷം_View_Upsert(pView, pUpsert, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  എങ്കിൽ( pTrigger ){
+    sqlite3_വൃക്ഷം_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#എങ്കിൽ TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an UPDATE statement.
 */
-void sqlite3TreeViewUpdate(
-  const With *pWith,
-  const SrcList *pTabList,
-  const ExprList *pChanges,
-  const Expr *pWhere,
-  int onError,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+ശൂന്യം sqlite3_വൃക്ഷം_View_Update(
+  സ്ഥിരം With *pWith,
+  സ്ഥിരം SrcList *pTabList,
+  സ്ഥിരം വ്യഞ്ജകം_List *pChanges,
+  സ്ഥിരം വ്യഞ്ജകം *pWhere,
+  പൂർണ്ണസംഖ്യ onError,
+  സ്ഥിരം വ്യഞ്ജകം_List *pOrderBy,
+  സ്ഥിരം വ്യഞ്ജകം *pLimit,
+  സ്ഥിരം Upsert *pUpsert,
+  സ്ഥിരം Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  const char *zLabel = "UPDATE";
-  switch( onError ){
-    case OE_Replace:  zLabel = "UPDATE OR REPLACE";   break;
-    case OE_Ignore:   zLabel = "UPDATE OR IGNORE";    break;
-    case OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "UPDATE OR ABORT";     break;
-    case OE_Fail:     zLabel = "UPDATE OR FAIL";      break;
+  പൂർണ്ണസംഖ്യ n = 0;
+  വൃക്ഷം_View *pView = 0;
+  സ്ഥിരം അക്ഷരം *zLabel = "UPDATE";
+  തിരഞ്ഞെടുപ്പ്( onError ){
+    അവസ്ഥ OE_Replace:  zLabel = "UPDATE OR REPLACE";   നിർത്തുക;
+    അവസ്ഥ OE_Ignore:   zLabel = "UPDATE OR IGNORE";    നിർത്തുക;
+    അവസ്ഥ OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  നിർത്തുക;
+    അവസ്ഥ OE_Abort:    zLabel = "UPDATE OR ABORT";     നിർത്തുക;
+    അവസ്ഥ OE_Fail:     zLabel = "UPDATE OR FAIL";      നിർത്തുക;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pChanges ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+  sqlite3_വൃക്ഷം_View_വരി(pView, zLabel);
+  എങ്കിൽ( pWith ) n++;
+  എങ്കിൽ( pTabList ) n++;
+  എങ്കിൽ( pChanges ) n++;
+  എങ്കിൽ( pWhere ) n++;
+  എങ്കിൽ( pOrderBy ) n++;
+  എങ്കിൽ( pLimit ) n++;
+  എങ്കിൽ( pUpsert ) n++;
+  എങ്കിൽ( pTrigger ) n++;
+  എങ്കിൽ( pWith ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_With(pView, pWith, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pTabList ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "FROM");
+    sqlite3_വൃക്ഷം_View_Src_List(pView, pTabList);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pChanges ){
-    sqlite3TreeViewExprList(pView, pChanges, (--n)>0, "SET");
+  എങ്കിൽ( pChanges ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pChanges, (--n)>0, "SET");
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pWhere ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "WHERE");
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pWhere, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  എങ്കിൽ( pOrderBy ){
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pLimit ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "LIMIT");
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(pView, pLimit, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  എങ്കിൽ( pUpsert ){
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, (--n)>0);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "UPSERT");
+    sqlite3_വൃക്ഷം_View_Upsert(pView, pUpsert, 0);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  എങ്കിൽ( pTrigger ){
+    sqlite3_വൃക്ഷം_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
@@ -1239,50 +1239,50 @@ void sqlite3TreeViewUpdate(
 /*
 ** Show a human-readable graph of a TriggerStep
 */
-void sqlite3TreeViewTriggerStep(
-  TreeView *pView,
-  const TriggerStep *pStep,
+ശൂന്യം sqlite3_വൃക്ഷം_View_Trigger_Step(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം TriggerStep *pStep,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pStep==0 ) return;
-  sqlite3TreeViewPush(&pView, 
+  പൂർണ്ണസംഖ്യ cnt = 0;
+  എങ്കിൽ( pStep==0 ) തിരികെ;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 
       moreToFollow || (showFullList && pStep->pNext!=0));
-  do{
-    if( cnt++ && pStep->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  ചെയ്യുക{
+    എങ്കിൽ( cnt++ && pStep->pNext==0 ){
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
-  }while( showFullList && (pStep = pStep->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
+  }ആകുമ്പോൾ( showFullList && (pStep = pStep->pNext)!=0 );
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
   
 /*
 ** Show a human-readable graph of a Trigger
 */
-void sqlite3TreeViewTrigger(
-  TreeView *pView,
-  const Trigger *pTrigger,
+ശൂന്യം sqlite3_വൃക്ഷം_View_Trigger(
+  വൃക്ഷം_View *pView,
+  സ്ഥിരം Trigger *pTrigger,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pTrigger==0 ) return;
-  sqlite3TreeViewPush(&pView,
+  പൂർണ്ണസംഖ്യ cnt = 0;
+  എങ്കിൽ( pTrigger==0 ) തിരികെ;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView,
      moreToFollow || (showFullList && pTrigger->pNext!=0));
-  do{
-    if( cnt++ && pTrigger->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  ചെയ്യുക{
+    എങ്കിൽ( cnt++ && pTrigger->pNext==0 ){
+      sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+      sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "TRIGGER %s", pTrigger->zName);
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewTriggerStep(pView, pTrigger->step_list, 0, 1);
-    sqlite3TreeViewPop(&pView);
-  }while( showFullList && (pTrigger = pTrigger->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_വൃക്ഷം_View_വരി(pView, "TRIGGER %s", pTrigger->zName);
+    sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+    sqlite3_വൃക്ഷം_View_Trigger_Step(pView, pTrigger->step_list, 0, 1);
+    sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
+  }ആകുമ്പോൾ( showFullList && (pTrigger = pTrigger->pNext)!=0 );
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
 #endif /* SQLITE_OMIT_TRIGGER */
   
@@ -1301,32 +1301,32 @@ void sqlite3TreeViewTrigger(
 **
 **     sqlite3ShowWhereTerm() in where.c
 */
-void sqlite3ShowExpr(const Expr *p){ sqlite3TreeViewExpr(0,p,0); }
-void sqlite3ShowExprList(const ExprList *p){ sqlite3TreeViewExprList(0,p,0,0);}
-void sqlite3ShowIdList(const IdList *p){ sqlite3TreeViewIdList(0,p,0,0); }
-void sqlite3ShowSrcList(const SrcList *p){
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "SRCLIST");
-  sqlite3TreeViewSrcList(pView,p);
-  sqlite3TreeViewPop(&pView);
+ശൂന്യം sqlite3_Show_വ്യഞ്ജകം(സ്ഥിരം വ്യഞ്ജകം *p){ sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(0,p,0); }
+ശൂന്യം sqlite3_Show_വ്യഞ്ജകം_List(സ്ഥിരം വ്യഞ്ജകം_List *p){ sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം_List(0,p,0,0);}
+ശൂന്യം sqlite3ShowIdList(സ്ഥിരം IdList *p){ sqlite3_വൃക്ഷം_View_Id_List(0,p,0,0); }
+ശൂന്യം sqlite3ShowSrcList(സ്ഥിരം SrcList *p){
+  വൃക്ഷം_View *pView = 0;
+  sqlite3_വൃക്ഷം_View_തള്ളുക(&pView, 0);
+  sqlite3_വൃക്ഷം_View_വരി(pView, "SRCLIST");
+  sqlite3_വൃക്ഷം_View_Src_List(pView,p);
+  sqlite3_വൃക്ഷം_View_എടുക്കുക(&pView);
 }
-void sqlite3ShowSelect(const Select *p){ sqlite3TreeViewSelect(0,p,0); }
-void sqlite3ShowWith(const With *p){ sqlite3TreeViewWith(0,p,0); }
-void sqlite3ShowUpsert(const Upsert *p){ sqlite3TreeViewUpsert(0,p,0); }
+ശൂന്യം sqlite3ShowSelect(സ്ഥിരം Select *p){ sqlite3_വൃക്ഷം_View_Select(0,p,0); }
+ശൂന്യം sqlite3ShowWith(സ്ഥിരം With *p){ sqlite3_വൃക്ഷം_View_With(0,p,0); }
+ശൂന്യം sqlite3ShowUpsert(സ്ഥിരം Upsert *p){ sqlite3_വൃക്ഷം_View_Upsert(0,p,0); }
 #ifndef SQLITE_OMIT_TRIGGER
-void sqlite3ShowTriggerStep(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,0);
+ശൂന്യം sqlite3ShowTriggerStep(സ്ഥിരം TriggerStep *p){
+  sqlite3_വൃക്ഷം_View_Trigger_Step(0,p,0,0);
 }
-void sqlite3ShowTriggerStepList(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,1);
+ശൂന്യം sqlite3ShowTriggerStepList(സ്ഥിരം TriggerStep *p){
+  sqlite3_വൃക്ഷം_View_Trigger_Step(0,p,0,1);
 }
-void sqlite3ShowTrigger(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,0); }
-void sqlite3ShowTriggerList(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,1);}
+ശൂന്യം sqlite3ShowTrigger(സ്ഥിരം Trigger *p){ sqlite3_വൃക്ഷം_View_Trigger(0,p,0,0); }
+ശൂന്യം sqlite3ShowTriggerList(സ്ഥിരം Trigger *p){ sqlite3_വൃക്ഷം_View_Trigger(0,p,0,1);}
 #endif
 #ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3ShowWindow(const Window *p){ sqlite3TreeViewWindow(0,p,0); }
-void sqlite3ShowWinFunc(const Window *p){ sqlite3TreeViewWinFunc(0,p,0); }
+ശൂന്യം sqlite3ShowWindow(സ്ഥിരം Window *p){ sqlite3_വൃക്ഷം_View_Window(0,p,0); }
+ശൂന്യം sqlite3ShowWinFunc(സ്ഥിരം Window *p){ sqlite3_വൃക്ഷം_View_Win_Func(0,p,0); }
 #endif
 
 #endif /* SQLITE_DEBUG */

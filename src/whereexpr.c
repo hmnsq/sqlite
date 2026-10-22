@@ -16,16 +16,16 @@
 ** readability and editability.  This file contains utility routines for
 ** analyzing Expr objects in the WHERE clause.
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#അന്തര്ഭാവ "sqliteInt.h"
+#അന്തര്ഭാവ "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+സ്ഥിതം ശൂന്യം വ്യഞ്ജകം_Analyze(SrcList*, WhereClause*, പൂർണ്ണസംഖ്യ);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
 */
-static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
+സ്ഥിതം ശൂന്യം whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -33,7 +33,7 @@ static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
 /*
 ** Deallocate all memory associated with a WhereAndInfo object.
 */
-static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
+സ്ഥിതം ശൂന്യം whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -57,38 +57,38 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
+സ്ഥിതം പൂർണ്ണസംഖ്യ where_Clause_തിരുകുക(WhereClause *pWC, വ്യഞ്ജകം *p, u16 wtFlags){
   WhereTerm *pTerm;
-  int idx;
+  പൂർണ്ണസംഖ്യ idx;
   testcase( wtFlags & TERM_VIRTUAL );
-  if( pWC->nTerm>=pWC->nSlot ){
+  എങ്കിൽ( pWC->nTerm>=pWC->nSlot ){
     WhereTerm *pOld = pWC->a;
     sqlite3 *db = pWC->pWInfo->pParse->db;
-    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, sizeof(pWC->a[0])*pWC->nSlot*2 );
-    if( pWC->a==0 ){
-      if( wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, p);
+    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, വലുപ്പം(pWC->a[0])*pWC->nSlot*2 );
+    എങ്കിൽ( pWC->a==0 ){
+      എങ്കിൽ( wtFlags & TERM_DYNAMIC ){
+        sqlite3_വ്യഞ്ജകം_Delete(db, p);
       }
       pWC->a = pOld;
-      return 0;
+      തിരികെ 0;
     }
-    memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
+    memcpy(pWC->a, pOld, വലുപ്പം(pWC->a[0])*pWC->nTerm);
     pWC->nSlot = pWC->nSlot*2;
   }
   pTerm = &pWC->a[idx = pWC->nTerm++];
-  if( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
-  if( p && ExprHasProperty(p, EP_Unlikely) ){
+  എങ്കിൽ( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
+  എങ്കിൽ( p && വ്യഞ്ജകം_Has_Property(p, EP_Unlikely) ){
     pTerm->truthProb = sqlite3LogEst(p->iTable) - 270;
-  }else{
+  }അല്ലെങ്കിൽ{
     pTerm->truthProb = 1;
   }
-  pTerm->pExpr = sqlite3ExprSkipCollateAndLikely(p);
+  pTerm->p_വ്യഞ്ജകം = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(p);
   pTerm->wtFlags = wtFlags;
   pTerm->pWC = pWC;
   pTerm->iParent = -1;
   memset(&pTerm->eOperator, 0,
-         sizeof(WhereTerm) - offsetof(WhereTerm,eOperator));
-  return idx;
+         വലുപ്പം(WhereTerm) - offsetof(WhereTerm,eOperator));
+  തിരികെ idx;
 }
 
 /*
@@ -96,69 +96,69 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
-  assert( TK_GT>TK_EQ && TK_GT<TK_GE );
-  assert( TK_LT>TK_EQ && TK_LT<TK_GE );
-  assert( TK_LE>TK_EQ && TK_LE<TK_GE );
-  assert( TK_GE==TK_EQ+4 );
-  assert( TK_IN<TK_EQ );
-  assert( TK_IS<TK_EQ );
-  assert( TK_ISNULL<TK_EQ );
-  if( op>TK_GE ) return 0;
-  if( op>=TK_EQ ) return 1;
-  return op==TK_IN || op==TK_ISNULL || op==TK_IS;
+സ്ഥിതം പൂർണ്ണസംഖ്യ allowedOp(പൂർണ്ണസംഖ്യ op){
+  പ്രതിജ്ഞാ( TK_GT>TK_EQ && TK_GT<TK_GE );
+  പ്രതിജ്ഞാ( TK_LT>TK_EQ && TK_LT<TK_GE );
+  പ്രതിജ്ഞാ( TK_LE>TK_EQ && TK_LE<TK_GE );
+  പ്രതിജ്ഞാ( TK_GE==TK_EQ+4 );
+  പ്രതിജ്ഞാ( TK_IN<TK_EQ );
+  പ്രതിജ്ഞാ( TK_IS<TK_EQ );
+  പ്രതിജ്ഞാ( TK_ISNULL<TK_EQ );
+  എങ്കിൽ( op>TK_GE ) തിരികെ 0;
+  എങ്കിൽ( op>=TK_EQ ) തിരികെ 1;
+  തിരികെ op==TK_IN || op==TK_ISNULL || op==TK_IS;
 }
 
 /*
 ** Commute a comparison operator.  Expressions of the form "X op Y"
 ** are converted into "Y op X".
 */
-static u16 exprCommute(Parse *pParse, Expr *pExpr){
-  if( pExpr->pLeft->op==TK_VECTOR
-   || pExpr->pRight->op==TK_VECTOR
-   || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
-      sqlite3BinaryCompareCollSeq(pParse, pExpr->pRight, pExpr->pLeft)
+സ്ഥിതം u16 വ്യഞ്ജകം_Commute(Parse *pParse, വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത്->op==TK_VECTOR
+   || p_വ്യഞ്ജകം->p_വലത്->op==TK_VECTOR
+   || sqlite3_ദ്വിമാന_Compare_Coll_Seq(pParse, p_വ്യഞ്ജകം->p_ഇടത്, p_വ്യഞ്ജകം->p_വലത്) !=
+      sqlite3_ദ്വിമാന_Compare_Coll_Seq(pParse, p_വ്യഞ്ജകം->p_വലത്, p_വ്യഞ്ജകം->p_ഇടത്)
   ){
-    pExpr->flags ^= EP_Commuted;
+    p_വ്യഞ്ജകം->flags ^= EP_Commuted;
   }
-  SWAP(Expr*,pExpr->pRight,pExpr->pLeft);
-  if( pExpr->op>=TK_GT ){
-    assert( TK_LT==TK_GT+2 );
-    assert( TK_GE==TK_LE+2 );
-    assert( TK_GT>TK_EQ );
-    assert( TK_GT<TK_LE );
-    assert( pExpr->op>=TK_GT && pExpr->op<=TK_GE );
-    pExpr->op = ((pExpr->op-TK_GT)^2)+TK_GT;
+  SWAP(വ്യഞ്ജകം*,p_വ്യഞ്ജകം->p_വലത്,p_വ്യഞ്ജകം->p_ഇടത്);
+  എങ്കിൽ( p_വ്യഞ്ജകം->op>=TK_GT ){
+    പ്രതിജ്ഞാ( TK_LT==TK_GT+2 );
+    പ്രതിജ്ഞാ( TK_GE==TK_LE+2 );
+    പ്രതിജ്ഞാ( TK_GT>TK_EQ );
+    പ്രതിജ്ഞാ( TK_GT<TK_LE );
+    പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op>=TK_GT && p_വ്യഞ്ജകം->op<=TK_GE );
+    p_വ്യഞ്ജകം->op = ((p_വ്യഞ്ജകം->op-TK_GT)^2)+TK_GT;
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+സ്ഥിതം u16 operatorMask(പൂർണ്ണസംഖ്യ op){
   u16 c;
-  assert( allowedOp(op) );
-  if( op>=TK_EQ ){
-    assert( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
+  പ്രതിജ്ഞാ( allowedOp(op) );
+  എങ്കിൽ( op>=TK_EQ ){
+    പ്രതിജ്ഞാ( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
     c = (u16)(WO_EQ<<(op-TK_EQ));
-  }else if( op==TK_IN ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( op==TK_IN ){
     c = WO_IN;
-  }else if( op==TK_ISNULL ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( op==TK_ISNULL ){
     c = WO_ISNULL;
-  }else{
-    assert( op==TK_IS );
+  }അല്ലെങ്കിൽ{
+    പ്രതിജ്ഞാ( op==TK_IS );
     c = WO_IS;
   }
-  assert( op!=TK_ISNULL || c==WO_ISNULL );
-  assert( op!=TK_IN || c==WO_IN );
-  assert( op!=TK_EQ || c==WO_EQ );
-  assert( op!=TK_LT || c==WO_LT );
-  assert( op!=TK_LE || c==WO_LE );
-  assert( op!=TK_GT || c==WO_GT );
-  assert( op!=TK_GE || c==WO_GE );
-  assert( op!=TK_IS || c==WO_IS );
-  return c;
+  പ്രതിജ്ഞാ( op!=TK_ISNULL || c==WO_ISNULL );
+  പ്രതിജ്ഞാ( op!=TK_IN || c==WO_IN );
+  പ്രതിജ്ഞാ( op!=TK_EQ || c==WO_EQ );
+  പ്രതിജ്ഞാ( op!=TK_LT || c==WO_LT );
+  പ്രതിജ്ഞാ( op!=TK_LE || c==WO_LE );
+  പ്രതിജ്ഞാ( op!=TK_GT || c==WO_GT );
+  പ്രതിജ്ഞാ( op!=TK_GE || c==WO_GE );
+  പ്രതിജ്ഞാ( op!=TK_IS || c==WO_IS );
+  തിരികെ c;
 }
 
 
@@ -175,50 +175,50 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+സ്ഥിതം പൂർണ്ണസംഖ്യ isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
-  Expr *pExpr,      /* Test this expression */
-  Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
-  int *pisComplete, /* True if the only wildcard is % in the last character */
-  int *pnoCase      /* True if uppercase is equivalent to lowercase */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,      /* Test this expression */
+  വ്യഞ്ജകം **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
+  പൂർണ്ണസംഖ്യ *pisComplete, /* True if the only wildcard is % in the last character */
+  പൂർണ്ണസംഖ്യ *pnoCase      /* True if uppercase is equivalent to lowercase */
 ){
-  const u8 *z = 0;           /* String on RHS of LIKE operator */
-  Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */
-  ExprList *pList;           /* List of operands to the LIKE operator */
+  സ്ഥിരം u8 *z = 0;           /* String on RHS of LIKE operator */
+  വ്യഞ്ജകം *p_വലത്, *p_ഇടത്;      /* Right and left size of LIKE operator */
+  വ്യഞ്ജകം_List *pList;           /* List of operands to the LIKE operator */
   u8 c;                      /* One character in z[] */
-  int cnt;                   /* Number of non-wildcard prefix characters */
+  പൂർണ്ണസംഖ്യ cnt;                   /* Number of non-wildcard prefix characters */
   u8 wc[4];                  /* Wildcard characters */
   sqlite3 *db = pParse->db;  /* Database connection */
-  sqlite3_value *pVal = 0;
-  int op;                    /* Opcode of pRight */
-  int rc;                    /* Result code to return */
+  sqlite3_മൂല്യം *pVal = 0;
+  പൂർണ്ണസംഖ്യ op;                    /* Opcode of pRight */
+  പൂർണ്ണസംഖ്യ rc;                    /* Result code to return */
 
-  if( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (char*)wc) ){
-    return 0;
+  എങ്കിൽ( !sqlite3IsLikeFunction(db, p_വ്യഞ്ജകം, pnoCase, (അക്ഷരം*)wc) ){
+    തിരികെ 0;
   }
 #ifdef SQLITE_EBCDIC
-  if( *pnoCase ) return 0;
+  എങ്കിൽ( *pnoCase ) തിരികെ 0;
 #endif
-  assert( ExprUseXList(pExpr) );
-  pList = pExpr->x.pList;
-  pLeft = pList->a[1].pExpr;
+  പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+  pList = p_വ്യഞ്ജകം->x.pList;
+  p_ഇടത് = pList->a[1].p_വ്യഞ്ജകം;
 
-  pRight = sqlite3ExprSkipCollate(pList->a[0].pExpr);
-  op = pRight->op;
-  if( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  p_വലത് = sqlite3_വ്യഞ്ജകം_Skip_Collate(pList->a[0].p_വ്യഞ്ജകം);
+  op = p_വലത്->op;
+  എങ്കിൽ( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *pReprepare = pParse->pReprepare;
-    int iCol = pRight->iColumn;
-    pVal = sqlite3VdbeGetBoundValue(pReprepare, iCol, SQLITE_AFF_BLOB);
-    if( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
-      z = sqlite3_value_text(pVal);
+    പൂർണ്ണസംഖ്യ iCol = p_വലത്->iColumn;
+    pVal = sqlite3_Vdbe_Get_Bound_മൂല്യം(pReprepare, iCol, SQLITE_AFF_BLOB);
+    എങ്കിൽ( pVal && sqlite3_മൂല്യം_type(pVal)==SQLITE_TEXT ){
+      z = sqlite3_മൂല്യം_text(pVal);
     }
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iCol, 0);
-    assert( pRight->op==TK_VARIABLE || pRight->op==TK_REGISTER );
-  }else if( op==TK_STRING ){
-    assert( !ExprHasProperty(pRight, EP_IntValue) );
-     z = (u8*)pRight->u.zToken;
+    പ്രതിജ്ഞാ( p_വലത്->op==TK_VARIABLE || p_വലത്->op==TK_REGISTER );
+  }അല്ലെങ്കിൽ എങ്കിൽ( op==TK_STRING ){
+    പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വലത്, EP_Int_മൂല്യം) );
+     z = (u8*)p_വലത്->u.zToken;
   }
-  if( z ){
+  എങ്കിൽ( z ){
     /* Count the number of prefix bytes prior to the first wildcard,
     ** U+fffd character, or malformed utf-8. If the underlying database
     ** has a UTF16LE encoding, then only consider ASCII characters.  Note that
@@ -226,19 +226,19 @@ static int isLikeOrGlob(
     ** code, but the database engine itself might be processing content using a
     ** different encoding. */
     cnt = 0;
-    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
+    ആകുമ്പോൾ( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
       cnt++;
-      if( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
+      എങ്കിൽ( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
         cnt++;
-      }else if( c>=0x80 ){
-        const u8 *z2 = z+cnt-1;
-        if( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
+      }അല്ലെങ്കിൽ എങ്കിൽ( c>=0x80 ){
+        സ്ഥിരം u8 *z2 = z+cnt-1;
+        എങ്കിൽ( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
          || ENC(db)==SQLITE_UTF16LE 
         ){
           cnt--;
-          break;
-        }else{
-          cnt = (int)(z2-z);
+          നിർത്തുക;
+        }അല്ലെങ്കിൽ{
+          cnt = (പൂർണ്ണസംഖ്യ)(z2-z);
         }
       }
     }
@@ -251,26 +251,26 @@ static int isLikeOrGlob(
     ** range search. The third is because the caller assumes that the pattern
     ** consists of at least one character after all escapes have been
     ** removed.  */
-    if( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
-      Expr *pPrefix;
+    എങ്കിൽ( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
+      വ്യഞ്ജകം *pPrefix;
 
       /* A "complete" match if the pattern ends with "*" or "%" */
       *pisComplete = c==wc[0] && z[cnt+1]==0 && ENC(db)!=SQLITE_UTF16LE;
 
       /* Get the pattern prefix.  Remove all escapes from the prefix. */
-      pPrefix = sqlite3Expr(db, TK_STRING, (char*)z);
-      if( pPrefix ){
-        int iFrom, iTo;
-        char *zNew;
-        assert( !ExprHasProperty(pPrefix, EP_IntValue) );
+      pPrefix = sqlite3_വ്യഞ്ജകം(db, TK_STRING, (അക്ഷരം*)z);
+      എങ്കിൽ( pPrefix ){
+        പൂർണ്ണസംഖ്യ iFrom, iTo;
+        അക്ഷരം *zNew;
+        പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(pPrefix, EP_Int_മൂല്യം) );
         zNew = pPrefix->u.zToken;
         zNew[cnt] = 0;
-        for(iFrom=iTo=0; iFrom<cnt; iFrom++){
-          if( zNew[iFrom]==wc[3] ) iFrom++;
+        വേണ്ടി(iFrom=iTo=0; iFrom<cnt; iFrom++){
+          എങ്കിൽ( zNew[iFrom]==wc[3] ) iFrom++;
           zNew[iTo++] = zNew[iFrom];
         }
         zNew[iTo] = 0;
-        assert( iTo>0 );
+        പ്രതിജ്ഞാ( iTo>0 );
 
         /* If the LHS is not an ordinary column with TEXT affinity, then the
         ** pattern prefix boundaries (both the start and end boundaries) must
@@ -285,29 +285,29 @@ static int isLikeOrGlob(
         **    2019-06-14 https://sqlite.org/src/info/ce8717f0885af975
         **    2019-09-03 https://sqlite.org/src/info/0f0428096f17252a
         */
-        if( pLeft->op!=TK_COLUMN
-         || sqlite3ExprAffinity(pLeft)!=SQLITE_AFF_TEXT
-         || (ALWAYS( ExprUseYTab(pLeft) )
-             && ALWAYS(pLeft->y.pTab)
-             && IsVirtual(pLeft->y.pTab))  /* Might be numeric */
+        എങ്കിൽ( p_ഇടത്->op!=TK_COLUMN
+         || sqlite3_വ്യഞ്ജകം_Affinity(p_ഇടത്)!=SQLITE_AFF_TEXT
+         || (ALWAYS( വ്യഞ്ജകം_Use_YTab(p_ഇടത്) )
+             && ALWAYS(p_ഇടത്->y.pTab)
+             && IsVirtual(p_ഇടത്->y.pTab))  /* Might be numeric */
         ){
-          int isNum;
-          double rDummy;
-          assert( zNew[iTo]==0 );
-          isNum = sqlite3AtoF(zNew, &rDummy);
-          if( isNum<=0 ){
-            if( iTo==1 && zNew[0]=='-' ){
-              isNum = +1;
-            }else{
+          പൂർണ്ണസംഖ്യ is_അക്കം;
+          ഇരട്ട rDummy;
+          പ്രതിജ്ഞാ( zNew[iTo]==0 );
+          is_അക്കം = sqlite3AtoF(zNew, &rDummy);
+          എങ്കിൽ( is_അക്കം<=0 ){
+            എങ്കിൽ( iTo==1 && zNew[0]=='-' ){
+              is_അക്കം = +1;
+            }അല്ലെങ്കിൽ{
               zNew[iTo-1]++;
-              isNum = sqlite3AtoF(zNew, &rDummy);
+              is_അക്കം = sqlite3AtoF(zNew, &rDummy);
               zNew[iTo-1]--;
             }
           }
-          if( isNum>0 ){
-            sqlite3ExprDelete(db, pPrefix);
-            sqlite3ValueFree(pVal);
-            return 0;
+          എങ്കിൽ( is_അക്കം>0 ){
+            sqlite3_വ്യഞ്ജകം_Delete(db, pPrefix);
+            sqlite3_മൂല്യം_Free(pVal);
+            തിരികെ 0;
           }
         }
       }
@@ -315,31 +315,31 @@ static int isLikeOrGlob(
 
       /* If the RHS pattern is a bound parameter, make arrangements to
       ** reprepare the statement when that parameter is rebound */
-      if( op==TK_VARIABLE ){
+      എങ്കിൽ( op==TK_VARIABLE ){
         Vdbe *v = pParse->pVdbe;
-        sqlite3VdbeReprepareOnBind(v, pRight->iColumn, 0);
-        assert( !ExprHasProperty(pRight, EP_IntValue) );
-        if( *pisComplete && pRight->u.zToken[1] ){
+        sqlite3VdbeReprepareOnBind(v, p_വലത്->iColumn, 0);
+        പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വലത്, EP_Int_മൂല്യം) );
+        എങ്കിൽ( *pisComplete && p_വലത്->u.zToken[1] ){
           /* If the rhs of the LIKE expression is a variable, and the current
           ** value of the variable means there is no need to invoke the LIKE
           ** function, then no OP_Variable will be added to the program.
           ** This causes problems for the sqlite3_bind_parameter_name()
           ** API. To work around them, add a dummy OP_Variable here.
           */
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3ExprCodeTarget(pParse, pRight, r1);
+          പൂർണ്ണസംഖ്യ r1 = sqlite3GetTempReg(pParse);
+          sqlite3_വ്യഞ്ജകം_Code_Target(pParse, p_വലത്, r1);
           sqlite3VdbeChangeP3(v, sqlite3VdbeCurrentAddr(v)-1, 0);
           sqlite3ReleaseTempReg(pParse, r1);
         }
       }
-    }else{
+    }അല്ലെങ്കിൽ{
       z = 0;
     }
   }
 
   rc = (z!=0);
-  sqlite3ValueFree(pVal);
-  return rc;
+  sqlite3_മൂല്യം_Free(pVal);
+  തിരികെ rc;
 }
 #endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
@@ -350,25 +350,25 @@ static int isLikeOrGlob(
 **
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
-int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
-    const char *zOp;
-    unsigned char eOp;
+പൂർണ്ണസംഖ്യ sqlite3_വ്യഞ്ജകം_Is_Like_Operator(സ്ഥിരം വ്യഞ്ജകം *p_വ്യഞ്ജകം){
+  സ്ഥിതം സ്ഥിരം ഘടന {
+    സ്ഥിരം അക്ഷരം *zOp;
+    unsigned അക്ഷരം eOp;
   } aOp[] = {
     { "match",  SQLITE_INDEX_CONSTRAINT_MATCH },
     { "glob",   SQLITE_INDEX_CONSTRAINT_GLOB },
     { "like",   SQLITE_INDEX_CONSTRAINT_LIKE },
     { "regexp", SQLITE_INDEX_CONSTRAINT_REGEXP }
   };
-  int i;
-  assert( pExpr->op==TK_FUNCTION );
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  for(i=0; i<ArraySize(aOp); i++){
-    if( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
-      return aOp[i].eOp;
+  പൂർണ്ണസംഖ്യ i;
+  പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op==TK_FUNCTION );
+  പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+  വേണ്ടി(i=0; i<ArraySize(aOp); i++){
+    എങ്കിൽ( sqlite3StrICmp(p_വ്യഞ്ജകം->u.zToken, aOp[i].zOp)==0 ){
+      തിരികെ aOp[i].eOp;
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 
@@ -399,22 +399,22 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+സ്ഥിതം പൂർണ്ണസംഖ്യ isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
-  Expr *pExpr,                    /* Test this expression */
-  unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
-  Expr **ppLeft,                  /* Column expression to left of MATCH/op2 */
-  Expr **ppRight                  /* Expression to left of MATCH/op2 */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,                    /* Test this expression */
+  unsigned അക്ഷരം *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
+  വ്യഞ്ജകം **pp_ഇടത്,                  /* Column expression to left of MATCH/op2 */
+  വ്യഞ്ജകം **pp_വലത്                  /* Expression to left of MATCH/op2 */
 ){
-  if( pExpr->op==TK_FUNCTION ){
-    ExprList *pList;
-    Expr *pCol;                     /* Column reference */
-    int i;
+  എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_FUNCTION ){
+    വ്യഞ്ജകം_List *pList;
+    വ്യഞ്ജകം *pCol;                     /* Column reference */
+    പൂർണ്ണസംഖ്യ i;
 
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    if( pList==0 || pList->nExpr!=2 ){
-      return 0;
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+    pList = p_വ്യഞ്ജകം->x.pList;
+    എങ്കിൽ( pList==0 || pList->n_വ്യഞ്ജകം!=2 ){
+      തിരികെ 0;
     }
 
     /* Built-in operators MATCH, GLOB, LIKE, and REGEXP attach to a
@@ -424,13 +424,13 @@ static int isAuxiliaryVtabOperator(
     **       vtab_column MATCH expression
     **       MATCH(expression,vtab_column)
     */
-    pCol = pList->a[1].pExpr;
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
+    pCol = pList->a[1].p_വ്യഞ്ജകം;
+    പ്രതിജ്ഞാ( pCol->op!=TK_COLUMN || (വ്യഞ്ജകം_Use_YTab(pCol) && pCol->y.pTab!=0) );
+    എങ്കിൽ( വ്യഞ്ജകം_Is_Vtab(pCol) && (i = sqlite3_വ്യഞ്ജകം_Is_Like_Operator(p_വ്യഞ്ജകം))!=0 ){
       *peOp2 = i;
-      *ppRight = pList->a[0].pExpr;
-      *ppLeft = pCol;
-      return 1;
+      *pp_വലത് = pList->a[0].p_വ്യഞ്ജകം;
+      *pp_ഇടത് = pCol;
+      തിരികെ 1;
     }
 
     /* We can also match against the first column of overloaded
@@ -443,58 +443,58 @@ static int isAuxiliaryVtabOperator(
     ** names.  But for this use case, xFindFunction is expected to deal
     ** with function names in an arbitrary case.
     */
-    pCol = pList->a[0].pExpr;
-    assert( pCol->op!=TK_COLUMN || ExprUseYTab(pCol) );
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) ){
+    pCol = pList->a[0].p_വ്യഞ്ജകം;
+    പ്രതിജ്ഞാ( pCol->op!=TK_COLUMN || വ്യഞ്ജകം_Use_YTab(pCol) );
+    പ്രതിജ്ഞാ( pCol->op!=TK_COLUMN || (വ്യഞ്ജകം_Use_YTab(pCol) && pCol->y.pTab!=0) );
+    എങ്കിൽ( വ്യഞ്ജകം_Is_Vtab(pCol) ){
       sqlite3_vtab *pVtab;
       sqlite3_module *pMod;
-      void (*xNotUsed)(sqlite3_context*,int,sqlite3_value**);
-      void *pNotUsed;
+      ശൂന്യം (*xNotUsed)(sqlite3_context*,പൂർണ്ണസംഖ്യ,sqlite3_മൂല്യം**);
+      ശൂന്യം *pNotUsed;
       pVtab = sqlite3GetVTable(db, pCol->y.pTab)->pVtab;
-      assert( pVtab!=0 );
-      assert( pVtab->pModule!=0 );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
+      പ്രതിജ്ഞാ( pVtab!=0 );
+      പ്രതിജ്ഞാ( pVtab->pModule!=0 );
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
       pMod = (sqlite3_module *)pVtab->pModule;
-      if( pMod->xFindFunction!=0 ){
-        i = pMod->xFindFunction(pVtab,2, pExpr->u.zToken, &xNotUsed, &pNotUsed);
-        if( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
+      എങ്കിൽ( pMod->xFindFunction!=0 ){
+        i = pMod->xFindFunction(pVtab,2, p_വ്യഞ്ജകം->u.zToken, &xNotUsed, &pNotUsed);
+        എങ്കിൽ( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
           *peOp2 = i;
-          *ppRight = pList->a[1].pExpr;
-          *ppLeft = pCol;
-          return 1;
+          *pp_വലത് = pList->a[1].p_വ്യഞ്ജകം;
+          *pp_ഇടത് = pCol;
+          തിരികെ 1;
         }
       }
     }
-  }else if( pExpr->op>=TK_EQ ){
+  }അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op>=TK_EQ ){
     /* Comparison operators are a common case.  Save a few comparisons for
     ** that common case by terminating early. */
-    assert( TK_NE < TK_EQ );
-    assert( TK_ISNOT < TK_EQ );
-    assert( TK_NOTNULL < TK_EQ );
-    return 0;
-  }else if( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
-    int res = 0;
-    Expr *pLeft = pExpr->pLeft;
-    Expr *pRight = pExpr->pRight;
-    assert( pLeft->op!=TK_COLUMN || (ExprUseYTab(pLeft) && pLeft->y.pTab!=0) );
-    if( ExprIsVtab(pLeft) ){
+    പ്രതിജ്ഞാ( TK_NE < TK_EQ );
+    പ്രതിജ്ഞാ( TK_ISNOT < TK_EQ );
+    പ്രതിജ്ഞാ( TK_NOTNULL < TK_EQ );
+    തിരികെ 0;
+  }അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_NE || p_വ്യഞ്ജകം->op==TK_ISNOT || p_വ്യഞ്ജകം->op==TK_NOTNULL ){
+    പൂർണ്ണസംഖ്യ res = 0;
+    വ്യഞ്ജകം *p_ഇടത് = p_വ്യഞ്ജകം->p_ഇടത്;
+    വ്യഞ്ജകം *p_വലത് = p_വ്യഞ്ജകം->p_വലത്;
+    പ്രതിജ്ഞാ( p_ഇടത്->op!=TK_COLUMN || (വ്യഞ്ജകം_Use_YTab(p_ഇടത്) && p_ഇടത്->y.pTab!=0) );
+    എങ്കിൽ( വ്യഞ്ജകം_Is_Vtab(p_ഇടത്) ){
       res++;
     }
-    assert( pRight==0 || pRight->op!=TK_COLUMN
-            || (ExprUseYTab(pRight) && pRight->y.pTab!=0) );
-    if( pRight && ExprIsVtab(pRight) ){
+    പ്രതിജ്ഞാ( p_വലത്==0 || p_വലത്->op!=TK_COLUMN
+            || (വ്യഞ്ജകം_Use_YTab(p_വലത്) && p_വലത്->y.pTab!=0) );
+    എങ്കിൽ( p_വലത് && വ്യഞ്ജകം_Is_Vtab(p_വലത്) ){
       res++;
-      SWAP(Expr*, pLeft, pRight);
+      SWAP(വ്യഞ്ജകം*, p_ഇടത്, p_വലത്);
     }
-    *ppLeft = pLeft;
-    *ppRight = pRight;
-    if( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
-    if( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
-    if( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
-    return res;
+    *pp_ഇടത് = p_ഇടത്;
+    *pp_വലത് = p_വലത്;
+    എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
+    എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
+    എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
+    തിരികെ res;
   }
-  return 0;
+  തിരികെ 0;
 }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
 
@@ -502,8 +502,8 @@ static int isAuxiliaryVtabOperator(
 ** If the pBase expression originated in the ON or USING clause of
 ** a join, then transfer the appropriate markings over to derived.
 */
-static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
-  if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
+സ്ഥിതം ശൂന്യം transferJoinMarkings(വ്യഞ്ജകം *pDerived, വ്യഞ്ജകം *pBase){
+  എങ്കിൽ( pDerived && വ്യഞ്ജകം_Has_Property(pBase, EP_OuterON|EP_InnerON) ){
     pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
     pDerived->w.iJoin = pBase->w.iJoin;
   }
@@ -512,10 +512,10 @@ static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
+സ്ഥിതം ശൂന്യം markTermAsChild(WhereClause *pWC, പൂർണ്ണസംഖ്യ iChild, പൂർണ്ണസംഖ്യ iParent){
   pWC->a[iChild].iParent = iParent;
   pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
-  assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
+  പ്രതിജ്ഞാ(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
   pWC->a[iParent].nChild++;
   testcase( pWC->a[iParent].nChild == UMXV(pWC->a[0].nChild) );
 
@@ -526,14 +526,14 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
-  if( pTerm->eOperator!=WO_AND ){
-    return N==0 ? pTerm : 0;
+സ്ഥിതം WhereTerm *whereNthSubterm(WhereTerm *pTerm, പൂർണ്ണസംഖ്യ N){
+  എങ്കിൽ( pTerm->eOperator!=WO_AND ){
+    തിരികെ N==0 ? pTerm : 0;
   }
-  if( N<pTerm->u.pAndInfo->wc.nTerm ){
-    return &pTerm->u.pAndInfo->wc.a[N];
+  എങ്കിൽ( N<pTerm->u.pAndInfo->wc.nTerm ){
+    തിരികെ &pTerm->u.pAndInfo->wc.a[N];
   }
-  return 0;
+  തിരികെ 0;
 }
 
 /*
@@ -556,7 +556,7 @@ static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
 **
 **    x<y OR x>y    -->     x!=y    
 */
-static void whereCombineDisjuncts(
+സ്ഥിതം ശൂന്യം whereCombineDisjuncts(
   SrcList *pSrc,         /* the FROM clause */
   WhereClause *pWC,      /* The complete WHERE clause */
   WhereTerm *pOne,       /* First disjunct */
@@ -564,44 +564,44 @@ static void whereCombineDisjuncts(
 ){
   u16 eOp = pOne->eOperator | pTwo->eOperator;
   sqlite3 *db;           /* Database connection (for malloc) */
-  Expr *pNew;            /* New virtual expression */
-  int op;                /* Operator for the combined expression */
-  int idxNew;            /* Index in pWC of the next virtual term */
-  Expr *pA, *pB;         /* Expressions associated with pOne and pTwo */
+  വ്യഞ്ജകം *pNew;            /* New virtual expression */
+  പൂർണ്ണസംഖ്യ op;                /* Operator for the combined expression */
+  പൂർണ്ണസംഖ്യ idxNew;            /* Index in pWC of the next virtual term */
+  വ്യഞ്ജകം *pA, *pB;         /* Expressions associated with pOne and pTwo */
 
-  if( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) return;
-  if( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
-   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) return;
-  pA = pOne->pExpr;
-  pB = pTwo->pExpr;
-  assert( pA->pLeft!=0 && pA->pRight!=0 );
-  assert( pB->pLeft!=0 && pB->pRight!=0 );
-  if( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  return;
-  if( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) return;
-  if( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
-    return;
+  എങ്കിൽ( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) തിരികെ;
+  എങ്കിൽ( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) തിരികെ;
+  എങ്കിൽ( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) തിരികെ;
+  എങ്കിൽ( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
+   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) തിരികെ;
+  pA = pOne->p_വ്യഞ്ജകം;
+  pB = pTwo->p_വ്യഞ്ജകം;
+  പ്രതിജ്ഞാ( pA->p_ഇടത്!=0 && pA->p_വലത്!=0 );
+  പ്രതിജ്ഞാ( pB->p_ഇടത്!=0 && pB->p_വലത്!=0 );
+  എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(0,pA->p_ഇടത്, pB->p_ഇടത്, -1) )  തിരികെ;
+  എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare(0,pA->p_വലത്, pB->p_വലത്,-1) ) തിരികെ;
+  എങ്കിൽ( വ്യഞ്ജകം_Has_Property(pA,EP_Commuted)!=വ്യഞ്ജകം_Has_Property(pB,EP_Commuted) ){
+    തിരികെ;
   }
   /* If we reach this point, it means the two subterms can be combined */
-  if( (eOp & (eOp-1))!=0 ){
-    if( eOp & (WO_LT|WO_LE) ){
+  എങ്കിൽ( (eOp & (eOp-1))!=0 ){
+    എങ്കിൽ( eOp & (WO_LT|WO_LE) ){
       eOp = WO_LE;
-    }else{
-      assert( eOp & (WO_GT|WO_GE) );
+    }അല്ലെങ്കിൽ{
+      പ്രതിജ്ഞാ( eOp & (WO_GT|WO_GE) );
       eOp = WO_GE;
     }
   }
   db = pWC->pWInfo->pParse->db;
-  pNew = sqlite3ExprDup(db, pA, 0);
-  if( pNew==0 ) return;
-  for(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
+  pNew = sqlite3_വ്യഞ്ജകം_Dup(db, pA, 0);
+  എങ്കിൽ( pNew==0 ) തിരികെ;
+  വേണ്ടി(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ പ്രതിജ്ഞാ( op<TK_GE ); }
   pNew->op = op;
-  idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
-  exprAnalyze(pSrc, pWC, idxNew);
+  idxNew = where_Clause_തിരുകുക(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+  വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew);
 }
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#എങ്കിൽ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Analyze a term that consists of two or more OR-connected
 ** subterms.  So in:
@@ -689,17 +689,17 @@ static void whereCombineDisjuncts(
 ** If none of cases 1, 2, or 3 apply, then leave the eOperator set to
 ** zero.  This term is not useful for search.
 */
-static void exprAnalyzeOrTerm(
+സ്ഥിതം ശൂന്യം വ്യഞ്ജകം_Analyze_Or_Term(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
-  int idxTerm               /* Index of the OR-term to be analyzed */
+  പൂർണ്ണസംഖ്യ idxTerm               /* Index of the OR-term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo;        /* WHERE clause processing context */
   Parse *pParse = pWInfo->pParse;         /* Parser context */
   sqlite3 *db = pParse->db;               /* Database connection */
   WhereTerm *pTerm = &pWC->a[idxTerm];    /* The term to be analyzed */
-  Expr *pExpr = pTerm->pExpr;             /* The expression of the term */
-  int i;                                  /* Loop counters */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം = pTerm->p_വ്യഞ്ജകം;             /* The expression of the term */
+  പൂർണ്ണസംഖ്യ i;                                  /* Loop counters */
   WhereClause *pOrWc;       /* Breakup of pTerm into subterms */
   WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */
   WhereOrInfo *pOrInfo;     /* Additional information associated with pTerm */
@@ -711,71 +711,71 @@ static void exprAnalyzeOrTerm(
   ** stored in a WhereClause structure containing within the WhereOrInfo
   ** object that is attached to the original OR clause term.
   */
-  assert( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
-  assert( pExpr->op==TK_OR );
-  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
-  if( pOrInfo==0 ) return;
+  പ്രതിജ്ഞാ( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
+  പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op==TK_OR );
+  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, വലുപ്പം(*pOrInfo));
+  എങ്കിൽ( pOrInfo==0 ) തിരികെ;
   pTerm->wtFlags |= TERM_ORINFO;
   pOrWc = &pOrInfo->wc;
-  memset(pOrWc->aStatic, 0, sizeof(pOrWc->aStatic));
+  memset(pOrWc->aStatic, 0, വലുപ്പം(pOrWc->aStatic));
   sqlite3WhereClauseInit(pOrWc, pWInfo);
-  sqlite3WhereSplit(pOrWc, pExpr, TK_OR);
-  sqlite3WhereExprAnalyze(pSrc, pOrWc);
-  if( db->mallocFailed ) return;
-  assert( pOrWc->nTerm>=2 );
+  sqlite3WhereSplit(pOrWc, p_വ്യഞ്ജകം, TK_OR);
+  sqlite3_Where_വ്യഞ്ജകം_Analyze(pSrc, pOrWc);
+  എങ്കിൽ( db->mallocFailed ) തിരികെ;
+  പ്രതിജ്ഞാ( pOrWc->nTerm>=2 );
 
   /*
   ** Compute the set of tables that might satisfy cases 1 or 3.
   */
   indexable = ~(Bitmask)0;
   chngToIN = ~(Bitmask)0;
-  for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
-    if( (pOrTerm->eOperator & WO_SINGLE)==0 ){
+  വേണ്ടി(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
+    എങ്കിൽ( (pOrTerm->eOperator & WO_SINGLE)==0 ){
       WhereAndInfo *pAndInfo;
-      assert( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
+      പ്രതിജ്ഞാ( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
       chngToIN = 0;
-      pAndInfo = sqlite3DbMallocRawNN(db, sizeof(*pAndInfo));
-      if( pAndInfo ){
+      pAndInfo = sqlite3DbMallocRawNN(db, വലുപ്പം(*pAndInfo));
+      എങ്കിൽ( pAndInfo ){
         WhereClause *pAndWC;
         WhereTerm *pAndTerm;
-        int j;
+        പൂർണ്ണസംഖ്യ j;
         Bitmask b = 0;
         pOrTerm->u.pAndInfo = pAndInfo;
         pOrTerm->wtFlags |= TERM_ANDINFO;
         pOrTerm->eOperator = WO_AND;
-        pOrTerm->leftCursor = -1;
+        pOrTerm->ഇടത്_Cursor = -1;
         pAndWC = &pAndInfo->wc;
-        memset(pAndWC->aStatic, 0, sizeof(pAndWC->aStatic));
+        memset(pAndWC->aStatic, 0, വലുപ്പം(pAndWC->aStatic));
         sqlite3WhereClauseInit(pAndWC, pWC->pWInfo);
-        sqlite3WhereSplit(pAndWC, pOrTerm->pExpr, TK_AND);
-        sqlite3WhereExprAnalyze(pSrc, pAndWC);
+        sqlite3WhereSplit(pAndWC, pOrTerm->p_വ്യഞ്ജകം, TK_AND);
+        sqlite3_Where_വ്യഞ്ജകം_Analyze(pSrc, pAndWC);
         pAndWC->pOuter = pWC;
-        if( !db->mallocFailed ){
-          for(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
-            assert( pAndTerm->pExpr );
-            if( allowedOp(pAndTerm->pExpr->op)
+        എങ്കിൽ( !db->mallocFailed ){
+          വേണ്ടി(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
+            പ്രതിജ്ഞാ( pAndTerm->p_വ്യഞ്ജകം );
+            എങ്കിൽ( allowedOp(pAndTerm->p_വ്യഞ്ജകം->op)
              || pAndTerm->eOperator==WO_AUX
             ){
-              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->leftCursor);
+              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->ഇടത്_Cursor);
             }
           }
         }
         indexable &= b;
       }
-    }else if( pOrTerm->wtFlags & TERM_COPIED ){
+    }അല്ലെങ്കിൽ എങ്കിൽ( pOrTerm->wtFlags & TERM_COPIED ){
       /* Skip this term for now.  We revisit it when we process the
       ** corresponding TERM_VIRTUAL term */
-    }else{
+    }അല്ലെങ്കിൽ{
       Bitmask b;
-      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->leftCursor);
-      if( pOrTerm->wtFlags & TERM_VIRTUAL ){
+      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->ഇടത്_Cursor);
+      എങ്കിൽ( pOrTerm->wtFlags & TERM_VIRTUAL ){
         WhereTerm *pOther = &pOrWc->a[pOrTerm->iParent];
-        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->leftCursor);
+        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->ഇടത്_Cursor);
       }
       indexable &= b;
-      if( (pOrTerm->eOperator & WO_EQ)==0 ){
+      എങ്കിൽ( (pOrTerm->eOperator & WO_EQ)==0 ){
         chngToIN = 0;
-      }else{
+      }അല്ലെങ്കിൽ{
         chngToIN &= b;
       }
     }
@@ -787,20 +787,20 @@ static void exprAnalyzeOrTerm(
   */
   pOrInfo->indexable = indexable;
   pTerm->eOperator = WO_OR;
-  pTerm->leftCursor = -1;
-  if( indexable ){
+  pTerm->ഇടത്_Cursor = -1;
+  എങ്കിൽ( indexable ){
     pWC->hasOr = 1;
   }
 
   /* For a two-way OR, attempt to implementation case 2.
   */
-  if( indexable && pOrWc->nTerm==2 ){
-    int iOne = 0;
+  എങ്കിൽ( indexable && pOrWc->nTerm==2 ){
+    പൂർണ്ണസംഖ്യ iOne = 0;
     WhereTerm *pOne;
-    while( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
-      int iTwo = 0;
+    ആകുമ്പോൾ( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
+      പൂർണ്ണസംഖ്യ iTwo = 0;
       WhereTerm *pTwo;
-      while( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
+      ആകുമ്പോൾ( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
         whereCombineDisjuncts(pSrc, pWC, pOne, pTwo);
       }
     }
@@ -827,11 +827,11 @@ static void exprAnalyzeOrTerm(
   ** Note that terms of the form "table.column1=table.column2" (the
   ** same table on both sizes of the ==) cannot be optimized.
   */
-  if( chngToIN ){
-    int okToChngToIN = 0;     /* True if the conversion to IN is valid */
-    int iColumn = -1;         /* Column index on lhs of IN operator */
-    int iCursor = -1;         /* Table cursor common to all terms */
-    int j = 0;                /* Loop counter */
+  എങ്കിൽ( chngToIN ){
+    പൂർണ്ണസംഖ്യ okToChngToIN = 0;     /* True if the conversion to IN is valid */
+    പൂർണ്ണസംഖ്യ iColumn = -1;         /* Column index on lhs of IN operator */
+    പൂർണ്ണസംഖ്യ iCursor = -1;         /* Table cursor common to all terms */
+    പൂർണ്ണസംഖ്യ j = 0;                /* Loop counter */
 
     /* Search for a table and column that appears on one side or the
     ** other of the == operator in every subterm.  That table and column
@@ -839,68 +839,68 @@ static void exprAnalyzeOrTerm(
     ** such table and column.  Set okToChngToIN if an appropriate table
     ** and column is found but leave okToChngToIN false if not found.
     */
-    for(j=0; j<2 && !okToChngToIN; j++){
-      Expr *pLeft = 0;
+    വേണ്ടി(j=0; j<2 && !okToChngToIN; j++){
+      വ്യഞ്ജകം *p_ഇടത് = 0;
       pOrTerm = pOrWc->a;
-      for(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
+      വേണ്ടി(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
+        പ്രതിജ്ഞാ( pOrTerm->eOperator & WO_EQ );
         pOrTerm->wtFlags &= ~TERM_OK;
-        if( pOrTerm->leftCursor==iCursor ){
+        എങ്കിൽ( pOrTerm->ഇടത്_Cursor==iCursor ){
           /* This is the 2-bit case and we are on the second iteration and
           ** current term is from the first iteration.  So skip this term. */
-          assert( j==1 );
-          continue;
+          പ്രതിജ്ഞാ( j==1 );
+          തുടരുക;
         }
-        if( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
-                                            pOrTerm->leftCursor))==0 ){
+        എങ്കിൽ( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
+                                            pOrTerm->ഇടത്_Cursor))==0 ){
           /* This term must be of the form t1.a==t2.b where t2 is in the
           ** chngToIN set but t1 is not.  This term will be either preceded
           ** or followed by an inverted copy (t2.b==t1.a).  Skip this term
           ** and use its inversion. */
           testcase( pOrTerm->wtFlags & TERM_COPIED );
           testcase( pOrTerm->wtFlags & TERM_VIRTUAL );
-          assert( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
-          continue;
+          പ്രതിജ്ഞാ( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
+          തുടരുക;
         }
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        iColumn = pOrTerm->u.x.leftColumn;
-        iCursor = pOrTerm->leftCursor;
-        pLeft = pOrTerm->pExpr->pLeft;
-        break;
+        പ്രതിജ്ഞാ( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        iColumn = pOrTerm->u.x.ഇടത്_Column;
+        iCursor = pOrTerm->ഇടത്_Cursor;
+        p_ഇടത് = pOrTerm->p_വ്യഞ്ജകം->p_ഇടത്;
+        നിർത്തുക;
       }
-      if( i<0 ){
+      എങ്കിൽ( i<0 ){
         /* No candidate table+column was found.  This can only occur
         ** on the second iteration */
-        assert( j==1 );
-        assert( IsPowerOfTwo(chngToIN) );
-        assert( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
-        break;
+        പ്രതിജ്ഞാ( j==1 );
+        പ്രതിജ്ഞാ( IsPowerOfTwo(chngToIN) );
+        പ്രതിജ്ഞാ( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
+        നിർത്തുക;
       }
       testcase( j==1 );
 
       /* We have found a candidate table and column.  Check to see if that
       ** table and column is common to every term in the OR clause */
       okToChngToIN = 1;
-      for(; i>=0 && okToChngToIN; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        if( pOrTerm->leftCursor!=iCursor ){
+      വേണ്ടി(; i>=0 && okToChngToIN; i--, pOrTerm++){
+        പ്രതിജ്ഞാ( pOrTerm->eOperator & WO_EQ );
+        പ്രതിജ്ഞാ( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        എങ്കിൽ( pOrTerm->ഇടത്_Cursor!=iCursor ){
           pOrTerm->wtFlags &= ~TERM_OK;
-        }else if( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
-               && sqlite3ExprCompare(pParse, pOrTerm->pExpr->pLeft, pLeft, -1)
+        }അല്ലെങ്കിൽ എങ്കിൽ( pOrTerm->u.x.ഇടത്_Column!=iColumn || (iColumn==XN_വ്യഞ്ജകം
+               && sqlite3_വ്യഞ്ജകം_Compare(pParse, pOrTerm->p_വ്യഞ്ജകം->p_ഇടത്, p_ഇടത്, -1)
         )){
           okToChngToIN = 0;
-        }else{
-          int affLeft, affRight;
+        }അല്ലെങ്കിൽ{
+          പൂർണ്ണസംഖ്യ aff_ഇടത്, aff_വലത്;
           /* If the right-hand side is also a column, then the affinities
           ** of both right and left sides must be such that no type
           ** conversions are required on the right.  (Ticket #2249)
           */
-          affRight = sqlite3ExprAffinity(pOrTerm->pExpr->pRight);
-          affLeft = sqlite3ExprAffinity(pOrTerm->pExpr->pLeft);
-          if( affRight!=0 && affRight!=affLeft ){
+          aff_വലത് = sqlite3_വ്യഞ്ജകം_Affinity(pOrTerm->p_വ്യഞ്ജകം->p_വലത്);
+          aff_ഇടത് = sqlite3_വ്യഞ്ജകം_Affinity(pOrTerm->p_വ്യഞ്ജകം->p_ഇടത്);
+          എങ്കിൽ( aff_വലത്!=0 && aff_വലത്!=aff_ഇടത് ){
             okToChngToIN = 0;
-          }else{
+          }അല്ലെങ്കിൽ{
             pOrTerm->wtFlags |= TERM_OK;
           }
         }
@@ -917,60 +917,60 @@ static void exprAnalyzeOrTerm(
     ** subterms of the OR are compatible.  Omit the construction of the
     ** new IN operator if there are any collating sequence mismatches.
     */
-    if( okToChngToIN ){
-      Expr *pDup;            /* A transient duplicate expression */
-      ExprList *pList = 0;   /* The RHS of the IN operator */
-      Expr *pLeft = 0;       /* The LHS of the IN operator */
+    എങ്കിൽ( okToChngToIN ){
+      വ്യഞ്ജകം *pDup;            /* A transient duplicate expression */
+      വ്യഞ്ജകം_List *pList = 0;   /* The RHS of the IN operator */
+      വ്യഞ്ജകം *p_ഇടത് = 0;       /* The LHS of the IN operator */
       CollSeq *pCollSeq = 0; /* Collating sequence to use */
-      Expr *pNew;            /* The complete IN operator */
+      വ്യഞ്ജകം *pNew;            /* The complete IN operator */
 
-      for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
-        Expr *pThis;
-        if( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        assert( pOrTerm->leftCursor==iCursor );
-        assert( pOrTerm->u.x.leftColumn==iColumn );
-        pThis = pOrTerm->pExpr;
-        pDup = sqlite3ExprDup(db, pThis->pRight, 0);
-        pList = sqlite3ExprListAppend(pWInfo->pParse, pList, pDup);
-        if( pLeft==0 ){
-          pLeft = pThis->pLeft;
-          pCollSeq = sqlite3ExprCompareCollSeq(pParse, pThis);
-        }else{
-          assert( 0==sqlite3ExprCompare(pParse, 
-                        sqlite3ExprSkipCollate(pThis->pLeft),
-                        sqlite3ExprSkipCollate(pLeft), -1) );
-          if( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
-            pLeft = 0;  /* Collating sequence mismatch */
-            break;
+      വേണ്ടി(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
+        വ്യഞ്ജകം *pThis;
+        എങ്കിൽ( (pOrTerm->wtFlags & TERM_OK)==0 ) തുടരുക;
+        പ്രതിജ്ഞാ( pOrTerm->eOperator & WO_EQ );
+        പ്രതിജ്ഞാ( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        പ്രതിജ്ഞാ( pOrTerm->ഇടത്_Cursor==iCursor );
+        പ്രതിജ്ഞാ( pOrTerm->u.x.ഇടത്_Column==iColumn );
+        pThis = pOrTerm->p_വ്യഞ്ജകം;
+        pDup = sqlite3_വ്യഞ്ജകം_Dup(db, pThis->p_വലത്, 0);
+        pList = sqlite3_വ്യഞ്ജകം_List_Append(pWInfo->pParse, pList, pDup);
+        എങ്കിൽ( p_ഇടത്==0 ){
+          p_ഇടത് = pThis->p_ഇടത്;
+          pCollSeq = sqlite3_വ്യഞ്ജകം_Compare_Coll_Seq(pParse, pThis);
+        }അല്ലെങ്കിൽ{
+          പ്രതിജ്ഞാ( 0==sqlite3_വ്യഞ്ജകം_Compare(pParse, 
+                        sqlite3_വ്യഞ്ജകം_Skip_Collate(pThis->p_ഇടത്),
+                        sqlite3_വ്യഞ്ജകം_Skip_Collate(p_ഇടത്), -1) );
+          എങ്കിൽ( pCollSeq!=sqlite3_വ്യഞ്ജകം_Compare_Coll_Seq(pParse, pThis) ){
+            p_ഇടത് = 0;  /* Collating sequence mismatch */
+            നിർത്തുക;
           }
         }
       }
-      if( pLeft==0 ){
+      എങ്കിൽ( p_ഇടത്==0 ){
         pNew = 0;  /* Collating sequence mismatch */
-      }else{
-        pDup = sqlite3ExprDup(db, pLeft, 0);
-        if( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
+      }അല്ലെങ്കിൽ{
+        pDup = sqlite3_വ്യഞ്ജകം_Dup(db, p_ഇടത്, 0);
+        എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Coll_Seq(pParse, pDup)!=pCollSeq
          && pCollSeq!=0
         ){
-          assert( pCollSeq->zName!=0 );
-          pDup = sqlite3ExprAddCollateString(pParse, pDup, pCollSeq->zName);
+          പ്രതിജ്ഞാ( pCollSeq->zName!=0 );
+          pDup = sqlite3_വ്യഞ്ജകം_Add_Collate_String(pParse, pDup, pCollSeq->zName);
         }
         pNew = sqlite3PExpr(pParse, TK_IN, pDup, 0);
       }
-      if( pNew ){
-        int idxNew;
-        transferJoinMarkings(pNew, pExpr);
-        assert( ExprUseXList(pNew) );
+      എങ്കിൽ( pNew ){
+        പൂർണ്ണസംഖ്യ idxNew;
+        transferJoinMarkings(pNew, p_വ്യഞ്ജകം);
+        പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(pNew) );
         pNew->x.pList = pList;
-        idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_തിരുകുക(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
         testcase( idxNew==0 );
-        exprAnalyze(pSrc, pWC, idxNew);
+        വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew);
         /* pTerm = &pWC->a[idxTerm]; // would be needed if pTerm where reused */
         markTermAsChild(pWC, idxNew, idxTerm);
-      }else{
-        sqlite3ExprListDelete(db, pList);
+      }അല്ലെങ്കിൽ{
+        sqlite3_വ്യഞ്ജകം_List_Delete(db, pList);
       }
     }
   }
@@ -993,29 +993,29 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
-  char aff1, aff2;
-  if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
-  if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) return 0;        /* (3) */
-  assert( pSrc!=0 );
-  if( pExpr->op==TK_IS
+സ്ഥിതം പൂർണ്ണസംഖ്യ termIsEquivalence(Parse *pParse, വ്യഞ്ജകം *p_വ്യഞ്ജകം, SrcList *pSrc){
+  അക്ഷരം aff1, aff2;
+  എങ്കിൽ( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) തിരികെ 0;  /* (1) */
+  എങ്കിൽ( p_വ്യഞ്ജകം->op!=TK_EQ && p_വ്യഞ്ജകം->op!=TK_IS ) തിരികെ 0;                 /* (2) */
+  എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON|EP_Collate) ) തിരികെ 0;        /* (3) */
+  പ്രതിജ്ഞാ( pSrc!=0 );
+  എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_IS
    && pSrc->nSrc>=2
    && (pSrc->a[0].fg.jointype & JT_LTORJ)!=0
   ){
-    return 0;                                                          /* (4) */
+    തിരികെ 0;                                                          /* (4) */
   }
-  aff1 = sqlite3ExprAffinity(pExpr->pLeft);
-  aff2 = sqlite3ExprAffinity(pExpr->pRight);
-  if( aff1!=aff2
+  aff1 = sqlite3_വ്യഞ്ജകം_Affinity(p_വ്യഞ്ജകം->p_ഇടത്);
+  aff2 = sqlite3_വ്യഞ്ജകം_Affinity(p_വ്യഞ്ജകം->p_വലത്);
+  എങ്കിൽ( aff1!=aff2
    && (!sqlite3IsNumericAffinity(aff1) || !sqlite3IsNumericAffinity(aff2))
   ){
-    return 0;                                                          /* (5) */
+    തിരികെ 0;                                                          /* (5) */
   }
-  if( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
-    return 0;                                                          /* (6) */
+  എങ്കിൽ( !sqlite3_വ്യഞ്ജകം_Coll_Seq_Match(pParse, p_വ്യഞ്ജകം->p_ഇടത്, p_വ്യഞ്ജകം->p_വലത്) ){
+    തിരികെ 0;                                                          /* (6) */
   }
-  return 1;
+  തിരികെ 1;
 }
 
 /*
@@ -1023,32 +1023,32 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 ** a bitmask indicating which tables are used in that expression
 ** tree.
 */
-static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
+സ്ഥിതം Bitmask വ്യഞ്ജകം_Select_Usage(WhereMaskSet *pMaskSet, Select *pS){
   Bitmask mask = 0;
-  while( pS ){
+  ആകുമ്പോൾ( pS ){
     SrcList *pSrc = pS->pSrc;
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pEList);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pGroupBy);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pWhere);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pHaving);
-    if( ALWAYS(pSrc!=0) ){
-      int i;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          mask |= exprSelectUsage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, pS->pEList);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, pS->pGroupBy);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, pS->pOrderBy);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, pS->pWhere);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, pS->pHaving);
+    എങ്കിൽ( ALWAYS(pSrc!=0) ){
+      പൂർണ്ണസംഖ്യ i;
+      വേണ്ടി(i=0; i<pSrc->nSrc; i++){
+        എങ്കിൽ( pSrc->a[i].fg.isSubquery ){
+          mask |= വ്യഞ്ജകം_Select_Usage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
         }
-        if( pSrc->a[i].fg.isUsing==0 ){
-          mask |= sqlite3WhereExprUsage(pMaskSet, pSrc->a[i].u3.pOn);
+        എങ്കിൽ( pSrc->a[i].fg.isUsing==0 ){
+          mask |= sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, pSrc->a[i].u3.pOn);
         }
-        if( pSrc->a[i].fg.isTabFunc ){
-          mask |= sqlite3WhereExprListUsage(pMaskSet, pSrc->a[i].u1.pFuncArg);
+        എങ്കിൽ( pSrc->a[i].fg.isTabFunc ){
+          mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, pSrc->a[i].u1.pFuncArg);
         }
       }
     }
     pS = pS->pPrior;
   }
-  return mask;
+  തിരികെ mask;
 }
 
 /*
@@ -1064,68 +1064,68 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+സ്ഥിതം SQLITE_NOINLINE പൂർണ്ണസംഖ്യ വ്യഞ്ജകം_Might_Be_Indexed2(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor and column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int j                  /* Start looking with the j-th pFrom entry */
+  പൂർണ്ണസംഖ്യ *aiCurCol,         /* Write the referenced table cursor and column here */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,           /* An operand of a comparison operator */
+  പൂർണ്ണസംഖ്യ j                  /* Start looking with the j-th pFrom entry */
 ){
   Index *pIdx;
-  int i;
-  int iCur;
-  do{
+  പൂർണ്ണസംഖ്യ i;
+  പൂർണ്ണസംഖ്യ iCur;
+  ചെയ്യുക{
     iCur = pFrom->a[j].iCursor;
-    for(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr==0 ) continue;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( pIdx->aiColumn[i]!=XN_EXPR ) continue;
-        assert( pIdx->bHasExpr );
-        if( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
-         && !sqlite3ExprIsConstant(0,pIdx->aColExpr->a[i].pExpr)
+    വേണ്ടി(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      എങ്കിൽ( pIdx->a_Col_വ്യഞ്ജകം==0 ) തുടരുക;
+      വേണ്ടി(i=0; i<pIdx->n_താക്കോൽ_Col; i++){
+        എങ്കിൽ( pIdx->aiColumn[i]!=XN_വ്യഞ്ജകം ) തുടരുക;
+        പ്രതിജ്ഞാ( pIdx->b_Has_വ്യഞ്ജകം );
+        എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Compare_Skip(p_വ്യഞ്ജകം,pIdx->a_Col_വ്യഞ്ജകം->a[i].p_വ്യഞ്ജകം,iCur)==0
+         && !sqlite3_വ്യഞ്ജകം_Is_Constant(0,pIdx->a_Col_വ്യഞ്ജകം->a[i].p_വ്യഞ്ജകം)
         ){
           aiCurCol[0] = iCur;
-          aiCurCol[1] = XN_EXPR;
-          return 1;
+          aiCurCol[1] = XN_വ്യഞ്ജകം;
+          തിരികെ 1;
         }
       }
     }
-  }while( ++j < pFrom->nSrc );
-  return 0;
+  }ആകുമ്പോൾ( ++j < pFrom->nSrc );
+  തിരികെ 0;
 }
-static int exprMightBeIndexed(
+സ്ഥിതം പൂർണ്ണസംഖ്യ വ്യഞ്ജകം_Might_Be_Indexed(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor & column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int op                 /* The specific comparison operator */
+  പൂർണ്ണസംഖ്യ *aiCurCol,         /* Write the referenced table cursor & column here */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,           /* An operand of a comparison operator */
+  പൂർണ്ണസംഖ്യ op                 /* The specific comparison operator */
 ){
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
   /* If this expression is a vector to the left or right of a
   ** inequality constraint (>, <, >= or <=), perform the processing
   ** on the first element of the vector.  */
-  assert( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
-  assert( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
-  assert( op<=TK_GE );
-  if( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
-    assert( ExprUseXList(pExpr) );
-    pExpr = pExpr->x.pList->a[0].pExpr;
+  പ്രതിജ്ഞാ( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
+  പ്രതിജ്ഞാ( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
+  പ്രതിജ്ഞാ( op<=TK_GE );
+  എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+    p_വ്യഞ്ജകം = p_വ്യഞ്ജകം->x.pList->a[0].p_വ്യഞ്ജകം;
   }
 
-  if( pExpr->op==TK_COLUMN ){
-    aiCurCol[0] = pExpr->iTable;
-    aiCurCol[1] = pExpr->iColumn;
-    return 1;
+  എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_COLUMN ){
+    aiCurCol[0] = p_വ്യഞ്ജകം->iTable;
+    aiCurCol[1] = p_വ്യഞ്ജകം->iColumn;
+    തിരികെ 1;
   }
 
-  for(i=0; i<pFrom->nSrc; i++){
+  വേണ്ടി(i=0; i<pFrom->nSrc; i++){
     Index *pIdx;
-    for(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr ){
-        return exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
+    വേണ്ടി(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      എങ്കിൽ( pIdx->a_Col_വ്യഞ്ജകം ){
+        തിരികെ വ്യഞ്ജകം_Might_Be_Indexed2(pFrom,aiCurCol,p_വ്യഞ്ജകം,i);
       }
     }
   }
-  return 0;
+  തിരികെ 0;
 }
 
 
@@ -1147,155 +1147,155 @@ static int exprMightBeIndexed(
 ** is a commuted copy of a prior term.)  The original term has nChild=1
 ** and the copy has idxParent set to the index of the original term.
 */
-static void exprAnalyze(
+സ്ഥിതം ശൂന്യം വ്യഞ്ജകം_Analyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
-  int idxTerm               /* Index of the term to be analyzed */
+  പൂർണ്ണസംഖ്യ idxTerm               /* Index of the term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo; /* WHERE clause processing context */
   WhereTerm *pTerm;                /* The term to be analyzed */
   WhereMaskSet *pMaskSet;          /* Set of table index masks */
-  Expr *pExpr;                     /* The expression to be analyzed */
-  Bitmask prereqLeft;              /* Prerequisites of the pExpr->pLeft */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം;                     /* The expression to be analyzed */
+  Bitmask prereq_ഇടത്;              /* Prerequisites of the pExpr->pLeft */
   Bitmask prereqAll;               /* Prerequisites of pExpr */
-  Bitmask extraRight = 0;          /* Extra dependencies on LEFT JOIN */
-  Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
-  int isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
-  int noCase = 0;                  /* uppercase equivalent to lowercase */
-  int op;                          /* Top-level operator.  pExpr->op */
+  Bitmask extra_വലത് = 0;          /* Extra dependencies on LEFT JOIN */
+  വ്യഞ്ജകം *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
+  പൂർണ്ണസംഖ്യ isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
+  പൂർണ്ണസംഖ്യ noCase = 0;                  /* uppercase equivalent to lowercase */
+  പൂർണ്ണസംഖ്യ op;                          /* Top-level operator.  pExpr->op */
   Parse *pParse = pWInfo->pParse;  /* Parsing context */
   sqlite3 *db = pParse->db;        /* Database connection */
-  unsigned char eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
-  int nLeft;                       /* Number of elements on left side vector */
+  unsigned അക്ഷരം eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
+  പൂർണ്ണസംഖ്യ n_ഇടത്;                       /* Number of elements on left side vector */
 
-  if( db->mallocFailed ){
-    return;
+  എങ്കിൽ( db->mallocFailed ){
+    തിരികെ;
   }
-  assert( pWC->nTerm > idxTerm );
+  പ്രതിജ്ഞാ( pWC->nTerm > idxTerm );
   pTerm = &pWC->a[idxTerm];
 #ifdef SQLITE_DEBUG
   pTerm->iTerm = idxTerm;
 #endif
   pMaskSet = &pWInfo->sMaskSet;
-  pExpr = pTerm->pExpr;
-  assert( pExpr!=0 ); /* Because malloc() has not failed */
-  assert( pExpr->op!=TK_AS && pExpr->op!=TK_COLLATE );
-exprAnalyze_restart:
+  p_വ്യഞ്ജകം = pTerm->p_വ്യഞ്ജകം;
+  പ്രതിജ്ഞാ( p_വ്യഞ്ജകം!=0 ); /* Because malloc() has not failed */
+  പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->op!=TK_AS && p_വ്യഞ്ജകം->op!=TK_COLLATE );
+വ്യഞ്ജകം_Analyze_restart:
   pMaskSet->bVarSelect = 0;
-  prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);
-  op = pExpr->op;
-  if( op==TK_IN ){
-    assert( pExpr->pRight==0 );
-    if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-    if( ExprUseXSelect(pExpr) ){
-      pTerm->prereqRight = exprSelectUsage(pMaskSet, pExpr->x.pSelect);
-    }else{
-      pTerm->prereqRight = sqlite3WhereExprListUsage(pMaskSet, pExpr->x.pList);
+  prereq_ഇടത് = sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, p_വ്യഞ്ജകം->p_ഇടത്);
+  op = p_വ്യഞ്ജകം->op;
+  എങ്കിൽ( op==TK_IN ){
+    പ്രതിജ്ഞാ( p_വ്യഞ്ജകം->p_വലത്==0 );
+    എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Check_IN(pParse, p_വ്യഞ്ജകം) ) തിരികെ;
+    എങ്കിൽ( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) ){
+      pTerm->prereq_വലത് = വ്യഞ്ജകം_Select_Usage(pMaskSet, p_വ്യഞ്ജകം->x.pSelect);
+    }അല്ലെങ്കിൽ{
+      pTerm->prereq_വലത് = sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, p_വ്യഞ്ജകം->x.pList);
     }
-    prereqAll = prereqLeft | pTerm->prereqRight;
-  }else{
-    pTerm->prereqRight = sqlite3WhereExprUsage(pMaskSet, pExpr->pRight);
-    if( pExpr->pLeft==0
-     || ExprHasProperty(pExpr, EP_xIsSelect|EP_IfNullRow)
-     || pExpr->x.pList!=0
+    prereqAll = prereq_ഇടത് | pTerm->prereq_വലത്;
+  }അല്ലെങ്കിൽ{
+    pTerm->prereq_വലത് = sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, p_വ്യഞ്ജകം->p_വലത്);
+    എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത്==0
+     || വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_xIsSelect|EP_IfNullRow)
+     || p_വ്യഞ്ജകം->x.pList!=0
     ){
-      prereqAll = sqlite3WhereExprUsageNN(pMaskSet, pExpr);
-    }else{
-      prereqAll = prereqLeft | pTerm->prereqRight;
+      prereqAll = sqlite3_Where_വ്യഞ്ജകം_Usage_NN(pMaskSet, p_വ്യഞ്ജകം);
+    }അല്ലെങ്കിൽ{
+      prereqAll = prereq_ഇടത് | pTerm->prereq_വലത്;
     }
   }
-  if( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
+  എങ്കിൽ( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
 
 #ifdef SQLITE_DEBUG
-  if( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
+  എങ്കിൽ( prereqAll!=sqlite3_Where_വ്യഞ്ജകം_Usage_NN(pMaskSet, p_വ്യഞ്ജകം) ){
     printf("\n*** Incorrect prereqAll computed for:\n");
-    sqlite3TreeViewExpr(0,pExpr,0);
-    assert( 0 );
+    sqlite3_വൃക്ഷം_View_വ്യഞ്ജകം(0,p_വ്യഞ്ജകം,0);
+    പ്രതിജ്ഞാ( 0 );
   }
 #endif
 
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
-    Bitmask x = sqlite3WhereGetMask(pMaskSet, pExpr->w.iJoin);
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+  എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON|EP_InnerON) ){
+    Bitmask x = sqlite3WhereGetMask(pMaskSet, p_വ്യഞ്ജകം->w.iJoin);
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON) ){
       prereqAll |= x;
-      extraRight = x-1;  /* ON clause terms may not be used with an index
+      extra_വലത് = x-1;  /* ON clause terms may not be used with an index
                          ** on left table of a LEFT JOIN.  Ticket #3015 */
-    }else if( (prereqAll>>1)>=x ){
-      ExprClearProperty(pExpr, EP_InnerON);
+    }അല്ലെങ്കിൽ എങ്കിൽ( (prereqAll>>1)>=x ){
+      വ്യഞ്ജകം_Clear_Property(p_വ്യഞ്ജകം, EP_InnerON);
     }
   }
   pTerm->prereqAll = prereqAll;
-  pTerm->leftCursor = -1;
+  pTerm->ഇടത്_Cursor = -1;
   pTerm->iParent = -1;
   pTerm->eOperator = 0;
-  if( allowedOp(op) ){
-    int aiCurCol[2];
-    Expr *pLeft = sqlite3ExprSkipCollate(pExpr->pLeft);
-    Expr *pRight = sqlite3ExprSkipCollate(pExpr->pRight);
-    u16 opMask = (pTerm->prereqRight & prereqLeft)==0 ? WO_ALL : WO_EQUIV;
+  എങ്കിൽ( allowedOp(op) ){
+    പൂർണ്ണസംഖ്യ aiCurCol[2];
+    വ്യഞ്ജകം *p_ഇടത് = sqlite3_വ്യഞ്ജകം_Skip_Collate(p_വ്യഞ്ജകം->p_ഇടത്);
+    വ്യഞ്ജകം *p_വലത് = sqlite3_വ്യഞ്ജകം_Skip_Collate(p_വ്യഞ്ജകം->p_വലത്);
+    u16 opMask = (pTerm->prereq_വലത് & prereq_ഇടത്)==0 ? WO_ALL : WO_EQUIV;
 
-    if( pTerm->u.x.iField>0 ){
-      assert( op==TK_IN );
-      assert( pLeft->op==TK_VECTOR );
-      assert( ExprUseXList(pLeft) );
-      pLeft = pLeft->x.pList->a[pTerm->u.x.iField-1].pExpr;
+    എങ്കിൽ( pTerm->u.x.iField>0 ){
+      പ്രതിജ്ഞാ( op==TK_IN );
+      പ്രതിജ്ഞാ( p_ഇടത്->op==TK_VECTOR );
+      പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_ഇടത്) );
+      p_ഇടത് = p_ഇടത്->x.pList->a[pTerm->u.x.iField-1].p_വ്യഞ്ജകം;
     }
 
-    if( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
-      pTerm->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pTerm->u.x.leftColumn = aiCurCol[1];
+    എങ്കിൽ( വ്യഞ്ജകം_Might_Be_Indexed(pSrc, aiCurCol, p_ഇടത്, op) ){
+      pTerm->ഇടത്_Cursor = aiCurCol[0];
+      പ്രതിജ്ഞാ( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
+      pTerm->u.x.ഇടത്_Column = aiCurCol[1];
       pTerm->eOperator = operatorMask(op) & opMask;
     }
-    if( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
-    if( pRight
-     && exprMightBeIndexed(pSrc, aiCurCol, pRight, op)
-     && !ExprHasProperty(pRight, EP_FixedCol)
+    എങ്കിൽ( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
+    എങ്കിൽ( p_വലത്
+     && വ്യഞ്ജകം_Might_Be_Indexed(pSrc, aiCurCol, p_വലത്, op)
+     && !വ്യഞ്ജകം_Has_Property(p_വലത്, EP_FixedCol)
     ){
       WhereTerm *pNew;
-      Expr *pDup;
+      വ്യഞ്ജകം *pDup;
       u16 eExtraOp = 0;        /* Extra bits for pNew->eOperator */
-      assert( pTerm->u.x.iField==0 );
-      if( pTerm->leftCursor>=0 ){
-        int idxNew;
-        pDup = sqlite3ExprDup(db, pExpr, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDup);
-          return;
+      പ്രതിജ്ഞാ( pTerm->u.x.iField==0 );
+      എങ്കിൽ( pTerm->ഇടത്_Cursor>=0 ){
+        പൂർണ്ണസംഖ്യ idxNew;
+        pDup = sqlite3_വ്യഞ്ജകം_Dup(db, p_വ്യഞ്ജകം, 0);
+        എങ്കിൽ( db->mallocFailed ){
+          sqlite3_വ്യഞ്ജകം_Delete(db, pDup);
+          തിരികെ;
         }
-        idxNew = whereClauseInsert(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
-        if( idxNew==0 ) return;
+        idxNew = where_Clause_തിരുകുക(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
+        എങ്കിൽ( idxNew==0 ) തിരികെ;
         pNew = &pWC->a[idxNew];
         markTermAsChild(pWC, idxNew, idxTerm);
-        if( op==TK_IS ) pNew->wtFlags |= TERM_IS;
+        എങ്കിൽ( op==TK_IS ) pNew->wtFlags |= TERM_IS;
         pTerm = &pWC->a[idxTerm];
         pTerm->wtFlags |= TERM_COPIED;
-        assert( pWInfo->pTabList!=0 );
-        if( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
+        പ്രതിജ്ഞാ( pWInfo->pTabList!=0 );
+        എങ്കിൽ( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
           pTerm->eOperator |= WO_EQUIV;
           eExtraOp = WO_EQUIV;
         }
-      }else{
-        pDup = pExpr;
+      }അല്ലെങ്കിൽ{
+        pDup = p_വ്യഞ്ജകം;
         pNew = pTerm;
       }
-      pNew->wtFlags |= exprCommute(pParse, pDup);
-      pNew->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pNew->u.x.leftColumn = aiCurCol[1];
-      testcase( (prereqLeft | extraRight) != prereqLeft );
-      pNew->prereqRight = prereqLeft | extraRight;
+      pNew->wtFlags |= വ്യഞ്ജകം_Commute(pParse, pDup);
+      pNew->ഇടത്_Cursor = aiCurCol[0];
+      പ്രതിജ്ഞാ( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
+      pNew->u.x.ഇടത്_Column = aiCurCol[1];
+      testcase( (prereq_ഇടത് | extra_വലത്) != prereq_ഇടത് );
+      pNew->prereq_വലത് = prereq_ഇടത് | extra_വലത്;
       pNew->prereqAll = prereqAll;
       pNew->eOperator = (operatorMask(pDup->op) + eExtraOp) & opMask;
-    }else
-    if( op==TK_ISNULL
-     && !ExprHasProperty(pExpr,EP_OuterON)
-     && 0==sqlite3ExprCanBeNull(pLeft)
+    }അല്ലെങ്കിൽ
+    എങ്കിൽ( op==TK_ISNULL
+     && !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം,EP_OuterON)
+     && 0==sqlite3_വ്യഞ്ജകം_Can_Be_Null(p_ഇടത്)
     ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pExpr->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
-      pExpr->u.zToken = "false";
-      ExprSetProperty(pExpr, EP_IsFalse);
+      പ്രതിജ്ഞാ( !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Int_മൂല്യം) );
+      p_വ്യഞ്ജകം->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
+      p_വ്യഞ്ജകം->u.zToken = "false";
+      വ്യഞ്ജകം_Set_Property(p_വ്യഞ്ജകം, EP_IsFalse);
       pTerm->prereqAll = 0;
       pTerm->eOperator = 0;
     }
@@ -1317,43 +1317,43 @@ exprAnalyze_restart:
   ** skipped.  Or, if the children are satisfied by an index, the original
   ** BETWEEN term is skipped.
   */
-  else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
-    ExprList *pList;
-    int i;
-    static const u8 ops[] = {TK_GE, TK_LE};
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    assert( pList!=0 );
-    assert( pList->nExpr==2 );
-    assert( pWC->a[idxTerm].nChild==0 );
-    for(i=0; i<2; i++){
-      Expr *pNewExpr;
-      int idxNew;
-      pNewExpr = sqlite3PExpr(pParse, ops[i],
-                             sqlite3ExprDup(db, pExpr->pLeft, 0),
-                             sqlite3ExprDup(db, pList->a[i].pExpr, 0));
-      transferJoinMarkings(pNewExpr, pExpr);
-      idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+  അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_BETWEEN && pWC->op==TK_AND ){
+    വ്യഞ്ജകം_List *pList;
+    പൂർണ്ണസംഖ്യ i;
+    സ്ഥിതം സ്ഥിരം u8 ops[] = {TK_GE, TK_LE};
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+    pList = p_വ്യഞ്ജകം->x.pList;
+    പ്രതിജ്ഞാ( pList!=0 );
+    പ്രതിജ്ഞാ( pList->n_വ്യഞ്ജകം==2 );
+    പ്രതിജ്ഞാ( pWC->a[idxTerm].nChild==0 );
+    വേണ്ടി(i=0; i<2; i++){
+      വ്യഞ്ജകം *p_New_വ്യഞ്ജകം;
+      പൂർണ്ണസംഖ്യ idxNew;
+      p_New_വ്യഞ്ജകം = sqlite3PExpr(pParse, ops[i],
+                             sqlite3_വ്യഞ്ജകം_Dup(db, p_വ്യഞ്ജകം->p_ഇടത്, 0),
+                             sqlite3_വ്യഞ്ജകം_Dup(db, pList->a[i].p_വ്യഞ്ജകം, 0));
+      transferJoinMarkings(p_New_വ്യഞ്ജകം, p_വ്യഞ്ജകം);
+      idxNew = where_Clause_തിരുകുക(pWC, p_New_വ്യഞ്ജകം, TERM_VIRTUAL|TERM_DYNAMIC);
       testcase( idxNew==0 );
-      exprAnalyze(pSrc, pWC, idxNew);
+      വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew);
       pTerm = &pWC->a[idxTerm];
       markTermAsChild(pWC, idxNew, idxTerm);
     }
   }
 #endif /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#എങ്കിൽ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
   /* Analyze a term that is composed of two or more subterms connected by
   ** an OR operator.
   */
-  else if( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
-    Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-    if( pAlt!=pExpr ){
-      pTerm->pExpr = pExpr = sqlite3ExprSkipCollateAndLikely(pAlt);
-      goto exprAnalyze_restart;
+  അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_OR && !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_Collate) ){
+    വ്യഞ്ജകം *pAlt = sqlite3_വ്യഞ്ജകം_Simplified_And_Or(p_വ്യഞ്ജകം);
+    എങ്കിൽ( pAlt!=p_വ്യഞ്ജകം ){
+      pTerm->p_വ്യഞ്ജകം = p_വ്യഞ്ജകം = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(pAlt);
+      പോകുക വ്യഞ്ജകം_Analyze_restart;
     }
-    assert( pWC->op==TK_AND );
-    exprAnalyzeOrTerm(pSrc, pWC, idxTerm);
+    പ്രതിജ്ഞാ( pWC->op==TK_AND );
+    വ്യഞ്ജകം_Analyze_Or_Term(pSrc, pWC, idxTerm);
     pTerm = &pWC->a[idxTerm];
   }
 #endif /* SQLITE_OMIT_OR_OPTIMIZATION */
@@ -1363,27 +1363,27 @@ exprAnalyze_restart:
   **
   ** The virtual term must be tagged with TERM_VNULL.
   */
-  else if( pExpr->op==TK_NOTNULL ){
-    if( pExpr->pLeft->op==TK_COLUMN
-     && pExpr->pLeft->iColumn>=0
-     && !ExprHasProperty(pExpr, EP_OuterON)
+  അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_NOTNULL ){
+    എങ്കിൽ( p_വ്യഞ്ജകം->p_ഇടത്->op==TK_COLUMN
+     && p_വ്യഞ്ജകം->p_ഇടത്->iColumn>=0
+     && !വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON)
     ){
-      Expr *pNewExpr;
-      Expr *pLeft = pExpr->pLeft;
-      int idxNew;
+      വ്യഞ്ജകം *p_New_വ്യഞ്ജകം;
+      വ്യഞ്ജകം *p_ഇടത് = p_വ്യഞ്ജകം->p_ഇടത്;
+      പൂർണ്ണസംഖ്യ idxNew;
       WhereTerm *pNewTerm;
  
-      pNewExpr = sqlite3PExpr(pParse, TK_GT,
-                              sqlite3ExprDup(db, pLeft, 0),
-                              sqlite3ExprAlloc(db, TK_NULL, 0, 0));
+      p_New_വ്യഞ്ജകം = sqlite3PExpr(pParse, TK_GT,
+                              sqlite3_വ്യഞ്ജകം_Dup(db, p_ഇടത്, 0),
+                              sqlite3_വ്യഞ്ജകം_Alloc(db, TK_NULL, 0, 0));
  
-      idxNew = whereClauseInsert(pWC, pNewExpr,
+      idxNew = where_Clause_തിരുകുക(pWC, p_New_വ്യഞ്ജകം,
                                 TERM_VIRTUAL|TERM_DYNAMIC|TERM_VNULL);
-      if( idxNew ){
+      എങ്കിൽ( idxNew ){
         pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = 0;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
+        pNewTerm->prereq_വലത് = 0;
+        pNewTerm->ഇടത്_Cursor = p_ഇടത്->iTable;
+        pNewTerm->u.x.ഇടത്_Column = p_ഇടത്->iColumn;
         pNewTerm->eOperator = WO_GT;
         markTermAsChild(pWC, idxNew, idxTerm);
         pTerm = &pWC->a[idxTerm];
@@ -1408,81 +1408,81 @@ exprAnalyze_restart:
   ** bound is made all lowercase so that the bounds also work when comparing
   ** BLOBs.
   */
-  else if( pExpr->op==TK_FUNCTION
+  അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_FUNCTION
    && pWC->op==TK_AND
-   && isLikeOrGlob(pParse, pExpr, &pStr1, &isComplete, &noCase)
+   && isLikeOrGlob(pParse, p_വ്യഞ്ജകം, &pStr1, &isComplete, &noCase)
   ){
-    Expr *pLeft;       /* LHS of LIKE/GLOB operator */
-    Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
-    Expr *pNewExpr1;
-    Expr *pNewExpr2;
-    int idxNew1;
-    int idxNew2;
-    const char *zCollSeqName;     /* Name of collating sequence */
-    const u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
+    വ്യഞ്ജകം *p_ഇടത്;       /* LHS of LIKE/GLOB operator */
+    വ്യഞ്ജകം *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
+    വ്യഞ്ജകം *pNewExpr1;
+    വ്യഞ്ജകം *pNewExpr2;
+    പൂർണ്ണസംഖ്യ idxNew1;
+    പൂർണ്ണസംഖ്യ idxNew2;
+    സ്ഥിരം അക്ഷരം *zCollSeqName;     /* Name of collating sequence */
+    സ്ഥിരം u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
 
-    assert( ExprUseXList(pExpr) );
-    pLeft = pExpr->x.pList->a[1].pExpr;
-    pStr2 = sqlite3ExprDup(db, pStr1, 0);
-    assert( pStr1==0 || !ExprHasProperty(pStr1, EP_IntValue) );
-    assert( pStr2==0 || !ExprHasProperty(pStr2, EP_IntValue) );
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_XList(p_വ്യഞ്ജകം) );
+    p_ഇടത് = p_വ്യഞ്ജകം->x.pList->a[1].p_വ്യഞ്ജകം;
+    pStr2 = sqlite3_വ്യഞ്ജകം_Dup(db, pStr1, 0);
+    പ്രതിജ്ഞാ( pStr1==0 || !വ്യഞ്ജകം_Has_Property(pStr1, EP_Int_മൂല്യം) );
+    പ്രതിജ്ഞാ( pStr2==0 || !വ്യഞ്ജകം_Has_Property(pStr2, EP_Int_മൂല്യം) );
 
 
     /* Convert the lower bound to upper-case and the upper bound to
     ** lower-case (upper-case is less than lower-case in ASCII) so that
     ** the range constraints also work for BLOBs
     */
-    if( noCase && !pParse->db->mallocFailed ){
-      int i;
-      char c;
+    എങ്കിൽ( noCase && !pParse->db->mallocFailed ){
+      പൂർണ്ണസംഖ്യ i;
+      അക്ഷരം c;
       pTerm->wtFlags |= TERM_LIKE;
-      for(i=0; (c = pStr1->u.zToken[i])!=0; i++){
+      വേണ്ടി(i=0; (c = pStr1->u.zToken[i])!=0; i++){
         pStr1->u.zToken[i] = sqlite3Toupper(c);
         pStr2->u.zToken[i] = sqlite3Tolower(c);
       }
     }
 
-    if( !db->mallocFailed ){
+    എങ്കിൽ( !db->mallocFailed ){
       u8 *pC;       /* Last character before the first wildcard */
       pC = (u8*)&pStr2->u.zToken[sqlite3Strlen30(pStr2->u.zToken)-1];
-      if( noCase ){
+      എങ്കിൽ( noCase ){
         /* The point is to increment the last character before the first
         ** wildcard.  But if we increment '@', that will push it into the
         ** alphabetic range where case conversions will mess up the
         ** inequality.  To avoid this, make sure to also run the full
         ** LIKE on all candidate expressions by clearing the isComplete flag
         */
-        if( *pC=='A'-1 ) isComplete = 0;
+        എങ്കിൽ( *pC=='A'-1 ) isComplete = 0;
         *pC = sqlite3UpperToLower[*pC];
       }
 
       /* Increment the value of the last utf8 character in the prefix. */
-      while( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
+      ആകുമ്പോൾ( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
         *pC = 0x80;
         pC--;
       }
-      assert( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
+      പ്രതിജ്ഞാ( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
       (*pC)++;
     }
-    zCollSeqName = noCase ? "NOCASE" : sqlite3StrBINARY;
-    pNewExpr1 = sqlite3ExprDup(db, pLeft, 0);
+    zCollSeqName = noCase ? "NOCASE" : sqlite3_Str_ദ്വിമാന;
+    pNewExpr1 = sqlite3_വ്യഞ്ജകം_Dup(db, p_ഇടത്, 0);
     pNewExpr1 = sqlite3PExpr(pParse, TK_GE,
-           sqlite3ExprAddCollateString(pParse,pNewExpr1,zCollSeqName),
+           sqlite3_വ്യഞ്ജകം_Add_Collate_String(pParse,pNewExpr1,zCollSeqName),
            pStr1);
-    transferJoinMarkings(pNewExpr1, pExpr);
-    idxNew1 = whereClauseInsert(pWC, pNewExpr1, wtFlags);
+    transferJoinMarkings(pNewExpr1, p_വ്യഞ്ജകം);
+    idxNew1 = where_Clause_തിരുകുക(pWC, pNewExpr1, wtFlags);
     testcase( idxNew1==0 );
-    pNewExpr2 = sqlite3ExprDup(db, pLeft, 0);
+    pNewExpr2 = sqlite3_വ്യഞ്ജകം_Dup(db, p_ഇടത്, 0);
     pNewExpr2 = sqlite3PExpr(pParse, TK_LT,
-           sqlite3ExprAddCollateString(pParse,pNewExpr2,zCollSeqName),
+           sqlite3_വ്യഞ്ജകം_Add_Collate_String(pParse,pNewExpr2,zCollSeqName),
            pStr2);
-    transferJoinMarkings(pNewExpr2, pExpr);
-    idxNew2 = whereClauseInsert(pWC, pNewExpr2, wtFlags);
+    transferJoinMarkings(pNewExpr2, p_വ്യഞ്ജകം);
+    idxNew2 = where_Clause_തിരുകുക(pWC, pNewExpr2, wtFlags);
     testcase( idxNew2==0 );
-    exprAnalyze(pSrc, pWC, idxNew1);
-    exprAnalyze(pSrc, pWC, idxNew2);
+    വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew1);
+    വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew2);
     pTerm = &pWC->a[idxTerm];
-    if( isComplete ){
+    എങ്കിൽ( isComplete ){
       markTermAsChild(pWC, idxNew1, idxTerm);
       markTermAsChild(pWC, idxNew2, idxTerm);
     }
@@ -1499,24 +1499,24 @@ exprAnalyze_restart:
   **
   ** tag-20220128a
   */
-  if( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
-   && (nLeft = sqlite3ExprVectorSize(pExpr->pLeft))>1
-   && sqlite3ExprVectorSize(pExpr->pRight)==nLeft
-   && ( (pExpr->pLeft->flags & EP_xIsSelect)==0
-     || (pExpr->pRight->flags & EP_xIsSelect)==0)
+  എങ്കിൽ( (p_വ്യഞ്ജകം->op==TK_EQ || p_വ്യഞ്ജകം->op==TK_IS)
+   && (n_ഇടത് = sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->p_ഇടത്))>1
+   && sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->p_വലത്)==n_ഇടത്
+   && ( (p_വ്യഞ്ജകം->p_ഇടത്->flags & EP_xIsSelect)==0
+     || (p_വ്യഞ്ജകം->p_വലത്->flags & EP_xIsSelect)==0)
    && pWC->op==TK_AND
   ){
-    int i;
-    for(i=0; i<nLeft; i++){
-      int idxNew;
-      Expr *pNew;
-      Expr *pLeft = sqlite3ExprForVectorField(pParse, pExpr->pLeft, i, nLeft);
-      Expr *pRight = sqlite3ExprForVectorField(pParse, pExpr->pRight, i, nLeft);
+    പൂർണ്ണസംഖ്യ i;
+    വേണ്ടി(i=0; i<n_ഇടത്; i++){
+      പൂർണ്ണസംഖ്യ idxNew;
+      വ്യഞ്ജകം *pNew;
+      വ്യഞ്ജകം *p_ഇടത് = sqlite3_വ്യഞ്ജകം_For_Vector_Field(pParse, p_വ്യഞ്ജകം->p_ഇടത്, i, n_ഇടത്);
+      വ്യഞ്ജകം *p_വലത് = sqlite3_വ്യഞ്ജകം_For_Vector_Field(pParse, p_വ്യഞ്ജകം->p_വലത്, i, n_ഇടത്);
 
-      pNew = sqlite3PExpr(pParse, pExpr->op, pLeft, pRight);
-      transferJoinMarkings(pNew, pExpr);
-      idxNew = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
-      exprAnalyze(pSrc, pWC, idxNew);
+      pNew = sqlite3PExpr(pParse, p_വ്യഞ്ജകം->op, p_ഇടത്, p_വലത്);
+      transferJoinMarkings(pNew, p_വ്യഞ്ജകം);
+      idxNew = where_Clause_തിരുകുക(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
+      വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew);
     }
     pTerm = &pWC->a[idxTerm];
     pTerm->wtFlags |= TERM_CODED|TERM_VIRTUAL;  /* Disable the original */
@@ -1532,26 +1532,26 @@ exprAnalyze_restart:
   ** This only works if the RHS is a simple SELECT (not a compound) that does
   ** not use window functions.
   */
-  else if( pExpr->op==TK_IN
+  അല്ലെങ്കിൽ എങ്കിൽ( p_വ്യഞ്ജകം->op==TK_IN
    && pTerm->u.x.iField==0
-   && pExpr->pLeft->op==TK_VECTOR
-   && ALWAYS( ExprUseXSelect(pExpr) )
-   && (pExpr->x.pSelect->pPrior==0 || (pExpr->x.pSelect->selFlags & SF_Values))
+   && p_വ്യഞ്ജകം->p_ഇടത്->op==TK_VECTOR
+   && ALWAYS( വ്യഞ്ജകം_Use_XSelect(p_വ്യഞ്ജകം) )
+   && (p_വ്യഞ്ജകം->x.pSelect->pPrior==0 || (p_വ്യഞ്ജകം->x.pSelect->selFlags & SF_മൂല്യങ്ങൾ))
 #ifndef SQLITE_OMIT_WINDOWFUNC
-   && pExpr->x.pSelect->pWin==0
+   && p_വ്യഞ്ജകം->x.pSelect->pWin==0
 #endif
-   && (pExpr->x.pSelect->selFlags & SF_MinMaxAgg)==0
+   && (p_വ്യഞ്ജകം->x.pSelect->selFlags & SF_MinMaxAgg)==0
    && pWC->op==TK_AND
-   && pExpr->x.pSelect->pEList->nExpr <= UMXV(pTerm->nChild)
+   && p_വ്യഞ്ജകം->x.pSelect->pEList->n_വ്യഞ്ജകം <= UMXV(pTerm->nChild)
    /* ^-- See bug 2026-06-04T10:00:49Z */
   ){
-    int i;
-    assert( pTerm->nChild==0 );
-    for(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
-      int idxNew;
-      idxNew = whereClauseInsert(pWC, pExpr, TERM_VIRTUAL|TERM_SLICE);
+    പൂർണ്ണസംഖ്യ i;
+    പ്രതിജ്ഞാ( pTerm->nChild==0 );
+    വേണ്ടി(i=0; i<sqlite3_വ്യഞ്ജകം_Vector_Size(p_വ്യഞ്ജകം->p_ഇടത്); i++){
+      പൂർണ്ണസംഖ്യ idxNew;
+      idxNew = where_Clause_തിരുകുക(pWC, p_വ്യഞ്ജകം, TERM_VIRTUAL|TERM_SLICE);
       pWC->a[idxNew].u.x.iField = i+1;
-      exprAnalyze(pSrc, pWC, idxNew);
+      വ്യഞ്ജകം_Analyze(pSrc, pWC, idxNew);
       markTermAsChild(pWC, idxNew, idxTerm);
     }
   }
@@ -1566,30 +1566,30 @@ exprAnalyze_restart:
   ** virtual tables.  The native query optimizer does not attempt
   ** to do anything with MATCH functions.
   */
-  else if( pWC->op==TK_AND ){
-    Expr *pRight = 0, *pLeft = 0;
-    int res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
-    while( res-- > 0 ){
-      int idxNew;
+  അല്ലെങ്കിൽ എങ്കിൽ( pWC->op==TK_AND ){
+    വ്യഞ്ജകം *p_വലത് = 0, *p_ഇടത് = 0;
+    പൂർണ്ണസംഖ്യ res = isAuxiliaryVtabOperator(db, p_വ്യഞ്ജകം, &eOp2, &p_ഇടത്, &p_വലത്);
+    ആകുമ്പോൾ( res-- > 0 ){
+      പൂർണ്ണസംഖ്യ idxNew;
       WhereTerm *pNewTerm;
-      Bitmask prereqColumn, prereqExpr;
+      Bitmask prereqColumn, prereq_വ്യഞ്ജകം;
 
-      prereqExpr = sqlite3WhereExprUsage(pMaskSet, pRight);
-      prereqColumn = sqlite3WhereExprUsage(pMaskSet, pLeft);
-      if( (prereqExpr & prereqColumn)==0 ){
-        Expr *pNewExpr;
-        pNewExpr = sqlite3PExpr(pParse, TK_MATCH,
-            0, sqlite3ExprDup(db, pRight, 0));
-        if( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
-          ExprSetProperty(pNewExpr, EP_OuterON);
-          pNewExpr->w.iJoin = pExpr->w.iJoin;
+      prereq_വ്യഞ്ജകം = sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, p_വലത്);
+      prereqColumn = sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, p_ഇടത്);
+      എങ്കിൽ( (prereq_വ്യഞ്ജകം & prereqColumn)==0 ){
+        വ്യഞ്ജകം *p_New_വ്യഞ്ജകം;
+        p_New_വ്യഞ്ജകം = sqlite3PExpr(pParse, TK_MATCH,
+            0, sqlite3_വ്യഞ്ജകം_Dup(db, p_വലത്, 0));
+        എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p_വ്യഞ്ജകം, EP_OuterON) && p_New_വ്യഞ്ജകം ){
+          വ്യഞ്ജകം_Set_Property(p_New_വ്യഞ്ജകം, EP_OuterON);
+          p_New_വ്യഞ്ജകം->w.iJoin = p_വ്യഞ്ജകം->w.iJoin;
         }
-        idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_തിരുകുക(pWC, p_New_വ്യഞ്ജകം, TERM_VIRTUAL|TERM_DYNAMIC);
         testcase( idxNew==0 );
         pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = prereqExpr | extraRight;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
+        pNewTerm->prereq_വലത് = prereq_വ്യഞ്ജകം | extra_വലത്;
+        pNewTerm->ഇടത്_Cursor = p_ഇടത്->iTable;
+        pNewTerm->u.x.ഇടത്_Column = p_ഇടത്->iColumn;
         pNewTerm->eOperator = WO_AUX;
         pNewTerm->eMatchOp = eOp2;
         markTermAsChild(pWC, idxNew, idxTerm);
@@ -1597,7 +1597,7 @@ exprAnalyze_restart:
         pTerm->wtFlags |= TERM_COPIED;
         pNewTerm->prereqAll = pTerm->prereqAll;
       }
-      SWAP(Expr*, pLeft, pRight);
+      SWAP(വ്യഞ്ജകം*, p_ഇടത്, p_വലത്);
     }
   }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
@@ -1607,7 +1607,7 @@ exprAnalyze_restart:
   */
   testcase( pTerm!=&pWC->a[idxTerm] );
   pTerm = &pWC->a[idxTerm];
-  pTerm->prereqRight |= extraRight;
+  pTerm->prereq_വലത് |= extra_വലത്;
 }
 
 /***************************************************************************
@@ -1632,16 +1632,16 @@ exprAnalyze_restart:
 ** the WhereClause.a[] array.  The slot[] array grows as needed to contain
 ** all terms of the WHERE clause.
 */
-void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
-  Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
+ശൂന്യം sqlite3WhereSplit(WhereClause *pWC, വ്യഞ്ജകം *p_വ്യഞ്ജകം, u8 op){
+  വ്യഞ്ജകം *pE2 = sqlite3_വ്യഞ്ജകം_Skip_Collate_And_Likely(p_വ്യഞ്ജകം);
   pWC->op = op;
-  assert( pE2!=0 || pExpr==0 );
-  if( pE2==0 ) return;
-  if( pE2->op!=op ){
-    whereClauseInsert(pWC, pExpr, 0);
-  }else{
-    sqlite3WhereSplit(pWC, pE2->pLeft, op);
-    sqlite3WhereSplit(pWC, pE2->pRight, op);
+  പ്രതിജ്ഞാ( pE2!=0 || p_വ്യഞ്ജകം==0 );
+  എങ്കിൽ( pE2==0 ) തിരികെ;
+  എങ്കിൽ( pE2->op!=op ){
+    where_Clause_തിരുകുക(pWC, p_വ്യഞ്ജകം, 0);
+  }അല്ലെങ്കിൽ{
+    sqlite3WhereSplit(pWC, pE2->p_ഇടത്, op);
+    sqlite3WhereSplit(pWC, pE2->p_വലത്, op);
   }
 }
 
@@ -1656,34 +1656,34 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 ** TK_INTEGER so that it will be available to sqlite3_vtab_rhs_value().
 ** If not, then it codes as a TK_REGISTER expression.
 */
-static void whereAddLimitExpr(
+സ്ഥിതം ശൂന്യം where_Add_Limit_വ്യഞ്ജകം(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
-  int iReg,           /* Register that will hold value of the limit/offset */
-  Expr *pExpr,        /* Expression that defines the limit/offset */
-  int iCsr,           /* Cursor to which the constraint applies */
-  int eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
+  പൂർണ്ണസംഖ്യ iReg,           /* Register that will hold value of the limit/offset */
+  വ്യഞ്ജകം *p_വ്യഞ്ജകം,        /* Expression that defines the limit/offset */
+  പൂർണ്ണസംഖ്യ iCsr,           /* Cursor to which the constraint applies */
+  പൂർണ്ണസംഖ്യ eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
 ){
   Parse *pParse = pWC->pWInfo->pParse;
   sqlite3 *db = pParse->db;
-  Expr *pNew;
-  int iVal = 0;
+  വ്യഞ്ജകം *pNew;
+  പൂർണ്ണസംഖ്യ iVal = 0;
 
-  if( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
-    Expr *pVal = sqlite3ExprInt32(db, iVal);
-    if( pVal==0 ) return;
+  എങ്കിൽ( sqlite3_വ്യഞ്ജകം_Is_Integer(p_വ്യഞ്ജകം, &iVal, pParse, 0) && iVal>=0 ){
+    വ്യഞ്ജകം *pVal = sqlite3_വ്യഞ്ജകം_Int32(db, iVal);
+    എങ്കിൽ( pVal==0 ) തിരികെ;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
-  }else{
-    Expr *pVal = sqlite3ExprAlloc(db, TK_REGISTER, 0, 0);
-    if( pVal==0 ) return;
+  }അല്ലെങ്കിൽ{
+    വ്യഞ്ജകം *pVal = sqlite3_വ്യഞ്ജകം_Alloc(db, TK_REGISTER, 0, 0);
+    എങ്കിൽ( pVal==0 ) തിരികെ;
     pVal->iTable = iReg;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
   }
-  if( pNew ){
+  എങ്കിൽ( pNew ){
     WhereTerm *pTerm;
-    int idx;
-    idx = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
+    പൂർണ്ണസംഖ്യ idx;
+    idx = where_Clause_തിരുകുക(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
     pTerm = &pWC->a[idx];
-    pTerm->leftCursor = iCsr;
+    pTerm->ഇടത്_Cursor = iCsr;
     pTerm->eOperator = WO_AUX;
     pTerm->eMatchOp = eMatchOp;
   }
@@ -1707,68 +1707,68 @@ static void whereAddLimitExpr(
 ** exist only so that they may be passed to the xBestIndex method of the
 ** single virtual table in the FROM clause of the SELECT.
 */
-void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
-  assert( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
-  if( p->pGroupBy==0
+ശൂന്യം SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
+  പ്രതിജ്ഞാ( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
+  എങ്കിൽ( p->pGroupBy==0
    && (p->selFlags & (SF_Distinct|SF_Aggregate))==0             /* 2 */
    && (p->pSrc->nSrc==1 && IsVirtual(p->pSrc->a[0].pSTab))      /* 3 */
   ){
-    ExprList *pOrderBy = p->pOrderBy;
-    int iCsr = p->pSrc->a[0].iCursor;
-    int ii;
+    വ്യഞ്ജകം_List *pOrderBy = p->pOrderBy;
+    പൂർണ്ണസംഖ്യ iCsr = p->pSrc->a[0].iCursor;
+    പൂർണ്ണസംഖ്യ ii;
 
     /* Check condition (4). Return early if it is not met. */
-    for(ii=0; ii<pWC->nTerm; ii++){
-      if( pWC->a[ii].wtFlags & TERM_CODED ){
+    വേണ്ടി(ii=0; ii<pWC->nTerm; ii++){
+      എങ്കിൽ( pWC->a[ii].wtFlags & TERM_CODED ){
         /* This term is a vector operation that has been decomposed into
         ** other, subsequent terms.  It can be ignored. See tag-20220128a */
-        assert( pWC->a[ii].wtFlags & TERM_VIRTUAL );
-        assert( pWC->a[ii].eOperator==WO_ROWVAL );
-        continue;
+        പ്രതിജ്ഞാ( pWC->a[ii].wtFlags & TERM_VIRTUAL );
+        പ്രതിജ്ഞാ( pWC->a[ii].eOperator==WO_ROWVAL );
+        തുടരുക;
       }
-      if( pWC->a[ii].nChild ){
+      എങ്കിൽ( pWC->a[ii].nChild ){
         /* If this term has child terms, then they are also part of the
         ** pWC->a[] array. So this term can be ignored, as a LIMIT clause
         ** will only be added if each of the child terms passes the
         ** (leftCursor==iCsr) test below.  */
-        continue;
+        തുടരുക;
       }
-      if( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
+      എങ്കിൽ( pWC->a[ii].ഇടത്_Cursor==iCsr && pWC->a[ii].prereq_വലത്==0 ) തുടരുക;
 
       /* If this term has a parent with exactly one child, and the parent will
       ** be passed through to xBestIndex, then this term can be ignored.  */
-      if( pWC->a[ii].iParent>=0 ){
+      എങ്കിൽ( pWC->a[ii].iParent>=0 ){
         WhereTerm *pParent = &pWC->a[ pWC->a[ii].iParent ];
-        if( pParent->leftCursor==iCsr
-         && pParent->prereqRight==0
+        എങ്കിൽ( pParent->ഇടത്_Cursor==iCsr
+         && pParent->prereq_വലത്==0
          && pParent->nChild==1
         ){
-          continue;
+          തുടരുക;
         }
       }
 
       /* This term will not be passed through. Do not add a LIMIT clause. */
-      return;
+      തിരികെ;
     }
 
     /* Check condition (5). Return early if it is not met. */
-    if( pOrderBy ){
-      for(ii=0; ii<pOrderBy->nExpr; ii++){
-        Expr *pExpr = pOrderBy->a[ii].pExpr;
-        if( pExpr->op!=TK_COLUMN ) return;
-        if( pExpr->iTable!=iCsr ) return;
-        if( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) return;
+    എങ്കിൽ( pOrderBy ){
+      വേണ്ടി(ii=0; ii<pOrderBy->n_വ്യഞ്ജകം; ii++){
+        വ്യഞ്ജകം *p_വ്യഞ്ജകം = pOrderBy->a[ii].p_വ്യഞ്ജകം;
+        എങ്കിൽ( p_വ്യഞ്ജകം->op!=TK_COLUMN ) തിരികെ;
+        എങ്കിൽ( p_വ്യഞ്ജകം->iTable!=iCsr ) തിരികെ;
+        എങ്കിൽ( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) തിരികെ;
       }
     }
 
     /* All conditions are met. Add the terms to the where-clause object. */
-    assert( p->pLimit->op==TK_LIMIT );
-    if( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iOffset, p->pLimit->pRight,
+    പ്രതിജ്ഞാ( p->pLimit->op==TK_LIMIT );
+    എങ്കിൽ( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
+      where_Add_Limit_വ്യഞ്ജകം(pWC, p->iOffset, p->pLimit->p_വലത്,
                         iCsr, SQLITE_INDEX_CONSTRAINT_OFFSET);
     }
-    if( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iLimit, p->pLimit->pLeft,
+    എങ്കിൽ( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
+      where_Add_Limit_വ്യഞ്ജകം(pWC, p->iLimit, p->pLimit->p_ഇടത്,
                         iCsr, SQLITE_INDEX_CONSTRAINT_LIMIT);
     }
   }
@@ -1777,7 +1777,7 @@ void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
 /*
 ** Initialize a preallocated WhereClause structure.
 */
-void sqlite3WhereClauseInit(
+ശൂന്യം sqlite3WhereClauseInit(
   WhereClause *pWC,        /* The WhereClause to be initialized */
   WhereInfo *pWInfo        /* The WHERE processing context */
 ){
@@ -1795,34 +1795,34 @@ void sqlite3WhereClauseInit(
 ** itself is not freed.  This routine is the inverse of
 ** sqlite3WhereClauseInit().
 */
-void sqlite3WhereClauseClear(WhereClause *pWC){
+ശൂന്യം sqlite3WhereClauseClear(WhereClause *pWC){
   sqlite3 *db = pWC->pWInfo->pParse->db;
-  assert( pWC->nTerm>=pWC->nBase );
-  if( pWC->nTerm>0 ){
+  പ്രതിജ്ഞാ( pWC->nTerm>=pWC->nBase );
+  എങ്കിൽ( pWC->nTerm>0 ){
     WhereTerm *a = pWC->a;
     WhereTerm *aLast = &pWC->a[pWC->nTerm-1];
 #ifdef SQLITE_DEBUG
-    int i;
+    പൂർണ്ണസംഖ്യ i;
     /* Verify that every term past pWC->nBase is virtual */
-    for(i=pWC->nBase; i<pWC->nTerm; i++){
-      assert( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
+    വേണ്ടി(i=pWC->nBase; i<pWC->nTerm; i++){
+      പ്രതിജ്ഞാ( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
     }
 #endif
-    while(1){
-      assert( a->eMatchOp==0 || a->eOperator==WO_AUX );
-      if( a->wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, a->pExpr);
+    ആകുമ്പോൾ(1){
+      പ്രതിജ്ഞാ( a->eMatchOp==0 || a->eOperator==WO_AUX );
+      എങ്കിൽ( a->wtFlags & TERM_DYNAMIC ){
+        sqlite3_വ്യഞ്ജകം_Delete(db, a->p_വ്യഞ്ജകം);
       }
-      if( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
-        if( a->wtFlags & TERM_ORINFO ){
-          assert( (a->wtFlags & TERM_ANDINFO)==0 );
+      എങ്കിൽ( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
+        എങ്കിൽ( a->wtFlags & TERM_ORINFO ){
+          പ്രതിജ്ഞാ( (a->wtFlags & TERM_ANDINFO)==0 );
           whereOrInfoDelete(db, a->u.pOrInfo);
-        }else{
-          assert( (a->wtFlags & TERM_ANDINFO)!=0 );
+        }അല്ലെങ്കിൽ{
+          പ്രതിജ്ഞാ( (a->wtFlags & TERM_ANDINFO)!=0 );
           whereAndInfoDelete(db, a->u.pAndInfo);
         }
       }
-      if( a==aLast ) break;
+      എങ്കിൽ( a==aLast ) നിർത്തുക;
       a++;
     }
   }
@@ -1860,53 +1860,53 @@ void sqlite3WhereClauseClear(WhereClause *pWC){
 **       "no-inline" function to avoid the stack push overhead in the
 **       common case where it is not needed.
 */
-static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
+സ്ഥിതം SQLITE_NOINLINE Bitmask sqlite3_Where_വ്യഞ്ജകം_Usage_Full(
   WhereMaskSet *pMaskSet,
-  Expr *p
+  വ്യഞ്ജകം *p
 ){
   Bitmask mask;
   mask = (p->op==TK_IF_NULL_ROW) ? sqlite3WhereGetMask(pMaskSet, p->iTable) : 0;
-  if( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
-  if( p->pRight ){
-    mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pRight);
-    assert( p->x.pList==0 );
-  }else if( ExprUseXSelect(p) ){
-    if( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
-    mask |= exprSelectUsage(pMaskSet, p->x.pSelect);
-  }else if( p->x.pList ){
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->x.pList);
+  എങ്കിൽ( p->p_ഇടത് ) mask |= sqlite3_Where_വ്യഞ്ജകം_Usage_NN(pMaskSet, p->p_ഇടത്);
+  എങ്കിൽ( p->p_വലത് ){
+    mask |= sqlite3_Where_വ്യഞ്ജകം_Usage_NN(pMaskSet, p->p_വലത്);
+    പ്രതിജ്ഞാ( p->x.pList==0 );
+  }അല്ലെങ്കിൽ എങ്കിൽ( വ്യഞ്ജകം_Use_XSelect(p) ){
+    എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
+    mask |= വ്യഞ്ജകം_Select_Usage(pMaskSet, p->x.pSelect);
+  }അല്ലെങ്കിൽ എങ്കിൽ( p->x.pList ){
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, p->x.pList);
   }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
-    assert( p->y.pWin!=0 );
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pPartition);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, p->y.pWin->pFilter);
+  എങ്കിൽ( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && വ്യഞ്ജകം_Use_YWin(p) ){
+    പ്രതിജ്ഞാ( p->y.pWin!=0 );
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, p->y.pWin->pPartition);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_List_Usage(pMaskSet, p->y.pWin->pOrderBy);
+    mask |= sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, p->y.pWin->pFilter);
   }
 #endif
-  return mask;
+  തിരികെ mask;
 }
-Bitmask sqlite3WhereExprUsageNN(WhereMaskSet *pMaskSet, Expr *p){
-  if( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return sqlite3WhereGetMask(pMaskSet, p->iTable);
-  }else if( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
-    assert( p->op!=TK_IF_NULL_ROW );
-    return 0;
+Bitmask sqlite3_Where_വ്യഞ്ജകം_Usage_NN(WhereMaskSet *pMaskSet, വ്യഞ്ജകം *p){
+  എങ്കിൽ( p->op==TK_COLUMN && !വ്യഞ്ജകം_Has_Property(p, EP_FixedCol) ){
+    തിരികെ sqlite3WhereGetMask(pMaskSet, p->iTable);
+  }അല്ലെങ്കിൽ എങ്കിൽ( വ്യഞ്ജകം_Has_Property(p, EP_TokenOnly|EP_Leaf) ){
+    പ്രതിജ്ഞാ( p->op!=TK_IF_NULL_ROW );
+    തിരികെ 0;
   }
-  return sqlite3WhereExprUsageFull(pMaskSet, p);
+  തിരികെ sqlite3_Where_വ്യഞ്ജകം_Usage_Full(pMaskSet, p);
 }
-Bitmask sqlite3WhereExprUsage(WhereMaskSet *pMaskSet, Expr *p){
-  return p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
+Bitmask sqlite3_Where_വ്യഞ്ജകം_Usage(WhereMaskSet *pMaskSet, വ്യഞ്ജകം *p){
+  തിരികെ p ? sqlite3_Where_വ്യഞ്ജകം_Usage_NN(pMaskSet,p) : 0;
 }
-Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
-  int i;
+Bitmask sqlite3_Where_വ്യഞ്ജകം_List_Usage(WhereMaskSet *pMaskSet, വ്യഞ്ജകം_List *pList){
+  പൂർണ്ണസംഖ്യ i;
   Bitmask mask = 0;
-  if( pList ){
-    for(i=0; i<pList->nExpr; i++){
-      mask |= sqlite3WhereExprUsage(pMaskSet, pList->a[i].pExpr);
+  എങ്കിൽ( pList ){
+    വേണ്ടി(i=0; i<pList->n_വ്യഞ്ജകം; i++){
+      mask |= sqlite3_Where_വ്യഞ്ജകം_Usage(pMaskSet, pList->a[i].p_വ്യഞ്ജകം);
     }
   }
-  return mask;
+  തിരികെ mask;
 }
 
 
@@ -1918,13 +1918,13 @@ Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
 ** virtual terms, so start analyzing at the end and work forward
 ** so that the added virtual terms are never processed.
 */
-void sqlite3WhereExprAnalyze(
+ശൂന്യം sqlite3_Where_വ്യഞ്ജകം_Analyze(
   SrcList *pTabList,       /* the FROM clause */
   WhereClause *pWC         /* the WHERE clause to be analyzed */
 ){
-  int i;
-  for(i=pWC->nTerm-1; i>=0; i--){
-    exprAnalyze(pTabList, pWC, i);
+  പൂർണ്ണസംഖ്യ i;
+  വേണ്ടി(i=pWC->nTerm-1; i>=0; i--){
+    വ്യഞ്ജകം_Analyze(pTabList, pWC, i);
   }
 }
 
@@ -1935,54 +1935,54 @@ void sqlite3WhereExprAnalyze(
 ** Each function argument translates into an equality constraint against
 ** a HIDDEN column in the table.
 */
-void sqlite3WhereTabFuncArgs(
+ശൂന്യം sqlite3WhereTabFuncArgs(
   Parse *pParse,                    /* Parsing context */
   SrcItem *pItem,                   /* The FROM clause term to process */
   WhereClause *pWC                  /* Xfer function arguments to here */
 ){
   Table *pTab;
-  int j, k;
-  ExprList *pArgs;
-  Expr *pColRef;
-  Expr *pTerm;
-  if( pItem->fg.isTabFunc==0 ) return;
+  പൂർണ്ണസംഖ്യ j, k;
+  വ്യഞ്ജകം_List *pArgs;
+  വ്യഞ്ജകം *pColRef;
+  വ്യഞ്ജകം *pTerm;
+  എങ്കിൽ( pItem->fg.isTabFunc==0 ) തിരികെ;
   pTab = pItem->pSTab;
-  assert( pTab!=0 );
-  if( !IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pItem->zName);
-    return;
+  പ്രതിജ്ഞാ( pTab!=0 );
+  എങ്കിൽ( !IsVirtual(pTab) ){
+    sqlite3_Error_സന്ദേശം(pParse, "'%s' is not a function", pItem->zName);
+    തിരികെ;
   }
   pArgs = pItem->u1.pFuncArg;
-  if( pArgs==0 ) return;
-  for(j=k=0; j<pArgs->nExpr; j++){
-    Expr *pRhs;
+  എങ്കിൽ( pArgs==0 ) തിരികെ;
+  വേണ്ടി(j=k=0; j<pArgs->n_വ്യഞ്ജകം; j++){
+    വ്യഞ്ജകം *pRhs;
     u32 joinType;
-    while( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
-    if( k>=pTab->nCol ){
-      sqlite3ErrorMsg(pParse, "too many arguments on %s() - max %d",
+    ആകുമ്പോൾ( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
+    എങ്കിൽ( k>=pTab->nCol ){
+      sqlite3_Error_സന്ദേശം(pParse, "too many arguments on %s() - max %d",
                       pTab->zName, j);
-      return;
+      തിരികെ;
     }
-    pColRef = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-    if( pColRef==0 ) return;
+    pColRef = sqlite3_വ്യഞ്ജകം_Alloc(pParse->db, TK_COLUMN, 0, 0);
+    എങ്കിൽ( pColRef==0 ) തിരികെ;
     pColRef->iTable = pItem->iCursor;
     pColRef->iColumn = k++;
-    assert( ExprUseYTab(pColRef) );
+    പ്രതിജ്ഞാ( വ്യഞ്ജകം_Use_YTab(pColRef) );
     pColRef->y.pTab = pTab;
-    pItem->colUsed |= sqlite3ExprColUsed(pColRef);
+    pItem->colUsed |= sqlite3_വ്യഞ്ജകം_Col_Used(pColRef);
     pRhs = sqlite3PExpr(pParse, TK_UPLUS,
-        sqlite3ExprDup(pParse->db, pArgs->a[j].pExpr, 0), 0);
+        sqlite3_വ്യഞ്ജകം_Dup(pParse->db, pArgs->a[j].p_വ്യഞ്ജകം, 0), 0);
     pTerm = sqlite3PExpr(pParse, TK_EQ, pColRef, pRhs);
-    if( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
-      testcase( pItem->fg.jointype & JT_LEFT );  /* testtag-20230227a */
-      testcase( pItem->fg.jointype & JT_RIGHT ); /* testtag-20230227b */
+    എങ്കിൽ( pItem->fg.jointype & (JT_ഇടത്|JT_വലത്) ){
+      testcase( pItem->fg.jointype & JT_ഇടത് );  /* testtag-20230227a */
+      testcase( pItem->fg.jointype & JT_വലത് ); /* testtag-20230227b */
       joinType = EP_OuterON;
-    }else{
+    }അല്ലെങ്കിൽ{
       testcase( pItem->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
       joinType = EP_InnerON;
     }
-    sqlite3SetJoinExpr(pTerm, pItem->iCursor, joinType);
-    whereClauseInsert(pWC, pTerm, TERM_DYNAMIC);
+    sqlite3_Set_Join_വ്യഞ്ജകം(pTerm, pItem->iCursor, joinType);
+    where_Clause_തിരുകുക(pWC, pTerm, TERM_DYNAMIC);
   }
 }
 
@@ -1990,8 +1990,8 @@ void sqlite3WhereTabFuncArgs(
 ** Return true if the WhereLoop pLoop can be use a Bloom filter.
 ** tag-202607231411
 */
-int sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
-  if( pLoop->wsFlags & WHERE_IPK ) return 1;
-  if( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) return 0;
-  return sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
+പൂർണ്ണസംഖ്യ sqlite3WhereLoopBloomable(സ്ഥിരം WhereLoop *pLoop){
+  എങ്കിൽ( pLoop->wsFlags & WHERE_IPK ) തിരികെ 1;
+  എങ്കിൽ( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) തിരികെ 0;
+  തിരികെ sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
 }
