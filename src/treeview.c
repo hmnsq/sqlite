@@ -17,34 +17,34 @@
 ** The interfaces in this file is only available when compiling
 ** with SQLITE_DEBUG.
 */
-#include "sqliteInt.h"
-#ifdef SQLITE_DEBUG
+#अन्तर्भाव "sqliteInt.h"
+#यदि_परिभाषितम् SQLITE_DEBUG
 
 /*
 ** Add a new subitem to the tree.  The moreToFollow flag indicates that this
 ** is not the last item in the tree.
 */
-static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
-  TreeView *p = *pp;
-  if( p==0 ){
-    *pp = p = sqlite3_malloc64( sizeof(*p) );
-    if( p==0 ) return;
-    memset(p, 0, sizeof(*p));
-  }else{
+स्थिर शून्य sqlite3_वृक्षः_View_प्रक्षिप(वृक्षः_View **pp, u8 अधिकम्_गन्तव्यम्_Follow){
+  वृक्षः_View *p = *pp;
+  यदि( p==0 ){
+    *pp = p = sqlite3_malloc64( परिमाण(*p) );
+    यदि( p==0 ) प्रत्यागम;
+    स्मृतिं_पूरय(p, 0, परिमाण(*p));
+  }अन्यथा{
     p->iLevel++;
   }
-  assert( moreToFollow==0 || moreToFollow==1 );
-  if( p->iLevel<(int)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
+  प्रतिज्ञा( अधिकम्_गन्तव्यम्_Follow==0 || अधिकम्_गन्तव्यम्_Follow==1 );
+  यदि( p->iLevel<(पूर्णाङ्क)परिमाण(p->b_पङ्क्तिः) ) p->b_पङ्क्तिः[p->iLevel] = अधिकम्_गन्तव्यम्_Follow;
 }
 
 /*
 ** Finished with one layer of the tree
 */
-static void sqlite3TreeViewPop(TreeView **pp){
-  TreeView *p = *pp;
-  if( p==0 ) return;
+स्थिर शून्य sqlite3_वृक्षः_View_निष्कासय(वृक्षः_View **pp){
+  वृक्षः_View *p = *pp;
+  यदि( p==0 ) प्रत्यागम;
   p->iLevel--;
-  if( p->iLevel<0 ){
+  यदि( p->iLevel<0 ){
     sqlite3_free(p);
     *pp = 0;
   }
@@ -54,23 +54,23 @@ static void sqlite3TreeViewPop(TreeView **pp){
 ** Generate a single line of output for the tree, with a prefix that contains
 ** all the appropriate tree lines
 */
-void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
+शून्य sqlite3_वृक्षः_View_पङ्क्तिः(वृक्षः_View *p, ध्रुव वर्ण *zFormat, ...){
   va_list ap;
-  int i;
+  पूर्णाङ्क i;
   StrAccum acc;
-  char zBuf[1000];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  if( p ){
-    for(i=0; i<p->iLevel && i<(int)sizeof(p->bLine)-1; i++){
-      sqlite3_str_append(&acc, p->bLine[i] ? "|   " : "    ", 4);
+  वर्ण zBuf[1000];
+  sqlite3StrAccumInit(&acc, 0, zBuf, परिमाण(zBuf), 0);
+  यदि( p ){
+    प्रति(i=0; i<p->iLevel && i<(पूर्णाङ्क)परिमाण(p->b_पङ्क्तिः)-1; i++){
+      sqlite3_str_append(&acc, p->b_पङ्क्तिः[i] ? "|   " : "    ", 4);
     }
-    sqlite3_str_append(&acc, p->bLine[i] ? "|-- " : "'-- ", 4);
+    sqlite3_str_append(&acc, p->b_पङ्क्तिः[i] ? "|-- " : "'-- ", 4);
   }
-  if( zFormat!=0 ){
+  यदि( zFormat!=0 ){
     va_start(ap, zFormat);
     sqlite3_str_vappendf(&acc, zFormat, ap);
     va_end(ap);
-    assert( acc.nChar>0 || acc.accError );
+    प्रतिज्ञा( acc.nChar>0 || acc.accError );
     sqlite3_str_append(&acc, "\n", 1);
   }
   sqlite3StrAccumFinish(&acc);
@@ -81,704 +81,704 @@ void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
 /*
 ** Shorthand for starting a new tree item that consists of a single label
 */
-static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
-  sqlite3TreeViewPush(&p, moreFollows);
-  sqlite3TreeViewLine(p, "%s", zLabel);
+स्थिर शून्य sqlite3_वृक्षः_View_Item(वृक्षः_View *p, ध्रुव वर्ण *zLabel,u8 अधिकम्_Follows){
+  sqlite3_वृक्षः_View_प्रक्षिप(&p, अधिकम्_Follows);
+  sqlite3_वृक्षः_View_पङ्क्तिः(p, "%s", zLabel);
 }
 
 /*
 ** Show a list of Column objects in tree format.
 */
-void sqlite3TreeViewColumnList(
-  TreeView *pView,
-  const Column *aCol,
-  int nCol,
-  u8 moreToFollow
+शून्य sqlite3_वृक्षः_View_Column_List(
+  वृक्षः_View *pView,
+  ध्रुव Column *aCol,
+  पूर्णाङ्क nCol,
+  u8 अधिकम्_गन्तव्यम्_Follow
 ){
-  int i;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewLine(pView, "COLUMNS");
-  for(i=0; i<nCol; i++){
+  पूर्णाङ्क i;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, "COLUMNS");
+  प्रति(i=0; i<nCol; i++){
     u16 flg = aCol[i].colFlags;
-    int colMoreToFollow = i<(nCol - 1);
-    sqlite3TreeViewPush(&pView, colMoreToFollow);
-    sqlite3TreeViewLine(pView, 0);
-    printf(" %s", aCol[i].zCnName);
-    switch( aCol[i].eCType ){
-      case COLTYPE_ANY:      printf(" ANY");        break;
-      case COLTYPE_BLOB:     printf(" BLOB");       break;
-      case COLTYPE_INT:      printf(" INT");        break;
-      case COLTYPE_INTEGER:  printf(" INTEGER");    break;
-      case COLTYPE_REAL:     printf(" REAL");       break;
-      case COLTYPE_TEXT:     printf(" TEXT");       break;
-      case COLTYPE_CUSTOM: {
-        if( flg & COLFLAG_HASTYPE ){
-          const char *z = aCol[i].zCnName;
-          z += strlen(z)+1;
-          printf(" X-%s", z);
-          break;
+    पूर्णाङ्क col_अधिकम्_गन्तव्यम्_Follow = i<(nCol - 1);
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, col_अधिकम्_गन्तव्यम्_Follow);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, 0);
+    प्रारूप_लिख(" %s", aCol[i].zCnName);
+    विकल्प( aCol[i].eCType ){
+      पक्ष COLTYPE_ANY:      प्रारूप_लिख(" ANY");        भङ्ग;
+      पक्ष COLTYPE_BLOB:     प्रारूप_लिख(" BLOB");       भङ्ग;
+      पक्ष COLTYPE_INT:      प्रारूप_लिख(" INT");        भङ्ग;
+      पक्ष COLTYPE_INTEGER:  प्रारूप_लिख(" INTEGER");    भङ्ग;
+      पक्ष COLTYPE_REAL:     प्रारूप_लिख(" REAL");       भङ्ग;
+      पक्ष COLTYPE_TEXT:     प्रारूप_लिख(" TEXT");       भङ्ग;
+      पक्ष COLTYPE_CUSTOM: {
+        यदि( flg & COLFLAG_HASTYPE ){
+          ध्रुव वर्ण *z = aCol[i].zCnName;
+          z += वाक्यदैर्घ्यम्(z)+1;
+          प्रारूप_लिख(" X-%s", z);
+          भङ्ग;
         }
       }
     }
-    if( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
-    if( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
-#ifdef COLFLAG_NOEXPAND
-    if( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
-#endif
-    if( flg ) printf(" flags=%04x", flg);
-    printf("\n");      
+    यदि( flg & COLFLAG_PRIMKEY ) प्रारूप_लिख(" PRIMARY KEY");
+    यदि( flg & COLFLAG_HIDDEN ) प्रारूप_लिख(" HIDDEN");
+#यदि_परिभाषितम् COLFLAG_NOEXPAND
+    यदि( flg & COLFLAG_NOEXPAND ) प्रारूप_लिख(" NO-EXPAND");
+#यदि_अन्तः
+    यदि( flg ) प्रारूप_लिख(" flags=%04x", flg);
+    प्रारूप_लिख("\n");      
     fflush(stdout);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
 /*
 ** Generate a human-readable description of a WITH clause.
 */
-void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
-  int i;
-  if( pWith==0 ) return;
-  if( pWith->nCte==0 ) return;
-  if( pWith->pOuter ){
-    sqlite3TreeViewLine(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
-  }else{
-    sqlite3TreeViewLine(pView, "WITH (0x%p)", pWith);
+शून्य sqlite3_वृक्षः_View_With(वृक्षः_View *pView, ध्रुव With *pWith, u8 अधिकम्_गन्तव्यम्_Follow){
+  पूर्णाङ्क i;
+  यदि( pWith==0 ) प्रत्यागम;
+  यदि( pWith->nCte==0 ) प्रत्यागम;
+  यदि( pWith->pOuter ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
+  }अन्यथा{
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "WITH (0x%p)", pWith);
   }
-  if( pWith->nCte>0 ){
-    sqlite3TreeViewPush(&pView, moreToFollow);
-    for(i=0; i<pWith->nCte; i++){
+  यदि( pWith->nCte>0 ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+    प्रति(i=0; i<pWith->nCte; i++){
       StrAccum x;
-      char zLine[1000];
-      const struct Cte *pCte = &pWith->a[i];
-      sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+      वर्ण z_पङ्क्तिः[1000];
+      ध्रुव संरचना Cte *pCte = &pWith->a[i];
+      sqlite3StrAccumInit(&x, 0, z_पङ्क्तिः, परिमाण(z_पङ्क्तिः), 0);
       sqlite3_str_appendf(&x, "%s", pCte->zName);
-      if( pCte->pCols && pCte->pCols->nExpr>0 ){
-        char cSep = '(';
-        int j;
-        for(j=0; j<pCte->pCols->nExpr; j++){
-          sqlite3_str_appendf(&x, "%c%s", cSep, pCte->pCols->a[j].zEName);
+      यदि( pCte->p_स्तम्भसङ्ख्या && pCte->p_स्तम्भसङ्ख्या->n_व्यञ्जकम्>0 ){
+        वर्ण cSep = '(';
+        पूर्णाङ्क j;
+        प्रति(j=0; j<pCte->p_स्तम्भसङ्ख्या->n_व्यञ्जकम्; j++){
+          sqlite3_str_appendf(&x, "%c%s", cSep, pCte->p_स्तम्भसङ्ख्या->a[j].zEName);
           cSep = ',';
         }
         sqlite3_str_appendf(&x, ")");
       }
-      if( pCte->eM10d!=M10d_Any ){
+      यदि( pCte->eM10d!=M10d_Any ){
         sqlite3_str_appendf(&x, " %sMATERIALIZED", 
            pCte->eM10d==M10d_No ? "NOT " : "");
       }
-      if( pCte->pUse ){
+      यदि( pCte->pUse ){
         sqlite3_str_appendf(&x, " (pUse=0x%p, nUse=%d)", pCte->pUse,
                  pCte->pUse->nUse);
       }
       sqlite3StrAccumFinish(&x);
-      sqlite3TreeViewItem(pView, zLine, i<pWith->nCte-1);
-      sqlite3TreeViewSelect(pView, pCte->pSelect, 0);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_Item(pView, z_पङ्क्तिः, i<pWith->nCte-1);
+      sqlite3_वृक्षः_View_Select(pView, pCte->pSelect, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a SrcList object.
 */
-void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
-  int i;
-  if( pSrc==0 ) return;
-  for(i=0; i<pSrc->nSrc; i++){
-    const SrcItem *pItem = &pSrc->a[i];
+शून्य sqlite3_वृक्षः_View_Src_List(वृक्षः_View *pView, ध्रुव SrcList *pSrc){
+  पूर्णाङ्क i;
+  यदि( pSrc==0 ) प्रत्यागम;
+  प्रति(i=0; i<pSrc->nSrc; i++){
+    ध्रुव SrcItem *pItem = &pSrc->a[i];
     StrAccum x;
-    int n = 0;
-    char zLine[1000];
-    sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
-    x.printfFlags |= SQLITE_PRINTF_INTERNAL;
+    पूर्णाङ्क n = 0;
+    वर्ण z_पङ्क्तिः[1000];
+    sqlite3StrAccumInit(&x, 0, z_पङ्क्तिः, परिमाण(z_पङ्क्तिः), 0);
+    x.printfFlags |= SQLITE_PRINTF_आन्तरिकम्;
     sqlite3_str_appendf(&x, "{%d:*} %!S", pItem->iCursor, pItem);
-    if( pItem->pSTab ){
+    यदि( pItem->pSTab ){
       sqlite3_str_appendf(&x, " tab=%Q nCol=%d ptr=%p used=%llx%s",
            pItem->pSTab->zName, pItem->pSTab->nCol, pItem->pSTab, 
-           pItem->colUsed,
-           pItem->fg.rowidUsed ? "+rowid" : "");
+           pItem->col_प्रयुक्तम्,
+           pItem->fg.rowid_प्रयुक्तम् ? "+rowid" : "");
     }
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
+    यदि( (pItem->fg.jointype & (JT_वामः|JT_दक्षिणः))==(JT_वामः|JT_दक्षिणः) ){
       sqlite3_str_appendf(&x, " FULL-OUTER-JOIN");
-    }else if( pItem->fg.jointype & JT_LEFT ){
+    }अन्यथा यदि( pItem->fg.jointype & JT_वामः ){
       sqlite3_str_appendf(&x, " LEFT-JOIN");
-    }else if( pItem->fg.jointype & JT_RIGHT ){
+    }अन्यथा यदि( pItem->fg.jointype & JT_दक्षिणः ){
       sqlite3_str_appendf(&x, " RIGHT-JOIN");
-    }else if( pItem->fg.jointype & JT_CROSS ){
+    }अन्यथा यदि( pItem->fg.jointype & JT_CROSS ){
       sqlite3_str_appendf(&x, " CROSS-JOIN");
     }
-    if( pItem->fg.jointype & JT_LTORJ ){
+    यदि( pItem->fg.jointype & JT_LTORJ ){
       sqlite3_str_appendf(&x, " LTORJ");
     }
-    if( pItem->fg.fromDDL ){
+    यदि( pItem->fg.fromDDL ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( pItem->fg.isCte ){
-      static const char *aMat[] = {",MAT", "", ",NO-MAT"};
+    यदि( pItem->fg.isCte ){
+      स्थिर ध्रुव वर्ण *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);
     }
-    if( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
+    यदि( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
       sqlite3_str_appendf(&x, " isOn");
     }
-    if( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
-    if( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
-    if( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
-    if( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
-    if( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
-    if( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
-    if( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
-    if( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
-    if( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
+    यदि( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
+    यदि( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
+    यदि( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
+    यदि( pItem->fg.द्वारा_Coroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
+    यदि( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
+    यदि( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
+    यदि( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
+    यदि( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
+    यदि( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
 
     sqlite3StrAccumFinish(&x);
-    sqlite3TreeViewItem(pView, zLine, i<pSrc->nSrc-1);
+    sqlite3_वृक्षः_View_Item(pView, z_पङ्क्तिः, i<pSrc->nSrc-1);
     n = 0;
-    if( pItem->fg.isSubquery ) n++;
-    if( pItem->fg.isTabFunc ) n++;
-    if( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
-    if( pItem->fg.isUsing ){
-      sqlite3TreeViewIdList(pView, pItem->u3.pUsing, (--n)>0, "USING");
-    }else if( pItem->u3.pOn!=0 ){
-      sqlite3TreeViewItem(pView, "ON", (--n)>0);
-      sqlite3TreeViewExpr(pView, pItem->u3.pOn, 0);
-      sqlite3TreeViewPop(&pView);
+    यदि( pItem->fg.isSubquery ) n++;
+    यदि( pItem->fg.isTabFunc ) n++;
+    यदि( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
+    यदि( pItem->fg.isUsing ){
+      sqlite3_वृक्षः_View_Id_List(pView, pItem->u3.pUsing, (--n)>0, "USING");
+    }अन्यथा यदि( pItem->u3.pOn!=0 ){
+      sqlite3_वृक्षः_View_Item(pView, "ON", (--n)>0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pItem->u3.pOn, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    if( pItem->fg.isSubquery ){
-      assert( n==1 );
-      if( pItem->pSTab ){
-        Table *pTab = pItem->pSTab;
-        sqlite3TreeViewColumnList(pView, pTab->aCol, pTab->nCol, 1);
+    यदि( pItem->fg.isSubquery ){
+      प्रतिज्ञा( n==1 );
+      यदि( pItem->pSTab ){
+        सारणी *pTab = pItem->pSTab;
+        sqlite3_वृक्षः_View_Column_List(pView, pTab->aCol, pTab->nCol, 1);
       }
-      assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-      sqlite3TreeViewSelect(pView, pItem->u4.pSubq->pSelect, 0);
+      प्रतिज्ञा( (पूर्णाङ्क)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+      sqlite3_वृक्षः_View_Select(pView, pItem->u4.pSubq->pSelect, 0);
     }
-    if( pItem->fg.isTabFunc ){
-      sqlite3TreeViewExprList(pView, pItem->u1.pFuncArg, 0, "func-args:");
+    यदि( pItem->fg.isTabFunc ){
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pItem->u1.pFuncArg, 0, "func-args:");
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a Select object.
 */
-void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
-  int n = 0;
-  int cnt = 0;
-  if( p==0 ){
-    sqlite3TreeViewLine(pView, "nil-SELECT");
-    return;
+शून्य sqlite3_वृक्षः_View_Select(वृक्षः_View *pView, ध्रुव Select *p, u8 अधिकम्_गन्तव्यम्_Follow){
+  पूर्णाङ्क n = 0;
+  पूर्णाङ्क cnt = 0;
+  यदि( p==0 ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "nil-SELECT");
+    प्रत्यागम;
   } 
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( p->pWith ){
-    sqlite3TreeViewWith(pView, p->pWith, 1);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  यदि( p->pWith ){
+    sqlite3_वृक्षः_View_With(pView, p->pWith, 1);
     cnt = 1;
-    sqlite3TreeViewPush(&pView, 1);
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, 1);
   }
-  do{
-    if( p->selFlags & SF_WhereBegin ){
-      sqlite3TreeViewLine(pView, "sqlite3WhereBegin()");
-    }else{
-      sqlite3TreeViewLine(pView,
+  कुरु{
+    यदि( p->selFlags & SF_WhereBegin ){
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "sqlite3WhereBegin()");
+    }अन्यथा{
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,
         "SELECT%s%s (%u/%p) selFlags=0x%x nSelectRow=%d",
         ((p->selFlags & SF_Distinct) ? " DISTINCT" : ""),
         ((p->selFlags & SF_Aggregate) ? " agg_flag" : ""),
         p->selId, p, p->selFlags,
-        (int)p->nSelectRow
+        (पूर्णाङ्क)p->nSelectRow
       );
     }
-    if( cnt++ ) sqlite3TreeViewPop(&pView);
-    if( p->pPrior ){
+    यदि( cnt++ ) sqlite3_वृक्षः_View_निष्कासय(&pView);
+    यदि( p->p_प्राक् ){
       n = 1000;
-    }else{
+    }अन्यथा{
       n = 0;
-      if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
-      if( p->pWhere ) n++;
-      if( p->pGroupBy ) n++;
-      if( p->pHaving ) n++;
-      if( p->pOrderBy ) n++;
-      if( p->pLimit ) n++;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( p->pWin ) n++;
-      if( p->pWinDefn ) n++;
-#endif
+      यदि( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
+      यदि( p->pWhere ) n++;
+      यदि( p->p_गणः_By ) n++;
+      यदि( p->pHaving ) n++;
+      यदि( p->p_क्रमः_By ) n++;
+      यदि( p->p_सीमा ) n++;
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+      यदि( p->pWin ) n++;
+      यदि( p->pWinDefn ) n++;
+#यदि_अन्तः
     }
-    if( p->pEList ){
-      sqlite3TreeViewExprList(pView, p->pEList, n>0, "result-set");
+    यदि( p->pEList ){
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p->pEList, n>0, "result-set");
     }
     n--;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ){
-      Window *pX;
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "window-functions");
-      for(pX=p->pWin; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWinFunc(pView, pX, pX->pNextWin!=0);
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+    यदि( p->pWin ){
+      गवाक्षः *pX;
+      sqlite3_वृक्षः_View_प्रक्षिप(&pView, (n--)>0);
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "window-functions");
+      प्रति(pX=p->pWin; pX; pX=pX->p_अग्र_Win){
+        sqlite3_वृक्षः_View_Win_Func(pView, pX, pX->p_अग्र_Win!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-#endif
-    if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "FROM");
-      sqlite3TreeViewSrcList(pView, p->pSrc);
-      sqlite3TreeViewPop(&pView);
+#यदि_अन्तः
+    यदि( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
+      sqlite3_वृक्षः_View_प्रक्षिप(&pView, (n--)>0);
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "FROM");
+      sqlite3_वृक्षः_View_Src_List(pView, p->pSrc);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    if( p->pWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    यदि( p->pWhere ){
+      sqlite3_वृक्षः_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p->pWhere, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    if( p->pGroupBy ){
-      sqlite3TreeViewExprList(pView, p->pGroupBy, (n--)>0, "GROUPBY");
+    यदि( p->p_गणः_By ){
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p->p_गणः_By, (n--)>0, "GROUPBY");
     }
-    if( p->pHaving ){
-      sqlite3TreeViewItem(pView, "HAVING", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pHaving, 0);
-      sqlite3TreeViewPop(&pView);
+    यदि( p->pHaving ){
+      sqlite3_वृक्षः_View_Item(pView, "HAVING", (n--)>0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p->pHaving, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWinDefn ){
-      Window *pX;
-      sqlite3TreeViewItem(pView, "WINDOW", (n--)>0);
-      for(pX=p->pWinDefn; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWindow(pView, pX, pX->pNextWin!=0);
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+    यदि( p->pWinDefn ){
+      गवाक्षः *pX;
+      sqlite3_वृक्षः_View_Item(pView, "WINDOW", (n--)>0);
+      प्रति(pX=p->pWinDefn; pX; pX=pX->p_अग्र_Win){
+        sqlite3_वृक्षः_View_गवाक्षः(pView, pX, pX->p_अग्र_Win!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-#endif
-    if( p->pOrderBy ){
-      sqlite3TreeViewExprList(pView, p->pOrderBy, (n--)>0, "ORDERBY");
+#यदि_अन्तः
+    यदि( p->p_क्रमः_By ){
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p->p_क्रमः_By, (n--)>0, "ORDERBY");
     }
-    if( p->pLimit ){
-      sqlite3TreeViewItem(pView, "LIMIT", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pLimit->pLeft, p->pLimit->pRight!=0);
-      if( p->pLimit->pRight ){
-        sqlite3TreeViewItem(pView, "OFFSET", 0);
-        sqlite3TreeViewExpr(pView, p->pLimit->pRight, 0);
-        sqlite3TreeViewPop(&pView);
+    यदि( p->p_सीमा ){
+      sqlite3_वृक्षः_View_Item(pView, "LIMIT", (n--)>0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p->p_सीमा->p_वामः, p->p_सीमा->p_दक्षिणः!=0);
+      यदि( p->p_सीमा->p_दक्षिणः ){
+        sqlite3_वृक्षः_View_Item(pView, "OFFSET", 0);
+        sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p->p_सीमा->p_दक्षिणः, 0);
+        sqlite3_वृक्षः_View_निष्कासय(&pView);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    if( p->pPrior ){
-      const char *zOp = "UNION";
-      switch( p->op ){
-        case TK_ALL:         zOp = "UNION ALL";  break;
-        case TK_INTERSECT:   zOp = "INTERSECT";  break;
-        case TK_EXCEPT:      zOp = "EXCEPT";     break;
+    यदि( p->p_प्राक् ){
+      ध्रुव वर्ण *zOp = "UNION";
+      विकल्प( p->op ){
+        पक्ष TK_ALL:         zOp = "UNION ALL";  भङ्ग;
+        पक्ष TK_INTERSECT:   zOp = "INTERSECT";  भङ्ग;
+        पक्ष TK_EXCEPT:      zOp = "EXCEPT";     भङ्ग;
       }
-      sqlite3TreeViewItem(pView, zOp, 1);
+      sqlite3_वृक्षः_View_Item(pView, zOp, 1);
     }
-    p = p->pPrior;
-  }while( p!=0 );
-  sqlite3TreeViewPop(&pView);
+    p = p->p_प्राक्;
+  }यावत्( p!=0 );
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a description of starting or stopping bounds
 */
-void sqlite3TreeViewBound(
-  TreeView *pView,        /* View context */
+शून्य sqlite3_वृक्षः_View_Bound(
+  वृक्षः_View *pView,        /* View context */
   u8 eBound,              /* UNBOUNDED, CURRENT, PRECEDING, FOLLOWING */
-  Expr *pExpr,            /* Value for PRECEDING or FOLLOWING */
-  u8 moreToFollow         /* True if more to follow */
+  व्यञ्जकम् *p_व्यञ्जकम्,            /* Value for PRECEDING or FOLLOWING */
+  u8 अधिकम्_गन्तव्यम्_Follow         /* True if more to follow */
 ){
-  switch( eBound ){
-    case TK_UNBOUNDED: {
-      sqlite3TreeViewItem(pView, "UNBOUNDED", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+  विकल्प( eBound ){
+    पक्ष TK_UNBOUNDED: {
+      sqlite3_वृक्षः_View_Item(pView, "UNBOUNDED", अधिकम्_गन्तव्यम्_Follow);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      भङ्ग;
     }
-    case TK_CURRENT: {
-      sqlite3TreeViewItem(pView, "CURRENT", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+    पक्ष TK_CURRENT: {
+      sqlite3_वृक्षः_View_Item(pView, "CURRENT", अधिकम्_गन्तव्यम्_Follow);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      भङ्ग;
     }
-    case TK_PRECEDING: {
-      sqlite3TreeViewItem(pView, "PRECEDING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    पक्ष TK_PRECEDING: {
+      sqlite3_वृक्षः_View_Item(pView, "PRECEDING", अधिकम्_गन्तव्यम्_Follow);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      भङ्ग;
     }
-    case TK_FOLLOWING: {
-      sqlite3TreeViewItem(pView, "FOLLOWING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    पक्ष TK_FOLLOWING: {
+      sqlite3_वृक्षः_View_Item(pView, "FOLLOWING", अधिकम्_गन्तव्यम्_Follow);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      भङ्ग;
     }
   }
 }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#यदि_अन्तः /* SQLITE_OMIT_WINDOWFUNC */
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a human-readable explanation for a Window object
 */
-void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
-  int nElement = 0;
-  if( pWin==0 ) return;
-  if( pWin->pFilter ){
-    sqlite3TreeViewItem(pView, "FILTER", 1);
-    sqlite3TreeViewExpr(pView, pWin->pFilter, 0);
-    sqlite3TreeViewPop(&pView);
-    if( pWin->eFrmType==TK_FILTER ) return;
+शून्य sqlite3_वृक्षः_View_गवाक्षः(वृक्षः_View *pView, ध्रुव गवाक्षः *pWin, u8 अधिकम्){
+  पूर्णाङ्क nElement = 0;
+  यदि( pWin==0 ) प्रत्यागम;
+  यदि( pWin->pFilter ){
+    sqlite3_वृक्षः_View_Item(pView, "FILTER", 1);
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pWin->pFilter, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
+    यदि( pWin->eFrmType==TK_FILTER ) प्रत्यागम;
   }
-  sqlite3TreeViewPush(&pView, more);
-  if( pWin->zName ){
-    sqlite3TreeViewLine(pView, "OVER %s (%p)", pWin->zName, pWin);
-  }else{
-    sqlite3TreeViewLine(pView, "OVER (%p)", pWin);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्);
+  यदि( pWin->zName ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "OVER %s (%p)", pWin->zName, pWin);
+  }अन्यथा{
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "OVER (%p)", pWin);
   }
-  if( pWin->zBase )    nElement++;
-  if( pWin->pOrderBy ) nElement++;
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
-  if( pWin->eExclude ) nElement++;
-  if( pWin->zBase ){
-    sqlite3TreeViewPush(&pView, (--nElement)>0);
-    sqlite3TreeViewLine(pView, "window: %s", pWin->zBase);
-    sqlite3TreeViewPop(&pView);
+  यदि( pWin->z_आधारः )    nElement++;
+  यदि( pWin->p_क्रमः_By ) nElement++;
+  यदि( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
+  यदि( pWin->eExclude ) nElement++;
+  यदि( pWin->z_आधारः ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--nElement)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "window: %s", pWin->z_आधारः);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pWin->pPartition ){
-    sqlite3TreeViewExprList(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
+  यदि( pWin->pPartition ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
   }
-  if( pWin->pOrderBy ){
-    sqlite3TreeViewExprList(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
+  यदि( pWin->p_क्रमः_By ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pWin->p_क्रमः_By, (--nElement)>0, "ORDER-BY");
   }
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
-    char zBuf[30];
-    const char *zFrmType = "ROWS";
-    if( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
-    if( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%s%s",zFrmType,
+  यदि( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
+    वर्ण zBuf[30];
+    ध्रुव वर्ण *zFrmType = "ROWS";
+    यदि( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
+    यदि( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
+    sqlite3_snprintf(परिमाण(zBuf),zBuf,"%s%s",zFrmType,
         pWin->bImplicitFrame ? " (implied)" : "");
-    sqlite3TreeViewItem(pView, zBuf, (--nElement)>0);
-    sqlite3TreeViewBound(pView, pWin->eStart, pWin->pStart, 1);
-    sqlite3TreeViewBound(pView, pWin->eEnd, pWin->pEnd, 0);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_Item(pView, zBuf, (--nElement)>0);
+    sqlite3_वृक्षः_View_Bound(pView, pWin->eStart, pWin->pStart, 1);
+    sqlite3_वृक्षः_View_Bound(pView, pWin->e_अन्तः, pWin->p_अन्तः, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pWin->eExclude ){
-    char zBuf[30];
-    const char *zExclude;
-    switch( pWin->eExclude ){
-      case TK_NO:      zExclude = "NO OTHERS";   break;
-      case TK_CURRENT: zExclude = "CURRENT ROW"; break;
-      case TK_GROUP:   zExclude = "GROUP";       break;
-      case TK_TIES:    zExclude = "TIES";        break;
-      default:
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
+  यदि( pWin->eExclude ){
+    वर्ण zBuf[30];
+    ध्रुव वर्ण *zExclude;
+    विकल्प( pWin->eExclude ){
+      पक्ष TK_NO:      zExclude = "NO OTHERS";   भङ्ग;
+      पक्ष TK_CURRENT: zExclude = "CURRENT ROW"; भङ्ग;
+      पक्ष TK_गणः:   zExclude = "GROUP";       भङ्ग;
+      पक्ष TK_TIES:    zExclude = "TIES";        भङ्ग;
+      स्वभाव:
+        sqlite3_snprintf(परिमाण(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
         zExclude = zBuf;
-        break;
+        भङ्ग;
     }
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewLine(pView, "EXCLUDE %s", zExclude);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "EXCLUDE %s", zExclude);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#यदि_अन्तः /* SQLITE_OMIT_WINDOWFUNC */
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a human-readable explanation for a Window Function object
 */
-void sqlite3TreeViewWinFunc(TreeView *pView, const Window *pWin, u8 more){
-  if( pWin==0 ) return;
-  sqlite3TreeViewPush(&pView, more);
-  sqlite3TreeViewLine(pView, "WINFUNC %s(%d)",
+शून्य sqlite3_वृक्षः_View_Win_Func(वृक्षः_View *pView, ध्रुव गवाक्षः *pWin, u8 अधिकम्){
+  यदि( pWin==0 ) प्रत्यागम;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, "WINFUNC %s(%d)",
                        pWin->pWFunc->zName, pWin->pWFunc->nArg);
-  sqlite3TreeViewWindow(pView, pWin, 0);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_गवाक्षः(pView, pWin, 0);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#यदि_अन्तः /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Generate a human-readable explanation of an expression tree.
 */
-void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
-  const char *zBinOp = 0;   /* Binary operator */
-  const char *zUniOp = 0;   /* Unary operator */
-  char zFlgs[200];
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( pExpr==0 ){
-    sqlite3TreeViewLine(pView, "nil");
-    sqlite3TreeViewPop(&pView);
-    return;
+शून्य sqlite3_वृक्षः_View_व्यञ्जकम्(वृक्षः_View *pView, ध्रुव व्यञ्जकम् *p_व्यञ्जकम्, u8 अधिकम्_गन्तव्यम्_Follow){
+  ध्रुव वर्ण *zBinOp = 0;   /* Binary operator */
+  ध्रुव वर्ण *zUniOp = 0;   /* Unary operator */
+  वर्ण zFlgs[200];
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  यदि( p_व्यञ्जकम्==0 ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "nil");
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
+    प्रत्यागम;
   }
-  if( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
+  यदि( p_व्यञ्जकम्->flags || p_व्यञ्जकम्->aff_व्यञ्जकम् || p_व्यञ्जकम्->vvaFlags || p_व्यञ्जकम्->pAggInfo ){
     StrAccum x;
-    sqlite3StrAccumInit(&x, 0, zFlgs, sizeof(zFlgs), 0);
+    sqlite3StrAccumInit(&x, 0, zFlgs, परिमाण(zFlgs), 0);
     sqlite3_str_appendf(&x, " fg.af=%x.%c",
-      pExpr->flags, pExpr->affExpr ? pExpr->affExpr : 'n');
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
-      sqlite3_str_appendf(&x, " outer.iJoin=%d", pExpr->w.iJoin);
+      p_व्यञ्जकम्->flags, p_व्यञ्जकम्->aff_व्यञ्जकम् ? p_व्यञ्जकम्->aff_व्यञ्जकम् : 'n');
+    यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_OuterON) ){
+      sqlite3_str_appendf(&x, " outer.iJoin=%d", p_व्यञ्जकम्->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_InnerON) ){
-      sqlite3_str_appendf(&x, " inner.iJoin=%d", pExpr->w.iJoin);
+    यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_InnerON) ){
+      sqlite3_str_appendf(&x, " inner.iJoin=%d", p_व्यञ्जकम्->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_FromDDL) ){
+    यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_FromDDL) ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( ExprHasVVAProperty(pExpr, EP_Immutable) ){
+    यदि( व्यञ्जकम्_Has_VVAProperty(p_व्यञ्जकम्, EP_Immutable) ){
       sqlite3_str_appendf(&x, " IMMUTABLE");
     }
-    if( pExpr->pAggInfo!=0 ){
-      sqlite3_str_appendf(&x, " agg-column[%d]", pExpr->iAgg);
+    यदि( p_व्यञ्जकम्->pAggInfo!=0 ){
+      sqlite3_str_appendf(&x, " agg-column[%d]", p_व्यञ्जकम्->iAgg);
     }
     sqlite3StrAccumFinish(&x);
-  }else{
+  }अन्यथा{
     zFlgs[0] = 0;
   }
-  switch( pExpr->op ){
-    case TK_AGG_COLUMN: {
-      sqlite3TreeViewLine(pView, "AGG{%d:%d}%s",
-            pExpr->iTable, pExpr->iColumn, zFlgs);
-      break;
+  विकल्प( p_व्यञ्जकम्->op ){
+    पक्ष TK_AGG_COLUMN: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "AGG{%d:%d}%s",
+            p_व्यञ्जकम्->i_सारणी, p_व्यञ्जकम्->iColumn, zFlgs);
+      भङ्ग;
     }
-    case TK_COLUMN: {
-      if( pExpr->iTable<0 ){
+    पक्ष TK_COLUMN: {
+      यदि( p_व्यञ्जकम्->i_सारणी<0 ){
         /* This only happens when coding check constraints */
-        char zOp2[16];
-        if( pExpr->op2 ){
-          sqlite3_snprintf(sizeof(zOp2),zOp2," op2=0x%02x",pExpr->op2);
-        }else{
+        वर्ण zOp2[16];
+        यदि( p_व्यञ्जकम्->op2 ){
+          sqlite3_snprintf(परिमाण(zOp2),zOp2," op2=0x%02x",p_व्यञ्जकम्->op2);
+        }अन्यथा{
           zOp2[0] = 0;
         }
-        sqlite3TreeViewLine(pView, "COLUMN(%d)%s%s",
-                                    pExpr->iColumn, zFlgs, zOp2);
-      }else{
-        assert( ExprUseYTab(pExpr) );
-        sqlite3TreeViewLine(pView, "{%d:%d} pTab=%p%s",
-                        pExpr->iTable, pExpr->iColumn,
-                        pExpr->y.pTab, zFlgs);
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "COLUMN(%d)%s%s",
+                                    p_व्यञ्जकम्->iColumn, zFlgs, zOp2);
+      }अन्यथा{
+        प्रतिज्ञा( व्यञ्जकम्_Use_YTab(p_व्यञ्जकम्) );
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "{%d:%d} pTab=%p%s",
+                        p_व्यञ्जकम्->i_सारणी, p_व्यञ्जकम्->iColumn,
+                        p_व्यञ्जकम्->y.pTab, zFlgs);
       }
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
-        sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+      यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_FixedCol) ){
+        sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
       }
-      break;
+      भङ्ग;
     }
-    case TK_INTEGER: {
-      if( pExpr->flags & EP_IntValue ){
-        sqlite3TreeViewLine(pView, "%d", pExpr->u.iValue);
-      }else{
-        sqlite3TreeViewLine(pView, "%s", pExpr->u.zToken);
+    पक्ष TK_INTEGER: {
+      यदि( p_व्यञ्जकम्->flags & EP_Int_मानम् ){
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%d", p_व्यञ्जकम्->u.i_मानम्);
+      }अन्यथा{
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s", p_व्यञ्जकम्->u.zToken);
       }
-      break;
+      भङ्ग;
     }
-#ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+#यदि_अपरिभाषितम् SQLITE_OMIT_FLOATING_POINT
+    पक्ष TK_FLOAT: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"%s", p_व्यञ्जकम्->u.zToken);
+      भङ्ग;
     }
-#endif
-    case TK_STRING: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%Q", pExpr->u.zToken);
-      break;
+#यदि_अन्तः
+    पक्ष TK_STRING: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"%Q", p_व्यञ्जकम्->u.zToken);
+      भङ्ग;
     }
-    case TK_NULL: {
-      sqlite3TreeViewLine(pView,"NULL");
-      break;
+    पक्ष TK_NULL: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"NULL");
+      भङ्ग;
     }
-    case TK_TRUEFALSE: {
-      sqlite3TreeViewLine(pView,"%s%s",
-         sqlite3ExprTruthValue(pExpr) ? "TRUE" : "FALSE", zFlgs);
-      break;
+    पक्ष TK_TRUEFALSE: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"%s%s",
+         sqlite3_व्यञ्जकम्_Truth_मानम्(p_व्यञ्जकम्) ? "TRUE" : "FALSE", zFlgs);
+      भङ्ग;
     }
-#ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+#यदि_अपरिभाषितम् SQLITE_OMIT_BLOB_LITERAL
+    पक्ष TK_BLOB: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"%s", p_व्यञ्जकम्->u.zToken);
+      भङ्ग;
     }
-#endif
-    case TK_VARIABLE: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"VARIABLE(%s,%d)",
-                          pExpr->u.zToken, pExpr->iColumn);
-      break;
+#यदि_अन्तः
+    पक्ष TK_VARIABLE: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"VARIABLE(%s,%d)",
+                          p_व्यञ्जकम्->u.zToken, p_व्यञ्जकम्->iColumn);
+      भङ्ग;
     }
-    case TK_REGISTER: {
-      sqlite3TreeViewLine(pView,"REGISTER(%d)", pExpr->iTable);
-      break;
+    पक्ष TK_पञ्जिकाकोशः: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"REGISTER(%d)", p_व्यञ्जकम्->i_सारणी);
+      भङ्ग;
     }
-    case TK_ID: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"ID \"%w\"", pExpr->u.zToken);
-      break;
+    पक्ष TK_ID: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"ID \"%w\"", p_व्यञ्जकम्->u.zToken);
+      भङ्ग;
     }
-    case TK_ASTERISK: {
-      sqlite3TreeViewLine(pView,"ASKTERISK");
-      break;
+    पक्ष TK_ASTERISK: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"ASKTERISK");
+      भङ्ग;
     }
-#ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+#यदि_अपरिभाषितम् SQLITE_OMIT_CAST
+    पक्ष TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"CAST %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView,"CAST %Q", p_व्यञ्जकम्->u.zToken);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
+      भङ्ग;
     }
-#endif /* SQLITE_OMIT_CAST */
-    case TK_LT:      zBinOp = "LT";     break;
-    case TK_LE:      zBinOp = "LE";     break;
-    case TK_GT:      zBinOp = "GT";     break;
-    case TK_GE:      zBinOp = "GE";     break;
-    case TK_NE:      zBinOp = "NE";     break;
-    case TK_EQ:      zBinOp = "EQ";     break;
-    case TK_IS:      zBinOp = "IS";     break;
-    case TK_ISNOT:   zBinOp = "ISNOT";  break;
-    case TK_AND:     zBinOp = "AND";    break;
-    case TK_OR:      zBinOp = "OR";     break;
-    case TK_PLUS:    zBinOp = "ADD";    break;
-    case TK_STAR:    zBinOp = "MUL";    break;
-    case TK_MINUS:   zBinOp = "SUB";    break;
-    case TK_REM:     zBinOp = "REM";    break;
-    case TK_BITAND:  zBinOp = "BITAND"; break;
-    case TK_BITOR:   zBinOp = "BITOR";  break;
-    case TK_SLASH:   zBinOp = "DIV";    break;
-    case TK_LSHIFT:  zBinOp = "LSHIFT"; break;
-    case TK_RSHIFT:  zBinOp = "RSHIFT"; break;
-    case TK_CONCAT:  zBinOp = "CONCAT"; break;
-    case TK_DOT:     zBinOp = "DOT";    break;
-    case TK_LIMIT:   zBinOp = "LIMIT";  break;
+#यदि_अन्तः /* SQLITE_OMIT_CAST */
+    पक्ष TK_LT:      zBinOp = "LT";     भङ्ग;
+    पक्ष TK_LE:      zBinOp = "LE";     भङ्ग;
+    पक्ष TK_GT:      zBinOp = "GT";     भङ्ग;
+    पक्ष TK_GE:      zBinOp = "GE";     भङ्ग;
+    पक्ष TK_NE:      zBinOp = "NE";     भङ्ग;
+    पक्ष TK_EQ:      zBinOp = "EQ";     भङ्ग;
+    पक्ष TK_IS:      zBinOp = "IS";     भङ्ग;
+    पक्ष TK_ISNOT:   zBinOp = "ISNOT";  भङ्ग;
+    पक्ष TK_AND:     zBinOp = "AND";    भङ्ग;
+    पक्ष TK_OR:      zBinOp = "OR";     भङ्ग;
+    पक्ष TK_PLUS:    zBinOp = "ADD";    भङ्ग;
+    पक्ष TK_तारकम्:    zBinOp = "MUL";    भङ्ग;
+    पक्ष TK_MINUS:   zBinOp = "SUB";    भङ्ग;
+    पक्ष TK_REM:     zBinOp = "REM";    भङ्ग;
+    पक्ष TK_BITAND:  zBinOp = "BITAND"; भङ्ग;
+    पक्ष TK_BITOR:   zBinOp = "BITOR";  भङ्ग;
+    पक्ष TK_SLASH:   zBinOp = "DIV";    भङ्ग;
+    पक्ष TK_LSHIFT:  zBinOp = "LSHIFT"; भङ्ग;
+    पक्ष TK_RSHIFT:  zBinOp = "RSHIFT"; भङ्ग;
+    पक्ष TK_CONCAT:  zBinOp = "CONCAT"; भङ्ग;
+    पक्ष TK_DOT:     zBinOp = "DOT";    भङ्ग;
+    पक्ष TK_सीमा:   zBinOp = "LIMIT";  भङ्ग;
 
-    case TK_UMINUS:  zUniOp = "UMINUS"; break;
-    case TK_UPLUS:   zUniOp = "UPLUS";  break;
-    case TK_BITNOT:  zUniOp = "BITNOT"; break;
-    case TK_NOT:     zUniOp = "NOT";    break;
-    case TK_ISNULL:  zUniOp = "ISNULL"; break;
-    case TK_NOTNULL: zUniOp = "NOTNULL"; break;
+    पक्ष TK_UMINUS:  zUniOp = "UMINUS"; भङ्ग;
+    पक्ष TK_UPLUS:   zUniOp = "UPLUS";  भङ्ग;
+    पक्ष TK_BITNOT:  zUniOp = "BITNOT"; भङ्ग;
+    पक्ष TK_NOT:     zUniOp = "NOT";    भङ्ग;
+    पक्ष TK_ISNULL:  zUniOp = "ISNULL"; भङ्ग;
+    पक्ष TK_NOTNULL: zUniOp = "NOTNULL"; भङ्ग;
 
-    case TK_TRUTH: {
-      int x;
-      const char *azOp[] = {
+    पक्ष TK_TRUTH: {
+      पूर्णाङ्क x;
+      ध्रुव वर्ण *azOp[] = {
          "IS-FALSE", "IS-TRUE", "IS-NOT-FALSE", "IS-NOT-TRUE"
       };
-      assert( pExpr->op2==TK_IS || pExpr->op2==TK_ISNOT );
-      assert( pExpr->pRight );
-      assert( sqlite3ExprSkipCollateAndLikely(pExpr->pRight)->op
+      प्रतिज्ञा( p_व्यञ्जकम्->op2==TK_IS || p_व्यञ्जकम्->op2==TK_ISNOT );
+      प्रतिज्ञा( p_व्यञ्जकम्->p_दक्षिणः );
+      प्रतिज्ञा( sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(p_व्यञ्जकम्->p_दक्षिणः)->op
                   == TK_TRUEFALSE );
-      x = (pExpr->op2==TK_ISNOT)*2 + sqlite3ExprTruthValue(pExpr->pRight);
+      x = (p_व्यञ्जकम्->op2==TK_ISNOT)*2 + sqlite3_व्यञ्जकम्_Truth_मानम्(p_व्यञ्जकम्->p_दक्षिणः);
       zUniOp = azOp[x];
-      break;
+      भङ्ग;
     }
 
-    case TK_SPAN: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "SPAN %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    पक्ष TK_विस्तृतिः: {
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "SPAN %Q", p_व्यञ्जकम्->u.zToken);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
+      भङ्ग;
     }
 
-    case TK_COLLATE: {
+    पक्ष TK_COLLATE: {
       /* COLLATE operators without the EP_Collate flag are intended to
       ** emulate collation associated with a table column.  These show
       ** up in the treeview output as "SOFT-COLLATE".  Explicit COLLATE
       ** operators that appear in the original SQL always have the
       ** EP_Collate bit set and appear in treeview output as just "COLLATE" */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "%sCOLLATE %Q%s",
-        !ExprHasProperty(pExpr, EP_Collate) ? "SOFT-" : "",
-        pExpr->u.zToken, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%sCOLLATE %Q%s",
+        !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Collate) ? "SOFT-" : "",
+        p_व्यञ्जकम्->u.zToken, zFlgs);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
+      भङ्ग;
     }
 
-    case TK_AGG_FUNCTION:
-    case TK_FUNCTION: {
-      ExprList *pFarg;       /* List of function arguments */
-      Window *pWin;
-      if( ExprHasProperty(pExpr, EP_TokenOnly) ){
+    पक्ष TK_AGG_FUNCTION:
+    पक्ष TK_FUNCTION: {
+      व्यञ्जकम्_List *pFarg;       /* List of function arguments */
+      गवाक्षः *pWin;
+      यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_TokenOnly) ){
         pFarg = 0;
         pWin = 0;
-      }else{
-        assert( ExprUseXList(pExpr) );
-        pFarg = pExpr->x.pList;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-        pWin = IsWindowFunc(pExpr) ? pExpr->y.pWin : 0;
-#else
+      }अन्यथा{
+        प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_व्यञ्जकम्) );
+        pFarg = p_व्यञ्जकम्->x.pList;
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+        pWin = Is_गवाक्षः_Func(p_व्यञ्जकम्) ? p_व्यञ्जकम्->y.pWin : 0;
+#अन्यथा
         pWin = 0;
-#endif 
+#यदि_अन्तः 
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->op==TK_AGG_FUNCTION ){
-        sqlite3TreeViewLine(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
-                             pExpr->op2, pExpr->u.zToken, zFlgs,
-                             pExpr->pAggInfo ? pExpr->pAggInfo->selId : 0,
-                             pExpr->iAgg, pExpr->pAggInfo);
-      }else if( pExpr->op2!=0 ){
-        const char *zOp2;
-        char zBuf[8];
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"0x%02x",pExpr->op2);
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      यदि( p_व्यञ्जकम्->op==TK_AGG_FUNCTION ){
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
+                             p_व्यञ्जकम्->op2, p_व्यञ्जकम्->u.zToken, zFlgs,
+                             p_व्यञ्जकम्->pAggInfo ? p_व्यञ्जकम्->pAggInfo->selId : 0,
+                             p_व्यञ्जकम्->iAgg, p_व्यञ्जकम्->pAggInfo);
+      }अन्यथा यदि( p_व्यञ्जकम्->op2!=0 ){
+        ध्रुव वर्ण *zOp2;
+        वर्ण zBuf[8];
+        sqlite3_snprintf(परिमाण(zBuf),zBuf,"0x%02x",p_व्यञ्जकम्->op2);
         zOp2 = zBuf;
-        if( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
-        if( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
-        if( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
-        if( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s op2=%s",
-                            pExpr->u.zToken, zFlgs, zOp2);
-      }else{
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s", pExpr->u.zToken, zFlgs);
+        यदि( p_व्यञ्जकम्->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
+        यदि( p_व्यञ्जकम्->op2==NC_Idx_व्यञ्जकम् ) zOp2 = "NC_IdxExpr";
+        यदि( p_व्यञ्जकम्->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
+        यदि( p_व्यञ्जकम्->op2==NC_GenCol ) zOp2 = "NC_GenCol";
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "FUNCTION %Q%s op2=%s",
+                            p_व्यञ्जकम्->u.zToken, zFlgs, zOp2);
+      }अन्यथा{
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "FUNCTION %Q%s", p_व्यञ्जकम्->u.zToken, zFlgs);
       }
-      if( pFarg ){
-        sqlite3TreeViewExprList(pView, pFarg, pWin!=0 || pExpr->pLeft, 0);
-        if( pExpr->pLeft ){
-          Expr *pOB = pExpr->pLeft;
-          assert( pOB->op==TK_ORDER );
-          assert( ExprUseXList(pOB) );
-          sqlite3TreeViewExprList(pView, pOB->x.pList, pWin!=0, "ORDERBY");
+      यदि( pFarg ){
+        sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pFarg, pWin!=0 || p_व्यञ्जकम्->p_वामः, 0);
+        यदि( p_व्यञ्जकम्->p_वामः ){
+          व्यञ्जकम् *pOB = p_व्यञ्जकम्->p_वामः;
+          प्रतिज्ञा( pOB->op==TK_क्रमः );
+          प्रतिज्ञा( व्यञ्जकम्_Use_XList(pOB) );
+          sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pOB->x.pList, pWin!=0, "ORDERBY");
         }
       }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pWin ){
-        sqlite3TreeViewWindow(pView, pWin, 0);
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+      यदि( pWin ){
+        sqlite3_वृक्षः_View_गवाक्षः(pView, pWin, 0);
       }
-#endif
-      break;
+#यदि_अन्तः
+      भङ्ग;
     }
-    case TK_ORDER: {
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, "ORDERBY");
-      break;
+    पक्ष TK_क्रमः: {
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_व्यञ्जकम्->x.pList, 0, "ORDERBY");
+      भङ्ग;
     }
-#ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "EXISTS-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+#यदि_अपरिभाषितम् SQLITE_OMIT_SUBQUERY
+    पक्ष TK_EXISTS: {
+      प्रतिज्ञा( व्यञ्जकम्_Use_XSelect(p_व्यञ्जकम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "EXISTS-expr flags=0x%x", p_व्यञ्जकम्->flags);
+      sqlite3_वृक्षः_View_Select(pView, p_व्यञ्जकम्->x.pSelect, 0);
+      भङ्ग;
     }
-    case TK_SELECT: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "subquery-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    पक्ष TK_SELECT: {
+      प्रतिज्ञा( व्यञ्जकम्_Use_XSelect(p_व्यञ्जकम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "subquery-expr flags=0x%x", p_व्यञ्जकम्->flags);
+      sqlite3_वृक्षः_View_Select(pView, p_व्यञ्जकम्->x.pSelect, 0);
+      भङ्ग;
     }
-    case TK_IN: {
+    पक्ष TK_अन्तर्: {
       sqlite3_str *pStr = sqlite3_str_new(0);
-      char *z;
-      sqlite3_str_appendf(pStr, "IN flags=0x%x", pExpr->flags);
-      if( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      वर्ण *z;
+      sqlite3_str_appendf(pStr, "IN flags=0x%x", p_व्यञ्जकम्->flags);
+      यदि( p_व्यञ्जकम्->i_सारणी ) sqlite3_str_appendf(pStr, " iTable=%d",p_व्यञ्जकम्->i_सारणी);
+      यदि( व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Subrtn) ){
         sqlite3_str_appendf(pStr, " subrtn(%d,%d)",
-            pExpr->y.sub.regReturn, pExpr->y.sub.iAddr);
+            p_व्यञ्जकम्->y.sub.regReturn, p_व्यञ्जकम्->y.sub.iAddr);
       }
       z = sqlite3_str_finish(pStr);
-      sqlite3TreeViewLine(pView, z);
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, z);
       sqlite3_free(z);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      if( ExprUseXSelect(pExpr) ){
-        sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      }else{
-        sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 1);
+      यदि( व्यञ्जकम्_Use_XSelect(p_व्यञ्जकम्) ){
+        sqlite3_वृक्षः_View_Select(pView, p_व्यञ्जकम्->x.pSelect, 0);
+      }अन्यथा{
+        sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_व्यञ्जकम्->x.pList, 0, 0);
       }
-      break;
+      भङ्ग;
     }
-#endif /* SQLITE_OMIT_SUBQUERY */
+#यदि_अन्तः /* SQLITE_OMIT_SUBQUERY */
 
     /*
     **    x BETWEEN y AND z
@@ -791,20 +791,20 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
-      const Expr *pX, *pY, *pZ;
-      pX = pExpr->pLeft;
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr==2 );
-      pY = pExpr->x.pList->a[0].pExpr;
-      pZ = pExpr->x.pList->a[1].pExpr;
-      sqlite3TreeViewLine(pView, "BETWEEN%s", zFlgs);
-      sqlite3TreeViewExpr(pView, pX, 1);
-      sqlite3TreeViewExpr(pView, pY, 1);
-      sqlite3TreeViewExpr(pView, pZ, 0);
-      break;
+    पक्ष TK_BETWEEN: {
+      ध्रुव व्यञ्जकम् *pX, *pY, *pZ;
+      pX = p_व्यञ्जकम्->p_वामः;
+      प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_व्यञ्जकम्) );
+      प्रतिज्ञा( p_व्यञ्जकम्->x.pList->n_व्यञ्जकम्==2 );
+      pY = p_व्यञ्जकम्->x.pList->a[0].p_व्यञ्जकम्;
+      pZ = p_व्यञ्जकम्->x.pList->a[1].p_व्यञ्जकम्;
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "BETWEEN%s", zFlgs);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pX, 1);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pY, 1);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pZ, 0);
+      भङ्ग;
     }
-    case TK_TRIGGER: {
+    पक्ष TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -812,479 +812,479 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       ** is set to the column of the pseudo-table to read, or to -1 to
       ** read the rowid field.
       */
-      sqlite3TreeViewLine(pView, "%s(%d)", 
-          pExpr->iTable ? "NEW" : "OLD", pExpr->iColumn);
-      break;
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s(%d)", 
+          p_व्यञ्जकम्->i_सारणी ? "NEW" : "OLD", p_व्यञ्जकम्->iColumn);
+      भङ्ग;
     }
-    case TK_CASE: {
-      sqlite3TreeViewLine(pView, "CASE");
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
-      break;
+    पक्ष TK_CASE: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "CASE");
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 1);
+      प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_व्यञ्जकम्) );
+      sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_व्यञ्जकम्->x.pList, 0, 0);
+      भङ्ग;
     }
-#ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
-      const char *zType = "unk";
-      switch( pExpr->affExpr ){
-        case OE_Rollback:   zType = "rollback";  break;
-        case OE_Abort:      zType = "abort";     break;
-        case OE_Fail:       zType = "fail";      break;
-        case OE_Ignore:     zType = "ignore";    break;
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
+    पक्ष TK_RAISE: {
+      ध्रुव वर्ण *zType = "unk";
+      विकल्प( p_व्यञ्जकम्->aff_व्यञ्जकम् ){
+        पक्ष OE_Rollback:   zType = "rollback";  भङ्ग;
+        पक्ष OE_Abort:      zType = "abort";     भङ्ग;
+        पक्ष OE_Fail:       zType = "fail";      भङ्ग;
+        पक्ष OE_Ignore:     zType = "ignore";    भङ्ग;
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "RAISE %s", zType);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "RAISE %s", zType);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
+      भङ्ग;
     }
-#endif
-    case TK_MATCH: {
-      sqlite3TreeViewLine(pView, "MATCH {%d:%d}%s",
-                          pExpr->iTable, pExpr->iColumn, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-      break;
+#यदि_अन्तः
+    पक्ष TK_मेलनम्: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "MATCH {%d:%d}%s",
+                          p_व्यञ्जकम्->i_सारणी, p_व्यञ्जकम्->iColumn, zFlgs);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_दक्षिणः, 0);
+      भङ्ग;
     }
-    case TK_VECTOR: {
-      char *z = sqlite3_mprintf("VECTOR%s",zFlgs);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewBareExprList(pView, pExpr->x.pList, z);
+    पक्ष TK_सदिशम्: {
+      वर्ण *z = sqlite3_mprintf("VECTOR%s",zFlgs);
+      प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_व्यञ्जकम्) );
+      sqlite3_वृक्षः_View_Bare_व्यञ्जकम्_List(pView, p_व्यञ्जकम्->x.pList, z);
       sqlite3_free(z);
-      break;
+      भङ्ग;
     }
-    case TK_SELECT_COLUMN: {
-      sqlite3TreeViewLine(pView, "SELECT-COLUMN %d of [0..%d]%s",
-              pExpr->iColumn, pExpr->iTable-1,
-              pExpr->pRight==pExpr->pLeft ? " (SELECT-owner)" : "");
-      assert( ExprUseXSelect(pExpr->pLeft) );
-      sqlite3TreeViewSelect(pView, pExpr->pLeft->x.pSelect, 0);
-      break;
+    पक्ष TK_SELECT_COLUMN: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "SELECT-COLUMN %d of [0..%d]%s",
+              p_व्यञ्जकम्->iColumn, p_व्यञ्जकम्->i_सारणी-1,
+              p_व्यञ्जकम्->p_दक्षिणः==p_व्यञ्जकम्->p_वामः ? " (SELECT-owner)" : "");
+      प्रतिज्ञा( व्यञ्जकम्_Use_XSelect(p_व्यञ्जकम्->p_वामः) );
+      sqlite3_वृक्षः_View_Select(pView, p_व्यञ्जकम्->p_वामः->x.pSelect, 0);
+      भङ्ग;
     }
-    case TK_IF_NULL_ROW: {
-      sqlite3TreeViewLine(pView, "IF-NULL-ROW %d", pExpr->iTable);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    पक्ष TK_IF_NULL_ROW: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "IF-NULL-ROW %d", p_व्यञ्जकम्->i_सारणी);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
+      भङ्ग;
     }
-    case TK_ERROR: {
-      Expr tmp;
-      sqlite3TreeViewLine(pView, "ERROR");
-      tmp = *pExpr;
-      tmp.op = pExpr->op2;
-      sqlite3TreeViewExpr(pView, &tmp, 0);
-      break;
+    पक्ष TK_ERROR: {
+      व्यञ्जकम् tmp;
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "ERROR");
+      tmp = *p_व्यञ्जकम्;
+      tmp.op = p_व्यञ्जकम्->op2;
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, &tmp, 0);
+      भङ्ग;
     }
-    case TK_ROW: {
-      if( pExpr->iColumn<=0 ){
-        sqlite3TreeViewLine(pView, "First FROM table rowid");
-      }else{
-        sqlite3TreeViewLine(pView, "First FROM table column %d",
-            pExpr->iColumn-1);
+    पक्ष TK_ROW: {
+      यदि( p_व्यञ्जकम्->iColumn<=0 ){
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "First FROM table rowid");
+      }अन्यथा{
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, "First FROM table column %d",
+            p_व्यञ्जकम्->iColumn-1);
       }
-      break;
+      भङ्ग;
     }
-    default: {
-      sqlite3TreeViewLine(pView, "op=%d", pExpr->op);
-      break;
+    स्वभाव: {
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, "op=%d", p_व्यञ्जकम्->op);
+      भङ्ग;
     }
   }
-  if( zBinOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zBinOp, zFlgs);
-    sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-    sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-  }else if( zUniOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zUniOp, zFlgs);
-   sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+  यदि( zBinOp ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s%s", zBinOp, zFlgs);
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 1);
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_दक्षिणः, 0);
+  }अन्यथा यदि( zUniOp ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s%s", zUniOp, zFlgs);
+   sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_व्यञ्जकम्->p_वामः, 0);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
 
 /*
 ** Generate a human-readable explanation of an expression list.
 */
-void sqlite3TreeViewBareExprList(
-  TreeView *pView,
-  const ExprList *pList,
-  const char *zLabel
+शून्य sqlite3_वृक्षः_View_Bare_व्यञ्जकम्_List(
+  वृक्षः_View *pView,
+  ध्रुव व्यञ्जकम्_List *pList,
+  ध्रुव वर्ण *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nExpr; i++){
-      int j = pList->a[i].u.x.iOrderByCol;
-      u8 sortFlags = pList->a[i].fg.sortFlags;
-      char *zName = pList->a[i].zEName;
-      int moreToFollow = i<pList->nExpr - 1;
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPush(&pView, moreToFollow);
-        moreToFollow = 0;
-        sqlite3TreeViewLine(pView, 0);
-        if( zName ){
-          switch( pList->a[i].fg.eEName ){
-            default:
+  यदि( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  यदि( pList==0 ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s (empty)", zLabel);
+  }अन्यथा{
+    पूर्णाङ्क i;
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s", zLabel);
+    प्रति(i=0; i<pList->n_व्यञ्जकम्; i++){
+      पूर्णाङ्क j = pList->a[i].u.x.i_क्रमः_By_Col;
+      u8 क्रमय_Flags = pList->a[i].fg.क्रमय_Flags;
+      वर्ण *zName = pList->a[i].zEName;
+      पूर्णाङ्क अधिकम्_गन्तव्यम्_Follow = i<pList->n_व्यञ्जकम् - 1;
+      यदि( j || zName || क्रमय_Flags ){
+        sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+        अधिकम्_गन्तव्यम्_Follow = 0;
+        sqlite3_वृक्षः_View_पङ्क्तिः(pView, 0);
+        यदि( zName ){
+          विकल्प( pList->a[i].fg.eEName ){
+            स्वभाव:
               fprintf(stdout, "AS %s ", zName);
-              break;
-            case ENAME_TAB:
+              भङ्ग;
+            पक्ष ENAME_TAB:
               fprintf(stdout, "TABLE-ALIAS-NAME(\"%s\") ", zName);
-              if( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
-              if( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
-              if( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
-              break;
-            case ENAME_SPAN:
+              यदि( pList->a[i].fg.b_प्रयुक्तम् ) fprintf(stdout, "(used) ");
+              यदि( pList->a[i].fg.b_Using_पदांशः ) fprintf(stdout, "(USING-term) ");
+              यदि( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
+              भङ्ग;
+            पक्ष ENAME_विस्तृतिः:
               fprintf(stdout, "SPAN(\"%s\") ", zName);
-              break;
+              भङ्ग;
           }
         }
-        if( j ){
+        यदि( j ){
           fprintf(stdout, "iOrderByCol=%d ", j);
         }
-        if( sortFlags & KEYINFO_ORDER_DESC ){
+        यदि( क्रमय_Flags & KEYINFO_क्रमः_DESC ){
           fprintf(stdout, "DESC ");
-        }else if( sortFlags & KEYINFO_ORDER_BIGNULL ){
+        }अन्यथा यदि( क्रमय_Flags & KEYINFO_क्रमः_BIGNULL ){
           fprintf(stdout, "NULLS-LAST");
         }
         fprintf(stdout, "\n");
         fflush(stdout);
       }
-      sqlite3TreeViewExpr(pView, pList->a[i].pExpr, moreToFollow);
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pList->a[i].p_व्यञ्जकम्, अधिकम्_गन्तव्यम्_Follow);
+      यदि( j || zName || क्रमय_Flags ){
+        sqlite3_वृक्षः_View_निष्कासय(&pView);
       }
     }
   }
 }
-void sqlite3TreeViewExprList(
-  TreeView *pView,
-  const ExprList *pList,
-  u8 moreToFollow,
-  const char *zLabel
+शून्य sqlite3_वृक्षः_View_व्यञ्जकम्_List(
+  वृक्षः_View *pView,
+  ध्रुव व्यञ्जकम्_List *pList,
+  u8 अधिकम्_गन्तव्यम्_Follow,
+  ध्रुव वर्ण *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareExprList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  sqlite3_वृक्षः_View_Bare_व्यञ्जकम्_List(pView, pList, zLabel);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of an id-list.
 */
-void sqlite3TreeViewBareIdList(
-  TreeView *pView,
-  const IdList *pList,
-  const char *zLabel
+शून्य sqlite3_वृक्षः_View_Bare_Id_List(
+  वृक्षः_View *pView,
+  ध्रुव IdList *pList,
+  ध्रुव वर्ण *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nId; i++){
-      char *zName = pList->a[i].zName;
-      int moreToFollow = i<pList->nId - 1;
-      if( zName==0 ) zName = "(null)";
-      sqlite3TreeViewPush(&pView, moreToFollow);
-      sqlite3TreeViewLine(pView, 0);
+  यदि( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  यदि( pList==0 ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s (empty)", zLabel);
+  }अन्यथा{
+    पूर्णाङ्क i;
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s", zLabel);
+    प्रति(i=0; i<pList->nId; i++){
+      वर्ण *zName = pList->a[i].zName;
+      पूर्णाङ्क अधिकम्_गन्तव्यम्_Follow = i<pList->nId - 1;
+      यदि( zName==0 ) zName = "(null)";
+      sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+      sqlite3_वृक्षः_View_पङ्क्तिः(pView, 0);
       fprintf(stdout, "%s\n", zName);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
   }
 }
-void sqlite3TreeViewIdList(
-  TreeView *pView,
-  const IdList *pList,
-  u8 moreToFollow,
-  const char *zLabel
+शून्य sqlite3_वृक्षः_View_Id_List(
+  वृक्षः_View *pView,
+  ध्रुव IdList *pList,
+  u8 अधिकम्_गन्तव्यम्_Follow,
+  ध्रुव वर्ण *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareIdList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  sqlite3_वृक्षः_View_Bare_Id_List(pView, pList, zLabel);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of a list of Upsert objects
 */
-void sqlite3TreeViewUpsert(
-  TreeView *pView,
-  const Upsert *pUpsert,
-  u8 moreToFollow
+शून्य sqlite3_वृक्षः_View_Upsert(
+  वृक्षः_View *pView,
+  ध्रुव Upsert *pUpsert,
+  u8 अधिकम्_गन्तव्यम्_Follow
 ){
-  if( pUpsert==0 ) return;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  while( pUpsert ){
-    int n;
-    sqlite3TreeViewPush(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
-    sqlite3TreeViewLine(pView, "ON CONFLICT DO %s", 
+  यदि( pUpsert==0 ) प्रत्यागम;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, अधिकम्_गन्तव्यम्_Follow);
+  यावत्( pUpsert ){
+    पूर्णाङ्क n;
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, pUpsert->p_अग्र_Upsert!=0 || अधिकम्_गन्तव्यम्_Follow);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "ON CONFLICT DO %s", 
          pUpsert->isDoUpdate ? "UPDATE" : "NOTHING");
-    n = (pUpsert->pUpsertSet!=0) + (pUpsert->pUpsertWhere!=0);
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
-    if( pUpsert->pUpsertWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, pUpsert->pUpsertWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    n = (pUpsert->p_Upsert_समुच्चयः!=0) + (pUpsert->pUpsertWhere!=0);
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pUpsert->p_Upsert_समुच्चयः, (n--)>0, "SET");
+    यदि( pUpsert->pUpsertWhere ){
+      sqlite3_वृक्षः_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pUpsert->pUpsertWhere, 0);
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
     }
-    sqlite3TreeViewPop(&pView);
-    pUpsert = pUpsert->pNextUpsert;
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
+    pUpsert = pUpsert->p_अग्र_Upsert;
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
 
-#if TREETRACE_ENABLED
+#यदि TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an DELETE statement.
 */
-void sqlite3TreeViewDelete(
-  const With *pWith,
-  const SrcList *pTabList,
-  const Expr *pWhere,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Trigger *pTrigger
+शून्य sqlite3_वृक्षः_View_Delete(
+  ध्रुव With *pWith,
+  ध्रुव SrcList *pTabList,
+  ध्रुव व्यञ्जकम् *pWhere,
+  ध्रुव व्यञ्जकम्_List *p_क्रमः_By,
+  ध्रुव व्यञ्जकम् *p_सीमा,
+  ध्रुव Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "DELETE");
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  पूर्णाङ्क n = 0;
+  वृक्षः_View *pView = 0;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, "DELETE");
+  यदि( pWith ) n++;
+  यदि( pTabList ) n++;
+  यदि( pWhere ) n++;
+  यदि( p_क्रमः_By ) n++;
+  यदि( p_सीमा ) n++;
+  यदि( pTrigger ) n++;
+  यदि( pWith ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_With(pView, pWith, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  यदि( pTabList ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "FROM");
+    sqlite3_वृक्षः_View_Src_List(pView, pTabList);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( pWhere ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "WHERE");
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pWhere, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  यदि( p_क्रमः_By ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_क्रमः_By, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( p_सीमा ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "LIMIT");
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_सीमा, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  यदि( pTrigger ){
+    sqlite3_वृक्षः_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* TREETRACE_ENABLED */
+#यदि_अन्तः /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#यदि TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an INSERT statement.
 */
-void sqlite3TreeViewInsert(
-  const With *pWith,
-  const SrcList *pTabList,
-  const IdList *pColumnList,
-  const Select *pSelect,
-  const ExprList *pExprList,
-  int onError,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+शून्य sqlite3_वृक्षः_View_निवेशय(
+  ध्रुव With *pWith,
+  ध्रुव SrcList *pTabList,
+  ध्रुव IdList *pColumnList,
+  ध्रुव Select *pSelect,
+  ध्रुव व्यञ्जकम्_List *p_व्यञ्जकम्_List,
+  पूर्णाङ्क onError,
+  ध्रुव Upsert *pUpsert,
+  ध्रुव Trigger *pTrigger
 ){
-  TreeView *pView = 0;
-  int n = 0;
-  const char *zLabel = "INSERT";
-  switch( onError ){
-    case OE_Replace:  zLabel = "REPLACE";             break;
-    case OE_Ignore:   zLabel = "INSERT OR IGNORE";    break;
-    case OE_Rollback: zLabel = "INSERT OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "INSERT OR ABORT";     break;
-    case OE_Fail:     zLabel = "INSERT OR FAIL";      break;
+  वृक्षः_View *pView = 0;
+  पूर्णाङ्क n = 0;
+  ध्रुव वर्ण *zLabel = "INSERT";
+  विकल्प( onError ){
+    पक्ष OE_Replace:  zLabel = "REPLACE";             भङ्ग;
+    पक्ष OE_Ignore:   zLabel = "INSERT OR IGNORE";    भङ्ग;
+    पक्ष OE_Rollback: zLabel = "INSERT OR ROLLBACK";  भङ्ग;
+    पक्ष OE_Abort:    zLabel = "INSERT OR ABORT";     भङ्ग;
+    पक्ष OE_Fail:     zLabel = "INSERT OR FAIL";      भङ्ग;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pColumnList ) n++;
-  if( pSelect ) n++;
-  if( pExprList ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, zLabel);
+  यदि( pWith ) n++;
+  यदि( pTabList ) n++;
+  यदि( pColumnList ) n++;
+  यदि( pSelect ) n++;
+  यदि( p_व्यञ्जकम्_List ) n++;
+  यदि( pUpsert ) n++;
+  यदि( pTrigger ) n++;
+  यदि( pWith ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_With(pView, pWith, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "INTO");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  यदि( pTabList ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "INTO");
+    sqlite3_वृक्षः_View_Src_List(pView, pTabList);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pColumnList ){
-    sqlite3TreeViewIdList(pView, pColumnList, (--n)>0, "COLUMNS");
+  यदि( pColumnList ){
+    sqlite3_वृक्षः_View_Id_List(pView, pColumnList, (--n)>0, "COLUMNS");
   }
-  if( pSelect ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "DATA-SOURCE");
-    sqlite3TreeViewSelect(pView, pSelect, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( pSelect ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "DATA-SOURCE");
+    sqlite3_वृक्षः_View_Select(pView, pSelect, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pExprList ){
-    sqlite3TreeViewExprList(pView, pExprList, (--n)>0, "VALUES");
+  यदि( p_व्यञ्जकम्_List ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_व्यञ्जकम्_List, (--n)>0, "VALUES");
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( pUpsert ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "UPSERT");
+    sqlite3_वृक्षः_View_Upsert(pView, pUpsert, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  यदि( pTrigger ){
+    sqlite3_वृक्षः_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* TREETRACE_ENABLED */
+#यदि_अन्तः /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#यदि TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an UPDATE statement.
 */
-void sqlite3TreeViewUpdate(
-  const With *pWith,
-  const SrcList *pTabList,
-  const ExprList *pChanges,
-  const Expr *pWhere,
-  int onError,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+शून्य sqlite3_वृक्षः_View_Update(
+  ध्रुव With *pWith,
+  ध्रुव SrcList *pTabList,
+  ध्रुव व्यञ्जकम्_List *pChanges,
+  ध्रुव व्यञ्जकम् *pWhere,
+  पूर्णाङ्क onError,
+  ध्रुव व्यञ्जकम्_List *p_क्रमः_By,
+  ध्रुव व्यञ्जकम् *p_सीमा,
+  ध्रुव Upsert *pUpsert,
+  ध्रुव Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  const char *zLabel = "UPDATE";
-  switch( onError ){
-    case OE_Replace:  zLabel = "UPDATE OR REPLACE";   break;
-    case OE_Ignore:   zLabel = "UPDATE OR IGNORE";    break;
-    case OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "UPDATE OR ABORT";     break;
-    case OE_Fail:     zLabel = "UPDATE OR FAIL";      break;
+  पूर्णाङ्क n = 0;
+  वृक्षः_View *pView = 0;
+  ध्रुव वर्ण *zLabel = "UPDATE";
+  विकल्प( onError ){
+    पक्ष OE_Replace:  zLabel = "UPDATE OR REPLACE";   भङ्ग;
+    पक्ष OE_Ignore:   zLabel = "UPDATE OR IGNORE";    भङ्ग;
+    पक्ष OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  भङ्ग;
+    पक्ष OE_Abort:    zLabel = "UPDATE OR ABORT";     भङ्ग;
+    पक्ष OE_Fail:     zLabel = "UPDATE OR FAIL";      भङ्ग;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pChanges ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, zLabel);
+  यदि( pWith ) n++;
+  यदि( pTabList ) n++;
+  यदि( pChanges ) n++;
+  यदि( pWhere ) n++;
+  यदि( p_क्रमः_By ) n++;
+  यदि( p_सीमा ) n++;
+  यदि( pUpsert ) n++;
+  यदि( pTrigger ) n++;
+  यदि( pWith ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_With(pView, pWith, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  यदि( pTabList ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "FROM");
+    sqlite3_वृक्षः_View_Src_List(pView, pTabList);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pChanges ){
-    sqlite3TreeViewExprList(pView, pChanges, (--n)>0, "SET");
+  यदि( pChanges ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, pChanges, (--n)>0, "SET");
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( pWhere ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "WHERE");
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, pWhere, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  यदि( p_क्रमः_By ){
+    sqlite3_वृक्षः_View_व्यञ्जकम्_List(pView, p_क्रमः_By, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( p_सीमा ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "LIMIT");
+    sqlite3_वृक्षः_View_व्यञ्जकम्(pView, p_सीमा, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  यदि( pUpsert ){
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, (--n)>0);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "UPSERT");
+    sqlite3_वृक्षः_View_Upsert(pView, pUpsert, 0);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  यदि( pTrigger ){
+    sqlite3_वृक्षः_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* TREETRACE_ENABLED */
+#यदि_अन्तः /* TREETRACE_ENABLED */
 
-#ifndef SQLITE_OMIT_TRIGGER
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
 /*
 ** Show a human-readable graph of a TriggerStep
 */
-void sqlite3TreeViewTriggerStep(
-  TreeView *pView,
-  const TriggerStep *pStep,
-  u8 moreToFollow,
-  u8 showFullList
+शून्य sqlite3_वृक्षः_View_Trigger_चरणः(
+  वृक्षः_View *pView,
+  ध्रुव Trigger_चरणः *p_चरणः,
+  u8 अधिकम्_गन्तव्यम्_Follow,
+  u8 show_पूर्णम्_List
 ){
-  int cnt = 0;
-  if( pStep==0 ) return;
-  sqlite3TreeViewPush(&pView, 
-      moreToFollow || (showFullList && pStep->pNext!=0));
-  do{
-    if( cnt++ && pStep->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  पूर्णाङ्क cnt = 0;
+  यदि( p_चरणः==0 ) प्रत्यागम;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, 
+      अधिकम्_गन्तव्यम्_Follow || (show_पूर्णम्_List && p_चरणः->p_अग्र!=0));
+  कुरु{
+    यदि( cnt++ && p_चरणः->p_अग्र==0 ){
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
-  }while( showFullList && (pStep = pStep->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "%s", p_चरणः->z_विस्तृतिः ? p_चरणः->z_विस्तृतिः : "RETURNING");
+  }यावत्( show_पूर्णम्_List && (p_चरणः = p_चरणः->p_अग्र)!=0 );
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
   
 /*
 ** Show a human-readable graph of a Trigger
 */
-void sqlite3TreeViewTrigger(
-  TreeView *pView,
-  const Trigger *pTrigger,
-  u8 moreToFollow,
-  u8 showFullList
+शून्य sqlite3_वृक्षः_View_Trigger(
+  वृक्षः_View *pView,
+  ध्रुव Trigger *pTrigger,
+  u8 अधिकम्_गन्तव्यम्_Follow,
+  u8 show_पूर्णम्_List
 ){
-  int cnt = 0;
-  if( pTrigger==0 ) return;
-  sqlite3TreeViewPush(&pView,
-     moreToFollow || (showFullList && pTrigger->pNext!=0));
-  do{
-    if( cnt++ && pTrigger->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  पूर्णाङ्क cnt = 0;
+  यदि( pTrigger==0 ) प्रत्यागम;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView,
+     अधिकम्_गन्तव्यम्_Follow || (show_पूर्णम्_List && pTrigger->p_अग्र!=0));
+  कुरु{
+    यदि( cnt++ && pTrigger->p_अग्र==0 ){
+      sqlite3_वृक्षः_View_निष्कासय(&pView);
+      sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "TRIGGER %s", pTrigger->zName);
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewTriggerStep(pView, pTrigger->step_list, 0, 1);
-    sqlite3TreeViewPop(&pView);
-  }while( showFullList && (pTrigger = pTrigger->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_वृक्षः_View_पङ्क्तिः(pView, "TRIGGER %s", pTrigger->zName);
+    sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+    sqlite3_वृक्षः_View_Trigger_चरणः(pView, pTrigger->चरणः_list, 0, 1);
+    sqlite3_वृक्षः_View_निष्कासय(&pView);
+  }यावत्( show_पूर्णम्_List && (pTrigger = pTrigger->p_अग्र)!=0 );
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-#endif /* SQLITE_OMIT_TRIGGER */
+#यदि_अन्तः /* SQLITE_OMIT_TRIGGER */
   
 
 /*
@@ -1301,32 +1301,32 @@ void sqlite3TreeViewTrigger(
 **
 **     sqlite3ShowWhereTerm() in where.c
 */
-void sqlite3ShowExpr(const Expr *p){ sqlite3TreeViewExpr(0,p,0); }
-void sqlite3ShowExprList(const ExprList *p){ sqlite3TreeViewExprList(0,p,0,0);}
-void sqlite3ShowIdList(const IdList *p){ sqlite3TreeViewIdList(0,p,0,0); }
-void sqlite3ShowSrcList(const SrcList *p){
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "SRCLIST");
-  sqlite3TreeViewSrcList(pView,p);
-  sqlite3TreeViewPop(&pView);
+शून्य sqlite3_Show_व्यञ्जकम्(ध्रुव व्यञ्जकम् *p){ sqlite3_वृक्षः_View_व्यञ्जकम्(0,p,0); }
+शून्य sqlite3_Show_व्यञ्जकम्_List(ध्रुव व्यञ्जकम्_List *p){ sqlite3_वृक्षः_View_व्यञ्जकम्_List(0,p,0,0);}
+शून्य sqlite3ShowIdList(ध्रुव IdList *p){ sqlite3_वृक्षः_View_Id_List(0,p,0,0); }
+शून्य sqlite3ShowSrcList(ध्रुव SrcList *p){
+  वृक्षः_View *pView = 0;
+  sqlite3_वृक्षः_View_प्रक्षिप(&pView, 0);
+  sqlite3_वृक्षः_View_पङ्क्तिः(pView, "SRCLIST");
+  sqlite3_वृक्षः_View_Src_List(pView,p);
+  sqlite3_वृक्षः_View_निष्कासय(&pView);
 }
-void sqlite3ShowSelect(const Select *p){ sqlite3TreeViewSelect(0,p,0); }
-void sqlite3ShowWith(const With *p){ sqlite3TreeViewWith(0,p,0); }
-void sqlite3ShowUpsert(const Upsert *p){ sqlite3TreeViewUpsert(0,p,0); }
-#ifndef SQLITE_OMIT_TRIGGER
-void sqlite3ShowTriggerStep(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,0);
+शून्य sqlite3ShowSelect(ध्रुव Select *p){ sqlite3_वृक्षः_View_Select(0,p,0); }
+शून्य sqlite3ShowWith(ध्रुव With *p){ sqlite3_वृक्षः_View_With(0,p,0); }
+शून्य sqlite3ShowUpsert(ध्रुव Upsert *p){ sqlite3_वृक्षः_View_Upsert(0,p,0); }
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
+शून्य sqlite3_Show_Trigger_चरणः(ध्रुव Trigger_चरणः *p){
+  sqlite3_वृक्षः_View_Trigger_चरणः(0,p,0,0);
 }
-void sqlite3ShowTriggerStepList(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,1);
+शून्य sqlite3_Show_Trigger_चरणः_List(ध्रुव Trigger_चरणः *p){
+  sqlite3_वृक्षः_View_Trigger_चरणः(0,p,0,1);
 }
-void sqlite3ShowTrigger(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,0); }
-void sqlite3ShowTriggerList(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,1);}
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3ShowWindow(const Window *p){ sqlite3TreeViewWindow(0,p,0); }
-void sqlite3ShowWinFunc(const Window *p){ sqlite3TreeViewWinFunc(0,p,0); }
-#endif
+शून्य sqlite3ShowTrigger(ध्रुव Trigger *p){ sqlite3_वृक्षः_View_Trigger(0,p,0,0); }
+शून्य sqlite3ShowTriggerList(ध्रुव Trigger *p){ sqlite3_वृक्षः_View_Trigger(0,p,0,1);}
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_OMIT_WINDOWFUNC
+शून्य sqlite3_Show_गवाक्षः(ध्रुव गवाक्षः *p){ sqlite3_वृक्षः_View_गवाक्षः(0,p,0); }
+शून्य sqlite3ShowWinFunc(ध्रुव गवाक्षः *p){ sqlite3_वृक्षः_View_Win_Func(0,p,0); }
+#यदि_अन्तः
 
-#endif /* SQLITE_DEBUG */
+#यदि_अन्तः /* SQLITE_DEBUG */

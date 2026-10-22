@@ -11,10 +11,10 @@
 ** This file contains code used by the compiler to add foreign key
 ** support to compiled SQL statements.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-#ifndef SQLITE_OMIT_TRIGGER
+#यदि_अपरिभाषितम् SQLITE_OMIT_FOREIGN_कुञ्चिका
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
 
 /*
 ** Deferred and Immediate FKs
@@ -180,22 +180,22 @@
 ** into pParse. If an OOM error occurs, non-zero is returned and the
 ** pParse->db->mallocFailed flag is set.
 */
-int sqlite3FkLocateIndex(
+पूर्णाङ्क sqlite3_Fk_Locate_सूचकांक(
   Parse *pParse,                  /* Parse context to store any error in */
-  Table *pParent,                 /* Parent table of FK constraint pFKey */
+  सारणी *pParent,                 /* Parent table of FK constraint pFKey */
   FKey *pFKey,                    /* Foreign key to find index for */
-  Index **ppIdx,                  /* OUT: Unique index on parent table */
-  int **paiCol                    /* OUT: Map of index columns in pFKey */
+  सूचकांक **ppIdx,                  /* OUT: Unique index on parent table */
+  पूर्णाङ्क **paiCol                    /* OUT: Map of index columns in pFKey */
 ){
-  Index *pIdx = 0;                    /* Value to return via *ppIdx */
-  int *aiCol = 0;                     /* Value to return via *paiCol */
-  int nCol = pFKey->nCol;             /* Number of columns in parent key */
-  char *zKey = pFKey->aCol[0].zCol;   /* Name of left-most parent key column */
+  सूचकांक *pIdx = 0;                    /* Value to return via *ppIdx */
+  पूर्णाङ्क *aiCol = 0;                     /* Value to return via *paiCol */
+  पूर्णाङ्क nCol = pFKey->nCol;             /* Number of columns in parent key */
+  वर्ण *z_कुञ्चिका = pFKey->aCol[0].zCol;   /* Name of left-most parent key column */
 
   /* The caller is responsible for zeroing output parameters. */
-  assert( ppIdx && *ppIdx==0 );
-  assert( !paiCol || *paiCol==0 );
-  assert( pParse );
+  प्रतिज्ञा( ppIdx && *ppIdx==0 );
+  प्रतिज्ञा( !paiCol || *paiCol==0 );
+  प्रतिज्ञा( pParse );
 
   /* If this is a non-composite (single column) foreign key, check if it 
   ** maps to the INTEGER PRIMARY KEY of table pParent. If so, leave *ppIdx 
@@ -205,7 +205,7 @@ int sqlite3FkLocateIndex(
   ** space for the aiCol array (returned via output parameter *paiCol).
   ** Non-composite foreign keys do not require the aiCol array.
   */
-  if( nCol==1 ){
+  यदि( nCol==1 ){
     /* The FK maps to the IPK if any of the following are true:
     **
     **   1) There is an INTEGER PRIMARY KEY column and the FK is implicitly 
@@ -213,82 +213,82 @@ int sqlite3FkLocateIndex(
     **   2) The FK is explicitly mapped to a column declared as INTEGER
     **      PRIMARY KEY.
     */
-    if( pParent->iPKey>=0 ){
-      if( !zKey ) return 0;
-      if( !sqlite3StrICmp(pParent->aCol[pParent->iPKey].zCnName, zKey) ){
-        return 0;
+    यदि( pParent->iPKey>=0 ){
+      यदि( !z_कुञ्चिका ) प्रत्यागम 0;
+      यदि( !sqlite3StrICmp(pParent->aCol[pParent->iPKey].zCnName, z_कुञ्चिका) ){
+        प्रत्यागम 0;
       }
     }
-  }else if( paiCol ){
-    assert( nCol>1 );
-    aiCol = (int *)sqlite3DbMallocRawNN(pParse->db, nCol*sizeof(int));
-    if( !aiCol ) return 1;
+  }अन्यथा यदि( paiCol ){
+    प्रतिज्ञा( nCol>1 );
+    aiCol = (पूर्णाङ्क *)sqlite3DbMallocRawNN(pParse->db, nCol*परिमाण(पूर्णाङ्क));
+    यदि( !aiCol ) प्रत्यागम 1;
     *paiCol = aiCol;
   }
 
-  for(pIdx=pParent->pIndex; pIdx; pIdx=pIdx->pNext){
-    if( pIdx->nKeyCol==nCol && IsUniqueIndex(pIdx) && pIdx->pPartIdxWhere==0 ){ 
+  प्रति(pIdx=pParent->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+    यदि( pIdx->n_कुञ्चिका_Col==nCol && Is_Unique_सूचकांक(pIdx) && pIdx->pPartIdxWhere==0 ){ 
       /* pIdx is a UNIQUE index (or a PRIMARY KEY) and has the right number
       ** of columns. If each indexed column corresponds to a foreign key
       ** column of pFKey, then this index is a winner.  */
 
-      if( zKey==0 ){
+      यदि( z_कुञ्चिका==0 ){
         /* If zKey is NULL, then this foreign key is implicitly mapped to 
         ** the PRIMARY KEY of table pParent. The PRIMARY KEY index may be 
         ** identified by the test.  */
-        if( IsPrimaryKeyIndex(pIdx) ){
-          if( aiCol ){
-            int i;
-            for(i=0; i<nCol; i++) aiCol[i] = pFKey->aCol[i].iFrom;
+        यदि( Is_Primary_कुञ्चिका_सूचकांक(pIdx) ){
+          यदि( aiCol ){
+            पूर्णाङ्क i;
+            प्रति(i=0; i<nCol; i++) aiCol[i] = pFKey->aCol[i].iFrom;
           }
-          break;
+          भङ्ग;
         }
-      }else{
+      }अन्यथा{
         /* If zKey is non-NULL, then this foreign key was declared to
         ** map to an explicit list of columns in table pParent. Check if this
         ** index matches those columns. Also, check that the index uses
         ** the default collation sequences for each column. */
-        int i, j;
-        for(i=0; i<nCol; i++){
+        पूर्णाङ्क i, j;
+        प्रति(i=0; i<nCol; i++){
           i16 iCol = pIdx->aiColumn[i];     /* Index of column in parent tbl */
-          const char *zDfltColl;            /* Def. collation for column */
-          char *zIdxCol;                    /* Name of indexed column */
+          ध्रुव वर्ण *zDfltColl;            /* Def. collation for column */
+          वर्ण *zIdxCol;                    /* Name of indexed column */
 
-          if( iCol<0 ) break; /* No foreign keys against expression indexes */
+          यदि( iCol<0 ) भङ्ग; /* No foreign keys against expression indexes */
 
           /* If the index uses a collation sequence that is different from
           ** the default collation sequence for the column, this index is
           ** unusable. Bail out early in this case.  */
           zDfltColl = sqlite3ColumnColl(&pParent->aCol[iCol]);
-          if( !zDfltColl ) zDfltColl = sqlite3StrBINARY;
-          if( sqlite3StrICmp(pIdx->azColl[i], zDfltColl) ) break;
+          यदि( !zDfltColl ) zDfltColl = sqlite3_Str_द्विमान;
+          यदि( sqlite3StrICmp(pIdx->azColl[i], zDfltColl) ) भङ्ग;
 
           zIdxCol = pParent->aCol[iCol].zCnName;
-          for(j=0; j<nCol; j++){
-            if( sqlite3StrICmp(pFKey->aCol[j].zCol, zIdxCol)==0 ){
-              if( aiCol ) aiCol[i] = pFKey->aCol[j].iFrom;
-              break;
+          प्रति(j=0; j<nCol; j++){
+            यदि( sqlite3StrICmp(pFKey->aCol[j].zCol, zIdxCol)==0 ){
+              यदि( aiCol ) aiCol[i] = pFKey->aCol[j].iFrom;
+              भङ्ग;
             }
           }
-          if( j==nCol ) break;
+          यदि( j==nCol ) भङ्ग;
         }
-        if( i==nCol ) break;      /* pIdx is usable */
+        यदि( i==nCol ) भङ्ग;      /* pIdx is usable */
       }
     }
   }
 
-  if( !pIdx ){
-    if( !pParse->disableTriggers ){
-      sqlite3ErrorMsg(pParse,
+  यदि( !pIdx ){
+    यदि( !pParse->disableTriggers ){
+      sqlite3_Error_सन्देशः(pParse,
            "foreign key mismatch - \"%w\" referencing \"%w\"",
-           pFKey->pFrom->zName, pFKey->zTo);
+           pFKey->pFrom->zName, pFKey->z_गन्तव्यम्);
     }
     sqlite3DbFree(pParse->db, aiCol);
-    return 1;
+    प्रत्यागम 1;
   }
 
   *ppIdx = pIdx;
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -317,21 +317,21 @@ int sqlite3FkLocateIndex(
 ** These operations are identified in the comment at the top of this file 
 ** (fkey.c) as "I.1" and "D.1".
 */
-static void fkLookupParent(
+स्थिर शून्य fkLookupParent(
   Parse *pParse,        /* Parse context */
-  int iDb,              /* Index of database housing pTab */
-  Table *pTab,          /* Parent table of FK pFKey */
-  Index *pIdx,          /* Unique index on parent key columns in pTab */
+  पूर्णाङ्क iDb,              /* Index of database housing pTab */
+  सारणी *pTab,          /* Parent table of FK pFKey */
+  सूचकांक *pIdx,          /* Unique index on parent key columns in pTab */
   FKey *pFKey,          /* Foreign key constraint */
-  int *aiCol,           /* Map from parent key columns to child table columns */
-  int regData,          /* Address of array containing child table row */
-  int nIncr,            /* Increment constraint counter by this */
-  int isIgnore          /* If true, pretend pTab contains all NULL values */
+  पूर्णाङ्क *aiCol,           /* Map from parent key columns to child table columns */
+  पूर्णाङ्क reg_दत्त,          /* Address of array containing child table row */
+  पूर्णाङ्क nIncr,            /* Increment constraint counter by this */
+  पूर्णाङ्क isIgnore          /* If true, pretend pTab contains all NULL values */
 ){
-  int i;                                    /* Iterator variable */
+  पूर्णाङ्क i;                                    /* Iterator variable */
   Vdbe *v = sqlite3GetVdbe(pParse);         /* Vdbe to add code to */
-  int iCur = pParse->nTab - 1;              /* Cursor number to use */
-  int iOk = sqlite3VdbeMakeLabel(pParse);   /* jump here if parent key found */
+  पूर्णाङ्क iCur = pParse->nTab - 1;              /* Cursor number to use */
+  पूर्णाङ्क iOk = sqlite3VdbeMakeLabel(pParse);   /* jump here if parent key found */
 
   sqlite3VdbeVerifyAbortable(v,
     (!pFKey->isDeferred
@@ -346,57 +346,57 @@ static void fkLookupParent(
   ** Check if any of the key columns in the child table row are NULL. If 
   ** any are, then the constraint is considered satisfied. No need to 
   ** search for a matching row in the parent table.  */
-  if( nIncr<0 ){
-    sqlite3VdbeAddOp2(v, OP_FkIfZero, pFKey->isDeferred, iOk);
+  यदि( nIncr<0 ){
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_FkIfZero, pFKey->isDeferred, iOk);
     VdbeCoverage(v);
   }
-  for(i=0; i<pFKey->nCol; i++){
-    int iReg = sqlite3TableColumnToStorage(pFKey->pFrom,aiCol[i]) + regData + 1;
-    sqlite3VdbeAddOp2(v, OP_IsNull, iReg, iOk); VdbeCoverage(v);
+  प्रति(i=0; i<pFKey->nCol; i++){
+    पूर्णाङ्क iReg = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pFKey->pFrom,aiCol[i]) + reg_दत्त + 1;
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, iReg, iOk); VdbeCoverage(v);
   }
 
-  if( isIgnore==0 ){
-    if( pIdx==0 ){
+  यदि( isIgnore==0 ){
+    यदि( pIdx==0 ){
       /* If pIdx is NULL, then the parent key is the INTEGER PRIMARY KEY
       ** column of the parent table (table pTab).  */
-      int iMustBeInt;               /* Address of MustBeInt instruction */
-      int regTemp = sqlite3GetTempReg(pParse);
+      पूर्णाङ्क iMustBeInt;               /* Address of MustBeInt instruction */
+      पूर्णाङ्क reg_अस्थायी = sqlite3_Get_अस्थायी_Reg(pParse);
   
       /* Invoke MustBeInt to coerce the child key value to an integer (i.e. 
       ** apply the affinity of the parent key). If this fails, then there
       ** is no matching parent key. Before using MustBeInt, make a copy of
       ** the value. Otherwise, the value inserted into the child key column
       ** will have INTEGER affinity applied to it, which may not be correct.  */
-      sqlite3VdbeAddOp2(v, OP_SCopy, 
-        sqlite3TableColumnToStorage(pFKey->pFrom,aiCol[0])+1+regData, regTemp);
-      iMustBeInt = sqlite3VdbeAddOp2(v, OP_MustBeInt, regTemp, 0);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_SCopy, 
+        sqlite3_सारणी_Column_गन्तव्यम्_Storage(pFKey->pFrom,aiCol[0])+1+reg_दत्त, reg_अस्थायी);
+      iMustBeInt = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_MustBeInt, reg_अस्थायी, 0);
       VdbeCoverage(v);
   
       /* If the parent table is the same as the child table, and we are about
       ** to increment the constraint-counter (i.e. this is an INSERT operation),
       ** then check if the row being inserted matches itself. If so, do not
       ** increment the constraint-counter.  */
-      if( pTab==pFKey->pFrom && nIncr==1 ){
-        sqlite3VdbeAddOp3(v, OP_Eq, regData, iOk, regTemp); VdbeCoverage(v);
+      यदि( pTab==pFKey->pFrom && nIncr==1 ){
+        sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Eq, reg_दत्त, iOk, reg_अस्थायी); VdbeCoverage(v);
         sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
       }
   
-      sqlite3OpenTable(pParse, iCur, iDb, pTab, OP_OpenRead);
-      sqlite3VdbeAddOp3(v, OP_NotExists, iCur, 0, regTemp); VdbeCoverage(v);
+      sqlite3_Open_सारणी(pParse, iCur, iDb, pTab, OP_OpenRead);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NotExists, iCur, 0, reg_अस्थायी); VdbeCoverage(v);
       sqlite3VdbeGoto(v, iOk);
-      sqlite3VdbeJumpHere(v, sqlite3VdbeCurrentAddr(v)-2);
-      sqlite3VdbeJumpHere(v, iMustBeInt);
-      sqlite3ReleaseTempReg(pParse, regTemp);
-    }else{
-      int nCol = pFKey->nCol;
-      int regTemp = sqlite3GetTempRange(pParse, nCol);
+      sqlite3_Vdbe_Jump_अत्र(v, sqlite3VdbeCurrentAddr(v)-2);
+      sqlite3_Vdbe_Jump_अत्र(v, iMustBeInt);
+      sqlite3_Release_अस्थायी_Reg(pParse, reg_अस्थायी);
+    }अन्यथा{
+      पूर्णाङ्क nCol = pFKey->nCol;
+      पूर्णाङ्क reg_अस्थायी = sqlite3_Get_अस्थायी_Range(pParse, nCol);
   
-      sqlite3VdbeAddOp3(v, OP_OpenRead, iCur, pIdx->tnum, iDb);
-      sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
-      for(i=0; i<nCol; i++){
-        sqlite3VdbeAddOp2(v, OP_Copy, 
-               sqlite3TableColumnToStorage(pFKey->pFrom, aiCol[i])+1+regData,
-               regTemp+i);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_OpenRead, iCur, pIdx->tnum, iDb);
+      sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pIdx);
+      प्रति(i=0; i<nCol; i++){
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Copy, 
+               sqlite3_सारणी_Column_गन्तव्यम्_Storage(pFKey->pFrom, aiCol[i])+1+reg_दत्त,
+               reg_अस्थायी+i);
       }
   
       /* If the parent table is the same as the child table, and we are about
@@ -409,35 +409,35 @@ static void fkLookupParent(
       ** of the parent-key values are NULL (at this point it is known that
       ** none of the child key values are).
       */
-      if( pTab==pFKey->pFrom && nIncr==1 ){
-        int iJump = sqlite3VdbeCurrentAddr(v) + nCol + 1;
-        for(i=0; i<nCol; i++){
-          int iChild = sqlite3TableColumnToStorage(pFKey->pFrom,aiCol[i])
-                              +1+regData;
-          int iParent = 1+regData;
-          iParent += sqlite3TableColumnToStorage(pIdx->pTable,
+      यदि( pTab==pFKey->pFrom && nIncr==1 ){
+        पूर्णाङ्क iJump = sqlite3VdbeCurrentAddr(v) + nCol + 1;
+        प्रति(i=0; i<nCol; i++){
+          पूर्णाङ्क iChild = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pFKey->pFrom,aiCol[i])
+                              +1+reg_दत्त;
+          पूर्णाङ्क iParent = 1+reg_दत्त;
+          iParent += sqlite3_सारणी_Column_गन्तव्यम्_Storage(pIdx->p_सारणी,
                                                  pIdx->aiColumn[i]);
-          assert( pIdx->aiColumn[i]>=0 );
-          assert( aiCol[i]!=pTab->iPKey );
-          if( pIdx->aiColumn[i]==pTab->iPKey ){
+          प्रतिज्ञा( pIdx->aiColumn[i]>=0 );
+          प्रतिज्ञा( aiCol[i]!=pTab->iPKey );
+          यदि( pIdx->aiColumn[i]==pTab->iPKey ){
             /* The parent key is a composite key that includes the IPK column */
-            iParent = regData;
+            iParent = reg_दत्त;
           }
-          sqlite3VdbeAddOp3(v, OP_Ne, iChild, iJump, iParent); VdbeCoverage(v);
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Ne, iChild, iJump, iParent); VdbeCoverage(v);
           sqlite3VdbeChangeP5(v, SQLITE_JUMPIFNULL);
         }
         sqlite3VdbeGoto(v, iOk);
       }
 
-      sqlite3VdbeAddOp4(v, OP_Affinity, regTemp, nCol, 0,
-                        sqlite3IndexAffinityStr(pParse->db,pIdx), nCol);
-      sqlite3VdbeAddOp4Int(v, OP_Found, iCur, iOk, regTemp, nCol);
+      sqlite3_Vdbe_सङ्कलय_Op4(v, OP_Affinity, reg_अस्थायी, nCol, 0,
+                        sqlite3_सूचकांक_Affinity_Str(pParse->db,pIdx), nCol);
+      sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_प्राप्तम्, iCur, iOk, reg_अस्थायी, nCol);
       VdbeCoverage(v);
-      sqlite3ReleaseTempRange(pParse, regTemp, nCol);
+      sqlite3_Release_अस्थायी_Range(pParse, reg_अस्थायी, nCol);
     }
   }
 
-  if( !pFKey->isDeferred && !(pParse->db->flags & SQLITE_DeferFKs)
+  यदि( !pFKey->isDeferred && !(pParse->db->flags & SQLITE_DeferFKs)
    && !pParse->pToplevel 
    && !pParse->isMultiWrite 
   ){
@@ -445,18 +445,18 @@ static void fkLookupParent(
     ** one row into the table, raise a constraint immediately instead of
     ** incrementing a counter. This is necessary as the VM code is being
     ** generated for will not open a statement transaction.  */
-    assert( nIncr==1 );
+    प्रतिज्ञा( nIncr==1 );
     sqlite3HaltConstraint(pParse, SQLITE_CONSTRAINT_FOREIGNKEY,
         OE_Abort, 0, P4_STATIC, P5_ConstraintFK);
-  }else{
-    if( nIncr>0 && pFKey->isDeferred==0 ){
+  }अन्यथा{
+    यदि( nIncr>0 && pFKey->isDeferred==0 ){
       sqlite3MayAbort(pParse);
     }
-    sqlite3VdbeAddOp2(v, OP_FkCounter, pFKey->isDeferred, nIncr);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Fk_गणक, pFKey->isDeferred, nIncr);
   }
 
   sqlite3VdbeResolveLabel(v, iOk);
-  sqlite3VdbeAddOp1(v, OP_Close, iCur);
+  sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Close, iCur);
 }
 
 
@@ -468,52 +468,52 @@ static void fkLookupParent(
 ** for pTab.  regBase itself holds the rowid.  regBase+1 holds the first
 ** column.  regBase+2 holds the second column, and so forth.
 */
-static Expr *exprTableRegister(
+स्थिर व्यञ्जकम् *व्यञ्जकम्_सारणी_पञ्जिकाकोशः(
   Parse *pParse,     /* Parsing and code generating context */
-  Table *pTab,       /* The table whose content is at r[regBase]... */
-  int regBase,       /* Contents of table pTab */
+  सारणी *pTab,       /* The table whose content is at r[regBase]... */
+  पूर्णाङ्क reg_आधारः,       /* Contents of table pTab */
   i16 iCol           /* Which column of pTab is desired */
 ){
-  Expr *pExpr;
+  व्यञ्जकम् *p_व्यञ्जकम्;
   Column *pCol;
-  const char *zColl;
+  ध्रुव वर्ण *zColl;
   sqlite3 *db = pParse->db;
 
-  pExpr = sqlite3Expr(db, TK_REGISTER, 0);
-  if( pExpr ){
-    if( iCol>=0 && iCol!=pTab->iPKey ){
+  p_व्यञ्जकम् = sqlite3_व्यञ्जकम्(db, TK_पञ्जिकाकोशः, 0);
+  यदि( p_व्यञ्जकम् ){
+    यदि( iCol>=0 && iCol!=pTab->iPKey ){
       pCol = &pTab->aCol[iCol];
-      pExpr->iTable = regBase + sqlite3TableColumnToStorage(pTab,iCol) + 1;
-      pExpr->affExpr = pCol->affinity;
+      p_व्यञ्जकम्->i_सारणी = reg_आधारः + sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab,iCol) + 1;
+      p_व्यञ्जकम्->aff_व्यञ्जकम् = pCol->affinity;
       zColl = sqlite3ColumnColl(pCol);
-      if( zColl==0 ) zColl = db->pDfltColl->zName;
-      pExpr = sqlite3ExprAddCollateString(pParse, pExpr, zColl);
-    }else{
-      pExpr->iTable = regBase;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
+      यदि( zColl==0 ) zColl = db->pDfltColl->zName;
+      p_व्यञ्जकम् = sqlite3_व्यञ्जकम्_सङ्कलय_Collate_String(pParse, p_व्यञ्जकम्, zColl);
+    }अन्यथा{
+      p_व्यञ्जकम्->i_सारणी = reg_आधारः;
+      p_व्यञ्जकम्->aff_व्यञ्जकम् = SQLITE_AFF_INTEGER;
     }
   }
-  return pExpr;
+  प्रत्यागम p_व्यञ्जकम्;
 }
 
 /*
 ** Return an Expr object that refers to column iCol of table pTab which
 ** has cursor iCur.
 */
-static Expr *exprTableColumn(
+स्थिर व्यञ्जकम् *व्यञ्जकम्_सारणी_Column(
   sqlite3 *db,      /* The database connection */
-  Table *pTab,      /* The table whose column is desired */
-  int iCursor,      /* The open cursor on the table */
+  सारणी *pTab,      /* The table whose column is desired */
+  पूर्णाङ्क iCursor,      /* The open cursor on the table */
   i16 iCol          /* The column that is wanted */
 ){
-  Expr *pExpr = sqlite3Expr(db, TK_COLUMN, 0);
-  if( pExpr ){
-    assert( ExprUseYTab(pExpr) );
-    pExpr->y.pTab = pTab;
-    pExpr->iTable = iCursor;
-    pExpr->iColumn = iCol;
+  व्यञ्जकम् *p_व्यञ्जकम् = sqlite3_व्यञ्जकम्(db, TK_COLUMN, 0);
+  यदि( p_व्यञ्जकम् ){
+    प्रतिज्ञा( व्यञ्जकम्_Use_YTab(p_व्यञ्जकम्) );
+    p_व्यञ्जकम्->y.pTab = pTab;
+    p_व्यञ्जकम्->i_सारणी = iCursor;
+    p_व्यञ्जकम्->iColumn = iCol;
   }
-  return pExpr;
+  प्रत्यागम p_व्यञ्जकम्;
 }
 
 /*
@@ -524,26 +524,26 @@ static Expr *exprTableColumn(
 ** This is used in cases where (p1.iCol1 = p2.iCol2) must be evaluated
 ** using the affinity of p1.iCol1 as part of foreign key processing.
 */
-static int fkUsesLhsAffinity(Table *p1, int iCol1, Table *p2, int iCol2){
+स्थिर पूर्णाङ्क fk_उपयुङ्क्ते_Lhs_Affinity(सारणी *p1, पूर्णाङ्क iCol1, सारणी *p2, पूर्णाङ्क iCol2){
   u8 aff1 = iCol1>=0 ? p1->aCol[iCol1].affinity : SQLITE_AFF_NUMERIC;
   u8 aff2 = p2->aCol[iCol2].affinity;
 
   /* If either side has a numeric affinity, then the comparison uses numeric
   ** affinity. So the affinity matches if aff1 is numeric, but not if aff1
   ** is not numeric but aff2 is.  */
-  if( sqlite3IsNumericAffinity(aff1) ) return 1;
-  if( sqlite3IsNumericAffinity(aff2) ) return 0;
+  यदि( sqlite3IsNumericAffinity(aff1) ) प्रत्यागम 1;
+  यदि( sqlite3IsNumericAffinity(aff2) ) प्रत्यागम 0;
 
-  assert( aff1==SQLITE_AFF_TEXT || aff1==SQLITE_AFF_BLOB );
-  assert( aff2==SQLITE_AFF_TEXT || aff2==SQLITE_AFF_BLOB );
+  प्रतिज्ञा( aff1==SQLITE_AFF_TEXT || aff1==SQLITE_AFF_BLOB );
+  प्रतिज्ञा( aff2==SQLITE_AFF_TEXT || aff2==SQLITE_AFF_BLOB );
 
   /* At this point, either the affinities are the same or one is TEXT and
   ** the other BLOB. In the second case the comparison will be done with
   ** BLOB affinity, which does not match if aff1 is TEXT.  */
-  return (aff1==aff2 || aff1==SQLITE_AFF_BLOB);
+  प्रत्यागम (aff1==aff2 || aff1==SQLITE_AFF_BLOB);
 }
 
-#ifndef SQLITE_OMIT_CAST
+#यदि_अपरिभाषितम् SQLITE_OMIT_CAST
 /*
 ** Return non-zero if a lookup on column iCol of table pTab, using collation
 ** sequence zColl, can be done using either the rowid or an index. That is,
@@ -551,20 +551,20 @@ static int fkUsesLhsAffinity(Table *p1, int iCol1, Table *p2, int iCol2){
 ** whose left-most column is iCol and whose collation sequence for that
 ** column is zColl. Return zero otherwise.
 */
-static int fkChildKeyIsIndexed(Table *pTab, int iCol, const char *zColl){
-  Index *pIdx;
-  if( iCol==pTab->iPKey ) return 1;
-  for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-    if( pIdx->aiColumn[0]==iCol
+स्थिर पूर्णाङ्क fk_Child_कुञ्चिका_Is_अनुक्रमितम्(सारणी *pTab, पूर्णाङ्क iCol, ध्रुव वर्ण *zColl){
+  सूचकांक *pIdx;
+  यदि( iCol==pTab->iPKey ) प्रत्यागम 1;
+  प्रति(pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+    यदि( pIdx->aiColumn[0]==iCol
      && pIdx->pPartIdxWhere==0
      && sqlite3StrICmp(pIdx->azColl[0], zColl)==0
     ){
-      return 1;
+      प्रत्यागम 1;
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
-#endif
+#यदि_अन्तः
 
 /*
 ** Return an expression equivalent to (pLeft = pRight), where pLeft is a
@@ -591,67 +591,67 @@ static int fkChildKeyIsIndexed(Table *pTab, int iCol, const char *zColl){
 ** IN ensure that no affinity other than that of the child column is
 ** applied.
 */
-static Expr *fkParentChildEq(
+स्थिर व्यञ्जकम् *fkParentChildEq(
   Parse *pParse,            /* Parsing context */
-  Expr *pLeft,              /* Parent key value */
-  Expr *pRight,             /* Unresolved reference to child key column */
-  Table *pTab,              /* Parent table */
-  int iCol,                 /* Parent key column, or <0 for rowid */
-  Table *pChild,            /* Child table */
-  int iChildCol,            /* Child key column */
-  int bComposite            /* This is part of a composite FK */
+  व्यञ्जकम् *p_वामः,              /* Parent key value */
+  व्यञ्जकम् *p_दक्षिणः,             /* Unresolved reference to child key column */
+  सारणी *pTab,              /* Parent table */
+  पूर्णाङ्क iCol,                 /* Parent key column, or <0 for rowid */
+  सारणी *pChild,            /* Child table */
+  पूर्णाङ्क iChildCol,            /* Child key column */
+  पूर्णाङ्क b_संयुक्त            /* This is part of a composite FK */
 ){
   sqlite3 *db = pParse->db;
-  Expr *pEq;
-#ifndef SQLITE_OMIT_CAST
-  Expr *pIn = 0;
-#endif
+  व्यञ्जकम् *pEq;
+#यदि_अपरिभाषितम् SQLITE_OMIT_CAST
+  व्यञ्जकम् *p_अन्तर् = 0;
+#यदि_अन्तः
 
-  if( fkUsesLhsAffinity(pTab, iCol, pChild, iChildCol) ){
-    return sqlite3PExpr(pParse, TK_EQ, pLeft, pRight);
+  यदि( fk_उपयुङ्क्ते_Lhs_Affinity(pTab, iCol, pChild, iChildCol) ){
+    प्रत्यागम sqlite3PExpr(pParse, TK_EQ, p_वामः, p_दक्षिणः);
   }
-  assert( iCol>=0 );
+  प्रतिज्ञा( iCol>=0 );
 
-#ifndef SQLITE_OMIT_CAST
+#यदि_अपरिभाषितम् SQLITE_OMIT_CAST
   {
-    const char *zColl = sqlite3ColumnColl(&pTab->aCol[iCol]);
-    if( zColl==0 ) zColl = sqlite3StrBINARY;
+    ध्रुव वर्ण *zColl = sqlite3ColumnColl(&pTab->aCol[iCol]);
+    यदि( zColl==0 ) zColl = sqlite3_Str_द्विमान;
 
     /* The IN term is only useful if it can drive a lookup on the child
     ** table. Omit it otherwise, so that a full scan of the child table
     ** does not have to evaluate it for every row.  */
-    if( bComposite || fkChildKeyIsIndexed(pChild, iChildCol, zColl) ){
-      static const Token tNumeric = { "NUMERIC", 7 };
-      Expr *pCast;
-      ExprList *pList;
+    यदि( b_संयुक्त || fk_Child_कुञ्चिका_Is_अनुक्रमितम्(pChild, iChildCol, zColl) ){
+      स्थिर ध्रुव Token tNumeric = { "NUMERIC", 7 };
+      व्यञ्जकम् *pCast;
+      व्यञ्जकम्_List *pList;
 
-      pCast = sqlite3ExprAlloc(db, TK_CAST, &tNumeric, 0);
-      sqlite3ExprAttachSubtrees(db, pCast, sqlite3ExprDup(db, pLeft, 0), 0);
-      pList = sqlite3ExprListAppend(pParse, 0,
-          sqlite3PExpr(pParse, TK_UPLUS, sqlite3ExprDup(db, pLeft, 0), 0)
+      pCast = sqlite3_व्यञ्जकम्_Alloc(db, TK_CAST, &tNumeric, 0);
+      sqlite3_व्यञ्जकम्_Attach_Subtrees(db, pCast, sqlite3_व्यञ्जकम्_Dup(db, p_वामः, 0), 0);
+      pList = sqlite3_व्यञ्जकम्_List_Append(pParse, 0,
+          sqlite3PExpr(pParse, TK_UPLUS, sqlite3_व्यञ्जकम्_Dup(db, p_वामः, 0), 0)
       );
-      pList = sqlite3ExprListAppend(pParse, pList,
+      pList = sqlite3_व्यञ्जकम्_List_Append(pParse, pList,
           sqlite3PExpr(pParse, TK_UPLUS, pCast, 0)
       );
-      pIn = sqlite3PExpr(pParse, TK_IN, sqlite3ExprAddCollateString(pParse,
-            sqlite3ExprDup(db, pRight, 0), zColl
+      p_अन्तर् = sqlite3PExpr(pParse, TK_अन्तर्, sqlite3_व्यञ्जकम्_सङ्कलय_Collate_String(pParse,
+            sqlite3_व्यञ्जकम्_Dup(db, p_दक्षिणः, 0), zColl
       ), 0);
-      if( pIn ){
-        pIn->x.pList = pList;
-        sqlite3ExprSetHeightAndFlags(pParse, pIn);
-      }else{
-        sqlite3ExprListDelete(db, pList);
+      यदि( p_अन्तर् ){
+        p_अन्तर्->x.pList = pList;
+        sqlite3_व्यञ्जकम्_समुच्चयः_Height_And_Flags(pParse, p_अन्तर्);
+      }अन्यथा{
+        sqlite3_व्यञ्जकम्_List_Delete(db, pList);
       }
     }
   }
-#endif
+#यदि_अन्तः
 
-  pRight = sqlite3PExpr(pParse, TK_UPLUS, pRight, 0);
-  pEq = sqlite3PExpr(pParse, TK_EQ, pLeft, pRight);
-#ifndef SQLITE_OMIT_CAST
-  pEq = sqlite3ExprAnd(pParse, pEq, pIn);
-#endif
-  return pEq;
+  p_दक्षिणः = sqlite3PExpr(pParse, TK_UPLUS, p_दक्षिणः, 0);
+  pEq = sqlite3PExpr(pParse, TK_EQ, p_वामः, p_दक्षिणः);
+#यदि_अपरिभाषितम् SQLITE_OMIT_CAST
+  pEq = sqlite3_व्यञ्जकम्_And(pParse, pEq, p_अन्तर्);
+#यदि_अन्तः
+  प्रत्यागम pEq;
 }
 
 /*
@@ -682,31 +682,31 @@ static Expr *fkParentChildEq(
 ** These operations are identified in the comment at the top of this file 
 ** (fkey.c) as "I.2" and "D.2".
 */
-static void fkScanChildren(
+स्थिर शून्य fk_अवलोकनम्_Children(
   Parse *pParse,                  /* Parse context */
   SrcList *pSrc,                  /* The child table to be scanned */
-  Table *pTab,                    /* The parent table */
-  Index *pIdx,                    /* Index on parent covering the foreign key */
+  सारणी *pTab,                    /* The parent table */
+  सूचकांक *pIdx,                    /* Index on parent covering the foreign key */
   FKey *pFKey,                    /* The foreign key linking pSrc to pTab */
-  int *aiCol,                     /* Map from pIdx cols to child table cols */
-  int regData,                    /* Parent row data starts here */
-  int nIncr                       /* Amount to increment deferred counter by */
+  पूर्णाङ्क *aiCol,                     /* Map from pIdx cols to child table cols */
+  पूर्णाङ्क reg_दत्त,                    /* Parent row data starts here */
+  पूर्णाङ्क nIncr                       /* Amount to increment deferred counter by */
 ){
   sqlite3 *db = pParse->db;       /* Database handle */
-  int i;                          /* Iterator variable */
-  Expr *pWhere = 0;               /* WHERE clause to scan with */
+  पूर्णाङ्क i;                          /* Iterator variable */
+  व्यञ्जकम् *pWhere = 0;               /* WHERE clause to scan with */
   NameContext sNameContext;       /* Context used to resolve WHERE clause */
   WhereInfo *pWInfo;              /* Context used by sqlite3WhereXXX() */
-  int iFkIfZero = 0;              /* Address of OP_FkIfZero */
+  पूर्णाङ्क iFkIfZero = 0;              /* Address of OP_FkIfZero */
   Vdbe *v = sqlite3GetVdbe(pParse);
 
-  assert( pIdx==0 || pIdx->pTable==pTab );
-  assert( pIdx==0 || pIdx->nKeyCol==pFKey->nCol );
-  assert( pIdx!=0 || pFKey->nCol==1 );
-  assert( pIdx!=0 || HasRowid(pTab) );
+  प्रतिज्ञा( pIdx==0 || pIdx->p_सारणी==pTab );
+  प्रतिज्ञा( pIdx==0 || pIdx->n_कुञ्चिका_Col==pFKey->nCol );
+  प्रतिज्ञा( pIdx!=0 || pFKey->nCol==1 );
+  प्रतिज्ञा( pIdx!=0 || HasRowid(pTab) );
 
-  if( nIncr<0 ){
-    iFkIfZero = sqlite3VdbeAddOp2(v, OP_FkIfZero, pFKey->isDeferred, 0);
+  यदि( nIncr<0 ){
+    iFkIfZero = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_FkIfZero, pFKey->isDeferred, 0);
     VdbeCoverage(v);
   }
 
@@ -718,23 +718,23 @@ static void fkScanChildren(
   ** the parent key columns. The affinity of the parent key column should
   ** be applied to each child key value before the comparison takes place.
   */
-  for(i=0; i<pFKey->nCol; i++){
-    Expr *pLeft;                  /* Value from parent table row */
-    Expr *pRight;                 /* Column ref to child table */
-    Expr *pEq;                    /* Expression (pLeft = pRight) */
+  प्रति(i=0; i<pFKey->nCol; i++){
+    व्यञ्जकम् *p_वामः;                  /* Value from parent table row */
+    व्यञ्जकम् *p_दक्षिणः;                 /* Column ref to child table */
+    व्यञ्जकम् *pEq;                    /* Expression (pLeft = pRight) */
     i16 iCol;                     /* Index of column in parent table */
     i16 iCol2;                    /* Index of column in child table */
-    const char *zCol;             /* Name of column in child table */
+    ध्रुव वर्ण *zCol;             /* Name of column in child table */
 
     iCol = pIdx ? pIdx->aiColumn[i] : -1;
-    pLeft = exprTableRegister(pParse, pTab, regData, iCol);
+    p_वामः = व्यञ्जकम्_सारणी_पञ्जिकाकोशः(pParse, pTab, reg_दत्त, iCol);
     iCol2 = aiCol ? aiCol[i] : pFKey->aCol[0].iFrom;
-    assert( iCol2>=0 );
+    प्रतिज्ञा( iCol2>=0 );
     zCol = pFKey->pFrom->aCol[iCol2].zCnName;
-    pRight = sqlite3Expr(db, TK_ID, zCol);
-    pEq = fkParentChildEq(pParse, pLeft, pRight, pTab, iCol,
+    p_दक्षिणः = sqlite3_व्यञ्जकम्(db, TK_ID, zCol);
+    pEq = fkParentChildEq(pParse, p_वामः, p_दक्षिणः, pTab, iCol,
                           pFKey->pFrom, iCol2, pFKey->nCol>0);
-    pWhere = sqlite3ExprAnd(pParse, pWhere, pEq);
+    pWhere = sqlite3_व्यञ्जकम्_And(pParse, pWhere, pEq);
   }
 
   /* If the child table is the same as the parent table, then add terms
@@ -751,51 +751,51 @@ static void fkScanChildren(
   ** as the required values have already been loaded into registers
   ** by the caller.
   */
-  if( pTab==pFKey->pFrom && nIncr>0 ){
-    Expr *pNe;                    /* Expression (pLeft != pRight) */
-    Expr *pLeft;                  /* Value from parent table row */
-    Expr *pRight;                 /* Column ref to child table */
-    if( HasRowid(pTab) ){
-      pLeft = exprTableRegister(pParse, pTab, regData, -1);
-      pRight = exprTableColumn(db, pTab, pSrc->a[0].iCursor, -1);
-      pNe = sqlite3PExpr(pParse, TK_NE, pLeft, pRight);
-    }else{
-      Expr *pEq, *pAll = 0;
-      assert( pIdx!=0 );
-      for(i=0; i<pIdx->nKeyCol; i++){
+  यदि( pTab==pFKey->pFrom && nIncr>0 ){
+    व्यञ्जकम् *pNe;                    /* Expression (pLeft != pRight) */
+    व्यञ्जकम् *p_वामः;                  /* Value from parent table row */
+    व्यञ्जकम् *p_दक्षिणः;                 /* Column ref to child table */
+    यदि( HasRowid(pTab) ){
+      p_वामः = व्यञ्जकम्_सारणी_पञ्जिकाकोशः(pParse, pTab, reg_दत्त, -1);
+      p_दक्षिणः = व्यञ्जकम्_सारणी_Column(db, pTab, pSrc->a[0].iCursor, -1);
+      pNe = sqlite3PExpr(pParse, TK_NE, p_वामः, p_दक्षिणः);
+    }अन्यथा{
+      व्यञ्जकम् *pEq, *pAll = 0;
+      प्रतिज्ञा( pIdx!=0 );
+      प्रति(i=0; i<pIdx->n_कुञ्चिका_Col; i++){
         i16 iCol = pIdx->aiColumn[i];
-        assert( iCol>=0 );
-        pLeft = exprTableRegister(pParse, pTab, regData, iCol);
-        pRight = sqlite3Expr(db, TK_ID, pTab->aCol[iCol].zCnName);
-        pEq = sqlite3PExpr(pParse, TK_IS, pLeft, pRight);
-        pAll = sqlite3ExprAnd(pParse, pAll, pEq);
+        प्रतिज्ञा( iCol>=0 );
+        p_वामः = व्यञ्जकम्_सारणी_पञ्जिकाकोशः(pParse, pTab, reg_दत्त, iCol);
+        p_दक्षिणः = sqlite3_व्यञ्जकम्(db, TK_ID, pTab->aCol[iCol].zCnName);
+        pEq = sqlite3PExpr(pParse, TK_IS, p_वामः, p_दक्षिणः);
+        pAll = sqlite3_व्यञ्जकम्_And(pParse, pAll, pEq);
       }
       pNe = sqlite3PExpr(pParse, TK_NOT, pAll, 0);
     }
-    pWhere = sqlite3ExprAnd(pParse, pWhere, pNe);
+    pWhere = sqlite3_व्यञ्जकम्_And(pParse, pWhere, pNe);
   }
 
   /* Resolve the references in the WHERE clause. */
-  memset(&sNameContext, 0, sizeof(NameContext));
+  स्मृतिं_पूरय(&sNameContext, 0, परिमाण(NameContext));
   sNameContext.pSrcList = pSrc;
   sNameContext.pParse = pParse;
-  sqlite3ResolveExprNames(&sNameContext, pWhere);
+  sqlite3_Resolve_व्यञ्जकम्_नामानि(&sNameContext, pWhere);
 
   /* Create VDBE to loop through the entries in pSrc that match the WHERE
   ** clause. For each row found, increment either the deferred or immediate
   ** foreign key constraint counter. */
-  if( pParse->nErr==0 ){
+  यदि( pParse->nErr==0 ){
     pWInfo = sqlite3WhereBegin(pParse, pSrc, pWhere, 0, 0, 0, 0, 0);
-    sqlite3VdbeAddOp2(v, OP_FkCounter, pFKey->isDeferred, nIncr);
-    if( pWInfo ){
-      sqlite3WhereEnd(pWInfo);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Fk_गणक, pFKey->isDeferred, nIncr);
+    यदि( pWInfo ){
+      sqlite3_Where_अन्तः(pWInfo);
     }
   }
 
   /* Clean up the WHERE clause constructed above. */
-  sqlite3ExprDelete(db, pWhere);
-  if( iFkIfZero ){
-    sqlite3VdbeJumpHereOrPopInst(v, iFkIfZero);
+  sqlite3_व्यञ्जकम्_Delete(db, pWhere);
+  यदि( iFkIfZero ){
+    sqlite3_Vdbe_Jump_अत्र_Or_निष्कासय_Inst(v, iFkIfZero);
   }
 }
 
@@ -813,8 +813,8 @@ static void fkScanChildren(
 ** NULL pointer (as there are no FK constraints for which t2 is the parent
 ** table).
 */
-FKey *sqlite3FkReferences(Table *pTab){
-  return (FKey *)sqlite3HashFind(&pTab->pSchema->fkeyHash, pTab->zName);
+FKey *sqlite3FkReferences(सारणी *pTab){
+  प्रत्यागम (FKey *)sqlite3HashFind(&pTab->pSchema->fkeyHash, pTab->zName);
 }
 
 /*
@@ -825,14 +825,14 @@ FKey *sqlite3FkReferences(Table *pTab){
 ** The Trigger structure or any of its sub-components may be allocated from
 ** the lookaside buffer belonging to database handle dbMem.
 */
-static void fkTriggerDelete(sqlite3 *dbMem, Trigger *p){
-  if( p ){
-    TriggerStep *pStep = p->step_list;
-    sqlite3SrcListDelete(dbMem, pStep->pSrc);
-    sqlite3ExprDelete(dbMem, pStep->pWhere);
-    sqlite3ExprListDelete(dbMem, pStep->pExprList);
-    sqlite3SelectDelete(dbMem, pStep->pSelect);
-    sqlite3ExprDelete(dbMem, p->pWhen);
+स्थिर शून्य fkTriggerDelete(sqlite3 *dbMem, Trigger *p){
+  यदि( p ){
+    Trigger_चरणः *p_चरणः = p->चरणः_list;
+    sqlite3SrcListDelete(dbMem, p_चरणः->pSrc);
+    sqlite3_व्यञ्जकम्_Delete(dbMem, p_चरणः->pWhere);
+    sqlite3_व्यञ्जकम्_List_Delete(dbMem, p_चरणः->p_व्यञ्जकम्_List);
+    sqlite3SelectDelete(dbMem, p_चरणः->pSelect);
+    sqlite3_व्यञ्जकम्_Delete(dbMem, p->pWhen);
     sqlite3DbFree(dbMem, p);
   }
 }
@@ -842,14 +842,14 @@ static void fkTriggerDelete(sqlite3 *dbMem, Trigger *p){
 ** in a particular database.  This needs to happen when the schema
 ** changes.
 */
-void sqlite3FkClearTriggerCache(sqlite3 *db, int iDb){
+शून्य sqlite3FkClearTriggerCache(sqlite3 *db, पूर्णाङ्क iDb){
   HashElem *k;
   Hash *pHash = &db->aDb[iDb].pSchema->tblHash;
-  for(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k)){
-    Table *pTab = sqliteHashData(k);
+  प्रति(k=sqliteHashFirst(pHash); k; k=sqlite_Hash_अग्र(k)){
+    सारणी *pTab = sqlite_Hash_दत्त(k);
     FKey *pFKey;
-    if( !IsOrdinaryTable(pTab) ) continue;
-    for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
+    यदि( !Is_Ordinary_सारणी(pTab) ) अनुवर्त;
+    प्रति(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->p_अग्र_From){
       fkTriggerDelete(db, pFKey->apTrigger[0]); pFKey->apTrigger[0] = 0;
       fkTriggerDelete(db, pFKey->apTrigger[1]); pFKey->apTrigger[1] = 0;
     }
@@ -873,27 +873,27 @@ void sqlite3FkClearTriggerCache(sqlite3 *db, int iDb){
 ** the table from the database. Triggers are disabled while running this
 ** DELETE, but foreign key actions are not.
 */
-void sqlite3FkDropTable(Parse *pParse, SrcList *pName, Table *pTab){
+शून्य sqlite3_Fk_Drop_सारणी(Parse *pParse, SrcList *pName, सारणी *pTab){
   sqlite3 *db = pParse->db;
-  if( (db->flags&SQLITE_ForeignKeys) && IsOrdinaryTable(pTab) ){
-    int iSkip = 0;
+  यदि( (db->flags&SQLITE_Foreign_कुञ्चिकाः) && Is_Ordinary_सारणी(pTab) ){
+    पूर्णाङ्क iSkip = 0;
     Vdbe *v = sqlite3GetVdbe(pParse);
 
-    assert( v );                  /* VDBE has already been allocated */
-    assert( IsOrdinaryTable(pTab) );
-    if( sqlite3FkReferences(pTab)==0 ){
+    प्रतिज्ञा( v );                  /* VDBE has already been allocated */
+    प्रतिज्ञा( Is_Ordinary_सारणी(pTab) );
+    यदि( sqlite3FkReferences(pTab)==0 ){
       /* Search for a deferred foreign key constraint for which this table
       ** is the child table. If one cannot be found, return without 
       ** generating any VDBE code. If one can be found, then jump over
       ** the entire DELETE if there are no outstanding deferred constraints
       ** when this statement is run.  */
       FKey *p;
-      for(p=pTab->u.tab.pFKey; p; p=p->pNextFrom){
-        if( p->isDeferred || (db->flags & SQLITE_DeferFKs) ) break;
+      प्रति(p=pTab->u.tab.pFKey; p; p=p->p_अग्र_From){
+        यदि( p->isDeferred || (db->flags & SQLITE_DeferFKs) ) भङ्ग;
       }
-      if( !p ) return;
+      यदि( !p ) प्रत्यागम;
       iSkip = sqlite3VdbeMakeLabel(pParse);
-      sqlite3VdbeAddOp2(v, OP_FkIfZero, 1, iSkip); VdbeCoverage(v);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_FkIfZero, 1, iSkip); VdbeCoverage(v);
     }
 
     pParse->disableTriggers = 1;
@@ -909,15 +909,15 @@ void sqlite3FkDropTable(Parse *pParse, SrcList *pName, Table *pTab){
     ** the statement transaction will not be rolled back even if FK
     ** constraints are violated.
     */
-    if( (db->flags & SQLITE_DeferFKs)==0 ){
+    यदि( (db->flags & SQLITE_DeferFKs)==0 ){
       sqlite3VdbeVerifyAbortable(v, OE_Abort);
-      sqlite3VdbeAddOp2(v, OP_FkIfZero, 0, sqlite3VdbeCurrentAddr(v)+2);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_FkIfZero, 0, sqlite3VdbeCurrentAddr(v)+2);
       VdbeCoverage(v);
       sqlite3HaltConstraint(pParse, SQLITE_CONSTRAINT_FOREIGNKEY,
           OE_Abort, 0, P4_STATIC, P5_ConstraintFK);
     }
 
-    if( iSkip ){
+    यदि( iSkip ){
       sqlite3VdbeResolveLabel(v, iSkip);
     }
   }
@@ -936,19 +936,19 @@ void sqlite3FkDropTable(Parse *pParse, SrcList *pName, Table *pTab){
 ** This function returns true if any of the columns that are part of the
 ** child key for FK constraint *p are modified.
 */
-static int fkChildIsModified(
-  Table *pTab,                    /* Table being updated */
+स्थिर पूर्णाङ्क fkChildIsModified(
+  सारणी *pTab,                    /* Table being updated */
   FKey *p,                        /* Foreign key for which pTab is the child */
-  int *aChange,                   /* Array indicating modified columns */
-  int bChngRowid                  /* True if rowid is modified by this update */
+  पूर्णाङ्क *aChange,                   /* Array indicating modified columns */
+  पूर्णाङ्क bChngRowid                  /* True if rowid is modified by this update */
 ){
-  int i;
-  for(i=0; i<p->nCol; i++){
-    int iChildKey = p->aCol[i].iFrom;
-    if( aChange[iChildKey]>=0 ) return 1;
-    if( iChildKey==pTab->iPKey && bChngRowid ) return 1;
+  पूर्णाङ्क i;
+  प्रति(i=0; i<p->nCol; i++){
+    पूर्णाङ्क i_Child_कुञ्चिका = p->aCol[i].iFrom;
+    यदि( aChange[i_Child_कुञ्चिका]>=0 ) प्रत्यागम 1;
+    यदि( i_Child_कुञ्चिका==pTab->iPKey && bChngRowid ) प्रत्यागम 1;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -963,28 +963,28 @@ static int fkChildIsModified(
 ** This function returns true if any of the columns that are part of the
 ** parent key for FK constraint *p are modified.
 */
-static int fkParentIsModified(
-  Table *pTab, 
+स्थिर पूर्णाङ्क fkParentIsModified(
+  सारणी *pTab, 
   FKey *p, 
-  int *aChange, 
-  int bChngRowid
+  पूर्णाङ्क *aChange, 
+  पूर्णाङ्क bChngRowid
 ){
-  int i;
-  for(i=0; i<p->nCol; i++){
-    char *zKey = p->aCol[i].zCol;
-    int iKey;
-    for(iKey=0; iKey<pTab->nCol; iKey++){
-      if( aChange[iKey]>=0 || (iKey==pTab->iPKey && bChngRowid) ){
-        Column *pCol = &pTab->aCol[iKey];
-        if( zKey ){
-          if( 0==sqlite3StrICmp(pCol->zCnName, zKey) ) return 1;
-        }else if( pCol->colFlags & COLFLAG_PRIMKEY ){
-          return 1;
+  पूर्णाङ्क i;
+  प्रति(i=0; i<p->nCol; i++){
+    वर्ण *z_कुञ्चिका = p->aCol[i].zCol;
+    पूर्णाङ्क i_कुञ्चिका;
+    प्रति(i_कुञ्चिका=0; i_कुञ्चिका<pTab->nCol; i_कुञ्चिका++){
+      यदि( aChange[i_कुञ्चिका]>=0 || (i_कुञ्चिका==pTab->iPKey && bChngRowid) ){
+        Column *pCol = &pTab->aCol[i_कुञ्चिका];
+        यदि( z_कुञ्चिका ){
+          यदि( 0==sqlite3StrICmp(pCol->zCnName, z_कुञ्चिका) ) प्रत्यागम 1;
+        }अन्यथा यदि( pCol->colFlags & COLFLAG_PRIMKEY ){
+          प्रत्यागम 1;
         }
       }
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -992,17 +992,17 @@ static int fkParentIsModified(
 ** used to code a trigger that is really a "SET NULL" action belonging
 ** to trigger pFKey.
 */
-static int isSetNullAction(Parse *pParse, FKey *pFKey){
+स्थिर पूर्णाङ्क is_समुच्चयः_Null_Action(Parse *pParse, FKey *pFKey){
   Trigger *p = pParse->pTrigCoded;
-  if( p ){
-    if( (p==pFKey->apTrigger[0] && pFKey->aAction[0]==OE_SetNull)
-     || (p==pFKey->apTrigger[1] && pFKey->aAction[1]==OE_SetNull)
+  यदि( p ){
+    यदि( (p==pFKey->apTrigger[0] && pFKey->aAction[0]==OE_समुच्चयः_Null)
+     || (p==pFKey->apTrigger[1] && pFKey->aAction[1]==OE_समुच्चयः_Null)
     ){
-      assert( (pParse->db->flags & SQLITE_FkNoAction)==0 );
-      return 1;
+      प्रतिज्ञा( (pParse->db->flags & SQLITE_FkNoAction)==0 );
+      प्रत्यागम 1;
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -1025,62 +1025,62 @@ static int isSetNullAction(Parse *pParse, FKey *pFKey){
 ** described for DELETE. Then again after the original record is deleted
 ** but before the new record is inserted using the INSERT convention. 
 */
-void sqlite3FkCheck(
+शून्य sqlite3FkCheck(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Row is being deleted from this table */ 
-  int regOld,                     /* Previous row data is stored here */
-  int regNew,                     /* New row data is stored here */
-  int *aChange,                   /* Array indicating UPDATEd columns (or 0) */
-  int bChngRowid                  /* True if rowid is UPDATEd */
+  सारणी *pTab,                    /* Row is being deleted from this table */ 
+  पूर्णाङ्क regOld,                     /* Previous row data is stored here */
+  पूर्णाङ्क regNew,                     /* New row data is stored here */
+  पूर्णाङ्क *aChange,                   /* Array indicating UPDATEd columns (or 0) */
+  पूर्णाङ्क bChngRowid                  /* True if rowid is UPDATEd */
 ){
   sqlite3 *db = pParse->db;       /* Database handle */
   FKey *pFKey;                    /* Used to iterate through FKs */
-  int iDb;                        /* Index of database containing pTab */
-  const char *zDb;                /* Name of database containing pTab */
-  int isIgnoreErrors = pParse->disableTriggers;
+  पूर्णाङ्क iDb;                        /* Index of database containing pTab */
+  ध्रुव वर्ण *zDb;                /* Name of database containing pTab */
+  पूर्णाङ्क isIgnoreErrors = pParse->disableTriggers;
 
   /* Exactly one of regOld and regNew should be non-zero. */
-  assert( (regOld==0)!=(regNew==0) );
+  प्रतिज्ञा( (regOld==0)!=(regNew==0) );
 
   /* If foreign-keys are disabled, this function is a no-op. */
-  if( (db->flags&SQLITE_ForeignKeys)==0 ) return;
-  if( !IsOrdinaryTable(pTab) ) return;
+  यदि( (db->flags&SQLITE_Foreign_कुञ्चिकाः)==0 ) प्रत्यागम;
+  यदि( !Is_Ordinary_सारणी(pTab) ) प्रत्यागम;
 
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb>=00 && iDb<db->nDb );
+  iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pTab->pSchema);
+  प्रतिज्ञा( iDb>=00 && iDb<db->nDb );
   zDb = db->aDb[iDb].zDbSName;
 
   /* Loop through all the foreign key constraints for which pTab is the
   ** child table (the table that the foreign key definition is part of).  */
-  for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-    Table *pTo;                   /* Parent table of foreign key pFKey */
-    Index *pIdx = 0;              /* Index on key columns in pTo */
-    int *aiFree = 0;
-    int *aiCol;
-    int iCol;
-    int i;
-    int bIgnore = 0;
+  प्रति(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->p_अग्र_From){
+    सारणी *p_गन्तव्यम्;                   /* Parent table of foreign key pFKey */
+    सूचकांक *pIdx = 0;              /* Index on key columns in pTo */
+    पूर्णाङ्क *aiFree = 0;
+    पूर्णाङ्क *aiCol;
+    पूर्णाङ्क iCol;
+    पूर्णाङ्क i;
+    पूर्णाङ्क bIgnore = 0;
 
-    if( aChange 
-     && sqlite3_stricmp(pTab->zName, pFKey->zTo)!=0
+    यदि( aChange 
+     && sqlite3_stricmp(pTab->zName, pFKey->z_गन्तव्यम्)!=0
      && fkChildIsModified(pTab, pFKey, aChange, bChngRowid)==0 
     ){
-      continue;
+      अनुवर्त;
     }
 
     /* Find the parent table of this foreign key. Also find a unique index 
     ** on the parent key columns in the parent table. If either of these 
     ** schema items cannot be located, set an error in pParse and return 
     ** early.  */
-    if( pParse->disableTriggers ){
-      pTo = sqlite3FindTable(db, pFKey->zTo, zDb);
-    }else{
-      pTo = sqlite3LocateTable(pParse, 0, pFKey->zTo, zDb);
+    यदि( pParse->disableTriggers ){
+      p_गन्तव्यम् = sqlite3_Find_सारणी(db, pFKey->z_गन्तव्यम्, zDb);
+    }अन्यथा{
+      p_गन्तव्यम् = sqlite3_Locate_सारणी(pParse, 0, pFKey->z_गन्तव्यम्, zDb);
     }
-    if( !pTo || sqlite3FkLocateIndex(pParse, pTo, pFKey, &pIdx, &aiFree) ){
-      assert( isIgnoreErrors==0 || (regOld!=0 && regNew==0) );
-      if( !isIgnoreErrors || db->mallocFailed ) return;
-      if( pTo==0 ){
+    यदि( !p_गन्तव्यम् || sqlite3_Fk_Locate_सूचकांक(pParse, p_गन्तव्यम्, pFKey, &pIdx, &aiFree) ){
+      प्रतिज्ञा( isIgnoreErrors==0 || (regOld!=0 && regNew==0) );
+      यदि( !isIgnoreErrors || db->mallocFailed ) प्रत्यागम;
+      यदि( p_गन्तव्यम्==0 ){
         /* If isIgnoreErrors is true, then a table is being dropped. In this
         ** case SQLite runs a "DELETE FROM xxx" on the table being dropped
         ** before actually dropping it in order to check FK constraints.
@@ -1089,56 +1089,56 @@ void sqlite3FkCheck(
         ** FK counter for each row of the current table with non-NULL keys.
         */
         Vdbe *v = sqlite3GetVdbe(pParse);
-        int iJump = sqlite3VdbeCurrentAddr(v) + pFKey->nCol + 1;
-        for(i=0; i<pFKey->nCol; i++){
-          int iFromCol, iReg;
+        पूर्णाङ्क iJump = sqlite3VdbeCurrentAddr(v) + pFKey->nCol + 1;
+        प्रति(i=0; i<pFKey->nCol; i++){
+          पूर्णाङ्क iFromCol, iReg;
           iFromCol = pFKey->aCol[i].iFrom;
-          iReg = sqlite3TableColumnToStorage(pFKey->pFrom,iFromCol) + regOld+1;
-          sqlite3VdbeAddOp2(v, OP_IsNull, iReg, iJump); VdbeCoverage(v);
+          iReg = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pFKey->pFrom,iFromCol) + regOld+1;
+          sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, iReg, iJump); VdbeCoverage(v);
         }
-        sqlite3VdbeAddOp2(v, OP_FkCounter, pFKey->isDeferred, -1);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Fk_गणक, pFKey->isDeferred, -1);
       }
-      continue;
+      अनुवर्त;
     }
-    assert( pFKey->nCol==1 || (aiFree && pIdx) );
+    प्रतिज्ञा( pFKey->nCol==1 || (aiFree && pIdx) );
 
-    if( aiFree ){
+    यदि( aiFree ){
       aiCol = aiFree;
-    }else{
+    }अन्यथा{
       iCol = pFKey->aCol[0].iFrom;
       aiCol = &iCol;
     }
-    for(i=0; i<pFKey->nCol; i++){
-      if( aiCol[i]==pTab->iPKey ){
+    प्रति(i=0; i<pFKey->nCol; i++){
+      यदि( aiCol[i]==pTab->iPKey ){
         aiCol[i] = -1;
       }
-      assert( pIdx==0 || pIdx->aiColumn[i]>=0 );
-#ifndef SQLITE_OMIT_AUTHORIZATION
+      प्रतिज्ञा( pIdx==0 || pIdx->aiColumn[i]>=0 );
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTHORIZATION
       /* Request permission to read the parent key columns. If the 
       ** authorization callback returns SQLITE_IGNORE, behave as if any
       ** values read from the parent table are NULL. */
-      if( db->xAuth ){
-        int rcauth;
-        char *zCol = pTo->aCol[pIdx ? pIdx->aiColumn[i] : pTo->iPKey].zCnName;
-        rcauth = sqlite3AuthReadCol(pParse, pTo->zName, zCol, iDb);
+      यदि( db->xAuth ){
+        पूर्णाङ्क rcauth;
+        वर्ण *zCol = p_गन्तव्यम्->aCol[pIdx ? pIdx->aiColumn[i] : p_गन्तव्यम्->iPKey].zCnName;
+        rcauth = sqlite3AuthReadCol(pParse, p_गन्तव्यम्->zName, zCol, iDb);
         bIgnore = (rcauth==SQLITE_IGNORE);
       }
-#endif
+#यदि_अन्तः
     }
 
     /* Take a shared-cache advisory read-lock on the parent table. Allocate 
     ** a cursor to use to search the unique index on the parent key columns 
     ** in the parent table.  */
-    sqlite3TableLock(pParse, iDb, pTo->tnum, 0, pTo->zName);
+    sqlite3_सारणी_तालकम्(pParse, iDb, p_गन्तव्यम्->tnum, 0, p_गन्तव्यम्->zName);
     pParse->nTab++;
 
-    if( regOld!=0 ){
+    यदि( regOld!=0 ){
       /* A row is being removed from the child table. Search for the parent.
       ** If the parent does not exist, removing the child row resolves an 
       ** outstanding foreign key constraint violation. */
-      fkLookupParent(pParse, iDb, pTo, pIdx, pFKey, aiCol, regOld, -1, bIgnore);
+      fkLookupParent(pParse, iDb, p_गन्तव्यम्, pIdx, pFKey, aiCol, regOld, -1, bIgnore);
     }
-    if( regNew!=0 && !isSetNullAction(pParse, pFKey) ){
+    यदि( regNew!=0 && !is_समुच्चयः_Null_Action(pParse, pFKey) ){
       /* A row is being added to the child table. If a parent row cannot
       ** be found, adding the child row has violated the FK constraint. 
       **
@@ -1147,7 +1147,7 @@ void sqlite3FkCheck(
       ** foreign key, then omit this scan altogether. As all child key
       ** values are guaranteed to be NULL, it is not possible for adding
       ** this row to cause an FK violation.  */
-      fkLookupParent(pParse, iDb, pTo, pIdx, pFKey, aiCol, regNew, +1, bIgnore);
+      fkLookupParent(pParse, iDb, p_गन्तव्यम्, pIdx, pFKey, aiCol, regNew, +1, bIgnore);
     }
 
     sqlite3DbFree(db, aiFree);
@@ -1155,48 +1155,48 @@ void sqlite3FkCheck(
 
   /* Loop through all the foreign key constraints that refer to this table.
   ** (the "child" constraints) */
-  for(pFKey = sqlite3FkReferences(pTab); pFKey; pFKey=pFKey->pNextTo){
-    Index *pIdx = 0;              /* Foreign key index for pFKey */
+  प्रति(pFKey = sqlite3FkReferences(pTab); pFKey; pFKey=pFKey->p_अग्र_गन्तव्यम्){
+    सूचकांक *pIdx = 0;              /* Foreign key index for pFKey */
     SrcList *pSrc;
-    int *aiCol = 0;
+    पूर्णाङ्क *aiCol = 0;
 
-    if( aChange && fkParentIsModified(pTab, pFKey, aChange, bChngRowid)==0 ){
-      continue;
+    यदि( aChange && fkParentIsModified(pTab, pFKey, aChange, bChngRowid)==0 ){
+      अनुवर्त;
     }
 
-    if( !pFKey->isDeferred && !(db->flags & SQLITE_DeferFKs) 
+    यदि( !pFKey->isDeferred && !(db->flags & SQLITE_DeferFKs) 
      && !pParse->pToplevel && !pParse->isMultiWrite 
     ){
-      assert( regOld==0 && regNew!=0 );
+      प्रतिज्ञा( regOld==0 && regNew!=0 );
       /* Inserting a single row into a parent table cannot cause (or fix)
       ** an immediate foreign key violation. So do nothing in this case.  */
-      continue;
+      अनुवर्त;
     }
 
-    if( sqlite3FkLocateIndex(pParse, pTab, pFKey, &pIdx, &aiCol) ){
-      if( !isIgnoreErrors || db->mallocFailed ) return;
-      continue;
+    यदि( sqlite3_Fk_Locate_सूचकांक(pParse, pTab, pFKey, &pIdx, &aiCol) ){
+      यदि( !isIgnoreErrors || db->mallocFailed ) प्रत्यागम;
+      अनुवर्त;
     }
-    assert( aiCol || pFKey->nCol==1 );
+    प्रतिज्ञा( aiCol || pFKey->nCol==1 );
 
     /* Create a SrcList structure containing the child table.  We need the
     ** child table as a SrcList for sqlite3WhereBegin() */
     pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
-    if( pSrc ){
+    यदि( pSrc ){
       SrcItem *pItem = pSrc->a;
       pItem->pSTab = pFKey->pFrom;
       pItem->zName = pFKey->pFrom->zName;
       pItem->pSTab->nTabRef++;
       pItem->iCursor = pParse->nTab++;
   
-      if( regNew!=0 ){
-        fkScanChildren(pParse, pSrc, pTab, pIdx, pFKey, aiCol, regNew, -1);
+      यदि( regNew!=0 ){
+        fk_अवलोकनम्_Children(pParse, pSrc, pTab, pIdx, pFKey, aiCol, regNew, -1);
       }
-      if( regOld!=0 ){
-        int eAction = pFKey->aAction[aChange!=0];
-        if( (db->flags & SQLITE_FkNoAction) ) eAction = OE_None;
+      यदि( regOld!=0 ){
+        पूर्णाङ्क eAction = pFKey->aAction[aChange!=0];
+        यदि( (db->flags & SQLITE_FkNoAction) ) eAction = OE_None;
 
-        fkScanChildren(pParse, pSrc, pTab, pIdx, pFKey, aiCol, regOld, 1);
+        fk_अवलोकनम्_Children(pParse, pSrc, pTab, pIdx, pFKey, aiCol, regOld, 1);
         /* If this is a deferred FK constraint, or a CASCADE or SET NULL
         ** action applies, then any foreign key violations caused by
         ** removing the parent key will be rectified by the action trigger.
@@ -1214,7 +1214,7 @@ void sqlite3FkCheck(
         ** child table to fire. In these cases the fk constraint counters
         ** might be set incorrectly if any OP_FkCounter related scans are 
         ** omitted.  */
-        if( !pFKey->isDeferred && eAction!=OE_Cascade && eAction!=OE_SetNull ){
+        यदि( !pFKey->isDeferred && eAction!=OE_Cascade && eAction!=OE_समुच्चयः_Null ){
           sqlite3MayAbort(pParse);
         }
       }
@@ -1225,7 +1225,7 @@ void sqlite3FkCheck(
   }
 }
 
-#define COLUMN_MASK(x) (((x)>31) ? 0xffffffff : ((u32)1<<(x)))
+#परिभाषय COLUMN_आवरणम्(x) (((x)>31) ? 0xffffffff : ((u32)1<<(x)))
 
 /*
 ** This function is called before generating code to update or delete a 
@@ -1233,27 +1233,27 @@ void sqlite3FkCheck(
 */
 u32 sqlite3FkOldmask(
   Parse *pParse,                  /* Parse context */
-  Table *pTab                     /* Table being modified */
+  सारणी *pTab                     /* Table being modified */
 ){
-  u32 mask = 0;
-  if( pParse->db->flags&SQLITE_ForeignKeys && IsOrdinaryTable(pTab) ){
+  u32 आवरणम् = 0;
+  यदि( pParse->db->flags&SQLITE_Foreign_कुञ्चिकाः && Is_Ordinary_सारणी(pTab) ){
     FKey *p;
-    int i;
-    for(p=pTab->u.tab.pFKey; p; p=p->pNextFrom){
-      for(i=0; i<p->nCol; i++) mask |= COLUMN_MASK(p->aCol[i].iFrom);
+    पूर्णाङ्क i;
+    प्रति(p=pTab->u.tab.pFKey; p; p=p->p_अग्र_From){
+      प्रति(i=0; i<p->nCol; i++) आवरणम् |= COLUMN_आवरणम्(p->aCol[i].iFrom);
     }
-    for(p=sqlite3FkReferences(pTab); p; p=p->pNextTo){
-      Index *pIdx = 0;
-      sqlite3FkLocateIndex(pParse, pTab, p, &pIdx, 0);
-      if( pIdx ){
-        for(i=0; i<pIdx->nKeyCol; i++){
-          assert( pIdx->aiColumn[i]>=0 );
-          mask |= COLUMN_MASK(pIdx->aiColumn[i]);
+    प्रति(p=sqlite3FkReferences(pTab); p; p=p->p_अग्र_गन्तव्यम्){
+      सूचकांक *pIdx = 0;
+      sqlite3_Fk_Locate_सूचकांक(pParse, pTab, p, &pIdx, 0);
+      यदि( pIdx ){
+        प्रति(i=0; i<pIdx->n_कुञ्चिका_Col; i++){
+          प्रतिज्ञा( pIdx->aiColumn[i]>=0 );
+          आवरणम् |= COLUMN_आवरणम्(pIdx->aiColumn[i]);
         }
       }
     }
   }
-  return mask;
+  प्रत्यागम आवरणम्;
 }
 
 
@@ -1281,47 +1281,47 @@ u32 sqlite3FkOldmask(
 **
 ** Or, assuming some other foreign key processing is required, 1.
 */
-int sqlite3FkRequired(
+पूर्णाङ्क sqlite3FkRequired(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being modified */
-  int *aChange,                   /* Non-NULL for UPDATE operations */
-  int chngRowid                   /* True for UPDATE that affects rowid */
+  सारणी *pTab,                    /* Table being modified */
+  पूर्णाङ्क *aChange,                   /* Non-NULL for UPDATE operations */
+  पूर्णाङ्क chngRowid                   /* True for UPDATE that affects rowid */
 ){
-  int eRet = 1;                   /* Value to return if bHaveFK is true */
-  int bHaveFK = 0;                /* If FK processing is required */
-  if( pParse->db->flags&SQLITE_ForeignKeys && IsOrdinaryTable(pTab) ){
-    if( !aChange ){
+  पूर्णाङ्क eRet = 1;                   /* Value to return if bHaveFK is true */
+  पूर्णाङ्क bHaveFK = 0;                /* If FK processing is required */
+  यदि( pParse->db->flags&SQLITE_Foreign_कुञ्चिकाः && Is_Ordinary_सारणी(pTab) ){
+    यदि( !aChange ){
       /* A DELETE operation. Foreign key processing is required if the 
       ** table in question is either the child or parent table for any 
       ** foreign key constraint.  */
       bHaveFK = (sqlite3FkReferences(pTab) || pTab->u.tab.pFKey);
-    }else{
+    }अन्यथा{
       /* This is an UPDATE. Foreign key processing is only required if the
       ** operation modifies one or more child or parent key columns. */
       FKey *p;
 
       /* Check if any child key columns are being modified. */
-      for(p=pTab->u.tab.pFKey; p; p=p->pNextFrom){
-        if( fkChildIsModified(pTab, p, aChange, chngRowid) ){
-          if( 0==sqlite3_stricmp(pTab->zName, p->zTo) ) eRet = 2;
+      प्रति(p=pTab->u.tab.pFKey; p; p=p->p_अग्र_From){
+        यदि( fkChildIsModified(pTab, p, aChange, chngRowid) ){
+          यदि( 0==sqlite3_stricmp(pTab->zName, p->z_गन्तव्यम्) ) eRet = 2;
           bHaveFK = 1;
         }
       }
 
       /* Check if any parent key columns are being modified. */
-      for(p=sqlite3FkReferences(pTab); p; p=p->pNextTo){
-        if( fkParentIsModified(pTab, p, aChange, chngRowid) ){
-          if( (pParse->db->flags & SQLITE_FkNoAction)==0 
+      प्रति(p=sqlite3FkReferences(pTab); p; p=p->p_अग्र_गन्तव्यम्){
+        यदि( fkParentIsModified(pTab, p, aChange, chngRowid) ){
+          यदि( (pParse->db->flags & SQLITE_FkNoAction)==0 
            && p->aAction[1]!=OE_None 
           ){
-            return 2;
+            प्रत्यागम 2;
           }
           bHaveFK = 1;
         }
       }
     }
   }
-  return bHaveFK ? eRet : 0;
+  प्रत्यागम bHaveFK ? eRet : 0;
 }
 
 /*
@@ -1353,119 +1353,119 @@ int sqlite3FkRequired(
 ** is eventually freed along with the rest of the foreign key object by 
 ** sqlite3FkDelete().
 */
-static Trigger *fkActionTrigger(
+स्थिर Trigger *fkActionTrigger(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being updated or deleted from */
+  सारणी *pTab,                    /* Table being updated or deleted from */
   FKey *pFKey,                    /* Foreign key to get action for */
-  ExprList *pChanges              /* Change-list for UPDATE, NULL for DELETE */
+  व्यञ्जकम्_List *pChanges              /* Change-list for UPDATE, NULL for DELETE */
 ){
   sqlite3 *db = pParse->db;       /* Database handle */
-  int action;                     /* One of OE_None, OE_Cascade etc. */
+  पूर्णाङ्क action;                     /* One of OE_None, OE_Cascade etc. */
   Trigger *pTrigger;              /* Trigger definition to return */
-  int iAction = (pChanges!=0);    /* 1 for UPDATE, 0 for DELETE */
+  पूर्णाङ्क iAction = (pChanges!=0);    /* 1 for UPDATE, 0 for DELETE */
 
   action = pFKey->aAction[iAction];
-  if( (db->flags & SQLITE_FkNoAction) ) action = OE_None;
-  if( action==OE_Restrict && (db->flags & SQLITE_DeferFKs) ){
-    return 0;
+  यदि( (db->flags & SQLITE_FkNoAction) ) action = OE_None;
+  यदि( action==OE_Restrict && (db->flags & SQLITE_DeferFKs) ){
+    प्रत्यागम 0;
   }
   pTrigger = pFKey->apTrigger[iAction];
 
-  if( action!=OE_None && !pTrigger ){
-    char const *zFrom;            /* Name of child table */
-    int nFrom;                    /* Length in bytes of zFrom */
-    Index *pIdx = 0;              /* Parent key index for this FK */
-    int *aiCol = 0;               /* child table cols -> parent key cols */
-    TriggerStep *pStep = 0;        /* First (only) step of trigger program */
-    Expr *pWhere = 0;             /* WHERE clause of trigger step */
-    ExprList *pList = 0;          /* Changes list if ON UPDATE CASCADE */
+  यदि( action!=OE_None && !pTrigger ){
+    वर्ण ध्रुव *zFrom;            /* Name of child table */
+    पूर्णाङ्क nFrom;                    /* Length in bytes of zFrom */
+    सूचकांक *pIdx = 0;              /* Parent key index for this FK */
+    पूर्णाङ्क *aiCol = 0;               /* child table cols -> parent key cols */
+    Trigger_चरणः *p_चरणः = 0;        /* First (only) step of trigger program */
+    व्यञ्जकम् *pWhere = 0;             /* WHERE clause of trigger step */
+    व्यञ्जकम्_List *pList = 0;          /* Changes list if ON UPDATE CASCADE */
     Select *pSelect = 0;          /* If RESTRICT, "SELECT RAISE(...)" */
-    int i;                        /* Iterator variable */
-    Expr *pWhen = 0;              /* WHEN clause for the trigger */
+    पूर्णाङ्क i;                        /* Iterator variable */
+    व्यञ्जकम् *pWhen = 0;              /* WHEN clause for the trigger */
 
-    if( sqlite3FkLocateIndex(pParse, pTab, pFKey, &pIdx, &aiCol) ) return 0;
-    assert( aiCol || pFKey->nCol==1 );
+    यदि( sqlite3_Fk_Locate_सूचकांक(pParse, pTab, pFKey, &pIdx, &aiCol) ) प्रत्यागम 0;
+    प्रतिज्ञा( aiCol || pFKey->nCol==1 );
 
-    for(i=0; i<pFKey->nCol; i++){
+    प्रति(i=0; i<pFKey->nCol; i++){
       Token tOld = { "old", 3 };  /* Literal "old" token */
       Token tNew = { "new", 3 };  /* Literal "new" token */
       Token tFromCol;             /* Name of column in child table */
-      Token tToCol;               /* Name of column in parent table */
-      int iFromCol;               /* Idx of column in child table */
-      int iToCol;                 /* Idx of column in parent table */
-      Expr *pEq;                  /* OLD.tToCol = tFromCol */
-      Expr *pLeft;                /* OLD.tToCol */
-      Expr *pRight;               /* tFromCol */
+      Token t_गन्तव्यम्_Col;               /* Name of column in parent table */
+      पूर्णाङ्क iFromCol;               /* Idx of column in child table */
+      पूर्णाङ्क i_गन्तव्यम्_Col;                 /* Idx of column in parent table */
+      व्यञ्जकम् *pEq;                  /* OLD.tToCol = tFromCol */
+      व्यञ्जकम् *p_वामः;                /* OLD.tToCol */
+      व्यञ्जकम् *p_दक्षिणः;               /* tFromCol */
 
       iFromCol = aiCol ? aiCol[i] : pFKey->aCol[0].iFrom;
-      assert( iFromCol>=0 );
-      assert( pIdx!=0 || (pTab->iPKey>=0 && pTab->iPKey<pTab->nCol) );
-      assert( pIdx==0 || pIdx->aiColumn[i]>=0 );
-      iToCol = pIdx ? pIdx->aiColumn[i] : pTab->iPKey;
-      sqlite3TokenInit(&tToCol, pTab->aCol[iToCol].zCnName);
+      प्रतिज्ञा( iFromCol>=0 );
+      प्रतिज्ञा( pIdx!=0 || (pTab->iPKey>=0 && pTab->iPKey<pTab->nCol) );
+      प्रतिज्ञा( pIdx==0 || pIdx->aiColumn[i]>=0 );
+      i_गन्तव्यम्_Col = pIdx ? pIdx->aiColumn[i] : pTab->iPKey;
+      sqlite3TokenInit(&t_गन्तव्यम्_Col, pTab->aCol[i_गन्तव्यम्_Col].zCnName);
       sqlite3TokenInit(&tFromCol, pFKey->pFrom->aCol[iFromCol].zCnName);
 
-      pLeft = sqlite3PExpr(pParse, TK_DOT,
-          sqlite3ExprAlloc(db, TK_ID, &tOld, 0),
-          sqlite3ExprAlloc(db, TK_ID, &tToCol, 0)
+      p_वामः = sqlite3PExpr(pParse, TK_DOT,
+          sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &tOld, 0),
+          sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &t_गन्तव्यम्_Col, 0)
       );
-      pRight = sqlite3ExprAlloc(db, TK_ID, &tFromCol, 0);
+      p_दक्षिणः = sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &tFromCol, 0);
 
       /* OLD.* columns do not normally have an affinity. So set the affinity
       ** of OLD.tToCol (the parent key) explicitly here. */
-      if( pLeft ) pLeft->affExpr = pTab->aCol[iToCol].affinity;
+      यदि( p_वामः ) p_वामः->aff_व्यञ्जकम् = pTab->aCol[i_गन्तव्यम्_Col].affinity;
 
       /* Create the expression "OLD.tToCol = tFromCol". It is important
       ** that the "OLD.tToCol" term is on the LHS of the = operator, so
       ** that the collation sequence associated with the parent table is
       ** used for the comparison. */
-      pEq = fkParentChildEq(pParse, pLeft, pRight, pTab, iToCol,
+      pEq = fkParentChildEq(pParse, p_वामः, p_दक्षिणः, pTab, i_गन्तव्यम्_Col,
                             pFKey->pFrom, iFromCol, pFKey->nCol>1);
-      pWhere = sqlite3ExprAnd(pParse, pWhere, pEq);
+      pWhere = sqlite3_व्यञ्जकम्_And(pParse, pWhere, pEq);
 
       /* For ON UPDATE, construct the next term of the WHEN clause.
       ** The final WHEN clause will be like this:
       **
       **    WHEN NOT(old.col1 IS new.col1 AND ... AND old.colN IS new.colN)
       */
-      if( pChanges ){
+      यदि( pChanges ){
         pEq = sqlite3PExpr(pParse, TK_IS,
             sqlite3PExpr(pParse, TK_DOT, 
-              sqlite3ExprAlloc(db, TK_ID, &tOld, 0),
-              sqlite3ExprAlloc(db, TK_ID, &tToCol, 0)),
+              sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &tOld, 0),
+              sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &t_गन्तव्यम्_Col, 0)),
             sqlite3PExpr(pParse, TK_DOT, 
-              sqlite3ExprAlloc(db, TK_ID, &tNew, 0),
-              sqlite3ExprAlloc(db, TK_ID, &tToCol, 0))
+              sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &tNew, 0),
+              sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &t_गन्तव्यम्_Col, 0))
             );
-        pWhen = sqlite3ExprAnd(pParse, pWhen, pEq);
+        pWhen = sqlite3_व्यञ्जकम्_And(pParse, pWhen, pEq);
       }
   
-      if( action!=OE_Restrict && (action!=OE_Cascade || pChanges) ){
-        Expr *pNew;
-        if( action==OE_Cascade ){
+      यदि( action!=OE_Restrict && (action!=OE_Cascade || pChanges) ){
+        व्यञ्जकम् *pNew;
+        यदि( action==OE_Cascade ){
           pNew = sqlite3PExpr(pParse, TK_DOT, 
-            sqlite3ExprAlloc(db, TK_ID, &tNew, 0),
-            sqlite3ExprAlloc(db, TK_ID, &tToCol, 0));
-        }else if( action==OE_SetDflt ){
+            sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &tNew, 0),
+            sqlite3_व्यञ्जकम्_Alloc(db, TK_ID, &t_गन्तव्यम्_Col, 0));
+        }अन्यथा यदि( action==OE_समुच्चयः_Dflt ){
           Column *pCol = pFKey->pFrom->aCol + iFromCol;
-          Expr *pDflt;
-          if( pCol->colFlags & COLFLAG_GENERATED ){
+          व्यञ्जकम् *pDflt;
+          यदि( pCol->colFlags & COLFLAG_GENERATED ){
             testcase( pCol->colFlags & COLFLAG_VIRTUAL );
             testcase( pCol->colFlags & COLFLAG_STORED );
             pDflt = 0;
-          }else{
-            pDflt = sqlite3ColumnExprAuth(pFKey->pFrom, pCol, pParse);
+          }अन्यथा{
+            pDflt = sqlite3_Column_व्यञ्जकम्_Auth(pFKey->pFrom, pCol, pParse);
           }
-          if( pDflt ){
-            pNew = sqlite3ExprDup(db, pDflt, 0);
-          }else{
-            pNew = sqlite3ExprAlloc(db, TK_NULL, 0, 0);
+          यदि( pDflt ){
+            pNew = sqlite3_व्यञ्जकम्_Dup(db, pDflt, 0);
+          }अन्यथा{
+            pNew = sqlite3_व्यञ्जकम्_Alloc(db, TK_NULL, 0, 0);
           }
-        }else{
-          pNew = sqlite3ExprAlloc(db, TK_NULL, 0, 0);
+        }अन्यथा{
+          pNew = sqlite3_व्यञ्जकम्_Alloc(db, TK_NULL, 0, 0);
         }
-        pList = sqlite3ExprListAppend(pParse, pList, pNew);
-        sqlite3ExprListSetName(pParse, pList, &tFromCol, 0);
+        pList = sqlite3_व्यञ्जकम्_List_Append(pParse, pList, pNew);
+        sqlite3_व्यञ्जकम्_List_समुच्चयः_Name(pParse, pList, &tFromCol, 0);
       }
     }
     sqlite3DbFree(db, aiCol);
@@ -1473,24 +1473,24 @@ static Trigger *fkActionTrigger(
     zFrom = pFKey->pFrom->zName;
     nFrom = sqlite3Strlen30(zFrom);
 
-    if( action==OE_Restrict ){
+    यदि( action==OE_Restrict ){
       SrcList *pSrc;
-      Expr *pRaise; 
+      व्यञ्जकम् *pRaise; 
 
-      pRaise = sqlite3Expr(db, TK_STRING, "FOREIGN KEY constraint failed"),
+      pRaise = sqlite3_व्यञ्जकम्(db, TK_STRING, "FOREIGN KEY constraint failed"),
       pRaise = sqlite3PExpr(pParse, TK_RAISE, pRaise, 0);
-      if( pRaise ){
-        pRaise->affExpr = OE_Abort;
+      यदि( pRaise ){
+        pRaise->aff_व्यञ्जकम् = OE_Abort;
       }
       pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
-      if( pSrc ){
+      यदि( pSrc ){
         SrcItem *pItem = &pSrc->a[0];
         pItem->zName = sqlite3DbStrDup(db, zFrom);
         pItem->fg.fixedSchema = 1;
         pItem->u4.pSchema = pTab->pSchema;
       }
       pSelect = sqlite3SelectNew(pParse, 
-          sqlite3ExprListAppend(pParse, 0, pRaise),
+          sqlite3_व्यञ्जकम्_List_Append(pParse, 0, pRaise),
           pSrc,
           pWhere,
           0, 0, 0, 0, 0
@@ -1502,135 +1502,135 @@ static Trigger *fkActionTrigger(
     DisableLookaside;
 
     pTrigger = (Trigger *)sqlite3DbMallocZero(db, 
-        sizeof(Trigger) +         /* struct Trigger */
-        sizeof(TriggerStep)       /* Single step in trigger program */
+        परिमाण(Trigger) +         /* struct Trigger */
+        परिमाण(Trigger_चरणः)       /* Single step in trigger program */
     );
-    if( pTrigger ){
-      pStep = pTrigger->step_list = (TriggerStep *)&pTrigger[1];
-      pStep->pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
-      if( pStep->pSrc ){
-        SrcItem *pItem = &pStep->pSrc->a[0];
+    यदि( pTrigger ){
+      p_चरणः = pTrigger->चरणः_list = (Trigger_चरणः *)&pTrigger[1];
+      p_चरणः->pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
+      यदि( p_चरणः->pSrc ){
+        SrcItem *pItem = &p_चरणः->pSrc->a[0];
         pItem->zName = sqlite3DbStrNDup(db, zFrom, nFrom);
         pItem->u4.pSchema = pTab->pSchema;
         pItem->fg.fixedSchema = 1;
       }
-      pStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
-      pStep->pExprList = sqlite3ExprListDup(db, pList, EXPRDUP_REDUCE);
-      pStep->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
-      if( pWhen ){
+      p_चरणः->pWhere = sqlite3_व्यञ्जकम्_Dup(db, pWhere, EXPRDUP_REDUCE);
+      p_चरणः->p_व्यञ्जकम्_List = sqlite3_व्यञ्जकम्_List_Dup(db, pList, EXPRDUP_REDUCE);
+      p_चरणः->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
+      यदि( pWhen ){
         pWhen = sqlite3PExpr(pParse, TK_NOT, pWhen, 0);
-        pTrigger->pWhen = sqlite3ExprDup(db, pWhen, EXPRDUP_REDUCE);
+        pTrigger->pWhen = sqlite3_व्यञ्जकम्_Dup(db, pWhen, EXPRDUP_REDUCE);
       }
     }
 
     /* Re-enable the lookaside buffer, if it was disabled earlier. */
     EnableLookaside;
 
-    sqlite3ExprDelete(db, pWhere);
-    sqlite3ExprDelete(db, pWhen);
-    sqlite3ExprListDelete(db, pList);
+    sqlite3_व्यञ्जकम्_Delete(db, pWhere);
+    sqlite3_व्यञ्जकम्_Delete(db, pWhen);
+    sqlite3_व्यञ्जकम्_List_Delete(db, pList);
     sqlite3SelectDelete(db, pSelect);
-    if( db->mallocFailed==1 ){
+    यदि( db->mallocFailed==1 ){
       fkTriggerDelete(db, pTrigger);
-      return 0;
+      प्रत्यागम 0;
     }
-    assert( pStep!=0 );
-    assert( pTrigger!=0 );
+    प्रतिज्ञा( p_चरणः!=0 );
+    प्रतिज्ञा( pTrigger!=0 );
 
-    switch( action ){
-      case OE_Restrict:
-        pStep->op = TK_SELECT;
-        break;
-      case OE_Cascade: 
-        if( !pChanges ){ 
-          pStep->op = TK_DELETE; 
-          break; 
+    विकल्प( action ){
+      पक्ष OE_Restrict:
+        p_चरणः->op = TK_SELECT;
+        भङ्ग;
+      पक्ष OE_Cascade: 
+        यदि( !pChanges ){ 
+          p_चरणः->op = TK_DELETE; 
+          भङ्ग; 
         }
         /* no break */ deliberate_fall_through
-      default:
-        pStep->op = TK_UPDATE;
+      स्वभाव:
+        p_चरणः->op = TK_UPDATE;
     }
-    pStep->pTrig = pTrigger;
+    p_चरणः->pTrig = pTrigger;
     pTrigger->pSchema = pTab->pSchema;
     pTrigger->pTabSchema = pTab->pSchema;
     pFKey->apTrigger[iAction] = pTrigger;
     pTrigger->op = (pChanges ? TK_UPDATE : TK_DELETE);
   }
 
-  return pTrigger;
+  प्रत्यागम pTrigger;
 }
 
 /*
 ** This function is called when deleting or updating a row to implement
 ** any required CASCADE, SET NULL or SET DEFAULT actions.
 */
-void sqlite3FkActions(
+शून्य sqlite3FkActions(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being updated or deleted from */
-  ExprList *pChanges,             /* Change-list for UPDATE, NULL for DELETE */
-  int regOld,                     /* Address of array containing old row */
-  int *aChange,                   /* Array indicating UPDATEd columns (or 0) */
-  int bChngRowid                  /* True if rowid is UPDATEd */
+  सारणी *pTab,                    /* Table being updated or deleted from */
+  व्यञ्जकम्_List *pChanges,             /* Change-list for UPDATE, NULL for DELETE */
+  पूर्णाङ्क regOld,                     /* Address of array containing old row */
+  पूर्णाङ्क *aChange,                   /* Array indicating UPDATEd columns (or 0) */
+  पूर्णाङ्क bChngRowid                  /* True if rowid is UPDATEd */
 ){
   /* If foreign-key support is enabled, iterate through all FKs that 
   ** refer to table pTab. If there is an action associated with the FK 
   ** for this operation (either update or delete), invoke the associated 
   ** trigger sub-program.  */
-  if( pParse->db->flags&SQLITE_ForeignKeys ){
+  यदि( pParse->db->flags&SQLITE_Foreign_कुञ्चिकाः ){
     FKey *pFKey;                  /* Iterator variable */
-    for(pFKey = sqlite3FkReferences(pTab); pFKey; pFKey=pFKey->pNextTo){
-      if( aChange==0 || fkParentIsModified(pTab, pFKey, aChange, bChngRowid) ){
+    प्रति(pFKey = sqlite3FkReferences(pTab); pFKey; pFKey=pFKey->p_अग्र_गन्तव्यम्){
+      यदि( aChange==0 || fkParentIsModified(pTab, pFKey, aChange, bChngRowid) ){
         Trigger *pAct = fkActionTrigger(pParse, pTab, pFKey, pChanges);
-        if( pAct ){
-          sqlite3CodeRowTriggerDirect(pParse, pAct, pTab, regOld, OE_Abort, 0);
+        यदि( pAct ){
+          sqlite3_संहिता_Row_Trigger_प्रत्यक्षम्(pParse, pAct, pTab, regOld, OE_Abort, 0);
         }
       }
     }
   }
 }
 
-#endif /* ifndef SQLITE_OMIT_TRIGGER */
+#यदि_अन्तः /* ifndef SQLITE_OMIT_TRIGGER */
 
 /*
 ** Free all memory associated with foreign key definitions attached to
 ** table pTab. Remove the deleted foreign keys from the Schema.fkeyHash
 ** hash table.
 */
-void sqlite3FkDelete(sqlite3 *db, Table *pTab){
+शून्य sqlite3FkDelete(sqlite3 *db, सारणी *pTab){
   FKey *pFKey;                    /* Iterator variable */
-  FKey *pNext;                    /* Copy of pFKey->pNextFrom */
+  FKey *p_अग्र;                    /* Copy of pFKey->pNextFrom */
 
-  assert( IsOrdinaryTable(pTab) );
-  assert( db!=0 );
-  for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pNext){
-    assert( db==0 || sqlite3SchemaMutexHeld(db, 0, pTab->pSchema) );
+  प्रतिज्ञा( Is_Ordinary_सारणी(pTab) );
+  प्रतिज्ञा( db!=0 );
+  प्रति(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=p_अग्र){
+    प्रतिज्ञा( db==0 || sqlite3SchemaMutexHeld(db, 0, pTab->pSchema) );
 
     /* Remove the FK from the fkeyHash hash table. */
-    if( db->pnBytesFreed==0 ){
-      if( pFKey->pPrevTo ){
-        pFKey->pPrevTo->pNextTo = pFKey->pNextTo;
-      }else{
-        const char *z = (pFKey->pNextTo ? pFKey->pNextTo->zTo : pFKey->zTo);
-        sqlite3HashInsert(&pTab->pSchema->fkeyHash, z, pFKey->pNextTo);
+    यदि( db->pn_अष्टकानि_Freed==0 ){
+      यदि( pFKey->p_पूर्व_गन्तव्यम् ){
+        pFKey->p_पूर्व_गन्तव्यम्->p_अग्र_गन्तव्यम् = pFKey->p_अग्र_गन्तव्यम्;
+      }अन्यथा{
+        ध्रुव वर्ण *z = (pFKey->p_अग्र_गन्तव्यम् ? pFKey->p_अग्र_गन्तव्यम्->z_गन्तव्यम् : pFKey->z_गन्तव्यम्);
+        sqlite3_Hash_निवेशय(&pTab->pSchema->fkeyHash, z, pFKey->p_अग्र_गन्तव्यम्);
       }
-      if( pFKey->pNextTo ){
-        pFKey->pNextTo->pPrevTo = pFKey->pPrevTo;
+      यदि( pFKey->p_अग्र_गन्तव्यम् ){
+        pFKey->p_अग्र_गन्तव्यम्->p_पूर्व_गन्तव्यम् = pFKey->p_पूर्व_गन्तव्यम्;
       }
     }
 
     /* EV: R-30323-21917 Each foreign key constraint in SQLite is
     ** classified as either immediate or deferred.
     */
-    assert( pFKey->isDeferred==0 || pFKey->isDeferred==1 );
+    प्रतिज्ञा( pFKey->isDeferred==0 || pFKey->isDeferred==1 );
 
     /* Delete any triggers created to implement actions for this FK. */
-#ifndef SQLITE_OMIT_TRIGGER
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
     fkTriggerDelete(db, pFKey->apTrigger[0]);
     fkTriggerDelete(db, pFKey->apTrigger[1]);
-#endif
+#यदि_अन्तः
 
-    pNext = pFKey->pNextFrom;
+    p_अग्र = pFKey->p_अग्र_From;
     sqlite3DbFree(db, pFKey);
   }
 }
-#endif /* ifndef SQLITE_OMIT_FOREIGN_KEY */
+#यदि_अन्तः /* ifndef SQLITE_OMIT_FOREIGN_KEY */

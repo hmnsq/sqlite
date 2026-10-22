@@ -16,8 +16,8 @@
 ** so is applicable.  Because this module is responsible for selecting
 ** indices, you might also think of this module as the "query optimizer".
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#अन्तर्भाव "sqliteInt.h"
+#अन्तर्भाव "whereInt.h"
 
 /*
 ** Extra information appended to the end of sqlite3_index_info but not
@@ -28,39 +28,39 @@
 ** next.  As long as allocateIndexInfo() and sqlite3_vtab_collation()
 ** agree on the structure, all will be well.
 */
-typedef struct HiddenIndexInfo HiddenIndexInfo;
-struct HiddenIndexInfo {
+प्रकारनिर्देश संरचना Hidden_सूचकांक_Info Hidden_सूचकांक_Info;
+संरचना Hidden_सूचकांक_Info {
   WhereClause *pWC;        /* The Where clause being analyzed */
   Parse *pParse;           /* The parsing context */
-  int eDistinct;           /* Value to return from sqlite3_vtab_distinct() */
-  u32 mIn;                 /* Mask of terms that are <col> IN (...) */
-  u32 mHandleIn;           /* Terms that vtab will handle as <col> IN (...) */
-  sqlite3_value *aRhs[FLEXARRAY];  /* RHS values for constraints. MUST BE LAST
+  पूर्णाङ्क eDistinct;           /* Value to return from sqlite3_vtab_distinct() */
+  u32 m_अन्तर्;                 /* Mask of terms that are <col> IN (...) */
+  u32 m_Handle_अन्तर्;           /* Terms that vtab will handle as <col> IN (...) */
+  sqlite3_मानम् *aRhs[FLEXARRAY];  /* RHS values for constraints. MUST BE LAST
                                    ** Extra space is allocated to hold up
                                    ** to nTerm such values */
 };
 
 /* Size (in bytes) of a HiddenIndeInfo object sufficient to hold as
 ** many as N constraints */
-#define SZ_HIDDENINDEXINFO(N) \
-                  (offsetof(HiddenIndexInfo,aRhs) + (N)*sizeof(sqlite3_value*))
+#परिभाषय SZ_HIDDENINDEXINFO(N) \
+                  (offsetof(Hidden_सूचकांक_Info,aRhs) + (N)*परिमाण(sqlite3_मानम्*))
 
 /* Forward declaration of methods */
-static int whereLoopResize(sqlite3*, WhereLoop*, int);
+स्थिर पूर्णाङ्क whereLoopResize(sqlite3*, WhereLoop*, पूर्णाङ्क);
 
 /*
 ** Return the estimated number of output rows from a WHERE clause
 */
-LogEst sqlite3WhereOutputRowCount(WhereInfo *pWInfo){
-  return pWInfo->nRowOut;
+LogEst sqlite3_Where_Output_Row_गणनम्(WhereInfo *pWInfo){
+  प्रत्यागम pWInfo->n_Row_बहिर्गमनम्;
 }
 
 /*
 ** Return one of the WHERE_DISTINCT_xxxxx values to indicate how this
 ** WHERE clause returns outputs for DISTINCT processing.
 */
-int sqlite3WhereIsDistinct(WhereInfo *pWInfo){
-  return pWInfo->eDistinct;
+पूर्णाङ्क sqlite3WhereIsDistinct(WhereInfo *pWInfo){
+  प्रत्यागम pWInfo->eDistinct;
 }
 
 /*
@@ -71,8 +71,8 @@ int sqlite3WhereIsDistinct(WhereInfo *pWInfo){
 ** is positive but less than the number of ORDER BY terms means that
 ** block sorting is required.
 */
-int sqlite3WhereIsOrdered(WhereInfo *pWInfo){
-  return pWInfo->nOBSat<0 ? 0 : pWInfo->nOBSat;
+पूर्णाङ्क sqlite3WhereIsOrdered(WhereInfo *pWInfo){
+  प्रत्यागम pWInfo->nOBSat<0 ? 0 : pWInfo->nOBSat;
 }
 
 /*
@@ -98,16 +98,16 @@ int sqlite3WhereIsOrdered(WhereInfo *pWInfo){
 ** that might make the code run a little faster, but should not change
 ** the final answer.
 */
-int sqlite3WhereOrderByLimitOptLabel(WhereInfo *pWInfo){
+पूर्णाङ्क sqlite3_Where_क्रमः_By_सीमा_Opt_Label(WhereInfo *pWInfo){
   WhereLevel *pInner;
-  if( !pWInfo->bOrderedInnerLoop ){
+  यदि( !pWInfo->bOrderedInnerLoop ){
     /* The ORDER BY LIMIT optimization does not apply.  Jump to the
     ** continuation of the inner-most loop. */
-    return pWInfo->iContinue;
+    प्रत्यागम pWInfo->iContinue;
   }
   pInner = &pWInfo->a[pWInfo->nLevel-1];
-  assert( pInner->addrNxt!=0 );
-  return pInner->pRJ ? pWInfo->iContinue : pInner->addrNxt;
+  प्रतिज्ञा( pInner->addrNxt!=0 );
+  प्रत्यागम pInner->pRJ ? pWInfo->iContinue : pInner->addrNxt;
 }
 
 /*
@@ -121,16 +121,16 @@ int sqlite3WhereOrderByLimitOptLabel(WhereInfo *pWInfo){
 ** correct answer should be obtained regardless.  This OP_Goto just
 ** makes the answer appear faster.
 */
-void sqlite3WhereMinMaxOptEarlyOut(Vdbe *v, WhereInfo *pWInfo){
+शून्य sqlite3_Where_Min_Max_Opt_Early_बहिर्गमनम्(Vdbe *v, WhereInfo *pWInfo){
   WhereLevel *pInner;
-  int i;
-  if( !pWInfo->bOrderedInnerLoop ) return;
-  if( pWInfo->nOBSat==0 ) return;
-  for(i=pWInfo->nLevel-1; i>=0; i--){
+  पूर्णाङ्क i;
+  यदि( !pWInfo->bOrderedInnerLoop ) प्रत्यागम;
+  यदि( pWInfo->nOBSat==0 ) प्रत्यागम;
+  प्रति(i=pWInfo->nLevel-1; i>=0; i--){
     pInner = &pWInfo->a[i];
-    if( (pInner->pWLoop->wsFlags & WHERE_COLUMN_IN)!=0 ){
+    यदि( (pInner->pWLoop->wsFlags & WHERE_COLUMN_अन्तर्)!=0 ){
       sqlite3VdbeGoto(v, pInner->addrNxt);
-      return;
+      प्रत्यागम;
     }
   }
   sqlite3VdbeGoto(v, pWInfo->iBreak);
@@ -140,17 +140,17 @@ void sqlite3WhereMinMaxOptEarlyOut(Vdbe *v, WhereInfo *pWInfo){
 ** Return the VDBE address or label to jump to in order to continue
 ** immediately with the next row of a WHERE clause.
 */
-int sqlite3WhereContinueLabel(WhereInfo *pWInfo){
-  assert( pWInfo->iContinue!=0 );
-  return pWInfo->iContinue;
+पूर्णाङ्क sqlite3WhereContinueLabel(WhereInfo *pWInfo){
+  प्रतिज्ञा( pWInfo->iContinue!=0 );
+  प्रत्यागम pWInfo->iContinue;
 }
 
 /*
 ** Return the VDBE address or label to jump to in order to break
 ** out of a WHERE loop.
 */
-int sqlite3WhereBreakLabel(WhereInfo *pWInfo){
-  return pWInfo->iBreak;
+पूर्णाङ्क sqlite3WhereBreakLabel(WhereInfo *pWInfo){
+  प्रत्यागम pWInfo->iBreak;
 }
 
 /*
@@ -170,32 +170,32 @@ int sqlite3WhereBreakLabel(WhereInfo *pWInfo){
 ** aiCur[0] and aiCur[1] both get -1 if the where-clause logic is
 ** unable to use the ONEPASS optimization.
 */
-int sqlite3WhereOkOnePass(WhereInfo *pWInfo, int *aiCur){
-  memcpy(aiCur, pWInfo->aiCurOnePass, sizeof(int)*2);
-#ifdef WHERETRACE_ENABLED
-  if( sqlite3WhereTrace && pWInfo->eOnePass!=ONEPASS_OFF ){
+पूर्णाङ्क sqlite3WhereOkOnePass(WhereInfo *pWInfo, पूर्णाङ्क *aiCur){
+  स्मृतिं_प्रतिलिख(aiCur, pWInfo->aiCurOnePass, परिमाण(पूर्णाङ्क)*2);
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+  यदि( sqlite3WhereTrace && pWInfo->eOnePass!=ONEPASS_OFF ){
     sqlite3DebugPrintf("%s cursors: %d %d\n",
          pWInfo->eOnePass==ONEPASS_SINGLE ? "ONEPASS_SINGLE" : "ONEPASS_MULTI",
          aiCur[0], aiCur[1]);
   }
-#endif
-  return pWInfo->eOnePass;
+#यदि_अन्तः
+  प्रत्यागम pWInfo->eOnePass;
 }
 
 /*
 ** Return TRUE if the WHERE loop uses the OP_DeferredSeek opcode to move
 ** the data cursor to the row selected by the index cursor.
 */
-int sqlite3WhereUsesDeferredSeek(WhereInfo *pWInfo){
-  return pWInfo->bDeferredSeek;
+पूर्णाङ्क sqlite3_Where_उपयुङ्क्ते_Deferred_Seek(WhereInfo *pWInfo){
+  प्रत्यागम pWInfo->bDeferredSeek;
 }
 
 /*
 ** Move the content of pSrc into pDest
 */
-static void whereOrMove(WhereOrSet *pDest, WhereOrSet *pSrc){
+स्थिर शून्य whereOrMove(Where_Or_समुच्चयः *pDest, Where_Or_समुच्चयः *pSrc){
   pDest->n = pSrc->n;
-  memcpy(pDest->a, pSrc->a, pDest->n*sizeof(pDest->a[0]));
+  स्मृतिं_प्रतिलिख(pDest->a, pSrc->a, pDest->n*परिमाण(pDest->a[0]));
 }
 
 /*
@@ -205,81 +205,81 @@ static void whereOrMove(WhereOrSet *pDest, WhereOrSet *pSrc){
 ** appended, or it might be discarded.  Do whatever is the right thing
 ** so that pSet keeps the N_OR_COST best entries seen so far.
 */
-static int whereOrInsert(
-  WhereOrSet *pSet,      /* The WhereOrSet to be updated */
+स्थिर पूर्णाङ्क where_Or_निवेशय(
+  Where_Or_समुच्चयः *p_समुच्चयः,      /* The WhereOrSet to be updated */
   Bitmask prereq,        /* Prerequisites of the new entry */
-  LogEst rRun,           /* Run-cost of the new entry */
-  LogEst nOut            /* Number of outputs for the new entry */
+  LogEst r_सततम्,           /* Run-cost of the new entry */
+  LogEst n_बहिर्गमनम्            /* Number of outputs for the new entry */
 ){
   u16 i;
   WhereOrCost *p;
-  for(i=pSet->n, p=pSet->a; i>0; i--, p++){
-    if( rRun<=p->rRun && (prereq & p->prereq)==prereq ){
-      goto whereOrInsert_done;
+  प्रति(i=p_समुच्चयः->n, p=p_समुच्चयः->a; i>0; i--, p++){
+    यदि( r_सततम्<=p->r_सततम् && (prereq & p->prereq)==prereq ){
+      गच्छ where_Or_निवेशय_समाप्तम्;
     }
-    if( p->rRun<=rRun && (p->prereq & prereq)==p->prereq ){
-      return 0;
+    यदि( p->r_सततम्<=r_सततम् && (p->prereq & prereq)==p->prereq ){
+      प्रत्यागम 0;
     }
   }
-  if( pSet->n<N_OR_COST ){
-    p = &pSet->a[pSet->n++];
-    p->nOut = nOut;
-  }else{
-    p = pSet->a;
-    for(i=1; i<pSet->n; i++){
-      if( p->rRun>pSet->a[i].rRun ) p = pSet->a + i;
+  यदि( p_समुच्चयः->n<N_OR_COST ){
+    p = &p_समुच्चयः->a[p_समुच्चयः->n++];
+    p->n_बहिर्गमनम् = n_बहिर्गमनम्;
+  }अन्यथा{
+    p = p_समुच्चयः->a;
+    प्रति(i=1; i<p_समुच्चयः->n; i++){
+      यदि( p->r_सततम्>p_समुच्चयः->a[i].r_सततम् ) p = p_समुच्चयः->a + i;
     }
-    if( p->rRun<=rRun ) return 0;
+    यदि( p->r_सततम्<=r_सततम् ) प्रत्यागम 0;
   }
-whereOrInsert_done:
+where_Or_निवेशय_समाप्तम्:
   p->prereq = prereq;
-  p->rRun = rRun;
-  if( p->nOut>nOut ) p->nOut = nOut;
-  return 1;
+  p->r_सततम् = r_सततम्;
+  यदि( p->n_बहिर्गमनम्>n_बहिर्गमनम् ) p->n_बहिर्गमनम् = n_बहिर्गमनम्;
+  प्रत्यागम 1;
 }
 
 /*
 ** Return the bitmask for the given cursor number.  Return 0 if
 ** iCursor is not in the set.
 */
-Bitmask sqlite3WhereGetMask(WhereMaskSet *pMaskSet, int iCursor){
-  int i;
-  assert( pMaskSet->n<=(int)sizeof(Bitmask)*8 );
-  assert( pMaskSet->n>0 || pMaskSet->ix[0]<0 );
-  assert( iCursor>=-1 );
-  if( pMaskSet->ix[0]==iCursor ){
-    return 1;
+Bitmask sqlite3_Where_Get_आवरणम्(Where_आवरणम्_समुच्चयः *p_आवरणम्_समुच्चयः, पूर्णाङ्क iCursor){
+  पूर्णाङ्क i;
+  प्रतिज्ञा( p_आवरणम्_समुच्चयः->n<=(पूर्णाङ्क)परिमाण(Bitmask)*8 );
+  प्रतिज्ञा( p_आवरणम्_समुच्चयः->n>0 || p_आवरणम्_समुच्चयः->ix[0]<0 );
+  प्रतिज्ञा( iCursor>=-1 );
+  यदि( p_आवरणम्_समुच्चयः->ix[0]==iCursor ){
+    प्रत्यागम 1;
   }
-  for(i=1; i<pMaskSet->n; i++){
-    if( pMaskSet->ix[i]==iCursor ){
-      return MASKBIT(i);
+  प्रति(i=1; i<p_आवरणम्_समुच्चयः->n; i++){
+    यदि( p_आवरणम्_समुच्चयः->ix[i]==iCursor ){
+      प्रत्यागम MASKBIT(i);
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /* Allocate memory that is automatically freed when pWInfo is freed.
 */
-void *sqlite3WhereMalloc(WhereInfo *pWInfo, u64 nByte){
-  WhereMemBlock *pBlock;
-  pBlock = sqlite3DbMallocRawNN(pWInfo->pParse->db, nByte+sizeof(*pBlock));
-  if( pBlock ){
-    pBlock->pNext = pWInfo->pMemToFree;
-    pBlock->sz = nByte;
-    pWInfo->pMemToFree = pBlock;
-    pBlock++;
+शून्य *sqlite3WhereMalloc(WhereInfo *pWInfo, u64 nByte){
+  Where_Mem_खण्डम् *p_खण्डम्;
+  p_खण्डम् = sqlite3DbMallocRawNN(pWInfo->pParse->db, nByte+परिमाण(*p_खण्डम्));
+  यदि( p_खण्डम् ){
+    p_खण्डम्->p_अग्र = pWInfo->p_Mem_गन्तव्यम्_Free;
+    p_खण्डम्->sz = nByte;
+    pWInfo->p_Mem_गन्तव्यम्_Free = p_खण्डम्;
+    p_खण्डम्++;
   }
-  return (void*)pBlock;
+  प्रत्यागम (शून्य*)p_खण्डम्;
 }
-void *sqlite3WhereRealloc(WhereInfo *pWInfo, void *pOld, u64 nByte){
-  void *pNew = sqlite3WhereMalloc(pWInfo, nByte);
-  if( pNew && pOld ){
-    WhereMemBlock *pOldBlk = (WhereMemBlock*)pOld;
+शून्य *sqlite3WhereRealloc(WhereInfo *pWInfo, शून्य *pOld, u64 nByte){
+  शून्य *pNew = sqlite3WhereMalloc(pWInfo, nByte);
+  यदि( pNew && pOld ){
+    Where_Mem_खण्डम् *pOldBlk = (Where_Mem_खण्डम्*)pOld;
     pOldBlk--;
-    assert( pOldBlk->sz<nByte );
-    memcpy(pNew, pOld, pOldBlk->sz);
+    प्रतिज्ञा( pOldBlk->sz<nByte );
+    स्मृतिं_प्रतिलिख(pNew, pOld, pOldBlk->sz);
   }
-  return pNew;
+  प्रत्यागम pNew;
 }
 
 /*
@@ -290,21 +290,21 @@ void *sqlite3WhereRealloc(WhereInfo *pWInfo, void *pOld, u64 nByte){
 ** sqlite3WhereBegin() routine.  So we know that the pMaskSet->ix[]
 ** array will never overflow.
 */
-static void createMask(WhereMaskSet *pMaskSet, int iCursor){
-  assert( pMaskSet->n < ArraySize(pMaskSet->ix) );
-  pMaskSet->ix[pMaskSet->n++] = iCursor;
+स्थिर शून्य create_आवरणम्(Where_आवरणम्_समुच्चयः *p_आवरणम्_समुच्चयः, पूर्णाङ्क iCursor){
+  प्रतिज्ञा( p_आवरणम्_समुच्चयः->n < Array_आकार(p_आवरणम्_समुच्चयः->ix) );
+  p_आवरणम्_समुच्चयः->ix[p_आवरणम्_समुच्चयः->n++] = iCursor;
 }
 
 /*
 ** If the right-hand branch of the expression is a TK_COLUMN, then return
 ** a pointer to the right-hand branch.  Otherwise, return NULL.
 */
-static Expr *whereRightSubexprIsColumn(Expr *p){
-  p = sqlite3ExprSkipCollateAndLikely(p->pRight);
-  if( ALWAYS(p!=0) && p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return p;
+स्थिर व्यञ्जकम् *where_दक्षिणः_Subexpr_Is_Column(व्यञ्जकम् *p){
+  p = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(p->p_दक्षिणः);
+  यदि( ALWAYS(p!=0) && p->op==TK_COLUMN && !व्यञ्जकम्_Has_Property(p, EP_FixedCol) ){
+    प्रत्यागम p;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -316,35 +316,35 @@ static Expr *whereRightSubexprIsColumn(Expr *p){
 ** or "NOCASE") used by the comparison in pTerm. If it is not compatible
 ** with affinity idxaff, NULL is returned.
 */
-static SQLITE_NOINLINE const char *indexInAffinityOk(
+स्थिर SQLITE_NOINLINE ध्रुव वर्ण *सूचकांक_अन्तर्_Affinity_Ok(
   Parse *pParse, 
-  WhereTerm *pTerm, 
+  Where_पदांशः *p_पदांशः, 
   u8 idxaff
 ){
-  Expr *pX = pTerm->pExpr;
-  Expr inexpr;
+  व्यञ्जकम् *pX = p_पदांशः->p_व्यञ्जकम्;
+  व्यञ्जकम् inexpr;
 
-  assert( pTerm->eOperator & WO_IN );
+  प्रतिज्ञा( p_पदांशः->eOperator & WO_अन्तर् );
 
-  if( ExprUseXSelect(pX) ){
-    int iField = 0;
+  यदि( व्यञ्जकम्_Use_XSelect(pX) ){
+    पूर्णाङ्क i_क्षेत्रम् = 0;
     inexpr.flags = 0;
     inexpr.op = TK_EQ;
-    if( sqlite3ExprIsVector(pX->pLeft) ){
-      iField = pTerm->u.x.iField - 1;
-      inexpr.pLeft = pX->pLeft->x.pList->a[iField].pExpr;
-    }else{
-      inexpr.pLeft = pX->pLeft;
+    यदि( sqlite3_व्यञ्जकम्_Is_सदिशम्(pX->p_वामः) ){
+      i_क्षेत्रम् = p_पदांशः->u.x.i_क्षेत्रम् - 1;
+      inexpr.p_वामः = pX->p_वामः->x.pList->a[i_क्षेत्रम्].p_व्यञ्जकम्;
+    }अन्यथा{
+      inexpr.p_वामः = pX->p_वामः;
     }
-    inexpr.pRight = pX->x.pSelect->pEList->a[iField].pExpr;
+    inexpr.p_दक्षिणः = pX->x.pSelect->pEList->a[i_क्षेत्रम्].p_व्यञ्जकम्;
     pX = &inexpr;
   }
 
-  if( sqlite3IndexAffinityOk(pX, idxaff) ){
-    CollSeq *pRet = sqlite3ExprCompareCollSeq(pParse, pX);
-    return pRet ? pRet->zName : sqlite3StrBINARY;
+  यदि( sqlite3_सूचकांक_Affinity_Ok(pX, idxaff) ){
+    CollSeq *pRet = sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pParse, pX);
+    प्रत्यागम pRet ? pRet->zName : sqlite3_Str_द्विमान;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -352,108 +352,108 @@ static SQLITE_NOINLINE const char *indexInAffinityOk(
 ** established when the pScan object was initialized by whereScanInit().
 ** Return NULL if there are no more matching WhereTerms.
 */
-static WhereTerm *whereScanNext(WhereScan *pScan){
-  int iCur;            /* The cursor on the LHS of the term */
+स्थिर Where_पदांशः *where_अवलोकनम्_अग्र(Where_अवलोकनम् *p_अवलोकनम्){
+  पूर्णाङ्क iCur;            /* The cursor on the LHS of the term */
   i16 iColumn;         /* The column on the LHS of the term.  -1 for IPK */
-  Expr *pX;            /* An expression being tested */
+  व्यञ्जकम् *pX;            /* An expression being tested */
   WhereClause *pWC;    /* Shorthand for pScan->pWC */
-  WhereTerm *pTerm;    /* The term being tested */
-  int k = pScan->k;    /* Where to start scanning */
+  Where_पदांशः *p_पदांशः;    /* The term being tested */
+  पूर्णाङ्क k = p_अवलोकनम्->k;    /* Where to start scanning */
 
-  assert( pScan->iEquiv<=pScan->nEquiv );
-  pWC = pScan->pWC;
-  while(1){
-    iColumn = pScan->aiColumn[pScan->iEquiv-1];
-    iCur = pScan->aiCur[pScan->iEquiv-1];
-    assert( pWC!=0 );
-    assert( iCur>=0 );
-    do{
-      for(pTerm=pWC->a+k; k<pWC->nTerm; k++, pTerm++){
-        assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 || pTerm->leftCursor<0 );
-        if( pTerm->leftCursor==iCur
-         && pTerm->u.x.leftColumn==iColumn
-         && (iColumn!=XN_EXPR
-             || sqlite3ExprCompareSkip(pTerm->pExpr->pLeft,
-                                       pScan->pIdxExpr,iCur)==0)
-         && (pScan->iEquiv<=1 || !ExprHasProperty(pTerm->pExpr, EP_OuterON))
+  प्रतिज्ञा( p_अवलोकनम्->iEquiv<=p_अवलोकनम्->nEquiv );
+  pWC = p_अवलोकनम्->pWC;
+  यावत्(1){
+    iColumn = p_अवलोकनम्->aiColumn[p_अवलोकनम्->iEquiv-1];
+    iCur = p_अवलोकनम्->aiCur[p_अवलोकनम्->iEquiv-1];
+    प्रतिज्ञा( pWC!=0 );
+    प्रतिज्ञा( iCur>=0 );
+    कुरु{
+      प्रति(p_पदांशः=pWC->a+k; k<pWC->n_पदांशः; k++, p_पदांशः++){
+        प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 || p_पदांशः->वामः_Cursor<0 );
+        यदि( p_पदांशः->वामः_Cursor==iCur
+         && p_पदांशः->u.x.वामः_Column==iColumn
+         && (iColumn!=XN_व्यञ्जकम्
+             || sqlite3_व्यञ्जकम्_Compare_Skip(p_पदांशः->p_व्यञ्जकम्->p_वामः,
+                                       p_अवलोकनम्->p_Idx_व्यञ्जकम्,iCur)==0)
+         && (p_अवलोकनम्->iEquiv<=1 || !व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON))
         ){
-          if( (pTerm->eOperator & WO_EQUIV)!=0
-           && pScan->nEquiv<ArraySize(pScan->aiCur)
-           && (pX = whereRightSubexprIsColumn(pTerm->pExpr))!=0
+          यदि( (p_पदांशः->eOperator & WO_EQUIV)!=0
+           && p_अवलोकनम्->nEquiv<Array_आकार(p_अवलोकनम्->aiCur)
+           && (pX = where_दक्षिणः_Subexpr_Is_Column(p_पदांशः->p_व्यञ्जकम्))!=0
           ){
-            int j;
-            for(j=0; j<pScan->nEquiv; j++){
-              if( pScan->aiCur[j]==pX->iTable
-               && pScan->aiColumn[j]==pX->iColumn ){
-                  break;
+            पूर्णाङ्क j;
+            प्रति(j=0; j<p_अवलोकनम्->nEquiv; j++){
+              यदि( p_अवलोकनम्->aiCur[j]==pX->i_सारणी
+               && p_अवलोकनम्->aiColumn[j]==pX->iColumn ){
+                  भङ्ग;
               }
             }
-            if( j==pScan->nEquiv ){
-              pScan->aiCur[j] = pX->iTable;
-              pScan->aiColumn[j] = pX->iColumn;
-              pScan->nEquiv++;
+            यदि( j==p_अवलोकनम्->nEquiv ){
+              p_अवलोकनम्->aiCur[j] = pX->i_सारणी;
+              p_अवलोकनम्->aiColumn[j] = pX->iColumn;
+              p_अवलोकनम्->nEquiv++;
             }
           }
-          if( (pTerm->eOperator & pScan->opMask)!=0 ){
+          यदि( (p_पदांशः->eOperator & p_अवलोकनम्->op_आवरणम्)!=0 ){
             /* Verify the affinity and collating sequence match */
-            if( pScan->zCollName && (pTerm->eOperator & WO_ISNULL)==0 ){
-              const char *zCollName;
+            यदि( p_अवलोकनम्->zCollName && (p_पदांशः->eOperator & WO_ISNULL)==0 ){
+              ध्रुव वर्ण *zCollName;
               Parse *pParse = pWC->pWInfo->pParse;
-              pX = pTerm->pExpr;
+              pX = p_पदांशः->p_व्यञ्जकम्;
 
-              if( (pTerm->eOperator & WO_IN) ){
-                zCollName = indexInAffinityOk(pParse, pTerm, pScan->idxaff);
-                if( !zCollName ) continue;
-              }else{
+              यदि( (p_पदांशः->eOperator & WO_अन्तर्) ){
+                zCollName = सूचकांक_अन्तर्_Affinity_Ok(pParse, p_पदांशः, p_अवलोकनम्->idxaff);
+                यदि( !zCollName ) अनुवर्त;
+              }अन्यथा{
                 CollSeq *pColl;
-                if( !sqlite3IndexAffinityOk(pX, pScan->idxaff) ){
-                  continue;
+                यदि( !sqlite3_सूचकांक_Affinity_Ok(pX, p_अवलोकनम्->idxaff) ){
+                  अनुवर्त;
                 }
-                assert(pX->pLeft);
-                pColl = sqlite3ExprCompareCollSeq(pParse, pX);
-                zCollName = pColl ? pColl->zName : sqlite3StrBINARY;
+                प्रतिज्ञा(pX->p_वामः);
+                pColl = sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pParse, pX);
+                zCollName = pColl ? pColl->zName : sqlite3_Str_द्विमान;
               }
 
-              if( sqlite3StrICmp(zCollName, pScan->zCollName) ){
-                continue;
+              यदि( sqlite3StrICmp(zCollName, p_अवलोकनम्->zCollName) ){
+                अनुवर्त;
               }
             }
-            if( (pTerm->eOperator & (WO_EQ|WO_IS))!=0
-             && (pX = pTerm->pExpr->pRight, ALWAYS(pX!=0))
+            यदि( (p_पदांशः->eOperator & (WO_EQ|WO_IS))!=0
+             && (pX = p_पदांशः->p_व्यञ्जकम्->p_दक्षिणः, ALWAYS(pX!=0))
              && pX->op==TK_COLUMN
-             && pX->iTable==pScan->aiCur[0]
-             && pX->iColumn==pScan->aiColumn[0]
+             && pX->i_सारणी==p_अवलोकनम्->aiCur[0]
+             && pX->iColumn==p_अवलोकनम्->aiColumn[0]
             ){
-              testcase( pTerm->eOperator & WO_IS );
-              continue;
+              testcase( p_पदांशः->eOperator & WO_IS );
+              अनुवर्त;
             }
-            pScan->pWC = pWC;
-            pScan->k = k+1;
-#ifdef WHERETRACE_ENABLED
-            if( (sqlite3WhereTrace & 0x20000)!=0 && pScan->nEquiv>1 ){
-              int ii;
+            p_अवलोकनम्->pWC = pWC;
+            p_अवलोकनम्->k = k+1;
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+            यदि( (sqlite3WhereTrace & 0x20000)!=0 && p_अवलोकनम्->nEquiv>1 ){
+              पूर्णाङ्क ii;
               sqlite3DebugPrintf("EQUIVALENT TO {%d:%d} (due to TERM-%d):",
-                 pScan->aiCur[0], pScan->aiColumn[0], pTerm->iTerm);
-              for(ii=1; ii<pScan->nEquiv; ii++){
+                 p_अवलोकनम्->aiCur[0], p_अवलोकनम्->aiColumn[0], p_पदांशः->i_पदांशः);
+              प्रति(ii=1; ii<p_अवलोकनम्->nEquiv; ii++){
                 sqlite3DebugPrintf(" {%d:%d}",
-                   pScan->aiCur[ii], pScan->aiColumn[ii]);
+                   p_अवलोकनम्->aiCur[ii], p_अवलोकनम्->aiColumn[ii]);
               }
               sqlite3DebugPrintf("\n");
             }
-#endif
-            return pTerm;
+#यदि_अन्तः
+            प्रत्यागम p_पदांशः;
           }
         }
       }
       pWC = pWC->pOuter;
       k = 0;
-    }while( pWC!=0 );
-    if( pScan->iEquiv>=pScan->nEquiv ) break;
-    pWC = pScan->pOrigWC;
+    }यावत्( pWC!=0 );
+    यदि( p_अवलोकनम्->iEquiv>=p_अवलोकनम्->nEquiv ) भङ्ग;
+    pWC = p_अवलोकनम्->pOrigWC;
     k = 0;
-    pScan->iEquiv++;
+    p_अवलोकनम्->iEquiv++;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -462,9 +462,9 @@ static WhereTerm *whereScanNext(WhereScan *pScan){
 ** the normal whereScanInit() routine, which is a high-runner, does not
 ** need to push registers onto the stack as part of its prologue.
 */
-static SQLITE_NOINLINE WhereTerm *whereScanInitIndexExpr(WhereScan *pScan){
-  pScan->idxaff = sqlite3ExprAffinity(pScan->pIdxExpr);
-  return whereScanNext(pScan);
+स्थिर SQLITE_NOINLINE Where_पदांशः *where_अवलोकनम्_Init_सूचकांक_व्यञ्जकम्(Where_अवलोकनम् *p_अवलोकनम्){
+  p_अवलोकनम्->idxaff = sqlite3_व्यञ्जकम्_Affinity(p_अवलोकनम्->p_Idx_व्यञ्जकम्);
+  प्रत्यागम where_अवलोकनम्_अग्र(p_अवलोकनम्);
 }
 
 /*
@@ -486,43 +486,43 @@ static SQLITE_NOINLINE WhereTerm *whereScanInitIndexExpr(WhereScan *pScan){
 ** If X is not the INTEGER PRIMARY KEY then X must be compatible with
 ** index pIdx.
 */
-static WhereTerm *whereScanInit(
-  WhereScan *pScan,       /* The WhereScan object being initialized */
+स्थिर Where_पदांशः *where_अवलोकनम्_Init(
+  Where_अवलोकनम् *p_अवलोकनम्,       /* The WhereScan object being initialized */
   WhereClause *pWC,       /* The WHERE clause to be scanned */
-  int iCur,               /* Cursor to scan for */
-  int iColumn,            /* Column to scan for */
-  u32 opMask,             /* Operator(s) to scan for */
-  Index *pIdx             /* Must be compatible with this index */
+  पूर्णाङ्क iCur,               /* Cursor to scan for */
+  पूर्णाङ्क iColumn,            /* Column to scan for */
+  u32 op_आवरणम्,             /* Operator(s) to scan for */
+  सूचकांक *pIdx             /* Must be compatible with this index */
 ){
-  pScan->pOrigWC = pWC;
-  pScan->pWC = pWC;
-  pScan->pIdxExpr = 0;
-  pScan->idxaff = 0;
-  pScan->zCollName = 0;
-  pScan->opMask = opMask;
-  pScan->k = 0;
-  pScan->aiCur[0] = iCur;
-  pScan->nEquiv = 1;
-  pScan->iEquiv = 1;
-  if( pIdx ){
-    int j = iColumn;
+  p_अवलोकनम्->pOrigWC = pWC;
+  p_अवलोकनम्->pWC = pWC;
+  p_अवलोकनम्->p_Idx_व्यञ्जकम् = 0;
+  p_अवलोकनम्->idxaff = 0;
+  p_अवलोकनम्->zCollName = 0;
+  p_अवलोकनम्->op_आवरणम् = op_आवरणम्;
+  p_अवलोकनम्->k = 0;
+  p_अवलोकनम्->aiCur[0] = iCur;
+  p_अवलोकनम्->nEquiv = 1;
+  p_अवलोकनम्->iEquiv = 1;
+  यदि( pIdx ){
+    पूर्णाङ्क j = iColumn;
     iColumn = pIdx->aiColumn[j];
-    if( iColumn==pIdx->pTable->iPKey ){
+    यदि( iColumn==pIdx->p_सारणी->iPKey ){
       iColumn = XN_ROWID;
-    }else if( iColumn>=0 ){
-      pScan->idxaff = pIdx->pTable->aCol[iColumn].affinity;
-      pScan->zCollName = pIdx->azColl[j];
-    }else if( iColumn==XN_EXPR ){
-      pScan->pIdxExpr = pIdx->aColExpr->a[j].pExpr;
-      pScan->zCollName = pIdx->azColl[j];
-      pScan->aiColumn[0] = XN_EXPR;
-      return whereScanInitIndexExpr(pScan);
+    }अन्यथा यदि( iColumn>=0 ){
+      p_अवलोकनम्->idxaff = pIdx->p_सारणी->aCol[iColumn].affinity;
+      p_अवलोकनम्->zCollName = pIdx->azColl[j];
+    }अन्यथा यदि( iColumn==XN_व्यञ्जकम् ){
+      p_अवलोकनम्->p_Idx_व्यञ्जकम् = pIdx->a_Col_व्यञ्जकम्->a[j].p_व्यञ्जकम्;
+      p_अवलोकनम्->zCollName = pIdx->azColl[j];
+      p_अवलोकनम्->aiColumn[0] = XN_व्यञ्जकम्;
+      प्रत्यागम where_अवलोकनम्_Init_सूचकांक_व्यञ्जकम्(p_अवलोकनम्);
     }
-  }else if( iColumn==XN_EXPR ){
-    return 0;
+  }अन्यथा यदि( iColumn==XN_व्यञ्जकम् ){
+    प्रत्यागम 0;
   }
-  pScan->aiColumn[0] = iColumn;
-  return whereScanNext(pScan);
+  p_अवलोकनम्->aiColumn[0] = iColumn;
+  प्रत्यागम where_अवलोकनम्_अग्र(p_अवलोकनम्);
 }
 
 /*
@@ -550,31 +550,31 @@ static WhereTerm *whereScanInit(
 ** the form "X <op> <const-expr>" exist.   If no terms with a constant RHS
 ** exist, try to return a term that does not use WO_EQUIV.
 */
-WhereTerm *sqlite3WhereFindTerm(
+Where_पदांशः *sqlite3_Where_Find_पदांशः(
   WhereClause *pWC,     /* The WHERE clause to be searched */
-  int iCur,             /* Cursor number of LHS */
-  int iColumn,          /* Column number of LHS */
+  पूर्णाङ्क iCur,             /* Cursor number of LHS */
+  पूर्णाङ्क iColumn,          /* Column number of LHS */
   Bitmask notReady,     /* RHS must not overlap with this mask */
   u32 op,               /* Mask of WO_xx values describing operator */
-  Index *pIdx           /* Must be compatible with this index, if not NULL */
+  सूचकांक *pIdx           /* Must be compatible with this index, if not NULL */
 ){
-  WhereTerm *pResult = 0;
-  WhereTerm *p;
-  WhereScan scan;
+  Where_पदांशः *p_परिणाम = 0;
+  Where_पदांशः *p;
+  Where_अवलोकनम् अवलोकनम्;
 
-  p = whereScanInit(&scan, pWC, iCur, iColumn, op, pIdx);
+  p = where_अवलोकनम्_Init(&अवलोकनम्, pWC, iCur, iColumn, op, pIdx);
   op &= WO_EQ|WO_IS;
-  while( p ){
-    if( (p->prereqRight & notReady)==0 ){
-      if( p->prereqRight==0 && (p->eOperator&op)!=0 ){
+  यावत्( p ){
+    यदि( (p->prereq_दक्षिणः & notReady)==0 ){
+      यदि( p->prereq_दक्षिणः==0 && (p->eOperator&op)!=0 ){
         testcase( p->eOperator & WO_IS );
-        return p;
+        प्रत्यागम p;
       }
-      if( pResult==0 ) pResult = p;
+      यदि( p_परिणाम==0 ) p_परिणाम = p;
     }
-    p = whereScanNext(&scan);
+    p = where_अवलोकनम्_अग्र(&अवलोकनम्);
   }
-  return pResult;
+  प्रत्यागम p_परिणाम;
 }
 
 /*
@@ -584,48 +584,48 @@ WhereTerm *sqlite3WhereFindTerm(
 ** If such an expression is found, its index in pList->a[] is returned. If
 ** no expression is found, -1 is returned.
 */
-static int findIndexCol(
+स्थिर पूर्णाङ्क find_सूचकांक_Col(
   Parse *pParse,                  /* Parse context */
-  ExprList *pList,                /* Expression list to search */
-  int iBase,                      /* Cursor for table associated with pIdx */
-  Index *pIdx,                    /* Index to match column of */
-  int iCol                        /* Column of index to match */
+  व्यञ्जकम्_List *pList,                /* Expression list to search */
+  पूर्णाङ्क i_आधारः,                      /* Cursor for table associated with pIdx */
+  सूचकांक *pIdx,                    /* Index to match column of */
+  पूर्णाङ्क iCol                        /* Column of index to match */
 ){
-  int i;
-  const char *zColl = pIdx->azColl[iCol];
+  पूर्णाङ्क i;
+  ध्रुव वर्ण *zColl = pIdx->azColl[iCol];
 
-  for(i=0; i<pList->nExpr; i++){
-    Expr *p = sqlite3ExprSkipCollateAndLikely(pList->a[i].pExpr);
-    if( ALWAYS(p!=0)
+  प्रति(i=0; i<pList->n_व्यञ्जकम्; i++){
+    व्यञ्जकम् *p = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(pList->a[i].p_व्यञ्जकम्);
+    यदि( ALWAYS(p!=0)
      && (p->op==TK_COLUMN || p->op==TK_AGG_COLUMN)
      && p->iColumn==pIdx->aiColumn[iCol]
-     && p->iTable==iBase
+     && p->i_सारणी==i_आधारः
     ){
-      CollSeq *pColl = sqlite3ExprNNCollSeq(pParse, pList->a[i].pExpr);
-      if( 0==sqlite3StrICmp(pColl->zName, zColl) ){
-        return i;
+      CollSeq *pColl = sqlite3_व्यञ्जकम्_NNColl_Seq(pParse, pList->a[i].p_व्यञ्जकम्);
+      यदि( 0==sqlite3StrICmp(pColl->zName, zColl) ){
+        प्रत्यागम i;
       }
     }
   }
 
-  return -1;
+  प्रत्यागम -1;
 }
 
 /*
 ** Return TRUE if the iCol-th column of index pIdx is NOT NULL
 */
-static int indexColumnNotNull(Index *pIdx, int iCol){
-  int j;
-  assert( pIdx!=0 );
-  assert( iCol>=0 && iCol<pIdx->nColumn );
+स्थिर पूर्णाङ्क सूचकांक_Column_Not_Null(सूचकांक *pIdx, पूर्णाङ्क iCol){
+  पूर्णाङ्क j;
+  प्रतिज्ञा( pIdx!=0 );
+  प्रतिज्ञा( iCol>=0 && iCol<pIdx->nColumn );
   j = pIdx->aiColumn[iCol];
-  if( j>=0 ){
-    return pIdx->pTable->aCol[j].notNull;
-  }else if( j==(-1) ){
-    return 1;
-  }else{
-    assert( j==(-2) );
-    return 0;  /* Assume an indexed expression can always yield a NULL */
+  यदि( j>=0 ){
+    प्रत्यागम pIdx->p_सारणी->aCol[j].notNull;
+  }अन्यथा यदि( j==(-1) ){
+    प्रत्यागम 1;
+  }अन्यथा{
+    प्रतिज्ञा( j==(-2) );
+    प्रत्यागम 0;  /* Assume an indexed expression can always yield a NULL */
 
   }
 }
@@ -637,33 +637,33 @@ static int indexColumnNotNull(Index *pIdx, int iCol){
 ** A DISTINCT list is redundant if any subset of the columns in the
 ** DISTINCT list are collectively unique and individually non-null.
 */
-static int isDistinctRedundant(
+स्थिर पूर्णाङ्क isDistinctRedundant(
   Parse *pParse,            /* Parsing context */
   SrcList *pTabList,        /* The FROM clause */
   WhereClause *pWC,         /* The WHERE clause */
-  ExprList *pDistinct       /* The result set that needs to be DISTINCT */
+  व्यञ्जकम्_List *pDistinct       /* The result set that needs to be DISTINCT */
 ){
-  Table *pTab;
-  Index *pIdx;
-  int i;                         
-  int iBase;
+  सारणी *pTab;
+  सूचकांक *pIdx;
+  पूर्णाङ्क i;                         
+  पूर्णाङ्क i_आधारः;
 
   /* If there is more than one table or sub-select in the FROM clause of
   ** this query, then it will not be possible to show that the DISTINCT
   ** clause is redundant. */
-  if( pTabList->nSrc!=1 ) return 0;
-  iBase = pTabList->a[0].iCursor;
+  यदि( pTabList->nSrc!=1 ) प्रत्यागम 0;
+  i_आधारः = pTabList->a[0].iCursor;
   pTab = pTabList->a[0].pSTab;
 
   /* If any of the expressions is an IPK column on table iBase, then return
   ** true. Note: The (p->iTable==iBase) part of this test may be false if the
   ** current SELECT is a correlated sub-query.
   */
-  for(i=0; i<pDistinct->nExpr; i++){
-    Expr *p = sqlite3ExprSkipCollateAndLikely(pDistinct->a[i].pExpr);
-    if( NEVER(p==0) ) continue;
-    if( p->op!=TK_COLUMN && p->op!=TK_AGG_COLUMN ) continue;
-    if( p->iTable==iBase && p->iColumn<0 ) return 1;
+  प्रति(i=0; i<pDistinct->n_व्यञ्जकम्; i++){
+    व्यञ्जकम् *p = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(pDistinct->a[i].p_व्यञ्जकम्);
+    यदि( NEVER(p==0) ) अनुवर्त;
+    यदि( p->op!=TK_COLUMN && p->op!=TK_AGG_COLUMN ) अनुवर्त;
+    यदि( p->i_सारणी==i_आधारः && p->iColumn<0 ) प्रत्यागम 1;
   }
 
   /* Loop through all indices on the table, checking each to see if it makes
@@ -679,30 +679,30 @@ static int isDistinctRedundant(
   **   3. All of those index columns for which the WHERE clause does not
   **      contain a "col=X" term are subject to a NOT NULL constraint.
   */
-  for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-    if( !IsUniqueIndex(pIdx) ) continue;
-    if( pIdx->pPartIdxWhere ) continue;
-    for(i=0; i<pIdx->nKeyCol; i++){
-      if( 0==sqlite3WhereFindTerm(pWC, iBase, i, ~(Bitmask)0, WO_EQ, pIdx) ){
-        if( findIndexCol(pParse, pDistinct, iBase, pIdx, i)<0 ) break;
-        if( indexColumnNotNull(pIdx, i)==0 ) break;
+  प्रति(pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+    यदि( !Is_Unique_सूचकांक(pIdx) ) अनुवर्त;
+    यदि( pIdx->pPartIdxWhere ) अनुवर्त;
+    प्रति(i=0; i<pIdx->n_कुञ्चिका_Col; i++){
+      यदि( 0==sqlite3_Where_Find_पदांशः(pWC, i_आधारः, i, ~(Bitmask)0, WO_EQ, pIdx) ){
+        यदि( find_सूचकांक_Col(pParse, pDistinct, i_आधारः, pIdx, i)<0 ) भङ्ग;
+        यदि( सूचकांक_Column_Not_Null(pIdx, i)==0 ) भङ्ग;
       }
     }
-    if( i==pIdx->nKeyCol ){
+    यदि( i==pIdx->n_कुञ्चिका_Col ){
       /* This index implies that the DISTINCT qualifier is redundant. */
-      return 1;
+      प्रत्यागम 1;
     }
   }
 
-  return 0;
+  प्रत्यागम 0;
 }
 
 
 /*
 ** Estimate the logarithm of the input value to base 2.
 */
-static LogEst estLog(LogEst N){
-  return N<=10 ? 0 : sqlite3LogEst(N) - 33;
+स्थिर LogEst estLog(LogEst N){
+  प्रत्यागम N<=10 ? 0 : sqlite3LogEst(N) - 33;
 }
 
 /*
@@ -717,50 +717,50 @@ static LogEst estLog(LogEst N){
 ** iAutoidxCur cursor, in order to generate unique rowids for the
 ** automatic index being generated.
 */
-static void translateColumnToCopy(
+स्थिर शून्य translate_Column_गन्तव्यम्_Copy(
   Parse *pParse,      /* Parsing context */
-  int iStart,         /* Translate from this opcode to the end */
-  int iTabCur,        /* OP_Column/OP_Rowid references to this table */
-  int iRegister,      /* The first column is in this register */
-  int iAutoidxCur     /* If non-zero, cursor of autoindex being generated */
+  पूर्णाङ्क iStart,         /* Translate from this opcode to the end */
+  पूर्णाङ्क iTabCur,        /* OP_Column/OP_Rowid references to this table */
+  पूर्णाङ्क i_पञ्जिकाकोशः,      /* The first column is in this register */
+  पूर्णाङ्क iAutoidxCur     /* If non-zero, cursor of autoindex being generated */
 ){
   Vdbe *v = pParse->pVdbe;
   VdbeOp *pOp = sqlite3VdbeGetOp(v, iStart);
-  int iEnd = sqlite3VdbeCurrentAddr(v);
-  if( pParse->db->mallocFailed ) return;
-#ifdef SQLITE_DEBUG
-  if( pParse->db->flags & SQLITE_VdbeAddopTrace ){
-    printf("CHECKING for column-to-copy on cursor %d for %d..%d\n",
-            iTabCur, iStart, iEnd);
+  पूर्णाङ्क i_अन्तः = sqlite3VdbeCurrentAddr(v);
+  यदि( pParse->db->mallocFailed ) प्रत्यागम;
+#यदि_परिभाषितम् SQLITE_DEBUG
+  यदि( pParse->db->flags & SQLITE_VdbeAddopTrace ){
+    प्रारूप_लिख("CHECKING for column-to-copy on cursor %d for %d..%d\n",
+            iTabCur, iStart, i_अन्तः);
   }
-#endif
-  for(; iStart<iEnd; iStart++, pOp++){
-    if( pOp->p1!=iTabCur ) continue;
-    if( pOp->opcode==OP_Column ){
-#ifdef SQLITE_DEBUG
-      if( pParse->db->flags & SQLITE_VdbeAddopTrace ){
-        printf("TRANSLATE OP_Column to OP_Copy at %d\n", iStart);
+#यदि_अन्तः
+  प्रति(; iStart<i_अन्तः; iStart++, pOp++){
+    यदि( pOp->p1!=iTabCur ) अनुवर्त;
+    यदि( pOp->opcode==OP_Column ){
+#यदि_परिभाषितम् SQLITE_DEBUG
+      यदि( pParse->db->flags & SQLITE_VdbeAddopTrace ){
+        प्रारूप_लिख("TRANSLATE OP_Column to OP_Copy at %d\n", iStart);
       }
-#endif
+#यदि_अन्तः
       pOp->opcode = OP_Copy;
-      pOp->p1 = pOp->p2 + iRegister;
+      pOp->p1 = pOp->p2 + i_पञ्जिकाकोशः;
       pOp->p2 = pOp->p3;
       pOp->p3 = 0;
       pOp->p5 = 2;  /* Cause the MEM_Subtype flag to be cleared */
-    }else if( pOp->opcode==OP_Rowid ){
-#ifdef SQLITE_DEBUG
-      if( pParse->db->flags & SQLITE_VdbeAddopTrace ){
-        printf("TRANSLATE OP_Rowid to OP_Sequence at %d\n", iStart);
+    }अन्यथा यदि( pOp->opcode==OP_Rowid ){
+#यदि_परिभाषितम् SQLITE_DEBUG
+      यदि( pParse->db->flags & SQLITE_VdbeAddopTrace ){
+        प्रारूप_लिख("TRANSLATE OP_Rowid to OP_Sequence at %d\n", iStart);
       }
-#endif
+#यदि_अन्तः
       pOp->opcode = OP_Sequence;
       pOp->p1 = iAutoidxCur;
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-      if( iAutoidxCur==0 ){
+#यदि_परिभाषितम् SQLITE_ALLOW_ROWID_अन्तर्_VIEW
+      यदि( iAutoidxCur==0 ){
         pOp->opcode = OP_Null;
         pOp->p3 = 0;
       }
-#endif
+#यदि_अन्तः
     }
   }
 }
@@ -771,54 +771,54 @@ static void translateColumnToCopy(
 ** SQLITE_TEST or SQLITE_DEBUG are defined, then these routines
 ** are no-ops.
 */
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(WHERETRACE_ENABLED)
-static void whereTraceIndexInfoInputs(
-  sqlite3_index_info *p,   /* The IndexInfo object */
-  Table *pTab              /* The TABLE that is the virtual table */
+#यदि !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(WHERETRACE_ENABLED)
+स्थिर शून्य where_Trace_सूचकांक_Info_Inputs(
+  sqlite3_सूचकांक_info *p,   /* The IndexInfo object */
+  सारणी *pTab              /* The TABLE that is the virtual table */
 ){
-  int i;
-  if( (sqlite3WhereTrace & 0x10)==0 ) return;
+  पूर्णाङ्क i;
+  यदि( (sqlite3WhereTrace & 0x10)==0 ) प्रत्यागम;
   sqlite3DebugPrintf("sqlite3_index_info inputs for %s:\n", pTab->zName);
-  for(i=0; i<p->nConstraint; i++){
+  प्रति(i=0; i<p->nConstraint; i++){
     sqlite3DebugPrintf(
        "  constraint[%d]: col=%d termid=%d op=%d usabled=%d collseq=%s\n",
        i,
        p->aConstraint[i].iColumn,
-       p->aConstraint[i].iTermOffset,
+       p->aConstraint[i].i_पदांशः_विस्थापनम्,
        p->aConstraint[i].op,
        p->aConstraint[i].usable,
        sqlite3_vtab_collation(p,i));
   }
-  for(i=0; i<p->nOrderBy; i++){
+  प्रति(i=0; i<p->n_क्रमः_By; i++){
     sqlite3DebugPrintf("  orderby[%d]: col=%d desc=%d\n",
        i,
-       p->aOrderBy[i].iColumn,
-       p->aOrderBy[i].desc);
+       p->a_क्रमः_By[i].iColumn,
+       p->a_क्रमः_By[i].desc);
   }
 }
-static void whereTraceIndexInfoOutputs(
-  sqlite3_index_info *p,   /* The IndexInfo object */
-  Table *pTab              /* The TABLE that is the virtual table */
+स्थिर शून्य where_Trace_सूचकांक_Info_Outputs(
+  sqlite3_सूचकांक_info *p,   /* The IndexInfo object */
+  सारणी *pTab              /* The TABLE that is the virtual table */
 ){
-  int i;
-  if( (sqlite3WhereTrace & 0x10)==0 ) return;
+  पूर्णाङ्क i;
+  यदि( (sqlite3WhereTrace & 0x10)==0 ) प्रत्यागम;
   sqlite3DebugPrintf("sqlite3_index_info outputs for %s:\n", pTab->zName);
-  for(i=0; i<p->nConstraint; i++){
+  प्रति(i=0; i<p->nConstraint; i++){
     sqlite3DebugPrintf("  usage[%d]: argvIdx=%d omit=%d\n",
        i,
-       p->aConstraintUsage[i].argvIndex,
+       p->aConstraintUsage[i].argv_सूचकांक,
        p->aConstraintUsage[i].omit);
   }
-  sqlite3DebugPrintf("  idxNum=%d\n", p->idxNum);
+  sqlite3DebugPrintf("  idxNum=%d\n", p->idx_अङ्कः);
   sqlite3DebugPrintf("  idxStr=%s\n", p->idxStr);
-  sqlite3DebugPrintf("  orderByConsumed=%d\n", p->orderByConsumed);
+  sqlite3DebugPrintf("  orderByConsumed=%d\n", p->क्रमः_By_Consumed);
   sqlite3DebugPrintf("  estimatedCost=%g\n", p->estimatedCost);
-  sqlite3DebugPrintf("  estimatedRows=%lld\n", p->estimatedRows);
+  sqlite3DebugPrintf("  estimatedRows=%lld\n", p->estimated_पङ्क्तिकाः);
 }
-#else
-#define whereTraceIndexInfoInputs(A,B)
-#define whereTraceIndexInfoOutputs(A,B)
-#endif
+#अन्यथा
+#परिभाषय where_Trace_सूचकांक_Info_Inputs(A,B)
+#परिभाषय where_Trace_सूचकांक_Info_Outputs(A,B)
+#यदि_अन्तः
 
 /*
 ** We know that pSrc is an operand of an outer join.  Return true if
@@ -833,29 +833,29 @@ static void whereTraceIndexInfoOutputs(
 ** the right table of a RIGHT JOIN because the constraint implies a
 ** not-NULL condition on the left table of the RIGHT JOIN.
 */
-static int constraintCompatibleWithOuterJoin(
-  const WhereTerm *pTerm,       /* WHERE clause term to check */
-  const SrcItem *pSrc           /* Table we are trying to access */
+स्थिर पूर्णाङ्क constraintCompatibleWithOuterJoin(
+  ध्रुव Where_पदांशः *p_पदांशः,       /* WHERE clause term to check */
+  ध्रुव SrcItem *pSrc           /* Table we are trying to access */
 ){
-  assert( (pSrc->fg.jointype&(JT_LEFT|JT_LTORJ|JT_RIGHT))!=0 ); /* By caller */
-  testcase( (pSrc->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))==JT_LEFT );
-  testcase( (pSrc->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))==JT_LTORJ );
-  testcase( ExprHasProperty(pTerm->pExpr, EP_OuterON) )
-  testcase( ExprHasProperty(pTerm->pExpr, EP_InnerON) );
-  if( !ExprHasProperty(pTerm->pExpr, EP_OuterON|EP_InnerON)
-   || pTerm->pExpr->w.iJoin != pSrc->iCursor
+  प्रतिज्ञा( (pSrc->fg.jointype&(JT_वामः|JT_LTORJ|JT_दक्षिणः))!=0 ); /* By caller */
+  testcase( (pSrc->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))==JT_वामः );
+  testcase( (pSrc->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))==JT_LTORJ );
+  testcase( व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON) )
+  testcase( व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_InnerON) );
+  यदि( !व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON|EP_InnerON)
+   || p_पदांशः->p_व्यञ्जकम्->w.iJoin != pSrc->iCursor
   ){
-    return 0;
+    प्रत्यागम 0;
   }
-  if( (pSrc->fg.jointype & (JT_LEFT|JT_RIGHT))!=0
-   && NEVER(ExprHasProperty(pTerm->pExpr, EP_InnerON))
+  यदि( (pSrc->fg.jointype & (JT_वामः|JT_दक्षिणः))!=0
+   && NEVER(व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_InnerON))
   ){
-    return 0;
+    प्रत्यागम 0;
   }
-  return 1;
+  प्रत्यागम 1;
 }
 
-#ifndef SQLITE_OMIT_AUTOMATIC_INDEX
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOMATIC_सूचकांक
 /*
 ** Return true if column iCol of table pTab seem like it might be a
 ** good column to use as part of a query-time index.
@@ -875,64 +875,64 @@ static int constraintCompatibleWithOuterJoin(
 ** performance on any queries at hand, but it did burn CPU cycles, so the
 ** idea was not committed.
 */
-static SQLITE_NOINLINE int columnIsGoodIndexCandidate(
-  const Table *pTab,
-  int iCol
+स्थिर SQLITE_NOINLINE पूर्णाङ्क column_Is_Good_सूचकांक_Candidate(
+  ध्रुव सारणी *pTab,
+  पूर्णाङ्क iCol
 ){
-  const Index *pIdx;
-  for(pIdx = pTab->pIndex; pIdx!=0; pIdx=pIdx->pNext){
-    int j;
-    for(j=0; j<pIdx->nKeyCol; j++){
-       if( pIdx->aiColumn[j]==iCol ){
-         if( j==0 ) return 0;
-         if( pIdx->hasStat1 && pIdx->aiRowLogEst[j+1]>20 ) return 0;
-         break;
+  ध्रुव सूचकांक *pIdx;
+  प्रति(pIdx = pTab->p_सूचकांक; pIdx!=0; pIdx=pIdx->p_अग्र){
+    पूर्णाङ्क j;
+    प्रति(j=0; j<pIdx->n_कुञ्चिका_Col; j++){
+       यदि( pIdx->aiColumn[j]==iCol ){
+         यदि( j==0 ) प्रत्यागम 0;
+         यदि( pIdx->hasStat1 && pIdx->aiRowLogEst[j+1]>20 ) प्रत्यागम 0;
+         भङ्ग;
        }
     }
   }
-  return 1;
+  प्रत्यागम 1;
 }
-#endif /* SQLITE_OMIT_AUTOMATIC_INDEX */
+#यदि_अन्तः /* SQLITE_OMIT_AUTOMATIC_INDEX */
 
 
 
-#ifndef SQLITE_OMIT_AUTOMATIC_INDEX
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOMATIC_सूचकांक
 /*
 ** Return TRUE if the WHERE clause term pTerm is of a form where it
 ** could be used with an index to access pSrc, assuming an appropriate
 ** index existed.
 */
-static int termCanDriveIndex(
-  const WhereTerm *pTerm,        /* WHERE clause term to check */
-  const SrcItem *pSrc,           /* Table we are trying to access */
-  const Bitmask notReady         /* Tables in outer loops of the join */
+स्थिर पूर्णाङ्क पदांशः_Can_Drive_सूचकांक(
+  ध्रुव Where_पदांशः *p_पदांशः,        /* WHERE clause term to check */
+  ध्रुव SrcItem *pSrc,           /* Table we are trying to access */
+  ध्रुव Bitmask notReady         /* Tables in outer loops of the join */
 ){
-  char aff;
-  int leftCol;
+  वर्ण aff;
+  पूर्णाङ्क वामः_Col;
   
-  if( pTerm->leftCursor!=pSrc->iCursor ) return 0;
-  if( (pTerm->eOperator & (WO_EQ|WO_IS))==0 ) return 0;
-  assert( (pSrc->fg.jointype & JT_RIGHT)==0 );
-  if( (pSrc->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))!=0
-   && !constraintCompatibleWithOuterJoin(pTerm,pSrc)
+  यदि( p_पदांशः->वामः_Cursor!=pSrc->iCursor ) प्रत्यागम 0;
+  यदि( (p_पदांशः->eOperator & (WO_EQ|WO_IS))==0 ) प्रत्यागम 0;
+  प्रतिज्ञा( (pSrc->fg.jointype & JT_दक्षिणः)==0 );
+  यदि( (pSrc->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))!=0
+   && !constraintCompatibleWithOuterJoin(p_पदांशः,pSrc)
   ){
-    return 0;  /* See https://sqlite.org/forum/forumpost/51e6959f61 */
+    प्रत्यागम 0;  /* See https://sqlite.org/forum/forumpost/51e6959f61 */
   }
-  if( (pTerm->prereqRight & notReady)!=0 ) return 0;
-  assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-  leftCol = pTerm->u.x.leftColumn;
-  if( leftCol<0 ) return 0;
-  aff = pSrc->pSTab->aCol[leftCol].affinity;
-  if( !sqlite3IndexAffinityOk(pTerm->pExpr, aff) ) return 0;
-  testcase( pTerm->pExpr->op==TK_IS );
-  return columnIsGoodIndexCandidate(pSrc->pSTab, leftCol);
+  यदि( (p_पदांशः->prereq_दक्षिणः & notReady)!=0 ) प्रत्यागम 0;
+  प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 );
+  वामः_Col = p_पदांशः->u.x.वामः_Column;
+  यदि( वामः_Col<0 ) प्रत्यागम 0;
+  aff = pSrc->pSTab->aCol[वामः_Col].affinity;
+  यदि( !sqlite3_सूचकांक_Affinity_Ok(p_पदांशः->p_व्यञ्जकम्, aff) ) प्रत्यागम 0;
+  testcase( p_पदांशः->p_व्यञ्जकम्->op==TK_IS );
+  प्रत्यागम column_Is_Good_सूचकांक_Candidate(pSrc->pSTab, वामः_Col);
 }
-#endif
+#यदि_अन्तः
 
 
-#ifndef SQLITE_OMIT_AUTOMATIC_INDEX
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOMATIC_सूचकांक
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
+#यदि_परिभाषितम् SQLITE_ENABLE_STMT_SCANSTATUS
 /*
 ** Argument pIdx represents an automatic index that the current statement
 ** will create and populate. Add an OP_Explain with text of the form:
@@ -944,33 +944,33 @@ static int termCanDriveIndex(
 ** values with. In order to avoid breaking legacy code and test cases,
 ** the OP_Explain is not added if this is an EXPLAIN QUERY PLAN command.
 */
-static void explainAutomaticIndex(
+स्थिर शून्य explain_Automatic_सूचकांक(
   Parse *pParse,
-  Index *pIdx,                    /* Automatic index to explain */
-  int bPartial,                   /* True if pIdx is a partial index */
-  int *pAddrExplain               /* OUT: Address of OP_Explain */
+  सूचकांक *pIdx,                    /* Automatic index to explain */
+  पूर्णाङ्क bPartial,                   /* True if pIdx is a partial index */
+  पूर्णाङ्क *pAddrExplain               /* OUT: Address of OP_Explain */
 ){
-  if( IS_STMT_SCANSTATUS(pParse->db) && pParse->explain!=2 ){
-    Table *pTab = pIdx->pTable;
-    const char *zSep = "";
-    char *zText = 0;
-    int ii = 0;
+  यदि( IS_STMT_SCANSTATUS(pParse->db) && pParse->explain!=2 ){
+    सारणी *pTab = pIdx->p_सारणी;
+    ध्रुव वर्ण *zSep = "";
+    वर्ण *zText = 0;
+    पूर्णाङ्क ii = 0;
     sqlite3_str *pStr = sqlite3_str_new(pParse->db);
     sqlite3_str_appendf(pStr,"CREATE AUTOMATIC INDEX ON %s(", pTab->zName);
-    assert( pIdx->nColumn>1 );
-    assert( pIdx->aiColumn[pIdx->nColumn-1]==XN_ROWID || !HasRowid(pTab) );
-    for(ii=0; ii<(pIdx->nColumn-1); ii++){
-      const char *zName = 0;
-      int iCol = pIdx->aiColumn[ii];
+    प्रतिज्ञा( pIdx->nColumn>1 );
+    प्रतिज्ञा( pIdx->aiColumn[pIdx->nColumn-1]==XN_ROWID || !HasRowid(pTab) );
+    प्रति(ii=0; ii<(pIdx->nColumn-1); ii++){
+      ध्रुव वर्ण *zName = 0;
+      पूर्णाङ्क iCol = pIdx->aiColumn[ii];
 
       zName = pTab->aCol[iCol].zCnName;
       sqlite3_str_appendf(pStr, "%s%s", zSep, zName);
       zSep = ", ";
     }
     zText = sqlite3_str_finish(pStr);
-    if( zText==0 ){
+    यदि( zText==0 ){
       sqlite3OomFault(pParse->db);
-    }else{
+    }अन्यथा{
       *pAddrExplain = sqlite3VdbeExplain(
           pParse, 0, "%s)%s", zText, (bPartial ? " WHERE <expr>" : "")
       );
@@ -978,103 +978,103 @@ static void explainAutomaticIndex(
     }
   }
 }
-#else
-# define explainAutomaticIndex(a,b,c,d)
-#endif
+#अन्यथा
+# define explain_Automatic_सूचकांक(a,b,c,d)
+#यदि_अन्तः
 
 /*
 ** Generate code to construct the Index object for an automatic index
 ** and to set up the WhereLevel object pLevel so that the code generator
 ** makes use of the automatic index.
 */
-static SQLITE_NOINLINE void constructAutomaticIndex(
+स्थिर SQLITE_NOINLINE शून्य construct_Automatic_सूचकांक(
   Parse *pParse,              /* The parsing context */
   WhereClause *pWC,           /* The WHERE clause */
-  const Bitmask notReady,     /* Mask of cursors that are not available */
+  ध्रुव Bitmask notReady,     /* Mask of cursors that are not available */
   WhereLevel *pLevel          /* Write new index here */
 ){
-  int nKeyCol;                /* Number of columns in the constructed index */
-  WhereTerm *pTerm;           /* A single term of the WHERE clause */
-  WhereTerm *pWCEnd;          /* End of pWC->a[] */
-  Index *pIdx;                /* Object describing the transient index */
+  पूर्णाङ्क n_कुञ्चिका_Col;                /* Number of columns in the constructed index */
+  Where_पदांशः *p_पदांशः;           /* A single term of the WHERE clause */
+  Where_पदांशः *pWCEnd;          /* End of pWC->a[] */
+  सूचकांक *pIdx;                /* Object describing the transient index */
   Vdbe *v;                    /* Prepared statement under construction */
-  int addrInit;               /* Address of the initialization bypass jump */
-  Table *pTable;              /* The table being indexed */
-  int addrTop;                /* Top of the index fill loop */
-  int regRecord;              /* Register holding an index record */
-  int n;                      /* Column counter */
-  int i;                      /* Loop counter */
-  int mxBitCol;               /* Maximum column in pSrc->colUsed */
+  पूर्णाङ्क addrInit;               /* Address of the initialization bypass jump */
+  सारणी *p_सारणी;              /* The table being indexed */
+  पूर्णाङ्क addr_शिखरम्;                /* Top of the index fill loop */
+  पूर्णाङ्क reg_लेखः;              /* Register holding an index record */
+  पूर्णाङ्क n;                      /* Column counter */
+  पूर्णाङ्क i;                      /* Loop counter */
+  पूर्णाङ्क mxBitCol;               /* Maximum column in pSrc->colUsed */
   CollSeq *pColl;             /* Collating sequence to on a column */
   WhereLoop *pLoop;           /* The Loop object */
-  char *zNotUsed;             /* Extra space on the end of pIdx */
-  Bitmask idxCols;            /* Bitmap of columns used for indexing */
-  Bitmask extraCols;          /* Bitmap of additional columns */
-  u8 sentWarning = 0;         /* True if a warning has been issued */
+  वर्ण *z_Not_प्रयुक्तम्;             /* Extra space on the end of pIdx */
+  Bitmask idx_स्तम्भसङ्ख्या;            /* Bitmap of columns used for indexing */
+  Bitmask extra_स्तम्भसङ्ख्या;          /* Bitmap of additional columns */
+  u8 प्रेषितम्_Warning = 0;         /* True if a warning has been issued */
   u8 useBloomFilter = 1;      /* True to also add a Bloom filter */
-  Expr *pPartial = 0;         /* Partial Index Expression */
-  int iContinue = 0;          /* Jump here to skip excluded rows */
+  व्यञ्जकम् *pPartial = 0;         /* Partial Index Expression */
+  पूर्णाङ्क iContinue = 0;          /* Jump here to skip excluded rows */
   SrcList *pTabList;          /* The complete FROM clause */
   SrcItem *pSrc;              /* The FROM clause term to get the next index */
-  int addrCounter = 0;        /* Address where integer counter is initialized */
-  int regBase;                /* Array of registers where record is assembled */
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExp = 0;            /* Address of OP_Explain */
-#endif
+  पूर्णाङ्क addr_गणक = 0;        /* Address where integer counter is initialized */
+  पूर्णाङ्क reg_आधारः;                /* Array of registers where record is assembled */
+#यदि_परिभाषितम् SQLITE_ENABLE_STMT_SCANSTATUS
+  पूर्णाङ्क addrExp = 0;            /* Address of OP_Explain */
+#यदि_अन्तः
 
   /* Generate code to skip over the creation and initialization of the
   ** transient index on 2nd and subsequent iterations of the loop. */
   v = pParse->pVdbe;
-  assert( v!=0 );
-  addrInit = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+  प्रतिज्ञा( v!=0 );
+  addrInit = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Once); VdbeCoverage(v);
 
   /* Count the number of columns that will be added to the index
   ** and used to match WHERE clause constraints */
-  nKeyCol = 0;
+  n_कुञ्चिका_Col = 0;
   pTabList = pWC->pWInfo->pTabList;
   pSrc = &pTabList->a[pLevel->iFrom];
-  pTable = pSrc->pSTab;
-  pWCEnd = &pWC->a[pWC->nTerm];
+  p_सारणी = pSrc->pSTab;
+  pWCEnd = &pWC->a[pWC->n_पदांशः];
   pLoop = pLevel->pWLoop;
-  idxCols = 0;
-  for(pTerm=pWC->a; pTerm<pWCEnd; pTerm++){
-    Expr *pExpr = pTerm->pExpr;
+  idx_स्तम्भसङ्ख्या = 0;
+  प्रति(p_पदांशः=pWC->a; p_पदांशः<pWCEnd; p_पदांशः++){
+    व्यञ्जकम् *p_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
     /* Make the automatic index a partial index if there are terms in the
     ** WHERE clause (or the ON clause of a LEFT join) that constrain which
     ** rows of the target table (pSrc) that can be used. */
-    if( (pTerm->wtFlags & TERM_VIRTUAL)==0
-     && sqlite3ExprIsSingleTableConstraint(pExpr, pTabList, pLevel->iFrom, 0)
+    यदि( (p_पदांशः->wtFlags & पदांशः_VIRTUAL)==0
+     && sqlite3_व्यञ्जकम्_Is_Single_सारणी_Constraint(p_व्यञ्जकम्, pTabList, pLevel->iFrom, 0)
     ){
-      pPartial = sqlite3ExprAnd(pParse, pPartial,
-                                sqlite3ExprDup(pParse->db, pExpr, 0));
+      pPartial = sqlite3_व्यञ्जकम्_And(pParse, pPartial,
+                                sqlite3_व्यञ्जकम्_Dup(pParse->db, p_व्यञ्जकम्, 0));
     }
-    if( termCanDriveIndex(pTerm, pSrc, notReady) ){
-      int iCol;
-      Bitmask cMask;
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      iCol = pTerm->u.x.leftColumn;
-      cMask = iCol>=BMS ? MASKBIT(BMS-1) : MASKBIT(iCol);
+    यदि( पदांशः_Can_Drive_सूचकांक(p_पदांशः, pSrc, notReady) ){
+      पूर्णाङ्क iCol;
+      Bitmask c_आवरणम्;
+      प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 );
+      iCol = p_पदांशः->u.x.वामः_Column;
+      c_आवरणम् = iCol>=BMS ? MASKBIT(BMS-1) : MASKBIT(iCol);
       testcase( iCol==BMS );
       testcase( iCol==BMS-1 );
-      if( !sentWarning ){
+      यदि( !प्रेषितम्_Warning ){
         sqlite3_log(SQLITE_WARNING_AUTOINDEX,
-            "automatic index on %s(%s)", pTable->zName,
-            pTable->aCol[iCol].zCnName);
-        sentWarning = 1;
+            "automatic index on %s(%s)", p_सारणी->zName,
+            p_सारणी->aCol[iCol].zCnName);
+        प्रेषितम्_Warning = 1;
       }
-      if( (idxCols & cMask)==0 ){
-        if( whereLoopResize(pParse->db, pLoop, nKeyCol+1) ){
-          goto end_auto_index_create;
+      यदि( (idx_स्तम्भसङ्ख्या & c_आवरणम्)==0 ){
+        यदि( whereLoopResize(pParse->db, pLoop, n_कुञ्चिका_Col+1) ){
+          गच्छ अन्तः_auto_सूचकांक_create;
         }
-        pLoop->aLTerm[nKeyCol++] = pTerm;
-        idxCols |= cMask;
+        pLoop->aLTerm[n_कुञ्चिका_Col++] = p_पदांशः;
+        idx_स्तम्भसङ्ख्या |= c_आवरणम्;
       }
     }
   }
-  assert( nKeyCol>0 || pParse->db->mallocFailed );
-  pLoop->u.btree.nEq = pLoop->nLTerm = nKeyCol;
-  pLoop->wsFlags = WHERE_COLUMN_EQ | WHERE_IDX_ONLY | WHERE_INDEXED
-                     | WHERE_AUTO_INDEX;
+  प्रतिज्ञा( n_कुञ्चिका_Col>0 || pParse->db->mallocFailed );
+  pLoop->u.btree.nEq = pLoop->nLTerm = n_कुञ्चिका_Col;
+  pLoop->wsFlags = WHERE_COLUMN_EQ | WHERE_IDX_ONLY | WHERE_अनुक्रमितम्
+                     | WHERE_AUTO_सूचकांक;
 
   /* Count the number of additional columns needed to create a
   ** covering index.  A "covering index" is an index that contains all
@@ -1084,171 +1084,171 @@ static SQLITE_NOINLINE void constructAutomaticIndex(
   ** original table changes and the index and table cannot both be used
   ** if they go out of sync.
   */
-  if( IsView(pTable) ){
-    extraCols = ALLBITS & ~idxCols;
-  }else{
-    extraCols = pSrc->colUsed & (~idxCols | MASKBIT(BMS-1));
+  यदि( IsView(p_सारणी) ){
+    extra_स्तम्भसङ्ख्या = ALLBITS & ~idx_स्तम्भसङ्ख्या;
+  }अन्यथा{
+    extra_स्तम्भसङ्ख्या = pSrc->col_प्रयुक्तम् & (~idx_स्तम्भसङ्ख्या | MASKBIT(BMS-1));
   }
-  if( !HasRowid(pTable) ){
+  यदि( !HasRowid(p_सारणी) ){
     /* For WITHOUT ROWID tables, ensure that all PRIMARY KEY columns are
     ** either in the idxCols mask or in the extraCols mask */
-    for(i=0; i<pTable->nCol; i++){
-      if( (pTable->aCol[i].colFlags & COLFLAG_PRIMKEY)==0 ) continue;
-      if( i>=BMS-1 ){
-        extraCols |= MASKBIT(BMS-1);
-        break;
+    प्रति(i=0; i<p_सारणी->nCol; i++){
+      यदि( (p_सारणी->aCol[i].colFlags & COLFLAG_PRIMKEY)==0 ) अनुवर्त;
+      यदि( i>=BMS-1 ){
+        extra_स्तम्भसङ्ख्या |= MASKBIT(BMS-1);
+        भङ्ग;
       }
-      if( idxCols & MASKBIT(i) ) continue;
-      extraCols |= MASKBIT(i);
+      यदि( idx_स्तम्भसङ्ख्या & MASKBIT(i) ) अनुवर्त;
+      extra_स्तम्भसङ्ख्या |= MASKBIT(i);
     }
   }
-  mxBitCol = MIN(BMS-1,pTable->nCol);
-  testcase( pTable->nCol==BMS-1 );
-  testcase( pTable->nCol==BMS-2 );
-  for(i=0; i<mxBitCol; i++){
-    if( extraCols & MASKBIT(i) ) nKeyCol++;
+  mxBitCol = MIN(BMS-1,p_सारणी->nCol);
+  testcase( p_सारणी->nCol==BMS-1 );
+  testcase( p_सारणी->nCol==BMS-2 );
+  प्रति(i=0; i<mxBitCol; i++){
+    यदि( extra_स्तम्भसङ्ख्या & MASKBIT(i) ) n_कुञ्चिका_Col++;
   }
-  if( pSrc->colUsed & MASKBIT(BMS-1) ){
-    nKeyCol += pTable->nCol - BMS + 1;
+  यदि( pSrc->col_प्रयुक्तम् & MASKBIT(BMS-1) ){
+    n_कुञ्चिका_Col += p_सारणी->nCol - BMS + 1;
   }
 
   /* Construct the Index object to describe this index */
-  assert( nKeyCol <= pTable->nCol + MAX(0, pTable->nCol - BMS + 1) );
+  प्रतिज्ञा( n_कुञ्चिका_Col <= p_सारणी->nCol + MAX(0, p_सारणी->nCol - BMS + 1) );
   /* ^-- This guarantees that the number of index columns will fit in the u16 */
-  pIdx = sqlite3AllocateIndexObject(pParse->db, nKeyCol+HasRowid(pTable),
-                                    0, &zNotUsed);
-  if( pIdx==0 ) goto end_auto_index_create;
-  pLoop->u.btree.pIndex = pIdx;
+  pIdx = sqlite3_Allocate_सूचकांक_Object(pParse->db, n_कुञ्चिका_Col+HasRowid(p_सारणी),
+                                    0, &z_Not_प्रयुक्तम्);
+  यदि( pIdx==0 ) गच्छ अन्तः_auto_सूचकांक_create;
+  pLoop->u.btree.p_सूचकांक = pIdx;
   pIdx->zName = "auto-index";
-  pIdx->pTable = pTable;
+  pIdx->p_सारणी = p_सारणी;
   n = 0;
-  idxCols = 0;
-  for(pTerm=pWC->a; pTerm<pWCEnd; pTerm++){
-    if( termCanDriveIndex(pTerm, pSrc, notReady) ){
-      int iCol;
-      Bitmask cMask;
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      iCol = pTerm->u.x.leftColumn;
-      cMask = iCol>=BMS ? MASKBIT(BMS-1) : MASKBIT(iCol);
+  idx_स्तम्भसङ्ख्या = 0;
+  प्रति(p_पदांशः=pWC->a; p_पदांशः<pWCEnd; p_पदांशः++){
+    यदि( पदांशः_Can_Drive_सूचकांक(p_पदांशः, pSrc, notReady) ){
+      पूर्णाङ्क iCol;
+      Bitmask c_आवरणम्;
+      प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 );
+      iCol = p_पदांशः->u.x.वामः_Column;
+      c_आवरणम् = iCol>=BMS ? MASKBIT(BMS-1) : MASKBIT(iCol);
       testcase( iCol==BMS-1 );
       testcase( iCol==BMS );
-      if( (idxCols & cMask)==0 ){
-        Expr *pX = pTerm->pExpr;
-        idxCols |= cMask;
-        pIdx->aiColumn[n] = pTerm->u.x.leftColumn;
-        pColl = sqlite3ExprCompareCollSeq(pParse, pX);
-        assert( pColl!=0 || pParse->nErr>0 ); /* TH3 collate01.800 */
-        if( !sqlite3IsBinary(pColl) ){
+      यदि( (idx_स्तम्भसङ्ख्या & c_आवरणम्)==0 ){
+        व्यञ्जकम् *pX = p_पदांशः->p_व्यञ्जकम्;
+        idx_स्तम्भसङ्ख्या |= c_आवरणम्;
+        pIdx->aiColumn[n] = p_पदांशः->u.x.वामः_Column;
+        pColl = sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pParse, pX);
+        प्रतिज्ञा( pColl!=0 || pParse->nErr>0 ); /* TH3 collate01.800 */
+        यदि( !sqlite3_Is_द्विमान(pColl) ){
           /* Disallow the use of a Bloom filter if any non-BINARY collating
           ** sequence is involved.  tag-202607231411 */
           useBloomFilter = 0;
         }
-        pIdx->azColl[n] = pColl ? pColl->zName : sqlite3StrBINARY;
+        pIdx->azColl[n] = pColl ? pColl->zName : sqlite3_Str_द्विमान;
         n++;
       }
     }
   }
-  assert( (u32)n==pLoop->u.btree.nEq );
+  प्रतिज्ञा( (u32)n==pLoop->u.btree.nEq );
 
   /* Add additional columns needed to make the automatic index into
   ** a covering index */
-  for(i=0; i<mxBitCol; i++){
-    if( extraCols & MASKBIT(i) ){
+  प्रति(i=0; i<mxBitCol; i++){
+    यदि( extra_स्तम्भसङ्ख्या & MASKBIT(i) ){
       pIdx->aiColumn[n] = i;
-      pIdx->azColl[n] = sqlite3StrBINARY;
+      pIdx->azColl[n] = sqlite3_Str_द्विमान;
       n++;
     }
   }
-  if( pSrc->colUsed & MASKBIT(BMS-1) ){
-    for(i=BMS-1; i<pTable->nCol; i++){
+  यदि( pSrc->col_प्रयुक्तम् & MASKBIT(BMS-1) ){
+    प्रति(i=BMS-1; i<p_सारणी->nCol; i++){
       pIdx->aiColumn[n] = i;
-      pIdx->azColl[n] = sqlite3StrBINARY;
+      pIdx->azColl[n] = sqlite3_Str_द्विमान;
       n++;
     }
   }
-  assert( n==nKeyCol );
-  if( HasRowid(pTable) ){
+  प्रतिज्ञा( n==n_कुञ्चिका_Col );
+  यदि( HasRowid(p_सारणी) ){
     pIdx->aiColumn[n] = XN_ROWID;
-    pIdx->azColl[n] = sqlite3StrBINARY;
+    pIdx->azColl[n] = sqlite3_Str_द्विमान;
   }
 
   /* Create the automatic index */
-  explainAutomaticIndex(pParse, pIdx, pPartial!=0, &addrExp);
-  assert( pLevel->iIdxCur>=0 );
+  explain_Automatic_सूचकांक(pParse, pIdx, pPartial!=0, &addrExp);
+  प्रतिज्ञा( pLevel->iIdxCur>=0 );
   pLevel->iIdxCur = pParse->nTab++;
-  sqlite3VdbeAddOp2(v, OP_OpenAutoindex, pLevel->iIdxCur, nKeyCol+1);
-  sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
-  VdbeComment((v, "for %s", pTable->zName));
-  if( OptimizationEnabled(pParse->db, SQLITE_BloomFilter) && useBloomFilter ){
+  sqlite3_Vdbe_सङ्कलय_Op2(v, OP_OpenAutoindex, pLevel->iIdxCur, n_कुञ्चिका_Col+1);
+  sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pIdx);
+  VdbeComment((v, "for %s", p_सारणी->zName));
+  यदि( OptimizationEnabled(pParse->db, SQLITE_BloomFilter) && useBloomFilter ){
     sqlite3WhereExplainBloomFilter(pParse, pWC->pWInfo, pLevel);
     pLevel->regFilter = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Blob, 10000, pLevel->regFilter);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Blob, 10000, pLevel->regFilter);
   }
 
   /* Fill the automatic index with content */
-  assert( pSrc == &pWC->pWInfo->pTabList->a[pLevel->iFrom] );
-  if( pSrc->fg.viaCoroutine ){
-    int regYield;
+  प्रतिज्ञा( pSrc == &pWC->pWInfo->pTabList->a[pLevel->iFrom] );
+  यदि( pSrc->fg.द्वारा_Coroutine ){
+    पूर्णाङ्क regYield;
     Subquery *pSubq;
-    assert( pSrc->fg.isSubquery );
+    प्रतिज्ञा( pSrc->fg.isSubquery );
     pSubq = pSrc->u4.pSubq;
-    assert( pSubq!=0 );
+    प्रतिज्ञा( pSubq!=0 );
     regYield = pSubq->regReturn;
-    addrCounter = sqlite3VdbeAddOp2(v, OP_Integer, 0, 0);
-    sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, pSubq->addrFillSub);
-    addrTop =  sqlite3VdbeAddOp1(v, OP_Yield, regYield);
+    addr_गणक = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, 0, 0);
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_InitCoroutine, regYield, 0, pSubq->addrFillSub);
+    addr_शिखरम् =  sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Yield, regYield);
     VdbeCoverage(v);
     VdbeComment((v, "next row of %s", pSrc->pSTab->zName));
-  }else{
-    assert( pLevel->addrHalt );
-    addrTop = sqlite3VdbeAddOp2(v, OP_Rewind,pLevel->iTabCur,pLevel->addrHalt);
+  }अन्यथा{
+    प्रतिज्ञा( pLevel->addrHalt );
+    addr_शिखरम् = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rewind,pLevel->iTabCur,pLevel->addrHalt);
     VdbeCoverage(v);
   }
-  if( pPartial ){
+  यदि( pPartial ){
     iContinue = sqlite3VdbeMakeLabel(pParse);
-    sqlite3ExprIfFalse(pParse, pPartial, iContinue, SQLITE_JUMPIFNULL);
+    sqlite3_व्यञ्जकम्_If_False(pParse, pPartial, iContinue, SQLITE_JUMPIFNULL);
     pLoop->wsFlags |= WHERE_PARTIALIDX;
   }
-  regRecord = sqlite3GetTempReg(pParse);
-  regBase = sqlite3GenerateIndexKey(
-      pParse, pIdx, pLevel->iTabCur, regRecord, 0, 0, 0, 0
+  reg_लेखः = sqlite3_Get_अस्थायी_Reg(pParse);
+  reg_आधारः = sqlite3_Generate_सूचकांक_कुञ्चिका(
+      pParse, pIdx, pLevel->iTabCur, reg_लेखः, 0, 0, 0, 0
   );
-  if( pLevel->regFilter ){
-    assert( sqlite3WhereLoopBloomable(pLoop) );
-    sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pLevel->regFilter, 0,
-                         regBase, pLoop->u.btree.nEq);
+  यदि( pLevel->regFilter ){
+    प्रतिज्ञा( sqlite3WhereLoopBloomable(pLoop) );
+    sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_Filter_सङ्कलय, pLevel->regFilter, 0,
+                         reg_आधारः, pLoop->u.btree.nEq);
   }
-  sqlite3VdbeScanStatusCounters(v, addrExp, addrExp, sqlite3VdbeCurrentAddr(v));
-  sqlite3VdbeAddOp2(v, OP_IdxInsert, pLevel->iIdxCur, regRecord);
+  sqlite3_Vdbe_अवलोकनम्_स्थितिः_Counters(v, addrExp, addrExp, sqlite3VdbeCurrentAddr(v));
+  sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Idx_निवेशय, pLevel->iIdxCur, reg_लेखः);
   sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
-  if( pPartial ) sqlite3VdbeResolveLabel(v, iContinue);
-  if( pSrc->fg.viaCoroutine ){
-    assert( pSrc->fg.isSubquery && pSrc->u4.pSubq!=0 );
-    sqlite3VdbeChangeP2(v, addrCounter, regBase+n);
+  यदि( pPartial ) sqlite3VdbeResolveLabel(v, iContinue);
+  यदि( pSrc->fg.द्वारा_Coroutine ){
+    प्रतिज्ञा( pSrc->fg.isSubquery && pSrc->u4.pSubq!=0 );
+    sqlite3VdbeChangeP2(v, addr_गणक, reg_आधारः+n);
     testcase( pParse->db->mallocFailed );
-    assert( pLevel->iIdxCur>0 );
-    translateColumnToCopy(pParse, addrTop, pLevel->iTabCur,
-                          pSrc->u4.pSubq->regResult, pLevel->iIdxCur);
-    sqlite3VdbeGoto(v, addrTop);
-    pSrc->fg.viaCoroutine = 0;
-    sqlite3VdbeJumpHere(v, addrTop);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_Next, pLevel->iTabCur, addrTop+1); VdbeCoverage(v);
+    प्रतिज्ञा( pLevel->iIdxCur>0 );
+    translate_Column_गन्तव्यम्_Copy(pParse, addr_शिखरम्, pLevel->iTabCur,
+                          pSrc->u4.pSubq->reg_परिणाम, pLevel->iIdxCur);
+    sqlite3VdbeGoto(v, addr_शिखरम्);
+    pSrc->fg.द्वारा_Coroutine = 0;
+    sqlite3_Vdbe_Jump_अत्र(v, addr_शिखरम्);
+  }अन्यथा{
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_अग्र, pLevel->iTabCur, addr_शिखरम्+1); VdbeCoverage(v);
     sqlite3VdbeChangeP5(v, SQLITE_STMTSTATUS_AUTOINDEX);
-    if( (pSrc->fg.jointype & JT_LEFT)!=0 ){
-      sqlite3VdbeJumpHere(v, addrTop);
+    यदि( (pSrc->fg.jointype & JT_वामः)!=0 ){
+      sqlite3_Vdbe_Jump_अत्र(v, addr_शिखरम्);
     }
   }
-  sqlite3ReleaseTempReg(pParse, regRecord);
+  sqlite3_Release_अस्थायी_Reg(pParse, reg_लेखः);
  
   /* Jump here when skipping the initialization */
-  sqlite3VdbeJumpHere(v, addrInit);
-  sqlite3VdbeScanStatusRange(v, addrExp, addrExp, -1);
+  sqlite3_Vdbe_Jump_अत्र(v, addrInit);
+  sqlite3_Vdbe_अवलोकनम्_स्थितिः_Range(v, addrExp, addrExp, -1);
 
-end_auto_index_create:
-  sqlite3ExprDelete(pParse->db, pPartial);
+अन्तः_auto_सूचकांक_create:
+  sqlite3_व्यञ्जकम्_Delete(pParse->db, pPartial);
 }
-#endif /* SQLITE_OMIT_AUTOMATIC_INDEX */
+#यदि_अन्तः /* SQLITE_OMIT_AUTOMATIC_INDEX */
 
 /*
 ** Generate bytecode that will initialize a Bloom filter that is appropriate
@@ -1268,41 +1268,41 @@ end_auto_index_create:
 ** the loop would benefit from a Bloom filter, and the WHERE_BLOOMFILTER bit
 ** is set.
 */
-static SQLITE_NOINLINE void sqlite3ConstructBloomFilter(
+स्थिर SQLITE_NOINLINE शून्य sqlite3ConstructBloomFilter(
   WhereInfo *pWInfo,    /* The WHERE clause */
-  int iLevel,           /* Index in pWInfo->a[] that is pLevel */
+  पूर्णाङ्क iLevel,           /* Index in pWInfo->a[] that is pLevel */
   WhereLevel *pLevel,   /* Make a Bloom filter for this FROM term */
   Bitmask notReady      /* Loops that are not ready */
 ){
-  int addrOnce;                        /* Address of opening OP_Once */
-  int addrTop;                         /* Address of OP_Rewind */
-  int addrCont;                        /* Jump here to skip a row */
-  const WhereTerm *pTerm;              /* For looping over WHERE clause terms */
-  const WhereTerm *pWCEnd;             /* Last WHERE clause term */
+  पूर्णाङ्क addrOnce;                        /* Address of opening OP_Once */
+  पूर्णाङ्क addr_शिखरम्;                         /* Address of OP_Rewind */
+  पूर्णाङ्क addrCont;                        /* Jump here to skip a row */
+  ध्रुव Where_पदांशः *p_पदांशः;              /* For looping over WHERE clause terms */
+  ध्रुव Where_पदांशः *pWCEnd;             /* Last WHERE clause term */
   Parse *pParse = pWInfo->pParse;      /* Parsing context */
   Vdbe *v = pParse->pVdbe;             /* VDBE under construction */
   WhereLoop *pLoop = pLevel->pWLoop;   /* The loop being coded */
-  int iCur;                            /* Cursor for table getting the filter */
-  IndexedExpr *saved_pIdxEpr;          /* saved copy of Parse.pIdxEpr */
-  IndexedExpr *saved_pIdxPartExpr;     /* saved copy of Parse.pIdxPartExpr */
+  पूर्णाङ्क iCur;                            /* Cursor for table getting the filter */
+  अनुक्रमितम्_व्यञ्जकम् *saved_pIdxEpr;          /* saved copy of Parse.pIdxEpr */
+  अनुक्रमितम्_व्यञ्जकम् *saved_p_Idx_Part_व्यञ्जकम्;     /* saved copy of Parse.pIdxPartExpr */
 
   saved_pIdxEpr = pParse->pIdxEpr;
-  saved_pIdxPartExpr = pParse->pIdxPartExpr;
+  saved_p_Idx_Part_व्यञ्जकम् = pParse->p_Idx_Part_व्यञ्जकम्;
   pParse->pIdxEpr = 0;
-  pParse->pIdxPartExpr = 0;
+  pParse->p_Idx_Part_व्यञ्जकम् = 0;
 
-  assert( pLoop!=0 );
-  assert( v!=0 );
-  assert( pLoop->wsFlags & WHERE_BLOOMFILTER );
-  assert( (pLoop->wsFlags & WHERE_IDX_ONLY)==0 );
+  प्रतिज्ञा( pLoop!=0 );
+  प्रतिज्ञा( v!=0 );
+  प्रतिज्ञा( pLoop->wsFlags & WHERE_BLOOMFILTER );
+  प्रतिज्ञा( (pLoop->wsFlags & WHERE_IDX_ONLY)==0 );
 
-  addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-  do{
-    const SrcList *pTabList;
-    const SrcItem *pItem;
-    const Table *pTab;
+  addrOnce = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Once); VdbeCoverage(v);
+  कुरु{
+    ध्रुव SrcList *pTabList;
+    ध्रुव SrcItem *pItem;
+    ध्रुव सारणी *pTab;
     u64 sz;
-    int iSrc;
+    पूर्णाङ्क iSrc;
     sqlite3WhereExplainBloomFilter(pParse, pWInfo, pLevel);
     addrCont = sqlite3VdbeMakeLabel(pParse);
     iCur = pLevel->iTabCur;
@@ -1319,89 +1319,89 @@ static SQLITE_NOINLINE void sqlite3ConstructBloomFilter(
     pTabList = pWInfo->pTabList;
     iSrc = pLevel->iFrom;
     pItem = &pTabList->a[iSrc];
-    assert( pItem!=0 );
+    प्रतिज्ञा( pItem!=0 );
     pTab = pItem->pSTab;
-    assert( pTab!=0 );
-    sz = sqlite3LogEstToInt(pTab->nRowLogEst);
-    if( sz<10000 ){
+    प्रतिज्ञा( pTab!=0 );
+    sz = sqlite3_Log_Est_गन्तव्यम्_Int(pTab->nRowLogEst);
+    यदि( sz<10000 ){
       sz = 10000;
-    }else if( sz>10000000 ){
+    }अन्यथा यदि( sz>10000000 ){
       sz = 10000000;
     }
-    assert( sqlite3WhereLoopBloomable(pLoop) );
-    sqlite3VdbeAddOp2(v, OP_Blob, (int)sz, pLevel->regFilter);
+    प्रतिज्ञा( sqlite3WhereLoopBloomable(pLoop) );
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Blob, (पूर्णाङ्क)sz, pLevel->regFilter);
 
-    addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, iCur); VdbeCoverage(v);
-    pWCEnd = &pWInfo->sWC.a[pWInfo->sWC.nTerm];
-    for(pTerm=pWInfo->sWC.a; pTerm<pWCEnd; pTerm++){
-      Expr *pExpr = pTerm->pExpr;
-      if( (pTerm->wtFlags & TERM_VIRTUAL)==0
-       && sqlite3ExprIsSingleTableConstraint(pExpr, pTabList, iSrc, 0)
+    addr_शिखरम् = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Rewind, iCur); VdbeCoverage(v);
+    pWCEnd = &pWInfo->sWC.a[pWInfo->sWC.n_पदांशः];
+    प्रति(p_पदांशः=pWInfo->sWC.a; p_पदांशः<pWCEnd; p_पदांशः++){
+      व्यञ्जकम् *p_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
+      यदि( (p_पदांशः->wtFlags & पदांशः_VIRTUAL)==0
+       && sqlite3_व्यञ्जकम्_Is_Single_सारणी_Constraint(p_व्यञ्जकम्, pTabList, iSrc, 0)
       ){
-        sqlite3ExprIfFalse(pParse, pTerm->pExpr, addrCont, SQLITE_JUMPIFNULL);
+        sqlite3_व्यञ्जकम्_If_False(pParse, p_पदांशः->p_व्यञ्जकम्, addrCont, SQLITE_JUMPIFNULL);
       }
     }
-    if( pLoop->wsFlags & WHERE_IPK ){
-      int r1 = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp2(v, OP_Rowid, iCur, r1);
-      sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pLevel->regFilter, 0, r1, 1);
-      sqlite3ReleaseTempReg(pParse, r1);
-    }else{
-      Index *pIdx = pLoop->u.btree.pIndex;
-      int n = pLoop->u.btree.nEq;
-      int r1 = sqlite3GetTempRange(pParse, n);
-      int jj;
-      assert( pIdx!=0 );
-      for(jj=0; jj<n; jj++){
-        assert( pIdx->pTable==pItem->pSTab );
-        sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iCur, jj, r1+jj);
+    यदि( pLoop->wsFlags & WHERE_IPK ){
+      पूर्णाङ्क r1 = sqlite3_Get_अस्थायी_Reg(pParse);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rowid, iCur, r1);
+      sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_Filter_सङ्कलय, pLevel->regFilter, 0, r1, 1);
+      sqlite3_Release_अस्थायी_Reg(pParse, r1);
+    }अन्यथा{
+      सूचकांक *pIdx = pLoop->u.btree.p_सूचकांक;
+      पूर्णाङ्क n = pLoop->u.btree.nEq;
+      पूर्णाङ्क r1 = sqlite3_Get_अस्थायी_Range(pParse, n);
+      पूर्णाङ्क jj;
+      प्रतिज्ञा( pIdx!=0 );
+      प्रति(jj=0; jj<n; jj++){
+        प्रतिज्ञा( pIdx->p_सारणी==pItem->pSTab );
+        sqlite3_व्यञ्जकम्_संहिता_आरोपय_सूचकांक_Column(pParse, pIdx, iCur, jj, r1+jj);
       }
-      sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pLevel->regFilter, 0, r1, n);
-      sqlite3ReleaseTempRange(pParse, r1, n);
+      sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_Filter_सङ्कलय, pLevel->regFilter, 0, r1, n);
+      sqlite3_Release_अस्थायी_Range(pParse, r1, n);
     }
     sqlite3VdbeResolveLabel(v, addrCont);
-    sqlite3VdbeAddOp2(v, OP_Next, pLevel->iTabCur, addrTop+1);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_अग्र, pLevel->iTabCur, addr_शिखरम्+1);
     VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addrTop);
+    sqlite3_Vdbe_Jump_अत्र(v, addr_शिखरम्);
     pLoop->wsFlags &= ~WHERE_BLOOMFILTER;
-    while( ++iLevel < pWInfo->nLevel ){
-      const SrcItem *pTabItem;
+    यावत्( ++iLevel < pWInfo->nLevel ){
+      ध्रुव SrcItem *pTabItem;
       pLevel = &pWInfo->a[iLevel];
       pTabItem = &pWInfo->pTabList->a[pLevel->iFrom];
-      if( pTabItem->fg.jointype & (JT_LEFT|JT_LTORJ) ) continue;
+      यदि( pTabItem->fg.jointype & (JT_वामः|JT_LTORJ) ) अनुवर्त;
       pLoop = pLevel->pWLoop;
-      if( NEVER(pLoop==0) ) continue;
-      if( pLoop->prereq & notReady ) continue;
-      if( (pLoop->wsFlags & (WHERE_BLOOMFILTER|WHERE_COLUMN_IN))
+      यदि( NEVER(pLoop==0) ) अनुवर्त;
+      यदि( pLoop->prereq & notReady ) अनुवर्त;
+      यदि( (pLoop->wsFlags & (WHERE_BLOOMFILTER|WHERE_COLUMN_अन्तर्))
                  ==WHERE_BLOOMFILTER
       ){
         /* This is a candidate for bloom-filter pull-down (early evaluation).
         ** The test that WHERE_COLUMN_IN is omitted is important, as we are
         ** not able to do early evaluation of bloom filters that make use of
         ** the IN operator */
-        break;
+        भङ्ग;
       }
     }
-  }while( iLevel < pWInfo->nLevel );
-  sqlite3VdbeJumpHere(v, addrOnce);
+  }यावत्( iLevel < pWInfo->nLevel );
+  sqlite3_Vdbe_Jump_अत्र(v, addrOnce);
   pParse->pIdxEpr = saved_pIdxEpr;
-  pParse->pIdxPartExpr = saved_pIdxPartExpr;
+  pParse->p_Idx_Part_व्यञ्जकम् = saved_p_Idx_Part_व्यञ्जकम्;
 }
 
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
 /*
 ** Return term iTerm of the WhereClause passed as the first argument. Terms
 ** are numbered from 0 upwards, starting with the terms in pWC->a[], then
 ** those in pWC->pOuter->a[] (if any), and so on.
 */
-static WhereTerm *termFromWhereClause(WhereClause *pWC, int iTerm){
+स्थिर Where_पदांशः *पदांशः_From_Where_Clause(WhereClause *pWC, पूर्णाङ्क i_पदांशः){
   WhereClause *p;
-  for(p=pWC; p; p=p->pOuter){
-    if( iTerm<p->nTerm ) return &p->a[iTerm];
-    iTerm -= p->nTerm;
+  प्रति(p=pWC; p; p=p->pOuter){
+    यदि( i_पदांशः<p->n_पदांशः ) प्रत्यागम &p->a[i_पदांशः];
+    i_पदांशः -= p->n_पदांशः;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -1409,61 +1409,61 @@ static WhereTerm *termFromWhereClause(WhereClause *pWC, int iTerm){
 ** responsibility of the caller to eventually release the structure
 ** by passing the pointer returned by this function to freeIndexInfo().
 */
-static sqlite3_index_info *allocateIndexInfo(
+स्थिर sqlite3_सूचकांक_info *allocate_सूचकांक_Info(
   WhereInfo *pWInfo,              /* The WHERE clause */
   WhereClause *pWC,               /* The WHERE clause being analyzed */
   Bitmask mUnusable,              /* Ignore terms with these prereqs */
   SrcItem *pSrc,                  /* The FROM clause term that is the vtab */
   u16 *pmNoOmit                   /* Mask of terms not to omit */
 ){
-  int i, j;
-  int nTerm;
+  पूर्णाङ्क i, j;
+  पूर्णाङ्क n_पदांशः;
   Parse *pParse = pWInfo->pParse;
-  struct sqlite3_index_constraint *pIdxCons;
-  struct sqlite3_index_orderby *pIdxOrderBy;
-  struct sqlite3_index_constraint_usage *pUsage;
-  struct HiddenIndexInfo *pHidden;
-  WhereTerm *pTerm;
-  int nOrderBy;
-  sqlite3_index_info *pIdxInfo;
+  संरचना sqlite3_सूचकांक_constraint *pIdxCons;
+  संरचना sqlite3_सूचकांक_orderby *p_Idx_क्रमः_By;
+  संरचना sqlite3_सूचकांक_constraint_usage *pUsage;
+  संरचना Hidden_सूचकांक_Info *pHidden;
+  Where_पदांशः *p_पदांशः;
+  पूर्णाङ्क n_क्रमः_By;
+  sqlite3_सूचकांक_info *pIdxInfo;
   u16 mNoOmit = 0;
-  const Table *pTab;
-  int eDistinct = 0;
-  ExprList *pOrderBy = pWInfo->pOrderBy;
+  ध्रुव सारणी *pTab;
+  पूर्णाङ्क eDistinct = 0;
+  व्यञ्जकम्_List *p_क्रमः_By = pWInfo->p_क्रमः_By;
   WhereClause *p;
 
-  assert( pSrc!=0 );
+  प्रतिज्ञा( pSrc!=0 );
   pTab = pSrc->pSTab;
-  assert( pTab!=0 );
-  assert( IsVirtual(pTab) );
+  प्रतिज्ञा( pTab!=0 );
+  प्रतिज्ञा( IsVirtual(pTab) );
 
   /* Find all WHERE clause constraints referring to this virtual table.
   ** Mark each term with the TERM_OK flag.  Set nTerm to the number of
   ** terms found.
   */
-  for(p=pWC, nTerm=0; p; p=p->pOuter){
-    for(i=0, pTerm=p->a; i<p->nTerm; i++, pTerm++){
-      pTerm->wtFlags &= ~TERM_OK;
-      if( pTerm->leftCursor != pSrc->iCursor ) continue;
-      if( pTerm->prereqRight & mUnusable ) continue;
-      assert( IsPowerOfTwo(pTerm->eOperator & ~WO_EQUIV) );
-      testcase( pTerm->eOperator & WO_IN );
-      testcase( pTerm->eOperator & WO_ISNULL );
-      testcase( pTerm->eOperator & WO_IS );
-      testcase( pTerm->eOperator & WO_ALL );
-      if( (pTerm->eOperator & ~(WO_EQUIV))==0 ) continue;
-      if( pTerm->wtFlags & TERM_VNULL ) continue;
+  प्रति(p=pWC, n_पदांशः=0; p; p=p->pOuter){
+    प्रति(i=0, p_पदांशः=p->a; i<p->n_पदांशः; i++, p_पदांशः++){
+      p_पदांशः->wtFlags &= ~पदांशः_OK;
+      यदि( p_पदांशः->वामः_Cursor != pSrc->iCursor ) अनुवर्त;
+      यदि( p_पदांशः->prereq_दक्षिणः & mUnusable ) अनुवर्त;
+      प्रतिज्ञा( Is_Power_सम्बन्धि_Two(p_पदांशः->eOperator & ~WO_EQUIV) );
+      testcase( p_पदांशः->eOperator & WO_अन्तर् );
+      testcase( p_पदांशः->eOperator & WO_ISNULL );
+      testcase( p_पदांशः->eOperator & WO_IS );
+      testcase( p_पदांशः->eOperator & WO_ALL );
+      यदि( (p_पदांशः->eOperator & ~(WO_EQUIV))==0 ) अनुवर्त;
+      यदि( p_पदांशः->wtFlags & पदांशः_VNULL ) अनुवर्त;
 
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      assert( pTerm->u.x.leftColumn>=XN_ROWID );
-      assert( pTerm->u.x.leftColumn<pTab->nCol );
-      if( (pSrc->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))!=0
-          && !constraintCompatibleWithOuterJoin(pTerm,pSrc)
+      प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 );
+      प्रतिज्ञा( p_पदांशः->u.x.वामः_Column>=XN_ROWID );
+      प्रतिज्ञा( p_पदांशः->u.x.वामः_Column<pTab->nCol );
+      यदि( (pSrc->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))!=0
+          && !constraintCompatibleWithOuterJoin(p_पदांशः,pSrc)
         ){
-        continue;
+        अनुवर्त;
       }
-      nTerm++;
-      pTerm->wtFlags |= TERM_OK;
+      n_पदांशः++;
+      p_पदांशः->wtFlags |= पदांशः_OK;
     }
   }
 
@@ -1471,55 +1471,55 @@ static sqlite3_index_info *allocateIndexInfo(
   ** virtual table then allocate space for the aOrderBy part of
   ** the sqlite3_index_info structure.
   */
-  nOrderBy = 0;
-  if( pOrderBy ){
-    int n = pOrderBy->nExpr;
-    for(i=0; i<n; i++){
-      Expr *pExpr = pOrderBy->a[i].pExpr;
-      Expr *pE2;
+  n_क्रमः_By = 0;
+  यदि( p_क्रमः_By ){
+    पूर्णाङ्क n = p_क्रमः_By->n_व्यञ्जकम्;
+    प्रति(i=0; i<n; i++){
+      व्यञ्जकम् *p_व्यञ्जकम् = p_क्रमः_By->a[i].p_व्यञ्जकम्;
+      व्यञ्जकम् *pE2;
 
       /* Skip over constant terms in the ORDER BY clause */
-      if( sqlite3ExprIsConstant(0, pExpr) ){
-        continue;
+      यदि( sqlite3_व्यञ्जकम्_Is_Constant(0, p_व्यञ्जकम्) ){
+        अनुवर्त;
       }
 
       /* Virtual tables are unable to deal with NULLS FIRST */
-      if( pOrderBy->a[i].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) break;
+      यदि( p_क्रमः_By->a[i].fg.क्रमय_Flags & KEYINFO_क्रमः_BIGNULL ) भङ्ग;
 
       /* First case - a direct column references without a COLLATE operator */
-      if( pExpr->op==TK_COLUMN && pExpr->iTable==pSrc->iCursor ){
-        assert( pExpr->iColumn>=XN_ROWID && pExpr->iColumn<pTab->nCol );
-        continue;
+      यदि( p_व्यञ्जकम्->op==TK_COLUMN && p_व्यञ्जकम्->i_सारणी==pSrc->iCursor ){
+        प्रतिज्ञा( p_व्यञ्जकम्->iColumn>=XN_ROWID && p_व्यञ्जकम्->iColumn<pTab->nCol );
+        अनुवर्त;
       }
 
       /* 2nd case - a column reference with a COLLATE operator.  Only match
       ** of the COLLATE operator matches the collation of the column. */
-      if( pExpr->op==TK_COLLATE
-       && (pE2 = pExpr->pLeft)->op==TK_COLUMN
-       && pE2->iTable==pSrc->iCursor
+      यदि( p_व्यञ्जकम्->op==TK_COLLATE
+       && (pE2 = p_व्यञ्जकम्->p_वामः)->op==TK_COLUMN
+       && pE2->i_सारणी==pSrc->iCursor
       ){
-        const char *zColl;  /* The collating sequence name */
-        assert( !ExprHasProperty(pExpr, EP_IntValue) );
-        assert( pExpr->u.zToken!=0 );
-        assert( pE2->iColumn>=XN_ROWID && pE2->iColumn<pTab->nCol );
-        pExpr->iColumn = pE2->iColumn;
-        if( pE2->iColumn<0 ) continue;  /* Collseq does not matter for rowid */
+        ध्रुव वर्ण *zColl;  /* The collating sequence name */
+        प्रतिज्ञा( !व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_Int_मानम्) );
+        प्रतिज्ञा( p_व्यञ्जकम्->u.zToken!=0 );
+        प्रतिज्ञा( pE2->iColumn>=XN_ROWID && pE2->iColumn<pTab->nCol );
+        p_व्यञ्जकम्->iColumn = pE2->iColumn;
+        यदि( pE2->iColumn<0 ) अनुवर्त;  /* Collseq does not matter for rowid */
         zColl = sqlite3ColumnColl(&pTab->aCol[pE2->iColumn]);
-        if( zColl==0 ) zColl = sqlite3StrBINARY;
-        if( sqlite3_stricmp(pExpr->u.zToken, zColl)==0 ) continue;
+        यदि( zColl==0 ) zColl = sqlite3_Str_द्विमान;
+        यदि( sqlite3_stricmp(p_व्यञ्जकम्->u.zToken, zColl)==0 ) अनुवर्त;
       }
 
       /* No matches cause a break out of the loop */
-      break;
+      भङ्ग;
     }
-    if( i==n ){
-      int bSortByGroup = (pWInfo->wctrlFlags & WHERE_SORTBYGROUP)!=0;
-      nOrderBy = n;
-      if( (pWInfo->wctrlFlags & WHERE_DISTINCTBY) && !pSrc->fg.rowidUsed ){
-        eDistinct = 2 + bSortByGroup;
-      }else if( pWInfo->wctrlFlags & WHERE_GROUPBY ){
-        eDistinct = 1 - bSortByGroup;
-      }else if( pWInfo->wctrlFlags & WHERE_WANT_DISTINCT ){
+    यदि( i==n ){
+      पूर्णाङ्क b_क्रमय_By_गणः = (pWInfo->wctrlFlags & WHERE_SORTBYGROUP)!=0;
+      n_क्रमः_By = n;
+      यदि( (pWInfo->wctrlFlags & WHERE_DISTINCTBY) && !pSrc->fg.rowid_प्रयुक्तम् ){
+        eDistinct = 2 + b_क्रमय_By_गणः;
+      }अन्यथा यदि( pWInfo->wctrlFlags & WHERE_GROUPBY ){
+        eDistinct = 1 - b_क्रमय_By_गणः;
+      }अन्यथा यदि( pWInfo->wctrlFlags & WHERE_WANT_DISTINCT ){
         eDistinct = 3;
       }
     }
@@ -1527,111 +1527,111 @@ static sqlite3_index_info *allocateIndexInfo(
 
   /* Allocate the sqlite3_index_info structure
   */
-  pIdxInfo = sqlite3DbMallocZero(pParse->db, sizeof(*pIdxInfo)
-                           + (sizeof(*pIdxCons) + sizeof(*pUsage))*nTerm
-                           + sizeof(*pIdxOrderBy)*nOrderBy
-                           + SZ_HIDDENINDEXINFO(nTerm) );
-  if( pIdxInfo==0 ){
-    sqlite3ErrorMsg(pParse, "out of memory");
-    return 0;
+  pIdxInfo = sqlite3DbMallocZero(pParse->db, परिमाण(*pIdxInfo)
+                           + (परिमाण(*pIdxCons) + परिमाण(*pUsage))*n_पदांशः
+                           + परिमाण(*p_Idx_क्रमः_By)*n_क्रमः_By
+                           + SZ_HIDDENINDEXINFO(n_पदांशः) );
+  यदि( pIdxInfo==0 ){
+    sqlite3_Error_सन्देशः(pParse, "out of memory");
+    प्रत्यागम 0;
   }
-  pHidden = (struct HiddenIndexInfo*)&pIdxInfo[1];
-  pIdxCons = (struct sqlite3_index_constraint*)&pHidden->aRhs[nTerm];
-  pIdxOrderBy = (struct sqlite3_index_orderby*)&pIdxCons[nTerm];
-  pUsage = (struct sqlite3_index_constraint_usage*)&pIdxOrderBy[nOrderBy];
+  pHidden = (संरचना Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  pIdxCons = (संरचना sqlite3_सूचकांक_constraint*)&pHidden->aRhs[n_पदांशः];
+  p_Idx_क्रमः_By = (संरचना sqlite3_सूचकांक_orderby*)&pIdxCons[n_पदांशः];
+  pUsage = (संरचना sqlite3_सूचकांक_constraint_usage*)&p_Idx_क्रमः_By[n_क्रमः_By];
   pIdxInfo->aConstraint = pIdxCons;
-  pIdxInfo->aOrderBy = pIdxOrderBy;
+  pIdxInfo->a_क्रमः_By = p_Idx_क्रमः_By;
   pIdxInfo->aConstraintUsage = pUsage;
-  pIdxInfo->colUsed = (sqlite3_int64)pSrc->colUsed;
-  if( HasRowid(pTab)==0 ){
+  pIdxInfo->col_प्रयुक्तम् = (sqlite3_int64)pSrc->col_प्रयुक्तम्;
+  यदि( HasRowid(pTab)==0 ){
     /* Ensure that all bits associated with PK columns are set. This is to
     ** ensure they are available for cases like RIGHT joins or OR loops. */
-    Index *pPk = sqlite3PrimaryKeyIndex((Table*)pTab);
-    assert( pPk!=0 );
-    for(i=0; i<pPk->nKeyCol; i++){
-      int iCol = pPk->aiColumn[i];
-      assert( iCol>=0 );
-      if( iCol>=BMS-1 ) iCol = BMS-1;
-      pIdxInfo->colUsed |= MASKBIT(iCol);
+    सूचकांक *pPk = sqlite3_Primary_कुञ्चिका_सूचकांक((सारणी*)pTab);
+    प्रतिज्ञा( pPk!=0 );
+    प्रति(i=0; i<pPk->n_कुञ्चिका_Col; i++){
+      पूर्णाङ्क iCol = pPk->aiColumn[i];
+      प्रतिज्ञा( iCol>=0 );
+      यदि( iCol>=BMS-1 ) iCol = BMS-1;
+      pIdxInfo->col_प्रयुक्तम् |= MASKBIT(iCol);
     }
   }
   pHidden->pWC = pWC;
   pHidden->pParse = pParse;
   pHidden->eDistinct = eDistinct;
-  pHidden->mIn = 0;
-  for(p=pWC, i=j=0; p; p=p->pOuter){
-    int nLast = i+p->nTerm;;
-    for(pTerm=p->a; i<nLast; i++, pTerm++){
+  pHidden->m_अन्तर् = 0;
+  प्रति(p=pWC, i=j=0; p; p=p->pOuter){
+    पूर्णाङ्क n_चरमः = i+p->n_पदांशः;;
+    प्रति(p_पदांशः=p->a; i<n_चरमः; i++, p_पदांशः++){
       u16 op;
-      if( (pTerm->wtFlags & TERM_OK)==0 ) continue;
-      pIdxCons[j].iColumn = pTerm->u.x.leftColumn;
-      pIdxCons[j].iTermOffset = i;
-      op = pTerm->eOperator & WO_ALL;
-      if( op==WO_IN ){
-        if( (pTerm->wtFlags & TERM_SLICE)==0 ){
-          pHidden->mIn |= SMASKBIT32(j);
+      यदि( (p_पदांशः->wtFlags & पदांशः_OK)==0 ) अनुवर्त;
+      pIdxCons[j].iColumn = p_पदांशः->u.x.वामः_Column;
+      pIdxCons[j].i_पदांशः_विस्थापनम् = i;
+      op = p_पदांशः->eOperator & WO_ALL;
+      यदि( op==WO_अन्तर् ){
+        यदि( (p_पदांशः->wtFlags & पदांशः_खण्डिका)==0 ){
+          pHidden->m_अन्तर् |= SMASKBIT32(j);
         }
         op = WO_EQ;
       }
-      if( op==WO_AUX ){
-        pIdxCons[j].op = pTerm->eMatchOp;
-      }else if( op & (WO_ISNULL|WO_IS) ){
-        if( op==WO_ISNULL ){
-          pIdxCons[j].op = SQLITE_INDEX_CONSTRAINT_ISNULL;
-        }else{
-          pIdxCons[j].op = SQLITE_INDEX_CONSTRAINT_IS;
+      यदि( op==WO_AUX ){
+        pIdxCons[j].op = p_पदांशः->e_मेलनम्_Op;
+      }अन्यथा यदि( op & (WO_ISNULL|WO_IS) ){
+        यदि( op==WO_ISNULL ){
+          pIdxCons[j].op = SQLITE_सूचकांक_CONSTRAINT_ISNULL;
+        }अन्यथा{
+          pIdxCons[j].op = SQLITE_सूचकांक_CONSTRAINT_IS;
         }
-      }else{
+      }अन्यथा{
         pIdxCons[j].op = (u8)op;
         /* The direct assignment in the previous line is possible only because
         ** the WO_ and SQLITE_INDEX_CONSTRAINT_ codes are identical.  The
         ** following asserts verify this fact. */
-        assert( WO_EQ==SQLITE_INDEX_CONSTRAINT_EQ );
-        assert( WO_LT==SQLITE_INDEX_CONSTRAINT_LT );
-        assert( WO_LE==SQLITE_INDEX_CONSTRAINT_LE );
-        assert( WO_GT==SQLITE_INDEX_CONSTRAINT_GT );
-        assert( WO_GE==SQLITE_INDEX_CONSTRAINT_GE );
-        assert( pTerm->eOperator&(WO_IN|WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE|WO_AUX) );
+        प्रतिज्ञा( WO_EQ==SQLITE_सूचकांक_CONSTRAINT_EQ );
+        प्रतिज्ञा( WO_LT==SQLITE_सूचकांक_CONSTRAINT_LT );
+        प्रतिज्ञा( WO_LE==SQLITE_सूचकांक_CONSTRAINT_LE );
+        प्रतिज्ञा( WO_GT==SQLITE_सूचकांक_CONSTRAINT_GT );
+        प्रतिज्ञा( WO_GE==SQLITE_सूचकांक_CONSTRAINT_GE );
+        प्रतिज्ञा( p_पदांशः->eOperator&(WO_अन्तर्|WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE|WO_AUX) );
 
-        if( op & (WO_LT|WO_LE|WO_GT|WO_GE)
-            && sqlite3ExprIsVector(pTerm->pExpr->pRight)
+        यदि( op & (WO_LT|WO_LE|WO_GT|WO_GE)
+            && sqlite3_व्यञ्जकम्_Is_सदिशम्(p_पदांशः->p_व्यञ्जकम्->p_दक्षिणः)
           ){
           testcase( j!=i );
-          if( j<16 ) mNoOmit |= (1 << j);
-          if( op==WO_LT ) pIdxCons[j].op = WO_LE;
-          if( op==WO_GT ) pIdxCons[j].op = WO_GE;
+          यदि( j<16 ) mNoOmit |= (1 << j);
+          यदि( op==WO_LT ) pIdxCons[j].op = WO_LE;
+          यदि( op==WO_GT ) pIdxCons[j].op = WO_GE;
         }
       }
 
       j++;
     }
   }
-  assert( j==nTerm );
+  प्रतिज्ञा( j==n_पदांशः );
   pIdxInfo->nConstraint = j;
-  for(i=j=0; i<nOrderBy; i++){
-    Expr *pExpr = pOrderBy->a[i].pExpr;
-    if( sqlite3ExprIsConstant(0, pExpr) ) continue;
-    assert( pExpr->op==TK_COLUMN
-         || (pExpr->op==TK_COLLATE && pExpr->pLeft->op==TK_COLUMN
-              && pExpr->iColumn==pExpr->pLeft->iColumn) );
-    pIdxOrderBy[j].iColumn = pExpr->iColumn;
-    pIdxOrderBy[j].desc = pOrderBy->a[i].fg.sortFlags & KEYINFO_ORDER_DESC;
+  प्रति(i=j=0; i<n_क्रमः_By; i++){
+    व्यञ्जकम् *p_व्यञ्जकम् = p_क्रमः_By->a[i].p_व्यञ्जकम्;
+    यदि( sqlite3_व्यञ्जकम्_Is_Constant(0, p_व्यञ्जकम्) ) अनुवर्त;
+    प्रतिज्ञा( p_व्यञ्जकम्->op==TK_COLUMN
+         || (p_व्यञ्जकम्->op==TK_COLLATE && p_व्यञ्जकम्->p_वामः->op==TK_COLUMN
+              && p_व्यञ्जकम्->iColumn==p_व्यञ्जकम्->p_वामः->iColumn) );
+    p_Idx_क्रमः_By[j].iColumn = p_व्यञ्जकम्->iColumn;
+    p_Idx_क्रमः_By[j].desc = p_क्रमः_By->a[i].fg.क्रमय_Flags & KEYINFO_क्रमः_DESC;
     j++;
   }
-  pIdxInfo->nOrderBy = j;
+  pIdxInfo->n_क्रमः_By = j;
 
   *pmNoOmit = mNoOmit;
-  return pIdxInfo;
+  प्रत्यागम pIdxInfo;
 }
 
 /*
 ** Free and zero the sqlite3_index_info.idxStr value if needed.
 */
-static void freeIdxStr(sqlite3_index_info *pIdxInfo){
-  if( pIdxInfo->needToFreeIdxStr ){
+स्थिर शून्य freeIdxStr(sqlite3_सूचकांक_info *pIdxInfo){
+  यदि( pIdxInfo->need_गन्तव्यम्_Free_Idx_Str ){
     sqlite3_free(pIdxInfo->idxStr);
     pIdxInfo->idxStr = 0;
-    pIdxInfo->needToFreeIdxStr = 0;
+    pIdxInfo->need_गन्तव्यम्_Free_Idx_Str = 0;
   }
 }  
 
@@ -1639,15 +1639,15 @@ static void freeIdxStr(sqlite3_index_info *pIdxInfo){
 ** Free an sqlite3_index_info structure allocated by allocateIndexInfo()
 ** and possibly modified by xBestIndex methods.
 */
-static void freeIndexInfo(sqlite3 *db, sqlite3_index_info *pIdxInfo){
-  HiddenIndexInfo *pHidden;
-  int i;
-  assert( pIdxInfo!=0 );
-  pHidden = (HiddenIndexInfo*)&pIdxInfo[1];
-  assert( pHidden->pParse!=0 );
-  assert( pHidden->pParse->db==db );
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    sqlite3ValueFree(pHidden->aRhs[i]); /* IMP: R-14553-25174 */
+स्थिर शून्य free_सूचकांक_Info(sqlite3 *db, sqlite3_सूचकांक_info *pIdxInfo){
+  Hidden_सूचकांक_Info *pHidden;
+  पूर्णाङ्क i;
+  प्रतिज्ञा( pIdxInfo!=0 );
+  pHidden = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  प्रतिज्ञा( pHidden->pParse!=0 );
+  प्रतिज्ञा( pHidden->pParse->db==db );
+  प्रति(i=0; i<pIdxInfo->nConstraint; i++){
+    sqlite3_मानम्_Free(pHidden->aRhs[i]); /* IMP: R-14553-25174 */
     pHidden->aRhs[i] = 0;
   }
   freeIdxStr(pIdxInfo);
@@ -1670,37 +1670,37 @@ static void freeIndexInfo(sqlite3 *db, sqlite3_index_info *pIdxInfo){
 ** caller to eventually free p->idxStr if p->needToFreeIdxStr indicates
 ** that this is required.
 */
-static int vtabBestIndex(Parse *pParse, Table *pTab, sqlite3_index_info *p){
-  int rc;
+स्थिर पूर्णाङ्क vtab_Best_सूचकांक(Parse *pParse, सारणी *pTab, sqlite3_सूचकांक_info *p){
+  पूर्णाङ्क rc;
   sqlite3_vtab *pVtab;
 
-  assert( IsVirtual(pTab) );
+  प्रतिज्ञा( IsVirtual(pTab) );
   pVtab = sqlite3GetVTable(pParse->db, pTab)->pVtab;
-  whereTraceIndexInfoInputs(p, pTab);
-  pParse->db->nSchemaLock++;
-  rc = pVtab->pModule->xBestIndex(pVtab, p);
-  pParse->db->nSchemaLock--;
-  whereTraceIndexInfoOutputs(p, pTab);
+  where_Trace_सूचकांक_Info_Inputs(p, pTab);
+  pParse->db->n_Schema_तालकम्++;
+  rc = pVtab->pModule->x_Best_सूचकांक(pVtab, p);
+  pParse->db->n_Schema_तालकम्--;
+  where_Trace_सूचकांक_Info_Outputs(p, pTab);
 
-  if( rc!=SQLITE_OK && rc!=SQLITE_CONSTRAINT ){
-    if( rc==SQLITE_NOMEM ){
+  यदि( rc!=SQLITE_OK && rc!=SQLITE_CONSTRAINT ){
+    यदि( rc==SQLITE_NOMEM ){
       sqlite3OomFault(pParse->db);
-    }else if( !pVtab->zErrMsg ){
-      sqlite3ErrorMsg(pParse, "%s", sqlite3ErrStr(rc));
-    }else{
-      sqlite3ErrorMsg(pParse, "%s", pVtab->zErrMsg);
+    }अन्यथा यदि( !pVtab->z_Err_सन्देशः ){
+      sqlite3_Error_सन्देशः(pParse, "%s", sqlite3ErrStr(rc));
+    }अन्यथा{
+      sqlite3_Error_सन्देशः(pParse, "%s", pVtab->z_Err_सन्देशः);
     }
   }
-  if( pTab->u.vtab.p->bAllSchemas ){
-    sqlite3VtabUsesAllSchemas(pParse);
+  यदि( pTab->u.vtab.p->bAllSchemas ){
+    sqlite3_Vtab_उपयुङ्क्ते_All_Schemas(pParse);
   }
-  sqlite3_free(pVtab->zErrMsg);
-  pVtab->zErrMsg = 0;
-  return rc;
+  sqlite3_free(pVtab->z_Err_सन्देशः);
+  pVtab->z_Err_सन्देशः = 0;
+  प्रत्यागम rc;
 }
-#endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) */
+#यदि_अन्तः /* !defined(SQLITE_OMIT_VIRTUALTABLE) */
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
 /*
 ** Estimate the location of a particular key among all keys in an
 ** index.  Store the results in aStat as follows:
@@ -1714,29 +1714,29 @@ static int vtabBestIndex(Parse *pParse, Table *pTab, sqlite3_index_info *p){
 ** based on the contents of aSample[] and the number of fields in record
 ** pRec.
 */
-static int whereKeyStats(
+स्थिर पूर्णाङ्क where_कुञ्चिका_Stats(
   Parse *pParse,              /* Database connection */
-  Index *pIdx,                /* Index to consider domain of */
-  UnpackedRecord *pRec,       /* Vector of values to consider */
-  int roundUp,                /* Round up if true.  Round down if false */
+  सूचकांक *pIdx,                /* Index to consider domain of */
+  Unpacked_लेखः *pRec,       /* Vector of values to consider */
+  पूर्णाङ्क आवर्तनम्_ऊर्ध्वम्,                /* Round up if true.  Round down if false */
   tRowcnt *aStat              /* OUT: stats written here */
 ){
-  IndexSample *aSample = pIdx->aSample;
-  int iCol;                   /* Index of required stats in anEq[] etc. */
-  int i;                      /* Index of first sample >= pRec */
-  int iSample;                /* Smallest sample larger than or equal to pRec */
-  int iMin = 0;               /* Smallest sample not yet tested */
-  int iTest;                  /* Next sample to test */
-  int res;                    /* Result of comparison operation */
-  int nField;                 /* Number of fields in pRec */
-  tRowcnt iLower = 0;         /* anLt[] + anEq[] of largest sample pRec is > */
+  सूचकांक_Sample *aSample = pIdx->aSample;
+  पूर्णाङ्क iCol;                   /* Index of required stats in anEq[] etc. */
+  पूर्णाङ्क i;                      /* Index of first sample >= pRec */
+  पूर्णाङ्क iSample;                /* Smallest sample larger than or equal to pRec */
+  पूर्णाङ्क iMin = 0;               /* Smallest sample not yet tested */
+  पूर्णाङ्क iTest;                  /* Next sample to test */
+  पूर्णाङ्क res;                    /* Result of comparison operation */
+  पूर्णाङ्क n_क्षेत्रम्;                 /* Number of fields in pRec */
+  tRowcnt i_अधस्तनम् = 0;         /* anLt[] + anEq[] of largest sample pRec is > */
 
-#ifndef SQLITE_DEBUG
-  UNUSED_PARAMETER( pParse );
-#endif
-  assert( pRec!=0 );
-  assert( pIdx->nSample>0 );
-  assert( pRec->nField>0 );
+#यदि_अपरिभाषितम् SQLITE_DEBUG
+  अप्रयुक्तम्_PARAMETER( pParse );
+#यदि_अन्तः
+  प्रतिज्ञा( pRec!=0 );
+  प्रतिज्ञा( pIdx->nSample>0 );
+  प्रतिज्ञा( pRec->n_क्षेत्रम्>0 );
 
 
   /* Do a binary search to find the first sample greater than or equal
@@ -1783,123 +1783,123 @@ static int whereKeyStats(
   ** it is extended to two fields. The duplicates that this creates do not
   ** cause any problems.
   */
-  if( !HasRowid(pIdx->pTable) && IsPrimaryKeyIndex(pIdx) ){
-    nField = pIdx->nKeyCol;
-  }else{
-    nField = pIdx->nColumn;
+  यदि( !HasRowid(pIdx->p_सारणी) && Is_Primary_कुञ्चिका_सूचकांक(pIdx) ){
+    n_क्षेत्रम् = pIdx->n_कुञ्चिका_Col;
+  }अन्यथा{
+    n_क्षेत्रम् = pIdx->nColumn;
   }
-  nField = MIN(pRec->nField, nField);
+  n_क्षेत्रम् = MIN(pRec->n_क्षेत्रम्, n_क्षेत्रम्);
   iCol = 0;
-  iSample = pIdx->nSample * nField;
-  do{
-    int iSamp;                    /* Index in aSample[] of test sample */
-    int n;                        /* Number of fields in test sample */
+  iSample = pIdx->nSample * n_क्षेत्रम्;
+  कुरु{
+    पूर्णाङ्क iSamp;                    /* Index in aSample[] of test sample */
+    पूर्णाङ्क n;                        /* Number of fields in test sample */
 
     iTest = (iMin+iSample)/2;
-    iSamp = iTest / nField;
-    if( iSamp>0 ){
+    iSamp = iTest / n_क्षेत्रम्;
+    यदि( iSamp>0 ){
       /* The proposed effective sample is a prefix of sample aSample[iSamp].
       ** Specifically, the shortest prefix of at least (1 + iTest%nField)
       ** fields that is greater than the previous effective sample.  */
-      for(n=(iTest % nField) + 1; n<nField; n++){
-        if( aSample[iSamp-1].anLt[n-1]!=aSample[iSamp].anLt[n-1] ) break;
+      प्रति(n=(iTest % n_क्षेत्रम्) + 1; n<n_क्षेत्रम्; n++){
+        यदि( aSample[iSamp-1].anLt[n-1]!=aSample[iSamp].anLt[n-1] ) भङ्ग;
       }
-    }else{
+    }अन्यथा{
       n = iTest + 1;
     }
 
-    pRec->nField = n;
-    res = sqlite3VdbeRecordCompare(aSample[iSamp].n, aSample[iSamp].p, pRec);
-    if( res<0 ){
-      iLower = aSample[iSamp].anLt[n-1] + aSample[iSamp].anEq[n-1];
+    pRec->n_क्षेत्रम् = n;
+    res = sqlite3_Vdbe_लेखः_Compare(aSample[iSamp].n, aSample[iSamp].p, pRec);
+    यदि( res<0 ){
+      i_अधस्तनम् = aSample[iSamp].anLt[n-1] + aSample[iSamp].anEq[n-1];
       iMin = iTest+1;
-    }else if( res==0 && n<nField ){
-      iLower = aSample[iSamp].anLt[n-1];
+    }अन्यथा यदि( res==0 && n<n_क्षेत्रम् ){
+      i_अधस्तनम् = aSample[iSamp].anLt[n-1];
       iMin = iTest+1;
       res = -1;
-    }else{
+    }अन्यथा{
       iSample = iTest;
       iCol = n-1;
     }
-  }while( res && iMin<iSample );
-  i = iSample / nField;
+  }यावत्( res && iMin<iSample );
+  i = iSample / n_क्षेत्रम्;
 
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
   /* The following assert statements check that the binary search code
   ** above found the right answer. This block serves no purpose other
   ** than to invoke the asserts.  */
-  if( pParse->db->mallocFailed==0 ){
-    if( res==0 ){
+  यदि( pParse->db->mallocFailed==0 ){
+    यदि( res==0 ){
       /* If (res==0) is true, then pRec must be equal to sample i. */
-      assert( i<pIdx->nSample );
-      assert( iCol==nField-1 );
-      pRec->nField = nField;
-      assert( 0==sqlite3VdbeRecordCompare(aSample[i].n, aSample[i].p, pRec)
+      प्रतिज्ञा( i<pIdx->nSample );
+      प्रतिज्ञा( iCol==n_क्षेत्रम्-1 );
+      pRec->n_क्षेत्रम् = n_क्षेत्रम्;
+      प्रतिज्ञा( 0==sqlite3_Vdbe_लेखः_Compare(aSample[i].n, aSample[i].p, pRec)
            || pParse->db->mallocFailed
       );
-    }else{
+    }अन्यथा{
       /* Unless i==pIdx->nSample, indicating that pRec is larger than
       ** all samples in the aSample[] array, pRec must be smaller than the
       ** (iCol+1) field prefix of sample i.  */
-      assert( i<=pIdx->nSample && i>=0 );
-      pRec->nField = iCol+1;
-      assert( i==pIdx->nSample
-           || sqlite3VdbeRecordCompare(aSample[i].n, aSample[i].p, pRec)>0
+      प्रतिज्ञा( i<=pIdx->nSample && i>=0 );
+      pRec->n_क्षेत्रम् = iCol+1;
+      प्रतिज्ञा( i==pIdx->nSample
+           || sqlite3_Vdbe_लेखः_Compare(aSample[i].n, aSample[i].p, pRec)>0
            || pParse->db->mallocFailed );
 
       /* if i==0 and iCol==0, then record pRec is smaller than all samples
       ** in the aSample[] array. Otherwise, if (iCol>0) then pRec must
       ** be greater than or equal to the (iCol) field prefix of sample i.
       ** If (i>0), then pRec must also be greater than sample (i-1).  */
-      if( iCol>0 ){
-        pRec->nField = iCol;
-        assert( sqlite3VdbeRecordCompare(aSample[i].n, aSample[i].p, pRec)<=0
+      यदि( iCol>0 ){
+        pRec->n_क्षेत्रम् = iCol;
+        प्रतिज्ञा( sqlite3_Vdbe_लेखः_Compare(aSample[i].n, aSample[i].p, pRec)<=0
              || pParse->db->mallocFailed || CORRUPT_DB );
       }
-      if( i>0 ){
-        pRec->nField = nField;
-        assert( sqlite3VdbeRecordCompare(aSample[i-1].n, aSample[i-1].p, pRec)<0
+      यदि( i>0 ){
+        pRec->n_क्षेत्रम् = n_क्षेत्रम्;
+        प्रतिज्ञा( sqlite3_Vdbe_लेखः_Compare(aSample[i-1].n, aSample[i-1].p, pRec)<0
              || pParse->db->mallocFailed || CORRUPT_DB );
       }
     }
   }
-#endif /* ifdef SQLITE_DEBUG */
+#यदि_अन्तः /* ifdef SQLITE_DEBUG */
 
-  if( res==0 ){
+  यदि( res==0 ){
     /* Record pRec is equal to sample i */
-    assert( iCol==nField-1 );
+    प्रतिज्ञा( iCol==n_क्षेत्रम्-1 );
     aStat[0] = aSample[i].anLt[iCol];
     aStat[1] = aSample[i].anEq[iCol];
-  }else{
+  }अन्यथा{
     /* At this point, the (iCol+1) field prefix of aSample[i] is the first
     ** sample that is greater than pRec. Or, if i==pIdx->nSample then pRec
     ** is larger than all samples in the array. */
-    tRowcnt iUpper, iGap;
-    if( i>=pIdx->nSample ){
-      iUpper = pIdx->nRowEst0;
-    }else{
-      iUpper = aSample[i].anLt[iCol];
+    tRowcnt i_ऊर्ध्वस्थम्, iGap;
+    यदि( i>=pIdx->nSample ){
+      i_ऊर्ध्वस्थम् = pIdx->nRowEst0;
+    }अन्यथा{
+      i_ऊर्ध्वस्थम् = aSample[i].anLt[iCol];
     }
 
-    if( iLower>=iUpper ){
+    यदि( i_अधस्तनम्>=i_ऊर्ध्वस्थम् ){
       iGap = 0;
-    }else{
-      iGap = iUpper - iLower;
+    }अन्यथा{
+      iGap = i_ऊर्ध्वस्थम् - i_अधस्तनम्;
     }
-    if( roundUp ){
+    यदि( आवर्तनम्_ऊर्ध्वम् ){
       iGap = (iGap*2)/3;
-    }else{
+    }अन्यथा{
       iGap = iGap/3;
     }
-    aStat[0] = iLower + iGap;
-    aStat[1] = pIdx->aAvgEq[nField-1];
+    aStat[0] = i_अधस्तनम् + iGap;
+    aStat[1] = pIdx->aAvgEq[n_क्षेत्रम्-1];
   }
 
   /* Restore the pRec->nField value before returning.  */
-  pRec->nField = nField;
-  return i;
+  pRec->n_क्षेत्रम् = n_क्षेत्रम्;
+  प्रत्यागम i;
 }
-#endif /* SQLITE_ENABLE_STAT4 */
+#यदि_अन्तः /* SQLITE_ENABLE_STAT4 */
 
 /*
 ** If it is not NULL, pTerm is a term that provides an upper or lower
@@ -1912,35 +1912,35 @@ static int whereKeyStats(
 ** input rows. Otherwise, this function assumes that an "IS NOT NULL" term
 ** has a likelihood of 0.50, and any other term a likelihood of 0.25.
 */
-static LogEst whereRangeAdjust(WhereTerm *pTerm, LogEst nNew){
+स्थिर LogEst whereRangeAdjust(Where_पदांशः *p_पदांशः, LogEst nNew){
   LogEst nRet = nNew;
-  if( pTerm ){
-    if( pTerm->truthProb<=0 ){
-      nRet += pTerm->truthProb;
-    }else if( (pTerm->wtFlags & TERM_VNULL)==0 ){
-      nRet -= 20;        assert( 20==sqlite3LogEst(4) );
+  यदि( p_पदांशः ){
+    यदि( p_पदांशः->truthProb<=0 ){
+      nRet += p_पदांशः->truthProb;
+    }अन्यथा यदि( (p_पदांशः->wtFlags & पदांशः_VNULL)==0 ){
+      nRet -= 20;        प्रतिज्ञा( 20==sqlite3LogEst(4) );
     }
   }
-  return nRet;
+  प्रत्यागम nRet;
 }
 
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
 /*
 ** Return the affinity for a single column of an index.
 */
-char sqlite3IndexColumnAffinity(sqlite3 *db, Index *pIdx, int iCol){
-  assert( iCol>=0 && iCol<pIdx->nColumn );
-  if( !pIdx->zColAff ){
-    if( sqlite3IndexAffinityStr(db, pIdx)==0 ) return SQLITE_AFF_BLOB;
+वर्ण sqlite3_सूचकांक_Column_Affinity(sqlite3 *db, सूचकांक *pIdx, पूर्णाङ्क iCol){
+  प्रतिज्ञा( iCol>=0 && iCol<pIdx->nColumn );
+  यदि( !pIdx->zColAff ){
+    यदि( sqlite3_सूचकांक_Affinity_Str(db, pIdx)==0 ) प्रत्यागम SQLITE_AFF_BLOB;
   }
-  assert( pIdx->zColAff[iCol]!=0 );
-  return pIdx->zColAff[iCol];
+  प्रतिज्ञा( pIdx->zColAff[iCol]!=0 );
+  प्रत्यागम pIdx->zColAff[iCol];
 }
-#endif
+#यदि_अन्तः
 
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
 /*
 ** This function is called to estimate the number of rows visited by a
 ** range-scan on a skip-scan index. For example:
@@ -1976,77 +1976,77 @@ char sqlite3IndexColumnAffinity(sqlite3 *db, Index *pIdx, int iCol){
 ** If an error occurs, an SQLite error code is returned. Otherwise,
 ** SQLITE_OK.
 */
-static int whereRangeSkipScanEst(
+स्थिर पूर्णाङ्क where_Range_Skip_अवलोकनम्_Est(
   Parse *pParse,       /* Parsing & code generating context */
-  WhereTerm *pLower,   /* Lower bound on the range. ex: "x>123" Might be NULL */
-  WhereTerm *pUpper,   /* Upper bound on the range. ex: "x<455" Might be NULL */
+  Where_पदांशः *p_अधस्तनम्,   /* Lower bound on the range. ex: "x>123" Might be NULL */
+  Where_पदांशः *p_ऊर्ध्वस्थम्,   /* Upper bound on the range. ex: "x<455" Might be NULL */
   WhereLoop *pLoop,    /* Update the .nOut value of this loop */
-  int *pbDone          /* Set to true if at least one expr. value extracted */
+  पूर्णाङ्क *pb_समाप्तम्          /* Set to true if at least one expr. value extracted */
 ){
-  Index *p = pLoop->u.btree.pIndex;
-  int nEq = pLoop->u.btree.nEq;
+  सूचकांक *p = pLoop->u.btree.p_सूचकांक;
+  पूर्णाङ्क nEq = pLoop->u.btree.nEq;
   sqlite3 *db = pParse->db;
-  int nLower = -1;
-  int nUpper = p->nSample+1;
-  int rc = SQLITE_OK;
-  u8 aff = sqlite3IndexColumnAffinity(db, p, nEq);
+  पूर्णाङ्क n_अधस्तनम् = -1;
+  पूर्णाङ्क n_ऊर्ध्वस्थम् = p->nSample+1;
+  पूर्णाङ्क rc = SQLITE_OK;
+  u8 aff = sqlite3_सूचकांक_Column_Affinity(db, p, nEq);
   CollSeq *pColl;
  
-  sqlite3_value *p1 = 0;          /* Value extracted from pLower */
-  sqlite3_value *p2 = 0;          /* Value extracted from pUpper */
-  sqlite3_value *pVal = 0;        /* Value extracted from record */
+  sqlite3_मानम् *p1 = 0;          /* Value extracted from pLower */
+  sqlite3_मानम् *p2 = 0;          /* Value extracted from pUpper */
+  sqlite3_मानम् *pVal = 0;        /* Value extracted from record */
 
   pColl = sqlite3LocateCollSeq(pParse, p->azColl[nEq]);
-  if( pLower ){
-    rc = sqlite3Stat4ValueFromExpr(pParse, pLower->pExpr->pRight, aff, &p1);
-    nLower = 0;
+  यदि( p_अधस्तनम् ){
+    rc = sqlite3_Stat4_मानम्_From_व्यञ्जकम्(pParse, p_अधस्तनम्->p_व्यञ्जकम्->p_दक्षिणः, aff, &p1);
+    n_अधस्तनम् = 0;
   }
-  if( pUpper && rc==SQLITE_OK ){
-    rc = sqlite3Stat4ValueFromExpr(pParse, pUpper->pExpr->pRight, aff, &p2);
-    nUpper = p2 ? 0 : p->nSample;
+  यदि( p_ऊर्ध्वस्थम् && rc==SQLITE_OK ){
+    rc = sqlite3_Stat4_मानम्_From_व्यञ्जकम्(pParse, p_ऊर्ध्वस्थम्->p_व्यञ्जकम्->p_दक्षिणः, aff, &p2);
+    n_ऊर्ध्वस्थम् = p2 ? 0 : p->nSample;
   }
 
-  if( p1 || p2 ){
-    int i;
-    int nDiff;
-    for(i=0; rc==SQLITE_OK && i<p->nSample; i++){
+  यदि( p1 || p2 ){
+    पूर्णाङ्क i;
+    पूर्णाङ्क nDiff;
+    प्रति(i=0; rc==SQLITE_OK && i<p->nSample; i++){
       rc = sqlite3Stat4Column(db, p->aSample[i].p, p->aSample[i].n, nEq, &pVal);
-      if( rc==SQLITE_OK && p1 ){
-        int res = sqlite3MemCompare(p1, pVal, pColl);
-        if( res>=0 ) nLower++;
+      यदि( rc==SQLITE_OK && p1 ){
+        पूर्णाङ्क res = sqlite3MemCompare(p1, pVal, pColl);
+        यदि( res>=0 ) n_अधस्तनम्++;
       }
-      if( rc==SQLITE_OK && p2 ){
-        int res = sqlite3MemCompare(p2, pVal, pColl);
-        if( res>=0 ) nUpper++;
+      यदि( rc==SQLITE_OK && p2 ){
+        पूर्णाङ्क res = sqlite3MemCompare(p2, pVal, pColl);
+        यदि( res>=0 ) n_ऊर्ध्वस्थम्++;
       }
     }
-    nDiff = (nUpper - nLower);
-    if( nDiff<=0 ) nDiff = 1;
+    nDiff = (n_ऊर्ध्वस्थम् - n_अधस्तनम्);
+    यदि( nDiff<=0 ) nDiff = 1;
 
     /* If there is both an upper and lower bound specified, and the
     ** comparisons indicate that they are close together, use the fallback
     ** method (assume that the scan visits 1/64 of the rows) for estimating
     ** the number of rows visited. Otherwise, estimate the number of rows
     ** using the method described in the header comment for this function. */
-    if( nDiff!=1 || pUpper==0 || pLower==0 ){
-      int nAdjust = (sqlite3LogEst(p->nSample) - sqlite3LogEst(nDiff));
-      pLoop->nOut -= nAdjust;
-      *pbDone = 1;
+    यदि( nDiff!=1 || p_ऊर्ध्वस्थम्==0 || p_अधस्तनम्==0 ){
+      पूर्णाङ्क nAdjust = (sqlite3LogEst(p->nSample) - sqlite3LogEst(nDiff));
+      pLoop->n_बहिर्गमनम् -= nAdjust;
+      *pb_समाप्तम् = 1;
       WHERETRACE(0x20, ("range skip-scan regions: %u..%u  adjust=%d est=%d\n",
-                           nLower, nUpper, nAdjust*-1, pLoop->nOut));
+                           n_अधस्तनम्, n_ऊर्ध्वस्थम्, nAdjust*-1, pLoop->n_बहिर्गमनम्));
     }
 
-  }else{
-    assert( *pbDone==0 );
+  }अन्यथा{
+    प्रतिज्ञा( *pb_समाप्तम्==0 );
   }
 
-  sqlite3ValueFree(p1);
-  sqlite3ValueFree(p2);
-  sqlite3ValueFree(pVal);
+  sqlite3_मानम्_Free(p1);
+  sqlite3_मानम्_Free(p2);
+  sqlite3_मानम्_Free(pVal);
 
-  return rc;
+  प्रत्यागम rc;
 }
-#endif /* SQLITE_ENABLE_STAT4 */
+#यदि_अन्तः /* SQLITE_ENABLE_STAT4 */
 
 /*
 ** This function is used to estimate the number of rows that will be visited
@@ -2088,29 +2088,29 @@ static int whereRangeSkipScanEst(
 ** and a pair of constraints (x>? AND x<?) reduces the expected number of
 ** rows visited by a factor of 64.
 */
-static int whereRangeScanEst(
+स्थिर पूर्णाङ्क where_Range_अवलोकनम्_Est(
   Parse *pParse,       /* Parsing & code generating context */
   WhereLoopBuilder *pBuilder,
-  WhereTerm *pLower,   /* Lower bound on the range. ex: "x>123" Might be NULL */
-  WhereTerm *pUpper,   /* Upper bound on the range. ex: "x<455" Might be NULL */
+  Where_पदांशः *p_अधस्तनम्,   /* Lower bound on the range. ex: "x>123" Might be NULL */
+  Where_पदांशः *p_ऊर्ध्वस्थम्,   /* Upper bound on the range. ex: "x<455" Might be NULL */
   WhereLoop *pLoop     /* Modify the .nOut and maybe .rRun fields */
 ){
-  int rc = SQLITE_OK;
-  int nOut = pLoop->nOut;
+  पूर्णाङ्क rc = SQLITE_OK;
+  पूर्णाङ्क n_बहिर्गमनम् = pLoop->n_बहिर्गमनम्;
   LogEst nNew;
 
-#ifdef SQLITE_ENABLE_STAT4
-  Index *p = pLoop->u.btree.pIndex;
-  int nEq = pLoop->u.btree.nEq;
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
+  सूचकांक *p = pLoop->u.btree.p_सूचकांक;
+  पूर्णाङ्क nEq = pLoop->u.btree.nEq;
 
-  if( p->nSample>0 && ALWAYS(nEq<p->nSampleCol)
+  यदि( p->nSample>0 && ALWAYS(nEq<p->nSampleCol)
    && OptimizationEnabled(pParse->db, SQLITE_Stat4)
   ){
-    if( nEq==pBuilder->nRecValid ){
-      UnpackedRecord *pRec = pBuilder->pRec;
+    यदि( nEq==pBuilder->nRecValid ){
+      Unpacked_लेखः *pRec = pBuilder->pRec;
       tRowcnt a[2];
-      int nBtm = pLoop->u.btree.nBtm;
-      int nTop = pLoop->u.btree.nTop;
+      पूर्णाङ्क nBtm = pLoop->u.btree.nBtm;
+      पूर्णाङ्क n_शिखरम् = pLoop->u.btree.n_शिखरम्;
 
       /* Variable iLower will be set to the estimate of the number of rows in
       ** the index that are less than the lower bound of the range query. The
@@ -2131,103 +2131,103 @@ static int whereRangeScanEst(
       **
       ** The number of rows between the two bounds is then just iUpper-iLower.
       */
-      tRowcnt iLower;     /* Rows less than the lower bound */
-      tRowcnt iUpper;     /* Rows less than the upper bound */
-      int iLwrIdx = -2;   /* aSample[] for the lower bound */
-      int iUprIdx = -1;   /* aSample[] for the upper bound */
+      tRowcnt i_अधस्तनम्;     /* Rows less than the lower bound */
+      tRowcnt i_ऊर्ध्वस्थम्;     /* Rows less than the upper bound */
+      पूर्णाङ्क iLwrIdx = -2;   /* aSample[] for the lower bound */
+      पूर्णाङ्क iUprIdx = -1;   /* aSample[] for the upper bound */
 
-      if( pRec ){
-        testcase( pRec->nField!=pBuilder->nRecValid );
-        pRec->nField = pBuilder->nRecValid;
+      यदि( pRec ){
+        testcase( pRec->n_क्षेत्रम्!=pBuilder->nRecValid );
+        pRec->n_क्षेत्रम् = pBuilder->nRecValid;
       }
       /* Determine iLower and iUpper using ($P) only. */
-      if( nEq==0 ){
-        iLower = 0;
-        iUpper = p->nRowEst0;
-      }else{
+      यदि( nEq==0 ){
+        i_अधस्तनम् = 0;
+        i_ऊर्ध्वस्थम् = p->nRowEst0;
+      }अन्यथा{
         /* Note: this call could be optimized away - since the same values must
         ** have been requested when testing key $P in whereEqualScanEst().  */
-        whereKeyStats(pParse, p, pRec, 0, a);
-        iLower = a[0];
-        iUpper = a[0] + a[1];
+        where_कुञ्चिका_Stats(pParse, p, pRec, 0, a);
+        i_अधस्तनम् = a[0];
+        i_ऊर्ध्वस्थम् = a[0] + a[1];
       }
 
-      assert( pLower==0 || (pLower->eOperator & (WO_GT|WO_GE))!=0 );
-      assert( pUpper==0 || (pUpper->eOperator & (WO_LT|WO_LE))!=0 );
-      assert( p->aSortOrder!=0 );
-      if( p->aSortOrder[nEq] ){
+      प्रतिज्ञा( p_अधस्तनम्==0 || (p_अधस्तनम्->eOperator & (WO_GT|WO_GE))!=0 );
+      प्रतिज्ञा( p_ऊर्ध्वस्थम्==0 || (p_ऊर्ध्वस्थम्->eOperator & (WO_LT|WO_LE))!=0 );
+      प्रतिज्ञा( p->a_क्रमय_क्रमः!=0 );
+      यदि( p->a_क्रमय_क्रमः[nEq] ){
         /* The roles of pLower and pUpper are swapped for a DESC index */
-        SWAP(WhereTerm*, pLower, pUpper);
-        SWAP(int, nBtm, nTop);
+        SWAP(Where_पदांशः*, p_अधस्तनम्, p_ऊर्ध्वस्थम्);
+        SWAP(पूर्णाङ्क, nBtm, n_शिखरम्);
       }
 
       /* If possible, improve on the iLower estimate using ($P:$L). */
-      if( pLower ){
-        int n;                    /* Values extracted from pExpr */
-        Expr *pExpr = pLower->pExpr->pRight;
-        rc = sqlite3Stat4ProbeSetValue(pParse, p, &pRec, pExpr, nBtm, nEq, &n);
-        if( rc==SQLITE_OK && n ){
+      यदि( p_अधस्तनम् ){
+        पूर्णाङ्क n;                    /* Values extracted from pExpr */
+        व्यञ्जकम् *p_व्यञ्जकम् = p_अधस्तनम्->p_व्यञ्जकम्->p_दक्षिणः;
+        rc = sqlite3_Stat4_Probe_समुच्चयः_मानम्(pParse, p, &pRec, p_व्यञ्जकम्, nBtm, nEq, &n);
+        यदि( rc==SQLITE_OK && n ){
           tRowcnt iNew;
-          u16 mask = WO_GT|WO_LE;
-          if( sqlite3ExprVectorSize(pExpr)>n ) mask = (WO_LE|WO_LT);
-          iLwrIdx = whereKeyStats(pParse, p, pRec, 0, a);
-          iNew = a[0] + ((pLower->eOperator & mask) ? a[1] : 0);
-          if( iNew>iLower ) iLower = iNew;
-          nOut--;
-          pLower = 0;
+          u16 आवरणम् = WO_GT|WO_LE;
+          यदि( sqlite3_व्यञ्जकम्_सदिशम्_आकार(p_व्यञ्जकम्)>n ) आवरणम् = (WO_LE|WO_LT);
+          iLwrIdx = where_कुञ्चिका_Stats(pParse, p, pRec, 0, a);
+          iNew = a[0] + ((p_अधस्तनम्->eOperator & आवरणम्) ? a[1] : 0);
+          यदि( iNew>i_अधस्तनम् ) i_अधस्तनम् = iNew;
+          n_बहिर्गमनम्--;
+          p_अधस्तनम् = 0;
         }
       }
 
       /* If possible, improve on the iUpper estimate using ($P:$U). */
-      if( pUpper ){
-        int n;                    /* Values extracted from pExpr */
-        Expr *pExpr = pUpper->pExpr->pRight;
-        rc = sqlite3Stat4ProbeSetValue(pParse, p, &pRec, pExpr, nTop, nEq, &n);
-        if( rc==SQLITE_OK && n ){
+      यदि( p_ऊर्ध्वस्थम् ){
+        पूर्णाङ्क n;                    /* Values extracted from pExpr */
+        व्यञ्जकम् *p_व्यञ्जकम् = p_ऊर्ध्वस्थम्->p_व्यञ्जकम्->p_दक्षिणः;
+        rc = sqlite3_Stat4_Probe_समुच्चयः_मानम्(pParse, p, &pRec, p_व्यञ्जकम्, n_शिखरम्, nEq, &n);
+        यदि( rc==SQLITE_OK && n ){
           tRowcnt iNew;
-          u16 mask = WO_GT|WO_LE;
-          if( sqlite3ExprVectorSize(pExpr)>n ) mask = (WO_LE|WO_LT);
-          iUprIdx = whereKeyStats(pParse, p, pRec, 1, a);
-          iNew = a[0] + ((pUpper->eOperator & mask) ? a[1] : 0);
-          if( iNew<iUpper ) iUpper = iNew;
-          nOut--;
-          pUpper = 0;
+          u16 आवरणम् = WO_GT|WO_LE;
+          यदि( sqlite3_व्यञ्जकम्_सदिशम्_आकार(p_व्यञ्जकम्)>n ) आवरणम् = (WO_LE|WO_LT);
+          iUprIdx = where_कुञ्चिका_Stats(pParse, p, pRec, 1, a);
+          iNew = a[0] + ((p_ऊर्ध्वस्थम्->eOperator & आवरणम्) ? a[1] : 0);
+          यदि( iNew<i_ऊर्ध्वस्थम् ) i_ऊर्ध्वस्थम् = iNew;
+          n_बहिर्गमनम्--;
+          p_ऊर्ध्वस्थम् = 0;
         }
       }
 
       pBuilder->pRec = pRec;
-      if( rc==SQLITE_OK ){
-        if( iUpper>iLower ){
-          nNew = sqlite3LogEst(iUpper - iLower);
+      यदि( rc==SQLITE_OK ){
+        यदि( i_ऊर्ध्वस्थम्>i_अधस्तनम् ){
+          nNew = sqlite3LogEst(i_ऊर्ध्वस्थम् - i_अधस्तनम्);
           /* TUNING:  If both iUpper and iLower are derived from the same
           ** sample, then assume they are 4x more selective.  This brings
           ** the estimated selectivity more in line with what it would be
           ** if estimated without the use of STAT4 tables. */
-          if( iLwrIdx==iUprIdx ){ nNew -= 20; }
-          assert( 20==sqlite3LogEst(4) );
-        }else{
-          nNew = 10;        assert( 10==sqlite3LogEst(2) );
+          यदि( iLwrIdx==iUprIdx ){ nNew -= 20; }
+          प्रतिज्ञा( 20==sqlite3LogEst(4) );
+        }अन्यथा{
+          nNew = 10;        प्रतिज्ञा( 10==sqlite3LogEst(2) );
         }
-        if( nNew<nOut ){
-          nOut = nNew;
+        यदि( nNew<n_बहिर्गमनम् ){
+          n_बहिर्गमनम् = nNew;
         }
         WHERETRACE(0x20, ("STAT4 range scan: %u..%u  est=%d\n",
-                           (u32)iLower, (u32)iUpper, nOut));
+                           (u32)i_अधस्तनम्, (u32)i_ऊर्ध्वस्थम्, n_बहिर्गमनम्));
       }
-    }else{
-      int bDone = 0;
-      rc = whereRangeSkipScanEst(pParse, pLower, pUpper, pLoop, &bDone);
-      if( bDone ) return rc;
+    }अन्यथा{
+      पूर्णाङ्क b_समाप्तम् = 0;
+      rc = where_Range_Skip_अवलोकनम्_Est(pParse, p_अधस्तनम्, p_ऊर्ध्वस्थम्, pLoop, &b_समाप्तम्);
+      यदि( b_समाप्तम् ) प्रत्यागम rc;
     }
   }
-#else
-  UNUSED_PARAMETER(pParse);
-  UNUSED_PARAMETER(pBuilder);
-  assert( pLower || pUpper );
-#endif
-  assert( pUpper==0 || (pUpper->wtFlags & TERM_VNULL)==0 || pParse->nErr>0 );
-  nNew = whereRangeAdjust(pLower, nOut);
-  nNew = whereRangeAdjust(pUpper, nNew);
+#अन्यथा
+  अप्रयुक्तम्_PARAMETER(pParse);
+  अप्रयुक्तम्_PARAMETER(pBuilder);
+  प्रतिज्ञा( p_अधस्तनम् || p_ऊर्ध्वस्थम् );
+#यदि_अन्तः
+  प्रतिज्ञा( p_ऊर्ध्वस्थम्==0 || (p_ऊर्ध्वस्थम्->wtFlags & पदांशः_VNULL)==0 || pParse->nErr>0 );
+  nNew = whereRangeAdjust(p_अधस्तनम्, n_बहिर्गमनम्);
+  nNew = whereRangeAdjust(p_ऊर्ध्वस्थम्, nNew);
 
   /* TUNING: If there is both an upper and lower limit and neither limit
   ** has an application-defined likelihood(), assume the range is
@@ -2235,24 +2235,24 @@ static int whereRangeScanEst(
   ** range query (e.g. col > ?) is assumed to match 1/4 of the rows in the
   ** index. While a closed range (e.g. col BETWEEN ? AND ?) is estimated to
   ** match 1/64 of the index. */
-  if( pLower && pLower->truthProb>0 && pUpper && pUpper->truthProb>0 ){
+  यदि( p_अधस्तनम् && p_अधस्तनम्->truthProb>0 && p_ऊर्ध्वस्थम् && p_ऊर्ध्वस्थम्->truthProb>0 ){
     nNew -= 20;
   }
 
-  nOut -= (pLower!=0) + (pUpper!=0);
-  if( nNew<10 ) nNew = 10;
-  if( nNew<nOut ) nOut = nNew;
-#if defined(WHERETRACE_ENABLED)
-  if( pLoop->nOut>nOut ){
+  n_बहिर्गमनम् -= (p_अधस्तनम्!=0) + (p_ऊर्ध्वस्थम्!=0);
+  यदि( nNew<10 ) nNew = 10;
+  यदि( nNew<n_बहिर्गमनम् ) n_बहिर्गमनम् = nNew;
+#यदि defined(WHERETRACE_ENABLED)
+  यदि( pLoop->n_बहिर्गमनम्>n_बहिर्गमनम् ){
     WHERETRACE(0x20,("Range scan lowers nOut from %d to %d\n",
-                    pLoop->nOut, nOut));
+                    pLoop->n_बहिर्गमनम्, n_बहिर्गमनम्));
   }
-#endif
-  pLoop->nOut = (LogEst)nOut;
-  return rc;
+#यदि_अन्तः
+  pLoop->n_बहिर्गमनम् = (LogEst)n_बहिर्गमनम्;
+  प्रत्यागम rc;
 }
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
 /*
 ** Estimate the number of rows that will be returned based on
 ** an equality constraint x=VALUE and where that VALUE occurs in
@@ -2270,54 +2270,54 @@ static int whereRangeScanEst(
 ** for a UTF conversion required for comparison.  The error is stored
 ** in the pParse structure.
 */
-static int whereEqualScanEst(
+स्थिर पूर्णाङ्क where_Equal_अवलोकनम्_Est(
   Parse *pParse,       /* Parsing & code generating context */
   WhereLoopBuilder *pBuilder,
-  Expr *pExpr,         /* Expression for VALUE in the x=VALUE constraint */
+  व्यञ्जकम् *p_व्यञ्जकम्,         /* Expression for VALUE in the x=VALUE constraint */
   tRowcnt *pnRow       /* Write the revised row estimate here */
 ){
-  Index *p = pBuilder->pNew->u.btree.pIndex;
-  int nEq = pBuilder->pNew->u.btree.nEq;
-  UnpackedRecord *pRec = pBuilder->pRec;
-  int rc;                   /* Subfunction return code */
+  सूचकांक *p = pBuilder->pNew->u.btree.p_सूचकांक;
+  पूर्णाङ्क nEq = pBuilder->pNew->u.btree.nEq;
+  Unpacked_लेखः *pRec = pBuilder->pRec;
+  पूर्णाङ्क rc;                   /* Subfunction return code */
   tRowcnt a[2];             /* Statistics */
-  int bOk;
+  पूर्णाङ्क bOk;
 
-  assert( nEq>=1 );
-  assert( nEq<=p->nColumn );
-  assert( p->aSample!=0 );
-  assert( p->nSample>0 );
-  assert( pBuilder->nRecValid<nEq );
+  प्रतिज्ञा( nEq>=1 );
+  प्रतिज्ञा( nEq<=p->nColumn );
+  प्रतिज्ञा( p->aSample!=0 );
+  प्रतिज्ञा( p->nSample>0 );
+  प्रतिज्ञा( pBuilder->nRecValid<nEq );
 
   /* If values are not available for all fields of the index to the left
   ** of this one, no estimate can be made. Return SQLITE_NOTFOUND. */
-  if( pBuilder->nRecValid<(nEq-1) ){
-    return SQLITE_NOTFOUND;
+  यदि( pBuilder->nRecValid<(nEq-1) ){
+    प्रत्यागम SQLITE_NOTFOUND;
   }
 
   /* This is an optimization only. The call to sqlite3Stat4ProbeSetValue()
   ** below would return the same value.  */
-  if( nEq>=p->nColumn ){
+  यदि( nEq>=p->nColumn ){
     *pnRow = 1;
-    return SQLITE_OK;
+    प्रत्यागम SQLITE_OK;
   }
 
-  rc = sqlite3Stat4ProbeSetValue(pParse, p, &pRec, pExpr, 1, nEq-1, &bOk);
+  rc = sqlite3_Stat4_Probe_समुच्चयः_मानम्(pParse, p, &pRec, p_व्यञ्जकम्, 1, nEq-1, &bOk);
   pBuilder->pRec = pRec;
-  if( rc!=SQLITE_OK ) return rc;
-  if( bOk==0 ) return SQLITE_NOTFOUND;
+  यदि( rc!=SQLITE_OK ) प्रत्यागम rc;
+  यदि( bOk==0 ) प्रत्यागम SQLITE_NOTFOUND;
   pBuilder->nRecValid = nEq;
 
-  whereKeyStats(pParse, p, pRec, 0, a);
+  where_कुञ्चिका_Stats(pParse, p, pRec, 0, a);
   WHERETRACE(0x20,("equality scan regions %s(%d): %d\n",
-                   p->zName, nEq-1, (int)a[1]));
+                   p->zName, nEq-1, (पूर्णाङ्क)a[1]));
   *pnRow = a[1];
  
-  return rc;
+  प्रत्यागम rc;
 }
-#endif /* SQLITE_ENABLE_STAT4 */
+#यदि_अन्तः /* SQLITE_ENABLE_STAT4 */
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
 /*
 ** Estimate the number of rows that will be returned based on
 ** an IN constraint where the right-hand side of the IN operator
@@ -2334,102 +2334,102 @@ static int whereEqualScanEst(
 ** for a UTF conversion required for comparison.  The error is stored
 ** in the pParse structure.
 */
-static int whereInScanEst(
+स्थिर पूर्णाङ्क where_अन्तर्_अवलोकनम्_Est(
   Parse *pParse,       /* Parsing & code generating context */
   WhereLoopBuilder *pBuilder,
-  ExprList *pList,     /* The value list on the RHS of "x IN (v1,v2,v3,...)" */
+  व्यञ्जकम्_List *pList,     /* The value list on the RHS of "x IN (v1,v2,v3,...)" */
   tRowcnt *pnRow       /* Write the revised row estimate here */
 ){
-  Index *p = pBuilder->pNew->u.btree.pIndex;
-  i64 nRow0 = sqlite3LogEstToInt(p->aiRowLogEst[0]);
-  int nRecValid = pBuilder->nRecValid;
-  int rc = SQLITE_OK;     /* Subfunction return code */
+  सूचकांक *p = pBuilder->pNew->u.btree.p_सूचकांक;
+  i64 nRow0 = sqlite3_Log_Est_गन्तव्यम्_Int(p->aiRowLogEst[0]);
+  पूर्णाङ्क nRecValid = pBuilder->nRecValid;
+  पूर्णाङ्क rc = SQLITE_OK;     /* Subfunction return code */
   tRowcnt nEst;           /* Number of rows for a single term */
   tRowcnt nRowEst = 0;    /* New estimate of the number of rows */
-  int i;                  /* Loop counter */
+  पूर्णाङ्क i;                  /* Loop counter */
 
-  assert( p->aSample!=0 );
-  for(i=0; rc==SQLITE_OK && i<pList->nExpr; i++){
+  प्रतिज्ञा( p->aSample!=0 );
+  प्रति(i=0; rc==SQLITE_OK && i<pList->n_व्यञ्जकम्; i++){
     nEst = nRow0;
-    rc = whereEqualScanEst(pParse, pBuilder, pList->a[i].pExpr, &nEst);
+    rc = where_Equal_अवलोकनम्_Est(pParse, pBuilder, pList->a[i].p_व्यञ्जकम्, &nEst);
     nRowEst += nEst;
     pBuilder->nRecValid = nRecValid;
   }
 
-  if( rc==SQLITE_OK ){
-    if( nRowEst > (tRowcnt)nRow0 ) nRowEst = nRow0;
+  यदि( rc==SQLITE_OK ){
+    यदि( nRowEst > (tRowcnt)nRow0 ) nRowEst = nRow0;
     *pnRow = nRowEst;
     WHERETRACE(0x20,("IN row estimate: est=%d\n", nRowEst));
   }
-  assert( pBuilder->nRecValid==nRecValid );
-  return rc;
+  प्रतिज्ञा( pBuilder->nRecValid==nRecValid );
+  प्रत्यागम rc;
 }
-#endif /* SQLITE_ENABLE_STAT4 */
+#यदि_अन्तः /* SQLITE_ENABLE_STAT4 */
 
 
-#if defined(WHERETRACE_ENABLED) || defined(SQLITE_DEBUG)
+#यदि defined(WHERETRACE_ENABLED) || defined(SQLITE_DEBUG)
 /*
 ** Print the content of a WhereTerm object
 */
-void sqlite3WhereTermPrint(WhereTerm *pTerm, int iTerm){
-  if( pTerm==0 ){
-    sqlite3DebugPrintf("TERM-%-3d NULL\n", iTerm);
-  }else{
-    char zType[8];
-    char zLeft[50];
-    memcpy(zType, "....", 5);
-    if( pTerm->wtFlags & TERM_VIRTUAL ) zType[0] = 'V';
-    if( pTerm->eOperator & WO_EQUIV  ) zType[1] = 'E';
-    if( ExprHasProperty(pTerm->pExpr, EP_OuterON) ) zType[2] = 'L';
-    if( pTerm->wtFlags & TERM_CODED  ) zType[3] = 'C';
-    if( pTerm->eOperator & WO_SINGLE ){
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      sqlite3_snprintf(sizeof(zLeft),zLeft,"left={%d:%d}",
-                       pTerm->leftCursor, pTerm->u.x.leftColumn);
-    }else if( (pTerm->eOperator & WO_OR)!=0 && pTerm->u.pOrInfo!=0 ){
-      sqlite3_snprintf(sizeof(zLeft),zLeft,"indexable=0x%llx",
-                       pTerm->u.pOrInfo->indexable);
-    }else{
-      sqlite3_snprintf(sizeof(zLeft),zLeft,"left=%d", pTerm->leftCursor);
+शून्य sqlite3_Where_पदांशः_Print(Where_पदांशः *p_पदांशः, पूर्णाङ्क i_पदांशः){
+  यदि( p_पदांशः==0 ){
+    sqlite3DebugPrintf("TERM-%-3d NULL\n", i_पदांशः);
+  }अन्यथा{
+    वर्ण zType[8];
+    वर्ण z_वामः[50];
+    स्मृतिं_प्रतिलिख(zType, "....", 5);
+    यदि( p_पदांशः->wtFlags & पदांशः_VIRTUAL ) zType[0] = 'V';
+    यदि( p_पदांशः->eOperator & WO_EQUIV  ) zType[1] = 'E';
+    यदि( व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON) ) zType[2] = 'L';
+    यदि( p_पदांशः->wtFlags & पदांशः_CODED  ) zType[3] = 'C';
+    यदि( p_पदांशः->eOperator & WO_SINGLE ){
+      प्रतिज्ञा( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 );
+      sqlite3_snprintf(परिमाण(z_वामः),z_वामः,"left={%d:%d}",
+                       p_पदांशः->वामः_Cursor, p_पदांशः->u.x.वामः_Column);
+    }अन्यथा यदि( (p_पदांशः->eOperator & WO_OR)!=0 && p_पदांशः->u.pOrInfo!=0 ){
+      sqlite3_snprintf(परिमाण(z_वामः),z_वामः,"indexable=0x%llx",
+                       p_पदांशः->u.pOrInfo->indexable);
+    }अन्यथा{
+      sqlite3_snprintf(परिमाण(z_वामः),z_वामः,"left=%d", p_पदांशः->वामः_Cursor);
     }
-    iTerm = pTerm->iTerm = MAX(iTerm,pTerm->iTerm);
+    i_पदांशः = p_पदांशः->i_पदांशः = MAX(i_पदांशः,p_पदांशः->i_पदांशः);
     sqlite3DebugPrintf(
        "TERM-%-3d %p %s %-12s op=%03x wtFlags=%04x",
-       iTerm, pTerm, zType, zLeft, pTerm->eOperator, pTerm->wtFlags);
+       i_पदांशः, p_पदांशः, zType, z_वामः, p_पदांशः->eOperator, p_पदांशः->wtFlags);
     /* The 0x10000 .wheretrace flag causes extra information to be
     ** shown about each Term */
-    if( sqlite3WhereTrace & 0x10000 ){
+    यदि( sqlite3WhereTrace & 0x10000 ){
       sqlite3DebugPrintf(" prob=%-3d prereq=%llx,%llx",
-        pTerm->truthProb, (u64)pTerm->prereqAll, (u64)pTerm->prereqRight);
+        p_पदांशः->truthProb, (u64)p_पदांशः->prereqAll, (u64)p_पदांशः->prereq_दक्षिणः);
     }
-    if( (pTerm->eOperator & (WO_OR|WO_AND))==0 && pTerm->u.x.iField ){
-      sqlite3DebugPrintf(" iField=%d", pTerm->u.x.iField);
+    यदि( (p_पदांशः->eOperator & (WO_OR|WO_AND))==0 && p_पदांशः->u.x.i_क्षेत्रम् ){
+      sqlite3DebugPrintf(" iField=%d", p_पदांशः->u.x.i_क्षेत्रम्);
     }
-    if( pTerm->iParent>=0 ){
-      sqlite3DebugPrintf(" iParent=%d", pTerm->iParent);
+    यदि( p_पदांशः->iParent>=0 ){
+      sqlite3DebugPrintf(" iParent=%d", p_पदांशः->iParent);
     }
     sqlite3DebugPrintf("\n");
-    sqlite3TreeViewExpr(0, pTerm->pExpr, 0);
+    sqlite3_वृक्षः_View_व्यञ्जकम्(0, p_पदांशः->p_व्यञ्जकम्, 0);
   }
 }
-void sqlite3ShowWhereTerm(WhereTerm *pTerm){
-  sqlite3WhereTermPrint(pTerm, 0);
+शून्य sqlite3_Show_Where_पदांशः(Where_पदांशः *p_पदांशः){
+  sqlite3_Where_पदांशः_Print(p_पदांशः, 0);
 }
-#endif
+#यदि_अन्तः
 
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
 /*
 ** Show the complete content of a WhereClause
 */
-void sqlite3WhereClausePrint(WhereClause *pWC){
-  int i;
-  for(i=0; i<pWC->nTerm; i++){
-    sqlite3WhereTermPrint(&pWC->a[i], i);
+शून्य sqlite3WhereClausePrint(WhereClause *pWC){
+  पूर्णाङ्क i;
+  प्रति(i=0; i<pWC->n_पदांशः; i++){
+    sqlite3_Where_पदांशः_Print(&pWC->a[i], i);
   }
 }
-#endif
+#यदि_अन्तः
 
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
 /*
 ** Print a WhereLoop object for debugging purposes
 **
@@ -2445,12 +2445,12 @@ void sqlite3WhereClausePrint(WhereClause *pWC){
 **     | / \ / \         /     \              | /      \ / \      /     \
 **     1.002.001         t2.t2xy              2 f 010241 N 2 cost 0,56,31
 */
-void sqlite3WhereLoopPrint(const WhereLoop *p, const WhereClause *pWC){
+शून्य sqlite3WhereLoopPrint(ध्रुव WhereLoop *p, ध्रुव WhereClause *pWC){
   WhereInfo *pWInfo;
-  if( pWC ){
-    int nb;
+  यदि( pWC ){
+    पूर्णाङ्क nb;
     SrcItem *pItem;
-    Table *pTab;
+    सारणी *pTab;
     Bitmask mAll;
 
     pWInfo = pWC->pWInfo;
@@ -2459,90 +2459,90 @@ void sqlite3WhereLoopPrint(const WhereLoop *p, const WhereClause *pWC){
     pTab = pItem->pSTab;
     mAll = (((Bitmask)1)<<(nb*4)) - 1;
     sqlite3DebugPrintf("%c%2d.%0*llx.%0*llx", p->cId,
-                       p->iTab, nb, p->maskSelf, nb, p->prereq & mAll);
+                       p->iTab, nb, p->आवरणम्_Self, nb, p->prereq & mAll);
     sqlite3DebugPrintf(" %12s",
                        pItem->zAlias ? pItem->zAlias : pTab->zName);
-  }else{
+  }अन्यथा{
     pWInfo = 0;
     sqlite3DebugPrintf("%c%2d.%03llx.%03llx %c%d",
-         p->cId, p->iTab, p->maskSelf, p->prereq & 0xfff, p->cId, p->iTab);
+         p->cId, p->iTab, p->आवरणम्_Self, p->prereq & 0xfff, p->cId, p->iTab);
   }
-  if( (p->wsFlags & WHERE_VIRTUALTABLE)==0 ){
-    const char *zName;
-    if( p->u.btree.pIndex && (zName = p->u.btree.pIndex->zName)!=0 ){
-      if( strncmp(zName, "sqlite_autoindex_", 17)==0 ){
-        int i = sqlite3Strlen30(zName) - 1;
-        while( zName[i]!='_' ) i--;
+  यदि( (p->wsFlags & WHERE_VIRTUALTABLE)==0 ){
+    ध्रुव वर्ण *zName;
+    यदि( p->u.btree.p_सूचकांक && (zName = p->u.btree.p_सूचकांक->zName)!=0 ){
+      यदि( वाक्ये_तुलय(zName, "sqlite_autoindex_", 17)==0 ){
+        पूर्णाङ्क i = sqlite3Strlen30(zName) - 1;
+        यावत्( zName[i]!='_' ) i--;
         zName += i;
       }
       sqlite3DebugPrintf(".%-16s %2d", zName, p->u.btree.nEq);
-    }else{
+    }अन्यथा{
       sqlite3DebugPrintf("%20s","");
     }
-  }else{
-    char *z;
-    if( p->u.vtab.idxStr ){
+  }अन्यथा{
+    वर्ण *z;
+    यदि( p->u.vtab.idxStr ){
       z = sqlite3_mprintf("(%d,\"%s\",%#x)",
-                p->u.vtab.idxNum, p->u.vtab.idxStr, p->u.vtab.omitMask);
-    }else{
-      z = sqlite3_mprintf("(%d,%x)", p->u.vtab.idxNum, p->u.vtab.omitMask);
+                p->u.vtab.idx_अङ्कः, p->u.vtab.idxStr, p->u.vtab.omit_आवरणम्);
+    }अन्यथा{
+      z = sqlite3_mprintf("(%d,%x)", p->u.vtab.idx_अङ्कः, p->u.vtab.omit_आवरणम्);
     }
     sqlite3DebugPrintf(" %-19s", z);
     sqlite3_free(z);
   }
-  if( p->wsFlags & WHERE_SKIPSCAN ){
+  यदि( p->wsFlags & WHERE_SKIPSCAN ){
     sqlite3DebugPrintf(" f %06x %d-%d", p->wsFlags, p->nLTerm,p->nSkip);
-  }else{
+  }अन्यथा{
     sqlite3DebugPrintf(" f %06x N %d", p->wsFlags, p->nLTerm);
   }
-  if( pWInfo && pWInfo->bStarUsed && p->rStarDelta!=0 ){
+  यदि( pWInfo && pWInfo->b_तारकम्_प्रयुक्तम् && p->r_तारकम्_Delta!=0 ){
     sqlite3DebugPrintf(" cost %d,%d,%d delta=%d\n",
-                       p->rSetup, p->rRun, p->nOut, p->rStarDelta);
-  }else{
-    sqlite3DebugPrintf(" cost %d,%d,%d\n", p->rSetup, p->rRun, p->nOut);
+                       p->r_सज्जता, p->r_सततम्, p->n_बहिर्गमनम्, p->r_तारकम्_Delta);
+  }अन्यथा{
+    sqlite3DebugPrintf(" cost %d,%d,%d\n", p->r_सज्जता, p->r_सततम्, p->n_बहिर्गमनम्);
   }
-  if( p->nLTerm && (sqlite3WhereTrace & 0x4000)!=0 ){
-    int i;
-    for(i=0; i<p->nLTerm; i++){
-      sqlite3WhereTermPrint(p->aLTerm[i], i);
+  यदि( p->nLTerm && (sqlite3WhereTrace & 0x4000)!=0 ){
+    पूर्णाङ्क i;
+    प्रति(i=0; i<p->nLTerm; i++){
+      sqlite3_Where_पदांशः_Print(p->aLTerm[i], i);
     }
   }
 }
-void sqlite3ShowWhereLoop(const WhereLoop *p){
-  if( p ) sqlite3WhereLoopPrint(p, 0);
+शून्य sqlite3ShowWhereLoop(ध्रुव WhereLoop *p){
+  यदि( p ) sqlite3WhereLoopPrint(p, 0);
 }
-void sqlite3ShowWhereLoopList(const WhereLoop *p){
-  while( p ){
+शून्य sqlite3ShowWhereLoopList(ध्रुव WhereLoop *p){
+  यावत्( p ){
     sqlite3ShowWhereLoop(p);
-    p = p->pNextLoop;
+    p = p->p_अग्र_Loop;
   }
 }
-#endif
+#यदि_अन्तः
 
 /*
 ** Convert bulk memory into a valid WhereLoop that can be passed
 ** to whereLoopClear harmlessly.
 */
-static void whereLoopInit(WhereLoop *p){
+स्थिर शून्य whereLoopInit(WhereLoop *p){
   p->aLTerm = p->aLTermSpace;
   p->nLTerm = 0;
-  p->nLSlot = ArraySize(p->aLTermSpace);
+  p->nLSlot = Array_आकार(p->aLTermSpace);
   p->wsFlags = 0;
 }
 
 /*
 ** Clear the WhereLoop.u union.  Leave WhereLoop.pLTerm intact.
 */
-static void whereLoopClearUnion(sqlite3 *db, WhereLoop *p){
-  if( p->wsFlags & (WHERE_VIRTUALTABLE|WHERE_AUTO_INDEX) ){
-    if( (p->wsFlags & WHERE_VIRTUALTABLE)!=0 && p->u.vtab.needFree ){
+स्थिर शून्य whereLoopClearUnion(sqlite3 *db, WhereLoop *p){
+  यदि( p->wsFlags & (WHERE_VIRTUALTABLE|WHERE_AUTO_सूचकांक) ){
+    यदि( (p->wsFlags & WHERE_VIRTUALTABLE)!=0 && p->u.vtab.needFree ){
       sqlite3_free(p->u.vtab.idxStr);
       p->u.vtab.needFree = 0;
       p->u.vtab.idxStr = 0;
-    }else if( (p->wsFlags & WHERE_AUTO_INDEX)!=0 && p->u.btree.pIndex!=0 ){
-      sqlite3DbFree(db, p->u.btree.pIndex->zColAff);
-      sqlite3DbFreeNN(db, p->u.btree.pIndex);
-      p->u.btree.pIndex = 0;
+    }अन्यथा यदि( (p->wsFlags & WHERE_AUTO_सूचकांक)!=0 && p->u.btree.p_सूचकांक!=0 ){
+      sqlite3DbFree(db, p->u.btree.p_सूचकांक->zColAff);
+      sqlite3DbFreeNN(db, p->u.btree.p_सूचकांक);
+      p->u.btree.p_सूचकांक = 0;
     }
   }
 }
@@ -2551,11 +2551,11 @@ static void whereLoopClearUnion(sqlite3 *db, WhereLoop *p){
 ** Deallocate internal memory used by a WhereLoop object.  Leave the
 ** object in an initialized state, as if it had been newly allocated.
 */
-static void whereLoopClear(sqlite3 *db, WhereLoop *p){
-  if( p->aLTerm!=p->aLTermSpace ){
+स्थिर शून्य whereLoopClear(sqlite3 *db, WhereLoop *p){
+  यदि( p->aLTerm!=p->aLTermSpace ){
     sqlite3DbFreeNN(db, p->aLTerm);
     p->aLTerm = p->aLTermSpace;
-    p->nLSlot = ArraySize(p->aLTermSpace);
+    p->nLSlot = Array_आकार(p->aLTermSpace);
   }
   whereLoopClearUnion(db, p);
   p->nLTerm = 0;
@@ -2565,45 +2565,45 @@ static void whereLoopClear(sqlite3 *db, WhereLoop *p){
 /*
 ** Increase the memory allocation for pLoop->aLTerm[] to be at least n.
 */
-static int whereLoopResize(sqlite3 *db, WhereLoop *p, int n){
-  WhereTerm **paNew;
-  if( p->nLSlot>=n ) return SQLITE_OK;
+स्थिर पूर्णाङ्क whereLoopResize(sqlite3 *db, WhereLoop *p, पूर्णाङ्क n){
+  Where_पदांशः **paNew;
+  यदि( p->nLSlot>=n ) प्रत्यागम SQLITE_OK;
   n = (n+7)&~7;
-  paNew = sqlite3DbMallocRawNN(db, sizeof(p->aLTerm[0])*n);
-  if( paNew==0 ) return SQLITE_NOMEM_BKPT;
-  memcpy(paNew, p->aLTerm, sizeof(p->aLTerm[0])*p->nLSlot);
-  if( p->aLTerm!=p->aLTermSpace ) sqlite3DbFreeNN(db, p->aLTerm);
+  paNew = sqlite3DbMallocRawNN(db, परिमाण(p->aLTerm[0])*n);
+  यदि( paNew==0 ) प्रत्यागम SQLITE_NOMEM_BKPT;
+  स्मृतिं_प्रतिलिख(paNew, p->aLTerm, परिमाण(p->aLTerm[0])*p->nLSlot);
+  यदि( p->aLTerm!=p->aLTermSpace ) sqlite3DbFreeNN(db, p->aLTerm);
   p->aLTerm = paNew;
   p->nLSlot = n;
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Transfer content from the second pLoop into the first.
 */
-static int whereLoopXfer(sqlite3 *db, WhereLoop *pTo, WhereLoop *pFrom){
-  whereLoopClearUnion(db, pTo);
-  if( pFrom->nLTerm > pTo->nLSlot
-   && whereLoopResize(db, pTo, pFrom->nLTerm)
+स्थिर पूर्णाङ्क whereLoopXfer(sqlite3 *db, WhereLoop *p_गन्तव्यम्, WhereLoop *pFrom){
+  whereLoopClearUnion(db, p_गन्तव्यम्);
+  यदि( pFrom->nLTerm > p_गन्तव्यम्->nLSlot
+   && whereLoopResize(db, p_गन्तव्यम्, pFrom->nLTerm)
   ){
-    memset(pTo, 0, WHERE_LOOP_XFER_SZ);
-    return SQLITE_NOMEM_BKPT;
+    स्मृतिं_पूरय(p_गन्तव्यम्, 0, WHERE_LOOP_XFER_SZ);
+    प्रत्यागम SQLITE_NOMEM_BKPT;
   }
-  memcpy(pTo, pFrom, WHERE_LOOP_XFER_SZ);
-  memcpy(pTo->aLTerm, pFrom->aLTerm, pTo->nLTerm*sizeof(pTo->aLTerm[0]));
-  if( pFrom->wsFlags & WHERE_VIRTUALTABLE ){
+  स्मृतिं_प्रतिलिख(p_गन्तव्यम्, pFrom, WHERE_LOOP_XFER_SZ);
+  स्मृतिं_प्रतिलिख(p_गन्तव्यम्->aLTerm, pFrom->aLTerm, p_गन्तव्यम्->nLTerm*परिमाण(p_गन्तव्यम्->aLTerm[0]));
+  यदि( pFrom->wsFlags & WHERE_VIRTUALTABLE ){
     pFrom->u.vtab.needFree = 0;
-  }else if( (pFrom->wsFlags & WHERE_AUTO_INDEX)!=0 ){
-    pFrom->u.btree.pIndex = 0;
+  }अन्यथा यदि( (pFrom->wsFlags & WHERE_AUTO_सूचकांक)!=0 ){
+    pFrom->u.btree.p_सूचकांक = 0;
   }
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Delete a WhereLoop object
 */
-static void whereLoopDelete(sqlite3 *db, WhereLoop *p){
-  assert( db!=0 );
+स्थिर शून्य whereLoopDelete(sqlite3 *db, WhereLoop *p){
+  प्रतिज्ञा( db!=0 );
   whereLoopClear(db, p);
   sqlite3DbNNFreeNN(db, p);
 }
@@ -2611,19 +2611,19 @@ static void whereLoopDelete(sqlite3 *db, WhereLoop *p){
 /*
 ** Free a WhereInfo structure
 */
-static void whereInfoFree(sqlite3 *db, WhereInfo *pWInfo){
-  assert( pWInfo!=0 );
-  assert( db!=0 );
+स्थिर शून्य whereInfoFree(sqlite3 *db, WhereInfo *pWInfo){
+  प्रतिज्ञा( pWInfo!=0 );
+  प्रतिज्ञा( db!=0 );
   sqlite3WhereClauseClear(&pWInfo->sWC);
-  while( pWInfo->pLoops ){
+  यावत्( pWInfo->pLoops ){
     WhereLoop *p = pWInfo->pLoops;
-    pWInfo->pLoops = p->pNextLoop;
+    pWInfo->pLoops = p->p_अग्र_Loop;
     whereLoopDelete(db, p);
   }
-  while( pWInfo->pMemToFree ){
-    WhereMemBlock *pNext = pWInfo->pMemToFree->pNext;
-    sqlite3DbNNFreeNN(db, pWInfo->pMemToFree);
-    pWInfo->pMemToFree = pNext;
+  यावत्( pWInfo->p_Mem_गन्तव्यम्_Free ){
+    Where_Mem_खण्डम् *p_अग्र = pWInfo->p_Mem_गन्तव्यम्_Free->p_अग्र;
+    sqlite3DbNNFreeNN(db, pWInfo->p_Mem_गन्तव्यम्_Free);
+    pWInfo->p_Mem_गन्तव्यम्_Free = p_अग्र;
   }
   sqlite3DbNNFreeNN(db, pWInfo);
 }
@@ -2653,36 +2653,36 @@ static void whereInfoFree(sqlite3 *db, WhereInfo *pWInfo){
 **   (2d)  X skips at least as many columns as Y
 **   (2e)  If X is a covering index, than Y is too
 */
-static int whereLoopCheaperProperSubset(
-  const WhereLoop *pX,       /* First WhereLoop to compare */
-  const WhereLoop *pY        /* Compare against this WhereLoop */
+स्थिर पूर्णाङ्क whereLoopCheaperProperSubset(
+  ध्रुव WhereLoop *pX,       /* First WhereLoop to compare */
+  ध्रुव WhereLoop *pY        /* Compare against this WhereLoop */
 ){
-  int i, j;
-  if( pX->rRun>pY->rRun && pX->nOut>pY->nOut ) return 0; /* (1d) and (2a) */
-  assert( (pX->wsFlags & WHERE_VIRTUALTABLE)==0 );
-  assert( (pY->wsFlags & WHERE_VIRTUALTABLE)==0 );
-  if( pX->u.btree.nEq < pY->u.btree.nEq                  /* (1b) */
-   && pX->u.btree.pIndex==pY->u.btree.pIndex             /* (1a) */
+  पूर्णाङ्क i, j;
+  यदि( pX->r_सततम्>pY->r_सततम् && pX->n_बहिर्गमनम्>pY->n_बहिर्गमनम् ) प्रत्यागम 0; /* (1d) and (2a) */
+  प्रतिज्ञा( (pX->wsFlags & WHERE_VIRTUALTABLE)==0 );
+  प्रतिज्ञा( (pY->wsFlags & WHERE_VIRTUALTABLE)==0 );
+  यदि( pX->u.btree.nEq < pY->u.btree.nEq                  /* (1b) */
+   && pX->u.btree.p_सूचकांक==pY->u.btree.p_सूचकांक             /* (1a) */
    && pX->nSkip==0 && pY->nSkip==0                       /* (1c) */
   ){
-    return 1;  /* Case 1 is true */
+    प्रत्यागम 1;  /* Case 1 is true */
   }
-  if( pX->nLTerm-pX->nSkip >= pY->nLTerm-pY->nSkip ){
-    return 0;                                            /* (2b) */
+  यदि( pX->nLTerm-pX->nSkip >= pY->nLTerm-pY->nSkip ){
+    प्रत्यागम 0;                                            /* (2b) */
   }
-  if( pY->nSkip > pX->nSkip ) return 0;                  /* (2d) */
-  for(i=pX->nLTerm-1; i>=0; i--){
-    if( pX->aLTerm[i]==0 ) continue;
-    for(j=pY->nLTerm-1; j>=0; j--){
-      if( pY->aLTerm[j]==pX->aLTerm[i] ) break;
+  यदि( pY->nSkip > pX->nSkip ) प्रत्यागम 0;                  /* (2d) */
+  प्रति(i=pX->nLTerm-1; i>=0; i--){
+    यदि( pX->aLTerm[i]==0 ) अनुवर्त;
+    प्रति(j=pY->nLTerm-1; j>=0; j--){
+      यदि( pY->aLTerm[j]==pX->aLTerm[i] ) भङ्ग;
     }
-    if( j<0 ) return 0;                                  /* (2c) */
+    यदि( j<0 ) प्रत्यागम 0;                                  /* (2c) */
   }
-  if( (pX->wsFlags&WHERE_IDX_ONLY)!=0
+  यदि( (pX->wsFlags&WHERE_IDX_ONLY)!=0
    && (pY->wsFlags&WHERE_IDX_ONLY)==0 ){
-    return 0;                                            /* (2e) */
+    प्रत्यागम 0;                                            /* (2e) */
   }
-  return 1;  /* Case 2 is true */
+  प्रत्यागम 1;  /* Case 2 is true */
 }
 
 /*
@@ -2699,29 +2699,29 @@ static int whereLoopCheaperProperSubset(
 ** WHERE clause terms than Y and that every WHERE clause term used by X is
 ** also used by Y.
 */
-static void whereLoopAdjustCost(const WhereLoop *p, WhereLoop *pTemplate){
-  if( (pTemplate->wsFlags & WHERE_INDEXED)==0 ) return;
-  for(; p; p=p->pNextLoop){
-    if( p->iTab!=pTemplate->iTab ) continue;
-    if( (p->wsFlags & WHERE_INDEXED)==0 ) continue;
-    if( whereLoopCheaperProperSubset(p, pTemplate) ){
+स्थिर शून्य whereLoopAdjustCost(ध्रुव WhereLoop *p, WhereLoop *pTemplate){
+  यदि( (pTemplate->wsFlags & WHERE_अनुक्रमितम्)==0 ) प्रत्यागम;
+  प्रति(; p; p=p->p_अग्र_Loop){
+    यदि( p->iTab!=pTemplate->iTab ) अनुवर्त;
+    यदि( (p->wsFlags & WHERE_अनुक्रमितम्)==0 ) अनुवर्त;
+    यदि( whereLoopCheaperProperSubset(p, pTemplate) ){
       /* Adjust pTemplate cost downward so that it is cheaper than its
       ** subset p. */
       WHERETRACE(0x80,("subset cost adjustment %d,%d to %d,%d\n",
-                       pTemplate->rRun, pTemplate->nOut,
-                       MIN(p->rRun, pTemplate->rRun),
-                       MIN(p->nOut - 1, pTemplate->nOut)));
-      pTemplate->rRun = MIN(p->rRun, pTemplate->rRun);
-      pTemplate->nOut = MIN(p->nOut - 1, pTemplate->nOut);
-    }else if( whereLoopCheaperProperSubset(pTemplate, p) ){
+                       pTemplate->r_सततम्, pTemplate->n_बहिर्गमनम्,
+                       MIN(p->r_सततम्, pTemplate->r_सततम्),
+                       MIN(p->n_बहिर्गमनम् - 1, pTemplate->n_बहिर्गमनम्)));
+      pTemplate->r_सततम् = MIN(p->r_सततम्, pTemplate->r_सततम्);
+      pTemplate->n_बहिर्गमनम् = MIN(p->n_बहिर्गमनम् - 1, pTemplate->n_बहिर्गमनम्);
+    }अन्यथा यदि( whereLoopCheaperProperSubset(pTemplate, p) ){
       /* Adjust pTemplate cost upward so that it is costlier than p since
       ** pTemplate is a proper subset of p */
       WHERETRACE(0x80,("subset cost adjustment %d,%d to %d,%d\n",
-                       pTemplate->rRun, pTemplate->nOut,
-                       MAX(p->rRun, pTemplate->rRun),
-                       MAX(p->nOut + 1, pTemplate->nOut)));
-      pTemplate->rRun = MAX(p->rRun, pTemplate->rRun);
-      pTemplate->nOut = MAX(p->nOut + 1, pTemplate->nOut);
+                       pTemplate->r_सततम्, pTemplate->n_बहिर्गमनम्,
+                       MAX(p->r_सततम्, pTemplate->r_सततम्),
+                       MAX(p->n_बहिर्गमनम् + 1, pTemplate->n_बहिर्गमनम्)));
+      pTemplate->r_सततम् = MAX(p->r_सततम्, pTemplate->r_सततम्);
+      pTemplate->n_बहिर्गमनम् = MAX(p->n_बहिर्गमनम् + 1, pTemplate->n_बहिर्गमनम्);
     }
   }
 }
@@ -2740,39 +2740,39 @@ static void whereLoopAdjustCost(const WhereLoop *p, WhereLoop *pTemplate){
 ** to be added to the list as a new entry, then return a pointer to the
 ** tail of the list.
 */
-static WhereLoop **whereLoopFindLesser(
-  WhereLoop **ppPrev,
-  const WhereLoop *pTemplate
+स्थिर WhereLoop **whereLoopFindLesser(
+  WhereLoop **pp_पूर्व,
+  ध्रुव WhereLoop *pTemplate
 ){
   WhereLoop *p;
-  for(p=(*ppPrev); p; ppPrev=&p->pNextLoop, p=*ppPrev){
-    if( p->iTab!=pTemplate->iTab || p->iSortIdx!=pTemplate->iSortIdx ){
+  प्रति(p=(*pp_पूर्व); p; pp_पूर्व=&p->p_अग्र_Loop, p=*pp_पूर्व){
+    यदि( p->iTab!=pTemplate->iTab || p->i_क्रमय_Idx!=pTemplate->i_क्रमय_Idx ){
       /* If either the iTab or iSortIdx values for two WhereLoop are different
       ** then those WhereLoops need to be considered separately.  Neither is
       ** a candidate to replace the other. */
-      continue;
+      अनुवर्त;
     }
     /* In the current implementation, the rSetup value is either zero
     ** or the cost of building an automatic index (NlogN) and the NlogN
     ** is the same for compatible WhereLoops. */
-    assert( p->rSetup==0 || pTemplate->rSetup==0
-                 || p->rSetup==pTemplate->rSetup );
+    प्रतिज्ञा( p->r_सज्जता==0 || pTemplate->r_सज्जता==0
+                 || p->r_सज्जता==pTemplate->r_सज्जता );
 
     /* whereLoopAddBtree() always generates and inserts the automatic index
     ** case first.  Hence compatible candidate WhereLoops never have a larger
     ** rSetup. Call this SETUP-INVARIANT */
-    assert( p->rSetup>=pTemplate->rSetup );
+    प्रतिज्ञा( p->r_सज्जता>=pTemplate->r_सज्जता );
 
     /* Any loop using an application-defined index (or PRIMARY KEY or
     ** UNIQUE constraint) with one or more == constraints is better
     ** than an automatic index. Unless it is a skip-scan. */
-    if( (p->wsFlags & WHERE_AUTO_INDEX)!=0
+    यदि( (p->wsFlags & WHERE_AUTO_सूचकांक)!=0
      && (pTemplate->nSkip)==0
-     && (pTemplate->wsFlags & WHERE_INDEXED)!=0
+     && (pTemplate->wsFlags & WHERE_अनुक्रमितम्)!=0
      && (pTemplate->wsFlags & WHERE_COLUMN_EQ)!=0
      && (p->prereq & pTemplate->prereq)==pTemplate->prereq
     ){
-      break;
+      भङ्ग;
     }
 
     /* If existing WhereLoop p is better than pTemplate, pTemplate can be
@@ -2780,12 +2780,12 @@ static WhereLoop **whereLoopFindLesser(
     **   (1)  p has no more dependencies than pTemplate, and
     **   (2)  p has an equal or lower cost than pTemplate
     */
-    if( (p->prereq & pTemplate->prereq)==p->prereq    /* (1)  */
-     && p->rSetup<=pTemplate->rSetup                  /* (2a) */
-     && p->rRun<=pTemplate->rRun                      /* (2b) */
-     && p->nOut<=pTemplate->nOut                      /* (2c) */
+    यदि( (p->prereq & pTemplate->prereq)==p->prereq    /* (1)  */
+     && p->r_सज्जता<=pTemplate->r_सज्जता                  /* (2a) */
+     && p->r_सततम्<=pTemplate->r_सततम्                      /* (2b) */
+     && p->n_बहिर्गमनम्<=pTemplate->n_बहिर्गमनम्                      /* (2c) */
     ){
-      return 0;  /* Discard pTemplate */
+      प्रत्यागम 0;  /* Discard pTemplate */
     }
 
     /* If pTemplate is always better than p, then cause p to be overwritten
@@ -2793,15 +2793,15 @@ static WhereLoop **whereLoopFindLesser(
     **   (1)  pTemplate has no more dependencies than p, and
     **   (2)  pTemplate has an equal or lower cost than p.
     */
-    if( (p->prereq & pTemplate->prereq)==pTemplate->prereq   /* (1)  */
-     && p->rRun>=pTemplate->rRun                             /* (2a) */
-     && p->nOut>=pTemplate->nOut                             /* (2b) */
+    यदि( (p->prereq & pTemplate->prereq)==pTemplate->prereq   /* (1)  */
+     && p->r_सततम्>=pTemplate->r_सततम्                             /* (2a) */
+     && p->n_बहिर्गमनम्>=pTemplate->n_बहिर्गमनम्                             /* (2b) */
     ){
-      assert( p->rSetup>=pTemplate->rSetup ); /* SETUP-INVARIANT above */
-      break;   /* Cause p to be overwritten by pTemplate */
+      प्रतिज्ञा( p->r_सज्जता>=pTemplate->r_सज्जता ); /* SETUP-INVARIANT above */
+      भङ्ग;   /* Cause p to be overwritten by pTemplate */
     }
   }
-  return ppPrev;
+  प्रत्यागम pp_पूर्व;
 }
 
 /*
@@ -2828,112 +2828,112 @@ static WhereLoop **whereLoopFindLesser(
 **    (3)  The template has same or fewer dependencies than the current loop
 **    (4)  The template has the same or lower cost than the current loop
 */
-static int whereLoopInsert(WhereLoopBuilder *pBuilder, WhereLoop *pTemplate){
-  WhereLoop **ppPrev, *p;
+स्थिर पूर्णाङ्क where_Loop_निवेशय(WhereLoopBuilder *pBuilder, WhereLoop *pTemplate){
+  WhereLoop **pp_पूर्व, *p;
   WhereInfo *pWInfo = pBuilder->pWInfo;
   sqlite3 *db = pWInfo->pParse->db;
-  int rc;
+  पूर्णाङ्क rc;
 
   /* Stop the search once we hit the query planner search limit */
-  if( pBuilder->iPlanLimit==0 ){
+  यदि( pBuilder->i_Plan_सीमा==0 ){
     WHERETRACE(0xffffffff,("=== query planner search limit reached ===\n"));
-    if( pBuilder->pOrSet ) pBuilder->pOrSet->n = 0;
-    return SQLITE_DONE;
+    यदि( pBuilder->p_Or_समुच्चयः ) pBuilder->p_Or_समुच्चयः->n = 0;
+    प्रत्यागम SQLITE_समाप्तम्;
   }
-  pBuilder->iPlanLimit--;
+  pBuilder->i_Plan_सीमा--;
 
   whereLoopAdjustCost(pWInfo->pLoops, pTemplate);
 
   /* If pBuilder->pOrSet is defined, then only keep track of the costs
   ** and prereqs.
   */
-  if( pBuilder->pOrSet!=0 ){
-    if( pTemplate->nLTerm ){
-#if WHERETRACE_ENABLED
-      u16 n = pBuilder->pOrSet->n;
-      int x =
-#endif
-      whereOrInsert(pBuilder->pOrSet, pTemplate->prereq, pTemplate->rRun,
-                                    pTemplate->nOut);
-#if WHERETRACE_ENABLED /* 0x8 */
-      if( sqlite3WhereTrace & 0x8 ){
+  यदि( pBuilder->p_Or_समुच्चयः!=0 ){
+    यदि( pTemplate->nLTerm ){
+#यदि WHERETRACE_ENABLED
+      u16 n = pBuilder->p_Or_समुच्चयः->n;
+      पूर्णाङ्क x =
+#यदि_अन्तः
+      where_Or_निवेशय(pBuilder->p_Or_समुच्चयः, pTemplate->prereq, pTemplate->r_सततम्,
+                                    pTemplate->n_बहिर्गमनम्);
+#यदि WHERETRACE_ENABLED /* 0x8 */
+      यदि( sqlite3WhereTrace & 0x8 ){
         sqlite3DebugPrintf(x?"   or-%d:  ":"   or-X:  ", n);
         sqlite3WhereLoopPrint(pTemplate, pBuilder->pWC);
       }
-#endif
+#यदि_अन्तः
     }
-    return SQLITE_OK;
+    प्रत्यागम SQLITE_OK;
   }
 
   /* Look for an existing WhereLoop to replace with pTemplate
   */
-  ppPrev = whereLoopFindLesser(&pWInfo->pLoops, pTemplate);
+  pp_पूर्व = whereLoopFindLesser(&pWInfo->pLoops, pTemplate);
 
-  if( ppPrev==0 ){
+  यदि( pp_पूर्व==0 ){
     /* There already exists a WhereLoop on the list that is better
     ** than pTemplate, so just ignore pTemplate */
-#if WHERETRACE_ENABLED /* 0x8 */
-    if( sqlite3WhereTrace & 0x8 ){
+#यदि WHERETRACE_ENABLED /* 0x8 */
+    यदि( sqlite3WhereTrace & 0x8 ){
       sqlite3DebugPrintf("   skip: ");
       sqlite3WhereLoopPrint(pTemplate, pBuilder->pWC);
     }
-#endif
-    return SQLITE_OK; 
-  }else{
-    p = *ppPrev;
+#यदि_अन्तः
+    प्रत्यागम SQLITE_OK; 
+  }अन्यथा{
+    p = *pp_पूर्व;
   }
 
   /* If we reach this point it means that either p[] should be overwritten
   ** with pTemplate[] if p[] exists, or if p==NULL then allocate a new
   ** WhereLoop and insert it.
   */
-#if WHERETRACE_ENABLED /* 0x8 */
-  if( sqlite3WhereTrace & 0x8 ){
-    if( p!=0 ){
+#यदि WHERETRACE_ENABLED /* 0x8 */
+  यदि( sqlite3WhereTrace & 0x8 ){
+    यदि( p!=0 ){
       sqlite3DebugPrintf("replace: ");
       sqlite3WhereLoopPrint(p, pBuilder->pWC);
       sqlite3DebugPrintf("   with: ");
-    }else{
+    }अन्यथा{
       sqlite3DebugPrintf("    add: ");
     }
     sqlite3WhereLoopPrint(pTemplate, pBuilder->pWC);
   }
-#endif
-  if( p==0 ){
+#यदि_अन्तः
+  यदि( p==0 ){
     /* Allocate a new WhereLoop to add to the end of the list */
-    *ppPrev = p = sqlite3DbMallocRawNN(db, sizeof(WhereLoop));
-    if( p==0 ) return SQLITE_NOMEM_BKPT;
+    *pp_पूर्व = p = sqlite3DbMallocRawNN(db, परिमाण(WhereLoop));
+    यदि( p==0 ) प्रत्यागम SQLITE_NOMEM_BKPT;
     whereLoopInit(p);
-    p->pNextLoop = 0;
-  }else{
+    p->p_अग्र_Loop = 0;
+  }अन्यथा{
     /* We will be overwriting WhereLoop p[].  But before we do, first
     ** go through the rest of the list and delete any other entries besides
     ** p[] that are also supplanted by pTemplate */
-    WhereLoop **ppTail = &p->pNextLoop;
-    WhereLoop *pToDel;
-    while( *ppTail ){
-      ppTail = whereLoopFindLesser(ppTail, pTemplate);
-      if( ppTail==0 ) break;
-      pToDel = *ppTail;
-      if( pToDel==0 ) break;
-      *ppTail = pToDel->pNextLoop;
-#if WHERETRACE_ENABLED /* 0x8 */
-      if( sqlite3WhereTrace & 0x8 ){
+    WhereLoop **pp_पुच्छ = &p->p_अग्र_Loop;
+    WhereLoop *p_गन्तव्यम्_Del;
+    यावत्( *pp_पुच्छ ){
+      pp_पुच्छ = whereLoopFindLesser(pp_पुच्छ, pTemplate);
+      यदि( pp_पुच्छ==0 ) भङ्ग;
+      p_गन्तव्यम्_Del = *pp_पुच्छ;
+      यदि( p_गन्तव्यम्_Del==0 ) भङ्ग;
+      *pp_पुच्छ = p_गन्तव्यम्_Del->p_अग्र_Loop;
+#यदि WHERETRACE_ENABLED /* 0x8 */
+      यदि( sqlite3WhereTrace & 0x8 ){
         sqlite3DebugPrintf(" delete: ");
-        sqlite3WhereLoopPrint(pToDel, pBuilder->pWC);
+        sqlite3WhereLoopPrint(p_गन्तव्यम्_Del, pBuilder->pWC);
       }
-#endif
-      whereLoopDelete(db, pToDel);
+#यदि_अन्तः
+      whereLoopDelete(db, p_गन्तव्यम्_Del);
     }
   }
   rc = whereLoopXfer(db, p, pTemplate);
-  if( (p->wsFlags & WHERE_VIRTUALTABLE)==0 ){
-    Index *pIndex = p->u.btree.pIndex;
-    if( pIndex && pIndex->idxType==SQLITE_IDXTYPE_IPK ){
-      p->u.btree.pIndex = 0;
+  यदि( (p->wsFlags & WHERE_VIRTUALTABLE)==0 ){
+    सूचकांक *p_सूचकांक = p->u.btree.p_सूचकांक;
+    यदि( p_सूचकांक && p_सूचकांक->idxType==SQLITE_IDXTYPE_IPK ){
+      p->u.btree.p_सूचकांक = 0;
     }
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -2947,32 +2947,32 @@ static int whereLoopInsert(WhereLoopBuilder *pBuilder, WhereLoop *pTemplate){
 **    eCode==0     Count as a GLOB pattern
 **    eCode==1     Count as a LIKE pattern
 */
-static int exprNodePatternLengthEst(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_STRING ){
-    int sz = 0;                    /* Pattern size in bytes */
-    u8 *z = (u8*)pExpr->u.zToken;  /* The pattern */
+स्थिर पूर्णाङ्क व्यञ्जकम्_ग्रन्थिः_आदर्शः_दीर्घता_Est(Walker *pWalker, व्यञ्जकम् *p_व्यञ्जकम्){
+  यदि( p_व्यञ्जकम्->op==TK_STRING ){
+    पूर्णाङ्क sz = 0;                    /* Pattern size in bytes */
+    u8 *z = (u8*)p_व्यञ्जकम्->u.zToken;  /* The pattern */
     u8 c;                          /* Next character of the pattern */
     u8 c1, c2, c3;                 /* Wildcards */
-    if( pWalker->eCode ){
+    यदि( pWalker->e_संहिता ){
       c1 = '%';
       c2 = '_';
       c3 = 0;
-    }else{
+    }अन्यथा{
       c1 = '*';
       c2 = '?';
       c3 = '[';
     }
-    while( (c = *(z++))!=0 ){
-      if( c==c3 ){
-        if( *z ) z++;
-        while( *z && *z!=']' ) z++;
-      }else if( c!=c1 && c!=c2 ){
+    यावत्( (c = *(z++))!=0 ){
+      यदि( c==c3 ){
+        यदि( *z ) z++;
+        यावत्( *z && *z!=']' ) z++;
+      }अन्यथा यदि( c!=c1 && c!=c2 ){
         sz++;
       }
     }
-    if( sz>pWalker->u.sz ) pWalker->u.sz = sz;
+    यदि( sz>pWalker->u.sz ) pWalker->u.sz = sz;
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 /*
@@ -2984,17 +2984,17 @@ static int exprNodePatternLengthEst(Walker *pWalker, Expr *pExpr){
 **    eCode==0     Count as a GLOB pattern
 **    eCode==1     Count as a LIKE pattern
 */
-static int estLikePatternLength(Expr *p, u16 eCode){
+स्थिर पूर्णाङ्क est_Like_आदर्शः_दीर्घता(व्यञ्जकम् *p, u16 e_संहिता){
   Walker w;
   w.u.sz = 0;
-  w.eCode = eCode;
-  w.xExprCallback = exprNodePatternLengthEst;
+  w.e_संहिता = e_संहिता;
+  w.x_व्यञ्जकम्_Callback = व्यञ्जकम्_ग्रन्थिः_आदर्शः_दीर्घता_Est;
   w.xSelectCallback = sqlite3SelectWalkFail;
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
-#endif
-  sqlite3WalkExpr(&w, p);
-  return w.u.sz;
+#यदि_अन्तः
+  sqlite3_Walk_व्यञ्जकम्(&w, p);
+  प्रत्यागम w.u.sz;
 }
 
 /*
@@ -3033,38 +3033,38 @@ static int estLikePatternLength(Expr *p, u16 eCode){
 ** to give better output-row count estimates when preparing queries for
 ** the Join-Order Benchmarks.  See forum thread 2026-01-30T09:57:54z
 */
-static void whereLoopOutputAdjust(
+स्थिर शून्य whereLoopOutputAdjust(
   WhereClause *pWC,      /* The WHERE clause */
   WhereLoop *pLoop,      /* The loop to adjust downward */
   LogEst nRow            /* Number of rows in the entire table */
 ){
-  WhereTerm *pTerm, *pX;
-  Bitmask notAllowed = ~(pLoop->prereq|pLoop->maskSelf);
-  int i, j;
+  Where_पदांशः *p_पदांशः, *pX;
+  Bitmask notAllowed = ~(pLoop->prereq|pLoop->आवरणम्_Self);
+  पूर्णाङ्क i, j;
   LogEst iReduce = 0;    /* pLoop->nOut should not exceed nRow-iReduce */
 
   /* Skip all this if the FROM clause of the query is a single table and
   ** there is no ORDER BY. In this case it doesn't matter how accurate
   ** the WhereLoop.nOut values are.  */
-  if( pWC->pWInfo->pTabList->nSrc<=1 && pWC->pWInfo->pOrderBy==0 ){
-    return;
+  यदि( pWC->pWInfo->pTabList->nSrc<=1 && pWC->pWInfo->p_क्रमः_By==0 ){
+    प्रत्यागम;
   }
 
-  assert( (pLoop->wsFlags & WHERE_AUTO_INDEX)==0 );
-  for(i=pWC->nBase, pTerm=pWC->a; i>0; i--, pTerm++){
-    assert( pTerm!=0 );
-    if( (pTerm->prereqAll & notAllowed)!=0 ) continue;
-    if( (pTerm->prereqAll & pLoop->maskSelf)==0 ) continue;
-    if( (pTerm->wtFlags & TERM_VIRTUAL)!=0 ) continue;
-    for(j=pLoop->nLTerm-1; j>=0; j--){
+  प्रतिज्ञा( (pLoop->wsFlags & WHERE_AUTO_सूचकांक)==0 );
+  प्रति(i=pWC->n_आधारः, p_पदांशः=pWC->a; i>0; i--, p_पदांशः++){
+    प्रतिज्ञा( p_पदांशः!=0 );
+    यदि( (p_पदांशः->prereqAll & notAllowed)!=0 ) अनुवर्त;
+    यदि( (p_पदांशः->prereqAll & pLoop->आवरणम्_Self)==0 ) अनुवर्त;
+    यदि( (p_पदांशः->wtFlags & पदांशः_VIRTUAL)!=0 ) अनुवर्त;
+    प्रति(j=pLoop->nLTerm-1; j>=0; j--){
       pX = pLoop->aLTerm[j];
-      if( pX==0 ) continue;
-      if( pX==pTerm ) break;
-      if( pX->iParent>=0 && (&pWC->a[pX->iParent])==pTerm ) break;
+      यदि( pX==0 ) अनुवर्त;
+      यदि( pX==p_पदांशः ) भङ्ग;
+      यदि( pX->iParent>=0 && (&pWC->a[pX->iParent])==p_पदांशः ) भङ्ग;
     }
-    if( j<0 ){
-      sqlite3ProgressCheck(pWC->pWInfo->pParse);
-      if( pLoop->maskSelf==pTerm->prereqAll ){
+    यदि( j<0 ){
+      sqlite3_प्रगतिः_Check(pWC->pWInfo->pParse);
+      यदि( pLoop->आवरणम्_Self==p_पदांशः->prereqAll ){
         /* If there are extra terms in the WHERE clause not used by an index
         ** that depend only on the table being scanned, and that will tend to
         ** cause many rows to be omitted, then mark that table as
@@ -3074,61 +3074,61 @@ static void whereLoopOutputAdjust(
         ** are straight comparison operators that are non-true with NULL
         ** operand, or if the loop is not an OUTER JOIN.
         */
-        if( (pTerm->eOperator & 0x3f)!=0
+        यदि( (p_पदांशः->eOperator & 0x3f)!=0
          || (pWC->pWInfo->pTabList->a[pLoop->iTab].fg.jointype
-                  & (JT_LEFT|JT_LTORJ))==0
+                  & (JT_वामः|JT_LTORJ))==0
         ){
           pLoop->wsFlags |= WHERE_SELFCULL;
         }
       }
-      if( pTerm->truthProb<=0 ){
+      यदि( p_पदांशः->truthProb<=0 ){
         /* If a truth probability is specified using the likelihood() hints,
         ** then use the probability provided by the application. */
-        pLoop->nOut += pTerm->truthProb;
-      }else{
+        pLoop->n_बहिर्गमनम् += p_पदांशः->truthProb;
+      }अन्यथा{
         /* In the absence of explicit truth probabilities, use heuristics to
         ** guess a reasonable truth probability. */
-        Expr *pOpExpr = pTerm->pExpr;
-        pLoop->nOut--;
-        if( (pTerm->eOperator&(WO_EQ|WO_IS))!=0
-         && (pTerm->wtFlags & TERM_HIGHTRUTH)==0  /* tag-20200224-1 */
+        व्यञ्जकम् *p_Op_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
+        pLoop->n_बहिर्गमनम्--;
+        यदि( (p_पदांशः->eOperator&(WO_EQ|WO_IS))!=0
+         && (p_पदांशः->wtFlags & पदांशः_HIGHTRUTH)==0  /* tag-20200224-1 */
         ){
-          Expr *pRight = pOpExpr->pRight;
+          व्यञ्जकम् *p_दक्षिणः = p_Op_व्यञ्जकम्->p_दक्षिणः;
           Parse *pParse = pWC->pWInfo->pParse;
-          int k = 0;
-          testcase( pOpExpr->op==TK_IS );
-          if( sqlite3ExprIsInteger(pRight, &k, pParse, 1) && k>=(-1) && k<=1 ){
+          पूर्णाङ्क k = 0;
+          testcase( p_Op_व्यञ्जकम्->op==TK_IS );
+          यदि( sqlite3_व्यञ्जकम्_Is_Integer(p_दक्षिणः, &k, pParse, 1) && k>=(-1) && k<=1 ){
             k = 10;
-          }else{
+          }अन्यथा{
             k = 20;
           }
-          if( iReduce<k ){
-            pTerm->wtFlags |= TERM_HEURTRUTH;
+          यदि( iReduce<k ){
+            p_पदांशः->wtFlags |= पदांशः_HEURTRUTH;
             iReduce = k;
           }
-        }else
-        if( ExprHasProperty(pOpExpr, EP_InfixFunc) 
-         && pOpExpr->op==TK_FUNCTION
+        }अन्यथा
+        यदि( व्यञ्जकम्_Has_Property(p_Op_व्यञ्जकम्, EP_InfixFunc) 
+         && p_Op_व्यञ्जकम्->op==TK_FUNCTION
         ){
-          int eOp;
-          assert( ExprUseXList(pOpExpr) );
-          assert( pOpExpr->x.pList->nExpr>=2 );
-          eOp = sqlite3ExprIsLikeOperator(pOpExpr);
-          if( ALWAYS(eOp>0) ){
-            int szPattern;
-            Expr *pRHS = pOpExpr->x.pList->a[0].pExpr;
-            eOp = eOp==SQLITE_INDEX_CONSTRAINT_LIKE;
-            szPattern = estLikePatternLength(pRHS, eOp);
-            if( szPattern>0 ){
-              pLoop->nOut -= szPattern*2;
+          पूर्णाङ्क eOp;
+          प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_Op_व्यञ्जकम्) );
+          प्रतिज्ञा( p_Op_व्यञ्जकम्->x.pList->n_व्यञ्जकम्>=2 );
+          eOp = sqlite3_व्यञ्जकम्_Is_Like_Operator(p_Op_व्यञ्जकम्);
+          यदि( ALWAYS(eOp>0) ){
+            पूर्णाङ्क sz_आदर्शः;
+            व्यञ्जकम् *pRHS = p_Op_व्यञ्जकम्->x.pList->a[0].p_व्यञ्जकम्;
+            eOp = eOp==SQLITE_सूचकांक_CONSTRAINT_LIKE;
+            sz_आदर्शः = est_Like_आदर्शः_दीर्घता(pRHS, eOp);
+            यदि( sz_आदर्शः>0 ){
+              pLoop->n_बहिर्गमनम् -= sz_आदर्शः*2;
             }
           }
         }
       }
     }
   }
-  if( pLoop->nOut > nRow-iReduce ){
-    pLoop->nOut = nRow - iReduce;
+  यदि( pLoop->n_बहिर्गमनम् > nRow-iReduce ){
+    pLoop->n_बहिर्गमनम् = nRow - iReduce;
   }
 }
 
@@ -3149,68 +3149,68 @@ static void whereLoopOutputAdjust(
 ** then this function would be invoked with nEq=1. The value returned in
 ** this case is 3.
 */
-static int whereRangeVectorLen(
+स्थिर पूर्णाङ्क where_Range_सदिशम्_Len(
   Parse *pParse,       /* Parsing context */
-  int iCur,            /* Cursor open on pIdx */
-  Index *pIdx,         /* The index to be used for a inequality constraint */
-  int nEq,             /* Number of prior equality constraints on same index */
-  WhereTerm *pTerm     /* The vector inequality constraint */
+  पूर्णाङ्क iCur,            /* Cursor open on pIdx */
+  सूचकांक *pIdx,         /* The index to be used for a inequality constraint */
+  पूर्णाङ्क nEq,             /* Number of prior equality constraints on same index */
+  Where_पदांशः *p_पदांशः     /* The vector inequality constraint */
 ){
-  int nCmp = sqlite3ExprVectorSize(pTerm->pExpr->pLeft);
-  int i;
+  पूर्णाङ्क nCmp = sqlite3_व्यञ्जकम्_सदिशम्_आकार(p_पदांशः->p_व्यञ्जकम्->p_वामः);
+  पूर्णाङ्क i;
 
   nCmp = MIN(nCmp, (pIdx->nColumn - nEq));
-  for(i=1; i<nCmp; i++){
+  प्रति(i=1; i<nCmp; i++){
     /* Test if comparison i of pTerm is compatible with column (i+nEq)
     ** of the index. If not, exit the loop.  */
-    char aff;                     /* Comparison affinity */
-    char idxaff = 0;              /* Indexed columns affinity */
+    वर्ण aff;                     /* Comparison affinity */
+    वर्ण idxaff = 0;              /* Indexed columns affinity */
     CollSeq *pColl;               /* Comparison collation sequence */
-    Expr *pLhs, *pRhs;
+    व्यञ्जकम् *pLhs, *pRhs;
 
-    assert( ExprUseXList(pTerm->pExpr->pLeft) );
-    pLhs = pTerm->pExpr->pLeft->x.pList->a[i].pExpr;
-    pRhs = pTerm->pExpr->pRight;
-    if( ExprUseXSelect(pRhs) ){
-      pRhs = pRhs->x.pSelect->pEList->a[i].pExpr;
-    }else{
-      pRhs = pRhs->x.pList->a[i].pExpr;
+    प्रतिज्ञा( व्यञ्जकम्_Use_XList(p_पदांशः->p_व्यञ्जकम्->p_वामः) );
+    pLhs = p_पदांशः->p_व्यञ्जकम्->p_वामः->x.pList->a[i].p_व्यञ्जकम्;
+    pRhs = p_पदांशः->p_व्यञ्जकम्->p_दक्षिणः;
+    यदि( व्यञ्जकम्_Use_XSelect(pRhs) ){
+      pRhs = pRhs->x.pSelect->pEList->a[i].p_व्यञ्जकम्;
+    }अन्यथा{
+      pRhs = pRhs->x.pList->a[i].p_व्यञ्जकम्;
     }
 
     /* Check that the LHS of the comparison is a column reference to
     ** the right column of the right source table. And that the sort
     ** order of the index column is the same as the sort order of the
     ** leftmost index column.  */
-    if( pLhs->op!=TK_COLUMN
-     || pLhs->iTable!=iCur
+    यदि( pLhs->op!=TK_COLUMN
+     || pLhs->i_सारणी!=iCur
      || pLhs->iColumn!=pIdx->aiColumn[i+nEq]
-     || pIdx->aSortOrder[i+nEq]!=pIdx->aSortOrder[nEq]
+     || pIdx->a_क्रमय_क्रमः[i+nEq]!=pIdx->a_क्रमय_क्रमः[nEq]
     ){
-      break;
+      भङ्ग;
     }
 
     testcase( pLhs->iColumn==XN_ROWID );
-    aff = sqlite3CompareAffinity(pRhs, sqlite3ExprAffinity(pLhs));
-    idxaff = sqlite3TableColumnAffinity(pIdx->pTable, pLhs->iColumn);
-    if( aff!=idxaff ) break;
+    aff = sqlite3CompareAffinity(pRhs, sqlite3_व्यञ्जकम्_Affinity(pLhs));
+    idxaff = sqlite3_सारणी_Column_Affinity(pIdx->p_सारणी, pLhs->iColumn);
+    यदि( aff!=idxaff ) भङ्ग;
 
-    if( ExprHasProperty(pTerm->pExpr, EP_Commuted) ) SWAP(Expr*, pRhs, pLhs);
-    pColl = sqlite3BinaryCompareCollSeq(pParse, pLhs, pRhs);
-    if( pColl==0 ) break;
-    if( sqlite3StrICmp(pColl->zName, pIdx->azColl[i+nEq]) ) break;
+    यदि( व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_Commuted) ) SWAP(व्यञ्जकम्*, pRhs, pLhs);
+    pColl = sqlite3_द्विमान_Compare_Coll_Seq(pParse, pLhs, pRhs);
+    यदि( pColl==0 ) भङ्ग;
+    यदि( sqlite3StrICmp(pColl->zName, pIdx->azColl[i+nEq]) ) भङ्ग;
   }
-  return i;
+  प्रत्यागम i;
 }
 
 /*
 ** Adjust the cost C by the costMult factor T.  This only occurs if
 ** compiled with -DSQLITE_ENABLE_COSTMULT
 */
-#ifdef SQLITE_ENABLE_COSTMULT
+#यदि_परिभाषितम् SQLITE_ENABLE_COSTMULT
 # define ApplyCostMultiplier(C,T)  C += T
-#else
+#अन्यथा
 # define ApplyCostMultiplier(C,T)
-#endif
+#यदि_अन्तः
 
 /*
 ** We have so far matched pBuilder->pNew->u.btree.nEq terms of the
@@ -3224,135 +3224,135 @@ static int whereRangeVectorLen(
 ** If pProbe->idxType==SQLITE_IDXTYPE_IPK, that means pIndex is
 ** a fake index used for the INTEGER PRIMARY KEY.
 */
-static int whereLoopAddBtreeIndex(
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_Btree_सूचकांक(
   WhereLoopBuilder *pBuilder,     /* The WhereLoop factory */
   SrcItem *pSrc,                  /* FROM clause term being analyzed */
-  Index *pProbe,                  /* An index on pSrc */
-  LogEst nInMul                   /* log(Number of iterations due to IN) */
+  सूचकांक *pProbe,                  /* An index on pSrc */
+  LogEst n_अन्तर्_Mul                   /* log(Number of iterations due to IN) */
 ){
   WhereInfo *pWInfo = pBuilder->pWInfo;  /* WHERE analyze context */
   Parse *pParse = pWInfo->pParse;        /* Parsing context */
   sqlite3 *db = pParse->db;       /* Database connection malloc context */
   WhereLoop *pNew;                /* Template WhereLoop under construction */
-  WhereTerm *pTerm;               /* A WhereTerm under consideration */
-  int opMask;                     /* Valid operators for constraints */
-  WhereScan scan;                 /* Iterator for WHERE terms */
+  Where_पदांशः *p_पदांशः;               /* A WhereTerm under consideration */
+  पूर्णाङ्क op_आवरणम्;                     /* Valid operators for constraints */
+  Where_अवलोकनम् अवलोकनम्;                 /* Iterator for WHERE terms */
   Bitmask saved_prereq;           /* Original value of pNew->prereq */
   u16 saved_nLTerm;               /* Original value of pNew->nLTerm */
   u16 saved_nEq;                  /* Original value of pNew->u.btree.nEq */
   u16 saved_nBtm;                 /* Original value of pNew->u.btree.nBtm */
-  u16 saved_nTop;                 /* Original value of pNew->u.btree.nTop */
+  u16 saved_n_शिखरम्;                 /* Original value of pNew->u.btree.nTop */
   u16 saved_nSkip;                /* Original value of pNew->nSkip */
   u32 saved_wsFlags;              /* Original value of pNew->wsFlags */
-  LogEst saved_nOut;              /* Original value of pNew->nOut */
-  int rc = SQLITE_OK;             /* Return code */
-  LogEst rSize;                   /* Number of rows in the table */
-  LogEst rLogSize;                /* Logarithm of table size */
-  WhereTerm *pTop = 0, *pBtm = 0; /* Top and bottom range constraints */
+  LogEst saved_n_बहिर्गमनम्;              /* Original value of pNew->nOut */
+  पूर्णाङ्क rc = SQLITE_OK;             /* Return code */
+  LogEst r_आकार;                   /* Number of rows in the table */
+  LogEst r_Log_आकार;                /* Logarithm of table size */
+  Where_पदांशः *p_शिखरम् = 0, *pBtm = 0; /* Top and bottom range constraints */
 
   pNew = pBuilder->pNew;
-  assert( db->mallocFailed==0 || pParse->nErr>0 );
-  if( pParse->nErr ){
-    return pParse->rc;
+  प्रतिज्ञा( db->mallocFailed==0 || pParse->nErr>0 );
+  यदि( pParse->nErr ){
+    प्रत्यागम pParse->rc;
   }
   WHERETRACE(0x800, ("BEGIN %s.addBtreeIdx(%s), nEq=%d, nSkip=%d, rRun=%d\n",
-                     pProbe->pTable->zName,pProbe->zName,
-                     pNew->u.btree.nEq, pNew->nSkip, pNew->rRun));
+                     pProbe->p_सारणी->zName,pProbe->zName,
+                     pNew->u.btree.nEq, pNew->nSkip, pNew->r_सततम्));
 
-  assert( (pNew->wsFlags & WHERE_VIRTUALTABLE)==0 );
-  assert( (pNew->wsFlags & WHERE_TOP_LIMIT)==0 );
-  if( pNew->wsFlags & WHERE_BTM_LIMIT ){
-    opMask = WO_LT|WO_LE;
-  }else{
-    assert( pNew->u.btree.nBtm==0 );
-    opMask = WO_EQ|WO_IN|WO_GT|WO_GE|WO_LT|WO_LE|WO_ISNULL|WO_IS;
+  प्रतिज्ञा( (pNew->wsFlags & WHERE_VIRTUALTABLE)==0 );
+  प्रतिज्ञा( (pNew->wsFlags & WHERE_शिखरम्_सीमा)==0 );
+  यदि( pNew->wsFlags & WHERE_BTM_सीमा ){
+    op_आवरणम् = WO_LT|WO_LE;
+  }अन्यथा{
+    प्रतिज्ञा( pNew->u.btree.nBtm==0 );
+    op_आवरणम् = WO_EQ|WO_अन्तर्|WO_GT|WO_GE|WO_LT|WO_LE|WO_ISNULL|WO_IS;
   }
-  if( pProbe->bUnordered ){
-    opMask &= ~(WO_GT|WO_GE|WO_LT|WO_LE);
+  यदि( pProbe->bUnordered ){
+    op_आवरणम् &= ~(WO_GT|WO_GE|WO_LT|WO_LE);
   }
 
-  assert( pNew->u.btree.nEq<pProbe->nColumn );
-  assert( pNew->u.btree.nEq<pProbe->nKeyCol
+  प्रतिज्ञा( pNew->u.btree.nEq<pProbe->nColumn );
+  प्रतिज्ञा( pNew->u.btree.nEq<pProbe->n_कुञ्चिका_Col
        || pProbe->idxType!=SQLITE_IDXTYPE_PRIMARYKEY );
 
   saved_nEq = pNew->u.btree.nEq;
   saved_nBtm = pNew->u.btree.nBtm;
-  saved_nTop = pNew->u.btree.nTop;
+  saved_n_शिखरम् = pNew->u.btree.n_शिखरम्;
   saved_nSkip = pNew->nSkip;
   saved_nLTerm = pNew->nLTerm;
   saved_wsFlags = pNew->wsFlags;
   saved_prereq = pNew->prereq;
-  saved_nOut = pNew->nOut;
-  pTerm = whereScanInit(&scan, pBuilder->pWC, pSrc->iCursor, saved_nEq,
-                        opMask, pProbe);
-  pNew->rSetup = 0;
-  rSize = pProbe->aiRowLogEst[0];
-  rLogSize = estLog(rSize);
-  for(; rc==SQLITE_OK && pTerm!=0; pTerm = whereScanNext(&scan)){
-    u16 eOp = pTerm->eOperator;   /* Shorthand for pTerm->eOperator */
+  saved_n_बहिर्गमनम् = pNew->n_बहिर्गमनम्;
+  p_पदांशः = where_अवलोकनम्_Init(&अवलोकनम्, pBuilder->pWC, pSrc->iCursor, saved_nEq,
+                        op_आवरणम्, pProbe);
+  pNew->r_सज्जता = 0;
+  r_आकार = pProbe->aiRowLogEst[0];
+  r_Log_आकार = estLog(r_आकार);
+  प्रति(; rc==SQLITE_OK && p_पदांशः!=0; p_पदांशः = where_अवलोकनम्_अग्र(&अवलोकनम्)){
+    u16 eOp = p_पदांशः->eOperator;   /* Shorthand for pTerm->eOperator */
     LogEst rCostIdx;
-    LogEst nOutUnadjusted;        /* nOut before IN() and WHERE adjustments */
-    int nIn = 0;
-#ifdef SQLITE_ENABLE_STAT4
-    int nRecValid = pBuilder->nRecValid;
-#endif
-    if( (eOp==WO_ISNULL || (pTerm->wtFlags&TERM_VNULL)!=0)
-     && indexColumnNotNull(pProbe, saved_nEq)
+    LogEst n_बहिर्गमनम्_Unadjusted;        /* nOut before IN() and WHERE adjustments */
+    पूर्णाङ्क n_अन्तर् = 0;
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
+    पूर्णाङ्क nRecValid = pBuilder->nRecValid;
+#यदि_अन्तः
+    यदि( (eOp==WO_ISNULL || (p_पदांशः->wtFlags&पदांशः_VNULL)!=0)
+     && सूचकांक_Column_Not_Null(pProbe, saved_nEq)
     ){
-      continue; /* ignore IS [NOT] NULL constraints on NOT NULL columns */
+      अनुवर्त; /* ignore IS [NOT] NULL constraints on NOT NULL columns */
     }
-    if( pTerm->prereqRight & pNew->maskSelf ) continue;
+    यदि( p_पदांशः->prereq_दक्षिणः & pNew->आवरणम्_Self ) अनुवर्त;
 
     /* Do not allow the upper bound of a LIKE optimization range constraint
     ** to mix with a lower range bound from some other source */
-    if( pTerm->wtFlags & TERM_LIKEOPT && pTerm->eOperator==WO_LT ) continue;
+    यदि( p_पदांशः->wtFlags & पदांशः_LIKEOPT && p_पदांशः->eOperator==WO_LT ) अनुवर्त;
 
-    if( (pSrc->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))!=0
-     && !constraintCompatibleWithOuterJoin(pTerm,pSrc)
+    यदि( (pSrc->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))!=0
+     && !constraintCompatibleWithOuterJoin(p_पदांशः,pSrc)
     ){
-      continue;
+      अनुवर्त;
     }
-    if( IsUniqueIndex(pProbe) && saved_nEq==pProbe->nKeyCol-1 ){
+    यदि( Is_Unique_सूचकांक(pProbe) && saved_nEq==pProbe->n_कुञ्चिका_Col-1 ){
       pBuilder->bldFlags1 |= SQLITE_BLDF1_UNIQUE;
-    }else{
-      pBuilder->bldFlags1 |= SQLITE_BLDF1_INDEXED;
+    }अन्यथा{
+      pBuilder->bldFlags1 |= SQLITE_BLDF1_अनुक्रमितम्;
     }
     pNew->wsFlags = saved_wsFlags;
     pNew->u.btree.nEq = saved_nEq;
     pNew->u.btree.nBtm = saved_nBtm;
-    pNew->u.btree.nTop = saved_nTop;
+    pNew->u.btree.n_शिखरम् = saved_n_शिखरम्;
     pNew->nLTerm = saved_nLTerm;
-    if( pNew->nLTerm>=pNew->nLSlot
+    यदि( pNew->nLTerm>=pNew->nLSlot
      && whereLoopResize(db, pNew, pNew->nLTerm+1)
     ){
-       break; /* OOM while trying to enlarge the pNew->aLTerm array */
+       भङ्ग; /* OOM while trying to enlarge the pNew->aLTerm array */
     }
-    pNew->aLTerm[pNew->nLTerm++] = pTerm;
-    pNew->prereq = (saved_prereq | pTerm->prereqRight) & ~pNew->maskSelf;
+    pNew->aLTerm[pNew->nLTerm++] = p_पदांशः;
+    pNew->prereq = (saved_prereq | p_पदांशः->prereq_दक्षिणः) & ~pNew->आवरणम्_Self;
 
-    assert( nInMul==0
+    प्रतिज्ञा( n_अन्तर्_Mul==0
         || (pNew->wsFlags & WHERE_COLUMN_NULL)!=0
-        || (pNew->wsFlags & WHERE_COLUMN_IN)!=0
+        || (pNew->wsFlags & WHERE_COLUMN_अन्तर्)!=0
         || (pNew->wsFlags & WHERE_SKIPSCAN)!=0
     );
 
-    if( eOp & WO_IN ){
-      Expr *pExpr = pTerm->pExpr;
-      if( ExprUseXSelect(pExpr) ){
+    यदि( eOp & WO_अन्तर् ){
+      व्यञ्जकम् *p_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
+      यदि( व्यञ्जकम्_Use_XSelect(p_व्यञ्जकम्) ){
         /* "x IN (SELECT ...)":  TUNING: the SELECT returns 25 rows */
-        int i;
-        int bRedundant = 0;
-        nIn = 46;  assert( 46==sqlite3LogEst(25) );
+        पूर्णाङ्क i;
+        पूर्णाङ्क bRedundant = 0;
+        n_अन्तर् = 46;  प्रतिज्ञा( 46==sqlite3LogEst(25) );
 
         /* The expression may actually be of the form (x, y) IN (SELECT...).
         ** In this case there is a separate term for each of (x) and (y).
         ** However, the nIn multiplier should only be applied once, not once
         ** for each such term. The following loop checks that pTerm is the
         ** first such term in use, and sets nIn back to 0 if it is not. */
-        for(i=0; i<pNew->nLTerm-1; i++){
-          if( pNew->aLTerm[i] && pNew->aLTerm[i]->pExpr==pExpr ){
-            nIn = 0;
-            if( pNew->aLTerm[i]->u.x.iField == pTerm->u.x.iField ){
+        प्रति(i=0; i<pNew->nLTerm-1; i++){
+          यदि( pNew->aLTerm[i] && pNew->aLTerm[i]->p_व्यञ्जकम्==p_व्यञ्जकम् ){
+            n_अन्तर् = 0;
+            यदि( pNew->aLTerm[i]->u.x.i_क्षेत्रम् == p_पदांशः->u.x.i_क्षेत्रम् ){
               /* Detect when two or more columns of an index match the same 
               ** column of a vector IN operater, and avoid adding the column
               ** to the WhereLoop more than once.  See tag-20250707-01
@@ -3361,15 +3361,15 @@ static int whereLoopAddBtreeIndex(
             }
           }
         }
-        if( bRedundant ){
+        यदि( bRedundant ){
           pNew->nLTerm--;
-          continue;
+          अनुवर्त;
         }
-      }else if( ALWAYS(pExpr->x.pList && pExpr->x.pList->nExpr) ){
+      }अन्यथा यदि( ALWAYS(p_व्यञ्जकम्->x.pList && p_व्यञ्जकम्->x.pList->n_व्यञ्जकम्) ){
         /* "x IN (value, value, ...)" */
-        nIn = sqlite3LogEst(pExpr->x.pList->nExpr);
+        n_अन्तर् = sqlite3LogEst(p_व्यञ्जकम्->x.pList->n_व्यञ्जकम्);
       }
-      if( pProbe->hasStat1 && rLogSize>=10 ){
+      यदि( pProbe->hasStat1 && r_Log_आकार>=10 ){
         LogEst M, logK, x;
         /* Let:
         **   N = the total number of rows in the table
@@ -3392,78 +3392,78 @@ static int whereLoopAddBtreeIndex(
         ** tables (less than 2 rows) as it is pointless in that case.
         */
         M = pProbe->aiRowLogEst[saved_nEq];
-        logK = estLog(nIn);
+        logK = estLog(n_अन्तर्);
         /* TUNING      v-----  10 to bias toward indexed IN */
-        x = M + logK + 10 - (nIn + rLogSize);
-        if( x>=0 ){
+        x = M + logK + 10 - (n_अन्तर् + r_Log_आकार);
+        यदि( x>=0 ){
           WHERETRACE(0x40,
             ("IN operator (N=%d M=%d logK=%d nIn=%d rLogSize=%d x=%d) "
              "prefers indexed lookup\n",
-             saved_nEq, M, logK, nIn, rLogSize, x));
-        }else if( nInMul<2 && OptimizationEnabled(db, SQLITE_SeekScan) ){
+             saved_nEq, M, logK, n_अन्तर्, r_Log_आकार, x));
+        }अन्यथा यदि( n_अन्तर्_Mul<2 && OptimizationEnabled(db, SQLITE_Seek_अवलोकनम्) ){
           WHERETRACE(0x40,
             ("IN operator (N=%d M=%d logK=%d nIn=%d rLogSize=%d x=%d"
              " nInMul=%d) prefers skip-scan\n",
-             saved_nEq, M, logK, nIn, rLogSize, x, nInMul));
-          pNew->wsFlags |= WHERE_IN_SEEKSCAN;
-        }else{
+             saved_nEq, M, logK, n_अन्तर्, r_Log_आकार, x, n_अन्तर्_Mul));
+          pNew->wsFlags |= WHERE_अन्तर्_SEEKSCAN;
+        }अन्यथा{
           WHERETRACE(0x40,
             ("IN operator (N=%d M=%d logK=%d nIn=%d rLogSize=%d x=%d"
              " nInMul=%d) prefers normal scan\n",
-             saved_nEq, M, logK, nIn, rLogSize, x, nInMul));
-          continue;
+             saved_nEq, M, logK, n_अन्तर्, r_Log_आकार, x, n_अन्तर्_Mul));
+          अनुवर्त;
         }
       }
-      pNew->wsFlags |= WHERE_COLUMN_IN;
-    }else if( eOp & (WO_EQ|WO_IS) ){
-      int iCol = pProbe->aiColumn[saved_nEq];
+      pNew->wsFlags |= WHERE_COLUMN_अन्तर्;
+    }अन्यथा यदि( eOp & (WO_EQ|WO_IS) ){
+      पूर्णाङ्क iCol = pProbe->aiColumn[saved_nEq];
       pNew->wsFlags |= WHERE_COLUMN_EQ;
-      assert( saved_nEq==pNew->u.btree.nEq );
-      if( iCol==XN_ROWID
-       || (iCol>=0 && nInMul==0 && saved_nEq==pProbe->nKeyCol-1)
+      प्रतिज्ञा( saved_nEq==pNew->u.btree.nEq );
+      यदि( iCol==XN_ROWID
+       || (iCol>=0 && n_अन्तर्_Mul==0 && saved_nEq==pProbe->n_कुञ्चिका_Col-1)
       ){
-        if( iCol==XN_ROWID || pProbe->uniqNotNull
-         || (pProbe->nKeyCol==1 && pProbe->onError && (eOp & WO_EQ))
+        यदि( iCol==XN_ROWID || pProbe->uniqNotNull
+         || (pProbe->n_कुञ्चिका_Col==1 && pProbe->onError && (eOp & WO_EQ))
         ){
           pNew->wsFlags |= WHERE_ONEROW;
-        }else{
+        }अन्यथा{
           pNew->wsFlags |= WHERE_UNQ_WANTED;
         }
       }
-      if( scan.iEquiv>1 ) pNew->wsFlags |= WHERE_TRANSCONS;
-    }else if( eOp & WO_ISNULL ){
+      यदि( अवलोकनम्.iEquiv>1 ) pNew->wsFlags |= WHERE_TRANSCONS;
+    }अन्यथा यदि( eOp & WO_ISNULL ){
       pNew->wsFlags |= WHERE_COLUMN_NULL;
-    }else{
-      int nVecLen = whereRangeVectorLen(
-          pParse, pSrc->iCursor, pProbe, saved_nEq, pTerm
+    }अन्यथा{
+      पूर्णाङ्क nVecLen = where_Range_सदिशम्_Len(
+          pParse, pSrc->iCursor, pProbe, saved_nEq, p_पदांशः
       );
-      if( eOp & (WO_GT|WO_GE) ){
+      यदि( eOp & (WO_GT|WO_GE) ){
         testcase( eOp & WO_GT );
         testcase( eOp & WO_GE );
-        pNew->wsFlags |= WHERE_COLUMN_RANGE|WHERE_BTM_LIMIT;
+        pNew->wsFlags |= WHERE_COLUMN_RANGE|WHERE_BTM_सीमा;
         pNew->u.btree.nBtm = nVecLen;
-        pBtm = pTerm;
-        pTop = 0;
-        if( pTerm->wtFlags & TERM_LIKEOPT ){
+        pBtm = p_पदांशः;
+        p_शिखरम् = 0;
+        यदि( p_पदांशः->wtFlags & पदांशः_LIKEOPT ){
           /* Range constraints that come from the LIKE optimization are
           ** always used in pairs. */
-          pTop = &pTerm[1];
-          assert( (pTop-(pTerm->pWC->a))<pTerm->pWC->nTerm );
-          assert( pTop->wtFlags & TERM_LIKEOPT );
-          assert( pTop->eOperator==WO_LT );
-          if( whereLoopResize(db, pNew, pNew->nLTerm+1) ) break; /* OOM */
-          pNew->aLTerm[pNew->nLTerm++] = pTop;
-          pNew->wsFlags |= WHERE_TOP_LIMIT;
-          pNew->u.btree.nTop = 1;
+          p_शिखरम् = &p_पदांशः[1];
+          प्रतिज्ञा( (p_शिखरम्-(p_पदांशः->pWC->a))<p_पदांशः->pWC->n_पदांशः );
+          प्रतिज्ञा( p_शिखरम्->wtFlags & पदांशः_LIKEOPT );
+          प्रतिज्ञा( p_शिखरम्->eOperator==WO_LT );
+          यदि( whereLoopResize(db, pNew, pNew->nLTerm+1) ) भङ्ग; /* OOM */
+          pNew->aLTerm[pNew->nLTerm++] = p_शिखरम्;
+          pNew->wsFlags |= WHERE_शिखरम्_सीमा;
+          pNew->u.btree.n_शिखरम् = 1;
         }
-      }else{
-        assert( eOp & (WO_LT|WO_LE) );
+      }अन्यथा{
+        प्रतिज्ञा( eOp & (WO_LT|WO_LE) );
         testcase( eOp & WO_LT );
         testcase( eOp & WO_LE );
-        pNew->wsFlags |= WHERE_COLUMN_RANGE|WHERE_TOP_LIMIT;
-        pNew->u.btree.nTop = nVecLen;
-        pTop = pTerm;
-        pBtm = (pNew->wsFlags & WHERE_BTM_LIMIT)!=0 ?
+        pNew->wsFlags |= WHERE_COLUMN_RANGE|WHERE_शिखरम्_सीमा;
+        pNew->u.btree.n_शिखरम् = nVecLen;
+        p_शिखरम् = p_पदांशः;
+        pBtm = (pNew->wsFlags & WHERE_BTM_सीमा)!=0 ?
                        pNew->aLTerm[pNew->nLTerm-2] : 0;
       }
     }
@@ -3473,77 +3473,77 @@ static int whereLoopAddBtreeIndex(
     ** values of nIn and nInMul. In other words, assuming that all
     ** "x IN(...)" terms are replaced with "x = ?". This block updates
     ** the value of pNew->nOut to account for pTerm (but not nIn/nInMul).  */
-    assert( pNew->nOut==saved_nOut );
-    if( pNew->wsFlags & WHERE_COLUMN_RANGE ){
+    प्रतिज्ञा( pNew->n_बहिर्गमनम्==saved_n_बहिर्गमनम् );
+    यदि( pNew->wsFlags & WHERE_COLUMN_RANGE ){
       /* Adjust nOut using stat4 data. Or, if there is no stat4
       ** data, using some other estimate.  */
-      whereRangeScanEst(pParse, pBuilder, pBtm, pTop, pNew);
-    }else{
-      int nEq = ++pNew->u.btree.nEq;
-      assert( eOp & (WO_ISNULL|WO_EQ|WO_IN|WO_IS) );
+      where_Range_अवलोकनम्_Est(pParse, pBuilder, pBtm, p_शिखरम्, pNew);
+    }अन्यथा{
+      पूर्णाङ्क nEq = ++pNew->u.btree.nEq;
+      प्रतिज्ञा( eOp & (WO_ISNULL|WO_EQ|WO_अन्तर्|WO_IS) );
 
-      assert( pNew->nOut==saved_nOut );
-      if( pTerm->truthProb<=0 && pProbe->aiColumn[saved_nEq]>=0 ){
-        assert( (eOp & WO_IN) || nIn==0 );
-        testcase( eOp & WO_IN );
-        pNew->nOut += pTerm->truthProb;
-        pNew->nOut -= nIn;
-      }else{
-#ifdef SQLITE_ENABLE_STAT4
-        tRowcnt nOut = 0;
-        if( nInMul==0
+      प्रतिज्ञा( pNew->n_बहिर्गमनम्==saved_n_बहिर्गमनम् );
+      यदि( p_पदांशः->truthProb<=0 && pProbe->aiColumn[saved_nEq]>=0 ){
+        प्रतिज्ञा( (eOp & WO_अन्तर्) || n_अन्तर्==0 );
+        testcase( eOp & WO_अन्तर् );
+        pNew->n_बहिर्गमनम् += p_पदांशः->truthProb;
+        pNew->n_बहिर्गमनम् -= n_अन्तर्;
+      }अन्यथा{
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
+        tRowcnt n_बहिर्गमनम् = 0;
+        यदि( n_अन्तर्_Mul==0
          && pProbe->nSample
          && ALWAYS(pNew->u.btree.nEq<=pProbe->nSampleCol)
-         && ((eOp & WO_IN)==0 || ExprUseXList(pTerm->pExpr))
+         && ((eOp & WO_अन्तर्)==0 || व्यञ्जकम्_Use_XList(p_पदांशः->p_व्यञ्जकम्))
          && OptimizationEnabled(db, SQLITE_Stat4)
         ){
-          Expr *pExpr = pTerm->pExpr;
-          if( (eOp & (WO_EQ|WO_ISNULL|WO_IS))!=0 ){
+          व्यञ्जकम् *p_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
+          यदि( (eOp & (WO_EQ|WO_ISNULL|WO_IS))!=0 ){
             testcase( eOp & WO_EQ );
             testcase( eOp & WO_IS );
             testcase( eOp & WO_ISNULL );
-            rc = whereEqualScanEst(pParse, pBuilder, pExpr->pRight, &nOut);
-          }else{
-            rc = whereInScanEst(pParse, pBuilder, pExpr->x.pList, &nOut);
+            rc = where_Equal_अवलोकनम्_Est(pParse, pBuilder, p_व्यञ्जकम्->p_दक्षिणः, &n_बहिर्गमनम्);
+          }अन्यथा{
+            rc = where_अन्तर्_अवलोकनम्_Est(pParse, pBuilder, p_व्यञ्जकम्->x.pList, &n_बहिर्गमनम्);
           }
-          if( rc==SQLITE_NOTFOUND ) rc = SQLITE_OK;
-          if( rc!=SQLITE_OK ) break;          /* Jump out of the pTerm loop */
-          if( nOut ){
-            pNew->nOut = sqlite3LogEst(nOut);
-            if( nEq==1
+          यदि( rc==SQLITE_NOTFOUND ) rc = SQLITE_OK;
+          यदि( rc!=SQLITE_OK ) भङ्ग;          /* Jump out of the pTerm loop */
+          यदि( n_बहिर्गमनम् ){
+            pNew->n_बहिर्गमनम् = sqlite3LogEst(n_बहिर्गमनम्);
+            यदि( nEq==1
              /* TUNING: Mark terms as "low selectivity" if they seem likely
              ** to be true for half or more of the rows in the table.
              ** See tag-202002240-1 */
-             && pNew->nOut+10 > pProbe->aiRowLogEst[0]
+             && pNew->n_बहिर्गमनम्+10 > pProbe->aiRowLogEst[0]
             ){
-#if WHERETRACE_ENABLED /* 0x01 */
-              if( sqlite3WhereTrace & 0x20 ){
+#यदि WHERETRACE_ENABLED /* 0x01 */
+              यदि( sqlite3WhereTrace & 0x20 ){
                 sqlite3DebugPrintf(
                    "STAT4 determines term has low selectivity:\n");
-                sqlite3WhereTermPrint(pTerm, 999);
+                sqlite3_Where_पदांशः_Print(p_पदांशः, 999);
               }
-#endif
-              pTerm->wtFlags |= TERM_HIGHTRUTH;
-              if( pTerm->wtFlags & TERM_HEURTRUTH ){
+#यदि_अन्तः
+              p_पदांशः->wtFlags |= पदांशः_HIGHTRUTH;
+              यदि( p_पदांशः->wtFlags & पदांशः_HEURTRUTH ){
                 /* If the term has previously been used with an assumption of
                 ** higher selectivity, then set the flag to rerun the
                 ** loop computations. */
                 pBuilder->bldFlags2 |= SQLITE_BLDF2_2NDPASS;
               }
             }
-            if( pNew->nOut>saved_nOut ) pNew->nOut = saved_nOut;
-            pNew->nOut -= nIn;
+            यदि( pNew->n_बहिर्गमनम्>saved_n_बहिर्गमनम् ) pNew->n_बहिर्गमनम् = saved_n_बहिर्गमनम्;
+            pNew->n_बहिर्गमनम् -= n_अन्तर्;
           }
         }
-        if( nOut==0 )
-#endif
+        यदि( n_बहिर्गमनम्==0 )
+#यदि_अन्तः
         {
-          pNew->nOut += (pProbe->aiRowLogEst[nEq] - pProbe->aiRowLogEst[nEq-1]);
-          if( eOp & WO_ISNULL ){
+          pNew->n_बहिर्गमनम् += (pProbe->aiRowLogEst[nEq] - pProbe->aiRowLogEst[nEq-1]);
+          यदि( eOp & WO_ISNULL ){
             /* TUNING: If there is no likelihood() value, assume that a
             ** "col IS NULL" expression matches twice as many rows
             ** as (col=?). */
-            pNew->nOut += 10;
+            pNew->n_बहिर्गमनम् += 10;
           }
         }
       }
@@ -3556,17 +3556,17 @@ static int whereLoopAddBtreeIndex(
     **   2.  Stepping forward in the index pNew->nOut times to find all
     **       additional matching entries.
     */
-    assert( pSrc->pSTab->szTabRow>0 );
-    if( pProbe->idxType==SQLITE_IDXTYPE_IPK ){
+    प्रतिज्ञा( pSrc->pSTab->szTabRow>0 );
+    यदि( pProbe->idxType==SQLITE_IDXTYPE_IPK ){
       /* The pProbe->szIdxRow is low for an IPK table since the interior
       ** pages are small.  Thus szIdxRow gives a good estimate of seek cost.
       ** But the leaf pages are full-size, so pProbe->szIdxRow would badly
       ** under-estimate the scanning cost. */
-      rCostIdx = pNew->nOut + 16;
-    }else{
-      rCostIdx = pNew->nOut + 1 + (15*pProbe->szIdxRow)/pSrc->pSTab->szTabRow;
+      rCostIdx = pNew->n_बहिर्गमनम् + 16;
+    }अन्यथा{
+      rCostIdx = pNew->n_बहिर्गमनम् + 1 + (15*pProbe->szIdxRow)/pSrc->pSTab->szTabRow;
     }
-    rCostIdx = sqlite3LogEstAdd(rLogSize, rCostIdx);
+    rCostIdx = sqlite3_Log_Est_सङ्कलय(r_Log_आकार, rCostIdx);
 
     /* Estimate the cost of running the loop.  If all data is coming
     ** from the index, then this is just the cost of doing the index
@@ -3574,47 +3574,47 @@ static int whereLoopAddBtreeIndex(
     ** we also have to add in the cost of doing pNew->nOut searches to
     ** locate the row in the main table that corresponds to the index entry.
     */
-    pNew->rRun = rCostIdx;
-    if( (pNew->wsFlags & (WHERE_IDX_ONLY|WHERE_IPK|WHERE_EXPRIDX))==0 ){
-      pNew->rRun = sqlite3LogEstAdd(pNew->rRun, pNew->nOut + 16);
+    pNew->r_सततम् = rCostIdx;
+    यदि( (pNew->wsFlags & (WHERE_IDX_ONLY|WHERE_IPK|WHERE_EXPRIDX))==0 ){
+      pNew->r_सततम् = sqlite3_Log_Est_सङ्कलय(pNew->r_सततम्, pNew->n_बहिर्गमनम् + 16);
     }
-    ApplyCostMultiplier(pNew->rRun, pProbe->pTable->costMult);
+    ApplyCostMultiplier(pNew->r_सततम्, pProbe->p_सारणी->costMult);
 
-    nOutUnadjusted = pNew->nOut;
-    pNew->rRun += nInMul + nIn;
-    pNew->nOut += nInMul + nIn;
-    whereLoopOutputAdjust(pBuilder->pWC, pNew, rSize);
-    if( pSrc->fg.fromExists ) pNew->nOut = 0;
-    rc = whereLoopInsert(pBuilder, pNew);
+    n_बहिर्गमनम्_Unadjusted = pNew->n_बहिर्गमनम्;
+    pNew->r_सततम् += n_अन्तर्_Mul + n_अन्तर्;
+    pNew->n_बहिर्गमनम् += n_अन्तर्_Mul + n_अन्तर्;
+    whereLoopOutputAdjust(pBuilder->pWC, pNew, r_आकार);
+    यदि( pSrc->fg.fromExists ) pNew->n_बहिर्गमनम् = 0;
+    rc = where_Loop_निवेशय(pBuilder, pNew);
 
-    if( pNew->wsFlags & WHERE_COLUMN_RANGE ){
-      pNew->nOut = saved_nOut;
-    }else{
-      pNew->nOut = nOutUnadjusted;
+    यदि( pNew->wsFlags & WHERE_COLUMN_RANGE ){
+      pNew->n_बहिर्गमनम् = saved_n_बहिर्गमनम्;
+    }अन्यथा{
+      pNew->n_बहिर्गमनम् = n_बहिर्गमनम्_Unadjusted;
     }
 
-    if( (pNew->wsFlags & WHERE_TOP_LIMIT)==0
+    यदि( (pNew->wsFlags & WHERE_शिखरम्_सीमा)==0
      && pNew->u.btree.nEq<pProbe->nColumn
-     && (pNew->u.btree.nEq<pProbe->nKeyCol ||
+     && (pNew->u.btree.nEq<pProbe->n_कुञ्चिका_Col ||
           pProbe->idxType!=SQLITE_IDXTYPE_PRIMARYKEY)
     ){
-      if( pNew->u.btree.nEq>3 ){
-        sqlite3ProgressCheck(pParse);
+      यदि( pNew->u.btree.nEq>3 ){
+        sqlite3_प्रगतिः_Check(pParse);
       }
-      whereLoopAddBtreeIndex(pBuilder, pSrc, pProbe, nInMul+nIn);
+      where_Loop_सङ्कलय_Btree_सूचकांक(pBuilder, pSrc, pProbe, n_अन्तर्_Mul+n_अन्तर्);
     }
-    pNew->nOut = saved_nOut;
-#ifdef SQLITE_ENABLE_STAT4
+    pNew->n_बहिर्गमनम् = saved_n_बहिर्गमनम्;
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
     pBuilder->nRecValid = nRecValid;
-#endif
+#यदि_अन्तः
   }
   pNew->prereq = saved_prereq;
   pNew->u.btree.nEq = saved_nEq;
   pNew->u.btree.nBtm = saved_nBtm;
-  pNew->u.btree.nTop = saved_nTop;
+  pNew->u.btree.n_शिखरम् = saved_n_शिखरम्;
   pNew->nSkip = saved_nSkip;
   pNew->wsFlags = saved_wsFlags;
-  pNew->nOut = saved_nOut;
+  pNew->n_बहिर्गमनम् = saved_n_बहिर्गमनम्;
   pNew->nLTerm = saved_nLTerm;
 
   /* Consider using a skip-scan if there are no WHERE clause constraints
@@ -3627,13 +3627,13 @@ static int whereLoopAddBtreeIndex(
   ** the code). And, even if it is not, it should not be too much slower.
   ** On the other hand, the extra seeks could end up being significantly
   ** more expensive.  */
-  assert( 42==sqlite3LogEst(18) );
-  if( saved_nEq==saved_nSkip
-   && saved_nEq+1<pProbe->nKeyCol
+  प्रतिज्ञा( 42==sqlite3LogEst(18) );
+  यदि( saved_nEq==saved_nSkip
+   && saved_nEq+1<pProbe->n_कुञ्चिका_Col
    && saved_nEq==pNew->nLTerm
-   && pProbe->noSkipScan==0
+   && pProbe->no_Skip_अवलोकनम्==0
    && pProbe->hasStat1!=0
-   && OptimizationEnabled(db, SQLITE_SkipScan)
+   && OptimizationEnabled(db, SQLITE_Skip_अवलोकनम्)
    && pProbe->aiRowLogEst[saved_nEq+1]>=42  /* TUNING: Minimum for skip-scan */
    && pSrc->fg.fromExists==0
    && (rc = whereLoopResize(db, pNew, pNew->nLTerm+1))==SQLITE_OK
@@ -3644,20 +3644,20 @@ static int whereLoopAddBtreeIndex(
     pNew->aLTerm[pNew->nLTerm++] = 0;
     pNew->wsFlags |= WHERE_SKIPSCAN;
     nIter = pProbe->aiRowLogEst[saved_nEq] - pProbe->aiRowLogEst[saved_nEq+1];
-    pNew->nOut -= nIter;
+    pNew->n_बहिर्गमनम् -= nIter;
     /* TUNING:  Because uncertainties in the estimates for skip-scan queries,
     ** add a 1.375 fudge factor to make skip-scan slightly less likely. */
     nIter += 5;
-    whereLoopAddBtreeIndex(pBuilder, pSrc, pProbe, nIter + nInMul);
-    pNew->nOut = saved_nOut;
+    where_Loop_सङ्कलय_Btree_सूचकांक(pBuilder, pSrc, pProbe, nIter + n_अन्तर्_Mul);
+    pNew->n_बहिर्गमनम् = saved_n_बहिर्गमनम्;
     pNew->u.btree.nEq = saved_nEq;
     pNew->nSkip = saved_nSkip;
     pNew->wsFlags = saved_wsFlags;
   }
 
   WHERETRACE(0x800, ("END %s.addBtreeIdx(%s), nEq=%d, rc=%d\n",
-                      pProbe->pTable->zName, pProbe->zName, saved_nEq, rc));
-  return rc;
+                      pProbe->p_सारणी->zName, pProbe->zName, saved_nEq, rc));
+  प्रत्यागम rc;
 }
 
 /*
@@ -3668,101 +3668,101 @@ static int whereLoopAddBtreeIndex(
 ** if there is no way for pIndex to be useful in implementing that
 ** ORDER BY clause.
 */
-static int indexMightHelpWithOrderBy(
+स्थिर पूर्णाङ्क सूचकांक_Might_Help_With_क्रमः_By(
   WhereLoopBuilder *pBuilder,
-  Index *pIndex,
-  int iCursor
+  सूचकांक *p_सूचकांक,
+  पूर्णाङ्क iCursor
 ){
-  ExprList *pOB;
-  ExprList *aColExpr;
-  int ii, jj;
+  व्यञ्जकम्_List *pOB;
+  व्यञ्जकम्_List *a_Col_व्यञ्जकम्;
+  पूर्णाङ्क ii, jj;
 
-  if( pIndex->bUnordered ) return 0;
-  if( (pOB = pBuilder->pWInfo->pOrderBy)==0 ) return 0;
-  for(ii=0; ii<pOB->nExpr; ii++){
-    Expr *pExpr = sqlite3ExprSkipCollateAndLikely(pOB->a[ii].pExpr);
-    if( NEVER(pExpr==0) ) continue;
-    if( (pExpr->op==TK_COLUMN || pExpr->op==TK_AGG_COLUMN) 
-     && pExpr->iTable==iCursor 
+  यदि( p_सूचकांक->bUnordered ) प्रत्यागम 0;
+  यदि( (pOB = pBuilder->pWInfo->p_क्रमः_By)==0 ) प्रत्यागम 0;
+  प्रति(ii=0; ii<pOB->n_व्यञ्जकम्; ii++){
+    व्यञ्जकम् *p_व्यञ्जकम् = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(pOB->a[ii].p_व्यञ्जकम्);
+    यदि( NEVER(p_व्यञ्जकम्==0) ) अनुवर्त;
+    यदि( (p_व्यञ्जकम्->op==TK_COLUMN || p_व्यञ्जकम्->op==TK_AGG_COLUMN) 
+     && p_व्यञ्जकम्->i_सारणी==iCursor 
     ){
-      if( pExpr->iColumn<0 ) return 1;
-      for(jj=0; jj<pIndex->nKeyCol; jj++){
-        if( pExpr->iColumn==pIndex->aiColumn[jj] ) return 1;
+      यदि( p_व्यञ्जकम्->iColumn<0 ) प्रत्यागम 1;
+      प्रति(jj=0; jj<p_सूचकांक->n_कुञ्चिका_Col; jj++){
+        यदि( p_व्यञ्जकम्->iColumn==p_सूचकांक->aiColumn[jj] ) प्रत्यागम 1;
       }
-    }else if( (aColExpr = pIndex->aColExpr)!=0 ){
-      for(jj=0; jj<pIndex->nKeyCol; jj++){
-        if( pIndex->aiColumn[jj]!=XN_EXPR ) continue;
-        if( sqlite3ExprCompareSkip(pExpr,aColExpr->a[jj].pExpr,iCursor)==0 ){
-          return 1;
+    }अन्यथा यदि( (a_Col_व्यञ्जकम् = p_सूचकांक->a_Col_व्यञ्जकम्)!=0 ){
+      प्रति(jj=0; jj<p_सूचकांक->n_कुञ्चिका_Col; jj++){
+        यदि( p_सूचकांक->aiColumn[jj]!=XN_व्यञ्जकम् ) अनुवर्त;
+        यदि( sqlite3_व्यञ्जकम्_Compare_Skip(p_व्यञ्जकम्,a_Col_व्यञ्जकम्->a[jj].p_व्यञ्जकम्,iCursor)==0 ){
+          प्रत्यागम 1;
         }
       }
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /* Check to see if a partial index with pPartIndexWhere can be used
 ** in the current query.  Return true if it can be and false if not.
 */
-static int whereUsablePartialIndex(
-  int iTab,             /* The table for which we want an index */
+स्थिर पूर्णाङ्क where_Usable_Partial_सूचकांक(
+  पूर्णाङ्क iTab,             /* The table for which we want an index */
   u8 jointype,          /* The JT_* flags on the join */
   WhereClause *pWC,     /* The WHERE clause of the query */
-  Expr *pWhere          /* The WHERE clause from the partial index */
+  व्यञ्जकम् *pWhere          /* The WHERE clause from the partial index */
 ){
-  int i;
-  WhereTerm *pTerm;
+  पूर्णाङ्क i;
+  Where_पदांशः *p_पदांशः;
   Parse *pParse;
 
-  if( jointype & JT_LTORJ ) return 0;
+  यदि( jointype & JT_LTORJ ) प्रत्यागम 0;
   pParse = pWC->pWInfo->pParse;
-  while( pWhere->op==TK_AND ){
-    if( !whereUsablePartialIndex(iTab,jointype,pWC,pWhere->pLeft) ) return 0;
-    pWhere = pWhere->pRight;
+  यावत्( pWhere->op==TK_AND ){
+    यदि( !where_Usable_Partial_सूचकांक(iTab,jointype,pWC,pWhere->p_वामः) ) प्रत्यागम 0;
+    pWhere = pWhere->p_दक्षिणः;
   }
-  for(i=0, pTerm=pWC->a; i<pWC->nTerm; i++, pTerm++){
-    Expr *pExpr;
-    pExpr = pTerm->pExpr;
-    if( (!ExprHasProperty(pExpr, EP_OuterON) || pExpr->w.iJoin==iTab)
-     && ((jointype & JT_OUTER)==0 || ExprHasProperty(pExpr, EP_OuterON))
-     && sqlite3ExprImpliesExpr(pParse, pExpr, pWhere, iTab)
-     && !sqlite3ExprImpliesExpr(pParse, pExpr, pWhere, -1)
-     && (pTerm->wtFlags & TERM_VNULL)==0
+  प्रति(i=0, p_पदांशः=pWC->a; i<pWC->n_पदांशः; i++, p_पदांशः++){
+    व्यञ्जकम् *p_व्यञ्जकम्;
+    p_व्यञ्जकम् = p_पदांशः->p_व्यञ्जकम्;
+    यदि( (!व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_OuterON) || p_व्यञ्जकम्->w.iJoin==iTab)
+     && ((jointype & JT_OUTER)==0 || व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_OuterON))
+     && sqlite3_व्यञ्जकम्_उपपादयति_व्यञ्जकम्(pParse, p_व्यञ्जकम्, pWhere, iTab)
+     && !sqlite3_व्यञ्जकम्_उपपादयति_व्यञ्जकम्(pParse, p_व्यञ्जकम्, pWhere, -1)
+     && (p_पदांशः->wtFlags & पदांशः_VNULL)==0
     ){
-      return 1;
+      प्रत्यागम 1;
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
 ** pIdx is an index containing expressions.  Check it see if any of the
 ** expressions in the index match the pExpr expression.
 */
-static int exprIsCoveredByIndex(
-  const Expr *pExpr,
-  const Index *pIdx,
-  int iTabCur
+स्थिर पूर्णाङ्क व्यञ्जकम्_Is_Covered_By_सूचकांक(
+  ध्रुव व्यञ्जकम् *p_व्यञ्जकम्,
+  ध्रुव सूचकांक *pIdx,
+  पूर्णाङ्क iTabCur
 ){
-  int i;
-  for(i=0; i<pIdx->nColumn; i++){
-    if( pIdx->aiColumn[i]==XN_EXPR
-     && sqlite3ExprCompare(0, pExpr, pIdx->aColExpr->a[i].pExpr, iTabCur)==0
+  पूर्णाङ्क i;
+  प्रति(i=0; i<pIdx->nColumn; i++){
+    यदि( pIdx->aiColumn[i]==XN_व्यञ्जकम्
+     && sqlite3_व्यञ्जकम्_Compare(0, p_व्यञ्जकम्, pIdx->a_Col_व्यञ्जकम्->a[i].p_व्यञ्जकम्, iTabCur)==0
     ){
-      return 1;
+      प्रत्यागम 1;
     }
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
 ** Structure passed to the whereIsCoveringIndex Walker callback.
 */
-typedef struct CoveringIndexCheck CoveringIndexCheck;
-struct CoveringIndexCheck {
-  Index *pIdx;       /* The index */
-  int iTabCur;       /* Cursor number for the corresponding table */
-  u8 bExpr;          /* Uses an indexed expression */
+प्रकारनिर्देश संरचना Covering_सूचकांक_Check Covering_सूचकांक_Check;
+संरचना Covering_सूचकांक_Check {
+  सूचकांक *pIdx;       /* The index */
+  पूर्णाङ्क iTabCur;       /* Cursor number for the corresponding table */
+  u8 b_व्यञ्जकम्;          /* Uses an indexed expression */
   u8 bUnidx;         /* Uses an unindexed column not within an indexed expr */
 };
 
@@ -3783,32 +3783,32 @@ struct CoveringIndexCheck {
 ** If pCk->pIdx contains indexed expressions and one of those expressions
 ** matches pExpr, then prune the search.
 */
-static int whereIsCoveringIndexWalkCallback(Walker *pWalk, Expr *pExpr){
-  int i;                    /* Loop counter */
-  const Index *pIdx;        /* The index of interest */
-  const i16 *aiColumn;      /* Columns contained in the index */
+स्थिर पूर्णाङ्क where_Is_Covering_सूचकांक_Walk_Callback(Walker *pWalk, व्यञ्जकम् *p_व्यञ्जकम्){
+  पूर्णाङ्क i;                    /* Loop counter */
+  ध्रुव सूचकांक *pIdx;        /* The index of interest */
+  ध्रुव i16 *aiColumn;      /* Columns contained in the index */
   u16 nColumn;              /* Number of columns in the index */
-  CoveringIndexCheck *pCk;  /* Info about this search */
+  Covering_सूचकांक_Check *pCk;  /* Info about this search */
 
   pCk = pWalk->u.pCovIdxCk;
   pIdx = pCk->pIdx;
-  if( (pExpr->op==TK_COLUMN || pExpr->op==TK_AGG_COLUMN) ){
+  यदि( (p_व्यञ्जकम्->op==TK_COLUMN || p_व्यञ्जकम्->op==TK_AGG_COLUMN) ){
     /* if( pExpr->iColumn<(BMS-1) && pIdx->bHasExpr==0 ) return WRC_Continue;*/
-    if( pExpr->iTable!=pCk->iTabCur ) return WRC_Continue;
+    यदि( p_व्यञ्जकम्->i_सारणी!=pCk->iTabCur ) प्रत्यागम WRC_Continue;
     pIdx = pWalk->u.pCovIdxCk->pIdx;
     aiColumn = pIdx->aiColumn;
     nColumn = pIdx->nColumn;
-    for(i=0; i<nColumn; i++){
-      if( aiColumn[i]==pExpr->iColumn ) return WRC_Continue;
+    प्रति(i=0; i<nColumn; i++){
+      यदि( aiColumn[i]==p_व्यञ्जकम्->iColumn ) प्रत्यागम WRC_Continue;
     }
     pCk->bUnidx = 1;
-    return WRC_Abort;
-  }else if( pIdx->bHasExpr
-         && exprIsCoveredByIndex(pExpr, pIdx, pWalk->u.pCovIdxCk->iTabCur) ){
-    pCk->bExpr = 1;
-    return WRC_Prune;
+    प्रत्यागम WRC_Abort;
+  }अन्यथा यदि( pIdx->b_Has_व्यञ्जकम्
+         && व्यञ्जकम्_Is_Covered_By_सूचकांक(p_व्यञ्जकम्, pIdx, pWalk->u.pCovIdxCk->iTabCur) ){
+    pCk->b_व्यञ्जकम् = 1;
+    प्रत्यागम WRC_Prune;
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 
@@ -3835,59 +3835,59 @@ static int whereIsCoveringIndexWalkCallback(Walker *pWalk, Expr *pExpr){
 ** But returning one of the other two values when zero should have been
 ** returned can lead to incorrect bytecode and assertion faults.
 */
-static SQLITE_NOINLINE u32 whereIsCoveringIndex(
+स्थिर SQLITE_NOINLINE u32 where_Is_Covering_सूचकांक(
   WhereInfo *pWInfo,     /* The WHERE clause context */
-  Index *pIdx,           /* Index that is being tested */
-  int iTabCur            /* Cursor for the table being indexed */
+  सूचकांक *pIdx,           /* Index that is being tested */
+  पूर्णाङ्क iTabCur            /* Cursor for the table being indexed */
 ){
-  int i, rc;
-  struct CoveringIndexCheck ck;
+  पूर्णाङ्क i, rc;
+  संरचना Covering_सूचकांक_Check ck;
   Walker w;
-  if( pWInfo->pSelect==0 ){
+  यदि( pWInfo->pSelect==0 ){
     /* We don't have access to the full query, so we cannot check to see
     ** if pIdx is covering.  Assume it is not. */
-    return 0;
+    प्रत्यागम 0;
   }
-  if( pIdx->bHasExpr==0 ){
-    for(i=0; i<pIdx->nColumn; i++){
-      if( pIdx->aiColumn[i]>=BMS-1 ) break;
+  यदि( pIdx->b_Has_व्यञ्जकम्==0 ){
+    प्रति(i=0; i<pIdx->nColumn; i++){
+      यदि( pIdx->aiColumn[i]>=BMS-1 ) भङ्ग;
     }
-    if( i>=pIdx->nColumn ){
+    यदि( i>=pIdx->nColumn ){
       /* pIdx does not index any columns greater than 62, but we know from
       ** colMask that columns greater than 62 are used, so this is not a
       ** covering index */
-      return 0;
+      प्रत्यागम 0;
     }
   }
   ck.pIdx = pIdx;
   ck.iTabCur = iTabCur;
-  ck.bExpr = 0;
+  ck.b_व्यञ्जकम् = 0;
   ck.bUnidx = 0;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = whereIsCoveringIndexWalkCallback;
+  स्मृतिं_पूरय(&w, 0, परिमाण(w));
+  w.x_व्यञ्जकम्_Callback = where_Is_Covering_सूचकांक_Walk_Callback;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   w.u.pCovIdxCk = &ck;
   sqlite3WalkSelect(&w, pWInfo->pSelect);
-  if( ck.bUnidx ){
+  यदि( ck.bUnidx ){
     rc = 0;
-  }else if( ck.bExpr ){
+  }अन्यथा यदि( ck.b_व्यञ्जकम् ){
     rc = WHERE_EXPRIDX;
-  }else{
+  }अन्यथा{
     rc = WHERE_IDX_ONLY;
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** This is an sqlite3ParserAddCleanup() callback that is invoked to
 ** free the Parse->pIdxEpr list when the Parse object is destroyed.
 */
-static void whereIndexedExprCleanup(sqlite3 *db, void *pObject){
-  IndexedExpr **pp = (IndexedExpr**)pObject;
-  while( *pp!=0 ){
-    IndexedExpr *p = *pp;
+स्थिर शून्य where_अनुक्रमितम्_व्यञ्जकम्_Cleanup(sqlite3 *db, शून्य *pObject){
+  अनुक्रमितम्_व्यञ्जकम् **pp = (अनुक्रमितम्_व्यञ्जकम्**)pObject;
+  यावत्( *pp!=0 ){
+    अनुक्रमितम्_व्यञ्जकम् *p = *pp;
     *pp = p->pIENext;
-    sqlite3ExprDelete(db, p->pExpr);
+    sqlite3_व्यञ्जकम्_Delete(db, p->p_व्यञ्जकम्);
     sqlite3DbFreeNN(db, p);
   }
 }
@@ -3919,70 +3919,70 @@ static void whereIndexedExprCleanup(sqlite3 *db, void *pObject){
 ** to the Parse.pIdxPartExpr list for each column that can be replaced
 ** by a constant.
 */
-static void wherePartIdxExpr(
+स्थिर शून्य where_Part_Idx_व्यञ्जकम्(
   Parse *pParse,                  /* Parse context */
-  Index *pIdx,                    /* Partial index being processed */
-  Expr *pPart,                    /* WHERE clause being processed */
-  Bitmask *pMask,                 /* Mask to clear bits in */
-  int iIdxCur,                    /* Cursor number for index */
+  सूचकांक *pIdx,                    /* Partial index being processed */
+  व्यञ्जकम् *pPart,                    /* WHERE clause being processed */
+  Bitmask *p_आवरणम्,                 /* Mask to clear bits in */
+  पूर्णाङ्क iIdxCur,                    /* Cursor number for index */
   SrcItem *pItem                  /* The FROM clause entry for the table */
 ){
-  assert( pItem==0 || (pItem->fg.jointype & JT_RIGHT)==0 );
-  assert( (pItem==0 || pMask==0) && (pMask!=0 || pItem!=0) );
+  प्रतिज्ञा( pItem==0 || (pItem->fg.jointype & JT_दक्षिणः)==0 );
+  प्रतिज्ञा( (pItem==0 || p_आवरणम्==0) && (p_आवरणम्!=0 || pItem!=0) );
 
-  if( pPart->op==TK_AND ){
-    wherePartIdxExpr(pParse, pIdx, pPart->pRight, pMask, iIdxCur, pItem);
-    pPart = pPart->pLeft;
+  यदि( pPart->op==TK_AND ){
+    where_Part_Idx_व्यञ्जकम्(pParse, pIdx, pPart->p_दक्षिणः, p_आवरणम्, iIdxCur, pItem);
+    pPart = pPart->p_वामः;
   }
 
-  if( (pPart->op==TK_EQ || pPart->op==TK_IS) ){
-    Expr *pLeft = pPart->pLeft;
-    Expr *pRight = pPart->pRight;
-    Table *pLeftTab;            /* Table of the left operand */
-    Column *pLeftCol;           /* Column of the left operand */
-    u8 affRight, affLeft;
+  यदि( (pPart->op==TK_EQ || pPart->op==TK_IS) ){
+    व्यञ्जकम् *p_वामः = pPart->p_वामः;
+    व्यञ्जकम् *p_दक्षिणः = pPart->p_दक्षिणः;
+    सारणी *p_वामः_Tab;            /* Table of the left operand */
+    Column *p_वामः_Col;           /* Column of the left operand */
+    u8 aff_दक्षिणः, aff_वामः;
 
-    if( pLeft->op!=TK_COLUMN ) return;
-    if( !sqlite3ExprIsConstant(0, pRight) ) return;
-    if( !sqlite3IsBinary(sqlite3ExprCompareCollSeq(pParse, pPart)) ) return;
-    if( pLeft->iColumn<0 ) return;
-    pLeftTab = pIdx->pTable;
-    pLeftCol = &pLeftTab->aCol[pLeft->iColumn];
-    affLeft = pLeftCol->affinity;
-    assert( SQLITE_AFF_BLOB<SQLITE_AFF_TEXT );
-    if( affLeft<SQLITE_AFF_TEXT ) return;
-    affRight = sqlite3ExprAffinity(pRight);
-    if( affRight!=0 && affRight!=affLeft ) return;
-    if( pItem ){
+    यदि( p_वामः->op!=TK_COLUMN ) प्रत्यागम;
+    यदि( !sqlite3_व्यञ्जकम्_Is_Constant(0, p_दक्षिणः) ) प्रत्यागम;
+    यदि( !sqlite3_Is_द्विमान(sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pParse, pPart)) ) प्रत्यागम;
+    यदि( p_वामः->iColumn<0 ) प्रत्यागम;
+    p_वामः_Tab = pIdx->p_सारणी;
+    p_वामः_Col = &p_वामः_Tab->aCol[p_वामः->iColumn];
+    aff_वामः = p_वामः_Col->affinity;
+    प्रतिज्ञा( SQLITE_AFF_BLOB<SQLITE_AFF_TEXT );
+    यदि( aff_वामः<SQLITE_AFF_TEXT ) प्रत्यागम;
+    aff_दक्षिणः = sqlite3_व्यञ्जकम्_Affinity(p_दक्षिणः);
+    यदि( aff_दक्षिणः!=0 && aff_दक्षिणः!=aff_वामः ) प्रत्यागम;
+    यदि( pItem ){
       sqlite3 *db = pParse->db;
-      IndexedExpr *p = (IndexedExpr*)sqlite3DbMallocRaw(db, sizeof(*p));
-      if( p ){
-        int bNullRow = (pItem->fg.jointype&(JT_LEFT|JT_LTORJ))!=0;
-        pRight = sqlite3ExprDup(db, pRight, 0);
-        if( (pLeftTab->tabFlags & TF_Strict)!=0 ){
+      अनुक्रमितम्_व्यञ्जकम् *p = (अनुक्रमितम्_व्यञ्जकम्*)sqlite3DbMallocRaw(db, परिमाण(*p));
+      यदि( p ){
+        पूर्णाङ्क bNullRow = (pItem->fg.jointype&(JT_वामः|JT_LTORJ))!=0;
+        p_दक्षिणः = sqlite3_व्यञ्जकम्_Dup(db, p_दक्षिणः, 0);
+        यदि( (p_वामः_Tab->tabFlags & TF_Strict)!=0 ){
           Token t;
-          t.z = sqlite3ColumnType(pLeftCol, 0);
-          assert( t.z!=0 );  /* Because affLeft>=SQLITE_AFF_TEXT */
-          t.n = (int)strlen(t.z);
-          p->pExpr = sqlite3ExprAlloc(db, TK_CAST, &t, 1);
-          sqlite3ExprAttachSubtrees(db, p->pExpr, pRight, 0);
-        }else{
-          p->pExpr = pRight;
+          t.z = sqlite3ColumnType(p_वामः_Col, 0);
+          प्रतिज्ञा( t.z!=0 );  /* Because affLeft>=SQLITE_AFF_TEXT */
+          t.n = (पूर्णाङ्क)वाक्यदैर्घ्यम्(t.z);
+          p->p_व्यञ्जकम् = sqlite3_व्यञ्जकम्_Alloc(db, TK_CAST, &t, 1);
+          sqlite3_व्यञ्जकम्_Attach_Subtrees(db, p->p_व्यञ्जकम्, p_दक्षिणः, 0);
+        }अन्यथा{
+          p->p_व्यञ्जकम् = p_दक्षिणः;
         }
-        p->iDataCur = pItem->iCursor;
+        p->i_दत्त_Cur = pItem->iCursor;
         p->iIdxCur = iIdxCur;
-        p->iIdxCol = pLeft->iColumn;
+        p->iIdxCol = p_वामः->iColumn;
         p->bMaybeNullRow = bNullRow;
-        p->pIENext = pParse->pIdxPartExpr;
-        p->aff = affLeft;
-        pParse->pIdxPartExpr = p;
-        if( p->pIENext==0 ){
-          void *pArg = (void*)&pParse->pIdxPartExpr;
-          sqlite3ParserAddCleanup(pParse, whereIndexedExprCleanup, pArg);
+        p->pIENext = pParse->p_Idx_Part_व्यञ्जकम्;
+        p->aff = aff_वामः;
+        pParse->p_Idx_Part_व्यञ्जकम् = p;
+        यदि( p->pIENext==0 ){
+          शून्य *pArg = (शून्य*)&pParse->p_Idx_Part_व्यञ्जकम्;
+          sqlite3_Parser_सङ्कलय_Cleanup(pParse, where_अनुक्रमितम्_व्यञ्जकम्_Cleanup, pArg);
         }
       }
-    }else if( pLeft->iColumn<(BMS-1) ){
-      *pMask &= ~((Bitmask)1 << pLeft->iColumn);
+    }अन्यथा यदि( p_वामः->iColumn<(BMS-1) ){
+      *p_आवरणम् &= ~((Bitmask)1 << p_वामः->iColumn);
     }
   }
 }
@@ -4024,24 +4024,24 @@ static void wherePartIdxExpr(
 ** performance of using an index is far better than the worst-case performance
 ** of a full table scan.
 */
-static int whereLoopAddBtree(
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_Btree(
   WhereLoopBuilder *pBuilder, /* WHERE clause information */
   Bitmask mPrereq             /* Extra prerequisites for using this table */
 ){
   WhereInfo *pWInfo;          /* WHERE analysis context */
-  Index *pProbe;              /* An index we are evaluating */
-  Index sPk;                  /* A fake index object for the primary key */
+  सूचकांक *pProbe;              /* An index we are evaluating */
+  सूचकांक sPk;                  /* A fake index object for the primary key */
   LogEst aiRowEstPk[2];       /* The aiRowLogEst[] value for the sPk index */
   i16 aiColumnPk = -1;        /* The aColumn[] value for the sPk index */
   SrcList *pTabList;          /* The FROM clause */
   SrcItem *pSrc;              /* The FROM clause btree term to add */
   WhereLoop *pNew;            /* Template WhereLoop object */
-  int rc = SQLITE_OK;         /* Return code */
-  int iSortIdx;               /* Index number */
-  int b;                      /* A boolean value */
-  LogEst rSize;               /* number of rows in the table */
+  पूर्णाङ्क rc = SQLITE_OK;         /* Return code */
+  पूर्णाङ्क i_क्रमय_Idx;               /* Index number */
+  पूर्णाङ्क b;                      /* A boolean value */
+  LogEst r_आकार;               /* number of rows in the table */
   WhereClause *pWC;           /* The parsed WHERE clause */
-  Table *pTab;                /* Table being queried */
+  सारणी *pTab;                /* Table being queried */
  
   pNew = pBuilder->pNew;
   pWInfo = pBuilder->pWInfo;
@@ -4049,65 +4049,65 @@ static int whereLoopAddBtree(
   pSrc = pTabList->a + pNew->iTab;
   pTab = pSrc->pSTab;
   pWC = pBuilder->pWC;
-  assert( !IsVirtual(pSrc->pSTab) );
+  प्रतिज्ञा( !IsVirtual(pSrc->pSTab) );
 
-  if( pSrc->fg.isIndexedBy ){
-    assert( pSrc->fg.isCte==0 );
+  यदि( pSrc->fg.is_अनुक्रमितम्_By ){
+    प्रतिज्ञा( pSrc->fg.isCte==0 );
     /* An INDEXED BY clause specifies a particular index to use */
     pProbe = pSrc->u2.pIBIndex;
-  }else if( !HasRowid(pTab) ){
-    if( pSrc->fg.notIndexed ){
-      pProbe = sqlite3PrimaryKeyIndex(pTab);
-    }else{
-      pProbe = pTab->pIndex;
+  }अन्यथा यदि( !HasRowid(pTab) ){
+    यदि( pSrc->fg.not_अनुक्रमितम् ){
+      pProbe = sqlite3_Primary_कुञ्चिका_सूचकांक(pTab);
+    }अन्यथा{
+      pProbe = pTab->p_सूचकांक;
     }
-  }else{
+  }अन्यथा{
     /* There is no INDEXED BY clause.  Create a fake Index object in local
     ** variable sPk to represent the rowid primary key index.  Make this
     ** fake index the first in a chain of Index objects with all of the real
     ** indices to follow */
-    Index *pFirst;                  /* First of real indices on the table */
-    memset(&sPk, 0, sizeof(Index));
-    sPk.nKeyCol = 1;
+    सूचकांक *pFirst;                  /* First of real indices on the table */
+    स्मृतिं_पूरय(&sPk, 0, परिमाण(सूचकांक));
+    sPk.n_कुञ्चिका_Col = 1;
     sPk.nColumn = 1;
     sPk.aiColumn = &aiColumnPk;
     sPk.aiRowLogEst = aiRowEstPk;
     sPk.onError = OE_Replace;
-    sPk.pTable = pTab;
+    sPk.p_सारणी = pTab;
     sPk.szIdxRow = 3;  /* TUNING: Interior rows of IPK table are very small */
     sPk.idxType = SQLITE_IDXTYPE_IPK;
     aiRowEstPk[0] = pTab->nRowLogEst;
     aiRowEstPk[1] = 0;
-    pFirst = pSrc->pSTab->pIndex;
-    sPk.pNext = pFirst;
+    pFirst = pSrc->pSTab->p_सूचकांक;
+    sPk.p_अग्र = pFirst;
     pProbe = &sPk;
   }
-  rSize = pTab->nRowLogEst;
+  r_आकार = pTab->nRowLogEst;
 
-#ifndef SQLITE_OMIT_AUTOMATIC_INDEX
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOMATIC_सूचकांक
   /* Automatic indexes */
-  if( !pBuilder->pOrSet      /* Not part of an OR optimization */
-   && (pWInfo->wctrlFlags & (WHERE_RIGHT_JOIN|WHERE_OR_SUBCLAUSE))==0
-   && (pWInfo->pParse->db->flags & SQLITE_AutoIndex)!=0
-   && !pSrc->fg.isIndexedBy  /* Has no INDEXED BY clause */
-   && !pSrc->fg.notIndexed   /* Has no NOT INDEXED clause */
+  यदि( !pBuilder->p_Or_समुच्चयः      /* Not part of an OR optimization */
+   && (pWInfo->wctrlFlags & (WHERE_दक्षिणः_JOIN|WHERE_OR_SUBCLAUSE))==0
+   && (pWInfo->pParse->db->flags & SQLITE_Auto_सूचकांक)!=0
+   && !pSrc->fg.is_अनुक्रमितम्_By  /* Has no INDEXED BY clause */
+   && !pSrc->fg.not_अनुक्रमितम्   /* Has no NOT INDEXED clause */
    && !pSrc->fg.isCorrelated /* Not a correlated subquery */
    && !pSrc->fg.isRecursive  /* Not a recursive common table expression. */
-   && (pSrc->fg.jointype & JT_RIGHT)==0 /* Not the right tab of a RIGHT JOIN */
+   && (pSrc->fg.jointype & JT_दक्षिणः)==0 /* Not the right tab of a RIGHT JOIN */
   ){
     /* Generate auto-index WhereLoops */
-    LogEst rLogSize;         /* Logarithm of the number of rows in the table */
-    WhereTerm *pTerm;
-    WhereTerm *pWCEnd = pWC->a + pWC->nTerm;
-    rLogSize = estLog(rSize);
-    for(pTerm=pWC->a; rc==SQLITE_OK && pTerm<pWCEnd; pTerm++){
-      if( pTerm->prereqRight & pNew->maskSelf ) continue;
-      if( termCanDriveIndex(pTerm, pSrc, 0) ){
+    LogEst r_Log_आकार;         /* Logarithm of the number of rows in the table */
+    Where_पदांशः *p_पदांशः;
+    Where_पदांशः *pWCEnd = pWC->a + pWC->n_पदांशः;
+    r_Log_आकार = estLog(r_आकार);
+    प्रति(p_पदांशः=pWC->a; rc==SQLITE_OK && p_पदांशः<pWCEnd; p_पदांशः++){
+      यदि( p_पदांशः->prereq_दक्षिणः & pNew->आवरणम्_Self ) अनुवर्त;
+      यदि( पदांशः_Can_Drive_सूचकांक(p_पदांशः, pSrc, 0) ){
         pNew->u.btree.nEq = 1;
         pNew->nSkip = 0;
-        pNew->u.btree.pIndex = 0;
+        pNew->u.btree.p_सूचकांक = 0;
         pNew->nLTerm = 1;
-        pNew->aLTerm[0] = pTerm;
+        pNew->aLTerm[0] = p_पदांशः;
         /* TUNING: One-time cost for computing the automatic index is
         ** estimated to be X*N*log2(N) where N is the number of rows in
         ** the table being indexed and where X is 7 (LogEst=28) for normal
@@ -4116,67 +4116,67 @@ static int whereLoopAddBtree(
         ** will be more aggressive about generating automatic indexes for
         ** those objects, since there is no opportunity to add schema
         ** indexes on subqueries and views. */
-        pNew->rSetup = rLogSize + rSize;
-        if( !IsView(pTab) && (pTab->tabFlags & TF_Ephemeral)==0 ){
-          pNew->rSetup += 28;
-        }else{
-          pNew->rSetup -= 25;  /* Greatly reduced setup cost for auto indexes
+        pNew->r_सज्जता = r_Log_आकार + r_आकार;
+        यदि( !IsView(pTab) && (pTab->tabFlags & TF_Ephemeral)==0 ){
+          pNew->r_सज्जता += 28;
+        }अन्यथा{
+          pNew->r_सज्जता -= 25;  /* Greatly reduced setup cost for auto indexes
                                ** on ephemeral materializations of views */
         }
-        ApplyCostMultiplier(pNew->rSetup, pTab->costMult);
-        if( pNew->rSetup<0 ) pNew->rSetup = 0;
+        ApplyCostMultiplier(pNew->r_सज्जता, pTab->costMult);
+        यदि( pNew->r_सज्जता<0 ) pNew->r_सज्जता = 0;
         /* TUNING: Each index lookup yields 20 rows in the table.  This
         ** is more than the usual guess of 10 rows, since we have no way
         ** of knowing how selective the index will ultimately be.  It would
         ** not be unreasonable to make this value much larger. */
-        pNew->nOut = 43;  assert( 43==sqlite3LogEst(20) );
-        pNew->rRun = sqlite3LogEstAdd(rLogSize,pNew->nOut);
-        pNew->wsFlags = WHERE_AUTO_INDEX;
-        pNew->prereq = mPrereq | pTerm->prereqRight;
-        rc = whereLoopInsert(pBuilder, pNew);
+        pNew->n_बहिर्गमनम् = 43;  प्रतिज्ञा( 43==sqlite3LogEst(20) );
+        pNew->r_सततम् = sqlite3_Log_Est_सङ्कलय(r_Log_आकार,pNew->n_बहिर्गमनम्);
+        pNew->wsFlags = WHERE_AUTO_सूचकांक;
+        pNew->prereq = mPrereq | p_पदांशः->prereq_दक्षिणः;
+        rc = where_Loop_निवेशय(pBuilder, pNew);
       }
     }
   }
-#endif /* SQLITE_OMIT_AUTOMATIC_INDEX */
+#यदि_अन्तः /* SQLITE_OMIT_AUTOMATIC_INDEX */
 
   /* Loop over all indices. If there was an INDEXED BY clause, then only
   ** consider index pProbe.  */
-  for(iSortIdx=1;
+  प्रति(i_क्रमय_Idx=1;
       rc==SQLITE_OK && pProbe;
-      pProbe=(pSrc->fg.isIndexedBy||pSrc->fg.notIndexed)?0:pProbe->pNext,
-         iSortIdx++
+      pProbe=(pSrc->fg.is_अनुक्रमितम्_By||pSrc->fg.not_अनुक्रमितम्)?0:pProbe->p_अग्र,
+         i_क्रमय_Idx++
   ){
-    if( pProbe->pPartIdxWhere!=0
-     && !whereUsablePartialIndex(pSrc->iCursor, pSrc->fg.jointype, pWC,
+    यदि( pProbe->pPartIdxWhere!=0
+     && !where_Usable_Partial_सूचकांक(pSrc->iCursor, pSrc->fg.jointype, pWC,
                                  pProbe->pPartIdxWhere)
     ){
       testcase( pNew->iTab!=pSrc->iCursor );  /* See ticket [98d973b8f5] */
-      continue;  /* Partial index inappropriate for this query */
+      अनुवर्त;  /* Partial index inappropriate for this query */
     }
-    if( pProbe->bNoQuery ) continue;
-    rSize = pProbe->aiRowLogEst[0];
+    यदि( pProbe->bNoQuery ) अनुवर्त;
+    r_आकार = pProbe->aiRowLogEst[0];
     pNew->u.btree.nEq = 0;
     pNew->u.btree.nBtm = 0;
-    pNew->u.btree.nTop = 0;
+    pNew->u.btree.n_शिखरम् = 0;
     pNew->u.btree.nDistinctCol = 0;
     pNew->nSkip = 0;
     pNew->nLTerm = 0;
-    pNew->iSortIdx = 0;
-    pNew->rSetup = 0;
+    pNew->i_क्रमय_Idx = 0;
+    pNew->r_सज्जता = 0;
     pNew->prereq = mPrereq;
-    pNew->nOut = rSize;
-    pNew->u.btree.pIndex = pProbe;
-    pNew->u.btree.pOrderBy = 0;
-    b = indexMightHelpWithOrderBy(pBuilder, pProbe, pSrc->iCursor);
+    pNew->n_बहिर्गमनम् = r_आकार;
+    pNew->u.btree.p_सूचकांक = pProbe;
+    pNew->u.btree.p_क्रमः_By = 0;
+    b = सूचकांक_Might_Help_With_क्रमः_By(pBuilder, pProbe, pSrc->iCursor);
 
     /* The ONEPASS_DESIRED flags never occurs together with ORDER BY */
-    assert( (pWInfo->wctrlFlags & WHERE_ONEPASS_DESIRED)==0 || b==0 );
-    if( pProbe->idxType==SQLITE_IDXTYPE_IPK ){
+    प्रतिज्ञा( (pWInfo->wctrlFlags & WHERE_ONEPASS_DESIRED)==0 || b==0 );
+    यदि( pProbe->idxType==SQLITE_IDXTYPE_IPK ){
       /* Integer primary key index */
       pNew->wsFlags = WHERE_IPK;
 
       /* Full table scan */
-      pNew->iSortIdx = b ? iSortIdx : 0;
+      pNew->i_क्रमय_Idx = b ? i_क्रमय_Idx : 0;
       /* TUNING: Cost of full table scan is 3.0*N.  The 3.0 factor is an
       ** extra cost designed to discourage the use of full table scans,
       ** since index lookups have better worst-case performance if our
@@ -4189,177 +4189,177 @@ static int whereLoopAddBtree(
       ** the scarcer of the two values, and in that case an index lookup is
       ** better.
       */
-#ifdef SQLITE_ENABLE_STAT4
-      pNew->rRun = rSize + 16 - 2*((pTab->tabFlags & TF_HasStat4)!=0);
-#else
-      pNew->rRun = rSize + 16;
-#endif
-      ApplyCostMultiplier(pNew->rRun, pTab->costMult);
-      whereLoopOutputAdjust(pWC, pNew, rSize);
-      if( pSrc->fg.isSubquery ){
-        if( pSrc->fg.viaCoroutine ) pNew->wsFlags |= WHERE_COROUTINE;
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
+      pNew->r_सततम् = r_आकार + 16 - 2*((pTab->tabFlags & TF_HasStat4)!=0);
+#अन्यथा
+      pNew->r_सततम् = r_आकार + 16;
+#यदि_अन्तः
+      ApplyCostMultiplier(pNew->r_सततम्, pTab->costMult);
+      whereLoopOutputAdjust(pWC, pNew, r_आकार);
+      यदि( pSrc->fg.isSubquery ){
+        यदि( pSrc->fg.द्वारा_Coroutine ) pNew->wsFlags |= WHERE_COROUTINE;
         /* Do not set btree.pOrderBy for a recursive CTE. In this case
         ** the ORDER BY clause does not determine the overall order that
         ** rows are emitted from the CTE in.  */
-        if( (pSrc->u4.pSubq->pSelect->selFlags & SF_Recursive)==0 ){
-          pNew->u.btree.pOrderBy = pSrc->u4.pSubq->pSelect->pOrderBy;
+        यदि( (pSrc->u4.pSubq->pSelect->selFlags & SF_Recursive)==0 ){
+          pNew->u.btree.p_क्रमः_By = pSrc->u4.pSubq->pSelect->p_क्रमः_By;
         }
-      }else if( pSrc->fg.fromExists ){
-        pNew->nOut = 0;
+      }अन्यथा यदि( pSrc->fg.fromExists ){
+        pNew->n_बहिर्गमनम् = 0;
       }
-      rc = whereLoopInsert(pBuilder, pNew);
-      pNew->nOut = rSize;
-      if( rc ) break;
-    }else{
+      rc = where_Loop_निवेशय(pBuilder, pNew);
+      pNew->n_बहिर्गमनम् = r_आकार;
+      यदि( rc ) भङ्ग;
+    }अन्यथा{
       Bitmask m;
-      if( pProbe->isCovering ){
+      यदि( pProbe->isCovering ){
         m = 0;
-        pNew->wsFlags = WHERE_IDX_ONLY | WHERE_INDEXED;
-      }else{
-        m = pSrc->colUsed & pProbe->colNotIdxed;
-        if( pProbe->pPartIdxWhere 
+        pNew->wsFlags = WHERE_IDX_ONLY | WHERE_अनुक्रमितम्;
+      }अन्यथा{
+        m = pSrc->col_प्रयुक्तम् & pProbe->colNotIdxed;
+        यदि( pProbe->pPartIdxWhere 
          && (pWInfo->wctrlFlags & WHERE_OR_SUBCLAUSE)==0
         ){
-          wherePartIdxExpr(
+          where_Part_Idx_व्यञ्जकम्(
               pWInfo->pParse, pProbe, pProbe->pPartIdxWhere, &m, 0, 0
           );
         }
-        pNew->wsFlags = WHERE_INDEXED;
-        if( m==TOPBIT || (pProbe->bHasExpr && !pProbe->bHasVCol && m!=0) ){
-          u32 isCov = whereIsCoveringIndex(pWInfo, pProbe, pSrc->iCursor);
-          if( isCov==0 ){
+        pNew->wsFlags = WHERE_अनुक्रमितम्;
+        यदि( m==TOPBIT || (pProbe->b_Has_व्यञ्जकम् && !pProbe->bHasVCol && m!=0) ){
+          u32 isCov = where_Is_Covering_सूचकांक(pWInfo, pProbe, pSrc->iCursor);
+          यदि( isCov==0 ){
             WHERETRACE(0x200,
                ("-> %s is not a covering index"
                 " according to whereIsCoveringIndex()\n", pProbe->zName));
-            assert( m!=0 );
-          }else{
+            प्रतिज्ञा( m!=0 );
+          }अन्यथा{
             m = 0;
             pNew->wsFlags |= isCov;
-            if( isCov & WHERE_IDX_ONLY ){
+            यदि( isCov & WHERE_IDX_ONLY ){
               WHERETRACE(0x200,
                  ("-> %s is a covering expression index"
                   " according to whereIsCoveringIndex()\n", pProbe->zName));
-            }else{
-              assert( isCov==WHERE_EXPRIDX );
+            }अन्यथा{
+              प्रतिज्ञा( isCov==WHERE_EXPRIDX );
               WHERETRACE(0x200,
                  ("-> %s might be a covering expression index"
                   " according to whereIsCoveringIndex()\n", pProbe->zName));
             }
           }
-        }else if( m==0 
+        }अन्यथा यदि( m==0 
            && (HasRowid(pTab) || pWInfo->pSelect!=0 || sqlite3FaultSim(700))
         ){
           WHERETRACE(0x200,
              ("-> %s is a covering index according to bitmasks\n",
              pProbe->zName, m==0 ? "is" : "is not"));
-          pNew->wsFlags = WHERE_IDX_ONLY | WHERE_INDEXED;
+          pNew->wsFlags = WHERE_IDX_ONLY | WHERE_अनुक्रमितम्;
         }
       }
 
       /* Full scan via index */
-      if( b
+      यदि( b
        || !HasRowid(pTab)
        || pProbe->pPartIdxWhere!=0
-       || pSrc->fg.isIndexedBy
+       || pSrc->fg.is_अनुक्रमितम्_By
        || ( m==0
          && pProbe->bUnordered==0
          && (pProbe->szIdxRow<pTab->szTabRow)
          && (pWInfo->wctrlFlags & WHERE_ONEPASS_DESIRED)==0
          && sqlite3GlobalConfig.bUseCis
-         && OptimizationEnabled(pWInfo->pParse->db, SQLITE_CoverIdxScan)
+         && OptimizationEnabled(pWInfo->pParse->db, SQLITE_Cover_Idx_अवलोकनम्)
           )
       ){
-        pNew->iSortIdx = b ? iSortIdx : 0;
+        pNew->i_क्रमय_Idx = b ? i_क्रमय_Idx : 0;
 
         /* The cost of visiting the index rows is N*K, where K is
         ** between 1.1 and 3.0, depending on the relative sizes of the
         ** index and table rows. */
-        pNew->rRun = rSize + 1 + (15*pProbe->szIdxRow)/pTab->szTabRow;
-        if( m!=0 ){
+        pNew->r_सततम् = r_आकार + 1 + (15*pProbe->szIdxRow)/pTab->szTabRow;
+        यदि( m!=0 ){
           /* If this is a non-covering index scan, add in the cost of
           ** doing table lookups.  The cost will be 3x the number of
           ** lookups.  Take into account WHERE clause terms that can be
           ** satisfied using just the index, and that do not require a
           ** table lookup. */
-          LogEst nLookup = rSize + 16;  /* Base cost:  N*3 */
-          int ii;
-          int iCur = pSrc->iCursor;
+          LogEst nLookup = r_आकार + 16;  /* Base cost:  N*3 */
+          पूर्णाङ्क ii;
+          पूर्णाङ्क iCur = pSrc->iCursor;
           WhereClause *pWC2 = &pWInfo->sWC;
-          for(ii=0; ii<pWC2->nTerm; ii++){
-            WhereTerm *pTerm = &pWC2->a[ii];
-            if( !sqlite3ExprCoveredByIndex(pTerm->pExpr, iCur, pProbe) ){
-              break;
+          प्रति(ii=0; ii<pWC2->n_पदांशः; ii++){
+            Where_पदांशः *p_पदांशः = &pWC2->a[ii];
+            यदि( !sqlite3_व्यञ्जकम्_Covered_By_सूचकांक(p_पदांशः->p_व्यञ्जकम्, iCur, pProbe) ){
+              भङ्ग;
             }
             /* pTerm can be evaluated using just the index.  So reduce
             ** the expected number of table lookups accordingly */
-            if( pTerm->truthProb<=0 ){
-              nLookup += pTerm->truthProb;
-            }else{
+            यदि( p_पदांशः->truthProb<=0 ){
+              nLookup += p_पदांशः->truthProb;
+            }अन्यथा{
               nLookup--;
-              if( pTerm->eOperator & (WO_EQ|WO_IS) ) nLookup -= 19;
+              यदि( p_पदांशः->eOperator & (WO_EQ|WO_IS) ) nLookup -= 19;
             }
           }
          
-          pNew->rRun = sqlite3LogEstAdd(pNew->rRun, nLookup);
+          pNew->r_सततम् = sqlite3_Log_Est_सङ्कलय(pNew->r_सततम्, nLookup);
         }
-        ApplyCostMultiplier(pNew->rRun, pTab->costMult);
-        whereLoopOutputAdjust(pWC, pNew, rSize);
-        if( (pSrc->fg.jointype & JT_RIGHT)!=0 && pProbe->aColExpr ){
+        ApplyCostMultiplier(pNew->r_सततम्, pTab->costMult);
+        whereLoopOutputAdjust(pWC, pNew, r_आकार);
+        यदि( (pSrc->fg.jointype & JT_दक्षिणः)!=0 && pProbe->a_Col_व्यञ्जकम् ){
           /* Do not do an SCAN of a index-on-expression in a RIGHT JOIN
           ** because the cursor used to access the index might not be
           ** positioned to the correct row during the right-join no-match
           ** loop. */
-        }else{
-          if( pSrc->fg.fromExists ) pNew->nOut = 0;
-          rc = whereLoopInsert(pBuilder, pNew);
+        }अन्यथा{
+          यदि( pSrc->fg.fromExists ) pNew->n_बहिर्गमनम् = 0;
+          rc = where_Loop_निवेशय(pBuilder, pNew);
         }
-        pNew->nOut = rSize;
-        if( rc ) break;
+        pNew->n_बहिर्गमनम् = r_आकार;
+        यदि( rc ) भङ्ग;
       }
     }
 
     pBuilder->bldFlags1 = 0;
-    rc = whereLoopAddBtreeIndex(pBuilder, pSrc, pProbe, 0);
-    if( pBuilder->bldFlags1==SQLITE_BLDF1_INDEXED ){
+    rc = where_Loop_सङ्कलय_Btree_सूचकांक(pBuilder, pSrc, pProbe, 0);
+    यदि( pBuilder->bldFlags1==SQLITE_BLDF1_अनुक्रमितम् ){
       /* If a non-unique index is used, or if a prefix of the key for
       ** unique index is used (making the index functionally non-unique)
       ** then the sqlite_stat1 data becomes important for scoring the
       ** plan */
       pTab->tabFlags |= TF_MaybeReanalyze;
     }
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
     sqlite3Stat4ProbeFree(pBuilder->pRec);
     pBuilder->nRecValid = 0;
     pBuilder->pRec = 0;
-#endif
+#यदि_अन्तः
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
 
 /*
 ** Return true if pTerm is a virtual table LIMIT or OFFSET term.
 */
-static int isLimitTerm(WhereTerm *pTerm){
-  assert( pTerm->eOperator==WO_AUX || pTerm->eMatchOp==0 );
-  return pTerm->eMatchOp>=SQLITE_INDEX_CONSTRAINT_LIMIT
-      && pTerm->eMatchOp<=SQLITE_INDEX_CONSTRAINT_OFFSET;
+स्थिर पूर्णाङ्क is_सीमा_पदांशः(Where_पदांशः *p_पदांशः){
+  प्रतिज्ञा( p_पदांशः->eOperator==WO_AUX || p_पदांशः->e_मेलनम्_Op==0 );
+  प्रत्यागम p_पदांशः->e_मेलनम्_Op>=SQLITE_सूचकांक_CONSTRAINT_सीमा
+      && p_पदांशः->e_मेलनम्_Op<=SQLITE_सूचकांक_CONSTRAINT_विस्थापनम्;
 }
 
 /*
 ** Return true if the first nCons constraints in the pUsage array are
 ** marked as in-use (have argvIndex>0). False otherwise.
 */
-static int allConstraintsUsed(
-  struct sqlite3_index_constraint_usage *aUsage, 
-  int nCons
+स्थिर पूर्णाङ्क all_Constraints_प्रयुक्तम्(
+  संरचना sqlite3_सूचकांक_constraint_usage *aUsage, 
+  पूर्णाङ्क nCons
 ){
-  int ii;
-  for(ii=0; ii<nCons; ii++){
-    if( aUsage[ii].argvIndex<=0 ) return 0;
+  पूर्णाङ्क ii;
+  प्रति(ii=0; ii<nCons; ii++){
+    यदि( aUsage[ii].argv_सूचकांक<=0 ) प्रत्यागम 0;
   }
-  return 1;
+  प्रत्यागम 1;
 }
 
 /*
@@ -4382,132 +4382,132 @@ static int allConstraintsUsed(
 ** Output parameter *pbIn is set to true if the plan added to pBuilder
 ** uses one or more WO_IN terms, or false otherwise.
 */
-static int whereLoopAddVirtualOne(
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_Virtual_One(
   WhereLoopBuilder *pBuilder,
   Bitmask mPrereq,                /* Mask of tables that must be used. */
   Bitmask mUsable,                /* Mask of usable tables */
   u16 mExclude,                   /* Exclude terms using these operators */
-  sqlite3_index_info *pIdxInfo,   /* Populated object for xBestIndex */
+  sqlite3_सूचकांक_info *pIdxInfo,   /* Populated object for xBestIndex */
   u16 mNoOmit,                    /* Do not omit these constraints */
-  int *pbIn,                      /* OUT: True if plan uses an IN(...) op */
-  int *pbRetryLimit               /* OUT: Retry without LIMIT/OFFSET */
+  पूर्णाङ्क *pb_अन्तर्,                      /* OUT: True if plan uses an IN(...) op */
+  पूर्णाङ्क *pb_Retry_सीमा               /* OUT: Retry without LIMIT/OFFSET */
 ){
   WhereClause *pWC = pBuilder->pWC;
-  HiddenIndexInfo *pHidden = (HiddenIndexInfo*)&pIdxInfo[1];
-  struct sqlite3_index_constraint *pIdxCons;
-  struct sqlite3_index_constraint_usage *pUsage = pIdxInfo->aConstraintUsage;
-  int i;
-  int mxTerm;
-  int rc = SQLITE_OK;
+  Hidden_सूचकांक_Info *pHidden = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  संरचना sqlite3_सूचकांक_constraint *pIdxCons;
+  संरचना sqlite3_सूचकांक_constraint_usage *pUsage = pIdxInfo->aConstraintUsage;
+  पूर्णाङ्क i;
+  पूर्णाङ्क mx_पदांशः;
+  पूर्णाङ्क rc = SQLITE_OK;
   WhereLoop *pNew = pBuilder->pNew;
   Parse *pParse = pBuilder->pWInfo->pParse;
   SrcItem *pSrc = &pBuilder->pWInfo->pTabList->a[pNew->iTab];
-  int nConstraint = pIdxInfo->nConstraint;
+  पूर्णाङ्क nConstraint = pIdxInfo->nConstraint;
 
-  assert( (mUsable & mPrereq)==mPrereq );
-  *pbIn = 0;
+  प्रतिज्ञा( (mUsable & mPrereq)==mPrereq );
+  *pb_अन्तर् = 0;
   pNew->prereq = mPrereq;
 
   /* Set the usable flag on the subset of constraints identified by
   ** arguments mUsable and mExclude. */
-  pIdxCons = *(struct sqlite3_index_constraint**)&pIdxInfo->aConstraint;
-  for(i=0; i<nConstraint; i++, pIdxCons++){
-    WhereTerm *pTerm = termFromWhereClause(pWC, pIdxCons->iTermOffset);
+  pIdxCons = *(संरचना sqlite3_सूचकांक_constraint**)&pIdxInfo->aConstraint;
+  प्रति(i=0; i<nConstraint; i++, pIdxCons++){
+    Where_पदांशः *p_पदांशः = पदांशः_From_Where_Clause(pWC, pIdxCons->i_पदांशः_विस्थापनम्);
     pIdxCons->usable = 0;
-    if( (pTerm->prereqRight & mUsable)==pTerm->prereqRight
-     && (pTerm->eOperator & mExclude)==0
-     && (pbRetryLimit || !isLimitTerm(pTerm))
+    यदि( (p_पदांशः->prereq_दक्षिणः & mUsable)==p_पदांशः->prereq_दक्षिणः
+     && (p_पदांशः->eOperator & mExclude)==0
+     && (pb_Retry_सीमा || !is_सीमा_पदांशः(p_पदांशः))
     ){
       pIdxCons->usable = 1;
     }
   }
 
   /* Initialize the output fields of the sqlite3_index_info structure */
-  memset(pUsage, 0, sizeof(pUsage[0])*nConstraint);
-  assert( pIdxInfo->needToFreeIdxStr==0 );
+  स्मृतिं_पूरय(pUsage, 0, परिमाण(pUsage[0])*nConstraint);
+  प्रतिज्ञा( pIdxInfo->need_गन्तव्यम्_Free_Idx_Str==0 );
   pIdxInfo->idxStr = 0;
-  pIdxInfo->idxNum = 0;
-  pIdxInfo->orderByConsumed = 0;
-  pIdxInfo->estimatedCost = SQLITE_BIG_DBL / (double)2;
-  pIdxInfo->estimatedRows = 25;
+  pIdxInfo->idx_अङ्कः = 0;
+  pIdxInfo->क्रमः_By_Consumed = 0;
+  pIdxInfo->estimatedCost = SQLITE_BIG_DBL / (द्विगुण)2;
+  pIdxInfo->estimated_पङ्क्तिकाः = 25;
   pIdxInfo->idxFlags = 0;
-  pHidden->mHandleIn = 0;
+  pHidden->m_Handle_अन्तर् = 0;
 
   /* Invoke the virtual table xBestIndex() method */
-  rc = vtabBestIndex(pParse, pSrc->pSTab, pIdxInfo);
-  if( rc ){
-    if( rc==SQLITE_CONSTRAINT ){
+  rc = vtab_Best_सूचकांक(pParse, pSrc->pSTab, pIdxInfo);
+  यदि( rc ){
+    यदि( rc==SQLITE_CONSTRAINT ){
       /* If the xBestIndex method returns SQLITE_CONSTRAINT, that means
       ** that the particular combination of parameters provided is unusable.
       ** Make no entries in the loop table.
       */
       WHERETRACE(0xffffffff, ("  ^^^^--- non-viable plan rejected!\n"));
       freeIdxStr(pIdxInfo);
-      return SQLITE_OK;
+      प्रत्यागम SQLITE_OK;
     }
-    return rc;
+    प्रत्यागम rc;
   }
 
-  mxTerm = -1;
-  assert( pNew->nLSlot>=nConstraint );
-  memset(pNew->aLTerm, 0, sizeof(pNew->aLTerm[0])*nConstraint );
-  memset(&pNew->u.vtab, 0, sizeof(pNew->u.vtab));
-  pIdxCons = *(struct sqlite3_index_constraint**)&pIdxInfo->aConstraint;
-  for(i=0; i<nConstraint; i++, pIdxCons++){
-    int iTerm;
-    if( (iTerm = pUsage[i].argvIndex - 1)>=0 ){
-      WhereTerm *pTerm;
-      int j = pIdxCons->iTermOffset;
-      if( iTerm>=nConstraint
+  mx_पदांशः = -1;
+  प्रतिज्ञा( pNew->nLSlot>=nConstraint );
+  स्मृतिं_पूरय(pNew->aLTerm, 0, परिमाण(pNew->aLTerm[0])*nConstraint );
+  स्मृतिं_पूरय(&pNew->u.vtab, 0, परिमाण(pNew->u.vtab));
+  pIdxCons = *(संरचना sqlite3_सूचकांक_constraint**)&pIdxInfo->aConstraint;
+  प्रति(i=0; i<nConstraint; i++, pIdxCons++){
+    पूर्णाङ्क i_पदांशः;
+    यदि( (i_पदांशः = pUsage[i].argv_सूचकांक - 1)>=0 ){
+      Where_पदांशः *p_पदांशः;
+      पूर्णाङ्क j = pIdxCons->i_पदांशः_विस्थापनम्;
+      यदि( i_पदांशः>=nConstraint
        || j<0
-       || (pTerm = termFromWhereClause(pWC, j))==0
-       || pNew->aLTerm[iTerm]!=0
+       || (p_पदांशः = पदांशः_From_Where_Clause(pWC, j))==0
+       || pNew->aLTerm[i_पदांशः]!=0
        || pIdxCons->usable==0
       ){
-        sqlite3ErrorMsg(pParse,"%s.xBestIndex malfunction",pSrc->pSTab->zName);
+        sqlite3_Error_सन्देशः(pParse,"%s.xBestIndex malfunction",pSrc->pSTab->zName);
         freeIdxStr(pIdxInfo);
-        return SQLITE_ERROR;
+        प्रत्यागम SQLITE_ERROR;
       }
-      testcase( iTerm==nConstraint-1 );
+      testcase( i_पदांशः==nConstraint-1 );
       testcase( j==0 );
-      testcase( j==pWC->nTerm-1 );
-      pNew->prereq |= pTerm->prereqRight;
-      assert( iTerm<pNew->nLSlot );
-      pNew->aLTerm[iTerm] = pTerm;
-      if( iTerm>mxTerm ) mxTerm = iTerm;
-      testcase( iTerm==15 );
-      testcase( iTerm==16 );
-      if( pUsage[i].omit ){
-        if( i<16 && ((1<<i)&mNoOmit)==0 ){
-          testcase( i!=iTerm );
-          pNew->u.vtab.omitMask |= 1<<iTerm;
-        }else{
-          testcase( i!=iTerm );
+      testcase( j==pWC->n_पदांशः-1 );
+      pNew->prereq |= p_पदांशः->prereq_दक्षिणः;
+      प्रतिज्ञा( i_पदांशः<pNew->nLSlot );
+      pNew->aLTerm[i_पदांशः] = p_पदांशः;
+      यदि( i_पदांशः>mx_पदांशः ) mx_पदांशः = i_पदांशः;
+      testcase( i_पदांशः==15 );
+      testcase( i_पदांशः==16 );
+      यदि( pUsage[i].omit ){
+        यदि( i<16 && ((1<<i)&mNoOmit)==0 ){
+          testcase( i!=i_पदांशः );
+          pNew->u.vtab.omit_आवरणम् |= 1<<i_पदांशः;
+        }अन्यथा{
+          testcase( i!=i_पदांशः );
         }
-        if( pTerm->eMatchOp==SQLITE_INDEX_CONSTRAINT_OFFSET ){
-          pNew->u.vtab.bOmitOffset = 1;
+        यदि( p_पदांशः->e_मेलनम्_Op==SQLITE_सूचकांक_CONSTRAINT_विस्थापनम् ){
+          pNew->u.vtab.b_Omit_विस्थापनम् = 1;
         }
       }
-      if( SMASKBIT32(i) & pHidden->mHandleIn ){
-        pNew->u.vtab.mHandleIn |= MASKBIT32(iTerm);
-      }else if( (pTerm->eOperator & WO_IN)!=0 ){
+      यदि( SMASKBIT32(i) & pHidden->m_Handle_अन्तर् ){
+        pNew->u.vtab.m_Handle_अन्तर् |= MASKBIT32(i_पदांशः);
+      }अन्यथा यदि( (p_पदांशः->eOperator & WO_अन्तर्)!=0 ){
         /* A virtual table that is constrained by an IN clause may not
         ** consume the ORDER BY clause because (1) the order of IN terms
         ** is not necessarily related to the order of output terms and
         ** (2) Multiple outputs from a single IN value will not merge
         ** together.  */
-        pIdxInfo->orderByConsumed = 0;
-        pIdxInfo->idxFlags &= ~SQLITE_INDEX_SCAN_UNIQUE;
-        *pbIn = 1; assert( (mExclude & WO_IN)==0 );
+        pIdxInfo->क्रमः_By_Consumed = 0;
+        pIdxInfo->idxFlags &= ~SQLITE_सूचकांक_अवलोकनम्_UNIQUE;
+        *pb_अन्तर् = 1; प्रतिज्ञा( (mExclude & WO_अन्तर्)==0 );
       }
 
       /* Unless pbRetryLimit is non-NULL, there should be no LIMIT/OFFSET
       ** terms. And if there are any, they should follow all other terms. */
-      assert( pbRetryLimit || !isLimitTerm(pTerm) );
-      assert( !isLimitTerm(pTerm) || i>=nConstraint-2 );
-      assert( !isLimitTerm(pTerm) || i==nConstraint-1 || isLimitTerm(pTerm+1) );
+      प्रतिज्ञा( pb_Retry_सीमा || !is_सीमा_पदांशः(p_पदांशः) );
+      प्रतिज्ञा( !is_सीमा_पदांशः(p_पदांशः) || i>=nConstraint-2 );
+      प्रतिज्ञा( !is_सीमा_पदांशः(p_पदांशः) || i==nConstraint-1 || is_सीमा_पदांशः(p_पदांशः+1) );
 
-      if( isLimitTerm(pTerm) && (*pbIn || !allConstraintsUsed(pUsage, i)) ){
+      यदि( is_सीमा_पदांशः(p_पदांशः) && (*pb_अन्तर् || !all_Constraints_प्रयुक्तम्(pUsage, i)) ){
         /* If there is an IN(...) term handled as an == (separate call to
         ** xFilter for each value on the RHS of the IN) and a LIMIT or
         ** OFFSET term handled as well, the plan is unusable. Similarly,
@@ -4516,51 +4516,51 @@ static int whereLoopAddVirtualOne(
         ** to true to tell the caller to retry with LIMIT and OFFSET 
         ** disabled. */
         freeIdxStr(pIdxInfo);
-        *pbRetryLimit = 1;
-        return SQLITE_OK;
+        *pb_Retry_सीमा = 1;
+        प्रत्यागम SQLITE_OK;
       }
     }
   }
 
-  pNew->nLTerm = mxTerm+1;
-  for(i=0; i<=mxTerm; i++){
-    if( pNew->aLTerm[i]==0 ){
+  pNew->nLTerm = mx_पदांशः+1;
+  प्रति(i=0; i<=mx_पदांशः; i++){
+    यदि( pNew->aLTerm[i]==0 ){
       /* The non-zero argvIdx values must be contiguous.  Raise an
       ** error if they are not */
-      sqlite3ErrorMsg(pParse,"%s.xBestIndex malfunction",pSrc->pSTab->zName);
+      sqlite3_Error_सन्देशः(pParse,"%s.xBestIndex malfunction",pSrc->pSTab->zName);
       freeIdxStr(pIdxInfo);
-      return SQLITE_ERROR;
+      प्रत्यागम SQLITE_ERROR;
     }
   }
-  assert( pNew->nLTerm<=pNew->nLSlot );
-  pNew->u.vtab.idxNum = pIdxInfo->idxNum;
-  pNew->u.vtab.needFree = pIdxInfo->needToFreeIdxStr;
-  pIdxInfo->needToFreeIdxStr = 0;
+  प्रतिज्ञा( pNew->nLTerm<=pNew->nLSlot );
+  pNew->u.vtab.idx_अङ्कः = pIdxInfo->idx_अङ्कः;
+  pNew->u.vtab.needFree = pIdxInfo->need_गन्तव्यम्_Free_Idx_Str;
+  pIdxInfo->need_गन्तव्यम्_Free_Idx_Str = 0;
   pNew->u.vtab.idxStr = pIdxInfo->idxStr;
-  pNew->u.vtab.isOrdered = (i8)(pIdxInfo->orderByConsumed ?
-      pIdxInfo->nOrderBy : 0);
-  pNew->u.vtab.bIdxNumHex = (pIdxInfo->idxFlags&SQLITE_INDEX_SCAN_HEX)!=0;
-  pNew->rSetup = 0;
-  pNew->rRun = sqlite3LogEstFromDouble(pIdxInfo->estimatedCost);
-  pNew->nOut = sqlite3LogEst(pIdxInfo->estimatedRows);
+  pNew->u.vtab.isOrdered = (i8)(pIdxInfo->क्रमः_By_Consumed ?
+      pIdxInfo->n_क्रमः_By : 0);
+  pNew->u.vtab.b_Idx_अङ्कः_Hex = (pIdxInfo->idxFlags&SQLITE_सूचकांक_अवलोकनम्_HEX)!=0;
+  pNew->r_सज्जता = 0;
+  pNew->r_सततम् = sqlite3LogEstFromDouble(pIdxInfo->estimatedCost);
+  pNew->n_बहिर्गमनम् = sqlite3LogEst(pIdxInfo->estimated_पङ्क्तिकाः);
 
   /* Set the WHERE_ONEROW flag if the xBestIndex() method indicated
   ** that the scan will visit at most one row. Clear it otherwise. */
-  if( pIdxInfo->idxFlags & SQLITE_INDEX_SCAN_UNIQUE ){
+  यदि( pIdxInfo->idxFlags & SQLITE_सूचकांक_अवलोकनम्_UNIQUE ){
     pNew->wsFlags |= WHERE_ONEROW;
-  }else{
+  }अन्यथा{
     pNew->wsFlags &= ~WHERE_ONEROW;
   }
-  rc = whereLoopInsert(pBuilder, pNew);
-  if( pNew->u.vtab.needFree ){
+  rc = where_Loop_निवेशय(pBuilder, pNew);
+  यदि( pNew->u.vtab.needFree ){
     sqlite3_free(pNew->u.vtab.idxStr);
     pNew->u.vtab.needFree = 0;
   }
   WHERETRACE(0xffffffff, ("  bIn=%d prereqIn=%04llx prereqOut=%04llx\n",
-                      *pbIn, (sqlite3_uint64)mPrereq,
+                      *pb_अन्तर्, (sqlite3_uint64)mPrereq,
                       (sqlite3_uint64)(pNew->prereq & ~mPrereq)));
 
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -4578,19 +4578,19 @@ static int whereLoopAddVirtualOne(
 **
 **    3. Otherwise, return "BINARY".
 */
-const char *sqlite3_vtab_collation(sqlite3_index_info *pIdxInfo, int iCons){
-  HiddenIndexInfo *pHidden = (HiddenIndexInfo*)&pIdxInfo[1];
-  const char *zRet = 0;
-  if( iCons>=0 && iCons<pIdxInfo->nConstraint ){
+ध्रुव वर्ण *sqlite3_vtab_collation(sqlite3_सूचकांक_info *pIdxInfo, पूर्णाङ्क iCons){
+  Hidden_सूचकांक_Info *pHidden = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  ध्रुव वर्ण *zRet = 0;
+  यदि( iCons>=0 && iCons<pIdxInfo->nConstraint ){
     CollSeq *pC = 0;
-    int iTerm = pIdxInfo->aConstraint[iCons].iTermOffset;
-    Expr *pX = termFromWhereClause(pHidden->pWC, iTerm)->pExpr;
-    if( pX->pLeft ){
-      pC = sqlite3ExprCompareCollSeq(pHidden->pParse, pX);
+    पूर्णाङ्क i_पदांशः = pIdxInfo->aConstraint[iCons].i_पदांशः_विस्थापनम्;
+    व्यञ्जकम् *pX = पदांशः_From_Where_Clause(pHidden->pWC, i_पदांशः)->p_व्यञ्जकम्;
+    यदि( pX->p_वामः ){
+      pC = sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pHidden->pParse, pX);
     }
-    zRet = (pC ? pC->zName : sqlite3StrBINARY);
+    zRet = (pC ? pC->zName : sqlite3_Str_द्विमान);
   }
-  return zRet;
+  प्रत्यागम zRet;
 }
 
 /*
@@ -4598,18 +4598,18 @@ const char *sqlite3_vtab_collation(sqlite3_index_info *pIdxInfo, int iCons){
 ** false otherwise. If iCons is an IN(...) constraint, set (if bHandle!=0)
 ** or clear (if bHandle==0) the flag to handle it using an iterator.
 */
-int sqlite3_vtab_in(sqlite3_index_info *pIdxInfo, int iCons, int bHandle){
-  HiddenIndexInfo *pHidden = (HiddenIndexInfo*)&pIdxInfo[1];
+पूर्णाङ्क sqlite3_vtab_अन्तर्(sqlite3_सूचकांक_info *pIdxInfo, पूर्णाङ्क iCons, पूर्णाङ्क bHandle){
+  Hidden_सूचकांक_Info *pHidden = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
   u32 m = SMASKBIT32(iCons);
-  if( m & pHidden->mIn ){
-    if( bHandle==0 ){
-      pHidden->mHandleIn &= ~m;
-    }else if( bHandle>0 ){
-      pHidden->mHandleIn |= m;
+  यदि( m & pHidden->m_अन्तर् ){
+    यदि( bHandle==0 ){
+      pHidden->m_Handle_अन्तर् &= ~m;
+    }अन्यथा यदि( bHandle>0 ){
+      pHidden->m_Handle_अन्तर् |= m;
     }
-    return 1;
+    प्रत्यागम 1;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
@@ -4618,23 +4618,23 @@ int sqlite3_vtab_in(sqlite3_index_info *pIdxInfo, int iCons, int bHandle){
 ** If possible, set (*ppVal) to point to an object containing the value
 ** on the right-hand-side of constraint iCons.
 */
-int sqlite3_vtab_rhs_value(
-  sqlite3_index_info *pIdxInfo,   /* Copy of first argument to xBestIndex */
-  int iCons,                      /* Constraint for which RHS is wanted */
-  sqlite3_value **ppVal           /* Write value extracted here */
+पूर्णाङ्क sqlite3_vtab_rhs_मानम्(
+  sqlite3_सूचकांक_info *pIdxInfo,   /* Copy of first argument to xBestIndex */
+  पूर्णाङ्क iCons,                      /* Constraint for which RHS is wanted */
+  sqlite3_मानम् **ppVal           /* Write value extracted here */
 ){
-  HiddenIndexInfo *pH = (HiddenIndexInfo*)&pIdxInfo[1];
-  sqlite3_value *pVal = 0;
-  int rc = SQLITE_OK;
-  if( iCons<0 || iCons>=pIdxInfo->nConstraint ){
+  Hidden_सूचकांक_Info *pH = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  sqlite3_मानम् *pVal = 0;
+  पूर्णाङ्क rc = SQLITE_OK;
+  यदि( iCons<0 || iCons>=pIdxInfo->nConstraint ){
     rc = SQLITE_MISUSE_BKPT; /* EV: R-30545-25046 */
-  }else{
-    if( pH->aRhs[iCons]==0 ){
-      WhereTerm *pTerm = termFromWhereClause(
-          pH->pWC, pIdxInfo->aConstraint[iCons].iTermOffset
+  }अन्यथा{
+    यदि( pH->aRhs[iCons]==0 ){
+      Where_पदांशः *p_पदांशः = पदांशः_From_Where_Clause(
+          pH->pWC, pIdxInfo->aConstraint[iCons].i_पदांशः_विस्थापनम्
       );
-      rc = sqlite3ValueFromExpr(
-          pH->pParse->db, pTerm->pExpr->pRight, ENC(pH->pParse->db),
+      rc = sqlite3_मानम्_From_व्यञ्जकम्(
+          pH->pParse->db, p_पदांशः->p_व्यञ्जकम्->p_दक्षिणः, ENC(pH->pParse->db),
           SQLITE_AFF_BLOB, &pH->aRhs[iCons]
       );
       testcase( rc!=SQLITE_OK );
@@ -4643,20 +4643,20 @@ int sqlite3_vtab_rhs_value(
   }
   *ppVal = pVal;
 
-  if( rc==SQLITE_OK && pVal==0 ){  /* IMP: R-19933-32160 */
+  यदि( rc==SQLITE_OK && pVal==0 ){  /* IMP: R-19933-32160 */
     rc = SQLITE_NOTFOUND;          /* IMP: R-36424-56542 */
   }
 
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** Return true if ORDER BY clause may be handled as DISTINCT.
 */
-int sqlite3_vtab_distinct(sqlite3_index_info *pIdxInfo){
-  HiddenIndexInfo *pHidden = (HiddenIndexInfo*)&pIdxInfo[1];
-  assert( pHidden->eDistinct>=0 && pHidden->eDistinct<=3 );
-  return pHidden->eDistinct;
+पूर्णाङ्क sqlite3_vtab_distinct(sqlite3_सूचकांक_info *pIdxInfo){
+  Hidden_सूचकांक_Info *pHidden = (Hidden_सूचकांक_Info*)&pIdxInfo[1];
+  प्रतिज्ञा( pHidden->eDistinct>=0 && pHidden->eDistinct<=3 );
+  प्रत्यागम pHidden->eDistinct;
 }
 
 /*
@@ -4668,14 +4668,14 @@ int sqlite3_vtab_distinct(sqlite3_index_info *pIdxInfo){
 **
 ** This is used by the (built-in) sqlite_dbpage virtual table.
 */
-void sqlite3VtabUsesAllSchemas(Parse *pParse){
-  int nDb = pParse->db->nDb;
-  int i;
-  for(i=0; i<nDb; i++){
-    sqlite3CodeVerifySchema(pParse, i);
+शून्य sqlite3_Vtab_उपयुङ्क्ते_All_Schemas(Parse *pParse){
+  पूर्णाङ्क nDb = pParse->db->nDb;
+  पूर्णाङ्क i;
+  प्रति(i=0; i<nDb; i++){
+    sqlite3_संहिता_Verify_Schema(pParse, i);
   }
-  if( DbMaskNonZero(pParse->writeMask) ){
-    for(i=0; i<nDb; i++){
+  यदि( Db_आवरणम्_Non_Zero(pParse->write_आवरणम्) ){
+    प्रति(i=0; i<nDb; i++){
       sqlite3BeginWriteOperation(pParse, 0, i);
     }
   }
@@ -4706,53 +4706,53 @@ void sqlite3VtabUsesAllSchemas(Parse *pParse){
 ** virtual table, so any terms for which the prerequisites overlap with
 ** mUnusable should always be configured as "not-usable" for xBestIndex.
 */
-static int whereLoopAddVirtual(
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_Virtual(
   WhereLoopBuilder *pBuilder,  /* WHERE clause information */
   Bitmask mPrereq,             /* Tables that must be scanned before this one */
   Bitmask mUnusable            /* Tables that must be scanned after this one */
 ){
-  int rc = SQLITE_OK;          /* Return code */
+  पूर्णाङ्क rc = SQLITE_OK;          /* Return code */
   WhereInfo *pWInfo;           /* WHERE analysis context */
   Parse *pParse;               /* The parsing context */
   WhereClause *pWC;            /* The WHERE clause */
   SrcItem *pSrc;               /* The FROM clause term to search */
-  sqlite3_index_info *p;       /* Object to pass to xBestIndex() */
-  int nConstraint;             /* Number of constraints in p */
-  int bIn;                     /* True if plan uses IN(...) operator */
+  sqlite3_सूचकांक_info *p;       /* Object to pass to xBestIndex() */
+  पूर्णाङ्क nConstraint;             /* Number of constraints in p */
+  पूर्णाङ्क b_अन्तर्;                     /* True if plan uses IN(...) operator */
   WhereLoop *pNew;
   Bitmask mBest;               /* Tables used by best possible plan */
   u16 mNoOmit;
-  int bRetry = 0;              /* True to retry with LIMIT/OFFSET disabled */
+  पूर्णाङ्क bRetry = 0;              /* True to retry with LIMIT/OFFSET disabled */
 
-  assert( (mPrereq & mUnusable)==0 );
+  प्रतिज्ञा( (mPrereq & mUnusable)==0 );
   pWInfo = pBuilder->pWInfo;
   pParse = pWInfo->pParse;
   pWC = pBuilder->pWC;
   pNew = pBuilder->pNew;
   pSrc = &pWInfo->pTabList->a[pNew->iTab];
-  assert( IsVirtual(pSrc->pSTab) );
-  p = allocateIndexInfo(pWInfo, pWC, mUnusable, pSrc, &mNoOmit);
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
-  pNew->rSetup = 0;
+  प्रतिज्ञा( IsVirtual(pSrc->pSTab) );
+  p = allocate_सूचकांक_Info(pWInfo, pWC, mUnusable, pSrc, &mNoOmit);
+  यदि( p==0 ) प्रत्यागम SQLITE_NOMEM_BKPT;
+  pNew->r_सज्जता = 0;
   pNew->wsFlags = WHERE_VIRTUALTABLE;
   pNew->nLTerm = 0;
   pNew->u.vtab.needFree = 0;
   nConstraint = p->nConstraint;
-  if( whereLoopResize(pParse->db, pNew, nConstraint) ){
-    freeIndexInfo(pParse->db, p);
-    return SQLITE_NOMEM_BKPT;
+  यदि( whereLoopResize(pParse->db, pNew, nConstraint) ){
+    free_सूचकांक_Info(pParse->db, p);
+    प्रत्यागम SQLITE_NOMEM_BKPT;
   }
 
   /* First call xBestIndex() with all constraints usable. */
   WHERETRACE(0x800, ("BEGIN %s.addVirtual()\n", pSrc->pSTab->zName));
   WHERETRACE(0x800, ("  VirtualOne: all usable\n"));
-  rc = whereLoopAddVirtualOne(
-      pBuilder, mPrereq, ALLBITS, 0, p, mNoOmit, &bIn, &bRetry
+  rc = where_Loop_सङ्कलय_Virtual_One(
+      pBuilder, mPrereq, ALLBITS, 0, p, mNoOmit, &b_अन्तर्, &bRetry
   );
-  if( bRetry ){
-    assert( rc==SQLITE_OK );
-    rc = whereLoopAddVirtualOne(
-        pBuilder, mPrereq, ALLBITS, 0, p, mNoOmit, &bIn, 0
+  यदि( bRetry ){
+    प्रतिज्ञा( rc==SQLITE_OK );
+    rc = where_Loop_सङ्कलय_Virtual_One(
+        pBuilder, mPrereq, ALLBITS, 0, p, mNoOmit, &b_अन्तर्, 0
     );
   }
 
@@ -4761,81 +4761,81 @@ static int whereLoopAddVirtual(
   ** and does not use an IN(...) operator, then there is no point in making
   ** any further calls to xBestIndex() since they will all return the same
   ** result (if the xBestIndex() implementation is sane). */
-  if( rc==SQLITE_OK && ((mBest = (pNew->prereq & ~mPrereq))!=0 || bIn) ){
-    int seenZero = 0;             /* True if a plan with no prereqs seen */
-    int seenZeroNoIN = 0;         /* Plan with no prereqs and no IN(...) seen */
-    Bitmask mPrev = 0;
-    Bitmask mBestNoIn = 0;
+  यदि( rc==SQLITE_OK && ((mBest = (pNew->prereq & ~mPrereq))!=0 || b_अन्तर्) ){
+    पूर्णाङ्क आलोकितम्_Zero = 0;             /* True if a plan with no prereqs seen */
+    पूर्णाङ्क आलोकितम्_Zero_No_अन्तर् = 0;         /* Plan with no prereqs and no IN(...) seen */
+    Bitmask m_पूर्व = 0;
+    Bitmask m_Best_No_अन्तर् = 0;
 
     /* If the plan produced by the earlier call uses an IN(...) term, call
     ** xBestIndex again, this time with IN(...) terms disabled. */
-    if( bIn ){
+    यदि( b_अन्तर् ){
       WHERETRACE(0x800, ("  VirtualOne: all usable w/o IN\n"));
-      rc = whereLoopAddVirtualOne(
-          pBuilder, mPrereq, ALLBITS, WO_IN, p, mNoOmit, &bIn, 0);
-      assert( bIn==0 );
-      mBestNoIn = pNew->prereq & ~mPrereq;
-      if( mBestNoIn==0 ){
-        seenZero = 1;
-        seenZeroNoIN = 1;
+      rc = where_Loop_सङ्कलय_Virtual_One(
+          pBuilder, mPrereq, ALLBITS, WO_अन्तर्, p, mNoOmit, &b_अन्तर्, 0);
+      प्रतिज्ञा( b_अन्तर्==0 );
+      m_Best_No_अन्तर् = pNew->prereq & ~mPrereq;
+      यदि( m_Best_No_अन्तर्==0 ){
+        आलोकितम्_Zero = 1;
+        आलोकितम्_Zero_No_अन्तर् = 1;
       }
     }
 
     /* Call xBestIndex once for each distinct value of (prereqRight & ~mPrereq)
     ** in the set of terms that apply to the current virtual table.  */
-    while( rc==SQLITE_OK ){
-      int i;
-      Bitmask mNext = ALLBITS;
-      assert( mNext>0 );
-      for(i=0; i<nConstraint; i++){
-        int iTerm = p->aConstraint[i].iTermOffset;
-        Bitmask mThis = termFromWhereClause(pWC, iTerm)->prereqRight & ~mPrereq;
-        if( mThis>mPrev && mThis<mNext ) mNext = mThis;
+    यावत्( rc==SQLITE_OK ){
+      पूर्णाङ्क i;
+      Bitmask m_अग्र = ALLBITS;
+      प्रतिज्ञा( m_अग्र>0 );
+      प्रति(i=0; i<nConstraint; i++){
+        पूर्णाङ्क i_पदांशः = p->aConstraint[i].i_पदांशः_विस्थापनम्;
+        Bitmask mThis = पदांशः_From_Where_Clause(pWC, i_पदांशः)->prereq_दक्षिणः & ~mPrereq;
+        यदि( mThis>m_पूर्व && mThis<m_अग्र ) m_अग्र = mThis;
       }
-      mPrev = mNext;
-      if( mNext==ALLBITS ) break;
-      if( mNext==mBest || mNext==mBestNoIn ) continue;
+      m_पूर्व = m_अग्र;
+      यदि( m_अग्र==ALLBITS ) भङ्ग;
+      यदि( m_अग्र==mBest || m_अग्र==m_Best_No_अन्तर् ) अनुवर्त;
       WHERETRACE(0x800, ("  VirtualOne: mPrev=%04llx mNext=%04llx\n",
-                       (sqlite3_uint64)mPrev, (sqlite3_uint64)mNext));
-      rc = whereLoopAddVirtualOne(
-          pBuilder, mPrereq, mNext|mPrereq, 0, p, mNoOmit, &bIn, 0);
-      if( pNew->prereq==mPrereq ){
-        seenZero = 1;
-        if( bIn==0 ) seenZeroNoIN = 1;
+                       (sqlite3_uint64)m_पूर्व, (sqlite3_uint64)m_अग्र));
+      rc = where_Loop_सङ्कलय_Virtual_One(
+          pBuilder, mPrereq, m_अग्र|mPrereq, 0, p, mNoOmit, &b_अन्तर्, 0);
+      यदि( pNew->prereq==mPrereq ){
+        आलोकितम्_Zero = 1;
+        यदि( b_अन्तर्==0 ) आलोकितम्_Zero_No_अन्तर् = 1;
       }
     }
 
     /* If the calls to xBestIndex() in the above loop did not find a plan
     ** that requires no source tables at all (i.e. one guaranteed to be
     ** usable), make a call here with all source tables disabled */
-    if( rc==SQLITE_OK && seenZero==0 ){
+    यदि( rc==SQLITE_OK && आलोकितम्_Zero==0 ){
       WHERETRACE(0x800, ("  VirtualOne: all disabled\n"));
-      rc = whereLoopAddVirtualOne(
-          pBuilder, mPrereq, mPrereq, 0, p, mNoOmit, &bIn, 0);
-      if( bIn==0 ) seenZeroNoIN = 1;
+      rc = where_Loop_सङ्कलय_Virtual_One(
+          pBuilder, mPrereq, mPrereq, 0, p, mNoOmit, &b_अन्तर्, 0);
+      यदि( b_अन्तर्==0 ) आलोकितम्_Zero_No_अन्तर् = 1;
     }
 
     /* If the calls to xBestIndex() have so far failed to find a plan
     ** that requires no source tables at all and does not use an IN(...)
     ** operator, make a final call to obtain one here.  */
-    if( rc==SQLITE_OK && seenZeroNoIN==0 ){
+    यदि( rc==SQLITE_OK && आलोकितम्_Zero_No_अन्तर्==0 ){
       WHERETRACE(0x800, ("  VirtualOne: all disabled and w/o IN\n"));
-      rc = whereLoopAddVirtualOne(
-          pBuilder, mPrereq, mPrereq, WO_IN, p, mNoOmit, &bIn, 0);
+      rc = where_Loop_सङ्कलय_Virtual_One(
+          pBuilder, mPrereq, mPrereq, WO_अन्तर्, p, mNoOmit, &b_अन्तर्, 0);
     }
   }
 
-  freeIndexInfo(pParse->db, p);
+  free_सूचकांक_Info(pParse->db, p);
   WHERETRACE(0x800, ("END %s.addVirtual(), rc=%d\n", pSrc->pSTab->zName, rc));
-  return rc;
+  प्रत्यागम rc;
 }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#यदि_अन्तः /* SQLITE_OMIT_VIRTUALTABLE */
 
 /*
 ** Add WhereLoop entries to handle OR terms.  This works for either
 ** btrees or virtual tables.
 */
-static int whereLoopAddOr(
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_Or(
   WhereLoopBuilder *pBuilder,
   Bitmask mPrereq,
   Bitmask mUnusable
@@ -4843,101 +4843,101 @@ static int whereLoopAddOr(
   WhereInfo *pWInfo = pBuilder->pWInfo;
   WhereClause *pWC;
   WhereLoop *pNew;
-  WhereTerm *pTerm, *pWCEnd;
-  int rc = SQLITE_OK;
-  int iCur;
-  WhereClause tempWC;
+  Where_पदांशः *p_पदांशः, *pWCEnd;
+  पूर्णाङ्क rc = SQLITE_OK;
+  पूर्णाङ्क iCur;
+  WhereClause अस्थायी_WC;
   WhereLoopBuilder sSubBuild;
-  WhereOrSet sSum, sCur;
+  Where_Or_समुच्चयः s_योग, sCur;
   SrcItem *pItem;
  
   pWC = pBuilder->pWC;
-  pWCEnd = pWC->a + pWC->nTerm;
+  pWCEnd = pWC->a + pWC->n_पदांशः;
   pNew = pBuilder->pNew;
-  memset(&sSum, 0, sizeof(sSum));
+  स्मृतिं_पूरय(&s_योग, 0, परिमाण(s_योग));
   pItem = pWInfo->pTabList->a + pNew->iTab;
   iCur = pItem->iCursor;
 
   /* The multi-index OR optimization does not work for RIGHT and FULL JOIN */
-  if( pItem->fg.jointype & JT_RIGHT ) return SQLITE_OK;
+  यदि( pItem->fg.jointype & JT_दक्षिणः ) प्रत्यागम SQLITE_OK;
 
-  for(pTerm=pWC->a; pTerm<pWCEnd && rc==SQLITE_OK; pTerm++){
-    if( (pTerm->eOperator & WO_OR)!=0
-     && (pTerm->u.pOrInfo->indexable & pNew->maskSelf)!=0
-     && (!ExprHasProperty(pTerm->pExpr, EP_OuterON)
-          || pTerm->pExpr->w.iJoin==iCur)
+  प्रति(p_पदांशः=pWC->a; p_पदांशः<pWCEnd && rc==SQLITE_OK; p_पदांशः++){
+    यदि( (p_पदांशः->eOperator & WO_OR)!=0
+     && (p_पदांशः->u.pOrInfo->indexable & pNew->आवरणम्_Self)!=0
+     && (!व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON)
+          || p_पदांशः->p_व्यञ्जकम्->w.iJoin==iCur)
     ){
-      WhereClause * const pOrWC = &pTerm->u.pOrInfo->wc;
-      WhereTerm * const pOrWCEnd = &pOrWC->a[pOrWC->nTerm];
-      WhereTerm *pOrTerm;
-      int once = 1;
-      int i, j;
+      WhereClause * ध्रुव pOrWC = &p_पदांशः->u.pOrInfo->wc;
+      Where_पदांशः * ध्रुव pOrWCEnd = &pOrWC->a[pOrWC->n_पदांशः];
+      Where_पदांशः *p_Or_पदांशः;
+      पूर्णाङ्क once = 1;
+      पूर्णाङ्क i, j;
    
       sSubBuild = *pBuilder;
-      sSubBuild.pOrSet = &sCur;
+      sSubBuild.p_Or_समुच्चयः = &sCur;
 
-      WHERETRACE(0x400, ("Begin processing OR-clause %p\n", pTerm));
-      for(pOrTerm=pOrWC->a; pOrTerm<pOrWCEnd; pOrTerm++){
-        if( (pOrTerm->eOperator & WO_AND)!=0 ){
-          sSubBuild.pWC = &pOrTerm->u.pAndInfo->wc;
-        }else if( pOrTerm->leftCursor==iCur ){
-          tempWC.pWInfo = pWC->pWInfo;
-          tempWC.pOuter = pWC;
-          tempWC.op = TK_AND;
-          tempWC.nTerm = 1;
-          tempWC.nBase = 1;
-          tempWC.a = pOrTerm;
-          sSubBuild.pWC = &tempWC;
-        }else{
-          continue;
+      WHERETRACE(0x400, ("Begin processing OR-clause %p\n", p_पदांशः));
+      प्रति(p_Or_पदांशः=pOrWC->a; p_Or_पदांशः<pOrWCEnd; p_Or_पदांशः++){
+        यदि( (p_Or_पदांशः->eOperator & WO_AND)!=0 ){
+          sSubBuild.pWC = &p_Or_पदांशः->u.pAndInfo->wc;
+        }अन्यथा यदि( p_Or_पदांशः->वामः_Cursor==iCur ){
+          अस्थायी_WC.pWInfo = pWC->pWInfo;
+          अस्थायी_WC.pOuter = pWC;
+          अस्थायी_WC.op = TK_AND;
+          अस्थायी_WC.n_पदांशः = 1;
+          अस्थायी_WC.n_आधारः = 1;
+          अस्थायी_WC.a = p_Or_पदांशः;
+          sSubBuild.pWC = &अस्थायी_WC;
+        }अन्यथा{
+          अनुवर्त;
         }
         sCur.n = 0;
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
         WHERETRACE(0x400, ("OR-term %d of %p has %d subterms:\n",
-                   (int)(pOrTerm-pOrWC->a), pTerm, sSubBuild.pWC->nTerm));
-        if( sqlite3WhereTrace & 0x20000 ){
+                   (पूर्णाङ्क)(p_Or_पदांशः-pOrWC->a), p_पदांशः, sSubBuild.pWC->n_पदांशः));
+        यदि( sqlite3WhereTrace & 0x20000 ){
           sqlite3WhereClausePrint(sSubBuild.pWC);
         }
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-        if( IsVirtual(pItem->pSTab) ){
-          rc = whereLoopAddVirtual(&sSubBuild, mPrereq, mUnusable);
-        }else
-#endif
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+        यदि( IsVirtual(pItem->pSTab) ){
+          rc = where_Loop_सङ्कलय_Virtual(&sSubBuild, mPrereq, mUnusable);
+        }अन्यथा
+#यदि_अन्तः
         {
-          rc = whereLoopAddBtree(&sSubBuild, mPrereq);
+          rc = where_Loop_सङ्कलय_Btree(&sSubBuild, mPrereq);
         }
-        if( rc==SQLITE_OK ){
-          rc = whereLoopAddOr(&sSubBuild, mPrereq, mUnusable);
+        यदि( rc==SQLITE_OK ){
+          rc = where_Loop_सङ्कलय_Or(&sSubBuild, mPrereq, mUnusable);
         }
         testcase( rc==SQLITE_NOMEM && sCur.n>0 );
-        testcase( rc==SQLITE_DONE );
-        if( sCur.n==0 ){
-          sSum.n = 0;
-          break;
-        }else if( once ){
-          whereOrMove(&sSum, &sCur);
+        testcase( rc==SQLITE_समाप्तम् );
+        यदि( sCur.n==0 ){
+          s_योग.n = 0;
+          भङ्ग;
+        }अन्यथा यदि( once ){
+          whereOrMove(&s_योग, &sCur);
           once = 0;
-        }else{
-          WhereOrSet sPrev;
-          whereOrMove(&sPrev, &sSum);
-          sSum.n = 0;
-          for(i=0; i<sPrev.n; i++){
-            for(j=0; j<sCur.n; j++){
-              whereOrInsert(&sSum, sPrev.a[i].prereq | sCur.a[j].prereq,
-                            sqlite3LogEstAdd(sPrev.a[i].rRun, sCur.a[j].rRun),
-                            sqlite3LogEstAdd(sPrev.a[i].nOut, sCur.a[j].nOut));
+        }अन्यथा{
+          Where_Or_समुच्चयः s_पूर्व;
+          whereOrMove(&s_पूर्व, &s_योग);
+          s_योग.n = 0;
+          प्रति(i=0; i<s_पूर्व.n; i++){
+            प्रति(j=0; j<sCur.n; j++){
+              where_Or_निवेशय(&s_योग, s_पूर्व.a[i].prereq | sCur.a[j].prereq,
+                            sqlite3_Log_Est_सङ्कलय(s_पूर्व.a[i].r_सततम्, sCur.a[j].r_सततम्),
+                            sqlite3_Log_Est_सङ्कलय(s_पूर्व.a[i].n_बहिर्गमनम्, sCur.a[j].n_बहिर्गमनम्));
             }
           }
         }
       }
       pNew->nLTerm = 1;
-      pNew->aLTerm[0] = pTerm;
+      pNew->aLTerm[0] = p_पदांशः;
       pNew->wsFlags = WHERE_MULTI_OR;
-      pNew->rSetup = 0;
-      pNew->iSortIdx = 0;
-      memset(&pNew->u, 0, sizeof(pNew->u));
-      for(i=0; rc==SQLITE_OK && i<sSum.n; i++){
+      pNew->r_सज्जता = 0;
+      pNew->i_क्रमय_Idx = 0;
+      स्मृतिं_पूरय(&pNew->u, 0, परिमाण(pNew->u));
+      प्रति(i=0; rc==SQLITE_OK && i<s_योग.n; i++){
         /* TUNING: Currently sSum.a[i].rRun is set to the sum of the costs
         ** of all sub-scans required by the OR-scan. However, due to rounding
         ** errors, it may be that the cost of the OR-scan is equal to its
@@ -4950,32 +4950,32 @@ static int whereLoopAddOr(
         **
         ** the planner may elect to "OR" together a full-table scan and an
         ** index lookup. And other similarly odd results.  */
-        pNew->rRun = sSum.a[i].rRun + 1;
-        pNew->nOut = sSum.a[i].nOut;
-        pNew->prereq = sSum.a[i].prereq;
-        rc = whereLoopInsert(pBuilder, pNew);
+        pNew->r_सततम् = s_योग.a[i].r_सततम् + 1;
+        pNew->n_बहिर्गमनम् = s_योग.a[i].n_बहिर्गमनम्;
+        pNew->prereq = s_योग.a[i].prereq;
+        rc = where_Loop_निवेशय(pBuilder, pNew);
       }
-      WHERETRACE(0x400, ("End processing OR-clause %p\n", pTerm));
+      WHERETRACE(0x400, ("End processing OR-clause %p\n", p_पदांशः));
     }
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** Add all WhereLoop objects for all tables
 */
-static int whereLoopAddAll(WhereLoopBuilder *pBuilder){
+स्थिर पूर्णाङ्क where_Loop_सङ्कलय_All(WhereLoopBuilder *pBuilder){
   WhereInfo *pWInfo = pBuilder->pWInfo;
   Bitmask mPrereq = 0;
-  Bitmask mPrior = 0;
-  int iTab;
+  Bitmask m_प्राक् = 0;
+  पूर्णाङ्क iTab;
   SrcList *pTabList = pWInfo->pTabList;
   SrcItem *pItem;
-  SrcItem *pEnd = &pTabList->a[pWInfo->nLevel];
+  SrcItem *p_अन्तः = &pTabList->a[pWInfo->nLevel];
   sqlite3 *db = pWInfo->pParse->db;
-  int rc = SQLITE_OK;
-  int bFirstPastRJ = 0;
-  int hasRightCrossJoin = 0;
+  पूर्णाङ्क rc = SQLITE_OK;
+  पूर्णाङ्क bFirstPastRJ = 0;
+  पूर्णाङ्क has_दक्षिणः_Cross_Join = 0;
   WhereLoop *pNew;
 
 
@@ -4983,18 +4983,18 @@ static int whereLoopAddAll(WhereLoopBuilder *pBuilder){
   pNew = pBuilder->pNew;
 
   /* Verify that pNew has already been initialized */
-  assert( pNew->nLTerm==0 );
-  assert( pNew->wsFlags==0 );
-  assert( pNew->nLSlot>=ArraySize(pNew->aLTermSpace) );
-  assert( pNew->aLTerm!=0 );
+  प्रतिज्ञा( pNew->nLTerm==0 );
+  प्रतिज्ञा( pNew->wsFlags==0 );
+  प्रतिज्ञा( pNew->nLSlot>=Array_आकार(pNew->aLTermSpace) );
+  प्रतिज्ञा( pNew->aLTerm!=0 );
 
-  pBuilder->iPlanLimit = SQLITE_QUERY_PLANNER_LIMIT;
-  for(iTab=0, pItem=pTabList->a; pItem<pEnd; iTab++, pItem++){
+  pBuilder->i_Plan_सीमा = SQLITE_QUERY_PLANNER_सीमा;
+  प्रति(iTab=0, pItem=pTabList->a; pItem<p_अन्तः; iTab++, pItem++){
     Bitmask mUnusable = 0;
     pNew->iTab = iTab;
-    pBuilder->iPlanLimit += SQLITE_QUERY_PLANNER_LIMIT_INCR;
-    pNew->maskSelf = sqlite3WhereGetMask(&pWInfo->sMaskSet, pItem->iCursor);
-    if( bFirstPastRJ
+    pBuilder->i_Plan_सीमा += SQLITE_QUERY_PLANNER_सीमा_INCR;
+    pNew->आवरणम्_Self = sqlite3_Where_Get_आवरणम्(&pWInfo->s_आवरणम्_समुच्चयः, pItem->iCursor);
+    यदि( bFirstPastRJ
      || (pItem->fg.jointype & (JT_OUTER|JT_CROSS|JT_LTORJ))!=0
     ){
       /* Add prerequisites to prevent reordering of FROM clause terms
@@ -5011,58 +5011,58 @@ static int whereLoopAddAll(WhereLoopBuilder *pBuilder){
       ** the theory that no real-world queries that care about performance
       ** actually use the CROSS JOIN syntax.
       */
-      if( pItem->fg.jointype & (JT_LTORJ|JT_CROSS) ){
+      यदि( pItem->fg.jointype & (JT_LTORJ|JT_CROSS) ){
         testcase( pItem->fg.jointype & JT_LTORJ );
         testcase( pItem->fg.jointype & JT_CROSS );
-        hasRightCrossJoin = 1;
+        has_दक्षिणः_Cross_Join = 1;
       }
-      mPrereq |= mPrior;
-      bFirstPastRJ = (pItem->fg.jointype & JT_RIGHT)!=0;
-    }else if( pItem->fg.fromExists ){
+      mPrereq |= m_प्राक्;
+      bFirstPastRJ = (pItem->fg.jointype & JT_दक्षिणः)!=0;
+    }अन्यथा यदि( pItem->fg.fromExists ){
       /* joins that result from the EXISTS-to-JOIN optimization should not
       ** be moved to the left of any of their dependencies */
       WhereClause *pWC = &pWInfo->sWC;
-      WhereTerm *pTerm;
-      int i;
-      for(i=pWC->nBase, pTerm=pWC->a; i>0; i--, pTerm++){
-        if( (pNew->maskSelf & pTerm->prereqAll)!=0 ){
-          mPrereq |= (pTerm->prereqAll & (pNew->maskSelf-1));
+      Where_पदांशः *p_पदांशः;
+      पूर्णाङ्क i;
+      प्रति(i=pWC->n_आधारः, p_पदांशः=pWC->a; i>0; i--, p_पदांशः++){
+        यदि( (pNew->आवरणम्_Self & p_पदांशः->prereqAll)!=0 ){
+          mPrereq |= (p_पदांशः->prereqAll & (pNew->आवरणम्_Self-1));
         }
       }
-    }else if( !hasRightCrossJoin ){
+    }अन्यथा यदि( !has_दक्षिणः_Cross_Join ){
       mPrereq = 0;
     }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pItem->pSTab) ){
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+    यदि( IsVirtual(pItem->pSTab) ){
       SrcItem *p;
-      for(p=&pItem[1]; p<pEnd; p++){
-        if( (p->fg.jointype & (JT_OUTER|JT_CROSS)) ){
-          mUnusable |= sqlite3WhereGetMask(&pWInfo->sMaskSet, p->iCursor);
+      प्रति(p=&pItem[1]; p<p_अन्तः; p++){
+        यदि( (p->fg.jointype & (JT_OUTER|JT_CROSS)) ){
+          mUnusable |= sqlite3_Where_Get_आवरणम्(&pWInfo->s_आवरणम्_समुच्चयः, p->iCursor);
         }
       }
-      rc = whereLoopAddVirtual(pBuilder, mPrereq, mUnusable);
-    }else
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+      rc = where_Loop_सङ्कलय_Virtual(pBuilder, mPrereq, mUnusable);
+    }अन्यथा
+#यदि_अन्तः /* SQLITE_OMIT_VIRTUALTABLE */
     {
-      rc = whereLoopAddBtree(pBuilder, mPrereq);
+      rc = where_Loop_सङ्कलय_Btree(pBuilder, mPrereq);
     }
-    if( rc==SQLITE_OK && pBuilder->pWC->hasOr ){
-      rc = whereLoopAddOr(pBuilder, mPrereq, mUnusable);
+    यदि( rc==SQLITE_OK && pBuilder->pWC->hasOr ){
+      rc = where_Loop_सङ्कलय_Or(pBuilder, mPrereq, mUnusable);
     }
-    mPrior |= pNew->maskSelf;
-    if( rc || db->mallocFailed ){
-      if( rc==SQLITE_DONE ){
+    m_प्राक् |= pNew->आवरणम्_Self;
+    यदि( rc || db->mallocFailed ){
+      यदि( rc==SQLITE_समाप्तम् ){
         /* We hit the query planner search limit set by iPlanLimit */
         sqlite3_log(SQLITE_WARNING, "abbreviated query algorithm search");
         rc = SQLITE_OK;
-      }else{
-        break;
+      }अन्यथा{
+        भङ्ग;
       }
     }
   }
 
   whereLoopClear(db, pNew);
-  return rc;
+  प्रत्यागम rc;
 }
 
 /* Implementation of the order-by-subquery optimization:
@@ -5104,56 +5104,56 @@ static int whereLoopAddAll(WhereLoopBuilder *pBuilder){
 **      implemented as a co-routine, the sort orders must be in the same
 **      direction because there is no way to run a co-routine backwards.
 */
-static SQLITE_NOINLINE int wherePathMatchSubqueryOB(
+स्थिर SQLITE_NOINLINE पूर्णाङ्क where_मार्गः_मेलनम्_Subquery_OB(
   WhereLoop *pLoop,       /* The nested loop term that is a subquery */
-  int iLoop,              /* Which level of the nested loop.  0==outermost */
-  int iCur,               /* Cursor used by the this loop */
-  ExprList *pOrderBy,     /* The ORDER BY clause on the whole query */
-  Bitmask *pRevMask,      /* When loops need to go in reverse order */
+  पूर्णाङ्क iLoop,              /* Which level of the nested loop.  0==outermost */
+  पूर्णाङ्क iCur,               /* Cursor used by the this loop */
+  व्यञ्जकम्_List *p_क्रमः_By,     /* The ORDER BY clause on the whole query */
+  Bitmask *p_Rev_आवरणम्,      /* When loops need to go in reverse order */
   Bitmask *pOBSat,        /* Which terms of pOrderBy are satisfied so far */
   u16 wctrlFlags          /* WHERE_GROUPBY or _DISTINCTBY or _ORDERBY_LIMIT */
 ){
-  int iOB;                /* Index into pOrderBy->a[] */
-  int jSub;               /* Index into pSubOB->a[] */
+  पूर्णाङ्क iOB;                /* Index into pOrderBy->a[] */
+  पूर्णाङ्क jSub;               /* Index into pSubOB->a[] */
   u8 rev = 0;             /* True if iOB and jSub sort in opposite directions */
   u8 revIdx = 0;          /* Sort direction for jSub */
-  Expr *pOBExpr;          /* Current term of outer ORDER BY */
-  ExprList *pSubOB;       /* Complete ORDER BY on the subquery */
+  व्यञ्जकम् *pOBExpr;          /* Current term of outer ORDER BY */
+  व्यञ्जकम्_List *pSubOB;       /* Complete ORDER BY on the subquery */
 
-  pSubOB = pLoop->u.btree.pOrderBy;
-  assert( pSubOB!=0 );
-  for(iOB=0; (MASKBIT(iOB) & *pOBSat)!=0; iOB++){}
-  for(jSub=0; jSub<pSubOB->nExpr && iOB<pOrderBy->nExpr; jSub++, iOB++){
-    if( pSubOB->a[jSub].u.x.iOrderByCol==0 ) break;
-    pOBExpr = pOrderBy->a[iOB].pExpr;
-    if( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) break;
-    if( pOBExpr->iTable!=iCur ) break;
-    if( pOBExpr->iColumn!=pSubOB->a[jSub].u.x.iOrderByCol-1 ) break;
-    if( (wctrlFlags & WHERE_GROUPBY)==0 ){
-      u8 sfOB = pOrderBy->a[iOB].fg.sortFlags;   /* sortFlags for iOB */
-      u8 sfSub = pSubOB->a[jSub].fg.sortFlags;   /* sortFlags for jSub */
-      if( (sfSub & KEYINFO_ORDER_BIGNULL) != (sfOB & KEYINFO_ORDER_BIGNULL) ){
-        break;
+  pSubOB = pLoop->u.btree.p_क्रमः_By;
+  प्रतिज्ञा( pSubOB!=0 );
+  प्रति(iOB=0; (MASKBIT(iOB) & *pOBSat)!=0; iOB++){}
+  प्रति(jSub=0; jSub<pSubOB->n_व्यञ्जकम् && iOB<p_क्रमः_By->n_व्यञ्जकम्; jSub++, iOB++){
+    यदि( pSubOB->a[jSub].u.x.i_क्रमः_By_Col==0 ) भङ्ग;
+    pOBExpr = p_क्रमः_By->a[iOB].p_व्यञ्जकम्;
+    यदि( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) भङ्ग;
+    यदि( pOBExpr->i_सारणी!=iCur ) भङ्ग;
+    यदि( pOBExpr->iColumn!=pSubOB->a[jSub].u.x.i_क्रमः_By_Col-1 ) भङ्ग;
+    यदि( (wctrlFlags & WHERE_GROUPBY)==0 ){
+      u8 sfOB = p_क्रमः_By->a[iOB].fg.क्रमय_Flags;   /* sortFlags for iOB */
+      u8 sfSub = pSubOB->a[jSub].fg.क्रमय_Flags;   /* sortFlags for jSub */
+      यदि( (sfSub & KEYINFO_क्रमः_BIGNULL) != (sfOB & KEYINFO_क्रमः_BIGNULL) ){
+        भङ्ग;
       }
-      revIdx = sfSub & KEYINFO_ORDER_DESC;
-      if( jSub>0 ){
-        if( (rev^revIdx)!=(sfOB & KEYINFO_ORDER_DESC) ){
-          break;
+      revIdx = sfSub & KEYINFO_क्रमः_DESC;
+      यदि( jSub>0 ){
+        यदि( (rev^revIdx)!=(sfOB & KEYINFO_क्रमः_DESC) ){
+          भङ्ग;
         }
-      }else{
-        rev = revIdx ^ (sfOB & KEYINFO_ORDER_DESC);
-        if( rev ){
-          if( (pLoop->wsFlags & WHERE_COROUTINE)!=0 ){
+      }अन्यथा{
+        rev = revIdx ^ (sfOB & KEYINFO_क्रमः_DESC);
+        यदि( rev ){
+          यदि( (pLoop->wsFlags & WHERE_COROUTINE)!=0 ){
             /* Cannot run a co-routine in reverse order */
-            break;
+            भङ्ग;
           }
-          *pRevMask |= MASKBIT(iLoop);
+          *p_Rev_आवरणम् |= MASKBIT(iLoop);
         }
       }
     }
     *pOBSat |= MASKBIT(iOB);
   }
-  return jSub>0;
+  प्रत्यागम jSub>0;
 }
 
 /*
@@ -5173,38 +5173,38 @@ static SQLITE_NOINLINE int wherePathMatchSubqueryOB(
 ** the pOrderBy terms can be matched in any order.  With ORDER BY, the
 ** pOrderBy terms must be matched in strict left-to-right order.
 */
-static i8 wherePathSatisfiesOrderBy(
+स्थिर i8 where_मार्गः_Satisfies_क्रमः_By(
   WhereInfo *pWInfo,    /* The WHERE clause */
-  ExprList *pOrderBy,   /* ORDER BY or GROUP BY or DISTINCT clause to check */
-  WherePath *pPath,     /* The WherePath to check */
+  व्यञ्जकम्_List *p_क्रमः_By,   /* ORDER BY or GROUP BY or DISTINCT clause to check */
+  Where_मार्गः *p_मार्गः,     /* The WherePath to check */
   u16 wctrlFlags,       /* WHERE_GROUPBY or _DISTINCTBY or _ORDERBY_LIMIT */
   u16 nLoop,            /* Number of entries in pPath->aLoop[] */
-  WhereLoop *pLast,     /* Add this WhereLoop to the end of pPath->aLoop[] */
-  Bitmask *pRevMask     /* OUT: Mask of WhereLoops to run in reverse order */
+  WhereLoop *p_चरमः,     /* Add this WhereLoop to the end of pPath->aLoop[] */
+  Bitmask *p_Rev_आवरणम्     /* OUT: Mask of WhereLoops to run in reverse order */
 ){
-  u8 revSet;            /* True if rev is known */
+  u8 rev_समुच्चयः;            /* True if rev is known */
   u8 rev;               /* Composite sort order */
   u8 revIdx;            /* Index sort order */
-  u8 isOrderDistinct;   /* All prior WhereLoops are order-distinct */
+  u8 is_क्रमः_Distinct;   /* All prior WhereLoops are order-distinct */
   u8 distinctColumns;   /* True if the loop has UNIQUE NOT NULL columns */
-  u8 isMatch;           /* iColumn matches a term of the ORDER BY clause */
-  u16 eqOpMask;         /* Allowed equality operators */
-  u16 nKeyCol;          /* Number of key columns in pIndex */
+  u8 is_मेलनम्;           /* iColumn matches a term of the ORDER BY clause */
+  u16 eq_Op_आवरणम्;         /* Allowed equality operators */
+  u16 n_कुञ्चिका_Col;          /* Number of key columns in pIndex */
   u16 nColumn;          /* Total number of ordered columns in the index */
-  u16 nOrderBy;         /* Number terms in the ORDER BY clause */
-  int iLoop;            /* Index of WhereLoop in pPath being processed */
-  int i, j;             /* Loop counters */
-  int iCur;             /* Cursor number for current WhereLoop */
-  int iColumn;          /* A column number within table iCur */
+  u16 n_क्रमः_By;         /* Number terms in the ORDER BY clause */
+  पूर्णाङ्क iLoop;            /* Index of WhereLoop in pPath being processed */
+  पूर्णाङ्क i, j;             /* Loop counters */
+  पूर्णाङ्क iCur;             /* Cursor number for current WhereLoop */
+  पूर्णाङ्क iColumn;          /* A column number within table iCur */
   WhereLoop *pLoop = 0; /* Current WhereLoop being processed. */
-  WhereTerm *pTerm;     /* A single term of the WHERE clause */
-  Expr *pOBExpr;        /* An expression from the ORDER BY clause */
+  Where_पदांशः *p_पदांशः;     /* A single term of the WHERE clause */
+  व्यञ्जकम् *pOBExpr;        /* An expression from the ORDER BY clause */
   CollSeq *pColl;       /* COLLATE function from an ORDER BY clause term */
-  Index *pIndex;        /* The index associated with pLoop */
+  सूचकांक *p_सूचकांक;        /* The index associated with pLoop */
   sqlite3 *db = pWInfo->pParse->db;  /* Database connection */
   Bitmask obSat = 0;    /* Mask of ORDER BY terms satisfied so far */
-  Bitmask obDone;       /* Mask of all ORDER BY terms */
-  Bitmask orderDistinctMask;  /* Mask of all well-ordered loops */
+  Bitmask ob_समाप्तम्;       /* Mask of all ORDER BY terms */
+  Bitmask क्रमः_Distinct_आवरणम्;  /* Mask of all well-ordered loops */
   Bitmask ready;              /* Mask of inner loops */
 
   /*
@@ -5229,37 +5229,37 @@ static i8 wherePathSatisfiesOrderBy(
   ** automatically order-distinct.
   */
 
-  assert( pOrderBy!=0 );
-  if( nLoop && OptimizationDisabled(db, SQLITE_OrderByIdxJoin) ) return 0;
+  प्रतिज्ञा( p_क्रमः_By!=0 );
+  यदि( nLoop && OptimizationDisabled(db, SQLITE_क्रमः_By_Idx_Join) ) प्रत्यागम 0;
 
-  nOrderBy = pOrderBy->nExpr;
-  testcase( nOrderBy==BMS-1 );
-  if( nOrderBy>BMS-1 ) return 0;  /* Cannot optimize overly large ORDER BYs */
-  isOrderDistinct = 1;
-  obDone = MASKBIT(nOrderBy)-1;
-  orderDistinctMask = 0;
+  n_क्रमः_By = p_क्रमः_By->n_व्यञ्जकम्;
+  testcase( n_क्रमः_By==BMS-1 );
+  यदि( n_क्रमः_By>BMS-1 ) प्रत्यागम 0;  /* Cannot optimize overly large ORDER BYs */
+  is_क्रमः_Distinct = 1;
+  ob_समाप्तम् = MASKBIT(n_क्रमः_By)-1;
+  क्रमः_Distinct_आवरणम् = 0;
   ready = 0;
-  eqOpMask = WO_EQ | WO_IS | WO_ISNULL;
-  if( wctrlFlags & (WHERE_ORDERBY_LIMIT|WHERE_ORDERBY_MAX|WHERE_ORDERBY_MIN) ){
-    eqOpMask |= WO_IN;
+  eq_Op_आवरणम् = WO_EQ | WO_IS | WO_ISNULL;
+  यदि( wctrlFlags & (WHERE_ORDERBY_सीमा|WHERE_ORDERBY_MAX|WHERE_ORDERBY_MIN) ){
+    eq_Op_आवरणम् |= WO_अन्तर्;
   }
-  for(iLoop=0; isOrderDistinct && obSat<obDone && iLoop<=nLoop; iLoop++){
-    if( iLoop>0 ) ready |= pLoop->maskSelf;
-    if( iLoop<nLoop ){
-      pLoop = pPath->aLoop[iLoop];
-      if( wctrlFlags & WHERE_ORDERBY_LIMIT ) continue;
-    }else{
-      pLoop = pLast;
+  प्रति(iLoop=0; is_क्रमः_Distinct && obSat<ob_समाप्तम् && iLoop<=nLoop; iLoop++){
+    यदि( iLoop>0 ) ready |= pLoop->आवरणम्_Self;
+    यदि( iLoop<nLoop ){
+      pLoop = p_मार्गः->aLoop[iLoop];
+      यदि( wctrlFlags & WHERE_ORDERBY_सीमा ) अनुवर्त;
+    }अन्यथा{
+      pLoop = p_चरमः;
     }
-    if( pLoop->wsFlags & WHERE_VIRTUALTABLE ){
-      if( pLoop->u.vtab.isOrdered && pWInfo->pOrderBy==pOrderBy ){
-        obSat = obDone;
-      }else{
+    यदि( pLoop->wsFlags & WHERE_VIRTUALTABLE ){
+      यदि( pLoop->u.vtab.isOrdered && pWInfo->p_क्रमः_By==p_क्रमः_By ){
+        obSat = ob_समाप्तम्;
+      }अन्यथा{
         /* No further ORDER BY terms may be matched. So this call should
         ** return >=0, not -1. Clear isOrderDistinct to ensure it does so. */
-        isOrderDistinct = 0;
+        is_क्रमः_Distinct = 0;
       }
-      break;
+      भङ्ग;
     }
     iCur = pWInfo->pTabList->a[pLoop->iTab].iCursor;
 
@@ -5268,87 +5268,87 @@ static i8 wherePathSatisfiesOrderBy(
     ** clause of the form X IS NULL or X=? that reference only outer
     ** loops.
     */
-    for(i=0; i<nOrderBy; i++){
-      if( MASKBIT(i) & obSat ) continue;
-      pOBExpr = sqlite3ExprSkipCollateAndLikely(pOrderBy->a[i].pExpr);
-      if( NEVER(pOBExpr==0) ) continue;
-      if( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) continue;
-      if( pOBExpr->iTable!=iCur ) continue;
-      pTerm = sqlite3WhereFindTerm(&pWInfo->sWC, iCur, pOBExpr->iColumn,
-                       ~ready, eqOpMask, 0);
-      if( pTerm==0 ) continue;
-      if( pTerm->eOperator==WO_IN ){
+    प्रति(i=0; i<n_क्रमः_By; i++){
+      यदि( MASKBIT(i) & obSat ) अनुवर्त;
+      pOBExpr = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(p_क्रमः_By->a[i].p_व्यञ्जकम्);
+      यदि( NEVER(pOBExpr==0) ) अनुवर्त;
+      यदि( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) अनुवर्त;
+      यदि( pOBExpr->i_सारणी!=iCur ) अनुवर्त;
+      p_पदांशः = sqlite3_Where_Find_पदांशः(&pWInfo->sWC, iCur, pOBExpr->iColumn,
+                       ~ready, eq_Op_आवरणम्, 0);
+      यदि( p_पदांशः==0 ) अनुवर्त;
+      यदि( p_पदांशः->eOperator==WO_अन्तर् ){
         /* IN terms are only valid for sorting in the ORDER BY LIMIT
         ** optimization, and then only if they are actually used
         ** by the query plan */
-        assert( wctrlFlags &
-               (WHERE_ORDERBY_LIMIT|WHERE_ORDERBY_MIN|WHERE_ORDERBY_MAX) );
-        for(j=0; j<pLoop->nLTerm && pTerm!=pLoop->aLTerm[j]; j++){}
-        if( j>=pLoop->nLTerm ) continue;
+        प्रतिज्ञा( wctrlFlags &
+               (WHERE_ORDERBY_सीमा|WHERE_ORDERBY_MIN|WHERE_ORDERBY_MAX) );
+        प्रति(j=0; j<pLoop->nLTerm && p_पदांशः!=pLoop->aLTerm[j]; j++){}
+        यदि( j>=pLoop->nLTerm ) अनुवर्त;
       }
-      if( (pTerm->eOperator&(WO_EQ|WO_IS))!=0 && pOBExpr->iColumn>=0 ){
+      यदि( (p_पदांशः->eOperator&(WO_EQ|WO_IS))!=0 && pOBExpr->iColumn>=0 ){
         Parse *pParse = pWInfo->pParse;
-        CollSeq *pColl1 = sqlite3ExprNNCollSeq(pParse, pOrderBy->a[i].pExpr);
-        const Expr *pCExpr = pTerm->pExpr;
-        CollSeq *pColl2 = sqlite3ExprCompareCollSeq(pParse, pCExpr);
-        char affRight;
-        assert( pColl1 );
-        if( pColl2==0 || sqlite3StrICmp(pColl1->zName, pColl2->zName) ){
-          continue;
+        CollSeq *pColl1 = sqlite3_व्यञ्जकम्_NNColl_Seq(pParse, p_क्रमः_By->a[i].p_व्यञ्जकम्);
+        ध्रुव व्यञ्जकम् *pCExpr = p_पदांशः->p_व्यञ्जकम्;
+        CollSeq *pColl2 = sqlite3_व्यञ्जकम्_Compare_Coll_Seq(pParse, pCExpr);
+        वर्ण aff_दक्षिणः;
+        प्रतिज्ञा( pColl1 );
+        यदि( pColl2==0 || sqlite3StrICmp(pColl1->zName, pColl2->zName) ){
+          अनुवर्त;
         }
-        affRight = sqlite3ExprAffinity(pCExpr->pRight);
+        aff_दक्षिणः = sqlite3_व्यञ्जकम्_Affinity(pCExpr->p_दक्षिणः);
         /* Left operand must be a column, hence always has affinity */
-        assert( sqlite3ExprAffinity(pCExpr->pLeft)!=0 );
-        if( affRight!=0 && affRight!=sqlite3ExprAffinity(pCExpr->pLeft) ){
-          continue;  /* An affinity conversion would be required */
+        प्रतिज्ञा( sqlite3_व्यञ्जकम्_Affinity(pCExpr->p_वामः)!=0 );
+        यदि( aff_दक्षिणः!=0 && aff_दक्षिणः!=sqlite3_व्यञ्जकम्_Affinity(pCExpr->p_वामः) ){
+          अनुवर्त;  /* An affinity conversion would be required */
         }
         testcase( pCExpr->op==TK_IS );
       }
       obSat |= MASKBIT(i);
     }
 
-    if( (pLoop->wsFlags & WHERE_ONEROW)==0 ){
-      if( pLoop->wsFlags & WHERE_IPK ){
-        if( pLoop->u.btree.pOrderBy
-         && OptimizationEnabled(db, SQLITE_OrderBySubq)
-         &&  wherePathMatchSubqueryOB(pLoop,iLoop,iCur,
-                                     pOrderBy,pRevMask, &obSat, wctrlFlags)
+    यदि( (pLoop->wsFlags & WHERE_ONEROW)==0 ){
+      यदि( pLoop->wsFlags & WHERE_IPK ){
+        यदि( pLoop->u.btree.p_क्रमः_By
+         && OptimizationEnabled(db, SQLITE_क्रमः_By_Subq)
+         &&  where_मार्गः_मेलनम्_Subquery_OB(pLoop,iLoop,iCur,
+                                     p_क्रमः_By,p_Rev_आवरणम्, &obSat, wctrlFlags)
         ){
           nColumn = 0;
-          isOrderDistinct = 0;
-        }else{
+          is_क्रमः_Distinct = 0;
+        }अन्यथा{
           nColumn = 1;
         }
-        pIndex = 0;
-        nKeyCol = 1;
-      }else if( (pIndex = pLoop->u.btree.pIndex)==0 || pIndex->bUnordered ){
-        return 0;
-      }else{
-        nKeyCol = pIndex->nKeyCol;
-        nColumn = pIndex->nColumn;
-        assert( nColumn==nKeyCol+1 || !HasRowid(pIndex->pTable) );
-        assert( pIndex->aiColumn[nColumn-1]==XN_ROWID
-                          || !HasRowid(pIndex->pTable));
+        p_सूचकांक = 0;
+        n_कुञ्चिका_Col = 1;
+      }अन्यथा यदि( (p_सूचकांक = pLoop->u.btree.p_सूचकांक)==0 || p_सूचकांक->bUnordered ){
+        प्रत्यागम 0;
+      }अन्यथा{
+        n_कुञ्चिका_Col = p_सूचकांक->n_कुञ्चिका_Col;
+        nColumn = p_सूचकांक->nColumn;
+        प्रतिज्ञा( nColumn==n_कुञ्चिका_Col+1 || !HasRowid(p_सूचकांक->p_सारणी) );
+        प्रतिज्ञा( p_सूचकांक->aiColumn[nColumn-1]==XN_ROWID
+                          || !HasRowid(p_सूचकांक->p_सारणी));
         /* All relevant terms of the index must also be non-NULL in order
         ** for isOrderDistinct to be true.  So the isOrderDistinct value
         ** computed here might be a false positive.  Corrections will be
         ** made at tag-20210426-1 below */
-        isOrderDistinct = IsUniqueIndex(pIndex)
+        is_क्रमः_Distinct = Is_Unique_सूचकांक(p_सूचकांक)
                           && (pLoop->wsFlags & WHERE_SKIPSCAN)==0;
       }
 
       /* Loop through all columns of the index and deal with the ones
       ** that are not constrained by == or IN.
       */
-      rev = revSet = 0;
+      rev = rev_समुच्चयः = 0;
       distinctColumns = 0;
-      for(j=0; j<nColumn; j++){
+      प्रति(j=0; j<nColumn; j++){
         u8 bOnce = 1; /* True to run the ORDER BY search loop */
 
-        assert( j>=pLoop->u.btree.nEq
+        प्रतिज्ञा( j>=pLoop->u.btree.nEq
             || (pLoop->aLTerm[j]==0)==(j<pLoop->nSkip)
         );
-        if( j<pLoop->u.btree.nEq && j>=pLoop->nSkip ){
+        यदि( j<pLoop->u.btree.nEq && j>=pLoop->nSkip ){
           u16 eOp = pLoop->aLTerm[j]->eOperator;
 
           /* Skip over == and IS and ISNULL terms.  (Also skip IN terms when
@@ -5363,25 +5363,25 @@ static i8 wherePathSatisfiesOrderBy(
           ** if it is one of two or more, none of the columns can be
           ** considered to match an ORDER BY term.
           */
-          if( (eOp & eqOpMask)!=0 ){
-            if( eOp & (WO_ISNULL|WO_IS) ){
+          यदि( (eOp & eq_Op_आवरणम्)!=0 ){
+            यदि( eOp & (WO_ISNULL|WO_IS) ){
               testcase( eOp & WO_ISNULL );
               testcase( eOp & WO_IS );
-              testcase( isOrderDistinct );
-              isOrderDistinct = 0;
+              testcase( is_क्रमः_Distinct );
+              is_क्रमः_Distinct = 0;
             }
-            continue; 
-          }else if( ALWAYS(eOp & WO_IN) ){
+            अनुवर्त; 
+          }अन्यथा यदि( ALWAYS(eOp & WO_अन्तर्) ){
             /* ALWAYS() justification: eOp is an equality operator due to the
             ** j<pLoop->u.btree.nEq constraint above.  Any equality other
             ** than WO_IN is captured by the previous "if".  So this one
             ** always has to be WO_IN. */
-            Expr *pX = pLoop->aLTerm[j]->pExpr;
-            for(i=j+1; i<pLoop->u.btree.nEq; i++){
-              if( pLoop->aLTerm[i]->pExpr==pX ){
-                assert( (pLoop->aLTerm[i]->eOperator & WO_IN) );
+            व्यञ्जकम् *pX = pLoop->aLTerm[j]->p_व्यञ्जकम्;
+            प्रति(i=j+1; i<pLoop->u.btree.nEq; i++){
+              यदि( pLoop->aLTerm[i]->p_व्यञ्जकम्==pX ){
+                प्रतिज्ञा( (pLoop->aLTerm[i]->eOperator & WO_अन्तर्) );
                 bOnce = 0;
-                break;
+                भङ्ग;
               }
             }
           }
@@ -5390,11 +5390,11 @@ static i8 wherePathSatisfiesOrderBy(
         /* Get the column number in the table (iColumn) and sort order
         ** (revIdx) for the j-th column of the index.
         */
-        if( pIndex ){
-          iColumn = pIndex->aiColumn[j];
-          revIdx = pIndex->aSortOrder[j] & KEYINFO_ORDER_DESC;
-          if( iColumn==pIndex->pTable->iPKey ) iColumn = XN_ROWID;
-        }else{
+        यदि( p_सूचकांक ){
+          iColumn = p_सूचकांक->aiColumn[j];
+          revIdx = p_सूचकांक->a_क्रमय_क्रमः[j] & KEYINFO_क्रमः_DESC;
+          यदि( iColumn==p_सूचकांक->p_सारणी->iPKey ) iColumn = XN_ROWID;
+        }अन्यथा{
           iColumn = XN_ROWID;
           revIdx = 0;
         }
@@ -5402,125 +5402,125 @@ static i8 wherePathSatisfiesOrderBy(
         /* An unconstrained column that might be NULL means that this
         ** WhereLoop is not well-ordered.  tag-20210426-1
         */
-        if( isOrderDistinct ){
-          if( iColumn>=0
+        यदि( is_क्रमः_Distinct ){
+          यदि( iColumn>=0
            && j>=pLoop->u.btree.nEq
-           && pIndex->pTable->aCol[iColumn].notNull==0
+           && p_सूचकांक->p_सारणी->aCol[iColumn].notNull==0
           ){
-            isOrderDistinct = 0;
+            is_क्रमः_Distinct = 0;
           }
-          if( iColumn==XN_EXPR ){
-            isOrderDistinct = 0;
+          यदि( iColumn==XN_व्यञ्जकम् ){
+            is_क्रमः_Distinct = 0;
           }
         }
 
         /* Find the ORDER BY term that corresponds to the j-th column
         ** of the index and mark that ORDER BY term having been satisfied.
         */
-        isMatch = 0;
-        for(i=0; bOnce && i<nOrderBy; i++){
-          if( MASKBIT(i) & obSat ) continue;
-          pOBExpr = sqlite3ExprSkipCollateAndLikely(pOrderBy->a[i].pExpr);
+        is_मेलनम् = 0;
+        प्रति(i=0; bOnce && i<n_क्रमः_By; i++){
+          यदि( MASKBIT(i) & obSat ) अनुवर्त;
+          pOBExpr = sqlite3_व्यञ्जकम्_Skip_Collate_And_Likely(p_क्रमः_By->a[i].p_व्यञ्जकम्);
           testcase( wctrlFlags & WHERE_GROUPBY );
           testcase( wctrlFlags & WHERE_DISTINCTBY );
-          if( NEVER(pOBExpr==0) ) continue;
-          if( (wctrlFlags & (WHERE_GROUPBY|WHERE_DISTINCTBY))==0 ) bOnce = 0;
-          if( iColumn>=XN_ROWID ){
-            if( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) continue;
-            if( pOBExpr->iTable!=iCur ) continue;
-            if( pOBExpr->iColumn!=iColumn ) continue;
-          }else{
-            Expr *pIxExpr = pIndex->aColExpr->a[j].pExpr;
-            if( sqlite3ExprCompareSkip(pOBExpr, pIxExpr, iCur) ){
-              continue;
+          यदि( NEVER(pOBExpr==0) ) अनुवर्त;
+          यदि( (wctrlFlags & (WHERE_GROUPBY|WHERE_DISTINCTBY))==0 ) bOnce = 0;
+          यदि( iColumn>=XN_ROWID ){
+            यदि( pOBExpr->op!=TK_COLUMN && pOBExpr->op!=TK_AGG_COLUMN ) अनुवर्त;
+            यदि( pOBExpr->i_सारणी!=iCur ) अनुवर्त;
+            यदि( pOBExpr->iColumn!=iColumn ) अनुवर्त;
+          }अन्यथा{
+            व्यञ्जकम् *p_Ix_व्यञ्जकम् = p_सूचकांक->a_Col_व्यञ्जकम्->a[j].p_व्यञ्जकम्;
+            यदि( sqlite3_व्यञ्जकम्_Compare_Skip(pOBExpr, p_Ix_व्यञ्जकम्, iCur) ){
+              अनुवर्त;
             }
           }
-          if( iColumn!=XN_ROWID ){
-            pColl = sqlite3ExprNNCollSeq(pWInfo->pParse, pOrderBy->a[i].pExpr);
-            if( sqlite3StrICmp(pColl->zName, pIndex->azColl[j])!=0 ) continue;
+          यदि( iColumn!=XN_ROWID ){
+            pColl = sqlite3_व्यञ्जकम्_NNColl_Seq(pWInfo->pParse, p_क्रमः_By->a[i].p_व्यञ्जकम्);
+            यदि( sqlite3StrICmp(pColl->zName, p_सूचकांक->azColl[j])!=0 ) अनुवर्त;
           }
-          if( wctrlFlags & WHERE_DISTINCTBY ){
+          यदि( wctrlFlags & WHERE_DISTINCTBY ){
             pLoop->u.btree.nDistinctCol = j+1;
           }
-          isMatch = 1;
-          break;
+          is_मेलनम् = 1;
+          भङ्ग;
         }
-        if( isMatch && (wctrlFlags & WHERE_GROUPBY)==0 ){
+        यदि( is_मेलनम् && (wctrlFlags & WHERE_GROUPBY)==0 ){
           /* Make sure the sort order is compatible in an ORDER BY clause.
           ** Sort order is irrelevant for a GROUP BY clause. */
-          if( revSet ){
-            if( (rev ^ revIdx)
-                           != (pOrderBy->a[i].fg.sortFlags&KEYINFO_ORDER_DESC)
+          यदि( rev_समुच्चयः ){
+            यदि( (rev ^ revIdx)
+                           != (p_क्रमः_By->a[i].fg.क्रमय_Flags&KEYINFO_क्रमः_DESC)
             ){
-              isMatch = 0;
+              is_मेलनम् = 0;
             }
-          }else{
-            rev = revIdx ^ (pOrderBy->a[i].fg.sortFlags & KEYINFO_ORDER_DESC);
-            if( rev ) *pRevMask |= MASKBIT(iLoop);
-            revSet = 1;
+          }अन्यथा{
+            rev = revIdx ^ (p_क्रमः_By->a[i].fg.क्रमय_Flags & KEYINFO_क्रमः_DESC);
+            यदि( rev ) *p_Rev_आवरणम् |= MASKBIT(iLoop);
+            rev_समुच्चयः = 1;
           }
         }
-        if( isMatch && (pOrderBy->a[i].fg.sortFlags & KEYINFO_ORDER_BIGNULL) ){
-          if( j==pLoop->u.btree.nEq 
-           && (j<nKeyCol||HasRowid(pIndex->pTable)||!IsPrimaryKeyIndex(pIndex))
+        यदि( is_मेलनम् && (p_क्रमः_By->a[i].fg.क्रमय_Flags & KEYINFO_क्रमः_BIGNULL) ){
+          यदि( j==pLoop->u.btree.nEq 
+           && (j<n_कुञ्चिका_Col||HasRowid(p_सूचकांक->p_सारणी)||!Is_Primary_कुञ्चिका_सूचकांक(p_सूचकांक))
           ){
             /* If this is the PK of a WITHOUT ROWID table, do not use any
             ** field past nKeyCol for a NULLS LAST sort. If ALTER TABLE has
             ** been used to add columns to the table, this field may not
             ** be present in all records, which causes problems for the seeks
             ** used by NULLS LAST sorts.  */
-            pLoop->wsFlags |= WHERE_BIGNULL_SORT;
-          }else{
-            isMatch = 0;
+            pLoop->wsFlags |= WHERE_BIGNULL_क्रमय;
+          }अन्यथा{
+            is_मेलनम् = 0;
           }
         }
-        if( isMatch ){
-          if( iColumn==XN_ROWID ){
+        यदि( is_मेलनम् ){
+          यदि( iColumn==XN_ROWID ){
             testcase( distinctColumns==0 );
             distinctColumns = 1;
           }
           obSat |= MASKBIT(i);
-        }else{
+        }अन्यथा{
           /* No match found */
-          assert( nKeyCol>0 );
-          if( j<nKeyCol ){
-            testcase( isOrderDistinct!=0 );
-            isOrderDistinct = 0;
+          प्रतिज्ञा( n_कुञ्चिका_Col>0 );
+          यदि( j<n_कुञ्चिका_Col ){
+            testcase( is_क्रमः_Distinct!=0 );
+            is_क्रमः_Distinct = 0;
           }
-          break;
+          भङ्ग;
         }
       } /* end Loop over all index columns */
-      if( distinctColumns ){
-        testcase( isOrderDistinct==0 );
-        isOrderDistinct = 1;
+      यदि( distinctColumns ){
+        testcase( is_क्रमः_Distinct==0 );
+        is_क्रमः_Distinct = 1;
       }
     } /* end-if not one-row */
 
     /* Mark off any other ORDER BY terms that reference pLoop */
-    if( isOrderDistinct ){
-      orderDistinctMask |= pLoop->maskSelf;
-      for(i=0; i<nOrderBy; i++){
-        Expr *p;
-        Bitmask mTerm;
-        if( MASKBIT(i) & obSat ) continue;
-        p = pOrderBy->a[i].pExpr;
-        mTerm = sqlite3WhereExprUsage(&pWInfo->sMaskSet,p);
-        if( mTerm==0 && !sqlite3ExprIsConstant(0,p) ) continue;
-        if( (mTerm&~orderDistinctMask)==0 ){
+    यदि( is_क्रमः_Distinct ){
+      क्रमः_Distinct_आवरणम् |= pLoop->आवरणम्_Self;
+      प्रति(i=0; i<n_क्रमः_By; i++){
+        व्यञ्जकम् *p;
+        Bitmask m_पदांशः;
+        यदि( MASKBIT(i) & obSat ) अनुवर्त;
+        p = p_क्रमः_By->a[i].p_व्यञ्जकम्;
+        m_पदांशः = sqlite3_Where_व्यञ्जकम्_Usage(&pWInfo->s_आवरणम्_समुच्चयः,p);
+        यदि( m_पदांशः==0 && !sqlite3_व्यञ्जकम्_Is_Constant(0,p) ) अनुवर्त;
+        यदि( (m_पदांशः&~क्रमः_Distinct_आवरणम्)==0 ){
           obSat |= MASKBIT(i);
         }
       }
     }
   } /* End the loop over all WhereLoops from outer-most down to inner-most */
-  if( obSat==obDone ) return (i8)nOrderBy;
-  if( !isOrderDistinct ){
-    for(i=nOrderBy-1; i>0; i--){
+  यदि( obSat==ob_समाप्तम् ) प्रत्यागम (i8)n_क्रमः_By;
+  यदि( !is_क्रमः_Distinct ){
+    प्रति(i=n_क्रमः_By-1; i>0; i--){
       Bitmask m = ALWAYS(i<BMS) ? MASKBIT(i) - 1 : 0;
-      if( (obSat&m)==m ) return i;
+      यदि( (obSat&m)==m ) प्रत्यागम i;
     }
-    return 0;
+    प्रत्यागम 0;
   }
-  return -1;
+  प्रत्यागम -1;
 }
 
 
@@ -5547,34 +5547,34 @@ static i8 wherePathSatisfiesOrderBy(
 **   SELECT * FROM t1 GROUP BY x,y ORDER BY x,y;   -- IsSorted()==1
 **   SELECT * FROM t1 GROUP BY y,x ORDER BY y,x;   -- IsSorted()==0
 */
-int sqlite3WhereIsSorted(WhereInfo *pWInfo){
-  assert( pWInfo->wctrlFlags & (WHERE_GROUPBY|WHERE_DISTINCTBY) );
-  assert( pWInfo->wctrlFlags & WHERE_SORTBYGROUP );
-  return pWInfo->sorted;
+पूर्णाङ्क sqlite3WhereIsSorted(WhereInfo *pWInfo){
+  प्रतिज्ञा( pWInfo->wctrlFlags & (WHERE_GROUPBY|WHERE_DISTINCTBY) );
+  प्रतिज्ञा( pWInfo->wctrlFlags & WHERE_SORTBYGROUP );
+  प्रत्यागम pWInfo->sorted;
 }
 
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
 /* For debugging use only: */
-static const char *wherePathName(WherePath *pPath, int nLoop, WhereLoop *pLast){
-  static char zName[65];
-  int i;
-  for(i=0; i<nLoop; i++){ zName[i] = pPath->aLoop[i]->cId; }
-  if( pLast ) zName[i++] = pLast->cId;
+स्थिर ध्रुव वर्ण *where_मार्गः_Name(Where_मार्गः *p_मार्गः, पूर्णाङ्क nLoop, WhereLoop *p_चरमः){
+  स्थिर वर्ण zName[65];
+  पूर्णाङ्क i;
+  प्रति(i=0; i<nLoop; i++){ zName[i] = p_मार्गः->aLoop[i]->cId; }
+  यदि( p_चरमः ) zName[i++] = p_चरमः->cId;
   zName[i] = 0;
-  return zName;
+  प्रत्यागम zName;
 }
-#endif
+#यदि_अन्तः
 
 /*
 ** Return the cost of sorting nRow rows, assuming that the keys have
 ** nOrderby columns and that the first nSorted columns are already in
 ** order.
 */
-static LogEst whereSortingCost(
+स्थिर LogEst where_क्रमणम्_Cost(
   WhereInfo *pWInfo, /* Query planning context */
   LogEst nRow,       /* Estimated number of rows to sort */
-  int nOrderBy,      /* Number of ORDER BY clause terms */
-  int nSorted        /* Number of initial ORDER BY terms naturally in order */
+  पूर्णाङ्क n_क्रमः_By,      /* Number of ORDER BY clause terms */
+  पूर्णाङ्क nSorted        /* Number of initial ORDER BY terms naturally in order */
 ){
   /* Estimated cost of a full external sort, where N is
   ** the number of rows to sort is:
@@ -5597,15 +5597,15 @@ static LogEst whereSortingCost(
   ** And extra factor of 2.0 or 3.0 is added to the sorting cost if the sort
   ** is built using OP_IdxInsert and OP_Sort rather than with OP_SorterInsert.
   */
-  LogEst rSortCost, nCol;
-  assert( pWInfo->pSelect!=0 );
-  assert( pWInfo->pSelect->pEList!=0 );
+  LogEst r_क्रमय_Cost, nCol;
+  प्रतिज्ञा( pWInfo->pSelect!=0 );
+  प्रतिज्ञा( pWInfo->pSelect->pEList!=0 );
   /* TUNING: sorting cost proportional to the number of output columns: */
-  nCol = sqlite3LogEst((pWInfo->pSelect->pEList->nExpr+59)/30);
-  rSortCost = nRow + nCol;
-  if( nSorted>0 ){
+  nCol = sqlite3LogEst((pWInfo->pSelect->pEList->n_व्यञ्जकम्+59)/30);
+  r_क्रमय_Cost = nRow + nCol;
+  यदि( nSorted>0 ){
     /* Scale the result by (Y/X) */
-    rSortCost += sqlite3LogEst((nOrderBy-nSorted)*100/nOrderBy) - 66;
+    r_क्रमय_Cost += sqlite3LogEst((n_क्रमः_By-nSorted)*100/n_क्रमः_By) - 66;
   }
 
   /* Multiple by log(M) where M is the number of output rows.
@@ -5613,21 +5613,21 @@ static LogEst whereSortingCost(
   ** a DISTINCT operator, M will be the number of distinct output
   ** rows, so fudge it downwards a bit.
   */
-  if( (pWInfo->wctrlFlags & WHERE_USE_LIMIT)!=0 ){
-    rSortCost += 10;       /* TUNING: Extra 2.0x if using LIMIT */
-    if( nSorted!=0 ){
-      rSortCost += 6;      /* TUNING: Extra 1.5x if also using partial sort */
+  यदि( (pWInfo->wctrlFlags & WHERE_USE_सीमा)!=0 ){
+    r_क्रमय_Cost += 10;       /* TUNING: Extra 2.0x if using LIMIT */
+    यदि( nSorted!=0 ){
+      r_क्रमय_Cost += 6;      /* TUNING: Extra 1.5x if also using partial sort */
     }
-    if( pWInfo->iLimit<nRow ){
-      nRow = pWInfo->iLimit;
+    यदि( pWInfo->i_सीमा<nRow ){
+      nRow = pWInfo->i_सीमा;
     }
-  }else if( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT) ){
+  }अन्यथा यदि( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT) ){
     /* TUNING: In the sort for a DISTINCT operator, assume that the DISTINCT
     ** reduces the number of output rows by a factor of 2 */
-    if( nRow>10 ){ nRow -= 10;  assert( 10==sqlite3LogEst(2) ); }
+    यदि( nRow>10 ){ nRow -= 10;  प्रतिज्ञा( 10==sqlite3LogEst(2) ); }
   }
-  rSortCost += estLog(nRow);
-  return rSortCost;
+  r_क्रमय_Cost += estLog(nRow);
+  प्रत्यागम r_क्रमय_Cost;
 }
 
 /*
@@ -5694,153 +5694,153 @@ static LogEst whereSortingCost(
 ** on just full table scans of dimension tables, rather than reducing costs
 ** in the all access methods of the fact table.
 */
-static int computeMxChoice(WhereInfo *pWInfo){
-  int nLoop = pWInfo->nLevel;    /* Number of terms in the join */
+स्थिर पूर्णाङ्क computeMxChoice(WhereInfo *pWInfo){
+  पूर्णाङ्क nLoop = pWInfo->nLevel;    /* Number of terms in the join */
   WhereLoop *pWLoop;             /* For looping over WhereLoops */
 
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
   /* The star-query detection code below makes use of the following
   ** properties of the WhereLoop list, so verify them before
   ** continuing:
   **    (1)  .maskSelf is the bitmask corresponding to .iTab
   **    (2)  The WhereLoop list is in ascending .iTab order
   */
-  for(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->pNextLoop){
-    assert( pWLoop->maskSelf==MASKBIT(pWLoop->iTab) );
-    assert( pWLoop->pNextLoop==0 || pWLoop->iTab<=pWLoop->pNextLoop->iTab );
+  प्रति(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+    प्रतिज्ञा( pWLoop->आवरणम्_Self==MASKBIT(pWLoop->iTab) );
+    प्रतिज्ञा( pWLoop->p_अग्र_Loop==0 || pWLoop->iTab<=pWLoop->p_अग्र_Loop->iTab );
   }
-#endif /* SQLITE_DEBUG */
+#यदि_अन्तः /* SQLITE_DEBUG */
 
-  if( nLoop>=4  /* Constraint (aa) */
-   && !pWInfo->bStarDone
-   && OptimizationEnabled(pWInfo->pParse->db, SQLITE_StarQuery)
+  यदि( nLoop>=4  /* Constraint (aa) */
+   && !pWInfo->b_तारकम्_समाप्तम्
+   && OptimizationEnabled(pWInfo->pParse->db, SQLITE_तारकम्_Query)
   ){
     SrcItem *aFromTabs;    /* All terms of the FROM clause */
-    int iFromIdx;          /* Term of FROM clause is the candidate fact-table */
+    पूर्णाङ्क iFromIdx;          /* Term of FROM clause is the candidate fact-table */
     Bitmask m;             /* Bitmask for candidate fact-table */
     Bitmask mSelfJoin = 0; /* Tables that cannot be dimension tables */       
     WhereLoop *pStart;     /* Where to start searching for dimension-tables */
 
-    pWInfo->bStarDone = 1; /* Only do this computation once */
+    pWInfo->b_तारकम्_समाप्तम् = 1; /* Only do this computation once */
 
     /* Look for fact tables with three or more dimensions where the
     ** dimension tables are not separately from the fact tables by an outer
     ** or cross join.  Adjust cost weights if found.
     */
-    assert( !pWInfo->bStarUsed );
+    प्रतिज्ञा( !pWInfo->b_तारकम्_प्रयुक्तम् );
     aFromTabs = pWInfo->pTabList->a;
     pStart = pWInfo->pLoops;
-    for(iFromIdx=0, m=1; iFromIdx<nLoop; iFromIdx++, m<<=1){
-      int nDep = 0;             /* Number of dimension tables */
-      LogEst mxRun;             /* Maximum SCAN cost of a fact table */
-      Bitmask mSeen = 0;        /* Mask of dimension tables */
+    प्रति(iFromIdx=0, m=1; iFromIdx<nLoop; iFromIdx++, m<<=1){
+      पूर्णाङ्क nDep = 0;             /* Number of dimension tables */
+      LogEst mx_सततम्;             /* Maximum SCAN cost of a fact table */
+      Bitmask m_आलोकितम् = 0;        /* Mask of dimension tables */
       SrcItem *pFactTab;        /* The candidate fact table */
 
       pFactTab = aFromTabs + iFromIdx;
-      if( (pFactTab->fg.jointype & (JT_OUTER|JT_CROSS))!=0 ){
+      यदि( (pFactTab->fg.jointype & (JT_OUTER|JT_CROSS))!=0 ){
         /* If the candidate fact-table is the right table of an outer join
         ** restrict the search for dimension-tables to be tables to the right
         ** of the fact-table.  Constraint (bb) */
-        if( iFromIdx+3 > nLoop ){
-          break;  /* ^-- Impossible to reach nDep>=2 - Constraint (cc) */
+        यदि( iFromIdx+3 > nLoop ){
+          भङ्ग;  /* ^-- Impossible to reach nDep>=2 - Constraint (cc) */
         }
-        while( pStart && pStart->iTab<=iFromIdx ){
-          pStart = pStart->pNextLoop;
+        यावत्( pStart && pStart->iTab<=iFromIdx ){
+          pStart = pStart->p_अग्र_Loop;
         }
       }
-      for(pWLoop=pStart; pWLoop; pWLoop=pWLoop->pNextLoop){
-        if( (aFromTabs[pWLoop->iTab].fg.jointype & (JT_OUTER|JT_CROSS))!=0 ){
-          break; /* Constraint (bb) */
+      प्रति(pWLoop=pStart; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+        यदि( (aFromTabs[pWLoop->iTab].fg.jointype & (JT_OUTER|JT_CROSS))!=0 ){
+          भङ्ग; /* Constraint (bb) */
         }
-        if( (pWLoop->prereq & m)!=0        /* pWInfo depends on iFromIdx */
-         && (pWLoop->maskSelf & mSeen)==0  /* pWInfo not already a dependency */
-         && (pWLoop->maskSelf & mSelfJoin)==0 /* Not a self-join */
+        यदि( (pWLoop->prereq & m)!=0        /* pWInfo depends on iFromIdx */
+         && (pWLoop->आवरणम्_Self & m_आलोकितम्)==0  /* pWInfo not already a dependency */
+         && (pWLoop->आवरणम्_Self & mSelfJoin)==0 /* Not a self-join */
         ){
-          if( aFromTabs[pWLoop->iTab].pSTab==pFactTab->pSTab ){
+          यदि( aFromTabs[pWLoop->iTab].pSTab==pFactTab->pSTab ){
             mSelfJoin |= m;
-          }else{
+          }अन्यथा{
             nDep++;
-            mSeen |= pWLoop->maskSelf;
+            m_आलोकितम् |= pWLoop->आवरणम्_Self;
           }
         }
       }
-      if( nDep<=2 ){
-        continue; /* Constraint (cc) */
+      यदि( nDep<=2 ){
+        अनुवर्त; /* Constraint (cc) */
       }
 
       /* If we reach this point, it means that pFactTab is a fact table
       ** with four or more dimensions connected by inner joins.  Proceed
       ** to make cost adjustments. */
      
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
       /* Make sure rStarDelta values are initialized */
-      if( !pWInfo->bStarUsed ){
-        for(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->pNextLoop){
-          pWLoop->rStarDelta = 0;
+      यदि( !pWInfo->b_तारकम्_प्रयुक्तम् ){
+        प्रति(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+          pWLoop->r_तारकम्_Delta = 0;
         }
       }
-#endif
-#ifdef WHERETRACE_ENABLED /* 0x80000 */
-      if( sqlite3WhereTrace & 0x80000 ){
-        Bitmask mShow = mSeen;
+#यदि_अन्तः
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x80000 */
+      यदि( sqlite3WhereTrace & 0x80000 ){
+        Bitmask mShow = m_आलोकितम्;
         sqlite3DebugPrintf("Fact table %s(%d), dimensions:",
             pFactTab->zAlias ? pFactTab->zAlias : pFactTab->pSTab->zName,
             iFromIdx);
-        for(pWLoop=pStart; pWLoop; pWLoop=pWLoop->pNextLoop){
-          if( mShow & pWLoop->maskSelf ){
+        प्रति(pWLoop=pStart; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+          यदि( mShow & pWLoop->आवरणम्_Self ){
             SrcItem *pDim = aFromTabs + pWLoop->iTab;
-            mShow &= ~pWLoop->maskSelf;
+            mShow &= ~pWLoop->आवरणम्_Self;
             sqlite3DebugPrintf(" %s(%d)",
               pDim->zAlias ? pDim->zAlias: pDim->pSTab->zName, pWLoop->iTab);
           }
         }
         sqlite3DebugPrintf("\n");
       }
-#endif
-      pWInfo->bStarUsed = 1;
+#यदि_अन्तः
+      pWInfo->b_तारकम्_प्रयुक्तम् = 1;
 
       /* Compute the maximum cost of any WhereLoop for the
       ** fact table plus one epsilon */
-      mxRun = LOGEST_MIN;
-      for(pWLoop=pStart; pWLoop; pWLoop=pWLoop->pNextLoop){
-        if( pWLoop->iTab<iFromIdx ) continue;
-        if( pWLoop->iTab>iFromIdx ) break;
-        if( pWLoop->rRun>mxRun ) mxRun = pWLoop->rRun;
+      mx_सततम् = LOGEST_MIN;
+      प्रति(pWLoop=pStart; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+        यदि( pWLoop->iTab<iFromIdx ) अनुवर्त;
+        यदि( pWLoop->iTab>iFromIdx ) भङ्ग;
+        यदि( pWLoop->r_सततम्>mx_सततम् ) mx_सततम् = pWLoop->r_सततम्;
       }
-      if( ALWAYS(mxRun<LOGEST_MAX) ) mxRun++;
+      यदि( ALWAYS(mx_सततम्<LOGEST_MAX) ) mx_सततम्++;
 
       /* Increase the cost of table scans for dimension tables to be
       ** slightly more than the maximum cost of the fact table */
-      for(pWLoop=pStart; pWLoop; pWLoop=pWLoop->pNextLoop){
-        if( (pWLoop->maskSelf & mSeen)==0 ) continue;
-        if( pWLoop->nLTerm ) continue;
-        if( pWLoop->rRun<mxRun ){
-#ifdef WHERETRACE_ENABLED /* 0x80000 */
-          if( sqlite3WhereTrace & 0x80000 ){
+      प्रति(pWLoop=pStart; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+        यदि( (pWLoop->आवरणम्_Self & m_आलोकितम्)==0 ) अनुवर्त;
+        यदि( pWLoop->nLTerm ) अनुवर्त;
+        यदि( pWLoop->r_सततम्<mx_सततम् ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x80000 */
+          यदि( sqlite3WhereTrace & 0x80000 ){
             SrcItem *pDim = aFromTabs + pWLoop->iTab;
             sqlite3DebugPrintf(
               "Increase SCAN cost of %s to %d\n",
-              pDim->zAlias ? pDim->zAlias: pDim->pSTab->zName, mxRun
+              pDim->zAlias ? pDim->zAlias: pDim->pSTab->zName, mx_सततम्
             );
           }
-          pWLoop->rStarDelta = mxRun - pWLoop->rRun;
-#endif /* WHERETRACE_ENABLED */
-          pWLoop->rRun = mxRun;
+          pWLoop->r_तारकम्_Delta = mx_सततम् - pWLoop->r_सततम्;
+#यदि_अन्तः /* WHERETRACE_ENABLED */
+          pWLoop->r_सततम् = mx_सततम्;
         }
       }
     }
-#ifdef WHERETRACE_ENABLED /* 0x80000 */
-    if( (sqlite3WhereTrace & 0x80000)!=0 && pWInfo->bStarUsed ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x80000 */
+    यदि( (sqlite3WhereTrace & 0x80000)!=0 && pWInfo->b_तारकम्_प्रयुक्तम् ){
       sqlite3DebugPrintf("WhereLoops changed by star-query heuristic:\n");
-      for(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->pNextLoop){
-        if( pWLoop->rStarDelta ){
+      प्रति(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+        यदि( pWLoop->r_तारकम्_Delta ){
           sqlite3WhereLoopPrint(pWLoop, &pWInfo->sWC);
         }
       }
     }
-#endif
+#यदि_अन्तः
   }
-  return pWInfo->bStarUsed ? 18 : 12;
+  प्रत्यागम pWInfo->b_तारकम्_प्रयुक्तम् ? 18 : 12;
 }
 
 /*
@@ -5854,15 +5854,15 @@ static int computeMxChoice(WhereInfo *pWInfo){
 **    true         We cannot tell the difference in pCandidate and pBaseline
 **    false        pCandidate seems like a better choice than pBaseline
 */
-static SQLITE_NOINLINE int whereLoopIsNoBetter(
-  const WhereLoop *pCandidate,
-  const WhereLoop *pBaseline
+स्थिर SQLITE_NOINLINE पूर्णाङ्क whereLoopIsNoBetter(
+  ध्रुव WhereLoop *pCandidate,
+  ध्रुव WhereLoop *pBaseline
 ){
-  if( (pCandidate->wsFlags & WHERE_INDEXED)==0 ) return 1;
-  if( (pBaseline->wsFlags & WHERE_INDEXED)==0 ) return 1;
-  if( pCandidate->u.btree.pIndex->szIdxRow <
-        pBaseline->u.btree.pIndex->szIdxRow ) return 0;
-  return 1;
+  यदि( (pCandidate->wsFlags & WHERE_अनुक्रमितम्)==0 ) प्रत्यागम 1;
+  यदि( (pBaseline->wsFlags & WHERE_अनुक्रमितम्)==0 ) प्रत्यागम 1;
+  यदि( pCandidate->u.btree.p_सूचकांक->szIdxRow <
+        pBaseline->u.btree.p_सूचकांक->szIdxRow ) प्रत्यागम 0;
+  प्रत्यागम 1;
 }
 
 /*
@@ -5877,26 +5877,26 @@ static SQLITE_NOINLINE int whereLoopIsNoBetter(
 ** Return SQLITE_OK on success or SQLITE_NOMEM of a memory allocation
 ** error occurs.
 */
-static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
-  int mxChoice;             /* Maximum number of simultaneous paths tracked */
-  int nLoop;                /* Number of terms in the join */
+स्थिर पूर्णाङ्क where_मार्गः_Solver(WhereInfo *pWInfo, LogEst nRowEst){
+  पूर्णाङ्क mxChoice;             /* Maximum number of simultaneous paths tracked */
+  पूर्णाङ्क nLoop;                /* Number of terms in the join */
   Parse *pParse;            /* Parsing context */
-  int iLoop;                /* Loop counter over the terms of the join */
-  int ii, jj;               /* Loop counters */
-  int mxI = 0;              /* Index of next entry to replace */
-  int nOrderBy;             /* Number of ORDER BY clause terms */
+  पूर्णाङ्क iLoop;                /* Loop counter over the terms of the join */
+  पूर्णाङ्क ii, jj;               /* Loop counters */
+  पूर्णाङ्क mxI = 0;              /* Index of next entry to replace */
+  पूर्णाङ्क n_क्रमः_By;             /* Number of ORDER BY clause terms */
   LogEst mxCost = 0;        /* Maximum cost of a set of paths */
   LogEst mxUnsort = 0;      /* Maximum unsorted cost of a set of path */
-  int nTo, nFrom;           /* Number of valid entries in aTo[] and aFrom[] */
-  WherePath *aFrom;         /* All nFrom paths at the previous level */
-  WherePath *aTo;           /* The nTo best paths at the current level */
-  WherePath *pFrom;         /* An element of aFrom[] that we are working on */
-  WherePath *pTo;           /* An element of aTo[] that we are working on */
+  पूर्णाङ्क n_गन्तव्यम्, nFrom;           /* Number of valid entries in aTo[] and aFrom[] */
+  Where_मार्गः *aFrom;         /* All nFrom paths at the previous level */
+  Where_मार्गः *a_गन्तव्यम्;           /* The nTo best paths at the current level */
+  Where_मार्गः *pFrom;         /* An element of aFrom[] that we are working on */
+  Where_मार्गः *p_गन्तव्यम्;           /* An element of aTo[] that we are working on */
   WhereLoop *pWLoop;        /* One of the WhereLoop objects */
   WhereLoop **pX;           /* Used to divy up the pSpace memory */
-  LogEst *aSortCost = 0;    /* Sorting and partial sorting costs */
-  char *pSpace;             /* Temporary memory used by this routine */
-  int nSpace;               /* Bytes of space allocated at pSpace */
+  LogEst *a_क्रमय_Cost = 0;    /* Sorting and partial sorting costs */
+  वर्ण *pSpace;             /* Temporary memory used by this routine */
+  पूर्णाङ्क nSpace;               /* Bytes of space allocated at pSpace */
 
   pParse = pWInfo->pParse;
   nLoop = pWInfo->nLevel;
@@ -5911,131 +5911,131 @@ static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
   **       2            5
   **       3+        12 or 18        // see computeMxChoice()
   */
-  if( nLoop<=1 ){
+  यदि( nLoop<=1 ){
     mxChoice = 1;
-  }else if( nLoop==2 ){
+  }अन्यथा यदि( nLoop==2 ){
     mxChoice = 5;
-  }else if( pParse->nErr ){
+  }अन्यथा यदि( pParse->nErr ){
     mxChoice = 1;
-  }else{
+  }अन्यथा{
     mxChoice = computeMxChoice(pWInfo);
   }
-  assert( nLoop<=pWInfo->pTabList->nSrc );
+  प्रतिज्ञा( nLoop<=pWInfo->pTabList->nSrc );
 
   /* If nRowEst is zero and there is an ORDER BY clause, ignore it. In this
   ** case the purpose of this call is to estimate the number of rows returned
   ** by the overall query. Once this estimate has been obtained, the caller
   ** will invoke this function a second time, passing the estimate as the
   ** nRowEst parameter.  */
-  if( pWInfo->pOrderBy==0 || nRowEst==0 ){
-    nOrderBy = 0;
-  }else{
-    nOrderBy = pWInfo->pOrderBy->nExpr;
+  यदि( pWInfo->p_क्रमः_By==0 || nRowEst==0 ){
+    n_क्रमः_By = 0;
+  }अन्यथा{
+    n_क्रमः_By = pWInfo->p_क्रमः_By->n_व्यञ्जकम्;
   }
 
   /* Allocate and initialize space for aTo, aFrom and aSortCost[] */
-  nSpace = (sizeof(WherePath)+sizeof(WhereLoop*)*nLoop)*mxChoice*2;
-  nSpace += sizeof(LogEst) * nOrderBy;
-  pSpace = sqlite3StackAllocRawNN(pParse->db, nSpace);
-  if( pSpace==0 ) return SQLITE_NOMEM_BKPT;
-  aTo = (WherePath*)pSpace;
-  aFrom = aTo+mxChoice;
-  memset(aFrom, 0, sizeof(aFrom[0]));
+  nSpace = (परिमाण(Where_मार्गः)+परिमाण(WhereLoop*)*nLoop)*mxChoice*2;
+  nSpace += परिमाण(LogEst) * n_क्रमः_By;
+  pSpace = sqlite3_राशिः_Alloc_Raw_NN(pParse->db, nSpace);
+  यदि( pSpace==0 ) प्रत्यागम SQLITE_NOMEM_BKPT;
+  a_गन्तव्यम् = (Where_मार्गः*)pSpace;
+  aFrom = a_गन्तव्यम्+mxChoice;
+  स्मृतिं_पूरय(aFrom, 0, परिमाण(aFrom[0]));
   pX = (WhereLoop**)(aFrom+mxChoice);
-  for(ii=mxChoice*2, pFrom=aTo; ii>0; ii--, pFrom++, pX += nLoop){
+  प्रति(ii=mxChoice*2, pFrom=a_गन्तव्यम्; ii>0; ii--, pFrom++, pX += nLoop){
     pFrom->aLoop = pX;
   }
-  if( nOrderBy ){
+  यदि( n_क्रमः_By ){
     /* If there is an ORDER BY clause and it is not being ignored, set up
     ** space for the aSortCost[] array. Each element of the aSortCost array
     ** is either zero - meaning it has not yet been initialized - or the
     ** cost of sorting nRowEst rows of data where the first X terms of
     ** the ORDER BY clause are already in order, where X is the array
     ** index.  */
-    aSortCost = (LogEst*)pX;
-    memset(aSortCost, 0, sizeof(LogEst) * nOrderBy);
+    a_क्रमय_Cost = (LogEst*)pX;
+    स्मृतिं_पूरय(a_क्रमय_Cost, 0, परिमाण(LogEst) * n_क्रमः_By);
   }
-  assert( aSortCost==0 || &pSpace[nSpace]==(char*)&aSortCost[nOrderBy] );
-  assert( aSortCost!=0 || &pSpace[nSpace]==(char*)pX );
+  प्रतिज्ञा( a_क्रमय_Cost==0 || &pSpace[nSpace]==(वर्ण*)&a_क्रमय_Cost[n_क्रमः_By] );
+  प्रतिज्ञा( a_क्रमय_Cost!=0 || &pSpace[nSpace]==(वर्ण*)pX );
 
   /* Seed the search with a single WherePath containing zero WhereLoops.
   **
   ** TUNING: Do not let the number of iterations go above 28.  If the cost
   ** of computing an automatic index is not paid back within the first 28
   ** rows, then do not use the automatic index. */
-  aFrom[0].nRow = MIN(pParse->nQueryLoop, 48);  assert( 48==sqlite3LogEst(28) );
+  aFrom[0].nRow = MIN(pParse->nQueryLoop, 48);  प्रतिज्ञा( 48==sqlite3LogEst(28) );
   nFrom = 1;
-  assert( aFrom[0].isOrdered==0 );
-  if( nOrderBy ){
+  प्रतिज्ञा( aFrom[0].isOrdered==0 );
+  यदि( n_क्रमः_By ){
     /* If nLoop is zero, then there are no FROM terms in the query. Since
     ** in this case the query may return a maximum of one row, the results
     ** are already in the requested order. Set isOrdered to nOrderBy to
     ** indicate this. Or, if nLoop is greater than zero, set isOrdered to
     ** -1, indicating that the result set may or may not be ordered,
     ** depending on the loops added to the current plan.  */
-    aFrom[0].isOrdered = nLoop>0 ? -1 : nOrderBy;
+    aFrom[0].isOrdered = nLoop>0 ? -1 : n_क्रमः_By;
   }
 
   /* Compute successively longer WherePaths using the previous generation
   ** of WherePaths as the basis for the next.  Keep track of the mxChoice
   ** best paths at each generation */
-  for(iLoop=0; iLoop<nLoop; iLoop++){
-    nTo = 0;
-    for(ii=0, pFrom=aFrom; ii<nFrom; ii++, pFrom++){
-      for(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->pNextLoop){
-        LogEst nOut;                      /* Rows visited by (pFrom+pWLoop) */
+  प्रति(iLoop=0; iLoop<nLoop; iLoop++){
+    n_गन्तव्यम् = 0;
+    प्रति(ii=0, pFrom=aFrom; ii<nFrom; ii++, pFrom++){
+      प्रति(pWLoop=pWInfo->pLoops; pWLoop; pWLoop=pWLoop->p_अग्र_Loop){
+        LogEst n_बहिर्गमनम्;                      /* Rows visited by (pFrom+pWLoop) */
         LogEst rCost;                     /* Cost of path (pFrom+pWLoop) */
         LogEst rUnsort;                   /* Unsorted cost of (pFrom+pWLoop) */
         i8 isOrdered;                     /* isOrdered for (pFrom+pWLoop) */
-        Bitmask maskNew;                  /* Mask of src visited by (..) */
-        Bitmask revMask;                  /* Mask of rev-order loops for (..) */
+        Bitmask आवरणम्_New;                  /* Mask of src visited by (..) */
+        Bitmask rev_आवरणम्;                  /* Mask of rev-order loops for (..) */
 
-        if( (pWLoop->prereq & ~pFrom->maskLoop)!=0 ) continue;
-        if( (pWLoop->maskSelf & pFrom->maskLoop)!=0 ) continue;
-        if( (pWLoop->wsFlags & WHERE_AUTO_INDEX)!=0 && pFrom->nRow<3 ){
+        यदि( (pWLoop->prereq & ~pFrom->आवरणम्_Loop)!=0 ) अनुवर्त;
+        यदि( (pWLoop->आवरणम्_Self & pFrom->आवरणम्_Loop)!=0 ) अनुवर्त;
+        यदि( (pWLoop->wsFlags & WHERE_AUTO_सूचकांक)!=0 && pFrom->nRow<3 ){
           /* Do not use an automatic index if the this loop is expected
           ** to run less than 1.25 times.  It is tempting to also exclude
           ** automatic index usage on an outer loop, but sometimes an automatic
           ** index is useful in the outer loop of a correlated subquery. */
-          assert( 10==sqlite3LogEst(2) );
-          continue;
+          प्रतिज्ञा( 10==sqlite3LogEst(2) );
+          अनुवर्त;
         }
 
         /* At this point, pWLoop is a candidate to be the next loop.
         ** Compute its cost */
-        rUnsort = pWLoop->rRun + pFrom->nRow;
-        if( pWLoop->rSetup ){
-          rUnsort = sqlite3LogEstAdd(pWLoop->rSetup, rUnsort);
+        rUnsort = pWLoop->r_सततम् + pFrom->nRow;
+        यदि( pWLoop->r_सज्जता ){
+          rUnsort = sqlite3_Log_Est_सङ्कलय(pWLoop->r_सज्जता, rUnsort);
         }
-        rUnsort = sqlite3LogEstAdd(rUnsort, pFrom->rUnsort);
-        nOut = pFrom->nRow + pWLoop->nOut;
-        maskNew = pFrom->maskLoop | pWLoop->maskSelf;
+        rUnsort = sqlite3_Log_Est_सङ्कलय(rUnsort, pFrom->rUnsort);
+        n_बहिर्गमनम् = pFrom->nRow + pWLoop->n_बहिर्गमनम्;
+        आवरणम्_New = pFrom->आवरणम्_Loop | pWLoop->आवरणम्_Self;
         isOrdered = pFrom->isOrdered;
-        if( isOrdered<0 ){
-          revMask = 0;
-          isOrdered = wherePathSatisfiesOrderBy(pWInfo,
-                       pWInfo->pOrderBy, pFrom, pWInfo->wctrlFlags,
-                       iLoop, pWLoop, &revMask);
-        }else{
-          revMask = pFrom->revLoop;
+        यदि( isOrdered<0 ){
+          rev_आवरणम् = 0;
+          isOrdered = where_मार्गः_Satisfies_क्रमः_By(pWInfo,
+                       pWInfo->p_क्रमः_By, pFrom, pWInfo->wctrlFlags,
+                       iLoop, pWLoop, &rev_आवरणम्);
+        }अन्यथा{
+          rev_आवरणम् = pFrom->revLoop;
         }
-        if( isOrdered>=0 && isOrdered<nOrderBy ){
-          if( aSortCost[isOrdered]==0 ){
-            aSortCost[isOrdered] = whereSortingCost(
-                pWInfo, nRowEst, nOrderBy, isOrdered
+        यदि( isOrdered>=0 && isOrdered<n_क्रमः_By ){
+          यदि( a_क्रमय_Cost[isOrdered]==0 ){
+            a_क्रमय_Cost[isOrdered] = where_क्रमणम्_Cost(
+                pWInfo, nRowEst, n_क्रमः_By, isOrdered
             );
           }
           /* TUNING:  Add a small extra penalty (3) to sorting as an
           ** extra encouragement to the query planner to select a plan
           ** where the rows emerge in the correct order without any sorting
           ** required. */
-          rCost = sqlite3LogEstAdd(rUnsort, aSortCost[isOrdered]) + 3;
+          rCost = sqlite3_Log_Est_सङ्कलय(rUnsort, a_क्रमय_Cost[isOrdered]) + 3;
 
           WHERETRACE(0x002,
               ("---- sort cost=%-3d (%d/%d) increases cost %3d to %-3d\n",
-               aSortCost[isOrdered], (nOrderBy-isOrdered), nOrderBy,
+               a_क्रमय_Cost[isOrdered], (n_क्रमः_By-isOrdered), n_क्रमः_By,
                rUnsort, rCost));
-        }else{
+        }अन्यथा{
           rCost = rUnsort;
           rUnsort -= 2;  /* TUNING:  Slight bias in favor of no-sort plans */
         }
@@ -6058,50 +6058,50 @@ static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
         ** to (pTo->isOrdered==(-1))==(isOrdered==(-1))" for the range
         ** of legal values for isOrdered, -1..64.
         */
-        testcase( nTo==0 );
-        for(jj=0, pTo=aTo; jj<nTo; jj++, pTo++){
-          if( pTo->maskLoop==maskNew
-           && ( ((pTo->isOrdered^isOrdered)&0x80)==0 || iLoop==nLoop-1 )
+        testcase( n_गन्तव्यम्==0 );
+        प्रति(jj=0, p_गन्तव्यम्=a_गन्तव्यम्; jj<n_गन्तव्यम्; jj++, p_गन्तव्यम्++){
+          यदि( p_गन्तव्यम्->आवरणम्_Loop==आवरणम्_New
+           && ( ((p_गन्तव्यम्->isOrdered^isOrdered)&0x80)==0 || iLoop==nLoop-1 )
           ){
-            testcase( jj==nTo-1 );
-            break;
+            testcase( jj==n_गन्तव्यम्-1 );
+            भङ्ग;
           }
         }
-        if( jj>=nTo ){
+        यदि( jj>=n_गन्तव्यम् ){
           /* None of the existing best-so-far paths match the candidate. */
-          if( nTo>=mxChoice
+          यदि( n_गन्तव्यम्>=mxChoice
            && (rCost>mxCost || (rCost==mxCost && rUnsort>=mxUnsort))
           ){
             /* The current candidate is no better than any of the mxChoice
             ** paths currently in the best-so-far buffer.  So discard
             ** this candidate as not viable. */
-#ifdef WHERETRACE_ENABLED /* 0x4 */
-            if( sqlite3WhereTrace&0x4 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x4 */
+            यदि( sqlite3WhereTrace&0x4 ){
               sqlite3DebugPrintf("Skip   %s cost=%-3d,%3d,%3d order=%c\n",
-                  wherePathName(pFrom, iLoop, pWLoop), rCost, nOut, rUnsort,
+                  where_मार्गः_Name(pFrom, iLoop, pWLoop), rCost, n_बहिर्गमनम्, rUnsort,
                   isOrdered>=0 ? isOrdered+'0' : '?');
             }
-#endif
-            continue;
+#यदि_अन्तः
+            अनुवर्त;
           }
           /* If we reach this points it means that the new candidate path
           ** needs to be added to the set of best-so-far paths. */
-          if( nTo<mxChoice ){
+          यदि( n_गन्तव्यम्<mxChoice ){
             /* Increase the size of the aTo set by one */
-            jj = nTo++;
-          }else{
+            jj = n_गन्तव्यम्++;
+          }अन्यथा{
             /* New path replaces the prior worst to keep count below mxChoice */
             jj = mxI;
           }
-          pTo = &aTo[jj];
-#ifdef WHERETRACE_ENABLED /* 0x4 */
-          if( sqlite3WhereTrace&0x4 ){
+          p_गन्तव्यम् = &a_गन्तव्यम्[jj];
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x4 */
+          यदि( sqlite3WhereTrace&0x4 ){
             sqlite3DebugPrintf("New    %s cost=%-3d,%3d,%3d order=%c\n",
-                wherePathName(pFrom, iLoop, pWLoop), rCost, nOut, rUnsort,
+                where_मार्गः_Name(pFrom, iLoop, pWLoop), rCost, n_बहिर्गमनम्, rUnsort,
                 isOrdered>=0 ? isOrdered+'0' : '?');
           }
-#endif
-        }else{
+#यदि_अन्तः
+        }अन्यथा{
           /* Control reaches here if best-so-far path pTo=aTo[jj] covers the
           ** same set of loops and has the same isOrdered setting as the
           ** candidate path.  Check to see if the candidate should replace
@@ -6110,61 +6110,61 @@ static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
           ** The conditional is an expanded vector comparison equivalent to:
           **   (pTo->rCost,pTo->nRow,pTo->rUnsort) <= (rCost,nOut,rUnsort)
           */
-          if( (pTo->rCost<rCost)
-           || (pTo->rCost==rCost && pTo->nRow<nOut)
-           || (pTo->rCost==rCost && pTo->nRow==nOut && pTo->rUnsort<rUnsort)
-           || (pTo->rCost==rCost && pTo->nRow==nOut && pTo->rUnsort==rUnsort
-                  && whereLoopIsNoBetter(pWLoop, pTo->aLoop[iLoop]) )
+          यदि( (p_गन्तव्यम्->rCost<rCost)
+           || (p_गन्तव्यम्->rCost==rCost && p_गन्तव्यम्->nRow<n_बहिर्गमनम्)
+           || (p_गन्तव्यम्->rCost==rCost && p_गन्तव्यम्->nRow==n_बहिर्गमनम् && p_गन्तव्यम्->rUnsort<rUnsort)
+           || (p_गन्तव्यम्->rCost==rCost && p_गन्तव्यम्->nRow==n_बहिर्गमनम् && p_गन्तव्यम्->rUnsort==rUnsort
+                  && whereLoopIsNoBetter(pWLoop, p_गन्तव्यम्->aLoop[iLoop]) )
           ){
-#ifdef WHERETRACE_ENABLED /* 0x4 */
-            if( sqlite3WhereTrace&0x4 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x4 */
+            यदि( sqlite3WhereTrace&0x4 ){
               sqlite3DebugPrintf(
                   "Skip   %s cost=%-3d,%3d,%3d order=%c",
-                  wherePathName(pFrom, iLoop, pWLoop), rCost, nOut, rUnsort,
+                  where_मार्गः_Name(pFrom, iLoop, pWLoop), rCost, n_बहिर्गमनम्, rUnsort,
                   isOrdered>=0 ? isOrdered+'0' : '?');
               sqlite3DebugPrintf("   vs %s cost=%-3d,%3d,%3d order=%c\n",
-                  wherePathName(pTo, iLoop+1, 0), pTo->rCost, pTo->nRow,
-                  pTo->rUnsort, pTo->isOrdered>=0 ? pTo->isOrdered+'0' : '?');
+                  where_मार्गः_Name(p_गन्तव्यम्, iLoop+1, 0), p_गन्तव्यम्->rCost, p_गन्तव्यम्->nRow,
+                  p_गन्तव्यम्->rUnsort, p_गन्तव्यम्->isOrdered>=0 ? p_गन्तव्यम्->isOrdered+'0' : '?');
             }
-#endif
+#यदि_अन्तः
             /* Discard the candidate path from further consideration */
-            testcase( pTo->rCost==rCost );
-            continue;
+            testcase( p_गन्तव्यम्->rCost==rCost );
+            अनुवर्त;
           }
-          testcase( pTo->rCost==rCost+1 );
+          testcase( p_गन्तव्यम्->rCost==rCost+1 );
           /* Control reaches here if the candidate path is better than the
           ** pTo path.  Replace pTo with the candidate. */
-#ifdef WHERETRACE_ENABLED /* 0x4 */
-          if( sqlite3WhereTrace&0x4 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED /* 0x4 */
+          यदि( sqlite3WhereTrace&0x4 ){
             sqlite3DebugPrintf(
                 "Update %s cost=%-3d,%3d,%3d order=%c",
-                wherePathName(pFrom, iLoop, pWLoop), rCost, nOut, rUnsort,
+                where_मार्गः_Name(pFrom, iLoop, pWLoop), rCost, n_बहिर्गमनम्, rUnsort,
                 isOrdered>=0 ? isOrdered+'0' : '?');
             sqlite3DebugPrintf("  was %s cost=%-3d,%3d,%3d order=%c\n",
-                wherePathName(pTo, iLoop+1, 0), pTo->rCost, pTo->nRow,
-                pTo->rUnsort, pTo->isOrdered>=0 ? pTo->isOrdered+'0' : '?');
+                where_मार्गः_Name(p_गन्तव्यम्, iLoop+1, 0), p_गन्तव्यम्->rCost, p_गन्तव्यम्->nRow,
+                p_गन्तव्यम्->rUnsort, p_गन्तव्यम्->isOrdered>=0 ? p_गन्तव्यम्->isOrdered+'0' : '?');
           }
-#endif
+#यदि_अन्तः
         }
         /* pWLoop is a winner.  Add it to the set of best so far */
-        pTo->maskLoop = pFrom->maskLoop | pWLoop->maskSelf;
-        pTo->revLoop = revMask;
-        pTo->nRow = nOut;
-        pTo->rCost = rCost;
-        pTo->rUnsort = rUnsort;
-        pTo->isOrdered = isOrdered;
-        memcpy(pTo->aLoop, pFrom->aLoop, sizeof(WhereLoop*)*iLoop);
-        pTo->aLoop[iLoop] = pWLoop;
-        if( nTo>=mxChoice ){
+        p_गन्तव्यम्->आवरणम्_Loop = pFrom->आवरणम्_Loop | pWLoop->आवरणम्_Self;
+        p_गन्तव्यम्->revLoop = rev_आवरणम्;
+        p_गन्तव्यम्->nRow = n_बहिर्गमनम्;
+        p_गन्तव्यम्->rCost = rCost;
+        p_गन्तव्यम्->rUnsort = rUnsort;
+        p_गन्तव्यम्->isOrdered = isOrdered;
+        स्मृतिं_प्रतिलिख(p_गन्तव्यम्->aLoop, pFrom->aLoop, परिमाण(WhereLoop*)*iLoop);
+        p_गन्तव्यम्->aLoop[iLoop] = pWLoop;
+        यदि( n_गन्तव्यम्>=mxChoice ){
           mxI = 0;
-          mxCost = aTo[0].rCost;
-          mxUnsort = aTo[0].nRow;
-          for(jj=1, pTo=&aTo[1]; jj<mxChoice; jj++, pTo++){
-            if( pTo->rCost>mxCost
-             || (pTo->rCost==mxCost && pTo->rUnsort>mxUnsort)
+          mxCost = a_गन्तव्यम्[0].rCost;
+          mxUnsort = a_गन्तव्यम्[0].nRow;
+          प्रति(jj=1, p_गन्तव्यम्=&a_गन्तव्यम्[1]; jj<mxChoice; jj++, p_गन्तव्यम्++){
+            यदि( p_गन्तव्यम्->rCost>mxCost
+             || (p_गन्तव्यम्->rCost==mxCost && p_गन्तव्यम्->rUnsort>mxUnsort)
             ){
-              mxCost = pTo->rCost;
-              mxUnsort = pTo->rUnsort;
+              mxCost = p_गन्तव्यम्->rCost;
+              mxUnsort = p_गन्तव्यम्->rUnsort;
               mxI = jj;
             }
           }
@@ -6172,134 +6172,134 @@ static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
       }
     }
 
-#ifdef WHERETRACE_ENABLED  /* >=2 */
-    if( sqlite3WhereTrace & 0x02 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED  /* >=2 */
+    यदि( sqlite3WhereTrace & 0x02 ){
       LogEst rMin, rFloor = 0;
-      int nDone = 0;
-      int nProgress;
+      पूर्णाङ्क n_समाप्तम् = 0;
+      पूर्णाङ्क n_प्रगतिः;
       sqlite3DebugPrintf("---- after round %d ----\n", iLoop);
-      do{
-        nProgress = 0;
+      कुरु{
+        n_प्रगतिः = 0;
         rMin = 0x7fff;
-        for(ii=0, pTo=aTo; ii<nTo; ii++, pTo++){
-          if( pTo->rCost>rFloor && pTo->rCost<rMin ) rMin = pTo->rCost;
+        प्रति(ii=0, p_गन्तव्यम्=a_गन्तव्यम्; ii<n_गन्तव्यम्; ii++, p_गन्तव्यम्++){
+          यदि( p_गन्तव्यम्->rCost>rFloor && p_गन्तव्यम्->rCost<rMin ) rMin = p_गन्तव्यम्->rCost;
         }
-        for(ii=0, pTo=aTo; ii<nTo; ii++, pTo++){
-          if( pTo->rCost==rMin ){
+        प्रति(ii=0, p_गन्तव्यम्=a_गन्तव्यम्; ii<n_गन्तव्यम्; ii++, p_गन्तव्यम्++){
+          यदि( p_गन्तव्यम्->rCost==rMin ){
             sqlite3DebugPrintf(" %s cost=%-3d nrow=%-3d order=%c",
-               wherePathName(pTo, iLoop+1, 0), pTo->rCost, pTo->nRow,
-               pTo->isOrdered>=0 ? (pTo->isOrdered+'0') : '?');
-            if( pTo->isOrdered>0 ){
-              sqlite3DebugPrintf(" rev=0x%llx\n", pTo->revLoop);
-            }else{
+               where_मार्गः_Name(p_गन्तव्यम्, iLoop+1, 0), p_गन्तव्यम्->rCost, p_गन्तव्यम्->nRow,
+               p_गन्तव्यम्->isOrdered>=0 ? (p_गन्तव्यम्->isOrdered+'0') : '?');
+            यदि( p_गन्तव्यम्->isOrdered>0 ){
+              sqlite3DebugPrintf(" rev=0x%llx\n", p_गन्तव्यम्->revLoop);
+            }अन्यथा{
               sqlite3DebugPrintf("\n");
             }
-            nDone++;
-            nProgress++;
+            n_समाप्तम्++;
+            n_प्रगतिः++;
           }
         }
         rFloor = rMin;
-      }while( nDone<nTo && nProgress>0 );
+      }यावत्( n_समाप्तम्<n_गन्तव्यम् && n_प्रगतिः>0 );
     }
-#endif
+#यदि_अन्तः
 
     /* Swap the roles of aFrom and aTo for the next generation */
-    pFrom = aTo;
-    aTo = aFrom;
+    pFrom = a_गन्तव्यम्;
+    a_गन्तव्यम् = aFrom;
     aFrom = pFrom;
-    nFrom = nTo;
+    nFrom = n_गन्तव्यम्;
   }
 
-  if( nFrom==0 ){
-    sqlite3ErrorMsg(pParse, "no query solution");
-    sqlite3StackFreeNN(pParse->db, pSpace);
-    return SQLITE_ERROR;
+  यदि( nFrom==0 ){
+    sqlite3_Error_सन्देशः(pParse, "no query solution");
+    sqlite3_राशिः_Free_NN(pParse->db, pSpace);
+    प्रत्यागम SQLITE_ERROR;
   }
  
   /* Only one path is available, which is the best path */
-  assert( nFrom==1 );
+  प्रतिज्ञा( nFrom==1 );
   pFrom = aFrom;
 
-  assert( pWInfo->nLevel==nLoop );
+  प्रतिज्ञा( pWInfo->nLevel==nLoop );
   /* Load the lowest cost path into pWInfo */
-  for(iLoop=0; iLoop<nLoop; iLoop++){
+  प्रति(iLoop=0; iLoop<nLoop; iLoop++){
     WhereLevel *pLevel = pWInfo->a + iLoop;
     pLevel->pWLoop = pWLoop = pFrom->aLoop[iLoop];
     pLevel->iFrom = pWLoop->iTab;
     pLevel->iTabCur = pWInfo->pTabList->a[pLevel->iFrom].iCursor;
   }
-  if( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)!=0
+  यदि( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)!=0
    && (pWInfo->wctrlFlags & WHERE_DISTINCTBY)==0
    && pWInfo->eDistinct==WHERE_DISTINCT_NOOP
    && nRowEst
   ){
-    Bitmask notUsed;
-    int rc = wherePathSatisfiesOrderBy(pWInfo, pWInfo->pResultSet, pFrom,
-                 WHERE_DISTINCTBY, nLoop-1, pFrom->aLoop[nLoop-1], &notUsed);
-    if( rc==pWInfo->pResultSet->nExpr ){
+    Bitmask not_प्रयुक्तम्;
+    पूर्णाङ्क rc = where_मार्गः_Satisfies_क्रमः_By(pWInfo, pWInfo->p_परिणाम_समुच्चयः, pFrom,
+                 WHERE_DISTINCTBY, nLoop-1, pFrom->aLoop[nLoop-1], &not_प्रयुक्तम्);
+    यदि( rc==pWInfo->p_परिणाम_समुच्चयः->n_व्यञ्जकम् ){
       pWInfo->eDistinct = WHERE_DISTINCT_ORDERED;
     }
   }
   pWInfo->bOrderedInnerLoop = 0;
-  if( pWInfo->pOrderBy ){
+  यदि( pWInfo->p_क्रमः_By ){
     pWInfo->nOBSat = pFrom->isOrdered;
-    if( pWInfo->wctrlFlags & WHERE_DISTINCTBY ){
-      if( pFrom->isOrdered==pWInfo->pOrderBy->nExpr ){
+    यदि( pWInfo->wctrlFlags & WHERE_DISTINCTBY ){
+      यदि( pFrom->isOrdered==pWInfo->p_क्रमः_By->n_व्यञ्जकम् ){
         pWInfo->eDistinct = WHERE_DISTINCT_ORDERED;
       }
       /* vvv--- See check-in [12ad822d9b827777] on 2023-03-16 ---vvv */
-      assert( pWInfo->pSelect->pOrderBy==0
-           || pWInfo->nOBSat <= pWInfo->pSelect->pOrderBy->nExpr );
-    }else{
-      pWInfo->revMask = pFrom->revLoop;
-      if( pWInfo->nOBSat<=0 ){
+      प्रतिज्ञा( pWInfo->pSelect->p_क्रमः_By==0
+           || pWInfo->nOBSat <= pWInfo->pSelect->p_क्रमः_By->n_व्यञ्जकम् );
+    }अन्यथा{
+      pWInfo->rev_आवरणम् = pFrom->revLoop;
+      यदि( pWInfo->nOBSat<=0 ){
         pWInfo->nOBSat = 0;
-        if( nLoop>0 ){
+        यदि( nLoop>0 ){
           u32 wsFlags = pFrom->aLoop[nLoop-1]->wsFlags;
-          if( (wsFlags & WHERE_ONEROW)==0
-           && (wsFlags&(WHERE_IPK|WHERE_COLUMN_IN))!=(WHERE_IPK|WHERE_COLUMN_IN)
+          यदि( (wsFlags & WHERE_ONEROW)==0
+           && (wsFlags&(WHERE_IPK|WHERE_COLUMN_अन्तर्))!=(WHERE_IPK|WHERE_COLUMN_अन्तर्)
           ){
             Bitmask m = 0;
-            int rc = wherePathSatisfiesOrderBy(pWInfo, pWInfo->pOrderBy, pFrom,
-                      WHERE_ORDERBY_LIMIT, nLoop-1, pFrom->aLoop[nLoop-1], &m);
+            पूर्णाङ्क rc = where_मार्गः_Satisfies_क्रमः_By(pWInfo, pWInfo->p_क्रमः_By, pFrom,
+                      WHERE_ORDERBY_सीमा, nLoop-1, pFrom->aLoop[nLoop-1], &m);
             testcase( wsFlags & WHERE_IPK );
-            testcase( wsFlags & WHERE_COLUMN_IN );
-            if( rc==pWInfo->pOrderBy->nExpr ){
+            testcase( wsFlags & WHERE_COLUMN_अन्तर् );
+            यदि( rc==pWInfo->p_क्रमः_By->n_व्यञ्जकम् ){
               pWInfo->bOrderedInnerLoop = 1;
-              pWInfo->revMask = m;
+              pWInfo->rev_आवरणम् = m;
             }
           }
         }
-      }else if( nLoop
+      }अन्यथा यदि( nLoop
             && pWInfo->nOBSat==1
             && (pWInfo->wctrlFlags & (WHERE_ORDERBY_MIN|WHERE_ORDERBY_MAX))!=0
             ){
         pWInfo->bOrderedInnerLoop = 1;
       }
     }
-    if( (pWInfo->wctrlFlags & WHERE_SORTBYGROUP)
-        && pWInfo->nOBSat==pWInfo->pOrderBy->nExpr && nLoop>0
+    यदि( (pWInfo->wctrlFlags & WHERE_SORTBYGROUP)
+        && pWInfo->nOBSat==pWInfo->p_क्रमः_By->n_व्यञ्जकम् && nLoop>0
     ){
-      Bitmask revMask = 0;
-      int nOrder = wherePathSatisfiesOrderBy(pWInfo, pWInfo->pOrderBy,
-          pFrom, 0, nLoop-1, pFrom->aLoop[nLoop-1], &revMask
+      Bitmask rev_आवरणम् = 0;
+      पूर्णाङ्क n_क्रमः = where_मार्गः_Satisfies_क्रमः_By(pWInfo, pWInfo->p_क्रमः_By,
+          pFrom, 0, nLoop-1, pFrom->aLoop[nLoop-1], &rev_आवरणम्
       );
-      assert( pWInfo->sorted==0 );
-      if( nOrder==pWInfo->pOrderBy->nExpr ){
+      प्रतिज्ञा( pWInfo->sorted==0 );
+      यदि( n_क्रमः==pWInfo->p_क्रमः_By->n_व्यञ्जकम् ){
         pWInfo->sorted = 1;
-        pWInfo->revMask = revMask;
+        pWInfo->rev_आवरणम् = rev_आवरणम्;
       }
     }
   }
 
-  pWInfo->nRowOut = pFrom->nRow;
-#ifdef WHERETRACE_ENABLED
-  pWInfo->rTotalCost = pFrom->rCost;
-#endif
+  pWInfo->n_Row_बहिर्गमनम् = pFrom->nRow;
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+  pWInfo->r_योग_Cost = pFrom->rCost;
+#यदि_अन्तः
 
   /* Free temporary memory and return success */
-  sqlite3StackFreeNN(pParse->db, pSpace);
-  return SQLITE_OK;
+  sqlite3_राशिः_Free_NN(pParse->db, pSpace);
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
@@ -6344,40 +6344,40 @@ static int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst){
 ** See test cases in test/whereN.test for the real-world query that
 ** originally provoked this heuristic.
 */
-static SQLITE_NOINLINE void whereInterstageHeuristic(WhereInfo *pWInfo){
-  int i;
-#ifdef WHERETRACE_ENABLED
-  int once = 0;
-#endif
-  for(i=0; i<pWInfo->nLevel; i++){
+स्थिर SQLITE_NOINLINE शून्य whereInterstageHeuristic(WhereInfo *pWInfo){
+  पूर्णाङ्क i;
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+  पूर्णाङ्क once = 0;
+#यदि_अन्तः
+  प्रति(i=0; i<pWInfo->nLevel; i++){
     WhereLoop *p = pWInfo->a[i].pWLoop;
-    if( p==0 ) break;
-    if( (p->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
+    यदि( p==0 ) भङ्ग;
+    यदि( (p->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
       /* Treat a vtab scan as similar to a full-table scan */
-      break;
+      भङ्ग;
     }
-    if( (p->wsFlags & (WHERE_COLUMN_EQ|WHERE_COLUMN_NULL|WHERE_COLUMN_IN))!=0 ){
+    यदि( (p->wsFlags & (WHERE_COLUMN_EQ|WHERE_COLUMN_NULL|WHERE_COLUMN_अन्तर्))!=0 ){
       u8 iTab = p->iTab;
       WhereLoop *pLoop;
-      for(pLoop=pWInfo->pLoops; pLoop; pLoop=pLoop->pNextLoop){
-        if( pLoop->iTab!=iTab ) continue;
-        if( (pLoop->wsFlags & (WHERE_CONSTRAINT|WHERE_AUTO_INDEX))!=0 ){
+      प्रति(pLoop=pWInfo->pLoops; pLoop; pLoop=pLoop->p_अग्र_Loop){
+        यदि( pLoop->iTab!=iTab ) अनुवर्त;
+        यदि( (pLoop->wsFlags & (WHERE_CONSTRAINT|WHERE_AUTO_सूचकांक))!=0 ){
           /* Auto-index and index-constrained loops allowed to remain */
-          continue;
+          अनुवर्त;
         }
-#ifdef WHERETRACE_ENABLED
-        if( sqlite3WhereTrace & 0x80 ){
-          if( once==0 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+        यदि( sqlite3WhereTrace & 0x80 ){
+          यदि( once==0 ){
             sqlite3DebugPrintf("Loops disabled by interstage heuristic:\n");
             once = 1;
           }
           sqlite3WhereLoopPrint(pLoop, &pWInfo->sWC);
         }
-#endif /* WHERETRACE_ENABLED */
+#यदि_अन्तः /* WHERETRACE_ENABLED */
         pLoop->prereq = ALLBITS;  /* Prevent 2nd solver() from using this one */
       }
-    }else{
-      break;
+    }अन्यथा{
+      भङ्ग;
     }
   }
 }
@@ -6393,107 +6393,107 @@ static SQLITE_NOINLINE void whereInterstageHeuristic(WhereInfo *pWInfo){
 ** no-frills query planner.  Return zero if this query needs the
 ** general-purpose query planner.
 */
-static int whereShortCut(WhereLoopBuilder *pBuilder){
+स्थिर पूर्णाङ्क whereShortCut(WhereLoopBuilder *pBuilder){
   WhereInfo *pWInfo;
   SrcItem *pItem;
   WhereClause *pWC;
-  WhereTerm *pTerm;
+  Where_पदांशः *p_पदांशः;
   WhereLoop *pLoop;
-  int iCur;
-  int j;
-  Table *pTab;
-  Index *pIdx;
-  WhereScan scan;
+  पूर्णाङ्क iCur;
+  पूर्णाङ्क j;
+  सारणी *pTab;
+  सूचकांक *pIdx;
+  Where_अवलोकनम् अवलोकनम्;
 
   pWInfo = pBuilder->pWInfo;
-  if( pWInfo->wctrlFlags & WHERE_OR_SUBCLAUSE ) return 0;
-  assert( pWInfo->pTabList->nSrc>=1 );
+  यदि( pWInfo->wctrlFlags & WHERE_OR_SUBCLAUSE ) प्रत्यागम 0;
+  प्रतिज्ञा( pWInfo->pTabList->nSrc>=1 );
   pItem = pWInfo->pTabList->a;
   pTab = pItem->pSTab;
-  if( IsVirtual(pTab) ) return 0;
-  if( pItem->fg.isIndexedBy || pItem->fg.notIndexed ){
-    testcase( pItem->fg.isIndexedBy );
-    testcase( pItem->fg.notIndexed );
-    return 0;
+  यदि( IsVirtual(pTab) ) प्रत्यागम 0;
+  यदि( pItem->fg.is_अनुक्रमितम्_By || pItem->fg.not_अनुक्रमितम् ){
+    testcase( pItem->fg.is_अनुक्रमितम्_By );
+    testcase( pItem->fg.not_अनुक्रमितम् );
+    प्रत्यागम 0;
   }
   iCur = pItem->iCursor;
   pWC = &pWInfo->sWC;
   pLoop = pBuilder->pNew;
   pLoop->wsFlags = 0;
   pLoop->nSkip = 0;
-  pTerm = whereScanInit(&scan, pWC, iCur, -1, WO_EQ|WO_IS, 0);
-  while( pTerm && pTerm->prereqRight ) pTerm = whereScanNext(&scan);
-  if( pTerm ){
-    testcase( pTerm->eOperator & WO_IS );
+  p_पदांशः = where_अवलोकनम्_Init(&अवलोकनम्, pWC, iCur, -1, WO_EQ|WO_IS, 0);
+  यावत्( p_पदांशः && p_पदांशः->prereq_दक्षिणः ) p_पदांशः = where_अवलोकनम्_अग्र(&अवलोकनम्);
+  यदि( p_पदांशः ){
+    testcase( p_पदांशः->eOperator & WO_IS );
     pLoop->wsFlags = WHERE_COLUMN_EQ|WHERE_IPK|WHERE_ONEROW;
-    pLoop->aLTerm[0] = pTerm;
+    pLoop->aLTerm[0] = p_पदांशः;
     pLoop->nLTerm = 1;
     pLoop->u.btree.nEq = 1;
     /* TUNING: Cost of a rowid lookup is 10 */
-    pLoop->rRun = 33;  /* 33==sqlite3LogEst(10) */
-  }else{
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      int opMask;
-      assert( pLoop->aLTermSpace==pLoop->aLTerm );
-      if( !IsUniqueIndex(pIdx)
+    pLoop->r_सततम् = 33;  /* 33==sqlite3LogEst(10) */
+  }अन्यथा{
+    प्रति(pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+      पूर्णाङ्क op_आवरणम्;
+      प्रतिज्ञा( pLoop->aLTermSpace==pLoop->aLTerm );
+      यदि( !Is_Unique_सूचकांक(pIdx)
        || pIdx->pPartIdxWhere!=0
-       || pIdx->nKeyCol>ArraySize(pLoop->aLTermSpace)
-      ) continue;
-      opMask = pIdx->uniqNotNull ? (WO_EQ|WO_IS) : WO_EQ;
-      for(j=0; j<pIdx->nKeyCol; j++){
-        pTerm = whereScanInit(&scan, pWC, iCur, j, opMask, pIdx);
-        while( pTerm && pTerm->prereqRight ) pTerm = whereScanNext(&scan);
-        if( pTerm==0 ) break;
-        testcase( pTerm->eOperator & WO_IS );
-        pLoop->aLTerm[j] = pTerm;
+       || pIdx->n_कुञ्चिका_Col>Array_आकार(pLoop->aLTermSpace)
+      ) अनुवर्त;
+      op_आवरणम् = pIdx->uniqNotNull ? (WO_EQ|WO_IS) : WO_EQ;
+      प्रति(j=0; j<pIdx->n_कुञ्चिका_Col; j++){
+        p_पदांशः = where_अवलोकनम्_Init(&अवलोकनम्, pWC, iCur, j, op_आवरणम्, pIdx);
+        यावत्( p_पदांशः && p_पदांशः->prereq_दक्षिणः ) p_पदांशः = where_अवलोकनम्_अग्र(&अवलोकनम्);
+        यदि( p_पदांशः==0 ) भङ्ग;
+        testcase( p_पदांशः->eOperator & WO_IS );
+        pLoop->aLTerm[j] = p_पदांशः;
       }
-      if( j!=pIdx->nKeyCol ) continue;
-      pLoop->wsFlags = WHERE_COLUMN_EQ|WHERE_ONEROW|WHERE_INDEXED;
-      if( pIdx->isCovering || (pItem->colUsed & pIdx->colNotIdxed)==0 ){
+      यदि( j!=pIdx->n_कुञ्चिका_Col ) अनुवर्त;
+      pLoop->wsFlags = WHERE_COLUMN_EQ|WHERE_ONEROW|WHERE_अनुक्रमितम्;
+      यदि( pIdx->isCovering || (pItem->col_प्रयुक्तम् & pIdx->colNotIdxed)==0 ){
         pLoop->wsFlags |= WHERE_IDX_ONLY;
       }
       pLoop->nLTerm = j;
       pLoop->u.btree.nEq = j;
-      pLoop->u.btree.pIndex = pIdx;
+      pLoop->u.btree.p_सूचकांक = pIdx;
       /* TUNING: Cost of a unique index lookup is 15 */
-      pLoop->rRun = 39;  /* 39==sqlite3LogEst(15) */
-      break;
+      pLoop->r_सततम् = 39;  /* 39==sqlite3LogEst(15) */
+      भङ्ग;
     }
   }
-  if( pLoop->wsFlags ){
-    pLoop->nOut = (LogEst)1;
+  यदि( pLoop->wsFlags ){
+    pLoop->n_बहिर्गमनम् = (LogEst)1;
     pWInfo->a[0].pWLoop = pLoop;
-    assert( pWInfo->sMaskSet.n==1 && iCur==pWInfo->sMaskSet.ix[0] );
-    pLoop->maskSelf = 1; /* sqlite3WhereGetMask(&pWInfo->sMaskSet, iCur); */
+    प्रतिज्ञा( pWInfo->s_आवरणम्_समुच्चयः.n==1 && iCur==pWInfo->s_आवरणम्_समुच्चयः.ix[0] );
+    pLoop->आवरणम्_Self = 1; /* sqlite3WhereGetMask(&pWInfo->sMaskSet, iCur); */
     pWInfo->a[0].iTabCur = iCur;
-    pWInfo->nRowOut = 1;
-    if( pWInfo->pOrderBy ) pWInfo->nOBSat =  pWInfo->pOrderBy->nExpr;
-    if( pWInfo->wctrlFlags & WHERE_WANT_DISTINCT ){
+    pWInfo->n_Row_बहिर्गमनम् = 1;
+    यदि( pWInfo->p_क्रमः_By ) pWInfo->nOBSat =  pWInfo->p_क्रमः_By->n_व्यञ्जकम्;
+    यदि( pWInfo->wctrlFlags & WHERE_WANT_DISTINCT ){
       pWInfo->eDistinct = WHERE_DISTINCT_UNIQUE;
     }
-    if( scan.iEquiv>1 ) pLoop->wsFlags |= WHERE_TRANSCONS;
-#ifdef SQLITE_DEBUG
+    यदि( अवलोकनम्.iEquiv>1 ) pLoop->wsFlags |= WHERE_TRANSCONS;
+#यदि_परिभाषितम् SQLITE_DEBUG
     pLoop->cId = '0';
-#endif
-#ifdef WHERETRACE_ENABLED
-    if( sqlite3WhereTrace & 0x02 ){
+#यदि_अन्तः
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+    यदि( sqlite3WhereTrace & 0x02 ){
       sqlite3DebugPrintf("whereShortCut() used to compute solution\n");
     }
-#endif
-    return 1;
+#यदि_अन्तः
+    प्रत्यागम 1;
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /*
 ** Helper function for exprIsDeterministic().
 */
-static int exprNodeIsDeterministic(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_ConstFunc)==0 ){
-    pWalker->eCode = 0;
-    return WRC_Abort;
+स्थिर पूर्णाङ्क व्यञ्जकम्_ग्रन्थिः_Is_Deterministic(Walker *pWalker, व्यञ्जकम् *p_व्यञ्जकम्){
+  यदि( p_व्यञ्जकम्->op==TK_FUNCTION && व्यञ्जकम्_Has_Property(p_व्यञ्जकम्, EP_ConstFunc)==0 ){
+    pWalker->e_संहिता = 0;
+    प्रत्यागम WRC_Abort;
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 /*
@@ -6501,37 +6501,37 @@ static int exprNodeIsDeterministic(Walker *pWalker, Expr *pExpr){
 ** functions. Do not consider non-deterministic SQL functions that are
 ** part of sub-select statements.
 */
-static int exprIsDeterministic(Expr *p){
+स्थिर पूर्णाङ्क व्यञ्जकम्_Is_Deterministic(व्यञ्जकम् *p){
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.eCode = 1;
-  w.xExprCallback = exprNodeIsDeterministic;
+  स्मृतिं_पूरय(&w, 0, परिमाण(w));
+  w.e_संहिता = 1;
+  w.x_व्यञ्जकम्_Callback = व्यञ्जकम्_ग्रन्थिः_Is_Deterministic;
   w.xSelectCallback = sqlite3SelectWalkFail;
-  sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  sqlite3_Walk_व्यञ्जकम्(&w, p);
+  प्रत्यागम w.e_संहिता;
 }
 
  
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
 /*
 ** Display all WhereLoops in pWInfo
 */
-static void showAllWhereLoops(WhereInfo *pWInfo, WhereClause *pWC){
-  if( sqlite3WhereTrace ){    /* Display all of the WhereLoop objects */
+स्थिर शून्य showAllWhereLoops(WhereInfo *pWInfo, WhereClause *pWC){
+  यदि( sqlite3WhereTrace ){    /* Display all of the WhereLoop objects */
     WhereLoop *p;
-    int i;
-    static const char zLabel[] = "0123456789abcdefghijklmnopqrstuvwyxz"
+    पूर्णाङ्क i;
+    स्थिर ध्रुव वर्ण zLabel[] = "0123456789abcdefghijklmnopqrstuvwyxz"
                                            "ABCDEFGHIJKLMNOPQRSTUVWYXZ";
-    for(p=pWInfo->pLoops, i=0; p; p=p->pNextLoop, i++){
-      p->cId = zLabel[i%(sizeof(zLabel)-1)];
+    प्रति(p=pWInfo->pLoops, i=0; p; p=p->p_अग्र_Loop, i++){
+      p->cId = zLabel[i%(परिमाण(zLabel)-1)];
       sqlite3WhereLoopPrint(p, pWC);
     }
   }
 }
 # define WHERETRACE_ALL_LOOPS(W,C) showAllWhereLoops(W,C)
-#else
+#अन्यथा
 # define WHERETRACE_ALL_LOOPS(W,C)
-#endif
+#यदि_अन्तः
 
 /* Attempt to omit tables from a join that do not affect the result.
 ** For a table to not affect the result, the following must be true:
@@ -6573,78 +6573,78 @@ static void showAllWhereLoops(WhereInfo *pWInfo, WhereClause *pWC){
 **       LEFT JOIN t2
 **       LEFT JOIN t3 ON (t1.ipk=t3.ipk)
 */
-static SQLITE_NOINLINE Bitmask whereOmitNoopJoin(
+स्थिर SQLITE_NOINLINE Bitmask whereOmitNoopJoin(
   WhereInfo *pWInfo,
   Bitmask notReady
 ){
-  int i;
-  Bitmask tabUsed;
-  int hasRightJoin;
+  पूर्णाङ्क i;
+  Bitmask tab_प्रयुक्तम्;
+  पूर्णाङ्क has_दक्षिणः_Join;
 
   /* Preconditions checked by the caller */
-  assert( pWInfo->nLevel>=2 );
-  assert( OptimizationEnabled(pWInfo->pParse->db, SQLITE_OmitNoopJoin) );
+  प्रतिज्ञा( pWInfo->nLevel>=2 );
+  प्रतिज्ञा( OptimizationEnabled(pWInfo->pParse->db, SQLITE_OmitNoopJoin) );
 
   /* These two preconditions checked by the caller combine to guarantee
   ** condition (1) of the header comment */
-  assert( pWInfo->pResultSet!=0 );
-  assert( 0==(pWInfo->wctrlFlags & WHERE_AGG_DISTINCT) );
+  प्रतिज्ञा( pWInfo->p_परिणाम_समुच्चयः!=0 );
+  प्रतिज्ञा( 0==(pWInfo->wctrlFlags & WHERE_AGG_DISTINCT) );
 
-  tabUsed = sqlite3WhereExprListUsage(&pWInfo->sMaskSet, pWInfo->pResultSet);
-  if( pWInfo->pOrderBy ){
-    tabUsed |= sqlite3WhereExprListUsage(&pWInfo->sMaskSet, pWInfo->pOrderBy);
+  tab_प्रयुक्तम् = sqlite3_Where_व्यञ्जकम्_List_Usage(&pWInfo->s_आवरणम्_समुच्चयः, pWInfo->p_परिणाम_समुच्चयः);
+  यदि( pWInfo->p_क्रमः_By ){
+    tab_प्रयुक्तम् |= sqlite3_Where_व्यञ्जकम्_List_Usage(&pWInfo->s_आवरणम्_समुच्चयः, pWInfo->p_क्रमः_By);
   }
-  hasRightJoin = (pWInfo->pTabList->a[0].fg.jointype & JT_LTORJ)!=0;
-  for(i=pWInfo->nLevel-1; i>=1; i--){
-    WhereTerm *pTerm, *pEnd;
+  has_दक्षिणः_Join = (pWInfo->pTabList->a[0].fg.jointype & JT_LTORJ)!=0;
+  प्रति(i=pWInfo->nLevel-1; i>=1; i--){
+    Where_पदांशः *p_पदांशः, *p_अन्तः;
     SrcItem *pItem;
     WhereLoop *pLoop;
     Bitmask m1;
     pLoop = pWInfo->a[i].pWLoop;
     pItem = &pWInfo->pTabList->a[pLoop->iTab];
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))!=JT_LEFT ) continue;
-    if( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)==0
+    यदि( (pItem->fg.jointype & (JT_वामः|JT_दक्षिणः))!=JT_वामः ) अनुवर्त;
+    यदि( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)==0
      && (pLoop->wsFlags & WHERE_ONEROW)==0
     ){
-      continue;
+      अनुवर्त;
     }
-    if( (tabUsed & pLoop->maskSelf)!=0 ) continue;
-    pEnd = pWInfo->sWC.a + pWInfo->sWC.nTerm;
-    for(pTerm=pWInfo->sWC.a; pTerm<pEnd; pTerm++){
-      if( (pTerm->prereqAll & pLoop->maskSelf)!=0 ){
-        if( !ExprHasProperty(pTerm->pExpr, EP_OuterON)
-         || pTerm->pExpr->w.iJoin!=pItem->iCursor
+    यदि( (tab_प्रयुक्तम् & pLoop->आवरणम्_Self)!=0 ) अनुवर्त;
+    p_अन्तः = pWInfo->sWC.a + pWInfo->sWC.n_पदांशः;
+    प्रति(p_पदांशः=pWInfo->sWC.a; p_पदांशः<p_अन्तः; p_पदांशः++){
+      यदि( (p_पदांशः->prereqAll & pLoop->आवरणम्_Self)!=0 ){
+        यदि( !व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_OuterON)
+         || p_पदांशः->p_व्यञ्जकम्->w.iJoin!=pItem->iCursor
         ){
-          break;
+          भङ्ग;
         }
       }
-      if( hasRightJoin
-       && ExprHasProperty(pTerm->pExpr, EP_InnerON)
-       && NEVER(pTerm->pExpr->w.iJoin==pItem->iCursor)
+      यदि( has_दक्षिणः_Join
+       && व्यञ्जकम्_Has_Property(p_पदांशः->p_व्यञ्जकम्, EP_InnerON)
+       && NEVER(p_पदांशः->p_व्यञ्जकम्->w.iJoin==pItem->iCursor)
       ){
-        break;  /* restriction (5) */
+        भङ्ग;  /* restriction (5) */
       }
     }
-    if( pTerm<pEnd ) continue;
+    यदि( p_पदांशः<p_अन्तः ) अनुवर्त;
     WHERETRACE(0xffffffff,("-> omit unused FROM-clause term %c\n",pLoop->cId));
     m1 = MASKBIT(i)-1;
-    testcase( ((pWInfo->revMask>>1) & ~m1)!=0 );
-    pWInfo->revMask = (m1 & pWInfo->revMask) | ((pWInfo->revMask>>1) & ~m1);
-    notReady &= ~pLoop->maskSelf;
-    for(pTerm=pWInfo->sWC.a; pTerm<pEnd; pTerm++){
-      if( (pTerm->prereqAll & pLoop->maskSelf)!=0 ){
-        pTerm->wtFlags |= TERM_CODED;
-        pTerm->prereqAll = 0;
+    testcase( ((pWInfo->rev_आवरणम्>>1) & ~m1)!=0 );
+    pWInfo->rev_आवरणम् = (m1 & pWInfo->rev_आवरणम्) | ((pWInfo->rev_आवरणम्>>1) & ~m1);
+    notReady &= ~pLoop->आवरणम्_Self;
+    प्रति(p_पदांशः=pWInfo->sWC.a; p_पदांशः<p_अन्तः; p_पदांशः++){
+      यदि( (p_पदांशः->prereqAll & pLoop->आवरणम्_Self)!=0 ){
+        p_पदांशः->wtFlags |= पदांशः_CODED;
+        p_पदांशः->prereqAll = 0;
       }
     }
-    if( i!=pWInfo->nLevel-1 ){
-      int nByte = (pWInfo->nLevel-1-i) * sizeof(WhereLevel);
+    यदि( i!=pWInfo->nLevel-1 ){
+      पूर्णाङ्क nByte = (pWInfo->nLevel-1-i) * परिमाण(WhereLevel);
       memmove(&pWInfo->a[i], &pWInfo->a[i+1], nByte);
     }
     pWInfo->nLevel--;
-    assert( pWInfo->nLevel>0 );
+    प्रतिज्ञा( pWInfo->nLevel>0 );
   }
-  return notReady;
+  प्रत्यागम notReady;
 }
 
 /*
@@ -6665,36 +6665,36 @@ static SQLITE_NOINLINE Bitmask whereOmitNoopJoin(
 ** WhereLoop.  The implementation of the Bloom filter comes further
 ** down where the code for each WhereLoop is generated.
 */
-static SQLITE_NOINLINE void whereCheckIfBloomFilterIsUseful(
-  const WhereInfo *pWInfo
+स्थिर SQLITE_NOINLINE शून्य whereCheckIfBloomFilterIsUseful(
+  ध्रुव WhereInfo *pWInfo
 ){
-  int i;
-  LogEst nSearch = 0;
+  पूर्णाङ्क i;
+  LogEst n_अन्वेषणम् = 0;
 
-  assert( pWInfo->nLevel>=2 );
-  assert( OptimizationEnabled(pWInfo->pParse->db, SQLITE_BloomFilter) );
-  for(i=0; i<pWInfo->nLevel; i++){
+  प्रतिज्ञा( pWInfo->nLevel>=2 );
+  प्रतिज्ञा( OptimizationEnabled(pWInfo->pParse->db, SQLITE_BloomFilter) );
+  प्रति(i=0; i<pWInfo->nLevel; i++){
     WhereLoop *pLoop = pWInfo->a[i].pWLoop;
-    const unsigned int reqFlags = (WHERE_SELFCULL|WHERE_COLUMN_EQ);
+    ध्रुव अचिह्नित पूर्णाङ्क reqFlags = (WHERE_SELFCULL|WHERE_COLUMN_EQ);
     SrcItem *pItem = &pWInfo->pTabList->a[pLoop->iTab];
-    Table *pTab = pItem->pSTab;
-    if( (pTab->tabFlags & TF_HasStat1)==0 ) break;
+    सारणी *pTab = pItem->pSTab;
+    यदि( (pTab->tabFlags & TF_HasStat1)==0 ) भङ्ग;
     pTab->tabFlags |= TF_MaybeReanalyze;
-    if( i>=1
+    यदि( i>=1
      && (pLoop->wsFlags & reqFlags)==reqFlags
      && sqlite3WhereLoopBloomable(pLoop)
-     && nSearch > pTab->nRowLogEst
+     && n_अन्वेषणम् > pTab->nRowLogEst
     ){
-      testcase( pItem->fg.jointype & JT_LEFT );
+      testcase( pItem->fg.jointype & JT_वामः );
       pLoop->wsFlags |= WHERE_BLOOMFILTER;
       pLoop->wsFlags &= ~WHERE_IDX_ONLY;
       WHERETRACE(0xffffffff, (
          "-> use Bloom-filter on loop %c because there are ~%.1e "
          "lookups into %s which has only ~%.1e rows\n",
-         pLoop->cId, (double)sqlite3LogEstToInt(nSearch), pTab->zName,
-         (double)sqlite3LogEstToInt(pTab->nRowLogEst)));
+         pLoop->cId, (द्विगुण)sqlite3_Log_Est_गन्तव्यम्_Int(n_अन्वेषणम्), pTab->zName,
+         (द्विगुण)sqlite3_Log_Est_गन्तव्यम्_Int(pTab->nRowLogEst)));
     }
-    nSearch += pLoop->nOut;
+    n_अन्वेषणम् += pLoop->n_बहिर्गमनम्;
   }
 }
 
@@ -6709,52 +6709,52 @@ static SQLITE_NOINLINE void whereCheckIfBloomFilterIsUseful(
 ** will know to replace occurrences of the indexed expression with
 ** references to the corresponding column of the index.
 */
-static SQLITE_NOINLINE void whereAddIndexedExpr(
+स्थिर SQLITE_NOINLINE शून्य where_सङ्कलय_अनुक्रमितम्_व्यञ्जकम्(
   Parse *pParse,     /* Add IndexedExpr entries to pParse->pIdxEpr */
-  Index *pIdx,       /* The index-on-expression that contains the expressions */
-  int iIdxCur,       /* Cursor number for pIdx */
+  सूचकांक *pIdx,       /* The index-on-expression that contains the expressions */
+  पूर्णाङ्क iIdxCur,       /* Cursor number for pIdx */
   SrcItem *pTabItem  /* The FROM clause entry for the table */
 ){
-  int i;
-  IndexedExpr *p;
-  Table *pTab;
-  assert( pIdx->bHasExpr );
-  pTab = pIdx->pTable;
-  for(i=0; i<pIdx->nColumn; i++){
-    Expr *pExpr;
-    int j = pIdx->aiColumn[i];
-    if( j==XN_EXPR ){
-      pExpr = pIdx->aColExpr->a[i].pExpr;
-    }else if( j>=0 && (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)!=0 ){
-      pExpr = sqlite3ColumnExpr(pTab, &pTab->aCol[j]);
-    }else{
-      continue;
+  पूर्णाङ्क i;
+  अनुक्रमितम्_व्यञ्जकम् *p;
+  सारणी *pTab;
+  प्रतिज्ञा( pIdx->b_Has_व्यञ्जकम् );
+  pTab = pIdx->p_सारणी;
+  प्रति(i=0; i<pIdx->nColumn; i++){
+    व्यञ्जकम् *p_व्यञ्जकम्;
+    पूर्णाङ्क j = pIdx->aiColumn[i];
+    यदि( j==XN_व्यञ्जकम् ){
+      p_व्यञ्जकम् = pIdx->a_Col_व्यञ्जकम्->a[i].p_व्यञ्जकम्;
+    }अन्यथा यदि( j>=0 && (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)!=0 ){
+      p_व्यञ्जकम् = sqlite3_Column_व्यञ्जकम्(pTab, &pTab->aCol[j]);
+    }अन्यथा{
+      अनुवर्त;
     }
-    if( sqlite3ExprIsConstant(0,pExpr) ) continue;
-    p = sqlite3DbMallocRaw(pParse->db,  sizeof(IndexedExpr));
-    if( p==0 ) break;
+    यदि( sqlite3_व्यञ्जकम्_Is_Constant(0,p_व्यञ्जकम्) ) अनुवर्त;
+    p = sqlite3DbMallocRaw(pParse->db,  परिमाण(अनुक्रमितम्_व्यञ्जकम्));
+    यदि( p==0 ) भङ्ग;
     p->pIENext = pParse->pIdxEpr;
-#ifdef WHERETRACE_ENABLED
-    if( sqlite3WhereTrace & 0x200 ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+    यदि( sqlite3WhereTrace & 0x200 ){
       sqlite3DebugPrintf("New pParse->pIdxEpr term {%d,%d}\n", iIdxCur, i);
-      if( sqlite3WhereTrace & 0x5000 ) sqlite3ShowExpr(pExpr);
+      यदि( sqlite3WhereTrace & 0x5000 ) sqlite3_Show_व्यञ्जकम्(p_व्यञ्जकम्);
     }
-#endif
-    p->pExpr = sqlite3ExprDup(pParse->db, pExpr, 0);
-    p->iDataCur = pTabItem->iCursor;
+#यदि_अन्तः
+    p->p_व्यञ्जकम् = sqlite3_व्यञ्जकम्_Dup(pParse->db, p_व्यञ्जकम्, 0);
+    p->i_दत्त_Cur = pTabItem->iCursor;
     p->iIdxCur = iIdxCur;
     p->iIdxCol = i;
-    p->bMaybeNullRow = (pTabItem->fg.jointype & (JT_LEFT|JT_LTORJ|JT_RIGHT))!=0;
-    if( sqlite3IndexAffinityStr(pParse->db, pIdx) ){
+    p->bMaybeNullRow = (pTabItem->fg.jointype & (JT_वामः|JT_LTORJ|JT_दक्षिणः))!=0;
+    यदि( sqlite3_सूचकांक_Affinity_Str(pParse->db, pIdx) ){
       p->aff = pIdx->zColAff[i];
     }
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
+#यदि_परिभाषितम् SQLITE_ENABLE_EXPLAIN_COMMENTS
     p->zIdxName = pIdx->zName;
-#endif
+#यदि_अन्तः
     pParse->pIdxEpr = p;
-    if( p->pIENext==0 ){
-      void *pArg = (void*)&pParse->pIdxEpr;
-      sqlite3ParserAddCleanup(pParse, whereIndexedExprCleanup, pArg);
+    यदि( p->pIENext==0 ){
+      शून्य *pArg = (शून्य*)&pParse->pIdxEpr;
+      sqlite3_Parser_सङ्कलय_Cleanup(pParse, where_अनुक्रमितम्_व्यञ्जकम्_Cleanup, pArg);
     }
   }
 }
@@ -6767,16 +6767,16 @@ static SQLITE_NOINLINE void whereAddIndexedExpr(
 ** This implements the PRAGMA reverse_unordered_selects=ON setting.
 ** (Also SQLITE_DBCONFIG_REVERSE_SCANORDER).
 */
-static SQLITE_NOINLINE void whereReverseScanOrder(WhereInfo *pWInfo){
-  int ii;
-  for(ii=0; ii<pWInfo->pTabList->nSrc; ii++){
+स्थिर SQLITE_NOINLINE शून्य where_Reverse_अवलोकनम्_क्रमः(WhereInfo *pWInfo){
+  पूर्णाङ्क ii;
+  प्रति(ii=0; ii<pWInfo->pTabList->nSrc; ii++){
     SrcItem *pItem = &pWInfo->pTabList->a[ii];
-    if( !pItem->fg.isCte
+    यदि( !pItem->fg.isCte
      || pItem->u2.pCteUse->eM10d!=M10d_Yes
      || NEVER(pItem->fg.isSubquery==0)
-     || pItem->u4.pSubq->pSelect->pOrderBy==0
+     || pItem->u4.pSubq->pSelect->p_क्रमः_By==0
     ){
-      pWInfo->revMask |= MASKBIT(ii);
+      pWInfo->rev_आवरणम् |= MASKBIT(ii);
     }
   }
 }
@@ -6872,45 +6872,45 @@ static SQLITE_NOINLINE void whereReverseScanOrder(WhereInfo *pWInfo){
 WhereInfo *sqlite3WhereBegin(
   Parse *pParse,          /* The parser context */
   SrcList *pTabList,      /* FROM clause: A list of all tables to be scanned */
-  Expr *pWhere,           /* The WHERE clause */
-  ExprList *pOrderBy,     /* An ORDER BY (or GROUP BY) clause, or NULL */
-  ExprList *pResultSet,   /* Query result set.  Req'd for DISTINCT */
+  व्यञ्जकम् *pWhere,           /* The WHERE clause */
+  व्यञ्जकम्_List *p_क्रमः_By,     /* An ORDER BY (or GROUP BY) clause, or NULL */
+  व्यञ्जकम्_List *p_परिणाम_समुच्चयः,   /* Query result set.  Req'd for DISTINCT */
   Select *pSelect,        /* The entire SELECT statement */
   u16 wctrlFlags,         /* The WHERE_* flags defined in sqliteInt.h */
-  int iAuxArg             /* If WHERE_OR_SUBCLAUSE is set, index cursor number
+  पूर्णाङ्क iAuxArg             /* If WHERE_OR_SUBCLAUSE is set, index cursor number
                           ** If WHERE_USE_LIMIT, then the limit amount */
 ){
-  int nByteWInfo;            /* Num. bytes allocated for WhereInfo struct */
-  int nTabList;              /* Number of elements in pTabList */
+  पूर्णाङ्क nByteWInfo;            /* Num. bytes allocated for WhereInfo struct */
+  पूर्णाङ्क nTabList;              /* Number of elements in pTabList */
   WhereInfo *pWInfo;         /* Will become the return value of this function */
   Vdbe *v = pParse->pVdbe;   /* The virtual database engine */
   Bitmask notReady;          /* Cursors that are not yet positioned */
   WhereLoopBuilder sWLB;     /* The WhereLoop builder */
-  WhereMaskSet *pMaskSet;    /* The expression mask set */
+  Where_आवरणम्_समुच्चयः *p_आवरणम्_समुच्चयः;    /* The expression mask set */
   WhereLevel *pLevel;        /* A single level in pWInfo->a[] */
   WhereLoop *pLoop;          /* Pointer to a single WhereLoop object */
-  int ii;                    /* Loop counter */
+  पूर्णाङ्क ii;                    /* Loop counter */
   sqlite3 *db;               /* Database connection */
-  int rc;                    /* Return code */
+  पूर्णाङ्क rc;                    /* Return code */
   u8 bFordelete = 0;         /* OPFLAG_FORDELETE or zero, as appropriate */
 
-  assert( (wctrlFlags & WHERE_ONEPASS_MULTIROW)==0 || (
+  प्रतिज्ञा( (wctrlFlags & WHERE_ONEPASS_MULTIROW)==0 || (
         (wctrlFlags & WHERE_ONEPASS_DESIRED)!=0
      && (wctrlFlags & WHERE_OR_SUBCLAUSE)==0
   ));
 
   /* Only one of WHERE_OR_SUBCLAUSE or WHERE_USE_LIMIT */
-  assert( (wctrlFlags & WHERE_OR_SUBCLAUSE)==0
-            || (wctrlFlags & WHERE_USE_LIMIT)==0 );
+  प्रतिज्ञा( (wctrlFlags & WHERE_OR_SUBCLAUSE)==0
+            || (wctrlFlags & WHERE_USE_सीमा)==0 );
 
   /* Variable initialization */
   db = pParse->db;
-  memset(&sWLB, 0, sizeof(sWLB));
+  स्मृतिं_पूरय(&sWLB, 0, परिमाण(sWLB));
 
   /* An ORDER/GROUP BY clause of more than 63 terms cannot be optimized */
-  testcase( pOrderBy && pOrderBy->nExpr==BMS-1 );
-  if( pOrderBy && pOrderBy->nExpr>=BMS ){
-    pOrderBy = 0;
+  testcase( p_क्रमः_By && p_क्रमः_By->n_व्यञ्जकम्==BMS-1 );
+  यदि( p_क्रमः_By && p_क्रमः_By->n_व्यञ्जकम्>=BMS ){
+    p_क्रमः_By = 0;
     wctrlFlags &= ~WHERE_WANT_DISTINCT;
     wctrlFlags |= WHERE_KEEP_ALL_JOINS; /* Disable omit-noop-join opt */
   }
@@ -6919,9 +6919,9 @@ WhereInfo *sqlite3WhereBegin(
   ** bits in a Bitmask
   */
   testcase( pTabList->nSrc==BMS );
-  if( pTabList->nSrc>BMS ){
-    sqlite3ErrorMsg(pParse, "at most %d tables in a join", BMS);
-    return 0;
+  यदि( pTabList->nSrc>BMS ){
+    sqlite3_Error_सन्देशः(pParse, "at most %d tables in a join", BMS);
+    प्रत्यागम 0;
   }
 
   /* This function normally generates a nested loop for all tables in
@@ -6939,65 +6939,65 @@ WhereInfo *sqlite3WhereBegin(
   ** some architectures. Hence the ROUND8() below.
   */
   nByteWInfo = SZ_WHEREINFO(nTabList);
-  pWInfo = sqlite3DbMallocRawNN(db, nByteWInfo + sizeof(WhereLoop));
-  if( db->mallocFailed ){
+  pWInfo = sqlite3DbMallocRawNN(db, nByteWInfo + परिमाण(WhereLoop));
+  यदि( db->mallocFailed ){
     sqlite3DbFree(db, pWInfo);
     pWInfo = 0;
-    goto whereBeginError;
+    गच्छ whereBeginError;
   }
   pWInfo->pParse = pParse;
   pWInfo->pTabList = pTabList;
-  pWInfo->pOrderBy = pOrderBy;
-#if WHERETRACE_ENABLED
+  pWInfo->p_क्रमः_By = p_क्रमः_By;
+#यदि WHERETRACE_ENABLED
   pWInfo->pWhere = pWhere;
-#endif
-  pWInfo->pResultSet = pResultSet;
+#यदि_अन्तः
+  pWInfo->p_परिणाम_समुच्चयः = p_परिणाम_समुच्चयः;
   pWInfo->aiCurOnePass[0] = pWInfo->aiCurOnePass[1] = -1;
   pWInfo->nLevel = nTabList;
   pWInfo->iBreak = pWInfo->iContinue = sqlite3VdbeMakeLabel(pParse);
   pWInfo->wctrlFlags = wctrlFlags;
-  pWInfo->iLimit = iAuxArg;
+  pWInfo->i_सीमा = iAuxArg;
   pWInfo->savedNQueryLoop = pParse->nQueryLoop;
   pWInfo->pSelect = pSelect;
-  memset(&pWInfo->nOBSat, 0,
+  स्मृतिं_पूरय(&pWInfo->nOBSat, 0,
          offsetof(WhereInfo,sWC) - offsetof(WhereInfo,nOBSat));
-  memset(&pWInfo->a[0], 0, sizeof(WhereLoop)+nTabList*sizeof(WhereLevel));
-  assert( pWInfo->eOnePass==ONEPASS_OFF );  /* ONEPASS defaults to OFF */
-  pMaskSet = &pWInfo->sMaskSet;
-  pMaskSet->n = 0;
-  pMaskSet->ix[0] = -99; /* Initialize ix[0] to a value that can never be
+  स्मृतिं_पूरय(&pWInfo->a[0], 0, परिमाण(WhereLoop)+nTabList*परिमाण(WhereLevel));
+  प्रतिज्ञा( pWInfo->eOnePass==ONEPASS_OFF );  /* ONEPASS defaults to OFF */
+  p_आवरणम्_समुच्चयः = &pWInfo->s_आवरणम्_समुच्चयः;
+  p_आवरणम्_समुच्चयः->n = 0;
+  p_आवरणम्_समुच्चयः->ix[0] = -99; /* Initialize ix[0] to a value that can never be
                          ** a valid cursor number, to avoid an initial
                          ** test for pMaskSet->n==0 in sqlite3WhereGetMask() */
   sWLB.pWInfo = pWInfo;
   sWLB.pWC = &pWInfo->sWC;
-  sWLB.pNew = (WhereLoop*)(((char*)pWInfo)+nByteWInfo);
-  assert( EIGHT_BYTE_ALIGNMENT(sWLB.pNew) );
+  sWLB.pNew = (WhereLoop*)(((वर्ण*)pWInfo)+nByteWInfo);
+  प्रतिज्ञा( EIGHT_BYTE_ALIGNMENT(sWLB.pNew) );
   whereLoopInit(sWLB.pNew);
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
   sWLB.pNew->cId = '*';
-#endif
+#यदि_अन्तः
 
   /* Split the WHERE clause into separate subexpressions where each
   ** subexpression is separated by an AND operator.
   */
   sqlite3WhereClauseInit(&pWInfo->sWC, pWInfo);
-  sqlite3WhereSplit(&pWInfo->sWC, pWhere, TK_AND);
+  sqlite3_Where_विभज(&pWInfo->sWC, pWhere, TK_AND);
    
   /* Special case: No FROM clause
   */
-  if( nTabList==0 ){
-    if( pOrderBy ) pWInfo->nOBSat = pOrderBy->nExpr;
-    if( (wctrlFlags & WHERE_WANT_DISTINCT)!=0
+  यदि( nTabList==0 ){
+    यदि( p_क्रमः_By ) pWInfo->nOBSat = p_क्रमः_By->n_व्यञ्जकम्;
+    यदि( (wctrlFlags & WHERE_WANT_DISTINCT)!=0
      && OptimizationEnabled(db, SQLITE_DistinctOpt)
     ){
       pWInfo->eDistinct = WHERE_DISTINCT_UNIQUE;
     }
-    if( ALWAYS(pWInfo->pSelect)
-     && (pWInfo->pSelect->selFlags & SF_MultiValue)==0
+    यदि( ALWAYS(pWInfo->pSelect)
+     && (pWInfo->pSelect->selFlags & SF_Multi_मानम्)==0
     ){
       ExplainQueryPlan((pParse, 0, "SCAN CONSTANT ROW"));
     }
-  }else{
+  }अन्यथा{
     /* Assign a bit from the bitmask to every term in the FROM clause.
     **
     ** The N-th term of the FROM clause is assigned a bitmask of 1<<N.
@@ -7013,28 +7013,28 @@ WhereInfo *sqlite3WhereBegin(
     ** WHERE_OR_SUBCLAUSE flag is set.
     */
     ii = 0;
-    do{
-      createMask(pMaskSet, pTabList->a[ii].iCursor);
-      sqlite3WhereTabFuncArgs(pParse, &pTabList->a[ii], &pWInfo->sWC);
-    }while( (++ii)<pTabList->nSrc );
-  #ifdef SQLITE_DEBUG
+    कुरु{
+      create_आवरणम्(p_आवरणम्_समुच्चयः, pTabList->a[ii].iCursor);
+      sqlite3_Where_Tab_Func_तर्काः(pParse, &pTabList->a[ii], &pWInfo->sWC);
+    }यावत्( (++ii)<pTabList->nSrc );
+  #यदि_परिभाषितम् SQLITE_DEBUG
     {
       Bitmask mx = 0;
-      for(ii=0; ii<pTabList->nSrc; ii++){
-        Bitmask m = sqlite3WhereGetMask(pMaskSet, pTabList->a[ii].iCursor);
-        assert( m>=mx );
+      प्रति(ii=0; ii<pTabList->nSrc; ii++){
+        Bitmask m = sqlite3_Where_Get_आवरणम्(p_आवरणम्_समुच्चयः, pTabList->a[ii].iCursor);
+        प्रतिज्ञा( m>=mx );
         mx = m;
       }
     }
-  #endif
+  #यदि_अन्तः
   }
  
   /* Analyze all of the subexpressions. */
-  sqlite3WhereExprAnalyze(pTabList, &pWInfo->sWC);
-  if( pSelect && pSelect->pLimit ){
-    sqlite3WhereAddLimit(&pWInfo->sWC, pSelect);
+  sqlite3_Where_व्यञ्जकम्_Analyze(pTabList, &pWInfo->sWC);
+  यदि( pSelect && pSelect->p_सीमा ){
+    sqlite3_Where_सङ्कलय_सीमा(&pWInfo->sWC, pSelect);
   }
-  if( pParse->nErr ) goto whereBeginError;
+  यदि( pParse->nErr ) गच्छ whereBeginError;
 
   /* The False-WHERE-Term-Bypass optimization:
   **
@@ -7062,144 +7062,144 @@ WhereInfo *sqlite3WhereBegin(
   ** from outer queries so that the value of the term changes from one
   ** invocation of the current subquery to the next.
   */
-  for(ii=0; ii<sWLB.pWC->nBase; ii++){
-    WhereTerm *pT = &sWLB.pWC->a[ii];  /* A term of the WHERE clause */
-    Expr *pX;                          /* The expression of pT */
-    if( pT->wtFlags & TERM_VIRTUAL ) continue;
-    pX = pT->pExpr;
-    assert( pX!=0 );
-    assert( pT->prereqAll!=0 || !ExprHasProperty(pX, EP_OuterON) );
-    if( pT->prereqAll==0                           /* Conditions (1) and (2) */
-     && (nTabList==0 || exprIsDeterministic(pX))   /* Condition (4) */
-     && !(ExprHasProperty(pX, EP_InnerON)          /* Condition (3) */
+  प्रति(ii=0; ii<sWLB.pWC->n_आधारः; ii++){
+    Where_पदांशः *pT = &sWLB.pWC->a[ii];  /* A term of the WHERE clause */
+    व्यञ्जकम् *pX;                          /* The expression of pT */
+    यदि( pT->wtFlags & पदांशः_VIRTUAL ) अनुवर्त;
+    pX = pT->p_व्यञ्जकम्;
+    प्रतिज्ञा( pX!=0 );
+    प्रतिज्ञा( pT->prereqAll!=0 || !व्यञ्जकम्_Has_Property(pX, EP_OuterON) );
+    यदि( pT->prereqAll==0                           /* Conditions (1) and (2) */
+     && (nTabList==0 || व्यञ्जकम्_Is_Deterministic(pX))   /* Condition (4) */
+     && !(व्यञ्जकम्_Has_Property(pX, EP_InnerON)          /* Condition (3) */
           && (pTabList->a[0].fg.jointype & JT_LTORJ)!=0 )
     ){
-      sqlite3ExprIfFalse(pParse, pX, pWInfo->iBreak, SQLITE_JUMPIFNULL);
-      pT->wtFlags |= TERM_CODED;
+      sqlite3_व्यञ्जकम्_If_False(pParse, pX, pWInfo->iBreak, SQLITE_JUMPIFNULL);
+      pT->wtFlags |= पदांशः_CODED;
     }
   }
 
-  if( wctrlFlags & WHERE_WANT_DISTINCT ){
-    if( OptimizationDisabled(db, SQLITE_DistinctOpt) ){
+  यदि( wctrlFlags & WHERE_WANT_DISTINCT ){
+    यदि( OptimizationDisabled(db, SQLITE_DistinctOpt) ){
       /* Disable the DISTINCT optimization if SQLITE_DistinctOpt is set via
       ** sqlite3_test_ctrl(SQLITE_TESTCTRL_OPTIMIZATIONS,...) */
       wctrlFlags &= ~WHERE_WANT_DISTINCT;
       pWInfo->wctrlFlags &= ~WHERE_WANT_DISTINCT;
-    }else if( isDistinctRedundant(pParse, pTabList, &pWInfo->sWC, pResultSet) ){
+    }अन्यथा यदि( isDistinctRedundant(pParse, pTabList, &pWInfo->sWC, p_परिणाम_समुच्चयः) ){
       /* The DISTINCT marking is pointless.  Ignore it. */
       pWInfo->eDistinct = WHERE_DISTINCT_UNIQUE;
-    }else if( pOrderBy==0 ){
+    }अन्यथा यदि( p_क्रमः_By==0 ){
       /* Try to ORDER BY the result set to make distinct processing easier */
       pWInfo->wctrlFlags |= WHERE_DISTINCTBY;
-      pWInfo->pOrderBy = pResultSet;
+      pWInfo->p_क्रमः_By = p_परिणाम_समुच्चयः;
     }
   }
 
   /* Construct the WhereLoop objects */
-#if defined(WHERETRACE_ENABLED)
-  if( sqlite3WhereTrace & 0xffffffff ){
+#यदि defined(WHERETRACE_ENABLED)
+  यदि( sqlite3WhereTrace & 0xffffffff ){
     sqlite3DebugPrintf("*** Optimizer Start *** (wctrlFlags: 0x%x",wctrlFlags);
-    if( wctrlFlags & WHERE_USE_LIMIT ){
+    यदि( wctrlFlags & WHERE_USE_सीमा ){
       sqlite3DebugPrintf(", limit: %d", iAuxArg);
     }
     sqlite3DebugPrintf(")\n");
-    if( sqlite3WhereTrace & 0x8000 ){
+    यदि( sqlite3WhereTrace & 0x8000 ){
       Select sSelect;
-      memset(&sSelect, 0, sizeof(sSelect));
+      स्मृतिं_पूरय(&sSelect, 0, परिमाण(sSelect));
       sSelect.selFlags = SF_WhereBegin;
       sSelect.pSrc = pTabList;
       sSelect.pWhere = pWhere;
-      sSelect.pOrderBy = pOrderBy;
-      sSelect.pEList = pResultSet;
-      sqlite3TreeViewSelect(0, &sSelect, 0);
+      sSelect.p_क्रमः_By = p_क्रमः_By;
+      sSelect.pEList = p_परिणाम_समुच्चयः;
+      sqlite3_वृक्षः_View_Select(0, &sSelect, 0);
     }
-    if( sqlite3WhereTrace & 0x4000 ){ /* Display all WHERE clause terms */
+    यदि( sqlite3WhereTrace & 0x4000 ){ /* Display all WHERE clause terms */
       sqlite3DebugPrintf("---- WHERE clause at start of analysis:\n");
       sqlite3WhereClausePrint(sWLB.pWC);
     }
   }
-#endif
+#यदि_अन्तः
 
-  if( nTabList!=1 || whereShortCut(&sWLB)==0 ){
-    rc = whereLoopAddAll(&sWLB);
-    if( rc ) goto whereBeginError;
+  यदि( nTabList!=1 || whereShortCut(&sWLB)==0 ){
+    rc = where_Loop_सङ्कलय_All(&sWLB);
+    यदि( rc ) गच्छ whereBeginError;
 
-#ifdef SQLITE_ENABLE_STAT4
+#यदि_परिभाषितम् SQLITE_ENABLE_STAT4
     /* If one or more WhereTerm.truthProb values were used in estimating
     ** loop parameters, but then those truthProb values were subsequently
     ** changed based on STAT4 information while computing subsequent loops,
     ** then we need to rerun the whole loop building process so that all
     ** loops will be built using the revised truthProb values. */
-    if( sWLB.bldFlags2 & SQLITE_BLDF2_2NDPASS ){
+    यदि( sWLB.bldFlags2 & SQLITE_BLDF2_2NDPASS ){
       WHERETRACE_ALL_LOOPS(pWInfo, sWLB.pWC);
       WHERETRACE(0xffffffff,
            ("**** Redo all loop computations due to"
             " TERM_HIGHTRUTH changes ****\n"));
-      while( pWInfo->pLoops ){
+      यावत्( pWInfo->pLoops ){
         WhereLoop *p = pWInfo->pLoops;
-        pWInfo->pLoops = p->pNextLoop;
+        pWInfo->pLoops = p->p_अग्र_Loop;
         whereLoopDelete(db, p);
       }
-      rc = whereLoopAddAll(&sWLB);
-      if( rc ) goto whereBeginError;
+      rc = where_Loop_सङ्कलय_All(&sWLB);
+      यदि( rc ) गच्छ whereBeginError;
     }
-#endif
+#यदि_अन्तः
     WHERETRACE_ALL_LOOPS(pWInfo, sWLB.pWC);
  
-    wherePathSolver(pWInfo, 0);
-    if( db->mallocFailed ) goto whereBeginError;
-    if( pWInfo->pOrderBy ){
+    where_मार्गः_Solver(pWInfo, 0);
+    यदि( db->mallocFailed ) गच्छ whereBeginError;
+    यदि( pWInfo->p_क्रमः_By ){
        whereInterstageHeuristic(pWInfo);
-       wherePathSolver(pWInfo, pWInfo->nRowOut<0 ? 1 : pWInfo->nRowOut+1);
-       if( db->mallocFailed ) goto whereBeginError;
+       where_मार्गः_Solver(pWInfo, pWInfo->n_Row_बहिर्गमनम्<0 ? 1 : pWInfo->n_Row_बहिर्गमनम्+1);
+       यदि( db->mallocFailed ) गच्छ whereBeginError;
     }
 
     /* TUNING:  Assume that a DISTINCT clause on a subquery reduces
     ** the output size by a factor of 8 (LogEst -30).  Search for
     ** tag-20250414a to see other cases.
     */
-    if( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)!=0 ){
+    यदि( (pWInfo->wctrlFlags & WHERE_WANT_DISTINCT)!=0 ){
       WHERETRACE(0x0080,("nRowOut reduced from %d to %d due to DISTINCT\n",
-                         pWInfo->nRowOut, pWInfo->nRowOut-30));
-      pWInfo->nRowOut -= 30;
+                         pWInfo->n_Row_बहिर्गमनम्, pWInfo->n_Row_बहिर्गमनम्-30));
+      pWInfo->n_Row_बहिर्गमनम् -= 30;
     }
 
   }
-  assert( pWInfo->pTabList!=0 );
-  if( pWInfo->pOrderBy==0 && (db->flags & SQLITE_ReverseOrder)!=0 ){
-    whereReverseScanOrder(pWInfo);
+  प्रतिज्ञा( pWInfo->pTabList!=0 );
+  यदि( pWInfo->p_क्रमः_By==0 && (db->flags & SQLITE_Reverse_क्रमः)!=0 ){
+    where_Reverse_अवलोकनम्_क्रमः(pWInfo);
   }
-  if( pParse->nErr ){
-    goto whereBeginError;
+  यदि( pParse->nErr ){
+    गच्छ whereBeginError;
   }
-  assert( db->mallocFailed==0 );
-#ifdef WHERETRACE_ENABLED
-  if( sqlite3WhereTrace ){
+  प्रतिज्ञा( db->mallocFailed==0 );
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+  यदि( sqlite3WhereTrace ){
     sqlite3DebugPrintf("---- Solution cost=%d, nRow=%d",
-                       pWInfo->rTotalCost, pWInfo->nRowOut);
-    if( pWInfo->nOBSat>0 ){
-      sqlite3DebugPrintf(" ORDERBY=%d,0x%llx", pWInfo->nOBSat, pWInfo->revMask);
+                       pWInfo->r_योग_Cost, pWInfo->n_Row_बहिर्गमनम्);
+    यदि( pWInfo->nOBSat>0 ){
+      sqlite3DebugPrintf(" ORDERBY=%d,0x%llx", pWInfo->nOBSat, pWInfo->rev_आवरणम्);
     }
-    switch( pWInfo->eDistinct ){
-      case WHERE_DISTINCT_UNIQUE: {
+    विकल्प( pWInfo->eDistinct ){
+      पक्ष WHERE_DISTINCT_UNIQUE: {
         sqlite3DebugPrintf("  DISTINCT=unique");
-        break;
+        भङ्ग;
       }
-      case WHERE_DISTINCT_ORDERED: {
+      पक्ष WHERE_DISTINCT_ORDERED: {
         sqlite3DebugPrintf("  DISTINCT=ordered");
-        break;
+        भङ्ग;
       }
-      case WHERE_DISTINCT_UNORDERED: {
+      पक्ष WHERE_DISTINCT_UNORDERED: {
         sqlite3DebugPrintf("  DISTINCT=unordered");
-        break;
+        भङ्ग;
       }
     }
     sqlite3DebugPrintf("\n");
-    for(ii=0; ii<pWInfo->nLevel; ii++){
+    प्रति(ii=0; ii<pWInfo->nLevel; ii++){
       sqlite3WhereLoopPrint(pWInfo->a[ii].pWLoop, sWLB.pWC);
     }
   }
-#endif
+#यदि_अन्तः
 
   /* Attempt to omit tables from a join that do not affect the result.
   ** See the comment on whereOmitNoopJoin() for further information.
@@ -7212,33 +7212,33 @@ WhereInfo *sqlite3WhereBegin(
   ** in-line sqlite3WhereCodeOneLoopStart() for performance reasons.
   */
   notReady = ~(Bitmask)0;
-  if( pWInfo->nLevel>=2       /* Must be a join, or this opt8n is pointless */
-   && pResultSet!=0           /* Condition (1) */
+  यदि( pWInfo->nLevel>=2       /* Must be a join, or this opt8n is pointless */
+   && p_परिणाम_समुच्चयः!=0           /* Condition (1) */
    && 0==(wctrlFlags & (WHERE_AGG_DISTINCT|WHERE_KEEP_ALL_JOINS)) /* (1),(6) */
    && OptimizationEnabled(db, SQLITE_OmitNoopJoin)                /* (7) */
   ){
     notReady = whereOmitNoopJoin(pWInfo, notReady);
     nTabList = pWInfo->nLevel;
-    assert( nTabList>0 );
+    प्रतिज्ञा( nTabList>0 );
   }
 
   /* Check to see if there are any SEARCH loops that might benefit from
   ** using a Bloom filter.
   */
-  if( pWInfo->nLevel>=2
+  यदि( pWInfo->nLevel>=2
    && OptimizationEnabled(db, SQLITE_BloomFilter)
   ){
     whereCheckIfBloomFilterIsUseful(pWInfo);
   }
 
-#if defined(WHERETRACE_ENABLED)
-  if( sqlite3WhereTrace & 0x4000 ){ /* Display all terms of the WHERE clause */
+#यदि defined(WHERETRACE_ENABLED)
+  यदि( sqlite3WhereTrace & 0x4000 ){ /* Display all terms of the WHERE clause */
     sqlite3DebugPrintf("---- WHERE clause at end of analysis:\n");
     sqlite3WhereClausePrint(sWLB.pWC);
   }
   WHERETRACE(0xffffffff,("*** Optimizer Finished ***\n"));
-#endif
-  pWInfo->pParse->nQueryLoop += pWInfo->nRowOut;
+#यदि_अन्तः
+  pWInfo->pParse->nQueryLoop += pWInfo->n_Row_बहिर्गमनम्;
 
   /* If the caller is an UPDATE or DELETE statement that is requesting
   ** to use a one-pass algorithm, determine if this is appropriate.
@@ -7259,20 +7259,20 @@ WhereInfo *sqlite3WhereBegin(
   ** use a one-pass approach, and this is not set accurately for scans
   ** that use the OR optimization.
   */
-  assert( (wctrlFlags & WHERE_ONEPASS_DESIRED)==0 || pWInfo->nLevel==1 );
-  if( (wctrlFlags & WHERE_ONEPASS_DESIRED)!=0 ){
-    int wsFlags = pWInfo->a[0].pWLoop->wsFlags;
-    int bOnerow = (wsFlags & WHERE_ONEROW)!=0;
-    assert( !(wsFlags&WHERE_VIRTUALTABLE) || IsVirtual(pTabList->a[0].pSTab) );
-    if( bOnerow || (
+  प्रतिज्ञा( (wctrlFlags & WHERE_ONEPASS_DESIRED)==0 || pWInfo->nLevel==1 );
+  यदि( (wctrlFlags & WHERE_ONEPASS_DESIRED)!=0 ){
+    पूर्णाङ्क wsFlags = pWInfo->a[0].pWLoop->wsFlags;
+    पूर्णाङ्क bOnerow = (wsFlags & WHERE_ONEROW)!=0;
+    प्रतिज्ञा( !(wsFlags&WHERE_VIRTUALTABLE) || IsVirtual(pTabList->a[0].pSTab) );
+    यदि( bOnerow || (
         0!=(wctrlFlags & WHERE_ONEPASS_MULTIROW)
      && !IsVirtual(pTabList->a[0].pSTab)
      && (0==(wsFlags & WHERE_MULTI_OR) || (wctrlFlags & WHERE_DUPLICATES_OK))
      && OptimizationEnabled(db, SQLITE_OnePass)
     )){
       pWInfo->eOnePass = bOnerow ? ONEPASS_SINGLE : ONEPASS_MULTI;
-      if( HasRowid(pTabList->a[0].pSTab) && (wsFlags & WHERE_IDX_ONLY) ){
-        if( wctrlFlags & WHERE_ONEPASS_MULTIROW ){
+      यदि( HasRowid(pTabList->a[0].pSTab) && (wsFlags & WHERE_IDX_ONLY) ){
+        यदि( wctrlFlags & WHERE_ONEPASS_MULTIROW ){
           bFordelete = OPFLAG_FORDELETE;
         }
         pWInfo->a[0].pWLoop->wsFlags = (wsFlags & ~WHERE_IDX_ONLY);
@@ -7283,190 +7283,190 @@ WhereInfo *sqlite3WhereBegin(
   /* Open all tables in the pTabList and any indices selected for
   ** searching those tables.
   */
-  for(ii=0, pLevel=pWInfo->a; ii<nTabList; ii++, pLevel++){
-    Table *pTab;     /* Table to open */
-    int iDb;         /* Index of database containing table/index */
+  प्रति(ii=0, pLevel=pWInfo->a; ii<nTabList; ii++, pLevel++){
+    सारणी *pTab;     /* Table to open */
+    पूर्णाङ्क iDb;         /* Index of database containing table/index */
     SrcItem *pTabItem;
 
     pTabItem = &pTabList->a[pLevel->iFrom];
     pTab = pTabItem->pSTab;
-    iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+    iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pTab->pSchema);
     pLoop = pLevel->pWLoop;
     pLevel->addrBrk = sqlite3VdbeMakeLabel(pParse);
-    if( ii==0 || (pTabItem[0].fg.jointype & JT_LEFT)!=0 ){
+    यदि( ii==0 || (pTabItem[0].fg.jointype & JT_वामः)!=0 ){
       pLevel->addrHalt = pLevel->addrBrk;
-    }else if( pWInfo->a[ii-1].pRJ ){
+    }अन्यथा यदि( pWInfo->a[ii-1].pRJ ){
       pLevel->addrHalt = pWInfo->a[ii-1].addrBrk;
-    }else{
+    }अन्यथा{
       pLevel->addrHalt = pWInfo->a[ii-1].addrHalt;
     }
-    if( (pTab->tabFlags & TF_Ephemeral)!=0 || IsView(pTab) ){
+    यदि( (pTab->tabFlags & TF_Ephemeral)!=0 || IsView(pTab) ){
       /* Do nothing */
-    }else
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( (pLoop->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
-      int iCur = pTabItem->iCursor;
-      sqlite3VdbeAddOp4(v, OP_VOpen, iCur, 0, 0, pVTab, P4_VTAB);
-    }else if( IsVirtual(pTab) ){
+    }अन्यथा
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+    यदि( (pLoop->wsFlags & WHERE_VIRTUALTABLE)!=0 ){
+      ध्रुव वर्ण *pVTab = (ध्रुव वर्ण *)sqlite3GetVTable(db, pTab);
+      पूर्णाङ्क iCur = pTabItem->iCursor;
+      sqlite3_Vdbe_सङ्कलय_Op4(v, OP_VOpen, iCur, 0, 0, pVTab, P4_VTAB);
+    }अन्यथा यदि( IsVirtual(pTab) ){
       /* noop */
-    }else
-#endif
-    if( ((pLoop->wsFlags & WHERE_IDX_ONLY)==0
+    }अन्यथा
+#यदि_अन्तः
+    यदि( ((pLoop->wsFlags & WHERE_IDX_ONLY)==0
          && (wctrlFlags & WHERE_OR_SUBCLAUSE)==0)
-     || (pTabItem->fg.jointype & (JT_LTORJ|JT_RIGHT))!=0
+     || (pTabItem->fg.jointype & (JT_LTORJ|JT_दक्षिणः))!=0
     ){
-      int op = OP_OpenRead;
-      if( pWInfo->eOnePass!=ONEPASS_OFF ){
+      पूर्णाङ्क op = OP_OpenRead;
+      यदि( pWInfo->eOnePass!=ONEPASS_OFF ){
         op = OP_OpenWrite;
         pWInfo->aiCurOnePass[0] = pTabItem->iCursor;
       };
-      sqlite3OpenTable(pParse, pTabItem->iCursor, iDb, pTab, op);
-      assert( pTabItem->iCursor==pLevel->iTabCur );
+      sqlite3_Open_सारणी(pParse, pTabItem->iCursor, iDb, pTab, op);
+      प्रतिज्ञा( pTabItem->iCursor==pLevel->iTabCur );
       testcase( pWInfo->eOnePass==ONEPASS_OFF && pTab->nCol==BMS-1 );
       testcase( pWInfo->eOnePass==ONEPASS_OFF && pTab->nCol==BMS );
-      if( pWInfo->eOnePass==ONEPASS_OFF
+      यदि( pWInfo->eOnePass==ONEPASS_OFF
        && pTab->nCol<BMS
        && (pTab->tabFlags & (TF_HasGenerated|TF_WithoutRowid))==0
-       && (pLoop->wsFlags & (WHERE_AUTO_INDEX|WHERE_BLOOMFILTER))==0
+       && (pLoop->wsFlags & (WHERE_AUTO_सूचकांक|WHERE_BLOOMFILTER))==0
       ){
         /* If we know that only a prefix of the record will be used,
         ** it is advantageous to reduce the "column count" field in
         ** the P4 operand of the OP_OpenRead/Write opcode. */
-        Bitmask b = pTabItem->colUsed;
-        int n = 0;
-        for(; b; b=b>>1, n++){}
-        sqlite3VdbeChangeP4(v, -1, SQLITE_INT_TO_PTR(n), P4_INT32);
-        assert( n<=pTab->nCol );
+        Bitmask b = pTabItem->col_प्रयुक्तम्;
+        पूर्णाङ्क n = 0;
+        प्रति(; b; b=b>>1, n++){}
+        sqlite3VdbeChangeP4(v, -1, SQLITE_INT_गन्तव्यम्_PTR(n), P4_INT32);
+        प्रतिज्ञा( n<=pTab->nCol );
       }
-#ifdef SQLITE_ENABLE_CURSOR_HINTS
-      if( pLoop->u.btree.pIndex!=0 && (pTab->tabFlags & TF_WithoutRowid)==0 ){
+#यदि_परिभाषितम् SQLITE_ENABLE_CURSOR_HINTS
+      यदि( pLoop->u.btree.p_सूचकांक!=0 && (pTab->tabFlags & TF_WithoutRowid)==0 ){
         sqlite3VdbeChangeP5(v, OPFLAG_SEEKEQ|bFordelete);
-      }else
-#endif
+      }अन्यथा
+#यदि_अन्तः
       {
         sqlite3VdbeChangeP5(v, bFordelete);
       }
-#ifdef SQLITE_ENABLE_COLUMN_USED_MASK
-      sqlite3VdbeAddOp3(v, OP_ColumnsUsed, pTabItem->iCursor,
-                    LOWER32(pTabItem->colUsed), UPPER32(pTabItem->colUsed));
-#endif
-      if( ii>=2
-       && (pTabItem[0].fg.jointype & (JT_LTORJ|JT_LEFT))==0 
+#यदि_परिभाषितम् SQLITE_ENABLE_COLUMN_प्रयुक्तम्_आवरणम्
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Columns_प्रयुक्तम्, pTabItem->iCursor,
+                    LOWER32(pTabItem->col_प्रयुक्तम्), UPPER32(pTabItem->col_प्रयुक्तम्));
+#यदि_अन्तः
+      यदि( ii>=2
+       && (pTabItem[0].fg.jointype & (JT_LTORJ|JT_वामः))==0 
        && pLevel->addrHalt==pWInfo->a[0].addrHalt
       ){
-        sqlite3VdbeAddOp2(v, OP_IfEmpty, pTabItem->iCursor, pWInfo->iBreak);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_If_रिक्तानि, pTabItem->iCursor, pWInfo->iBreak);
         VdbeCoverage(v);
       }
-    }else{
-      sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
+    }अन्यथा{
+      sqlite3_सारणी_तालकम्(pParse, iDb, pTab->tnum, 0, pTab->zName);
     }
-    if( pLoop->wsFlags & WHERE_INDEXED ){
-      Index *pIx = pLoop->u.btree.pIndex;
-      int iIndexCur;
-      int op = OP_OpenRead;
+    यदि( pLoop->wsFlags & WHERE_अनुक्रमितम् ){
+      सूचकांक *pIx = pLoop->u.btree.p_सूचकांक;
+      पूर्णाङ्क i_सूचकांक_Cur;
+      पूर्णाङ्क op = OP_OpenRead;
       /* iAuxArg is always set to a positive value if ONEPASS is possible */
-      assert( iAuxArg!=0 || (pWInfo->wctrlFlags & WHERE_ONEPASS_DESIRED)==0 );
-      if( !HasRowid(pTab) && IsPrimaryKeyIndex(pIx)
+      प्रतिज्ञा( iAuxArg!=0 || (pWInfo->wctrlFlags & WHERE_ONEPASS_DESIRED)==0 );
+      यदि( !HasRowid(pTab) && Is_Primary_कुञ्चिका_सूचकांक(pIx)
        && (wctrlFlags & WHERE_OR_SUBCLAUSE)!=0
       ){
         /* This is one term of an OR-optimization using the PRIMARY KEY of a
         ** WITHOUT ROWID table.  No need for a separate index */
-        iIndexCur = pLevel->iTabCur;
+        i_सूचकांक_Cur = pLevel->iTabCur;
         op = 0;
-      }else if( pWInfo->eOnePass!=ONEPASS_OFF ){
-        Index *pJ = pTabItem->pSTab->pIndex;
-        iIndexCur = iAuxArg;
-        assert( wctrlFlags & WHERE_ONEPASS_DESIRED );
-        while( ALWAYS(pJ) && pJ!=pIx ){
-          iIndexCur++;
-          pJ = pJ->pNext;
+      }अन्यथा यदि( pWInfo->eOnePass!=ONEPASS_OFF ){
+        सूचकांक *pJ = pTabItem->pSTab->p_सूचकांक;
+        i_सूचकांक_Cur = iAuxArg;
+        प्रतिज्ञा( wctrlFlags & WHERE_ONEPASS_DESIRED );
+        यावत्( ALWAYS(pJ) && pJ!=pIx ){
+          i_सूचकांक_Cur++;
+          pJ = pJ->p_अग्र;
         }
         op = OP_OpenWrite;
-        pWInfo->aiCurOnePass[1] = iIndexCur;
-      }else if( iAuxArg && (wctrlFlags & WHERE_OR_SUBCLAUSE)!=0 ){
-        iIndexCur = iAuxArg;
+        pWInfo->aiCurOnePass[1] = i_सूचकांक_Cur;
+      }अन्यथा यदि( iAuxArg && (wctrlFlags & WHERE_OR_SUBCLAUSE)!=0 ){
+        i_सूचकांक_Cur = iAuxArg;
         op = OP_ReopenIdx;
-      }else{
-        iIndexCur = pParse->nTab++;
-        if( pIx->bHasExpr && OptimizationEnabled(db, SQLITE_IndexedExpr) ){
-          whereAddIndexedExpr(pParse, pIx, iIndexCur, pTabItem);
+      }अन्यथा{
+        i_सूचकांक_Cur = pParse->nTab++;
+        यदि( pIx->b_Has_व्यञ्जकम् && OptimizationEnabled(db, SQLITE_अनुक्रमितम्_व्यञ्जकम्) ){
+          where_सङ्कलय_अनुक्रमितम्_व्यञ्जकम्(pParse, pIx, i_सूचकांक_Cur, pTabItem);
         }
-        if( pIx->pPartIdxWhere && (pTabItem->fg.jointype & JT_RIGHT)==0 ){
-          wherePartIdxExpr(
-              pParse, pIx, pIx->pPartIdxWhere, 0, iIndexCur, pTabItem
+        यदि( pIx->pPartIdxWhere && (pTabItem->fg.jointype & JT_दक्षिणः)==0 ){
+          where_Part_Idx_व्यञ्जकम्(
+              pParse, pIx, pIx->pPartIdxWhere, 0, i_सूचकांक_Cur, pTabItem
           );
         }
       }
-      pLevel->iIdxCur = iIndexCur;
-      assert( pIx!=0 );
-      assert( pIx->pSchema==pTab->pSchema );
-      assert( iIndexCur>=0 );
-      if( op ){
-        sqlite3VdbeAddOp3(v, op, iIndexCur, pIx->tnum, iDb);
-        sqlite3VdbeSetP4KeyInfo(pParse, pIx);
-        if( (pLoop->wsFlags & WHERE_CONSTRAINT)!=0
+      pLevel->iIdxCur = i_सूचकांक_Cur;
+      प्रतिज्ञा( pIx!=0 );
+      प्रतिज्ञा( pIx->pSchema==pTab->pSchema );
+      प्रतिज्ञा( i_सूचकांक_Cur>=0 );
+      यदि( op ){
+        sqlite3_Vdbe_सङ्कलय_Op3(v, op, i_सूचकांक_Cur, pIx->tnum, iDb);
+        sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pIx);
+        यदि( (pLoop->wsFlags & WHERE_CONSTRAINT)!=0
          && (pLoop->wsFlags & (WHERE_COLUMN_RANGE|WHERE_SKIPSCAN))==0
-         && (pLoop->wsFlags & WHERE_BIGNULL_SORT)==0
-         && (pLoop->wsFlags & WHERE_IN_SEEKSCAN)==0
+         && (pLoop->wsFlags & WHERE_BIGNULL_क्रमय)==0
+         && (pLoop->wsFlags & WHERE_अन्तर्_SEEKSCAN)==0
          && (pWInfo->wctrlFlags&WHERE_ORDERBY_MIN)==0
          && pWInfo->eDistinct!=WHERE_DISTINCT_ORDERED
         ){
           sqlite3VdbeChangeP5(v, OPFLAG_SEEKEQ);
         }
         VdbeComment((v, "%s", pIx->zName));
-#ifdef SQLITE_ENABLE_COLUMN_USED_MASK
+#यदि_परिभाषितम् SQLITE_ENABLE_COLUMN_प्रयुक्तम्_आवरणम्
         {
-          u64 colUsed = 0;
-          int ii, jj;
-          for(ii=0; ii<pIx->nColumn; ii++){
+          u64 col_प्रयुक्तम् = 0;
+          पूर्णाङ्क ii, jj;
+          प्रति(ii=0; ii<pIx->nColumn; ii++){
             jj = pIx->aiColumn[ii];
-            if( jj<0 ) continue;
-            if( jj>63 ) jj = 63;
-            if( (pTabItem->colUsed & MASKBIT(jj))==0 ) continue;
-            colUsed |= ((u64)1)<<(ii<63 ? ii : 63);
+            यदि( jj<0 ) अनुवर्त;
+            यदि( jj>63 ) jj = 63;
+            यदि( (pTabItem->col_प्रयुक्तम् & MASKBIT(jj))==0 ) अनुवर्त;
+            col_प्रयुक्तम् |= ((u64)1)<<(ii<63 ? ii : 63);
           }
-          sqlite3VdbeAddOp3(v, OP_ColumnsUsed, iIndexCur,
-                            LOWER32(colUsed),UPPER32(colUsed));
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Columns_प्रयुक्तम्, i_सूचकांक_Cur,
+                            LOWER32(col_प्रयुक्तम्),UPPER32(col_प्रयुक्तम्));
         }
-#endif /* SQLITE_ENABLE_COLUMN_USED_MASK */
-#ifdef SQLITE_ENABLE_CURSOR_HINTS
-        if( HasRowid(pTab) ){
-          sqlite3VdbeAddOp3(v, OP_CursorHint, iIndexCur, 0, pTabItem->iCursor);
+#यदि_अन्तः /* SQLITE_ENABLE_COLUMN_USED_MASK */
+#यदि_परिभाषितम् SQLITE_ENABLE_CURSOR_HINTS
+        यदि( HasRowid(pTab) ){
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_CursorHint, i_सूचकांक_Cur, 0, pTabItem->iCursor);
         }
-#endif
+#यदि_अन्तः
       }
     }
-    if( iDb>=0 ) sqlite3CodeVerifySchema(pParse, iDb);
-    if( (pTabItem->fg.jointype & JT_RIGHT)!=0
-     && (pLevel->pRJ = sqlite3WhereMalloc(pWInfo, sizeof(WhereRightJoin)))!=0
+    यदि( iDb>=0 ) sqlite3_संहिता_Verify_Schema(pParse, iDb);
+    यदि( (pTabItem->fg.jointype & JT_दक्षिणः)!=0
+     && (pLevel->pRJ = sqlite3WhereMalloc(pWInfo, परिमाण(Where_दक्षिणः_Join)))!=0
     ){
-      WhereRightJoin *pRJ = pLevel->pRJ;
-      int bBloomable = 0;
-      pRJ->iMatch = pParse->nTab++;
+      Where_दक्षिणः_Join *pRJ = pLevel->pRJ;
+      पूर्णाङ्क bBloomable = 0;
+      pRJ->i_मेलनम् = pParse->nTab++;
       pRJ->regReturn = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, pRJ->regReturn);
-      assert( pTab==pTabItem->pSTab );
-      if( HasRowid(pTab) ){
-        KeyInfo *pInfo;
-        sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pRJ->iMatch, 1);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Null, 0, pRJ->regReturn);
+      प्रतिज्ञा( pTab==pTabItem->pSTab );
+      यदि( HasRowid(pTab) ){
+        कुञ्चिका_Info *pInfo;
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_OpenEphemeral, pRJ->i_मेलनम्, 1);
         bBloomable = 1;
-        pInfo = sqlite3KeyInfoAlloc(pParse->db, 1, 0);
-        if( pInfo ){
+        pInfo = sqlite3_कुञ्चिका_Info_Alloc(pParse->db, 1, 0);
+        यदि( pInfo ){
           pInfo->aColl[0] = 0;
-          pInfo->aSortFlags[0] = 0;
+          pInfo->a_क्रमय_Flags[0] = 0;
           sqlite3VdbeAppendP4(v, pInfo, P4_KEYINFO);
         }
-      }else{
-        Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-        sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pRJ->iMatch, pPk->nKeyCol);
-        sqlite3VdbeSetP4KeyInfo(pParse, pPk);
-        bBloomable = sqlite3IndexBloomable(pPk,pPk->nKeyCol);
+      }अन्यथा{
+        सूचकांक *pPk = sqlite3_Primary_कुञ्चिका_सूचकांक(pTab);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_OpenEphemeral, pRJ->i_मेलनम्, pPk->n_कुञ्चिका_Col);
+        sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pPk);
+        bBloomable = sqlite3_सूचकांक_Bloomable(pPk,pPk->n_कुञ्चिका_Col);
       }
-      if( bBloomable ){
+      यदि( bBloomable ){
         pRJ->regBloom = ++pParse->nMem;
-        sqlite3VdbeAddOp2(v, OP_Blob, 65536, pRJ->regBloom);
-      }else{
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Blob, 65536, pRJ->regBloom);
+      }अन्यथा{
         pRJ->regBloom = 0;
       }
       pLoop->wsFlags &= ~WHERE_IDX_ONLY;
@@ -7477,74 +7477,74 @@ WhereInfo *sqlite3WhereBegin(
       pWInfo->eDistinct = WHERE_DISTINCT_UNORDERED;
     }
   }
-  pWInfo->iTop = sqlite3VdbeCurrentAddr(v);
-  if( db->mallocFailed ) goto whereBeginError;
+  pWInfo->i_शिखरम् = sqlite3VdbeCurrentAddr(v);
+  यदि( db->mallocFailed ) गच्छ whereBeginError;
 
   /* Generate the code to do the search.  Each iteration of the for
   ** loop below generates code for a single nested loop of the VM
   ** program.
   */
-  for(ii=0; ii<nTabList; ii++){
-    int addrExplain;
-    int wsFlags;
+  प्रति(ii=0; ii<nTabList; ii++){
+    पूर्णाङ्क addrExplain;
+    पूर्णाङ्क wsFlags;
     SrcItem *pSrc;
-    if( pParse->nErr ) goto whereBeginError;
+    यदि( pParse->nErr ) गच्छ whereBeginError;
     pLevel = &pWInfo->a[ii];
     wsFlags = pLevel->pWLoop->wsFlags;
     pSrc = &pTabList->a[pLevel->iFrom];
-    if( pSrc->fg.isMaterialized ){
+    यदि( pSrc->fg.isMaterialized ){
       Subquery *pSubq;
-      int iOnce = 0;
-      assert( pSrc->fg.isSubquery );
+      पूर्णाङ्क iOnce = 0;
+      प्रतिज्ञा( pSrc->fg.isSubquery );
       pSubq = pSrc->u4.pSubq;
-      if( pSrc->fg.isCorrelated==0 ){
-        iOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-      }else{
+      यदि( pSrc->fg.isCorrelated==0 ){
+        iOnce = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Once); VdbeCoverage(v);
+      }अन्यथा{
         iOnce = 0;
       }
-      sqlite3VdbeAddOp2(v, OP_Gosub, pSubq->regReturn, pSubq->addrFillSub);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Gosub, pSubq->regReturn, pSubq->addrFillSub);
       VdbeComment((v, "materialize %!S", pSrc));
-      if( iOnce )  sqlite3VdbeJumpHere(v, iOnce);
+      यदि( iOnce )  sqlite3_Vdbe_Jump_अत्र(v, iOnce);
     }
-    assert( pTabList == pWInfo->pTabList );
-    if( (wsFlags & (WHERE_AUTO_INDEX|WHERE_BLOOMFILTER))!=0 ){
-      if( (wsFlags & WHERE_AUTO_INDEX)!=0 ){
-#ifndef SQLITE_OMIT_AUTOMATIC_INDEX
-        constructAutomaticIndex(pParse, &pWInfo->sWC, notReady, pLevel);
-#endif
-      }else{
+    प्रतिज्ञा( pTabList == pWInfo->pTabList );
+    यदि( (wsFlags & (WHERE_AUTO_सूचकांक|WHERE_BLOOMFILTER))!=0 ){
+      यदि( (wsFlags & WHERE_AUTO_सूचकांक)!=0 ){
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOMATIC_सूचकांक
+        construct_Automatic_सूचकांक(pParse, &pWInfo->sWC, notReady, pLevel);
+#यदि_अन्तः
+      }अन्यथा{
         sqlite3ConstructBloomFilter(pWInfo, ii, pLevel, notReady);
       }
-      if( db->mallocFailed ) goto whereBeginError;
+      यदि( db->mallocFailed ) गच्छ whereBeginError;
     }
-    addrExplain = sqlite3WhereExplainOneScan(
+    addrExplain = sqlite3_Where_Explain_One_अवलोकनम्(
         pParse, pTabList, pLevel, wctrlFlags
     );
     pLevel->addrBody = sqlite3VdbeCurrentAddr(v);
-    notReady = sqlite3WhereCodeOneLoopStart(pParse,v,pWInfo,ii,pLevel,notReady);
+    notReady = sqlite3_Where_संहिता_One_Loop_Start(pParse,v,pWInfo,ii,pLevel,notReady);
     pWInfo->iContinue = pLevel->addrCont;
-    if( (wsFlags&WHERE_MULTI_OR)==0 && (wctrlFlags&WHERE_OR_SUBCLAUSE)==0 ){
-      sqlite3WhereAddScanStatus(v, pTabList, pLevel, addrExplain);
+    यदि( (wsFlags&WHERE_MULTI_OR)==0 && (wctrlFlags&WHERE_OR_SUBCLAUSE)==0 ){
+      sqlite3_Where_सङ्कलय_अवलोकनम्_स्थितिः(v, pTabList, pLevel, addrExplain);
     }
   }
 
   /* Done. */
   VdbeModuleComment((v, "Begin WHERE-core"));
-  pWInfo->iEndWhere = sqlite3VdbeCurrentAddr(v);
-  return pWInfo;
+  pWInfo->i_अन्तः_Where = sqlite3VdbeCurrentAddr(v);
+  प्रत्यागम pWInfo;
 
   /* Jump here if malloc fails */
 whereBeginError:
-  if( pWInfo ){
+  यदि( pWInfo ){
     pParse->nQueryLoop = pWInfo->savedNQueryLoop;
     whereInfoFree(db, pWInfo);
   }
-#ifdef WHERETRACE_ENABLED
+#यदि_परिभाषितम् WHERETRACE_ENABLED
   /* Prevent harmless compiler warnings about debugging routines
   ** being declared but never used */
   sqlite3ShowWhereLoopList(0);
-#endif /* WHERETRACE_ENABLED */
-  return 0;
+#यदि_अन्तः /* WHERETRACE_ENABLED */
+  प्रत्यागम 0;
 }
 
 /*
@@ -7553,130 +7553,130 @@ whereBeginError:
 ** to trace those changes if PRAGMA vdbe_addoptrace=on.  This routine
 ** does that.
 */
-#ifndef SQLITE_DEBUG
+#यदि_अपरिभाषितम् SQLITE_DEBUG
 # define OpcodeRewriteTrace(D,K,P) /* no-op */
-#else
+#अन्यथा
 # define OpcodeRewriteTrace(D,K,P) sqlite3WhereOpcodeRewriteTrace(D,K,P)
-  static void sqlite3WhereOpcodeRewriteTrace(
+  स्थिर शून्य sqlite3WhereOpcodeRewriteTrace(
     sqlite3 *db,
-    int pc,
+    पूर्णाङ्क pc,
     VdbeOp *pOp
   ){
-    if( (db->flags & SQLITE_VdbeAddopTrace)==0 ) return;
+    यदि( (db->flags & SQLITE_VdbeAddopTrace)==0 ) प्रत्यागम;
     sqlite3VdbePrintOp(0, pc, pOp);
-    sqlite3ShowWhereTerm(0); /* So compiler won't complain about unused func */
+    sqlite3_Show_Where_पदांशः(0); /* So compiler won't complain about unused func */
   }
-#endif
+#यदि_अन्तः
 
 /*
 ** Generate the end of the WHERE loop.  See comments on
 ** sqlite3WhereBegin() for additional information.
 */
-void sqlite3WhereEnd(WhereInfo *pWInfo){
+शून्य sqlite3_Where_अन्तः(WhereInfo *pWInfo){
   Parse *pParse = pWInfo->pParse;
   Vdbe *v = pParse->pVdbe;
-  int i;
+  पूर्णाङ्क i;
   WhereLevel *pLevel;
   WhereLoop *pLoop;
   SrcList *pTabList = pWInfo->pTabList;
   sqlite3 *db = pParse->db;
-  int iEnd = sqlite3VdbeCurrentAddr(v);
-  int nRJ = 0;
-#ifndef SQLITE_DISABLE_SKIPAHEAD_DISTINCT
-  int addrSeek = 0;
-#endif
+  पूर्णाङ्क i_अन्तः = sqlite3VdbeCurrentAddr(v);
+  पूर्णाङ्क nRJ = 0;
+#यदि_अपरिभाषितम् SQLITE_DISABLE_SKIPAHEAD_DISTINCT
+  पूर्णाङ्क addrSeek = 0;
+#यदि_अन्तः
 
   /* Generate loop termination code.
   */
   VdbeModuleComment((v, "End WHERE-core"));
-  for(i=pWInfo->nLevel-1; i>=0; i--){
-    int addr;
+  प्रति(i=pWInfo->nLevel-1; i>=0; i--){
+    पूर्णाङ्क addr;
     pLevel = &pWInfo->a[i];
-    if( pLevel->pRJ ){
+    यदि( pLevel->pRJ ){
       /* Terminate the subroutine that forms the interior of the loop of
       ** the RIGHT JOIN table */
-      WhereRightJoin *pRJ = pLevel->pRJ;
+      Where_दक्षिणः_Join *pRJ = pLevel->pRJ;
       sqlite3VdbeResolveLabel(v, pLevel->addrCont);
       /* Replace addrCont with a new label that will never be used, just so
       ** the subsequent call to resolve pLevel->addrCont will have something
       ** to resolve. */
       pLevel->addrCont = sqlite3VdbeMakeLabel(pParse);
-      pRJ->endSubrtn = sqlite3VdbeCurrentAddr(v);
-      sqlite3VdbeAddOp3(v, OP_Return, pRJ->regReturn, pRJ->addrSubrtn, 1);
+      pRJ->अन्तः_Subrtn = sqlite3VdbeCurrentAddr(v);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Return, pRJ->regReturn, pRJ->addrSubrtn, 1);
       VdbeCoverage(v);
       nRJ++;
     }
     pLoop = pLevel->pWLoop;
-    if( pLevel->op!=OP_Noop ){
-#ifndef SQLITE_DISABLE_SKIPAHEAD_DISTINCT
-      Index *pIdx;
-      int n;
-      if( pWInfo->eDistinct==WHERE_DISTINCT_ORDERED
+    यदि( pLevel->op!=OP_Noop ){
+#यदि_अपरिभाषितम् SQLITE_DISABLE_SKIPAHEAD_DISTINCT
+      सूचकांक *pIdx;
+      पूर्णाङ्क n;
+      यदि( pWInfo->eDistinct==WHERE_DISTINCT_ORDERED
        && i==pWInfo->nLevel-1  /* Ticket [ef9318757b152e3] 2017-10-21 */
-       && (pLoop->wsFlags & WHERE_INDEXED)!=0
-       && (pIdx = pLoop->u.btree.pIndex)->hasStat1
+       && (pLoop->wsFlags & WHERE_अनुक्रमितम्)!=0
+       && (pIdx = pLoop->u.btree.p_सूचकांक)->hasStat1
        && (n = pLoop->u.btree.nDistinctCol)>0
        && pIdx->aiRowLogEst[n]>=36
       ){
-        int r1 = pParse->nMem+1;
-        int j, op;
-        int addrIfNull = 0; /* Init to avoid false-positive compiler warning */
-        if( pLevel->iLeftJoin ){
-          addrIfNull = sqlite3VdbeAddOp2(v, OP_IfNullRow, pLevel->iIdxCur, r1);
+        पूर्णाङ्क r1 = pParse->nMem+1;
+        पूर्णाङ्क j, op;
+        पूर्णाङ्क addrIfNull = 0; /* Init to avoid false-positive compiler warning */
+        यदि( pLevel->i_वामः_Join ){
+          addrIfNull = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IfNullRow, pLevel->iIdxCur, r1);
         }
-        for(j=0; j<n; j++){
-          sqlite3VdbeAddOp3(v, OP_Column, pLevel->iIdxCur, j, r1+j);
+        प्रति(j=0; j<n; j++){
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Column, pLevel->iIdxCur, j, r1+j);
         }
         pParse->nMem += n+1;
-        op = pLevel->op==OP_Prev ? OP_SeekLT : OP_SeekGT;
-        addrSeek = sqlite3VdbeAddOp4Int(v, op, pLevel->iIdxCur, 0, r1, n);
+        op = pLevel->op==OP_पूर्व ? OP_SeekLT : OP_SeekGT;
+        addrSeek = sqlite3_Vdbe_सङ्कलय_Op4_Int(v, op, pLevel->iIdxCur, 0, r1, n);
         VdbeCoverageIf(v, op==OP_SeekLT);
         VdbeCoverageIf(v, op==OP_SeekGT);
-        sqlite3VdbeAddOp2(v, OP_Goto, 1, pLevel->p2);
-        if( pLevel->iLeftJoin ){
-          sqlite3VdbeJumpHere(v, addrIfNull);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Goto, 1, pLevel->p2);
+        यदि( pLevel->i_वामः_Join ){
+          sqlite3_Vdbe_Jump_अत्र(v, addrIfNull);
         }
       }
-#endif /* SQLITE_DISABLE_SKIPAHEAD_DISTINCT */
+#यदि_अन्तः /* SQLITE_DISABLE_SKIPAHEAD_DISTINCT */
     }
-    if( pTabList->a[pLevel->iFrom].fg.fromExists ){
+    यदि( pTabList->a[pLevel->iFrom].fg.fromExists ){
       /* This is an EXISTS-to-JOIN optimization loop. If this loop sees a 
       ** successful row, it should break out of itself. */
-      sqlite3VdbeAddOp2(v, OP_Goto, 0, pLevel->addrBrk);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Goto, 0, pLevel->addrBrk);
       VdbeComment((v, "EXISTS break %d", i));
-    }else if( pLevel->addrDeleteCont ){
+    }अन्यथा यदि( pLevel->addrDeleteCont ){
       /* An inner loop matched no rows on this auto-index driven loop and
       ** there are outer loops.  So delete the auto-index entry to avoid
       ** future unnecessary work. */
-      int iBypass = sqlite3VdbeAddOp0(v, OP_Goto);
-      assert( pLoop->wsFlags & WHERE_AUTO_INDEX );
+      पूर्णाङ्क iBypass = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);
+      प्रतिज्ञा( pLoop->wsFlags & WHERE_AUTO_सूचकांक );
       sqlite3VdbeResolveLabel(v, pLevel->addrDeleteCont);
-      sqlite3VdbeAddOp1(v, OP_Delete, pLevel->iIdxCur);
+      sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Delete, pLevel->iIdxCur);
       sqlite3VdbeChangeP5(v, OPFLAG_SAVEPOSITION);
       VdbeComment((v, "delete useless auto-index entry"));
-      sqlite3VdbeJumpHere(v, iBypass);
+      sqlite3_Vdbe_Jump_अत्र(v, iBypass);
     }
     sqlite3VdbeResolveLabel(v, pLevel->addrCont);
-    if( pLevel->op!=OP_Noop ){
-      sqlite3VdbeAddOp3(v, pLevel->op, pLevel->p1, pLevel->p2, pLevel->p3);
+    यदि( pLevel->op!=OP_Noop ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, pLevel->op, pLevel->p1, pLevel->p2, pLevel->p3);
       sqlite3VdbeChangeP5(v, pLevel->p5);
       VdbeCoverage(v);
-      VdbeCoverageIf(v, pLevel->op==OP_Next);
-      VdbeCoverageIf(v, pLevel->op==OP_Prev);
+      VdbeCoverageIf(v, pLevel->op==OP_अग्र);
+      VdbeCoverageIf(v, pLevel->op==OP_पूर्व);
       VdbeCoverageIf(v, pLevel->op==OP_VNext);
-#ifndef SQLITE_DISABLE_SKIPAHEAD_DISTINCT
-      if( addrSeek ){
-        sqlite3VdbeJumpHere(v, addrSeek);
+#यदि_अपरिभाषितम् SQLITE_DISABLE_SKIPAHEAD_DISTINCT
+      यदि( addrSeek ){
+        sqlite3_Vdbe_Jump_अत्र(v, addrSeek);
         addrSeek = 0;
       }
-#endif
-      if( pLevel->regBignull ){
+#यदि_अन्तः
+      यदि( pLevel->regBignull ){
         sqlite3VdbeResolveLabel(v, pLevel->addrBignull);
-        sqlite3VdbeAddOp2(v, OP_DecrJumpZero, pLevel->regBignull, pLevel->p2-1);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_DecrJumpZero, pLevel->regBignull, pLevel->p2-1);
         VdbeCoverage(v);
       }
     }
-    if( pLevel->addrNxt!=pLevel->addrBrk ){
+    यदि( pLevel->addrNxt!=pLevel->addrBrk ){
       /* This occurs in three cases - (a) for a LIKE/GLOB scan that must visit
       ** ranges of text and blob values separately, and (b) when there is
       ** an IN(...) constraint driving the index, and (c) when a prior error
@@ -7684,152 +7684,152 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
       ** in the next block, inside the #ifndef. */
       sqlite3VdbeResolveLabel(v, pLevel->addrNxt);
     }
-#ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-    assert( (pLevel->addrNxt==pLevel->addrBrk)
+#यदि_अपरिभाषितम् SQLITE_LIKE_DOESNT_मेलनम्_BLOBS
+    प्रतिज्ञा( (pLevel->addrNxt==pLevel->addrBrk)
          || (pLevel->addrLikeRep)                                    /* (a) */
-         || ((pLoop->wsFlags & WHERE_IN_ABLE) && pLevel->u.in.nIn>0) /* (b) */
+         || ((pLoop->wsFlags & WHERE_अन्तर्_ABLE) && pLevel->u.अन्तर्.n_अन्तर्>0) /* (b) */
          || pWInfo->pParse->nErr>0                                   /* (c) */
     );
-    if( pLevel->addrLikeRep ){
+    यदि( pLevel->addrLikeRep ){
       /* The LIKE optimization loop is nested inside any IN(...) and
       ** skip-scan loops, so it is closed here, before either of those. */
-      sqlite3VdbeAddOp2(v, OP_DecrJumpZero, (int)(pLevel->iLikeRepCntr>>1),
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_DecrJumpZero, (पूर्णाङ्क)(pLevel->iLikeRepCntr>>1),
                         pLevel->addrLikeRep);
       VdbeCoverage(v);
     }
-#endif
-    if( (pLoop->wsFlags & WHERE_IN_ABLE)!=0 && pLevel->u.in.nIn>0 ){
-      struct InLoop *pIn;
-      int j;
-      for(j=pLevel->u.in.nIn, pIn=&pLevel->u.in.aInLoop[j-1]; j>0; j--, pIn--){
-        assert( sqlite3VdbeGetOp(v, pIn->addrInTop+1)->opcode==OP_IsNull
+#यदि_अन्तः
+    यदि( (pLoop->wsFlags & WHERE_अन्तर्_ABLE)!=0 && pLevel->u.अन्तर्.n_अन्तर्>0 ){
+      संरचना अन्तर्_Loop *p_अन्तर्;
+      पूर्णाङ्क j;
+      प्रति(j=pLevel->u.अन्तर्.n_अन्तर्, p_अन्तर्=&pLevel->u.अन्तर्.a_अन्तर्_Loop[j-1]; j>0; j--, p_अन्तर्--){
+        प्रतिज्ञा( sqlite3VdbeGetOp(v, p_अन्तर्->addr_अन्तर्_शिखरम्+1)->opcode==OP_IsNull
                  || pParse->db->mallocFailed );
-        sqlite3VdbeJumpHere(v, pIn->addrInTop+1);
-        if( pIn->eEndLoopOp!=OP_Noop ){
-          if( pIn->nPrefix ){
-            int bEarlyOut =
+        sqlite3_Vdbe_Jump_अत्र(v, p_अन्तर्->addr_अन्तर्_शिखरम्+1);
+        यदि( p_अन्तर्->e_अन्तः_Loop_Op!=OP_Noop ){
+          यदि( p_अन्तर्->n_उपसर्गः ){
+            पूर्णाङ्क b_Early_बहिर्गमनम् =
                 (pLoop->wsFlags & WHERE_VIRTUALTABLE)==0
-                 && (pLoop->wsFlags & WHERE_IN_EARLYOUT)!=0;
-            if( pLevel->iLeftJoin ){
+                 && (pLoop->wsFlags & WHERE_अन्तर्_EARLYOUT)!=0;
+            यदि( pLevel->i_वामः_Join ){
               /* For LEFT JOIN queries, cursor pIn->iCur might have been
               ** disabled by OP_NullRow.  This occurs for WHERE clauses such
               ** as "a = ? AND b IN (...)", where the index is on (a, b).
               ** When the OP_IfNullRow jump is taken, the pIn->iBase register
               ** is NULLed out as a side effect.  But as that register is not
               ** used when the jump is taken, the side-effect is harmless. */
-              sqlite3VdbeAddOp3(v, OP_IfNullRow, pIn->iCur,
-                  sqlite3VdbeCurrentAddr(v) + 2 + bEarlyOut, pIn->iBase);
+              sqlite3_Vdbe_सङ्कलय_Op3(v, OP_IfNullRow, p_अन्तर्->iCur,
+                  sqlite3VdbeCurrentAddr(v) + 2 + b_Early_बहिर्गमनम्, p_अन्तर्->i_आधारः);
               VdbeCoverage(v);
             }
-            if( bEarlyOut ){
-              sqlite3VdbeAddOp4Int(v, OP_IfNoHope, pLevel->iIdxCur,
+            यदि( b_Early_बहिर्गमनम् ){
+              sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_IfNoHope, pLevel->iIdxCur,
                   sqlite3VdbeCurrentAddr(v)+2,
-                  pIn->iBase, pIn->nPrefix);
+                  p_अन्तर्->i_आधारः, p_अन्तर्->n_उपसर्गः);
               VdbeCoverage(v);
               /* Retarget the OP_IsNull against the left operand of IN so
               ** it jumps past the OP_IfNoHope.  This is because the
               ** OP_IsNull also bypasses the OP_Affinity opcode that is
               ** required by OP_IfNoHope. */
-              sqlite3VdbeJumpHere(v, pIn->addrInTop+1);
+              sqlite3_Vdbe_Jump_अत्र(v, p_अन्तर्->addr_अन्तर्_शिखरम्+1);
             }
           }
-          sqlite3VdbeAddOp2(v, pIn->eEndLoopOp, pIn->iCur, pIn->addrInTop);
+          sqlite3_Vdbe_सङ्कलय_Op2(v, p_अन्तर्->e_अन्तः_Loop_Op, p_अन्तर्->iCur, p_अन्तर्->addr_अन्तर्_शिखरम्);
           VdbeCoverage(v);
-          VdbeCoverageIf(v, pIn->eEndLoopOp==OP_Prev);
-          VdbeCoverageIf(v, pIn->eEndLoopOp==OP_Next);
+          VdbeCoverageIf(v, p_अन्तर्->e_अन्तः_Loop_Op==OP_पूर्व);
+          VdbeCoverageIf(v, p_अन्तर्->e_अन्तः_Loop_Op==OP_अग्र);
         }
-        sqlite3VdbeJumpHere(v, pIn->addrInTop-1);
+        sqlite3_Vdbe_Jump_अत्र(v, p_अन्तर्->addr_अन्तर्_शिखरम्-1);
       }
     }
     sqlite3VdbeResolveLabel(v, pLevel->addrBrk);
-    if( pLevel->pRJ ){
-      sqlite3VdbeAddOp3(v, OP_Return, pLevel->pRJ->regReturn, 0, 1);
+    यदि( pLevel->pRJ ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Return, pLevel->pRJ->regReturn, 0, 1);
       VdbeCoverage(v);
     }
-    if( pLevel->addrSkip ){
+    यदि( pLevel->addrSkip ){
       sqlite3VdbeGoto(v, pLevel->addrSkip);
-      VdbeComment((v, "next skip-scan on %s", pLoop->u.btree.pIndex->zName));
-      sqlite3VdbeJumpHere(v, pLevel->addrSkip);
-      sqlite3VdbeJumpHere(v, pLevel->addrSkip-2);
+      VdbeComment((v, "next skip-scan on %s", pLoop->u.btree.p_सूचकांक->zName));
+      sqlite3_Vdbe_Jump_अत्र(v, pLevel->addrSkip);
+      sqlite3_Vdbe_Jump_अत्र(v, pLevel->addrSkip-2);
     }
-    if( pLevel->iLeftJoin ){
-      int ws = pLoop->wsFlags;
-      addr = sqlite3VdbeAddOp1(v, OP_IfPos, pLevel->iLeftJoin); VdbeCoverage(v);
-      assert( (ws & WHERE_IDX_ONLY)==0 || (ws & WHERE_INDEXED)!=0 );
-      if( (ws & WHERE_IDX_ONLY)==0 ){
+    यदि( pLevel->i_वामः_Join ){
+      पूर्णाङ्क ws = pLoop->wsFlags;
+      addr = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_IfPos, pLevel->i_वामः_Join); VdbeCoverage(v);
+      प्रतिज्ञा( (ws & WHERE_IDX_ONLY)==0 || (ws & WHERE_अनुक्रमितम्)!=0 );
+      यदि( (ws & WHERE_IDX_ONLY)==0 ){
         SrcItem *pSrc = &pTabList->a[pLevel->iFrom];
-        assert( pLevel->iTabCur==pSrc->iCursor );
-        if( pSrc->fg.viaCoroutine ){
-          int m, n;
-          assert( pSrc->fg.isSubquery );
-          n = pSrc->u4.pSubq->regResult;
-          assert( pSrc->pSTab!=0 );
+        प्रतिज्ञा( pLevel->iTabCur==pSrc->iCursor );
+        यदि( pSrc->fg.द्वारा_Coroutine ){
+          पूर्णाङ्क m, n;
+          प्रतिज्ञा( pSrc->fg.isSubquery );
+          n = pSrc->u4.pSubq->reg_परिणाम;
+          प्रतिज्ञा( pSrc->pSTab!=0 );
           m = pSrc->pSTab->nCol;
-          sqlite3VdbeAddOp3(v, OP_Null, 0, n, n+m-1);
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Null, 0, n, n+m-1);
         }
-        sqlite3VdbeAddOp1(v, OP_NullRow, pLevel->iTabCur);
+        sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NullRow, pLevel->iTabCur);
       }
-      if( (ws & WHERE_INDEXED)
+      यदि( (ws & WHERE_अनुक्रमितम्)
        || ((ws & WHERE_MULTI_OR) && pLevel->u.pCoveringIdx)
       ){
-        if( ws & WHERE_MULTI_OR ){
-          Index *pIx = pLevel->u.pCoveringIdx;
-          int iDb = sqlite3SchemaToIndex(db, pIx->pSchema);
-          sqlite3VdbeAddOp3(v, OP_ReopenIdx, pLevel->iIdxCur, pIx->tnum, iDb);
-          sqlite3VdbeSetP4KeyInfo(pParse, pIx);
+        यदि( ws & WHERE_MULTI_OR ){
+          सूचकांक *pIx = pLevel->u.pCoveringIdx;
+          पूर्णाङ्क iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pIx->pSchema);
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_ReopenIdx, pLevel->iIdxCur, pIx->tnum, iDb);
+          sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pIx);
         }
-        sqlite3VdbeAddOp1(v, OP_NullRow, pLevel->iIdxCur);
+        sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NullRow, pLevel->iIdxCur);
       }
-      if( ws & WHERE_IN_ABLE ){
-        int m;
-        for(m=0; m<pLevel->u.in.nIn; m++){
-          struct InLoop *pIn = &pLevel->u.in.aInLoop[m];
-          if( pIn->eEndLoopOp!=OP_Noop ){
-            sqlite3VdbeAddOp1(v, OP_NullRow, pIn->iCur);
+      यदि( ws & WHERE_अन्तर्_ABLE ){
+        पूर्णाङ्क m;
+        प्रति(m=0; m<pLevel->u.अन्तर्.n_अन्तर्; m++){
+          संरचना अन्तर्_Loop *p_अन्तर् = &pLevel->u.अन्तर्.a_अन्तर्_Loop[m];
+          यदि( p_अन्तर्->e_अन्तः_Loop_Op!=OP_Noop ){
+            sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NullRow, p_अन्तर्->iCur);
           }
         }
       }
-      if( pLevel->op==OP_Return ){
-        sqlite3VdbeAddOp2(v, OP_Gosub, pLevel->p1, pLevel->addrFirst);
-      }else{
+      यदि( pLevel->op==OP_Return ){
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Gosub, pLevel->p1, pLevel->addrFirst);
+      }अन्यथा{
         sqlite3VdbeGoto(v, pLevel->addrFirst);
       }
-      sqlite3VdbeJumpHere(v, addr);
+      sqlite3_Vdbe_Jump_अत्र(v, addr);
     }
     VdbeModuleComment((v, "End WHERE-loop%d: %s", i,
                      pWInfo->pTabList->a[pLevel->iFrom].pSTab->zName));
   }
 
-  assert( pWInfo->nLevel<=pTabList->nSrc );
-  for(i=0, pLevel=pWInfo->a; i<pWInfo->nLevel; i++, pLevel++){
-    int k, last;
-    VdbeOp *pOp, *pLastOp;
-    Index *pIdx = 0;
+  प्रतिज्ञा( pWInfo->nLevel<=pTabList->nSrc );
+  प्रति(i=0, pLevel=pWInfo->a; i<pWInfo->nLevel; i++, pLevel++){
+    पूर्णाङ्क k, चरमः_2;
+    VdbeOp *pOp, *p_चरमः_Op;
+    सूचकांक *pIdx = 0;
     SrcItem *pTabItem = &pTabList->a[pLevel->iFrom];
-    Table *pTab = pTabItem->pSTab;
-    assert( pTab!=0 );
+    सारणी *pTab = pTabItem->pSTab;
+    प्रतिज्ञा( pTab!=0 );
     pLoop = pLevel->pWLoop;
 
     /* Do RIGHT JOIN processing.  Generate code that will output the
     ** unmatched rows of the right operand of the RIGHT JOIN with
     ** all of the columns of the left operand set to NULL.
     */
-    if( pLevel->pRJ ){
-      sqlite3WhereRightJoinLoop(pWInfo, i, pLevel);
-      continue;
+    यदि( pLevel->pRJ ){
+      sqlite3_Where_दक्षिणः_Join_Loop(pWInfo, i, pLevel);
+      अनुवर्त;
     }
 
     /* For a co-routine, change all OP_Column references to the table of
     ** the co-routine into OP_Copy of result contained in a register.
     ** OP_Rowid becomes OP_Null.
     */
-    if( pTabItem->fg.viaCoroutine ){
+    यदि( pTabItem->fg.द्वारा_Coroutine ){
       testcase( pParse->db->mallocFailed );
-      assert( pTabItem->fg.isSubquery );
-      assert( pTabItem->u4.pSubq->regResult>=0 );
-      translateColumnToCopy(pParse, pLevel->addrBody, pLevel->iTabCur,
-                            pTabItem->u4.pSubq->regResult, 0);
-      continue;
+      प्रतिज्ञा( pTabItem->fg.isSubquery );
+      प्रतिज्ञा( pTabItem->u4.pSubq->reg_परिणाम>=0 );
+      translate_Column_गन्तव्यम्_Copy(pParse, pLevel->addrBody, pLevel->iTabCur,
+                            pTabItem->u4.pSubq->reg_परिणाम, 0);
+      अनुवर्त;
     }
 
     /* If this scan uses an index, make VDBE code substitutions to read data
@@ -7843,87 +7843,87 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
     ** that reference the table and converts them into opcodes that
     ** reference the index.
     */
-    if( pLoop->wsFlags & (WHERE_INDEXED|WHERE_IDX_ONLY) ){
-      pIdx = pLoop->u.btree.pIndex;
-    }else if( pLoop->wsFlags & WHERE_MULTI_OR ){
+    यदि( pLoop->wsFlags & (WHERE_अनुक्रमितम्|WHERE_IDX_ONLY) ){
+      pIdx = pLoop->u.btree.p_सूचकांक;
+    }अन्यथा यदि( pLoop->wsFlags & WHERE_MULTI_OR ){
       pIdx = pLevel->u.pCoveringIdx;
     }
-    if( pIdx
+    यदि( pIdx
      && !db->mallocFailed
     ){
-      if( pWInfo->eOnePass==ONEPASS_OFF || !HasRowid(pIdx->pTable) ){
-        last = iEnd;
-      }else{
-        last = pWInfo->iEndWhere;
+      यदि( pWInfo->eOnePass==ONEPASS_OFF || !HasRowid(pIdx->p_सारणी) ){
+        चरमः_2 = i_अन्तः;
+      }अन्यथा{
+        चरमः_2 = pWInfo->i_अन्तः_Where;
       }
-      if( pIdx->bHasExpr ){
-        IndexedExpr *p = pParse->pIdxEpr;
-        while( p ){
-          if( p->iIdxCur==pLevel->iIdxCur ){
-#ifdef WHERETRACE_ENABLED
-            if( sqlite3WhereTrace & 0x200 ){
+      यदि( pIdx->b_Has_व्यञ्जकम् ){
+        अनुक्रमितम्_व्यञ्जकम् *p = pParse->pIdxEpr;
+        यावत्( p ){
+          यदि( p->iIdxCur==pLevel->iIdxCur ){
+#यदि_परिभाषितम् WHERETRACE_ENABLED
+            यदि( sqlite3WhereTrace & 0x200 ){
               sqlite3DebugPrintf("Disable pParse->pIdxEpr term {%d,%d}\n",
                                   p->iIdxCur, p->iIdxCol);
-              if( sqlite3WhereTrace & 0x5000 ) sqlite3ShowExpr(p->pExpr);
+              यदि( sqlite3WhereTrace & 0x5000 ) sqlite3_Show_व्यञ्जकम्(p->p_व्यञ्जकम्);
             }
-#endif
-            p->iDataCur = -1;
+#यदि_अन्तः
+            p->i_दत्त_Cur = -1;
             p->iIdxCur = -1;
           }
           p = p->pIENext;
         }
       }
       k = pLevel->addrBody + 1;
-#ifdef SQLITE_DEBUG
-      if( db->flags & SQLITE_VdbeAddopTrace ){
-        printf("TRANSLATE cursor %d->%d in opcode range %d..%d\n",
-                pLevel->iTabCur, pLevel->iIdxCur, k, last-1);
+#यदि_परिभाषितम् SQLITE_DEBUG
+      यदि( db->flags & SQLITE_VdbeAddopTrace ){
+        प्रारूप_लिख("TRANSLATE cursor %d->%d in opcode range %d..%d\n",
+                pLevel->iTabCur, pLevel->iIdxCur, k, चरमः_2-1);
       }
       /* Proof that the "+1" on the k value above is safe */
       pOp = sqlite3VdbeGetOp(v, k - 1);
-      assert( pOp->opcode!=OP_Column || pOp->p1!=pLevel->iTabCur );
-      assert( pOp->opcode!=OP_Rowid  || pOp->p1!=pLevel->iTabCur );
-      assert( pOp->opcode!=OP_IfNullRow || pOp->p1!=pLevel->iTabCur );
-#endif
+      प्रतिज्ञा( pOp->opcode!=OP_Column || pOp->p1!=pLevel->iTabCur );
+      प्रतिज्ञा( pOp->opcode!=OP_Rowid  || pOp->p1!=pLevel->iTabCur );
+      प्रतिज्ञा( pOp->opcode!=OP_IfNullRow || pOp->p1!=pLevel->iTabCur );
+#यदि_अन्तः
       pOp = sqlite3VdbeGetOp(v, k);
-      pLastOp = pOp + (last - k);
-      assert( pOp<=pLastOp );
-      do{
-        if( pOp->p1!=pLevel->iTabCur ){
+      p_चरमः_Op = pOp + (चरमः_2 - k);
+      प्रतिज्ञा( pOp<=p_चरमः_Op );
+      कुरु{
+        यदि( pOp->p1!=pLevel->iTabCur ){
           /* no-op */
-        }else if( pOp->opcode==OP_Column
-#ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
-         || pOp->opcode==OP_Offset
-#endif
+        }अन्यथा यदि( pOp->opcode==OP_Column
+#यदि_परिभाषितम् SQLITE_ENABLE_विस्थापनम्_SQL_FUNC
+         || pOp->opcode==OP_विस्थापनम्
+#यदि_अन्तः
         ){
-          int x = pOp->p2;
-          assert( pIdx->pTable==pTab );
-#ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
-          if( pOp->opcode==OP_Offset ){
+          पूर्णाङ्क x = pOp->p2;
+          प्रतिज्ञा( pIdx->p_सारणी==pTab );
+#यदि_परिभाषितम् SQLITE_ENABLE_विस्थापनम्_SQL_FUNC
+          यदि( pOp->opcode==OP_विस्थापनम् ){
             /* Do not need to translate the column number */
-          }else
-#endif
-          if( !HasRowid(pTab) ){
-            Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+          }अन्यथा
+#यदि_अन्तः
+          यदि( !HasRowid(pTab) ){
+            सूचकांक *pPk = sqlite3_Primary_कुञ्चिका_सूचकांक(pTab);
             x = pPk->aiColumn[x];
-            assert( x>=0 );
-          }else{
-            testcase( x!=sqlite3StorageColumnToTable(pTab,x) );
-            x = sqlite3StorageColumnToTable(pTab,x);
+            प्रतिज्ञा( x>=0 );
+          }अन्यथा{
+            testcase( x!=sqlite3_Storage_Column_गन्तव्यम्_सारणी(pTab,x) );
+            x = sqlite3_Storage_Column_गन्तव्यम्_सारणी(pTab,x);
           }
-          x = sqlite3TableColumnToIndex(pIdx, x);
-          if( x>=0 ){
+          x = sqlite3_सारणी_Column_गन्तव्यम्_सूचकांक(pIdx, x);
+          यदि( x>=0 ){
             pOp->p2 = x;
             pOp->p1 = pLevel->iIdxCur;
             OpcodeRewriteTrace(db, k, pOp);
-          }else if( pLoop->wsFlags & (WHERE_IDX_ONLY|WHERE_EXPRIDX) ){
-            if( pLoop->wsFlags & WHERE_IDX_ONLY ){
+          }अन्यथा यदि( pLoop->wsFlags & (WHERE_IDX_ONLY|WHERE_EXPRIDX) ){
+            यदि( pLoop->wsFlags & WHERE_IDX_ONLY ){
               /* An error. pLoop is supposed to be a covering index loop,
               ** and yet the VM code refers to a column of the table that 
               ** is not part of the index.  */
-              sqlite3ErrorMsg(pParse, "internal query planner error");
-              pParse->rc = SQLITE_INTERNAL;
-            }else{
+              sqlite3_Error_सन्देशः(pParse, "internal query planner error");
+              pParse->rc = SQLITE_आन्तरिकम्;
+            }अन्यथा{
               /* The WHERE_EXPRIDX flag is set by the planner when it is likely
               ** that pLoop is a covering index loop, but it is not possible
               ** to be 100% sure. In this case, any OP_Explain opcode
@@ -7932,7 +7932,7 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
               ** index loop. So clear the WHERE_EXPRIDX flag and rewrite the
               ** text that accompanies the OP_Explain opcode, if any.  */
               pLoop->wsFlags &= ~WHERE_EXPRIDX;
-              sqlite3WhereAddExplainText(pParse,
+              sqlite3_Where_सङ्कलय_Explain_Text(pParse,
                   pLevel->addrBody-1,
                   pTabList,
                   pLevel,
@@ -7940,21 +7940,21 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
               );
             }
           }
-        }else if( pOp->opcode==OP_Rowid ){
+        }अन्यथा यदि( pOp->opcode==OP_Rowid ){
           pOp->p1 = pLevel->iIdxCur;
           pOp->opcode = OP_IdxRowid;
           OpcodeRewriteTrace(db, k, pOp);
-        }else if( pOp->opcode==OP_IfNullRow ){
+        }अन्यथा यदि( pOp->opcode==OP_IfNullRow ){
           pOp->p1 = pLevel->iIdxCur;
           OpcodeRewriteTrace(db, k, pOp);
         }
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
         k++;
-#endif
-      }while( (++pOp)<pLastOp );
-#ifdef SQLITE_DEBUG
-      if( db->flags & SQLITE_VdbeAddopTrace ) printf("TRANSLATE complete\n");
-#endif
+#यदि_अन्तः
+      }यावत्( (++pOp)<p_चरमः_Op );
+#यदि_परिभाषितम् SQLITE_DEBUG
+      यदि( db->flags & SQLITE_VdbeAddopTrace ) प्रारूप_लिख("TRANSLATE complete\n");
+#यदि_अन्तः
     }
   }
 
@@ -7968,5 +7968,5 @@ void sqlite3WhereEnd(WhereInfo *pWInfo){
   pParse->nQueryLoop = pWInfo->savedNQueryLoop;
   whereInfoFree(db, pWInfo);
   pParse->withinRJSubrtn -= nRJ;
-  return;
+  प्रत्यागम;
 }

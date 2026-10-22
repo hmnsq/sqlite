@@ -37,35 +37,35 @@
 **
 **   SQLITE_MUTEX_W32          For multi-threaded applications on Win32.
 */
-#if !SQLITE_THREADSAFE
+#यदि !SQLITE_THREADSAFE
 # define SQLITE_MUTEX_OMIT
-#endif
-#if SQLITE_THREADSAFE && !defined(SQLITE_MUTEX_NOOP)
-#  if SQLITE_OS_UNIX || defined(__CYGWIN__)
+#यदि_अन्तः
+#यदि SQLITE_THREADSAFE && !defined(SQLITE_MUTEX_NOOP)
+#  यदि SQLITE_OS_UNIX || defined(__CYGWIN__)
 #    define SQLITE_MUTEX_PTHREADS
 #  elif SQLITE_OS_WIN
 #    define SQLITE_MUTEX_W32
-#  else
+#  अन्यथा
 #    define SQLITE_MUTEX_NOOP
 #  endif
-#endif
+#यदि_अन्तः
 
-#ifdef SQLITE_MUTEX_OMIT
+#यदि_परिभाषितम् SQLITE_MUTEX_OMIT
 /*
 ** If this is a no-op implementation, implement everything as macros.
 */
-#define sqlite3_mutex_alloc(X)    ((sqlite3_mutex*)8)
-#define sqlite3_mutex_free(X)
-#define sqlite3_mutex_enter(X)    
-#define sqlite3_mutex_try(X)      SQLITE_OK
-#define sqlite3_mutex_leave(X)    
-#define sqlite3_mutex_held(X)     ((void)(X),1)
-#define sqlite3_mutex_notheld(X)  ((void)(X),1)
-#define sqlite3MutexAlloc(X)      ((sqlite3_mutex*)8)
-#define sqlite3MutexInit()        SQLITE_OK
-#define sqlite3MutexEnd()
-#define MUTEX_LOGIC(X)
-#else
-#define MUTEX_LOGIC(X)            X
-int sqlite3_mutex_held(sqlite3_mutex*);
-#endif /* defined(SQLITE_MUTEX_OMIT) */
+#परिभाषय sqlite3_mutex_alloc(X)    ((sqlite3_mutex*)8)
+#परिभाषय sqlite3_mutex_free(X)
+#परिभाषय sqlite3_mutex_enter(X)    
+#परिभाषय sqlite3_mutex_try(X)      SQLITE_OK
+#परिभाषय sqlite3_mutex_leave(X)    
+#परिभाषय sqlite3_mutex_held(X)     ((शून्य)(X),1)
+#परिभाषय sqlite3_mutex_notheld(X)  ((शून्य)(X),1)
+#परिभाषय sqlite3MutexAlloc(X)      ((sqlite3_mutex*)8)
+#परिभाषय sqlite3MutexInit()        SQLITE_OK
+#परिभाषय sqlite3_Mutex_अन्तः()
+#परिभाषय MUTEX_LOGIC(X)
+#अन्यथा
+#परिभाषय MUTEX_LOGIC(X)            X
+पूर्णाङ्क sqlite3_mutex_held(sqlite3_mutex*);
+#यदि_अन्तः /* defined(SQLITE_MUTEX_OMIT) */

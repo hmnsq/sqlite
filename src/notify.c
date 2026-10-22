@@ -13,11 +13,11 @@
 ** This file contains the implementation of the sqlite3_unlock_notify()
 ** API method and its associated functionality.
 */
-#include "sqliteInt.h"
-#include "btreeInt.h"
+#अन्तर्भाव "sqliteInt.h"
+#अन्तर्भाव "btreeInt.h"
 
 /* Omit this entire file if SQLITE_ENABLE_UNLOCK_NOTIFY is not defined. */
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
+#यदि_परिभाषितम् SQLITE_ENABLE_UNLOCK_NOTIFY
 
 /*
 ** Public interfaces:
@@ -28,8 +28,8 @@
 **   sqlite3_unlock_notify()
 */
 
-#define assertMutexHeld() \
-  assert( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) )
+#परिभाषय assertMutexHeld() \
+  प्रतिज्ञा( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) )
 
 /*
 ** Head of a linked list of all sqlite3 objects created by this process
@@ -37,9 +37,9 @@
 ** is not NULL. This variable may only accessed while the STATIC_MAIN
 ** mutex is held.
 */
-static sqlite3 *SQLITE_WSD sqlite3BlockedList = 0;
+स्थिर sqlite3 *SQLITE_WSD sqlite3BlockedList = 0;
 
-#ifndef NDEBUG
+#यदि_अपरिभाषितम् NDEBUG
 /*
 ** This function is a complex assert() that verifies the following 
 ** properties of the blocked connections list:
@@ -54,39 +54,39 @@ static sqlite3 *SQLITE_WSD sqlite3BlockedList = 0;
 **      blocked connections list have pUnlockConnection or pBlockingConnection
 **      set to db. This is used when closing connection db.
 */
-static void checkListProperties(sqlite3 *db){
+स्थिर शून्य checkListProperties(sqlite3 *db){
   sqlite3 *p;
-  for(p=sqlite3BlockedList; p; p=p->pNextBlocked){
-    int seen = 0;
+  प्रति(p=sqlite3BlockedList; p; p=p->p_अग्र_Blocked){
+    पूर्णाङ्क आलोकितम् = 0;
     sqlite3 *p2;
 
     /* Verify property (1) */
-    assert( p->pUnlockConnection || p->pBlockingConnection );
+    प्रतिज्ञा( p->pUnlockConnection || p->pBlockingConnection );
 
     /* Verify property (2) */
-    for(p2=sqlite3BlockedList; p2!=p; p2=p2->pNextBlocked){
-      if( p2->xUnlockNotify==p->xUnlockNotify ) seen = 1;
-      assert( p2->xUnlockNotify==p->xUnlockNotify || !seen );
-      assert( db==0 || p->pUnlockConnection!=db );
-      assert( db==0 || p->pBlockingConnection!=db );
+    प्रति(p2=sqlite3BlockedList; p2!=p; p2=p2->p_अग्र_Blocked){
+      यदि( p2->xUnlockNotify==p->xUnlockNotify ) आलोकितम् = 1;
+      प्रतिज्ञा( p2->xUnlockNotify==p->xUnlockNotify || !आलोकितम् );
+      प्रतिज्ञा( db==0 || p->pUnlockConnection!=db );
+      प्रतिज्ञा( db==0 || p->pBlockingConnection!=db );
     }
   }
 }
-#else
+#अन्यथा
 # define checkListProperties(x)
-#endif
+#यदि_अन्तः
 
 /*
 ** Remove connection db from the blocked connections list. If connection
 ** db is not currently a part of the list, this function is a no-op.
 */
-static void removeFromBlockedList(sqlite3 *db){
+स्थिर शून्य removeFromBlockedList(sqlite3 *db){
   sqlite3 **pp;
   assertMutexHeld();
-  for(pp=&sqlite3BlockedList; *pp; pp = &(*pp)->pNextBlocked){
-    if( *pp==db ){
-      *pp = (*pp)->pNextBlocked;
-      break;
+  प्रति(pp=&sqlite3BlockedList; *pp; pp = &(*pp)->p_अग्र_Blocked){
+    यदि( *pp==db ){
+      *pp = (*pp)->p_अग्र_Blocked;
+      भङ्ग;
     }
   }
 }
@@ -95,22 +95,22 @@ static void removeFromBlockedList(sqlite3 *db){
 ** Add connection db to the blocked connections list. It is assumed
 ** that it is not already a part of the list.
 */
-static void addToBlockedList(sqlite3 *db){
+स्थिर शून्य सङ्कलय_गन्तव्यम्_Blocked_List(sqlite3 *db){
   sqlite3 **pp;
   assertMutexHeld();
-  for(
+  प्रति(
     pp=&sqlite3BlockedList; 
     *pp && (*pp)->xUnlockNotify!=db->xUnlockNotify; 
-    pp=&(*pp)->pNextBlocked
+    pp=&(*pp)->p_अग्र_Blocked
   );
-  db->pNextBlocked = *pp;
+  db->p_अग्र_Blocked = *pp;
   *pp = db;
 }
 
 /*
 ** Obtain the STATIC_MAIN mutex.
 */
-static void enterMutex(void){
+स्थिर शून्य enterMutex(शून्य){
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
   checkListProperties(0);
 }
@@ -118,7 +118,7 @@ static void enterMutex(void){
 /*
 ** Release the STATIC_MAIN mutex.
 */
-static void leaveMutex(void){
+स्थिर शून्य leaveMutex(शून्य){
   assertMutexHeld();
   checkListProperties(0);
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
@@ -145,51 +145,51 @@ static void leaveMutex(void){
 ** on the same "db".  If xNotify==0 then any prior callbacks are immediately
 ** cancelled.
 */
-int sqlite3_unlock_notify(
+पूर्णाङ्क sqlite3_unlock_notify(
   sqlite3 *db,
-  void (*xNotify)(void **, int),
-  void *pArg
+  शून्य (*xNotify)(शून्य **, पूर्णाङ्क),
+  शून्य *pArg
 ){
-  int rc = SQLITE_OK;
+  पूर्णाङ्क rc = SQLITE_OK;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
+#यदि_परिभाषितम् SQLITE_ENABLE_API_ARMOR
+  यदि( !sqlite3SafetyCheckOk(db) ) प्रत्यागम SQLITE_MISUSE_BKPT;
+#यदि_अन्तः
   sqlite3_mutex_enter(db->mutex);
   enterMutex();
 
-  if( xNotify==0 ){
+  यदि( xNotify==0 ){
     removeFromBlockedList(db);
     db->pBlockingConnection = 0;
     db->pUnlockConnection = 0;
     db->xUnlockNotify = 0;
     db->pUnlockArg = 0;
-  }else if( 0==db->pBlockingConnection ){
+  }अन्यथा यदि( 0==db->pBlockingConnection ){
     /* The blocking transaction has been concluded. Or there never was a 
     ** blocking transaction. In either case, invoke the notify callback
     ** immediately. 
     */
     xNotify(&pArg, 1);
-  }else{
+  }अन्यथा{
     sqlite3 *p;
 
-    for(p=db->pBlockingConnection; p && p!=db; p=p->pUnlockConnection){}
-    if( p ){
+    प्रति(p=db->pBlockingConnection; p && p!=db; p=p->pUnlockConnection){}
+    यदि( p ){
       rc = SQLITE_LOCKED;              /* Deadlock detected. */
-    }else{
+    }अन्यथा{
       db->pUnlockConnection = db->pBlockingConnection;
       db->xUnlockNotify = xNotify;
       db->pUnlockArg = pArg;
       removeFromBlockedList(db);
-      addToBlockedList(db);
+      सङ्कलय_गन्तव्यम्_Blocked_List(db);
     }
   }
 
   leaveMutex();
-  assert( !db->mallocFailed );
-  sqlite3ErrorWithMsg(db, rc, (rc?"database is deadlocked":0));
+  प्रतिज्ञा( !db->mallocFailed );
+  sqlite3_Error_With_सन्देशः(db, rc, (rc?"database is deadlocked":0));
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -198,10 +198,10 @@ int sqlite3_unlock_notify(
 ** to the user because it requires a lock that will not be available
 ** until connection pBlocker concludes its current transaction.
 */
-void sqlite3ConnectionBlocked(sqlite3 *db, sqlite3 *pBlocker){
+शून्य sqlite3ConnectionBlocked(sqlite3 *db, sqlite3 *pBlocker){
   enterMutex();
-  if( db->pBlockingConnection==0 && db->pUnlockConnection==0 ){
-    addToBlockedList(db);
+  यदि( db->pBlockingConnection==0 && db->pUnlockConnection==0 ){
+    सङ्कलय_गन्तव्यम्_Blocked_List(db);
   }
   db->pBlockingConnection = pBlocker;
   leaveMutex();
@@ -226,47 +226,47 @@ void sqlite3ConnectionBlocked(sqlite3 *db, sqlite3 *pBlocker){
 **      pUnlockConnection==0, remove the entry from the blocked connections
 **      list.
 */
-void sqlite3ConnectionUnlocked(sqlite3 *db){
-  void (*xUnlockNotify)(void **, int) = 0; /* Unlock-notify cb to invoke */
-  int nArg = 0;                            /* Number of entries in aArg[] */
+शून्य sqlite3ConnectionUnlocked(sqlite3 *db){
+  शून्य (*xUnlockNotify)(शून्य **, पूर्णाङ्क) = 0; /* Unlock-notify cb to invoke */
+  पूर्णाङ्क nArg = 0;                            /* Number of entries in aArg[] */
   sqlite3 **pp;                            /* Iterator variable */
-  void **aArg;               /* Arguments to the unlock callback */
-  void **aDyn = 0;           /* Dynamically allocated space for aArg[] */
-  void *aStatic[16];         /* Starter space for aArg[].  No malloc required */
+  शून्य **aArg;               /* Arguments to the unlock callback */
+  शून्य **aDyn = 0;           /* Dynamically allocated space for aArg[] */
+  शून्य *aStatic[16];         /* Starter space for aArg[].  No malloc required */
 
   aArg = aStatic;
   enterMutex();         /* Enter STATIC_MAIN mutex */
 
   /* This loop runs once for each entry in the blocked-connections list. */
-  for(pp=&sqlite3BlockedList; *pp; /* no-op */ ){
+  प्रति(pp=&sqlite3BlockedList; *pp; /* no-op */ ){
     sqlite3 *p = *pp;
 
     /* Step 1. */
-    if( p->pBlockingConnection==db ){
+    यदि( p->pBlockingConnection==db ){
       p->pBlockingConnection = 0;
     }
 
     /* Step 2. */
-    if( p->pUnlockConnection==db ){
-      assert( p->xUnlockNotify );
-      if( p->xUnlockNotify!=xUnlockNotify && nArg!=0 ){
+    यदि( p->pUnlockConnection==db ){
+      प्रतिज्ञा( p->xUnlockNotify );
+      यदि( p->xUnlockNotify!=xUnlockNotify && nArg!=0 ){
         xUnlockNotify(aArg, nArg);
         nArg = 0;
       }
 
       sqlite3BeginBenignMalloc();
-      assert( aArg==aDyn || (aDyn==0 && aArg==aStatic) );
-      assert( nArg<=(int)ArraySize(aStatic) || aArg==aDyn );
-      if( (!aDyn && nArg==(int)ArraySize(aStatic))
-       || (aDyn && nArg==(int)(sqlite3MallocSize(aDyn)/sizeof(void*)))
+      प्रतिज्ञा( aArg==aDyn || (aDyn==0 && aArg==aStatic) );
+      प्रतिज्ञा( nArg<=(पूर्णाङ्क)Array_आकार(aStatic) || aArg==aDyn );
+      यदि( (!aDyn && nArg==(पूर्णाङ्क)Array_आकार(aStatic))
+       || (aDyn && nArg==(पूर्णाङ्क)(sqlite3_Malloc_आकार(aDyn)/परिमाण(शून्य*)))
       ){
         /* The aArg[] array needs to grow. */
-        void **pNew = (void **)sqlite3Malloc(nArg*sizeof(void *)*2);
-        if( pNew ){
-          memcpy(pNew, aArg, nArg*sizeof(void *));
+        शून्य **pNew = (शून्य **)sqlite3Malloc(nArg*परिमाण(शून्य *)*2);
+        यदि( pNew ){
+          स्मृतिं_प्रतिलिख(pNew, aArg, nArg*परिमाण(शून्य *));
           sqlite3_free(aDyn);
           aDyn = aArg = pNew;
-        }else{
+        }अन्यथा{
           /* This occurs when the array of context pointers that need to
           ** be passed to the unlock-notify callback is larger than the
           ** aStatic[] array allocated on the stack and the attempt to 
@@ -295,7 +295,7 @@ void sqlite3ConnectionUnlocked(sqlite3 *db){
           nArg = 0;
         }
       }
-      sqlite3EndBenignMalloc();
+      sqlite3_अन्तः_Benign_Malloc();
 
       aArg[nArg++] = p->pUnlockArg;
       xUnlockNotify = p->xUnlockNotify;
@@ -305,16 +305,16 @@ void sqlite3ConnectionUnlocked(sqlite3 *db){
     }
 
     /* Step 3. */
-    if( p->pBlockingConnection==0 && p->pUnlockConnection==0 ){
+    यदि( p->pBlockingConnection==0 && p->pUnlockConnection==0 ){
       /* Remove connection p from the blocked connections list. */
-      *pp = p->pNextBlocked;
-      p->pNextBlocked = 0;
-    }else{
-      pp = &p->pNextBlocked;
+      *pp = p->p_अग्र_Blocked;
+      p->p_अग्र_Blocked = 0;
+    }अन्यथा{
+      pp = &p->p_अग्र_Blocked;
     }
   }
 
-  if( nArg!=0 ){
+  यदि( nArg!=0 ){
     xUnlockNotify(aArg, nArg);
   }
   sqlite3_free(aDyn);
@@ -325,11 +325,11 @@ void sqlite3ConnectionUnlocked(sqlite3 *db){
 ** This is called when the database connection passed as an argument is 
 ** being closed. The connection is removed from the blocked list.
 */
-void sqlite3ConnectionClosed(sqlite3 *db){
+शून्य sqlite3ConnectionClosed(sqlite3 *db){
   sqlite3ConnectionUnlocked(db);
   enterMutex();
   removeFromBlockedList(db);
   checkListProperties(db);
   leaveMutex();
 }
-#endif
+#यदि_अन्तः

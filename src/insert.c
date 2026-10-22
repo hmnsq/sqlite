@@ -12,7 +12,7 @@
 ** This file contains C code routines that are called by the parser
 ** to handle INSERT statements in SQLite.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 /*
 ** Generate code that will
@@ -23,31 +23,31 @@
 ** If pTab is a WITHOUT ROWID table, then it is the PRIMARY KEY index
 ** for that table that is actually opened.
 */
-void sqlite3OpenTable(
+शून्य sqlite3_Open_सारणी(
   Parse *pParse,  /* Generate code into this VDBE */
-  int iCur,       /* The cursor number of the table */
-  int iDb,        /* The database index in sqlite3.aDb[] */
-  Table *pTab,    /* The table to be opened */
-  int opcode      /* OP_OpenRead or OP_OpenWrite */
+  पूर्णाङ्क iCur,       /* The cursor number of the table */
+  पूर्णाङ्क iDb,        /* The database index in sqlite3.aDb[] */
+  सारणी *pTab,    /* The table to be opened */
+  पूर्णाङ्क opcode      /* OP_OpenRead or OP_OpenWrite */
 ){
   Vdbe *v;
-  assert( !IsVirtual(pTab) );
-  assert( pParse->pVdbe!=0 );
+  प्रतिज्ञा( !IsVirtual(pTab) );
+  प्रतिज्ञा( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
-  assert( opcode==OP_OpenWrite || opcode==OP_OpenRead );
-  if( !pParse->db->noSharedCache ){
-    sqlite3TableLock(pParse, iDb, pTab->tnum,
+  प्रतिज्ञा( opcode==OP_OpenWrite || opcode==OP_OpenRead );
+  यदि( !pParse->db->noSharedCache ){
+    sqlite3_सारणी_तालकम्(pParse, iDb, pTab->tnum,
                      (opcode==OP_OpenWrite)?1:0, pTab->zName);
   }
-  if( HasRowid(pTab) ){
-    sqlite3VdbeAddOp4Int(v, opcode, iCur, pTab->tnum, iDb, pTab->nNVCol);
+  यदि( HasRowid(pTab) ){
+    sqlite3_Vdbe_सङ्कलय_Op4_Int(v, opcode, iCur, pTab->tnum, iDb, pTab->nNVCol);
     VdbeComment((v, "%s", pTab->zName));
-  }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-    assert( pPk!=0 );
-    assert( pPk->tnum==pTab->tnum || CORRUPT_DB );
-    sqlite3VdbeAddOp3(v, opcode, iCur, pPk->tnum, iDb);
-    sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+  }अन्यथा{
+    सूचकांक *pPk = sqlite3_Primary_कुञ्चिका_सूचकांक(pTab);
+    प्रतिज्ञा( pPk!=0 );
+    प्रतिज्ञा( pPk->tnum==pTab->tnum || CORRUPT_DB );
+    sqlite3_Vdbe_सङ्कलय_Op3(v, opcode, iCur, pPk->tnum, iDb);
+    sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pPk);
     VdbeComment((v, "%s", pTab->zName));
   }
 }
@@ -72,7 +72,7 @@ void sqlite3OpenTable(
 ** is managed along with the rest of the Index structure. It will be
 ** released when sqlite3DeleteIndex() is called.
 */
-static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
+स्थिर SQLITE_NOINLINE ध्रुव वर्ण *compute_सूचकांक_Aff_Str(sqlite3 *db, सूचकांक *pIdx){
   /* The first time a column affinity string for a particular index is
   ** required, it is allocated and populated here. It is then stored as
   ** a member of the Index structure for subsequent use.
@@ -81,36 +81,36 @@ static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
   ** sqliteDeleteIndex() when the Index structure itself is cleaned
   ** up.
   */
-  int n;
-  Table *pTab = pIdx->pTable;
-  pIdx->zColAff = (char *)sqlite3DbMallocRaw(0, pIdx->nColumn+1);
-  if( !pIdx->zColAff ){
+  पूर्णाङ्क n;
+  सारणी *pTab = pIdx->p_सारणी;
+  pIdx->zColAff = (वर्ण *)sqlite3DbMallocRaw(0, pIdx->nColumn+1);
+  यदि( !pIdx->zColAff ){
     sqlite3OomFault(db);
-    return 0;
+    प्रत्यागम 0;
   }
-  for(n=0; n<pIdx->nColumn; n++){
+  प्रति(n=0; n<pIdx->nColumn; n++){
     i16 x = pIdx->aiColumn[n];
-    char aff;
-    if( x>=0 ){
+    वर्ण aff;
+    यदि( x>=0 ){
       aff = pTab->aCol[x].affinity;
-    }else if( x==XN_ROWID ){
+    }अन्यथा यदि( x==XN_ROWID ){
       aff = SQLITE_AFF_INTEGER;
-    }else{
-      assert( x==XN_EXPR );
-      assert( pIdx->bHasExpr );
-      assert( pIdx->aColExpr!=0 );
-      aff = sqlite3ExprAffinity(pIdx->aColExpr->a[n].pExpr);
+    }अन्यथा{
+      प्रतिज्ञा( x==XN_व्यञ्जकम् );
+      प्रतिज्ञा( pIdx->b_Has_व्यञ्जकम् );
+      प्रतिज्ञा( pIdx->a_Col_व्यञ्जकम्!=0 );
+      aff = sqlite3_व्यञ्जकम्_Affinity(pIdx->a_Col_व्यञ्जकम्->a[n].p_व्यञ्जकम्);
     }
-    if( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
-    if( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
+    यदि( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
+    यदि( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
     pIdx->zColAff[n] = aff;
   }
   pIdx->zColAff[n] = 0;
-  return pIdx->zColAff;
+  प्रत्यागम pIdx->zColAff;
 }
-const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
-  if( !pIdx->zColAff ) return computeIndexAffStr(db, pIdx);
-  return pIdx->zColAff;
+ध्रुव वर्ण *sqlite3_सूचकांक_Affinity_Str(sqlite3 *db, सूचकांक *pIdx){
+  यदि( !pIdx->zColAff ) प्रत्यागम compute_सूचकांक_Aff_Str(db, pIdx);
+  प्रत्यागम pIdx->zColAff;
 }
 
 
@@ -119,21 +119,21 @@ const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
 ** from sqlite3DbMalloc().  The caller is responsible for freeing
 ** the space when done.
 */
-char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
-  char *zColAff;
-  zColAff = (char *)sqlite3DbMallocRaw(db, pTab->nCol+1);
-  if( zColAff ){
-    int i, j;
-    for(i=j=0; i<pTab->nCol; i++){
-      if( (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
+वर्ण *sqlite3_सारणी_Affinity_Str(sqlite3 *db, ध्रुव सारणी *pTab){
+  वर्ण *zColAff;
+  zColAff = (वर्ण *)sqlite3DbMallocRaw(db, pTab->nCol+1);
+  यदि( zColAff ){
+    पूर्णाङ्क i, j;
+    प्रति(i=j=0; i<pTab->nCol; i++){
+      यदि( (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
         zColAff[j++] = pTab->aCol[i].affinity;
       }
     }
-    do{
+    कुरु{
       zColAff[j--] = 0;
-    }while( j>=0 && zColAff[j]<=SQLITE_AFF_BLOB );
+    }यावत्( j>=0 && zColAff[j]<=SQLITE_AFF_BLOB );
   }
-  return zColAff; 
+  प्रत्यागम zColAff; 
 }
 
 /*
@@ -176,47 +176,47 @@ char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
 ** the first of a series of registers that will form the new record.
 ** Apply the type checking to that array of registers.
 */
-void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
-  int i;
-  char *zColAff;
-  if( pTab->tabFlags & TF_Strict ){
-    if( iReg==0 ){
+शून्य sqlite3_सारणी_Affinity(Vdbe *v, सारणी *pTab, पूर्णाङ्क iReg){
+  पूर्णाङ्क i;
+  वर्ण *zColAff;
+  यदि( pTab->tabFlags & TF_Strict ){
+    यदि( iReg==0 ){
       /* Move the previous opcode (which should be OP_MakeRecord) forward
       ** by one slot and insert a new OP_TypeCheck where the current
       ** OP_MakeRecord is found */
-      VdbeOp *pPrev;
-      int p3;
-      sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
-      pPrev = sqlite3VdbeGetLastOp(v);
-      assert( pPrev!=0 );
-      assert( pPrev->opcode==OP_MakeRecord || sqlite3VdbeDb(v)->mallocFailed );
-      pPrev->opcode = OP_TypeCheck;
-      p3 = pPrev->p3;
-      pPrev->p3 = 0;
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, pPrev->p1, pPrev->p2, p3);
-    }else{
+      VdbeOp *p_पूर्व;
+      पूर्णाङ्क p3;
+      sqlite3VdbeAppendP4(v, pTab, P4_सारणी);
+      p_पूर्व = sqlite3_Vdbe_Get_चरमः_Op(v);
+      प्रतिज्ञा( p_पूर्व!=0 );
+      प्रतिज्ञा( p_पूर्व->opcode==OP_Make_लेखः || sqlite3VdbeDb(v)->mallocFailed );
+      p_पूर्व->opcode = OP_TypeCheck;
+      p3 = p_पूर्व->p3;
+      p_पूर्व->p3 = 0;
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Make_लेखः, p_पूर्व->p1, p_पूर्व->p2, p3);
+    }अन्यथा{
       /* Insert an isolated OP_Typecheck */
-      sqlite3VdbeAddOp2(v, OP_TypeCheck, iReg, pTab->nNVCol);
-      sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_TypeCheck, iReg, pTab->nNVCol);
+      sqlite3VdbeAppendP4(v, pTab, P4_सारणी);
     }
-    return;
+    प्रत्यागम;
   }
   zColAff = pTab->zColAff;
-  if( zColAff==0 ){
-    zColAff = sqlite3TableAffinityStr(0, pTab);
-    if( !zColAff ){
+  यदि( zColAff==0 ){
+    zColAff = sqlite3_सारणी_Affinity_Str(0, pTab);
+    यदि( !zColAff ){
       sqlite3OomFault(sqlite3VdbeDb(v));
-      return;
+      प्रत्यागम;
     }
     pTab->zColAff = zColAff;
   }
-  assert( zColAff!=0 );
+  प्रतिज्ञा( zColAff!=0 );
   i = sqlite3Strlen30NN(zColAff);
-  if( i ){
-    if( iReg ){
-      sqlite3VdbeAddOp4(v, OP_Affinity, iReg, i, 0, zColAff, i);
-    }else{
-      assert( sqlite3VdbeGetLastOp(v)->opcode==OP_MakeRecord
+  यदि( i ){
+    यदि( iReg ){
+      sqlite3_Vdbe_सङ्कलय_Op4(v, OP_Affinity, iReg, i, 0, zColAff, i);
+    }अन्यथा{
+      प्रतिज्ञा( sqlite3_Vdbe_Get_चरमः_Op(v)->opcode==OP_Make_लेखः
               || sqlite3VdbeDb(v)->mallocFailed );
       sqlite3VdbeChangeP4(v, -1, zColAff, i);
     }
@@ -229,52 +229,52 @@ void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
 ** a statement of the form  "INSERT INTO <iDb, pTab> SELECT ..." can
 ** run without using a temporary table for the results of the SELECT.
 */
-static int readsTable(Parse *p, int iDb, Table *pTab){
+स्थिर पूर्णाङ्क reads_सारणी(Parse *p, पूर्णाङ्क iDb, सारणी *pTab){
   Vdbe *v = sqlite3GetVdbe(p);
-  int i;
-  int iEnd = sqlite3VdbeCurrentAddr(v);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  पूर्णाङ्क i;
+  पूर्णाङ्क i_अन्तः = sqlite3VdbeCurrentAddr(v);
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
   VTable *pVTab = IsVirtual(pTab) ? sqlite3GetVTable(p->db, pTab) : 0;
-#endif
+#यदि_अन्तः
 
-  for(i=1; i<iEnd; i++){
+  प्रति(i=1; i<i_अन्तः; i++){
     VdbeOp *pOp = sqlite3VdbeGetOp(v, i);
-    assert( pOp!=0 );
-    if( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
-      Index *pIndex;
+    प्रतिज्ञा( pOp!=0 );
+    यदि( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
+      सूचकांक *p_सूचकांक;
       Pgno tnum = pOp->p2;
-      if( tnum==pTab->tnum ){
-        return 1;
+      यदि( tnum==pTab->tnum ){
+        प्रत्यागम 1;
       }
-      for(pIndex=pTab->pIndex; pIndex; pIndex=pIndex->pNext){
-        if( tnum==pIndex->tnum ){
-          return 1;
+      प्रति(p_सूचकांक=pTab->p_सूचकांक; p_सूचकांक; p_सूचकांक=p_सूचकांक->p_अग्र){
+        यदि( tnum==p_सूचकांक->tnum ){
+          प्रत्यागम 1;
         }
       }
     }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
-      assert( pOp->p4.pVtab!=0 );
-      assert( pOp->p4type==P4_VTAB );
-      return 1;
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+    यदि( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
+      प्रतिज्ञा( pOp->p4.pVtab!=0 );
+      प्रतिज्ञा( pOp->p4type==P4_VTAB );
+      प्रत्यागम 1;
     }
-#endif
+#यदि_अन्तः
   }
-  return 0;
+  प्रत्यागम 0;
 }
 
 /* This walker callback will compute the union of colFlags flags for all
 ** referenced columns in a CHECK constraint or generated column expression.
 */
-static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn>=0 ){
-    assert( pExpr->iColumn < pWalker->u.pTab->nCol );
-    pWalker->eCode |= pWalker->u.pTab->aCol[pExpr->iColumn].colFlags;
+स्थिर पूर्णाङ्क व्यञ्जकम्_Column_Flag_Union(Walker *pWalker, व्यञ्जकम् *p_व्यञ्जकम्){
+  यदि( p_व्यञ्जकम्->op==TK_COLUMN && p_व्यञ्जकम्->iColumn>=0 ){
+    प्रतिज्ञा( p_व्यञ्जकम्->iColumn < pWalker->u.pTab->nCol );
+    pWalker->e_संहिता |= pWalker->u.pTab->aCol[p_व्यञ्जकम्->iColumn].colFlags;
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
 /*
 ** All regular columns for table pTab have been puts into registers
 ** starting with iRegStore.  The registers that correspond to STORED
@@ -282,45 +282,45 @@ static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
 ** back and computes the values for those columns based on the previously
 ** computed normal columns.
 */
-void sqlite3ComputeGeneratedColumns(
+शून्य sqlite3ComputeGeneratedColumns(
   Parse *pParse,    /* Parsing context */
-  int iRegStore,    /* Register holding the first column */
-  Table *pTab       /* The table */
+  पूर्णाङ्क iRegStore,    /* Register holding the first column */
+  सारणी *pTab       /* The table */
 ){
-  int i;
+  पूर्णाङ्क i;
   Walker w;
   Column *pRedo;
-  int eProgress;
+  पूर्णाङ्क e_प्रगतिः;
   VdbeOp *pOp;
 
-  assert( pTab->tabFlags & TF_HasGenerated );
+  प्रतिज्ञा( pTab->tabFlags & TF_HasGenerated );
   testcase( pTab->tabFlags & TF_HasVirtual );
   testcase( pTab->tabFlags & TF_HasStored );
 
   /* Before computing generated columns, first go through and make sure
   ** that appropriate affinity has been applied to the regular columns
   */
-  sqlite3TableAffinity(pParse->pVdbe, pTab, iRegStore);
-  if( (pTab->tabFlags & TF_HasStored)!=0 ){
-    pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Affinity ){
+  sqlite3_सारणी_Affinity(pParse->pVdbe, pTab, iRegStore);
+  यदि( (pTab->tabFlags & TF_HasStored)!=0 ){
+    pOp = sqlite3_Vdbe_Get_चरमः_Op(pParse->pVdbe);
+    यदि( pOp->opcode==OP_Affinity ){
       /* Change the OP_Affinity argument to '@' (NONE) for all stored
       ** columns.  '@' is the no-op affinity and those columns have not
       ** yet been computed. */
-      int ii, jj;
-      char *zP4 = pOp->p4.z;
-      assert( zP4!=0 );
-      assert( pOp->p4type==P4_DYNAMIC );
-      for(ii=jj=0; zP4[jj]; ii++){
-        if( pTab->aCol[ii].colFlags & COLFLAG_VIRTUAL ){
-          continue;
+      पूर्णाङ्क ii, jj;
+      वर्ण *zP4 = pOp->p4.z;
+      प्रतिज्ञा( zP4!=0 );
+      प्रतिज्ञा( pOp->p4type==P4_DYNAMIC );
+      प्रति(ii=jj=0; zP4[jj]; ii++){
+        यदि( pTab->aCol[ii].colFlags & COLFLAG_VIRTUAL ){
+          अनुवर्त;
         }
-        if( pTab->aCol[ii].colFlags & COLFLAG_STORED ){
+        यदि( pTab->aCol[ii].colFlags & COLFLAG_STORED ){
           zP4[jj] = SQLITE_AFF_NONE;
         }
         jj++;
       }
-    }else if( pOp->opcode==OP_TypeCheck ){
+    }अन्यथा यदि( pOp->opcode==OP_TypeCheck ){
       /* If an OP_TypeCheck was generated because the table is STRICT,
       ** then set the P3 operand to indicate that generated columns should
       ** not be checked */
@@ -332,8 +332,8 @@ void sqlite3ComputeGeneratedColumns(
   ** this is a two-pass algorithm.  On the first pass, mark all generated
   ** columns as "not available".
   */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
+  प्रति(i=0; i<pTab->nCol; i++){
+    यदि( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
       testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
       testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
       pTab->aCol[i].colFlags |= COLFLAG_NOTAVAIL;
@@ -341,7 +341,7 @@ void sqlite3ComputeGeneratedColumns(
   }
 
   w.u.pTab = pTab;
-  w.xExprCallback = exprColumnFlagUnion;
+  w.x_व्यञ्जकम्_Callback = व्यञ्जकम्_Column_Flag_Union;
   w.xSelectCallback = 0;
   w.xSelectCallback2 = 0;
 
@@ -351,38 +351,38 @@ void sqlite3ComputeGeneratedColumns(
   ** they are needed.
   */
   pParse->iSelfTab = -iRegStore;
-  do{
-    eProgress = 0;
+  कुरु{
+    e_प्रगतिः = 0;
     pRedo = 0;
-    for(i=0; i<pTab->nCol; i++){
+    प्रति(i=0; i<pTab->nCol; i++){
       Column *pCol = pTab->aCol + i;
-      if( (pCol->colFlags & COLFLAG_NOTAVAIL)!=0 ){
-        int x;
+      यदि( (pCol->colFlags & COLFLAG_NOTAVAIL)!=0 ){
+        पूर्णाङ्क x;
         pCol->colFlags |= COLFLAG_BUSY;
-        w.eCode = 0;
-        sqlite3WalkExpr(&w, sqlite3ColumnExpr(pTab, pCol));
+        w.e_संहिता = 0;
+        sqlite3_Walk_व्यञ्जकम्(&w, sqlite3_Column_व्यञ्जकम्(pTab, pCol));
         pCol->colFlags &= ~COLFLAG_BUSY;
-        if( w.eCode & COLFLAG_NOTAVAIL ){
+        यदि( w.e_संहिता & COLFLAG_NOTAVAIL ){
           pRedo = pCol;
-          continue;
+          अनुवर्त;
         }
-        eProgress = 1;
-        assert( pCol->colFlags & COLFLAG_GENERATED );
-        x = sqlite3TableColumnToStorage(pTab, i) + iRegStore;
-        sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, x);
+        e_प्रगतिः = 1;
+        प्रतिज्ञा( pCol->colFlags & COLFLAG_GENERATED );
+        x = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, i) + iRegStore;
+        sqlite3_व्यञ्जकम्_संहिता_Generated_Column(pParse, pTab, pCol, x);
         pCol->colFlags &= ~COLFLAG_NOTAVAIL;
       }
     }
-  }while( pRedo && eProgress );
-  if( pRedo ){
-    sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
+  }यावत्( pRedo && e_प्रगतिः );
+  यदि( pRedo ){
+    sqlite3_Error_सन्देशः(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
   }
   pParse->iSelfTab = 0;
 }
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
+#यदि_अन्तः /* SQLITE_OMIT_GENERATED_COLUMNS */
 
 
-#ifndef SQLITE_OMIT_AUTOINCREMENT
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTOINCREMENT
 /*
 ** Locate or create an AutoincInfo structure associated with table pTab
 ** which is in database iDb.  Return the register number for the register
@@ -406,46 +406,46 @@ void sqlite3ComputeGeneratedColumns(
 ** The 2nd register is the one that is returned.  That is all the
 ** insert routine needs to know about.
 */
-static int autoIncBegin(
+स्थिर पूर्णाङ्क autoIncBegin(
   Parse *pParse,      /* Parsing context */
-  int iDb,            /* Index of the database holding pTab */
-  Table *pTab         /* The table we are writing to */
+  पूर्णाङ्क iDb,            /* Index of the database holding pTab */
+  सारणी *pTab         /* The table we are writing to */
 ){
-  int memId = 0;      /* Register holding maximum rowid */
-  assert( pParse->db->aDb[iDb].pSchema!=0 );
-  if( (pTab->tabFlags & TF_Autoincrement)!=0
+  पूर्णाङ्क memId = 0;      /* Register holding maximum rowid */
+  प्रतिज्ञा( pParse->db->aDb[iDb].pSchema!=0 );
+  यदि( (pTab->tabFlags & TF_Autoincrement)!=0
    && (pParse->db->mDbFlags & DBFLAG_Vacuum)==0
   ){
     Parse *pToplevel = sqlite3ParseToplevel(pParse);
     AutoincInfo *pInfo;
-    Table *pSeqTab = pParse->db->aDb[iDb].pSchema->pSeqTab;
+    सारणी *pSeqTab = pParse->db->aDb[iDb].pSchema->pSeqTab;
 
     /* Verify that the sqlite_sequence table exists and is an ordinary
     ** rowid table with exactly two columns.
     ** Ticket d8dc2b3a58cd5dc2918a1d4acb 2018-05-23 */
-    if( pSeqTab==0
+    यदि( pSeqTab==0
      || !HasRowid(pSeqTab)
      || NEVER(IsVirtual(pSeqTab))
      || pSeqTab->nCol!=2
     ){
       pParse->nErr++;
       pParse->rc = SQLITE_CORRUPT_SEQUENCE;
-      return 0;
+      प्रत्यागम 0;
     }
 
-    if( pToplevel->usesAinc==0 ){
+    यदि( pToplevel->उपयुङ्क्ते_Ainc==0 ){
       pToplevel->pAinc = 0;
     }
     pInfo = pToplevel->pAinc;
-    while( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->pNext; }
-    if( pInfo==0 ){
-      pInfo = sqlite3DbMallocRawNN(pParse->db, sizeof(*pInfo));
-      sqlite3ParserAddCleanup(pToplevel, sqlite3DbFree, pInfo);
+    यावत्( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->p_अग्र; }
+    यदि( pInfo==0 ){
+      pInfo = sqlite3DbMallocRawNN(pParse->db, परिमाण(*pInfo));
+      sqlite3_Parser_सङ्कलय_Cleanup(pToplevel, sqlite3DbFree, pInfo);
       testcase( pParse->earlyCleanup );
-      if( pParse->db->mallocFailed ) return 0;
-      pInfo->pNext = pToplevel->pAinc;
+      यदि( pParse->db->mallocFailed ) प्रत्यागम 0;
+      pInfo->p_अग्र = pToplevel->pAinc;
       pToplevel->pAinc = pInfo;
-      pToplevel->usesAinc = 1;
+      pToplevel->उपयुङ्क्ते_Ainc = 1;
       pInfo->pTab = pTab;
       pInfo->iDb = iDb;
       pToplevel->nMem++;                  /* Register to hold name of table */
@@ -454,51 +454,51 @@ static int autoIncBegin(
     }
     memId = pInfo->regCtr;
   }
-  return memId;
+  प्रत्यागम memId;
 }
 
 /*
 ** This routine generates code that will initialize all of the
 ** register used by the autoincrement tracker. 
 */
-void sqlite3AutoincrementBegin(Parse *pParse){
+शून्य sqlite3AutoincrementBegin(Parse *pParse){
   AutoincInfo *p;            /* Information about an AUTOINCREMENT */
   sqlite3 *db = pParse->db;  /* The database connection */
   Db *pDb;                   /* Database only autoinc table */
-  int memId;                 /* Register holding max rowid */
+  पूर्णाङ्क memId;                 /* Register holding max rowid */
   Vdbe *v = pParse->pVdbe;   /* VDBE under construction */
 
   /* This routine is never called during trigger-generation.  It is
   ** only called from the top-level */
-  assert( pParse->pTriggerTab==0 );
-  assert( sqlite3IsToplevel(pParse) );
+  प्रतिज्ञा( pParse->pTriggerTab==0 );
+  प्रतिज्ञा( sqlite3IsToplevel(pParse) );
 
-  assert( v );   /* We failed long ago if this is not so */
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoInc[] = {
+  प्रतिज्ञा( v );   /* We failed long ago if this is not so */
+  प्रतिज्ञा( pParse->उपयुङ्क्ते_Ainc );
+  प्रति(p = pParse->pAinc; p; p = p->p_अग्र){
+    स्थिर ध्रुव पूर्णाङ्क iLn = VDBE_विस्थापनम्_LINENO(2);
+    स्थिर ध्रुव VdbeOpList autoInc[] = {
       /* 0  */ {OP_Null,    0,  0, 0},
       /* 1  */ {OP_Rewind,  0, 10, 0},
       /* 2  */ {OP_Column,  0,  0, 0},
       /* 3  */ {OP_Ne,      0,  9, 0},
       /* 4  */ {OP_Rowid,   0,  0, 0},
       /* 5  */ {OP_Column,  0,  1, 0},
-      /* 6  */ {OP_AddImm,  0,  0, 0},
+      /* 6  */ {OP_सङ्कलय_Imm,  0,  0, 0},
       /* 7  */ {OP_Copy,    0,  0, 0},
       /* 8  */ {OP_Goto,    0, 11, 0},
-      /* 9  */ {OP_Next,    0,  2, 0},
+      /* 9  */ {OP_अग्र,    0,  2, 0},
       /* 10 */ {OP_Integer, 0,  0, 0},
       /* 11 */ {OP_Close,   0,  0, 0}
     };
     VdbeOp *aOp;
     pDb = &db->aDb[p->iDb];
     memId = p->regCtr;
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
-    sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenRead);
-    sqlite3VdbeLoadString(v, memId-1, p->pTab->zName);
-    aOp = sqlite3VdbeAddOpList(v, ArraySize(autoInc), autoInc, iLn);
-    if( aOp==0 ) break;
+    प्रतिज्ञा( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    sqlite3_Open_सारणी(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenRead);
+    sqlite3_Vdbe_आरोपय_String(v, memId-1, p->pTab->zName);
+    aOp = sqlite3_Vdbe_सङ्कलय_Op_List(v, Array_आकार(autoInc), autoInc, iLn);
+    यदि( aOp==0 ) भङ्ग;
     aOp[0].p2 = memId;
     aOp[0].p3 = memId+2;
     aOp[2].p3 = memId;
@@ -511,7 +511,7 @@ void sqlite3AutoincrementBegin(Parse *pParse){
     aOp[7].p2 = memId+2;
     aOp[7].p1 = memId;
     aOp[10].p2 = memId;
-    if( pParse->nTab==0 ) pParse->nTab = 1;
+    यदि( pParse->nTab==0 ) pParse->nTab = 1;
   }
 }
 
@@ -523,9 +523,9 @@ void sqlite3AutoincrementBegin(Parse *pParse){
 ** larger than the maximum rowid in the memId memory cell, then the
 ** memory cell is updated.
 */
-static void autoIncStep(Parse *pParse, int memId, int regRowid){
-  if( memId>0 ){
-    sqlite3VdbeAddOp2(pParse->pVdbe, OP_MemMax, memId, regRowid);
+स्थिर शून्य auto_Inc_चरणः(Parse *pParse, पूर्णाङ्क memId, पूर्णाङ्क regRowid){
+  यदि( memId>0 ){
+    sqlite3_Vdbe_सङ्कलय_Op2(pParse->pVdbe, OP_MemMax, memId, regRowid);
   }
 }
 
@@ -536,34 +536,34 @@ static void autoIncStep(Parse *pParse, int memId, int regRowid){
 ** table (either directly or through triggers) needs to call this
 ** routine just before the "exit" code.
 */
-static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
+स्थिर SQLITE_NOINLINE शून्य auto_Increment_अन्तः(Parse *pParse){
   AutoincInfo *p;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
-  assert( v );
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoIncEnd[] = {
+  प्रतिज्ञा( v );
+  प्रतिज्ञा( pParse->उपयुङ्क्ते_Ainc );
+  प्रति(p = pParse->pAinc; p; p = p->p_अग्र){
+    स्थिर ध्रुव पूर्णाङ्क iLn = VDBE_विस्थापनम्_LINENO(2);
+    स्थिर ध्रुव VdbeOpList auto_Inc_अन्तः[] = {
       /* 0 */ {OP_NotNull,     0, 2, 0},
       /* 1 */ {OP_NewRowid,    0, 0, 0},
-      /* 2 */ {OP_MakeRecord,  0, 2, 0},
-      /* 3 */ {OP_Insert,      0, 0, 0},
+      /* 2 */ {OP_Make_लेखः,  0, 2, 0},
+      /* 3 */ {OP_निवेशय,      0, 0, 0},
       /* 4 */ {OP_Close,       0, 0, 0}
     };
     VdbeOp *aOp;
     Db *pDb = &db->aDb[p->iDb];
-    int iRec;
-    int memId = p->regCtr;
+    पूर्णाङ्क iRec;
+    पूर्णाङ्क memId = p->regCtr;
 
-    iRec = sqlite3GetTempReg(pParse);
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
-    sqlite3VdbeAddOp3(v, OP_Le, memId+2, sqlite3VdbeCurrentAddr(v)+7, memId);
+    iRec = sqlite3_Get_अस्थायी_Reg(pParse);
+    प्रतिज्ञा( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Le, memId+2, sqlite3VdbeCurrentAddr(v)+7, memId);
     VdbeCoverage(v);
-    sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenWrite);
-    aOp = sqlite3VdbeAddOpList(v, ArraySize(autoIncEnd), autoIncEnd, iLn);
-    if( aOp==0 ) break;
+    sqlite3_Open_सारणी(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenWrite);
+    aOp = sqlite3_Vdbe_सङ्कलय_Op_List(v, Array_आकार(auto_Inc_अन्तः), auto_Inc_अन्तः, iLn);
+    यदि( aOp==0 ) भङ्ग;
     aOp[0].p1 = memId+1;
     aOp[1].p2 = memId+1;
     aOp[2].p1 = memId-1;
@@ -571,33 +571,33 @@ static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
     aOp[3].p2 = iRec;
     aOp[3].p3 = memId+1;
     aOp[3].p5 = OPFLAG_APPEND;
-    sqlite3ReleaseTempReg(pParse, iRec);
+    sqlite3_Release_अस्थायी_Reg(pParse, iRec);
   }
 }
-void sqlite3AutoincrementEnd(Parse *pParse){
-  if( pParse->usesAinc ) autoIncrementEnd(pParse);
+शून्य sqlite3_Autoincrement_अन्तः(Parse *pParse){
+  यदि( pParse->उपयुङ्क्ते_Ainc ) auto_Increment_अन्तः(pParse);
 }
-#else
+#अन्यथा
 /*
 ** If SQLITE_OMIT_AUTOINCREMENT is defined, then the three routines
 ** above are all no-ops
 */
 # define autoIncBegin(A,B,C) (0)
-# define autoIncStep(A,B,C)
-#endif /* SQLITE_OMIT_AUTOINCREMENT */
+# define auto_Inc_चरणः(A,B,C)
+#यदि_अन्तः /* SQLITE_OMIT_AUTOINCREMENT */
 
 /*
 ** If argument pVal is a Select object returned by an sqlite3MultiValues()
 ** that was able to use the co-routine optimization, finish coding the
 ** co-routine.
 */
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
-  if( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
+शून्य sqlite3_Multi_मानानि_अन्तः(Parse *pParse, Select *pVal){
+  यदि( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
     SrcItem *pItem = &pVal->pSrc->a[0];
-    assert( (pItem->fg.isSubquery && pItem->u4.pSubq!=0) || pParse->nErr );
-    if( pItem->fg.isSubquery ){
-      sqlite3VdbeEndCoroutine(pParse->pVdbe, pItem->u4.pSubq->regReturn);
-      sqlite3VdbeJumpHere(pParse->pVdbe, pItem->u4.pSubq->addrFillSub - 1);
+    प्रतिज्ञा( (pItem->fg.isSubquery && pItem->u4.pSubq!=0) || pParse->nErr );
+    यदि( pItem->fg.isSubquery ){
+      sqlite3_Vdbe_अन्तः_Coroutine(pParse->pVdbe, pItem->u4.pSubq->regReturn);
+      sqlite3_Vdbe_Jump_अत्र(pParse->pVdbe, pItem->u4.pSubq->addrFillSub - 1);
     }
   }
 }
@@ -606,16 +606,16 @@ void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
 ** Return true if all expressions in the expression-list passed as the
 ** only argument are both constant and have no affinity.
 */
-static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
-  int ii;
-  if( sqlite3ExprListIsConstant(pParse, pRow, 0)==0 ) return 0;
-  for(ii=0; ii<pRow->nExpr; ii++){
-    Expr *pExpr = pRow->a[ii].pExpr;
-    assert( pExpr->op!=TK_RAISE );
-    assert( pExpr->affExpr==0 );
-    if( 0!=sqlite3ExprAffinity(pExpr) ) return 0;
+स्थिर पूर्णाङ्क व्यञ्जकम्_List_Is_No_Affinity(Parse *pParse, व्यञ्जकम्_List *pRow){
+  पूर्णाङ्क ii;
+  यदि( sqlite3_व्यञ्जकम्_List_Is_Constant(pParse, pRow, 0)==0 ) प्रत्यागम 0;
+  प्रति(ii=0; ii<pRow->n_व्यञ्जकम्; ii++){
+    व्यञ्जकम् *p_व्यञ्जकम् = pRow->a[ii].p_व्यञ्जकम्;
+    प्रतिज्ञा( p_व्यञ्जकम्->op!=TK_RAISE );
+    प्रतिज्ञा( p_व्यञ्जकम्->aff_व्यञ्जकम्==0 );
+    यदि( 0!=sqlite3_व्यञ्जकम्_Affinity(p_व्यञ्जकम्) ) प्रत्यागम 0;
   }
-  return 1;
+  प्रत्यागम 1;
 
 }
 
@@ -670,36 +670,36 @@ static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
 **       affinity of such a column for all rows require access to all values in
 **       the column simultaneously. 
 */
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
+Select *sqlite3_Multi_मानानि(Parse *pParse, Select *p_वामः, व्यञ्जकम्_List *pRow){
 
-  if( pParse->bHasWith                   /* condition (a) above */
+  यदि( pParse->bHasWith                   /* condition (a) above */
    || pParse->db->init.busy              /* condition (b) above */
-   || sqlite3ExprListIsConstant(pParse, pRow, 1)==0   /* condition (c) above */
-   || (pLeft->pSrc->nSrc==0 &&
-       exprListIsNoAffinity(pParse,pLeft->pEList)==0) /* condition (d) above */
-   || IN_SPECIAL_PARSE
+   || sqlite3_व्यञ्जकम्_List_Is_Constant(pParse, pRow, 1)==0   /* condition (c) above */
+   || (p_वामः->pSrc->nSrc==0 &&
+       व्यञ्जकम्_List_Is_No_Affinity(pParse,p_वामः->pEList)==0) /* condition (d) above */
+   || अन्तर्_SPECIAL_PARSE
   ){
     /* The co-routine method cannot be used. Fall back to UNION ALL. */
     Select *pSelect = 0;
-    int f = SF_Values | SF_MultiValue;
-    if( pLeft->pSrc->nSrc ){
-      sqlite3MultiValuesEnd(pParse, pLeft);
-      f = SF_Values;
-    }else if( pLeft->pPrior ){
+    पूर्णाङ्क f = SF_मानानि | SF_Multi_मानम्;
+    यदि( p_वामः->pSrc->nSrc ){
+      sqlite3_Multi_मानानि_अन्तः(pParse, p_वामः);
+      f = SF_मानानि;
+    }अन्यथा यदि( p_वामः->p_प्राक् ){
       /* In this case set the SF_MultiValue flag only if it was set on pLeft */
-      f = (f & pLeft->selFlags);
+      f = (f & p_वामः->selFlags);
     }
     pSelect = sqlite3SelectNew(pParse, pRow, 0, 0, 0, 0, 0, f, 0);
-    pLeft->selFlags &= ~(u32)SF_MultiValue;
-    if( pSelect ){
+    p_वामः->selFlags &= ~(u32)SF_Multi_मानम्;
+    यदि( pSelect ){
       pSelect->op = TK_ALL;
-      pSelect->pPrior = pLeft;
-      pLeft = pSelect;
+      pSelect->p_प्राक् = p_वामः;
+      p_वामः = pSelect;
     }
-  }else{
+  }अन्यथा{
     SrcItem *p = 0;               /* SrcItem that reads from co-routine */
 
-    if( pLeft->pSrc->nSrc==0 ){
+    यदि( p_वामः->pSrc->nSrc==0 ){
       /* Co-routine has not yet been started and the special Select object
       ** that accesses the co-routine has not yet been created. This block 
       ** does both those things. */
@@ -708,31 +708,31 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
 
       /* Ensure the database schema has been read. This is to ensure we have
       ** the correct text encoding.  */
-      if( (pParse->db->mDbFlags & DBFLAG_SchemaKnownOk)==0 ){
+      यदि( (pParse->db->mDbFlags & DBFLAG_Schema_ज्ञातम्_Ok)==0 ){
         sqlite3ReadSchema(pParse);
       }
 
-      if( pRet ){
+      यदि( pRet ){
         SelectDest dest;
         Subquery *pSubq;
         pRet->pSrc->nSrc = 1;
-        pRet->pPrior = pLeft->pPrior;
-        pRet->op = pLeft->op;
-        if( pRet->pPrior ) pRet->selFlags |= SF_Values;
-        pLeft->pPrior = 0;
-        pLeft->op = TK_SELECT;
-        assert( pLeft->pNext==0 );
-        assert( pRet->pNext==0 );
+        pRet->p_प्राक् = p_वामः->p_प्राक्;
+        pRet->op = p_वामः->op;
+        यदि( pRet->p_प्राक् ) pRet->selFlags |= SF_मानानि;
+        p_वामः->p_प्राक् = 0;
+        p_वामः->op = TK_SELECT;
+        प्रतिज्ञा( p_वामः->p_अग्र==0 );
+        प्रतिज्ञा( pRet->p_अग्र==0 );
         p = &pRet->pSrc->a[0];
-        p->fg.viaCoroutine = 1;
+        p->fg.द्वारा_Coroutine = 1;
         p->iCursor = -1;
-        assert( !p->fg.isIndexedBy && !p->fg.isTabFunc );
+        प्रतिज्ञा( !p->fg.is_अनुक्रमितम्_By && !p->fg.isTabFunc );
         p->u1.nRow = 2;
-        if( sqlite3SrcItemAttachSubquery(pParse, p, pLeft, 0) ){
+        यदि( sqlite3SrcItemAttachSubquery(pParse, p, p_वामः, 0) ){
           pSubq = p->u4.pSubq;
           pSubq->addrFillSub = sqlite3VdbeCurrentAddr(v) + 1;
           pSubq->regReturn = ++pParse->nMem;
-          sqlite3VdbeAddOp3(v, OP_InitCoroutine,
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_InitCoroutine,
                             pSubq->regReturn, 0, pSubq->addrFillSub);
           sqlite3SelectDestInit(&dest, SRT_Coroutine, pSubq->regReturn);
 
@@ -742,50 +742,50 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
           ** to use these registers directly, instead of copying the output
           ** of the co-routine to a separate array for processing.  */
           dest.iSdst = pParse->nMem + 3; 
-          dest.nSdst = pLeft->pEList->nExpr;
+          dest.nSdst = p_वामः->pEList->n_व्यञ्जकम्;
           pParse->nMem += 2 + dest.nSdst;
 
-          pLeft->selFlags |= SF_MultiValue;
-          sqlite3Select(pParse, pLeft, &dest);
-          pSubq->regResult = dest.iSdst;
-          assert( pParse->nErr || dest.iSdst>0 );
+          p_वामः->selFlags |= SF_Multi_मानम्;
+          sqlite3Select(pParse, p_वामः, &dest);
+          pSubq->reg_परिणाम = dest.iSdst;
+          प्रतिज्ञा( pParse->nErr || dest.iSdst>0 );
         }
-        pLeft = pRet;
+        p_वामः = pRet;
       }
-    }else{
-      p = &pLeft->pSrc->a[0];
-      assert( !p->fg.isTabFunc && !p->fg.isIndexedBy );
+    }अन्यथा{
+      p = &p_वामः->pSrc->a[0];
+      प्रतिज्ञा( !p->fg.isTabFunc && !p->fg.is_अनुक्रमितम्_By );
       p->u1.nRow++;
     }
   
-    if( pParse->nErr==0 ){
+    यदि( pParse->nErr==0 ){
       Subquery *pSubq;
-      assert( p!=0 );
-      assert( p->fg.isSubquery );
+      प्रतिज्ञा( p!=0 );
+      प्रतिज्ञा( p->fg.isSubquery );
       pSubq = p->u4.pSubq;
-      assert( pSubq!=0 );
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      if( pSubq->pSelect->pEList->nExpr!=pRow->nExpr ){
-        sqlite3SelectWrongNumTermsError(pParse, pSubq->pSelect);
-      }else{
-        sqlite3ExprCodeExprList(pParse, pRow, pSubq->regResult, 0, 0);
-        sqlite3VdbeAddOp1(pParse->pVdbe, OP_Yield, pSubq->regReturn);
+      प्रतिज्ञा( pSubq!=0 );
+      प्रतिज्ञा( pSubq->pSelect!=0 );
+      प्रतिज्ञा( pSubq->pSelect->pEList!=0 );
+      यदि( pSubq->pSelect->pEList->n_व्यञ्जकम्!=pRow->n_व्यञ्जकम् ){
+        sqlite3_Select_Wrong_अङ्कः_Terms_Error(pParse, pSubq->pSelect);
+      }अन्यथा{
+        sqlite3_व्यञ्जकम्_संहिता_व्यञ्जकम्_List(pParse, pRow, pSubq->reg_परिणाम, 0, 0);
+        sqlite3_Vdbe_सङ्कलय_Op1(pParse->pVdbe, OP_Yield, pSubq->regReturn);
       }
     }
-    sqlite3ExprListDelete(pParse->db, pRow);
+    sqlite3_व्यञ्जकम्_List_Delete(pParse->db, pRow);
   }
 
-  return pLeft;
+  प्रत्यागम p_वामः;
 }
 
 /* Forward declaration */
-static int xferOptimization(
+स्थिर पूर्णाङ्क xferOptimization(
   Parse *pParse,        /* Parser context */
-  Table *pDest,         /* The table we are inserting into */
+  सारणी *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  पूर्णाङ्क onError,          /* How to handle constraint errors */
+  पूर्णाङ्क iDbDest           /* The database of pDest */
 );
 
 /*
@@ -885,66 +885,66 @@ static int xferOptimization(
 **         end loop
 **      D: cleanup
 */
-void sqlite3Insert(
+शून्य sqlite3_निवेशय(
   Parse *pParse,        /* Parser context */
   SrcList *pTabList,    /* Name of table into which we are inserting */
   Select *pSelect,      /* A SELECT statement to use as the data source */
   IdList *pColumn,      /* Column names corresponding to IDLIST, or NULL. */
-  int onError,          /* How to handle constraint errors */
+  पूर्णाङ्क onError,          /* How to handle constraint errors */
   Upsert *pUpsert       /* ON CONFLICT clauses for upsert, or NULL */
 ){
   sqlite3 *db;          /* The main database structure */
-  Table *pTab;          /* The table to insert into.  aka TABLE */
-  int i, j;             /* Loop counters */
+  सारणी *pTab;          /* The table to insert into.  aka TABLE */
+  पूर्णाङ्क i, j;             /* Loop counters */
   Vdbe *v;              /* Generate code into this virtual machine */
-  Index *pIdx;          /* For looping over indices of the table */
-  int nColumn;          /* Number of columns in the data */
-  int nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
-  int iDataCur = 0;     /* VDBE cursor that is the main data repository */
-  int iIdxCur = 0;      /* First index cursor */
-  int ipkColumn = -1;   /* Column that is the INTEGER PRIMARY KEY */
-  int endOfLoop;        /* Label for the end of the insertion loop */
-  int srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
-  int addrInsTop = 0;   /* Jump to label "D" */
-  int addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
+  सूचकांक *pIdx;          /* For looping over indices of the table */
+  पूर्णाङ्क nColumn;          /* Number of columns in the data */
+  पूर्णाङ्क nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
+  पूर्णाङ्क i_दत्त_Cur = 0;     /* VDBE cursor that is the main data repository */
+  पूर्णाङ्क iIdxCur = 0;      /* First index cursor */
+  पूर्णाङ्क ipkColumn = -1;   /* Column that is the INTEGER PRIMARY KEY */
+  पूर्णाङ्क अन्तः_सम्बन्धि_Loop;        /* Label for the end of the insertion loop */
+  पूर्णाङ्क srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
+  पूर्णाङ्क addr_Ins_शिखरम् = 0;   /* Jump to label "D" */
+  पूर्णाङ्क addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
   SelectDest dest;      /* Destination for SELECT on rhs of INSERT */
-  int iDb;              /* Index of database holding TABLE */
-  u8 useTempTable = 0;  /* Store SELECT results in intermediate table */
+  पूर्णाङ्क iDb;              /* Index of database holding TABLE */
+  u8 use_अस्थायी_सारणी = 0;  /* Store SELECT results in intermediate table */
   u8 appendFlag = 0;    /* True if the insert is likely to be an append */
   u8 withoutRowid;      /* 0 for normal table.  1 for WITHOUT ROWID table */
-  u8 bIdListInOrder;    /* True if IDLIST is in table order */
-  ExprList *pList = 0;  /* List of VALUES() to be inserted  */
-  int iRegStore;        /* Register in which to store next column */
+  u8 b_Id_List_अन्तर्_क्रमः;    /* True if IDLIST is in table order */
+  व्यञ्जकम्_List *pList = 0;  /* List of VALUES() to be inserted  */
+  पूर्णाङ्क iRegStore;        /* Register in which to store next column */
 
   /* Register allocations */
-  int regFromSelect = 0;/* Base register for data coming from SELECT */
-  int regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
-  int regRowCount = 0;  /* Memory cell used for the row counter */
-  int regIns;           /* Block of regs holding rowid+data being inserted */
-  int regRowid;         /* registers holding insert rowid */
-  int regData;          /* register holding first column to insert */
-  int *aRegIdx = 0;     /* One register allocated to each index */
-  int *aTabColMap = 0;  /* Mapping from pTab columns to pCol entries */
+  पूर्णाङ्क regFromSelect = 0;/* Base register for data coming from SELECT */
+  पूर्णाङ्क regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
+  पूर्णाङ्क reg_Row_गणनम् = 0;  /* Memory cell used for the row counter */
+  पूर्णाङ्क regIns;           /* Block of regs holding rowid+data being inserted */
+  पूर्णाङ्क regRowid;         /* registers holding insert rowid */
+  पूर्णाङ्क reg_दत्त;          /* register holding first column to insert */
+  पूर्णाङ्क *aRegIdx = 0;     /* One register allocated to each index */
+  पूर्णाङ्क *aTabColMap = 0;  /* Mapping from pTab columns to pCol entries */
 
-#ifndef SQLITE_OMIT_TRIGGER
-  int isView;                 /* True if attempting to insert into a view */
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
+  पूर्णाङ्क isView;                 /* True if attempting to insert into a view */
   Trigger *pTrigger;          /* List of triggers on pTab, if required */
-  int tmask;                  /* Mask of trigger times */
-#endif
+  पूर्णाङ्क tmask;                  /* Mask of trigger times */
+#यदि_अन्तः
 
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ){
-    goto insert_cleanup;
+  प्रतिज्ञा( db->pParse==pParse );
+  यदि( pParse->nErr ){
+    गच्छ निवेशय_cleanup;
   }
-  assert( db->mallocFailed==0 );
+  प्रतिज्ञा( db->mallocFailed==0 );
   dest.iSDParm = 0;  /* Suppress a harmless compiler warning */
 
   /* If the Select object is really just a simple VALUES() list with a
   ** single row (the common case) then keep that one row of values
   ** and discard the other (unused) parts of the pSelect object
   */
-  if( pSelect && (pSelect->selFlags & SF_Values)!=0 && pSelect->pPrior==0 ){
+  यदि( pSelect && (pSelect->selFlags & SF_मानानि)!=0 && pSelect->p_प्राक्==0 ){
     pList = pSelect->pEList;
     pSelect->pEList = 0;
     sqlite3SelectDelete(db, pSelect);
@@ -953,65 +953,65 @@ void sqlite3Insert(
 
   /* Locate the table into which we will be inserting new information.
   */
-  assert( pTabList->nSrc==1 );
+  प्रतिज्ञा( pTabList->nSrc==1 );
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 ){
-    goto insert_cleanup;
+  यदि( pTab==0 ){
+    गच्छ निवेशय_cleanup;
   }
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb<db->nDb );
-  if( sqlite3AuthCheck(pParse, SQLITE_INSERT, pTab->zName, 0,
+  iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pTab->pSchema);
+  प्रतिज्ञा( iDb<db->nDb );
+  यदि( sqlite3AuthCheck(pParse, SQLITE_निवेशय, pTab->zName, 0,
                        db->aDb[iDb].zDbSName) ){
-    goto insert_cleanup;
+    गच्छ निवेशय_cleanup;
   }
   withoutRowid = !HasRowid(pTab);
 
   /* Figure out if we have any triggers and if the table being
   ** inserted into is a view
   */
-#ifndef SQLITE_OMIT_TRIGGER
-  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_INSERT, 0, &tmask);
+#यदि_अपरिभाषितम् SQLITE_OMIT_TRIGGER
+  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_निवेशय, 0, &tmask);
   isView = IsView(pTab);
-#else
+#अन्यथा
 # define pTrigger 0
 # define tmask 0
 # define isView 0
-#endif
-#ifdef SQLITE_OMIT_VIEW
+#यदि_अन्तः
+#यदि_परिभाषितम् SQLITE_OMIT_VIEW
 # undef isView
 # define isView 0
-#endif
-  assert( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
+#यदि_अन्तः
+  प्रतिज्ञा( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewInsert(pParse->pWith, pTabList, pColumn, pSelect, pList,
+#यदि TREETRACE_ENABLED
+  यदि( sqlite3_वृक्षः_Trace & 0x10000 ){
+    sqlite3_वृक्षः_View_पङ्क्तिः(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
+    sqlite3_वृक्षः_View_निवेशय(pParse->pWith, pTabList, pColumn, pSelect, pList,
                           onError, pUpsert, pTrigger);
   }
-#endif
+#यदि_अन्तः
 
   /* If pTab is really a view, make sure it has been initialized.
   ** ViewGetColumnNames() is a no-op if pTab is not a view.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto insert_cleanup;
+  यदि( sqlite3_View_Get_Column_नामानि(pParse, pTab) ){
+    गच्छ निवेशय_cleanup;
   }
 
   /* Cannot insert into a read-only table.
   */
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
-    goto insert_cleanup;
+  यदि( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+    गच्छ निवेशय_cleanup;
   }
 
   /* Allocate a VDBE
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ) goto insert_cleanup;
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  यदि( v==0 ) गच्छ निवेशय_cleanup;
+  यदि( pParse->nested==0 ) sqlite3_Vdbe_गणनम्_Changes(v);
   sqlite3BeginWriteOperation(pParse, pSelect || pTrigger, iDb);
 
-#ifndef SQLITE_OMIT_XFER_OPT
+#यदि_अपरिभाषितम् SQLITE_OMIT_XFER_OPT
   /* If the statement is of the form
   **
   **       INSERT INTO <table1> SELECT * FROM <table2>;
@@ -1021,16 +1021,16 @@ void sqlite3Insert(
   **
   ** This is the 2nd template.
   */
-  if( pColumn==0
+  यदि( pColumn==0
    && pSelect!=0
    && pTrigger==0
    && xferOptimization(pParse, pTab, pSelect, onError, iDb)
   ){
-    assert( !pTrigger );
-    assert( pList==0 );
-    goto insert_end;
+    प्रतिज्ञा( !pTrigger );
+    प्रतिज्ञा( pList==0 );
+    गच्छ निवेशय_अन्तः;
   }
-#endif /* SQLITE_OMIT_XFER_OPT */
+#यदि_अन्तः /* SQLITE_OMIT_XFER_OPT */
 
   /* If this is an AUTOINCREMENT table, look up the sequence number in the
   ** sqlite_sequence table and store it in memory cell regAutoinc.
@@ -1042,11 +1042,11 @@ void sqlite3Insert(
   */
   regRowid = regIns = pParse->nMem+1;
   pParse->nMem += pTab->nCol + 1;
-  if( IsVirtual(pTab) ){
+  यदि( IsVirtual(pTab) ){
     regRowid++;
     pParse->nMem++;
   }
-  regData = regRowid+1;
+  reg_दत्त = regRowid+1;
 
   /* If the INSERT statement included an IDLIST term, then make sure
   ** all elements of the IDLIST really are columns of the table and
@@ -1067,35 +1067,35 @@ void sqlite3Insert(
   ** columns into storage order.  False negatives are harmless,
   ** but false positives will cause database corruption.
   */
-  bIdListInOrder = (pTab->tabFlags & (TF_OOOHidden|TF_HasStored))==0;
-  if( pColumn ){
-    aTabColMap = sqlite3DbMallocZero(db, pTab->nCol*sizeof(int));
-    if( aTabColMap==0 ) goto insert_cleanup;
-    for(i=0; i<pColumn->nId; i++){
-      j = sqlite3ColumnIndex(pTab, pColumn->a[i].zName);
-      if( j>=0 ){
-        if( aTabColMap[j]==0 ) aTabColMap[j] = i+1;
-        if( i!=j ) bIdListInOrder = 0;
-        if( j==pTab->iPKey ){
-          ipkColumn = i;  assert( !withoutRowid );
+  b_Id_List_अन्तर्_क्रमः = (pTab->tabFlags & (TF_OOOHidden|TF_HasStored))==0;
+  यदि( pColumn ){
+    aTabColMap = sqlite3DbMallocZero(db, pTab->nCol*परिमाण(पूर्णाङ्क));
+    यदि( aTabColMap==0 ) गच्छ निवेशय_cleanup;
+    प्रति(i=0; i<pColumn->nId; i++){
+      j = sqlite3_Column_सूचकांक(pTab, pColumn->a[i].zName);
+      यदि( j>=0 ){
+        यदि( aTabColMap[j]==0 ) aTabColMap[j] = i+1;
+        यदि( i!=j ) b_Id_List_अन्तर्_क्रमः = 0;
+        यदि( j==pTab->iPKey ){
+          ipkColumn = i;  प्रतिज्ञा( !withoutRowid );
         }
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-        if( pTab->aCol[j].colFlags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
-          sqlite3ErrorMsg(pParse,
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
+        यदि( pTab->aCol[j].colFlags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
+          sqlite3_Error_सन्देशः(pParse,
              "cannot INSERT into generated column \"%s\"",
              pTab->aCol[j].zCnName);
-          goto insert_cleanup;
+          गच्छ निवेशय_cleanup;
         }
-#endif
-      }else{
-        if( sqlite3IsRowid(pColumn->a[i].zName) && !withoutRowid ){
+#यदि_अन्तः
+      }अन्यथा{
+        यदि( sqlite3IsRowid(pColumn->a[i].zName) && !withoutRowid ){
           ipkColumn = i;
-          bIdListInOrder = 0;
-        }else{
-          sqlite3ErrorMsg(pParse, "table %S has no column named %s",
+          b_Id_List_अन्तर्_क्रमः = 0;
+        }अन्यथा{
+          sqlite3_Error_सन्देशः(pParse, "table %S has no column named %s",
               pTabList->a, pColumn->a[i].zName);
           pParse->checkSchema = 1;
-          goto insert_cleanup;
+          गच्छ निवेशय_cleanup;
         }
       }
     }
@@ -1106,47 +1106,47 @@ void sqlite3Insert(
   ** produces a single row of the SELECT on each invocation.  The
   ** co-routine is the common header to the 3rd and 4th templates.
   */
-  if( pSelect ){
+  यदि( pSelect ){
     /* Data is coming from a SELECT or from a multi-row VALUES clause.
     ** Generate a co-routine to run the SELECT. */
-    int rc;             /* Result code */
+    पूर्णाङ्क rc;             /* Result code */
 
-    if( pSelect->pSrc->nSrc==1 
-     && pSelect->pSrc->a[0].fg.viaCoroutine 
-     && pSelect->pPrior==0
+    यदि( pSelect->pSrc->nSrc==1 
+     && pSelect->pSrc->a[0].fg.द्वारा_Coroutine 
+     && pSelect->p_प्राक्==0
     ){
       SrcItem *pItem = &pSelect->pSrc->a[0];
       Subquery *pSubq;
-      assert( pItem->fg.isSubquery );
+      प्रतिज्ञा( pItem->fg.isSubquery );
       pSubq = pItem->u4.pSubq;
       dest.iSDParm = pSubq->regReturn;
-      regFromSelect = pSubq->regResult;
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      nColumn = pSubq->pSelect->pEList->nExpr;
+      regFromSelect = pSubq->reg_परिणाम;
+      प्रतिज्ञा( pSubq->pSelect!=0 );
+      प्रतिज्ञा( pSubq->pSelect->pEList!=0 );
+      nColumn = pSubq->pSelect->pEList->n_व्यञ्जकम्;
       ExplainQueryPlan((pParse, 0, "SCAN %S", pItem));
-      if( bIdListInOrder && nColumn==pTab->nCol ){
-        regData = regFromSelect;
-        regRowid = regData - 1;
+      यदि( b_Id_List_अन्तर्_क्रमः && nColumn==pTab->nCol ){
+        reg_दत्त = regFromSelect;
+        regRowid = reg_दत्त - 1;
         regIns = regRowid - (IsVirtual(pTab) ? 1 : 0);
       }
-    }else{
-      int addrTop;        /* Top of the co-routine */
-      int regYield = ++pParse->nMem;
-      addrTop = sqlite3VdbeCurrentAddr(v) + 1;
-      sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, addrTop);
+    }अन्यथा{
+      पूर्णाङ्क addr_शिखरम्;        /* Top of the co-routine */
+      पूर्णाङ्क regYield = ++pParse->nMem;
+      addr_शिखरम् = sqlite3VdbeCurrentAddr(v) + 1;
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_InitCoroutine, regYield, 0, addr_शिखरम्);
       sqlite3SelectDestInit(&dest, SRT_Coroutine, regYield);
-      dest.iSdst = bIdListInOrder ? regData : 0;
+      dest.iSdst = b_Id_List_अन्तर्_क्रमः ? reg_दत्त : 0;
       dest.nSdst = pTab->nCol;
       rc = sqlite3Select(pParse, pSelect, &dest);
       regFromSelect = dest.iSdst;
-      assert( db->pParse==pParse );
-      if( rc || pParse->nErr ) goto insert_cleanup;
-      assert( db->mallocFailed==0 );
-      sqlite3VdbeEndCoroutine(v, regYield);
-      sqlite3VdbeJumpHere(v, addrTop - 1);                       /* label B: */
-      assert( pSelect->pEList );
-      nColumn = pSelect->pEList->nExpr;
+      प्रतिज्ञा( db->pParse==pParse );
+      यदि( rc || pParse->nErr ) गच्छ निवेशय_cleanup;
+      प्रतिज्ञा( db->mallocFailed==0 );
+      sqlite3_Vdbe_अन्तः_Coroutine(v, regYield);
+      sqlite3_Vdbe_Jump_अत्र(v, addr_शिखरम् - 1);                       /* label B: */
+      प्रतिज्ञा( pSelect->pEList );
+      nColumn = pSelect->pEList->n_व्यञ्जकम्;
     }
 
     /* Set useTempTable to TRUE if the result of the SELECT statement
@@ -1158,11 +1158,11 @@ void sqlite3Insert(
     ** of the tables being read by the SELECT statement.  Also use a
     ** temp table in the case of row triggers.
     */
-    if( pTrigger || readsTable(pParse, iDb, pTab) ){
-      useTempTable = 1;
+    यदि( pTrigger || reads_सारणी(pParse, iDb, pTab) ){
+      use_अस्थायी_सारणी = 1;
     }
 
-    if( useTempTable ){
+    यदि( use_अस्थायी_सारणी ){
       /* Invoke the coroutine to extract information from the SELECT
       ** and add it to a transient table srcTab.  The code generated
       ** here is from the 4th template:
@@ -1173,38 +1173,38 @@ void sqlite3Insert(
       **         goto L
       **      M: ...
       */
-      int regRec;          /* Register to hold packed record */
-      int regTempRowid;    /* Register to hold temp table ROWID */
-      int addrL;           /* Label "L" */
+      पूर्णाङ्क regRec;          /* Register to hold packed record */
+      पूर्णाङ्क reg_अस्थायी_Rowid;    /* Register to hold temp table ROWID */
+      पूर्णाङ्क addrL;           /* Label "L" */
 
       srcTab = pParse->nTab++;
-      regRec = sqlite3GetTempReg(pParse);
-      regTempRowid = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp2(v, OP_OpenEphemeral, srcTab, nColumn);
-      addrL = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm); VdbeCoverage(v);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regFromSelect, nColumn, regRec);
-      sqlite3VdbeAddOp2(v, OP_NewRowid, srcTab, regTempRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, srcTab, regRec, regTempRowid);
+      regRec = sqlite3_Get_अस्थायी_Reg(pParse);
+      reg_अस्थायी_Rowid = sqlite3_Get_अस्थायी_Reg(pParse);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_OpenEphemeral, srcTab, nColumn);
+      addrL = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Yield, dest.iSDParm); VdbeCoverage(v);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Make_लेखः, regFromSelect, nColumn, regRec);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_NewRowid, srcTab, reg_अस्थायी_Rowid);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_निवेशय, srcTab, regRec, reg_अस्थायी_Rowid);
       sqlite3VdbeGoto(v, addrL);
-      sqlite3VdbeJumpHere(v, addrL);
-      sqlite3ReleaseTempReg(pParse, regRec);
-      sqlite3ReleaseTempReg(pParse, regTempRowid);
+      sqlite3_Vdbe_Jump_अत्र(v, addrL);
+      sqlite3_Release_अस्थायी_Reg(pParse, regRec);
+      sqlite3_Release_अस्थायी_Reg(pParse, reg_अस्थायी_Rowid);
     }
-  }else{
+  }अन्यथा{
     /* This is the case if the data for the INSERT is coming from a
     ** single-row VALUES clause
     */
     NameContext sNC;
-    memset(&sNC, 0, sizeof(sNC));
+    स्मृतिं_पूरय(&sNC, 0, परिमाण(sNC));
     sNC.pParse = pParse;
     srcTab = -1;
-    assert( useTempTable==0 );
-    if( pList ){
-      nColumn = pList->nExpr;
-      if( sqlite3ResolveExprListNames(&sNC, pList) ){
-        goto insert_cleanup;
+    प्रतिज्ञा( use_अस्थायी_सारणी==0 );
+    यदि( pList ){
+      nColumn = pList->n_व्यञ्जकम्;
+      यदि( sqlite3_Resolve_व्यञ्जकम्_List_नामानि(&sNC, pList) ){
+        गच्छ निवेशय_cleanup;
       }
-    }else{
+    }अन्यथा{
       nColumn = 0;
     }
   }
@@ -1213,107 +1213,107 @@ void sqlite3Insert(
   ** key, the set the ipkColumn variable to the integer primary key
   ** column index in the original table definition.
   */
-  if( pColumn==0 && nColumn>0 ){
+  यदि( pColumn==0 && nColumn>0 ){
     ipkColumn = pTab->iPKey;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    if( ipkColumn>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
+    यदि( ipkColumn>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
-      for(i=ipkColumn-1; i>=0; i--){
-        if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
+      प्रति(i=ipkColumn-1; i>=0; i--){
+        यदि( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
           testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
           testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
           ipkColumn--;
         }
       }
     }
-#endif
+#यदि_अन्तः
 
     /* Make sure the number of columns in the source data matches the number
     ** of columns to be inserted into the table.
     */
-    assert( TF_HasHidden==COLFLAG_HIDDEN );
-    assert( TF_HasGenerated==COLFLAG_GENERATED );
-    assert( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
-    if( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
-      for(i=0; i<pTab->nCol; i++){
-        if( pTab->aCol[i].colFlags & COLFLAG_NOINSERT ) nHidden++;
+    प्रतिज्ञा( TF_HasHidden==COLFLAG_HIDDEN );
+    प्रतिज्ञा( TF_HasGenerated==COLFLAG_GENERATED );
+    प्रतिज्ञा( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
+    यदि( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
+      प्रति(i=0; i<pTab->nCol; i++){
+        यदि( pTab->aCol[i].colFlags & COLFLAG_NOINSERT ) nHidden++;
       }
     }
-    if( nColumn!=(pTab->nCol-nHidden) ){
-      sqlite3ErrorMsg(pParse,
+    यदि( nColumn!=(pTab->nCol-nHidden) ){
+      sqlite3_Error_सन्देशः(pParse,
          "table %S has %d columns but %d values were supplied",
          pTabList->a, pTab->nCol-nHidden, nColumn);
-     goto insert_cleanup;
+     गच्छ निवेशय_cleanup;
     }
   }
-  if( pColumn!=0 && nColumn!=pColumn->nId ){
-    sqlite3ErrorMsg(pParse, "%d values for %d columns", nColumn, pColumn->nId);
-    goto insert_cleanup;
+  यदि( pColumn!=0 && nColumn!=pColumn->nId ){
+    sqlite3_Error_सन्देशः(pParse, "%d values for %d columns", nColumn, pColumn->nId);
+    गच्छ निवेशय_cleanup;
   }
    
   /* Initialize the count of rows to be inserted
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  यदि( (db->flags & SQLITE_गणनम्_पङ्क्तिकाः)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
   ){
-    regRowCount = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, regRowCount);
+    reg_Row_गणनम् = ++pParse->nMem;
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, 0, reg_Row_गणनम्);
   }
 
   /* If this is not a view, open the table and and all indices */
-  if( !isView ){
-    int nIdx;
-    nIdx = sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, 0, -1, 0,
-                                      &iDataCur, &iIdxCur);
-    aRegIdx = sqlite3DbMallocRawNN(db, sizeof(int)*(nIdx+2));
-    if( aRegIdx==0 ){
-      goto insert_cleanup;
+  यदि( !isView ){
+    पूर्णाङ्क nIdx;
+    nIdx = sqlite3_Open_सारणी_And_Indices(pParse, pTab, OP_OpenWrite, 0, -1, 0,
+                                      &i_दत्त_Cur, &iIdxCur);
+    aRegIdx = sqlite3DbMallocRawNN(db, परिमाण(पूर्णाङ्क)*(nIdx+2));
+    यदि( aRegIdx==0 ){
+      गच्छ निवेशय_cleanup;
     }
-    for(i=0, pIdx=pTab->pIndex; i<nIdx; pIdx=pIdx->pNext, i++){
-      assert( pIdx );
+    प्रति(i=0, pIdx=pTab->p_सूचकांक; i<nIdx; pIdx=pIdx->p_अग्र, i++){
+      प्रतिज्ञा( pIdx );
       aRegIdx[i] = ++pParse->nMem;
       pParse->nMem += pIdx->nColumn;
     }
     aRegIdx[i] = ++pParse->nMem;  /* Register to store the table record */
   }
-#ifndef SQLITE_OMIT_UPSERT
-  if( pUpsert ){
+#यदि_अपरिभाषितम् SQLITE_OMIT_UPSERT
+  यदि( pUpsert ){
     Upsert *pNx;
-    if( IsVirtual(pTab) ){
-      sqlite3ErrorMsg(pParse, "UPSERT not implemented for virtual table \"%s\"",
+    यदि( IsVirtual(pTab) ){
+      sqlite3_Error_सन्देशः(pParse, "UPSERT not implemented for virtual table \"%s\"",
               pTab->zName);
-      goto insert_cleanup;
+      गच्छ निवेशय_cleanup;
     }
-    if( IsView(pTab) ){
-      sqlite3ErrorMsg(pParse, "cannot UPSERT a view");
-      goto insert_cleanup;
+    यदि( IsView(pTab) ){
+      sqlite3_Error_सन्देशः(pParse, "cannot UPSERT a view");
+      गच्छ निवेशय_cleanup;
     }
-    if( sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget) ){
-      goto insert_cleanup;
+    यदि( sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget) ){
+      गच्छ निवेशय_cleanup;
     }
-    pTabList->a[0].iCursor = iDataCur;
+    pTabList->a[0].iCursor = i_दत्त_Cur;
     pNx = pUpsert;
-    do{
+    कुरु{
       pNx->pUpsertSrc = pTabList;
-      pNx->regData = regData;
-      pNx->iDataCur = iDataCur;
+      pNx->reg_दत्त = reg_दत्त;
+      pNx->i_दत्त_Cur = i_दत्त_Cur;
       pNx->iIdxCur = iIdxCur;
-      if( pNx->pUpsertTarget ){
-        if( sqlite3UpsertAnalyzeTarget(pParse, pTabList, pNx, pUpsert) ){
-          goto insert_cleanup;
+      यदि( pNx->pUpsertTarget ){
+        यदि( sqlite3UpsertAnalyzeTarget(pParse, pTabList, pNx, pUpsert) ){
+          गच्छ निवेशय_cleanup;
         }
       }
-      pNx = pNx->pNextUpsert;
-    }while( pNx!=0 );
+      pNx = pNx->p_अग्र_Upsert;
+    }यावत्( pNx!=0 );
   }
-#endif
+#यदि_अन्तः
 
 
   /* This is the top of the main insertion loop */
-  if( useTempTable ){
+  यदि( use_अस्थायी_सारणी ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 4):
     **
@@ -1323,9 +1323,9 @@ void sqlite3Insert(
     **         end loop
     **      D: ...
     */
-    addrInsTop = sqlite3VdbeAddOp1(v, OP_Rewind, srcTab); VdbeCoverage(v);
+    addr_Ins_शिखरम् = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Rewind, srcTab); VdbeCoverage(v);
     addrCont = sqlite3VdbeCurrentAddr(v);
-  }else if( pSelect ){
+  }अन्यथा यदि( pSelect ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 3):
     **
@@ -1334,14 +1334,14 @@ void sqlite3Insert(
     **         goto C
     **      D: ...
     */
-    sqlite3VdbeReleaseRegisters(pParse, regData, pTab->nCol, 0, 0);
-    addrInsTop = addrCont = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm);
+    sqlite3VdbeReleaseRegisters(pParse, reg_दत्त, pTab->nCol, 0, 0);
+    addr_Ins_शिखरम् = addrCont = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Yield, dest.iSDParm);
     VdbeCoverage(v);
-    if( ipkColumn>=0 ){
+    यदि( ipkColumn>=0 ){
       /* tag-20191021-001: If the INTEGER PRIMARY KEY is being generated by the
       ** SELECT, go ahead and copy the value into the rowid slot now, so that
       ** the value does not get overwritten by a NULL at tag-20191021-002. */
-      sqlite3VdbeAddOp2(v, OP_Copy, regFromSelect+ipkColumn, regRowid);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Copy, regFromSelect+ipkColumn, regRowid);
     }
   }
 
@@ -1353,79 +1353,79 @@ void sqlite3Insert(
   ** of the rowid.
   */
   nHidden = 0;
-  iRegStore = regData;  assert( regData==regRowid+1 );
-  for(i=0; i<pTab->nCol; i++, iRegStore++){
-    int k;
+  iRegStore = reg_दत्त;  प्रतिज्ञा( reg_दत्त==regRowid+1 );
+  प्रति(i=0; i<pTab->nCol; i++, iRegStore++){
+    पूर्णाङ्क k;
     u32 colFlags;
-    assert( i>=nHidden );
-    if( i==pTab->iPKey ){
+    प्रतिज्ञा( i>=nHidden );
+    यदि( i==pTab->iPKey ){
       /* tag-20191021-002: References to the INTEGER PRIMARY KEY are filled
       ** using the rowid. So put a NULL in the IPK slot of the record to avoid
       ** using excess space.  The file format definition requires this extra
       ** NULL - we cannot optimize further by skipping the column completely */
-      sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
-      continue;
+      sqlite3_Vdbe_सङ्कलय_Op1(v, OP_SoftNull, iRegStore);
+      अनुवर्त;
     }
-    if( ((colFlags = pTab->aCol[i].colFlags) & COLFLAG_NOINSERT)!=0 ){
+    यदि( ((colFlags = pTab->aCol[i].colFlags) & COLFLAG_NOINSERT)!=0 ){
       nHidden++;
-      if( (colFlags & COLFLAG_VIRTUAL)!=0 ){
+      यदि( (colFlags & COLFLAG_VIRTUAL)!=0 ){
         /* Virtual columns do not participate in OP_MakeRecord.  So back up
         ** iRegStore by one slot to compensate for the iRegStore++ in the
         ** outer for() loop */
         iRegStore--;
-        continue;
-      }else if( (colFlags & COLFLAG_STORED)!=0 ){
+        अनुवर्त;
+      }अन्यथा यदि( (colFlags & COLFLAG_STORED)!=0 ){
         /* Stored columns are computed later.  But if there are BEFORE
         ** triggers, the slots used for stored columns will be OP_Copy-ed
         ** to a second block of registers, so the register needs to be
         ** initialized to NULL to avoid an uninitialized register read */
-        if( tmask & TRIGGER_BEFORE ){
-          sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
+        यदि( tmask & TRIGGER_BEFORE ){
+          sqlite3_Vdbe_सङ्कलय_Op1(v, OP_SoftNull, iRegStore);
         }
-        continue;
-      }else if( pColumn==0 ){
+        अनुवर्त;
+      }अन्यथा यदि( pColumn==0 ){
         /* Hidden columns that are not explicitly named in the INSERT
         ** get their default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_व्यञ्जकम्_संहिता_Factorable(pParse,
+            sqlite3_Column_व्यञ्जकम्_Auth(pTab, &pTab->aCol[i], pParse),
             iRegStore);
-        continue;
+        अनुवर्त;
       }
     }
-    if( pColumn ){
+    यदि( pColumn ){
       j = aTabColMap[i];
-      assert( j>=0 && j<=pColumn->nId );   
-      if( j==0 ){
+      प्रतिज्ञा( j>=0 && j<=pColumn->nId );   
+      यदि( j==0 ){
         /* A column not named in the insert column list gets its
         ** default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_व्यञ्जकम्_संहिता_Factorable(pParse,
+            sqlite3_Column_व्यञ्जकम्_Auth(pTab, &pTab->aCol[i], pParse),
             iRegStore);
-        continue;
+        अनुवर्त;
       }
       k = j - 1;
-    }else if( nColumn==0 ){
+    }अन्यथा यदि( nColumn==0 ){
       /* This is INSERT INTO ... DEFAULT VALUES.  Load the default value. */
-      sqlite3ExprCodeFactorable(pParse,
-          sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+      sqlite3_व्यञ्जकम्_संहिता_Factorable(pParse,
+          sqlite3_Column_व्यञ्जकम्_Auth(pTab, &pTab->aCol[i], pParse),
           iRegStore);
-      continue;
-    }else{
+      अनुवर्त;
+    }अन्यथा{
       k = i - nHidden;
     }
 
-    if( useTempTable ){
-      sqlite3VdbeAddOp3(v, OP_Column, srcTab, k, iRegStore);
-    }else if( pSelect ){
-      if( regFromSelect!=regData ){
-        sqlite3VdbeAddOp2(v, OP_SCopy, regFromSelect+k, iRegStore);
+    यदि( use_अस्थायी_सारणी ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Column, srcTab, k, iRegStore);
+    }अन्यथा यदि( pSelect ){
+      यदि( regFromSelect!=reg_दत्त ){
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_SCopy, regFromSelect+k, iRegStore);
       }
-    }else{
-      Expr *pX = pList->a[k].pExpr;
-      int y = sqlite3ExprCodeTarget(pParse, pX, iRegStore);
-      if( y!=iRegStore ){
-        sqlite3VdbeAddOp2(v,
-          ExprHasProperty(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
+    }अन्यथा{
+      व्यञ्जकम् *pX = pList->a[k].p_व्यञ्जकम्;
+      पूर्णाङ्क y = sqlite3_व्यञ्जकम्_संहिता_Target(pParse, pX, iRegStore);
+      यदि( y!=iRegStore ){
+        sqlite3_Vdbe_सङ्कलय_Op2(v,
+          व्यञ्जकम्_Has_Property(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
       }
     }
   }
@@ -1433,9 +1433,9 @@ void sqlite3Insert(
 
   /* Run the BEFORE and INSTEAD OF triggers, if there are any
   */
-  endOfLoop = sqlite3VdbeMakeLabel(pParse);
-  if( tmask & TRIGGER_BEFORE ){
-    int regCols = sqlite3GetTempRange(pParse, pTab->nCol+1);
+  अन्तः_सम्बन्धि_Loop = sqlite3VdbeMakeLabel(pParse);
+  यदि( tmask & TRIGGER_BEFORE ){
+    पूर्णाङ्क reg_स्तम्भसङ्ख्या = sqlite3_Get_अस्थायी_Range(pParse, pTab->nCol+1);
 
     /* build the NEW.* reference row.  Note that if there is an INTEGER
     ** PRIMARY KEY into which a NULL is being inserted, that NULL will be
@@ -1443,129 +1443,129 @@ void sqlite3Insert(
     ** we do not know what the unique ID will be (because the insert has
     ** not happened yet) so we substitute a rowid of -1
     */
-    if( ipkColumn<0 ){
-      sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
-    }else{
-      int addr1;
-      assert( !withoutRowid );
-      if( useTempTable ){
-        sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regCols);
-      }else{
-        assert( pSelect==0 );  /* Otherwise useTempTable is true */
-        sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regCols);
+    यदि( ipkColumn<0 ){
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, -1, reg_स्तम्भसङ्ख्या);
+    }अन्यथा{
+      पूर्णाङ्क addr1;
+      प्रतिज्ञा( !withoutRowid );
+      यदि( use_अस्थायी_सारणी ){
+        sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Column, srcTab, ipkColumn, reg_स्तम्भसङ्ख्या);
+      }अन्यथा{
+        प्रतिज्ञा( pSelect==0 );  /* Otherwise useTempTable is true */
+        sqlite3_व्यञ्जकम्_संहिता(pParse, pList->a[ipkColumn].p_व्यञ्जकम्, reg_स्तम्भसङ्ख्या);
       }
-      addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regCols); VdbeCoverage(v);
-      sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
-      sqlite3VdbeJumpHere(v, addr1);
-      sqlite3VdbeAddOp1(v, OP_MustBeInt, regCols); VdbeCoverage(v);
+      addr1 = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NotNull, reg_स्तम्भसङ्ख्या); VdbeCoverage(v);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, -1, reg_स्तम्भसङ्ख्या);
+      sqlite3_Vdbe_Jump_अत्र(v, addr1);
+      sqlite3_Vdbe_सङ्कलय_Op1(v, OP_MustBeInt, reg_स्तम्भसङ्ख्या); VdbeCoverage(v);
       sqlite3MayAbort(pParse);
     }
 
     /* Copy the new data already generated. */
-    assert( pTab->nNVCol>0 || pParse->nErr>0 );
-    sqlite3VdbeAddOp3(v, OP_Copy, regRowid+1, regCols+1, pTab->nNVCol-1);
+    प्रतिज्ञा( pTab->nNVCol>0 || pParse->nErr>0 );
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Copy, regRowid+1, reg_स्तम्भसङ्ख्या+1, pTab->nNVCol-1);
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
     /* Compute the new value for generated columns after all other
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** refers to the ROWID. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    यदि( pTab->tabFlags & TF_HasGenerated ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
-      sqlite3ComputeGeneratedColumns(pParse, regCols+1, pTab);
+      sqlite3ComputeGeneratedColumns(pParse, reg_स्तम्भसङ्ख्या+1, pTab);
     }
-#endif
+#यदि_अन्तः
 
     /* If this is an INSERT on a view with an INSTEAD OF INSERT trigger,
     ** do not attempt any conversions before assembling the record.
     ** If this is a real table, attempt conversions as required by the
     ** table column affinities.
     */
-    if( !isView ){
-      sqlite3TableAffinity(v, pTab, regCols+1);
+    यदि( !isView ){
+      sqlite3_सारणी_Affinity(v, pTab, reg_स्तम्भसङ्ख्या+1);
     }
 
     /* Fire BEFORE or INSTEAD OF triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_BEFORE,
-        pTab, regCols-pTab->nCol-1, onError, endOfLoop);
+    sqlite3_संहिता_Row_Trigger(pParse, pTrigger, TK_निवेशय, 0, TRIGGER_BEFORE,
+        pTab, reg_स्तम्भसङ्ख्या-pTab->nCol-1, onError, अन्तः_सम्बन्धि_Loop);
 
-    sqlite3ReleaseTempRange(pParse, regCols, pTab->nCol+1);
+    sqlite3_Release_अस्थायी_Range(pParse, reg_स्तम्भसङ्ख्या, pTab->nCol+1);
   }
 
-  if( !isView ){
-    if( IsVirtual(pTab) ){
+  यदि( !isView ){
+    यदि( IsVirtual(pTab) ){
       /* The row that the VUpdate opcode will delete: none */
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regIns);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Null, 0, regIns);
     }
-    if( ipkColumn>=0 ){
+    यदि( ipkColumn>=0 ){
       /* Compute the new rowid */
-      if( useTempTable ){
-        sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regRowid);
-      }else if( pSelect ){
+      यदि( use_अस्थायी_सारणी ){
+        sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Column, srcTab, ipkColumn, regRowid);
+      }अन्यथा यदि( pSelect ){
         /* Rowid already initialized at tag-20191021-001 */
-      }else{
-        Expr *pIpk = pList->a[ipkColumn].pExpr;
-        if( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
-          sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
+      }अन्यथा{
+        व्यञ्जकम् *pIpk = pList->a[ipkColumn].p_व्यञ्जकम्;
+        यदि( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NewRowid, i_दत्त_Cur, regRowid, regAutoinc);
           appendFlag = 1;
-        }else{
-          sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regRowid);
+        }अन्यथा{
+          sqlite3_व्यञ्जकम्_संहिता(pParse, pList->a[ipkColumn].p_व्यञ्जकम्, regRowid);
         }
       }
       /* If the PRIMARY KEY expression is NULL, then use OP_NewRowid
       ** to generate a unique primary key value.
       */
-      if( !appendFlag ){
-        int addr1;
-        if( !IsVirtual(pTab) ){
-          addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regRowid); VdbeCoverage(v);
-          sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
-          sqlite3VdbeJumpHere(v, addr1);
-        }else{
+      यदि( !appendFlag ){
+        पूर्णाङ्क addr1;
+        यदि( !IsVirtual(pTab) ){
+          addr1 = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NotNull, regRowid); VdbeCoverage(v);
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NewRowid, i_दत्त_Cur, regRowid, regAutoinc);
+          sqlite3_Vdbe_Jump_अत्र(v, addr1);
+        }अन्यथा{
           addr1 = sqlite3VdbeCurrentAddr(v);
-          sqlite3VdbeAddOp2(v, OP_IsNull, regRowid, addr1+2); VdbeCoverage(v);
+          sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, regRowid, addr1+2); VdbeCoverage(v);
         }
-        sqlite3VdbeAddOp1(v, OP_MustBeInt, regRowid); VdbeCoverage(v);
+        sqlite3_Vdbe_सङ्कलय_Op1(v, OP_MustBeInt, regRowid); VdbeCoverage(v);
         sqlite3MayAbort(pParse);
       }
-    }else if( IsVirtual(pTab) || withoutRowid ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regRowid);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
+    }अन्यथा यदि( IsVirtual(pTab) || withoutRowid ){
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Null, 0, regRowid);
+    }अन्यथा{
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NewRowid, i_दत्त_Cur, regRowid, regAutoinc);
       appendFlag = 1;
     }
-    autoIncStep(pParse, regAutoinc, regRowid);
+    auto_Inc_चरणः(pParse, regAutoinc, regRowid);
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
     /* Compute the new value for generated columns after all other
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** is derived from the INTEGER PRIMARY KEY. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    यदि( pTab->tabFlags & TF_HasGenerated ){
       sqlite3ComputeGeneratedColumns(pParse, regRowid+1, pTab);
     }
-#endif
+#यदि_अन्तः
 
     /* Generate code to check constraints and generate index keys and
     ** do the insertion.
     */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+    यदि( IsVirtual(pTab) ){
+      ध्रुव वर्ण *pVTab = (ध्रुव वर्ण *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
-      sqlite3VdbeAddOp4(v, OP_VUpdate, 1, pTab->nCol+2, regIns, pVTab, P4_VTAB);
+      sqlite3_Vdbe_सङ्कलय_Op4(v, OP_VUpdate, 1, pTab->nCol+2, regIns, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, onError==OE_Default ? OE_Abort : onError);
       sqlite3MayAbort(pParse);
-    }else
-#endif
+    }अन्यथा
+#यदि_अन्तः
     {
-      int isReplace = 0;/* Set to true if constraints may cause a replace */
-      int bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
-      sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, iDataCur, iIdxCur,
-          regIns, 0, ipkColumn>=0, onError, endOfLoop, &isReplace, 0, pUpsert
+      पूर्णाङ्क isReplace = 0;/* Set to true if constraints may cause a replace */
+      पूर्णाङ्क bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
+      sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, i_दत्त_Cur, iIdxCur,
+          regIns, 0, ipkColumn>=0, onError, अन्तः_सम्बन्धि_Loop, &isReplace, 0, pUpsert
       );
-      if( db->flags & SQLITE_ForeignKeys ){
+      यदि( db->flags & SQLITE_Foreign_कुञ्चिकाः ){
         sqlite3FkCheck(pParse, pTab, 0, regIns, 0, 0);
       }
 
@@ -1577,63 +1577,63 @@ void sqlite3Insert(
       ** cursor that is disturbed. And these instructions both clear the
       ** VdbeCursor.seekResult variable, disabling the OPFLAG_USESEEKRESULT
       ** functionality.  */
-      bUseSeek = (isReplace==0 || !sqlite3VdbeHasSubProgram(v));
-      sqlite3CompleteInsertion(pParse, pTab, iDataCur, iIdxCur,
+      bUseSeek = (isReplace==0 || !sqlite3_Vdbe_Has_Sub_क्रमादेशः(v));
+      sqlite3CompleteInsertion(pParse, pTab, i_दत्त_Cur, iIdxCur,
           regIns, aRegIdx, 0, appendFlag, bUseSeek
       );
     }
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  }else if( pParse->bReturning ){
+#यदि_परिभाषितम् SQLITE_ALLOW_ROWID_अन्तर्_VIEW
+  }अन्यथा यदि( pParse->bReturning ){
     /* If there is a RETURNING clause, populate the rowid register with
     ** constant value -1, in case one or more of the returned expressions
     ** refer to the "rowid" of the view.  */
-    sqlite3VdbeAddOp2(v, OP_Integer, -1, regRowid);
-#endif
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, -1, regRowid);
+#यदि_अन्तः
   }
 
   /* Update the count of rows that are inserted
   */
-  if( regRowCount ){
-    sqlite3VdbeAddOp2(v, OP_AddImm, regRowCount, 1);
+  यदि( reg_Row_गणनम् ){
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_सङ्कलय_Imm, reg_Row_गणनम्, 1);
   }
 
-  if( pTrigger ){
+  यदि( pTrigger ){
     /* Code AFTER triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_AFTER,
-        pTab, regData-2-pTab->nCol, onError, endOfLoop);
+    sqlite3_संहिता_Row_Trigger(pParse, pTrigger, TK_निवेशय, 0, TRIGGER_AFTER,
+        pTab, reg_दत्त-2-pTab->nCol, onError, अन्तः_सम्बन्धि_Loop);
   }
 
   /* The bottom of the main insertion loop, if the data source
   ** is a SELECT statement.
   */
-  sqlite3VdbeResolveLabel(v, endOfLoop);
-  if( useTempTable ){
-    sqlite3VdbeAddOp2(v, OP_Next, srcTab, addrCont); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addrInsTop);
-    sqlite3VdbeAddOp1(v, OP_Close, srcTab);
-  }else if( pSelect ){
+  sqlite3VdbeResolveLabel(v, अन्तः_सम्बन्धि_Loop);
+  यदि( use_अस्थायी_सारणी ){
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_अग्र, srcTab, addrCont); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_अत्र(v, addr_Ins_शिखरम्);
+    sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Close, srcTab);
+  }अन्यथा यदि( pSelect ){
     sqlite3VdbeGoto(v, addrCont);
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
     /* If we are jumping back to an OP_Yield that is preceded by an
     ** OP_ReleaseReg, set the p5 flag on the OP_Goto so that the
     ** OP_ReleaseReg will be included in the loop. */
-    if( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
-      assert( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
+    यदि( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
+      प्रतिज्ञा( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
       sqlite3VdbeChangeP5(v, 1);
     }
-#endif
-    sqlite3VdbeJumpHere(v, addrInsTop);
+#यदि_अन्तः
+    sqlite3_Vdbe_Jump_अत्र(v, addr_Ins_शिखरम्);
   }
 
-#ifndef SQLITE_OMIT_XFER_OPT
-insert_end:
-#endif /* SQLITE_OMIT_XFER_OPT */
+#यदि_अपरिभाषितम् SQLITE_OMIT_XFER_OPT
+निवेशय_अन्तः:
+#यदि_अन्तः /* SQLITE_OMIT_XFER_OPT */
   /* Update the sqlite_sequence table by storing the content of the
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
-    sqlite3AutoincrementEnd(pParse);
+  यदि( pParse->nested==0 && pParse->pTriggerTab==0 ){
+    sqlite3_Autoincrement_अन्तः(pParse);
   }
 
   /*
@@ -1641,59 +1641,59 @@ insert_end:
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( regRowCount ){
-    sqlite3CodeChangeCount(v, regRowCount, "rows inserted");
+  यदि( reg_Row_गणनम् ){
+    sqlite3_संहिता_Change_गणनम्(v, reg_Row_गणनम्, "rows inserted");
   }
 
-insert_cleanup:
+निवेशय_cleanup:
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprListDelete(db, pList);
+  sqlite3_व्यञ्जकम्_List_Delete(db, pList);
   sqlite3UpsertDelete(db, pUpsert);
   sqlite3SelectDelete(db, pSelect);
-  if( pColumn ){
+  यदि( pColumn ){
     sqlite3IdListDelete(db, pColumn);
     sqlite3DbFree(db, aTabColMap);
   }
-  if( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
+  यदि( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
 }
 
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
 ** (or in another file, if this file becomes part of the amalgamation).  */
-#ifdef isView
- #undef isView
-#endif
-#ifdef pTrigger
- #undef pTrigger
-#endif
-#ifdef tmask
- #undef tmask
-#endif
+#यदि_परिभाषितम् isView
+ #अपरिभाषय isView
+#यदि_अन्तः
+#यदि_परिभाषितम् pTrigger
+ #अपरिभाषय pTrigger
+#यदि_अन्तः
+#यदि_परिभाषितम् tmask
+ #अपरिभाषय tmask
+#यदि_अन्तः
 
 /*
 ** Meanings of bits in of pWalker->eCode for
 ** sqlite3ExprReferencesUpdatedColumn()
 */
-#define CKCNSTRNT_COLUMN   0x01    /* CHECK constraint uses a changing column */
-#define CKCNSTRNT_ROWID    0x02    /* CHECK constraint references the ROWID */
+#परिभाषय CKCNSTRNT_COLUMN   0x01    /* CHECK constraint uses a changing column */
+#परिभाषय CKCNSTRNT_ROWID    0x02    /* CHECK constraint references the ROWID */
 
 /* This is the Walker callback from sqlite3ExprReferencesUpdatedColumn().
 *  Set bit 0x01 of pWalker->eCode if pWalker->eCode to 0 and if this
 ** expression node references any of the
 ** columns that are being modified by an UPDATE statement.
 */
-static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN ){
-    assert( pExpr->iColumn>=0 || pExpr->iColumn==-1 );
-    if( pExpr->iColumn>=0 ){
-      if( pWalker->u.aiCol[pExpr->iColumn]>=0 ){
-        pWalker->eCode |= CKCNSTRNT_COLUMN;
+स्थिर पूर्णाङ्क check_Constraint_व्यञ्जकम्_ग्रन्थिः(Walker *pWalker, व्यञ्जकम् *p_व्यञ्जकम्){
+  यदि( p_व्यञ्जकम्->op==TK_COLUMN ){
+    प्रतिज्ञा( p_व्यञ्जकम्->iColumn>=0 || p_व्यञ्जकम्->iColumn==-1 );
+    यदि( p_व्यञ्जकम्->iColumn>=0 ){
+      यदि( pWalker->u.aiCol[p_व्यञ्जकम्->iColumn]>=0 ){
+        pWalker->e_संहिता |= CKCNSTRNT_COLUMN;
       }
-    }else{
-      pWalker->eCode |= CKCNSTRNT_ROWID;
+    }अन्यथा{
+      pWalker->e_संहिता |= CKCNSTRNT_ROWID;
     }
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 /*
@@ -1711,26 +1711,26 @@ static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
 ** the expression uses one or more of columns identified by the second and
 ** third arguments.
 */
-int sqlite3ExprReferencesUpdatedColumn(
-  Expr *pExpr,    /* The expression to be checked */
-  int *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
-  int chngRowid   /* True if UPDATE changes the rowid */
+पूर्णाङ्क sqlite3_व्यञ्जकम्_References_Updated_Column(
+  व्यञ्जकम् *p_व्यञ्जकम्,    /* The expression to be checked */
+  पूर्णाङ्क *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
+  पूर्णाङ्क chngRowid   /* True if UPDATE changes the rowid */
 ){
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.eCode = 0;
-  w.xExprCallback = checkConstraintExprNode;
+  स्मृतिं_पूरय(&w, 0, परिमाण(w));
+  w.e_संहिता = 0;
+  w.x_व्यञ्जकम्_Callback = check_Constraint_व्यञ्जकम्_ग्रन्थिः;
   w.u.aiCol = aiChng;
-  sqlite3WalkExpr(&w, pExpr);
-  if( !chngRowid ){
-    testcase( (w.eCode & CKCNSTRNT_ROWID)!=0 );
-    w.eCode &= ~CKCNSTRNT_ROWID;
+  sqlite3_Walk_व्यञ्जकम्(&w, p_व्यञ्जकम्);
+  यदि( !chngRowid ){
+    testcase( (w.e_संहिता & CKCNSTRNT_ROWID)!=0 );
+    w.e_संहिता &= ~CKCNSTRNT_ROWID;
   }
-  testcase( w.eCode==0 );
-  testcase( w.eCode==CKCNSTRNT_COLUMN );
-  testcase( w.eCode==CKCNSTRNT_ROWID );
-  testcase( w.eCode==(CKCNSTRNT_ROWID|CKCNSTRNT_COLUMN) );
-  return w.eCode!=0;
+  testcase( w.e_संहिता==0 );
+  testcase( w.e_संहिता==CKCNSTRNT_COLUMN );
+  testcase( w.e_संहिता==CKCNSTRNT_ROWID );
+  testcase( w.e_संहिता==(CKCNSTRNT_ROWID|CKCNSTRNT_COLUMN) );
+  प्रत्यागम w.e_संहिता!=0;
 }
 
 /*
@@ -1744,18 +1744,18 @@ int sqlite3ExprReferencesUpdatedColumn(
 ** of a table in either Index.pNext order, or in some other order established
 ** by an array of IndexListTerm objects.
 */
-typedef struct IndexListTerm IndexListTerm;
-typedef struct IndexIterator IndexIterator;
-struct IndexIterator {
-  int eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
-  int i;        /* Index of the current item from the list */
-  union {
-    struct {    /* Use this object for eType==0: A Index.pNext list */
-      Index *pIdx;   /* The current Index */
+प्रकारनिर्देश संरचना सूचकांक_List_पदांशः सूचकांक_List_पदांशः;
+प्रकारनिर्देश संरचना सूचकांक_Iterator सूचकांक_Iterator;
+संरचना सूचकांक_Iterator {
+  पूर्णाङ्क eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
+  पूर्णाङ्क i;        /* Index of the current item from the list */
+  सङ्घ {
+    संरचना {    /* Use this object for eType==0: A Index.pNext list */
+      सूचकांक *pIdx;   /* The current Index */
     } lx;     
-    struct {    /* Use this object for eType==1; Array of IndexListTerm */
-      int nIdx;               /* Size of the array */
-      IndexListTerm *aIdx;    /* Array of IndexListTerms */
+    संरचना {    /* Use this object for eType==1; Array of IndexListTerm */
+      पूर्णाङ्क nIdx;               /* Size of the array */
+      सूचकांक_List_पदांशः *aIdx;    /* Array of IndexListTerms */
     } ax;
   } u;
 };
@@ -1763,37 +1763,37 @@ struct IndexIterator {
 /* When IndexIterator.eType==1, then each index is an array of instances
 ** of the following object
 */
-struct IndexListTerm {
-  Index *p;  /* The index */
-  int ix;    /* Which entry in the original Table.pIndex list is this index*/
+संरचना सूचकांक_List_पदांशः {
+  सूचकांक *p;  /* The index */
+  पूर्णाङ्क ix;    /* Which entry in the original Table.pIndex list is this index*/
 };
 
 /* Return the first index on the list */
-static Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
-  assert( pIter->i==0 );
-  if( pIter->eType ){
+स्थिर सूचकांक *सूचकांक_Iterator_First(सूचकांक_Iterator *pIter, पूर्णाङ्क *pIx){
+  प्रतिज्ञा( pIter->i==0 );
+  यदि( pIter->eType ){
     *pIx = pIter->u.ax.aIdx[0].ix;
-    return pIter->u.ax.aIdx[0].p;
-  }else{
+    प्रत्यागम pIter->u.ax.aIdx[0].p;
+  }अन्यथा{
     *pIx = 0;
-    return pIter->u.lx.pIdx;
+    प्रत्यागम pIter->u.lx.pIdx;
   }
 }
 
 /* Return the next index from the list.  Return NULL when out of indexes */
-static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
-  if( pIter->eType ){
-    int i = ++pIter->i;
-    if( i>=pIter->u.ax.nIdx ){
+स्थिर सूचकांक *सूचकांक_Iterator_अग्र(सूचकांक_Iterator *pIter, पूर्णाङ्क *pIx){
+  यदि( pIter->eType ){
+    पूर्णाङ्क i = ++pIter->i;
+    यदि( i>=pIter->u.ax.nIdx ){
       *pIx = i;
-      return 0;
+      प्रत्यागम 0;
     }
     *pIx = pIter->u.ax.aIdx[i].ix;
-    return pIter->u.ax.aIdx[i].p;
-  }else{
+    प्रत्यागम pIter->u.ax.aIdx[i].p;
+  }अन्यथा{
     ++(*pIx);
-    pIter->u.lx.pIdx = pIter->u.lx.pIdx->pNext;
-    return pIter->u.lx.pIdx;
+    pIter->u.lx.pIdx = pIter->u.lx.pIdx->p_अग्र;
+    प्रत्यागम pIter->u.lx.pIdx;
   }
 }
  
@@ -1888,207 +1888,207 @@ static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
 ** is used.  Or if pParse->onError==OE_Default then the onError value
 ** for the constraint is used.
 */
-void sqlite3GenerateConstraintChecks(
+शून्य sqlite3GenerateConstraintChecks(
   Parse *pParse,       /* The parser context */
-  Table *pTab,         /* The table being inserted or updated */
-  int *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
-  int iDataCur,        /* Canonical data cursor (main table or PK index) */
-  int iIdxCur,         /* First index cursor */
-  int regNewData,      /* First register in a range holding values to insert */
-  int regOldData,      /* Previous content.  0 for INSERTs */
+  सारणी *pTab,         /* The table being inserted or updated */
+  पूर्णाङ्क *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
+  पूर्णाङ्क i_दत्त_Cur,        /* Canonical data cursor (main table or PK index) */
+  पूर्णाङ्क iIdxCur,         /* First index cursor */
+  पूर्णाङ्क reg_New_दत्त,      /* First register in a range holding values to insert */
+  पूर्णाङ्क reg_Old_दत्त,      /* Previous content.  0 for INSERTs */
   u8 pkChng,           /* Non-zero if the rowid or PRIMARY KEY changed */
   u8 overrideError,    /* Override onError to this if not OE_Default */
-  int ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
-  int *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
-  int *aiChng,         /* column i is unchanged if aiChng[i]<0 */
+  पूर्णाङ्क ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
+  पूर्णाङ्क *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
+  पूर्णाङ्क *aiChng,         /* column i is unchanged if aiChng[i]<0 */
   Upsert *pUpsert      /* ON CONFLICT clauses, if any.  NULL otherwise */
 ){
   Vdbe *v;             /* VDBE under construction */
-  Index *pIdx;         /* Pointer to one of the indices */
-  Index *pPk = 0;      /* The PRIMARY KEY index for WITHOUT ROWID tables */
+  सूचकांक *pIdx;         /* Pointer to one of the indices */
+  सूचकांक *pPk = 0;      /* The PRIMARY KEY index for WITHOUT ROWID tables */
   sqlite3 *db;         /* Database connection */
-  int i;               /* loop counter */
-  int ix;              /* Index loop counter */
-  int nCol;            /* Number of columns */
-  int onError;         /* Conflict resolution strategy */
-  int seenReplace = 0; /* True if REPLACE is used to resolve INT PK conflict */
-  int nPkField;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
+  पूर्णाङ्क i;               /* loop counter */
+  पूर्णाङ्क ix;              /* Index loop counter */
+  पूर्णाङ्क nCol;            /* Number of columns */
+  पूर्णाङ्क onError;         /* Conflict resolution strategy */
+  पूर्णाङ्क आलोकितम्_Replace = 0; /* True if REPLACE is used to resolve INT PK conflict */
+  पूर्णाङ्क n_Pk_क्षेत्रम्;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
   Upsert *pUpsertClause = 0;  /* The specific ON CONFLICT clause for pIdx */
   u8 isUpdate;           /* True if this is an UPDATE operation */
-  u8 bAffinityDone = 0;  /* True if the OP_Affinity operation has been run */
-  int upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
-  int upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
-  int ipkTop = 0;        /* Top of the IPK uniqueness check */
-  int ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
+  u8 b_Affinity_समाप्तम् = 0;  /* True if the OP_Affinity operation has been run */
+  पूर्णाङ्क upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
+  पूर्णाङ्क upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
+  पूर्णाङ्क ipk_शिखरम् = 0;        /* Top of the IPK uniqueness check */
+  पूर्णाङ्क ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
   /* Variables associated with retesting uniqueness constraints after
   ** replace triggers fire have run */
-  int regTrigCnt;       /* Register used to count replace trigger invocations */
-  int addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
-  int lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
+  पूर्णाङ्क regTrigCnt;       /* Register used to count replace trigger invocations */
+  पूर्णाङ्क addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
+  पूर्णाङ्क lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
   Trigger *pTrigger;    /* List of DELETE triggers on the table pTab */
-  int nReplaceTrig = 0; /* Number of replace triggers coded */
-  IndexIterator sIdxIter;  /* Index iterator */
+  पूर्णाङ्क nReplaceTrig = 0; /* Number of replace triggers coded */
+  सूचकांक_Iterator sIdxIter;  /* Index iterator */
 
-  isUpdate = regOldData!=0;
+  isUpdate = reg_Old_दत्त!=0;
   db = pParse->db;
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
+  प्रतिज्ञा( v!=0 );
+  प्रतिज्ञा( !IsView(pTab) );  /* This table is not a VIEW */
   nCol = pTab->nCol;
  
   /* pPk is the PRIMARY KEY index for WITHOUT ROWID tables and NULL for
   ** normal rowid tables.  nPkField is the number of key fields in the
   ** pPk index or 1 for a rowid table.  In other words, nPkField is the
   ** number of fields in the true primary key of the table. */
-  if( HasRowid(pTab) ){
+  यदि( HasRowid(pTab) ){
     pPk = 0;
-    nPkField = 1;
-  }else{
-    pPk = sqlite3PrimaryKeyIndex(pTab);
-    nPkField = pPk->nKeyCol;
+    n_Pk_क्षेत्रम् = 1;
+  }अन्यथा{
+    pPk = sqlite3_Primary_कुञ्चिका_सूचकांक(pTab);
+    n_Pk_क्षेत्रम् = pPk->n_कुञ्चिका_Col;
   }
 
   /* Record that this module has started */
   VdbeModuleComment((v, "BEGIN: GenCnstCks(%d,%d,%d,%d,%d)",
-                     iDataCur, iIdxCur, regNewData, regOldData, pkChng));
+                     i_दत्त_Cur, iIdxCur, reg_New_दत्त, reg_Old_दत्त, pkChng));
 
   /* Test all NOT NULL constraints.
   */
-  if( pTab->tabFlags & TF_HasNotNull ){
-    int b2ndPass = 0;         /* True if currently running 2nd pass */
-    int nSeenReplace = 0;     /* Number of ON CONFLICT REPLACE operations */
-    int nGenerated = 0;       /* Number of generated columns with NOT NULL */
-    while(1){  /* Make 2 passes over columns. Exit loop via "break" */
-      for(i=0; i<nCol; i++){
-        int iReg;                        /* Register holding column value */
+  यदि( pTab->tabFlags & TF_HasNotNull ){
+    पूर्णाङ्क b2ndPass = 0;         /* True if currently running 2nd pass */
+    पूर्णाङ्क n_आलोकितम्_Replace = 0;     /* Number of ON CONFLICT REPLACE operations */
+    पूर्णाङ्क nGenerated = 0;       /* Number of generated columns with NOT NULL */
+    यावत्(1){  /* Make 2 passes over columns. Exit loop via "break" */
+      प्रति(i=0; i<nCol; i++){
+        पूर्णाङ्क iReg;                        /* Register holding column value */
         Column *pCol = &pTab->aCol[i];   /* The column to check for NOT NULL */
-        int isGenerated;                 /* non-zero if column is generated */
+        पूर्णाङ्क isGenerated;                 /* non-zero if column is generated */
         onError = pCol->notNull;
-        if( onError==OE_None ) continue; /* No NOT NULL on this column */
-        if( i==pTab->iPKey ){
-          continue;        /* ROWID is never NULL */
+        यदि( onError==OE_None ) अनुवर्त; /* No NOT NULL on this column */
+        यदि( i==pTab->iPKey ){
+          अनुवर्त;        /* ROWID is never NULL */
         }
         isGenerated = pCol->colFlags & COLFLAG_GENERATED;
-        if( isGenerated && !b2ndPass ){
+        यदि( isGenerated && !b2ndPass ){
           nGenerated++;
-          continue;        /* Generated columns processed on 2nd pass */
+          अनुवर्त;        /* Generated columns processed on 2nd pass */
         }
-        if( aiChng && aiChng[i]<0 && !isGenerated ){
+        यदि( aiChng && aiChng[i]<0 && !isGenerated ){
           /* Do not check NOT NULL on columns that do not change */
-          continue;
+          अनुवर्त;
         }
-        if( overrideError!=OE_Default ){
+        यदि( overrideError!=OE_Default ){
           onError = overrideError;
-        }else if( onError==OE_Default ){
+        }अन्यथा यदि( onError==OE_Default ){
           onError = OE_Abort;
         }
-        if( onError==OE_Replace ){
-          if( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
+        यदि( onError==OE_Replace ){
+          यदि( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
            || pCol->iDflt==0  /* REPLACE is ABORT if no DEFAULT value */
           ){
             testcase( pCol->colFlags & COLFLAG_VIRTUAL );
             testcase( pCol->colFlags & COLFLAG_STORED );
             testcase( pCol->colFlags & COLFLAG_GENERATED );
             onError = OE_Abort;
-          }else{
-            assert( !isGenerated );
+          }अन्यथा{
+            प्रतिज्ञा( !isGenerated );
           }
-        }else if( b2ndPass && !isGenerated ){
-          continue;
+        }अन्यथा यदि( b2ndPass && !isGenerated ){
+          अनुवर्त;
         }
-        assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+        प्रतिज्ञा( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
             || onError==OE_Ignore || onError==OE_Replace );
-        testcase( i!=sqlite3TableColumnToStorage(pTab, i) );
-        iReg = sqlite3TableColumnToStorage(pTab, i) + regNewData + 1;
-        switch( onError ){
-          case OE_Replace: {
-            int addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, iReg);
+        testcase( i!=sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, i) );
+        iReg = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, i) + reg_New_दत्त + 1;
+        विकल्प( onError ){
+          पक्ष OE_Replace: {
+            पूर्णाङ्क addr1 = sqlite3_Vdbe_सङ्कलय_Op1(v, OP_NotNull, iReg);
             VdbeCoverage(v);
-            assert( (pCol->colFlags & COLFLAG_GENERATED)==0 );
-            nSeenReplace++;
-            sqlite3ExprCodeCopy(pParse,
-               sqlite3ColumnExprAuth(pTab, pCol, pParse), iReg);
-            sqlite3VdbeJumpHere(v, addr1);
-            break;
+            प्रतिज्ञा( (pCol->colFlags & COLFLAG_GENERATED)==0 );
+            n_आलोकितम्_Replace++;
+            sqlite3_व्यञ्जकम्_संहिता_Copy(pParse,
+               sqlite3_Column_व्यञ्जकम्_Auth(pTab, pCol, pParse), iReg);
+            sqlite3_Vdbe_Jump_अत्र(v, addr1);
+            भङ्ग;
           }
-          case OE_Abort:
+          पक्ष OE_Abort:
             sqlite3MayAbort(pParse);
             /* no break */ deliberate_fall_through
-          case OE_Rollback:
-          case OE_Fail: {
-            char *zMsg = sqlite3MPrintf(db, "%s.%s", pTab->zName,
+          पक्ष OE_Rollback:
+          पक्ष OE_Fail: {
+            वर्ण *z_सन्देशः = sqlite3MPrintf(db, "%s.%s", pTab->zName,
                                         pCol->zCnName);
-            testcase( zMsg==0 && db->mallocFailed==0 );
-            sqlite3VdbeAddOp3(v, OP_HaltIfNull, SQLITE_CONSTRAINT_NOTNULL,
+            testcase( z_सन्देशः==0 && db->mallocFailed==0 );
+            sqlite3_Vdbe_सङ्कलय_Op3(v, OP_HaltIfNull, SQLITE_CONSTRAINT_NOTNULL,
                               onError, iReg);
-            sqlite3VdbeAppendP4(v, zMsg, P4_DYNAMIC);
+            sqlite3VdbeAppendP4(v, z_सन्देशः, P4_DYNAMIC);
             sqlite3VdbeChangeP5(v, P5_ConstraintNotNull);
             VdbeCoverage(v);
-            break;
+            भङ्ग;
           }
-          default: {
-            assert( onError==OE_Ignore );
-            sqlite3VdbeAddOp2(v, OP_IsNull, iReg, ignoreDest);
+          स्वभाव: {
+            प्रतिज्ञा( onError==OE_Ignore );
+            sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, iReg, ignoreDest);
             VdbeCoverage(v);
-            break;
+            भङ्ग;
           }
         } /* end switch(onError) */
       } /* end loop i over columns */
-      if( nGenerated==0 && nSeenReplace==0 ){
+      यदि( nGenerated==0 && n_आलोकितम्_Replace==0 ){
         /* If there are no generated columns with NOT NULL constraints
         ** and no NOT NULL ON CONFLICT REPLACE constraints, then a single
         ** pass is sufficient */
-        break;
+        भङ्ग;
       }
-      if( b2ndPass ) break;  /* Never need more than 2 passes */
+      यदि( b2ndPass ) भङ्ग;  /* Never need more than 2 passes */
       b2ndPass = 1;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-      if( nSeenReplace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
+      यदि( n_आलोकितम्_Replace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
         /* If any NOT NULL ON CONFLICT REPLACE constraints fired on the
         ** first pass, recomputed values for all generated columns, as
         ** those values might depend on columns affected by the REPLACE.
         */
-        sqlite3ComputeGeneratedColumns(pParse, regNewData+1, pTab);
+        sqlite3ComputeGeneratedColumns(pParse, reg_New_दत्त+1, pTab);
       }
-#endif
+#यदि_अन्तः
     } /* end of 2-pass loop */
   } /* end if( has-not-null-constraints ) */
 
   /* Test all CHECK constraints
   */
-#ifndef SQLITE_OMIT_CHECK
-  if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-    ExprList *pCheck = pTab->pCheck;
-    pParse->iSelfTab = -(regNewData+1);
+#यदि_अपरिभाषितम् SQLITE_OMIT_CHECK
+  यदि( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+    व्यञ्जकम्_List *pCheck = pTab->pCheck;
+    pParse->iSelfTab = -(reg_New_दत्त+1);
     onError = overrideError!=OE_Default ? overrideError : OE_Abort;
-    for(i=0; i<pCheck->nExpr; i++){
-      int allOk;
-      Expr *pCopy;
-      Expr *pExpr = pCheck->a[i].pExpr;
-      if( aiChng
-       && !sqlite3ExprReferencesUpdatedColumn(pExpr, aiChng, pkChng)
+    प्रति(i=0; i<pCheck->n_व्यञ्जकम्; i++){
+      पूर्णाङ्क allOk;
+      व्यञ्जकम् *pCopy;
+      व्यञ्जकम् *p_व्यञ्जकम् = pCheck->a[i].p_व्यञ्जकम्;
+      यदि( aiChng
+       && !sqlite3_व्यञ्जकम्_References_Updated_Column(p_व्यञ्जकम्, aiChng, pkChng)
       ){
         /* The check constraints do not reference any of the columns being
         ** updated so there is no point it verifying the check constraint */
-        continue;
+        अनुवर्त;
       }
-      if( bAffinityDone==0 ){
-        sqlite3TableAffinity(v, pTab, regNewData+1);
-        bAffinityDone = 1;
+      यदि( b_Affinity_समाप्तम्==0 ){
+        sqlite3_सारणी_Affinity(v, pTab, reg_New_दत्त+1);
+        b_Affinity_समाप्तम् = 1;
       }
       allOk = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeVerifyAbortable(v, onError);
-      pCopy = sqlite3ExprDup(db, pExpr, 0);
-      if( !db->mallocFailed ){
-        sqlite3ExprIfTrue(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
+      pCopy = sqlite3_व्यञ्जकम्_Dup(db, p_व्यञ्जकम्, 0);
+      यदि( !db->mallocFailed ){
+        sqlite3_व्यञ्जकम्_If_True(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
       }
-      sqlite3ExprDelete(db, pCopy);
-      if( onError==OE_Ignore ){
+      sqlite3_व्यञ्जकम्_Delete(db, pCopy);
+      यदि( onError==OE_Ignore ){
         sqlite3VdbeGoto(v, ignoreDest);
-      }else{
-        char *zName = pCheck->a[i].zEName;
-        assert( zName!=0 || pParse->db->mallocFailed );
-        if( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
+      }अन्यथा{
+        वर्ण *zName = pCheck->a[i].zEName;
+        प्रतिज्ञा( zName!=0 || pParse->db->mallocFailed );
+        यदि( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
         sqlite3HaltConstraint(pParse, SQLITE_CONSTRAINT_CHECK,
                               onError, zName, P4_TRANSIENT,
                               P5_ConstraintCheck);
@@ -2097,7 +2097,7 @@ void sqlite3GenerateConstraintChecks(
     }
     pParse->iSelfTab = 0;
   }
-#endif /* !defined(SQLITE_OMIT_CHECK) */
+#यदि_अन्तः /* !defined(SQLITE_OMIT_CHECK) */
 
   /* UNIQUE and PRIMARY KEY constraints should be handled in the following
   ** order:
@@ -2130,60 +2130,60 @@ void sqlite3GenerateConstraintChecks(
   sIdxIter.eType = 0;
   sIdxIter.i = 0;
   sIdxIter.u.ax.aIdx = 0;  /* Silence harmless compiler warning */
-  sIdxIter.u.lx.pIdx = pTab->pIndex;
-  if( pUpsert ){
-    if( pUpsert->pUpsertTarget==0 ){
+  sIdxIter.u.lx.pIdx = pTab->p_सूचकांक;
+  यदि( pUpsert ){
+    यदि( pUpsert->pUpsertTarget==0 ){
       /* There is just on ON CONFLICT clause and it has no constraint-target */
-      assert( pUpsert->pNextUpsert==0 );
-      if( pUpsert->isDoUpdate==0 ){
+      प्रतिज्ञा( pUpsert->p_अग्र_Upsert==0 );
+      यदि( pUpsert->isDoUpdate==0 ){
         /* A single ON CONFLICT DO NOTHING clause, without a constraint-target.
         ** Make all unique constraint resolution be OE_Ignore */
         overrideError = OE_Ignore;
         pUpsert = 0;
-      }else{
+      }अन्यथा{
         /* A single ON CONFLICT DO UPDATE.  Make all resolutions OE_Update */
         overrideError = OE_Update;
       }
-    }else if( pTab->pIndex!=0 ){
+    }अन्यथा यदि( pTab->p_सूचकांक!=0 ){
       /* Otherwise, we'll need to run the IndexListTerm array version of the
       ** iterator to ensure that all of the ON CONFLICT conditions are
       ** checked first and in order. */
-      int nIdx, jj;
+      पूर्णाङ्क nIdx, jj;
       u64 nByte;
-      Upsert *pTerm;
-      u8 *bUsed;
-      for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
-         assert( aRegIdx[nIdx]>0 );
+      Upsert *p_पदांशः;
+      u8 *b_प्रयुक्तम्;
+      प्रति(nIdx=0, pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र, nIdx++){
+         प्रतिज्ञा( aRegIdx[nIdx]>0 );
       }
       sIdxIter.eType = 1;
       sIdxIter.u.ax.nIdx = nIdx;
-      nByte = (sizeof(IndexListTerm)+1)*nIdx + nIdx;
+      nByte = (परिमाण(सूचकांक_List_पदांशः)+1)*nIdx + nIdx;
       sIdxIter.u.ax.aIdx = sqlite3DbMallocZero(db, nByte);
-      if( sIdxIter.u.ax.aIdx==0 ) return; /* OOM */
-      bUsed = (u8*)&sIdxIter.u.ax.aIdx[nIdx];
-      pUpsert->pToFree = sIdxIter.u.ax.aIdx;
-      for(i=0, pTerm=pUpsert; pTerm; pTerm=pTerm->pNextUpsert){
-        if( pTerm->pUpsertTarget==0 ) break;
-        if( pTerm->pUpsertIdx==0 ) continue;  /* Skip ON CONFLICT for the IPK */
+      यदि( sIdxIter.u.ax.aIdx==0 ) प्रत्यागम; /* OOM */
+      b_प्रयुक्तम् = (u8*)&sIdxIter.u.ax.aIdx[nIdx];
+      pUpsert->p_गन्तव्यम्_Free = sIdxIter.u.ax.aIdx;
+      प्रति(i=0, p_पदांशः=pUpsert; p_पदांशः; p_पदांशः=p_पदांशः->p_अग्र_Upsert){
+        यदि( p_पदांशः->pUpsertTarget==0 ) भङ्ग;
+        यदि( p_पदांशः->pUpsertIdx==0 ) अनुवर्त;  /* Skip ON CONFLICT for the IPK */
         jj = 0;
-        pIdx = pTab->pIndex;
-        while( ALWAYS(pIdx!=0) && pIdx!=pTerm->pUpsertIdx ){
-           pIdx = pIdx->pNext;
+        pIdx = pTab->p_सूचकांक;
+        यावत्( ALWAYS(pIdx!=0) && pIdx!=p_पदांशः->pUpsertIdx ){
+           pIdx = pIdx->p_अग्र;
            jj++;
         }
-        if( bUsed[jj] ) continue; /* Duplicate ON CONFLICT clause ignored */
-        bUsed[jj] = 1;
+        यदि( b_प्रयुक्तम्[jj] ) अनुवर्त; /* Duplicate ON CONFLICT clause ignored */
+        b_प्रयुक्तम्[jj] = 1;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      for(jj=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, jj++){
-        if( bUsed[jj] ) continue;
+      प्रति(jj=0, pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र, jj++){
+        यदि( b_प्रयुक्तम्[jj] ) अनुवर्त;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      assert( i==nIdx );
+      प्रतिज्ञा( i==nIdx );
     }
   }
 
@@ -2207,40 +2207,40 @@ void sqlite3GenerateConstraintChecks(
   ** used to link together these tests which are separated from each other
   ** in the generate bytecode.
   */
-  if( (db->flags & (SQLITE_RecTriggers|SQLITE_ForeignKeys))==0 ){
+  यदि( (db->flags & (SQLITE_RecTriggers|SQLITE_Foreign_कुञ्चिकाः))==0 ){
     /* There are not DELETE triggers nor FK constraints.  No constraint
     ** rechecks are needed. */
     pTrigger = 0;
     regTrigCnt = 0;
-  }else{
-    if( db->flags&SQLITE_RecTriggers ){
+  }अन्यथा{
+    यदि( db->flags&SQLITE_RecTriggers ){
       pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
       regTrigCnt = pTrigger!=0 || sqlite3FkRequired(pParse, pTab, 0, 0);
-    }else{
+    }अन्यथा{
       pTrigger = 0;
       regTrigCnt = sqlite3FkRequired(pParse, pTab, 0, 0);
     }
-    if( regTrigCnt ){
+    यदि( regTrigCnt ){
       /* At this point regTrigCnt is non-zero if there are DELETE triggers
       ** or FK triggers. But we only care about these things if there is
       ** a chance that a row will be deleted by an ON CONFLICT REPLACE
       ** constraint. So zero regTrigCnt if no such constraint can be found. */
-      if( overrideError!=OE_Replace ){
-        if( overrideError!=OE_Default ){
+      यदि( overrideError!=OE_Replace ){
+        यदि( overrideError!=OE_Default ){
           regTrigCnt = 0;
-        }else if( pkChng==0 || pPk || pTab->keyConf!=OE_Replace ){
-          for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->onError==OE_Replace ) break;
+        }अन्यथा यदि( pkChng==0 || pPk || pTab->कुञ्चिका_Conf!=OE_Replace ){
+          प्रति(pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+            यदि( pIdx->onError==OE_Replace ) भङ्ग;
           }
-          if( pIdx==0 ) regTrigCnt = 0;
+          यदि( pIdx==0 ) regTrigCnt = 0;
         }
       }
     }
-    if( regTrigCnt ){
+    यदि( regTrigCnt ){
       /* Replace triggers might exist.  Allocate the counter and
       ** initialize it to zero. */
       regTrigCnt = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, regTrigCnt);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, 0, regTrigCnt);
       VdbeComment((v, "trigger count"));
       lblRecheckOk = sqlite3VdbeMakeLabel(pParse);
       addrRecheck = lblRecheckOk;
@@ -2250,32 +2250,32 @@ void sqlite3GenerateConstraintChecks(
   /* If rowid is changing, make sure the new rowid does not previously
   ** exist in the table.
   */
-  if( pkChng && pPk==0 ){
-    int addrRowidOk = sqlite3VdbeMakeLabel(pParse);
+  यदि( pkChng && pPk==0 ){
+    पूर्णाङ्क addrRowidOk = sqlite3VdbeMakeLabel(pParse);
 
     /* Figure out what action to take in case of a rowid collision */
-    onError = pTab->keyConf;
-    if( overrideError!=OE_Default ){
+    onError = pTab->कुञ्चिका_Conf;
+    यदि( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }अन्यथा यदि( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* figure out whether or not upsert applies in this case */
-    if( pUpsert ){
-      pUpsertClause = sqlite3UpsertOfIndex(pUpsert,0);
-      if( pUpsertClause!=0 ){
-        if( pUpsertClause->isDoUpdate==0 ){
+    यदि( pUpsert ){
+      pUpsertClause = sqlite3_Upsert_सम्बन्धि_सूचकांक(pUpsert,0);
+      यदि( pUpsertClause!=0 ){
+        यदि( pUpsertClause->isDoUpdate==0 ){
           onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-        }else{
+        }अन्यथा{
           onError = OE_Update;  /* DO UPDATE */
         }
       }
-      if( pUpsertClause!=pUpsert ){
+      यदि( pUpsertClause!=pUpsert ){
         /* The first ON CONFLICT clause has a conflict target other than
         ** the IPK.  We have to jump ahead to that first ON CONFLICT clause
         ** and then come back here and deal with the IPK afterwards */
-        upsertIpkDelay = sqlite3VdbeAddOp0(v, OP_Goto);
+        upsertIpkDelay = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);
       }
     }
 
@@ -2284,24 +2284,24 @@ void sqlite3GenerateConstraintChecks(
     ** to defer the running of the rowid conflict checking until after
     ** the UNIQUE constraints have run.
     */
-    if( onError==OE_Replace      /* IPK rule is REPLACE */
+    यदि( onError==OE_Replace      /* IPK rule is REPLACE */
      && onError!=overrideError   /* Rules for other constraints are different */
-     && pTab->pIndex             /* There exist other constraints */
+     && pTab->p_सूचकांक             /* There exist other constraints */
     ){
-      if( upsertIpkDelay ){
-        ipkTop = upsertIpkDelay + 1;
+      यदि( upsertIpkDelay ){
+        ipk_शिखरम् = upsertIpkDelay + 1;
         upsertIpkDelay = 0;
-      }else{
-        ipkTop = sqlite3VdbeAddOp0(v, OP_Goto)+1;
+      }अन्यथा{
+        ipk_शिखरम् = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto)+1;
       }
       VdbeComment((v, "defer IPK REPLACE until last"));
     }
 
-    if( isUpdate ){
+    यदि( isUpdate ){
       /* pkChng!=0 does not mean that the rowid has changed, only that
       ** it might have changed.  Skip the conflict logic below if the rowid
       ** is unchanged. */
-      sqlite3VdbeAddOp3(v, OP_Eq, regNewData, addrRowidOk, regOldData);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Eq, reg_New_दत्त, addrRowidOk, reg_Old_दत्त);
       sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
       VdbeCoverage(v);
     }
@@ -2310,24 +2310,24 @@ void sqlite3GenerateConstraintChecks(
     ** the following conflict logic if it does not. */
     VdbeNoopComment((v, "uniqueness check for ROWID"));
     sqlite3VdbeVerifyAbortable(v, onError);
-    sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRowidOk, regNewData);
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NotExists, i_दत्त_Cur, addrRowidOk, reg_New_दत्त);
     VdbeCoverage(v);
 
-    switch( onError ){
-      default: {
+    विकल्प( onError ){
+      स्वभाव: {
         onError = OE_Abort;
         /* no break */ deliberate_fall_through
       }
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+      पक्ष OE_Rollback:
+      पक्ष OE_Abort:
+      पक्ष OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3RowidConstraint(pParse, onError, pTab);
-        break;
+        भङ्ग;
       }
-      case OE_Replace: {
+      पक्ष OE_Replace: {
         /* If there are DELETE triggers on this table and the
         ** recursive-triggers flag is set, call GenerateRowDelete() to
         ** remove the conflicting row from the table. This will fire
@@ -2350,48 +2350,48 @@ void sqlite3GenerateConstraintChecks(
         ** to run without a statement journal if there are no indexes on the
         ** table.
         */
-        if( regTrigCnt ){
+        यदि( regTrigCnt ){
           sqlite3MultiWrite(pParse);
-          sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-                                   regNewData, 1, 0, OE_Replace, 1, -1);
-          sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
+          sqlite3GenerateRowDelete(pParse, pTab, pTrigger, i_दत्त_Cur, iIdxCur,
+                                   reg_New_दत्त, 1, 0, OE_Replace, 1, -1);
+          sqlite3_Vdbe_सङ्कलय_Op2(v, OP_सङ्कलय_Imm, regTrigCnt, 1); /* incr trigger cnt */
           nReplaceTrig++;
-        }else{
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-          assert( HasRowid(pTab) );
+        }अन्यथा{
+#यदि_परिभाषितम् SQLITE_ENABLE_PREUPDATE_HOOK
+          प्रतिज्ञा( HasRowid(pTab) );
           /* This OP_Delete opcode fires the pre-update-hook only. It does
           ** not modify the b-tree. It is more efficient to let the coming
           ** OP_Insert replace the existing entry than it is to delete the
           ** existing entry and then insert a new one. */
-          sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, OPFLAG_ISNOOP);
-          sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
-#endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-          if( pTab->pIndex ){
+          sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Delete, i_दत्त_Cur, OPFLAG_ISNOOP);
+          sqlite3VdbeAppendP4(v, pTab, P4_सारणी);
+#यदि_अन्तः /* SQLITE_ENABLE_PREUPDATE_HOOK */
+          यदि( pTab->p_सूचकांक ){
             sqlite3MultiWrite(pParse);
-            sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,-1);
+            sqlite3_Generate_Row_सूचकांक_Delete(pParse, pTab, i_दत्त_Cur, iIdxCur,0,-1);
           }
         }
-        seenReplace = 1;
-        break;
+        आलोकितम्_Replace = 1;
+        भङ्ग;
       }
-#ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
-        sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, 0, iDataCur);
+#यदि_अपरिभाषितम् SQLITE_OMIT_UPSERT
+      पक्ष OE_Update: {
+        sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, 0, i_दत्त_Cur);
         /* no break */ deliberate_fall_through
       }
-#endif
-      case OE_Ignore: {
+#यदि_अन्तः
+      पक्ष OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        भङ्ग;
       }
     }
     sqlite3VdbeResolveLabel(v, addrRowidOk);
-    if( ipkTop ){
-      ipkBottom = sqlite3VdbeAddOp0(v, OP_Goto);
-      sqlite3VdbeJumpHere(v, ipkTop-1);
-    }else if( pUpsert && pUpsertClause!=pUpsert ){
-      upsertIpkReturn = sqlite3VdbeAddOp0(v, OP_Goto);
+    यदि( ipk_शिखरम् ){
+      ipkBottom = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);
+      sqlite3_Vdbe_Jump_अत्र(v, ipk_शिखरम्-1);
+    }अन्यथा यदि( pUpsert && pUpsertClause!=pUpsert ){
+      upsertIpkReturn = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);
     }
   }
 
@@ -2402,38 +2402,38 @@ void sqlite3GenerateConstraintChecks(
   ** This loop also handles the case of the PRIMARY KEY index for a
   ** WITHOUT ROWID table.
   */
-  for(pIdx = indexIteratorFirst(&sIdxIter, &ix);
+  प्रति(pIdx = सूचकांक_Iterator_First(&sIdxIter, &ix);
       pIdx;
-      pIdx = indexIteratorNext(&sIdxIter, &ix)
+      pIdx = सूचकांक_Iterator_अग्र(&sIdxIter, &ix)
   ){
-    int regIdx;          /* Range of registers holding content for pIdx */
-    int regR;            /* Range of registers holding conflicting PK */
-    int iThisCur;        /* Cursor for this UNIQUE index */
-    int addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
-    int addrConflictCk;  /* First opcode in the conflict check logic */
-    int nConflictCk;     /* Number of opcodes in conflict check logic */
+    पूर्णाङ्क regIdx;          /* Range of registers holding content for pIdx */
+    पूर्णाङ्क regR;            /* Range of registers holding conflicting PK */
+    पूर्णाङ्क iThisCur;        /* Cursor for this UNIQUE index */
+    पूर्णाङ्क addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
+    पूर्णाङ्क addrConflictCk;  /* First opcode in the conflict check logic */
+    पूर्णाङ्क nConflictCk;     /* Number of opcodes in conflict check logic */
 
-    if( aRegIdx[ix]==0 ) continue;  /* Skip indices that do not change */
-    if( pUpsert ){
-      pUpsertClause = sqlite3UpsertOfIndex(pUpsert, pIdx);
-      if( upsertIpkDelay && pUpsertClause==pUpsert ){
-        sqlite3VdbeJumpHere(v, upsertIpkDelay);
+    यदि( aRegIdx[ix]==0 ) अनुवर्त;  /* Skip indices that do not change */
+    यदि( pUpsert ){
+      pUpsertClause = sqlite3_Upsert_सम्बन्धि_सूचकांक(pUpsert, pIdx);
+      यदि( upsertIpkDelay && pUpsertClause==pUpsert ){
+        sqlite3_Vdbe_Jump_अत्र(v, upsertIpkDelay);
       }
     }
     addrUniqueOk = sqlite3VdbeMakeLabel(pParse);
-    if( bAffinityDone==0 ){
-      sqlite3TableAffinity(v, pTab, regNewData+1);
-      bAffinityDone = 1;
+    यदि( b_Affinity_समाप्तम्==0 ){
+      sqlite3_सारणी_Affinity(v, pTab, reg_New_दत्त+1);
+      b_Affinity_समाप्तम् = 1;
     }
     VdbeNoopComment((v, "prep index %s", pIdx->zName));
     iThisCur = iIdxCur+ix;
 
 
     /* Skip partial indices for which the WHERE clause is not true */
-    if( pIdx->pPartIdxWhere ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, aRegIdx[ix]);
-      pParse->iSelfTab = -(regNewData+1);
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
+    यदि( pIdx->pPartIdxWhere ){
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Null, 0, aRegIdx[ix]);
+      pParse->iSelfTab = -(reg_New_दत्त+1);
+      sqlite3_व्यञ्जकम्_If_False_Dup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
     }
@@ -2442,60 +2442,60 @@ void sqlite3GenerateConstraintChecks(
     ** the insert or update.  Store that record in the aRegIdx[ix] register
     */
     regIdx = aRegIdx[ix]+1;
-    for(i=0; i<pIdx->nColumn; i++){
-      int iField = pIdx->aiColumn[i];
-      int x;
-      if( iField==XN_EXPR ){
-        pParse->iSelfTab = -(regNewData+1);
-        sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[i].pExpr, regIdx+i);
+    प्रति(i=0; i<pIdx->nColumn; i++){
+      पूर्णाङ्क i_क्षेत्रम् = pIdx->aiColumn[i];
+      पूर्णाङ्क x;
+      यदि( i_क्षेत्रम्==XN_व्यञ्जकम् ){
+        pParse->iSelfTab = -(reg_New_दत्त+1);
+        sqlite3_व्यञ्जकम्_संहिता_Copy(pParse, pIdx->a_Col_व्यञ्जकम्->a[i].p_व्यञ्जकम्, regIdx+i);
         pParse->iSelfTab = 0;
         VdbeComment((v, "%s column %d", pIdx->zName, i));
-      }else if( iField==XN_ROWID || iField==pTab->iPKey ){
-        x = regNewData;
-        sqlite3VdbeAddOp2(v, OP_IntCopy, x, regIdx+i);
+      }अन्यथा यदि( i_क्षेत्रम्==XN_ROWID || i_क्षेत्रम्==pTab->iPKey ){
+        x = reg_New_दत्त;
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IntCopy, x, regIdx+i);
         VdbeComment((v, "rowid"));
-      }else{
-        testcase( sqlite3TableColumnToStorage(pTab, iField)!=iField );
-        x = sqlite3TableColumnToStorage(pTab, iField) + regNewData + 1;
-        sqlite3VdbeAddOp2(v, OP_SCopy, x, regIdx+i);
-        VdbeComment((v, "%s", pTab->aCol[iField].zCnName));
+      }अन्यथा{
+        testcase( sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, i_क्षेत्रम्)!=i_क्षेत्रम् );
+        x = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, i_क्षेत्रम्) + reg_New_दत्त + 1;
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_SCopy, x, regIdx+i);
+        VdbeComment((v, "%s", pTab->aCol[i_क्षेत्रम्].zCnName));
       }
     }
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regIdx, pIdx->nColumn, aRegIdx[ix]);
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Make_लेखः, regIdx, pIdx->nColumn, aRegIdx[ix]);
     VdbeComment((v, "for %s", pIdx->zName));
-#ifdef SQLITE_ENABLE_NULL_TRIM
-    if( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
-      sqlite3SetMakeRecordP5(v, pIdx->pTable);
+#यदि_परिभाषितम् SQLITE_ENABLE_NULL_TRIM
+    यदि( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+      sqlite3_समुच्चयः_Make_लेखः_P5(v, pIdx->p_सारणी);
     }
-#endif
+#यदि_अन्तः
     sqlite3VdbeReleaseRegisters(pParse, regIdx, pIdx->nColumn, 0, 0);
 
     /* In an UPDATE operation, if this index is the PRIMARY KEY index
     ** of a WITHOUT ROWID table and there has been no change the
     ** primary key, then no collision is possible.  The collision detection
     ** logic below can all be skipped. */
-    if( isUpdate && pPk==pIdx && pkChng==0 ){
+    यदि( isUpdate && pPk==pIdx && pkChng==0 ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      अनुवर्त;
     }
 
     /* Find out what action to take in case there is a uniqueness conflict */
     onError = pIdx->onError;
-    if( onError==OE_None ){
+    यदि( onError==OE_None ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;  /* pIdx is not a UNIQUE index */
+      अनुवर्त;  /* pIdx is not a UNIQUE index */
     }
-    if( overrideError!=OE_Default ){
+    यदि( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }अन्यथा यदि( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* Figure out if the upsert clause applies to this index */
-    if( pUpsertClause ){
-      if( pUpsertClause->isDoUpdate==0 ){
+    यदि( pUpsertClause ){
+      यदि( pUpsertClause->isDoUpdate==0 ){
         onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-      }else{
+      }अन्यथा{
         onError = OE_Update;  /* DO UPDATE */
       }
     }
@@ -2510,53 +2510,53 @@ void sqlite3GenerateConstraintChecks(
     ** This is not possible for ENABLE_PREUPDATE_HOOK builds, as the row
     ** must be explicitly deleted in order to ensure any pre-update hook
     ** is invoked.  */
-    assert( IsOrdinaryTable(pTab) );
-#ifndef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (ix==0 && pIdx->pNext==0)                   /* Condition 3 */
+    प्रतिज्ञा( Is_Ordinary_सारणी(pTab) );
+#यदि_अपरिभाषितम् SQLITE_ENABLE_PREUPDATE_HOOK
+    यदि( (ix==0 && pIdx->p_अग्र==0)                   /* Condition 3 */
      && pPk==pIdx                                   /* Condition 2 */
      && onError==OE_Replace                         /* Condition 1 */
      && ( 0==(db->flags&SQLITE_RecTriggers) ||      /* Condition 4 */
           0==sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0))
-     && ( 0==(db->flags&SQLITE_ForeignKeys) ||      /* Condition 5 */
+     && ( 0==(db->flags&SQLITE_Foreign_कुञ्चिकाः) ||      /* Condition 5 */
          (0==pTab->u.tab.pFKey && 0==sqlite3FkReferences(pTab)))
     ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      अनुवर्त;
     }
-#endif /* ifndef SQLITE_ENABLE_PREUPDATE_HOOK */
+#यदि_अन्तः /* ifndef SQLITE_ENABLE_PREUPDATE_HOOK */
 
     /* Check to see if the new index entry will be unique */
     sqlite3VdbeVerifyAbortable(v, onError);
     addrConflictCk =
-      sqlite3VdbeAddOp4Int(v, OP_NoConflict, iThisCur, addrUniqueOk,
-                           regIdx, pIdx->nKeyCol); VdbeCoverage(v);
+      sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_NoConflict, iThisCur, addrUniqueOk,
+                           regIdx, pIdx->n_कुञ्चिका_Col); VdbeCoverage(v);
 
     /* Generate code to handle collisions */
-    regR = pIdx==pPk ? regIdx : sqlite3GetTempRange(pParse, nPkField);
-    if( isUpdate || onError==OE_Replace ){
-      if( HasRowid(pTab) ){
-        sqlite3VdbeAddOp2(v, OP_IdxRowid, iThisCur, regR);
+    regR = pIdx==pPk ? regIdx : sqlite3_Get_अस्थायी_Range(pParse, n_Pk_क्षेत्रम्);
+    यदि( isUpdate || onError==OE_Replace ){
+      यदि( HasRowid(pTab) ){
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IdxRowid, iThisCur, regR);
         /* Conflict only if the rowid of the existing index entry
         ** is different from old-rowid */
-        if( isUpdate ){
-          sqlite3VdbeAddOp3(v, OP_Eq, regR, addrUniqueOk, regOldData);
+        यदि( isUpdate ){
+          sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Eq, regR, addrUniqueOk, reg_Old_दत्त);
           sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
           VdbeCoverage(v);
         }
-      }else{
-        int x;
+      }अन्यथा{
+        पूर्णाङ्क x;
         /* Extract the PRIMARY KEY from the end of the index entry and
         ** store it in registers regR..regR+nPk-1 */
-        if( pIdx!=pPk ){
-          for(i=0; i<pPk->nKeyCol; i++){
-            assert( pPk->aiColumn[i]>=0 );
-            x = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
-            sqlite3VdbeAddOp3(v, OP_Column, iThisCur, x, regR+i);
+        यदि( pIdx!=pPk ){
+          प्रति(i=0; i<pPk->n_कुञ्चिका_Col; i++){
+            प्रतिज्ञा( pPk->aiColumn[i]>=0 );
+            x = sqlite3_सारणी_Column_गन्तव्यम्_सूचकांक(pIdx, pPk->aiColumn[i]);
+            sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Column, iThisCur, x, regR+i);
             VdbeComment((v, "%s.%s", pTab->zName,
                          pTab->aCol[pPk->aiColumn[i]].zCnName));
           }
         }
-        if( isUpdate ){
+        यदि( isUpdate ){
           /* If currently processing the PRIMARY KEY of a WITHOUT ROWID
           ** table, only conflict if the new PRIMARY KEY values are actually
           ** different from the old.  See TH3 withoutrowid04.test.
@@ -2564,21 +2564,21 @@ void sqlite3GenerateConstraintChecks(
           ** For a UNIQUE index, only conflict if the PRIMARY KEY values
           ** of the matched index row are different from the original PRIMARY
           ** KEY values of this row before the update.  */
-          int addrJump = sqlite3VdbeCurrentAddr(v)+pPk->nKeyCol;
-          int op = OP_Ne;
-          int regCmp = (IsPrimaryKeyIndex(pIdx) ? regIdx : regR);
+          पूर्णाङ्क addrJump = sqlite3VdbeCurrentAddr(v)+pPk->n_कुञ्चिका_Col;
+          पूर्णाङ्क op = OP_Ne;
+          पूर्णाङ्क regCmp = (Is_Primary_कुञ्चिका_सूचकांक(pIdx) ? regIdx : regR);
  
-          for(i=0; i<pPk->nKeyCol; i++){
-            char *p4 = (char*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
+          प्रति(i=0; i<pPk->n_कुञ्चिका_Col; i++){
+            वर्ण *p4 = (वर्ण*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
             x = pPk->aiColumn[i];
-            assert( x>=0 );
-            if( i==(pPk->nKeyCol-1) ){
+            प्रतिज्ञा( x>=0 );
+            यदि( i==(pPk->n_कुञ्चिका_Col-1) ){
               addrJump = addrUniqueOk;
               op = OP_Eq;
             }
-            x = sqlite3TableColumnToStorage(pTab, x);
-            sqlite3VdbeAddOp4(v, op,
-                regOldData+1+x, addrJump, regCmp+i, p4, P4_COLLSEQ
+            x = sqlite3_सारणी_Column_गन्तव्यम्_Storage(pTab, x);
+            sqlite3_Vdbe_सङ्कलय_Op4(v, op,
+                reg_Old_दत्त+1+x, addrJump, regCmp+i, p4, P4_COLLSEQ
             );
             sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
             VdbeCoverageIf(v, op==OP_Eq);
@@ -2589,58 +2589,58 @@ void sqlite3GenerateConstraintChecks(
     }
 
     nConflictCk = sqlite3VdbeCurrentAddr(v) - addrConflictCk;
-    assert( nConflictCk>0 || db->mallocFailed );
+    प्रतिज्ञा( nConflictCk>0 || db->mallocFailed );
     testcase( nConflictCk<=0 );
     testcase( nConflictCk>1 );
 
     /* Generate code that executes if the new index entry is not unique */
-    assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+    प्रतिज्ञा( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
         || onError==OE_Ignore || onError==OE_Replace || onError==OE_Update );
-    switch( onError ){
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+    विकल्प( onError ){
+      पक्ष OE_Rollback:
+      पक्ष OE_Abort:
+      पक्ष OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3UniqueConstraint(pParse, onError, pIdx);
-        break;
+        भङ्ग;
       }
-#ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
+#यदि_अपरिभाषितम् SQLITE_OMIT_UPSERT
+      पक्ष OE_Update: {
         sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, pIdx, iIdxCur+ix);
         /* no break */ deliberate_fall_through
       }
-#endif
-      case OE_Ignore: {
+#यदि_अन्तः
+      पक्ष OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        भङ्ग;
       }
-      default: {
-        assert( onError==OE_Replace );
-        if( regTrigCnt ){
+      स्वभाव: {
+        प्रतिज्ञा( onError==OE_Replace );
+        यदि( regTrigCnt ){
           sqlite3MultiWrite(pParse);
           nReplaceTrig++;
         }
-        if( pTrigger && isUpdate ){
-          sqlite3VdbeAddOp1(v, OP_CursorLock, iDataCur);
+        यदि( pTrigger && isUpdate ){
+          sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Cursor_तालकम्, i_दत्त_Cur);
         }
-        sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-            regR, nPkField, 0, OE_Replace,
+        sqlite3GenerateRowDelete(pParse, pTab, pTrigger, i_दत्त_Cur, iIdxCur,
+            regR, n_Pk_क्षेत्रम्, 0, OE_Replace,
             (pIdx==pPk ? ONEPASS_SINGLE : ONEPASS_OFF), iThisCur);
-        if( pTrigger && isUpdate ){
-          sqlite3VdbeAddOp1(v, OP_CursorUnlock, iDataCur);
+        यदि( pTrigger && isUpdate ){
+          sqlite3_Vdbe_सङ्कलय_Op1(v, OP_CursorUnlock, i_दत्त_Cur);
         }
-        seenReplace = 1;
-        break;
+        आलोकितम्_Replace = 1;
+        भङ्ग;
       }
     }
-    if( regTrigCnt ){
-      int addrBypass;  /* Jump destination to bypass recheck logic */
+    यदि( regTrigCnt ){
+      पूर्णाङ्क addrBypass;  /* Jump destination to bypass recheck logic */
 
-      sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
-      addrBypass = sqlite3VdbeAddOp0(v, OP_Goto);  /* Bypass recheck */
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_सङ्कलय_Imm, regTrigCnt, 1); /* incr trigger cnt */
+      addrBypass = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);  /* Bypass recheck */
       VdbeComment((v, "bypass recheck"));
 
       /* Here we insert code that will be invoked after all constraint
@@ -2648,31 +2648,31 @@ void sqlite3GenerateConstraintChecks(
       ** fired. */
       sqlite3VdbeResolveLabel(v, lblRecheckOk);
       lblRecheckOk = sqlite3VdbeMakeLabel(pParse);
-      if( pIdx->pPartIdxWhere ){
+      यदि( pIdx->pPartIdxWhere ){
         /* Bypass the recheck if this partial index is not defined
         ** for the current row */
-        sqlite3VdbeAddOp2(v, OP_IsNull, regIdx-1, lblRecheckOk);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, regIdx-1, lblRecheckOk);
         VdbeCoverage(v);
       }
       /* Copy the constraint check code from above, except change
       ** the constraint-ok jump destination to be the address of
       ** the next retest block */
-      while( nConflictCk>0 ){
+      यावत्( nConflictCk>0 ){
         VdbeOp x;    /* Conflict check opcode to copy */
         /* The sqlite3VdbeAddOp4() call might reallocate the opcode array.
         ** Hence, make a complete copy of the opcode, rather than using
         ** a pointer to the opcode. */
         x = *sqlite3VdbeGetOp(v, addrConflictCk);
-        if( x.opcode!=OP_IdxRowid || isUpdate ){
-          int p2;      /* New P2 value for copied conflict check opcode */
-          const char *zP4;
-          if( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
+        यदि( x.opcode!=OP_IdxRowid || isUpdate ){
+          पूर्णाङ्क p2;      /* New P2 value for copied conflict check opcode */
+          ध्रुव वर्ण *zP4;
+          यदि( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
             p2 = lblRecheckOk;
-          }else{
+          }अन्यथा{
             p2 = x.p2;
           }
-          zP4 = x.p4type==P4_INT32 ? SQLITE_INT_TO_PTR(x.p4.i) : x.p4.z;
-          sqlite3VdbeAddOp4(v, x.opcode, x.p1, p2, x.p3, zP4, x.p4type);
+          zP4 = x.p4type==P4_INT32 ? SQLITE_INT_गन्तव्यम्_PTR(x.p4.i) : x.p4.z;
+          sqlite3_Vdbe_सङ्कलय_Op4(v, x.opcode, x.p1, p2, x.p3, zP4, x.p4type);
           sqlite3VdbeChangeP5(v, x.p5);
           VdbeCoverageIf(v, p2!=x.p2);
         }
@@ -2682,83 +2682,83 @@ void sqlite3GenerateConstraintChecks(
       /* If the retest fails, issue an abort */
       sqlite3UniqueConstraint(pParse, OE_Abort, pIdx);
 
-      sqlite3VdbeJumpHere(v, addrBypass); /* Terminate the recheck bypass */
+      sqlite3_Vdbe_Jump_अत्र(v, addrBypass); /* Terminate the recheck bypass */
     }
     sqlite3VdbeResolveLabel(v, addrUniqueOk);
-    if( regR!=regIdx ) sqlite3ReleaseTempRange(pParse, regR, nPkField);
-    if( pUpsertClause
+    यदि( regR!=regIdx ) sqlite3_Release_अस्थायी_Range(pParse, regR, n_Pk_क्षेत्रम्);
+    यदि( pUpsertClause
      && upsertIpkReturn
-     && sqlite3UpsertNextIsIPK(pUpsertClause)
+     && sqlite3_Upsert_अग्र_Is_IPK(pUpsertClause)
     ){
       sqlite3VdbeGoto(v, upsertIpkDelay+1);
-      sqlite3VdbeJumpHere(v, upsertIpkReturn);
+      sqlite3_Vdbe_Jump_अत्र(v, upsertIpkReturn);
       upsertIpkReturn = 0;
     }
   }
 
   /* If the IPK constraint is a REPLACE, run it last */
-  if( ipkTop ){
-    sqlite3VdbeGoto(v, ipkTop);
+  यदि( ipk_शिखरम् ){
+    sqlite3VdbeGoto(v, ipk_शिखरम्);
     VdbeComment((v, "Do IPK REPLACE"));
-    assert( ipkBottom>0 );
-    sqlite3VdbeJumpHere(v, ipkBottom);
+    प्रतिज्ञा( ipkBottom>0 );
+    sqlite3_Vdbe_Jump_अत्र(v, ipkBottom);
   }
 
   /* Recheck all uniqueness constraints after replace triggers have run */
   testcase( regTrigCnt!=0 && nReplaceTrig==0 );
-  assert( regTrigCnt!=0 || nReplaceTrig==0 );
-  if( nReplaceTrig ){
-    sqlite3VdbeAddOp2(v, OP_IfNot, regTrigCnt, lblRecheckOk);VdbeCoverage(v);
-    if( !pPk ){
-      if( isUpdate ){
-        sqlite3VdbeAddOp3(v, OP_Eq, regNewData, addrRecheck, regOldData);
+  प्रतिज्ञा( regTrigCnt!=0 || nReplaceTrig==0 );
+  यदि( nReplaceTrig ){
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IfNot, regTrigCnt, lblRecheckOk);VdbeCoverage(v);
+    यदि( !pPk ){
+      यदि( isUpdate ){
+        sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Eq, reg_New_दत्त, addrRecheck, reg_Old_दत्त);
         sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
         VdbeCoverage(v);
       }
-      sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRecheck, regNewData);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NotExists, i_दत्त_Cur, addrRecheck, reg_New_दत्त);
       VdbeCoverage(v);
       sqlite3RowidConstraint(pParse, OE_Abort, pTab);
-    }else{
+    }अन्यथा{
       sqlite3VdbeGoto(v, addrRecheck);
     }
   }
-  if( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
+  यदि( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
 
   /* Generate the table record */
-  if( HasRowid(pTab) ){
-    int regRec = aRegIdx[ix];
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regNewData+1, pTab->nNVCol, regRec);
-    sqlite3SetMakeRecordP5(v, pTab);
-    if( !bAffinityDone ){
-      sqlite3TableAffinity(v, pTab, 0);
+  यदि( HasRowid(pTab) ){
+    पूर्णाङ्क regRec = aRegIdx[ix];
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Make_लेखः, reg_New_दत्त+1, pTab->nNVCol, regRec);
+    sqlite3_समुच्चयः_Make_लेखः_P5(v, pTab);
+    यदि( !b_Affinity_समाप्तम् ){
+      sqlite3_सारणी_Affinity(v, pTab, 0);
     }
   }
 
-  *pbMayReplace = seenReplace;
-  VdbeModuleComment((v, "END: GenCnstCks(%d)", seenReplace));
+  *pbMayReplace = आलोकितम्_Replace;
+  VdbeModuleComment((v, "END: GenCnstCks(%d)", आलोकितम्_Replace));
 }
 
-#ifdef SQLITE_ENABLE_NULL_TRIM
+#यदि_परिभाषितम् SQLITE_ENABLE_NULL_TRIM
 /*
 ** Change the P5 operand on the last opcode (which should be an OP_MakeRecord)
 ** to be the number of columns in table pTab that must not be NULL-trimmed.
 **
 ** Or if no columns of pTab may be NULL-trimmed, leave P5 at zero.
 */
-void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
+शून्य sqlite3_समुच्चयः_Make_लेखः_P5(Vdbe *v, सारणी *pTab){
   u16 i;
 
   /* Records with omitted columns are only allowed for schema format
   ** version 2 and later (SQLite version 3.1.4, 2005-02-20). */
-  if( pTab->pSchema->file_format<2 ) return;
+  यदि( pTab->pSchema->file_format<2 ) प्रत्यागम;
 
-  for(i=pTab->nCol-1; i>0; i--){
-    if( pTab->aCol[i].iDflt!=0 ) break;
-    if( pTab->aCol[i].colFlags & COLFLAG_PRIMKEY ) break;
+  प्रति(i=pTab->nCol-1; i>0; i--){
+    यदि( pTab->aCol[i].iDflt!=0 ) भङ्ग;
+    यदि( pTab->aCol[i].colFlags & COLFLAG_PRIMKEY ) भङ्ग;
   }
   sqlite3VdbeChangeP5(v, i+1);
 }
-#endif
+#यदि_अन्तः
 
 /*
 ** Table pTab is a WITHOUT ROWID table that is being written to. The cursor
@@ -2766,25 +2766,25 @@ void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
 ** PK index. This function adds code to invoke the pre-update hook,
 ** if one is registered.
 */
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-static void codeWithoutRowidPreupdate(
+#यदि_परिभाषितम् SQLITE_ENABLE_PREUPDATE_HOOK
+स्थिर शून्य संहिता_Without_Rowid_Preupdate(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being updated */
-  int iCur,                       /* Cursor number for table */
-  int regData                     /* Data containing new record */
+  सारणी *pTab,                    /* Table being updated */
+  पूर्णाङ्क iCur,                       /* Cursor number for table */
+  पूर्णाङ्क reg_दत्त                     /* Data containing new record */
 ){
   Vdbe *v = pParse->pVdbe;
-  int r = sqlite3GetTempReg(pParse);
-  assert( !HasRowid(pTab) );
-  assert( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
-  sqlite3VdbeAddOp2(v, OP_Integer, 0, r);
-  sqlite3VdbeAddOp4(v, OP_Insert, iCur, regData, r, (char*)pTab, P4_TABLE);
+  पूर्णाङ्क r = sqlite3_Get_अस्थायी_Reg(pParse);
+  प्रतिज्ञा( !HasRowid(pTab) );
+  प्रतिज्ञा( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
+  sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Integer, 0, r);
+  sqlite3_Vdbe_सङ्कलय_Op4(v, OP_निवेशय, iCur, reg_दत्त, r, (वर्ण*)pTab, P4_सारणी);
   sqlite3VdbeChangeP5(v, OPFLAG_ISNOOP);
-  sqlite3ReleaseTempReg(pParse, r);
+  sqlite3_Release_अस्थायी_Reg(pParse, r);
 }
-#else
-# define codeWithoutRowidPreupdate(a,b,c,d)
-#endif
+#अन्यथा
+# define संहिता_Without_Rowid_Preupdate(a,b,c,d)
+#यदि_अन्तः
 
 /*
 ** This routine generates code to finish the INSERT or UPDATE operation
@@ -2795,72 +2795,72 @@ static void codeWithoutRowidPreupdate(
 ** The arguments to this routine should be the same as the first six
 ** arguments to sqlite3GenerateConstraintChecks.
 */
-void sqlite3CompleteInsertion(
+शून्य sqlite3CompleteInsertion(
   Parse *pParse,      /* The parser context */
-  Table *pTab,        /* the table into which we are inserting */
-  int iDataCur,       /* Cursor of the canonical data source */
-  int iIdxCur,        /* First index cursor */
-  int regNewData,     /* Range of content */
-  int *aRegIdx,       /* Register used by each index.  0 for unused indices */
-  int update_flags,   /* True for UPDATE, False for INSERT */
-  int appendBias,     /* True if this is likely to be an append */
-  int useSeekResult   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
+  सारणी *pTab,        /* the table into which we are inserting */
+  पूर्णाङ्क i_दत्त_Cur,       /* Cursor of the canonical data source */
+  पूर्णाङ्क iIdxCur,        /* First index cursor */
+  पूर्णाङ्क reg_New_दत्त,     /* Range of content */
+  पूर्णाङ्क *aRegIdx,       /* Register used by each index.  0 for unused indices */
+  पूर्णाङ्क update_flags,   /* True for UPDATE, False for INSERT */
+  पूर्णाङ्क appendBias,     /* True if this is likely to be an append */
+  पूर्णाङ्क use_Seek_परिणाम   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
 ){
   Vdbe *v;            /* Prepared statements under construction */
-  Index *pIdx;        /* An index being inserted or updated */
+  सूचकांक *pIdx;        /* An index being inserted or updated */
   u8 pik_flags;       /* flag values passed to the btree insert */
-  int i;              /* Loop counter */
+  पूर्णाङ्क i;              /* Loop counter */
 
-  assert( update_flags==0
+  प्रतिज्ञा( update_flags==0
        || update_flags==OPFLAG_ISUPDATE
        || update_flags==(OPFLAG_ISUPDATE|OPFLAG_SAVEPOSITION)
   );
 
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
+  प्रतिज्ञा( v!=0 );
+  प्रतिज्ञा( !IsView(pTab) );  /* This table is not a VIEW */
+  प्रति(i=0, pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र, i++){
     /* All REPLACE indexes are at the end of the list */
-    assert( pIdx->onError!=OE_Replace
-         || pIdx->pNext==0
-         || pIdx->pNext->onError==OE_Replace );
-    if( aRegIdx[i]==0 ) continue;
-    if( pIdx->pPartIdxWhere || (update_flags && pIdx->bHasExpr) ){
+    प्रतिज्ञा( pIdx->onError!=OE_Replace
+         || pIdx->p_अग्र==0
+         || pIdx->p_अग्र->onError==OE_Replace );
+    यदि( aRegIdx[i]==0 ) अनुवर्त;
+    यदि( pIdx->pPartIdxWhere || (update_flags && pIdx->b_Has_व्यञ्जकम्) ){
       /* If this is a partial index, or an UPDATE of an index on an
       ** expression, then the record register may be set to NULL to indicate
       ** that no record should be inserted into this index. */
-      sqlite3VdbeAddOp2(v, OP_IsNull, aRegIdx[i], sqlite3VdbeCurrentAddr(v)+2);
+      sqlite3_Vdbe_सङ्कलय_Op2(v, OP_IsNull, aRegIdx[i], sqlite3VdbeCurrentAddr(v)+2);
       VdbeCoverage(v);
     }
-    pik_flags = (useSeekResult ? OPFLAG_USESEEKRESULT : 0);
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+    pik_flags = (use_Seek_परिणाम ? OPFLAG_USESEEKRESULT : 0);
+    यदि( Is_Primary_कुञ्चिका_सूचकांक(pIdx) && !HasRowid(pTab) ){
       pik_flags |= OPFLAG_NCHANGE;
       pik_flags |= (update_flags & OPFLAG_SAVEPOSITION);
-      if( update_flags==0 ){
-        codeWithoutRowidPreupdate(pParse, pTab, iIdxCur+i, aRegIdx[i]);
+      यदि( update_flags==0 ){
+        संहिता_Without_Rowid_Preupdate(pParse, pTab, iIdxCur+i, aRegIdx[i]);
       }
     }
-    sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iIdxCur+i, aRegIdx[i],
+    sqlite3_Vdbe_सङ्कलय_Op4_Int(v, OP_Idx_निवेशय, iIdxCur+i, aRegIdx[i],
                          aRegIdx[i]+1,
-                         pIdx->uniqNotNull ? pIdx->nKeyCol: pIdx->nColumn);
+                         pIdx->uniqNotNull ? pIdx->n_कुञ्चिका_Col: pIdx->nColumn);
     sqlite3VdbeChangeP5(v, pik_flags);
   }
-  if( !HasRowid(pTab) ) return;
-  if( pParse->nested ){
+  यदि( !HasRowid(pTab) ) प्रत्यागम;
+  यदि( pParse->nested ){
     pik_flags = 0;
-  }else{
+  }अन्यथा{
     pik_flags = OPFLAG_NCHANGE;
     pik_flags |= (update_flags?update_flags:OPFLAG_LASTROWID);
   }
-  if( appendBias ){
+  यदि( appendBias ){
     pik_flags |= OPFLAG_APPEND;
   }
-  if( useSeekResult ){
+  यदि( use_Seek_परिणाम ){
     pik_flags |= OPFLAG_USESEEKRESULT;
   }
-  sqlite3VdbeAddOp3(v, OP_Insert, iDataCur, aRegIdx[i], regNewData);
-  if( !pParse->nested ){
-    sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
+  sqlite3_Vdbe_सङ्कलय_Op3(v, OP_निवेशय, i_दत्त_Cur, aRegIdx[i], reg_New_दत्त);
+  यदि( !pParse->nested ){
+    sqlite3VdbeAppendP4(v, pTab, P4_सारणी);
   }
   sqlite3VdbeChangeP5(v, pik_flags);
 }
@@ -2886,76 +2886,76 @@ void sqlite3CompleteInsertion(
 ** If pTab is a virtual table, then this routine is a no-op and the
 ** *piDataCur and *piIdxCur values are left uninitialized.
 */
-int sqlite3OpenTableAndIndices(
+पूर्णाङ्क sqlite3_Open_सारणी_And_Indices(
   Parse *pParse,   /* Parsing context */
-  Table *pTab,     /* Table to be opened */
-  int op,          /* OP_OpenRead or OP_OpenWrite */
+  सारणी *pTab,     /* Table to be opened */
+  पूर्णाङ्क op,          /* OP_OpenRead or OP_OpenWrite */
   u8 p5,           /* P5 value for OP_Open* opcodes (except on WITHOUT ROWID) */
-  int iBase,       /* Use this for the table cursor, if there is one */
-  u8 *aToOpen,     /* If not NULL: boolean for each table and index */
-  int *piDataCur,  /* Write the database source cursor number here */
-  int *piIdxCur    /* Write the first index cursor number here */
+  पूर्णाङ्क i_आधारः,       /* Use this for the table cursor, if there is one */
+  u8 *a_गन्तव्यम्_Open,     /* If not NULL: boolean for each table and index */
+  पूर्णाङ्क *pi_दत्त_Cur,  /* Write the database source cursor number here */
+  पूर्णाङ्क *piIdxCur    /* Write the first index cursor number here */
 ){
-  int i;
-  int iDb;
-  int iDataCur;
-  Index *pIdx;
+  पूर्णाङ्क i;
+  पूर्णाङ्क iDb;
+  पूर्णाङ्क i_दत्त_Cur;
+  सूचकांक *pIdx;
   Vdbe *v;
 
-  assert( op==OP_OpenRead || op==OP_OpenWrite );
-  assert( op==OP_OpenWrite || p5==0 );
-  assert( piDataCur!=0 );
-  assert( piIdxCur!=0 );
-  if( IsVirtual(pTab) ){
+  प्रतिज्ञा( op==OP_OpenRead || op==OP_OpenWrite );
+  प्रतिज्ञा( op==OP_OpenWrite || p5==0 );
+  प्रतिज्ञा( pi_दत्त_Cur!=0 );
+  प्रतिज्ञा( piIdxCur!=0 );
+  यदि( IsVirtual(pTab) ){
     /* This routine is a no-op for virtual tables. Leave the output
     ** variables *piDataCur and *piIdxCur set to illegal cursor numbers
     ** for improved error detection. */
-    *piDataCur = *piIdxCur = -999;
-    return 0;
+    *pi_दत्त_Cur = *piIdxCur = -999;
+    प्रत्यागम 0;
   }
-  iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+  iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(pParse->db, pTab->pSchema);
   v = pParse->pVdbe;
-  assert( v!=0 );
-  if( iBase<0 ) iBase = pParse->nTab;
-  iDataCur = iBase++;
-  *piDataCur = iDataCur;
-  if( HasRowid(pTab) && (aToOpen==0 || aToOpen[0]) ){
-    sqlite3OpenTable(pParse, iDataCur, iDb, pTab, op);
-  }else if( pParse->db->noSharedCache==0 ){
-    sqlite3TableLock(pParse, iDb, pTab->tnum, op==OP_OpenWrite, pTab->zName);
+  प्रतिज्ञा( v!=0 );
+  यदि( i_आधारः<0 ) i_आधारः = pParse->nTab;
+  i_दत्त_Cur = i_आधारः++;
+  *pi_दत्त_Cur = i_दत्त_Cur;
+  यदि( HasRowid(pTab) && (a_गन्तव्यम्_Open==0 || a_गन्तव्यम्_Open[0]) ){
+    sqlite3_Open_सारणी(pParse, i_दत्त_Cur, iDb, pTab, op);
+  }अन्यथा यदि( pParse->db->noSharedCache==0 ){
+    sqlite3_सारणी_तालकम्(pParse, iDb, pTab->tnum, op==OP_OpenWrite, pTab->zName);
   }
-  *piIdxCur = iBase;
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
-    int iIdxCur = iBase++;
-    assert( pIdx->pSchema==pTab->pSchema );
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
-      *piDataCur = iIdxCur;
+  *piIdxCur = i_आधारः;
+  प्रति(i=0, pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र, i++){
+    पूर्णाङ्क iIdxCur = i_आधारः++;
+    प्रतिज्ञा( pIdx->pSchema==pTab->pSchema );
+    यदि( Is_Primary_कुञ्चिका_सूचकांक(pIdx) && !HasRowid(pTab) ){
+      *pi_दत्त_Cur = iIdxCur;
       p5 = 0;
     }
-    if( aToOpen==0 || aToOpen[i+1] ){
-      sqlite3VdbeAddOp3(v, op, iIdxCur, pIdx->tnum, iDb);
-      sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+    यदि( a_गन्तव्यम्_Open==0 || a_गन्तव्यम्_Open[i+1] ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, op, iIdxCur, pIdx->tnum, iDb);
+      sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pIdx);
       sqlite3VdbeChangeP5(v, p5);
       VdbeComment((v, "%s", pIdx->zName));
     }
   }
-  if( iBase>pParse->nTab ) pParse->nTab = iBase;
-  return i;
+  यदि( i_आधारः>pParse->nTab ) pParse->nTab = i_आधारः;
+  प्रत्यागम i;
 }
 
 
-#ifdef SQLITE_TEST
+#यदि_परिभाषितम् SQLITE_TEST
 /*
 ** The following global variable is incremented whenever the
 ** transfer optimization is used.  This is used for testing
 ** purposes only - to make sure the transfer optimization really
 ** is happening when it is supposed to.
 */
-int sqlite3_xferopt_count;
-#endif /* SQLITE_TEST */
+पूर्णाङ्क sqlite3_xferopt_गणनम्;
+#यदि_अन्तः /* SQLITE_TEST */
 
 
-#ifndef SQLITE_OMIT_XFER_OPT
+#यदि_अपरिभाषितम् SQLITE_OMIT_XFER_OPT
 /*
 ** Check to see if index pSrc is compatible as a source of data
 ** for index pDest in an insert transfer optimization.  The rules
@@ -2967,52 +2967,52 @@ int sqlite3_xferopt_count;
 **    *   The same collating sequence on each column
 **    *   The index has the exact same WHERE clause
 */
-static int xferCompatibleIndex(Index *pDest, Index *pSrc){
-  int i;
-  assert( pDest && pSrc );
-  assert( pDest->pTable!=pSrc->pTable );
-  if( pDest->nKeyCol!=pSrc->nKeyCol || pDest->nColumn!=pSrc->nColumn ){
-    return 0;   /* Different number of columns */
+स्थिर पूर्णाङ्क xfer_Compatible_सूचकांक(सूचकांक *pDest, सूचकांक *pSrc){
+  पूर्णाङ्क i;
+  प्रतिज्ञा( pDest && pSrc );
+  प्रतिज्ञा( pDest->p_सारणी!=pSrc->p_सारणी );
+  यदि( pDest->n_कुञ्चिका_Col!=pSrc->n_कुञ्चिका_Col || pDest->nColumn!=pSrc->nColumn ){
+    प्रत्यागम 0;   /* Different number of columns */
   }
-  if( pDest->onError!=pSrc->onError ){
-    return 0;   /* Different conflict resolution strategies */
+  यदि( pDest->onError!=pSrc->onError ){
+    प्रत्यागम 0;   /* Different conflict resolution strategies */
   }
-  for(i=0; i<pSrc->nKeyCol; i++){
-    if( pSrc->aiColumn[i]!=pDest->aiColumn[i] ){
-      return 0;   /* Different columns indexed */
+  प्रति(i=0; i<pSrc->n_कुञ्चिका_Col; i++){
+    यदि( pSrc->aiColumn[i]!=pDest->aiColumn[i] ){
+      प्रत्यागम 0;   /* Different columns indexed */
     }
-    if( pSrc->aiColumn[i]==XN_EXPR ){
-      assert( pSrc->aColExpr!=0 && pDest->aColExpr!=0 );
-      if( sqlite3ExprCompare(0, pSrc->aColExpr->a[i].pExpr,
-                             pDest->aColExpr->a[i].pExpr, -1)!=0 ){
-        return 0;   /* Different expressions in the index */
+    यदि( pSrc->aiColumn[i]==XN_व्यञ्जकम् ){
+      प्रतिज्ञा( pSrc->a_Col_व्यञ्जकम्!=0 && pDest->a_Col_व्यञ्जकम्!=0 );
+      यदि( sqlite3_व्यञ्जकम्_Compare(0, pSrc->a_Col_व्यञ्जकम्->a[i].p_व्यञ्जकम्,
+                             pDest->a_Col_व्यञ्जकम्->a[i].p_व्यञ्जकम्, -1)!=0 ){
+        प्रत्यागम 0;   /* Different expressions in the index */
       }
     }
-    if( pSrc->aSortOrder[i]!=pDest->aSortOrder[i] ){
-      return 0;   /* Different sort orders */
+    यदि( pSrc->a_क्रमय_क्रमः[i]!=pDest->a_क्रमय_क्रमः[i] ){
+      प्रत्यागम 0;   /* Different sort orders */
     }
-    if( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
-      return 0;   /* Different collating sequences */
+    यदि( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
+      प्रत्यागम 0;   /* Different collating sequences */
     }
   }
-  if( sqlite3ExprCompare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
-    return 0;     /* Different WHERE clauses */
+  यदि( sqlite3_व्यञ्जकम्_Compare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
+    प्रत्यागम 0;     /* Different WHERE clauses */
   }
 
   /* If no test above fails then the indices must be compatible */
-  return 1;
+  प्रत्यागम 1;
 }
 
 /*
 ** Examine an expression node and abort if it references the ROWID.
 ** This is a Walker callback used by xferCompatibleCheck()
 */
-static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn<0 ){
-    pWalk->eCode = 1;
-    return WRC_Abort;
-  }else{
-    return WRC_Continue;
+स्थिर पूर्णाङ्क xferCheckRowid(Walker *pWalk, व्यञ्जकम् *p_व्यञ्जकम्){
+  यदि( p_व्यञ्जकम्->op==TK_COLUMN && p_व्यञ्जकम्->iColumn<0 ){
+    pWalk->e_संहिता = 1;
+    प्रत्यागम WRC_Abort;
+  }अन्यथा{
+    प्रत्यागम WRC_Continue;
   }
 }
 
@@ -3027,18 +3027,18 @@ static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
 **       INTEGER PRIMARY KEY column, then no CHECK constraint may
 **       referenced the ROWID.  (See forum post 2026-05-11T13:15:57Z)
 */
-static int xferCompatibleCheck(Table *pDest, Table *pSrc){
-  if( sqlite3ExprListCompare(pSrc->pCheck,pDest->pCheck,-1) ){
-    return 0;
+स्थिर पूर्णाङ्क xferCompatibleCheck(सारणी *pDest, सारणी *pSrc){
+  यदि( sqlite3_व्यञ्जकम्_List_Compare(pSrc->pCheck,pDest->pCheck,-1) ){
+    प्रत्यागम 0;
   }
-  if( pDest->iPKey<0 ){
+  यदि( pDest->iPKey<0 ){
     Walker w;
-    memset(&w, 0, sizeof(w));
-    w.xExprCallback = xferCheckRowid;
-    sqlite3WalkExprList(&w,pDest->pCheck);
-    if( w.eCode ) return 0;
+    स्मृतिं_पूरय(&w, 0, परिमाण(w));
+    w.x_व्यञ्जकम्_Callback = xferCheckRowid;
+    sqlite3_Walk_व्यञ्जकम्_List(&w,pDest->pCheck);
+    यदि( w.e_संहिता ) प्रत्यागम 0;
   }
-  return 1;
+  प्रत्यागम 1;
 }
 
 /*
@@ -3066,80 +3066,80 @@ static int xferCompatibleCheck(Table *pDest, Table *pSrc){
 **
 ** This optimization is particularly useful at making VACUUM run faster.
 */
-static int xferOptimization(
+स्थिर पूर्णाङ्क xferOptimization(
   Parse *pParse,        /* Parser context */
-  Table *pDest,         /* The table we are inserting into */
+  सारणी *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  पूर्णाङ्क onError,          /* How to handle constraint errors */
+  पूर्णाङ्क iDbDest           /* The database of pDest */
 ){
   sqlite3 *db = pParse->db;
-  ExprList *pEList;                /* The result set of the SELECT */
-  Table *pSrc;                     /* The table in the FROM clause of SELECT */
-  Index *pSrcIdx, *pDestIdx;       /* Source and destination indices */
+  व्यञ्जकम्_List *pEList;                /* The result set of the SELECT */
+  सारणी *pSrc;                     /* The table in the FROM clause of SELECT */
+  सूचकांक *pSrcIdx, *pDestIdx;       /* Source and destination indices */
   SrcItem *pItem;                  /* An element of pSelect->pSrc */
-  int i;                           /* Loop counter */
-  int iDbSrc;                      /* The database of pSrc */
-  int iSrc, iDest;                 /* Cursors from source and destination */
-  int addr1, addr2;                /* Loop addresses */
-  int emptyDestTest = 0;           /* Address of test for empty pDest */
-  int emptySrcTest = 0;            /* Address of test for empty pSrc */
+  पूर्णाङ्क i;                           /* Loop counter */
+  पूर्णाङ्क iDbSrc;                      /* The database of pSrc */
+  पूर्णाङ्क iSrc, iDest;                 /* Cursors from source and destination */
+  पूर्णाङ्क addr1, addr2;                /* Loop addresses */
+  पूर्णाङ्क रिक्तानि_Dest_Test = 0;           /* Address of test for empty pDest */
+  पूर्णाङ्क रिक्तानि_Src_Test = 0;            /* Address of test for empty pSrc */
   Vdbe *v;                         /* The VDBE we are building */
-  int regAutoinc;                  /* Memory register used by AUTOINC */
-  int destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
-  int regData, regRowid;           /* Registers holding data and rowid */
+  पूर्णाङ्क regAutoinc;                  /* Memory register used by AUTOINC */
+  पूर्णाङ्क destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
+  पूर्णाङ्क reg_दत्त, regRowid;           /* Registers holding data and rowid */
 
-  assert( pSelect!=0 );
-  if( pParse->pWith || pSelect->pWith ){
+  प्रतिज्ञा( pSelect!=0 );
+  यदि( pParse->pWith || pSelect->pWith ){
     /* Do not attempt to process this query if there are an WITH clauses
     ** attached to it. Proceeding may generate a false "no such table: xxx"
     ** error if pSelect reads from a CTE named "xxx".  */
-    return 0;
+    प्रत्यागम 0;
   }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pDest) ){
-    return 0;   /* tab1 must not be a virtual table */
+#यदि_अपरिभाषितम् SQLITE_OMIT_VIRTUALTABLE
+  यदि( IsVirtual(pDest) ){
+    प्रत्यागम 0;   /* tab1 must not be a virtual table */
   }
-#endif
-  if( onError==OE_Default ){
-    if( pDest->iPKey>=0 ) onError = pDest->keyConf;
-    if( onError==OE_Default ) onError = OE_Abort;
+#यदि_अन्तः
+  यदि( onError==OE_Default ){
+    यदि( pDest->iPKey>=0 ) onError = pDest->कुञ्चिका_Conf;
+    यदि( onError==OE_Default ) onError = OE_Abort;
   }
-  assert(pSelect->pSrc);   /* allocated even if there is no FROM clause */
-  if( pSelect->pSrc->nSrc!=1 ){
-    return 0;   /* FROM clause must have exactly one term */
+  प्रतिज्ञा(pSelect->pSrc);   /* allocated even if there is no FROM clause */
+  यदि( pSelect->pSrc->nSrc!=1 ){
+    प्रत्यागम 0;   /* FROM clause must have exactly one term */
   }
-  if( pSelect->pSrc->a[0].fg.isSubquery ){
-    return 0;   /* FROM clause cannot contain a subquery */
+  यदि( pSelect->pSrc->a[0].fg.isSubquery ){
+    प्रत्यागम 0;   /* FROM clause cannot contain a subquery */
   }
-  if( pSelect->pWhere ){
-    return 0;   /* SELECT may not have a WHERE clause */
+  यदि( pSelect->pWhere ){
+    प्रत्यागम 0;   /* SELECT may not have a WHERE clause */
   }
-  if( pSelect->pOrderBy ){
-    return 0;   /* SELECT may not have an ORDER BY clause */
+  यदि( pSelect->p_क्रमः_By ){
+    प्रत्यागम 0;   /* SELECT may not have an ORDER BY clause */
   }
   /* Do not need to test for a HAVING clause.  If HAVING is present but
   ** there is no ORDER BY, we will get an error. */
-  if( pSelect->pGroupBy ){
-    return 0;   /* SELECT may not have a GROUP BY clause */
+  यदि( pSelect->p_गणः_By ){
+    प्रत्यागम 0;   /* SELECT may not have a GROUP BY clause */
   }
-  if( pSelect->pLimit ){
-    return 0;   /* SELECT may not have a LIMIT clause */
+  यदि( pSelect->p_सीमा ){
+    प्रत्यागम 0;   /* SELECT may not have a LIMIT clause */
   }
-  if( pSelect->pPrior ){
-    return 0;   /* SELECT may not be a compound query */
+  यदि( pSelect->p_प्राक् ){
+    प्रत्यागम 0;   /* SELECT may not be a compound query */
   }
-  if( pSelect->selFlags & SF_Distinct ){
-    return 0;   /* SELECT may not be DISTINCT */
+  यदि( pSelect->selFlags & SF_Distinct ){
+    प्रत्यागम 0;   /* SELECT may not be DISTINCT */
   }
   pEList = pSelect->pEList;
-  assert( pEList!=0 );
-  if( pEList->nExpr!=1 ){
-    return 0;   /* The result set must have exactly one column */
+  प्रतिज्ञा( pEList!=0 );
+  यदि( pEList->n_व्यञ्जकम्!=1 ){
+    प्रत्यागम 0;   /* The result set must have exactly one column */
   }
-  assert( pEList->a[0].pExpr );
-  if( pEList->a[0].pExpr->op!=TK_ASTERISK ){
-    return 0;   /* The result set must be the special operator "*" */
+  प्रतिज्ञा( pEList->a[0].p_व्यञ्जकम् );
+  यदि( pEList->a[0].p_व्यञ्जकम्->op!=TK_ASTERISK ){
+    प्रत्यागम 0;   /* The result set must be the special operator "*" */
   }
 
   /* At this point we have established that the statement is of the
@@ -3147,51 +3147,51 @@ static int xferOptimization(
   ** we have to check the semantics.
   */
   pItem = pSelect->pSrc->a;
-  pSrc = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pSrc==0 ){
-    return 0;   /* FROM clause does not contain a real table */
+  pSrc = sqlite3_Locate_सारणी_Item(pParse, 0, pItem);
+  यदि( pSrc==0 ){
+    प्रत्यागम 0;   /* FROM clause does not contain a real table */
   }
-  if( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
+  यदि( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
     testcase( pSrc!=pDest ); /* Possible due to bad sqlite_schema.rootpage */
-    return 0;   /* tab1 and tab2 may not be the same table */
+    प्रत्यागम 0;   /* tab1 and tab2 may not be the same table */
   }
-  if( HasRowid(pDest)!=HasRowid(pSrc) ){
-    return 0;   /* source and destination must both be WITHOUT ROWID or not */
+  यदि( HasRowid(pDest)!=HasRowid(pSrc) ){
+    प्रत्यागम 0;   /* source and destination must both be WITHOUT ROWID or not */
   }
-  if( !IsOrdinaryTable(pSrc) ){
-    return 0;   /* tab2 may not be a view or virtual table */
+  यदि( !Is_Ordinary_सारणी(pSrc) ){
+    प्रत्यागम 0;   /* tab2 may not be a view or virtual table */
   }
-  if( pDest->nCol!=pSrc->nCol ){
-    return 0;   /* Number of columns must be the same in tab1 and tab2 */
+  यदि( pDest->nCol!=pSrc->nCol ){
+    प्रत्यागम 0;   /* Number of columns must be the same in tab1 and tab2 */
   }
-  if( pDest->iPKey!=pSrc->iPKey ){
-    return 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
+  यदि( pDest->iPKey!=pSrc->iPKey ){
+    प्रत्यागम 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
   }
-  if( (pDest->tabFlags & TF_Strict)!=0 ){
-    if( (pSrc->tabFlags & TF_Strict)==0 ){
-      return 0;  /* Cannot feed from a non-strict into a strict table */
+  यदि( (pDest->tabFlags & TF_Strict)!=0 ){
+    यदि( (pSrc->tabFlags & TF_Strict)==0 ){
+      प्रत्यागम 0;  /* Cannot feed from a non-strict into a strict table */
     }
-    for(i=0; i<pDest->nCol; i++){
-      unsigned eDestType = pDest->aCol[i].eCType;
-      unsigned eSrcType = pSrc->aCol[i].eCType;
-      if( eDestType==COLTYPE_ANY ) continue;
-      if( eDestType==eSrcType ) continue;
-      if( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) continue;
-      if( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) continue;
-      return 0; /* Incompatible types in source and destination */
+    प्रति(i=0; i<pDest->nCol; i++){
+      अचिह्नित eDestType = pDest->aCol[i].eCType;
+      अचिह्नित eSrcType = pSrc->aCol[i].eCType;
+      यदि( eDestType==COLTYPE_ANY ) अनुवर्त;
+      यदि( eDestType==eSrcType ) अनुवर्त;
+      यदि( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) अनुवर्त;
+      यदि( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) अनुवर्त;
+      प्रत्यागम 0; /* Incompatible types in source and destination */
     }
   }
-  for(i=0; i<pDest->nCol; i++){
+  प्रति(i=0; i<pDest->nCol; i++){
     Column *pDestCol = &pDest->aCol[i];
     Column *pSrcCol = &pSrc->aCol[i];
-#ifdef SQLITE_ENABLE_HIDDEN_COLUMNS
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0
+#यदि_परिभाषितम् SQLITE_ENABLE_HIDDEN_COLUMNS
+    यदि( (db->mDbFlags & DBFLAG_Vacuum)==0
      && (pDestCol->colFlags | pSrcCol->colFlags) & COLFLAG_HIDDEN
     ){
-      return 0;    /* Neither table may have __hidden__ columns */
+      प्रत्यागम 0;    /* Neither table may have __hidden__ columns */
     }
-#endif
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_OMIT_GENERATED_COLUMNS
     /* Even if tables t1 and t2 have identical schemas, if they contain
     ** generated columns, then this statement is semantically incorrect:
     **
@@ -3208,77 +3208,77 @@ static int xferOptimization(
     ** VACUUM command where it is actually needed).  But why do that?  It
     ** seems harmless enough, and provides a useful service.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED) !=
+    यदि( (pDestCol->colFlags & COLFLAG_GENERATED) !=
         (pSrcCol->colFlags & COLFLAG_GENERATED) ){
-      return 0;    /* Both columns have the same generated-column type */
+      प्रत्यागम 0;    /* Both columns have the same generated-column type */
     }
     /* But the transfer is only allowed if both the source and destination
     ** tables have the exact same expressions for generated columns.
     ** This requirement could be relaxed for VIRTUAL columns, I suppose.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)!=0 ){
-      if( sqlite3ExprCompare(0,
-             sqlite3ColumnExpr(pSrc, pSrcCol),
-             sqlite3ColumnExpr(pDest, pDestCol), -1)!=0 ){
+    यदि( (pDestCol->colFlags & COLFLAG_GENERATED)!=0 ){
+      यदि( sqlite3_व्यञ्जकम्_Compare(0,
+             sqlite3_Column_व्यञ्जकम्(pSrc, pSrcCol),
+             sqlite3_Column_व्यञ्जकम्(pDest, pDestCol), -1)!=0 ){
         testcase( pDestCol->colFlags & COLFLAG_VIRTUAL );
         testcase( pDestCol->colFlags & COLFLAG_STORED );
-        return 0;  /* Different generator expressions */
+        प्रत्यागम 0;  /* Different generator expressions */
       }
     }
-#endif
-    if( pDestCol->affinity!=pSrcCol->affinity ){
-      return 0;    /* Affinity must be the same on all columns */
+#यदि_अन्तः
+    यदि( pDestCol->affinity!=pSrcCol->affinity ){
+      प्रत्यागम 0;    /* Affinity must be the same on all columns */
     }
-    if( sqlite3_stricmp(sqlite3ColumnColl(pDestCol),
+    यदि( sqlite3_stricmp(sqlite3ColumnColl(pDestCol),
                         sqlite3ColumnColl(pSrcCol))!=0 ){
-      return 0;    /* Collating sequence must be the same on all columns */
+      प्रत्यागम 0;    /* Collating sequence must be the same on all columns */
     }
-    if( pDestCol->notNull && !pSrcCol->notNull ){
-      return 0;    /* tab2 must be NOT NULL if tab1 is */
+    यदि( pDestCol->notNull && !pSrcCol->notNull ){
+      प्रत्यागम 0;    /* tab2 must be NOT NULL if tab1 is */
     }
     /* Default values for second and subsequent columns need to match. */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)==0 && i>0 ){
-      Expr *pDestExpr = sqlite3ColumnExpr(pDest, pDestCol);
-      Expr *pSrcExpr = sqlite3ColumnExpr(pSrc, pSrcCol);
-      assert( pDestExpr==0 || pDestExpr->op==TK_SPAN );
-      assert( pDestExpr==0 || !ExprHasProperty(pDestExpr, EP_IntValue) );
-      assert( pSrcExpr==0 || pSrcExpr->op==TK_SPAN );
-      assert( pSrcExpr==0 || !ExprHasProperty(pSrcExpr, EP_IntValue) );
-      if( (pDestExpr==0)!=(pSrcExpr==0)
-       || (pDestExpr!=0 && strcmp(pDestExpr->u.zToken,
-                                       pSrcExpr->u.zToken)!=0)
+    यदि( (pDestCol->colFlags & COLFLAG_GENERATED)==0 && i>0 ){
+      व्यञ्जकम् *p_Dest_व्यञ्जकम् = sqlite3_Column_व्यञ्जकम्(pDest, pDestCol);
+      व्यञ्जकम् *p_Src_व्यञ्जकम् = sqlite3_Column_व्यञ्जकम्(pSrc, pSrcCol);
+      प्रतिज्ञा( p_Dest_व्यञ्जकम्==0 || p_Dest_व्यञ्जकम्->op==TK_विस्तृतिः );
+      प्रतिज्ञा( p_Dest_व्यञ्जकम्==0 || !व्यञ्जकम्_Has_Property(p_Dest_व्यञ्जकम्, EP_Int_मानम्) );
+      प्रतिज्ञा( p_Src_व्यञ्जकम्==0 || p_Src_व्यञ्जकम्->op==TK_विस्तृतिः );
+      प्रतिज्ञा( p_Src_व्यञ्जकम्==0 || !व्यञ्जकम्_Has_Property(p_Src_व्यञ्जकम्, EP_Int_मानम्) );
+      यदि( (p_Dest_व्यञ्जकम्==0)!=(p_Src_व्यञ्जकम्==0)
+       || (p_Dest_व्यञ्जकम्!=0 && वाक्यं_तुलय(p_Dest_व्यञ्जकम्->u.zToken,
+                                       p_Src_व्यञ्जकम्->u.zToken)!=0)
       ){
-        return 0;    /* Default values must be the same for all columns */
+        प्रत्यागम 0;    /* Default values must be the same for all columns */
       }
     }
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
-    if( IsUniqueIndex(pDestIdx) ){
+  प्रति(pDestIdx=pDest->p_सूचकांक; pDestIdx; pDestIdx=pDestIdx->p_अग्र){
+    यदि( Is_Unique_सूचकांक(pDestIdx) ){
       destHasUniqueIdx = 1;
     }
-    for(pSrcIdx=pSrc->pIndex; pSrcIdx; pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    प्रति(pSrcIdx=pSrc->p_सूचकांक; pSrcIdx; pSrcIdx=pSrcIdx->p_अग्र){
+      यदि( xfer_Compatible_सूचकांक(pDestIdx, pSrcIdx) ) भङ्ग;
     }
-    if( pSrcIdx==0 ){
-      return 0;    /* pDestIdx has no corresponding index in pSrc */
+    यदि( pSrcIdx==0 ){
+      प्रत्यागम 0;    /* pDestIdx has no corresponding index in pSrc */
     }
-    if( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
+    यदि( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
          && sqlite3FaultSim(411)==SQLITE_OK ){
       /* The sqlite3FaultSim() call allows this corruption test to be
       ** bypassed during testing, in order to exercise other corruption tests
       ** further downstream. */
-      return 0;   /* Corrupt schema - two indexes on the same btree */
+      प्रत्यागम 0;   /* Corrupt schema - two indexes on the same btree */
     }
   }
-#ifndef SQLITE_OMIT_CHECK
-  if( pDest->pCheck
+#यदि_अपरिभाषितम् SQLITE_OMIT_CHECK
+  यदि( pDest->pCheck
    && (db->mDbFlags & DBFLAG_Vacuum)==0
    && !xferCompatibleCheck(pDest,pSrc)
   ){
-    return 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
+    प्रत्यागम 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
   }
-#endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_OMIT_FOREIGN_कुञ्चिका
   /* Disallow the transfer optimization if the destination table contains
   ** any foreign key constraints.  This is more restrictive than necessary.
   ** But the main beneficiary of the transfer optimization is the VACUUM
@@ -3286,47 +3286,47 @@ static int xferOptimization(
   ** the extra complication to make this rule less restrictive is probably
   ** not worth the effort.  Ticket [6284df89debdfa61db8073e062908af0c9b6118e]
   */
-  assert( IsOrdinaryTable(pDest) );
-  if( (db->flags & SQLITE_ForeignKeys)!=0 && pDest->u.tab.pFKey!=0 ){
-    return 0;
+  प्रतिज्ञा( Is_Ordinary_सारणी(pDest) );
+  यदि( (db->flags & SQLITE_Foreign_कुञ्चिकाः)!=0 && pDest->u.tab.pFKey!=0 ){
+    प्रत्यागम 0;
   }
-#endif
-  if( (db->flags & SQLITE_CountRows)!=0 ){
-    return 0;  /* xfer opt does not play well with PRAGMA count_changes */
+#यदि_अन्तः
+  यदि( (db->flags & SQLITE_गणनम्_पङ्क्तिकाः)!=0 ){
+    प्रत्यागम 0;  /* xfer opt does not play well with PRAGMA count_changes */
   }
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( db->xAuth ){
-    int iDb = sqlite3SchemaToIndex(db, pSrc->pSchema);
-    if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 0;
-    for(i=0; i<pSrc->nCol; i++){
+#यदि_अपरिभाषितम् SQLITE_OMIT_AUTHORIZATION
+  यदि( db->xAuth ){
+    पूर्णाङ्क iDb = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pSrc->pSchema);
+    यदि( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) प्रत्यागम 0;
+    प्रति(i=0; i<pSrc->nCol; i++){
       Column *pSrcCol = &pSrc->aCol[i];
-      if( sqlite3AuthReadCol(pParse, pSrc->zName, pSrcCol->zCnName, iDb) ){
-        return 0;
+      यदि( sqlite3AuthReadCol(pParse, pSrc->zName, pSrcCol->zCnName, iDb) ){
+        प्रत्यागम 0;
       }
     }
   }
-#endif
+#यदि_अन्तः
 
   /* If we get this far, it means that the xfer optimization is at
   ** least a possibility, though it might only work if the destination
   ** table (tab1) is initially empty.
   */
-#ifdef SQLITE_TEST
-  sqlite3_xferopt_count++;
-#endif
-  iDbSrc = sqlite3SchemaToIndex(db, pSrc->pSchema);
+#यदि_परिभाषितम् SQLITE_TEST
+  sqlite3_xferopt_गणनम्++;
+#यदि_अन्तः
+  iDbSrc = sqlite3_Schema_गन्तव्यम्_सूचकांक(db, pSrc->pSchema);
   v = sqlite3GetVdbe(pParse);
-  sqlite3CodeVerifySchema(pParse, iDbSrc);
+  sqlite3_संहिता_Verify_Schema(pParse, iDbSrc);
   iSrc = pParse->nTab++;
   iDest = pParse->nTab++;
   regAutoinc = autoIncBegin(pParse, iDbDest, pDest);
-  regData = sqlite3GetTempReg(pParse);
-  sqlite3VdbeAddOp2(v, OP_Null, 0, regData);
-  regRowid = sqlite3GetTempReg(pParse);
-  sqlite3OpenTable(pParse, iDest, iDbDest, pDest, OP_OpenWrite);
-  assert( HasRowid(pDest) || destHasUniqueIdx );
-  if( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
-      (pDest->iPKey<0 && pDest->pIndex!=0)          /* (1) */
+  reg_दत्त = sqlite3_Get_अस्थायी_Reg(pParse);
+  sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Null, 0, reg_दत्त);
+  regRowid = sqlite3_Get_अस्थायी_Reg(pParse);
+  sqlite3_Open_सारणी(pParse, iDest, iDbDest, pDest, OP_OpenWrite);
+  प्रतिज्ञा( HasRowid(pDest) || destHasUniqueIdx );
+  यदि( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
+      (pDest->iPKey<0 && pDest->p_सूचकांक!=0)          /* (1) */
    || destHasUniqueIdx                              /* (2) */
    || (onError!=OE_Abort && onError!=OE_Rollback)   /* (3) */
   )){
@@ -3347,74 +3347,74 @@ static int xferOptimization(
     **
     ** (3) onError is something other than OE_Abort and OE_Rollback.
     */
-    addr1 = sqlite3VdbeAddOp2(v, OP_Rewind, iDest, 0); VdbeCoverage(v);
-    emptyDestTest = sqlite3VdbeAddOp0(v, OP_Goto);
-    sqlite3VdbeJumpHere(v, addr1);
+    addr1 = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rewind, iDest, 0); VdbeCoverage(v);
+    रिक्तानि_Dest_Test = sqlite3_Vdbe_सङ्कलय_Op0(v, OP_Goto);
+    sqlite3_Vdbe_Jump_अत्र(v, addr1);
   }
-  if( HasRowid(pSrc) ){
+  यदि( HasRowid(pSrc) ){
     u8 insFlags;
-    sqlite3OpenTable(pParse, iSrc, iDbSrc, pSrc, OP_OpenRead);
-    emptySrcTest = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( pDest->iPKey>=0 ){
-      addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+    sqlite3_Open_सारणी(pParse, iSrc, iDbSrc, pSrc, OP_OpenRead);
+    रिक्तानि_Src_Test = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
+    यदि( pDest->iPKey>=0 ){
+      addr1 = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rowid, iSrc, regRowid);
+      यदि( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
         sqlite3VdbeVerifyAbortable(v, onError);
-        addr2 = sqlite3VdbeAddOp3(v, OP_NotExists, iDest, 0, regRowid);
+        addr2 = sqlite3_Vdbe_सङ्कलय_Op3(v, OP_NotExists, iDest, 0, regRowid);
         VdbeCoverage(v);
         sqlite3RowidConstraint(pParse, onError, pDest);
-        sqlite3VdbeJumpHere(v, addr2);
+        sqlite3_Vdbe_Jump_अत्र(v, addr2);
       }
-      autoIncStep(pParse, regAutoinc, regRowid);
-    }else if( pDest->pIndex==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
-      addr1 = sqlite3VdbeAddOp2(v, OP_NewRowid, iDest, regRowid);
-    }else{
-      addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      assert( (pDest->tabFlags & TF_Autoincrement)==0 );
+      auto_Inc_चरणः(pParse, regAutoinc, regRowid);
+    }अन्यथा यदि( pDest->p_सूचकांक==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
+      addr1 = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_NewRowid, iDest, regRowid);
+    }अन्यथा{
+      addr1 = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rowid, iSrc, regRowid);
+      प्रतिज्ञा( (pDest->tabFlags & TF_Autoincrement)==0 );
     }
 
-    if( db->mDbFlags & DBFLAG_Vacuum ){
-      sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
+    यदि( db->mDbFlags & DBFLAG_Vacuum ){
+      sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Seek_अन्तः, iDest);
       insFlags = OPFLAG_APPEND|OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
-    }else{
+    }अन्यथा{
       insFlags = OPFLAG_NCHANGE|OPFLAG_LASTROWID|OPFLAG_APPEND|OPFLAG_PREFORMAT;
     }
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
-      sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
+#यदि_परिभाषितम् SQLITE_ENABLE_PREUPDATE_HOOK
+    यदि( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Row_दत्त, iSrc, reg_दत्त, 1);
       insFlags &= ~OPFLAG_PREFORMAT;
-    }else
-#endif
+    }अन्यथा
+#यदि_अन्तः
     {
-      sqlite3VdbeAddOp3(v, OP_RowCell, iDest, iSrc, regRowid);
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_RowCell, iDest, iSrc, regRowid);
     }
-    sqlite3VdbeAddOp3(v, OP_Insert, iDest, regData, regRowid);
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
-      sqlite3VdbeChangeP4(v, -1, (char*)pDest, P4_TABLE);
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_निवेशय, iDest, reg_दत्त, regRowid);
+    यदि( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      sqlite3VdbeChangeP4(v, -1, (वर्ण*)pDest, P4_सारणी);
     }
     sqlite3VdbeChangeP5(v, insFlags);
 
-    sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1); VdbeCoverage(v);
-    sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-  }else{
-    sqlite3TableLock(pParse, iDbDest, pDest->tnum, 1, pDest->zName);
-    sqlite3TableLock(pParse, iDbSrc, pSrc->tnum, 0, pSrc->zName);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_अग्र, iSrc, addr1); VdbeCoverage(v);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Close, iSrc, 0);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Close, iDest, 0);
+  }अन्यथा{
+    sqlite3_सारणी_तालकम्(pParse, iDbDest, pDest->tnum, 1, pDest->zName);
+    sqlite3_सारणी_तालकम्(pParse, iDbSrc, pSrc->tnum, 0, pSrc->zName);
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
+  प्रति(pDestIdx=pDest->p_सूचकांक; pDestIdx; pDestIdx=pDestIdx->p_अग्र){
     u8 idxInsFlags = 0;
-    for(pSrcIdx=pSrc->pIndex; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    प्रति(pSrcIdx=pSrc->p_सूचकांक; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->p_अग्र){
+      यदि( xfer_Compatible_सूचकांक(pDestIdx, pSrcIdx) ) भङ्ग;
     }
-    assert( pSrcIdx );
-    sqlite3VdbeAddOp3(v, OP_OpenRead, iSrc, pSrcIdx->tnum, iDbSrc);
-    sqlite3VdbeSetP4KeyInfo(pParse, pSrcIdx);
+    प्रतिज्ञा( pSrcIdx );
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_OpenRead, iSrc, pSrcIdx->tnum, iDbSrc);
+    sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pSrcIdx);
     VdbeComment((v, "%s", pSrcIdx->zName));
-    sqlite3VdbeAddOp3(v, OP_OpenWrite, iDest, pDestIdx->tnum, iDbDest);
-    sqlite3VdbeSetP4KeyInfo(pParse, pDestIdx);
+    sqlite3_Vdbe_सङ्कलय_Op3(v, OP_OpenWrite, iDest, pDestIdx->tnum, iDbDest);
+    sqlite3_Vdbe_समुच्चयः_P4_कुञ्चिका_Info(pParse, pDestIdx);
     sqlite3VdbeChangeP5(v, OPFLAG_BULKCSR);
     VdbeComment((v, "%s", pDestIdx->zName));
-    addr1 = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( db->mDbFlags & DBFLAG_Vacuum ){
+    addr1 = sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
+    यदि( db->mDbFlags & DBFLAG_Vacuum ){
       /* This INSERT command is part of a VACUUM operation, which guarantees
       ** that the destination table is empty. If all indexed columns use
       ** collation sequence BINARY, then it can also be assumed that the
@@ -3429,45 +3429,45 @@ static int xferOptimization(
       ** might change the definition of a collation sequence and then run
       ** a VACUUM command. In that case keys may not be written in strictly
       ** sorted order.  */
-      for(i=0; i<pSrcIdx->nColumn; i++){
-        const char *zColl = pSrcIdx->azColl[i];
-        if( sqlite3_stricmp(sqlite3StrBINARY, zColl) ) break;
+      प्रति(i=0; i<pSrcIdx->nColumn; i++){
+        ध्रुव वर्ण *zColl = pSrcIdx->azColl[i];
+        यदि( sqlite3_stricmp(sqlite3_Str_द्विमान, zColl) ) भङ्ग;
       }
-      if( i==pSrcIdx->nColumn ){
+      यदि( i==pSrcIdx->nColumn ){
         idxInsFlags = OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
-        sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
-        sqlite3VdbeAddOp2(v, OP_RowCell, iDest, iSrc);
+        sqlite3_Vdbe_सङ्कलय_Op1(v, OP_Seek_अन्तः, iDest);
+        sqlite3_Vdbe_सङ्कलय_Op2(v, OP_RowCell, iDest, iSrc);
       }
-    }else if( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+    }अन्यथा यदि( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
       idxInsFlags |= OPFLAG_NCHANGE;
     }
-    if( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
-      sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0
+    यदि( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
+      sqlite3_Vdbe_सङ्कलय_Op3(v, OP_Row_दत्त, iSrc, reg_दत्त, 1);
+      यदि( (db->mDbFlags & DBFLAG_Vacuum)==0
        && !HasRowid(pDest)
-       && IsPrimaryKeyIndex(pDestIdx)
+       && Is_Primary_कुञ्चिका_सूचकांक(pDestIdx)
       ){
-        codeWithoutRowidPreupdate(pParse, pDest, iDest, regData);
+        संहिता_Without_Rowid_Preupdate(pParse, pDest, iDest, reg_दत्त);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_IdxInsert, iDest, regData);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Idx_निवेशय, iDest, reg_दत्त);
     sqlite3VdbeChangeP5(v, idxInsFlags|OPFLAG_APPEND);
-    sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1+1); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr1);
-    sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_अग्र, iSrc, addr1+1); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_अत्र(v, addr1);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Close, iSrc, 0);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Close, iDest, 0);
   }
-  if( emptySrcTest ) sqlite3VdbeJumpHere(v, emptySrcTest);
-  sqlite3ReleaseTempReg(pParse, regRowid);
-  sqlite3ReleaseTempReg(pParse, regData);
-  if( emptyDestTest ){
-    sqlite3AutoincrementEnd(pParse);
-    sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, 0);
-    sqlite3VdbeJumpHere(v, emptyDestTest);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-    return 0;
-  }else{
-    return 1;
+  यदि( रिक्तानि_Src_Test ) sqlite3_Vdbe_Jump_अत्र(v, रिक्तानि_Src_Test);
+  sqlite3_Release_अस्थायी_Reg(pParse, regRowid);
+  sqlite3_Release_अस्थायी_Reg(pParse, reg_दत्त);
+  यदि( रिक्तानि_Dest_Test ){
+    sqlite3_Autoincrement_अन्तः(pParse);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Halt, SQLITE_OK, 0);
+    sqlite3_Vdbe_Jump_अत्र(v, रिक्तानि_Dest_Test);
+    sqlite3_Vdbe_सङ्कलय_Op2(v, OP_Close, iDest, 0);
+    प्रत्यागम 0;
+  }अन्यथा{
+    प्रत्यागम 1;
   }
 }
-#endif /* SQLITE_OMIT_XFER_OPT */
+#यदि_अन्तः /* SQLITE_OMIT_XFER_OPT */

@@ -12,34 +12,34 @@
 **
 ** This file contains code that is specific to MSVC.
 */
-#ifndef SQLITE_MSVC_H
-#define SQLITE_MSVC_H
+#यदि_अपरिभाषितम् SQLITE_MSVC_H
+#परिभाषय SQLITE_MSVC_H
 
-#if defined(_MSC_VER)
-#pragma warning(disable : 4054)
-#pragma warning(disable : 4055)
-#pragma warning(disable : 4100)
-#pragma warning(disable : 4127)
-#pragma warning(disable : 4130)
-#pragma warning(disable : 4152)
-#pragma warning(disable : 4189)
-#pragma warning(disable : 4206)
-#pragma warning(disable : 4210)
-#pragma warning(disable : 4232)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4305)
-#pragma warning(disable : 4306)
-#pragma warning(disable : 4702)
-#pragma warning(disable : 4706)
-#endif /* defined(_MSC_VER) */
+#यदि defined(_MSC_VER)
+#निर्देशः warning(disable : 4054)
+#निर्देशः warning(disable : 4055)
+#निर्देशः warning(disable : 4100)
+#निर्देशः warning(disable : 4127)
+#निर्देशः warning(disable : 4130)
+#निर्देशः warning(disable : 4152)
+#निर्देशः warning(disable : 4189)
+#निर्देशः warning(disable : 4206)
+#निर्देशः warning(disable : 4210)
+#निर्देशः warning(disable : 4232)
+#निर्देशः warning(disable : 4244)
+#निर्देशः warning(disable : 4305)
+#निर्देशः warning(disable : 4306)
+#निर्देशः warning(disable : 4702)
+#निर्देशः warning(disable : 4706)
+#यदि_अन्तः /* defined(_MSC_VER) */
 
-#if defined(_MSC_VER) && !defined(_WIN64)
-#undef SQLITE_4_BYTE_ALIGNED_MALLOC
-#define SQLITE_4_BYTE_ALIGNED_MALLOC
-#endif /* defined(_MSC_VER) && !defined(_WIN64) */
+#यदि defined(_MSC_VER) && !defined(_WIN64)
+#अपरिभाषय SQLITE_4_BYTE_ALIGNED_MALLOC
+#परिभाषय SQLITE_4_BYTE_ALIGNED_MALLOC
+#यदि_अन्तः /* defined(_MSC_VER) && !defined(_WIN64) */
 
-#if !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
-#define HAVE_LOG2 0
-#endif /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
+#यदि !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
+#परिभाषय HAVE_LOG2 0
+#यदि_अन्तः /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
 
-#endif /* SQLITE_MSVC_H */
+#यदि_अन्तः /* SQLITE_MSVC_H */

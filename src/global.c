@@ -12,7 +12,7 @@
 **
 ** This file contains definitions of global variables and constants.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 /* An array to map all upper-case characters into their corresponding
 ** lower-case character. 
@@ -21,8 +21,8 @@
 ** handle case conversions for the UTF character set since the tables
 ** involved are nearly as big or bigger than SQLite itself.
 */
-const unsigned char sqlite3UpperToLower[] = {
-#ifdef SQLITE_ASCII
+ध्रुव अचिह्नित वर्ण sqlite3_ऊर्ध्वस्थम्_गन्तव्यम्_अधस्तनम्[] = {
+#यदि_परिभाषितम् SQLITE_ASCII
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
      18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
      36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
@@ -38,8 +38,8 @@ const unsigned char sqlite3UpperToLower[] = {
     216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,
     234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,
     252,253,254,255,
-#endif
-#ifdef SQLITE_EBCDIC
+#यदि_अन्तः
+#यदि_परिभाषितम् SQLITE_EBCDIC
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, /* 0x */
      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, /* 1x */
      32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, /* 2x */
@@ -56,7 +56,7 @@ const unsigned char sqlite3UpperToLower[] = {
     208,145,146,147,148,149,150,151,152,153,218,219,220,221,222,223, /* Dx */
     224,225,162,163,164,165,166,167,168,169,234,235,236,237,238,239, /* Ex */
     240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255, /* Fx */
-#endif
+#यदि_अन्तः
 /* All of the upper-to-lower conversion data is above.  The following
 ** 18 integers are completely unrelated.  They are appended to the
 ** sqlite3UpperToLower[] array to avoid UBSAN warnings.  Here's what is
@@ -83,9 +83,9 @@ const unsigned char sqlite3UpperToLower[] = {
    0,  1,  0,  1,  0,  1,  /* aEQb[]: Use when compare(A,B) equals zero */
    1,  0,  1,  0,  0,  1   /* aGTb[]: Use when compare(A,B) greater than zero*/
 };
-const unsigned char *sqlite3aLTb = &sqlite3UpperToLower[256-OP_Ne];
-const unsigned char *sqlite3aEQb = &sqlite3UpperToLower[256+6-OP_Ne];
-const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
+ध्रुव अचिह्नित वर्ण *sqlite3aLTb = &sqlite3_ऊर्ध्वस्थम्_गन्तव्यम्_अधस्तनम्[256-OP_Ne];
+ध्रुव अचिह्नित वर्ण *sqlite3aEQb = &sqlite3_ऊर्ध्वस्थम्_गन्तव्यम्_अधस्तनम्[256+6-OP_Ne];
+ध्रुव अचिह्नित वर्ण *sqlite3aGTb = &sqlite3_ऊर्ध्वस्थम्_गन्तव्यम्_अधस्तनम्[256+12-OP_Ne];
 
 /*
 ** The following 256 byte lookup table is used to support SQLites built-in
@@ -115,7 +115,7 @@ const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
 ** non-ASCII UTF character. Hence the test for whether or not a character is
 ** part of an identifier is 0x46.
 */
-const unsigned char sqlite3CtypeMap[256] = {
+ध्रुव अचिह्नित वर्ण sqlite3CtypeMap[256] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 00..07    ........ */
   0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  /* 08..0f    ........ */
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 10..17    ........ */
@@ -164,31 +164,31 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** disabled. The default value may be changed by compiling with the
 ** SQLITE_USE_URI symbol defined.
 */
-#ifndef SQLITE_USE_URI
+#यदि_अपरिभाषितम् SQLITE_USE_URI
 # define SQLITE_USE_URI 0
-#endif
+#यदि_अन्तः
 
 /* EVIDENCE-OF: R-38720-18127 The default setting is determined by the
 ** SQLITE_ALLOW_COVERING_INDEX_SCAN compile-time option, or is "on" if
 ** that compile-time option is omitted.
 */
-#if !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
-# define SQLITE_ALLOW_COVERING_INDEX_SCAN 1
-#else
-# if !SQLITE_ALLOW_COVERING_INDEX_SCAN 
-#   error "Compile-time disabling of covering index scan using the\
- -DSQLITE_ALLOW_COVERING_INDEX_SCAN=0 option is deprecated.\
- Contact SQLite developers if this is a problem for you, and\
- delete this #error macro to continue with your build."
+#यदि !defined(SQLITE_ALLOW_COVERING_सूचकांक_अवलोकनम्)
+# define SQLITE_ALLOW_COVERING_सूचकांक_अवलोकनम् 1
+#अन्यथा
+# यदि !SQLITE_ALLOW_COVERING_सूचकांक_अवलोकनम् 
+#   error "Compile-time disabling सम्बन्धि covering index अवलोकनम् using the\
+ -DSQLITE_ALLOW_COVERING_सूचकांक_अवलोकनम्=0 option is deprecated.\
+ Contact SQLite developers यदि this is a problem प्रति you, and\
+ delete this #दोषः macro गन्तव्यम् अनुवर्त with your build."
 # endif
-#endif
+#यदि_अन्तः
 
 /* The minimum PMA size is set to this value multiplied by the database
 ** page size in bytes.
 */
-#ifndef SQLITE_SORTER_PMASZ
+#यदि_अपरिभाषितम् SQLITE_SORTER_PMASZ
 # define SQLITE_SORTER_PMASZ 250
-#endif
+#यदि_अन्तः
 
 /* Statement journals spill to disk when their size exceeds the following
 ** threshold (in bytes). 0 means that statement journals are created and
@@ -198,9 +198,9 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** if journal_mode=MEMORY or if temp_store=MEMORY, regardless of this
 ** setting.)
 */
-#ifndef SQLITE_STMTJRNL_SPILL 
+#यदि_अपरिभाषितम् SQLITE_STMTJRNL_SPILL 
 # define SQLITE_STMTJRNL_SPILL (64*1024)
-#endif
+#यदि_अन्तः
 
 /*
 ** The default lookaside-configuration, the format "SZ,N".  SZ is the
@@ -215,37 +215,37 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** and 93 128-byte slots, which is more lookaside than is available
 ** using the older 1200,100 configuration without two-size-lookaside.
 */
-#ifndef SQLITE_DEFAULT_LOOKASIDE
+#यदि_अपरिभाषितम् SQLITE_DEFAULT_LOOKASIDE
 # ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,100  /* 120KB of memory */
-# else
+# अन्यथा
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,40   /* 48KB of memory */
 # endif
-#endif
+#यदि_अन्तः
 
 
 /* The default maximum size of an in-memory database created using
 ** sqlite3_deserialize()
 */
-#ifndef SQLITE_MEMDB_DEFAULT_MAXSIZE
+#यदि_अपरिभाषितम् SQLITE_MEMDB_DEFAULT_MAXSIZE
 # define SQLITE_MEMDB_DEFAULT_MAXSIZE 1073741824
-#endif
+#यदि_अन्तः
 
 /*
 ** The following singleton contains the global configuration for
 ** the SQLite library.
 */
-SQLITE_WSD struct Sqlite3Config sqlite3Config = {
+SQLITE_WSD संरचना Sqlite3Config sqlite3Config = {
    SQLITE_DEFAULT_MEMSTATUS,  /* bMemstat */
    1,                         /* bCoreMutex */
    SQLITE_THREADSAFE==1,      /* bFullMutex */
    SQLITE_USE_URI,            /* bOpenUri */
-   SQLITE_ALLOW_COVERING_INDEX_SCAN,   /* bUseCis */
+   SQLITE_ALLOW_COVERING_सूचकांक_अवलोकनम्,   /* bUseCis */
    0,                         /* bSmallMalloc */
    1,                         /* bExtraSchemaChecks */
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
    0,                         /* bJsonSelfcheck */
-#endif
+#यदि_अन्तः
    0x7ffffffe,                /* mxStrlen */
    0,                         /* neverCorrupt */
    SQLITE_DEFAULT_LOOKASIDE,  /* szLookaside, nLookaside */
@@ -253,12 +253,12 @@ SQLITE_WSD struct Sqlite3Config sqlite3Config = {
    {0,0,0,0,0,0,0,0},         /* m */
    {0,0,0,0,0,0,0,0,0},       /* mutex */
    {0,0,0,0,0,0,0,0,0,0,0,0,0},/* pcache2 */
-   (void*)0,                  /* pHeap */
+   (शून्य*)0,                  /* pHeap */
    0,                         /* nHeap */
    0, 0,                      /* mnHeap, mxHeap */
-   SQLITE_DEFAULT_MMAP_SIZE,  /* szMmap */
-   SQLITE_MAX_MMAP_SIZE,      /* mxMmap */
-   (void*)0,                  /* pPage */
+   SQLITE_DEFAULT_MMAP_आकार,  /* szMmap */
+   SQLITE_MAX_MMAP_आकार,      /* mxMmap */
+   (शून्य*)0,                  /* pPage */
    0,                         /* szPage */
    SQLITE_DEFAULT_PCACHE_INITSZ, /* nPage */
    0,                         /* mxParserStack */
@@ -274,31 +274,31 @@ SQLITE_WSD struct Sqlite3Config sqlite3Config = {
    0,                         /* pInitMutex */
    0,                         /* xLog */
    0,                         /* pLogArg */
-#ifdef SQLITE_ENABLE_SQLLOG
+#यदि_परिभाषितम् SQLITE_ENABLE_SQLLOG
    0,                         /* xSqllog */
    0,                         /* pSqllogArg */
-#endif
-#ifdef SQLITE_VDBE_COVERAGE
+#यदि_अन्तः
+#यदि_परिभाषितम् SQLITE_VDBE_COVERAGE
    0,                         /* xVdbeBranch */
    0,                         /* pVbeBranchArg */
-#endif
-#ifndef SQLITE_OMIT_DESERIALIZE
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_OMIT_DESERIALIZE
    SQLITE_MEMDB_DEFAULT_MAXSIZE,   /* mxMemdbSize */
-#endif
-#ifndef SQLITE_UNTESTABLE
+#यदि_अन्तः
+#यदि_अपरिभाषितम् SQLITE_UNTESTABLE
    0,                         /* xTestCallback */
-#endif
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
+#यदि_अन्तः
+#यदि_परिभाषितम् SQLITE_ALLOW_ROWID_अन्तर्_VIEW
    0,                         /* mNoVisibleRowid.  0 == allow rowid-in-view */
-#endif
+#यदि_अन्तः
    0,                         /* bLocaltimeFault */
    0,                         /* xAltLocaltime */
    0x7ffffffe,                /* iOnceResetThreshold */
-   SQLITE_DEFAULT_SORTERREF_SIZE,   /* szSorterRef */
+   SQLITE_DEFAULT_SORTERREF_आकार,   /* szSorterRef */
    0,                         /* iPrngSeed */
-#ifdef SQLITE_DEBUG
+#यदि_परिभाषितम् SQLITE_DEBUG
    {0,0,0,0,0,0},             /* aTune */
-#endif
+#यदि_अन्तः
 };
 
 /*
@@ -314,11 +314,11 @@ FuncDefHash sqlite3BuiltinFunctions;
 ** sqlite3_str object accepts no new text and always returns
 ** an SQLITE_NOMEM error.
 */
-const sqlite3_str sqlite3OomStr = {
+ध्रुव sqlite3_str sqlite3OomStr = {
    0, 0, 0, 0, 0, SQLITE_NOMEM, 0
 };
 
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#यदि defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 /*
 ** Counter used for coverage testing.  Does not come into play for
 ** release builds.
@@ -327,16 +327,16 @@ const sqlite3_str sqlite3OomStr = {
 ** result in TSAN warnings.  But as the variable does not exist in
 ** release builds, that should not be a concern.
 */
-unsigned int sqlite3CoverageCounter;
-#endif /* SQLITE_COVERAGE_TEST || SQLITE_DEBUG */
+अचिह्नित पूर्णाङ्क sqlite3_Coverage_गणक;
+#यदि_अन्तः /* SQLITE_COVERAGE_TEST || SQLITE_DEBUG */
 
-#ifdef VDBE_PROFILE
+#यदि_परिभाषितम् VDBE_PROFILE
 /*
 ** The following performance counter can be used in place of
 ** sqlite3Hwtime() for profiling.  This is a no-op on standard builds.
 */
 sqlite3_uint64 sqlite3NProfileCnt = 0;
-#endif
+#यदि_अन्तः
 
 /*
 ** The value of the "pending" byte must be 0x40000000 (1 byte past the
@@ -356,29 +356,29 @@ sqlite3_uint64 sqlite3NProfileCnt = 0;
 ** Changing the pending byte during operation will result in undefined
 ** and incorrect behavior.
 */
-#ifndef SQLITE_OMIT_WSD
-int sqlite3PendingByte = 0x40000000;
-#endif
+#यदि_अपरिभाषितम् SQLITE_OMIT_WSD
+पूर्णाङ्क sqlite3PendingByte = 0x40000000;
+#यदि_अन्तः
 
 /*
 ** Tracing flags set by SQLITE_TESTCTRL_TRACEFLAGS.
 */
-u32 sqlite3TreeTrace = 0;
+u32 sqlite3_वृक्षः_Trace = 0;
 u32 sqlite3WhereTrace = 0;
 
-#include "opcodes.h"
+#अन्तर्भाव "opcodes.h"
 /*
 ** Properties of opcodes.  The OPFLG_INITIALIZER macro is
 ** created by mkopcodeh.awk during compilation.  Data is obtained
 ** from the comments following the "case OP_xxxx:" statements in
 ** the vdbe.c file.  
 */
-const unsigned char sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
+ध्रुव अचिह्नित वर्ण sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
 
 /*
 ** Name of the default collating sequence
 */
-const char sqlite3StrBINARY[] = "BINARY";
+ध्रुव वर्ण sqlite3_Str_द्विमान[] = "BINARY";
 
 /*
 ** Standard typenames.  These names must match the COLTYPE_* definitions.
@@ -392,8 +392,8 @@ const char sqlite3StrBINARY[] = "BINARY";
 **    sqlite3StdTypeAffinity[]    The affinity associated with each entry
 **                                in sqlite3StdType[].
 */
-const unsigned char sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
-const char sqlite3StdTypeAffinity[] = {
+ध्रुव अचिह्नित वर्ण sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
+ध्रुव वर्ण sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_NUMERIC,
   SQLITE_AFF_BLOB,
   SQLITE_AFF_INTEGER,
@@ -401,7 +401,7 @@ const char sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_REAL,
   SQLITE_AFF_TEXT
 };
-const char *sqlite3StdType[] = {
+ध्रुव वर्ण *sqlite3StdType[] = {
   "ANY",
   "BLOB",
   "INT",

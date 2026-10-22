@@ -12,12 +12,12 @@
 ** This is the header file for the generic hash-table implementation
 ** used in SQLite.
 */
-#ifndef SQLITE_HASH_H
-#define SQLITE_HASH_H
+#यदि_अपरिभाषितम् SQLITE_HASH_H
+#परिभाषय SQLITE_HASH_H
 
 /* Forward declarations of structures. */
-typedef struct Hash Hash;
-typedef struct HashElem HashElem;
+प्रकारनिर्देश संरचना Hash Hash;
+प्रकारनिर्देश संरचना HashElem HashElem;
 
 /* A complete hash table is an instance of the following structure.
 ** The internals of this structure are intended to be opaque -- client
@@ -40,12 +40,12 @@ typedef struct HashElem HashElem;
 ** in the table, it is faster to do a linear search than to manage
 ** the hash table.
 */
-struct Hash {
-  unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
+संरचना Hash {
+  अचिह्नित पूर्णाङ्क htsize;      /* Number of buckets in the hash table */
+  अचिह्नित पूर्णाङ्क गणनम्;       /* Number of entries in this table */
   HashElem *first;          /* The first element of the array */
-  struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+  संरचना _ht {              /* the hash table */
+    अचिह्नित पूर्णाङ्क गणनम्;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -56,20 +56,20 @@ struct Hash {
 ** Again, this structure is intended to be opaque, but it can't really
 ** be opaque because it is used by macros.
 */
-struct HashElem {
-  HashElem *next, *prev;       /* Next and previous elements in the table */
-  void *data;                  /* Data associated with this element */
-  const char *pKey;            /* Key associated with this element */
-  unsigned int h;              /* hash for pKey */
+संरचना HashElem {
+  HashElem *अग्र, *पूर्व;       /* Next and previous elements in the table */
+  शून्य *दत्त;                  /* Data associated with this element */
+  ध्रुव वर्ण *p_कुञ्चिका;            /* Key associated with this element */
+  अचिह्नित पूर्णाङ्क h;              /* hash for pKey */
 };
 
 /*
 ** Access routines.  To delete, insert a NULL pointer.
 */
-void sqlite3HashInit(Hash*);
-void *sqlite3HashInsert(Hash*, const char *pKey, void *pData);
-void *sqlite3HashFind(const Hash*, const char *pKey);
-void sqlite3HashClear(Hash*);
+शून्य sqlite3HashInit(Hash*);
+शून्य *sqlite3_Hash_निवेशय(Hash*, ध्रुव वर्ण *p_कुञ्चिका, शून्य *p_दत्त);
+शून्य *sqlite3HashFind(ध्रुव Hash*, ध्रुव वर्ण *p_कुञ्चिका);
+शून्य sqlite3HashClear(Hash*);
 
 /*
 ** Macros for looping over all elements of a hash table.  The idiom is
@@ -83,15 +83,15 @@ void sqlite3HashClear(Hash*);
 **     // do something with pData
 **   }
 */
-#define sqliteHashFirst(H)  ((H)->first)
-#define sqliteHashNext(E)   ((E)->next)
-#define sqliteHashData(E)   ((E)->data)
+#परिभाषय sqliteHashFirst(H)  ((H)->first)
+#परिभाषय sqlite_Hash_अग्र(E)   ((E)->अग्र)
+#परिभाषय sqlite_Hash_दत्त(E)   ((E)->दत्त)
 /* #define sqliteHashKey(E)    ((E)->pKey) // NOT USED */
 /* #define sqliteHashKeysize(E) ((E)->nKey)  // NOT USED */
 
 /*
 ** Number of entries in a hash table
 */
-#define sqliteHashCount(H)  ((H)->count)
+#परिभाषय sqlite_Hash_गणनम्(H)  ((H)->गणनम्)
 
-#endif /* SQLITE_HASH_H */
+#यदि_अन्तः /* SQLITE_HASH_H */

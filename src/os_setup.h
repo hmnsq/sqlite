@@ -13,8 +13,8 @@
 ** This file contains pre-processor directives related to operating system
 ** detection and/or setup.
 */
-#ifndef SQLITE_OS_SETUP_H
-#define SQLITE_OS_SETUP_H
+#यदि_अपरिभाषितम् SQLITE_OS_सज्जता_H
+#परिभाषय SQLITE_OS_सज्जता_H
 
 /*
 ** Figure out if we are dealing with Unix, Windows, or some other operating
@@ -35,57 +35,57 @@
 ** must provide its own VFS implementation together with sqlite3_os_init()
 ** and sqlite3_os_end() routines.
 */
-#if SQLITE_OS_KV+1<=1  && SQLITE_OS_OTHER+1<=1 &&  \
+#यदि SQLITE_OS_KV+1<=1  && SQLITE_OS_OTHER+1<=1 &&  \
     SQLITE_OS_WIN+1<=1 && SQLITE_OS_UNIX+1<=1 
-#  if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || \
+#  यदि defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || \
           defined(__MINGW32__) || defined(__BORLANDC__)
 #    define SQLITE_OS_WIN 1
 #    define SQLITE_OS_UNIX 0
-#  else
+#  अन्यथा
 #    define SQLITE_OS_WIN 0
 #    define SQLITE_OS_UNIX 1
 #  endif
-#endif
-#if SQLITE_OS_OTHER+1>1
+#यदि_अन्तः
+#यदि SQLITE_OS_OTHER+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_UNIX
 #  define SQLITE_OS_UNIX 0
 #  undef SQLITE_OS_WIN
 #  define SQLITE_OS_WIN 0
-#endif
-#if SQLITE_OS_KV+1>1
+#यदि_अन्तः
+#यदि SQLITE_OS_KV+1>1
 #  undef SQLITE_OS_OTHER
 #  define SQLITE_OS_OTHER 0
 #  undef SQLITE_OS_UNIX
 #  define SQLITE_OS_UNIX 0
 #  undef SQLITE_OS_WIN
 #  define SQLITE_OS_WIN 0
-#  define SQLITE_OMIT_LOAD_EXTENSION 1
+#  define SQLITE_OMIT_आरोपय_EXTENSION 1
 #  define SQLITE_OMIT_WAL 1
 #  define SQLITE_OMIT_DEPRECATED 1
-#  undef SQLITE_TEMP_STORE
-#  define SQLITE_TEMP_STORE 3  /* Always use memory for temporary storage */
+#  undef SQLITE_अस्थायी_STORE
+#  define SQLITE_अस्थायी_STORE 3  /* Always use memory for temporary storage */
 #  define SQLITE_DQS 0
 #  define SQLITE_OMIT_SHARED_CACHE 1
 #  define SQLITE_OMIT_AUTOINIT 1
-#endif
-#if SQLITE_OS_UNIX+1>1
+#यदि_अन्तः
+#यदि SQLITE_OS_UNIX+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_OTHER
 #  define SQLITE_OS_OTHER 0
 #  undef SQLITE_OS_WIN
 #  define SQLITE_OS_WIN 0
-#endif
-#if SQLITE_OS_WIN+1>1
+#यदि_अन्तः
+#यदि SQLITE_OS_WIN+1>1
 #  undef SQLITE_OS_KV
 #  define SQLITE_OS_KV 0
 #  undef SQLITE_OS_OTHER
 #  define SQLITE_OS_OTHER 0
 #  undef SQLITE_OS_UNIX
 #  define SQLITE_OS_UNIX 0
-#endif
+#यदि_अन्तः
 
 
-#endif /* SQLITE_OS_SETUP_H */
+#यदि_अन्तः /* SQLITE_OS_SETUP_H */

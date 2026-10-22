@@ -13,51 +13,51 @@
 ** This file implements virtual-tables for examining the bytecode content
 ** of a prepared statement.
 */
-#include "sqliteInt.h"
-#if defined(SQLITE_ENABLE_BYTECODE_VTAB) && !defined(SQLITE_OMIT_VIRTUALTABLE)
-#include "vdbeInt.h"
+#अन्तर्भाव "sqliteInt.h"
+#यदि defined(SQLITE_ENABLE_BYTECODE_VTAB) && !defined(SQLITE_OMIT_VIRTUALTABLE)
+#अन्तर्भाव "vdbeInt.h"
 
 /* An instance of the bytecode() table-valued function.
 */
-typedef struct bytecodevtab bytecodevtab;
-struct bytecodevtab {
-  sqlite3_vtab base;     /* Base class - must be first */
+प्रकारनिर्देश संरचना bytecodevtab bytecodevtab;
+संरचना bytecodevtab {
+  sqlite3_vtab आधारः;     /* Base class - must be first */
   sqlite3 *db;           /* Database connection */
-  int bTablesUsed;       /* 2 for tables_used().  0 for bytecode(). */
+  पूर्णाङ्क b_Tables_प्रयुक्तम्;       /* 2 for tables_used().  0 for bytecode(). */
 };
 
 /* A cursor for scanning through the bytecode
 */
-typedef struct bytecodevtab_cursor bytecodevtab_cursor;
-struct bytecodevtab_cursor {
-  sqlite3_vtab_cursor base;  /* Base class - must be first */
+प्रकारनिर्देश संरचना bytecodevtab_cursor bytecodevtab_cursor;
+संरचना bytecodevtab_cursor {
+  sqlite3_vtab_cursor आधारः;  /* Base class - must be first */
   sqlite3_stmt *pStmt;       /* The statement whose bytecode is displayed */
-  int iRowid;                /* The rowid of the output table */
-  int iAddr;                 /* Address */
-  int needFinalize;          /* Cursors owns pStmt and must finalize it */
-  int showSubprograms;       /* Provide a listing of subprograms */
+  पूर्णाङ्क iRowid;                /* The rowid of the output table */
+  पूर्णाङ्क iAddr;                 /*स्थानाङ्कः*/
+  पूर्णाङ्क needFinalize;          /* Cursors owns pStmt and must finalize it */
+  पूर्णाङ्क showSubprograms;       /* Provide a listing of subprograms */
   Op *aOp;                   /* Operand array */
-  char *zP4;                 /* Rendered P4 value */
-  const char *zType;         /* tables_used.type */
-  const char *zSchema;       /* tables_used.schema */
-  const char *zName;         /* tables_used.name */
+  वर्ण *zP4;                 /* Rendered P4 value */
+  ध्रुव वर्ण *zType;         /* tables_used.type */
+  ध्रुव वर्ण *zSchema;       /* tables_used.schema */
+  ध्रुव वर्ण *zName;         /* tables_used.name */
   Mem sub;                   /* Subprograms */
 };
 
 /*
 ** Create a new bytecode() table-valued function.
 */
-static int bytecodevtabConnect(
+स्थिर पूर्णाङ्क bytecodevtabConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  शून्य *pAux,
+  पूर्णाङ्क argc, ध्रुव वर्ण *ध्रुव*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  वर्ण **pzErr
 ){
   bytecodevtab *pNew;
-  int rc;
-  int isTabUsed = pAux!=0;
-  const char *azSchema[2] = {
+  पूर्णाङ्क rc;
+  पूर्णाङ्क is_Tab_प्रयुक्तम् = pAux!=0;
+  ध्रुव वर्ण *azSchema[2] = {
     /* bytecode() schema */
     "CREATE TABLE x("
       "addr INT,"
@@ -85,53 +85,53 @@ static int bytecodevtabConnect(
    ");"
   };
 
-  (void)argc;
-  (void)argv;
-  (void)pzErr;
-  rc = sqlite3_declare_vtab(db, azSchema[isTabUsed]);
-  if( rc==SQLITE_OK ){
-    pNew = sqlite3_malloc( sizeof(*pNew) );
+  (शून्य)argc;
+  (शून्य)argv;
+  (शून्य)pzErr;
+  rc = sqlite3_declare_vtab(db, azSchema[is_Tab_प्रयुक्तम्]);
+  यदि( rc==SQLITE_OK ){
+    pNew = sqlite3_malloc( परिमाण(*pNew) );
     *ppVtab = (sqlite3_vtab*)pNew;
-    if( pNew==0 ) return SQLITE_NOMEM;
-    memset(pNew, 0, sizeof(*pNew));
+    यदि( pNew==0 ) प्रत्यागम SQLITE_NOMEM;
+    स्मृतिं_पूरय(pNew, 0, परिमाण(*pNew));
     pNew->db = db;
-    pNew->bTablesUsed = isTabUsed*2;
+    pNew->b_Tables_प्रयुक्तम् = is_Tab_प्रयुक्तम्*2;
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** This method is the destructor for bytecodevtab objects.
 */
-static int bytecodevtabDisconnect(sqlite3_vtab *pVtab){
+स्थिर पूर्णाङ्क bytecodevtabDisconnect(sqlite3_vtab *pVtab){
   bytecodevtab *p = (bytecodevtab*)pVtab;
   sqlite3_free(p);
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Constructor for a new bytecodevtab_cursor object.
 */
-static int bytecodevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+स्थिर पूर्णाङ्क bytecodevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   bytecodevtab *pVTab = (bytecodevtab*)p;
   bytecodevtab_cursor *pCur;
-  pCur = sqlite3_malloc( sizeof(*pCur) );
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(*pCur));
+  pCur = sqlite3_malloc( परिमाण(*pCur) );
+  यदि( pCur==0 ) प्रत्यागम SQLITE_NOMEM;
+  स्मृतिं_पूरय(pCur, 0, परिमाण(*pCur));
   sqlite3VdbeMemInit(&pCur->sub, pVTab->db, 1);
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  *ppCursor = &pCur->आधारः;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Clear all internal content from a bytecodevtab cursor.
 */
-static void bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
+स्थिर शून्य bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
   sqlite3_free(pCur->zP4);
   pCur->zP4 = 0;
   sqlite3VdbeMemRelease(&pCur->sub);
-  sqlite3VdbeMemSetNull(&pCur->sub);
-  if( pCur->needFinalize ){
+  sqlite3_Vdbe_Mem_समुच्चयः_Null(&pCur->sub);
+  यदि( pCur->needFinalize ){
     sqlite3_finalize(pCur->pStmt);
   }
   pCur->pStmt = 0;
@@ -144,89 +144,89 @@ static void bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
 /*
 ** Destructor for a bytecodevtab_cursor.
 */
-static int bytecodevtabClose(sqlite3_vtab_cursor *cur){
+स्थिर पूर्णाङ्क bytecodevtabClose(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   bytecodevtabCursorClear(pCur);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 
 /*
 ** Advance a bytecodevtab_cursor to its next row of output.
 */
-static int bytecodevtabNext(sqlite3_vtab_cursor *cur){
+स्थिर पूर्णाङ्क bytecodevtab_अग्र(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   bytecodevtab *pTab = (bytecodevtab*)cur->pVtab;
-  int rc;
-  if( pCur->zP4 ){
+  पूर्णाङ्क rc;
+  यदि( pCur->zP4 ){
     sqlite3_free(pCur->zP4);
     pCur->zP4 = 0;
   }
-  if( pCur->zName ){
+  यदि( pCur->zName ){
     pCur->zName = 0;
     pCur->zType = 0;
     pCur->zSchema = 0;
   }
-  rc = sqlite3VdbeNextOpcode(
+  rc = sqlite3_Vdbe_अग्र_Opcode(
            (Vdbe*)pCur->pStmt, 
            pCur->showSubprograms ? &pCur->sub : 0,
-           pTab->bTablesUsed,
+           pTab->b_Tables_प्रयुक्तम्,
            &pCur->iRowid,
            &pCur->iAddr,
            &pCur->aOp);
-  if( rc!=SQLITE_OK ){
-    sqlite3VdbeMemSetNull(&pCur->sub);
+  यदि( rc!=SQLITE_OK ){
+    sqlite3_Vdbe_Mem_समुच्चयः_Null(&pCur->sub);
     pCur->aOp = 0;
   }
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int bytecodevtabEof(sqlite3_vtab_cursor *cur){
+स्थिर पूर्णाङ्क bytecodevtabEof(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
-  return pCur->aOp==0;
+  प्रत्यागम pCur->aOp==0;
 }
 
 /*
 ** Return values of columns for the row at which the bytecodevtab_cursor
 ** is currently pointing.
 */
-static int bytecodevtabColumn(
+स्थिर पूर्णाङ्क bytecodevtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int i                       /* Which column to return */
+  पूर्णाङ्क i                       /* Which column to return */
 ){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   bytecodevtab *pVTab = (bytecodevtab*)cur->pVtab;
   Op *pOp = pCur->aOp + pCur->iAddr;
-  if( pVTab->bTablesUsed ){
-    if( i==4 ){
+  यदि( pVTab->b_Tables_प्रयुक्तम् ){
+    यदि( i==4 ){
       i = 8;
-    }else{
-      if( i<=2 && pCur->zType==0 ){
+    }अन्यथा{
+      यदि( i<=2 && pCur->zType==0 ){
         Schema *pSchema;
         HashElem *k;
-        int iDb = pOp->p3;
-        Pgno iRoot = (Pgno)pOp->p2;
+        पूर्णाङ्क iDb = pOp->p3;
+        Pgno i_मूलम् = (Pgno)pOp->p2;
         sqlite3 *db = pVTab->db;
         pSchema = db->aDb[iDb].pSchema;
         pCur->zSchema = db->aDb[iDb].zDbSName;
-        for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
-          Table *pTab = (Table*)sqliteHashData(k);
-          if( !IsVirtual(pTab) && pTab->tnum==iRoot ){
+        प्रति(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqlite_Hash_अग्र(k)){
+          सारणी *pTab = (सारणी*)sqlite_Hash_दत्त(k);
+          यदि( !IsVirtual(pTab) && pTab->tnum==i_मूलम् ){
             pCur->zName = pTab->zName;
             pCur->zType = "table";
-            break;
+            भङ्ग;
           }
         }
-        if( pCur->zName==0 ){
-          for(k=sqliteHashFirst(&pSchema->idxHash); k; k=sqliteHashNext(k)){
-            Index *pIdx = (Index*)sqliteHashData(k);
-            if( pIdx->tnum==iRoot ){
+        यदि( pCur->zName==0 ){
+          प्रति(k=sqliteHashFirst(&pSchema->idxHash); k; k=sqlite_Hash_अग्र(k)){
+            सूचकांक *pIdx = (सूचकांक*)sqlite_Hash_दत्त(k);
+            यदि( pIdx->tnum==i_मूलम् ){
               pCur->zName = pIdx->zName;
               pCur->zType = "index";
             }
@@ -236,92 +236,92 @@ static int bytecodevtabColumn(
       i += 20;
     }
   }
-  switch( i ){
-    case 0:   /* addr */
-      sqlite3_result_int(ctx, pCur->iAddr);
-      break;
-    case 1:   /* opcode */
-      sqlite3_result_text(ctx, (char*)sqlite3OpcodeName(pOp->opcode),
+  विकल्प( i ){
+    पक्ष 0:   /* addr */
+      sqlite3_परिणाम_int(ctx, pCur->iAddr);
+      भङ्ग;
+    पक्ष 1:   /* opcode */
+      sqlite3_परिणाम_text(ctx, (वर्ण*)sqlite3OpcodeName(pOp->opcode),
                           -1, SQLITE_STATIC);
-      break;
-    case 2:   /* p1 */
-      sqlite3_result_int(ctx, pOp->p1);
-      break;
-    case 3:   /* p2 */
-      sqlite3_result_int(ctx, pOp->p2);
-      break;
-    case 4:   /* p3 */
-      sqlite3_result_int(ctx, pOp->p3);
-      break;
-    case 5:   /* p4 */
-    case 7:   /* comment */
-      if( pCur->zP4==0 ){
+      भङ्ग;
+    पक्ष 2:   /* p1 */
+      sqlite3_परिणाम_int(ctx, pOp->p1);
+      भङ्ग;
+    पक्ष 3:   /* p2 */
+      sqlite3_परिणाम_int(ctx, pOp->p2);
+      भङ्ग;
+    पक्ष 4:   /* p3 */
+      sqlite3_परिणाम_int(ctx, pOp->p3);
+      भङ्ग;
+    पक्ष 5:   /* p4 */
+    पक्ष 7:   /* comment */
+      यदि( pCur->zP4==0 ){
         pCur->zP4 = sqlite3VdbeDisplayP4(pVTab->db, pOp);
       }
-      if( i==5 ){
-        sqlite3_result_text(ctx, pCur->zP4, -1, SQLITE_STATIC);
-      }else{
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-        char *zCom = sqlite3VdbeDisplayComment(pVTab->db, pOp, pCur->zP4);
-        sqlite3_result_text(ctx, zCom, -1, sqlite3_free);
-#endif
+      यदि( i==5 ){
+        sqlite3_परिणाम_text(ctx, pCur->zP4, -1, SQLITE_STATIC);
+      }अन्यथा{
+#यदि_परिभाषितम् SQLITE_ENABLE_EXPLAIN_COMMENTS
+        वर्ण *zCom = sqlite3VdbeDisplayComment(pVTab->db, pOp, pCur->zP4);
+        sqlite3_परिणाम_text(ctx, zCom, -1, sqlite3_free);
+#यदि_अन्तः
       }
-      break;
-    case 6:     /* p5 */
-      sqlite3_result_int(ctx, pOp->p5);
-      break;
-    case 8: {   /* subprog */
+      भङ्ग;
+    पक्ष 6:     /* p5 */
+      sqlite3_परिणाम_int(ctx, pOp->p5);
+      भङ्ग;
+    पक्ष 8: {   /* subprog */
       Op *aOp = pCur->aOp;
-      assert( aOp[0].opcode==OP_Init );
-      assert( aOp[0].p4.z==0 || strncmp(aOp[0].p4.z,"-" "- ",3)==0 );
-      if( pCur->iRowid==pCur->iAddr+1 ){
-        break;  /* Result is NULL for the main program */
-      }else if( aOp[0].p4.z!=0 ){
-         sqlite3_result_text(ctx, aOp[0].p4.z+3, -1, SQLITE_STATIC);
-      }else{
-         sqlite3_result_text(ctx, "(FK)", 4, SQLITE_STATIC);
+      प्रतिज्ञा( aOp[0].opcode==OP_Init );
+      प्रतिज्ञा( aOp[0].p4.z==0 || वाक्ये_तुलय(aOp[0].p4.z,"-" "- ",3)==0 );
+      यदि( pCur->iRowid==pCur->iAddr+1 ){
+        भङ्ग;  /* Result is NULL for the main program */
+      }अन्यथा यदि( aOp[0].p4.z!=0 ){
+         sqlite3_परिणाम_text(ctx, aOp[0].p4.z+3, -1, SQLITE_STATIC);
+      }अन्यथा{
+         sqlite3_परिणाम_text(ctx, "(FK)", 4, SQLITE_STATIC);
       }
-      break;
+      भङ्ग;
     }
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-    case 9:     /* nexec */
-      sqlite3_result_int64(ctx, pOp->nExec);
-      break;
-    case 10:    /* ncycle */
-      sqlite3_result_int64(ctx, pOp->nCycle);
-      break;
-#else
-    case 9:     /* nexec */
-    case 10:    /* ncycle */
-      sqlite3_result_int(ctx, 0);
-      break;
-#endif
+#यदि_परिभाषितम् SQLITE_ENABLE_STMT_SCANSTATUS
+    पक्ष 9:     /* nexec */
+      sqlite3_परिणाम_int64(ctx, pOp->nExec);
+      भङ्ग;
+    पक्ष 10:    /* ncycle */
+      sqlite3_परिणाम_int64(ctx, pOp->n_आवृत्तिः);
+      भङ्ग;
+#अन्यथा
+    पक्ष 9:     /* nexec */
+    पक्ष 10:    /* ncycle */
+      sqlite3_परिणाम_int(ctx, 0);
+      भङ्ग;
+#यदि_अन्तः
 
-    case 20:  /* tables_used.type */
-      sqlite3_result_text(ctx, pCur->zType, -1, SQLITE_STATIC);
-      break;
-    case 21:  /* tables_used.schema */
-      sqlite3_result_text(ctx, pCur->zSchema, -1, SQLITE_STATIC);
-      break;
-    case 22:  /* tables_used.name */
-      sqlite3_result_text(ctx, pCur->zName, -1, SQLITE_STATIC);
-      break;
-    case 23:  /* tables_used.wr */
-      sqlite3_result_int(ctx, pOp->opcode==OP_OpenWrite);
-      break;
+    पक्ष 20:  /* tables_used.type */
+      sqlite3_परिणाम_text(ctx, pCur->zType, -1, SQLITE_STATIC);
+      भङ्ग;
+    पक्ष 21:  /* tables_used.schema */
+      sqlite3_परिणाम_text(ctx, pCur->zSchema, -1, SQLITE_STATIC);
+      भङ्ग;
+    पक्ष 22:  /* tables_used.name */
+      sqlite3_परिणाम_text(ctx, pCur->zName, -1, SQLITE_STATIC);
+      भङ्ग;
+    पक्ष 23:  /* tables_used.wr */
+      sqlite3_परिणाम_int(ctx, pOp->opcode==OP_OpenWrite);
+      भङ्ग;
   }
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+स्थिर पूर्णाङ्क bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   *pRowid = pCur->iRowid;
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
@@ -330,42 +330,42 @@ static int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 **    idxNum==0     means show all subprograms
 **    idxNum==1     means show only the main bytecode and omit subprograms.
 */
-static int bytecodevtabFilter(
+स्थिर पूर्णाङ्क bytecodevtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  पूर्णाङ्क idx_अङ्कः, ध्रुव वर्ण *idxStr,
+  पूर्णाङ्क argc, sqlite3_मानम् **argv
 ){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor *)pVtabCursor;
   bytecodevtab *pVTab = (bytecodevtab *)pVtabCursor->pVtab;
-  int rc = SQLITE_OK;
-  (void)idxStr;
+  पूर्णाङ्क rc = SQLITE_OK;
+  (शून्य)idxStr;
 
   bytecodevtabCursorClear(pCur);
   pCur->iRowid = 0;
   pCur->iAddr = 0;
-  pCur->showSubprograms = idxNum==0;
-  assert( argc==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    const char *zSql = (const char*)sqlite3_value_text(argv[0]);
-    if( zSql==0 ){
+  pCur->showSubprograms = idx_अङ्कः==0;
+  प्रतिज्ञा( argc==1 );
+  यदि( sqlite3_मानम्_type(argv[0])==SQLITE_TEXT ){
+    ध्रुव वर्ण *zSql = (ध्रुव वर्ण*)sqlite3_मानम्_text(argv[0]);
+    यदि( zSql==0 ){
       rc = SQLITE_NOMEM;
-    }else{
+    }अन्यथा{
       rc = sqlite3_prepare_v2(pVTab->db, zSql, -1, &pCur->pStmt, 0);
       pCur->needFinalize = 1;
     }
-  }else{
-    pCur->pStmt = (sqlite3_stmt*)sqlite3_value_pointer(argv[0],"stmt-pointer");
+  }अन्यथा{
+    pCur->pStmt = (sqlite3_stmt*)sqlite3_मानम्_pointer(argv[0],"stmt-pointer");
   }
-  if( pCur->pStmt==0 ){
-    pVTab->base.zErrMsg = sqlite3_mprintf(
+  यदि( pCur->pStmt==0 ){
+    pVTab->आधारः.z_Err_सन्देशः = sqlite3_mprintf(
        "argument to %s() is not a valid SQL statement",
-       pVTab->bTablesUsed ? "tables_used" : "bytecode"
+       pVTab->b_Tables_प्रयुक्तम् ? "tables_used" : "bytecode"
     );
     rc = SQLITE_ERROR;
-  }else{
-    bytecodevtabNext(pVtabCursor);
+  }अन्यथा{
+    bytecodevtab_अग्र(pVtabCursor);
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -373,48 +373,48 @@ static int bytecodevtabFilter(
 ** into the xFilter method.  If there is no valid stmt=? constraint,
 ** then return an SQLITE_CONSTRAINT error.
 */
-static int bytecodevtabBestIndex(
+स्थिर पूर्णाङ्क bytecodevtab_Best_सूचकांक(
   sqlite3_vtab *tab,
-  sqlite3_index_info *pIdxInfo
+  sqlite3_सूचकांक_info *pIdxInfo
 ){
-  int i;
-  int rc = SQLITE_CONSTRAINT;
-  struct sqlite3_index_constraint *p;
+  पूर्णाङ्क i;
+  पूर्णाङ्क rc = SQLITE_CONSTRAINT;
+  संरचना sqlite3_सूचकांक_constraint *p;
   bytecodevtab *pVTab = (bytecodevtab*)tab;
-  int iBaseCol = pVTab->bTablesUsed ? 4 : 10;
-  pIdxInfo->estimatedCost = (double)100;
-  pIdxInfo->estimatedRows = 100;
-  pIdxInfo->idxNum = 0;
-  for(i=0, p=pIdxInfo->aConstraint; i<pIdxInfo->nConstraint; i++, p++){
-    if( p->usable==0 ) continue;
-    if( p->op==SQLITE_INDEX_CONSTRAINT_EQ && p->iColumn==iBaseCol+1 ){
+  पूर्णाङ्क i_आधारः_Col = pVTab->b_Tables_प्रयुक्तम् ? 4 : 10;
+  pIdxInfo->estimatedCost = (द्विगुण)100;
+  pIdxInfo->estimated_पङ्क्तिकाः = 100;
+  pIdxInfo->idx_अङ्कः = 0;
+  प्रति(i=0, p=pIdxInfo->aConstraint; i<pIdxInfo->nConstraint; i++, p++){
+    यदि( p->usable==0 ) अनुवर्त;
+    यदि( p->op==SQLITE_सूचकांक_CONSTRAINT_EQ && p->iColumn==i_आधारः_Col+1 ){
       rc = SQLITE_OK;
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->aConstraintUsage[i].argvIndex = 1;
+      pIdxInfo->aConstraintUsage[i].argv_सूचकांक = 1;
     }
-    if( p->op==SQLITE_INDEX_CONSTRAINT_ISNULL && p->iColumn==iBaseCol ){
+    यदि( p->op==SQLITE_सूचकांक_CONSTRAINT_ISNULL && p->iColumn==i_आधारः_Col ){
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_अङ्कः = 1;
     }
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** This following structure defines all the methods for the 
 ** virtual table.
 */
-static sqlite3_module bytecodevtabModule = {
+स्थिर sqlite3_module bytecodevtabModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ bytecodevtabConnect,
-  /* xBestIndex  */ bytecodevtabBestIndex,
+  /* xBestIndex  */ bytecodevtab_Best_सूचकांक,
   /* xDisconnect */ bytecodevtabDisconnect,
   /* xDestroy    */ 0,
   /* xOpen       */ bytecodevtabOpen,
   /* xClose      */ bytecodevtabClose,
   /* xFilter     */ bytecodevtabFilter,
-  /* xNext       */ bytecodevtabNext,
+  /* xNext       */ bytecodevtab_अग्र,
   /* xEof        */ bytecodevtabEof,
   /* xColumn     */ bytecodevtabColumn,
   /* xRowid      */ bytecodevtabRowid,
@@ -433,14 +433,14 @@ static sqlite3_module bytecodevtabModule = {
 };
 
 
-int sqlite3VdbeBytecodeVtabInit(sqlite3 *db){
-  int rc;
+पूर्णाङ्क sqlite3VdbeBytecodeVtabInit(sqlite3 *db){
+  पूर्णाङ्क rc;
   rc = sqlite3_create_module(db, "bytecode", &bytecodevtabModule, 0);
-  if( rc==SQLITE_OK ){
+  यदि( rc==SQLITE_OK ){
     rc = sqlite3_create_module(db, "tables_used", &bytecodevtabModule, &db);
   }
-  return rc;
+  प्रत्यागम rc;
 }
-#elif defined(SQLITE_ENABLE_BYTECODE_VTAB)
-int sqlite3VdbeBytecodeVtabInit(sqlite3 *db){ return SQLITE_OK; }
-#endif /* SQLITE_ENABLE_BYTECODE_VTAB */
+#नोचेद्यदि defined(SQLITE_ENABLE_BYTECODE_VTAB)
+पूर्णाङ्क sqlite3VdbeBytecodeVtabInit(sqlite3 *db){ प्रत्यागम SQLITE_OK; }
+#यदि_अन्तः /* SQLITE_ENABLE_BYTECODE_VTAB */
