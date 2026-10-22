@@ -12,18 +12,18 @@
 ** This is the implementation of generic hash-tables
 ** used in SQLite.
 */
-#include "sqliteInt.h"
-#include <assert.h>
+#অন্তর্ভাব "sqliteInt.h"
+#অন্তর্ভাব <assert.h>
 
 /* Turn bulk memory into a hash table object by initializing the
 ** fields of the Hash structure.
 **
 ** "pNew" is a pointer to the hash table that is to be initialized.
 */
-void sqlite3HashInit(Hash *pNew){
-  assert( pNew!=0 );
+শূন্য sqlite3HashInit(Hash *pNew){
+  প্রতিজ্ঞা( pNew!=0 );
   pNew->first = 0;
-  pNew->count = 0;
+  pNew->গুনতি = 0;
   pNew->htsize = 0;
   pNew->ht = 0;
 }
@@ -32,29 +32,29 @@ void sqlite3HashInit(Hash *pNew){
 ** Call this routine to delete a hash table or to reset a hash table
 ** to the empty state.
 */
-void sqlite3HashClear(Hash *pH){
+শূন্য sqlite3HashClear(Hash *pH){
   HashElem *elem;         /* For looping over all elements of the table */
 
-  assert( pH!=0 );
+  প্রতিজ্ঞা( pH!=0 );
   elem = pH->first;
   pH->first = 0;
   sqlite3_free(pH->ht);
   pH->ht = 0;
   pH->htsize = 0;
-  while( elem ){
+  যাবত্( elem ){
     HashElem *next_elem = elem->next;
     sqlite3_free(elem);
     elem = next_elem;
   }
-  pH->count = 0;
+  pH->গুনতি = 0;
 }
 
 /*
 ** The hashing function.
 */
-static unsigned int strHash(const char *z){
-  unsigned int h = 0;
-  while( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
+স্থির unsigned পূর্ণাঙ্ক strHash(ধ্রুব বর্ণ *z){
+  unsigned পূর্ণাঙ্ক h = 0;
+  যাবত্( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
     /* Knuth multiplicative hashing.  (Sorting & Searching, p. 510).
     ** 0x9e3779b1 is 2654435761 which is the closest prime number to
     ** (2**32)*golden_ratio, where golden_ratio = (sqrt(5) - 1)/2.
@@ -63,41 +63,41 @@ static unsigned int strHash(const char *z){
     ** hashed since the omitted bits determine the upper/lower case difference.
     */
 #ifdef SQLITE_EBCDIC
-    h += 0xbf & (unsigned char)*(z++);
-#else
-    h += 0xdf & (unsigned char)*(z++);
+    h += 0xbf & (unsigned বর্ণ)*(z++);
+#অন্যথা
+    h += 0xdf & (unsigned বর্ণ)*(z++);
 #endif
     h *= 0x9e3779b1;
   }
-  return h;
+  প্রত্যাগম h;
 }
 
 
 /* Link pNew element into the hash table pH.  If pEntry!=0 then also
 ** insert pNew into the pEntry hash bucket.
 */
-static void insertElement(
+স্থির শূন্য ঢোকাও_Element(
   Hash *pH,              /* The complete hash table */
-  struct _ht *pEntry,    /* The entry into which pNew is inserted */
+  সংরচনা _ht *pEntry,    /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
 ){
   HashElem *pHead;       /* First element already in pEntry */
-  if( pEntry ){
-    pHead = pEntry->count ? pEntry->chain : 0;
-    pEntry->count++;
+  যদি( pEntry ){
+    pHead = pEntry->গুনতি ? pEntry->chain : 0;
+    pEntry->গুনতি++;
     pEntry->chain = pNew;
-  }else{
+  }অন্যথা{
     pHead = 0;
   }
-  if( pHead ){
+  যদি( pHead ){
     pNew->next = pHead;
     pNew->prev = pHead->prev;
-    if( pHead->prev ){ pHead->prev->next = pNew; }
-    else             { pH->first = pNew; }
+    যদি( pHead->prev ){ pHead->prev->next = pNew; }
+    অন্যথা             { pH->first = pNew; }
     pHead->prev = pNew;
-  }else{
+  }অন্যথা{
     pNew->next = pH->first;
-    if( pH->first ){ pH->first->prev = pNew; }
+    যদি( pH->first ){ pH->first->prev = pNew; }
     pNew->prev = 0;
     pH->first = pNew;
   }
@@ -110,15 +110,15 @@ static void insertElement(
 ** if the new size is the same as the prior size.
 ** Return TRUE if the resize occurs and false if not.
 */
-static int rehash(Hash *pH, unsigned int new_size){
-  struct _ht *new_ht;            /* The new hash table */
+স্থির পূর্ণাঙ্ক rehash(Hash *pH, unsigned পূর্ণাঙ্ক new_size){
+  সংরচনা _ht *new_ht;            /* The new hash table */
   HashElem *elem, *next_elem;    /* For looping over existing elements */
 
-#if SQLITE_MALLOC_SOFT_LIMIT>0
-  if( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
-    new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(struct _ht);
+#যদি SQLITE_MALLOC_SOFT_LIMIT>0
+  যদি( new_size*পরিমাণ(সংরচনা _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
+    new_size = SQLITE_MALLOC_SOFT_LIMIT/পরিমাণ(সংরচনা _ht);
   }
-  if( new_size==pH->htsize ) return 0;
+  যদি( new_size==pH->htsize ) প্রত্যাগম 0;
 #endif
 
   /* The inability to allocates space for a larger hash table is
@@ -130,19 +130,19 @@ static int rehash(Hash *pH, unsigned int new_size){
   ** may be larger than the requested amount).
   */
   sqlite3BeginBenignMalloc();
-  new_ht = (struct _ht *)sqlite3Malloc( new_size*sizeof(struct _ht) );
+  new_ht = (সংরচনা _ht *)sqlite3Malloc( new_size*পরিমাণ(সংরচনা _ht) );
   sqlite3EndBenignMalloc();
 
-  if( new_ht==0 ) return 0;
+  যদি( new_ht==0 ) প্রত্যাগম 0;
   sqlite3_free(pH->ht);
   pH->ht = new_ht;
-  pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(struct _ht);
-  memset(new_ht, 0, new_size*sizeof(struct _ht));
-  for(elem=pH->first, pH->first=0; elem; elem = next_elem){
+  pH->htsize = new_size = sqlite3MallocSize(new_ht)/পরিমাণ(সংরচনা _ht);
+  memset(new_ht, 0, new_size*পরিমাণ(সংরচনা _ht));
+  প্রতি(elem=pH->first, pH->first=0; elem; elem = next_elem){
     next_elem = elem->next;
-    insertElement(pH, &new_ht[elem->h % new_size], elem);
+    ঢোকাও_Element(pH, &new_ht[elem->h % new_size], elem);
   }
-  return 1;
+  প্রত্যাগম 1;
 }
 
 /* This function (for internal use only) locates an element in an
@@ -150,67 +150,67 @@ static int rehash(Hash *pH, unsigned int new_size){
 ** a pointer to a static null element with HashElem.data==0 is returned.
 ** If pH is not NULL, then the hash for this key is written to *pH.
 */
-static HashElem *findElementWithHash(
-  const Hash *pH,     /* The pH to be searched */
-  const char *pKey,   /* The key we are searching for */
-  unsigned int *pHash /* Write the hash value here */
+স্থির HashElem *findElementWithHash(
+  ধ্রুব Hash *pH,     /* The pH to be searched */
+  ধ্রুব বর্ণ *p_চাবি,   /* The key we are searching for */
+  unsigned পূর্ণাঙ্ক *pHash /* Write the hash value here */
 ){
   HashElem *elem;                /* Used to loop thru the element list */
-  unsigned int count;            /* Number of elements left to test */
-  unsigned int h;                /* The computed hash */
-  static HashElem nullElement = { 0, 0, 0, 0, 0 };
+  unsigned পূর্ণাঙ্ক গুনতি;            /* Number of elements left to test */
+  unsigned পূর্ণাঙ্ক h;                /* The computed hash */
+  স্থির HashElem nullElement = { 0, 0, 0, 0, 0 };
 
-  h = strHash(pKey);
-  if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
-    struct _ht *pEntry;
+  h = strHash(p_চাবি);
+  যদি( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
+    সংরচনা _ht *pEntry;
     pEntry = &pH->ht[h % pH->htsize];
     elem = pEntry->chain;
-    count = pEntry->count;
-  }else{
+    গুনতি = pEntry->গুনতি;
+  }অন্যথা{
     elem = pH->first;
-    count = pH->count;
+    গুনতি = pH->গুনতি;
   }
-  if( pHash ) *pHash = h;
-  while( count ){
-    assert( elem!=0 );
-    if( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
-      return elem;
+  যদি( pHash ) *pHash = h;
+  যাবত্( গুনতি ){
+    প্রতিজ্ঞা( elem!=0 );
+    যদি( h==elem->h && sqlite3StrICmp(elem->p_চাবি,p_চাবি)==0 ){ 
+      প্রত্যাগম elem;
     }
     elem = elem->next;
-    count--;
+    গুনতি--;
   }
-  return &nullElement;
+  প্রত্যাগম &nullElement;
 }
 
 /* Remove a single entry from the hash table given a pointer to that
 ** element and a hash on the element's key.
 */
-static void removeElement(
+স্থির শূন্য removeElement(
   Hash *pH,         /* The pH containing "elem" */
   HashElem *elem    /* The element to be removed from the pH */
 ){
-  struct _ht *pEntry;
-  if( elem->prev ){
+  সংরচনা _ht *pEntry;
+  যদি( elem->prev ){
     elem->prev->next = elem->next; 
-  }else{
+  }অন্যথা{
     pH->first = elem->next;
   }
-  if( elem->next ){
+  যদি( elem->next ){
     elem->next->prev = elem->prev;
   }
-  if( pH->ht ){
+  যদি( pH->ht ){
     pEntry = &pH->ht[elem->h % pH->htsize];
-    if( pEntry->chain==elem ){
+    যদি( pEntry->chain==elem ){
       pEntry->chain = elem->next;
     }
-    assert( pEntry->count>0 );
-    pEntry->count--;
+    প্রতিজ্ঞা( pEntry->গুনতি>0 );
+    pEntry->গুনতি--;
   }
   sqlite3_free( elem );
-  pH->count--;
-  if( pH->count==0 ){
-    assert( pH->first==0 );
-    assert( pH->count==0 );
+  pH->গুনতি--;
+  যদি( pH->গুনতি==0 ){
+    প্রতিজ্ঞা( pH->first==0 );
+    প্রতিজ্ঞা( pH->গুনতি==0 );
     sqlite3HashClear(pH);
   }
 }
@@ -219,10 +219,10 @@ static void removeElement(
 ** that matches pKey.  Return the data for this element if it is
 ** found, or NULL if there is no match.
 */
-void *sqlite3HashFind(const Hash *pH, const char *pKey){
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  return findElementWithHash(pH, pKey, 0)->data;
+শূন্য *sqlite3HashFind(ধ্রুব Hash *pH, ধ্রুব বর্ণ *p_চাবি){
+  প্রতিজ্ঞা( pH!=0 );
+  প্রতিজ্ঞা( p_চাবি!=0 );
+  প্রত্যাগম findElementWithHash(pH, p_চাবি, 0)->data;
 }
 
 /* Insert an element into the hash table pH.  The key is pKey
@@ -239,35 +239,35 @@ void *sqlite3HashFind(const Hash *pH, const char *pKey){
 ** If the "data" parameter to this function is NULL, then the
 ** element corresponding to "key" is removed from the hash table.
 */
-void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
-  unsigned int h;       /* the hash of the key modulo hash table size */
+শূন্য *sqlite3_Hash_ঢোকাও(Hash *pH, ধ্রুব বর্ণ *p_চাবি, শূন্য *data){
+  unsigned পূর্ণাঙ্ক h;       /* the hash of the key modulo hash table size */
   HashElem *elem;       /* Used to loop thru the element list */
   HashElem *new_elem;   /* New element added to the pH */
 
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  elem = findElementWithHash(pH,pKey,&h);
-  if( elem->data ){
-    void *old_data = elem->data;
-    if( data==0 ){
+  প্রতিজ্ঞা( pH!=0 );
+  প্রতিজ্ঞা( p_চাবি!=0 );
+  elem = findElementWithHash(pH,p_চাবি,&h);
+  যদি( elem->data ){
+    শূন্য *old_data = elem->data;
+    যদি( data==0 ){
       removeElement(pH,elem);
-    }else{
+    }অন্যথা{
       elem->data = data;
-      elem->pKey = pKey;
+      elem->p_চাবি = p_চাবি;
     }
-    return old_data;
+    প্রত্যাগম old_data;
   }
-  if( data==0 ) return 0;
-  new_elem = (HashElem*)sqlite3Malloc( sizeof(HashElem) );
-  if( new_elem==0 ) return data;
-  new_elem->pKey = pKey;
+  যদি( data==0 ) প্রত্যাগম 0;
+  new_elem = (HashElem*)sqlite3Malloc( পরিমাণ(HashElem) );
+  যদি( new_elem==0 ) প্রত্যাগম data;
+  new_elem->p_চাবি = p_চাবি;
   new_elem->h = h;
   new_elem->data = data;
-  pH->count++;
-  if( pH->count>=5 && pH->count > 2*pH->htsize ){
-    rehash(pH, pH->count*3);
+  pH->গুনতি++;
+  যদি( pH->গুনতি>=5 && pH->গুনতি > 2*pH->htsize ){
+    rehash(pH, pH->গুনতি*3);
   }
-  insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
-  return 0;
+  ঢোকাও_Element(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
+  প্রত্যাগম 0;
 }
 

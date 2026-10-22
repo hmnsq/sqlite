@@ -16,16 +16,16 @@
 ** readability and editability.  This file contains utility routines for
 ** analyzing Expr objects in the WHERE clause.
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#অন্তর্ভাব "sqliteInt.h"
+#অন্তর্ভাব "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+স্থির শূন্য রাশিমালা_Analyze(SrcList*, WhereClause*, পূর্ণাঙ্ক);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
 */
-static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
+স্থির শূন্য whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -33,7 +33,7 @@ static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
 /*
 ** Deallocate all memory associated with a WhereAndInfo object.
 */
-static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
+স্থির শূন্য whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -57,38 +57,38 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
+স্থির পূর্ণাঙ্ক where_Clause_ঢোকাও(WhereClause *pWC, রাশিমালা *p, u16 wtFlags){
   WhereTerm *pTerm;
-  int idx;
+  পূর্ণাঙ্ক idx;
   testcase( wtFlags & TERM_VIRTUAL );
-  if( pWC->nTerm>=pWC->nSlot ){
+  যদি( pWC->nTerm>=pWC->nSlot ){
     WhereTerm *pOld = pWC->a;
     sqlite3 *db = pWC->pWInfo->pParse->db;
-    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, sizeof(pWC->a[0])*pWC->nSlot*2 );
-    if( pWC->a==0 ){
-      if( wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, p);
+    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, পরিমাণ(pWC->a[0])*pWC->nSlot*2 );
+    যদি( pWC->a==0 ){
+      যদি( wtFlags & TERM_DYNAMIC ){
+        sqlite3_রাশিমালা_Delete(db, p);
       }
       pWC->a = pOld;
-      return 0;
+      প্রত্যাগম 0;
     }
-    memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
+    memcpy(pWC->a, pOld, পরিমাণ(pWC->a[0])*pWC->nTerm);
     pWC->nSlot = pWC->nSlot*2;
   }
   pTerm = &pWC->a[idx = pWC->nTerm++];
-  if( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
-  if( p && ExprHasProperty(p, EP_Unlikely) ){
+  যদি( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
+  যদি( p && রাশিমালা_Has_Property(p, EP_Unlikely) ){
     pTerm->truthProb = sqlite3LogEst(p->iTable) - 270;
-  }else{
+  }অন্যথা{
     pTerm->truthProb = 1;
   }
-  pTerm->pExpr = sqlite3ExprSkipCollateAndLikely(p);
+  pTerm->p_রাশিমালা = sqlite3_রাশিমালা_Skip_Collate_And_Likely(p);
   pTerm->wtFlags = wtFlags;
   pTerm->pWC = pWC;
   pTerm->iParent = -1;
   memset(&pTerm->eOperator, 0,
-         sizeof(WhereTerm) - offsetof(WhereTerm,eOperator));
-  return idx;
+         পরিমাণ(WhereTerm) - offsetof(WhereTerm,eOperator));
+  প্রত্যাগম idx;
 }
 
 /*
@@ -96,69 +96,69 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
-  assert( TK_GT>TK_EQ && TK_GT<TK_GE );
-  assert( TK_LT>TK_EQ && TK_LT<TK_GE );
-  assert( TK_LE>TK_EQ && TK_LE<TK_GE );
-  assert( TK_GE==TK_EQ+4 );
-  assert( TK_IN<TK_EQ );
-  assert( TK_IS<TK_EQ );
-  assert( TK_ISNULL<TK_EQ );
-  if( op>TK_GE ) return 0;
-  if( op>=TK_EQ ) return 1;
-  return op==TK_IN || op==TK_ISNULL || op==TK_IS;
+স্থির পূর্ণাঙ্ক allowedOp(পূর্ণাঙ্ক op){
+  প্রতিজ্ঞা( TK_GT>TK_EQ && TK_GT<TK_GE );
+  প্রতিজ্ঞা( TK_LT>TK_EQ && TK_LT<TK_GE );
+  প্রতিজ্ঞা( TK_LE>TK_EQ && TK_LE<TK_GE );
+  প্রতিজ্ঞা( TK_GE==TK_EQ+4 );
+  প্রতিজ্ঞা( TK_IN<TK_EQ );
+  প্রতিজ্ঞা( TK_IS<TK_EQ );
+  প্রতিজ্ঞা( TK_ISNULL<TK_EQ );
+  যদি( op>TK_GE ) প্রত্যাগম 0;
+  যদি( op>=TK_EQ ) প্রত্যাগম 1;
+  প্রত্যাগম op==TK_IN || op==TK_ISNULL || op==TK_IS;
 }
 
 /*
 ** Commute a comparison operator.  Expressions of the form "X op Y"
 ** are converted into "Y op X".
 */
-static u16 exprCommute(Parse *pParse, Expr *pExpr){
-  if( pExpr->pLeft->op==TK_VECTOR
-   || pExpr->pRight->op==TK_VECTOR
-   || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
-      sqlite3BinaryCompareCollSeq(pParse, pExpr->pRight, pExpr->pLeft)
+স্থির u16 রাশিমালা_Commute(Parse *pParse, রাশিমালা *p_রাশিমালা){
+  যদি( p_রাশিমালা->p_বাম->op==TK_VECTOR
+   || p_রাশিমালা->p_ডান->op==TK_VECTOR
+   || sqlite3_দ্বিমিক_Compare_Coll_Seq(pParse, p_রাশিমালা->p_বাম, p_রাশিমালা->p_ডান) !=
+      sqlite3_দ্বিমিক_Compare_Coll_Seq(pParse, p_রাশিমালা->p_ডান, p_রাশিমালা->p_বাম)
   ){
-    pExpr->flags ^= EP_Commuted;
+    p_রাশিমালা->flags ^= EP_Commuted;
   }
-  SWAP(Expr*,pExpr->pRight,pExpr->pLeft);
-  if( pExpr->op>=TK_GT ){
-    assert( TK_LT==TK_GT+2 );
-    assert( TK_GE==TK_LE+2 );
-    assert( TK_GT>TK_EQ );
-    assert( TK_GT<TK_LE );
-    assert( pExpr->op>=TK_GT && pExpr->op<=TK_GE );
-    pExpr->op = ((pExpr->op-TK_GT)^2)+TK_GT;
+  SWAP(রাশিমালা*,p_রাশিমালা->p_ডান,p_রাশিমালা->p_বাম);
+  যদি( p_রাশিমালা->op>=TK_GT ){
+    প্রতিজ্ঞা( TK_LT==TK_GT+2 );
+    প্রতিজ্ঞা( TK_GE==TK_LE+2 );
+    প্রতিজ্ঞা( TK_GT>TK_EQ );
+    প্রতিজ্ঞা( TK_GT<TK_LE );
+    প্রতিজ্ঞা( p_রাশিমালা->op>=TK_GT && p_রাশিমালা->op<=TK_GE );
+    p_রাশিমালা->op = ((p_রাশিমালা->op-TK_GT)^2)+TK_GT;
   }
-  return 0;
+  প্রত্যাগম 0;
 }
 
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+স্থির u16 operatorMask(পূর্ণাঙ্ক op){
   u16 c;
-  assert( allowedOp(op) );
-  if( op>=TK_EQ ){
-    assert( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
+  প্রতিজ্ঞা( allowedOp(op) );
+  যদি( op>=TK_EQ ){
+    প্রতিজ্ঞা( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
     c = (u16)(WO_EQ<<(op-TK_EQ));
-  }else if( op==TK_IN ){
+  }অন্যথা যদি( op==TK_IN ){
     c = WO_IN;
-  }else if( op==TK_ISNULL ){
+  }অন্যথা যদি( op==TK_ISNULL ){
     c = WO_ISNULL;
-  }else{
-    assert( op==TK_IS );
+  }অন্যথা{
+    প্রতিজ্ঞা( op==TK_IS );
     c = WO_IS;
   }
-  assert( op!=TK_ISNULL || c==WO_ISNULL );
-  assert( op!=TK_IN || c==WO_IN );
-  assert( op!=TK_EQ || c==WO_EQ );
-  assert( op!=TK_LT || c==WO_LT );
-  assert( op!=TK_LE || c==WO_LE );
-  assert( op!=TK_GT || c==WO_GT );
-  assert( op!=TK_GE || c==WO_GE );
-  assert( op!=TK_IS || c==WO_IS );
-  return c;
+  প্রতিজ্ঞা( op!=TK_ISNULL || c==WO_ISNULL );
+  প্রতিজ্ঞা( op!=TK_IN || c==WO_IN );
+  প্রতিজ্ঞা( op!=TK_EQ || c==WO_EQ );
+  প্রতিজ্ঞা( op!=TK_LT || c==WO_LT );
+  প্রতিজ্ঞা( op!=TK_LE || c==WO_LE );
+  প্রতিজ্ঞা( op!=TK_GT || c==WO_GT );
+  প্রতিজ্ঞা( op!=TK_GE || c==WO_GE );
+  প্রতিজ্ঞা( op!=TK_IS || c==WO_IS );
+  প্রত্যাগম c;
 }
 
 
@@ -175,50 +175,50 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+স্থির পূর্ণাঙ্ক isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
-  Expr *pExpr,      /* Test this expression */
-  Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
-  int *pisComplete, /* True if the only wildcard is % in the last character */
-  int *pnoCase      /* True if uppercase is equivalent to lowercase */
+  রাশিমালা *p_রাশিমালা,      /* Test this expression */
+  রাশিমালা **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
+  পূর্ণাঙ্ক *pisComplete, /* True if the only wildcard is % in the last character */
+  পূর্ণাঙ্ক *pnoCase      /* True if uppercase is equivalent to lowercase */
 ){
-  const u8 *z = 0;           /* String on RHS of LIKE operator */
-  Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */
-  ExprList *pList;           /* List of operands to the LIKE operator */
+  ধ্রুব u8 *z = 0;           /* String on RHS of LIKE operator */
+  রাশিমালা *p_ডান, *p_বাম;      /* Right and left size of LIKE operator */
+  রাশিমালা_List *pList;           /* List of operands to the LIKE operator */
   u8 c;                      /* One character in z[] */
-  int cnt;                   /* Number of non-wildcard prefix characters */
+  পূর্ণাঙ্ক cnt;                   /* Number of non-wildcard prefix characters */
   u8 wc[4];                  /* Wildcard characters */
   sqlite3 *db = pParse->db;  /* Database connection */
-  sqlite3_value *pVal = 0;
-  int op;                    /* Opcode of pRight */
-  int rc;                    /* Result code to return */
+  sqlite3_মান *pVal = 0;
+  পূর্ণাঙ্ক op;                    /* Opcode of pRight */
+  পূর্ণাঙ্ক rc;                    /* Result code to return */
 
-  if( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (char*)wc) ){
-    return 0;
+  যদি( !sqlite3IsLikeFunction(db, p_রাশিমালা, pnoCase, (বর্ণ*)wc) ){
+    প্রত্যাগম 0;
   }
 #ifdef SQLITE_EBCDIC
-  if( *pnoCase ) return 0;
+  যদি( *pnoCase ) প্রত্যাগম 0;
 #endif
-  assert( ExprUseXList(pExpr) );
-  pList = pExpr->x.pList;
-  pLeft = pList->a[1].pExpr;
+  প্রতিজ্ঞা( রাশিমালা_Use_XList(p_রাশিমালা) );
+  pList = p_রাশিমালা->x.pList;
+  p_বাম = pList->a[1].p_রাশিমালা;
 
-  pRight = sqlite3ExprSkipCollate(pList->a[0].pExpr);
-  op = pRight->op;
-  if( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  p_ডান = sqlite3_রাশিমালা_Skip_Collate(pList->a[0].p_রাশিমালা);
+  op = p_ডান->op;
+  যদি( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *pReprepare = pParse->pReprepare;
-    int iCol = pRight->iColumn;
-    pVal = sqlite3VdbeGetBoundValue(pReprepare, iCol, SQLITE_AFF_BLOB);
-    if( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
-      z = sqlite3_value_text(pVal);
+    পূর্ণাঙ্ক iCol = p_ডান->iColumn;
+    pVal = sqlite3_Vdbe_Get_Bound_মান(pReprepare, iCol, SQLITE_AFF_BLOB);
+    যদি( pVal && sqlite3_মান_type(pVal)==SQLITE_TEXT ){
+      z = sqlite3_মান_text(pVal);
     }
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iCol, 0);
-    assert( pRight->op==TK_VARIABLE || pRight->op==TK_REGISTER );
-  }else if( op==TK_STRING ){
-    assert( !ExprHasProperty(pRight, EP_IntValue) );
-     z = (u8*)pRight->u.zToken;
+    প্রতিজ্ঞা( p_ডান->op==TK_VARIABLE || p_ডান->op==TK_REGISTER );
+  }অন্যথা যদি( op==TK_STRING ){
+    প্রতিজ্ঞা( !রাশিমালা_Has_Property(p_ডান, EP_Int_মান) );
+     z = (u8*)p_ডান->u.zToken;
   }
-  if( z ){
+  যদি( z ){
     /* Count the number of prefix bytes prior to the first wildcard,
     ** U+fffd character, or malformed utf-8. If the underlying database
     ** has a UTF16LE encoding, then only consider ASCII characters.  Note that
@@ -226,19 +226,19 @@ static int isLikeOrGlob(
     ** code, but the database engine itself might be processing content using a
     ** different encoding. */
     cnt = 0;
-    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
+    যাবত্( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
       cnt++;
-      if( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
+      যদি( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
         cnt++;
-      }else if( c>=0x80 ){
-        const u8 *z2 = z+cnt-1;
-        if( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
+      }অন্যথা যদি( c>=0x80 ){
+        ধ্রুব u8 *z2 = z+cnt-1;
+        যদি( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
          || ENC(db)==SQLITE_UTF16LE 
         ){
           cnt--;
-          break;
-        }else{
-          cnt = (int)(z2-z);
+          ভঙ্গ;
+        }অন্যথা{
+          cnt = (পূর্ণাঙ্ক)(z2-z);
         }
       }
     }
@@ -251,26 +251,26 @@ static int isLikeOrGlob(
     ** range search. The third is because the caller assumes that the pattern
     ** consists of at least one character after all escapes have been
     ** removed.  */
-    if( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
-      Expr *pPrefix;
+    যদি( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
+      রাশিমালা *pPrefix;
 
       /* A "complete" match if the pattern ends with "*" or "%" */
       *pisComplete = c==wc[0] && z[cnt+1]==0 && ENC(db)!=SQLITE_UTF16LE;
 
       /* Get the pattern prefix.  Remove all escapes from the prefix. */
-      pPrefix = sqlite3Expr(db, TK_STRING, (char*)z);
-      if( pPrefix ){
-        int iFrom, iTo;
-        char *zNew;
-        assert( !ExprHasProperty(pPrefix, EP_IntValue) );
+      pPrefix = sqlite3_রাশিমালা(db, TK_STRING, (বর্ণ*)z);
+      যদি( pPrefix ){
+        পূর্ণাঙ্ক iFrom, iTo;
+        বর্ণ *zNew;
+        প্রতিজ্ঞা( !রাশিমালা_Has_Property(pPrefix, EP_Int_মান) );
         zNew = pPrefix->u.zToken;
         zNew[cnt] = 0;
-        for(iFrom=iTo=0; iFrom<cnt; iFrom++){
-          if( zNew[iFrom]==wc[3] ) iFrom++;
+        প্রতি(iFrom=iTo=0; iFrom<cnt; iFrom++){
+          যদি( zNew[iFrom]==wc[3] ) iFrom++;
           zNew[iTo++] = zNew[iFrom];
         }
         zNew[iTo] = 0;
-        assert( iTo>0 );
+        প্রতিজ্ঞা( iTo>0 );
 
         /* If the LHS is not an ordinary column with TEXT affinity, then the
         ** pattern prefix boundaries (both the start and end boundaries) must
@@ -285,29 +285,29 @@ static int isLikeOrGlob(
         **    2019-06-14 https://sqlite.org/src/info/ce8717f0885af975
         **    2019-09-03 https://sqlite.org/src/info/0f0428096f17252a
         */
-        if( pLeft->op!=TK_COLUMN
-         || sqlite3ExprAffinity(pLeft)!=SQLITE_AFF_TEXT
-         || (ALWAYS( ExprUseYTab(pLeft) )
-             && ALWAYS(pLeft->y.pTab)
-             && IsVirtual(pLeft->y.pTab))  /* Might be numeric */
+        যদি( p_বাম->op!=TK_COLUMN
+         || sqlite3_রাশিমালা_Affinity(p_বাম)!=SQLITE_AFF_TEXT
+         || (ALWAYS( রাশিমালা_Use_YTab(p_বাম) )
+             && ALWAYS(p_বাম->y.pTab)
+             && IsVirtual(p_বাম->y.pTab))  /* Might be numeric */
         ){
-          int isNum;
-          double rDummy;
-          assert( zNew[iTo]==0 );
-          isNum = sqlite3AtoF(zNew, &rDummy);
-          if( isNum<=0 ){
-            if( iTo==1 && zNew[0]=='-' ){
-              isNum = +1;
-            }else{
+          পূর্ণাঙ্ক is_অঙ্ক;
+          দ্বিগুণ rDummy;
+          প্রতিজ্ঞা( zNew[iTo]==0 );
+          is_অঙ্ক = sqlite3AtoF(zNew, &rDummy);
+          যদি( is_অঙ্ক<=0 ){
+            যদি( iTo==1 && zNew[0]=='-' ){
+              is_অঙ্ক = +1;
+            }অন্যথা{
               zNew[iTo-1]++;
-              isNum = sqlite3AtoF(zNew, &rDummy);
+              is_অঙ্ক = sqlite3AtoF(zNew, &rDummy);
               zNew[iTo-1]--;
             }
           }
-          if( isNum>0 ){
-            sqlite3ExprDelete(db, pPrefix);
-            sqlite3ValueFree(pVal);
-            return 0;
+          যদি( is_অঙ্ক>0 ){
+            sqlite3_রাশিমালা_Delete(db, pPrefix);
+            sqlite3_মান_Free(pVal);
+            প্রত্যাগম 0;
           }
         }
       }
@@ -315,31 +315,31 @@ static int isLikeOrGlob(
 
       /* If the RHS pattern is a bound parameter, make arrangements to
       ** reprepare the statement when that parameter is rebound */
-      if( op==TK_VARIABLE ){
+      যদি( op==TK_VARIABLE ){
         Vdbe *v = pParse->pVdbe;
-        sqlite3VdbeReprepareOnBind(v, pRight->iColumn, 0);
-        assert( !ExprHasProperty(pRight, EP_IntValue) );
-        if( *pisComplete && pRight->u.zToken[1] ){
+        sqlite3VdbeReprepareOnBind(v, p_ডান->iColumn, 0);
+        প্রতিজ্ঞা( !রাশিমালা_Has_Property(p_ডান, EP_Int_মান) );
+        যদি( *pisComplete && p_ডান->u.zToken[1] ){
           /* If the rhs of the LIKE expression is a variable, and the current
           ** value of the variable means there is no need to invoke the LIKE
           ** function, then no OP_Variable will be added to the program.
           ** This causes problems for the sqlite3_bind_parameter_name()
           ** API. To work around them, add a dummy OP_Variable here.
           */
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3ExprCodeTarget(pParse, pRight, r1);
+          পূর্ণাঙ্ক r1 = sqlite3GetTempReg(pParse);
+          sqlite3_রাশিমালা_Code_Target(pParse, p_ডান, r1);
           sqlite3VdbeChangeP3(v, sqlite3VdbeCurrentAddr(v)-1, 0);
           sqlite3ReleaseTempReg(pParse, r1);
         }
       }
-    }else{
+    }অন্যথা{
       z = 0;
     }
   }
 
   rc = (z!=0);
-  sqlite3ValueFree(pVal);
-  return rc;
+  sqlite3_মান_Free(pVal);
+  প্রত্যাগম rc;
 }
 #endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
@@ -350,25 +350,25 @@ static int isLikeOrGlob(
 **
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
-int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
-    const char *zOp;
-    unsigned char eOp;
+পূর্ণাঙ্ক sqlite3_রাশিমালা_Is_Like_Operator(ধ্রুব রাশিমালা *p_রাশিমালা){
+  স্থির ধ্রুব সংরচনা {
+    ধ্রুব বর্ণ *zOp;
+    unsigned বর্ণ eOp;
   } aOp[] = {
     { "match",  SQLITE_INDEX_CONSTRAINT_MATCH },
     { "glob",   SQLITE_INDEX_CONSTRAINT_GLOB },
     { "like",   SQLITE_INDEX_CONSTRAINT_LIKE },
     { "regexp", SQLITE_INDEX_CONSTRAINT_REGEXP }
   };
-  int i;
-  assert( pExpr->op==TK_FUNCTION );
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  for(i=0; i<ArraySize(aOp); i++){
-    if( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
-      return aOp[i].eOp;
+  পূর্ণাঙ্ক i;
+  প্রতিজ্ঞা( p_রাশিমালা->op==TK_FUNCTION );
+  প্রতিজ্ঞা( !রাশিমালা_Has_Property(p_রাশিমালা, EP_Int_মান) );
+  প্রতি(i=0; i<ArraySize(aOp); i++){
+    যদি( sqlite3StrICmp(p_রাশিমালা->u.zToken, aOp[i].zOp)==0 ){
+      প্রত্যাগম aOp[i].eOp;
     }
   }
-  return 0;
+  প্রত্যাগম 0;
 }
 
 
@@ -399,22 +399,22 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+স্থির পূর্ণাঙ্ক isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
-  Expr *pExpr,                    /* Test this expression */
-  unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
-  Expr **ppLeft,                  /* Column expression to left of MATCH/op2 */
-  Expr **ppRight                  /* Expression to left of MATCH/op2 */
+  রাশিমালা *p_রাশিমালা,                    /* Test this expression */
+  unsigned বর্ণ *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
+  রাশিমালা **pp_বাম,                  /* Column expression to left of MATCH/op2 */
+  রাশিমালা **pp_ডান                  /* Expression to left of MATCH/op2 */
 ){
-  if( pExpr->op==TK_FUNCTION ){
-    ExprList *pList;
-    Expr *pCol;                     /* Column reference */
-    int i;
+  যদি( p_রাশিমালা->op==TK_FUNCTION ){
+    রাশিমালা_List *pList;
+    রাশিমালা *pCol;                     /* Column reference */
+    পূর্ণাঙ্ক i;
 
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    if( pList==0 || pList->nExpr!=2 ){
-      return 0;
+    প্রতিজ্ঞা( রাশিমালা_Use_XList(p_রাশিমালা) );
+    pList = p_রাশিমালা->x.pList;
+    যদি( pList==0 || pList->n_রাশিমালা!=2 ){
+      প্রত্যাগম 0;
     }
 
     /* Built-in operators MATCH, GLOB, LIKE, and REGEXP attach to a
@@ -424,13 +424,13 @@ static int isAuxiliaryVtabOperator(
     **       vtab_column MATCH expression
     **       MATCH(expression,vtab_column)
     */
-    pCol = pList->a[1].pExpr;
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
+    pCol = pList->a[1].p_রাশিমালা;
+    প্রতিজ্ঞা( pCol->op!=TK_COLUMN || (রাশিমালা_Use_YTab(pCol) && pCol->y.pTab!=0) );
+    যদি( রাশিমালা_Is_Vtab(pCol) && (i = sqlite3_রাশিমালা_Is_Like_Operator(p_রাশিমালা))!=0 ){
       *peOp2 = i;
-      *ppRight = pList->a[0].pExpr;
-      *ppLeft = pCol;
-      return 1;
+      *pp_ডান = pList->a[0].p_রাশিমালা;
+      *pp_বাম = pCol;
+      প্রত্যাগম 1;
     }
 
     /* We can also match against the first column of overloaded
@@ -443,58 +443,58 @@ static int isAuxiliaryVtabOperator(
     ** names.  But for this use case, xFindFunction is expected to deal
     ** with function names in an arbitrary case.
     */
-    pCol = pList->a[0].pExpr;
-    assert( pCol->op!=TK_COLUMN || ExprUseYTab(pCol) );
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) ){
+    pCol = pList->a[0].p_রাশিমালা;
+    প্রতিজ্ঞা( pCol->op!=TK_COLUMN || রাশিমালা_Use_YTab(pCol) );
+    প্রতিজ্ঞা( pCol->op!=TK_COLUMN || (রাশিমালা_Use_YTab(pCol) && pCol->y.pTab!=0) );
+    যদি( রাশিমালা_Is_Vtab(pCol) ){
       sqlite3_vtab *pVtab;
       sqlite3_module *pMod;
-      void (*xNotUsed)(sqlite3_context*,int,sqlite3_value**);
-      void *pNotUsed;
+      শূন্য (*xNotUsed)(sqlite3_context*,পূর্ণাঙ্ক,sqlite3_মান**);
+      শূন্য *pNotUsed;
       pVtab = sqlite3GetVTable(db, pCol->y.pTab)->pVtab;
-      assert( pVtab!=0 );
-      assert( pVtab->pModule!=0 );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
+      প্রতিজ্ঞা( pVtab!=0 );
+      প্রতিজ্ঞা( pVtab->pModule!=0 );
+      প্রতিজ্ঞা( !রাশিমালা_Has_Property(p_রাশিমালা, EP_Int_মান) );
       pMod = (sqlite3_module *)pVtab->pModule;
-      if( pMod->xFindFunction!=0 ){
-        i = pMod->xFindFunction(pVtab,2, pExpr->u.zToken, &xNotUsed, &pNotUsed);
-        if( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
+      যদি( pMod->xFindFunction!=0 ){
+        i = pMod->xFindFunction(pVtab,2, p_রাশিমালা->u.zToken, &xNotUsed, &pNotUsed);
+        যদি( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
           *peOp2 = i;
-          *ppRight = pList->a[1].pExpr;
-          *ppLeft = pCol;
-          return 1;
+          *pp_ডান = pList->a[1].p_রাশিমালা;
+          *pp_বাম = pCol;
+          প্রত্যাগম 1;
         }
       }
     }
-  }else if( pExpr->op>=TK_EQ ){
+  }অন্যথা যদি( p_রাশিমালা->op>=TK_EQ ){
     /* Comparison operators are a common case.  Save a few comparisons for
     ** that common case by terminating early. */
-    assert( TK_NE < TK_EQ );
-    assert( TK_ISNOT < TK_EQ );
-    assert( TK_NOTNULL < TK_EQ );
-    return 0;
-  }else if( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
-    int res = 0;
-    Expr *pLeft = pExpr->pLeft;
-    Expr *pRight = pExpr->pRight;
-    assert( pLeft->op!=TK_COLUMN || (ExprUseYTab(pLeft) && pLeft->y.pTab!=0) );
-    if( ExprIsVtab(pLeft) ){
+    প্রতিজ্ঞা( TK_NE < TK_EQ );
+    প্রতিজ্ঞা( TK_ISNOT < TK_EQ );
+    প্রতিজ্ঞা( TK_NOTNULL < TK_EQ );
+    প্রত্যাগম 0;
+  }অন্যথা যদি( p_রাশিমালা->op==TK_NE || p_রাশিমালা->op==TK_ISNOT || p_রাশিমালা->op==TK_NOTNULL ){
+    পূর্ণাঙ্ক res = 0;
+    রাশিমালা *p_বাম = p_রাশিমালা->p_বাম;
+    রাশিমালা *p_ডান = p_রাশিমালা->p_ডান;
+    প্রতিজ্ঞা( p_বাম->op!=TK_COLUMN || (রাশিমালা_Use_YTab(p_বাম) && p_বাম->y.pTab!=0) );
+    যদি( রাশিমালা_Is_Vtab(p_বাম) ){
       res++;
     }
-    assert( pRight==0 || pRight->op!=TK_COLUMN
-            || (ExprUseYTab(pRight) && pRight->y.pTab!=0) );
-    if( pRight && ExprIsVtab(pRight) ){
+    প্রতিজ্ঞা( p_ডান==0 || p_ডান->op!=TK_COLUMN
+            || (রাশিমালা_Use_YTab(p_ডান) && p_ডান->y.pTab!=0) );
+    যদি( p_ডান && রাশিমালা_Is_Vtab(p_ডান) ){
       res++;
-      SWAP(Expr*, pLeft, pRight);
+      SWAP(রাশিমালা*, p_বাম, p_ডান);
     }
-    *ppLeft = pLeft;
-    *ppRight = pRight;
-    if( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
-    if( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
-    if( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
-    return res;
+    *pp_বাম = p_বাম;
+    *pp_ডান = p_ডান;
+    যদি( p_রাশিমালা->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
+    যদি( p_রাশিমালা->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
+    যদি( p_রাশিমালা->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
+    প্রত্যাগম res;
   }
-  return 0;
+  প্রত্যাগম 0;
 }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
 
@@ -502,8 +502,8 @@ static int isAuxiliaryVtabOperator(
 ** If the pBase expression originated in the ON or USING clause of
 ** a join, then transfer the appropriate markings over to derived.
 */
-static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
-  if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
+স্থির শূন্য transferJoinMarkings(রাশিমালা *pDerived, রাশিমালা *pBase){
+  যদি( pDerived && রাশিমালা_Has_Property(pBase, EP_OuterON|EP_InnerON) ){
     pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
     pDerived->w.iJoin = pBase->w.iJoin;
   }
@@ -512,10 +512,10 @@ static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
+স্থির শূন্য markTermAsChild(WhereClause *pWC, পূর্ণাঙ্ক iChild, পূর্ণাঙ্ক iParent){
   pWC->a[iChild].iParent = iParent;
   pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
-  assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
+  প্রতিজ্ঞা(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
   pWC->a[iParent].nChild++;
   testcase( pWC->a[iParent].nChild == UMXV(pWC->a[0].nChild) );
 
@@ -526,14 +526,14 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
-  if( pTerm->eOperator!=WO_AND ){
-    return N==0 ? pTerm : 0;
+স্থির WhereTerm *whereNthSubterm(WhereTerm *pTerm, পূর্ণাঙ্ক N){
+  যদি( pTerm->eOperator!=WO_AND ){
+    প্রত্যাগম N==0 ? pTerm : 0;
   }
-  if( N<pTerm->u.pAndInfo->wc.nTerm ){
-    return &pTerm->u.pAndInfo->wc.a[N];
+  যদি( N<pTerm->u.pAndInfo->wc.nTerm ){
+    প্রত্যাগম &pTerm->u.pAndInfo->wc.a[N];
   }
-  return 0;
+  প্রত্যাগম 0;
 }
 
 /*
@@ -556,7 +556,7 @@ static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
 **
 **    x<y OR x>y    -->     x!=y    
 */
-static void whereCombineDisjuncts(
+স্থির শূন্য whereCombineDisjuncts(
   SrcList *pSrc,         /* the FROM clause */
   WhereClause *pWC,      /* The complete WHERE clause */
   WhereTerm *pOne,       /* First disjunct */
@@ -564,44 +564,44 @@ static void whereCombineDisjuncts(
 ){
   u16 eOp = pOne->eOperator | pTwo->eOperator;
   sqlite3 *db;           /* Database connection (for malloc) */
-  Expr *pNew;            /* New virtual expression */
-  int op;                /* Operator for the combined expression */
-  int idxNew;            /* Index in pWC of the next virtual term */
-  Expr *pA, *pB;         /* Expressions associated with pOne and pTwo */
+  রাশিমালা *pNew;            /* New virtual expression */
+  পূর্ণাঙ্ক op;                /* Operator for the combined expression */
+  পূর্ণাঙ্ক idxNew;            /* Index in pWC of the next virtual term */
+  রাশিমালা *pA, *pB;         /* Expressions associated with pOne and pTwo */
 
-  if( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) return;
-  if( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
-   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) return;
-  pA = pOne->pExpr;
-  pB = pTwo->pExpr;
-  assert( pA->pLeft!=0 && pA->pRight!=0 );
-  assert( pB->pLeft!=0 && pB->pRight!=0 );
-  if( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  return;
-  if( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) return;
-  if( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
-    return;
+  যদি( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) প্রত্যাগম;
+  যদি( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) প্রত্যাগম;
+  যদি( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) প্রত্যাগম;
+  যদি( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
+   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) প্রত্যাগম;
+  pA = pOne->p_রাশিমালা;
+  pB = pTwo->p_রাশিমালা;
+  প্রতিজ্ঞা( pA->p_বাম!=0 && pA->p_ডান!=0 );
+  প্রতিজ্ঞা( pB->p_বাম!=0 && pB->p_ডান!=0 );
+  যদি( sqlite3_রাশিমালা_Compare(0,pA->p_বাম, pB->p_বাম, -1) )  প্রত্যাগম;
+  যদি( sqlite3_রাশিমালা_Compare(0,pA->p_ডান, pB->p_ডান,-1) ) প্রত্যাগম;
+  যদি( রাশিমালা_Has_Property(pA,EP_Commuted)!=রাশিমালা_Has_Property(pB,EP_Commuted) ){
+    প্রত্যাগম;
   }
   /* If we reach this point, it means the two subterms can be combined */
-  if( (eOp & (eOp-1))!=0 ){
-    if( eOp & (WO_LT|WO_LE) ){
+  যদি( (eOp & (eOp-1))!=0 ){
+    যদি( eOp & (WO_LT|WO_LE) ){
       eOp = WO_LE;
-    }else{
-      assert( eOp & (WO_GT|WO_GE) );
+    }অন্যথা{
+      প্রতিজ্ঞা( eOp & (WO_GT|WO_GE) );
       eOp = WO_GE;
     }
   }
   db = pWC->pWInfo->pParse->db;
-  pNew = sqlite3ExprDup(db, pA, 0);
-  if( pNew==0 ) return;
-  for(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
+  pNew = sqlite3_রাশিমালা_Dup(db, pA, 0);
+  যদি( pNew==0 ) প্রত্যাগম;
+  প্রতি(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ প্রতিজ্ঞা( op<TK_GE ); }
   pNew->op = op;
-  idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
-  exprAnalyze(pSrc, pWC, idxNew);
+  idxNew = where_Clause_ঢোকাও(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+  রাশিমালা_Analyze(pSrc, pWC, idxNew);
 }
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#যদি !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Analyze a term that consists of two or more OR-connected
 ** subterms.  So in:
@@ -689,17 +689,17 @@ static void whereCombineDisjuncts(
 ** If none of cases 1, 2, or 3 apply, then leave the eOperator set to
 ** zero.  This term is not useful for search.
 */
-static void exprAnalyzeOrTerm(
+স্থির শূন্য রাশিমালা_Analyze_Or_Term(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
-  int idxTerm               /* Index of the OR-term to be analyzed */
+  পূর্ণাঙ্ক idxTerm               /* Index of the OR-term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo;        /* WHERE clause processing context */
   Parse *pParse = pWInfo->pParse;         /* Parser context */
   sqlite3 *db = pParse->db;               /* Database connection */
   WhereTerm *pTerm = &pWC->a[idxTerm];    /* The term to be analyzed */
-  Expr *pExpr = pTerm->pExpr;             /* The expression of the term */
-  int i;                                  /* Loop counters */
+  রাশিমালা *p_রাশিমালা = pTerm->p_রাশিমালা;             /* The expression of the term */
+  পূর্ণাঙ্ক i;                                  /* Loop counters */
   WhereClause *pOrWc;       /* Breakup of pTerm into subterms */
   WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */
   WhereOrInfo *pOrInfo;     /* Additional information associated with pTerm */
@@ -711,71 +711,71 @@ static void exprAnalyzeOrTerm(
   ** stored in a WhereClause structure containing within the WhereOrInfo
   ** object that is attached to the original OR clause term.
   */
-  assert( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
-  assert( pExpr->op==TK_OR );
-  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
-  if( pOrInfo==0 ) return;
+  প্রতিজ্ঞা( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
+  প্রতিজ্ঞা( p_রাশিমালা->op==TK_OR );
+  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, পরিমাণ(*pOrInfo));
+  যদি( pOrInfo==0 ) প্রত্যাগম;
   pTerm->wtFlags |= TERM_ORINFO;
   pOrWc = &pOrInfo->wc;
-  memset(pOrWc->aStatic, 0, sizeof(pOrWc->aStatic));
+  memset(pOrWc->aStatic, 0, পরিমাণ(pOrWc->aStatic));
   sqlite3WhereClauseInit(pOrWc, pWInfo);
-  sqlite3WhereSplit(pOrWc, pExpr, TK_OR);
-  sqlite3WhereExprAnalyze(pSrc, pOrWc);
-  if( db->mallocFailed ) return;
-  assert( pOrWc->nTerm>=2 );
+  sqlite3WhereSplit(pOrWc, p_রাশিমালা, TK_OR);
+  sqlite3_Where_রাশিমালা_Analyze(pSrc, pOrWc);
+  যদি( db->mallocFailed ) প্রত্যাগম;
+  প্রতিজ্ঞা( pOrWc->nTerm>=2 );
 
   /*
   ** Compute the set of tables that might satisfy cases 1 or 3.
   */
   indexable = ~(Bitmask)0;
   chngToIN = ~(Bitmask)0;
-  for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
-    if( (pOrTerm->eOperator & WO_SINGLE)==0 ){
+  প্রতি(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
+    যদি( (pOrTerm->eOperator & WO_SINGLE)==0 ){
       WhereAndInfo *pAndInfo;
-      assert( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
+      প্রতিজ্ঞা( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
       chngToIN = 0;
-      pAndInfo = sqlite3DbMallocRawNN(db, sizeof(*pAndInfo));
-      if( pAndInfo ){
+      pAndInfo = sqlite3DbMallocRawNN(db, পরিমাণ(*pAndInfo));
+      যদি( pAndInfo ){
         WhereClause *pAndWC;
         WhereTerm *pAndTerm;
-        int j;
+        পূর্ণাঙ্ক j;
         Bitmask b = 0;
         pOrTerm->u.pAndInfo = pAndInfo;
         pOrTerm->wtFlags |= TERM_ANDINFO;
         pOrTerm->eOperator = WO_AND;
-        pOrTerm->leftCursor = -1;
+        pOrTerm->বাম_Cursor = -1;
         pAndWC = &pAndInfo->wc;
-        memset(pAndWC->aStatic, 0, sizeof(pAndWC->aStatic));
+        memset(pAndWC->aStatic, 0, পরিমাণ(pAndWC->aStatic));
         sqlite3WhereClauseInit(pAndWC, pWC->pWInfo);
-        sqlite3WhereSplit(pAndWC, pOrTerm->pExpr, TK_AND);
-        sqlite3WhereExprAnalyze(pSrc, pAndWC);
+        sqlite3WhereSplit(pAndWC, pOrTerm->p_রাশিমালা, TK_AND);
+        sqlite3_Where_রাশিমালা_Analyze(pSrc, pAndWC);
         pAndWC->pOuter = pWC;
-        if( !db->mallocFailed ){
-          for(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
-            assert( pAndTerm->pExpr );
-            if( allowedOp(pAndTerm->pExpr->op)
+        যদি( !db->mallocFailed ){
+          প্রতি(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
+            প্রতিজ্ঞা( pAndTerm->p_রাশিমালা );
+            যদি( allowedOp(pAndTerm->p_রাশিমালা->op)
              || pAndTerm->eOperator==WO_AUX
             ){
-              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->leftCursor);
+              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->বাম_Cursor);
             }
           }
         }
         indexable &= b;
       }
-    }else if( pOrTerm->wtFlags & TERM_COPIED ){
+    }অন্যথা যদি( pOrTerm->wtFlags & TERM_COPIED ){
       /* Skip this term for now.  We revisit it when we process the
       ** corresponding TERM_VIRTUAL term */
-    }else{
+    }অন্যথা{
       Bitmask b;
-      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->leftCursor);
-      if( pOrTerm->wtFlags & TERM_VIRTUAL ){
+      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->বাম_Cursor);
+      যদি( pOrTerm->wtFlags & TERM_VIRTUAL ){
         WhereTerm *pOther = &pOrWc->a[pOrTerm->iParent];
-        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->leftCursor);
+        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->বাম_Cursor);
       }
       indexable &= b;
-      if( (pOrTerm->eOperator & WO_EQ)==0 ){
+      যদি( (pOrTerm->eOperator & WO_EQ)==0 ){
         chngToIN = 0;
-      }else{
+      }অন্যথা{
         chngToIN &= b;
       }
     }
@@ -787,20 +787,20 @@ static void exprAnalyzeOrTerm(
   */
   pOrInfo->indexable = indexable;
   pTerm->eOperator = WO_OR;
-  pTerm->leftCursor = -1;
-  if( indexable ){
+  pTerm->বাম_Cursor = -1;
+  যদি( indexable ){
     pWC->hasOr = 1;
   }
 
   /* For a two-way OR, attempt to implementation case 2.
   */
-  if( indexable && pOrWc->nTerm==2 ){
-    int iOne = 0;
+  যদি( indexable && pOrWc->nTerm==2 ){
+    পূর্ণাঙ্ক iOne = 0;
     WhereTerm *pOne;
-    while( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
-      int iTwo = 0;
+    যাবত্( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
+      পূর্ণাঙ্ক iTwo = 0;
       WhereTerm *pTwo;
-      while( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
+      যাবত্( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
         whereCombineDisjuncts(pSrc, pWC, pOne, pTwo);
       }
     }
@@ -827,11 +827,11 @@ static void exprAnalyzeOrTerm(
   ** Note that terms of the form "table.column1=table.column2" (the
   ** same table on both sizes of the ==) cannot be optimized.
   */
-  if( chngToIN ){
-    int okToChngToIN = 0;     /* True if the conversion to IN is valid */
-    int iColumn = -1;         /* Column index on lhs of IN operator */
-    int iCursor = -1;         /* Table cursor common to all terms */
-    int j = 0;                /* Loop counter */
+  যদি( chngToIN ){
+    পূর্ণাঙ্ক okToChngToIN = 0;     /* True if the conversion to IN is valid */
+    পূর্ণাঙ্ক iColumn = -1;         /* Column index on lhs of IN operator */
+    পূর্ণাঙ্ক iCursor = -1;         /* Table cursor common to all terms */
+    পূর্ণাঙ্ক j = 0;                /* Loop counter */
 
     /* Search for a table and column that appears on one side or the
     ** other of the == operator in every subterm.  That table and column
@@ -839,68 +839,68 @@ static void exprAnalyzeOrTerm(
     ** such table and column.  Set okToChngToIN if an appropriate table
     ** and column is found but leave okToChngToIN false if not found.
     */
-    for(j=0; j<2 && !okToChngToIN; j++){
-      Expr *pLeft = 0;
+    প্রতি(j=0; j<2 && !okToChngToIN; j++){
+      রাশিমালা *p_বাম = 0;
       pOrTerm = pOrWc->a;
-      for(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
+      প্রতি(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
+        প্রতিজ্ঞা( pOrTerm->eOperator & WO_EQ );
         pOrTerm->wtFlags &= ~TERM_OK;
-        if( pOrTerm->leftCursor==iCursor ){
+        যদি( pOrTerm->বাম_Cursor==iCursor ){
           /* This is the 2-bit case and we are on the second iteration and
           ** current term is from the first iteration.  So skip this term. */
-          assert( j==1 );
-          continue;
+          প্রতিজ্ঞা( j==1 );
+          অনুবর্ত;
         }
-        if( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
-                                            pOrTerm->leftCursor))==0 ){
+        যদি( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
+                                            pOrTerm->বাম_Cursor))==0 ){
           /* This term must be of the form t1.a==t2.b where t2 is in the
           ** chngToIN set but t1 is not.  This term will be either preceded
           ** or followed by an inverted copy (t2.b==t1.a).  Skip this term
           ** and use its inversion. */
           testcase( pOrTerm->wtFlags & TERM_COPIED );
           testcase( pOrTerm->wtFlags & TERM_VIRTUAL );
-          assert( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
-          continue;
+          প্রতিজ্ঞা( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
+          অনুবর্ত;
         }
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        iColumn = pOrTerm->u.x.leftColumn;
-        iCursor = pOrTerm->leftCursor;
-        pLeft = pOrTerm->pExpr->pLeft;
-        break;
+        প্রতিজ্ঞা( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        iColumn = pOrTerm->u.x.বাম_Column;
+        iCursor = pOrTerm->বাম_Cursor;
+        p_বাম = pOrTerm->p_রাশিমালা->p_বাম;
+        ভঙ্গ;
       }
-      if( i<0 ){
+      যদি( i<0 ){
         /* No candidate table+column was found.  This can only occur
         ** on the second iteration */
-        assert( j==1 );
-        assert( IsPowerOfTwo(chngToIN) );
-        assert( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
-        break;
+        প্রতিজ্ঞা( j==1 );
+        প্রতিজ্ঞা( IsPowerOfTwo(chngToIN) );
+        প্রতিজ্ঞা( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
+        ভঙ্গ;
       }
       testcase( j==1 );
 
       /* We have found a candidate table and column.  Check to see if that
       ** table and column is common to every term in the OR clause */
       okToChngToIN = 1;
-      for(; i>=0 && okToChngToIN; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        if( pOrTerm->leftCursor!=iCursor ){
+      প্রতি(; i>=0 && okToChngToIN; i--, pOrTerm++){
+        প্রতিজ্ঞা( pOrTerm->eOperator & WO_EQ );
+        প্রতিজ্ঞা( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        যদি( pOrTerm->বাম_Cursor!=iCursor ){
           pOrTerm->wtFlags &= ~TERM_OK;
-        }else if( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
-               && sqlite3ExprCompare(pParse, pOrTerm->pExpr->pLeft, pLeft, -1)
+        }অন্যথা যদি( pOrTerm->u.x.বাম_Column!=iColumn || (iColumn==XN_রাশিমালা
+               && sqlite3_রাশিমালা_Compare(pParse, pOrTerm->p_রাশিমালা->p_বাম, p_বাম, -1)
         )){
           okToChngToIN = 0;
-        }else{
-          int affLeft, affRight;
+        }অন্যথা{
+          পূর্ণাঙ্ক aff_বাম, aff_ডান;
           /* If the right-hand side is also a column, then the affinities
           ** of both right and left sides must be such that no type
           ** conversions are required on the right.  (Ticket #2249)
           */
-          affRight = sqlite3ExprAffinity(pOrTerm->pExpr->pRight);
-          affLeft = sqlite3ExprAffinity(pOrTerm->pExpr->pLeft);
-          if( affRight!=0 && affRight!=affLeft ){
+          aff_ডান = sqlite3_রাশিমালা_Affinity(pOrTerm->p_রাশিমালা->p_ডান);
+          aff_বাম = sqlite3_রাশিমালা_Affinity(pOrTerm->p_রাশিমালা->p_বাম);
+          যদি( aff_ডান!=0 && aff_ডান!=aff_বাম ){
             okToChngToIN = 0;
-          }else{
+          }অন্যথা{
             pOrTerm->wtFlags |= TERM_OK;
           }
         }
@@ -917,60 +917,60 @@ static void exprAnalyzeOrTerm(
     ** subterms of the OR are compatible.  Omit the construction of the
     ** new IN operator if there are any collating sequence mismatches.
     */
-    if( okToChngToIN ){
-      Expr *pDup;            /* A transient duplicate expression */
-      ExprList *pList = 0;   /* The RHS of the IN operator */
-      Expr *pLeft = 0;       /* The LHS of the IN operator */
+    যদি( okToChngToIN ){
+      রাশিমালা *pDup;            /* A transient duplicate expression */
+      রাশিমালা_List *pList = 0;   /* The RHS of the IN operator */
+      রাশিমালা *p_বাম = 0;       /* The LHS of the IN operator */
       CollSeq *pCollSeq = 0; /* Collating sequence to use */
-      Expr *pNew;            /* The complete IN operator */
+      রাশিমালা *pNew;            /* The complete IN operator */
 
-      for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
-        Expr *pThis;
-        if( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        assert( pOrTerm->leftCursor==iCursor );
-        assert( pOrTerm->u.x.leftColumn==iColumn );
-        pThis = pOrTerm->pExpr;
-        pDup = sqlite3ExprDup(db, pThis->pRight, 0);
-        pList = sqlite3ExprListAppend(pWInfo->pParse, pList, pDup);
-        if( pLeft==0 ){
-          pLeft = pThis->pLeft;
-          pCollSeq = sqlite3ExprCompareCollSeq(pParse, pThis);
-        }else{
-          assert( 0==sqlite3ExprCompare(pParse, 
-                        sqlite3ExprSkipCollate(pThis->pLeft),
-                        sqlite3ExprSkipCollate(pLeft), -1) );
-          if( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
-            pLeft = 0;  /* Collating sequence mismatch */
-            break;
+      প্রতি(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
+        রাশিমালা *pThis;
+        যদি( (pOrTerm->wtFlags & TERM_OK)==0 ) অনুবর্ত;
+        প্রতিজ্ঞা( pOrTerm->eOperator & WO_EQ );
+        প্রতিজ্ঞা( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
+        প্রতিজ্ঞা( pOrTerm->বাম_Cursor==iCursor );
+        প্রতিজ্ঞা( pOrTerm->u.x.বাম_Column==iColumn );
+        pThis = pOrTerm->p_রাশিমালা;
+        pDup = sqlite3_রাশিমালা_Dup(db, pThis->p_ডান, 0);
+        pList = sqlite3_রাশিমালা_List_Append(pWInfo->pParse, pList, pDup);
+        যদি( p_বাম==0 ){
+          p_বাম = pThis->p_বাম;
+          pCollSeq = sqlite3_রাশিমালা_Compare_Coll_Seq(pParse, pThis);
+        }অন্যথা{
+          প্রতিজ্ঞা( 0==sqlite3_রাশিমালা_Compare(pParse, 
+                        sqlite3_রাশিমালা_Skip_Collate(pThis->p_বাম),
+                        sqlite3_রাশিমালা_Skip_Collate(p_বাম), -1) );
+          যদি( pCollSeq!=sqlite3_রাশিমালা_Compare_Coll_Seq(pParse, pThis) ){
+            p_বাম = 0;  /* Collating sequence mismatch */
+            ভঙ্গ;
           }
         }
       }
-      if( pLeft==0 ){
+      যদি( p_বাম==0 ){
         pNew = 0;  /* Collating sequence mismatch */
-      }else{
-        pDup = sqlite3ExprDup(db, pLeft, 0);
-        if( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
+      }অন্যথা{
+        pDup = sqlite3_রাশিমালা_Dup(db, p_বাম, 0);
+        যদি( sqlite3_রাশিমালা_Coll_Seq(pParse, pDup)!=pCollSeq
          && pCollSeq!=0
         ){
-          assert( pCollSeq->zName!=0 );
-          pDup = sqlite3ExprAddCollateString(pParse, pDup, pCollSeq->zName);
+          প্রতিজ্ঞা( pCollSeq->zName!=0 );
+          pDup = sqlite3_রাশিমালা_Add_Collate_String(pParse, pDup, pCollSeq->zName);
         }
         pNew = sqlite3PExpr(pParse, TK_IN, pDup, 0);
       }
-      if( pNew ){
-        int idxNew;
-        transferJoinMarkings(pNew, pExpr);
-        assert( ExprUseXList(pNew) );
+      যদি( pNew ){
+        পূর্ণাঙ্ক idxNew;
+        transferJoinMarkings(pNew, p_রাশিমালা);
+        প্রতিজ্ঞা( রাশিমালা_Use_XList(pNew) );
         pNew->x.pList = pList;
-        idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_ঢোকাও(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
         testcase( idxNew==0 );
-        exprAnalyze(pSrc, pWC, idxNew);
+        রাশিমালা_Analyze(pSrc, pWC, idxNew);
         /* pTerm = &pWC->a[idxTerm]; // would be needed if pTerm where reused */
         markTermAsChild(pWC, idxNew, idxTerm);
-      }else{
-        sqlite3ExprListDelete(db, pList);
+      }অন্যথা{
+        sqlite3_রাশিমালা_List_Delete(db, pList);
       }
     }
   }
@@ -993,29 +993,29 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
-  char aff1, aff2;
-  if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
-  if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) return 0;        /* (3) */
-  assert( pSrc!=0 );
-  if( pExpr->op==TK_IS
+স্থির পূর্ণাঙ্ক termIsEquivalence(Parse *pParse, রাশিমালা *p_রাশিমালা, SrcList *pSrc){
+  বর্ণ aff1, aff2;
+  যদি( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) প্রত্যাগম 0;  /* (1) */
+  যদি( p_রাশিমালা->op!=TK_EQ && p_রাশিমালা->op!=TK_IS ) প্রত্যাগম 0;                 /* (2) */
+  যদি( রাশিমালা_Has_Property(p_রাশিমালা, EP_OuterON|EP_Collate) ) প্রত্যাগম 0;        /* (3) */
+  প্রতিজ্ঞা( pSrc!=0 );
+  যদি( p_রাশিমালা->op==TK_IS
    && pSrc->nSrc>=2
    && (pSrc->a[0].fg.jointype & JT_LTORJ)!=0
   ){
-    return 0;                                                          /* (4) */
+    প্রত্যাগম 0;                                                          /* (4) */
   }
-  aff1 = sqlite3ExprAffinity(pExpr->pLeft);
-  aff2 = sqlite3ExprAffinity(pExpr->pRight);
-  if( aff1!=aff2
+  aff1 = sqlite3_রাশিমালা_Affinity(p_রাশিমালা->p_বাম);
+  aff2 = sqlite3_রাশিমালা_Affinity(p_রাশিমালা->p_ডান);
+  যদি( aff1!=aff2
    && (!sqlite3IsNumericAffinity(aff1) || !sqlite3IsNumericAffinity(aff2))
   ){
-    return 0;                                                          /* (5) */
+    প্রত্যাগম 0;                                                          /* (5) */
   }
-  if( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
-    return 0;                                                          /* (6) */
+  যদি( !sqlite3_রাশিমালা_Coll_Seq_Match(pParse, p_রাশিমালা->p_বাম, p_রাশিমালা->p_ডান) ){
+    প্রত্যাগম 0;                                                          /* (6) */
   }
-  return 1;
+  প্রত্যাগম 1;
 }
 
 /*
@@ -1023,32 +1023,32 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 ** a bitmask indicating which tables are used in that expression
 ** tree.
 */
-static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
+স্থির Bitmask রাশিমালা_Select_Usage(WhereMaskSet *pMaskSet, Select *pS){
   Bitmask mask = 0;
-  while( pS ){
+  যাবত্( pS ){
     SrcList *pSrc = pS->pSrc;
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pEList);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pGroupBy);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pWhere);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pHaving);
-    if( ALWAYS(pSrc!=0) ){
-      int i;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          mask |= exprSelectUsage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, pS->pEList);
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, pS->pGroupBy);
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, pS->pOrderBy);
+    mask |= sqlite3_Where_রাশিমালা_Usage(pMaskSet, pS->pWhere);
+    mask |= sqlite3_Where_রাশিমালা_Usage(pMaskSet, pS->pHaving);
+    যদি( ALWAYS(pSrc!=0) ){
+      পূর্ণাঙ্ক i;
+      প্রতি(i=0; i<pSrc->nSrc; i++){
+        যদি( pSrc->a[i].fg.isSubquery ){
+          mask |= রাশিমালা_Select_Usage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
         }
-        if( pSrc->a[i].fg.isUsing==0 ){
-          mask |= sqlite3WhereExprUsage(pMaskSet, pSrc->a[i].u3.pOn);
+        যদি( pSrc->a[i].fg.isUsing==0 ){
+          mask |= sqlite3_Where_রাশিমালা_Usage(pMaskSet, pSrc->a[i].u3.pOn);
         }
-        if( pSrc->a[i].fg.isTabFunc ){
-          mask |= sqlite3WhereExprListUsage(pMaskSet, pSrc->a[i].u1.pFuncArg);
+        যদি( pSrc->a[i].fg.isTabFunc ){
+          mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, pSrc->a[i].u1.pFuncArg);
         }
       }
     }
     pS = pS->pPrior;
   }
-  return mask;
+  প্রত্যাগম mask;
 }
 
 /*
@@ -1064,68 +1064,68 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+স্থির SQLITE_NOINLINE পূর্ণাঙ্ক রাশিমালা_Might_Be_Indexed2(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor and column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int j                  /* Start looking with the j-th pFrom entry */
+  পূর্ণাঙ্ক *aiCurCol,         /* Write the referenced table cursor and column here */
+  রাশিমালা *p_রাশিমালা,           /* An operand of a comparison operator */
+  পূর্ণাঙ্ক j                  /* Start looking with the j-th pFrom entry */
 ){
   Index *pIdx;
-  int i;
-  int iCur;
-  do{
+  পূর্ণাঙ্ক i;
+  পূর্ণাঙ্ক iCur;
+  কুরু{
     iCur = pFrom->a[j].iCursor;
-    for(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr==0 ) continue;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( pIdx->aiColumn[i]!=XN_EXPR ) continue;
-        assert( pIdx->bHasExpr );
-        if( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
-         && !sqlite3ExprIsConstant(0,pIdx->aColExpr->a[i].pExpr)
+    প্রতি(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      যদি( pIdx->a_Col_রাশিমালা==0 ) অনুবর্ত;
+      প্রতি(i=0; i<pIdx->n_চাবি_Col; i++){
+        যদি( pIdx->aiColumn[i]!=XN_রাশিমালা ) অনুবর্ত;
+        প্রতিজ্ঞা( pIdx->b_Has_রাশিমালা );
+        যদি( sqlite3_রাশিমালা_Compare_Skip(p_রাশিমালা,pIdx->a_Col_রাশিমালা->a[i].p_রাশিমালা,iCur)==0
+         && !sqlite3_রাশিমালা_Is_Constant(0,pIdx->a_Col_রাশিমালা->a[i].p_রাশিমালা)
         ){
           aiCurCol[0] = iCur;
-          aiCurCol[1] = XN_EXPR;
-          return 1;
+          aiCurCol[1] = XN_রাশিমালা;
+          প্রত্যাগম 1;
         }
       }
     }
-  }while( ++j < pFrom->nSrc );
-  return 0;
+  }যাবত্( ++j < pFrom->nSrc );
+  প্রত্যাগম 0;
 }
-static int exprMightBeIndexed(
+স্থির পূর্ণাঙ্ক রাশিমালা_Might_Be_Indexed(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor & column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int op                 /* The specific comparison operator */
+  পূর্ণাঙ্ক *aiCurCol,         /* Write the referenced table cursor & column here */
+  রাশিমালা *p_রাশিমালা,           /* An operand of a comparison operator */
+  পূর্ণাঙ্ক op                 /* The specific comparison operator */
 ){
-  int i;
+  পূর্ণাঙ্ক i;
 
   /* If this expression is a vector to the left or right of a
   ** inequality constraint (>, <, >= or <=), perform the processing
   ** on the first element of the vector.  */
-  assert( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
-  assert( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
-  assert( op<=TK_GE );
-  if( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
-    assert( ExprUseXList(pExpr) );
-    pExpr = pExpr->x.pList->a[0].pExpr;
+  প্রতিজ্ঞা( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
+  প্রতিজ্ঞা( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
+  প্রতিজ্ঞা( op<=TK_GE );
+  যদি( p_রাশিমালা->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
+    প্রতিজ্ঞা( রাশিমালা_Use_XList(p_রাশিমালা) );
+    p_রাশিমালা = p_রাশিমালা->x.pList->a[0].p_রাশিমালা;
   }
 
-  if( pExpr->op==TK_COLUMN ){
-    aiCurCol[0] = pExpr->iTable;
-    aiCurCol[1] = pExpr->iColumn;
-    return 1;
+  যদি( p_রাশিমালা->op==TK_COLUMN ){
+    aiCurCol[0] = p_রাশিমালা->iTable;
+    aiCurCol[1] = p_রাশিমালা->iColumn;
+    প্রত্যাগম 1;
   }
 
-  for(i=0; i<pFrom->nSrc; i++){
+  প্রতি(i=0; i<pFrom->nSrc; i++){
     Index *pIdx;
-    for(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr ){
-        return exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
+    প্রতি(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
+      যদি( pIdx->a_Col_রাশিমালা ){
+        প্রত্যাগম রাশিমালা_Might_Be_Indexed2(pFrom,aiCurCol,p_রাশিমালা,i);
       }
     }
   }
-  return 0;
+  প্রত্যাগম 0;
 }
 
 
@@ -1147,155 +1147,155 @@ static int exprMightBeIndexed(
 ** is a commuted copy of a prior term.)  The original term has nChild=1
 ** and the copy has idxParent set to the index of the original term.
 */
-static void exprAnalyze(
+স্থির শূন্য রাশিমালা_Analyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
-  int idxTerm               /* Index of the term to be analyzed */
+  পূর্ণাঙ্ক idxTerm               /* Index of the term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo; /* WHERE clause processing context */
   WhereTerm *pTerm;                /* The term to be analyzed */
   WhereMaskSet *pMaskSet;          /* Set of table index masks */
-  Expr *pExpr;                     /* The expression to be analyzed */
-  Bitmask prereqLeft;              /* Prerequisites of the pExpr->pLeft */
+  রাশিমালা *p_রাশিমালা;                     /* The expression to be analyzed */
+  Bitmask prereq_বাম;              /* Prerequisites of the pExpr->pLeft */
   Bitmask prereqAll;               /* Prerequisites of pExpr */
-  Bitmask extraRight = 0;          /* Extra dependencies on LEFT JOIN */
-  Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
-  int isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
-  int noCase = 0;                  /* uppercase equivalent to lowercase */
-  int op;                          /* Top-level operator.  pExpr->op */
+  Bitmask extra_ডান = 0;          /* Extra dependencies on LEFT JOIN */
+  রাশিমালা *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
+  পূর্ণাঙ্ক isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
+  পূর্ণাঙ্ক noCase = 0;                  /* uppercase equivalent to lowercase */
+  পূর্ণাঙ্ক op;                          /* Top-level operator.  pExpr->op */
   Parse *pParse = pWInfo->pParse;  /* Parsing context */
   sqlite3 *db = pParse->db;        /* Database connection */
-  unsigned char eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
-  int nLeft;                       /* Number of elements on left side vector */
+  unsigned বর্ণ eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
+  পূর্ণাঙ্ক n_বাম;                       /* Number of elements on left side vector */
 
-  if( db->mallocFailed ){
-    return;
+  যদি( db->mallocFailed ){
+    প্রত্যাগম;
   }
-  assert( pWC->nTerm > idxTerm );
+  প্রতিজ্ঞা( pWC->nTerm > idxTerm );
   pTerm = &pWC->a[idxTerm];
 #ifdef SQLITE_DEBUG
   pTerm->iTerm = idxTerm;
 #endif
   pMaskSet = &pWInfo->sMaskSet;
-  pExpr = pTerm->pExpr;
-  assert( pExpr!=0 ); /* Because malloc() has not failed */
-  assert( pExpr->op!=TK_AS && pExpr->op!=TK_COLLATE );
-exprAnalyze_restart:
+  p_রাশিমালা = pTerm->p_রাশিমালা;
+  প্রতিজ্ঞা( p_রাশিমালা!=0 ); /* Because malloc() has not failed */
+  প্রতিজ্ঞা( p_রাশিমালা->op!=TK_AS && p_রাশিমালা->op!=TK_COLLATE );
+রাশিমালা_Analyze_restart:
   pMaskSet->bVarSelect = 0;
-  prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);
-  op = pExpr->op;
-  if( op==TK_IN ){
-    assert( pExpr->pRight==0 );
-    if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-    if( ExprUseXSelect(pExpr) ){
-      pTerm->prereqRight = exprSelectUsage(pMaskSet, pExpr->x.pSelect);
-    }else{
-      pTerm->prereqRight = sqlite3WhereExprListUsage(pMaskSet, pExpr->x.pList);
+  prereq_বাম = sqlite3_Where_রাশিমালা_Usage(pMaskSet, p_রাশিমালা->p_বাম);
+  op = p_রাশিমালা->op;
+  যদি( op==TK_IN ){
+    প্রতিজ্ঞা( p_রাশিমালা->p_ডান==0 );
+    যদি( sqlite3_রাশিমালা_Check_IN(pParse, p_রাশিমালা) ) প্রত্যাগম;
+    যদি( রাশিমালা_Use_XSelect(p_রাশিমালা) ){
+      pTerm->prereq_ডান = রাশিমালা_Select_Usage(pMaskSet, p_রাশিমালা->x.pSelect);
+    }অন্যথা{
+      pTerm->prereq_ডান = sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, p_রাশিমালা->x.pList);
     }
-    prereqAll = prereqLeft | pTerm->prereqRight;
-  }else{
-    pTerm->prereqRight = sqlite3WhereExprUsage(pMaskSet, pExpr->pRight);
-    if( pExpr->pLeft==0
-     || ExprHasProperty(pExpr, EP_xIsSelect|EP_IfNullRow)
-     || pExpr->x.pList!=0
+    prereqAll = prereq_বাম | pTerm->prereq_ডান;
+  }অন্যথা{
+    pTerm->prereq_ডান = sqlite3_Where_রাশিমালা_Usage(pMaskSet, p_রাশিমালা->p_ডান);
+    যদি( p_রাশিমালা->p_বাম==0
+     || রাশিমালা_Has_Property(p_রাশিমালা, EP_xIsSelect|EP_IfNullRow)
+     || p_রাশিমালা->x.pList!=0
     ){
-      prereqAll = sqlite3WhereExprUsageNN(pMaskSet, pExpr);
-    }else{
-      prereqAll = prereqLeft | pTerm->prereqRight;
+      prereqAll = sqlite3_Where_রাশিমালা_Usage_NN(pMaskSet, p_রাশিমালা);
+    }অন্যথা{
+      prereqAll = prereq_বাম | pTerm->prereq_ডান;
     }
   }
-  if( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
+  যদি( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
 
 #ifdef SQLITE_DEBUG
-  if( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
+  যদি( prereqAll!=sqlite3_Where_রাশিমালা_Usage_NN(pMaskSet, p_রাশিমালা) ){
     printf("\n*** Incorrect prereqAll computed for:\n");
-    sqlite3TreeViewExpr(0,pExpr,0);
-    assert( 0 );
+    sqlite3_বৃক্ষ_View_রাশিমালা(0,p_রাশিমালা,0);
+    প্রতিজ্ঞা( 0 );
   }
 #endif
 
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
-    Bitmask x = sqlite3WhereGetMask(pMaskSet, pExpr->w.iJoin);
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+  যদি( রাশিমালা_Has_Property(p_রাশিমালা, EP_OuterON|EP_InnerON) ){
+    Bitmask x = sqlite3WhereGetMask(pMaskSet, p_রাশিমালা->w.iJoin);
+    যদি( রাশিমালা_Has_Property(p_রাশিমালা, EP_OuterON) ){
       prereqAll |= x;
-      extraRight = x-1;  /* ON clause terms may not be used with an index
+      extra_ডান = x-1;  /* ON clause terms may not be used with an index
                          ** on left table of a LEFT JOIN.  Ticket #3015 */
-    }else if( (prereqAll>>1)>=x ){
-      ExprClearProperty(pExpr, EP_InnerON);
+    }অন্যথা যদি( (prereqAll>>1)>=x ){
+      রাশিমালা_Clear_Property(p_রাশিমালা, EP_InnerON);
     }
   }
   pTerm->prereqAll = prereqAll;
-  pTerm->leftCursor = -1;
+  pTerm->বাম_Cursor = -1;
   pTerm->iParent = -1;
   pTerm->eOperator = 0;
-  if( allowedOp(op) ){
-    int aiCurCol[2];
-    Expr *pLeft = sqlite3ExprSkipCollate(pExpr->pLeft);
-    Expr *pRight = sqlite3ExprSkipCollate(pExpr->pRight);
-    u16 opMask = (pTerm->prereqRight & prereqLeft)==0 ? WO_ALL : WO_EQUIV;
+  যদি( allowedOp(op) ){
+    পূর্ণাঙ্ক aiCurCol[2];
+    রাশিমালা *p_বাম = sqlite3_রাশিমালা_Skip_Collate(p_রাশিমালা->p_বাম);
+    রাশিমালা *p_ডান = sqlite3_রাশিমালা_Skip_Collate(p_রাশিমালা->p_ডান);
+    u16 opMask = (pTerm->prereq_ডান & prereq_বাম)==0 ? WO_ALL : WO_EQUIV;
 
-    if( pTerm->u.x.iField>0 ){
-      assert( op==TK_IN );
-      assert( pLeft->op==TK_VECTOR );
-      assert( ExprUseXList(pLeft) );
-      pLeft = pLeft->x.pList->a[pTerm->u.x.iField-1].pExpr;
+    যদি( pTerm->u.x.iField>0 ){
+      প্রতিজ্ঞা( op==TK_IN );
+      প্রতিজ্ঞা( p_বাম->op==TK_VECTOR );
+      প্রতিজ্ঞা( রাশিমালা_Use_XList(p_বাম) );
+      p_বাম = p_বাম->x.pList->a[pTerm->u.x.iField-1].p_রাশিমালা;
     }
 
-    if( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
-      pTerm->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pTerm->u.x.leftColumn = aiCurCol[1];
+    যদি( রাশিমালা_Might_Be_Indexed(pSrc, aiCurCol, p_বাম, op) ){
+      pTerm->বাম_Cursor = aiCurCol[0];
+      প্রতিজ্ঞা( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
+      pTerm->u.x.বাম_Column = aiCurCol[1];
       pTerm->eOperator = operatorMask(op) & opMask;
     }
-    if( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
-    if( pRight
-     && exprMightBeIndexed(pSrc, aiCurCol, pRight, op)
-     && !ExprHasProperty(pRight, EP_FixedCol)
+    যদি( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
+    যদি( p_ডান
+     && রাশিমালা_Might_Be_Indexed(pSrc, aiCurCol, p_ডান, op)
+     && !রাশিমালা_Has_Property(p_ডান, EP_FixedCol)
     ){
       WhereTerm *pNew;
-      Expr *pDup;
+      রাশিমালা *pDup;
       u16 eExtraOp = 0;        /* Extra bits for pNew->eOperator */
-      assert( pTerm->u.x.iField==0 );
-      if( pTerm->leftCursor>=0 ){
-        int idxNew;
-        pDup = sqlite3ExprDup(db, pExpr, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDup);
-          return;
+      প্রতিজ্ঞা( pTerm->u.x.iField==0 );
+      যদি( pTerm->বাম_Cursor>=0 ){
+        পূর্ণাঙ্ক idxNew;
+        pDup = sqlite3_রাশিমালা_Dup(db, p_রাশিমালা, 0);
+        যদি( db->mallocFailed ){
+          sqlite3_রাশিমালা_Delete(db, pDup);
+          প্রত্যাগম;
         }
-        idxNew = whereClauseInsert(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
-        if( idxNew==0 ) return;
+        idxNew = where_Clause_ঢোকাও(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
+        যদি( idxNew==0 ) প্রত্যাগম;
         pNew = &pWC->a[idxNew];
         markTermAsChild(pWC, idxNew, idxTerm);
-        if( op==TK_IS ) pNew->wtFlags |= TERM_IS;
+        যদি( op==TK_IS ) pNew->wtFlags |= TERM_IS;
         pTerm = &pWC->a[idxTerm];
         pTerm->wtFlags |= TERM_COPIED;
-        assert( pWInfo->pTabList!=0 );
-        if( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
+        প্রতিজ্ঞা( pWInfo->pTabList!=0 );
+        যদি( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
           pTerm->eOperator |= WO_EQUIV;
           eExtraOp = WO_EQUIV;
         }
-      }else{
-        pDup = pExpr;
+      }অন্যথা{
+        pDup = p_রাশিমালা;
         pNew = pTerm;
       }
-      pNew->wtFlags |= exprCommute(pParse, pDup);
-      pNew->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pNew->u.x.leftColumn = aiCurCol[1];
-      testcase( (prereqLeft | extraRight) != prereqLeft );
-      pNew->prereqRight = prereqLeft | extraRight;
+      pNew->wtFlags |= রাশিমালা_Commute(pParse, pDup);
+      pNew->বাম_Cursor = aiCurCol[0];
+      প্রতিজ্ঞা( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
+      pNew->u.x.বাম_Column = aiCurCol[1];
+      testcase( (prereq_বাম | extra_ডান) != prereq_বাম );
+      pNew->prereq_ডান = prereq_বাম | extra_ডান;
       pNew->prereqAll = prereqAll;
       pNew->eOperator = (operatorMask(pDup->op) + eExtraOp) & opMask;
-    }else
-    if( op==TK_ISNULL
-     && !ExprHasProperty(pExpr,EP_OuterON)
-     && 0==sqlite3ExprCanBeNull(pLeft)
+    }অন্যথা
+    যদি( op==TK_ISNULL
+     && !রাশিমালা_Has_Property(p_রাশিমালা,EP_OuterON)
+     && 0==sqlite3_রাশিমালা_Can_Be_Null(p_বাম)
     ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pExpr->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
-      pExpr->u.zToken = "false";
-      ExprSetProperty(pExpr, EP_IsFalse);
+      প্রতিজ্ঞা( !রাশিমালা_Has_Property(p_রাশিমালা, EP_Int_মান) );
+      p_রাশিমালা->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
+      p_রাশিমালা->u.zToken = "false";
+      রাশিমালা_Set_Property(p_রাশিমালা, EP_IsFalse);
       pTerm->prereqAll = 0;
       pTerm->eOperator = 0;
     }
@@ -1317,43 +1317,43 @@ exprAnalyze_restart:
   ** skipped.  Or, if the children are satisfied by an index, the original
   ** BETWEEN term is skipped.
   */
-  else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
-    ExprList *pList;
-    int i;
-    static const u8 ops[] = {TK_GE, TK_LE};
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    assert( pList!=0 );
-    assert( pList->nExpr==2 );
-    assert( pWC->a[idxTerm].nChild==0 );
-    for(i=0; i<2; i++){
-      Expr *pNewExpr;
-      int idxNew;
-      pNewExpr = sqlite3PExpr(pParse, ops[i],
-                             sqlite3ExprDup(db, pExpr->pLeft, 0),
-                             sqlite3ExprDup(db, pList->a[i].pExpr, 0));
-      transferJoinMarkings(pNewExpr, pExpr);
-      idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+  অন্যথা যদি( p_রাশিমালা->op==TK_BETWEEN && pWC->op==TK_AND ){
+    রাশিমালা_List *pList;
+    পূর্ণাঙ্ক i;
+    স্থির ধ্রুব u8 ops[] = {TK_GE, TK_LE};
+    প্রতিজ্ঞা( রাশিমালা_Use_XList(p_রাশিমালা) );
+    pList = p_রাশিমালা->x.pList;
+    প্রতিজ্ঞা( pList!=0 );
+    প্রতিজ্ঞা( pList->n_রাশিমালা==2 );
+    প্রতিজ্ঞা( pWC->a[idxTerm].nChild==0 );
+    প্রতি(i=0; i<2; i++){
+      রাশিমালা *p_New_রাশিমালা;
+      পূর্ণাঙ্ক idxNew;
+      p_New_রাশিমালা = sqlite3PExpr(pParse, ops[i],
+                             sqlite3_রাশিমালা_Dup(db, p_রাশিমালা->p_বাম, 0),
+                             sqlite3_রাশিমালা_Dup(db, pList->a[i].p_রাশিমালা, 0));
+      transferJoinMarkings(p_New_রাশিমালা, p_রাশিমালা);
+      idxNew = where_Clause_ঢোকাও(pWC, p_New_রাশিমালা, TERM_VIRTUAL|TERM_DYNAMIC);
       testcase( idxNew==0 );
-      exprAnalyze(pSrc, pWC, idxNew);
+      রাশিমালা_Analyze(pSrc, pWC, idxNew);
       pTerm = &pWC->a[idxTerm];
       markTermAsChild(pWC, idxNew, idxTerm);
     }
   }
 #endif /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#যদি !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
   /* Analyze a term that is composed of two or more subterms connected by
   ** an OR operator.
   */
-  else if( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
-    Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-    if( pAlt!=pExpr ){
-      pTerm->pExpr = pExpr = sqlite3ExprSkipCollateAndLikely(pAlt);
-      goto exprAnalyze_restart;
+  অন্যথা যদি( p_রাশিমালা->op==TK_OR && !রাশিমালা_Has_Property(p_রাশিমালা, EP_Collate) ){
+    রাশিমালা *pAlt = sqlite3_রাশিমালা_Simplified_And_Or(p_রাশিমালা);
+    যদি( pAlt!=p_রাশিমালা ){
+      pTerm->p_রাশিমালা = p_রাশিমালা = sqlite3_রাশিমালা_Skip_Collate_And_Likely(pAlt);
+      গচ্ছ রাশিমালা_Analyze_restart;
     }
-    assert( pWC->op==TK_AND );
-    exprAnalyzeOrTerm(pSrc, pWC, idxTerm);
+    প্রতিজ্ঞা( pWC->op==TK_AND );
+    রাশিমালা_Analyze_Or_Term(pSrc, pWC, idxTerm);
     pTerm = &pWC->a[idxTerm];
   }
 #endif /* SQLITE_OMIT_OR_OPTIMIZATION */
@@ -1363,27 +1363,27 @@ exprAnalyze_restart:
   **
   ** The virtual term must be tagged with TERM_VNULL.
   */
-  else if( pExpr->op==TK_NOTNULL ){
-    if( pExpr->pLeft->op==TK_COLUMN
-     && pExpr->pLeft->iColumn>=0
-     && !ExprHasProperty(pExpr, EP_OuterON)
+  অন্যথা যদি( p_রাশিমালা->op==TK_NOTNULL ){
+    যদি( p_রাশিমালা->p_বাম->op==TK_COLUMN
+     && p_রাশিমালা->p_বাম->iColumn>=0
+     && !রাশিমালা_Has_Property(p_রাশিমালা, EP_OuterON)
     ){
-      Expr *pNewExpr;
-      Expr *pLeft = pExpr->pLeft;
-      int idxNew;
+      রাশিমালা *p_New_রাশিমালা;
+      রাশিমালা *p_বাম = p_রাশিমালা->p_বাম;
+      পূর্ণাঙ্ক idxNew;
       WhereTerm *pNewTerm;
  
-      pNewExpr = sqlite3PExpr(pParse, TK_GT,
-                              sqlite3ExprDup(db, pLeft, 0),
-                              sqlite3ExprAlloc(db, TK_NULL, 0, 0));
+      p_New_রাশিমালা = sqlite3PExpr(pParse, TK_GT,
+                              sqlite3_রাশিমালা_Dup(db, p_বাম, 0),
+                              sqlite3_রাশিমালা_Alloc(db, TK_NULL, 0, 0));
  
-      idxNew = whereClauseInsert(pWC, pNewExpr,
+      idxNew = where_Clause_ঢোকাও(pWC, p_New_রাশিমালা,
                                 TERM_VIRTUAL|TERM_DYNAMIC|TERM_VNULL);
-      if( idxNew ){
+      যদি( idxNew ){
         pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = 0;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
+        pNewTerm->prereq_ডান = 0;
+        pNewTerm->বাম_Cursor = p_বাম->iTable;
+        pNewTerm->u.x.বাম_Column = p_বাম->iColumn;
         pNewTerm->eOperator = WO_GT;
         markTermAsChild(pWC, idxNew, idxTerm);
         pTerm = &pWC->a[idxTerm];
@@ -1408,81 +1408,81 @@ exprAnalyze_restart:
   ** bound is made all lowercase so that the bounds also work when comparing
   ** BLOBs.
   */
-  else if( pExpr->op==TK_FUNCTION
+  অন্যথা যদি( p_রাশিমালা->op==TK_FUNCTION
    && pWC->op==TK_AND
-   && isLikeOrGlob(pParse, pExpr, &pStr1, &isComplete, &noCase)
+   && isLikeOrGlob(pParse, p_রাশিমালা, &pStr1, &isComplete, &noCase)
   ){
-    Expr *pLeft;       /* LHS of LIKE/GLOB operator */
-    Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
-    Expr *pNewExpr1;
-    Expr *pNewExpr2;
-    int idxNew1;
-    int idxNew2;
-    const char *zCollSeqName;     /* Name of collating sequence */
-    const u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
+    রাশিমালা *p_বাম;       /* LHS of LIKE/GLOB operator */
+    রাশিমালা *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
+    রাশিমালা *pNewExpr1;
+    রাশিমালা *pNewExpr2;
+    পূর্ণাঙ্ক idxNew1;
+    পূর্ণাঙ্ক idxNew2;
+    ধ্রুব বর্ণ *zCollSeqName;     /* Name of collating sequence */
+    ধ্রুব u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
 
-    assert( ExprUseXList(pExpr) );
-    pLeft = pExpr->x.pList->a[1].pExpr;
-    pStr2 = sqlite3ExprDup(db, pStr1, 0);
-    assert( pStr1==0 || !ExprHasProperty(pStr1, EP_IntValue) );
-    assert( pStr2==0 || !ExprHasProperty(pStr2, EP_IntValue) );
+    প্রতিজ্ঞা( রাশিমালা_Use_XList(p_রাশিমালা) );
+    p_বাম = p_রাশিমালা->x.pList->a[1].p_রাশিমালা;
+    pStr2 = sqlite3_রাশিমালা_Dup(db, pStr1, 0);
+    প্রতিজ্ঞা( pStr1==0 || !রাশিমালা_Has_Property(pStr1, EP_Int_মান) );
+    প্রতিজ্ঞা( pStr2==0 || !রাশিমালা_Has_Property(pStr2, EP_Int_মান) );
 
 
     /* Convert the lower bound to upper-case and the upper bound to
     ** lower-case (upper-case is less than lower-case in ASCII) so that
     ** the range constraints also work for BLOBs
     */
-    if( noCase && !pParse->db->mallocFailed ){
-      int i;
-      char c;
+    যদি( noCase && !pParse->db->mallocFailed ){
+      পূর্ণাঙ্ক i;
+      বর্ণ c;
       pTerm->wtFlags |= TERM_LIKE;
-      for(i=0; (c = pStr1->u.zToken[i])!=0; i++){
+      প্রতি(i=0; (c = pStr1->u.zToken[i])!=0; i++){
         pStr1->u.zToken[i] = sqlite3Toupper(c);
         pStr2->u.zToken[i] = sqlite3Tolower(c);
       }
     }
 
-    if( !db->mallocFailed ){
+    যদি( !db->mallocFailed ){
       u8 *pC;       /* Last character before the first wildcard */
       pC = (u8*)&pStr2->u.zToken[sqlite3Strlen30(pStr2->u.zToken)-1];
-      if( noCase ){
+      যদি( noCase ){
         /* The point is to increment the last character before the first
         ** wildcard.  But if we increment '@', that will push it into the
         ** alphabetic range where case conversions will mess up the
         ** inequality.  To avoid this, make sure to also run the full
         ** LIKE on all candidate expressions by clearing the isComplete flag
         */
-        if( *pC=='A'-1 ) isComplete = 0;
+        যদি( *pC=='A'-1 ) isComplete = 0;
         *pC = sqlite3UpperToLower[*pC];
       }
 
       /* Increment the value of the last utf8 character in the prefix. */
-      while( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
+      যাবত্( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
         *pC = 0x80;
         pC--;
       }
-      assert( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
+      প্রতিজ্ঞা( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
       (*pC)++;
     }
-    zCollSeqName = noCase ? "NOCASE" : sqlite3StrBINARY;
-    pNewExpr1 = sqlite3ExprDup(db, pLeft, 0);
+    zCollSeqName = noCase ? "NOCASE" : sqlite3_Str_দ্বিমিক;
+    pNewExpr1 = sqlite3_রাশিমালা_Dup(db, p_বাম, 0);
     pNewExpr1 = sqlite3PExpr(pParse, TK_GE,
-           sqlite3ExprAddCollateString(pParse,pNewExpr1,zCollSeqName),
+           sqlite3_রাশিমালা_Add_Collate_String(pParse,pNewExpr1,zCollSeqName),
            pStr1);
-    transferJoinMarkings(pNewExpr1, pExpr);
-    idxNew1 = whereClauseInsert(pWC, pNewExpr1, wtFlags);
+    transferJoinMarkings(pNewExpr1, p_রাশিমালা);
+    idxNew1 = where_Clause_ঢোকাও(pWC, pNewExpr1, wtFlags);
     testcase( idxNew1==0 );
-    pNewExpr2 = sqlite3ExprDup(db, pLeft, 0);
+    pNewExpr2 = sqlite3_রাশিমালা_Dup(db, p_বাম, 0);
     pNewExpr2 = sqlite3PExpr(pParse, TK_LT,
-           sqlite3ExprAddCollateString(pParse,pNewExpr2,zCollSeqName),
+           sqlite3_রাশিমালা_Add_Collate_String(pParse,pNewExpr2,zCollSeqName),
            pStr2);
-    transferJoinMarkings(pNewExpr2, pExpr);
-    idxNew2 = whereClauseInsert(pWC, pNewExpr2, wtFlags);
+    transferJoinMarkings(pNewExpr2, p_রাশিমালা);
+    idxNew2 = where_Clause_ঢোকাও(pWC, pNewExpr2, wtFlags);
     testcase( idxNew2==0 );
-    exprAnalyze(pSrc, pWC, idxNew1);
-    exprAnalyze(pSrc, pWC, idxNew2);
+    রাশিমালা_Analyze(pSrc, pWC, idxNew1);
+    রাশিমালা_Analyze(pSrc, pWC, idxNew2);
     pTerm = &pWC->a[idxTerm];
-    if( isComplete ){
+    যদি( isComplete ){
       markTermAsChild(pWC, idxNew1, idxTerm);
       markTermAsChild(pWC, idxNew2, idxTerm);
     }
@@ -1499,24 +1499,24 @@ exprAnalyze_restart:
   **
   ** tag-20220128a
   */
-  if( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
-   && (nLeft = sqlite3ExprVectorSize(pExpr->pLeft))>1
-   && sqlite3ExprVectorSize(pExpr->pRight)==nLeft
-   && ( (pExpr->pLeft->flags & EP_xIsSelect)==0
-     || (pExpr->pRight->flags & EP_xIsSelect)==0)
+  যদি( (p_রাশিমালা->op==TK_EQ || p_রাশিমালা->op==TK_IS)
+   && (n_বাম = sqlite3_রাশিমালা_Vector_Size(p_রাশিমালা->p_বাম))>1
+   && sqlite3_রাশিমালা_Vector_Size(p_রাশিমালা->p_ডান)==n_বাম
+   && ( (p_রাশিমালা->p_বাম->flags & EP_xIsSelect)==0
+     || (p_রাশিমালা->p_ডান->flags & EP_xIsSelect)==0)
    && pWC->op==TK_AND
   ){
-    int i;
-    for(i=0; i<nLeft; i++){
-      int idxNew;
-      Expr *pNew;
-      Expr *pLeft = sqlite3ExprForVectorField(pParse, pExpr->pLeft, i, nLeft);
-      Expr *pRight = sqlite3ExprForVectorField(pParse, pExpr->pRight, i, nLeft);
+    পূর্ণাঙ্ক i;
+    প্রতি(i=0; i<n_বাম; i++){
+      পূর্ণাঙ্ক idxNew;
+      রাশিমালা *pNew;
+      রাশিমালা *p_বাম = sqlite3_রাশিমালা_For_Vector_Field(pParse, p_রাশিমালা->p_বাম, i, n_বাম);
+      রাশিমালা *p_ডান = sqlite3_রাশিমালা_For_Vector_Field(pParse, p_রাশিমালা->p_ডান, i, n_বাম);
 
-      pNew = sqlite3PExpr(pParse, pExpr->op, pLeft, pRight);
-      transferJoinMarkings(pNew, pExpr);
-      idxNew = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
-      exprAnalyze(pSrc, pWC, idxNew);
+      pNew = sqlite3PExpr(pParse, p_রাশিমালা->op, p_বাম, p_ডান);
+      transferJoinMarkings(pNew, p_রাশিমালা);
+      idxNew = where_Clause_ঢোকাও(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
+      রাশিমালা_Analyze(pSrc, pWC, idxNew);
     }
     pTerm = &pWC->a[idxTerm];
     pTerm->wtFlags |= TERM_CODED|TERM_VIRTUAL;  /* Disable the original */
@@ -1532,26 +1532,26 @@ exprAnalyze_restart:
   ** This only works if the RHS is a simple SELECT (not a compound) that does
   ** not use window functions.
   */
-  else if( pExpr->op==TK_IN
+  অন্যথা যদি( p_রাশিমালা->op==TK_IN
    && pTerm->u.x.iField==0
-   && pExpr->pLeft->op==TK_VECTOR
-   && ALWAYS( ExprUseXSelect(pExpr) )
-   && (pExpr->x.pSelect->pPrior==0 || (pExpr->x.pSelect->selFlags & SF_Values))
+   && p_রাশিমালা->p_বাম->op==TK_VECTOR
+   && ALWAYS( রাশিমালা_Use_XSelect(p_রাশিমালা) )
+   && (p_রাশিমালা->x.pSelect->pPrior==0 || (p_রাশিমালা->x.pSelect->selFlags & SF_মানসমূহ))
 #ifndef SQLITE_OMIT_WINDOWFUNC
-   && pExpr->x.pSelect->pWin==0
+   && p_রাশিমালা->x.pSelect->pWin==0
 #endif
-   && (pExpr->x.pSelect->selFlags & SF_MinMaxAgg)==0
+   && (p_রাশিমালা->x.pSelect->selFlags & SF_MinMaxAgg)==0
    && pWC->op==TK_AND
-   && pExpr->x.pSelect->pEList->nExpr <= UMXV(pTerm->nChild)
+   && p_রাশিমালা->x.pSelect->pEList->n_রাশিমালা <= UMXV(pTerm->nChild)
    /* ^-- See bug 2026-06-04T10:00:49Z */
   ){
-    int i;
-    assert( pTerm->nChild==0 );
-    for(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
-      int idxNew;
-      idxNew = whereClauseInsert(pWC, pExpr, TERM_VIRTUAL|TERM_SLICE);
+    পূর্ণাঙ্ক i;
+    প্রতিজ্ঞা( pTerm->nChild==0 );
+    প্রতি(i=0; i<sqlite3_রাশিমালা_Vector_Size(p_রাশিমালা->p_বাম); i++){
+      পূর্ণাঙ্ক idxNew;
+      idxNew = where_Clause_ঢোকাও(pWC, p_রাশিমালা, TERM_VIRTUAL|TERM_SLICE);
       pWC->a[idxNew].u.x.iField = i+1;
-      exprAnalyze(pSrc, pWC, idxNew);
+      রাশিমালা_Analyze(pSrc, pWC, idxNew);
       markTermAsChild(pWC, idxNew, idxTerm);
     }
   }
@@ -1566,30 +1566,30 @@ exprAnalyze_restart:
   ** virtual tables.  The native query optimizer does not attempt
   ** to do anything with MATCH functions.
   */
-  else if( pWC->op==TK_AND ){
-    Expr *pRight = 0, *pLeft = 0;
-    int res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
-    while( res-- > 0 ){
-      int idxNew;
+  অন্যথা যদি( pWC->op==TK_AND ){
+    রাশিমালা *p_ডান = 0, *p_বাম = 0;
+    পূর্ণাঙ্ক res = isAuxiliaryVtabOperator(db, p_রাশিমালা, &eOp2, &p_বাম, &p_ডান);
+    যাবত্( res-- > 0 ){
+      পূর্ণাঙ্ক idxNew;
       WhereTerm *pNewTerm;
-      Bitmask prereqColumn, prereqExpr;
+      Bitmask prereqColumn, prereq_রাশিমালা;
 
-      prereqExpr = sqlite3WhereExprUsage(pMaskSet, pRight);
-      prereqColumn = sqlite3WhereExprUsage(pMaskSet, pLeft);
-      if( (prereqExpr & prereqColumn)==0 ){
-        Expr *pNewExpr;
-        pNewExpr = sqlite3PExpr(pParse, TK_MATCH,
-            0, sqlite3ExprDup(db, pRight, 0));
-        if( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
-          ExprSetProperty(pNewExpr, EP_OuterON);
-          pNewExpr->w.iJoin = pExpr->w.iJoin;
+      prereq_রাশিমালা = sqlite3_Where_রাশিমালা_Usage(pMaskSet, p_ডান);
+      prereqColumn = sqlite3_Where_রাশিমালা_Usage(pMaskSet, p_বাম);
+      যদি( (prereq_রাশিমালা & prereqColumn)==0 ){
+        রাশিমালা *p_New_রাশিমালা;
+        p_New_রাশিমালা = sqlite3PExpr(pParse, TK_MATCH,
+            0, sqlite3_রাশিমালা_Dup(db, p_ডান, 0));
+        যদি( রাশিমালা_Has_Property(p_রাশিমালা, EP_OuterON) && p_New_রাশিমালা ){
+          রাশিমালা_Set_Property(p_New_রাশিমালা, EP_OuterON);
+          p_New_রাশিমালা->w.iJoin = p_রাশিমালা->w.iJoin;
         }
-        idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_ঢোকাও(pWC, p_New_রাশিমালা, TERM_VIRTUAL|TERM_DYNAMIC);
         testcase( idxNew==0 );
         pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = prereqExpr | extraRight;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
+        pNewTerm->prereq_ডান = prereq_রাশিমালা | extra_ডান;
+        pNewTerm->বাম_Cursor = p_বাম->iTable;
+        pNewTerm->u.x.বাম_Column = p_বাম->iColumn;
         pNewTerm->eOperator = WO_AUX;
         pNewTerm->eMatchOp = eOp2;
         markTermAsChild(pWC, idxNew, idxTerm);
@@ -1597,7 +1597,7 @@ exprAnalyze_restart:
         pTerm->wtFlags |= TERM_COPIED;
         pNewTerm->prereqAll = pTerm->prereqAll;
       }
-      SWAP(Expr*, pLeft, pRight);
+      SWAP(রাশিমালা*, p_বাম, p_ডান);
     }
   }
 #endif /* SQLITE_OMIT_VIRTUALTABLE */
@@ -1607,7 +1607,7 @@ exprAnalyze_restart:
   */
   testcase( pTerm!=&pWC->a[idxTerm] );
   pTerm = &pWC->a[idxTerm];
-  pTerm->prereqRight |= extraRight;
+  pTerm->prereq_ডান |= extra_ডান;
 }
 
 /***************************************************************************
@@ -1632,16 +1632,16 @@ exprAnalyze_restart:
 ** the WhereClause.a[] array.  The slot[] array grows as needed to contain
 ** all terms of the WHERE clause.
 */
-void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
-  Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
+শূন্য sqlite3WhereSplit(WhereClause *pWC, রাশিমালা *p_রাশিমালা, u8 op){
+  রাশিমালা *pE2 = sqlite3_রাশিমালা_Skip_Collate_And_Likely(p_রাশিমালা);
   pWC->op = op;
-  assert( pE2!=0 || pExpr==0 );
-  if( pE2==0 ) return;
-  if( pE2->op!=op ){
-    whereClauseInsert(pWC, pExpr, 0);
-  }else{
-    sqlite3WhereSplit(pWC, pE2->pLeft, op);
-    sqlite3WhereSplit(pWC, pE2->pRight, op);
+  প্রতিজ্ঞা( pE2!=0 || p_রাশিমালা==0 );
+  যদি( pE2==0 ) প্রত্যাগম;
+  যদি( pE2->op!=op ){
+    where_Clause_ঢোকাও(pWC, p_রাশিমালা, 0);
+  }অন্যথা{
+    sqlite3WhereSplit(pWC, pE2->p_বাম, op);
+    sqlite3WhereSplit(pWC, pE2->p_ডান, op);
   }
 }
 
@@ -1656,34 +1656,34 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 ** TK_INTEGER so that it will be available to sqlite3_vtab_rhs_value().
 ** If not, then it codes as a TK_REGISTER expression.
 */
-static void whereAddLimitExpr(
+স্থির শূন্য where_Add_Limit_রাশিমালা(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
-  int iReg,           /* Register that will hold value of the limit/offset */
-  Expr *pExpr,        /* Expression that defines the limit/offset */
-  int iCsr,           /* Cursor to which the constraint applies */
-  int eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
+  পূর্ণাঙ্ক iReg,           /* Register that will hold value of the limit/offset */
+  রাশিমালা *p_রাশিমালা,        /* Expression that defines the limit/offset */
+  পূর্ণাঙ্ক iCsr,           /* Cursor to which the constraint applies */
+  পূর্ণাঙ্ক eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
 ){
   Parse *pParse = pWC->pWInfo->pParse;
   sqlite3 *db = pParse->db;
-  Expr *pNew;
-  int iVal = 0;
+  রাশিমালা *pNew;
+  পূর্ণাঙ্ক iVal = 0;
 
-  if( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
-    Expr *pVal = sqlite3ExprInt32(db, iVal);
-    if( pVal==0 ) return;
+  যদি( sqlite3_রাশিমালা_Is_Integer(p_রাশিমালা, &iVal, pParse, 0) && iVal>=0 ){
+    রাশিমালা *pVal = sqlite3_রাশিমালা_Int32(db, iVal);
+    যদি( pVal==0 ) প্রত্যাগম;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
-  }else{
-    Expr *pVal = sqlite3ExprAlloc(db, TK_REGISTER, 0, 0);
-    if( pVal==0 ) return;
+  }অন্যথা{
+    রাশিমালা *pVal = sqlite3_রাশিমালা_Alloc(db, TK_REGISTER, 0, 0);
+    যদি( pVal==0 ) প্রত্যাগম;
     pVal->iTable = iReg;
     pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
   }
-  if( pNew ){
+  যদি( pNew ){
     WhereTerm *pTerm;
-    int idx;
-    idx = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
+    পূর্ণাঙ্ক idx;
+    idx = where_Clause_ঢোকাও(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
     pTerm = &pWC->a[idx];
-    pTerm->leftCursor = iCsr;
+    pTerm->বাম_Cursor = iCsr;
     pTerm->eOperator = WO_AUX;
     pTerm->eMatchOp = eMatchOp;
   }
@@ -1707,68 +1707,68 @@ static void whereAddLimitExpr(
 ** exist only so that they may be passed to the xBestIndex method of the
 ** single virtual table in the FROM clause of the SELECT.
 */
-void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
-  assert( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
-  if( p->pGroupBy==0
+শূন্য SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
+  প্রতিজ্ঞা( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
+  যদি( p->pGroupBy==0
    && (p->selFlags & (SF_Distinct|SF_Aggregate))==0             /* 2 */
    && (p->pSrc->nSrc==1 && IsVirtual(p->pSrc->a[0].pSTab))      /* 3 */
   ){
-    ExprList *pOrderBy = p->pOrderBy;
-    int iCsr = p->pSrc->a[0].iCursor;
-    int ii;
+    রাশিমালা_List *pOrderBy = p->pOrderBy;
+    পূর্ণাঙ্ক iCsr = p->pSrc->a[0].iCursor;
+    পূর্ণাঙ্ক ii;
 
     /* Check condition (4). Return early if it is not met. */
-    for(ii=0; ii<pWC->nTerm; ii++){
-      if( pWC->a[ii].wtFlags & TERM_CODED ){
+    প্রতি(ii=0; ii<pWC->nTerm; ii++){
+      যদি( pWC->a[ii].wtFlags & TERM_CODED ){
         /* This term is a vector operation that has been decomposed into
         ** other, subsequent terms.  It can be ignored. See tag-20220128a */
-        assert( pWC->a[ii].wtFlags & TERM_VIRTUAL );
-        assert( pWC->a[ii].eOperator==WO_ROWVAL );
-        continue;
+        প্রতিজ্ঞা( pWC->a[ii].wtFlags & TERM_VIRTUAL );
+        প্রতিজ্ঞা( pWC->a[ii].eOperator==WO_ROWVAL );
+        অনুবর্ত;
       }
-      if( pWC->a[ii].nChild ){
+      যদি( pWC->a[ii].nChild ){
         /* If this term has child terms, then they are also part of the
         ** pWC->a[] array. So this term can be ignored, as a LIMIT clause
         ** will only be added if each of the child terms passes the
         ** (leftCursor==iCsr) test below.  */
-        continue;
+        অনুবর্ত;
       }
-      if( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
+      যদি( pWC->a[ii].বাম_Cursor==iCsr && pWC->a[ii].prereq_ডান==0 ) অনুবর্ত;
 
       /* If this term has a parent with exactly one child, and the parent will
       ** be passed through to xBestIndex, then this term can be ignored.  */
-      if( pWC->a[ii].iParent>=0 ){
+      যদি( pWC->a[ii].iParent>=0 ){
         WhereTerm *pParent = &pWC->a[ pWC->a[ii].iParent ];
-        if( pParent->leftCursor==iCsr
-         && pParent->prereqRight==0
+        যদি( pParent->বাম_Cursor==iCsr
+         && pParent->prereq_ডান==0
          && pParent->nChild==1
         ){
-          continue;
+          অনুবর্ত;
         }
       }
 
       /* This term will not be passed through. Do not add a LIMIT clause. */
-      return;
+      প্রত্যাগম;
     }
 
     /* Check condition (5). Return early if it is not met. */
-    if( pOrderBy ){
-      for(ii=0; ii<pOrderBy->nExpr; ii++){
-        Expr *pExpr = pOrderBy->a[ii].pExpr;
-        if( pExpr->op!=TK_COLUMN ) return;
-        if( pExpr->iTable!=iCsr ) return;
-        if( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) return;
+    যদি( pOrderBy ){
+      প্রতি(ii=0; ii<pOrderBy->n_রাশিমালা; ii++){
+        রাশিমালা *p_রাশিমালা = pOrderBy->a[ii].p_রাশিমালা;
+        যদি( p_রাশিমালা->op!=TK_COLUMN ) প্রত্যাগম;
+        যদি( p_রাশিমালা->iTable!=iCsr ) প্রত্যাগম;
+        যদি( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) প্রত্যাগম;
       }
     }
 
     /* All conditions are met. Add the terms to the where-clause object. */
-    assert( p->pLimit->op==TK_LIMIT );
-    if( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iOffset, p->pLimit->pRight,
+    প্রতিজ্ঞা( p->pLimit->op==TK_LIMIT );
+    যদি( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
+      where_Add_Limit_রাশিমালা(pWC, p->iOffset, p->pLimit->p_ডান,
                         iCsr, SQLITE_INDEX_CONSTRAINT_OFFSET);
     }
-    if( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iLimit, p->pLimit->pLeft,
+    যদি( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
+      where_Add_Limit_রাশিমালা(pWC, p->iLimit, p->pLimit->p_বাম,
                         iCsr, SQLITE_INDEX_CONSTRAINT_LIMIT);
     }
   }
@@ -1777,7 +1777,7 @@ void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
 /*
 ** Initialize a preallocated WhereClause structure.
 */
-void sqlite3WhereClauseInit(
+শূন্য sqlite3WhereClauseInit(
   WhereClause *pWC,        /* The WhereClause to be initialized */
   WhereInfo *pWInfo        /* The WHERE processing context */
 ){
@@ -1795,34 +1795,34 @@ void sqlite3WhereClauseInit(
 ** itself is not freed.  This routine is the inverse of
 ** sqlite3WhereClauseInit().
 */
-void sqlite3WhereClauseClear(WhereClause *pWC){
+শূন্য sqlite3WhereClauseClear(WhereClause *pWC){
   sqlite3 *db = pWC->pWInfo->pParse->db;
-  assert( pWC->nTerm>=pWC->nBase );
-  if( pWC->nTerm>0 ){
+  প্রতিজ্ঞা( pWC->nTerm>=pWC->nBase );
+  যদি( pWC->nTerm>0 ){
     WhereTerm *a = pWC->a;
     WhereTerm *aLast = &pWC->a[pWC->nTerm-1];
 #ifdef SQLITE_DEBUG
-    int i;
+    পূর্ণাঙ্ক i;
     /* Verify that every term past pWC->nBase is virtual */
-    for(i=pWC->nBase; i<pWC->nTerm; i++){
-      assert( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
+    প্রতি(i=pWC->nBase; i<pWC->nTerm; i++){
+      প্রতিজ্ঞা( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
     }
 #endif
-    while(1){
-      assert( a->eMatchOp==0 || a->eOperator==WO_AUX );
-      if( a->wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, a->pExpr);
+    যাবত্(1){
+      প্রতিজ্ঞা( a->eMatchOp==0 || a->eOperator==WO_AUX );
+      যদি( a->wtFlags & TERM_DYNAMIC ){
+        sqlite3_রাশিমালা_Delete(db, a->p_রাশিমালা);
       }
-      if( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
-        if( a->wtFlags & TERM_ORINFO ){
-          assert( (a->wtFlags & TERM_ANDINFO)==0 );
+      যদি( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
+        যদি( a->wtFlags & TERM_ORINFO ){
+          প্রতিজ্ঞা( (a->wtFlags & TERM_ANDINFO)==0 );
           whereOrInfoDelete(db, a->u.pOrInfo);
-        }else{
-          assert( (a->wtFlags & TERM_ANDINFO)!=0 );
+        }অন্যথা{
+          প্রতিজ্ঞা( (a->wtFlags & TERM_ANDINFO)!=0 );
           whereAndInfoDelete(db, a->u.pAndInfo);
         }
       }
-      if( a==aLast ) break;
+      যদি( a==aLast ) ভঙ্গ;
       a++;
     }
   }
@@ -1860,53 +1860,53 @@ void sqlite3WhereClauseClear(WhereClause *pWC){
 **       "no-inline" function to avoid the stack push overhead in the
 **       common case where it is not needed.
 */
-static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
+স্থির SQLITE_NOINLINE Bitmask sqlite3_Where_রাশিমালা_Usage_Full(
   WhereMaskSet *pMaskSet,
-  Expr *p
+  রাশিমালা *p
 ){
   Bitmask mask;
   mask = (p->op==TK_IF_NULL_ROW) ? sqlite3WhereGetMask(pMaskSet, p->iTable) : 0;
-  if( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
-  if( p->pRight ){
-    mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pRight);
-    assert( p->x.pList==0 );
-  }else if( ExprUseXSelect(p) ){
-    if( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
-    mask |= exprSelectUsage(pMaskSet, p->x.pSelect);
-  }else if( p->x.pList ){
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->x.pList);
+  যদি( p->p_বাম ) mask |= sqlite3_Where_রাশিমালা_Usage_NN(pMaskSet, p->p_বাম);
+  যদি( p->p_ডান ){
+    mask |= sqlite3_Where_রাশিমালা_Usage_NN(pMaskSet, p->p_ডান);
+    প্রতিজ্ঞা( p->x.pList==0 );
+  }অন্যথা যদি( রাশিমালা_Use_XSelect(p) ){
+    যদি( রাশিমালা_Has_Property(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
+    mask |= রাশিমালা_Select_Usage(pMaskSet, p->x.pSelect);
+  }অন্যথা যদি( p->x.pList ){
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, p->x.pList);
   }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
-    assert( p->y.pWin!=0 );
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pPartition);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, p->y.pWin->pFilter);
+  যদি( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && রাশিমালা_Use_YWin(p) ){
+    প্রতিজ্ঞা( p->y.pWin!=0 );
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, p->y.pWin->pPartition);
+    mask |= sqlite3_Where_রাশিমালা_List_Usage(pMaskSet, p->y.pWin->pOrderBy);
+    mask |= sqlite3_Where_রাশিমালা_Usage(pMaskSet, p->y.pWin->pFilter);
   }
 #endif
-  return mask;
+  প্রত্যাগম mask;
 }
-Bitmask sqlite3WhereExprUsageNN(WhereMaskSet *pMaskSet, Expr *p){
-  if( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return sqlite3WhereGetMask(pMaskSet, p->iTable);
-  }else if( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
-    assert( p->op!=TK_IF_NULL_ROW );
-    return 0;
+Bitmask sqlite3_Where_রাশিমালা_Usage_NN(WhereMaskSet *pMaskSet, রাশিমালা *p){
+  যদি( p->op==TK_COLUMN && !রাশিমালা_Has_Property(p, EP_FixedCol) ){
+    প্রত্যাগম sqlite3WhereGetMask(pMaskSet, p->iTable);
+  }অন্যথা যদি( রাশিমালা_Has_Property(p, EP_TokenOnly|EP_Leaf) ){
+    প্রতিজ্ঞা( p->op!=TK_IF_NULL_ROW );
+    প্রত্যাগম 0;
   }
-  return sqlite3WhereExprUsageFull(pMaskSet, p);
+  প্রত্যাগম sqlite3_Where_রাশিমালা_Usage_Full(pMaskSet, p);
 }
-Bitmask sqlite3WhereExprUsage(WhereMaskSet *pMaskSet, Expr *p){
-  return p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
+Bitmask sqlite3_Where_রাশিমালা_Usage(WhereMaskSet *pMaskSet, রাশিমালা *p){
+  প্রত্যাগম p ? sqlite3_Where_রাশিমালা_Usage_NN(pMaskSet,p) : 0;
 }
-Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
-  int i;
+Bitmask sqlite3_Where_রাশিমালা_List_Usage(WhereMaskSet *pMaskSet, রাশিমালা_List *pList){
+  পূর্ণাঙ্ক i;
   Bitmask mask = 0;
-  if( pList ){
-    for(i=0; i<pList->nExpr; i++){
-      mask |= sqlite3WhereExprUsage(pMaskSet, pList->a[i].pExpr);
+  যদি( pList ){
+    প্রতি(i=0; i<pList->n_রাশিমালা; i++){
+      mask |= sqlite3_Where_রাশিমালা_Usage(pMaskSet, pList->a[i].p_রাশিমালা);
     }
   }
-  return mask;
+  প্রত্যাগম mask;
 }
 
 
@@ -1918,13 +1918,13 @@ Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
 ** virtual terms, so start analyzing at the end and work forward
 ** so that the added virtual terms are never processed.
 */
-void sqlite3WhereExprAnalyze(
+শূন্য sqlite3_Where_রাশিমালা_Analyze(
   SrcList *pTabList,       /* the FROM clause */
   WhereClause *pWC         /* the WHERE clause to be analyzed */
 ){
-  int i;
-  for(i=pWC->nTerm-1; i>=0; i--){
-    exprAnalyze(pTabList, pWC, i);
+  পূর্ণাঙ্ক i;
+  প্রতি(i=pWC->nTerm-1; i>=0; i--){
+    রাশিমালা_Analyze(pTabList, pWC, i);
   }
 }
 
@@ -1935,54 +1935,54 @@ void sqlite3WhereExprAnalyze(
 ** Each function argument translates into an equality constraint against
 ** a HIDDEN column in the table.
 */
-void sqlite3WhereTabFuncArgs(
+শূন্য sqlite3WhereTabFuncArgs(
   Parse *pParse,                    /* Parsing context */
   SrcItem *pItem,                   /* The FROM clause term to process */
   WhereClause *pWC                  /* Xfer function arguments to here */
 ){
   Table *pTab;
-  int j, k;
-  ExprList *pArgs;
-  Expr *pColRef;
-  Expr *pTerm;
-  if( pItem->fg.isTabFunc==0 ) return;
+  পূর্ণাঙ্ক j, k;
+  রাশিমালা_List *pArgs;
+  রাশিমালা *pColRef;
+  রাশিমালা *pTerm;
+  যদি( pItem->fg.isTabFunc==0 ) প্রত্যাগম;
   pTab = pItem->pSTab;
-  assert( pTab!=0 );
-  if( !IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pItem->zName);
-    return;
+  প্রতিজ্ঞা( pTab!=0 );
+  যদি( !IsVirtual(pTab) ){
+    sqlite3_Error_বার্তা(pParse, "'%s' is not a function", pItem->zName);
+    প্রত্যাগম;
   }
   pArgs = pItem->u1.pFuncArg;
-  if( pArgs==0 ) return;
-  for(j=k=0; j<pArgs->nExpr; j++){
-    Expr *pRhs;
+  যদি( pArgs==0 ) প্রত্যাগম;
+  প্রতি(j=k=0; j<pArgs->n_রাশিমালা; j++){
+    রাশিমালা *pRhs;
     u32 joinType;
-    while( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
-    if( k>=pTab->nCol ){
-      sqlite3ErrorMsg(pParse, "too many arguments on %s() - max %d",
+    যাবত্( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
+    যদি( k>=pTab->nCol ){
+      sqlite3_Error_বার্তা(pParse, "too many arguments on %s() - max %d",
                       pTab->zName, j);
-      return;
+      প্রত্যাগম;
     }
-    pColRef = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-    if( pColRef==0 ) return;
+    pColRef = sqlite3_রাশিমালা_Alloc(pParse->db, TK_COLUMN, 0, 0);
+    যদি( pColRef==0 ) প্রত্যাগম;
     pColRef->iTable = pItem->iCursor;
     pColRef->iColumn = k++;
-    assert( ExprUseYTab(pColRef) );
+    প্রতিজ্ঞা( রাশিমালা_Use_YTab(pColRef) );
     pColRef->y.pTab = pTab;
-    pItem->colUsed |= sqlite3ExprColUsed(pColRef);
+    pItem->colUsed |= sqlite3_রাশিমালা_Col_Used(pColRef);
     pRhs = sqlite3PExpr(pParse, TK_UPLUS,
-        sqlite3ExprDup(pParse->db, pArgs->a[j].pExpr, 0), 0);
+        sqlite3_রাশিমালা_Dup(pParse->db, pArgs->a[j].p_রাশিমালা, 0), 0);
     pTerm = sqlite3PExpr(pParse, TK_EQ, pColRef, pRhs);
-    if( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
-      testcase( pItem->fg.jointype & JT_LEFT );  /* testtag-20230227a */
-      testcase( pItem->fg.jointype & JT_RIGHT ); /* testtag-20230227b */
+    যদি( pItem->fg.jointype & (JT_বাম|JT_ডান) ){
+      testcase( pItem->fg.jointype & JT_বাম );  /* testtag-20230227a */
+      testcase( pItem->fg.jointype & JT_ডান ); /* testtag-20230227b */
       joinType = EP_OuterON;
-    }else{
+    }অন্যথা{
       testcase( pItem->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
       joinType = EP_InnerON;
     }
-    sqlite3SetJoinExpr(pTerm, pItem->iCursor, joinType);
-    whereClauseInsert(pWC, pTerm, TERM_DYNAMIC);
+    sqlite3_Set_Join_রাশিমালা(pTerm, pItem->iCursor, joinType);
+    where_Clause_ঢোকাও(pWC, pTerm, TERM_DYNAMIC);
   }
 }
 
@@ -1990,8 +1990,8 @@ void sqlite3WhereTabFuncArgs(
 ** Return true if the WhereLoop pLoop can be use a Bloom filter.
 ** tag-202607231411
 */
-int sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
-  if( pLoop->wsFlags & WHERE_IPK ) return 1;
-  if( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) return 0;
-  return sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
+পূর্ণাঙ্ক sqlite3WhereLoopBloomable(ধ্রুব WhereLoop *pLoop){
+  যদি( pLoop->wsFlags & WHERE_IPK ) প্রত্যাগম 1;
+  যদি( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) প্রত্যাগম 0;
+  প্রত্যাগম sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
 }

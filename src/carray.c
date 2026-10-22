@@ -52,34 +52,34 @@
 ** as the number of elements in the array.  The virtual table steps through
 ** the array, element by element.
 */
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
-#include "sqliteInt.h"
-#if defined(_WIN32) || defined(__RTP__) || defined(_WRS_KERNEL)
-  struct iovec {
-    void *iov_base;
+#যদি !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+#অন্তর্ভাব "sqliteInt.h"
+#যদি defined(_WIN32) || defined(__RTP__) || defined(_WRS_KERNEL)
+  সংরচনা iovec {
+    শূন্য *iov_base;
     size_t iov_len;
   };
-#else
+#অন্যথা
 # include <sys/uio.h>
 #endif
 
 /*
 ** Names of allowed datatypes
 */
-static const char *azCarrayType[] = {
+স্থির ধ্রুব বর্ণ *azCarrayType[] = {
   "int32", "int64", "double", "char*", "struct iovec"
 };
 
 /*
 ** Structure used to hold the sqlite3_carray_bind() information
 */
-typedef struct carray_bind carray_bind;
-struct carray_bind {
-  void *aData;                /* The data */
-  int nData;                  /* Number of elements */
-  int mFlags;                 /* Control flags */
-  void (*xDel)(void*);        /* Destructor for aData */
-  void *pDel;                 /* Alternative argument to xDel() */
+প্রকারনির্দেশ সংরচনা carray_bind carray_bind;
+সংরচনা carray_bind {
+  শূন্য *aData;                /* The data */
+  পূর্ণাঙ্ক nData;                  /* Number of elements */
+  পূর্ণাঙ্ক mFlags;                 /* Control flags */
+  শূন্য (*xDel)(শূন্য*);        /* Destructor for aData */
+  শূন্য *pDel;                 /* Alternative argument to xDel() */
 };
 
 
@@ -87,13 +87,13 @@ struct carray_bind {
 ** serve as the underlying representation of a cursor that scans
 ** over rows of the result
 */
-typedef struct carray_cursor carray_cursor;
-struct carray_cursor {
+প্রকারনির্দেশ সংরচনা carray_cursor carray_cursor;
+সংরচনা carray_cursor {
   sqlite3_vtab_cursor base;  /* Base class - must be first */
   sqlite3_int64 iRowid;      /* The rowid */
-  void *pPtr;                /* Pointer to the array of values */
+  শূন্য *pPtr;                /* Pointer to the array of values */
   sqlite3_int64 iCnt;        /* Number of integers in the array */
-  unsigned char eType;       /* One of the CARRAY_type values */
+  unsigned বর্ণ eType;       /* One of the CARRAY_type values */
 };
 
 /*
@@ -109,195 +109,195 @@ struct carray_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against carray will look like.
 */
-static int carrayConnect(
+স্থির পূর্ণাঙ্ক carrayConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  শূন্য *pAux,
+  পূর্ণাঙ্ক argc, ধ্রুব বর্ণ *ধ্রুব*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  বর্ণ **pzErr
 ){
   sqlite3_vtab *pNew;
-  int rc;
+  পূর্ণাঙ্ক rc;
 
 /* Column numbers */
-#define CARRAY_COLUMN_VALUE   0
+#define CARRAY_COLUMN_মান   0
 #define CARRAY_COLUMN_POINTER 1
-#define CARRAY_COLUMN_COUNT   2
+#define CARRAY_COLUMN_গুনতি   2
 #define CARRAY_COLUMN_CTYPE   3
 
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(value,pointer hidden,count hidden,ctype hidden)");
-  if( rc==SQLITE_OK ){
-    pNew = *ppVtab = sqlite3_malloc( sizeof(*pNew) );
-    if( pNew==0 ) return SQLITE_NOMEM;
-    memset(pNew, 0, sizeof(*pNew));
+  যদি( rc==SQLITE_OK ){
+    pNew = *ppVtab = sqlite3_malloc( পরিমাণ(*pNew) );
+    যদি( pNew==0 ) প্রত্যাগম SQLITE_NOMEM;
+    memset(pNew, 0, পরিমাণ(*pNew));
   }
-  return rc;
+  প্রত্যাগম rc;
 }
 
 /*
 ** This method is the destructor for carray_cursor objects.
 */
-static int carrayDisconnect(sqlite3_vtab *pVtab){
+স্থির পূর্ণাঙ্ক carrayDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** Constructor for a new carray_cursor object.
 */
-static int carrayOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+স্থির পূর্ণাঙ্ক carrayOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   carray_cursor *pCur;
-  pCur = sqlite3_malloc( sizeof(*pCur) );
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(*pCur));
+  pCur = sqlite3_malloc( পরিমাণ(*pCur) );
+  যদি( pCur==0 ) প্রত্যাগম SQLITE_NOMEM;
+  memset(pCur, 0, পরিমাণ(*pCur));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** Destructor for a carray_cursor.
 */
-static int carrayClose(sqlite3_vtab_cursor *cur){
+স্থির পূর্ণাঙ্ক carrayClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 
 /*
 ** Advance a carray_cursor to its next row of output.
 */
-static int carrayNext(sqlite3_vtab_cursor *cur){
+স্থির পূর্ণাঙ্ক carrayNext(sqlite3_vtab_cursor *cur){
   carray_cursor *pCur = (carray_cursor*)cur;
   pCur->iRowid++;
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** Return values of columns for the row at which the carray_cursor
 ** is currently pointing.
 */
-static int carrayColumn(
+স্থির পূর্ণাঙ্ক carrayColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int i                       /* Which column to return */
+  পূর্ণাঙ্ক i                       /* Which column to return */
 ){
   carray_cursor *pCur = (carray_cursor*)cur;
   sqlite3_int64 x = 0;
-  switch( i ){
-    case CARRAY_COLUMN_POINTER:   return SQLITE_OK;
-    case CARRAY_COLUMN_COUNT:     x = pCur->iCnt;   break;
-    case CARRAY_COLUMN_CTYPE: {
+  বিকল্প( i ){
+    পক্ষ CARRAY_COLUMN_POINTER:   প্রত্যাগম SQLITE_OK;
+    পক্ষ CARRAY_COLUMN_গুনতি:     x = pCur->iCnt;   ভঙ্গ;
+    পক্ষ CARRAY_COLUMN_CTYPE: {
       sqlite3_result_text(ctx, azCarrayType[pCur->eType], -1, SQLITE_STATIC);
-      return SQLITE_OK;
+      প্রত্যাগম SQLITE_OK;
     }
-    default: {
-      switch( pCur->eType ){
-        case CARRAY_INT32: {
-          int *p = (int*)pCur->pPtr;
+    স্বভাব: {
+      বিকল্প( pCur->eType ){
+        পক্ষ CARRAY_INT32: {
+          পূর্ণাঙ্ক *p = (পূর্ণাঙ্ক*)pCur->pPtr;
           sqlite3_result_int(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          প্রত্যাগম SQLITE_OK;
         }
-        case CARRAY_INT64: {
+        পক্ষ CARRAY_INT64: {
           sqlite3_int64 *p = (sqlite3_int64*)pCur->pPtr;
           sqlite3_result_int64(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          প্রত্যাগম SQLITE_OK;
         }
-        case CARRAY_DOUBLE: {
-          double *p = (double*)pCur->pPtr;
+        পক্ষ CARRAY_DOUBLE: {
+          দ্বিগুণ *p = (দ্বিগুণ*)pCur->pPtr;
           sqlite3_result_double(ctx, p[pCur->iRowid-1]);
-          return SQLITE_OK;
+          প্রত্যাগম SQLITE_OK;
         }
-        case CARRAY_TEXT: {
-          const char **p = (const char**)pCur->pPtr;
+        পক্ষ CARRAY_TEXT: {
+          ধ্রুব বর্ণ **p = (ধ্রুব বর্ণ**)pCur->pPtr;
           sqlite3_result_text(ctx, p[pCur->iRowid-1], -1, SQLITE_TRANSIENT);
-          return SQLITE_OK;
+          প্রত্যাগম SQLITE_OK;
         }
-        default: {
-          const struct iovec *p = (struct iovec*)pCur->pPtr;
-          assert( pCur->eType==CARRAY_BLOB );
+        স্বভাব: {
+          ধ্রুব সংরচনা iovec *p = (সংরচনা iovec*)pCur->pPtr;
+          প্রতিজ্ঞা( pCur->eType==CARRAY_BLOB );
           p += pCur->iRowid-1;
-          if( p->iov_len>0x7fffffff ){
+          যদি( p->iov_len>0x7fffffff ){
             sqlite3_result_error_toobig(ctx);
-            return SQLITE_TOOBIG;
-          }else{
-            sqlite3_result_blob(ctx, p->iov_base, (int)p->iov_len,
+            প্রত্যাগম SQLITE_TOOBIG;
+          }অন্যথা{
+            sqlite3_result_blob(ctx, p->iov_base, (পূর্ণাঙ্ক)p->iov_len,
                                  SQLITE_TRANSIENT);
           }
-          return SQLITE_OK;
+          প্রত্যাগম SQLITE_OK;
         }
       }
     }
   }
   sqlite3_result_int64(ctx, x);
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int carrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+স্থির পূর্ণাঙ্ক carrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   carray_cursor *pCur = (carray_cursor*)cur;
   *pRowid = pCur->iRowid;
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int carrayEof(sqlite3_vtab_cursor *cur){
+স্থির পূর্ণাঙ্ক carrayEof(sqlite3_vtab_cursor *cur){
   carray_cursor *pCur = (carray_cursor*)cur;
-  return pCur->iRowid>pCur->iCnt;
+  প্রত্যাগম pCur->iRowid>pCur->iCnt;
 }
 
 /*
 ** This method is called to "rewind" the carray_cursor object back
 ** to the first row of output.
 */
-static int carrayFilter(
+স্থির পূর্ণাঙ্ক carrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  পূর্ণাঙ্ক idx_অঙ্ক, ধ্রুব বর্ণ *idxStr,
+  পূর্ণাঙ্ক argc, sqlite3_মান **argv
 ){
   carray_cursor *pCur = (carray_cursor *)pVtabCursor;
   pCur->pPtr = 0;
   pCur->iCnt = 0;
-  switch( idxNum ){
-    case 1: {
-      carray_bind *pBind = sqlite3_value_pointer(argv[0], "carray-bind");
-      if( pBind==0 ) break;
+  বিকল্প( idx_অঙ্ক ){
+    পক্ষ 1: {
+      carray_bind *pBind = sqlite3_মান_pointer(argv[0], "carray-bind");
+      যদি( pBind==0 ) ভঙ্গ;
       pCur->pPtr = pBind->aData;
       pCur->iCnt = pBind->nData;
       pCur->eType = pBind->mFlags & 0x07;
-      break;
+      ভঙ্গ;
     }
-    case 2:
-    case 3: {
-      pCur->pPtr = sqlite3_value_pointer(argv[0], "carray");
-      pCur->iCnt = pCur->pPtr ? sqlite3_value_int64(argv[1]) : 0;
-      if( idxNum<3 ){
+    পক্ষ 2:
+    পক্ষ 3: {
+      pCur->pPtr = sqlite3_মান_pointer(argv[0], "carray");
+      pCur->iCnt = pCur->pPtr ? sqlite3_মান_int64(argv[1]) : 0;
+      যদি( idx_অঙ্ক<3 ){
         pCur->eType = CARRAY_INT32;
-      }else{
-        unsigned char i;
-        const char *zType = (const char*)sqlite3_value_text(argv[2]);
-        for(i=0; i<sizeof(azCarrayType)/sizeof(azCarrayType[0]); i++){
-          if( sqlite3_stricmp(zType, azCarrayType[i])==0 ) break;
+      }অন্যথা{
+        unsigned বর্ণ i;
+        ধ্রুব বর্ণ *zType = (ধ্রুব বর্ণ*)sqlite3_মান_text(argv[2]);
+        প্রতি(i=0; i<পরিমাণ(azCarrayType)/পরিমাণ(azCarrayType[0]); i++){
+          যদি( sqlite3_stricmp(zType, azCarrayType[i])==0 ) ভঙ্গ;
         }
-        if( i>=sizeof(azCarrayType)/sizeof(azCarrayType[0]) ){
-          pVtabCursor->pVtab->zErrMsg = sqlite3_mprintf(
+        যদি( i>=পরিমাণ(azCarrayType)/পরিমাণ(azCarrayType[0]) ){
+          pVtabCursor->pVtab->z_Err_বার্তা = sqlite3_mprintf(
             "unknown datatype: %Q", zType);
-          return SQLITE_ERROR;
-        }else{
+          প্রত্যাগম SQLITE_ERROR;
+        }অন্যথা{
           pCur->eType = i;
         }
       }
-      break;
+      ভঙ্গ;
     }
   }
   pCur->iRowid = 1;
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
@@ -320,71 +320,71 @@ static int carrayFilter(
 **
 ** idxNum is 0 otherwise and carray becomes an empty table.
 */
-static int carrayBestIndex(
+স্থির পূর্ণাঙ্ক carrayBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
-  int i;                 /* Loop over constraints */
-  int ptrIdx = -1;       /* Index of the pointer= constraint, or -1 if none */
-  int cntIdx = -1;       /* Index of the count= constraint, or -1 if none */
-  int ctypeIdx = -1;     /* Index of the ctype= constraint, or -1 if none */
+  পূর্ণাঙ্ক i;                 /* Loop over constraints */
+  পূর্ণাঙ্ক ptrIdx = -1;       /* Index of the pointer= constraint, or -1 if none */
+  পূর্ণাঙ্ক cntIdx = -1;       /* Index of the count= constraint, or -1 if none */
+  পূর্ণাঙ্ক ctypeIdx = -1;     /* Index of the ctype= constraint, or -1 if none */
   unsigned seen = 0;     /* Bitmask of == constrainted columns */
 
-  const struct sqlite3_index_constraint *pConstraint;
+  ধ্রুব সংরচনা sqlite3_index_constraint *pConstraint;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->iColumn>=0 ) seen |= 1 << pConstraint->iColumn;
-    if( pConstraint->usable==0 ) continue;
-    switch( pConstraint->iColumn ){
-      case CARRAY_COLUMN_POINTER:
+  প্রতি(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    যদি( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) অনুবর্ত;
+    যদি( pConstraint->iColumn>=0 ) seen |= 1 << pConstraint->iColumn;
+    যদি( pConstraint->usable==0 ) অনুবর্ত;
+    বিকল্প( pConstraint->iColumn ){
+      পক্ষ CARRAY_COLUMN_POINTER:
         ptrIdx = i;
-        break;
-      case CARRAY_COLUMN_COUNT:
+        ভঙ্গ;
+      পক্ষ CARRAY_COLUMN_গুনতি:
         cntIdx = i;
-        break;
-      case CARRAY_COLUMN_CTYPE:
+        ভঙ্গ;
+      পক্ষ CARRAY_COLUMN_CTYPE:
         ctypeIdx = i;
-        break;
+        ভঙ্গ;
     }
   }
-  if( ptrIdx>=0 ){
+  যদি( ptrIdx>=0 ){
     pIdxInfo->aConstraintUsage[ptrIdx].argvIndex = 1;
     pIdxInfo->aConstraintUsage[ptrIdx].omit = 1;
-    pIdxInfo->estimatedCost = (double)1;
+    pIdxInfo->estimatedCost = (দ্বিগুণ)1;
     pIdxInfo->estimatedRows = 100;
-    pIdxInfo->idxNum = 1;
-    if( cntIdx>=0 ){
+    pIdxInfo->idx_অঙ্ক = 1;
+    যদি( cntIdx>=0 ){
       pIdxInfo->aConstraintUsage[cntIdx].argvIndex = 2;
       pIdxInfo->aConstraintUsage[cntIdx].omit = 1;
-      pIdxInfo->idxNum = 2;
-      if( ctypeIdx>=0 ){
+      pIdxInfo->idx_অঙ্ক = 2;
+      যদি( ctypeIdx>=0 ){
         pIdxInfo->aConstraintUsage[ctypeIdx].argvIndex = 3;
         pIdxInfo->aConstraintUsage[ctypeIdx].omit = 1;
-        pIdxInfo->idxNum = 3;
-      }else if( seen & (1<<CARRAY_COLUMN_CTYPE) ){
+        pIdxInfo->idx_অঙ্ক = 3;
+      }অন্যথা যদি( seen & (1<<CARRAY_COLUMN_CTYPE) ){
         /* In a three-argument carray(), we need to know the value of all
         ** three arguments */
-        return SQLITE_CONSTRAINT;
+        প্রত্যাগম SQLITE_CONSTRAINT;
       }
-    }else if( seen & (1<<CARRAY_COLUMN_COUNT) ){
+    }অন্যথা যদি( seen & (1<<CARRAY_COLUMN_গুনতি) ){
       /* In a two-argument carray(), we need to know the value of both
       ** arguments */
-      return SQLITE_CONSTRAINT;
+      প্রত্যাগম SQLITE_CONSTRAINT;
     }
-  }else{
-    pIdxInfo->estimatedCost = (double)2147483647;
+  }অন্যথা{
+    pIdxInfo->estimatedCost = (দ্বিগুণ)2147483647;
     pIdxInfo->estimatedRows = 2147483647;
-    pIdxInfo->idxNum = 0;
+    pIdxInfo->idx_অঙ্ক = 0;
   }
-  return SQLITE_OK;
+  প্রত্যাগম SQLITE_OK;
 }
 
 /*
 ** This following structure defines all the methods for the 
 ** carray virtual table.
 */
-static sqlite3_module carrayModule = {
+স্থির sqlite3_module carrayModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   carrayConnect,             /* xConnect */
@@ -415,9 +415,9 @@ static sqlite3_module carrayModule = {
 /*
 ** Destructor for the carray_bind object
 */
-static void carrayBindDel(void *pPtr){
+স্থির শূন্য carrayBindDel(শূন্য *pPtr){
   carray_bind *p = (carray_bind*)pPtr;
-  if( p->xDel!=SQLITE_STATIC ){
+  যদি( p->xDel!=SQLITE_STATIC ){
     p->xDel(p->pDel);
   }
   sqlite3_free(p);
@@ -438,104 +438,104 @@ static void carrayBindDel(void *pPtr){
 ** The destructor is called pDestroy if pDestroy!=NULL, or against
 ** aData if pDestroy==NULL.
 */
-SQLITE_API int sqlite3_carray_bind_v2(
+SQLITE_API পূর্ণাঙ্ক sqlite3_carray_bind_v2(
   sqlite3_stmt *pStmt,
-  int idx,
-  void *aData,
-  int nData,
-  int mFlags,
-  void (*xDestroy)(void*),
-  void *pDestroy
+  পূর্ণাঙ্ক idx,
+  শূন্য *aData,
+  পূর্ণাঙ্ক nData,
+  পূর্ণাঙ্ক mFlags,
+  শূন্য (*xDestroy)(শূন্য*),
+  শূন্য *pDestroy
 ){
   carray_bind *pNew = 0;
-  int i;
-  int rc = SQLITE_OK;
+  পূর্ণাঙ্ক i;
+  পূর্ণাঙ্ক rc = SQLITE_OK;
   
   /* Ensure that the mFlags value is acceptable. */
-  assert( CARRAY_INT32==0 && CARRAY_INT64==1 && CARRAY_DOUBLE==2 );
-  assert( CARRAY_TEXT==3 && CARRAY_BLOB==4 );
-  if( mFlags<CARRAY_INT32 || mFlags>CARRAY_BLOB ){
+  প্রতিজ্ঞা( CARRAY_INT32==0 && CARRAY_INT64==1 && CARRAY_DOUBLE==2 );
+  প্রতিজ্ঞা( CARRAY_TEXT==3 && CARRAY_BLOB==4 );
+  যদি( mFlags<CARRAY_INT32 || mFlags>CARRAY_BLOB ){
     rc = SQLITE_ERROR;
-    goto carray_bind_error;
+    গচ্ছ carray_bind_error;
   }
 
-  pNew = sqlite3_malloc64(sizeof(*pNew));
-  if( pNew==0 ){
+  pNew = sqlite3_malloc64(পরিমাণ(*pNew));
+  যদি( pNew==0 ){
     rc = SQLITE_NOMEM;
-    goto carray_bind_error;
+    গচ্ছ carray_bind_error;
   }
 
   pNew->nData = nData;
   pNew->mFlags = mFlags;
-  if( xDestroy==SQLITE_TRANSIENT ){
+  যদি( xDestroy==SQLITE_TRANSIENT ){
     sqlite3_int64 sz = nData;
-    switch( mFlags ){
-      case CARRAY_INT32:   sz *= 4;                     break;
-      case CARRAY_INT64:   sz *= 8;                     break;
-      case CARRAY_DOUBLE:  sz *= 8;                     break;
-      case CARRAY_TEXT:    sz *= sizeof(char*);         break;
-      default:             sz *= sizeof(struct iovec);  break;
+    বিকল্প( mFlags ){
+      পক্ষ CARRAY_INT32:   sz *= 4;                     ভঙ্গ;
+      পক্ষ CARRAY_INT64:   sz *= 8;                     ভঙ্গ;
+      পক্ষ CARRAY_DOUBLE:  sz *= 8;                     ভঙ্গ;
+      পক্ষ CARRAY_TEXT:    sz *= পরিমাণ(বর্ণ*);         ভঙ্গ;
+      স্বভাব:             sz *= পরিমাণ(সংরচনা iovec);  ভঙ্গ;
     }
-    if( mFlags==CARRAY_TEXT ){
-      for(i=0; i<nData; i++){
-        const char *z = ((char**)aData)[i];
-        if( z ) sz += strlen(z) + 1;
+    যদি( mFlags==CARRAY_TEXT ){
+      প্রতি(i=0; i<nData; i++){
+        ধ্রুব বর্ণ *z = ((বর্ণ**)aData)[i];
+        যদি( z ) sz += strlen(z) + 1;
       }
-    }else if( mFlags==CARRAY_BLOB ){
-      for(i=0; i<nData; i++){
-        sz += ((struct iovec*)aData)[i].iov_len;
+    }অন্যথা যদি( mFlags==CARRAY_BLOB ){
+      প্রতি(i=0; i<nData; i++){
+        sz += ((সংরচনা iovec*)aData)[i].iov_len;
       }
     } 
 
     pNew->aData = sqlite3_malloc64( sz>0 ? sz : 1 );
-    if( pNew->aData==0 ){
+    যদি( pNew->aData==0 ){
       rc = SQLITE_NOMEM;
-      goto carray_bind_error;
+      গচ্ছ carray_bind_error;
     }
 
-    if( mFlags==CARRAY_TEXT ){
-      char **az = (char**)pNew->aData;
-      char *z = (char*)&az[nData];
-      for(i=0; i<nData; i++){
-        const char *zData = ((char**)aData)[i];
+    যদি( mFlags==CARRAY_TEXT ){
+      বর্ণ **az = (বর্ণ**)pNew->aData;
+      বর্ণ *z = (বর্ণ*)&az[nData];
+      প্রতি(i=0; i<nData; i++){
+        ধ্রুব বর্ণ *zData = ((বর্ণ**)aData)[i];
         sqlite3_int64 n;
-        if( zData==0 ){
+        যদি( zData==0 ){
           az[i] = 0;
-          continue;
+          অনুবর্ত;
         }
         az[i] = z;
         n = strlen(zData);
         memcpy(z, zData, n+1);
         z += n+1;
       }
-    }else if( mFlags==CARRAY_BLOB ){
-      struct iovec *p = (struct iovec*)pNew->aData;
-      unsigned char *z = (unsigned char*)&p[nData];
-      for(i=0; i<nData; i++){
-        size_t n = ((struct iovec*)aData)[i].iov_len;
+    }অন্যথা যদি( mFlags==CARRAY_BLOB ){
+      সংরচনা iovec *p = (সংরচনা iovec*)pNew->aData;
+      unsigned বর্ণ *z = (unsigned বর্ণ*)&p[nData];
+      প্রতি(i=0; i<nData; i++){
+        size_t n = ((সংরচনা iovec*)aData)[i].iov_len;
         p[i].iov_len = n;
         p[i].iov_base = z;
         z += n;
-        memcpy(p[i].iov_base, ((struct iovec*)aData)[i].iov_base, n);
+        memcpy(p[i].iov_base, ((সংরচনা iovec*)aData)[i].iov_base, n);
       }
-    }else if( sz>0 ){
+    }অন্যথা যদি( sz>0 ){
       memcpy(pNew->aData, aData, sz);
     }
     pNew->xDel = sqlite3_free;
     pNew->pDel = pNew->aData;
-  }else{
+  }অন্যথা{
     pNew->aData = aData;
     pNew->xDel = xDestroy;
     pNew->pDel = pDestroy;
   }
-  return sqlite3_bind_pointer(pStmt, idx, pNew, "carray-bind", carrayBindDel);
+  প্রত্যাগম sqlite3_bind_pointer(pStmt, idx, pNew, "carray-bind", carrayBindDel);
  
  carray_bind_error:
-  if( xDestroy!=SQLITE_STATIC && xDestroy!=SQLITE_TRANSIENT ){
+  যদি( xDestroy!=SQLITE_STATIC && xDestroy!=SQLITE_TRANSIENT ){
     xDestroy(pDestroy);
   }
   sqlite3_free(pNew);
-  return rc;
+  প্রত্যাগম rc;
 }
 
 /*
@@ -543,22 +543,22 @@ SQLITE_API int sqlite3_carray_bind_v2(
 ** version of CARRAY().  Same as sqlite3_carray_bind_v2() with the
 ** pDestroy parameter set to NULL.
 */
-SQLITE_API int sqlite3_carray_bind(
+SQLITE_API পূর্ণাঙ্ক sqlite3_carray_bind(
   sqlite3_stmt *pStmt,
-  int idx,
-  void *aData,
-  int nData,
-  int mFlags,
-  void (*xDestroy)(void*)
+  পূর্ণাঙ্ক idx,
+  শূন্য *aData,
+  পূর্ণাঙ্ক nData,
+  পূর্ণাঙ্ক mFlags,
+  শূন্য (*xDestroy)(শূন্য*)
 ){
-  return sqlite3_carray_bind_v2(pStmt,idx,aData,nData,mFlags,xDestroy,aData);
+  প্রত্যাগম sqlite3_carray_bind_v2(pStmt,idx,aData,nData,mFlags,xDestroy,aData);
 }
 
 /*
 ** Invoke this routine to register the carray() function.
 */
 Module *sqlite3CarrayRegister(sqlite3 *db){
-  return sqlite3VtabCreateModule(db, "carray", &carrayModule, 0, 0);
+  প্রত্যাগম sqlite3VtabCreateModule(db, "carray", &carrayModule, 0, 0);
 }
 
 #endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY) */

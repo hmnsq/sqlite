@@ -30,11 +30,11 @@
 ** VDBE_DISPLAY_P4 is true or false depending on whether or not the
 ** "explain" P4 display logic is enabled.
 */
-#if !defined(SQLITE_OMIT_EXPLAIN) || !defined(NDEBUG) \
+#যদি !defined(SQLITE_OMIT_EXPLAIN) || !defined(NDEBUG) \
      || defined(VDBE_PROFILE) || defined(SQLITE_DEBUG) \
      || defined(SQLITE_ENABLE_BYTECODE_VTAB)
 # define VDBE_DISPLAY_P4 1
-#else
+#অন্যথা
 # define VDBE_DISPLAY_P4 0
 #endif
 
@@ -43,21 +43,21 @@
 ** executed by a virtual machine.  Each instruction is an instance
 ** of the following structure.
 */
-typedef struct VdbeOp Op;
+প্রকারনির্দেশ সংরচনা VdbeOp Op;
 
 /*
 ** Boolean values
 */
-typedef unsigned Bool;
+প্রকারনির্দেশ unsigned Bool;
 
 /* Opaque type used by code in vdbesort.c */
-typedef struct VdbeSorter VdbeSorter;
+প্রকারনির্দেশ সংরচনা VdbeSorter VdbeSorter;
 
 /* Elements of the linked list at Vdbe.pAuxData */
-typedef struct AuxData AuxData;
+প্রকারনির্দেশ সংরচনা AuxData AuxData;
 
 /* A cache of large TEXT or BLOB values in a VdbeCursor */
-typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
+প্রকারনির্দেশ সংরচনা VdbeTxtBlbCache VdbeTxtBlbCache;
 
 /* Types of VDBE cursors */
 #define CURTYPE_BTREE       0
@@ -75,8 +75,8 @@ typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
 **      * A virtual table
 **      * A one-row "pseudotable" stored in a single register
 */
-typedef struct VdbeCursor VdbeCursor;
-struct VdbeCursor {
+প্রকারনির্দেশ সংরচনা VdbeCursor VdbeCursor;
+সংরচনা VdbeCursor {
   u8 eCurType;            /* One of the CURTYPE_* values above */
   i8 iDb;                 /* Index of cursor database in db->aDb[] */
   u8 nullRow;             /* True if pointing to a row with no data */
@@ -92,18 +92,18 @@ struct VdbeCursor {
   Bool noReuse:1;         /* OpenEphemeral may not reuse this cursor */
   Bool colCache:1;        /* pCache pointer is initialized and non-NULL */
   u16 seekHit;            /* See the OP_SeekHit and OP_IfNoHope opcodes */
-  union {                 /* pBtx for isEphermeral.  pAltMap otherwise */
+  সঙ্ঘ {                 /* pBtx for isEphermeral.  pAltMap otherwise */
     Btree *pBtx;            /* Separate file holding temporary table */
     u32 *aAltMap;           /* Mapping from table to index column numbers */
   } ub;
-  i64 seqCount;           /* Sequence counter */
+  i64 seq_গুনতি;           /* Sequence counter */
 
   /* Cached OP_Column parse information is only valid if cacheStatus matches
   ** Vdbe.cacheCtr.  Vdbe.cacheCtr will never take on the value of
   ** CACHE_STALE (0) and so setting cacheStatus=CACHE_STALE guarantees that
   ** the cache is out of date. */
   u32 cacheStatus;        /* Cache is valid if this matches Vdbe.cacheCtr */
-  int seekResult;         /* Result of previous sqlite3BtreeMoveto() or 0
+  পূর্ণাঙ্ক seekResult;         /* Result of previous sqlite3BtreeMoveto() or 0
                           ** if there have been no prior seeks on the cursor. */
   /* seekResult does not distinguish between "no seeks have ever occurred
   ** on this cursor" and "the most recent seek was an exact match".
@@ -113,19 +113,19 @@ struct VdbeCursor {
   ** The fields that follow are uninitialized, and must be individually
   ** initialized prior to first use. */
   VdbeCursor *pAltCursor; /* Associated index cursor from which to read */
-  union {
+  সঙ্ঘ {
     BtCursor *pCursor;          /* CURTYPE_BTREE or _PSEUDO.  Btree cursor */
     sqlite3_vtab_cursor *pVCur; /* CURTYPE_VTAB.              Vtab cursor */
     VdbeSorter *pSorter;        /* CURTYPE_SORTER.            Sorter object */
   } uc;
-  KeyInfo *pKeyInfo;      /* Info about index keys needed by index cursors */
+  চাবি_Info *p_চাবি_Info;      /* Info about index keys needed by index cursors */
   u32 iHdrOffset;         /* Offset to next unparsed byte of the header */
-  Pgno pgnoRoot;          /* Root page of the open btree cursor */
+  Pgno pgno_মূল;          /* Root page of the open btree cursor */
   i16 nField;             /* Number of fields in the header */
   u16 nHdrParsed;         /* Number of header fields parsed so far */
   i64 movetoTarget;       /* Argument to the deferred sqlite3BtreeMoveto() */
   u32 *aOffset;           /* Pointer to aType[nField] */
-  const u8 *aRow;         /* Data for the current row, if all on one page */
+  ধ্রুব u8 *aRow;         /* Data for the current row, if all on one page */
   u32 payloadSize;        /* Total number of bytes in the record */
   u32 szRow;              /* Byte available in aRow */
 #ifdef SQLITE_ENABLE_COLUMN_USED_MASK
@@ -144,7 +144,7 @@ struct VdbeCursor {
 ** of 8.
 */
 #define SZ_VDBECURSOR(N) \
-    (ROUND8(offsetof(VdbeCursor,aType)) + ((N)+1)*sizeof(u64))
+    (ROUND8(offsetof(VdbeCursor,aType)) + ((N)+1)*পরিমাণ(u64))
 
 /* Return true if P is a null-only cursor
 */
@@ -162,10 +162,10 @@ struct VdbeCursor {
 ** can be stored in a cache defined by this object, and attached to the
 ** VdbeCursor using the pCache field.
 */
-struct VdbeTxtBlbCache {
-  char *pCValue;        /* A RCStr buffer to hold the value */
+সংরচনা VdbeTxtBlbCache {
+  বর্ণ *pCValue;        /* A RCStr buffer to hold the value */
   i64 iOffset;          /* File offset of the row being cached */
-  int iCol;             /* Column for which the cache is valid */
+  পূর্ণাঙ্ক iCol;             /* Column for which the cache is valid */
   u32 cacheStatus;      /* Vdbe.cacheCtr value */
   u32 colCacheCtr;      /* Column cache counter */
 };
@@ -191,26 +191,26 @@ struct VdbeTxtBlbCache {
 ** The currently executing frame is stored in Vdbe.pFrame. Vdbe.pFrame is
 ** set to NULL if the currently executing frame is the main program.
 */
-typedef struct VdbeFrame VdbeFrame;
-struct VdbeFrame {
+প্রকারনির্দেশ সংরচনা VdbeFrame VdbeFrame;
+সংরচনা VdbeFrame {
   Vdbe *v;                /* VM this frame belongs to */
   VdbeFrame *pParent;     /* Parent of this frame, or NULL if parent is main */
   Op *aOp;                /* Program instructions for parent frame */
   Mem *aMem;              /* Array of memory cells for parent frame */
   VdbeCursor **apCsr;     /* Array of Vdbe cursors for parent frame */
   u8 *aOnce;              /* Bitmask used by OP_Once */
-  void *token;            /* Copy of SubProgram.token */
+  শূন্য *token;            /* Copy of SubProgram.token */
   i64 lastRowid;          /* Last insert rowid (sqlite3.lastRowid) */
   AuxData *pAuxData;      /* Linked list of auxdata allocations */
-#if SQLITE_DEBUG
+#যদি SQLITE_DEBUG
   u32 iFrameMagic;        /* magic number for sanity checking */
 #endif
-  int nCursor;            /* Number of entries in apCsr */
-  int pc;                 /* Program Counter in parent (calling) frame */
-  int nOp;                /* Size of aOp array */
-  int nMem;               /* Number of entries in aMem */
-  int nChildMem;          /* Number of memory cells for child frame */
-  int nChildCsr;          /* Number of cursors for child frame */
+  পূর্ণাঙ্ক nCursor;            /* Number of entries in apCsr */
+  পূর্ণাঙ্ক pc;                 /* Program Counter in parent (calling) frame */
+  পূর্ণাঙ্ক nOp;                /* Size of aOp array */
+  পূর্ণাঙ্ক nMem;               /* Number of entries in aMem */
+  পূর্ণাঙ্ক nChildMem;          /* Number of memory cells for child frame */
+  পূর্ণাঙ্ক nChildCsr;          /* Number of cursors for child frame */
   i64 nChange;            /* Statement changes (Vdbe.nChange)     */
   i64 nDbChange;          /* Value of db->nChange */
 };
@@ -222,32 +222,32 @@ struct VdbeFrame {
 ** Return a pointer to the array of registers allocated for use
 ** by a VdbeFrame.
 */
-#define VdbeFrameMem(p) ((Mem *)&((u8 *)p)[ROUND8(sizeof(VdbeFrame))])
+#define VdbeFrameMem(p) ((Mem *)&((u8 *)p)[ROUND8(পরিমাণ(VdbeFrame))])
 
 /*
 ** Internally, the vdbe manipulates nearly all SQL values as Mem
 ** structures. Each Mem struct may cache multiple representations (string,
 ** integer etc.) of the same value.
 */
-struct sqlite3_value {
-  union MemValue {
-    double r;           /* Real value used when MEM_Real is set in flags */
+সংরচনা sqlite3_মান {
+  সঙ্ঘ Mem_মান {
+    দ্বিগুণ r;           /* Real value used when MEM_Real is set in flags */
     i64 i;              /* Integer value used when MEM_Int is set in flags */
-    int nZero;          /* Extra zero bytes when MEM_Zero and MEM_Blob set */
-    const char *zPType; /* Pointer type when MEM_Term|MEM_Subtype|MEM_Null */
+    পূর্ণাঙ্ক nZero;          /* Extra zero bytes when MEM_Zero and MEM_Blob set */
+    ধ্রুব বর্ণ *zPType; /* Pointer type when MEM_Term|MEM_Subtype|MEM_Null */
     FuncDef *pDef;      /* Used only when flags==MEM_Agg */
   } u;
-  char *z;            /* String or BLOB value */
-  int n;              /* Number of characters in string value, excluding '\0' */
+  বর্ণ *z;            /* String or BLOB value */
+  পূর্ণাঙ্ক n;              /* Number of characters in string value, excluding '\0' */
   u16 flags;          /* Some combination of MEM_Null, MEM_Str, MEM_Dyn, etc. */
   u8  enc;            /* SQLITE_UTF8, SQLITE_UTF16BE, SQLITE_UTF16LE */
   u8  eSubtype;       /* Subtype for this value */
   /* ShallowCopy only needs to copy the information above */
   sqlite3 *db;        /* The associated database connection */
-  int szMalloc;       /* Size of the zMalloc allocation */
+  পূর্ণাঙ্ক szMalloc;       /* Size of the zMalloc allocation */
   u32 uTemp;          /* Transient storage for serial_type in OP_MakeRecord */
-  char *zMalloc;      /* Space to hold MEM_Str or MEM_Blob if szMalloc>0 */
-  void (*xDel)(void*);/* Destructor for Mem.z - only valid if MEM_Dyn */
+  বর্ণ *zMalloc;      /* Space to hold MEM_Str or MEM_Blob if szMalloc>0 */
+  শূন্য (*xDel)(শূন্য*);/* Destructor for Mem.z - only valid if MEM_Dyn */
 #ifdef SQLITE_DEBUG
   Mem *pScopyFrom;    /* This Mem is a shallow copy of pScopyFrom */
   u16 mScopyFlags;    /* flags value immediately after the shallow copy */
@@ -371,11 +371,11 @@ struct sqlite3_value {
 ** are stored in a linked list headed at Vdbe.pAuxData. All are destroyed
 ** when the VM is halted (if not before).
 */
-struct AuxData {
-  int iAuxOp;                     /* Instruction number of OP_Function opcode */
-  int iAuxArg;                    /* Index of function argument. */
-  void *pAux;                     /* Aux data pointer */
-  void (*xDeleteAux)(void*);      /* Destructor for the aux data */
+সংরচনা AuxData {
+  পূর্ণাঙ্ক iAuxOp;                     /* Instruction number of OP_Function opcode */
+  পূর্ণাঙ্ক iAuxArg;                    /* Index of function argument. */
+  শূন্য *pAux;                     /* Aux data pointer */
+  শূন্য (*xDeleteAux)(শূন্য*);      /* Destructor for the aux data */
   AuxData *pNextAux;              /* Next element in list */
 };
 
@@ -392,17 +392,17 @@ struct AuxData {
 ** This structure is defined inside of vdbeInt.h because it uses substructures
 ** (Mem) which are only defined there.
 */
-struct sqlite3_context {
+সংরচনা sqlite3_context {
   Mem *pOut;              /* The return value is stored here */
   FuncDef *pFunc;         /* Pointer to function information */
   Mem *pMem;              /* Memory cell used to store aggregate context */
   Vdbe *pVdbe;            /* The VM that owns this context */
-  int iOp;                /* Instruction number of OP_Function */
-  int isError;            /* Error code returned by the function. */
+  পূর্ণাঙ্ক iOp;                /* Instruction number of OP_Function */
+  পূর্ণাঙ্ক isError;            /* Error code returned by the function. */
   u8 enc;                 /* Encoding to use for results */
   u8 skipFlag;            /* Skip accumulator loading if true */
   u16 argc;               /* Number of arguments */
-  sqlite3_value *argv[FLEXARRAY]; /* Argument set */
+  sqlite3_মান *argv[FLEXARRAY]; /* Argument set */
 };
 
 /*
@@ -410,7 +410,7 @@ struct sqlite3_context {
 ** argv[] arguments.
 */
 #define SZ_CONTEXT(N)  \
-   (offsetof(sqlite3_context,argv)+(N)*sizeof(sqlite3_value*))
+   (offsetof(sqlite3_context,argv)+(N)*পরিমাণ(sqlite3_মান*))
 
 
 /* The ScanStatus object holds a single value for the
@@ -424,15 +424,15 @@ struct sqlite3_context {
 **   integer addresses is a start and end address (both inclusive) for a range
 **   instructions. A start value of 0 indicates an empty range.
 */
-typedef struct ScanStatus ScanStatus;
-struct ScanStatus {
-  int addrExplain;                /* OP_Explain for loop */
-  int aAddrRange[6];
-  int addrLoop;                   /* Address of "loops" counter */
-  int addrVisit;                  /* Address of "rows visited" counter */
-  int iSelectID;                  /* The "Select-ID" for this loop */
+প্রকারনির্দেশ সংরচনা ScanStatus ScanStatus;
+সংরচনা ScanStatus {
+  পূর্ণাঙ্ক addrExplain;                /* OP_Explain for loop */
+  পূর্ণাঙ্ক aAddrRange[6];
+  পূর্ণাঙ্ক addrLoop;                   /* Address of "loops" counter */
+  পূর্ণাঙ্ক addrVisit;                  /* Address of "rows visited" counter */
+  পূর্ণাঙ্ক iSelectID;                  /* The "Select-ID" for this loop */
   LogEst nEst;                    /* Estimated output rows per loop */
-  char *zName;                    /* Name of table or index */
+  বর্ণ *zName;                    /* Name of table or index */
 };
 
 /* The DblquoteStr object holds the text of a double-quoted
@@ -442,10 +442,10 @@ struct ScanStatus {
 ** list is consulted for each double-quoted identifier to see if the
 ** identifier should really be a string literal.
 */
-typedef struct DblquoteStr DblquoteStr;
-struct DblquoteStr {
+প্রকারনির্দেশ সংরচনা DblquoteStr DblquoteStr;
+সংরচনা DblquoteStr {
   DblquoteStr *pNextStr;   /* Next string literal in the list */
-  char z[8];               /* Dequoted value for the string */
+  বর্ণ z[8];               /* Dequoted value for the string */
 };
 
 /*
@@ -455,18 +455,18 @@ struct DblquoteStr {
 ** The "sqlite3_stmt" structure pointer that is returned by sqlite3_prepare()
 ** is really a pointer to an instance of this structure.
 */
-struct Vdbe {
+সংরচনা Vdbe {
   sqlite3 *db;            /* The database connection that owns this statement */
   Vdbe **ppVPrev,*pVNext; /* Linked list of VDBEs with the same Vdbe.db */
   Parse *pParse;          /* Parsing context used to create this Vdbe */
   ynVar nVar;             /* Number of entries in aVar[] */
-  int nMem;               /* Number of memory locations currently allocated */
-  int nCursor;            /* Number of slots in apCsr[] */
+  পূর্ণাঙ্ক nMem;               /* Number of memory locations currently allocated */
+  পূর্ণাঙ্ক nCursor;            /* Number of slots in apCsr[] */
   u32 cacheCtr;           /* VdbeCursor row cache generation counter */
-  int pc;                 /* The program counter */
-  int rc;                 /* Value to return */
+  পূর্ণাঙ্ক pc;                 /* The program counter */
+  পূর্ণাঙ্ক rc;                 /* Value to return */
   i64 nChange;            /* Number of db changes made since last reset */
-  int iStatement;         /* Statement number (or 0 if has no opened stmt) */
+  পূর্ণাঙ্ক iStatement;         /* Statement number (or 0 if has no opened stmt) */
   i64 iCurrentTime;       /* Value of julianday('now') for this statement */
   i64 nFkConstraint;      /* Number of imm. FK constraints this VM */
   i64 nStmtDefCons;       /* Number of def. constraints when stmt started */
@@ -480,19 +480,19 @@ struct Vdbe {
   ** initialized to zero or NULL */
 
   Op *aOp;                /* Space to hold the virtual machine's program */
-  int nOp;                /* Number of instructions in the program */
-  int nOpAlloc;           /* Slots allocated for aOp[] */
+  পূর্ণাঙ্ক nOp;                /* Number of instructions in the program */
+  পূর্ণাঙ্ক nOpAlloc;           /* Slots allocated for aOp[] */
   Mem *aColName;          /* Column names to return */
   Mem *pResultRow;        /* Current output row */
-  char *zErrMsg;          /* Error message written here */
+  বর্ণ *z_Err_বার্তা;          /* Error message written here */
   VList *pVList;          /* Name of variables */
 #ifndef SQLITE_OMIT_TRACE
   i64 startTime;          /* Time when query started - used for profiling */
 #endif
 #ifdef SQLITE_DEBUG
-  int rcApp;              /* errcode set by sqlite3_result_error_code() */
+  পূর্ণাঙ্ক rcApp;              /* errcode set by sqlite3_result_error_code() */
   u32 nWrite;             /* Number of write operations that have occurred */
-  int napArg;             /* Size of the apArg[] array */
+  পূর্ণাঙ্ক napArg;             /* Size of the apArg[] array */
 #endif
   u16 nResColumn;         /* Number of columns in one row of the result set */
   u16 nResAlloc;          /* Column slots allocated to aColName[] */
@@ -510,22 +510,22 @@ struct Vdbe {
   yDbMask btreeMask;      /* Bitmask of db->aDb[] entries referenced */
   yDbMask lockMask;       /* Subset of btreeMask that requires a lock */
   u32 aCounter[9];        /* Counters used by sqlite3_stmt_status() */
-  char *zSql;             /* Text of the SQL statement that generated this */
+  বর্ণ *zSql;             /* Text of the SQL statement that generated this */
 #ifdef SQLITE_ENABLE_NORMALIZE
-  char *zNormSql;         /* Normalization of the associated SQL statement */
+  বর্ণ *zNormSql;         /* Normalization of the associated SQL statement */
   DblquoteStr *pDblStr;   /* List of double-quoted string literals */
 #endif
-  void *pFree;            /* Free this when deleting the vdbe */
+  শূন্য *pFree;            /* Free this when deleting the vdbe */
   VdbeFrame *pFrame;      /* Parent frame */
   VdbeFrame *pDelFrame;   /* List of frame objects to free on VM reset */
-  int nFrame;             /* Number of frames in pFrame list */
+  পূর্ণাঙ্ক nFrame;             /* Number of frames in pFrame list */
   u32 expmask;            /* Binding to these vars might invalidate VM */
   u32 smimask;            /* Only invalid if changing to/from small integer */
                           /* Note: smimask is always a subset of expmask */
   SubProgram *pProgram;   /* Linked list of all sub-programs used by VM */
   AuxData *pAuxData;      /* Linked list of auxdata allocations */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int nScan;              /* Entries in aScan[] */
+  পূর্ণাঙ্ক nScan;              /* Entries in aScan[] */
   ScanStatus *aScan;      /* Scan definitions for sqlite3_stmt_scanstatus() */
 #endif
 };
@@ -542,26 +542,26 @@ struct Vdbe {
 ** Structure used to store the context required by the
 ** sqlite3_preupdate_*() API functions.
 */
-struct PreUpdate {
+সংরচনা PreUpdate {
   Vdbe *v;
   VdbeCursor *pCsr;               /* Cursor to read old values from */
-  int op;                         /* One of SQLITE_INSERT, UPDATE, DELETE */
+  পূর্ণাঙ্ক op;                         /* One of SQLITE_INSERT, UPDATE, DELETE */
   u8 *aRecord;                    /* old.* database record */
-  KeyInfo *pKeyinfo;              /* Key information */
+  চাবি_Info *pKeyinfo;              /* Key information */
   UnpackedRecord *pUnpacked;      /* Unpacked version of aRecord[] */
   UnpackedRecord *pNewUnpacked;   /* Unpacked version of new.* record */
-  int iNewReg;                    /* Register for new.* values */
-  int iBlobWrite;                 /* Value returned by preupdate_blobwrite() */
+  পূর্ণাঙ্ক iNewReg;                    /* Register for new.* values */
+  পূর্ণাঙ্ক iBlobWrite;                 /* Value returned by preupdate_blobwrite() */
   i64 iKey1;                      /* First key value passed to hook */
   i64 iKey2;                      /* Second key value passed to hook */
   Mem oldipk;                     /* Memory cell holding "old" IPK value */
   Mem *aNew;                      /* Array of new.* values */
   Table *pTab;                    /* Schema object being updated */
   Index *pPk;                     /* PK index if pTab is WITHOUT ROWID */
-  sqlite3_value **apDflt;         /* Array of default values, if required */
-  struct {
+  sqlite3_মান **apDflt;         /* Array of default values, if required */
+  সংরচনা {
     u8 keyinfoSpace[SZ_KEYINFO_0];  /* Space to hold pKeyinfo[0] content */
-  } uKey;
+  } u_চাবি;
 };
 
 /*
@@ -576,17 +576,17 @@ struct PreUpdate {
 ** know how to use this object to step through all the values in the
 ** right operand of the IN constraint.
 */
-typedef struct ValueList ValueList;
-struct ValueList {
+প্রকারনির্দেশ সংরচনা মান_List মান_List;
+সংরচনা মান_List {
   BtCursor *pCsr;          /* An ephemeral table holding all values */
-  sqlite3_value *pOut;     /* Register to hold each decoded output value */
+  sqlite3_মান *pOut;     /* Register to hold each decoded output value */
 };
 
 /* Size of content associated with serial types that fit into a
 ** single-byte varint.
 */
 #ifndef SQLITE_AMALGAMATION
-extern const u8 sqlite3SmallTypeSizes[];
+বাহ্য ধ্রুব u8 sqlite3SmallTypeSizes[];
 #endif
 
 /* Input "x" is a sequence of unsigned characters that represent a
@@ -597,168 +597,168 @@ extern const u8 sqlite3SmallTypeSizes[];
 #define THREE_BYTE_INT(x)  (65536*(i8)((x)[0])|((x)[1]<<8)|(x)[2])
 #define FOUR_BYTE_UINT(x)  (((u32)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
 #define FOUR_BYTE_U64(x)   (((u64)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
-#define FOUR_BYTE_INT(x)   ((int)FOUR_BYTE_UINT(x))
+#define FOUR_BYTE_INT(x)   ((পূর্ণাঙ্ক)FOUR_BYTE_UINT(x))
 #define SIX_BYTE_INT(x)    (FOUR_BYTE_UINT(x+2)+4294967296LL*TWO_BYTE_INT(x))
 
 /*
 ** Function prototypes
 */
-void sqlite3VdbeError(Vdbe*, const char *, ...);
-void sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor*);
-void sqlite3VdbeFreeCursorNN(Vdbe*,VdbeCursor*);
-void sqliteVdbePopStack(Vdbe*,int);
-int SQLITE_NOINLINE sqlite3VdbeHandleMovedCursor(VdbeCursor *p);
-int SQLITE_NOINLINE sqlite3VdbeFinishMoveto(VdbeCursor*);
-int sqlite3VdbeCursorRestore(VdbeCursor*);
+শূন্য sqlite3VdbeError(Vdbe*, ধ্রুব বর্ণ *, ...);
+শূন্য sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor*);
+শূন্য sqlite3VdbeFreeCursorNN(Vdbe*,VdbeCursor*);
+শূন্য sqlite_Vdbe_বের_করো_স্তূপ(Vdbe*,পূর্ণাঙ্ক);
+পূর্ণাঙ্ক SQLITE_NOINLINE sqlite3VdbeHandleMovedCursor(VdbeCursor *p);
+পূর্ণাঙ্ক SQLITE_NOINLINE sqlite3VdbeFinishMoveto(VdbeCursor*);
+পূর্ণাঙ্ক sqlite3VdbeCursorRestore(VdbeCursor*);
 u32 sqlite3VdbeSerialTypeLen(u32);
 u8 sqlite3VdbeOneByteSerialTypeLen(u8);
 #ifdef SQLITE_MIXED_ENDIAN_64BIT_FLOAT
   u64 sqlite3FloatSwap(u64 in);
 # define swapMixedEndianFloat(X)  X = sqlite3FloatSwap(X)
-#else
+#অন্যথা
 # define swapMixedEndianFloat(X)
 #endif
-void sqlite3VdbeSerialGet(const unsigned char*, u32, Mem*);
-void sqlite3VdbeDeleteAuxData(sqlite3*, AuxData**, int, int);
+শূন্য sqlite3VdbeSerialGet(ধ্রুব unsigned বর্ণ*, u32, Mem*);
+শূন্য sqlite3VdbeDeleteAuxData(sqlite3*, AuxData**, পূর্ণাঙ্ক, পূর্ণাঙ্ক);
 
-int sqlite2BtreeKeyCompare(BtCursor *, const void *, int, int, int *);
-int sqlite3VdbeIdxKeyCompare(sqlite3*,VdbeCursor*,UnpackedRecord*,int*);
-int sqlite3VdbeIdxRowid(sqlite3*, BtCursor*, i64*);
-int sqlite3VdbeExec(Vdbe*);
-#if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
-int sqlite3VdbeNextOpcode(Vdbe*,Mem*,int,int*,int*,Op**);
-char *sqlite3VdbeDisplayP4(sqlite3*,Op*);
+পূর্ণাঙ্ক sqlite2_Btree_চাবি_Compare(BtCursor *, ধ্রুব শূন্য *, পূর্ণাঙ্ক, পূর্ণাঙ্ক, পূর্ণাঙ্ক *);
+পূর্ণাঙ্ক sqlite3_Vdbe_Idx_চাবি_Compare(sqlite3*,VdbeCursor*,UnpackedRecord*,পূর্ণাঙ্ক*);
+পূর্ণাঙ্ক sqlite3VdbeIdxRowid(sqlite3*, BtCursor*, i64*);
+পূর্ণাঙ্ক sqlite3VdbeExec(Vdbe*);
+#যদি !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
+পূর্ণাঙ্ক sqlite3VdbeNextOpcode(Vdbe*,Mem*,পূর্ণাঙ্ক,পূর্ণাঙ্ক*,পূর্ণাঙ্ক*,Op**);
+বর্ণ *sqlite3VdbeDisplayP4(sqlite3*,Op*);
 #endif
-#if defined(SQLITE_ENABLE_EXPLAIN_COMMENTS)
-char *sqlite3VdbeDisplayComment(sqlite3*,const Op*,const char*);
+#যদি defined(SQLITE_ENABLE_EXPLAIN_COMMENTS)
+বর্ণ *sqlite3VdbeDisplayComment(sqlite3*,ধ্রুব Op*,ধ্রুব বর্ণ*);
 #endif
-#if !defined(SQLITE_OMIT_EXPLAIN)
-int sqlite3VdbeList(Vdbe*);
+#যদি !defined(SQLITE_OMIT_EXPLAIN)
+পূর্ণাঙ্ক sqlite3VdbeList(Vdbe*);
 #endif
-int sqlite3VdbeHalt(Vdbe*);
-int sqlite3VdbeChangeEncoding(Mem *, int);
-int sqlite3VdbeMemTooBig(Mem*);
-int sqlite3VdbeMemCopy(Mem*, const Mem*);
-void sqlite3VdbeMemShallowCopy(Mem*, const Mem*, int);
-void sqlite3VdbeMemMove(Mem*, Mem*);
-int sqlite3VdbeMemNulTerminate(Mem*);
-int sqlite3VdbeMemSetStr(Mem*, const char*, i64, u8, void(*)(void*));
-int sqlite3VdbeMemSetText(Mem*, const char*, i64, void(*)(void*));
-void sqlite3VdbeMemSetInt64(Mem*, i64);
+পূর্ণাঙ্ক sqlite3VdbeHalt(Vdbe*);
+পূর্ণাঙ্ক sqlite3VdbeChangeEncoding(Mem *, পূর্ণাঙ্ক);
+পূর্ণাঙ্ক sqlite3VdbeMemTooBig(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemCopy(Mem*, ধ্রুব Mem*);
+শূন্য sqlite3VdbeMemShallowCopy(Mem*, ধ্রুব Mem*, পূর্ণাঙ্ক);
+শূন্য sqlite3VdbeMemMove(Mem*, Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemNulTerminate(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemSetStr(Mem*, ধ্রুব বর্ণ*, i64, u8, শূন্য(*)(শূন্য*));
+পূর্ণাঙ্ক sqlite3VdbeMemSetText(Mem*, ধ্রুব বর্ণ*, i64, শূন্য(*)(শূন্য*));
+শূন্য sqlite3VdbeMemSetInt64(Mem*, i64);
 #ifdef SQLITE_OMIT_FLOATING_POINT
 # define sqlite3VdbeMemSetDouble sqlite3VdbeMemSetInt64
-#else
-  void sqlite3VdbeMemSetDouble(Mem*, double);
+#অন্যথা
+  শূন্য sqlite3VdbeMemSetDouble(Mem*, দ্বিগুণ);
 #endif
-void sqlite3VdbeMemSetPointer(Mem*, void*, const char*, void(*)(void*));
-void sqlite3VdbeMemInit(Mem*,sqlite3*,u16);
-void sqlite3VdbeMemSetNull(Mem*);
+শূন্য sqlite3VdbeMemSetPointer(Mem*, শূন্য*, ধ্রুব বর্ণ*, শূন্য(*)(শূন্য*));
+শূন্য sqlite3VdbeMemInit(Mem*,sqlite3*,u16);
+শূন্য sqlite3VdbeMemSetNull(Mem*);
 #ifndef SQLITE_OMIT_INCRBLOB
-void sqlite3VdbeMemSetZeroBlob(Mem*,int);
-#else
-int sqlite3VdbeMemSetZeroBlob(Mem*,int);
+শূন্য sqlite3VdbeMemSetZeroBlob(Mem*,পূর্ণাঙ্ক);
+#অন্যথা
+পূর্ণাঙ্ক sqlite3VdbeMemSetZeroBlob(Mem*,পূর্ণাঙ্ক);
 #endif
 #ifdef SQLITE_DEBUG
-int sqlite3VdbeMemIsRowSet(const Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemIsRowSet(ধ্রুব Mem*);
 #endif
-int sqlite3VdbeMemSetRowSet(Mem*);
-int sqlite3VdbeMemZeroTerminateIfAble(Mem*);
-int sqlite3VdbeMemMakeWriteable(Mem*);
-int sqlite3VdbeMemStringify(Mem*, u8, u8);
-int sqlite3IntFloatCompare(i64,double);
-i64 sqlite3VdbeIntValue(const Mem*);
-int sqlite3VdbeMemIntegerify(Mem*);
-double sqlite3VdbeRealValue(Mem*);
-int sqlite3MemRealValueRC(Mem*, double*);
-int sqlite3VdbeBooleanValue(Mem*, int ifNull);
-void sqlite3VdbeIntegerAffinity(Mem*,int bFromText);
-int sqlite3VdbeMemRealify(Mem*);
-int sqlite3VdbeMemNumerify(Mem*);
-int sqlite3VdbeMemCast(Mem*,u8,u8);
-int sqlite3VdbeMemFromBtree(BtCursor*,u32,u32,Mem*);
-int sqlite3VdbeMemFromBtreeZeroOffset(BtCursor*,u32,Mem*);
-void sqlite3VdbeMemRelease(Mem *p);
-void sqlite3VdbeMemReleaseMalloc(Mem*p);
-int sqlite3VdbeMemFinalize(Mem*, FuncDef*);
+পূর্ণাঙ্ক sqlite3VdbeMemSetRowSet(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemZeroTerminateIfAble(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemMakeWriteable(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemStringify(Mem*, u8, u8);
+পূর্ণাঙ্ক sqlite3IntFloatCompare(i64,দ্বিগুণ);
+i64 sqlite3_Vdbe_Int_মান(ধ্রুব Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemIntegerify(Mem*);
+দ্বিগুণ sqlite3_Vdbe_Real_মান(Mem*);
+পূর্ণাঙ্ক sqlite3_Mem_Real_মান_RC(Mem*, দ্বিগুণ*);
+পূর্ণাঙ্ক sqlite3_Vdbe_Boolean_মান(Mem*, পূর্ণাঙ্ক ifNull);
+শূন্য sqlite3VdbeIntegerAffinity(Mem*,পূর্ণাঙ্ক bFromText);
+পূর্ণাঙ্ক sqlite3VdbeMemRealify(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemNumerify(Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemCast(Mem*,u8,u8);
+পূর্ণাঙ্ক sqlite3VdbeMemFromBtree(BtCursor*,u32,u32,Mem*);
+পূর্ণাঙ্ক sqlite3VdbeMemFromBtreeZeroOffset(BtCursor*,u32,Mem*);
+শূন্য sqlite3VdbeMemRelease(Mem *p);
+শূন্য sqlite3VdbeMemReleaseMalloc(Mem*p);
+পূর্ণাঙ্ক sqlite3VdbeMemFinalize(Mem*, FuncDef*);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-int sqlite3VdbeMemAggValue(Mem*, Mem*, FuncDef*);
+পূর্ণাঙ্ক sqlite3_Vdbe_Mem_Agg_মান(Mem*, Mem*, FuncDef*);
 #endif
-#if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
-const char *sqlite3OpcodeName(int);
+#যদি !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
+ধ্রুব বর্ণ *sqlite3OpcodeName(পূর্ণাঙ্ক);
 #endif
-int sqlite3VdbeMemGrow(Mem *pMem, int n, int preserve);
-int sqlite3VdbeMemClearAndResize(Mem *pMem, int n);
-int sqlite3VdbeCloseStatement(Vdbe *, int);
+পূর্ণাঙ্ক sqlite3VdbeMemGrow(Mem *pMem, পূর্ণাঙ্ক n, পূর্ণাঙ্ক preserve);
+পূর্ণাঙ্ক sqlite3VdbeMemClearAndResize(Mem *pMem, পূর্ণাঙ্ক n);
+পূর্ণাঙ্ক sqlite3VdbeCloseStatement(Vdbe *, পূর্ণাঙ্ক);
 #ifdef SQLITE_DEBUG
-int sqlite3VdbeFrameIsValid(VdbeFrame*);
+পূর্ণাঙ্ক sqlite3VdbeFrameIsValid(VdbeFrame*);
 #endif
-void sqlite3VdbeFrameMemDel(void*);      /* Destructor on Mem */
-void sqlite3VdbeFrameDelete(VdbeFrame*); /* Actually deletes the Frame */
-int sqlite3VdbeFrameRestore(VdbeFrame *);
+শূন্য sqlite3VdbeFrameMemDel(শূন্য*);      /* Destructor on Mem */
+শূন্য sqlite3VdbeFrameDelete(VdbeFrame*); /* Actually deletes the Frame */
+পূর্ণাঙ্ক sqlite3VdbeFrameRestore(VdbeFrame *);
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-void sqlite3VdbePreUpdateHook(
-    Vdbe*,VdbeCursor*,int,const char*,Table*,i64,int,int);
+শূন্য sqlite3VdbePreUpdateHook(
+    Vdbe*,VdbeCursor*,পূর্ণাঙ্ক,ধ্রুব বর্ণ*,Table*,i64,পূর্ণাঙ্ক,পূর্ণাঙ্ক);
 #endif
-int sqlite3VdbeTransferError(Vdbe *p);
-int sqlite3VdbeFindIndexKey(BtCursor*, Index*, UnpackedRecord*, int*, int);
+পূর্ণাঙ্ক sqlite3VdbeTransferError(Vdbe *p);
+পূর্ণাঙ্ক sqlite3_Vdbe_Find_Index_চাবি(BtCursor*, Index*, UnpackedRecord*, পূর্ণাঙ্ক*, পূর্ণাঙ্ক);
 
-int sqlite3VdbeSorterInit(sqlite3 *, int, VdbeCursor *);
-void sqlite3VdbeSorterReset(sqlite3 *, VdbeSorter *);
-void sqlite3VdbeSorterClose(sqlite3 *, VdbeCursor *);
-int sqlite3VdbeSorterRowkey(const VdbeCursor *, Mem *);
-int sqlite3VdbeSorterNext(sqlite3 *, const VdbeCursor *);
-int sqlite3VdbeSorterRewind(const VdbeCursor *, int *);
-int sqlite3VdbeSorterWrite(const VdbeCursor *, Mem *);
-int sqlite3VdbeSorterCompare(const VdbeCursor *, Mem *, int, int *);
+পূর্ণাঙ্ক sqlite3VdbeSorterInit(sqlite3 *, পূর্ণাঙ্ক, VdbeCursor *);
+শূন্য sqlite3VdbeSorterReset(sqlite3 *, VdbeSorter *);
+শূন্য sqlite3VdbeSorterClose(sqlite3 *, VdbeCursor *);
+পূর্ণাঙ্ক sqlite3VdbeSorterRowkey(ধ্রুব VdbeCursor *, Mem *);
+পূর্ণাঙ্ক sqlite3VdbeSorterNext(sqlite3 *, ধ্রুব VdbeCursor *);
+পূর্ণাঙ্ক sqlite3VdbeSorterRewind(ধ্রুব VdbeCursor *, পূর্ণাঙ্ক *);
+পূর্ণাঙ্ক sqlite3VdbeSorterWrite(ধ্রুব VdbeCursor *, Mem *);
+পূর্ণাঙ্ক sqlite3VdbeSorterCompare(ধ্রুব VdbeCursor *, Mem *, পূর্ণাঙ্ক, পূর্ণাঙ্ক *);
 
-void sqlite3VdbeValueListFree(void*);
+শূন্য sqlite3_Vdbe_মান_List_Free(শূন্য*);
 
 #ifdef SQLITE_DEBUG
-  void sqlite3VdbeIncrWriteCounter(Vdbe*, VdbeCursor*);
-  void sqlite3VdbeAssertAbortable(Vdbe*);
-#else
+  শূন্য sqlite3VdbeIncrWriteCounter(Vdbe*, VdbeCursor*);
+  শূন্য sqlite3VdbeAssertAbortable(Vdbe*);
+#অন্যথা
 # define sqlite3VdbeIncrWriteCounter(V,C)
 # define sqlite3VdbeAssertAbortable(V)
 #endif
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE)
-  void sqlite3VdbeEnter(Vdbe*);
-#else
+#যদি !defined(SQLITE_OMIT_SHARED_CACHE)
+  শূন্য sqlite3VdbeEnter(Vdbe*);
+#অন্যথা
 # define sqlite3VdbeEnter(X)
 #endif
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE>0
-  void sqlite3VdbeLeave(Vdbe*);
-#else
+#যদি !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE>0
+  শূন্য sqlite3VdbeLeave(Vdbe*);
+#অন্যথা
 # define sqlite3VdbeLeave(X)
 #endif
 
 #ifdef SQLITE_DEBUG
-void sqlite3VdbeMemAboutToChange(Vdbe*,Mem*);
-int sqlite3VdbeCheckMemInvariants(Mem*);
+শূন্য sqlite3VdbeMemAboutToChange(Vdbe*,Mem*);
+পূর্ণাঙ্ক sqlite3VdbeCheckMemInvariants(Mem*);
 #endif
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-int sqlite3VdbeCheckFkImmediate(Vdbe*);
-int sqlite3VdbeCheckFkDeferred(Vdbe*);
-#else
+#ifndef SQLITE_OMIT_FOREIGN_চাবি
+পূর্ণাঙ্ক sqlite3VdbeCheckFkImmediate(Vdbe*);
+পূর্ণাঙ্ক sqlite3VdbeCheckFkDeferred(Vdbe*);
+#অন্যথা
 # define sqlite3VdbeCheckFkImmediate(p) 0
 # define sqlite3VdbeCheckFkDeferred(p) 0
 #endif
 
 #ifdef SQLITE_DEBUG
-  void sqlite3VdbePrintSql(Vdbe*);
-  void sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr);
+  শূন্য sqlite3VdbePrintSql(Vdbe*);
+  শূন্য sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr);
 #endif
 #ifndef SQLITE_OMIT_UTF16
-  int sqlite3VdbeMemTranslate(Mem*, u8);
-  int sqlite3VdbeMemHandleBom(Mem *pMem);
+  পূর্ণাঙ্ক sqlite3VdbeMemTranslate(Mem*, u8);
+  পূর্ণাঙ্ক sqlite3VdbeMemHandleBom(Mem *pMem);
 #endif
 
 #ifndef SQLITE_OMIT_INCRBLOB
-  int sqlite3VdbeMemExpandBlob(Mem *);
+  পূর্ণাঙ্ক sqlite3VdbeMemExpandBlob(Mem *);
   #define ExpandBlob(P) (((P)->flags&MEM_Zero)?sqlite3VdbeMemExpandBlob(P):0)
-#else
+#অন্যথা
   #define sqlite3VdbeMemExpandBlob(x) SQLITE_OK
   #define ExpandBlob(P) SQLITE_OK
 #endif
