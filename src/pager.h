@@ -30,17 +30,17 @@
 ** The type used to represent a page number.  The first page in a file
 ** is called page 1.  0 is used to represent "not a page".
 */
-typedef u32 Pgno;
+प्रकारनिर्देश u32 Pgno;
 
 /*
 ** Each open file is managed by a separate instance of the "Pager" structure.
 */
-typedef struct Pager Pager;
+प्रकारनिर्देश संरचना Pager Pager;
 
 /*
 ** Handle type for pages.
 */
-typedef struct PgHdr DbPage;
+प्रकारनिर्देश संरचना PgHdr DbPage;
 
 /*
 ** Page number PAGER_SJ_PGNO is never used in an SQLite database (it is
@@ -130,138 +130,138 @@ typedef struct PgHdr DbPage;
 */
 
 /* Open and close a Pager connection. */ 
-int sqlite3PagerOpen(
+पूर्णाङ्क sqlite3PagerOpen(
   sqlite3_vfs*,
   Pager **ppPager,
-  const char*,
-  int,
-  int,
-  int,
-  void(*)(DbPage*)
+  ध्रुव वर्ण*,
+  पूर्णाङ्क,
+  पूर्णाङ्क,
+  पूर्णाङ्क,
+  शून्य(*)(DbPage*)
 );
-int sqlite3PagerClose(Pager *pPager, sqlite3*);
-int sqlite3PagerReadFileheader(Pager*, int, unsigned char*);
+पूर्णाङ्क sqlite3PagerClose(Pager *pPager, sqlite3*);
+पूर्णाङ्क sqlite3PagerReadFileheader(Pager*, पूर्णाङ्क, unsigned वर्ण*);
 
 /* Functions used to configure a Pager object. */
-void sqlite3PagerSetBusyHandler(Pager*, int(*)(void *), void *);
-int sqlite3PagerSetPagesize(Pager*, u32*, int);
-Pgno sqlite3PagerMaxPageCount(Pager*, Pgno);
-void sqlite3PagerSetCachesize(Pager*, int);
-int sqlite3PagerSetSpillsize(Pager*, int);
-void sqlite3PagerSetMmapLimit(Pager *, sqlite3_int64);
-void sqlite3PagerShrink(Pager*);
-void sqlite3PagerSetFlags(Pager*,unsigned);
-int sqlite3PagerLockingMode(Pager *, int);
-int sqlite3PagerSetJournalMode(Pager *, int);
-int sqlite3PagerGetJournalMode(Pager*);
-int sqlite3PagerOkToChangeJournalMode(Pager*);
+शून्य sqlite3PagerSetBusyHandler(Pager*, पूर्णाङ्क(*)(शून्य *), शून्य *);
+पूर्णाङ्क sqlite3PagerSetPagesize(Pager*, u32*, पूर्णाङ्क);
+Pgno sqlite3_Pager_Max_Page_मोजणी(Pager*, Pgno);
+शून्य sqlite3PagerSetCachesize(Pager*, पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerSetSpillsize(Pager*, पूर्णाङ्क);
+शून्य sqlite3PagerSetMmapLimit(Pager *, sqlite3_int64);
+शून्य sqlite3PagerShrink(Pager*);
+शून्य sqlite3PagerSetFlags(Pager*,unsigned);
+पूर्णाङ्क sqlite3PagerLockingMode(Pager *, पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerSetJournalMode(Pager *, पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerGetJournalMode(Pager*);
+पूर्णाङ्क sqlite3PagerOkToChangeJournalMode(Pager*);
 i64 sqlite3PagerJournalSizeLimit(Pager *, i64);
 sqlite3_backup **sqlite3PagerBackupPtr(Pager*);
-int sqlite3PagerFlush(Pager*);
+पूर्णाङ्क sqlite3PagerFlush(Pager*);
 
 /* Functions used to obtain and release page references. */ 
-int sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, int clrFlag);
+पूर्णाङ्क sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, पूर्णाङ्क clrFlag);
 DbPage *sqlite3PagerLookup(Pager *pPager, Pgno pgno);
-void sqlite3PagerRef(DbPage*);
-void sqlite3PagerUnref(DbPage*);
-void sqlite3PagerUnrefNotNull(DbPage*);
-void sqlite3PagerUnrefPageOne(DbPage*);
+शून्य sqlite3PagerRef(DbPage*);
+शून्य sqlite3PagerUnref(DbPage*);
+शून्य sqlite3PagerUnrefNotNull(DbPage*);
+शून्य sqlite3PagerUnrefPageOne(DbPage*);
 
 /* Operations on page references. */
-int sqlite3PagerWrite(DbPage*);
-void sqlite3PagerDontWrite(DbPage*);
-int sqlite3PagerMovepage(Pager*,DbPage*,Pgno,int);
-int sqlite3PagerPageRefcount(DbPage*);
-void *sqlite3PagerGetData(DbPage *); 
-void *sqlite3PagerGetExtra(DbPage *); 
+पूर्णाङ्क sqlite3PagerWrite(DbPage*);
+शून्य sqlite3PagerDontWrite(DbPage*);
+पूर्णाङ्क sqlite3PagerMovepage(Pager*,DbPage*,Pgno,पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerPageRefcount(DbPage*);
+शून्य *sqlite3PagerGetData(DbPage *); 
+शून्य *sqlite3PagerGetExtra(DbPage *); 
 
 /* Functions used to manage pager transactions and savepoints. */
-void sqlite3PagerPagecount(Pager*, int*);
-int sqlite3PagerBegin(Pager*, int exFlag, int);
-int sqlite3PagerCommitPhaseOne(Pager*,const char *zSuper, int);
-int sqlite3PagerExclusiveLock(Pager*);
-int sqlite3PagerSync(Pager *pPager, const char *zSuper);
-int sqlite3PagerCommitPhaseTwo(Pager*);
-int sqlite3PagerRollback(Pager*);
-int sqlite3PagerOpenSavepoint(Pager *pPager, int n);
-int sqlite3PagerSavepoint(Pager *pPager, int op, int iSavepoint);
-int sqlite3PagerSharedLock(Pager *pPager);
+शून्य sqlite3PagerPagecount(Pager*, पूर्णाङ्क*);
+पूर्णाङ्क sqlite3PagerBegin(Pager*, पूर्णाङ्क exFlag, पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerCommitPhaseOne(Pager*,ध्रुव वर्ण *zSuper, पूर्णाङ्क);
+पूर्णाङ्क sqlite3PagerExclusiveLock(Pager*);
+पूर्णाङ्क sqlite3PagerSync(Pager *pPager, ध्रुव वर्ण *zSuper);
+पूर्णाङ्क sqlite3PagerCommitPhaseTwo(Pager*);
+पूर्णाङ्क sqlite3PagerRollback(Pager*);
+पूर्णाङ्क sqlite3PagerOpenSavepoint(Pager *pPager, पूर्णाङ्क n);
+पूर्णाङ्क sqlite3PagerSavepoint(Pager *pPager, पूर्णाङ्क op, पूर्णाङ्क iSavepoint);
+पूर्णाङ्क sqlite3PagerSharedLock(Pager *pPager);
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, int, int*, int*);
-  int sqlite3PagerWalSupported(Pager *pPager);
-  int sqlite3PagerWalCallback(Pager *pPager);
-  int sqlite3PagerOpenWal(Pager *pPager, int *pisOpen);
-  int sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
+  पूर्णाङ्क sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, पूर्णाङ्क, पूर्णाङ्क*, पूर्णाङ्क*);
+  पूर्णाङ्क sqlite3PagerWalSupported(Pager *pPager);
+  पूर्णाङ्क sqlite3PagerWalCallback(Pager *pPager);
+  पूर्णाङ्क sqlite3PagerOpenWal(Pager *pPager, पूर्णाङ्क *pisOpen);
+  पूर्णाङ्क sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
 # ifdef SQLITE_ENABLE_SNAPSHOT
-  int sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
-  int sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
-  int sqlite3PagerSnapshotRecover(Pager *pPager);
-  int sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
-  void sqlite3PagerSnapshotUnlock(Pager *pPager);
+  पूर्णाङ्क sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
+  पूर्णाङ्क sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
+  पूर्णाङ्क sqlite3PagerSnapshotRecover(Pager *pPager);
+  पूर्णाङ्क sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
+  शून्य sqlite3PagerSnapshotUnlock(Pager *pPager);
 # endif
 #endif
 
-#if !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
-  int sqlite3PagerWalWriteLock(Pager*, int);
-  void sqlite3PagerWalDb(Pager*, sqlite3*);
-#else
+#यदि !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+  पूर्णाङ्क sqlite3PagerWalWriteLock(Pager*, पूर्णाङ्क);
+  शून्य sqlite3PagerWalDb(Pager*, sqlite3*);
+#अन्यथा
 # define sqlite3PagerWalWriteLock(y,z) SQLITE_OK
 # define sqlite3PagerWalDb(x,y)
 #endif
 
 #ifdef SQLITE_DIRECT_OVERFLOW_READ
-  int sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
+  पूर्णाङ्क sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
 #endif
 
 #ifdef SQLITE_ENABLE_ZIPVFS
-  int sqlite3PagerWalFramesize(Pager *pPager);
+  पूर्णाङ्क sqlite3PagerWalFramesize(Pager *pPager);
 #endif
 
 /* Functions used to query pager state and configuration. */
 u8 sqlite3PagerIsreadonly(Pager*);
 u32 sqlite3PagerDataVersion(Pager*);
 #ifdef SQLITE_DEBUG
-  int sqlite3PagerRefcount(Pager*);
+  पूर्णाङ्क sqlite3PagerRefcount(Pager*);
 #endif
-int sqlite3PagerMemUsed(Pager*);
-const char *sqlite3PagerFilename(const Pager*, int);
+पूर्णाङ्क sqlite3PagerMemUsed(Pager*);
+ध्रुव वर्ण *sqlite3PagerFilename(ध्रुव Pager*, पूर्णाङ्क);
 sqlite3_vfs *sqlite3PagerVfs(Pager*);
 sqlite3_file *sqlite3PagerFile(Pager*);
 sqlite3_file *sqlite3PagerJrnlFile(Pager*);
-const char *sqlite3PagerJournalname(Pager*);
-void *sqlite3PagerTempSpace(Pager*);
-int sqlite3PagerIsMemdb(Pager*);
-void sqlite3PagerCacheStat(Pager *, int, int, u64*);
-void sqlite3PagerClearCache(Pager*);
-int sqlite3SectorSize(sqlite3_file *);
+ध्रुव वर्ण *sqlite3PagerJournalname(Pager*);
+शून्य *sqlite3PagerTempSpace(Pager*);
+पूर्णाङ्क sqlite3PagerIsMemdb(Pager*);
+शून्य sqlite3PagerCacheStat(Pager *, पूर्णाङ्क, पूर्णाङ्क, u64*);
+शून्य sqlite3PagerClearCache(Pager*);
+पूर्णाङ्क sqlite3SectorSize(sqlite3_file *);
 
 /* Functions used to truncate the database file. */
-void sqlite3PagerTruncateImage(Pager*,Pgno);
+शून्य sqlite3PagerTruncateImage(Pager*,Pgno);
 
-void sqlite3PagerRekey(DbPage*, Pgno, u16);
+शून्य sqlite3PagerRekey(DbPage*, Pgno, u16);
 
 /* Functions to support testing and debugging. */
-#if !defined(NDEBUG) || defined(SQLITE_TEST)
+#यदि !defined(NDEBUG) || defined(SQLITE_TEST)
   Pgno sqlite3PagerPagenumber(DbPage*);
-  int sqlite3PagerIswriteable(DbPage*);
+  पूर्णाङ्क sqlite3PagerIswriteable(DbPage*);
 #endif
 #ifdef SQLITE_TEST
-  int *sqlite3PagerStats(Pager*);
-  void sqlite3PagerRefdump(Pager*);
-  void disable_simulated_io_errors(void);
-  void enable_simulated_io_errors(void);
-#else
+  पूर्णाङ्क *sqlite3PagerStats(Pager*);
+  शून्य sqlite3PagerRefdump(Pager*);
+  शून्य disable_simulated_io_errors(शून्य);
+  शून्य enable_simulated_io_errors(शून्य);
+#अन्यथा
 # define disable_simulated_io_errors()
 # define enable_simulated_io_errors()
 #endif
 
-#if defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
-int sqlite3PagerWalSystemErrno(Pager*);
+#यदि defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
+पूर्णाङ्क sqlite3PagerWalSystemErrno(Pager*);
 #endif
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
-  void sqlite3PagerWalStat(Pager*,sqlite3_str*);
+#यदि defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+  शून्य sqlite3PagerWalStat(Pager*,sqlite3_str*);
 #endif
 
 #endif /* SQLITE_PAGER_H */

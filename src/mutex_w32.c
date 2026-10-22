@@ -11,18 +11,18 @@
 *************************************************************************
 ** This file contains the C functions that implement mutexes for Win32.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
-#if SQLITE_OS_WIN
+#यदि SQLITE_OS_WIN
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#अन्तर्भाव "os_common.h"
 
 /*
 ** Include the header file for the Windows VFS.
 */
-#include "os_win.h"
+#अन्तर्भाव "os_win.h"
 #endif
 
 /*
@@ -31,14 +31,14 @@
 */
 #ifdef SQLITE_MUTEX_W32
 
-#if MSVC_VERSION>0
+#यदि MSVC_VERSION>0
 # define ALIGN128 __declspec(align(128))
-#else
+#अन्यथा
 # define ALIGN128
 #endif
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(ढकला)
 #pragma warning(disable: 4324)
 #endif /* _MSC_VER */
 
@@ -52,20 +52,20 @@
 ** that 64 works just as well most of the time, but the internet says
 ** that 128-byte alignment works better.
 */
-struct sqlite3_mutex { 
-  union {
+संरचना sqlite3_mutex { 
+  सङ्घ {
     CRITICAL_SECTION cs;     /* The CRITICAL_SECTION mutex.  id==1 */
     SRWLOCK srwl;            /* The Slim reader/writer lock.  id!=1 */
   } u;
-  int id;                    /* Mutex type */
+  पूर्णाङ्क id;                    /* Mutex type */
 #ifdef SQLITE_DEBUG
-  volatile int nRef;         /* Number of entrances */
-  volatile DWORD owner;      /* Thread holding this mutex */
-  volatile LONG trace;       /* True to trace changes */
+  चञ्चल पूर्णाङ्क nRef;         /* Number of entrances */
+  चञ्चल DWORD owner;      /* Thread holding this mutex */
+  चञ्चल LONG trace;       /* True to trace changes */
 #endif
 };
 #ifdef _MSC_VER
-#pragma warning(pop)
+#pragma warning(काढा)
 #endif /* _MSC_VER */
 
 #ifdef SQLITE_DEBUG
@@ -73,12 +73,12 @@ struct sqlite3_mutex {
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
 ** intended for use only inside assert() statements.
 */
-static int winMutexHeld(sqlite3_mutex *p){
-  return p->nRef!=0 && p->owner==GetCurrentThreadId();
+स्थिर पूर्णाङ्क winMutexHeld(sqlite3_mutex *p){
+  प्रत्यागम p->nRef!=0 && p->owner==GetCurrentThreadId();
 }
 
-static int winMutexNotheld(sqlite3_mutex *p){
-  return p->nRef==0 || p->owner!=GetCurrentThreadId();
+स्थिर पूर्णाङ्क winMutexNotheld(sqlite3_mutex *p){
+  प्रत्यागम p->nRef==0 || p->owner!=GetCurrentThreadId();
 }
 #endif
 
@@ -87,14 +87,14 @@ static int winMutexNotheld(sqlite3_mutex *p){
 ** and also for the xShmBarrier method of the VFS in cases when SQLite is
 ** compiled without mutexes (SQLITE_THREADSAFE=0).
 */
-void sqlite3MemoryBarrier(void){
-#if defined(SQLITE_MEMORY_BARRIER)
+शून्य sqlite3MemoryBarrier(शून्य){
+#यदि defined(SQLITE_MEMORY_BARRIER)
   SQLITE_MEMORY_BARRIER;
-#elif defined(__GNUC__)
+#नोचेद्यदि defined(__GNUC__)
   __sync_synchronize();
-#elif MSVC_VERSION>=1400
+#नोचेद्यदि MSVC_VERSION>=1400
   _ReadWriteBarrier();
-#elif defined(MemoryBarrier)
+#नोचेद्यदि defined(MemoryBarrier)
   MemoryBarrier();
 #endif
 }
@@ -109,25 +109,25 @@ void sqlite3MemoryBarrier(void){
 ** Experiments show that 64 works just as well most of the time, but
 ** the internet says that 128-byte alignment works better.
 */
-static ALIGN128 union staticMutexes {
+स्थिर ALIGN128 सङ्घ staticMutexes {
   sqlite3_mutex m;
-  char spacer[128];
+  वर्ण spacer[128];
 } aWindowsMutex[12];
-static int winMutex_isInit = 0;
+स्थिर पूर्णाङ्क winMutex_isInit = 0;
 
 /* As the winMutexInit() and winMutexEnd() functions are called as part
 ** of the sqlite3_initialize() and sqlite3_shutdown() processing, the
 ** "interlocked" magic used here is probably not strictly necessary.
 */
-static LONG volatile winMutex_lock = 0;
+स्थिर LONG चञ्चल winMutex_lock = 0;
 
-void sqlite3_win32_sleep(DWORD milliseconds); /* os_win.c */
+शून्य sqlite3_win32_sleep(DWORD milliseconds); /* os_win.c */
 
-static int winMutexInit(void){
+स्थिर पूर्णाङ्क winMutexInit(शून्य){
   /* The first to increment to 1 does actual initialization */
-  if( InterlockedCompareExchange(&winMutex_lock, 1, 0)==0 ){
-    int i;
-    for(i=0; i<ArraySize(aWindowsMutex); i++){
+  यदि( InterlockedCompareExchange(&winMutex_lock, 1, 0)==0 ){
+    पूर्णाङ्क i;
+    प्रति(i=0; i<ArraySize(aWindowsMutex); i++){
       sqlite3_mutex *p = &aWindowsMutex[i].m;
       p->id = i+2;
       InitializeSRWLock(&p->u.srwl);
@@ -138,25 +138,25 @@ static int winMutexInit(void){
 #endif
     }
     winMutex_isInit = 1;
-  }else{
+  }अन्यथा{
     /* Another thread is (in the process of) initializing the static
     ** mutexes */
-    while( !winMutex_isInit ){
+    यावत्( !winMutex_isInit ){
       sqlite3_win32_sleep(1);
     }
   }
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
-static int winMutexEnd(void){
+स्थिर पूर्णाङ्क winMutexEnd(शून्य){
   /* The first to decrement to 0 does actual shutdown
   ** (which should be the last to shutdown.) */
-  if( InterlockedCompareExchange(&winMutex_lock, 0, 1)==1 ){
-    if( winMutex_isInit==1 ){
+  यदि( InterlockedCompareExchange(&winMutex_lock, 0, 1)==1 ){
+    यदि( winMutex_isInit==1 ){
       winMutex_isInit = 0;
     }
   }
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
@@ -207,33 +207,33 @@ static int winMutexEnd(void){
 ** mutex types, the same mutex is returned on every call that has
 ** the same type number.
 */
-static sqlite3_mutex *winMutexAlloc(int iType){
+स्थिर sqlite3_mutex *winMutexAlloc(पूर्णाङ्क iType){
   sqlite3_mutex *p;
 
-  switch( iType ){
-    case SQLITE_MUTEX_FAST:
-    case SQLITE_MUTEX_RECURSIVE: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+  विकल्प( iType ){
+    पक्ष SQLITE_MUTEX_FAST:
+    पक्ष SQLITE_MUTEX_RECURSIVE: {
+      p = sqlite3MallocZero( परिमाण(*p) );
+      यदि( p ){
         p->id = iType;
 #ifdef SQLITE_DEBUG
 #ifdef SQLITE_WIN32_MUTEX_TRACE_DYNAMIC
         p->trace = 1;
 #endif
 #endif
-        if( iType==SQLITE_MUTEX_RECURSIVE ){
+        यदि( iType==SQLITE_MUTEX_RECURSIVE ){
           InitializeCriticalSection(&p->u.cs);
-        }else{
+        }अन्यथा{
           InitializeSRWLock(&p->u.srwl);
         }
       }
-      break;
+      भङ्ग;
     }
-    default: {
+    स्वभाव: {
 #ifdef SQLITE_ENABLE_API_ARMOR
-      if( iType-2<0 || iType-2>=ArraySize(aWindowsMutex) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+      यदि( iType-2<0 || iType-2>=ArraySize(aWindowsMutex) ){
+        (शून्य)SQLITE_MISUSE_BKPT;
+        प्रत्यागम 0;
       }
 #endif
       p = &aWindowsMutex[iType-2].m;
@@ -242,11 +242,11 @@ static sqlite3_mutex *winMutexAlloc(int iType){
       InterlockedCompareExchange(&p->trace, 1, 0);
 #endif
 #endif
-      break;
+      भङ्ग;
     }
   }
-  assert( p==0 || p->id==iType );
-  return p;
+  प्रतिज्ञा( p==0 || p->id==iType );
+  प्रत्यागम p;
 }
 
 
@@ -255,17 +255,17 @@ static sqlite3_mutex *winMutexAlloc(int iType){
 ** allocated mutex.  SQLite is careful to deallocate every
 ** mutex that it allocates.
 */
-static void winMutexFree(sqlite3_mutex *p){
-  assert( p );
-  assert( p->nRef==0 && p->owner==0 );
-  if( p->id==SQLITE_MUTEX_FAST ){
+स्थिर शून्य winMutexFree(sqlite3_mutex *p){
+  प्रतिज्ञा( p );
+  प्रतिज्ञा( p->nRef==0 && p->owner==0 );
+  यदि( p->id==SQLITE_MUTEX_FAST ){
     sqlite3_free(p);
-  }else if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  }अन्यथा यदि( p->id==SQLITE_MUTEX_RECURSIVE ){
     DeleteCriticalSection(&p->u.cs);
     sqlite3_free(p);
-  }else{
+  }अन्यथा{
 #ifdef SQLITE_ENABLE_API_ARMOR
-    (void)SQLITE_MISUSE_BKPT;
+    (शून्य)SQLITE_MISUSE_BKPT;
 #endif
   }
 }
@@ -281,60 +281,60 @@ static void winMutexFree(sqlite3_mutex *p){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void winMutexEnter(sqlite3_mutex *p){
-  assert( p );
+स्थिर शून्य winMutexEnter(sqlite3_mutex *p){
+  प्रतिज्ञा( p );
 #ifdef SQLITE_DEBUG
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
+  प्रतिज्ञा( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
 #endif
-  assert( winMutex_isInit==1 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  प्रतिज्ञा( winMutex_isInit==1 );
+  यदि( p->id==SQLITE_MUTEX_RECURSIVE ){
     EnterCriticalSection(&p->u.cs);
-  }else{
+  }अन्यथा{
     AcquireSRWLockExclusive(&p->u.srwl);
   }
 #ifdef SQLITE_DEBUG
-  assert( p->nRef>0 || p->owner==0 );
+  प्रतिज्ञा( p->nRef>0 || p->owner==0 );
   p->owner = GetCurrentThreadId();
   p->nRef++;
-  if( p->trace ){
+  यदि( p->trace ){
     OSTRACE(("ENTER-MUTEX tid=%lu, mutex(%d)=%p (%d), nRef=%d\n",
              GetCurrentThreadId(), p->id, p, p->trace, p->nRef));
   }
 #endif
 }
 
-static int winMutexTry(sqlite3_mutex *p){
-  int rc = SQLITE_BUSY;
-  assert( p );
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
+स्थिर पूर्णाङ्क winMutexTry(sqlite3_mutex *p){
+  पूर्णाङ्क rc = SQLITE_BUSY;
+  प्रतिज्ञा( p );
+  प्रतिज्ञा( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
   /*
   ** The sqlite3_mutex_try() routine is seldom used, and when it is
   ** used it is merely an optimization.  So it is OK for it to always
   ** fail.
   */
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  यदि( p->id==SQLITE_MUTEX_RECURSIVE ){
     rc = TryEnterCriticalSection(&p->u.cs);
-  }else{
+  }अन्यथा{
     rc = TryAcquireSRWLockExclusive(&p->u.srwl);
   }
-  if( rc ){
+  यदि( rc ){
 #ifdef SQLITE_DEBUG
     p->owner = GetCurrentThreadId();
     p->nRef++;
 #endif
     rc = SQLITE_OK;
-  }else{
+  }अन्यथा{
     rc = SQLITE_BUSY;
   }
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  यदि( p->trace ){
     OSTRACE((
        "TRY-MUTEX tid=%lu, mutex(%d)=%p (%d), owner=%lu, nRef=%d, rc=%s\n",
        GetCurrentThreadId(), p->id, p, p->trace, p->owner, p->nRef,
        sqlite3ErrName(rc)));
   }
 #endif
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -343,31 +343,31 @@ static int winMutexTry(sqlite3_mutex *p){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void winMutexLeave(sqlite3_mutex *p){
-  assert( p );
+स्थिर शून्य winMutexLeave(sqlite3_mutex *p){
+  प्रतिज्ञा( p );
 #ifdef SQLITE_DEBUG
-  assert( p->nRef>0 );
-  assert( p->owner==GetCurrentThreadId() );
+  प्रतिज्ञा( p->nRef>0 );
+  प्रतिज्ञा( p->owner==GetCurrentThreadId() );
   p->nRef--;
-  if( p->nRef==0 ) p->owner = 0;
-  assert( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
+  यदि( p->nRef==0 ) p->owner = 0;
+  प्रतिज्ञा( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
 #endif
-  assert( winMutex_isInit==1 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  प्रतिज्ञा( winMutex_isInit==1 );
+  यदि( p->id==SQLITE_MUTEX_RECURSIVE ){
     LeaveCriticalSection(&p->u.cs);
-  }else{
+  }अन्यथा{
     ReleaseSRWLockExclusive(&p->u.srwl);
   }
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  यदि( p->trace ){
     OSTRACE(("LEAVE-MUTEX tid=%lu, mutex(%d)=%p (%d), nRef=%d\n",
              GetCurrentThreadId(), p->id, p, p->trace, p->nRef));
   }
 #endif
 }
 
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ध्रुव *sqlite3DefaultMutex(शून्य){
+  स्थिर ध्रुव sqlite3_mutex_methods sMutex = {
     winMutexInit,
     winMutexEnd,
     winMutexAlloc,
@@ -378,12 +378,12 @@ sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
 #ifdef SQLITE_DEBUG
     winMutexHeld,
     winMutexNotheld
-#else
+#अन्यथा
     0,
     0
 #endif
   };
-  return &sMutex;
+  प्रत्यागम &sMutex;
 }
 
 #endif /* SQLITE_MUTEX_W32 */
