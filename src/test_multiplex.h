@@ -20,8 +20,8 @@
 **
 */
 
-#ifndef SQLITE_TEST_MULTIPLEX_H
-#define SQLITE_TEST_MULTIPLEX_H
+#अगर_अघोषित SQLITE_TEST_MULTIPLEX_H
+#घोषणा SQLITE_TEST_MULTIPLEX_H
 
 /*
 ** CAPI: File-control Operations Supported by Multiplex VFS
@@ -42,13 +42,13 @@
 **   This file control is used to set the maximum number of chunks
 **   allowed to be used for a multiplex file set.
 */
-#define MULTIPLEX_CTRL_ENABLE          214014
-#define MULTIPLEX_CTRL_SET_CHUNK_SIZE  214015
-#define MULTIPLEX_CTRL_SET_MAX_CHUNKS  214016
+#घोषणा MULTIPLEX_CTRL_ENABLE          214014
+#घोषणा MULTIPLEX_CTRL_SET_CHUNK_आकार  214015
+#घोषणा MULTIPLEX_CTRL_SET_MAX_CHUNKS  214016
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#अगर_घोषित __cplusplus
+बाह्य "C" {
+#पूर्ण_अगर
 
 /*
 ** CAPI: Initialize the multiplex VFS shim - sqlite3_multiplex_initialize()
@@ -79,7 +79,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefault);
+बाह्य पूर्णांक sqlite3_multiplex_initialize(स्थिर अक्षर *zOrigVfsName, पूर्णांक makeDefault);
 
 /*
 ** CAPI: Shutdown the multiplex system - sqlite3_multiplex_shutdown()
@@ -90,10 +90,10 @@ extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefaul
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining multiplex groups.
 */
-extern int sqlite3_multiplex_shutdown(int eForce);
+बाह्य पूर्णांक sqlite3_multiplex_shutdown(पूर्णांक eForce);
 
-#ifdef __cplusplus
+#अगर_घोषित __cplusplus
 }  /* End of the 'extern "C"' block */
-#endif
+#पूर्ण_अगर
 
-#endif /* SQLITE_TEST_MULTIPLEX_H */
+#पूर्ण_अगर /* SQLITE_TEST_MULTIPLEX_H */

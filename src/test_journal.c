@@ -93,78 +93,78 @@
 **
 **     c) The journal file is deleted using xDelete.
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#अगर SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
+#समावेश "sqlite3.h"
+#समावेश "sqliteInt.h"
 
 /*
 ** Maximum pathname length supported by the jt backend.
 */
-#define JT_MAX_PATHNAME 512
+#घोषणा JT_MAX_PATHNAME 512
 
 /*
 ** Name used to identify this VFS.
 */
-#define JT_VFS_NAME "jt"
+#घोषणा JT_VFS_NAME "jt"
 
-typedef struct jt_file jt_file;
-struct jt_file {
+प्रकार काष्ठा jt_file jt_file;
+काष्ठा jt_file {
   sqlite3_file base;
-  const char *zName;       /* Name of open file */
-  int flags;               /* Flags the file was opened with */
+  स्थिर अक्षर *zName;       /* Name of open file */
+  पूर्णांक flags;               /* Flags the file was opened with */
 
   /* The following are only used by database file file handles */
-  int eLock;               /* Current lock held on the file */
+  पूर्णांक eLock;               /* Current lock held on the file */
   u32 nPage;               /* Size of file in pages when transaction started */
   u32 nPagesize;           /* Page size when transaction started */
   Bitvec *pWritable;       /* Bitvec of pages that may be written to the file */
   u32 *aCksum;             /* Checksum for first nPage pages */
-  int nSync;               /* Number of times journal file has been synced */
+  पूर्णांक nSync;               /* Number of times journal file has been synced */
 
   /* Only used by journal file-handles */
   sqlite3_int64 iMaxOff;   /* Maximum offset written to this transaction */
 
-  jt_file *pNext;          /* All files are stored in a linked list */
+  jt_file *p_अग्र;          /* All files are stored in a linked list */
   sqlite3_file *pReal;     /* The file handle for the underlying vfs */
 };
 
 /*
 ** Method declarations for jt_file.
 */
-static int jtClose(sqlite3_file*);
-static int jtRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int jtWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int jtTruncate(sqlite3_file*, sqlite3_int64 size);
-static int jtSync(sqlite3_file*, int flags);
-static int jtFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int jtLock(sqlite3_file*, int);
-static int jtUnlock(sqlite3_file*, int);
-static int jtCheckReservedLock(sqlite3_file*, int *);
-static int jtFileControl(sqlite3_file*, int op, void *pArg);
-static int jtSectorSize(sqlite3_file*);
-static int jtDeviceCharacteristics(sqlite3_file*);
+अटल पूर्णांक jtClose(sqlite3_file*);
+अटल पूर्णांक jtRead(sqlite3_file*, व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक jtWrite(sqlite3_file*,स्थिर व्योम*,पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक jtTruncate(sqlite3_file*, sqlite3_int64 आकार);
+अटल पूर्णांक jtSync(sqlite3_file*, पूर्णांक flags);
+अटल पूर्णांक jt_File_आकार(sqlite3_file*, sqlite3_int64 *p_आकार);
+अटल पूर्णांक jtLock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक jtUnlock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक jtCheckReservedLock(sqlite3_file*, पूर्णांक *);
+अटल पूर्णांक jtFileControl(sqlite3_file*, पूर्णांक op, व्योम *pArg);
+अटल पूर्णांक jt_Sector_आकार(sqlite3_file*);
+अटल पूर्णांक jtDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for jt_vfs.
 */
-static int jtOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int jtDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int jtAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int jtFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *jtDlOpen(sqlite3_vfs*, const char *zFilename);
-static void jtDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*jtDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void jtDlClose(sqlite3_vfs*, void*);
-static int jtRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int jtSleep(sqlite3_vfs*, int microseconds);
-static int jtCurrentTime(sqlite3_vfs*, double*);
-static int jtCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
-static int jtGetLastError(sqlite3_vfs*, int, char*);
+अटल पूर्णांक jtOpen(sqlite3_vfs*, स्थिर अक्षर *, sqlite3_file*, पूर्णांक , पूर्णांक *);
+अटल पूर्णांक jtDelete(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक syncDir);
+अटल पूर्णांक jtAccess(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक flags, पूर्णांक *);
+अटल पूर्णांक jtFullPathname(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक, अक्षर *zOut);
+अटल व्योम *jtDlOpen(sqlite3_vfs*, स्थिर अक्षर *zFilename);
+अटल व्योम jtDlError(sqlite3_vfs*, पूर्णांक nByte, अक्षर *z_Err_संदेश);
+अटल व्योम (*jtDlSym(sqlite3_vfs*,व्योम*, स्थिर अक्षर *z_प्रतीक))(व्योम);
+अटल व्योम jtDlClose(sqlite3_vfs*, व्योम*);
+अटल पूर्णांक jtRandomness(sqlite3_vfs*, पूर्णांक nByte, अक्षर *zOut);
+अटल पूर्णांक jtSleep(sqlite3_vfs*, पूर्णांक microseconds);
+अटल पूर्णांक jtCurrentTime(sqlite3_vfs*, द्विगुन*);
+अटल पूर्णांक jtCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+अटल पूर्णांक jtGetLastError(sqlite3_vfs*, पूर्णांक, अक्षर*);
 
-static sqlite3_vfs jt_vfs = {
+अटल sqlite3_vfs jt_vfs = {
   2,                             /* iVersion */
-  sizeof(jt_file),               /* szOsFile */
+  माप(jt_file),               /* szOsFile */
   JT_MAX_PATHNAME,               /* mxPathname */
   0,                             /* pNext */
   JT_VFS_NAME,                   /* zName */
@@ -184,48 +184,48 @@ static sqlite3_vfs jt_vfs = {
   jtCurrentTimeInt64             /* xCurrentTimeInt64 */
 };
 
-static sqlite3_io_methods jt_io_methods = {
+अटल sqlite3_io_methods jt_io_methods = {
   1,                             /* iVersion */
   jtClose,                       /* xClose */
   jtRead,                        /* xRead */
   jtWrite,                       /* xWrite */
   jtTruncate,                    /* xTruncate */
   jtSync,                        /* xSync */
-  jtFileSize,                    /* xFileSize */
+  jt_File_आकार,                    /* xFileSize */
   jtLock,                        /* xLock */
   jtUnlock,                      /* xUnlock */
   jtCheckReservedLock,           /* xCheckReservedLock */
   jtFileControl,                 /* xFileControl */
-  jtSectorSize,                  /* xSectorSize */
+  jt_Sector_आकार,                  /* xSectorSize */
   jtDeviceCharacteristics        /* xDeviceCharacteristics */
 };
 
-struct JtGlobal {
+काष्ठा JtGlobal {
   sqlite3_vfs *pVfs;             /* Parent VFS */
   jt_file *pList;                /* List of all open files */
 };
-static struct JtGlobal g = {0, 0};
+अटल काष्ठा JtGlobal g = {0, 0};
 
 /*
 ** Functions to obtain and relinquish a mutex to protect g.pList. The
 ** STATIC_PRNG mutex is reused, purely for the sake of convenience.
 */
-static void enterJtMutex(void){
+अटल व्योम enterJtMutex(व्योम){
   sqlite3_mutex_enter(sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_PRNG));
 }
-static void leaveJtMutex(void){
+अटल व्योम leaveJtMutex(व्योम){
   sqlite3_mutex_leave(sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_PRNG));
 }
 
-extern int sqlite3_io_error_pending;
-extern int sqlite3_io_error_hit;
-static void stop_ioerr_simulation(int *piSave, int *piSave2){
+बाह्य पूर्णांक sqlite3_io_error_pending;
+बाह्य पूर्णांक sqlite3_io_error_hit;
+अटल व्योम stop_ioerr_simulation(पूर्णांक *piSave, पूर्णांक *piSave2){
   *piSave = sqlite3_io_error_pending;
   *piSave2 = sqlite3_io_error_hit;
   sqlite3_io_error_pending = -1;
   sqlite3_io_error_hit = 0;
 }
-static void start_ioerr_simulation(int iSave, int iSave2){
+अटल व्योम start_ioerr_simulation(पूर्णांक iSave, पूर्णांक iSave2){
   sqlite3_io_error_pending = iSave;
   sqlite3_io_error_hit = iSave2;
 }
@@ -235,7 +235,7 @@ static void start_ioerr_simulation(int iSave, int iSave2){
 ** open on a main database file. If it is, and a transaction is currently
 ** opened on the file, then discard all transaction related data.
 */
-static void closeTransaction(jt_file *p){
+अटल व्योम closeTransaction(jt_file *p){
   sqlite3BitvecDestroy(p->pWritable);
   sqlite3_free(p->aCksum);
   p->pWritable = 0;
@@ -246,32 +246,32 @@ static void closeTransaction(jt_file *p){
 /*
 ** Close an jt-file.
 */
-static int jtClose(sqlite3_file *pFile){
+अटल पूर्णांक jtClose(sqlite3_file *pFile){
   jt_file **pp;
   jt_file *p = (jt_file *)pFile;
 
   closeTransaction(p);
   enterJtMutex();
-  if( p->zName ){
-    for(pp=&g.pList; *pp!=p; pp=&(*pp)->pNext);
-    *pp = p->pNext;
+  अगर( p->zName ){
+    क्रम(pp=&g.pList; *pp!=p; pp=&(*pp)->p_अग्र);
+    *pp = p->p_अग्र;
   }
   leaveJtMutex();
   sqlite3OsClose(p->pReal);
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Read data from an jt-file.
 */
-static int jtRead(
+अटल पूर्णांक jtRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
+  वापस sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
@@ -289,21 +289,21 @@ static int jtRead(
 **   c) There is currently a reserved lock on the file. This 
 **      condition is waived if the noLock argument is non-zero.
 **/
-static jt_file *locateDatabaseHandle(const char *zJournal, int noLock){
+अटल jt_file *locateDatabaseHandle(स्थिर अक्षर *zJournal, पूर्णांक noLock){
   jt_file *pMain = 0;
   enterJtMutex();
-  for(pMain=g.pList; pMain; pMain=pMain->pNext){
-    int nName = (int)(strlen(zJournal) - strlen("-journal"));
-    if( (pMain->flags&SQLITE_OPEN_MAIN_DB)
-     && ((int)strlen(pMain->zName)==nName)
-     && 0==memcmp(pMain->zName, zJournal, nName)
+  क्रम(pMain=g.pList; pMain; pMain=pMain->p_अग्र){
+    पूर्णांक nName = (पूर्णांक)(म_माप(zJournal) - म_माप("-journal"));
+    अगर( (pMain->flags&SQLITE_OPEN_MAIN_DB)
+     && ((पूर्णांक)म_माप(pMain->zName)==nName)
+     && 0==स_भेद(pMain->zName, zJournal, nName)
      && ((pMain->eLock>=SQLITE_LOCK_RESERVED) || noLock)
     ){
-      break;
+      अवरोध;
     }
   }
   leaveJtMutex();
-  return pMain;
+  वापस pMain;
 }
 
 /*
@@ -311,21 +311,21 @@ static jt_file *locateDatabaseHandle(const char *zJournal, int noLock){
 ** unsigned 32-bit integer stored in big-endian format. Decode the 
 ** integer and return its value.
 */
-static u32 decodeUint32(const unsigned char *z){
-  return (z[0]<<24) + (z[1]<<16) + (z[2]<<8) + z[3];
+अटल u32 decodeUint32(स्थिर अचिन्हित अक्षर *z){
+  वापस (z[0]<<24) + (z[1]<<16) + (z[2]<<8) + z[3];
 }
 
 /*
 ** Calculate a checksum from the buffer of length n bytes pointed to
 ** by parameter z.
 */
-static u32 genCksum(const unsigned char *z, int n){
-  int i;
+अटल u32 genCksum(स्थिर अचिन्हित अक्षर *z, पूर्णांक n){
+  पूर्णांक i;
   u32 cksum = 0;
-  for(i=0; i<n; i++){
+  क्रम(i=0; i<n; i++){
     cksum = cksum + z[i] + (cksum<<3);
   }
-  return cksum;
+  वापस cksum;
 }
 
 /*
@@ -337,82 +337,82 @@ static u32 genCksum(const unsigned char *z, int n){
 ** SQLITE_OK is returned if the journal-header is successfully 
 ** decoded. Otherwise, SQLITE_ERROR.
 */
-static int decodeJournalHdr(
-  const unsigned char *zBuf,         /* Input: 28 byte journal header */
+अटल पूर्णांक decodeJournalHdr(
+  स्थिर अचिन्हित अक्षर *zBuf,         /* Input: 28 byte journal header */
   u32 *pnRec,                        /* Out: Number of journalled records */
   u32 *pnPage,                       /* Out: Original database page count */
   u32 *pnSector,                     /* Out: Sector size in bytes */
   u32 *pnPagesize                    /* Out: Page size in bytes */
 ){
-  unsigned char aMagic[] = { 0xd9, 0xd5, 0x05, 0xf9, 0x20, 0xa1, 0x63, 0xd7 };
-  if( memcmp(aMagic, zBuf, 8) ) return SQLITE_ERROR;
-  if( pnRec ) *pnRec = decodeUint32(&zBuf[8]);
-  if( pnPage ) *pnPage = decodeUint32(&zBuf[16]);
-  if( pnSector ) *pnSector = decodeUint32(&zBuf[20]);
-  if( pnPagesize ) *pnPagesize = decodeUint32(&zBuf[24]);
-  return SQLITE_OK;
+  अचिन्हित अक्षर aMagic[] = { 0xd9, 0xd5, 0x05, 0xf9, 0x20, 0xa1, 0x63, 0xd7 };
+  अगर( स_भेद(aMagic, zBuf, 8) ) वापस SQLITE_ERROR;
+  अगर( pnRec ) *pnRec = decodeUint32(&zBuf[8]);
+  अगर( pnPage ) *pnPage = decodeUint32(&zBuf[16]);
+  अगर( pnSector ) *pnSector = decodeUint32(&zBuf[20]);
+  अगर( pnPagesize ) *pnPagesize = decodeUint32(&zBuf[24]);
+  वापस SQLITE_OK;
 }
 
 /*
 ** This function is called when a new transaction is opened, just after
 ** the first journal-header is written to the journal file.
 */
-static int openTransaction(jt_file *pMain, jt_file *pJournal){
-  unsigned char *aData;
+अटल पूर्णांक openTransaction(jt_file *pMain, jt_file *pJournal){
+  अचिन्हित अक्षर *a_तथ्य;
   sqlite3_file *p = pMain->pReal;
-  int rc = SQLITE_OK;
+  पूर्णांक rc = SQLITE_OK;
 
   closeTransaction(pMain);
-  aData = sqlite3_malloc(pMain->nPagesize);
+  a_तथ्य = sqlite3_malloc(pMain->nPagesize);
   pMain->pWritable = sqlite3BitvecCreate(pMain->nPage);
-  pMain->aCksum = sqlite3_malloc(sizeof(u32) * (pMain->nPage + 1));
+  pMain->aCksum = sqlite3_malloc(माप(u32) * (pMain->nPage + 1));
   pJournal->iMaxOff = 0;
 
-  if( !pMain->pWritable || !pMain->aCksum || !aData ){
+  अगर( !pMain->pWritable || !pMain->aCksum || !a_तथ्य ){
     rc = SQLITE_IOERR_NOMEM;
-  }else if( pMain->nPage>0 ){
+  }अन्यथा अगर( pMain->nPage>0 ){
     u32 iTrunk;
-    int iSave;
-    int iSave2;
+    पूर्णांक iSave;
+    पूर्णांक iSave2;
 
     stop_ioerr_simulation(&iSave, &iSave2);
 
     /* Read the database free-list. Add the page-number for each free-list
     ** leaf to the jt_file.pWritable bitvec.
     */
-    rc = sqlite3OsRead(p, aData, pMain->nPagesize, 0);
-    if( rc==SQLITE_OK ){
-      u32 nDbsize = decodeUint32(&aData[28]);
-      if( nDbsize>0 && memcmp(&aData[24], &aData[92], 4)==0 ){
+    rc = sqlite3OsRead(p, a_तथ्य, pMain->nPagesize, 0);
+    अगर( rc==SQLITE_OK ){
+      u32 nDbsize = decodeUint32(&a_तथ्य[28]);
+      अगर( nDbsize>0 && स_भेद(&a_तथ्य[24], &a_तथ्य[92], 4)==0 ){
         u32 iPg;
-        for(iPg=nDbsize+1; iPg<=pMain->nPage; iPg++){
+        क्रम(iPg=nDbsize+1; iPg<=pMain->nPage; iPg++){
           sqlite3BitvecSet(pMain->pWritable, iPg);
         }
       }
     }
-    iTrunk = decodeUint32(&aData[32]);
-    while( rc==SQLITE_OK && iTrunk>0 ){
+    iTrunk = decodeUint32(&a_तथ्य[32]);
+    जबतक( rc==SQLITE_OK && iTrunk>0 ){
       u32 nLeaf;
       u32 iLeaf;
       sqlite3_int64 iOff = (i64)(iTrunk-1)*pMain->nPagesize;
-      rc = sqlite3OsRead(p, aData, pMain->nPagesize, iOff);
-      nLeaf = decodeUint32(&aData[4]);
-      for(iLeaf=0; rc==SQLITE_OK && iLeaf<nLeaf; iLeaf++){
-        u32 pgno = decodeUint32(&aData[8+4*iLeaf]);
+      rc = sqlite3OsRead(p, a_तथ्य, pMain->nPagesize, iOff);
+      nLeaf = decodeUint32(&a_तथ्य[4]);
+      क्रम(iLeaf=0; rc==SQLITE_OK && iLeaf<nLeaf; iLeaf++){
+        u32 pgno = decodeUint32(&a_तथ्य[8+4*iLeaf]);
         sqlite3BitvecSet(pMain->pWritable, pgno);
       }
-      iTrunk = decodeUint32(aData);
+      iTrunk = decodeUint32(a_तथ्य);
     }
 
     /* Calculate and store a checksum for each page in the database file. */
-    if( rc==SQLITE_OK ){
-      int ii;
-      for(ii=0; rc==SQLITE_OK && ii<(int)pMain->nPage; ii++){
+    अगर( rc==SQLITE_OK ){
+      पूर्णांक ii;
+      क्रम(ii=0; rc==SQLITE_OK && ii<(पूर्णांक)pMain->nPage; ii++){
         i64 iOff = (i64)(pMain->nPagesize) * (i64)ii;
-        if( iOff==PENDING_BYTE ) continue;
-        rc = sqlite3OsRead(pMain->pReal, aData, pMain->nPagesize, iOff);
-        pMain->aCksum[ii] = genCksum(aData, pMain->nPagesize);
-        if( ii+1==(int)pMain->nPage && rc==SQLITE_IOERR_SHORT_READ ){
+        अगर( iOff==PENDING_BYTE ) जारी;
+        rc = sqlite3OsRead(pMain->pReal, a_तथ्य, pMain->nPagesize, iOff);
+        pMain->aCksum[ii] = genCksum(a_तथ्य, pMain->nPagesize);
+        अगर( ii+1==(पूर्णांक)pMain->nPage && rc==SQLITE_IOERR_SHORT_READ ){
           rc = SQLITE_OK;
         }
       }
@@ -421,8 +421,8 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
     start_ioerr_simulation(iSave, iSave2);
   }
 
-  sqlite3_free(aData);
-  return rc;
+  sqlite3_free(a_तथ्य);
+  वापस rc;
 }
 
 /*
@@ -430,62 +430,62 @@ static int openTransaction(jt_file *pMain, jt_file *pJournal){
 ** This function reads the journal file and adds the page number for each
 ** page in the journal to the Bitvec object passed as the second argument.
 */
-static int readJournalFile(jt_file *p, jt_file *pMain){
-  int rc = SQLITE_OK;
-  unsigned char zBuf[28];
+अटल पूर्णांक readJournalFile(jt_file *p, jt_file *pMain){
+  पूर्णांक rc = SQLITE_OK;
+  अचिन्हित अक्षर zBuf[28];
   sqlite3_file *pReal = p->pReal;
   sqlite3_int64 iOff = 0;
-  sqlite3_int64 iSize = p->iMaxOff;
-  unsigned char *aPage;
-  int iSave;
-  int iSave2;
+  sqlite3_int64 i_आकार = p->iMaxOff;
+  अचिन्हित अक्षर *aPage;
+  पूर्णांक iSave;
+  पूर्णांक iSave2;
 
   aPage = sqlite3_malloc(pMain->nPagesize);
-  if( !aPage ){
-    return SQLITE_IOERR_NOMEM;
+  अगर( !aPage ){
+    वापस SQLITE_IOERR_NOMEM;
   }
 
   stop_ioerr_simulation(&iSave, &iSave2);
 
-  while( rc==SQLITE_OK && iOff<iSize ){
+  जबतक( rc==SQLITE_OK && iOff<i_आकार ){
     u32 nRec, nPage, nSector, nPagesize;
     u32 ii;
 
     /* Read and decode the next journal-header from the journal file. */
     rc = sqlite3OsRead(pReal, zBuf, 28, iOff);
-    if( rc!=SQLITE_OK 
+    अगर( rc!=SQLITE_OK 
      || decodeJournalHdr(zBuf, &nRec, &nPage, &nSector, &nPagesize) 
     ){
-      goto finish_rjf;
+      जाओ finish_rjf;
     }
     iOff += nSector;
 
-    if( nRec==0 ){
+    अगर( nRec==0 ){
       /* A trick. There might be another journal-header immediately 
       ** following this one. In this case, 0 records means 0 records, 
       ** not "read until the end of the file". See also ticket #2565.
       */
-      if( iSize>=(iOff+nSector) ){
+      अगर( i_आकार>=(iOff+nSector) ){
         rc = sqlite3OsRead(pReal, zBuf, 28, iOff);
-        if( rc!=SQLITE_OK || 0==decodeJournalHdr(zBuf, 0, 0, 0, 0) ){
-          continue;
+        अगर( rc!=SQLITE_OK || 0==decodeJournalHdr(zBuf, 0, 0, 0, 0) ){
+          जारी;
         }
       }
-      nRec = (u32)((iSize-iOff) / (pMain->nPagesize+8));
+      nRec = (u32)((i_आकार-iOff) / (pMain->nPagesize+8));
     }
 
     /* Read all the records that follow the journal-header just read. */
-    for(ii=0; rc==SQLITE_OK && ii<nRec && iOff<iSize; ii++){
+    क्रम(ii=0; rc==SQLITE_OK && ii<nRec && iOff<i_आकार; ii++){
       u32 pgno;
       rc = sqlite3OsRead(pReal, zBuf, 4, iOff);
-      if( rc==SQLITE_OK ){
+      अगर( rc==SQLITE_OK ){
         pgno = decodeUint32(zBuf);
-        if( pgno>0 && pgno<=pMain->nPage ){
-          if( 0==sqlite3BitvecTest(pMain->pWritable, pgno) ){
+        अगर( pgno>0 && pgno<=pMain->nPage ){
+          अगर( 0==sqlite3BitvecTest(pMain->pWritable, pgno) ){
             rc = sqlite3OsRead(pReal, aPage, pMain->nPagesize, iOff+4);
-            if( rc==SQLITE_OK ){
+            अगर( rc==SQLITE_OK ){
               u32 cksum = genCksum(aPage, pMain->nPagesize);
-              assert( cksum==pMain->aCksum[pgno-1] );
+              निश्चित( cksum==pMain->aCksum[pgno-1] );
             }
           }
           sqlite3BitvecSet(pMain->pWritable, pgno);
@@ -500,50 +500,50 @@ static int readJournalFile(jt_file *p, jt_file *pMain){
 finish_rjf:
   start_ioerr_simulation(iSave, iSave2);
   sqlite3_free(aPage);
-  if( rc==SQLITE_IOERR_SHORT_READ ){
+  अगर( rc==SQLITE_IOERR_SHORT_READ ){
     rc = SQLITE_OK;
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Write data to an jt-file.
 */
-static int jtWrite(
+अटल पूर्णांक jtWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  स्थिर व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc;
+  पूर्णांक rc;
   jt_file *p = (jt_file *)pFile;
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    if( iOfst==0 ){
+  अगर( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    अगर( iOfst==0 ){
       jt_file *pMain = locateDatabaseHandle(p->zName, 0);
-      assert( pMain );
+      निश्चित( pMain );
   
-      if( iAmt==28 ){
+      अगर( iAmt==28 ){
         /* Zeroing the first journal-file header. This is the end of a
         ** transaction. */
         closeTransaction(pMain);
-      }else if( iAmt!=12 ){
+      }अन्यथा अगर( iAmt!=12 ){
         /* Writing the first journal header to a journal file. This happens
         ** when a transaction is first started.  */
         u8 *z = (u8 *)zBuf;
         pMain->nPage = decodeUint32(&z[16]);
         pMain->nPagesize = decodeUint32(&z[24]);
-        if( SQLITE_OK!=(rc=openTransaction(pMain, p)) ){
-          return rc;
+        अगर( SQLITE_OK!=(rc=openTransaction(pMain, p)) ){
+          वापस rc;
         }
       }
     }
-    if( p->iMaxOff<(iOfst + iAmt) ){
+    अगर( p->iMaxOff<(iOfst + iAmt) ){
       p->iMaxOff = iOfst + iAmt;
     }
   }
 
-  if( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
-    if( iAmt<(int)p->nPagesize 
+  अगर( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
+    अगर( iAmt<(पूर्णांक)p->nPagesize 
      && p->nPagesize%iAmt==0 
      && iOfst>=(PENDING_BYTE+512) 
      && iOfst+iAmt<=PENDING_BYTE+p->nPagesize
@@ -553,55 +553,55 @@ static int jtWrite(
       ** it needs to fill in the non-locking-region part of the original
       ** pending-byte page.
       */
-    }else{
+    }अन्यथा{
       u32 pgno = (u32)(iOfst/p->nPagesize + 1);
-      assert( (iAmt==1||iAmt==(int)p->nPagesize) &&
+      निश्चित( (iAmt==1||iAmt==(पूर्णांक)p->nPagesize) &&
               ((iOfst+iAmt)%p->nPagesize)==0 );
       /* The following assert() statements may fail if this layer is used
       ** with a connection in "PRAGMA synchronous=off" mode. If they
       ** fail with sync=normal or sync=full, this may indicate problem.  */
-      assert( p->nPage==0 || pgno<=p->nPage || p->nSync>0 );
-      assert( pgno>p->nPage || sqlite3BitvecTest(p->pWritable, pgno) );
+      निश्चित( p->nPage==0 || pgno<=p->nPage || p->nSync>0 );
+      निश्चित( pgno>p->nPage || sqlite3BitvecTest(p->pWritable, pgno) );
     }
   }
 
   rc = sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
-  if( (p->flags&SQLITE_OPEN_MAIN_JOURNAL) && iAmt==12 ){
+  अगर( (p->flags&SQLITE_OPEN_MAIN_JOURNAL) && iAmt==12 ){
     jt_file *pMain = locateDatabaseHandle(p->zName, 0);
-    int rc2 = readJournalFile(p, pMain);
-    if( rc==SQLITE_OK ) rc = rc2;
+    पूर्णांक rc2 = readJournalFile(p, pMain);
+    अगर( rc==SQLITE_OK ) rc = rc2;
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Truncate an jt-file.
 */
-static int jtTruncate(sqlite3_file *pFile, sqlite_int64 size){
+अटल पूर्णांक jtTruncate(sqlite3_file *pFile, sqlite_int64 आकार){
   jt_file *p = (jt_file *)pFile;
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL && size==0 ){
+  अगर( p->flags&SQLITE_OPEN_MAIN_JOURNAL && आकार==0 ){
     /* Truncating a journal file. This is the end of a transaction. */
     jt_file *pMain = locateDatabaseHandle(p->zName, 0);
     closeTransaction(pMain);
   }
-  if( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
+  अगर( p->flags&SQLITE_OPEN_MAIN_DB && p->pWritable ){
     u32 pgno;
     u32 locking_page = (u32)(PENDING_BYTE/p->nPagesize+1);
-    for(pgno=(u32)(size/p->nPagesize+1); pgno<=p->nPage; pgno++){
-      assert( pgno==locking_page || sqlite3BitvecTest(p->pWritable, pgno) );
+    क्रम(pgno=(u32)(आकार/p->nPagesize+1); pgno<=p->nPage; pgno++){
+      निश्चित( pgno==locking_page || sqlite3BitvecTest(p->pWritable, pgno) );
     }
   }
-  return sqlite3OsTruncate(p->pReal, size);
+  वापस sqlite3OsTruncate(p->pReal, आकार);
 }
 
 /*
 ** Sync an jt-file.
 */
-static int jtSync(sqlite3_file *pFile, int flags){
+अटल पूर्णांक jtSync(sqlite3_file *pFile, पूर्णांक flags){
   jt_file *p = (jt_file *)pFile;
 
-  if( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    int rc;
+  अगर( p->flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    पूर्णांक rc;
     jt_file *pMain;                   /* The associated database file */
 
     /* The journal file is being synced. At this point, we inspect the 
@@ -612,117 +612,117 @@ static int jtSync(sqlite3_file *pFile, int flags){
     pMain = locateDatabaseHandle(p->zName, 0);
 
     /* Set the bitvec values */
-    if( pMain && pMain->pWritable ){
+    अगर( pMain && pMain->pWritable ){
       pMain->nSync++;
       rc = readJournalFile(p, pMain);
-      if( rc!=SQLITE_OK ){
-        return rc;
+      अगर( rc!=SQLITE_OK ){
+        वापस rc;
       }
     }
   }
 
-  return sqlite3OsSync(p->pReal, flags);
+  वापस sqlite3OsSync(p->pReal, flags);
 }
 
 /*
 ** Return the current file-size of an jt-file.
 */
-static int jtFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+अटल पूर्णांक jt_File_आकार(sqlite3_file *pFile, sqlite_int64 *p_आकार){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsFileSize(p->pReal, pSize);
+  वापस sqlite3_Os_File_आकार(p->pReal, p_आकार);
 }
 
 /*
 ** Lock an jt-file.
 */
-static int jtLock(sqlite3_file *pFile, int eLock){
-  int rc;
+अटल पूर्णांक jtLock(sqlite3_file *pFile, पूर्णांक eLock){
+  पूर्णांक rc;
   jt_file *p = (jt_file *)pFile;
   rc = sqlite3OsLock(p->pReal, eLock);
-  if( rc==SQLITE_OK && eLock>p->eLock ){
+  अगर( rc==SQLITE_OK && eLock>p->eLock ){
     p->eLock = eLock;
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Unlock an jt-file.
 */
-static int jtUnlock(sqlite3_file *pFile, int eLock){
-  int rc;
+अटल पूर्णांक jtUnlock(sqlite3_file *pFile, पूर्णांक eLock){
+  पूर्णांक rc;
   jt_file *p = (jt_file *)pFile;
   rc = sqlite3OsUnlock(p->pReal, eLock);
-  if( rc==SQLITE_OK && eLock<p->eLock ){
+  अगर( rc==SQLITE_OK && eLock<p->eLock ){
     p->eLock = eLock;
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an jt-file.
 */
-static int jtCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+अटल पूर्णांक jtCheckReservedLock(sqlite3_file *pFile, पूर्णांक *pResOut){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsCheckReservedLock(p->pReal, pResOut);
+  वापस sqlite3OsCheckReservedLock(p->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an jt-file.
 */
-static int jtFileControl(sqlite3_file *pFile, int op, void *pArg){
+अटल पूर्णांक jtFileControl(sqlite3_file *pFile, पूर्णांक op, व्योम *pArg){
   jt_file *p = (jt_file *)pFile;
-  return p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
+  वापस p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an jt-file.
 */
-static int jtSectorSize(sqlite3_file *pFile){
+अटल पूर्णांक jt_Sector_आकार(sqlite3_file *pFile){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsSectorSize(p->pReal);
+  वापस sqlite3_Os_Sector_आकार(p->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an jt-file.
 */
-static int jtDeviceCharacteristics(sqlite3_file *pFile){
+अटल पूर्णांक jtDeviceCharacteristics(sqlite3_file *pFile){
   jt_file *p = (jt_file *)pFile;
-  return sqlite3OsDeviceCharacteristics(p->pReal);
+  वापस sqlite3OsDeviceCharacteristics(p->pReal);
 }
 
 /*
 ** Open an jt file handle.
 */
-static int jtOpen(
+अटल पूर्णांक jtOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  स्थिर अक्षर *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  पूर्णांक flags,
+  पूर्णांक *pOutFlags
 ){
-  int rc;
+  पूर्णांक rc;
   jt_file *p = (jt_file *)pFile;
   pFile->pMethods = 0;
   p->pReal = (sqlite3_file *)&p[1];
   p->pReal->pMethods = 0;
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  assert( rc==SQLITE_OK || p->pReal->pMethods==0 );
-  if( rc==SQLITE_OK ){
+  निश्चित( rc==SQLITE_OK || p->pReal->pMethods==0 );
+  अगर( rc==SQLITE_OK ){
     pFile->pMethods = &jt_io_methods;
     p->eLock = 0;
     p->zName = zName;
     p->flags = flags;
-    p->pNext = 0;
+    p->p_अग्र = 0;
     p->pWritable = 0;
     p->aCksum = 0;
     enterJtMutex();
-    if( zName ){
-      p->pNext = g.pList;
+    अगर( zName ){
+      p->p_अग्र = g.pList;
       g.pList = p;
     }
     leaveJtMutex();
   }
-  return rc;
+  वापस rc;
 }
 
 /*
@@ -730,30 +730,30 @@ static int jtOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int jtDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int nPath = (int)strlen(zPath);
-  if( nPath>8 && 0==strcmp("-journal", &zPath[nPath-8]) ){
+अटल पूर्णांक jtDelete(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath, पूर्णांक dirSync){
+  पूर्णांक nPath = (पूर्णांक)म_माप(zPath);
+  अगर( nPath>8 && 0==म_भेद("-journal", &zPath[nPath-8]) ){
     /* Deleting a journal file. The end of a transaction. */
     jt_file *pMain = locateDatabaseHandle(zPath, 0);
-    if( pMain ){
+    अगर( pMain ){
       closeTransaction(pMain);
     }
   }
 
-  return sqlite3OsDelete(g.pVfs, zPath, dirSync);
+  वापस sqlite3OsDelete(g.pVfs, zPath, dirSync);
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int jtAccess(
+अटल पूर्णांक jtAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  स्थिर अक्षर *zPath, 
+  पूर्णांक flags, 
+  पूर्णांक *pResOut
 ){
-  return sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
+  वापस sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
 }
 
 /*
@@ -761,20 +761,20 @@ static int jtAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (JT_MAX_PATHNAME+1) bytes.
 */
-static int jtFullPathname(
+अटल पूर्णांक jtFullPathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  स्थिर अक्षर *zPath, 
+  पूर्णांक nOut, 
+  अक्षर *zOut
 ){
-  return sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
+  वापस sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *jtDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return g.pVfs->xDlOpen(g.pVfs, zPath);
+अटल व्योम *jtDlOpen(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath){
+  वापस g.pVfs->xDlOpen(g.pVfs, zPath);
 }
 
 /*
@@ -782,21 +782,21 @@ static void *jtDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void jtDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  g.pVfs->xDlError(g.pVfs, nByte, zErrMsg);
+अटल व्योम jtDlError(sqlite3_vfs *pVfs, पूर्णांक nByte, अक्षर *z_Err_संदेश){
+  g.pVfs->xDlError(g.pVfs, nByte, z_Err_संदेश);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*jtDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return g.pVfs->xDlSym(g.pVfs, p, zSym);
+अटल व्योम (*jtDlSym(sqlite3_vfs *pVfs, व्योम *p, स्थिर अक्षर *zSym))(व्योम){
+  वापस g.pVfs->xDlSym(g.pVfs, p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void jtDlClose(sqlite3_vfs *pVfs, void *pHandle){
+अटल व्योम jtDlClose(sqlite3_vfs *pVfs, व्योम *pHandle){
   g.pVfs->xDlClose(g.pVfs, pHandle);
 }
 
@@ -804,33 +804,33 @@ static void jtDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int jtRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
+अटल पूर्णांक jtRandomness(sqlite3_vfs *pVfs, पूर्णांक nByte, अक्षर *zBufOut){
+  वापस sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int jtSleep(sqlite3_vfs *pVfs, int nMicro){
-  return sqlite3OsSleep(g.pVfs, nMicro);
+अटल पूर्णांक jtSleep(sqlite3_vfs *pVfs, पूर्णांक nMicro){
+  वापस sqlite3OsSleep(g.pVfs, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int jtCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
+अटल पूर्णांक jtCurrentTime(sqlite3_vfs *pVfs, द्विगुन *pTimeOut){
+  वापस g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
 }
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int jtCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  return g.pVfs->xCurrentTimeInt64(g.pVfs, pTimeOut);
+अटल पूर्णांक jtCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
+  वापस g.pVfs->xCurrentTimeInt64(g.pVfs, pTimeOut);
 }
 
-static int jtGetLastError(sqlite3_vfs *pVfs, int n, char *z){
-  return g.pVfs->xGetLastError(g.pVfs, n, z);
+अटल पूर्णांक jtGetLastError(sqlite3_vfs *pVfs, पूर्णांक n, अक्षर *z){
+  वापस g.pVfs->xGetLastError(g.pVfs, n, z);
 }
 
 /**************************************************************************
@@ -844,26 +844,26 @@ static int jtGetLastError(sqlite3_vfs *pVfs, int n, char *z){
 ** true, then the jt VFS is installed as non-default. In this case it
 ** is available via its name, "jt".
 */
-int jt_register(char *zWrap, int isDefault){
+पूर्णांक jt_register(अक्षर *zWrap, पूर्णांक isDefault){
   g.pVfs = sqlite3_vfs_find(zWrap);
-  if( g.pVfs==0 ){
-    return SQLITE_ERROR;
+  अगर( g.pVfs==0 ){
+    वापस SQLITE_ERROR;
   }
-  jt_vfs.szOsFile = sizeof(jt_file) + g.pVfs->szOsFile;
-  if( g.pVfs->iVersion==1 ){
+  jt_vfs.szOsFile = माप(jt_file) + g.pVfs->szOsFile;
+  अगर( g.pVfs->iVersion==1 ){
     jt_vfs.iVersion = 1;
-  }else if( g.pVfs->xCurrentTimeInt64==0 ){
+  }अन्यथा अगर( g.pVfs->xCurrentTimeInt64==0 ){
     jt_vfs.xCurrentTimeInt64 = 0;
   }
   sqlite3_vfs_register(&jt_vfs, isDefault);
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Uninstall the jt VFS, if it is installed.
 */
-void jt_unregister(void){
+व्योम jt_unregister(व्योम){
   sqlite3_vfs_unregister(&jt_vfs);
 }
 
-#endif
+#पूर्ण_अगर

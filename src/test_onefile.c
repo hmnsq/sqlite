@@ -79,108 +79,108 @@
 **   time using this demo vfs.
 */
 
-#include "sqlite3.h"
-#include <assert.h>
-#include <string.h>
+#समावेश "sqlite3.h"
+#समावेश <assert.h>
+#समावेश <string.h>
 
 /*
 ** Maximum pathname length supported by the fs backend.
 */
-#define BLOCKSIZE 512
-#define BLOBSIZE 10485760
+#घोषणा BLOCKSIZE 512
+#घोषणा BLOBSIZE 10485760
 
 /*
 ** Name used to identify this VFS.
 */
-#define FS_VFS_NAME "fs"
+#घोषणा FS_VFS_NAME "fs"
 
-typedef struct fs_real_file fs_real_file;
-struct fs_real_file {
+प्रकार काष्ठा fs_real_file fs_real_file;
+काष्ठा fs_real_file {
   sqlite3_file *pFile;
-  const char *zName;
-  int nDatabase;              /* Current size of database region */
-  int nJournal;               /* Current size of journal region */
-  int nBlob;                  /* Total size of allocated blob */
-  int nRef;                   /* Number of pointers to this structure */
-  fs_real_file *pNext;
+  स्थिर अक्षर *zName;
+  पूर्णांक nDatabase;              /* Current size of database region */
+  पूर्णांक nJournal;               /* Current size of journal region */
+  पूर्णांक nBlob;                  /* Total size of allocated blob */
+  पूर्णांक nRef;                   /* Number of pointers to this structure */
+  fs_real_file *p_अग्र;
   fs_real_file **ppThis;
 };
 
-typedef struct fs_file fs_file;
-struct fs_file {
+प्रकार काष्ठा fs_file fs_file;
+काष्ठा fs_file {
   sqlite3_file base;
-  int eType;
+  पूर्णांक eType;
   fs_real_file *pReal;
 };
 
-typedef struct tmp_file tmp_file;
-struct tmp_file {
+प्रकार काष्ठा tmp_file tmp_file;
+काष्ठा tmp_file {
   sqlite3_file base;
-  int nSize;
-  int nAlloc;
-  char *zAlloc;
+  पूर्णांक n_आकार;
+  पूर्णांक nAlloc;
+  अक्षर *zAlloc;
 };
 
 /* Values for fs_file.eType. */
-#define DATABASE_FILE   1
-#define JOURNAL_FILE    2
+#घोषणा DATABASE_FILE   1
+#घोषणा JOURNAL_FILE    2
 
 /*
 ** Method declarations for fs_file.
 */
-static int fsClose(sqlite3_file*);
-static int fsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int fsWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int fsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int fsSync(sqlite3_file*, int flags);
-static int fsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int fsLock(sqlite3_file*, int);
-static int fsUnlock(sqlite3_file*, int);
-static int fsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int fsFileControl(sqlite3_file*, int op, void *pArg);
-static int fsSectorSize(sqlite3_file*);
-static int fsDeviceCharacteristics(sqlite3_file*);
+अटल पूर्णांक fsClose(sqlite3_file*);
+अटल पूर्णांक fsRead(sqlite3_file*, व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक fsWrite(sqlite3_file*, स्थिर व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक fsTruncate(sqlite3_file*, sqlite3_int64 आकार);
+अटल पूर्णांक fsSync(sqlite3_file*, पूर्णांक flags);
+अटल पूर्णांक fs_File_आकार(sqlite3_file*, sqlite3_int64 *p_आकार);
+अटल पूर्णांक fsLock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक fsUnlock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक fsCheckReservedLock(sqlite3_file*, पूर्णांक *pResOut);
+अटल पूर्णांक fsFileControl(sqlite3_file*, पूर्णांक op, व्योम *pArg);
+अटल पूर्णांक fs_Sector_आकार(sqlite3_file*);
+अटल पूर्णांक fsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tmp_file.
 */
-static int tmpClose(sqlite3_file*);
-static int tmpRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tmpSync(sqlite3_file*, int flags);
-static int tmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tmpLock(sqlite3_file*, int);
-static int tmpUnlock(sqlite3_file*, int);
-static int tmpCheckReservedLock(sqlite3_file*, int *pResOut);
-static int tmpFileControl(sqlite3_file*, int op, void *pArg);
-static int tmpSectorSize(sqlite3_file*);
-static int tmpDeviceCharacteristics(sqlite3_file*);
+अटल पूर्णांक tmpClose(sqlite3_file*);
+अटल पूर्णांक tmpRead(sqlite3_file*, व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक tmpWrite(sqlite3_file*, स्थिर व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक tmpTruncate(sqlite3_file*, sqlite3_int64 आकार);
+अटल पूर्णांक tmpSync(sqlite3_file*, पूर्णांक flags);
+अटल पूर्णांक tmp_File_आकार(sqlite3_file*, sqlite3_int64 *p_आकार);
+अटल पूर्णांक tmpLock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक tmpUnlock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक tmpCheckReservedLock(sqlite3_file*, पूर्णांक *pResOut);
+अटल पूर्णांक tmpFileControl(sqlite3_file*, पूर्णांक op, व्योम *pArg);
+अटल पूर्णांक tmp_Sector_आकार(sqlite3_file*);
+अटल पूर्णांक tmpDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for fs_vfs.
 */
-static int fsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int fsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int fsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int fsFullPathname(sqlite3_vfs*, const char *zName, int nOut,char *zOut);
-static void *fsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void fsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*fsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void fsDlClose(sqlite3_vfs*, void*);
-static int fsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int fsSleep(sqlite3_vfs*, int microseconds);
-static int fsCurrentTime(sqlite3_vfs*, double*);
+अटल पूर्णांक fsOpen(sqlite3_vfs*, स्थिर अक्षर *, sqlite3_file*, पूर्णांक , पूर्णांक *);
+अटल पूर्णांक fsDelete(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक syncDir);
+अटल पूर्णांक fsAccess(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक flags, पूर्णांक *);
+अटल पूर्णांक fsFullPathname(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक nOut,अक्षर *zOut);
+अटल व्योम *fsDlOpen(sqlite3_vfs*, स्थिर अक्षर *zFilename);
+अटल व्योम fsDlError(sqlite3_vfs*, पूर्णांक nByte, अक्षर *z_Err_संदेश);
+अटल व्योम (*fsDlSym(sqlite3_vfs*,व्योम*, स्थिर अक्षर *z_प्रतीक))(व्योम);
+अटल व्योम fsDlClose(sqlite3_vfs*, व्योम*);
+अटल पूर्णांक fsRandomness(sqlite3_vfs*, पूर्णांक nByte, अक्षर *zOut);
+अटल पूर्णांक fsSleep(sqlite3_vfs*, पूर्णांक microseconds);
+अटल पूर्णांक fsCurrentTime(sqlite3_vfs*, द्विगुन*);
 
 
-typedef struct fs_vfs_t fs_vfs_t;
-struct fs_vfs_t {
+प्रकार काष्ठा fs_vfs_t fs_vfs_t;
+काष्ठा fs_vfs_t {
   sqlite3_vfs base;
   fs_real_file *pFileList;
   sqlite3_vfs *pParent;
 };
 
-static fs_vfs_t fs_vfs = {
+अटल fs_vfs_t fs_vfs = {
   {
     1,                                          /* iVersion */
     0,                                          /* szOsFile */
@@ -205,19 +205,19 @@ static fs_vfs_t fs_vfs = {
   0                                             /* pParent */
 };
 
-static sqlite3_io_methods fs_io_methods = {
+अटल sqlite3_io_methods fs_io_methods = {
   1,                            /* iVersion */
   fsClose,                      /* xClose */
   fsRead,                       /* xRead */
   fsWrite,                      /* xWrite */
   fsTruncate,                   /* xTruncate */
   fsSync,                       /* xSync */
-  fsFileSize,                   /* xFileSize */
+  fs_File_आकार,                   /* xFileSize */
   fsLock,                       /* xLock */
   fsUnlock,                     /* xUnlock */
   fsCheckReservedLock,          /* xCheckReservedLock */
   fsFileControl,                /* xFileControl */
-  fsSectorSize,                 /* xSectorSize */
+  fs_Sector_आकार,                 /* xSectorSize */
   fsDeviceCharacteristics,      /* xDeviceCharacteristics */
   0,                            /* xShmMap */
   0,                            /* xShmLock */
@@ -226,19 +226,19 @@ static sqlite3_io_methods fs_io_methods = {
 };
 
 
-static sqlite3_io_methods tmp_io_methods = {
+अटल sqlite3_io_methods tmp_io_methods = {
   1,                            /* iVersion */
   tmpClose,                     /* xClose */
   tmpRead,                      /* xRead */
   tmpWrite,                     /* xWrite */
   tmpTruncate,                  /* xTruncate */
   tmpSync,                      /* xSync */
-  tmpFileSize,                  /* xFileSize */
+  tmp_File_आकार,                  /* xFileSize */
   tmpLock,                      /* xLock */
   tmpUnlock,                    /* xUnlock */
   tmpCheckReservedLock,         /* xCheckReservedLock */
   tmpFileControl,               /* xFileControl */
-  tmpSectorSize,                /* xSectorSize */
+  tmp_Sector_आकार,                /* xSectorSize */
   tmpDeviceCharacteristics,     /* xDeviceCharacteristics */
   0,                            /* xShmMap */
   0,                            /* xShmLock */
@@ -247,416 +247,416 @@ static sqlite3_io_methods tmp_io_methods = {
 };
 
 /* Useful macros used in several places */
-#define MIN(x,y) ((x)<(y)?(x):(y))
-#define MAX(x,y) ((x)>(y)?(x):(y))
+#घोषणा MIN(x,y) ((x)<(y)?(x):(y))
+#घोषणा MAX(x,y) ((x)>(y)?(x):(y))
 
 
 /*
 ** Close a tmp-file.
 */
-static int tmpClose(sqlite3_file *pFile){
+अटल पूर्णांक tmpClose(sqlite3_file *pFile){
   tmp_file *pTmp = (tmp_file *)pFile;
   sqlite3_free(pTmp->zAlloc);
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Read data from a tmp-file.
 */
-static int tmpRead(
+अटल पूर्णांक tmpRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nSize ){
-    return SQLITE_IOERR_SHORT_READ;
+  अगर( (iAmt+iOfst)>pTmp->n_आकार ){
+    वापस SQLITE_IOERR_SHORT_READ;
   }
-  memcpy(zBuf, &pTmp->zAlloc[iOfst], iAmt);
-  return SQLITE_OK;
+  स_नकल(zBuf, &pTmp->zAlloc[iOfst], iAmt);
+  वापस SQLITE_OK;
 }
 
 /*
 ** Write data to a tmp-file.
 */
-static int tmpWrite(
+अटल पूर्णांक tmpWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  स्थिर व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nAlloc ){
-    int nNew = (int)(2*(iAmt+iOfst+pTmp->nAlloc));
-    char *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
-    if( !zNew ){
-      return SQLITE_NOMEM;
+  अगर( (iAmt+iOfst)>pTmp->nAlloc ){
+    पूर्णांक nNew = (पूर्णांक)(2*(iAmt+iOfst+pTmp->nAlloc));
+    अक्षर *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
+    अगर( !zNew ){
+      वापस SQLITE_NOMEM;
     }
     pTmp->zAlloc = zNew;
     pTmp->nAlloc = nNew;
   }
-  memcpy(&pTmp->zAlloc[iOfst], zBuf, iAmt);
-  pTmp->nSize = (int)MAX(pTmp->nSize, iOfst+iAmt);
-  return SQLITE_OK;
+  स_नकल(&pTmp->zAlloc[iOfst], zBuf, iAmt);
+  pTmp->n_आकार = (पूर्णांक)MAX(pTmp->n_आकार, iOfst+iAmt);
+  वापस SQLITE_OK;
 }
 
 /*
 ** Truncate a tmp-file.
 */
-static int tmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
+अटल पूर्णांक tmpTruncate(sqlite3_file *pFile, sqlite_int64 आकार){
   tmp_file *pTmp = (tmp_file *)pFile;
-  pTmp->nSize = (int)MIN(pTmp->nSize, size);
-  return SQLITE_OK;
+  pTmp->n_आकार = (पूर्णांक)MIN(pTmp->n_आकार, आकार);
+  वापस SQLITE_OK;
 }
 
 /*
 ** Sync a tmp-file.
 */
-static int tmpSync(sqlite3_file *pFile, int flags){
-  return SQLITE_OK;
+अटल पूर्णांक tmpSync(sqlite3_file *pFile, पूर्णांक flags){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of a tmp-file.
 */
-static int tmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+अटल पूर्णांक tmp_File_आकार(sqlite3_file *pFile, sqlite_int64 *p_आकार){
   tmp_file *pTmp = (tmp_file *)pFile;
-  *pSize = pTmp->nSize;
-  return SQLITE_OK;
+  *p_आकार = pTmp->n_आकार;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Lock a tmp-file.
 */
-static int tmpLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+अटल पूर्णांक tmpLock(sqlite3_file *pFile, पूर्णांक eLock){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Unlock a tmp-file.
 */
-static int tmpUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+अटल पूर्णांक tmpUnlock(sqlite3_file *pFile, पूर्णांक eLock){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on a tmp-file.
 */
-static int tmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+अटल पूर्णांक tmpCheckReservedLock(sqlite3_file *pFile, पूर्णांक *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on a tmp-file.
 */
-static int tmpFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_OK;
+अटल पूर्णांक tmpFileControl(sqlite3_file *pFile, पूर्णांक op, व्योम *pArg){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for a tmp-file.
 */
-static int tmpSectorSize(sqlite3_file *pFile){
-  return 0;
+अटल पूर्णांक tmp_Sector_आकार(sqlite3_file *pFile){
+  वापस 0;
 }
 
 /*
 ** Return the device characteristic flags supported by a tmp-file.
 */
-static int tmpDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+अटल पूर्णांक tmpDeviceCharacteristics(sqlite3_file *pFile){
+  वापस 0;
 }
 
 /*
 ** Close an fs-file.
 */
-static int fsClose(sqlite3_file *pFile){
-  int rc = SQLITE_OK;
+अटल पूर्णांक fsClose(sqlite3_file *pFile){
+  पूर्णांक rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
 
   /* Decrement the real_file ref-count. */
   pReal->nRef--;
-  assert(pReal->nRef>=0);
+  निश्चित(pReal->nRef>=0);
 
   /* When the ref-count reaches 0, destroy the structure */
-  if( pReal->nRef==0 ){
-    *pReal->ppThis = pReal->pNext;
-    if( pReal->pNext ){
-      pReal->pNext->ppThis = pReal->ppThis;
+  अगर( pReal->nRef==0 ){
+    *pReal->ppThis = pReal->p_अग्र;
+    अगर( pReal->p_अग्र ){
+      pReal->p_अग्र->ppThis = pReal->ppThis;
     }
     rc = pReal->pFile->pMethods->xClose(pReal->pFile);
     sqlite3_free(pReal);
   }
 
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Read data from an fs-file.
 */
-static int fsRead(
+अटल पूर्णांक fsRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  पूर्णांक rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
+  अगर( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
    || (p->eType==JOURNAL_FILE && (iAmt+iOfst)>pReal->nJournal)
   ){
     rc = SQLITE_IOERR_SHORT_READ;
-  }else if( p->eType==DATABASE_FILE ){
+  }अन्यथा अगर( p->eType==DATABASE_FILE ){
     rc = pF->pMethods->xRead(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-  }else{
+  }अन्यथा{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    पूर्णांक iRem = iAmt;
+    पूर्णांक iBuf = 0;
+    पूर्णांक ii = (पूर्णांक)iOfst;
+    जबतक( iRem>0 && rc==SQLITE_OK ){
+      पूर्णांक iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      पूर्णांक iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      rc = pF->pMethods->xRead(pF, &((char *)zBuf)[iBuf], iRealAmt, iRealOff);
+      rc = pF->pMethods->xRead(pF, &((अक्षर *)zBuf)[iBuf], iRealAmt, iRealOff);
       ii += iRealAmt;
       iBuf += iRealAmt;
       iRem -= iRealAmt;
     }
   }
 
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Write data to an fs-file.
 */
-static int fsWrite(
+अटल पूर्णांक fsWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  स्थिर व्योम *zBuf, 
+  पूर्णांक iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  पूर्णांक rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( p->eType==DATABASE_FILE ){
-    if( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
+  अगर( p->eType==DATABASE_FILE ){
+    अगर( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
       rc = SQLITE_FULL;
-    }else{
+    }अन्यथा{
       rc = pF->pMethods->xWrite(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-      if( rc==SQLITE_OK ){
-        pReal->nDatabase = (int)MAX(pReal->nDatabase, iAmt+iOfst);
+      अगर( rc==SQLITE_OK ){
+        pReal->nDatabase = (पूर्णांक)MAX(pReal->nDatabase, iAmt+iOfst);
       }
     }
-  }else{
+  }अन्यथा{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    पूर्णांक iRem = iAmt;
+    पूर्णांक iBuf = 0;
+    पूर्णांक ii = (पूर्णांक)iOfst;
+    जबतक( iRem>0 && rc==SQLITE_OK ){
+      पूर्णांक iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      पूर्णांक iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      if( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
+      अगर( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
         rc = SQLITE_FULL;
-      }else{
-        rc = pF->pMethods->xWrite(pF, &((char *)zBuf)[iBuf], iRealAmt,iRealOff);
+      }अन्यथा{
+        rc = pF->pMethods->xWrite(pF, &((अक्षर *)zBuf)[iBuf], iRealAmt,iRealOff);
         ii += iRealAmt;
         iBuf += iRealAmt;
         iRem -= iRealAmt;
       }
     }
-    if( rc==SQLITE_OK ){
-      pReal->nJournal = (int)MAX(pReal->nJournal, iAmt+iOfst);
+    अगर( rc==SQLITE_OK ){
+      pReal->nJournal = (पूर्णांक)MAX(pReal->nJournal, iAmt+iOfst);
     }
   }
 
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Truncate an fs-file.
 */
-static int fsTruncate(sqlite3_file *pFile, sqlite_int64 size){
+अटल पूर्णांक fsTruncate(sqlite3_file *pFile, sqlite_int64 आकार){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
-    pReal->nDatabase = (int)MIN(pReal->nDatabase, size);
-  }else{
-    pReal->nJournal = (int)MIN(pReal->nJournal, size);
+  अगर( p->eType==DATABASE_FILE ){
+    pReal->nDatabase = (पूर्णांक)MIN(pReal->nDatabase, आकार);
+  }अन्यथा{
+    pReal->nJournal = (पूर्णांक)MIN(pReal->nJournal, आकार);
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Sync an fs-file.
 */
-static int fsSync(sqlite3_file *pFile, int flags){
+अटल पूर्णांक fsSync(sqlite3_file *pFile, पूर्णांक flags){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pRealFile = pReal->pFile;
-  int rc = SQLITE_OK;
+  पूर्णांक rc = SQLITE_OK;
 
-  if( p->eType==DATABASE_FILE ){
-    unsigned char zSize[4];
-    zSize[0] = (pReal->nDatabase&0xFF000000)>>24;
-    zSize[1] = (unsigned char)((pReal->nDatabase&0x00FF0000)>>16);
-    zSize[2] = (pReal->nDatabase&0x0000FF00)>>8;
-    zSize[3] = (pReal->nDatabase&0x000000FF);
-    rc = pRealFile->pMethods->xWrite(pRealFile, zSize, 4, 0);
+  अगर( p->eType==DATABASE_FILE ){
+    अचिन्हित अक्षर z_आकार[4];
+    z_आकार[0] = (pReal->nDatabase&0xFF000000)>>24;
+    z_आकार[1] = (अचिन्हित अक्षर)((pReal->nDatabase&0x00FF0000)>>16);
+    z_आकार[2] = (pReal->nDatabase&0x0000FF00)>>8;
+    z_आकार[3] = (pReal->nDatabase&0x000000FF);
+    rc = pRealFile->pMethods->xWrite(pRealFile, z_आकार, 4, 0);
   }
-  if( rc==SQLITE_OK ){
+  अगर( rc==SQLITE_OK ){
     rc = pRealFile->pMethods->xSync(pRealFile, flags&(~SQLITE_SYNC_DATAONLY));
   }
 
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Return the current file-size of an fs-file.
 */
-static int fsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+अटल पूर्णांक fs_File_आकार(sqlite3_file *pFile, sqlite_int64 *p_आकार){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
-    *pSize = pReal->nDatabase;
-  }else{
-    *pSize = pReal->nJournal;
+  अगर( p->eType==DATABASE_FILE ){
+    *p_आकार = pReal->nDatabase;
+  }अन्यथा{
+    *p_आकार = pReal->nJournal;
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Lock an fs-file.
 */
-static int fsLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+अटल पूर्णांक fsLock(sqlite3_file *pFile, पूर्णांक eLock){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Unlock an fs-file.
 */
-static int fsUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+अटल पूर्णांक fsUnlock(sqlite3_file *pFile, पूर्णांक eLock){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an fs-file.
 */
-static int fsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+अटल पूर्णांक fsCheckReservedLock(sqlite3_file *pFile, पूर्णांक *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on an fs-file.
 */
-static int fsFileControl(sqlite3_file *pFile, int op, void *pArg){
-  if( op==SQLITE_FCNTL_PRAGMA ) return SQLITE_NOTFOUND;
-  return SQLITE_OK;
+अटल पूर्णांक fsFileControl(sqlite3_file *pFile, पूर्णांक op, व्योम *pArg){
+  अगर( op==SQLITE_FCNTL_PRAGMA ) वापस SQLITE_NOTFOUND;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for an fs-file.
 */
-static int fsSectorSize(sqlite3_file *pFile){
-  return BLOCKSIZE;
+अटल पूर्णांक fs_Sector_आकार(sqlite3_file *pFile){
+  वापस BLOCKSIZE;
 }
 
 /*
 ** Return the device characteristic flags supported by an fs-file.
 */
-static int fsDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+अटल पूर्णांक fsDeviceCharacteristics(sqlite3_file *pFile){
+  वापस 0;
 }
 
 /*
 ** Open an fs file handle.
 */
-static int fsOpen(
+अटल पूर्णांक fsOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  स्थिर अक्षर *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  पूर्णांक flags,
+  पूर्णांक *pOutFlags
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = 0;
-  int eType;
-  int nName;
-  int rc = SQLITE_OK;
+  पूर्णांक eType;
+  पूर्णांक nName;
+  पूर्णांक rc = SQLITE_OK;
 
-  if( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
+  अगर( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
     tmp_file *p2 = (tmp_file *)pFile;
-    memset(p2, 0, sizeof(*p2));
+    स_रखो(p2, 0, माप(*p2));
     p2->base.pMethods = &tmp_io_methods;
-    return SQLITE_OK;
+    वापस SQLITE_OK;
   }
 
   eType = ((flags&(SQLITE_OPEN_MAIN_DB))?DATABASE_FILE:JOURNAL_FILE);
   p->base.pMethods = &fs_io_methods;
   p->eType = eType;
 
-  assert(strlen("-journal")==8);
-  nName = (int)strlen(zName)-((eType==JOURNAL_FILE)?8:0);
+  निश्चित(म_माप("-journal")==8);
+  nName = (पूर्णांक)म_माप(zName)-((eType==JOURNAL_FILE)?8:0);
   pReal=pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zName, nName); pReal=pReal->pNext);
+  क्रम(; pReal && म_भेदन(pReal->zName, zName, nName); pReal=pReal->p_अग्र);
 
-  if( !pReal ){
-    int real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_TEMP_DB;
-    sqlite3_int64 size;
+  अगर( !pReal ){
+    पूर्णांक real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_अस्थायी_DB;
+    sqlite3_int64 आकार;
     sqlite3_file *pRealFile;
     sqlite3_vfs *pParent = pFsVfs->pParent;
-    assert(eType==DATABASE_FILE);
+    निश्चित(eType==DATABASE_FILE);
 
-    pReal = (fs_real_file *)sqlite3_malloc(sizeof(*pReal)+pParent->szOsFile);
-    if( !pReal ){
+    pReal = (fs_real_file *)sqlite3_malloc(माप(*pReal)+pParent->szOsFile);
+    अगर( !pReal ){
       rc = SQLITE_NOMEM;
-      goto open_out;
+      जाओ open_out;
     }
-    memset(pReal, 0, sizeof(*pReal)+pParent->szOsFile);
+    स_रखो(pReal, 0, माप(*pReal)+pParent->szOsFile);
     pReal->zName = zName;
     pReal->pFile = (sqlite3_file *)(&pReal[1]);
 
     rc = pParent->xOpen(pParent, zName, pReal->pFile, real_flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
-      goto open_out;
+    अगर( rc!=SQLITE_OK ){
+      जाओ open_out;
     }
     pRealFile = pReal->pFile;
 
-    rc = pRealFile->pMethods->xFileSize(pRealFile, &size);
-    if( rc!=SQLITE_OK ){
-      goto open_out;
+    rc = pRealFile->pMethods->x_File_आकार(pRealFile, &आकार);
+    अगर( rc!=SQLITE_OK ){
+      जाओ open_out;
     }
-    if( size==0 ){
+    अगर( आकार==0 ){
       rc = pRealFile->pMethods->xWrite(pRealFile, "\0", 1, BLOBSIZE-1);
       pReal->nBlob = BLOBSIZE;
-    }else{
-      unsigned char zS[4];
-      pReal->nBlob = (int)size;
+    }अन्यथा{
+      अचिन्हित अक्षर zS[4];
+      pReal->nBlob = (पूर्णांक)आकार;
       rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, 0);
       pReal->nDatabase = (zS[0]<<24)+(zS[1]<<16)+(zS[2]<<8)+zS[3];
-      if( rc==SQLITE_OK ){
+      अगर( rc==SQLITE_OK ){
         rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, pReal->nBlob-4);
-        if( zS[0] || zS[1] || zS[2] || zS[3] ){
+        अगर( zS[0] || zS[1] || zS[2] || zS[3] ){
           pReal->nJournal = pReal->nBlob;
         }
       }
     }
 
-    if( rc==SQLITE_OK ){
-      pReal->pNext = pFsVfs->pFileList;
-      if( pReal->pNext ){
-        pReal->pNext->ppThis = &pReal->pNext;
+    अगर( rc==SQLITE_OK ){
+      pReal->p_अग्र = pFsVfs->pFileList;
+      अगर( pReal->p_अग्र ){
+        pReal->p_अग्र->ppThis = &pReal->p_अग्र;
       }
       pReal->ppThis = &pFsVfs->pFileList;
       pFsVfs->pFileList = pReal;
@@ -664,18 +664,18 @@ static int fsOpen(
   }
 
 open_out:
-  if( pReal ){
-    if( rc==SQLITE_OK ){
+  अगर( pReal ){
+    अगर( rc==SQLITE_OK ){
       p->pReal = pReal;
       pReal->nRef++;
-    }else{
-      if( pReal->pFile->pMethods ){
+    }अन्यथा{
+      अगर( pReal->pFile->pMethods ){
         pReal->pFile->pMethods->xClose(pReal->pFile);
       }
       sqlite3_free(pReal);
     }
   }
-  return rc;
+  वापस rc;
 }
 
 /*
@@ -683,59 +683,59 @@ open_out:
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int fsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
+अटल पूर्णांक fsDelete(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath, पूर्णांक dirSync){
+  पूर्णांक rc = SQLITE_OK;
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
   sqlite3_file *pF;
-  int nName = (int)strlen(zPath) - 8;
+  पूर्णांक nName = (पूर्णांक)म_माप(zPath) - 8;
 
-  assert(strlen("-journal")==8);
-  assert(strcmp("-journal", &zPath[nName])==0);
+  निश्चित(म_माप("-journal")==8);
+  निश्चित(म_भेद("-journal", &zPath[nName])==0);
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
-  if( pReal ){
+  क्रम(; pReal && म_भेदन(pReal->zName, zPath, nName); pReal=pReal->p_अग्र);
+  अगर( pReal ){
     pF = pReal->pFile;
     rc = pF->pMethods->xWrite(pF, "\0\0\0\0", 4, pReal->nBlob-BLOCKSIZE);
-    if( rc==SQLITE_OK ){
+    अगर( rc==SQLITE_OK ){
       pReal->nJournal = 0;
     }
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int fsAccess(
+अटल पूर्णांक fsAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  स्थिर अक्षर *zPath, 
+  पूर्णांक flags, 
+  पूर्णांक *pResOut
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
-  int isJournal = 0;
-  int nName = (int)strlen(zPath);
+  पूर्णांक isJournal = 0;
+  पूर्णांक nName = (पूर्णांक)म_माप(zPath);
 
-  if( flags!=SQLITE_ACCESS_EXISTS ){
+  अगर( flags!=SQLITE_ACCESS_EXISTS ){
     sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-    return pParent->xAccess(pParent, zPath, flags, pResOut);
+    वापस pParent->xAccess(pParent, zPath, flags, pResOut);
   }
 
-  assert(strlen("-journal")==8);
-  if( nName>8 && strcmp("-journal", &zPath[nName-8])==0 ){
+  निश्चित(म_माप("-journal")==8);
+  अगर( nName>8 && म_भेद("-journal", &zPath[nName-8])==0 ){
     nName -= 8;
     isJournal = 1;
   }
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
+  क्रम(; pReal && म_भेदन(pReal->zName, zPath, nName); pReal=pReal->p_अग्र);
 
   *pResOut = (pReal && (!isJournal || pReal->nJournal>0));
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
@@ -743,22 +743,22 @@ static int fsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (FS_MAX_PATHNAME+1) bytes.
 */
-static int fsFullPathname(
+अटल पूर्णांक fsFullPathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zPath,            /* Possibly relative input path */
-  int nOut,                     /* Size of output buffer in bytes */
-  char *zOut                    /* Output buffer */
+  स्थिर अक्षर *zPath,            /* Possibly relative input path */
+  पूर्णांक nOut,                     /* Size of output buffer in bytes */
+  अक्षर *zOut                    /* Output buffer */
 ){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xFullPathname(pParent, zPath, nOut, zOut);
+  वापस pParent->xFullPathname(pParent, zPath, nOut, zOut);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
+अटल व्योम *fsDlOpen(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlOpen(pParent, zPath);
+  वापस pParent->xDlOpen(pParent, zPath);
 }
 
 /*
@@ -766,23 +766,23 @@ static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+अटल व्योम fsDlError(sqlite3_vfs *pVfs, पूर्णांक nByte, अक्षर *z_Err_संदेश){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  pParent->xDlError(pParent, nByte, zErrMsg);
+  pParent->xDlError(pParent, nByte, z_Err_संदेश);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*fsDlSym(sqlite3_vfs *pVfs, void *pH, const char *zSym))(void){
+अटल व्योम (*fsDlSym(sqlite3_vfs *pVfs, व्योम *pH, स्थिर अक्षर *zSym))(व्योम){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlSym(pParent, pH, zSym);
+  वापस pParent->xDlSym(pParent, pH, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void fsDlClose(sqlite3_vfs *pVfs, void *pHandle){
+अटल व्योम fsDlClose(sqlite3_vfs *pVfs, व्योम *pHandle){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
   pParent->xDlClose(pParent, pHandle);
 }
@@ -791,26 +791,26 @@ static void fsDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int fsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+अटल पूर्णांक fsRandomness(sqlite3_vfs *pVfs, पूर्णांक nByte, अक्षर *zBufOut){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xRandomness(pParent, nByte, zBufOut);
+  वापस pParent->xRandomness(pParent, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int fsSleep(sqlite3_vfs *pVfs, int nMicro){
+अटल पूर्णांक fsSleep(sqlite3_vfs *pVfs, पूर्णांक nMicro){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xSleep(pParent, nMicro);
+  वापस pParent->xSleep(pParent, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+अटल पूर्णांक fsCurrentTime(sqlite3_vfs *pVfs, द्विगुन *pTimeOut){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xCurrentTime(pParent, pTimeOut);
+  वापस pParent->xCurrentTime(pParent, pTimeOut);
 }
 
 /*
@@ -818,14 +818,14 @@ static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
 ** true, the fs vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-int fs_register(void){
-  if( fs_vfs.pParent ) return SQLITE_OK;
+पूर्णांक fs_register(व्योम){
+  अगर( fs_vfs.pParent ) वापस SQLITE_OK;
   fs_vfs.pParent = sqlite3_vfs_find(0);
   fs_vfs.base.mxPathname = fs_vfs.pParent->mxPathname;
-  fs_vfs.base.szOsFile = MAX(sizeof(tmp_file), sizeof(fs_file));
-  return sqlite3_vfs_register(&fs_vfs.base, 0);
+  fs_vfs.base.szOsFile = MAX(माप(tmp_file), माप(fs_file));
+  वापस sqlite3_vfs_register(&fs_vfs.base, 0);
 }
 
-#ifdef SQLITE_TEST
-  int SqlitetestOnefile_Init() {return fs_register();}
-#endif
+#अगर_घोषित SQLITE_TEST
+  पूर्णांक SqlitetestOnefile_Init() {वापस fs_register();}
+#पूर्ण_अगर

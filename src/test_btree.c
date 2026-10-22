@@ -13,8 +13,8 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "btreeInt.h"
-#include "tclsqlite.h"
+#समावेश "btreeInt.h"
+#समावेश "tclsqlite.h"
 
 /*
 ** Usage: sqlite3_shared_cache_report
@@ -22,41 +22,41 @@
 ** Return a list of file that are shared and the number of
 ** references to each file.
 */
-int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
-  void * clientData,
+पूर्णांक SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(
+  व्योम * client_तथ्य,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णांक objc,
   Tcl_Obj *CONST objv[]
 ){
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  extern BtShared *sqlite3SharedCacheList;
+#अगर_अघोषित SQLITE_OMIT_SHARED_CACHE
+  बाह्य BtShared *sqlite3SharedCacheList;
   BtShared *pBt;
   Tcl_Obj *pRet = Tcl_NewObj();
-  for(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->pNext){
-    const char *zFile = sqlite3PagerFilename(pBt->pPager, 1);
+  क्रम(pBt=GLOBAL(BtShared*,sqlite3SharedCacheList); pBt; pBt=pBt->p_अग्र){
+    स्थिर अक्षर *zFile = sqlite3PagerFilename(pBt->pPager, 1);
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(zFile, -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(pBt->nRef));
   }
-  Tcl_SetObjResult(interp, pRet);
-#endif
-  return TCL_OK;
+  Tcl_Set_Obj_परिणाम(interp, pRet);
+#पूर्ण_अगर
+  वापस TCL_OK;
 }
 
 /*
 ** Print debugging information about all cursors to standard output.
 */
-void sqlite3BtreeCursorList(Btree *p){
-#ifdef SQLITE_DEBUG
+व्योम sqlite3BtreeCursorList(Btree *p){
+#अगर_घोषित SQLITE_DEBUG
   BtCursor *pCur;
   BtShared *pBt = p->pBt;
-  for(pCur=pBt->pCursor; pCur; pCur=pCur->pNext){
+  क्रम(pCur=pBt->pCursor; pCur; pCur=pCur->p_अग्र){
     MemPage *pPage = pCur->apPage[pCur->iPage];
-    char *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
+    अक्षर *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
     sqlite3DebugPrintf("CURSOR %p rooted at %4d(%s) currently at %d.%d%s\n",
-       pCur, pCur->pgnoRoot, zMode,
+       pCur, pCur->pgno_मूल, zMode,
        pPage ? pPage->pgno : 0, pCur->aiIdx[pCur->iPage],
        (pCur->eState==CURSOR_VALID) ? "" : " eof"
     );
   }
-#endif
+#पूर्ण_अगर
 }

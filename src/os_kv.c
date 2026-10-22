@@ -30,31 +30,31 @@
 ** a few characters.  If the database name is too long, the VFS will
 ** malfunction and you will get SQLITE_CORRUPT errors.
 */
-#include <sqliteInt.h>
-#if SQLITE_OS_KV || (SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL))
+#समावेश <sqliteInt.h>
+#अगर SQLITE_OS_KV || (SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL))
 
 /*****************************************************************************
 ** Debugging logic
 */
 
 /* SQLITE_KV_TRACE() is used for tracing calls to kvrecord routines. */
-#if 0
-#define SQLITE_KV_TRACE(X)  printf X
-#else
-#define SQLITE_KV_TRACE(X)
-#endif
+#अगर 0
+#घोषणा SQLITE_KV_TRACE(X)  म_लिखो X
+#अन्यथा
+#घोषणा SQLITE_KV_TRACE(X)
+#पूर्ण_अगर
 
 /* SQLITE_KV_LOG() is used for tracing calls to the VFS interface */
-#if 0
-#define SQLITE_KV_LOG(X)  printf X
-#else
-#define SQLITE_KV_LOG(X)
-#endif
+#अगर 0
+#घोषणा SQLITE_KV_LOG(X)  म_लिखो X
+#अन्यथा
+#घोषणा SQLITE_KV_LOG(X)
+#पूर्ण_अगर
 
 /*
 ** Forward declaration of objects used by this VFS implementation
 */
-typedef struct KVVfsFile KVVfsFile;
+प्रकार काष्ठा KVVfsFile KVVfsFile;
 
 /* A single open file.  There are only two files represented by this
 ** VFS - the database and the rollback journal.
@@ -64,56 +64,56 @@ typedef struct KVVfsFile KVVfsFile;
 ** sqlite3-wasm.c:sqlite3__wasm_enum_json(). There are no binary
 ** compatibility concerns, so it does not need an iVersion member.
 */
-struct KVVfsFile {
+काष्ठा KVVfsFile {
   sqlite3_file base;              /* IO methods */
-  const char *zClass;             /* Storage class */
-  int isJournal;                  /* True if this is a journal file */
-  unsigned int nJrnl;             /* Space allocated for aJrnl[] */
-  char *aJrnl;                    /* Journal content */
-  int szPage;                     /* Last known page size */
+  स्थिर अक्षर *zClass;             /* Storage class */
+  पूर्णांक isJournal;                  /* True if this is a journal file */
+  अचिन्हित पूर्णांक nJrnl;             /* Space allocated for aJrnl[] */
+  अक्षर *aJrnl;                    /* Journal content */
+  पूर्णांक szPage;                     /* Last known page size */
   sqlite3_int64 szDb;             /* Database file size.  -1 means unknown */
-  char *aData;                    /* Buffer to hold page data */
+  अक्षर *a_तथ्य;                    /* Buffer to hold page data */
 };
-#define SQLITE_KVOS_SZ 133073
+#घोषणा SQLITE_KVOS_SZ 133073
 
 /*
 ** Methods for KVVfsFile
 */
-static int kvvfsClose(sqlite3_file*);
-static int kvvfsReadDb(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int kvvfsReadJrnl(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int kvvfsWriteDb(sqlite3_file*,const void*,int iAmt, sqlite3_int64);
-static int kvvfsWriteJrnl(sqlite3_file*,const void*,int iAmt, sqlite3_int64);
-static int kvvfsTruncateDb(sqlite3_file*, sqlite3_int64 size);
-static int kvvfsTruncateJrnl(sqlite3_file*, sqlite3_int64 size);
-static int kvvfsSyncDb(sqlite3_file*, int flags);
-static int kvvfsSyncJrnl(sqlite3_file*, int flags);
-static int kvvfsFileSizeDb(sqlite3_file*, sqlite3_int64 *pSize);
-static int kvvfsFileSizeJrnl(sqlite3_file*, sqlite3_int64 *pSize);
-static int kvvfsLock(sqlite3_file*, int);
-static int kvvfsUnlock(sqlite3_file*, int);
-static int kvvfsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int kvvfsFileControlDb(sqlite3_file*, int op, void *pArg);
-static int kvvfsFileControlJrnl(sqlite3_file*, int op, void *pArg);
-static int kvvfsSectorSize(sqlite3_file*);
-static int kvvfsDeviceCharacteristics(sqlite3_file*);
+अटल पूर्णांक kvvfsClose(sqlite3_file*);
+अटल पूर्णांक kvvfsReadDb(sqlite3_file*, व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक kvvfsReadJrnl(sqlite3_file*, व्योम*, पूर्णांक iAmt, sqlite3_int64 iOfst);
+अटल पूर्णांक kvvfsWriteDb(sqlite3_file*,स्थिर व्योम*,पूर्णांक iAmt, sqlite3_int64);
+अटल पूर्णांक kvvfsWriteJrnl(sqlite3_file*,स्थिर व्योम*,पूर्णांक iAmt, sqlite3_int64);
+अटल पूर्णांक kvvfsTruncateDb(sqlite3_file*, sqlite3_int64 आकार);
+अटल पूर्णांक kvvfsTruncateJrnl(sqlite3_file*, sqlite3_int64 आकार);
+अटल पूर्णांक kvvfsSyncDb(sqlite3_file*, पूर्णांक flags);
+अटल पूर्णांक kvvfsSyncJrnl(sqlite3_file*, पूर्णांक flags);
+अटल पूर्णांक kvvfs_File_आकार_Db(sqlite3_file*, sqlite3_int64 *p_आकार);
+अटल पूर्णांक kvvfs_File_आकार_Jrnl(sqlite3_file*, sqlite3_int64 *p_आकार);
+अटल पूर्णांक kvvfsLock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक kvvfsUnlock(sqlite3_file*, पूर्णांक);
+अटल पूर्णांक kvvfsCheckReservedLock(sqlite3_file*, पूर्णांक *pResOut);
+अटल पूर्णांक kvvfsFileControlDb(sqlite3_file*, पूर्णांक op, व्योम *pArg);
+अटल पूर्णांक kvvfsFileControlJrnl(sqlite3_file*, पूर्णांक op, व्योम *pArg);
+अटल पूर्णांक kvvfs_Sector_आकार(sqlite3_file*);
+अटल पूर्णांक kvvfsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Methods for sqlite3_vfs
 */
-static int kvvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int kvvfsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int kvvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int kvvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *kvvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static int kvvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int kvvfsSleep(sqlite3_vfs*, int microseconds);
-static int kvvfsCurrentTime(sqlite3_vfs*, double*);
-static int kvvfsCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+अटल पूर्णांक kvvfsOpen(sqlite3_vfs*, स्थिर अक्षर *, sqlite3_file*, पूर्णांक , पूर्णांक *);
+अटल पूर्णांक kvvfsDelete(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक syncDir);
+अटल पूर्णांक kvvfsAccess(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक flags, पूर्णांक *);
+अटल पूर्णांक kvvfsFullPathname(sqlite3_vfs*, स्थिर अक्षर *zName, पूर्णांक, अक्षर *zOut);
+अटल व्योम *kvvfsDlOpen(sqlite3_vfs*, स्थिर अक्षर *zFilename);
+अटल पूर्णांक kvvfsRandomness(sqlite3_vfs*, पूर्णांक nByte, अक्षर *zOut);
+अटल पूर्णांक kvvfsSleep(sqlite3_vfs*, पूर्णांक microseconds);
+अटल पूर्णांक kvvfsCurrentTime(sqlite3_vfs*, द्विगुन*);
+अटल पूर्णांक kvvfsCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
 
-static sqlite3_vfs sqlite3OsKvvfsObject = {
+अटल sqlite3_vfs sqlite3OsKvvfsObject = {
   2,                              /* iVersion */
-  sizeof(KVVfsFile),              /* szOsFile */
+  माप(KVVfsFile),              /* szOsFile */
   1024,                           /* mxPathname */
   0,                              /* pNext */
   "kvvfs",                        /* zName */
@@ -135,19 +135,19 @@ static sqlite3_vfs sqlite3OsKvvfsObject = {
 
 /* Methods for sqlite3_file objects referencing a database file
 */
-static sqlite3_io_methods kvvfs_db_io_methods = {
+अटल sqlite3_io_methods kvvfs_db_io_methods = {
   1,                              /* iVersion */
   kvvfsClose,                     /* xClose */
   kvvfsReadDb,                    /* xRead */
   kvvfsWriteDb,                   /* xWrite */
   kvvfsTruncateDb,                /* xTruncate */
   kvvfsSyncDb,                    /* xSync */
-  kvvfsFileSizeDb,                /* xFileSize */
+  kvvfs_File_आकार_Db,                /* xFileSize */
   kvvfsLock,                      /* xLock */
   kvvfsUnlock,                    /* xUnlock */
   kvvfsCheckReservedLock,         /* xCheckReservedLock */
   kvvfsFileControlDb,             /* xFileControl */
-  kvvfsSectorSize,                /* xSectorSize */
+  kvvfs_Sector_आकार,                /* xSectorSize */
   kvvfsDeviceCharacteristics,     /* xDeviceCharacteristics */
   0,                              /* xShmMap */
   0,                              /* xShmLock */
@@ -159,19 +159,19 @@ static sqlite3_io_methods kvvfs_db_io_methods = {
 
 /* Methods for sqlite3_file objects referencing a rollback journal
 */
-static sqlite3_io_methods kvvfs_jrnl_io_methods = {
+अटल sqlite3_io_methods kvvfs_jrnl_io_methods = {
   1,                              /* iVersion */
   kvvfsClose,                     /* xClose */
   kvvfsReadJrnl,                  /* xRead */
   kvvfsWriteJrnl,                 /* xWrite */
   kvvfsTruncateJrnl,              /* xTruncate */
   kvvfsSyncJrnl,                  /* xSync */
-  kvvfsFileSizeJrnl,              /* xFileSize */
+  kvvfs_File_आकार_Jrnl,              /* xFileSize */
   kvvfsLock,                      /* xLock */
   kvvfsUnlock,                    /* xUnlock */
   kvvfsCheckReservedLock,         /* xCheckReservedLock */
   kvvfsFileControlJrnl,           /* xFileControl */
-  kvvfsSectorSize,                /* xSectorSize */
+  kvvfs_Sector_आकार,                /* xSectorSize */
   kvvfsDeviceCharacteristics,     /* xDeviceCharacteristics */
   0,                              /* xShmMap */
   0,                              /* xShmLock */
@@ -182,39 +182,39 @@ static sqlite3_io_methods kvvfs_jrnl_io_methods = {
 };
 
 /****** Storage subsystem **************************************************/
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#समावेश <sys/types.h>
+#समावेश <sys/stat.h>
+#समावेश <unistd.h>
 
 /* Forward declarations for the low-level storage engine
 */
-#ifndef SQLITE_WASM
+#अगर_अघोषित SQLITE_WASM
 /* In WASM builds these are implemented in JS. */
-static int kvrecordWrite(const char*, const char *zKey, const char *zData);
-static int kvrecordDelete(const char*, const char *zKey);
-static int kvrecordRead(const char*, const char *zKey, char *zBuf, int nBuf);
-#endif
-#ifndef KVRECORD_KEY_SZ
-#define KVRECORD_KEY_SZ 32
-#endif
+अटल पूर्णांक kvrecordWrite(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी, स्थिर अक्षर *z_तथ्य);
+अटल पूर्णांक kvrecordDelete(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी);
+अटल पूर्णांक kvrecordRead(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी, अक्षर *zBuf, पूर्णांक nBuf);
+#पूर्ण_अगर
+#अगर_अघोषित KVRECORD_कुंजी_SZ
+#घोषणा KVRECORD_कुंजी_SZ 32
+#पूर्ण_अगर
 
 /* Expand the key name with an appropriate prefix and put the result
 ** in zKeyOut[].  The zKeyOut[] buffer is assumed to hold at least
 ** KVRECORD_KEY_SZ bytes.
 */
-static void kvrecordMakeKey(
-  const char *zClass,
-  const char *zKeyIn,
-  char *zKeyOut
+अटल व्योम kvrecord_Make_कुंजी(
+  स्थिर अक्षर *zClass,
+  स्थिर अक्षर *z_कुंजी_In,
+  अक्षर *z_कुंजी_Out
 ){
-  assert( zKeyIn );
-  assert( zKeyOut );
-  assert( zClass );
-  sqlite3_snprintf(KVRECORD_KEY_SZ, zKeyOut, "kvvfs-%s-%s",
-                   zClass, zKeyIn);
+  निश्चित( z_कुंजी_In );
+  निश्चित( z_कुंजी_Out );
+  निश्चित( zClass );
+  sqlite3_snprintf(KVRECORD_कुंजी_SZ, z_कुंजी_Out, "kvvfs-%s-%s",
+                   zClass, z_कुंजी_In);
 }
 
-#ifndef SQLITE_WASM
+#अगर_अघोषित SQLITE_WASM
 /* In WASM builds do not define APIs which use fopen(), fwrite(),
 ** and the like because those APIs are a portability issue for
 ** WASM.
@@ -226,24 +226,24 @@ static void kvrecordMakeKey(
 **
 ** Return the number of errors.
 */
-static int kvrecordWrite(
-  const char *zClass,
-  const char *zKey,
-  const char *zData
+अटल पूर्णांक kvrecordWrite(
+  स्थिर अक्षर *zClass,
+  स्थिर अक्षर *z_कुंजी,
+  स्थिर अक्षर *z_तथ्य
 ){
-  FILE *fd;
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
-  fd = fopen(zXKey, "wb");
-  if( fd ){
+  खाता *fd;
+  अक्षर zXKey[KVRECORD_कुंजी_SZ];
+  kvrecord_Make_कुंजी(zClass, z_कुंजी, zXKey);
+  fd = ख_खोलो(zXKey, "wb");
+  अगर( fd ){
     SQLITE_KV_TRACE(("KVVFS-WRITE  %-15s (%d) %.50s%s\n", zXKey,
-                 (int)strlen(zData), zData,
-                 strlen(zData)>50 ? "..." : ""));
-    fputs(zData, fd);
-    fclose(fd);
-    return 0;
-  }else{
-    return 1;
+                 (पूर्णांक)म_माप(z_तथ्य), z_तथ्य,
+                 म_माप(z_तथ्य)>50 ? "..." : ""));
+    ख_माला_दो(z_तथ्य, fd);
+    ख_बंद(fd);
+    वापस 0;
+  }अन्यथा{
+    वापस 1;
   }
 }
 
@@ -251,12 +251,12 @@ static int kvrecordWrite(
 ** namespace given by zClass.  If the key does not previously exist,
 ** this routine is a no-op.
 */
-static int kvrecordDelete(const char *zClass, const char *zKey){
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
+अटल पूर्णांक kvrecordDelete(स्थिर अक्षर *zClass, स्थिर अक्षर *z_कुंजी){
+  अक्षर zXKey[KVRECORD_कुंजी_SZ];
+  kvrecord_Make_कुंजी(zClass, z_कुंजी, zXKey);
   unlink(zXKey);
   SQLITE_KV_TRACE(("KVVFS-DELETE %-15s\n", zXKey));
-  return 0;
+  वापस 0;
 }
 
 /* Read the value associated with a zKey from the key/value namespace given
@@ -274,48 +274,48 @@ static int kvrecordDelete(const char *zClass, const char *zKey){
 ** zero-terminates zBuf at zBuf[0] and returns the size of the data
 ** without reading it.
 */
-static int kvrecordRead(
-  const char *zClass,
-  const char *zKey,
-  char *zBuf,
-  int nBuf
+अटल पूर्णांक kvrecordRead(
+  स्थिर अक्षर *zClass,
+  स्थिर अक्षर *z_कुंजी,
+  अक्षर *zBuf,
+  पूर्णांक nBuf
 ){
-  FILE *fd;
-  struct stat buf;
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
-  if( access(zXKey, R_OK)!=0
+  खाता *fd;
+  काष्ठा stat buf;
+  अक्षर zXKey[KVRECORD_कुंजी_SZ];
+  kvrecord_Make_कुंजी(zClass, z_कुंजी, zXKey);
+  अगर( access(zXKey, R_OK)!=0
    || stat(zXKey, &buf)!=0
    || !S_ISREG(buf.st_mode)
   ){
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (-1)\n", zXKey));
-    return -1;
+    वापस -1;
   }
-  if( nBuf<=0 ){
-    return (int)buf.st_size;
-  }else if( nBuf==1 ){
+  अगर( nBuf<=0 ){
+    वापस (पूर्णांक)buf.st_आकार;
+  }अन्यथा अगर( nBuf==1 ){
     zBuf[0] = 0;
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (%d)\n", zXKey,
-                 (int)buf.st_size));
-    return (int)buf.st_size;
+                 (पूर्णांक)buf.st_आकार));
+    वापस (पूर्णांक)buf.st_आकार;
   }
-  if( nBuf > buf.st_size + 1 ){
-    nBuf = buf.st_size + 1;
+  अगर( nBuf > buf.st_आकार + 1 ){
+    nBuf = buf.st_आकार + 1;
   }
-  fd = fopen(zXKey, "rb");
-  if( fd==0 ){
+  fd = ख_खोलो(zXKey, "rb");
+  अगर( fd==0 ){
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (-1)\n", zXKey));
-    return -1;
-  }else{
-    sqlite3_int64 n = fread(zBuf, 1, nBuf-1, fd);
-    fclose(fd);
+    वापस -1;
+  }अन्यथा{
+    sqlite3_int64 n = ख_पढ़ो(zBuf, 1, nBuf-1, fd);
+    ख_बंद(fd);
     zBuf[n] = 0;
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (%lld) %.50s%s\n", zXKey,
                  n, zBuf, n>50 ? "..." : ""));
-    return (int)n;
+    वापस (पूर्णांक)n;
   }
 }
-#endif /* #ifndef SQLITE_WASM */
+#पूर्ण_अगर /* #ifndef SQLITE_WASM */
 
 
 /*
@@ -326,22 +326,22 @@ static int kvrecordRead(
 ** sqlite3-wasm.c:sqlite3__wasm_enum_json(). There are no binary
 ** compatibility concerns, so it does not need an iVersion member.
 */
-typedef struct sqlite3_kvvfs_methods sqlite3_kvvfs_methods;
-struct sqlite3_kvvfs_methods {
-  int (*xRcrdRead)(const char*, const char *zKey, char *zBuf, int nBuf);
-  int (*xRcrdWrite)(const char*, const char *zKey, const char *zData);
-  int (*xRcrdDelete)(const char*, const char *zKey);
-  const int nKeySize;
-  const int nBufferSize;
-#ifndef SQLITE_WASM
-#  define MAYBE_CONST const
-#else
+प्रकार काष्ठा sqlite3_kvvfs_methods sqlite3_kvvfs_methods;
+काष्ठा sqlite3_kvvfs_methods {
+  पूर्णांक (*xRcrdRead)(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी, अक्षर *zBuf, पूर्णांक nBuf);
+  पूर्णांक (*xRcrdWrite)(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी, स्थिर अक्षर *z_तथ्य);
+  पूर्णांक (*xRcrdDelete)(स्थिर अक्षर*, स्थिर अक्षर *z_कुंजी);
+  स्थिर पूर्णांक n_कुंजी_आकार;
+  स्थिर पूर्णांक n_बफर_आकार;
+#अगर_अघोषित SQLITE_WASM
+#  define MAYBE_CONST स्थिर
+#अन्यथा
 #  define MAYBE_CONST
-#endif
+#पूर्ण_अगर
   MAYBE_CONST sqlite3_vfs * pVfs;
   MAYBE_CONST sqlite3_io_methods *pIoDb;
   MAYBE_CONST sqlite3_io_methods *pIoJrnl;
-#undef MAYBE_CONST
+#अघोषित MAYBE_CONST
 };
 
 
@@ -355,21 +355,21 @@ struct sqlite3_kvvfs_methods {
 ** This is not explicitly flagged as static because the amalgamation
 ** build will tag it with SQLITE_PRIVATE.
 */
-#ifndef SQLITE_WASM
-const
-#endif
+#अगर_अघोषित SQLITE_WASM
+स्थिर
+#पूर्ण_अगर
 sqlite3_kvvfs_methods sqlite3KvvfsMethods = {
-#ifndef SQLITE_WASM
+#अगर_अघोषित SQLITE_WASM
   .xRcrdRead       = kvrecordRead,
   .xRcrdWrite      = kvrecordWrite,
   .xRcrdDelete     = kvrecordDelete,
-#else
+#अन्यथा
   .xRcrdRead       = 0,
   .xRcrdWrite      = 0,
   .xRcrdDelete     = 0,
-#endif
-  .nKeySize        = KVRECORD_KEY_SZ,
-  .nBufferSize     = SQLITE_KVOS_SZ,
+#पूर्ण_अगर
+  .n_कुंजी_आकार        = KVRECORD_कुंजी_SZ,
+  .n_बफर_आकार     = SQLITE_KVOS_SZ,
   .pVfs            = &sqlite3OsKvvfsObject,
   .pIoDb           = &kvvfs_db_io_methods,
   .pIoJrnl         = &kvvfs_jrnl_io_methods
@@ -399,37 +399,37 @@ sqlite3_kvvfs_methods sqlite3KvvfsMethods = {
 **      of hexadecimal and base-26 numbers, it is always clear where
 **      one stops and the next begins.
 */
-#ifndef SQLITE_WASM
-static
-#endif
-int kvvfsEncode(const char *aData, int nData, char *aOut){
-  int i, j;
-  const unsigned char *a = (const unsigned char*)aData;
-  for(i=j=0; i<nData; i++){
-    unsigned char c = a[i];
-    if( c!=0 ){
+#अगर_अघोषित SQLITE_WASM
+अटल
+#पूर्ण_अगर
+पूर्णांक kvvfsEncode(स्थिर अक्षर *a_तथ्य, पूर्णांक n_तथ्य, अक्षर *aOut){
+  पूर्णांक i, j;
+  स्थिर अचिन्हित अक्षर *a = (स्थिर अचिन्हित अक्षर*)a_तथ्य;
+  क्रम(i=j=0; i<n_तथ्य; i++){
+    अचिन्हित अक्षर c = a[i];
+    अगर( c!=0 ){
       aOut[j++] = "0123456789ABCDEF"[c>>4];
       aOut[j++] = "0123456789ABCDEF"[c&0xf];
-    }else{
+    }अन्यथा{
       /* A sequence of 1 or more zeros is stored as a little-endian
       ** base-26 number using a..z as the digits. So one zero is "b".
       ** Two zeros is "c". 25 zeros is "z", 26 zeros is "ab", 27 is "bb",
       ** and so forth.
       */
-      int k;
-      for(k=1; i+k<nData && a[i+k]==0; k++){}
+      पूर्णांक k;
+      क्रम(k=1; i+k<n_तथ्य && a[i+k]==0; k++){}
       i += k-1;
-      while( k>0 ){
+      जबतक( k>0 ){
         aOut[j++] = 'a'+(k%26);
         k /= 26;
       }
     }
   }
   aOut[j] = 0;
-  return j;
+  वापस j;
 }
 
-static const signed char kvvfsHexValue[256] = {
+अटल स्थिर चिन्हित अक्षर kvvfs_Hex_मूल्य[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
@@ -456,43 +456,43 @@ static const signed char kvvfsHexValue[256] = {
 ** The return value is the number of bytes actually written into aOut[], or
 ** -1 for malformed inputs.
 */
-#ifndef SQLITE_WASM
-static
-#endif
-int kvvfsDecode(const char *a, char *aOut, int nOut){
-  int i, j;
-  int c;
-  const unsigned char *aIn = (const unsigned char*)a;
+#अगर_अघोषित SQLITE_WASM
+अटल
+#पूर्ण_अगर
+पूर्णांक kvvfsDecode(स्थिर अक्षर *a, अक्षर *aOut, पूर्णांक nOut){
+  पूर्णांक i, j;
+  पूर्णांक c;
+  स्थिर अचिन्हित अक्षर *aIn = (स्थिर अचिन्हित अक्षर*)a;
   i = 0;
   j = 0;
-  while( 1 ){
-    c = kvvfsHexValue[aIn[i]];
-    if( c<0 ){
+  जबतक( 1 ){
+    c = kvvfs_Hex_मूल्य[aIn[i]];
+    अगर( c<0 ){
       sqlite3_int64 n = 0;
       sqlite3_int64 mult = 1;
       c = aIn[i];
-      if( c==0 ) break;
-      while( c>='a' && c<='z' ){
+      अगर( c==0 ) अवरोध;
+      जबतक( c>='a' && c<='z' ){
         n += (c - 'a')*mult;
-        if( n>nOut ) return -1 /* oversized/malformed input */;
+        अगर( n>nOut ) वापस -1 /* oversized/malformed input */;
         mult *= 26;
         c = aIn[++i];
       }
-      if( j+n>nOut ) return -1 /* oversized/malformed input */;
-      memset(&aOut[j], 0, n);
+      अगर( j+n>nOut ) वापस -1 /* oversized/malformed input */;
+      स_रखो(&aOut[j], 0, n);
       j += n;
-      if( c==0 || mult==1 ) break; /* progress stalled if mult==1 */
-    }else if( j<nOut ){
+      अगर( c==0 || mult==1 ) अवरोध; /* progress stalled if mult==1 */
+    }अन्यथा अगर( j<nOut ){
       aOut[j] = c<<4;
-      c = kvvfsHexValue[aIn[++i]];
-      if( c<0 ) return -1 /* hex bytes are always in pairs */;
+      c = kvvfs_Hex_मूल्य[aIn[++i]];
+      अगर( c<0 ) वापस -1 /* hex bytes are always in pairs */;
       aOut[j++] += c;
       i++;
-    }else{
-      return -1;
+    }अन्यथा{
+      वापस -1;
     }
   }
-  return j;
+  वापस j;
 }
 
 /*
@@ -506,34 +506,34 @@ int kvvfsDecode(const char *a, char *aOut, int nOut){
 ** by a single space, then the encoding of the journal.  The space
 ** separator is required to act as a terminator for the base-26 number.
 */
-static void kvvfsDecodeJournal(
+अटल व्योम kvvfsDecodeJournal(
   KVVfsFile *pFile,      /* Store decoding in pFile->aJrnl */
-  const char *zTxt,      /* Text encoding.  Zero-terminated */
-  int nTxt               /* Bytes in zTxt, excluding zero terminator */
+  स्थिर अक्षर *zTxt,      /* Text encoding.  Zero-terminated */
+  पूर्णांक nTxt               /* Bytes in zTxt, excluding zero terminator */
 ){
-  unsigned int n = 0, mult;
-  int c, i;
+  अचिन्हित पूर्णांक n = 0, mult;
+  पूर्णांक c, i;
   i = 0;
   mult = 1;
   sqlite3_free(pFile->aJrnl);
   pFile->aJrnl = 0;
   pFile->nJrnl = 0;
-  while( (c = zTxt[i])>='a' && c<='z' ){
+  जबतक( (c = zTxt[i])>='a' && c<='z' ){
     n += (c - 'a')*mult;
     mult *= 26;
     ++i;
   }
-  if( ' '!=zTxt[i++] ){
+  अगर( ' '!=zTxt[i++] ){
     /* Malformed input */
-    return;
+    वापस;
   }
   pFile->aJrnl = sqlite3_malloc64( n );
-  if( pFile->aJrnl==0 ){
-    return;
+  अगर( pFile->aJrnl==0 ){
+    वापस;
   }
   pFile->nJrnl = n;
   n = kvvfsDecode(zTxt+i, pFile->aJrnl, pFile->nJrnl);
-  if( n<pFile->nJrnl ){
+  अगर( n<pFile->nJrnl ){
     sqlite3_free(pFile->aJrnl);
     pFile->aJrnl = 0;
     pFile->nJrnl = 0;
@@ -543,17 +543,17 @@ static void kvvfsDecodeJournal(
 /*
 ** Read or write the "sz" element, containing the database file size.
 */
-static sqlite3_int64 kvvfsReadFileSize(KVVfsFile *pFile){
-  char zData[50];
-  zData[0] = 0;
-  sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "sz", zData,
-                                sizeof(zData)-1);
-  return strtoll(zData, 0, 0);
+अटल sqlite3_int64 kvvfs_Read_File_आकार(KVVfsFile *pFile){
+  अक्षर z_तथ्य[50];
+  z_तथ्य[0] = 0;
+  sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "sz", z_तथ्य,
+                                माप(z_तथ्य)-1);
+  वापस strtoll(z_तथ्य, 0, 0);
 }
-static int kvvfsWriteFileSize(KVVfsFile *pFile, sqlite3_int64 sz){
-  char zData[50];
-  sqlite3_snprintf(sizeof(zData), zData, "%lld", sz);
-  return sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "sz", zData);
+अटल पूर्णांक kvvfs_Write_File_आकार(KVVfsFile *pFile, sqlite3_int64 sz){
+  अक्षर z_तथ्य[50];
+  sqlite3_snprintf(माप(z_तथ्य), z_तथ्य, "%lld", sz);
+  वापस sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "sz", z_तथ्य);
 }
 
 /****** sqlite3_io_methods methods ******************************************/
@@ -561,328 +561,328 @@ static int kvvfsWriteFileSize(KVVfsFile *pFile, sqlite3_int64 sz){
 /*
 ** Close an kvvfs-file.
 */
-static int kvvfsClose(sqlite3_file *pProtoFile){
+अटल पूर्णांक kvvfsClose(sqlite3_file *pProtoFile){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
 
   SQLITE_KV_LOG(("xClose %s %s\n", pFile->zClass,
              pFile->isJournal ? "journal" : "db"));
   sqlite3_free(pFile->aJrnl);
-  sqlite3_free(pFile->aData);
-  memset(pFile, 0, sizeof(*pFile));
-  return SQLITE_OK;
+  sqlite3_free(pFile->a_तथ्य);
+  स_रखो(pFile, 0, माप(*pFile));
+  वापस SQLITE_OK;
 }
 
 /*
 ** Read from the -journal file.
 */
-static int kvvfsReadJrnl(
+अटल पूर्णांक kvvfsReadJrnl(
   sqlite3_file *pProtoFile,
-  void *zBuf,
-  int iAmt,
+  व्योम *zBuf,
+  पूर्णांक iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  assert( pFile->isJournal );
+  निश्चित( pFile->isJournal );
   SQLITE_KV_LOG(("xRead('%s-journal',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( pFile->aJrnl==0 ){
-    int rc;
-    int szTxt = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
+  अगर( pFile->aJrnl==0 ){
+    पूर्णांक rc;
+    पूर्णांक szTxt = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
                                               0, 0);
-    char *aTxt;
-    if( szTxt<=4 ){
-      return SQLITE_IOERR;
+    अक्षर *aTxt;
+    अगर( szTxt<=4 ){
+      वापस SQLITE_IOERR;
     }
     aTxt = sqlite3_malloc64( szTxt+1 );
-    if( aTxt==0 ) return SQLITE_NOMEM;
+    अगर( aTxt==0 ) वापस SQLITE_NOMEM;
     rc = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
                                        aTxt, szTxt+1);
-    if( rc>=0 ){
+    अगर( rc>=0 ){
       kvvfsDecodeJournal(pFile, aTxt, szTxt);
       rc = 0;
     }
     sqlite3_free(aTxt);
-    if( rc ) return rc;
-    if( pFile->aJrnl==0 ) return SQLITE_IOERR;
+    अगर( rc ) वापस rc;
+    अगर( pFile->aJrnl==0 ) वापस SQLITE_IOERR;
   }
-  if( iOfst+iAmt>pFile->nJrnl ){
-    return SQLITE_IOERR_SHORT_READ;
+  अगर( iOfst+iAmt>pFile->nJrnl ){
+    वापस SQLITE_IOERR_SHORT_READ;
   }
-  memcpy(zBuf, pFile->aJrnl+iOfst, iAmt);
-  return SQLITE_OK;
+  स_नकल(zBuf, pFile->aJrnl+iOfst, iAmt);
+  वापस SQLITE_OK;
 }
 
 /*
 ** Read from the database file.
 */
-static int kvvfsReadDb(
+अटल पूर्णांक kvvfsReadDb(
   sqlite3_file *pProtoFile,
-  void *zBuf,
-  int iAmt,
+  व्योम *zBuf,
+  पूर्णांक iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  unsigned int pgno;
-  int got, n;
-  char zKey[30];
-  char *aData = pFile->aData;
-  assert( iOfst>=0 );
-  assert( iAmt>=0 );
+  अचिन्हित पूर्णांक pgno;
+  पूर्णांक got, n;
+  अक्षर z_कुंजी[30];
+  अक्षर *a_तथ्य = pFile->a_तथ्य;
+  निश्चित( iOfst>=0 );
+  निश्चित( iAmt>=0 );
   SQLITE_KV_LOG(("xRead('%s-db',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( iOfst+iAmt>=512 ){
-    if( (iOfst % iAmt)!=0 ){
-      return SQLITE_IOERR_READ;
+  अगर( iOfst+iAmt>=512 ){
+    अगर( (iOfst % iAmt)!=0 ){
+      वापस SQLITE_IOERR_READ;
     }
-    if( (iAmt & (iAmt-1))!=0 || iAmt<512 || iAmt>65536 ){
-      return SQLITE_IOERR_READ;
+    अगर( (iAmt & (iAmt-1))!=0 || iAmt<512 || iAmt>65536 ){
+      वापस SQLITE_IOERR_READ;
     }
     pFile->szPage = iAmt;
     pgno = 1 + iOfst/iAmt;
-  }else{
+  }अन्यथा{
     pgno = 1;
   }
-  sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
-  got = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, zKey,
-                                      aData, SQLITE_KVOS_SZ-1);
-  if( got<0 ){
+  sqlite3_snprintf(माप(z_कुंजी), z_कुंजी, "%u", pgno);
+  got = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, z_कुंजी,
+                                      a_तथ्य, SQLITE_KVOS_SZ-1);
+  अगर( got<0 ){
     n = 0;
-  }else{
-    aData[got] = 0;
-    if( iOfst+iAmt<512 ){
-      int k = iOfst+iAmt;
-      aData[k*2] = 0;
-      n = kvvfsDecode(aData, &aData[2000], SQLITE_KVOS_SZ-2000);
-      if( n>=iOfst+iAmt ){
-        memcpy(zBuf, &aData[2000+iOfst], iAmt);
+  }अन्यथा{
+    a_तथ्य[got] = 0;
+    अगर( iOfst+iAmt<512 ){
+      पूर्णांक k = iOfst+iAmt;
+      a_तथ्य[k*2] = 0;
+      n = kvvfsDecode(a_तथ्य, &a_तथ्य[2000], SQLITE_KVOS_SZ-2000);
+      अगर( n>=iOfst+iAmt ){
+        स_नकल(zBuf, &a_तथ्य[2000+iOfst], iAmt);
         n = iAmt;
-      }else{
+      }अन्यथा{
         n = 0;
       }
-    }else{
-      n = kvvfsDecode(aData, zBuf, iAmt);
+    }अन्यथा{
+      n = kvvfsDecode(a_तथ्य, zBuf, iAmt);
     }
   }
-  if( n<iAmt ){
-    memset(zBuf+n, 0, iAmt-n);
-    return SQLITE_IOERR_SHORT_READ;
+  अगर( n<iAmt ){
+    स_रखो(zBuf+n, 0, iAmt-n);
+    वापस SQLITE_IOERR_SHORT_READ;
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 
 /*
 ** Write into the -journal file.
 */
-static int kvvfsWriteJrnl(
+अटल पूर्णांक kvvfsWriteJrnl(
   sqlite3_file *pProtoFile,
-  const void *zBuf,
-  int iAmt,
+  स्थिर व्योम *zBuf,
+  पूर्णांक iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
   sqlite3_int64 iEnd = iOfst+iAmt;
   SQLITE_KV_LOG(("xWrite('%s-journal',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( iEnd>=0x10000000 ) return SQLITE_FULL;
-  if( pFile->aJrnl==0 || pFile->nJrnl<iEnd ){
-    char *aNew = sqlite3_realloc(pFile->aJrnl, iEnd);
-    if( aNew==0 ){
-      return SQLITE_IOERR_NOMEM;
+  अगर( iEnd>=0x10000000 ) वापस SQLITE_FULL;
+  अगर( pFile->aJrnl==0 || pFile->nJrnl<iEnd ){
+    अक्षर *aNew = sqlite3_realloc(pFile->aJrnl, iEnd);
+    अगर( aNew==0 ){
+      वापस SQLITE_IOERR_NOMEM;
     }
     pFile->aJrnl = aNew;
-    if( pFile->nJrnl<iOfst ){
-      memset(pFile->aJrnl+pFile->nJrnl, 0, iOfst-pFile->nJrnl);
+    अगर( pFile->nJrnl<iOfst ){
+      स_रखो(pFile->aJrnl+pFile->nJrnl, 0, iOfst-pFile->nJrnl);
     }
     pFile->nJrnl = iEnd;
   }
-  memcpy(pFile->aJrnl+iOfst, zBuf, iAmt);
-  return SQLITE_OK;
+  स_नकल(pFile->aJrnl+iOfst, zBuf, iAmt);
+  वापस SQLITE_OK;
 }
 
 /*
 ** Write into the database file.
 */
-static int kvvfsWriteDb(
+अटल पूर्णांक kvvfsWriteDb(
   sqlite3_file *pProtoFile,
-  const void *zBuf,
-  int iAmt,
+  स्थिर व्योम *zBuf,
+  पूर्णांक iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  unsigned int pgno;
-  char zKey[30];
-  char *aData = pFile->aData;
-  int rc;
+  अचिन्हित पूर्णांक pgno;
+  अक्षर z_कुंजी[30];
+  अक्षर *a_तथ्य = pFile->a_तथ्य;
+  पूर्णांक rc;
   SQLITE_KV_LOG(("xWrite('%s-db',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  assert( iAmt>=512 && iAmt<=65536 );
-  assert( (iAmt & (iAmt-1))==0 );
-  assert( pFile->szPage<0 || pFile->szPage==iAmt );
+  निश्चित( iAmt>=512 && iAmt<=65536 );
+  निश्चित( (iAmt & (iAmt-1))==0 );
+  निश्चित( pFile->szPage<0 || pFile->szPage==iAmt );
   pFile->szPage = iAmt;
   pgno = 1 + iOfst/iAmt;
-  sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
-  kvvfsEncode(zBuf, iAmt, aData);
-  rc = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, zKey, aData);
-  if( 0==rc ){
-    if( iOfst+iAmt > pFile->szDb ){
+  sqlite3_snprintf(माप(z_कुंजी), z_कुंजी, "%u", pgno);
+  kvvfsEncode(zBuf, iAmt, a_तथ्य);
+  rc = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, z_कुंजी, a_तथ्य);
+  अगर( 0==rc ){
+    अगर( iOfst+iAmt > pFile->szDb ){
       pFile->szDb = iOfst + iAmt;
     }
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Truncate an kvvfs-file.
 */
-static int kvvfsTruncateJrnl(sqlite3_file *pProtoFile, sqlite_int64 size){
+अटल पूर्णांक kvvfsTruncateJrnl(sqlite3_file *pProtoFile, sqlite_int64 आकार){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  SQLITE_KV_LOG(("xTruncate('%s-journal',%lld)\n", pFile->zClass, size));
-  assert( size==0 );
+  SQLITE_KV_LOG(("xTruncate('%s-journal',%lld)\n", pFile->zClass, आकार));
+  निश्चित( आकार==0 );
   sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, "jrnl");
   sqlite3_free(pFile->aJrnl);
   pFile->aJrnl = 0;
   pFile->nJrnl = 0;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
-static int kvvfsTruncateDb(sqlite3_file *pProtoFile, sqlite_int64 size){
+अटल पूर्णांक kvvfsTruncateDb(sqlite3_file *pProtoFile, sqlite_int64 आकार){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  if( pFile->szDb>size
+  अगर( pFile->szDb>आकार
    && pFile->szPage>0
-   && (size % pFile->szPage)==0
+   && (आकार % pFile->szPage)==0
   ){
-    char zKey[50];
-    unsigned int pgno, pgnoMax;
-    SQLITE_KV_LOG(("xTruncate('%s-db',%lld)\n", pFile->zClass, size));
-    pgno = 1 + size/pFile->szPage;
+    अक्षर z_कुंजी[50];
+    अचिन्हित पूर्णांक pgno, pgnoMax;
+    SQLITE_KV_LOG(("xTruncate('%s-db',%lld)\n", pFile->zClass, आकार));
+    pgno = 1 + आकार/pFile->szPage;
     pgnoMax = 2 + pFile->szDb/pFile->szPage;
-    while( pgno<=pgnoMax ){
-      sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
-      sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, zKey);
+    जबतक( pgno<=pgnoMax ){
+      sqlite3_snprintf(माप(z_कुंजी), z_कुंजी, "%u", pgno);
+      sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, z_कुंजी);
       pgno++;
     }
-    pFile->szDb = size;
-    return kvvfsWriteFileSize(pFile, size) ? SQLITE_IOERR : SQLITE_OK;
+    pFile->szDb = आकार;
+    वापस kvvfs_Write_File_आकार(pFile, आकार) ? SQLITE_IOERR : SQLITE_OK;
   }
-  return SQLITE_IOERR;
+  वापस SQLITE_IOERR;
 }
 
 /*
 ** Sync an kvvfs-file.
 */
-static int kvvfsSyncJrnl(sqlite3_file *pProtoFile, int flags){
-  int i, n;
+अटल पूर्णांक kvvfsSyncJrnl(sqlite3_file *pProtoFile, पूर्णांक flags){
+  पूर्णांक i, n;
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  char *zOut;
+  अक्षर *zOut;
   SQLITE_KV_LOG(("xSync('%s-journal')\n", pFile->zClass));
-  if( pFile->nJrnl<=0 ){
-    return kvvfsTruncateJrnl(pProtoFile, 0);
+  अगर( pFile->nJrnl<=0 ){
+    वापस kvvfsTruncateJrnl(pProtoFile, 0);
   }
   zOut = sqlite3_malloc64( pFile->nJrnl*2 + 50 );
-  if( zOut==0 ){
-    return SQLITE_IOERR_NOMEM;
+  अगर( zOut==0 ){
+    वापस SQLITE_IOERR_NOMEM;
   }
   n = pFile->nJrnl;
   i = 0;
-  do{
+  करो{
     zOut[i++] = 'a' + (n%26);
     n /= 26;
-  }while( n>0 );
+  }जबतक( n>0 );
   zOut[i++] = ' ';
   kvvfsEncode(pFile->aJrnl, pFile->nJrnl, &zOut[i]);
   i = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "jrnl", zOut);
   sqlite3_free(zOut);
-  return i ? SQLITE_IOERR : SQLITE_OK;
+  वापस i ? SQLITE_IOERR : SQLITE_OK;
 }
-static int kvvfsSyncDb(sqlite3_file *pProtoFile, int flags){
-  return SQLITE_OK;
+अटल पूर्णांक kvvfsSyncDb(sqlite3_file *pProtoFile, पूर्णांक flags){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of an kvvfs-file.
 */
-static int kvvfsFileSizeJrnl(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
+अटल पूर्णांक kvvfs_File_आकार_Jrnl(sqlite3_file *pProtoFile, sqlite_int64 *p_आकार){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
   SQLITE_KV_LOG(("xFileSize('%s-journal')\n", pFile->zClass));
-  *pSize = pFile->nJrnl;
-  return SQLITE_OK;
+  *p_आकार = pFile->nJrnl;
+  वापस SQLITE_OK;
 }
-static int kvvfsFileSizeDb(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
+अटल पूर्णांक kvvfs_File_आकार_Db(sqlite3_file *pProtoFile, sqlite_int64 *p_आकार){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
   SQLITE_KV_LOG(("xFileSize('%s-db')\n", pFile->zClass));
-  if( pFile->szDb>=0 ){
-    *pSize = pFile->szDb;
-  }else{
-    *pSize = kvvfsReadFileSize(pFile);
+  अगर( pFile->szDb>=0 ){
+    *p_आकार = pFile->szDb;
+  }अन्यथा{
+    *p_आकार = kvvfs_Read_File_आकार(pFile);
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Lock an kvvfs-file.
 */
-static int kvvfsLock(sqlite3_file *pProtoFile, int eLock){
+अटल पूर्णांक kvvfsLock(sqlite3_file *pProtoFile, पूर्णांक eLock){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  assert( !pFile->isJournal );
+  निश्चित( !pFile->isJournal );
   SQLITE_KV_LOG(("xLock(%s,%d)\n", pFile->zClass, eLock));
 
-  if( eLock!=SQLITE_LOCK_NONE ){
-    pFile->szDb = kvvfsReadFileSize(pFile);
+  अगर( eLock!=SQLITE_LOCK_NONE ){
+    pFile->szDb = kvvfs_Read_File_आकार(pFile);
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Unlock an kvvfs-file.
 */
-static int kvvfsUnlock(sqlite3_file *pProtoFile, int eLock){
+अटल पूर्णांक kvvfsUnlock(sqlite3_file *pProtoFile, पूर्णांक eLock){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  assert( !pFile->isJournal );
+  निश्चित( !pFile->isJournal );
   SQLITE_KV_LOG(("xUnlock(%s,%d)\n", pFile->zClass, eLock));
-  if( eLock==SQLITE_LOCK_NONE ){
+  अगर( eLock==SQLITE_LOCK_NONE ){
     pFile->szDb = -1;
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an kvvfs-file.
 */
-static int kvvfsCheckReservedLock(sqlite3_file *pProtoFile, int *pResOut){
+अटल पूर्णांक kvvfsCheckReservedLock(sqlite3_file *pProtoFile, पूर्णांक *pResOut){
   SQLITE_KV_LOG(("xCheckReservedLock\n"));
   *pResOut = 0;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on an kvvfs-file.
 */
-static int kvvfsFileControlJrnl(sqlite3_file *pProtoFile, int op, void *pArg){
+अटल पूर्णांक kvvfsFileControlJrnl(sqlite3_file *pProtoFile, पूर्णांक op, व्योम *pArg){
   SQLITE_KV_LOG(("xFileControl(%d) on journal\n", op));
-  return SQLITE_NOTFOUND;
+  वापस SQLITE_NOTFOUND;
 }
-static int kvvfsFileControlDb(sqlite3_file *pProtoFile, int op, void *pArg){
+अटल पूर्णांक kvvfsFileControlDb(sqlite3_file *pProtoFile, पूर्णांक op, व्योम *pArg){
   SQLITE_KV_LOG(("xFileControl(%d) on database\n", op));
-  if( op==SQLITE_FCNTL_SYNC ){
+  अगर( op==SQLITE_FCNTL_SYNC ){
     KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-    int rc = SQLITE_OK;
+    पूर्णांक rc = SQLITE_OK;
     SQLITE_KV_LOG(("xSync('%s-db')\n", pFile->zClass));
-    if( pFile->szDb>0 && 0!=kvvfsWriteFileSize(pFile, pFile->szDb) ){
+    अगर( pFile->szDb>0 && 0!=kvvfs_Write_File_आकार(pFile, pFile->szDb) ){
       rc = SQLITE_IOERR;
     }
-    return rc;
+    वापस rc;
   }
-  return SQLITE_NOTFOUND;
+  वापस SQLITE_NOTFOUND;
 }
 
 /*
 ** Return the sector-size in bytes for an kvvfs-file.
 */
-static int kvvfsSectorSize(sqlite3_file *pFile){
-  return 512;
+अटल पूर्णांक kvvfs_Sector_आकार(sqlite3_file *pFile){
+  वापस 512;
 }
 
 /*
 ** Return the device characteristic flags supported by an kvvfs-file.
 */
-static int kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
-  return 0;
+अटल पूर्णांक kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
+  वापस 0;
 }
 
 /****** sqlite3_vfs methods *************************************************/
@@ -890,55 +890,55 @@ static int kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
 /*
 ** Open an kvvfs file handle.
 */
-static int kvvfsOpen(
+अटल पूर्णांक kvvfsOpen(
   sqlite3_vfs *pProtoVfs,
-  const char *zName,
+  स्थिर अक्षर *zName,
   sqlite3_file *pProtoFile,
-  int flags,
-  int *pOutFlags
+  पूर्णांक flags,
+  पूर्णांक *pOutFlags
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  if( zName==0 ) zName = "";
+  अगर( zName==0 ) zName = "";
   SQLITE_KV_LOG(("xOpen(\"%s\")\n", zName));
-  assert(!pFile->zClass);
-  assert(!pFile->aData);
-  assert(!pFile->aJrnl);
-  assert(!pFile->nJrnl);
-  assert(!pFile->base.pMethods);
+  निश्चित(!pFile->zClass);
+  निश्चित(!pFile->a_तथ्य);
+  निश्चित(!pFile->aJrnl);
+  निश्चित(!pFile->nJrnl);
+  निश्चित(!pFile->base.pMethods);
   pFile->szPage = -1;
   pFile->szDb = -1;
-  if( 0==sqlite3_strglob("*-journal", zName) ){
+  अगर( 0==sqlite3_strglob("*-journal", zName) ){
     pFile->isJournal = 1;
     pFile->base.pMethods = &kvvfs_jrnl_io_methods;
-    if( 0==strcmp("session-journal",zName) ){
+    अगर( 0==म_भेद("session-journal",zName) ){
       pFile->zClass = "session";
-    }else if( 0==strcmp("local-journal",zName) ){
+    }अन्यथा अगर( 0==म_भेद("local-journal",zName) ){
       pFile->zClass = "local";
     }
-  }else{
+  }अन्यथा{
     pFile->isJournal = 0;
     pFile->base.pMethods = &kvvfs_db_io_methods;
   }
-  if( !pFile->zClass ){
-#ifdef SQLITE_WASM
-    if( strlen(zName) >= (KVRECORD_KEY_SZ
+  अगर( !pFile->zClass ){
+#अगर_घोषित SQLITE_WASM
+    अगर( म_माप(zName) >= (KVRECORD_कुंजी_SZ
                           - 6 /* "kvvfs-" */
                           - 11 /* "-NNNNNNNNNNN" */) ){
-      return SQLITE_CANTOPEN;
+      वापस SQLITE_CANTOPEN;
     }
-#else
-    if( 0!=strcmp(zName, "local") && 0!=strcmp(zName, "session") ){
+#अन्यथा
+    अगर( 0!=म_भेद(zName, "local") && 0!=म_भेद(zName, "session") ){
       /* Historical naming restriction which journaling depends on. */
-      return SQLITE_CANTOPEN;
+      वापस SQLITE_CANTOPEN;
     }
-#endif
+#पूर्ण_अगर
     pFile->zClass = zName;
   }
-  pFile->aData = sqlite3_malloc64(SQLITE_KVOS_SZ);
-  if( pFile->aData==0 ){
-    return SQLITE_NOMEM;
+  pFile->a_तथ्य = sqlite3_malloc64(SQLITE_KVOS_SZ);
+  अगर( pFile->a_तथ्य==0 ){
+    वापस SQLITE_NOMEM;
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
@@ -946,32 +946,32 @@ static int kvvfsOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int kvvfsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc /* The JS impl can fail with OOM in argument conversion */;
-  if( strcmp(zPath, "local-journal")==0 ){
+अटल पूर्णांक kvvfsDelete(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath, पूर्णांक dirSync){
+  पूर्णांक rc /* The JS impl can fail with OOM in argument conversion */;
+  अगर( म_भेद(zPath, "local-journal")==0 ){
     rc = sqlite3KvvfsMethods.xRcrdDelete("local", "jrnl");
-  }else
-  if( strcmp(zPath, "session-journal")==0 ){
+  }अन्यथा
+  अगर( म_भेद(zPath, "session-journal")==0 ){
     rc = sqlite3KvvfsMethods.xRcrdDelete("session", "jrnl");
   }
-  else{
+  अन्यथा{
     rc = 0;
   }
-  return rc;
+  वापस rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int kvvfsAccess(
+अटल पूर्णांक kvvfsAccess(
   sqlite3_vfs *pProtoVfs,
-  const char *zPath,
-  int flags,
-  int *pResOut
+  स्थिर अक्षर *zPath,
+  पूर्णांक flags,
+  पूर्णांक *pResOut
 ){
   SQLITE_KV_LOG(("xAccess(\"%s\")\n", zPath));
-#if 0 && defined(SQLITE_WASM)
+#अगर 0 && defined(SQLITE_WASM)
   /*
   ** This is not having the desired effect in the JS bindings.
   ** It's ostensibly the same logic as the #else block, but
@@ -981,34 +981,34 @@ static int kvvfsAccess(
   ** are mapped to the storage for the main db (which is is exactly
   ** what the mapping of "local-journal" -> "local" is doing).
   */
-  const char *zKey = (0==sqlite3_strglob("*-journal", zPath))
+  स्थिर अक्षर *z_कुंजी = (0==sqlite3_strglob("*-journal", zPath))
     ? "jrnl" : "sz";
   *pResOut =
-    sqlite3KvvfsMethods.xRcrdRead(zPath, zKey, 0, 0)>0;
-#else
-  if( strcmp(zPath, "local-journal")==0 ){
+    sqlite3KvvfsMethods.xRcrdRead(zPath, z_कुंजी, 0, 0)>0;
+#अन्यथा
+  अगर( म_भेद(zPath, "local-journal")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("local", "jrnl", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "session-journal")==0 ){
+  }अन्यथा
+  अगर( म_भेद(zPath, "session-journal")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("session", "jrnl", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "local")==0 ){
+  }अन्यथा
+  अगर( म_भेद(zPath, "local")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("local", "sz", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "session")==0 ){
+  }अन्यथा
+  अगर( म_भेद(zPath, "session")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("session", "sz", 0, 0)>0;
-  }else
+  }अन्यथा
   {
     *pResOut = 0;
   }
   /*all current JS tests avoid triggering: assert( *pResOut == 0 ); */
-#endif
+#पूर्ण_अगर
   SQLITE_KV_LOG(("xAccess returns %d\n",*pResOut));
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
@@ -1016,82 +1016,82 @@ static int kvvfsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int kvvfsFullPathname(
+अटल पूर्णांक kvvfsFullPathname(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int nOut,
-  char *zOut
+  स्थिर अक्षर *zPath,
+  पूर्णांक nOut,
+  अक्षर *zOut
 ){
-  size_t nPath;
-#ifdef SQLITE_OS_KV_ALWAYS_LOCAL
+  माप_प्रकार nPath;
+#अगर_घोषित SQLITE_OS_KV_ALWAYS_LOCAL
   zPath = "local";
-#endif
-  nPath = strlen(zPath);
+#पूर्ण_अगर
+  nPath = म_माप(zPath);
   SQLITE_KV_LOG(("xFullPathname(\"%s\")\n", zPath));
-  if( nOut<nPath+1 ) nPath = nOut - 1;
-  memcpy(zOut, zPath, nPath);
+  अगर( nOut<nPath+1 ) nPath = nOut - 1;
+  स_नकल(zOut, zPath, nPath);
   zOut[nPath] = 0;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *kvvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return 0;
+अटल व्योम *kvvfsDlOpen(sqlite3_vfs *pVfs, स्थिर अक्षर *zPath){
+  वापस 0;
 }
 
 /*
 ** Populate the buffer pointed to by zBufOut with nByte bytes of
 ** random data.
 */
-static int kvvfsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  memset(zBufOut, 0, nByte);
-  return nByte;
+अटल पूर्णांक kvvfsRandomness(sqlite3_vfs *pVfs, पूर्णांक nByte, अक्षर *zBufOut){
+  स_रखो(zBufOut, 0, nByte);
+  वापस nByte;
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds
 ** actually slept.
 */
-static int kvvfsSleep(sqlite3_vfs *pVfs, int nMicro){
-  return SQLITE_OK;
+अटल पूर्णांक kvvfsSleep(sqlite3_vfs *pVfs, पूर्णांक nMicro){
+  वापस SQLITE_OK;
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int kvvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+अटल पूर्णांक kvvfsCurrentTime(sqlite3_vfs *pVfs, द्विगुन *pTimeOut){
   sqlite3_int64 i = 0;
-  int rc;
+  पूर्णांक rc;
   rc = kvvfsCurrentTimeInt64(0, &i);
   *pTimeOut = i/86400000.0;
-  return rc;
+  वापस rc;
 }
-#include <sys/time.h>
-static int kvvfsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-  struct timeval sNow;
-  (void)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
+#समावेश <sys/time.h>
+अटल पूर्णांक kvvfsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
+  अटल स्थिर sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+  काष्ठा timeval sNow;
+  (व्योम)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
   *pTimeOut = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_usec/1000;
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
-#endif /* SQLITE_OS_KV || SQLITE_OS_UNIX */
+#पूर्ण_अगर /* SQLITE_OS_KV || SQLITE_OS_UNIX */
 
-#if SQLITE_OS_KV
+#अगर SQLITE_OS_KV
 /*
 ** This routine is called initialize the KV-vfs as the default VFS.
 */
-int sqlite3_os_init(void){
-  return sqlite3_vfs_register(&sqlite3OsKvvfsObject, 1);
+पूर्णांक sqlite3_os_init(व्योम){
+  वापस sqlite3_vfs_register(&sqlite3OsKvvfsObject, 1);
 }
-int sqlite3_os_end(void){
-  return SQLITE_OK;
+पूर्णांक sqlite3_os_end(व्योम){
+  वापस SQLITE_OK;
 }
-#endif /* SQLITE_OS_KV */
+#पूर्ण_अगर /* SQLITE_OS_KV */
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void){
-  return sqlite3_vfs_register(&sqlite3OsKvvfsObject, 0);
+#अगर SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+पूर्णांक sqlite3KvvfsInit(व्योम){
+  वापस sqlite3_vfs_register(&sqlite3OsKvvfsObject, 0);
 }
-#endif
+#पूर्ण_अगर

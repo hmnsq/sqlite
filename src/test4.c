@@ -11,52 +11,52 @@
 *************************************************************************
 ** Code for testing the SQLite library in a multithreaded environment.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#if SQLITE_OS_UNIX && SQLITE_THREADSAFE
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
-#include <sched.h>
-#include <ctype.h>
+#समावेश "sqliteInt.h"
+#समावेश "tclsqlite.h"
+#अगर SQLITE_OS_UNIX && SQLITE_THREADSAFE
+#समावेश <stdlib.h>
+#समावेश <string.h>
+#समावेश <pthread.h>
+#समावेश <sched.h>
+#समावेश <ctype.h>
 
-extern const char *sqlite3ErrName(int);
+बाह्य स्थिर अक्षर *sqlite3ErrName(पूर्णांक);
 
 /*
 ** Each thread is controlled by an instance of the following
 ** structure.
 */
-typedef struct Thread Thread;
-struct Thread {
+प्रकार काष्ठा Thread Thread;
+काष्ठा Thread {
   /* The first group of fields are writable by the leader and read-only
   ** to the thread. */
-  char *zFilename;       /* Name of database file */
-  void (*xOp)(Thread*);  /* next operation to do */
-  char *zArg;            /* argument usable by xOp */
-  int opnum;             /* Operation number */
-  int busy;              /* True if this thread is in use */
+  अक्षर *zFilename;       /* Name of database file */
+  व्योम (*xOp)(Thread*);  /* next operation to do */
+  अक्षर *zArg;            /* argument usable by xOp */
+  पूर्णांक opnum;             /* Operation number */
+  पूर्णांक busy;              /* True if this thread is in use */
 
   /* The next group of fields are writable by the thread but read-only to the
   ** leader. */
-  int completed;        /* Number of operations completed */
+  पूर्णांक completed;        /* Number of operations completed */
   sqlite3 *db;           /* Open database */
   sqlite3_stmt *pStmt;     /* Pending operation */
-  char *zErr;           /* operation error */
-  char *zStaticErr;     /* Static error message */
-  int rc;               /* operation return code */
-  int argc;             /* number of columns in result */
-  const char *argv[100];    /* result columns */
-  const char *colv[100];    /* result column names */
+  अक्षर *zErr;           /* operation error */
+  अक्षर *zStaticErr;     /* Static error message */
+  पूर्णांक rc;               /* operation return code */
+  पूर्णांक argc;             /* number of columns in result */
+  स्थिर अक्षर *argv[100];    /* result columns */
+  स्थिर अक्षर *colv[100];    /* result column names */
 };
 
 /*
 ** There can be as many as 26 threads running at once.  Each is named
 ** by a capital letter: A, B, C, ..., Y, Z.
 */
-#define N_THREAD 26
-static Thread threadset[N_THREAD];
+#घोषणा N_THREAD 26
+अटल Thread threadset[N_THREAD];
 
-static void test_barrier(){
+अटल व्योम test_barrier(){
   sqlite3_mutex *pMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_APP1);
   sqlite3_mutex_enter(pMutex);
   sqlite3_mutex_leave(pMutex);
@@ -65,13 +65,13 @@ static void test_barrier(){
 /*
 ** The main loop for a thread.  Threads use busy waiting. 
 */
-static void *test_thread_main(void *pArg){
+अटल व्योम *test_thread_main(व्योम *pArg){
   Thread *p = (Thread*)pArg;
-  if( p->db ){
+  अगर( p->db ){
     sqlite3_close(p->db);
   }
   sqlite3_open(p->zFilename, &p->db);
-  if( SQLITE_OK!=sqlite3_errcode(p->db) ){
+  अगर( SQLITE_OK!=sqlite3_errcode(p->db) ){
     p->zErr = strdup(sqlite3_errmsg(p->db));
     sqlite3_close(p->db);
     p->db = 0;
@@ -79,37 +79,37 @@ static void *test_thread_main(void *pArg){
   p->pStmt = 0;
   test_barrier();
   p->completed = 1;
-  while( p->opnum<=p->completed ) sched_yield();
+  जबतक( p->opnum<=p->completed ) sched_yield();
   test_barrier();
-  while( p->xOp ){
-    if( p->zErr && p->zErr!=p->zStaticErr ){
+  जबतक( p->xOp ){
+    अगर( p->zErr && p->zErr!=p->zStaticErr ){
       sqlite3_free(p->zErr);
       p->zErr = 0;
     }
     (*p->xOp)(p);
     test_barrier();
     p->completed++;
-    while( p->opnum<=p->completed ) sched_yield();
+    जबतक( p->opnum<=p->completed ) sched_yield();
     test_barrier();
   }
-  if( p->pStmt ){
+  अगर( p->pStmt ){
     sqlite3_finalize(p->pStmt);
     p->pStmt = 0;
   }
-  if( p->db ){
+  अगर( p->db ){
     sqlite3_close(p->db);
     p->db = 0;
   }
-  if( p->zErr && p->zErr!=p->zStaticErr ){
+  अगर( p->zErr && p->zErr!=p->zStaticErr ){
     sqlite3_free(p->zErr);
     p->zErr = 0;
   }
   test_barrier();
   p->completed++;
-#ifndef SQLITE_OMIT_DEPRECATED
+#अगर_अघोषित SQLITE_OMIT_DEPRECATED
   sqlite3_thread_cleanup();
-#endif
-  return 0;
+#पूर्ण_अगर
+  वापस 0;
 }
 
 /*
@@ -117,12 +117,12 @@ static void *test_thread_main(void *pArg){
 ** If the argument is not a valid thread ID put an error message in
 ** the interpreter and return -1.
 */
-static int parse_thread_id(Tcl_Interp *interp, const char *zArg){
-  if( zArg==0 || zArg[0]==0 || zArg[1]!=0 || !isupper((unsigned char)zArg[0]) ){
-    Tcl_AppendResult(interp, "thread ID must be an upper case letter", NULL);
-    return -1;
+अटल पूर्णांक parse_thread_id(Tcl_Interp *interp, स्थिर अक्षर *zArg){
+  अगर( zArg==0 || zArg[0]==0 || zArg[1]!=0 || !है_बड़ा((अचिन्हित अक्षर)zArg[0]) ){
+    Tcl_Append_परिणाम(interp, "thread ID must be an upper case letter", शून्य);
+    वापस -1;
   }
-  return zArg[0] - 'A';
+  वापस zArg[0] - 'A';
 }
 
 /*
@@ -131,26 +131,26 @@ static int parse_thread_id(Tcl_Interp *interp, const char *zArg){
 ** NAME should be an upper case letter.  Start the thread running with
 ** an open connection to the given database.
 */
-static int SQLITE_TCLAPI tcl_thread_create(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_create(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
+  पूर्णांक i;
   pthread_t x;
-  int rc;
+  पूर्णांक rc;
 
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID FILENAME", NULL);
-    return TCL_ERROR;
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID FILENAME", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( threadset[i].busy ){
-    Tcl_AppendResult(interp, "thread ", argv[1], " is already running", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "thread ", argv[1], " is already running", शून्य);
+    वापस TCL_ERROR;
   }
   threadset[i].busy = 1;
   sqlite3_free(threadset[i].zFilename);
@@ -158,22 +158,22 @@ static int SQLITE_TCLAPI tcl_thread_create(
   threadset[i].opnum = 1;
   threadset[i].completed = 0;
   rc = pthread_create(&x, 0, test_thread_main, &threadset[i]);
-  if( rc ){
-    Tcl_AppendResult(interp, "failed to create the thread", NULL);
+  अगर( rc ){
+    Tcl_Append_परिणाम(interp, "failed to create the thread", शून्य);
     sqlite3_free(threadset[i].zFilename);
     threadset[i].busy = 0;
-    return TCL_ERROR;
+    वापस TCL_ERROR;
   }
   pthread_detach(x);
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
 ** Wait for a thread to reach its idle state.
 */
-static void test_thread_wait(Thread *p){
+अटल व्योम test_thread_wait(Thread *p){
   test_barrier();
-  while( p->opnum>p->completed ) sched_yield();
+  जबतक( p->opnum>p->completed ) sched_yield();
   test_barrier();
 }
 
@@ -182,33 +182,33 @@ static void test_thread_wait(Thread *p){
 **
 ** Wait on thread ID to reach its idle state.
 */
-static int SQLITE_TCLAPI tcl_thread_wait(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_wait(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
+  पूर्णांक i;
 
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
 ** Stop a thread.
 */
-static void test_stop_thread(Thread *p){
+अटल व्योम test_stop_thread(Thread *p){
   test_thread_wait(p);
   p->xOp = 0;
   p->opnum++;
@@ -226,33 +226,33 @@ static void test_stop_thread(Thread *p){
 ** Cause a thread to shut itself down.  Wait for the shutdown to be
 ** completed.  If ID is "*" then stop all threads.
 */
-static int SQLITE_TCLAPI tcl_thread_halt(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_halt(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
+  पूर्णांक i;
 
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
-  if( argv[1][0]=='*' && argv[1][1]==0 ){
-    for(i=0; i<N_THREAD; i++){
-      if( threadset[i].busy ) test_stop_thread(&threadset[i]);
+  अगर( argv[1][0]=='*' && argv[1][1]==0 ){
+    क्रम(i=0; i<N_THREAD; i++){
+      अगर( threadset[i].busy ) test_stop_thread(&threadset[i]);
     }
-  }else{
+  }अन्यथा{
     i = parse_thread_id(interp, argv[1]);
-    if( i<0 ) return TCL_ERROR;
-    if( !threadset[i].busy ){
-      Tcl_AppendResult(interp, "no such thread", NULL);
-      return TCL_ERROR;
+    अगर( i<0 ) वापस TCL_ERROR;
+    अगर( !threadset[i].busy ){
+      Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+      वापस TCL_ERROR;
     }
     test_stop_thread(&threadset[i]);
   }
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
@@ -261,30 +261,30 @@ static int SQLITE_TCLAPI tcl_thread_halt(
 ** Wait on the most recent thread_step to complete, then return the
 ** number of columns in the result set.
 */
-static int SQLITE_TCLAPI tcl_thread_argc(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_argc(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  char zBuf[100];
+  पूर्णांक i;
+  अक्षर zBuf[100];
 
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", threadset[i].argc);
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  sqlite3_snprintf(माप(zBuf), zBuf, "%d", threadset[i].argc);
+  Tcl_Append_परिणाम(interp, zBuf, शून्य);
+  वापस TCL_OK;
 }
 
 /*
@@ -293,34 +293,34 @@ static int SQLITE_TCLAPI tcl_thread_argc(
 ** Wait on the most recent thread_step to complete, then return the
 ** value of the N-th columns in the result set.
 */
-static int SQLITE_TCLAPI tcl_thread_argv(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_argv(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  int n;
+  पूर्णांक i;
+  पूर्णांक n;
 
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID N", NULL);
-    return TCL_ERROR;
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID N", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[2], &n) ) return TCL_ERROR;
+  अगर( Tcl_GetInt(interp, argv[2], &n) ) वापस TCL_ERROR;
   test_thread_wait(&threadset[i]);
-  if( n<0 || n>=threadset[i].argc ){
-    Tcl_AppendResult(interp, "column number out of range", NULL);
-    return TCL_ERROR;
+  अगर( n<0 || n>=threadset[i].argc ){
+    Tcl_Append_परिणाम(interp, "column number out of range", शून्य);
+    वापस TCL_ERROR;
   }
-  Tcl_AppendResult(interp, threadset[i].argv[n], NULL);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, threadset[i].argv[n], शून्य);
+  वापस TCL_OK;
 }
 
 /*
@@ -329,34 +329,34 @@ static int SQLITE_TCLAPI tcl_thread_argv(
 ** Wait on the most recent thread_step to complete, then return the
 ** name of the N-th columns in the result set.
 */
-static int SQLITE_TCLAPI tcl_thread_colname(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_colname(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  int n;
+  पूर्णांक i;
+  पूर्णांक n;
 
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID N", NULL);
-    return TCL_ERROR;
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID N", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[2], &n) ) return TCL_ERROR;
+  अगर( Tcl_GetInt(interp, argv[2], &n) ) वापस TCL_ERROR;
   test_thread_wait(&threadset[i]);
-  if( n<0 || n>=threadset[i].argc ){
-    Tcl_AppendResult(interp, "column number out of range", NULL);
-    return TCL_ERROR;
+  अगर( n<0 || n>=threadset[i].argc ){
+    Tcl_Append_परिणाम(interp, "column number out of range", शून्य);
+    वापस TCL_ERROR;
   }
-  Tcl_AppendResult(interp, threadset[i].colv[n], NULL);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, threadset[i].colv[n], शून्य);
+  वापस TCL_OK;
 }
 
 /*
@@ -365,30 +365,30 @@ static int SQLITE_TCLAPI tcl_thread_colname(
 ** Wait on the most recent operation to complete, then return the
 ** result code from that operation.
 */
-static int SQLITE_TCLAPI tcl_thread_result(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_परिणाम(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  const char *zName;
+  पूर्णांक i;
+  स्थिर अक्षर *zName;
 
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   zName = sqlite3ErrName(threadset[i].rc);
-  Tcl_AppendResult(interp, zName, NULL);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, zName, शून्य);
+  वापस TCL_OK;
 }
 
 /*
@@ -397,40 +397,40 @@ static int SQLITE_TCLAPI tcl_thread_result(
 ** Wait on the most recent operation to complete, then return the
 ** error string.
 */
-static int SQLITE_TCLAPI tcl_thread_error(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_error(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
+  पूर्णांक i;
 
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
-  Tcl_AppendResult(interp, threadset[i].zErr, NULL);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, threadset[i].zErr, शून्य);
+  वापस TCL_OK;
 }
 
 /*
 ** This procedure runs in the thread to compile an SQL statement.
 */
-static void do_compile(Thread *p){
-  if( p->db==0 ){
+अटल व्योम do_compile(Thread *p){
+  अगर( p->db==0 ){
     p->zErr = p->zStaticErr = "no database is open";
     p->rc = SQLITE_ERROR;
-    return;
+    वापस;
   }
-  if( p->pStmt ){
+  अगर( p->pStmt ){
     sqlite3_finalize(p->pStmt);
     p->pStmt = 0;
   }
@@ -442,23 +442,23 @@ static void do_compile(Thread *p){
 **
 ** Compile a new virtual machine.
 */
-static int SQLITE_TCLAPI tcl_thread_compile(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_compile(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID SQL", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID SQL", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   threadset[i].xOp = do_compile;
@@ -466,26 +466,26 @@ static int SQLITE_TCLAPI tcl_thread_compile(
   threadset[i].zArg = sqlite3_mprintf("%s", argv[2]);
   test_barrier();
   threadset[i].opnum++;
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
 ** This procedure runs in the thread to step the virtual machine.
 */
-static void do_step(Thread *p){
-  int i;
-  if( p->pStmt==0 ){
+अटल व्योम do_step(Thread *p){
+  पूर्णांक i;
+  अगर( p->pStmt==0 ){
     p->zErr = p->zStaticErr = "no virtual machine available";
     p->rc = SQLITE_ERROR;
-    return;
+    वापस;
   }
   p->rc = sqlite3_step(p->pStmt);
-  if( p->rc==SQLITE_ROW ){
-    p->argc = sqlite3_column_count(p->pStmt);
-    for(i=0; i<sqlite3_data_count(p->pStmt); i++){
-      p->argv[i] = (char*)sqlite3_column_text(p->pStmt, i);
+  अगर( p->rc==SQLITE_ROW ){
+    p->argc = sqlite3_column_गिनती(p->pStmt);
+    क्रम(i=0; i<sqlite3_तथ्य_गिनती(p->pStmt); i++){
+      p->argv[i] = (अक्षर*)sqlite3_column_text(p->pStmt, i);
     }
-    for(i=0; i<p->argc; i++){
+    क्रम(i=0; i<p->argc; i++){
       p->colv[i] = sqlite3_column_name(p->pStmt, i);
     }
   }
@@ -496,39 +496,39 @@ static void do_step(Thread *p){
 **
 ** Advance the virtual machine by one step
 */
-static int SQLITE_TCLAPI tcl_thread_step(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_step(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " IDL", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " IDL", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   threadset[i].xOp = do_step;
   test_barrier();
   threadset[i].opnum++;
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
 ** This procedure runs in the thread to finalize a virtual machine.
 */
-static void do_finalize(Thread *p){
-  if( p->pStmt==0 ){
+अटल व्योम do_finalize(Thread *p){
+  अगर( p->pStmt==0 ){
     p->zErr = p->zStaticErr = "no virtual machine available";
     p->rc = SQLITE_ERROR;
-    return;
+    वापस;
   }
   p->rc = sqlite3_finalize(p->pStmt);
   p->pStmt = 0;
@@ -539,23 +539,23 @@ static void do_finalize(Thread *p){
 **
 ** Finalize the virtual machine.
 */
-static int SQLITE_TCLAPI tcl_thread_finalize(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_finalize(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " IDL", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " IDL", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   threadset[i].xOp = do_finalize;
@@ -563,7 +563,7 @@ static int SQLITE_TCLAPI tcl_thread_finalize(
   threadset[i].zArg = 0;
   test_barrier();
   threadset[i].opnum++;
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
@@ -571,37 +571,37 @@ static int SQLITE_TCLAPI tcl_thread_finalize(
 **
 ** Interchange the sqlite* pointer between two threads.
 */
-static int SQLITE_TCLAPI tcl_thread_swap(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_swap(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i, j;
-  sqlite3 *temp;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID1 ID2", NULL);
-    return TCL_ERROR;
+  पूर्णांक i, j;
+  sqlite3 *अस्थायी;
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID1 ID2", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   j = parse_thread_id(interp, argv[2]);
-  if( j<0 ) return TCL_ERROR;
-  if( !threadset[j].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( j<0 ) वापस TCL_ERROR;
+  अगर( !threadset[j].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[j]);
-  temp = threadset[i].db;
+  अस्थायी = threadset[i].db;
   threadset[i].db = threadset[j].db;
-  threadset[j].db = temp;
-  return TCL_OK;
+  threadset[j].db = अस्थायी;
+  वापस TCL_OK;
 }
 
 /*
@@ -611,61 +611,61 @@ static int SQLITE_TCLAPI tcl_thread_swap(
 ** remove the pointer from the thread itself.  Afterwards, the thread
 ** can be stopped and the connection can be used by the main thread.
 */
-static int SQLITE_TCLAPI tcl_thread_db_get(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_db_get(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  char zBuf[100];
-  extern int sqlite3TestMakePointerStr(Tcl_Interp*, char*, void*);
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  अक्षर zBuf[100];
+  बाह्य पूर्णांक sqlite3TestMakePointerStr(Tcl_Interp*, अक्षर*, व्योम*);
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   sqlite3TestMakePointerStr(interp, zBuf, threadset[i].db);
   threadset[i].db = 0;
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, zBuf, (अक्षर*)0);
+  वापस TCL_OK;
 }
 
 /*
 ** Usage: thread_db_put ID DB
 **
 */
-static int SQLITE_TCLAPI tcl_thread_db_put(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_db_put(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  extern int sqlite3TestMakePointerStr(Tcl_Interp*, char*, void*);
-  extern void *sqlite3TestTextToPtr(const char *);
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID DB", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  बाह्य पूर्णांक sqlite3TestMakePointerStr(Tcl_Interp*, अक्षर*, व्योम*);
+  बाह्य व्योम *sqlite3TestTextToPtr(स्थिर अक्षर *);
+  अगर( argc!=3 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID DB", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
-  assert( !threadset[i].db );
+  निश्चित( !threadset[i].db );
   threadset[i].db = (sqlite3*)sqlite3TestTextToPtr(argv[2]);
-  return TCL_OK;
+  वापस TCL_OK;
 }
 
 /*
@@ -674,39 +674,39 @@ static int SQLITE_TCLAPI tcl_thread_db_put(
 ** Return the database stmt pointer for the given thread.  Then
 ** remove the pointer from the thread itself. 
 */
-static int SQLITE_TCLAPI tcl_thread_stmt_get(
-  void *NotUsed,
+अटल पूर्णांक SQLITE_TCLAPI tcl_thread_stmt_get(
+  व्योम *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  पूर्णांक argc,              /* Number of arguments */
+  स्थिर अक्षर **argv      /* Text of each argument */
 ){
-  int i;
-  char zBuf[100];
-  extern int sqlite3TestMakePointerStr(Tcl_Interp*, char*, void*);
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID", NULL);
-    return TCL_ERROR;
+  पूर्णांक i;
+  अक्षर zBuf[100];
+  बाह्य पूर्णांक sqlite3TestMakePointerStr(Tcl_Interp*, अक्षर*, व्योम*);
+  अगर( argc!=2 ){
+    Tcl_Append_परिणाम(interp, "wrong # args: should be \"", argv[0],
+       " ID", शून्य);
+    वापस TCL_ERROR;
   }
   i = parse_thread_id(interp, argv[1]);
-  if( i<0 ) return TCL_ERROR;
-  if( !threadset[i].busy ){
-    Tcl_AppendResult(interp, "no such thread", NULL);
-    return TCL_ERROR;
+  अगर( i<0 ) वापस TCL_ERROR;
+  अगर( !threadset[i].busy ){
+    Tcl_Append_परिणाम(interp, "no such thread", शून्य);
+    वापस TCL_ERROR;
   }
   test_thread_wait(&threadset[i]);
   sqlite3TestMakePointerStr(interp, zBuf, threadset[i].pStmt);
   threadset[i].pStmt = 0;
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_Append_परिणाम(interp, zBuf, (अक्षर*)0);
+  वापस TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest4_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+पूर्णांक Sqlitetest4_Init(Tcl_Interp *interp){
+  अटल काष्ठा {
+     अक्षर *zName;
      Tcl_CmdProc *xProc;
   } aCmd[] = {
      { "thread_create",     (Tcl_CmdProc*)tcl_thread_create     },
@@ -715,7 +715,7 @@ int Sqlitetest4_Init(Tcl_Interp *interp){
      { "thread_argc",       (Tcl_CmdProc*)tcl_thread_argc       },
      { "thread_argv",       (Tcl_CmdProc*)tcl_thread_argv       },
      { "thread_colname",    (Tcl_CmdProc*)tcl_thread_colname    },
-     { "thread_result",     (Tcl_CmdProc*)tcl_thread_result     },
+     { "thread_result",     (Tcl_CmdProc*)tcl_thread_परिणाम     },
      { "thread_error",      (Tcl_CmdProc*)tcl_thread_error      },
      { "thread_compile",    (Tcl_CmdProc*)tcl_thread_compile    },
      { "thread_step",       (Tcl_CmdProc*)tcl_thread_step       },
@@ -725,13 +725,13 @@ int Sqlitetest4_Init(Tcl_Interp *interp){
      { "thread_db_put",     (Tcl_CmdProc*)tcl_thread_db_put     },
      { "thread_stmt_get",   (Tcl_CmdProc*)tcl_thread_stmt_get   },
   };
-  int i;
+  पूर्णांक i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  क्रम(i=0; i<माप(aCmd)/माप(aCmd[0]); i++){
     Tcl_CreateCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
-  return TCL_OK;
+  वापस TCL_OK;
 }
-#else
-int Sqlitetest4_Init(Tcl_Interp *interp){ return TCL_OK; }
-#endif /* SQLITE_OS_UNIX */
+#अन्यथा
+पूर्णांक Sqlitetest4_Init(Tcl_Interp *interp){ वापस TCL_OK; }
+#पूर्ण_अगर /* SQLITE_OS_UNIX */

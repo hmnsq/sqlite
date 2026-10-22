@@ -12,26 +12,26 @@
 ** This file contains code to implement various aspects of UPSERT
 ** processing and handling of the Upsert object.
 */
-#include "sqliteInt.h"
+#समावेश "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_UPSERT
+#अगर_अघोषित SQLITE_OMIT_UPSERT
 /*
 ** Free a list of Upsert objects
 */
-static void SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
-  do{
-    Upsert *pNext = p->pNextUpsert;
-    sqlite3ExprListDelete(db, p->pUpsertTarget);
-    sqlite3ExprDelete(db, p->pUpsertTargetWhere);
-    sqlite3ExprListDelete(db, p->pUpsertSet);
-    sqlite3ExprDelete(db, p->pUpsertWhere);
+अटल व्योम SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
+  करो{
+    Upsert *p_अग्र = p->p_अग्र_Upsert;
+    sqlite3_व्यंजक_List_Delete(db, p->pUpsertTarget);
+    sqlite3_व्यंजक_Delete(db, p->pUpsertTargetWhere);
+    sqlite3_व्यंजक_List_Delete(db, p->pUpsertSet);
+    sqlite3_व्यंजक_Delete(db, p->pUpsertWhere);
     sqlite3DbFree(db, p->pToFree);
     sqlite3DbFree(db, p);
-    p = pNext;
-  }while( p );
+    p = p_अग्र;
+  }जबतक( p );
 }
-void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
-  if( p ) upsertDelete(db, p);
+व्योम sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
+  अगर( p ) upsertDelete(db, p);
 }
 
 
@@ -39,13 +39,13 @@ void sqlite3UpsertDelete(sqlite3 *db, Upsert *p){
 ** Duplicate an Upsert object.
 */
 Upsert *sqlite3UpsertDup(sqlite3 *db, Upsert *p){
-  if( p==0 ) return 0;
-  return sqlite3UpsertNew(db,
-           sqlite3ExprListDup(db, p->pUpsertTarget, 0),
-           sqlite3ExprDup(db, p->pUpsertTargetWhere, 0),
-           sqlite3ExprListDup(db, p->pUpsertSet, 0),
-           sqlite3ExprDup(db, p->pUpsertWhere, 0),
-           sqlite3UpsertDup(db, p->pNextUpsert)
+  अगर( p==0 ) वापस 0;
+  वापस sqlite3UpsertNew(db,
+           sqlite3_व्यंजक_List_Dup(db, p->pUpsertTarget, 0),
+           sqlite3_व्यंजक_Dup(db, p->pUpsertTargetWhere, 0),
+           sqlite3_व्यंजक_List_Dup(db, p->pUpsertSet, 0),
+           sqlite3_व्यंजक_Dup(db, p->pUpsertWhere, 0),
+           sqlite3UpsertDup(db, p->p_अग्र_Upsert)
          );
 }
 
@@ -54,30 +54,30 @@ Upsert *sqlite3UpsertDup(sqlite3 *db, Upsert *p){
 */
 Upsert *sqlite3UpsertNew(
   sqlite3 *db,           /* Determines which memory allocator to use */
-  ExprList *pTarget,     /* Target argument to ON CONFLICT, or NULL */
-  Expr *pTargetWhere,    /* Optional WHERE clause on the target */
-  ExprList *pSet,        /* UPDATE columns, or NULL for a DO NOTHING */
-  Expr *pWhere,          /* WHERE clause for the ON CONFLICT UPDATE */
-  Upsert *pNext          /* Next ON CONFLICT clause in the list */
+  व्यंजक_List *pTarget,     /* Target argument to ON CONFLICT, or NULL */
+  व्यंजक *pTargetWhere,    /* Optional WHERE clause on the target */
+  व्यंजक_List *pSet,        /* UPDATE columns, or NULL for a DO NOTHING */
+  व्यंजक *pWhere,          /* WHERE clause for the ON CONFLICT UPDATE */
+  Upsert *p_अग्र          /* Next ON CONFLICT clause in the list */
 ){
   Upsert *pNew;
-  pNew = sqlite3DbMallocZero(db, sizeof(Upsert));
-  if( pNew==0 ){
-    sqlite3ExprListDelete(db, pTarget);
-    sqlite3ExprDelete(db, pTargetWhere);
-    sqlite3ExprListDelete(db, pSet);
-    sqlite3ExprDelete(db, pWhere);
-    sqlite3UpsertDelete(db, pNext);
-    return 0;
-  }else{
+  pNew = sqlite3DbMallocZero(db, माप(Upsert));
+  अगर( pNew==0 ){
+    sqlite3_व्यंजक_List_Delete(db, pTarget);
+    sqlite3_व्यंजक_Delete(db, pTargetWhere);
+    sqlite3_व्यंजक_List_Delete(db, pSet);
+    sqlite3_व्यंजक_Delete(db, pWhere);
+    sqlite3UpsertDelete(db, p_अग्र);
+    वापस 0;
+  }अन्यथा{
     pNew->pUpsertTarget = pTarget;
     pNew->pUpsertTargetWhere = pTargetWhere;
     pNew->pUpsertSet = pSet;
     pNew->pUpsertWhere = pWhere;
     pNew->isDoUpdate = pSet!=0;
-    pNew->pNextUpsert = pNext;
+    pNew->p_अग्र_Upsert = p_अग्र;
   }
-  return pNew;
+  वापस pNew;
 }
 
 /*
@@ -87,53 +87,53 @@ Upsert *sqlite3UpsertNew(
 ** Return SQLITE_OK if everything works, or an error code is something
 ** is wrong.
 */
-int sqlite3UpsertAnalyzeTarget(
+पूर्णांक sqlite3UpsertAnalyzeTarget(
   Parse *pParse,     /* The parsing context */
   SrcList *pTabList, /* Table into which we are inserting */
   Upsert *pUpsert,   /* The ON CONFLICT clauses */
   Upsert *pAll       /* Complete list of all ON CONFLICT clauses */
 ){
   Table *pTab;            /* That table into which we are inserting */
-  int rc;                 /* Result code */
-  int iCursor;            /* Cursor used by pTab */
-  Index *pIdx;            /* One of the indexes of pTab */
-  ExprList *pTarget;      /* The conflict-target clause */
-  Expr *pTerm;            /* One term of the conflict-target clause */
+  पूर्णांक rc;                 /* Result code */
+  पूर्णांक iCursor;            /* Cursor used by pTab */
+  सूचकांक *pIdx;            /* One of the indexes of pTab */
+  व्यंजक_List *pTarget;      /* The conflict-target clause */
+  व्यंजक *pTerm;            /* One term of the conflict-target clause */
   NameContext sNC;        /* Context for resolving symbolic names */
-  Expr sCol[2];           /* Index column converted into an Expr */
-  int nClause = 0;        /* Counter of ON CONFLICT clauses */
+  व्यंजक sCol[2];           /* Index column converted into an Expr */
+  पूर्णांक nClause = 0;        /* Counter of ON CONFLICT clauses */
 
-  assert( pTabList->nSrc==1 );
-  assert( pTabList->a[0].pSTab!=0 );
-  assert( pUpsert!=0 );
-  assert( pUpsert->pUpsertTarget!=0 );
+  निश्चित( pTabList->nSrc==1 );
+  निश्चित( pTabList->a[0].pSTab!=0 );
+  निश्चित( pUpsert!=0 );
+  निश्चित( pUpsert->pUpsertTarget!=0 );
 
   /* Resolve all symbolic names in the conflict-target clause, which
   ** includes both the list of columns and the optional partial-index
   ** WHERE clause.
   */
-  memset(&sNC, 0, sizeof(sNC));
+  स_रखो(&sNC, 0, माप(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  for(; pUpsert && pUpsert->pUpsertTarget;
-        pUpsert=pUpsert->pNextUpsert, nClause++){
-    rc = sqlite3ResolveExprListNames(&sNC, pUpsert->pUpsertTarget);
-    if( rc ) return rc;
-    rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertTargetWhere);
-    if( rc ) return rc;
+  क्रम(; pUpsert && pUpsert->pUpsertTarget;
+        pUpsert=pUpsert->p_अग्र_Upsert, nClause++){
+    rc = sqlite3_Resolve_व्यंजक_List_Names(&sNC, pUpsert->pUpsertTarget);
+    अगर( rc ) वापस rc;
+    rc = sqlite3_Resolve_व्यंजक_Names(&sNC, pUpsert->pUpsertTargetWhere);
+    अगर( rc ) वापस rc;
   
     /* Check to see if the conflict target matches the rowid. */  
     pTab = pTabList->a[0].pSTab;
     pTarget = pUpsert->pUpsertTarget;
     iCursor = pTabList->a[0].iCursor;
-    if( HasRowid(pTab) 
-     && pTarget->nExpr==1
-     && (pTerm = pTarget->a[0].pExpr)->op==TK_COLUMN
+    अगर( HasRowid(pTab) 
+     && pTarget->n_व्यंजक==1
+     && (pTerm = pTarget->a[0].p_व्यंजक)->op==TK_COLUMN
      && pTerm->iColumn==XN_ROWID
     ){
       /* The conflict-target is the rowid of the primary table */
-      assert( pUpsert->pUpsertIdx==0 );
-      continue;
+      निश्चित( pUpsert->pUpsertIdx==0 );
+      जारी;
     }
   
     /* Initialize sCol[0..1] to be an expression parse tree for a
@@ -142,59 +142,59 @@ int sqlite3UpsertAnalyzeTarget(
     ** will populate the specific collation and column number values
     ** prior to comparing against the conflict-target expression.
     */
-    memset(sCol, 0, sizeof(sCol));
+    स_रखो(sCol, 0, माप(sCol));
     sCol[0].op = TK_COLLATE;
-    sCol[0].pLeft = &sCol[1];
+    sCol[0].p_बायाँ = &sCol[1];
     sCol[1].op = TK_COLUMN;
     sCol[1].iTable = pTabList->a[0].iCursor;
   
     /* Check for matches against other indexes */
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      int ii, jj, nn;
-      if( !IsUniqueIndex(pIdx) ) continue;
-      if( pTarget->nExpr!=pIdx->nKeyCol ) continue;
-      if( pIdx->pPartIdxWhere ){
-        if( pUpsert->pUpsertTargetWhere==0 ) continue;
-        if( sqlite3ExprCompare(pParse, pUpsert->pUpsertTargetWhere,
+    क्रम(pIdx=pTab->p_सूचकांक; pIdx; pIdx=pIdx->p_अग्र){
+      पूर्णांक ii, jj, nn;
+      अगर( !Is_Unique_सूचकांक(pIdx) ) जारी;
+      अगर( pTarget->n_व्यंजक!=pIdx->n_कुंजी_Col ) जारी;
+      अगर( pIdx->pPartIdxWhere ){
+        अगर( pUpsert->pUpsertTargetWhere==0 ) जारी;
+        अगर( sqlite3_व्यंजक_Compare(pParse, pUpsert->pUpsertTargetWhere,
                                pIdx->pPartIdxWhere, iCursor)!=0 ){
-          continue;
+          जारी;
         }
       }
-      nn = pIdx->nKeyCol;
-      for(ii=0; ii<nn; ii++){
-        Expr *pExpr;
-        sCol[0].u.zToken = (char*)pIdx->azColl[ii];
-        if( pIdx->aiColumn[ii]==XN_EXPR ){
-          assert( pIdx->aColExpr!=0 );
-          assert( pIdx->aColExpr->nExpr>ii );
-          assert( pIdx->bHasExpr );
-          pExpr = pIdx->aColExpr->a[ii].pExpr;
-          if( pExpr->op!=TK_COLLATE ){
-            sCol[0].pLeft = pExpr;
-            pExpr = &sCol[0];
+      nn = pIdx->n_कुंजी_Col;
+      क्रम(ii=0; ii<nn; ii++){
+        व्यंजक *p_व्यंजक;
+        sCol[0].u.zToken = (अक्षर*)pIdx->azColl[ii];
+        अगर( pIdx->aiColumn[ii]==XN_व्यंजक ){
+          निश्चित( pIdx->a_Col_व्यंजक!=0 );
+          निश्चित( pIdx->a_Col_व्यंजक->n_व्यंजक>ii );
+          निश्चित( pIdx->b_Has_व्यंजक );
+          p_व्यंजक = pIdx->a_Col_व्यंजक->a[ii].p_व्यंजक;
+          अगर( p_व्यंजक->op!=TK_COLLATE ){
+            sCol[0].p_बायाँ = p_व्यंजक;
+            p_व्यंजक = &sCol[0];
           }
-        }else{
-          sCol[0].pLeft = &sCol[1];
+        }अन्यथा{
+          sCol[0].p_बायाँ = &sCol[1];
           sCol[1].iColumn = pIdx->aiColumn[ii];
-          pExpr = &sCol[0];
+          p_व्यंजक = &sCol[0];
         }
-        for(jj=0; jj<nn; jj++){
-          if( sqlite3ExprCompare(0,pTarget->a[jj].pExpr,pExpr,iCursor)<2 ){
-            break;  /* Column ii of the index matches column jj of target */
+        क्रम(jj=0; jj<nn; jj++){
+          अगर( sqlite3_व्यंजक_Compare(0,pTarget->a[jj].p_व्यंजक,p_व्यंजक,iCursor)<2 ){
+            अवरोध;  /* Column ii of the index matches column jj of target */
           }
         }
-        if( jj>=nn ){
+        अगर( jj>=nn ){
           /* The target contains no match for column jj of the index */
-          break;
+          अवरोध;
         }
       }
-      if( ii<nn ){
+      अगर( ii<nn ){
         /* Column ii of the index did not match any term of the conflict target.
         ** Continue the search with the next index. */
-        continue;
+        जारी;
       }
       pUpsert->pUpsertIdx = pIdx;
-      if( sqlite3UpsertOfIndex(pAll,pIdx)!=pUpsert ){
+      अगर( sqlite3_Upsert_Of_सूचकांक(pAll,pIdx)!=pUpsert ){
         /* Really this should be an error.  The isDup ON CONFLICT clause will
         ** never fire.  But this problem was not discovered until three years
         ** after multi-CONFLICT upsert was added, and so we silently ignore
@@ -202,21 +202,21 @@ int sqlite3UpsertAnalyzeTarget(
         ** have redundant ON CONFLICT clauses. */
         pUpsert->isDup = 1;
       }
-      break;
+      अवरोध;
     }
-    if( pUpsert->pUpsertIdx==0 ){
-      char zWhich[16];
-      if( nClause==0 && pUpsert->pNextUpsert==0 ){
+    अगर( pUpsert->pUpsertIdx==0 ){
+      अक्षर zWhich[16];
+      अगर( nClause==0 && pUpsert->p_अग्र_Upsert==0 ){
         zWhich[0] = 0;
-      }else{
-        sqlite3_snprintf(sizeof(zWhich),zWhich,"%r ", nClause+1);
+      }अन्यथा{
+        sqlite3_snprintf(माप(zWhich),zWhich,"%r ", nClause+1);
       }
-      sqlite3ErrorMsg(pParse, "%sON CONFLICT clause does not match any "
+      sqlite3_Error_संदेश(pParse, "%sON CONFLICT clause does not match any "
                               "PRIMARY KEY or UNIQUE constraint", zWhich);
-      return SQLITE_ERROR;
+      वापस SQLITE_ERROR;
     }
   }
-  return SQLITE_OK;
+  वापस SQLITE_OK;
 }
 
 /*
@@ -224,18 +224,18 @@ int sqlite3UpsertAnalyzeTarget(
 ** conflict target, or if pUpsert is followed by another ON CONFLICT
 ** clause that targets the INTEGER PRIMARY KEY.
 */
-int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
-  Upsert *pNext;
-  if( NEVER(pUpsert==0) ) return 0;
-  pNext = pUpsert->pNextUpsert;
-  while( 1 /*exit-by-return*/ ){
-    if( pNext==0 ) return 1;
-    if( pNext->pUpsertTarget==0 ) return 1;
-    if( pNext->pUpsertIdx==0 ) return 1;
-    if( !pNext->isDup ) return 0;
-    pNext = pNext->pNextUpsert;
+पूर्णांक sqlite3_Upsert_अग्र_Is_IPK(Upsert *pUpsert){
+  Upsert *p_अग्र;
+  अगर( NEVER(pUpsert==0) ) वापस 0;
+  p_अग्र = pUpsert->p_अग्र_Upsert;
+  जबतक( 1 /*exit-by-return*/ ){
+    अगर( p_अग्र==0 ) वापस 1;
+    अगर( p_अग्र->pUpsertTarget==0 ) वापस 1;
+    अगर( p_अग्र->pUpsertIdx==0 ) वापस 1;
+    अगर( !p_अग्र->isDup ) वापस 0;
+    p_अग्र = p_अग्र->p_अग्र_Upsert;
   }
-  return 0;
+  वापस 0;
 }
 
 /*
@@ -244,15 +244,15 @@ int sqlite3UpsertNextIsIPK(Upsert *pUpsert){
 ** clause that applies to the index.  Or, if the index is not subject to
 ** any ON CONFLICT clause, return NULL.
 */
-Upsert *sqlite3UpsertOfIndex(Upsert *pUpsert, Index *pIdx){
-  while(
+Upsert *sqlite3_Upsert_Of_सूचकांक(Upsert *pUpsert, सूचकांक *pIdx){
+  जबतक(
       pUpsert
    && pUpsert->pUpsertTarget!=0
    && pUpsert->pUpsertIdx!=pIdx
   ){
-     pUpsert = pUpsert->pNextUpsert;
+     pUpsert = pUpsert->p_अग्र_Upsert;
   }
-  return pUpsert;
+  वापस pUpsert;
 }
 
 /*
@@ -264,47 +264,47 @@ Upsert *sqlite3UpsertOfIndex(Upsert *pUpsert, Index *pIdx){
 ** is not NULL, then pIdx is the constraint that failed and iCur is a
 ** cursor points to the conflicting row.
 */
-void sqlite3UpsertDoUpdate(
+व्योम sqlite3UpsertDoUpdate(
   Parse *pParse,        /* The parsing and code-generating context */
   Upsert *pUpsert,      /* The ON CONFLICT clause for the upsert */
   Table *pTab,          /* The table being updated */
-  Index *pIdx,          /* The UNIQUE constraint that failed */
-  int iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
+  सूचकांक *pIdx,          /* The UNIQUE constraint that failed */
+  पूर्णांक iCur              /* Cursor for pIdx (or pTab if pIdx==NULL) */
 ){
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
   SrcList *pSrc;            /* FROM clause for the UPDATE */
-  int iDataCur;
-  int i;
-  Upsert *pTop = pUpsert;
+  पूर्णांक i_तथ्य_Cur;
+  पूर्णांक i;
+  Upsert *p_शीर्ष_2 = pUpsert;
 
-  assert( v!=0 );
-  assert( pUpsert!=0 );
-  iDataCur = pUpsert->iDataCur;
-  pUpsert = sqlite3UpsertOfIndex(pTop, pIdx);
+  निश्चित( v!=0 );
+  निश्चित( pUpsert!=0 );
+  i_तथ्य_Cur = pUpsert->i_तथ्य_Cur;
+  pUpsert = sqlite3_Upsert_Of_सूचकांक(p_शीर्ष_2, pIdx);
   VdbeNoopComment((v, "Begin DO UPDATE of UPSERT"));
-  if( pIdx && iCur!=iDataCur ){
-    if( HasRowid(pTab) ){
-      int regRowid = sqlite3GetTempReg(pParse);
+  अगर( pIdx && iCur!=i_तथ्य_Cur ){
+    अगर( HasRowid(pTab) ){
+      पूर्णांक regRowid = sqlite3_Get_अस्थायी_Reg(pParse);
       sqlite3VdbeAddOp2(v, OP_IdxRowid, iCur, regRowid);
-      sqlite3VdbeAddOp3(v, OP_SeekRowid, iDataCur, 0, regRowid);
+      sqlite3VdbeAddOp3(v, OP_SeekRowid, i_तथ्य_Cur, 0, regRowid);
       VdbeCoverage(v);
-      sqlite3ReleaseTempReg(pParse, regRowid);
-    }else{
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-      int nPk = pPk->nKeyCol;
-      int iPk = pParse->nMem+1;
+      sqlite3_Release_अस्थायी_Reg(pParse, regRowid);
+    }अन्यथा{
+      सूचकांक *pPk = sqlite3_Primary_कुंजी_सूचकांक(pTab);
+      पूर्णांक nPk = pPk->n_कुंजी_Col;
+      पूर्णांक iPk = pParse->nMem+1;
       pParse->nMem += nPk;
-      for(i=0; i<nPk; i++){
-        int k;
-        assert( pPk->aiColumn[i]>=0 );
-        k = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
+      क्रम(i=0; i<nPk; i++){
+        पूर्णांक k;
+        निश्चित( pPk->aiColumn[i]>=0 );
+        k = sqlite3_Table_Column_To_सूचकांक(pIdx, pPk->aiColumn[i]);
         sqlite3VdbeAddOp3(v, OP_Column, iCur, k, iPk+i);
         VdbeComment((v, "%s.%s", pIdx->zName,
                     pTab->aCol[pPk->aiColumn[i]].zCnName));
       }
       sqlite3VdbeVerifyAbortable(v, OE_Abort);
-      i = sqlite3VdbeAddOp4Int(v, OP_Found, iDataCur, 0, iPk, nPk);
+      i = sqlite3VdbeAddOp4Int(v, OP_Found, i_तथ्य_Cur, 0, iPk, nPk);
       VdbeCoverage(v);
       sqlite3VdbeAddOp4(v, OP_Halt, SQLITE_CORRUPT, OE_Abort, 0, 
             "corrupt database", P4_STATIC);
@@ -314,17 +314,17 @@ void sqlite3UpsertDoUpdate(
   }
   /* pUpsert does not own pTop->pUpsertSrc - the outer INSERT statement does.
   ** So we have to make a copy before passing it down into sqlite3Update() */
-  pSrc = sqlite3SrcListDup(db, pTop->pUpsertSrc, 0);
+  pSrc = sqlite3SrcListDup(db, p_शीर्ष_2->pUpsertSrc, 0);
   /* excluded.* columns of type REAL need to be converted to a hard real */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
-      int iStorage = pTop->regData + sqlite3TableColumnToStorage(pTab, i);
+  क्रम(i=0; i<pTab->nCol; i++){
+    अगर( pTab->aCol[i].affinity==SQLITE_AFF_REAL ){
+      पूर्णांक iStorage = p_शीर्ष_2->reg_तथ्य + sqlite3TableColumnToStorage(pTab, i);
       sqlite3VdbeAddOp1(v, OP_RealAffinity, iStorage);
     }
   }
-  sqlite3Update(pParse, pSrc, sqlite3ExprListDup(db,pUpsert->pUpsertSet,0),
-      sqlite3ExprDup(db,pUpsert->pUpsertWhere,0), OE_Abort, 0, 0, pUpsert);
+  sqlite3Update(pParse, pSrc, sqlite3_व्यंजक_List_Dup(db,pUpsert->pUpsertSet,0),
+      sqlite3_व्यंजक_Dup(db,pUpsert->pUpsertWhere,0), OE_Abort, 0, 0, pUpsert);
   VdbeNoopComment((v, "End DO UPDATE of UPSERT"));
 }
 
-#endif /* SQLITE_OMIT_UPSERT */
+#पूर्ण_अगर /* SQLITE_OMIT_UPSERT */

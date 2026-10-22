@@ -13,32 +13,32 @@
 ** functions of SQLite.  (Some function, and in particular the date and
 ** time functions, are implemented separately.)
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
-#ifndef SQLITE_OMIT_FLOATING_POINT
-#include <math.h>
-#endif
-#include "vdbeInt.h"
+#समावेश "sqliteInt.h"
+#समावेश <stdlib.h>
+#समावेश <assert.h>
+#अगर_अघोषित SQLITE_OMIT_FLOATING_POINT
+#समावेश <math.h>
+#पूर्ण_अगर
+#समावेश "vdbeInt.h"
 
 /*
 ** Return the collating function associated with a function.
 */
-static CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
+अटल CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
   VdbeOp *pOp;
-  assert( context->pVdbe!=0 );
+  निश्चित( context->pVdbe!=0 );
   pOp = &context->pVdbe->aOp[context->iOp-1];
-  assert( pOp->opcode==OP_CollSeq );
-  assert( pOp->p4type==P4_COLLSEQ );
-  return pOp->p4.pColl;
+  निश्चित( pOp->opcode==OP_CollSeq );
+  निश्चित( pOp->p4type==P4_COLLSEQ );
+  वापस pOp->p4.pColl;
 }
 
 /*
 ** Indicate that the accumulator load should be skipped on this
 ** iteration of the aggregate loop.
 */
-static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
-  assert( context->isError<=0 );
+अटल व्योम sqlite3SkipAccumulatorLoad(sqlite3_context *context){
+  निश्चित( context->isError<=0 );
   context->isError = -1;
   context->skipFlag = 1;
 }
@@ -46,109 +46,109 @@ static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
 /*
 ** Implementation of the non-aggregate min() and max() functions
 */
-static void minmaxFunc(
+अटल व्योम minmaxFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int i;
-  int mask;    /* 0 for min() or 0xffffffff for max() */
-  int iBest;
+  पूर्णांक i;
+  पूर्णांक mask;    /* 0 for min() or 0xffffffff for max() */
+  पूर्णांक iBest;
   CollSeq *pColl;
 
-  assert( argc>1 );
-  mask = sqlite3_user_data(context)==0 ? 0 : -1;
+  निश्चित( argc>1 );
+  mask = sqlite3_user_तथ्य(context)==0 ? 0 : -1;
   pColl = sqlite3GetFuncCollSeq(context);
-  assert( pColl );
-  assert( mask==-1 || mask==0 );
+  निश्चित( pColl );
+  निश्चित( mask==-1 || mask==0 );
   iBest = 0;
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  for(i=1; i<argc; i++){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) return;
-    if( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_NULL ) वापस;
+  क्रम(i=1; i<argc; i++){
+    अगर( sqlite3_मूल्य_type(argv[i])==SQLITE_NULL ) वापस;
+    अगर( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
       testcase( mask==0 );
       iBest = i;
     }
   }
-  sqlite3_result_value(context, argv[iBest]);
+  sqlite3_परिणाम_मूल्य(context, argv[iBest]);
 }
 
 /*
 ** Return the type of the argument.
 */
-static void typeofFunc(
+अटल व्योम typeofFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **argv
 ){
-  static const char *azType[] = { "integer", "real", "text", "blob", "null" };
-  int i = sqlite3_value_type(argv[0]) - 1;
+  अटल स्थिर अक्षर *azType[] = { "integer", "real", "text", "blob", "null" };
+  पूर्णांक i = sqlite3_मूल्य_type(argv[0]) - 1;
   UNUSED_PARAMETER(NotUsed);
-  assert( i>=0 && i<ArraySize(azType) );
-  assert( SQLITE_INTEGER==1 );
-  assert( SQLITE_FLOAT==2 );
-  assert( SQLITE_TEXT==3 );
-  assert( SQLITE_BLOB==4 );
-  assert( SQLITE_NULL==5 );
+  निश्चित( i>=0 && i<Array_आकार(azType) );
+  निश्चित( SQLITE_INTEGER==1 );
+  निश्चित( SQLITE_FLOAT==2 );
+  निश्चित( SQLITE_TEXT==3 );
+  निश्चित( SQLITE_BLOB==4 );
+  निश्चित( SQLITE_NULL==5 );
   /* EVIDENCE-OF: R-01470-60482 The sqlite3_value_type(V) interface returns
   ** the datatype code for the initial datatype of the sqlite3_value object
   ** V. The returned value is one of SQLITE_INTEGER, SQLITE_FLOAT,
   ** SQLITE_TEXT, SQLITE_BLOB, or SQLITE_NULL. */
-  sqlite3_result_text(context, azType[i], -1, SQLITE_STATIC);
+  sqlite3_परिणाम_text(context, azType[i], -1, SQLITE_STATIC);
 }
 
 /* subtype(X)
 **
 ** Return the subtype of X
 */
-static void subtypeFunc(
+अटल व्योम subtypeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   UNUSED_PARAMETER(argc);
-  sqlite3_result_int(context, sqlite3_value_subtype(argv[0]));
+  sqlite3_परिणाम_int(context, sqlite3_मूल्य_subtype(argv[0]));
 }
 
 /*
 ** Implementation of the length() function
 */
-static void lengthFunc(
+अटल व्योम लंबाई_Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  assert( argc==1 );
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB:
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  चयन( sqlite3_मूल्य_type(argv[0]) ){
+    हाल SQLITE_BLOB:
+    हाल SQLITE_INTEGER:
+    हाल SQLITE_FLOAT: {
+      sqlite3_परिणाम_int(context, sqlite3_मूल्य_bytes(argv[0]));
+      अवरोध;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *z = sqlite3_value_text(argv[0]);
-      const unsigned char *z0;
-      if( z==0 ) return;
+    हाल SQLITE_TEXT: {
+      स्थिर अचिन्हित अक्षर *z = sqlite3_मूल्य_text(argv[0]);
+      स्थिर अचिन्हित अक्षर *z0;
+      अगर( z==0 ) वापस;
       z0 = z;
-      while( 1 /*exit-by-break*/ ){
+      जबतक( 1 /*exit-by-break*/ ){
                       /*  vvvvvv----  See tag-20260418-01 */
-        if( (u8)(z[0]-1)<(0x80-1) ){
+        अगर( (u8)(z[0]-1)<(0x80-1) ){
           z++;
-        }else if( z[0]==0 ){
-          break;
-        }else{
+        }अन्यथा अगर( z[0]==0 ){
+          अवरोध;
+        }अन्यथा{
           z++;
-          while( (z[0]&0xc0)==0x80 ){ z++; z0++; }
+          जबतक( (z[0]&0xc0)==0x80 ){ z++; z0++; }
         }
       }
-      sqlite3_result_int(context, (int)(z-z0));
-      break;
+      sqlite3_परिणाम_int(context, (पूर्णांक)(z-z0));
+      अवरोध;
     }
-    default: {
-      sqlite3_result_null(context);
-      break;
+    शेष: {
+      sqlite3_परिणाम_null(context);
+      अवरोध;
     }
   }
 }
@@ -156,35 +156,35 @@ static void lengthFunc(
 /*
 ** Implementation of the octet_length() function
 */
-static void bytelengthFunc(
+अटल व्योम bytelengthFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  assert( argc==1 );
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  चयन( sqlite3_मूल्य_type(argv[0]) ){
+    हाल SQLITE_BLOB: {
+      sqlite3_परिणाम_int(context, sqlite3_मूल्य_bytes(argv[0]));
+      अवरोध;
     }
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
+    हाल SQLITE_INTEGER:
+    हाल SQLITE_FLOAT: {
       i64 m = sqlite3_context_db_handle(context)->enc<=SQLITE_UTF8 ? 1 : 2;
-      sqlite3_result_int64(context, sqlite3_value_bytes(argv[0])*m);
-      break;
+      sqlite3_परिणाम_int64(context, sqlite3_मूल्य_bytes(argv[0])*m);
+      अवरोध;
     }
-    case SQLITE_TEXT: {
-      if( sqlite3_value_encoding(argv[0])<=SQLITE_UTF8 ){
-        sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      }else{
-        sqlite3_result_int(context, sqlite3_value_bytes16(argv[0]));
+    हाल SQLITE_TEXT: {
+      अगर( sqlite3_मूल्य_encoding(argv[0])<=SQLITE_UTF8 ){
+        sqlite3_परिणाम_int(context, sqlite3_मूल्य_bytes(argv[0]));
+      }अन्यथा{
+        sqlite3_परिणाम_int(context, sqlite3_मूल्य_bytes16(argv[0]));
       }
-      break;
+      अवरोध;
     }
-    default: {
-      sqlite3_result_null(context);
-      break;
+    शेष: {
+      sqlite3_परिणाम_null(context);
+      अवरोध;
     }
   }
 }
@@ -195,40 +195,40 @@ static void bytelengthFunc(
 ** IMP: R-23979-26855 The abs(X) function returns the absolute value of
 ** the numeric argument X.
 */
-static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  assert( argc==1 );
+अटल व्योम absFunc(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal<0 ){
-        if( iVal==SMALLEST_INT64 ){
+  चयन( sqlite3_मूल्य_type(argv[0]) ){
+    हाल SQLITE_INTEGER: {
+      i64 iVal = sqlite3_मूल्य_int64(argv[0]);
+      अगर( iVal<0 ){
+        अगर( iVal==SMALLEST_INT64 ){
           /* IMP: R-31676-45509 If X is the integer -9223372036854775808
           ** then abs(X) throws an integer overflow error since there is no
           ** equivalent positive 64-bit two complement value. */
-          sqlite3_result_error(context, "integer overflow", -1);
-          return;
+          sqlite3_परिणाम_error(context, "integer overflow", -1);
+          वापस;
         }
         iVal = -iVal;
       }
-      sqlite3_result_int64(context, iVal);
-      break;
+      sqlite3_परिणाम_int64(context, iVal);
+      अवरोध;
     }
-    case SQLITE_NULL: {
+    हाल SQLITE_NULL: {
       /* IMP: R-37434-19929 Abs(X) returns NULL if X is NULL. */
-      sqlite3_result_null(context);
-      break;
+      sqlite3_परिणाम_null(context);
+      अवरोध;
     }
-    default: {
+    शेष: {
       /* Because sqlite3_value_double() returns 0.0 if the argument is not
       ** something that can be converted into a number, we have:
       ** IMP: R-01992-00519 Abs(X) returns 0.0 if X is a string or blob
       ** that cannot be converted to a numeric value.
       */
-      double rVal = sqlite3_value_double(argv[0]);
-      if( rVal<0 ) rVal = -rVal;
-      sqlite3_result_double(context, rVal);
-      break;
+      द्विगुन rVal = sqlite3_मूल्य_double(argv[0]);
+      अगर( rVal<0 ) rVal = -rVal;
+      sqlite3_परिणाम_double(context, rVal);
+      अवरोध;
     }
   }
 }
@@ -244,101 +244,101 @@ static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** the number of bytes in haystack prior to the first occurrence of needle,
 ** or 0 if needle never occurs in haystack.
 */
-static void instrFunc(
+अटल व्योम instrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *zHaystack;
-  const unsigned char *zNeedle;
-  int nHaystack;
-  int nNeedle;
-  int typeHaystack, typeNeedle;
-  int N = 1;
-  int isText;
-  unsigned char firstChar;
-  sqlite3_value *pC1 = 0;
-  sqlite3_value *pC2 = 0;
+  स्थिर अचिन्हित अक्षर *zHaystack;
+  स्थिर अचिन्हित अक्षर *zNeedle;
+  पूर्णांक nHaystack;
+  पूर्णांक nNeedle;
+  पूर्णांक typeHaystack, typeNeedle;
+  पूर्णांक N = 1;
+  पूर्णांक isText;
+  अचिन्हित अक्षर firstChar;
+  sqlite3_मूल्य *pC1 = 0;
+  sqlite3_मूल्य *pC2 = 0;
 
   UNUSED_PARAMETER(argc);
-  typeHaystack = sqlite3_value_type(argv[0]);
-  typeNeedle = sqlite3_value_type(argv[1]);
-  if( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) return;
-  nHaystack = sqlite3_value_bytes(argv[0]);
-  nNeedle = sqlite3_value_bytes(argv[1]);
-  if( nNeedle>0 ){
-    if( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
-      zHaystack = sqlite3_value_blob(argv[0]);
-      zNeedle = sqlite3_value_blob(argv[1]);
+  typeHaystack = sqlite3_मूल्य_type(argv[0]);
+  typeNeedle = sqlite3_मूल्य_type(argv[1]);
+  अगर( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) वापस;
+  nHaystack = sqlite3_मूल्य_bytes(argv[0]);
+  nNeedle = sqlite3_मूल्य_bytes(argv[1]);
+  अगर( nNeedle>0 ){
+    अगर( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
+      zHaystack = sqlite3_मूल्य_blob(argv[0]);
+      zNeedle = sqlite3_मूल्य_blob(argv[1]);
       isText = 0;
-    }else if( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
-      zHaystack = sqlite3_value_text(argv[0]);
-      zNeedle = sqlite3_value_text(argv[1]);
+    }अन्यथा अगर( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
+      zHaystack = sqlite3_मूल्य_text(argv[0]);
+      zNeedle = sqlite3_मूल्य_text(argv[1]);
       isText = 1;
-    }else{
-      pC1 = sqlite3_value_dup(argv[0]);
-      zHaystack = sqlite3_value_text(pC1);
-      if( zHaystack==0 ) goto endInstrOOM;
-      nHaystack = sqlite3_value_bytes(pC1);
-      pC2 = sqlite3_value_dup(argv[1]);
-      zNeedle = sqlite3_value_text(pC2);
-      if( zNeedle==0 ) goto endInstrOOM;
-      nNeedle = sqlite3_value_bytes(pC2);
+    }अन्यथा{
+      pC1 = sqlite3_मूल्य_dup(argv[0]);
+      zHaystack = sqlite3_मूल्य_text(pC1);
+      अगर( zHaystack==0 ) जाओ endInstrOOM;
+      nHaystack = sqlite3_मूल्य_bytes(pC1);
+      pC2 = sqlite3_मूल्य_dup(argv[1]);
+      zNeedle = sqlite3_मूल्य_text(pC2);
+      अगर( zNeedle==0 ) जाओ endInstrOOM;
+      nNeedle = sqlite3_मूल्य_bytes(pC2);
       isText = 1;
     }
-    if( zNeedle==0 || (nHaystack && zHaystack==0) ) goto endInstrOOM;
+    अगर( zNeedle==0 || (nHaystack && zHaystack==0) ) जाओ endInstrOOM;
     firstChar = zNeedle[0];
-    while( nNeedle<=nHaystack
-       && (zHaystack[0]!=firstChar || memcmp(zHaystack, zNeedle, nNeedle)!=0)
+    जबतक( nNeedle<=nHaystack
+       && (zHaystack[0]!=firstChar || स_भेद(zHaystack, zNeedle, nNeedle)!=0)
     ){
       N++;
-      do{
+      करो{
         nHaystack--;
         zHaystack++;
-      }while( isText && (zHaystack[0]&0xc0)==0x80 );
+      }जबतक( isText && (zHaystack[0]&0xc0)==0x80 );
     }
-    if( nNeedle>nHaystack ) N = 0;
+    अगर( nNeedle>nHaystack ) N = 0;
   }
-  sqlite3_result_int(context, N);
+  sqlite3_परिणाम_int(context, N);
 endInstr:
-  sqlite3_value_free(pC1);
-  sqlite3_value_free(pC2);
-  return;
+  sqlite3_मूल्य_free(pC1);
+  sqlite3_मूल्य_free(pC2);
+  वापस;
 endInstrOOM:
-  sqlite3_result_error_nomem(context);
-  goto endInstr;
+  sqlite3_परिणाम_error_nomem(context);
+  जाओ endInstr;
 }
 
 /*
 ** Implementation of the printf() (a.k.a. format()) SQL function.
 */
-static void printfFunc(
+अटल व्योम printfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   PrintfArguments x;
   StrAccum str;
-  const char *zFormat;
+  स्थिर अक्षर *zFormat;
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  if( argc>=1 && (zFormat = (const char*)sqlite3_value_text(argv[0]))!=0 ){
+  अगर( argc>=1 && (zFormat = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]))!=0 ){
     x.nArg = argc-1;
     x.nUsed = 0;
     x.apArg = argv+1;
-    sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
+    sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_लंबाई]);
     str.printfFlags = SQLITE_PRINTF_SQLFUNC;
     sqlite3_str_appendf(&str, zFormat, &x);
-    sqlite3_result_str(context, &str, SQLITE_XFER);
+    sqlite3_परिणाम_str(context, &str, SQLITE_XFER);
   }
 }
 
 /* Return true if any of the eight bytes in word is NUL or non-ASCII. */
-static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
-  const u64 byteOnes = UINT64_C(0x0101010101010101);
-  const u64 byteHighBits = UINT64_C(0x8080808080808080);
+अटल SQLITE_INLINE पूर्णांक containsNulOrNonAscii(u64 word){
+  स्थिर u64 byteOnes = UINT64_C(0x0101010101010101);
+  स्थिर u64 byte_ऊपरी_Bits = UINT64_C(0x8080808080808080);
   /* NUL causes a borrow into a high bit; non-ASCII already has one set. */
-  return ((word | (word - byteOnes)) & byteHighBits)!=0;
+  वापस ((word | (word - byteOnes)) & byte_ऊपरी_Bits)!=0;
 }
 
 /*
@@ -353,161 +353,161 @@ static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
 **
 ** If p2 is negative, return the p2 characters preceding p1.
 */
-static void substrFunc(
+अटल व्योम substrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *z;
-  const unsigned char *z2;
-  int len;
-  int p0type;
+  स्थिर अचिन्हित अक्षर *z;
+  स्थिर अचिन्हित अक्षर *z2;
+  पूर्णांक len;
+  पूर्णांक p0type;
   i64 p1, p2;
 
-  assert( argc==3 || argc==2 );
-  p0type = sqlite3_value_type(argv[0]);
-  p1 = sqlite3_value_int64(argv[1]);
-  if( p0type==SQLITE_BLOB ){
-    len = sqlite3_value_bytes(argv[0]);
-    z = sqlite3_value_blob(argv[0]);
-    if( z==0 ) return;
-    assert( len==sqlite3_value_bytes(argv[0]) );
-  }else{
-    z = sqlite3_value_text(argv[0]);
-    if( z==0 ) return;
+  निश्चित( argc==3 || argc==2 );
+  p0type = sqlite3_मूल्य_type(argv[0]);
+  p1 = sqlite3_मूल्य_int64(argv[1]);
+  अगर( p0type==SQLITE_BLOB ){
+    len = sqlite3_मूल्य_bytes(argv[0]);
+    z = sqlite3_मूल्य_blob(argv[0]);
+    अगर( z==0 ) वापस;
+    निश्चित( len==sqlite3_मूल्य_bytes(argv[0]) );
+  }अन्यथा{
+    z = sqlite3_मूल्य_text(argv[0]);
+    अगर( z==0 ) वापस;
     len = 0;
-    if( p1<0 ){
-      for(z2=z; *z2; len++){
+    अगर( p1<0 ){
+      क्रम(z2=z; *z2; len++){
         SQLITE_SKIP_UTF8(z2);
       }
     }
   }
-  if( argc==3 ){
-    p2 = sqlite3_value_int64(argv[2]);
-    if( p2==0 && sqlite3_value_type(argv[2])==SQLITE_NULL ) return;
-  }else{
+  अगर( argc==3 ){
+    p2 = sqlite3_मूल्य_int64(argv[2]);
+    अगर( p2==0 && sqlite3_मूल्य_type(argv[2])==SQLITE_NULL ) वापस;
+  }अन्यथा{
     p2 = LARGEST_INT64;
   }
-  if( p1==0 ){
-#ifdef SQLITE_SUBSTR_COMPATIBILITY
+  अगर( p1==0 ){
+#अगर_घोषित SQLITE_SUBSTR_COMPATIBILITY
     /* If SUBSTR_COMPATIBILITY is defined then substr(X,0,N) work the same as
     ** as substr(X,1,N) - it returns the first N characters of X.  This
     ** is essentially a back-out of the bug-fix in check-in [5fc125d362df4b8]
     ** from 2009-02-02 for compatibility of applications that exploited the
     ** old buggy behavior. */
     p1 = 1; /* <rdar://problem/6778339> */
-#endif
-    if( sqlite3_value_type(argv[1])==SQLITE_NULL ) return;
+#पूर्ण_अगर
+    अगर( sqlite3_मूल्य_type(argv[1])==SQLITE_NULL ) वापस;
   }
-  if( p1<0 ){
+  अगर( p1<0 ){
     p1 += len;
-    if( p1<0 ){
-      if( p2<0 ){
+    अगर( p1<0 ){
+      अगर( p2<0 ){
         p2 = 0;
-      }else{
+      }अन्यथा{
         p2 += p1;
       }
       p1 = 0;
     }
-  }else if( p1>0 ){
+  }अन्यथा अगर( p1>0 ){
     p1--;
-  }else if( p2>0 ){
+  }अन्यथा अगर( p2>0 ){
     p2--;
   }
-  if( p2<0 ){
-    if( p2<-p1 ){
+  अगर( p2<0 ){
+    अगर( p2<-p1 ){
       p2 = p1;
-    }else{
+    }अन्यथा{
       p2 = -p2;
     }
     p1 -= p2;
   }
-  assert( p1>=0 && p2>=0 );
-  if( p0type!=SQLITE_BLOB ){
-    if( p1>=8 ){
+  निश्चित( p1>=0 && p2>=0 );
+  अगर( p0type!=SQLITE_BLOB ){
+    अगर( p1>=8 ){
       /* Skip 8 characters at a time while all 8 bytes are in 0x01..0x7f */
-      const unsigned char *zEnd = z + sqlite3_value_bytes(argv[0]);
-      while( p1>=8 && zEnd-z>=8 ){
+      स्थिर अचिन्हित अक्षर *zEnd = z + sqlite3_मूल्य_bytes(argv[0]);
+      जबतक( p1>=8 && zEnd-z>=8 ){
         u64 word;
-        memcpy(&word, z, sizeof(word));
+        स_नकल(&word, z, माप(word));
         /* Handle NUL and UTF-8 with the scalar loop below. */
-        if( containsNulOrNonAscii(word) ){
-          break;
+        अगर( containsNulOrNonAscii(word) ){
+          अवरोध;
         }
         z += 8;
         p1 -= 8;
       }
     }
-    for( ; p1>0; p1--){
+    क्रम( ; p1>0; p1--){
                     /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z[0]-1)<(0x80-1) ){
+      अगर( (u8)(z[0]-1)<(0x80-1) ){
         z++;
-      }else if( z[0]==0 ){
-        break;
-      }else{
-        do{ z++; }while( (z[0]&0xc0)==0x80 );
+      }अन्यथा अगर( z[0]==0 ){
+        अवरोध;
+      }अन्यथा{
+        करो{ z++; }जबतक( (z[0]&0xc0)==0x80 );
       }
     }
-    for(z2=z; p2>0; p2--){
+    क्रम(z2=z; p2>0; p2--){
                      /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z2[0]-1)<(0x80-1) ){
+      अगर( (u8)(z2[0]-1)<(0x80-1) ){
         z2++;
-      }else if( z2[0]==0 ){
-        break;
-      }else{
-        do{ z2++; }while( (z2[0]&0xc0)==0x80 );
+      }अन्यथा अगर( z2[0]==0 ){
+        अवरोध;
+      }अन्यथा{
+        करो{ z2++; }जबतक( (z2[0]&0xc0)==0x80 );
       }
     }
-    sqlite3_result_text64(context, (char*)z, z2-z, SQLITE_TRANSIENT,
+    sqlite3_परिणाम_text64(context, (अक्षर*)z, z2-z, SQLITE_TRANSIENT,
                           SQLITE_UTF8);
-  }else{
-    if( p1>=len ){
+  }अन्यथा{
+    अगर( p1>=len ){
       p1 = p2 = 0;
-    }else if( p2>len-p1 ){
+    }अन्यथा अगर( p2>len-p1 ){
       p2 = len-p1;
-      assert( p2>0 );
+      निश्चित( p2>0 );
     }
-    sqlite3_result_blob64(context, (char*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
+    sqlite3_परिणाम_blob64(context, (अक्षर*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
   }
 }
 
 /*
 ** Implementation of the round() function
 */
-#ifndef SQLITE_OMIT_FLOATING_POINT
-static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+#अगर_अघोषित SQLITE_OMIT_FLOATING_POINT
+अटल व्योम roundFunc(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
   i64 n = 0;
-  double r;
-  char *zBuf;
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    if( SQLITE_NULL==sqlite3_value_type(argv[1]) ) return;
-    n = sqlite3_value_int64(argv[1]);
-    if( n>30 ) n = 30;
-    if( n<0 ) n = 0;
+  द्विगुन r;
+  अक्षर *zBuf;
+  निश्चित( argc==1 || argc==2 );
+  अगर( argc==2 ){
+    अगर( SQLITE_NULL==sqlite3_मूल्य_type(argv[1]) ) वापस;
+    n = sqlite3_मूल्य_int64(argv[1]);
+    अगर( n>30 ) n = 30;
+    अगर( n<0 ) n = 0;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  r = sqlite3_value_double(argv[0]);
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_NULL ) वापस;
+  r = sqlite3_मूल्य_double(argv[0]);
   /* If Y==0 and X will fit in a 64-bit int,
   ** handle the rounding directly,
   ** otherwise use printf.
   */
-  if( r<-4503599627370496.0 || r>+4503599627370496.0 ){
+  अगर( r<-4503599627370496.0 || r>+4503599627370496.0 ){
     /* The value has no fractional part so there is nothing to round */
-  }else if( n==0 ){ 
-    r = (double)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
-  }else{
-    zBuf = sqlite3_mprintf("%!.*f",(int)n,r);
-    if( zBuf==0 ){
-      sqlite3_result_error_nomem(context);
-      return;
+  }अन्यथा अगर( n==0 ){ 
+    r = (द्विगुन)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
+  }अन्यथा{
+    zBuf = sqlite3_mprintf("%!.*f",(पूर्णांक)n,r);
+    अगर( zBuf==0 ){
+      sqlite3_परिणाम_error_nomem(context);
+      वापस;
     }
     sqlite3AtoF(zBuf, &r);
     sqlite3_free(zBuf);
   }
-  sqlite3_result_double(context, r);
+  sqlite3_परिणाम_double(context, r);
 }
-#endif
+#पूर्ण_अगर
 
 /*
 ** Allocate nByte bytes of space using sqlite3Malloc(). If the
@@ -516,62 +516,62 @@ static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** If nByte is larger than the maximum string or blob length, then
 ** raise an SQLITE_TOOBIG exception and return NULL.
 */
-static void *contextMalloc(sqlite3_context *context, i64 nByte){
-  char *z;
+अटल व्योम *contextMalloc(sqlite3_context *context, i64 nByte){
+  अक्षर *z;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( nByte>0 );
-  testcase( nByte==db->aLimit[SQLITE_LIMIT_LENGTH] );
-  testcase( nByte==(i64)db->aLimit[SQLITE_LIMIT_LENGTH]+1 );
-  if( nByte>db->aLimit[SQLITE_LIMIT_LENGTH] ){
-    sqlite3_result_error_toobig(context);
+  निश्चित( nByte>0 );
+  testcase( nByte==db->aLimit[SQLITE_LIMIT_लंबाई] );
+  testcase( nByte==(i64)db->aLimit[SQLITE_LIMIT_लंबाई]+1 );
+  अगर( nByte>db->aLimit[SQLITE_LIMIT_लंबाई] ){
+    sqlite3_परिणाम_error_toobig(context);
     z = 0;
-  }else{
+  }अन्यथा{
     z = sqlite3Malloc(nByte);
-    if( !z ){
-      sqlite3_result_error_nomem(context);
+    अगर( !z ){
+      sqlite3_परिणाम_error_nomem(context);
     }
   }
-  return z;
+  वापस z;
 }
 
 /*
 ** Implementation of the upper() and lower() SQL functions.
 */
-static void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+अटल व्योम upperFunc(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  अक्षर *z1;
+  स्थिर अक्षर *z2;
+  पूर्णांक i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (अक्षर*)sqlite3_मूल्य_text(argv[0]);
+  n = sqlite3_मूल्य_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  निश्चित( z2==(अक्षर*)sqlite3_मूल्य_text(argv[0]) );
+  अगर( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
-        z1[i] = (char)sqlite3Toupper(z2[i]);
+    अगर( z1 ){
+      क्रम(i=0; i<n; i++){
+        z1[i] = (अक्षर)sqlite3Toupper(z2[i]);
       }
-      sqlite3_result_text(context, z1, n, sqlite3_free);
+      sqlite3_परिणाम_text(context, z1, n, sqlite3_free);
     }
   }
 }
-static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+अटल व्योम lowerFunc(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  अक्षर *z1;
+  स्थिर अक्षर *z2;
+  पूर्णांक i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (अक्षर*)sqlite3_मूल्य_text(argv[0]);
+  n = sqlite3_मूल्य_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  निश्चित( z2==(अक्षर*)sqlite3_मूल्य_text(argv[0]) );
+  अगर( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
+    अगर( z1 ){
+      क्रम(i=0; i<n; i++){
         z1[i] = sqlite3Tolower(z2[i]);
       }
-      sqlite3_result_text(context, z1, n, sqlite3_free);
+      sqlite3_परिणाम_text(context, z1, n, sqlite3_free);
     }
   }
 }
@@ -584,20 +584,20 @@ static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** noopFunc will never be called so it doesn't matter what the implementation
 ** is.  We might as well use the "version()" function as a substitute.
 */
-#define noopFunc versionFunc   /* Substitute function - never called */
+#घोषणा noopFunc versionFunc   /* Substitute function - never called */
 
 /*
 ** Implementation of random().  Return a random integer. 
 */
-static void randomFunc(
+अटल व्योम randomFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   sqlite_int64 r;
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  sqlite3_randomness(sizeof(r), &r);
-  if( r<0 ){
+  sqlite3_randomness(माप(r), &r);
+  अगर( r<0 ){
     /* We need to prevent a random number of 0x8000000000000000
     ** (or -9223372036854775808) since when you do abs() of that
     ** number of you get the same value back again.  To do this
@@ -608,30 +608,30 @@ static void randomFunc(
     */
     r = -(r & LARGEST_INT64);
   }
-  sqlite3_result_int64(context, r);
+  sqlite3_परिणाम_int64(context, r);
 }
 
 /*
 ** Implementation of randomblob(N).  Return a random blob
 ** that is N bytes long.
 */
-static void randomBlob(
+अटल व्योम randomBlob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   sqlite3_int64 n;
-  unsigned char *p;
-  assert( argc==1 );
+  अचिन्हित अक्षर *p;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<1 ){
+  n = sqlite3_मूल्य_int64(argv[0]);
+  अगर( n<1 ){
     n = 1;
   }
   p = contextMalloc(context, n);
-  if( p ){
+  अगर( p ){
     sqlite3_randomness(n, p);
-    sqlite3_result_blob(context, (char*)p, n, sqlite3_free);
+    sqlite3_परिणाम_blob(context, (अक्षर*)p, n, sqlite3_free);
   }
 }
 
@@ -639,17 +639,17 @@ static void randomBlob(
 ** Implementation of the last_insert_rowid() SQL function.  The return
 ** value is the same as the sqlite3_last_insert_rowid() API function.
 */
-static void last_insert_rowid(
+अटल व्योम last_जोड़ो_rowid(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-51513-12026 The last_insert_rowid() SQL function is a
   ** wrapper around the sqlite3_last_insert_rowid() C/C++ interface
   ** function. */
-  sqlite3_result_int64(context, sqlite3_last_insert_rowid(db));
+  sqlite3_परिणाम_int64(context, sqlite3_last_जोड़ो_rowid(db));
 }
 
 /*
@@ -659,36 +659,36 @@ static void last_insert_rowid(
 ** around the sqlite3_changes64() C/C++ function and hence follows the
 ** same rules for counting changes.
 */
-static void changes(
+अटल व्योम changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  sqlite3_result_int64(context, sqlite3_changes64(db));
+  sqlite3_परिणाम_int64(context, sqlite3_changes64(db));
 }
 
 /*
 ** Implementation of the total_changes() SQL function.  The return value is
 ** the same as the sqlite3_total_changes64() API function.
 */
-static void total_changes(
+अटल व्योम योग_changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-11217-42568 This function is a wrapper around the
   ** sqlite3_total_changes64() C/C++ interface. */
-  sqlite3_result_int64(context, sqlite3_total_changes64(db));
+  sqlite3_परिणाम_int64(context, sqlite3_योग_changes64(db));
 }
 
 /*
 ** A structure defining how to do GLOB-style comparisons.
 */
-struct compareInfo {
+काष्ठा compareInfo {
   u8 matchAll;          /* "*" or "%" */
   u8 matchOne;          /* "?" or "_" */
   u8 matchSet;          /* "[" or 0 */
@@ -701,27 +701,27 @@ struct compareInfo {
 ** macro for fast reading of the next character in the common case where
 ** the next character is ASCII.
 */
-#if defined(SQLITE_EBCDIC)
+#अगर defined(SQLITE_EBCDIC)
 # define sqlite3Utf8Read(A)        (*((*A)++))
 # define Utf8Read(A)               (*(A++))
-#else
+#अन्यथा
 # define Utf8Read(A)               (A[0]<0x80?*(A++):sqlite3Utf8Read(&A))
-#endif
+#पूर्ण_अगर
 
-static const struct compareInfo globInfo = { '*', '?', '[', 0 };
+अटल स्थिर काष्ठा compareInfo globInfo = { '*', '?', '[', 0 };
 /* The correct SQL-92 behavior is for the LIKE operator to ignore
 ** case.  Thus  'a' LIKE 'A' would be true. */
-static const struct compareInfo likeInfoNorm = { '%', '_',   0, 1 };
+अटल स्थिर काष्ठा compareInfo likeInfoNorm = { '%', '_',   0, 1 };
 /* If SQLITE_CASE_SENSITIVE_LIKE is defined, then the LIKE operator
 ** is case sensitive causing 'a' LIKE 'A' to be false */
-static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
+अटल स्थिर काष्ठा compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 
 /*
 ** Possible error returns from patternMatch()
 */
-#define SQLITE_MATCH             0
-#define SQLITE_NOMATCH           1
-#define SQLITE_NOWILDCARDMATCH   2
+#घोषणा SQLITE_MATCH             0
+#घोषणा SQLITE_NOMATCH           1
+#घोषणा SQLITE_NOWILDCARDMATCH   2
 
 /*
 ** Compare two UTF-8 strings for equality where the first string is
@@ -761,45 +761,45 @@ static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 **
 ** This routine is usually quick, but can be N**2 in the worst case.
 */
-static int patternCompare(
-  const u8 *zPattern,              /* The glob pattern */
-  const u8 *zString,               /* The string to compare against the glob */
-  const struct compareInfo *pInfo, /* Information about how to do the compare */
+अटल पूर्णांक patternCompare(
+  स्थिर u8 *zPattern,              /* The glob pattern */
+  स्थिर u8 *zString,               /* The string to compare against the glob */
+  स्थिर काष्ठा compareInfo *pInfo, /* Information about how to do the compare */
   u32 matchOther                   /* The escape char (LIKE) or '[' (GLOB) */
 ){
   u32 c, c2;                       /* Next pattern and input string chars */
   u32 matchOne = pInfo->matchOne;  /* "?" or "_" */
   u32 matchAll = pInfo->matchAll;  /* "*" or "%" */
   u8 noCase = pInfo->noCase;       /* True if uppercase==lowercase */
-  const u8 *zEscaped = 0;          /* One past the last escaped input char */
+  स्थिर u8 *zEscaped = 0;          /* One past the last escaped input char */
  
-  while( (c = Utf8Read(zPattern))!=0 ){
-    if( c==matchAll ){  /* Match "*" */
+  जबतक( (c = Utf8Read(zPattern))!=0 ){
+    अगर( c==matchAll ){  /* Match "*" */
       /* Skip over multiple "*" characters in the pattern.  If there
       ** are also "?" characters, skip those as well, but consume a
       ** single character of the input string for each "?" skipped */
-      while( (c=Utf8Read(zPattern)) == matchAll
+      जबतक( (c=Utf8Read(zPattern)) == matchAll
              || (c == matchOne && matchOne!=0) ){
-        if( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
-          return SQLITE_NOWILDCARDMATCH;
+        अगर( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
+          वापस SQLITE_NOWILDCARDMATCH;
         }
       }
-      if( c==0 ){
-        return SQLITE_MATCH;   /* "*" at the end of the pattern matches */
-      }else if( c==matchOther ){
-        if( pInfo->matchSet==0 ){
+      अगर( c==0 ){
+        वापस SQLITE_MATCH;   /* "*" at the end of the pattern matches */
+      }अन्यथा अगर( c==matchOther ){
+        अगर( pInfo->matchSet==0 ){
           c = sqlite3Utf8Read(&zPattern);
-          if( c==0 ) return SQLITE_NOWILDCARDMATCH;
-        }else{
+          अगर( c==0 ) वापस SQLITE_NOWILDCARDMATCH;
+        }अन्यथा{
           /* "[...]" immediately follows the "*".  We have to do a slow
           ** recursive search in this case, but it is an unusual case. */
-          assert( matchOther<0x80 );  /* '[' is a single-byte character */
-          while( *zString ){
-            int bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
-            if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          निश्चित( matchOther<0x80 );  /* '[' is a single-byte character */
+          जबतक( *zString ){
+            पूर्णांक bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
+            अगर( bMatch!=SQLITE_NOMATCH ) वापस bMatch;
             SQLITE_SKIP_UTF8(zString);
           }
-          return SQLITE_NOWILDCARDMATCH;
+          वापस SQLITE_NOWILDCARDMATCH;
         }
       }
 
@@ -812,106 +812,106 @@ static int patternCompare(
       ** c but in the other case and search the input string for either
       ** c or cx.
       */
-      if( c<0x80 ){
-        char zStop[3];
-        int bMatch;
+      अगर( c<0x80 ){
+        अक्षर zStop[3];
+        पूर्णांक bMatch;
         /* If the next pattern character is an ordinary ASCII character,
         ** then a candidate position can only match if the next input
         ** character is nx or ny.  Check that inline, to avoid most of the
         ** recursive calls.  nx==0 disables this check. */
         u8 nx = zPattern[0], ny = nx;
-        if( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
+        अगर( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
           nx = 0;
         }
-        if( noCase ){
+        अगर( noCase ){
           zStop[0] = sqlite3Toupper(c);
           zStop[1] = sqlite3Tolower(c);
           zStop[2] = 0;
           nx = sqlite3Toupper(nx);
           ny = sqlite3Tolower(ny);
-        }else{
+        }अन्यथा{
           zStop[0] = c;
           zStop[1] = 0;
         }
-        while(1){
-          zString += strcspn((const char*)zString, zStop);
-          if( zString[0]==0 ) break;
+        जबतक(1){
+          zString += म_खोज((स्थिर अक्षर*)zString, zStop);
+          अगर( zString[0]==0 ) अवरोध;
           zString++;
-          if( nx && zString[0]!=nx && zString[0]!=ny ) continue;
+          अगर( nx && zString[0]!=nx && zString[0]!=ny ) जारी;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          अगर( bMatch!=SQLITE_NOMATCH ) वापस bMatch;
         }
-      }else{
-        int bMatch;
-        while( (c2 = Utf8Read(zString))!=0 ){
-          if( c2!=c ) continue;
+      }अन्यथा{
+        पूर्णांक bMatch;
+        जबतक( (c2 = Utf8Read(zString))!=0 ){
+          अगर( c2!=c ) जारी;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          अगर( bMatch!=SQLITE_NOMATCH ) वापस bMatch;
         }
       }
-      return SQLITE_NOWILDCARDMATCH;
+      वापस SQLITE_NOWILDCARDMATCH;
     }
-    if( c==matchOther ){
-      if( pInfo->matchSet==0 ){
+    अगर( c==matchOther ){
+      अगर( pInfo->matchSet==0 ){
         c = sqlite3Utf8Read(&zPattern);
-        if( c==0 ) return SQLITE_NOMATCH;
+        अगर( c==0 ) वापस SQLITE_NOMATCH;
         zEscaped = zPattern;
-      }else{
+      }अन्यथा{
         u32 prior_c = 0;
-        int seen = 0;
-        int invert = 0;
+        पूर्णांक seen = 0;
+        पूर्णांक invert = 0;
         c = sqlite3Utf8Read(&zString);
-        if( c==0 ) return SQLITE_NOMATCH;
+        अगर( c==0 ) वापस SQLITE_NOMATCH;
         c2 = sqlite3Utf8Read(&zPattern);
-        if( c2=='^' ){
+        अगर( c2=='^' ){
           invert = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==']' ){
-          if( c==']' ) seen = 1;
+        अगर( c2==']' ){
+          अगर( c==']' ) seen = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        while( c2 && c2!=']' ){
-          if( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
+        जबतक( c2 && c2!=']' ){
+          अगर( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
             c2 = sqlite3Utf8Read(&zPattern);
-            if( c>=prior_c && c<=c2 ) seen = 1;
+            अगर( c>=prior_c && c<=c2 ) seen = 1;
             prior_c = 0;
-          }else{
-            if( c==c2 ){
+          }अन्यथा{
+            अगर( c==c2 ){
               seen = 1;
             }
             prior_c = c2;
           }
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==0 || (seen ^ invert)==0 ){
-          return SQLITE_NOMATCH;
+        अगर( c2==0 || (seen ^ invert)==0 ){
+          वापस SQLITE_NOMATCH;
         }
-        continue;
+        जारी;
       }
     }
     c2 = Utf8Read(zString);
-    if( c==c2 ) continue;
-    if( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
-      continue;
+    अगर( c==c2 ) जारी;
+    अगर( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
+      जारी;
     }
-    if( c==matchOne && zPattern!=zEscaped && c2!=0 ) continue;
-    return SQLITE_NOMATCH;
+    अगर( c==matchOne && zPattern!=zEscaped && c2!=0 ) जारी;
+    वापस SQLITE_NOMATCH;
   }
-  return *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
+  वापस *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
 }
 
 /*
 ** The sqlite3_strglob() interface.  Return 0 on a match (like strcmp()) and
 ** non-zero if there is no match.
 */
-int sqlite3_strglob(const char *zGlobPattern, const char *zString){
-  if( zString==0 ){
-    return zGlobPattern!=0;
-  }else if( zGlobPattern==0 ){
-    return 1;
-  }else {
-    return patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
+पूर्णांक sqlite3_strglob(स्थिर अक्षर *zGlobPattern, स्थिर अक्षर *zString){
+  अगर( zString==0 ){
+    वापस zGlobPattern!=0;
+  }अन्यथा अगर( zGlobPattern==0 ){
+    वापस 1;
+  }अन्यथा {
+    वापस patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
   }
 }
 
@@ -919,13 +919,13 @@ int sqlite3_strglob(const char *zGlobPattern, const char *zString){
 ** The sqlite3_strlike() interface.  Return 0 on a match and non-zero for
 ** a miss - like strcmp().
 */
-int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
-  if( zStr==0 ){
-    return zPattern!=0;
-  }else if( zPattern==0 ){
-    return 1;
-  }else{
-    return patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
+पूर्णांक sqlite3_strlike(स्थिर अक्षर *zPattern, स्थिर अक्षर *zStr, अचिन्हित पूर्णांक esc){
+  अगर( zStr==0 ){
+    वापस zPattern!=0;
+  }अन्यथा अगर( zPattern==0 ){
+    वापस 1;
+  }अन्यथा{
+    वापस patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
   }
 }
 
@@ -934,9 +934,9 @@ int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
 ** just a variation of LIKE) gets called.  This is used for testing
 ** only.
 */
-#ifdef SQLITE_TEST
-int sqlite3_like_count = 0;
-#endif
+#अगर_घोषित SQLITE_TEST
+पूर्णांक sqlite3_like_गिनती = 0;
+#पूर्ण_अगर
 
 
 /*
@@ -951,68 +951,68 @@ int sqlite3_like_count = 0;
 ** This same function (with a different compareInfo structure) computes
 ** the GLOB operator.
 */
-static void likeFunc(
+अटल व्योम likeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *zA, *zB;
+  स्थिर अचिन्हित अक्षर *zA, *zB;
   u32 escape;
-  int nPat;
+  पूर्णांक nPat;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  struct compareInfo *pInfo = sqlite3_user_data(context);
-  struct compareInfo backupInfo;
+  काष्ठा compareInfo *pInfo = sqlite3_user_तथ्य(context);
+  काष्ठा compareInfo backupInfo;
 
-#ifdef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-  if( sqlite3_value_type(argv[0])==SQLITE_BLOB
-   || sqlite3_value_type(argv[1])==SQLITE_BLOB
+#अगर_घोषित SQLITE_LIKE_DOESNT_MATCH_BLOBS
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_BLOB
+   || sqlite3_मूल्य_type(argv[1])==SQLITE_BLOB
   ){
-#ifdef SQLITE_TEST
-    sqlite3_like_count++;
-#endif
-    sqlite3_result_int(context, 0);
-    return;
+#अगर_घोषित SQLITE_TEST
+    sqlite3_like_गिनती++;
+#पूर्ण_अगर
+    sqlite3_परिणाम_int(context, 0);
+    वापस;
   }
-#endif
+#पूर्ण_अगर
 
   /* Limit the length of the LIKE or GLOB pattern to avoid problems
   ** of deep recursion and N*N behavior in patternCompare().
   */
-  nPat = sqlite3_value_bytes(argv[0]);
-  testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] );
-  testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]+1 );
-  if( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] ){
-    sqlite3_result_error(context, "LIKE or GLOB pattern too complex", -1);
-    return;
+  nPat = sqlite3_मूल्य_bytes(argv[0]);
+  testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_लंबाई] );
+  testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_लंबाई]+1 );
+  अगर( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_लंबाई] ){
+    sqlite3_परिणाम_error(context, "LIKE or GLOB pattern too complex", -1);
+    वापस;
   }
-  if( argc==3 ){
+  अगर( argc==3 ){
     /* The escape character string must consist of a single UTF-8 character.
     ** Otherwise, return an error.
     */
-    const unsigned char *zEsc = sqlite3_value_text(argv[2]);
-    if( zEsc==0 ) return;
-    if( sqlite3Utf8CharLen((char*)zEsc, -1)!=1 ){
-      sqlite3_result_error(context,
+    स्थिर अचिन्हित अक्षर *zEsc = sqlite3_मूल्य_text(argv[2]);
+    अगर( zEsc==0 ) वापस;
+    अगर( sqlite3Utf8CharLen((अक्षर*)zEsc, -1)!=1 ){
+      sqlite3_परिणाम_error(context,
           "ESCAPE expression must be a single character", -1);
-      return;
+      वापस;
     }
     escape = sqlite3Utf8Read(&zEsc);
-    if( escape==pInfo->matchAll || escape==pInfo->matchOne ){
-      memcpy(&backupInfo, pInfo, sizeof(backupInfo));
+    अगर( escape==pInfo->matchAll || escape==pInfo->matchOne ){
+      स_नकल(&backupInfo, pInfo, माप(backupInfo));
       pInfo = &backupInfo;
-      if( escape==pInfo->matchAll ) pInfo->matchAll = 0;
-      if( escape==pInfo->matchOne ) pInfo->matchOne = 0;
+      अगर( escape==pInfo->matchAll ) pInfo->matchAll = 0;
+      अगर( escape==pInfo->matchOne ) pInfo->matchOne = 0;
     }
-  }else{
+  }अन्यथा{
     escape = pInfo->matchSet;
   }
-  zB = sqlite3_value_text(argv[0]);
-  zA = sqlite3_value_text(argv[1]);
-  if( zA && zB ){
-#ifdef SQLITE_TEST
-    sqlite3_like_count++;
-#endif
-    sqlite3_result_int(context,
+  zB = sqlite3_मूल्य_text(argv[0]);
+  zA = sqlite3_मूल्य_text(argv[1]);
+  अगर( zA && zB ){
+#अगर_घोषित SQLITE_TEST
+    sqlite3_like_गिनती++;
+#पूर्ण_अगर
+    sqlite3_परिणाम_int(context,
                       patternCompare(zB, zA, pInfo, escape)==SQLITE_MATCH);
   }
 }
@@ -1022,15 +1022,15 @@ static void likeFunc(
 ** argument if the arguments are different.  The result is NULL if the
 ** arguments are equal to each other.
 */
-static void nullifFunc(
+अटल व्योम nullifFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **argv
 ){
   CollSeq *pColl = sqlite3GetFuncCollSeq(context);
   UNUSED_PARAMETER(NotUsed);
-  if( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
-    sqlite3_result_value(context, argv[0]);
+  अगर( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
+    sqlite3_परिणाम_मूल्य(context, argv[0]);
   }
 }
 
@@ -1038,15 +1038,15 @@ static void nullifFunc(
 ** Implementation of the sqlite_version() function.  The result is the version
 ** of the SQLite library that is running.
 */
-static void versionFunc(
+अटल व्योम versionFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-48699-48617 This function is an SQL wrapper around the
   ** sqlite3_libversion() C-interface. */
-  sqlite3_result_text(context, sqlite3_libversion(), -1, SQLITE_STATIC);
+  sqlite3_परिणाम_text(context, sqlite3_libversion(), -1, SQLITE_STATIC);
 }
 
 /*
@@ -1054,15 +1054,15 @@ static void versionFunc(
 ** that identifies the particular version of the source code used to build
 ** SQLite.
 */
-static void sourceidFunc(
+अटल व्योम sourceidFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-24470-31136 This function is an SQL wrapper around the
   ** sqlite3_sourceid() C interface. */
-  sqlite3_result_text(context, sqlite3_sourceid(), -1, SQLITE_STATIC);
+  sqlite3_परिणाम_text(context, sqlite3_sourceid(), -1, SQLITE_STATIC);
 }
 
 /*
@@ -1070,14 +1070,14 @@ static void sourceidFunc(
 ** sqlite3_log().  The return value is NULL.  The function exists purely for
 ** its side-effects.
 */
-static void errlogFunc(
+अटल व्योम errlogFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(context);
-  sqlite3_log(sqlite3_value_int(argv[0]), "%s", sqlite3_value_text(argv[1]));
+  sqlite3_log(sqlite3_मूल्य_int(argv[0]), "%s", sqlite3_मूल्य_text(argv[1]));
 }
 
 /*
@@ -1085,56 +1085,56 @@ static void errlogFunc(
 ** The result is an integer that identifies if the compiler option
 ** was used to build SQLite.
 */
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptionusedFunc(
+#अगर_अघोषित SQLITE_OMIT_COMPILEOPTION_DIAGS
+अटल व्योम compileoptionusedFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const char *zOptName;
-  assert( argc==1 );
+  स्थिर अक्षर *zOptName;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-39564-36305 The sqlite_compileoption_used() SQL
   ** function is a wrapper around the sqlite3_compileoption_used() C/C++
   ** function.
   */
-  if( (zOptName = (const char*)sqlite3_value_text(argv[0]))!=0 ){
-    sqlite3_result_int(context, sqlite3_compileoption_used(zOptName));
+  अगर( (zOptName = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]))!=0 ){
+    sqlite3_परिणाम_int(context, sqlite3_compileoption_used(zOptName));
   }
 }
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+#पूर्ण_अगर /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
 /*
 ** Implementation of the sqlite_compileoption_get() function.
 ** The result is a string that identifies the compiler options
 ** used to build SQLite.
 */
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptiongetFunc(
+#अगर_अघोषित SQLITE_OMIT_COMPILEOPTION_DIAGS
+अटल व्योम compileoptiongetFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   i64 n;
-  const char *zRes;
-  assert( argc==1 );
+  स्थिर अक्षर *zRes;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-04922-24076 The sqlite_compileoption_get() SQL function
   ** is a wrapper around the sqlite3_compileoption_get() C/C++ function.
   */
-  n = sqlite3_value_int64(argv[0]);
+  n = sqlite3_मूल्य_int64(argv[0]);
   /* Use a negative lower bound to assist testing of the
   ** sqlite3_compileoption_get() C-language interface and its handling
   ** of negative inputs.
   **         vvvvv */
-  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((int)n) : 0;
-  sqlite3_result_text(context, zRes, -1, SQLITE_STATIC);
+  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((पूर्णांक)n) : 0;
+  sqlite3_परिणाम_text(context, zRes, -1, SQLITE_STATIC);
 }
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+#पूर्ण_अगर /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
 /* Array for converting from half-bytes (nybbles) into ASCII hex
 ** digits. */
-static const char hexdigits[] = {
+अटल स्थिर अक्षर hexdigits[] = {
   '0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
@@ -1143,34 +1143,34 @@ static const char hexdigits[] = {
 ** Append to pStr text that is the SQL literal representation of the
 ** value contained in pValue.
 */
-void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
+व्योम sqlite3_Quote_मूल्य(StrAccum *pStr, sqlite3_मूल्य *p_मूल्य, पूर्णांक bEscape){
   /* As currently implemented, the string must be initially empty.
   ** we might relax this requirement in the future, but that will
   ** require enhancements to the implementation. */
-  assert( pStr!=0 && pStr->nChar==0 );
+  निश्चित( pStr!=0 && pStr->nChar==0 );
 
-  switch( sqlite3_value_type(pValue) ){
-    case SQLITE_FLOAT: {
+  चयन( sqlite3_मूल्य_type(p_मूल्य) ){
+    हाल SQLITE_FLOAT: {
                              /*    ,---  Show infinity as 9.0e+999
                              **    |   
                              **    | ,--- 17 precision guarantees round-trip
                              **    v v                                       */
-      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_मूल्य_double(p_मूल्य));
+      अवरोध;
     }
-    case SQLITE_INTEGER: {
-      sqlite3_str_appendf(pStr, "%lld", sqlite3_value_int64(pValue));
-      break;
+    हाल SQLITE_INTEGER: {
+      sqlite3_str_appendf(pStr, "%lld", sqlite3_मूल्य_int64(p_मूल्य));
+      अवरोध;
     }
-    case SQLITE_BLOB: {
-      char const *zBlob = sqlite3_value_blob(pValue);
-      i64 nBlob = sqlite3_value_bytes(pValue);
-      assert( zBlob==sqlite3_value_blob(pValue) ); /* No encoding change */
+    हाल SQLITE_BLOB: {
+      अक्षर स्थिर *zBlob = sqlite3_मूल्य_blob(p_मूल्य);
+      i64 nBlob = sqlite3_मूल्य_bytes(p_मूल्य);
+      निश्चित( zBlob==sqlite3_मूल्य_blob(p_मूल्य) ); /* No encoding change */
       sqlite3StrAccumEnlarge(pStr, nBlob*2 + 4);
-      if( pStr->accError==0 ){
-        char *zText = pStr->zText;
-        int i;
-        for(i=0; i<nBlob; i++){
+      अगर( pStr->accError==0 ){
+        अक्षर *zText = pStr->zText;
+        पूर्णांक i;
+        क्रम(i=0; i<nBlob; i++){
           zText[(i*2)+2] = hexdigits[(zBlob[i]>>4)&0x0F];
           zText[(i*2)+3] = hexdigits[(zBlob[i])&0x0F];
         }
@@ -1180,17 +1180,17 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
         zText[1] = '\'';
         pStr->nChar = nBlob*2 + 3;
       }
-      break;
+      अवरोध;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *zArg = sqlite3_value_text(pValue);
+    हाल SQLITE_TEXT: {
+      स्थिर अचिन्हित अक्षर *zArg = sqlite3_मूल्य_text(p_मूल्य);
       sqlite3_str_appendf(pStr, bEscape ? "%#Q" : "%Q", zArg);
-      break;
+      अवरोध;
     }
-    default: {
-      assert( sqlite3_value_type(pValue)==SQLITE_NULL );
+    शेष: {
+      निश्चित( sqlite3_मूल्य_type(p_मूल्य)==SQLITE_NULL );
       sqlite3_str_append(pStr, "NULL", 4);
-      break;
+      अवरोध;
     }
   }
 }
@@ -1200,15 +1200,15 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
 ** a decoding of those digits into *pVal.  Or return false if any
 ** one of the first N characters in z[] is not a hexadecimal digit.
 */
-static int isNHex(const char *z, int N, u32 *pVal){
-  int i;
+अटल पूर्णांक isNHex(स्थिर अक्षर *z, पूर्णांक N, u32 *pVal){
+  पूर्णांक i;
   u32 v = 0;
-  for(i=0; i<N; i++){
-    if( !sqlite3Isxdigit(z[i]) ) return 0;
+  क्रम(i=0; i<N; i++){
+    अगर( !sqlite3Isxdigit(z[i]) ) वापस 0;
     v = (v<<4) + sqlite3HexToInt(z[i]);
   }
   *pVal = v;
-  return 1;
+  वापस 1;
 }
 
 /*
@@ -1224,73 +1224,73 @@ static int isNHex(const char *z, int N, u32 *pVal){
 **    or \UXXXXXXXX (8 hexadecimal digits). To specify a backslash,
 **    write two backslashes. All other characters are taken literally.
 */
-static void unistrFunc(
+अटल व्योम unistrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  char *zOut;
-  const char *zIn;
-  int nIn;
-  int i, j, n;
+  अक्षर *zOut;
+  स्थिर अक्षर *zIn;
+  पूर्णांक nIn;
+  पूर्णांक i, j, n;
   u32 v;
 
-  assert( argc==1 );
+  निश्चित( argc==1 );
   UNUSED_PARAMETER( argc );
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = sqlite3_value_bytes(argv[0]);
+  zIn = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]);
+  अगर( zIn==0 ) वापस;
+  nIn = sqlite3_मूल्य_bytes(argv[0]);
   zOut = sqlite3_malloc64(nIn+1);
-  if( zOut==0 ){
-    sqlite3_result_error_nomem(context);
-    return;
+  अगर( zOut==0 ){
+    sqlite3_परिणाम_error_nomem(context);
+    वापस;
   }
   i = j = 0;
-  while( i<nIn ){
-    const char *z = strchr(&zIn[i],'\\');
-    if( z==0 ){
+  जबतक( i<nIn ){
+    स्थिर अक्षर *z = म_अक्षर(&zIn[i],'\\');
+    अगर( z==0 ){
       n = nIn - i;
-      memmove(&zOut[j], &zIn[i], n);
+      स_हटाओ(&zOut[j], &zIn[i], n);
       j += n;
-      break;
+      अवरोध;
     }
     n = z - &zIn[i];
-    if( n>0 ){
-      memmove(&zOut[j], &zIn[i], n);
+    अगर( n>0 ){
+      स_हटाओ(&zOut[j], &zIn[i], n);
       j += n;
       i += n;
     }
-    if( zIn[i+1]=='\\' ){
+    अगर( zIn[i+1]=='\\' ){
       i += 2;
       zOut[j++] = '\\';
-    }else if( sqlite3Isxdigit(zIn[i+1]) ){
-      if( !isNHex(&zIn[i+1], 4, &v) ) goto unistr_error;
+    }अन्यथा अगर( sqlite3Isxdigit(zIn[i+1]) ){
+      अगर( !isNHex(&zIn[i+1], 4, &v) ) जाओ unistr_error;
       i += 5;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='+' ){
-      if( !isNHex(&zIn[i+2], 6, &v) ) goto unistr_error;
+    }अन्यथा अगर( zIn[i+1]=='+' ){
+      अगर( !isNHex(&zIn[i+2], 6, &v) ) जाओ unistr_error;
       i += 8;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='u' ){
-      if( !isNHex(&zIn[i+2], 4, &v) ) goto unistr_error;
+    }अन्यथा अगर( zIn[i+1]=='u' ){
+      अगर( !isNHex(&zIn[i+2], 4, &v) ) जाओ unistr_error;
       i += 6;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='U' ){
-      if( !isNHex(&zIn[i+2], 8, &v) ) goto unistr_error;
+    }अन्यथा अगर( zIn[i+1]=='U' ){
+      अगर( !isNHex(&zIn[i+2], 8, &v) ) जाओ unistr_error;
       i += 10;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else{
-      goto unistr_error;
+    }अन्यथा{
+      जाओ unistr_error;
     }
   }
   zOut[j] = 0;
-  sqlite3_result_text64(context, zOut, j, sqlite3_free, SQLITE_UTF8_ZT);
-  return;
+  sqlite3_परिणाम_text64(context, zOut, j, sqlite3_free, SQLITE_UTF8_ZT);
+  वापस;
 
 unistr_error:
   sqlite3_free(zOut);
-  sqlite3_result_error(context, "invalid Unicode escape", -1);
-  return;
+  sqlite3_परिणाम_error(context, "invalid Unicode escape", -1);
+  वापस;
 }
 
 
@@ -1308,28 +1308,28 @@ unistr_error:
 ** implemented instead.  The difference is that UNISTR_QUOTE() uses the
 ** UNISTR() function to escape control characters.
 */
-static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+अटल व्योम quoteFunc(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
   sqlite3_str str;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( argc==1 );
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  sqlite3QuoteValue(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_data(context)));
-  sqlite3_result_str(context, &str, SQLITE_XFER);
+  sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_लंबाई]);
+  sqlite3_Quote_मूल्य(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_तथ्य(context)));
+  sqlite3_परिणाम_str(context, &str, SQLITE_XFER);
 }
 
 /*
 ** The unicode() function.  Return the integer unicode code-point value
 ** for the first character of the input string.
 */
-static void unicodeFunc(
+अटल व्योम unicodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *z = sqlite3_value_text(argv[0]);
-  (void)argc;
-  if( z && z[0] ) sqlite3_result_int(context, sqlite3Utf8Read(&z));
+  स्थिर अचिन्हित अक्षर *z = sqlite3_मूल्य_text(argv[0]);
+  (व्योम)argc;
+  अगर( z && z[0] ) sqlite3_परिणाम_int(context, sqlite3Utf8Read(&z));
 }
 
 /*
@@ -1337,34 +1337,34 @@ static void unicodeFunc(
 ** an integer.  It constructs a string where each character of the string
 ** is the unicode character for the corresponding integer argument.
 */
-static void charFunc(
+अटल व्योम charFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  unsigned char *z, *zOut;
-  int i;
+  अचिन्हित अक्षर *z, *zOut;
+  पूर्णांक i;
   zOut = z = sqlite3_malloc64( argc*4+1 );
-  if( z==0 ){
-    sqlite3_result_error_nomem(context);
-    return;
+  अगर( z==0 ){
+    sqlite3_परिणाम_error_nomem(context);
+    वापस;
   }
-  for(i=0; i<argc; i++){
+  क्रम(i=0; i<argc; i++){
     sqlite3_int64 x;
-    unsigned c;
-    x = sqlite3_value_int64(argv[i]);
-    if( x<0 || x>0x10ffff ) x = 0xfffd;
-    c = (unsigned)(x & 0x1fffff);
-    if( c<0x00080 ){
+    अचिन्हित c;
+    x = sqlite3_मूल्य_int64(argv[i]);
+    अगर( x<0 || x>0x10ffff ) x = 0xfffd;
+    c = (अचिन्हित)(x & 0x1fffff);
+    अगर( c<0x00080 ){
       *zOut++ = (u8)(c&0xFF);
-    }else if( c<0x00800 ){
+    }अन्यथा अगर( c<0x00800 ){
       *zOut++ = 0xC0 + (u8)((c>>6)&0x1F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else if( c<0x10000 ){
+    }अन्यथा अगर( c<0x10000 ){
       *zOut++ = 0xE0 + (u8)((c>>12)&0x0F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else{
+    }अन्यथा{
       *zOut++ = 0xF0 + (u8)((c>>18) & 0x07);
       *zOut++ = 0x80 + (u8)((c>>12) & 0x3F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
@@ -1372,35 +1372,35 @@ static void charFunc(
     }                                                    \
   }
   *zOut = 0;
-  sqlite3_result_text64(context, (char*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
+  sqlite3_परिणाम_text64(context, (अक्षर*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
 }
 
 /*
 ** The hex() function.  Interpret the argument as a blob.  Return
 ** a hexadecimal rendering as text.
 */
-static void hexFunc(
+अटल व्योम hexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int i, n;
-  const unsigned char *pBlob;
-  char *zHex, *z;
-  assert( argc==1 );
+  पूर्णांक i, n;
+  स्थिर अचिन्हित अक्षर *pBlob;
+  अक्षर *zHex, *z;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  pBlob = sqlite3_value_blob(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
-  assert( pBlob==sqlite3_value_blob(argv[0]) );  /* No encoding change */
+  pBlob = sqlite3_मूल्य_blob(argv[0]);
+  n = sqlite3_मूल्य_bytes(argv[0]);
+  निश्चित( pBlob==sqlite3_मूल्य_blob(argv[0]) );  /* No encoding change */
   z = zHex = contextMalloc(context, ((i64)n)*2 + 1);
-  if( zHex ){
-    for(i=0; i<n; i++, pBlob++){
-      unsigned char c = *pBlob;
+  अगर( zHex ){
+    क्रम(i=0; i<n; i++, pBlob++){
+      अचिन्हित अक्षर c = *pBlob;
       *(z++) = hexdigits[(c>>4)&0xf];
       *(z++) = hexdigits[c&0xf];
     }
     *z = 0;
-    sqlite3_result_text64(context, zHex, (u64)(z-zHex),
+    sqlite3_परिणाम_text64(context, zHex, (u64)(z-zHex),
                           sqlite3_free, SQLITE_UTF8_ZT);
   }
 }
@@ -1409,14 +1409,14 @@ static void hexFunc(
 ** Buffer zStr contains nStr bytes of utf-8 encoded text. Return 1 if zStr
 ** contains character ch, or 0 if it does not.
 */
-static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
-  const u8 *zEnd = &zStr[nStr];
-  const u8 *z = zStr;
-  while( z<zEnd ){
+अटल पूर्णांक strContainsChar(स्थिर u8 *zStr, पूर्णांक nStr, u32 ch){
+  स्थिर u8 *zEnd = &zStr[nStr];
+  स्थिर u8 *z = zStr;
+  जबतक( z<zEnd ){
     u32 tst = Utf8Read(z);
-    if( tst==ch ) return 1;
+    अगर( tst==ch ) वापस 1;
   }
-  return 0;
+  वापस 0;
 }
 
 /*
@@ -1441,77 +1441,77 @@ static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
 **     unhex('AB CD', ' ') IS x'ABCD'
 **     unhex('A BCD', ' ') IS NULL
 */
-static void unhexFunc(
+अटल व्योम unhexFunc(
   sqlite3_context *pCtx,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const u8 *zPass = (const u8*)"";
-  int nPass = 0;
-  const u8 *zHex = sqlite3_value_text(argv[0]);
-  int nHex = sqlite3_value_bytes(argv[0]);
-#ifdef SQLITE_DEBUG
-  const u8 *zEnd = zHex ? &zHex[nHex] : 0;
-#endif
+  स्थिर u8 *zPass = (स्थिर u8*)"";
+  पूर्णांक nPass = 0;
+  स्थिर u8 *zHex = sqlite3_मूल्य_text(argv[0]);
+  पूर्णांक nHex = sqlite3_मूल्य_bytes(argv[0]);
+#अगर_घोषित SQLITE_DEBUG
+  स्थिर u8 *zEnd = zHex ? &zHex[nHex] : 0;
+#पूर्ण_अगर
   u8 *pBlob = 0;
   u8 *p = 0;
 
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    zPass = sqlite3_value_text(argv[1]);
-    nPass = sqlite3_value_bytes(argv[1]);
+  निश्चित( argc==1 || argc==2 );
+  अगर( argc==2 ){
+    zPass = sqlite3_मूल्य_text(argv[1]);
+    nPass = sqlite3_मूल्य_bytes(argv[1]);
   }
-  if( !zHex || !zPass ) return;
+  अगर( !zHex || !zPass ) वापस;
 
   p = pBlob = contextMalloc(pCtx, (nHex/2)+1);
-  if( pBlob ){
+  अगर( pBlob ){
     u8 c;                         /* Most significant digit of next byte */
     u8 d;                         /* Least significant digit of next byte */
 
-    while( (c = *zHex)!=0x00 ){
-      while( !sqlite3Isxdigit(c) ){
+    जबतक( (c = *zHex)!=0x00 ){
+      जबतक( !sqlite3Isxdigit(c) ){
         u32 ch = Utf8Read(zHex);
-        assert( zHex<=zEnd );
-        if( !strContainsChar(zPass, nPass, ch) ) goto unhex_null;
+        निश्चित( zHex<=zEnd );
+        अगर( !strContainsChar(zPass, nPass, ch) ) जाओ unhex_null;
         c = *zHex;
-        if( c==0x00 ) goto unhex_done;
+        अगर( c==0x00 ) जाओ unhex_done;
       }
       zHex++;
-      assert( *zEnd==0x00 );
-      assert( zHex<=zEnd );
+      निश्चित( *zEnd==0x00 );
+      निश्चित( zHex<=zEnd );
       d = *(zHex++);
-      if( !sqlite3Isxdigit(d) ) goto unhex_null;
+      अगर( !sqlite3Isxdigit(d) ) जाओ unhex_null;
       *(p++) = (sqlite3HexToInt(c)<<4) | sqlite3HexToInt(d);
     }
   }
 
  unhex_done:
-  sqlite3_result_blob(pCtx, pBlob, (p - pBlob), sqlite3_free);
-  return;
+  sqlite3_परिणाम_blob(pCtx, pBlob, (p - pBlob), sqlite3_free);
+  वापस;
 
  unhex_null:
   sqlite3_free(pBlob);
-  return;
+  वापस;
 }
 
 
 /*
 ** The zeroblob(N) function returns a zero-filled blob of size N bytes.
 */
-static void zeroblobFunc(
+अटल व्योम zeroblobFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   i64 n;
-  int rc;
-  assert( argc==1 );
+  पूर्णांक rc;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<0 ) n = 0;
-  rc = sqlite3_result_zeroblob64(context, n); /* IMP: R-00293-64994 */
-  if( rc ){
-    sqlite3_result_error_code(context, rc);
+  n = sqlite3_मूल्य_int64(argv[0]);
+  अगर( n<0 ) n = 0;
+  rc = sqlite3_परिणाम_zeroblob64(context, n); /* IMP: R-00293-64994 */
+  अगर( rc ){
+    sqlite3_परिणाम_error_code(context, rc);
   }
 }
 
@@ -1521,178 +1521,178 @@ static void zeroblobFunc(
 ** from A by replacing every occurrence of B with C.  The match
 ** must be exact.  Collating sequences are not used.
 */
-static void replaceFunc(
+अटल व्योम replaceFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *zStr;        /* The input string A */
-  const unsigned char *zPattern;    /* The pattern string B */
-  const unsigned char *zRep;        /* The replacement string C */
-  unsigned char *zOut;              /* The output */
-  int nStr;                /* Size of zStr */
-  int nPattern;            /* Size of zPattern */
-  int nRep;                /* Size of zRep */
+  स्थिर अचिन्हित अक्षर *zStr;        /* The input string A */
+  स्थिर अचिन्हित अक्षर *zPattern;    /* The pattern string B */
+  स्थिर अचिन्हित अक्षर *zRep;        /* The replacement string C */
+  अचिन्हित अक्षर *zOut;              /* The output */
+  पूर्णांक nStr;                /* Size of zStr */
+  पूर्णांक nPattern;            /* Size of zPattern */
+  पूर्णांक nRep;                /* Size of zRep */
   i64 nOut;                /* Maximum size of zOut */
-  int loopLimit;           /* Last zStr[] that might match zPattern[] */
+  पूर्णांक loopLimit;           /* Last zStr[] that might match zPattern[] */
   i64 i, j;                /* Loop counters */
-  unsigned cntExpand;      /* Number zOut expansions */
+  अचिन्हित cntExpand;      /* Number zOut expansions */
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  assert( argc==3 );
+  निश्चित( argc==3 );
   UNUSED_PARAMETER(argc);
-  zStr = sqlite3_value_text(argv[0]);
-  if( zStr==0 ) return;
-  nStr = sqlite3_value_bytes(argv[0]);
-  assert( zStr==sqlite3_value_text(argv[0]) );  /* No encoding change */
-  zPattern = sqlite3_value_text(argv[1]);
-  if( zPattern==0 ){
-    assert( sqlite3_value_type(argv[1])==SQLITE_NULL
+  zStr = sqlite3_मूल्य_text(argv[0]);
+  अगर( zStr==0 ) वापस;
+  nStr = sqlite3_मूल्य_bytes(argv[0]);
+  निश्चित( zStr==sqlite3_मूल्य_text(argv[0]) );  /* No encoding change */
+  zPattern = sqlite3_मूल्य_text(argv[1]);
+  अगर( zPattern==0 ){
+    निश्चित( sqlite3_मूल्य_type(argv[1])==SQLITE_NULL
             || sqlite3_context_db_handle(context)->mallocFailed );
-    return;
+    वापस;
   }
-  if( zPattern[0]==0 ){
-    assert( sqlite3_value_type(argv[1])!=SQLITE_NULL );
-    sqlite3_result_text(context, (const char*)zStr, nStr, SQLITE_TRANSIENT);
-    return;
+  अगर( zPattern[0]==0 ){
+    निश्चित( sqlite3_मूल्य_type(argv[1])!=SQLITE_NULL );
+    sqlite3_परिणाम_text(context, (स्थिर अक्षर*)zStr, nStr, SQLITE_TRANSIENT);
+    वापस;
   }
-  nPattern = sqlite3_value_bytes(argv[1]);
-  assert( zPattern==sqlite3_value_text(argv[1]) );  /* No encoding change */
-  zRep = sqlite3_value_text(argv[2]);
-  if( zRep==0 ) return;
-  nRep = sqlite3_value_bytes(argv[2]);
-  assert( zRep==sqlite3_value_text(argv[2]) );
+  nPattern = sqlite3_मूल्य_bytes(argv[1]);
+  निश्चित( zPattern==sqlite3_मूल्य_text(argv[1]) );  /* No encoding change */
+  zRep = sqlite3_मूल्य_text(argv[2]);
+  अगर( zRep==0 ) वापस;
+  nRep = sqlite3_मूल्य_bytes(argv[2]);
+  निश्चित( zRep==sqlite3_मूल्य_text(argv[2]) );
   nOut = nStr + 1;
-  assert( nOut<SQLITE_MAX_LENGTH );
+  निश्चित( nOut<SQLITE_MAX_लंबाई );
   zOut = contextMalloc(context, nOut);
-  if( zOut==0 ){
-    return;
+  अगर( zOut==0 ){
+    वापस;
   }
   loopLimit = nStr - nPattern; 
   cntExpand = 0;
-  for(i=j=0; i<=loopLimit; i++){
-    if( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
+  क्रम(i=j=0; i<=loopLimit; i++){
+    अगर( zStr[i]!=zPattern[0] || स_भेद(&zStr[i], zPattern, nPattern) ){
       zOut[j++] = zStr[i];
-    }else{
-      if( nRep>nPattern ){
+    }अन्यथा{
+      अगर( nRep>nPattern ){
         nOut += nRep - nPattern;
-        testcase( nOut-1==db->aLimit[SQLITE_LIMIT_LENGTH] );
-        testcase( nOut-2==db->aLimit[SQLITE_LIMIT_LENGTH] );
-        if( nOut-1>db->aLimit[SQLITE_LIMIT_LENGTH] ){
-          sqlite3_result_error_toobig(context);
+        testcase( nOut-1==db->aLimit[SQLITE_LIMIT_लंबाई] );
+        testcase( nOut-2==db->aLimit[SQLITE_LIMIT_लंबाई] );
+        अगर( nOut-1>db->aLimit[SQLITE_LIMIT_लंबाई] ){
+          sqlite3_परिणाम_error_toobig(context);
           sqlite3_free(zOut);
-          return;
+          वापस;
         }
         cntExpand++;
-        if( (cntExpand&(cntExpand-1))==0 ){
+        अगर( (cntExpand&(cntExpand-1))==0 ){
           /* Grow the size of the output buffer only on substitutions
           ** whose index is a power of two: 1, 2, 4, 8, 16, 32, ... */
           u8 *zOld;
           zOld = zOut;
-          zOut = sqlite3Realloc(zOut, (int)nOut + (nOut - nStr - 1));
-          if( zOut==0 ){
-            sqlite3_result_error_nomem(context);
+          zOut = sqlite3Realloc(zOut, (पूर्णांक)nOut + (nOut - nStr - 1));
+          अगर( zOut==0 ){
+            sqlite3_परिणाम_error_nomem(context);
             sqlite3_free(zOld);
-            return;
+            वापस;
           }
         }
       }
-      memcpy(&zOut[j], zRep, nRep);
+      स_नकल(&zOut[j], zRep, nRep);
       j += nRep;
       i += nPattern-1;
     }
   }
-  assert( j+nStr-i+1<=nOut );
-  memcpy(&zOut[j], &zStr[i], nStr-i);
+  निश्चित( j+nStr-i+1<=nOut );
+  स_नकल(&zOut[j], &zStr[i], nStr-i);
   j += nStr - i;
-  assert( j<=nOut );
+  निश्चित( j<=nOut );
   zOut[j] = 0;
-  sqlite3_result_text(context, (char*)zOut, j, sqlite3_free);
+  sqlite3_परिणाम_text(context, (अक्षर*)zOut, j, sqlite3_free);
 }
 
 /*
 ** Implementation of the TRIM(), LTRIM(), and RTRIM() functions.
 ** The userdata is 0x1 for left trim, 0x2 for right trim, 0x3 for both.
 */
-static void trimFunc(
+अटल व्योम trimFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const unsigned char *zIn;         /* Input string */
-  const unsigned char *zCharSet;    /* Set of characters to trim */
-  unsigned int nIn;                 /* Number of bytes in input */
-  int flags;                        /* 1: trimleft  2: trimright  3: trim */
-  int i;                            /* Loop counter */
-  unsigned int *aLen = 0;           /* Length of each character in zCharSet */
-  unsigned char **azChar = 0;       /* Individual characters in zCharSet */
-  int nChar;                        /* Number of characters in zCharSet */
+  स्थिर अचिन्हित अक्षर *zIn;         /* Input string */
+  स्थिर अचिन्हित अक्षर *zCharSet;    /* Set of characters to trim */
+  अचिन्हित पूर्णांक nIn;                 /* Number of bytes in input */
+  पूर्णांक flags;                        /* 1: trimleft  2: trimright  3: trim */
+  पूर्णांक i;                            /* Loop counter */
+  अचिन्हित पूर्णांक *aLen = 0;           /* Length of each character in zCharSet */
+  अचिन्हित अक्षर **azChar = 0;       /* Individual characters in zCharSet */
+  पूर्णांक nChar;                        /* Number of characters in zCharSet */
 
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
-    return;
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_NULL ){
+    वापस;
   }
-  zIn = sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = (unsigned)sqlite3_value_bytes(argv[0]);
-  assert( zIn==sqlite3_value_text(argv[0]) );
-  if( argc==1 ){
-    static const unsigned lenOne[] = { 1 };
-    static unsigned char * const azOne[] = { (u8*)" " };
+  zIn = sqlite3_मूल्य_text(argv[0]);
+  अगर( zIn==0 ) वापस;
+  nIn = (अचिन्हित)sqlite3_मूल्य_bytes(argv[0]);
+  निश्चित( zIn==sqlite3_मूल्य_text(argv[0]) );
+  अगर( argc==1 ){
+    अटल स्थिर अचिन्हित lenOne[] = { 1 };
+    अटल अचिन्हित अक्षर * स्थिर azOne[] = { (u8*)" " };
     nChar = 1;
-    aLen = (unsigned*)lenOne;
-    azChar = (unsigned char **)azOne;
+    aLen = (अचिन्हित*)lenOne;
+    azChar = (अचिन्हित अक्षर **)azOne;
     zCharSet = 0;
-  }else if( (zCharSet = sqlite3_value_text(argv[1]))==0 ){
-    return;
-  }else{
-    const unsigned char *z;
-    for(z=zCharSet, nChar=0; *z; nChar++){
+  }अन्यथा अगर( (zCharSet = sqlite3_मूल्य_text(argv[1]))==0 ){
+    वापस;
+  }अन्यथा{
+    स्थिर अचिन्हित अक्षर *z;
+    क्रम(z=zCharSet, nChar=0; *z; nChar++){
       SQLITE_SKIP_UTF8(z);
     }
-    if( nChar>0 ){
+    अगर( nChar>0 ){
       azChar = contextMalloc(context,
-                     ((i64)nChar)*(sizeof(char*)+sizeof(unsigned)));
-      if( azChar==0 ){
-        return;
+                     ((i64)nChar)*(माप(अक्षर*)+माप(अचिन्हित)));
+      अगर( azChar==0 ){
+        वापस;
       }
-      aLen = (unsigned*)&azChar[nChar];
-      for(z=zCharSet, nChar=0; *z; nChar++){
-        azChar[nChar] = (unsigned char *)z;
+      aLen = (अचिन्हित*)&azChar[nChar];
+      क्रम(z=zCharSet, nChar=0; *z; nChar++){
+        azChar[nChar] = (अचिन्हित अक्षर *)z;
         SQLITE_SKIP_UTF8(z);
-        aLen[nChar] = (unsigned)(z - azChar[nChar]);
+        aLen[nChar] = (अचिन्हित)(z - azChar[nChar]);
       }
     }
   }
-  if( nChar>0 ){
-    flags = SQLITE_PTR_TO_INT(sqlite3_user_data(context));
-    if( flags & 1 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+  अगर( nChar>0 ){
+    flags = SQLITE_PTR_TO_INT(sqlite3_user_तथ्य(context));
+    अगर( flags & 1 ){
+      जबतक( nIn>0 ){
+        अचिन्हित पूर्णांक len = 0;
+        क्रम(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(zIn, azChar[i], len)==0 ) break;
+          अगर( len<=nIn && स_भेद(zIn, azChar[i], len)==0 ) अवरोध;
         }
-        if( i>=nChar ) break;
+        अगर( i>=nChar ) अवरोध;
         zIn += len;
         nIn -= len;
       }
     }
-    if( flags & 2 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+    अगर( flags & 2 ){
+      जबतक( nIn>0 ){
+        अचिन्हित पूर्णांक len = 0;
+        क्रम(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(&zIn[nIn-len],azChar[i],len)==0 ) break;
+          अगर( len<=nIn && स_भेद(&zIn[nIn-len],azChar[i],len)==0 ) अवरोध;
         }
-        if( i>=nChar ) break;
+        अगर( i>=nChar ) अवरोध;
         nIn -= len;
       }
     }
-    if( zCharSet ){
+    अगर( zCharSet ){
       sqlite3_free(azChar);
     }
   }
-  sqlite3_result_text(context, (char*)zIn, nIn, SQLITE_TRANSIENT);
+  sqlite3_परिणाम_text(context, (अक्षर*)zIn, nIn, SQLITE_TRANSIENT);
 }
 
 /* The core implementation of the CONCAT(...) and CONCAT_WS(SEP,...)
@@ -1701,55 +1701,55 @@ static void trimFunc(
 ** Return a string value that is the concatenation of all non-null
 ** entries in argv[].  Use zSep as the separator.
 */
-static void concatFuncCore(
+अटल व्योम concatFuncCore(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv,
-  int nSep,
-  const char *zSep
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv,
+  पूर्णांक nSep,
+  स्थिर अक्षर *zSep
 ){
   i64 j, n = 0;
-  int i;
-  int bNotNull = 0;   /* True after at least NOT NULL argument seen */
-  char *z;
-  for(i=0; i<argc; i++){
-    n += sqlite3_value_bytes(argv[i]);
+  पूर्णांक i;
+  पूर्णांक bNotNull = 0;   /* True after at least NOT NULL argument seen */
+  अक्षर *z;
+  क्रम(i=0; i<argc; i++){
+    n += sqlite3_मूल्य_bytes(argv[i]);
   }
   n += (argc-1)*(i64)nSep;
   z = sqlite3_malloc64(n+1);
-  if( z==0 ){
-    sqlite3_result_error_nomem(context);
-    return;
+  अगर( z==0 ){
+    sqlite3_परिणाम_error_nomem(context);
+    वापस;
   }
   j = 0;
-  for(i=0; i<argc; i++){
-    if( sqlite3_value_type(argv[i])!=SQLITE_NULL ){
-      int k = sqlite3_value_bytes(argv[i]);
-      const char *v = (const char*)sqlite3_value_text(argv[i]);
-      if( v!=0 ){
-        if( bNotNull && nSep>0 ){
-          memcpy(&z[j], zSep, nSep);
+  क्रम(i=0; i<argc; i++){
+    अगर( sqlite3_मूल्य_type(argv[i])!=SQLITE_NULL ){
+      पूर्णांक k = sqlite3_मूल्य_bytes(argv[i]);
+      स्थिर अक्षर *v = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[i]);
+      अगर( v!=0 ){
+        अगर( bNotNull && nSep>0 ){
+          स_नकल(&z[j], zSep, nSep);
           j += nSep;
         }
-        memcpy(&z[j], v, k);
+        स_नकल(&z[j], v, k);
         j += k;
         bNotNull = 1;
       }
     }
   }
   z[j] = 0;
-  assert( j<=n );
-  sqlite3_result_text64(context, z, j, sqlite3_free, SQLITE_UTF8_ZT);
+  निश्चित( j<=n );
+  sqlite3_परिणाम_text64(context, z, j, sqlite3_free, SQLITE_UTF8_ZT);
 }
 
 /*
 ** The CONCAT(...) function.  Generate a string result that is the
 ** concatentation of all non-null arguments.
 */
-static void concatFunc(
+अटल व्योम concatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   concatFuncCore(context, argc, argv, 0, "");
 }
@@ -1761,19 +1761,19 @@ static void concatFunc(
 ** argument.  Use the first argument (which must be non-NULL) as the
 ** separator.
 */
-static void concatwsFunc(
+अटल व्योम concatwsFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int nSep = sqlite3_value_bytes(argv[0]);
-  const char *zSep = (const char*)sqlite3_value_text(argv[0]);
-  if( zSep==0 ) return;
+  पूर्णांक nSep = sqlite3_मूल्य_bytes(argv[0]);
+  स्थिर अक्षर *zSep = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]);
+  अगर( zSep==0 ) वापस;
   concatFuncCore(context, argc-1, argv+1, nSep, zSep);
 }
 
 
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+#अगर_घोषित SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
 /*
 ** The "unknown" function is automatically substituted in place of
 ** any unrecognized function name when doing an EXPLAIN or EXPLAIN QUERY PLAN
@@ -1783,39 +1783,39 @@ static void concatwsFunc(
 ** involving application-defined functions to be examined in a generic
 ** sqlite3 shell.
 */
-static void unknownFunc(
+अटल व्योम unknownFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   /* no-op */
-  (void)context;
-  (void)argc;
-  (void)argv;
+  (व्योम)context;
+  (व्योम)argc;
+  (व्योम)argv;
 }
-#endif /*SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION*/
+#पूर्ण_अगर /*SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION*/
 
 
 /* IMP: R-25361-16150 This function is omitted from SQLite by default. It
 ** is only available if the SQLITE_SOUNDEX compile-time option is used
 ** when SQLite is built.
 */
-#ifdef SQLITE_SOUNDEX
+#अगर_घोषित SQLITE_SOUNDEX
 /*
 ** Compute the soundex encoding of a word.
 **
 ** IMP: R-59782-00072 The soundex(X) function returns a string that is the
 ** soundex encoding of the string X.
 */
-static void soundexFunc(
+अटल व्योम soundexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  char zResult[8];
-  const u8 *zIn;
-  int i, j;
-  static const unsigned char iCode[] = {
+  अक्षर z_परिणाम[8];
+  स्थिर u8 *zIn;
+  पूर्णांक i, j;
+  अटल स्थिर अचिन्हित अक्षर iCode[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1825,92 +1825,92 @@ static void soundexFunc(
     0, 0, 1, 2, 3, 0, 1, 2, 0, 0, 2, 2, 4, 5, 5, 0,
     1, 2, 6, 2, 3, 0, 1, 0, 2, 0, 2, 0, 0, 0, 0, 0,
   };
-  assert( argc==1 );
-  zIn = (u8*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) zIn = (u8*)"";
-  for(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
-  if( zIn[i] ){
+  निश्चित( argc==1 );
+  zIn = (u8*)sqlite3_मूल्य_text(argv[0]);
+  अगर( zIn==0 ) zIn = (u8*)"";
+  क्रम(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
+  अगर( zIn[i] ){
     u8 prevcode = iCode[zIn[i]&0x7f];
-    zResult[0] = sqlite3Toupper(zIn[i]);
-    for(j=1; j<4 && zIn[i]; i++){
-      int code = iCode[zIn[i]&0x7f];
-      if( code>0 ){
-        if( code!=prevcode ){
+    z_परिणाम[0] = sqlite3Toupper(zIn[i]);
+    क्रम(j=1; j<4 && zIn[i]; i++){
+      पूर्णांक code = iCode[zIn[i]&0x7f];
+      अगर( code>0 ){
+        अगर( code!=prevcode ){
           prevcode = code;
-          zResult[j++] = code + '0';
+          z_परिणाम[j++] = code + '0';
         }
-      }else{
+      }अन्यथा{
         prevcode = 0;
       }
     }
-    while( j<4 ){
-      zResult[j++] = '0';
+    जबतक( j<4 ){
+      z_परिणाम[j++] = '0';
     }
-    zResult[j] = 0;
-    sqlite3_result_text(context, zResult, 4, SQLITE_TRANSIENT);
-  }else{
+    z_परिणाम[j] = 0;
+    sqlite3_परिणाम_text(context, z_परिणाम, 4, SQLITE_TRANSIENT);
+  }अन्यथा{
     /* IMP: R-64894-50321 The string "?000" is returned if the argument
     ** is NULL or contains no ASCII alphabetic characters. */
-    sqlite3_result_text(context, "?000", 4, SQLITE_STATIC);
+    sqlite3_परिणाम_text(context, "?000", 4, SQLITE_STATIC);
   }
 }
-#endif /* SQLITE_SOUNDEX */
+#पूर्ण_अगर /* SQLITE_SOUNDEX */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#अगर defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
 /*
 ** This SQL function just invokes sqlite3OomFault() and then returns
 ** NULL.  Used for testing only.
 */
-static void oomFunc(
+अटल व्योम oomFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   sqlite3OomFault(db);
 }
-#endif /* SQLITE_DEBUG || SQLITE_BUILTIN_OOM_FUNCTION */
+#पूर्ण_अगर /* SQLITE_DEBUG || SQLITE_BUILTIN_OOM_FUNCTION */
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#अगर_अघोषित SQLITE_OMIT_LOAD_EXTENSION
 /*
 ** A function that loads a shared-library extension then returns NULL.
 */
-static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
-  const char *zFile = (const char *)sqlite3_value_text(argv[0]);
-  const char *zProc;
+अटल व्योम loadExt(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  स्थिर अक्षर *zFile = (स्थिर अक्षर *)sqlite3_मूल्य_text(argv[0]);
+  स्थिर अक्षर *zProc;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char *zErrMsg = 0;
+  अक्षर *z_Err_संदेश = 0;
 
   /* Disallow the load_extension() SQL function unless the SQLITE_LoadExtFunc
   ** flag is set.  See the sqlite3_enable_load_extension() API.
   */
-  if( (db->flags & SQLITE_LoadExtFunc)==0 ){
-    sqlite3_result_error(context, "not authorized", -1);
-    return;
+  अगर( (db->flags & SQLITE_LoadExtFunc)==0 ){
+    sqlite3_परिणाम_error(context, "not authorized", -1);
+    वापस;
   }
 
-  if( argc==2 ){
-    zProc = (const char *)sqlite3_value_text(argv[1]);
-  }else{
+  अगर( argc==2 ){
+    zProc = (स्थिर अक्षर *)sqlite3_मूल्य_text(argv[1]);
+  }अन्यथा{
     zProc = 0;
   }
-  if( zFile && sqlite3_load_extension(db, zFile, zProc, &zErrMsg) ){
-    sqlite3_result_error(context, zErrMsg, -1);
-    sqlite3_free(zErrMsg);
+  अगर( zFile && sqlite3_load_extension(db, zFile, zProc, &z_Err_संदेश) ){
+    sqlite3_परिणाम_error(context, z_Err_संदेश, -1);
+    sqlite3_free(z_Err_संदेश);
   }
 }
-#endif
+#पूर्ण_अगर
 
 
 /*
 ** An instance of the following structure holds the context of a
 ** sum() or avg() aggregate computation.
 */
-typedef struct SumCtx SumCtx;
-struct SumCtx {
-  double rSum;      /* Running sum as as a double */
-  double rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
-  i64 iSum;         /* Running sum as a signed integer */
+प्रकार काष्ठा योग_Ctx योग_Ctx;
+काष्ठा योग_Ctx {
+  द्विगुन r_योग;      /* Running sum as as a double */
+  द्विगुन rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
+  i64 i_योग;         /* Running sum as a signed integer */
   i64 cnt;          /* Number of elements summed */
   u8 approx;        /* True if any non-integer value was input to the sum */
   u8 ovrfl;         /* Integer overflow seen */
@@ -1924,48 +1924,48 @@ struct SumCtx {
 ** Variables are marked "volatile" to defeat c89 x86 floating point
 ** optimizations can mess up this algorithm.
 */
-static void kahanBabuskaNeumaierStep(
-  volatile SumCtx *pSum,
-  volatile double r
+अटल व्योम kahanBabuskaNeumaierStep(
+  अस्थिर योग_Ctx *p_योग,
+  अस्थिर द्विगुन r
 ){
-  volatile double s = pSum->rSum;
-  volatile double t = s + r;
-  if( fabs(s) > fabs(r) ){
-    pSum->rErr += (s - t) + r;
-  }else{
-    pSum->rErr += (r - t) + s;
+  अस्थिर द्विगुन s = p_योग->r_योग;
+  अस्थिर द्विगुन t = s + r;
+  अगर( भ_असल(s) > भ_असल(r) ){
+    p_योग->rErr += (s - t) + r;
+  }अन्यथा{
+    p_योग->rErr += (r - t) + s;
   }
-  pSum->rSum = t;
+  p_योग->r_योग = t;
 }
 
 /*
 ** Add a (possibly large) integer to the running sum.
 */
-static void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+अटल व्योम kahanBabuskaNeumaierStepInt64(अस्थिर योग_Ctx *p_योग, i64 iVal){
+  अगर( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iBig, iSm;
     iSm = iVal % 16384;
     iBig = iVal - iSm;
-    kahanBabuskaNeumaierStep(pSum, iBig);
-    kahanBabuskaNeumaierStep(pSum, iSm);
-  }else{
-    kahanBabuskaNeumaierStep(pSum, (double)iVal);
+    kahanBabuskaNeumaierStep(p_योग, iBig);
+    kahanBabuskaNeumaierStep(p_योग, iSm);
+  }अन्यथा{
+    kahanBabuskaNeumaierStep(p_योग, (द्विगुन)iVal);
   }
 }
 
 /*
 ** Initialize the Kahan-Babaska-Neumaier sum from a 64-bit integer
 */
-static void kahanBabuskaNeumaierInit(
-  volatile SumCtx *p,
+अटल व्योम kahanBabuskaNeumaierInit(
+  अस्थिर योग_Ctx *p,
   i64 iVal
 ){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+  अगर( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iSm = iVal % 16384;
-    p->rSum = (double)(iVal - iSm);
-    p->rErr = (double)iSm;
-  }else{
-    p->rSum = (double)iVal;
+    p->r_योग = (द्विगुन)(iVal - iSm);
+    p->rErr = (द्विगुन)iSm;
+  }अन्यथा{
+    p->r_योग = (द्विगुन)iVal;
     p->rErr = 0.0;
   }
 }
@@ -1980,198 +1980,198 @@ static void kahanBabuskaNeumaierInit(
 ** value.  TOTAL never fails, but SUM might throw an exception if
 ** it overflows an integer.
 */
-static void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
-  SumCtx *p;
-  int type;
-  assert( argc==1 );
+अटल व्योम योग_Step(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  योग_Ctx *p;
+  पूर्णांक type;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
-  if( p && type!=SQLITE_NULL ){
+  p = sqlite3_aggregate_context(context, माप(*p));
+  type = sqlite3_मूल्य_numeric_type(argv[0]);
+  अगर( p && type!=SQLITE_NULL ){
     p->cnt++;
-    if( p->approx==0 ){
-      if( type!=SQLITE_INTEGER ){
-        kahanBabuskaNeumaierInit(p, p->iSum);
+    अगर( p->approx==0 ){
+      अगर( type!=SQLITE_INTEGER ){
+        kahanBabuskaNeumaierInit(p, p->i_योग);
         p->approx = 1;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
-      }else{
-        i64 x = p->iSum;
-        if( sqlite3AddInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
-          p->iSum = x;
-        }else{
+        kahanBabuskaNeumaierStep(p, sqlite3_मूल्य_double(argv[0]));
+      }अन्यथा{
+        i64 x = p->i_योग;
+        अगर( sqlite3AddInt64(&x, sqlite3_मूल्य_int64(argv[0]))==0 ){
+          p->i_योग = x;
+        }अन्यथा{
           p->ovrfl = 1;
-          kahanBabuskaNeumaierInit(p, p->iSum);
+          kahanBabuskaNeumaierInit(p, p->i_योग);
           p->approx = 1;
-          kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
+          kahanBabuskaNeumaierStepInt64(p, sqlite3_मूल्य_int64(argv[0]));
         }
       }
-    }else{
-      if( type==SQLITE_INTEGER ){
-        kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
-      }else{
+    }अन्यथा{
+      अगर( type==SQLITE_INTEGER ){
+        kahanBabuskaNeumaierStepInt64(p, sqlite3_मूल्य_int64(argv[0]));
+      }अन्यथा{
         p->ovrfl = 0;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
+        kahanBabuskaNeumaierStep(p, sqlite3_मूल्य_double(argv[0]));
       }
     }
   }
 }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-static void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
-  SumCtx *p;
-  int type;
-  assert( argc==1 );
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+अटल व्योम योग_Inverse(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य**argv){
+  योग_Ctx *p;
+  पूर्णांक type;
+  निश्चित( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
+  p = sqlite3_aggregate_context(context, माप(*p));
+  type = sqlite3_मूल्य_numeric_type(argv[0]);
   /* p is always non-NULL because sumStep() will have been called first
   ** to initialize it */
-  if( ALWAYS(p) && type!=SQLITE_NULL ){
-    assert( p->cnt>0 );
+  अगर( ALWAYS(p) && type!=SQLITE_NULL ){
+    निश्चित( p->cnt>0 );
     p->cnt--;
-    if( !p->approx ){
-      i64 x = p->iSum;
-      if( sqlite3SubInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
-        p->iSum = x;
-        return;
+    अगर( !p->approx ){
+      i64 x = p->i_योग;
+      अगर( sqlite3SubInt64(&x, sqlite3_मूल्य_int64(argv[0]))==0 ){
+        p->i_योग = x;
+        वापस;
       }
       p->ovrfl = 1;
       p->approx = 1;
-      kahanBabuskaNeumaierInit(p, p->iSum);
+      kahanBabuskaNeumaierInit(p, p->i_योग);
     }
-    if( type==SQLITE_INTEGER ){
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal!=SMALLEST_INT64 ){
+    अगर( type==SQLITE_INTEGER ){
+      i64 iVal = sqlite3_मूल्य_int64(argv[0]);
+      अगर( iVal!=SMALLEST_INT64 ){
         kahanBabuskaNeumaierStepInt64(p, -iVal);
-      }else{
+      }अन्यथा{
         kahanBabuskaNeumaierStepInt64(p, LARGEST_INT64);
         kahanBabuskaNeumaierStepInt64(p, 1);
       }       
-    }else{
-      kahanBabuskaNeumaierStep(p, -sqlite3_value_double(argv[0]));
+    }अन्यथा{
+      kahanBabuskaNeumaierStep(p, -sqlite3_मूल्य_double(argv[0]));
     }
   }
 }
-#else
-# define sumInverse 0
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-static void sumFinalize(sqlite3_context *context){
-  SumCtx *p;
+#अन्यथा
+# define योग_Inverse 0
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
+अटल व्योम योग_Finalize(sqlite3_context *context){
+  योग_Ctx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    if( p->approx ){
-      if( p->ovrfl ){
-        sqlite3_result_error(context,"integer overflow",-1);
-      }else if( !sqlite3IsOverflow(p->rErr) ){
-        sqlite3_result_double(context, p->rSum+p->rErr);
-      }else{
-        sqlite3_result_double(context, p->rSum);
+  अगर( p && p->cnt>0 ){
+    अगर( p->approx ){
+      अगर( p->ovrfl ){
+        sqlite3_परिणाम_error(context,"integer overflow",-1);
+      }अन्यथा अगर( !sqlite3IsOverflow(p->rErr) ){
+        sqlite3_परिणाम_double(context, p->r_योग+p->rErr);
+      }अन्यथा{
+        sqlite3_परिणाम_double(context, p->r_योग);
       }
-    }else{
-      sqlite3_result_int64(context, p->iSum);
+    }अन्यथा{
+      sqlite3_परिणाम_int64(context, p->i_योग);
     }
   }
 }
-static void avgFinalize(sqlite3_context *context){
-  SumCtx *p;
+अटल व्योम avgFinalize(sqlite3_context *context){
+  योग_Ctx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    double r;
-    if( p->approx ){
-      r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+  अगर( p && p->cnt>0 ){
+    द्विगुन r;
+    अगर( p->approx ){
+      r = p->r_योग;
+      अगर( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }अन्यथा{
+      r = (द्विगुन)(p->i_योग);
     }
-    sqlite3_result_double(context, r/(double)p->cnt);
+    sqlite3_परिणाम_double(context, r/(द्विगुन)p->cnt);
   }
 }
-static void totalFinalize(sqlite3_context *context){
-  SumCtx *p;
-  double r = 0.0;
+अटल व्योम योग_Finalize_2(sqlite3_context *context){
+  योग_Ctx *p;
+  द्विगुन r = 0.0;
   p = sqlite3_aggregate_context(context, 0);
-  if( p ){
-    if( p->approx ){
-      r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+  अगर( p ){
+    अगर( p->approx ){
+      r = p->r_योग;
+      अगर( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }अन्यथा{
+      r = (द्विगुन)(p->i_योग);
     }
   }
-  sqlite3_result_double(context, r);
+  sqlite3_परिणाम_double(context, r);
 }
 
 /*
 ** The following structure keeps track of state information for the
 ** count() aggregate function.
 */
-typedef struct CountCtx CountCtx;
-struct CountCtx {
+प्रकार काष्ठा गिनती_Ctx गिनती_Ctx;
+काष्ठा गिनती_Ctx {
   i64 n;
-#ifdef SQLITE_DEBUG
-  int bInverse;                   /* True if xInverse() ever called */
-#endif
+#अगर_घोषित SQLITE_DEBUG
+  पूर्णांक bInverse;                   /* True if xInverse() ever called */
+#पूर्ण_अगर
 };
 
 /*
 ** Routines to implement the count() aggregate function.
 */
-static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && p ){
+अटल व्योम गिनती_Step(sqlite3_context *context, पूर्णांक argc, sqlite3_मूल्य **argv){
+  गिनती_Ctx *p;
+  p = sqlite3_aggregate_context(context, माप(*p));
+  अगर( (argc==0 || SQLITE_NULL!=sqlite3_मूल्य_type(argv[0])) && p ){
     p->n++;
   }
 
-#ifndef SQLITE_OMIT_DEPRECATED
+#अगर_अघोषित SQLITE_OMIT_DEPRECATED
   /* The sqlite3_aggregate_count() function is deprecated.  But just to make
   ** sure it still operates correctly, verify that its count agrees with our
   ** internal count when using count(*) and when the total count can be
   ** expressed as a 32-bit integer. */
-  assert( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
-          || p->n==sqlite3_aggregate_count(context) );
-#endif
+  निश्चित( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
+          || p->n==sqlite3_aggregate_गिनती(context) );
+#पूर्ण_अगर
 }  
-static void countFinalize(sqlite3_context *context){
-  CountCtx *p;
+अटल व्योम गिनती_Finalize(sqlite3_context *context){
+  गिनती_Ctx *p;
   p = sqlite3_aggregate_context(context, 0);
-  sqlite3_result_int64(context, p ? p->n : 0);
+  sqlite3_परिणाम_int64(context, p ? p->n : 0);
 }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-static void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(ctx, sizeof(*p));
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+अटल व्योम गिनती_Inverse(sqlite3_context *ctx, पूर्णांक argc, sqlite3_मूल्य **argv){
+  गिनती_Ctx *p;
+  p = sqlite3_aggregate_context(ctx, माप(*p));
   /* p is always non-NULL since countStep() will have been called first */
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && ALWAYS(p) ){
+  अगर( (argc==0 || SQLITE_NULL!=sqlite3_मूल्य_type(argv[0])) && ALWAYS(p) ){
     p->n--;
-#ifdef SQLITE_DEBUG
+#अगर_घोषित SQLITE_DEBUG
     p->bInverse = 1;
-#endif
+#पूर्ण_अगर
   }
 }  
-#else
-# define countInverse 0
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#अन्यथा
+# define गिनती_Inverse 0
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Routines to implement min() and max() aggregate functions.
 */
-static void minmaxStep(
+अटल व्योम minmaxStep(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  पूर्णांक NotUsed,
+  sqlite3_मूल्य **argv
 ){
   Mem *pArg  = (Mem *)argv[0];
   Mem *pBest;
   UNUSED_PARAMETER(NotUsed);
 
-  pBest = (Mem *)sqlite3_aggregate_context(context, sizeof(*pBest));
-  if( !pBest ) return;
+  pBest = (Mem *)sqlite3_aggregate_context(context, माप(*pBest));
+  अगर( !pBest ) वापस;
 
-  if( sqlite3_value_type(pArg)==SQLITE_NULL ){
-    if( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
-  }else if( pBest->flags ){
-    int max;
-    int cmp;
+  अगर( sqlite3_मूल्य_type(pArg)==SQLITE_NULL ){
+    अगर( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
+  }अन्यथा अगर( pBest->flags ){
+    पूर्णांक max;
+    पूर्णांक cmp;
     CollSeq *pColl = sqlite3GetFuncCollSeq(context);
     /* This step function is used for both the min() and max() aggregates,
     ** the only difference between the two being that the sense of the
@@ -2181,37 +2181,37 @@ static void minmaxStep(
     ** Therefore the next statement sets variable 'max' to 1 for the max()
     ** aggregate, or 0 for min().
     */
-    max = sqlite3_user_data(context)!=0;
+    max = sqlite3_user_तथ्य(context)!=0;
     cmp = sqlite3MemCompare(pBest, pArg, pColl);
-    if( (max && cmp<0) || (!max && cmp>0) ){
+    अगर( (max && cmp<0) || (!max && cmp>0) ){
       sqlite3VdbeMemCopy(pBest, pArg);
-    }else{
+    }अन्यथा{
       sqlite3SkipAccumulatorLoad(context);
     }
-  }else{
+  }अन्यथा{
     pBest->db = sqlite3_context_db_handle(context);
     sqlite3VdbeMemCopy(pBest, pArg);
   }
 }
-static void minMaxValueFinalize(sqlite3_context *context, int bValue){
-  sqlite3_value *pRes;
-  pRes = (sqlite3_value *)sqlite3_aggregate_context(context, 0);
-  if( pRes ){
-    if( pRes->flags ){
-      sqlite3_result_value(context, pRes);
+अटल व्योम min_Max_मूल्य_Finalize(sqlite3_context *context, पूर्णांक b_मूल्य){
+  sqlite3_मूल्य *pRes;
+  pRes = (sqlite3_मूल्य *)sqlite3_aggregate_context(context, 0);
+  अगर( pRes ){
+    अगर( pRes->flags ){
+      sqlite3_परिणाम_मूल्य(context, pRes);
     }
-    if( bValue==0 ) sqlite3VdbeMemRelease(pRes);
+    अगर( b_मूल्य==0 ) sqlite3VdbeMemRelease(pRes);
   }
 }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-static void minMaxValue(sqlite3_context *context){
-  minMaxValueFinalize(context, 1);
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+अटल व्योम min_Max_मूल्य(sqlite3_context *context){
+  min_Max_मूल्य_Finalize(context, 1);
 }
-#else
-# define minMaxValue 0
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-static void minMaxFinalize(sqlite3_context *context){
-  minMaxValueFinalize(context, 0);
+#अन्यथा
+# define min_Max_मूल्य 0
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
+अटल व्योम minMaxFinalize(sqlite3_context *context){
+  min_Max_मूल्य_Finalize(context, 0);
 }
 
 /*
@@ -2228,168 +2228,168 @@ static void minMaxFinalize(sqlite3_context *context){
 ** so we could change it, in theory.  But the old behavior has been
 ** around for so long that we dare not, for fear of breaking something.
 */
-typedef struct {
+प्रकार काष्ठा {
   StrAccum str;          /* The accumulated concatenation */
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  int nAccum;            /* Number of strings presently concatenated */
-  int nFirstSepLength;   /* Used to detect separator length change */
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+  पूर्णांक nAccum;            /* Number of strings presently concatenated */
+  पूर्णांक n_First_Sep_लंबाई;   /* Used to detect separator length change */
   /* If pnSepLengths!=0, refs an array of inter-string separator lengths,
   ** stored as actually incorporated into presently accumulated result.
   ** (Hence, its slots in use number nAccum-1 between method calls.)
   ** If pnSepLengths==0, nFirstSepLength is the length used throughout.
   */
-  int *pnSepLengths;
-#endif
+  पूर्णांक *pnSepLengths;
+#पूर्ण_अगर
 } GroupConcatCtx;
 
-static void groupConcatStep(
+अटल व्योम groupConcatStep(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  const char *zVal;
+  स्थिर अक्षर *zVal;
   GroupConcatCtx *pGCC;
-  const char *zSep;
-  int nVal, nSep;
-  assert( argc==1 || argc==2 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
-  if( pGCC ){
+  स्थिर अक्षर *zSep;
+  पूर्णांक nVal, nSep;
+  निश्चित( argc==1 || argc==2 );
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_NULL ) वापस;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, माप(*pGCC));
+  अगर( pGCC ){
     sqlite3 *db = sqlite3_context_db_handle(context);
-    int firstTerm = pGCC->str.mxAlloc==0;
-    pGCC->str.mxAlloc = db->aLimit[SQLITE_LIMIT_LENGTH];
-    if( argc==1 ){
-      if( !firstTerm ){
+    पूर्णांक firstTerm = pGCC->str.mxAlloc==0;
+    pGCC->str.mxAlloc = db->aLimit[SQLITE_LIMIT_लंबाई];
+    अगर( argc==1 ){
+      अगर( !firstTerm ){
         sqlite3_str_appendchar(&pGCC->str, 1, ',');
       }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
-        pGCC->nFirstSepLength = 1;
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+      अन्यथा{
+        pGCC->n_First_Sep_लंबाई = 1;
       }
-#endif
-    }else if( !firstTerm ){
-      zSep = (char*)sqlite3_value_text(argv[1]);
-      nSep = sqlite3_value_bytes(argv[1]);
-      if( zSep ){
+#पूर्ण_अगर
+    }अन्यथा अगर( !firstTerm ){
+      zSep = (अक्षर*)sqlite3_मूल्य_text(argv[1]);
+      nSep = sqlite3_मूल्य_bytes(argv[1]);
+      अगर( zSep ){
         sqlite3_str_append(&pGCC->str, zSep, nSep);
       }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+      अन्यथा{
         nSep = 0;
       }
-      if( nSep != pGCC->nFirstSepLength || pGCC->pnSepLengths != 0 ){
-        int *pnsl = pGCC->pnSepLengths;
-        if( pnsl == 0 ){
+      अगर( nSep != pGCC->n_First_Sep_लंबाई || pGCC->pnSepLengths != 0 ){
+        पूर्णांक *pnsl = pGCC->pnSepLengths;
+        अगर( pnsl == 0 ){
           /* First separator length variation seen, start tracking them. */
-          pnsl = (int*)sqlite3_malloc64((pGCC->nAccum+1) * sizeof(int));
-          if( pnsl!=0 ){
-            int i = 0, nA = pGCC->nAccum-1;
-            while( i<nA ) pnsl[i++] = pGCC->nFirstSepLength;
+          pnsl = (पूर्णांक*)sqlite3_malloc64((pGCC->nAccum+1) * माप(पूर्णांक));
+          अगर( pnsl!=0 ){
+            पूर्णांक i = 0, nA = pGCC->nAccum-1;
+            जबतक( i<nA ) pnsl[i++] = pGCC->n_First_Sep_लंबाई;
           }
-        }else{
-          pnsl = (int*)sqlite3_realloc64(pnsl, pGCC->nAccum * sizeof(int));
+        }अन्यथा{
+          pnsl = (पूर्णांक*)sqlite3_realloc64(pnsl, pGCC->nAccum * माप(पूर्णांक));
         }
-        if( pnsl!=0 ){
-          if( ALWAYS(pGCC->nAccum>0) ){
+        अगर( pnsl!=0 ){
+          अगर( ALWAYS(pGCC->nAccum>0) ){
             pnsl[pGCC->nAccum-1] = nSep;
           }
           pGCC->pnSepLengths = pnsl;
-        }else{
+        }अन्यथा{
           sqlite3StrAccumSetError(&pGCC->str, SQLITE_NOMEM);
         }
       }
-#endif
+#पूर्ण_अगर
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    else{
-      pGCC->nFirstSepLength = sqlite3_value_bytes(argv[1]);
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+    अन्यथा{
+      pGCC->n_First_Sep_लंबाई = sqlite3_मूल्य_bytes(argv[1]);
     }
     pGCC->nAccum += 1;
-#endif
-    zVal = (char*)sqlite3_value_text(argv[0]);
-    nVal = sqlite3_value_bytes(argv[0]);
-    if( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
+#पूर्ण_अगर
+    zVal = (अक्षर*)sqlite3_मूल्य_text(argv[0]);
+    nVal = sqlite3_मूल्य_bytes(argv[0]);
+    अगर( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
   }
 }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatInverse(
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+अटल व्योम groupConcatInverse(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   GroupConcatCtx *pGCC;
-  assert( argc==1 || argc==2 );
-  (void)argc;  /* Suppress unused parameter warning */
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
+  निश्चित( argc==1 || argc==2 );
+  (व्योम)argc;  /* Suppress unused parameter warning */
+  अगर( sqlite3_मूल्य_type(argv[0])==SQLITE_NULL ) वापस;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, माप(*pGCC));
   /* pGCC is always non-NULL since groupConcatStep() will have always
   ** run first to initialize it */
-  if( ALWAYS(pGCC) ){
-    int nVS;  /* Number of characters to remove */
+  अगर( ALWAYS(pGCC) ){
+    पूर्णांक nVS;  /* Number of characters to remove */
     /* Must call sqlite3_value_text() to convert the argument into text prior
     ** to invoking sqlite3_value_bytes(), in case the text encoding is UTF16 */
-    (void)sqlite3_value_text(argv[0]);
-    nVS = sqlite3_value_bytes(argv[0]);
+    (व्योम)sqlite3_मूल्य_text(argv[0]);
+    nVS = sqlite3_मूल्य_bytes(argv[0]);
     pGCC->nAccum -= 1;
-    if( pGCC->pnSepLengths!=0 ){
-      assert(pGCC->nAccum >= 0);
-      if( pGCC->nAccum>0 ){
+    अगर( pGCC->pnSepLengths!=0 ){
+      निश्चित(pGCC->nAccum >= 0);
+      अगर( pGCC->nAccum>0 ){
         nVS += *pGCC->pnSepLengths;
-        memmove(pGCC->pnSepLengths, pGCC->pnSepLengths+1,
-               (pGCC->nAccum-1)*sizeof(int));
+        स_हटाओ(pGCC->pnSepLengths, pGCC->pnSepLengths+1,
+               (pGCC->nAccum-1)*माप(पूर्णांक));
       }
-    }else{
+    }अन्यथा{
       /* If removing single accumulated string, harmlessly over-do. */
-      nVS += pGCC->nFirstSepLength;
+      nVS += pGCC->n_First_Sep_लंबाई;
     }
-    if( nVS>=(int)pGCC->str.nChar ){
+    अगर( nVS>=(पूर्णांक)pGCC->str.nChar ){
       pGCC->str.nChar = 0;
-    }else{
+    }अन्यथा{
       pGCC->str.nChar -= nVS;
-      memmove(pGCC->str.zText, &pGCC->str.zText[nVS], pGCC->str.nChar);
+      स_हटाओ(pGCC->str.zText, &pGCC->str.zText[nVS], pGCC->str.nChar);
     }
-    if( pGCC->nAccum==0 ){
+    अगर( pGCC->nAccum==0 ){
       pGCC->str.mxAlloc = 0;
       sqlite3_free(pGCC->pnSepLengths);
       pGCC->pnSepLengths = 0;
     }
   }
 }
-#else
+#अन्यथा
 # define groupConcatInverse 0
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-static void groupConcatFinalize(sqlite3_context *context){
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
+अटल व्योम groupConcatFinalize(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC ){
-    sqlite3_result_str(context, &pGCC->str, SQLITE_XFER);
-#ifndef SQLITE_OMIT_WINDOWFUNC
+  अगर( pGCC ){
+    sqlite3_परिणाम_str(context, &pGCC->str, SQLITE_XFER);
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
     sqlite3_free(pGCC->pnSepLengths);
-#endif
+#पूर्ण_अगर
   }
 }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatValue(sqlite3_context *context){
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+अटल व्योम group_Concat_मूल्य(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC && pGCC->nAccum>0 ){
-    sqlite3_result_str(context, &pGCC->str, SQLITE_COPY);
+  अगर( pGCC && pGCC->nAccum>0 ){
+    sqlite3_परिणाम_str(context, &pGCC->str, SQLITE_COPY);
   }
 }
-#else
-# define groupConcatValue 0
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#अन्यथा
+# define group_Concat_मूल्य 0
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** This routine does per-connection function registration.  Most
 ** of the built-in functions above are part of the global function set.
 ** This routine only deals with those that are not global.
 */
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
-  int rc = sqlite3_overload_function(db, "MATCH", 2);
-  assert( rc==SQLITE_NOMEM || rc==SQLITE_OK );
-  if( rc==SQLITE_NOMEM ){
+व्योम sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
+  पूर्णांक rc = sqlite3_overload_function(db, "MATCH", 2);
+  निश्चित( rc==SQLITE_NOMEM || rc==SQLITE_OK );
+  अगर( rc==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
 }
@@ -2399,23 +2399,23 @@ void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
 ** parameter determines whether or not the LIKE operator is case
 ** sensitive.
 */
-void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
+व्योम sqlite3RegisterLikeFunctions(sqlite3 *db, पूर्णांक caseSensitive){
   FuncDef *pDef;
-  struct compareInfo *pInfo;
-  int flags;
-  int nArg;
-  if( caseSensitive ){
-    pInfo = (struct compareInfo*)&likeInfoAlt;
+  काष्ठा compareInfo *pInfo;
+  पूर्णांक flags;
+  पूर्णांक nArg;
+  अगर( caseSensitive ){
+    pInfo = (काष्ठा compareInfo*)&likeInfoAlt;
     flags = SQLITE_FUNC_LIKE | SQLITE_FUNC_CASE;
-  }else{
-    pInfo = (struct compareInfo*)&likeInfoNorm;
+  }अन्यथा{
+    pInfo = (काष्ठा compareInfo*)&likeInfoNorm;
     flags = SQLITE_FUNC_LIKE;
   }
-  for(nArg=2; nArg<=3; nArg++){
+  क्रम(nArg=2; nArg<=3; nArg++){
     sqlite3CreateFunc(db, "like", nArg, SQLITE_UTF8, pInfo, likeFunc, 
                       0, 0, 0, 0, 0);
     pDef = sqlite3FindFunction(db, "like", nArg, SQLITE_UTF8, 0);
-    assert( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
+    निश्चित( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
                        ** because the "like" SQL-function already exists */
     pDef->funcFlags |= flags;
     pDef->funcFlags &= ~SQLITE_FUNC_UNSAFE;
@@ -2439,67 +2439,67 @@ void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
 ** between uppercase and lowercase (as does GLOB) then *pIsNocase is set to
 ** false.
 */
-int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
+पूर्णांक sqlite3IsLikeFunction(sqlite3 *db, व्यंजक *p_व्यंजक, पूर्णांक *pIsNocase, अक्षर *aWc){
   FuncDef *pDef;
-  int nExpr;
-  assert( pExpr!=0 );
-  assert( pExpr->op==TK_FUNCTION );
-  assert( ExprUseXList(pExpr) );
-  if( !pExpr->x.pList ){
-    return 0;
+  पूर्णांक n_व्यंजक;
+  निश्चित( p_व्यंजक!=0 );
+  निश्चित( p_व्यंजक->op==TK_FUNCTION );
+  निश्चित( व्यंजक_Use_XList(p_व्यंजक) );
+  अगर( !p_व्यंजक->x.pList ){
+    वापस 0;
   }
-  nExpr = pExpr->x.pList->nExpr;
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  pDef = sqlite3FindFunction(db, pExpr->u.zToken, nExpr, SQLITE_UTF8, 0);
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return 0;
-#endif
-  if( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
-    return 0;
+  n_व्यंजक = p_व्यंजक->x.pList->n_व्यंजक;
+  निश्चित( !व्यंजक_Has_Property(p_व्यंजक, EP_Int_मूल्य) );
+  pDef = sqlite3FindFunction(db, p_व्यंजक->u.zToken, n_व्यंजक, SQLITE_UTF8, 0);
+#अगर_घोषित SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+  अगर( pDef==0 ) वापस 0;
+#पूर्ण_अगर
+  अगर( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
+    वापस 0;
   }
 
   /* The memcpy() statement assumes that the wildcard characters are
   ** the first three statements in the compareInfo structure.  The
   ** asserts() that follow verify that assumption
   */
-  memcpy(aWc, pDef->pUserData, 3);
-  assert( (char*)&likeInfoAlt == (char*)&likeInfoAlt.matchAll );
-  assert( &((char*)&likeInfoAlt)[1] == (char*)&likeInfoAlt.matchOne );
-  assert( &((char*)&likeInfoAlt)[2] == (char*)&likeInfoAlt.matchSet );
+  स_नकल(aWc, pDef->p_User_तथ्य, 3);
+  निश्चित( (अक्षर*)&likeInfoAlt == (अक्षर*)&likeInfoAlt.matchAll );
+  निश्चित( &((अक्षर*)&likeInfoAlt)[1] == (अक्षर*)&likeInfoAlt.matchOne );
+  निश्चित( &((अक्षर*)&likeInfoAlt)[2] == (अक्षर*)&likeInfoAlt.matchSet );
 
-  if( nExpr<3 ){
+  अगर( n_व्यंजक<3 ){
     aWc[3] = 0;
-  }else{
-    Expr *pEscape = pExpr->x.pList->a[2].pExpr;
-    char *zEscape;
-    if( pEscape->op!=TK_STRING ) return 0;
-    assert( !ExprHasProperty(pEscape, EP_IntValue) );
+  }अन्यथा{
+    व्यंजक *pEscape = p_व्यंजक->x.pList->a[2].p_व्यंजक;
+    अक्षर *zEscape;
+    अगर( pEscape->op!=TK_STRING ) वापस 0;
+    निश्चित( !व्यंजक_Has_Property(pEscape, EP_Int_मूल्य) );
     zEscape = pEscape->u.zToken;
-    if( zEscape[0]==0 || zEscape[1]!=0 ) return 0;
-    if( zEscape[0]==aWc[0] ) return 0;
-    if( zEscape[0]==aWc[1] ) return 0;
+    अगर( zEscape[0]==0 || zEscape[1]!=0 ) वापस 0;
+    अगर( zEscape[0]==aWc[0] ) वापस 0;
+    अगर( zEscape[0]==aWc[1] ) वापस 0;
     aWc[3] = zEscape[0];
   }
 
   *pIsNocase = (pDef->funcFlags & SQLITE_FUNC_CASE)==0;
-  return 1;
+  वापस 1;
 }
 
 /* Mathematical Constants */
-#ifndef M_PI
+#अगर_अघोषित M_PI
 # define M_PI   3.141592653589793238462643383279502884
-#endif
-#ifndef M_LN10
+#पूर्ण_अगर
+#अगर_अघोषित M_LN10
 # define M_LN10 2.302585092994045684017991454684364208
-#endif
-#ifndef M_LN2
+#पूर्ण_अगर
+#अगर_अघोषित M_LN2
 # define M_LN2  0.693147180559945309417232121458176568
-#endif
+#पूर्ण_अगर
 
 
 /* Extra math functions that require linking with -lm
 */
-#ifdef SQLITE_ENABLE_MATH_FUNCTIONS
+#अगर_घोषित SQLITE_ENABLE_MATH_FUNCTIONS
 /*
 ** Implementation SQL functions:
 **
@@ -2510,24 +2510,24 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
 ** The sqlite3_user_data() pointer is a pointer to the libm implementation
 ** of the underlying C function.
 */
-static void ceilingFunc(
+अटल व्योम ceilingFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  assert( argc==1 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-       sqlite3_result_int64(context, sqlite3_value_int64(argv[0]));
-       break;
+  निश्चित( argc==1 );
+  चयन( sqlite3_मूल्य_numeric_type(argv[0]) ){
+    हाल SQLITE_INTEGER: {
+       sqlite3_परिणाम_int64(context, sqlite3_मूल्य_int64(argv[0]));
+       अवरोध;
     }
-    case SQLITE_FLOAT: {
-       double (*x)(double) = (double(*)(double))sqlite3_user_data(context);
-       sqlite3_result_double(context, x(sqlite3_value_double(argv[0])));
-       break;
+    हाल SQLITE_FLOAT: {
+       द्विगुन (*x)(द्विगुन) = (द्विगुन(*)(द्विगुन))sqlite3_user_तथ्य(context);
+       sqlite3_परिणाम_double(context, x(sqlite3_मूल्य_double(argv[0])));
+       अवरोध;
     }
-    default: {
-       break;
+    शेष: {
+       अवरोध;
     }
   }
 }
@@ -2537,19 +2537,19 @@ static void ceilingFunc(
 ** unable to take a pointer to these functions.  Hence, we here wrap them
 ** in our own actual functions.
 */
-static double xCeil(double x){ return ceil(x); }
-static double xFloor(double x){ return floor(x); }
+अटल द्विगुन xCeil(द्विगुन x){ वापस उच्चमान(x); }
+अटल द्विगुन xFloor(द्विगुन x){ वापस न्यूनमान(x); }
 
 /*
 ** Some systems do not have log2() and log10() in their standard math
 ** libraries.
 */
-#if defined(HAVE_LOG10) && HAVE_LOG10==0
+#अगर defined(HAVE_LOG10) && HAVE_LOG10==0
 # define log10(X) (0.4342944819032517867*log(X))
-#endif
-#if defined(HAVE_LOG2) && HAVE_LOG2==0
+#पूर्ण_अगर
+#अगर defined(HAVE_LOG2) && HAVE_LOG2==0
 # define log2(X) (1.442695040888963456*log(X))
-#endif
+#पूर्ण_अगर
 
 
 /*
@@ -2560,77 +2560,77 @@ static double xFloor(double x){ return floor(x); }
 **   log10(X)    - log X base 10
 **   log(B,X)    - log X base B
 */
-static void logFunc(
+अटल व्योम logFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  double x, b, ans;
-  assert( argc==1 || argc==2 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT:
-      x = sqlite3_value_double(argv[0]);
-      if( x<=0.0 ) return;
-      break;
-    default:
-      return;
+  द्विगुन x, b, ans;
+  निश्चित( argc==1 || argc==2 );
+  चयन( sqlite3_मूल्य_numeric_type(argv[0]) ){
+    हाल SQLITE_INTEGER:
+    हाल SQLITE_FLOAT:
+      x = sqlite3_मूल्य_double(argv[0]);
+      अगर( x<=0.0 ) वापस;
+      अवरोध;
+    शेष:
+      वापस;
   }
-  if( argc==2 ){
-    switch( sqlite3_value_numeric_type(argv[1]) ){
-      case SQLITE_INTEGER:
-      case SQLITE_FLOAT:
+  अगर( argc==2 ){
+    चयन( sqlite3_मूल्य_numeric_type(argv[1]) ){
+      हाल SQLITE_INTEGER:
+      हाल SQLITE_FLOAT:
         b = log(x);
-        if( b<=0.0 ) return;
-        x = sqlite3_value_double(argv[1]);
-        if( x<=0.0 ) return;
-        break;
-     default:
-        return;
+        अगर( b<=0.0 ) वापस;
+        x = sqlite3_मूल्य_double(argv[1]);
+        अगर( x<=0.0 ) वापस;
+        अवरोध;
+     शेष:
+        वापस;
     }
     ans = log(x)/b;
-  }else{
-    switch( SQLITE_PTR_TO_INT(sqlite3_user_data(context)) ){
-      case 1:
+  }अन्यथा{
+    चयन( SQLITE_PTR_TO_INT(sqlite3_user_तथ्य(context)) ){
+      हाल 1:
         ans = log10(x);
-        break;
-      case 2:
+        अवरोध;
+      हाल 2:
         ans = log2(x);
-        break;
-      default:
+        अवरोध;
+      शेष:
         ans = log(x);
-        break;
+        अवरोध;
     }
   }
-  sqlite3_result_double(context, ans);
+  sqlite3_परिणाम_double(context, ans);
 }
 
 /*
 ** Functions to converts degrees to radians and radians to degrees.
 */
-static double degToRad(double x){ return x*(M_PI/180.0); }
-static double radToDeg(double x){ return x*(180.0/M_PI); }
+अटल द्विगुन degToRad(द्विगुन x){ वापस x*(M_PI/180.0); }
+अटल द्विगुन radToDeg(द्विगुन x){ वापस x*(180.0/M_PI); }
 
 /*
 ** Implementation of 1-argument SQL math functions:
 **
 **   exp(X)  - Compute e to the X-th power
 */
-static void math1Func(
+अटल व्योम math1Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int type0;
-  double v0, ans;
-  double (*x)(double);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  x = (double(*)(double))sqlite3_user_data(context);
+  पूर्णांक type0;
+  द्विगुन v0, ans;
+  द्विगुन (*x)(द्विगुन);
+  निश्चित( argc==1 );
+  type0 = sqlite3_मूल्य_numeric_type(argv[0]);
+  अगर( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) वापस;
+  v0 = sqlite3_मूल्य_double(argv[0]);
+  x = (द्विगुन(*)(द्विगुन))sqlite3_user_तथ्य(context);
   ans = x(v0);
-  sqlite3_result_double(context, ans);
+  sqlite3_परिणाम_double(context, ans);
 }
 
 /*
@@ -2638,60 +2638,60 @@ static void math1Func(
 **
 **   power(X,Y)  - Compute X to the Y-th power
 */
-static void math2Func(
+अटल व्योम math2Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int type0, type1;
-  double v0, v1, ans;
-  double (*x)(double,double);
-  assert( argc==2 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  type1 = sqlite3_value_numeric_type(argv[1]);
-  if( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  v1 = sqlite3_value_double(argv[1]);
-  x = (double(*)(double,double))sqlite3_user_data(context);
+  पूर्णांक type0, type1;
+  द्विगुन v0, v1, ans;
+  द्विगुन (*x)(द्विगुन,द्विगुन);
+  निश्चित( argc==2 );
+  type0 = sqlite3_मूल्य_numeric_type(argv[0]);
+  अगर( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) वापस;
+  type1 = sqlite3_मूल्य_numeric_type(argv[1]);
+  अगर( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) वापस;
+  v0 = sqlite3_मूल्य_double(argv[0]);
+  v1 = sqlite3_मूल्य_double(argv[1]);
+  x = (द्विगुन(*)(द्विगुन,द्विगुन))sqlite3_user_तथ्य(context);
   ans = x(v0, v1);
-  sqlite3_result_double(context, ans);
+  sqlite3_परिणाम_double(context, ans);
 }
 
 /*
 ** Implementation of 0-argument pi() function.
 */
-static void piFunc(
+अटल व्योम piFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  assert( argc==0 );
-  (void)argv;
-  sqlite3_result_double(context, M_PI);
+  निश्चित( argc==0 );
+  (व्योम)argv;
+  sqlite3_परिणाम_double(context, M_PI);
 }
 
-#endif /* SQLITE_ENABLE_MATH_FUNCTIONS */
+#पूर्ण_अगर /* SQLITE_ENABLE_MATH_FUNCTIONS */
 
 /*
 ** Implementation of sign(X) function.
 */
-static void signFunc(
+अटल व्योम signFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int type0;
-  double x;
+  पूर्णांक type0;
+  द्विगुन x;
   UNUSED_PARAMETER(argc);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  x = sqlite3_value_double(argv[0]);
-  sqlite3_result_int(context, x<0.0 ? -1 : x>0.0 ? +1 : 0);
+  निश्चित( argc==1 );
+  type0 = sqlite3_मूल्य_numeric_type(argv[0]);
+  अगर( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) वापस;
+  x = sqlite3_मूल्य_double(argv[0]);
+  sqlite3_परिणाम_int(context, x<0.0 ? -1 : x>0.0 ? +1 : 0);
 }
 
-#if defined(SQLITE_ENABLE_PERCENTILE)
+#अगर defined(SQLITE_ENABLE_PERCENTILE)
 /***********************************************************************
 ** This section implements the percentile(Y,P) SQL function and similar.
 ** Requirements:
@@ -2801,33 +2801,33 @@ static void signFunc(
 ** aggregate.  Remember all input Y values until the very end.
 ** Those values are accumulated in the Percentile.a[] array.
 */
-typedef struct Percentile Percentile;
-struct Percentile {
+प्रकार काष्ठा Percentile Percentile;
+काष्ठा Percentile {
   u64 nAlloc;          /* Number of slots allocated for a[] */
   u64 nUsed;           /* Number of slots actually used in a[] */
-  char bSorted;        /* True if a[] is already in sorted order */
-  char bKeepSorted;    /* True if advantageous to keep a[] sorted */
-  char bPctValid;      /* True if rPct is valid */
-  double rPct;         /* Fraction.  0.0 to 1.0 */
-  double *a;           /* Array of Y values */
+  अक्षर bSorted;        /* True if a[] is already in sorted order */
+  अक्षर bKeepSorted;    /* True if advantageous to keep a[] sorted */
+  अक्षर bPctValid;      /* True if rPct is valid */
+  द्विगुन rPct;         /* Fraction.  0.0 to 1.0 */
+  द्विगुन *a;           /* Array of Y values */
 };
 
 /*
 ** Return TRUE if the input floating-point number is an infinity.
 */
-static int percentIsInfinity(double r){
+अटल पूर्णांक percentIsInfinity(द्विगुन r){
   sqlite3_uint64 u;
-  assert( sizeof(u)==sizeof(r) );
-  memcpy(&u, &r, sizeof(u));
-  return ((u>>52)&0x7ff)==0x7ff;
+  निश्चित( माप(u)==माप(r) );
+  स_नकल(&u, &r, माप(u));
+  वापस ((u>>52)&0x7ff)==0x7ff;
 }
 
 /*
 ** Return TRUE if two doubles differ by 0.001 or less.
 */
-static int percentSameValue(double a, double b){
+अटल पूर्णांक percent_Same_मूल्य(द्विगुन a, द्विगुन b){
   a -= b;
-  return a>=-0.001 && a<=0.001;
+  वापस a>=-0.001 && a<=0.001;
 }
 
 /*
@@ -2841,22 +2841,22 @@ static int percentSameValue(double a, double b){
 ** order.  The smallest return value in this case will be 0, and
 ** the largest return value will be p->nUsed.
 */
-static i64 percentBinarySearch(Percentile *p, double y, int bExact){
+अटल i64 percent_द्विआधारी_खोज(Percentile *p, द्विगुन y, पूर्णांक bExact){
   i64 iFirst = 0;                   /* First element of search range */
   i64 iLast = (i64)p->nUsed - 1;    /* Last element of search range */
-  while( iLast>=iFirst ){
+  जबतक( iLast>=iFirst ){
     i64 iMid = (iFirst+iLast)/2;
-    double x = p->a[iMid];
-    if( x<y ){
+    द्विगुन x = p->a[iMid];
+    अगर( x<y ){
       iFirst = iMid + 1;
-    }else if( x>y ){
+    }अन्यथा अगर( x>y ){
       iLast = iMid - 1;
-    }else{
-      return iMid;
+    }अन्यथा{
+      वापस iMid;
     }
   }
-  if( bExact ) return -1;
-  return iFirst;
+  अगर( bExact ) वापस -1;
+  वापस iFirst;
 }
 
 /*
@@ -2866,16 +2866,16 @@ static i64 percentBinarySearch(Percentile *p, double y, int bExact){
 ** (with two '%' characters).  That substring will be replaced by the name
 ** of the function.
 */
-static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
-  char *zMsg1;
-  char *zMsg2;
-  va_list ap;
+अटल व्योम percentError(sqlite3_context *pCtx, स्थिर अक्षर *zFormat, ...){
+  अक्षर *zMsg1;
+  अक्षर *zMsg2;
+  बहु_सूची ap;
 
-  va_start(ap, zFormat);
+  बहु_शुरू(ap, zFormat);
   zMsg1 = sqlite3_vmprintf(zFormat, ap);
-  va_end(ap);
+  बहु_पूर्ण(ap);
   zMsg2 = zMsg1 ? sqlite3_mprintf(zMsg1, sqlite3VdbeFuncName(pCtx)) : 0;
-  sqlite3_result_error(pCtx, zMsg2, -1);
+  sqlite3_परिणाम_error(pCtx, zMsg2, -1);
   sqlite3_free(zMsg1);
   sqlite3_free(zMsg2);
 }
@@ -2884,95 +2884,95 @@ static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
 ** The "step" function for percentile(Y,P) is called once for each
 ** input row.
 */
-static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
+अटल व्योम percentStep(sqlite3_context *pCtx, पूर्णांक argc, sqlite3_मूल्य **argv){
   Percentile *p;
-  double rPct;
-  int eType;
-  double y;
-  assert( argc==2 || argc==1 );
+  द्विगुन rPct;
+  पूर्णांक eType;
+  द्विगुन y;
+  निश्चित( argc==2 || argc==1 );
 
-  if( argc==1 ){
+  अगर( argc==1 ){
     /* Requirement 13:  median(Y) is the same as percentile(Y,50). */
     rPct = 0.5;
-  }else{
+  }अन्यथा{
     /* P must be a number between 0 and 100 for percentile() or between
     ** 0.0 and 1.0 for percentile_cont() and percentile_disc().
     **
     ** The user-data is an integer which is 10 times the upper bound.
     */
-    double mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&2)? 100.0 : 1.0;
-    eType = sqlite3_value_numeric_type(argv[1]);
-    rPct = sqlite3_value_double(argv[1])/mxFrac;
-    if( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
+    द्विगुन mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_तथ्य(pCtx))&2)? 100.0 : 1.0;
+    eType = sqlite3_मूल्य_numeric_type(argv[1]);
+    rPct = sqlite3_मूल्य_double(argv[1])/mxFrac;
+    अगर( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
      || rPct<0.0 || rPct>1.0
     ){
       percentError(pCtx, "the fraction argument to %%s()"
                         " is not between 0.0 and %.1f",
-                        (double)mxFrac);
-      return;
+                        (द्विगुन)mxFrac);
+      वापस;
     }
   }
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p==0 ) return;
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, माप(*p));
+  अगर( p==0 ) वापस;
 
   /* Remember the P value.  Throw an error if the P value is different
   ** from any prior row, per Requirement (2). */
-  if( !p->bPctValid ){
+  अगर( !p->bPctValid ){
     p->rPct = rPct;
     p->bPctValid = 1;
-  }else if( !percentSameValue(p->rPct,rPct) ){
+  }अन्यथा अगर( !percent_Same_मूल्य(p->rPct,rPct) ){
     percentError(pCtx, "the fraction argument to %%s()"
                       " is not the same for all input rows");
-    return;
+    वापस;
   }
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_मूल्य_type(argv[0]);
+  अगर( eType==SQLITE_NULL ) वापस;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+  अगर( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
     percentError(pCtx, "input to %%s() is not numeric");
-    return;
+    वापस;
   }
 
   /* Throw an error if the Y value is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
+  y = sqlite3_मूल्य_double(argv[0]);
+  अगर( percentIsInfinity(y) ){
     percentError(pCtx, "Inf input to %%s()");
-    return;
+    वापस;
   }
 
   /* Allocate and store the Y */
-  if( p->nUsed>=p->nAlloc ){
+  अगर( p->nUsed>=p->nAlloc ){
     u64 n = p->nAlloc*2 + 250;
-    double *a = sqlite3_realloc64(p->a, sizeof(double)*n);
-    if( a==0 ){
+    द्विगुन *a = sqlite3_realloc64(p->a, माप(द्विगुन)*n);
+    अगर( a==0 ){
       sqlite3_free(p->a);
-      memset(p, 0, sizeof(*p));
-      sqlite3_result_error_nomem(pCtx);
-      return;
+      स_रखो(p, 0, माप(*p));
+      sqlite3_परिणाम_error_nomem(pCtx);
+      वापस;
     }
     p->nAlloc = n;
     p->a = a;
   }
-  if( p->nUsed==0 ){
+  अगर( p->nUsed==0 ){
     p->a[p->nUsed++] = y;
     p->bSorted = 1;
-  }else if( !p->bSorted || y>=p->a[p->nUsed-1] ){
+  }अन्यथा अगर( !p->bSorted || y>=p->a[p->nUsed-1] ){
     p->a[p->nUsed++] = y;
-  }else if( p->bKeepSorted ){
+  }अन्यथा अगर( p->bKeepSorted ){
     i64 i;
-    i = percentBinarySearch(p, y, 0);
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i+1], &p->a[i], (p->nUsed-i)*sizeof(p->a[0]));
+    i = percent_द्विआधारी_खोज(p, y, 0);
+    अगर( i<(पूर्णांक)p->nUsed ){
+      स_हटाओ(&p->a[i+1], &p->a[i], (p->nUsed-i)*माप(p->a[0]));
     }
     p->a[i] = y;
     p->nUsed++;
-  }else{
+  }अन्यथा{
     p->a[p->nUsed++] = y;
     p->bSorted = 0;
   }
@@ -2981,7 +2981,7 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 /*
 ** Interchange two doubles.
 */
-#define SWAP_DOUBLE(X,Y)  {double ttt=(X);(X)=(Y);(Y)=ttt;}
+#घोषणा SWAP_DOUBLE(X,Y)  {द्विगुन ttt=(X);(X)=(Y);(Y)=ttt;}
 
 /*
 ** Sort an array of doubles.
@@ -3000,34 +3000,34 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 ** so it is not necessary to position any other elements. Or if iReq is
 ** negative, then the final array must be fully sorted.
 */
-static void percentSort(
-  double *a,                      /* Array to sort */
-  unsigned int n,                 /* Number of elements in array a[] */
-  int iReq                        /* Element caller cares about (or -ve) */
+अटल व्योम percentSort(
+  द्विगुन *a,                      /* Array to sort */
+  अचिन्हित पूर्णांक n,                 /* Number of elements in array a[] */
+  पूर्णांक iReq                        /* Element caller cares about (or -ve) */
 ){
-  int iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
-  int iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
-  int i;         /* Loop counter */
-  double rPivot; /* The pivot value */
+  पूर्णांक iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
+  पूर्णांक iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
+  पूर्णांक i;         /* Loop counter */
+  द्विगुन rPivot; /* The pivot value */
 
-  assert( n>=2 );
-  do{
+  निश्चित( n>=2 );
+  करो{
     /* Put the first, middle, and last elements in sorted order.
     ** After doing so, return immediately if the array contains
     ** three or fewer elements as there is nothing more to do.
     */
-    if( a[0]>a[n-1] ){
+    अगर( a[0]>a[n-1] ){
       SWAP_DOUBLE(a[0],a[n-1])
     }
-    if( n==2 ) return;
+    अगर( n==2 ) वापस;
     iGt = n-1;
     i = n/2;
-    if( a[0]>a[i] ){
+    अगर( a[0]>a[i] ){
       SWAP_DOUBLE(a[0],a[i])
-    }else if( a[i]>a[iGt] ){
+    }अन्यथा अगर( a[i]>a[iGt] ){
       SWAP_DOUBLE(a[i],a[iGt])
     }
-    if( n==3 ) return;
+    अगर( n==3 ) वापस;
 
     /* Take the value of the middle element as the pivot.  Shuffle
     ** values around so that all elements less than the pivot come
@@ -3035,29 +3035,29 @@ static void percentSort(
     */
     rPivot = a[i];
     iLt = i = 1;
-    do{
-      if( a[i]<rPivot ){
-        if( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
+    करो{
+      अगर( a[i]<rPivot ){
+        अगर( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
         iLt++;
         i++;
-      }else if( a[i]>rPivot ){
-        do{
+      }अन्यथा अगर( a[i]>rPivot ){
+        करो{
           iGt--;
-        }while( iGt>i && a[iGt]>rPivot );
+        }जबतक( iGt>i && a[iGt]>rPivot );
         SWAP_DOUBLE(a[i],a[iGt])
-      }else{
+      }अन्यथा{
         i++;
       }
-    }while( i<iGt );
+    }जबतक( i<iGt );
 
-    assert( iLt>0 && iLt<iGt && (unsigned)iGt<n );
+    निश्चित( iLt>0 && iLt<iGt && (अचिन्हित)iGt<n );
     testcase( iGt>iLt+1 );
-    assert( a[iLt]==rPivot );
-    assert( a[iLt-1]<=rPivot );
-    assert( a[iGt]>=rPivot );
-    assert( a[iLt+1]>=rPivot );
+    निश्चित( a[iLt]==rPivot );
+    निश्चित( a[iLt-1]<=rPivot );
+    निश्चित( a[iGt]>=rPivot );
+    निश्चित( a[iLt+1]>=rPivot );
 
-    if( iReq>=0 ){
+    अगर( iReq>=0 ){
       /* In this case, the only elements that the caller requires sorted into 
       ** the correct positions are elements a[iReq] and a[iReq+1]. At this
       ** point we know that element a[iLt] is in the correct position and
@@ -3069,73 +3069,73 @@ static void percentSort(
       ** right partition or the equal partition (elements for which 
       ** iLt<=iElem<iGt). Therefore it is always sufficient to sort only
       ** the right partition in this case.  */
-      if( iReq<iLt ){
+      अगर( iReq<iLt ){
         n = iLt;
-      }else{
+      }अन्यथा{
         a += iGt;
         n -= iGt;
         iReq = MAX(0, iReq-iGt);
       }
-    }else{
+    }अन्यथा{
       /* Recurse on the smaller partition only.  The smaller partition
       ** will hold n/2 or fewer entries, which assures that the stack
       ** depth will not exceed O(log(n)), even for pathological cases.
       ** Loop without recursion for the larger partition. */
-      if( iLt>(int)(n/2) ){
-        if( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
+      अगर( iLt>(पूर्णांक)(n/2) ){
+        अगर( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
         n = iLt;
-      }else{
-        if( iLt>=2 ) percentSort(a, iLt, -1);
+      }अन्यथा{
+        अगर( iLt>=2 ) percentSort(a, iLt, -1);
         a += iGt;
         n -= iGt;
       }
     }
-  }while( n>=2 );
+  }जबतक( n>=2 );
 }
 
 /*
 ** The "inverse" function for percentile(Y,P) is called to remove a
 ** row that was previously inserted by "step".
 */
-static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
+अटल व्योम percentInverse(sqlite3_context *pCtx,पूर्णांक argc,sqlite3_मूल्य **argv){
   Percentile *p;
-  int eType;
-  double y;
+  पूर्णांक eType;
+  द्विगुन y;
   i64 i;
-  assert( argc==2 || argc==1 );
+  निश्चित( argc==2 || argc==1 );
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, माप(*p));
+  निश्चित( p!=0 );
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_मूल्य_type(argv[0]);
+  अगर( eType==SQLITE_NULL ) वापस;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
-    return;
+  अगर( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+    वापस;
   }
 
   /* Ignore the Y value if it is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
-    return;
+  y = sqlite3_मूल्य_double(argv[0]);
+  अगर( percentIsInfinity(y) ){
+    वापस;
   }
-  if( p->bSorted==0 ){
-    assert( p->nUsed>1 );
+  अगर( p->bSorted==0 ){
+    निश्चित( p->nUsed>1 );
     percentSort(p->a, p->nUsed, -1);
     p->bSorted = 1;
   }
   p->bKeepSorted = 1;
 
   /* Find and remove the row */
-  i = percentBinarySearch(p, y, 1);
-  if( i>=0 ){
+  i = percent_द्विआधारी_खोज(p, y, 1);
+  अगर( i>=0 ){
     p->nUsed--;
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed - i)*sizeof(p->a[0]));
+    अगर( i<(पूर्णांक)p->nUsed ){
+      स_हटाओ(&p->a[i], &p->a[i+1], (p->nUsed - i)*माप(p->a[0]));
     }
   }
 }
@@ -3144,104 +3144,104 @@ static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
 ** Compute the final output of percentile().  Clean up all allocated
 ** memory if and only if bIsFinal is true.
 */
-static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
+अटल व्योम percentCompute(sqlite3_context *pCtx, पूर्णांक bIsFinal){
   Percentile *p;
-  int settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
-  unsigned i1, i2;
-  double v1, v2;
-  double ix, vx;
+  पूर्णांक settings = SQLITE_PTR_TO_INT(sqlite3_user_तथ्य(pCtx))&1; /* Discrete? */
+  अचिन्हित i1, i2;
+  द्विगुन v1, v2;
+  द्विगुन ix, vx;
   p = (Percentile*)sqlite3_aggregate_context(pCtx, 0);
-  if( p==0 ) return;
-  if( p->a==0 ) return;
-  if( p->nUsed ){
+  अगर( p==0 ) वापस;
+  अगर( p->a==0 ) वापस;
+  अगर( p->nUsed ){
     ix = p->rPct*(p->nUsed-1);
-    i1 = (unsigned)ix;
-    if( p->bSorted==0 ){
+    i1 = (अचिन्हित)ix;
+    अगर( p->bSorted==0 ){
       /* In cases where bIsFinal is non-zero, setting Percentile.bSorted 
       ** after the percentSort() call here is not technically correct, as 
       ** the array is not fully sorted. But in this case the object will be 
       ** freed below anyway, so it doesn't matter.  */
-      assert( p->nUsed>1 );
-      percentSort(p->a, p->nUsed, (bIsFinal ? (int)i1 : -1));
+      निश्चित( p->nUsed>1 );
+      percentSort(p->a, p->nUsed, (bIsFinal ? (पूर्णांक)i1 : -1));
       p->bSorted = 1;
     }
-    if( settings & 1 ){
+    अगर( settings & 1 ){
       vx = p->a[i1];
-    }else{
-      i2 = ix==(double)i1 || i1==p->nUsed-1 ? i1 : i1+1;
+    }अन्यथा{
+      i2 = ix==(द्विगुन)i1 || i1==p->nUsed-1 ? i1 : i1+1;
       v1 = p->a[i1];
       v2 = p->a[i2];
       vx = v1 + (v2-v1)*(ix-i1);
     }
-    sqlite3_result_double(pCtx, vx);
+    sqlite3_परिणाम_double(pCtx, vx);
   }
-  if( bIsFinal ){
+  अगर( bIsFinal ){
     sqlite3_free(p->a);
-    memset(p, 0, sizeof(*p));
-  }else{
+    स_रखो(p, 0, माप(*p));
+  }अन्यथा{
     p->bKeepSorted = 1;
   }
 }
-static void percentFinal(sqlite3_context *pCtx){
+अटल व्योम percentFinal(sqlite3_context *pCtx){
   percentCompute(pCtx, 1);
 }
-static void percentValue(sqlite3_context *pCtx){
+अटल व्योम percent_मूल्य(sqlite3_context *pCtx){
   percentCompute(pCtx, 0);
 }
 /****** End of percentile family of functions ******/
-#endif /* SQLITE_ENABLE_PERCENTILE */
+#पूर्ण_अगर /* SQLITE_ENABLE_PERCENTILE */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#अगर defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Implementation of sqlite_filestat(SCHEMA).
 **
 ** Return JSON text that describes low-level debug/diagnostic information
 ** about the sqlite3_file object associated with SCHEMA.
 */
-static void filestatFunc(
+अटल व्योम filestatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  स्थिर अक्षर *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  अगर( pBtree ){
     Pager *pPager;
     sqlite3_file *fd;
-    int rc;
+    पूर्णांक rc;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    निश्चित( pPager!=0 );
     fd = sqlite3PagerFile(pPager);
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
-      sqlite3_result_error_nomem(context);
-    }else{
+    अगर( sqlite3_str_errcode(pStr) ){
+      sqlite3_परिणाम_error_nomem(context);
+    }अन्यथा{
       sqlite3_str_append(pStr, "{\"db\":", 6);
       rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-      if( rc ) sqlite3_str_append(pStr, "null", 4);
+      अगर( rc ) sqlite3_str_append(pStr, "null", 4);
       fd = sqlite3PagerJrnlFile(pPager);
-      if( fd && fd->pMethods!=0 ){
+      अगर( fd && fd->pMethods!=0 ){
         sqlite3_str_appendall(pStr, ",\"journal\":");
         rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-        if( rc ) sqlite3_str_append(pStr, "null", 4);
+        अगर( rc ) sqlite3_str_append(pStr, "null", 4);
       }
       sqlite3_str_append(pStr, "}", 1);
-      sqlite3_result_str(context, pStr, SQLITE_FINISH);
+      sqlite3_परिणाम_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
-    sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
+  }अन्यथा{
+    sqlite3_परिणाम_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#पूर्ण_अगर /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#अगर defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
 /*
 ** Implementation of sqlite_walstat(SCHEMA).
 **
@@ -3250,40 +3250,40 @@ static void filestatFunc(
 ** of production builds.  This function is not part of the SQLite API
 ** and is likely to change or be removed in future versions of SQLite.
 */
-static void walstatFunc(
+अटल व्योम walstatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  स्थिर अक्षर *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  अगर( pBtree ){
     Pager *pPager;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    निश्चित( pPager!=0 );
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
-      sqlite3_result_error_nomem(context);
-    }else{
+    अगर( sqlite3_str_errcode(pStr) ){
+      sqlite3_परिणाम_error_nomem(context);
+    }अन्यथा{
       sqlite3_str_append(pStr, "{", 1);
       sqlite3PagerWalStat(pPager, pStr);
       sqlite3_str_append(pStr, "}", 1);
-      sqlite3_result_str(context, pStr, SQLITE_FINISH);
+      sqlite3_परिणाम_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
-    sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
+  }अन्यथा{
+    sqlite3_परिणाम_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_WALSTAT */
+#पूर्ण_अगर /* SQLITE_DEBUG || SQLITE_ENABLE_WALSTAT */
 
-#ifdef SQLITE_DEBUG
+#अगर_घोषित SQLITE_DEBUG
 /*
 ** Implementation of fpdecode(x,y,z) function.
 **
@@ -3296,33 +3296,33 @@ static void walstatFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void fpdecodeFunc(
+अटल व्योम fpdecodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   FpDecode s;
-  double x;
-  int y, z;
-  char zBuf[100];
+  द्विगुन x;
+  पूर्णांक y, z;
+  अक्षर zBuf[100];
   UNUSED_PARAMETER(argc);
-  assert( argc==3 );
-  x = sqlite3_value_double(argv[0]);
-  y = sqlite3_value_int(argv[1]);
-  z = sqlite3_value_int(argv[2]);
-  if( z<=0 ) z = 1;
-  if( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
+  निश्चित( argc==3 );
+  x = sqlite3_मूल्य_double(argv[0]);
+  y = sqlite3_मूल्य_int(argv[1]);
+  z = sqlite3_मूल्य_int(argv[2]);
+  अगर( z<=0 ) z = 1;
+  अगर( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
   sqlite3FpDecode(&s, x, y, z);
-  if( s.isSpecial==2 ){
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "NaN");
-  }else{
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
+  अगर( s.isSpecial==2 ){
+    sqlite3_snprintf(माप(zBuf), zBuf, "NaN");
+  }अन्यथा{
+    sqlite3_snprintf(माप(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
   }
-  sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
+  sqlite3_परिणाम_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
-#endif /* SQLITE_DEBUG */
+#पूर्ण_अगर /* SQLITE_DEBUG */
 
-#ifdef SQLITE_DEBUG
+#अगर_घोषित SQLITE_DEBUG
 /*
 ** Implementation of parseuri(uri,flags) function.
 **
@@ -3341,62 +3341,62 @@ static void fpdecodeFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void parseuriFunc(
+अटल व्योम parseuriFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  sqlite3_str *pResult;
-  const char *zVfs;
-  const char *zUri;
-  unsigned int flgs;
-  int rc;
+  sqlite3_str *p_परिणाम;
+  स्थिर अक्षर *zVfs;
+  स्थिर अक्षर *zUri;
+  अचिन्हित पूर्णांक flgs;
+  पूर्णांक rc;
   sqlite3_vfs *pVfs = 0;
-  char *zFile = 0;
-  char *zErr = 0;
+  अक्षर *zFile = 0;
+  अक्षर *zErr = 0;
 
-  if( argc<2 ) return;
+  अगर( argc<2 ) वापस;
   pVfs = sqlite3_vfs_find(0);
-  assert( pVfs );
+  निश्चित( pVfs );
   zVfs = pVfs->zName;
-  zUri = (const char*)sqlite3_value_text(argv[0]);
-  if( zUri==0 ) return;
-  flgs = (unsigned int)sqlite3_value_int(argv[1]);
+  zUri = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[0]);
+  अगर( zUri==0 ) वापस;
+  flgs = (अचिन्हित पूर्णांक)sqlite3_मूल्य_int(argv[1]);
   rc = sqlite3ParseUri(zVfs, zUri, &flgs, &pVfs, &zFile, &zErr);
-  pResult = sqlite3_str_new(0);
-  if( !sqlite3_str_errcode(pResult) ){
-    int i;
-    sqlite3_str_appendf(pResult, "rc=%d", rc);
-    sqlite3_str_appendf(pResult, ", flags=0x%x", flgs);
-    sqlite3_str_appendf(pResult, ", vfs=%Q", pVfs ? pVfs->zName: 0);
-    sqlite3_str_appendf(pResult, ", err=%Q", zErr);
-    sqlite3_str_appendf(pResult, ", file=%Q", zFile);
-    if( zFile ){
-      const char *z = zFile;
+  p_परिणाम = sqlite3_str_new(0);
+  अगर( !sqlite3_str_errcode(p_परिणाम) ){
+    पूर्णांक i;
+    sqlite3_str_appendf(p_परिणाम, "rc=%d", rc);
+    sqlite3_str_appendf(p_परिणाम, ", flags=0x%x", flgs);
+    sqlite3_str_appendf(p_परिणाम, ", vfs=%Q", pVfs ? pVfs->zName: 0);
+    sqlite3_str_appendf(p_परिणाम, ", err=%Q", zErr);
+    sqlite3_str_appendf(p_परिणाम, ", file=%Q", zFile);
+    अगर( zFile ){
+      स्थिर अक्षर *z = zFile;
       z += sqlite3Strlen30(z)+1;
-      while( z[0] ){
-        sqlite3_str_appendf(pResult, ", %Q", z);
+      जबतक( z[0] ){
+        sqlite3_str_appendf(p_परिणाम, ", %Q", z);
         z += sqlite3Strlen30(z)+1;
       }
-      for(i=2; i<argc; i++){
-        const char *zArg;
-        if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
-          int k = sqlite3_value_int(argv[i]);
-          sqlite3_str_appendf(pResult, ", '%d:%q'",k,sqlite3_uri_key(zFile, k));
-        }else if( (zArg = (const char*)sqlite3_value_text(argv[i]))!=0 ){
-          sqlite3_str_appendf(pResult, ", '%q:%q'",
+      क्रम(i=2; i<argc; i++){
+        स्थिर अक्षर *zArg;
+        अगर( sqlite3_मूल्य_type(argv[i])==SQLITE_INTEGER ){
+          पूर्णांक k = sqlite3_मूल्य_int(argv[i]);
+          sqlite3_str_appendf(p_परिणाम, ", '%d:%q'",k,sqlite3_uri_कुंजी(zFile, k));
+        }अन्यथा अगर( (zArg = (स्थिर अक्षर*)sqlite3_मूल्य_text(argv[i]))!=0 ){
+          sqlite3_str_appendf(p_परिणाम, ", '%q:%q'",
                  zArg, sqlite3_uri_parameter(zFile,zArg));
-        }else{
-          sqlite3_str_appendf(pResult, ", NULL");
+        }अन्यथा{
+          sqlite3_str_appendf(p_परिणाम, ", NULL");
         }
       }
     }
   }
-  sqlite3_result_str(ctx, pResult, SQLITE_FINISH);
+  sqlite3_परिणाम_str(ctx, p_परिणाम, SQLITE_FINISH);
   sqlite3_free_filename(zFile);
   sqlite3_free(zErr);
 }
-#endif /* SQLITE_DEBUG */
+#पूर्ण_अगर /* SQLITE_DEBUG */
 
 /*
 ** All of the FuncDef structures in the aBuiltinFunc[] array above
@@ -3405,7 +3405,7 @@ static void parseuriFunc(
 **
 ** After this routine runs
 */
-void sqlite3RegisterBuiltinFunctions(void){
+व्योम sqlite3RegisterBuiltinFunctions(व्योम){
   /*
   ** The following array holds FuncDef structures for all of the functions
   ** defined in this file.
@@ -3416,36 +3416,36 @@ void sqlite3RegisterBuiltinFunctions(void){
   **
   ** For peak efficiency, put the most frequently used function last.
   */
-  static FuncDef aBuiltinFunc[] = {
+  अटल FuncDef aBuiltinFunc[] = {
 /***** Functions only available with SQLITE_TESTCTRL_INTERNAL_FUNCTIONS *****/
-#if !defined(SQLITE_UNTESTABLE)
+#अगर !defined(SQLITE_UNTESTABLE)
     TEST_FUNC(implies_nonnull_row, 2, INLINEFUNC_implies_nonnull_row, 0),
-    TEST_FUNC(expr_compare,        2, INLINEFUNC_expr_compare,        0),
-    TEST_FUNC(expr_implies_expr,   2, INLINEFUNC_expr_implies_expr,   0),
+    TEST_FUNC(व्यंजक_compare,        2, INLINEFUNC_व्यंजक_compare,        0),
+    TEST_FUNC(व्यंजक_implies_व्यंजक,   2, INLINEFUNC_व्यंजक_implies_व्यंजक,   0),
     TEST_FUNC(affinity,            1, INLINEFUNC_affinity,            0),
-#endif /* !defined(SQLITE_UNTESTABLE) */
+#पूर्ण_अगर /* !defined(SQLITE_UNTESTABLE) */
 /***** Regular functions *****/
-#ifdef SQLITE_SOUNDEX
+#अगर_घोषित SQLITE_SOUNDEX
     FUNCTION(soundex,            1, 0, 0, soundexFunc      ),
-#endif
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#पूर्ण_अगर
+#अगर_अघोषित SQLITE_OMIT_LOAD_EXTENSION
     SFUNCTION(load_extension,    1, 0, 0, loadExt          ),
     SFUNCTION(load_extension,    2, 0, 0, loadExt          ),
-#endif
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
+#पूर्ण_अगर
+#अगर_अघोषित SQLITE_OMIT_COMPILEOPTION_DIAGS
     DFUNCTION(sqlite_compileoption_used,1, 0, 0, compileoptionusedFunc  ),
     DFUNCTION(sqlite_compileoption_get, 1, 0, 0, compileoptiongetFunc  ),
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+#पूर्ण_अगर /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
     INLINE_FUNC(unlikely,        1, INLINEFUNC_unlikely, SQLITE_FUNC_UNLIKELY),
     INLINE_FUNC(likelihood,      2, INLINEFUNC_unlikely, SQLITE_FUNC_UNLIKELY),
     INLINE_FUNC(likely,          1, INLINEFUNC_unlikely, SQLITE_FUNC_UNLIKELY),
-#ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
+#अगर_घोषित SQLITE_ENABLE_OFFSET_SQL_FUNC
     INLINE_FUNC(sqlite_offset,   1, INLINEFUNC_sqlite_offset, 0 ),
-#endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#पूर्ण_अगर
+#अगर defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
     FUNCTION(sqlite_filestat,    1, 0, 0, filestatFunc     ),
     FUNCTION(sqlite_walstat,     1, 0, 0, walstatFunc      ),
-#endif
+#पूर्ण_अगर
     FUNCTION(ltrim,              1, 1, 0, trimFunc         ),
     FUNCTION(ltrim,              2, 1, 0, trimFunc         ),
     FUNCTION(rtrim,              1, 2, 0, trimFunc         ),
@@ -3453,33 +3453,33 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(trim,               1, 3, 0, trimFunc         ),
     FUNCTION(trim,               2, 3, 0, trimFunc         ),
     FUNCTION(min,               -3, 0, 1, minmaxFunc       ),
-    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, min_Max_मूल्य, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION(max,               -3, 1, 1, minmaxFunc       ),
-    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, min_Max_मूल्य, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION2(typeof,            1, 0, 0, typeofFunc,  SQLITE_FUNC_TYPEOF),
     FUNCTION2(subtype,           1, 0, 0, subtypeFunc,
                                            SQLITE_FUNC_TYPEOF|SQLITE_SUBTYPE),
-    FUNCTION2(length,            1, 0, 0, lengthFunc,  SQLITE_FUNC_LENGTH),
-    FUNCTION2(octet_length,      1, 0, 0, bytelengthFunc,SQLITE_FUNC_BYTELEN),
+    FUNCTION2(लंबाई,            1, 0, 0, लंबाई_Func,  SQLITE_FUNC_लंबाई),
+    FUNCTION2(octet_लंबाई,      1, 0, 0, bytelengthFunc,SQLITE_FUNC_BYTELEN),
     FUNCTION(instr,              2, 0, 0, instrFunc        ),
-    FUNCTION(printf,            -1, 0, 0, printfFunc       ),
+    FUNCTION(म_लिखो,            -1, 0, 0, printfFunc       ),
     FUNCTION(format,            -1, 0, 0, printfFunc       ),
     FUNCTION(unicode,            1, 0, 0, unicodeFunc      ),
-    FUNCTION(char,              -1, 0, 0, charFunc         ),
-    FUNCTION(abs,                1, 0, 0, absFunc          ),
-#ifdef SQLITE_DEBUG
+    FUNCTION(अक्षर,              -1, 0, 0, charFunc         ),
+    FUNCTION(असल,                1, 0, 0, absFunc          ),
+#अगर_घोषित SQLITE_DEBUG
     FUNCTION(fpdecode,           3, 0, 0, fpdecodeFunc     ),
     FUNCTION(parseuri,          -1, 0, 0, parseuriFunc     ),
-#endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#पूर्ण_अगर
+#अगर defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
     FUNCTION(oom,               -1, 0, 0, oomFunc          ),
-#endif
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#पूर्ण_अगर
+#अगर_अघोषित SQLITE_OMIT_FLOATING_POINT
     FUNCTION(round,              1, 0, 0, roundFunc        ),
     FUNCTION(round,              2, 0, 0, roundFunc        ),
-#endif
+#पूर्ण_अगर
     FUNCTION(upper,              1, 0, 0, upperFunc        ),
     FUNCTION(lower,              1, 0, 0, lowerFunc        ),
     FUNCTION(hex,                1, 0, 0, hexFunc          ),
@@ -3497,72 +3497,72 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(unistr,             1, 0, 0, unistrFunc       ),
     FUNCTION(quote,              1, 0, 0, quoteFunc        ),
     FUNCTION(unistr_quote,       1, 1, 0, quoteFunc        ),
-    VFUNCTION(last_insert_rowid, 0, 0, 0, last_insert_rowid),
+    VFUNCTION(last_जोड़ो_rowid, 0, 0, 0, last_जोड़ो_rowid),
     VFUNCTION(changes,           0, 0, 0, changes          ),
-    VFUNCTION(total_changes,     0, 0, 0, total_changes    ),
+    VFUNCTION(योग_changes,     0, 0, 0, योग_changes    ),
     FUNCTION(replace,            3, 0, 0, replaceFunc      ),
     FUNCTION(zeroblob,           1, 0, 0, zeroblobFunc     ),
     FUNCTION(substr,             2, 0, 0, substrFunc       ),
     FUNCTION(substr,             3, 0, 0, substrFunc       ),
     FUNCTION(substring,          2, 0, 0, substrFunc       ),
     FUNCTION(substring,          3, 0, 0, substrFunc       ),
-    WAGGREGATE(sum,   1,0,0, sumStep, sumFinalize, sumFinalize, sumInverse, 0),
-    WAGGREGATE(total, 1,0,0, sumStep,totalFinalize,totalFinalize,sumInverse, 0),
-    WAGGREGATE(avg,   1,0,0, sumStep, avgFinalize, avgFinalize, sumInverse, 0),
-    WAGGREGATE(count, 0,0,0, countStep,
-        countFinalize, countFinalize, countInverse,
-        SQLITE_FUNC_COUNT|SQLITE_FUNC_ANYORDER  ),
-    WAGGREGATE(count, 1,0,0, countStep,
-        countFinalize, countFinalize, countInverse, SQLITE_FUNC_ANYORDER ),
+    WAGGREGATE(योग,   1,0,0, योग_Step, योग_Finalize, योग_Finalize, योग_Inverse, 0),
+    WAGGREGATE(योग_2, 1,0,0, योग_Step,योग_Finalize_2,योग_Finalize_2,योग_Inverse, 0),
+    WAGGREGATE(avg,   1,0,0, योग_Step, avgFinalize, avgFinalize, योग_Inverse, 0),
+    WAGGREGATE(गिनती, 0,0,0, गिनती_Step,
+        गिनती_Finalize, गिनती_Finalize, गिनती_Inverse,
+        SQLITE_FUNC_गिनती|SQLITE_FUNC_ANYORDER  ),
+    WAGGREGATE(गिनती, 1,0,0, गिनती_Step,
+        गिनती_Finalize, गिनती_Finalize, गिनती_Inverse, SQLITE_FUNC_ANYORDER ),
     WAGGREGATE(group_concat, 1, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_मूल्य, groupConcatInverse, 0),
     WAGGREGATE(group_concat, 2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_मूल्य, groupConcatInverse, 0),
     WAGGREGATE(string_agg,   2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_मूल्य, groupConcatInverse, 0),
 
-#ifdef SQLITE_ENABLE_PERCENTILE
+#अगर_घोषित SQLITE_ENABLE_PERCENTILE
     WAGGREGATE(median,          1,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_मूल्य, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile,      2, 0x2,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_मूल्य, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_cont, 2,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_मूल्य, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_disc, 2, 0x1,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_मूल्य, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
-#endif /* SQLITE_ENABLE_PERCENTILE */
+#पूर्ण_अगर /* SQLITE_ENABLE_PERCENTILE */
  
     LIKEFUNC(glob, 2, &globInfo, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
-#ifdef SQLITE_CASE_SENSITIVE_LIKE
+#अगर_घोषित SQLITE_CASE_SENSITIVE_LIKE
     LIKEFUNC(like, 2, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
     LIKEFUNC(like, 3, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
-#else
+#अन्यथा
     LIKEFUNC(like, 2, &likeInfoNorm, SQLITE_FUNC_LIKE),
     LIKEFUNC(like, 3, &likeInfoNorm, SQLITE_FUNC_LIKE),
-#endif
-#ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+#पूर्ण_अगर
+#अगर_घोषित SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
     FUNCTION(unknown,           -1, 0, 0, unknownFunc      ),
-#endif
-#ifdef SQLITE_ENABLE_MATH_FUNCTIONS
-    MFUNCTION(ceil,              1, xCeil,     ceilingFunc ),
+#पूर्ण_अगर
+#अगर_घोषित SQLITE_ENABLE_MATH_FUNCTIONS
+    MFUNCTION(उच्चमान,              1, xCeil,     ceilingFunc ),
     MFUNCTION(ceiling,           1, xCeil,     ceilingFunc ),
-    MFUNCTION(floor,             1, xFloor,    ceilingFunc ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+    MFUNCTION(न्यूनमान,             1, xFloor,    ceilingFunc ),
+#अगर SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(trunc,             1, trunc,     ceilingFunc ),
-#endif
+#पूर्ण_अगर
     FUNCTION(ln,                 1, 0, 0,      logFunc     ),
     FUNCTION(log,                1, 1, 0,      logFunc     ),
     FUNCTION(log10,              1, 1, 0,      logFunc     ),
     FUNCTION(log2,               1, 2, 0,      logFunc     ),
     FUNCTION(log,                2, 0, 0,      logFunc     ),
     MFUNCTION(exp,               1, exp,       math1Func   ),
-    MFUNCTION(pow,               2, pow,       math2Func   ),
-    MFUNCTION(power,             2, pow,       math2Func   ),
-    MFUNCTION(mod,               2, fmod,      math2Func   ),
+    MFUNCTION(घात,               2, घात,       math2Func   ),
+    MFUNCTION(power,             2, घात,       math2Func   ),
+    MFUNCTION(mod,               2, भ_शेष,      math2Func   ),
     MFUNCTION(acos,              1, acos,      math1Func   ),
     MFUNCTION(asin,              1, asin,      math1Func   ),
     MFUNCTION(atan,              1, atan,      math1Func   ),
@@ -3573,43 +3573,43 @@ void sqlite3RegisterBuiltinFunctions(void){
     MFUNCTION(cosh,              1, cosh,      math1Func   ),
     MFUNCTION(sinh,              1, sinh,      math1Func   ),
     MFUNCTION(tanh,              1, tanh,      math1Func   ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+#अगर SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(acosh,             1, acosh,     math1Func   ),
     MFUNCTION(asinh,             1, asinh,     math1Func   ),
     MFUNCTION(atanh,             1, atanh,     math1Func   ),
-#endif
-    MFUNCTION(sqrt,              1, sqrt,      math1Func   ),
+#पूर्ण_अगर
+    MFUNCTION(वर्ग_मूल,              1, वर्ग_मूल,      math1Func   ),
     MFUNCTION(radians,           1, degToRad,  math1Func   ),
     MFUNCTION(degrees,           1, radToDeg,  math1Func   ),
     MFUNCTION(pi,                0, 0,         piFunc      ),
-#endif /* SQLITE_ENABLE_MATH_FUNCTIONS */
+#पूर्ण_अगर /* SQLITE_ENABLE_MATH_FUNCTIONS */
     FUNCTION(sign,               1, 0, 0,      signFunc    ),
     INLINE_FUNC(coalesce,       -4, INLINEFUNC_coalesce, 0 ),
     INLINE_FUNC(iif,            -4, INLINEFUNC_iif,      0 ),
-    INLINE_FUNC(if,             -4, INLINEFUNC_iif,      0 ),
+    INLINE_FUNC(अगर,             -4, INLINEFUNC_iif,      0 ),
   };
-#ifndef SQLITE_OMIT_ALTERTABLE
+#अगर_अघोषित SQLITE_OMIT_ALTERTABLE
   sqlite3AlterFunctions();
-#endif
+#पूर्ण_अगर
   sqlite3WindowFunctions();
   sqlite3RegisterDateTimeFunctions();
   sqlite3RegisterJsonFunctions();
-  sqlite3InsertBuiltinFuncs(aBuiltinFunc, ArraySize(aBuiltinFunc));
+  sqlite3_जोड़ो_Builtin_Funcs(aBuiltinFunc, Array_आकार(aBuiltinFunc));
 
-#if 0  /* Enable to print out how the built-in functions are hashed */
+#अगर 0  /* Enable to print out how the built-in functions are hashed */
   {
-    int i;
+    पूर्णांक i;
     FuncDef *p;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
-      printf("FUNC-HASH %02d:", i);
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
-        int n = sqlite3Strlen30(p->zName);
-        int h = p->zName[0] + n;
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-        printf(" %s(%d)", p->zName, h);
+    क्रम(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+      म_लिखो("FUNC-HASH %02d:", i);
+      क्रम(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
+        पूर्णांक n = sqlite3Strlen30(p->zName);
+        पूर्णांक h = p->zName[0] + n;
+        निश्चित( p->funcFlags & SQLITE_FUNC_BUILTIN );
+        म_लिखो(" %s(%d)", p->zName, h);
       }
-      printf("\n");
+      म_लिखो("\n");
     }
   }
-#endif
+#पूर्ण_अगर
 }

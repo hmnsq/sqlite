@@ -15,8 +15,8 @@
 ** individual tokens and sends those tokens one-by-one over to the
 ** parser for analysis.
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
+#समावेश "sqliteInt.h"
+#समावेश <stdlib.h>
 
 /* Character classes for tokenizing
 **
@@ -26,40 +26,40 @@
 ** a lookup table is used, all of the classes need to be small integers and
 ** all of them need to be used within the switch.
 */
-#define CC_X          0    /* The letter 'x', or start of BLOB literal */
-#define CC_KYWD0      1    /* First letter of a keyword */
-#define CC_KYWD       2    /* Alphabetics or '_'.  Usable in a keyword */
-#define CC_DIGIT      3    /* Digits */
-#define CC_DOLLAR     4    /* '$' */
-#define CC_VARALPHA   5    /* '@', '#', ':'.  Alphabetic SQL variables */
-#define CC_VARNUM     6    /* '?'.  Numeric SQL variables */
-#define CC_SPACE      7    /* Space characters */
-#define CC_QUOTE      8    /* '"', '\'', or '`'.  String literals, quoted ids */
-#define CC_QUOTE2     9    /* '['.   [...] style quoted ids */
-#define CC_PIPE      10    /* '|'.   Bitwise OR or concatenate */
-#define CC_MINUS     11    /* '-'.  Minus or SQL-style comment */
-#define CC_LT        12    /* '<'.  Part of < or <= or <> */
-#define CC_GT        13    /* '>'.  Part of > or >= */
-#define CC_EQ        14    /* '='.  Part of = or == */
-#define CC_BANG      15    /* '!'.  Part of != */
-#define CC_SLASH     16    /* '/'.  / or c-style comment */
-#define CC_LP        17    /* '(' */
-#define CC_RP        18    /* ')' */
-#define CC_SEMI      19    /* ';' */
-#define CC_PLUS      20    /* '+' */
-#define CC_STAR      21    /* '*' */
-#define CC_PERCENT   22    /* '%' */
-#define CC_COMMA     23    /* ',' */
-#define CC_AND       24    /* '&' */
-#define CC_TILDA     25    /* '~' */
-#define CC_DOT       26    /* '.' */
-#define CC_ID        27    /* unicode characters usable in IDs */
-#define CC_ILLEGAL   28    /* Illegal character */
-#define CC_NUL       29    /* 0x00 */
-#define CC_BOM       30    /* First byte of UTF8 BOM:  0xEF 0xBB 0xBF */
+#घोषणा CC_X          0    /* The letter 'x', or start of BLOB literal */
+#घोषणा CC_KYWD0      1    /* First letter of a keyword */
+#घोषणा CC_KYWD       2    /* Alphabetics or '_'.  Usable in a keyword */
+#घोषणा CC_DIGIT      3    /* Digits */
+#घोषणा CC_DOLLAR     4    /* '$' */
+#घोषणा CC_VARALPHA   5    /* '@', '#', ':'.  Alphabetic SQL variables */
+#घोषणा CC_VARNUM     6    /* '?'.  Numeric SQL variables */
+#घोषणा CC_SPACE      7    /* Space characters */
+#घोषणा CC_QUOTE      8    /* '"', '\'', or '`'.  String literals, quoted ids */
+#घोषणा CC_QUOTE2     9    /* '['.   [...] style quoted ids */
+#घोषणा CC_PIPE      10    /* '|'.   Bitwise OR or concatenate */
+#घोषणा CC_MINUS     11    /* '-'.  Minus or SQL-style comment */
+#घोषणा CC_LT        12    /* '<'.  Part of < or <= or <> */
+#घोषणा CC_GT        13    /* '>'.  Part of > or >= */
+#घोषणा CC_EQ        14    /* '='.  Part of = or == */
+#घोषणा CC_BANG      15    /* '!'.  Part of != */
+#घोषणा CC_SLASH     16    /* '/'.  / or c-style comment */
+#घोषणा CC_LP        17    /* '(' */
+#घोषणा CC_RP        18    /* ')' */
+#घोषणा CC_SEMI      19    /* ';' */
+#घोषणा CC_PLUS      20    /* '+' */
+#घोषणा CC_STAR      21    /* '*' */
+#घोषणा CC_PERCENT   22    /* '%' */
+#घोषणा CC_COMMA     23    /* ',' */
+#घोषणा CC_AND       24    /* '&' */
+#घोषणा CC_TILDA     25    /* '~' */
+#घोषणा CC_DOT       26    /* '.' */
+#घोषणा CC_ID        27    /* unicode characters usable in IDs */
+#घोषणा CC_ILLEGAL   28    /* Illegal character */
+#घोषणा CC_NUL       29    /* 0x00 */
+#घोषणा CC_BOM       30    /* First byte of UTF8 BOM:  0xEF 0xBB 0xBF */
 
-static const unsigned char aiClass[] = {
-#ifdef SQLITE_ASCII
+अटल स्थिर अचिन्हित अक्षर aiClass[] = {
+#अगर_घोषित SQLITE_ASCII
 /*         x0  x1  x2  x3  x4  x5  x6  x7  x8  x9  xa  xb  xc  xd  xe  xf */
 /* 0x */   29, 28, 28, 28, 28, 28, 28, 28, 28,  7,  7, 28,  7,  7, 28, 28,
 /* 1x */   28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
@@ -77,8 +77,8 @@ static const unsigned char aiClass[] = {
 /* Dx */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
 /* Ex */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 30,
 /* Fx */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27
-#endif
-#ifdef SQLITE_EBCDIC
+#पूर्ण_अगर
+#अगर_घोषित SQLITE_EBCDIC
 /*         x0  x1  x2  x3  x4  x5  x6  x7  x8  x9  xa  xb  xc  xd  xe  xf */
 /* 0x */   29, 28, 28, 28, 28,  7, 28, 28, 28, 28, 28, 28,  7,  7, 28, 28,
 /* 1x */   28, 28, 28, 28, 28,  7, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
@@ -96,7 +96,7 @@ static const unsigned char aiClass[] = {
 /* Dx */   28,  1,  1,  1,  1,  1,  1,  1,  1,  1, 28, 28, 28, 28, 28, 28,
 /* Ex */   28, 28,  1,  1,  1,  1,  1,  0,  2,  2, 28, 28, 28, 28, 28, 28,
 /* Fx */    3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 28, 28, 28, 28, 28, 28,
-#endif
+#पूर्ण_अगर
 };
 
 /*
@@ -108,12 +108,12 @@ static const unsigned char aiClass[] = {
 **
 ** Used by keywordhash.h
 */
-#ifdef SQLITE_ASCII
-# define charMap(X) sqlite3UpperToLower[(unsigned char)X]
-#endif
-#ifdef SQLITE_EBCDIC
-# define charMap(X) ebcdicToAscii[(unsigned char)X]
-const unsigned char ebcdicToAscii[] = {
+#अगर_घोषित SQLITE_ASCII
+# define charMap(X) sqlite3UpperToLower[(अचिन्हित अक्षर)X]
+#पूर्ण_अगर
+#अगर_घोषित SQLITE_EBCDIC
+# define charMap(X) ebcdicToAscii[(अचिन्हित अक्षर)X]
+स्थिर अचिन्हित अक्षर ebcdicToAscii[] = {
 /* 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 1x */
@@ -132,7 +132,7 @@ const unsigned char ebcdicToAscii[] = {
    0,  0,115,116,117,118,119,120,121,122,  0,  0,  0,  0,  0,  0,  /* Ex */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* Fx */
 };
-#endif
+#पूर्ण_अगर
 
 /*
 ** The sqlite3KeywordCode function looks up an identifier to determine if
@@ -145,7 +145,7 @@ const unsigned char ebcdicToAscii[] = {
 ** named keywordhash.h and then included into this source file by
 ** the #include below.
 */
-#include "keywordhash.h"
+#समावेश "keywordhash.h"
 
 
 /*
@@ -164,11 +164,11 @@ const unsigned char ebcdicToAscii[] = {
 ** SQLite will allow '$' in identifiers for compatibility.
 ** But the feature is undocumented.
 */
-#ifdef SQLITE_ASCII
-#define IdChar(C)  ((sqlite3CtypeMap[(unsigned char)C]&0x46)!=0)
-#endif
-#ifdef SQLITE_EBCDIC
-const char sqlite3IsEbcdicIdChar[] = {
+#अगर_घोषित SQLITE_ASCII
+#घोषणा IdChar(C)  ((sqlite3CtypeMap[(अचिन्हित अक्षर)C]&0x46)!=0)
+#पूर्ण_अगर
+#अगर_घोषित SQLITE_EBCDIC
+स्थिर अक्षर sqlite3IsEbcdicIdChar[] = {
 /* x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xA xB xC xD xE xF */
     0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,  /* 4x */
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0,  /* 5x */
@@ -183,24 +183,24 @@ const char sqlite3IsEbcdicIdChar[] = {
     0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,  /* Ex */
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0,  /* Fx */
 };
-#define IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
-#endif
+#घोषणा IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
+#पूर्ण_अगर
 
 /* Make the IdChar function accessible from ctime.c and alter.c */
-int sqlite3IsIdChar(u8 c){ return IdChar(c); }
+पूर्णांक sqlite3IsIdChar(u8 c){ वापस IdChar(c); }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
 /*
 ** Return the id of the next token in string (*pz). Before returning, set
 ** (*pz) to point to the byte following the parsed token.
 */
-static int getToken(const unsigned char **pz){
-  const unsigned char *z = *pz;
-  int t;                          /* Token type to return */
-  do {
+अटल पूर्णांक getToken(स्थिर अचिन्हित अक्षर **pz){
+  स्थिर अचिन्हित अक्षर *z = *pz;
+  पूर्णांक t;                          /* Token type to return */
+  करो {
     z += sqlite3GetToken(z, &t);
-  }while( t==TK_SPACE || t==TK_COMMENT );
-  if( t==TK_ID 
+  }जबतक( t==TK_SPACE || t==TK_COMMENT );
+  अगर( t==TK_ID 
    || t==TK_STRING 
    || t==TK_JOIN_KW 
    || t==TK_WINDOW 
@@ -210,7 +210,7 @@ static int getToken(const unsigned char **pz){
     t = TK_ID;
   }
   *pz = z;
-  return t;
+  वापस t;
 }
 
 /*
@@ -243,469 +243,469 @@ static int getToken(const unsigned char **pz){
 **   * the previous token was TK_RP, and
 **   * the next token is TK_LP.
 */
-static int analyzeWindowKeyword(const unsigned char *z){
-  int t;
+अटल पूर्णांक analyzeWindowKeyword(स्थिर अचिन्हित अक्षर *z){
+  पूर्णांक t;
   t = getToken(&z);
-  if( t!=TK_ID ) return TK_ID;
+  अगर( t!=TK_ID ) वापस TK_ID;
   t = getToken(&z);
-  if( t!=TK_AS ) return TK_ID;
-  return TK_WINDOW;
+  अगर( t!=TK_AS ) वापस TK_ID;
+  वापस TK_WINDOW;
 }
-static int analyzeOverKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP ){
-    int t = getToken(&z);
-    if( t==TK_LP || t==TK_ID ) return TK_OVER;
+अटल पूर्णांक analyzeOverKeyword(स्थिर अचिन्हित अक्षर *z, पूर्णांक lastToken){
+  अगर( lastToken==TK_RP ){
+    पूर्णांक t = getToken(&z);
+    अगर( t==TK_LP || t==TK_ID ) वापस TK_OVER;
   }
-  return TK_ID;
+  वापस TK_ID;
 }
-static int analyzeFilterKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP && getToken(&z)==TK_LP ){
-    return TK_FILTER;
+अटल पूर्णांक analyzeFilterKeyword(स्थिर अचिन्हित अक्षर *z, पूर्णांक lastToken){
+  अगर( lastToken==TK_RP && getToken(&z)==TK_LP ){
+    वापस TK_FILTER;
   }
-  return TK_ID;
+  वापस TK_ID;
 }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Return the length (in bytes) of the token that begins at z[0]. 
 ** Store the token type in *tokenType before returning.
 */
-i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
+i64 sqlite3GetToken(स्थिर अचिन्हित अक्षर *z, पूर्णांक *tokenType){
   i64 i;
-  int c;
-  switch( aiClass[*z] ){  /* Switch on the character-class of the first byte
+  पूर्णांक c;
+  चयन( aiClass[*z] ){  /* Switch on the character-class of the first byte
                           ** of the token. See the comment on the CC_ defines
                           ** above. */
-    case CC_SPACE: {
+    हाल CC_SPACE: {
       testcase( z[0]==' ' );
       testcase( z[0]=='\t' );
       testcase( z[0]=='\n' );
       testcase( z[0]=='\f' );
       testcase( z[0]=='\r' );
-      for(i=1; sqlite3Isspace(z[i]); i++){}
+      क्रम(i=1; sqlite3Isspace(z[i]); i++){}
       *tokenType = TK_SPACE;
-      return i;
+      वापस i;
     }
-    case CC_MINUS: {
-      if( z[1]=='-' ){
-        for(i=2; (c=z[i])!=0 && c!='\n'; i++){}
+    हाल CC_MINUS: {
+      अगर( z[1]=='-' ){
+        क्रम(i=2; (c=z[i])!=0 && c!='\n'; i++){}
         *tokenType = TK_COMMENT;
-        return i;
-      }else if( z[1]=='>' ){
+        वापस i;
+      }अन्यथा अगर( z[1]=='>' ){
         *tokenType = TK_PTR;
-        return 2 + (z[2]=='>');
+        वापस 2 + (z[2]=='>');
       }
       *tokenType = TK_MINUS;
-      return 1;
+      वापस 1;
     }
-    case CC_LP: {
+    हाल CC_LP: {
       *tokenType = TK_LP;
-      return 1;
+      वापस 1;
     }
-    case CC_RP: {
+    हाल CC_RP: {
       *tokenType = TK_RP;
-      return 1;
+      वापस 1;
     }
-    case CC_SEMI: {
+    हाल CC_SEMI: {
       *tokenType = TK_SEMI;
-      return 1;
+      वापस 1;
     }
-    case CC_PLUS: {
+    हाल CC_PLUS: {
       *tokenType = TK_PLUS;
-      return 1;
+      वापस 1;
     }
-    case CC_STAR: {
+    हाल CC_STAR: {
       *tokenType = TK_STAR;
-      return 1;
+      वापस 1;
     }
-    case CC_SLASH: {
-      if( z[1]!='*' || z[2]==0 ){
+    हाल CC_SLASH: {
+      अगर( z[1]!='*' || z[2]==0 ){
         *tokenType = TK_SLASH;
-        return 1;
+        वापस 1;
       }
-      for(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
-      if( c ) i++;
+      क्रम(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
+      अगर( c ) i++;
       *tokenType = TK_COMMENT;
-      return i;
+      वापस i;
     }
-    case CC_PERCENT: {
+    हाल CC_PERCENT: {
       *tokenType = TK_REM;
-      return 1;
+      वापस 1;
     }
-    case CC_EQ: {
+    हाल CC_EQ: {
       *tokenType = TK_EQ;
-      return 1 + (z[1]=='=');
+      वापस 1 + (z[1]=='=');
     }
-    case CC_LT: {
-      if( (c=z[1])=='=' ){
+    हाल CC_LT: {
+      अगर( (c=z[1])=='=' ){
         *tokenType = TK_LE;
-        return 2;
-      }else if( c=='>' ){
+        वापस 2;
+      }अन्यथा अगर( c=='>' ){
         *tokenType = TK_NE;
-        return 2;
-      }else if( c=='<' ){
+        वापस 2;
+      }अन्यथा अगर( c=='<' ){
         *tokenType = TK_LSHIFT;
-        return 2;
-      }else{
+        वापस 2;
+      }अन्यथा{
         *tokenType = TK_LT;
-        return 1;
+        वापस 1;
       }
     }
-    case CC_GT: {
-      if( (c=z[1])=='=' ){
+    हाल CC_GT: {
+      अगर( (c=z[1])=='=' ){
         *tokenType = TK_GE;
-        return 2;
-      }else if( c=='>' ){
+        वापस 2;
+      }अन्यथा अगर( c=='>' ){
         *tokenType = TK_RSHIFT;
-        return 2;
-      }else{
+        वापस 2;
+      }अन्यथा{
         *tokenType = TK_GT;
-        return 1;
+        वापस 1;
       }
     }
-    case CC_BANG: {
-      if( z[1]!='=' ){
+    हाल CC_BANG: {
+      अगर( z[1]!='=' ){
         *tokenType = TK_ILLEGAL;
-        return 1;
-      }else{
+        वापस 1;
+      }अन्यथा{
         *tokenType = TK_NE;
-        return 2;
+        वापस 2;
       }
     }
-    case CC_PIPE: {
-      if( z[1]!='|' ){
+    हाल CC_PIPE: {
+      अगर( z[1]!='|' ){
         *tokenType = TK_BITOR;
-        return 1;
-      }else{
+        वापस 1;
+      }अन्यथा{
         *tokenType = TK_CONCAT;
-        return 2;
+        वापस 2;
       }
     }
-    case CC_COMMA: {
+    हाल CC_COMMA: {
       *tokenType = TK_COMMA;
-      return 1;
+      वापस 1;
     }
-    case CC_AND: {
+    हाल CC_AND: {
       *tokenType = TK_BITAND;
-      return 1;
+      वापस 1;
     }
-    case CC_TILDA: {
+    हाल CC_TILDA: {
       *tokenType = TK_BITNOT;
-      return 1;
+      वापस 1;
     }
-    case CC_QUOTE: {
-      int delim = z[0];
+    हाल CC_QUOTE: {
+      पूर्णांक delim = z[0];
       testcase( delim=='`' );
       testcase( delim=='\'' );
       testcase( delim=='"' );
-      for(i=1; (c=z[i])!=0; i++){
-        if( c==delim ){
-          if( z[i+1]==delim ){
+      क्रम(i=1; (c=z[i])!=0; i++){
+        अगर( c==delim ){
+          अगर( z[i+1]==delim ){
             i++;
-          }else{
-            break;
+          }अन्यथा{
+            अवरोध;
           }
         }
       }
-      if( c=='\'' ){
+      अगर( c=='\'' ){
         *tokenType = TK_STRING;
-        return i+1;
-      }else if( c!=0 ){
+        वापस i+1;
+      }अन्यथा अगर( c!=0 ){
         *tokenType = TK_ID;
-        return i+1;
-      }else{
+        वापस i+1;
+      }अन्यथा{
         *tokenType = TK_ILLEGAL;
-        return i;
+        वापस i;
       }
     }
-    case CC_DOT: {
-#ifndef SQLITE_OMIT_FLOATING_POINT
-      if( !sqlite3Isdigit(z[1]) )
-#endif
+    हाल CC_DOT: {
+#अगर_अघोषित SQLITE_OMIT_FLOATING_POINT
+      अगर( !sqlite3Isdigit(z[1]) )
+#पूर्ण_अगर
       {
         *tokenType = TK_DOT;
-        return 1;
+        वापस 1;
       }
       /* If the next character is a digit, this is a floating point
       ** number that begins with ".".  Fall thru into the next case */
       /* no break */ deliberate_fall_through
     }
-    case CC_DIGIT: {
+    हाल CC_DIGIT: {
       testcase( z[0]=='0' );  testcase( z[0]=='1' );  testcase( z[0]=='2' );
       testcase( z[0]=='3' );  testcase( z[0]=='4' );  testcase( z[0]=='5' );
       testcase( z[0]=='6' );  testcase( z[0]=='7' );  testcase( z[0]=='8' );
       testcase( z[0]=='9' );  testcase( z[0]=='.' );
       *tokenType = TK_INTEGER;
-#ifndef SQLITE_OMIT_HEX_INTEGER
-      if( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
-        for(i=3; 1; i++){
-          if( sqlite3Isxdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+#अगर_अघोषित SQLITE_OMIT_HEX_INTEGER
+      अगर( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
+        क्रम(i=3; 1; i++){
+          अगर( sqlite3Isxdigit(z[i])==0 ){
+            अगर( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
-              break;
+            }अन्यथा{
+              अवरोध;
             }
           }
         }
-      }else
-#endif
+      }अन्यथा
+#पूर्ण_अगर
         {
-        for(i=0; 1; i++){
-          if( sqlite3Isdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+        क्रम(i=0; 1; i++){
+          अगर( sqlite3Isdigit(z[i])==0 ){
+            अगर( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
-              break;
+            }अन्यथा{
+              अवरोध;
             }
           }
         }
-#ifndef SQLITE_OMIT_FLOATING_POINT
-        if( z[i]=='.' ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i++; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+#अगर_अघोषित SQLITE_OMIT_FLOATING_POINT
+        अगर( z[i]=='.' ){
+          अगर( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          क्रम(i++; 1; i++){
+            अगर( sqlite3Isdigit(z[i])==0 ){
+              अगर( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
-                break;
+              }अन्यथा{
+                अवरोध;
               }
             }
           }
         }
-        if( (z[i]=='e' || z[i]=='E') &&
+        अगर( (z[i]=='e' || z[i]=='E') &&
              ( sqlite3Isdigit(z[i+1]) 
               || ((z[i+1]=='+' || z[i+1]=='-') && sqlite3Isdigit(z[i+2]))
              )
         ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i+=2; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+          अगर( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          क्रम(i+=2; 1; i++){
+            अगर( sqlite3Isdigit(z[i])==0 ){
+              अगर( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
-                break;
+              }अन्यथा{
+                अवरोध;
               }
             }
           }
         }
-#endif
+#पूर्ण_अगर
       }
-      while( IdChar(z[i]) ){
+      जबतक( IdChar(z[i]) ){
         *tokenType = TK_ILLEGAL;
         i++;
       }
-      return i;
+      वापस i;
     }
-    case CC_QUOTE2: {
-      for(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
+    हाल CC_QUOTE2: {
+      क्रम(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
       *tokenType = c==']' ? TK_ID : TK_ILLEGAL;
-      return i;
+      वापस i;
     }
-    case CC_VARNUM: {
+    हाल CC_VARNUM: {
       *tokenType = TK_VARIABLE;
-      for(i=1; sqlite3Isdigit(z[i]); i++){}
-      return i;
+      क्रम(i=1; sqlite3Isdigit(z[i]); i++){}
+      वापस i;
     }
-    case CC_DOLLAR:
-    case CC_VARALPHA: {
+    हाल CC_DOLLAR:
+    हाल CC_VARALPHA: {
       i64 n = 0;
       testcase( z[0]=='$' );  testcase( z[0]=='@' );
       testcase( z[0]==':' );  testcase( z[0]=='#' );
       *tokenType = TK_VARIABLE;
-      for(i=1; (c=z[i])!=0; i++){
-        if( IdChar(c) ){
+      क्रम(i=1; (c=z[i])!=0; i++){
+        अगर( IdChar(c) ){
           n++;
-#ifndef SQLITE_OMIT_TCL_VARIABLE
-        }else if( c=='(' && n>0 ){
-          do{
+#अगर_अघोषित SQLITE_OMIT_TCL_VARIABLE
+        }अन्यथा अगर( c=='(' && n>0 ){
+          करो{
             i++;
-          }while( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
-          if( c==')' ){
+          }जबतक( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
+          अगर( c==')' ){
             i++;
-          }else{
+          }अन्यथा{
             *tokenType = TK_ILLEGAL;
           }
-          break;
-        }else if( c==':' && z[i+1]==':' ){
+          अवरोध;
+        }अन्यथा अगर( c==':' && z[i+1]==':' ){
           i++;
-#endif
-        }else{
-          break;
+#पूर्ण_अगर
+        }अन्यथा{
+          अवरोध;
         }
       }
-      if( n==0 ) *tokenType = TK_ILLEGAL;
-      return i;
+      अगर( n==0 ) *tokenType = TK_ILLEGAL;
+      वापस i;
     }
-    case CC_KYWD0: {
-      if( aiClass[z[1]]>CC_KYWD ){ i = 1;  break; }
-      for(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
-      if( IdChar(z[i]) ){
+    हाल CC_KYWD0: {
+      अगर( aiClass[z[1]]>CC_KYWD ){ i = 1;  अवरोध; }
+      क्रम(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
+      अगर( IdChar(z[i]) ){
         /* This token started out using characters that can appear in keywords,
         ** but z[i] is a character not allowed within keywords, so this must
         ** be an identifier instead */
         i++;
-        break;
+        अवरोध;
       }
       *tokenType = TK_ID;
-      return keywordCode((char*)z, i, tokenType);
+      वापस keywordCode((अक्षर*)z, i, tokenType);
     }
-    case CC_X: {
-#ifndef SQLITE_OMIT_BLOB_LITERAL
+    हाल CC_X: {
+#अगर_अघोषित SQLITE_OMIT_BLOB_LITERAL
       testcase( z[0]=='x' ); testcase( z[0]=='X' );
-      if( z[1]=='\'' ){
+      अगर( z[1]=='\'' ){
         *tokenType = TK_BLOB;
-        for(i=2; sqlite3Isxdigit(z[i]); i++){}
-        if( z[i]!='\'' || i%2 ){
+        क्रम(i=2; sqlite3Isxdigit(z[i]); i++){}
+        अगर( z[i]!='\'' || i%2 ){
           *tokenType = TK_ILLEGAL;
-          while( z[i] && z[i]!='\'' ){ i++; }
+          जबतक( z[i] && z[i]!='\'' ){ i++; }
         }
-        if( z[i] ) i++;
-        return i;
+        अगर( z[i] ) i++;
+        वापस i;
       }
-#endif
+#पूर्ण_अगर
       /* If it is not a BLOB literal, then it must be an ID, since no
       ** SQL keywords start with the letter 'x'.  Fall through */
       /* no break */ deliberate_fall_through
     }
-    case CC_KYWD:
-    case CC_ID: {
+    हाल CC_KYWD:
+    हाल CC_ID: {
       i = 1;
-      break;
+      अवरोध;
     }
-    case CC_BOM: {
-      if( z[1]==0xbb && z[2]==0xbf ){
+    हाल CC_BOM: {
+      अगर( z[1]==0xbb && z[2]==0xbf ){
         *tokenType = TK_SPACE;
-        return 3;
+        वापस 3;
       }
       i = 1;
-      break;
+      अवरोध;
     }
-    case CC_NUL: {
+    हाल CC_NUL: {
       *tokenType = TK_ILLEGAL;
-      return 0;
+      वापस 0;
     }
-    default: {
+    शेष: {
       *tokenType = TK_ILLEGAL;
-      return 1;
+      वापस 1;
     }
   }
-  while( IdChar(z[i]) ){ i++; }
+  जबतक( IdChar(z[i]) ){ i++; }
   *tokenType = TK_ID;
-  return i;
+  वापस i;
 }
 
 /*
 ** Run the parser on the given SQL string.
 */
-int sqlite3RunParser(Parse *pParse, const char *zSql){
-  int nErr = 0;                   /* Number of errors encountered */
-  void *pEngine;                  /* The LEMON-generated LALR(1) parser */
+पूर्णांक sqlite3RunParser(Parse *pParse, स्थिर अक्षर *zSql){
+  पूर्णांक nErr = 0;                   /* Number of errors encountered */
+  व्योम *pEngine;                  /* The LEMON-generated LALR(1) parser */
   i64 n = 0;                      /* Length of the next token token */
-  int tokenType;                  /* type of the next token */
-  int lastTokenParsed = -1;       /* type of the previous token */
+  पूर्णांक tokenType;                  /* type of the next token */
+  पूर्णांक lastTokenParsed = -1;       /* type of the previous token */
   sqlite3 *db = pParse->db;       /* The database connection */
   i64 mxSqlLen;                   /* Max length of an SQL string */
   Parse *pParentParse = 0;        /* Outer parse context, if any */
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+#अगर_घोषित sqlite3Parser_ENGINEALWAYSONSTACK
   yyParser sEngine;    /* Space to hold the Lemon-generated Parser object */
-#endif
+#पूर्ण_अगर
   VVA_ONLY( u8 startedWithOom = db->mallocFailed );
 
-  assert( zSql!=0 );
-  mxSqlLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
-  if( db->nVdbeActive==0 ){
+  निश्चित( zSql!=0 );
+  mxSqlLen = db->aLimit[SQLITE_LIMIT_SQL_लंबाई];
+  अगर( db->nVdbeActive==0 ){
     AtomicStore(&db->u1.isInterrupted, 0);
   }
   pParse->rc = SQLITE_OK;
-  pParse->zTail = zSql;
-#ifdef SQLITE_DEBUG
-  if( db->flags & SQLITE_ParserTrace ){
-    printf("parser: [[[%s]]]\n", zSql);
-    sqlite3ParserTrace(stdout, "parser: ");
-  }else{
+  pParse->z_पुच्छ = zSql;
+#अगर_घोषित SQLITE_DEBUG
+  अगर( db->flags & SQLITE_ParserTrace ){
+    म_लिखो("parser: [[[%s]]]\n", zSql);
+    sqlite3ParserTrace(मानक_निकास, "parser: ");
+  }अन्यथा{
     sqlite3ParserTrace(0, 0);
   }
-#endif
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+#पूर्ण_अगर
+#अगर_घोषित sqlite3Parser_ENGINEALWAYSONSTACK
   pEngine = &sEngine;
   sqlite3ParserInit(pEngine, pParse);
-#else
+#अन्यथा
   pEngine = sqlite3ParserAlloc(sqlite3Malloc, pParse);
-  if( pEngine==0 ){
+  अगर( pEngine==0 ){
     sqlite3OomFault(db);
-    return SQLITE_NOMEM_BKPT;
+    वापस SQLITE_NOMEM_BKPT;
   }
-#endif
-  assert( pParse->pNewTable==0 );
-  assert( pParse->pNewTrigger==0 );
-  assert( pParse->nVar==0 );
-  assert( pParse->pVList==0 );
+#पूर्ण_अगर
+  निश्चित( pParse->pNewTable==0 );
+  निश्चित( pParse->pNewTrigger==0 );
+  निश्चित( pParse->nVar==0 );
+  निश्चित( pParse->pVList==0 );
   pParentParse = db->pParse;
   db->pParse = pParse;
-  while( 1 ){
+  जबतक( 1 ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
     mxSqlLen -= n;
-    if( mxSqlLen<0 ){
+    अगर( mxSqlLen<0 ){
       pParse->rc = SQLITE_TOOBIG;
       pParse->nErr++;
-      break;
+      अवरोध;
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( tokenType>=TK_WINDOW ){
-      assert( tokenType==TK_SPACE || tokenType==TK_OVER || tokenType==TK_FILTER
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+    अगर( tokenType>=TK_WINDOW ){
+      निश्चित( tokenType==TK_SPACE || tokenType==TK_OVER || tokenType==TK_FILTER
            || tokenType==TK_ILLEGAL || tokenType==TK_WINDOW 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
-#else
-    if( tokenType>=TK_SPACE ){
-      assert( tokenType==TK_SPACE || tokenType==TK_ILLEGAL 
+#अन्यथा
+    अगर( tokenType>=TK_SPACE ){
+      निश्चित( tokenType==TK_SPACE || tokenType==TK_ILLEGAL 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-      if( AtomicLoad(&db->u1.isInterrupted) ){
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
+      अगर( AtomicLoad(&db->u1.isInterrupted) ){
         pParse->rc = SQLITE_INTERRUPT;
         pParse->nErr++;
-        break;
+        अवरोध;
       }
-      if( tokenType==TK_SPACE ){
+      अगर( tokenType==TK_SPACE ){
         zSql += n;
-        continue;
+        जारी;
       }
-      if( zSql[0]==0 ){
+      अगर( zSql[0]==0 ){
         /* Upon reaching the end of input, call the parser two more times
         ** with tokens TK_SEMI and 0, in that order. */
-        if( lastTokenParsed==TK_SEMI ){
+        अगर( lastTokenParsed==TK_SEMI ){
           tokenType = 0;
-        }else if( lastTokenParsed==0 ){
-          break;
-        }else{
+        }अन्यथा अगर( lastTokenParsed==0 ){
+          अवरोध;
+        }अन्यथा{
           tokenType = TK_SEMI;
         }
         n = 0;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      }else if( tokenType==TK_WINDOW ){
-        assert( n==6 );
-        tokenType = analyzeWindowKeyword((const u8*)&zSql[6]);
-      }else if( tokenType==TK_OVER ){
-        assert( n==4 );
-        tokenType = analyzeOverKeyword((const u8*)&zSql[4], lastTokenParsed);
-      }else if( tokenType==TK_FILTER ){
-        assert( n==6 );
-        tokenType = analyzeFilterKeyword((const u8*)&zSql[6], lastTokenParsed);
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-      }else if( tokenType==TK_COMMENT
+#अगर_अघोषित SQLITE_OMIT_WINDOWFUNC
+      }अन्यथा अगर( tokenType==TK_WINDOW ){
+        निश्चित( n==6 );
+        tokenType = analyzeWindowKeyword((स्थिर u8*)&zSql[6]);
+      }अन्यथा अगर( tokenType==TK_OVER ){
+        निश्चित( n==4 );
+        tokenType = analyzeOverKeyword((स्थिर u8*)&zSql[4], lastTokenParsed);
+      }अन्यथा अगर( tokenType==TK_FILTER ){
+        निश्चित( n==6 );
+        tokenType = analyzeFilterKeyword((स्थिर u8*)&zSql[6], lastTokenParsed);
+#पूर्ण_अगर /* SQLITE_OMIT_WINDOWFUNC */
+      }अन्यथा अगर( tokenType==TK_COMMENT
              && (db->init.busy || (db->flags & SQLITE_Comments)!=0)
       ){
         /* Ignore SQL comments if either (1) we are reparsing the schema or
         ** (2) SQLITE_DBCONFIG_ENABLE_COMMENTS is turned on (the default). */
         zSql += n;
-        continue;
-      }else if( tokenType!=TK_QNUMBER ){
+        जारी;
+      }अन्यथा अगर( tokenType!=TK_QNUMBER ){
         Token x;
         x.z = zSql;
         x.n = (u32)n;
-        sqlite3ErrorMsg(pParse, "unrecognized token: \"%T\"", &x);
-        break;
+        sqlite3_Error_संदेश(pParse, "unrecognized token: \"%T\"", &x);
+        अवरोध;
       }
     }
     pParse->sLastToken.z = zSql;
@@ -713,63 +713,63 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
     sqlite3Parser(pEngine, tokenType, pParse->sLastToken);
     lastTokenParsed = tokenType;
     zSql += n;
-    assert( db->mallocFailed==0 || pParse->rc!=SQLITE_OK || startedWithOom );
-    if( pParse->rc!=SQLITE_OK ) break;
+    निश्चित( db->mallocFailed==0 || pParse->rc!=SQLITE_OK || startedWithOom );
+    अगर( pParse->rc!=SQLITE_OK ) अवरोध;
   }
-  assert( nErr==0 );
-#ifdef YYTRACKMAXSTACKDEPTH
+  निश्चित( nErr==0 );
+#अगर_घोषित YYTRACKMAXSTACKDEPTH
   sqlite3_mutex_enter(sqlite3MallocMutex());
-  sqlite3StatusHighwater(SQLITE_STATUS_PARSER_STACK,
-      sqlite3ParserStackPeak(pEngine)
+  sqlite3StatusHighwater(SQLITE_STATUS_PARSER_ढेर,
+      sqlite3_Parser_ढेर_Peak(pEngine)
   );
   sqlite3_mutex_leave(sqlite3MallocMutex());
-#endif /* YYDEBUG */
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+#पूर्ण_अगर /* YYDEBUG */
+#अगर_घोषित sqlite3Parser_ENGINEALWAYSONSTACK
   sqlite3ParserFinalize(pEngine);
-#else
+#अन्यथा
   sqlite3ParserFree(pEngine, sqlite3_free);
-#endif
-  if( db->mallocFailed ){
+#पूर्ण_अगर
+  अगर( db->mallocFailed ){
     pParse->rc = SQLITE_NOMEM_BKPT;
   }
-  if( pParse->zErrMsg || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
-    if( pParse->zErrMsg==0 ){
-      pParse->zErrMsg = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
+  अगर( pParse->z_Err_संदेश || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
+    अगर( pParse->z_Err_संदेश==0 ){
+      pParse->z_Err_संदेश = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
     }
-    if( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
-      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->zErrMsg, pParse->zTail);
+    अगर( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
+      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->z_Err_संदेश, pParse->z_पुच्छ);
     }
     nErr++;
   }
-  pParse->zTail = zSql;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  pParse->z_पुच्छ = zSql;
+#अगर_अघोषित SQLITE_OMIT_VIRTUALTABLE
   sqlite3_free(pParse->apVtabLock);
-#endif
+#पूर्ण_अगर
 
-  if( pParse->pNewTable && !IN_SPECIAL_PARSE ){
+  अगर( pParse->pNewTable && !IN_SPECIAL_PARSE ){
     /* If the pParse->declareVtab flag is set, do not delete any table 
     ** structure built up in pParse->pNewTable. The calling code (see vtab.c)
     ** will take responsibility for freeing the Table structure.
     */
     sqlite3DeleteTable(db, pParse->pNewTable);
   }
-  if( pParse->pNewTrigger && !IN_RENAME_OBJECT ){
+  अगर( pParse->pNewTrigger && !IN_RENAME_OBJECT ){
     sqlite3DeleteTrigger(db, pParse->pNewTrigger);
   }
-  if( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
+  अगर( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
   db->pParse = pParentParse;
-  assert( nErr==0 || pParse->rc!=SQLITE_OK );
-  return nErr;
+  निश्चित( nErr==0 || pParse->rc!=SQLITE_OK );
+  वापस nErr;
 }
 
 
-#ifdef SQLITE_ENABLE_NORMALIZE
+#अगर_घोषित SQLITE_ENABLE_NORMALIZE
 /*
 ** Insert a single space character into pStr if the current string
 ** ends with an identifier
 */
-static void addSpaceSeparator(sqlite3_str *pStr){
-  if( pStr->nChar && sqlite3IsIdChar(pStr->zText[pStr->nChar-1]) ){
+अटल व्योम addSpaceSeparator(sqlite3_str *pStr){
+  अगर( pStr->nChar && sqlite3IsIdChar(pStr->zText[pStr->nChar-1]) ){
     sqlite3_str_append(pStr, " ", 1);
   }
 }
@@ -779,18 +779,18 @@ static void addSpaceSeparator(sqlite3_str *pStr){
 ** the normalization in space obtained from sqlite3DbMalloc().  Or return
 ** NULL if anything goes wrong or if zSql is NULL.
 */
-char *sqlite3Normalize(
+अक्षर *sqlite3Normalize(
   Vdbe *pVdbe,       /* VM being reprepared */
-  const char *zSql   /* The original SQL string */
+  स्थिर अक्षर *zSql   /* The original SQL string */
 ){
   sqlite3 *db;       /* The database connection */
-  int i;             /* Next unread byte of zSql[] */
+  पूर्णांक i;             /* Next unread byte of zSql[] */
   i64 n;             /* length of current token */
-  int tokenType;     /* type of current token */
-  int prevType = 0;  /* Previous non-whitespace token */
-  int nParen;        /* Number of nested levels of parentheses */
-  int iStartIN;      /* Start of RHS of IN operator in z[] */
-  int nParenAtIN;    /* Value of nParent at start of RHS of IN operator */
+  पूर्णांक tokenType;     /* type of current token */
+  पूर्णांक पूर्व_Type = 0;  /* Previous non-whitespace token */
+  पूर्णांक nParen;        /* Number of nested levels of parentheses */
+  पूर्णांक iStartIN;      /* Start of RHS of IN operator in z[] */
+  पूर्णांक nParenAtIN;    /* Value of nParent at start of RHS of IN operator */
   u32 j;             /* Bytes of normalized SQL generated so far */
   sqlite3_str *pStr; /* The normalized SQL string under construction */
 
@@ -798,102 +798,102 @@ char *sqlite3Normalize(
   tokenType = -1;
   nParen = iStartIN = nParenAtIN = 0;
   pStr = sqlite3_str_new(db);
-  assert( pStr!=0 );  /* sqlite3_str_new() never returns NULL */
-  for(i=0; zSql[i] && pStr->accError==0; i+=n){
-    if( tokenType!=TK_SPACE ){
-      prevType = tokenType;
+  निश्चित( pStr!=0 );  /* sqlite3_str_new() never returns NULL */
+  क्रम(i=0; zSql[i] && pStr->accError==0; i+=n){
+    अगर( tokenType!=TK_SPACE ){
+      पूर्व_Type = tokenType;
     }
-    n = sqlite3GetToken((unsigned char*)zSql+i, &tokenType);
-    if( NEVER(n<=0) ) break;
-    switch( tokenType ){
-      case TK_COMMENT:
-      case TK_SPACE: {
-        break;
+    n = sqlite3GetToken((अचिन्हित अक्षर*)zSql+i, &tokenType);
+    अगर( NEVER(n<=0) ) अवरोध;
+    चयन( tokenType ){
+      हाल TK_COMMENT:
+      हाल TK_SPACE: {
+        अवरोध;
       }
-      case TK_NULL: {
-        if( prevType==TK_IS || prevType==TK_NOT ){
+      हाल TK_NULL: {
+        अगर( पूर्व_Type==TK_IS || पूर्व_Type==TK_NOT ){
           sqlite3_str_append(pStr, " NULL", 5);
-          break;
+          अवरोध;
         }
         /* no break */ deliberate_fall_through
       }
-      case TK_STRING:
-      case TK_INTEGER:
-      case TK_FLOAT:
-      case TK_VARIABLE:
-      case TK_BLOB: {
+      हाल TK_STRING:
+      हाल TK_INTEGER:
+      हाल TK_FLOAT:
+      हाल TK_VARIABLE:
+      हाल TK_BLOB: {
         sqlite3_str_append(pStr, "?", 1);
-        break;
+        अवरोध;
       }
-      case TK_LP: {
+      हाल TK_LP: {
         nParen++;
-        if( prevType==TK_IN ){
+        अगर( पूर्व_Type==TK_IN ){
           iStartIN = pStr->nChar;
           nParenAtIN = nParen;
         }
         sqlite3_str_append(pStr, "(", 1);
-        break;
+        अवरोध;
       }
-      case TK_RP: {
-        if( iStartIN>0 && nParen==nParenAtIN ){
-          assert( pStr->nChar>=(u32)iStartIN );
+      हाल TK_RP: {
+        अगर( iStartIN>0 && nParen==nParenAtIN ){
+          निश्चित( pStr->nChar>=(u32)iStartIN );
           pStr->nChar = iStartIN+1;
           sqlite3_str_append(pStr, "?,?,?", 5);
           iStartIN = 0;
         }
         nParen--;
         sqlite3_str_append(pStr, ")", 1);
-        break;
+        अवरोध;
       }
-      case TK_ID: {
+      हाल TK_ID: {
         iStartIN = 0;
         j = pStr->nChar;
-        if( sqlite3Isquote(zSql[i]) ){
-          char *zId = sqlite3DbStrNDup(db, zSql+i, n);
-          int nId;
-          int eType = 0;
-          if( zId==0 ) break;
+        अगर( sqlite3Isquote(zSql[i]) ){
+          अक्षर *zId = sqlite3DbStrNDup(db, zSql+i, n);
+          पूर्णांक nId;
+          पूर्णांक eType = 0;
+          अगर( zId==0 ) अवरोध;
           sqlite3Dequote(zId);
-          if( zSql[i]=='"' && sqlite3VdbeUsesDoubleQuotedString(pVdbe, zId) ){
+          अगर( zSql[i]=='"' && sqlite3VdbeUsesDoubleQuotedString(pVdbe, zId) ){
             sqlite3_str_append(pStr, "?", 1);
             sqlite3DbFree(db, zId);
-            break;
+            अवरोध;
           }
           nId = sqlite3Strlen30(zId);
-          if( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
+          अगर( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
             addSpaceSeparator(pStr);
             sqlite3_str_append(pStr, zId, nId);
-          }else{
+          }अन्यथा{
             sqlite3_str_appendf(pStr, "\"%w\"", zId);
           }
           sqlite3DbFree(db, zId);
-        }else{
+        }अन्यथा{
           addSpaceSeparator(pStr);
           sqlite3_str_append(pStr, zSql+i, n);
         }
-        while( j<pStr->nChar ){
+        जबतक( j<pStr->nChar ){
           pStr->zText[j] = sqlite3Tolower(pStr->zText[j]);
           j++;
         }
-        break;
+        अवरोध;
       }
-      case TK_SELECT: {
+      हाल TK_SELECT: {
         iStartIN = 0;
         /* no break */ deliberate_fall_through
       }
-      default: {
-        if( sqlite3IsIdChar(zSql[i]) ) addSpaceSeparator(pStr);
+      शेष: {
+        अगर( sqlite3IsIdChar(zSql[i]) ) addSpaceSeparator(pStr);
         j = pStr->nChar;
         sqlite3_str_append(pStr, zSql+i, n);
-        while( j<pStr->nChar ){
+        जबतक( j<pStr->nChar ){
           pStr->zText[j] = sqlite3Toupper(pStr->zText[j]);
           j++;
         }
-        break;
+        अवरोध;
       }
     }
   }
-  if( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
-  return sqlite3_str_finish(pStr);
+  अगर( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
+  वापस sqlite3_str_finish(pStr);
 }
-#endif /* SQLITE_ENABLE_NORMALIZE */
+#पूर्ण_अगर /* SQLITE_ENABLE_NORMALIZE */

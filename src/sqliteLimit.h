@@ -20,10 +20,10 @@
 ** The hard limit is the ability of a 32-bit signed integer
 ** to count the size: 2^31-1 or 2147483647.
 */
-#ifndef SQLITE_MAX_LENGTH
-# define SQLITE_MAX_LENGTH 1000000000
-#endif
-#define SQLITE_MIN_LENGTH 30   /* Minimum value for the length limit */
+#अगर_अघोषित SQLITE_MAX_लंबाई
+# define SQLITE_MAX_लंबाई 1000000000
+#पूर्ण_अगर
+#घोषणा SQLITE_MIN_लंबाई 30   /* Minimum value for the length limit */
 
 /*
 ** Maximum size of any single memory allocation.
@@ -39,12 +39,12 @@
 ** or even smaller would be reasonable upper bounds on the size of a memory
 ** allocations for most applications.
 */
-#ifndef SQLITE_MAX_ALLOCATION_SIZE
-# define SQLITE_MAX_ALLOCATION_SIZE  2147483391
-#endif
-#if SQLITE_MAX_ALLOCATION_SIZE>2147483391
-# error Maximum size for SQLITE_MAX_ALLOCATION_SIZE is 2147483391
-#endif
+#अगर_अघोषित SQLITE_MAX_ALLOCATION_आकार
+# define SQLITE_MAX_ALLOCATION_आकार  2147483391
+#पूर्ण_अगर
+#अगर SQLITE_MAX_ALLOCATION_आकार>2147483391
+# error Maximum आकार क्रम SQLITE_MAX_ALLOCATION_आकार is 2147483391
+#पूर्ण_अगर
 
 /*
 ** This is the maximum number of
@@ -69,11 +69,11 @@
 ** since must also store the primary key at the end.  Hence the
 ** column count for Index is u16 instead of i16.
 */
-#if !defined(SQLITE_MAX_COLUMN)
+#अगर !defined(SQLITE_MAX_COLUMN)
 # define SQLITE_MAX_COLUMN 2000
-#elif SQLITE_MAX_COLUMN>32767
+#या_अगर SQLITE_MAX_COLUMN>32767
 # error SQLITE_MAX_COLUMN may not exceed 32767
-#endif
+#पूर्ण_अगर
 
 /*
 ** The maximum length of a single SQL statement in bytes.
@@ -85,9 +85,9 @@
 ** The hard limit is the largest possible 32-bit signed integer less
 ** 1024, or 2147482624.
 */
-#ifndef SQLITE_MAX_SQL_LENGTH
-# define SQLITE_MAX_SQL_LENGTH 1000000000
-#endif
+#अगर_अघोषित SQLITE_MAX_SQL_लंबाई
+# define SQLITE_MAX_SQL_लंबाई 1000000000
+#पूर्ण_अगर
 
 /*
 ** The maximum depth of an expression tree. The expression tree depth
@@ -98,9 +98,9 @@
 ** A value of 0 for this compile-time option causes all expression
 ** depth limiting code to be omitted.
 */
-#ifndef SQLITE_MAX_EXPR_DEPTH
-# define SQLITE_MAX_EXPR_DEPTH 1000
-#endif
+#अगर_अघोषित SQLITE_MAX_व्यंजक_DEPTH
+# define SQLITE_MAX_व्यंजक_DEPTH 1000
+#पूर्ण_अगर
 
 /*
 ** The maximum depth of the LALR(1) stack used in the parser that
@@ -113,9 +113,9 @@
 ** hard-coded to 100 entries, and that worked fine for almost all
 ** applications.  So the upper bound on this limit need not be large.
 */
-#ifndef SQLITE_MAX_PARSER_DEPTH
+#अगर_अघोषित SQLITE_MAX_PARSER_DEPTH
 # define SQLITE_MAX_PARSER_DEPTH 2500
-#endif
+#पूर्ण_अगर
 
 /*
 ** The maximum number of terms in a compound SELECT statement.
@@ -125,17 +125,17 @@
 ** never has more than 3 or 4 terms.  Use a value of 0 to disable
 ** any limit on the number of terms in a compound SELECT.
 */
-#ifndef SQLITE_MAX_COMPOUND_SELECT
+#अगर_अघोषित SQLITE_MAX_COMPOUND_SELECT
 # define SQLITE_MAX_COMPOUND_SELECT 500
-#endif
+#पूर्ण_अगर
 
 /*
 ** The maximum number of opcodes in a VDBE program.
 ** Not currently enforced.
 */
-#ifndef SQLITE_MAX_VDBE_OP
+#अगर_अघोषित SQLITE_MAX_VDBE_OP
 # define SQLITE_MAX_VDBE_OP 250000000
-#endif
+#पूर्ण_अगर
 
 /*
 ** The maximum number of arguments to an SQL function.
@@ -144,9 +144,9 @@
 ** constraints (it needs to fit inside a i16).  We keep it
 ** lower than that to prevent abuse.
 */
-#ifndef SQLITE_MAX_FUNCTION_ARG
+#अगर_अघोषित SQLITE_MAX_FUNCTION_ARG
 # define SQLITE_MAX_FUNCTION_ARG 1000
-#endif
+#पूर्ण_अगर
 
 /*
 ** The suggested maximum number of in-memory pages to use for
@@ -157,17 +157,17 @@
 ** IMPLEMENTATION-OF: R-48205-43578 The default suggested cache size can be
 ** altered using the SQLITE_DEFAULT_CACHE_SIZE compile-time options.
 */
-#ifndef SQLITE_DEFAULT_CACHE_SIZE
-# define SQLITE_DEFAULT_CACHE_SIZE  -2000
-#endif
+#अगर_अघोषित SQLITE_DEFAULT_CACHE_आकार
+# define SQLITE_DEFAULT_CACHE_आकार  -2000
+#पूर्ण_अगर
 
 /*
 ** The default number of frames to accumulate in the log file before
 ** checkpointing the database in WAL mode.
 */
-#ifndef SQLITE_DEFAULT_WAL_AUTOCHECKPOINT
+#अगर_अघोषित SQLITE_DEFAULT_WAL_AUTOCHECKPOINT
 # define SQLITE_DEFAULT_WAL_AUTOCHECKPOINT  1000
-#endif
+#पूर्ण_अगर
 
 /*
 ** The maximum number of attached databases.  This must be between 0
@@ -175,9 +175,9 @@
 ** counted using a signed 8-bit integer which has a maximum value of 127
 ** and we have to allow 2 extra counts for the "main" and "temp" databases.
 */
-#ifndef SQLITE_MAX_ATTACHED
+#अगर_अघोषित SQLITE_MAX_ATTACHED
 # define SQLITE_MAX_ATTACHED 10
-#endif
+#पूर्ण_अगर
 
 
 /*
@@ -186,9 +186,9 @@
 ** structure.  But otherwise, we believe that the number can be as large
 ** as a signed 32-bit integer can hold.
 */
-#ifndef SQLITE_MAX_VARIABLE_NUMBER
-# define SQLITE_MAX_VARIABLE_NUMBER 32766
-#endif
+#अगर_अघोषित SQLITE_MAX_VARIABLE_संख्या
+# define SQLITE_MAX_VARIABLE_संख्या 32766
+#पूर्ण_अगर
 
 /* Maximum page size.  The upper bound on this value is 65536.  This a limit
 ** imposed by the use of 16-bit offsets within each page.
@@ -201,22 +201,22 @@
 ** compiled with the default page-size limit will not be able to rollback
 ** the aborted transaction. This could lead to database corruption.
 */
-#ifdef SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_MAX_PAGE_SIZE
-#endif
-#define SQLITE_MAX_PAGE_SIZE 65536
+#अगर_घोषित SQLITE_MAX_PAGE_आकार
+# undef SQLITE_MAX_PAGE_आकार
+#पूर्ण_अगर
+#घोषणा SQLITE_MAX_PAGE_आकार 65536
 
 
 /*
 ** The default size of a database page.
 */
-#ifndef SQLITE_DEFAULT_PAGE_SIZE
-# define SQLITE_DEFAULT_PAGE_SIZE 4096
-#endif
-#if SQLITE_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_DEFAULT_PAGE_SIZE
-# define SQLITE_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
-#endif
+#अगर_अघोषित SQLITE_DEFAULT_PAGE_आकार
+# define SQLITE_DEFAULT_PAGE_आकार 4096
+#पूर्ण_अगर
+#अगर SQLITE_DEFAULT_PAGE_आकार>SQLITE_MAX_PAGE_आकार
+# undef SQLITE_DEFAULT_PAGE_आकार
+# define SQLITE_DEFAULT_PAGE_आकार SQLITE_MAX_PAGE_आकार
+#पूर्ण_अगर
 
 /*
 ** Ordinarily, if no value is explicitly provided, SQLite creates databases
@@ -225,17 +225,17 @@
 ** SQLite may choose a larger value. This constant is the maximum value
 ** SQLite will choose on its own.
 */
-#ifndef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE 8192
-#endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE>SQLITE_MAX_PAGE_SIZE
-# undef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
-#endif
-#if SQLITE_MAX_DEFAULT_PAGE_SIZE<SQLITE_DEFAULT_PAGE_SIZE
-# undef SQLITE_MAX_DEFAULT_PAGE_SIZE
-# define SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_DEFAULT_PAGE_SIZE
-#endif
+#अगर_अघोषित SQLITE_MAX_DEFAULT_PAGE_आकार
+# define SQLITE_MAX_DEFAULT_PAGE_आकार 8192
+#पूर्ण_अगर
+#अगर SQLITE_MAX_DEFAULT_PAGE_आकार>SQLITE_MAX_PAGE_आकार
+# undef SQLITE_MAX_DEFAULT_PAGE_आकार
+# define SQLITE_MAX_DEFAULT_PAGE_आकार SQLITE_MAX_PAGE_आकार
+#पूर्ण_अगर
+#अगर SQLITE_MAX_DEFAULT_PAGE_आकार<SQLITE_DEFAULT_PAGE_आकार
+# undef SQLITE_MAX_DEFAULT_PAGE_आकार
+# define SQLITE_MAX_DEFAULT_PAGE_आकार SQLITE_DEFAULT_PAGE_आकार
+#पूर्ण_अगर
 
 
 /*
@@ -245,17 +245,17 @@
 ** This value can be lowered (or raised) at run-time using the
 ** max_page_count macro.
 */
-#ifndef SQLITE_MAX_PAGE_COUNT
-# define SQLITE_MAX_PAGE_COUNT 0xfffffffe /* 4294967294 */
-#endif
+#अगर_अघोषित SQLITE_MAX_PAGE_गिनती
+# define SQLITE_MAX_PAGE_गिनती 0xfffffffe /* 4294967294 */
+#पूर्ण_अगर
 
 /*
 ** Maximum length (in bytes) of the pattern in a LIKE or GLOB
 ** operator.
 */
-#ifndef SQLITE_MAX_LIKE_PATTERN_LENGTH
-# define SQLITE_MAX_LIKE_PATTERN_LENGTH 50000
-#endif
+#अगर_अघोषित SQLITE_MAX_LIKE_PATTERN_लंबाई
+# define SQLITE_MAX_LIKE_PATTERN_लंबाई 50000
+#पूर्ण_अगर
 
 /*
 ** Maximum depth of recursion for triggers.
@@ -264,9 +264,9 @@
 ** fire any triggers. A value of 0 means that no trigger programs at all
 ** may be executed.
 */
-#ifndef SQLITE_MAX_TRIGGER_DEPTH
+#अगर_अघोषित SQLITE_MAX_TRIGGER_DEPTH
 # define SQLITE_MAX_TRIGGER_DEPTH 1000
-#endif
+#पूर्ण_अगर
 
 /*
 ** Maximum number of objects defined by a single database schema.
@@ -291,17 +291,17 @@
 ** No real-world application should ever get anywhere close to hitting
 ** this limit.
 */
-#ifndef SQLITE_MAX_SCHEMA
+#अगर_अघोषित SQLITE_MAX_SCHEMA
 # define SQLITE_MAX_SCHEMA 10000000
-#endif
+#पूर्ण_अगर
 
 /*
 ** Maximum number of SQL statements allowed in the body of a single
 ** trigger.
 */
-#ifndef SQLITE_MAX_TRIGGER_STEPS
+#अगर_अघोषित SQLITE_MAX_TRIGGER_STEPS
 # define SQLITE_MAX_TRIGGER_STEPS 65000
-#endif
+#पूर्ण_अगर
 
 /*
 ** Maximum number of CTE cursors (approximately).  This limit will be
@@ -320,6 +320,6 @@
 **
 ** See Bug 2026-10-04T05:35:14Z
 */
-#ifndef SQLITE_MAX_CTES
+#अगर_अघोषित SQLITE_MAX_CTES
 # define SQLITE_MAX_CTES 50000
-#endif
+#पूर्ण_अगर

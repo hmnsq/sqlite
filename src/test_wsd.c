@@ -15,70 +15,70 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#अगर defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
-#include "sqliteInt.h"
+#समावेश "sqliteInt.h"
 
-#define PLS_HASHSIZE 43
+#घोषणा PLS_HASHSIZE 43
 
-typedef struct ProcessLocalStorage ProcessLocalStorage;
-typedef struct ProcessLocalVar ProcessLocalVar;
+प्रकार काष्ठा ProcessLocalStorage ProcessLocalStorage;
+प्रकार काष्ठा ProcessLocalVar ProcessLocalVar;
 
-struct ProcessLocalStorage {
-  ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+काष्ठा ProcessLocalStorage {
+  ProcessLocalVar *a_तथ्य[PLS_HASHSIZE];
+  पूर्णांक nFree;
   u8 *pFree;
 };
 
-struct ProcessLocalVar {
-  void *pKey;
-  ProcessLocalVar *pNext;
+काष्ठा ProcessLocalVar {
+  व्योम *p_कुंजी;
+  ProcessLocalVar *p_अग्र;
 };
 
-static ProcessLocalStorage *pGlobal = 0;
+अटल ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
-    pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
-      memset(pGlobal, 0, sizeof(ProcessLocalStorage));
-      pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
+पूर्णांक sqlite3_wsd_init(पूर्णांक N, पूर्णांक J){
+  अगर( !pGlobal ){
+    पूर्णांक nMalloc = N + माप(ProcessLocalStorage) + J*माप(ProcessLocalVar);
+    pGlobal = (ProcessLocalStorage *)दो_स्मृति(nMalloc);
+    अगर( pGlobal ){
+      स_रखो(pGlobal, 0, माप(ProcessLocalStorage));
+      pGlobal->nFree = nMalloc - माप(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  वापस pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+व्योम *sqlite3_wsd_find(व्योम *K, पूर्णांक L){
+  पूर्णांक i;
+  पूर्णांक iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
-    iHash = (iHash<<3) + ((unsigned char *)&K)[i];
+  क्रम(i=0; i<माप(व्योम*); i++){
+    iHash = (iHash<<3) + ((अचिन्हित अक्षर *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  क्रम(pVar=pGlobal->a_तथ्य[iHash]; pVar && pVar->p_कुंजी!=K; pVar=pVar->p_अग्र);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
-    assert( pGlobal->nFree>=nByte );
+  अगर( !pVar ){
+    पूर्णांक nByte = ROUND8(माप(ProcessLocalVar) + L);
+    निश्चित( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
-    pVar->pNext = pGlobal->aData[iHash];
-    pGlobal->aData[iHash] = pVar;
+    pVar->p_कुंजी = K;
+    pVar->p_अग्र = pGlobal->a_तथ्य[iHash];
+    pGlobal->a_तथ्य[iHash] = pVar;
     pGlobal->nFree -= nByte;
     pGlobal->pFree += nByte;
-    memcpy(&pVar[1], K, L);
+    स_नकल(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  वापस (व्योम *)&pVar[1];
 }
 
-#endif
+#पूर्ण_अगर
