@@ -117,29 +117,29 @@
 ** Additional information can be found in the doc/jsonb.md file of the
 ** canonical SQLite source tree.
 */
-#ifndef SQLITE_OMIT_JSON
-#include "sqliteInt.h"
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_JSON
+#అన్తర్భావ "sqliteInt.h"
 
 /* JSONB element types
 */
-#define JSONB_NULL     0   /* "null" */
-#define JSONB_TRUE     1   /* "true" */
-#define JSONB_FALSE    2   /* "false" */
-#define JSONB_INT      3   /* integer acceptable to JSON and SQL */
-#define JSONB_INT5     4   /* integer in 0x000 notation */
-#define JSONB_FLOAT    5   /* float acceptable to JSON and SQL */
-#define JSONB_FLOAT5   6   /* float with JSON5 extensions */
-#define JSONB_TEXT     7   /* Text compatible with both JSON and SQL */
-#define JSONB_TEXTJ    8   /* Text with JSON escapes */
-#define JSONB_TEXT5    9   /* Text with JSON-5 escape */
-#define JSONB_TEXTRAW 10   /* SQL text that needs escaping for JSON */
-#define JSONB_ARRAY   11   /* An array */
-#define JSONB_OBJECT  12   /* An object */
+#నిర్వచించు JSONB_NULL     0   /* "null" */
+#నిర్వచించు JSONB_TRUE     1   /* "true" */
+#నిర్వచించు JSONB_FALSE    2   /* "false" */
+#నిర్వచించు JSONB_INT      3   /* integer acceptable to JSON and SQL */
+#నిర్వచించు JSONB_INT5     4   /* integer in 0x000 notation */
+#నిర్వచించు JSONB_FLOAT    5   /* float acceptable to JSON and SQL */
+#నిర్వచించు JSONB_FLOAT5   6   /* float with JSON5 extensions */
+#నిర్వచించు JSONB_పాఠ్యం     7   /* Text compatible with both JSON and SQL */
+#నిర్వచించు JSONB_TEXTJ    8   /* Text with JSON escapes */
+#నిర్వచించు JSONB_TEXT5    9   /* Text with JSON-5 escape */
+#నిర్వచించు JSONB_TEXTRAW 10   /* SQL text that needs escaping for JSON */
+#నిర్వచించు JSONB_ARRAY   11   /* An array */
+#నిర్వచించు JSONB_OBJECT  12   /* An object */
 
 /* Human-readable names for the JSONB values.  The index for each
 ** string must correspond to the JSONB_* integer above.
 */
-static const char * const jsonbType[] = {
+స్థిర స్థిరరాశి అక్షరం * స్థిరరాశి jsonbType[] = {
   "null", "true", "false", "integer", "integer", 
   "real", "real", "text",  "text",    "text",
   "text", "array", "object", "", "", "", ""
@@ -150,8 +150,8 @@ static const char * const jsonbType[] = {
 ** the library isspace() function, resulting in a 7% overall performance
 ** increase for the text-JSON parser.  (Ubuntu14.10 gcc 4.8.4 x64 with -Os).
 */
-static const char jsonIsSpace[] = {
-#ifdef SQLITE_ASCII
+స్థిర స్థిరరాశి అక్షరం jsonIsSpace[] = {
+#నిర్వచితమైతే SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 1, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -170,8 +170,8 @@ static const char jsonIsSpace[] = {
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* d */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* e */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* f */
-#endif
-#ifdef SQLITE_EBCDIC
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_EBCDIC
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 1, 0, 0,  0, 0, 0, 0, 0, 1, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -190,21 +190,21 @@ static const char jsonIsSpace[] = {
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* d */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* e */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* f */
-#endif
+#అయితే_ముగింపు
 
 };
-#define jsonIsspace(x) (jsonIsSpace[(unsigned char)x])
+#నిర్వచించు jsonIsspace(x) (jsonIsSpace[(గుర్తులేని అక్షరం)x])
 
 /*
 ** The set of all space characters recognized by jsonIsspace().
 ** Useful as the second argument to strspn().
 */
-#ifdef SQLITE_ASCII
-static const char jsonSpaces[] = "\011\012\015\040";
-#endif
-#ifdef SQLITE_EBCDIC
-static const char jsonSpaces[] = "\005\045\015\100";
-#endif
+#నిర్వచితమైతే SQLITE_ASCII
+స్థిర స్థిరరాశి అక్షరం jsonSpaces[] = "\011\012\015\040";
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_EBCDIC
+స్థిర స్థిరరాశి అక్షరం jsonSpaces[] = "\005\045\015\100";
+#అయితే_ముగింపు
 
 
 /*
@@ -213,8 +213,8 @@ static const char jsonSpaces[] = "\005\045\015\100";
 ** canonical JSON, but it is special in JSON-5, so we include
 ** it in the set of special characters.
 */
-static const char jsonIsOk[256] = {
-#ifdef SQLITE_ASCII
+స్థిర స్థిరరాశి అక్షరం jsonIsOk[256] = {
+#నిర్వచితమైతే SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -233,8 +233,8 @@ static const char jsonIsOk[256] = {
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* d */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* e */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1   /* f */
-#endif
-#ifdef SQLITE_EBCDIC
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_EBCDIC
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 1 */
@@ -253,25 +253,25 @@ static const char jsonIsOk[256] = {
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* d */
   0, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1,  /* e */
   1, 1, 1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1, 1, 1   /* f */
-#endif
+#అయితే_ముగింపు
 };
 
 /* Objects */
-typedef struct JsonCache JsonCache;
-typedef struct JsonString JsonString;
-typedef struct JsonParse JsonParse;
+రకనిర్వచనం నిర్మాణం JsonCache JsonCache;
+రకనిర్వచనం నిర్మాణం JsonString JsonString;
+రకనిర్వచనం నిర్మాణం JsonParse JsonParse;
 
 /*
 ** Magic number used for the JSON parse cache in sqlite3_get_auxdata()
 */
-#define JSON_CACHE_ID    (-429938)  /* Cache entry */
-#define JSON_CACHE_SIZE  4          /* Max number of cache entries */
+#నిర్వచించు JSON_CACHE_ID    (-429938)  /* Cache entry */
+#నిర్వచించు JSON_CACHE_కొలత  4          /* Max number of cache entries */
 
 /*
 ** jsonUnescapeOneChar() returns this invalid code point if it encounters
 ** a syntax error.
 */
-#define JSON_INVALID_CHAR 0x99999
+#నిర్వచించు JSON_INVALID_CHAR 0x99999
 
 /* A cache mapping JSON text into JSONB blobs.
 **
@@ -286,10 +286,10 @@ typedef struct JsonParse JsonParse;
 **
 **    *   zJson must be an RCStr.  In other words bJsonIsRCStr must be true.
 */
-struct JsonCache {
+నిర్మాణం JsonCache {
   sqlite3 *db;                    /* Database connection */
-  int nUsed;                      /* Number of active entries in the cache */
-  JsonParse *a[JSON_CACHE_SIZE];  /* One line for each cache entry */
+  పూర్ణాంకం n_వాడిన;                      /* Number of active entries in the cache */
+  JsonParse *a[JSON_CACHE_కొలత];  /* One line for each cache entry */
 };
 
 /* An instance of this object represents a JSON string
@@ -300,39 +300,39 @@ struct JsonCache {
 ** then it will be an RCStr string.  This aids with caching of large
 ** JSON strings.
 */
-struct JsonString {
+నిర్మాణం JsonString {
   sqlite3_context *pCtx;   /* Function context - put error messages here */
-  char *zBuf;              /* Append JSON content here */
+  అక్షరం *zBuf;              /* Append JSON content here */
   u64 nAlloc;              /* Bytes of storage available in zBuf[] */
-  u64 nUsed;               /* Bytes of zBuf[] currently used */
+  u64 n_వాడిన;               /* Bytes of zBuf[] currently used */
   u8 bStatic;              /* True if zBuf is static space */
   u8 eErr;                 /* True if an error has been encountered */
-  char zSpace[100];        /* Initial static space */
+  అక్షరం zSpace[100];        /* Initial static space */
 };
 
 /* Allowed values for JsonString.eErr */
-#define JSTRING_OOM         0x01   /* Out of memory */
-#define JSTRING_MALFORMED   0x02   /* Malformed JSONB */
-#define JSTRING_TOODEEP     0x04   /* JSON nested too deep */
-#define JSTRING_ERR         0x08   /* Error already sent to sqlite3_result */
+#నిర్వచించు JSTRING_OOM         0x01   /* Out of memory */
+#నిర్వచించు JSTRING_MALFORMED   0x02   /* Malformed JSONB */
+#నిర్వచించు JSTRING_TOODEEP     0x04   /* JSON nested too deep */
+#నిర్వచించు JSTRING_ERR         0x08   /* Error already sent to sqlite3_result */
 
 /* The "subtype" set for text JSON values passed through using
 ** sqlite3_result_subtype() and sqlite3_value_subtype().
 */
-#define JSON_SUBTYPE  74    /* Ascii for "J" */
+#నిర్వచించు JSON_SUBTYPE  74    /* Ascii for "J" */
 
 /*
 ** Bit values for the flags passed into various SQL function implementations
 ** via the sqlite3_user_data() value.
 */
-#define JSON_JSON      0x01        /* Result is always JSON */
-#define JSON_SQL       0x02        /* Result is always SQL */
-#define JSON_ABPATH    0x03        /* Allow abbreviated JSON path specs */
-#define JSON_ISSET     0x04        /* json_set(), not json_insert() */
-#define JSON_AINS      0x08        /* json_array_insert(), not json_insert() */
-#define JSON_BLOB      0x10        /* Use the BLOB output format */
+#నిర్వచించు JSON_JSON      0x01        /* Result is always JSON */
+#నిర్వచించు JSON_SQL       0x02        /* Result is always SQL */
+#నిర్వచించు JSON_ABPATH    0x03        /* Allow abbreviated JSON path specs */
+#నిర్వచించు JSON_ISSET     0x04        /* json_set(), not json_insert() */
+#నిర్వచించు JSON_AINS      0x08        /* json_array_insert(), not json_insert() */
+#నిర్వచించు JSON_BLOB      0x10        /* Use the BLOB output format */
 
-#define JSON_INSERT_TYPE(X)  (((X)&0xC)>>2)
+#నిర్వచించు JSON_చొప్పించు_TYPE(X)  (((X)&0xC)>>2)
 
 
 /* A parsed JSON value.  Lifecycle:
@@ -350,16 +350,16 @@ struct JsonString {
 **       is skipped if the function is one of the jsonb_* functions that
 **       returns JSONB instead of text JSON.
 */
-struct JsonParse {
+నిర్మాణం JsonParse {
   u8 *aBlob;         /* JSONB representation of JSON value */
   u32 nBlob;         /* Bytes of aBlob[] actually used */
   u32 nBlobAlloc;    /* Bytes allocated to aBlob[].  0 if aBlob is external */
-  char *zJson;       /* Json text used for parsing */
+  అక్షరం *zJson;       /* Json text used for parsing */
   sqlite3 *db;       /* The database connection to which this object belongs */
-  int nJson;         /* Length of the zJson string in bytes */
+  పూర్ణాంకం nJson;         /* Length of the zJson string in bytes */
   u32 nJPRef;        /* Number of references to this object */
   u32 iErr;          /* Error location in zJson[] */
-  u16 iDepth;        /* Nesting depth */
+  u16 i_లోతు;        /* Nesting depth */
   u8 nErr;           /* Number of errors seen */
   u8 oom;            /* Set to true if out of memory */
   u8 bJsonIsRCStr;   /* True if zJson is an RCStr */
@@ -367,18 +367,18 @@ struct JsonParse {
   u8 bReadOnly;      /* Do not modify. */
   /* Search and edit information.  See jsonLookupStep() */
   u8 eEdit;          /* Edit operation to apply */
-  int delta;         /* Size change due to the edit */
+  పూర్ణాంకం delta;         /* Size change due to the edit */
   u32 nIns;          /* Number of bytes to insert */
   u32 iLabel;        /* Location of label if search landed on an object value */
   u8 *aIns;          /* Content to be inserted */
 };
 
 /* Allowed values for JsonParse.eEdit */
-#define JEDIT_DEL   1   /* Delete if exists */
-#define JEDIT_REPL  2   /* Overwrite if exists */
-#define JEDIT_INS   3   /* Insert if not exists */
-#define JEDIT_SET   4   /* Insert or overwrite */
-#define JEDIT_AINS  5   /* array_insert() */
+#నిర్వచించు JEDIT_DEL   1   /* Delete if exists */
+#నిర్వచించు JEDIT_REPL  2   /* Overwrite if exists */
+#నిర్వచించు JEDIT_INS   3   /* Insert if not exists */
+#నిర్వచించు JEDIT_సమితి   4   /* Insert or overwrite */
+#నిర్వచించు JEDIT_AINS  5   /* array_insert() */
 
 /*
 ** Maximum nesting depth of JSON for this implementation.
@@ -387,30 +387,30 @@ struct JsonParse {
 ** descent parser.  A depth of 1000 is far deeper than any sane JSON
 ** should go.  Historical note: This limit was 2000 prior to version 3.42.0
 */
-#ifndef SQLITE_JSON_MAX_DEPTH
-# define JSON_MAX_DEPTH  1000
-#else
-# define JSON_MAX_DEPTH SQLITE_JSON_MAX_DEPTH
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_JSON_MAX_లోతు
+# define JSON_MAX_లోతు  1000
+#లేకపోతే
+# define JSON_MAX_లోతు SQLITE_JSON_MAX_లోతు
+#అయితే_ముగింపు
 
 /*
 ** Allowed values for the flgs argument to jsonParseFuncArg();
 */
-#define JSON_EDITABLE  0x01   /* Generate a writable JsonParse object */
-#define JSON_KEEPERROR 0x02   /* Return non-NULL even if there is an error */
-#define JSON_NOCACHE   0x04   /* Do not use the JSON cache */
+#నిర్వచించు JSON_EDITABLE  0x01   /* Generate a writable JsonParse object */
+#నిర్వచించు JSON_KEEPERROR 0x02   /* Return non-NULL even if there is an error */
+#నిర్వచించు JSON_NOCACHE   0x04   /* Do not use the JSON cache */
 
 /**************************************************************************
 ** Forward references
 **************************************************************************/
-static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
-static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
-static void jsonReturnParse(sqlite3_context*,JsonParse*);
-static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
-static void jsonParseFree(JsonParse*);
-static u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
-static u32 jsonUnescapeOneChar(const char*, u32, u32*);
+స్థిర శూన్య jsonReturnStringAsBlob(JsonString*);
+స్థిర పూర్ణాంకం jsonArgIsJsonb(sqlite3_విలువ *pJson, JsonParse *p);
+స్థిర u32 json_Translate_Blob_గమ్యం_పాఠ్యం(JsonParse*,u32,JsonString*);
+స్థిర శూన్య jsonReturnParse(sqlite3_context*,JsonParse*);
+స్థిర JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_విలువ*,u32);
+స్థిర శూన్య jsonParseFree(JsonParse*);
+స్థిర u32 jsonb_Payload_కొలత(స్థిరరాశి JsonParse*, u32, u32*);
+స్థిర u32 jsonUnescapeOneChar(స్థిరరాశి అక్షరం*, u32, u32*);
 
 /**************************************************************************
 ** Utility routines for dealing with JsonCache objects
@@ -419,14 +419,14 @@ static u32 jsonUnescapeOneChar(const char*, u32, u32*);
 /*
 ** Free a JsonCache object.
 */
-static void jsonCacheDelete(JsonCache *p){
-  int i;
-  for(i=0; i<p->nUsed; i++){
+స్థిర శూన్య jsonCacheDelete(JsonCache *p){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<p->n_వాడిన; i++){
     jsonParseFree(p->a[i]);
   }
   sqlite3DbFree(p->db, p);
 }
-static void jsonCacheDeleteGeneric(void *p){
+స్థిర శూన్య jsonCacheDeleteGeneric(శూన్య *p){
   jsonCacheDelete((JsonCache*)p);
 }
 
@@ -437,37 +437,37 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+స్థిర పూర్ణాంకం json_Cache_చొప్పించు(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
   JsonCache *p;
 
-  assert( pParse->zJson!=0 );
-  assert( pParse->bJsonIsRCStr );
-  assert( pParse->delta==0 );
+  ప్రతిజ్ఞా( pParse->zJson!=0 );
+  ప్రతిజ్ఞా( pParse->bJsonIsRCStr );
+  ప్రతిజ్ఞా( pParse->delta==0 );
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
+  ఒకవేళ( p==0 ){
     sqlite3 *db = sqlite3_context_db_handle(ctx);
-    p = sqlite3DbMallocZero(db, sizeof(*p));
-    if( p==0 ) return SQLITE_NOMEM;
+    p = sqlite3DbMallocZero(db, పరిమాణం(*p));
+    ఒకవేళ( p==0 ) తిరిగి SQLITE_NOMEM;
     p->db = db;
-    sqlite3_set_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
+    sqlite3_సమితి_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
     p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-    if( p==0 ) return SQLITE_NOMEM;
+    ఒకవేళ( p==0 ) తిరిగి SQLITE_NOMEM;
   }
-  if( p->nUsed >= JSON_CACHE_SIZE ){
+  ఒకవేళ( p->n_వాడిన >= JSON_CACHE_కొలత ){
     jsonParseFree(p->a[0]);
-    memmove(p->a, &p->a[1], (JSON_CACHE_SIZE-1)*sizeof(p->a[0]));
-    p->nUsed = JSON_CACHE_SIZE-1;
+    memmove(p->a, &p->a[1], (JSON_CACHE_కొలత-1)*పరిమాణం(p->a[0]));
+    p->n_వాడిన = JSON_CACHE_కొలత-1;
   }
-  assert( pParse->nBlobAlloc>0 );
+  ప్రతిజ్ఞా( pParse->nBlobAlloc>0 );
   pParse->eEdit = 0;
   pParse->nJPRef++;
   pParse->bReadOnly = 1;
-  p->a[p->nUsed] = pParse;
-  p->nUsed++;
-  return SQLITE_OK;
+  p->a[p->n_వాడిన] = pParse;
+  p->n_వాడిన++;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -481,47 +481,47 @@ static int jsonCacheInsert(
 ** be deleted at any moment.  If the caller wants the JsonParse to
 ** linger, it needs to increment the nPJRef reference counter.
 */
-static JsonParse *jsonCacheSearch(
+స్థిర JsonParse *json_Cache_శోధన(
   sqlite3_context *ctx,    /* The SQL statement context holding the cache */
-  sqlite3_value *pArg      /* Function argument containing SQL text */
+  sqlite3_విలువ *pArg      /* Function argument containing SQL text */
 ){
   JsonCache *p;
-  int i;
-  const char *zJson;
-  int nJson;
+  పూర్ణాంకం i;
+  స్థిరరాశి అక్షరం *zJson;
+  పూర్ణాంకం nJson;
 
-  if( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
-    return 0;
+  ఒకవేళ( sqlite3_విలువ_type(pArg)!=SQLITE_పాఠ్యం ){
+    తిరిగి 0;
   }
-  zJson = (const char*)sqlite3_value_text(pArg);
-  if( zJson==0 ) return 0;
-  nJson = sqlite3_value_bytes(pArg);
+  zJson = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pArg);
+  ఒకవేళ( zJson==0 ) తిరిగి 0;
+  nJson = sqlite3_విలువ_బైట్లు(pArg);
 
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
-    return 0;
+  ఒకవేళ( p==0 ){
+    తిరిగి 0;
   }
-  for(i=0; i<p->nUsed; i++){
-    if( p->a[i]->zJson==zJson ) break;
+  కొరకు(i=0; i<p->n_వాడిన; i++){
+    ఒకవేళ( p->a[i]->zJson==zJson ) ఆపు;
   }
-  if( i>=p->nUsed ){
-    for(i=0; i<p->nUsed; i++){
-      if( p->a[i]->nJson!=nJson ) continue;
-      if( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) break;
+  ఒకవేళ( i>=p->n_వాడిన ){
+    కొరకు(i=0; i<p->n_వాడిన; i++){
+      ఒకవేళ( p->a[i]->nJson!=nJson ) కొనసాగు;
+      ఒకవేళ( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) ఆపు;
     }
   }
-  if( i<p->nUsed ){
-    if( i<p->nUsed-1 ){
+  ఒకవేళ( i<p->n_వాడిన ){
+    ఒకవేళ( i<p->n_వాడిన-1 ){
       /* Make the matching entry the most recently used entry */
       JsonParse *tmp = p->a[i];
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed-i-1)*sizeof(tmp));
-      p->a[p->nUsed-1] = tmp;
-      i = p->nUsed - 1;
+      memmove(&p->a[i], &p->a[i+1], (p->n_వాడిన-i-1)*పరిమాణం(tmp));
+      p->a[p->n_వాడిన-1] = tmp;
+      i = p->n_వాడిన - 1;
     }
-    assert( p->a[i]->delta==0 );
-    return p->a[i];
-  }else{
-    return 0;
+    ప్రతిజ్ఞా( p->a[i]->delta==0 );
+    తిరిగి p->a[i];
+  }లేకపోతే{
+    తిరిగి 0;
   }
 }
 
@@ -532,16 +532,16 @@ static JsonParse *jsonCacheSearch(
 /* Turn uninitialized bulk memory into a valid JsonString object
 ** holding a zero-length string.
 */
-static void jsonStringZero(JsonString *p){
+స్థిర శూన్య jsonStringZero(JsonString *p){
   p->zBuf = p->zSpace;
-  p->nAlloc = sizeof(p->zSpace);
-  p->nUsed = 0;
+  p->nAlloc = పరిమాణం(p->zSpace);
+  p->n_వాడిన = 0;
   p->bStatic = 1;
 }
 
 /* Initialize the JsonString object
 */
-static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
+స్థిర శూన్య jsonStringInit(JsonString *p, sqlite3_context *pCtx){
   p->pCtx = pCtx;
   p->eErr = 0;
   jsonStringZero(p);
@@ -550,118 +550,118 @@ static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
 /* Free all allocated memory and reset the JsonString object back to its
 ** initial state.
 */
-static void jsonStringReset(JsonString *p){
-  if( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
+స్థిర శూన్య jsonStringReset(JsonString *p){
+  ఒకవేళ( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
   jsonStringZero(p);
 }
 
 /* Report an out-of-memory (OOM) condition
 */
-static void jsonStringOom(JsonString *p){
+స్థిర శూన్య jsonStringOom(JsonString *p){
   p->eErr |= JSTRING_OOM;
-  if( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
+  ఒకవేళ( p->pCtx ) sqlite3_ఫలితం_error_nomem(p->pCtx);
   jsonStringReset(p);
 }
 
 /* Report JSON nested too deep
 */
-static void jsonStringTooDeep(JsonString *p){
+స్థిర శూన్య jsonStringTooDeep(JsonString *p){
   p->eErr |= JSTRING_TOODEEP;
-  assert( p->pCtx!=0 );
-  sqlite3_result_error(p->pCtx, "JSON nested too deep", -1);
+  ప్రతిజ్ఞా( p->pCtx!=0 );
+  sqlite3_ఫలితం_error(p->pCtx, "JSON nested too deep", -1);
   jsonStringReset(p);
 }
 
 /* Enlarge pJson->zBuf so that it can hold at least N more bytes.
 ** Return zero on success.  Return non-zero on an OOM error
 */
-static int jsonStringGrow(JsonString *p, u32 N){
-  u64 nTotal = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
-  char *zNew;
-  if( p->bStatic ){
-    if( p->eErr ) return 1;
-    zNew = sqlite3RCStrNew(nTotal);
-    if( zNew==0 ){
+స్థిర పూర్ణాంకం jsonStringGrow(JsonString *p, u32 N){
+  u64 n_మొత్తం = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
+  అక్షరం *zNew;
+  ఒకవేళ( p->bStatic ){
+    ఒకవేళ( p->eErr ) తిరిగి 1;
+    zNew = sqlite3RCStrNew(n_మొత్తం);
+    ఒకవేళ( zNew==0 ){
       jsonStringOom(p);
-      return SQLITE_NOMEM;
+      తిరిగి SQLITE_NOMEM;
     }
-    memcpy(zNew, p->zBuf, (size_t)p->nUsed);
+    జ్ఞాపకం_నకలు(zNew, p->zBuf, (size_t)p->n_వాడిన);
     p->zBuf = zNew;
     p->bStatic = 0;
-  }else{
-    p->zBuf = sqlite3RCStrResize(p->zBuf, nTotal);
-    if( p->zBuf==0 ){
+  }లేకపోతే{
+    p->zBuf = sqlite3RCStrResize(p->zBuf, n_మొత్తం);
+    ఒకవేళ( p->zBuf==0 ){
       p->eErr |= JSTRING_OOM;
       jsonStringZero(p);
-      return SQLITE_NOMEM;
+      తిరిగి SQLITE_NOMEM;
     }
   }
-  p->nAlloc = nTotal;
-  return SQLITE_OK;
+  p->nAlloc = n_మొత్తం;
+  తిరిగి SQLITE_OK;
 }
 
 /* Append N bytes from zIn onto the end of the JsonString string.
 */
-static SQLITE_NOINLINE void jsonStringExpandAndAppend(
+స్థిర SQLITE_NOINLINE శూన్య jsonStringExpandAndAppend(
   JsonString *p,
-  const char *zIn,
+  స్థిరరాశి అక్షరం *z_లోపల,
   u32 N
 ){
-  assert( N>0 );
-  if( jsonStringGrow(p,N) ) return;
-  memcpy(p->zBuf+p->nUsed, zIn, N);
-  p->nUsed += N;
+  ప్రతిజ్ఞా( N>0 );
+  ఒకవేళ( jsonStringGrow(p,N) ) తిరిగి;
+  జ్ఞాపకం_నకలు(p->zBuf+p->n_వాడిన, z_లోపల, N);
+  p->n_వాడిన += N;
 }
-static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
-  if( N==0 ) return;
-  if( N+p->nUsed >= p->nAlloc ){
-    jsonStringExpandAndAppend(p,zIn,N);
-  }else{
-    memcpy(p->zBuf+p->nUsed, zIn, N);
-    p->nUsed += N;
+స్థిర శూన్య jsonAppendRaw(JsonString *p, స్థిరరాశి అక్షరం *z_లోపల, u32 N){
+  ఒకవేళ( N==0 ) తిరిగి;
+  ఒకవేళ( N+p->n_వాడిన >= p->nAlloc ){
+    jsonStringExpandAndAppend(p,z_లోపల,N);
+  }లేకపోతే{
+    జ్ఞాపకం_నకలు(p->zBuf+p->n_వాడిన, z_లోపల, N);
+    p->n_వాడిన += N;
   }
 }
-static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
-  assert( N>0 );
-  if( N+p->nUsed >= p->nAlloc ){
-    jsonStringExpandAndAppend(p,zIn,N);
-  }else{
-    memcpy(p->zBuf+p->nUsed, zIn, N);
-    p->nUsed += N;
+స్థిర శూన్య jsonAppendRawNZ(JsonString *p, స్థిరరాశి అక్షరం *z_లోపల, u32 N){
+  ప్రతిజ్ఞా( N>0 );
+  ఒకవేళ( N+p->n_వాడిన >= p->nAlloc ){
+    jsonStringExpandAndAppend(p,z_లోపల,N);
+  }లేకపోతే{
+    జ్ఞాపకం_నకలు(p->zBuf+p->n_వాడిన, z_లోపల, N);
+    p->n_వాడిన += N;
   }
 }
 
 /* Append formatted text (not to exceed N bytes) to the JsonString.
 */
-static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
+స్థిర శూన్య jsonPrintf(పూర్ణాంకం N, JsonString *p, స్థిరరాశి అక్షరం *zFormat, ...){
   va_list ap;
-  if( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) return;
+  ఒకవేళ( (p->n_వాడిన + N >= p->nAlloc) && jsonStringGrow(p, N) ) తిరిగి;
   va_start(ap, zFormat);
-  sqlite3_vsnprintf(N, p->zBuf+p->nUsed, zFormat, ap);
+  sqlite3_vsnprintf(N, p->zBuf+p->n_వాడిన, zFormat, ap);
   va_end(ap);
-  p->nUsed += (int)strlen(p->zBuf+p->nUsed);
+  p->n_వాడిన += (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(p->zBuf+p->n_వాడిన);
 }
 
 /* Append a single character
 */
-static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
-  if( jsonStringGrow(p,1) ) return;
-  p->zBuf[p->nUsed++] = c;
+స్థిర SQLITE_NOINLINE శూన్య jsonAppendCharExpand(JsonString *p, అక్షరం c){
+  ఒకవేళ( jsonStringGrow(p,1) ) తిరిగి;
+  p->zBuf[p->n_వాడిన++] = c;
 }
-static void jsonAppendChar(JsonString *p, char c){
-  if( p->nUsed>=p->nAlloc ){
+స్థిర శూన్య jsonAppendChar(JsonString *p, అక్షరం c){
+  ఒకవేళ( p->n_వాడిన>=p->nAlloc ){
     jsonAppendCharExpand(p,c);
-  }else{
-    p->zBuf[p->nUsed++] = c;
+  }లేకపోతే{
+    p->zBuf[p->n_వాడిన++] = c;
   }
 }
 
 /* Remove a single character from the end of the string
 */
-static void jsonStringTrimOneChar(JsonString *p){
-  if( p->eErr==0 ){
-    assert( p->nUsed>0 );
-    p->nUsed--;
+స్థిర శూన్య jsonStringTrimOneChar(JsonString *p){
+  ఒకవేళ( p->eErr==0 ){
+    ప్రతిజ్ఞా( p->n_వాడిన>0 );
+    p->n_వాడిన--;
   }
 }
 
@@ -671,20 +671,20 @@ static void jsonStringTrimOneChar(JsonString *p){
 ** Return true on success.  Return false if an OOM prevents this
 ** from happening.
 */
-static int jsonStringTerminate(JsonString *p){
+స్థిర పూర్ణాంకం jsonStringTerminate(JsonString *p){
   jsonAppendChar(p, 0);
   jsonStringTrimOneChar(p);
-  return p->eErr==0;
+  తిరిగి p->eErr==0;
 }
 
 /* Append a comma separator to the output buffer, if the previous
 ** character is not '[' or '{'.
 */
-static void jsonAppendSeparator(JsonString *p){
-  char c;
-  if( p->nUsed==0 ) return;
-  c = p->zBuf[p->nUsed-1];
-  if( c=='[' || c=='{' ) return;
+స్థిర శూన్య jsonAppendSeparator(JsonString *p){
+  అక్షరం c;
+  ఒకవేళ( p->n_వాడిన==0 ) తిరిగి;
+  c = p->zBuf[p->n_వాడిన-1];
+  ఒకవేళ( c=='[' || c=='{' ) తిరిగి;
   jsonAppendChar(p, ',');
 }
 
@@ -694,31 +694,31 @@ static void jsonAppendSeparator(JsonString *p){
 ** This routine assumes that the output buffer has already been enlarged
 ** sufficiently to hold the worst-case encoding plus a nul terminator.
 */
-static void jsonAppendControlChar(JsonString *p, u8 c){
-  static const char aSpecial[] = {
+స్థిర శూన్య jsonAppendControlChar(JsonString *p, u8 c){
+  స్థిర స్థిరరాశి అక్షరం aSpecial[] = {
      0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0,   0,   0, 0, 0
   };
-  assert( sizeof(aSpecial)==32 );
-  assert( aSpecial['\b']=='b' );
-  assert( aSpecial['\f']=='f' );
-  assert( aSpecial['\n']=='n' );
-  assert( aSpecial['\r']=='r' );
-  assert( aSpecial['\t']=='t' );
-  assert( c>=0 && c<sizeof(aSpecial) );
-  assert( p->nUsed+7 <= p->nAlloc );
-  if( aSpecial[c] ){
-    p->zBuf[p->nUsed] = '\\';
-    p->zBuf[p->nUsed+1] = aSpecial[c];
-    p->nUsed += 2;
-  }else{
-    p->zBuf[p->nUsed] = '\\';
-    p->zBuf[p->nUsed+1] = 'u';
-    p->zBuf[p->nUsed+2] = '0';
-    p->zBuf[p->nUsed+3] = '0';
-    p->zBuf[p->nUsed+4] = "0123456789abcdef"[c>>4];
-    p->zBuf[p->nUsed+5] = "0123456789abcdef"[c&0xf];
-    p->nUsed += 6;
+  ప్రతిజ్ఞా( పరిమాణం(aSpecial)==32 );
+  ప్రతిజ్ఞా( aSpecial['\b']=='b' );
+  ప్రతిజ్ఞా( aSpecial['\f']=='f' );
+  ప్రతిజ్ఞా( aSpecial['\n']=='n' );
+  ప్రతిజ్ఞా( aSpecial['\r']=='r' );
+  ప్రతిజ్ఞా( aSpecial['\t']=='t' );
+  ప్రతిజ్ఞా( c>=0 && c<పరిమాణం(aSpecial) );
+  ప్రతిజ్ఞా( p->n_వాడిన+7 <= p->nAlloc );
+  ఒకవేళ( aSpecial[c] ){
+    p->zBuf[p->n_వాడిన] = '\\';
+    p->zBuf[p->n_వాడిన+1] = aSpecial[c];
+    p->n_వాడిన += 2;
+  }లేకపోతే{
+    p->zBuf[p->n_వాడిన] = '\\';
+    p->zBuf[p->n_వాడిన+1] = 'u';
+    p->zBuf[p->n_వాడిన+2] = '0';
+    p->zBuf[p->n_వాడిన+3] = '0';
+    p->zBuf[p->n_వాడిన+4] = "0123456789abcdef"[c>>4];
+    p->zBuf[p->n_వాడిన+5] = "0123456789abcdef"[c&0xf];
+    p->n_వాడిన += 6;
   }
 }
 
@@ -730,117 +730,117 @@ static void jsonAppendControlChar(JsonString *p, u8 c){
 ** This routine is a high-runner.  There is a measurable performance
 ** increase associated with unwinding the jsonIsOk[] loop.
 */
-static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
+స్థిర శూన్య jsonAppendString(JsonString *p, స్థిరరాశి అక్షరం *z_లోపల, u32 N){
   u32 k;
   u8 c;
-  const u8 *z = (const u8*)zIn;
-  if( z==0 ) return;
-  if( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) return;
-  p->zBuf[p->nUsed++] = '"';
-  while( 1 /*exit-by-break*/ ){
+  స్థిరరాశి u8 *z = (స్థిరరాశి u8*)z_లోపల;
+  ఒకవేళ( z==0 ) తిరిగి;
+  ఒకవేళ( (N+p->n_వాడిన+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) తిరిగి;
+  p->zBuf[p->n_వాడిన++] = '"';
+  అయితే( 1 /*exit-by-break*/ ){
     k = 0;
     /* The following while() is the 4-way unwound equivalent of
     **
     **     while( k<N && jsonIsOk[z[k]] ){ k++; }
     */
-    while( 1 /* Exit by break */ ){
-      if( k+3>=N ){
-        while( k<N && jsonIsOk[z[k]] ){ k++; }
-        break;
+    అయితే( 1 /* Exit by break */ ){
+      ఒకవేళ( k+3>=N ){
+        అయితే( k<N && jsonIsOk[z[k]] ){ k++; }
+        ఆపు;
       }
-      if( !jsonIsOk[z[k]] ){
-        break;
+      ఒకవేళ( !jsonIsOk[z[k]] ){
+        ఆపు;
       }
-      if( !jsonIsOk[z[k+1]] ){
+      ఒకవేళ( !jsonIsOk[z[k+1]] ){
         k += 1;
-        break;
+        ఆపు;
       }
-      if( !jsonIsOk[z[k+2]] ){
+      ఒకవేళ( !jsonIsOk[z[k+2]] ){
         k += 2;
-        break;
+        ఆపు;
       }
-      if( !jsonIsOk[z[k+3]] ){
+      ఒకవేళ( !jsonIsOk[z[k+3]] ){
         k += 3;
-        break;
-      }else{
+        ఆపు;
+      }లేకపోతే{
         k += 4;
       }
     }
-    if( k>=N ){
-      if( k>0 ){
-        memcpy(&p->zBuf[p->nUsed], z, k);
-        p->nUsed += k;
+    ఒకవేళ( k>=N ){
+      ఒకవేళ( k>0 ){
+        జ్ఞాపకం_నకలు(&p->zBuf[p->n_వాడిన], z, k);
+        p->n_వాడిన += k;
       }
-      break;
+      ఆపు;
     }
-    if( k>0 ){
-      memcpy(&p->zBuf[p->nUsed], z, k);
-      p->nUsed += k;
+    ఒకవేళ( k>0 ){
+      జ్ఞాపకం_నకలు(&p->zBuf[p->n_వాడిన], z, k);
+      p->n_వాడిన += k;
       z += k;
       N -= k;
     }
     c = z[0];
-    if( c=='"' || c=='\\' ){
-      if( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) return;
-      p->zBuf[p->nUsed++] = '\\';
-      p->zBuf[p->nUsed++] = c;
-    }else if( c=='\'' ){
-      p->zBuf[p->nUsed++] = c;
-    }else{
-      if( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) return;
+    ఒకవేళ( c=='"' || c=='\\' ){
+      ఒకవేళ( (p->n_వాడిన+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) తిరిగి;
+      p->zBuf[p->n_వాడిన++] = '\\';
+      p->zBuf[p->n_వాడిన++] = c;
+    }లేకపోతే ఒకవేళ( c=='\'' ){
+      p->zBuf[p->n_వాడిన++] = c;
+    }లేకపోతే{
+      ఒకవేళ( (p->n_వాడిన+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) తిరిగి;
       jsonAppendControlChar(p, c);
     }
     z++;
     N--;
   }
-  p->zBuf[p->nUsed++] = '"';
-  assert( p->nUsed<p->nAlloc );
+  p->zBuf[p->n_వాడిన++] = '"';
+  ప్రతిజ్ఞా( p->n_వాడిన<p->nAlloc );
 }
 
 /*
 ** Append an sqlite3_value (such as a function parameter) to the JSON
 ** string under construction in p.
 */
-static void jsonAppendSqlValue(
+స్థిర శూన్య json_Append_Sql_విలువ(
   JsonString *p,                 /* Append to this JSON string */
-  sqlite3_value *pValue          /* Value to append */
+  sqlite3_విలువ *p_విలువ          /* Value to append */
 ){
-  switch( sqlite3_value_type(pValue) ){
-    case SQLITE_NULL: {
+  ఎంపిక( sqlite3_విలువ_type(p_విలువ) ){
+    స్థితి SQLITE_NULL: {
       jsonAppendRawNZ(p, "null", 4);
-      break;
+      ఆపు;
     }
-    case SQLITE_FLOAT: {
-      jsonPrintf(100, p, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+    స్థితి SQLITE_FLOAT: {
+      jsonPrintf(100, p, "%!0.17g", sqlite3_విలువ_double(p_విలువ));
+      ఆపు;
     }
-    case SQLITE_INTEGER: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
+    స్థితి SQLITE_INTEGER: {
+      స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(p_విలువ);
+      u32 n = (u32)sqlite3_విలువ_బైట్లు(p_విలువ);
       jsonAppendRaw(p, z, n);
-      break;
+      ఆపు;
     }
-    case SQLITE_TEXT: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
-      if( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
+    స్థితి SQLITE_పాఠ్యం: {
+      స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(p_విలువ);
+      u32 n = (u32)sqlite3_విలువ_బైట్లు(p_విలువ);
+      ఒకవేళ( sqlite3_విలువ_subtype(p_విలువ)==JSON_SUBTYPE ){
         jsonAppendRaw(p, z, n);
-      }else{
+      }లేకపోతే{
         jsonAppendString(p, z, n);
       }
-      break;
+      ఆపు;
     }
-    default: {
+    అప్రమేయ: {
       JsonParse px;
-      memset(&px, 0, sizeof(px));
-      if( jsonArgIsJsonb(pValue, &px) ){
-        jsonTranslateBlobToText(&px, 0, p);
-      }else if( p->eErr==0 ){
-        sqlite3_result_error(p->pCtx, "JSON cannot hold BLOB values", -1);
+      memset(&px, 0, పరిమాణం(px));
+      ఒకవేళ( jsonArgIsJsonb(p_విలువ, &px) ){
+        json_Translate_Blob_గమ్యం_పాఠ్యం(&px, 0, p);
+      }లేకపోతే ఒకవేళ( p->eErr==0 ){
+        sqlite3_ఫలితం_error(p->pCtx, "JSON cannot hold BLOB values", -1);
         p->eErr = JSTRING_ERR;
         jsonStringReset(p);
       }
-      break;
+      ఆపు;
     }
   }
 }
@@ -854,44 +854,44 @@ static void jsonAppendSqlValue(
 ** loaded into the zJson field of the pParse object as a RCStr and the
 ** pParse is added to the cache.
 */
-static void jsonReturnString(
+స్థిర శూన్య jsonReturnString(
   JsonString *p,            /* String to return */
   JsonParse *pParse,        /* JSONB source or NULL */
   sqlite3_context *ctx      /* Where to cache */
 ){
-  assert( (pParse!=0)==(ctx!=0) );
-  assert( ctx==0 || ctx==p->pCtx );
+  ప్రతిజ్ఞా( (pParse!=0)==(ctx!=0) );
+  ప్రతిజ్ఞా( ctx==0 || ctx==p->pCtx );
   jsonStringTerminate(p);
-  if( p->eErr==0 ){
-    int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
-    if( flags & JSON_BLOB ){
+  ఒకవేళ( p->eErr==0 ){
+    పూర్ణాంకం flags = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(p->pCtx));
+    ఒకవేళ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(p);
-    }else if( p->bStatic ){
-      sqlite3_result_text64(p->pCtx, p->zBuf, p->nUsed,
+    }లేకపోతే ఒకవేళ( p->bStatic ){
+      sqlite3_ఫలితం_text64(p->pCtx, p->zBuf, p->n_వాడిన,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-    }else{
-      if( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
-        int rc;
+    }లేకపోతే{
+      ఒకవేళ( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
+        పూర్ణాంకం rc;
         pParse->zJson = sqlite3RCStrRef(p->zBuf);
-        pParse->nJson = p->nUsed;
+        pParse->nJson = p->n_వాడిన;
         pParse->bJsonIsRCStr = 1;
-        rc = jsonCacheInsert(ctx, pParse);
-        if( rc==SQLITE_NOMEM ){
-          sqlite3_result_error_nomem(ctx);
+        rc = json_Cache_చొప్పించు(ctx, pParse);
+        ఒకవేళ( rc==SQLITE_NOMEM ){
+          sqlite3_ఫలితం_error_nomem(ctx);
           jsonStringReset(p);
-          return;
+          తిరిగి;
         }
       }
-      sqlite3_result_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->nUsed,
+      sqlite3_ఫలితం_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->n_వాడిన,
                             sqlite3RCStrUnref,
                             SQLITE_UTF8);
     }
-  }else if( p->eErr & JSTRING_OOM ){
-    sqlite3_result_error_nomem(p->pCtx);
-  }else if( p->eErr & JSTRING_TOODEEP ){
+  }లేకపోతే ఒకవేళ( p->eErr & JSTRING_OOM ){
+    sqlite3_ఫలితం_error_nomem(p->pCtx);
+  }లేకపోతే ఒకవేళ( p->eErr & JSTRING_TOODEEP ){
     /* error already in p->pCtx */
-  }else if( p->eErr & JSTRING_MALFORMED ){
-    sqlite3_result_error(p->pCtx, "malformed JSON", -1);
+  }లేకపోతే ఒకవేళ( p->eErr & JSTRING_MALFORMED ){
+    sqlite3_ఫలితం_error(p->pCtx, "malformed JSON", -1);
   }
   jsonStringReset(p);
 }
@@ -904,15 +904,15 @@ static void jsonReturnString(
 ** Reclaim all memory allocated by a JsonParse object.  But do not
 ** delete the JsonParse object itself.
 */
-static void jsonParseReset(JsonParse *pParse){
-  assert( pParse->nJPRef<=1 );
-  if( pParse->bJsonIsRCStr ){
+స్థిర శూన్య jsonParseReset(JsonParse *pParse){
+  ప్రతిజ్ఞా( pParse->nJPRef<=1 );
+  ఒకవేళ( pParse->bJsonIsRCStr ){
     sqlite3RCStrUnref(pParse->zJson);
     pParse->zJson = 0;
     pParse->nJson = 0;
     pParse->bJsonIsRCStr = 0;
   }
-  if( pParse->nBlobAlloc ){
+  ఒకవేళ( pParse->nBlobAlloc ){
     sqlite3DbFree(pParse->db, pParse->aBlob);
     pParse->aBlob = 0;
     pParse->nBlob = 0;
@@ -924,11 +924,11 @@ static void jsonParseReset(JsonParse *pParse){
 ** Decrement the reference count on the JsonParse object.  When the
 ** count reaches zero, free the object.
 */
-static void jsonParseFree(JsonParse *pParse){
-  if( pParse ){
-    if( pParse->nJPRef>1 ){
+స్థిర శూన్య jsonParseFree(JsonParse *pParse){
+  ఒకవేళ( pParse ){
+    ఒకవేళ( pParse->nJPRef>1 ){
       pParse->nJPRef--;
-    }else{
+    }లేకపోతే{
       jsonParseReset(pParse);
       sqlite3DbFree(pParse->db, pParse);
     }
@@ -945,40 +945,40 @@ static void jsonParseFree(JsonParse *pParse){
 ** character:  0..9a..fA..F.  But unlike sqlite3HexToInt(), it does not
 ** assert() if the digit is not hex.
 */
-static u8 jsonHexToInt(int h){
-#ifdef SQLITE_ASCII
+స్థిర u8 json_Hex_గమ్యం_Int(పూర్ణాంకం h){
+#నిర్వచితమైతే SQLITE_ASCII
   h += 9*(1&(h>>6));
-#endif
-#ifdef SQLITE_EBCDIC
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
-#endif
-  return (u8)(h & 0xf);
+#అయితే_ముగింపు
+  తిరిగి (u8)(h & 0xf);
 }
 
 /*
 ** Convert a 4-byte hex string into an integer
 */
-static u32 jsonHexToInt4(const char *z){
+స్థిర u32 json_Hex_గమ్యం_Int4(స్థిరరాశి అక్షరం *z){
   u32 v;
-  v = (jsonHexToInt(z[0])<<12)
-    + (jsonHexToInt(z[1])<<8)
-    + (jsonHexToInt(z[2])<<4)
-    + jsonHexToInt(z[3]);
-  return v;
+  v = (json_Hex_గమ్యం_Int(z[0])<<12)
+    + (json_Hex_గమ్యం_Int(z[1])<<8)
+    + (json_Hex_గమ్యం_Int(z[2])<<4)
+    + json_Hex_గమ్యం_Int(z[3]);
+  తిరిగి v;
 }
 
 /*
 ** Return true if z[] begins with 2 (or more) hexadecimal digits
 */
-static int jsonIs2Hex(const char *z){
-  return sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
+స్థిర పూర్ణాంకం jsonIs2Hex(స్థిరరాశి అక్షరం *z){
+  తిరిగి sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
 }
 
 /*
 ** Return true if z[] begins with 4 (or more) hexadecimal digits
 */
-static int jsonIs4Hex(const char *z){
-  return jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
+స్థిర పూర్ణాంకం jsonIs4Hex(స్థిరరాశి అక్షరం *z){
+  తిరిగి jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
 }
 
 /*
@@ -1017,108 +1017,108 @@ static int jsonIs4Hex(const char *z){
 ** In addition, comments between '/', '*' and '*', '/' and
 ** from '/', '/' to end-of-line are also considered to be whitespace.
 */
-static int json5Whitespace(const char *zIn){
-  int n = 0;
-  const u8 *z = (u8*)zIn;
-  while( 1 /*exit by "goto whitespace_done"*/ ){
-    switch( z[n] ){
-      case 0x09:
-      case 0x0a:
-      case 0x0b:
-      case 0x0c:
-      case 0x0d:
-      case 0x20: {
+స్థిర పూర్ణాంకం json5Whitespace(స్థిరరాశి అక్షరం *z_లోపల){
+  పూర్ణాంకం n = 0;
+  స్థిరరాశి u8 *z = (u8*)z_లోపల;
+  అయితే( 1 /*exit by "goto whitespace_done"*/ ){
+    ఎంపిక( z[n] ){
+      స్థితి 0x09:
+      స్థితి 0x0a:
+      స్థితి 0x0b:
+      స్థితి 0x0c:
+      స్థితి 0x0d:
+      స్థితి 0x20: {
         n++;
-        break;
+        ఆపు;
       }
-      case '/': {
-        if( z[n+1]=='*' && z[n+2]!=0 ){
-          int j;
-          for(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
-            if( z[j]==0 ) goto whitespace_done;
+      స్థితి '/': {
+        ఒకవేళ( z[n+1]=='*' && z[n+2]!=0 ){
+          పూర్ణాంకం j;
+          కొరకు(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
+            ఒకవేళ( z[j]==0 ) వెళ్ళు whitespace_పూర్తి;
           }
           n = j+1;
-          break;
-        }else if( z[n+1]=='/' ){
-          int j;
-          char c;
-          for(j=n+2; (c = z[j])!=0; j++){
-            if( c=='\n' || c=='\r' ) break;
-            if( 0xe2==(u8)c && 0x80==(u8)z[j+1]
+          ఆపు;
+        }లేకపోతే ఒకవేళ( z[n+1]=='/' ){
+          పూర్ణాంకం j;
+          అక్షరం c;
+          కొరకు(j=n+2; (c = z[j])!=0; j++){
+            ఒకవేళ( c=='\n' || c=='\r' ) ఆపు;
+            ఒకవేళ( 0xe2==(u8)c && 0x80==(u8)z[j+1]
              && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2])
             ){
               j += 2;
-              break;
+              ఆపు;
             }
           }
           n = j;
-          if( z[n] ) n++;
-          break;
+          ఒకవేళ( z[n] ) n++;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      case 0xc2: {
-        if( z[n+1]==0xa0 ){
+      స్థితి 0xc2: {
+        ఒకవేళ( z[n+1]==0xa0 ){
           n += 2;
-          break;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      case 0xe1: {
-        if( z[n+1]==0x9a && z[n+2]==0x80 ){
+      స్థితి 0xe1: {
+        ఒకవేళ( z[n+1]==0x9a && z[n+2]==0x80 ){
           n += 3;
-          break;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      case 0xe2: {
-        if( z[n+1]==0x80 ){
+      స్థితి 0xe2: {
+        ఒకవేళ( z[n+1]==0x80 ){
           u8 c = z[n+2];
-          if( c<0x80 ) goto whitespace_done;
-          if( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
+          ఒకవేళ( c<0x80 ) వెళ్ళు whitespace_పూర్తి;
+          ఒకవేళ( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
             n += 3;
-            break;
+            ఆపు;
           }
-        }else if( z[n+1]==0x81 && z[n+2]==0x9f ){
+        }లేకపోతే ఒకవేళ( z[n+1]==0x81 && z[n+2]==0x9f ){
           n += 3;
-          break;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      case 0xe3: {
-        if( z[n+1]==0x80 && z[n+2]==0x80 ){
+      స్థితి 0xe3: {
+        ఒకవేళ( z[n+1]==0x80 && z[n+2]==0x80 ){
           n += 3;
-          break;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      case 0xef: {
-        if( z[n+1]==0xbb && z[n+2]==0xbf ){
+      స్థితి 0xef: {
+        ఒకవేళ( z[n+1]==0xbb && z[n+2]==0xbf ){
           n += 3;
-          break;
+          ఆపు;
         }
-        goto whitespace_done;
+        వెళ్ళు whitespace_పూర్తి;
       }
-      default: {
-        goto whitespace_done;
+      అప్రమేయ: {
+        వెళ్ళు whitespace_పూర్తి;
       }
     }
   }
-  whitespace_done:
-  return n;
+  whitespace_పూర్తి:
+  తిరిగి n;
 }
 
 /*
 ** Extra floating-point literals to allow in JSON.
 */
-static const struct NanInfName {
-  char c1;
-  char c2;
-  char n;
-  char eType;
-  char nRepl;
-  char *zMatch;
-  char *zRepl;
+స్థిర స్థిరరాశి నిర్మాణం NanInfName {
+  అక్షరం c1;
+  అక్షరం c2;
+  అక్షరం n;
+  అక్షరం eType;
+  అక్షరం nRepl;
+  అక్షరం *z_సరిపోలిక;
+  అక్షరం *zRepl;
 } aNanInfName[] = {
   { 'i', 'I', 3, JSONB_FLOAT, 7, "inf", "9.0e999" },
   { 'i', 'I', 8, JSONB_FLOAT, 7, "infinity", "9.0e999" },
@@ -1132,14 +1132,14 @@ static const struct NanInfName {
 ** Report the wrong number of arguments for json_insert(), json_replace()
 ** or json_set().
 */
-static void jsonWrongNumArgs(
+స్థిర శూన్య json_Wrong_అంకె_వాదనలు(
   sqlite3_context *pCtx,
-  const char *zFuncName
+  స్థిరరాశి అక్షరం *zFuncName
 ){
-  char *zMsg = sqlite3_mprintf("json_%s() needs an odd number of arguments",
+  అక్షరం *z_సందేశం = sqlite3_mprintf("json_%s() needs an odd number of arguments",
                                zFuncName);
-  sqlite3_result_error(pCtx, zMsg, -1);
-  sqlite3_free(zMsg);
+  sqlite3_ఫలితం_error(pCtx, z_సందేశం, -1);
+  sqlite3_free(z_సందేశం);
 }
 
 /****************************************************************************
@@ -1151,22 +1151,22 @@ static void jsonWrongNumArgs(
 **
 ** Return the number of errors.
 */
-static int jsonBlobExpand(JsonParse *pParse, u64 N){
+స్థిర పూర్ణాంకం jsonBlobExpand(JsonParse *pParse, u64 N){
   u8 *aNew;
   u64 t;
-  assert( N>pParse->nBlobAlloc );
-  if( pParse->nBlobAlloc==0 ){
+  ప్రతిజ్ఞా( N>pParse->nBlobAlloc );
+  ఒకవేళ( pParse->nBlobAlloc==0 ){
     t = 100;
-  }else{
+  }లేకపోతే{
     t = pParse->nBlobAlloc*2;
   }
-  if( t<N ) t = N+100;
+  ఒకవేళ( t<N ) t = N+100;
   aNew = sqlite3DbRealloc(pParse->db, pParse->aBlob, t);
-  if( aNew==0 ){ pParse->oom = 1; return 1; }
-  assert( t<0x7fffffff );
+  ఒకవేళ( aNew==0 ){ pParse->oom = 1; తిరిగి 1; }
+  ప్రతిజ్ఞా( t<0x7fffffff );
   pParse->aBlob = aNew;
   pParse->nBlobAlloc = (u32)t;
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -1177,42 +1177,42 @@ static int jsonBlobExpand(JsonParse *pParse, u64 N){
 **
 ** Return true on success.  Return false on OOM.
 */
-static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
+స్థిర పూర్ణాంకం jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
   u8 *aOld;
-  u64 nSize;
-  assert( !pParse->bReadOnly );
-  if( pParse->oom ) return 0;
-  if( pParse->nBlobAlloc>0 ) return 1;
+  u64 n_కొలత;
+  ప్రతిజ్ఞా( !pParse->bReadOnly );
+  ఒకవేళ( pParse->oom ) తిరిగి 0;
+  ఒకవేళ( pParse->nBlobAlloc>0 ) తిరిగి 1;
   aOld = pParse->aBlob;
-  nSize = pParse->nBlob + nExtra;
+  n_కొలత = pParse->nBlob + nExtra;
   pParse->aBlob = 0;
-  if( jsonBlobExpand(pParse, nSize) ){
-    return 0;
+  ఒకవేళ( jsonBlobExpand(pParse, n_కొలత) ){
+    తిరిగి 0;
   }
-  assert( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
-  memcpy(pParse->aBlob, aOld, pParse->nBlob);
-  return 1;
+  ప్రతిజ్ఞా( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
+  జ్ఞాపకం_నకలు(pParse->aBlob, aOld, pParse->nBlob);
+  తిరిగి 1;
 }
 
 /* Expand pParse->aBlob and append one bytes.
 */
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
+స్థిర SQLITE_NOINLINE శూన్య jsonBlobExpandAndAppendOneByte(
   JsonParse *pParse,
   u8 c
 ){
   jsonBlobExpand(pParse, (u64)pParse->nBlob+1);
-  if( pParse->oom==0 ){
-    assert( pParse->nBlob+1<=pParse->nBlobAlloc );
+  ఒకవేళ( pParse->oom==0 ){
+    ప్రతిజ్ఞా( pParse->nBlob+1<=pParse->nBlobAlloc );
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
 
 /* Append a single character.
 */
-static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
-  if( pParse->nBlob >= pParse->nBlobAlloc ){
+స్థిర శూన్య jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
+  ఒకవేళ( pParse->nBlob >= pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendOneByte(pParse, c);
-  }else{
+  }లేకపోతే{
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
@@ -1220,15 +1220,15 @@ static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
 /* Slow version of jsonBlobAppendNode() that first resizes the
 ** pParse->aBlob structure.
 */
-static void jsonBlobAppendNode(JsonParse*,u8,u64,const void*);
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
+స్థిర శూన్య json_Blob_Append_కణుపు(JsonParse*,u8,u64,స్థిరరాశి శూన్య*);
+స్థిర SQLITE_NOINLINE శూన్య json_Blob_Expand_And_Append_కణుపు(
   JsonParse *pParse,
   u8 eType,
   u64 szPayload,
-  const void *aPayload
+  స్థిరరాశి శూన్య *aPayload
 ){
-  if( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) return;
-  jsonBlobAppendNode(pParse, eType, szPayload, aPayload);
+  ఒకవేళ( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) తిరిగి;
+  json_Blob_Append_కణుపు(pParse, eType, szPayload, aPayload);
 }
 
 
@@ -1241,32 +1241,32 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
 ** payload, but the payload is not appended and pParse->nBlob is left
 ** pointing to where the first byte of payload will eventually be.
 */
-static void jsonBlobAppendNode(
+స్థిర శూన్య json_Blob_Append_కణుపు(
   JsonParse *pParse,          /* The JsonParse object under construction */
   u8 eType,                   /* Node type.  One of JSONB_* */
   u64 szPayload,              /* Number of bytes of payload */
-  const void *aPayload        /* The payload.  Might be NULL */
+  స్థిరరాశి శూన్య *aPayload        /* The payload.  Might be NULL */
 ){
   u8 *a;
-  if( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
-    jsonBlobExpandAndAppendNode(pParse,eType,szPayload,aPayload);
-    return;
+  ఒకవేళ( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
+    json_Blob_Expand_And_Append_కణుపు(pParse,eType,szPayload,aPayload);
+    తిరిగి;
   }
-  assert( pParse->aBlob!=0 );
+  ప్రతిజ్ఞా( pParse->aBlob!=0 );
   a = &pParse->aBlob[pParse->nBlob];
-  if( szPayload<=11 ){
+  ఒకవేళ( szPayload<=11 ){
     a[0] = eType | (szPayload<<4);
     pParse->nBlob += 1;
-  }else if( szPayload<=0xff ){
+  }లేకపోతే ఒకవేళ( szPayload<=0xff ){
     a[0] = eType | 0xc0;
     a[1] = szPayload & 0xff;
     pParse->nBlob += 2;
-  }else if( szPayload<=0xffff ){
+  }లేకపోతే ఒకవేళ( szPayload<=0xffff ){
     a[0] = eType | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
     pParse->nBlob += 3;
-  }else{
+  }లేకపోతే{
     a[0] = eType | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
@@ -1274,15 +1274,15 @@ static void jsonBlobAppendNode(
     a[4] = szPayload & 0xff;
     pParse->nBlob += 5;
   }
-  if( aPayload ){
+  ఒకవేళ( aPayload ){
     pParse->nBlob += szPayload;
-    memcpy(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
+    జ్ఞాపకం_నకలు(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
   }
 }
 
 /* Change the payload size for the node at index i to be szPayload.
 */
-static int jsonBlobChangePayloadSize(
+స్థిర పూర్ణాంకం json_Blob_Change_Payload_కొలత(
   JsonParse *pParse,
   u32 i,
   u32 szPayload
@@ -1291,61 +1291,61 @@ static int jsonBlobChangePayloadSize(
   u8 szType;
   u8 nExtra;
   u8 nNeeded;
-  int delta;
-  if( pParse->oom ) return 0;
+  పూర్ణాంకం delta;
+  ఒకవేళ( pParse->oom ) తిరిగి 0;
   a = &pParse->aBlob[i];
   szType = a[0]>>4;
-  if( szType<=11 ){
+  ఒకవేళ( szType<=11 ){
     nExtra = 0;
-  }else if( szType==12 ){
+  }లేకపోతే ఒకవేళ( szType==12 ){
     nExtra = 1;
-  }else if( szType==13 ){
+  }లేకపోతే ఒకవేళ( szType==13 ){
     nExtra = 2;
-  }else if( szType==14 ){
+  }లేకపోతే ఒకవేళ( szType==14 ){
     nExtra = 4;
-  }else{
+  }లేకపోతే{
     nExtra = 8;
   }
-  if( szPayload<=11 ){
+  ఒకవేళ( szPayload<=11 ){
     nNeeded = 0;
-  }else if( szPayload<=0xff ){
+  }లేకపోతే ఒకవేళ( szPayload<=0xff ){
     nNeeded = 1;
-  }else if( szPayload<=0xffff ){
+  }లేకపోతే ఒకవేళ( szPayload<=0xffff ){
     nNeeded = 2;
-  }else{
+  }లేకపోతే{
     nNeeded = 4;
   }
   delta = nNeeded - nExtra;
-  if( delta ){
-    u64 newSize = (u64)pParse->nBlob + delta;
-    if( delta>0 ){
-      if( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
-        return 0;  /* OOM error.  Error state recorded in pParse->oom. */
+  ఒకవేళ( delta ){
+    u64 new_కొలత_2 = (u64)pParse->nBlob + delta;
+    ఒకవేళ( delta>0 ){
+      ఒకవేళ( new_కొలత_2>pParse->nBlobAlloc && jsonBlobExpand(pParse, new_కొలత_2) ){
+        తిరిగి 0;  /* OOM error.  Error state recorded in pParse->oom. */
       }
       a = &pParse->aBlob[i];
       memmove(&a[1+delta], &a[1], pParse->nBlob - (i+1));
-    }else{
+    }లేకపోతే{
       memmove(&a[1], &a[1-delta], pParse->nBlob - (i+1-delta));
     }
-    pParse->nBlob = newSize;
+    pParse->nBlob = new_కొలత_2;
   }
-  if( nNeeded==0 ){
+  ఒకవేళ( nNeeded==0 ){
     a[0] = (a[0] & 0x0f) | (szPayload<<4);
-  }else if( nNeeded==1 ){
+  }లేకపోతే ఒకవేళ( nNeeded==1 ){
     a[0] = (a[0] & 0x0f) | 0xc0;
     a[1] = szPayload & 0xff;
-  }else if( nNeeded==2 ){
+  }లేకపోతే ఒకవేళ( nNeeded==2 ){
     a[0] = (a[0] & 0x0f) | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
-  }else{
+  }లేకపోతే{
     a[0] = (a[0] & 0x0f) | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
     a[3] = (szPayload >> 8) & 0xff;
     a[4] = szPayload & 0xff;
   }
-  return delta;
+  తిరిగి delta;
 }
 
 /*
@@ -1353,11 +1353,11 @@ static int jsonBlobChangePayloadSize(
 ** then set *pOp to JSONB_TEXTJ and return true.  If not, do not make
 ** any changes to *pOp and return false.
 */
-static int jsonIs4HexB(const char *z, int *pOp){
-  if( z[0]!='u' ) return 0;
-  if( !jsonIs4Hex(&z[1]) ) return 0;
+స్థిర పూర్ణాంకం jsonIs4HexB(స్థిరరాశి అక్షరం *z, పూర్ణాంకం *pOp){
+  ఒకవేళ( z[0]!='u' ) తిరిగి 0;
+  ఒకవేళ( !jsonIs4Hex(&z[1]) ) తిరిగి 0;
   *pOp = JSONB_TEXTJ;
-  return 1;
+  తిరిగి 1;
 }
 
 /*
@@ -1370,195 +1370,195 @@ static int jsonIs4HexB(const char *z, int *pOp){
 ** error if a problem is detected.  (In other words, if the error is at offset
 ** 0, return 1).
 */
-static u32 jsonbValidityCheck(
-  const JsonParse *pParse,    /* Input JSONB.  Only aBlob and nBlob are used */
+స్థిర u32 jsonbValidityCheck(
+  స్థిరరాశి JsonParse *pParse,    /* Input JSONB.  Only aBlob and nBlob are used */
   u32 i,                      /* Start of element as pParse->aBlob[i] */
-  u32 iEnd,                   /* One more than the last byte of the element */
-  u32 iDepth                  /* Current nesting depth */
+  u32 i_చివర,                   /* One more than the last byte of the element */
+  u32 i_లోతు                  /* Current nesting depth */
 ){
   u32 n, sz, j, k;
-  const u8 *z;
+  స్థిరరాశి u8 *z;
   u8 x;
-  if( iDepth>JSON_MAX_DEPTH ) return i+1;
+  ఒకవేళ( i_లోతు>JSON_MAX_లోతు ) తిరిగి i+1;
   sz = 0;
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( NEVER(n==0) ) return i+1;          /* Checked by caller */
-  if( NEVER(i+n+sz!=iEnd) ) return i+1;  /* Checked by caller */
+  n = jsonb_Payload_కొలత(pParse, i, &sz);
+  ఒకవేళ( NEVER(n==0) ) తిరిగి i+1;          /* Checked by caller */
+  ఒకవేళ( NEVER(i+n+sz!=i_చివర) ) తిరిగి i+1;  /* Checked by caller */
   z = pParse->aBlob;
   x = z[i] & 0x0f;
-  switch( x ){
-    case JSONB_NULL:
-    case JSONB_TRUE:
-    case JSONB_FALSE: {
-      return n+sz==1 ? 0 : i+1;
+  ఎంపిక( x ){
+    స్థితి JSONB_NULL:
+    స్థితి JSONB_TRUE:
+    స్థితి JSONB_FALSE: {
+      తిరిగి n+sz==1 ? 0 : i+1;
     }
-    case JSONB_INT: {
-      if( sz<1 ) return i+1;
+    స్థితి JSONB_INT: {
+      ఒకవేళ( sz<1 ) తిరిగి i+1;
       j = i+n;
-      if( z[j]=='-' ){
+      ఒకవేళ( z[j]=='-' ){
         j++;
-        if( sz<2 ) return i+1;
+        ఒకవేళ( sz<2 ) తిరిగి i+1;
       }
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isdigit(z[j]) ){
+      అయితే( j<k ){
+        ఒకవేళ( sqlite3Isdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }లేకపోతే{
+          తిరిగి j+1;
         }
       }
-      return 0;
+      తిరిగి 0;
     }
-    case JSONB_INT5: {
-      if( sz<3 ) return i+1;
+    స్థితి JSONB_INT5: {
+      ఒకవేళ( sz<3 ) తిరిగి i+1;
       j = i+n;
-      if( z[j]=='-' ){
-        if( sz<4 ) return i+1;
+      ఒకవేళ( z[j]=='-' ){
+        ఒకవేళ( sz<4 ) తిరిగి i+1;
         j++;
       }
-      if( z[j]!='0' ) return i+1;
-      if( z[j+1]!='x' && z[j+1]!='X' ) return j+2;
+      ఒకవేళ( z[j]!='0' ) తిరిగి i+1;
+      ఒకవేళ( z[j+1]!='x' && z[j+1]!='X' ) తిరిగి j+2;
       j += 2;
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isxdigit(z[j]) ){
+      అయితే( j<k ){
+        ఒకవేళ( sqlite3Isxdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }లేకపోతే{
+          తిరిగి j+1;
         }
       }
-      return 0;
+      తిరిగి 0;
     }
-    case JSONB_FLOAT:
-    case JSONB_FLOAT5: {
-      u8 seen = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
-      if( sz<2 ) return i+1;
+    స్థితి JSONB_FLOAT:
+    స్థితి JSONB_FLOAT5: {
+      u8 చూసిన = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
+      ఒకవేళ( sz<2 ) తిరిగి i+1;
       j = i+n;
       k = j+sz;
-      if( z[j]=='-' ){
+      ఒకవేళ( z[j]=='-' ){
         j++;
-        if( sz<3 ) return i+1;
+        ఒకవేళ( sz<3 ) తిరిగి i+1;
       }
-      if( z[j]=='.' ){
-        if( x==JSONB_FLOAT ) return j+1;
-        if( !sqlite3Isdigit(z[j+1]) ) return j+1;
+      ఒకవేళ( z[j]=='.' ){
+        ఒకవేళ( x==JSONB_FLOAT ) తిరిగి j+1;
+        ఒకవేళ( !sqlite3Isdigit(z[j+1]) ) తిరిగి j+1;
         j += 2;
-        seen = 1;
-      }else if( z[j]=='0' && x==JSONB_FLOAT ){
-        if( j+3>k ) return j+1;
-        if( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) return j+1;
+        చూసిన = 1;
+      }లేకపోతే ఒకవేళ( z[j]=='0' && x==JSONB_FLOAT ){
+        ఒకవేళ( j+3>k ) తిరిగి j+1;
+        ఒకవేళ( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) తిరిగి j+1;
         j++;
       }
-      for(; j<k; j++){
-        if( sqlite3Isdigit(z[j]) ) continue;
-        if( z[j]=='.' ){
-          if( seen>0 ) return j+1;
-          if( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
-            return j+1;
+      కొరకు(; j<k; j++){
+        ఒకవేళ( sqlite3Isdigit(z[j]) ) కొనసాగు;
+        ఒకవేళ( z[j]=='.' ){
+          ఒకవేళ( చూసిన>0 ) తిరిగి j+1;
+          ఒకవేళ( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
+            తిరిగి j+1;
           }
-          seen = 1;
-          continue;
+          చూసిన = 1;
+          కొనసాగు;
         }
-        if( z[j]=='e' || z[j]=='E' ){
-          if( seen==2 ) return j+1;
-          if( j==k-1 ) return j+1;
-          if( z[j+1]=='+' || z[j+1]=='-' ){
+        ఒకవేళ( z[j]=='e' || z[j]=='E' ){
+          ఒకవేళ( చూసిన==2 ) తిరిగి j+1;
+          ఒకవేళ( j==k-1 ) తిరిగి j+1;
+          ఒకవేళ( z[j+1]=='+' || z[j+1]=='-' ){
             j++;
-            if( j==k-1 ) return j+1;
+            ఒకవేళ( j==k-1 ) తిరిగి j+1;
           }
-          seen = 2;
-          continue;
+          చూసిన = 2;
+          కొనసాగు;
         }
-        return j+1;
+        తిరిగి j+1;
       }
-      if( seen==0 ) return i+1;
-      return 0;
+      ఒకవేళ( చూసిన==0 ) తిరిగి i+1;
+      తిరిగి 0;
     }
-    case JSONB_TEXT: {
+    స్థితి JSONB_పాఠ్యం: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ) return j+1;
+      అయితే( j<k ){
+        ఒకవేళ( !jsonIsOk[z[j]] && z[j]!='\'' ) తిరిగి j+1;
         j++;
       }
-      return 0;
+      తిరిగి 0;
     }
-    case JSONB_TEXTJ:
-    case JSONB_TEXT5: {
+    స్థితి JSONB_TEXTJ:
+    స్థితి JSONB_TEXT5: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ){
-          if( z[j]=='"' ){
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( z[j]<=0x1f ){
+      అయితే( j<k ){
+        ఒకవేళ( !jsonIsOk[z[j]] && z[j]!='\'' ){
+          ఒకవేళ( z[j]=='"' ){
+            ఒకవేళ( x==JSONB_TEXTJ ) తిరిగి j+1;
+          }లేకపోతే ఒకవేళ( z[j]<=0x1f ){
             /* Control characters in JSON5 string literals are ok */
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( NEVER(z[j]!='\\') || j+1>=k ){
-            return j+1;
-          }else if( strchr("\"\\/bfnrt",z[j+1])!=0 ){
+            ఒకవేళ( x==JSONB_TEXTJ ) తిరిగి j+1;
+          }లేకపోతే ఒకవేళ( NEVER(z[j]!='\\') || j+1>=k ){
+            తిరిగి j+1;
+          }లేకపోతే ఒకవేళ( strchr("\"\\/bfnrt",z[j+1])!=0 ){
             j++;
-          }else if( z[j+1]=='u' ){
-            if( j+5>=k ) return j+1;
-            if( !jsonIs4Hex((const char*)&z[j+2]) ) return j+1;
+          }లేకపోతే ఒకవేళ( z[j+1]=='u' ){
+            ఒకవేళ( j+5>=k ) తిరిగి j+1;
+            ఒకవేళ( !jsonIs4Hex((స్థిరరాశి అక్షరం*)&z[j+2]) ) తిరిగి j+1;
             j++;
-          }else if( x!=JSONB_TEXT5 ){
-            return j+1;
-          }else{
+          }లేకపోతే ఒకవేళ( x!=JSONB_TEXT5 ){
+            తిరిగి j+1;
+          }లేకపోతే{
             u32 c = 0;
-            u32 szC = jsonUnescapeOneChar((const char*)&z[j], k-j, &c);
-            if( c==JSON_INVALID_CHAR ) return j+1;
+            u32 szC = jsonUnescapeOneChar((స్థిరరాశి అక్షరం*)&z[j], k-j, &c);
+            ఒకవేళ( c==JSON_INVALID_CHAR ) తిరిగి j+1;
             j += szC - 1;
           }
         }
         j++;
       }
-      return 0;
+      తిరిగి 0;
     }
-    case JSONB_TEXTRAW: {
-      return 0;
+    స్థితి JSONB_TEXTRAW: {
+      తిరిగి 0;
     }
-    case JSONB_ARRAY: {
+    స్థితి JSONB_ARRAY: {
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      అయితే( j<k ){
         sz = 0;
-        n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        n = jsonb_Payload_కొలత(pParse, j, &sz);
+        ఒకవేళ( n==0 ) తిరిగి j+1;
+        ఒకవేళ( j+n+sz>k ) తిరిగి j+1;
+        sub = jsonbValidityCheck(pParse, j, j+n+sz, i_లోతు+1);
+        ఒకవేళ( sub ) తిరిగి sub;
         j += n + sz;
       }
-      assert( j==k );
-      return 0;
+      ప్రతిజ్ఞా( j==k );
+      తిరిగి 0;
     }
-    case JSONB_OBJECT: {
+    స్థితి JSONB_OBJECT: {
       u32 cnt = 0;
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      అయితే( j<k ){
         sz = 0;
-        n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        if( (cnt & 1)==0 ){
+        n = jsonb_Payload_కొలత(pParse, j, &sz);
+        ఒకవేళ( n==0 ) తిరిగి j+1;
+        ఒకవేళ( j+n+sz>k ) తిరిగి j+1;
+        ఒకవేళ( (cnt & 1)==0 ){
           x = z[j] & 0x0f;
-          if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return j+1;
+          ఒకవేళ( x<JSONB_పాఠ్యం || x>JSONB_TEXTRAW ) తిరిగి j+1;
         }
-        sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        sub = jsonbValidityCheck(pParse, j, j+n+sz, i_లోతు+1);
+        ఒకవేళ( sub ) తిరిగి sub;
         cnt++;
         j += n + sz;
       }
-      assert( j==k );
-      if( (cnt & 1)!=0 ) return j+1;
-      return 0;
+      ప్రతిజ్ఞా( j==k );
+      ఒకవేళ( (cnt & 1)!=0 ) తిరిగి j+1;
+      తిరిగి 0;
     }
-    default: {
-      return i+1;
+    అప్రమేయ: {
+      తిరిగి i+1;
     }
   }
 }
@@ -1579,467 +1579,467 @@ static u32 jsonbValidityCheck(
 **     -4    ',' seen    /     the index in zJson[] of the seen character
 **     -5    ':' seen   /
 */
-static int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
-  char c;
+స్థిర పూర్ణాంకం json_Translate_పాఠ్యం_గమ్యం_Blob(JsonParse *pParse, u32 i){
+  అక్షరం c;
   u32 j;
-  u32 iThis, iStart;
-  int x;
+  u32 iThis, i_ప్రారంభం;
+  పూర్ణాంకం x;
   u8 t;
-  const char *z = pParse->zJson;
+  స్థిరరాశి అక్షరం *z = pParse->zJson;
 json_parse_restart:
-  switch( (u8)z[i] ){
-  case '{': {
+  ఎంపిక( (u8)z[i] ){
+  స్థితి '{': {
     /* Parse object */
     iThis = pParse->nBlob;
-    jsonBlobAppendNode(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    json_Blob_Append_కణుపు(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
+    ఒకవేళ( ++pParse->i_లోతు > JSON_MAX_లోతు ){
       pParse->iErr = i;
-      return -1;
+      తిరిగి -1;
     }
-    iStart = pParse->nBlob;
-    for(j=i+1;;j++){
+    i_ప్రారంభం = pParse->nBlob;
+    కొరకు(j=i+1;;j++){
       u32 iBlob = pParse->nBlob;
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        int op;
-        if( x==(-2) ){
+      x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+      ఒకవేళ( x<=0 ){
+        పూర్ణాంకం op;
+        ఒకవేళ( x==(-2) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
-          break;
+          ఒకవేళ( pParse->nBlob!=(u32)i_ప్రారంభం ) pParse->hasNonstd = 1;
+          ఆపు;
         }
         j += json5Whitespace(&z[j]);
-        op = JSONB_TEXT;
-        if( sqlite3JsonId1(z[j]) 
+        op = JSONB_పాఠ్యం;
+        ఒకవేళ( sqlite3JsonId1(z[j]) 
          || (z[j]=='\\' && jsonIs4HexB(&z[j+1], &op))
         ){
-          int k = j+1;
-          while( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
+          పూర్ణాంకం k = j+1;
+          అయితే( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
             || (z[k]=='\\' && jsonIs4HexB(&z[k+1], &op))
           ){
             k++;
           }
-          assert( iBlob==pParse->nBlob );
-          jsonBlobAppendNode(pParse, op, k-j, &z[j]);
+          ప్రతిజ్ఞా( iBlob==pParse->nBlob );
+          json_Blob_Append_కణుపు(pParse, op, k-j, &z[j]);
           pParse->hasNonstd = 1;
           x = k;
-        }else{
-          if( x!=-1 ) pParse->iErr = j;
-          return -1;
+        }లేకపోతే{
+          ఒకవేళ( x!=-1 ) pParse->iErr = j;
+          తిరిగి -1;
         }
       }
-      if( pParse->oom ) return -1;
+      ఒకవేళ( pParse->oom ) తిరిగి -1;
       t = pParse->aBlob[iBlob] & 0x0f;
-      if( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
+      ఒకవేళ( t<JSONB_పాఠ్యం || t>JSONB_TEXTRAW ){
         pParse->iErr = j;
-        return -1;
+        తిరిగి -1;
       }
       j = x;
-      if( z[j]==':' ){
+      ఒకవేళ( z[j]==':' ){
         j++;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }లేకపోతే{
+        ఒకవేళ( jsonIsspace(z[j]) ){
           /* strspn() is not helpful here */
-          do{ j++; }while( jsonIsspace(z[j]) );
-          if( z[j]==':' ){
+          చేయి{ j++; }అయితే( jsonIsspace(z[j]) );
+          ఒకవేళ( z[j]==':' ){
             j++;
-            goto parse_object_value;
+            వెళ్ళు parse_object_విలువ;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x!=(-5) ){
-          if( x!=(-1) ) pParse->iErr = j;
-          return -1;
+        x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+        ఒకవేళ( x!=(-5) ){
+          ఒకవేళ( x!=(-1) ) pParse->iErr = j;
+          తిరిగి -1;
         }
         j = pParse->iErr+1;
       }
-    parse_object_value:
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+    parse_object_విలువ:
+      x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+      ఒకవేళ( x<=0 ){
+        ఒకవేళ( x!=(-1) ) pParse->iErr = j;
+        తిరిగి -1;
       }
       j = x;
-      if( z[j]==',' ){
-        continue;
-      }else if( z[j]=='}' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      ఒకవేళ( z[j]==',' ){
+        కొనసాగు;
+      }లేకపోతే ఒకవేళ( z[j]=='}' ){
+        ఆపు;
+      }లేకపోతే{
+        ఒకవేళ( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
-            continue;
-          }else if( z[j]=='}' ){
-            break;
+          ఒకవేళ( z[j]==',' ){
+            కొనసాగు;
+          }లేకపోతే ఒకవేళ( z[j]=='}' ){
+            ఆపు;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+        ఒకవేళ( x==(-4) ){
           j = pParse->iErr;
-          continue;
+          కొనసాగు;
         }
-        if( x==(-2) ){
+        ఒకవేళ( x==(-2) ){
           j = pParse->iErr;
-          break;
+          ఆపు;
         }
       }
       pParse->iErr = j;
-      return -1;
+      తిరిగి -1;
     }
-    jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
-    pParse->iDepth--;
-    return j+1;
+    json_Blob_Change_Payload_కొలత(pParse, iThis, pParse->nBlob - i_ప్రారంభం);
+    pParse->i_లోతు--;
+    తిరిగి j+1;
   }
-  case '[': {
+  స్థితి '[': {
     /* Parse array */
     iThis = pParse->nBlob;
-    assert( i<=(u32)pParse->nJson );
-    jsonBlobAppendNode(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
-    iStart = pParse->nBlob;
-    if( pParse->oom ) return -1;
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    ప్రతిజ్ఞా( i<=(u32)pParse->nJson );
+    json_Blob_Append_కణుపు(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
+    i_ప్రారంభం = pParse->nBlob;
+    ఒకవేళ( pParse->oom ) తిరిగి -1;
+    ఒకవేళ( ++pParse->i_లోతు > JSON_MAX_లోతు ){
       pParse->iErr = i;
-      return -1;
+      తిరిగి -1;
     }
-    for(j=i+1;;j++){
-      x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x==(-3) ){
+    కొరకు(j=i+1;;j++){
+      x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+      ఒకవేళ( x<=0 ){
+        ఒకవేళ( x==(-3) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
-          break;
+          ఒకవేళ( pParse->nBlob!=i_ప్రారంభం ) pParse->hasNonstd = 1;
+          ఆపు;
         }
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+        ఒకవేళ( x!=(-1) ) pParse->iErr = j;
+        తిరిగి -1;
       }
       j = x;
-      if( z[j]==',' ){
-        continue;
-      }else if( z[j]==']' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      ఒకవేళ( z[j]==',' ){
+        కొనసాగు;
+      }లేకపోతే ఒకవేళ( z[j]==']' ){
+        ఆపు;
+      }లేకపోతే{
+        ఒకవేళ( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
-            continue;
-          }else if( z[j]==']' ){
-            break;
+          ఒకవేళ( z[j]==',' ){
+            కొనసాగు;
+          }లేకపోతే ఒకవేళ( z[j]==']' ){
+            ఆపు;
           }
         }
-        x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        x = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, j);
+        ఒకవేళ( x==(-4) ){
           j = pParse->iErr;
-          continue;
+          కొనసాగు;
         }
-        if( x==(-3) ){
+        ఒకవేళ( x==(-3) ){
           j = pParse->iErr;
-          break;
+          ఆపు;
         }
       }
       pParse->iErr = j;
-      return -1;
+      తిరిగి -1;
     }
-    jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
-    pParse->iDepth--;
-    return j+1;
+    json_Blob_Change_Payload_కొలత(pParse, iThis, pParse->nBlob - i_ప్రారంభం);
+    pParse->i_లోతు--;
+    తిరిగి j+1;
   }
-  case '\'': {
+  స్థితి '\'': {
     u8 opcode;
-    char cDelim;
+    అక్షరం cDelim;
     pParse->hasNonstd = 1;
-    opcode = JSONB_TEXT;
-    goto parse_string;
-  case '"':
+    opcode = JSONB_పాఠ్యం;
+    వెళ్ళు parse_string;
+  స్థితి '"':
     /* Parse string */
-    opcode = JSONB_TEXT;
+    opcode = JSONB_పాఠ్యం;
   parse_string:
     cDelim = z[i];
     j = i+1;
-    while( 1 /*exit-by-break*/ ){
-      if( jsonIsOk[(u8)z[j]] ){
-        if( !jsonIsOk[(u8)z[j+1]] ){
+    అయితే( 1 /*exit-by-break*/ ){
+      ఒకవేళ( jsonIsOk[(u8)z[j]] ){
+        ఒకవేళ( !jsonIsOk[(u8)z[j+1]] ){
           j += 1;
-        }else if( !jsonIsOk[(u8)z[j+2]] ){
+        }లేకపోతే ఒకవేళ( !jsonIsOk[(u8)z[j+2]] ){
           j += 2;
-        }else{
+        }లేకపోతే{
           j += 3;
-          continue;
+          కొనసాగు;
         }
       }
       c = z[j];
-      if( c==cDelim ){
-        break;
-      }else if( c=='\\' ){
+      ఒకవేళ( c==cDelim ){
+        ఆపు;
+      }లేకపోతే ఒకవేళ( c=='\\' ){
         c = z[++j];
-        if( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
+        ఒకవేళ( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
            || c=='n' || c=='r' || c=='t'
            || (c=='u' && jsonIs4Hex(&z[j+1])) ){
-          if( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
-        }else if( c=='\'' ||  c=='v' || c=='\n'
-#ifdef SQLITE_BUG_COMPATIBLE_20250510
+          ఒకవేళ( opcode==JSONB_పాఠ్యం ) opcode = JSONB_TEXTJ;
+        }లేకపోతే ఒకవేళ( c=='\'' ||  c=='v' || c=='\n'
+#నిర్వచితమైతే SQLITE_BUG_COMPATIBLE_20250510
            || (c=='0')                            /* Legacy bug compatible */
-#else
+#లేకపోతే
            || (c=='0' && !sqlite3Isdigit(z[j+1])) /* Correct implementation */
-#endif
+#అయితే_ముగింపు
            || (0xe2==(u8)c && 0x80==(u8)z[j+1]
                 && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2]))
            || (c=='x' && jsonIs2Hex(&z[j+1])) ){
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else if( c=='\r' ){
-          if( z[j+1]=='\n' ) j++;
+        }లేకపోతే ఒకవేళ( c=='\r' ){
+          ఒకవేళ( z[j+1]=='\n' ) j++;
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else{
+        }లేకపోతే{
           pParse->iErr = j;
-          return -1;
+          తిరిగి -1;
         }
-      }else if( c<=0x1f ){
-        if( c==0 ){
+      }లేకపోతే ఒకవేళ( c<=0x1f ){
+        ఒకవేళ( c==0 ){
           pParse->iErr = j;
-          return -1;
+          తిరిగి -1;
         }
         /* Control characters are not allowed in canonical JSON string
         ** literals, but are allowed in JSON5 string literals. */
         opcode = JSONB_TEXT5;
         pParse->hasNonstd = 1;
-      }else if( c=='"' ){
+      }లేకపోతే ఒకవేళ( c=='"' ){
         opcode = JSONB_TEXT5;
       }
       j++;
     }
-    jsonBlobAppendNode(pParse, opcode, j-1-i, &z[i+1]);
-    return j+1;
+    json_Blob_Append_కణుపు(pParse, opcode, j-1-i, &z[i+1]);
+    తిరిగి j+1;
   }
-  case 't': {
-    if( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  స్థితి 't': {
+    ఒకవేళ( అక్షరశ్రేణి_పోలిక(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_TRUE);
-      return i+4;
+      తిరిగి i+4;
     }
     pParse->iErr = i;
-    return -1;
+    తిరిగి -1;
   }
-  case 'f': {
-    if( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
+  స్థితి 'f': {
+    ఒకవేళ( అక్షరశ్రేణి_పోలిక(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
       jsonBlobAppendOneByte(pParse, JSONB_FALSE);
-      return i+5;
+      తిరిగి i+5;
     }
     pParse->iErr = i;
-    return -1;
+    తిరిగి -1;
   }
-  case '+': {
-    u8 seenE;
+  స్థితి '+': {
+    u8 చూసిన_E;
     pParse->hasNonstd = 1;
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-    goto parse_number;
-  case '.':
-    if( sqlite3Isdigit(z[i+1]) ){
+    వెళ్ళు parse_సంఖ్య;
+  స్థితి '.':
+    ఒకవేళ( sqlite3Isdigit(z[i+1]) ){
       pParse->hasNonstd = 1;
       t = 0x03;          /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-      seenE = 0;
-      goto parse_number_2;
+      చూసిన_E = 0;
+      వెళ్ళు parse_సంఖ్య_2;
     }
     pParse->iErr = i;
-    return -1;
-  case '-':
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
+    తిరిగి -1;
+  స్థితి '-':
+  స్థితి '0':
+  స్థితి '1':
+  స్థితి '2':
+  స్థితి '3':
+  స్థితి '4':
+  స్థితి '5':
+  స్థితి '6':
+  స్థితి '7':
+  స్థితి '8':
+  స్థితి '9':
     /* Parse number */
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-  parse_number:
-    seenE = 0;
-    assert( '-' < '0' );
-    assert( '+' < '0' );
-    assert( '.' < '0' );
+  parse_సంఖ్య:
+    చూసిన_E = 0;
+    ప్రతిజ్ఞా( '-' < '0' );
+    ప్రతిజ్ఞా( '+' < '0' );
+    ప్రతిజ్ఞా( '.' < '0' );
     c = z[i];
 
-    if( c<='0' ){
-      if( c=='0' ){
-        if( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
-          assert( t==0x00 );
+    ఒకవేళ( c<='0' ){
+      ఒకవేళ( c=='0' ){
+        ఒకవేళ( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
+          ప్రతిజ్ఞా( t==0x00 );
           pParse->hasNonstd = 1;
           t = 0x01;
-          for(j=i+3; sqlite3Isxdigit(z[j]); j++){}
-          goto parse_number_finish;
-        }else if( sqlite3Isdigit(z[i+1]) ){
+          కొరకు(j=i+3; sqlite3Isxdigit(z[j]); j++){}
+          వెళ్ళు parse_సంఖ్య_ముగింపు;
+        }లేకపోతే ఒకవేళ( sqlite3Isdigit(z[i+1]) ){
           pParse->iErr = i+1;
-          return -1;
+          తిరిగి -1;
         }
-      }else{
-        if( !sqlite3Isdigit(z[i+1]) ){
+      }లేకపోతే{
+        ఒకవేళ( !sqlite3Isdigit(z[i+1]) ){
           /* JSON5 allows for "+Infinity" and "-Infinity" using exactly
           ** that case.  SQLite also allows these in any case and it allows
           ** "+inf" and "-inf". */
-          if( (z[i+1]=='I' || z[i+1]=='i')
+          ఒకవేళ( (z[i+1]=='I' || z[i+1]=='i')
            && sqlite3StrNICmp(&z[i+1], "inf",3)==0
           ){
             pParse->hasNonstd = 1;
-            if( z[i]=='-' ){
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-            }else{
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
+            ఒకవేళ( z[i]=='-' ){
+              json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, 6, "-9e999");
+            }లేకపోతే{
+              json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, 5, "9e999");
             }
-            return i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
+            తిరిగి i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
           }
-          if( z[i+1]=='.' ){
+          ఒకవేళ( z[i+1]=='.' ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            goto parse_number_2;
+            వెళ్ళు parse_సంఖ్య_2;
           }
           pParse->iErr = i;
-          return -1;
+          తిరిగి -1;
         }
-        if( z[i+1]=='0' ){
-          if( sqlite3Isdigit(z[i+2]) ){
+        ఒకవేళ( z[i+1]=='0' ){
+          ఒకవేళ( sqlite3Isdigit(z[i+2]) ){
             pParse->iErr = i+1;
-            return -1;
-          }else if( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
+            తిరిగి -1;
+          }లేకపోతే ఒకవేళ( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            for(j=i+4; sqlite3Isxdigit(z[j]); j++){}
-            goto parse_number_finish;
+            కొరకు(j=i+4; sqlite3Isxdigit(z[j]); j++){}
+            వెళ్ళు parse_సంఖ్య_ముగింపు;
           }
         }
       }
     }
 
-  parse_number_2:
-    for(j=i+1;; j++){
+  parse_సంఖ్య_2:
+    కొరకు(j=i+1;; j++){
       c = z[j];
-      if( sqlite3Isdigit(c) ) continue;
-      if( c=='.' ){
-        if( (t & 0x02)!=0 ){
+      ఒకవేళ( sqlite3Isdigit(c) ) కొనసాగు;
+      ఒకవేళ( c=='.' ){
+        ఒకవేళ( (t & 0x02)!=0 ){
           pParse->iErr = j;
-          return -1;
+          తిరిగి -1;
         }
         t |= 0x02;
-        continue;
+        కొనసాగు;
       }
-      if( c=='e' || c=='E' ){
-        if( z[j-1]<'0' ){
-          if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+      ఒకవేళ( c=='e' || c=='E' ){
+        ఒకవేళ( z[j-1]<'0' ){
+          ఒకవేళ( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-          }else{
+          }లేకపోతే{
             pParse->iErr = j;
-            return -1;
+            తిరిగి -1;
           }
         }
-        if( seenE ){
+        ఒకవేళ( చూసిన_E ){
           pParse->iErr = j;
-          return -1;
+          తిరిగి -1;
         }
         t |= 0x02;
-        seenE = 1;
+        చూసిన_E = 1;
         c = z[j+1];
-        if( c=='+' || c=='-' ){
+        ఒకవేళ( c=='+' || c=='-' ){
           j++;
           c = z[j+1];
         }
-        if( c<'0' || c>'9' ){
+        ఒకవేళ( c<'0' || c>'9' ){
           pParse->iErr = j;
-          return -1;
+          తిరిగి -1;
         }
-        continue;
+        కొనసాగు;
       }
-      break;
+      ఆపు;
     }
-    if( z[j-1]<'0' ){
-      if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+    ఒకవేళ( z[j-1]<'0' ){
+      ఒకవేళ( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
         pParse->hasNonstd = 1;
         t |= 0x01;
-      }else{
+      }లేకపోతే{
         pParse->iErr = j;
-        return -1;
+        తిరిగి -1;
       }
     }
-  parse_number_finish:
-    assert( JSONB_INT+0x01==JSONB_INT5 );
-    assert( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
-    assert( JSONB_INT+0x02==JSONB_FLOAT );
-    if( z[i]=='+' ) i++;
-    jsonBlobAppendNode(pParse, JSONB_INT+t, j-i, &z[i]);
-    return j;
+  parse_సంఖ్య_ముగింపు:
+    ప్రతిజ్ఞా( JSONB_INT+0x01==JSONB_INT5 );
+    ప్రతిజ్ఞా( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
+    ప్రతిజ్ఞా( JSONB_INT+0x02==JSONB_FLOAT );
+    ఒకవేళ( z[i]=='+' ) i++;
+    json_Blob_Append_కణుపు(pParse, JSONB_INT+t, j-i, &z[i]);
+    తిరిగి j;
   }
-  case '}': {
+  స్థితి '}': {
     pParse->iErr = i;
-    return -2;  /* End of {...} */
+    తిరిగి -2;  /* End of {...} */
   }
-  case ']': {
+  స్థితి ']': {
     pParse->iErr = i;
-    return -3;  /* End of [...] */
+    తిరిగి -3;  /* End of [...] */
   }
-  case ',': {
+  స్థితి ',': {
     pParse->iErr = i;
-    return -4;  /* List separator */
+    తిరిగి -4;  /* List separator */
   }
-  case ':': {
+  స్థితి ':': {
     pParse->iErr = i;
-    return -5;  /* Object label/value separator */
+    తిరిగి -5;  /* Object label/value separator */
   }
-  case 0: {
-    return 0;   /* End of file */
+  స్థితి 0: {
+    తిరిగి 0;   /* End of file */
   }
-  case 0x09:
-  case 0x0a:
-  case 0x0d:
-  case 0x20: {
+  స్థితి 0x09:
+  స్థితి 0x0a:
+  స్థితి 0x0d:
+  స్థితి 0x20: {
     i += 1 + (u32)strspn(&z[i+1], jsonSpaces);
-    goto json_parse_restart;
+    వెళ్ళు json_parse_restart;
   }
-  case 0x0b:
-  case 0x0c:
-  case '/':
-  case 0xc2:
-  case 0xe1:
-  case 0xe2:
-  case 0xe3:
-  case 0xef: {
+  స్థితి 0x0b:
+  స్థితి 0x0c:
+  స్థితి '/':
+  స్థితి 0xc2:
+  స్థితి 0xe1:
+  స్థితి 0xe2:
+  స్థితి 0xe3:
+  స్థితి 0xef: {
     j = json5Whitespace(&z[i]);
-    if( j>0 ){
+    ఒకవేళ( j>0 ){
       i += j;
       pParse->hasNonstd = 1;
-      goto json_parse_restart;
+      వెళ్ళు json_parse_restart;
     }
     pParse->iErr = i;
-    return -1;
+    తిరిగి -1;
   }
-  case 'n': {
-    if( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  స్థితి 'n': {
+    ఒకవేళ( అక్షరశ్రేణి_పోలిక(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_NULL);
-      return i+4;
+      తిరిగి i+4;
     }
     /* fall-through into the default case that checks for NaN */
     /* no break */ deliberate_fall_through
   }
-  default: {
+  అప్రమేయ: {
     u32 k;
-    int nn;
+    పూర్ణాంకం nn;
     c = z[i];
-    for(k=0; k<sizeof(aNanInfName)/sizeof(aNanInfName[0]); k++){
-      if( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
+    కొరకు(k=0; k<పరిమాణం(aNanInfName)/పరిమాణం(aNanInfName[0]); k++){
+      ఒకవేళ( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) కొనసాగు;
       nn = aNanInfName[k].n;
-      if( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
-        continue;
+      ఒకవేళ( sqlite3StrNICmp(&z[i], aNanInfName[k].z_సరిపోలిక, nn)!=0 ){
+        కొనసాగు;
       }
-      if( sqlite3Isalnum(z[i+nn]) ) continue;
-      if( aNanInfName[k].eType==JSONB_FLOAT ){
-        jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-      }else{
+      ఒకవేళ( sqlite3Isalnum(z[i+nn]) ) కొనసాగు;
+      ఒకవేళ( aNanInfName[k].eType==JSONB_FLOAT ){
+        json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, 5, "9e999");
+      }లేకపోతే{
         jsonBlobAppendOneByte(pParse, JSONB_NULL);
       }
       pParse->hasNonstd = 1;
-      return i + nn;
+      తిరిగి i + nn;
     }
     pParse->iErr = i;
-    return -1;  /* Syntax error */
+    తిరిగి -1;  /* Syntax error */
   }
   } /* End switch(z[i]) */
 }
@@ -2053,44 +2053,44 @@ json_parse_restart:
 ** pParse must be initialized to an empty parse object prior to calling
 ** this routine.
 */
-static int jsonConvertTextToBlob(
+స్థిర పూర్ణాంకం json_Convert_పాఠ్యం_గమ్యం_Blob(
   JsonParse *pParse,           /* Initialize and fill this JsonParse object */
   sqlite3_context *pCtx        /* Report errors here */
 ){
-  int i;
-  const char *zJson = pParse->zJson;
-  i = jsonTranslateTextToBlob(pParse, 0);
-  if( pParse->oom ) i = -1;
-  if( i>0 ){
-#ifdef SQLITE_DEBUG
-    assert( pParse->iDepth==0 );
-    if( sqlite3Config.bJsonSelfcheck ){
-      assert( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
+  పూర్ణాంకం i;
+  స్థిరరాశి అక్షరం *zJson = pParse->zJson;
+  i = json_Translate_పాఠ్యం_గమ్యం_Blob(pParse, 0);
+  ఒకవేళ( pParse->oom ) i = -1;
+  ఒకవేళ( i>0 ){
+#నిర్వచితమైతే SQLITE_DEBUG
+    ప్రతిజ్ఞా( pParse->i_లోతు==0 );
+    ఒకవేళ( sqlite3Config.bJsonSelfcheck ){
+      ప్రతిజ్ఞా( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
     }   
-#endif
-    while( jsonIsspace(zJson[i]) ) i++;
-    if( zJson[i] ){
+#అయితే_ముగింపు
+    అయితే( jsonIsspace(zJson[i]) ) i++;
+    ఒకవేళ( zJson[i] ){
       i += json5Whitespace(&zJson[i]);
-      if( zJson[i] ){
-        if( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
+      ఒకవేళ( zJson[i] ){
+        ఒకవేళ( pCtx ) sqlite3_ఫలితం_error(pCtx, "malformed JSON", -1);
         jsonParseReset(pParse);
-        return 1;
+        తిరిగి 1;
       }
       pParse->hasNonstd = 1;
     }
   }
-  if( i<=0 ){
-    if( pCtx!=0 ){
-      if( pParse->oom ){
-        sqlite3_result_error_nomem(pCtx);
-      }else{
-        sqlite3_result_error(pCtx, "malformed JSON", -1);
+  ఒకవేళ( i<=0 ){
+    ఒకవేళ( pCtx!=0 ){
+      ఒకవేళ( pParse->oom ){
+        sqlite3_ఫలితం_error_nomem(pCtx);
+      }లేకపోతే{
+        sqlite3_ఫలితం_error(pCtx, "malformed JSON", -1);
       }
     }
     jsonParseReset(pParse);
-    return 1;
+    తిరిగి 1;
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -2098,21 +2098,21 @@ static int jsonConvertTextToBlob(
 ** this into the JSONB format and make it the return value of the
 ** SQL function.
 */
-static void jsonReturnStringAsBlob(JsonString *pStr){
+స్థిర శూన్య jsonReturnStringAsBlob(JsonString *pStr){
   JsonParse px;
-  assert( pStr->eErr==0 );
-  memset(&px, 0, sizeof(px));
+  ప్రతిజ్ఞా( pStr->eErr==0 );
+  memset(&px, 0, పరిమాణం(px));
   px.zJson = pStr->zBuf;
-  px.nJson = pStr->nUsed;
+  px.nJson = pStr->n_వాడిన;
   px.db = sqlite3_context_db_handle(pStr->pCtx);
-  (void)jsonTranslateTextToBlob(&px, 0);
-  if( px.oom ){
+  (శూన్య)json_Translate_పాఠ్యం_గమ్యం_Blob(&px, 0);
+  ఒకవేళ( px.oom ){
     sqlite3DbFree(px.db, px.aBlob);
-    sqlite3_result_error_nomem(pStr->pCtx);
-  }else{
-    assert( px.nBlobAlloc>0 );
-    assert( !px.bReadOnly );
-    sqlite3_result_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
+    sqlite3_ఫలితం_error_nomem(pStr->pCtx);
+  }లేకపోతే{
+    ప్రతిజ్ఞా( px.nBlobAlloc>0 );
+    ప్రతిజ్ఞా( !px.bReadOnly );
+    sqlite3_ఫలితం_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
   }
 }
 
@@ -2122,41 +2122,41 @@ static void jsonReturnStringAsBlob(JsonString *pStr){
 ** recursion to handle the (relatively uncommon) cases where the
 ** the payload size is a 2, 4, or 8 byte integer.
 */
-static u32 jsonbPayloadSizeWide(
-  const JsonParse *pParse,   /* JSON parsing context */
+స్థిర u32 jsonb_Payload_కొలత_Wide(
+  స్థిరరాశి JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz,                  /* Write payload size here */
   u8 x                       /* pParse->aBlob[i]>>4 */
 ){
   u32 sz;
   u32 n;
-  assert( i<pParse->nBlob );
-  assert( x==(pParse->aBlob[i]>>4) );
-  assert( x>=13 );
-  if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  ప్రతిజ్ఞా( i<pParse->nBlob );
+  ప్రతిజ్ఞా( x==(pParse->aBlob[i]>>4) );
+  ప్రతిజ్ఞా( x>=13 );
+  ఒకవేళ( x==13 ){
+    ఒకవేళ( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==14 ){
+    ఒకవేళ( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }లేకపోతే{
+    ఒకవేళ( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
@@ -2170,14 +2170,14 @@ static u32 jsonbPayloadSizeWide(
   /* Quirks with -Os and gcov cause the NO_TEST line below to show up as
   ** false-positive coverage miss.  The testcases() macros above are
   ** sufficient to prove that the branch is in fact covered */
-  if( (i64)i+sz+n > pParse->nBlob
+  ఒకవేళ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta  /*NO_TEST*/
   ){
     *pSz = 0;
-    return 0;
+    తిరిగి 0;
   }
   *pSz = sz;
-  return n;
+  తిరిగి n;
 }
 
 /*
@@ -2192,111 +2192,111 @@ static u32 jsonbPayloadSizeWide(
 ** payload size in to *pSz.  It returns the offset from i to the
 ** beginning of the payload.  Return 0 on error.
 */
-static u32 jsonbPayloadSize(
-  const JsonParse *pParse,   /* JSON parsing context */
+స్థిర u32 jsonb_Payload_కొలత(
+  స్థిరరాశి JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ఒకవేళ( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    తిరిగి 0;
+  }లేకపోతే ఒకవేళ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==12 ){
+    ఒకవేళ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse, i, pSz, x);
+  }లేకపోతే{
+    తిరిగి jsonb_Payload_కొలత_Wide(pParse, i, pSz, x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ఒకవేళ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    తిరిగి 0;
   }
   *pSz = sz;
-  return n;
+  తిరిగి n;
 }
 
-#if SQLITE_USES_INLINE
+#ఒకవేళ SQLITE_ఉపయోగిస్తుంది_INLINE
 /* A separate inline version of jsonbPayloadSize(), used in one particulary
 ** performance-critical place.
 */
-static SQLITE_INLINE u32 jsonbPayloadSizeInline(
-  const JsonParse *pParse,   /* JSON parsing context */
+స్థిర SQLITE_INLINE u32 jsonb_Payload_కొలత_Inline(
+  స్థిరరాశి JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ఒకవేళ( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    తిరిగి 0;
+  }లేకపోతే ఒకవేళ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==12 ){
+    ఒకవేళ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==13 ){
+    ఒకవేళ( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==14 ){
+    ఒకవేళ( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }లేకపోతే{
+    ఒకవేళ( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
     n = 9;
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ఒకవేళ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    తిరిగి 0;
   }
   *pSz = sz;
-  return n;
+  తిరిగి n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#లేకపోతే /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
-# define jsonbPayloadSizeInline(a,b,c) jsonbPayloadSize(a,b,c)
-#endif
+# define jsonb_Payload_కొలత_Inline(a,b,c) jsonb_Payload_కొలత(a,b,c)
+#అయితే_ముగింపు
 
 
-#if SQLITE_USES_INLINE
+#ఒకవేళ SQLITE_ఉపయోగిస్తుంది_INLINE
 /* A separate inline version of jsonbPayloadSize() that implements the more
 ** common paths inline but then calls out to a subroutine for the uncommon
 ** paths.
@@ -2308,42 +2308,42 @@ static SQLITE_INLINE u32 jsonbPayloadSizeInline(
 **    *   Large sizes (greater than 255) are uncommon and are handled
 **        by a subroutine call to the jsonbPayloadSizeWide().
 */
-static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
-  const JsonParse *pParse,   /* JSON parsing context */
+స్థిర SQLITE_INLINE u32 jsonb_Payload_కొలత_Semi_Inline(
+  స్థిరరాశి JsonParse *pParse,   /* JSON parsing context */
   u32 i,                     /* Index of the node type-code */
   u32 *pSz                   /* Write payload size here */
 ){
   u8 x;
   u32 sz;
   u32 n;
-  assert( i<pParse->nBlob );
-  if( (x = pParse->aBlob[i]>>4)<=11 ){
+  ప్రతిజ్ఞా( i<pParse->nBlob );
+  ఒకవేళ( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }లేకపోతే ఒకవేళ( x==12 ){
+    ఒకవేళ( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      తిరిగి 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse,i,pSz,x);
+  }లేకపోతే{
+    తిరిగి jsonb_Payload_కొలత_Wide(pParse,i,pSz,x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ఒకవేళ( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    తిరిగి 0;
   }
   *pSz = sz;
-  return n;
+  తిరిగి n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#లేకపోతే /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
-# define jsonbPayloadSizeSemiInline(a,b,c) jsonbPayloadSize(a,b,c)
-#endif
+# define jsonb_Payload_కొలత_Semi_Inline(a,b,c) jsonb_Payload_కొలత(a,b,c)
+#అయితే_ముగింపు
 
 /*
 ** Translate the binary JSONB representation of JSON beginning at
@@ -2358,247 +2358,247 @@ static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToText(
+స్థిర u32 json_Translate_Blob_గమ్యం_పాఠ్యం(
   JsonParse *pParse,             /* the complete parse of the JSON */
   u32 i,                         /* Start rendering at this index */
-  JsonString *pOut               /* Write JSON here */
+  JsonString *p_బహిర్గతం               /* Write JSON here */
 ){
-  u32 sz, n, j, iEnd;
+  u32 sz, n, j, i_చివర;
 
-  n = jsonbPayloadSizeInline(pParse, i, &sz);
-  if( n==0 ){
-    pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+  n = jsonb_Payload_కొలత_Inline(pParse, i, &sz);
+  ఒకవేళ( n==0 ){
+    p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+    తిరిగి pParse->nBlob+1;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
-      jsonAppendRawNZ(pOut, "null", 4);
-      return i+1;
+  ఎంపిక( pParse->aBlob[i] & 0x0f ){
+    స్థితి JSONB_NULL: {
+      jsonAppendRawNZ(p_బహిర్గతం, "null", 4);
+      తిరిగి i+1;
     }
-    case JSONB_TRUE: {
-      jsonAppendRawNZ(pOut, "true", 4);
-      return i+1;
+    స్థితి JSONB_TRUE: {
+      jsonAppendRawNZ(p_బహిర్గతం, "true", 4);
+      తిరిగి i+1;
     }
-    case JSONB_FALSE: {
-      jsonAppendRawNZ(pOut, "false", 5);
-      return i+1;
+    స్థితి JSONB_FALSE: {
+      jsonAppendRawNZ(p_బహిర్గతం, "false", 5);
+      తిరిగి i+1;
     }
-    case JSONB_INT:
-    case JSONB_FLOAT: {
-      if( sz==0 ) goto malformed_jsonb;
-      jsonAppendRaw(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    స్థితి JSONB_INT:
+    స్థితి JSONB_FLOAT: {
+      ఒకవేళ( sz==0 ) వెళ్ళు malformed_jsonb;
+      jsonAppendRaw(p_బహిర్గతం, (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n], sz);
+      ఆపు;
     }
-    case JSONB_INT5: {  /* Integer literal in hexadecimal notation */
+    స్థితి JSONB_INT5: {  /* Integer literal in hexadecimal notation */
       u32 k = 2;
       sqlite3_uint64 u = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      int bOverflow = 0;
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
-        jsonAppendChar(pOut, '-');
+      స్థిరరాశి అక్షరం *z_లోపల = (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n];
+      పూర్ణాంకం b_అధికప్రవాహం = 0;
+      ఒకవేళ( sz==0 ) వెళ్ళు malformed_jsonb;
+      ఒకవేళ( z_లోపల[0]=='-' ){
+        jsonAppendChar(p_బహిర్గతం, '-');
         k++;
-      }else if( zIn[0]=='+' ){
+      }లేకపోతే ఒకవేళ( z_లోపల[0]=='+' ){
         k++;
       }
-      for(; k<sz; k++){
-        if( !sqlite3Isxdigit(zIn[k]) ){
-          pOut->eErr |= JSTRING_MALFORMED;
-          break;
-        }else if( (u>>60)!=0 ){
-          bOverflow = 1;
-        }else{
-          u = u*16 + sqlite3HexToInt(zIn[k]);
+      కొరకు(; k<sz; k++){
+        ఒకవేళ( !sqlite3Isxdigit(z_లోపల[k]) ){
+          p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+          ఆపు;
+        }లేకపోతే ఒకవేళ( (u>>60)!=0 ){
+          b_అధికప్రవాహం = 1;
+        }లేకపోతే{
+          u = u*16 + sqlite3_Hex_గమ్యం_Int(z_లోపల[k]);
         }
       }
-      jsonPrintf(100,pOut,bOverflow?"9.0e999":"%llu", u);
-      break;
+      jsonPrintf(100,p_బహిర్గతం,b_అధికప్రవాహం?"9.0e999":"%llu", u);
+      ఆపు;
     }
-    case JSONB_FLOAT5: { /* Float literal missing digits beside "." */
+    స్థితి JSONB_FLOAT5: { /* Float literal missing digits beside "." */
       u32 k = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
-        jsonAppendChar(pOut, '-');
-        if( sz<=1 ) goto malformed_jsonb;
+      స్థిరరాశి అక్షరం *z_లోపల = (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n];
+      ఒకవేళ( sz==0 ) వెళ్ళు malformed_jsonb;
+      ఒకవేళ( z_లోపల[0]=='-' ){
+        jsonAppendChar(p_బహిర్గతం, '-');
+        ఒకవేళ( sz<=1 ) వెళ్ళు malformed_jsonb;
         k = 1;
       }
-      if( zIn[k]=='.' ){
-        jsonAppendChar(pOut, '0');
+      ఒకవేళ( z_లోపల[k]=='.' ){
+        jsonAppendChar(p_బహిర్గతం, '0');
       }
-      for(; k<sz; k++){
-        jsonAppendChar(pOut, zIn[k]);
-        if( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
-          jsonAppendChar(pOut, '0');
+      కొరకు(; k<sz; k++){
+        jsonAppendChar(p_బహిర్గతం, z_లోపల[k]);
+        ఒకవేళ( z_లోపల[k]=='.' && (k+1==sz || !sqlite3Isdigit(z_లోపల[k+1])) ){
+          jsonAppendChar(p_బహిర్గతం, '0');
         }
       }
-      break;
+      ఆపు;
     }
-    case JSONB_TEXT:
-    case JSONB_TEXTJ: {
-      if( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
-        pOut->zBuf[pOut->nUsed] = '"';
-        memcpy(pOut->zBuf+pOut->nUsed+1,(const char*)&pParse->aBlob[i+n],sz);
-        pOut->zBuf[pOut->nUsed+sz+1] = '"';
-        pOut->nUsed += sz+2;
+    స్థితి JSONB_పాఠ్యం:
+    స్థితి JSONB_TEXTJ: {
+      ఒకవేళ( p_బహిర్గతం->n_వాడిన+sz+2<=p_బహిర్గతం->nAlloc || jsonStringGrow(p_బహిర్గతం, sz+2)==0 ){
+        p_బహిర్గతం->zBuf[p_బహిర్గతం->n_వాడిన] = '"';
+        జ్ఞాపకం_నకలు(p_బహిర్గతం->zBuf+p_బహిర్గతం->n_వాడిన+1,(స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n],sz);
+        p_బహిర్గతం->zBuf[p_బహిర్గతం->n_వాడిన+sz+1] = '"';
+        p_బహిర్గతం->n_వాడిన += sz+2;
       }
-      break;
+      ఆపు;
     }
-    case JSONB_TEXT5: {
-      const char *zIn;
+    స్థితి JSONB_TEXT5: {
+      స్థిరరాశి అక్షరం *z_లోపల;
       u32 k;
       u32 sz2 = sz;
-      zIn = (const char*)&pParse->aBlob[i+n];
-      jsonAppendChar(pOut, '"');
-      while( sz2>0 ){
-        for(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
-        if( k>0 ){
-          jsonAppendRawNZ(pOut, zIn, k);
-          if( k>=sz2 ){
-            break;
+      z_లోపల = (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n];
+      jsonAppendChar(p_బహిర్గతం, '"');
+      అయితే( sz2>0 ){
+        కొరకు(k=0; k<sz2 && (jsonIsOk[(u8)z_లోపల[k]] || z_లోపల[k]=='\''); k++){}
+        ఒకవేళ( k>0 ){
+          jsonAppendRawNZ(p_బహిర్గతం, z_లోపల, k);
+          ఒకవేళ( k>=sz2 ){
+            ఆపు;
           }
-          zIn += k;
+          z_లోపల += k;
           sz2 -= k;
         }
-        if( zIn[0]=='"' ){
-          jsonAppendRawNZ(pOut, "\\\"", 2);
-          zIn++;
+        ఒకవేళ( z_లోపల[0]=='"' ){
+          jsonAppendRawNZ(p_బహిర్గతం, "\\\"", 2);
+          z_లోపల++;
           sz2--;
-          continue;
+          కొనసాగు;
         }
-        if( zIn[0]<=0x1f ){
-          if( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) break;
-          jsonAppendControlChar(pOut, zIn[0]);
-          zIn++;
+        ఒకవేళ( z_లోపల[0]<=0x1f ){
+          ఒకవేళ( p_బహిర్గతం->n_వాడిన+7>p_బహిర్గతం->nAlloc && jsonStringGrow(p_బహిర్గతం,7) ) ఆపు;
+          jsonAppendControlChar(p_బహిర్గతం, z_లోపల[0]);
+          z_లోపల++;
           sz2--;
-          continue;
+          కొనసాగు;
         }
-        assert( zIn[0]=='\\' );
-        assert( sz2>=1 );
-        if( sz2<2 ){
-          pOut->eErr |= JSTRING_MALFORMED;
-          break;
+        ప్రతిజ్ఞా( z_లోపల[0]=='\\' );
+        ప్రతిజ్ఞా( sz2>=1 );
+        ఒకవేళ( sz2<2 ){
+          p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+          ఆపు;
         }
-        switch( (u8)zIn[1] ){
-          case '\'':
-            jsonAppendChar(pOut, '\'');
-            break;
-          case 'v':
-            jsonAppendRawNZ(pOut, "\\u000b", 6);
-            break;
-          case 'x':
-            if( sz2<4 ){
-              pOut->eErr |= JSTRING_MALFORMED;
+        ఎంపిక( (u8)z_లోపల[1] ){
+          స్థితి '\'':
+            jsonAppendChar(p_బహిర్గతం, '\'');
+            ఆపు;
+          స్థితి 'v':
+            jsonAppendRawNZ(p_బహిర్గతం, "\\u000b", 6);
+            ఆపు;
+          స్థితి 'x':
+            ఒకవేళ( sz2<4 ){
+              p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              ఆపు;
             }
-            jsonAppendRawNZ(pOut, "\\u00", 4);
-            jsonAppendRawNZ(pOut, &zIn[2], 2);
-            zIn += 2;
+            jsonAppendRawNZ(p_బహిర్గతం, "\\u00", 4);
+            jsonAppendRawNZ(p_బహిర్గతం, &z_లోపల[2], 2);
+            z_లోపల += 2;
             sz2 -= 2;
-            break;
-          case '0':
-            jsonAppendRawNZ(pOut, "\\u0000", 6);
-            break;
-          case '\r':
-            if( sz2>2 && zIn[2]=='\n' ){
-              zIn++;
+            ఆపు;
+          స్థితి '0':
+            jsonAppendRawNZ(p_బహిర్గతం, "\\u0000", 6);
+            ఆపు;
+          స్థితి '\r':
+            ఒకవేళ( sz2>2 && z_లోపల[2]=='\n' ){
+              z_లోపల++;
               sz2--;
             }
-            break;
-          case '\n':
-            break;
-          case 0xe2:
+            ఆపు;
+          స్థితి '\n':
+            ఆపు;
+          స్థితి 0xe2:
             /* '\' followed by either U+2028 or U+2029 is ignored as
             ** whitespace.  Note that in UTF8, U+2028 is 0xe2 0x80 0x29.
             ** U+2029 is the same except for the last byte */
-            if( sz2<4
-             || 0x80!=(u8)zIn[2]
-             || (0xa8!=(u8)zIn[3] && 0xa9!=(u8)zIn[3])
+            ఒకవేళ( sz2<4
+             || 0x80!=(u8)z_లోపల[2]
+             || (0xa8!=(u8)z_లోపల[3] && 0xa9!=(u8)z_లోపల[3])
             ){
-              pOut->eErr |= JSTRING_MALFORMED;
+              p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              ఆపు;
             }
-            zIn += 2;
+            z_లోపల += 2;
             sz2 -= 2;
-            break;
-          default:
-            jsonAppendRawNZ(pOut, zIn, 2);
-            break;
+            ఆపు;
+          అప్రమేయ:
+            jsonAppendRawNZ(p_బహిర్గతం, z_లోపల, 2);
+            ఆపు;
         }
-        assert( sz2>=2 );
-        zIn += 2;
+        ప్రతిజ్ఞా( sz2>=2 );
+        z_లోపల += 2;
         sz2 -= 2;
       }
-      jsonAppendChar(pOut, '"');
-      break;
+      jsonAppendChar(p_బహిర్గతం, '"');
+      ఆపు;
     }
-    case JSONB_TEXTRAW: {
-      jsonAppendString(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    స్థితి JSONB_TEXTRAW: {
+      jsonAppendString(p_బహిర్గతం, (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n], sz);
+      ఆపు;
     }
-    case JSONB_ARRAY: {
-      jsonAppendChar(pOut, '[');
+    స్థితి JSONB_ARRAY: {
+      jsonAppendChar(p_బహిర్గతం, '[');
       j = i+n;
-      iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
-        jsonStringTooDeep(pOut);
+      i_చివర = j+sz;
+      ఒకవేళ( ++pParse->i_లోతు > JSON_MAX_లోతు ){
+        jsonStringTooDeep(p_బహిర్గతం);
       }
-      while( j<iEnd && pOut->eErr==0 ){
-        j = jsonTranslateBlobToText(pParse, j, pOut);
-        jsonAppendChar(pOut, ',');
+      అయితే( j<i_చివర && p_బహిర్గతం->eErr==0 ){
+        j = json_Translate_Blob_గమ్యం_పాఠ్యం(pParse, j, p_బహిర్గతం);
+        jsonAppendChar(p_బహిర్గతం, ',');
       }
-      pParse->iDepth--;
-      if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
-      jsonAppendChar(pOut, ']');
-      break;
+      pParse->i_లోతు--;
+      ఒకవేళ( j>i_చివర ) p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+      ఒకవేళ( sz>0 ) jsonStringTrimOneChar(p_బహిర్గతం);
+      jsonAppendChar(p_బహిర్గతం, ']');
+      ఆపు;
     }
-    case JSONB_OBJECT: {
-      int x = 0;
-      jsonAppendChar(pOut, '{');
+    స్థితి JSONB_OBJECT: {
+      పూర్ణాంకం x = 0;
+      jsonAppendChar(p_బహిర్గతం, '{');
       j = i+n;
-      iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
-        jsonStringTooDeep(pOut);
+      i_చివర = j+sz;
+      ఒకవేళ( ++pParse->i_లోతు > JSON_MAX_లోతు ){
+        jsonStringTooDeep(p_బహిర్గతం);
       }
-      while( j<iEnd && pOut->eErr==0 ){
-        j = jsonTranslateBlobToText(pParse, j, pOut);
-        jsonAppendChar(pOut, (x++ & 1) ? ',' : ':');
+      అయితే( j<i_చివర && p_బహిర్గతం->eErr==0 ){
+        j = json_Translate_Blob_గమ్యం_పాఠ్యం(pParse, j, p_బహిర్గతం);
+        jsonAppendChar(p_బహిర్గతం, (x++ & 1) ? ',' : ':');
       }
-      pParse->iDepth--;
-      if( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
-      jsonAppendChar(pOut, '}');
-      break;
+      pParse->i_లోతు--;
+      ఒకవేళ( (x & 1)!=0 || j>i_చివర ) p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+      ఒకవేళ( sz>0 ) jsonStringTrimOneChar(p_బహిర్గతం);
+      jsonAppendChar(p_బహిర్గతం, '}');
+      ఆపు;
     }
 
-    default: {
+    అప్రమేయ: {
       malformed_jsonb:
-      pOut->eErr |= JSTRING_MALFORMED;
-      break;
+      p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+      ఆపు;
     }
   }
-  return i+n+sz;
+  తిరిగి i+n+sz;
 }
 
 /* Context for recursion of json_pretty()
 */
-typedef struct JsonPretty JsonPretty;
-struct JsonPretty {
+రకనిర్వచనం నిర్మాణం JsonPretty JsonPretty;
+నిర్మాణం JsonPretty {
   JsonParse *pParse;        /* The BLOB being rendered */
-  JsonString *pOut;         /* Generate pretty output into this string */
-  const char *zIndent;      /* Use this text for indentation */
+  JsonString *p_బహిర్గతం;         /* Generate pretty output into this string */
+  స్థిరరాశి అక్షరం *zIndent;      /* Use this text for indentation */
   u32 szIndent;             /* Bytes in zIndent[] */
   u32 nIndent;              /* Current level of indentation */
 };
 
 /* Append indentation to the pretty JSON under construction */
-static void jsonPrettyIndent(JsonPretty *pPretty){
+స్థిర శూన్య jsonPrettyIndent(JsonPretty *pPretty){
   u32 jj;
-  for(jj=0; jj<pPretty->nIndent; jj++){
-    jsonAppendRaw(pPretty->pOut, pPretty->zIndent, pPretty->szIndent);
+  కొరకు(jj=0; jj<pPretty->nIndent; jj++){
+    jsonAppendRaw(pPretty->p_బహిర్గతం, pPretty->zIndent, pPretty->szIndent);
   }
 }
 
@@ -2619,115 +2619,115 @@ static void jsonPrettyIndent(JsonPretty *pPretty){
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToPrettyText(
+స్థిర u32 json_Translate_Blob_గమ్యం_Pretty_పాఠ్యం(
   JsonPretty *pPretty,       /* Pretty-printing context */
   u32 i                      /* Start rendering at this index */
 ){
-  u32 sz, n, j, iEnd;
+  u32 sz, n, j, i_చివర;
   JsonParse *pParse = pPretty->pParse;
-  JsonString *pOut = pPretty->pOut;
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
-    pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+  JsonString *p_బహిర్గతం = pPretty->p_బహిర్గతం;
+  n = jsonb_Payload_కొలత(pParse, i, &sz);
+  ఒకవేళ( n==0 ){
+    p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+    తిరిగి pParse->nBlob+1;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_ARRAY: {
+  ఎంపిక( pParse->aBlob[i] & 0x0f ){
+    స్థితి JSONB_ARRAY: {
       j = i+n;
-      iEnd = j+sz;
-      jsonAppendChar(pOut, '[');
-      if( j<iEnd ){
-        jsonAppendChar(pOut, '\n');
+      i_చివర = j+sz;
+      jsonAppendChar(p_బహిర్గతం, '[');
+      ఒకవేళ( j<i_చివర ){
+        jsonAppendChar(p_బహిర్గతం, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
-          jsonStringTooDeep(pOut);
+        ఒకవేళ( pPretty->nIndent >= JSON_MAX_లోతు ){
+          jsonStringTooDeep(p_బహిర్గతం);
         }
-        while( pOut->eErr==0 ){
+        అయితే( p_బహిర్గతం->eErr==0 ){
           jsonPrettyIndent(pPretty);
-          j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ){
-            if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-            break;
+          j = json_Translate_Blob_గమ్యం_Pretty_పాఠ్యం(pPretty, j);
+          ఒకవేళ( j>=i_చివర ){
+            ఒకవేళ( j>i_చివర ) p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+            ఆపు;
           }
-          jsonAppendRawNZ(pOut, ",\n", 2);
+          jsonAppendRawNZ(p_బహిర్గతం, ",\n", 2);
         }
-        jsonAppendChar(pOut, '\n');
+        jsonAppendChar(p_బహిర్గతం, '\n');
         pPretty->nIndent--;
         jsonPrettyIndent(pPretty);
       }
-      jsonAppendChar(pOut, ']');
-      i = iEnd;
-      break;
+      jsonAppendChar(p_బహిర్గతం, ']');
+      i = i_చివర;
+      ఆపు;
     }
-    case JSONB_OBJECT: {
+    స్థితి JSONB_OBJECT: {
       j = i+n;
-      iEnd = j+sz;
-      jsonAppendChar(pOut, '{');
-      if( j<iEnd ){
-        jsonAppendChar(pOut, '\n');
+      i_చివర = j+sz;
+      jsonAppendChar(p_బహిర్గతం, '{');
+      ఒకవేళ( j<i_చివర ){
+        jsonAppendChar(p_బహిర్గతం, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
-          jsonStringTooDeep(pOut);
+        ఒకవేళ( pPretty->nIndent >= JSON_MAX_లోతు ){
+          jsonStringTooDeep(p_బహిర్గతం);
         }
-        pParse->iDepth = pPretty->nIndent;
-        while( pOut->eErr==0 ){
+        pParse->i_లోతు = pPretty->nIndent;
+        అయితే( p_బహిర్గతం->eErr==0 ){
           jsonPrettyIndent(pPretty);
-          j = jsonTranslateBlobToText(pParse, j, pOut);
-          if( j>iEnd ){
-            pOut->eErr |= JSTRING_MALFORMED;
-            break;
+          j = json_Translate_Blob_గమ్యం_పాఠ్యం(pParse, j, p_బహిర్గతం);
+          ఒకవేళ( j>i_చివర ){
+            p_బహిర్గతం->eErr |= JSTRING_MALFORMED;
+            ఆపు;
           }
-          jsonAppendRawNZ(pOut, ": ", 2);
-          j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ) break;
-          jsonAppendRawNZ(pOut, ",\n", 2);
+          jsonAppendRawNZ(p_బహిర్గతం, ": ", 2);
+          j = json_Translate_Blob_గమ్యం_Pretty_పాఠ్యం(pPretty, j);
+          ఒకవేళ( j>=i_చివర ) ఆపు;
+          jsonAppendRawNZ(p_బహిర్గతం, ",\n", 2);
         }
-        jsonAppendChar(pOut, '\n');
+        jsonAppendChar(p_బహిర్గతం, '\n');
         pPretty->nIndent--;
         jsonPrettyIndent(pPretty);
       }
-      jsonAppendChar(pOut, '}');
-      i = iEnd;
-      break;
+      jsonAppendChar(p_బహిర్గతం, '}');
+      i = i_చివర;
+      ఆపు;
     }
-    default: {
-      i = jsonTranslateBlobToText(pParse, i, pOut);
-      break;
+    అప్రమేయ: {
+      i = json_Translate_Blob_గమ్యం_పాఠ్యం(pParse, i, p_బహిర్గతం);
+      ఆపు;
     }
   }
-  return i;
+  తిరిగి i;
 }
 
 /*
 ** Given that a JSONB_ARRAY object starts at offset i, return
 ** the number of entries in that array.
 */
-static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
-  u32 n, sz, i, iEnd;
+స్థిర u32 jsonb_Array_లెక్క(JsonParse *pParse, u32 i_మూలం){
+  u32 n, sz, i, i_చివర;
   u32 k = 0;
-  n = jsonbPayloadSize(pParse, iRoot, &sz);
-  iEnd = iRoot+n+sz;
-  for(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
-    n = jsonbPayloadSizeSemiInline(pParse, i, &sz);
+  n = jsonb_Payload_కొలత(pParse, i_మూలం, &sz);
+  i_చివర = i_మూలం+n+sz;
+  కొరకు(i=i_మూలం+n; n>0 && i<i_చివర; i+=sz+n, k++){
+    n = jsonb_Payload_కొలత_Semi_Inline(pParse, i, &sz);
   }
-  return k;
+  తిరిగి k;
 }
 
 /*
 ** Edit the payload size of the element at iRoot by the amount in
 ** pParse->delta.
 */
-static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
+స్థిర శూన్య json_After_Edit_కొలత_Adjust(JsonParse *pParse, u32 i_మూలం){
   u32 sz = 0;
   u32 nBlob;
-  assert( pParse->delta!=0 );
-  assert( pParse->nBlobAlloc >= pParse->nBlob );
+  ప్రతిజ్ఞా( pParse->delta!=0 );
+  ప్రతిజ్ఞా( pParse->nBlobAlloc >= pParse->nBlob );
   nBlob = pParse->nBlob;
   pParse->nBlob = pParse->nBlobAlloc;
-  (void)jsonbPayloadSize(pParse, iRoot, &sz);
+  (శూన్య)jsonb_Payload_కొలత(pParse, i_మూలం, &sz);
   pParse->nBlob = nBlob;
   sz += pParse->delta;
-  pParse->delta += jsonBlobChangePayloadSize(pParse, iRoot, sz);
+  pParse->delta += json_Blob_Change_Payload_కొలత(pParse, i_మూలం, sz);
 }
 
 /*
@@ -2746,9 +2746,9 @@ static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
 ** This routine is an optimization.  A correct answer is obtained if it
 ** always leaves the output unchanged and returns false.
 */
-static int jsonBlobOverwrite(
-  u8 *aOut,                 /* Overwrite here */
-  const u8 *aIns,           /* New content */
+స్థిర పూర్ణాంకం jsonBlobOverwrite(
+  u8 *a_బహిర్గతం,                 /* Overwrite here */
+  స్థిరరాశి u8 *aIns,           /* New content */
   u32 nIns,                 /* Bytes of new content */
   u32 d                     /* Need to expand new content by this much */
 ){
@@ -2760,50 +2760,50 @@ static int jsonBlobOverwrite(
   ** expanded aIns[], based on the size of the expanded aIns[] header:
   **
   **                             2     3  4     5  6  7  8     9 */
-  static const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
+  స్థిర స్థిరరాశి u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
 
-  if( (aIns[0]&0x0f)<=2 ) return 0;    /* Cannot enlarge NULL, true, false */
-  switch( aIns[0]>>4 ){
-    default: {                         /* aIns[] header size 1 */
-      if( ((1<<d)&0x116)==0 ) return 0;  /* d must be 1, 2, 4, or 8 */
+  ఒకవేళ( (aIns[0]&0x0f)<=2 ) తిరిగి 0;    /* Cannot enlarge NULL, true, false */
+  ఎంపిక( aIns[0]>>4 ){
+    అప్రమేయ: {                         /* aIns[] header size 1 */
+      ఒకవేళ( ((1<<d)&0x116)==0 ) తిరిగి 0;  /* d must be 1, 2, 4, or 8 */
       i = d + 1;                         /* New hdr sz: 2, 3, 5, or 9 */
       szHdr = 1;
-      break;
+      ఆపు;
     }
-    case 12: {                         /* aIns[] header size is 2 */
-      if( ((1<<d)&0x8a)==0) return 0;    /* d must be 1, 3, or 7 */
+    స్థితి 12: {                         /* aIns[] header size is 2 */
+      ఒకవేళ( ((1<<d)&0x8a)==0) తిరిగి 0;    /* d must be 1, 3, or 7 */
       i = d + 2;                         /* New hdr sz: 2, 5, or 9 */
       szHdr = 2;
-      break;
+      ఆపు;
     }
-    case 13: {                         /* aIns[] header size is 3 */
-      if( d!=2 && d!=6 ) return 0;       /* d must be 2 or 6 */
+    స్థితి 13: {                         /* aIns[] header size is 3 */
+      ఒకవేళ( d!=2 && d!=6 ) తిరిగి 0;       /* d must be 2 or 6 */
       i = d + 3;                         /* New hdr sz: 5 or 9 */
       szHdr = 3;
-      break;
+      ఆపు;
     }
-    case 14: {                         /* aIns[] header size is 5 */
-      if( d!=4 ) return 0;               /* d must be 4 */
+    స్థితి 14: {                         /* aIns[] header size is 5 */
+      ఒకవేళ( d!=4 ) తిరిగి 0;               /* d must be 4 */
       i = 9;                             /* New hdr sz: 9 */
       szHdr = 5;
-      break;
+      ఆపు;
     }
-    case 15: {                         /* aIns[] header size is 9 */
-      return 0;                          /* No solution */
+    స్థితి 15: {                         /* aIns[] header size is 9 */
+      తిరిగి 0;                          /* No solution */
     }
   }
-  assert( i>=2 && i<=9 && aType[i-2]!=0 );
-  aOut[0] = (aIns[0] & 0x0f) | aType[i-2];
-  memcpy(&aOut[i], &aIns[szHdr], nIns-szHdr);
+  ప్రతిజ్ఞా( i>=2 && i<=9 && aType[i-2]!=0 );
+  a_బహిర్గతం[0] = (aIns[0] & 0x0f) | aType[i-2];
+  జ్ఞాపకం_నకలు(&a_బహిర్గతం[i], &aIns[szHdr], nIns-szHdr);
   szPayload = nIns - szHdr;
-  while( 1/*edit-by-break*/ ){
+  అయితే( 1/*edit-by-break*/ ){
     i--;
-    aOut[i] = szPayload & 0xff;
-    if( i==1 ) break;
+    a_బహిర్గతం[i] = szPayload & 0xff;
+    ఒకవేళ( i==1 ) ఆపు;
     szPayload >>= 8;
   }
-  assert( (szPayload>>8)==0 );
-  return 1;
+  ప్రతిజ్ఞా( (szPayload>>8)==0 );
+  తిరిగి 1;
 }
 
 /*
@@ -2819,24 +2819,24 @@ static int jsonBlobOverwrite(
 **
 ** Set pParse->oom if an OOM occurs.
 */
-static void jsonBlobEdit(
+స్థిర శూన్య jsonBlobEdit(
   JsonParse *pParse,     /* The JSONB to be modified is in pParse->aBlob */
   u32 iDel,              /* First byte to be removed */
   u32 nDel,              /* Number of bytes to remove */
-  const u8 *aIns,        /* Content to insert */
+  స్థిరరాశి u8 *aIns,        /* Content to insert */
   u32 nIns               /* Bytes of content to insert */
 ){
   i64 d = (i64)nIns - (i64)nDel;
-  assert( pParse->nBlob >= (u64)iDel + (u64)nDel );
-  if( d<0 && d>=(-8) && aIns!=0
-   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (int)-d)
+  ప్రతిజ్ఞా( pParse->nBlob >= (u64)iDel + (u64)nDel );
+  ఒకవేళ( d<0 && d>=(-8) && aIns!=0
+   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (పూర్ణాంకం)-d)
   ){
-    return;
+    తిరిగి;
   }
-  if( d!=0 ){
-    if( pParse->nBlob + d > pParse->nBlobAlloc ){
+  ఒకవేళ( d!=0 ){
+    ఒకవేళ( pParse->nBlob + d > pParse->nBlobAlloc ){
       jsonBlobExpand(pParse, (u64)pParse->nBlob+d);
-      if( pParse->oom ) return;
+      ఒకవేళ( pParse->oom ) తిరిగి;
     }
     memmove(&pParse->aBlob[iDel+nIns],
             &pParse->aBlob[iDel+nDel],
@@ -2844,8 +2844,8 @@ static void jsonBlobEdit(
     pParse->nBlob += d;
     pParse->delta += d;
   }
-  if( nIns && aIns ){
-    memcpy(&pParse->aBlob[iDel], aIns, nIns);
+  ఒకవేళ( nIns && aIns ){
+    జ్ఞాపకం_నకలు(&pParse->aBlob[iDel], aIns, nIns);
   }
 }
 
@@ -2859,33 +2859,33 @@ static void jsonBlobEdit(
 **    0x5c 0xe2 0x80 0xa8
 **    0x5c 0xe2 0x80 0xa9
 */
-static u32 jsonBytesToBypass(const char *z, u32 n){
+స్థిర u32 json_బైట్లు_గమ్యం_Bypass(స్థిరరాశి అక్షరం *z, u32 n){
   u32 i = 0;
-  while( i+1<n ){
-    if( z[i]!='\\' ) return i;
-    if( z[i+1]=='\n' ){
+  అయితే( i+1<n ){
+    ఒకవేళ( z[i]!='\\' ) తిరిగి i;
+    ఒకవేళ( z[i+1]=='\n' ){
       i += 2;
-      continue;
+      కొనసాగు;
     }
-    if( z[i+1]=='\r' ){
-      if( i+2<n && z[i+2]=='\n' ){
+    ఒకవేళ( z[i+1]=='\r' ){
+      ఒకవేళ( i+2<n && z[i+2]=='\n' ){
         i += 3;
-      }else{
+      }లేకపోతే{
         i += 2;
       }
-      continue;
+      కొనసాగు;
     }
-    if( 0xe2==(u8)z[i+1]
+    ఒకవేళ( 0xe2==(u8)z[i+1]
      && i+3<n
      && 0x80==(u8)z[i+2]
      && (0xa8==(u8)z[i+3] || 0xa9==(u8)z[i+3])
     ){
       i += 4;
-      continue;
+      కొనసాగు;
     }
-    break;
+    ఆపు;
   }
-  return i;
+  తిరిగి i;
 }
 
 /*
@@ -2897,87 +2897,87 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
 ** after the '\\' to complete the encoding) then *piOut is set to
 ** JSON_INVALID_CHAR.
 */
-static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
-  assert( n>0 );
-  assert( z[0]=='\\' );
-  if( n<2 ){
-    *piOut = JSON_INVALID_CHAR;
-    return n;
+స్థిర u32 jsonUnescapeOneChar(స్థిరరాశి అక్షరం *z, u32 n, u32 *pi_బహిర్గతం){
+  ప్రతిజ్ఞా( n>0 );
+  ప్రతిజ్ఞా( z[0]=='\\' );
+  ఒకవేళ( n<2 ){
+    *pi_బహిర్గతం = JSON_INVALID_CHAR;
+    తిరిగి n;
   }
-  switch( (u8)z[1] ){
-    case 'u': {
+  ఎంపిక( (u8)z[1] ){
+    స్థితి 'u': {
       u32 v, vlo;
-      if( n<6 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
+      ఒకవేళ( n<6 ){
+        *pi_బహిర్గతం = JSON_INVALID_CHAR;
+        తిరిగి n;
       }
-      v = jsonHexToInt4(&z[2]);
-      if( (v & 0xfc00)==0xd800
+      v = json_Hex_గమ్యం_Int4(&z[2]);
+      ఒకవేళ( (v & 0xfc00)==0xd800
        && n>=12
        && z[6]=='\\'
        && z[7]=='u'
-       && ((vlo = jsonHexToInt4(&z[8]))&0xfc00)==0xdc00
+       && ((vlo = json_Hex_గమ్యం_Int4(&z[8]))&0xfc00)==0xdc00
       ){
-        *piOut = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
-        return 12;
-      }else{
-        *piOut = v;
-        return 6;
+        *pi_బహిర్గతం = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
+        తిరిగి 12;
+      }లేకపోతే{
+        *pi_బహిర్గతం = v;
+        తిరిగి 6;
       }
     }
-    case 'b': {   *piOut = '\b';  return 2; }
-    case 'f': {   *piOut = '\f';  return 2; }
-    case 'n': {   *piOut = '\n';  return 2; }
-    case 'r': {   *piOut = '\r';  return 2; }
-    case 't': {   *piOut = '\t';  return 2; }
-    case 'v': {   *piOut = '\v';  return 2; }
-    case '0': {
+    స్థితి 'b': {   *pi_బహిర్గతం = '\b';  తిరిగి 2; }
+    స్థితి 'f': {   *pi_బహిర్గతం = '\f';  తిరిగి 2; }
+    స్థితి 'n': {   *pi_బహిర్గతం = '\n';  తిరిగి 2; }
+    స్థితి 'r': {   *pi_బహిర్గతం = '\r';  తిరిగి 2; }
+    స్థితి 't': {   *pi_బహిర్గతం = '\t';  తిరిగి 2; }
+    స్థితి 'v': {   *pi_బహిర్గతం = '\v';  తిరిగి 2; }
+    స్థితి '0': {
       /* JSON5 requires that the \0 escape not be followed by a digit.
       ** But SQLite did not enforce this restriction in versions 3.42.0
       ** through 3.49.2.  That was a bug.  But some applications might have
       ** come to depend on that bug.  Use the SQLITE_BUG_COMPATIBLE_20250510
       ** option to restore the old buggy behavior. */
-#ifdef SQLITE_BUG_COMPATIBLE_20250510
+#నిర్వచితమైతే SQLITE_BUG_COMPATIBLE_20250510
       /* Legacy bug-compatible behavior */
-      *piOut = 0;
-#else
+      *pi_బహిర్గతం = 0;
+#లేకపోతే
       /* Correct behavior */
-      *piOut = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
-#endif
-      return 2;
+      *pi_బహిర్గతం = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
+#అయితే_ముగింపు
+      తిరిగి 2;
     }
-    case '\'':
-    case '"':
-    case '/':
-    case '\\':{   *piOut = z[1];  return 2; }
-    case 'x': {
-      if( n<4 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
+    స్థితి '\'':
+    స్థితి '"':
+    స్థితి '/':
+    స్థితి '\\':{   *pi_బహిర్గతం = z[1];  తిరిగి 2; }
+    స్థితి 'x': {
+      ఒకవేళ( n<4 ){
+        *pi_బహిర్గతం = JSON_INVALID_CHAR;
+        తిరిగి n;
       }
-      *piOut = (jsonHexToInt(z[2])<<4) | jsonHexToInt(z[3]);
-      return 4;
+      *pi_బహిర్గతం = (json_Hex_గమ్యం_Int(z[2])<<4) | json_Hex_గమ్యం_Int(z[3]);
+      తిరిగి 4;
     }
-    case 0xe2:
-    case '\r':
-    case '\n': {
-      u32 nSkip = jsonBytesToBypass(z, n);
-      if( nSkip==0 ){
-        *piOut = JSON_INVALID_CHAR;
-        return n;
-      }else if( nSkip==n ){
-        *piOut = 0;
-        return n;
-      }else if( z[nSkip]=='\\' ){
-        return nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
-      }else{
-        int sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
-        return nSkip + sz;
+    స్థితి 0xe2:
+    స్థితి '\r':
+    స్థితి '\n': {
+      u32 nSkip = json_బైట్లు_గమ్యం_Bypass(z, n);
+      ఒకవేళ( nSkip==0 ){
+        *pi_బహిర్గతం = JSON_INVALID_CHAR;
+        తిరిగి n;
+      }లేకపోతే ఒకవేళ( nSkip==n ){
+        *pi_బహిర్గతం = 0;
+        తిరిగి n;
+      }లేకపోతే ఒకవేళ( z[nSkip]=='\\' ){
+        తిరిగి nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, pi_బహిర్గతం);
+      }లేకపోతే{
+        పూర్ణాంకం sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, pi_బహిర్గతం);
+        తిరిగి nSkip + sz;
       }
     }
-    default: {
-      *piOut = JSON_INVALID_CHAR;
-      return 2;
+    అప్రమేయ: {
+      *pi_బహిర్గతం = JSON_INVALID_CHAR;
+      తిరిగి 2;
     }
   }
 }
@@ -2990,55 +2990,55 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** In this version, we know that one or the other or both of the
 ** two comparands contains an escape sequence.
 */
-static SQLITE_NOINLINE int jsonLabelCompareEscaped(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+స్థిర SQLITE_NOINLINE పూర్ణాంకం jsonLabelCompareEscaped(
+  స్థిరరాశి అక్షరం *z_ఎడమ,          /* The left label */
+  u32 n_ఎడమ,                  /* Size of the left label in bytes */
+  పూర్ణాంకం raw_ఎడమ,                /* True if zLeft contains no escapes */
+  స్థిరరాశి అక్షరం *z_కుడి,         /* The right label */
+  u32 n_కుడి,                 /* Size of the right label in bytes */
+  పూర్ణాంకం raw_కుడి                /* True if zRight is escape-free */
 ){
-  u32 cLeft, cRight;
-  assert( rawLeft==0 || rawRight==0 );
-  while( 1 /*exit-by-return*/ ){
-    if( nLeft==0 ){
-      cLeft = 0;
-    }else if( rawLeft || zLeft[0]!='\\' ){
-      cLeft = ((u8*)zLeft)[0];
-      if( cLeft>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
-        zLeft += sz;
-        nLeft -= sz;
-      }else{
-        zLeft++;
-        nLeft--;
+  u32 c_ఎడమ, c_కుడి;
+  ప్రతిజ్ఞా( raw_ఎడమ==0 || raw_కుడి==0 );
+  అయితే( 1 /*exit-by-return*/ ){
+    ఒకవేళ( n_ఎడమ==0 ){
+      c_ఎడమ = 0;
+    }లేకపోతే ఒకవేళ( raw_ఎడమ || z_ఎడమ[0]!='\\' ){
+      c_ఎడమ = ((u8*)z_ఎడమ)[0];
+      ఒకవేళ( c_ఎడమ>=0xc0 ){
+        పూర్ణాంకం sz = sqlite3Utf8ReadLimited((u8*)z_ఎడమ, n_ఎడమ, &c_ఎడమ);
+        z_ఎడమ += sz;
+        n_ఎడమ -= sz;
+      }లేకపోతే{
+        z_ఎడమ++;
+        n_ఎడమ--;
       }
-    }else{
-      u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
-      zLeft += n;
-      assert( n<=nLeft );
-      nLeft -= n;
+    }లేకపోతే{
+      u32 n = jsonUnescapeOneChar(z_ఎడమ, n_ఎడమ, &c_ఎడమ);
+      z_ఎడమ += n;
+      ప్రతిజ్ఞా( n<=n_ఎడమ );
+      n_ఎడమ -= n;
     }
-    if( nRight==0 ){
-      cRight = 0;
-    }else if( rawRight || zRight[0]!='\\' ){
-      cRight = ((u8*)zRight)[0];
-      if( cRight>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
-        zRight += sz;
-        nRight -= sz;
-      }else{
-        zRight++;
-        nRight--;
+    ఒకవేళ( n_కుడి==0 ){
+      c_కుడి = 0;
+    }లేకపోతే ఒకవేళ( raw_కుడి || z_కుడి[0]!='\\' ){
+      c_కుడి = ((u8*)z_కుడి)[0];
+      ఒకవేళ( c_కుడి>=0xc0 ){
+        పూర్ణాంకం sz = sqlite3Utf8ReadLimited((u8*)z_కుడి, n_కుడి, &c_కుడి);
+        z_కుడి += sz;
+        n_కుడి -= sz;
+      }లేకపోతే{
+        z_కుడి++;
+        n_కుడి--;
       }
-    }else{
-      u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
-      zRight += n;
-      assert( n<=nRight );
-      nRight -= n;
+    }లేకపోతే{
+      u32 n = jsonUnescapeOneChar(z_కుడి, n_కుడి, &c_కుడి);
+      z_కుడి += n;
+      ప్రతిజ్ఞా( n<=n_కుడి );
+      n_కుడి -= n;
     }
-    if( cLeft!=cRight ) return 0;
-    if( cLeft==0 ) return 1;
+    ఒకవేళ( c_ఎడమ!=c_కుడి ) తిరిగి 0;
+    ఒకవేళ( c_ఎడమ==0 ) తిరిగి 1;
   }
 }
 
@@ -3046,37 +3046,37 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** Compare two object labels.  Return 1 if they are equal and
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
-static int jsonLabelCompare(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+స్థిర పూర్ణాంకం jsonLabelCompare(
+  స్థిరరాశి అక్షరం *z_ఎడమ,          /* The left label */
+  u32 n_ఎడమ,                  /* Size of the left label in bytes */
+  పూర్ణాంకం raw_ఎడమ,                /* True if zLeft contains no escapes */
+  స్థిరరాశి అక్షరం *z_కుడి,         /* The right label */
+  u32 n_కుడి,                 /* Size of the right label in bytes */
+  పూర్ణాంకం raw_కుడి                /* True if zRight is escape-free */
 ){
-  if( rawLeft && rawRight ){
+  ఒకవేళ( raw_ఎడమ && raw_కుడి ){
     /* Simpliest case:  Neither label contains escapes.  A simple
     ** memcmp() is sufficient. */
-    if( nLeft!=nRight ) return 0;
-    return memcmp(zLeft, zRight, nLeft)==0;
-  }else{
-    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
-                                   zRight, nRight, rawRight);
+    ఒకవేళ( n_ఎడమ!=n_కుడి ) తిరిగి 0;
+    తిరిగి memcmp(z_ఎడమ, z_కుడి, n_ఎడమ)==0;
+  }లేకపోతే{
+    తిరిగి jsonLabelCompareEscaped(z_ఎడమ, n_ఎడమ, raw_ఎడమ,
+                                   z_కుడి, n_కుడి, raw_కుడి);
   }
 }
 
 /*
 ** Error returns from jsonLookupStep()
 */
-#define JSON_LOOKUP_ERROR      0xffffffff
-#define JSON_LOOKUP_NOTFOUND   0xfffffffe
-#define JSON_LOOKUP_NOTARRAY   0xfffffffd
-#define JSON_LOOKUP_TOODEEP    0xfffffffc
-#define JSON_LOOKUP_PATHERROR  0xfffffffb
-#define JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
+#నిర్వచించు JSON_LOOKUP_ERROR      0xffffffff
+#నిర్వచించు JSON_LOOKUP_NOTFOUND   0xfffffffe
+#నిర్వచించు JSON_LOOKUP_NOTARRAY   0xfffffffd
+#నిర్వచించు JSON_LOOKUP_TOODEEP    0xfffffffc
+#నిర్వచించు JSON_LOOKUP_PATHERROR  0xfffffffb
+#నిర్వచించు JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
 
 /* Forward declaration */
-static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
+స్థిర u32 json_Lookup_అడుగు(JsonParse*,u32,స్థిరరాశి అక్షరం*,u32);
 
 
 /* This helper routine for jsonLookupStep() populates pIns with
@@ -3098,36 +3098,36 @@ static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
 ** The caller is responsible for resetting pIns when it has finished
 ** using the substructure.
 */
-static u32 jsonCreateEditSubstructure(
+స్థిర u32 jsonCreateEditSubstructure(
   JsonParse *pParse,  /* The original JSONB that is being edited */
   JsonParse *pIns,    /* Populate this with the blob data to insert */
-  const char *zTail   /* Tail of the path that determines substructure */
+  స్థిరరాశి అక్షరం *z_తోక   /* Tail of the path that determines substructure */
 ){
-  static const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
-  int rc;
-  memset(pIns, 0, sizeof(*pIns));
+  స్థిర స్థిరరాశి u8 ఖాళీలు_Object[] = { JSONB_ARRAY, JSONB_OBJECT };
+  పూర్ణాంకం rc;
+  memset(pIns, 0, పరిమాణం(*pIns));
   pIns->db = pParse->db;
-  if( zTail[0]==0 ){
+  ఒకవేళ( z_తోక[0]==0 ){
     /* No substructure.  Just insert what is given in pParse. */
     pIns->aBlob = pParse->aIns;
     pIns->nBlob = pParse->nIns;
     rc = 0;
-  }else{
+  }లేకపోతే{
     /* Construct the binary substructure */
     pIns->nBlob = 1;
-    pIns->aBlob = (u8*)&emptyObject[zTail[0]=='.'];
+    pIns->aBlob = (u8*)&ఖాళీలు_Object[z_తోక[0]=='.'];
     pIns->eEdit = pParse->eEdit;
     pIns->nIns = pParse->nIns;
     pIns->aIns = pParse->aIns;
-    pIns->iDepth = pParse->iDepth+1;
-    if( pIns->iDepth >= JSON_MAX_DEPTH ){
-      return JSON_LOOKUP_TOODEEP;
+    pIns->i_లోతు = pParse->i_లోతు+1;
+    ఒకవేళ( pIns->i_లోతు >= JSON_MAX_లోతు ){
+      తిరిగి JSON_LOOKUP_TOODEEP;
     }
-    rc = jsonLookupStep(pIns, 0, zTail, 0);
-    pParse->iDepth--;
+    rc = json_Lookup_అడుగు(pIns, 0, z_తోక, 0);
+    pParse->i_లోతు--;
     pParse->oom |= pIns->oom;
   }
-  return rc;  /* Error code only */
+  తిరిగి rc;  /* Error code only */
 }
 
 /*
@@ -3147,234 +3147,234 @@ static u32 jsonCreateEditSubstructure(
 ** is performed, the return value is only useful for detecting error
 ** conditions.
 */
-static u32 jsonLookupStep(
+స్థిర u32 json_Lookup_అడుగు(
   JsonParse *pParse,      /* The JSON to search */
-  u32 iRoot,              /* Begin the search at this element of aBlob[] */
-  const char *zPath,      /* The path to search */
+  u32 i_మూలం,              /* Begin the search at this element of aBlob[] */
+  స్థిరరాశి అక్షరం *z_మార్గం,      /* The path to search */
   u32 iLabel              /* Label if iRoot is a value of in an object */
 ){
-  u32 i, j, k, nKey, sz, n, iEnd, rc;
-  const char *zKey;
+  u32 i, j, k, n_కీలకం, sz, n, i_చివర, rc;
+  స్థిరరాశి అక్షరం *z_కీలకం;
   u8 x;
 
-  if( zPath[0]==0 ){
-    if( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
-      n = jsonbPayloadSize(pParse, iRoot, &sz);
+  ఒకవేళ( z_మార్గం[0]==0 ){
+    ఒకవేళ( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
+      n = jsonb_Payload_కొలత(pParse, i_మూలం, &sz);
       sz += n;
-      if( pParse->eEdit==JEDIT_DEL ){
-        if( iLabel>0 ){
-          sz += iRoot - iLabel;
-          iRoot = iLabel;
+      ఒకవేళ( pParse->eEdit==JEDIT_DEL ){
+        ఒకవేళ( iLabel>0 ){
+          sz += i_మూలం - iLabel;
+          i_మూలం = iLabel;
         }
-        jsonBlobEdit(pParse, iRoot, sz, 0, 0);
-      }else if( pParse->eEdit==JEDIT_INS ){
+        jsonBlobEdit(pParse, i_మూలం, sz, 0, 0);
+      }లేకపోతే ఒకవేళ( pParse->eEdit==JEDIT_INS ){
         /* Already exists, so json_insert() is a no-op */
-      }else if( pParse->eEdit==JEDIT_AINS ){
+      }లేకపోతే ఒకవేళ( pParse->eEdit==JEDIT_AINS ){
         /* json_array_insert() */
-        if( zPath[-1]!=']' ){
-          return JSON_LOOKUP_NOTARRAY;
-        }else{
-          jsonBlobEdit(pParse, iRoot, 0, pParse->aIns, pParse->nIns);
+        ఒకవేళ( z_మార్గం[-1]!=']' ){
+          తిరిగి JSON_LOOKUP_NOTARRAY;
+        }లేకపోతే{
+          jsonBlobEdit(pParse, i_మూలం, 0, pParse->aIns, pParse->nIns);
         }
-      }else{
+      }లేకపోతే{
         /* json_set() or json_replace() */
-        jsonBlobEdit(pParse, iRoot, sz, pParse->aIns, pParse->nIns);
+        jsonBlobEdit(pParse, i_మూలం, sz, pParse->aIns, pParse->nIns);
       }
     }
     pParse->iLabel = iLabel;
-    return iRoot;
+    తిరిగి i_మూలం;
   }
-  if( zPath[0]=='.' ){
-    int rawKey = 1;
-    x = pParse->aBlob[iRoot];
-    zPath++;
-    if( zPath[0]=='"' ){
-      zKey = zPath + 1;
-      for(i=1; zPath[i] && zPath[i]!='"'; i++){
-        if( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
+  ఒకవేళ( z_మార్గం[0]=='.' ){
+    పూర్ణాంకం raw_కీలకం = 1;
+    x = pParse->aBlob[i_మూలం];
+    z_మార్గం++;
+    ఒకవేళ( z_మార్గం[0]=='"' ){
+      z_కీలకం = z_మార్గం + 1;
+      కొరకు(i=1; z_మార్గం[i] && z_మార్గం[i]!='"'; i++){
+        ఒకవేళ( z_మార్గం[i]=='\\' && z_మార్గం[i+1]!=0 ) i++;
       }
-      nKey = i-1;
-      if( zPath[i] ){
+      n_కీలకం = i-1;
+      ఒకవేళ( z_మార్గం[i] ){
         i++;
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }లేకపోతే{
+        తిరిగి JSON_LOOKUP_PATHERROR;
       }
-      testcase( nKey==0 );
-      rawKey = memchr(zKey, '\\', nKey)==0;
-    }else{
-      zKey = zPath;
-      for(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
-      nKey = i;
-      if( nKey==0 ){
-        return JSON_LOOKUP_PATHERROR;
+      testcase( n_కీలకం==0 );
+      raw_కీలకం = memchr(z_కీలకం, '\\', n_కీలకం)==0;
+    }లేకపోతే{
+      z_కీలకం = z_మార్గం;
+      కొరకు(i=0; z_మార్గం[i] && z_మార్గం[i]!='.' && z_మార్గం[i]!='['; i++){}
+      n_కీలకం = i;
+      ఒకవేళ( n_కీలకం==0 ){
+        తిరిగి JSON_LOOKUP_PATHERROR;
       }
     }
-    if( (x & 0x0f)!=JSONB_OBJECT ) return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
-    j = iRoot + n;  /* j is the index of a label */
-    iEnd = j+sz;
-    while( j<iEnd ){
-      int rawLabel;
-      const char *zLabel;
+    ఒకవేళ( (x & 0x0f)!=JSONB_OBJECT ) తిరిగి JSON_LOOKUP_NOTFOUND;
+    n = jsonb_Payload_కొలత(pParse, i_మూలం, &sz);
+    j = i_మూలం + n;  /* j is the index of a label */
+    i_చివర = j+sz;
+    అయితే( j<i_చివర ){
+      పూర్ణాంకం rawLabel;
+      స్థిరరాశి అక్షరం *zLabel;
       x = pParse->aBlob[j] & 0x0f;
-      if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return JSON_LOOKUP_ERROR;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ఒకవేళ( x<JSONB_పాఠ్యం || x>JSONB_TEXTRAW ) తిరిగి JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_కొలత_Semi_Inline(pParse, j, &sz);
+      ఒకవేళ( n==0 ) తిరిగి JSON_LOOKUP_ERROR;
       k = j+n;  /* k is the index of the label text */
-      if( k+sz>=iEnd ) return JSON_LOOKUP_ERROR;
-      zLabel = (const char*)&pParse->aBlob[k];
-      rawLabel = x==JSONB_TEXT || x==JSONB_TEXTRAW;
-      if( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
+      ఒకవేళ( k+sz>=i_చివర ) తిరిగి JSON_LOOKUP_ERROR;
+      zLabel = (స్థిరరాశి అక్షరం*)&pParse->aBlob[k];
+      rawLabel = x==JSONB_పాఠ్యం || x==JSONB_TEXTRAW;
+      ఒకవేళ( jsonLabelCompare(z_కీలకం, n_కీలకం, raw_కీలకం, zLabel, sz, rawLabel) ){
         u32 v = k+sz;  /* v is the index of the value */
-        if( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
-        n = jsonbPayloadSize(pParse, v, &sz);
-        if( n==0 || v+n+sz>iEnd ) return JSON_LOOKUP_ERROR;
-        assert( j>0 );
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+        ఒకవేళ( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) తిరిగి JSON_LOOKUP_ERROR;
+        n = jsonb_Payload_కొలత(pParse, v, &sz);
+        ఒకవేళ( n==0 || v+n+sz>i_చివర ) తిరిగి JSON_LOOKUP_ERROR;
+        ప్రతిజ్ఞా( j>0 );
+        ఒకవేళ( ++pParse->i_లోతు >= JSON_MAX_లోతు ){
+          తిరిగి JSON_LOOKUP_TOODEEP;
         }
-        rc = jsonLookupStep(pParse, v, &zPath[i], j);
-        pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        rc = json_Lookup_అడుగు(pParse, v, &z_మార్గం[i], j);
+        pParse->i_లోతు--;
+        ఒకవేళ( pParse->delta ) json_After_Edit_కొలత_Adjust(pParse, i_మూలం);
+        తిరిగి rc;
       }
       j = k+sz;
-      if( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ఒకవేళ( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) తిరిగి JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_కొలత_Semi_Inline(pParse, j, &sz);
+      ఒకవేళ( n==0 ) తిరిగి JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ఒకవేళ( j>i_చివర ) తిరిగి JSON_LOOKUP_ERROR;
+    ఒకవేళ( pParse->eEdit>=JEDIT_INS ){
       u32 nIns;          /* Total bytes to insert (label+value) */
       JsonParse v;       /* BLOB encoding of the value to be inserted */
       JsonParse ix;      /* Header of the label to be inserted */
       testcase( pParse->eEdit==JEDIT_INS );
-      testcase( pParse->eEdit==JEDIT_SET );
+      testcase( pParse->eEdit==JEDIT_సమితి );
       testcase( pParse->eEdit==JEDIT_AINS );
-      if( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
-        return JSON_LOOKUP_NOTARRAY;
+      ఒకవేళ( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&z_మార్గం[i])!=0 ){
+        తిరిగి JSON_LOOKUP_NOTARRAY;
       }
-      memset(&ix, 0, sizeof(ix));
+      memset(&ix, 0, పరిమాణం(ix));
       ix.db = pParse->db;
-      jsonBlobAppendNode(&ix, rawKey?JSONB_TEXTRAW:JSONB_TEXT5, nKey, 0);
+      json_Blob_Append_కణుపు(&ix, raw_కీలకం?JSONB_TEXTRAW:JSONB_TEXT5, n_కీలకం, 0);
       pParse->oom |= ix.oom;
-      rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i]);
-      if( !JSON_LOOKUP_ISERROR(rc)
-       && jsonBlobMakeEditable(pParse, ix.nBlob+nKey+v.nBlob)
+      rc = jsonCreateEditSubstructure(pParse, &v, &z_మార్గం[i]);
+      ఒకవేళ( !JSON_LOOKUP_ISERROR(rc)
+       && jsonBlobMakeEditable(pParse, ix.nBlob+n_కీలకం+v.nBlob)
       ){
-        assert( !pParse->oom );
-        nIns = ix.nBlob + nKey + v.nBlob;
+        ప్రతిజ్ఞా( !pParse->oom );
+        nIns = ix.nBlob + n_కీలకం + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
-        if( !pParse->oom ){
-          assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
-          assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
-          memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
+        ఒకవేళ( !pParse->oom ){
+          ప్రతిజ్ఞా( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
+          ప్రతిజ్ఞా( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
+          జ్ఞాపకం_నకలు(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
           k = j + ix.nBlob;
-          memcpy(&pParse->aBlob[k], zKey, nKey);
-          k += nKey;
-          memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          జ్ఞాపకం_నకలు(&pParse->aBlob[k], z_కీలకం, n_కీలకం);
+          k += n_కీలకం;
+          జ్ఞాపకం_నకలు(&pParse->aBlob[k], v.aBlob, v.nBlob);
+          ఒకవేళ( ALWAYS(pParse->delta) ) json_After_Edit_కొలత_Adjust(pParse, i_మూలం);
         }
       }
       jsonParseReset(&v);
       jsonParseReset(&ix);
-      return rc;
+      తిరిగి rc;
     }
-  }else if( zPath[0]=='[' ){
+  }లేకపోతే ఒకవేళ( z_మార్గం[0]=='[' ){
     u64 kk = 0;
-    x = pParse->aBlob[iRoot] & 0x0f;
-    if( x!=JSONB_ARRAY )  return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
+    x = pParse->aBlob[i_మూలం] & 0x0f;
+    ఒకవేళ( x!=JSONB_ARRAY )  తిరిగి JSON_LOOKUP_NOTFOUND;
+    n = jsonb_Payload_కొలత(pParse, i_మూలం, &sz);
     i = 1;
-    while( sqlite3Isdigit(zPath[i]) ){
-      if( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
+    అయితే( sqlite3Isdigit(z_మార్గం[i]) ){
+      ఒకవేళ( kk<0xffffffff ) kk = kk*10 + z_మార్గం[i] - '0';
       /*     ^^^^^^^^^^--- Allow kk to be bigger than any JSON array so that
       ** we get NOTFOUND instead of PATHERROR, without overflowing kk. */
       i++;
     }
-    if( i<2 || zPath[i]!=']' ){
-      if( zPath[1]=='#' ){
-        kk = jsonbArrayCount(pParse, iRoot);
+    ఒకవేళ( i<2 || z_మార్గం[i]!=']' ){
+      ఒకవేళ( z_మార్గం[1]=='#' ){
+        kk = jsonb_Array_లెక్క(pParse, i_మూలం);
         i = 2;
-        if( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
+        ఒకవేళ( z_మార్గం[2]=='-' && sqlite3Isdigit(z_మార్గం[3]) ){
           u64 nn = 0;
           i = 3;
-          do{
-            if( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
+          చేయి{
+            ఒకవేళ( nn<0xffffffff ) nn = nn*10 + z_మార్గం[i] - '0';
             /*     ^^^^^^^^^^--- Allow nn to be bigger than any JSON array to
             ** get NOTFOUND instead of PATHERROR, without overflowing nn. */
             i++;
-          }while( sqlite3Isdigit(zPath[i]) );
-          if( nn>kk ) return JSON_LOOKUP_NOTFOUND;
+          }అయితే( sqlite3Isdigit(z_మార్గం[i]) );
+          ఒకవేళ( nn>kk ) తిరిగి JSON_LOOKUP_NOTFOUND;
           kk -= nn;
         }
-        if( zPath[i]!=']' ){
-          return JSON_LOOKUP_PATHERROR;
+        ఒకవేళ( z_మార్గం[i]!=']' ){
+          తిరిగి JSON_LOOKUP_PATHERROR;
         }
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }లేకపోతే{
+        తిరిగి JSON_LOOKUP_PATHERROR;
       }
     }
-    j = iRoot+n;
-    iEnd = j+sz;
-    while( j<iEnd ){
-      if( kk==0 ){
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+    j = i_మూలం+n;
+    i_చివర = j+sz;
+    అయితే( j<i_చివర ){
+      ఒకవేళ( kk==0 ){
+        ఒకవేళ( ++pParse->i_లోతు >= JSON_MAX_లోతు ){
+          తిరిగి JSON_LOOKUP_TOODEEP;
         }
-        rc = jsonLookupStep(pParse, j, &zPath[i+1], 0);
-        pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        rc = json_Lookup_అడుగు(pParse, j, &z_మార్గం[i+1], 0);
+        pParse->i_లోతు--;
+        ఒకవేళ( pParse->delta ) json_After_Edit_కొలత_Adjust(pParse, i_మూలం);
+        తిరిగి rc;
       }
       kk--;
-      n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      n = jsonb_Payload_కొలత_Semi_Inline(pParse, j, &sz);
+      ఒకవేళ( n==0 ) తిరిగి JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( kk>0 ) return JSON_LOOKUP_NOTFOUND;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ఒకవేళ( j>i_చివర ) తిరిగి JSON_LOOKUP_ERROR;
+    ఒకవేళ( kk>0 ) తిరిగి JSON_LOOKUP_NOTFOUND;
+    ఒకవేళ( pParse->eEdit>=JEDIT_INS ){
       JsonParse v;
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_AINS );
-      testcase( pParse->eEdit==JEDIT_SET );
-      rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i+1]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      testcase( pParse->eEdit==JEDIT_సమితి );
+      rc = jsonCreateEditSubstructure(pParse, &v, &z_మార్గం[i+1]);
+      ఒకవేళ( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, v.nBlob)
       ){
-        assert( !pParse->oom );
+        ప్రతిజ్ఞా( !pParse->oom );
         jsonBlobEdit(pParse, j, 0, v.aBlob, v.nBlob);
       }
       jsonParseReset(&v);
-      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-      return rc;
+      ఒకవేళ( pParse->delta ) json_After_Edit_కొలత_Adjust(pParse, i_మూలం);
+      తిరిగి rc;
     }
-  }else{
-    return JSON_LOOKUP_PATHERROR; 
+  }లేకపోతే{
+    తిరిగి JSON_LOOKUP_PATHERROR; 
   }
-  return JSON_LOOKUP_NOTFOUND;
+  తిరిగి JSON_LOOKUP_NOTFOUND;
 }
 
 /*
 ** Convert a JSON BLOB into text and make that text the return value
 ** of an SQL function.
 */
-static void jsonReturnTextJsonFromBlob(
+స్థిర శూన్య json_Return_పాఠ్యం_Json_From_Blob(
   sqlite3_context *ctx,
-  const u8 *aBlob,
+  స్థిరరాశి u8 *aBlob,
   u32 nBlob
 ){
   JsonParse x;
   JsonString s;
 
-  if( NEVER(aBlob==0) ) return;
-  memset(&x, 0, sizeof(x));
+  ఒకవేళ( NEVER(aBlob==0) ) తిరిగి;
+  memset(&x, 0, పరిమాణం(x));
   x.aBlob = (u8*)aBlob;
   x.nBlob = nBlob;
   jsonStringInit(&s, ctx);
-  jsonTranslateBlobToText(&x, 0, &s);
+  json_Translate_Blob_గమ్యం_పాఠ్యం(&x, 0, &s);
   jsonReturnString(&s, 0, 0);
 }
 
@@ -3394,179 +3394,179 @@ static void jsonReturnTextJsonFromBlob(
 **
 **     eMode==2     JSONB
 */
-static void jsonReturnFromBlob(
+స్థిర శూన్య jsonReturnFromBlob(
   JsonParse *pParse,          /* Complete JSON parse tree */
   u32 i,                      /* Index of the node */
   sqlite3_context *pCtx,      /* Return value for this function */
-  int eMode                   /* Format of return: text of JSONB */
+  పూర్ణాంకం e_బహుళకం                   /* Format of return: text of JSONB */
 ){
   u32 n, sz;
-  int rc;
+  పూర్ణాంకం rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
 
-  assert( eMode>=0 && eMode<=2 );
-  n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
-    sqlite3_result_error(pCtx, "malformed JSON", -1);
-    return;
+  ప్రతిజ్ఞా( e_బహుళకం>=0 && e_బహుళకం<=2 );
+  n = jsonb_Payload_కొలత(pParse, i, &sz);
+  ఒకవేళ( n==0 ){
+    sqlite3_ఫలితం_error(pCtx, "malformed JSON", -1);
+    తిరిగి;
   }
-  switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_null(pCtx);
-      break;
+  ఎంపిక( pParse->aBlob[i] & 0x0f ){
+    స్థితి JSONB_NULL: {
+      ఒకవేళ( sz ) వెళ్ళు returnfromblob_malformed;
+      sqlite3_ఫలితం_null(pCtx);
+      ఆపు;
     }
-    case JSONB_TRUE: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_int(pCtx, 1);
-      break;
+    స్థితి JSONB_TRUE: {
+      ఒకవేళ( sz ) వెళ్ళు returnfromblob_malformed;
+      sqlite3_ఫలితం_int(pCtx, 1);
+      ఆపు;
     }
-    case JSONB_FALSE: {
-      if( sz ) goto returnfromblob_malformed;
-      sqlite3_result_int(pCtx, 0);
-      break;
+    స్థితి JSONB_FALSE: {
+      ఒకవేళ( sz ) వెళ్ళు returnfromblob_malformed;
+      sqlite3_ఫలితం_int(pCtx, 0);
+      ఆపు;
     }
-    case JSONB_INT5:
-    case JSONB_INT: {
+    స్థితి JSONB_INT5:
+    స్థితి JSONB_INT: {
       sqlite3_int64 iRes = 0;
-      char *z;
-      int bNeg = 0;
-      char x;
-      if( sz==0 ) goto returnfromblob_malformed;
-      x = (char)pParse->aBlob[i+n];
-      if( x=='-' ){
-        if( sz<2 ) goto returnfromblob_malformed;
+      అక్షరం *z;
+      పూర్ణాంకం bNeg = 0;
+      అక్షరం x;
+      ఒకవేళ( sz==0 ) వెళ్ళు returnfromblob_malformed;
+      x = (అక్షరం)pParse->aBlob[i+n];
+      ఒకవేళ( x=='-' ){
+        ఒకవేళ( sz<2 ) వెళ్ళు returnfromblob_malformed;
         n++;
         sz--;
         bNeg = 1;
       }
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
-      rc = sqlite3DecOrHexToI64(z, &iRes);
+      z = sqlite3DbStrNDup(db, (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n], (పూర్ణాంకం)sz);
+      ఒకవేళ( z==0 ) వెళ్ళు returnfromblob_oom;
+      rc = sqlite3_Dec_Or_Hex_గమ్యం_I64(z, &iRes);
       sqlite3DbFree(db, z);
-      if( rc==0 ){
-        if( iRes<0 ){
+      ఒకవేళ( rc==0 ){
+        ఒకవేళ( iRes<0 ){
           /* A hexadecimal literal with 16 significant digits and with the
           ** high-order bit set is a negative integer in SQLite (and hence
           ** iRes comes back as negative) but should be interpreted as a
           ** positive value if it occurs within JSON.  The value is too
           ** large to appear as an SQLite integer so it must be converted
           ** into floating point. */
-          double r;
-          r = (double)*(sqlite3_uint64*)&iRes;
-          sqlite3_result_double(pCtx, bNeg ? -r : r);
-        }else{
-          sqlite3_result_int64(pCtx, bNeg ? -iRes : iRes);
+          ద్విగుణ r;
+          r = (ద్విగుణ)*(sqlite3_uint64*)&iRes;
+          sqlite3_ఫలితం_double(pCtx, bNeg ? -r : r);
+        }లేకపోతే{
+          sqlite3_ఫలితం_int64(pCtx, bNeg ? -iRes : iRes);
         }
-      }else if( rc==3 && bNeg ){
-        sqlite3_result_int64(pCtx, SMALLEST_INT64);
-      }else if( rc==1 ){
-        goto returnfromblob_malformed;
-      }else{
-        if( bNeg ){ n--; sz++; }
-        goto to_double;
+      }లేకపోతే ఒకవేళ( rc==3 && bNeg ){
+        sqlite3_ఫలితం_int64(pCtx, అతిచిన్న_INT64);
+      }లేకపోతే ఒకవేళ( rc==1 ){
+        వెళ్ళు returnfromblob_malformed;
+      }లేకపోతే{
+        ఒకవేళ( bNeg ){ n--; sz++; }
+        వెళ్ళు గమ్యం_double;
       }
-      break;
+      ఆపు;
     }
-    case JSONB_FLOAT5:
-    case JSONB_FLOAT: {
-      double r;
-      char *z;
-      if( sz==0 ) goto returnfromblob_malformed;
-    to_double:
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+    స్థితి JSONB_FLOAT5:
+    స్థితి JSONB_FLOAT: {
+      ద్విగుణ r;
+      అక్షరం *z;
+      ఒకవేళ( sz==0 ) వెళ్ళు returnfromblob_malformed;
+    గమ్యం_double:
+      z = sqlite3DbStrNDup(db, (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n], (పూర్ణాంకం)sz);
+      ఒకవేళ( z==0 ) వెళ్ళు returnfromblob_oom;
       rc = sqlite3AtoF(z, &r);
       sqlite3DbFree(db, z);
-      if( rc<=0 ) goto returnfromblob_malformed;
-      sqlite3_result_double(pCtx, r);
-      break;
+      ఒకవేళ( rc<=0 ) వెళ్ళు returnfromblob_malformed;
+      sqlite3_ఫలితం_double(pCtx, r);
+      ఆపు;
     }
-    case JSONB_TEXTRAW:
-    case JSONB_TEXT: {
-      sqlite3_result_text(pCtx, (char*)&pParse->aBlob[i+n], sz,
+    స్థితి JSONB_TEXTRAW:
+    స్థితి JSONB_పాఠ్యం: {
+      sqlite3_ఫలితం_పాఠ్యం(pCtx, (అక్షరం*)&pParse->aBlob[i+n], sz,
                           SQLITE_TRANSIENT);
-      break;
+      ఆపు;
     }
-    case JSONB_TEXT5:
-    case JSONB_TEXTJ: {
+    స్థితి JSONB_TEXT5:
+    స్థితి JSONB_TEXTJ: {
       /* Translate JSON formatted string into raw text */
-      u32 iIn, iOut;
-      const char *z;
-      char *zOut;
-      u32 nOut = sz;
-      z = (const char*)&pParse->aBlob[i+n];
-      zOut = sqlite3DbMallocRaw(db, ((u64)nOut)+1);
-      if( zOut==0 ) goto returnfromblob_oom;
-      for(iIn=iOut=0; iIn<sz; iIn++){
-        char c = z[iIn];
-        if( c=='\\' ){
+      u32 i_లోపల, i_బహిర్గతం;
+      స్థిరరాశి అక్షరం *z;
+      అక్షరం *z_బహిర్గతం;
+      u32 n_బహిర్గతం = sz;
+      z = (స్థిరరాశి అక్షరం*)&pParse->aBlob[i+n];
+      z_బహిర్గతం = sqlite3DbMallocRaw(db, ((u64)n_బహిర్గతం)+1);
+      ఒకవేళ( z_బహిర్గతం==0 ) వెళ్ళు returnfromblob_oom;
+      కొరకు(i_లోపల=i_బహిర్గతం=0; i_లోపల<sz; i_లోపల++){
+        అక్షరం c = z[i_లోపల];
+        ఒకవేళ( c=='\\' ){
           u32 v;
-          u32 szEscape = jsonUnescapeOneChar(&z[iIn], sz-iIn, &v);
-          if( v==0 && iIn+szEscape==sz
-           && (z[iIn+1]=='\n' || z[iIn+1]=='\r' || (u8)z[iIn+1]==0xe2)
+          u32 szEscape = jsonUnescapeOneChar(&z[i_లోపల], sz-i_లోపల, &v);
+          ఒకవేళ( v==0 && i_లోపల+szEscape==sz
+           && (z[i_లోపల+1]=='\n' || z[i_లోపల+1]=='\r' || (u8)z[i_లోపల+1]==0xe2)
           ){
             /* A JSON5 line continuation at the end of the string
             ** contributes no characters */
-          }else if( v<=0x7f ){
-            zOut[iOut++] = (char)v;
-          }else if( v<=0x7ff ){
-            assert( szEscape>=2 );
-            zOut[iOut++] = (char)(0xc0 | (v>>6));
-            zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v<0x10000 ){
-            assert( szEscape>=3 );
-            zOut[iOut++] = 0xe0 | (v>>12);
-            zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
-            zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v==JSON_INVALID_CHAR ){
+          }లేకపోతే ఒకవేళ( v<=0x7f ){
+            z_బహిర్గతం[i_బహిర్గతం++] = (అక్షరం)v;
+          }లేకపోతే ఒకవేళ( v<=0x7ff ){
+            ప్రతిజ్ఞా( szEscape>=2 );
+            z_బహిర్గతం[i_బహిర్గతం++] = (అక్షరం)(0xc0 | (v>>6));
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | (v&0x3f);
+          }లేకపోతే ఒకవేళ( v<0x10000 ){
+            ప్రతిజ్ఞా( szEscape>=3 );
+            z_బహిర్గతం[i_బహిర్గతం++] = 0xe0 | (v>>12);
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | ((v>>6)&0x3f);
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | (v&0x3f);
+          }లేకపోతే ఒకవేళ( v==JSON_INVALID_CHAR ){
             /* Silently ignore illegal unicode */
-          }else{
-            assert( szEscape>=4 );
-            zOut[iOut++] = 0xf0 | (v>>18);
-            zOut[iOut++] = 0x80 | ((v>>12)&0x3f);
-            zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
-            zOut[iOut++] = 0x80 | (v&0x3f);
+          }లేకపోతే{
+            ప్రతిజ్ఞా( szEscape>=4 );
+            z_బహిర్గతం[i_బహిర్గతం++] = 0xf0 | (v>>18);
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | ((v>>12)&0x3f);
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | ((v>>6)&0x3f);
+            z_బహిర్గతం[i_బహిర్గతం++] = 0x80 | (v&0x3f);
           }
-          iIn += szEscape - 1;
-        }else{
-          zOut[iOut++] = c;
+          i_లోపల += szEscape - 1;
+        }లేకపోతే{
+          z_బహిర్గతం[i_బహిర్గతం++] = c;
         }
       } /* end for() */
-      assert( iOut<=nOut );
-      zOut[iOut] = 0;
-      sqlite3_result_text(pCtx, zOut, iOut, SQLITE_DYNAMIC);
-      break;
+      ప్రతిజ్ఞా( i_బహిర్గతం<=n_బహిర్గతం );
+      z_బహిర్గతం[i_బహిర్గతం] = 0;
+      sqlite3_ఫలితం_పాఠ్యం(pCtx, z_బహిర్గతం, i_బహిర్గతం, SQLITE_DYNAMIC);
+      ఆపు;
     }
-    case JSONB_ARRAY:
-    case JSONB_OBJECT: {
-      if( eMode==0 ){
-        if( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
-          eMode = 2;
-        }else{
-          eMode = 1;
+    స్థితి JSONB_ARRAY:
+    స్థితి JSONB_OBJECT: {
+      ఒకవేళ( e_బహుళకం==0 ){
+        ఒకవేళ( (SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(pCtx)) & JSON_BLOB)!=0 ){
+          e_బహుళకం = 2;
+        }లేకపోతే{
+          e_బహుళకం = 1;
         }
       }
-      if( eMode==2 ){
-        sqlite3_result_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
-      }else{
-        jsonReturnTextJsonFromBlob(pCtx, &pParse->aBlob[i], sz+n);
+      ఒకవేళ( e_బహుళకం==2 ){
+        sqlite3_ఫలితం_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
+      }లేకపోతే{
+        json_Return_పాఠ్యం_Json_From_Blob(pCtx, &pParse->aBlob[i], sz+n);
       }
-      break;
+      ఆపు;
     }
-    default: {
-      goto returnfromblob_malformed;
+    అప్రమేయ: {
+      వెళ్ళు returnfromblob_malformed;
     }
   }
-  return;
+  తిరిగి;
 
 returnfromblob_oom:
-  sqlite3_result_error_nomem(pCtx);
-  return;
+  sqlite3_ఫలితం_error_nomem(pCtx);
+  తిరిగి;
 
 returnfromblob_malformed:
-  sqlite3_result_error(pCtx, "malformed JSON", -1);
-  return;
+  sqlite3_ఫలితం_error(pCtx, "malformed JSON", -1);
+  తిరిగి;
 }
 
 /*
@@ -3586,76 +3586,76 @@ returnfromblob_malformed:
 ** function might set an error message in ctx and return non-zero.
 ** It might also set an error message and return non-zero on an OOM error.
 */
-static int jsonFunctionArgToBlob(
+స్థిర పూర్ణాంకం json_Function_Arg_గమ్యం_Blob(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_విలువ *pArg,
   JsonParse *pParse
 ){
-  int eType = sqlite3_value_type(pArg);
-  static u8 aNull[] = { 0x00 };
-  memset(pParse, 0, sizeof(pParse[0]));
+  పూర్ణాంకం eType = sqlite3_విలువ_type(pArg);
+  స్థిర u8 aNull[] = { 0x00 };
+  memset(pParse, 0, పరిమాణం(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
-  switch( eType ){
-    default: {
+  ఎంపిక( eType ){
+    అప్రమేయ: {
       pParse->aBlob = aNull;
       pParse->nBlob = 1;
-      return 0;
+      తిరిగి 0;
     }
-    case SQLITE_BLOB: {
-      if( !jsonArgIsJsonb(pArg, pParse) ){
-        sqlite3_result_error(ctx, "JSON cannot hold BLOB values", -1);
-        return 1;
+    స్థితి SQLITE_BLOB: {
+      ఒకవేళ( !jsonArgIsJsonb(pArg, pParse) ){
+        sqlite3_ఫలితం_error(ctx, "JSON cannot hold BLOB values", -1);
+        తిరిగి 1;
       }
-      break;
+      ఆపు;
     }
-    case SQLITE_TEXT: {
-      const char *zJson = (const char*)sqlite3_value_text(pArg);
-      int nJson = sqlite3_value_bytes(pArg);
-      if( zJson==0 ) return 1;
-      if( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
-        pParse->zJson = (char*)zJson;
+    స్థితి SQLITE_పాఠ్యం: {
+      స్థిరరాశి అక్షరం *zJson = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pArg);
+      పూర్ణాంకం nJson = sqlite3_విలువ_బైట్లు(pArg);
+      ఒకవేళ( zJson==0 ) తిరిగి 1;
+      ఒకవేళ( sqlite3_విలువ_subtype(pArg)==JSON_SUBTYPE ){
+        pParse->zJson = (అక్షరం*)zJson;
         pParse->nJson = nJson;
-        if( jsonConvertTextToBlob(pParse, ctx) ){
-          sqlite3_result_error(ctx, "malformed JSON", -1);
+        ఒకవేళ( json_Convert_పాఠ్యం_గమ్యం_Blob(pParse, ctx) ){
+          sqlite3_ఫలితం_error(ctx, "malformed JSON", -1);
           sqlite3DbFree(pParse->db, pParse->aBlob);
-          memset(pParse, 0, sizeof(pParse[0]));
-          return 1;
+          memset(pParse, 0, పరిమాణం(pParse[0]));
+          తిరిగి 1;
         }
-      }else{
-        jsonBlobAppendNode(pParse, JSONB_TEXTRAW, nJson, zJson);
+      }లేకపోతే{
+        json_Blob_Append_కణుపు(pParse, JSONB_TEXTRAW, nJson, zJson);
       }
-      break;
+      ఆపు;
     }
-    case SQLITE_FLOAT: {
-      if( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
-        jsonBlobAppendNode(pParse, JSONB_NULL, 0, 0);
-      }else{
-        int n = sqlite3_value_bytes(pArg);
-        const char *z = (const char*)sqlite3_value_text(pArg);
-        if( z==0 ) return 1;
-        if( z[0]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-        }else if( z[0]=='-' && z[1]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-        }else{
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, n, z);
+    స్థితి SQLITE_FLOAT: {
+      ఒకవేళ( NEVER(sqlite3IsNaN(sqlite3_విలువ_double(pArg))) ){
+        json_Blob_Append_కణుపు(pParse, JSONB_NULL, 0, 0);
+      }లేకపోతే{
+        పూర్ణాంకం n = sqlite3_విలువ_బైట్లు(pArg);
+        స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pArg);
+        ఒకవేళ( z==0 ) తిరిగి 1;
+        ఒకవేళ( z[0]=='I' ){
+          json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, 5, "9e999");
+        }లేకపోతే ఒకవేళ( z[0]=='-' && z[1]=='I' ){
+          json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, 6, "-9e999");
+        }లేకపోతే{
+          json_Blob_Append_కణుపు(pParse, JSONB_FLOAT, n, z);
         }
       }
-      break;
+      ఆపు;
     }
-    case SQLITE_INTEGER: {
-      int n = sqlite3_value_bytes(pArg);
-      const char *z = (const char*)sqlite3_value_text(pArg);
-      if( z==0 ) return 1;
-      jsonBlobAppendNode(pParse, JSONB_INT, n, z);
-      break;
+    స్థితి SQLITE_INTEGER: {
+      పూర్ణాంకం n = sqlite3_విలువ_బైట్లు(pArg);
+      స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pArg);
+      ఒకవేళ( z==0 ) తిరిగి 1;
+      json_Blob_Append_కణుపు(pParse, JSONB_INT, n, z);
+      ఆపు;
     }
   }
-  if( pParse->oom ){
-    sqlite3_result_error_nomem(ctx);
-    return 1;
-  }else{
-    return 0;
+  ఒకవేళ( pParse->oom ){
+    sqlite3_ఫలితం_error_nomem(ctx);
+    తిరిగి 1;
+  }లేకపోతే{
+    తిరిగి 0;
   }
 }
 
@@ -3674,29 +3674,29 @@ static int jsonFunctionArgToBlob(
 ** If ctx is not NULL then push the error message into ctx and return NULL.
 ** If ctx is NULL, then return the text of the error message.
 */
-static char *jsonBadPathError(
+స్థిర అక్షరం *json_Bad_మార్గం_Error(
   sqlite3_context *ctx,     /* The function call containing the error */
-  const char *zPath,        /* The path with the problem */
-  int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
+  స్థిరరాశి అక్షరం *z_మార్గం,        /* The path with the problem */
+  పూర్ణాంకం rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
 ){
-  char *zMsg;
-  if( rc==(int)JSON_LOOKUP_NOTARRAY ){
-    zMsg = sqlite3_mprintf("not an array element: %Q", zPath);
-  }else if( rc==(int)JSON_LOOKUP_ERROR ){
-    zMsg = sqlite3_mprintf("malformed JSON");
-  }else if( rc==(int)JSON_LOOKUP_TOODEEP ){
-    zMsg = sqlite3_mprintf("JSON path too deep");
-  }else{
-    zMsg = sqlite3_mprintf("bad JSON path: %Q", zPath);
+  అక్షరం *z_సందేశం;
+  ఒకవేళ( rc==(పూర్ణాంకం)JSON_LOOKUP_NOTARRAY ){
+    z_సందేశం = sqlite3_mprintf("not an array element: %Q", z_మార్గం);
+  }లేకపోతే ఒకవేళ( rc==(పూర్ణాంకం)JSON_LOOKUP_ERROR ){
+    z_సందేశం = sqlite3_mprintf("malformed JSON");
+  }లేకపోతే ఒకవేళ( rc==(పూర్ణాంకం)JSON_LOOKUP_TOODEEP ){
+    z_సందేశం = sqlite3_mprintf("JSON path too deep");
+  }లేకపోతే{
+    z_సందేశం = sqlite3_mprintf("bad JSON path: %Q", z_మార్గం);
   }
-  if( ctx==0 ) return zMsg;
-  if( zMsg ){
-    sqlite3_result_error(ctx, zMsg, -1);
-    sqlite3_free(zMsg);
-  }else{
-    sqlite3_result_error_nomem(ctx);
+  ఒకవేళ( ctx==0 ) తిరిగి z_సందేశం;
+  ఒకవేళ( z_సందేశం ){
+    sqlite3_ఫలితం_error(ctx, z_సందేశం, -1);
+    sqlite3_free(z_సందేశం);
+  }లేకపోతే{
+    sqlite3_ఫలితం_error_nomem(ctx);
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /* argv[0] is a BLOB that seems likely to be a JSONB.  Subsequent
@@ -3707,62 +3707,62 @@ static char *jsonBadPathError(
 ** The specific operation is determined by eEdit, which can be one
 ** of JEDIT_INS, JEDIT_REPL, JEDIT_SET, or JEDIT_AINS.
 */
-static void jsonInsertIntoBlob(
+స్థిర శూన్య json_చొప్పించు_Into_Blob(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv,
-  int eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv,
+  పూర్ణాంకం eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
 ){
-  int i;
+  పూర్ణాంకం i;
   u32 rc = 0;
-  const char *zPath = 0;
-  int flgs;
+  స్థిరరాశి అక్షరం *z_మార్గం = 0;
+  పూర్ణాంకం flgs;
   JsonParse *p;
   JsonParse ax;
 
-  assert( (argc&1)==1 );
+  ప్రతిజ్ఞా( (argc&1)==1 );
   flgs = argc==1 ? 0 : JSON_EDITABLE;
   p = jsonParseFuncArg(ctx, argv[0], flgs);
-  if( p==0 ) return;
-  for(i=1; i<argc-1; i+=2){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
-      sqlite3_result_error_nomem(ctx);
+  ఒకవేళ( p==0 ) తిరిగి;
+  కొరకు(i=1; i<argc-1; i+=2){
+    ఒకవేళ( sqlite3_విలువ_type(argv[i])==SQLITE_NULL ) కొనసాగు;
+    z_మార్గం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    ఒకవేళ( z_మార్గం==0 ){
+      sqlite3_ఫలితం_error_nomem(ctx);
       jsonParseFree(p);
-      return;
+      తిరిగి;
     }
-    if( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
-    if( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
+    ఒకవేళ( z_మార్గం[0]!='$' ) వెళ్ళు json_చొప్పించు_Into_Blob_patherror;
+    ఒకవేళ( json_Function_Arg_గమ్యం_Blob(ctx, argv[i+1], &ax) ){
       jsonParseReset(&ax);
       jsonParseFree(p);
-      return;
+      తిరిగి;
     }
-    if( zPath[1]==0 ){
-      if( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
+    ఒకవేళ( z_మార్గం[1]==0 ){
+      ఒకవేళ( eEdit==JEDIT_REPL || eEdit==JEDIT_సమితి ){
         jsonBlobEdit(p, 0, p->nBlob, ax.aBlob, ax.nBlob);
       }
       rc = 0;
-   }else{
+   }లేకపోతే{
       p->eEdit = eEdit;
       p->nIns = ax.nBlob;
       p->aIns = ax.aBlob;
       p->delta = 0;
-      p->iDepth = 0;
-      rc = jsonLookupStep(p, 0, zPath+1, 0);
+      p->i_లోతు = 0;
+      rc = json_Lookup_అడుగు(p, 0, z_మార్గం+1, 0);
     }
     jsonParseReset(&ax);
-    if( rc==JSON_LOOKUP_NOTFOUND ) continue;
-    if( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
+    ఒకవేళ( rc==JSON_LOOKUP_NOTFOUND ) కొనసాగు;
+    ఒకవేళ( JSON_LOOKUP_ISERROR(rc) ) వెళ్ళు json_చొప్పించు_Into_Blob_patherror;
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  తిరిగి;
 
-jsonInsertIntoBlob_patherror:
+json_చొప్పించు_Into_Blob_patherror:
   jsonParseFree(p);
-  jsonBadPathError(ctx, zPath, rc);
-  return;
+  json_Bad_మార్గం_Error(ctx, z_మార్గం, rc);
+  తిరిగి;
 }
 
 /*
@@ -3793,27 +3793,27 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+స్థిర పూర్ణాంకం jsonArgIsJsonb(sqlite3_విలువ *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
-  if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
-  p->aBlob = (u8*)sqlite3_value_blob(pArg);
-  p->nBlob = (u32)sqlite3_value_bytes(pArg);
-  if( p->nBlob>0
+  ఒకవేళ( sqlite3_విలువ_type(pArg)!=SQLITE_BLOB ) తిరిగి 0;
+  p->aBlob = (u8*)sqlite3_విలువ_blob(pArg);
+  p->nBlob = (u32)sqlite3_విలువ_బైట్లు(pArg);
+  ఒకవేళ( p->nBlob>0
    && ALWAYS(p->aBlob!=0)
    && ((c = p->aBlob[0]) & 0x0f)<=JSONB_OBJECT
-   && (n = jsonbPayloadSize(p, 0, &sz))>0
+   && (n = jsonb_Payload_కొలత(p, 0, &sz))>0
    && sz+n==p->nBlob
    && ((c & 0x0f)>JSONB_FALSE || sz==0)
    && (sz>7 
       || (c!=0x7b && c!=0x5b && !sqlite3Isdigit(c))
       || jsonbValidityCheck(p, 0, p->nBlob, 1)==0)
   ){
-    return 1;
+    తిరిగి 1;
   }
   p->aBlob = 0;
   p->nBlob = 0;
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -3832,53 +3832,53 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
 ** is so that SQL functions that are given NULL arguments will return
 ** a NULL value.
 */
-static JsonParse *jsonParseFuncArg(
+స్థిర JsonParse *jsonParseFuncArg(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_విలువ *pArg,
   u32 flgs
 ){
-  int eType;                   /* Datatype of pArg */
+  పూర్ణాంకం eType;                   /* Datatype of pArg */
   JsonParse *p = 0;            /* Value to be returned */
   JsonParse *pFromCache = 0;   /* Value taken from cache */
   sqlite3 *db;                 /* The database connection */
   
-  assert( ctx!=0 );
-  eType = sqlite3_value_type(pArg);
-  if( eType==SQLITE_NULL ){
-    return 0;
+  ప్రతిజ్ఞా( ctx!=0 );
+  eType = sqlite3_విలువ_type(pArg);
+  ఒకవేళ( eType==SQLITE_NULL ){
+    తిరిగి 0;
   }
-  if( (flgs & JSON_NOCACHE)==0 ){
-    pFromCache = jsonCacheSearch(ctx, pArg);
+  ఒకవేళ( (flgs & JSON_NOCACHE)==0 ){
+    pFromCache = json_Cache_శోధన(ctx, pArg);
   }
-  if( pFromCache ){
+  ఒకవేళ( pFromCache ){
     pFromCache->nJPRef++;
-    if( (flgs & JSON_EDITABLE)==0 ){
-      return pFromCache;
+    ఒకవేళ( (flgs & JSON_EDITABLE)==0 ){
+      తిరిగి pFromCache;
     }
   }
   db = sqlite3_context_db_handle(ctx);
 rebuild_from_cache:
-  p = sqlite3DbMallocZero(db, sizeof(*p));
-  if( p==0 ) goto json_pfa_oom;
-  memset(p, 0, sizeof(*p));
+  p = sqlite3DbMallocZero(db, పరిమాణం(*p));
+  ఒకవేళ( p==0 ) వెళ్ళు json_pfa_oom;
+  memset(p, 0, పరిమాణం(*p));
   p->db = db;
   p->nJPRef = 1;
-  if( pFromCache!=0 ){
+  ఒకవేళ( pFromCache!=0 ){
     u32 nBlob = pFromCache->nBlob;
     p->aBlob = sqlite3DbMallocRaw(db, nBlob);
-    if( p->aBlob==0 ) goto json_pfa_oom;
-    memcpy(p->aBlob, pFromCache->aBlob, nBlob);
+    ఒకవేళ( p->aBlob==0 ) వెళ్ళు json_pfa_oom;
+    జ్ఞాపకం_నకలు(p->aBlob, pFromCache->aBlob, nBlob);
     p->nBlobAlloc = p->nBlob = nBlob;
     p->hasNonstd = pFromCache->hasNonstd;
     jsonParseFree(pFromCache);
-    return p;
+    తిరిగి p;
   }
-  if( eType==SQLITE_BLOB ){
-    if( jsonArgIsJsonb(pArg,p) ){
-      if( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
-        goto json_pfa_oom;
+  ఒకవేళ( eType==SQLITE_BLOB ){
+    ఒకవేళ( jsonArgIsJsonb(pArg,p) ){
+      ఒకవేళ( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
+        వెళ్ళు json_pfa_oom;
       }
-      return p;
+      తిరిగి p;
     }
     /* If the blob is not valid JSONB, fall through into trying to cast
     ** the blob into text which is then interpreted as JSON.  (tag-20240123-a)
@@ -3893,57 +3893,57 @@ rebuild_from_cache:
     ** See for example https://sqlite.org/forum/forumpost/012136abd5292b8d
     */
   }
-  p->zJson = (char*)sqlite3_value_text(pArg);
-  p->nJson = sqlite3_value_bytes(pArg);
-  if( db->mallocFailed ) goto json_pfa_oom;
-  if( p->nJson==0 ) goto json_pfa_malformed;
-  assert( p->zJson!=0 );
-  if( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
-    if( flgs & JSON_KEEPERROR ){
+  p->zJson = (అక్షరం*)sqlite3_విలువ_పాఠ్యం(pArg);
+  p->nJson = sqlite3_విలువ_బైట్లు(pArg);
+  ఒకవేళ( db->mallocFailed ) వెళ్ళు json_pfa_oom;
+  ఒకవేళ( p->nJson==0 ) వెళ్ళు json_pfa_malformed;
+  ప్రతిజ్ఞా( p->zJson!=0 );
+  ఒకవేళ( json_Convert_పాఠ్యం_గమ్యం_Blob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
+    ఒకవేళ( flgs & JSON_KEEPERROR ){
       p->nErr = 1;
-      return p;
-    }else{
+      తిరిగి p;
+    }లేకపోతే{
       jsonParseFree(p);
-      return 0;
+      తిరిగి 0;
     }
-  }else{
-    int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
-    int rc;
-    if( !isRCStr ){
-      char *zNew = sqlite3RCStrNew( p->nJson );
-      if( zNew==0 ) goto json_pfa_oom;
-      memcpy(zNew, p->zJson, p->nJson);
+  }లేకపోతే{
+    పూర్ణాంకం isRCStr = sqlite3_విలువ_Is_యొక్క_Class(pArg, sqlite3RCStrUnref);
+    పూర్ణాంకం rc;
+    ఒకవేళ( !isRCStr ){
+      అక్షరం *zNew = sqlite3RCStrNew( p->nJson );
+      ఒకవేళ( zNew==0 ) వెళ్ళు json_pfa_oom;
+      జ్ఞాపకం_నకలు(zNew, p->zJson, p->nJson);
       p->zJson = zNew;
       p->zJson[p->nJson] = 0;
-    }else{
+    }లేకపోతే{
       sqlite3RCStrRef(p->zJson);
     }
     p->bJsonIsRCStr = 1;
-    rc = jsonCacheInsert(ctx, p);
-    if( rc==SQLITE_NOMEM ) goto json_pfa_oom;
-    if( flgs & JSON_EDITABLE ){
+    rc = json_Cache_చొప్పించు(ctx, p);
+    ఒకవేళ( rc==SQLITE_NOMEM ) వెళ్ళు json_pfa_oom;
+    ఒకవేళ( flgs & JSON_EDITABLE ){
       pFromCache = p;
       p = 0;
-      goto rebuild_from_cache;
+      వెళ్ళు rebuild_from_cache;
     }
   }
-  return p;
+  తిరిగి p;
 
 json_pfa_malformed:
-  if( flgs & JSON_KEEPERROR ){
+  ఒకవేళ( flgs & JSON_KEEPERROR ){
     p->nErr = 1;
-    return p;
-  }else{
+    తిరిగి p;
+  }లేకపోతే{
     jsonParseFree(p);
-    sqlite3_result_error(ctx, "malformed JSON", -1);
-    return 0;
+    sqlite3_ఫలితం_error(ctx, "malformed JSON", -1);
+    తిరిగి 0;
   }
 
 json_pfa_oom:
   jsonParseFree(pFromCache);
   jsonParseFree(p);
-  sqlite3_result_error_nomem(ctx);
-  return 0;
+  sqlite3_ఫలితం_error_nomem(ctx);
+  తిరిగి 0;
 }
 
 /*
@@ -3951,30 +3951,30 @@ json_pfa_oom:
 ** or make it JSON text, depending on whether the JSON_BLOB flag is
 ** set on the function.
 */
-static void jsonReturnParse(
+స్థిర శూన్య jsonReturnParse(
   sqlite3_context *ctx,
   JsonParse *p
 ){
-  int flgs;
-  if( p->oom ){
-    sqlite3_result_error_nomem(ctx);
-    return;
+  పూర్ణాంకం flgs;
+  ఒకవేళ( p->oom ){
+    sqlite3_ఫలితం_error_nomem(ctx);
+    తిరిగి;
   }
-  flgs = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  if( flgs & JSON_BLOB ){
-    if( p->nBlobAlloc>0 && !p->bReadOnly ){
-      sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
+  flgs = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(ctx));
+  ఒకవేళ( flgs & JSON_BLOB ){
+    ఒకవేళ( p->nBlobAlloc>0 && !p->bReadOnly ){
+      sqlite3_ఫలితం_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
       p->nBlobAlloc = 0;
-    }else{
-      sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
+    }లేకపోతే{
+      sqlite3_ఫలితం_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
     }
-  }else{
+  }లేకపోతే{
     JsonString s;
     jsonStringInit(&s, ctx);
     p->delta = 0;
-    jsonTranslateBlobToText(p, 0, &s);
+    json_Translate_Blob_గమ్యం_పాఠ్యం(p, 0, &s);
     jsonReturnString(&s, p, ctx);
-    sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+    sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
   }
 }
 
@@ -3982,149 +3982,149 @@ static void jsonReturnParse(
 ** SQL functions used for testing and debugging
 ****************************************************************************/
 
-#if SQLITE_DEBUG
+#ఒకవేళ SQLITE_DEBUG
 /*
 ** Decode JSONB bytes in aBlob[] starting at iStart through but not 
 ** including iEnd.  Indent the
 ** content by nIndent spaces.
 */
-static void jsonDebugPrintBlob(
+స్థిర శూన్య jsonDebugPrintBlob(
   JsonParse *pParse, /* JSON content */
-  u32 iStart,        /* Start rendering here */
-  u32 iEnd,          /* Do not render this byte or any byte after this one */
-  int nIndent,       /* Indent by this many spaces */
-  sqlite3_str *pOut  /* Generate output into this sqlite3_str object */
+  u32 i_ప్రారంభం,        /* Start rendering here */
+  u32 i_చివర,          /* Do not render this byte or any byte after this one */
+  పూర్ణాంకం nIndent,       /* Indent by this many spaces */
+  sqlite3_str *p_బహిర్గతం  /* Generate output into this sqlite3_str object */
 ){
-  while( iStart<iEnd ){
+  అయితే( i_ప్రారంభం<i_చివర ){
     u32 i, n, nn, sz = 0;
-    int showContent = 1;
-    u8 x = pParse->aBlob[iStart] & 0x0f;
+    పూర్ణాంకం showContent = 1;
+    u8 x = pParse->aBlob[i_ప్రారంభం] & 0x0f;
     u32 savedNBlob = pParse->nBlob;
-    sqlite3_str_appendf(pOut, "%5d:%*s", iStart, nIndent, "");
-    if( pParse->nBlobAlloc>pParse->nBlob ){
+    sqlite3_str_appendf(p_బహిర్గతం, "%5d:%*s", i_ప్రారంభం, nIndent, "");
+    ఒకవేళ( pParse->nBlobAlloc>pParse->nBlob ){
       pParse->nBlob = pParse->nBlobAlloc;
     }
-    nn = n = jsonbPayloadSize(pParse, iStart, &sz);
-    if( nn==0 ) nn = 1;
-    if( sz>0 && x<JSONB_ARRAY ){
+    nn = n = jsonb_Payload_కొలత(pParse, i_ప్రారంభం, &sz);
+    ఒకవేళ( nn==0 ) nn = 1;
+    ఒకవేళ( sz>0 && x<JSONB_ARRAY ){
       nn += sz;
     }
-    for(i=0; i<nn; i++){
-      sqlite3_str_appendf(pOut, " %02x", pParse->aBlob[iStart+i]);
+    కొరకు(i=0; i<nn; i++){
+      sqlite3_str_appendf(p_బహిర్గతం, " %02x", pParse->aBlob[i_ప్రారంభం+i]);
     }
-    if( n==0 ){
-      sqlite3_str_appendf(pOut, "   ERROR invalid node size\n");
-      iStart = n==0 ? iStart+1 : iEnd;
-      continue;
+    ఒకవేళ( n==0 ){
+      sqlite3_str_appendf(p_బహిర్గతం, "   ERROR invalid node size\n");
+      i_ప్రారంభం = n==0 ? i_ప్రారంభం+1 : i_చివర;
+      కొనసాగు;
     }
     pParse->nBlob = savedNBlob;
-    if( iStart+n+sz>iEnd ){
-      iEnd = iStart+n+sz;
-      if( iEnd>pParse->nBlob ){
-        if( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
-          iEnd = pParse->nBlobAlloc;
-        }else{
-          iEnd = pParse->nBlob;
+    ఒకవేళ( i_ప్రారంభం+n+sz>i_చివర ){
+      i_చివర = i_ప్రారంభం+n+sz;
+      ఒకవేళ( i_చివర>pParse->nBlob ){
+        ఒకవేళ( pParse->nBlobAlloc>0 && i_చివర>pParse->nBlobAlloc ){
+          i_చివర = pParse->nBlobAlloc;
+        }లేకపోతే{
+          i_చివర = pParse->nBlob;
         }
       }
     }
-    sqlite3_str_appendall(pOut,"  <-- ");
-    switch( x ){
-      case JSONB_NULL:     sqlite3_str_appendall(pOut,"null"); break;
-      case JSONB_TRUE:     sqlite3_str_appendall(pOut,"true"); break;
-      case JSONB_FALSE:    sqlite3_str_appendall(pOut,"false"); break;
-      case JSONB_INT:      sqlite3_str_appendall(pOut,"int"); break;
-      case JSONB_INT5:     sqlite3_str_appendall(pOut,"int5"); break;
-      case JSONB_FLOAT:    sqlite3_str_appendall(pOut,"float"); break;
-      case JSONB_FLOAT5:   sqlite3_str_appendall(pOut,"float5"); break;
-      case JSONB_TEXT:     sqlite3_str_appendall(pOut,"text"); break;
-      case JSONB_TEXTJ:    sqlite3_str_appendall(pOut,"textj"); break;
-      case JSONB_TEXT5:    sqlite3_str_appendall(pOut,"text5"); break;
-      case JSONB_TEXTRAW:  sqlite3_str_appendall(pOut,"textraw"); break;
-      case JSONB_ARRAY: {
-        sqlite3_str_appendf(pOut,"array, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+    sqlite3_str_appendall(p_బహిర్గతం,"  <-- ");
+    ఎంపిక( x ){
+      స్థితి JSONB_NULL:     sqlite3_str_appendall(p_బహిర్గతం,"null"); ఆపు;
+      స్థితి JSONB_TRUE:     sqlite3_str_appendall(p_బహిర్గతం,"true"); ఆపు;
+      స్థితి JSONB_FALSE:    sqlite3_str_appendall(p_బహిర్గతం,"false"); ఆపు;
+      స్థితి JSONB_INT:      sqlite3_str_appendall(p_బహిర్గతం,"int"); ఆపు;
+      స్థితి JSONB_INT5:     sqlite3_str_appendall(p_బహిర్గతం,"int5"); ఆపు;
+      స్థితి JSONB_FLOAT:    sqlite3_str_appendall(p_బహిర్గతం,"float"); ఆపు;
+      స్థితి JSONB_FLOAT5:   sqlite3_str_appendall(p_బహిర్గతం,"float5"); ఆపు;
+      స్థితి JSONB_పాఠ్యం:     sqlite3_str_appendall(p_బహిర్గతం,"text"); ఆపు;
+      స్థితి JSONB_TEXTJ:    sqlite3_str_appendall(p_బహిర్గతం,"textj"); ఆపు;
+      స్థితి JSONB_TEXT5:    sqlite3_str_appendall(p_బహిర్గతం,"text5"); ఆపు;
+      స్థితి JSONB_TEXTRAW:  sqlite3_str_appendall(p_బహిర్గతం,"textraw"); ఆపు;
+      స్థితి JSONB_ARRAY: {
+        sqlite3_str_appendf(p_బహిర్గతం,"array, %u bytes\n", sz);
+        jsonDebugPrintBlob(pParse, i_ప్రారంభం+n, i_ప్రారంభం+n+sz, nIndent+2, p_బహిర్గతం);
         showContent = 0;
-        break;
+        ఆపు;
       }
-      case JSONB_OBJECT: {
-        sqlite3_str_appendf(pOut, "object, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+      స్థితి JSONB_OBJECT: {
+        sqlite3_str_appendf(p_బహిర్గతం, "object, %u bytes\n", sz);
+        jsonDebugPrintBlob(pParse, i_ప్రారంభం+n, i_ప్రారంభం+n+sz, nIndent+2, p_బహిర్గతం);
         showContent = 0;
-        break;
+        ఆపు;
       }
-      default: {
-        sqlite3_str_appendall(pOut, "ERROR: unknown node type\n");
+      అప్రమేయ: {
+        sqlite3_str_appendall(p_బహిర్గతం, "ERROR: unknown node type\n");
         showContent = 0;
-        break;
+        ఆపు;
       }
     }
-    if( showContent ){
-      if( sz==0 && x<=JSONB_FALSE ){
-        sqlite3_str_append(pOut, "\n", 1);
-      }else{
+    ఒకవేళ( showContent ){
+      ఒకవేళ( sz==0 && x<=JSONB_FALSE ){
+        sqlite3_str_append(p_బహిర్గతం, "\n", 1);
+      }లేకపోతే{
         u32 j;
-        sqlite3_str_appendall(pOut, ": \"");
-        for(j=iStart+n; j<iStart+n+sz; j++){
+        sqlite3_str_appendall(p_బహిర్గతం, ": \"");
+        కొరకు(j=i_ప్రారంభం+n; j<i_ప్రారంభం+n+sz; j++){
           u8 c = pParse->aBlob[j];
-          if( c<0x20 || c>=0x7f ) c = '.';
-          sqlite3_str_append(pOut, (char*)&c, 1);
+          ఒకవేళ( c<0x20 || c>=0x7f ) c = '.';
+          sqlite3_str_append(p_బహిర్గతం, (అక్షరం*)&c, 1);
         }
-        sqlite3_str_append(pOut, "\"\n", 2);
+        sqlite3_str_append(p_బహిర్గతం, "\"\n", 2);
       }
     }
-    iStart += n + sz;
+    i_ప్రారంభం += n + sz;
   }
 }
-static void jsonShowParse(JsonParse *pParse){
-  sqlite3_str out;
-  char zBuf[1000];
-  if( pParse==0 ){
-    printf("NULL pointer\n");
-    return;
-  }else{
-    printf("nBlobAlloc = %u\n", pParse->nBlobAlloc);
-    printf("nBlob = %u\n", pParse->nBlob);
-    printf("delta = %d\n", pParse->delta);
-    if( pParse->nBlob==0 ) return;
-    printf("content (bytes 0..%u):\n", pParse->nBlob-1);
+స్థిర శూన్య jsonShowParse(JsonParse *pParse){
+  sqlite3_str బహిర్గతం;
+  అక్షరం zBuf[1000];
+  ఒకవేళ( pParse==0 ){
+    రాయి("NULL pointer\n");
+    తిరిగి;
+  }లేకపోతే{
+    రాయి("nBlobAlloc = %u\n", pParse->nBlobAlloc);
+    రాయి("nBlob = %u\n", pParse->nBlob);
+    రాయి("delta = %d\n", pParse->delta);
+    ఒకవేళ( pParse->nBlob==0 ) తిరిగి;
+    రాయి("content (bytes 0..%u):\n", pParse->nBlob-1);
   }
-  sqlite3StrAccumInit(&out, 0, zBuf, sizeof(zBuf), 1000000);
-  jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &out);
-  printf("%s", sqlite3_str_value(&out));
-  sqlite3_str_reset(&out);
+  sqlite3StrAccumInit(&బహిర్గతం, 0, zBuf, పరిమాణం(zBuf), 1000000);
+  jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &బహిర్గతం);
+  రాయి("%s", sqlite3_str_విలువ(&బహిర్గతం));
+  sqlite3_str_reset(&బహిర్గతం);
 }
-#endif /* SQLITE_DEBUG */
+#అయితే_ముగింపు /* SQLITE_DEBUG */
 
-#ifdef SQLITE_DEBUG
+#నిర్వచితమైతే SQLITE_DEBUG
 /*
 ** SQL function:   json_parse(JSON)
 **
 ** Parse JSON using jsonParseFuncArg().  Return text that is a
 ** human-readable dump of the binary JSONB for the input parameter.
 */
-static void jsonParseFunc(
+స్థిర శూన్య jsonParseFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p;        /* The parse */
-  sqlite3_str out;
+  sqlite3_str బహిర్గతం;
 
-  assert( argc>=1 );
-  sqlite3StrAccumInit(&out, 0, 0, 0, 1000000);
+  ప్రతిజ్ఞా( argc>=1 );
+  sqlite3StrAccumInit(&బహిర్గతం, 0, 0, 0, 1000000);
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==1 ){
-    jsonDebugPrintBlob(p, 0, p->nBlob, 0, &out);
-    sqlite3_result_text64(ctx,out.zText,out.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
-  }else{
+  ఒకవేళ( p==0 ) తిరిగి;
+  ఒకవేళ( argc==1 ){
+    jsonDebugPrintBlob(p, 0, p->nBlob, 0, &బహిర్గతం);
+    sqlite3_ఫలితం_text64(ctx,బహిర్గతం.z_పాఠ్యం,బహిర్గతం.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
+  }లేకపోతే{
     jsonShowParse(p);
   }
   jsonParseFree(p);
-  sqlite3_str_reset(&out);
+  sqlite3_str_reset(&బహిర్గతం);
 }
-#endif /* SQLITE_DEBUG */
+#అయితే_ముగింపు /* SQLITE_DEBUG */
 
 /****************************************************************************
 ** Scalar SQL function implementations
@@ -4136,18 +4136,18 @@ static void jsonParseFunc(
 ** double-quotes around strings and returning the unquoted string "null"
 ** when given a NULL input.
 */
-static void jsonQuoteFunc(
+స్థిర శూన్య jsonQuoteFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonString jx;
-  UNUSED_PARAMETER(argc);
+  వాడని_PARAMETER(argc);
 
   jsonStringInit(&jx, ctx);
-  jsonAppendSqlValue(&jx, argv[0]);
+  json_Append_Sql_విలువ(&jx, argv[0]);
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
 }
 
 /*
@@ -4155,23 +4155,23 @@ static void jsonQuoteFunc(
 ** array that contains all values given in arguments.  Or if any argument
 ** is a BLOB, throw an error.
 */
-static void jsonArrayFunc(
+స్థిర శూన్య jsonArrayFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  int i;
+  పూర్ణాంకం i;
   JsonString jx;
 
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '[');
-  for(i=0; i<argc; i++){
+  కొరకు(i=0; i<argc; i++){
     jsonAppendSeparator(&jx);
-    jsonAppendSqlValue(&jx, argv[i]);
+    json_Append_Sql_విలువ(&jx, argv[i]);
   }
   jsonAppendChar(&jx, ']');
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
 }
 
 /*
@@ -4181,10 +4181,10 @@ static void jsonArrayFunc(
 ** Return the number of elements in the top-level JSON array.
 ** Return 0 if the input is not a well-formed JSON array.
 */
-static void jsonArrayLengthFunc(
+స్థిర శూన్య json_Array_నిడివి_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p;          /* The parse */
   sqlite3_int64 cnt = 0;
@@ -4192,38 +4192,38 @@ static void jsonArrayLengthFunc(
   u8 eErr = 0;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    const char *zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ){
+  ఒకవేళ( p==0 ) తిరిగి;
+  ఒకవేళ( argc==2 ){
+    స్థిరరాశి అక్షరం *z_మార్గం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+    ఒకవేళ( z_మార్గం==0 ){
       jsonParseFree(p);
-      return;
+      తిరిగి;
     }
-    i = jsonLookupStep(p, 0, zPath[0]=='$' ? zPath+1 : "@", 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    i = json_Lookup_అడుగు(p, 0, z_మార్గం[0]=='$' ? z_మార్గం+1 : "@", 0);
+    ఒకవేళ( JSON_LOOKUP_ISERROR(i) ){
+      ఒకవేళ( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
-        jsonBadPathError(ctx, zPath, i);
+      }లేకపోతే{
+        json_Bad_మార్గం_Error(ctx, z_మార్గం, i);
       }
       eErr = 1;
       i = 0;
     }
-  }else{
+  }లేకపోతే{
     i = 0;
   }
-  if( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
-    cnt = jsonbArrayCount(p, i);
+  ఒకవేళ( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
+    cnt = jsonb_Array_లెక్క(p, i);
   }
-  if( !eErr ) sqlite3_result_int64(ctx, cnt);
+  ఒకవేళ( !eErr ) sqlite3_ఫలితం_int64(ctx, cnt);
   jsonParseFree(p);
 }
 
 /* True if the string is all alphanumerics and underscores */
-static int jsonAllAlphanum(const char *z, int n){
-  int i;
-  for(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
-  return i==n;
+స్థిర పూర్ణాంకం jsonAllAlphanum(స్థిరరాశి అక్షరం *z, పూర్ణాంకం n){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
+  తిరిగి i==n;
 }
 
 /*
@@ -4246,34 +4246,34 @@ static int jsonAllAlphanum(const char *z, int n){
 ** Abbreviated JSON path expressions are allows if JSON_ABPATH, for
 ** compatibility with PG.
 */
-static void jsonExtractFunc(
+స్థిర శూన్య json_వెలికితీయి_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p = 0;      /* The parse */
-  int flags;             /* Flags associated with the function */
-  int i;                 /* Loop counter */
+  పూర్ణాంకం flags;             /* Flags associated with the function */
+  పూర్ణాంకం i;                 /* Loop counter */
   JsonString jx;         /* String for array result */
 
-  if( argc<2 ) return;
+  ఒకవేళ( argc<2 ) తిరిగి;
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  ఒకవేళ( p==0 ) తిరిగి;
+  flags = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(ctx));
   jsonStringInit(&jx, ctx);
-  if( argc>2 ){
+  ఒకవేళ( argc>2 ){
     jsonAppendChar(&jx, '[');
   }
-  for(i=1; i<argc; i++){
+  కొరకు(i=1; i<argc; i++){
     /* With a single PATH argument */
-    const char *zPath = (const char*)sqlite3_value_text(argv[i]);
-    int nPath;
+    స్థిరరాశి అక్షరం *z_మార్గం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    పూర్ణాంకం n_మార్గం;
     u32 j;
-    if( zPath==0 ) goto json_extract_error;
-    nPath = sqlite3Strlen30(zPath);
-    if( zPath[0]=='$' ){
-      j = jsonLookupStep(p, 0, zPath+1, 0);
-    }else if( (flags & JSON_ABPATH) ){
+    ఒకవేళ( z_మార్గం==0 ) వెళ్ళు json_వెలికితీయి_error;
+    n_మార్గం = sqlite3Strlen30(z_మార్గం);
+    ఒకవేళ( z_మార్గం[0]=='$' ){
+      j = json_Lookup_అడుగు(p, 0, z_మార్గం+1, 0);
+    }లేకపోతే ఒకవేళ( (flags & JSON_ABPATH) ){
       /* The -> and ->> operators accept abbreviated PATH arguments.  This
       ** is mostly for compatibility with PostgreSQL, but also for
       ** convenience.
@@ -4288,82 +4288,82 @@ static void jsonExtractFunc(
       **     NUMBER   ==>  $[#NUMBER]    // PG compatible
       */
       jsonStringInit(&jx, ctx);
-      if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
+      ఒకవేళ( sqlite3_విలువ_type(argv[i])==SQLITE_INTEGER ){
         jsonAppendRawNZ(&jx, "[", 1);
-        if( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
-        jsonAppendRaw(&jx, zPath, nPath);
+        ఒకవేళ( z_మార్గం[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
+        jsonAppendRaw(&jx, z_మార్గం, n_మార్గం);
         jsonAppendRawNZ(&jx, "]", 2);
-      }else if( jsonAllAlphanum(zPath, nPath) ){
+      }లేకపోతే ఒకవేళ( jsonAllAlphanum(z_మార్గం, n_మార్గం) ){
         jsonAppendRawNZ(&jx, ".", 1);
-        jsonAppendRaw(&jx, zPath, nPath);
-      }else if( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
-        jsonAppendRaw(&jx, zPath, nPath);
-      }else{
+        jsonAppendRaw(&jx, z_మార్గం, n_మార్గం);
+      }లేకపోతే ఒకవేళ( z_మార్గం[0]=='[' && n_మార్గం>=3 && z_మార్గం[n_మార్గం-1]==']' ){
+        jsonAppendRaw(&jx, z_మార్గం, n_మార్గం);
+      }లేకపోతే{
         jsonAppendRawNZ(&jx, ".\"", 2);
-        jsonAppendRaw(&jx, zPath, nPath);
+        jsonAppendRaw(&jx, z_మార్గం, n_మార్గం);
         jsonAppendRawNZ(&jx, "\"", 1);
       }
       jsonStringTerminate(&jx);
-      j = jsonLookupStep(p, 0, jx.zBuf, 0);
+      j = json_Lookup_అడుగు(p, 0, jx.zBuf, 0);
       jsonStringReset(&jx);
-    }else{
-      jsonBadPathError(ctx, zPath, 0);
-      goto json_extract_error;
+    }లేకపోతే{
+      json_Bad_మార్గం_Error(ctx, z_మార్గం, 0);
+      వెళ్ళు json_వెలికితీయి_error;
     }
-    if( j<p->nBlob ){
-      if( argc==2 ){
-        if( flags & JSON_JSON ){
+    ఒకవేళ( j<p->nBlob ){
+      ఒకవేళ( argc==2 ){
+        ఒకవేళ( flags & JSON_JSON ){
           jsonStringInit(&jx, ctx);
-          jsonTranslateBlobToText(p, j, &jx);
+          json_Translate_Blob_గమ్యం_పాఠ్యం(p, j, &jx);
           jsonReturnString(&jx, 0, 0);
           jsonStringReset(&jx);
-          assert( (flags & JSON_BLOB)==0 );
-          sqlite3_result_subtype(ctx, JSON_SUBTYPE);
-        }else{
+          ప్రతిజ్ఞా( (flags & JSON_BLOB)==0 );
+          sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
+        }లేకపోతే{
           jsonReturnFromBlob(p, j, ctx, 0);
-          if( (flags & (JSON_SQL|JSON_BLOB))==0
+          ఒకవేళ( (flags & (JSON_SQL|JSON_BLOB))==0
            && (p->aBlob[j]&0x0f)>=JSONB_ARRAY
           ){
-            sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+            sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
           }
         }
-      }else{
+      }లేకపోతే{
         jsonAppendSeparator(&jx);
-        jsonTranslateBlobToText(p, j, &jx);
+        json_Translate_Blob_గమ్యం_పాఠ్యం(p, j, &jx);
       }
-    }else if( j==JSON_LOOKUP_NOTFOUND ){
-      if( argc==2 ){
-        goto json_extract_error;  /* Return NULL if not found */
-      }else{
+    }లేకపోతే ఒకవేళ( j==JSON_LOOKUP_NOTFOUND ){
+      ఒకవేళ( argc==2 ){
+        వెళ్ళు json_వెలికితీయి_error;  /* Return NULL if not found */
+      }లేకపోతే{
         jsonAppendSeparator(&jx);
         jsonAppendRawNZ(&jx, "null", 4);
       }
-    }else{
-      jsonBadPathError(ctx, zPath, j);
-      goto json_extract_error;
+    }లేకపోతే{
+      json_Bad_మార్గం_Error(ctx, z_మార్గం, j);
+      వెళ్ళు json_వెలికితీయి_error;
     }
   }
-  if( argc>2 ){
+  ఒకవేళ( argc>2 ){
     jsonAppendChar(&jx, ']');
     jsonReturnString(&jx, 0, 0);
-    if( (flags & JSON_BLOB)==0 ){
-      sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+    ఒకవేళ( (flags & JSON_BLOB)==0 ){
+      sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
     }
   }
-json_extract_error:
+json_వెలికితీయి_error:
   jsonStringReset(&jx);
   jsonParseFree(p);
-  return;
+  తిరిగి;
 }
 
 /*
 ** Return codes for jsonMergePatch()
 */
-#define JSON_MERGE_OK          0     /* Success */
-#define JSON_MERGE_BADTARGET   1     /* Malformed TARGET blob */
-#define JSON_MERGE_BADPATCH    2     /* Malformed PATCH blob */
-#define JSON_MERGE_OOM         3     /* Out-of-memory condition */
-#define JSON_MERGE_TOODEEP     4     /* Nested too deep */
+#నిర్వచించు JSON_విలీనం_OK          0     /* Success */
+#నిర్వచించు JSON_విలీనం_BADTARGET   1     /* Malformed TARGET blob */
+#నిర్వచించు JSON_విలీనం_BADPATCH    2     /* Malformed PATCH blob */
+#నిర్వచించు JSON_విలీనం_OOM         3     /* Out-of-memory condition */
+#నిర్వచించు JSON_విలీనం_TOODEEP     4     /* Nested too deep */
 
 /*
 ** RFC-7396 MergePatch for two JSONB blobs.
@@ -4411,12 +4411,12 @@ json_extract_error:
 **  |
 **  ^---- Line numbers referenced in comments in the implementation
 */
-static int jsonMergePatch(
-  JsonParse *pTarget,      /* The JSON parser that contains the TARGET */
-  u32 iTarget,             /* Index of TARGET in pTarget->aBlob[] */
-  const JsonParse *pPatch, /* The PATCH */
+స్థిర పూర్ణాంకం json_విలీనం_Patch(
+  JsonParse *p_లక్ష్యం,      /* The JSON parser that contains the TARGET */
+  u32 i_లక్ష్యం,             /* Index of TARGET in pTarget->aBlob[] */
+  స్థిరరాశి JsonParse *pPatch, /* The PATCH */
   u32 iPatch,              /* Index of PATCH in pPatch->aBlob[] */
-  u32 iDepth               /* Nesting depth */
+  u32 i_లోతు               /* Nesting depth */
 ){
   u8 x;             /* Type of a single node */
   u32 n, sz=0;      /* Return values from jsonbPayloadSize() */
@@ -4442,120 +4442,120 @@ static int jsonMergePatch(
   u32 nPValue;      /* Header size for the patch value */
   u32 szPValue;     /* Payload size of the patch value */
 
-  assert( iTarget>=0 && iTarget<pTarget->nBlob );
-  assert( iPatch>=0 && iPatch<pPatch->nBlob );
+  ప్రతిజ్ఞా( i_లక్ష్యం>=0 && i_లక్ష్యం<p_లక్ష్యం->nBlob );
+  ప్రతిజ్ఞా( iPatch>=0 && iPatch<pPatch->nBlob );
   x = pPatch->aBlob[iPatch] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
+  ఒకవేళ( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
     u32 szPatch;        /* Total size of the patch, header+payload */
-    u32 szTarget;       /* Total size of the target, header+payload */
-    n = jsonbPayloadSize(pPatch, iPatch, &sz);
+    u32 sz_లక్ష్యం;       /* Total size of the target, header+payload */
+    n = jsonb_Payload_కొలత(pPatch, iPatch, &sz);
     szPatch = n+sz;
     sz = 0;
-    n = jsonbPayloadSize(pTarget, iTarget, &sz);
-    szTarget = n+sz;
-    jsonBlobEdit(pTarget, iTarget, szTarget, pPatch->aBlob+iPatch, szPatch);
-    return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
+    n = jsonb_Payload_కొలత(p_లక్ష్యం, i_లక్ష్యం, &sz);
+    sz_లక్ష్యం = n+sz;
+    jsonBlobEdit(p_లక్ష్యం, i_లక్ష్యం, sz_లక్ష్యం, pPatch->aBlob+iPatch, szPatch);
+    తిరిగి p_లక్ష్యం->oom ? JSON_విలీనం_OOM : JSON_విలీనం_OK;  /* Line 03 */
   }
-  x = pTarget->aBlob[iTarget] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
-    n = jsonbPayloadSize(pTarget, iTarget, &sz);
-    jsonBlobEdit(pTarget, iTarget+n, sz, 0, 0);
-    x = pTarget->aBlob[iTarget];
-    pTarget->aBlob[iTarget] = (x & 0xf0) | JSONB_OBJECT;
+  x = p_లక్ష్యం->aBlob[i_లక్ష్యం] & 0x0f;
+  ఒకవేళ( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
+    n = jsonb_Payload_కొలత(p_లక్ష్యం, i_లక్ష్యం, &sz);
+    jsonBlobEdit(p_లక్ష్యం, i_లక్ష్యం+n, sz, 0, 0);
+    x = p_లక్ష్యం->aBlob[i_లక్ష్యం];
+    p_లక్ష్యం->aBlob[i_లక్ష్యం] = (x & 0xf0) | JSONB_OBJECT;
   }
-  n = jsonbPayloadSize(pPatch, iPatch, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADPATCH;
+  n = jsonb_Payload_కొలత(pPatch, iPatch, &sz);
+  ఒకవేళ( NEVER(n==0) ) తిరిగి JSON_విలీనం_BADPATCH;
   iPCursor = iPatch+n;
   iPEnd = iPCursor+sz;
-  n = jsonbPayloadSize(pTarget, iTarget, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADTARGET;
-  iTStart = iTarget+n;
+  n = jsonb_Payload_కొలత(p_లక్ష్యం, i_లక్ష్యం, &sz);
+  ఒకవేళ( NEVER(n==0) ) తిరిగి JSON_విలీనం_BADTARGET;
+  iTStart = i_లక్ష్యం+n;
   iTEndBE = iTStart+sz;
 
-  while( iPCursor<iPEnd ){  /* Algorithm line 07 */
+  అయితే( iPCursor<iPEnd ){  /* Algorithm line 07 */
     iPLabel = iPCursor;
     ePLabel = pPatch->aBlob[iPCursor] & 0x0f;
-    if( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
-      return JSON_MERGE_BADPATCH;
+    ఒకవేళ( ePLabel<JSONB_పాఠ్యం || ePLabel>JSONB_TEXTRAW ){
+      తిరిగి JSON_విలీనం_BADPATCH;
     }
-    nPLabel = jsonbPayloadSize(pPatch, iPCursor, &szPLabel);
-    if( nPLabel==0 ) return JSON_MERGE_BADPATCH;
+    nPLabel = jsonb_Payload_కొలత(pPatch, iPCursor, &szPLabel);
+    ఒకవేళ( nPLabel==0 ) తిరిగి JSON_విలీనం_BADPATCH;
     iPValue = iPCursor + nPLabel + szPLabel;
-    if( iPValue>=iPEnd ) return JSON_MERGE_BADPATCH;
-    nPValue = jsonbPayloadSize(pPatch, iPValue, &szPValue);
-    if( nPValue==0 ) return JSON_MERGE_BADPATCH;
+    ఒకవేళ( iPValue>=iPEnd ) తిరిగి JSON_విలీనం_BADPATCH;
+    nPValue = jsonb_Payload_కొలత(pPatch, iPValue, &szPValue);
+    ఒకవేళ( nPValue==0 ) తిరిగి JSON_విలీనం_BADPATCH;
     iPCursor = iPValue + nPValue + szPValue;
-    if( iPCursor>iPEnd ) return JSON_MERGE_BADPATCH;
+    ఒకవేళ( iPCursor>iPEnd ) తిరిగి JSON_విలీనం_BADPATCH;
 
     iTCursor = iTStart;
-    iTEnd = iTEndBE + pTarget->delta;
-    while( iTCursor<iTEnd ){
-      int isEqual;   /* true if the patch and target labels match */
+    iTEnd = iTEndBE + p_లక్ష్యం->delta;
+    అయితే( iTCursor<iTEnd ){
+      పూర్ణాంకం isEqual;   /* true if the patch and target labels match */
       iTLabel = iTCursor;
-      eTLabel = pTarget->aBlob[iTCursor] & 0x0f;
-      if( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
-        return JSON_MERGE_BADTARGET;
+      eTLabel = p_లక్ష్యం->aBlob[iTCursor] & 0x0f;
+      ఒకవేళ( eTLabel<JSONB_పాఠ్యం || eTLabel>JSONB_TEXTRAW ){
+        తిరిగి JSON_విలీనం_BADTARGET;
       }
-      nTLabel = jsonbPayloadSize(pTarget, iTCursor, &szTLabel);
-      if( nTLabel==0 ) return JSON_MERGE_BADTARGET;
+      nTLabel = jsonb_Payload_కొలత(p_లక్ష్యం, iTCursor, &szTLabel);
+      ఒకవేళ( nTLabel==0 ) తిరిగి JSON_విలీనం_BADTARGET;
       iTValue = iTLabel + nTLabel + szTLabel;
-      if( iTValue>=iTEnd ) return JSON_MERGE_BADTARGET;
-      nTValue = jsonbPayloadSize(pTarget, iTValue, &szTValue);
-      if( nTValue==0 ) return JSON_MERGE_BADTARGET;
-      if( iTValue + nTValue + szTValue > iTEnd ) return JSON_MERGE_BADTARGET;
+      ఒకవేళ( iTValue>=iTEnd ) తిరిగి JSON_విలీనం_BADTARGET;
+      nTValue = jsonb_Payload_కొలత(p_లక్ష్యం, iTValue, &szTValue);
+      ఒకవేళ( nTValue==0 ) తిరిగి JSON_విలీనం_BADTARGET;
+      ఒకవేళ( iTValue + nTValue + szTValue > iTEnd ) తిరిగి JSON_విలీనం_BADTARGET;
       isEqual = jsonLabelCompare(
-                   (const char*)&pPatch->aBlob[iPLabel+nPLabel],
+                   (స్థిరరాశి అక్షరం*)&pPatch->aBlob[iPLabel+nPLabel],
                    szPLabel,
-                   (ePLabel==JSONB_TEXT || ePLabel==JSONB_TEXTRAW),
-                   (const char*)&pTarget->aBlob[iTLabel+nTLabel],
+                   (ePLabel==JSONB_పాఠ్యం || ePLabel==JSONB_TEXTRAW),
+                   (స్థిరరాశి అక్షరం*)&p_లక్ష్యం->aBlob[iTLabel+nTLabel],
                    szTLabel,
-                   (eTLabel==JSONB_TEXT || eTLabel==JSONB_TEXTRAW));
-      if( isEqual ) break;
+                   (eTLabel==JSONB_పాఠ్యం || eTLabel==JSONB_TEXTRAW));
+      ఒకవేళ( isEqual ) ఆపు;
       iTCursor = iTValue + nTValue + szTValue;
     }
     x = pPatch->aBlob[iPValue] & 0x0f;
-    if( iTCursor<iTEnd ){
+    ఒకవేళ( iTCursor<iTEnd ){
       /* A match was found.  Algorithm line 08 */
-      if( x==0 ){
+      ఒకవేళ( x==0 ){
         /* Patch value is NULL.  Algorithm line 09 */
-        jsonBlobEdit(pTarget, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
+        jsonBlobEdit(p_లక్ష్యం, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
         /*  vvvvvv----- No OOM on a delete-only edit */
-        if( NEVER(pTarget->oom) ) return JSON_MERGE_OOM;
-      }else{
+        ఒకవేళ( NEVER(p_లక్ష్యం->oom) ) తిరిగి JSON_విలీనం_OOM;
+      }లేకపోతే{
         /* Algorithm line 12 */
-        int rc, savedDelta = pTarget->delta;
-        pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
-        rc = jsonMergePatch(pTarget, iTValue, pPatch, iPValue, iDepth+1);
-        if( rc ) return rc;
-        pTarget->delta += savedDelta;
+        పూర్ణాంకం rc, savedDelta = p_లక్ష్యం->delta;
+        p_లక్ష్యం->delta = 0;
+        ఒకవేళ( i_లోతు>=JSON_MAX_లోతు ) తిరిగి JSON_విలీనం_TOODEEP;
+        rc = json_విలీనం_Patch(p_లక్ష్యం, iTValue, pPatch, iPValue, i_లోతు+1);
+        ఒకవేళ( rc ) తిరిగి rc;
+        p_లక్ష్యం->delta += savedDelta;
       }        
-    }else if( x>0 ){  /* Algorithm line 13 */
+    }లేకపోతే ఒకవేళ( x>0 ){  /* Algorithm line 13 */
       /* No match and patch value is not NULL */
       u32 szNew = szPLabel+nPLabel;
-      if( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
-        jsonBlobEdit(pTarget, iTEnd, 0, 0, szPValue+nPValue+szNew);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
-        memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
-        memcpy(&pTarget->aBlob[iTEnd+szNew], 
+      ఒకవేళ( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
+        jsonBlobEdit(p_లక్ష్యం, iTEnd, 0, 0, szPValue+nPValue+szNew);
+        ఒకవేళ( p_లక్ష్యం->oom ) తిరిగి JSON_విలీనం_OOM;
+        జ్ఞాపకం_నకలు(&p_లక్ష్యం->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
+        జ్ఞాపకం_నకలు(&p_లక్ష్యం->aBlob[iTEnd+szNew], 
                &pPatch->aBlob[iPValue], szPValue+nPValue);
-      }else{
-        int rc, savedDelta;
-        jsonBlobEdit(pTarget, iTEnd, 0, 0, szNew+1);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
-        memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
-        pTarget->aBlob[iTEnd+szNew] = 0x00;
-        savedDelta = pTarget->delta;
-        pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
-        rc = jsonMergePatch(pTarget, iTEnd+szNew,pPatch,iPValue,iDepth+1);
-        if( rc ) return rc;
-        pTarget->delta += savedDelta;
+      }లేకపోతే{
+        పూర్ణాంకం rc, savedDelta;
+        jsonBlobEdit(p_లక్ష్యం, iTEnd, 0, 0, szNew+1);
+        ఒకవేళ( p_లక్ష్యం->oom ) తిరిగి JSON_విలీనం_OOM;
+        జ్ఞాపకం_నకలు(&p_లక్ష్యం->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
+        p_లక్ష్యం->aBlob[iTEnd+szNew] = 0x00;
+        savedDelta = p_లక్ష్యం->delta;
+        p_లక్ష్యం->delta = 0;
+        ఒకవేళ( i_లోతు>=JSON_MAX_లోతు ) తిరిగి JSON_విలీనం_TOODEEP;
+        rc = json_విలీనం_Patch(p_లక్ష్యం, iTEnd+szNew,pPatch,iPValue,i_లోతు+1);
+        ఒకవేళ( rc ) తిరిగి rc;
+        p_లక్ష్యం->delta += savedDelta;
       }
     }
   }
-  if( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
-  return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
+  ఒకవేళ( p_లక్ష్యం->delta ) json_After_Edit_కొలత_Adjust(p_లక్ష్యం, i_లక్ష్యం);
+  తిరిగి p_లక్ష్యం->oom ? JSON_విలీనం_OOM : JSON_విలీనం_OK;
 }
 
 
@@ -4564,34 +4564,34 @@ static int jsonMergePatch(
 ** object that is the result of running the RFC 7396 MergePatch() algorithm
 ** on the two arguments.
 */
-static void jsonPatchFunc(
+స్థిర శూన్య jsonPatchFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  JsonParse *pTarget;    /* The TARGET */
+  JsonParse *p_లక్ష్యం;    /* The TARGET */
   JsonParse *pPatch;     /* The PATCH */
-  int rc;                /* Result code */
+  పూర్ణాంకం rc;                /* Result code */
 
-  UNUSED_PARAMETER(argc);
-  assert( argc==2 );
-  pTarget = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
-  if( pTarget==0 ) return;
+  వాడని_PARAMETER(argc);
+  ప్రతిజ్ఞా( argc==2 );
+  p_లక్ష్యం = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
+  ఒకవేళ( p_లక్ష్యం==0 ) తిరిగి;
   pPatch = jsonParseFuncArg(ctx, argv[1], 0);
-  if( pPatch ){
-    rc = jsonMergePatch(pTarget, 0, pPatch, 0, 0);
-    if( rc==JSON_MERGE_OK ){
-      jsonReturnParse(ctx, pTarget);
-    }else if( rc==JSON_MERGE_OOM ){
-      sqlite3_result_error_nomem(ctx);
-    }else if( rc==JSON_MERGE_TOODEEP ){
-      sqlite3_result_error(ctx, "JSON nested too deep", -1);
-    }else{
-      sqlite3_result_error(ctx, "malformed JSON", -1);
+  ఒకవేళ( pPatch ){
+    rc = json_విలీనం_Patch(p_లక్ష్యం, 0, pPatch, 0, 0);
+    ఒకవేళ( rc==JSON_విలీనం_OK ){
+      jsonReturnParse(ctx, p_లక్ష్యం);
+    }లేకపోతే ఒకవేళ( rc==JSON_విలీనం_OOM ){
+      sqlite3_ఫలితం_error_nomem(ctx);
+    }లేకపోతే ఒకవేళ( rc==JSON_విలీనం_TOODEEP ){
+      sqlite3_ఫలితం_error(ctx, "JSON nested too deep", -1);
+    }లేకపోతే{
+      sqlite3_ఫలితం_error(ctx, "malformed JSON", -1);
     }
     jsonParseFree(pPatch);
   }
-  jsonParseFree(pTarget);
+  jsonParseFree(p_లక్ష్యం);
 }
 
 
@@ -4600,39 +4600,39 @@ static void jsonPatchFunc(
 ** object that contains all name/value given in arguments.  Or if any name
 ** is not a string or if any value is a BLOB, throw an error.
 */
-static void jsonObjectFunc(
+స్థిర శూన్య jsonObjectFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  int i;
+  పూర్ణాంకం i;
   JsonString jx;
-  const char *z;
+  స్థిరరాశి అక్షరం *z;
   u32 n;
 
-  if( argc&1 ){
-    sqlite3_result_error(ctx, "json_object() requires an even number "
+  ఒకవేళ( argc&1 ){
+    sqlite3_ఫలితం_error(ctx, "json_object() requires an even number "
                                   "of arguments", -1);
-    return;
+    తిరిగి;
   }
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '{');
-  for(i=0; i<argc; i+=2){
-    if( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
-      sqlite3_result_error(ctx, "json_object() labels must be TEXT", -1);
+  కొరకు(i=0; i<argc; i+=2){
+    ఒకవేళ( sqlite3_విలువ_type(argv[i])!=SQLITE_పాఠ్యం ){
+      sqlite3_ఫలితం_error(ctx, "json_object() labels must be TEXT", -1);
       jsonStringReset(&jx);
-      return;
+      తిరిగి;
     }
     jsonAppendSeparator(&jx);
-    z = (const char*)sqlite3_value_text(argv[i]);
-    n = sqlite3_value_bytes(argv[i]);
+    z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    n = sqlite3_విలువ_బైట్లు(argv[i]);
     jsonAppendString(&jx, z, n);
     jsonAppendChar(&jx, ':');
-    jsonAppendSqlValue(&jx, argv[i+1]);
+    json_Append_Sql_విలువ(&jx, argv[i+1]);
   }
   jsonAppendChar(&jx, '}');
   jsonReturnString(&jx, 0, 0);
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
 }
 
 
@@ -4642,53 +4642,53 @@ static void jsonObjectFunc(
 ** Remove the named elements from JSON and return the result.  malformed
 ** JSON or PATH arguments result in an error.
 */
-static void jsonRemoveFunc(
+స్థిర శూన్య jsonRemoveFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0; /* Path of element to be removed */
-  int i;                 /* Loop counter */
+  స్థిరరాశి అక్షరం *z_మార్గం = 0; /* Path of element to be removed */
+  పూర్ణాంకం i;                 /* Loop counter */
   u32 rc;                /* Subroutine return code */
 
-  if( argc<1 ) return;
+  ఒకవేళ( argc<1 ) తిరిగి;
   p = jsonParseFuncArg(ctx, argv[0], argc>1 ? JSON_EDITABLE : 0);
-  if( p==0 ) return;
-  for(i=1; i<argc; i++){
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
-      goto json_remove_done;
+  ఒకవేళ( p==0 ) తిరిగి;
+  కొరకు(i=1; i<argc; i++){
+    z_మార్గం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    ఒకవేళ( z_మార్గం==0 ){
+      వెళ్ళు json_remove_పూర్తి;
     }
-    if( zPath[0]!='$' ){
-      goto json_remove_patherror;
+    ఒకవేళ( z_మార్గం[0]!='$' ){
+      వెళ్ళు json_remove_patherror;
     }
-    if( zPath[1]==0 ){
+    ఒకవేళ( z_మార్గం[1]==0 ){
       /* json_remove(j,'$') returns NULL */
-      goto json_remove_done;
+      వెళ్ళు json_remove_పూర్తి;
     }
     p->eEdit = JEDIT_DEL;
     p->delta = 0;
-    rc = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(rc) ){
-      if( rc==JSON_LOOKUP_NOTFOUND ){
-        continue;  /* No-op */
-      }else{
-        jsonBadPathError(ctx, zPath, rc);
+    rc = json_Lookup_అడుగు(p, 0, z_మార్గం+1, 0);
+    ఒకవేళ( JSON_LOOKUP_ISERROR(rc) ){
+      ఒకవేళ( rc==JSON_LOOKUP_NOTFOUND ){
+        కొనసాగు;  /* No-op */
+      }లేకపోతే{
+        json_Bad_మార్గం_Error(ctx, z_మార్గం, rc);
       }
-      goto json_remove_done;
+      వెళ్ళు json_remove_పూర్తి;
     }
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  తిరిగి;
 
 json_remove_patherror:
-  jsonBadPathError(ctx, zPath, 0);
+  json_Bad_మార్గం_Error(ctx, z_మార్గం, 0);
 
-json_remove_done:
+json_remove_పూర్తి:
   jsonParseFree(p);
-  return;
+  తిరిగి;
 }
 
 /*
@@ -4697,17 +4697,17 @@ json_remove_done:
 ** Replace the value at PATH with VALUE.  If PATH does not already exist,
 ** this routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonReplaceFunc(
+స్థిర శూన్య jsonReplaceFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  if( argc<1 ) return;
-  if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, "replace");
-    return;
+  ఒకవేళ( argc<1 ) తిరిగి;
+  ఒకవేళ( (argc&1)==0 ) {
+    json_Wrong_అంకె_వాదనలు(ctx, "replace");
+    తిరిగి;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, JEDIT_REPL);
+  json_చొప్పించు_Into_Blob(ctx, argc, argv, JEDIT_REPL);
 }
 
 
@@ -4723,23 +4723,23 @@ static void jsonReplaceFunc(
 ** Create PATH and initialize it to VALUE.  If PATH already exists, this
 ** routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonSetFunc(
+స్థిర శూన్య json_సమితి_Func(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  int eInsType = JSON_INSERT_TYPE(flags);
-  static const char *azInsType[] = { "insert", "set", "array_insert" };
-  static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
+  పూర్ణాంకం flags = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(ctx));
+  పూర్ణాంకం eInsType = JSON_చొప్పించు_TYPE(flags);
+  స్థిర స్థిరరాశి అక్షరం *azInsType[] = { "insert", "set", "array_insert" };
+  స్థిర స్థిరరాశి u8 aEditType[] = { JEDIT_INS, JEDIT_సమితి, JEDIT_AINS };
 
-  if( argc<1 ) return;
-  assert( eInsType>=0 && eInsType<=2 );
-  if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, azInsType[eInsType]);
-    return;
+  ఒకవేళ( argc<1 ) తిరిగి;
+  ప్రతిజ్ఞా( eInsType>=0 && eInsType<=2 );
+  ఒకవేళ( (argc&1)==0 ) {
+    json_Wrong_అంకె_వాదనలు(ctx, azInsType[eInsType]);
+    తిరిగి;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, aEditType[eInsType]);
+  json_చొప్పించు_Into_Blob(ctx, argc, argv, aEditType[eInsType]);
 }
 
 /*
@@ -4749,38 +4749,38 @@ static void jsonSetFunc(
 ** Return the top-level "type" of a JSON string.  json_type() raises an
 ** error if either the JSON or PATH inputs are not well-formed.
 */
-static void jsonTypeFunc(
+స్థిర శూన్య jsonTypeFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0;
+  స్థిరరాశి అక్షరం *z_మార్గం = 0;
   u32 i;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ) goto json_type_done;
-    if( zPath[0]!='$' ){
-      jsonBadPathError(ctx, zPath, 0);
-      goto json_type_done;
+  ఒకవేళ( p==0 ) తిరిగి;
+  ఒకవేళ( argc==2 ){
+    z_మార్గం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+    ఒకవేళ( z_మార్గం==0 ) వెళ్ళు json_type_పూర్తి;
+    ఒకవేళ( z_మార్గం[0]!='$' ){
+      json_Bad_మార్గం_Error(ctx, z_మార్గం, 0);
+      వెళ్ళు json_type_పూర్తి;
     }
-    i = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    i = json_Lookup_అడుగు(p, 0, z_మార్గం+1, 0);
+    ఒకవేళ( JSON_LOOKUP_ISERROR(i) ){
+      ఒకవేళ( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
-        jsonBadPathError(ctx, zPath, i);
+      }లేకపోతే{
+        json_Bad_మార్గం_Error(ctx, z_మార్గం, i);
       }
-      goto json_type_done;
+      వెళ్ళు json_type_పూర్తి;
     }
-  }else{
+  }లేకపోతే{
     i = 0;
   }
-  sqlite3_result_text(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
-json_type_done:
+  sqlite3_ఫలితం_పాఠ్యం(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
+json_type_పూర్తి:
   jsonParseFree(p);
 }
 
@@ -4794,26 +4794,26 @@ json_type_done:
 ** The INDENT argument is text that is used for indentation.  If omitted,
 ** it defaults to four spaces (the same as PostgreSQL).
 */
-static void jsonPrettyFunc(
+స్థిర శూన్య jsonPrettyFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonString s;          /* The output string */
   JsonPretty x;          /* Pretty printing context */
 
-  memset(&x, 0, sizeof(x));
+  memset(&x, 0, పరిమాణం(x));
   x.pParse = jsonParseFuncArg(ctx, argv[0], 0);
-  if( x.pParse==0 ) return;
-  x.pOut = &s;
+  ఒకవేళ( x.pParse==0 ) తిరిగి;
+  x.p_బహిర్గతం = &s;
   jsonStringInit(&s, ctx);
-  if( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
+  ఒకవేళ( argc==1 || (x.zIndent = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]))==0 ){
     x.zIndent = "    ";
     x.szIndent = 4;
-  }else{
-    x.szIndent = (u32)strlen(x.zIndent);
+  }లేకపోతే{
+    x.szIndent = (u32)అక్షరశ్రేణి_పొడవు(x.zIndent);
   }
-  jsonTranslateBlobToPrettyText(&x, 0);
+  json_Translate_Blob_గమ్యం_Pretty_పాఠ్యం(&x, 0);
   jsonReturnString(&s, 0, 0);
   jsonParseFree(x.pParse);
 }
@@ -4875,72 +4875,72 @@ static void jsonPrettyFunc(
 **   *   Return 1 if the input is well-formed.
 **   *   Return 0 if the input is not well-formed.
 */
-static void jsonValidFunc(
+స్థిర శూన్య jsonValidFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonParse *p;          /* The parse */
   u8 flags = 1;
   u8 res = 0;
-  if( argc==2 ){
-    i64 f = sqlite3_value_int64(argv[1]);
-    if( f<1 || f>15 ){
-      sqlite3_result_error(ctx, "FLAGS parameter to json_valid() must be"
+  ఒకవేళ( argc==2 ){
+    i64 f = sqlite3_విలువ_int64(argv[1]);
+    ఒకవేళ( f<1 || f>15 ){
+      sqlite3_ఫలితం_error(ctx, "FLAGS parameter to json_valid() must be"
                                 " between 1 and 15", -1);
-      return;
+      తిరిగి;
     }
     flags = f & 0x0f;
   }
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_NULL: {
-#ifdef SQLITE_LEGACY_JSON_VALID
+  ఎంపిక( sqlite3_విలువ_type(argv[0]) ){
+    స్థితి SQLITE_NULL: {
+#నిర్వచితమైతే SQLITE_LEGACY_JSON_VALID
       /* Incorrect legacy behavior was to return FALSE for a NULL input */
-      sqlite3_result_int(ctx, 0);
-#endif
-      return;
+      sqlite3_ఫలితం_int(ctx, 0);
+#అయితే_ముగింపు
+      తిరిగి;
     }
-    case SQLITE_BLOB: {
+    స్థితి SQLITE_BLOB: {
       JsonParse py;
-      memset(&py, 0, sizeof(py));
-      if( jsonArgIsJsonb(argv[0], &py) ){
-        if( flags & 0x04 ){
+      memset(&py, 0, పరిమాణం(py));
+      ఒకవేళ( jsonArgIsJsonb(argv[0], &py) ){
+        ఒకవేళ( flags & 0x04 ){
           /* Superficial checking only - accomplished by the
           ** jsonArgIsJsonb() call above. */
           res = 1;
-        }else if( flags & 0x08 ){
+        }లేకపోతే ఒకవేళ( flags & 0x08 ){
           /* Strict checking.  Check by translating BLOB->TEXT->BLOB.  If
           ** no errors occur, call that a "strict check". */
           res = 0==jsonbValidityCheck(&py, 0, py.nBlob, 1);
         }
-        break;
+        ఆపు;
       }
       /* Fall through into interpreting the input as text.  See note
       ** above at tag-20240123-a. */
       /* no break */ deliberate_fall_through
     }
-    default: {
+    అప్రమేయ: {
       JsonParse px;
-      if( (flags & 0x3)==0 ) break;
-      memset(&px, 0, sizeof(px));
+      ఒకవేళ( (flags & 0x3)==0 ) ఆపు;
+      memset(&px, 0, పరిమాణం(px));
      
       p = jsonParseFuncArg(ctx, argv[0], JSON_KEEPERROR|JSON_NOCACHE);
-      if( p ){
-        if( p->oom ){
-          sqlite3_result_error_nomem(ctx);
-        }else if( p->nErr ){
+      ఒకవేళ( p ){
+        ఒకవేళ( p->oom ){
+          sqlite3_ఫలితం_error_nomem(ctx);
+        }లేకపోతే ఒకవేళ( p->nErr ){
           /* no-op */
-        }else if( (flags & 0x02)!=0 || p->hasNonstd==0 ){
+        }లేకపోతే ఒకవేళ( (flags & 0x02)!=0 || p->hasNonstd==0 ){
           res = 1;
         }
         jsonParseFree(p);
-      }else{
-        sqlite3_result_error_nomem(ctx);
+      }లేకపోతే{
+        sqlite3_ఫలితం_error_nomem(ctx);
       }
-      break;
+      ఆపు;
     }
   }
-  sqlite3_result_int(ctx, res);
+  sqlite3_ఫలితం_int(ctx, res);
 }
 
 /*
@@ -4957,43 +4957,43 @@ static void jsonValidFunc(
 ** that the input was not valid JSON, or return 0 if the input text looks
 ** ok.  JSON-5 extensions are accepted.
 */
-static void jsonErrorFunc(
+స్థిర శూన్య jsonErrorFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   i64 iErrPos = 0;       /* Error position to be returned */
   JsonParse s;
 
-  assert( argc==1 );
-  UNUSED_PARAMETER(argc);
-  memset(&s, 0, sizeof(s));
+  ప్రతిజ్ఞా( argc==1 );
+  వాడని_PARAMETER(argc);
+  memset(&s, 0, పరిమాణం(s));
   s.db = sqlite3_context_db_handle(ctx);
-  if( jsonArgIsJsonb(argv[0], &s) ){
+  ఒకవేళ( jsonArgIsJsonb(argv[0], &s) ){
     iErrPos = (i64)jsonbValidityCheck(&s, 0, s.nBlob, 1);
-  }else{
-    s.zJson = (char*)sqlite3_value_text(argv[0]);
-    if( s.zJson==0 ) return;  /* NULL input or OOM */
-    s.nJson = sqlite3_value_bytes(argv[0]);
-    if( jsonConvertTextToBlob(&s,0) ){
-      if( s.oom ){
+  }లేకపోతే{
+    s.zJson = (అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+    ఒకవేళ( s.zJson==0 ) తిరిగి;  /* NULL input or OOM */
+    s.nJson = sqlite3_విలువ_బైట్లు(argv[0]);
+    ఒకవేళ( json_Convert_పాఠ్యం_గమ్యం_Blob(&s,0) ){
+      ఒకవేళ( s.oom ){
         iErrPos = -1;
-      }else{
+      }లేకపోతే{
         /* Convert byte-offset s.iErr into a character offset */
         u32 k;
-        assert( s.zJson!=0 );  /* Because s.oom is false */
-        for(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
-          if( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
+        ప్రతిజ్ఞా( s.zJson!=0 );  /* Because s.oom is false */
+        కొరకు(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
+          ఒకవేళ( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
         }
         iErrPos++;
       }
     }
   }
   jsonParseReset(&s);
-  if( iErrPos<0 ){
-    sqlite3_result_error_nomem(ctx);
-  }else{
-    sqlite3_result_int64(ctx, iErrPos);
+  ఒకవేళ( iErrPos<0 ){
+    sqlite3_ఫలితం_error_nomem(ctx);
+  }లేకపోతే{
+    sqlite3_ఫలితం_int64(ctx, iErrPos);
   }
 }
 
@@ -5005,114 +5005,114 @@ static void jsonErrorFunc(
 **
 ** Return a JSON array composed of all values in the aggregate.
 */
-static void jsonArrayStep(
+స్థిర శూన్య json_Array_అడుగు(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonString *pStr;
-  UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    if( pStr->zBuf==0 ){
+  వాడని_PARAMETER(argc);
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, పరిమాణం(*pStr));
+  ఒకవేళ( pStr ){
+    ఒకవేళ( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '[');
-    }else if( pStr->nUsed>1 ){
+    }లేకపోతే ఒకవేళ( pStr->n_వాడిన>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    jsonAppendSqlValue(pStr, argv[0]);
+    json_Append_Sql_విలువ(pStr, argv[0]);
   }
 }
-static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
+స్థిర శూన్య jsonArrayCompute(sqlite3_context *ctx, పూర్ణాంకం isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  పూర్ణాంకం flags = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ఒకవేళ( pStr ){
     pStr->pCtx = ctx;
     jsonAppendRawNZ(pStr, "]", 2);
     jsonStringTrimOneChar(pStr);
-    if( pStr->eErr ){
+    ఒకవేళ( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
-    }else if( flags & JSON_BLOB ){
+      తిరిగి;
+    }లేకపోతే ఒకవేళ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ఒకవేళ( isFinal ){
+        ఒకవేళ( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }లేకపోతే{
         jsonStringTrimOneChar(pStr);
       }
-      return;
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+      తిరిగి;
+    }లేకపోతే ఒకవేళ( isFinal ){
+      sqlite3_ఫలితం_పాఠ్యం(ctx, pStr->zBuf, (పూర్ణాంకం)pStr->n_వాడిన,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                               sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }లేకపోతే{
+      sqlite3_ఫలితం_పాఠ్యం(ctx, pStr->zBuf, (పూర్ణాంకం)pStr->n_వాడిన, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pStr);
     }
-  }else if( flags & JSON_BLOB ){
-    static const u8 emptyArray = 0x0b;
-    sqlite3_result_blob(ctx, &emptyArray, 1, SQLITE_STATIC);
-  }else{
-    sqlite3_result_text(ctx, "[]", 2, SQLITE_STATIC);
+  }లేకపోతే ఒకవేళ( flags & JSON_BLOB ){
+    స్థిర స్థిరరాశి u8 ఖాళీలు_Array = 0x0b;
+    sqlite3_ఫలితం_blob(ctx, &ఖాళీలు_Array, 1, SQLITE_STATIC);
+  }లేకపోతే{
+    sqlite3_ఫలితం_పాఠ్యం(ctx, "[]", 2, SQLITE_STATIC);
   }
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonArrayValue(sqlite3_context *ctx){
+స్థిర శూన్య json_Array_విలువ(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 0);
 }
-static void jsonArrayFinal(sqlite3_context *ctx){
+స్థిర శూన్య jsonArrayFinal(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 1);
 }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WINDOWFUNC
 /*
 ** This method works for both json_group_array() and json_group_object().
 ** It works by removing the first element of the group by searching forward
 ** to the first comma (",") that is not within a string and deleting all
 ** text through that comma.
 */
-static void jsonGroupInverse(
+స్థిర శూన్య json_సమూహం_Inverse(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  unsigned int i;
-  int inStr = 0;
-  int nNest = 0;
-  char *z;
-  char c;
+  గుర్తులేని పూర్ణాంకం i;
+  పూర్ణాంకం లోపల_Str = 0;
+  పూర్ణాంకం nNest = 0;
+  అక్షరం *z;
+  అక్షరం c;
   JsonString *pStr;
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(argv);
+  వాడని_PARAMETER(argc);
+  వాడని_PARAMETER(argv);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
   /* pStr is always non-NULL since jsonArrayStep() or jsonObjectStep() will
   ** always have been called to initialize it */
-  if( NEVER(!pStr) ) return;
+  ఒకవేళ( NEVER(!pStr) ) తిరిగి;
   z = pStr->zBuf;
-  for(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
-    if( c=='"' ){
-      inStr = !inStr;
-    }else if( c=='\\' ){
+  కొరకు(i=1; i<pStr->n_వాడిన && ((c = z[i])!=',' || లోపల_Str || nNest); i++){
+    ఒకవేళ( c=='"' ){
+      లోపల_Str = !లోపల_Str;
+    }లేకపోతే ఒకవేళ( c=='\\' ){
       i++;
-    }else if( !inStr ){
-      if( c=='{' || c=='[' ) nNest++;
-      if( c=='}' || c==']' ) nNest--;
+    }లేకపోతే ఒకవేళ( !లోపల_Str ){
+      ఒకవేళ( c=='{' || c=='[' ) nNest++;
+      ఒకవేళ( c=='}' || c==']' ) nNest--;
     }
   }
-  if( i<pStr->nUsed ){
-    pStr->nUsed -= i;
-    memmove(&z[1], &z[i+1], (size_t)pStr->nUsed-1);
-    z[pStr->nUsed] = 0;
-  }else{
-    pStr->nUsed = 1;
+  ఒకవేళ( i<pStr->n_వాడిన ){
+    pStr->n_వాడిన -= i;
+    memmove(&z[1], &z[i+1], (size_t)pStr->n_వాడిన-1);
+    z[pStr->n_వాడిన] = 0;
+  }లేకపోతే{
+    pStr->n_వాడిన = 1;
   }
 }
-#else
-# define jsonGroupInverse 0
-#endif
+#లేకపోతే
+# define json_సమూహం_Inverse 0
+#అయితే_ముగింపు
 
 
 /*
@@ -5127,63 +5127,63 @@ static void jsonGroupInverse(
 ** correctly process xInverse() requests.  The initial "@" is converted
 ** back into "{" and the "@" null values are removed by jsonObjectCompute().
 */
-static void jsonObjectStep(
+స్థిర శూన్య json_Object_అడుగు(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   JsonString *pStr;
-  const char *z;
+  స్థిరరాశి అక్షరం *z;
   u32 n;
-  UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    z = (const char*)sqlite3_value_text(argv[0]);
+  వాడని_PARAMETER(argc);
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, పరిమాణం(*pStr));
+  ఒకవేళ( pStr ){
+    z = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
     n = sqlite3Strlen30(z);
-    if( pStr->zBuf==0 ){
+    ఒకవేళ( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '{');
-    }else if( pStr->nUsed>1 ){
+    }లేకపోతే ఒకవేళ( pStr->n_వాడిన>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    if( z!=0 ){
+    ఒకవేళ( z!=0 ){
       jsonAppendString(pStr, z, n);
       jsonAppendChar(pStr, ':');
-      jsonAppendSqlValue(pStr, argv[1]);
-    }else{
+      json_Append_Sql_విలువ(pStr, argv[1]);
+    }లేకపోతే{
       pStr->zBuf[0] = '@';
       jsonAppendRawNZ(pStr, "@", 1);
     }
   }
 }
-static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
+స్థిర శూన్య jsonObjectCompute(sqlite3_context *ctx, పూర్ణాంకం isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  పూర్ణాంకం flags = SQLITE_PTR_గమ్యం_INT(sqlite3_user_దత్తాంశం(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ఒకవేళ( pStr ){
     JsonString *pOgStr = pStr;
     JsonString tmpStr;
     jsonAppendRawNZ(pOgStr, "}", 2);  /* Ensure it is zero-terminated */
     jsonStringTrimOneChar(pOgStr);    /* Remove the zero terminator */
     pStr->pCtx = ctx;
-    if( pStr->eErr ){
+    ఒకవేళ( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
+      తిరిగి;
     }
-    if( pStr->zBuf[0]!='{' ){
+    ఒకవేళ( pStr->zBuf[0]!='{' ){
       /* The string contains null entries that need to be removed */
       u64 i, j;
-      int inStr = 0;
-      if( !isFinal ){
+      పూర్ణాంకం లోపల_Str = 0;
+      ఒకవేళ( !isFinal ){
         /* Work with a temporary copy of the string if this is not the
         ** final result */
         jsonStringInit(&tmpStr, ctx);
-        jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->nUsed+1);
+        jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->n_వాడిన+1);
         pStr = &tmpStr;
-        if( pStr->eErr ){
+        ఒకవేళ( pStr->eErr ){
           jsonReturnString(pStr, 0, 0);
-          return;
+          తిరిగి;
         }
         jsonStringTrimOneChar(pStr);  /* Remove zero terminator */
       }
@@ -5191,198 +5191,198 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
       ** to "{" and removing all subsequence "@" entries, with their
       ** associated comma delimeters. */
       pStr->zBuf[0] = '{';
-      for(i=j=1; i<pStr->nUsed; i++){
-        char c = pStr->zBuf[i];
-        if( c=='"' ){
-          inStr = !inStr;
+      కొరకు(i=j=1; i<pStr->n_వాడిన; i++){
+        అక్షరం c = pStr->zBuf[i];
+        ఒకవేళ( c=='"' ){
+          లోపల_Str = !లోపల_Str;
           pStr->zBuf[j++] = '"';
-        }else if( c=='\\' ){
+        }లేకపోతే ఒకవేళ( c=='\\' ){
           pStr->zBuf[j++] = '\\';
           pStr->zBuf[j++] = pStr->zBuf[++i];
-        }else if( c=='@' && !inStr ){
-          assert( i+1<pStr->nUsed );
-          if( pStr->zBuf[i+1]==',' ){
+        }లేకపోతే ఒకవేళ( c=='@' && !లోపల_Str ){
+          ప్రతిజ్ఞా( i+1<pStr->n_వాడిన );
+          ఒకవేళ( pStr->zBuf[i+1]==',' ){
             i++;
-          }else if( pStr->zBuf[j-1]==',' ){
+          }లేకపోతే ఒకవేళ( pStr->zBuf[j-1]==',' ){
             j--;
           }
-        }else{
+        }లేకపోతే{
           pStr->zBuf[j++] = c;
         }
       }
       pStr->zBuf[j] = 0;  /* Restore zero terminator */
-      pStr->nUsed = j;    /* Truncate the string */
+      pStr->n_వాడిన = j;    /* Truncate the string */
     }
-    if( flags & JSON_BLOB ){
+    ఒకవేళ( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ఒకవేళ( isFinal ){
+        ఒకవేళ( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }లేకపోతే{
         jsonStringTrimOneChar(pOgStr);
       }
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+    }లేకపోతే ఒకవేళ( isFinal ){
+      sqlite3_ఫలితం_పాఠ్యం(ctx, pStr->zBuf, (పూర్ణాంకం)pStr->n_వాడిన,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                           sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }లేకపోతే{
+      sqlite3_ఫలితం_పాఠ్యం(ctx, pStr->zBuf, (పూర్ణాంకం)pStr->n_వాడిన, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pOgStr);
     }
-    if( pStr!=pOgStr ) jsonStringReset(pStr);
-  }else if( flags & JSON_BLOB ){
-    static const unsigned char emptyObject = 0x0c;
-    sqlite3_result_blob(ctx, &emptyObject, 1, SQLITE_STATIC); 
-  }else{
-    sqlite3_result_text(ctx, "{}", 2, SQLITE_STATIC);
+    ఒకవేళ( pStr!=pOgStr ) jsonStringReset(pStr);
+  }లేకపోతే ఒకవేళ( flags & JSON_BLOB ){
+    స్థిర స్థిరరాశి గుర్తులేని అక్షరం ఖాళీలు_Object = 0x0c;
+    sqlite3_ఫలితం_blob(ctx, &ఖాళీలు_Object, 1, SQLITE_STATIC); 
+  }లేకపోతే{
+    sqlite3_ఫలితం_పాఠ్యం(ctx, "{}", 2, SQLITE_STATIC);
   }
-  sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+  sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonObjectValue(sqlite3_context *ctx){
+స్థిర శూన్య json_Object_విలువ(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 0);
 }
-static void jsonObjectFinal(sqlite3_context *ctx){
+స్థిర శూన్య jsonObjectFinal(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 1);
 }
 
 
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
 /****************************************************************************
 ** The json_each virtual table
 ****************************************************************************/
-typedef struct JsonParent JsonParent;
-struct JsonParent {
-  u32 iHead;                 /* Start of object or array */
-  u32 iValue;                /* Start of the value */
-  u32 iEnd;                  /* First byte past the end */
-  u32 nPath;                 /* Length of path */
-  i64 iKey;                  /* Key for JSONB_ARRAY */
+రకనిర్వచనం నిర్మాణం Json_మాతృ Json_మాతృ;
+నిర్మాణం Json_మాతృ {
+  u32 i_తల;                 /* Start of object or array */
+  u32 i_విలువ;                /* Start of the value */
+  u32 i_చివర;                  /* First byte past the end */
+  u32 n_మార్గం;                 /* Length of path */
+  i64 i_కీలకం;                  /* Key for JSONB_ARRAY */
 };
 
-typedef struct JsonEachCursor JsonEachCursor;
-struct JsonEachCursor {
-  sqlite3_vtab_cursor base;  /* Base class - must be first */
+రకనిర్వచనం నిర్మాణం JsonEachCursor JsonEachCursor;
+నిర్మాణం JsonEachCursor {
+  sqlite3_vtab_cursor పునాది;  /* Base class - must be first */
   u32 iRowid;                /* The rowid */
   u32 i;                     /* Index in sParse.aBlob[] of current row */
-  u32 iEnd;                  /* EOF when i equals or exceeds this value */
-  u32 nRoot;                 /* Size of the root path in bytes */
+  u32 i_చివర;                  /* EOF when i equals or exceeds this value */
+  u32 n_మూలం;                 /* Size of the root path in bytes */
   u8 eType;                  /* Type of the container for element i */
   u8 bRecursive;             /* True for json_tree().  False for json_each() */
-  u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
-  u32 nParent;               /* Current nesting depth */
-  u32 nParentAlloc;          /* Space allocated for aParent[] */
-  JsonParent *aParent;       /* Parent elements of i */
+  u8 e_బహుళకం;                  /* 1 for json_each().  2 for jsonb_each() */
+  u32 n_మాతృ;               /* Current nesting depth */
+  u32 n_మాతృ_Alloc;          /* Space allocated for aParent[] */
+  Json_మాతృ *a_మాతృ;       /* Parent elements of i */
   sqlite3 *db;               /* Database connection */
-  JsonString path;           /* Current path */
+  JsonString మార్గం;           /* Current path */
   JsonParse sParse;          /* Parse of the input JSON */
 };
-typedef struct JsonEachConnection JsonEachConnection;
-struct JsonEachConnection {
-  sqlite3_vtab base;         /* Base class - must be first */
+రకనిర్వచనం నిర్మాణం JsonEachConnection JsonEachConnection;
+నిర్మాణం JsonEachConnection {
+  sqlite3_vtab పునాది;         /* Base class - must be first */
   sqlite3 *db;               /* Database connection */
-  u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
+  u8 e_బహుళకం;                  /* 1 for json_each().  2 for jsonb_each() */
   u8 bRecursive;             /* True for json_tree().  False for json_each() */
 };
 
 
 /* Constructor for the json_each virtual table */
-static int jsonEachConnect(
+స్థిర పూర్ణాంకం jsonEachConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  శూన్య *pAux,
+  పూర్ణాంకం argc, స్థిరరాశి అక్షరం *స్థిరరాశి*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  అక్షరం **pzErr
 ){
   JsonEachConnection *pNew;
-  int rc;
+  పూర్ణాంకం rc;
 
 /* Column numbers */
-#define JEACH_KEY     0
-#define JEACH_VALUE   1
-#define JEACH_TYPE    2
-#define JEACH_ATOM    3
-#define JEACH_ID      4
-#define JEACH_PARENT  5
-#define JEACH_FULLKEY 6
-#define JEACH_PATH    7
+#నిర్వచించు JEACH_కీలకం     0
+#నిర్వచించు JEACH_విలువ   1
+#నిర్వచించు JEACH_TYPE    2
+#నిర్వచించు JEACH_ATOM    3
+#నిర్వచించు JEACH_ID      4
+#నిర్వచించు JEACH_మాతృ  5
+#నిర్వచించు JEACH_FULLKEY 6
+#నిర్వచించు JEACH_మార్గం    7
 /* The xBestIndex method assumes that the JSON and ROOT columns are
 ** the last two columns in the table.  Should this ever changes, be
 ** sure to update the xBestIndex method. */
-#define JEACH_JSON    8
-#define JEACH_ROOT    9
+#నిర్వచించు JEACH_JSON    8
+#నిర్వచించు JEACH_మూలం    9
 
-  UNUSED_PARAMETER(pzErr);
-  UNUSED_PARAMETER(argv);
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(pAux);
+  వాడని_PARAMETER(pzErr);
+  వాడని_PARAMETER(argv);
+  వాడని_PARAMETER(argc);
+  వాడని_PARAMETER(pAux);
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(key,value,type,atom,id,parent,fullkey,path,"
                     "json HIDDEN,root HIDDEN)");
-  if( rc==SQLITE_OK ){
-    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, sizeof(*pNew));
+  ఒకవేళ( rc==SQLITE_OK ){
+    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, పరిమాణం(*pNew));
     *ppVtab = (sqlite3_vtab*)pNew;
-    if( pNew==0 ) return SQLITE_NOMEM;
+    ఒకవేళ( pNew==0 ) తిరిగి SQLITE_NOMEM;
     sqlite3_vtab_config(db, SQLITE_VTAB_INNOCUOUS);
     pNew->db = db;
-    pNew->eMode = argv[0][4]=='b' ? 2 : 1;
-    pNew->bRecursive = argv[0][4+pNew->eMode]=='t';
+    pNew->e_బహుళకం = argv[0][4]=='b' ? 2 : 1;
+    pNew->bRecursive = argv[0][4+pNew->e_బహుళకం]=='t';
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /* destructor for json_each virtual table */
-static int jsonEachDisconnect(sqlite3_vtab *pVtab){
+స్థిర పూర్ణాంకం jsonEachDisconnect(sqlite3_vtab *pVtab){
   JsonEachConnection *p = (JsonEachConnection*)pVtab;
   sqlite3DbFree(p->db, pVtab);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* constructor for a JsonEachCursor object for json_each()/json_tree(). */
-static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+స్థిర పూర్ణాంకం jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   JsonEachConnection *pVtab = (JsonEachConnection*)p;
   JsonEachCursor *pCur;
 
-  UNUSED_PARAMETER(p);
-  pCur = sqlite3DbMallocZero(pVtab->db, sizeof(*pCur));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  వాడని_PARAMETER(p);
+  pCur = sqlite3DbMallocZero(pVtab->db, పరిమాణం(*pCur));
+  ఒకవేళ( pCur==0 ) తిరిగి SQLITE_NOMEM;
   pCur->db = pVtab->db;
-  pCur->eMode = pVtab->eMode;
+  pCur->e_బహుళకం = pVtab->e_బహుళకం;
   pCur->bRecursive = pVtab->bRecursive;
-  jsonStringZero(&pCur->path);
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  jsonStringZero(&pCur->మార్గం);
+  *ppCursor = &pCur->పునాది;
+  తిరిగి SQLITE_OK;
 }
 
 /* Reset a JsonEachCursor back to its original state.  Free any memory
 ** held. */
-static void jsonEachCursorReset(JsonEachCursor *p){
+స్థిర శూన్య jsonEachCursorReset(JsonEachCursor *p){
   jsonParseReset(&p->sParse);
-  jsonStringReset(&p->path);
-  sqlite3DbFree(p->db, p->aParent);
+  jsonStringReset(&p->మార్గం);
+  sqlite3DbFree(p->db, p->a_మాతృ);
   p->iRowid = 0;
   p->i = 0;
-  p->aParent = 0;
-  p->nParent = 0;
-  p->nParentAlloc = 0;
-  p->iEnd = 0;
+  p->a_మాతృ = 0;
+  p->n_మాతృ = 0;
+  p->n_మాతృ_Alloc = 0;
+  p->i_చివర = 0;
   p->eType = 0;
 }
 
 /* Destructor for a jsonEachCursor object */
-static int jsonEachClose(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం jsonEachClose(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   jsonEachCursorReset(p);
   
   sqlite3DbFree(p->db, cur);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Return TRUE if the jsonEachCursor object has been advanced off the end
 ** of the JSON object */
-static int jsonEachEof(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం jsonEachEof(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  return p->i >= p->iEnd;
+  తిరిగి p->i >= p->i_చివర;
 }
 
 /*
@@ -5390,251 +5390,251 @@ static int jsonEachEof(sqlite3_vtab_cursor *cur){
 ** then return the index of the value.  For all other cases, return the
 ** current pointer position, which is the value.
 */
-static int jsonSkipLabel(JsonEachCursor *p){
-  if( p->eType==JSONB_OBJECT ){
+స్థిర పూర్ణాంకం jsonSkipLabel(JsonEachCursor *p){
+  ఒకవేళ( p->eType==JSONB_OBJECT ){
     u32 sz = 0;
-    u32 n = jsonbPayloadSize(&p->sParse, p->i, &sz);
+    u32 n = jsonb_Payload_కొలత(&p->sParse, p->i, &sz);
     sz += p->i + n;
-    if( sz >= p->sParse.nBlob ) sz = p->i;
-    return sz;
-  }else{
-    return p->i;
+    ఒకవేళ( sz >= p->sParse.nBlob ) sz = p->i;
+    తిరిగి sz;
+  }లేకపోతే{
+    తిరిగి p->i;
   }
 }
 
 /*
 ** Append the path name for the current element.
 */
-static void jsonAppendPathName(JsonEachCursor *p){
-  assert( p->nParent>0 );
-  assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
-  if( p->eType==JSONB_ARRAY ){
-    jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].iKey);
-  }else{
+స్థిర శూన్య json_Append_మార్గం_Name(JsonEachCursor *p){
+  ప్రతిజ్ఞా( p->n_మాతృ>0 );
+  ప్రతిజ్ఞా( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
+  ఒకవేళ( p->eType==JSONB_ARRAY ){
+    jsonPrintf(30, &p->మార్గం, "[%lld]", p->a_మాతృ[p->n_మాతృ-1].i_కీలకం);
+  }లేకపోతే{
     u32 n, sz = 0, k, i;
-    const char *z;
-    int needQuote = 0;
-    n = jsonbPayloadSize(&p->sParse, p->i, &sz);
+    స్థిరరాశి అక్షరం *z;
+    పూర్ణాంకం needQuote = 0;
+    n = jsonb_Payload_కొలత(&p->sParse, p->i, &sz);
     k = p->i + n;
-    z = (const char*)&p->sParse.aBlob[k];
-    if( sz==0 || !sqlite3Isalpha(z[0]) ){
+    z = (స్థిరరాశి అక్షరం*)&p->sParse.aBlob[k];
+    ఒకవేళ( sz==0 || !sqlite3Isalpha(z[0]) ){
       needQuote = 1;
-    }else{
-      for(i=0; i<sz; i++){
-        if( !sqlite3Isalnum(z[i]) ){
+    }లేకపోతే{
+      కొరకు(i=0; i<sz; i++){
+        ఒకవేళ( !sqlite3Isalnum(z[i]) ){
           needQuote = 1;
-          break;
+          ఆపు;
         }
       }
     }
-    if( needQuote ){
-      jsonPrintf(sz+4,&p->path,".\"%.*s\"", sz, z);
-    }else{
-      jsonPrintf(sz+2,&p->path,".%.*s", sz, z);
+    ఒకవేళ( needQuote ){
+      jsonPrintf(sz+4,&p->మార్గం,".\"%.*s\"", sz, z);
+    }లేకపోతే{
+      jsonPrintf(sz+2,&p->మార్గం,".%.*s", sz, z);
     }
   }
 }
 
 /* Report a "malformed JSON" or OOM error against the cursor.
 */
-static int jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
-  sqlite3_free(cur->pVtab->zErrMsg);
-  cur->pVtab->zErrMsg = sqlite3_mprintf("malformed JSON");
+స్థిర పూర్ణాంకం json_Each_Malformed_ఆదానం(sqlite3_vtab_cursor *cur){
+  sqlite3_free(cur->pVtab->z_Err_సందేశం);
+  cur->pVtab->z_Err_సందేశం = sqlite3_mprintf("malformed JSON");
   jsonEachCursorReset((JsonEachCursor*)cur);
-  return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+  తిరిగి cur->pVtab->z_Err_సందేశం ? SQLITE_ERROR : SQLITE_NOMEM;
 }
 
 /* Advance the cursor to the next element for json_tree() */
-static int jsonEachNext(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం json_Each_తదుపరి(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  int rc = SQLITE_OK;
-  if( p->bRecursive ){
+  పూర్ణాంకం rc = SQLITE_OK;
+  ఒకవేళ( p->bRecursive ){
     u8 x;
     u8 levelChange = 0;
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     x = p->sParse.aBlob[i] & 0x0f;
-    n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
-    if( x==JSONB_OBJECT || x==JSONB_ARRAY ){
-      JsonParent *pParent;
-      if( p->nParent>=p->nParentAlloc ){
-        JsonParent *pNew;
+    n = jsonb_Payload_కొలత(&p->sParse, i, &sz);
+    ఒకవేళ( n==0 )తిరిగి json_Each_Malformed_ఆదానం(cur);
+    ఒకవేళ( x==JSONB_OBJECT || x==JSONB_ARRAY ){
+      Json_మాతృ *p_మాతృ;
+      ఒకవేళ( p->n_మాతృ>=p->n_మాతృ_Alloc ){
+        Json_మాతృ *pNew;
         u64 nNew;
-        nNew = p->nParentAlloc*2 + 3;
-        pNew = sqlite3DbRealloc(p->db, p->aParent, sizeof(JsonParent)*nNew);
-        if( pNew==0 ) return SQLITE_NOMEM;
-        p->nParentAlloc = (u32)nNew;
-        p->aParent = pNew;
+        nNew = p->n_మాతృ_Alloc*2 + 3;
+        pNew = sqlite3DbRealloc(p->db, p->a_మాతృ, పరిమాణం(Json_మాతృ)*nNew);
+        ఒకవేళ( pNew==0 ) తిరిగి SQLITE_NOMEM;
+        p->n_మాతృ_Alloc = (u32)nNew;
+        p->a_మాతృ = pNew;
       }
       levelChange = 1;
-      pParent = &p->aParent[p->nParent];
-      pParent->iHead = p->i;
-      pParent->iValue = i;
-      pParent->iEnd = i + n + sz;
-      pParent->iKey = -1;
-      pParent->nPath = (u32)p->path.nUsed;
-      if( p->eType && p->nParent ){
-        jsonAppendPathName(p);
-        if( p->path.eErr ) rc = SQLITE_NOMEM;
+      p_మాతృ = &p->a_మాతృ[p->n_మాతృ];
+      p_మాతృ->i_తల = p->i;
+      p_మాతృ->i_విలువ = i;
+      p_మాతృ->i_చివర = i + n + sz;
+      p_మాతృ->i_కీలకం = -1;
+      p_మాతృ->n_మార్గం = (u32)p->మార్గం.n_వాడిన;
+      ఒకవేళ( p->eType && p->n_మాతృ ){
+        json_Append_మార్గం_Name(p);
+        ఒకవేళ( p->మార్గం.eErr ) rc = SQLITE_NOMEM;
       }
-      p->nParent++;
+      p->n_మాతృ++;
       p->i = i + n;
-    }else{
+    }లేకపోతే{
       p->i = i + n + sz;
     }
-    while( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
-      p->nParent--;
-      p->path.nUsed = p->aParent[p->nParent].nPath;
+    అయితే( p->n_మాతృ>0 && p->i >= p->a_మాతృ[p->n_మాతృ-1].i_చివర ){
+      p->n_మాతృ--;
+      p->మార్గం.n_వాడిన = p->a_మాతృ[p->n_మాతృ].n_మార్గం;
       levelChange = 1;
     }
-    if( levelChange ){
-      if( p->nParent>0 ){
-        JsonParent *pParent = &p->aParent[p->nParent-1];
-        u32 iVal = pParent->iValue;
+    ఒకవేళ( levelChange ){
+      ఒకవేళ( p->n_మాతృ>0 ){
+        Json_మాతృ *p_మాతృ = &p->a_మాతృ[p->n_మాతృ-1];
+        u32 iVal = p_మాతృ->i_విలువ;
         p->eType = p->sParse.aBlob[iVal] & 0x0f;
-      }else{
+      }లేకపోతే{
         p->eType = 0;
       }
     }
-  }else{
+  }లేకపోతే{
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
-    n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    n = jsonb_Payload_కొలత(&p->sParse, i, &sz);
+    ఒకవేళ( n==0 )తిరిగి json_Each_Malformed_ఆదానం(cur);
     p->i = i + n + sz;
   }
-  if( p->eType==JSONB_ARRAY && p->nParent ){
-    p->aParent[p->nParent-1].iKey++;
+  ఒకవేళ( p->eType==JSONB_ARRAY && p->n_మాతృ ){
+    p->a_మాతృ[p->n_మాతృ-1].i_కీలకం++;
   }
   p->iRowid++;
-  return rc;
+  తిరిగి rc;
 }
 
 /* Length of the path for rowid==0 in bRecursive mode.
 */
-static int jsonEachPathLength(JsonEachCursor *p){
-  u32 n = p->path.nUsed;
-  char *z = p->path.zBuf;
-  if( p->iRowid==0 && p->bRecursive && n>=2 ){
-    while( ALWAYS(n>1) ){
+స్థిర పూర్ణాంకం json_Each_మార్గం_నిడివి(JsonEachCursor *p){
+  u32 n = p->మార్గం.n_వాడిన;
+  అక్షరం *z = p->మార్గం.zBuf;
+  ఒకవేళ( p->iRowid==0 && p->bRecursive && n>=2 ){
+    అయితే( ALWAYS(n>1) ){
       n--;
-      if( z[n]=='[' || z[n]=='.' ){
+      ఒకవేళ( z[n]=='[' || z[n]=='.' ){
         u32 x;
-        char cSaved = z[n];
+        అక్షరం cSaved = z[n];
         z[n] = 0;
-        assert( p->sParse.eEdit==0 );
-        x = jsonLookupStep(&p->sParse, 0, z+1, 0);
+        ప్రతిజ్ఞా( p->sParse.eEdit==0 );
+        x = json_Lookup_అడుగు(&p->sParse, 0, z+1, 0);
         z[n] = cSaved;
-        if( !JSON_LOOKUP_ISERROR(x) ) break;
+        ఒకవేళ( !JSON_LOOKUP_ISERROR(x) ) ఆపు;
       }
     }
   }
-  return n;
+  తిరిగి n;
 }
 
 /* Return the value of a column */
-static int jsonEachColumn(
+స్థిర పూర్ణాంకం json_Each_స్తంభం(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int iColumn                 /* Which column to return */
+  పూర్ణాంకం i_స్తంభం                 /* Which column to return */
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  switch( iColumn ){
-    case JEACH_KEY: {
-      if( p->nParent==0 ){
+  ఎంపిక( i_స్తంభం ){
+    స్థితి JEACH_కీలకం: {
+      ఒకవేళ( p->n_మాతృ==0 ){
         u32 n, j;
-        if( p->nRoot==1 ) break;
-        j = jsonEachPathLength(p);
-        n = p->nRoot - j;
-        if( n==0 ){
-          break;
-        }else if( p->path.zBuf[j]=='[' ){
+        ఒకవేళ( p->n_మూలం==1 ) ఆపు;
+        j = json_Each_మార్గం_నిడివి(p);
+        n = p->n_మూలం - j;
+        ఒకవేళ( n==0 ){
+          ఆపు;
+        }లేకపోతే ఒకవేళ( p->మార్గం.zBuf[j]=='[' ){
           i64 x;
-          sqlite3Atoi64(&p->path.zBuf[j+1], &x, n-1, SQLITE_UTF8);
-          sqlite3_result_int64(ctx, x);
-        }else if( p->path.zBuf[j+1]=='"' ){
-          sqlite3_result_text(ctx, &p->path.zBuf[j+2], n-3, SQLITE_TRANSIENT);
-        }else{
-          sqlite3_result_text(ctx, &p->path.zBuf[j+1], n-1, SQLITE_TRANSIENT);
+          sqlite3Atoi64(&p->మార్గం.zBuf[j+1], &x, n-1, SQLITE_UTF8);
+          sqlite3_ఫలితం_int64(ctx, x);
+        }లేకపోతే ఒకవేళ( p->మార్గం.zBuf[j+1]=='"' ){
+          sqlite3_ఫలితం_పాఠ్యం(ctx, &p->మార్గం.zBuf[j+2], n-3, SQLITE_TRANSIENT);
+        }లేకపోతే{
+          sqlite3_ఫలితం_పాఠ్యం(ctx, &p->మార్గం.zBuf[j+1], n-1, SQLITE_TRANSIENT);
         }
-        break;
+        ఆపు;
       }
-      if( p->eType==JSONB_OBJECT ){
+      ఒకవేళ( p->eType==JSONB_OBJECT ){
         jsonReturnFromBlob(&p->sParse, p->i, ctx, 1);
-      }else{
-        assert( p->eType==JSONB_ARRAY );
-        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iKey);
+      }లేకపోతే{
+        ప్రతిజ్ఞా( p->eType==JSONB_ARRAY );
+        sqlite3_ఫలితం_int64(ctx, p->a_మాతృ[p->n_మాతృ-1].i_కీలకం);
       }
-      break;
+      ఆపు;
     }
-    case JEACH_VALUE: {
+    స్థితి JEACH_విలువ: {
       u32 i = jsonSkipLabel(p);
-      jsonReturnFromBlob(&p->sParse, i, ctx, p->eMode);
-      if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
-        sqlite3_result_subtype(ctx, JSON_SUBTYPE);
+      jsonReturnFromBlob(&p->sParse, i, ctx, p->e_బహుళకం);
+      ఒకవేళ( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
+        sqlite3_ఫలితం_subtype(ctx, JSON_SUBTYPE);
       }
-      break;
+      ఆపు;
     }
-    case JEACH_TYPE: {
+    స్థితి JEACH_TYPE: {
       u32 i = jsonSkipLabel(p);
       u8 eType = p->sParse.aBlob[i] & 0x0f;
-      sqlite3_result_text(ctx, jsonbType[eType], -1, SQLITE_STATIC);
-      break;
+      sqlite3_ఫలితం_పాఠ్యం(ctx, jsonbType[eType], -1, SQLITE_STATIC);
+      ఆపు;
     }
-    case JEACH_ATOM: {
+    స్థితి JEACH_ATOM: {
       u32 i = jsonSkipLabel(p);
-      if( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
+      ఒకవేళ( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
         jsonReturnFromBlob(&p->sParse, i, ctx, 1);
       }
-      break;
+      ఆపు;
     }
-    case JEACH_ID: {
-      sqlite3_result_int64(ctx, (sqlite3_int64)p->i);
-      break;
+    స్థితి JEACH_ID: {
+      sqlite3_ఫలితం_int64(ctx, (sqlite3_int64)p->i);
+      ఆపు;
     }
-    case JEACH_PARENT: {
-      if( p->nParent>0 && p->bRecursive ){
-        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iHead);
+    స్థితి JEACH_మాతృ: {
+      ఒకవేళ( p->n_మాతృ>0 && p->bRecursive ){
+        sqlite3_ఫలితం_int64(ctx, p->a_మాతృ[p->n_మాతృ-1].i_తల);
       }
-      break;
+      ఆపు;
     }
-    case JEACH_FULLKEY: {
-      u64 nBase = p->path.nUsed;
-      if( p->nParent ) jsonAppendPathName(p);
-      sqlite3_result_text64(ctx, p->path.zBuf, p->path.nUsed,
+    స్థితి JEACH_FULLKEY: {
+      u64 n_పునాది = p->మార్గం.n_వాడిన;
+      ఒకవేళ( p->n_మాతృ ) json_Append_మార్గం_Name(p);
+      sqlite3_ఫలితం_text64(ctx, p->మార్గం.zBuf, p->మార్గం.n_వాడిన,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-      p->path.nUsed = nBase;
-      break;
+      p->మార్గం.n_వాడిన = n_పునాది;
+      ఆపు;
     }
-    case JEACH_PATH: {
-      u32 n = jsonEachPathLength(p);
-      sqlite3_result_text64(ctx, p->path.zBuf, n,
+    స్థితి JEACH_మార్గం: {
+      u32 n = json_Each_మార్గం_నిడివి(p);
+      sqlite3_ఫలితం_text64(ctx, p->మార్గం.zBuf, n,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-      break;
+      ఆపు;
     }
-    default: {
-      sqlite3_result_text(ctx, p->path.zBuf, p->nRoot, SQLITE_TRANSIENT);
-      break;
+    అప్రమేయ: {
+      sqlite3_ఫలితం_పాఠ్యం(ctx, p->మార్గం.zBuf, p->n_మూలం, SQLITE_TRANSIENT);
+      ఆపు;
     }
-    case JEACH_JSON: {
-      if( p->sParse.zJson==0 ){
-        sqlite3_result_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
+    స్థితి JEACH_JSON: {
+      ఒకవేళ( p->sParse.zJson==0 ){
+        sqlite3_ఫలితం_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
                             SQLITE_TRANSIENT);
-      }else{
-        sqlite3_result_text(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
+      }లేకపోతే{
+        sqlite3_ఫలితం_పాఠ్యం(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
       }
-      break;
+      ఆపు;
     }
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Return the current rowid value */
-static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+స్థిర పూర్ణాంకం jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   *pRowid = p->iRowid;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* The query strategy is to look for an equality constraint on the json
@@ -5642,178 +5642,178 @@ static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** 1 if the constraint is found, 3 if the constraint and zRoot are found,
 ** and 0 otherwise.
 */
-static int jsonEachBestIndex(
+స్థిర పూర్ణాంకం json_Each_ఉత్తమ_సూచీ(
   sqlite3_vtab *tab,
-  sqlite3_index_info *pIdxInfo
+  sqlite3_సూచీ_info *pIdxInfo
 ){
-  int i;                     /* Loop counter or computed array index */
-  int aIdx[2];               /* Index of constraints for JSON and ROOT */
-  int unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
-  int idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
-  const struct sqlite3_index_constraint *pConstraint;
+  పూర్ణాంకం i;                     /* Loop counter or computed array index */
+  పూర్ణాంకం aIdx[2];               /* Index of constraints for JSON and ROOT */
+  పూర్ణాంకం unusable_ముసుగు = 0;      /* Mask of unusable JSON and ROOT constraints */
+  పూర్ణాంకం idx_ముసుగు = 0;           /* Mask of usable == constraints JSON and ROOT */
+  స్థిరరాశి నిర్మాణం sqlite3_సూచీ_constraint *pConstraint;
 
   /* This implementation assumes that JSON and ROOT are the last two
   ** columns in the table */
-  assert( JEACH_ROOT == JEACH_JSON+1 );
-  UNUSED_PARAMETER(tab);
+  ప్రతిజ్ఞా( JEACH_మూలం == JEACH_JSON+1 );
+  వాడని_PARAMETER(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    int iCol;
-    int iMask;
-    if( pConstraint->iColumn < JEACH_JSON ) continue;
-    iCol = pConstraint->iColumn - JEACH_JSON;
-    assert( iCol==0 || iCol==1 );
-    testcase( iCol==0 );
-    iMask = 1 << iCol;
-    if( pConstraint->usable==0 ){
-      unusableMask |= iMask;
-    }else if( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      aIdx[iCol] = i;
-      idxMask |= iMask;
+  కొరకు(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    పూర్ణాంకం i_నిలువు;
+    పూర్ణాంకం i_ముసుగు;
+    ఒకవేళ( pConstraint->i_స్తంభం < JEACH_JSON ) కొనసాగు;
+    i_నిలువు = pConstraint->i_స్తంభం - JEACH_JSON;
+    ప్రతిజ్ఞా( i_నిలువు==0 || i_నిలువు==1 );
+    testcase( i_నిలువు==0 );
+    i_ముసుగు = 1 << i_నిలువు;
+    ఒకవేళ( pConstraint->usable==0 ){
+      unusable_ముసుగు |= i_ముసుగు;
+    }లేకపోతే ఒకవేళ( pConstraint->op==SQLITE_సూచీ_CONSTRAINT_EQ ){
+      aIdx[i_నిలువు] = i;
+      idx_ముసుగు |= i_ముసుగు;
     }
   }
-  if( pIdxInfo->nOrderBy>0
-   && pIdxInfo->aOrderBy[0].iColumn<0
-   && pIdxInfo->aOrderBy[0].desc==0
+  ఒకవేళ( pIdxInfo->n_క్రమం_By>0
+   && pIdxInfo->a_క్రమం_By[0].i_స్తంభం<0
+   && pIdxInfo->a_క్రమం_By[0].desc==0
   ){
-    pIdxInfo->orderByConsumed = 1;
+    pIdxInfo->క్రమం_By_Consumed = 1;
   }
 
-  if( (unusableMask & ~idxMask)!=0 ){
+  ఒకవేళ( (unusable_ముసుగు & ~idx_ముసుగు)!=0 ){
     /* If there are any unusable constraints on JSON or ROOT, then reject
     ** this entire plan */
-    return SQLITE_CONSTRAINT;
+    తిరిగి SQLITE_CONSTRAINT;
   }
-  if( aIdx[0]<0 ){
+  ఒకవేళ( aIdx[0]<0 ){
     /* No JSON input.  Leave estimatedCost at the huge value that it was
     ** initialized to to discourage the query planner from selecting this
     ** plan. */
-    pIdxInfo->idxNum = 0;
-  }else{
-    pIdxInfo->estimatedCost = 1.0;
+    pIdxInfo->idx_అంకె = 0;
+  }లేకపోతే{
+    pIdxInfo->estimated_ఖర్చు = 1.0;
     i = aIdx[0];
-    pIdxInfo->aConstraintUsage[i].argvIndex = 1;
+    pIdxInfo->aConstraintUsage[i].argv_సూచీ = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
-    if( aIdx[1]<0 ){
-      pIdxInfo->idxNum = 1;  /* Only JSON supplied.  Plan 1 */
-    }else{
+    ఒకవేళ( aIdx[1]<0 ){
+      pIdxInfo->idx_అంకె = 1;  /* Only JSON supplied.  Plan 1 */
+    }లేకపోతే{
       i = aIdx[1];
-      pIdxInfo->aConstraintUsage[i].argvIndex = 2;
+      pIdxInfo->aConstraintUsage[i].argv_సూచీ = 2;
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->idxNum = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
+      pIdxInfo->idx_అంకె = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
     }
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Start a search on a new JSON string */
-static int jsonEachFilter(
+స్థిర పూర్ణాంకం jsonEachFilter(
   sqlite3_vtab_cursor *cur,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  పూర్ణాంకం idx_అంకె, స్థిరరాశి అక్షరం *idxStr,
+  పూర్ణాంకం argc, sqlite3_విలువ **argv
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  const char *zRoot = 0;
+  స్థిరరాశి అక్షరం *z_మూలం = 0;
   u32 i, n, sz;
 
-  UNUSED_PARAMETER(idxStr);
-  UNUSED_PARAMETER(argc);
+  వాడని_PARAMETER(idxStr);
+  వాడని_PARAMETER(argc);
   jsonEachCursorReset(p);
-  if( idxNum==0 ) return SQLITE_OK;
-  memset(&p->sParse, 0, sizeof(p->sParse));
+  ఒకవేళ( idx_అంకె==0 ) తిరిగి SQLITE_OK;
+  memset(&p->sParse, 0, పరిమాణం(p->sParse));
   p->sParse.nJPRef = 1;
   p->sParse.db = p->db;
-  if( jsonArgIsJsonb(argv[0], &p->sParse) ){
+  ఒకవేళ( jsonArgIsJsonb(argv[0], &p->sParse) ){
     /* We have JSONB */
-  }else{
-    p->sParse.zJson = (char*)sqlite3_value_text(argv[0]);
-    p->sParse.nJson = sqlite3_value_bytes(argv[0]);
-    if( p->sParse.zJson==0 ){
-      p->i = p->iEnd = 0;
-      return SQLITE_OK;
+  }లేకపోతే{
+    p->sParse.zJson = (అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+    p->sParse.nJson = sqlite3_విలువ_బైట్లు(argv[0]);
+    ఒకవేళ( p->sParse.zJson==0 ){
+      p->i = p->i_చివర = 0;
+      తిరిగి SQLITE_OK;
     }      
-    if( jsonConvertTextToBlob(&p->sParse, 0) ){
-      if( p->sParse.oom ){
-        return SQLITE_NOMEM;
+    ఒకవేళ( json_Convert_పాఠ్యం_గమ్యం_Blob(&p->sParse, 0) ){
+      ఒకవేళ( p->sParse.oom ){
+        తిరిగి SQLITE_NOMEM;
       }
-      return jsonEachMalformedInput(cur);
+      తిరిగి json_Each_Malformed_ఆదానం(cur);
     }
   }
-  if( idxNum==3 ){
-    zRoot = (const char*)sqlite3_value_text(argv[1]);
-    if( zRoot==0 ) return SQLITE_OK;
-    if( zRoot[0]!='$' ){
-      sqlite3_free(cur->pVtab->zErrMsg);
-      cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+  ఒకవేళ( idx_అంకె==3 ){
+    z_మూలం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+    ఒకవేళ( z_మూలం==0 ) తిరిగి SQLITE_OK;
+    ఒకవేళ( z_మూలం[0]!='$' ){
+      sqlite3_free(cur->pVtab->z_Err_సందేశం);
+      cur->pVtab->z_Err_సందేశం = json_Bad_మార్గం_Error(0, z_మూలం, 0);
       jsonEachCursorReset(p);
-      return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+      తిరిగి cur->pVtab->z_Err_సందేశం ? SQLITE_ERROR : SQLITE_NOMEM;
     }
-    p->nRoot = sqlite3Strlen30(zRoot);
-    if( zRoot[1]==0 ){
+    p->n_మూలం = sqlite3Strlen30(z_మూలం);
+    ఒకవేళ( z_మూలం[1]==0 ){
       i = p->i = 0;
       p->eType = 0;
-    }else{
-      i = jsonLookupStep(&p->sParse, 0, zRoot+1, 0);
-      if( JSON_LOOKUP_ISERROR(i) ){
-        if( i==JSON_LOOKUP_NOTFOUND ){
+    }లేకపోతే{
+      i = json_Lookup_అడుగు(&p->sParse, 0, z_మూలం+1, 0);
+      ఒకవేళ( JSON_LOOKUP_ISERROR(i) ){
+        ఒకవేళ( i==JSON_LOOKUP_NOTFOUND ){
           p->i = 0;
           p->eType = 0;
-          p->iEnd = 0;
-          return SQLITE_OK;
+          p->i_చివర = 0;
+          తిరిగి SQLITE_OK;
         }
-        sqlite3_free(cur->pVtab->zErrMsg);
-        cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+        sqlite3_free(cur->pVtab->z_Err_సందేశం);
+        cur->pVtab->z_Err_సందేశం = json_Bad_మార్గం_Error(0, z_మూలం, 0);
         jsonEachCursorReset(p);
-        return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+        తిరిగి cur->pVtab->z_Err_సందేశం ? SQLITE_ERROR : SQLITE_NOMEM;
       }
-      if( p->sParse.iLabel ){
+      ఒకవేళ( p->sParse.iLabel ){
         p->i = p->sParse.iLabel;
         p->eType = JSONB_OBJECT;
-      }else{
+      }లేకపోతే{
         p->i = i;
         p->eType = JSONB_ARRAY;
       }
     }
-    jsonAppendRaw(&p->path, zRoot, p->nRoot);
-  }else{
+    jsonAppendRaw(&p->మార్గం, z_మూలం, p->n_మూలం);
+  }లేకపోతే{
     i = p->i = 0;
     p->eType = 0;
-    p->nRoot = 1;
-    jsonAppendRaw(&p->path, "$", 1);
+    p->n_మూలం = 1;
+    jsonAppendRaw(&p->మార్గం, "$", 1);
   }
-  p->nParent = 0;
-  n = jsonbPayloadSize(&p->sParse, i, &sz);
-  p->iEnd = i+n+sz;
-  if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
+  p->n_మాతృ = 0;
+  n = jsonb_Payload_కొలత(&p->sParse, i, &sz);
+  p->i_చివర = i+n+sz;
+  ఒకవేళ( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
     p->i = i + n;
     p->eType = p->sParse.aBlob[i] & 0x0f;
-    p->aParent = sqlite3DbMallocZero(p->db, sizeof(JsonParent));
-    if( p->aParent==0 ) return SQLITE_NOMEM;
-    p->nParent = 1;
-    p->nParentAlloc = 1;
-    p->aParent[0].iKey = 0;
-    p->aParent[0].iEnd = p->iEnd;
-    p->aParent[0].iHead = p->i;
-    p->aParent[0].iValue = i;
+    p->a_మాతృ = sqlite3DbMallocZero(p->db, పరిమాణం(Json_మాతృ));
+    ఒకవేళ( p->a_మాతృ==0 ) తిరిగి SQLITE_NOMEM;
+    p->n_మాతృ = 1;
+    p->n_మాతృ_Alloc = 1;
+    p->a_మాతృ[0].i_కీలకం = 0;
+    p->a_మాతృ[0].i_చివర = p->i_చివర;
+    p->a_మాతృ[0].i_తల = p->i;
+    p->a_మాతృ[0].i_విలువ = i;
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* The methods of the json_each virtual table */
-static sqlite3_module jsonEachModule = {
+స్థిర sqlite3_module jsonEachModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   jsonEachConnect,           /* xConnect */
-  jsonEachBestIndex,         /* xBestIndex */
+  json_Each_ఉత్తమ_సూచీ,         /* xBestIndex */
   jsonEachDisconnect,        /* xDisconnect */
   0,                         /* xDestroy */
   jsonEachOpen,              /* xOpen - open a cursor */
   jsonEachClose,             /* xClose - close a cursor */
   jsonEachFilter,            /* xFilter - configure scan constraints */
-  jsonEachNext,              /* xNext - advance a cursor */
+  json_Each_తదుపరి,              /* xNext - advance a cursor */
   jsonEachEof,               /* xEof - check for end of scan */
-  jsonEachColumn,            /* xColumn - read data */
+  json_Each_స్తంభం,            /* xColumn - read data */
   jsonEachRowid,             /* xRowid - read data */
   0,                         /* xUpdate */
   0,                         /* xBegin */
@@ -5828,15 +5828,15 @@ static sqlite3_module jsonEachModule = {
   0,                         /* xShadowName */
   0                          /* xIntegrity */
 };
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
-#endif /* !defined(SQLITE_OMIT_JSON) */
+#అయితే_ముగింపు /* SQLITE_OMIT_VIRTUALTABLE */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_JSON) */
 
 /*
 ** Register JSON functions.
 */
-void sqlite3RegisterJsonFunctions(void){
-#ifndef SQLITE_OMIT_JSON
-  static FuncDef aJsonFunc[] = {
+శూన్య sqlite3_రిజిస్టరు_Json_Functions(శూన్య){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_JSON
+  స్థిర FuncDef aJsonFunc[] = {
     /*   sqlite3_result_subtype() ----,  ,--- sqlite3_value_subtype()       */
     /*                                |  |                                  */
     /*             Uses cache ------, |  | ,---- Returns JSONB              */
@@ -5847,17 +5847,17 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb,              1,1,0, 0,1,0,          jsonRemoveFunc),
     JFUNCTION(json_array,        -1,0,1, 1,0,0,          jsonArrayFunc),
     JFUNCTION(jsonb_array,       -1,0,1, 1,1,0,          jsonArrayFunc),
-    JFUNCTION(json_array_insert, -1,1,1, 1,0,JSON_AINS,  jsonSetFunc),
-    JFUNCTION(jsonb_array_insert,-1,1,0, 1,1,JSON_AINS,  jsonSetFunc),
-    JFUNCTION(json_array_length,  1,1,0, 0,0,0,          jsonArrayLengthFunc),
-    JFUNCTION(json_array_length,  2,1,0, 0,0,0,          jsonArrayLengthFunc),
+    JFUNCTION(json_array_చొప్పించు, -1,1,1, 1,0,JSON_AINS,  json_సమితి_Func),
+    JFUNCTION(jsonb_array_చొప్పించు,-1,1,0, 1,1,JSON_AINS,  json_సమితి_Func),
+    JFUNCTION(json_array_నిడివి,  1,1,0, 0,0,0,          json_Array_నిడివి_Func),
+    JFUNCTION(json_array_నిడివి,  2,1,0, 0,0,0,          json_Array_నిడివి_Func),
     JFUNCTION(json_error_position,1,1,0, 0,0,0,          jsonErrorFunc),
-    JFUNCTION(json_extract,      -1,1,1, 0,0,0,          jsonExtractFunc),
-    JFUNCTION(jsonb_extract,     -1,1,0, 0,1,0,          jsonExtractFunc),
-    JFUNCTION(->,                 2,1,1, 0,0,JSON_JSON,  jsonExtractFunc),
-    JFUNCTION(->>,                2,1,0, 0,0,JSON_SQL,   jsonExtractFunc),
-    JFUNCTION(json_insert,       -1,1,1, 1,0,0,          jsonSetFunc),
-    JFUNCTION(jsonb_insert,      -1,1,0, 1,1,0,          jsonSetFunc),
+    JFUNCTION(json_వెలికితీయి,      -1,1,1, 0,0,0,          json_వెలికితీయి_Func),
+    JFUNCTION(jsonb_వెలికితీయి,     -1,1,0, 0,1,0,          json_వెలికితీయి_Func),
+    JFUNCTION(->,                 2,1,1, 0,0,JSON_JSON,  json_వెలికితీయి_Func),
+    JFUNCTION(->>,                2,1,0, 0,0,JSON_SQL,   json_వెలికితీయి_Func),
+    JFUNCTION(json_చొప్పించు,       -1,1,1, 1,0,0,          json_సమితి_Func),
+    JFUNCTION(jsonb_చొప్పించు,      -1,1,0, 1,1,0,          json_సమితి_Func),
     JFUNCTION(json_object,       -1,0,1, 1,0,0,          jsonObjectFunc),
     JFUNCTION(jsonb_object,      -1,0,1, 1,1,0,          jsonObjectFunc),
     JFUNCTION(json_patch,         2,1,1, 0,0,0,          jsonPatchFunc),
@@ -5869,50 +5869,50 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb_remove,      -1,1,0, 0,1,0,          jsonRemoveFunc),
     JFUNCTION(json_replace,      -1,1,1, 1,0,0,          jsonReplaceFunc),
     JFUNCTION(jsonb_replace,     -1,1,0, 1,1,0,          jsonReplaceFunc),
-    JFUNCTION(json_set,          -1,1,1, 1,0,JSON_ISSET, jsonSetFunc),
-    JFUNCTION(jsonb_set,         -1,1,0, 1,1,JSON_ISSET, jsonSetFunc),
+    JFUNCTION(json_సమితి,          -1,1,1, 1,0,JSON_ISSET, json_సమితి_Func),
+    JFUNCTION(jsonb_సమితి,         -1,1,0, 1,1,JSON_ISSET, json_సమితి_Func),
     JFUNCTION(json_type,          1,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_type,          2,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_valid,         1,1,0, 0,0,0,          jsonValidFunc),
     JFUNCTION(json_valid,         2,1,0, 0,0,0,          jsonValidFunc),
-#if SQLITE_DEBUG
+#ఒకవేళ SQLITE_DEBUG
     JFUNCTION(json_parse,         1,1,0, 0,0,0,          jsonParseFunc),
-#endif
-    WAGGREGATE(json_group_array,  1, 0, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
+#అయితే_ముగింపు
+    WAGGREGATE(json_సమూహం_array,  1, 0, 0,
+       json_Array_అడుగు, jsonArrayFinal, json_Array_విలువ, json_సమూహం_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ఫలితం_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC),
-    WAGGREGATE(jsonb_group_array, 1, JSON_BLOB, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
-    WAGGREGATE(json_group_object, 2, 0, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
-    WAGGREGATE(jsonb_group_object,2, JSON_BLOB, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
-       SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
+    WAGGREGATE(jsonb_సమూహం_array, 1, JSON_BLOB, 0,
+       json_Array_అడుగు, jsonArrayFinal, json_Array_విలువ, json_సమూహం_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ఫలితం_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
+    WAGGREGATE(json_సమూహం_object, 2, 0, 0,
+       json_Object_అడుగు, jsonObjectFinal, json_Object_విలువ, json_సమూహం_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ఫలితం_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
+    WAGGREGATE(jsonb_సమూహం_object,2, JSON_BLOB, 0,
+       json_Object_అడుగు, jsonObjectFinal, json_Object_విలువ, json_సమూహం_Inverse,
+       SQLITE_SUBTYPE|SQLITE_ఫలితం_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC)
   };
-  sqlite3InsertBuiltinFuncs(aJsonFunc, ArraySize(aJsonFunc));
-#endif
+  sqlite3_చొప్పించు_Builtin_Funcs(aJsonFunc, Array_కొలత(aJsonFunc));
+#అయితే_ముగింపు
 }
 
-#if  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+#ఒకవేళ  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
 /*
 ** Register the JSON table-valued function named zName and return a
 ** pointer to its Module object.  Return NULL if something goes wrong.
 */
-Module *sqlite3JsonVtabRegister(sqlite3 *db, const char *zName){
-  unsigned int i;
-  static const char *azModule[] = {
+Module *sqlite3_Json_Vtab_రిజిస్టరు(sqlite3 *db, స్థిరరాశి అక్షరం *zName){
+  గుర్తులేని పూర్ణాంకం i;
+  స్థిర స్థిరరాశి అక్షరం *azModule[] = {
     "json_each", "json_tree", "jsonb_each", "jsonb_tree"
   };
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  for(i=0; i<sizeof(azModule)/sizeof(azModule[0]); i++){
-    if( sqlite3StrICmp(azModule[i],zName)==0 ){
-      return sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
+  ప్రతిజ్ఞా( sqlite3_Hash_కనుగొను(&db->aModule, zName)==0 );
+  కొరకు(i=0; i<పరిమాణం(azModule)/పరిమాణం(azModule[0]); i++){
+    ఒకవేళ( sqlite3StrICmp(azModule[i],zName)==0 ){
+      తిరిగి sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
     }
   }
-  return 0;
+  తిరిగి 0;
 }
-#endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */

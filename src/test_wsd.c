@@ -15,70 +15,70 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#ఒకవేళ defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
-#define PLS_HASHSIZE 43
+#నిర్వచించు PLS_HASHSIZE 43
 
-typedef struct ProcessLocalStorage ProcessLocalStorage;
-typedef struct ProcessLocalVar ProcessLocalVar;
+రకనిర్వచనం నిర్మాణం ProcessLocalStorage ProcessLocalStorage;
+రకనిర్వచనం నిర్మాణం ProcessLocalVar ProcessLocalVar;
 
-struct ProcessLocalStorage {
-  ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+నిర్మాణం ProcessLocalStorage {
+  ProcessLocalVar *a_దత్తాంశం[PLS_HASHSIZE];
+  పూర్ణాంకం nFree;
   u8 *pFree;
 };
 
-struct ProcessLocalVar {
-  void *pKey;
-  ProcessLocalVar *pNext;
+నిర్మాణం ProcessLocalVar {
+  శూన్య *p_కీలకం;
+  ProcessLocalVar *p_తదుపరి;
 };
 
-static ProcessLocalStorage *pGlobal = 0;
+స్థిర ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
-    pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
-      memset(pGlobal, 0, sizeof(ProcessLocalStorage));
-      pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
+పూర్ణాంకం sqlite3_wsd_init(పూర్ణాంకం N, పూర్ణాంకం J){
+  ఒకవేళ( !pGlobal ){
+    పూర్ణాంకం nMalloc = N + పరిమాణం(ProcessLocalStorage) + J*పరిమాణం(ProcessLocalVar);
+    pGlobal = (ProcessLocalStorage *)జ్ఞాపకం_ఇవ్వు(nMalloc);
+    ఒకవేళ( pGlobal ){
+      memset(pGlobal, 0, పరిమాణం(ProcessLocalStorage));
+      pGlobal->nFree = nMalloc - పరిమాణం(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  తిరిగి pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+శూన్య *sqlite3_wsd_కనుగొను(శూన్య *K, పూర్ణాంకం L){
+  పూర్ణాంకం i;
+  పూర్ణాంకం iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
-    iHash = (iHash<<3) + ((unsigned char *)&K)[i];
+  కొరకు(i=0; i<పరిమాణం(శూన్య*); i++){
+    iHash = (iHash<<3) + ((గుర్తులేని అక్షరం *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  కొరకు(pVar=pGlobal->a_దత్తాంశం[iHash]; pVar && pVar->p_కీలకం!=K; pVar=pVar->p_తదుపరి);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
-    assert( pGlobal->nFree>=nByte );
+  ఒకవేళ( !pVar ){
+    పూర్ణాంకం nByte = ROUND8(పరిమాణం(ProcessLocalVar) + L);
+    ప్రతిజ్ఞా( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
-    pVar->pNext = pGlobal->aData[iHash];
-    pGlobal->aData[iHash] = pVar;
+    pVar->p_కీలకం = K;
+    pVar->p_తదుపరి = pGlobal->a_దత్తాంశం[iHash];
+    pGlobal->a_దత్తాంశం[iHash] = pVar;
     pGlobal->nFree -= nByte;
     pGlobal->pFree += nByte;
-    memcpy(&pVar[1], K, L);
+    జ్ఞాపకం_నకలు(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  తిరిగి (శూన్య *)&pVar[1];
 }
 
-#endif
+#అయితే_ముగింపు

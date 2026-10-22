@@ -16,16 +16,16 @@
 ** readability and editability.  This file contains utility routines for
 ** analyzing Expr objects in the WHERE clause.
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+స్థిర శూన్య సమాసం_Analyze(SrcList*, WhereClause*, పూర్ణాంకం);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
 */
-static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
+స్థిర శూన్య whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -33,7 +33,7 @@ static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
 /*
 ** Deallocate all memory associated with a WhereAndInfo object.
 */
-static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
+స్థిర శూన్య whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -57,38 +57,38 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
-  WhereTerm *pTerm;
-  int idx;
-  testcase( wtFlags & TERM_VIRTUAL );
-  if( pWC->nTerm>=pWC->nSlot ){
-    WhereTerm *pOld = pWC->a;
+స్థిర పూర్ణాంకం where_Clause_చొప్పించు(WhereClause *pWC, సమాసం *p, u16 wtFlags){
+  Where_పదం *p_పదం;
+  పూర్ణాంకం idx;
+  testcase( wtFlags & పదం_VIRTUAL );
+  ఒకవేళ( pWC->n_పదం>=pWC->n_స్థానం ){
+    Where_పదం *pOld = pWC->a;
     sqlite3 *db = pWC->pWInfo->pParse->db;
-    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, sizeof(pWC->a[0])*pWC->nSlot*2 );
-    if( pWC->a==0 ){
-      if( wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, p);
+    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, పరిమాణం(pWC->a[0])*pWC->n_స్థానం*2 );
+    ఒకవేళ( pWC->a==0 ){
+      ఒకవేళ( wtFlags & పదం_DYNAMIC ){
+        sqlite3_సమాసం_Delete(db, p);
       }
       pWC->a = pOld;
-      return 0;
+      తిరిగి 0;
     }
-    memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
-    pWC->nSlot = pWC->nSlot*2;
+    జ్ఞాపకం_నకలు(pWC->a, pOld, పరిమాణం(pWC->a[0])*pWC->n_పదం);
+    pWC->n_స్థానం = pWC->n_స్థానం*2;
   }
-  pTerm = &pWC->a[idx = pWC->nTerm++];
-  if( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
-  if( p && ExprHasProperty(p, EP_Unlikely) ){
-    pTerm->truthProb = sqlite3LogEst(p->iTable) - 270;
-  }else{
-    pTerm->truthProb = 1;
+  p_పదం = &pWC->a[idx = pWC->n_పదం++];
+  ఒకవేళ( (wtFlags & పదం_VIRTUAL)==0 ) pWC->n_పునాది = pWC->n_పదం;
+  ఒకవేళ( p && సమాసం_Has_Property(p, EP_Unlikely) ){
+    p_పదం->truthProb = sqlite3LogEst(p->i_పట్టిక) - 270;
+  }లేకపోతే{
+    p_పదం->truthProb = 1;
   }
-  pTerm->pExpr = sqlite3ExprSkipCollateAndLikely(p);
-  pTerm->wtFlags = wtFlags;
-  pTerm->pWC = pWC;
-  pTerm->iParent = -1;
-  memset(&pTerm->eOperator, 0,
-         sizeof(WhereTerm) - offsetof(WhereTerm,eOperator));
-  return idx;
+  p_పదం->p_సమాసం = sqlite3_సమాసం_Skip_Collate_And_Likely(p);
+  p_పదం->wtFlags = wtFlags;
+  p_పదం->pWC = pWC;
+  p_పదం->i_మాతృ = -1;
+  memset(&p_పదం->eOperator, 0,
+         పరిమాణం(Where_పదం) - offsetof(Where_పదం,eOperator));
+  తిరిగి idx;
 }
 
 /*
@@ -96,73 +96,73 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
-  assert( TK_GT>TK_EQ && TK_GT<TK_GE );
-  assert( TK_LT>TK_EQ && TK_LT<TK_GE );
-  assert( TK_LE>TK_EQ && TK_LE<TK_GE );
-  assert( TK_GE==TK_EQ+4 );
-  assert( TK_IN<TK_EQ );
-  assert( TK_IS<TK_EQ );
-  assert( TK_ISNULL<TK_EQ );
-  if( op>TK_GE ) return 0;
-  if( op>=TK_EQ ) return 1;
-  return op==TK_IN || op==TK_ISNULL || op==TK_IS;
+స్థిర పూర్ణాంకం allowedOp(పూర్ణాంకం op){
+  ప్రతిజ్ఞా( TK_GT>TK_EQ && TK_GT<TK_GE );
+  ప్రతిజ్ఞా( TK_LT>TK_EQ && TK_LT<TK_GE );
+  ప్రతిజ్ఞా( TK_LE>TK_EQ && TK_LE<TK_GE );
+  ప్రతిజ్ఞా( TK_GE==TK_EQ+4 );
+  ప్రతిజ్ఞా( TK_లోపల<TK_EQ );
+  ప్రతిజ్ఞా( TK_IS<TK_EQ );
+  ప్రతిజ్ఞా( TK_ISNULL<TK_EQ );
+  ఒకవేళ( op>TK_GE ) తిరిగి 0;
+  ఒకవేళ( op>=TK_EQ ) తిరిగి 1;
+  తిరిగి op==TK_లోపల || op==TK_ISNULL || op==TK_IS;
 }
 
 /*
 ** Commute a comparison operator.  Expressions of the form "X op Y"
 ** are converted into "Y op X".
 */
-static u16 exprCommute(Parse *pParse, Expr *pExpr){
-  if( pExpr->pLeft->op==TK_VECTOR
-   || pExpr->pRight->op==TK_VECTOR
-   || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
-      sqlite3BinaryCompareCollSeq(pParse, pExpr->pRight, pExpr->pLeft)
+స్థిర u16 సమాసం_Commute(Parse *pParse, సమాసం *p_సమాసం){
+  ఒకవేళ( p_సమాసం->p_ఎడమ->op==TK_సదిశ
+   || p_సమాసం->p_కుడి->op==TK_సదిశ
+   || sqlite3_ద్విమాన_Compare_Coll_Seq(pParse, p_సమాసం->p_ఎడమ, p_సమాసం->p_కుడి) !=
+      sqlite3_ద్విమాన_Compare_Coll_Seq(pParse, p_సమాసం->p_కుడి, p_సమాసం->p_ఎడమ)
   ){
-    pExpr->flags ^= EP_Commuted;
+    p_సమాసం->flags ^= EP_Commuted;
   }
-  SWAP(Expr*,pExpr->pRight,pExpr->pLeft);
-  if( pExpr->op>=TK_GT ){
-    assert( TK_LT==TK_GT+2 );
-    assert( TK_GE==TK_LE+2 );
-    assert( TK_GT>TK_EQ );
-    assert( TK_GT<TK_LE );
-    assert( pExpr->op>=TK_GT && pExpr->op<=TK_GE );
-    pExpr->op = ((pExpr->op-TK_GT)^2)+TK_GT;
+  మార్పిడి(సమాసం*,p_సమాసం->p_కుడి,p_సమాసం->p_ఎడమ);
+  ఒకవేళ( p_సమాసం->op>=TK_GT ){
+    ప్రతిజ్ఞా( TK_LT==TK_GT+2 );
+    ప్రతిజ్ఞా( TK_GE==TK_LE+2 );
+    ప్రతిజ్ఞా( TK_GT>TK_EQ );
+    ప్రతిజ్ఞా( TK_GT<TK_LE );
+    ప్రతిజ్ఞా( p_సమాసం->op>=TK_GT && p_సమాసం->op<=TK_GE );
+    p_సమాసం->op = ((p_సమాసం->op-TK_GT)^2)+TK_GT;
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+స్థిర u16 operator_ముసుగు(పూర్ణాంకం op){
   u16 c;
-  assert( allowedOp(op) );
-  if( op>=TK_EQ ){
-    assert( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
+  ప్రతిజ్ఞా( allowedOp(op) );
+  ఒకవేళ( op>=TK_EQ ){
+    ప్రతిజ్ఞా( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
     c = (u16)(WO_EQ<<(op-TK_EQ));
-  }else if( op==TK_IN ){
-    c = WO_IN;
-  }else if( op==TK_ISNULL ){
+  }లేకపోతే ఒకవేళ( op==TK_లోపల ){
+    c = WO_లోపల;
+  }లేకపోతే ఒకవేళ( op==TK_ISNULL ){
     c = WO_ISNULL;
-  }else{
-    assert( op==TK_IS );
+  }లేకపోతే{
+    ప్రతిజ్ఞా( op==TK_IS );
     c = WO_IS;
   }
-  assert( op!=TK_ISNULL || c==WO_ISNULL );
-  assert( op!=TK_IN || c==WO_IN );
-  assert( op!=TK_EQ || c==WO_EQ );
-  assert( op!=TK_LT || c==WO_LT );
-  assert( op!=TK_LE || c==WO_LE );
-  assert( op!=TK_GT || c==WO_GT );
-  assert( op!=TK_GE || c==WO_GE );
-  assert( op!=TK_IS || c==WO_IS );
-  return c;
+  ప్రతిజ్ఞా( op!=TK_ISNULL || c==WO_ISNULL );
+  ప్రతిజ్ఞా( op!=TK_లోపల || c==WO_లోపల );
+  ప్రతిజ్ఞా( op!=TK_EQ || c==WO_EQ );
+  ప్రతిజ్ఞా( op!=TK_LT || c==WO_LT );
+  ప్రతిజ్ఞా( op!=TK_LE || c==WO_LE );
+  ప్రతిజ్ఞా( op!=TK_GT || c==WO_GT );
+  ప్రతిజ్ఞా( op!=TK_GE || c==WO_GE );
+  ప్రతిజ్ఞా( op!=TK_IS || c==WO_IS );
+  తిరిగి c;
 }
 
 
-#ifndef SQLITE_OMIT_LIKE_OPTIMIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_LIKE_OPTIMIZATION
 /*
 ** Check to see if the given expression is a LIKE or GLOB operator that
 ** can be optimized using inequality constraints.  Return TRUE if it is
@@ -175,50 +175,50 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+స్థిర పూర్ణాంకం isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
-  Expr *pExpr,      /* Test this expression */
-  Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
-  int *pisComplete, /* True if the only wildcard is % in the last character */
-  int *pnoCase      /* True if uppercase is equivalent to lowercase */
+  సమాసం *p_సమాసం,      /* Test this expression */
+  సమాసం **pp_ఉపసర్గ,  /* Pointer to TK_STRING expression with pattern prefix */
+  పూర్ణాంకం *pisComplete, /* True if the only wildcard is % in the last character */
+  పూర్ణాంకం *pnoCase      /* True if uppercase is equivalent to lowercase */
 ){
-  const u8 *z = 0;           /* String on RHS of LIKE operator */
-  Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */
-  ExprList *pList;           /* List of operands to the LIKE operator */
+  స్థిరరాశి u8 *z = 0;           /* String on RHS of LIKE operator */
+  సమాసం *p_కుడి, *p_ఎడమ;      /* Right and left size of LIKE operator */
+  సమాసం_List *pList;           /* List of operands to the LIKE operator */
   u8 c;                      /* One character in z[] */
-  int cnt;                   /* Number of non-wildcard prefix characters */
+  పూర్ణాంకం cnt;                   /* Number of non-wildcard prefix characters */
   u8 wc[4];                  /* Wildcard characters */
   sqlite3 *db = pParse->db;  /* Database connection */
-  sqlite3_value *pVal = 0;
-  int op;                    /* Opcode of pRight */
-  int rc;                    /* Result code to return */
+  sqlite3_విలువ *pVal = 0;
+  పూర్ణాంకం op;                    /* Opcode of pRight */
+  పూర్ణాంకం rc;                    /* Result code to return */
 
-  if( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (char*)wc) ){
-    return 0;
+  ఒకవేళ( !sqlite3IsLikeFunction(db, p_సమాసం, pnoCase, (అక్షరం*)wc) ){
+    తిరిగి 0;
   }
-#ifdef SQLITE_EBCDIC
-  if( *pnoCase ) return 0;
-#endif
-  assert( ExprUseXList(pExpr) );
-  pList = pExpr->x.pList;
-  pLeft = pList->a[1].pExpr;
+#నిర్వచితమైతే SQLITE_EBCDIC
+  ఒకవేళ( *pnoCase ) తిరిగి 0;
+#అయితే_ముగింపు
+  ప్రతిజ్ఞా( సమాసం_Use_XList(p_సమాసం) );
+  pList = p_సమాసం->x.pList;
+  p_ఎడమ = pList->a[1].p_సమాసం;
 
-  pRight = sqlite3ExprSkipCollate(pList->a[0].pExpr);
-  op = pRight->op;
-  if( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  p_కుడి = sqlite3_సమాసం_Skip_Collate(pList->a[0].p_సమాసం);
+  op = p_కుడి->op;
+  ఒకవేళ( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *pReprepare = pParse->pReprepare;
-    int iCol = pRight->iColumn;
-    pVal = sqlite3VdbeGetBoundValue(pReprepare, iCol, SQLITE_AFF_BLOB);
-    if( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
-      z = sqlite3_value_text(pVal);
+    పూర్ణాంకం i_నిలువు = p_కుడి->i_స్తంభం;
+    pVal = sqlite3_Vdbe_Get_Bound_విలువ(pReprepare, i_నిలువు, SQLITE_AFF_BLOB);
+    ఒకవేళ( pVal && sqlite3_విలువ_type(pVal)==SQLITE_పాఠ్యం ){
+      z = sqlite3_విలువ_పాఠ్యం(pVal);
     }
-    sqlite3VdbeReprepareOnBind(pParse->pVdbe, iCol, 0);
-    assert( pRight->op==TK_VARIABLE || pRight->op==TK_REGISTER );
-  }else if( op==TK_STRING ){
-    assert( !ExprHasProperty(pRight, EP_IntValue) );
-     z = (u8*)pRight->u.zToken;
+    sqlite3VdbeReprepareOnBind(pParse->pVdbe, i_నిలువు, 0);
+    ప్రతిజ్ఞా( p_కుడి->op==TK_VARIABLE || p_కుడి->op==TK_రిజిస్టరు );
+  }లేకపోతే ఒకవేళ( op==TK_STRING ){
+    ప్రతిజ్ఞా( !సమాసం_Has_Property(p_కుడి, EP_Int_విలువ) );
+     z = (u8*)p_కుడి->u.zToken;
   }
-  if( z ){
+  ఒకవేళ( z ){
     /* Count the number of prefix bytes prior to the first wildcard,
     ** U+fffd character, or malformed utf-8. If the underlying database
     ** has a UTF16LE encoding, then only consider ASCII characters.  Note that
@@ -226,19 +226,19 @@ static int isLikeOrGlob(
     ** code, but the database engine itself might be processing content using a
     ** different encoding. */
     cnt = 0;
-    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
+    అయితే( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
       cnt++;
-      if( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
+      ఒకవేళ( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
         cnt++;
-      }else if( c>=0x80 ){
-        const u8 *z2 = z+cnt-1;
-        if( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
+      }లేకపోతే ఒకవేళ( c>=0x80 ){
+        స్థిరరాశి u8 *z2 = z+cnt-1;
+        ఒకవేళ( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
          || ENC(db)==SQLITE_UTF16LE 
         ){
           cnt--;
-          break;
-        }else{
-          cnt = (int)(z2-z);
+          ఆపు;
+        }లేకపోతే{
+          cnt = (పూర్ణాంకం)(z2-z);
         }
       }
     }
@@ -251,26 +251,26 @@ static int isLikeOrGlob(
     ** range search. The third is because the caller assumes that the pattern
     ** consists of at least one character after all escapes have been
     ** removed.  */
-    if( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
-      Expr *pPrefix;
+    ఒకవేళ( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
+      సమాసం *p_ఉపసర్గ;
 
       /* A "complete" match if the pattern ends with "*" or "%" */
       *pisComplete = c==wc[0] && z[cnt+1]==0 && ENC(db)!=SQLITE_UTF16LE;
 
       /* Get the pattern prefix.  Remove all escapes from the prefix. */
-      pPrefix = sqlite3Expr(db, TK_STRING, (char*)z);
-      if( pPrefix ){
-        int iFrom, iTo;
-        char *zNew;
-        assert( !ExprHasProperty(pPrefix, EP_IntValue) );
-        zNew = pPrefix->u.zToken;
+      p_ఉపసర్గ = sqlite3_సమాసం(db, TK_STRING, (అక్షరం*)z);
+      ఒకవేళ( p_ఉపసర్గ ){
+        పూర్ణాంకం iFrom, i_గమ్యం;
+        అక్షరం *zNew;
+        ప్రతిజ్ఞా( !సమాసం_Has_Property(p_ఉపసర్గ, EP_Int_విలువ) );
+        zNew = p_ఉపసర్గ->u.zToken;
         zNew[cnt] = 0;
-        for(iFrom=iTo=0; iFrom<cnt; iFrom++){
-          if( zNew[iFrom]==wc[3] ) iFrom++;
-          zNew[iTo++] = zNew[iFrom];
+        కొరకు(iFrom=i_గమ్యం=0; iFrom<cnt; iFrom++){
+          ఒకవేళ( zNew[iFrom]==wc[3] ) iFrom++;
+          zNew[i_గమ్యం++] = zNew[iFrom];
         }
-        zNew[iTo] = 0;
-        assert( iTo>0 );
+        zNew[i_గమ్యం] = 0;
+        ప్రతిజ్ఞా( i_గమ్యం>0 );
 
         /* If the LHS is not an ordinary column with TEXT affinity, then the
         ** pattern prefix boundaries (both the start and end boundaries) must
@@ -285,63 +285,63 @@ static int isLikeOrGlob(
         **    2019-06-14 https://sqlite.org/src/info/ce8717f0885af975
         **    2019-09-03 https://sqlite.org/src/info/0f0428096f17252a
         */
-        if( pLeft->op!=TK_COLUMN
-         || sqlite3ExprAffinity(pLeft)!=SQLITE_AFF_TEXT
-         || (ALWAYS( ExprUseYTab(pLeft) )
-             && ALWAYS(pLeft->y.pTab)
-             && IsVirtual(pLeft->y.pTab))  /* Might be numeric */
+        ఒకవేళ( p_ఎడమ->op!=TK_స్తంభం
+         || sqlite3_సమాసం_Affinity(p_ఎడమ)!=SQLITE_AFF_పాఠ్యం
+         || (ALWAYS( సమాసం_Use_YTab(p_ఎడమ) )
+             && ALWAYS(p_ఎడమ->y.pTab)
+             && IsVirtual(p_ఎడమ->y.pTab))  /* Might be numeric */
         ){
-          int isNum;
-          double rDummy;
-          assert( zNew[iTo]==0 );
-          isNum = sqlite3AtoF(zNew, &rDummy);
-          if( isNum<=0 ){
-            if( iTo==1 && zNew[0]=='-' ){
-              isNum = +1;
-            }else{
-              zNew[iTo-1]++;
-              isNum = sqlite3AtoF(zNew, &rDummy);
-              zNew[iTo-1]--;
+          పూర్ణాంకం is_అంకె;
+          ద్విగుణ rDummy;
+          ప్రతిజ్ఞా( zNew[i_గమ్యం]==0 );
+          is_అంకె = sqlite3AtoF(zNew, &rDummy);
+          ఒకవేళ( is_అంకె<=0 ){
+            ఒకవేళ( i_గమ్యం==1 && zNew[0]=='-' ){
+              is_అంకె = +1;
+            }లేకపోతే{
+              zNew[i_గమ్యం-1]++;
+              is_అంకె = sqlite3AtoF(zNew, &rDummy);
+              zNew[i_గమ్యం-1]--;
             }
           }
-          if( isNum>0 ){
-            sqlite3ExprDelete(db, pPrefix);
-            sqlite3ValueFree(pVal);
-            return 0;
+          ఒకవేళ( is_అంకె>0 ){
+            sqlite3_సమాసం_Delete(db, p_ఉపసర్గ);
+            sqlite3_విలువ_Free(pVal);
+            తిరిగి 0;
           }
         }
       }
-      *ppPrefix = pPrefix;
+      *pp_ఉపసర్గ = p_ఉపసర్గ;
 
       /* If the RHS pattern is a bound parameter, make arrangements to
       ** reprepare the statement when that parameter is rebound */
-      if( op==TK_VARIABLE ){
+      ఒకవేళ( op==TK_VARIABLE ){
         Vdbe *v = pParse->pVdbe;
-        sqlite3VdbeReprepareOnBind(v, pRight->iColumn, 0);
-        assert( !ExprHasProperty(pRight, EP_IntValue) );
-        if( *pisComplete && pRight->u.zToken[1] ){
+        sqlite3VdbeReprepareOnBind(v, p_కుడి->i_స్తంభం, 0);
+        ప్రతిజ్ఞా( !సమాసం_Has_Property(p_కుడి, EP_Int_విలువ) );
+        ఒకవేళ( *pisComplete && p_కుడి->u.zToken[1] ){
           /* If the rhs of the LIKE expression is a variable, and the current
           ** value of the variable means there is no need to invoke the LIKE
           ** function, then no OP_Variable will be added to the program.
           ** This causes problems for the sqlite3_bind_parameter_name()
           ** API. To work around them, add a dummy OP_Variable here.
           */
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3ExprCodeTarget(pParse, pRight, r1);
+          పూర్ణాంకం r1 = sqlite3_Get_తాత్కాలిక_Reg(pParse);
+          sqlite3_సమాసం_సంకేతం_లక్ష్యం(pParse, p_కుడి, r1);
           sqlite3VdbeChangeP3(v, sqlite3VdbeCurrentAddr(v)-1, 0);
-          sqlite3ReleaseTempReg(pParse, r1);
+          sqlite3_Release_తాత్కాలిక_Reg(pParse, r1);
         }
       }
-    }else{
+    }లేకపోతే{
       z = 0;
     }
   }
 
   rc = (z!=0);
-  sqlite3ValueFree(pVal);
-  return rc;
+  sqlite3_విలువ_Free(pVal);
+  తిరిగి rc;
 }
-#endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
 /*
 ** If pExpr is one of "like", "glob", "match", or "regexp", then
@@ -350,29 +350,29 @@ static int isLikeOrGlob(
 **
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
-int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
-    const char *zOp;
-    unsigned char eOp;
+పూర్ణాంకం sqlite3_సమాసం_Is_Like_Operator(స్థిరరాశి సమాసం *p_సమాసం){
+  స్థిర స్థిరరాశి నిర్మాణం {
+    స్థిరరాశి అక్షరం *zOp;
+    గుర్తులేని అక్షరం eOp;
   } aOp[] = {
-    { "match",  SQLITE_INDEX_CONSTRAINT_MATCH },
-    { "glob",   SQLITE_INDEX_CONSTRAINT_GLOB },
-    { "like",   SQLITE_INDEX_CONSTRAINT_LIKE },
-    { "regexp", SQLITE_INDEX_CONSTRAINT_REGEXP }
+    { "match",  SQLITE_సూచీ_CONSTRAINT_సరిపోలిక },
+    { "glob",   SQLITE_సూచీ_CONSTRAINT_GLOB },
+    { "like",   SQLITE_సూచీ_CONSTRAINT_LIKE },
+    { "regexp", SQLITE_సూచీ_CONSTRAINT_REGEXP }
   };
-  int i;
-  assert( pExpr->op==TK_FUNCTION );
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  for(i=0; i<ArraySize(aOp); i++){
-    if( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
-      return aOp[i].eOp;
+  పూర్ణాంకం i;
+  ప్రతిజ్ఞా( p_సమాసం->op==TK_FUNCTION );
+  ప్రతిజ్ఞా( !సమాసం_Has_Property(p_సమాసం, EP_Int_విలువ) );
+  కొరకు(i=0; i<Array_కొలత(aOp); i++){
+    ఒకవేళ( sqlite3StrICmp(p_సమాసం->u.zToken, aOp[i].zOp)==0 ){
+      తిరిగి aOp[i].eOp;
     }
   }
-  return 0;
+  తిరిగి 0;
 }
 
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
 /*
 ** Check to see if the pExpr expression is a form that needs to be passed
 ** to the xBestIndex method of virtual tables.  Forms of interest include:
@@ -399,22 +399,22 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+స్థిర పూర్ణాంకం isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
-  Expr *pExpr,                    /* Test this expression */
-  unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
-  Expr **ppLeft,                  /* Column expression to left of MATCH/op2 */
-  Expr **ppRight                  /* Expression to left of MATCH/op2 */
+  సమాసం *p_సమాసం,                    /* Test this expression */
+  గుర్తులేని అక్షరం *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
+  సమాసం **pp_ఎడమ,                  /* Column expression to left of MATCH/op2 */
+  సమాసం **pp_కుడి                  /* Expression to left of MATCH/op2 */
 ){
-  if( pExpr->op==TK_FUNCTION ){
-    ExprList *pList;
-    Expr *pCol;                     /* Column reference */
-    int i;
+  ఒకవేళ( p_సమాసం->op==TK_FUNCTION ){
+    సమాసం_List *pList;
+    సమాసం *p_నిలువు;                     /* Column reference */
+    పూర్ణాంకం i;
 
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    if( pList==0 || pList->nExpr!=2 ){
-      return 0;
+    ప్రతిజ్ఞా( సమాసం_Use_XList(p_సమాసం) );
+    pList = p_సమాసం->x.pList;
+    ఒకవేళ( pList==0 || pList->n_సమాసం!=2 ){
+      తిరిగి 0;
     }
 
     /* Built-in operators MATCH, GLOB, LIKE, and REGEXP attach to a
@@ -424,13 +424,13 @@ static int isAuxiliaryVtabOperator(
     **       vtab_column MATCH expression
     **       MATCH(expression,vtab_column)
     */
-    pCol = pList->a[1].pExpr;
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
+    p_నిలువు = pList->a[1].p_సమాసం;
+    ప్రతిజ్ఞా( p_నిలువు->op!=TK_స్తంభం || (సమాసం_Use_YTab(p_నిలువు) && p_నిలువు->y.pTab!=0) );
+    ఒకవేళ( సమాసం_Is_Vtab(p_నిలువు) && (i = sqlite3_సమాసం_Is_Like_Operator(p_సమాసం))!=0 ){
       *peOp2 = i;
-      *ppRight = pList->a[0].pExpr;
-      *ppLeft = pCol;
-      return 1;
+      *pp_కుడి = pList->a[0].p_సమాసం;
+      *pp_ఎడమ = p_నిలువు;
+      తిరిగి 1;
     }
 
     /* We can also match against the first column of overloaded
@@ -443,81 +443,81 @@ static int isAuxiliaryVtabOperator(
     ** names.  But for this use case, xFindFunction is expected to deal
     ** with function names in an arbitrary case.
     */
-    pCol = pList->a[0].pExpr;
-    assert( pCol->op!=TK_COLUMN || ExprUseYTab(pCol) );
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) ){
+    p_నిలువు = pList->a[0].p_సమాసం;
+    ప్రతిజ్ఞా( p_నిలువు->op!=TK_స్తంభం || సమాసం_Use_YTab(p_నిలువు) );
+    ప్రతిజ్ఞా( p_నిలువు->op!=TK_స్తంభం || (సమాసం_Use_YTab(p_నిలువు) && p_నిలువు->y.pTab!=0) );
+    ఒకవేళ( సమాసం_Is_Vtab(p_నిలువు) ){
       sqlite3_vtab *pVtab;
       sqlite3_module *pMod;
-      void (*xNotUsed)(sqlite3_context*,int,sqlite3_value**);
-      void *pNotUsed;
-      pVtab = sqlite3GetVTable(db, pCol->y.pTab)->pVtab;
-      assert( pVtab!=0 );
-      assert( pVtab->pModule!=0 );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
+      శూన్య (*x_Not_వాడిన)(sqlite3_context*,పూర్ణాంకం,sqlite3_విలువ**);
+      శూన్య *p_Not_వాడిన;
+      pVtab = sqlite3GetVTable(db, p_నిలువు->y.pTab)->pVtab;
+      ప్రతిజ్ఞా( pVtab!=0 );
+      ప్రతిజ్ఞా( pVtab->pModule!=0 );
+      ప్రతిజ్ఞా( !సమాసం_Has_Property(p_సమాసం, EP_Int_విలువ) );
       pMod = (sqlite3_module *)pVtab->pModule;
-      if( pMod->xFindFunction!=0 ){
-        i = pMod->xFindFunction(pVtab,2, pExpr->u.zToken, &xNotUsed, &pNotUsed);
-        if( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
+      ఒకవేళ( pMod->x_కనుగొను_Function!=0 ){
+        i = pMod->x_కనుగొను_Function(pVtab,2, p_సమాసం->u.zToken, &x_Not_వాడిన, &p_Not_వాడిన);
+        ఒకవేళ( i>=SQLITE_సూచీ_CONSTRAINT_FUNCTION ){
           *peOp2 = i;
-          *ppRight = pList->a[1].pExpr;
-          *ppLeft = pCol;
-          return 1;
+          *pp_కుడి = pList->a[1].p_సమాసం;
+          *pp_ఎడమ = p_నిలువు;
+          తిరిగి 1;
         }
       }
     }
-  }else if( pExpr->op>=TK_EQ ){
+  }లేకపోతే ఒకవేళ( p_సమాసం->op>=TK_EQ ){
     /* Comparison operators are a common case.  Save a few comparisons for
     ** that common case by terminating early. */
-    assert( TK_NE < TK_EQ );
-    assert( TK_ISNOT < TK_EQ );
-    assert( TK_NOTNULL < TK_EQ );
-    return 0;
-  }else if( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
-    int res = 0;
-    Expr *pLeft = pExpr->pLeft;
-    Expr *pRight = pExpr->pRight;
-    assert( pLeft->op!=TK_COLUMN || (ExprUseYTab(pLeft) && pLeft->y.pTab!=0) );
-    if( ExprIsVtab(pLeft) ){
+    ప్రతిజ్ఞా( TK_NE < TK_EQ );
+    ప్రతిజ్ఞా( TK_ISNOT < TK_EQ );
+    ప్రతిజ్ఞా( TK_NOTNULL < TK_EQ );
+    తిరిగి 0;
+  }లేకపోతే ఒకవేళ( p_సమాసం->op==TK_NE || p_సమాసం->op==TK_ISNOT || p_సమాసం->op==TK_NOTNULL ){
+    పూర్ణాంకం res = 0;
+    సమాసం *p_ఎడమ = p_సమాసం->p_ఎడమ;
+    సమాసం *p_కుడి = p_సమాసం->p_కుడి;
+    ప్రతిజ్ఞా( p_ఎడమ->op!=TK_స్తంభం || (సమాసం_Use_YTab(p_ఎడమ) && p_ఎడమ->y.pTab!=0) );
+    ఒకవేళ( సమాసం_Is_Vtab(p_ఎడమ) ){
       res++;
     }
-    assert( pRight==0 || pRight->op!=TK_COLUMN
-            || (ExprUseYTab(pRight) && pRight->y.pTab!=0) );
-    if( pRight && ExprIsVtab(pRight) ){
+    ప్రతిజ్ఞా( p_కుడి==0 || p_కుడి->op!=TK_స్తంభం
+            || (సమాసం_Use_YTab(p_కుడి) && p_కుడి->y.pTab!=0) );
+    ఒకవేళ( p_కుడి && సమాసం_Is_Vtab(p_కుడి) ){
       res++;
-      SWAP(Expr*, pLeft, pRight);
+      మార్పిడి(సమాసం*, p_ఎడమ, p_కుడి);
     }
-    *ppLeft = pLeft;
-    *ppRight = pRight;
-    if( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
-    if( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
-    if( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
-    return res;
+    *pp_ఎడమ = p_ఎడమ;
+    *pp_కుడి = p_కుడి;
+    ఒకవేళ( p_సమాసం->op==TK_NE ) *peOp2 = SQLITE_సూచీ_CONSTRAINT_NE;
+    ఒకవేళ( p_సమాసం->op==TK_ISNOT ) *peOp2 = SQLITE_సూచీ_CONSTRAINT_ISNOT;
+    ఒకవేళ( p_సమాసం->op==TK_NOTNULL ) *peOp2 = SQLITE_సూచీ_CONSTRAINT_ISNOTNULL;
+    తిరిగి res;
   }
-  return 0;
+  తిరిగి 0;
 }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#అయితే_ముగింపు /* SQLITE_OMIT_VIRTUALTABLE */
 
 /*
 ** If the pBase expression originated in the ON or USING clause of
 ** a join, then transfer the appropriate markings over to derived.
 */
-static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
-  if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
-    pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
-    pDerived->w.iJoin = pBase->w.iJoin;
+స్థిర శూన్య transferJoinMarkings(సమాసం *pDerived, సమాసం *p_పునాది){
+  ఒకవేళ( pDerived && సమాసం_Has_Property(p_పునాది, EP_OuterON|EP_InnerON) ){
+    pDerived->flags |= p_పునాది->flags & (EP_OuterON|EP_InnerON);
+    pDerived->w.iJoin = p_పునాది->w.iJoin;
   }
 }
 
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
-  pWC->a[iChild].iParent = iParent;
-  pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
-  assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
-  pWC->a[iParent].nChild++;
-  testcase( pWC->a[iParent].nChild == UMXV(pWC->a[0].nChild) );
+స్థిర శూన్య mark_పదం_As_బిడ్డ(WhereClause *pWC, పూర్ణాంకం i_బిడ్డ, పూర్ణాంకం i_మాతృ){
+  pWC->a[i_బిడ్డ].i_మాతృ = i_మాతృ;
+  pWC->a[i_బిడ్డ].truthProb = pWC->a[i_మాతృ].truthProb;
+  ప్రతిజ్ఞా(   pWC->a[i_మాతృ].n_బిడ్డ <  UMXV(pWC->a[0].n_బిడ్డ) );
+  pWC->a[i_మాతృ].n_బిడ్డ++;
+  testcase( pWC->a[i_మాతృ].n_బిడ్డ == UMXV(pWC->a[0].n_బిడ్డ) );
 
 }
 
@@ -526,14 +526,14 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
-  if( pTerm->eOperator!=WO_AND ){
-    return N==0 ? pTerm : 0;
+స్థిర Where_పదం *whereNthSubterm(Where_పదం *p_పదం, పూర్ణాంకం N){
+  ఒకవేళ( p_పదం->eOperator!=WO_AND ){
+    తిరిగి N==0 ? p_పదం : 0;
   }
-  if( N<pTerm->u.pAndInfo->wc.nTerm ){
-    return &pTerm->u.pAndInfo->wc.a[N];
+  ఒకవేళ( N<p_పదం->u.pAndInfo->wc.n_పదం ){
+    తిరిగి &p_పదం->u.pAndInfo->wc.a[N];
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -556,52 +556,52 @@ static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
 **
 **    x<y OR x>y    -->     x!=y    
 */
-static void whereCombineDisjuncts(
+స్థిర శూన్య whereCombineDisjuncts(
   SrcList *pSrc,         /* the FROM clause */
   WhereClause *pWC,      /* The complete WHERE clause */
-  WhereTerm *pOne,       /* First disjunct */
-  WhereTerm *pTwo        /* Second disjunct */
+  Where_పదం *pOne,       /* First disjunct */
+  Where_పదం *pTwo        /* Second disjunct */
 ){
   u16 eOp = pOne->eOperator | pTwo->eOperator;
   sqlite3 *db;           /* Database connection (for malloc) */
-  Expr *pNew;            /* New virtual expression */
-  int op;                /* Operator for the combined expression */
-  int idxNew;            /* Index in pWC of the next virtual term */
-  Expr *pA, *pB;         /* Expressions associated with pOne and pTwo */
+  సమాసం *pNew;            /* New virtual expression */
+  పూర్ణాంకం op;                /* Operator for the combined expression */
+  పూర్ణాంకం idxNew;            /* Index in pWC of the next virtual term */
+  సమాసం *pA, *pB;         /* Expressions associated with pOne and pTwo */
 
-  if( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) return;
-  if( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
-   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) return;
-  pA = pOne->pExpr;
-  pB = pTwo->pExpr;
-  assert( pA->pLeft!=0 && pA->pRight!=0 );
-  assert( pB->pLeft!=0 && pB->pRight!=0 );
-  if( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  return;
-  if( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) return;
-  if( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
-    return;
+  ఒకవేళ( (pOne->wtFlags | pTwo->wtFlags) & పదం_VNULL ) తిరిగి;
+  ఒకవేళ( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) తిరిగి;
+  ఒకవేళ( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) తిరిగి;
+  ఒకవేళ( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
+   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) తిరిగి;
+  pA = pOne->p_సమాసం;
+  pB = pTwo->p_సమాసం;
+  ప్రతిజ్ఞా( pA->p_ఎడమ!=0 && pA->p_కుడి!=0 );
+  ప్రతిజ్ఞా( pB->p_ఎడమ!=0 && pB->p_కుడి!=0 );
+  ఒకవేళ( sqlite3_సమాసం_Compare(0,pA->p_ఎడమ, pB->p_ఎడమ, -1) )  తిరిగి;
+  ఒకవేళ( sqlite3_సమాసం_Compare(0,pA->p_కుడి, pB->p_కుడి,-1) ) తిరిగి;
+  ఒకవేళ( సమాసం_Has_Property(pA,EP_Commuted)!=సమాసం_Has_Property(pB,EP_Commuted) ){
+    తిరిగి;
   }
   /* If we reach this point, it means the two subterms can be combined */
-  if( (eOp & (eOp-1))!=0 ){
-    if( eOp & (WO_LT|WO_LE) ){
+  ఒకవేళ( (eOp & (eOp-1))!=0 ){
+    ఒకవేళ( eOp & (WO_LT|WO_LE) ){
       eOp = WO_LE;
-    }else{
-      assert( eOp & (WO_GT|WO_GE) );
+    }లేకపోతే{
+      ప్రతిజ్ఞా( eOp & (WO_GT|WO_GE) );
       eOp = WO_GE;
     }
   }
   db = pWC->pWInfo->pParse->db;
-  pNew = sqlite3ExprDup(db, pA, 0);
-  if( pNew==0 ) return;
-  for(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
+  pNew = sqlite3_సమాసం_Dup(db, pA, 0);
+  ఒకవేళ( pNew==0 ) తిరిగి;
+  కొరకు(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ ప్రతిజ్ఞా( op<TK_GE ); }
   pNew->op = op;
-  idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
-  exprAnalyze(pSrc, pWC, idxNew);
+  idxNew = where_Clause_చొప్పించు(pWC, pNew, పదం_VIRTUAL|పదం_DYNAMIC);
+  సమాసం_Analyze(pSrc, pWC, idxNew);
 }
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#ఒకవేళ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Analyze a term that consists of two or more OR-connected
 ** subterms.  So in:
@@ -689,21 +689,21 @@ static void whereCombineDisjuncts(
 ** If none of cases 1, 2, or 3 apply, then leave the eOperator set to
 ** zero.  This term is not useful for search.
 */
-static void exprAnalyzeOrTerm(
+స్థిర శూన్య సమాసం_Analyze_Or_పదం(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
-  int idxTerm               /* Index of the OR-term to be analyzed */
+  పూర్ణాంకం idx_పదం               /* Index of the OR-term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo;        /* WHERE clause processing context */
   Parse *pParse = pWInfo->pParse;         /* Parser context */
   sqlite3 *db = pParse->db;               /* Database connection */
-  WhereTerm *pTerm = &pWC->a[idxTerm];    /* The term to be analyzed */
-  Expr *pExpr = pTerm->pExpr;             /* The expression of the term */
-  int i;                                  /* Loop counters */
+  Where_పదం *p_పదం = &pWC->a[idx_పదం];    /* The term to be analyzed */
+  సమాసం *p_సమాసం = p_పదం->p_సమాసం;             /* The expression of the term */
+  పూర్ణాంకం i;                                  /* Loop counters */
   WhereClause *pOrWc;       /* Breakup of pTerm into subterms */
-  WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */
+  Where_పదం *p_Or_పదం;       /* A Sub-term within the pOrWc */
   WhereOrInfo *pOrInfo;     /* Additional information associated with pTerm */
-  Bitmask chngToIN;         /* Tables that might satisfy case 1 */
+  Bitmask chng_గమ్యం_లోపల;         /* Tables that might satisfy case 1 */
   Bitmask indexable;        /* Tables that are indexable, satisfying case 2 */
 
   /*
@@ -711,72 +711,72 @@ static void exprAnalyzeOrTerm(
   ** stored in a WhereClause structure containing within the WhereOrInfo
   ** object that is attached to the original OR clause term.
   */
-  assert( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
-  assert( pExpr->op==TK_OR );
-  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
-  if( pOrInfo==0 ) return;
-  pTerm->wtFlags |= TERM_ORINFO;
+  ప్రతిజ్ఞా( (p_పదం->wtFlags & (పదం_DYNAMIC|పదం_ORINFO|పదం_ANDINFO))==0 );
+  ప్రతిజ్ఞా( p_సమాసం->op==TK_OR );
+  p_పదం->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, పరిమాణం(*pOrInfo));
+  ఒకవేళ( pOrInfo==0 ) తిరిగి;
+  p_పదం->wtFlags |= పదం_ORINFO;
   pOrWc = &pOrInfo->wc;
-  memset(pOrWc->aStatic, 0, sizeof(pOrWc->aStatic));
+  memset(pOrWc->aStatic, 0, పరిమాణం(pOrWc->aStatic));
   sqlite3WhereClauseInit(pOrWc, pWInfo);
-  sqlite3WhereSplit(pOrWc, pExpr, TK_OR);
-  sqlite3WhereExprAnalyze(pSrc, pOrWc);
-  if( db->mallocFailed ) return;
-  assert( pOrWc->nTerm>=2 );
+  sqlite3_Where_విభజించు(pOrWc, p_సమాసం, TK_OR);
+  sqlite3_Where_సమాసం_Analyze(pSrc, pOrWc);
+  ఒకవేళ( db->mallocFailed ) తిరిగి;
+  ప్రతిజ్ఞా( pOrWc->n_పదం>=2 );
 
   /*
   ** Compute the set of tables that might satisfy cases 1 or 3.
   */
   indexable = ~(Bitmask)0;
-  chngToIN = ~(Bitmask)0;
-  for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
-    if( (pOrTerm->eOperator & WO_SINGLE)==0 ){
+  chng_గమ్యం_లోపల = ~(Bitmask)0;
+  కొరకు(i=pOrWc->n_పదం-1, p_Or_పదం=pOrWc->a; i>=0 && indexable; i--, p_Or_పదం++){
+    ఒకవేళ( (p_Or_పదం->eOperator & WO_SINGLE)==0 ){
       WhereAndInfo *pAndInfo;
-      assert( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
-      chngToIN = 0;
-      pAndInfo = sqlite3DbMallocRawNN(db, sizeof(*pAndInfo));
-      if( pAndInfo ){
+      ప్రతిజ్ఞా( (p_Or_పదం->wtFlags & (పదం_ANDINFO|పదం_ORINFO))==0 );
+      chng_గమ్యం_లోపల = 0;
+      pAndInfo = sqlite3DbMallocRawNN(db, పరిమాణం(*pAndInfo));
+      ఒకవేళ( pAndInfo ){
         WhereClause *pAndWC;
-        WhereTerm *pAndTerm;
-        int j;
+        Where_పదం *p_And_పదం;
+        పూర్ణాంకం j;
         Bitmask b = 0;
-        pOrTerm->u.pAndInfo = pAndInfo;
-        pOrTerm->wtFlags |= TERM_ANDINFO;
-        pOrTerm->eOperator = WO_AND;
-        pOrTerm->leftCursor = -1;
+        p_Or_పదం->u.pAndInfo = pAndInfo;
+        p_Or_పదం->wtFlags |= పదం_ANDINFO;
+        p_Or_పదం->eOperator = WO_AND;
+        p_Or_పదం->ఎడమ_Cursor = -1;
         pAndWC = &pAndInfo->wc;
-        memset(pAndWC->aStatic, 0, sizeof(pAndWC->aStatic));
+        memset(pAndWC->aStatic, 0, పరిమాణం(pAndWC->aStatic));
         sqlite3WhereClauseInit(pAndWC, pWC->pWInfo);
-        sqlite3WhereSplit(pAndWC, pOrTerm->pExpr, TK_AND);
-        sqlite3WhereExprAnalyze(pSrc, pAndWC);
+        sqlite3_Where_విభజించు(pAndWC, p_Or_పదం->p_సమాసం, TK_AND);
+        sqlite3_Where_సమాసం_Analyze(pSrc, pAndWC);
         pAndWC->pOuter = pWC;
-        if( !db->mallocFailed ){
-          for(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
-            assert( pAndTerm->pExpr );
-            if( allowedOp(pAndTerm->pExpr->op)
-             || pAndTerm->eOperator==WO_AUX
+        ఒకవేళ( !db->mallocFailed ){
+          కొరకు(j=0, p_And_పదం=pAndWC->a; j<pAndWC->n_పదం; j++, p_And_పదం++){
+            ప్రతిజ్ఞా( p_And_పదం->p_సమాసం );
+            ఒకవేళ( allowedOp(p_And_పదం->p_సమాసం->op)
+             || p_And_పదం->eOperator==WO_AUX
             ){
-              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->leftCursor);
+              b |= sqlite3_Where_Get_ముసుగు(&pWInfo->s_ముసుగు_సమితి, p_And_పదం->ఎడమ_Cursor);
             }
           }
         }
         indexable &= b;
       }
-    }else if( pOrTerm->wtFlags & TERM_COPIED ){
+    }లేకపోతే ఒకవేళ( p_Or_పదం->wtFlags & పదం_COPIED ){
       /* Skip this term for now.  We revisit it when we process the
       ** corresponding TERM_VIRTUAL term */
-    }else{
+    }లేకపోతే{
       Bitmask b;
-      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->leftCursor);
-      if( pOrTerm->wtFlags & TERM_VIRTUAL ){
-        WhereTerm *pOther = &pOrWc->a[pOrTerm->iParent];
-        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->leftCursor);
+      b = sqlite3_Where_Get_ముసుగు(&pWInfo->s_ముసుగు_సమితి, p_Or_పదం->ఎడమ_Cursor);
+      ఒకవేళ( p_Or_పదం->wtFlags & పదం_VIRTUAL ){
+        Where_పదం *pOther = &pOrWc->a[p_Or_పదం->i_మాతృ];
+        b |= sqlite3_Where_Get_ముసుగు(&pWInfo->s_ముసుగు_సమితి, pOther->ఎడమ_Cursor);
       }
       indexable &= b;
-      if( (pOrTerm->eOperator & WO_EQ)==0 ){
-        chngToIN = 0;
-      }else{
-        chngToIN &= b;
+      ఒకవేళ( (p_Or_పదం->eOperator & WO_EQ)==0 ){
+        chng_గమ్యం_లోపల = 0;
+      }లేకపోతే{
+        chng_గమ్యం_లోపల &= b;
       }
     }
   }
@@ -786,21 +786,21 @@ static void exprAnalyzeOrTerm(
   ** empty.
   */
   pOrInfo->indexable = indexable;
-  pTerm->eOperator = WO_OR;
-  pTerm->leftCursor = -1;
-  if( indexable ){
+  p_పదం->eOperator = WO_OR;
+  p_పదం->ఎడమ_Cursor = -1;
+  ఒకవేళ( indexable ){
     pWC->hasOr = 1;
   }
 
   /* For a two-way OR, attempt to implementation case 2.
   */
-  if( indexable && pOrWc->nTerm==2 ){
-    int iOne = 0;
-    WhereTerm *pOne;
-    while( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
-      int iTwo = 0;
-      WhereTerm *pTwo;
-      while( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
+  ఒకవేళ( indexable && pOrWc->n_పదం==2 ){
+    పూర్ణాంకం iOne = 0;
+    Where_పదం *pOne;
+    అయితే( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
+      పూర్ణాంకం iTwo = 0;
+      Where_పదం *pTwo;
+      అయితే( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
         whereCombineDisjuncts(pSrc, pWC, pOne, pTwo);
       }
     }
@@ -827,11 +827,11 @@ static void exprAnalyzeOrTerm(
   ** Note that terms of the form "table.column1=table.column2" (the
   ** same table on both sizes of the ==) cannot be optimized.
   */
-  if( chngToIN ){
-    int okToChngToIN = 0;     /* True if the conversion to IN is valid */
-    int iColumn = -1;         /* Column index on lhs of IN operator */
-    int iCursor = -1;         /* Table cursor common to all terms */
-    int j = 0;                /* Loop counter */
+  ఒకవేళ( chng_గమ్యం_లోపల ){
+    పూర్ణాంకం ok_గమ్యం_Chng_గమ్యం_లోపల = 0;     /* True if the conversion to IN is valid */
+    పూర్ణాంకం i_స్తంభం = -1;         /* Column index on lhs of IN operator */
+    పూర్ణాంకం iCursor = -1;         /* Table cursor common to all terms */
+    పూర్ణాంకం j = 0;                /* Loop counter */
 
     /* Search for a table and column that appears on one side or the
     ** other of the == operator in every subterm.  That table and column
@@ -839,69 +839,69 @@ static void exprAnalyzeOrTerm(
     ** such table and column.  Set okToChngToIN if an appropriate table
     ** and column is found but leave okToChngToIN false if not found.
     */
-    for(j=0; j<2 && !okToChngToIN; j++){
-      Expr *pLeft = 0;
-      pOrTerm = pOrWc->a;
-      for(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        pOrTerm->wtFlags &= ~TERM_OK;
-        if( pOrTerm->leftCursor==iCursor ){
+    కొరకు(j=0; j<2 && !ok_గమ్యం_Chng_గమ్యం_లోపల; j++){
+      సమాసం *p_ఎడమ = 0;
+      p_Or_పదం = pOrWc->a;
+      కొరకు(i=pOrWc->n_పదం-1; i>=0; i--, p_Or_పదం++){
+        ప్రతిజ్ఞా( p_Or_పదం->eOperator & WO_EQ );
+        p_Or_పదం->wtFlags &= ~పదం_OK;
+        ఒకవేళ( p_Or_పదం->ఎడమ_Cursor==iCursor ){
           /* This is the 2-bit case and we are on the second iteration and
           ** current term is from the first iteration.  So skip this term. */
-          assert( j==1 );
-          continue;
+          ప్రతిజ్ఞా( j==1 );
+          కొనసాగు;
         }
-        if( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
-                                            pOrTerm->leftCursor))==0 ){
+        ఒకవేళ( (chng_గమ్యం_లోపల & sqlite3_Where_Get_ముసుగు(&pWInfo->s_ముసుగు_సమితి,
+                                            p_Or_పదం->ఎడమ_Cursor))==0 ){
           /* This term must be of the form t1.a==t2.b where t2 is in the
           ** chngToIN set but t1 is not.  This term will be either preceded
           ** or followed by an inverted copy (t2.b==t1.a).  Skip this term
           ** and use its inversion. */
-          testcase( pOrTerm->wtFlags & TERM_COPIED );
-          testcase( pOrTerm->wtFlags & TERM_VIRTUAL );
-          assert( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
-          continue;
+          testcase( p_Or_పదం->wtFlags & పదం_COPIED );
+          testcase( p_Or_పదం->wtFlags & పదం_VIRTUAL );
+          ప్రతిజ్ఞా( p_Or_పదం->wtFlags & (పదం_COPIED|పదం_VIRTUAL) );
+          కొనసాగు;
         }
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        iColumn = pOrTerm->u.x.leftColumn;
-        iCursor = pOrTerm->leftCursor;
-        pLeft = pOrTerm->pExpr->pLeft;
-        break;
+        ప్రతిజ్ఞా( (p_Or_పదం->eOperator & (WO_OR|WO_AND))==0 );
+        i_స్తంభం = p_Or_పదం->u.x.ఎడమ_స్తంభం;
+        iCursor = p_Or_పదం->ఎడమ_Cursor;
+        p_ఎడమ = p_Or_పదం->p_సమాసం->p_ఎడమ;
+        ఆపు;
       }
-      if( i<0 ){
+      ఒకవేళ( i<0 ){
         /* No candidate table+column was found.  This can only occur
         ** on the second iteration */
-        assert( j==1 );
-        assert( IsPowerOfTwo(chngToIN) );
-        assert( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
-        break;
+        ప్రతిజ్ఞా( j==1 );
+        ప్రతిజ్ఞా( Is_Power_యొక్క_Two(chng_గమ్యం_లోపల) );
+        ప్రతిజ్ఞా( chng_గమ్యం_లోపల==sqlite3_Where_Get_ముసుగు(&pWInfo->s_ముసుగు_సమితి, iCursor) );
+        ఆపు;
       }
       testcase( j==1 );
 
       /* We have found a candidate table and column.  Check to see if that
       ** table and column is common to every term in the OR clause */
-      okToChngToIN = 1;
-      for(; i>=0 && okToChngToIN; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        if( pOrTerm->leftCursor!=iCursor ){
-          pOrTerm->wtFlags &= ~TERM_OK;
-        }else if( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
-               && sqlite3ExprCompare(pParse, pOrTerm->pExpr->pLeft, pLeft, -1)
+      ok_గమ్యం_Chng_గమ్యం_లోపల = 1;
+      కొరకు(; i>=0 && ok_గమ్యం_Chng_గమ్యం_లోపల; i--, p_Or_పదం++){
+        ప్రతిజ్ఞా( p_Or_పదం->eOperator & WO_EQ );
+        ప్రతిజ్ఞా( (p_Or_పదం->eOperator & (WO_OR|WO_AND))==0 );
+        ఒకవేళ( p_Or_పదం->ఎడమ_Cursor!=iCursor ){
+          p_Or_పదం->wtFlags &= ~పదం_OK;
+        }లేకపోతే ఒకవేళ( p_Or_పదం->u.x.ఎడమ_స్తంభం!=i_స్తంభం || (i_స్తంభం==XN_సమాసం
+               && sqlite3_సమాసం_Compare(pParse, p_Or_పదం->p_సమాసం->p_ఎడమ, p_ఎడమ, -1)
         )){
-          okToChngToIN = 0;
-        }else{
-          int affLeft, affRight;
+          ok_గమ్యం_Chng_గమ్యం_లోపల = 0;
+        }లేకపోతే{
+          పూర్ణాంకం aff_ఎడమ, aff_కుడి;
           /* If the right-hand side is also a column, then the affinities
           ** of both right and left sides must be such that no type
           ** conversions are required on the right.  (Ticket #2249)
           */
-          affRight = sqlite3ExprAffinity(pOrTerm->pExpr->pRight);
-          affLeft = sqlite3ExprAffinity(pOrTerm->pExpr->pLeft);
-          if( affRight!=0 && affRight!=affLeft ){
-            okToChngToIN = 0;
-          }else{
-            pOrTerm->wtFlags |= TERM_OK;
+          aff_కుడి = sqlite3_సమాసం_Affinity(p_Or_పదం->p_సమాసం->p_కుడి);
+          aff_ఎడమ = sqlite3_సమాసం_Affinity(p_Or_పదం->p_సమాసం->p_ఎడమ);
+          ఒకవేళ( aff_కుడి!=0 && aff_కుడి!=aff_ఎడమ ){
+            ok_గమ్యం_Chng_గమ్యం_లోపల = 0;
+          }లేకపోతే{
+            p_Or_పదం->wtFlags |= పదం_OK;
           }
         }
       }
@@ -917,65 +917,65 @@ static void exprAnalyzeOrTerm(
     ** subterms of the OR are compatible.  Omit the construction of the
     ** new IN operator if there are any collating sequence mismatches.
     */
-    if( okToChngToIN ){
-      Expr *pDup;            /* A transient duplicate expression */
-      ExprList *pList = 0;   /* The RHS of the IN operator */
-      Expr *pLeft = 0;       /* The LHS of the IN operator */
+    ఒకవేళ( ok_గమ్యం_Chng_గమ్యం_లోపల ){
+      సమాసం *pDup;            /* A transient duplicate expression */
+      సమాసం_List *pList = 0;   /* The RHS of the IN operator */
+      సమాసం *p_ఎడమ = 0;       /* The LHS of the IN operator */
       CollSeq *pCollSeq = 0; /* Collating sequence to use */
-      Expr *pNew;            /* The complete IN operator */
+      సమాసం *pNew;            /* The complete IN operator */
 
-      for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
-        Expr *pThis;
-        if( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        assert( pOrTerm->leftCursor==iCursor );
-        assert( pOrTerm->u.x.leftColumn==iColumn );
-        pThis = pOrTerm->pExpr;
-        pDup = sqlite3ExprDup(db, pThis->pRight, 0);
-        pList = sqlite3ExprListAppend(pWInfo->pParse, pList, pDup);
-        if( pLeft==0 ){
-          pLeft = pThis->pLeft;
-          pCollSeq = sqlite3ExprCompareCollSeq(pParse, pThis);
-        }else{
-          assert( 0==sqlite3ExprCompare(pParse, 
-                        sqlite3ExprSkipCollate(pThis->pLeft),
-                        sqlite3ExprSkipCollate(pLeft), -1) );
-          if( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
-            pLeft = 0;  /* Collating sequence mismatch */
-            break;
+      కొరకు(i=pOrWc->n_పదం-1, p_Or_పదం=pOrWc->a; i>=0; i--, p_Or_పదం++){
+        సమాసం *pThis;
+        ఒకవేళ( (p_Or_పదం->wtFlags & పదం_OK)==0 ) కొనసాగు;
+        ప్రతిజ్ఞా( p_Or_పదం->eOperator & WO_EQ );
+        ప్రతిజ్ఞా( (p_Or_పదం->eOperator & (WO_OR|WO_AND))==0 );
+        ప్రతిజ్ఞా( p_Or_పదం->ఎడమ_Cursor==iCursor );
+        ప్రతిజ్ఞా( p_Or_పదం->u.x.ఎడమ_స్తంభం==i_స్తంభం );
+        pThis = p_Or_పదం->p_సమాసం;
+        pDup = sqlite3_సమాసం_Dup(db, pThis->p_కుడి, 0);
+        pList = sqlite3_సమాసం_List_Append(pWInfo->pParse, pList, pDup);
+        ఒకవేళ( p_ఎడమ==0 ){
+          p_ఎడమ = pThis->p_ఎడమ;
+          pCollSeq = sqlite3_సమాసం_Compare_Coll_Seq(pParse, pThis);
+        }లేకపోతే{
+          ప్రతిజ్ఞా( 0==sqlite3_సమాసం_Compare(pParse, 
+                        sqlite3_సమాసం_Skip_Collate(pThis->p_ఎడమ),
+                        sqlite3_సమాసం_Skip_Collate(p_ఎడమ), -1) );
+          ఒకవేళ( pCollSeq!=sqlite3_సమాసం_Compare_Coll_Seq(pParse, pThis) ){
+            p_ఎడమ = 0;  /* Collating sequence mismatch */
+            ఆపు;
           }
         }
       }
-      if( pLeft==0 ){
+      ఒకవేళ( p_ఎడమ==0 ){
         pNew = 0;  /* Collating sequence mismatch */
-      }else{
-        pDup = sqlite3ExprDup(db, pLeft, 0);
-        if( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
+      }లేకపోతే{
+        pDup = sqlite3_సమాసం_Dup(db, p_ఎడమ, 0);
+        ఒకవేళ( sqlite3_సమాసం_Coll_Seq(pParse, pDup)!=pCollSeq
          && pCollSeq!=0
         ){
-          assert( pCollSeq->zName!=0 );
-          pDup = sqlite3ExprAddCollateString(pParse, pDup, pCollSeq->zName);
+          ప్రతిజ్ఞా( pCollSeq->zName!=0 );
+          pDup = sqlite3_సమాసం_కూడు_Collate_String(pParse, pDup, pCollSeq->zName);
         }
-        pNew = sqlite3PExpr(pParse, TK_IN, pDup, 0);
+        pNew = sqlite3PExpr(pParse, TK_లోపల, pDup, 0);
       }
-      if( pNew ){
-        int idxNew;
-        transferJoinMarkings(pNew, pExpr);
-        assert( ExprUseXList(pNew) );
+      ఒకవేళ( pNew ){
+        పూర్ణాంకం idxNew;
+        transferJoinMarkings(pNew, p_సమాసం);
+        ప్రతిజ్ఞా( సమాసం_Use_XList(pNew) );
         pNew->x.pList = pList;
-        idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_చొప్పించు(pWC, pNew, పదం_VIRTUAL|పదం_DYNAMIC);
         testcase( idxNew==0 );
-        exprAnalyze(pSrc, pWC, idxNew);
+        సమాసం_Analyze(pSrc, pWC, idxNew);
         /* pTerm = &pWC->a[idxTerm]; // would be needed if pTerm where reused */
-        markTermAsChild(pWC, idxNew, idxTerm);
-      }else{
-        sqlite3ExprListDelete(db, pList);
+        mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
+      }లేకపోతే{
+        sqlite3_సమాసం_List_Delete(db, pList);
       }
     }
   }
 }
-#endif /* !SQLITE_OMIT_OR_OPTIMIZATION && !SQLITE_OMIT_SUBQUERY */
+#అయితే_ముగింపు /* !SQLITE_OMIT_OR_OPTIMIZATION && !SQLITE_OMIT_SUBQUERY */
 
 /*
 ** We already know that pExpr is a binary operator where both operands are
@@ -993,29 +993,29 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
-  char aff1, aff2;
-  if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
-  if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) return 0;        /* (3) */
-  assert( pSrc!=0 );
-  if( pExpr->op==TK_IS
+స్థిర పూర్ణాంకం పదం_Is_Equivalence(Parse *pParse, సమాసం *p_సమాసం, SrcList *pSrc){
+  అక్షరం aff1, aff2;
+  ఒకవేళ( !OptimizationEnabled(pParse->db, SQLITE_సంక్రమణ) ) తిరిగి 0;  /* (1) */
+  ఒకవేళ( p_సమాసం->op!=TK_EQ && p_సమాసం->op!=TK_IS ) తిరిగి 0;                 /* (2) */
+  ఒకవేళ( సమాసం_Has_Property(p_సమాసం, EP_OuterON|EP_Collate) ) తిరిగి 0;        /* (3) */
+  ప్రతిజ్ఞా( pSrc!=0 );
+  ఒకవేళ( p_సమాసం->op==TK_IS
    && pSrc->nSrc>=2
    && (pSrc->a[0].fg.jointype & JT_LTORJ)!=0
   ){
-    return 0;                                                          /* (4) */
+    తిరిగి 0;                                                          /* (4) */
   }
-  aff1 = sqlite3ExprAffinity(pExpr->pLeft);
-  aff2 = sqlite3ExprAffinity(pExpr->pRight);
-  if( aff1!=aff2
+  aff1 = sqlite3_సమాసం_Affinity(p_సమాసం->p_ఎడమ);
+  aff2 = sqlite3_సమాసం_Affinity(p_సమాసం->p_కుడి);
+  ఒకవేళ( aff1!=aff2
    && (!sqlite3IsNumericAffinity(aff1) || !sqlite3IsNumericAffinity(aff2))
   ){
-    return 0;                                                          /* (5) */
+    తిరిగి 0;                                                          /* (5) */
   }
-  if( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
-    return 0;                                                          /* (6) */
+  ఒకవేళ( !sqlite3_సమాసం_Coll_Seq_సరిపోలిక(pParse, p_సమాసం->p_ఎడమ, p_సమాసం->p_కుడి) ){
+    తిరిగి 0;                                                          /* (6) */
   }
-  return 1;
+  తిరిగి 1;
 }
 
 /*
@@ -1023,32 +1023,32 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 ** a bitmask indicating which tables are used in that expression
 ** tree.
 */
-static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
-  Bitmask mask = 0;
-  while( pS ){
+స్థిర Bitmask సమాసం_Select_Usage(Where_ముసుగు_సమితి *p_ముసుగు_సమితి, Select *pS){
+  Bitmask ముసుగు = 0;
+  అయితే( pS ){
     SrcList *pSrc = pS->pSrc;
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pEList);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pGroupBy);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pWhere);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pHaving);
-    if( ALWAYS(pSrc!=0) ){
-      int i;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          mask |= exprSelectUsage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, pS->pEList);
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, pS->p_సమూహం_By);
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, pS->p_క్రమం_By);
+    ముసుగు |= sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, pS->pWhere);
+    ముసుగు |= sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, pS->pHaving);
+    ఒకవేళ( ALWAYS(pSrc!=0) ){
+      పూర్ణాంకం i;
+      కొరకు(i=0; i<pSrc->nSrc; i++){
+        ఒకవేళ( pSrc->a[i].fg.isSubquery ){
+          ముసుగు |= సమాసం_Select_Usage(p_ముసుగు_సమితి, pSrc->a[i].u4.pSubq->pSelect);
         }
-        if( pSrc->a[i].fg.isUsing==0 ){
-          mask |= sqlite3WhereExprUsage(pMaskSet, pSrc->a[i].u3.pOn);
+        ఒకవేళ( pSrc->a[i].fg.isUsing==0 ){
+          ముసుగు |= sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, pSrc->a[i].u3.pOn);
         }
-        if( pSrc->a[i].fg.isTabFunc ){
-          mask |= sqlite3WhereExprListUsage(pMaskSet, pSrc->a[i].u1.pFuncArg);
+        ఒకవేళ( pSrc->a[i].fg.isTabFunc ){
+          ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, pSrc->a[i].u1.pFuncArg);
         }
       }
     }
-    pS = pS->pPrior;
+    pS = pS->p_పూర్వ;
   }
-  return mask;
+  తిరిగి ముసుగు;
 }
 
 /*
@@ -1064,68 +1064,68 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+స్థిర SQLITE_NOINLINE పూర్ణాంకం సమాసం_Might_Be_Indexed2(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor and column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int j                  /* Start looking with the j-th pFrom entry */
+  పూర్ణాంకం *ai_Cur_నిలువు,         /* Write the referenced table cursor and column here */
+  సమాసం *p_సమాసం,           /* An operand of a comparison operator */
+  పూర్ణాంకం j                  /* Start looking with the j-th pFrom entry */
 ){
-  Index *pIdx;
-  int i;
-  int iCur;
-  do{
+  సూచీ *pIdx;
+  పూర్ణాంకం i;
+  పూర్ణాంకం iCur;
+  చేయి{
     iCur = pFrom->a[j].iCursor;
-    for(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr==0 ) continue;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( pIdx->aiColumn[i]!=XN_EXPR ) continue;
-        assert( pIdx->bHasExpr );
-        if( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
-         && !sqlite3ExprIsConstant(0,pIdx->aColExpr->a[i].pExpr)
+    కొరకు(pIdx=pFrom->a[j].pSTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+      ఒకవేళ( pIdx->a_నిలువు_సమాసం==0 ) కొనసాగు;
+      కొరకు(i=0; i<pIdx->n_కీలకం_నిలువు; i++){
+        ఒకవేళ( pIdx->ai_స్తంభం[i]!=XN_సమాసం ) కొనసాగు;
+        ప్రతిజ్ఞా( pIdx->b_Has_సమాసం );
+        ఒకవేళ( sqlite3_సమాసం_Compare_Skip(p_సమాసం,pIdx->a_నిలువు_సమాసం->a[i].p_సమాసం,iCur)==0
+         && !sqlite3_సమాసం_Is_Constant(0,pIdx->a_నిలువు_సమాసం->a[i].p_సమాసం)
         ){
-          aiCurCol[0] = iCur;
-          aiCurCol[1] = XN_EXPR;
-          return 1;
+          ai_Cur_నిలువు[0] = iCur;
+          ai_Cur_నిలువు[1] = XN_సమాసం;
+          తిరిగి 1;
         }
       }
     }
-  }while( ++j < pFrom->nSrc );
-  return 0;
+  }అయితే( ++j < pFrom->nSrc );
+  తిరిగి 0;
 }
-static int exprMightBeIndexed(
+స్థిర పూర్ణాంకం సమాసం_Might_Be_సూచీకృత(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor & column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int op                 /* The specific comparison operator */
+  పూర్ణాంకం *ai_Cur_నిలువు,         /* Write the referenced table cursor & column here */
+  సమాసం *p_సమాసం,           /* An operand of a comparison operator */
+  పూర్ణాంకం op                 /* The specific comparison operator */
 ){
-  int i;
+  పూర్ణాంకం i;
 
   /* If this expression is a vector to the left or right of a
   ** inequality constraint (>, <, >= or <=), perform the processing
   ** on the first element of the vector.  */
-  assert( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
-  assert( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
-  assert( op<=TK_GE );
-  if( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
-    assert( ExprUseXList(pExpr) );
-    pExpr = pExpr->x.pList->a[0].pExpr;
+  ప్రతిజ్ఞా( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
+  ప్రతిజ్ఞా( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_లోపల<TK_GE );
+  ప్రతిజ్ఞా( op<=TK_GE );
+  ఒకవేళ( p_సమాసం->op==TK_సదిశ && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
+    ప్రతిజ్ఞా( సమాసం_Use_XList(p_సమాసం) );
+    p_సమాసం = p_సమాసం->x.pList->a[0].p_సమాసం;
   }
 
-  if( pExpr->op==TK_COLUMN ){
-    aiCurCol[0] = pExpr->iTable;
-    aiCurCol[1] = pExpr->iColumn;
-    return 1;
+  ఒకవేళ( p_సమాసం->op==TK_స్తంభం ){
+    ai_Cur_నిలువు[0] = p_సమాసం->i_పట్టిక;
+    ai_Cur_నిలువు[1] = p_సమాసం->i_స్తంభం;
+    తిరిగి 1;
   }
 
-  for(i=0; i<pFrom->nSrc; i++){
-    Index *pIdx;
-    for(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr ){
-        return exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
+  కొరకు(i=0; i<pFrom->nSrc; i++){
+    సూచీ *pIdx;
+    కొరకు(pIdx=pFrom->a[i].pSTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+      ఒకవేళ( pIdx->a_నిలువు_సమాసం ){
+        తిరిగి సమాసం_Might_Be_Indexed2(pFrom,ai_Cur_నిలువు,p_సమాసం,i);
       }
     }
   }
-  return 0;
+  తిరిగి 0;
 }
 
 
@@ -1147,161 +1147,161 @@ static int exprMightBeIndexed(
 ** is a commuted copy of a prior term.)  The original term has nChild=1
 ** and the copy has idxParent set to the index of the original term.
 */
-static void exprAnalyze(
+స్థిర శూన్య సమాసం_Analyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
-  int idxTerm               /* Index of the term to be analyzed */
+  పూర్ణాంకం idx_పదం               /* Index of the term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo; /* WHERE clause processing context */
-  WhereTerm *pTerm;                /* The term to be analyzed */
-  WhereMaskSet *pMaskSet;          /* Set of table index masks */
-  Expr *pExpr;                     /* The expression to be analyzed */
-  Bitmask prereqLeft;              /* Prerequisites of the pExpr->pLeft */
+  Where_పదం *p_పదం;                /* The term to be analyzed */
+  Where_ముసుగు_సమితి *p_ముసుగు_సమితి;          /* Set of table index masks */
+  సమాసం *p_సమాసం;                     /* The expression to be analyzed */
+  Bitmask prereq_ఎడమ;              /* Prerequisites of the pExpr->pLeft */
   Bitmask prereqAll;               /* Prerequisites of pExpr */
-  Bitmask extraRight = 0;          /* Extra dependencies on LEFT JOIN */
-  Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
-  int isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
-  int noCase = 0;                  /* uppercase equivalent to lowercase */
-  int op;                          /* Top-level operator.  pExpr->op */
+  Bitmask extra_కుడి = 0;          /* Extra dependencies on LEFT JOIN */
+  సమాసం *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
+  పూర్ణాంకం isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
+  పూర్ణాంకం noCase = 0;                  /* uppercase equivalent to lowercase */
+  పూర్ణాంకం op;                          /* Top-level operator.  pExpr->op */
   Parse *pParse = pWInfo->pParse;  /* Parsing context */
   sqlite3 *db = pParse->db;        /* Database connection */
-  unsigned char eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
-  int nLeft;                       /* Number of elements on left side vector */
+  గుర్తులేని అక్షరం eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
+  పూర్ణాంకం n_ఎడమ;                       /* Number of elements on left side vector */
 
-  if( db->mallocFailed ){
-    return;
+  ఒకవేళ( db->mallocFailed ){
+    తిరిగి;
   }
-  assert( pWC->nTerm > idxTerm );
-  pTerm = &pWC->a[idxTerm];
-#ifdef SQLITE_DEBUG
-  pTerm->iTerm = idxTerm;
-#endif
-  pMaskSet = &pWInfo->sMaskSet;
-  pExpr = pTerm->pExpr;
-  assert( pExpr!=0 ); /* Because malloc() has not failed */
-  assert( pExpr->op!=TK_AS && pExpr->op!=TK_COLLATE );
-exprAnalyze_restart:
-  pMaskSet->bVarSelect = 0;
-  prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);
-  op = pExpr->op;
-  if( op==TK_IN ){
-    assert( pExpr->pRight==0 );
-    if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-    if( ExprUseXSelect(pExpr) ){
-      pTerm->prereqRight = exprSelectUsage(pMaskSet, pExpr->x.pSelect);
-    }else{
-      pTerm->prereqRight = sqlite3WhereExprListUsage(pMaskSet, pExpr->x.pList);
+  ప్రతిజ్ఞా( pWC->n_పదం > idx_పదం );
+  p_పదం = &pWC->a[idx_పదం];
+#నిర్వచితమైతే SQLITE_DEBUG
+  p_పదం->i_పదం = idx_పదం;
+#అయితే_ముగింపు
+  p_ముసుగు_సమితి = &pWInfo->s_ముసుగు_సమితి;
+  p_సమాసం = p_పదం->p_సమాసం;
+  ప్రతిజ్ఞా( p_సమాసం!=0 ); /* Because malloc() has not failed */
+  ప్రతిజ్ఞా( p_సమాసం->op!=TK_AS && p_సమాసం->op!=TK_COLLATE );
+సమాసం_Analyze_restart:
+  p_ముసుగు_సమితి->bVarSelect = 0;
+  prereq_ఎడమ = sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, p_సమాసం->p_ఎడమ);
+  op = p_సమాసం->op;
+  ఒకవేళ( op==TK_లోపల ){
+    ప్రతిజ్ఞా( p_సమాసం->p_కుడి==0 );
+    ఒకవేళ( sqlite3_సమాసం_Check_లోపల(pParse, p_సమాసం) ) తిరిగి;
+    ఒకవేళ( సమాసం_Use_XSelect(p_సమాసం) ){
+      p_పదం->prereq_కుడి = సమాసం_Select_Usage(p_ముసుగు_సమితి, p_సమాసం->x.pSelect);
+    }లేకపోతే{
+      p_పదం->prereq_కుడి = sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, p_సమాసం->x.pList);
     }
-    prereqAll = prereqLeft | pTerm->prereqRight;
-  }else{
-    pTerm->prereqRight = sqlite3WhereExprUsage(pMaskSet, pExpr->pRight);
-    if( pExpr->pLeft==0
-     || ExprHasProperty(pExpr, EP_xIsSelect|EP_IfNullRow)
-     || pExpr->x.pList!=0
+    prereqAll = prereq_ఎడమ | p_పదం->prereq_కుడి;
+  }లేకపోతే{
+    p_పదం->prereq_కుడి = sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, p_సమాసం->p_కుడి);
+    ఒకవేళ( p_సమాసం->p_ఎడమ==0
+     || సమాసం_Has_Property(p_సమాసం, EP_xIsSelect|EP_If_Null_అడ్డువరుస)
+     || p_సమాసం->x.pList!=0
     ){
-      prereqAll = sqlite3WhereExprUsageNN(pMaskSet, pExpr);
-    }else{
-      prereqAll = prereqLeft | pTerm->prereqRight;
+      prereqAll = sqlite3_Where_సమాసం_Usage_NN(p_ముసుగు_సమితి, p_సమాసం);
+    }లేకపోతే{
+      prereqAll = prereq_ఎడమ | p_పదం->prereq_కుడి;
     }
   }
-  if( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
+  ఒకవేళ( p_ముసుగు_సమితి->bVarSelect ) p_పదం->wtFlags |= పదం_VARSELECT;
 
-#ifdef SQLITE_DEBUG
-  if( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
-    printf("\n*** Incorrect prereqAll computed for:\n");
-    sqlite3TreeViewExpr(0,pExpr,0);
-    assert( 0 );
+#నిర్వచితమైతే SQLITE_DEBUG
+  ఒకవేళ( prereqAll!=sqlite3_Where_సమాసం_Usage_NN(p_ముసుగు_సమితి, p_సమాసం) ){
+    రాయి("\n*** Incorrect prereqAll computed for:\n");
+    sqlite3_వృక్షం_View_సమాసం(0,p_సమాసం,0);
+    ప్రతిజ్ఞా( 0 );
   }
-#endif
+#అయితే_ముగింపు
 
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
-    Bitmask x = sqlite3WhereGetMask(pMaskSet, pExpr->w.iJoin);
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+  ఒకవేళ( సమాసం_Has_Property(p_సమాసం, EP_OuterON|EP_InnerON) ){
+    Bitmask x = sqlite3_Where_Get_ముసుగు(p_ముసుగు_సమితి, p_సమాసం->w.iJoin);
+    ఒకవేళ( సమాసం_Has_Property(p_సమాసం, EP_OuterON) ){
       prereqAll |= x;
-      extraRight = x-1;  /* ON clause terms may not be used with an index
+      extra_కుడి = x-1;  /* ON clause terms may not be used with an index
                          ** on left table of a LEFT JOIN.  Ticket #3015 */
-    }else if( (prereqAll>>1)>=x ){
-      ExprClearProperty(pExpr, EP_InnerON);
+    }లేకపోతే ఒకవేళ( (prereqAll>>1)>=x ){
+      సమాసం_Clear_Property(p_సమాసం, EP_InnerON);
     }
   }
-  pTerm->prereqAll = prereqAll;
-  pTerm->leftCursor = -1;
-  pTerm->iParent = -1;
-  pTerm->eOperator = 0;
-  if( allowedOp(op) ){
-    int aiCurCol[2];
-    Expr *pLeft = sqlite3ExprSkipCollate(pExpr->pLeft);
-    Expr *pRight = sqlite3ExprSkipCollate(pExpr->pRight);
-    u16 opMask = (pTerm->prereqRight & prereqLeft)==0 ? WO_ALL : WO_EQUIV;
+  p_పదం->prereqAll = prereqAll;
+  p_పదం->ఎడమ_Cursor = -1;
+  p_పదం->i_మాతృ = -1;
+  p_పదం->eOperator = 0;
+  ఒకవేళ( allowedOp(op) ){
+    పూర్ణాంకం ai_Cur_నిలువు[2];
+    సమాసం *p_ఎడమ = sqlite3_సమాసం_Skip_Collate(p_సమాసం->p_ఎడమ);
+    సమాసం *p_కుడి = sqlite3_సమాసం_Skip_Collate(p_సమాసం->p_కుడి);
+    u16 op_ముసుగు = (p_పదం->prereq_కుడి & prereq_ఎడమ)==0 ? WO_ALL : WO_EQUIV;
 
-    if( pTerm->u.x.iField>0 ){
-      assert( op==TK_IN );
-      assert( pLeft->op==TK_VECTOR );
-      assert( ExprUseXList(pLeft) );
-      pLeft = pLeft->x.pList->a[pTerm->u.x.iField-1].pExpr;
+    ఒకవేళ( p_పదం->u.x.i_క్షేత్రం>0 ){
+      ప్రతిజ్ఞా( op==TK_లోపల );
+      ప్రతిజ్ఞా( p_ఎడమ->op==TK_సదిశ );
+      ప్రతిజ్ఞా( సమాసం_Use_XList(p_ఎడమ) );
+      p_ఎడమ = p_ఎడమ->x.pList->a[p_పదం->u.x.i_క్షేత్రం-1].p_సమాసం;
     }
 
-    if( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
-      pTerm->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pTerm->u.x.leftColumn = aiCurCol[1];
-      pTerm->eOperator = operatorMask(op) & opMask;
+    ఒకవేళ( సమాసం_Might_Be_సూచీకృత(pSrc, ai_Cur_నిలువు, p_ఎడమ, op) ){
+      p_పదం->ఎడమ_Cursor = ai_Cur_నిలువు[0];
+      ప్రతిజ్ఞా( (p_పదం->eOperator & (WO_OR|WO_AND))==0 );
+      p_పదం->u.x.ఎడమ_స్తంభం = ai_Cur_నిలువు[1];
+      p_పదం->eOperator = operator_ముసుగు(op) & op_ముసుగు;
     }
-    if( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
-    if( pRight
-     && exprMightBeIndexed(pSrc, aiCurCol, pRight, op)
-     && !ExprHasProperty(pRight, EP_FixedCol)
+    ఒకవేళ( op==TK_IS ) p_పదం->wtFlags |= పదం_IS;
+    ఒకవేళ( p_కుడి
+     && సమాసం_Might_Be_సూచీకృత(pSrc, ai_Cur_నిలువు, p_కుడి, op)
+     && !సమాసం_Has_Property(p_కుడి, EP_Fixed_నిలువు)
     ){
-      WhereTerm *pNew;
-      Expr *pDup;
+      Where_పదం *pNew;
+      సమాసం *pDup;
       u16 eExtraOp = 0;        /* Extra bits for pNew->eOperator */
-      assert( pTerm->u.x.iField==0 );
-      if( pTerm->leftCursor>=0 ){
-        int idxNew;
-        pDup = sqlite3ExprDup(db, pExpr, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDup);
-          return;
+      ప్రతిజ్ఞా( p_పదం->u.x.i_క్షేత్రం==0 );
+      ఒకవేళ( p_పదం->ఎడమ_Cursor>=0 ){
+        పూర్ణాంకం idxNew;
+        pDup = sqlite3_సమాసం_Dup(db, p_సమాసం, 0);
+        ఒకవేళ( db->mallocFailed ){
+          sqlite3_సమాసం_Delete(db, pDup);
+          తిరిగి;
         }
-        idxNew = whereClauseInsert(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
-        if( idxNew==0 ) return;
+        idxNew = where_Clause_చొప్పించు(pWC, pDup, పదం_VIRTUAL|పదం_DYNAMIC);
+        ఒకవేళ( idxNew==0 ) తిరిగి;
         pNew = &pWC->a[idxNew];
-        markTermAsChild(pWC, idxNew, idxTerm);
-        if( op==TK_IS ) pNew->wtFlags |= TERM_IS;
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        assert( pWInfo->pTabList!=0 );
-        if( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
-          pTerm->eOperator |= WO_EQUIV;
+        mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
+        ఒకవేళ( op==TK_IS ) pNew->wtFlags |= పదం_IS;
+        p_పదం = &pWC->a[idx_పదం];
+        p_పదం->wtFlags |= పదం_COPIED;
+        ప్రతిజ్ఞా( pWInfo->pTabList!=0 );
+        ఒకవేళ( పదం_Is_Equivalence(pParse, pDup, pWInfo->pTabList) ){
+          p_పదం->eOperator |= WO_EQUIV;
           eExtraOp = WO_EQUIV;
         }
-      }else{
-        pDup = pExpr;
-        pNew = pTerm;
+      }లేకపోతే{
+        pDup = p_సమాసం;
+        pNew = p_పదం;
       }
-      pNew->wtFlags |= exprCommute(pParse, pDup);
-      pNew->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pNew->u.x.leftColumn = aiCurCol[1];
-      testcase( (prereqLeft | extraRight) != prereqLeft );
-      pNew->prereqRight = prereqLeft | extraRight;
+      pNew->wtFlags |= సమాసం_Commute(pParse, pDup);
+      pNew->ఎడమ_Cursor = ai_Cur_నిలువు[0];
+      ప్రతిజ్ఞా( (p_పదం->eOperator & (WO_OR|WO_AND))==0 );
+      pNew->u.x.ఎడమ_స్తంభం = ai_Cur_నిలువు[1];
+      testcase( (prereq_ఎడమ | extra_కుడి) != prereq_ఎడమ );
+      pNew->prereq_కుడి = prereq_ఎడమ | extra_కుడి;
       pNew->prereqAll = prereqAll;
-      pNew->eOperator = (operatorMask(pDup->op) + eExtraOp) & opMask;
-    }else
-    if( op==TK_ISNULL
-     && !ExprHasProperty(pExpr,EP_OuterON)
-     && 0==sqlite3ExprCanBeNull(pLeft)
+      pNew->eOperator = (operator_ముసుగు(pDup->op) + eExtraOp) & op_ముసుగు;
+    }లేకపోతే
+    ఒకవేళ( op==TK_ISNULL
+     && !సమాసం_Has_Property(p_సమాసం,EP_OuterON)
+     && 0==sqlite3_సమాసం_Can_Be_Null(p_ఎడమ)
     ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pExpr->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
-      pExpr->u.zToken = "false";
-      ExprSetProperty(pExpr, EP_IsFalse);
-      pTerm->prereqAll = 0;
-      pTerm->eOperator = 0;
+      ప్రతిజ్ఞా( !సమాసం_Has_Property(p_సమాసం, EP_Int_విలువ) );
+      p_సమాసం->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
+      p_సమాసం->u.zToken = "false";
+      సమాసం_సమితి_Property(p_సమాసం, EP_IsFalse);
+      p_పదం->prereqAll = 0;
+      p_పదం->eOperator = 0;
     }
   }
 
-#ifndef SQLITE_OMIT_BETWEEN_OPTIMIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_BETWEEN_OPTIMIZATION
   /* If a term is the BETWEEN operator, create two new virtual terms
   ** that define the range that the BETWEEN implements.  For example:
   **
@@ -1317,84 +1317,84 @@ exprAnalyze_restart:
   ** skipped.  Or, if the children are satisfied by an index, the original
   ** BETWEEN term is skipped.
   */
-  else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
-    ExprList *pList;
-    int i;
-    static const u8 ops[] = {TK_GE, TK_LE};
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    assert( pList!=0 );
-    assert( pList->nExpr==2 );
-    assert( pWC->a[idxTerm].nChild==0 );
-    for(i=0; i<2; i++){
-      Expr *pNewExpr;
-      int idxNew;
-      pNewExpr = sqlite3PExpr(pParse, ops[i],
-                             sqlite3ExprDup(db, pExpr->pLeft, 0),
-                             sqlite3ExprDup(db, pList->a[i].pExpr, 0));
-      transferJoinMarkings(pNewExpr, pExpr);
-      idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+  లేకపోతే ఒకవేళ( p_సమాసం->op==TK_BETWEEN && pWC->op==TK_AND ){
+    సమాసం_List *pList;
+    పూర్ణాంకం i;
+    స్థిర స్థిరరాశి u8 ops[] = {TK_GE, TK_LE};
+    ప్రతిజ్ఞా( సమాసం_Use_XList(p_సమాసం) );
+    pList = p_సమాసం->x.pList;
+    ప్రతిజ్ఞా( pList!=0 );
+    ప్రతిజ్ఞా( pList->n_సమాసం==2 );
+    ప్రతిజ్ఞా( pWC->a[idx_పదం].n_బిడ్డ==0 );
+    కొరకు(i=0; i<2; i++){
+      సమాసం *p_New_సమాసం;
+      పూర్ణాంకం idxNew;
+      p_New_సమాసం = sqlite3PExpr(pParse, ops[i],
+                             sqlite3_సమాసం_Dup(db, p_సమాసం->p_ఎడమ, 0),
+                             sqlite3_సమాసం_Dup(db, pList->a[i].p_సమాసం, 0));
+      transferJoinMarkings(p_New_సమాసం, p_సమాసం);
+      idxNew = where_Clause_చొప్పించు(pWC, p_New_సమాసం, పదం_VIRTUAL|పదం_DYNAMIC);
       testcase( idxNew==0 );
-      exprAnalyze(pSrc, pWC, idxNew);
-      pTerm = &pWC->a[idxTerm];
-      markTermAsChild(pWC, idxNew, idxTerm);
+      సమాసం_Analyze(pSrc, pWC, idxNew);
+      p_పదం = &pWC->a[idx_పదం];
+      mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
     }
   }
-#endif /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#ఒకవేళ !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
   /* Analyze a term that is composed of two or more subterms connected by
   ** an OR operator.
   */
-  else if( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
-    Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-    if( pAlt!=pExpr ){
-      pTerm->pExpr = pExpr = sqlite3ExprSkipCollateAndLikely(pAlt);
-      goto exprAnalyze_restart;
+  లేకపోతే ఒకవేళ( p_సమాసం->op==TK_OR && !సమాసం_Has_Property(p_సమాసం, EP_Collate) ){
+    సమాసం *pAlt = sqlite3_సమాసం_Simplified_And_Or(p_సమాసం);
+    ఒకవేళ( pAlt!=p_సమాసం ){
+      p_పదం->p_సమాసం = p_సమాసం = sqlite3_సమాసం_Skip_Collate_And_Likely(pAlt);
+      వెళ్ళు సమాసం_Analyze_restart;
     }
-    assert( pWC->op==TK_AND );
-    exprAnalyzeOrTerm(pSrc, pWC, idxTerm);
-    pTerm = &pWC->a[idxTerm];
+    ప్రతిజ్ఞా( pWC->op==TK_AND );
+    సమాసం_Analyze_Or_పదం(pSrc, pWC, idx_పదం);
+    p_పదం = &pWC->a[idx_పదం];
   }
-#endif /* SQLITE_OMIT_OR_OPTIMIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_OR_OPTIMIZATION */
   /* The form "x IS NOT NULL" can sometimes be evaluated more efficiently
   ** as "x>NULL" if x is not an INTEGER PRIMARY KEY.  So construct a
   ** virtual term of that form.
   **
   ** The virtual term must be tagged with TERM_VNULL.
   */
-  else if( pExpr->op==TK_NOTNULL ){
-    if( pExpr->pLeft->op==TK_COLUMN
-     && pExpr->pLeft->iColumn>=0
-     && !ExprHasProperty(pExpr, EP_OuterON)
+  లేకపోతే ఒకవేళ( p_సమాసం->op==TK_NOTNULL ){
+    ఒకవేళ( p_సమాసం->p_ఎడమ->op==TK_స్తంభం
+     && p_సమాసం->p_ఎడమ->i_స్తంభం>=0
+     && !సమాసం_Has_Property(p_సమాసం, EP_OuterON)
     ){
-      Expr *pNewExpr;
-      Expr *pLeft = pExpr->pLeft;
-      int idxNew;
-      WhereTerm *pNewTerm;
+      సమాసం *p_New_సమాసం;
+      సమాసం *p_ఎడమ = p_సమాసం->p_ఎడమ;
+      పూర్ణాంకం idxNew;
+      Where_పదం *p_New_పదం;
  
-      pNewExpr = sqlite3PExpr(pParse, TK_GT,
-                              sqlite3ExprDup(db, pLeft, 0),
-                              sqlite3ExprAlloc(db, TK_NULL, 0, 0));
+      p_New_సమాసం = sqlite3PExpr(pParse, TK_GT,
+                              sqlite3_సమాసం_Dup(db, p_ఎడమ, 0),
+                              sqlite3_సమాసం_Alloc(db, TK_NULL, 0, 0));
  
-      idxNew = whereClauseInsert(pWC, pNewExpr,
-                                TERM_VIRTUAL|TERM_DYNAMIC|TERM_VNULL);
-      if( idxNew ){
-        pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = 0;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
-        pNewTerm->eOperator = WO_GT;
-        markTermAsChild(pWC, idxNew, idxTerm);
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        pNewTerm->prereqAll = pTerm->prereqAll;
+      idxNew = where_Clause_చొప్పించు(pWC, p_New_సమాసం,
+                                పదం_VIRTUAL|పదం_DYNAMIC|పదం_VNULL);
+      ఒకవేళ( idxNew ){
+        p_New_పదం = &pWC->a[idxNew];
+        p_New_పదం->prereq_కుడి = 0;
+        p_New_పదం->ఎడమ_Cursor = p_ఎడమ->i_పట్టిక;
+        p_New_పదం->u.x.ఎడమ_స్తంభం = p_ఎడమ->i_స్తంభం;
+        p_New_పదం->eOperator = WO_GT;
+        mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
+        p_పదం = &pWC->a[idx_పదం];
+        p_పదం->wtFlags |= పదం_COPIED;
+        p_New_పదం->prereqAll = p_పదం->prereqAll;
       }
     }
   }
 
 
-#ifndef SQLITE_OMIT_LIKE_OPTIMIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_LIKE_OPTIMIZATION
   /* Add constraints to reduce the search space on a LIKE or GLOB
   ** operator.
   **
@@ -1408,86 +1408,86 @@ exprAnalyze_restart:
   ** bound is made all lowercase so that the bounds also work when comparing
   ** BLOBs.
   */
-  else if( pExpr->op==TK_FUNCTION
+  లేకపోతే ఒకవేళ( p_సమాసం->op==TK_FUNCTION
    && pWC->op==TK_AND
-   && isLikeOrGlob(pParse, pExpr, &pStr1, &isComplete, &noCase)
+   && isLikeOrGlob(pParse, p_సమాసం, &pStr1, &isComplete, &noCase)
   ){
-    Expr *pLeft;       /* LHS of LIKE/GLOB operator */
-    Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
-    Expr *pNewExpr1;
-    Expr *pNewExpr2;
-    int idxNew1;
-    int idxNew2;
-    const char *zCollSeqName;     /* Name of collating sequence */
-    const u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
+    సమాసం *p_ఎడమ;       /* LHS of LIKE/GLOB operator */
+    సమాసం *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
+    సమాసం *pNewExpr1;
+    సమాసం *pNewExpr2;
+    పూర్ణాంకం idxNew1;
+    పూర్ణాంకం idxNew2;
+    స్థిరరాశి అక్షరం *zCollSeqName;     /* Name of collating sequence */
+    స్థిరరాశి u16 wtFlags = పదం_LIKEOPT | పదం_VIRTUAL | పదం_DYNAMIC;
 
-    assert( ExprUseXList(pExpr) );
-    pLeft = pExpr->x.pList->a[1].pExpr;
-    pStr2 = sqlite3ExprDup(db, pStr1, 0);
-    assert( pStr1==0 || !ExprHasProperty(pStr1, EP_IntValue) );
-    assert( pStr2==0 || !ExprHasProperty(pStr2, EP_IntValue) );
+    ప్రతిజ్ఞా( సమాసం_Use_XList(p_సమాసం) );
+    p_ఎడమ = p_సమాసం->x.pList->a[1].p_సమాసం;
+    pStr2 = sqlite3_సమాసం_Dup(db, pStr1, 0);
+    ప్రతిజ్ఞా( pStr1==0 || !సమాసం_Has_Property(pStr1, EP_Int_విలువ) );
+    ప్రతిజ్ఞా( pStr2==0 || !సమాసం_Has_Property(pStr2, EP_Int_విలువ) );
 
 
     /* Convert the lower bound to upper-case and the upper bound to
     ** lower-case (upper-case is less than lower-case in ASCII) so that
     ** the range constraints also work for BLOBs
     */
-    if( noCase && !pParse->db->mallocFailed ){
-      int i;
-      char c;
-      pTerm->wtFlags |= TERM_LIKE;
-      for(i=0; (c = pStr1->u.zToken[i])!=0; i++){
+    ఒకవేళ( noCase && !pParse->db->mallocFailed ){
+      పూర్ణాంకం i;
+      అక్షరం c;
+      p_పదం->wtFlags |= పదం_LIKE;
+      కొరకు(i=0; (c = pStr1->u.zToken[i])!=0; i++){
         pStr1->u.zToken[i] = sqlite3Toupper(c);
         pStr2->u.zToken[i] = sqlite3Tolower(c);
       }
     }
 
-    if( !db->mallocFailed ){
+    ఒకవేళ( !db->mallocFailed ){
       u8 *pC;       /* Last character before the first wildcard */
       pC = (u8*)&pStr2->u.zToken[sqlite3Strlen30(pStr2->u.zToken)-1];
-      if( noCase ){
+      ఒకవేళ( noCase ){
         /* The point is to increment the last character before the first
         ** wildcard.  But if we increment '@', that will push it into the
         ** alphabetic range where case conversions will mess up the
         ** inequality.  To avoid this, make sure to also run the full
         ** LIKE on all candidate expressions by clearing the isComplete flag
         */
-        if( *pC=='A'-1 ) isComplete = 0;
-        *pC = sqlite3UpperToLower[*pC];
+        ఒకవేళ( *pC=='A'-1 ) isComplete = 0;
+        *pC = sqlite3_పై_గమ్యం_క్రింది[*pC];
       }
 
       /* Increment the value of the last utf8 character in the prefix. */
-      while( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
+      అయితే( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
         *pC = 0x80;
         pC--;
       }
-      assert( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
+      ప్రతిజ్ఞా( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
       (*pC)++;
     }
-    zCollSeqName = noCase ? "NOCASE" : sqlite3StrBINARY;
-    pNewExpr1 = sqlite3ExprDup(db, pLeft, 0);
+    zCollSeqName = noCase ? "NOCASE" : sqlite3_Str_ద్విమాన;
+    pNewExpr1 = sqlite3_సమాసం_Dup(db, p_ఎడమ, 0);
     pNewExpr1 = sqlite3PExpr(pParse, TK_GE,
-           sqlite3ExprAddCollateString(pParse,pNewExpr1,zCollSeqName),
+           sqlite3_సమాసం_కూడు_Collate_String(pParse,pNewExpr1,zCollSeqName),
            pStr1);
-    transferJoinMarkings(pNewExpr1, pExpr);
-    idxNew1 = whereClauseInsert(pWC, pNewExpr1, wtFlags);
+    transferJoinMarkings(pNewExpr1, p_సమాసం);
+    idxNew1 = where_Clause_చొప్పించు(pWC, pNewExpr1, wtFlags);
     testcase( idxNew1==0 );
-    pNewExpr2 = sqlite3ExprDup(db, pLeft, 0);
+    pNewExpr2 = sqlite3_సమాసం_Dup(db, p_ఎడమ, 0);
     pNewExpr2 = sqlite3PExpr(pParse, TK_LT,
-           sqlite3ExprAddCollateString(pParse,pNewExpr2,zCollSeqName),
+           sqlite3_సమాసం_కూడు_Collate_String(pParse,pNewExpr2,zCollSeqName),
            pStr2);
-    transferJoinMarkings(pNewExpr2, pExpr);
-    idxNew2 = whereClauseInsert(pWC, pNewExpr2, wtFlags);
+    transferJoinMarkings(pNewExpr2, p_సమాసం);
+    idxNew2 = where_Clause_చొప్పించు(pWC, pNewExpr2, wtFlags);
     testcase( idxNew2==0 );
-    exprAnalyze(pSrc, pWC, idxNew1);
-    exprAnalyze(pSrc, pWC, idxNew2);
-    pTerm = &pWC->a[idxTerm];
-    if( isComplete ){
-      markTermAsChild(pWC, idxNew1, idxTerm);
-      markTermAsChild(pWC, idxNew2, idxTerm);
+    సమాసం_Analyze(pSrc, pWC, idxNew1);
+    సమాసం_Analyze(pSrc, pWC, idxNew2);
+    p_పదం = &pWC->a[idx_పదం];
+    ఒకవేళ( isComplete ){
+      mark_పదం_As_బిడ్డ(pWC, idxNew1, idx_పదం);
+      mark_పదం_As_బిడ్డ(pWC, idxNew2, idx_పదం);
     }
   }
-#endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
   /* If there is a vector == or IS term - e.g. "(a, b) == (?, ?)" - create
   ** new terms for each component comparison - "a = ?" and "b = ?".  The
@@ -1499,28 +1499,28 @@ exprAnalyze_restart:
   **
   ** tag-20220128a
   */
-  if( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
-   && (nLeft = sqlite3ExprVectorSize(pExpr->pLeft))>1
-   && sqlite3ExprVectorSize(pExpr->pRight)==nLeft
-   && ( (pExpr->pLeft->flags & EP_xIsSelect)==0
-     || (pExpr->pRight->flags & EP_xIsSelect)==0)
+  ఒకవేళ( (p_సమాసం->op==TK_EQ || p_సమాసం->op==TK_IS)
+   && (n_ఎడమ = sqlite3_సమాసం_సదిశ_కొలత(p_సమాసం->p_ఎడమ))>1
+   && sqlite3_సమాసం_సదిశ_కొలత(p_సమాసం->p_కుడి)==n_ఎడమ
+   && ( (p_సమాసం->p_ఎడమ->flags & EP_xIsSelect)==0
+     || (p_సమాసం->p_కుడి->flags & EP_xIsSelect)==0)
    && pWC->op==TK_AND
   ){
-    int i;
-    for(i=0; i<nLeft; i++){
-      int idxNew;
-      Expr *pNew;
-      Expr *pLeft = sqlite3ExprForVectorField(pParse, pExpr->pLeft, i, nLeft);
-      Expr *pRight = sqlite3ExprForVectorField(pParse, pExpr->pRight, i, nLeft);
+    పూర్ణాంకం i;
+    కొరకు(i=0; i<n_ఎడమ; i++){
+      పూర్ణాంకం idxNew;
+      సమాసం *pNew;
+      సమాసం *p_ఎడమ = sqlite3_సమాసం_For_సదిశ_క్షేత్రం(pParse, p_సమాసం->p_ఎడమ, i, n_ఎడమ);
+      సమాసం *p_కుడి = sqlite3_సమాసం_For_సదిశ_క్షేత్రం(pParse, p_సమాసం->p_కుడి, i, n_ఎడమ);
 
-      pNew = sqlite3PExpr(pParse, pExpr->op, pLeft, pRight);
-      transferJoinMarkings(pNew, pExpr);
-      idxNew = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
-      exprAnalyze(pSrc, pWC, idxNew);
+      pNew = sqlite3PExpr(pParse, p_సమాసం->op, p_ఎడమ, p_కుడి);
+      transferJoinMarkings(pNew, p_సమాసం);
+      idxNew = where_Clause_చొప్పించు(pWC, pNew, పదం_DYNAMIC|పదం_ముక్క);
+      సమాసం_Analyze(pSrc, pWC, idxNew);
     }
-    pTerm = &pWC->a[idxTerm];
-    pTerm->wtFlags |= TERM_CODED|TERM_VIRTUAL;  /* Disable the original */
-    pTerm->eOperator = WO_ROWVAL;
+    p_పదం = &pWC->a[idx_పదం];
+    p_పదం->wtFlags |= పదం_CODED|పదం_VIRTUAL;  /* Disable the original */
+    p_పదం->eOperator = WO_ROWVAL;
   }
 
   /* If there is a vector IN term - e.g. "(a, b) IN (SELECT ...)" - create
@@ -1532,31 +1532,31 @@ exprAnalyze_restart:
   ** This only works if the RHS is a simple SELECT (not a compound) that does
   ** not use window functions.
   */
-  else if( pExpr->op==TK_IN
-   && pTerm->u.x.iField==0
-   && pExpr->pLeft->op==TK_VECTOR
-   && ALWAYS( ExprUseXSelect(pExpr) )
-   && (pExpr->x.pSelect->pPrior==0 || (pExpr->x.pSelect->selFlags & SF_Values))
-#ifndef SQLITE_OMIT_WINDOWFUNC
-   && pExpr->x.pSelect->pWin==0
-#endif
-   && (pExpr->x.pSelect->selFlags & SF_MinMaxAgg)==0
+  లేకపోతే ఒకవేళ( p_సమాసం->op==TK_లోపల
+   && p_పదం->u.x.i_క్షేత్రం==0
+   && p_సమాసం->p_ఎడమ->op==TK_సదిశ
+   && ALWAYS( సమాసం_Use_XSelect(p_సమాసం) )
+   && (p_సమాసం->x.pSelect->p_పూర్వ==0 || (p_సమాసం->x.pSelect->selFlags & SF_విలువలు))
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WINDOWFUNC
+   && p_సమాసం->x.pSelect->pWin==0
+#అయితే_ముగింపు
+   && (p_సమాసం->x.pSelect->selFlags & SF_MinMaxAgg)==0
    && pWC->op==TK_AND
-   && pExpr->x.pSelect->pEList->nExpr <= UMXV(pTerm->nChild)
+   && p_సమాసం->x.pSelect->pEList->n_సమాసం <= UMXV(p_పదం->n_బిడ్డ)
    /* ^-- See bug 2026-06-04T10:00:49Z */
   ){
-    int i;
-    assert( pTerm->nChild==0 );
-    for(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
-      int idxNew;
-      idxNew = whereClauseInsert(pWC, pExpr, TERM_VIRTUAL|TERM_SLICE);
-      pWC->a[idxNew].u.x.iField = i+1;
-      exprAnalyze(pSrc, pWC, idxNew);
-      markTermAsChild(pWC, idxNew, idxTerm);
+    పూర్ణాంకం i;
+    ప్రతిజ్ఞా( p_పదం->n_బిడ్డ==0 );
+    కొరకు(i=0; i<sqlite3_సమాసం_సదిశ_కొలత(p_సమాసం->p_ఎడమ); i++){
+      పూర్ణాంకం idxNew;
+      idxNew = where_Clause_చొప్పించు(pWC, p_సమాసం, పదం_VIRTUAL|పదం_ముక్క);
+      pWC->a[idxNew].u.x.i_క్షేత్రం = i+1;
+      సమాసం_Analyze(pSrc, pWC, idxNew);
+      mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
     }
   }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
   /* Add a WO_AUX auxiliary term to the constraint set if the
   ** current expression is of the form "column OP expr" where OP
   ** is an operator that gets passed into virtual tables but which is
@@ -1566,48 +1566,48 @@ exprAnalyze_restart:
   ** virtual tables.  The native query optimizer does not attempt
   ** to do anything with MATCH functions.
   */
-  else if( pWC->op==TK_AND ){
-    Expr *pRight = 0, *pLeft = 0;
-    int res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
-    while( res-- > 0 ){
-      int idxNew;
-      WhereTerm *pNewTerm;
-      Bitmask prereqColumn, prereqExpr;
+  లేకపోతే ఒకవేళ( pWC->op==TK_AND ){
+    సమాసం *p_కుడి = 0, *p_ఎడమ = 0;
+    పూర్ణాంకం res = isAuxiliaryVtabOperator(db, p_సమాసం, &eOp2, &p_ఎడమ, &p_కుడి);
+    అయితే( res-- > 0 ){
+      పూర్ణాంకం idxNew;
+      Where_పదం *p_New_పదం;
+      Bitmask prereq_స్తంభం, prereq_సమాసం;
 
-      prereqExpr = sqlite3WhereExprUsage(pMaskSet, pRight);
-      prereqColumn = sqlite3WhereExprUsage(pMaskSet, pLeft);
-      if( (prereqExpr & prereqColumn)==0 ){
-        Expr *pNewExpr;
-        pNewExpr = sqlite3PExpr(pParse, TK_MATCH,
-            0, sqlite3ExprDup(db, pRight, 0));
-        if( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
-          ExprSetProperty(pNewExpr, EP_OuterON);
-          pNewExpr->w.iJoin = pExpr->w.iJoin;
+      prereq_సమాసం = sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, p_కుడి);
+      prereq_స్తంభం = sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, p_ఎడమ);
+      ఒకవేళ( (prereq_సమాసం & prereq_స్తంభం)==0 ){
+        సమాసం *p_New_సమాసం;
+        p_New_సమాసం = sqlite3PExpr(pParse, TK_సరిపోలిక,
+            0, sqlite3_సమాసం_Dup(db, p_కుడి, 0));
+        ఒకవేళ( సమాసం_Has_Property(p_సమాసం, EP_OuterON) && p_New_సమాసం ){
+          సమాసం_సమితి_Property(p_New_సమాసం, EP_OuterON);
+          p_New_సమాసం->w.iJoin = p_సమాసం->w.iJoin;
         }
-        idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_చొప్పించు(pWC, p_New_సమాసం, పదం_VIRTUAL|పదం_DYNAMIC);
         testcase( idxNew==0 );
-        pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = prereqExpr | extraRight;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
-        pNewTerm->eOperator = WO_AUX;
-        pNewTerm->eMatchOp = eOp2;
-        markTermAsChild(pWC, idxNew, idxTerm);
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        pNewTerm->prereqAll = pTerm->prereqAll;
+        p_New_పదం = &pWC->a[idxNew];
+        p_New_పదం->prereq_కుడి = prereq_సమాసం | extra_కుడి;
+        p_New_పదం->ఎడమ_Cursor = p_ఎడమ->i_పట్టిక;
+        p_New_పదం->u.x.ఎడమ_స్తంభం = p_ఎడమ->i_స్తంభం;
+        p_New_పదం->eOperator = WO_AUX;
+        p_New_పదం->e_సరిపోలిక_Op = eOp2;
+        mark_పదం_As_బిడ్డ(pWC, idxNew, idx_పదం);
+        p_పదం = &pWC->a[idx_పదం];
+        p_పదం->wtFlags |= పదం_COPIED;
+        p_New_పదం->prereqAll = p_పదం->prereqAll;
       }
-      SWAP(Expr*, pLeft, pRight);
+      మార్పిడి(సమాసం*, p_ఎడమ, p_కుడి);
     }
   }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#అయితే_ముగింపు /* SQLITE_OMIT_VIRTUALTABLE */
 
   /* Prevent ON clause terms of a LEFT JOIN from being used to drive
   ** an index for tables to the left of the join.
   */
-  testcase( pTerm!=&pWC->a[idxTerm] );
-  pTerm = &pWC->a[idxTerm];
-  pTerm->prereqRight |= extraRight;
+  testcase( p_పదం!=&pWC->a[idx_పదం] );
+  p_పదం = &pWC->a[idx_పదం];
+  p_పదం->prereq_కుడి |= extra_కుడి;
 }
 
 /***************************************************************************
@@ -1632,16 +1632,16 @@ exprAnalyze_restart:
 ** the WhereClause.a[] array.  The slot[] array grows as needed to contain
 ** all terms of the WHERE clause.
 */
-void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
-  Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
+శూన్య sqlite3_Where_విభజించు(WhereClause *pWC, సమాసం *p_సమాసం, u8 op){
+  సమాసం *pE2 = sqlite3_సమాసం_Skip_Collate_And_Likely(p_సమాసం);
   pWC->op = op;
-  assert( pE2!=0 || pExpr==0 );
-  if( pE2==0 ) return;
-  if( pE2->op!=op ){
-    whereClauseInsert(pWC, pExpr, 0);
-  }else{
-    sqlite3WhereSplit(pWC, pE2->pLeft, op);
-    sqlite3WhereSplit(pWC, pE2->pRight, op);
+  ప్రతిజ్ఞా( pE2!=0 || p_సమాసం==0 );
+  ఒకవేళ( pE2==0 ) తిరిగి;
+  ఒకవేళ( pE2->op!=op ){
+    where_Clause_చొప్పించు(pWC, p_సమాసం, 0);
+  }లేకపోతే{
+    sqlite3_Where_విభజించు(pWC, pE2->p_ఎడమ, op);
+    sqlite3_Where_విభజించు(pWC, pE2->p_కుడి, op);
   }
 }
 
@@ -1656,36 +1656,36 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 ** TK_INTEGER so that it will be available to sqlite3_vtab_rhs_value().
 ** If not, then it codes as a TK_REGISTER expression.
 */
-static void whereAddLimitExpr(
+స్థిర శూన్య where_కూడు_హద్దు_సమాసం(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
-  int iReg,           /* Register that will hold value of the limit/offset */
-  Expr *pExpr,        /* Expression that defines the limit/offset */
-  int iCsr,           /* Cursor to which the constraint applies */
-  int eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
+  పూర్ణాంకం iReg,           /* Register that will hold value of the limit/offset */
+  సమాసం *p_సమాసం,        /* Expression that defines the limit/offset */
+  పూర్ణాంకం iCsr,           /* Cursor to which the constraint applies */
+  పూర్ణాంకం e_సరిపోలిక_Op        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
 ){
   Parse *pParse = pWC->pWInfo->pParse;
   sqlite3 *db = pParse->db;
-  Expr *pNew;
-  int iVal = 0;
+  సమాసం *pNew;
+  పూర్ణాంకం iVal = 0;
 
-  if( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
-    Expr *pVal = sqlite3ExprInt32(db, iVal);
-    if( pVal==0 ) return;
-    pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
-  }else{
-    Expr *pVal = sqlite3ExprAlloc(db, TK_REGISTER, 0, 0);
-    if( pVal==0 ) return;
-    pVal->iTable = iReg;
-    pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
+  ఒకవేళ( sqlite3_సమాసం_Is_Integer(p_సమాసం, &iVal, pParse, 0) && iVal>=0 ){
+    సమాసం *pVal = sqlite3_సమాసం_Int32(db, iVal);
+    ఒకవేళ( pVal==0 ) తిరిగి;
+    pNew = sqlite3PExpr(pParse, TK_సరిపోలిక, 0, pVal);
+  }లేకపోతే{
+    సమాసం *pVal = sqlite3_సమాసం_Alloc(db, TK_రిజిస్టరు, 0, 0);
+    ఒకవేళ( pVal==0 ) తిరిగి;
+    pVal->i_పట్టిక = iReg;
+    pNew = sqlite3PExpr(pParse, TK_సరిపోలిక, 0, pVal);
   }
-  if( pNew ){
-    WhereTerm *pTerm;
-    int idx;
-    idx = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
-    pTerm = &pWC->a[idx];
-    pTerm->leftCursor = iCsr;
-    pTerm->eOperator = WO_AUX;
-    pTerm->eMatchOp = eMatchOp;
+  ఒకవేళ( pNew ){
+    Where_పదం *p_పదం;
+    పూర్ణాంకం idx;
+    idx = where_Clause_చొప్పించు(pWC, pNew, పదం_DYNAMIC|పదం_VIRTUAL);
+    p_పదం = &pWC->a[idx];
+    p_పదం->ఎడమ_Cursor = iCsr;
+    p_పదం->eOperator = WO_AUX;
+    p_పదం->e_సరిపోలిక_Op = e_సరిపోలిక_Op;
   }
 }
 
@@ -1707,69 +1707,69 @@ static void whereAddLimitExpr(
 ** exist only so that they may be passed to the xBestIndex method of the
 ** single virtual table in the FROM clause of the SELECT.
 */
-void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
-  assert( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
-  if( p->pGroupBy==0
+శూన్య SQLITE_NOINLINE sqlite3_Where_కూడు_హద్దు(WhereClause *pWC, Select *p){
+  ప్రతిజ్ఞా( p!=0 && p->p_హద్దు!=0 );                 /* 1 -- checked by caller */
+  ఒకవేళ( p->p_సమూహం_By==0
    && (p->selFlags & (SF_Distinct|SF_Aggregate))==0             /* 2 */
    && (p->pSrc->nSrc==1 && IsVirtual(p->pSrc->a[0].pSTab))      /* 3 */
   ){
-    ExprList *pOrderBy = p->pOrderBy;
-    int iCsr = p->pSrc->a[0].iCursor;
-    int ii;
+    సమాసం_List *p_క్రమం_By = p->p_క్రమం_By;
+    పూర్ణాంకం iCsr = p->pSrc->a[0].iCursor;
+    పూర్ణాంకం ii;
 
     /* Check condition (4). Return early if it is not met. */
-    for(ii=0; ii<pWC->nTerm; ii++){
-      if( pWC->a[ii].wtFlags & TERM_CODED ){
+    కొరకు(ii=0; ii<pWC->n_పదం; ii++){
+      ఒకవేళ( pWC->a[ii].wtFlags & పదం_CODED ){
         /* This term is a vector operation that has been decomposed into
         ** other, subsequent terms.  It can be ignored. See tag-20220128a */
-        assert( pWC->a[ii].wtFlags & TERM_VIRTUAL );
-        assert( pWC->a[ii].eOperator==WO_ROWVAL );
-        continue;
+        ప్రతిజ్ఞా( pWC->a[ii].wtFlags & పదం_VIRTUAL );
+        ప్రతిజ్ఞా( pWC->a[ii].eOperator==WO_ROWVAL );
+        కొనసాగు;
       }
-      if( pWC->a[ii].nChild ){
+      ఒకవేళ( pWC->a[ii].n_బిడ్డ ){
         /* If this term has child terms, then they are also part of the
         ** pWC->a[] array. So this term can be ignored, as a LIMIT clause
         ** will only be added if each of the child terms passes the
         ** (leftCursor==iCsr) test below.  */
-        continue;
+        కొనసాగు;
       }
-      if( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
+      ఒకవేళ( pWC->a[ii].ఎడమ_Cursor==iCsr && pWC->a[ii].prereq_కుడి==0 ) కొనసాగు;
 
       /* If this term has a parent with exactly one child, and the parent will
       ** be passed through to xBestIndex, then this term can be ignored.  */
-      if( pWC->a[ii].iParent>=0 ){
-        WhereTerm *pParent = &pWC->a[ pWC->a[ii].iParent ];
-        if( pParent->leftCursor==iCsr
-         && pParent->prereqRight==0
-         && pParent->nChild==1
+      ఒకవేళ( pWC->a[ii].i_మాతృ>=0 ){
+        Where_పదం *p_మాతృ = &pWC->a[ pWC->a[ii].i_మాతృ ];
+        ఒకవేళ( p_మాతృ->ఎడమ_Cursor==iCsr
+         && p_మాతృ->prereq_కుడి==0
+         && p_మాతృ->n_బిడ్డ==1
         ){
-          continue;
+          కొనసాగు;
         }
       }
 
       /* This term will not be passed through. Do not add a LIMIT clause. */
-      return;
+      తిరిగి;
     }
 
     /* Check condition (5). Return early if it is not met. */
-    if( pOrderBy ){
-      for(ii=0; ii<pOrderBy->nExpr; ii++){
-        Expr *pExpr = pOrderBy->a[ii].pExpr;
-        if( pExpr->op!=TK_COLUMN ) return;
-        if( pExpr->iTable!=iCsr ) return;
-        if( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) return;
+    ఒకవేళ( p_క్రమం_By ){
+      కొరకు(ii=0; ii<p_క్రమం_By->n_సమాసం; ii++){
+        సమాసం *p_సమాసం = p_క్రమం_By->a[ii].p_సమాసం;
+        ఒకవేళ( p_సమాసం->op!=TK_స్తంభం ) తిరిగి;
+        ఒకవేళ( p_సమాసం->i_పట్టిక!=iCsr ) తిరిగి;
+        ఒకవేళ( p_క్రమం_By->a[ii].fg.క్రమీకరించు_Flags & KEYINFO_క్రమం_BIGNULL ) తిరిగి;
       }
     }
 
     /* All conditions are met. Add the terms to the where-clause object. */
-    assert( p->pLimit->op==TK_LIMIT );
-    if( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iOffset, p->pLimit->pRight,
-                        iCsr, SQLITE_INDEX_CONSTRAINT_OFFSET);
+    ప్రతిజ్ఞా( p->p_హద్దు->op==TK_హద్దు );
+    ఒకవేళ( p->i_స్థానభ్రంశం!=0 && (p->selFlags & SF_Compound)==0 ){
+      where_కూడు_హద్దు_సమాసం(pWC, p->i_స్థానభ్రంశం, p->p_హద్దు->p_కుడి,
+                        iCsr, SQLITE_సూచీ_CONSTRAINT_స్థానభ్రంశం);
     }
-    if( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iLimit, p->pLimit->pLeft,
-                        iCsr, SQLITE_INDEX_CONSTRAINT_LIMIT);
+    ఒకవేళ( p->i_స్థానభ్రంశం==0 || (p->selFlags & SF_Compound)==0 ){
+      where_కూడు_హద్దు_సమాసం(pWC, p->i_హద్దు, p->p_హద్దు->p_ఎడమ,
+                        iCsr, SQLITE_సూచీ_CONSTRAINT_హద్దు);
     }
   }
 }
@@ -1777,16 +1777,16 @@ void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
 /*
 ** Initialize a preallocated WhereClause structure.
 */
-void sqlite3WhereClauseInit(
+శూన్య sqlite3WhereClauseInit(
   WhereClause *pWC,        /* The WhereClause to be initialized */
   WhereInfo *pWInfo        /* The WHERE processing context */
 ){
   pWC->pWInfo = pWInfo;
   pWC->hasOr = 0;
   pWC->pOuter = 0;
-  pWC->nTerm = 0;
-  pWC->nBase = 0;
-  pWC->nSlot = ArraySize(pWC->aStatic);
+  pWC->n_పదం = 0;
+  pWC->n_పునాది = 0;
+  pWC->n_స్థానం = Array_కొలత(pWC->aStatic);
   pWC->a = pWC->aStatic;
 }
 
@@ -1795,34 +1795,34 @@ void sqlite3WhereClauseInit(
 ** itself is not freed.  This routine is the inverse of
 ** sqlite3WhereClauseInit().
 */
-void sqlite3WhereClauseClear(WhereClause *pWC){
+శూన్య sqlite3WhereClauseClear(WhereClause *pWC){
   sqlite3 *db = pWC->pWInfo->pParse->db;
-  assert( pWC->nTerm>=pWC->nBase );
-  if( pWC->nTerm>0 ){
-    WhereTerm *a = pWC->a;
-    WhereTerm *aLast = &pWC->a[pWC->nTerm-1];
-#ifdef SQLITE_DEBUG
-    int i;
+  ప్రతిజ్ఞా( pWC->n_పదం>=pWC->n_పునాది );
+  ఒకవేళ( pWC->n_పదం>0 ){
+    Where_పదం *a = pWC->a;
+    Where_పదం *a_చివరి = &pWC->a[pWC->n_పదం-1];
+#నిర్వచితమైతే SQLITE_DEBUG
+    పూర్ణాంకం i;
     /* Verify that every term past pWC->nBase is virtual */
-    for(i=pWC->nBase; i<pWC->nTerm; i++){
-      assert( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
+    కొరకు(i=pWC->n_పునాది; i<pWC->n_పదం; i++){
+      ప్రతిజ్ఞా( (pWC->a[i].wtFlags & పదం_VIRTUAL)!=0 );
     }
-#endif
-    while(1){
-      assert( a->eMatchOp==0 || a->eOperator==WO_AUX );
-      if( a->wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, a->pExpr);
+#అయితే_ముగింపు
+    అయితే(1){
+      ప్రతిజ్ఞా( a->e_సరిపోలిక_Op==0 || a->eOperator==WO_AUX );
+      ఒకవేళ( a->wtFlags & పదం_DYNAMIC ){
+        sqlite3_సమాసం_Delete(db, a->p_సమాసం);
       }
-      if( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
-        if( a->wtFlags & TERM_ORINFO ){
-          assert( (a->wtFlags & TERM_ANDINFO)==0 );
+      ఒకవేళ( a->wtFlags & (పదం_ORINFO|పదం_ANDINFO) ){
+        ఒకవేళ( a->wtFlags & పదం_ORINFO ){
+          ప్రతిజ్ఞా( (a->wtFlags & పదం_ANDINFO)==0 );
           whereOrInfoDelete(db, a->u.pOrInfo);
-        }else{
-          assert( (a->wtFlags & TERM_ANDINFO)!=0 );
+        }లేకపోతే{
+          ప్రతిజ్ఞా( (a->wtFlags & పదం_ANDINFO)!=0 );
           whereAndInfoDelete(db, a->u.pAndInfo);
         }
       }
-      if( a==aLast ) break;
+      ఒకవేళ( a==a_చివరి ) ఆపు;
       a++;
     }
   }
@@ -1860,53 +1860,53 @@ void sqlite3WhereClauseClear(WhereClause *pWC){
 **       "no-inline" function to avoid the stack push overhead in the
 **       common case where it is not needed.
 */
-static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
-  WhereMaskSet *pMaskSet,
-  Expr *p
+స్థిర SQLITE_NOINLINE Bitmask sqlite3_Where_సమాసం_Usage_నిండిన(
+  Where_ముసుగు_సమితి *p_ముసుగు_సమితి,
+  సమాసం *p
 ){
-  Bitmask mask;
-  mask = (p->op==TK_IF_NULL_ROW) ? sqlite3WhereGetMask(pMaskSet, p->iTable) : 0;
-  if( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
-  if( p->pRight ){
-    mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pRight);
-    assert( p->x.pList==0 );
-  }else if( ExprUseXSelect(p) ){
-    if( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
-    mask |= exprSelectUsage(pMaskSet, p->x.pSelect);
-  }else if( p->x.pList ){
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->x.pList);
+  Bitmask ముసుగు;
+  ముసుగు = (p->op==TK_IF_NULL_అడ్డువరుస) ? sqlite3_Where_Get_ముసుగు(p_ముసుగు_సమితి, p->i_పట్టిక) : 0;
+  ఒకవేళ( p->p_ఎడమ ) ముసుగు |= sqlite3_Where_సమాసం_Usage_NN(p_ముసుగు_సమితి, p->p_ఎడమ);
+  ఒకవేళ( p->p_కుడి ){
+    ముసుగు |= sqlite3_Where_సమాసం_Usage_NN(p_ముసుగు_సమితి, p->p_కుడి);
+    ప్రతిజ్ఞా( p->x.pList==0 );
+  }లేకపోతే ఒకవేళ( సమాసం_Use_XSelect(p) ){
+    ఒకవేళ( సమాసం_Has_Property(p, EP_VarSelect) ) p_ముసుగు_సమితి->bVarSelect = 1;
+    ముసుగు |= సమాసం_Select_Usage(p_ముసుగు_సమితి, p->x.pSelect);
+  }లేకపోతే ఒకవేళ( p->x.pList ){
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, p->x.pList);
   }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
-    assert( p->y.pWin!=0 );
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pPartition);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, p->y.pWin->pFilter);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WINDOWFUNC
+  ఒకవేళ( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && సమాసం_Use_YWin(p) ){
+    ప్రతిజ్ఞా( p->y.pWin!=0 );
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, p->y.pWin->p_విభజన);
+    ముసుగు |= sqlite3_Where_సమాసం_List_Usage(p_ముసుగు_సమితి, p->y.pWin->p_క్రమం_By);
+    ముసుగు |= sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, p->y.pWin->pFilter);
   }
-#endif
-  return mask;
+#అయితే_ముగింపు
+  తిరిగి ముసుగు;
 }
-Bitmask sqlite3WhereExprUsageNN(WhereMaskSet *pMaskSet, Expr *p){
-  if( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return sqlite3WhereGetMask(pMaskSet, p->iTable);
-  }else if( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
-    assert( p->op!=TK_IF_NULL_ROW );
-    return 0;
+Bitmask sqlite3_Where_సమాసం_Usage_NN(Where_ముసుగు_సమితి *p_ముసుగు_సమితి, సమాసం *p){
+  ఒకవేళ( p->op==TK_స్తంభం && !సమాసం_Has_Property(p, EP_Fixed_నిలువు) ){
+    తిరిగి sqlite3_Where_Get_ముసుగు(p_ముసుగు_సమితి, p->i_పట్టిక);
+  }లేకపోతే ఒకవేళ( సమాసం_Has_Property(p, EP_TokenOnly|EP_ఆకు) ){
+    ప్రతిజ్ఞా( p->op!=TK_IF_NULL_అడ్డువరుస );
+    తిరిగి 0;
   }
-  return sqlite3WhereExprUsageFull(pMaskSet, p);
+  తిరిగి sqlite3_Where_సమాసం_Usage_నిండిన(p_ముసుగు_సమితి, p);
 }
-Bitmask sqlite3WhereExprUsage(WhereMaskSet *pMaskSet, Expr *p){
-  return p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
+Bitmask sqlite3_Where_సమాసం_Usage(Where_ముసుగు_సమితి *p_ముసుగు_సమితి, సమాసం *p){
+  తిరిగి p ? sqlite3_Where_సమాసం_Usage_NN(p_ముసుగు_సమితి,p) : 0;
 }
-Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
-  int i;
-  Bitmask mask = 0;
-  if( pList ){
-    for(i=0; i<pList->nExpr; i++){
-      mask |= sqlite3WhereExprUsage(pMaskSet, pList->a[i].pExpr);
+Bitmask sqlite3_Where_సమాసం_List_Usage(Where_ముసుగు_సమితి *p_ముసుగు_సమితి, సమాసం_List *pList){
+  పూర్ణాంకం i;
+  Bitmask ముసుగు = 0;
+  ఒకవేళ( pList ){
+    కొరకు(i=0; i<pList->n_సమాసం; i++){
+      ముసుగు |= sqlite3_Where_సమాసం_Usage(p_ముసుగు_సమితి, pList->a[i].p_సమాసం);
     }
   }
-  return mask;
+  తిరిగి ముసుగు;
 }
 
 
@@ -1918,13 +1918,13 @@ Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
 ** virtual terms, so start analyzing at the end and work forward
 ** so that the added virtual terms are never processed.
 */
-void sqlite3WhereExprAnalyze(
+శూన్య sqlite3_Where_సమాసం_Analyze(
   SrcList *pTabList,       /* the FROM clause */
   WhereClause *pWC         /* the WHERE clause to be analyzed */
 ){
-  int i;
-  for(i=pWC->nTerm-1; i>=0; i--){
-    exprAnalyze(pTabList, pWC, i);
+  పూర్ణాంకం i;
+  కొరకు(i=pWC->n_పదం-1; i>=0; i--){
+    సమాసం_Analyze(pTabList, pWC, i);
   }
 }
 
@@ -1935,54 +1935,54 @@ void sqlite3WhereExprAnalyze(
 ** Each function argument translates into an equality constraint against
 ** a HIDDEN column in the table.
 */
-void sqlite3WhereTabFuncArgs(
+శూన్య sqlite3_Where_Tab_Func_వాదనలు(
   Parse *pParse,                    /* Parsing context */
-  SrcItem *pItem,                   /* The FROM clause term to process */
+  Src_అంశం *p_అంశం,                   /* The FROM clause term to process */
   WhereClause *pWC                  /* Xfer function arguments to here */
 ){
-  Table *pTab;
-  int j, k;
-  ExprList *pArgs;
-  Expr *pColRef;
-  Expr *pTerm;
-  if( pItem->fg.isTabFunc==0 ) return;
-  pTab = pItem->pSTab;
-  assert( pTab!=0 );
-  if( !IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pItem->zName);
-    return;
+  పట్టిక *pTab;
+  పూర్ణాంకం j, k;
+  సమాసం_List *p_వాదనలు;
+  సమాసం *p_నిలువు_Ref;
+  సమాసం *p_పదం;
+  ఒకవేళ( p_అంశం->fg.isTabFunc==0 ) తిరిగి;
+  pTab = p_అంశం->pSTab;
+  ప్రతిజ్ఞా( pTab!=0 );
+  ఒకవేళ( !IsVirtual(pTab) ){
+    sqlite3_Error_సందేశం(pParse, "'%s' is not a function", p_అంశం->zName);
+    తిరిగి;
   }
-  pArgs = pItem->u1.pFuncArg;
-  if( pArgs==0 ) return;
-  for(j=k=0; j<pArgs->nExpr; j++){
-    Expr *pRhs;
+  p_వాదనలు = p_అంశం->u1.pFuncArg;
+  ఒకవేళ( p_వాదనలు==0 ) తిరిగి;
+  కొరకు(j=k=0; j<p_వాదనలు->n_సమాసం; j++){
+    సమాసం *pRhs;
     u32 joinType;
-    while( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
-    if( k>=pTab->nCol ){
-      sqlite3ErrorMsg(pParse, "too many arguments on %s() - max %d",
+    అయితే( k<pTab->n_నిలువు && (pTab->a_నిలువు[k].నిలువు_Flags & COLFLAG_HIDDEN)==0 ){k++;}
+    ఒకవేళ( k>=pTab->n_నిలువు ){
+      sqlite3_Error_సందేశం(pParse, "too many arguments on %s() - max %d",
                       pTab->zName, j);
-      return;
+      తిరిగి;
     }
-    pColRef = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-    if( pColRef==0 ) return;
-    pColRef->iTable = pItem->iCursor;
-    pColRef->iColumn = k++;
-    assert( ExprUseYTab(pColRef) );
-    pColRef->y.pTab = pTab;
-    pItem->colUsed |= sqlite3ExprColUsed(pColRef);
+    p_నిలువు_Ref = sqlite3_సమాసం_Alloc(pParse->db, TK_స్తంభం, 0, 0);
+    ఒకవేళ( p_నిలువు_Ref==0 ) తిరిగి;
+    p_నిలువు_Ref->i_పట్టిక = p_అంశం->iCursor;
+    p_నిలువు_Ref->i_స్తంభం = k++;
+    ప్రతిజ్ఞా( సమాసం_Use_YTab(p_నిలువు_Ref) );
+    p_నిలువు_Ref->y.pTab = pTab;
+    p_అంశం->నిలువు_వాడిన |= sqlite3_సమాసం_నిలువు_వాడిన(p_నిలువు_Ref);
     pRhs = sqlite3PExpr(pParse, TK_UPLUS,
-        sqlite3ExprDup(pParse->db, pArgs->a[j].pExpr, 0), 0);
-    pTerm = sqlite3PExpr(pParse, TK_EQ, pColRef, pRhs);
-    if( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
-      testcase( pItem->fg.jointype & JT_LEFT );  /* testtag-20230227a */
-      testcase( pItem->fg.jointype & JT_RIGHT ); /* testtag-20230227b */
+        sqlite3_సమాసం_Dup(pParse->db, p_వాదనలు->a[j].p_సమాసం, 0), 0);
+    p_పదం = sqlite3PExpr(pParse, TK_EQ, p_నిలువు_Ref, pRhs);
+    ఒకవేళ( p_అంశం->fg.jointype & (JT_ఎడమ|JT_కుడి) ){
+      testcase( p_అంశం->fg.jointype & JT_ఎడమ );  /* testtag-20230227a */
+      testcase( p_అంశం->fg.jointype & JT_కుడి ); /* testtag-20230227b */
       joinType = EP_OuterON;
-    }else{
-      testcase( pItem->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
+    }లేకపోతే{
+      testcase( p_అంశం->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
       joinType = EP_InnerON;
     }
-    sqlite3SetJoinExpr(pTerm, pItem->iCursor, joinType);
-    whereClauseInsert(pWC, pTerm, TERM_DYNAMIC);
+    sqlite3_సమితి_Join_సమాసం(p_పదం, p_అంశం->iCursor, joinType);
+    where_Clause_చొప్పించు(pWC, p_పదం, పదం_DYNAMIC);
   }
 }
 
@@ -1990,8 +1990,8 @@ void sqlite3WhereTabFuncArgs(
 ** Return true if the WhereLoop pLoop can be use a Bloom filter.
 ** tag-202607231411
 */
-int sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
-  if( pLoop->wsFlags & WHERE_IPK ) return 1;
-  if( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) return 0;
-  return sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
+పూర్ణాంకం sqlite3WhereLoopBloomable(స్థిరరాశి WhereLoop *pLoop){
+  ఒకవేళ( pLoop->wsFlags & WHERE_IPK ) తిరిగి 1;
+  ఒకవేళ( NEVER((pLoop->wsFlags & WHERE_సూచీకృత)==0) ) తిరిగి 0;
+  తిరిగి sqlite3_సూచీ_Bloomable(pLoop->u.btree.p_సూచీ, pLoop->u.btree.nEq);
 }

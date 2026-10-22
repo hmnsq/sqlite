@@ -19,19 +19,19 @@
 ** #if SQLITE_TEST ... #endif.  It is factored out into this separate module
 ** in an effort to keep the tclsqlite.c file pure.
 */
-#include "sqlite3.h"
-#include "tclsqlite.h"
+#అన్తర్భావ "sqlite3.h"
+#అన్తర్భావ "tclsqlite.h"
 
 /* Needed for the setrlimit() system call on unix */
-#if defined(unix)
-#include <sys/resource.h>
-#endif
+#ఒకవేళ defined(unix)
+#అన్తర్భావ <sys/resource.h>
+#అయితే_ముగింపు
 
 /* Forward declaration */
-static int SQLITE_TCLAPI load_testfixture_extensions(
-  ClientData cd,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI ఎక్కించు_testfixture_extensions(
+  Client_దత్తాంశం cd,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 );
 
@@ -48,78 +48,78 @@ static int SQLITE_TCLAPI load_testfixture_extensions(
 **   * If SQLITE_TEST is set, the various test interfaces used by the Tcl
 **     test suite.
 */
-const char *sqlite3TestInit(Tcl_Interp *interp){
-  extern int Sqlite3_Init(Tcl_Interp*);
-  extern int Sqliteconfig_Init(Tcl_Interp*);
-  extern int Sqlitetest1_Init(Tcl_Interp*);
-  extern int Sqlitetest2_Init(Tcl_Interp*);
-  extern int Sqlitetest3_Init(Tcl_Interp*);
-  extern int Sqlitetest4_Init(Tcl_Interp*);
-  extern int Sqlitetest5_Init(Tcl_Interp*);
-  extern int Sqlitetest6_Init(Tcl_Interp*);
-  extern int Sqlitetest8_Init(Tcl_Interp*);
-  extern int Sqlitetest9_Init(Tcl_Interp*);
-  extern int Sqlitetest_autoext_Init(Tcl_Interp*);
-  extern int Sqlitetest_blob_Init(Tcl_Interp*);
-  extern int Sqlitetest_demovfs_Init(Tcl_Interp *);
-  extern int Sqlitetest_func_Init(Tcl_Interp*);
-  extern int Sqlitetest_hexio_Init(Tcl_Interp*);
-  extern int Sqlitetest_init_Init(Tcl_Interp*);
-  extern int Sqlitetest_malloc_Init(Tcl_Interp*);
-  extern int Sqlitetest_mutex_Init(Tcl_Interp*);
-  extern int Sqlitetestschema_Init(Tcl_Interp*);
-  extern int Sqlitetestsse_Init(Tcl_Interp*);
-  extern int Sqlitetesttclvar_Init(Tcl_Interp*);
-  extern int Sqlitetestfs_Init(Tcl_Interp*);
-  extern int SqlitetestThread_Init(Tcl_Interp*);
-  extern int SqlitetestOnefile_Init();
-  extern int SqlitetestOsinst_Init(Tcl_Interp*);
-  extern int Sqlitetestbackup_Init(Tcl_Interp*);
-  extern int Sqlitetestintarray_Init(Tcl_Interp*);
-  extern int Sqlitetestvfs_Init(Tcl_Interp *);
-  extern int Sqlitetestrtree_Init(Tcl_Interp*);
-  extern int Sqlitetestrtreedoc_Init(Tcl_Interp*);
-  extern int Sqlitequota_Init(Tcl_Interp*);
-  extern int Sqlitemultiplex_Init(Tcl_Interp*);
-  extern int SqliteSuperlock_Init(Tcl_Interp*);
-  extern int SqlitetestSyscall_Init(Tcl_Interp*);
-#if defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
-  extern int TestSession_Init(Tcl_Interp*);
-#endif
-  extern int Md5_Init(Tcl_Interp*);
-  extern int Fts5tcl_Init(Tcl_Interp *);
-  extern int SqliteRbu_Init(Tcl_Interp*);
-  extern int Sqlitetesttcl_Init(Tcl_Interp*);
-#if defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
-  extern int Sqlitetestfts3_Init(Tcl_Interp *interp);
-#endif
-#ifdef SQLITE_ENABLE_ZIPVFS
-  extern int Zipvfs_Init(Tcl_Interp*);
-#endif
-  extern int TestExpert_Init(Tcl_Interp*);
-  extern int Sqlitetest_window_Init(Tcl_Interp *);
-  extern int Sqlitetestvdbecov_Init(Tcl_Interp *);
-  extern int TestRecover_Init(Tcl_Interp*);
-  extern int Sqlitetestintck_Init(Tcl_Interp*);
+స్థిరరాశి అక్షరం *sqlite3TestInit(Tcl_Interp *interp){
+  బాహ్య పూర్ణాంకం Sqlite3_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqliteconfig_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest1_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest2_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest3_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest4_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest5_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest6_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest8_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest9_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_autoext_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_blob_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_demovfs_Init(Tcl_Interp *);
+  బాహ్య పూర్ణాంకం Sqlitetest_func_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_hexio_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_init_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_malloc_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_mutex_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestschema_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestsse_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetesttclvar_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestfs_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం SqlitetestThread_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం SqlitetestOnefile_Init();
+  బాహ్య పూర్ణాంకం SqlitetestOsinst_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestbackup_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestintarray_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestvfs_Init(Tcl_Interp *);
+  బాహ్య పూర్ణాంకం Sqlitetestrtree_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestrtreedoc_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitequota_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitemultiplex_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం SqliteSuperlock_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం SqlitetestSyscall_Init(Tcl_Interp*);
+#ఒకవేళ defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
+  బాహ్య పూర్ణాంకం TestSession_Init(Tcl_Interp*);
+#అయితే_ముగింపు
+  బాహ్య పూర్ణాంకం Md5_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Fts5tcl_Init(Tcl_Interp *);
+  బాహ్య పూర్ణాంకం SqliteRbu_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetesttcl_Init(Tcl_Interp*);
+#ఒకవేళ defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
+  బాహ్య పూర్ణాంకం Sqlitetestfts3_Init(Tcl_Interp *interp);
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_ENABLE_ZIPVFS
+  బాహ్య పూర్ణాంకం Zipvfs_Init(Tcl_Interp*);
+#అయితే_ముగింపు
+  బాహ్య పూర్ణాంకం TestExpert_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetest_కిటికీ_Init(Tcl_Interp *);
+  బాహ్య పూర్ణాంకం Sqlitetestvdbecov_Init(Tcl_Interp *);
+  బాహ్య పూర్ణాంకం TestRecover_Init(Tcl_Interp*);
+  బాహ్య పూర్ణాంకం Sqlitetestintck_Init(Tcl_Interp*);
 
   Tcl_CmdInfo cmdInfo;
 
   /* Since the primary use case for this binary is testing of SQLite,
   ** be sure to generate core files if we crash */
-#if defined(unix)
-  { struct rlimit x;
+#ఒకవేళ defined(unix)
+  { నిర్మాణం rlimit x;
     getrlimit(RLIMIT_CORE, &x);
     x.rlim_cur = x.rlim_max;
     setrlimit(RLIMIT_CORE, &x);
   }
-#endif /* unix */
+#అయితే_ముగింపు /* unix */
 
-  if( Tcl_GetCommandInfo(interp, "sqlite3", &cmdInfo)==0 ){
+  ఒకవేళ( Tcl_GetCommandInfo(interp, "sqlite3", &cmdInfo)==0 ){
     Sqlite3_Init(interp);
   }
-#ifdef SQLITE_ENABLE_ZIPVFS
+#నిర్వచితమైతే SQLITE_ENABLE_ZIPVFS
   Zipvfs_Init(interp);
-#endif
+#అయితే_ముగింపు
   Md5_Init(interp);
   Sqliteconfig_Init(interp);
   Sqlitetest1_Init(interp);
@@ -153,48 +153,48 @@ const char *sqlite3TestInit(Tcl_Interp *interp){
   Sqlitemultiplex_Init(interp);
   SqliteSuperlock_Init(interp);
   SqlitetestSyscall_Init(interp);
-#if defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
+#ఒకవేళ defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
   TestSession_Init(interp);
-#endif
+#అయితే_ముగింపు
   Fts5tcl_Init(interp);
   SqliteRbu_Init(interp);
   Sqlitetesttcl_Init(interp);
 
-#if defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
+#ఒకవేళ defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
   Sqlitetestfts3_Init(interp);
-#endif
+#అయితే_ముగింపు
   TestExpert_Init(interp);
-  Sqlitetest_window_Init(interp);
+  Sqlitetest_కిటికీ_Init(interp);
   Sqlitetestvdbecov_Init(interp);
   TestRecover_Init(interp);
   Sqlitetestintck_Init(interp);
 
   Tcl_CreateObjCommand(
-      interp, "load_testfixture_extensions", load_testfixture_extensions,0,0
+      interp, "load_testfixture_extensions", ఎక్కించు_testfixture_extensions,0,0
   );
-  return 0;
+  తిరిగి 0;
 }
 
 /* tclcmd:   load_testfixture_extensions
 */
-static int SQLITE_TCLAPI load_testfixture_extensions(
-  ClientData cd,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI ఎక్కించు_testfixture_extensions(
+  Client_దత్తాంశం cd,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
 
   Tcl_Interp *slave;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SLAVE");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "SLAVE");
+    తిరిగి TCL_ERROR;
   }
 
   slave = Tcl_GetSlave(interp, Tcl_GetString(objv[1]));
-  if( !slave ){
-    return TCL_ERROR;
+  ఒకవేళ( !slave ){
+    తిరిగి TCL_ERROR;
   }
 
-  (void)sqlite3TestInit(slave);
-  return TCL_OK;
+  (శూన్య)sqlite3TestInit(slave);
+  తిరిగి TCL_OK;
 }

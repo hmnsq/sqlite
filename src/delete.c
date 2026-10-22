@@ -12,7 +12,7 @@
 ** This file contains C code routines that are called by the parser
 ** in order to generate code for DELETE FROM statements.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** While a SrcList can in general represent multiple tables and subqueries
@@ -28,31 +28,31 @@
 **    pSrc->a[0].u2.pIBIndex  Pointer to the INDEXED BY index, if there is one
 **
 */
-Table *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
-  SrcItem *pItem = pSrc->a;
-  Table *pTab;
-  assert( pItem && pSrc->nSrc>=1 );
-  pTab = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pItem->pSTab ) sqlite3DeleteTable(pParse->db, pItem->pSTab);
-  pItem->pSTab = pTab;
-  pItem->fg.notCte = 1;
-  if( pTab ){
+పట్టిక *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
+  Src_అంశం *p_అంశం = pSrc->a;
+  పట్టిక *pTab;
+  ప్రతిజ్ఞా( p_అంశం && pSrc->nSrc>=1 );
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, p_అంశం);
+  ఒకవేళ( p_అంశం->pSTab ) sqlite3_Delete_పట్టిక(pParse->db, p_అంశం->pSTab);
+  p_అంశం->pSTab = pTab;
+  p_అంశం->fg.notCte = 1;
+  ఒకవేళ( pTab ){
     pTab->nTabRef++;
-    if( pItem->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pItem) ){
+    ఒకవేళ( p_అంశం->fg.is_సూచీకృత_By && sqlite3_సూచీకృత_By_Lookup(pParse, p_అంశం) ){
       pTab = 0;
     }
   }
-  return pTab;
+  తిరిగి pTab;
 }
 
 /* Generate byte-code that will report the number of rows modified
 ** by a DELETE, INSERT, or UPDATE statement.
 */
-void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
-  sqlite3VdbeAddOp0(v, OP_FkCheck);
-  sqlite3VdbeAddOp2(v, OP_ResultRow, regCounter, 1);
-  sqlite3VdbeSetNumCols(v, 1);
-  sqlite3VdbeSetColName(v, 0, COLNAME_NAME, zColName, SQLITE_STATIC);
+శూన్య sqlite3_సంకేతం_Change_లెక్క(Vdbe *v, పూర్ణాంకం regCounter, స్థిరరాశి అక్షరం *z_నిలువు_Name){
+  sqlite3_Vdbe_కూడు_Op0(v, OP_FkCheck);
+  sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, regCounter, 1);
+  sqlite3_Vdbe_సమితి_అంకె_నిలువుల_సంఖ్య(v, 1);
+  sqlite3_Vdbe_సమితి_నిలువు_Name(v, 0, COLNAME_NAME, z_నిలువు_Name, SQLITE_STATIC);
 }
 
 /* Return true if table pTab is read-only.
@@ -74,10 +74,10 @@ void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
 **      defensive mode, and the current sqlite3_prepare()
 **      is for a top-level SQL statement.
 */
-static int vtabIsReadOnly(Parse *pParse, Table *pTab){
-  assert( IsVirtual(pTab) );
-  if( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
-    return 1;
+స్థిర పూర్ణాంకం vtabIsReadOnly(Parse *pParse, పట్టిక *pTab){
+  ప్రతిజ్ఞా( IsVirtual(pTab) );
+  ఒకవేళ( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
+    తిరిగి 1;
   }
 
   /* Within triggers:
@@ -86,27 +86,27 @@ static int vtabIsReadOnly(Parse *pParse, Table *pTab){
   **   *  Only allow DELETE, INSERT, or UPDATE of non-SQLITE_VTAB_INNOCUOUS
   **      virtual tables if PRAGMA trusted_schema=ON.
   */
-  if( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
+  ఒకవేళ( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
    && pTab->u.vtab.p->eVtabRisk >
            ((pParse->db->flags & SQLITE_TrustedSchema)!=0)
   ){
-    sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
+    sqlite3_Error_సందేశం(pParse, "unsafe use of virtual table \"%s\"",
       pTab->zName);
   }
-  return 0;
+  తిరిగి 0;
 }
-static int tabIsReadOnly(Parse *pParse, Table *pTab){
+స్థిర పూర్ణాంకం tabIsReadOnly(Parse *pParse, పట్టిక *pTab){
   sqlite3 *db;
-  if( IsVirtual(pTab) ){
-    return vtabIsReadOnly(pParse, pTab);
+  ఒకవేళ( IsVirtual(pTab) ){
+    తిరిగి vtabIsReadOnly(pParse, pTab);
   }
-  if( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) return 0;
+  ఒకవేళ( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) తిరిగి 0;
   db = pParse->db;
-  if( (pTab->tabFlags & TF_Readonly)!=0 ){
-    return sqlite3WritableSchema(db)==0 && pParse->nested==0;
+  ఒకవేళ( (pTab->tabFlags & TF_Readonly)!=0 ){
+    తిరిగి sqlite3WritableSchema(db)==0 && pParse->nested==0;
   }
-  assert( pTab->tabFlags & TF_Shadow );
-  return sqlite3ReadOnlyShadowTables(db);
+  ప్రతిజ్ఞా( pTab->tabFlags & TF_Shadow );
+  తిరిగి sqlite3ReadOnlyShadowTables(db);
 }
 
 /*
@@ -116,61 +116,61 @@ static int tabIsReadOnly(Parse *pParse, Table *pTab){
 ** If pTab is writable but other errors have occurred -> return 1.
 ** If pTab is writable and no prior errors -> return 0;
 */
-int sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
-  if( tabIsReadOnly(pParse, pTab) ){
-    sqlite3ErrorMsg(pParse, "table %s may not be modified", pTab->zName);
-    return 1;
+పూర్ణాంకం sqlite3IsReadOnly(Parse *pParse, పట్టిక *pTab, Trigger *pTrigger){
+  ఒకవేళ( tabIsReadOnly(pParse, pTab) ){
+    sqlite3_Error_సందేశం(pParse, "table %s may not be modified", pTab->zName);
+    తిరిగి 1;
   }
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab)
-   && (pTrigger==0 || (pTrigger->bReturning && pTrigger->pNext==0))
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIEW
+  ఒకవేళ( IsView(pTab)
+   && (pTrigger==0 || (pTrigger->bReturning && pTrigger->p_తదుపరి==0))
   ){
-    sqlite3ErrorMsg(pParse,"cannot modify %s because it is a view",pTab->zName);
-    return 1;
+    sqlite3_Error_సందేశం(pParse,"cannot modify %s because it is a view",pTab->zName);
+    తిరిగి 1;
   }
-#endif
-  return 0;
+#అయితే_ముగింపు
+  తిరిగి 0;
 }
 
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+#ఒకవేళ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
 /*
 ** Evaluate a view and store its result in an ephemeral table.  The
 ** pWhere argument is an optional WHERE clause that restricts the
 ** set of rows in the view that are to be added to the ephemeral table.
 */
-void sqlite3MaterializeView(
+శూన్య sqlite3MaterializeView(
   Parse *pParse,       /* Parsing context */
-  Table *pView,        /* View definition */
-  Expr *pWhere,        /* Optional WHERE clause to be added */
-  ExprList *pOrderBy,  /* Optional ORDER BY clause */
-  Expr *pLimit,        /* Optional LIMIT clause */
-  int iCur             /* Cursor number for ephemeral table */
+  పట్టిక *pView,        /* View definition */
+  సమాసం *pWhere,        /* Optional WHERE clause to be added */
+  సమాసం_List *p_క్రమం_By,  /* Optional ORDER BY clause */
+  సమాసం *p_హద్దు,        /* Optional LIMIT clause */
+  పూర్ణాంకం iCur             /* Cursor number for ephemeral table */
 ){
   SelectDest dest;
   Select *pSel;
   SrcList *pFrom;
   sqlite3 *db = pParse->db;
-  int iDb = sqlite3SchemaToIndex(db, pView->pSchema);
-  pWhere = sqlite3ExprDup(db, pWhere, 0);
+  పూర్ణాంకం iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pView->pSchema);
+  pWhere = sqlite3_సమాసం_Dup(db, pWhere, 0);
   pFrom = sqlite3SrcListAppend(pParse, 0, 0, 0);
-  if( pFrom ){
-    assert( pFrom->nSrc==1 );
+  ఒకవేళ( pFrom ){
+    ప్రతిజ్ఞా( pFrom->nSrc==1 );
     pFrom->a[0].zName = sqlite3DbStrDup(db, pView->zName);
-    assert( pFrom->a[0].fg.fixedSchema==0 && pFrom->a[0].fg.isSubquery==0 );
+    ప్రతిజ్ఞా( pFrom->a[0].fg.fixedSchema==0 && pFrom->a[0].fg.isSubquery==0 );
     pFrom->a[0].u4.zDatabase = sqlite3DbStrDup(db, db->aDb[iDb].zDbSName);
-    assert( pFrom->a[0].fg.isUsing==0 );
-    assert( pFrom->a[0].u3.pOn==0 );
+    ప్రతిజ్ఞా( pFrom->a[0].fg.isUsing==0 );
+    ప్రతిజ్ఞా( pFrom->a[0].u3.pOn==0 );
   }
-  pSel = sqlite3SelectNew(pParse, 0, pFrom, pWhere, 0, 0, pOrderBy,
-                          SF_IncludeHidden, pLimit);
+  pSel = sqlite3SelectNew(pParse, 0, pFrom, pWhere, 0, 0, p_క్రమం_By,
+                          SF_IncludeHidden, p_హద్దు);
   sqlite3SelectDestInit(&dest, SRT_EphemTab, iCur);
   sqlite3Select(pParse, pSel, &dest);
   sqlite3SelectDelete(db, pSel);
 }
-#endif /* !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER) */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER) */
 
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
+#ఒకవేళ defined(SQLITE_ENABLE_UPDATE_DELETE_హద్దు) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Generate an expression tree to implement the WHERE, ORDER BY,
 ** and LIMIT/OFFSET portion of DELETE and UPDATE statements.
@@ -179,36 +179,36 @@ void sqlite3MaterializeView(
 **                            \__________________________/
 **                               pLimitWhere (pInClause)
 */
-Expr *sqlite3LimitWhere(
+సమాసం *sqlite3_హద్దు_Where(
   Parse *pParse,               /* The parser context */
   SrcList *pSrc,               /* the FROM clause -- which tables to scan */
-  Expr *pWhere,                /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,          /* The ORDER BY clause.  May be null */
-  Expr *pLimit,                /* The LIMIT clause.  May be null */
-  char *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
+  సమాసం *pWhere,                /* The WHERE clause.  May be null */
+  సమాసం_List *p_క్రమం_By,          /* The ORDER BY clause.  May be null */
+  సమాసం *p_హద్దు,                /* The LIMIT clause.  May be null */
+  అక్షరం *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
 ){
   sqlite3 *db = pParse->db;
-  Expr *pLhs = NULL;           /* LHS of IN(SELECT...) operator */
-  Expr *pInClause = NULL;      /* WHERE rowid IN ( select ) */
-  ExprList *pEList = NULL;     /* Expression list containing only pSelectRowid*/
-  SrcList *pSelectSrc = NULL;  /* SELECT rowid FROM x ... (dup of pSrc) */
-  Select *pSelect = NULL;      /* Complete SELECT tree */
-  Table *pTab;
+  సమాసం *pLhs = ఖాళీ;           /* LHS of IN(SELECT...) operator */
+  సమాసం *p_లోపల_Clause = ఖాళీ;      /* WHERE rowid IN ( select ) */
+  సమాసం_List *pEList = ఖాళీ;     /* Expression list containing only pSelectRowid*/
+  SrcList *pSelectSrc = ఖాళీ;  /* SELECT rowid FROM x ... (dup of pSrc) */
+  Select *pSelect = ఖాళీ;      /* Complete SELECT tree */
+  పట్టిక *pTab;
 
   /* Check that there isn't an ORDER BY without a LIMIT clause.
   */
-  if( pOrderBy && pLimit==0 ) {
-    sqlite3ErrorMsg(pParse, "ORDER BY without LIMIT on %s", zStmtType);
-    sqlite3ExprDelete(pParse->db, pWhere);
-    sqlite3ExprListDelete(pParse->db, pOrderBy);
-    return 0;
+  ఒకవేళ( p_క్రమం_By && p_హద్దు==0 ) {
+    sqlite3_Error_సందేశం(pParse, "ORDER BY without LIMIT on %s", zStmtType);
+    sqlite3_సమాసం_Delete(pParse->db, pWhere);
+    sqlite3_సమాసం_List_Delete(pParse->db, p_క్రమం_By);
+    తిరిగి 0;
   }
 
   /* We only need to generate a select expression if there
   ** is a limit/offset term to enforce.
   */
-  if( pLimit == 0 ) {
-    return pWhere;
+  ఒకవేళ( p_హద్దు == 0 ) {
+    తిరిగి pWhere;
   }
 
   /* Generate a select expression tree to enforce the limit/offset
@@ -221,32 +221,32 @@ Expr *sqlite3LimitWhere(
   */
 
   pTab = pSrc->a[0].pSTab;
-  if( HasRowid(pTab) ){
-    pLhs = sqlite3PExpr(pParse, TK_ROW, 0, 0);
-    pEList = sqlite3ExprListAppend(
-        pParse, 0, sqlite3PExpr(pParse, TK_ROW, 0, 0)
+  ఒకవేళ( HasRowid(pTab) ){
+    pLhs = sqlite3PExpr(pParse, TK_అడ్డువరుస, 0, 0);
+    pEList = sqlite3_సమాసం_List_Append(
+        pParse, 0, sqlite3PExpr(pParse, TK_అడ్డువరుస, 0, 0)
     );
-  }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-    assert( pPk!=0 );
-    assert( pPk->nKeyCol>=1 );
-    if( pPk->nKeyCol==1 ){
-      const char *zName;
-      assert( pPk->aiColumn[0]>=0 && pPk->aiColumn[0]<pTab->nCol );
-      zName = pTab->aCol[pPk->aiColumn[0]].zCnName;
-      pLhs = sqlite3Expr(db, TK_ID, zName);
-      pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ID, zName));
-    }else{
-      int i;
-      for(i=0; i<pPk->nKeyCol; i++){
-        Expr *p;
-        assert( pPk->aiColumn[i]>=0 && pPk->aiColumn[i]<pTab->nCol );
-        p = sqlite3Expr(db, TK_ID, pTab->aCol[pPk->aiColumn[i]].zCnName);
-        pEList = sqlite3ExprListAppend(pParse, pEList, p);
+  }లేకపోతే{
+    సూచీ *pPk = sqlite3_Primary_కీలకం_సూచీ(pTab);
+    ప్రతిజ్ఞా( pPk!=0 );
+    ప్రతిజ్ఞా( pPk->n_కీలకం_నిలువు>=1 );
+    ఒకవేళ( pPk->n_కీలకం_నిలువు==1 ){
+      స్థిరరాశి అక్షరం *zName;
+      ప్రతిజ్ఞా( pPk->ai_స్తంభం[0]>=0 && pPk->ai_స్తంభం[0]<pTab->n_నిలువు );
+      zName = pTab->a_నిలువు[pPk->ai_స్తంభం[0]].zCnName;
+      pLhs = sqlite3_సమాసం(db, TK_ID, zName);
+      pEList = sqlite3_సమాసం_List_Append(pParse, 0, sqlite3_సమాసం(db, TK_ID, zName));
+    }లేకపోతే{
+      పూర్ణాంకం i;
+      కొరకు(i=0; i<pPk->n_కీలకం_నిలువు; i++){
+        సమాసం *p;
+        ప్రతిజ్ఞా( pPk->ai_స్తంభం[i]>=0 && pPk->ai_స్తంభం[i]<pTab->n_నిలువు );
+        p = sqlite3_సమాసం(db, TK_ID, pTab->a_నిలువు[pPk->ai_స్తంభం[i]].zCnName);
+        pEList = sqlite3_సమాసం_List_Append(pParse, pEList, p);
       }
-      pLhs = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
-      if( pLhs ){
-        pLhs->x.pList = sqlite3ExprListDup(db, pEList, 0);
+      pLhs = sqlite3PExpr(pParse, TK_సదిశ, 0, 0);
+      ఒకవేళ( pLhs ){
+        pLhs->x.pList = sqlite3_సమాసం_List_Dup(db, pEList, 0);
       }
     }
   }
@@ -256,26 +256,26 @@ Expr *sqlite3LimitWhere(
   pSrc->a[0].pSTab = 0;
   pSelectSrc = sqlite3SrcListDup(db, pSrc, 0);
   pSrc->a[0].pSTab = pTab;
-  if( pSrc->a[0].fg.isIndexedBy ){
-    assert( pSrc->a[0].fg.isCte==0 );
+  ఒకవేళ( pSrc->a[0].fg.is_సూచీకృత_By ){
+    ప్రతిజ్ఞా( pSrc->a[0].fg.isCte==0 );
     pSrc->a[0].u2.pIBIndex = 0;
-    pSrc->a[0].fg.isIndexedBy = 0;
-    sqlite3DbFree(db, pSrc->a[0].u1.zIndexedBy);
-  }else if( pSrc->a[0].fg.isCte ){
+    pSrc->a[0].fg.is_సూచీకృత_By = 0;
+    sqlite3DbFree(db, pSrc->a[0].u1.z_సూచీకృత_By);
+  }లేకపోతే ఒకవేళ( pSrc->a[0].fg.isCte ){
     pSrc->a[0].u2.pCteUse->nUse++;
   }
 
   /* generate the SELECT expression tree. */
   pSelect = sqlite3SelectNew(pParse, pEList, pSelectSrc, pWhere, 0 ,0,
-      pOrderBy,0,pLimit
+      p_క్రమం_By,0,p_హద్దు
   );
 
   /* now generate the new WHERE rowid IN clause for the DELETE/UPDATE */
-  pInClause = sqlite3PExpr(pParse, TK_IN, pLhs, 0);
-  sqlite3PExprAddSelect(pParse, pInClause, pSelect);
-  return pInClause;
+  p_లోపల_Clause = sqlite3PExpr(pParse, TK_లోపల, pLhs, 0);
+  sqlite3_PExpr_కూడు_Select(pParse, p_లోపల_Clause, pSelect);
+  తిరిగి p_లోపల_Clause;
 }
-#endif /* defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) */
+#అయితే_ముగింపు /* defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) */
        /*      && !defined(SQLITE_OMIT_SUBQUERY) */
 
 /*
@@ -285,57 +285,57 @@ Expr *sqlite3LimitWhere(
 **                 \________/       \________________/
 **                  pTabList              pWhere
 */
-void sqlite3DeleteFrom(
+శూన్య sqlite3DeleteFrom(
   Parse *pParse,         /* The parser context */
   SrcList *pTabList,     /* The table from which we should delete things */
-  Expr *pWhere,          /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,    /* ORDER BY clause. May be null */
-  Expr *pLimit           /* LIMIT clause. May be null */
+  సమాసం *pWhere,          /* The WHERE clause.  May be null */
+  సమాసం_List *p_క్రమం_By,    /* ORDER BY clause. May be null */
+  సమాసం *p_హద్దు           /* LIMIT clause. May be null */
 ){
   Vdbe *v;               /* The virtual database engine */
-  Table *pTab;           /* The table from which records will be deleted */
-  int i;                 /* Loop counter */
+  పట్టిక *pTab;           /* The table from which records will be deleted */
+  పూర్ణాంకం i;                 /* Loop counter */
   WhereInfo *pWInfo;     /* Information about the WHERE clause */
-  Index *pIdx;           /* For looping over indices of the table */
-  int iTabCur;           /* Cursor number for the table */
-  int iDataCur = 0;      /* VDBE cursor for the canonical data source */
-  int iIdxCur = 0;       /* Cursor number of the first index */
-  int nIdx;              /* Number of indices */
+  సూచీ *pIdx;           /* For looping over indices of the table */
+  పూర్ణాంకం iTabCur;           /* Cursor number for the table */
+  పూర్ణాంకం i_దత్తాంశం_Cur = 0;      /* VDBE cursor for the canonical data source */
+  పూర్ణాంకం iIdxCur = 0;       /* Cursor number of the first index */
+  పూర్ణాంకం nIdx;              /* Number of indices */
   sqlite3 *db;           /* Main database structure */
   AuthContext sContext;  /* Authorization context */
   NameContext sNC;       /* Name context to resolve expressions in */
-  int iDb;               /* Database number */
-  int memCnt = 0;        /* Memory cell used for change counting */
-  int rcauth;            /* Value returned by authorization callback */
-  int eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
-  int aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
-  u8 *aToOpen = 0;       /* Open cursor iTabCur+j if aToOpen[j] is true */
-  Index *pPk;            /* The PRIMARY KEY index on the table */
-  int iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
+  పూర్ణాంకం iDb;               /* Database number */
+  పూర్ణాంకం memCnt = 0;        /* Memory cell used for change counting */
+  పూర్ణాంకం rcauth;            /* Value returned by authorization callback */
+  పూర్ణాంకం eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
+  పూర్ణాంకం aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
+  u8 *a_గమ్యం_Open = 0;       /* Open cursor iTabCur+j if aToOpen[j] is true */
+  సూచీ *pPk;            /* The PRIMARY KEY index on the table */
+  పూర్ణాంకం iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
   i16 nPk = 1;           /* Number of columns in the PRIMARY KEY */
-  int iKey;              /* Memory cell holding key of row to be deleted */
-  i16 nKey;              /* Number of memory cells in the row key */
-  int iEphCur = 0;       /* Ephemeral table holding all primary key values */
-  int iRowSet = 0;       /* Register for rowset of rows to delete */
-  int addrBypass = 0;    /* Address of jump over the delete logic */
-  int addrLoop = 0;      /* Top of the delete loop */
-  int addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
-  int bComplex;          /* True if there are triggers or FKs or
+  పూర్ణాంకం i_కీలకం;              /* Memory cell holding key of row to be deleted */
+  i16 n_కీలకం;              /* Number of memory cells in the row key */
+  పూర్ణాంకం iEphCur = 0;       /* Ephemeral table holding all primary key values */
+  పూర్ణాంకం i_అడ్డువరుస_సమితి = 0;       /* Register for rowset of rows to delete */
+  పూర్ణాంకం addrBypass = 0;    /* Address of jump over the delete logic */
+  పూర్ణాంకం addrLoop = 0;      /* Top of the delete loop */
+  పూర్ణాంకం addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
+  పూర్ణాంకం bComplex;          /* True if there are triggers or FKs or
                          ** subqueries in the WHERE clause */
 
-#ifndef SQLITE_OMIT_TRIGGER
-  int isView;                  /* True if attempting to delete from a view */
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
+  పూర్ణాంకం isView;                  /* True if attempting to delete from a view */
   Trigger *pTrigger;           /* List of table triggers, if required */
-#endif
+#అయితే_ముగింపు
 
-  memset(&sContext, 0, sizeof(sContext));
+  memset(&sContext, 0, పరిమాణం(sContext));
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ){
-    goto delete_from_cleanup;
+  ప్రతిజ్ఞా( db->pParse==pParse );
+  ఒకవేళ( pParse->nErr ){
+    వెళ్ళు delete_from_cleanup;
   }
-  assert( db->mallocFailed==0 );
-  assert( pTabList->nSrc==1 );
+  ప్రతిజ్ఞా( db->mallocFailed==0 );
+  ప్రతిజ్ఞా( pTabList->nSrc==1 );
 
   /* Locate the table which we want to delete.  This table has to be
   ** put in an SrcList structure because some of the subroutines we
@@ -343,120 +343,120 @@ void sqlite3DeleteFrom(
   ** an SrcList* parameter instead of just a Table* parameter.
   */
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 )  goto delete_from_cleanup;
+  ఒకవేళ( pTab==0 )  వెళ్ళు delete_from_cleanup;
 
   /* Figure out if we have any triggers and if the table being
   ** deleted from is a view
   */
-#ifndef SQLITE_OMIT_TRIGGER
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
   pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
   isView = IsView(pTab);
-#else
+#లేకపోతే
 # define pTrigger 0
 # define isView 0
-#endif
+#అయితే_ముగింపు
   bComplex = pTrigger || sqlite3FkRequired(pParse, pTab, 0, 0);
-#ifdef SQLITE_OMIT_VIEW
+#నిర్వచితమైతే SQLITE_OMIT_VIEW
 # undef isView
 # define isView 0
-#endif
+#అయితే_ముగింపు
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewDelete(pParse->pWith, pTabList, pWhere,
-                          pOrderBy, pLimit, pTrigger);
+#ఒకవేళ TREETRACE_ENABLED
+  ఒకవేళ( sqlite3_వృక్షం_Trace & 0x10000 ){
+    sqlite3_వృక్షం_View_పంక్తి(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
+    sqlite3_వృక్షం_View_Delete(pParse->pWith, pTabList, pWhere,
+                          p_క్రమం_By, p_హద్దు, pTrigger);
   }
-#endif
+#అయితే_ముగింపు
 
-#ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( !isView ){
-    pWhere = sqlite3LimitWhere(
-        pParse, pTabList, pWhere, pOrderBy, pLimit, "DELETE"
+#నిర్వచితమైతే SQLITE_ENABLE_UPDATE_DELETE_హద్దు
+  ఒకవేళ( !isView ){
+    pWhere = sqlite3_హద్దు_Where(
+        pParse, pTabList, pWhere, p_క్రమం_By, p_హద్దు, "DELETE"
     );
-    pOrderBy = 0;
-    pLimit = 0;
+    p_క్రమం_By = 0;
+    p_హద్దు = 0;
   }
-#endif
+#అయితే_ముగింపు
 
   /* If pTab is really a view, make sure it has been initialized.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto delete_from_cleanup;
+  ఒకవేళ( sqlite3_View_Get_స్తంభం_పేర్లు(pParse, pTab) ){
+    వెళ్ళు delete_from_cleanup;
   }
 
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
-    goto delete_from_cleanup;
+  ఒకవేళ( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+    వెళ్ళు delete_from_cleanup;
   }
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb<db->nDb );
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
+  ప్రతిజ్ఞా( iDb<db->nDb );
   rcauth = sqlite3AuthCheck(pParse, SQLITE_DELETE, pTab->zName, 0,
                             db->aDb[iDb].zDbSName);
-  assert( rcauth==SQLITE_OK || rcauth==SQLITE_DENY || rcauth==SQLITE_IGNORE );
-  if( rcauth==SQLITE_DENY ){
-    goto delete_from_cleanup;
+  ప్రతిజ్ఞా( rcauth==SQLITE_OK || rcauth==SQLITE_DENY || rcauth==SQLITE_IGNORE );
+  ఒకవేళ( rcauth==SQLITE_DENY ){
+    వెళ్ళు delete_from_cleanup;
   }
-  assert(!isView || pTrigger);
+  ప్రతిజ్ఞా(!isView || pTrigger);
 
   /* Assign cursor numbers to the table and all its indices.
   */
-  assert( pTabList->nSrc==1 );
+  ప్రతిజ్ఞా( pTabList->nSrc==1 );
   iTabCur = pTabList->a[0].iCursor = pParse->nTab++;
-  for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
+  కొరకు(nIdx=0, pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి, nIdx++){
     pParse->nTab++;
   }
 
   /* Start the view context
   */
-  if( isView ){
-    sqlite3AuthContextPush(pParse, &sContext, pTab->zName);
+  ఒకవేళ( isView ){
+    sqlite3_Auth_Context_నెట్టు(pParse, &sContext, pTab->zName);
   }
 
   /* Begin generating code.
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ){
-    goto delete_from_cleanup;
+  ఒకవేళ( v==0 ){
+    వెళ్ళు delete_from_cleanup;
   }
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  ఒకవేళ( pParse->nested==0 ) sqlite3_Vdbe_లెక్క_Changes(v);
   sqlite3BeginWriteOperation(pParse, bComplex, iDb);
 
   /* If we are trying to delete from a view, realize that view into
   ** an ephemeral table.
   */
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-  if( isView ){
+#ఒకవేళ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+  ఒకవేళ( isView ){
     sqlite3MaterializeView(pParse, pTab,
-        pWhere, pOrderBy, pLimit, iTabCur
+        pWhere, p_క్రమం_By, p_హద్దు, iTabCur
     );
-    iDataCur = iIdxCur = iTabCur;
-    pOrderBy = 0;
-    pLimit = 0;
+    i_దత్తాంశం_Cur = iIdxCur = iTabCur;
+    p_క్రమం_By = 0;
+    p_హద్దు = 0;
   }
-#endif
+#అయితే_ముగింపు
 
   /* Resolve the column names in the WHERE clause.
   */
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, పరిమాణం(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  if( sqlite3ResolveExprNames(&sNC, pWhere) ){
-    goto delete_from_cleanup;
+  ఒకవేళ( sqlite3_Resolve_సమాసం_పేర్లు(&sNC, pWhere) ){
+    వెళ్ళు delete_from_cleanup;
   }
 
   /* Initialize the counter of the number of rows deleted, if
   ** we are counting rows.
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  ఒకవేళ( (db->flags & SQLITE_లెక్క_అడ్డువరుసలు)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
   ){
     memCnt = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, memCnt);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_Integer, 0, memCnt);
   }
 
-#ifndef SQLITE_OMIT_TRUNCATE_OPTIMIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRUNCATE_OPTIMIZATION
   /* Special case: A DELETE without a WHERE clause deletes everything.
   ** It is easier just to erase the whole table. Prior to version 3.6.5,
   ** this optimization caused the row change count (the value returned by
@@ -468,51 +468,51 @@ void sqlite3DeleteFrom(
   ** the truncate optimization is disabled and all rows are deleted
   ** individually.
   */
-  if( rcauth==SQLITE_OK
+  ఒకవేళ( rcauth==SQLITE_OK
    && pWhere==0
    && !bComplex
    && !IsVirtual(pTab)
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
+#నిర్వచితమైతే SQLITE_ENABLE_PREUPDATE_HOOK
    && db->xPreUpdateCallback==0
-#endif
+#అయితే_ముగింపు
   ){
-    assert( !isView );
-    sqlite3TableLock(pParse, iDb, pTab->tnum, 1, pTab->zName);
-    if( HasRowid(pTab) ){
-      sqlite3VdbeAddOp4(v, OP_Clear, pTab->tnum, iDb, memCnt ? memCnt : -1,
+    ప్రతిజ్ఞా( !isView );
+    sqlite3_పట్టిక_తాళం(pParse, iDb, pTab->tnum, 1, pTab->zName);
+    ఒకవేళ( HasRowid(pTab) ){
+      sqlite3_Vdbe_కూడు_Op4(v, OP_Clear, pTab->tnum, iDb, memCnt ? memCnt : -1,
                         pTab->zName, P4_STATIC);
     }
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      assert( pIdx->pSchema==pTab->pSchema );
-      if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_Clear, pIdx->tnum, iDb);
+    కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+      ప్రతిజ్ఞా( pIdx->pSchema==pTab->pSchema );
+      ఒకవేళ( Is_Primary_కీలకం_సూచీ(pIdx) && !HasRowid(pTab) ){
+        sqlite3_Vdbe_కూడు_Op3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
+      }లేకపోతే{
+        sqlite3_Vdbe_కూడు_Op2(v, OP_Clear, pIdx->tnum, iDb);
       }
     }
-  }else
-#endif /* SQLITE_OMIT_TRUNCATE_OPTIMIZATION */
+  }లేకపోతే
+#అయితే_ముగింపు /* SQLITE_OMIT_TRUNCATE_OPTIMIZATION */
   {
     u16 wcf = WHERE_ONEPASS_DESIRED|WHERE_DUPLICATES_OK;
-    if( sNC.ncFlags & NC_Subquery ) bComplex = 1;
+    ఒకవేళ( sNC.ncFlags & NC_Subquery ) bComplex = 1;
     wcf |= (bComplex ? 0 : WHERE_ONEPASS_MULTIROW);
-    if( HasRowid(pTab) ){
+    ఒకవేళ( HasRowid(pTab) ){
       /* For a rowid table, initialize the RowSet to an empty set */
       pPk = 0;
-      assert( nPk==1 );
-      iRowSet = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, iRowSet);
-    }else{
+      ప్రతిజ్ఞా( nPk==1 );
+      i_అడ్డువరుస_సమితి = ++pParse->nMem;
+      sqlite3_Vdbe_కూడు_Op2(v, OP_Null, 0, i_అడ్డువరుస_సమితి);
+    }లేకపోతే{
       /* For a WITHOUT ROWID table, create an ephemeral table used to
       ** hold all primary keys for rows to be deleted. */
-      pPk = sqlite3PrimaryKeyIndex(pTab);
-      assert( pPk!=0 );
-      nPk = pPk->nKeyCol;
+      pPk = sqlite3_Primary_కీలకం_సూచీ(pTab);
+      ప్రతిజ్ఞా( pPk!=0 );
+      nPk = pPk->n_కీలకం_నిలువు;
       iPk = pParse->nMem+1;
       pParse->nMem += nPk;
       iEphCur = pParse->nTab++;
-      addrEphOpen = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iEphCur, nPk);
-      sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+      addrEphOpen = sqlite3_Vdbe_కూడు_Op2(v, OP_OpenEphemeral, iEphCur, nPk);
+      sqlite3_Vdbe_సమితి_P4_కీలకం_Info(pParse, pPk);
     }
  
     /* Construct a query to find the rowid or primary key for every row
@@ -524,64 +524,64 @@ void sqlite3DeleteFrom(
     **  ONEPASS_MULTI:  One-pass approach - any number of rows may be deleted.
     */
     pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, 0, 0,0,wcf,iTabCur+1);
-    if( pWInfo==0 ) goto delete_from_cleanup;
+    ఒకవేళ( pWInfo==0 ) వెళ్ళు delete_from_cleanup;
     eOnePass = sqlite3WhereOkOnePass(pWInfo, aiCurOnePass);
-    assert( IsVirtual(pTab)==0 || eOnePass!=ONEPASS_MULTI );
-    assert( IsVirtual(pTab) || bComplex || eOnePass!=ONEPASS_OFF
+    ప్రతిజ్ఞా( IsVirtual(pTab)==0 || eOnePass!=ONEPASS_MULTI );
+    ప్రతిజ్ఞా( IsVirtual(pTab) || bComplex || eOnePass!=ONEPASS_OFF
             || OptimizationDisabled(db, SQLITE_OnePass) );
-    if( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
-    if( sqlite3WhereUsesDeferredSeek(pWInfo) ){
-      sqlite3VdbeAddOp1(v, OP_FinishSeek, iTabCur);
+    ఒకవేళ( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
+    ఒకవేళ( sqlite3_Where_ఉపయోగిస్తుంది_Deferred_Seek(pWInfo) ){
+      sqlite3_Vdbe_కూడు_Op1(v, OP_ముగింపు_Seek, iTabCur);
     }
  
     /* Keep track of the number of rows to be deleted */
-    if( memCnt ){
-      sqlite3VdbeAddOp2(v, OP_AddImm, memCnt, 1);
+    ఒకవేళ( memCnt ){
+      sqlite3_Vdbe_కూడు_Op2(v, OP_కూడు_Imm, memCnt, 1);
     }
  
     /* Extract the rowid or primary key for the current row */
-    if( pPk ){
-      for(i=0; i<nPk; i++){
-        assert( pPk->aiColumn[i]>=0 );
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur,
-                                        pPk->aiColumn[i], iPk+i);
+    ఒకవేళ( pPk ){
+      కొరకు(i=0; i<nPk; i++){
+        ప్రతిజ్ఞా( pPk->ai_స్తంభం[i]>=0 );
+        sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, iTabCur,
+                                        pPk->ai_స్తంభం[i], iPk+i);
       }
-      iKey = iPk;
-    }else{
-      iKey = ++pParse->nMem;
-      sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur, -1, iKey);
+      i_కీలకం = iPk;
+    }లేకపోతే{
+      i_కీలకం = ++pParse->nMem;
+      sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, iTabCur, -1, i_కీలకం);
     }
  
-    if( eOnePass!=ONEPASS_OFF ){
+    ఒకవేళ( eOnePass!=ONEPASS_OFF ){
       /* For ONEPASS, no need to store the rowid/primary-key. There is only
       ** one, so just keep it in its register(s) and fall through to the
       ** delete code.  */
-      nKey = nPk; /* OP_Found will use an unpacked key */
-      aToOpen = sqlite3DbMallocRawNN(db, nIdx+2);
-      if( aToOpen==0 ){
-        sqlite3WhereEnd(pWInfo);
-        goto delete_from_cleanup;
+      n_కీలకం = nPk; /* OP_Found will use an unpacked key */
+      a_గమ్యం_Open = sqlite3DbMallocRawNN(db, nIdx+2);
+      ఒకవేళ( a_గమ్యం_Open==0 ){
+        sqlite3_Where_చివర(pWInfo);
+        వెళ్ళు delete_from_cleanup;
       }
-      memset(aToOpen, 1, nIdx+1);
-      aToOpen[nIdx+1] = 0;
-      if( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iTabCur] = 0;
-      if( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iTabCur] = 0;
-      if( addrEphOpen ) sqlite3VdbeChangeToNoop(v, addrEphOpen);
+      memset(a_గమ్యం_Open, 1, nIdx+1);
+      a_గమ్యం_Open[nIdx+1] = 0;
+      ఒకవేళ( aiCurOnePass[0]>=0 ) a_గమ్యం_Open[aiCurOnePass[0]-iTabCur] = 0;
+      ఒకవేళ( aiCurOnePass[1]>=0 ) a_గమ్యం_Open[aiCurOnePass[1]-iTabCur] = 0;
+      ఒకవేళ( addrEphOpen ) sqlite3_Vdbe_Change_గమ్యం_Noop(v, addrEphOpen);
       addrBypass = sqlite3VdbeMakeLabel(pParse);
-    }else{
-      if( pPk ){
+    }లేకపోతే{
+      ఒకవేళ( pPk ){
         /* Add the PK key for this row to the temporary table */
-        iKey = ++pParse->nMem;
-        nKey = 0;   /* Zero tells OP_Found to use a composite key */
-        sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, iKey,
-            sqlite3IndexAffinityStr(pParse->db, pPk), nPk);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iEphCur, iKey, iPk, nPk);
-      }else{
+        i_కీలకం = ++pParse->nMem;
+        n_కీలకం = 0;   /* Zero tells OP_Found to use a composite key */
+        sqlite3_Vdbe_కూడు_Op4(v, OP_Make_రికార్డు, iPk, nPk, i_కీలకం,
+            sqlite3_సూచీ_Affinity_Str(pParse->db, pPk), nPk);
+        sqlite3_Vdbe_కూడు_Op4_Int(v, OP_Idx_చొప్పించు, iEphCur, i_కీలకం, iPk, nPk);
+      }లేకపోతే{
         /* Add the rowid of the row to be deleted to the RowSet */
-        nKey = 1;  /* OP_DeferredSeek always uses a single rowid */
-        sqlite3VdbeAddOp2(v, OP_RowSetAdd, iRowSet, iKey);
+        n_కీలకం = 1;  /* OP_DeferredSeek always uses a single rowid */
+        sqlite3_Vdbe_కూడు_Op2(v, OP_అడ్డువరుస_సమితి_కూడు, i_అడ్డువరుస_సమితి, i_కీలకం);
       }
-      sqlite3WhereEnd(pWInfo);
+      sqlite3_Where_చివర(pWInfo);
     }
  
     /* Unless this is a view, open cursors for the table we are
@@ -589,78 +589,78 @@ void sqlite3DeleteFrom(
     ** only effect this statement has is to fire the INSTEAD OF
     ** triggers.
     */
-    if( !isView ){
-      int iAddrOnce = 0;
-      if( eOnePass==ONEPASS_MULTI ){
-        iAddrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+    ఒకవేళ( !isView ){
+      పూర్ణాంకం iAddrOnce = 0;
+      ఒకవేళ( eOnePass==ONEPASS_MULTI ){
+        iAddrOnce = sqlite3_Vdbe_కూడు_Op0(v, OP_Once); VdbeCoverage(v);
       }
       testcase( IsVirtual(pTab) );
-      sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, OPFLAG_FORDELETE,
-                                 iTabCur, aToOpen, &iDataCur, &iIdxCur);
-      assert( pPk || IsVirtual(pTab) || iDataCur==iTabCur );
-      assert( pPk || IsVirtual(pTab) || iIdxCur==iDataCur+1 );
-      if( eOnePass==ONEPASS_MULTI ){
-        sqlite3VdbeJumpHereOrPopInst(v, iAddrOnce);
+      sqlite3_Open_పట్టిక_And_Indices(pParse, pTab, OP_OpenWrite, OPFLAG_FORDELETE,
+                                 iTabCur, a_గమ్యం_Open, &i_దత్తాంశం_Cur, &iIdxCur);
+      ప్రతిజ్ఞా( pPk || IsVirtual(pTab) || i_దత్తాంశం_Cur==iTabCur );
+      ప్రతిజ్ఞా( pPk || IsVirtual(pTab) || iIdxCur==i_దత్తాంశం_Cur+1 );
+      ఒకవేళ( eOnePass==ONEPASS_MULTI ){
+        sqlite3_Vdbe_Jump_ఇక్కడ_Or_తీయి_Inst(v, iAddrOnce);
       }
     }
  
     /* Set up a loop over the rowids/primary-keys that were found in the
     ** where-clause loop above.
     */
-    if( eOnePass!=ONEPASS_OFF ){
-      assert( nKey==nPk );  /* OP_Found will use an unpacked key */
-      if( !IsVirtual(pTab) && aToOpen[iDataCur-iTabCur] ){
-        assert( pPk!=0 || IsView(pTab) );
-        sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, addrBypass, iKey, nKey);
+    ఒకవేళ( eOnePass!=ONEPASS_OFF ){
+      ప్రతిజ్ఞా( n_కీలకం==nPk );  /* OP_Found will use an unpacked key */
+      ఒకవేళ( !IsVirtual(pTab) && a_గమ్యం_Open[i_దత్తాంశం_Cur-iTabCur] ){
+        ప్రతిజ్ఞా( pPk!=0 || IsView(pTab) );
+        sqlite3_Vdbe_కూడు_Op4_Int(v, OP_Not_దొరికింది, i_దత్తాంశం_Cur, addrBypass, i_కీలకం, n_కీలకం);
         VdbeCoverage(v);
       }
-    }else if( pPk ){
-      addrLoop = sqlite3VdbeAddOp1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
-      if( IsVirtual(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Column, iEphCur, 0, iKey);
-      }else{
-        sqlite3VdbeAddOp2(v, OP_RowData, iEphCur, iKey);
+    }లేకపోతే ఒకవేళ( pPk ){
+      addrLoop = sqlite3_Vdbe_కూడు_Op1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
+      ఒకవేళ( IsVirtual(pTab) ){
+        sqlite3_Vdbe_కూడు_Op3(v, OP_స్తంభం, iEphCur, 0, i_కీలకం);
+      }లేకపోతే{
+        sqlite3_Vdbe_కూడు_Op2(v, OP_అడ్డువరుస_దత్తాంశం, iEphCur, i_కీలకం);
       }
-      assert( nKey==0 );  /* OP_Found will use a composite key */
-    }else{
-      addrLoop = sqlite3VdbeAddOp3(v, OP_RowSetRead, iRowSet, 0, iKey);
+      ప్రతిజ్ఞా( n_కీలకం==0 );  /* OP_Found will use a composite key */
+    }లేకపోతే{
+      addrLoop = sqlite3_Vdbe_కూడు_Op3(v, OP_అడ్డువరుస_సమితి_Read, i_అడ్డువరుస_సమితి, 0, i_కీలకం);
       VdbeCoverage(v);
-      assert( nKey==1 );
+      ప్రతిజ్ఞా( n_కీలకం==1 );
     } 
  
     /* Delete the row */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+    ఒకవేళ( IsVirtual(pTab) ){
+      స్థిరరాశి అక్షరం *pVTab = (స్థిరరాశి అక్షరం *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
-      assert( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
+      ప్రతిజ్ఞా( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
       sqlite3MayAbort(pParse);
-      if( eOnePass==ONEPASS_SINGLE ){
-        sqlite3VdbeAddOp1(v, OP_Close, iTabCur);
-        if( sqlite3IsToplevel(pParse) ){
+      ఒకవేళ( eOnePass==ONEPASS_SINGLE ){
+        sqlite3_Vdbe_కూడు_Op1(v, OP_Close, iTabCur);
+        ఒకవేళ( sqlite3IsToplevel(pParse) ){
           pParse->isMultiWrite = 0;
         }
       }
-      sqlite3VdbeAddOp4(v, OP_VUpdate, 0, 1, iKey, pVTab, P4_VTAB);
+      sqlite3_Vdbe_కూడు_Op4(v, OP_VUpdate, 0, 1, i_కీలకం, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, OE_Abort);
-    }else
-#endif
+    }లేకపోతే
+#అయితే_ముగింపు
     {
-      int count = (pParse->nested==0);    /* True to count changes */
-      sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-          iKey, nKey, count, OE_Default, eOnePass, aiCurOnePass[1]);
+      పూర్ణాంకం లెక్క = (pParse->nested==0);    /* True to count changes */
+      sqlite3_Generate_అడ్డువరుస_Delete(pParse, pTab, pTrigger, i_దత్తాంశం_Cur, iIdxCur,
+          i_కీలకం, n_కీలకం, లెక్క, OE_Default, eOnePass, aiCurOnePass[1]);
     }
  
     /* End of the loop over all rowids/primary-keys. */
-    if( eOnePass!=ONEPASS_OFF ){
+    ఒకవేళ( eOnePass!=ONEPASS_OFF ){
       sqlite3VdbeResolveLabel(v, addrBypass);
-      sqlite3WhereEnd(pWInfo);
-    }else if( pPk ){
-      sqlite3VdbeAddOp2(v, OP_Next, iEphCur, addrLoop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrLoop);
-    }else{
+      sqlite3_Where_చివర(pWInfo);
+    }లేకపోతే ఒకవేళ( pPk ){
+      sqlite3_Vdbe_కూడు_Op2(v, OP_తదుపరి, iEphCur, addrLoop+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_ఇక్కడ(v, addrLoop);
+    }లేకపోతే{
       sqlite3VdbeGoto(v, addrLoop);
-      sqlite3VdbeJumpHere(v, addrLoop);
+      sqlite3_Vdbe_Jump_ఇక్కడ(v, addrLoop);
     }    
   } /* End non-truncate path */
 
@@ -668,38 +668,38 @@ void sqlite3DeleteFrom(
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
-    sqlite3AutoincrementEnd(pParse);
+  ఒకవేళ( pParse->nested==0 && pParse->pTriggerTab==0 ){
+    sqlite3_Autoincrement_చివర(pParse);
   }
 
   /* Return the number of rows that were deleted. If this routine is
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( memCnt ){
-    sqlite3CodeChangeCount(v, memCnt, "rows deleted");
+  ఒకవేళ( memCnt ){
+    sqlite3_సంకేతం_Change_లెక్క(v, memCnt, "rows deleted");
   }
 
 delete_from_cleanup:
-  sqlite3AuthContextPop(&sContext);
+  sqlite3_Auth_Context_తీయి(&sContext);
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprDelete(db, pWhere);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
-  sqlite3ExprListDelete(db, pOrderBy);
-  sqlite3ExprDelete(db, pLimit);
-#endif
-  if( aToOpen ) sqlite3DbNNFreeNN(db, aToOpen);
-  return;
+  sqlite3_సమాసం_Delete(db, pWhere);
+#ఒకవేళ defined(SQLITE_ENABLE_UPDATE_DELETE_హద్దు)
+  sqlite3_సమాసం_List_Delete(db, p_క్రమం_By);
+  sqlite3_సమాసం_Delete(db, p_హద్దు);
+#అయితే_ముగింపు
+  ఒకవేళ( a_గమ్యం_Open ) sqlite3DbNNFreeNN(db, a_గమ్యం_Open);
+  తిరిగి;
 }
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
 ** (or in another file, if this file becomes part of the amalgamation).  */
-#ifdef isView
- #undef isView
-#endif
-#ifdef pTrigger
- #undef pTrigger
-#endif
+#నిర్వచితమైతే isView
+ #నిర్వచనం_రద్దు isView
+#అయితే_ముగింపు
+#నిర్వచితమైతే pTrigger
+ #నిర్వచనం_రద్దు pTrigger
+#అయితే_ముగింపు
 
 /*
 ** This routine generates VDBE code that causes a single row of a
@@ -742,71 +742,71 @@ delete_from_cleanup:
 **   Except, this optimization is disabled if there are BEFORE triggers since
 **   the trigger body might have moved the cursor.
 */
-void sqlite3GenerateRowDelete(
+శూన్య sqlite3_Generate_అడ్డువరుస_Delete(
   Parse *pParse,     /* Parsing context */
-  Table *pTab,       /* Table containing the row to be deleted */
+  పట్టిక *pTab,       /* Table containing the row to be deleted */
   Trigger *pTrigger, /* List of triggers to (potentially) fire */
-  int iDataCur,      /* Cursor from which column data is extracted */
-  int iIdxCur,       /* First index cursor */
-  int iPk,           /* First memory cell containing the PRIMARY KEY */
+  పూర్ణాంకం i_దత్తాంశం_Cur,      /* Cursor from which column data is extracted */
+  పూర్ణాంకం iIdxCur,       /* First index cursor */
+  పూర్ణాంకం iPk,           /* First memory cell containing the PRIMARY KEY */
   i16 nPk,           /* Number of PRIMARY KEY memory cells */
-  u8 count,          /* If non-zero, increment the row change counter */
+  u8 లెక్క,          /* If non-zero, increment the row change counter */
   u8 onconf,         /* Default ON CONFLICT policy for triggers */
-  u8 eMode,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
-  int iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
+  u8 e_బహుళకం,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
+  పూర్ణాంకం iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
 ){
   Vdbe *v = pParse->pVdbe;        /* Vdbe */
-  int iOld = 0;                   /* First register in OLD.* array */
-  int iLabel;                     /* Label resolved to end of generated code */
+  పూర్ణాంకం iOld = 0;                   /* First register in OLD.* array */
+  పూర్ణాంకం iLabel;                     /* Label resolved to end of generated code */
   u8 opSeek;                      /* Seek opcode */
 
   /* Vdbe is guaranteed to have been allocated by this stage. */
-  assert( v );
+  ప్రతిజ్ఞా( v );
   VdbeModuleComment((v, "BEGIN: GenRowDel(%d,%d,%d,%d)",
-                         iDataCur, iIdxCur, iPk, (int)nPk));
+                         i_దత్తాంశం_Cur, iIdxCur, iPk, (పూర్ణాంకం)nPk));
 
   /* Seek cursor iCur to the row to delete. If this row no longer exists
   ** (this can happen if a trigger program has already deleted it), do
   ** not attempt to delete it or fire any DELETE triggers.  */
   iLabel = sqlite3VdbeMakeLabel(pParse);
-  opSeek = HasRowid(pTab) ? OP_NotExists : OP_NotFound;
-  if( eMode==ONEPASS_OFF ){
-    sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
+  opSeek = HasRowid(pTab) ? OP_NotExists : OP_Not_దొరికింది;
+  ఒకవేళ( e_బహుళకం==ONEPASS_OFF ){
+    sqlite3_Vdbe_కూడు_Op4_Int(v, opSeek, i_దత్తాంశం_Cur, iLabel, iPk, nPk);
     VdbeCoverageIf(v, opSeek==OP_NotExists);
-    VdbeCoverageIf(v, opSeek==OP_NotFound);
+    VdbeCoverageIf(v, opSeek==OP_Not_దొరికింది);
   }
 
   /* If there are any triggers to fire, allocate a range of registers to
   ** use for the old.* references in the triggers.  */
-  if( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
-    u32 mask;                     /* Mask of OLD.* columns in use */
-    int iCol;                     /* Iterator used while populating OLD.* */
-    int addrStart;                /* Start of BEFORE trigger programs */
+  ఒకవేళ( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
+    u32 ముసుగు;                     /* Mask of OLD.* columns in use */
+    పూర్ణాంకం i_నిలువు;                     /* Iterator used while populating OLD.* */
+    పూర్ణాంకం addr_ప్రారంభం;                /* Start of BEFORE trigger programs */
 
     /* TODO: Could use temporary registers here. Also could attempt to
     ** avoid copying the contents of the rowid register.  */
-    mask = sqlite3TriggerColmask(
+    ముసుగు = sqlite3TriggerColmask(
         pParse, pTrigger, 0, 0, TRIGGER_BEFORE|TRIGGER_AFTER, pTab, onconf
     );
-    mask |= sqlite3FkOldmask(pParse, pTab);
+    ముసుగు |= sqlite3FkOldmask(pParse, pTab);
     iOld = pParse->nMem+1;
-    pParse->nMem += (1 + pTab->nCol);
+    pParse->nMem += (1 + pTab->n_నిలువు);
 
     /* Populate the OLD.* pseudo-table register array. These values will be
     ** used by any BEFORE and AFTER triggers that exist.  */
-    sqlite3VdbeAddOp2(v, OP_Copy, iPk, iOld);
-    for(iCol=0; iCol<pTab->nCol; iCol++){
-      testcase( mask!=0xffffffff && iCol==31 );
-      testcase( mask!=0xffffffff && iCol==32 );
-      if( mask==0xffffffff || (iCol<=31 && (mask & MASKBIT32(iCol))!=0) ){
-        int kk = sqlite3TableColumnToStorage(pTab, iCol);
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, iCol, iOld+kk+1);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_Copy, iPk, iOld);
+    కొరకు(i_నిలువు=0; i_నిలువు<pTab->n_నిలువు; i_నిలువు++){
+      testcase( ముసుగు!=0xffffffff && i_నిలువు==31 );
+      testcase( ముసుగు!=0xffffffff && i_నిలువు==32 );
+      ఒకవేళ( ముసుగు==0xffffffff || (i_నిలువు<=31 && (ముసుగు & MASKBIT32(i_నిలువు))!=0) ){
+        పూర్ణాంకం kk = sqlite3_పట్టిక_స్తంభం_గమ్యం_Storage(pTab, i_నిలువు);
+        sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, i_దత్తాంశం_Cur, i_నిలువు, iOld+kk+1);
       }
     }
 
     /* Invoke BEFORE DELETE trigger programs. */
-    addrStart = sqlite3VdbeCurrentAddr(v);
-    sqlite3CodeRowTrigger(pParse, pTrigger,
+    addr_ప్రారంభం = sqlite3VdbeCurrentAddr(v);
+    sqlite3_సంకేతం_అడ్డువరుస_Trigger(pParse, pTrigger,
         TK_DELETE, 0, TRIGGER_BEFORE, pTab, iOld, onconf, iLabel
     );
 
@@ -818,10 +818,10 @@ void sqlite3GenerateRowDelete(
     ** Also disable the iIdxNoSeek optimization since the BEFORE trigger
     ** may have moved that cursor.
     */
-    if( addrStart<sqlite3VdbeCurrentAddr(v) ){
-      sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
+    ఒకవేళ( addr_ప్రారంభం<sqlite3VdbeCurrentAddr(v) ){
+      sqlite3_Vdbe_కూడు_Op4_Int(v, opSeek, i_దత్తాంశం_Cur, iLabel, iPk, nPk);
       VdbeCoverageIf(v, opSeek==OP_NotExists);
-      VdbeCoverageIf(v, opSeek==OP_NotFound);
+      VdbeCoverageIf(v, opSeek==OP_Not_దొరికింది);
       testcase( iIdxNoSeek>=0 );
       iIdxNoSeek = -1;
     }
@@ -842,20 +842,20 @@ void sqlite3GenerateRowDelete(
   ** the update-hook is not invoked for rows removed by REPLACE, but the
   ** pre-update-hook is.
   */
-  if( !IsView(pTab) ){
+  ఒకవేళ( !IsView(pTab) ){
     u8 p5 = 0;
-    sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,iIdxNoSeek);
-    sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, (count?OPFLAG_NCHANGE:0));
-    if( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
-      sqlite3VdbeAppendP4(v, (char*)pTab, P4_TABLE);
+    sqlite3_Generate_అడ్డువరుస_సూచీ_Delete(pParse, pTab, i_దత్తాంశం_Cur, iIdxCur,0,iIdxNoSeek);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_Delete, i_దత్తాంశం_Cur, (లెక్క?OPFLAG_NCHANGE:0));
+    ఒకవేళ( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
+      sqlite3VdbeAppendP4(v, (అక్షరం*)pTab, P4_పట్టిక);
     }
-    if( eMode!=ONEPASS_OFF ){
+    ఒకవేళ( e_బహుళకం!=ONEPASS_OFF ){
       sqlite3VdbeChangeP5(v, OPFLAG_AUXDELETE);
     }
-    if( iIdxNoSeek>=0 && iIdxNoSeek!=iDataCur ){
-      sqlite3VdbeAddOp1(v, OP_Delete, iIdxNoSeek);
+    ఒకవేళ( iIdxNoSeek>=0 && iIdxNoSeek!=i_దత్తాంశం_Cur ){
+      sqlite3_Vdbe_కూడు_Op1(v, OP_Delete, iIdxNoSeek);
     }
-    if( eMode==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
+    ఒకవేళ( e_బహుళకం==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
     sqlite3VdbeChangeP5(v, p5);
   }
 
@@ -865,8 +865,8 @@ void sqlite3GenerateRowDelete(
   sqlite3FkActions(pParse, pTab, 0, iOld, 0, 0);
 
   /* Invoke AFTER DELETE trigger programs. */
-  if( pTrigger ){
-    sqlite3CodeRowTrigger(pParse, pTrigger,
+  ఒకవేళ( pTrigger ){
+    sqlite3_సంకేతం_అడ్డువరుస_Trigger(pParse, pTrigger,
         TK_DELETE, 0, TRIGGER_AFTER, pTab, iOld, onconf, iLabel
     );
   }
@@ -896,41 +896,41 @@ void sqlite3GenerateRowDelete(
 **   3.  The "iDataCur" cursor must be already be positioned on the row
 **       that is to be deleted.
 */
-void sqlite3GenerateRowIndexDelete(
+శూన్య sqlite3_Generate_అడ్డువరుస_సూచీ_Delete(
   Parse *pParse,     /* Parsing and code generating context */
-  Table *pTab,       /* Table containing the row to be deleted */
-  int iDataCur,      /* Cursor of table holding data. */
-  int iIdxCur,       /* First index cursor */
-  int *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
-  int iIdxNoSeek     /* Do not delete from this cursor */
+  పట్టిక *pTab,       /* Table containing the row to be deleted */
+  పూర్ణాంకం i_దత్తాంశం_Cur,      /* Cursor of table holding data. */
+  పూర్ణాంకం iIdxCur,       /* First index cursor */
+  పూర్ణాంకం *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
+  పూర్ణాంకం iIdxNoSeek     /* Do not delete from this cursor */
 ){
-  int i;             /* Index loop counter */
-  int r1 = -1;       /* Register holding an index key */
-  int iPartIdxLabel; /* Jump destination for skipping partial index entries */
-  Index *pIdx;       /* Current index */
-  Index *pPrior = 0; /* Prior index */
+  పూర్ణాంకం i;             /* Index loop counter */
+  పూర్ణాంకం r1 = -1;       /* Register holding an index key */
+  పూర్ణాంకం iPartIdxLabel; /* Jump destination for skipping partial index entries */
+  సూచీ *pIdx;       /* Current index */
+  సూచీ *p_పూర్వ = 0; /* Prior index */
   Vdbe *v;           /* The prepared statement under construction */
-  Index *pPk;        /* PRIMARY KEY index, or NULL for rowid tables */
+  సూచీ *pPk;        /* PRIMARY KEY index, or NULL for rowid tables */
 
   v = pParse->pVdbe;
-  pPk = HasRowid(pTab) ? 0 : sqlite3PrimaryKeyIndex(pTab);
-  for(i=0, pIdx=pTab->pIndex; pIdx; i++, pIdx=pIdx->pNext){
-    int p3 = 0;
-    assert( iIdxCur+i!=iDataCur || pPk==pIdx );
-    if( aRegIdx!=0 && aRegIdx[i]==0 ) continue;
-    if( pIdx==pPk ) continue;
-    if( iIdxCur+i==iIdxNoSeek ) continue;
+  pPk = HasRowid(pTab) ? 0 : sqlite3_Primary_కీలకం_సూచీ(pTab);
+  కొరకు(i=0, pIdx=pTab->p_సూచీ; pIdx; i++, pIdx=pIdx->p_తదుపరి){
+    పూర్ణాంకం p3 = 0;
+    ప్రతిజ్ఞా( iIdxCur+i!=i_దత్తాంశం_Cur || pPk==pIdx );
+    ఒకవేళ( aRegIdx!=0 && aRegIdx[i]==0 ) కొనసాగు;
+    ఒకవేళ( pIdx==pPk ) కొనసాగు;
+    ఒకవేళ( iIdxCur+i==iIdxNoSeek ) కొనసాగు;
     VdbeModuleComment((v, "GenRowIdxDel for %s", pIdx->zName));
-    r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 1,
-        &iPartIdxLabel, pPrior, r1);
-    if( pIdx->bHasExpr && aRegIdx ){
+    r1 = sqlite3_Generate_సూచీ_కీలకం(pParse, pIdx, i_దత్తాంశం_Cur, 0, 1,
+        &iPartIdxLabel, p_పూర్వ, r1);
+    ఒకవేళ( pIdx->b_Has_సమాసం && aRegIdx ){
       p3 = aRegIdx[i];
     }
-    sqlite3VdbeAddOp3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
-    sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->nKeyCol : pIdx->nColumn);
+    sqlite3_Vdbe_కూడు_Op3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
+    sqlite3VdbeChangeP4(v, -1, (స్థిరరాశి అక్షరం*)pIdx, P4_సూచీ);
+    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->n_కీలకం_నిలువు : pIdx->n_స్తంభం);
     sqlite3ResolvePartIdxLabel(pParse, iPartIdxLabel);
-    pPrior = pIdx;
+    p_పూర్వ = pIdx;
   }
 }
 
@@ -965,49 +965,49 @@ void sqlite3GenerateRowIndexDelete(
 ** on a table with multiple indices, and especially with the ROWID or
 ** PRIMARY KEY columns of the index.
 */
-int sqlite3GenerateIndexKey(
+పూర్ణాంకం sqlite3_Generate_సూచీ_కీలకం(
   Parse *pParse,       /* Parsing context */
-  Index *pIdx,         /* The index for which to generate a key */
-  int iDataCur,        /* Cursor number from which to take column data */
-  int regOut,          /* Put the new key into this register if not 0 */
-  int prefixOnly,      /* Compute only a unique prefix of the key */
-  int *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
-  Index *pPrior,       /* Previously generated index key */
-  int regPrior         /* Register holding previous generated key */
+  సూచీ *pIdx,         /* The index for which to generate a key */
+  పూర్ణాంకం i_దత్తాంశం_Cur,        /* Cursor number from which to take column data */
+  పూర్ణాంకం reg_బహిర్గతం,          /* Put the new key into this register if not 0 */
+  పూర్ణాంకం ఉపసర్గ_Only,      /* Compute only a unique prefix of the key */
+  పూర్ణాంకం *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
+  సూచీ *p_పూర్వ,       /* Previously generated index key */
+  పూర్ణాంకం reg_పూర్వ         /* Register holding previous generated key */
 ){
   Vdbe *v = pParse->pVdbe;
-  int j;
-  int regBase;
-  int nCol;
+  పూర్ణాంకం j;
+  పూర్ణాంకం reg_పునాది;
+  పూర్ణాంకం n_నిలువు;
 
-  if( piPartIdxLabel ){
-    if( pIdx->pPartIdxWhere ){
+  ఒకవేళ( piPartIdxLabel ){
+    ఒకవేళ( pIdx->pPartIdxWhere ){
       *piPartIdxLabel = sqlite3VdbeMakeLabel(pParse);
-      pParse->iSelfTab = iDataCur + 1;
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
+      pParse->iSelfTab = i_దత్తాంశం_Cur + 1;
+      sqlite3_సమాసం_If_False_Dup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
-      pPrior = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
+      p_పూర్వ = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
                   ** pPartIdxWhere may have corrupted regPrior registers */
-    }else{
+    }లేకపోతే{
       *piPartIdxLabel = 0;
     }
   }
-  nCol = (prefixOnly && pIdx->uniqNotNull) ? pIdx->nKeyCol : pIdx->nColumn;
-  regBase = sqlite3GetTempRange(pParse, nCol);
-  if( pPrior && (regBase!=regPrior || pPrior->pPartIdxWhere) ) pPrior = 0;
-  for(j=0; j<nCol; j++){
-    int iTabCol;
-    if( pPrior
-     && pPrior->aiColumn[j]==pIdx->aiColumn[j]
-     && pPrior->aiColumn[j]!=XN_EXPR
+  n_నిలువు = (ఉపసర్గ_Only && pIdx->uniqNotNull) ? pIdx->n_కీలకం_నిలువు : pIdx->n_స్తంభం;
+  reg_పునాది = sqlite3_Get_తాత్కాలిక_Range(pParse, n_నిలువు);
+  ఒకవేళ( p_పూర్వ && (reg_పునాది!=reg_పూర్వ || p_పూర్వ->pPartIdxWhere) ) p_పూర్వ = 0;
+  కొరకు(j=0; j<n_నిలువు; j++){
+    పూర్ణాంకం i_Tab_నిలువు;
+    ఒకవేళ( p_పూర్వ
+     && p_పూర్వ->ai_స్తంభం[j]==pIdx->ai_స్తంభం[j]
+     && p_పూర్వ->ai_స్తంభం[j]!=XN_సమాసం
     ){
       /* This column was already computed by the previous index */
-      continue;
+      కొనసాగు;
     }
-    sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iDataCur, j, regBase+j);
-    if( (iTabCol = pIdx->aiColumn[j])>=0 
-     && (pIdx->pTable->aCol[iTabCol].colFlags & COLFLAG_VIRTUAL)==0
+    sqlite3_సమాసం_సంకేతం_ఎక్కించు_సూచీ_స్తంభం(pParse, pIdx, i_దత్తాంశం_Cur, j, reg_పునాది+j);
+    ఒకవేళ( (i_Tab_నిలువు = pIdx->ai_స్తంభం[j])>=0 
+     && (pIdx->p_పట్టిక->a_నిలువు[i_Tab_నిలువు].నిలువు_Flags & COLFLAG_VIRTUAL)==0
     ){
       /* If the column affinity is REAL but the number is an integer, then it
       ** might be stored in the table as an integer (using a compact
@@ -1015,14 +1015,14 @@ int sqlite3GenerateIndexKey(
       ** But we are getting ready to store this value back into an index, where
       ** it should be converted by to INTEGER again.  So omit the
       ** OP_RealAffinity opcode if it is present */
-      sqlite3VdbeDeletePriorOpcode(v, OP_RealAffinity);
+      sqlite3_Vdbe_Delete_పూర్వ_Opcode(v, OP_RealAffinity);
     }
   }
-  if( regOut ){
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase, nCol, regOut);
+  ఒకవేళ( reg_బహిర్గతం ){
+    sqlite3_Vdbe_కూడు_Op3(v, OP_Make_రికార్డు, reg_పునాది, n_నిలువు, reg_బహిర్గతం);
   }
-  sqlite3ReleaseTempRange(pParse, regBase, nCol);
-  return regBase;
+  sqlite3_Release_తాత్కాలిక_Range(pParse, reg_పునాది, n_నిలువు);
+  తిరిగి reg_పునాది;
 }
 
 /*
@@ -1030,8 +1030,8 @@ int sqlite3GenerateIndexKey(
 ** because it was a partial index, then this routine should be called to
 ** resolve that label.
 */
-void sqlite3ResolvePartIdxLabel(Parse *pParse, int iLabel){
-  if( iLabel ){
+శూన్య sqlite3ResolvePartIdxLabel(Parse *pParse, పూర్ణాంకం iLabel){
+  ఒకవేళ( iLabel ){
     sqlite3VdbeResolveLabel(pParse->pVdbe, iLabel);
   }
 }

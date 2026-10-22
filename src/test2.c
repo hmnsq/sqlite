@@ -13,24 +13,24 @@
 ** is not included in the SQLite library.  It is used for automated
 ** testing of the SQLite library.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <ctype.h>
 
-extern const char *sqlite3ErrName(int);
+బాహ్య స్థిరరాశి అక్షరం *sqlite3ErrName(పూర్ణాంకం);
 
 /*
 ** Page size and reserved size used for testing.
 */
-static int test_pagesize = 1024;
+స్థిర పూర్ణాంకం test_pagesize = 1024;
 
 /*
 ** Dummy page reinitializer
 */
-static void pager_test_reiniter(DbPage *pNotUsed){
-  return;
+స్థిర శూన్య pager_test_reiniter(Db_పుట *p_Not_వాడిన){
+  తిరిగి;
 }
 
 /*
@@ -38,34 +38,34 @@ static void pager_test_reiniter(DbPage *pNotUsed){
 **
 ** Open a new pager
 */
-static int SQLITE_TCLAPI pager_open(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_open(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  u32 pageSize;
+  u32 పుట_కొలత;
   Pager *pPager;
-  int nPage;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " FILENAME N-PAGE\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం n_పుట;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " FILENAME N-PAGE\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[2], &nPage) ) return TCL_ERROR;
-  rc = sqlite3PagerOpen(sqlite3_vfs_find(0), &pPager, argv[1], 0, 0,
+  ఒకవేళ( Tcl_GetInt(interp, argv[2], &n_పుట) ) తిరిగి TCL_ERROR;
+  rc = sqlite3PagerOpen(sqlite3_vfs_కనుగొను(0), &pPager, argv[1], 0, 0,
       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_MAIN_DB,
       pager_test_reiniter);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  sqlite3PagerSetCachesize(pPager, nPage);
-  pageSize = test_pagesize;
-  sqlite3PagerSetPagesize(pPager, &pageSize, -1);
-  Tcl_AppendResult(interp, sqlite3TestPtrToText(pPager), NULL);
-  return TCL_OK;
+  sqlite3_Pager_సమితి_Cachesize(pPager, n_పుట);
+  పుట_కొలత = test_pagesize;
+  sqlite3_Pager_సమితి_Pagesize(pPager, &పుట_కొలత, -1);
+  Tcl_Append_ఫలితం(interp, sqlite3_Test_Ptr_గమ్యం_పాఠ్యం(pPager), ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -73,26 +73,26 @@ static int SQLITE_TCLAPI pager_open(
 **
 ** Close the given pager.
 */
-static int SQLITE_TCLAPI pager_close(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_close(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerClose(pPager, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -100,26 +100,26 @@ static int SQLITE_TCLAPI pager_close(
 **
 ** Rollback changes
 */
-static int SQLITE_TCLAPI pager_rollback(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_rollback(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerRollback(pPager);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -127,31 +127,31 @@ static int SQLITE_TCLAPI pager_rollback(
 **
 ** Commit all changes
 */
-static int SQLITE_TCLAPI pager_commit(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_commit(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerCommitPhaseOne(pPager, 0, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
   rc = sqlite3PagerCommitPhaseTwo(pPager);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -159,26 +159,26 @@ static int SQLITE_TCLAPI pager_commit(
 **
 ** Start a new checkpoint.
 */
-static int SQLITE_TCLAPI pager_stmt_begin(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_stmt_begin(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerOpenSavepoint(pPager, 1);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -186,27 +186,27 @@ static int SQLITE_TCLAPI pager_stmt_begin(
 **
 ** Rollback changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_rollback(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_stmt_rollback(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerSavepoint(pPager, SAVEPOINT_ROLLBACK, 0);
   sqlite3PagerSavepoint(pPager, SAVEPOINT_RELEASE, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -214,26 +214,26 @@ static int SQLITE_TCLAPI pager_stmt_rollback(
 **
 ** Commit changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_commit(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_stmt_commit(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   rc = sqlite3PagerSavepoint(pPager, SAVEPOINT_RELEASE, 0);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -241,32 +241,32 @@ static int SQLITE_TCLAPI pager_stmt_commit(
 **
 ** Return pager statistics.
 */
-static int SQLITE_TCLAPI pager_stats(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_stats(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int i, *a;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం i, *a;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
   a = sqlite3PagerStats(pPager);
-  for(i=0; i<9; i++){
-    static char *zName[] = {
+  కొరకు(i=0; i<9; i++){
+    స్థిర అక్షరం *zName[] = {
       "ref", "page", "max", "size", "state", "err",
       "hit", "miss", "ovfl",
     };
-    char zBuf[100];
+    అక్షరం zBuf[100];
     Tcl_AppendElement(interp, zName[i]);
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%d",a[i]);
+    sqlite3_snprintf(పరిమాణం(zBuf),zBuf,"%d",a[i]);
     Tcl_AppendElement(interp, zBuf);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -274,25 +274,25 @@ static int SQLITE_TCLAPI pager_stats(
 **
 ** Return the size of the database file.
 */
-static int SQLITE_TCLAPI pager_pagecount(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_pagecount(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  char zBuf[100];
-  int nPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID\"", NULL);
-    return TCL_ERROR;
+  అక్షరం zBuf[100];
+  పూర్ణాంకం n_పుట;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  sqlite3PagerPagecount(pPager, &nPage);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", nPage);
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  sqlite3PagerPagecount(pPager, &n_పుట);
+  sqlite3_snprintf(పరిమాణం(zBuf), zBuf, "%d", n_పుట);
+  Tcl_Append_ఫలితం(interp, zBuf, ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -300,33 +300,33 @@ static int SQLITE_TCLAPI pager_pagecount(
 **
 ** Return a pointer to a page from the database.
 */
-static int SQLITE_TCLAPI page_get(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_get(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  DbPage *pPage = 0;
-  int pgno;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  Db_పుట *p_పుట = 0;
+  పూర్ణాంకం pgno;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
-  rc = sqlite3PagerSharedLock(pPager);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3PagerGet(pPager, pgno, &pPage, 0);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  ఒకవేళ( Tcl_GetInt(interp, argv[2], &pgno) ) తిరిగి TCL_ERROR;
+  rc = sqlite3_Pager_Shared_తాళం(pPager);
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = sqlite3PagerGet(pPager, pgno, &p_పుట, 0);
   }
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  Tcl_AppendResult(interp, sqlite3TestPtrToText(pPage), NULL);
-  return TCL_OK;
+  Tcl_Append_ఫలితం(interp, sqlite3_Test_Ptr_గమ్యం_పాఠ్యం(p_పుట), ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -335,49 +335,49 @@ static int SQLITE_TCLAPI page_get(
 ** Return a pointer to a page if the page is already in cache.
 ** If not in cache, return an empty string.
 */
-static int SQLITE_TCLAPI page_lookup(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_lookup(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  DbPage *pPage;
-  int pgno;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  Db_పుట *p_పుట;
+  పూర్ణాంకం pgno;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
-  pPage = sqlite3PagerLookup(pPager, pgno);
-  if( pPage ){
-    Tcl_AppendResult(interp, sqlite3TestPtrToText(pPage), NULL);
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  ఒకవేళ( Tcl_GetInt(interp, argv[2], &pgno) ) తిరిగి TCL_ERROR;
+  p_పుట = sqlite3PagerLookup(pPager, pgno);
+  ఒకవేళ( p_పుట ){
+    Tcl_Append_ఫలితం(interp, sqlite3_Test_Ptr_గమ్యం_పాఠ్యం(p_పుట), ఖాళీ);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Usage:   pager_truncate ID PGNO
 */
-static int SQLITE_TCLAPI pager_truncate(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI pager_truncate(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   Pager *pPager;
-  int pgno;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " ID PGNO\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం pgno;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " ID PGNO\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPager = sqlite3TestTextToPtr(argv[1]);
-  if( Tcl_GetInt(interp, argv[2], &pgno) ) return TCL_ERROR;
+  pPager = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  ఒకవేళ( Tcl_GetInt(interp, argv[2], &pgno) ) తిరిగి TCL_ERROR;
   sqlite3PagerTruncateImage(pPager, pgno);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 
@@ -386,21 +386,21 @@ static int SQLITE_TCLAPI pager_truncate(
 **
 ** Drop a pointer to a page.
 */
-static int SQLITE_TCLAPI page_unref(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_unref(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  Db_పుట *p_పుట;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  sqlite3PagerUnref(pPage);
-  return TCL_OK;
+  p_పుట = (Db_పుట *)sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  sqlite3PagerUnref(p_పుట);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -408,23 +408,23 @@ static int SQLITE_TCLAPI page_unref(
 **
 ** Return the content of a page
 */
-static int SQLITE_TCLAPI page_read(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_read(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  char zBuf[100];
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  అక్షరం zBuf[100];
+  Db_పుట *p_పుట;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPage = sqlite3TestTextToPtr(argv[1]);
-  memcpy(zBuf, sqlite3PagerGetData(pPage), sizeof(zBuf));
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  p_పుట = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  జ్ఞాపకం_నకలు(zBuf, sqlite3_Pager_Get_దత్తాంశం(p_పుట), పరిమాణం(zBuf));
+  Tcl_Append_ఫలితం(interp, zBuf, ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -432,23 +432,23 @@ static int SQLITE_TCLAPI page_read(
 **
 ** Return the page number for a page.
 */
-static int SQLITE_TCLAPI page_number(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_సంఖ్య(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  char zBuf[100];
-  DbPage *pPage;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE\"", NULL);
-    return TCL_ERROR;
+  అక్షరం zBuf[100];
+  Db_పుట *p_పుట;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " PAGE\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", sqlite3PagerPagenumber(pPage));
-  Tcl_AppendResult(interp, zBuf, NULL);
-  return TCL_OK;
+  p_పుట = (Db_పుట *)sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  sqlite3_snprintf(పరిమాణం(zBuf), zBuf, "%d", sqlite3PagerPagenumber(p_పుట));
+  Tcl_Append_ఫలితం(interp, zBuf, ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -456,33 +456,33 @@ static int SQLITE_TCLAPI page_number(
 **
 ** Write something into a page.
 */
-static int SQLITE_TCLAPI page_write(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI పుట_write(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  DbPage *pPage;
-  char *pData;
-  int rc;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " PAGE DATA\"", NULL);
-    return TCL_ERROR;
+  Db_పుట *p_పుట;
+  అక్షరం *p_దత్తాంశం;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " PAGE DATA\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pPage = (DbPage *)sqlite3TestTextToPtr(argv[1]);
-  rc = sqlite3PagerWrite(pPage);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  p_పుట = (Db_పుట *)sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(argv[1]);
+  rc = sqlite3PagerWrite(p_పుట);
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  pData = sqlite3PagerGetData(pPage);
-  strncpy(pData, argv[2], test_pagesize-1);
-  pData[test_pagesize-1] = 0;
-  return TCL_OK;
+  p_దత్తాంశం = sqlite3_Pager_Get_దత్తాంశం(p_పుట);
+  strncpy(p_దత్తాంశం, argv[2], test_pagesize-1);
+  p_దత్తాంశం[test_pagesize-1] = 0;
+  తిరిగి TCL_OK;
 }
 
-#ifndef SQLITE_OMIT_DISKIO
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_DISKIO
 /*
 ** Usage:   fake_big_file  N  FILENAME
 **
@@ -492,60 +492,60 @@ static int SQLITE_TCLAPI page_write(
 ** new pages after N.  If N is 2096 or bigger, this will test the
 ** ability of SQLite to write to large files.
 */
-static int SQLITE_TCLAPI fake_big_file(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI fake_big_file(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
   sqlite3_vfs *pVfs;
   sqlite3_file *fd = 0;
-  int rc;
-  int n;
-  i64 offset;
-  char *zFile;
-  int nFile;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-       " N-MEGABYTES FILE\"", NULL);
-    return TCL_ERROR;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం n;
+  i64 స్థానభ్రంశం;
+  అక్షరం *zFile;
+  పూర్ణాంకం nFile;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+       " N-MEGABYTES FILE\"", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[1], &n) ) return TCL_ERROR;
-#if defined(_WIN32)
-  if( n>2 ){
-    Tcl_AppendResult(interp, "cannot create ", argv[1],
+  ఒకవేళ( Tcl_GetInt(interp, argv[1], &n) ) తిరిగి TCL_ERROR;
+#ఒకవేళ defined(_WIN32)
+  ఒకవేళ( n>2 ){
+    Tcl_Append_ఫలితం(interp, "cannot create ", argv[1],
        "MB file because Windows "
-       "does not support sparse files", (void*)0);
-    return TCL_ERROR;
+       "does not support sparse files", (శూన్య*)0);
+    తిరిగి TCL_ERROR;
   }
-#endif
+#అయితే_ముగింపు
 
-  pVfs = sqlite3_vfs_find(0);
-  nFile = (int)strlen(argv[2]);
+  pVfs = sqlite3_vfs_కనుగొను(0);
+  nFile = (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(argv[2]);
   zFile = sqlite3_malloc( nFile+2 );
-  if( zFile==0 ) return TCL_ERROR;
-  memcpy(zFile, argv[2], nFile+1);
+  ఒకవేళ( zFile==0 ) తిరిగి TCL_ERROR;
+  జ్ఞాపకం_నకలు(zFile, argv[2], nFile+1);
   zFile[nFile+1] = 0;
   rc = sqlite3OsOpenMalloc(pVfs, zFile, &fd, 
       (SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_MAIN_DB), 0
   );
-  if( rc ){
-    Tcl_AppendResult(interp, "open failed: ", sqlite3ErrName(rc), NULL);
+  ఒకవేళ( rc ){
+    Tcl_Append_ఫలితం(interp, "open failed: ", sqlite3ErrName(rc), ఖాళీ);
     sqlite3_free(zFile);
-    return TCL_ERROR;
+    తిరిగి TCL_ERROR;
   }
-  offset = n;
-  offset *= 1024*1024;
-  rc = sqlite3OsWrite(fd, "Hello, World!", 14, offset);
+  స్థానభ్రంశం = n;
+  స్థానభ్రంశం *= 1024*1024;
+  rc = sqlite3OsWrite(fd, "Hello, World!", 14, స్థానభ్రంశం);
   sqlite3OsCloseFree(fd);
   sqlite3_free(zFile);
-  if( rc ){
-    Tcl_AppendResult(interp, "write failed: ", sqlite3ErrName(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc ){
+    Tcl_Append_ఫలితం(interp, "write failed: ", sqlite3ErrName(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
-#endif
+#అయితే_ముగింపు
 
 
 /*
@@ -553,62 +553,62 @@ static int SQLITE_TCLAPI fake_big_file(
 **
 ** Set the PENDING_BYTE using the sqlite3_test_control() interface.
 */
-static int SQLITE_TCLAPI testPendingByte(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI testPendingByte(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  int pbyte;
-  int rc;
-  if( argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " PENDING-BYTE\"", (void*)0);
-    return TCL_ERROR;
+  పూర్ణాంకం pbyte;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+                     " PENDING-BYTE\"", (శూన్య*)0);
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetInt(interp, argv[1], &pbyte) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetInt(interp, argv[1], &pbyte) ) తిరిగి TCL_ERROR;
   rc = sqlite3_test_control(SQLITE_TESTCTRL_PENDING_BYTE, pbyte);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** The sqlite3FaultSim() callback:
 */
-static Tcl_Interp *faultSimInterp = 0;
-static int faultSimScriptSize = 0;
-static char *faultSimScript;
-static int faultSimCallback(int x){
-  char zInt[30];
-  int i;
-  int isNeg;
-  int rc;
-  if( x==0 ){
-    memcpy(faultSimScript+faultSimScriptSize, "0", 2);
-  }else{
+స్థిర Tcl_Interp *faultSimInterp = 0;
+స్థిర పూర్ణాంకం fault_Sim_Script_కొలత = 0;
+స్థిర అక్షరం *faultSimScript;
+స్థిర పూర్ణాంకం faultSimCallback(పూర్ణాంకం x){
+  అక్షరం zInt[30];
+  పూర్ణాంకం i;
+  పూర్ణాంకం isNeg;
+  పూర్ణాంకం rc;
+  ఒకవేళ( x==0 ){
+    జ్ఞాపకం_నకలు(faultSimScript+fault_Sim_Script_కొలత, "0", 2);
+  }లేకపోతే{
     /* Convert x to text without using any sqlite3 routines */
-    if( x<0 ){
+    ఒకవేళ( x<0 ){
       isNeg = 1;
       x = -x;
-    }else{
+    }లేకపోతే{
       isNeg = 0;
     }
-    zInt[sizeof(zInt)-1] = 0;
-    for(i=sizeof(zInt)-2; i>0 && x>0; i--, x /= 10){
+    zInt[పరిమాణం(zInt)-1] = 0;
+    కొరకు(i=పరిమాణం(zInt)-2; i>0 && x>0; i--, x /= 10){
       zInt[i] = (x%10) + '0';
     }
-    if( isNeg ) zInt[i--] = '-';
-    memcpy(faultSimScript+faultSimScriptSize, zInt+i+1, sizeof(zInt)-i-1);
+    ఒకవేళ( isNeg ) zInt[i--] = '-';
+    జ్ఞాపకం_నకలు(faultSimScript+fault_Sim_Script_కొలత, zInt+i+1, పరిమాణం(zInt)-i-1);
   }
   rc = Tcl_Eval(faultSimInterp, faultSimScript);
-  if( rc ){
+  ఒకవేళ( rc ){
     fprintf(stderr, "fault simulator script failed: [%s]", faultSimScript);
     rc = SQLITE_ERROR;
-  }else{
-    rc = atoi(Tcl_GetStringResult(faultSimInterp));
+  }లేకపోతే{
+    rc = atoi(Tcl_Get_String_ఫలితం(faultSimInterp));
   }
-  Tcl_ResetResult(faultSimInterp);
-  return rc;
+  Tcl_Reset_ఫలితం(faultSimInterp);
+  తిరిగి rc;
 }
 
 /*
@@ -618,42 +618,42 @@ static int faultSimCallback(int x){
 ** appended, whenever sqlite3FaultSim() is called.  Or, if SCRIPT is the
 ** empty string, cancel the sqlite3FaultSim() callback.
 */
-static int SQLITE_TCLAPI faultInstallCmd(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI faultInstallCmd(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  const char *zScript;
-  int nScript;
-  int rc;
-  if( argc!=1 && argc!=2 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " SCRIPT\"", (void*)0);
-    return SQLITE_ERROR;
+  స్థిరరాశి అక్షరం *zScript;
+  పూర్ణాంకం nScript;
+  పూర్ణాంకం rc;
+  ఒకవేళ( argc!=1 && argc!=2 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+                     " SCRIPT\"", (శూన్య*)0);
+    తిరిగి SQLITE_ERROR;
   }
   zScript = argc==2 ? argv[1] : "";
-  nScript = (int)strlen(zScript);
-  if( faultSimScript ){
-    free(faultSimScript);
+  nScript = (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(zScript);
+  ఒకవేళ( faultSimScript ){
+    విడుదల(faultSimScript);
     faultSimScript = 0;
   }
-  if( nScript==0 ){
+  ఒకవేళ( nScript==0 ){
     rc = sqlite3_test_control(SQLITE_TESTCTRL_FAULT_INSTALL, 0);
-  }else{
-    faultSimScript = malloc( nScript+100 );
-    if( faultSimScript==0 ){
-      Tcl_AppendResult(interp, "out of memory", (void*)0);
-      return SQLITE_ERROR;
+  }లేకపోతే{
+    faultSimScript = జ్ఞాపకం_ఇవ్వు( nScript+100 );
+    ఒకవేళ( faultSimScript==0 ){
+      Tcl_Append_ఫలితం(interp, "out of memory", (శూన్య*)0);
+      తిరిగి SQLITE_ERROR;
     }
-    memcpy(faultSimScript, zScript, nScript);
+    జ్ఞాపకం_నకలు(faultSimScript, zScript, nScript);
     faultSimScript[nScript] = ' ';
-    faultSimScriptSize = nScript+1;
+    fault_Sim_Script_కొలత = nScript+1;
     faultSimInterp = interp;
     rc = sqlite3_test_control(SQLITE_TESTCTRL_FAULT_INSTALL, faultSimCallback);
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -662,46 +662,46 @@ static int SQLITE_TCLAPI faultInstallCmd(
 ** Invoke the SQLITE_TESTCTRL_BITVEC_TEST operator on test_control.
 ** See comments on sqlite3BitvecBuiltinTest() for additional information.
 */
-static int SQLITE_TCLAPI testBitvecBuiltinTest(
-  void *NotUsed,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI testBitvecBuiltinTest(
+  శూన్య *Not_వాడిన,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int argc,              /* Number of arguments */
-  const char **argv      /* Text of each argument */
+  పూర్ణాంకం argc,              /* Number of arguments */
+  స్థిరరాశి అక్షరం **argv      /* Text of each argument */
 ){
-  int sz, rc;
-  int nProg = 0;
-  int aProg[100];
-  const char *z;
-  if( argc!=3 ){
-    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
-                     " SIZE PROGRAM\"", (void*)0);
+  పూర్ణాంకం sz, rc;
+  పూర్ణాంకం nProg = 0;
+  పూర్ణాంకం aProg[100];
+  స్థిరరాశి అక్షరం *z;
+  ఒకవేళ( argc!=3 ){
+    Tcl_Append_ఫలితం(interp, "wrong # args: should be \"", argv[0],
+                     " SIZE PROGRAM\"", (శూన్య*)0);
   }
-  if( Tcl_GetInt(interp, argv[1], &sz) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetInt(interp, argv[1], &sz) ) తిరిగి TCL_ERROR;
   z = argv[2];
-  while( nProg<99 && *z ){
-    while( *z && !sqlite3Isdigit(*z) ){ z++; }
-    if( *z==0 ) break;
+  అయితే( nProg<99 && *z ){
+    అయితే( *z && !sqlite3Isdigit(*z) ){ z++; }
+    ఒకవేళ( *z==0 ) ఆపు;
     aProg[nProg++] = atoi(z);
-    while( sqlite3Isdigit(*z) ){ z++; }
+    అయితే( sqlite3Isdigit(*z) ){ z++; }
   }
   aProg[nProg] = 0;
   rc = sqlite3_test_control(SQLITE_TESTCTRL_BITVEC_TEST, sz, aProg);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి TCL_OK;
 }  
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest2_Init(Tcl_Interp *interp){
-  extern int sqlite3_io_error_persist;
-  extern int sqlite3_io_error_pending;
-  extern int sqlite3_io_error_hit;
-  extern int sqlite3_io_error_hardhit;
-  extern int sqlite3_diskfull_pending;
-  extern int sqlite3_diskfull;
-  static struct {
-    char *zName;
+పూర్ణాంకం Sqlitetest2_Init(Tcl_Interp *interp){
+  బాహ్య పూర్ణాంకం sqlite3_io_error_persist;
+  బాహ్య పూర్ణాంకం sqlite3_io_error_pending;
+  బాహ్య పూర్ణాంకం sqlite3_io_error_తగిలింది;
+  బాహ్య పూర్ణాంకం sqlite3_io_error_hardhit;
+  బాహ్య పూర్ణాంకం sqlite3_diskfull_pending;
+  బాహ్య పూర్ణాంకం sqlite3_diskfull;
+  స్థిర నిర్మాణం {
+    అక్షరం *zName;
     Tcl_CmdProc *xProc;
   } aCmd[] = {
     { "pager_open",              (Tcl_CmdProc*)pager_open          },
@@ -713,39 +713,39 @@ int Sqlitetest2_Init(Tcl_Interp *interp){
     { "pager_stmt_rollback",     (Tcl_CmdProc*)pager_stmt_rollback },
     { "pager_stats",             (Tcl_CmdProc*)pager_stats         },
     { "pager_pagecount",         (Tcl_CmdProc*)pager_pagecount     },
-    { "page_get",                (Tcl_CmdProc*)page_get            },
-    { "page_lookup",             (Tcl_CmdProc*)page_lookup         },
-    { "page_unref",              (Tcl_CmdProc*)page_unref          },
-    { "page_read",               (Tcl_CmdProc*)page_read           },
-    { "page_write",              (Tcl_CmdProc*)page_write          },
-    { "page_number",             (Tcl_CmdProc*)page_number         },
+    { "page_get",                (Tcl_CmdProc*)పుట_get            },
+    { "page_lookup",             (Tcl_CmdProc*)పుట_lookup         },
+    { "page_unref",              (Tcl_CmdProc*)పుట_unref          },
+    { "page_read",               (Tcl_CmdProc*)పుట_read           },
+    { "page_write",              (Tcl_CmdProc*)పుట_write          },
+    { "page_number",             (Tcl_CmdProc*)పుట_సంఖ్య         },
     { "pager_truncate",          (Tcl_CmdProc*)pager_truncate      },
-#ifndef SQLITE_OMIT_DISKIO
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_DISKIO
     { "fake_big_file",           (Tcl_CmdProc*)fake_big_file       },
-#endif
+#అయితే_ముగింపు
     { "sqlite3BitvecBuiltinTest",(Tcl_CmdProc*)testBitvecBuiltinTest     },
     { "sqlite3_test_control_pending_byte",  (Tcl_CmdProc*)testPendingByte },
     { "sqlite3_test_control_fault_install", (Tcl_CmdProc*)faultInstallCmd },
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<పరిమాణం(aCmd)/పరిమాణం(aCmd[0]); i++){
     Tcl_CreateCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
   Tcl_LinkVar(interp, "sqlite_io_error_pending",
-     (char*)&sqlite3_io_error_pending, TCL_LINK_INT);
+     (అక్షరం*)&sqlite3_io_error_pending, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_persist",
-     (char*)&sqlite3_io_error_persist, TCL_LINK_INT);
+     (అక్షరం*)&sqlite3_io_error_persist, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_hit",
-     (char*)&sqlite3_io_error_hit, TCL_LINK_INT);
+     (అక్షరం*)&sqlite3_io_error_తగిలింది, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_io_error_hardhit",
-     (char*)&sqlite3_io_error_hardhit, TCL_LINK_INT);
+     (అక్షరం*)&sqlite3_io_error_hardhit, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_diskfull_pending",
-     (char*)&sqlite3_diskfull_pending, TCL_LINK_INT);
+     (అక్షరం*)&sqlite3_diskfull_pending, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_diskfull",
-     (char*)&sqlite3_diskfull, TCL_LINK_INT);
-#ifndef SQLITE_OMIT_WSD
+     (అక్షరం*)&sqlite3_diskfull, TCL_LINK_INT);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WSD
   Tcl_LinkVar(interp, "sqlite_pending_byte",
-     (char*)&sqlite3PendingByte, TCL_LINK_INT | TCL_LINK_READ_ONLY);
-#endif
-  return TCL_OK;
+     (అక్షరం*)&sqlite3PendingByte, TCL_LINK_INT | TCL_LINK_READ_ONLY);
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }

@@ -15,19 +15,19 @@
 ** big and we want to break it down some.  This packaged seemed like
 ** a good breakout.
 */
-#include "btreeInt.h"
-#ifndef SQLITE_OMIT_SHARED_CACHE
-#if SQLITE_THREADSAFE
+#అన్తర్భావ "btreeInt.h"
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SHARED_CACHE
+#ఒకవేళ SQLITE_THREADSAFE
 
 /*
 ** Obtain the BtShared mutex associated with B-Tree handle p. Also,
 ** set BtShared.db to the database handle associated with p and the
 ** p->locked boolean to true.
 */
-static void lockBtreeMutex(Btree *p){
-  assert( p->locked==0 );
-  assert( sqlite3_mutex_notheld(p->pBt->mutex) );
-  assert( sqlite3_mutex_held(p->db->mutex) );
+స్థిర శూన్య తాళం_Btree_Mutex(Btree *p){
+  ప్రతిజ్ఞా( p->locked==0 );
+  ప్రతిజ్ఞా( sqlite3_mutex_notheld(p->pBt->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(p->db->mutex) );
 
   sqlite3_mutex_enter(p->pBt->mutex);
   p->pBt->db = p->db;
@@ -38,19 +38,19 @@ static void lockBtreeMutex(Btree *p){
 ** Release the BtShared mutex associated with B-Tree handle p and
 ** clear the p->locked boolean.
 */
-static void SQLITE_NOINLINE unlockBtreeMutex(Btree *p){
+స్థిర శూన్య SQLITE_NOINLINE unlockBtreeMutex(Btree *p){
   BtShared *pBt = p->pBt;
-  assert( p->locked==1 );
-  assert( sqlite3_mutex_held(pBt->mutex) );
-  assert( sqlite3_mutex_held(p->db->mutex) );
-  assert( p->db==pBt->db );
+  ప్రతిజ్ఞా( p->locked==1 );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(pBt->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(p->db->mutex) );
+  ప్రతిజ్ఞా( p->db==pBt->db );
 
   sqlite3_mutex_leave(pBt->mutex);
   p->locked = 0;
 }
 
 /* Forward reference */
-static void SQLITE_NOINLINE btreeLockCarefully(Btree *p);
+స్థిర శూన్య SQLITE_NOINLINE btree_తాళం_Carefully(Btree *p);
 
 /*
 ** Enter a mutex on the given BTree object.
@@ -68,32 +68,32 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p);
 ** for the lock to become available on p, then relock all of the
 ** subsequent Btrees that desire a lock.
 */
-void sqlite3BtreeEnter(Btree *p){
+శూన్య sqlite3BtreeEnter(Btree *p){
   /* Some basic sanity checking on the Btree.  The list of Btrees
   ** connected by pNext and pPrev should be in sorted order by
   ** Btree.pBt value. All elements of the list should belong to
   ** the same connection. Only shared Btrees are on the list. */
-  assert( p->pNext==0 || p->pNext->pBt>p->pBt );
-  assert( p->pPrev==0 || p->pPrev->pBt<p->pBt );
-  assert( p->pNext==0 || p->pNext->db==p->db );
-  assert( p->pPrev==0 || p->pPrev->db==p->db );
-  assert( p->sharable || (p->pNext==0 && p->pPrev==0) );
+  ప్రతిజ్ఞా( p->p_తదుపరి==0 || p->p_తదుపరి->pBt>p->pBt );
+  ప్రతిజ్ఞా( p->pPrev==0 || p->pPrev->pBt<p->pBt );
+  ప్రతిజ్ఞా( p->p_తదుపరి==0 || p->p_తదుపరి->db==p->db );
+  ప్రతిజ్ఞా( p->pPrev==0 || p->pPrev->db==p->db );
+  ప్రతిజ్ఞా( p->sharable || (p->p_తదుపరి==0 && p->pPrev==0) );
 
   /* Check for locking consistency */
-  assert( !p->locked || p->wantToLock>0 );
-  assert( p->sharable || p->wantToLock==0 );
+  ప్రతిజ్ఞా( !p->locked || p->want_గమ్యం_తాళం>0 );
+  ప్రతిజ్ఞా( p->sharable || p->want_గమ్యం_తాళం==0 );
 
   /* We should already hold a lock on the database connection */
-  assert( sqlite3_mutex_held(p->db->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(p->db->mutex) );
 
   /* Unless the database is sharable and unlocked, then BtShared.db
   ** should already be set correctly. */
-  assert( (p->locked==0 && p->sharable) || p->pBt->db==p->db );
+  ప్రతిజ్ఞా( (p->locked==0 && p->sharable) || p->pBt->db==p->db );
 
-  if( !p->sharable ) return;
-  p->wantToLock++;
-  if( p->locked ) return;
-  btreeLockCarefully(p);
+  ఒకవేళ( !p->sharable ) తిరిగి;
+  p->want_గమ్యం_తాళం++;
+  ఒకవేళ( p->locked ) తిరిగి;
+  btree_తాళం_Carefully(p);
 }
 
 /* This is a helper function for sqlite3BtreeLock(). By moving
@@ -102,17 +102,17 @@ void sqlite3BtreeEnter(Btree *p){
 ** and thus help the sqlite3BtreeLock() routine to run much faster
 ** in the common case.
 */
-static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
+స్థిర శూన్య SQLITE_NOINLINE btree_తాళం_Carefully(Btree *p){
   Btree *pLater;
 
   /* In most cases, we should be able to acquire the lock we
   ** want without having to go through the ascending lock
   ** procedure that follows.  Just be sure not to block.
   */
-  if( sqlite3_mutex_try(p->pBt->mutex)==SQLITE_OK ){
+  ఒకవేళ( sqlite3_mutex_try(p->pBt->mutex)==SQLITE_OK ){
     p->pBt->db = p->db;
     p->locked = 1;
-    return;
+    తిరిగి;
   }
 
   /* To avoid deadlock, first release all locks with a larger
@@ -120,18 +120,18 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
   ** the other BtShared locks that we used to hold in ascending
   ** order.
   */
-  for(pLater=p->pNext; pLater; pLater=pLater->pNext){
-    assert( pLater->sharable );
-    assert( pLater->pNext==0 || pLater->pNext->pBt>pLater->pBt );
-    assert( !pLater->locked || pLater->wantToLock>0 );
-    if( pLater->locked ){
+  కొరకు(pLater=p->p_తదుపరి; pLater; pLater=pLater->p_తదుపరి){
+    ప్రతిజ్ఞా( pLater->sharable );
+    ప్రతిజ్ఞా( pLater->p_తదుపరి==0 || pLater->p_తదుపరి->pBt>pLater->pBt );
+    ప్రతిజ్ఞా( !pLater->locked || pLater->want_గమ్యం_తాళం>0 );
+    ఒకవేళ( pLater->locked ){
       unlockBtreeMutex(pLater);
     }
   }
-  lockBtreeMutex(p);
-  for(pLater=p->pNext; pLater; pLater=pLater->pNext){
-    if( pLater->wantToLock ){
-      lockBtreeMutex(pLater);
+  తాళం_Btree_Mutex(p);
+  కొరకు(pLater=p->p_తదుపరి; pLater; pLater=pLater->p_తదుపరి){
+    ఒకవేళ( pLater->want_గమ్యం_తాళం ){
+      తాళం_Btree_Mutex(pLater);
     }
   }
 }
@@ -140,33 +140,33 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
 /*
 ** Exit the recursive mutex on a Btree.
 */
-void sqlite3BtreeLeave(Btree *p){
-  assert( sqlite3_mutex_held(p->db->mutex) );
-  if( p->sharable ){
-    assert( p->wantToLock>0 );
-    p->wantToLock--;
-    if( p->wantToLock==0 ){
+శూన్య sqlite3BtreeLeave(Btree *p){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(p->db->mutex) );
+  ఒకవేళ( p->sharable ){
+    ప్రతిజ్ఞా( p->want_గమ్యం_తాళం>0 );
+    p->want_గమ్యం_తాళం--;
+    ఒకవేళ( p->want_గమ్యం_తాళం==0 ){
       unlockBtreeMutex(p);
     }
   }
 }
 
-#ifndef NDEBUG
+#నిర్వచితం_కాకపోతే NDEBUG
 /*
 ** Return true if the BtShared mutex is held on the btree, or if the
 ** B-Tree is not marked as sharable.
 **
 ** This routine is used only from within assert() statements.
 */
-int sqlite3BtreeHoldsMutex(Btree *p){
-  assert( p->sharable==0 || p->locked==0 || p->wantToLock>0 );
-  assert( p->sharable==0 || p->locked==0 || p->db==p->pBt->db );
-  assert( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->pBt->mutex) );
-  assert( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->db->mutex) );
+పూర్ణాంకం sqlite3BtreeHoldsMutex(Btree *p){
+  ప్రతిజ్ఞా( p->sharable==0 || p->locked==0 || p->want_గమ్యం_తాళం>0 );
+  ప్రతిజ్ఞా( p->sharable==0 || p->locked==0 || p->db==p->pBt->db );
+  ప్రతిజ్ఞా( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->pBt->mutex) );
+  ప్రతిజ్ఞా( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->db->mutex) );
 
-  return (p->sharable==0 || p->locked);
+  తిరిగి (p->sharable==0 || p->locked);
 }
-#endif
+#అయితే_ముగింపు
 
 
 /*
@@ -183,61 +183,61 @@ int sqlite3BtreeHoldsMutex(Btree *p){
 ** two or more btrees in common both try to lock all their btrees
 ** at the same instant.
 */
-static void SQLITE_NOINLINE btreeEnterAll(sqlite3 *db){
-  int i;
+స్థిర శూన్య SQLITE_NOINLINE btreeEnterAll(sqlite3 *db){
+  పూర్ణాంకం i;
   u8 skipOk = 1;
   Btree *p;
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nDb; i++){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  కొరకు(i=0; i<db->nDb; i++){
     p = db->aDb[i].pBt;
-    if( p && p->sharable ){
+    ఒకవేళ( p && p->sharable ){
       sqlite3BtreeEnter(p);
       skipOk = 0;
     }
   }
   db->noSharedCache = skipOk;
 }
-void sqlite3BtreeEnterAll(sqlite3 *db){
-  if( db->noSharedCache==0 ) btreeEnterAll(db);
+శూన్య sqlite3BtreeEnterAll(sqlite3 *db){
+  ఒకవేళ( db->noSharedCache==0 ) btreeEnterAll(db);
 }
-static void SQLITE_NOINLINE btreeLeaveAll(sqlite3 *db){
-  int i;
+స్థిర శూన్య SQLITE_NOINLINE btreeLeaveAll(sqlite3 *db){
+  పూర్ణాంకం i;
   Btree *p;
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nDb; i++){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  కొరకు(i=0; i<db->nDb; i++){
     p = db->aDb[i].pBt;
-    if( p ) sqlite3BtreeLeave(p);
+    ఒకవేళ( p ) sqlite3BtreeLeave(p);
   }
 }
-void sqlite3BtreeLeaveAll(sqlite3 *db){
-  if( db->noSharedCache==0 ) btreeLeaveAll(db);
+శూన్య sqlite3BtreeLeaveAll(sqlite3 *db){
+  ఒకవేళ( db->noSharedCache==0 ) btreeLeaveAll(db);
 }
 
-#ifndef NDEBUG
+#నిర్వచితం_కాకపోతే NDEBUG
 /*
 ** Return true if the current thread holds the database connection
 ** mutex and all required BtShared mutexes.
 **
 ** This routine is used inside assert() statements only.
 */
-int sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
-  int i;
-  if( !sqlite3_mutex_held(db->mutex) ){
-    return 0;
+పూర్ణాంకం sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
+  పూర్ణాంకం i;
+  ఒకవేళ( !sqlite3_mutex_held(db->mutex) ){
+    తిరిగి 0;
   }
-  for(i=0; i<db->nDb; i++){
+  కొరకు(i=0; i<db->nDb; i++){
     Btree *p;
     p = db->aDb[i].pBt;
-    if( p && p->sharable &&
-         (p->wantToLock==0 || !sqlite3_mutex_held(p->pBt->mutex)) ){
-      return 0;
+    ఒకవేళ( p && p->sharable &&
+         (p->want_గమ్యం_తాళం==0 || !sqlite3_mutex_held(p->pBt->mutex)) ){
+      తిరిగి 0;
     }
   }
-  return 1;
+  తిరిగి 1;
 }
-#endif /* NDEBUG */
+#అయితే_ముగింపు /* NDEBUG */
 
-#ifndef NDEBUG
+#నిర్వచితం_కాకపోతే NDEBUG
 /*
 ** Return true if the correct mutexes are held for accessing the
 ** db->aDb[iDb].pSchema structure.  The mutexes required for schema
@@ -249,21 +249,21 @@ int sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
 ** If pSchema is not NULL, then iDb is computed from pSchema and
 ** db using sqlite3SchemaToIndex().
 */
-int sqlite3SchemaMutexHeld(sqlite3 *db, int iDb, Schema *pSchema){
+పూర్ణాంకం sqlite3SchemaMutexHeld(sqlite3 *db, పూర్ణాంకం iDb, Schema *pSchema){
   Btree *p;
-  assert( db!=0 );
-  if( db->pVfs==0 && db->nDb==0 ) return 1;
-  if( pSchema ) iDb = sqlite3SchemaToIndex(db, pSchema);
-  assert( iDb>=0 && iDb<db->nDb );
-  if( !sqlite3_mutex_held(db->mutex) ) return 0;
-  if( iDb==1 ) return 1;
+  ప్రతిజ్ఞా( db!=0 );
+  ఒకవేళ( db->pVfs==0 && db->nDb==0 ) తిరిగి 1;
+  ఒకవేళ( pSchema ) iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pSchema);
+  ప్రతిజ్ఞా( iDb>=0 && iDb<db->nDb );
+  ఒకవేళ( !sqlite3_mutex_held(db->mutex) ) తిరిగి 0;
+  ఒకవేళ( iDb==1 ) తిరిగి 1;
   p = db->aDb[iDb].pBt;
-  assert( p!=0 );
-  return p->sharable==0 || p->locked==1;
+  ప్రతిజ్ఞా( p!=0 );
+  తిరిగి p->sharable==0 || p->locked==1;
 }
-#endif /* NDEBUG */
+#అయితే_ముగింపు /* NDEBUG */
 
-#else /* SQLITE_THREADSAFE>0 above.  SQLITE_THREADSAFE==0 below */
+#లేకపోతే /* SQLITE_THREADSAFE>0 above.  SQLITE_THREADSAFE==0 below */
 /*
 ** The following are special cases for mutex enter routines for use
 ** in single threaded applications that use shared cache.  Except for
@@ -274,27 +274,27 @@ int sqlite3SchemaMutexHeld(sqlite3 *db, int iDb, Schema *pSchema){
 ** the ones below, are no-ops and are null #defines in btree.h.
 */
 
-void sqlite3BtreeEnter(Btree *p){
+శూన్య sqlite3BtreeEnter(Btree *p){
   p->pBt->db = p->db;
 }
-void sqlite3BtreeEnterAll(sqlite3 *db){
-  int i;
+శూన్య sqlite3BtreeEnterAll(sqlite3 *db){
+  పూర్ణాంకం i;
   u8 skipOk = 1;
   /* As in the threadsafe build: set db->noSharedCache when no attached
   ** Btree is sharable, so that schema and table-lock checks are skipped */
-  if( db->noSharedCache ) return;
-  for(i=0; i<db->nDb; i++){
+  ఒకవేళ( db->noSharedCache ) తిరిగి;
+  కొరకు(i=0; i<db->nDb; i++){
     Btree *p = db->aDb[i].pBt;
-    if( p ){
+    ఒకవేళ( p ){
       p->pBt->db = p->db;
-      if( p->sharable ) skipOk = 0;
+      ఒకవేళ( p->sharable ) skipOk = 0;
     }
   }
   db->noSharedCache = skipOk;
 }
-#endif /* if SQLITE_THREADSAFE */
+#అయితే_ముగింపు /* if SQLITE_THREADSAFE */
 
-#ifndef SQLITE_OMIT_INCRBLOB
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_INCRBLOB
 /*
 ** Enter a mutex on a Btree given a cursor owned by that Btree. 
 **
@@ -302,14 +302,14 @@ void sqlite3BtreeEnterAll(sqlite3 *db){
 ** any time OMIT_SHARED_CACHE is not defined, regardless of whether or not 
 ** the build is threadsafe. Leave() is only required by threadsafe builds.
 */
-void sqlite3BtreeEnterCursor(BtCursor *pCur){
+శూన్య sqlite3BtreeEnterCursor(BtCursor *pCur){
   sqlite3BtreeEnter(pCur->pBtree);
 }
-# if SQLITE_THREADSAFE
-void sqlite3BtreeLeaveCursor(BtCursor *pCur){
+# ఒకవేళ SQLITE_THREADSAFE
+శూన్య sqlite3BtreeLeaveCursor(BtCursor *pCur){
   sqlite3BtreeLeave(pCur->pBtree);
 }
 # endif
-#endif /* ifndef SQLITE_OMIT_INCRBLOB */
+#అయితే_ముగింపు /* ifndef SQLITE_OMIT_INCRBLOB */
 
-#endif /* ifndef SQLITE_OMIT_SHARED_CACHE */
+#అయితే_ముగింపు /* ifndef SQLITE_OMIT_SHARED_CACHE */

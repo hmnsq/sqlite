@@ -13,26 +13,26 @@
 ** This file contains code used to implement test interfaces to the
 ** memory allocation subsystem.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
 /*
 ** This structure is used to encapsulate the global state variables used 
 ** by malloc() fault simulation.
 */
-static struct MemFault {
-  int iCountdown;         /* Number of pending successes before a failure */
-  int nRepeat;            /* Number of times to repeat the failure */
-  int nBenign;            /* Number of benign failures seen since last config */
-  int nFail;              /* Number of failures seen since last config */
-  int nOkBefore;          /* Successful allocations prior to the first fault */
-  int nOkAfter;           /* Successful allocations after a fault */
+స్థిర నిర్మాణం MemFault {
+  పూర్ణాంకం iCountdown;         /* Number of pending successes before a failure */
+  పూర్ణాంకం nRepeat;            /* Number of times to repeat the failure */
+  పూర్ణాంకం nBenign;            /* Number of benign failures seen since last config */
+  పూర్ణాంకం nFail;              /* Number of failures seen since last config */
+  పూర్ణాంకం nOkBefore;          /* Successful allocations prior to the first fault */
+  పూర్ణాంకం nOkAfter;           /* Successful allocations after a fault */
   u8 enable;              /* True if enabled */
-  int isInstalled;        /* True if the fault simulation layer is installed */
-  int isBenignMode;       /* True if malloc failures are considered benign */
+  పూర్ణాంకం isInstalled;        /* True if the fault simulation layer is installed */
+  పూర్ణాంకం is_Benign_బహుళకం;       /* True if malloc failures are considered benign */
   sqlite3_mem_methods m;  /* 'Real' malloc implementation */
 } memfault;
 
@@ -40,10 +40,10 @@ static struct MemFault {
 ** This routine exists as a place to set a breakpoint that will
 ** fire on any simulated malloc() failure.
 */
-static void sqlite3Fault(void){
-  static u64 cnt = 0;
+స్థిర శూన్య sqlite3Fault(శూన్య){
+  స్థిర u64 cnt = 0;
   cnt++;
-  if( cnt>((u64)1<<63) ) abort();
+  ఒకవేళ( cnt>((u64)1<<63) ) abort();
 }
 
 /*
@@ -52,49 +52,49 @@ static void sqlite3Fault(void){
 ** The sqlite3Fault() routine above runs on every malloc() failure.
 ** This routine only runs on the first such failure.
 */
-static void sqlite3FirstFault(void){
-  static u64 cnt2 = 0;
+స్థిర శూన్య sqlite3_మొదటి_Fault(శూన్య){
+  స్థిర u64 cnt2 = 0;
   cnt2++;
-  if( cnt2>((u64)1<<63) ) abort();
+  ఒకవేళ( cnt2>((u64)1<<63) ) abort();
 }
 
 /*
 ** Check to see if a fault should be simulated.  Return true to simulate
 ** the fault.  Return false if the fault should not be simulated.
 */
-static int faultsimStep(void){
-  if( likely(!memfault.enable) ){
+స్థిర పూర్ణాంకం faultsim_అడుగు(శూన్య){
+  ఒకవేళ( likely(!memfault.enable) ){
     memfault.nOkAfter++;
-    return 0;
+    తిరిగి 0;
   }
-  if( memfault.iCountdown>0 ){
+  ఒకవేళ( memfault.iCountdown>0 ){
     memfault.iCountdown--;
     memfault.nOkBefore++;
-    return 0;
+    తిరిగి 0;
   }
-  if( memfault.nFail==0 ) sqlite3FirstFault();
+  ఒకవేళ( memfault.nFail==0 ) sqlite3_మొదటి_Fault();
   sqlite3Fault();
   memfault.nFail++;
-  if( memfault.isBenignMode>0 ){
+  ఒకవేళ( memfault.is_Benign_బహుళకం>0 ){
     memfault.nBenign++;
   }
   memfault.nRepeat--;
-  if( memfault.nRepeat<=0 ){
+  ఒకవేళ( memfault.nRepeat<=0 ){
     memfault.enable = 0;
   }
-  return 1;  
+  తిరిగి 1;  
 }
 
 /*
 ** A version of sqlite3_mem_methods.xMalloc() that includes fault simulation
 ** logic.
 */
-static void *faultsimMalloc(int n){
-  void *p = 0;
-  if( !faultsimStep() ){
+స్థిర శూన్య *faultsimMalloc(పూర్ణాంకం n){
+  శూన్య *p = 0;
+  ఒకవేళ( !faultsim_అడుగు() ){
     p = memfault.m.xMalloc(n);
   }
-  return p;
+  తిరిగి p;
 }
 
 
@@ -102,12 +102,12 @@ static void *faultsimMalloc(int n){
 ** A version of sqlite3_mem_methods.xRealloc() that includes fault simulation
 ** logic.
 */
-static void *faultsimRealloc(void *pOld, int n){
-  void *p = 0;
-  if( !faultsimStep() ){
+స్థిర శూన్య *faultsimRealloc(శూన్య *pOld, పూర్ణాంకం n){
+  శూన్య *p = 0;
+  ఒకవేళ( !faultsim_అడుగు() ){
     p = memfault.m.xRealloc(pOld, n);
   }
-  return p;
+  తిరిగి p;
 }
 
 /*
@@ -116,7 +116,7 @@ static void *faultsimRealloc(void *pOld, int n){
 ** by a block of nRepeat failures, after which malloc() calls will begin
 ** to succeed again.
 */
-static void faultsimConfig(int nDelay, int nRepeat){
+స్థిర శూన్య faultsimConfig(పూర్ణాంకం nDelay, పూర్ణాంకం nRepeat){
   memfault.iCountdown = nDelay;
   memfault.nRepeat = nRepeat;
   memfault.nBenign = 0;
@@ -132,94 +132,94 @@ static void faultsimConfig(int nDelay, int nRepeat){
   ** it does affect OOM tests run later in the same process. So
   ** zero the variable here, just to be sure.
   */
-  memfault.isBenignMode = 0;
+  memfault.is_Benign_బహుళకం = 0;
 }
 
 /*
 ** Return the number of faults (both hard and benign faults) that have
 ** occurred since the injector was last configured.
 */
-static int faultsimFailures(void){
-  return memfault.nFail;
+స్థిర పూర్ణాంకం faultsimFailures(శూన్య){
+  తిరిగి memfault.nFail;
 }
 
 /*
 ** Return the number of benign faults that have occurred since the
 ** injector was last configured.
 */
-static int faultsimBenignFailures(void){
-  return memfault.nBenign;
+స్థిర పూర్ణాంకం faultsimBenignFailures(శూన్య){
+  తిరిగి memfault.nBenign;
 }
 
 /*
 ** Return the number of successes that will occur before the next failure.
 ** If no failures are scheduled, return -1.
 */
-static int faultsimPending(void){
-  if( memfault.enable ){
-    return memfault.iCountdown;
-  }else{
-    return -1;
+స్థిర పూర్ణాంకం faultsimPending(శూన్య){
+  ఒకవేళ( memfault.enable ){
+    తిరిగి memfault.iCountdown;
+  }లేకపోతే{
+    తిరిగి -1;
   }
 }
 
 
-static void faultsimBeginBenign(void){
-  memfault.isBenignMode++;
+స్థిర శూన్య faultsimBeginBenign(శూన్య){
+  memfault.is_Benign_బహుళకం++;
 }
-static void faultsimEndBenign(void){
-  memfault.isBenignMode--;
+స్థిర శూన్య faultsim_చివర_Benign(శూన్య){
+  memfault.is_Benign_బహుళకం--;
 }
 
 /*
 ** Add or remove the fault-simulation layer using sqlite3_config(). If
 ** the argument is non-zero, the 
 */
-static int faultsimInstall(int install){
-  int rc;
+స్థిర పూర్ణాంకం faultsimInstall(పూర్ణాంకం install){
+  పూర్ణాంకం rc;
 
   install = (install ? 1 : 0);
-  assert(memfault.isInstalled==1 || memfault.isInstalled==0);
+  ప్రతిజ్ఞా(memfault.isInstalled==1 || memfault.isInstalled==0);
 
-  if( install==memfault.isInstalled ){
-    return SQLITE_ERROR;
+  ఒకవేళ( install==memfault.isInstalled ){
+    తిరిగి SQLITE_ERROR;
   }
 
-  if( install ){
+  ఒకవేళ( install ){
     rc = sqlite3_config(SQLITE_CONFIG_GETMALLOC, &memfault.m);
-    assert(memfault.m.xMalloc);
-    if( rc==SQLITE_OK ){
+    ప్రతిజ్ఞా(memfault.m.xMalloc);
+    ఒకవేళ( rc==SQLITE_OK ){
       sqlite3_mem_methods m = memfault.m;
       m.xMalloc = faultsimMalloc;
       m.xRealloc = faultsimRealloc;
       rc = sqlite3_config(SQLITE_CONFIG_MALLOC, &m);
     }
     sqlite3_test_control(SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS, 
-        faultsimBeginBenign, faultsimEndBenign
+        faultsimBeginBenign, faultsim_చివర_Benign
     );
-  }else{
+  }లేకపోతే{
     sqlite3_mem_methods m2;
-    assert(memfault.m.xMalloc);
+    ప్రతిజ్ఞా(memfault.m.xMalloc);
 
     /* One should be able to reset the default memory allocator by storing
     ** a zeroed allocator then calling GETMALLOC. */
-    memset(&m2, 0, sizeof(m2));
+    memset(&m2, 0, పరిమాణం(m2));
     sqlite3_config(SQLITE_CONFIG_MALLOC, &m2);
     sqlite3_config(SQLITE_CONFIG_GETMALLOC, &m2);
-    assert( memcmp(&m2, &memfault.m, sizeof(m2))==0 );
+    ప్రతిజ్ఞా( memcmp(&m2, &memfault.m, పరిమాణం(m2))==0 );
 
     rc = sqlite3_config(SQLITE_CONFIG_MALLOC, &memfault.m);
     sqlite3_test_control(SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS,
-        (void*)0, (void*)0);
+        (శూన్య*)0, (శూన్య*)0);
   }
 
-  if( rc==SQLITE_OK ){
+  ఒకవేళ( rc==SQLITE_OK ){
     memfault.isInstalled = 1;
   }
-  return rc;
+  తిరిగి rc;
 }
 
-#ifdef SQLITE_TEST
+#నిర్వచితమైతే SQLITE_TEST
 
 /*
 ** This function is implemented in main.c. Returns a pointer to a static
@@ -229,18 +229,18 @@ static int faultsimInstall(int install){
 **
 **   sqlite3ErrName(1) -> "SQLITE_ERROR"
 */
-extern const char *sqlite3ErrName(int);
+బాహ్య స్థిరరాశి అక్షరం *sqlite3ErrName(పూర్ణాంకం);
 
 /*
 ** Transform pointers to text and back again
 */
-static void pointerToText(void *p, char *z){
-  const char *zRet = sqlite3TestPtrToText(p);
+స్థిర శూన్య సూచిక_గమ్యం_పాఠ్యం(శూన్య *p, అక్షరం *z){
+  స్థిరరాశి అక్షరం *zRet = sqlite3_Test_Ptr_గమ్యం_పాఠ్యం(p);
   sprintf(z, "%s", zRet);
 }
-static int textToPointer(const char *z, void **pp){
-  *pp = sqlite3TestTextToPtr(z);
-  return TCL_OK;
+స్థిర పూర్ణాంకం పాఠ్యం_గమ్యం_సూచిక(స్థిరరాశి అక్షరం *z, శూన్య **pp){
+  *pp = sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(z);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -248,24 +248,24 @@ static int textToPointer(const char *z, void **pp){
 **
 ** Raw test interface for sqlite3_malloc().
 */
-static int SQLITE_TCLAPI test_malloc(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_malloc(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;
-  void *p;
-  char zOut[100];
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NBYTES");
-    return TCL_ERROR;
+  పూర్ణాంకం nByte;
+  శూన్య *p;
+  అక్షరం z_బహిర్గతం[100];
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "NBYTES");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &nByte) ) return TCL_ERROR;
-  p = sqlite3_malloc((unsigned)nByte);
-  pointerToText(p, zOut);
-  Tcl_AppendResult(interp, zOut, NULL);
-  return TCL_OK;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &nByte) ) తిరిగి TCL_ERROR;
+  p = sqlite3_malloc((గుర్తులేని)nByte);
+  సూచిక_గమ్యం_పాఠ్యం(p, z_బహిర్గతం);
+  Tcl_Append_ఫలితం(interp, z_బహిర్గతం, ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -273,28 +273,28 @@ static int SQLITE_TCLAPI test_malloc(
 **
 ** Raw test interface for sqlite3_realloc().
 */
-static int SQLITE_TCLAPI test_realloc(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_realloc(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;
-  void *pPrior, *p;
-  char zOut[100];
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PRIOR NBYTES");
-    return TCL_ERROR;
+  పూర్ణాంకం nByte;
+  శూన్య *p_పూర్వ, *p;
+  అక్షరం z_బహిర్గతం[100];
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "PRIOR NBYTES");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &nByte) ) return TCL_ERROR;
-  if( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &nByte) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( పాఠ్యం_గమ్యం_సూచిక(Tcl_GetString(objv[1]), &p_పూర్వ) ){
+    Tcl_Append_ఫలితం(interp, "bad pointer: ", Tcl_GetString(objv[1]), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  p = sqlite3_realloc(pPrior, (unsigned)nByte);
-  pointerToText(p, zOut);
-  Tcl_AppendResult(interp, zOut, NULL);
-  return TCL_OK;
+  p = sqlite3_realloc(p_పూర్వ, (గుర్తులేని)nByte);
+  సూచిక_గమ్యం_పాఠ్యం(p, z_బహిర్గతం);
+  Tcl_Append_ఫలితం(interp, z_బహిర్గతం, ఖాళీ);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -302,30 +302,30 @@ static int SQLITE_TCLAPI test_realloc(
 **
 ** Raw test interface for sqlite3_free().
 */
-static int SQLITE_TCLAPI test_free(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_free(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  void *pPrior;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PRIOR");
-    return TCL_ERROR;
+  శూన్య *p_పూర్వ;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "PRIOR");
+    తిరిగి TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( పాఠ్యం_గమ్యం_సూచిక(Tcl_GetString(objv[1]), &p_పూర్వ) ){
+    Tcl_Append_ఫలితం(interp, "bad pointer: ", Tcl_GetString(objv[1]), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  sqlite3_free(pPrior);
-  return TCL_OK;
+  sqlite3_free(p_పూర్వ);
+  తిరిగి TCL_OK;
 }
 
 /*
 ** These routines are in test_hexio.c
 */
-int sqlite3TestHexToBin(const char *, int, char *);
-int sqlite3TestBinToHex(char*,int);
+పూర్ణాంకం sqlite3_Test_Hex_గమ్యం_Bin(స్థిరరాశి అక్షరం *, పూర్ణాంకం, అక్షరం *);
+పూర్ణాంకం sqlite3_Test_Bin_గమ్యం_Hex(అక్షరం*,పూర్ణాంకం);
 
 /*
 ** Usage:    memset  ADDRESS  SIZE  HEX
@@ -333,46 +333,46 @@ int sqlite3TestBinToHex(char*,int);
 ** Set a chunk of memory (obtained from malloc, probably) to a
 ** specified hex pattern.
 */
-static int SQLITE_TCLAPI test_memset(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memset(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  void *p;
-  int size, i;
-  Tcl_Size n;
-  char *zHex;
-  char *zOut;
-  char zBin[100];
+  శూన్య *p;
+  పూర్ణాంకం కొలత, i;
+  Tcl_కొలత n;
+  అక్షరం *zHex;
+  అక్షరం *z_బహిర్గతం;
+  అక్షరం zBin[100];
 
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "ADDRESS SIZE HEX");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=4 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "ADDRESS SIZE HEX");
+    తిరిగి TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &p) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( పాఠ్యం_గమ్యం_సూచిక(Tcl_GetString(objv[1]), &p) ){
+    Tcl_Append_ఫలితం(interp, "bad pointer: ", Tcl_GetString(objv[1]), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &size) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &కొలత) ){
+    తిరిగి TCL_ERROR;
   }
-  if( size<=0 ){
-    Tcl_AppendResult(interp, "size must be positive", (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( కొలత<=0 ){
+    Tcl_Append_ఫలితం(interp, "size must be positive", (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
   zHex = Tcl_GetStringFromObj(objv[3], &n);
-  if( n>sizeof(zBin)*2 ) n = sizeof(zBin)*2;
-  n = sqlite3TestHexToBin(zHex, (int)n, zBin);
-  if( n==0 ){
-    Tcl_AppendResult(interp, "no data", (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( n>పరిమాణం(zBin)*2 ) n = పరిమాణం(zBin)*2;
+  n = sqlite3_Test_Hex_గమ్యం_Bin(zHex, (పూర్ణాంకం)n, zBin);
+  ఒకవేళ( n==0 ){
+    Tcl_Append_ఫలితం(interp, "no data", (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  zOut = p;
-  for(i=0; i<size; i++){
-    zOut[i] = zBin[i%n];
+  z_బహిర్గతం = p;
+  కొరకు(i=0; i<కొలత; i++){
+    z_బహిర్గతం[i] = zBin[i%n];
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -380,46 +380,46 @@ static int SQLITE_TCLAPI test_memset(
 **
 ** Return memory as hexadecimal text.
 */
-static int SQLITE_TCLAPI test_memget(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memget(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  void *p;
-  int size, n;
-  char *zBin;
-  char zHex[100];
+  శూన్య *p;
+  పూర్ణాంకం కొలత, n;
+  అక్షరం *zBin;
+  అక్షరం zHex[100];
 
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "ADDRESS SIZE");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "ADDRESS SIZE");
+    తిరిగి TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &p) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( పాఠ్యం_గమ్యం_సూచిక(Tcl_GetString(objv[1]), &p) ){
+    Tcl_Append_ఫలితం(interp, "bad pointer: ", Tcl_GetString(objv[1]), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &size) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &కొలత) ){
+    తిరిగి TCL_ERROR;
   }
-  if( size<=0 ){
-    Tcl_AppendResult(interp, "size must be positive", (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( కొలత<=0 ){
+    Tcl_Append_ఫలితం(interp, "size must be positive", (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
   zBin = p;
-  while( size>0 ){
-    if( size>(sizeof(zHex)-1)/2 ){
-      n = (sizeof(zHex)-1)/2;
-    }else{
-      n = size;
+  అయితే( కొలత>0 ){
+    ఒకవేళ( కొలత>(పరిమాణం(zHex)-1)/2 ){
+      n = (పరిమాణం(zHex)-1)/2;
+    }లేకపోతే{
+      n = కొలత;
     }
-    memcpy(zHex, zBin, n);
+    జ్ఞాపకం_నకలు(zHex, zBin, n);
     zBin += n;
-    size -= n;
-    sqlite3TestBinToHex(zHex, n);
-    Tcl_AppendResult(interp, zHex, (char*)0);
+    కొలత -= n;
+    sqlite3_Test_Bin_గమ్యం_Hex(zHex, n);
+    Tcl_Append_ఫలితం(interp, zHex, (అక్షరం*)0);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -427,14 +427,14 @@ static int SQLITE_TCLAPI test_memget(
 **
 ** Raw test interface for sqlite3_memory_used().
 */
-static int SQLITE_TCLAPI test_memory_used(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_జ్ఞాపకం_వాడిన(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  Tcl_SetObjResult(interp, Tcl_NewWideIntObj(sqlite3_memory_used()));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewWideIntObj(sqlite3_జ్ఞాపకం_వాడిన()));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -442,23 +442,23 @@ static int SQLITE_TCLAPI test_memory_used(
 **
 ** Raw test interface for sqlite3_memory_highwater().
 */
-static int SQLITE_TCLAPI test_memory_highwater(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_జ్ఞాపకం_highwater(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int resetFlag = 0;
-  if( objc!=1 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?RESET?");
-    return TCL_ERROR;
+  పూర్ణాంకం resetFlag = 0;
+  ఒకవేళ( objc!=1 && objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "?RESET?");
+    తిరిగి TCL_ERROR;
   }
-  if( objc==2 ){
-    if( Tcl_GetBooleanFromObj(interp, objv[1], &resetFlag) ) return TCL_ERROR;
+  ఒకవేళ( objc==2 ){
+    ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[1], &resetFlag) ) తిరిగి TCL_ERROR;
   } 
-  Tcl_SetObjResult(interp, 
-     Tcl_NewWideIntObj(sqlite3_memory_highwater(resetFlag)));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, 
+     Tcl_NewWideIntObj(sqlite3_జ్ఞాపకం_highwater(resetFlag)));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -467,25 +467,25 @@ static int SQLITE_TCLAPI test_memory_highwater(
 ** Set the depth of backtracing.  If SQLITE_MEMDEBUG is not defined
 ** then this routine is a no-op.
 */
-static int SQLITE_TCLAPI test_memdebug_backtrace(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_backtrace(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int depth;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DEPT");
-    return TCL_ERROR;
+  పూర్ణాంకం లోతు;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "DEPT");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &depth) ) return TCL_ERROR;
-#ifdef SQLITE_MEMDEBUG
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &లోతు) ) తిరిగి TCL_ERROR;
+#నిర్వచితమైతే SQLITE_MEMDEBUG
   {
-    extern void sqlite3MemdebugBacktrace(int);
-    sqlite3MemdebugBacktrace(depth);
+    బాహ్య శూన్య sqlite3MemdebugBacktrace(పూర్ణాంకం);
+    sqlite3MemdebugBacktrace(లోతు);
   }
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -493,24 +493,24 @@ static int SQLITE_TCLAPI test_memdebug_backtrace(
 **
 ** Write a summary of unfreed memory to FILENAME.
 */
-static int SQLITE_TCLAPI test_memdebug_dump(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_dump(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "FILENAME");
+    తిరిగి TCL_ERROR;
   }
-#if defined(SQLITE_MEMDEBUG) || defined(SQLITE_MEMORY_SIZE) \
-     || defined(SQLITE_POW2_MEMORY_SIZE)
+#ఒకవేళ defined(SQLITE_MEMDEBUG) || defined(SQLITE_జ్ఞాపకం_కొలత) \
+     || defined(SQLITE_POW2_జ్ఞాపకం_కొలత)
   {
-    extern void sqlite3MemdebugDump(const char*);
+    బాహ్య శూన్య sqlite3MemdebugDump(స్థిరరాశి అక్షరం*);
     sqlite3MemdebugDump(Tcl_GetString(objv[1]));
   }
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -518,25 +518,25 @@ static int SQLITE_TCLAPI test_memdebug_dump(
 **
 ** Return the total number of times malloc() has been called.
 */
-static int SQLITE_TCLAPI test_memdebug_malloc_count(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_malloc_లెక్క(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nMalloc = -1;
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  పూర్ణాంకం nMalloc = -1;
+  ఒకవేళ( objc!=1 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "");
+    తిరిగి TCL_ERROR;
   }
-#if defined(SQLITE_MEMDEBUG)
+#ఒకవేళ defined(SQLITE_MEMDEBUG)
   {
-    extern int sqlite3MemdebugMallocCount();
-    nMalloc = sqlite3MemdebugMallocCount();
+    బాహ్య పూర్ణాంకం sqlite3_Memdebug_Malloc_లెక్క();
+    nMalloc = sqlite3_Memdebug_Malloc_లెక్క();
   }
-#endif
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nMalloc));
-  return TCL_OK;
+#అయితే_ముగింపు
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(nMalloc));
+  తిరిగి TCL_OK;
 }
 
 
@@ -558,51 +558,51 @@ static int SQLITE_TCLAPI test_memdebug_malloc_count(
 **
 ** To disable simulated failures, use a COUNTER of -1.
 */
-static int SQLITE_TCLAPI test_memdebug_fail(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_fail(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int ii;
-  int iFail;
-  int nRepeat = 1;
+  పూర్ణాంకం ii;
+  పూర్ణాంకం iFail;
+  పూర్ణాంకం nRepeat = 1;
   Tcl_Obj *pBenignCnt = 0;
-  int nBenign;
-  int nFail = 0;
+  పూర్ణాంకం nBenign;
+  పూర్ణాంకం nFail = 0;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "COUNTER ?OPTIONS?");
-    return TCL_ERROR;
+  ఒకవేళ( objc<2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "COUNTER ?OPTIONS?");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &iFail) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &iFail) ) తిరిగి TCL_ERROR;
 
-  for(ii=2; ii<objc; ii+=2){
-    Tcl_Size nOption;
-    char *zOption = Tcl_GetStringFromObj(objv[ii], &nOption);
-    char *zErr = 0;
+  కొరకు(ii=2; ii<objc; ii+=2){
+    Tcl_కొలత nOption;
+    అక్షరం *zOption = Tcl_GetStringFromObj(objv[ii], &nOption);
+    అక్షరం *zErr = 0;
 
-    if( nOption>1 && strncmp(zOption, "-repeat", nOption)==0 ){
-      if( ii==(objc-1) ){
+    ఒకవేళ( nOption>1 && అక్షరశ్రేణి_పోలిక(zOption, "-repeat", nOption)==0 ){
+      ఒకవేళ( ii==(objc-1) ){
         zErr = "option requires an argument: ";
-      }else{
-        if( Tcl_GetIntFromObj(interp, objv[ii+1], &nRepeat) ){
-          return TCL_ERROR;
+      }లేకపోతే{
+        ఒకవేళ( Tcl_GetIntFromObj(interp, objv[ii+1], &nRepeat) ){
+          తిరిగి TCL_ERROR;
         }
       }
-    }else if( nOption>1 && strncmp(zOption, "-benigncnt", nOption)==0 ){
-      if( ii==(objc-1) ){
+    }లేకపోతే ఒకవేళ( nOption>1 && అక్షరశ్రేణి_పోలిక(zOption, "-benigncnt", nOption)==0 ){
+      ఒకవేళ( ii==(objc-1) ){
         zErr = "option requires an argument: ";
-      }else{
+      }లేకపోతే{
         pBenignCnt = objv[ii+1];
       }
-    }else{
+    }లేకపోతే{
       zErr = "unknown option: ";
     }
 
-    if( zErr ){
-      Tcl_AppendResult(interp, zErr, zOption, NULL);
-      return TCL_ERROR;
+    ఒకవేళ( zErr ){
+      Tcl_Append_ఫలితం(interp, zErr, zOption, ఖాళీ);
+      తిరిగి TCL_ERROR;
     }
   }
   
@@ -610,11 +610,11 @@ static int SQLITE_TCLAPI test_memdebug_fail(
   nFail = faultsimFailures();
   faultsimConfig(iFail, nRepeat);
 
-  if( pBenignCnt ){
-    Tcl_ObjSetVar2(interp, pBenignCnt, 0, Tcl_NewIntObj(nBenign), 0);
+  ఒకవేళ( pBenignCnt ){
+    Tcl_Obj_సమితి_Var2(interp, pBenignCnt, 0, Tcl_NewIntObj(nBenign), 0);
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nFail));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(nFail));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -624,20 +624,20 @@ static int SQLITE_TCLAPI test_memdebug_fail(
 ** simulated failure occurs. A negative return value indicates that
 ** no malloc() failure is scheduled.
 */
-static int SQLITE_TCLAPI test_memdebug_pending(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_pending(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nPending;
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  పూర్ణాంకం nPending;
+  ఒకవేళ( objc!=1 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "");
+    తిరిగి TCL_ERROR;
   }
   nPending = faultsimPending();
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nPending));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(nPending));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -645,7 +645,7 @@ static int SQLITE_TCLAPI test_memdebug_pending(
 ** that have run.  This variable is only useful when running in the
 ** debugger.
 */
-static int sqlite3_memdebug_title_count = 0;
+స్థిర పూర్ణాంకం sqlite3_memdebug_title_లెక్క = 0;
 
 /*
 ** Usage:    sqlite3_memdebug_settitle TITLE
@@ -657,173 +657,173 @@ static int sqlite3_memdebug_title_count = 0;
 **
 ** Each title overwrite the previous.
 */
-static int SQLITE_TCLAPI test_memdebug_settitle(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_settitle(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  sqlite3_memdebug_title_count++;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "TITLE");
-    return TCL_ERROR;
+  sqlite3_memdebug_title_లెక్క++;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "TITLE");
+    తిరిగి TCL_ERROR;
   }
-#ifdef SQLITE_MEMDEBUG
+#నిర్వచితమైతే SQLITE_MEMDEBUG
   {
-    const char *zTitle;
-    extern int sqlite3MemdebugSettitle(const char*);
+    స్థిరరాశి అక్షరం *zTitle;
+    బాహ్య పూర్ణాంకం sqlite3MemdebugSettitle(స్థిరరాశి అక్షరం*);
     zTitle = Tcl_GetString(objv[1]);
     sqlite3MemdebugSettitle(zTitle);
   }
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }
 
-#define MALLOC_LOG_FRAMES  10 
-#define MALLOC_LOG_KEYINTS (                                              \
-    10 * ((sizeof(int)>=sizeof(void*)) ? 1 : sizeof(void*)/sizeof(int))   \
+#నిర్వచించు MALLOC_LOG_చట్రాలు  10 
+#నిర్వచించు MALLOC_LOG_KEYINTS (                                              \
+    10 * ((పరిమాణం(పూర్ణాంకం)>=పరిమాణం(శూన్య*)) ? 1 : పరిమాణం(శూన్య*)/పరిమాణం(పూర్ణాంకం))   \
 )
-static Tcl_HashTable aMallocLog;
-static int mallocLogEnabled = 0;
+స్థిర Tcl_Hash_పట్టిక aMallocLog;
+స్థిర పూర్ణాంకం mallocLogEnabled = 0;
 
-typedef struct MallocLog MallocLog;
-struct MallocLog {
-  int nCall;
-  int nByte;
+రకనిర్వచనం నిర్మాణం MallocLog MallocLog;
+నిర్మాణం MallocLog {
+  పూర్ణాంకం nCall;
+  పూర్ణాంకం nByte;
 };
 
-#ifdef SQLITE_MEMDEBUG
-static void test_memdebug_callback(int nByte, int nFrame, void **aFrame){
-  if( mallocLogEnabled ){
+#నిర్వచితమైతే SQLITE_MEMDEBUG
+స్థిర శూన్య test_memdebug_callback(పూర్ణాంకం nByte, పూర్ణాంకం n_చట్రం, శూన్య **a_చట్రం){
+  ఒకవేళ( mallocLogEnabled ){
     MallocLog *pLog;
-    Tcl_HashEntry *pEntry;
-    int isNew;
+    Tcl_Hash_నమోదు *p_నమోదు;
+    పూర్ణాంకం isNew;
 
-    int aKey[MALLOC_LOG_KEYINTS];
-    unsigned int nKey = sizeof(int)*MALLOC_LOG_KEYINTS;
+    పూర్ణాంకం a_కీలకం[MALLOC_LOG_KEYINTS];
+    గుర్తులేని పూర్ణాంకం n_కీలకం = పరిమాణం(పూర్ణాంకం)*MALLOC_LOG_KEYINTS;
 
-    memset(aKey, 0, nKey);
-    if( (sizeof(void*)*nFrame)<nKey ){
-      nKey = nFrame*sizeof(void*);
+    memset(a_కీలకం, 0, n_కీలకం);
+    ఒకవేళ( (పరిమాణం(శూన్య*)*n_చట్రం)<n_కీలకం ){
+      n_కీలకం = n_చట్రం*పరిమాణం(శూన్య*);
     }
-    memcpy(aKey, aFrame, nKey);
+    జ్ఞాపకం_నకలు(a_కీలకం, a_చట్రం, n_కీలకం);
 
-    pEntry = Tcl_CreateHashEntry(&aMallocLog, (const char *)aKey, &isNew);
-    if( isNew ){
-      pLog = (MallocLog *)Tcl_Alloc(sizeof(MallocLog));
-      memset(pLog, 0, sizeof(MallocLog));
-      Tcl_SetHashValue(pEntry, (ClientData)pLog);
-    }else{
-      pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
+    p_నమోదు = Tcl_Create_Hash_నమోదు(&aMallocLog, (స్థిరరాశి అక్షరం *)a_కీలకం, &isNew);
+    ఒకవేళ( isNew ){
+      pLog = (MallocLog *)Tcl_Alloc(పరిమాణం(MallocLog));
+      memset(pLog, 0, పరిమాణం(MallocLog));
+      Tcl_సమితి_Hash_విలువ(p_నమోదు, (Client_దత్తాంశం)pLog);
+    }లేకపోతే{
+      pLog = (MallocLog *)Tcl_Get_Hash_విలువ(p_నమోదు);
     }
 
     pLog->nCall++;
     pLog->nByte += nByte;
   }
 }
-#endif /* SQLITE_MEMDEBUG */
+#అయితే_ముగింపు /* SQLITE_MEMDEBUG */
 
-static void test_memdebug_log_clear(void){
-  Tcl_HashSearch search;
-  Tcl_HashEntry *pEntry;
-  for(
-    pEntry=Tcl_FirstHashEntry(&aMallocLog, &search);
-    pEntry;
-    pEntry=Tcl_NextHashEntry(&search)
+స్థిర శూన్య test_memdebug_log_clear(శూన్య){
+  Tcl_Hash_శోధన శోధన;
+  Tcl_Hash_నమోదు *p_నమోదు;
+  కొరకు(
+    p_నమోదు=Tcl_మొదటి_Hash_నమోదు(&aMallocLog, &శోధన);
+    p_నమోదు;
+    p_నమోదు=Tcl_తదుపరి_Hash_నమోదు(&శోధన)
   ){
-    MallocLog *pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
-    Tcl_Free((char *)pLog);
+    MallocLog *pLog = (MallocLog *)Tcl_Get_Hash_విలువ(p_నమోదు);
+    Tcl_Free((అక్షరం *)pLog);
   }
-  Tcl_DeleteHashTable(&aMallocLog);
-  Tcl_InitHashTable(&aMallocLog, MALLOC_LOG_KEYINTS);
+  Tcl_Delete_Hash_పట్టిక(&aMallocLog);
+  Tcl_Init_Hash_పట్టిక(&aMallocLog, MALLOC_LOG_KEYINTS);
 }
 
-static int SQLITE_TCLAPI test_memdebug_log(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_memdebug_log(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  static int isInit = 0;
-  int iSub;
+  స్థిర పూర్ణాంకం isInit = 0;
+  పూర్ణాంకం iSub;
 
-  static const char *MB_strs[] = { "start", "stop", "dump", "clear", "sync" };
-  enum MB_enum { 
-      MB_LOG_START, MB_LOG_STOP, MB_LOG_DUMP, MB_LOG_CLEAR, MB_LOG_SYNC 
+  స్థిర స్థిరరాశి అక్షరం *MB_strs[] = { "start", "stop", "dump", "clear", "sync" };
+  గణన MB_enum { 
+      MB_LOG_ప్రారంభం, MB_LOG_STOP, MB_LOG_DUMP, MB_LOG_CLEAR, MB_LOG_SYNC 
   };
 
-  if( !isInit ){
-#ifdef SQLITE_MEMDEBUG
-    extern void sqlite3MemdebugBacktraceCallback(
-        void (*xBacktrace)(int, int, void **));
+  ఒకవేళ( !isInit ){
+#నిర్వచితమైతే SQLITE_MEMDEBUG
+    బాహ్య శూన్య sqlite3MemdebugBacktraceCallback(
+        శూన్య (*xBacktrace)(పూర్ణాంకం, పూర్ణాంకం, శూన్య **));
     sqlite3MemdebugBacktraceCallback(test_memdebug_callback);
-#endif
-    Tcl_InitHashTable(&aMallocLog, MALLOC_LOG_KEYINTS);
+#అయితే_ముగింపు
+    Tcl_Init_Hash_పట్టిక(&aMallocLog, MALLOC_LOG_KEYINTS);
     isInit = 1;
   }
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
+  ఒకవేళ( objc<2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "SUB-COMMAND ...");
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], MB_strs, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_Get_సూచీ_From_Obj(interp, objv[1], MB_strs, "sub-command", 0, &iSub) ){
+    తిరిగి TCL_ERROR;
   }
 
-  switch( (enum MB_enum)iSub ){
-    case MB_LOG_START:
+  ఎంపిక( (గణన MB_enum)iSub ){
+    స్థితి MB_LOG_ప్రారంభం:
       mallocLogEnabled = 1;
-      break;
-    case MB_LOG_STOP:
+      ఆపు;
+    స్థితి MB_LOG_STOP:
       mallocLogEnabled = 0;
-      break;
-    case MB_LOG_DUMP: {
-      Tcl_HashSearch search;
-      Tcl_HashEntry *pEntry;
+      ఆపు;
+    స్థితి MB_LOG_DUMP: {
+      Tcl_Hash_శోధన శోధన;
+      Tcl_Hash_నమోదు *p_నమోదు;
       Tcl_Obj *pRet = Tcl_NewObj();
 
-      assert(sizeof(Tcl_WideInt)>=sizeof(void*));
+      ప్రతిజ్ఞా(పరిమాణం(Tcl_WideInt)>=పరిమాణం(శూన్య*));
 
-      for(
-        pEntry=Tcl_FirstHashEntry(&aMallocLog, &search);
-        pEntry;
-        pEntry=Tcl_NextHashEntry(&search)
+      కొరకు(
+        p_నమోదు=Tcl_మొదటి_Hash_నమోదు(&aMallocLog, &శోధన);
+        p_నమోదు;
+        p_నమోదు=Tcl_తదుపరి_Hash_నమోదు(&శోధన)
       ){
-        Tcl_Obj *apElem[MALLOC_LOG_FRAMES+2];
-        MallocLog *pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
-        Tcl_WideInt *aKey = (Tcl_WideInt *)Tcl_GetHashKey(&aMallocLog, pEntry);
-        int ii;
+        Tcl_Obj *apElem[MALLOC_LOG_చట్రాలు+2];
+        MallocLog *pLog = (MallocLog *)Tcl_Get_Hash_విలువ(p_నమోదు);
+        Tcl_WideInt *a_కీలకం = (Tcl_WideInt *)Tcl_Get_Hash_కీలకం(&aMallocLog, p_నమోదు);
+        పూర్ణాంకం ii;
   
         apElem[0] = Tcl_NewIntObj(pLog->nCall);
         apElem[1] = Tcl_NewIntObj(pLog->nByte);
-        for(ii=0; ii<MALLOC_LOG_FRAMES; ii++){
-          apElem[ii+2] = Tcl_NewWideIntObj(aKey[ii]);
+        కొరకు(ii=0; ii<MALLOC_LOG_చట్రాలు; ii++){
+          apElem[ii+2] = Tcl_NewWideIntObj(a_కీలకం[ii]);
         }
 
         Tcl_ListObjAppendElement(interp, pRet,
-            Tcl_NewListObj(MALLOC_LOG_FRAMES+2, apElem)
+            Tcl_NewListObj(MALLOC_LOG_చట్రాలు+2, apElem)
         );
       }
 
-      Tcl_SetObjResult(interp, pRet);
-      break;
+      Tcl_సమితి_Obj_ఫలితం(interp, pRet);
+      ఆపు;
     }
-    case MB_LOG_CLEAR: {
+    స్థితి MB_LOG_CLEAR: {
       test_memdebug_log_clear();
-      break;
+      ఆపు;
     }
 
-    case MB_LOG_SYNC: {
-#ifdef SQLITE_MEMDEBUG
-      extern void sqlite3MemdebugSync();
+    స్థితి MB_LOG_SYNC: {
+#నిర్వచితమైతే SQLITE_MEMDEBUG
+      బాహ్య శూన్య sqlite3MemdebugSync();
       test_memdebug_log_clear();
       mallocLogEnabled = 1;
       sqlite3MemdebugSync();
-#endif
-      break;
+#అయితే_ముగింపు
+      ఆపు;
     }
   }
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -836,37 +836,37 @@ static int SQLITE_TCLAPI test_memdebug_log(
 **
 ** A negative SIZE causes the buffer pointer to be NULL.
 */
-static int SQLITE_TCLAPI test_config_pagecache(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_pagecache(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sz, N;
+  పూర్ణాంకం sz, N;
   Tcl_Obj *pRes;
-  static char *buf = 0;
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SIZE N");
-    return TCL_ERROR;
+  స్థిర అక్షరం *buf = 0;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "SIZE N");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &N) ) return TCL_ERROR;
-  free(buf);
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &sz) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &N) ) తిరిగి TCL_ERROR;
+  విడుదల(buf);
   buf = 0;
 
   /* Set the return value */
   pRes = Tcl_NewObj();
-  Tcl_ListObjAppendElement(0, pRes, Tcl_NewIntObj(sqlite3GlobalConfig.szPage));
-  Tcl_ListObjAppendElement(0, pRes, Tcl_NewIntObj(sqlite3GlobalConfig.nPage));
-  Tcl_SetObjResult(interp, pRes);
+  Tcl_ListObjAppendElement(0, pRes, Tcl_NewIntObj(sqlite3GlobalConfig.sz_పుట));
+  Tcl_ListObjAppendElement(0, pRes, Tcl_NewIntObj(sqlite3GlobalConfig.n_పుట));
+  Tcl_సమితి_Obj_ఫలితం(interp, pRes);
 
-  if( sz<0 ){
-    sqlite3_config(SQLITE_CONFIG_PAGECACHE, (void*)0, 0, 0);
-  }else{
-    buf = malloc( sz*N );
+  ఒకవేళ( sz<0 ){
+    sqlite3_config(SQLITE_CONFIG_PAGECACHE, (శూన్య*)0, 0, 0);
+  }లేకపోతే{
+    buf = జ్ఞాపకం_ఇవ్వు( sz*N );
     sqlite3_config(SQLITE_CONFIG_PAGECACHE, buf, sz, N);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -879,40 +879,40 @@ static int SQLITE_TCLAPI test_config_pagecache(
 ** is certainty.  0 is never.  PRNG_SEED is the pseudo-random number generator
 ** seed.
 */
-static int SQLITE_TCLAPI test_alt_pcache(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_alt_pcache(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int installFlag;
-  int discardChance = 0;
-  int prngSeed = 0;
-  int highStress = 0;
-  extern void installTestPCache(int,unsigned,unsigned,unsigned);
-  if( objc<2 || objc>5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, 
+  పూర్ణాంకం installFlag;
+  పూర్ణాంకం discardChance = 0;
+  పూర్ణాంకం prng_విత్తనం_2 = 0;
+  పూర్ణాంకం ఎగువ_Stress = 0;
+  బాహ్య శూన్య installTestPCache(పూర్ణాంకం,గుర్తులేని,గుర్తులేని,గుర్తులేని);
+  ఒకవేళ( objc<2 || objc>5 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, 
         "INSTALLFLAG DISCARDCHANCE PRNGSEEED HIGHSTRESS");
-    return TCL_ERROR;
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &installFlag) ) return TCL_ERROR;
-  if( objc>=3 && Tcl_GetIntFromObj(interp, objv[2], &discardChance) ){
-     return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &installFlag) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( objc>=3 && Tcl_GetIntFromObj(interp, objv[2], &discardChance) ){
+     తిరిగి TCL_ERROR;
   }
-  if( objc>=4 && Tcl_GetIntFromObj(interp, objv[3], &prngSeed) ){
-     return TCL_ERROR;
+  ఒకవేళ( objc>=4 && Tcl_GetIntFromObj(interp, objv[3], &prng_విత్తనం_2) ){
+     తిరిగి TCL_ERROR;
   }
-  if( objc>=5 && Tcl_GetIntFromObj(interp, objv[4], &highStress) ){
-    return TCL_ERROR;
+  ఒకవేళ( objc>=5 && Tcl_GetIntFromObj(interp, objv[4], &ఎగువ_Stress) ){
+    తిరిగి TCL_ERROR;
   }
-  if( discardChance<0 || discardChance>100 ){
-    Tcl_AppendResult(interp, "discard-chance should be between 0 and 100",
-                     (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( discardChance<0 || discardChance>100 ){
+    Tcl_Append_ఫలితం(interp, "discard-chance should be between 0 and 100",
+                     (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  installTestPCache(installFlag, (unsigned)discardChance, (unsigned)prngSeed,
-                    (unsigned)highStress);
-  return TCL_OK;
+  installTestPCache(installFlag, (గుర్తులేని)discardChance, (గుర్తులేని)prng_విత్తనం_2,
+                    (గుర్తులేని)ఎగువ_Stress);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -920,41 +920,41 @@ static int SQLITE_TCLAPI test_alt_pcache(
 **
 ** Enable or disable memory status reporting using SQLITE_CONFIG_MEMSTATUS.
 */
-static int SQLITE_TCLAPI test_config_memstatus(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_memstatus(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int enable, rc;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+  పూర్ణాంకం enable, rc;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BOOLEAN");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &enable) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[1], &enable) ) తిరిగి TCL_ERROR;
   rc = sqlite3_config(SQLITE_CONFIG_MEMSTATUS, enable);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_lookaside  SIZE  COUNT
 **
 */
-static int SQLITE_TCLAPI test_config_lookaside(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_lookaside(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sz, cnt;
+  పూర్ణాంకం sz, cnt;
   Tcl_Obj *pRet;
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SIZE COUNT");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "SIZE COUNT");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &cnt) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &sz) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &cnt) ) తిరిగి TCL_ERROR;
   pRet = Tcl_NewObj();
   Tcl_ListObjAppendElement(
       interp, pRet, Tcl_NewIntObj(sqlite3GlobalConfig.szLookaside)
@@ -963,8 +963,8 @@ static int SQLITE_TCLAPI test_config_lookaside(
       interp, pRet, Tcl_NewIntObj(sqlite3GlobalConfig.nLookaside)
   );
   sqlite3_config(SQLITE_CONFIG_LOOKASIDE, sz, cnt);
-  Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, pRet);
+  తిరిగి TCL_OK;
 }
 
 
@@ -975,100 +975,100 @@ static int SQLITE_TCLAPI test_config_lookaside(
 ** is 10KB in size.  A BUFID of 0 indicates that the buffer should be NULL
 ** which will cause sqlite3_db_config() to allocate space on its own.
 */
-static int SQLITE_TCLAPI test_db_config_lookaside(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_db_config_lookaside(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int sz, cnt;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం sz, cnt;
   sqlite3 *db;
-  int bufid;
-  static char azBuf[2][10000];
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
-  if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BUFID SIZE COUNT");
-    return TCL_ERROR;
+  పూర్ణాంకం bufid;
+  స్థిర అక్షరం azBuf[2][10000];
+  బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp*, స్థిరరాశి అక్షరం*, sqlite3**);
+  ఒకవేళ( objc!=5 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BUFID SIZE COUNT");
+    తిరిగి TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &bufid) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[4], &cnt) ) return TCL_ERROR;
-  if( bufid==0 ){
-    rc = sqlite3_db_config(db, SQLITE_DBCONFIG_LOOKASIDE, (void*)0, sz, cnt);
-  }else if( bufid>=1 && bufid<=2 && sz*cnt<=sizeof(azBuf[0]) ){
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &bufid) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[3], &sz) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[4], &cnt) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( bufid==0 ){
+    rc = sqlite3_db_config(db, SQLITE_DBCONFIG_LOOKASIDE, (శూన్య*)0, sz, cnt);
+  }లేకపోతే ఒకవేళ( bufid>=1 && bufid<=2 && sz*cnt<=పరిమాణం(azBuf[0]) ){
     rc = sqlite3_db_config(db, SQLITE_DBCONFIG_LOOKASIDE, azBuf[bufid], sz,cnt);
-  }else{
-    Tcl_AppendResult(interp, "illegal arguments - see documentation", (char*)0);
-    return TCL_ERROR;
+  }లేకపోతే{
+    Tcl_Append_ఫలితం(interp, "illegal arguments - see documentation", (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_heap NBYTE NMINALLOC
 */
-static int SQLITE_TCLAPI test_config_heap(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_కుప్ప(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  static char *zBuf; /* Use this memory */
-  int nByte;         /* Size of buffer to pass to sqlite3_config() */
-  int nMinAlloc;     /* Size of minimum allocation */
-  int rc;            /* Return code of sqlite3_config() */
+  స్థిర అక్షరం *zBuf; /* Use this memory */
+  పూర్ణాంకం nByte;         /* Size of buffer to pass to sqlite3_config() */
+  పూర్ణాంకం nMinAlloc;     /* Size of minimum allocation */
+  పూర్ణాంకం rc;            /* Return code of sqlite3_config() */
 
   Tcl_Obj * CONST *aArg = &objv[1];
-  int nArg = objc-1;
+  పూర్ణాంకం nArg = objc-1;
 
-  if( nArg!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NBYTE NMINALLOC");
-    return TCL_ERROR;
+  ఒకవేళ( nArg!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "NBYTE NMINALLOC");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, aArg[1], &nMinAlloc) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, aArg[1], &nMinAlloc) ) తిరిగి TCL_ERROR;
 
-  if( nByte==0 ){
-    free( zBuf );
+  ఒకవేళ( nByte==0 ){
+    విడుదల( zBuf );
     zBuf = 0;
-    rc = sqlite3_config(SQLITE_CONFIG_HEAP, (void*)0, 0, 0);
-  }else{
+    rc = sqlite3_config(SQLITE_CONFIG_కుప్ప, (శూన్య*)0, 0, 0);
+  }లేకపోతే{
     zBuf = realloc(zBuf, nByte);
-    rc = sqlite3_config(SQLITE_CONFIG_HEAP, zBuf, nByte, nMinAlloc);
+    rc = sqlite3_config(SQLITE_CONFIG_కుప్ప, zBuf, nByte, nMinAlloc);
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_heap_size NBYTE
 */
-static int SQLITE_TCLAPI test_config_heap_size(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_కుప్ప_కొలత(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;         /* Size to pass to sqlite3_config() */
-  int rc;            /* Return code of sqlite3_config() */
+  పూర్ణాంకం nByte;         /* Size to pass to sqlite3_config() */
+  పూర్ణాంకం rc;            /* Return code of sqlite3_config() */
 
   Tcl_Obj * CONST *aArg = &objv[1];
-  int nArg = objc-1;
+  పూర్ణాంకం nArg = objc-1;
 
-  if( nArg!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NBYTE");
-    return TCL_ERROR;
+  ఒకవేళ( nArg!=1 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "NBYTE");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) తిరిగి TCL_ERROR;
 
   rc = sqlite3_config(SQLITE_CONFIG_WIN32_HEAPSIZE, nByte);
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1077,36 +1077,36 @@ static int SQLITE_TCLAPI test_config_heap_size(
 ** Invoke sqlite3_config() or sqlite3_db_config() with invalid
 ** opcodes and verify that they return errors.
 */
-static int SQLITE_TCLAPI test_config_error(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_error(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp*, స్థిరరాశి అక్షరం*, sqlite3**);
 
-  if( objc!=2 && objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "[DB]");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 && objc!=1 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "[DB]");
+    తిరిగి TCL_ERROR;
   }
-  if( objc==2 ){
-    if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-    if( sqlite3_db_config(db, 99999)!=SQLITE_ERROR ){
-      Tcl_AppendResult(interp, 
+  ఒకవేళ( objc==2 ){
+    ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
+    ఒకవేళ( sqlite3_db_config(db, 99999)!=SQLITE_ERROR ){
+      Tcl_Append_ఫలితం(interp, 
             "sqlite3_db_config(db, 99999) does not return SQLITE_ERROR",
-            (char*)0);
-      return TCL_ERROR;
+            (అక్షరం*)0);
+      తిరిగి TCL_ERROR;
     }
-  }else{
-    if( sqlite3_config(99999)!=SQLITE_ERROR ){
-      Tcl_AppendResult(interp, 
+  }లేకపోతే{
+    ఒకవేళ( sqlite3_config(99999)!=SQLITE_ERROR ){
+      Tcl_Append_ఫలితం(interp, 
           "sqlite3_config(99999) does not return SQLITE_ERROR",
-          (char*)0);
-      return TCL_ERROR;
+          (అక్షరం*)0);
+      తిరిగి TCL_ERROR;
     }
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1115,27 +1115,27 @@ static int SQLITE_TCLAPI test_config_error(
 ** Enables or disables interpretation of URI parameters by default using
 ** SQLITE_CONFIG_URI.
 */
-static int SQLITE_TCLAPI test_config_uri(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_uri(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int bOpenUri;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం bOpenUri;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BOOL");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &bOpenUri) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[1], &bOpenUri) ){
+    తిరిగి TCL_ERROR;
   }
 
   rc = sqlite3_config(SQLITE_CONFIG_URI, bOpenUri);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1144,27 +1144,27 @@ static int SQLITE_TCLAPI test_config_uri(
 ** Enables or disables the use of the covering-index scan optimization.
 ** SQLITE_CONFIG_COVERING_INDEX_SCAN.
 */
-static int SQLITE_TCLAPI test_config_cis(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_cis(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int bUseCis;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం bUseCis;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BOOL");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &bUseCis) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[1], &bUseCis) ){
+    తిరిగి TCL_ERROR;
   }
 
-  rc = sqlite3_config(SQLITE_CONFIG_COVERING_INDEX_SCAN, bUseCis);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  rc = sqlite3_config(SQLITE_CONFIG_COVERING_సూచీ_పరిశీలన, bUseCis);
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1172,27 +1172,27 @@ static int SQLITE_TCLAPI test_config_cis(
 **
 ** Set the minimum PMA size.
 */
-static int SQLITE_TCLAPI test_config_pmasz(
-  void * clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_config_pmasz(
+  శూన్య * client_దత్తాంశం, 
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int iPmaSz;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం iPmaSz;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BOOL");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &iPmaSz) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &iPmaSz) ){
+    తిరిగి TCL_ERROR;
   }
 
   rc = sqlite3_config(SQLITE_CONFIG_PMASZ, iPmaSz);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 
@@ -1202,34 +1202,34 @@ static int SQLITE_TCLAPI test_config_pmasz(
 **
 ** Write a summary of unfreed memsys3 allocations to FILENAME.
 */
-static int SQLITE_TCLAPI test_dump_memsys3(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_dump_memsys3(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "FILENAME");
+    తిరిగి TCL_ERROR;
   }
 
-  switch( SQLITE_PTR_TO_INT(clientData) ){
-    case 3: {
-#ifdef SQLITE_ENABLE_MEMSYS3
-      extern void sqlite3Memsys3Dump(const char*);
+  ఎంపిక( SQLITE_PTR_గమ్యం_INT(client_దత్తాంశం) ){
+    స్థితి 3: {
+#నిర్వచితమైతే SQLITE_ENABLE_MEMSYS3
+      బాహ్య శూన్య sqlite3Memsys3Dump(స్థిరరాశి అక్షరం*);
       sqlite3Memsys3Dump(Tcl_GetString(objv[1]));
-      break;
-#endif
+      ఆపు;
+#అయితే_ముగింపు
     }
-    case 5: {
-#ifdef SQLITE_ENABLE_MEMSYS5
-      extern void sqlite3Memsys5Dump(const char*);
+    స్థితి 5: {
+#నిర్వచితమైతే SQLITE_ENABLE_MEMSYS5
+      బాహ్య శూన్య sqlite3Memsys5Dump(స్థిరరాశి అక్షరం*);
       sqlite3Memsys5Dump(Tcl_GetString(objv[1]));
-      break;
-#endif
+      ఆపు;
+#అయితే_ముగింపు
     }
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1238,55 +1238,55 @@ static int SQLITE_TCLAPI test_dump_memsys3(
 ** Return a list of three elements which are the sqlite3_status() return
 ** code, the current value, and the high-water mark value.
 */
-static int SQLITE_TCLAPI test_status(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_స్థితి(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc, iValue, mxValue;
-  int i, op = 0, resetFlag;
-  const char *zOpName;
-  static const struct {
-    const char *zName;
-    int op;
+  పూర్ణాంకం rc, i_విలువ, mx_విలువ;
+  పూర్ణాంకం i, op = 0, resetFlag;
+  స్థిరరాశి అక్షరం *zOpName;
+  స్థిర స్థిరరాశి నిర్మాణం {
+    స్థిరరాశి అక్షరం *zName;
+    పూర్ణాంకం op;
   } aOp[] = {
-    { "SQLITE_STATUS_MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
-    { "SQLITE_STATUS_MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
-    { "SQLITE_STATUS_PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
-    { "SQLITE_STATUS_PAGECACHE_OVERFLOW",  SQLITE_STATUS_PAGECACHE_OVERFLOW  },
-    { "SQLITE_STATUS_PAGECACHE_SIZE",      SQLITE_STATUS_PAGECACHE_SIZE      },
-    { "SQLITE_STATUS_SCRATCH_USED",        SQLITE_STATUS_SCRATCH_USED        },
-    { "SQLITE_STATUS_SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
-    { "SQLITE_STATUS_SCRATCH_SIZE",        SQLITE_STATUS_SCRATCH_SIZE        },
-    { "SQLITE_STATUS_PARSER_STACK",        SQLITE_STATUS_PARSER_STACK        },
-    { "SQLITE_STATUS_MALLOC_COUNT",        SQLITE_STATUS_MALLOC_COUNT        },
+    { "SQLITE_STATUS_MEMORY_USED",         SQLITE_స్థితి_జ్ఞాపకం_వాడిన         },
+    { "SQLITE_STATUS_MALLOC_SIZE",         SQLITE_స్థితి_MALLOC_కొలత         },
+    { "SQLITE_STATUS_PAGECACHE_USED",      SQLITE_స్థితి_PAGECACHE_వాడిన      },
+    { "SQLITE_STATUS_PAGECACHE_OVERFLOW",  SQLITE_స్థితి_PAGECACHE_అధికప్రవాహం  },
+    { "SQLITE_STATUS_PAGECACHE_SIZE",      SQLITE_స్థితి_PAGECACHE_కొలత      },
+    { "SQLITE_STATUS_SCRATCH_USED",        SQLITE_స్థితి_SCRATCH_వాడిన        },
+    { "SQLITE_STATUS_SCRATCH_OVERFLOW",    SQLITE_స్థితి_SCRATCH_అధికప్రవాహం    },
+    { "SQLITE_STATUS_SCRATCH_SIZE",        SQLITE_స్థితి_SCRATCH_కొలత        },
+    { "SQLITE_STATUS_PARSER_STACK",        SQLITE_స్థితి_PARSER_దొంతర        },
+    { "SQLITE_STATUS_MALLOC_COUNT",        SQLITE_స్థితి_MALLOC_లెక్క        },
   };
-  Tcl_Obj *pResult;
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PARAMETER RESETFLAG");
-    return TCL_ERROR;
+  Tcl_Obj *p_ఫలితం;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "PARAMETER RESETFLAG");
+    తిరిగి TCL_ERROR;
   }
   zOpName = Tcl_GetString(objv[1]);
-  for(i=0; i<ArraySize(aOp); i++){
-    if( strcmp(aOp[i].zName, zOpName)==0 ){
+  కొరకు(i=0; i<Array_కొలత(aOp); i++){
+    ఒకవేళ( strcmp(aOp[i].zName, zOpName)==0 ){
       op = aOp[i].op;
-      break;
+      ఆపు;
     }
   }
-  if( i>=ArraySize(aOp) ){
-    if( Tcl_GetIntFromObj(interp, objv[1], &op) ) return TCL_ERROR;
+  ఒకవేళ( i>=Array_కొలత(aOp) ){
+    ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &op) ) తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[2], &resetFlag) ) return TCL_ERROR;
-  iValue = 0;
-  mxValue = 0;
-  rc = sqlite3_status(op, &iValue, &mxValue, resetFlag);
-  pResult = Tcl_NewObj();
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(rc));
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(iValue));
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(mxValue));
-  Tcl_SetObjResult(interp, pResult);
-  return TCL_OK;
+  ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[2], &resetFlag) ) తిరిగి TCL_ERROR;
+  i_విలువ = 0;
+  mx_విలువ = 0;
+  rc = sqlite3_స్థితి(op, &i_విలువ, &mx_విలువ, resetFlag);
+  p_ఫలితం = Tcl_NewObj();
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(rc));
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(i_విలువ));
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(mx_విలువ));
+  Tcl_సమితి_Obj_ఫలితం(interp, p_ఫలితం);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -1295,157 +1295,157 @@ static int SQLITE_TCLAPI test_status(
 ** Return a list of three elements which are the sqlite3_db_status() return
 ** code, the current value, and the high-water mark value.
 */
-static int SQLITE_TCLAPI test_db_status(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_db_స్థితి(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc, iValue, mxValue;
-  int i, op = 0, resetFlag;
-  const char *zOpName;
+  పూర్ణాంకం rc, i_విలువ, mx_విలువ;
+  పూర్ణాంకం i, op = 0, resetFlag;
+  స్థిరరాశి అక్షరం *zOpName;
   sqlite3 *db;
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
-  static const struct {
-    const char *zName;
-    int op;
+  బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp*, స్థిరరాశి అక్షరం*, sqlite3**);
+  స్థిర స్థిరరాశి నిర్మాణం {
+    స్థిరరాశి అక్షరం *zName;
+    పూర్ణాంకం op;
   } aOp[] = {
-    { "LOOKASIDE_USED",      SQLITE_DBSTATUS_LOOKASIDE_USED      },
-    { "CACHE_USED",          SQLITE_DBSTATUS_CACHE_USED          },
-    { "SCHEMA_USED",         SQLITE_DBSTATUS_SCHEMA_USED         },
-    { "STMT_USED",           SQLITE_DBSTATUS_STMT_USED           },
-    { "LOOKASIDE_HIT",       SQLITE_DBSTATUS_LOOKASIDE_HIT       },
-    { "LOOKASIDE_MISS_SIZE", SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE },
-    { "LOOKASIDE_MISS_FULL", SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL },
-    { "CACHE_HIT",           SQLITE_DBSTATUS_CACHE_HIT           },
-    { "CACHE_MISS",          SQLITE_DBSTATUS_CACHE_MISS          },
+    { "LOOKASIDE_USED",      SQLITE_DBSTATUS_LOOKASIDE_వాడిన      },
+    { "CACHE_USED",          SQLITE_DBSTATUS_CACHE_వాడిన          },
+    { "SCHEMA_USED",         SQLITE_DBSTATUS_SCHEMA_వాడిన         },
+    { "STMT_USED",           SQLITE_DBSTATUS_STMT_వాడిన           },
+    { "LOOKASIDE_HIT",       SQLITE_DBSTATUS_LOOKASIDE_తగిలింది       },
+    { "LOOKASIDE_MISS_SIZE", SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_కొలత },
+    { "LOOKASIDE_MISS_FULL", SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_నిండిన },
+    { "CACHE_HIT",           SQLITE_DBSTATUS_CACHE_తగిలింది           },
+    { "CACHE_MISS",          SQLITE_DBSTATUS_CACHE_తప్పిపోవు          },
     { "CACHE_WRITE",         SQLITE_DBSTATUS_CACHE_WRITE         },
     { "DEFERRED_FKS",        SQLITE_DBSTATUS_DEFERRED_FKS        },
-    { "CACHE_USED_SHARED",   SQLITE_DBSTATUS_CACHE_USED_SHARED   },
+    { "CACHE_USED_SHARED",   SQLITE_DBSTATUS_CACHE_వాడిన_SHARED   },
     { "CACHE_SPILL",         SQLITE_DBSTATUS_CACHE_SPILL         },
     { "TEMPBUF_SPILL",       SQLITE_DBSTATUS_TEMPBUF_SPILL       },
   };
-  Tcl_Obj *pResult;
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB PARAMETER RESETFLAG");
-    return TCL_ERROR;
+  Tcl_Obj *p_ఫలితం;
+  ఒకవేళ( objc!=4 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "DB PARAMETER RESETFLAG");
+    తిరిగి TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
   zOpName = Tcl_GetString(objv[2]);
-  if( memcmp(zOpName, "SQLITE_", 7)==0 ) zOpName += 7;
-  if( memcmp(zOpName, "DBSTATUS_", 9)==0 ) zOpName += 9;
-  for(i=0; i<ArraySize(aOp); i++){
-    if( strcmp(aOp[i].zName, zOpName)==0 ){
+  ఒకవేళ( memcmp(zOpName, "SQLITE_", 7)==0 ) zOpName += 7;
+  ఒకవేళ( memcmp(zOpName, "DBSTATUS_", 9)==0 ) zOpName += 9;
+  కొరకు(i=0; i<Array_కొలత(aOp); i++){
+    ఒకవేళ( strcmp(aOp[i].zName, zOpName)==0 ){
       op = aOp[i].op;
-      break;
+      ఆపు;
     }
   }
-  if( i>=ArraySize(aOp) ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &op) ) return TCL_ERROR;
+  ఒకవేళ( i>=Array_కొలత(aOp) ){
+    ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &op) ) తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[3], &resetFlag) ) return TCL_ERROR;
-  iValue = 0;
-  mxValue = 0;
-  rc = sqlite3_db_status(db, op, &iValue, &mxValue, resetFlag);
-  pResult = Tcl_NewObj();
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(rc));
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(iValue));
-  Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(mxValue));
-  Tcl_SetObjResult(interp, pResult);
-  return TCL_OK;
+  ఒకవేళ( Tcl_GetBooleanFromObj(interp, objv[3], &resetFlag) ) తిరిగి TCL_ERROR;
+  i_విలువ = 0;
+  mx_విలువ = 0;
+  rc = sqlite3_db_స్థితి(db, op, &i_విలువ, &mx_విలువ, resetFlag);
+  p_ఫలితం = Tcl_NewObj();
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(rc));
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(i_విలువ));
+  Tcl_ListObjAppendElement(0, p_ఫలితం, Tcl_NewIntObj(mx_విలువ));
+  Tcl_సమితి_Obj_ఫలితం(interp, p_ఫలితం);
+  తిరిగి TCL_OK;
 }
 
 /*
 ** install_malloc_faultsim BOOLEAN
 */
-static int SQLITE_TCLAPI test_install_malloc_faultsim(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_install_malloc_faultsim(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int isInstall;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం isInstall;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BOOLEAN");
+    తిరిగి TCL_ERROR;
   }
-  if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
-    return TCL_ERROR;
+  ఒకవేళ( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
+    తిరిగి TCL_ERROR;
   }
   rc = faultsimInstall(isInstall);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
+  తిరిగి TCL_OK;
 }
 
 /*
 ** sqlite3_install_memsys3
 */
-static int SQLITE_TCLAPI test_install_memsys3(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_install_memsys3(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = SQLITE_MISUSE;
-#ifdef SQLITE_ENABLE_MEMSYS3
-  const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
+  పూర్ణాంకం rc = SQLITE_MISUSE;
+#నిర్వచితమైతే SQLITE_ENABLE_MEMSYS3
+  స్థిరరాశి sqlite3_mem_methods *sqlite3MemGetMemsys3(శూన్య);
   rc = sqlite3_config(SQLITE_CONFIG_MALLOC, sqlite3MemGetMemsys3());
-#endif
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+#అయితే_ముగింపు
+  Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_VOLATILE);
+  తిరిగి TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_vfs_oom_test(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_vfs_oom_test(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int sqlite3_memdebug_vfs_oom_test;
-  if( objc>2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?INTEGER?");
-    return TCL_ERROR;
-  }else if( objc==2 ){
-    int iNew;
-    if( Tcl_GetIntFromObj(interp, objv[1], &iNew) ) return TCL_ERROR;
+  బాహ్య పూర్ణాంకం sqlite3_memdebug_vfs_oom_test;
+  ఒకవేళ( objc>2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "?INTEGER?");
+    తిరిగి TCL_ERROR;
+  }లేకపోతే ఒకవేళ( objc==2 ){
+    పూర్ణాంకం iNew;
+    ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &iNew) ) తిరిగి TCL_ERROR;
     sqlite3_memdebug_vfs_oom_test = iNew;
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_memdebug_vfs_oom_test));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(sqlite3_memdebug_vfs_oom_test));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_malloc_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+పూర్ణాంకం Sqlitetest_malloc_Init(Tcl_Interp *interp){
+  స్థిర నిర్మాణం {
+     అక్షరం *zName;
      Tcl_ObjCmdProc *xProc;
-     int clientData;
+     పూర్ణాంకం client_దత్తాంశం;
   } aObjCmd[] = {
      { "sqlite3_malloc",             test_malloc                   ,0 },
      { "sqlite3_realloc",            test_realloc                  ,0 },
      { "sqlite3_free",               test_free                     ,0 },
      { "memset",                     test_memset                   ,0 },
      { "memget",                     test_memget                   ,0 },
-     { "sqlite3_memory_used",        test_memory_used              ,0 },
-     { "sqlite3_memory_highwater",   test_memory_highwater         ,0 },
+     { "sqlite3_memory_used",        test_జ్ఞాపకం_వాడిన              ,0 },
+     { "sqlite3_memory_highwater",   test_జ్ఞాపకం_highwater         ,0 },
      { "sqlite3_memdebug_backtrace", test_memdebug_backtrace       ,0 },
      { "sqlite3_memdebug_dump",      test_memdebug_dump            ,0 },
      { "sqlite3_memdebug_fail",      test_memdebug_fail            ,0 },
      { "sqlite3_memdebug_pending",   test_memdebug_pending         ,0 },
      { "sqlite3_memdebug_settitle",  test_memdebug_settitle        ,0 },
-     { "sqlite3_memdebug_malloc_count", test_memdebug_malloc_count ,0 },
+     { "sqlite3_memdebug_malloc_count", test_memdebug_malloc_లెక్క ,0 },
      { "sqlite3_memdebug_log",       test_memdebug_log             ,0 },
      { "sqlite3_config_pagecache",   test_config_pagecache         ,0 },
      { "sqlite3_config_alt_pcache",  test_alt_pcache               ,0 },
-     { "sqlite3_status",             test_status                   ,0 },
-     { "sqlite3_db_status",          test_db_status                ,0 },
+     { "sqlite3_status",             test_స్థితి                   ,0 },
+     { "sqlite3_db_status",          test_db_స్థితి                ,0 },
      { "install_malloc_faultsim",    test_install_malloc_faultsim  ,0 },
-     { "sqlite3_config_heap",        test_config_heap              ,0 },
-     { "sqlite3_config_heap_size",   test_config_heap_size         ,0 },
+     { "sqlite3_config_heap",        test_config_కుప్ప              ,0 },
+     { "sqlite3_config_heap_size",   test_config_కుప్ప_కొలత         ,0 },
      { "sqlite3_config_memstatus",   test_config_memstatus         ,0 },
      { "sqlite3_config_lookaside",   test_config_lookaside         ,0 },
      { "sqlite3_config_error",       test_config_error             ,0 },
@@ -1458,11 +1458,11 @@ int Sqlitetest_malloc_Init(Tcl_Interp *interp){
      { "sqlite3_install_memsys3",    test_install_memsys3          ,0 },
      { "sqlite3_memdebug_vfs_oom_test", test_vfs_oom_test          ,0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
-    ClientData c = (ClientData)SQLITE_INT_TO_PTR(aObjCmd[i].clientData);
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<పరిమాణం(aObjCmd)/పరిమాణం(aObjCmd[0]); i++){
+    Client_దత్తాంశం c = (Client_దత్తాంశం)SQLITE_INT_గమ్యం_PTR(aObjCmd[i].client_దత్తాంశం);
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, c, 0);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
-#endif
+#అయితే_ముగింపు

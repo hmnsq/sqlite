@@ -11,9 +11,9 @@
 *************************************************************************
 ** This file contains code used to implement the ATTACH and DETACH commands.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_ATTACH
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ATTACH
 /*
 ** Resolve an expression that was part of an ATTACH or DETACH statement. This
 ** is slightly different from resolving a normal SQL expression, because simple
@@ -32,25 +32,25 @@
 **
 ** will fail because neither abc or def can be resolved.
 */
-static int resolveAttachExpr(NameContext *pName, Expr *pExpr)
+స్థిర పూర్ణాంకం resolve_Attach_సమాసం(NameContext *pName, సమాసం *p_సమాసం)
 {
-  int rc = SQLITE_OK;
-  if( pExpr ){
-    if( pExpr->op!=TK_ID ){
-      rc = sqlite3ResolveExprNames(pName, pExpr);
-    }else{
-      pExpr->op = TK_STRING;
+  పూర్ణాంకం rc = SQLITE_OK;
+  ఒకవేళ( p_సమాసం ){
+    ఒకవేళ( p_సమాసం->op!=TK_ID ){
+      rc = sqlite3_Resolve_సమాసం_పేర్లు(pName, p_సమాసం);
+    }లేకపోతే{
+      p_సమాసం->op = TK_STRING;
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Return true if zName points to a name that may be used to refer to
 ** database iDb attached to handle db.
 */
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
-  return (
+పూర్ణాంకం sqlite3DbIsNamed(sqlite3 *db, పూర్ణాంకం iDb, స్థిరరాశి అక్షరం *zName){
+  తిరిగి (
       sqlite3StrICmp(db->aDb[iDb].zDbSName, zName)==0
    || (iDb==0 && sqlite3StrICmp("main", zName)==0)
   );
@@ -60,16 +60,16 @@ int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
 ** If any TEMP triggers reference schema pSchema, move those triggers to
 ** reference the TEMP schema itself.
 */
-static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
-  HashElem *pEntry;
-  assert( db->aDb[1].pSchema );
-  pEntry = sqliteHashFirst(&db->aDb[1].pSchema->trigHash);
-  while( pEntry ){
-    Trigger *pTrig = (Trigger*)sqliteHashData(pEntry);
-    if( pTrig->pTabSchema==pSchema ){
+స్థిర శూన్య detach_తాత్కాలిక_Triggers(sqlite3 *db, Schema *pSchema){
+  HashElem *p_నమోదు;
+  ప్రతిజ్ఞా( db->aDb[1].pSchema );
+  p_నమోదు = sqlite_Hash_మొదటి(&db->aDb[1].pSchema->trigHash);
+  అయితే( p_నమోదు ){
+    Trigger *pTrig = (Trigger*)sqlite_Hash_దత్తాంశం(p_నమోదు);
+    ఒకవేళ( pTrig->pTabSchema==pSchema ){
       pTrig->pTabSchema = pTrig->pSchema;
     }
-    pEntry = sqliteHashNext(pEntry);
+    p_నమోదు = sqlite_Hash_తదుపరి(p_నమోదు);
   }
 }
 
@@ -88,77 +88,77 @@ static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
 ** new database, close the database on db->init.iDb and reopen it as an
 ** empty MemDB.
 */
-static void attachFunc(
+స్థిర శూన్య attachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  int i;
-  int rc = 0;
+  పూర్ణాంకం i;
+  పూర్ణాంకం rc = 0;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zName;
-  const char *zFile;
-  char *zPath = 0;
-  char *zErr = 0;
-  unsigned int flags;
+  స్థిరరాశి అక్షరం *zName;
+  స్థిరరాశి అక్షరం *zFile;
+  అక్షరం *z_మార్గం = 0;
+  అక్షరం *zErr = 0;
+  గుర్తులేని పూర్ణాంకం flags;
   Db *aNew;                 /* New array of Db pointers */
   Db *pNew = 0;             /* Db object for the newly attached database */
-  char *zErrDyn = 0;
+  అక్షరం *zErrDyn = 0;
   sqlite3_vfs *pVfs;
 
-  UNUSED_PARAMETER(NotUsed);
-  zFile = (const char *)sqlite3_value_text(argv[0]);
-  zName = (const char *)sqlite3_value_text(argv[1]);
-  if( zFile==0 ) zFile = "";
-  if( zName==0 ) zName = "";
+  వాడని_PARAMETER(Not_వాడిన);
+  zFile = (స్థిరరాశి అక్షరం *)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  zName = (స్థిరరాశి అక్షరం *)sqlite3_విలువ_పాఠ్యం(argv[1]);
+  ఒకవేళ( zFile==0 ) zFile = "";
+  ఒకవేళ( zName==0 ) zName = "";
 
-#ifndef SQLITE_OMIT_DESERIALIZE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_DESERIALIZE
 # define REOPEN_AS_MEMDB(db)  (db->init.reopenMemdb)
-#else
+#లేకపోతే
 # define REOPEN_AS_MEMDB(db)  (0)
-#endif
+#అయితే_ముగింపు
 
-  if( REOPEN_AS_MEMDB(db) ){
+  ఒకవేళ( REOPEN_AS_MEMDB(db) ){
     /* This is not a real ATTACH.  Instead, this routine is being called
     ** from sqlite3_deserialize() to close database db->init.iDb and
     ** reopen it as a MemDB */
     Btree *pNewBt = 0;
 
     pNew = &db->aDb[db->init.iDb];
-    assert( pNew->pBt!=0 );
-    if( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
-     || sqlite3BtreeIsInBackup(pNew->pBt)
+    ప్రతిజ్ఞా( pNew->pBt!=0 );
+    ఒకవేళ( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
+     || sqlite3_Btree_Is_లోపల_Backup(pNew->pBt)
     ){
       rc = SQLITE_BUSY;
-      goto attach_error;
+      వెళ్ళు attach_error;
     }
 
-    pVfs = sqlite3_vfs_find("memdb");
-    if( pVfs==0 ) return;
+    pVfs = sqlite3_vfs_కనుగొను("memdb");
+    ఒకవేళ( pVfs==0 ) తిరిగి;
     rc = sqlite3BtreeOpen(pVfs, "x\0", db, &pNewBt, 0, SQLITE_OPEN_MAIN_DB);
-    if( rc==SQLITE_OK ){
+    ఒకవేళ( rc==SQLITE_OK ){
       Schema *pNewSchema = sqlite3SchemaGet(db, pNewBt);
-      if( pNewSchema ){
+      ఒకవేళ( pNewSchema ){
         /* Both the Btree and the new Schema were allocated successfully.
         ** Close the old db and update the aDb[] slot with the new memdb
         ** values.  */
-        detachTempTriggers(db, pNew->pSchema);
+        detach_తాత్కాలిక_Triggers(db, pNew->pSchema);
         sqlite3BtreeClose(pNew->pBt);
         pNew->pBt = pNewBt;
         pNew->pSchema = pNewSchema;
-        if( db->init.iDb==0 ){
+        ఒకవేళ( db->init.iDb==0 ){
           /* Clear all eponymous virtual table instances, as they are holding
           ** pointers to the schema object just freed by sqlite3BtreeClose() */
-          sqlite3VtabEponymousTableClearAll(db);
+          sqlite3_Vtab_Eponymous_పట్టిక_Clear_All(db);
         }
         sqlite3ExpirePreparedStatements(db, 1);
-      }else{
+      }లేకపోతే{
         sqlite3BtreeClose(pNewBt);
         rc = SQLITE_NOMEM;
       }
     }
-    if( rc ) goto attach_error;
-  }else{
+    ఒకవేళ( rc ) వెళ్ళు attach_error;
+  }లేకపోతే{
     /* This is a real ATTACH
     **
     ** Check for the following errors:
@@ -167,143 +167,143 @@ static void attachFunc(
     **     * Transaction currently open
     **     * Specified database name already being used.
     */
-    if( db->nDb>=db->aLimit[SQLITE_LIMIT_ATTACHED]+2 ){
+    ఒకవేళ( db->nDb>=db->a_హద్దు[SQLITE_హద్దు_ATTACHED]+2 ){
       zErrDyn = sqlite3MPrintf(db, "too many attached databases - max %d", 
-        db->aLimit[SQLITE_LIMIT_ATTACHED]
+        db->a_హద్దు[SQLITE_హద్దు_ATTACHED]
       );
-      goto attach_error;
+      వెళ్ళు attach_error;
     }
-    for(i=0; i<db->nDb; i++){
-      assert( zName );
-      if( sqlite3DbIsNamed(db, i, zName) ){
+    కొరకు(i=0; i<db->nDb; i++){
+      ప్రతిజ్ఞా( zName );
+      ఒకవేళ( sqlite3DbIsNamed(db, i, zName) ){
         zErrDyn = sqlite3MPrintf(db, "database %s is already in use", zName);
-        goto attach_error;
+        వెళ్ళు attach_error;
       }
     }
   
     /* Allocate the new entry in the db->aDb[] array and initialize the schema
     ** hash tables.
     */
-    if( db->aDb==db->aDbStatic ){
-      aNew = sqlite3DbMallocRawNN(db, sizeof(db->aDb[0])*3 );
-      if( aNew==0 ) return;
-      memcpy(aNew, db->aDb, sizeof(db->aDb[0])*2);
-    }else{
-      aNew = sqlite3DbRealloc(db, db->aDb, sizeof(db->aDb[0])*(1+(i64)db->nDb));
-      if( aNew==0 ) return;
+    ఒకవేళ( db->aDb==db->aDbStatic ){
+      aNew = sqlite3DbMallocRawNN(db, పరిమాణం(db->aDb[0])*3 );
+      ఒకవేళ( aNew==0 ) తిరిగి;
+      జ్ఞాపకం_నకలు(aNew, db->aDb, పరిమాణం(db->aDb[0])*2);
+    }లేకపోతే{
+      aNew = sqlite3DbRealloc(db, db->aDb, పరిమాణం(db->aDb[0])*(1+(i64)db->nDb));
+      ఒకవేళ( aNew==0 ) తిరిగి;
     }
     db->aDb = aNew;
     pNew = &db->aDb[db->nDb];
-    memset(pNew, 0, sizeof(*pNew));
+    memset(pNew, 0, పరిమాణం(*pNew));
   
     /* Open the database file. If the btree is successfully opened, use
     ** it to obtain the database schema. At this point the schema may
     ** or may not be initialized.
     */
     flags = db->openFlags;
-    rc = sqlite3ParseUri(db->pVfs->zName, zFile, &flags, &pVfs, &zPath, &zErr);
-    if( rc!=SQLITE_OK ){
-      if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
-      sqlite3_result_error(context, zErr, -1);
+    rc = sqlite3ParseUri(db->pVfs->zName, zFile, &flags, &pVfs, &z_మార్గం, &zErr);
+    ఒకవేళ( rc!=SQLITE_OK ){
+      ఒకవేళ( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+      sqlite3_ఫలితం_error(context, zErr, -1);
       sqlite3_free(zErr);
-      return;
+      తిరిగి;
     }
-    if( (db->flags & SQLITE_AttachWrite)==0 ){
+    ఒకవేళ( (db->flags & SQLITE_AttachWrite)==0 ){
       flags &= ~(SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE);
       flags |= SQLITE_OPEN_READONLY;
-    }else if( (db->flags & SQLITE_AttachCreate)==0 ){
+    }లేకపోతే ఒకవేళ( (db->flags & SQLITE_AttachCreate)==0 ){
       flags &= ~SQLITE_OPEN_CREATE;
     }
-    assert( pVfs );
+    ప్రతిజ్ఞా( pVfs );
     flags |= SQLITE_OPEN_MAIN_DB;
-    rc = sqlite3BtreeOpen(pVfs, zPath, db, &pNew->pBt, 0, flags);
+    rc = sqlite3BtreeOpen(pVfs, z_మార్గం, db, &pNew->pBt, 0, flags);
     db->nDb++;
     pNew->zDbSName = sqlite3DbStrDup(db, zName);
   }
   db->noSharedCache = 0;
-  if( rc==SQLITE_CONSTRAINT ){
+  ఒకవేళ( rc==SQLITE_CONSTRAINT ){
     rc = SQLITE_ERROR;
     zErrDyn = sqlite3MPrintf(db, "database is already attached");
-  }else if( rc==SQLITE_OK ){
+  }లేకపోతే ఒకవేళ( rc==SQLITE_OK ){
     Pager *pPager;
     pNew->pSchema = sqlite3SchemaGet(db, pNew->pBt);
-    if( !pNew->pSchema ){
+    ఒకవేళ( !pNew->pSchema ){
       rc = SQLITE_NOMEM_BKPT;
-    }else if( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
+    }లేకపోతే ఒకవేళ( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
       zErrDyn = sqlite3MPrintf(db, 
         "attached databases must use the same text encoding as main database");
       rc = SQLITE_ERROR;
     }
     sqlite3BtreeEnter(pNew->pBt);
     pPager = sqlite3BtreePager(pNew->pBt);
-    sqlite3PagerLockingMode(pPager, db->dfltLockMode);
+    sqlite3_Pager_Locking_బహుళకం(pPager, db->dflt_తాళం_బహుళకం);
     sqlite3BtreeSecureDelete(pNew->pBt,
                              sqlite3BtreeSecureDelete(db->aDb[0].pBt,-1) );
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
-    sqlite3BtreeSetPagerFlags(pNew->pBt,
-                      PAGER_SYNCHRONOUS_FULL | (db->flags & PAGER_FLAGS_MASK));
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
+    sqlite3_Btree_సమితి_Pager_Flags(pNew->pBt,
+                      PAGER_SYNCHRONOUS_నిండిన | (db->flags & PAGER_FLAGS_ముసుగు));
+#అయితే_ముగింపు
     sqlite3BtreeLeave(pNew->pBt);
   }
   pNew->safety_level = SQLITE_DEFAULT_SYNCHRONOUS+1;
-  if( rc==SQLITE_OK && pNew->zDbSName==0 ){
+  ఒకవేళ( rc==SQLITE_OK && pNew->zDbSName==0 ){
     rc = SQLITE_NOMEM_BKPT;
   }
-  sqlite3_free_filename( zPath );
+  sqlite3_free_filename( z_మార్గం );
 
   /* If the file was opened successfully, read the schema for the new database.
   ** If this fails, or if opening the file failed, then close the file and 
   ** remove the entry from the db->aDb[] array. i.e. put everything back the
   ** way we found it.
   */
-  if( rc==SQLITE_OK ){
+  ఒకవేళ( rc==SQLITE_OK ){
     sqlite3BtreeEnterAll(db);
     db->init.iDb = 0;
-    db->mDbFlags &= ~(DBFLAG_SchemaKnownOk);
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    if( db->setlkFlags & SQLITE_SETLK_BLOCK_ON_CONNECT ){
-      int val = 1;
+    db->mDbFlags &= ~(DBFLAG_Schema_తెలిసిన_Ok);
+#నిర్వచితమైతే SQLITE_ENABLE_SETLK_TIMEOUT
+    ఒకవేళ( db->setlkFlags & SQLITE_SETLK_ఖండం_ON_CONNECT ){
+      పూర్ణాంకం val = 1;
       sqlite3_file *fd = sqlite3PagerFile(sqlite3BtreePager(pNew->pBt));
-      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_BLOCK_ON_CONNECT, &val);
+      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_ఖండం_ON_CONNECT, &val);
     }
-#endif
-    if( !REOPEN_AS_MEMDB(db) ){
+#అయితే_ముగింపు
+    ఒకవేళ( !REOPEN_AS_MEMDB(db) ){
       rc = sqlite3Init(db, &zErrDyn);
     }
     sqlite3BtreeLeaveAll(db);
-    assert( zErrDyn==0 || rc!=SQLITE_OK );
+    ప్రతిజ్ఞా( zErrDyn==0 || rc!=SQLITE_OK );
   }
-  if( rc ){
-    if( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
-      int iDb = db->nDb - 1;
-      assert( iDb>=2 );
-      if( db->aDb[iDb].pBt ){
+  ఒకవేళ( rc ){
+    ఒకవేళ( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
+      పూర్ణాంకం iDb = db->nDb - 1;
+      ప్రతిజ్ఞా( iDb>=2 );
+      ఒకవేళ( db->aDb[iDb].pBt ){
         sqlite3BtreeClose(db->aDb[iDb].pBt);
         db->aDb[iDb].pBt = 0;
         db->aDb[iDb].pSchema = 0;
       }
-      sqlite3ResetAllSchemasOfConnection(db);
+      sqlite3_Reset_All_Schemas_యొక్క_Connection(db);
       db->nDb = iDb;
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      ఒకవేళ( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         sqlite3DbFree(db, zErrDyn);
         zErrDyn = sqlite3MPrintf(db, "out of memory");
-      }else if( zErrDyn==0 ){
+      }లేకపోతే ఒకవేళ( zErrDyn==0 ){
         zErrDyn = sqlite3MPrintf(db, "unable to open database: %s", zFile);
       }
     }
-    goto attach_error;
+    వెళ్ళు attach_error;
   }
   
-  return;
+  తిరిగి;
 
 attach_error:
   /* Return an error if we get here */
-  if( zErrDyn ){
-    sqlite3_result_error(context, zErrDyn, -1);
+  ఒకవేళ( zErrDyn ){
+    sqlite3_ఫలితం_error(context, zErrDyn, -1);
     sqlite3DbFree(db, zErrDyn);
   }
-  if( rc ) sqlite3_result_error_code(context, rc);
+  ఒకవేళ( rc ) sqlite3_ఫలితం_error_సంకేతం(context, rc);
 }
 
 /*
@@ -314,123 +314,123 @@ attach_error:
 **
 **     SELECT sqlite_detach(x)
 */
-static void detachFunc(
+స్థిర శూన్య detachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  const char *zName = (const char *)sqlite3_value_text(argv[0]);
+  స్థిరరాశి అక్షరం *zName = (స్థిరరాశి అక్షరం *)sqlite3_విలువ_పాఠ్యం(argv[0]);
   sqlite3 *db = sqlite3_context_db_handle(context);
-  int i;
+  పూర్ణాంకం i;
   Db *pDb = 0;
-  char zErr[128];
+  అక్షరం zErr[128];
 
-  UNUSED_PARAMETER(NotUsed);
+  వాడని_PARAMETER(Not_వాడిన);
 
-  if( zName==0 ) zName = "";
-  for(i=0; i<db->nDb; i++){
+  ఒకవేళ( zName==0 ) zName = "";
+  కొరకు(i=0; i<db->nDb; i++){
     pDb = &db->aDb[i];
-    if( pDb->pBt==0 ) continue;
-    if( sqlite3DbIsNamed(db, i, zName) ) break;
+    ఒకవేళ( pDb->pBt==0 ) కొనసాగు;
+    ఒకవేళ( sqlite3DbIsNamed(db, i, zName) ) ఆపు;
   }
 
-  if( i>=db->nDb ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "no such database: %s", zName);
-    goto detach_error;
+  ఒకవేళ( i>=db->nDb ){
+    sqlite3_snprintf(పరిమాణం(zErr),zErr, "no such database: %s", zName);
+    వెళ్ళు detach_error;
   }
-  if( i<2 ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "cannot detach database %s", zName);
-    goto detach_error;
+  ఒకవేళ( i<2 ){
+    sqlite3_snprintf(పరిమాణం(zErr),zErr, "cannot detach database %s", zName);
+    వెళ్ళు detach_error;
   }
-  if( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
-   || sqlite3BtreeIsInBackup(pDb->pBt)
+  ఒకవేళ( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
+   || sqlite3_Btree_Is_లోపల_Backup(pDb->pBt)
   ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "database %s is locked", zName);
-    goto detach_error;
+    sqlite3_snprintf(పరిమాణం(zErr),zErr, "database %s is locked", zName);
+    వెళ్ళు detach_error;
   }
 
-  detachTempTriggers(db, pDb->pSchema);
+  detach_తాత్కాలిక_Triggers(db, pDb->pSchema);
   sqlite3BtreeClose(pDb->pBt);
   pDb->pBt = 0;
   pDb->pSchema = 0;
   sqlite3CollapseDatabaseArray(db);
-  return;
+  తిరిగి;
 
 detach_error:
-  sqlite3_result_error(context, zErr, -1);
+  sqlite3_ఫలితం_error(context, zErr, -1);
 }
 
 /*
 ** This procedure generates VDBE code for a single invocation of either the
 ** sqlite_detach() or sqlite_attach() SQL user functions.
 */
-static void codeAttach(
+స్థిర శూన్య సంకేతం_Attach(
   Parse *pParse,       /* The parser context */
-  int type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
-  FuncDef const *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
-  Expr *pAuthArg,      /* Expression to pass to authorization callback */
-  Expr *pFilename,     /* Name of database file */
-  Expr *pDbname,       /* Name of the database to use internally */
-  Expr *pKey           /* Database key for encryption extension */
+  పూర్ణాంకం type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
+  FuncDef స్థిరరాశి *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
+  సమాసం *pAuthArg,      /* Expression to pass to authorization callback */
+  సమాసం *pFilename,     /* Name of database file */
+  సమాసం *pDbname,       /* Name of the database to use internally */
+  సమాసం *p_కీలకం           /* Database key for encryption extension */
 ){
-  int rc;
+  పూర్ణాంకం rc;
   NameContext sName;
   Vdbe *v;
   sqlite3* db = pParse->db;
-  int regArgs;
+  పూర్ణాంకం reg_వాదనలు;
 
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ) goto attach_end;
+  ఒకవేళ( SQLITE_OK!=sqlite3ReadSchema(pParse) ) వెళ్ళు attach_చివర;
 
-  if( pParse->nErr ) goto attach_end;
-  memset(&sName, 0, sizeof(NameContext));
+  ఒకవేళ( pParse->nErr ) వెళ్ళు attach_చివర;
+  memset(&sName, 0, పరిమాణం(NameContext));
   sName.pParse = pParse;
 
-  if( 
-      SQLITE_OK!=resolveAttachExpr(&sName, pFilename) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pDbname) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pKey)
+  ఒకవేళ( 
+      SQLITE_OK!=resolve_Attach_సమాసం(&sName, pFilename) ||
+      SQLITE_OK!=resolve_Attach_సమాసం(&sName, pDbname) ||
+      SQLITE_OK!=resolve_Attach_సమాసం(&sName, p_కీలకం)
   ){
-    goto attach_end;
+    వెళ్ళు attach_చివర;
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( ALWAYS(pAuthArg) ){
-    char *zAuthArg;
-    if( pAuthArg->op==TK_STRING ){
-      assert( !ExprHasProperty(pAuthArg, EP_IntValue) );
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
+  ఒకవేళ( ALWAYS(pAuthArg) ){
+    అక్షరం *zAuthArg;
+    ఒకవేళ( pAuthArg->op==TK_STRING ){
+      ప్రతిజ్ఞా( !సమాసం_Has_Property(pAuthArg, EP_Int_విలువ) );
       zAuthArg = pAuthArg->u.zToken;
-    }else{
+    }లేకపోతే{
       zAuthArg = 0;
     }
     rc = sqlite3AuthCheck(pParse, type, zAuthArg, 0, 0);
-    if(rc!=SQLITE_OK ){
-      goto attach_end;
+    ఒకవేళ(rc!=SQLITE_OK ){
+      వెళ్ళు attach_చివర;
     }
   }
-#endif /* SQLITE_OMIT_AUTHORIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_AUTHORIZATION */
 
 
   v = sqlite3GetVdbe(pParse);
-  regArgs = sqlite3GetTempRange(pParse, 4);
-  sqlite3ExprCode(pParse, pFilename, regArgs);
-  sqlite3ExprCode(pParse, pDbname, regArgs+1);
-  sqlite3ExprCode(pParse, pKey, regArgs+2);
+  reg_వాదనలు = sqlite3_Get_తాత్కాలిక_Range(pParse, 4);
+  sqlite3_సమాసం_సంకేతం(pParse, pFilename, reg_వాదనలు);
+  sqlite3_సమాసం_సంకేతం(pParse, pDbname, reg_వాదనలు+1);
+  sqlite3_సమాసం_సంకేతం(pParse, p_కీలకం, reg_వాదనలు+2);
 
-  assert( v || db->mallocFailed );
-  if( v ){
-    sqlite3VdbeAddFunctionCall(pParse, 0, regArgs+3-pFunc->nArg, regArgs+3,
+  ప్రతిజ్ఞా( v || db->mallocFailed );
+  ఒకవేళ( v ){
+    sqlite3_Vdbe_కూడు_Function_Call(pParse, 0, reg_వాదనలు+3-pFunc->nArg, reg_వాదనలు+3,
                                pFunc->nArg, pFunc, 0);
     /* Code an OP_Expire. For an ATTACH statement, set P1 to true (expire this
     ** statement only). For DETACH, set it to false (expire all existing
     ** statements).
     */
-    sqlite3VdbeAddOp1(v, OP_Expire, (type==SQLITE_ATTACH));
+    sqlite3_Vdbe_కూడు_Op1(v, OP_Expire, (type==SQLITE_ATTACH));
   }
   
-attach_end:
-  sqlite3ExprDelete(db, pFilename);
-  sqlite3ExprDelete(db, pDbname);
-  sqlite3ExprDelete(db, pKey);
+attach_చివర:
+  sqlite3_సమాసం_Delete(db, pFilename);
+  sqlite3_సమాసం_Delete(db, pDbname);
+  sqlite3_సమాసం_Delete(db, p_కీలకం);
 }
 
 /*
@@ -438,8 +438,8 @@ attach_end:
 **
 **     DETACH pDbname
 */
-void sqlite3Detach(Parse *pParse, Expr *pDbname){
-  static const FuncDef detach_func = {
+శూన్య sqlite3Detach(Parse *pParse, సమాసం *pDbname){
+  స్థిర స్థిరరాశి FuncDef detach_func = {
     1,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -450,7 +450,7 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
     "sqlite_detach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_DETACH, &detach_func, pDbname, 0, 0, pDbname);
+  సంకేతం_Attach(pParse, SQLITE_DETACH, &detach_func, pDbname, 0, 0, pDbname);
 }
 
 /*
@@ -458,8 +458,8 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
 **
 **     ATTACH p AS pDbname KEY pKey
 */
-void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
-  static const FuncDef attach_func = {
+శూన్య sqlite3Attach(Parse *pParse, సమాసం *p, సమాసం *pDbname, సమాసం *p_కీలకం){
+  స్థిర స్థిరరాశి FuncDef attach_func = {
     3,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -470,99 +470,99 @@ void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
     "sqlite_attach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, pKey);
+  సంకేతం_Attach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, p_కీలకం);
 }
-#endif /* SQLITE_OMIT_ATTACH */
+#అయితే_ముగింపు /* SQLITE_OMIT_ATTACH */
 
 /*
 ** Expression callback used by sqlite3FixAAAA() routines.
 */
-static int fixExprCb(Walker *p, Expr *pExpr){
+స్థిర పూర్ణాంకం fix_సమాసం_Cb(Walker *p, సమాసం *p_సమాసం){
   DbFixer *pFix = p->u.pFix;
-  if( !pFix->bTemp ) ExprSetProperty(pExpr, EP_FromDDL);
-  if( pExpr->op==TK_VARIABLE ){
-    if( pFix->pParse->db->init.busy ){
-      pExpr->op = TK_NULL;
-    }else{
-      sqlite3ErrorMsg(pFix->pParse, "%s cannot use variables", pFix->zType);
-      return WRC_Abort;
+  ఒకవేళ( !pFix->b_తాత్కాలిక ) సమాసం_సమితి_Property(p_సమాసం, EP_FromDDL);
+  ఒకవేళ( p_సమాసం->op==TK_VARIABLE ){
+    ఒకవేళ( pFix->pParse->db->init.busy ){
+      p_సమాసం->op = TK_NULL;
+    }లేకపోతే{
+      sqlite3_Error_సందేశం(pFix->pParse, "%s cannot use variables", pFix->zType);
+      తిరిగి WRC_Abort;
     }
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
 ** Select callback used by sqlite3FixAAAA() routines.
 */
-static int fixSelectCb(Walker *p, Select *pSelect){
+స్థిర పూర్ణాంకం fixSelectCb(Walker *p, Select *pSelect){
   DbFixer *pFix = p->u.pFix;
-  int i;
-  SrcItem *pItem;
+  పూర్ణాంకం i;
+  Src_అంశం *p_అంశం;
   sqlite3 *db = pFix->pParse->db;
-  int iDb = sqlite3FindDbName(db, pFix->zDb);
+  పూర్ణాంకం iDb = sqlite3_కనుగొను_Db_Name(db, pFix->zDb);
   SrcList *pList = pSelect->pSrc;
 
-  if( NEVER(pList==0) ) return WRC_Continue;
-  for(i=0, pItem=pList->a; i<pList->nSrc; i++, pItem++){
-    if( pFix->bTemp==0 && pItem->fg.isSubquery==0 ){
-      if( pItem->fg.fixedSchema==0 && pItem->u4.zDatabase!=0 ){
-        if( iDb!=sqlite3FindDbName(db, pItem->u4.zDatabase) ){
-          sqlite3ErrorMsg(pFix->pParse,
+  ఒకవేళ( NEVER(pList==0) ) తిరిగి WRC_Continue;
+  కొరకు(i=0, p_అంశం=pList->a; i<pList->nSrc; i++, p_అంశం++){
+    ఒకవేళ( pFix->b_తాత్కాలిక==0 && p_అంశం->fg.isSubquery==0 ){
+      ఒకవేళ( p_అంశం->fg.fixedSchema==0 && p_అంశం->u4.zDatabase!=0 ){
+        ఒకవేళ( iDb!=sqlite3_కనుగొను_Db_Name(db, p_అంశం->u4.zDatabase) ){
+          sqlite3_Error_సందేశం(pFix->pParse,
               "%s %T cannot reference objects in database %s",
-              pFix->zType, pFix->pName, pItem->u4.zDatabase);
-          return WRC_Abort;
+              pFix->zType, pFix->pName, p_అంశం->u4.zDatabase);
+          తిరిగి WRC_Abort;
         }
-        sqlite3DbFree(db, pItem->u4.zDatabase);
-        pItem->fg.notCte = 1;
-        pItem->fg.hadSchema = 1;
+        sqlite3DbFree(db, p_అంశం->u4.zDatabase);
+        p_అంశం->fg.notCte = 1;
+        p_అంశం->fg.hadSchema = 1;
       }
-      pItem->u4.pSchema = pFix->pSchema;
-      pItem->fg.fromDDL = 1;
-      pItem->fg.fixedSchema = 1;
+      p_అంశం->u4.pSchema = pFix->pSchema;
+      p_అంశం->fg.fromDDL = 1;
+      p_అంశం->fg.fixedSchema = 1;
     }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-    if( pList->a[i].fg.isUsing==0
-     && sqlite3WalkExpr(&pFix->w, pList->a[i].u3.pOn)
+#ఒకవేళ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+    ఒకవేళ( pList->a[i].fg.isUsing==0
+     && sqlite3_Walk_సమాసం(&pFix->w, pList->a[i].u3.pOn)
     ){
-      return WRC_Abort;
+      తిరిగి WRC_Abort;
     }
-#endif
+#అయితే_ముగింపు
   }
-  if( pSelect->pWith ){
-    for(i=0; i<pSelect->pWith->nCte; i++){
-      if( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
-        return WRC_Abort;
+  ఒకవేళ( pSelect->pWith ){
+    కొరకు(i=0; i<pSelect->pWith->nCte; i++){
+      ఒకవేళ( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
+        తిరిగి WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
 ** Initialize a DbFixer structure.  This routine must be called prior
 ** to passing the structure to one of the sqliteFixAAAA() routines below.
 */
-void sqlite3FixInit(
+శూన్య sqlite3FixInit(
   DbFixer *pFix,      /* The fixer to be initialized */
   Parse *pParse,      /* Error messages will be written here */
-  int iDb,            /* This is the database that must be used */
-  const char *zType,  /* "view", "trigger", or "index" */
-  const Token *pName  /* Name of the view, trigger, or index */
+  పూర్ణాంకం iDb,            /* This is the database that must be used */
+  స్థిరరాశి అక్షరం *zType,  /* "view", "trigger", or "index" */
+  స్థిరరాశి Token *pName  /* Name of the view, trigger, or index */
 ){
   sqlite3 *db = pParse->db;
-  assert( db->nDb>iDb );
+  ప్రతిజ్ఞా( db->nDb>iDb );
   pFix->pParse = pParse;
   pFix->zDb = db->aDb[iDb].zDbSName;
   pFix->pSchema = db->aDb[iDb].pSchema;
   pFix->zType = zType;
   pFix->pName = pName;
-  pFix->bTemp = (iDb==1);
+  pFix->b_తాత్కాలిక = (iDb==1);
   pFix->w.pParse = pParse;
-  pFix->w.xExprCallback = fixExprCb;
+  pFix->w.x_సమాసం_Callback = fix_సమాసం_Cb;
   pFix->w.xSelectCallback = fixSelectCb;
   pFix->w.xSelectCallback2 = sqlite3WalkWinDefnDummyCallback;
-  pFix->w.walkerDepth = 0;
-  pFix->w.eCode = 0;
+  pFix->w.walker_లోతు = 0;
+  pFix->w.e_సంకేతం = 0;
   pFix->w.u.pFix = pFix;
 }
 
@@ -580,64 +580,64 @@ void sqlite3FixInit(
 ** pParse->zErrMsg and these routines return non-zero.  If everything
 ** checks out, these routines return 0.
 */
-int sqlite3FixSrcList(
+పూర్ణాంకం sqlite3FixSrcList(
   DbFixer *pFix,       /* Context of the fixation */
   SrcList *pList       /* The Source list to check and modify */
 ){
-  int res = 0;
-  if( pList ){
+  పూర్ణాంకం res = 0;
+  ఒకవేళ( pList ){
     Select s; 
-    memset(&s, 0, sizeof(s));
+    memset(&s, 0, పరిమాణం(s));
     s.pSrc = pList;
     res = sqlite3WalkSelect(&pFix->w, &s);
   }
-  return res;
+  తిరిగి res;
 }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-int sqlite3FixSelect(
+#ఒకవేళ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+పూర్ణాంకం sqlite3FixSelect(
   DbFixer *pFix,       /* Context of the fixation */
   Select *pSelect      /* The SELECT statement to be fixed to one database */
 ){
-  return sqlite3WalkSelect(&pFix->w, pSelect);
+  తిరిగి sqlite3WalkSelect(&pFix->w, pSelect);
 }
-int sqlite3FixExpr(
+పూర్ణాంకం sqlite3_Fix_సమాసం(
   DbFixer *pFix,     /* Context of the fixation */
-  Expr *pExpr        /* The expression to be fixed to one database */
+  సమాసం *p_సమాసం        /* The expression to be fixed to one database */
 ){
-  return sqlite3WalkExpr(&pFix->w, pExpr);
+  తిరిగి sqlite3_Walk_సమాసం(&pFix->w, p_సమాసం);
 }
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_TRIGGER
-int sqlite3FixTriggerStep(
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
+పూర్ణాంకం sqlite3_Fix_Trigger_అడుగు(
   DbFixer *pFix,     /* Context of the fixation */
-  TriggerStep *pStep /* The trigger step be fixed to one database */
+  Trigger_అడుగు *p_అడుగు /* The trigger step be fixed to one database */
 ){
-  while( pStep ){
-    if( sqlite3WalkSelect(&pFix->w, pStep->pSelect)
-     || sqlite3WalkExpr(&pFix->w, pStep->pWhere) 
-     || sqlite3WalkExprList(&pFix->w, pStep->pExprList)
-     || sqlite3FixSrcList(pFix, pStep->pSrc)
+  అయితే( p_అడుగు ){
+    ఒకవేళ( sqlite3WalkSelect(&pFix->w, p_అడుగు->pSelect)
+     || sqlite3_Walk_సమాసం(&pFix->w, p_అడుగు->pWhere) 
+     || sqlite3_Walk_సమాసం_List(&pFix->w, p_అడుగు->p_సమాసం_List)
+     || sqlite3FixSrcList(pFix, p_అడుగు->pSrc)
     ){
-      return 1;
+      తిరిగి 1;
     }
-#ifndef SQLITE_OMIT_UPSERT
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UPSERT
     {
-      Upsert *pUp;
-      for(pUp=pStep->pUpsert; pUp; pUp=pUp->pNextUpsert){
-        if( sqlite3WalkExprList(&pFix->w, pUp->pUpsertTarget)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertTargetWhere)
-         || sqlite3WalkExprList(&pFix->w, pUp->pUpsertSet)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertWhere)
+      Upsert *p_పైకి;
+      కొరకు(p_పైకి=p_అడుగు->pUpsert; p_పైకి; p_పైకి=p_పైకి->p_తదుపరి_Upsert){
+        ఒకవేళ( sqlite3_Walk_సమాసం_List(&pFix->w, p_పైకి->p_Upsert_లక్ష్యం)
+         || sqlite3_Walk_సమాసం(&pFix->w, p_పైకి->p_Upsert_లక్ష్యం_Where)
+         || sqlite3_Walk_సమాసం_List(&pFix->w, p_పైకి->p_Upsert_సమితి)
+         || sqlite3_Walk_సమాసం(&pFix->w, p_పైకి->pUpsertWhere)
         ){
-          return 1;
+          తిరిగి 1;
         }
       }
     }
-#endif
-    pStep = pStep->pNext;
+#అయితే_ముగింపు
+    p_అడుగు = p_అడుగు->p_తదుపరి;
   }
 
-  return 0;
+  తిరిగి 0;
 }
-#endif
+#అయితే_ముగింపు

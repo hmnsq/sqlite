@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#ఒకవేళ SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#అన్తర్భావ "sqlite3.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "tclsqlite.h"
 
-#ifdef SQLITE_VDBE_COVERAGE
+#నిర్వచితమైతే SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+స్థిర u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+స్థిర శూన్య test_vdbe_branch(
+  శూన్య *pCtx, 
+  గుర్తులేని పూర్ణాంకం iSrc, 
+  గుర్తులేని అక్షరం iBranch, 
+  గుర్తులేని అక్షరం iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  ఒకవేళ( iSrc<పరిమాణం(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+స్థిర శూన్య append_గమ్యం_List(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  పూర్ణాంకం i_పంక్తి, 
+  పూర్ణాంకం i_మార్గం, 
+  స్థిరరాశి అక్షరం *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
+  Tcl_Incr_Ref_లెక్క(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_పంక్తి));
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_మార్గం));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_లెక్క(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
-  ClientData cd,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_vdbe_coverage(
+  Client_దత్తాంశం cd,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  స్థిరరాశి అక్షరం *aSub[] = { "start", "report", "stop", 0 };
+  పూర్ణాంకం iSub = -1;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "sub-command");
+    తిరిగి TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_Get_సూచీ_From_Obj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    తిరిగి TCL_ERROR;
   }
 
-  Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  Tcl_Reset_ఫలితం(interp);
+  ప్రతిజ్ఞా( iSub==0 || iSub==1 || iSub==2 );
+  ఎంపిక( iSub ){
+    స్థితి 0:       /*ప్రారంభం*/
+      memset(aBranchArray, 0, పరిమాణం(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      ఆపు;
+    స్థితి 1: {     /* report */
+      పూర్ణాంకం i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_లెక్క(pRes);
+      కొరకు(i=0; i<పరిమాణం(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
-            appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
+        పూర్ణాంకం bFlag = ((b >> 4)==4);
+        ఒకవేళ( b ){
+          ఒకవేళ( (b & 0x01)==0 ){
+            append_గమ్యం_List(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
-            appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
+          ఒకవేళ( (b & 0x02)==0 ){
+            append_గమ్యం_List(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
-            appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
+          ఒకవేళ( (b & 0x04)==0 ){
+            append_గమ్యం_List(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
-      Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_సమితి_Obj_ఫలితం(interp, pRes);
+      Tcl_Decr_Ref_లెక్క(pRes);
+      ఆపు;
     };
       
-    default:      /* stop */         
+    అప్రమేయ:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      ఆపు;
   }
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
-#endif  /* SQLITE_VDBE_COVERAGE */
+#అయితే_ముగింపు  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
-#ifdef SQLITE_VDBE_COVERAGE
+పూర్ణాంకం Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+#నిర్వచితమైతే SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }
 
-#endif
+#అయితే_ముగింపు

@@ -35,264 +35,264 @@
 ** "name" and "arrayname" fields are ignored and the variable is modified
 ** according to "fullname" and "value" only.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
 
 /*
 ** Characters that make up the idxStr created by xBestIndex for xFilter.
 */
-#define TCLVAR_NAME_EQ      'e'
-#define TCLVAR_NAME_MATCH   'm'
-#define TCLVAR_VALUE_GLOB   'g'
-#define TCLVAR_VALUE_REGEXP 'r'
-#define TCLVAR_VALUE_LIKE   'l'
+#నిర్వచించు TCLVAR_NAME_EQ      'e'
+#నిర్వచించు TCLVAR_NAME_సరిపోలిక   'm'
+#నిర్వచించు TCLVAR_విలువ_GLOB   'g'
+#నిర్వచించు TCLVAR_విలువ_REGEXP 'r'
+#నిర్వచించు TCLVAR_విలువ_LIKE   'l'
 
-typedef struct tclvar_vtab tclvar_vtab;
-typedef struct tclvar_cursor tclvar_cursor;
+రకనిర్వచనం నిర్మాణం tclvar_vtab tclvar_vtab;
+రకనిర్వచనం నిర్మాణం tclvar_cursor tclvar_cursor;
 
 /* 
 ** A tclvar virtual-table object 
 */
-struct tclvar_vtab {
-  sqlite3_vtab base;
+నిర్మాణం tclvar_vtab {
+  sqlite3_vtab పునాది;
   Tcl_Interp *interp;
 };
 
 /* A tclvar cursor object */
-struct tclvar_cursor {
-  sqlite3_vtab_cursor base;
+నిర్మాణం tclvar_cursor {
+  sqlite3_vtab_cursor పునాది;
 
   Tcl_Obj *pList1;     /* Result of [info vars ?pattern?] */
   Tcl_Obj *pList2;     /* Result of [array names [lindex $pList1 $i1]] */
-  Tcl_Size i1;              /* Current item in pList1 */
-  Tcl_Size i2;              /* Current item (if any) in pList2 */
+  Tcl_కొలత i1;              /* Current item in pList1 */
+  Tcl_కొలత i2;              /* Current item (if any) in pList2 */
 };
 
 /* Methods for the tclvar module */
-static int tclvarConnect(
+స్థిర పూర్ణాంకం tclvarConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  శూన్య *pAux,
+  పూర్ణాంకం argc, స్థిరరాశి అక్షరం *స్థిరరాశి*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  అక్షరం **pzErr
 ){
   tclvar_vtab *pVtab;
-  static const char zSchema[] = 
+  స్థిర స్థిరరాశి అక్షరం zSchema[] = 
      "CREATE TABLE x("
      "  name TEXT,"                       /* Base name */
      "  arrayname TEXT,"                  /* Array index */
-     "  value TEXT,"                      /* Value */
+     "  value TEXT,"                      /*విలువ*/
      "  fullname TEXT PRIMARY KEY"        /* base(index) name */
      ") WITHOUT ROWID";
-  pVtab = sqlite3MallocZero( sizeof(*pVtab) );
-  if( pVtab==0 ) return SQLITE_NOMEM;
-  *ppVtab = &pVtab->base;
+  pVtab = sqlite3MallocZero( పరిమాణం(*pVtab) );
+  ఒకవేళ( pVtab==0 ) తిరిగి SQLITE_NOMEM;
+  *ppVtab = &pVtab->పునాది;
   pVtab->interp = (Tcl_Interp *)pAux;
   sqlite3_declare_vtab(db, zSchema);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int tclvarDisconnect(sqlite3_vtab *pVtab){
+స్థిర పూర్ణాంకం tclvarDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new tclvar cursor.
 */
-static int tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+స్థిర పూర్ణాంకం tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   tclvar_cursor *pCur;
-  pCur = sqlite3MallocZero(sizeof(tclvar_cursor));
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  pCur = sqlite3MallocZero(పరిమాణం(tclvar_cursor));
+  *ppCursor = &pCur->పునాది;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Close a tclvar cursor.
 */
-static int tclvarClose(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం tclvarClose(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
-  if( pCur->pList1 ){
-    Tcl_DecrRefCount(pCur->pList1);
+  ఒకవేళ( pCur->pList1 ){
+    Tcl_Decr_Ref_లెక్క(pCur->pList1);
   }
-  if( pCur->pList2 ){
-    Tcl_DecrRefCount(pCur->pList2);
+  ఒకవేళ( pCur->pList2 ){
+    Tcl_Decr_Ref_లెక్క(pCur->pList2);
   }
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Returns 1 if data is ready, or 0 if not.
 */
-static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
+స్థిర పూర్ణాంకం next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
   Tcl_Obj *p;
 
-  if( pObj ){
-    if( !pCur->pList2 ){
+  ఒకవేళ( pObj ){
+    ఒకవేళ( !pCur->pList2 ){
       p = Tcl_NewStringObj("array names", -1);
-      Tcl_IncrRefCount(p);
+      Tcl_Incr_Ref_లెక్క(p);
       Tcl_ListObjAppendElement(0, p, pObj);
       Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
-      Tcl_DecrRefCount(p);
-      pCur->pList2 = Tcl_GetObjResult(interp);
-      Tcl_IncrRefCount(pCur->pList2);
-      assert( pCur->i2==0 );
-    }else{
-      Tcl_Size n = 0;
+      Tcl_Decr_Ref_లెక్క(p);
+      pCur->pList2 = Tcl_Get_Obj_ఫలితం(interp);
+      Tcl_Incr_Ref_లెక్క(pCur->pList2);
+      ప్రతిజ్ఞా( pCur->i2==0 );
+    }లేకపోతే{
+      Tcl_కొలత n = 0;
       pCur->i2++;
-      Tcl_ListObjLength(0, pCur->pList2, &n);
-      if( pCur->i2>=n ){
-        Tcl_DecrRefCount(pCur->pList2);
+      Tcl_List_Obj_నిడివి(0, pCur->pList2, &n);
+      ఒకవేళ( pCur->i2>=n ){
+        Tcl_Decr_Ref_లెక్క(pCur->pList2);
         pCur->pList2 = 0;
         pCur->i2 = 0;
-        return 0;
+        తిరిగి 0;
       }
     }
   }
 
-  return 1;
+  తిరిగి 1;
 }
 
-static int tclvarNext(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం tclvar_తదుపరి(sqlite3_vtab_cursor *cur){
   Tcl_Obj *pObj;
-  Tcl_Size n = 0;
-  int ok = 0;
+  Tcl_కొలత n = 0;
+  పూర్ణాంకం ok = 0;
 
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
   Tcl_Interp *interp = ((tclvar_vtab *)(cur->pVtab))->interp;
 
-  Tcl_ListObjLength(0, pCur->pList1, &n);
-  while( !ok && pCur->i1<n ){
-    Tcl_ListObjIndex(0, pCur->pList1, pCur->i1, &pObj);
+  Tcl_List_Obj_నిడివి(0, pCur->pList1, &n);
+  అయితే( !ok && pCur->i1<n ){
+    Tcl_List_Obj_సూచీ(0, pCur->pList1, pCur->i1, &pObj);
     ok = next2(interp, pCur, pObj);
-    if( !ok ){
+    ఒకవేళ( !ok ){
       pCur->i1++;
     }
   }
 
-  return 0;
+  తిరిగి 0;
 }
 
-static int tclvarFilter(
+స్థిర పూర్ణాంకం tclvarFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  పూర్ణాంకం idx_అంకె, స్థిరరాశి అక్షరం *idxStr,
+  పూర్ణాంకం argc, sqlite3_విలువ **argv
 ){
   tclvar_cursor *pCur = (tclvar_cursor *)pVtabCursor;
   Tcl_Interp *interp = ((tclvar_vtab *)(pVtabCursor->pVtab))->interp;
   Tcl_Obj *p = Tcl_NewStringObj("tclvar_filter_cmd", -1);
 
-  const char *zEq = "";
-  const char *zMatch = "";
-  const char *zGlob = "";
-  const char *zRegexp = "";
-  const char *zLike = "";
-  int i;
+  స్థిరరాశి అక్షరం *zEq = "";
+  స్థిరరాశి అక్షరం *z_సరిపోలిక = "";
+  స్థిరరాశి అక్షరం *zGlob = "";
+  స్థిరరాశి అక్షరం *zRegexp = "";
+  స్థిరరాశి అక్షరం *zLike = "";
+  పూర్ణాంకం i;
 
-  for(i=0; idxStr[i]; i++){
-    switch( idxStr[i] ){
-      case TCLVAR_NAME_EQ:
-        zEq = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_NAME_MATCH:
-        zMatch = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_GLOB:
-        zGlob = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_REGEXP:
-        zRegexp = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      case TCLVAR_VALUE_LIKE:
-        zLike = (const char*)sqlite3_value_text(argv[i]);
-        break;
-      default:
-        assert( 0 );
+  కొరకు(i=0; idxStr[i]; i++){
+    ఎంపిక( idxStr[i] ){
+      స్థితి TCLVAR_NAME_EQ:
+        zEq = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+        ఆపు;
+      స్థితి TCLVAR_NAME_సరిపోలిక:
+        z_సరిపోలిక = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+        ఆపు;
+      స్థితి TCLVAR_విలువ_GLOB:
+        zGlob = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+        ఆపు;
+      స్థితి TCLVAR_విలువ_REGEXP:
+        zRegexp = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+        ఆపు;
+      స్థితి TCLVAR_విలువ_LIKE:
+        zLike = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+        ఆపు;
+      అప్రమేయ:
+        ప్రతిజ్ఞా( 0 );
     }
   }
 
-  Tcl_IncrRefCount(p);
+  Tcl_Incr_Ref_లెక్క(p);
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zEq, -1));
-  Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zMatch, -1));
+  Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(z_సరిపోలిక, -1));
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zGlob, -1));
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zRegexp, -1));
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zLike, -1));
 
   Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
-  if( pCur->pList1 ){
-    Tcl_DecrRefCount(pCur->pList1);
+  ఒకవేళ( pCur->pList1 ){
+    Tcl_Decr_Ref_లెక్క(pCur->pList1);
   }
-  if( pCur->pList2 ){
-    Tcl_DecrRefCount(pCur->pList2);
+  ఒకవేళ( pCur->pList2 ){
+    Tcl_Decr_Ref_లెక్క(pCur->pList2);
     pCur->pList2 = 0;
   }
   pCur->i1 = 0;
   pCur->i2 = 0;
-  pCur->pList1 = Tcl_GetObjResult(interp);
-  Tcl_IncrRefCount(pCur->pList1);
+  pCur->pList1 = Tcl_Get_Obj_ఫలితం(interp);
+  Tcl_Incr_Ref_లెక్క(pCur->pList1);
 
-  Tcl_DecrRefCount(p);
-  return tclvarNext(pVtabCursor);
+  Tcl_Decr_Ref_లెక్క(p);
+  తిరిగి tclvar_తదుపరి(pVtabCursor);
 }
 
-static int tclvarColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+స్థిర పూర్ణాంకం tclvar_స్తంభం(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, పూర్ణాంకం i){
   Tcl_Obj *p1;
   Tcl_Obj *p2;
-  const char *z1; 
-  const char *z2 = "";
+  స్థిరరాశి అక్షరం *z1; 
+  స్థిరరాశి అక్షరం *z2 = "";
   tclvar_cursor *pCur = (tclvar_cursor*)cur;
   Tcl_Interp *interp = ((tclvar_vtab *)cur->pVtab)->interp;
 
-  Tcl_ListObjIndex(interp, pCur->pList1, pCur->i1, &p1);
-  Tcl_ListObjIndex(interp, pCur->pList2, pCur->i2, &p2);
+  Tcl_List_Obj_సూచీ(interp, pCur->pList1, pCur->i1, &p1);
+  Tcl_List_Obj_సూచీ(interp, pCur->pList2, pCur->i2, &p2);
   z1 = Tcl_GetString(p1);
-  if( p2 ){
+  ఒకవేళ( p2 ){
     z2 = Tcl_GetString(p2);
   }
-  switch (i) {
-    case 0: {
-      sqlite3_result_text(ctx, z1, -1, SQLITE_TRANSIENT);
-      break;
+  ఎంపిక (i) {
+    స్థితి 0: {
+      sqlite3_ఫలితం_పాఠ్యం(ctx, z1, -1, SQLITE_TRANSIENT);
+      ఆపు;
     }
-    case 1: {
-      sqlite3_result_text(ctx, z2, -1, SQLITE_TRANSIENT);
-      break;
+    స్థితి 1: {
+      sqlite3_ఫలితం_పాఠ్యం(ctx, z2, -1, SQLITE_TRANSIENT);
+      ఆపు;
     }
-    case 2: {
+    స్థితి 2: {
       Tcl_Obj *pVal = Tcl_GetVar2Ex(interp, z1, *z2?z2:0, TCL_GLOBAL_ONLY);
-      sqlite3_result_text(ctx, Tcl_GetString(pVal), -1, SQLITE_TRANSIENT);
-      break;
+      sqlite3_ఫలితం_పాఠ్యం(ctx, Tcl_GetString(pVal), -1, SQLITE_TRANSIENT);
+      ఆపు;
     }
-    case 3: {
-      char *z3;
-      if( p2 ){
+    స్థితి 3: {
+      అక్షరం *z3;
+      ఒకవేళ( p2 ){
         z3 = sqlite3_mprintf("%s(%s)", z1, z2);
-        sqlite3_result_text(ctx, z3, -1, sqlite3_free);
-      }else{
-        sqlite3_result_text(ctx, z1, -1, SQLITE_TRANSIENT);
+        sqlite3_ఫలితం_పాఠ్యం(ctx, z3, -1, sqlite3_free);
+      }లేకపోతే{
+        sqlite3_ఫలితం_పాఠ్యం(ctx, z1, -1, SQLITE_TRANSIENT);
       }
-      break;
+      ఆపు;
     }
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
-static int tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+స్థిర పూర్ణాంకం tclvarRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
-static int tclvarEof(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం tclvarEof(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor*)cur;
-  return (pCur->pList2?0:1);
+  తిరిగి (pCur->pList2?0:1);
 }
 
 /*
@@ -303,32 +303,32 @@ static int tclvarEof(sqlite3_vtab_cursor *cur){
 ** There is guaranteed to be enough room in the buffer pointed to by zStr
 ** for the new character and nul-terminator.
 */
-static int tclvarAddToIdxstr(char *zStr, char x){
-  int i;
-  for(i=0; zStr[i]; i++){
-    if( zStr[i]==x ) return 1;
+స్థిర పూర్ణాంకం tclvar_కూడు_గమ్యం_Idxstr(అక్షరం *zStr, అక్షరం x){
+  పూర్ణాంకం i;
+  కొరకు(i=0; zStr[i]; i++){
+    ఒకవేళ( zStr[i]==x ) తిరిగి 1;
   }
   zStr[i] = x;
   zStr[i+1] = '\0';
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** Return true if variable $::tclvar_set_omit exists and is set to true.
 ** False otherwise.
 */
-static int tclvarSetOmit(Tcl_Interp *interp){
-  int rc;
-  int res = 0;
+స్థిర పూర్ణాంకం tclvar_సమితి_Omit(Tcl_Interp *interp){
+  పూర్ణాంకం rc;
+  పూర్ణాంకం res = 0;
   Tcl_Obj *pRes;
   rc = Tcl_Eval(interp,
     "expr {[info exists ::tclvar_set_omit] && $::tclvar_set_omit}"
   );
-  if( rc==TCL_OK ){
-    pRes = Tcl_GetObjResult(interp);
+  ఒకవేళ( rc==TCL_OK ){
+    pRes = Tcl_Get_Obj_ఫలితం(interp);
     rc = Tcl_GetBooleanFromObj(0, pRes, &res);
   }
-  return (rc==TCL_OK && res);
+  తిరిగి (rc==TCL_OK && res);
 }
 
 /*
@@ -344,137 +344,137 @@ static int tclvarSetOmit(Tcl_Interp *interp){
 ** For each constraint present, the corresponding TCLVAR_XXX character is
 ** appended to the idxStr value. 
 */
-static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+స్థిర పూర్ణాంకం tclvar_ఉత్తమ_సూచీ(sqlite3_vtab *tab, sqlite3_సూచీ_info *pIdxInfo){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  int ii;
-  char *zStr = sqlite3_malloc(32);
-  int iStr = 0;
+  పూర్ణాంకం ii;
+  అక్షరం *zStr = sqlite3_malloc(32);
+  పూర్ణాంకం iStr = 0;
 
-  if( zStr==0 ) return SQLITE_NOMEM;
+  ఒకవేళ( zStr==0 ) తిరిగి SQLITE_NOMEM;
   zStr[0] = '\0';
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
-    struct sqlite3_index_constraint_usage *pUsage;
+  కొరకు(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    నిర్మాణం sqlite3_సూచీ_constraint స్థిరరాశి *pCons = &pIdxInfo->aConstraint[ii];
+    నిర్మాణం sqlite3_సూచీ_constraint_usage *pUsage;
     
     pUsage = &pIdxInfo->aConstraintUsage[ii];
-    if( pCons->usable ){
+    ఒకవేళ( pCons->usable ){
       /* name = ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_EQ && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_EQ) ){
-          pUsage->argvIndex = ++iStr;
+      ఒకవేళ( pCons->op==SQLITE_సూచీ_CONSTRAINT_EQ && pCons->i_స్తంభం==0 ){
+        ఒకవేళ( 0==tclvar_కూడు_గమ్యం_Idxstr(zStr, TCLVAR_NAME_EQ) ){
+          pUsage->argv_సూచీ = ++iStr;
           pUsage->omit = 0;
         }
       }
 
       /* name MATCH ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_MATCH && pCons->iColumn==0 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_NAME_MATCH) ){
-          pUsage->argvIndex = ++iStr;
+      ఒకవేళ( pCons->op==SQLITE_సూచీ_CONSTRAINT_సరిపోలిక && pCons->i_స్తంభం==0 ){
+        ఒకవేళ( 0==tclvar_కూడు_గమ్యం_Idxstr(zStr, TCLVAR_NAME_సరిపోలిక) ){
+          pUsage->argv_సూచీ = ++iStr;
           pUsage->omit = 1;
         }
       }
 
       /* value GLOB ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
-          pUsage->argvIndex = ++iStr;
-          pUsage->omit = tclvarSetOmit(pTab->interp);
+      ఒకవేళ( pCons->op==SQLITE_సూచీ_CONSTRAINT_GLOB && pCons->i_స్తంభం==2 ){
+        ఒకవేళ( 0==tclvar_కూడు_గమ్యం_Idxstr(zStr, TCLVAR_విలువ_GLOB) ){
+          pUsage->argv_సూచీ = ++iStr;
+          pUsage->omit = tclvar_సమితి_Omit(pTab->interp);
         }
       }
 
       /* value REGEXP ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
-          pUsage->argvIndex = ++iStr;
-          pUsage->omit = tclvarSetOmit(pTab->interp);
+      ఒకవేళ( pCons->op==SQLITE_సూచీ_CONSTRAINT_REGEXP && pCons->i_స్తంభం==2 ){
+        ఒకవేళ( 0==tclvar_కూడు_గమ్యం_Idxstr(zStr, TCLVAR_విలువ_REGEXP) ){
+          pUsage->argv_సూచీ = ++iStr;
+          pUsage->omit = tclvar_సమితి_Omit(pTab->interp);
         }
       }
 
       /* value LIKE ? */
-      if( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
-          pUsage->argvIndex = ++iStr;
-          pUsage->omit = tclvarSetOmit(pTab->interp);
+      ఒకవేళ( pCons->op==SQLITE_సూచీ_CONSTRAINT_LIKE && pCons->i_స్తంభం==2 ){
+        ఒకవేళ( 0==tclvar_కూడు_గమ్యం_Idxstr(zStr, TCLVAR_విలువ_LIKE) ){
+          pUsage->argv_సూచీ = ++iStr;
+          pUsage->omit = tclvar_సమితి_Omit(pTab->interp);
         }
       }
     }
   }
   pIdxInfo->idxStr = zStr;
-  pIdxInfo->needToFreeIdxStr = 1;
+  pIdxInfo->need_గమ్యం_Free_Idx_Str = 1;
 
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Invoked for any UPDATE, INSERT, or DELETE against a tclvar table
 */
-static int tclvarUpdate(
+స్థిర పూర్ణాంకం tclvarUpdate(
   sqlite3_vtab *tab,
-  int argc,
-  sqlite3_value **argv,
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv,
   sqlite_int64 *pRowid
 ){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
-  if( argc==1 ){
+  ఒకవేళ( argc==1 ){
     /* A DELETE operation.  The variable to be deleted is stored in argv[0] */
-    const char *zVar = (const char*)sqlite3_value_text(argv[0]);
+    స్థిరరాశి అక్షరం *zVar = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
     Tcl_UnsetVar(pTab->interp, zVar, TCL_GLOBAL_ONLY);
-    return SQLITE_OK;
+    తిరిగి SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
+  ఒకవేళ( sqlite3_విలువ_type(argv[0])==SQLITE_NULL ){
     /* An INSERT operation */
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
-    const char *zName;
-    if( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
-      tab->zErrMsg = sqlite3_mprintf("the 'fullname' column must be TEXT");
-      return SQLITE_ERROR;
+    స్థిరరాశి అక్షరం *z_విలువ = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[4]);
+    స్థిరరాశి అక్షరం *zName;
+    ఒకవేళ( sqlite3_విలువ_type(argv[5])!=SQLITE_పాఠ్యం ){
+      tab->z_Err_సందేశం = sqlite3_mprintf("the 'fullname' column must be TEXT");
+      తిరిగి SQLITE_ERROR;
     }
-    zName = (const char*)sqlite3_value_text(argv[5]);
-    if( zValue ){
-      Tcl_SetVar(pTab->interp, zName, zValue, TCL_GLOBAL_ONLY);
-    }else{
+    zName = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[5]);
+    ఒకవేళ( z_విలువ ){
+      Tcl_సమితి_Var(pTab->interp, zName, z_విలువ, TCL_GLOBAL_ONLY);
+    }లేకపోతే{
       Tcl_UnsetVar(pTab->interp, zName, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    తిరిగి SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT
-   && sqlite3_value_type(argv[1])==SQLITE_TEXT
+  ఒకవేళ( sqlite3_విలువ_type(argv[0])==SQLITE_పాఠ్యం
+   && sqlite3_విలువ_type(argv[1])==SQLITE_పాఠ్యం
   ){
     /* An UPDATE operation */
-    const char *zOldName = (const char*)sqlite3_value_text(argv[0]);
-    const char *zNewName = (const char*)sqlite3_value_text(argv[1]);
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
+    స్థిరరాశి అక్షరం *zOldName = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+    స్థిరరాశి అక్షరం *zNewName = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+    స్థిరరాశి అక్షరం *z_విలువ = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[4]);
 
-    if( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
+    ఒకవేళ( strcmp(zOldName, zNewName)!=0 || z_విలువ==0 ){
       Tcl_UnsetVar(pTab->interp, zOldName, TCL_GLOBAL_ONLY);
     }
-    if( zValue!=0 ){
-      Tcl_SetVar(pTab->interp, zNewName, zValue, TCL_GLOBAL_ONLY);
+    ఒకవేళ( z_విలువ!=0 ){
+      Tcl_సమితి_Var(pTab->interp, zNewName, z_విలువ, TCL_GLOBAL_ONLY);
     }
-    return SQLITE_OK;
+    తిరిగి SQLITE_OK;
   }
-  tab->zErrMsg = sqlite3_mprintf("prohibited TCL variable change");
-  return SQLITE_ERROR;
+  tab->z_Err_సందేశం = sqlite3_mprintf("prohibited TCL variable change");
+  తిరిగి SQLITE_ERROR;
 }
 
 /*
 ** A virtual table module that provides read-only access to a
 ** Tcl global variable namespace.
 */
-static sqlite3_module tclvarModule = {
+స్థిర sqlite3_module tclvarModule = {
   0,                         /* iVersion */
   tclvarConnect,
   tclvarConnect,
-  tclvarBestIndex,
+  tclvar_ఉత్తమ_సూచీ,
   tclvarDisconnect, 
   tclvarDisconnect,
   tclvarOpen,                  /* xOpen - open a cursor */
   tclvarClose,                 /* xClose - close a cursor */
   tclvarFilter,                /* xFilter - configure scan constraints */
-  tclvarNext,                  /* xNext - advance a cursor */
+  tclvar_తదుపరి,                  /* xNext - advance a cursor */
   tclvarEof,                   /* xEof - check for end of scan */
-  tclvarColumn,                /* xColumn - read data */
+  tclvar_స్తంభం,                /* xColumn - read data */
   tclvarRowid,                 /* xRowid - read data */
   tclvarUpdate,                /* xUpdate */
   0,                           /* xBegin */
@@ -493,26 +493,26 @@ static sqlite3_module tclvarModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp *interp, స్థిరరాశి అక్షరం *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_tclvar_module(
-  ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
+స్థిర పూర్ణాంకం SQLITE_TCLAPI రిజిస్టరు_tclvar_module(
+  Client_దత్తాంశం client_దత్తాంశం, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  పూర్ణాంకం objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int rc = TCL_OK;
+  పూర్ణాంకం rc = TCL_OK;
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "DB");
+    తిరిగి TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_create_module(db, "tclvar", &tclvarModule, (void*)interp);
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  sqlite3_create_module(db, "tclvar", &tclvarModule, (శూన్య*)interp);
   rc = Tcl_Eval(interp, 
       "proc like {pattern str} {\n"
       "  set p [string map {% * _ ?} $pattern]\n"
@@ -534,30 +534,30 @@ static int SQLITE_TCLAPI register_tclvar_module(
       "  set res\n"
       "}\n"
   );
-#endif
-  return rc;
+#అయితే_ముగింపు
+  తిరిగి rc;
 }
 
-#endif
+#అయితే_ముగింపు
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetesttclvar_Init(Tcl_Interp *interp){
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+పూర్ణాంకం Sqlitetesttclvar_Init(Tcl_Interp *interp){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  స్థిర నిర్మాణం {
+     అక్షరం *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     శూన్య *client_దత్తాంశం;
   } aObjCmd[] = {
-     { "register_tclvar_module",   register_tclvar_module, 0 },
+     { "register_tclvar_module",   రిజిస్టరు_tclvar_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<పరిమాణం(aObjCmd)/పరిమాణం(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
-        aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
+        aObjCmd[i].xProc, aObjCmd[i].client_దత్తాంశం, 0);
   }
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }

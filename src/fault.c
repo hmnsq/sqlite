@@ -24,17 +24,17 @@
 ** during a hash table resize is a benign fault.
 */
 
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
-#ifndef SQLITE_UNTESTABLE
+#నిర్వచితం_కాకపోతే SQLITE_UNTESTABLE
 
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
-  void (*xBenignBegin)(void);
-  void (*xBenignEnd)(void);
+రకనిర్వచనం నిర్మాణం BenignMallocHooks BenignMallocHooks;
+స్థిర SQLITE_WSD నిర్మాణం BenignMallocHooks {
+  శూన్య (*xBenignBegin)(శూన్య);
+  శూన్య (*x_Benign_చివర)(శూన్య);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
@@ -43,27 +43,27 @@ static SQLITE_WSD struct BenignMallocHooks {
 ** case where writable static data is supported, wsdHooks can refer directly
 ** to the "sqlite3Hooks" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#నిర్వచితమైతే SQLITE_OMIT_WSD
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#లేకపోతే
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
-#endif
+#అయితే_ముగింపు
 
 
 /*
 ** Register hooks to call when sqlite3BeginBenignMalloc() and
 ** sqlite3EndBenignMalloc() are called, respectively.
 */
-void sqlite3BenignMallocHooks(
-  void (*xBenignBegin)(void),
-  void (*xBenignEnd)(void)
+శూన్య sqlite3BenignMallocHooks(
+  శూన్య (*xBenignBegin)(శూన్య),
+  శూన్య (*x_Benign_చివర)(శూన్య)
 ){
   wsdHooksInit;
   wsdHooks.xBenignBegin = xBenignBegin;
-  wsdHooks.xBenignEnd = xBenignEnd;
+  wsdHooks.x_Benign_చివర = x_Benign_చివర;
 }
 
 /*
@@ -71,17 +71,17 @@ void sqlite3BenignMallocHooks(
 ** subsequent malloc failures are benign. A call to sqlite3EndBenignMalloc()
 ** indicates that subsequent malloc failures are non-benign.
 */
-void sqlite3BeginBenignMalloc(void){
+శూన్య sqlite3BeginBenignMalloc(శూన్య){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  ఒకవేళ( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
-void sqlite3EndBenignMalloc(void){
+శూన్య sqlite3_చివర_Benign_Malloc(శూన్య){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
-    wsdHooks.xBenignEnd();
+  ఒకవేళ( wsdHooks.x_Benign_చివర ){
+    wsdHooks.x_Benign_చివర();
   }
 }
 
-#endif   /* #ifndef SQLITE_UNTESTABLE */
+#అయితే_ముగింపు   /* #ifndef SQLITE_UNTESTABLE */

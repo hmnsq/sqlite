@@ -15,10 +15,10 @@
 **
 ** The Vdbe parse-tree explainer is also found here.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "vdbeInt.h"
 
-#ifndef SQLITE_OMIT_TRACE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRACE
 
 /*
 ** zSql is a zero-terminated string of UTF-8 SQL text.  Return the number of
@@ -26,23 +26,23 @@
 ** a host parameter.  If the text contains no host parameters, return
 ** the total number of bytes in the text.
 */
-static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
-  int tokenType;
-  i64 nTotal = 0;
+స్థిర i64 కనుగొను_తదుపరి_Host_Parameter(స్థిరరాశి అక్షరం *zSql, i64 *pnToken){
+  పూర్ణాంకం tokenType;
+  i64 n_మొత్తం = 0;
   i64 n;
 
   *pnToken = 0;
-  while( zSql[0] ){
+  అయితే( zSql[0] ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
-    assert( n>0 && tokenType!=TK_ILLEGAL );
-    if( tokenType==TK_VARIABLE ){
+    ప్రతిజ్ఞా( n>0 && tokenType!=TK_ILLEGAL );
+    ఒకవేళ( tokenType==TK_VARIABLE ){
       *pnToken = n;
-      break;
+      ఆపు;
     }
-    nTotal += n;
+    n_మొత్తం += n;
     zSql += n;
   }
-  return nTotal;
+  తిరిగి n_మొత్తం;
 }
 
 /*
@@ -69,124 +69,124 @@ static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
 ** parameter index is known, locate the value in p->aVar[].  Then render
 ** the value as a literal in place of the host parameter name.
 */
-char *sqlite3VdbeExpandSql(
+అక్షరం *sqlite3VdbeExpandSql(
   Vdbe *p,                 /* The prepared statement being evaluated */
-  const char *zRawSql      /* Raw text of the SQL statement */
+  స్థిరరాశి అక్షరం *zRawSql      /* Raw text of the SQL statement */
 ){
   sqlite3 *db;             /* The database connection */
-  int idx = 0;             /* Index of a host parameter */
-  int nextIndex = 1;       /* Index of next ? host parameter */
+  పూర్ణాంకం idx = 0;             /* Index of a host parameter */
+  పూర్ణాంకం తదుపరి_సూచీ = 1;       /* Index of next ? host parameter */
   i64 n;                   /* Length of a token prefix */
   i64 nToken;              /* Length of the parameter token */
-  int i;                   /* Loop counter */
+  పూర్ణాంకం i;                   /* Loop counter */
   Mem *pVar;               /* Value of a host parameter */
-  StrAccum out;            /* Accumulate the output here */
-#ifndef SQLITE_OMIT_UTF16
+  StrAccum బహిర్గతం;            /* Accumulate the output here */
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
   Mem utf8;                /* Used to convert UTF16 into UTF8 for display */
-#endif
+#అయితే_ముగింపు
 
   db = p->db;
-  sqlite3StrAccumInit(&out, 0, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  if( db->nVdbeExec>1 ){
-    while( *zRawSql ){
-      const char *zStart = zRawSql;
-      while( *(zRawSql++)!='\n' && *zRawSql );
-      sqlite3_str_append(&out, "-- ", 3);
-      assert( (zRawSql - zStart) > 0 );
-      sqlite3_str_append(&out, zStart, (int)(zRawSql-zStart));
+  sqlite3StrAccumInit(&బహిర్గతం, 0, 0, 0, db->a_హద్దు[SQLITE_హద్దు_నిడివి]);
+  ఒకవేళ( db->nVdbeExec>1 ){
+    అయితే( *zRawSql ){
+      స్థిరరాశి అక్షరం *z_ప్రారంభం = zRawSql;
+      అయితే( *(zRawSql++)!='\n' && *zRawSql );
+      sqlite3_str_append(&బహిర్గతం, "-- ", 3);
+      ప్రతిజ్ఞా( (zRawSql - z_ప్రారంభం) > 0 );
+      sqlite3_str_append(&బహిర్గతం, z_ప్రారంభం, (పూర్ణాంకం)(zRawSql-z_ప్రారంభం));
     }
-  }else if( p->nVar==0 ){
-    sqlite3_str_append(&out, zRawSql, sqlite3Strlen30(zRawSql));
-  }else{
-    while( zRawSql[0] ){
-      n = findNextHostParameter(zRawSql, &nToken);
-      assert( n>0 );
-      sqlite3_str_append(&out, zRawSql, n);
+  }లేకపోతే ఒకవేళ( p->nVar==0 ){
+    sqlite3_str_append(&బహిర్గతం, zRawSql, sqlite3Strlen30(zRawSql));
+  }లేకపోతే{
+    అయితే( zRawSql[0] ){
+      n = కనుగొను_తదుపరి_Host_Parameter(zRawSql, &nToken);
+      ప్రతిజ్ఞా( n>0 );
+      sqlite3_str_append(&బహిర్గతం, zRawSql, n);
       zRawSql += n;
-      assert( zRawSql[0] || nToken==0 );
-      if( nToken==0 ) break;
-      if( zRawSql[0]=='?' ){
-        if( nToken>1 ){
-          assert( sqlite3Isdigit(zRawSql[1]) );
+      ప్రతిజ్ఞా( zRawSql[0] || nToken==0 );
+      ఒకవేళ( nToken==0 ) ఆపు;
+      ఒకవేళ( zRawSql[0]=='?' ){
+        ఒకవేళ( nToken>1 ){
+          ప్రతిజ్ఞా( sqlite3Isdigit(zRawSql[1]) );
           sqlite3GetInt32(&zRawSql[1], &idx);
-        }else{
-          idx = nextIndex;
+        }లేకపోతే{
+          idx = తదుపరి_సూచీ;
         }
-      }else{
-        assert( zRawSql[0]==':' || zRawSql[0]=='$' ||
+      }లేకపోతే{
+        ప్రతిజ్ఞా( zRawSql[0]==':' || zRawSql[0]=='$' ||
                 zRawSql[0]=='@' || zRawSql[0]=='#' );
         testcase( zRawSql[0]==':' );
         testcase( zRawSql[0]=='$' );
         testcase( zRawSql[0]=='@' );
         testcase( zRawSql[0]=='#' );
-        idx = sqlite3VdbeParameterIndex(p, zRawSql, nToken);
-        assert( idx>0 );
+        idx = sqlite3_Vdbe_Parameter_సూచీ(p, zRawSql, nToken);
+        ప్రతిజ్ఞా( idx>0 );
       }
       zRawSql += nToken;
-      nextIndex = MAX(idx + 1, nextIndex);
-      assert( idx>0 && idx<=p->nVar );
+      తదుపరి_సూచీ = MAX(idx + 1, తదుపరి_సూచీ);
+      ప్రతిజ్ఞా( idx>0 && idx<=p->nVar );
       pVar = &p->aVar[idx-1];
-      if( pVar->flags & MEM_Null ){
-        sqlite3_str_append(&out, "NULL", 4);
-      }else if( pVar->flags & (MEM_Int|MEM_IntReal) ){
-        sqlite3_str_appendf(&out, "%lld", pVar->u.i);
-      }else if( pVar->flags & MEM_Real ){
-        sqlite3_str_appendf(&out, "%!.15g", pVar->u.r);
-      }else if( pVar->flags & MEM_Str ){
-        int nOut;  /* Number of bytes of the string text to include in output */
-#ifndef SQLITE_OMIT_UTF16
+      ఒకవేళ( pVar->flags & MEM_Null ){
+        sqlite3_str_append(&బహిర్గతం, "NULL", 4);
+      }లేకపోతే ఒకవేళ( pVar->flags & (MEM_Int|MEM_IntReal) ){
+        sqlite3_str_appendf(&బహిర్గతం, "%lld", pVar->u.i);
+      }లేకపోతే ఒకవేళ( pVar->flags & MEM_Real ){
+        sqlite3_str_appendf(&బహిర్గతం, "%!.15g", pVar->u.r);
+      }లేకపోతే ఒకవేళ( pVar->flags & MEM_Str ){
+        పూర్ణాంకం n_బహిర్గతం;  /* Number of bytes of the string text to include in output */
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
         u8 enc = ENC(db);
-        if( enc!=SQLITE_UTF8 ){
-          memset(&utf8, 0, sizeof(utf8));
+        ఒకవేళ( enc!=SQLITE_UTF8 ){
+          memset(&utf8, 0, పరిమాణం(utf8));
           utf8.db = db;
-          sqlite3VdbeMemSetStr(&utf8, pVar->z, pVar->n, enc, SQLITE_STATIC);
-          if( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
-            out.accError = SQLITE_NOMEM;
-            out.nAlloc = 0;
+          sqlite3_Vdbe_Mem_సమితి_Str(&utf8, pVar->z, pVar->n, enc, SQLITE_STATIC);
+          ఒకవేళ( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
+            బహిర్గతం.accError = SQLITE_NOMEM;
+            బహిర్గతం.nAlloc = 0;
           }
           pVar = &utf8;
         }
-#endif
-        nOut = pVar->n;
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ){
-          nOut = SQLITE_TRACE_SIZE_LIMIT;
-          while( nOut<pVar->n && (pVar->z[nOut]&0xc0)==0x80 ){ nOut++; }
+#అయితే_ముగింపు
+        n_బహిర్గతం = pVar->n;
+#నిర్వచితమైతే SQLITE_TRACE_కొలత_హద్దు
+        ఒకవేళ( n_బహిర్గతం>SQLITE_TRACE_కొలత_హద్దు ){
+          n_బహిర్గతం = SQLITE_TRACE_కొలత_హద్దు;
+          అయితే( n_బహిర్గతం<pVar->n && (pVar->z[n_బహిర్గతం]&0xc0)==0x80 ){ n_బహిర్గతం++; }
         }
-#endif    
-        sqlite3_str_appendf(&out, "'%.*q'", nOut, pVar->z);
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
-          sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
+#అయితే_ముగింపు    
+        sqlite3_str_appendf(&బహిర్గతం, "'%.*q'", n_బహిర్గతం, pVar->z);
+#నిర్వచితమైతే SQLITE_TRACE_కొలత_హద్దు
+        ఒకవేళ( n_బహిర్గతం<pVar->n ){
+          sqlite3_str_appendf(&బహిర్గతం, "/*+%d bytes*/", pVar->n-n_బహిర్గతం);
         }
-#endif
-#ifndef SQLITE_OMIT_UTF16
-        if( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
-#endif
-      }else if( pVar->flags & MEM_Zero ){
-        sqlite3_str_appendf(&out, "zeroblob(%d)", pVar->u.nZero);
-      }else{
-        int nOut;  /* Number of bytes of the blob to include in output */
-        assert( pVar->flags & MEM_Blob );
-        sqlite3_str_append(&out, "x'", 2);
-        nOut = pVar->n;
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ) nOut = SQLITE_TRACE_SIZE_LIMIT;
-#endif
-        for(i=0; i<nOut; i++){
-          sqlite3_str_appendf(&out, "%02x", pVar->z[i]&0xff);
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+        ఒకవేళ( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
+#అయితే_ముగింపు
+      }లేకపోతే ఒకవేళ( pVar->flags & MEM_Zero ){
+        sqlite3_str_appendf(&బహిర్గతం, "zeroblob(%d)", pVar->u.nZero);
+      }లేకపోతే{
+        పూర్ణాంకం n_బహిర్గతం;  /* Number of bytes of the blob to include in output */
+        ప్రతిజ్ఞా( pVar->flags & MEM_Blob );
+        sqlite3_str_append(&బహిర్గతం, "x'", 2);
+        n_బహిర్గతం = pVar->n;
+#నిర్వచితమైతే SQLITE_TRACE_కొలత_హద్దు
+        ఒకవేళ( n_బహిర్గతం>SQLITE_TRACE_కొలత_హద్దు ) n_బహిర్గతం = SQLITE_TRACE_కొలత_హద్దు;
+#అయితే_ముగింపు
+        కొరకు(i=0; i<n_బహిర్గతం; i++){
+          sqlite3_str_appendf(&బహిర్గతం, "%02x", pVar->z[i]&0xff);
         }
-        sqlite3_str_append(&out, "'", 1);
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
-          sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
+        sqlite3_str_append(&బహిర్గతం, "'", 1);
+#నిర్వచితమైతే SQLITE_TRACE_కొలత_హద్దు
+        ఒకవేళ( n_బహిర్గతం<pVar->n ){
+          sqlite3_str_appendf(&బహిర్గతం, "/*+%d bytes*/", pVar->n-n_బహిర్గతం);
         }
-#endif
+#అయితే_ముగింపు
       }
     }
   }
-  if( out.accError ) sqlite3_str_reset(&out);
-  return sqlite3StrAccumFinish(&out);
+  ఒకవేళ( బహిర్గతం.accError ) sqlite3_str_reset(&బహిర్గతం);
+  తిరిగి sqlite3_Str_Accum_ముగింపు(&బహిర్గతం);
 }
 
-#endif /* #ifndef SQLITE_OMIT_TRACE */
+#అయితే_ముగింపు /* #ifndef SQLITE_OMIT_TRACE */

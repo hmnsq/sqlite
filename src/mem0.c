@@ -16,25 +16,25 @@
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#ifdef SQLITE_ZERO_MALLOC
+#నిర్వచితమైతే SQLITE_ZERO_MALLOC
 
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+స్థిర శూన్య *sqlite3MemMalloc(పూర్ణాంకం nByte){ తిరిగి 0; }
+స్థిర శూన్య sqlite3MemFree(శూన్య *p_పూర్వ){ తిరిగి; }
+స్థిర శూన్య *sqlite3MemRealloc(శూన్య *p_పూర్వ, పూర్ణాంకం nByte){ తిరిగి 0; }
+స్థిర పూర్ణాంకం sqlite3_Mem_కొలత(శూన్య *p_పూర్వ){ తిరిగి 0; }
+స్థిర పూర్ణాంకం sqlite3MemRoundup(పూర్ణాంకం n){ తిరిగి n; }
+స్థిర పూర్ణాంకం sqlite3MemInit(శూన్య *Not_వాడిన){ తిరిగి SQLITE_OK; }
+స్థిర శూన్య sqlite3MemShutdown(శూన్య *Not_వాడిన){ తిరిగి; }
 
 /*
 ** This routine is the only routine in this file with external linkage.
@@ -42,12 +42,12 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+శూన్య sqlite3_Mem_సమితి_Default(శూన్య){
+  స్థిర స్థిరరాశి sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,
-     sqlite3MemSize,
+     sqlite3_Mem_కొలత,
      sqlite3MemRoundup,
      sqlite3MemInit,
      sqlite3MemShutdown,
@@ -56,4 +56,4 @@ void sqlite3MemSetDefault(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
-#endif /* SQLITE_ZERO_MALLOC */
+#అయితే_ముగింపు /* SQLITE_ZERO_MALLOC */

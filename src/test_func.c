@@ -12,65 +12,65 @@
 ** Code for testing all sorts of SQLite interfaces.  This code
 ** implements new SQL functions used by the test scripts.
 */
-#include "sqlite3.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ "sqlite3.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "vdbeInt.h"
 
 /*
 ** Allocate nByte bytes of space using sqlite3_malloc(). If the
 ** allocation fails, call sqlite3_result_error_nomem() to notify
 ** the database handle that malloc() has failed.
 */
-static void *testContextMalloc(sqlite3_context *context, int nByte){
-  char *z = sqlite3_malloc(nByte);
-  if( !z && nByte>0 ){
-    sqlite3_result_error_nomem(context);
+స్థిర శూన్య *testContextMalloc(sqlite3_context *context, పూర్ణాంకం nByte){
+  అక్షరం *z = sqlite3_malloc(nByte);
+  ఒకవేళ( !z && nByte>0 ){
+    sqlite3_ఫలితం_error_nomem(context);
   }
-  return z;
+  తిరిగి z;
 }
 
 /*
 ** This function generates a string of random characters.  Used for
 ** generating test data.
 */
-static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
-  static const unsigned char zSrc[] = 
+స్థిర శూన్య randStr(sqlite3_context *context, పూర్ణాంకం argc, sqlite3_విలువ **argv){
+  స్థిర స్థిరరాశి గుర్తులేని అక్షరం zSrc[] = 
      "abcdefghijklmnopqrstuvwxyz"
      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
      "0123456789"
      ".-!,:*^+=_|?/<> ";
-  int iMin, iMax, n, r, i;
-  unsigned char zBuf[1000];
+  పూర్ణాంకం iMin, iMax, n, r, i;
+  గుర్తులేని అక్షరం zBuf[1000];
 
   /* It used to be possible to call randstr() with any number of arguments,
   ** but now it is registered with SQLite as requiring exactly 2.
   */
-  assert(argc==2);
+  ప్రతిజ్ఞా(argc==2);
 
-  iMin = sqlite3_value_int(argv[0]);
-  if( iMin<0 ) iMin = 0;
-  if( iMin>=sizeof(zBuf) ) iMin = sizeof(zBuf)-1;
-  iMax = sqlite3_value_int(argv[1]);
-  if( iMax<iMin ) iMax = iMin;
-  if( iMax>=sizeof(zBuf) ) iMax = sizeof(zBuf)-1;
+  iMin = sqlite3_విలువ_int(argv[0]);
+  ఒకవేళ( iMin<0 ) iMin = 0;
+  ఒకవేళ( iMin>=పరిమాణం(zBuf) ) iMin = పరిమాణం(zBuf)-1;
+  iMax = sqlite3_విలువ_int(argv[1]);
+  ఒకవేళ( iMax<iMin ) iMax = iMin;
+  ఒకవేళ( iMax>=పరిమాణం(zBuf) ) iMax = పరిమాణం(zBuf)-1;
   n = iMin;
-  if( iMax>iMin ){
-    sqlite3_randomness(sizeof(r), &r);
+  ఒకవేళ( iMax>iMin ){
+    sqlite3_randomness(పరిమాణం(r), &r);
     r &= 0x7fffffff;
     n += r%(iMax + 1 - iMin);
   }
-  assert( n<sizeof(zBuf) );
+  ప్రతిజ్ఞా( n<పరిమాణం(zBuf) );
   sqlite3_randomness(n, zBuf);
-  for(i=0; i<n; i++){
-    zBuf[i] = zSrc[zBuf[i]%(sizeof(zSrc)-1)];
+  కొరకు(i=0; i<n; i++){
+    zBuf[i] = zSrc[zBuf[i]%(పరిమాణం(zSrc)-1)];
   }
   zBuf[n] = 0;
-  sqlite3_result_text(context, (char*)zBuf, n, SQLITE_TRANSIENT);
+  sqlite3_ఫలితం_పాఠ్యం(context, (అక్షరం*)zBuf, n, SQLITE_TRANSIENT);
 }
 
 /*
@@ -84,66 +84,66 @@ static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
 **
 ** WARNING: Not threadsafe.
 */
-static int test_destructor_count_var = 0;
-static void destructor(void *p){
-  char *zVal = (char *)p;
-  assert(zVal);
+స్థిర పూర్ణాంకం test_destructor_లెక్క_var = 0;
+స్థిర శూన్య destructor(శూన్య *p){
+  అక్షరం *zVal = (అక్షరం *)p;
+  ప్రతిజ్ఞా(zVal);
   zVal--;
   sqlite3_free(zVal);
-  test_destructor_count_var--;
+  test_destructor_లెక్క_var--;
 }
-static void test_destructor(
+స్థిర శూన్య test_destructor(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  char *zVal;
-  int len;
+  అక్షరం *zVal;
+  పూర్ణాంకం len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes(argv[0]); 
+  test_destructor_లెక్క_var++;
+  ప్రతిజ్ఞా( nArg==1 );
+  ఒకవేళ( sqlite3_విలువ_type(argv[0])==SQLITE_NULL ) తిరిగి;
+  len = sqlite3_విలువ_బైట్లు(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  ఒకవేళ( !zVal ){
+    తిరిగి;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text(argv[0]), len);
-  sqlite3_result_text(pCtx, zVal, -1, destructor);
+  జ్ఞాపకం_నకలు(zVal, sqlite3_విలువ_పాఠ్యం(argv[0]), len);
+  sqlite3_ఫలితం_పాఠ్యం(pCtx, zVal, -1, destructor);
 }
-#ifndef SQLITE_OMIT_UTF16
-static void test_destructor16(
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+స్థిర శూన్య test_destructor16(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  char *zVal;
-  int len;
+  అక్షరం *zVal;
+  పూర్ణాంకం len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes16(argv[0]); 
+  test_destructor_లెక్క_var++;
+  ప్రతిజ్ఞా( nArg==1 );
+  ఒకవేళ( sqlite3_విలువ_type(argv[0])==SQLITE_NULL ) తిరిగి;
+  len = sqlite3_విలువ_bytes16(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  ఒకవేళ( !zVal ){
+    తిరిగి;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text16(argv[0]), len);
-  sqlite3_result_text16(pCtx, zVal, -1, destructor);
+  జ్ఞాపకం_నకలు(zVal, sqlite3_విలువ_text16(argv[0]), len);
+  sqlite3_ఫలితం_text16(pCtx, zVal, -1, destructor);
 }
-#endif
-static void test_destructor_count(
+#అయితే_ముగింపు
+స్థిర శూన్య test_destructor_లెక్క(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  sqlite3_result_int(pCtx, test_destructor_count_var);
+  sqlite3_ఫలితం_int(pCtx, test_destructor_లెక్క_var);
 }
 
 /*
@@ -151,23 +151,23 @@ static void test_destructor_count(
 ** arguments. It returns the text value returned by the sqlite3_errmsg16()
 ** API function.
 */
-#ifndef SQLITE_UNTESTABLE
-void sqlite3BeginBenignMalloc(void);
-void sqlite3EndBenignMalloc(void);
-#else
-  #define sqlite3BeginBenignMalloc()
-  #define sqlite3EndBenignMalloc()
-#endif
-static void test_agg_errmsg16_step(sqlite3_context *a, int b,sqlite3_value **c){
+#నిర్వచితం_కాకపోతే SQLITE_UNTESTABLE
+శూన్య sqlite3BeginBenignMalloc(శూన్య);
+శూన్య sqlite3_చివర_Benign_Malloc(శూన్య);
+#లేకపోతే
+  #నిర్వచించు sqlite3BeginBenignMalloc()
+  #నిర్వచించు sqlite3_చివర_Benign_Malloc()
+#అయితే_ముగింపు
+స్థిర శూన్య test_agg_errmsg16_అడుగు(sqlite3_context *a, పూర్ణాంకం b,sqlite3_విలువ **c){
 }
-static void test_agg_errmsg16_final(sqlite3_context *ctx){
-#ifndef SQLITE_OMIT_UTF16
-  const void *z;
+స్థిర శూన్య test_agg_errmsg16_final(sqlite3_context *ctx){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+  స్థిరరాశి శూన్య *z;
   sqlite3 * db = sqlite3_context_db_handle(ctx);
   sqlite3_aggregate_context(ctx, 2048);
   z = sqlite3_errmsg16(db);
-  sqlite3_result_text16(ctx, z, -1, SQLITE_TRANSIENT);
-#endif
+  sqlite3_ఫలితం_text16(ctx, z, -1, SQLITE_TRANSIENT);
+#అయితే_ముగింపు
 }
 
 /*
@@ -181,37 +181,37 @@ static void test_agg_errmsg16_final(sqlite3_context *ctx){
 ** registration, the result for that argument is 1.  The overall result
 ** is the individual argument results separated by spaces.
 */
-static void free_test_auxdata(void *p) {sqlite3_free(p);}
-static void test_auxdata(
+స్థిర శూన్య free_test_auxdata(శూన్య *p) {sqlite3_free(p);}
+స్థిర శూన్య test_auxdata(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  int i;
-  char *zRet = testContextMalloc(pCtx, nArg*2);
-  if( !zRet ) return;
+  పూర్ణాంకం i;
+  అక్షరం *zRet = testContextMalloc(pCtx, nArg*2);
+  ఒకవేళ( !zRet ) తిరిగి;
   memset(zRet, 0, nArg*2);
-  for(i=0; i<nArg; i++){
-    char const *z = (char*)sqlite3_value_text(argv[i]);
-    if( z ){
-      int n;
-      char *zAux = sqlite3_get_auxdata(pCtx, i);
-      if( zAux ){
+  కొరకు(i=0; i<nArg; i++){
+    అక్షరం స్థిరరాశి *z = (అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    ఒకవేళ( z ){
+      పూర్ణాంకం n;
+      అక్షరం *zAux = sqlite3_get_auxdata(pCtx, i);
+      ఒకవేళ( zAux ){
         zRet[i*2] = '1';
-        assert( strcmp(zAux,z)==0 );
-      }else {
+        ప్రతిజ్ఞా( strcmp(zAux,z)==0 );
+      }లేకపోతే {
         zRet[i*2] = '0';
       }
-      n = (int)strlen(z) + 1;
+      n = (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(z) + 1;
       zAux = testContextMalloc(pCtx, n);
-      if( zAux ){
-        memcpy(zAux, z, n);
-        sqlite3_set_auxdata(pCtx, i, zAux, free_test_auxdata);
+      ఒకవేళ( zAux ){
+        జ్ఞాపకం_నకలు(zAux, z, n);
+        sqlite3_సమితి_auxdata(pCtx, i, zAux, free_test_auxdata);
       }
       zRet[i*2+1] = ' ';
     }
   }
-  sqlite3_result_text(pCtx, zRet, 2*nArg-1, free_test_auxdata);
+  sqlite3_ఫలితం_పాఠ్యం(pCtx, zRet, 2*nArg-1, free_test_auxdata);
 }
 
 /*
@@ -219,14 +219,14 @@ static void test_auxdata(
 ** returns a copy of its first argument as the error message.  If the
 ** second argument exists, it becomes the error code.
 */
-static void test_error(
+స్థిర శూన్య test_error(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  sqlite3_result_error(pCtx, (char*)sqlite3_value_text(argv[0]), -1);
-  if( nArg==2 ){
-    sqlite3_result_error_code(pCtx, sqlite3_value_int(argv[1]));
+  sqlite3_ఫలితం_error(pCtx, (అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]), -1);
+  ఒకవేళ( nArg==2 ){
+    sqlite3_ఫలితం_error_సంకేతం(pCtx, sqlite3_విలువ_int(argv[1]));
   }
 }
 
@@ -236,24 +236,24 @@ static void test_error(
 ** and so forth.  Can be used (for example) to provide a sequence number
 ** in a result set.
 */
-static void counterFunc(
+స్థిర శూన్య counterFunc(
   sqlite3_context *pCtx,   /* Function context */
-  int nArg,                /* Number of function arguments */
-  sqlite3_value **argv     /* Values for all function arguments */
+  పూర్ణాంకం nArg,                /* Number of function arguments */
+  sqlite3_విలువ **argv     /* Values for all function arguments */
 ){
-  int *pCounter = (int*)sqlite3_get_auxdata(pCtx, 0);
-  if( pCounter==0 ){
-    pCounter = sqlite3_malloc( sizeof(*pCounter) );
-    if( pCounter==0 ){
-      sqlite3_result_error_nomem(pCtx);
-      return;
+  పూర్ణాంకం *pCounter = (పూర్ణాంకం*)sqlite3_get_auxdata(pCtx, 0);
+  ఒకవేళ( pCounter==0 ){
+    pCounter = sqlite3_malloc( పరిమాణం(*pCounter) );
+    ఒకవేళ( pCounter==0 ){
+      sqlite3_ఫలితం_error_nomem(pCtx);
+      తిరిగి;
     }
-    *pCounter = sqlite3_value_int(argv[0]);
-    sqlite3_set_auxdata(pCtx, 0, pCounter, sqlite3_free);
-  }else{
+    *pCounter = sqlite3_విలువ_int(argv[0]);
+    sqlite3_సమితి_auxdata(pCtx, 0, pCounter, sqlite3_free);
+  }లేకపోతే{
     ++*pCounter;
   }
-  sqlite3_result_int(pCtx, *pCounter);
+  sqlite3_ఫలితం_int(pCtx, *pCounter);
 }
 
 
@@ -269,55 +269,55 @@ static void counterFunc(
 ** We want to verify that the type conversions that occur on the
 ** first argument do not invalidate the second argument.
 */
-static void test_isolation(
+స్థిర శూన్య test_isolation(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-#ifndef SQLITE_OMIT_UTF16
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
-#endif
-  sqlite3_result_value(pCtx, argv[1]);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+  sqlite3_విలువ_text16(argv[0]);
+  sqlite3_విలువ_పాఠ్యం(argv[0]);
+  sqlite3_విలువ_text16(argv[0]);
+  sqlite3_విలువ_పాఠ్యం(argv[0]);
+#అయితే_ముగింపు
+  sqlite3_ఫలితం_విలువ(pCtx, argv[1]);
 }
 
 /*
 ** Invoke an SQL statement recursively.  The function result is the 
 ** first column of the first row of the result set.
 */
-static void test_eval(
+స్థిర శూన్య test_eval(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
   sqlite3_stmt *pStmt;
-  int rc;
+  పూర్ణాంకం rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  const char *zSql;
-  static const char zTag[] = "test_eval()";
+  స్థిరరాశి అక్షరం *zSql;
+  స్థిర స్థిరరాశి అక్షరం z_ట్యాగ్[] = "test_eval()";
 
-  if( sqlite3_get_clientdata(db, zTag) ){
-    sqlite3_result_error(pCtx, "nested test_eval()", -1);
-    return;
+  ఒకవేళ( sqlite3_get_clientdata(db, z_ట్యాగ్) ){
+    sqlite3_ఫలితం_error(pCtx, "nested test_eval()", -1);
+    తిరిగి;
   }
-  zSql = (char*)sqlite3_value_text(argv[0]);
-  sqlite3_set_clientdata(db, zTag, &rc, 0);
+  zSql = (అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  sqlite3_సమితి_clientdata(db, z_ట్యాగ్, &rc, 0);
   rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3_step(pStmt);
-    if( rc==SQLITE_ROW ){
-      sqlite3_result_value(pCtx, sqlite3_column_value(pStmt, 0));
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = sqlite3_అడుగు(pStmt);
+    ఒకవేళ( rc==SQLITE_అడ్డువరుస ){
+      sqlite3_ఫలితం_విలువ(pCtx, sqlite3_స్తంభం_విలువ(pStmt, 0));
     }
     rc = sqlite3_finalize(pStmt);
   }
-  sqlite3_set_clientdata(db, zTag, 0, 0);
-  if( rc ){
-    char *zErr;
+  sqlite3_సమితి_clientdata(db, z_ట్యాగ్, 0, 0);
+  ఒకవేళ( rc ){
+    అక్షరం *zErr;
     zErr = sqlite3_mprintf("sqlite3_prepare_v2() error: %s",sqlite3_errmsg(db));
-    sqlite3_result_text(pCtx, zErr, -1, sqlite3_free);
-    sqlite3_result_error_code(pCtx, rc);
+    sqlite3_ఫలితం_పాఠ్యం(pCtx, zErr, -1, sqlite3_free);
+    sqlite3_ఫలితం_error_సంకేతం(pCtx, rc);
   }
 }
 
@@ -325,24 +325,24 @@ static void test_eval(
 /*
 ** convert one character from hex to binary
 */
-static int testHexChar(char c){
-  if( c>='0' && c<='9' ){
-    return c - '0';
-  }else if( c>='a' && c<='f' ){
-    return c - 'a' + 10;
-  }else if( c>='A' && c<='F' ){
-    return c - 'A' + 10;
+స్థిర పూర్ణాంకం testHexChar(అక్షరం c){
+  ఒకవేళ( c>='0' && c<='9' ){
+    తిరిగి c - '0';
+  }లేకపోతే ఒకవేళ( c>='a' && c<='f' ){
+    తిరిగి c - 'a' + 10;
+  }లేకపోతే ఒకవేళ( c>='A' && c<='F' ){
+    తిరిగి c - 'A' + 10;
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** Convert hex to binary.
 */
-static void testHexToBin(const char *zIn, char *zOut){
-  while( zIn[0] && zIn[1] ){
-    *(zOut++) = (testHexChar(zIn[0])<<4) + testHexChar(zIn[1]);
-    zIn += 2;
+స్థిర శూన్య test_Hex_గమ్యం_Bin(స్థిరరాశి అక్షరం *z_లోపల, అక్షరం *z_బహిర్గతం){
+  అయితే( z_లోపల[0] && z_లోపల[1] ){
+    *(z_బహిర్గతం++) = (testHexChar(z_లోపల[0])<<4) + testHexChar(z_లోపల[1]);
+    z_లోపల += 2;
   }
 }
 
@@ -352,27 +352,27 @@ static void testHexToBin(const char *zIn, char *zOut){
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-#ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16be(
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+స్థిర శూన్య test_Hex_గమ్యం_Utf16be(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
-    sqlite3_result_error_nomem(pCtx);
-  }else{
-    testHexToBin(zIn, zOut);
-    sqlite3_result_text16be(pCtx, zOut, n/2, sqlite3_free);
+  పూర్ణాంకం n;
+  స్థిరరాశి అక్షరం *z_లోపల;
+  అక్షరం *z_బహిర్గతం;
+  ప్రతిజ్ఞా( nArg==1 );
+  n = sqlite3_విలువ_బైట్లు(argv[0]);
+  z_లోపల = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  z_బహిర్గతం = sqlite3_malloc( n/2 );
+  ఒకవేళ( z_బహిర్గతం==0 ){
+    sqlite3_ఫలితం_error_nomem(pCtx);
+  }లేకపోతే{
+    test_Hex_గమ్యం_Bin(z_లోపల, z_బహిర్గతం);
+    sqlite3_ఫలితం_text16be(pCtx, z_బహిర్గతం, n/2, sqlite3_free);
   }
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 **      hex_to_utf8(HEX)
@@ -380,23 +380,23 @@ static void testHexToUtf16be(
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-static void testHexToUtf8(
+స్థిర శూన్య test_Hex_గమ్యం_Utf8(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
-    sqlite3_result_error_nomem(pCtx);
-  }else{
-    testHexToBin(zIn, zOut);
-    sqlite3_result_text(pCtx, zOut, n/2, sqlite3_free);
+  పూర్ణాంకం n;
+  స్థిరరాశి అక్షరం *z_లోపల;
+  అక్షరం *z_బహిర్గతం;
+  ప్రతిజ్ఞా( nArg==1 );
+  n = sqlite3_విలువ_బైట్లు(argv[0]);
+  z_లోపల = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  z_బహిర్గతం = sqlite3_malloc( n/2 );
+  ఒకవేళ( z_బహిర్గతం==0 ){
+    sqlite3_ఫలితం_error_nomem(pCtx);
+  }లేకపోతే{
+    test_Hex_గమ్యం_Bin(z_లోపల, z_బహిర్గతం);
+    sqlite3_ఫలితం_పాఠ్యం(pCtx, z_బహిర్గతం, n/2, sqlite3_free);
   }
 }
 
@@ -406,27 +406,27 @@ static void testHexToUtf8(
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-#ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16le(
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
+స్థిర శూన్య test_Hex_గమ్యం_Utf16le(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  పూర్ణాంకం nArg,
+  sqlite3_విలువ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
-    sqlite3_result_error_nomem(pCtx);
-  }else{
-    testHexToBin(zIn, zOut);
-    sqlite3_result_text16le(pCtx, zOut, n/2, sqlite3_free);
+  పూర్ణాంకం n;
+  స్థిరరాశి అక్షరం *z_లోపల;
+  అక్షరం *z_బహిర్గతం;
+  ప్రతిజ్ఞా( nArg==1 );
+  n = sqlite3_విలువ_బైట్లు(argv[0]);
+  z_లోపల = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  z_బహిర్గతం = sqlite3_malloc( n/2 );
+  ఒకవేళ( z_బహిర్గతం==0 ){
+    sqlite3_ఫలితం_error_nomem(pCtx);
+  }లేకపోతే{
+    test_Hex_గమ్యం_Bin(z_లోపల, z_బహిర్గతం);
+    sqlite3_ఫలితం_text16le(pCtx, z_బహిర్గతం, n/2, sqlite3_free);
   }
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 ** SQL function:   real2hex(X)
@@ -435,33 +435,33 @@ static void testHexToUtf16le(
 ** the big-endian hexadecimal representation of the ieee754 encoding of
 ** that number.  If X is not a real number, return NULL.
 */
-static void real2hex(
+స్థిర శూన్య real2hex(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  union {
+  సంఘం {
     sqlite3_uint64 i;
-    double r;
-    unsigned char x[8];
+    ద్విగుణ r;
+    గుర్తులేని అక్షరం x[8];
   } v;
-  char zOut[20];
-  int i;
-  int bigEndian;
+  అక్షరం z_బహిర్గతం[20];
+  పూర్ణాంకం i;
+  పూర్ణాంకం bigEndian;
   v.i = 1;
   bigEndian = v.x[0]==0;
-  v.r = sqlite3_value_double(argv[0]);
-  for(i=0; i<8; i++){
-    if( bigEndian ){
-      zOut[i*2]   = "0123456789abcdef"[v.x[i]>>4];
-      zOut[i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
-    }else{
-      zOut[14-i*2]   = "0123456789abcdef"[v.x[i]>>4];
-      zOut[14-i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
+  v.r = sqlite3_విలువ_double(argv[0]);
+  కొరకు(i=0; i<8; i++){
+    ఒకవేళ( bigEndian ){
+      z_బహిర్గతం[i*2]   = "0123456789abcdef"[v.x[i]>>4];
+      z_బహిర్గతం[i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
+    }లేకపోతే{
+      z_బహిర్గతం[14-i*2]   = "0123456789abcdef"[v.x[i]>>4];
+      z_బహిర్గతం[14-i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
     }
   }
-  zOut[16] = 0;
-  sqlite3_result_text(context, zOut, -1, SQLITE_TRANSIENT);
+  z_బహిర్గతం[16] = 0;
+  sqlite3_ఫలితం_పాఠ్యం(context, z_బహిర్గతం, -1, SQLITE_TRANSIENT);
 }
 
 /*
@@ -472,43 +472,43 @@ static void real2hex(
 ** second argument is the index of the field within that record to
 ** extract and return.
 */
-static void test_extract(
+స్థిర శూన్య test_వెలికితీయి(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
-  u8 *pEndHdr;                    /* Points to one byte past record header */
+  u8 *p_చివర_Hdr;                    /* Points to one byte past record header */
   u8 *pHdr;                       /* Current point in record header */
   u8 *pBody;                      /* Current point in record data */
   u64 nHdr;                       /* Bytes in record header */
-  int iIdx;                       /* Required field */
-  int iCurrent = 0;               /* Current field */
+  పూర్ణాంకం iIdx;                       /* Required field */
+  పూర్ణాంకం iCurrent = 0;               /* Current field */
 
-  assert( argc==2 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
-  iIdx = sqlite3_value_int(argv[1]);
+  ప్రతిజ్ఞా( argc==2 );
+  pRec = (u8*)sqlite3_విలువ_blob(argv[0]);
+  iIdx = sqlite3_విలువ_int(argv[1]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
-  pBody = pEndHdr = &pRec[nHdr];
+  pBody = p_చివర_Hdr = &pRec[nHdr];
 
-  for(iCurrent=0; pHdr<pEndHdr && iCurrent<=iIdx; iCurrent++){
+  కొరకు(iCurrent=0; pHdr<p_చివర_Hdr && iCurrent<=iIdx; iCurrent++){
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, పరిమాణం(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    if( iCurrent==iIdx ){
-      sqlite3_result_value(context, &mem);
+    ఒకవేళ( iCurrent==iIdx ){
+      sqlite3_ఫలితం_విలువ(context, &mem);
     }
 
-    if( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
+    ఒకవేళ( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
   }
 }
 
@@ -520,89 +520,89 @@ static void test_extract(
 ** a tcl list (type SQLITE_TEXT) containing each of the values stored
 ** in the record.
 */
-static void test_decode(
+స్థిర శూన్య test_decode(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
-  u8 *pEndHdr;                    /* Points to one byte past record header */
+  u8 *p_చివర_Hdr;                    /* Points to one byte past record header */
   u8 *pHdr;                       /* Current point in record header */
   u8 *pBody;                      /* Current point in record data */
   u64 nHdr;                       /* Bytes in record header */
   Tcl_Obj *pRet;                  /* Return value */
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
+  Tcl_Incr_Ref_లెక్క(pRet);
 
-  assert( argc==1 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
+  ప్రతిజ్ఞా( argc==1 );
+  pRec = (u8*)sqlite3_విలువ_blob(argv[0]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
-  pBody = pEndHdr = &pRec[nHdr];
-  while( pHdr<pEndHdr ){
+  pBody = p_చివర_Hdr = &pRec[nHdr];
+  అయితే( pHdr<p_చివర_Hdr ){
     Tcl_Obj *pVal = 0;
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, పరిమాణం(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    switch( sqlite3_value_type(&mem) ){
-      case SQLITE_TEXT:
-        pVal = Tcl_NewStringObj((const char*)sqlite3_value_text(&mem), -1);
-        break;
+    ఎంపిక( sqlite3_విలువ_type(&mem) ){
+      స్థితి SQLITE_పాఠ్యం:
+        pVal = Tcl_NewStringObj((స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(&mem), -1);
+        ఆపు;
 
-      case SQLITE_BLOB: {
-        char hexdigit[] = {
+      స్థితి SQLITE_BLOB: {
+        అక్షరం hexdigit[] = {
           '0', '1', '2', '3', '4', '5', '6', '7',
           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
         };
-        int n = sqlite3_value_bytes(&mem);
-        u8 *z = (u8*)sqlite3_value_blob(&mem);
-        int i;
+        పూర్ణాంకం n = sqlite3_విలువ_బైట్లు(&mem);
+        u8 *z = (u8*)sqlite3_విలువ_blob(&mem);
+        పూర్ణాంకం i;
         pVal = Tcl_NewStringObj("x'", -1);
-        for(i=0; i<n; i++){
-          char hex[3];
+        కొరకు(i=0; i<n; i++){
+          అక్షరం hex[3];
           hex[0] = hexdigit[((z[i] >> 4) & 0x0F)];
           hex[1] = hexdigit[(z[i] & 0x0F)];
           hex[2] = '\0';
-          Tcl_AppendStringsToObj(pVal, hex, 0);
+          Tcl_Append_అక్షరశ్రేణులు_గమ్యం_Obj(pVal, hex, 0);
         }
-        Tcl_AppendStringsToObj(pVal, "'", 0);
-        break;
+        Tcl_Append_అక్షరశ్రేణులు_గమ్యం_Obj(pVal, "'", 0);
+        ఆపు;
       }
 
-      case SQLITE_FLOAT:
-        pVal = Tcl_NewDoubleObj(sqlite3_value_double(&mem));
-        break;
+      స్థితి SQLITE_FLOAT:
+        pVal = Tcl_NewDoubleObj(sqlite3_విలువ_double(&mem));
+        ఆపు;
 
-      case SQLITE_INTEGER:
-        pVal = Tcl_NewWideIntObj(sqlite3_value_int64(&mem));
-        break;
+      స్థితి SQLITE_INTEGER:
+        pVal = Tcl_NewWideIntObj(sqlite3_విలువ_int64(&mem));
+        ఆపు;
 
-      case SQLITE_NULL:
+      స్థితి SQLITE_NULL:
         pVal = Tcl_NewStringObj("NULL", -1);
-        break;
+        ఆపు;
 
-      default:
-        assert( 0 );
+      అప్రమేయ:
+        ప్రతిజ్ఞా( 0 );
     }
 
     Tcl_ListObjAppendElement(0, pRet, pVal);
 
-    if( mem.szMalloc ){
+    ఒకవేళ( mem.szMalloc ){
       sqlite3DbFree(db, mem.zMalloc);
     }
   }
 
-  sqlite3_result_text(context, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
-  Tcl_DecrRefCount(pRet);
+  sqlite3_ఫలితం_పాఠ్యం(context, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
+  Tcl_Decr_Ref_లెక్క(pRet);
 }
 
 /*
@@ -613,25 +613,25 @@ static void test_decode(
 ** check that the integer parameter is within range before passing it
 ** to sqlite3_result_zeroblob().
 */
-static void test_zeroblob(
+స్థిర శూన్య test_zeroblob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  int nZero = sqlite3_value_int(argv[0]);
-  sqlite3_result_zeroblob(context, nZero);
+  పూర్ణాంకం nZero = sqlite3_విలువ_int(argv[0]);
+  sqlite3_ఫలితం_zeroblob(context, nZero);
 }
 
 /*         test_getsubtype(V)
 **
 ** Return the subtype for value V.
 */
-static void test_getsubtype(
+స్థిర శూన్య test_getsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  sqlite3_result_int(context, (int)sqlite3_value_subtype(argv[0]));
+  sqlite3_ఫలితం_int(context, (పూర్ణాంకం)sqlite3_విలువ_subtype(argv[0]));
 }
 
 /*         test_frombind(A,B,C,...)
@@ -639,52 +639,52 @@ static void test_getsubtype(
 ** Return an integer bitmask that has a bit set for every argument
 ** (up to the first 63 arguments) that originates from a bind a parameter.
 */
-static void test_frombind(
+స్థిర శూన్య test_frombind(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
   sqlite3_uint64 m = 0;
-  int i;
-  for(i=0; i<argc && i<63; i++){
-    if( sqlite3_value_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<argc && i<63; i++){
+    ఒకవేళ( sqlite3_విలువ_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
   }
-  sqlite3_result_int64(context, (sqlite3_int64)m);
+  sqlite3_ఫలితం_int64(context, (sqlite3_int64)m);
 }
 
 /*         test_setsubtype(V, T)
 **
 ** Return the value V with its subtype changed to T
 */
-static void test_setsubtype(
+స్థిర శూన్య test_setsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  sqlite3_result_value(context, argv[0]);
-  sqlite3_result_subtype(context, (unsigned int)sqlite3_value_int(argv[1]));
+  sqlite3_ఫలితం_విలువ(context, argv[0]);
+  sqlite3_ఫలితం_subtype(context, (గుర్తులేని పూర్ణాంకం)sqlite3_విలువ_int(argv[1]));
 }
 
-static int registerTestFunctions(
+స్థిర పూర్ణాంకం రిజిస్టరు_Test_Functions(
   sqlite3 *db,
-  char **pzErrMsg,
-  const sqlite3_api_routines *pThunk
+  అక్షరం **pz_Err_సందేశం,
+  స్థిరరాశి sqlite3_api_routines *pThunk
 ){
-  static const struct {
-     char *zName;
-     signed char nArg;
-     unsigned int eTextRep; /* 1: UTF-16.  0: UTF-8 */
-     void (*xFunc)(sqlite3_context*,int,sqlite3_value **);
+  స్థిర స్థిరరాశి నిర్మాణం {
+     అక్షరం *zName;
+     గుర్తుగల అక్షరం nArg;
+     గుర్తులేని పూర్ణాంకం e_పాఠ్యం_Rep; /* 1: UTF-16.  0: UTF-8 */
+     శూన్య (*xFunc)(sqlite3_context*,పూర్ణాంకం,sqlite3_విలువ **);
   } aFuncs[] = {
     { "randstr",               2, SQLITE_UTF8, randStr    },
     { "test_destructor",       1, SQLITE_UTF8, test_destructor},
-#ifndef SQLITE_OMIT_UTF16
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
     { "test_destructor16",     1, SQLITE_UTF8, test_destructor16},
-    { "hex_to_utf16be",        1, SQLITE_UTF8, testHexToUtf16be},
-    { "hex_to_utf16le",        1, SQLITE_UTF8, testHexToUtf16le},
-#endif
-    { "hex_to_utf8",           1, SQLITE_UTF8, testHexToUtf8},
-    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_count},
+    { "hex_to_utf16be",        1, SQLITE_UTF8, test_Hex_గమ్యం_Utf16be},
+    { "hex_to_utf16le",        1, SQLITE_UTF8, test_Hex_గమ్యం_Utf16le},
+#అయితే_ముగింపు
+    { "hex_to_utf8",           1, SQLITE_UTF8, test_Hex_గమ్యం_Utf8},
+    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_లెక్క},
     { "test_auxdata",         -1, SQLITE_UTF8, test_auxdata},
     { "test_error",            1, SQLITE_UTF8, test_error},
     { "test_error",            2, SQLITE_UTF8, test_error},
@@ -693,24 +693,24 @@ static int registerTestFunctions(
     { "test_counter",          1, SQLITE_UTF8, counterFunc},
     { "real2hex",              1, SQLITE_UTF8, real2hex},
     { "test_decode",           1, SQLITE_UTF8, test_decode},
-    { "test_extract",          2, SQLITE_UTF8, test_extract},
+    { "test_extract",          2, SQLITE_UTF8, test_వెలికితీయి},
     { "test_zeroblob",  1, SQLITE_UTF8|SQLITE_DETERMINISTIC, test_zeroblob},
     { "test_getsubtype",       1, SQLITE_UTF8, test_getsubtype},
-    { "test_setsubtype",       2, SQLITE_UTF8|SQLITE_RESULT_SUBTYPE,
+    { "test_setsubtype",       2, SQLITE_UTF8|SQLITE_ఫలితం_SUBTYPE,
                                                test_setsubtype},
     { "test_frombind",        -1, SQLITE_UTF8, test_frombind},
   };
-  int i;
+  పూర్ణాంకం i;
 
-  for(i=0; i<sizeof(aFuncs)/sizeof(aFuncs[0]); i++){
+  కొరకు(i=0; i<పరిమాణం(aFuncs)/పరిమాణం(aFuncs[0]); i++){
     sqlite3_create_function(db, aFuncs[i].zName, aFuncs[i].nArg,
-        aFuncs[i].eTextRep, 0, aFuncs[i].xFunc, 0, 0);
+        aFuncs[i].e_పాఠ్యం_Rep, 0, aFuncs[i].xFunc, 0, 0);
   }
 
   sqlite3_create_function(db, "test_agg_errmsg16", 0, SQLITE_ANY, 0, 0, 
-      test_agg_errmsg16_step, test_agg_errmsg16_final);
+      test_agg_errmsg16_అడుగు, test_agg_errmsg16_final);
       
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -720,26 +720,26 @@ static int registerTestFunctions(
 ** the standard set of test functions to be loaded into each new
 ** database connection.
 */
-static int SQLITE_TCLAPI autoinstall_test_funcs(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI autoinstall_test_funcs(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
-  int rc = sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3_auto_extension((void(*)(void))Md5_Register);
+  బాహ్య పూర్ణాంకం Md5_రిజిస్టరు(sqlite3 *, అక్షరం **, స్థిరరాశి sqlite3_api_routines *);
+  పూర్ణాంకం rc = sqlite3_auto_extension((శూన్య(*)(శూన్య))రిజిస్టరు_Test_Functions);
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = sqlite3_auto_extension((శూన్య(*)(శూన్య))Md5_రిజిస్టరు);
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** A bogus step function and finalizer function.
 */
-static void tStep(sqlite3_context *a, int b, sqlite3_value **c){}
-static void tFinal(sqlite3_context *a){}
+స్థిర శూన్య t_అడుగు(sqlite3_context *a, పూర్ణాంకం b, sqlite3_విలువ **c){}
+స్థిర శూన్య tFinal(sqlite3_context *a){}
 
 
 /*
@@ -748,39 +748,39 @@ static void tFinal(sqlite3_context *a){}
 ** Make various calls to sqlite3_create_function that do not have valid
 ** parameters.  Verify that the error condition is detected and reported.
 */
-static int SQLITE_TCLAPI abuse_create_function(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI abuse_create_function(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp*, స్థిరరాశి అక్షరం*, sqlite3**);
   sqlite3 *db;
-  int rc;
-  int mxArg;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం mxArg;
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
 
-  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep,tStep,tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, t_అడుగు,t_అడుగు,tFinal);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
-  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, t_అడుగు, t_అడుగు, 0);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
-  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, 0, tFinal);
-  if( rc!=SQLITE_MISUSE) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, t_అడుగు, 0, tFinal);
+  ఒకవేళ( rc!=SQLITE_MISUSE) వెళ్ళు abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, 0, tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
-  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, t_అడుగు, 0);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
-  rc = sqlite3_create_function(db, "tx", -2, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", -2, SQLITE_UTF8, 0, t_అడుగు, 0, 0);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
-  rc = sqlite3_create_function(db, "tx", 32768, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  rc = sqlite3_create_function(db, "tx", 32768, SQLITE_UTF8, 0, t_అడుగు, 0, 0);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
   rc = sqlite3_create_function(db, "funcxx"
        "_123456789_123456789_123456789_123456789_123456789"
@@ -788,30 +788,30 @@ static int SQLITE_TCLAPI abuse_create_function(
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
-       1, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+       1, SQLITE_UTF8, 0, t_అడుగు, 0, 0);
+  ఒకవేళ( rc!=SQLITE_MISUSE ) వెళ్ళు abuse_err;
 
   /* This last function registration should actually work.  Generate
   ** a no-op function (that always returns NULL) and which has the
   ** maximum-length function name and the maximum number of parameters.
   */
-  sqlite3_limit(db, SQLITE_LIMIT_FUNCTION_ARG, 1000000);
-  mxArg = sqlite3_limit(db, SQLITE_LIMIT_FUNCTION_ARG, -1);
+  sqlite3_హద్దు(db, SQLITE_హద్దు_FUNCTION_ARG, 1000000);
+  mxArg = sqlite3_హద్దు(db, SQLITE_హద్దు_FUNCTION_ARG, -1);
   rc = sqlite3_create_function(db, "nullx"
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
-       mxArg, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_OK ) goto abuse_err;
+       mxArg, SQLITE_UTF8, 0, t_అడుగు, 0, 0);
+  ఒకవేళ( rc!=SQLITE_OK ) వెళ్ళు abuse_err;
                                 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 
 abuse_err:
-  Tcl_AppendResult(interp, "sqlite3_create_function abused test failed", 
-                   (char*)0);
-  return TCL_ERROR;
+  Tcl_Append_ఫలితం(interp, "sqlite3_create_function abused test failed", 
+                   (అక్షరం*)0);
+  తిరిగి TCL_ERROR;
 }
 
 
@@ -849,15 +849,15 @@ abuse_err:
 **     WHERE documents MATCH <query> 
 **     ORDER BY rank(matchinfo(documents), 1.0, 0.5) DESC
 */
-static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
-  int *aMatchinfo;                /* Return value of matchinfo() */
-  int nMatchinfo;                 /* Number of elements in aMatchinfo[] */
-  int nCol = 0;                   /* Number of columns in the table */
-  int nPhrase = 0;                /* Number of phrases in the query */
-  int iPhrase;                    /* Current phrase */
-  double score = 0.0;             /* Value to return */
+స్థిర శూన్య rankfunc(sqlite3_context *pCtx, పూర్ణాంకం nVal, sqlite3_విలువ **apVal){
+  పూర్ణాంకం *aMatchinfo;                /* Return value of matchinfo() */
+  పూర్ణాంకం nMatchinfo;                 /* Number of elements in aMatchinfo[] */
+  పూర్ణాంకం n_నిలువు = 0;                   /* Number of columns in the table */
+  పూర్ణాంకం nPhrase = 0;                /* Number of phrases in the query */
+  పూర్ణాంకం iPhrase;                    /* Current phrase */
+  ద్విగుణ score = 0.0;             /* Value to return */
 
-  assert( sizeof(int)==4 );
+  ప్రతిజ్ఞా( పరిమాణం(పూర్ణాంకం)==4 );
 
   /* Check that the number of arguments passed to this function is correct.
   ** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
@@ -866,23 +866,23 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
   ** query, and nCol to the number of columns in the table. Then check that the
   ** size of the matchinfo blob is as expected. Return an error if it is not.
   */
-  if( nVal<1 ) goto wrong_number_args;
-  aMatchinfo = (int*)sqlite3_value_blob(apVal[0]);
-  nMatchinfo = sqlite3_value_bytes(apVal[0]) / sizeof(int);
-  if( nMatchinfo>=2 ){
+  ఒకవేళ( nVal<1 ) వెళ్ళు wrong_సంఖ్య_వాదనలు;
+  aMatchinfo = (పూర్ణాంకం*)sqlite3_విలువ_blob(apVal[0]);
+  nMatchinfo = sqlite3_విలువ_బైట్లు(apVal[0]) / పరిమాణం(పూర్ణాంకం);
+  ఒకవేళ( nMatchinfo>=2 ){
     nPhrase = aMatchinfo[0];
-    nCol = aMatchinfo[1];
+    n_నిలువు = aMatchinfo[1];
   }
-  if( nMatchinfo!=(2+3*nCol*nPhrase) ){
-    sqlite3_result_error(pCtx,
+  ఒకవేళ( nMatchinfo!=(2+3*n_నిలువు*nPhrase) ){
+    sqlite3_ఫలితం_error(pCtx,
         "invalid matchinfo blob passed to function rank()", -1);
-    return;
+    తిరిగి;
   }
-  if( nVal!=(1+nCol) ) goto wrong_number_args;
+  ఒకవేళ( nVal!=(1+n_నిలువు) ) వెళ్ళు wrong_సంఖ్య_వాదనలు;
 
   /* Iterate through each phrase in the users query. */
-  for(iPhrase=0; iPhrase<nPhrase; iPhrase++){
-    int iCol;                     /* Current column */
+  కొరకు(iPhrase=0; iPhrase<nPhrase; iPhrase++){
+    పూర్ణాంకం i_నిలువు;                     /* Current column */
 
     /* Now iterate through each column in the users query. For each column,
     ** increment the relevancy score by:
@@ -893,65 +893,65 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
     ** the hit count and global hit counts for each column are found in 
     ** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
     */
-    int *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
-    for(iCol=0; iCol<nCol; iCol++){
-      int nHitCount = aPhraseinfo[3*iCol];
-      int nGlobalHitCount = aPhraseinfo[3*iCol+1];
-      double weight = sqlite3_value_double(apVal[iCol+1]);
-      if( nHitCount>0 ){
-        score += ((double)nHitCount / (double)nGlobalHitCount) * weight;
+    పూర్ణాంకం *aPhraseinfo = &aMatchinfo[2 + iPhrase*n_నిలువు*3];
+    కొరకు(i_నిలువు=0; i_నిలువు<n_నిలువు; i_నిలువు++){
+      పూర్ణాంకం n_తగిలింది_లెక్క = aPhraseinfo[3*i_నిలువు];
+      పూర్ణాంకం n_Global_తగిలింది_లెక్క = aPhraseinfo[3*i_నిలువు+1];
+      ద్విగుణ బరువు = sqlite3_విలువ_double(apVal[i_నిలువు+1]);
+      ఒకవేళ( n_తగిలింది_లెక్క>0 ){
+        score += ((ద్విగుణ)n_తగిలింది_లెక్క / (ద్విగుణ)n_Global_తగిలింది_లెక్క) * బరువు;
       }
     }
   }
 
-  sqlite3_result_double(pCtx, score);
-  return;
+  sqlite3_ఫలితం_double(pCtx, score);
+  తిరిగి;
 
   /* Jump here if the wrong number of arguments are passed to this function */
-wrong_number_args:
-  sqlite3_result_error(pCtx, "wrong number of arguments to function rank()", -1);
+wrong_సంఖ్య_వాదనలు:
+  sqlite3_ఫలితం_error(pCtx, "wrong number of arguments to function rank()", -1);
 }
 
-static int SQLITE_TCLAPI install_fts3_rank_function(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI install_fts3_rank_function(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp*, స్థిరరాశి అక్షరం*, sqlite3**);
   sqlite3 *db;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "DB");
+    తిరిగి TCL_ERROR;
   }
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
   sqlite3_create_function(db, "rank", -1, SQLITE_UTF8, 0, rankfunc, 0, 0);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_func_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+పూర్ణాంకం Sqlitetest_func_Init(Tcl_Interp *interp){
+  స్థిర నిర్మాణం {
+     అక్షరం *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "autoinstall_test_functions",    autoinstall_test_funcs },
      { "abuse_create_function",         abuse_create_function  },
      { "install_fts3_rank_function",    install_fts3_rank_function  },
   };
-  int i;
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
+  పూర్ణాంకం i;
+  బాహ్య పూర్ణాంకం Md5_రిజిస్టరు(sqlite3 *, అక్షరం **, స్థిరరాశి sqlite3_api_routines *);
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  కొరకు(i=0; i<పరిమాణం(aObjCmd)/పరిమాణం(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
   sqlite3_initialize();
-  sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  sqlite3_auto_extension((void(*)(void))Md5_Register);
-  return TCL_OK;
+  sqlite3_auto_extension((శూన్య(*)(శూన్య))రిజిస్టరు_Test_Functions);
+  sqlite3_auto_extension((శూన్య(*)(శూన్య))Md5_రిజిస్టరు);
+  తిరిగి TCL_OK;
 }

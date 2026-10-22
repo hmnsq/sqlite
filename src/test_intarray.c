@@ -18,9 +18,9 @@
 ** not recommended for use in production.  For a similar virtual table that
 ** is production-ready, see the "carray" virtual table over in ext/misc.
 */
-#include "test_intarray.h"
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ "test_intarray.h"
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
 
 /*
@@ -31,39 +31,39 @@
 ** the implementation of intarray only.  This object is opaque
 ** to users.
 */
-struct sqlite3_intarray {
-  int n;                    /* Number of elements in the array */
+నిర్మాణం sqlite3_intarray {
+  పూర్ణాంకం n;                    /* Number of elements in the array */
   sqlite3_int64 *a;         /* Contents of the array */
-  void (*xFree)(void*);     /* Function used to free a[] */
+  శూన్య (*xFree)(శూన్య*);     /* Function used to free a[] */
 };
 
 /* Objects used internally by the virtual table implementation */
-typedef struct intarray_vtab intarray_vtab;
-typedef struct intarray_cursor intarray_cursor;
+రకనిర్వచనం నిర్మాణం intarray_vtab intarray_vtab;
+రకనిర్వచనం నిర్మాణం intarray_cursor intarray_cursor;
 
 /* An intarray table object */
-struct intarray_vtab {
-  sqlite3_vtab base;            /* Base class */
+నిర్మాణం intarray_vtab {
+  sqlite3_vtab పునాది;            /* Base class */
   sqlite3_intarray *pContent;   /* Content of the integer array */
 };
 
 /* An intarray cursor object */
-struct intarray_cursor {
-  sqlite3_vtab_cursor base;    /* Base class */
-  int i;                       /* Current cursor position */
+నిర్మాణం intarray_cursor {
+  sqlite3_vtab_cursor పునాది;    /* Base class */
+  పూర్ణాంకం i;                       /* Current cursor position */
 };
 
 /*
 ** None of this works unless we have virtual tables.
 */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
 
 /*
 ** Free an sqlite3_intarray object.
 */
-static void intarrayFree(void *pX){
+స్థిర శూన్య intarrayFree(శూన్య *pX){
   sqlite3_intarray *p = (sqlite3_intarray*)pX;
-  if( p->xFree ){
+  ఒకవేళ( p->xFree ){
     p->xFree(p->a);
   }
   sqlite3_free(p);
@@ -72,132 +72,132 @@ static void intarrayFree(void *pX){
 /*
 ** Table destructor for the intarray module.
 */
-static int intarrayDestroy(sqlite3_vtab *p){
+స్థిర పూర్ణాంకం intarrayDestroy(sqlite3_vtab *p){
   intarray_vtab *pVtab = (intarray_vtab*)p;
   sqlite3_free(pVtab);
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** Table constructor for the intarray module.
 */
-static int intarrayCreate(
+స్థిర పూర్ణాంకం intarrayCreate(
   sqlite3 *db,              /* Database where module is created */
-  void *pAux,               /* clientdata for the module */
-  int argc,                 /* Number of arguments */
-  const char *const*argv,   /* Value for all arguments */
+  శూన్య *pAux,               /* clientdata for the module */
+  పూర్ణాంకం argc,                 /* Number of arguments */
+  స్థిరరాశి అక్షరం *స్థిరరాశి*argv,   /* Value for all arguments */
   sqlite3_vtab **ppVtab,    /* Write the new virtual table object here */
-  char **pzErr              /* Put error message text here */
+  అక్షరం **pzErr              /* Put error message text here */
 ){
-  int rc = SQLITE_NOMEM;
-  intarray_vtab *pVtab = sqlite3_malloc64(sizeof(intarray_vtab));
+  పూర్ణాంకం rc = SQLITE_NOMEM;
+  intarray_vtab *pVtab = sqlite3_malloc64(పరిమాణం(intarray_vtab));
 
-  if( pVtab ){
-    memset(pVtab, 0, sizeof(intarray_vtab));
+  ఒకవేళ( pVtab ){
+    memset(pVtab, 0, పరిమాణం(intarray_vtab));
     pVtab->pContent = (sqlite3_intarray*)pAux;
     rc = sqlite3_declare_vtab(db, "CREATE TABLE x(value INTEGER PRIMARY KEY)");
   }
   *ppVtab = (sqlite3_vtab *)pVtab;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Open a new cursor on the intarray table.
 */
-static int intarrayOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
-  int rc = SQLITE_NOMEM;
+స్థిర పూర్ణాంకం intarrayOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+  పూర్ణాంకం rc = SQLITE_NOMEM;
   intarray_cursor *pCur;
-  pCur = sqlite3_malloc64(sizeof(intarray_cursor));
-  if( pCur ){
-    memset(pCur, 0, sizeof(intarray_cursor));
+  pCur = sqlite3_malloc64(పరిమాణం(intarray_cursor));
+  ఒకవేళ( pCur ){
+    memset(pCur, 0, పరిమాణం(intarray_cursor));
     *ppCursor = (sqlite3_vtab_cursor *)pCur;
     rc = SQLITE_OK;
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Close a intarray table cursor.
 */
-static int intarrayClose(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం intarrayClose(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Retrieve a column of data.
 */
-static int intarrayColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+స్థిర పూర్ణాంకం intarray_స్తంభం(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, పూర్ణాంకం i){
   intarray_cursor *pCur = (intarray_cursor*)cur;
   intarray_vtab *pVtab = (intarray_vtab*)cur->pVtab;
-  if( pCur->i>=0 && pCur->i<pVtab->pContent->n ){
-    sqlite3_result_int64(ctx, pVtab->pContent->a[pCur->i]);
+  ఒకవేళ( pCur->i>=0 && pCur->i<pVtab->pContent->n ){
+    sqlite3_ఫలితం_int64(ctx, pVtab->pContent->a[pCur->i]);
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Retrieve the current rowid.
 */
-static int intarrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+స్థిర పూర్ణాంకం intarrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   *pRowid = pCur->i;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
-static int intarrayEof(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం intarrayEof(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   intarray_vtab *pVtab = (intarray_vtab *)cur->pVtab;
-  return pCur->i>=pVtab->pContent->n;
+  తిరిగి pCur->i>=pVtab->pContent->n;
 }
 
 /*
 ** Advance the cursor to the next row.
 */
-static int intarrayNext(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం intarray_తదుపరి(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   pCur->i++;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Reset a intarray table cursor.
 */
-static int intarrayFilter(
+స్థిర పూర్ణాంకం intarrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  పూర్ణాంకం idx_అంకె, స్థిరరాశి అక్షరం *idxStr,
+  పూర్ణాంకం argc, sqlite3_విలువ **argv
 ){
   intarray_cursor *pCur = (intarray_cursor *)pVtabCursor;
   pCur->i = 0;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Analyse the WHERE condition.
 */
-static int intarrayBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  return SQLITE_OK;
+స్థిర పూర్ణాంకం intarray_ఉత్తమ_సూచీ(sqlite3_vtab *tab, sqlite3_సూచీ_info *pIdxInfo){
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** A virtual table module that merely echos method calls into TCL
 ** variables.
 */
-static sqlite3_module intarrayModule = {
+స్థిర sqlite3_module intarrayModule = {
   0,                           /* iVersion */
   intarrayCreate,              /* xCreate - create a new virtual table */
   intarrayCreate,              /* xConnect - connect to an existing vtab */
-  intarrayBestIndex,           /* xBestIndex - find the best query index */
+  intarray_ఉత్తమ_సూచీ,           /* xBestIndex - find the best query index */
   intarrayDestroy,             /* xDisconnect - disconnect a vtab */
   intarrayDestroy,             /* xDestroy - destroy a vtab */
   intarrayOpen,                /* xOpen - open a cursor */
   intarrayClose,               /* xClose - close a cursor */
   intarrayFilter,              /* xFilter - configure scan constraints */
-  intarrayNext,                /* xNext - advance a cursor */
+  intarray_తదుపరి,                /* xNext - advance a cursor */
   intarrayEof,                 /* xEof */
-  intarrayColumn,              /* xColumn - read data */
+  intarray_స్తంభం,              /* xColumn - read data */
   intarrayRowid,               /* xRowid - read data */
   0,                           /* xUpdate */
   0,                           /* xBegin */
@@ -213,7 +213,7 @@ static sqlite3_module intarrayModule = {
   0                            /* xIntegrity */
 };
 
-#endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_VIRTUALTABLE) */
 
 /*
 ** Invoke this routine to create a specific instance of an intarray object.
@@ -226,31 +226,31 @@ static sqlite3_module intarrayModule = {
 ** explicitly by the application, the virtual table will be dropped implicitly
 ** by the system when the database connection is closed.
 */
-SQLITE_API int sqlite3_intarray_create(
+SQLITE_API పూర్ణాంకం sqlite3_intarray_create(
   sqlite3 *db,
-  const char *zName,
+  స్థిరరాశి అక్షరం *zName,
   sqlite3_intarray **ppReturn
 ){
-  int rc = SQLITE_OK;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  పూర్ణాంకం rc = SQLITE_OK;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
   sqlite3_intarray *p;
 
-  *ppReturn = p = sqlite3_malloc64( sizeof(*p) );
-  if( p==0 ){
-    return SQLITE_NOMEM;
+  *ppReturn = p = sqlite3_malloc64( పరిమాణం(*p) );
+  ఒకవేళ( p==0 ){
+    తిరిగి SQLITE_NOMEM;
   }
-  memset(p, 0, sizeof(*p));
+  memset(p, 0, పరిమాణం(*p));
   rc = sqlite3_create_module_v2(db, zName, &intarrayModule, p,
-                                (void(*)(void*))intarrayFree);
-  if( rc==SQLITE_OK ){
-    char *zSql;
+                                (శూన్య(*)(శూన్య*))intarrayFree);
+  ఒకవేళ( rc==SQLITE_OK ){
+    అక్షరం *zSql;
     zSql = sqlite3_mprintf("CREATE VIRTUAL TABLE temp.%Q USING %Q",
                            zName, zName);
     rc = sqlite3_exec(db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
-#endif
-  return rc;
+#అయితే_ముగింపు
+  తిరిగి rc;
 }
 
 /*
@@ -260,35 +260,35 @@ SQLITE_API int sqlite3_intarray_create(
 ** any query against the corresponding virtual table.  If the integer
 ** array does change or is deallocated undefined behavior will result.
 */
-SQLITE_API int sqlite3_intarray_bind(
+SQLITE_API పూర్ణాంకం sqlite3_intarray_bind(
   sqlite3_intarray *pIntArray,   /* The intarray object to bind to */
-  int nElements,                 /* Number of elements in the intarray */
+  పూర్ణాంకం nElements,                 /* Number of elements in the intarray */
   sqlite3_int64 *aElements,      /* Content of the intarray */
-  void (*xFree)(void*)           /* How to dispose of the intarray when done */
+  శూన్య (*xFree)(శూన్య*)           /* How to dispose of the intarray when done */
 ){
-  if( pIntArray->xFree ){
+  ఒకవేళ( pIntArray->xFree ){
     pIntArray->xFree(pIntArray->a);
   }
   pIntArray->n = nElements;
   pIntArray->a = aElements;
   pIntArray->xFree = xFree;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 
 /*****************************************************************************
 ** Everything below is interface for testing this module.
 */
-#ifdef SQLITE_TEST
-#include "tclsqlite.h"
+#నిర్వచితమైతే SQLITE_TEST
+#అన్తర్భావ "tclsqlite.h"
 
 /*
 ** Routines to encode and decode pointers
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern void *sqlite3TestTextToPtr(const char*);
-extern int sqlite3TestMakePointerStr(Tcl_Interp*, char *zPtr, void*);
-extern const char *sqlite3ErrName(int);
+బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp *interp, స్థిరరాశి అక్షరం *zA, sqlite3 **ppDb);
+బాహ్య శూన్య *sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(స్థిరరాశి అక్షరం*);
+బాహ్య పూర్ణాంకం sqlite3_Test_Make_సూచిక_Str(Tcl_Interp*, అక్షరం *zPtr, శూన్య*);
+బాహ్య స్థిరరాశి అక్షరం *sqlite3ErrName(పూర్ణాంకం);
 
 /*
 **    sqlite3_intarray_create  DB  NAME
@@ -296,34 +296,34 @@ extern const char *sqlite3ErrName(int);
 ** Invoke the sqlite3_intarray_create interface.  A string that becomes
 ** the first parameter to sqlite3_intarray_bind.
 */
-static int SQLITE_TCLAPI test_intarray_create(
-  ClientData clientData, /* Not used */
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_intarray_create(
+  Client_దత్తాంశం client_దత్తాంశం, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  పూర్ణాంకం objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  const char *zName;
+  స్థిరరాశి అక్షరం *zName;
   sqlite3_intarray *pArray;
-  int rc = SQLITE_OK;
-  char zPtr[100];
+  పూర్ణాంకం rc = SQLITE_OK;
+  అక్షరం zPtr[100];
 
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "DB");
+    తిరిగి TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ఒకవేళ( get_Db_సూచిక(interp, Tcl_GetString(objv[1]), &db) ) తిరిగి TCL_ERROR;
   zName = Tcl_GetString(objv[2]);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
   rc = sqlite3_intarray_create(db, zName, &pArray);
-#endif
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), (char*)0);
-    return TCL_ERROR;
+#అయితే_ముగింపు
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  sqlite3TestMakePointerStr(interp, zPtr, pArray);
-  Tcl_AppendResult(interp, zPtr, (char*)0);
-  return TCL_OK;
+  sqlite3_Test_Make_సూచిక_Str(interp, zPtr, pArray);
+  Tcl_Append_ఫలితం(interp, zPtr, (అక్షరం*)0);
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -331,61 +331,61 @@ static int SQLITE_TCLAPI test_intarray_create(
 **
 ** Invoke the sqlite3_intarray_bind interface on the given array of integers.
 */
-static int SQLITE_TCLAPI test_intarray_bind(
-  ClientData clientData, /* Not used */
+స్థిర పూర్ణాంకం SQLITE_TCLAPI test_intarray_bind(
+  Client_దత్తాంశం client_దత్తాంశం, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  పూర్ణాంకం objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_intarray *pArray;
-  int rc = SQLITE_OK;
-  int i, n;
+  పూర్ణాంకం rc = SQLITE_OK;
+  పూర్ణాంకం i, n;
   sqlite3_int64 *a;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTARRAY");
-    return TCL_ERROR;
+  ఒకవేళ( objc<2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "INTARRAY");
+    తిరిగి TCL_ERROR;
   }
-  pArray = (sqlite3_intarray*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
+  pArray = (sqlite3_intarray*)sqlite3_Test_పాఠ్యం_గమ్యం_Ptr(Tcl_GetString(objv[1]));
   n = objc - 2;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  a = sqlite3_malloc64( sizeof(a[0])*n );
-  if( a==0 ){
-    Tcl_AppendResult(interp, "SQLITE_NOMEM", (char*)0);
-    return TCL_ERROR;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  a = sqlite3_malloc64( పరిమాణం(a[0])*n );
+  ఒకవేళ( a==0 ){
+    Tcl_Append_ఫలితం(interp, "SQLITE_NOMEM", (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-  for(i=0; i<n; i++){
+  కొరకు(i=0; i<n; i++){
     Tcl_WideInt x = 0;
     Tcl_GetWideIntFromObj(0, objv[i+2], &x);
     a[i] = x;
   }
   rc = sqlite3_intarray_bind(pArray, n, a, sqlite3_free);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), (char*)0);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    Tcl_Append_ఫలితం(interp, sqlite3ErrName(rc), (అక్షరం*)0);
+    తిరిగి TCL_ERROR;
   }
-#endif
-  return TCL_OK;
+#అయితే_ముగింపు
+  తిరిగి TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestintarray_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+పూర్ణాంకం Sqlitetestintarray_Init(Tcl_Interp *interp){
+  స్థిర నిర్మాణం {
+     అక్షరం *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     శూన్య *client_దత్తాంశం;
   } aObjCmd[] = {
      { "sqlite3_intarray_create", test_intarray_create, 0 },
      { "sqlite3_intarray_bind", test_intarray_bind, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<పరిమాణం(aObjCmd)/పరిమాణం(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
-        aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
+        aObjCmd[i].xProc, aObjCmd[i].client_దత్తాంశం, 0);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
-#endif /* SQLITE_TEST */
+#అయితే_ముగింపు /* SQLITE_TEST */

@@ -11,15 +11,15 @@
 *************************************************************************
 ** This file contains code used to implement the PRAGMA command.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#ఒకవేళ !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  ఒకవేళ defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  లేకపోతే
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
-#endif
+#అయితే_ముగింపు
 
 /***************************************************************************
 ** The "pragma.h" include file is an automatically generated file that
@@ -28,7 +28,7 @@
 ** lexicographical order to facility a binary search of the pragma name.
 ** Do not edit pragma.h directly.  Edit and rerun the script in at
 ** ../tool/mkpragmatab.tcl. */
-#include "pragma.h"
+#అన్తర్భావ "pragma.h"
 
 /*
 ** When the 0x10 bit of PRAGMA optimize is set, any ANALYZE commands
@@ -54,9 +54,9 @@
 ** planner to fully characterize an index.  The additional accuracy from
 ** a larger analysis is not usually helpful.
 */
-#ifndef SQLITE_DEFAULT_OPTIMIZE_LIMIT
-# define SQLITE_DEFAULT_OPTIMIZE_LIMIT 2000
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_DEFAULT_OPTIMIZE_హద్దు
+# define SQLITE_DEFAULT_OPTIMIZE_హద్దు 2000
+#అయితే_ముగింపు
 
 /*
 ** Interpret the given string as a safety level.  Return 0 for OFF,
@@ -69,144 +69,144 @@
 ** to support legacy SQL code.  The safety level used to be boolean
 ** and older scripts may have used numbers 0 for OFF and 1 for ON.
 */
-static u8 getSafetyLevel(const char *z, int omitFull, u8 dflt){
+స్థిర u8 getSafetyLevel(స్థిరరాశి అక్షరం *z, పూర్ణాంకం omit_నిండిన, u8 dflt){
                              /* 123456789 123456789 123 */
-  static const char zText[] = "onoffalseyestruextrafull";
-  static const u8 iOffset[] = {0, 1, 2,  4,    9,  12,  15,   20};
-  static const u8 iLength[] = {2, 2, 3,  5,    3,   4,   5,    4};
-  static const u8 iValue[] =  {1, 0, 0,  0,    1,   1,   3,    2};
+  స్థిర స్థిరరాశి అక్షరం z_పాఠ్యం[] = "onoffalseyestruextrafull";
+  స్థిర స్థిరరాశి u8 i_స్థానభ్రంశం[] = {0, 1, 2,  4,    9,  12,  15,   20};
+  స్థిర స్థిరరాశి u8 i_నిడివి[] = {2, 2, 3,  5,    3,   4,   5,    4};
+  స్థిర స్థిరరాశి u8 i_విలువ[] =  {1, 0, 0,  0,    1,   1,   3,    2};
                             /* on no off false yes true extra full */
-  int i, n;
-  if( sqlite3Isdigit(*z) ){
-    return sqlite3Atoi(z)!=0;
+  పూర్ణాంకం i, n;
+  ఒకవేళ( sqlite3Isdigit(*z) ){
+    తిరిగి sqlite3Atoi(z)!=0;
   }
   n = sqlite3Strlen30(z);
-  for(i=0; i<ArraySize(iLength); i++){
-    if( iLength[i]==n && sqlite3StrNICmp(&zText[iOffset[i]],z,n)==0
-     && (!omitFull || iValue[i]<=1)
+  కొరకు(i=0; i<Array_కొలత(i_నిడివి); i++){
+    ఒకవేళ( i_నిడివి[i]==n && sqlite3StrNICmp(&z_పాఠ్యం[i_స్థానభ్రంశం[i]],z,n)==0
+     && (!omit_నిండిన || i_విలువ[i]<=1)
     ){
-      return iValue[i];
+      తిరిగి i_విలువ[i];
     }
   }
-  return dflt;
+  తిరిగి dflt;
 }
 
 /*
 ** Interpret the given string as a boolean value.
 */
-u8 sqlite3GetBoolean(const char *z, u8 dflt){
-  return getSafetyLevel(z,1,dflt)!=0;
+u8 sqlite3GetBoolean(స్థిరరాశి అక్షరం *z, u8 dflt){
+  తిరిగి getSafetyLevel(z,1,dflt)!=0;
 }
 
 /* The sqlite3GetBoolean() function is used by other modules but the
 ** remainder of this file is specific to PRAGMA processing.  So omit
 ** the rest of the file if PRAGMAs are omitted from the build.
 */
-#if !defined(SQLITE_OMIT_PRAGMA)
+#ఒకవేళ !defined(SQLITE_OMIT_PRAGMA)
 
 /*
 ** Interpret the given string as a locking mode value.
 */
-static int getLockingMode(const char *z){
-  if( z ){
-    if( 0==sqlite3StrICmp(z, "exclusive") ) return PAGER_LOCKINGMODE_EXCLUSIVE;
-    if( 0==sqlite3StrICmp(z, "normal") ) return PAGER_LOCKINGMODE_NORMAL;
+స్థిర పూర్ణాంకం get_Locking_బహుళకం(స్థిరరాశి అక్షరం *z){
+  ఒకవేళ( z ){
+    ఒకవేళ( 0==sqlite3StrICmp(z, "exclusive") ) తిరిగి PAGER_LOCKINGMODE_EXCLUSIVE;
+    ఒకవేళ( 0==sqlite3StrICmp(z, "normal") ) తిరిగి PAGER_LOCKINGMODE_సాధారణ;
   }
-  return PAGER_LOCKINGMODE_QUERY;
+  తిరిగి PAGER_LOCKINGMODE_QUERY;
 }
 
-#ifndef SQLITE_OMIT_AUTOVACUUM
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTOVACUUM
 /*
 ** Interpret the given string as an auto-vacuum mode value.
 **
 ** The following strings, "none", "full" and "incremental" are
 ** acceptable, as are their numeric equivalents: 0, 1 and 2 respectively.
 */
-static int getAutoVacuum(const char *z){
-  int i;
-  if( 0==sqlite3StrICmp(z, "none") ) return BTREE_AUTOVACUUM_NONE;
-  if( 0==sqlite3StrICmp(z, "full") ) return BTREE_AUTOVACUUM_FULL;
-  if( 0==sqlite3StrICmp(z, "incremental") ) return BTREE_AUTOVACUUM_INCR;
+స్థిర పూర్ణాంకం getAutoVacuum(స్థిరరాశి అక్షరం *z){
+  పూర్ణాంకం i;
+  ఒకవేళ( 0==sqlite3StrICmp(z, "none") ) తిరిగి BTREE_AUTOVACUUM_NONE;
+  ఒకవేళ( 0==sqlite3StrICmp(z, "full") ) తిరిగి BTREE_AUTOVACUUM_నిండిన;
+  ఒకవేళ( 0==sqlite3StrICmp(z, "incremental") ) తిరిగి BTREE_AUTOVACUUM_INCR;
   i = sqlite3Atoi(z);
-  return (u8)((i>=0&&i<=2)?i:0);
+  తిరిగి (u8)((i>=0&&i<=2)?i:0);
 }
-#endif /* ifndef SQLITE_OMIT_AUTOVACUUM */
+#అయితే_ముగింపు /* ifndef SQLITE_OMIT_AUTOVACUUM */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Interpret the given string as a temp db location. Return 1 for file
 ** backed temporary databases, 2 for the Red-Black tree in memory database
 ** and 0 to use the compile-time default.
 */
-static int getTempStore(const char *z){
-  if( z[0]>='0' && z[0]<='2' ){
-    return z[0] - '0';
-  }else if( sqlite3StrICmp(z, "file")==0 ){
-    return 1;
-  }else if( sqlite3StrICmp(z, "memory")==0 ){
-    return 2;
-  }else{
-    return 0;
+స్థిర పూర్ణాంకం get_తాత్కాలిక_Store(స్థిరరాశి అక్షరం *z){
+  ఒకవేళ( z[0]>='0' && z[0]<='2' ){
+    తిరిగి z[0] - '0';
+  }లేకపోతే ఒకవేళ( sqlite3StrICmp(z, "file")==0 ){
+    తిరిగి 1;
+  }లేకపోతే ఒకవేళ( sqlite3StrICmp(z, "memory")==0 ){
+    తిరిగి 2;
+  }లేకపోతే{
+    తిరిగి 0;
   }
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Invalidate temp storage, either when the temp storage is changed
 ** from default, or when 'file' and the temp_store_directory has changed
 */
-static int invalidateTempStorage(Parse *pParse){
+స్థిర పూర్ణాంకం invalidate_తాత్కాలిక_Storage(Parse *pParse){
   sqlite3 *db = pParse->db;
-  if( db->aDb[1].pBt!=0 ){
-    if( !db->autoCommit
+  ఒకవేళ( db->aDb[1].pBt!=0 ){
+    ఒకవేళ( !db->autoCommit
      || sqlite3BtreeTxnState(db->aDb[1].pBt)!=SQLITE_TXN_NONE
     ){
-      sqlite3ErrorMsg(pParse, "temporary storage cannot be changed "
+      sqlite3_Error_సందేశం(pParse, "temporary storage cannot be changed "
         "from within a transaction");
-      return SQLITE_ERROR;
+      తిరిగి SQLITE_ERROR;
     }
     sqlite3BtreeClose(db->aDb[1].pBt);
     db->aDb[1].pBt = 0;
-    sqlite3ResetAllSchemasOfConnection(db);
+    sqlite3_Reset_All_Schemas_యొక్క_Connection(db);
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** If the TEMP database is open, close it and mark the database schema
 ** as needing reloading.  This must be done when using the SQLITE_TEMP_STORE
 ** or DEFAULT_TEMP_STORE pragmas.
 */
-static int changeTempStorage(Parse *pParse, const char *zStorageType){
-  int ts = getTempStore(zStorageType);
+స్థిర పూర్ణాంకం change_తాత్కాలిక_Storage(Parse *pParse, స్థిరరాశి అక్షరం *zStorageType){
+  పూర్ణాంకం ts = get_తాత్కాలిక_Store(zStorageType);
   sqlite3 *db = pParse->db;
-  if( db->temp_store==ts ) return SQLITE_OK;
-  if( invalidateTempStorage( pParse ) != SQLITE_OK ){
-    return SQLITE_ERROR;
+  ఒకవేళ( db->తాత్కాలిక_store==ts ) తిరిగి SQLITE_OK;
+  ఒకవేళ( invalidate_తాత్కాలిక_Storage( pParse ) != SQLITE_OK ){
+    తిరిగి SQLITE_ERROR;
   }
-  db->temp_store = (u8)ts;
-  return SQLITE_OK;
+  db->తాత్కాలిక_store = (u8)ts;
+  తిరిగి SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_PAGER_PRAGMAS */
 
 /*
 ** Set result column names for a pragma.
 */
-static void setPragmaResultColumnNames(
+స్థిర శూన్య సమితి_Pragma_ఫలితం_స్తంభం_పేర్లు(
   Vdbe *v,                     /* The query under construction */
-  const PragmaName *pPragma    /* The pragma */
+  స్థిరరాశి PragmaName *pPragma    /* The pragma */
 ){
   u8 n = pPragma->nPragCName;
-  sqlite3VdbeSetNumCols(v, n==0 ? 1 : n);
-  if( n==0 ){
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
-  }else{
-    int i, j;
-    for(i=0, j=pPragma->iPragCName; i<n; i++, j++){
-      sqlite3VdbeSetColName(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
+  sqlite3_Vdbe_సమితి_అంకె_నిలువుల_సంఖ్య(v, n==0 ? 1 : n);
+  ఒకవేళ( n==0 ){
+    sqlite3_Vdbe_సమితి_నిలువు_Name(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
+  }లేకపోతే{
+    పూర్ణాంకం i, j;
+    కొరకు(i=0, j=pPragma->iPragCName; i<n; i++, j++){
+      sqlite3_Vdbe_సమితి_నిలువు_Name(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
     }
   }
 }
@@ -214,21 +214,21 @@ static void setPragmaResultColumnNames(
 /*
 ** Generate code to return a single integer value.
 */
-static void returnSingleInt(Vdbe *v, i64 value){
-  sqlite3VdbeAddInt64(v, 1, value);
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+స్థిర శూన్య returnSingleInt(Vdbe *v, i64 విలువ){
+  sqlite3_Vdbe_కూడు_Int64(v, 1, విలువ);
+  sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 1);
 }
 
 /*
 ** Generate code to return a single text value.
 */
-static void returnSingleText(
+స్థిర శూన్య return_Single_పాఠ్యం(
   Vdbe *v,                /* Prepared statement under construction */
-  const char *zValue      /* Value to be returned */
+  స్థిరరాశి అక్షరం *z_విలువ      /* Value to be returned */
 ){
-  if( zValue ){
-    sqlite3VdbeLoadString(v, 1, (const char*)zValue);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+  ఒకవేళ( z_విలువ ){
+    sqlite3_Vdbe_ఎక్కించు_String(v, 1, (స్థిరరాశి అక్షరం*)z_విలువ);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 1);
   }
 }
 
@@ -237,48 +237,48 @@ static void returnSingleText(
 ** Set the safety_level and pager flags for pager iDb.  Or if iDb<0
 ** set these values for all pagers.
 */
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
-static void setAllPagerFlags(sqlite3 *db){
-  if( db->autoCommit ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
+స్థిర శూన్య సమితి_All_Pager_Flags(sqlite3 *db){
+  ఒకవేళ( db->autoCommit ){
     Db *pDb = db->aDb;
-    int n = db->nDb;
-    assert( SQLITE_FullFSync==PAGER_FULLFSYNC );
-    assert( SQLITE_CkptFullFSync==PAGER_CKPT_FULLFSYNC );
-    assert( SQLITE_CacheSpill==PAGER_CACHESPILL );
-    assert( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
-             ==  PAGER_FLAGS_MASK );
-    assert( (pDb->safety_level & PAGER_SYNCHRONOUS_MASK)==pDb->safety_level );
-    while( (n--) > 0 ){
-      if( pDb->pBt ){
-        sqlite3BtreeSetPagerFlags(pDb->pBt,
-                 pDb->safety_level | (db->flags & PAGER_FLAGS_MASK) );
+    పూర్ణాంకం n = db->nDb;
+    ప్రతిజ్ఞా( SQLITE_నిండిన_FSync==PAGER_FULLFSYNC );
+    ప్రతిజ్ఞా( SQLITE_Ckpt_నిండిన_FSync==PAGER_CKPT_FULLFSYNC );
+    ప్రతిజ్ఞా( SQLITE_CacheSpill==PAGER_CACHESPILL );
+    ప్రతిజ్ఞా( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
+             ==  PAGER_FLAGS_ముసుగు );
+    ప్రతిజ్ఞా( (pDb->safety_level & PAGER_SYNCHRONOUS_ముసుగు)==pDb->safety_level );
+    అయితే( (n--) > 0 ){
+      ఒకవేళ( pDb->pBt ){
+        sqlite3_Btree_సమితి_Pager_Flags(pDb->pBt,
+                 pDb->safety_level | (db->flags & PAGER_FLAGS_ముసుగు) );
       }
       pDb++;
     }
   }
 }
-#else
-# define setAllPagerFlags(X)  /* no-op */
-#endif
+#లేకపోతే
+# define సమితి_All_Pager_Flags(X)  /* no-op */
+#అయితే_ముగింపు
 
 
 /*
 ** Return a human-readable name for a constraint resolution action.
 */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-static const char *actionName(u8 action){
-  const char *zName;
-  switch( action ){
-    case OE_SetNull:  zName = "SET NULL";        break;
-    case OE_SetDflt:  zName = "SET DEFAULT";     break;
-    case OE_Cascade:  zName = "CASCADE";         break;
-    case OE_Restrict: zName = "RESTRICT";        break;
-    default:          zName = "NO ACTION"; 
-                      assert( action==OE_None ); break;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FOREIGN_కీలకం
+స్థిర స్థిరరాశి అక్షరం *actionName(u8 action){
+  స్థిరరాశి అక్షరం *zName;
+  ఎంపిక( action ){
+    స్థితి OE_సమితి_Null:  zName = "SET NULL";        ఆపు;
+    స్థితి OE_సమితి_Dflt:  zName = "SET DEFAULT";     ఆపు;
+    స్థితి OE_Cascade:  zName = "CASCADE";         ఆపు;
+    స్థితి OE_Restrict: zName = "RESTRICT";        ఆపు;
+    అప్రమేయ:          zName = "NO ACTION"; 
+                      ప్రతిజ్ఞా( action==OE_None ); ఆపు;
   }
-  return zName;
+  తిరిగి zName;
 }
-#endif
+#అయితే_ముగింపు
 
 
 /*
@@ -286,90 +286,90 @@ static const char *actionName(u8 action){
 ** defined in pager.h. This function returns the associated lowercase
 ** journal-mode name.
 */
-const char *sqlite3JournalModename(int eMode){
-  static char * const azModeName[] = {
+స్థిరరాశి అక్షరం *sqlite3JournalModename(పూర్ణాంకం e_బహుళకం){
+  స్థిర అక్షరం * స్థిరరాశి az_బహుళకం_Name[] = {
     "delete", "persist", "off", "truncate", "memory"
-#ifndef SQLITE_OMIT_WAL
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WAL
      , "wal"
-#endif
+#అయితే_ముగింపు
   };
-  assert( PAGER_JOURNALMODE_DELETE==0 );
-  assert( PAGER_JOURNALMODE_PERSIST==1 );
-  assert( PAGER_JOURNALMODE_OFF==2 );
-  assert( PAGER_JOURNALMODE_TRUNCATE==3 );
-  assert( PAGER_JOURNALMODE_MEMORY==4 );
-  assert( PAGER_JOURNALMODE_WAL==5 );
-  assert( eMode>=0 && eMode<=ArraySize(azModeName) );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_DELETE==0 );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_PERSIST==1 );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_OFF==2 );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_TRUNCATE==3 );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_జ్ఞాపకం==4 );
+  ప్రతిజ్ఞా( PAGER_JOURNALMODE_WAL==5 );
+  ప్రతిజ్ఞా( e_బహుళకం>=0 && e_బహుళకం<=Array_కొలత(az_బహుళకం_Name) );
 
-  if( eMode==ArraySize(azModeName) ) return 0;
-  return azModeName[eMode];
+  ఒకవేళ( e_బహుళకం==Array_కొలత(az_బహుళకం_Name) ) తిరిగి 0;
+  తిరిగి az_బహుళకం_Name[e_బహుళకం];
 }
 
 /*
 ** Locate a pragma in the aPragmaName[] array.
 */
-static const PragmaName *pragmaLocate(const char *zName){
-  int upr, lwr, mid = 0, rc;
+స్థిర స్థిరరాశి PragmaName *pragmaLocate(స్థిరరాశి అక్షరం *zName){
+  పూర్ణాంకం upr, lwr, mid = 0, rc;
   lwr = 0;
-  upr = ArraySize(aPragmaName)-1;
-  while( lwr<=upr ){
+  upr = Array_కొలత(aPragmaName)-1;
+  అయితే( lwr<=upr ){
     mid = (lwr+upr)/2;
     rc = sqlite3_stricmp(zName, aPragmaName[mid].zName);
-    if( rc==0 ) break;
-    if( rc<0 ){
+    ఒకవేళ( rc==0 ) ఆపు;
+    ఒకవేళ( rc<0 ){
       upr = mid - 1;
-    }else{
+    }లేకపోతే{
       lwr = mid + 1;
     }
   }
-  return lwr>upr ? 0 : &aPragmaName[mid];
+  తిరిగి lwr>upr ? 0 : &aPragmaName[mid];
 }
 
 /*
 ** Create zero or more entries in the output for the SQL functions
 ** defined by FuncDef p.
 */
-static void pragmaFunclistLine(
+స్థిర శూన్య pragma_Funclist_పంక్తి(
   Vdbe *v,               /* The prepared statement being created */
   FuncDef *p,            /* A particular function definition */
-  int isBuiltin,         /* True if this is a built-in function */
-  int showInternFuncs    /* True if showing internal functions */
+  పూర్ణాంకం isBuiltin,         /* True if this is a built-in function */
+  పూర్ణాంకం showInternFuncs    /* True if showing internal functions */
 ){
-  u32 mask =
+  u32 ముసుగు =
       SQLITE_DETERMINISTIC |
       SQLITE_DIRECTONLY |
       SQLITE_SUBTYPE |
       SQLITE_INNOCUOUS |
-      SQLITE_FUNC_INTERNAL
+      SQLITE_FUNC_అంతర్గత
   ;
-  if( showInternFuncs ) mask = 0xffffffff;
-  for(; p; p=p->pNext){
-    const char *zType;
-    static const char *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
+  ఒకవేళ( showInternFuncs ) ముసుగు = 0xffffffff;
+  కొరకు(; p; p=p->p_తదుపరి){
+    స్థిరరాశి అక్షరం *zType;
+    స్థిర స్థిరరాశి అక్షరం *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
 
-    assert( SQLITE_FUNC_ENCMASK==0x3 );
-    assert( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
+    ప్రతిజ్ఞా( SQLITE_FUNC_ENCMASK==0x3 );
+    ప్రతిజ్ఞా( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
+    ప్రతిజ్ఞా( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
+    ప్రతిజ్ఞా( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
 
-    if( p->xSFunc==0 ) continue;
-    if( (p->funcFlags & SQLITE_FUNC_INTERNAL)!=0
+    ఒకవేళ( p->xSFunc==0 ) కొనసాగు;
+    ఒకవేళ( (p->funcFlags & SQLITE_FUNC_అంతర్గత)!=0
      && showInternFuncs==0
     ){
-      continue;
+      కొనసాగు;
     }   
-    if( p->xValue!=0 ){
+    ఒకవేళ( p->x_విలువ!=0 ){
       zType = "w";
-    }else if( p->xFinalize!=0 ){
+    }లేకపోతే ఒకవేళ( p->xFinalize!=0 ){
       zType = "a";
-    }else{
+    }లేకపోతే{
       zType = "s";
     }
-    sqlite3VdbeMultiLoad(v, 1, "sissii",
+    sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "sissii",
        p->zName, isBuiltin,
        zType, azEnc[p->funcFlags&SQLITE_FUNC_ENCMASK],
        p->nArg,
-       (p->funcFlags & mask) ^ SQLITE_INNOCUOUS
+       (p->funcFlags & ముసుగు) ^ SQLITE_INNOCUOUS
     );
   }
 }
@@ -382,13 +382,13 @@ static void pragmaFunclistLine(
 ** string held in register 3.  Decrement the result count in register 1
 ** and halt if the maximum number of result rows have been issued.
 */
-static int integrityCheckResultRow(Vdbe *v){
-  int addr;
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 3, 1);
-  addr = sqlite3VdbeAddOp3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
+స్థిర పూర్ణాంకం integrity_Check_ఫలితం_అడ్డువరుస(Vdbe *v){
+  పూర్ణాంకం addr;
+  sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 3, 1);
+  addr = sqlite3_Vdbe_కూడు_Op3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
   VdbeCoverage(v);
-  sqlite3VdbeAddOp0(v, OP_Halt);
-  return addr;
+  sqlite3_Vdbe_కూడు_Op0(v, OP_Halt);
+  తిరిగి addr;
 }
 
 /*
@@ -399,11 +399,11 @@ static int integrityCheckResultRow(Vdbe *v){
 **
 ** If pObjTab is null, then return true only if pTab is an imposter table.
 */
-static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
-  if( pObjTab ){
-    return pTab!=pObjTab;
-  }else{
-    return (pTab->tabFlags & TF_Imposter)!=0;
+స్థిర పూర్ణాంకం పట్టిక_Skip_Integrity_Check(స్థిరరాశి పట్టిక *pTab, స్థిరరాశి పట్టిక *pObjTab){
+  ఒకవేళ( pObjTab ){
+    తిరిగి pTab!=pObjTab;
+  }లేకపోతే{
+    తిరిగి (pTab->tabFlags & TF_Imposter)!=0;
   }
 }
 
@@ -422,54 +422,54 @@ static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
 ** and pId2 is the id.  If the left side is just "id" then pId1 is the
 ** id and pId2 is any empty string.
 */
-void sqlite3Pragma(
+శూన్య sqlite3Pragma(
   Parse *pParse,
   Token *pId1,        /* First part of [schema.]id field */
   Token *pId2,        /* Second part of [schema.]id field, or NULL */
-  Token *pValue,      /* Token for <value>, or NULL */
-  int minusFlag       /* True if a '-' sign preceded <value> */
+  Token *p_విలువ,      /* Token for <value>, or NULL */
+  పూర్ణాంకం minusFlag       /* True if a '-' sign preceded <value> */
 ){
-  char *zLeft = 0;       /* Nul-terminated UTF-8 string <id> */
-  char *zRight = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
-  const char *zDb = 0;   /* The database name */
+  అక్షరం *z_ఎడమ = 0;       /* Nul-terminated UTF-8 string <id> */
+  అక్షరం *z_కుడి = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
+  స్థిరరాశి అక్షరం *zDb = 0;   /* The database name */
   Token *pId;            /* Pointer to <id> token */
-  char *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
-  int iDb;               /* Database index for <database> */
-  int rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
+  అక్షరం *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
+  పూర్ణాంకం iDb;               /* Database index for <database> */
+  పూర్ణాంకం rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
   sqlite3 *db = pParse->db;    /* The database connection */
   Db *pDb;                     /* The specific database being pragmaed */
   Vdbe *v = sqlite3GetVdbe(pParse);  /* Prepared statement */
-  const PragmaName *pPragma;   /* The pragma */
+  స్థిరరాశి PragmaName *pPragma;   /* The pragma */
 
-  if( v==0 ) return;
-  sqlite3VdbeRunOnlyOnce(v);
+  ఒకవేళ( v==0 ) తిరిగి;
+  sqlite3_Vdbe_నిరంతరం_Only_Once(v);
   pParse->nMem = 2;
 
   /* Interpret the [schema.] part of the pragma statement. iDb is the
   ** index of the database this pragma is being applied to in db.aDb[]. */
   iDb = sqlite3TwoPartName(pParse, pId1, pId2, &pId);
-  if( iDb<0 ) return;
+  ఒకవేళ( iDb<0 ) తిరిగి;
   pDb = &db->aDb[iDb];
 
   /* If the temp database has been explicitly named as part of the
   ** pragma, make sure it is open.
   */
-  if( iDb==1 && sqlite3OpenTempDatabase(pParse) ){
-    return;
+  ఒకవేళ( iDb==1 && sqlite3_Open_తాత్కాలిక_Database(pParse) ){
+    తిరిగి;
   }
 
-  zLeft = sqlite3NameFromToken(db, pId);
-  if( !zLeft ) return;
-  if( minusFlag ){
-    zRight = sqlite3MPrintf(db, "-%T", pValue);
-  }else{
-    zRight = sqlite3NameFromToken(db, pValue);
+  z_ఎడమ = sqlite3NameFromToken(db, pId);
+  ఒకవేళ( !z_ఎడమ ) తిరిగి;
+  ఒకవేళ( minusFlag ){
+    z_కుడి = sqlite3MPrintf(db, "-%T", p_విలువ);
+  }లేకపోతే{
+    z_కుడి = sqlite3NameFromToken(db, p_విలువ);
   }
 
-  assert( pId2 );
+  ప్రతిజ్ఞా( pId2 );
   zDb = pId2->n>0 ? pDb->zDbSName : 0;
-  if( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, zLeft, zRight, zDb) ){
-    goto pragma_out;
+  ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, z_ఎడమ, z_కుడి, zDb) ){
+    వెళ్ళు pragma_బహిర్గతం;
   }
 
   /* Send an SQLITE_FCNTL_PRAGMA file-control to the underlying VFS
@@ -488,52 +488,52 @@ void sqlite3Pragma(
   ** argument.
   */
   aFcntl[0] = 0;
-  aFcntl[1] = zLeft;
-  aFcntl[2] = zRight;
+  aFcntl[1] = z_ఎడమ;
+  aFcntl[2] = z_కుడి;
   aFcntl[3] = 0;
   db->busyHandler.nBusy = 0;
-  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (void*)aFcntl);
-  if( rc==SQLITE_OK ){
-    sqlite3VdbeSetNumCols(v, 1);
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
-    returnSingleText(v, aFcntl[0]);
+  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (శూన్య*)aFcntl);
+  ఒకవేళ( rc==SQLITE_OK ){
+    sqlite3_Vdbe_సమితి_అంకె_నిలువుల_సంఖ్య(v, 1);
+    sqlite3_Vdbe_సమితి_నిలువు_Name(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
+    return_Single_పాఠ్యం(v, aFcntl[0]);
     sqlite3_free(aFcntl[0]);
-    goto pragma_out;
+    వెళ్ళు pragma_బహిర్గతం;
   }
-  if( rc!=SQLITE_NOTFOUND ){
-    if( aFcntl[0] ){
-      sqlite3ErrorMsg(pParse, "%s", aFcntl[0]);
+  ఒకవేళ( rc!=SQLITE_NOTFOUND ){
+    ఒకవేళ( aFcntl[0] ){
+      sqlite3_Error_సందేశం(pParse, "%s", aFcntl[0]);
       sqlite3_free(aFcntl[0]);
     }
     pParse->nErr++;
     pParse->rc = rc;
-    goto pragma_out;
+    వెళ్ళు pragma_బహిర్గతం;
   }
 
   /* Locate the pragma in the lookup table */
-  pPragma = pragmaLocate(zLeft);
-  if( pPragma==0 ){
+  pPragma = pragmaLocate(z_ఎడమ);
+  ఒకవేళ( pPragma==0 ){
     /* IMP: R-43042-22504 No error messages are generated if an
     ** unknown pragma is issued. */
-    goto pragma_out;
+    వెళ్ళు pragma_బహిర్గతం;
   }
 
   /* Make sure the database schema is loaded if the pragma requires that */
-  if( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
-    if( sqlite3ReadSchema(pParse) ) goto pragma_out;
+  ఒకవేళ( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
+    ఒకవేళ( sqlite3ReadSchema(pParse) ) వెళ్ళు pragma_బహిర్గతం;
   }
 
   /* Register the result column names for pragmas that return results */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns)==0
-   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || zRight==0)
+  ఒకవేళ( (pPragma->mPragFlg & PragFlg_NoColumns)==0
+   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || z_కుడి==0)
   ){
-    setPragmaResultColumnNames(v, pPragma);
+    సమితి_Pragma_ఫలితం_స్తంభం_పేర్లు(v, pPragma);
   }
 
   /* Jump to the appropriate pragma handler */
-  switch( pPragma->ePragTyp ){
+  ఎంపిక( pPragma->ePragTyp ){
  
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
+#ఒకవేళ !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
   /*
   **  PRAGMA [schema.]default_cache_size
   **  PRAGMA [schema.]default_cache_size=N
@@ -550,42 +550,42 @@ void sqlite3Pragma(
   ** size.  But continue to take the absolute value of the default cache
   ** size of historical compatibility.
   */
-  case PragTyp_DEFAULT_CACHE_SIZE: {
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList getCacheSize[] = {
+  స్థితి Prag_Typ_DEFAULT_CACHE_కొలత: {
+    స్థిర స్థిరరాశి పూర్ణాంకం iLn = VDBE_స్థానభ్రంశం_LINENO(2);
+    స్థిర స్థిరరాశి VdbeOpList get_Cache_కొలత[] = {
       { OP_Transaction, 0, 0,        0},                         /* 0 */
-      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_SIZE},  /* 1 */
+      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_కొలత},  /* 1 */
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 2,        0},
-      { OP_Subtract,    1, 2,        1},
+      { OP_వ్యవకలనం,    1, 2,        1},
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 1,        0},                         /* 6 */
       { OP_Noop,        0, 0,        0},
-      { OP_ResultRow,   1, 1,        0},
+      { OP_ఫలితం_అడ్డువరుస,   1, 1,        0},
     };
     VdbeOp *aOp;
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( !zRight ){
+    sqlite3_Vdbe_ఉపయోగిస్తుంది_Btree(v, iDb);
+    ఒకవేళ( !z_కుడి ){
       pParse->nMem += 2;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(getCacheSize));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(getCacheSize), getCacheSize, iLn);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_కొలత(get_Cache_కొలత));
+      aOp = sqlite3_Vdbe_కూడు_Op_List(v, Array_కొలత(get_Cache_కొలత), get_Cache_కొలత, iLn);
+      ఒకవేళ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ఆపు;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
-      aOp[6].p1 = SQLITE_DEFAULT_CACHE_SIZE;
-    }else{
-      int size = sqlite3AbsInt32(sqlite3Atoi(zRight));
+      aOp[6].p1 = SQLITE_DEFAULT_CACHE_కొలత;
+    }లేకపోతే{
+      పూర్ణాంకం కొలత = sqlite3AbsInt32(sqlite3Atoi(z_కుడి));
       sqlite3BeginWriteOperation(pParse, 0, iDb);
-      sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_DEFAULT_CACHE_SIZE, size);
-      assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_సమితి_Cookie, iDb, BTREE_DEFAULT_CACHE_కొలత, కొలత);
+      ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+      pDb->pSchema->cache_కొలత = కొలత;
+      sqlite3_Btree_సమితి_Cache_కొలత(pDb->pBt, pDb->pSchema->cache_కొలత);
     }
-    break;
+    ఆపు;
   }
-#endif /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
+#అయితే_ముగింపు /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
 
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS)
+#ఒకవేళ !defined(SQLITE_OMIT_PAGER_PRAGMAS)
   /*
   **  PRAGMA [schema.]page_size
   **  PRAGMA [schema.]page_size=N
@@ -595,22 +595,22 @@ void sqlite3Pragma(
   ** database page size value.  The value can only be set if
   ** the database has not yet been created.
   */
-  case PragTyp_PAGE_SIZE: {
+  స్థితి Prag_Typ_పుట_కొలత: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
-      int size = ALWAYS(pBt) ? sqlite3BtreeGetPageSize(pBt) : 0;
-      returnSingleInt(v, size);
-    }else{
+    ప్రతిజ్ఞా( pBt!=0 );
+    ఒకవేళ( !z_కుడి ){
+      పూర్ణాంకం కొలత = ALWAYS(pBt) ? sqlite3_Btree_Get_పుట_కొలత(pBt) : 0;
+      returnSingleInt(v, కొలత);
+    }లేకపోతే{
       /* Malloc may fail when setting the page-size, as there is an internal
       ** buffer that the pager module resizes using sqlite3_realloc().
       */
-      db->nextPagesize = sqlite3Atoi(zRight);
-      if( SQLITE_NOMEM==sqlite3BtreeSetPageSize(pBt, db->nextPagesize,0,0) ){
+      db->తదుపరి_Pagesize = sqlite3Atoi(z_కుడి);
+      ఒకవేళ( SQLITE_NOMEM==sqlite3_Btree_సమితి_పుట_కొలత(pBt, db->తదుపరి_Pagesize,0,0) ){
         sqlite3OomFault(db);
       }
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -621,26 +621,26 @@ void sqlite3Pragma(
   ** secure_delete flag.  The second form changes the secure_delete
   ** flag setting and reports the new value.
   */
-  case PragTyp_SECURE_DELETE: {
+  స్థితి PragTyp_SECURE_DELETE: {
     Btree *pBt = pDb->pBt;
-    int b = -1;
-    assert( pBt!=0 );
-    if( zRight ){
-      if( sqlite3_stricmp(zRight, "fast")==0 ){
+    పూర్ణాంకం b = -1;
+    ప్రతిజ్ఞా( pBt!=0 );
+    ఒకవేళ( z_కుడి ){
+      ఒకవేళ( sqlite3_stricmp(z_కుడి, "fast")==0 ){
         b = 2;
-      }else{
-        b = sqlite3GetBoolean(zRight, 0);
+      }లేకపోతే{
+        b = sqlite3GetBoolean(z_కుడి, 0);
       }
     }
-    if( pId2->n==0 && b>=0 ){
-      int ii;
-      for(ii=0; ii<db->nDb; ii++){
+    ఒకవేళ( pId2->n==0 && b>=0 ){
+      పూర్ణాంకం ii;
+      కొరకు(ii=0; ii<db->nDb; ii++){
         sqlite3BtreeSecureDelete(db->aDb[ii].pBt, b);
       }
     }
     b = sqlite3BtreeSecureDelete(pBt, b);
     returnSingleInt(v, b);
-    break;
+    ఆపు;
   }
 
   /*
@@ -660,43 +660,43 @@ void sqlite3Pragma(
   **
   ** Return the number of pages in the specified database.
   */
-  case PragTyp_PAGE_COUNT: {
-    int iReg;
+  స్థితి Prag_Typ_పుట_లెక్క: {
+    పూర్ణాంకం iReg;
     i64 x = 0;
-    sqlite3CodeVerifySchema(pParse, iDb);
+    sqlite3_సంకేతం_Verify_Schema(pParse, iDb);
     iReg = ++pParse->nMem;
-    if( sqlite3Tolower(zLeft[0])=='p' ){
-      sqlite3VdbeAddOp2(v, OP_Pagecount, iDb, iReg);
-    }else{
-      if( zRight && sqlite3DecOrHexToI64(zRight,&x)==0 ){
-        if( x<0 ) x = 0;
-        else if( x>0xfffffffe ) x = 0xfffffffe;
-      }else{
+    ఒకవేళ( sqlite3Tolower(z_ఎడమ[0])=='p' ){
+      sqlite3_Vdbe_కూడు_Op2(v, OP_Pagecount, iDb, iReg);
+    }లేకపోతే{
+      ఒకవేళ( z_కుడి && sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి,&x)==0 ){
+        ఒకవేళ( x<0 ) x = 0;
+        లేకపోతే ఒకవేళ( x>0xfffffffe ) x = 0xfffffffe;
+      }లేకపోతే{
         x = 0;
       }
-      sqlite3VdbeAddOp3(v, OP_MaxPgcnt, iDb, iReg, (int)x);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_MaxPgcnt, iDb, iReg, (పూర్ణాంకం)x);
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, iReg, 1);
-    break;
+    sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, iReg, 1);
+    ఆపు;
   }
 
   /*
   **  PRAGMA [schema.]locking_mode
   **  PRAGMA [schema.]locking_mode = (normal|exclusive)
   */
-  case PragTyp_LOCKING_MODE: {
-    const char *zRet = "normal";
-    int eMode = getLockingMode(zRight);
+  స్థితి Prag_Typ_LOCKING_బహుళకం: {
+    స్థిరరాశి అక్షరం *zRet = "normal";
+    పూర్ణాంకం e_బహుళకం = get_Locking_బహుళకం(z_కుడి);
 
-    if( pId2->n==0 && eMode==PAGER_LOCKINGMODE_QUERY ){
+    ఒకవేళ( pId2->n==0 && e_బహుళకం==PAGER_LOCKINGMODE_QUERY ){
       /* Simple "PRAGMA locking_mode;" statement. This is a query for
       ** the current default locking mode (which may be different to
       ** the locking-mode of the main database).
       */
-      eMode = db->dfltLockMode;
-    }else{
+      e_బహుళకం = db->dflt_తాళం_బహుళకం;
+    }లేకపోతే{
       Pager *pPager;
-      if( pId2->n==0 ){
+      ఒకవేళ( pId2->n==0 ){
         /* This indicates that no database name was specified as part
         ** of the PRAGMA command. In this case the locking-mode must be
         ** set on all attached databases, as well as the main db file.
@@ -705,25 +705,25 @@ void sqlite3Pragma(
         ** any subsequently attached databases also use the specified
         ** locking mode.
         */
-        int ii;
-        assert(pDb==&db->aDb[0]);
-        for(ii=2; ii<db->nDb; ii++){
+        పూర్ణాంకం ii;
+        ప్రతిజ్ఞా(pDb==&db->aDb[0]);
+        కొరకు(ii=2; ii<db->nDb; ii++){
           pPager = sqlite3BtreePager(db->aDb[ii].pBt);
-          sqlite3PagerLockingMode(pPager, eMode);
+          sqlite3_Pager_Locking_బహుళకం(pPager, e_బహుళకం);
         }
-        db->dfltLockMode = (u8)eMode;
+        db->dflt_తాళం_బహుళకం = (u8)e_బహుళకం;
       }
       pPager = sqlite3BtreePager(pDb->pBt);
-      eMode = sqlite3PagerLockingMode(pPager, eMode);
+      e_బహుళకం = sqlite3_Pager_Locking_బహుళకం(pPager, e_బహుళకం);
     }
 
-    assert( eMode==PAGER_LOCKINGMODE_NORMAL
-            || eMode==PAGER_LOCKINGMODE_EXCLUSIVE );
-    if( eMode==PAGER_LOCKINGMODE_EXCLUSIVE ){
+    ప్రతిజ్ఞా( e_బహుళకం==PAGER_LOCKINGMODE_సాధారణ
+            || e_బహుళకం==PAGER_LOCKINGMODE_EXCLUSIVE );
+    ఒకవేళ( e_బహుళకం==PAGER_LOCKINGMODE_EXCLUSIVE ){
       zRet = "exclusive";
     }
-    returnSingleText(v, zRet);
-    break;
+    return_Single_పాఠ్యం(v, zRet);
+    ఆపు;
   }
 
   /*
@@ -731,44 +731,44 @@ void sqlite3Pragma(
   **  PRAGMA [schema.]journal_mode =
   **                      (delete|persist|off|truncate|memory|wal|off)
   */
-  case PragTyp_JOURNAL_MODE: {
-    int eMode;        /* One of the PAGER_JOURNALMODE_XXX symbols */
-    int ii;           /* Loop counter */
+  స్థితి Prag_Typ_JOURNAL_బహుళకం: {
+    పూర్ణాంకం e_బహుళకం;        /* One of the PAGER_JOURNALMODE_XXX symbols */
+    పూర్ణాంకం ii;           /* Loop counter */
 
-    if( zRight==0 ){
+    ఒకవేళ( z_కుడి==0 ){
       /* If there is no "=MODE" part of the pragma, do a query for the
       ** current mode */
-      eMode = PAGER_JOURNALMODE_QUERY;
-    }else{
-      const char *zMode;
-      int n = sqlite3Strlen30(zRight);
-      for(eMode=0; (zMode = sqlite3JournalModename(eMode))!=0; eMode++){
-        if( sqlite3StrNICmp(zRight, zMode, n)==0 ) break;
+      e_బహుళకం = PAGER_JOURNALMODE_QUERY;
+    }లేకపోతే{
+      స్థిరరాశి అక్షరం *z_బహుళకం;
+      పూర్ణాంకం n = sqlite3Strlen30(z_కుడి);
+      కొరకు(e_బహుళకం=0; (z_బహుళకం = sqlite3JournalModename(e_బహుళకం))!=0; e_బహుళకం++){
+        ఒకవేళ( sqlite3StrNICmp(z_కుడి, z_బహుళకం, n)==0 ) ఆపు;
       }
-      if( !zMode ){
+      ఒకవేళ( !z_బహుళకం ){
         /* If the "=MODE" part does not match any known journal mode,
         ** then do a query */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_బహుళకం = PAGER_JOURNALMODE_QUERY;
       }
-      if( eMode==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
+      ఒకవేళ( e_బహుళకం==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow journal-mode "OFF" in defensive since the database
         ** can become corrupted using ordinary SQL when the journal is off */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_బహుళకం = PAGER_JOURNALMODE_QUERY;
       }
     }
-    if( eMode==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
+    ఒకవేళ( e_బహుళకం==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
       /* Convert "PRAGMA journal_mode" into "PRAGMA main.journal_mode" */
       iDb = 0;
       pId2->n = 1;
     }
-    for(ii=db->nDb-1; ii>=0; ii--){
-      if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-        sqlite3VdbeUsesBtree(v, ii);
-        sqlite3VdbeAddOp3(v, OP_JournalMode, ii, 1, eMode);
+    కొరకు(ii=db->nDb-1; ii>=0; ii--){
+      ఒకవేళ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+        sqlite3_Vdbe_ఉపయోగిస్తుంది_Btree(v, ii);
+        sqlite3_Vdbe_కూడు_Op3(v, OP_Journal_బహుళకం, ii, 1, e_బహుళకం);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
-    break;
+    sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 1);
+    ఆపు;
   }
 
   /*
@@ -777,19 +777,19 @@ void sqlite3Pragma(
   **
   ** Get or set the size limit on rollback journal files.
   */
-  case PragTyp_JOURNAL_SIZE_LIMIT: {
+  స్థితి Prag_Typ_JOURNAL_కొలత_హద్దు: {
     Pager *pPager = sqlite3BtreePager(pDb->pBt);
-    i64 iLimit = -2;
-    if( zRight ){
-      sqlite3DecOrHexToI64(zRight, &iLimit);
-      if( iLimit<-1 ) iLimit = -1;
+    i64 i_హద్దు = -2;
+    ఒకవేళ( z_కుడి ){
+      sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &i_హద్దు);
+      ఒకవేళ( i_హద్దు<-1 ) i_హద్దు = -1;
     }
-    iLimit = sqlite3PagerJournalSizeLimit(pPager, iLimit);
-    returnSingleInt(v, iLimit);
-    break;
+    i_హద్దు = sqlite3_Pager_Journal_కొలత_హద్దు(pPager, i_హద్దు);
+    returnSingleInt(v, i_హద్దు);
+    ఆపు;
   }
 
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_OMIT_PAGER_PRAGMAS */
 
   /*
   **  PRAGMA [schema.]auto_vacuum
@@ -798,76 +798,76 @@ void sqlite3Pragma(
   ** Get or set the value of the database 'auto-vacuum' parameter.
   ** The value is one of:  0 NONE 1 FULL 2 INCREMENTAL
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_AUTO_VACUUM: {
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTOVACUUM
+  స్థితి PragTyp_AUTO_VACUUM: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
+    ప్రతిజ్ఞా( pBt!=0 );
+    ఒకవేళ( !z_కుడి ){
       returnSingleInt(v, sqlite3BtreeGetAutoVacuum(pBt));
-    }else{
-      int eAuto = getAutoVacuum(zRight);
-      assert( eAuto>=0 && eAuto<=2 );
-      db->nextAutovac = (u8)eAuto;
+    }లేకపోతే{
+      పూర్ణాంకం eAuto = getAutoVacuum(z_కుడి);
+      ప్రతిజ్ఞా( eAuto>=0 && eAuto<=2 );
+      db->తదుపరి_Autovac = (u8)eAuto;
       /* Call SetAutoVacuum() to set initialize the internal auto and
       ** incr-vacuum flags. This is required in case this connection
       ** creates the database file. It is important that it is created
       ** as an auto-vacuum capable db.
       */
-      rc = sqlite3BtreeSetAutoVacuum(pBt, eAuto);
-      if( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
+      rc = sqlite3_Btree_సమితి_Auto_Vacuum(pBt, eAuto);
+      ఒకవేళ( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
         /* When setting the auto_vacuum mode to either "full" or
         ** "incremental", write the value of meta[6] in the database
         ** file. Before writing to meta[6], check that meta[3] indicates
         ** that this really is an auto-vacuum capable database.
         */
-        static const int iLn = VDBE_OFFSET_LINENO(2);
-        static const VdbeOpList setMeta6[] = {
+        స్థిర స్థిరరాశి పూర్ణాంకం iLn = VDBE_స్థానభ్రంశం_LINENO(2);
+        స్థిర స్థిరరాశి VdbeOpList సమితి_Meta6[] = {
           { OP_Transaction,    0,         1,                 0},    /* 0 */
-          { OP_ReadCookie,     0,         1,         BTREE_LARGEST_ROOT_PAGE},
+          { OP_ReadCookie,     0,         1,         BTREE_అతిపెద్ద_మూలం_పుట},
           { OP_If,             1,         0,                 0},    /* 2 */
           { OP_Halt,           SQLITE_OK, OE_Abort,          0},    /* 3 */
-          { OP_SetCookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
+          { OP_సమితి_Cookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
         };
         VdbeOp *aOp;
-        int iAddr = sqlite3VdbeCurrentAddr(v);
-        sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setMeta6));
-        aOp = sqlite3VdbeAddOpList(v, ArraySize(setMeta6), setMeta6, iLn);
-        if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+        పూర్ణాంకం iAddr = sqlite3VdbeCurrentAddr(v);
+        sqlite3VdbeVerifyNoMallocRequired(v, Array_కొలత(సమితి_Meta6));
+        aOp = sqlite3_Vdbe_కూడు_Op_List(v, Array_కొలత(సమితి_Meta6), సమితి_Meta6, iLn);
+        ఒకవేళ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ఆపు;
         aOp[0].p1 = iDb;
         aOp[1].p1 = iDb;
         aOp[2].p2 = iAddr+4;
         aOp[4].p1 = iDb;
         aOp[4].p3 = eAuto - 1;
-        sqlite3VdbeUsesBtree(v, iDb);
+        sqlite3_Vdbe_ఉపయోగిస్తుంది_Btree(v, iDb);
       }
     }
-    break;
+    ఆపు;
   }
-#endif
+#అయితే_ముగింపు
 
   /*
   **  PRAGMA [schema.]incremental_vacuum(N)
   **
   ** Do N steps of incremental vacuuming on a database.
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_INCREMENTAL_VACUUM: {
-    int iLimit = 0, addr;
-    if( zRight==0 || !sqlite3GetInt32(zRight, &iLimit) || iLimit<=0 ){
-      iLimit = 0x7fffffff;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTOVACUUM
+  స్థితి PragTyp_INCREMENTAL_VACUUM: {
+    పూర్ణాంకం i_హద్దు = 0, addr;
+    ఒకవేళ( z_కుడి==0 || !sqlite3GetInt32(z_కుడి, &i_హద్దు) || i_హద్దు<=0 ){
+      i_హద్దు = 0x7fffffff;
     }
     sqlite3BeginWriteOperation(pParse, 0, iDb);
-    sqlite3VdbeAddOp2(v, OP_Integer, iLimit, 1);
-    addr = sqlite3VdbeAddOp1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
-    sqlite3VdbeAddOp1(v, OP_ResultRow, 1);
-    sqlite3VdbeAddOp2(v, OP_AddImm, 1, -1);
-    sqlite3VdbeAddOp2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr);
-    break;
+    sqlite3_Vdbe_కూడు_Op2(v, OP_Integer, i_హద్దు, 1);
+    addr = sqlite3_Vdbe_కూడు_Op1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
+    sqlite3_Vdbe_కూడు_Op1(v, OP_ఫలితం_అడ్డువరుస, 1);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_కూడు_Imm, 1, -1);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ఇక్కడ(v, addr);
+    ఆపు;
   }
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_PAGER_PRAGMAS
   /*
   **  PRAGMA [schema.]cache_size
   **  PRAGMA [schema.]cache_size=N
@@ -879,16 +879,16 @@ void sqlite3Pragma(
   ** number of pages is adjusted so that the cache uses -N kibibytes
   ** of memory.
   */
-  case PragTyp_CACHE_SIZE: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
-      returnSingleInt(v, pDb->pSchema->cache_size);
-    }else{
-      int size = sqlite3Atoi(zRight);
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+  స్థితి Prag_Typ_CACHE_కొలత: {
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ఒకవేళ( !z_కుడి ){
+      returnSingleInt(v, pDb->pSchema->cache_కొలత);
+    }లేకపోతే{
+      పూర్ణాంకం కొలత = sqlite3Atoi(z_కుడి);
+      pDb->pSchema->cache_కొలత = కొలత;
+      sqlite3_Btree_సమితి_Cache_కొలత(pDb->pBt, pDb->pSchema->cache_కొలత);
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -913,25 +913,25 @@ void sqlite3Pragma(
   ** The cache_spill=BOOLEAN setting applies to all attached schemas,
   ** not just the schema specified.
   */
-  case PragTyp_CACHE_SPILL: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
+  స్థితి PragTyp_CACHE_SPILL: {
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ఒకవేళ( !z_కుడి ){
       returnSingleInt(v,
          (db->flags & SQLITE_CacheSpill)==0 ? 0 :
-            sqlite3BtreeSetSpillSize(pDb->pBt,0));
-    }else{
-      int size = 1;
-      if( sqlite3GetInt32(zRight, &size) ){
-        sqlite3BtreeSetSpillSize(pDb->pBt, size);
+            sqlite3_Btree_సమితి_Spill_కొలత(pDb->pBt,0));
+    }లేకపోతే{
+      పూర్ణాంకం కొలత = 1;
+      ఒకవేళ( sqlite3GetInt32(z_కుడి, &కొలత) ){
+        sqlite3_Btree_సమితి_Spill_కొలత(pDb->pBt, కొలత);
       }
-      if( sqlite3GetBoolean(zRight, size!=0) ){
+      ఒకవేళ( sqlite3GetBoolean(z_కుడి, కొలత!=0) ){
         db->flags |= SQLITE_CacheSpill;
-      }else{
+      }లేకపోతే{
         db->flags &= ~(u64)SQLITE_CacheSpill;
       }
-      setAllPagerFlags(db);
+      సమితి_All_Pager_Flags(db);
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -948,34 +948,34 @@ void sqlite3Pragma(
   ** as little or as much as it wants.  Except, if N is set to 0 then the
   ** upper layers will never invoke the xFetch interfaces to the VFS.
   */
-  case PragTyp_MMAP_SIZE: {
+  స్థితి Prag_Typ_MMAP_కొలత: {
     sqlite3_int64 sz;
-#if SQLITE_MAX_MMAP_SIZE>0
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( zRight ){
-      int ii;
-      sqlite3DecOrHexToI64(zRight, &sz);
-      if( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
-      if( pId2->n==0 ) db->szMmap = sz;
-      for(ii=db->nDb-1; ii>=0; ii--){
-        if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-          sqlite3BtreeSetMmapLimit(db->aDb[ii].pBt, sz);
+#ఒకవేళ SQLITE_MAX_MMAP_కొలత>0
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ఒకవేళ( z_కుడి ){
+      పూర్ణాంకం ii;
+      sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &sz);
+      ఒకవేళ( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
+      ఒకవేళ( pId2->n==0 ) db->szMmap = sz;
+      కొరకు(ii=db->nDb-1; ii>=0; ii--){
+        ఒకవేళ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+          sqlite3_Btree_సమితి_Mmap_హద్దు(db->aDb[ii].pBt, sz);
         }
       }
     }
     sz = -1;
-    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_SIZE, &sz);
-#else
+    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_కొలత, &sz);
+#లేకపోతే
     sz = 0;
     rc = SQLITE_OK;
-#endif
-    if( rc==SQLITE_OK ){
+#అయితే_ముగింపు
+    ఒకవేళ( rc==SQLITE_OK ){
       returnSingleInt(v, sz);
-    }else if( rc!=SQLITE_NOTFOUND ){
+    }లేకపోతే ఒకవేళ( rc!=SQLITE_NOTFOUND ){
       pParse->nErr++;
       pParse->rc = rc;
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -989,13 +989,13 @@ void sqlite3Pragma(
   ** Note that it is possible for the library compile-time options to
   ** override this setting
   */
-  case PragTyp_TEMP_STORE: {
-    if( !zRight ){
-      returnSingleInt(v, db->temp_store);
-    }else{
-      changeTempStorage(pParse, zRight);
+  స్థితి Prag_Typ_తాత్కాలిక_STORE: {
+    ఒకవేళ( !z_కుడి ){
+      returnSingleInt(v, db->తాత్కాలిక_store);
+    }లేకపోతే{
+      change_తాత్కాలిక_Storage(pParse, z_కుడి);
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -1008,40 +1008,40 @@ void sqlite3Pragma(
   ** If temporary directory is changed, then invalidateTempStorage.
   **
   */
-  case PragTyp_TEMP_STORE_DIRECTORY: {
+  స్థితి Prag_Typ_తాత్కాలిక_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_temp_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    ఒకవేళ( !z_కుడి ){
+      return_Single_పాఠ్యం(v, sqlite3_తాత్కాలిక_directory);
+    }లేకపోతే{
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WSD
+      ఒకవేళ( z_కుడి[0] ){
+        పూర్ణాంకం res;
+        rc = sqlite3OsAccess(db->pVfs, z_కుడి, SQLITE_ACCESS_READWRITE, &res);
+        ఒకవేళ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_సందేశం(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          వెళ్ళు pragma_బహిర్గతం;
         }
       }
-      if( SQLITE_TEMP_STORE==0
-       || (SQLITE_TEMP_STORE==1 && db->temp_store<=1)
-       || (SQLITE_TEMP_STORE==2 && db->temp_store==1)
+      ఒకవేళ( SQLITE_తాత్కాలిక_STORE==0
+       || (SQLITE_తాత్కాలిక_STORE==1 && db->తాత్కాలిక_store<=1)
+       || (SQLITE_తాత్కాలిక_STORE==2 && db->తాత్కాలిక_store==1)
       ){
-        invalidateTempStorage(pParse);
+        invalidate_తాత్కాలిక_Storage(pParse);
       }
-      sqlite3_free(sqlite3_temp_directory);
-      if( zRight[0] ){
-        sqlite3_temp_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_temp_directory = 0;
+      sqlite3_free(sqlite3_తాత్కాలిక_directory);
+      ఒకవేళ( z_కుడి[0] ){
+        sqlite3_తాత్కాలిక_directory = sqlite3_mprintf("%s", z_కుడి);
+      }లేకపోతే{
+        sqlite3_తాత్కాలిక_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#అయితే_ముగింపు /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    ఆపు;
   }
 
-#if SQLITE_OS_WIN
+#ఒకవేళ SQLITE_OS_WIN
   /*
   **   PRAGMA data_store_directory
   **   PRAGMA data_store_directory = ""|"directory_name"
@@ -1055,35 +1055,35 @@ void sqlite3Pragma(
   ** by this setting, regardless of its value.
   **
   */
-  case PragTyp_DATA_STORE_DIRECTORY: {
+  స్థితి Prag_Typ_దత్తాంశం_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_data_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    ఒకవేళ( !z_కుడి ){
+      return_Single_పాఠ్యం(v, sqlite3_దత్తాంశం_directory);
+    }లేకపోతే{
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WSD
+      ఒకవేళ( z_కుడి[0] ){
+        పూర్ణాంకం res;
+        rc = sqlite3OsAccess(db->pVfs, z_కుడి, SQLITE_ACCESS_READWRITE, &res);
+        ఒకవేళ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_సందేశం(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          వెళ్ళు pragma_బహిర్గతం;
         }
       }
-      sqlite3_free(sqlite3_data_directory);
-      if( zRight[0] ){
-        sqlite3_data_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_data_directory = 0;
+      sqlite3_free(sqlite3_దత్తాంశం_directory);
+      ఒకవేళ( z_కుడి[0] ){
+        sqlite3_దత్తాంశం_directory = sqlite3_mprintf("%s", z_కుడి);
+      }లేకపోతే{
+        sqlite3_దత్తాంశం_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#అయితే_ముగింపు /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    ఆపు;
   }
-#endif
+#అయితే_ముగింపు
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#ఒకవేళ SQLITE_ENABLE_LOCKING_STYLE
   /*
   **   PRAGMA [schema.]lock_proxy_file
   **   PRAGMA [schema.]lock_proxy_file = ":auto:"|"lock_file_path"
@@ -1092,33 +1092,33 @@ void sqlite3Pragma(
   ** the value sets a specific file to be used for database access locks.
   **
   */
-  case PragTyp_LOCK_PROXY_FILE: {
-    if( !zRight ){
+  స్థితి Prag_Typ_తాళం_PROXY_FILE: {
+    ఒకవేళ( !z_కుడి ){
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
-      char *proxy_file_path = NULL;
+      అక్షరం *proxy_file_మార్గం = ఖాళీ;
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
       sqlite3OsFileControlHint(pFile, SQLITE_GET_LOCKPROXYFILE,
-                           &proxy_file_path);
-      returnSingleText(v, proxy_file_path);
-    }else{
+                           &proxy_file_మార్గం);
+      return_Single_పాఠ్యం(v, proxy_file_మార్గం);
+    }లేకపోతే{
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
-      int res;
-      if( zRight[0] ){
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     zRight);
-      } else {
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     NULL);
+      పూర్ణాంకం res;
+      ఒకవేళ( z_కుడి[0] ){
+        res=sqlite3OsFileControl(pFile, SQLITE_సమితి_LOCKPROXYFILE,
+                                     z_కుడి);
+      } లేకపోతే {
+        res=sqlite3OsFileControl(pFile, SQLITE_సమితి_LOCKPROXYFILE,
+                                     ఖాళీ);
       }
-      if( res!=SQLITE_OK ){
-        sqlite3ErrorMsg(pParse, "failed to set lock proxy file");
-        goto pragma_out;
+      ఒకవేళ( res!=SQLITE_OK ){
+        sqlite3_Error_సందేశం(pParse, "failed to set lock proxy file");
+        వెళ్ళు pragma_బహిర్గతం;
       }
     }
-    break;
+    ఆపు;
   }
-#endif /* SQLITE_ENABLE_LOCKING_STYLE */     
+#అయితే_ముగింపు /* SQLITE_ENABLE_LOCKING_STYLE */     
    
   /*
   **   PRAGMA [schema.]synchronous
@@ -1129,63 +1129,63 @@ void sqlite3Pragma(
   ** default value will be restored the next time the database is
   ** opened.
   */
-  case PragTyp_SYNCHRONOUS: {
-    if( !zRight ){
+  స్థితి PragTyp_SYNCHRONOUS: {
+    ఒకవేళ( !z_కుడి ){
       returnSingleInt(v, pDb->safety_level-1);
-    }else{
-      if( !db->autoCommit ){
-        sqlite3ErrorMsg(pParse,
+    }లేకపోతే{
+      ఒకవేళ( !db->autoCommit ){
+        sqlite3_Error_సందేశం(pParse,
             "Safety level may not be changed inside a transaction");
-      }else if( iDb!=1 ){
-        int iLevel;
-        if( sqlite3Isdigit(zRight[0]) ){
-          iLevel = sqlite3Atoi(zRight);
-        }else{
-          iLevel = getSafetyLevel(zRight,0,1);
+      }లేకపోతే ఒకవేళ( iDb!=1 ){
+        పూర్ణాంకం iLevel;
+        ఒకవేళ( sqlite3Isdigit(z_కుడి[0]) ){
+          iLevel = sqlite3Atoi(z_కుడి);
+        }లేకపోతే{
+          iLevel = getSafetyLevel(z_కుడి,0,1);
         }
-        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_MASK;
-        if( iLevel==0 ) iLevel = 1;
+        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_ముసుగు;
+        ఒకవేళ( iLevel==0 ) iLevel = 1;
         pDb->safety_level = iLevel;
-        pDb->bSyncSet = 1;
-        setAllPagerFlags(db);
+        pDb->b_Sync_సమితి = 1;
+        సమితి_All_Pager_Flags(db);
       }
     }
-    break;
+    ఆపు;
   }
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_OMIT_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FLAG_PRAGMAS
-  case PragTyp_FLAG: {
-    if( zRight==0 ){
-      setPragmaResultColumnNames(v, pPragma);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FLAG_PRAGMAS
+  స్థితి PragTyp_FLAG: {
+    ఒకవేళ( z_కుడి==0 ){
+      సమితి_Pragma_ఫలితం_స్తంభం_పేర్లు(v, pPragma);
       returnSingleInt(v, (db->flags & pPragma->iArg)!=0 );
-    }else{
-      u64 mask = pPragma->iArg;    /* Mask of bits to set or clear. */
-      if( db->autoCommit==0 ){
+    }లేకపోతే{
+      u64 ముసుగు = pPragma->iArg;    /* Mask of bits to set or clear. */
+      ఒకవేళ( db->autoCommit==0 ){
         /* Foreign key support may not be enabled or disabled while not
         ** in auto-commit mode.  */
-        mask &= ~(SQLITE_ForeignKeys);
+        ముసుగు &= ~(SQLITE_Foreign_కీలకాలు);
       }
 
-      if( sqlite3GetBoolean(zRight, 0) ){
-        if( (mask & SQLITE_WriteSchema)==0
+      ఒకవేళ( sqlite3GetBoolean(z_కుడి, 0) ){
+        ఒకవేళ( (ముసుగు & SQLITE_WriteSchema)==0
          || (db->flags & SQLITE_Defensive)==0
         ){
-          db->flags |= mask;
+          db->flags |= ముసుగు;
         }
-      }else{
-        db->flags &= ~mask;
-        if( mask==SQLITE_DeferFKs ){
+      }లేకపోతే{
+        db->flags &= ~ముసుగు;
+        ఒకవేళ( ముసుగు==SQLITE_DeferFKs ){
           db->nDeferredImmCons = 0;
           db->nDeferredCons = 0;
         }
-        if( (mask & SQLITE_WriteSchema)!=0
-         && sqlite3_stricmp(zRight, "reset")==0
+        ఒకవేళ( (ముసుగు & SQLITE_WriteSchema)!=0
+         && sqlite3_stricmp(z_కుడి, "reset")==0
         ){
           /* IMP: R-60817-01178 If the argument is "RESET" then schema
           ** writing is disabled (as with "PRAGMA writable_schema=OFF") and,
           ** in addition, the schema is reloaded. */
-          sqlite3ResetAllSchemasOfConnection(db);
+          sqlite3_Reset_All_Schemas_యొక్క_Connection(db);
         }
       }
 
@@ -1193,14 +1193,14 @@ void sqlite3Pragma(
       ** compiler (eg. count_changes). So add an opcode to expire all
       ** compiled SQL statements after modifying a pragma value.
       */
-      sqlite3VdbeAddOp0(v, OP_Expire);
-      setAllPagerFlags(db);
+      sqlite3_Vdbe_కూడు_Op0(v, OP_Expire);
+      సమితి_All_Pager_Flags(db);
     }
-    break;
+    ఆపు;
   }
-#endif /* SQLITE_OMIT_FLAG_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_OMIT_FLAG_PRAGMAS */
 
-#ifndef SQLITE_OMIT_SCHEMA_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SCHEMA_PRAGMAS
   /*
   **   PRAGMA table_info(<table>)
   **
@@ -1214,56 +1214,56 @@ void sqlite3Pragma(
   ** dflt_value: The default value for the column, if any.
   ** pk:         Non-zero for PK fields.
   */
-  case PragTyp_TABLE_INFO: if( zRight ){
-    Table *pTab;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-    if( pTab ){
-      int i, k;
-      int nHidden = 0;
-      Column *pCol;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+  స్థితి Prag_Typ_పట్టిక_INFO: ఒకవేళ( z_కుడి ){
+    పట్టిక *pTab;
+    sqlite3_సంకేతం_Verify_Named_Schema(pParse, zDb);
+    pTab = sqlite3_Locate_పట్టిక(pParse, LOCATE_NOERR, z_కుడి, zDb);
+    ఒకవేళ( pTab ){
+      పూర్ణాంకం i, k;
+      పూర్ణాంకం nHidden = 0;
+      స్తంభం *p_నిలువు;
+      సూచీ *pPk = sqlite3_Primary_కీలకం_సూచీ(pTab);
       pParse->nMem = 7;
-      sqlite3ViewGetColumnNames(pParse, pTab);
-      for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-        int isHidden = 0;
-        const Expr *pColExpr;
-        if( pCol->colFlags & COLFLAG_NOINSERT ){
-          if( pPragma->iArg==0 ){
+      sqlite3_View_Get_స్తంభం_పేర్లు(pParse, pTab);
+      కొరకు(i=0, p_నిలువు=pTab->a_నిలువు; i<pTab->n_నిలువు; i++, p_నిలువు++){
+        పూర్ణాంకం isHidden = 0;
+        స్థిరరాశి సమాసం *p_నిలువు_సమాసం;
+        ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_NOINSERT ){
+          ఒకవేళ( pPragma->iArg==0 ){
             nHidden++;
-            continue;
+            కొనసాగు;
           }
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
+          ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_VIRTUAL ){
             isHidden = 2;  /* GENERATED ALWAYS AS ... VIRTUAL */
-          }else if( pCol->colFlags & COLFLAG_STORED ){
+          }లేకపోతే ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_STORED ){
             isHidden = 3;  /* GENERATED ALWAYS AS ... STORED */
-          }else{ assert( pCol->colFlags & COLFLAG_HIDDEN );
+          }లేకపోతే{ ప్రతిజ్ఞా( p_నిలువు->నిలువు_Flags & COLFLAG_HIDDEN );
             isHidden = 1;  /* HIDDEN */
           }
         }
-        if( (pCol->colFlags & COLFLAG_PRIMKEY)==0 ){
+        ఒకవేళ( (p_నిలువు->నిలువు_Flags & COLFLAG_PRIMKEY)==0 ){
           k = 0;
-        }else if( pPk==0 ){
+        }లేకపోతే ఒకవేళ( pPk==0 ){
           k = 1;
-        }else{
-          for(k=1; k<=pTab->nCol && pPk->aiColumn[k-1]!=i; k++){}
+        }లేకపోతే{
+          కొరకు(k=1; k<=pTab->n_నిలువు && pPk->ai_స్తంభం[k-1]!=i; k++){}
         }
-        pColExpr = sqlite3ColumnExpr(pTab,pCol);
-        assert( pColExpr==0 || pColExpr->op==TK_SPAN || isHidden>=2 );
-        assert( pColExpr==0 || !ExprHasProperty(pColExpr, EP_IntValue)
+        p_నిలువు_సమాసం = sqlite3_స్తంభం_సమాసం(pTab,p_నిలువు);
+        ప్రతిజ్ఞా( p_నిలువు_సమాసం==0 || p_నిలువు_సమాసం->op==TK_పరిధి || isHidden>=2 );
+        ప్రతిజ్ఞా( p_నిలువు_సమాసం==0 || !సమాసం_Has_Property(p_నిలువు_సమాసం, EP_Int_విలువ)
                   || isHidden>=2 );
-        sqlite3VdbeMultiLoad(v, 1, pPragma->iArg ? "issisii" : "issisi",
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, pPragma->iArg ? "issisii" : "issisi",
                i-nHidden,
-               pCol->zCnName,
-               sqlite3ColumnType(pCol,""),
-               pCol->notNull ? 1 : 0,
-               (isHidden>=2 || pColExpr==0) ? 0 : pColExpr->u.zToken,
+               p_నిలువు->zCnName,
+               sqlite3_స్తంభం_Type(p_నిలువు,""),
+               p_నిలువు->notNull ? 1 : 0,
+               (isHidden>=2 || p_నిలువు_సమాసం==0) ? 0 : p_నిలువు_సమాసం->u.zToken,
                k,
                isHidden);
       }
     }
   }
-  break;
+  ఆపు;
 
   /*
   **   PRAGMA table_list
@@ -1278,15 +1278,15 @@ void sqlite3Pragma(
   ** wr:         True for a WITHOUT ROWID table
   ** strict:     True for a STRICT table
   */
-  case PragTyp_TABLE_LIST: {
-    int ii;
+  స్థితి Prag_Typ_పట్టిక_LIST: {
+    పూర్ణాంకం ii;
     pParse->nMem = 6;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    for(ii=0; ii<db->nDb; ii++){
+    sqlite3_సంకేతం_Verify_Named_Schema(pParse, zDb);
+    కొరకు(ii=0; ii<db->nDb; ii++){
       HashElem *k;
       Hash *pHash;
-      int initNCol;
-      if( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) continue;
+      పూర్ణాంకం initNCol;
+      ఒకవేళ( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) కొనసాగు;
 
       /* Ensure that the Table.nCol field is initialized for all views
       ** and virtual tables.  Each time we initialize a Table.nCol value
@@ -1294,322 +1294,322 @@ void sqlite3Pragma(
       ** the initialization scan.
       */
       pHash = &db->aDb[ii].pSchema->tblHash;
-      initNCol = sqliteHashCount(pHash);
-      while( initNCol-- ){
-        for(k=sqliteHashFirst(pHash); 1; k=sqliteHashNext(k) ){
-          Table *pTab;
-          if( k==0 ){ initNCol = 0; break; }
-          pTab = sqliteHashData(k);
-          if( pTab->nCol==0 ){
-            char *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
-            if( zSql ){
+      initNCol = sqlite_Hash_లెక్క(pHash);
+      అయితే( initNCol-- ){
+        కొరకు(k=sqlite_Hash_మొదటి(pHash); 1; k=sqlite_Hash_తదుపరి(k) ){
+          పట్టిక *pTab;
+          ఒకవేళ( k==0 ){ initNCol = 0; ఆపు; }
+          pTab = sqlite_Hash_దత్తాంశం(k);
+          ఒకవేళ( pTab->n_నిలువు==0 ){
+            అక్షరం *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
+            ఒకవేళ( zSql ){
               sqlite3_stmt *pDummy = 0;
-              (void)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
+              (శూన్య)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
                                        &pDummy, 0);
-              (void)sqlite3_finalize(pDummy);
+              (శూన్య)sqlite3_finalize(pDummy);
               sqlite3DbFree(db, zSql);
             }
-            if( db->mallocFailed ){
-              sqlite3ErrorMsg(db->pParse, "out of memory");
+            ఒకవేళ( db->mallocFailed ){
+              sqlite3_Error_సందేశం(db->pParse, "out of memory");
               db->pParse->rc = SQLITE_NOMEM_BKPT;
             }
             pHash = &db->aDb[ii].pSchema->tblHash;
-            break;
+            ఆపు;
           }
         }
       }
 
-      for(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k) ){
-        Table *pTab = sqliteHashData(k);
-        const char *zType;
-        if( zRight && sqlite3_stricmp(zRight, pTab->zName)!=0 ) continue;
-        if( IsView(pTab) ){
+      కొరకు(k=sqlite_Hash_మొదటి(pHash); k; k=sqlite_Hash_తదుపరి(k) ){
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(k);
+        స్థిరరాశి అక్షరం *zType;
+        ఒకవేళ( z_కుడి && sqlite3_stricmp(z_కుడి, pTab->zName)!=0 ) కొనసాగు;
+        ఒకవేళ( IsView(pTab) ){
           zType = "view";
-        }else if( IsVirtual(pTab) ){
+        }లేకపోతే ఒకవేళ( IsVirtual(pTab) ){
           zType = "virtual";
-        }else if( pTab->tabFlags & TF_Shadow ){
+        }లేకపోతే ఒకవేళ( pTab->tabFlags & TF_Shadow ){
           zType = "shadow";
-        }else{
+        }లేకపోతే{
           zType = "table";
         }
-        sqlite3VdbeMultiLoad(v, 1, "sssiii",
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "sssiii",
            db->aDb[ii].zDbSName,
-           sqlite3PreferredTableName(pTab->zName),
+           sqlite3_Preferred_పట్టిక_Name(pTab->zName),
            zType,
-           pTab->nCol,
+           pTab->n_నిలువు,
            (pTab->tabFlags & TF_WithoutRowid)!=0,
            (pTab->tabFlags & TF_Strict)!=0
         );
       }
     }
   }
-  break;
+  ఆపు;
 
-#ifdef SQLITE_DEBUG
-  case PragTyp_STATS: {
-    Index *pIdx;
+#నిర్వచితమైతే SQLITE_DEBUG
+  స్థితి PragTyp_STATS: {
+    సూచీ *pIdx;
     HashElem *i;
     pParse->nMem = 5;
-    sqlite3CodeVerifySchema(pParse, iDb);
-    for(i=sqliteHashFirst(&pDb->pSchema->tblHash); i; i=sqliteHashNext(i)){
-      Table *pTab = sqliteHashData(i);
-      sqlite3VdbeMultiLoad(v, 1, "ssiii",
-           sqlite3PreferredTableName(pTab->zName),
+    sqlite3_సంకేతం_Verify_Schema(pParse, iDb);
+    కొరకు(i=sqlite_Hash_మొదటి(&pDb->pSchema->tblHash); i; i=sqlite_Hash_తదుపరి(i)){
+      పట్టిక *pTab = sqlite_Hash_దత్తాంశం(i);
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "ssiii",
+           sqlite3_Preferred_పట్టిక_Name(pTab->zName),
            0,
-           pTab->szTabRow,
-           pTab->nRowLogEst,
+           pTab->sz_Tab_అడ్డువరుస,
+           pTab->n_అడ్డువరుస_Log_Est,
            pTab->tabFlags);
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-        sqlite3VdbeMultiLoad(v, 2, "siiiX",
+      కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, 2, "siiiX",
            pIdx->zName,
-           pIdx->szIdxRow,
-           pIdx->aiRowLogEst[0],
+           pIdx->sz_Idx_అడ్డువరుస,
+           pIdx->ai_అడ్డువరుస_Log_Est[0],
            pIdx->hasStat1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 5);
+        sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 5);
       }
     }
   }
-  break;
-#endif
+  ఆపు;
+#అయితే_ముగింపు
 
-  case PragTyp_INDEX_INFO: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    pIdx = sqlite3FindIndex(db, zRight, zDb);
-    if( pIdx==0 ){
+  స్థితి Prag_Typ_సూచీ_INFO: ఒకవేళ( z_కుడి ){
+    సూచీ *pIdx;
+    పట్టిక *pTab;
+    pIdx = sqlite3_కనుగొను_సూచీ(db, z_కుడి, zDb);
+    ఒకవేళ( pIdx==0 ){
       /* If there is no index named zRight, check to see if there is a
       ** WITHOUT ROWID table named zRight, and if there is, show the
       ** structure of the PRIMARY KEY index for that table. */
-      pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-      if( pTab && !HasRowid(pTab) ){
-        pIdx = sqlite3PrimaryKeyIndex(pTab);
+      pTab = sqlite3_Locate_పట్టిక(pParse, LOCATE_NOERR, z_కుడి, zDb);
+      ఒకవేళ( pTab && !HasRowid(pTab) ){
+        pIdx = sqlite3_Primary_కీలకం_సూచీ(pTab);
       }
     }
-    if( pIdx ){
-      int iIdxDb = sqlite3SchemaToIndex(db, pIdx->pSchema);
-      int i;
-      int mx;
-      if( pPragma->iArg ){
+    ఒకవేళ( pIdx ){
+      పూర్ణాంకం iIdxDb = sqlite3_Schema_గమ్యం_సూచీ(db, pIdx->pSchema);
+      పూర్ణాంకం i;
+      పూర్ణాంకం mx;
+      ఒకవేళ( pPragma->iArg ){
         /* PRAGMA index_xinfo (newer version with more rows and columns) */
-        mx = pIdx->nColumn;
+        mx = pIdx->n_స్తంభం;
         pParse->nMem = 6;
-      }else{
+      }లేకపోతే{
         /* PRAGMA index_info (legacy version) */
-        mx = pIdx->nKeyCol;
+        mx = pIdx->n_కీలకం_నిలువు;
         pParse->nMem = 3;
       }
-      pTab = pIdx->pTable;
-      sqlite3CodeVerifySchema(pParse, iIdxDb);
-      assert( pParse->nMem<=pPragma->nPragCName );
-      for(i=0; i<mx; i++){
-        i16 cnum = pIdx->aiColumn[i];
-        sqlite3VdbeMultiLoad(v, 1, "iisX", i, cnum,
-                             cnum<0 ? 0 : pTab->aCol[cnum].zCnName);
-        if( pPragma->iArg ){
-          sqlite3VdbeMultiLoad(v, 4, "isiX",
-            pIdx->aSortOrder[i],
+      pTab = pIdx->p_పట్టిక;
+      sqlite3_సంకేతం_Verify_Schema(pParse, iIdxDb);
+      ప్రతిజ్ఞా( pParse->nMem<=pPragma->nPragCName );
+      కొరకు(i=0; i<mx; i++){
+        i16 cnum = pIdx->ai_స్తంభం[i];
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "iisX", i, cnum,
+                             cnum<0 ? 0 : pTab->a_నిలువు[cnum].zCnName);
+        ఒకవేళ( pPragma->iArg ){
+          sqlite3_Vdbe_Multi_ఎక్కించు(v, 4, "isiX",
+            pIdx->a_క్రమీకరించు_క్రమం[i],
             pIdx->azColl[i],
-            i<pIdx->nKeyCol);
+            i<pIdx->n_కీలకం_నిలువు);
         }
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, pParse->nMem);
+        sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, pParse->nMem);
       }
     }
   }
-  break;
+  ఆపు;
 
-  case PragTyp_INDEX_LIST: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    int i;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab ){
-      int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  స్థితి Prag_Typ_సూచీ_LIST: ఒకవేళ( z_కుడి ){
+    సూచీ *pIdx;
+    పట్టిక *pTab;
+    పూర్ణాంకం i;
+    pTab = sqlite3_కనుగొను_పట్టిక(db, z_కుడి, zDb);
+    ఒకవేళ( pTab ){
+      పూర్ణాంకం iTabDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
       pParse->nMem = 5;
-      sqlite3CodeVerifySchema(pParse, iTabDb);
-      for(pIdx=pTab->pIndex, i=0; pIdx; pIdx=pIdx->pNext, i++){
-        const char *azOrigin[] = { "c", "u", "pk" };
-        sqlite3VdbeMultiLoad(v, 1, "isisi",
+      sqlite3_సంకేతం_Verify_Schema(pParse, iTabDb);
+      కొరకు(pIdx=pTab->p_సూచీ, i=0; pIdx; pIdx=pIdx->p_తదుపరి, i++){
+        స్థిరరాశి అక్షరం *azOrigin[] = { "c", "u", "pk" };
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "isisi",
            i,
            pIdx->zName,
-           IsUniqueIndex(pIdx),
+           Is_Unique_సూచీ(pIdx),
            azOrigin[pIdx->idxType],
            pIdx->pPartIdxWhere!=0);
       }
     }
   }
-  break;
+  ఆపు;
 
-  case PragTyp_DATABASE_LIST: {
-    int i;
+  స్థితి PragTyp_DATABASE_LIST: {
+    పూర్ణాంకం i;
     pParse->nMem = 3;
-    for(i=0; i<db->nDb; i++){
-      if( db->aDb[i].pBt==0 ) continue;
-      assert( db->aDb[i].zDbSName!=0 );
-      sqlite3VdbeMultiLoad(v, 1, "iss",
+    కొరకు(i=0; i<db->nDb; i++){
+      ఒకవేళ( db->aDb[i].pBt==0 ) కొనసాగు;
+      ప్రతిజ్ఞా( db->aDb[i].zDbSName!=0 );
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "iss",
          i,
          db->aDb[i].zDbSName,
          sqlite3BtreeGetFilename(db->aDb[i].pBt));
     }
   }
-  break;
+  ఆపు;
 
-  case PragTyp_COLLATION_LIST: {
-    int i = 0;
+  స్థితి PragTyp_COLLATION_LIST: {
+    పూర్ణాంకం i = 0;
     HashElem *p;
     pParse->nMem = 2;
-    for(p=sqliteHashFirst(&db->aCollSeq); p; p=sqliteHashNext(p)){
-      CollSeq *pColl = (CollSeq *)sqliteHashData(p);
-      sqlite3VdbeMultiLoad(v, 1, "is", i++, pColl->zName);
+    కొరకు(p=sqlite_Hash_మొదటి(&db->aCollSeq); p; p=sqlite_Hash_తదుపరి(p)){
+      CollSeq *pColl = (CollSeq *)sqlite_Hash_దత్తాంశం(p);
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "is", i++, pColl->zName);
     }
   }
-  break;
+  ఆపు;
 
-#ifndef SQLITE_OMIT_INTROSPECTION_PRAGMAS
-  case PragTyp_FUNCTION_LIST: {
-    int i;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_INTROSPECTION_PRAGMAS
+  స్థితి PragTyp_FUNCTION_LIST: {
+    పూర్ణాంకం i;
     HashElem *j;
     FuncDef *p;
-    int showInternFunc = (db->mDbFlags & DBFLAG_InternalFunc)!=0;
+    పూర్ణాంకం showInternFunc = (db->mDbFlags & DBFLAG_అంతర్గత_Func)!=0;
     pParse->nMem = 6;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-        pragmaFunclistLine(v, p, 1, showInternFunc);
+    కొరకు(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+      కొరకు(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
+        ప్రతిజ్ఞా( p->funcFlags & SQLITE_FUNC_BUILTIN );
+        pragma_Funclist_పంక్తి(v, p, 1, showInternFunc);
       }
     }
-    for(j=sqliteHashFirst(&db->aFunc); j; j=sqliteHashNext(j)){
-      p = (FuncDef*)sqliteHashData(j);
-      assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
-      pragmaFunclistLine(v, p, 0, showInternFunc);
+    కొరకు(j=sqlite_Hash_మొదటి(&db->aFunc); j; j=sqlite_Hash_తదుపరి(j)){
+      p = (FuncDef*)sqlite_Hash_దత్తాంశం(j);
+      ప్రతిజ్ఞా( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
+      pragma_Funclist_పంక్తి(v, p, 0, showInternFunc);
     }
   }
-  break;
+  ఆపు;
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  case PragTyp_MODULE_LIST: {
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  స్థితి PragTyp_MODULE_LIST: {
     HashElem *j;
     pParse->nMem = 1;
-    for(j=sqliteHashFirst(&db->aModule); j; j=sqliteHashNext(j)){
-      Module *pMod = (Module*)sqliteHashData(j);
-      sqlite3VdbeMultiLoad(v, 1, "s", pMod->zName);
+    కొరకు(j=sqlite_Hash_మొదటి(&db->aModule); j; j=sqlite_Hash_తదుపరి(j)){
+      Module *pMod = (Module*)sqlite_Hash_దత్తాంశం(j);
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "s", pMod->zName);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_VIRTUALTABLE */
 
-  case PragTyp_PRAGMA_LIST: {
-    int i;
-    for(i=0; i<ArraySize(aPragmaName); i++){
-      sqlite3VdbeMultiLoad(v, 1, "s", aPragmaName[i].zName);
+  స్థితి PragTyp_PRAGMA_LIST: {
+    పూర్ణాంకం i;
+    కొరకు(i=0; i<Array_కొలత(aPragmaName); i++){
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "s", aPragmaName[i].zName);
     }
   }
-  break;
-#endif /* SQLITE_INTROSPECTION_PRAGMAS */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_INTROSPECTION_PRAGMAS */
 
-#endif /* SQLITE_OMIT_SCHEMA_PRAGMAS */
+#అయితే_ముగింపు /* SQLITE_OMIT_SCHEMA_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  case PragTyp_FOREIGN_KEY_LIST: if( zRight ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FOREIGN_కీలకం
+  స్థితి Prag_Typ_FOREIGN_కీలకం_LIST: ఒకవేళ( z_కుడి ){
     FKey *pFK;
-    Table *pTab;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab && IsOrdinaryTable(pTab) ){
+    పట్టిక *pTab;
+    pTab = sqlite3_కనుగొను_పట్టిక(db, z_కుడి, zDb);
+    ఒకవేళ( pTab && Is_Ordinary_పట్టిక(pTab) ){
       pFK = pTab->u.tab.pFKey;
-      if( pFK ){
-        int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-        int i = 0;
+      ఒకవేళ( pFK ){
+        పూర్ణాంకం iTabDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
+        పూర్ణాంకం i = 0;
         pParse->nMem = 8;
-        sqlite3CodeVerifySchema(pParse, iTabDb);
-        while(pFK){
-          int j;
-          for(j=0; j<pFK->nCol; j++){
-            sqlite3VdbeMultiLoad(v, 1, "iissssss",
+        sqlite3_సంకేతం_Verify_Schema(pParse, iTabDb);
+        అయితే(pFK){
+          పూర్ణాంకం j;
+          కొరకు(j=0; j<pFK->n_నిలువు; j++){
+            sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "iissssss",
                    i,
                    j,
-                   pFK->zTo,
-                   pTab->aCol[pFK->aCol[j].iFrom].zCnName,
-                   pFK->aCol[j].zCol,
+                   pFK->z_గమ్యం,
+                   pTab->a_నిలువు[pFK->a_నిలువు[j].iFrom].zCnName,
+                   pFK->a_నిలువు[j].z_నిలువు,
                    actionName(pFK->aAction[1]),  /* ON UPDATE */
                    actionName(pFK->aAction[0]),  /* ON DELETE */
                    "NONE");
           }
           ++i;
-          pFK = pFK->pNextFrom;
+          pFK = pFK->p_తదుపరి_From;
         }
       }
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  ఆపు;
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-#ifndef SQLITE_OMIT_TRIGGER
-  case PragTyp_FOREIGN_KEY_CHECK: {
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FOREIGN_కీలకం
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
+  స్థితి Prag_Typ_FOREIGN_కీలకం_CHECK: {
     FKey *pFK;             /* A foreign key constraint */
-    Table *pTab;           /* Child table contain "REFERENCES" keyword */
-    Table *pParent;        /* Parent table that child points to */
-    Index *pIdx;           /* Index in the parent table */
-    int i;                 /* Loop counter:  Foreign key number for pTab */
-    int j;                 /* Loop counter:  Field of the foreign key */
+    పట్టిక *pTab;           /* Child table contain "REFERENCES" keyword */
+    పట్టిక *p_మాతృ;        /* Parent table that child points to */
+    సూచీ *pIdx;           /* Index in the parent table */
+    పూర్ణాంకం i;                 /* Loop counter:  Foreign key number for pTab */
+    పూర్ణాంకం j;                 /* Loop counter:  Field of the foreign key */
     HashElem *k;           /* Loop counter:  Next table in schema */
-    int x;                 /* result variable */
-    int regResult;         /* 3 registers to hold a result row */
-    int regRow;            /* Registers to hold a row from pTab */
-    int addrTop;           /* Top of a loop checking foreign keys */
-    int addrOk;            /* Jump here if the key is OK */
-    int *aiCols;           /* child to parent column mapping */
+    పూర్ణాంకం x;                 /* result variable */
+    పూర్ణాంకం reg_ఫలితం;         /* 3 registers to hold a result row */
+    పూర్ణాంకం reg_అడ్డువరుస;            /* Registers to hold a row from pTab */
+    పూర్ణాంకం addr_శిఖరం;           /* Top of a loop checking foreign keys */
+    పూర్ణాంకం addrOk;            /* Jump here if the key is OK */
+    పూర్ణాంకం *ai_నిలువుల_సంఖ్య;           /* child to parent column mapping */
 
-    regResult = pParse->nMem+1;
+    reg_ఫలితం = pParse->nMem+1;
     pParse->nMem += 4;
-    regRow = ++pParse->nMem;
-    k = sqliteHashFirst(&db->aDb[iDb].pSchema->tblHash);
-    while( k ){
-      if( zRight ){
-        pTab = sqlite3LocateTable(pParse, 0, zRight, zDb);
+    reg_అడ్డువరుస = ++pParse->nMem;
+    k = sqlite_Hash_మొదటి(&db->aDb[iDb].pSchema->tblHash);
+    అయితే( k ){
+      ఒకవేళ( z_కుడి ){
+        pTab = sqlite3_Locate_పట్టిక(pParse, 0, z_కుడి, zDb);
         k = 0;
-      }else{
-        pTab = (Table*)sqliteHashData(k);
-        k = sqliteHashNext(k);
+      }లేకపోతే{
+        pTab = (పట్టిక*)sqlite_Hash_దత్తాంశం(k);
+        k = sqlite_Hash_తదుపరి(k);
       }
-      if( pTab==0 || !IsOrdinaryTable(pTab) || pTab->u.tab.pFKey==0 ) continue;
-      iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+      ఒకవేళ( pTab==0 || !Is_Ordinary_పట్టిక(pTab) || pTab->u.tab.pFKey==0 ) కొనసాగు;
+      iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
       zDb = db->aDb[iDb].zDbSName;
-      sqlite3CodeVerifySchema(pParse, iDb);
-      sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
-      sqlite3TouchRegister(pParse, pTab->nCol+regRow);
-      sqlite3OpenTable(pParse, 0, iDb, pTab, OP_OpenRead);
-      sqlite3VdbeLoadString(v, regResult, pTab->zName);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
-        if( pParent==0 ) continue;
+      sqlite3_సంకేతం_Verify_Schema(pParse, iDb);
+      sqlite3_పట్టిక_తాళం(pParse, iDb, pTab->tnum, 0, pTab->zName);
+      sqlite3_Touch_రిజిస్టరు(pParse, pTab->n_నిలువు+reg_అడ్డువరుస);
+      sqlite3_Open_పట్టిక(pParse, 0, iDb, pTab, OP_OpenRead);
+      sqlite3_Vdbe_ఎక్కించు_String(v, reg_ఫలితం, pTab->zName);
+      ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+      కొరకు(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_తదుపరి_From){
+        p_మాతృ = sqlite3_కనుగొను_పట్టిక(db, pFK->z_గమ్యం, zDb);
+        ఒకవేళ( p_మాతృ==0 ) కొనసాగు;
         pIdx = 0;
-        sqlite3TableLock(pParse, iDb, pParent->tnum, 0, pParent->zName);
-        x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, 0);
-        if( x==0 ){
-          if( pIdx==0 ){
-            sqlite3OpenTable(pParse, i, iDb, pParent, OP_OpenRead);
-          }else{
-            sqlite3VdbeAddOp3(v, OP_OpenRead, i, pIdx->tnum, iDb);
-            sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+        sqlite3_పట్టిక_తాళం(pParse, iDb, p_మాతృ->tnum, 0, p_మాతృ->zName);
+        x = sqlite3_Fk_Locate_సూచీ(pParse, p_మాతృ, pFK, &pIdx, 0);
+        ఒకవేళ( x==0 ){
+          ఒకవేళ( pIdx==0 ){
+            sqlite3_Open_పట్టిక(pParse, i, iDb, p_మాతృ, OP_OpenRead);
+          }లేకపోతే{
+            sqlite3_Vdbe_కూడు_Op3(v, OP_OpenRead, i, pIdx->tnum, iDb);
+            sqlite3_Vdbe_సమితి_P4_కీలకం_Info(pParse, pIdx);
           }
-        }else{
+        }లేకపోతే{
           k = 0;
-          break;
+          ఆపు;
         }
       }
-      assert( pParse->nErr>0 || pFK==0 );
-      if( pFK ) break;
-      if( pParse->nTab<i ) pParse->nTab = i;
-      addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, 0); VdbeCoverage(v);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
+      ప్రతిజ్ఞా( pParse->nErr>0 || pFK==0 );
+      ఒకవేళ( pFK ) ఆపు;
+      ఒకవేళ( pParse->nTab<i ) pParse->nTab = i;
+      addr_శిఖరం = sqlite3_Vdbe_కూడు_Op1(v, OP_Rewind, 0); VdbeCoverage(v);
+      ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+      కొరకు(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_తదుపరి_From){
+        p_మాతృ = sqlite3_కనుగొను_పట్టిక(db, pFK->z_గమ్యం, zDb);
         pIdx = 0;
-        aiCols = 0;
-        if( pParent ){
-          x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, &aiCols);
-          assert( x==0 || db->mallocFailed );
+        ai_నిలువుల_సంఖ్య = 0;
+        ఒకవేళ( p_మాతృ ){
+          x = sqlite3_Fk_Locate_సూచీ(pParse, p_మాతృ, pFK, &pIdx, &ai_నిలువుల_సంఖ్య);
+          ప్రతిజ్ఞా( x==0 || db->mallocFailed );
         }
         addrOk = sqlite3VdbeMakeLabel(pParse);
 
@@ -1617,63 +1617,63 @@ void sqlite3Pragma(
         ** regRow..regRow+n. If any of the child key values are NULL, this
         ** row cannot cause an FK violation. Jump directly to addrOk in
         ** this case. */
-        sqlite3TouchRegister(pParse, regRow + pFK->nCol);
-        for(j=0; j<pFK->nCol; j++){
-          int iCol = aiCols ? aiCols[j] : pFK->aCol[j].iFrom;
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, 0, iCol, regRow+j);
-          sqlite3VdbeAddOp2(v, OP_IsNull, regRow+j, addrOk); VdbeCoverage(v);
+        sqlite3_Touch_రిజిస్టరు(pParse, reg_అడ్డువరుస + pFK->n_నిలువు);
+        కొరకు(j=0; j<pFK->n_నిలువు; j++){
+          పూర్ణాంకం i_నిలువు = ai_నిలువుల_సంఖ్య ? ai_నిలువుల_సంఖ్య[j] : pFK->a_నిలువు[j].iFrom;
+          sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, 0, i_నిలువు, reg_అడ్డువరుస+j);
+          sqlite3_Vdbe_కూడు_Op2(v, OP_IsNull, reg_అడ్డువరుస+j, addrOk); VdbeCoverage(v);
         }
 
         /* Generate code to query the parent index for a matching parent
         ** key. If a match is found, jump to addrOk. */
-        if( pIdx ){
-          sqlite3VdbeAddOp4(v, OP_Affinity, regRow, pFK->nCol, 0,
-              sqlite3IndexAffinityStr(db,pIdx), pFK->nCol);
-          sqlite3VdbeAddOp4Int(v, OP_Found, i, addrOk, regRow, pFK->nCol);
+        ఒకవేళ( pIdx ){
+          sqlite3_Vdbe_కూడు_Op4(v, OP_Affinity, reg_అడ్డువరుస, pFK->n_నిలువు, 0,
+              sqlite3_సూచీ_Affinity_Str(db,pIdx), pFK->n_నిలువు);
+          sqlite3_Vdbe_కూడు_Op4_Int(v, OP_దొరికింది, i, addrOk, reg_అడ్డువరుస, pFK->n_నిలువు);
           VdbeCoverage(v);
-        }else if( pParent ){
-          int jmp = sqlite3VdbeCurrentAddr(v)+2;
-          sqlite3VdbeAddOp3(v, OP_SeekRowid, i, jmp, regRow); VdbeCoverage(v);
+        }లేకపోతే ఒకవేళ( p_మాతృ ){
+          పూర్ణాంకం jmp = sqlite3VdbeCurrentAddr(v)+2;
+          sqlite3_Vdbe_కూడు_Op3(v, OP_SeekRowid, i, jmp, reg_అడ్డువరుస); VdbeCoverage(v);
           sqlite3VdbeGoto(v, addrOk);
-          assert( pFK->nCol==1 || db->mallocFailed );
+          ప్రతిజ్ఞా( pFK->n_నిలువు==1 || db->mallocFailed );
         }
 
         /* Generate code to report an FK violation to the caller. */
-        if( HasRowid(pTab) ){
-          sqlite3VdbeAddOp2(v, OP_Rowid, 0, regResult+1);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Null, 0, regResult+1);
+        ఒకవేళ( HasRowid(pTab) ){
+          sqlite3_Vdbe_కూడు_Op2(v, OP_Rowid, 0, reg_ఫలితం+1);
+        }లేకపోతే{
+          sqlite3_Vdbe_కూడు_Op2(v, OP_Null, 0, reg_ఫలితం+1);
         }
-        sqlite3VdbeMultiLoad(v, regResult+2, "siX", pFK->zTo, i-1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, 4);
+        sqlite3_Vdbe_Multi_ఎక్కించు(v, reg_ఫలితం+2, "siX", pFK->z_గమ్యం, i-1);
+        sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, reg_ఫలితం, 4);
         sqlite3VdbeResolveLabel(v, addrOk);
-        sqlite3DbFree(db, aiCols);
+        sqlite3DbFree(db, ai_నిలువుల_సంఖ్య);
       }
-      sqlite3VdbeAddOp2(v, OP_Next, 0, addrTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrTop);
+      sqlite3_Vdbe_కూడు_Op2(v, OP_తదుపరి, 0, addr_శిఖరం+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_ఇక్కడ(v, addr_శిఖరం);
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_TRIGGER) */
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  ఆపు;
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_TRIGGER) */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
   /* Reinstall the LIKE and GLOB functions.  The variant of LIKE
   ** used will be case sensitive or not depending on the RHS.
   */
-  case PragTyp_CASE_SENSITIVE_LIKE: {
-    if( zRight ){
-      sqlite3RegisterLikeFunctions(db, sqlite3GetBoolean(zRight, 0));
+  స్థితి PragTyp_CASE_SENSITIVE_LIKE: {
+    ఒకవేళ( z_కుడి ){
+      sqlite3_రిజిస్టరు_Like_Functions(db, sqlite3GetBoolean(z_కుడి, 0));
     }
   }
-  break;
-#endif /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
 
-#ifndef SQLITE_INTEGRITY_CHECK_ERROR_MAX
+#నిర్వచితం_కాకపోతే SQLITE_INTEGRITY_CHECK_ERROR_MAX
 # define SQLITE_INTEGRITY_CHECK_ERROR_MAX 100
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_INTEGRITY_CHECK
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_INTEGRITY_CHECK
   /*    PRAGMA integrity_check
   **    PRAGMA integrity_check(N)
   **    PRAGMA quick_check
@@ -1698,11 +1698,11 @@ void sqlite3Pragma(
   **
   **      PRAGMA schema.integrity_check;
   */
-  case PragTyp_INTEGRITY_CHECK: {
-    int i, j, addr, mxErr;
-    Table *pObjTab = 0;     /* Check only this one table, if not NULL */
+  స్థితి PragTyp_INTEGRITY_CHECK: {
+    పూర్ణాంకం i, j, addr, mxErr;
+    పట్టిక *pObjTab = 0;     /* Check only this one table, if not NULL */
 
-    int isQuick = (sqlite3Tolower(zLeft[0])=='q');
+    పూర్ణాంకం is_శీఘ్ర = (sqlite3Tolower(z_ఎడమ[0])=='q');
 
     /* If the PRAGMA command was of the form "PRAGMA <db>.integrity_check",
     ** then iDb is set to the index of the database identified by <db>.
@@ -1713,112 +1713,112 @@ void sqlite3Pragma(
     ** "PRAGMA quick_check"), then iDb is set to 0. In this case, set iDb
     ** to -1 here, to indicate that the VDBE should verify the integrity
     ** of all attached databases.  */
-    assert( iDb>=0 );
-    assert( iDb==0 || pId2->z );
-    if( pId2->z==0 ) iDb = -1;
+    ప్రతిజ్ఞా( iDb>=0 );
+    ప్రతిజ్ఞా( iDb==0 || pId2->z );
+    ఒకవేళ( pId2->z==0 ) iDb = -1;
 
     /* Initialize the VDBE program */
     pParse->nMem = 6;
 
     /* Set the maximum error count */
     mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
-    if( zRight ){
-      if( sqlite3GetInt32(pValue->z, &mxErr) ){
-        if( mxErr<=0 ){
+    ఒకవేళ( z_కుడి ){
+      ఒకవేళ( sqlite3GetInt32(p_విలువ->z, &mxErr) ){
+        ఒకవేళ( mxErr<=0 ){
           mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
         }
-      }else{
-        pObjTab = sqlite3LocateTable(pParse, 0, zRight,
+      }లేకపోతే{
+        pObjTab = sqlite3_Locate_పట్టిక(pParse, 0, z_కుడి,
                       iDb>=0 ? db->aDb[iDb].zDbSName : 0);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
+    sqlite3_Vdbe_కూడు_Op2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
 
     /* Do an integrity check on each database file */
-    for(i=0; i<db->nDb; i++){
+    కొరకు(i=0; i<db->nDb; i++){
       HashElem *x;     /* For looping over tables in the schema */
       Hash *pTbls;     /* Set of all tables in the schema */
-      int *aRoot;      /* Array of root page numbers of all btrees */
-      int cnt = 0;     /* Number of entries in aRoot[] */
+      పూర్ణాంకం *a_మూలం;      /* Array of root page numbers of all btrees */
+      పూర్ణాంకం cnt = 0;     /* Number of entries in aRoot[] */
 
-      if( OMIT_TEMPDB && i==1 ) continue;
-      if( iDb>=0 && i!=iDb ) continue;
+      ఒకవేళ( OMIT_TEMPDB && i==1 ) కొనసాగు;
+      ఒకవేళ( iDb>=0 && i!=iDb ) కొనసాగు;
 
-      sqlite3CodeVerifySchema(pParse, i);
-      pParse->okConstFactor = 0;  /* tag-20230327-1 */
+      sqlite3_సంకేతం_Verify_Schema(pParse, i);
+      pParse->ok_Const_గుణకం = 0;  /* tag-20230327-1 */
 
       /* Do an integrity check of the B-Tree
       **
       ** Begin by finding the root pages numbers
       ** for all tables and indices in the database.
       */
-      assert( sqlite3SchemaMutexHeld(db, i, 0) );
+      ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, i, 0) );
       pTbls = &db->aDb[i].pSchema->tblHash;
-      for(cnt=0, x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);  /* Current table */
-        Index *pIdx;                      /* An index on pTab */
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) cnt++;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){ cnt++; }
+      కొరకు(cnt=0, x=sqlite_Hash_మొదటి(pTbls); x; x=sqlite_Hash_తదుపరి(x)){
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(x);  /* Current table */
+        సూచీ *pIdx;                      /* An index on pTab */
+        ఒకవేళ( పట్టిక_Skip_Integrity_Check(pTab,pObjTab) ) కొనసాగు;
+        ఒకవేళ( HasRowid(pTab) ) cnt++;
+        కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){ cnt++; }
       }
-      if( cnt==0 ) continue;
-      if( pObjTab ) cnt++;
-      aRoot = sqlite3DbMallocRawNN(db, sizeof(int)*(cnt+1));
-      if( aRoot==0 ) break;
+      ఒకవేళ( cnt==0 ) కొనసాగు;
+      ఒకవేళ( pObjTab ) cnt++;
+      a_మూలం = sqlite3DbMallocRawNN(db, పరిమాణం(పూర్ణాంకం)*(cnt+1));
+      ఒకవేళ( a_మూలం==0 ) ఆపు;
       cnt = 0;
-      if( pObjTab ) aRoot[++cnt] = 0;
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) aRoot[++cnt] = pTab->tnum;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          aRoot[++cnt] = pIdx->tnum;
+      ఒకవేళ( pObjTab ) a_మూలం[++cnt] = 0;
+      కొరకు(x=sqlite_Hash_మొదటి(pTbls); x; x=sqlite_Hash_తదుపరి(x)){
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(x);
+        సూచీ *pIdx;
+        ఒకవేళ( పట్టిక_Skip_Integrity_Check(pTab,pObjTab) ) కొనసాగు;
+        ఒకవేళ( HasRowid(pTab) ) a_మూలం[++cnt] = pTab->tnum;
+        కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+          a_మూలం[++cnt] = pIdx->tnum;
         }
       }
-      aRoot[0] = cnt;
+      a_మూలం[0] = cnt;
 
       /* Make sure sufficient number of registers have been allocated */
-      sqlite3TouchRegister(pParse, 8+cnt);
-      sqlite3VdbeAddOp3(v, OP_Null, 0, 8, 8+cnt);
-      sqlite3ClearTempRegCache(pParse);
+      sqlite3_Touch_రిజిస్టరు(pParse, 8+cnt);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_Null, 0, 8, 8+cnt);
+      sqlite3_Clear_తాత్కాలిక_Reg_Cache(pParse);
 
       /* Do the b-tree integrity checks */
-      sqlite3VdbeAddOp4(v, OP_IntegrityCk, 1, cnt, 8, (char*)aRoot,P4_INTARRAY);
+      sqlite3_Vdbe_కూడు_Op4(v, OP_IntegrityCk, 1, cnt, 8, (అక్షరం*)a_మూలం,P4_INTARRAY);
       sqlite3VdbeChangeP5(v, (u16)i);
-      addr = sqlite3VdbeAddOp1(v, OP_IsNull, 2); VdbeCoverage(v);
-      sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+      addr = sqlite3_Vdbe_కూడు_Op1(v, OP_IsNull, 2); VdbeCoverage(v);
+      sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0,
          sqlite3MPrintf(db, "*** in database %s ***\n", db->aDb[i].zDbSName),
          P4_DYNAMIC);
-      sqlite3VdbeAddOp3(v, OP_Concat, 2, 3, 3);
-      integrityCheckResultRow(v);
-      sqlite3VdbeJumpHere(v, addr);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 2, 3, 3);
+      integrity_Check_ఫలితం_అడ్డువరుస(v);
+      sqlite3_Vdbe_Jump_ఇక్కడ(v, addr);
 
       /* Check that the indexes all have the right number of rows */
       cnt = pObjTab ? 1 : 0;
-      sqlite3VdbeLoadString(v, 2, "wrong # of entries in index ");
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        int iTab = 0;
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ){
+      sqlite3_Vdbe_ఎక్కించు_String(v, 2, "wrong # of entries in index ");
+      కొరకు(x=sqlite_Hash_మొదటి(pTbls); x; x=sqlite_Hash_తదుపరి(x)){
+        పూర్ణాంకం iTab = 0;
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(x);
+        సూచీ *pIdx;
+        ఒకవేళ( పట్టిక_Skip_Integrity_Check(pTab,pObjTab) ) కొనసాగు;
+        ఒకవేళ( HasRowid(pTab) ){
           iTab = cnt++;
-        }else{
+        }లేకపోతే{
           iTab = cnt;
-          for(pIdx=pTab->pIndex; ALWAYS(pIdx); pIdx=pIdx->pNext){
-            if( IsPrimaryKeyIndex(pIdx) ) break;
+          కొరకు(pIdx=pTab->p_సూచీ; ALWAYS(pIdx); pIdx=pIdx->p_తదుపరి){
+            ఒకవేళ( Is_Primary_కీలకం_సూచీ(pIdx) ) ఆపు;
             iTab++;
           }
         }
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          if( pIdx->pPartIdxWhere==0 ){
-            addr = sqlite3VdbeAddOp3(v, OP_Eq, 8+cnt, 0, 8+iTab);
+        కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+          ఒకవేళ( pIdx->pPartIdxWhere==0 ){
+            addr = sqlite3_Vdbe_కూడు_Op3(v, OP_Eq, 8+cnt, 0, 8+iTab);
             VdbeCoverageNeverNull(v);
-            sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 2, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, addr);
+            sqlite3_Vdbe_ఎక్కించు_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 4, 2, 3);
+            integrity_Check_ఫలితం_అడ్డువరుస(v);
+            sqlite3_Vdbe_Jump_ఇక్కడ(v, addr);
           }
           cnt++;
         }
@@ -1826,81 +1826,81 @@ void sqlite3Pragma(
 
       /* Make sure all the indices are constructed correctly.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx, *pPk;
-        Index *pPrior = 0;      /* Previous index */
-        int loopTop;
-        int iDataCur, iIdxCur;
-        int r1 = -1;
-        int bStrict;            /* True for a STRICT table */
-        int r2;                 /* Previous key for WITHOUT ROWID tables */
-        int mxCol;              /* Maximum non-virtual column number */
+      కొరకు(x=sqlite_Hash_మొదటి(pTbls); x; x=sqlite_Hash_తదుపరి(x)){
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(x);
+        సూచీ *pIdx, *pPk;
+        సూచీ *p_పూర్వ = 0;      /* Previous index */
+        పూర్ణాంకం loop_శిఖరం;
+        పూర్ణాంకం i_దత్తాంశం_Cur, iIdxCur;
+        పూర్ణాంకం r1 = -1;
+        పూర్ణాంకం bStrict;            /* True for a STRICT table */
+        పూర్ణాంకం r2;                 /* Previous key for WITHOUT ROWID tables */
+        పూర్ణాంకం mx_నిలువు;              /* Maximum non-virtual column number */
 
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( !IsOrdinaryTable(pTab) ) continue;
-        if( isQuick || HasRowid(pTab) ){
+        ఒకవేళ( పట్టిక_Skip_Integrity_Check(pTab,pObjTab) ) కొనసాగు;
+        ఒకవేళ( !Is_Ordinary_పట్టిక(pTab) ) కొనసాగు;
+        ఒకవేళ( is_శీఘ్ర || HasRowid(pTab) ){
           pPk = 0;
           r2 = 0;
-        }else{
-          pPk = sqlite3PrimaryKeyIndex(pTab);
-          r2 = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-          sqlite3VdbeAddOp3(v, OP_Null, 1, r2, r2+pPk->nKeyCol-1);
+        }లేకపోతే{
+          pPk = sqlite3_Primary_కీలకం_సూచీ(pTab);
+          r2 = sqlite3_Get_తాత్కాలిక_Range(pParse, pPk->n_కీలకం_నిలువు);
+          sqlite3_Vdbe_కూడు_Op3(v, OP_Null, 1, r2, r2+pPk->n_కీలకం_నిలువు-1);
         }
-        sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenRead, 0,
-                                   1, 0, &iDataCur, &iIdxCur);
+        sqlite3_Open_పట్టిక_And_Indices(pParse, pTab, OP_OpenRead, 0,
+                                   1, 0, &i_దత్తాంశం_Cur, &iIdxCur);
         /* reg[7] counts the number of entries in the table.
         ** reg[8+i] counts the number of entries in the i-th index
         */
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, 7);
-        for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-          sqlite3VdbeAddOp2(v, OP_Integer, 0, 8+j); /* index entries counter */
+        sqlite3_Vdbe_కూడు_Op2(v, OP_Integer, 0, 7);
+        కొరకు(j=0, pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి, j++){
+          sqlite3_Vdbe_కూడు_Op2(v, OP_Integer, 0, 8+j); /* index entries counter */
         }
-        assert( pParse->nMem>=8+j );
-        assert( sqlite3NoTempsInRange(pParse,1,7+j) );
-        sqlite3VdbeAddOp2(v, OP_Rewind, iDataCur, 0); VdbeCoverage(v);
-        loopTop = sqlite3VdbeAddOp2(v, OP_AddImm, 7, 1);
+        ప్రతిజ్ఞా( pParse->nMem>=8+j );
+        ప్రతిజ్ఞా( sqlite3_No_Temps_లోపల_Range(pParse,1,7+j) );
+        sqlite3_Vdbe_కూడు_Op2(v, OP_Rewind, i_దత్తాంశం_Cur, 0); VdbeCoverage(v);
+        loop_శిఖరం = sqlite3_Vdbe_కూడు_Op2(v, OP_కూడు_Imm, 7, 1);
 
         /* Fetch the right-most column from the table.  This will cause
         ** the entire record header to be parsed and sanity checked.  It
         ** will also prepopulate the cursor column cache that is used
         ** by the OP_IsType code, so it is a required step.
         */
-        assert( !IsVirtual(pTab) );
-        if( HasRowid(pTab) ){
-          mxCol = -1;
-          for(j=0; j<pTab->nCol; j++){
-            if( (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)==0 ) mxCol++;
+        ప్రతిజ్ఞా( !IsVirtual(pTab) );
+        ఒకవేళ( HasRowid(pTab) ){
+          mx_నిలువు = -1;
+          కొరకు(j=0; j<pTab->n_నిలువు; j++){
+            ఒకవేళ( (pTab->a_నిలువు[j].నిలువు_Flags & COLFLAG_VIRTUAL)==0 ) mx_నిలువు++;
           }
-          if( mxCol==pTab->iPKey ) mxCol--;
-        }else{
+          ఒకవేళ( mx_నిలువు==pTab->iPKey ) mx_నిలువు--;
+        }లేకపోతే{
           /* COLFLAG_VIRTUAL columns are not included in the WITHOUT ROWID
           ** PK index column-count, so there is no need to account for them
           ** in this case. */
-          mxCol = sqlite3PrimaryKeyIndex(pTab)->nColumn-1;
+          mx_నిలువు = sqlite3_Primary_కీలకం_సూచీ(pTab)->n_స్తంభం-1;
         }
-        if( mxCol>=0 ){
-          sqlite3VdbeAddOp3(v, OP_Column, iDataCur, mxCol, 3);
-          sqlite3VdbeTypeofColumn(v, 3);
+        ఒకవేళ( mx_నిలువు>=0 ){
+          sqlite3_Vdbe_కూడు_Op3(v, OP_స్తంభం, i_దత్తాంశం_Cur, mx_నిలువు, 3);
+          sqlite3_Vdbe_Typeof_స్తంభం(v, 3);
         }
 
-        if( !isQuick ){
-          if( pPk ){
+        ఒకవేళ( !is_శీఘ్ర ){
+          ఒకవేళ( pPk ){
             /* Verify WITHOUT ROWID keys are in ascending order */
-            int a1;
-            char *zErr;
-            a1 = sqlite3VdbeAddOp4Int(v, OP_IdxGT, iDataCur, 0,r2,pPk->nKeyCol);
+            పూర్ణాంకం a1;
+            అక్షరం *zErr;
+            a1 = sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IdxGT, i_దత్తాంశం_Cur, 0,r2,pPk->n_కీలకం_నిలువు);
             VdbeCoverage(v);
-            sqlite3VdbeAddOp1(v, OP_IsNull, r2); VdbeCoverage(v);
+            sqlite3_Vdbe_కూడు_Op1(v, OP_IsNull, r2); VdbeCoverage(v);
             zErr = sqlite3MPrintf(db,
                    "row not in PRIMARY KEY order for %s",
                     pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, a1);
-            sqlite3VdbeJumpHere(v, a1+1);
-            for(j=0; j<pPk->nKeyCol; j++){
-              sqlite3ExprCodeLoadIndexColumn(pParse, pPk, iDataCur, j, r2+j);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_ఫలితం_అడ్డువరుస(v);
+            sqlite3_Vdbe_Jump_ఇక్కడ(v, a1);
+            sqlite3_Vdbe_Jump_ఇక్కడ(v, a1+1);
+            కొరకు(j=0; j<pPk->n_కీలకం_నిలువు; j++){
+              sqlite3_సమాసం_సంకేతం_ఎక్కించు_సూచీ_స్తంభం(pParse, pPk, i_దత్తాంశం_Cur, j, r2+j);
             }
           }
         }
@@ -1914,317 +1914,317 @@ void sqlite3Pragma(
         **       be a TEXT value that can be losslessly converted to numeric.
         */
         bStrict = (pTab->tabFlags & TF_Strict)!=0;
-        for(j=0; j<pTab->nCol; j++){
-          char *zErr;
-          Column *pCol = pTab->aCol + j;  /* The column to be checked */
-          int labelError;               /* Jump here to report an error */
-          int labelOk;                  /* Jump here if all looks ok */
-          int p1, p3, p4;               /* Operands to the OP_IsType opcode */
-          int doTypeCheck;              /* Check datatypes (besides NOT NULL) */
+        కొరకు(j=0; j<pTab->n_నిలువు; j++){
+          అక్షరం *zErr;
+          స్తంభం *p_నిలువు = pTab->a_నిలువు + j;  /* The column to be checked */
+          పూర్ణాంకం labelError;               /* Jump here to report an error */
+          పూర్ణాంకం labelOk;                  /* Jump here if all looks ok */
+          పూర్ణాంకం p1, p3, p4;               /* Operands to the OP_IsType opcode */
+          పూర్ణాంకం doTypeCheck;              /* Check datatypes (besides NOT NULL) */
 
-          if( j==pTab->iPKey ) continue;
-          if( bStrict ){
-            doTypeCheck = pCol->eCType>COLTYPE_ANY;
-          }else{
-            doTypeCheck = pCol->affinity>SQLITE_AFF_BLOB;
+          ఒకవేళ( j==pTab->iPKey ) కొనసాగు;
+          ఒకవేళ( bStrict ){
+            doTypeCheck = p_నిలువు->eCType>COLTYPE_ANY;
+          }లేకపోతే{
+            doTypeCheck = p_నిలువు->affinity>SQLITE_AFF_BLOB;
           }
-          if( pCol->notNull==0 && !doTypeCheck ) continue;
+          ఒకవేళ( p_నిలువు->notNull==0 && !doTypeCheck ) కొనసాగు;
 
           /* Compute the operands that will be needed for OP_IsType */
           p4 = SQLITE_NULL;
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
-            sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+          ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_VIRTUAL ){
+            sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, i_దత్తాంశం_Cur, j, 3);
             p1 = -1;
             p3 = 3;
-          }else{
-            if( pCol->iDflt ){
-              sqlite3_value *pDfltValue = 0;
-              sqlite3ValueFromExpr(db, sqlite3ColumnExprAuth(pTab,pCol,pParse),
-                                   ENC(db), pCol->affinity, &pDfltValue);
-              if( pDfltValue ){
-                p4 = sqlite3_value_type(pDfltValue);
-                sqlite3ValueFree(pDfltValue);
+          }లేకపోతే{
+            ఒకవేళ( p_నిలువు->iDflt ){
+              sqlite3_విలువ *p_Dflt_విలువ = 0;
+              sqlite3_విలువ_From_సమాసం(db, sqlite3_స్తంభం_సమాసం_Auth(pTab,p_నిలువు,pParse),
+                                   ENC(db), p_నిలువు->affinity, &p_Dflt_విలువ);
+              ఒకవేళ( p_Dflt_విలువ ){
+                p4 = sqlite3_విలువ_type(p_Dflt_విలువ);
+                sqlite3_విలువ_Free(p_Dflt_విలువ);
               }
             }
-            p1 = iDataCur;
-            if( !HasRowid(pTab) ){
-              testcase( j!=sqlite3TableColumnToStorage(pTab, j) );
-              p3 = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), j);
-            }else{
-              p3 = sqlite3TableColumnToStorage(pTab,j);
+            p1 = i_దత్తాంశం_Cur;
+            ఒకవేళ( !HasRowid(pTab) ){
+              testcase( j!=sqlite3_పట్టిక_స్తంభం_గమ్యం_Storage(pTab, j) );
+              p3 = sqlite3_పట్టిక_స్తంభం_గమ్యం_సూచీ(sqlite3_Primary_కీలకం_సూచీ(pTab), j);
+            }లేకపోతే{
+              p3 = sqlite3_పట్టిక_స్తంభం_గమ్యం_Storage(pTab,j);
               testcase( p3!=j);
             }
           }
 
           labelError = sqlite3VdbeMakeLabel(pParse);
           labelOk = sqlite3VdbeMakeLabel(pParse);
-          if( pCol->notNull ){
+          ఒకవేళ( p_నిలువు->notNull ){
             /* (1) NOT NULL columns may not contain a NULL */
-            int jmp3;
-            int jmp2 = sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            పూర్ణాంకం jmp3;
+            పూర్ణాంకం jmp2 = sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             VdbeCoverage(v);
-            if( p1<0 ){
+            ఒకవేళ( p1<0 ){
               sqlite3VdbeChangeP5(v, 0x0f); /* INT, REAL, TEXT, or BLOB */
               jmp3 = jmp2;
-            }else{
+            }లేకపోతే{
               sqlite3VdbeChangeP5(v, 0x0d); /* INT, TEXT, or BLOB */
               /* OP_IsType does not detect NaN values in the database file
               ** which should be treated as a NULL.  So if the header type
               ** is REAL, we have to load the actual data using OP_Column
               ** to reliably determine if the value is a NULL. */
-              sqlite3VdbeAddOp3(v, OP_Column, p1, p3, 3);
-              sqlite3ColumnDefault(v, pTab, j, 3);
-              jmp3 = sqlite3VdbeAddOp2(v, OP_NotNull, 3, labelOk);
+              sqlite3_Vdbe_కూడు_Op3(v, OP_స్తంభం, p1, p3, 3);
+              sqlite3_స్తంభం_Default(v, pTab, j, 3);
+              jmp3 = sqlite3_Vdbe_కూడు_Op2(v, OP_NotNull, 3, labelOk);
               VdbeCoverage(v);
             }           
             zErr = sqlite3MPrintf(db, "NULL value in %s.%s", pTab->zName,
-                                pCol->zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            if( doTypeCheck ){
+                                p_నిలువు->zCnName);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            ఒకవేళ( doTypeCheck ){
               sqlite3VdbeGoto(v, labelError);
-              sqlite3VdbeJumpHere(v, jmp2);
-              sqlite3VdbeJumpHere(v, jmp3);
-            }else{
+              sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp2);
+              sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp3);
+            }లేకపోతే{
               /* VDBE byte code will fall thru */
             }
           }
-          if( bStrict && doTypeCheck ){
+          ఒకవేళ( bStrict && doTypeCheck ){
             /* (2) Datatype must be exact for non-ANY columns in STRICT tables*/
-            static unsigned char aStdTypeMask[] = {
+            స్థిర గుర్తులేని అక్షరం a_Std_Type_ముసుగు[] = {
                0x1f,    /* ANY */
                0x18,    /* BLOB */
                0x11,    /* INT */
                0x11,    /* INTEGER */
                0x13,    /* REAL */
-               0x14     /* TEXT */
+               0x14     /*పాఠ్యం*/
             };
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
-            assert( pCol->eCType>=1 && pCol->eCType<=sizeof(aStdTypeMask) );
-            sqlite3VdbeChangeP5(v, aStdTypeMask[pCol->eCType-1]);
+            sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
+            ప్రతిజ్ఞా( p_నిలువు->eCType>=1 && p_నిలువు->eCType<=పరిమాణం(a_Std_Type_ముసుగు) );
+            sqlite3VdbeChangeP5(v, a_Std_Type_ముసుగు[p_నిలువు->eCType-1]);
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "non-%s value in %s.%s",
-                                  sqlite3StdType[pCol->eCType-1],
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity==SQLITE_AFF_TEXT ){
+                                  sqlite3StdType[p_నిలువు->eCType-1],
+                                  pTab->zName, pTab->a_నిలువు[j].zCnName);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }లేకపోతే ఒకవేళ( !bStrict && p_నిలువు->affinity==SQLITE_AFF_పాఠ్యం ){
             /* (3) Datatype for TEXT columns in non-STRICT tables must be
             **     NULL, TEXT, or BLOB. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "NUMERIC value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity>=SQLITE_AFF_NUMERIC ){
+                                  pTab->zName, pTab->a_నిలువు[j].zCnName);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }లేకపోతే ఒకవేళ( !bStrict && p_నిలువు->affinity>=SQLITE_AFF_NUMERIC ){
             /* (4) Datatype for numeric columns in non-STRICT tables must not
             **     be a TEXT value that can be converted to numeric. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1b); /* NULL, INT, FLOAT, or BLOB */
             VdbeCoverage(v);
-            if( p1>=0 ){
-              sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+            ఒకవేళ( p1>=0 ){
+              sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, i_దత్తాంశం_Cur, j, 3);
             }
-            sqlite3VdbeAddOp4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
-            sqlite3VdbeAddOp4Int(v, OP_IsType, -1, labelOk, 3, p4);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
+            sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IsType, -1, labelOk, 3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "TEXT value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+                                  pTab->zName, pTab->a_నిలువు[j].zCnName);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
           }
           sqlite3VdbeResolveLabel(v, labelError);
-          integrityCheckResultRow(v);
+          integrity_Check_ఫలితం_అడ్డువరుస(v);
           sqlite3VdbeResolveLabel(v, labelOk);
         }
         /* Verify CHECK constraints */
-        if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-          ExprList *pCheck = sqlite3ExprListDup(db, pTab->pCheck, 0);
-          if( db->mallocFailed==0 ){
-            int addrCkFault = sqlite3VdbeMakeLabel(pParse);
-            int addrCkOk = sqlite3VdbeMakeLabel(pParse);
-            char *zErr;
-            int k;
-            pParse->iSelfTab = iDataCur + 1;
-            for(k=pCheck->nExpr-1; k>0; k--){
-              sqlite3ExprIfFalse(pParse, pCheck->a[k].pExpr, addrCkFault, 0);
+        ఒకవేళ( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+          సమాసం_List *pCheck = sqlite3_సమాసం_List_Dup(db, pTab->pCheck, 0);
+          ఒకవేళ( db->mallocFailed==0 ){
+            పూర్ణాంకం addrCkFault = sqlite3VdbeMakeLabel(pParse);
+            పూర్ణాంకం addrCkOk = sqlite3VdbeMakeLabel(pParse);
+            అక్షరం *zErr;
+            పూర్ణాంకం k;
+            pParse->iSelfTab = i_దత్తాంశం_Cur + 1;
+            కొరకు(k=pCheck->n_సమాసం-1; k>0; k--){
+              sqlite3_సమాసం_If_False(pParse, pCheck->a[k].p_సమాసం, addrCkFault, 0);
             }
-            sqlite3ExprIfTrue(pParse, pCheck->a[0].pExpr, addrCkOk,
+            sqlite3_సమాసం_If_True(pParse, pCheck->a[0].p_సమాసం, addrCkOk,
                 SQLITE_JUMPIFNULL);
             sqlite3VdbeResolveLabel(v, addrCkFault);
             pParse->iSelfTab = 0;
             zErr = sqlite3MPrintf(db, "CHECK constraint failed in %s",
                 pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_ఫలితం_అడ్డువరుస(v);
             sqlite3VdbeResolveLabel(v, addrCkOk);
           }
-          sqlite3ExprListDelete(db, pCheck);
+          sqlite3_సమాసం_List_Delete(db, pCheck);
         }
-        if( !isQuick ){ /* Omit the remaining tests for quick_check */
+        ఒకవేళ( !is_శీఘ్ర ){ /* Omit the remaining tests for quick_check */
           /* Validate index entries for the current row */
-          for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-            int jmp2, jmp3, jmp4, jmp5, label6;
-            int kk;
-            int ckUniq = sqlite3VdbeMakeLabel(pParse);
-            if( pPk==pIdx ) continue;
-            r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 0, &jmp3,
-                                         pPrior, r1);
-            pPrior = pIdx;
-            sqlite3VdbeAddOp2(v, OP_AddImm, 8+j, 1);/* increment entry count */
+          కొరకు(j=0, pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి, j++){
+            పూర్ణాంకం jmp2, jmp3, jmp4, jmp5, label6;
+            పూర్ణాంకం kk;
+            పూర్ణాంకం ckUniq = sqlite3VdbeMakeLabel(pParse);
+            ఒకవేళ( pPk==pIdx ) కొనసాగు;
+            r1 = sqlite3_Generate_సూచీ_కీలకం(pParse, pIdx, i_దత్తాంశం_Cur, 0, 0, &jmp3,
+                                         p_పూర్వ, r1);
+            p_పూర్వ = pIdx;
+            sqlite3_Vdbe_కూడు_Op2(v, OP_కూడు_Imm, 8+j, 1);/* increment entry count */
             /* Verify that an index entry exists for the current table row */
-            sqlite3VdbeAddOp4Int(v, OP_Found, iIdxCur+j, ckUniq, r1,
-                                        pIdx->nColumn); VdbeCoverage(v);
-            jmp2 = sqlite3VdbeAddOp3(v, OP_IFindKey, iIdxCur+j, ckUniq, r1); 
+            sqlite3_Vdbe_కూడు_Op4_Int(v, OP_దొరికింది, iIdxCur+j, ckUniq, r1,
+                                        pIdx->n_స్తంభం); VdbeCoverage(v);
+            jmp2 = sqlite3_Vdbe_కూడు_Op3(v, OP_IFind_కీలకం, iIdxCur+j, ckUniq, r1); 
             VdbeCoverage(v);
-            sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+            sqlite3VdbeChangeP4(v, -1, (స్థిరరాశి అక్షరం*)pIdx, P4_సూచీ);
+            sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, 3, 0,
               sqlite3MPrintf(db, "index %s stores an imprecise floating-point "
                                  "value for row ", pIdx->zName),
               P4_DYNAMIC);
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeAddOp2(v, OP_Goto, 0, ckUniq);
+            sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 7, 3, 3);
+            integrity_Check_ఫలితం_అడ్డువరుస(v);
+            sqlite3_Vdbe_కూడు_Op2(v, OP_Goto, 0, ckUniq);
 
-            sqlite3VdbeJumpHere(v, jmp2);
-            sqlite3VdbeLoadString(v, 3, "row ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            sqlite3VdbeLoadString(v, 4, " missing from index ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp5 = sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp4 = integrityCheckResultRow(v);
+            sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp2);
+            sqlite3_Vdbe_ఎక్కించు_String(v, 3, "row ");
+            sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 7, 3, 3);
+            sqlite3_Vdbe_ఎక్కించు_String(v, 4, " missing from index ");
+            sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 4, 3, 3);
+            jmp5 = sqlite3_Vdbe_ఎక్కించు_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 4, 3, 3);
+            jmp4 = integrity_Check_ఫలితం_అడ్డువరుస(v);
             sqlite3VdbeResolveLabel(v, ckUniq);
 
             /* The OP_IdxRowid opcode is an optimized version of OP_Column
             ** that extracts the rowid off the end of the index record.
             ** But it only works correctly if index record does not have
             ** any extra bytes at the end.  Verify that this is the case. */
-            if( HasRowid(pTab) ){
-              int jmp7;
-              sqlite3VdbeAddOp2(v, OP_IdxRowid, iIdxCur+j, 3);
-              jmp7 = sqlite3VdbeAddOp3(v, OP_Eq, 3, 0, r1+pIdx->nColumn-1);
+            ఒకవేళ( HasRowid(pTab) ){
+              పూర్ణాంకం jmp7;
+              sqlite3_Vdbe_కూడు_Op2(v, OP_IdxRowid, iIdxCur+j, 3);
+              jmp7 = sqlite3_Vdbe_కూడు_Op3(v, OP_Eq, 3, 0, r1+pIdx->n_స్తంభం-1);
               VdbeCoverageNeverNull(v);
-              sqlite3VdbeLoadString(v, 3,
+              sqlite3_Vdbe_ఎక్కించు_String(v, 3,
                  "rowid not at end-of-record for row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " of index ");
+              sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_ఎక్కించు_String(v, 4, " of index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp7);
+              sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp7);
             }
 
             /* Any indexed columns with non-BINARY collations must still hold
             ** the exact same text value as the table. */
             label6 = 0;
-            for(kk=0; kk<pIdx->nKeyCol; kk++){
-              if( pIdx->azColl[kk]==sqlite3StrBINARY ) continue;
-              if( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
-              sqlite3VdbeAddOp3(v, OP_Column, iIdxCur+j, kk, 3);
-              sqlite3VdbeAddOp3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
+            కొరకు(kk=0; kk<pIdx->n_కీలకం_నిలువు; kk++){
+              ఒకవేళ( pIdx->azColl[kk]==sqlite3_Str_ద్విమాన ) కొనసాగు;
+              ఒకవేళ( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
+              sqlite3_Vdbe_కూడు_Op3(v, OP_స్తంభం, iIdxCur+j, kk, 3);
+              sqlite3_Vdbe_కూడు_Op3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
             }
-            if( label6 ){
-              int jmp6 = sqlite3VdbeAddOp0(v, OP_Goto);
+            ఒకవేళ( label6 ){
+              పూర్ణాంకం jmp6 = sqlite3_Vdbe_కూడు_Op0(v, OP_Goto);
               sqlite3VdbeResolveLabel(v, label6);
-              sqlite3VdbeLoadString(v, 3, "row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " values differ from index ");
+              sqlite3_Vdbe_ఎక్కించు_String(v, 3, "row ");
+              sqlite3_Vdbe_కూడు_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_ఎక్కించు_String(v, 4, " values differ from index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp6);
+              sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp6);
             }
              
             /* For UNIQUE indexes, verify that only one entry exists with the
             ** current key.  The entry is unique if (1) any column is NULL
             ** or (2) the next entry has a different key */
-            if( IsUniqueIndex(pIdx) ){
-              int uniqOk = sqlite3VdbeMakeLabel(pParse);
-              int jmp6;
-              for(kk=0; kk<pIdx->nKeyCol; kk++){
-                int iCol = pIdx->aiColumn[kk];
-                assert( iCol!=XN_ROWID && iCol<pTab->nCol );
-                if( iCol>=0 && pTab->aCol[iCol].notNull ) continue;
-                sqlite3VdbeAddOp2(v, OP_IsNull, r1+kk, uniqOk);
+            ఒకవేళ( Is_Unique_సూచీ(pIdx) ){
+              పూర్ణాంకం uniqOk = sqlite3VdbeMakeLabel(pParse);
+              పూర్ణాంకం jmp6;
+              కొరకు(kk=0; kk<pIdx->n_కీలకం_నిలువు; kk++){
+                పూర్ణాంకం i_నిలువు = pIdx->ai_స్తంభం[kk];
+                ప్రతిజ్ఞా( i_నిలువు!=XN_ROWID && i_నిలువు<pTab->n_నిలువు );
+                ఒకవేళ( i_నిలువు>=0 && pTab->a_నిలువు[i_నిలువు].notNull ) కొనసాగు;
+                sqlite3_Vdbe_కూడు_Op2(v, OP_IsNull, r1+kk, uniqOk);
                 VdbeCoverage(v);
               }
-              jmp6 = sqlite3VdbeAddOp1(v, OP_Next, iIdxCur+j); VdbeCoverage(v);
+              jmp6 = sqlite3_Vdbe_కూడు_Op1(v, OP_తదుపరి, iIdxCur+j); VdbeCoverage(v);
               sqlite3VdbeGoto(v, uniqOk);
-              sqlite3VdbeJumpHere(v, jmp6);
-              sqlite3VdbeAddOp4Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
-                                   pIdx->nKeyCol); VdbeCoverage(v);
-              sqlite3VdbeLoadString(v, 3, "non-unique entry in index ");
+              sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp6);
+              sqlite3_Vdbe_కూడు_Op4_Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
+                                   pIdx->n_కీలకం_నిలువు); VdbeCoverage(v);
+              sqlite3_Vdbe_ఎక్కించు_String(v, 3, "non-unique entry in index ");
               sqlite3VdbeGoto(v, jmp5);
               sqlite3VdbeResolveLabel(v, uniqOk);
             }
-            sqlite3VdbeJumpHere(v, jmp4);
+            sqlite3_Vdbe_Jump_ఇక్కడ(v, jmp4);
             sqlite3ResolvePartIdxLabel(pParse, jmp3);
           }
         }
-        sqlite3VdbeAddOp2(v, OP_Next, iDataCur, loopTop); VdbeCoverage(v);
-        sqlite3VdbeJumpHere(v, loopTop-1);
-        if( pPk ){
-          assert( !isQuick );
-          sqlite3ReleaseTempRange(pParse, r2, pPk->nKeyCol);
+        sqlite3_Vdbe_కూడు_Op2(v, OP_తదుపరి, i_దత్తాంశం_Cur, loop_శిఖరం); VdbeCoverage(v);
+        sqlite3_Vdbe_Jump_ఇక్కడ(v, loop_శిఖరం-1);
+        ఒకవేళ( pPk ){
+          ప్రతిజ్ఞా( !is_శీఘ్ర );
+          sqlite3_Release_తాత్కాలిక_Range(pParse, r2, pPk->n_కీలకం_నిలువు);
         }
       }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
       /* Second pass to invoke the xIntegrity method on all virtual
       ** tables.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
+      కొరకు(x=sqlite_Hash_మొదటి(pTbls); x; x=sqlite_Hash_తదుపరి(x)){
+        పట్టిక *pTab = sqlite_Hash_దత్తాంశం(x);
         sqlite3_vtab *pVTab;
-        int a1;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( IsOrdinaryTable(pTab) ) continue;
-        if( !IsVirtual(pTab) ) continue;
-        if( pTab->nCol<=0 ){
-          const char *zMod = pTab->u.vtab.azArg[0];
-          if( sqlite3HashFind(&db->aModule, zMod)==0 ) continue;
+        పూర్ణాంకం a1;
+        ఒకవేళ( పట్టిక_Skip_Integrity_Check(pTab,pObjTab) ) కొనసాగు;
+        ఒకవేళ( Is_Ordinary_పట్టిక(pTab) ) కొనసాగు;
+        ఒకవేళ( !IsVirtual(pTab) ) కొనసాగు;
+        ఒకవేళ( pTab->n_నిలువు<=0 ){
+          స్థిరరాశి అక్షరం *zMod = pTab->u.vtab.azArg[0];
+          ఒకవేళ( sqlite3_Hash_కనుగొను(&db->aModule, zMod)==0 ) కొనసాగు;
         }
-        sqlite3ViewGetColumnNames(pParse, pTab);
-        if( pTab->u.vtab.p==0 ) continue;
+        sqlite3_View_Get_స్తంభం_పేర్లు(pParse, pTab);
+        ఒకవేళ( pTab->u.vtab.p==0 ) కొనసాగు;
         pVTab = pTab->u.vtab.p->pVtab;
-        if( NEVER(pVTab==0) ) continue;
-        if( NEVER(pVTab->pModule==0) ) continue;
-        if( pVTab->pModule->iVersion<4 ) continue;
-        if( pVTab->pModule->xIntegrity==0 ) continue;
-        sqlite3VdbeAddOp3(v, OP_VCheck, i, 3, isQuick);
+        ఒకవేళ( NEVER(pVTab==0) ) కొనసాగు;
+        ఒకవేళ( NEVER(pVTab->pModule==0) ) కొనసాగు;
+        ఒకవేళ( pVTab->pModule->i_సంస్కరణ<4 ) కొనసాగు;
+        ఒకవేళ( pVTab->pModule->xIntegrity==0 ) కొనసాగు;
+        sqlite3_Vdbe_కూడు_Op3(v, OP_VCheck, i, 3, is_శీఘ్ర);
         pTab->nTabRef++;
         sqlite3VdbeAppendP4(v, pTab, P4_TABLEREF);
-        a1 = sqlite3VdbeAddOp1(v, OP_IsNull, 3); VdbeCoverage(v);
-        integrityCheckResultRow(v);
-        sqlite3VdbeJumpHere(v, a1);
-        continue;
+        a1 = sqlite3_Vdbe_కూడు_Op1(v, OP_IsNull, 3); VdbeCoverage(v);
+        integrity_Check_ఫలితం_అడ్డువరుస(v);
+        sqlite3_Vdbe_Jump_ఇక్కడ(v, a1);
+        కొనసాగు;
       }
-#endif
+#అయితే_ముగింపు
     }
     {
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList endCode[] = {
-        { OP_AddImm,      1, 0,        0},    /* 0 */
+      స్థిర స్థిరరాశి పూర్ణాంకం iLn = VDBE_స్థానభ్రంశం_LINENO(2);
+      స్థిర స్థిరరాశి VdbeOpList చివర_సంకేతం[] = {
+        { OP_కూడు_Imm,      1, 0,        0},    /* 0 */
         { OP_IfNotZero,   1, 4,        0},    /* 1 */
         { OP_String8,     0, 3,        0},    /* 2 */
-        { OP_ResultRow,   3, 1,        0},    /* 3 */
+        { OP_ఫలితం_అడ్డువరుస,   3, 1,        0},    /* 3 */
         { OP_Halt,        0, 0,        0},    /* 4 */
         { OP_String8,     0, 3,        0},    /* 5 */
         { OP_Goto,        0, 3,        0},    /* 6 */
       };
       VdbeOp *aOp;
 
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(endCode), endCode, iLn);
-      if( aOp ){
+      aOp = sqlite3_Vdbe_కూడు_Op_List(v, Array_కొలత(చివర_సంకేతం), చివర_సంకేతం, iLn);
+      ఒకవేళ( aOp ){
         aOp[0].p2 = 1-mxErr;
         aOp[2].p4type = P4_STATIC;
         aOp[2].p4.z = "ok";
         aOp[5].p4type = P4_STATIC;
-        aOp[5].p4.z = (char*)sqlite3ErrStr(SQLITE_CORRUPT);
+        aOp[5].p4.z = (అక్షరం*)sqlite3ErrStr(SQLITE_CORRUPT);
       }
       sqlite3VdbeChangeP3(v, 0, sqlite3VdbeCurrentAddr(v)-2);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_INTEGRITY_CHECK */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_INTEGRITY_CHECK */
 
-#ifndef SQLITE_OMIT_UTF16
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
   /*
   **   PRAGMA encoding
   **   PRAGMA encoding = "utf-8"|"utf-16"|"utf-16le"|"utf-16be"
@@ -2247,9 +2247,9 @@ void sqlite3Pragma(
   ** new database files created using this database handle. It is only
   ** useful if invoked immediately after the main database i
   */
-  case PragTyp_ENCODING: {
-    static const struct EncName {
-      char *zName;
+  స్థితి PragTyp_ENCODING: {
+    స్థిర స్థిరరాశి నిర్మాణం EncName {
+      అక్షరం *zName;
       u8 enc;
     } encnames[] = {
       { "UTF8",     SQLITE_UTF8        },
@@ -2262,38 +2262,38 @@ void sqlite3Pragma(
       { "UTF16",    0                  }, /* SQLITE_UTF16NATIVE */
       { 0, 0 }
     };
-    const struct EncName *pEnc;
-    if( !zRight ){    /* "PRAGMA encoding" */
-      if( sqlite3ReadSchema(pParse) ) goto pragma_out;
-      assert( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
-      assert( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
-      assert( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
-      returnSingleText(v, encnames[ENC(pParse->db)].zName);
-    }else{                        /* "PRAGMA encoding = XXX" */
+    స్థిరరాశి నిర్మాణం EncName *pEnc;
+    ఒకవేళ( !z_కుడి ){    /* "PRAGMA encoding" */
+      ఒకవేళ( sqlite3ReadSchema(pParse) ) వెళ్ళు pragma_బహిర్గతం;
+      ప్రతిజ్ఞా( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
+      ప్రతిజ్ఞా( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
+      ప్రతిజ్ఞా( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
+      return_Single_పాఠ్యం(v, encnames[ENC(pParse->db)].zName);
+    }లేకపోతే{                        /* "PRAGMA encoding = XXX" */
       /* Only change the value of sqlite.enc if the database handle is not
       ** initialized. If the main database exists, the new sqlite.enc value
       ** will be overwritten when the schema is next loaded. If it does not
       ** already exists, it will be created to use the new encoding value.
       */
-      if( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
-        for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-          if( 0==sqlite3StrICmp(zRight, pEnc->zName) ){
+      ఒకవేళ( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+        కొరకు(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+          ఒకవేళ( 0==sqlite3StrICmp(z_కుడి, pEnc->zName) ){
             u8 enc = pEnc->enc ? pEnc->enc : SQLITE_UTF16NATIVE;
             SCHEMA_ENC(db) = enc;
-            sqlite3SetTextEncoding(db, enc);
-            break;
+            sqlite3_సమితి_పాఠ్యం_Encoding(db, enc);
+            ఆపు;
           }
         }
-        if( !pEnc->zName ){
-          sqlite3ErrorMsg(pParse, "unsupported encoding: %s", zRight);
+        ఒకవేళ( !pEnc->zName ){
+          sqlite3_Error_సందేశం(pParse, "unsupported encoding: %s", z_కుడి);
         }
       }
     }
   }
-  break;
-#endif /* SQLITE_OMIT_UTF16 */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_UTF16 */
 
-#ifndef SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SCHEMA_సంస్కరణ_PRAGMAS
   /*
   **   PRAGMA [schema.]schema_version
   **   PRAGMA [schema.]schema_version = <integer>
@@ -2326,94 +2326,94 @@ void sqlite3Pragma(
   ** The user-version is not used internally by SQLite. It may be used by
   ** applications for any purpose.
   */
-  case PragTyp_HEADER_VALUE: {
-    int iCookie = pPragma->iArg;  /* Which cookie to read or write */
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( zRight && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
+  స్థితి Prag_Typ_శీర్షిక_విలువ: {
+    పూర్ణాంకం iCookie = pPragma->iArg;  /* Which cookie to read or write */
+    sqlite3_Vdbe_ఉపయోగిస్తుంది_Btree(v, iDb);
+    ఒకవేళ( z_కుడి && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
       /* Write the specified cookie value */
-      static const VdbeOpList setCookie[] = {
+      స్థిర స్థిరరాశి VdbeOpList సమితి_Cookie[] = {
         { OP_Transaction,    0,  1,  0},    /* 0 */
-        { OP_SetCookie,      0,  0,  0},    /* 1 */
+        { OP_సమితి_Cookie,      0,  0,  0},    /* 1 */
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(setCookie), setCookie, 0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_కొలత(సమితి_Cookie));
+      aOp = sqlite3_Vdbe_కూడు_Op_List(v, Array_కొలత(సమితి_Cookie), సమితి_Cookie, 0);
+      ఒకవేళ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ఆపు;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p2 = iCookie;
-      aOp[1].p3 = sqlite3Atoi(zRight);
+      aOp[1].p3 = sqlite3Atoi(z_కుడి);
       aOp[1].p5 = 1;
-      if( iCookie==BTREE_SCHEMA_VERSION && (db->flags & SQLITE_Defensive)!=0 ){
+      ఒకవేళ( iCookie==BTREE_SCHEMA_సంస్కరణ && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow the use of PRAGMA schema_version=VALUE in defensive
         ** mode.  Change the OP_SetCookie opcode into a no-op.  */
         aOp[1].opcode = OP_Noop;
       }
-    }else{
+    }లేకపోతే{
       /* Read the specified cookie value */
-      static const VdbeOpList readCookie[] = {
+      స్థిర స్థిరరాశి VdbeOpList readCookie[] = {
         { OP_Transaction,     0,  0,  0},    /* 0 */
         { OP_ReadCookie,      0,  1,  0},    /* 1 */
-        { OP_ResultRow,       1,  1,  0}
+        { OP_ఫలితం_అడ్డువరుస,       1,  1,  0}
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(readCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(readCookie),readCookie,0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_కొలత(readCookie));
+      aOp = sqlite3_Vdbe_కూడు_Op_List(v, Array_కొలత(readCookie),readCookie,0);
+      ఒకవేళ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ఆపు;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p3 = iCookie;
       sqlite3VdbeReusable(v);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
 
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_COMPILEOPTION_DIAGS
   /*
   **   PRAGMA compile_options
   **
   ** Return the names of all compile-time options used in this build,
   ** one option per row.
   */
-  case PragTyp_COMPILE_OPTIONS: {
-    int i = 0;
-    const char *zOpt;
+  స్థితి PragTyp_COMPILE_OPTIONS: {
+    పూర్ణాంకం i = 0;
+    స్థిరరాశి అక్షరం *zOpt;
     pParse->nMem = 1;
-    while( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
-      sqlite3VdbeLoadString(v, 1, zOpt);
-      sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+    అయితే( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
+      sqlite3_Vdbe_ఎక్కించు_String(v, 1, zOpt);
+      sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 1);
     }
     sqlite3VdbeReusable(v);
   }
-  break;
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+  ఆపు;
+#అయితే_ముగింపు /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
-#ifndef SQLITE_OMIT_WAL
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WAL
   /*
   **   PRAGMA [schema.]wal_checkpoint = passive|full|restart|truncate
   **
   ** Checkpoint the database.
   */
-  case PragTyp_WAL_CHECKPOINT: {
-    int iBt = (pId2->z?iDb:SQLITE_MAX_DB);
-    int eMode = SQLITE_CHECKPOINT_PASSIVE;
-    if( zRight ){
-      if( sqlite3StrICmp(zRight, "full")==0 ){
-        eMode = SQLITE_CHECKPOINT_FULL;
-      }else if( sqlite3StrICmp(zRight, "restart")==0 ){
-        eMode = SQLITE_CHECKPOINT_RESTART;
-      }else if( sqlite3StrICmp(zRight, "truncate")==0 ){
-        eMode = SQLITE_CHECKPOINT_TRUNCATE;
-      }else if( sqlite3StrICmp(zRight, "noop")==0 ){
-        eMode = SQLITE_CHECKPOINT_NOOP;
+  స్థితి PragTyp_WAL_CHECKPOINT: {
+    పూర్ణాంకం iBt = (pId2->z?iDb:SQLITE_MAX_DB);
+    పూర్ణాంకం e_బహుళకం = SQLITE_CHECKPOINT_PASSIVE;
+    ఒకవేళ( z_కుడి ){
+      ఒకవేళ( sqlite3StrICmp(z_కుడి, "full")==0 ){
+        e_బహుళకం = SQLITE_CHECKPOINT_నిండిన;
+      }లేకపోతే ఒకవేళ( sqlite3StrICmp(z_కుడి, "restart")==0 ){
+        e_బహుళకం = SQLITE_CHECKPOINT_RESTART;
+      }లేకపోతే ఒకవేళ( sqlite3StrICmp(z_కుడి, "truncate")==0 ){
+        e_బహుళకం = SQLITE_CHECKPOINT_TRUNCATE;
+      }లేకపోతే ఒకవేళ( sqlite3StrICmp(z_కుడి, "noop")==0 ){
+        e_బహుళకం = SQLITE_CHECKPOINT_NOOP;
       }
     }
     pParse->nMem = 3;
-    sqlite3VdbeAddOp3(v, OP_Checkpoint, iBt, eMode, 1);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 3);
+    sqlite3_Vdbe_కూడు_Op3(v, OP_Checkpoint, iBt, e_బహుళకం, 1);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, 1, 3);
   }
-  break;
+  ఆపు;
 
   /*
   **   PRAGMA wal_autocheckpoint
@@ -2423,16 +2423,16 @@ void sqlite3Pragma(
   ** after accumulating N frames in the log. Or query for the current value
   ** of N.
   */
-  case PragTyp_WAL_AUTOCHECKPOINT: {
-    if( zRight ){
-      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(zRight));
+  స్థితి PragTyp_WAL_AUTOCHECKPOINT: {
+    ఒకవేళ( z_కుడి ){
+      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(z_కుడి));
     }
     returnSingleInt(v,
        db->xWalCallback==sqlite3WalDefaultHook ?
-           SQLITE_PTR_TO_INT(db->pWalArg) : 0);
+           SQLITE_PTR_గమ్యం_INT(db->pWalArg) : 0);
   }
-  break;
-#endif
+  ఆపు;
+#అయితే_ముగింపు
 
   /*
   **  PRAGMA shrink_memory
@@ -2441,9 +2441,9 @@ void sqlite3Pragma(
   ** connection on which it is invoked to free up as much memory as it
   ** can, by calling sqlite3_db_release_memory().
   */
-  case PragTyp_SHRINK_MEMORY: {
-    sqlite3_db_release_memory(db);
-    break;
+  స్థితి Prag_Typ_SHRINK_జ్ఞాపకం: {
+    sqlite3_db_release_జ్ఞాపకం(db);
+    ఆపు;
   }
 
   /*
@@ -2519,129 +2519,129 @@ void sqlite3Pragma(
   ** literal argument to this pragma that contains a mnemonic description
   ** of the options rather than a bitmap.
   */
-  case PragTyp_OPTIMIZE: {
-    int iDbLast;           /* Loop termination point for the schema loop */
-    int iTabCur;           /* Cursor for a table whose size needs checking */
+  స్థితి PragTyp_OPTIMIZE: {
+    పూర్ణాంకం i_Db_చివరి;           /* Loop termination point for the schema loop */
+    పూర్ణాంకం iTabCur;           /* Cursor for a table whose size needs checking */
     HashElem *k;           /* Loop over tables of a schema */
     Schema *pSchema;       /* The current schema */
-    Table *pTab;           /* A table in the schema */
-    Index *pIdx;           /* An index of the table */
-    LogEst szThreshold;    /* Size threshold above which reanalysis needed */
-    char *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
-    u32 opMask;            /* Mask of operations to perform */
-    int nLimit;            /* Analysis limit to use */
-    int nCheck = 0;        /* Number of tables to be optimized */
-    int nBtree = 0;        /* Number of btrees to scan */
-    int nIndex;            /* Number of indexes on the current table */
+    పట్టిక *pTab;           /* A table in the schema */
+    సూచీ *pIdx;           /* An index of the table */
+    LogEst sz_పరిమితి;    /* Size threshold above which reanalysis needed */
+    అక్షరం *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
+    u32 op_ముసుగు;            /* Mask of operations to perform */
+    పూర్ణాంకం n_హద్దు;            /* Analysis limit to use */
+    పూర్ణాంకం nCheck = 0;        /* Number of tables to be optimized */
+    పూర్ణాంకం nBtree = 0;        /* Number of btrees to scan */
+    పూర్ణాంకం n_సూచీ;            /* Number of indexes on the current table */
 
-    if( zRight ){
-      opMask = (u32)sqlite3Atoi(zRight);
-      if( (opMask & 0x02)==0 ) break;
-    }else{
-      opMask = 0xfffe;
+    ఒకవేళ( z_కుడి ){
+      op_ముసుగు = (u32)sqlite3Atoi(z_కుడి);
+      ఒకవేళ( (op_ముసుగు & 0x02)==0 ) ఆపు;
+    }లేకపోతే{
+      op_ముసుగు = 0xfffe;
     }
-    if( (opMask & 0x10)==0 ){
-      nLimit = 0;
-    }else if( db->nAnalysisLimit>0
-           && db->nAnalysisLimit<SQLITE_DEFAULT_OPTIMIZE_LIMIT ){
-      nLimit = 0;
-    }else{
-      nLimit = SQLITE_DEFAULT_OPTIMIZE_LIMIT;
+    ఒకవేళ( (op_ముసుగు & 0x10)==0 ){
+      n_హద్దు = 0;
+    }లేకపోతే ఒకవేళ( db->n_Analysis_హద్దు>0
+           && db->n_Analysis_హద్దు<SQLITE_DEFAULT_OPTIMIZE_హద్దు ){
+      n_హద్దు = 0;
+    }లేకపోతే{
+      n_హద్దు = SQLITE_DEFAULT_OPTIMIZE_హద్దు;
     }
     iTabCur = pParse->nTab++;
-    for(iDbLast = zDb?iDb:db->nDb-1; iDb<=iDbLast; iDb++){
-      if( iDb==1 ) continue;
-      sqlite3CodeVerifySchema(pParse, iDb);
+    కొరకు(i_Db_చివరి = zDb?iDb:db->nDb-1; iDb<=i_Db_చివరి; iDb++){
+      ఒకవేళ( iDb==1 ) కొనసాగు;
+      sqlite3_సంకేతం_Verify_Schema(pParse, iDb);
       pSchema = db->aDb[iDb].pSchema;
-      for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
-        pTab = (Table*)sqliteHashData(k);
+      కొరకు(k=sqlite_Hash_మొదటి(&pSchema->tblHash); k; k=sqlite_Hash_తదుపరి(k)){
+        pTab = (పట్టిక*)sqlite_Hash_దత్తాంశం(k);
 
         /* This only works for ordinary tables */
-        if( !IsOrdinaryTable(pTab) ) continue;
+        ఒకవేళ( !Is_Ordinary_పట్టిక(pTab) ) కొనసాగు;
 
         /* Do not scan system tables */
-        if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) continue;
+        ఒకవేళ( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) కొనసాగు;
 
         /* Find the size of the table as last recorded in sqlite_stat1.
         ** If any index is unanalyzed, then the threshold is -1 to
         ** indicate a new, unanalyzed index
         */
-        szThreshold = pTab->nRowLogEst;
-        nIndex = 0;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          nIndex++;
-          if( !pIdx->hasStat1 ){
-            szThreshold = -1; /* Always analyze if any index lacks statistics */
+        sz_పరిమితి = pTab->n_అడ్డువరుస_Log_Est;
+        n_సూచీ = 0;
+        కొరకు(pIdx=pTab->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+          n_సూచీ++;
+          ఒకవేళ( !pIdx->hasStat1 ){
+            sz_పరిమితి = -1; /* Always analyze if any index lacks statistics */
           }
         }
 
         /* If table pTab has not been used in a way that would benefit from
         ** having analysis statistics during the current session, then skip it,
         ** unless the 0x10000 MASK bit is set. */
-        if( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
+        ఒకవేళ( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
           /* Check for size change if stat1 has been used for a query */
-        }else if( opMask & 0x10000 ){
+        }లేకపోతే ఒకవేళ( op_ముసుగు & 0x10000 ){
           /* Check for size change if 0x10000 is set */
-        }else if( pTab->pIndex!=0 && szThreshold<0 ){
+        }లేకపోతే ఒకవేళ( pTab->p_సూచీ!=0 && sz_పరిమితి<0 ){
           /* Do analysis if unanalyzed indexes exists */
-        }else{
+        }లేకపోతే{
           /* Otherwise, we can skip this table */
-          continue;
+          కొనసాగు;
         }
 
         nCheck++;
-        if( nCheck==2 ){
+        ఒకవేళ( nCheck==2 ){
           /* If ANALYZE might be invoked two or more times, hold a write
           ** transaction for efficiency */
           sqlite3BeginWriteOperation(pParse, 0, iDb);
         }
-        nBtree += nIndex+1;
+        nBtree += n_సూచీ+1;
 
         /* Reanalyze if the table is 10 times larger or smaller than
         ** the last analysis.  Unconditional reanalysis if there are
         ** unanalyzed indexes. */
-        sqlite3OpenTable(pParse, iTabCur, iDb, pTab, OP_OpenRead);
-        if( szThreshold>=0 ){
-          const LogEst iRange = 33;   /* 10x size change */
-          sqlite3VdbeAddOp4Int(v, OP_IfSizeBetween, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1),
-                         szThreshold>=iRange ? szThreshold-iRange : -1,
-                         szThreshold+iRange);
+        sqlite3_Open_పట్టిక(pParse, iTabCur, iDb, pTab, OP_OpenRead);
+        ఒకవేళ( sz_పరిమితి>=0 ){
+          స్థిరరాశి LogEst iRange = 33;   /* 10x size change */
+          sqlite3_Vdbe_కూడు_Op4_Int(v, OP_If_కొలత_Between, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_ముసుగు&1),
+                         sz_పరిమితి>=iRange ? sz_పరిమితి-iRange : -1,
+                         sz_పరిమితి+iRange);
           VdbeCoverage(v);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Rewind, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1));
+        }లేకపోతే{
+          sqlite3_Vdbe_కూడు_Op2(v, OP_Rewind, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_ముసుగు&1));
           VdbeCoverage(v);
         }
         zSubSql = sqlite3MPrintf(db, "ANALYZE \"%w\".\"%w\"",
                                  db->aDb[iDb].zDbSName, pTab->zName);
-        if( opMask & 0x01 ){
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3VdbeAddOp4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
-          sqlite3VdbeAddOp2(v, OP_ResultRow, r1, 1);
-        }else{
-          sqlite3VdbeAddOp4(v, OP_SqlExec, nLimit ? 0x02 : 00, nLimit, 0,
+        ఒకవేళ( op_ముసుగు & 0x01 ){
+          పూర్ణాంకం r1 = sqlite3_Get_తాత్కాలిక_Reg(pParse);
+          sqlite3_Vdbe_కూడు_Op4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
+          sqlite3_Vdbe_కూడు_Op2(v, OP_ఫలితం_అడ్డువరుస, r1, 1);
+        }లేకపోతే{
+          sqlite3_Vdbe_కూడు_Op4(v, OP_SqlExec, n_హద్దు ? 0x02 : 00, n_హద్దు, 0,
                             zSubSql, P4_DYNAMIC);
         }
       }
     }
-    sqlite3VdbeAddOp0(v, OP_Expire);
+    sqlite3_Vdbe_కూడు_Op0(v, OP_Expire);
 
     /* In a schema with a large number of tables and indexes, scale back
     ** the analysis_limit to avoid excess run-time in the worst case.
     */
-    if( !db->mallocFailed && nLimit>0 && nBtree>100 ){
-      int iAddr, iEnd;
+    ఒకవేళ( !db->mallocFailed && n_హద్దు>0 && nBtree>100 ){
+      పూర్ణాంకం iAddr, i_చివర;
       VdbeOp *aOp;
-      nLimit = 100*nLimit/nBtree;
-      if( nLimit<100 ) nLimit = 100;
+      n_హద్దు = 100*n_హద్దు/nBtree;
+      ఒకవేళ( n_హద్దు<100 ) n_హద్దు = 100;
       aOp = sqlite3VdbeGetOp(v, 0);
-      iEnd = sqlite3VdbeCurrentAddr(v);
-      for(iAddr=0; iAddr<iEnd; iAddr++){
-        if( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = nLimit;
+      i_చివర = sqlite3VdbeCurrentAddr(v);
+      కొరకు(iAddr=0; iAddr<i_చివర; iAddr++){
+        ఒకవేళ( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = n_హద్దు;
       }
     }
-    break;
+    ఆపు;
   }
 
   /*
@@ -2653,14 +2653,14 @@ void sqlite3Pragma(
   ** then 0 is returned.  Setting the busy_timeout to 0 or negative
   ** disables the timeout.
   */
-  /*case PragTyp_BUSY_TIMEOUT*/ default: {
-    int n = 0;
-    assert( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
-    if( zRight && sqlite3GetInt32(zRight,&n) ){
+  /*case PragTyp_BUSY_TIMEOUT*/ అప్రమేయ: {
+    పూర్ణాంకం n = 0;
+    ప్రతిజ్ఞా( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
+    ఒకవేళ( z_కుడి && sqlite3GetInt32(z_కుడి,&n) ){
       sqlite3_busy_timeout(db, n);
     }
     returnSingleInt(v, db->busyTimeout);
-    break;
+    ఆపు;
   }
 
   /*
@@ -2674,13 +2674,13 @@ void sqlite3Pragma(
   ** returns the same integer that would be returned by the
   ** sqlite3_soft_heap_limit64(-1) C-language function.
   */
-  case PragTyp_SOFT_HEAP_LIMIT: {
+  స్థితి Prag_Typ_SOFT_కుప్ప_హద్దు: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_soft_heap_limit64(N);
+    ఒకవేళ( z_కుడి && sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &N)==SQLITE_OK ){
+      sqlite3_soft_కుప్ప_limit64(N);
     }
-    returnSingleInt(v, sqlite3_soft_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_soft_కుప్ప_limit64(-1));
+    ఆపు;
   }
 
   /*
@@ -2694,14 +2694,14 @@ void sqlite3Pragma(
   ** the hard heap limit.  This allows an application to set a heap limit
   ** constraint that cannot be relaxed by an untrusted SQL script.
   */
-  case PragTyp_HARD_HEAP_LIMIT: {
+  స్థితి Prag_Typ_HARD_కుప్ప_హద్దు: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_int64 iPrior = sqlite3_hard_heap_limit64(-1);
-      if( N>0 && (iPrior==0 || iPrior>N) ) sqlite3_hard_heap_limit64(N);
+    ఒకవేళ( z_కుడి && sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &N)==SQLITE_OK ){
+      sqlite3_int64 i_పూర్వ = sqlite3_hard_కుప్ప_limit64(-1);
+      ఒకవేళ( N>0 && (i_పూర్వ==0 || i_పూర్వ>N) ) sqlite3_hard_కుప్ప_limit64(N);
     }
-    returnSingleInt(v, sqlite3_hard_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_hard_కుప్ప_limit64(-1));
+    ఆపు;
   }
 
   /*
@@ -2711,16 +2711,16 @@ void sqlite3Pragma(
   ** Configure the maximum number of worker threads.  Return the new
   ** maximum, which might be less than requested.
   */
-  case PragTyp_THREADS: {
+  స్థితి Prag_Typ_దారాలు: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK
+    ఒకవేళ( z_కుడి
+     && sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &N)==SQLITE_OK
      && N>=0
     ){
-      sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, (int)(N&0x7fffffff));
+      sqlite3_హద్దు(db, SQLITE_హద్దు_కార్మికుడు_దారాలు, (పూర్ణాంకం)(N&0x7fffffff));
     }
-    returnSingleInt(v, sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, -1));
-    break;
+    returnSingleInt(v, sqlite3_హద్దు(db, SQLITE_హద్దు_కార్మికుడు_దారాలు, -1));
+    ఆపు;
   }
 
   /*
@@ -2730,54 +2730,54 @@ void sqlite3Pragma(
   ** Configure the maximum number of rows that ANALYZE will examine
   ** in each index that it looks at.  Return the new limit.
   */
-  case PragTyp_ANALYSIS_LIMIT: {
+  స్థితి Prag_Typ_ANALYSIS_హద్దు: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK /* IMP: R-40975-20399 */
+    ఒకవేళ( z_కుడి
+     && sqlite3_Dec_Or_Hex_గమ్యం_I64(z_కుడి, &N)==SQLITE_OK /* IMP: R-40975-20399 */
      && N>=0
     ){
-      db->nAnalysisLimit = (int)(N&0x7fffffff);
+      db->n_Analysis_హద్దు = (పూర్ణాంకం)(N&0x7fffffff);
     }
-    returnSingleInt(v, db->nAnalysisLimit); /* IMP: R-57594-65522 */
-    break;
+    returnSingleInt(v, db->n_Analysis_హద్దు); /* IMP: R-57594-65522 */
+    ఆపు;
   }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#ఒకవేళ defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /*
   ** Report the current state of file logs for all databases
   */
-  case PragTyp_LOCK_STATUS: {
-    static const char *const azLockName[] = {
+  స్థితి Prag_Typ_తాళం_స్థితి: {
+    స్థిర స్థిరరాశి అక్షరం *స్థిరరాశి az_తాళం_Name[] = {
       "unlocked", "shared", "reserved", "pending", "exclusive"
     };
-    int i;
+    పూర్ణాంకం i;
     pParse->nMem = 2;
-    for(i=0; i<db->nDb; i++){
+    కొరకు(i=0; i<db->nDb; i++){
       Btree *pBt;
-      const char *zState = "unknown";
-      int j;
-      if( db->aDb[i].zDbSName==0 ) continue;
+      స్థిరరాశి అక్షరం *zState = "unknown";
+      పూర్ణాంకం j;
+      ఒకవేళ( db->aDb[i].zDbSName==0 ) కొనసాగు;
       pBt = db->aDb[i].pBt;
-      if( pBt==0 || sqlite3BtreePager(pBt)==0 ){
+      ఒకవేళ( pBt==0 || sqlite3BtreePager(pBt)==0 ){
         zState = "closed";
-      }else if( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
+      }లేకపోతే ఒకవేళ( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
                                      SQLITE_FCNTL_LOCKSTATE, &j)==SQLITE_OK ){
-         zState = azLockName[j];
+         zState = az_తాళం_Name[j];
       }
-      sqlite3VdbeMultiLoad(v, 1, "ss", db->aDb[i].zDbSName, zState);
+      sqlite3_Vdbe_Multi_ఎక్కించు(v, 1, "ss", db->aDb[i].zDbSName, zState);
     }
-    break;
+    ఆపు;
   }
-#endif
+#అయితే_ముగింపు
 
-#if defined(SQLITE_ENABLE_CEROD)
-  case PragTyp_ACTIVATE_EXTENSIONS: if( zRight ){
-    if( sqlite3StrNICmp(zRight, "cerod-", 6)==0 ){
-      sqlite3_activate_cerod(&zRight[6]);
+#ఒకవేళ defined(SQLITE_ENABLE_CEROD)
+  స్థితి PragTyp_ACTIVATE_EXTENSIONS: ఒకవేళ( z_కుడి ){
+    ఒకవేళ( sqlite3StrNICmp(z_కుడి, "cerod-", 6)==0 ){
+      sqlite3_activate_cerod(&z_కుడి[6]);
     }
   }
-  break;
-#endif
+  ఆపు;
+#అయితే_ముగింపు
 
   } /* End of the PRAGMA switch */
 
@@ -2786,104 +2786,104 @@ void sqlite3Pragma(
   ** PragFlg_NoColumns1 flag is set and the caller specified an argument
   ** to the PRAGMA, the implementation has not added any OP_ResultRow
   ** instructions to the VM.  */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns1) && zRight ){
-    sqlite3VdbeVerifyNoResultRow(v);
+  ఒకవేళ( (pPragma->mPragFlg & PragFlg_NoColumns1) && z_కుడి ){
+    sqlite3_Vdbe_Verify_No_ఫలితం_అడ్డువరుస(v);
   }
 
-pragma_out:
-  sqlite3DbFree(db, zLeft);
-  sqlite3DbFree(db, zRight);
+pragma_బహిర్గతం:
+  sqlite3DbFree(db, z_ఎడమ);
+  sqlite3DbFree(db, z_కుడి);
 }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
 /*****************************************************************************
 ** Implementation of an eponymous virtual table that runs a pragma.
 **
 */
-typedef struct PragmaVtab PragmaVtab;
-typedef struct PragmaVtabCursor PragmaVtabCursor;
-struct PragmaVtab {
-  sqlite3_vtab base;        /* Base class.  Must be first */
+రకనిర్వచనం నిర్మాణం PragmaVtab PragmaVtab;
+రకనిర్వచనం నిర్మాణం PragmaVtabCursor PragmaVtabCursor;
+నిర్మాణం PragmaVtab {
+  sqlite3_vtab పునాది;        /* Base class.  Must be first */
   sqlite3 *db;              /* The database connection to which it belongs */
-  const PragmaName *pName;  /* Name of the pragma */
+  స్థిరరాశి PragmaName *pName;  /* Name of the pragma */
   u8 nHidden;               /* Number of hidden columns */
   u8 iHidden;               /* Index of the first hidden column */
 };
-struct PragmaVtabCursor {
-  sqlite3_vtab_cursor base; /* Base class.  Must be first */
+నిర్మాణం PragmaVtabCursor {
+  sqlite3_vtab_cursor పునాది; /* Base class.  Must be first */
   sqlite3_stmt *pPragma;    /* The pragma statement to run */
   sqlite_int64 iRowid;      /* Current rowid */
-  char *azArg[2];           /* Value of the argument and schema */
+  అక్షరం *azArg[2];           /* Value of the argument and schema */
 };
 
 /*
 ** Pragma virtual table module xConnect method.
 */
-static int pragmaVtabConnect(
+స్థిర పూర్ణాంకం pragmaVtabConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  శూన్య *pAux,
+  పూర్ణాంకం argc, స్థిరరాశి అక్షరం *స్థిరరాశి*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  అక్షరం **pzErr
 ){
-  const PragmaName *pPragma = (const PragmaName*)pAux;
+  స్థిరరాశి PragmaName *pPragma = (స్థిరరాశి PragmaName*)pAux;
   PragmaVtab *pTab = 0;
-  int rc;
-  int i, j;
-  char cSep = '(';
+  పూర్ణాంకం rc;
+  పూర్ణాంకం i, j;
+  అక్షరం cSep = '(';
   StrAccum acc;
-  char zBuf[200];
+  అక్షరం zBuf[200];
 
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(argv);
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
+  వాడని_PARAMETER(argc);
+  వాడని_PARAMETER(argv);
+  sqlite3StrAccumInit(&acc, 0, zBuf, పరిమాణం(zBuf), 0);
   sqlite3_str_appendall(&acc, "CREATE TABLE x");
-  for(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
+  కొరకు(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
     sqlite3_str_appendf(&acc, "%c\"%s\"", cSep, pragCName[j]);
     cSep = ',';
   }
-  if( i==0 ){
+  ఒకవేళ( i==0 ){
     sqlite3_str_appendf(&acc, "(\"%s\"", pPragma->zName);
     i++;
   }
   j = 0;
-  if( pPragma->mPragFlg & PragFlg_Result1 ){
+  ఒకవేళ( pPragma->mPragFlg & PragFlg_Result1 ){
     sqlite3_str_appendall(&acc, ",arg HIDDEN");
     j++;
   }
-  if( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
+  ఒకవేళ( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
     sqlite3_str_appendall(&acc, ",schema HIDDEN");
     j++;
   }
   sqlite3_str_append(&acc, ")", 1);
-  sqlite3StrAccumFinish(&acc);
-  assert( strlen(zBuf) < sizeof(zBuf)-1 );
+  sqlite3_Str_Accum_ముగింపు(&acc);
+  ప్రతిజ్ఞా( అక్షరశ్రేణి_పొడవు(zBuf) < పరిమాణం(zBuf)-1 );
   rc = sqlite3_declare_vtab(db, zBuf);
-  if( rc==SQLITE_OK ){
-    pTab = (PragmaVtab*)sqlite3_malloc(sizeof(PragmaVtab));
-    if( pTab==0 ){
+  ఒకవేళ( rc==SQLITE_OK ){
+    pTab = (PragmaVtab*)sqlite3_malloc(పరిమాణం(PragmaVtab));
+    ఒకవేళ( pTab==0 ){
       rc = SQLITE_NOMEM;
-    }else{
-      memset(pTab, 0, sizeof(PragmaVtab));
+    }లేకపోతే{
+      memset(pTab, 0, పరిమాణం(PragmaVtab));
       pTab->pName = pPragma;
       pTab->db = db;
       pTab->iHidden = i;
       pTab->nHidden = j;
     }
-  }else{
+  }లేకపోతే{
     *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Pragma virtual table module xDisconnect method.
 */
-static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
+స్థిర పూర్ణాంకం pragmaVtabDisconnect(sqlite3_vtab *pVtab){
   PragmaVtab *pTab = (PragmaVtab*)pVtab;
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Figure out the best index to use to search a pragma virtual table.
@@ -2893,189 +2893,189 @@ static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
 ** possible, and especially on the first hidden parameter.  So return a
 ** high cost if hidden parameters are unconstrained.
 */
-static int pragmaVtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+స్థిర పూర్ణాంకం pragma_Vtab_ఉత్తమ_సూచీ(sqlite3_vtab *tab, sqlite3_సూచీ_info *pIdxInfo){
   PragmaVtab *pTab = (PragmaVtab*)tab;
-  const struct sqlite3_index_constraint *pConstraint;
-  int i, j;
-  int seen[2];
+  స్థిరరాశి నిర్మాణం sqlite3_సూచీ_constraint *pConstraint;
+  పూర్ణాంకం i, j;
+  పూర్ణాంకం చూసిన[2];
 
-  pIdxInfo->estimatedCost = (double)1;
-  if( pTab->nHidden==0 ){ return SQLITE_OK; }
+  pIdxInfo->estimated_ఖర్చు = (ద్విగుణ)1;
+  ఒకవేళ( pTab->nHidden==0 ){ తిరిగి SQLITE_OK; }
   pConstraint = pIdxInfo->aConstraint;
-  seen[0] = 0;
-  seen[1] = 0;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->iColumn < pTab->iHidden ) continue;
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->usable==0 ) return SQLITE_CONSTRAINT;
-    j = pConstraint->iColumn - pTab->iHidden;
-    assert( j < 2 );
-    seen[j] = i+1;
+  చూసిన[0] = 0;
+  చూసిన[1] = 0;
+  కొరకు(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    ఒకవేళ( pConstraint->i_స్తంభం < pTab->iHidden ) కొనసాగు;
+    ఒకవేళ( pConstraint->op!=SQLITE_సూచీ_CONSTRAINT_EQ ) కొనసాగు;
+    ఒకవేళ( pConstraint->usable==0 ) తిరిగి SQLITE_CONSTRAINT;
+    j = pConstraint->i_స్తంభం - pTab->iHidden;
+    ప్రతిజ్ఞా( j < 2 );
+    చూసిన[j] = i+1;
   }
-  if( seen[0]==0 ){
-    pIdxInfo->estimatedCost = (double)2147483647;
-    pIdxInfo->estimatedRows = 2147483647;
-    return SQLITE_OK;
+  ఒకవేళ( చూసిన[0]==0 ){
+    pIdxInfo->estimated_ఖర్చు = (ద్విగుణ)2147483647;
+    pIdxInfo->estimated_అడ్డువరుసలు = 2147483647;
+    తిరిగి SQLITE_OK;
   }
-  j = seen[0]-1;
-  pIdxInfo->aConstraintUsage[j].argvIndex = 1;
+  j = చూసిన[0]-1;
+  pIdxInfo->aConstraintUsage[j].argv_సూచీ = 1;
   pIdxInfo->aConstraintUsage[j].omit = 1;
-  pIdxInfo->estimatedCost = (double)20;
-  pIdxInfo->estimatedRows = 20;
-  if( seen[1] ){
-    j = seen[1]-1;
-    pIdxInfo->aConstraintUsage[j].argvIndex = 2;
+  pIdxInfo->estimated_ఖర్చు = (ద్విగుణ)20;
+  pIdxInfo->estimated_అడ్డువరుసలు = 20;
+  ఒకవేళ( చూసిన[1] ){
+    j = చూసిన[1]-1;
+    pIdxInfo->aConstraintUsage[j].argv_సూచీ = 2;
     pIdxInfo->aConstraintUsage[j].omit = 1;
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Create a new cursor for the pragma virtual table */
-static int pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
+స్థిర పూర్ణాంకం pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
   PragmaVtabCursor *pCsr;
-  pCsr = (PragmaVtabCursor*)sqlite3_malloc(sizeof(*pCsr));
-  if( pCsr==0 ) return SQLITE_NOMEM;
-  memset(pCsr, 0, sizeof(PragmaVtabCursor));
-  pCsr->base.pVtab = pVtab;
-  *ppCursor = &pCsr->base;
-  return SQLITE_OK;
+  pCsr = (PragmaVtabCursor*)sqlite3_malloc(పరిమాణం(*pCsr));
+  ఒకవేళ( pCsr==0 ) తిరిగి SQLITE_NOMEM;
+  memset(pCsr, 0, పరిమాణం(PragmaVtabCursor));
+  pCsr->పునాది.pVtab = pVtab;
+  *ppCursor = &pCsr->పునాది;
+  తిరిగి SQLITE_OK;
 }
 
 /* Clear all content from pragma virtual table cursor. */
-static void pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
-  int i;
+స్థిర శూన్య pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
+  పూర్ణాంకం i;
   sqlite3_finalize(pCsr->pPragma);
   pCsr->pPragma = 0;
   pCsr->iRowid = 0;
-  for(i=0; i<ArraySize(pCsr->azArg); i++){
+  కొరకు(i=0; i<Array_కొలత(pCsr->azArg); i++){
     sqlite3_free(pCsr->azArg[i]);
     pCsr->azArg[i] = 0;
   }
 }
 
 /* Close a pragma virtual table cursor */
-static int pragmaVtabClose(sqlite3_vtab_cursor *cur){
+స్థిర పూర్ణాంకం pragmaVtabClose(sqlite3_vtab_cursor *cur){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)cur;
   pragmaVtabCursorClear(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* Advance the pragma virtual table cursor to the next row */
-static int pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor){
+స్థిర పూర్ణాంకం pragma_Vtab_తదుపరి(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  int rc = SQLITE_OK;
+  పూర్ణాంకం rc = SQLITE_OK;
 
   /* Increment the xRowid value */
   pCsr->iRowid++;
-  assert( pCsr->pPragma );
-  if( SQLITE_ROW!=sqlite3_step(pCsr->pPragma) ){
+  ప్రతిజ్ఞా( pCsr->pPragma );
+  ఒకవేళ( SQLITE_అడ్డువరుస!=sqlite3_అడుగు(pCsr->pPragma) ){
     rc = sqlite3_finalize(pCsr->pPragma);
     pCsr->pPragma = 0;
     pragmaVtabCursorClear(pCsr);
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Pragma virtual table module xFilter method.
 */
-static int pragmaVtabFilter(
+స్థిర పూర్ణాంకం pragmaVtabFilter(
   sqlite3_vtab_cursor *pVtabCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  పూర్ణాంకం idx_అంకె, స్థిరరాశి అక్షరం *idxStr,
+  పూర్ణాంకం argc, sqlite3_విలువ **argv
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  int rc;
-  int i, j;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం i, j;
   StrAccum acc;
-  char *zSql;
+  అక్షరం *zSql;
 
-  UNUSED_PARAMETER(idxNum);
-  UNUSED_PARAMETER(idxStr);
+  వాడని_PARAMETER(idx_అంకె);
+  వాడని_PARAMETER(idxStr);
   pragmaVtabCursorClear(pCsr);
   j = (pTab->pName->mPragFlg & PragFlg_Result1)!=0 ? 0 : 1;
-  for(i=0; i<argc; i++, j++){
-    const char *zText = (const char*)sqlite3_value_text(argv[i]);
-    assert( j<ArraySize(pCsr->azArg) );
-    assert( pCsr->azArg[j]==0 );
-    if( zText ){
-      pCsr->azArg[j] = sqlite3_mprintf("%s", zText);
-      if( pCsr->azArg[j]==0 ){
-        return SQLITE_NOMEM;
+  కొరకు(i=0; i<argc; i++, j++){
+    స్థిరరాశి అక్షరం *z_పాఠ్యం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[i]);
+    ప్రతిజ్ఞా( j<Array_కొలత(pCsr->azArg) );
+    ప్రతిజ్ఞా( pCsr->azArg[j]==0 );
+    ఒకవేళ( z_పాఠ్యం ){
+      pCsr->azArg[j] = sqlite3_mprintf("%s", z_పాఠ్యం);
+      ఒకవేళ( pCsr->azArg[j]==0 ){
+        తిరిగి SQLITE_NOMEM;
       }
     }
   }
-  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->aLimit[SQLITE_LIMIT_SQL_LENGTH]);
+  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->a_హద్దు[SQLITE_హద్దు_SQL_నిడివి]);
   sqlite3_str_appendall(&acc, "PRAGMA ");
-  if( pCsr->azArg[1] ){
+  ఒకవేళ( pCsr->azArg[1] ){
     sqlite3_str_appendf(&acc, "%Q.", pCsr->azArg[1]);
   }
   sqlite3_str_appendall(&acc, pTab->pName->zName);
-  if( pCsr->azArg[0] ){
+  ఒకవేళ( pCsr->azArg[0] ){
     sqlite3_str_appendf(&acc, "=%Q", pCsr->azArg[0]);
   }
-  zSql = sqlite3StrAccumFinish(&acc);
-  if( zSql==0 ) return SQLITE_NOMEM;
+  zSql = sqlite3_Str_Accum_ముగింపు(&acc);
+  ఒకవేళ( zSql==0 ) తిరిగి SQLITE_NOMEM;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pPragma, 0);
   sqlite3_free(zSql);
-  if( rc!=SQLITE_OK ){
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
-    return rc;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    pTab->పునాది.z_Err_సందేశం = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
+    తిరిగి rc;
   }
-  return pragmaVtabNext(pVtabCursor);
+  తిరిగి pragma_Vtab_తదుపరి(pVtabCursor);
 }
 
 /*
 ** Pragma virtual table module xEof method.
 */
-static int pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
+స్థిర పూర్ణాంకం pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  return (pCsr->pPragma==0);
+  తిరిగి (pCsr->pPragma==0);
 }
 
 /* The xColumn method simply returns the corresponding column from
 ** the PRAGMA. 
 */
-static int pragmaVtabColumn(
+స్థిర పూర్ణాంకం pragma_Vtab_స్తంభం(
   sqlite3_vtab_cursor *pVtabCursor,
   sqlite3_context *ctx,
-  int i
+  పూర్ణాంకం i
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  if( i<pTab->iHidden ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pPragma, i));
-  }else{
-    sqlite3_result_text(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
+  ఒకవేళ( i<pTab->iHidden ){
+    sqlite3_ఫలితం_విలువ(ctx, sqlite3_స్తంభం_విలువ(pCsr->pPragma, i));
+  }లేకపోతే{
+    sqlite3_ఫలితం_పాఠ్యం(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Pragma virtual table module xRowid method.
 */
-static int pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
+స్థిర పూర్ణాంకం pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   *p = pCsr->iRowid;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /* The pragma virtual table object */
-static const sqlite3_module pragmaVtabModule = {
+స్థిర స్థిరరాశి sqlite3_module pragmaVtabModule = {
   0,                           /* iVersion */
   0,                           /* xCreate - create a table */
   pragmaVtabConnect,           /* xConnect - connect to an existing table */
-  pragmaVtabBestIndex,         /* xBestIndex - Determine search strategy */
+  pragma_Vtab_ఉత్తమ_సూచీ,         /* xBestIndex - Determine search strategy */
   pragmaVtabDisconnect,        /* xDisconnect - Disconnect from a table */
   0,                           /* xDestroy - Drop a table */
   pragmaVtabOpen,              /* xOpen - open a cursor */
   pragmaVtabClose,             /* xClose - close a cursor */
   pragmaVtabFilter,            /* xFilter - configure scan constraints */
-  pragmaVtabNext,              /* xNext - advance a cursor */
+  pragma_Vtab_తదుపరి,              /* xNext - advance a cursor */
   pragmaVtabEof,               /* xEof */
-  pragmaVtabColumn,            /* xColumn - read data */
+  pragma_Vtab_స్తంభం,            /* xColumn - read data */
   pragmaVtabRowid,             /* xRowid - read data */
   0,                           /* xUpdate - write data */
   0,                           /* xBegin - begin transaction */
@@ -3096,16 +3096,16 @@ static const sqlite3_module pragmaVtabModule = {
 ** then register an eponymous virtual table for that pragma and return
 ** a pointer to the Module object for the new virtual table.
 */
-Module *sqlite3PragmaVtabRegister(sqlite3 *db, const char *zName){
-  const PragmaName *pName;
-  assert( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
+Module *sqlite3_Pragma_Vtab_రిజిస్టరు(sqlite3 *db, స్థిరరాశి అక్షరం *zName){
+  స్థిరరాశి PragmaName *pName;
+  ప్రతిజ్ఞా( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
   pName = pragmaLocate(zName+7);
-  if( pName==0 ) return 0;
-  if( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) return 0;
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  return sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (void*)pName, 0);
+  ఒకవేళ( pName==0 ) తిరిగి 0;
+  ఒకవేళ( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) తిరిగి 0;
+  ప్రతిజ్ఞా( sqlite3_Hash_కనుగొను(&db->aModule, zName)==0 );
+  తిరిగి sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (శూన్య*)pName, 0);
 }
 
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#అయితే_ముగింపు /* SQLITE_OMIT_VIRTUALTABLE */
 
-#endif /* SQLITE_OMIT_PRAGMA */
+#అయితే_ముగింపు /* SQLITE_OMIT_PRAGMA */

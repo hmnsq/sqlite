@@ -15,18 +15,18 @@
 ** strings, and stuff like that.
 **
 */
-#include "sqliteInt.h"
-#include <stdarg.h>
-#ifndef SQLITE_OMIT_FLOATING_POINT
-#include <math.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ <stdarg.h>
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FLOATING_బిందువు
+#అన్తర్భావ <math.h>
 
 /* Work around a bug in older Microsoft compilers
 ** Forum post 2026-04-10T06:33:11z */
-#if !defined(INFINITY) && defined(_MSC_VER)
+#ఒకవేళ !defined(INFINITY) && defined(_MSC_VER)
 # define INFINITY HUGE_VAL
-#endif
+#అయితే_ముగింపు
 
-#endif /* SQLITE_OMIT_FLOATING_POINT */
+#అయితే_ముగింపు /* SQLITE_OMIT_FLOATING_POINT */
 
 /*
 ** Calls to sqlite3FaultSim() are used to simulate a failure during testing,
@@ -47,46 +47,46 @@
 ** should have a unique code.  To prevent legacy testing applications from
 ** breaking, the codes should not be changed or reused.
 */
-#ifndef SQLITE_UNTESTABLE
-int sqlite3FaultSim(int iTest){
-  int (*xCallback)(int) = sqlite3GlobalConfig.xTestCallback;
-  return xCallback ? xCallback(iTest) : SQLITE_OK;
+#నిర్వచితం_కాకపోతే SQLITE_UNTESTABLE
+పూర్ణాంకం sqlite3FaultSim(పూర్ణాంకం iTest){
+  పూర్ణాంకం (*xCallback)(పూర్ణాంకం) = sqlite3GlobalConfig.xTestCallback;
+  తిరిగి xCallback ? xCallback(iTest) : SQLITE_OK;
 }
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FLOATING_బిందువు
 /*
 ** Return true if the floating point value is Not a Number (NaN).
 **
 ** Use the math library isnan() function if compiled with SQLITE_HAVE_ISNAN.
 ** Otherwise, we have our own implementation that works on most systems.
 */
-int sqlite3IsNaN(double x){
-  int rc;   /* The value return */
-#if !SQLITE_HAVE_ISNAN && !HAVE_ISNAN
+పూర్ణాంకం sqlite3IsNaN(ద్విగుణ x){
+  పూర్ణాంకం rc;   /* The value return */
+#ఒకవేళ !SQLITE_HAVE_ISNAN && !HAVE_ISNAN
   u64 y;
-  memcpy(&y,&x,sizeof(y));
+  జ్ఞాపకం_నకలు(&y,&x,పరిమాణం(y));
   rc = IsNaN(y);
-#else
+#లేకపోతే
   rc = isnan(x);
-#endif /* HAVE_ISNAN */
+#అయితే_ముగింపు /* HAVE_ISNAN */
   testcase( rc );
-  return rc;
+  తిరిగి rc;
 }
-#endif /* SQLITE_OMIT_FLOATING_POINT */
+#అయితే_ముగింపు /* SQLITE_OMIT_FLOATING_POINT */
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FLOATING_బిందువు
 /*
 ** Return true if the floating point value is NaN or +Inf or -Inf.
 */
-int sqlite3IsOverflow(double x){
-  int rc;   /* The value return */
+పూర్ణాంకం sqlite3_Is_అధికప్రవాహం(ద్విగుణ x){
+  పూర్ణాంకం rc;   /* The value return */
   u64 y;
-  memcpy(&y,&x,sizeof(y));
+  జ్ఞాపకం_నకలు(&y,&x,పరిమాణం(y));
   rc = IsOvfl(y);
-  return rc;
+  తిరిగి rc;
 }
-#endif /* SQLITE_OMIT_FLOATING_POINT */
+#అయితే_ముగింపు /* SQLITE_OMIT_FLOATING_POINT */
 
 /*
 ** Compute a string length that is limited to what can be stored in
@@ -96,9 +96,9 @@ int sqlite3IsOverflow(double x){
 ** than the actual length of the string.  For very long strings (greater
 ** than 1GiB) the value returned might be less than the true string length.
 */
-int sqlite3Strlen30(const char *z){
-  if( z==0 ) return 0;
-  return 0x3fffffff & (int)strlen(z);
+పూర్ణాంకం sqlite3Strlen30(స్థిరరాశి అక్షరం *z){
+  ఒకవేళ( z==0 ) తిరిగి 0;
+  తిరిగి 0x3fffffff & (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(z);
 }
 
 /*
@@ -108,14 +108,14 @@ int sqlite3Strlen30(const char *z){
 ** The column type is an extra string stored after the zero-terminator on
 ** the column name if and only if the COLFLAG_HASTYPE flag is set.
 */
-char *sqlite3ColumnType(Column *pCol, char *zDflt){
-  if( pCol->colFlags & COLFLAG_HASTYPE ){
-    return pCol->zCnName + strlen(pCol->zCnName) + 1;
-  }else if( pCol->eCType ){
-    assert( pCol->eCType<=SQLITE_N_STDTYPE );
-    return (char*)sqlite3StdType[pCol->eCType-1];
-  }else{
-    return zDflt;
+అక్షరం *sqlite3_స్తంభం_Type(స్తంభం *p_నిలువు, అక్షరం *zDflt){
+  ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_HASTYPE ){
+    తిరిగి p_నిలువు->zCnName + అక్షరశ్రేణి_పొడవు(p_నిలువు->zCnName) + 1;
+  }లేకపోతే ఒకవేళ( p_నిలువు->eCType ){
+    ప్రతిజ్ఞా( p_నిలువు->eCType<=SQLITE_N_STDTYPE );
+    తిరిగి (అక్షరం*)sqlite3StdType[p_నిలువు->eCType-1];
+  }లేకపోతే{
+    తిరిగి zDflt;
   }
 }
 
@@ -124,9 +124,9 @@ char *sqlite3ColumnType(Column *pCol, char *zDflt){
 ** a separate routine to avoid unnecessary register saves on entry to
 ** sqlite3Error().
 */
-static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
-  sqlite3SystemError(db, err_code);
+స్థిర SQLITE_NOINLINE శూన్య  sqlite3_Error_ముగింపు(sqlite3 *db, పూర్ణాంకం err_సంకేతం_2){
+  ఒకవేళ( db->pErr ) sqlite3_విలువ_సమితి_Null(db->pErr);
+  sqlite3SystemError(db, err_సంకేతం_2);
 }
 
 /*
@@ -134,13 +134,13 @@ static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
 ** Also set iSysErrno (by calling sqlite3System) if the err_code indicates
 ** that would be appropriate.
 */
-void sqlite3Error(sqlite3 *db, int err_code){
-  assert( db!=0 );
-  db->errCode = err_code;
-  if( err_code || db->pErr ){
-    sqlite3ErrorFinish(db, err_code);
-  }else{
-    db->errByteOffset = -1;
+శూన్య sqlite3Error(sqlite3 *db, పూర్ణాంకం err_సంకేతం_2){
+  ప్రతిజ్ఞా( db!=0 );
+  db->err_సంకేతం = err_సంకేతం_2;
+  ఒకవేళ( err_సంకేతం_2 || db->pErr ){
+    sqlite3_Error_ముగింపు(db, err_సంకేతం_2);
+  }లేకపోతే{
+    db->err_Byte_స్థానభ్రంశం = -1;
   }
 }
 
@@ -148,39 +148,39 @@ void sqlite3Error(sqlite3 *db, int err_code){
 ** The equivalent of sqlite3Error(db, SQLITE_OK).  Clear the error state
 ** and error message.
 */
-void sqlite3ErrorClear(sqlite3 *db){
-  assert( db!=0 );
-  db->errCode = SQLITE_OK;
-  db->errByteOffset = -1;
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
+శూన్య sqlite3ErrorClear(sqlite3 *db){
+  ప్రతిజ్ఞా( db!=0 );
+  db->err_సంకేతం = SQLITE_OK;
+  db->err_Byte_స్థానభ్రంశం = -1;
+  ఒకవేళ( db->pErr ) sqlite3_విలువ_సమితి_Null(db->pErr);
 }
 
 /*
 ** Load the sqlite3.iSysErrno field if that is an appropriate thing
 ** to do based on the SQLite error code in rc.
 */
-void sqlite3SystemError(sqlite3 *db, int rc){
-  if( rc==SQLITE_IOERR_NOMEM ) return;
-#if defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
-  if( rc==SQLITE_IOERR_IN_PAGE ){
-    int ii;
-    int iErr;
+శూన్య sqlite3SystemError(sqlite3 *db, పూర్ణాంకం rc){
+  ఒకవేళ( rc==SQLITE_IOERR_NOMEM ) తిరిగి;
+#ఒకవేళ defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
+  ఒకవేళ( rc==SQLITE_IOERR_లోపల_పుట ){
+    పూర్ణాంకం ii;
+    పూర్ణాంకం iErr;
     sqlite3BtreeEnterAll(db);
-    for(ii=0; ii<db->nDb; ii++){
-      if( db->aDb[ii].pBt ){
+    కొరకు(ii=0; ii<db->nDb; ii++){
+      ఒకవేళ( db->aDb[ii].pBt ){
         iErr = sqlite3PagerWalSystemErrno(sqlite3BtreePager(db->aDb[ii].pBt));
-        if( iErr ){
+        ఒకవేళ( iErr ){
           db->iSysErrno = iErr;
         }
       }
     }
     sqlite3BtreeLeaveAll(db);
-    return;
+    తిరిగి;
   }
-#endif
+#అయితే_ముగింపు
   rc &= 0xff;
-  if( rc==SQLITE_CANTOPEN || rc==SQLITE_IOERR ){
-    db->iSysErrno = sqlite3OsGetLastError(db->pVfs);
+  ఒకవేళ( rc==SQLITE_CANTOPEN || rc==SQLITE_IOERR ){
+    db->iSysErrno = sqlite3_Os_Get_చివరి_Error(db->pVfs);
   }
 }
 
@@ -196,44 +196,44 @@ void sqlite3SystemError(sqlite3 *db, int rc){
 ** should be called with err_code set to SQLITE_OK and zFormat set
 ** to NULL.
 */
-void sqlite3ErrorWithMsg(sqlite3 *db, int err_code, const char *zFormat, ...){
-  assert( db!=0 );
-  db->errCode = err_code;
-  sqlite3SystemError(db, err_code);
-  if( zFormat==0 ){
-    sqlite3Error(db, err_code);
-  }else if( db->pErr || (db->pErr = sqlite3ValueNew(db))!=0 ){
-    char *z;
+శూన్య sqlite3_Error_With_సందేశం(sqlite3 *db, పూర్ణాంకం err_సంకేతం_2, స్థిరరాశి అక్షరం *zFormat, ...){
+  ప్రతిజ్ఞా( db!=0 );
+  db->err_సంకేతం = err_సంకేతం_2;
+  sqlite3SystemError(db, err_సంకేతం_2);
+  ఒకవేళ( zFormat==0 ){
+    sqlite3Error(db, err_సంకేతం_2);
+  }లేకపోతే ఒకవేళ( db->pErr || (db->pErr = sqlite3_విలువ_New(db))!=0 ){
+    అక్షరం *z;
     va_list ap;
     va_start(ap, zFormat);
     z = sqlite3VMPrintf(db, zFormat, ap);
     va_end(ap);
-    sqlite3ValueSetStr(db->pErr, -1, z, SQLITE_UTF8, SQLITE_DYNAMIC);
+    sqlite3_విలువ_సమితి_Str(db->pErr, -1, z, SQLITE_UTF8, SQLITE_DYNAMIC);
   }
 }
 
 /*
 ** Check for interrupts and invoke progress callback.
 */
-void sqlite3ProgressCheck(Parse *p){
+శూన్య sqlite3_పురోగతి_Check(Parse *p){
   sqlite3 *db = p->db;
-  if( AtomicLoad(&db->u1.isInterrupted) ){
+  ఒకవేళ( Atomic_ఎక్కించు(&db->u1.isInterrupted) ){
     p->nErr++;
-    p->rc = SQLITE_INTERRUPT;
+    p->rc = SQLITE_అంతరాయం;
   }
-#ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  if( db->xProgress ){
-    if( p->rc==SQLITE_INTERRUPT ){
-      p->nProgressSteps = 0;
-    }else if( (++p->nProgressSteps)>=db->nProgressOps ){
-      if( db->xProgress(db->pProgressArg) ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_పురోగతి_CALLBACK
+  ఒకవేళ( db->x_పురోగతి ){
+    ఒకవేళ( p->rc==SQLITE_అంతరాయం ){
+      p->n_పురోగతి_అడుగులు = 0;
+    }లేకపోతే ఒకవేళ( (++p->n_పురోగతి_అడుగులు)>=db->n_పురోగతి_Ops ){
+      ఒకవేళ( db->x_పురోగతి(db->p_పురోగతి_Arg) ){
         p->nErr++;
-        p->rc = SQLITE_INTERRUPT;
+        p->rc = SQLITE_అంతరాయం;
       }
-      p->nProgressSteps = 0;
+      p->n_పురోగతి_అడుగులు = 0;
     }
   }
-#endif
+#అయితే_ముగింపు
 }
 
 /*
@@ -246,27 +246,27 @@ void sqlite3ProgressCheck(Parse *p){
 ** Functions sqlite3Error() or sqlite3ErrorWithMsg() should be used
 ** during statement execution (sqlite3_step() etc.).
 */
-void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...){
-  char *zMsg;
+శూన్య sqlite3_Error_సందేశం(Parse *pParse, స్థిరరాశి అక్షరం *zFormat, ...){
+  అక్షరం *z_సందేశం;
   va_list ap;
   sqlite3 *db = pParse->db;
-  assert( db!=0 );
-  assert( db->pParse==pParse || db->pParse->pToplevel==pParse );
-  db->errByteOffset = -2;
+  ప్రతిజ్ఞా( db!=0 );
+  ప్రతిజ్ఞా( db->pParse==pParse || db->pParse->pToplevel==pParse );
+  db->err_Byte_స్థానభ్రంశం = -2;
   va_start(ap, zFormat);
-  zMsg = sqlite3VMPrintf(db, zFormat, ap);
+  z_సందేశం = sqlite3VMPrintf(db, zFormat, ap);
   va_end(ap);
-  if( db->errByteOffset<-1 ) db->errByteOffset = -1;
-  if( db->suppressErr ){
-    sqlite3DbFree(db, zMsg);
-    if( db->mallocFailed ){
+  ఒకవేళ( db->err_Byte_స్థానభ్రంశం<-1 ) db->err_Byte_స్థానభ్రంశం = -1;
+  ఒకవేళ( db->suppressErr ){
+    sqlite3DbFree(db, z_సందేశం);
+    ఒకవేళ( db->mallocFailed ){
       pParse->nErr++;
       pParse->rc = SQLITE_NOMEM;
     }
-  }else{
+  }లేకపోతే{
     pParse->nErr++;
-    sqlite3DbFree(db, pParse->zErrMsg);
-    pParse->zErrMsg = zMsg;
+    sqlite3DbFree(db, pParse->z_Err_సందేశం);
+    pParse->z_Err_సందేశం = z_సందేశం;
     pParse->rc = SQLITE_ERROR;
     pParse->pWith = 0;
   }
@@ -277,12 +277,12 @@ void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...){
 ** error code errCode to that parser if the parser has not already
 ** encountered some other kind of error.
 */
-int sqlite3ErrorToParser(sqlite3 *db, int errCode){
+పూర్ణాంకం sqlite3_Error_గమ్యం_Parser(sqlite3 *db, పూర్ణాంకం err_సంకేతం){
   Parse *pParse;
-  if( db==0 || (pParse = db->pParse)==0 ) return errCode;
-  pParse->rc = errCode;
+  ఒకవేళ( db==0 || (pParse = db->pParse)==0 ) తిరిగి err_సంకేతం;
+  pParse->rc = err_సంకేతం;
   pParse->nErr++;
-  return errCode;
+  తిరిగి err_సంకేతం;
 }
 
 /*
@@ -302,31 +302,31 @@ int sqlite3ErrorToParser(sqlite3 *db, int errCode){
 ** brackets from around identifiers.  For example:  "[a-b-c]" becomes
 ** "a-b-c".
 */
-void sqlite3Dequote(char *z){
-  char quote;
-  int i, j;
-  if( z==0 ) return;
+శూన్య sqlite3Dequote(అక్షరం *z){
+  అక్షరం quote;
+  పూర్ణాంకం i, j;
+  ఒకవేళ( z==0 ) తిరిగి;
   quote = z[0];
-  if( !sqlite3Isquote(quote) ) return;
-  if( quote=='[' ) quote = ']';
-  for(i=1, j=0;; i++){
-    assert( z[i] );
-    if( z[i]==quote ){
-      if( z[i+1]==quote ){
+  ఒకవేళ( !sqlite3Isquote(quote) ) తిరిగి;
+  ఒకవేళ( quote=='[' ) quote = ']';
+  కొరకు(i=1, j=0;; i++){
+    ప్రతిజ్ఞా( z[i] );
+    ఒకవేళ( z[i]==quote ){
+      ఒకవేళ( z[i+1]==quote ){
         z[j++] = quote;
         i++;
-      }else{
-        break;
+      }లేకపోతే{
+        ఆపు;
       }
-    }else{
+    }లేకపోతే{
       z[j++] = z[i];
     }
   }
   z[j] = 0;
 }
-void sqlite3DequoteExpr(Expr *p){
-  assert( !ExprHasProperty(p, EP_IntValue) );
-  assert( sqlite3Isquote(p->u.zToken[0]) );
+శూన్య sqlite3_Dequote_సమాసం(సమాసం *p){
+  ప్రతిజ్ఞా( !సమాసం_Has_Property(p, EP_Int_విలువ) );
+  ప్రతిజ్ఞా( sqlite3Isquote(p->u.zToken[0]) );
   p->flags |= p->u.zToken[0]=='"' ? EP_Quoted|EP_DblQuoted : EP_Quoted;
   sqlite3Dequote(p->u.zToken);
 }
@@ -336,35 +336,35 @@ void sqlite3DequoteExpr(Expr *p){
 ** and set the type to INTEGER or FLOAT. "Quoted" integers or floats are those
 ** that contain '_' characters that must be removed before further processing.
 */
-void sqlite3DequoteNumber(Parse *pParse, Expr *p){
-  assert( p!=0 || pParse->db->mallocFailed );
-  if( p ){
-    const char *pIn = p->u.zToken;
-    char *pOut = p->u.zToken;
-    int bHex = (pIn[0]=='0' && (pIn[1]=='x' || pIn[1]=='X'));
-    int iValue;
-    assert( p->op==TK_QNUMBER );
+శూన్య sqlite3_Dequote_సంఖ్య(Parse *pParse, సమాసం *p){
+  ప్రతిజ్ఞా( p!=0 || pParse->db->mallocFailed );
+  ఒకవేళ( p ){
+    స్థిరరాశి అక్షరం *p_లోపల = p->u.zToken;
+    అక్షరం *p_బహిర్గతం = p->u.zToken;
+    పూర్ణాంకం bHex = (p_లోపల[0]=='0' && (p_లోపల[1]=='x' || p_లోపల[1]=='X'));
+    పూర్ణాంకం i_విలువ;
+    ప్రతిజ్ఞా( p->op==TK_QNUMBER );
     p->op = TK_INTEGER;
-    do {
-      if( *pIn!=SQLITE_DIGIT_SEPARATOR ){
-        *pOut++ = *pIn;
-        if( *pIn=='e' || *pIn=='E' || *pIn=='.' ) p->op = TK_FLOAT;
-      }else{
-        if( (bHex==0 && (!sqlite3Isdigit(pIn[-1]) || !sqlite3Isdigit(pIn[1])))
-         || (bHex==1 && (!sqlite3Isxdigit(pIn[-1]) || !sqlite3Isxdigit(pIn[1])))
+    చేయి {
+      ఒకవేళ( *p_లోపల!=SQLITE_DIGIT_SEPARATOR ){
+        *p_బహిర్గతం++ = *p_లోపల;
+        ఒకవేళ( *p_లోపల=='e' || *p_లోపల=='E' || *p_లోపల=='.' ) p->op = TK_FLOAT;
+      }లేకపోతే{
+        ఒకవేళ( (bHex==0 && (!sqlite3Isdigit(p_లోపల[-1]) || !sqlite3Isdigit(p_లోపల[1])))
+         || (bHex==1 && (!sqlite3Isxdigit(p_లోపల[-1]) || !sqlite3Isxdigit(p_లోపల[1])))
         ){
-          sqlite3ErrorMsg(pParse, "unrecognized token: \"%s\"", p->u.zToken);
+          sqlite3_Error_సందేశం(pParse, "unrecognized token: \"%s\"", p->u.zToken);
         }
       }
-    }while( *pIn++ );
-    if( bHex ) p->op = TK_INTEGER;
+    }అయితే( *p_లోపల++ );
+    ఒకవేళ( bHex ) p->op = TK_INTEGER;
 
     /* tag-20240227-a: If after dequoting, the number is an integer that
     ** fits in 32 bits, then it must be converted into EP_IntValue.  Other
     ** parts of the code expect this.  See also tag-20240227-b. */
-    if( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &iValue) ){
-      p->u.iValue = iValue;
-      p->flags |= EP_IntValue;
+    ఒకవేళ( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &i_విలువ) ){
+      p->u.i_విలువ = i_విలువ;
+      p->flags |= EP_Int_విలువ;
     }
   }
 }
@@ -380,12 +380,12 @@ void sqlite3DequoteNumber(Parse *pParse, Expr *p){
 ** system should still return the correct answer even if this routine
 ** is always a no-op.
 */
-void sqlite3DequoteToken(Token *p){
-  unsigned int i;
-  if( p->n<2 ) return;
-  if( !sqlite3Isquote(p->z[0]) ) return;
-  for(i=1; i<p->n-1; i++){
-    if( sqlite3Isquote(p->z[i]) ) return;
+శూన్య sqlite3DequoteToken(Token *p){
+  గుర్తులేని పూర్ణాంకం i;
+  ఒకవేళ( p->n<2 ) తిరిగి;
+  ఒకవేళ( !sqlite3Isquote(p->z[0]) ) తిరిగి;
+  కొరకు(i=1; i<p->n-1; i++){
+    ఒకవేళ( sqlite3Isquote(p->z[i]) ) తిరిగి;
   }
   p->n -= 2;
   p->z++;
@@ -394,13 +394,13 @@ void sqlite3DequoteToken(Token *p){
 /*
 ** Generate a Token object from a string
 */
-void sqlite3TokenInit(Token *p, char *z){
+శూన్య sqlite3TokenInit(Token *p, అక్షరం *z){
   p->z = z;
   p->n = sqlite3Strlen30(z);
 }
 
 /* Convenient short-hand */
-#define UpperToLower sqlite3UpperToLower
+#నిర్వచించు పై_గమ్యం_క్రింది sqlite3_పై_గమ్యం_క్రింది
 
 /*
 ** Some systems have stricmp().  Others have strcasecmp().  Because
@@ -412,80 +412,80 @@ void sqlite3TokenInit(Token *p, char *z){
 ** case-independent fashion, using the same definition of "case
 ** independence" that SQLite uses internally when comparing identifiers.
 */
-int sqlite3_stricmp(const char *zLeft, const char *zRight){
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
-    return 1;
+పూర్ణాంకం sqlite3_stricmp(స్థిరరాశి అక్షరం *z_ఎడమ, స్థిరరాశి అక్షరం *z_కుడి){
+  ఒకవేళ( z_ఎడమ==0 ){
+    తిరిగి z_కుడి ? -1 : 0;
+  }లేకపోతే ఒకవేళ( z_కుడి==0 ){
+    తిరిగి 1;
   }
-  return sqlite3StrICmp(zLeft, zRight);
+  తిరిగి sqlite3StrICmp(z_ఎడమ, z_కుడి);
 }
-int sqlite3StrICmp(const char *zLeft, const char *zRight){
-  unsigned char *a, *b;
-  int c, x;
-  a = (unsigned char *)zLeft;
-  b = (unsigned char *)zRight;
-  for(;;){
+పూర్ణాంకం sqlite3StrICmp(స్థిరరాశి అక్షరం *z_ఎడమ, స్థిరరాశి అక్షరం *z_కుడి){
+  గుర్తులేని అక్షరం *a, *b;
+  పూర్ణాంకం c, x;
+  a = (గుర్తులేని అక్షరం *)z_ఎడమ;
+  b = (గుర్తులేని అక్షరం *)z_కుడి;
+  కొరకు(;;){
     c = *a;
     x = *b;
-    if( c==x ){
-      if( c==0 ) break;
-    }else{
-      c = (int)UpperToLower[c] - (int)UpperToLower[x];
-      if( c ) break;
+    ఒకవేళ( c==x ){
+      ఒకవేళ( c==0 ) ఆపు;
+    }లేకపోతే{
+      c = (పూర్ణాంకం)పై_గమ్యం_క్రింది[c] - (పూర్ణాంకం)పై_గమ్యం_క్రింది[x];
+      ఒకవేళ( c ) ఆపు;
     }
     a++;
     b++;
   }
-  return c;
+  తిరిగి c;
 }
-int sqlite3_strnicmp(const char *zLeft, const char *zRight, int N){
-  register unsigned char *a, *b;
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
-    return 1;
+పూర్ణాంకం sqlite3_strnicmp(స్థిరరాశి అక్షరం *z_ఎడమ, స్థిరరాశి అక్షరం *z_కుడి, పూర్ణాంకం N){
+  నమోదు గుర్తులేని అక్షరం *a, *b;
+  ఒకవేళ( z_ఎడమ==0 ){
+    తిరిగి z_కుడి ? -1 : 0;
+  }లేకపోతే ఒకవేళ( z_కుడి==0 ){
+    తిరిగి 1;
   }
-  a = (unsigned char *)zLeft;
-  b = (unsigned char *)zRight;
-  while( N-- > 0 && *a!=0 && UpperToLower[*a]==UpperToLower[*b]){ a++; b++; }
-  return N<0 ? 0 : UpperToLower[*a] - UpperToLower[*b];
+  a = (గుర్తులేని అక్షరం *)z_ఎడమ;
+  b = (గుర్తులేని అక్షరం *)z_కుడి;
+  అయితే( N-- > 0 && *a!=0 && పై_గమ్యం_క్రింది[*a]==పై_గమ్యం_క్రింది[*b]){ a++; b++; }
+  తిరిగి N<0 ? 0 : పై_గమ్యం_క్రింది[*a] - పై_గమ్యం_క్రింది[*b];
 }
 
 /*
 ** Compute an 8-bit hash on a string that is insensitive to case differences
 */
-u8 sqlite3StrIHash(const char *z){
+u8 sqlite3StrIHash(స్థిరరాశి అక్షరం *z){
   u8 h = 0;
-  if( z==0 ) return 0;
-  while( z[0] ){
-    h += UpperToLower[(unsigned char)z[0]];
+  ఒకవేళ( z==0 ) తిరిగి 0;
+  అయితే( z[0] ){
+    h += పై_గమ్యం_క్రింది[(గుర్తులేని అక్షరం)z[0]];
     z++;
   }
-  return h;
+  తిరిగి h;
 }
 
-#if !defined(SQLITE_DISABLE_INTRINSIC)               \
+#ఒకవేళ !defined(SQLITE_DISABLE_INTRINSIC)               \
   && (defined(__GNUC__) || defined(__clang__))       \
   && (defined(__x86_64__) || defined(__aarch64__) || \
       (defined(__riscv) && defined(__riscv_xlen) && (__riscv_xlen>32)))
-#define SQLITE_USE_UINT128
-#endif
+#నిర్వచించు SQLITE_USE_UINT128
+#అయితే_ముగింపు
 
 /*
 ** Two inputs are multiplied to get a 128-bit result.  Write the
 ** lower 64-bits of the result into *pLo, and return the high-order
 ** 64 bits.
 */
-static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
-#if defined(SQLITE_USE_UINT128)
+స్థిర u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
+#ఒకవేళ defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   *pLo = (u64)r;
-  return (u64)(r>>64);
-#elif defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
+  తిరిగి (u64)(r>>64);
+#లేదావేళ defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
   *pLo = a*b;
-  return __umulh(a, b);
-#else
+  తిరిగి __umulh(a, b);
+#లేకపోతే
   u64 a0 = (u32)a;
   u64 a1 = a >> 32;
   u64 b0 = (u32)b;
@@ -496,8 +496,8 @@ static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
   u64 a1b0 = a1 * b0;
   u64 t = (a0b0 >> 32) + (u32)a0b1 + (u32)a1b0;
   *pLo = (a0b0 & UINT64_C(0xffffffff)) | (t << 32);
-  return a1b1 + (a0b1>>32) + (a1b0>>32) + (t>>32);
-#endif
+  తిరిగి a1b1 + (a0b1>>32) + (a1b0>>32) + (t>>32);
+#అయితే_ముగింపు
 }
 
 /*
@@ -511,21 +511,21 @@ static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
 **
 ** The lower 64 bits of A*B are discarded.
 */
-static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
-#if defined(SQLITE_USE_UINT128)
+స్థిర u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
+#ఒకవేళ defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   r += ((__uint128_t)aLo * b) >> 32;
   *pLo = (r>>32)&0xffffffff;
-  return r>>64;
-#elif defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
+  తిరిగి r>>64;
+#లేదావేళ defined(_WIN64) && !defined(SQLITE_DISABLE_INTRINSIC)
   u64 r1_hi = __umulh(a,b);
   u64 r1_lo = a*b;
   u64 r2 = (__umulh((u64)aLo,b)<<32) + ((aLo*b)>>32);
   u64 t = r1_lo + r2;
-  if( t<r1_lo ) r1_hi++;
+  ఒకవేళ( t<r1_lo ) r1_hi++;
   *pLo = t>>32;
-  return r1_hi;
-#else
+  తిరిగి r1_hi;
+#లేకపోతే
   u64 x2 = a>>32;
   u64 x1 = a&0xffffffff;
   u64 x0 = aLo;
@@ -546,23 +546,23 @@ static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
   r2 += r1>>32;
   r3 += r2>>32;
   *pLo = r2&0xffffffff;
-  return (r4<<32) + r3;
-#endif
+  తిరిగి (r4<<32) + r3;
+#అయితే_ముగింపు
 }
 
-#undef SQLITE_USE_UINT128
+#నిర్వచనం_రద్దు SQLITE_USE_UINT128
 
 /*
 ** Return a u64 with the N-th bit set.
 */
-#define U64_BIT(N)  (((u64)1)<<(N))
+#నిర్వచించు U64_బిట్టు(N)  (((u64)1)<<(N))
 
 /*
 ** Range of powers of 10 that we need to deal with when converting
 ** IEEE754 doubles to and from decimal.
 */
-#define POWERSOF10_FIRST (-348)
-#define POWERSOF10_LAST  (+347)
+#నిర్వచించు POWERSOF10_మొదటి (-348)
+#నిర్వచించు POWERSOF10_చివరి  (+347)
 
 /*
 ** For any p between -348 and +347, return the integer part of
@@ -589,8 +589,8 @@ static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
 ** The constant tables aBase[], aScale[], and aScaleLo[] are generated
 ** by the C program at ../tool/mkfptab.c run with the --round option.
 */
-static u64 powerOfTen(int p, u32 *pLo){
-  static const u64 aBase[] = {
+స్థిర u64 power_యొక్క_Ten(పూర్ణాంకం p, u32 *pLo){
+  స్థిర స్థిరరాశి u64 a_పునాది[] = {
     UINT64_C(0x8000000000000000), /*  0: 1.0e+0 << 63 */
     UINT64_C(0xa000000000000000), /*  1: 1.0e+1 << 60 */
     UINT64_C(0xc800000000000000), /*  2: 1.0e+2 << 57 */
@@ -619,7 +619,7 @@ static u64 powerOfTen(int p, u32 *pLo){
     UINT64_C(0x84595161401484a0), /* 25: 1.0e+25 >> 20 */
     UINT64_C(0xa56fa5b99019a5c8), /* 26: 1.0e+26 >> 23 */
   };
-  static const u64 aScale[] = {
+  స్థిర స్థిరరాశి u64 aScale[] = {
     UINT64_C(0x8049a4ac0c5811ae), /*  0: 1.0e-351 << 1229 */
     UINT64_C(0xcf42894a5dce35ea), /*  1: 1.0e-324 << 1140 */
     UINT64_C(0xa76c582338ed2621), /*  2: 1.0e-297 << 1050 */
@@ -647,7 +647,7 @@ static u64 powerOfTen(int p, u32 *pLo){
     UINT64_C(0xc3b8358109e84f07), /* 24: 1.0e+297 >> 923 */
     UINT64_C(0x9e19db92b4e31ba9), /* 25: 1.0e+324 >> 1013 */
   };
-  static const unsigned int aScaleLo[] = {
+  స్థిర స్థిరరాశి గుర్తులేని పూర్ణాంకం aScaleLo[] = {
     0x205b896d, /*  0: 1.0e-351 << 1229 */
     0x52064cad, /*  1: 1.0e-324 << 1140 */
     0xaf2af2b8, /*  2: 1.0e-297 << 1050 */
@@ -675,41 +675,41 @@ static u64 powerOfTen(int p, u32 *pLo){
     0x0a862f81, /* 24: 1.0e+297 >> 923 */
     0x6c07a2c2, /* 25: 1.0e+324 >> 1013 */
   };
-  int g, n;
+  పూర్ణాంకం g, n;
   u64 s, x;
   u32 lo;
 
-  assert( p>=POWERSOF10_FIRST && p<=POWERSOF10_LAST );
-  if( p<0 ){
-    if( p==(-1) ){
+  ప్రతిజ్ఞా( p>=POWERSOF10_మొదటి && p<=POWERSOF10_చివరి );
+  ఒకవేళ( p<0 ){
+    ఒకవేళ( p==(-1) ){
       *pLo = aScaleLo[13];
-      return aScale[13];
+      తిరిగి aScale[13];
     }
     g = p/27;
     n = p%27;
-    if( n ){
+    ఒకవేళ( n ){
       g--;
       n += 27;
     }
-  }else if( p<27 ){
+  }లేకపోతే ఒకవేళ( p<27 ){
     *pLo = 0;
-    return aBase[p];
-  }else{
+    తిరిగి a_పునాది[p];
+  }లేకపోతే{
     g = p/27;
     n = p%27;
   }
   s = aScale[g+13];
-  if( n==0 ){
+  ఒకవేళ( n==0 ){
     *pLo = aScaleLo[g+13];
-    return s;
+    తిరిగి s;
   }
-  x = sqlite3Multiply160(s,aScaleLo[g+13],aBase[n],&lo);
-  if( (U64_BIT(63) & x)==0 ){
+  x = sqlite3Multiply160(s,aScaleLo[g+13],a_పునాది[n],&lo);
+  ఒకవేళ( (U64_బిట్టు(63) & x)==0 ){
     x  = x<<1 | ((lo>>31)&1);
     lo = (lo<<1) | 1;
   }
   *pLo = lo;
-  return x;
+  తిరిగి x;
 }
 
 /*
@@ -730,26 +730,26 @@ static u64 powerOfTen(int p, u32 *pLo){
 ** for division so that rounding of negative numbers happens in the
 ** right direction.
 */
-static int pwr10to2(int p){ return (p*108853) >> 15; }
-static int pwr2to10(int p){ return (p*78913) >> 18; }
+స్థిర పూర్ణాంకం pwr10to2(పూర్ణాంకం p){ తిరిగి (p*108853) >> 15; }
+స్థిర పూర్ణాంకం pwr2to10(పూర్ణాంకం p){ తిరిగి (p*78913) >> 18; }
 
 /*
 ** Count leading zeros for a 64-bit unsigned integer.
 */
-static int countLeadingZeros(u64 m){
-#if (defined(__GNUC__) || defined(__clang__)) \
+స్థిర పూర్ణాంకం లెక్క_Leading_Zeros(u64 m){
+#ఒకవేళ (defined(__GNUC__) || defined(__clang__)) \
     && !defined(SQLITE_DISABLE_INTRINSIC)
-  return __builtin_clzll(m);
-#else
-  int n = 0;
-  if( m <= 0x00000000ffffffffULL) { n += 32; m <<= 32; }
-  if( m <= 0x0000ffffffffffffULL) { n += 16; m <<= 16; }
-  if( m <= 0x00ffffffffffffffULL) { n += 8;  m <<= 8;  }
-  if( m <= 0x0fffffffffffffffULL) { n += 4;  m <<= 4;  }
-  if( m <= 0x3fffffffffffffffULL) { n += 2;  m <<= 2;  }
-  if( m <= 0x7fffffffffffffffULL) { n += 1;            }
-  return n;
-#endif
+  తిరిగి __builtin_clzll(m);
+#లేకపోతే
+  పూర్ణాంకం n = 0;
+  ఒకవేళ( m <= 0x00000000ffffffffULL) { n += 32; m <<= 32; }
+  ఒకవేళ( m <= 0x0000ffffffffffffULL) { n += 16; m <<= 16; }
+  ఒకవేళ( m <= 0x00ffffffffffffffULL) { n += 8;  m <<= 8;  }
+  ఒకవేళ( m <= 0x0fffffffffffffffULL) { n += 4;  m <<= 4;  }
+  ఒకవేళ( m <= 0x3fffffffffffffffULL) { n += 2;  m <<= 2;  }
+  ఒకవేళ( m <= 0x7fffffffffffffffULL) { n += 1;            }
+  తిరిగి n;
+#అయితే_ముగింపు
 }
 
 /*
@@ -760,19 +760,19 @@ static int countLeadingZeros(u64 m){
 ** The input m is required to have its highest bit set.  In other words,
 ** m should be left-shifted, and e decremented, to maximize the value of m.
 */
-static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
-  int p;
+స్థిర శూన్య sqlite3Fp2Convert10(u64 m, పూర్ణాంకం e, పూర్ణాంకం n, u64 *pD, పూర్ణాంకం *pP){
+  పూర్ణాంకం p;
   u64 h, d1;
   u32 d2;
-  assert( n>=1 && n<=18 );
+  ప్రతిజ్ఞా( n>=1 && n<=18 );
   p = n - 1 - pwr2to10(e+63);
-  h = sqlite3Multiply128(m, powerOfTen(p,&d2), &d1);
-  assert( -(e + pwr10to2(p) + 2) >= 0  );
-  assert( -(e + pwr10to2(p) + 1) <= 63 );
-  if( n==18 ){
+  h = sqlite3Multiply128(m, power_యొక్క_Ten(p,&d2), &d1);
+  ప్రతిజ్ఞా( -(e + pwr10to2(p) + 2) >= 0  );
+  ప్రతిజ్ఞా( -(e + pwr10to2(p) + 1) <= 63 );
+  ఒకవేళ( n==18 ){
     h >>= -(e + pwr10to2(p) + 2);
     *pD = (h + ((h<<1)&2))>>1;
-  }else{
+  }లేకపోతే{
     *pD = h >> -(e + pwr10to2(p) + 1);
   }
   *pP = -p;
@@ -784,23 +784,23 @@ static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
 ** The (current) algorithm is adapted from the work of Ross Cox at
 ** https://github.com/rsc/fpfmt
 */
-static double sqlite3Fp10Convert2(u64 d, int p){
-  int b, lp, e, adj, s;
+స్థిర ద్విగుణ sqlite3Fp10Convert2(u64 d, పూర్ణాంకం p){
+  పూర్ణాంకం b, lp, e, adj, s;
   u32 pwr10l, mid1;
   u64 pwr10h, x, hi, lo, sticky, u, m;
-  double r;
-  if( p<POWERSOF10_FIRST ) return 0.0;
-  if( p>POWERSOF10_LAST ) return (double)INFINITY;
-  b = 64 - countLeadingZeros(d);
+  ద్విగుణ r;
+  ఒకవేళ( p<POWERSOF10_మొదటి ) తిరిగి 0.0;
+  ఒకవేళ( p>POWERSOF10_చివరి ) తిరిగి (ద్విగుణ)INFINITY;
+  b = 64 - లెక్క_Leading_Zeros(d);
   lp = pwr10to2(p);
   e = 53 - b - lp;
-  if( e > 1074 ){
-    if( e>=1130 ) return 0.0;
+  ఒకవేళ( e > 1074 ){
+    ఒకవేళ( e>=1130 ) తిరిగి 0.0;
     e = 1074;
   }
   s = -(e-(64-b) + lp + 3);
-  pwr10h = powerOfTen(p, &pwr10l);
-  if( pwr10l!=0 ){
+  pwr10h = power_యొక్క_Ten(p, &pwr10l);
+  ఒకవేళ( pwr10l!=0 ){
     pwr10h++;
     pwr10l = ~pwr10l;
   }
@@ -808,24 +808,24 @@ static double sqlite3Fp10Convert2(u64 d, int p){
   hi = sqlite3Multiply128(x,pwr10h,&lo);
   mid1 = lo>>32;
   sticky = 1;
-  if( (hi & (U64_BIT(s)-1))==0 ) {
+  ఒకవేళ( (hi & (U64_బిట్టు(s)-1))==0 ) {
     u32 mid2 = sqlite3Multiply128(x,((u64)pwr10l)<<32,&lo)>>32;
     sticky = (mid1-mid2 > 1);
     hi -= mid1 < mid2;
   }
   u = (hi>>s) | sticky;
-  adj = (u >= U64_BIT(55)-2);
-  if( adj ){
+  adj = (u >= U64_బిట్టు(55)-2);
+  ఒకవేళ( adj ){
     u = (u>>adj) | (u&1);
     e -= adj;
   }
   m = (u + 1 + ((u>>2)&1)) >> 2;
-  if( e<=(-972) ) return (double)INFINITY;
-  if((m & U64_BIT(52)) != 0){
-    m = (m & ~U64_BIT(52)) | ((u64)(1075-e)<<52);
+  ఒకవేళ( e<=(-972) ) తిరిగి (ద్విగుణ)INFINITY;
+  ఒకవేళ((m & U64_బిట్టు(52)) != 0){
+    m = (m & ~U64_బిట్టు(52)) | ((u64)(1075-e)<<52);
   }
-  memcpy(&r,&m,8);
-  return r;
+  జ్ఞాపకం_నకలు(&r,&m,8);
+  తిరిగి r;
 }
 
 /*
@@ -875,132 +875,132 @@ static double sqlite3Fp10Convert2(u64 d, int p){
 ** by the 23rd significant digit, which this routine ignores. It is not
 ** possible to do better without some kind of BigNum.
 */
-int sqlite3AtoF(const char *zIn, double *pResult){
-#ifndef SQLITE_OMIT_FLOATING_POINT
-  const unsigned char *z = (const unsigned char*)zIn;
-  int neg = 0;       /* True for a negative value */
+పూర్ణాంకం sqlite3AtoF(స్థిరరాశి అక్షరం *z_లోపల, ద్విగుణ *p_ఫలితం){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FLOATING_బిందువు
+  స్థిరరాశి గుర్తులేని అక్షరం *z = (స్థిరరాశి గుర్తులేని అక్షరం*)z_లోపల;
+  పూర్ణాంకం neg = 0;       /* True for a negative value */
   u64 s = 0;         /* mantissa */
-  int d = 0;         /* Value is s * pow(10,d) */
-  int mState = 0;    /* 1: digit seen 2: fp 4: hard-zero */
-  unsigned v;        /* Value of a single digit */
+  పూర్ణాంకం d = 0;         /* Value is s * pow(10,d) */
+  పూర్ణాంకం mState = 0;    /* 1: digit seen 2: fp 4: hard-zero */
+  గుర్తులేని v;        /* Value of a single digit */
 
-  start_of_text:
-  if( (v = (unsigned)z[0] - '0')<10 ){
+  ప్రారంభం_యొక్క_పాఠ్యం:
+  ఒకవేళ( (v = (గుర్తులేని)z[0] - '0')<10 ){
     parse_integer_part:
     mState = 1;
     s = v;
     z++;
-    while( (v = (unsigned)z[0] - '0')<10 ){
+    అయితే( (v = (గుర్తులేని)z[0] - '0')<10 ){
       s = s*10 + v;
       z++;
-      if( s>=(LARGEST_UINT64-9)/10 ){
+      ఒకవేళ( s>=(అతిపెద్ద_UINT64-9)/10 ){
         mState = 9;
-        while( sqlite3Isdigit(z[0]) ){ z++; d++; }
-        break;
+        అయితే( sqlite3Isdigit(z[0]) ){ z++; d++; }
+        ఆపు;
       }
     }
-  }else if( z[0]=='-' ){
+  }లేకపోతే ఒకవేళ( z[0]=='-' ){
     neg = 1;
     z++;
-    if( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
-  }else if( z[0]=='+' ){
+    ఒకవేళ( (v = (గుర్తులేని)z[0] - '0')<10 ) వెళ్ళు parse_integer_part;
+  }లేకపోతే ఒకవేళ( z[0]=='+' ){
     z++;
-    if( (v = (unsigned)z[0] - '0')<10 ) goto parse_integer_part;
-  }else if( sqlite3Isspace(z[0]) ){
-    do{ z++; }while( sqlite3Isspace(z[0]) );
-    goto start_of_text;
-  }else{
+    ఒకవేళ( (v = (గుర్తులేని)z[0] - '0')<10 ) వెళ్ళు parse_integer_part;
+  }లేకపోతే ఒకవేళ( sqlite3Isspace(z[0]) ){
+    చేయి{ z++; }అయితే( sqlite3Isspace(z[0]) );
+    వెళ్ళు ప్రారంభం_యొక్క_పాఠ్యం;
+  }లేకపోతే{
     s = 0;
   }
 
   /* if decimal point is present */
-  if( *z=='.' ){
+  ఒకవేళ( *z=='.' ){
     z++;
-    if( sqlite3Isdigit(z[0]) ){
+    ఒకవేళ( sqlite3Isdigit(z[0]) ){
       mState |= 1;
-      do{
-        if( s<(LARGEST_UINT64-9)/10 ){
+      చేయి{
+        ఒకవేళ( s<(అతిపెద్ద_UINT64-9)/10 ){
           s = s*10 + z[0] - '0';
           d--;
-        }else{
+        }లేకపోతే{
           mState = 11;
         }
-      }while( sqlite3Isdigit(*++z) );
-    }else if( mState==0 ){
-      *pResult = 0.0;
-      return 0;
+      }అయితే( sqlite3Isdigit(*++z) );
+    }లేకపోతే ఒకవేళ( mState==0 ){
+      *p_ఫలితం = 0.0;
+      తిరిగి 0;
     }
     mState |= 2;
-  }else if( mState==0 ){
-    *pResult = 0.0;
-    return 0;
+  }లేకపోతే ఒకవేళ( mState==0 ){
+    *p_ఫలితం = 0.0;
+    తిరిగి 0;
   }
 
   /* if exponent is present */
-  if( *z=='e' || *z=='E' ){
-    int esign;
+  ఒకవేళ( *z=='e' || *z=='E' ){
+    పూర్ణాంకం esign;
     z++;
  
     /* get sign of exponent */
-    if( *z=='-' ){
+    ఒకవేళ( *z=='-' ){
       esign = -1;
       z++;
-    }else{
+    }లేకపోతే{
       esign = +1;
-      if( *z=='+' ){
+      ఒకవేళ( *z=='+' ){
         z++;
       }
     }
     /* copy digits to exponent */
-    if( (v = (unsigned)z[0] - '0')<10 ){
-      int exp = v;
+    ఒకవేళ( (v = (గుర్తులేని)z[0] - '0')<10 ){
+      పూర్ణాంకం ఘాతాంకం = v;
       z++;
       mState |= 2;
-      while( (v = (unsigned)z[0] - '0')<10 ){
-        exp = exp<10000 ? (exp*10 + v) : 10000;
+      అయితే( (v = (గుర్తులేని)z[0] - '0')<10 ){
+        ఘాతాంకం = ఘాతాంకం<10000 ? (ఘాతాంకం*10 + v) : 10000;
         z++;
       }
-      d += esign*exp;
-    }else{
+      d += esign*ఘాతాంకం;
+    }లేకపోతే{
       z--;  /* Leave z[0] at 'e' or '+' or '-',
             ** so that the return is 0 or -1 */
     }
   }
 
   /* Convert s*pow(10,d) into real */
-  if( s==0 ){
-    *pResult = 0.0;
+  ఒకవేళ( s==0 ){
+    *p_ఫలితం = 0.0;
     mState |= 4;
-  }else{
-    *pResult = sqlite3Fp10Convert2(s,d);
+  }లేకపోతే{
+    *p_ఫలితం = sqlite3Fp10Convert2(s,d);
   }
-  if( neg ) *pResult = -*pResult;
-  assert( !sqlite3IsNaN(*pResult) );
+  ఒకవేళ( neg ) *p_ఫలితం = -*p_ఫలితం;
+  ప్రతిజ్ఞా( !sqlite3IsNaN(*p_ఫలితం) );
 
   /* return true if number and no extra non-whitespace characters after */
-  if( z[0]==0 ){
-    return mState;
+  ఒకవేళ( z[0]==0 ){
+    తిరిగి mState;
   }
-  if( sqlite3Isspace(z[0]) ){
-    do{ z++; }while( sqlite3Isspace(*z) );
-    if( z[0]==0 ){
-      return mState;
+  ఒకవేళ( sqlite3Isspace(z[0]) ){
+    చేయి{ z++; }అయితే( sqlite3Isspace(*z) );
+    ఒకవేళ( z[0]==0 ){
+      తిరిగి mState;
     }
   }
-  return 0xfffffff0 | mState;
-#else
-  return sqlite3Atoi64(zIn, pResult, strlen(zIn), SQLITE_UTF8)==0;
-#endif /* SQLITE_OMIT_FLOATING_POINT */
+  తిరిగి 0xfffffff0 | mState;
+#లేకపోతే
+  తిరిగి sqlite3Atoi64(z_లోపల, p_ఫలితం, అక్షరశ్రేణి_పొడవు(z_లోపల), SQLITE_UTF8)==0;
+#అయితే_ముగింపు /* SQLITE_OMIT_FLOATING_POINT */
 }
 
 /*
 ** Digit pairs used to convert a U64 or I64 into text, two digits
 ** at a time.
 */
-static const union {
-  char a[201];
-  short int forceAlignment;
-} sqlite3DigitPairs = {
+స్థిర స్థిరరాశి సంఘం {
+  అక్షరం a[201];
+  పొట్టి పూర్ణాంకం forceAlignment;
+} sqlite3_Digit_జతలు = {
   "00010203040506070809"
   "10111213141516171819"
   "20212223242526272829"
@@ -1016,12 +1016,12 @@ static const union {
 /*
 ** ARMv6, ARMv7, PPC32 are known to not support hardware u64 division.
 */
-#if (defined(__arm__) && !defined(__aarch64__)) || \
+#ఒకవేళ (defined(__arm__) && !defined(__aarch64__)) || \
     (defined(__ppc__) && !defined(__ppc64__))
 # define SQLITE_AVOID_U64_DIVIDE 1
-#endif
+#అయితే_ముగింపు
 
-#ifdef SQLITE_AVOID_U64_DIVIDE
+#నిర్వచితమైతే SQLITE_AVOID_U64_DIVIDE
 /*
 ** Render an unsigned 64-bit integer as text onto the end of a 2-byte
 ** aligned buffer that is SQLITE_U64_DIGIT+1 bytes long.  The last byte
@@ -1035,14 +1035,14 @@ static const union {
 ** instead.  It is slower on platforms that have hardware u64 division,
 ** but much faster on platforms that do not.
 */
-static int sqlite3UInt64ToText(u64 v, char *zOut){
+స్థిర పూర్ణాంకం sqlite3_UInt64_గమ్యం_పాఠ్యం(u64 v, అక్షరం *z_బహిర్గతం){
   u32 x32, kk;
-  int i;
-  zOut[SQLITE_U64_DIGITS] = 0;
+  పూర్ణాంకం i;
+  z_బహిర్గతం[SQLITE_U64_DIGITS] = 0;
   i = SQLITE_U64_DIGITS;
-  assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[0]) );
-  assert( TWO_BYTE_ALIGNMENT(zOut) );
-  while( (v>>32)!=0 ){
+  ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&sqlite3_Digit_జతలు.a[0]) );
+  ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(z_బహిర్గతం) );
+  అయితే( (v>>32)!=0 ){
     u32 y, x0, x1, y0, y1;
     x32 = v % 100000000;
     v   = v / 100000000;
@@ -1052,30 +1052,30 @@ static int sqlite3UInt64ToText(u64 v, char *zOut){
     x0 = x32 % 100;
     y1 = y / 100;
     y0 = y % 100;
-    assert( i>=8 );
+    ప్రతిజ్ఞా( i>=8 );
     i -= 8;
-    *(u16*)(&zOut[i]) = *(u16*)&sqlite3DigitPairs.a[x1*2];
-    *(u16*)(&zOut[i+2]) = *(u16*)&sqlite3DigitPairs.a[x0*2];
-    *(u16*)(&zOut[i+4]) = *(u16*)&sqlite3DigitPairs.a[y1*2];
-    *(u16*)(&zOut[i+6]) = *(u16*)&sqlite3DigitPairs.a[y0*2];
+    *(u16*)(&z_బహిర్గతం[i]) = *(u16*)&sqlite3_Digit_జతలు.a[x1*2];
+    *(u16*)(&z_బహిర్గతం[i+2]) = *(u16*)&sqlite3_Digit_జతలు.a[x0*2];
+    *(u16*)(&z_బహిర్గతం[i+4]) = *(u16*)&sqlite3_Digit_జతలు.a[y1*2];
+    *(u16*)(&z_బహిర్గతం[i+6]) = *(u16*)&sqlite3_Digit_జతలు.a[y0*2];
   }
   x32 = v;
-  while( x32>=10 ){
+  అయితే( x32>=10 ){
     kk  = x32 % 100;
     x32 = x32 / 100;
-    assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk*2]) );
-    assert( i>=2 );
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&sqlite3_Digit_జతలు.a[kk*2]) );
+    ప్రతిజ్ఞా( i>=2 );
     i -= 2;
-    assert( TWO_BYTE_ALIGNMENT(&zOut[i]) );
-    *(u16*)(&zOut[i]) = *(u16*)&sqlite3DigitPairs.a[kk*2];
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&z_బహిర్గతం[i]) );
+    *(u16*)(&z_బహిర్గతం[i]) = *(u16*)&sqlite3_Digit_జతలు.a[kk*2];
   }
-  if( x32 ){
-    assert( i>0 );
-    zOut[--i] = x32 + '0';
+  ఒకవేళ( x32 ){
+    ప్రతిజ్ఞా( i>0 );
+    z_బహిర్గతం[--i] = x32 + '0';
   }
-  return i;
+  తిరిగి i;
 }
-#endif /* defined(SQLITE_AVOID_U64_DIVIDE) */
+#అయితే_ముగింపు /* defined(SQLITE_AVOID_U64_DIVIDE) */
 
 /*
 ** Render an signed 64-bit integer as text.  Store the result in zOut[] and
@@ -1085,42 +1085,42 @@ static int sqlite3UInt64ToText(u64 v, char *zOut){
 **
 ** The caller must ensure that zOut[] is at least 21 bytes in size.
 */
-int sqlite3Int64ToText(i64 v, char *zOut){
-  int i;
+పూర్ణాంకం sqlite3_Int64_గమ్యం_పాఠ్యం(i64 v, అక్షరం *z_బహిర్గతం){
+  పూర్ణాంకం i;
   u64 x;
-  union {
-    char a[SQLITE_U64_DIGITS+1];
+  సంఘం {
+    అక్షరం a[SQLITE_U64_DIGITS+1];
     u16 forceAlignment;
   } u;
-  if( v>0 ){
+  ఒకవేళ( v>0 ){
     x = v;
-  }else if( v==0 ){
-    zOut[0] = '0';
-    zOut[1] = 0;
-    return 1;
-  }else{
-    x = (v==SMALLEST_INT64) ? ((u64)1)<<63 : (u64)-v;
+  }లేకపోతే ఒకవేళ( v==0 ){
+    z_బహిర్గతం[0] = '0';
+    z_బహిర్గతం[1] = 0;
+    తిరిగి 1;
+  }లేకపోతే{
+    x = (v==అతిచిన్న_INT64) ? ((u64)1)<<63 : (u64)-v;
   }
-#ifdef SQLITE_AVOID_U64_DIVIDE
-  i = sqlite3UInt64ToText(x, u.a);
-#else
-  i = sizeof(u.a)-1;
+#నిర్వచితమైతే SQLITE_AVOID_U64_DIVIDE
+  i = sqlite3_UInt64_గమ్యం_పాఠ్యం(x, u.a);
+#లేకపోతే
+  i = పరిమాణం(u.a)-1;
   u.a[i] = 0;
-  while( x>=10 ){
-    int kk = (x%100)*2;
-    assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk]) );
-    assert( TWO_BYTE_ALIGNMENT(&u.a[i-2]) );
-    *(u16*)(&u.a[i-2]) = *(u16*)&sqlite3DigitPairs.a[kk];
+  అయితే( x>=10 ){
+    పూర్ణాంకం kk = (x%100)*2;
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&sqlite3_Digit_జతలు.a[kk]) );
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&u.a[i-2]) );
+    *(u16*)(&u.a[i-2]) = *(u16*)&sqlite3_Digit_జతలు.a[kk];
     i -= 2;
     x /= 100;
   }
-  if( x ){
+  ఒకవేళ( x ){
     u.a[--i] = x + '0';
   }
-#endif /* SQLITE_AVOID_U64_DIVIDE */
-  if( v<0 ) u.a[--i] = '-';
-  memcpy(zOut, &u.a[i], sizeof(u.a)-i);
-  return sizeof(u.a)-1-i;
+#అయితే_ముగింపు /* SQLITE_AVOID_U64_DIVIDE */
+  ఒకవేళ( v<0 ) u.a[--i] = '-';
+  జ్ఞాపకం_నకలు(z_బహిర్గతం, &u.a[i], పరిమాణం(u.a)-i);
+  తిరిగి పరిమాణం(u.a)-1-i;
 }
 
 /*
@@ -1137,21 +1137,21 @@ int sqlite3Int64ToText(i64 v, char *zOut){
 **
 ** will return -8.
 */
-static int compare2pow63(const char *zNum, int incr){
-  int c = 0;
-  int i;
+స్థిర పూర్ణాంకం compare2pow63(స్థిరరాశి అక్షరం *z_అంకె, పూర్ణాంకం incr){
+  పూర్ణాంకం c = 0;
+  పూర్ణాంకం i;
                     /* 012345678901234567 */
-  const char *pow63 = "922337203685477580";
-  for(i=0; c==0 && i<18; i++){
-    c = (zNum[i*incr]-pow63[i])*10;
+  స్థిరరాశి అక్షరం *pow63 = "922337203685477580";
+  కొరకు(i=0; c==0 && i<18; i++){
+    c = (z_అంకె[i*incr]-pow63[i])*10;
   }
-  if( c==0 ){
-    c = zNum[18*incr] - '8';
+  ఒకవేళ( c==0 ){
+    c = z_అంకె[18*incr] - '8';
     testcase( c==(-1) );
     testcase( c==0 );
     testcase( c==(+1) );
   }
-  return c;
+  తిరిగి c;
 }
 
 /*
@@ -1170,92 +1170,92 @@ static int compare2pow63(const char *zNum, int incr){
 ** The string is not necessarily zero-terminated.  The encoding is
 ** given by enc.
 */
-int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
-  int incr;
+పూర్ణాంకం sqlite3Atoi64(స్థిరరాశి అక్షరం *z_అంకె, i64 *p_అంకె, పూర్ణాంకం నిడివి, u8 enc){
+  పూర్ణాంకం incr;
   u64 u = 0;
-  int neg = 0; /* assume positive */
-  int i, j;
-  unsigned int c = 0;
-  int nonNum = 0;  /* True if input contains UTF16 with high byte non-zero */
-  int rc;          /* Baseline return code */
-  const char *zStart;
-  const char *zEnd = zNum + length;
-  assert( enc==SQLITE_UTF8 || enc==SQLITE_UTF16LE || enc==SQLITE_UTF16BE );
-  if( enc==SQLITE_UTF8 ){
+  పూర్ణాంకం neg = 0; /* assume positive */
+  పూర్ణాంకం i, j;
+  గుర్తులేని పూర్ణాంకం c = 0;
+  పూర్ణాంకం non_అంకె = 0;  /* True if input contains UTF16 with high byte non-zero */
+  పూర్ణాంకం rc;          /* Baseline return code */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం;
+  స్థిరరాశి అక్షరం *z_చివర = z_అంకె + నిడివి;
+  ప్రతిజ్ఞా( enc==SQLITE_UTF8 || enc==SQLITE_UTF16LE || enc==SQLITE_UTF16BE );
+  ఒకవేళ( enc==SQLITE_UTF8 ){
     incr = 1;
-  }else{
+  }లేకపోతే{
     incr = 2;
-    length &= ~1;
-    assert( SQLITE_UTF16LE==2 && SQLITE_UTF16BE==3 );
-    for(i=3-enc; i<length && zNum[i]==0; i+=2){}
-    nonNum = i<length;
-    zEnd = &zNum[i^1];
-    zNum += (enc&1);
+    నిడివి &= ~1;
+    ప్రతిజ్ఞా( SQLITE_UTF16LE==2 && SQLITE_UTF16BE==3 );
+    కొరకు(i=3-enc; i<నిడివి && z_అంకె[i]==0; i+=2){}
+    non_అంకె = i<నిడివి;
+    z_చివర = &z_అంకె[i^1];
+    z_అంకె += (enc&1);
   }
-  while( zNum<zEnd && sqlite3Isspace(*zNum) ) zNum+=incr;
-  if( zNum<zEnd ){
-    if( *zNum=='-' ){
+  అయితే( z_అంకె<z_చివర && sqlite3Isspace(*z_అంకె) ) z_అంకె+=incr;
+  ఒకవేళ( z_అంకె<z_చివర ){
+    ఒకవేళ( *z_అంకె=='-' ){
       neg = 1;
-      zNum+=incr;
-    }else if( *zNum=='+' ){
-      zNum+=incr;
+      z_అంకె+=incr;
+    }లేకపోతే ఒకవేళ( *z_అంకె=='+' ){
+      z_అంకె+=incr;
     }
   }
-  zStart = zNum;
-  while( zNum<zEnd && zNum[0]=='0' ){ zNum+=incr; } /* Skip leading zeros. */
-  for(i=0; &zNum[i]<zEnd && (c=(unsigned)zNum[i]-'0')<=9; i+=incr){
+  z_ప్రారంభం = z_అంకె;
+  అయితే( z_అంకె<z_చివర && z_అంకె[0]=='0' ){ z_అంకె+=incr; } /* Skip leading zeros. */
+  కొరకు(i=0; &z_అంకె[i]<z_చివర && (c=(గుర్తులేని)z_అంకె[i]-'0')<=9; i+=incr){
     u = u*10 + c;
   }
   testcase( i==18*incr );
   testcase( i==19*incr );
   testcase( i==20*incr );
-  if( u>LARGEST_INT64 ){
+  ఒకవేళ( u>అతిపెద్ద_INT64 ){
     /* This test and assignment is needed only to suppress UB warnings
     ** from clang and -fsanitize=undefined.  This test and assignment make
     ** the code a little larger and slower, and no harm comes from omitting
     ** them, but we must appease the undefined-behavior pharisees. */
-    *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
-  }else if( neg ){
-    *pNum = -(i64)u;
-  }else{
-    *pNum = (i64)u;
+    *p_అంకె = neg ? అతిచిన్న_INT64 : అతిపెద్ద_INT64;
+  }లేకపోతే ఒకవేళ( neg ){
+    *p_అంకె = -(i64)u;
+  }లేకపోతే{
+    *p_అంకె = (i64)u;
   }
   rc = 0;
-  if( i==0 && zStart==zNum ){    /* No digits */
+  ఒకవేళ( i==0 && z_ప్రారంభం==z_అంకె ){    /* No digits */
     rc = -1;
-  }else if( nonNum ){            /* UTF16 with high-order bytes non-zero */
+  }లేకపోతే ఒకవేళ( non_అంకె ){            /* UTF16 with high-order bytes non-zero */
     rc = 1;
-  }else if( &zNum[i]<zEnd ){     /* Extra bytes at the end */
-    int jj = i;
-    do{
-      if( !sqlite3Isspace(zNum[jj]) ){
+  }లేకపోతే ఒకవేళ( &z_అంకె[i]<z_చివర ){     /* Extra bytes at the end */
+    పూర్ణాంకం jj = i;
+    చేయి{
+      ఒకవేళ( !sqlite3Isspace(z_అంకె[jj]) ){
         rc = 1;          /* Extra non-space text after the integer */
-        break;
+        ఆపు;
       }
       jj += incr;
-    }while( &zNum[jj]<zEnd );
+    }అయితే( &z_అంకె[jj]<z_చివర );
   }
-  if( i<19*incr ){
+  ఒకవేళ( i<19*incr ){
     /* Less than 19 digits, so we know that it fits in 64 bits */
-    assert( u<=LARGEST_INT64 );
-    return rc;
-  }else{
+    ప్రతిజ్ఞా( u<=అతిపెద్ద_INT64 );
+    తిరిగి rc;
+  }లేకపోతే{
     /* zNum is a 19-digit numbers.  Compare it against 9223372036854775808. */
-    j = i>19*incr ? 1 : compare2pow63(zNum, incr);
-    if( j<0 ){
+    j = i>19*incr ? 1 : compare2pow63(z_అంకె, incr);
+    ఒకవేళ( j<0 ){
       /* zNum is less than 9223372036854775808 so it fits */
-      assert( u<=LARGEST_INT64 );
-      return rc;
-    }else{
-      *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
-      if( j>0 ){
+      ప్రతిజ్ఞా( u<=అతిపెద్ద_INT64 );
+      తిరిగి rc;
+    }లేకపోతే{
+      *p_అంకె = neg ? అతిచిన్న_INT64 : అతిపెద్ద_INT64;
+      ఒకవేళ( j>0 ){
         /* zNum is greater than 9223372036854775808 so it overflows */
-        return 2;
-      }else{
+        తిరిగి 2;
+      }లేకపోతే{
         /* zNum is exactly 9223372036854775808.  Fits if negative.  The
         ** special case 2 overflow if positive */
-        assert( u-1==LARGEST_INT64 );
-        return neg ? rc : 3;
+        ప్రతిజ్ఞా( u-1==అతిపెద్ద_INT64 );
+        తిరిగి neg ? rc : 3;
       }
     }
   }
@@ -1273,27 +1273,27 @@ int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
 **     2    Integer too large for a 64-bit signed integer or is malformed
 **     3    Special case of 9223372036854775808
 */
-int sqlite3DecOrHexToI64(const char *z, i64 *pOut){
-#ifndef SQLITE_OMIT_HEX_INTEGER
-  if( z[0]=='0'
+పూర్ణాంకం sqlite3_Dec_Or_Hex_గమ్యం_I64(స్థిరరాశి అక్షరం *z, i64 *p_బహిర్గతం){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_HEX_INTEGER
+  ఒకవేళ( z[0]=='0'
    && (z[1]=='x' || z[1]=='X')
   ){
     u64 u = 0;
-    int i, k;
-    for(i=2; z[i]=='0'; i++){}
-    for(k=i; sqlite3Isxdigit(z[k]); k++){
-      u = u*16 + sqlite3HexToInt(z[k]);
+    పూర్ణాంకం i, k;
+    కొరకు(i=2; z[i]=='0'; i++){}
+    కొరకు(k=i; sqlite3Isxdigit(z[k]); k++){
+      u = u*16 + sqlite3_Hex_గమ్యం_Int(z[k]);
     }
-    memcpy(pOut, &u, 8);
-    if( k-i>16 ) return 2;
-    if( z[k]!=0 ) return 1;
-    return 0;
-  }else
-#endif /* SQLITE_OMIT_HEX_INTEGER */
+    జ్ఞాపకం_నకలు(p_బహిర్గతం, &u, 8);
+    ఒకవేళ( k-i>16 ) తిరిగి 2;
+    ఒకవేళ( z[k]!=0 ) తిరిగి 1;
+    తిరిగి 0;
+  }లేకపోతే
+#అయితే_ముగింపు /* SQLITE_OMIT_HEX_INTEGER */
   {
-    int n = (int)(0x3fffffff&strspn(z,"+- \n\t0123456789"));
-    if( z[n] ) n++;
-    return sqlite3Atoi64(z, pOut, n, SQLITE_UTF8);
+    పూర్ణాంకం n = (పూర్ణాంకం)(0x3fffffff&strspn(z,"+- \n\t0123456789"));
+    ఒకవేళ( z[n] ) n++;
+    తిరిగి sqlite3Atoi64(z, p_బహిర్గతం, n, SQLITE_UTF8);
   }
 }
 
@@ -1307,38 +1307,38 @@ int sqlite3DecOrHexToI64(const char *z, i64 *pOut){
 ** This is different from sqlite3Atoi64() which requires the
 ** input number to be zero-terminated.
 */
-int sqlite3GetInt32(const char *zNum, int *pValue){
+పూర్ణాంకం sqlite3GetInt32(స్థిరరాశి అక్షరం *z_అంకె, పూర్ణాంకం *p_విలువ){
   sqlite_int64 v = 0;
-  int i, c;
-  int neg = 0;
-  if( zNum[0]=='-' ){
+  పూర్ణాంకం i, c;
+  పూర్ణాంకం neg = 0;
+  ఒకవేళ( z_అంకె[0]=='-' ){
     neg = 1;
-    zNum++;
-  }else if( zNum[0]=='+' ){
-    zNum++;
+    z_అంకె++;
+  }లేకపోతే ఒకవేళ( z_అంకె[0]=='+' ){
+    z_అంకె++;
   }
-#ifndef SQLITE_OMIT_HEX_INTEGER
-  else if( zNum[0]=='0'
-        && (zNum[1]=='x' || zNum[1]=='X')
-        && sqlite3Isxdigit(zNum[2])
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_HEX_INTEGER
+  లేకపోతే ఒకవేళ( z_అంకె[0]=='0'
+        && (z_అంకె[1]=='x' || z_అంకె[1]=='X')
+        && sqlite3Isxdigit(z_అంకె[2])
   ){
     u32 u = 0;
-    zNum += 2;
-    while( zNum[0]=='0' ) zNum++;
-    for(i=0; i<8 && sqlite3Isxdigit(zNum[i]); i++){
-      u = u*16 + sqlite3HexToInt(zNum[i]);
+    z_అంకె += 2;
+    అయితే( z_అంకె[0]=='0' ) z_అంకె++;
+    కొరకు(i=0; i<8 && sqlite3Isxdigit(z_అంకె[i]); i++){
+      u = u*16 + sqlite3_Hex_గమ్యం_Int(z_అంకె[i]);
     }
-    if( (u&0x80000000)==0 && sqlite3Isxdigit(zNum[i])==0 ){
-      memcpy(pValue, &u, 4);
-      return 1;
-    }else{
-      return 0;
+    ఒకవేళ( (u&0x80000000)==0 && sqlite3Isxdigit(z_అంకె[i])==0 ){
+      జ్ఞాపకం_నకలు(p_విలువ, &u, 4);
+      తిరిగి 1;
+    }లేకపోతే{
+      తిరిగి 0;
     }
   }
-#endif
-  if( !sqlite3Isdigit(zNum[0]) ) return 0;
-  while( zNum[0]=='0' ) zNum++;
-  for(i=0; i<11 && (c = zNum[i] - '0')>=0 && c<=9; i++){
+#అయితే_ముగింపు
+  ఒకవేళ( !sqlite3Isdigit(z_అంకె[0]) ) తిరిగి 0;
+  అయితే( z_అంకె[0]=='0' ) z_అంకె++;
+  కొరకు(i=0; i<11 && (c = z_అంకె[i] - '0')>=0 && c<=9; i++){
     v = v*10 + c;
   }
 
@@ -1348,28 +1348,28 @@ int sqlite3GetInt32(const char *zNum, int *pValue){
   **     2^31 -> 2147483648
   */
   testcase( i==10 );
-  if( i>10 ){
-    return 0;
+  ఒకవేళ( i>10 ){
+    తిరిగి 0;
   }
   testcase( v-neg==2147483647 );
-  if( v-neg>2147483647 ){
-    return 0;
+  ఒకవేళ( v-neg>2147483647 ){
+    తిరిగి 0;
   }
-  if( neg ){
+  ఒకవేళ( neg ){
     v = -v;
   }
-  *pValue = (int)v;
-  return 1;
+  *p_విలువ = (పూర్ణాంకం)v;
+  తిరిగి 1;
 }
 
 /*
 ** Return a 32-bit integer value extracted from a string.  If the
 ** string is not an integer, just return 0.
 */
-int sqlite3Atoi(const char *z){
-  int x = 0;
+పూర్ణాంకం sqlite3Atoi(స్థిరరాశి అక్షరం *z){
+  పూర్ణాంకం x = 0;
   sqlite3GetInt32(z, &x);
-  return x;
+  తిరిగి x;
 }
 
 /*
@@ -1391,149 +1391,149 @@ int sqlite3Atoi(const char *z){
 ** into the middle of p->zBuf[].  There are p->n significant digits.
 ** The p->z[] array is *not* zero-terminated.
 */
-void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
-  int i;               /* Index into zBuf[] where to put next character */
-  int n;               /* Number of digits */
+శూన్య sqlite3FpDecode(FpDecode *p, ద్విగుణ r, పూర్ణాంకం i_విడత, పూర్ణాంకం mx_విడత){
+  పూర్ణాంకం i;               /* Index into zBuf[] where to put next character */
+  పూర్ణాంకం n;               /* Number of digits */
   u64 v;               /* mantissa */
-  int e, exp = 0;      /* Base-2 and base-10 exponent */
-  char *zBuf;          /* Local alias for p->zBuf */
-  char *z;             /* Local alias for p->z */
+  పూర్ణాంకం e, ఘాతాంకం = 0;      /* Base-2 and base-10 exponent */
+  అక్షరం *zBuf;          /* Local alias for p->zBuf */
+  అక్షరం *z;             /* Local alias for p->z */
 
   p->isSpecial = 0;
-  assert( mxRound>0 );
-  assert( iRound>=-100000000 );
+  ప్రతిజ్ఞా( mx_విడత>0 );
+  ప్రతిజ్ఞా( i_విడత>=-100000000 );
 
   /* Convert negative numbers to positive.  Deal with Infinity, 0.0, and
   ** NaN. */
-  if( r<0.0 ){
+  ఒకవేళ( r<0.0 ){
     p->sign = '-';
     r = -r;
-  }else if( r==0.0 ){
+  }లేకపోతే ఒకవేళ( r==0.0 ){
     p->sign = '+';
     p->n = 1;
     p->iDP = 1;
     p->z = "0";
-    return;
-  }else{
+    తిరిగి;
+  }లేకపోతే{
     p->sign = '+';
   }
-  memcpy(&v,&r,8);
+  జ్ఞాపకం_నకలు(&v,&r,8);
   e = (v>>52)&0x7ff;
-  if( e==0x7ff ){
+  ఒకవేళ( e==0x7ff ){
     p->isSpecial = 1 + (v!=0x7ff0000000000000LL);
     p->n = 0;
     p->iDP = 0;
     p->z = p->zBuf;
-    return;
+    తిరిగి;
   }
   v &= 0x000fffffffffffffULL;
-  if( e==0 ){
-    int nn = countLeadingZeros(v);
+  ఒకవేళ( e==0 ){
+    పూర్ణాంకం nn = లెక్క_Leading_Zeros(v);
     v <<= nn;
     e = -1074 - nn;
-  }else{
-    v = (v<<11) | U64_BIT(63);
+  }లేకపోతే{
+    v = (v<<11) | U64_బిట్టు(63);
     e -= 1086;
   }
-  sqlite3Fp2Convert10(v, e, (iRound<=0||iRound>=18)?18:iRound+1, &v, &exp);  
+  sqlite3Fp2Convert10(v, e, (i_విడత<=0||i_విడత>=18)?18:i_విడత+1, &v, &ఘాతాంకం);  
 
   /* Extract significant digits, start at the right-most slot in p->zBuf
   ** and working back to the right.  "i" keeps track of the next slot in
   ** which to store a digit. */
-  assert( sizeof(p->zBuf)==SQLITE_U64_DIGITS+1 );
-  assert( v>0 );
+  ప్రతిజ్ఞా( పరిమాణం(p->zBuf)==SQLITE_U64_DIGITS+1 );
+  ప్రతిజ్ఞా( v>0 );
   zBuf = p->zBuf;
-#ifdef SQLITE_AVOID_U64_DIVIDE
-  i = sqlite3UInt64ToText(v, zBuf);
-#else
+#నిర్వచితమైతే SQLITE_AVOID_U64_DIVIDE
+  i = sqlite3_UInt64_గమ్యం_పాఠ్యం(v, zBuf);
+#లేకపోతే
   i = SQLITE_U64_DIGITS;
-  while( v>=10 ){
-    int kk = (v%100)*2;
-    assert( TWO_BYTE_ALIGNMENT(&sqlite3DigitPairs.a[kk]) );
-    assert( TWO_BYTE_ALIGNMENT(&zBuf[i]) );
-    assert( i-2>=0 );
-    *(u16*)(&zBuf[i-2]) = *(u16*)&sqlite3DigitPairs.a[kk];
+  అయితే( v>=10 ){
+    పూర్ణాంకం kk = (v%100)*2;
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&sqlite3_Digit_జతలు.a[kk]) );
+    ప్రతిజ్ఞా( TWO_BYTE_ALIGNMENT(&zBuf[i]) );
+    ప్రతిజ్ఞా( i-2>=0 );
+    *(u16*)(&zBuf[i-2]) = *(u16*)&sqlite3_Digit_జతలు.a[kk];
     i -= 2;
     v /= 100;
   }
-  if( v ){
-    assert( v<10 );
-    assert( i>0 );
+  ఒకవేళ( v ){
+    ప్రతిజ్ఞా( v<10 );
+    ప్రతిజ్ఞా( i>0 );
     zBuf[--i] = v + '0';
   }
-#endif /* SQLITE_AVOID_U64_DIVIDE */
-  assert( i>=0 && i<SQLITE_U64_DIGITS );
+#అయితే_ముగింపు /* SQLITE_AVOID_U64_DIVIDE */
+  ప్రతిజ్ఞా( i>=0 && i<SQLITE_U64_DIGITS );
   n = SQLITE_U64_DIGITS - i;  /* Total number of digits extracted */
-  assert( n>0 );
-  assert( n<=SQLITE_U64_DIGITS );
-  p->iDP = n + exp;
-  if( iRound<=0 ){
-    iRound = p->iDP - iRound;
-    if( iRound==0 && zBuf[i]>='5' ){
-      iRound = 1;
+  ప్రతిజ్ఞా( n>0 );
+  ప్రతిజ్ఞా( n<=SQLITE_U64_DIGITS );
+  p->iDP = n + ఘాతాంకం;
+  ఒకవేళ( i_విడత<=0 ){
+    i_విడత = p->iDP - i_విడత;
+    ఒకవేళ( i_విడత==0 && zBuf[i]>='5' ){
+      i_విడత = 1;
       zBuf[--i] = '0';
       n++;
       p->iDP++;
     }
   }
   z = &zBuf[i];  /* z points to the first digit */
-  if( iRound>0 && (iRound<n || n>mxRound) ){
-    if( iRound>mxRound ) iRound = mxRound;
-    if( iRound==17 ){
+  ఒకవేళ( i_విడత>0 && (i_విడత<n || n>mx_విడత) ){
+    ఒకవేళ( i_విడత>mx_విడత ) i_విడత = mx_విడత;
+    ఒకవేళ( i_విడత==17 ){
       /* If the precision is exactly 17, which only happens with the "!"
       ** flag (ex: "%!.17g") then try to reduce the precision if that
       ** yields text that will round-trip to the original floating-point.
       ** value.  Thus, for exaple, 49.47 will render as 49.47, rather than
       ** as 49.469999999999999. */
-      if( z[15]=='9' && z[14]=='9' ){
-        int jj, kk;
+      ఒకవేళ( z[15]=='9' && z[14]=='9' ){
+        పూర్ణాంకం jj, kk;
         u64 v2;
-        for(jj=14; jj>0 && z[jj-1]=='9'; jj--){}
-        if( jj==0 ){
+        కొరకు(jj=14; jj>0 && z[jj-1]=='9'; jj--){}
+        ఒకవేళ( jj==0 ){
           v2 = 1;
-        }else{
+        }లేకపోతే{
           v2 = z[0] - '0';
-          for(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
+          కొరకు(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
           v2++;
         }
-        if( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
-          iRound = jj+1;
+        ఒకవేళ( r==sqlite3Fp10Convert2(v2, ఘాతాంకం + n - jj) ){
+          i_విడత = jj+1;
         }
-      }else if( p->iDP>=n || (z[15]=='0' && z[14]=='0' && z[13]=='0') ){
-        int jj, kk;
+      }లేకపోతే ఒకవేళ( p->iDP>=n || (z[15]=='0' && z[14]=='0' && z[13]=='0') ){
+        పూర్ణాంకం jj, kk;
         u64 v2;
-        assert( z[0]!='0' );
-        for(jj=13; z[jj-1]=='0'; jj--){}
+        ప్రతిజ్ఞా( z[0]!='0' );
+        కొరకు(jj=13; z[jj-1]=='0'; jj--){}
         v2 = z[0] - '0';
-        for(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
-        if( r==sqlite3Fp10Convert2(v2, exp + n - jj) ){
-          iRound = jj+1;
+        కొరకు(kk=1; kk<jj; kk++) v2 = (v2*10) + z[kk] - '0';
+        ఒకవేళ( r==sqlite3Fp10Convert2(v2, ఘాతాంకం + n - jj) ){
+          i_విడత = jj+1;
         }
       }
     }
-    n = iRound;
-    if( z[iRound]>='5' ){
-      int j = iRound-1;
-      while( 1 /*exit-by-break*/ ){
+    n = i_విడత;
+    ఒకవేళ( z[i_విడత]>='5' ){
+      పూర్ణాంకం j = i_విడత-1;
+      అయితే( 1 /*exit-by-break*/ ){
         z[j]++;
-        if( z[j]<='9' ) break;
+        ఒకవేళ( z[j]<='9' ) ఆపు;
         z[j] = '0';
-        if( j==0 ){
+        ఒకవేళ( j==0 ){
           z--;
           z[0] = '1';
           n++;
           p->iDP++;
-          break;
-        }else{
+          ఆపు;
+        }లేకపోతే{
           j--;
         }
       }
     }
   }
-  assert( n>0 );
-  while( z[n-1]=='0' ){
+  ప్రతిజ్ఞా( n>0 );
+  అయితే( z[n-1]=='0' ){
     n--;
-    assert( n>0 );
+    ప్రతిజ్ఞా( n>0 );
   }
   p->n = n;
   p->z = z;
@@ -1545,16 +1545,16 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
 **
 ** Only decimal notation is accepted.
 */
-int sqlite3GetUInt32(const char *z, u32 *pI){
+పూర్ణాంకం sqlite3GetUInt32(స్థిరరాశి అక్షరం *z, u32 *pI){
   u64 v = 0;
-  int i;
-  for(i=0; sqlite3Isdigit(z[i]); i++){
+  పూర్ణాంకం i;
+  కొరకు(i=0; sqlite3Isdigit(z[i]); i++){
     v = v*10 + z[i] - '0';
-    if( v>4294967295LL ){ *pI = 0; return 0; }
+    ఒకవేళ( v>4294967295LL ){ *pI = 0; తిరిగి 0; }
   }
-  if( i==0 || z[i]!=0 ){ *pI = 0; return 0; }
+  ఒకవేళ( i==0 || z[i]!=0 ){ *pI = 0; తిరిగి 0; }
   *pI = (u32)v;
-  return 1;
+  తిరిగి 1;
 }
 
 /*
@@ -1586,81 +1586,81 @@ int sqlite3GetUInt32(const char *z, u32 *pI){
 ** bit clear.  Except, if we get to the 9th byte, it stores the full
 ** 8 bits and is the last byte.
 */
-static int SQLITE_NOINLINE putVarint64(unsigned char *p, u64 v){
-  int i, j, n;
+స్థిర పూర్ణాంకం SQLITE_NOINLINE putVarint64(గుర్తులేని అక్షరం *p, u64 v){
+  పూర్ణాంకం i, j, n;
   u8 buf[10];
-  if( v & (((u64)0xff000000)<<32) ){
+  ఒకవేళ( v & (((u64)0xff000000)<<32) ){
     p[8] = (u8)v;
     v >>= 8;
-    for(i=7; i>=0; i--){
+    కొరకు(i=7; i>=0; i--){
       p[i] = (u8)((v & 0x7f) | 0x80);
       v >>= 7;
     }
-    return 9;
+    తిరిగి 9;
   }   
   n = 0;
-  do{
+  చేయి{
     buf[n++] = (u8)((v & 0x7f) | 0x80);
     v >>= 7;
-  }while( v!=0 );
+  }అయితే( v!=0 );
   buf[0] &= 0x7f;
-  assert( n<=9 );
-  for(i=0, j=n-1; j>=0; j--, i++){
+  ప్రతిజ్ఞా( n<=9 );
+  కొరకు(i=0, j=n-1; j>=0; j--, i++){
     p[i] = buf[j];
   }
-  return n;
+  తిరిగి n;
 }
-int sqlite3PutVarint(unsigned char *p, u64 v){
-  if( v<=0x7f ){
+పూర్ణాంకం sqlite3PutVarint(గుర్తులేని అక్షరం *p, u64 v){
+  ఒకవేళ( v<=0x7f ){
     p[0] = v&0x7f;
-    return 1;
+    తిరిగి 1;
   }
-  if( v<=0x3fff ){
+  ఒకవేళ( v<=0x3fff ){
     p[0] = ((v>>7)&0x7f)|0x80;
     p[1] = v&0x7f;
-    return 2;
+    తిరిగి 2;
   }
-  return putVarint64(p,v);
+  తిరిగి putVarint64(p,v);
 }
 
 /*
 ** Read a 64-bit variable-length integer from memory starting at p[0].
 ** Return the number of bytes read.  The value is stored in *v.
 */
-u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
-  u64 iKey = p[0];
-  const u8 *pStart = p;
-  if( iKey>=0x80 ){
+u8 sqlite3GetVarint(స్థిరరాశి గుర్తులేని అక్షరం *p, u64 *v){
+  u64 i_కీలకం = p[0];
+  స్థిరరాశి u8 *p_ప్రారంభం = p;
+  ఒకవేళ( i_కీలకం>=0x80 ){
     u8 x;
-    iKey = (iKey<<7) ^ (x = *++p);
-    if( x>=0x80 ){
-      iKey = (iKey<<7) ^ (x = *++p);
-      if( x>=0x80 ){
-        iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
-        if( x>=0x80 ){
-          iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-          if( x>=0x80 ){
-            iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-            if( x>=0x80 ){
-              iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-              if( x>=0x80 ){
-                iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-                if( x>=0x80 ){
-                  iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
+    i_కీలకం = (i_కీలకం<<7) ^ (x = *++p);
+    ఒకవేళ( x>=0x80 ){
+      i_కీలకం = (i_కీలకం<<7) ^ (x = *++p);
+      ఒకవేళ( x>=0x80 ){
+        i_కీలకం = (i_కీలకం<<7) ^ 0x10204000 ^ (x = *++p);
+        ఒకవేళ( x>=0x80 ){
+          i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+          ఒకవేళ( x>=0x80 ){
+            i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+            ఒకవేళ( x>=0x80 ){
+              i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+              ఒకవేళ( x>=0x80 ){
+                i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+                ఒకవేళ( x>=0x80 ){
+                  i_కీలకం = (i_కీలకం<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
-      }else{
-        iKey ^= 0x204000;
+      }లేకపోతే{
+        i_కీలకం ^= 0x204000;
       }
-    }else{
-      iKey ^= 0x4000;
+    }లేకపోతే{
+      i_కీలకం ^= 0x4000;
     }
   }
-  *v = iKey;
-  return (u8)(p - pStart) + 1;
+  *v = i_కీలకం;
+  తిరిగి (u8)(p - p_ప్రారంభం) + 1;
 }
 
 /*
@@ -1668,38 +1668,38 @@ u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
 ** its length.  This is an optimization on sqlite3GetVarint() for the
 ** cases when the return value of sqlite3GetVarint() is not needed.
 */
-i64 sqlite3VarintValue(const unsigned char *p){
-  u64 iKey = p[0];
-  if( iKey>=0x80 ){
+i64 sqlite3_Varint_విలువ(స్థిరరాశి గుర్తులేని అక్షరం *p){
+  u64 i_కీలకం = p[0];
+  ఒకవేళ( i_కీలకం>=0x80 ){
     u8 x;
-    iKey = (iKey<<7) ^ (x = *++p);
-    if( x>=0x80 ){
-      iKey = (iKey<<7) ^ (x = *++p);
-      if( x>=0x80 ){
-        iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
-        if( x>=0x80 ){
-          iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-          if( x>=0x80 ){
-            iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-            if( x>=0x80 ){
-              iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-              if( x>=0x80 ){
-                iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
-                if( x>=0x80 ){
-                  iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
+    i_కీలకం = (i_కీలకం<<7) ^ (x = *++p);
+    ఒకవేళ( x>=0x80 ){
+      i_కీలకం = (i_కీలకం<<7) ^ (x = *++p);
+      ఒకవేళ( x>=0x80 ){
+        i_కీలకం = (i_కీలకం<<7) ^ 0x10204000 ^ (x = *++p);
+        ఒకవేళ( x>=0x80 ){
+          i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+          ఒకవేళ( x>=0x80 ){
+            i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+            ఒకవేళ( x>=0x80 ){
+              i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+              ఒకవేళ( x>=0x80 ){
+                i_కీలకం = (i_కీలకం<<7) ^ 0x4000 ^ (x = *++p);
+                ఒకవేళ( x>=0x80 ){
+                  i_కీలకం = (i_కీలకం<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
-      }else{
-        iKey ^= 0x204000;
+      }లేకపోతే{
+        i_కీలకం ^= 0x204000;
       }
-    }else{
-      iKey ^= 0x4000;
+    }లేకపోతే{
+      i_కీలకం ^= 0x4000;
     }
   }
-  return *(i64*)&iKey;
+  తిరిగి *(i64*)&i_కీలకం;
 }
 
 /*
@@ -1713,109 +1713,109 @@ i64 sqlite3VarintValue(const unsigned char *p){
 ** single-byte case.  All code should use the MACRO version as
 ** this function assumes the single-byte case has already been handled.
 */
-u8 sqlite3GetVarint32(const unsigned char *p, u32 *v){
+u8 sqlite3GetVarint32(స్థిరరాశి గుర్తులేని అక్షరం *p, u32 *v){
   u64 v64;
   u8 n;
 
   /* Assume that the single-byte case has already been handled by
   ** the getVarint32() macro */
-  assert( (p[0] & 0x80)!=0 );
+  ప్రతిజ్ఞా( (p[0] & 0x80)!=0 );
 
-  if( (p[1] & 0x80)==0 ){
+  ఒకవేళ( (p[1] & 0x80)==0 ){
     /* This is the two-byte case */
     *v = ((p[0]&0x7f)<<7) | p[1];
-    return 2;
+    తిరిగి 2;
   }
-  if( (p[2] & 0x80)==0 ){
+  ఒకవేళ( (p[2] & 0x80)==0 ){
     /* This is the three-byte case */
     *v = ((p[0]&0x7f)<<14) | ((p[1]&0x7f)<<7) | p[2];
-    return 3;
+    తిరిగి 3;
   }
   /* four or more bytes */
   n = sqlite3GetVarint(p, &v64);
-  assert( n>3 && n<=9 );
-  if( (v64 & SQLITE_MAX_U32)!=v64 ){
+  ప్రతిజ్ఞా( n>3 && n<=9 );
+  ఒకవేళ( (v64 & SQLITE_MAX_U32)!=v64 ){
     *v = 0xffffffff;
-  }else{
+  }లేకపోతే{
     *v = (u32)v64;
   }
-  return n;
+  తిరిగి n;
 }
 
 /*
 ** Return the number of bytes that will be needed to store the given
 ** 64-bit integer.
 */
-int sqlite3VarintLen(u64 v){
-  int i;
-  for(i=1; (v >>= 7)!=0; i++){ assert( i<10 ); }
-  return i;
+పూర్ణాంకం sqlite3VarintLen(u64 v){
+  పూర్ణాంకం i;
+  కొరకు(i=1; (v >>= 7)!=0; i++){ ప్రతిజ్ఞా( i<10 ); }
+  తిరిగి i;
 }
 
 
 /*
 ** Read an unsigned 32-bit integer from an unaligned big-endian array of bytes.
 */
-u32 sqlite3Get4byte(const u8 *p){
-#if SQLITE_BYTEORDER==4321
+u32 sqlite3Get4byte(స్థిరరాశి u8 *p){
+#ఒకవేళ SQLITE_BYTEORDER==4321
   u32 x;
-  memcpy(&x,p,4);
-  return x;
-#elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
+  జ్ఞాపకం_నకలు(&x,p,4);
+  తిరిగి x;
+#లేదావేళ SQLITE_BYTEORDER==1234 && GCC_సంస్కరణ>=4003000
   u32 x;
-  memcpy(&x,p,4);
-  return __builtin_bswap32(x);
-#elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
+  జ్ఞాపకం_నకలు(&x,p,4);
+  తిరిగి __builtin_bswap32(x);
+#లేదావేళ SQLITE_BYTEORDER==1234 && MSVC_సంస్కరణ>=1300
   u32 x;
-  memcpy(&x,p,4);
-  return _byteswap_ulong(x);
-#else
+  జ్ఞాపకం_నకలు(&x,p,4);
+  తిరిగి _byteswap_ulong(x);
+#లేకపోతే
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   testcase( p[0]&0x80 );
-  return ((unsigned)p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
-#endif
+  తిరిగి ((గుర్తులేని)p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
+#అయితే_ముగింపు
 }
 
 /* Write an unsigned 32-bit integer into an unaligned big-endian array of bytes.
 */
-void sqlite3Put4byte(unsigned char *p, u32 v){
-#if SQLITE_BYTEORDER==4321
-  memcpy(p,&v,4);
-#elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
+శూన్య sqlite3Put4byte(గుర్తులేని అక్షరం *p, u32 v){
+#ఒకవేళ SQLITE_BYTEORDER==4321
+  జ్ఞాపకం_నకలు(p,&v,4);
+#లేదావేళ SQLITE_BYTEORDER==1234 && GCC_సంస్కరణ>=4003000
   u32 x = __builtin_bswap32(v);
-  memcpy(p,&x,4);
-#elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
+  జ్ఞాపకం_నకలు(p,&x,4);
+#లేదావేళ SQLITE_BYTEORDER==1234 && MSVC_సంస్కరణ>=1300
   u32 x = _byteswap_ulong(v);
-  memcpy(p,&x,4);
-#else
+  జ్ఞాపకం_నకలు(p,&x,4);
+#లేకపోతే
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   p[0] = (u8)(v>>24);
   p[1] = (u8)(v>>16);
   p[2] = (u8)(v>>8);
   p[3] = (u8)v;
-#endif
+#అయితే_ముగింపు
 }
 
 /*
 ** Read an unsigned 64-bit integer from an unaligned big-endian byte array.
 */
-SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8 *p){
-#if SQLITE_BYTEORDER==4321
+SQLITE_OPT_INLINE u64 sqlite3Get8byte(స్థిరరాశి u8 *p){
+#ఒకవేళ SQLITE_BYTEORDER==4321
   u64 x;
-  memcpy(&x,p,8);
-  return x;
-#elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
+  జ్ఞాపకం_నకలు(&x,p,8);
+  తిరిగి x;
+#లేదావేళ SQLITE_BYTEORDER==1234 && GCC_సంస్కరణ>=4003000
   u64 x;
-  memcpy(&x,p,8);
-  return __builtin_bswap64(x);
-#elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
+  జ్ఞాపకం_నకలు(&x,p,8);
+  తిరిగి __builtin_bswap64(x);
+#లేదావేళ SQLITE_BYTEORDER==1234 && MSVC_సంస్కరణ>=1300
   u64 x;
-  memcpy(&x,p,8);
-  return _byteswap_uint64(x);
-#else
+  జ్ఞాపకం_నకలు(&x,p,8);
+  తిరిగి _byteswap_uint64(x);
+#లేకపోతే
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   testcase( p[0]&0x80 );
-  return (u64)(
+  తిరిగి (u64)(
     (((u64)p[0]) << 56) +
     (((u64)p[1]) << 48) +
     (((u64)p[2]) << 40) +
@@ -1825,75 +1825,75 @@ SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8 *p){
     (((u64)p[6]) <<  8) +
     (((u64)p[7]) <<  0)
   );
-#endif
+#అయితే_ముగింపు
 }
 
-#if SQLITE_BYTEORDER!=4321  /* Only used for little-endian machines */
+#ఒకవేళ SQLITE_BYTEORDER!=4321  /* Only used for little-endian machines */
 /*
 ** Byte-swap a 64-bit unsigned integer.
 */
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64 x){
-#if SQLITE_BYTEORDER==1234 && GCC_VERSION>=4003000
-  return __builtin_bswap64(x);
-#elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
-  return _byteswap_uint64(x);
-#else
+#ఒకవేళ SQLITE_BYTEORDER==1234 && GCC_సంస్కరణ>=4003000
+  తిరిగి __builtin_bswap64(x);
+#లేదావేళ SQLITE_BYTEORDER==1234 && MSVC_సంస్కరణ>=1300
+  తిరిగి _byteswap_uint64(x);
+#లేకపోతే
   /* Test this limb using -DSQLITE_BYTEORDER=0 */
   x = (x << 32) | (x >> 32);
   x = ((x & UINT64_C(0x0000ffff0000ffff)) << 16) |
       ((x & UINT64_C(0xffff0000ffff0000)) >> 16);
   x = ((x & UINT64_C(0x00ff00ff00ff00ff)) <<  8) |
       ((x & UINT64_C(0xff00ff00ff00ff00)) >>  8);
-  return x;
-#endif
+  తిరిగి x;
+#అయితే_ముగింపు
 }
-#endif /* SQLITE_BYTEORDER!=4321 */
+#అయితే_ముగింపు /* SQLITE_BYTEORDER!=4321 */
 
 /*
 ** Translate a single byte of Hex into an integer.
 ** This routine only works if h really is a valid hexadecimal
 ** character:  0..9a..fA..F
 */
-u8 sqlite3HexToInt(int h){
-  assert( (h>='0' && h<='9') ||  (h>='a' && h<='f') ||  (h>='A' && h<='F') );
-#ifdef SQLITE_ASCII
+u8 sqlite3_Hex_గమ్యం_Int(పూర్ణాంకం h){
+  ప్రతిజ్ఞా( (h>='0' && h<='9') ||  (h>='a' && h<='f') ||  (h>='A' && h<='F') );
+#నిర్వచితమైతే SQLITE_ASCII
   h += 9*(1&(h>>6));
-#endif
-#ifdef SQLITE_EBCDIC
+#అయితే_ముగింపు
+#నిర్వచితమైతే SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
-#endif
-  return (u8)(h & 0xf);
+#అయితే_ముగింపు
+  తిరిగి (u8)(h & 0xf);
 }
 
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
+#ఒకవేళ !defined(SQLITE_OMIT_BLOB_LITERAL)
 /*
 ** Convert a BLOB literal of the form "x'hhhhhh'" into its binary
 ** value.  Return a pointer to its binary value.  Space to hold the
 ** binary value has been obtained from malloc and must be freed by
 ** the calling routine.
 */
-void *sqlite3HexToBlob(sqlite3 *db, const char *z, int n){
-  char *zBlob;
-  int i;
+శూన్య *sqlite3_Hex_గమ్యం_Blob(sqlite3 *db, స్థిరరాశి అక్షరం *z, పూర్ణాంకం n){
+  అక్షరం *zBlob;
+  పూర్ణాంకం i;
 
-  zBlob = (char *)sqlite3DbMallocRawNN(db, n/2 + 1);
+  zBlob = (అక్షరం *)sqlite3DbMallocRawNN(db, n/2 + 1);
   n--;
-  if( zBlob ){
-    for(i=0; i<n; i+=2){
-      zBlob[i/2] = (sqlite3HexToInt(z[i])<<4) | sqlite3HexToInt(z[i+1]);
+  ఒకవేళ( zBlob ){
+    కొరకు(i=0; i<n; i+=2){
+      zBlob[i/2] = (sqlite3_Hex_గమ్యం_Int(z[i])<<4) | sqlite3_Hex_గమ్యం_Int(z[i+1]);
     }
     zBlob[i/2] = 0;
   }
-  return zBlob;
+  తిరిగి zBlob;
 }
-#endif /* !SQLITE_OMIT_BLOB_LITERAL */
+#అయితే_ముగింపు /* !SQLITE_OMIT_BLOB_LITERAL */
 
 /*
 ** Log an error that is an API call on a connection pointer that should
 ** not have been used.  The "type" of connection pointer is given as the
 ** argument.  The zType is a word like "NULL" or "closed" or "invalid".
 */
-static void logBadConnection(const char *zType){
+స్థిర శూన్య logBadConnection(స్థిరరాశి అక్షరం *zType){
   sqlite3_log(SQLITE_MISUSE,
      "API call with %s database connection pointer",
      zType
@@ -1914,34 +1914,34 @@ static void logBadConnection(const char *zType){
 ** open properly and is not fit for general use but which can be
 ** used as an argument to sqlite3_errmsg() or sqlite3_close().
 */
-int sqlite3SafetyCheckOk(sqlite3 *db){
+పూర్ణాంకం sqlite3SafetyCheckOk(sqlite3 *db){
   u8 eOpenState;
-  if( db==0 ){
+  ఒకవేళ( db==0 ){
     logBadConnection("NULL");
-    return 0;
+    తిరిగి 0;
   }
   eOpenState = db->eOpenState;
-  if( eOpenState!=SQLITE_STATE_OPEN ){
-    if( sqlite3SafetyCheckSickOrOk(db) ){
+  ఒకవేళ( eOpenState!=SQLITE_STATE_OPEN ){
+    ఒకవేళ( sqlite3SafetyCheckSickOrOk(db) ){
       testcase( sqlite3GlobalConfig.xLog!=0 );
       logBadConnection("unopened");
     }
-    return 0;
-  }else{
-    return 1;
+    తిరిగి 0;
+  }లేకపోతే{
+    తిరిగి 1;
   }
 }
-int sqlite3SafetyCheckSickOrOk(sqlite3 *db){
+పూర్ణాంకం sqlite3SafetyCheckSickOrOk(sqlite3 *db){
   u8 eOpenState;
   eOpenState = db->eOpenState;
-  if( eOpenState!=SQLITE_STATE_SICK &&
+  ఒకవేళ( eOpenState!=SQLITE_STATE_SICK &&
       eOpenState!=SQLITE_STATE_OPEN &&
       eOpenState!=SQLITE_STATE_BUSY ){
     testcase( sqlite3GlobalConfig.xLog!=0 );
     logBadConnection("invalid");
-    return 0;
-  }else{
-    return 1;
+    తిరిగి 0;
+  }లేకపోతే{
+    తిరిగి 1;
   }
 }
 
@@ -1951,74 +1951,74 @@ int sqlite3SafetyCheckSickOrOk(sqlite3 *db){
 ** Return 0 on success.  Or if the operation would have resulted in an
 ** overflow, leave *pA unchanged and return 1.
 */
-int sqlite3AddInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_add_overflow(*pA, iB, pA);
-#else
+పూర్ణాంకం sqlite3_కూడు_Int64(i64 *pA, i64 iB){
+#ఒకవేళ GCC_సంస్కరణ>=5004000 && !defined(__INTEL_COMPILER)
+  తిరిగి __builtin_add_overflow(*pA, iB, pA);
+#లేకపోతే
   i64 iA = *pA;
   testcase( iA==0 ); testcase( iA==1 );
   testcase( iB==-1 ); testcase( iB==0 );
-  if( iB>=0 ){
-    testcase( iA>0 && LARGEST_INT64 - iA == iB );
-    testcase( iA>0 && LARGEST_INT64 - iA == iB - 1 );
-    if( iA>0 && LARGEST_INT64 - iA < iB ) return 1;
-  }else{
-    testcase( iA<0 && -(iA + LARGEST_INT64) == iB + 1 );
-    testcase( iA<0 && -(iA + LARGEST_INT64) == iB + 2 );
-    if( iA<0 && -(iA + LARGEST_INT64) > iB + 1 ) return 1;
+  ఒకవేళ( iB>=0 ){
+    testcase( iA>0 && అతిపెద్ద_INT64 - iA == iB );
+    testcase( iA>0 && అతిపెద్ద_INT64 - iA == iB - 1 );
+    ఒకవేళ( iA>0 && అతిపెద్ద_INT64 - iA < iB ) తిరిగి 1;
+  }లేకపోతే{
+    testcase( iA<0 && -(iA + అతిపెద్ద_INT64) == iB + 1 );
+    testcase( iA<0 && -(iA + అతిపెద్ద_INT64) == iB + 2 );
+    ఒకవేళ( iA<0 && -(iA + అతిపెద్ద_INT64) > iB + 1 ) తిరిగి 1;
   }
   *pA += iB;
-  return 0;
-#endif
+  తిరిగి 0;
+#అయితే_ముగింపు
 }
-int sqlite3SubInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_sub_overflow(*pA, iB, pA);
-#else
-  testcase( iB==SMALLEST_INT64+1 );
-  if( iB==SMALLEST_INT64 ){
+పూర్ణాంకం sqlite3SubInt64(i64 *pA, i64 iB){
+#ఒకవేళ GCC_సంస్కరణ>=5004000 && !defined(__INTEL_COMPILER)
+  తిరిగి __builtin_sub_overflow(*pA, iB, pA);
+#లేకపోతే
+  testcase( iB==అతిచిన్న_INT64+1 );
+  ఒకవేళ( iB==అతిచిన్న_INT64 ){
     testcase( (*pA)==(-1) ); testcase( (*pA)==0 );
-    if( (*pA)>=0 ) return 1;
+    ఒకవేళ( (*pA)>=0 ) తిరిగి 1;
     *pA -= iB;
-    return 0;
-  }else{
-    return sqlite3AddInt64(pA, -iB);
+    తిరిగి 0;
+  }లేకపోతే{
+    తిరిగి sqlite3_కూడు_Int64(pA, -iB);
   }
-#endif
+#అయితే_ముగింపు
 }
-int sqlite3MulInt64(i64 *pA, i64 iB){
-#if GCC_VERSION>=5004000 && !defined(__INTEL_COMPILER)
-  return __builtin_mul_overflow(*pA, iB, pA);
-#else
+పూర్ణాంకం sqlite3MulInt64(i64 *pA, i64 iB){
+#ఒకవేళ GCC_సంస్కరణ>=5004000 && !defined(__INTEL_COMPILER)
+  తిరిగి __builtin_mul_overflow(*pA, iB, pA);
+#లేకపోతే
   i64 iA = *pA;
-  if( iB>0 ){
-    if( iA>LARGEST_INT64/iB ) return 1;
-    if( iA<SMALLEST_INT64/iB ) return 1;
-  }else if( iB<0 ){
-    if( iA>0 ){
-      if( iB<SMALLEST_INT64/iA ) return 1;
-    }else if( iA<0 ){
-      if( iB==SMALLEST_INT64 ) return 1;
-      if( iA==SMALLEST_INT64 ) return 1;
-      if( -iA>LARGEST_INT64/-iB ) return 1;
+  ఒకవేళ( iB>0 ){
+    ఒకవేళ( iA>అతిపెద్ద_INT64/iB ) తిరిగి 1;
+    ఒకవేళ( iA<అతిచిన్న_INT64/iB ) తిరిగి 1;
+  }లేకపోతే ఒకవేళ( iB<0 ){
+    ఒకవేళ( iA>0 ){
+      ఒకవేళ( iB<అతిచిన్న_INT64/iA ) తిరిగి 1;
+    }లేకపోతే ఒకవేళ( iA<0 ){
+      ఒకవేళ( iB==అతిచిన్న_INT64 ) తిరిగి 1;
+      ఒకవేళ( iA==అతిచిన్న_INT64 ) తిరిగి 1;
+      ఒకవేళ( -iA>అతిపెద్ద_INT64/-iB ) తిరిగి 1;
     }
   }
   *pA = iA*iB;
-  return 0;
-#endif
+  తిరిగి 0;
+#అయితే_ముగింపు
 }
 
 /*
 ** Compute the absolute value of a 32-bit signed integer, if possible.  Or
 ** if the integer has a value of -2147483648, return +2147483647
 */
-int sqlite3AbsInt32(int x){
-  if( x>=0 ) return x;
-  if( x==(int)0x80000000 ) return 0x7fffffff;
-  return -x;
+పూర్ణాంకం sqlite3AbsInt32(పూర్ణాంకం x){
+  ఒకవేళ( x>=0 ) తిరిగి x;
+  ఒకవేళ( x==(పూర్ణాంకం)0x80000000 ) తిరిగి 0x7fffffff;
+  తిరిగి -x;
 }
 
-#ifdef SQLITE_ENABLE_8_3_NAMES
+#నిర్వచితమైతే SQLITE_ENABLE_8_3_పేర్లు
 /*
 ** If SQLITE_ENABLE_8_3_NAMES is set at compile-time and if the database
 ** filename in zBaseFilename is a URI with the "8_3_names=1" parameter and
@@ -2036,18 +2036,18 @@ int sqlite3AbsInt32(int x){
 **     test.db-shm        =>   test.shm
 **     test.db-mj7f3319fa =>   test.9fa
 */
-void sqlite3FileSuffix3(const char *zBaseFilename, char *z){
-#if SQLITE_ENABLE_8_3_NAMES<2
-  if( sqlite3_uri_boolean(zBaseFilename, "8_3_names", 0) )
-#endif
+శూన్య sqlite3FileSuffix3(స్థిరరాశి అక్షరం *z_పునాది_Filename, అక్షరం *z){
+#ఒకవేళ SQLITE_ENABLE_8_3_పేర్లు<2
+  ఒకవేళ( sqlite3_uri_boolean(z_పునాది_Filename, "8_3_names", 0) )
+#అయితే_ముగింపు
   {
-    int i, sz;
+    పూర్ణాంకం i, sz;
     sz = sqlite3Strlen30(z);
-    for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-    if( z[i]=='.' && ALWAYS(sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
+    కొరకు(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
+    ఒకవేళ( z[i]=='.' && ALWAYS(sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
   }
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Find (an approximate) sum of two LogEst values.  This computation is
@@ -2055,8 +2055,8 @@ void sqlite3FileSuffix3(const char *zBaseFilename, char *z){
 ** value.
 **
 */
-LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
-  static const unsigned char x[] = {
+LogEst sqlite3_Log_Est_కూడు(LogEst a, LogEst b){
+  స్థిర స్థిరరాశి గుర్తులేని అక్షరం x[] = {
      10, 10,                         /* 0,1 */
       9, 9,                          /* 2,3 */
       8, 8,                          /* 4,5 */
@@ -2067,14 +2067,14 @@ LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
       3, 3, 3, 3, 3, 3,              /* 19-24 */
       2, 2, 2, 2, 2, 2, 2,           /* 25-31 */
   };
-  if( a>=b ){
-    if( a>b+49 ) return a;
-    if( a>b+31 ) return a+1;
-    return a+x[a-b];
-  }else{
-    if( b>a+49 ) return b;
-    if( b>a+31 ) return b+1;
-    return b+x[b-a];
+  ఒకవేళ( a>=b ){
+    ఒకవేళ( a>b+49 ) తిరిగి a;
+    ఒకవేళ( a>b+31 ) తిరిగి a+1;
+    తిరిగి a+x[a-b];
+  }లేకపోతే{
+    ఒకవేళ( b>a+49 ) తిరిగి b;
+    ఒకవేళ( b>a+31 ) తిరిగి b+1;
+    తిరిగి b+x[b-a];
   }
 }
 
@@ -2083,50 +2083,50 @@ LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
 ** approximation for 10*log2(x).
 */
 LogEst sqlite3LogEst(u64 x){
-  static LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
+  స్థిర LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
   LogEst y = 40;
-  if( x<8 ){
-    if( x<2 ) return 0;
-    while( x<8 ){  y -= 10; x <<= 1; }
-  }else{
-#if GCC_VERSION>=5004000
-    int i = 60 - __builtin_clzll(x);
+  ఒకవేళ( x<8 ){
+    ఒకవేళ( x<2 ) తిరిగి 0;
+    అయితే( x<8 ){  y -= 10; x <<= 1; }
+  }లేకపోతే{
+#ఒకవేళ GCC_సంస్కరణ>=5004000
+    పూర్ణాంకం i = 60 - __builtin_clzll(x);
     y += i*10;
     x >>= i;
-#else
-    while( x>255 ){ y += 40; x >>= 4; }  /*OPTIMIZATION-IF-TRUE*/
-    while( x>15 ){  y += 10; x >>= 1; }
-#endif
+#లేకపోతే
+    అయితే( x>255 ){ y += 40; x >>= 4; }  /*OPTIMIZATION-IF-TRUE*/
+    అయితే( x>15 ){  y += 10; x >>= 1; }
+#అయితే_ముగింపు
   }
-  return a[x&7] + y - 10;
+  తిరిగి a[x&7] + y - 10;
 }
 
 /*
 ** Convert a double into a LogEst
 ** In other words, compute an approximation for 10*log2(x).
 */
-LogEst sqlite3LogEstFromDouble(double x){
+LogEst sqlite3LogEstFromDouble(ద్విగుణ x){
   u64 a;
   LogEst e;
-  assert( sizeof(x)==8 && sizeof(a)==8 );
-  if( x<=1 ) return 0;
-  if( x<=2000000000 ) return sqlite3LogEst((u64)x);
-  memcpy(&a, &x, 8);
+  ప్రతిజ్ఞా( పరిమాణం(x)==8 && పరిమాణం(a)==8 );
+  ఒకవేళ( x<=1 ) తిరిగి 0;
+  ఒకవేళ( x<=2000000000 ) తిరిగి sqlite3LogEst((u64)x);
+  జ్ఞాపకం_నకలు(&a, &x, 8);
   e = (a>>52) - 1022;
-  return e*10;
+  తిరిగి e*10;
 }
 
 /*
 ** Convert a LogEst into an integer.
 */
-u64 sqlite3LogEstToInt(LogEst x){
+u64 sqlite3_Log_Est_గమ్యం_Int(LogEst x){
   u64 n;
   n = x%10;
   x /= 10;
-  if( n>=5 ) n -= 2;
-  else if( n>=1 ) n -= 1;
-  if( x>60 ) return (u64)LARGEST_INT64;
-  return x>=3 ? (n+8)<<(x-3) : (n+8)>>(3-x);
+  ఒకవేళ( n>=5 ) n -= 2;
+  లేకపోతే ఒకవేళ( n>=1 ) n -= 1;
+  ఒకవేళ( x>60 ) తిరిగి (u64)అతిపెద్ద_INT64;
+  తిరిగి x>=3 ? (n+8)<<(x-3) : (n+8)>>(3-x);
 }
 
 /*
@@ -2165,37 +2165,37 @@ u64 sqlite3LogEstToInt(LogEst x){
 ** indication that the VList may never again be enlarged, since the
 ** accompanying realloc() would invalidate the pointers.
 */
-VList *sqlite3VListAdd(
+VList *sqlite3_VList_కూడు(
   sqlite3 *db,           /* The database connection used for malloc() */
-  VList *pIn,            /* The input VList.  Might be NULL */
-  const char *zName,     /* Name of symbol to add */
-  int nName,             /* Bytes of text in zName */
-  int iVal               /* Value to associate with zName */
+  VList *p_లోపల,            /* The input VList.  Might be NULL */
+  స్థిరరాశి అక్షరం *zName,     /* Name of symbol to add */
+  పూర్ణాంకం nName,             /* Bytes of text in zName */
+  పూర్ణాంకం iVal               /* Value to associate with zName */
 ){
-  int nInt;              /* number of sizeof(int) objects needed for zName */
-  char *z;               /* Pointer to where zName will be stored */
-  int i;                 /* Index in pIn[] where zName is stored */
+  పూర్ణాంకం nInt;              /* number of sizeof(int) objects needed for zName */
+  అక్షరం *z;               /* Pointer to where zName will be stored */
+  పూర్ణాంకం i;                 /* Index in pIn[] where zName is stored */
 
   nInt = nName/4 + 3;
-  assert( pIn==0 || pIn[0]>=3 );  /* Verify ok to add new elements */
-  if( pIn==0 || pIn[1]+nInt > pIn[0] ){
+  ప్రతిజ్ఞా( p_లోపల==0 || p_లోపల[0]>=3 );  /* Verify ok to add new elements */
+  ఒకవేళ( p_లోపల==0 || p_లోపల[1]+nInt > p_లోపల[0] ){
     /* Enlarge the allocation */
-    sqlite3_int64 nAlloc = (pIn ? 2*(sqlite3_int64)pIn[0] : 10) + nInt;
-    VList *pOut = sqlite3DbRealloc(db, pIn, nAlloc*sizeof(int));
-    if( pOut==0 ) return pIn;
-    if( pIn==0 ) pOut[1] = 2;
-    pIn = pOut;
-    pIn[0] = nAlloc;
+    sqlite3_int64 nAlloc = (p_లోపల ? 2*(sqlite3_int64)p_లోపల[0] : 10) + nInt;
+    VList *p_బహిర్గతం = sqlite3DbRealloc(db, p_లోపల, nAlloc*పరిమాణం(పూర్ణాంకం));
+    ఒకవేళ( p_బహిర్గతం==0 ) తిరిగి p_లోపల;
+    ఒకవేళ( p_లోపల==0 ) p_బహిర్గతం[1] = 2;
+    p_లోపల = p_బహిర్గతం;
+    p_లోపల[0] = nAlloc;
   }
-  i = pIn[1];
-  pIn[i] = iVal;
-  pIn[i+1] = nInt;
-  z = (char*)&pIn[i+2];
-  pIn[1] = i+nInt;
-  assert( pIn[1]<=pIn[0] );
-  memcpy(z, zName, nName);
+  i = p_లోపల[1];
+  p_లోపల[i] = iVal;
+  p_లోపల[i+1] = nInt;
+  z = (అక్షరం*)&p_లోపల[i+2];
+  p_లోపల[1] = i+nInt;
+  ప్రతిజ్ఞా( p_లోపల[1]<=p_లోపల[0] );
+  జ్ఞాపకం_నకలు(z, zName, nName);
   z[nName] = 0;
-  return pIn;
+  తిరిగి p_లోపల;
 }
 
 /*
@@ -2203,31 +2203,31 @@ VList *sqlite3VListAdd(
 ** has the value iVal.  Or return a NULL if there is no such variable in
 ** the list
 */
-const char *sqlite3VListNumToName(VList *pIn, int iVal){
-  int i, mx;
-  if( pIn==0 ) return 0;
-  mx = pIn[1];
+స్థిరరాశి అక్షరం *sqlite3_VList_అంకె_గమ్యం_Name(VList *p_లోపల, పూర్ణాంకం iVal){
+  పూర్ణాంకం i, mx;
+  ఒకవేళ( p_లోపల==0 ) తిరిగి 0;
+  mx = p_లోపల[1];
   i = 2;
-  do{
-    if( pIn[i]==iVal ) return (char*)&pIn[i+2];
-    i += pIn[i+1];
-  }while( i<mx );
-  return 0;
+  చేయి{
+    ఒకవేళ( p_లోపల[i]==iVal ) తిరిగి (అక్షరం*)&p_లోపల[i+2];
+    i += p_లోపల[i+1];
+  }అయితే( i<mx );
+  తిరిగి 0;
 }
 
 /*
 ** Return the number of the variable named zName, if it is in VList.
 ** or return 0 if there is no such variable.
 */
-int sqlite3VListNameToNum(VList *pIn, const char *zName, int nName){
-  int i, mx;
-  if( pIn==0 ) return 0;
-  mx = pIn[1];
+పూర్ణాంకం sqlite3_VList_Name_గమ్యం_అంకె(VList *p_లోపల, స్థిరరాశి అక్షరం *zName, పూర్ణాంకం nName){
+  పూర్ణాంకం i, mx;
+  ఒకవేళ( p_లోపల==0 ) తిరిగి 0;
+  mx = p_లోపల[1];
   i = 2;
-  do{
-    const char *z = (const char*)&pIn[i+2];
-    if( strncmp(z,zName,nName)==0 && z[nName]==0 ) return pIn[i];
-    i += pIn[i+1];
-  }while( i<mx );
-  return 0;
+  చేయి{
+    స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)&p_లోపల[i+2];
+    ఒకవేళ( అక్షరశ్రేణి_పోలిక(z,zName,nName)==0 && z[nName]==0 ) తిరిగి p_లోపల[i];
+    i += p_లోపల[i+1];
+  }అయితే( i<mx );
+  తిరిగి 0;
 }

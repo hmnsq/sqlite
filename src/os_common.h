@@ -17,83 +17,83 @@
 ** This file should be #included by the os_*.c files only.  It is not a
 ** general purpose header file.
 */
-#ifndef _OS_COMMON_H_
-#define _OS_COMMON_H_
+#నిర్వచితం_కాకపోతే _OS_COMMON_H_
+#నిర్వచించు _OS_COMMON_H_
 
 /*
 ** At least two bugs have slipped in because we changed the MEMORY_DEBUG
 ** macro to SQLITE_DEBUG and some older makefiles have not yet made the
 ** switch.  The following code should catch this problem at compile-time.
 */
-#ifdef MEMORY_DEBUG
+#నిర్వచితమైతే జ్ఞాపకం_DEBUG
 # error "The MEMORY_DEBUG macro is obsolete.  Use SQLITE_DEBUG instead."
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Macros for performance tracing.  Normally turned off.  Only works
 ** on i486 hardware.
 */
-#ifdef SQLITE_PERFORMANCE_TRACE
+#నిర్వచితమైతే SQLITE_PERFORMANCE_TRACE
 
-static sqlite_uint64 g_start;
-static sqlite_uint64 g_elapsed;
-#define TIMER_START       g_start=sqlite3Hwtime()
-#define TIMER_END         g_elapsed=sqlite3Hwtime()-g_start
-#define TIMER_ELAPSED     g_elapsed
-#else
-#define TIMER_START
-#define TIMER_END
-#define TIMER_ELAPSED     ((sqlite_uint64)0)
-#endif
+స్థిర sqlite_uint64 g_ప్రారంభం;
+స్థిర sqlite_uint64 g_elapsed;
+#నిర్వచించు TIMER_ప్రారంభం       g_ప్రారంభం=sqlite3Hwtime()
+#నిర్వచించు TIMER_చివర         g_elapsed=sqlite3Hwtime()-g_ప్రారంభం
+#నిర్వచించు TIMER_ELAPSED     g_elapsed
+#లేకపోతే
+#నిర్వచించు TIMER_ప్రారంభం
+#నిర్వచించు TIMER_చివర
+#నిర్వచించు TIMER_ELAPSED     ((sqlite_uint64)0)
+#అయితే_ముగింపు
 
 /*
 ** If we compile with the SQLITE_TEST macro set, then the following block
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_io_error_hit;
-extern int sqlite3_io_error_hardhit;
-extern int sqlite3_io_error_pending;
-extern int sqlite3_io_error_persist;
-extern int sqlite3_io_error_benign;
-extern int sqlite3_diskfull_pending;
-extern int sqlite3_diskfull;
-#define SimulateIOErrorBenign(X) sqlite3_io_error_benign=(X)
-#define SimulateIOError(CODE)  \
-  if( (sqlite3_io_error_persist && sqlite3_io_error_hit) \
+#ఒకవేళ defined(SQLITE_TEST)
+బాహ్య పూర్ణాంకం sqlite3_io_error_తగిలింది;
+బాహ్య పూర్ణాంకం sqlite3_io_error_hardhit;
+బాహ్య పూర్ణాంకం sqlite3_io_error_pending;
+బాహ్య పూర్ణాంకం sqlite3_io_error_persist;
+బాహ్య పూర్ణాంకం sqlite3_io_error_benign;
+బాహ్య పూర్ణాంకం sqlite3_diskfull_pending;
+బాహ్య పూర్ణాంకం sqlite3_diskfull;
+#నిర్వచించు SimulateIOErrorBenign(X) sqlite3_io_error_benign=(X)
+#నిర్వచించు SimulateIOError(సంకేతం_3)  \
+  ఒకవేళ( (sqlite3_io_error_persist && sqlite3_io_error_తగిలింది) \
        || sqlite3_io_error_pending-- == 1 )  \
-              { local_ioerr(); CODE; }
-static void local_ioerr(){
+              { local_ioerr(); సంకేతం_3; }
+స్థిర శూన్య local_ioerr(){
   IOTRACE(("IOERR\n"));
-  sqlite3_io_error_hit++;
-  if( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
+  sqlite3_io_error_తగిలింది++;
+  ఒకవేళ( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
 }
-#define SimulateDiskfullError(CODE) \
-   if( sqlite3_diskfull_pending ){ \
-     if( sqlite3_diskfull_pending == 1 ){ \
+#నిర్వచించు SimulateDiskfullError(సంకేతం_3) \
+   ఒకవేళ( sqlite3_diskfull_pending ){ \
+     ఒకవేళ( sqlite3_diskfull_pending == 1 ){ \
        local_ioerr(); \
        sqlite3_diskfull = 1; \
-       sqlite3_io_error_hit = 1; \
-       CODE; \
-     }else{ \
+       sqlite3_io_error_తగిలింది = 1; \
+       సంకేతం_3; \
+     }లేకపోతే{ \
        sqlite3_diskfull_pending--; \
      } \
    }
-#else
-#define SimulateIOErrorBenign(X)
-#define SimulateIOError(A)
-#define SimulateDiskfullError(A)
-#endif /* defined(SQLITE_TEST) */
+#లేకపోతే
+#నిర్వచించు SimulateIOErrorBenign(X)
+#నిర్వచించు SimulateIOError(A)
+#నిర్వచించు SimulateDiskfullError(A)
+#అయితే_ముగింపు /* defined(SQLITE_TEST) */
 
 /*
 ** When testing, keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_open_file_count;
-#define OpenCounter(X)  sqlite3_open_file_count+=(X)
-#else
-#define OpenCounter(X)
-#endif /* defined(SQLITE_TEST) */
+#ఒకవేళ defined(SQLITE_TEST)
+బాహ్య పూర్ణాంకం sqlite3_open_file_లెక్క;
+#నిర్వచించు OpenCounter(X)  sqlite3_open_file_లెక్క+=(X)
+#లేకపోతే
+#నిర్వచించు OpenCounter(X)
+#అయితే_ముగింపు /* defined(SQLITE_TEST) */
 
-#endif /* !defined(_OS_COMMON_H_) */
+#అయితే_ముగింపు /* !defined(_OS_COMMON_H_) */

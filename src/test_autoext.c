@@ -11,75 +11,75 @@
 *************************************************************************
 ** Test extension for testing the sqlite3_auto_extension() function.
 */
-#include "tclsqlite.h"
-#include "sqlite3ext.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ "sqlite3ext.h"
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ఎక్కించు_EXTENSION
 SQLITE_EXTENSION_INIT1
 
 /*
 ** The sqr() SQL function returns the square of its input value.
 */
-static void sqrFunc(
+స్థిర శూన్య sqrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  double r = sqlite3_value_double(argv[0]);
-  sqlite3_result_double(context, r*r);
+  ద్విగుణ r = sqlite3_విలువ_double(argv[0]);
+  sqlite3_ఫలితం_double(context, r*r);
 }
 
 /*
 ** This is the entry point to register the extension for the sqr() function.
 */
-static int sqr_init(
+స్థిర పూర్ణాంకం sqr_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  అక్షరం **pz_Err_సందేశం, 
+  స్థిరరాశి sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
   sqlite3_create_function(db, "sqr", 1, SQLITE_ANY, 0, sqrFunc, 0, 0);
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** The cube() SQL function returns the cube of its input value.
 */
-static void cubeFunc(
+స్థిర శూన్య cubeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  పూర్ణాంకం argc,
+  sqlite3_విలువ **argv
 ){
-  double r = sqlite3_value_double(argv[0]);
-  sqlite3_result_double(context, r*r*r);
+  ద్విగుణ r = sqlite3_విలువ_double(argv[0]);
+  sqlite3_ఫలితం_double(context, r*r*r);
 }
 
 /*
 ** This is the entry point to register the extension for the cube() function.
 */
-static int cube_init(
+స్థిర పూర్ణాంకం cube_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  అక్షరం **pz_Err_సందేశం, 
+  స్థిరరాశి sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
   sqlite3_create_function(db, "cube", 1, SQLITE_ANY, 0, cubeFunc, 0, 0);
-  return 0;
+  తిరిగి 0;
 }
 
 /*
 ** This is a broken extension entry point
 */
-static int broken_init(
+స్థిర పూర్ణాంకం broken_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  అక్షరం **pz_Err_సందేశం, 
+  స్థిరరాశి sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  అక్షరం *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken autoext!");
-  *pzErrMsg = zErr;
-  return 1;
+  *pz_Err_సందేశం = zErr;
+  తిరిగి 1;
 }
 
 /*
@@ -87,15 +87,15 @@ static int broken_init(
 **
 ** Register the "sqr" extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtSqrObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI autoExtSqrObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))sqr_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_auto_extension((శూన్య(*)(శూన్య))sqr_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -103,15 +103,15 @@ static int SQLITE_TCLAPI autoExtSqrObjCmd(
 **
 ** Unregister the "sqr" extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))sqr_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_cancel_auto_extension((శూన్య(*)(శూన్య))sqr_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -119,15 +119,15 @@ static int SQLITE_TCLAPI cancelAutoExtSqrObjCmd(
 **
 ** Register the "cube" extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtCubeObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI autoExtCubeObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))cube_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_auto_extension((శూన్య(*)(శూన్య))cube_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -135,15 +135,15 @@ static int SQLITE_TCLAPI autoExtCubeObjCmd(
 **
 ** Unregister the "cube" extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))cube_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_cancel_auto_extension((శూన్య(*)(శూన్య))cube_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -151,15 +151,15 @@ static int SQLITE_TCLAPI cancelAutoExtCubeObjCmd(
 **
 ** Register the broken extension to be loaded automatically.
 */
-static int SQLITE_TCLAPI autoExtBrokenObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI autoExtBrokenObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_auto_extension((void(*)(void))broken_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_auto_extension((శూన్య(*)(శూన్య))broken_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -167,18 +167,18 @@ static int SQLITE_TCLAPI autoExtBrokenObjCmd(
 **
 ** Unregister the broken extension.
 */
-static int SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = sqlite3_cancel_auto_extension((void(*)(void))broken_init);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return SQLITE_OK;
+  పూర్ణాంకం rc = sqlite3_cancel_auto_extension((శూన్య(*)(శూన్య))broken_init);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(rc));
+  తిరిగి SQLITE_OK;
 }
 
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#అయితే_ముగింపు /* SQLITE_OMIT_LOAD_EXTENSION */
 
 
 /*
@@ -186,22 +186,22 @@ static int SQLITE_TCLAPI cancelAutoExtBrokenObjCmd(
 **
 ** Reset all auto-extensions
 */
-static int SQLITE_TCLAPI resetAutoExtObjCmd(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI resetAutoExtObjCmd(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_reset_auto_extension();
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 
 /*
 ** This procedure registers the TCL procs defined in this file.
 */
-int Sqlitetest_autoext_Init(Tcl_Interp *interp){
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+పూర్ణాంకం Sqlitetest_autoext_Init(Tcl_Interp *interp){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ఎక్కించు_EXTENSION
   Tcl_CreateObjCommand(interp, "sqlite3_auto_extension_sqr",
           autoExtSqrObjCmd, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlite3_auto_extension_cube",
@@ -214,8 +214,8 @@ int Sqlitetest_autoext_Init(Tcl_Interp *interp){
           cancelAutoExtCubeObjCmd, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlite3_cancel_auto_extension_broken",
           cancelAutoExtBrokenObjCmd, 0, 0);
-#endif
+#అయితే_ముగింపు
   Tcl_CreateObjCommand(interp, "sqlite3_reset_auto_extension",
           resetAutoExtObjCmd, 0, 0);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }

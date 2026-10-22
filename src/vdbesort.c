@@ -135,42 +135,42 @@
 ** thread to merge the output of each of the others to a single PMA for
 ** the main thread to read from.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "vdbeInt.h"
 
 /*
 ** If SQLITE_DEBUG_SORTER_THREADS is defined, this module outputs various
 ** messages to stderr that may be helpful in understanding the performance
 ** characteristics of the sorter in multi-threaded mode.
 */
-#if 0
-# define SQLITE_DEBUG_SORTER_THREADS 1
-#endif
+#ఒకవేళ 0
+# define SQLITE_DEBUG_SORTER_దారాలు 1
+#అయితే_ముగింపు
 
 /*
 ** Hard-coded maximum amount of data to accumulate in memory before flushing
 ** to a level 0 PMA. The purpose of this limit is to prevent various integer
 ** overflows. 512MiB.
 */
-#define SQLITE_MAX_PMASZ    (1<<29)
+#నిర్వచించు SQLITE_MAX_PMASZ    (1<<29)
 
 /*
 ** Private objects used by the sorter
 */
-typedef struct MergeEngine MergeEngine;     /* Merge PMAs together */
-typedef struct PmaReader PmaReader;         /* Incrementally read one PMA */
-typedef struct PmaWriter PmaWriter;         /* Incrementally write one PMA */
-typedef struct SorterRecord SorterRecord;   /* A record being sorted */
-typedef struct SortSubtask SortSubtask;     /* A sub-task in the sort process */
-typedef struct SorterFile SorterFile;       /* Temporary file object wrapper */
-typedef struct SorterList SorterList;       /* In-memory list of records */
-typedef struct IncrMerger IncrMerger;       /* Read & merge multiple PMAs */
+రకనిర్వచనం నిర్మాణం విలీనం_Engine విలీనం_Engine;     /* Merge PMAs together */
+రకనిర్వచనం నిర్మాణం PmaReader PmaReader;         /* Incrementally read one PMA */
+రకనిర్వచనం నిర్మాణం PmaWriter PmaWriter;         /* Incrementally write one PMA */
+రకనిర్వచనం నిర్మాణం Sorter_రికార్డు Sorter_రికార్డు;   /* A record being sorted */
+రకనిర్వచనం నిర్మాణం క్రమీకరించు_Subtask క్రమీకరించు_Subtask;     /* A sub-task in the sort process */
+రకనిర్వచనం నిర్మాణం SorterFile SorterFile;       /* Temporary file object wrapper */
+రకనిర్వచనం నిర్మాణం SorterList SorterList;       /* In-memory list of records */
+రకనిర్వచనం నిర్మాణం IncrMerger IncrMerger;       /* Read & merge multiple PMAs */
 
 /*
 ** A container for a temp file handle and the current amount of data
 ** stored in the file.
 */
-struct SorterFile {
+నిర్మాణం SorterFile {
   sqlite3_file *pFd;              /* File handle */
   i64 iEof;                       /* Bytes of data stored in pFd */
 };
@@ -183,9 +183,9 @@ struct SorterFile {
 ** are stored in the aMemory[] bulk memory, one right after the other, and
 ** are connected using SorterRecord.u.iNext.
 */
-struct SorterList {
-  SorterRecord *pList;            /* Linked list of records */
-  u8 *aMemory;                    /* If non-NULL, bulk memory to hold pList */
+నిర్మాణం SorterList {
+  Sorter_రికార్డు *pList;            /* Linked list of records */
+  u8 *a_జ్ఞాపకం;                    /* If non-NULL, bulk memory to hold pList */
   i64 szPMA;                      /* Size of pList as PMA in bytes */
 };
 
@@ -253,10 +253,10 @@ struct SorterList {
 ** key comparison operations are required, where N is the number of segments
 ** being merged (rounded up to the next power of 2).
 */
-struct MergeEngine {
-  int nTree;                 /* Used size of aTree/aReadr (power of 2) */
-  SortSubtask *pTask;        /* Used by this thread only */
-  int *aTree;                /* Current state of incremental merge */
+నిర్మాణం విలీనం_Engine {
+  పూర్ణాంకం n_వృక్షం;                 /* Used size of aTree/aReadr (power of 2) */
+  క్రమీకరించు_Subtask *pTask;        /* Used by this thread only */
+  పూర్ణాంకం *a_వృక్షం;                /* Current state of incremental merge */
   PmaReader *aReadr;         /* Array of PmaReaders to merge data from */
 };
 
@@ -291,13 +291,13 @@ struct MergeEngine {
 ** after the thread has finished are not dire. So we don't worry about
 ** memory barriers and such here.
 */
-typedef int (*SorterCompare)(SortSubtask*,int*,const void*,int,const void*,int);
-struct SortSubtask {
+రకనిర్వచనం పూర్ణాంకం (*SorterCompare)(క్రమీకరించు_Subtask*,పూర్ణాంకం*,స్థిరరాశి శూన్య*,పూర్ణాంకం,స్థిరరాశి శూన్య*,పూర్ణాంకం);
+నిర్మాణం క్రమీకరించు_Subtask {
   SQLiteThread *pThread;          /* Background thread, if any */
-  int bDone;                      /* Set if thread is finished but not joined */
-  int nPMA;                       /* Number of PMAs currently in file */
+  పూర్ణాంకం b_పూర్తి;                      /* Set if thread is finished but not joined */
+  పూర్ణాంకం nPMA;                       /* Number of PMAs currently in file */
   VdbeSorter *pSorter;            /* Sorter that owns this sub-task */
-  UnpackedRecord *pUnpacked;      /* Space to unpack a record */
+  Unpacked_రికార్డు *pUnpacked;      /* Space to unpack a record */
   SorterList list;                /* List for thread to write to a PMA */
   SorterCompare xCompare;         /* Compare function to use */
   SorterFile file;                /* Temp file for level-0 PMAs */
@@ -315,33 +315,33 @@ struct SortSubtask {
 **   this variable is updated so as to be set to the size on disk of the
 **   largest record in the sorter.
 */
-struct VdbeSorter {
-  int mnPmaSize;                  /* Minimum PMA size, in bytes */
-  int mxPmaSize;                  /* Maximum PMA size, in bytes.  0==no limit */
-  int mxKeysize;                  /* Largest serialized key seen so far */
-  int pgsz;                       /* Main database page size */
+నిర్మాణం VdbeSorter {
+  పూర్ణాంకం mn_Pma_కొలత;                  /* Minimum PMA size, in bytes */
+  పూర్ణాంకం mx_Pma_కొలత;                  /* Maximum PMA size, in bytes.  0==no limit */
+  పూర్ణాంకం mxKeysize;                  /* Largest serialized key seen so far */
+  పూర్ణాంకం pgsz;                       /* Main database page size */
   PmaReader *pReader;             /* Readr data from here after Rewind() */
-  MergeEngine *pMerger;           /* Or here, if bUseThreads==0 */
+  విలీనం_Engine *pMerger;           /* Or here, if bUseThreads==0 */
   sqlite3 *db;                    /* Database connection */
-  KeyInfo *pKeyInfo;              /* How to compare records */
-  UnpackedRecord *pUnpacked;      /* Used by VdbeSorterCompare() */
+  కీలకం_Info *p_కీలకం_Info;              /* How to compare records */
+  Unpacked_రికార్డు *pUnpacked;      /* Used by VdbeSorterCompare() */
   SorterList list;                /* List of in-memory records */
-  int iMemory;                    /* Offset of free space in list.aMemory */
-  int nMemory;                    /* Size of list.aMemory allocation in bytes */
+  పూర్ణాంకం i_జ్ఞాపకం;                    /* Offset of free space in list.aMemory */
+  పూర్ణాంకం n_జ్ఞాపకం;                    /* Size of list.aMemory allocation in bytes */
   u8 bUsePMA;                     /* True if one or more PMAs created */
-  u8 bUseThreads;                 /* True to use background threads */
+  u8 b_Use_దారాలు;                 /* True to use background threads */
   u8 iPrev;                       /* Previous thread used to flush PMA */
   u8 nTask;                       /* Size of aTask[] array */
-  u8 typeMask;
-  SortSubtask aTask[FLEXARRAY];   /* One or more subtasks */
+  u8 type_ముసుగు;
+  క్రమీకరించు_Subtask aTask[FLEXARRAY];   /* One or more subtasks */
 };
 
 /* Size (in bytes) of a VdbeSorter object that works with N or fewer subtasks */
-#define SZ_VDBESORTER(N)  (offsetof(VdbeSorter,aTask)+(N)*sizeof(SortSubtask))
+#నిర్వచించు SZ_VDBESORTER(N)  (offsetof(VdbeSorter,aTask)+(N)*పరిమాణం(క్రమీకరించు_Subtask))
 
-#define SORTER_TYPE_INTEGER 0x01
-#define SORTER_TYPE_TEXT    0x02
-#define SORTER_TYPE_REAL    0x04
+#నిర్వచించు SORTER_TYPE_INTEGER 0x01
+#నిర్వచించు SORTER_TYPE_పాఠ్యం    0x02
+#నిర్వచించు SORTER_TYPE_REAL    0x04
 
 /*
 ** An instance of the following object is used to read records out of a
@@ -352,16 +352,16 @@ struct VdbeSorter {
 **
 ** pFd==0 at EOF.
 */
-struct PmaReader {
+నిర్మాణం PmaReader {
   i64 iReadOff;               /* Current read offset */
   i64 iEof;                   /* 1 byte past EOF for this PmaReader */
-  int nAlloc;                 /* Bytes of space at aAlloc */
-  int nKey;                   /* Number of bytes in key */
+  పూర్ణాంకం nAlloc;                 /* Bytes of space at aAlloc */
+  పూర్ణాంకం n_కీలకం;                   /* Number of bytes in key */
   sqlite3_file *pFd;          /* File handle we are reading from */
   u8 *aAlloc;                 /* Space for aKey if aBuffer and pMap wont work */
-  u8 *aKey;                   /* Pointer to current key */
-  u8 *aBuffer;                /* Current read buffer */
-  int nBuffer;                /* Size of read buffer in bytes */
+  u8 *a_కీలకం;                   /* Pointer to current key */
+  u8 *a_బఫరు;                /* Current read buffer */
+  పూర్ణాంకం n_బఫరు;                /* Size of read buffer in bytes */
   u8 *aMap;                   /* Pointer to mapping of entire file */
   IncrMerger *pIncr;          /* Incremental merger */
 };
@@ -398,13 +398,13 @@ struct PmaReader {
 ** keys from pMerger by the calling thread whenever the PmaReader runs out
 ** of data.
 */
-struct IncrMerger {
-  SortSubtask *pTask;             /* Task that owns this merger */
-  MergeEngine *pMerger;           /* Merge engine thread reads data from */
-  i64 iStartOff;                  /* Offset to start writing file at */
-  int mxSz;                       /* Maximum bytes of data to store */
-  int bEof;                       /* Set to true when merge is finished */
-  int bUseThread;                 /* True to use a bg thread for this object */
+నిర్మాణం IncrMerger {
+  క్రమీకరించు_Subtask *pTask;             /* Task that owns this merger */
+  విలీనం_Engine *pMerger;           /* Merge engine thread reads data from */
+  i64 i_ప్రారంభం_Off;                  /* Offset to start writing file at */
+  పూర్ణాంకం mxSz;                       /* Maximum bytes of data to store */
+  పూర్ణాంకం bEof;                       /* Set to true when merge is finished */
+  పూర్ణాంకం bUseThread;                 /* True to use a bg thread for this object */
   SorterFile aFile[2];            /* aFile[0] for reading, [1] for writing */
 };
 
@@ -416,12 +416,12 @@ struct IncrMerger {
 ** each block is aligned on a page boundary.  This object caches writes to
 ** the PMA so that aligned, page-size blocks are written.
 */
-struct PmaWriter {
-  int eFWErr;                     /* Non-zero if in an error state */
-  u8 *aBuffer;                    /* Pointer to write buffer */
-  int nBuffer;                    /* Size of write buffer in bytes */
-  int iBufStart;                  /* First byte of buffer to write */
-  int iBufEnd;                    /* Last byte of buffer to write */
+నిర్మాణం PmaWriter {
+  పూర్ణాంకం eFWErr;                     /* Non-zero if in an error state */
+  u8 *a_బఫరు;                    /* Pointer to write buffer */
+  పూర్ణాంకం n_బఫరు;                    /* Size of write buffer in bytes */
+  పూర్ణాంకం i_Buf_ప్రారంభం;                  /* First byte of buffer to write */
+  పూర్ణాంకం i_Buf_చివర;                    /* Last byte of buffer to write */
   i64 iWriteOff;                  /* Offset of start of buffer in file */
   sqlite3_file *pFd;              /* File handle to write to */
   u64 nPmaSpill;                  /* Total number of bytes written */
@@ -445,11 +445,11 @@ struct PmaWriter {
 ** converted to use the SorterRecord.u.pNext pointers. See function
 ** vdbeSorterSort() for details.
 */
-struct SorterRecord {
-  int nVal;                       /* Size of the record in bytes */
-  union {
-    SorterRecord *pNext;          /* Pointer to next record in list */
-    int iNext;                    /* Offset within aMemory of next record */
+నిర్మాణం Sorter_రికార్డు {
+  పూర్ణాంకం nVal;                       /* Size of the record in bytes */
+  సంఘం {
+    Sorter_రికార్డు *p_తదుపరి;          /* Pointer to next record in list */
+    పూర్ణాంకం i_తదుపరి;                    /* Offset within aMemory of next record */
   } u;
   /* The data for the record immediately follows this header */
 };
@@ -459,25 +459,25 @@ struct SorterRecord {
 **
 **   void *SRVAL(SorterRecord *p) { return (void*)&p[1]; }
 */
-#define SRVAL(p) ((void*)((SorterRecord*)(p) + 1))
+#నిర్వచించు SRVAL(p) ((శూన్య*)((Sorter_రికార్డు*)(p) + 1))
 
 
 /* Maximum number of PMAs that a single MergeEngine can merge */
-#define SORTER_MAX_MERGE_COUNT 16
+#నిర్వచించు SORTER_MAX_విలీనం_లెక్క 16
 
-static int vdbeIncrSwap(IncrMerger*);
-static void vdbeIncrFree(IncrMerger *);
+స్థిర పూర్ణాంకం vdbe_Incr_మార్పిడి(IncrMerger*);
+స్థిర శూన్య vdbeIncrFree(IncrMerger *);
 
 /*
 ** Free all memory belonging to the PmaReader object passed as the
 ** argument. All structure fields are set to zero before returning.
 */
-static void vdbePmaReaderClear(PmaReader *pReadr){
+స్థిర శూన్య vdbePmaReaderClear(PmaReader *pReadr){
   sqlite3_free(pReadr->aAlloc);
-  sqlite3_free(pReadr->aBuffer);
-  if( pReadr->aMap ) sqlite3OsUnfetch(pReadr->pFd, 0, pReadr->aMap);
+  sqlite3_free(pReadr->a_బఫరు);
+  ఒకవేళ( pReadr->aMap ) sqlite3OsUnfetch(pReadr->pFd, 0, pReadr->aMap);
   vdbeIncrFree(pReadr->pIncr);
-  memset(pReadr, 0, sizeof(PmaReader));
+  memset(pReadr, 0, పరిమాణం(PmaReader));
 }
 
 /*
@@ -489,123 +489,123 @@ static void vdbePmaReaderClear(PmaReader *pReadr){
 ** The buffer returned in *ppOut is only valid until the
 ** next call to this function.
 */
-static int vdbePmaReadBlob(
+స్థిర పూర్ణాంకం vdbePmaReadBlob(
   PmaReader *p,                   /* PmaReader from which to take the blob */
-  int nByte,                      /* Bytes of data to read */
-  u8 **ppOut                      /* OUT: Pointer to buffer containing data */
+  పూర్ణాంకం nByte,                      /* Bytes of data to read */
+  u8 **pp_బహిర్గతం                      /* OUT: Pointer to buffer containing data */
 ){
-  int iBuf;                       /* Offset within buffer to read from */
-  int nAvail;                     /* Bytes of data available in buffer */
+  పూర్ణాంకం iBuf;                       /* Offset within buffer to read from */
+  పూర్ణాంకం nAvail;                     /* Bytes of data available in buffer */
 
-  if( p->aMap ){
-    *ppOut = &p->aMap[p->iReadOff];
+  ఒకవేళ( p->aMap ){
+    *pp_బహిర్గతం = &p->aMap[p->iReadOff];
     p->iReadOff += nByte;
-    return SQLITE_OK;
+    తిరిగి SQLITE_OK;
   }
 
-  assert( p->aBuffer );
+  ప్రతిజ్ఞా( p->a_బఫరు );
 
   /* If there is no more data to be read from the buffer, read the next
   ** p->nBuffer bytes of data from the file into it. Or, if there are less
   ** than p->nBuffer bytes remaining in the PMA, read all remaining data.  */
-  iBuf = p->iReadOff % p->nBuffer;
-  if( iBuf==0 ){
-    int nRead;                    /* Bytes to read from disk */
-    int rc;                       /* sqlite3OsRead() return code */
+  iBuf = p->iReadOff % p->n_బఫరు;
+  ఒకవేళ( iBuf==0 ){
+    పూర్ణాంకం nRead;                    /* Bytes to read from disk */
+    పూర్ణాంకం rc;                       /* sqlite3OsRead() return code */
 
     /* Determine how many bytes of data to read. */
-    if( (p->iEof - p->iReadOff) > (i64)p->nBuffer ){
-      nRead = p->nBuffer;
-    }else{
-      nRead = (int)(p->iEof - p->iReadOff);
+    ఒకవేళ( (p->iEof - p->iReadOff) > (i64)p->n_బఫరు ){
+      nRead = p->n_బఫరు;
+    }లేకపోతే{
+      nRead = (పూర్ణాంకం)(p->iEof - p->iReadOff);
     }
-    assert( nRead>0 );
+    ప్రతిజ్ఞా( nRead>0 );
 
     /* Readr data from the file. Return early if an error occurs. */
-    rc = sqlite3OsRead(p->pFd, p->aBuffer, nRead, p->iReadOff);
-    assert( rc!=SQLITE_IOERR_SHORT_READ );
-    if( rc!=SQLITE_OK ) return rc;
+    rc = sqlite3OsRead(p->pFd, p->a_బఫరు, nRead, p->iReadOff);
+    ప్రతిజ్ఞా( rc!=SQLITE_IOERR_SHORT_READ );
+    ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
   }
-  nAvail = p->nBuffer - iBuf;
+  nAvail = p->n_బఫరు - iBuf;
 
-  if( nByte<=nAvail ){
+  ఒకవేళ( nByte<=nAvail ){
     /* The requested data is available in the in-memory buffer. In this
     ** case there is no need to make a copy of the data, just return a
     ** pointer into the buffer to the caller.  */
-    *ppOut = &p->aBuffer[iBuf];
+    *pp_బహిర్గతం = &p->a_బఫరు[iBuf];
     p->iReadOff += nByte;
-  }else{
+  }లేకపోతే{
     /* The requested data is not all available in the in-memory buffer.
     ** In this case, allocate space at p->aAlloc[] to copy the requested
     ** range into. Then return a copy of pointer p->aAlloc to the caller.  */
-    int nRem;                     /* Bytes remaining to copy */
+    పూర్ణాంకం nRem;                     /* Bytes remaining to copy */
 
     /* Extend the p->aAlloc[] allocation if required. */
-    if( p->nAlloc<nByte ){
+    ఒకవేళ( p->nAlloc<nByte ){
       u8 *aNew;
       sqlite3_int64 nNew = MAX(128, 2*(sqlite3_int64)p->nAlloc);
-      while( nByte>nNew ) nNew = nNew*2;
+      అయితే( nByte>nNew ) nNew = nNew*2;
       aNew = sqlite3Realloc(p->aAlloc, nNew);
-      if( !aNew ) return SQLITE_NOMEM_BKPT;
+      ఒకవేళ( !aNew ) తిరిగి SQLITE_NOMEM_BKPT;
       p->nAlloc = nNew;
       p->aAlloc = aNew;
     }
 
     /* Copy as much data as is available in the buffer into the start of
     ** p->aAlloc[].  */
-    memcpy(p->aAlloc, &p->aBuffer[iBuf], nAvail);
+    జ్ఞాపకం_నకలు(p->aAlloc, &p->a_బఫరు[iBuf], nAvail);
     p->iReadOff += nAvail;
     nRem = nByte - nAvail;
 
     /* The following loop copies up to p->nBuffer bytes per iteration into
     ** the p->aAlloc[] buffer.  */
-    while( nRem>0 ){
-      int rc;                     /* vdbePmaReadBlob() return code */
-      int nCopy;                  /* Number of bytes to copy */
-      u8 *aNext = 0;              /* Pointer to buffer to copy data from */
+    అయితే( nRem>0 ){
+      పూర్ణాంకం rc;                     /* vdbePmaReadBlob() return code */
+      పూర్ణాంకం nCopy;                  /* Number of bytes to copy */
+      u8 *a_తదుపరి = 0;              /* Pointer to buffer to copy data from */
 
       nCopy = nRem;
-      if( nRem>p->nBuffer ) nCopy = p->nBuffer;
-      rc = vdbePmaReadBlob(p, nCopy, &aNext);
-      if( rc!=SQLITE_OK ) return rc;
-      assert( aNext!=p->aAlloc );
-      assert( aNext!=0 );
-      memcpy(&p->aAlloc[nByte - nRem], aNext, nCopy);
+      ఒకవేళ( nRem>p->n_బఫరు ) nCopy = p->n_బఫరు;
+      rc = vdbePmaReadBlob(p, nCopy, &a_తదుపరి);
+      ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
+      ప్రతిజ్ఞా( a_తదుపరి!=p->aAlloc );
+      ప్రతిజ్ఞా( a_తదుపరి!=0 );
+      జ్ఞాపకం_నకలు(&p->aAlloc[nByte - nRem], a_తదుపరి, nCopy);
       nRem -= nCopy;
     }
 
-    *ppOut = p->aAlloc;
+    *pp_బహిర్గతం = p->aAlloc;
   }
 
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Read a varint from the stream of data accessed by p. Set *pnOut to
 ** the value read.
 */
-static int vdbePmaReadVarint(PmaReader *p, u64 *pnOut){
-  int iBuf;
+స్థిర పూర్ణాంకం vdbePmaReadVarint(PmaReader *p, u64 *pn_బహిర్గతం){
+  పూర్ణాంకం iBuf;
 
-  if( p->aMap ){
-    p->iReadOff += sqlite3GetVarint(&p->aMap[p->iReadOff], pnOut);
-  }else{
-    iBuf = p->iReadOff % p->nBuffer;
-    if( iBuf && (p->nBuffer-iBuf)>=9 ){
-      p->iReadOff += sqlite3GetVarint(&p->aBuffer[iBuf], pnOut);
-    }else{
+  ఒకవేళ( p->aMap ){
+    p->iReadOff += sqlite3GetVarint(&p->aMap[p->iReadOff], pn_బహిర్గతం);
+  }లేకపోతే{
+    iBuf = p->iReadOff % p->n_బఫరు;
+    ఒకవేళ( iBuf && (p->n_బఫరు-iBuf)>=9 ){
+      p->iReadOff += sqlite3GetVarint(&p->a_బఫరు[iBuf], pn_బహిర్గతం);
+    }లేకపోతే{
       u8 aVarint[16], *a;
-      int i = 0, rc;
-      do{
+      పూర్ణాంకం i = 0, rc;
+      చేయి{
         rc = vdbePmaReadBlob(p, 1, &a);
-        if( rc ) return rc;
+        ఒకవేళ( rc ) తిరిగి rc;
         aVarint[(i++)&0xf] = a[0];
-      }while( (a[0]&0x80)!=0 );
-      sqlite3GetVarint(aVarint, pnOut);
+      }అయితే( (a[0]&0x80)!=0 );
+      sqlite3GetVarint(aVarint, pn_బహిర్గతం);
     }
   }
 
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -617,16 +617,16 @@ static int vdbePmaReadVarint(PmaReader *p, u64 *pnOut){
 ** Or, if an error occurs, return an SQLite error code. The final value of
 ** *pp is undefined in this case.
 */
-static int vdbeSorterMapFile(SortSubtask *pTask, SorterFile *pFile, u8 **pp){
-  int rc = SQLITE_OK;
-  if( pFile->iEof<=(i64)(pTask->pSorter->db->nMaxSorterMmap) ){
+స్థిర పూర్ణాంకం vdbeSorterMapFile(క్రమీకరించు_Subtask *pTask, SorterFile *pFile, u8 **pp){
+  పూర్ణాంకం rc = SQLITE_OK;
+  ఒకవేళ( pFile->iEof<=(i64)(pTask->pSorter->db->nMaxSorterMmap) ){
     sqlite3_file *pFd = pFile->pFd;
-    if( pFd->pMethods->iVersion>=3 ){
-      rc = sqlite3OsFetch(pFd, 0, (int)pFile->iEof, (void**)pp);
+    ఒకవేళ( pFd->pMethods->i_సంస్కరణ>=3 ){
+      rc = sqlite3OsFetch(pFd, 0, (పూర్ణాంకం)pFile->iEof, (శూన్య**)pp);
       testcase( rc!=SQLITE_OK );
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -634,18 +634,18 @@ static int vdbeSorterMapFile(SortSubtask *pTask, SorterFile *pFile, u8 **pp){
 ** that file) and seek it to offset iOff within the file.  Return SQLITE_OK
 ** if successful, or an SQLite error code if an error occurs.
 */
-static int vdbePmaReaderSeek(
-  SortSubtask *pTask,             /* Task context */
+స్థిర పూర్ణాంకం vdbePmaReaderSeek(
+  క్రమీకరించు_Subtask *pTask,             /* Task context */
   PmaReader *pReadr,              /* Reader whose cursor is to be moved */
   SorterFile *pFile,              /* Sorter file to read from */
   i64 iOff                        /* Offset in pFile */
 ){
-  int rc = SQLITE_OK;
+  పూర్ణాంకం rc = SQLITE_OK;
 
-  assert( pReadr->pIncr==0 || pReadr->pIncr->bEof==0 );
+  ప్రతిజ్ఞా( pReadr->pIncr==0 || pReadr->pIncr->bEof==0 );
 
-  if( sqlite3FaultSim(201) ) return SQLITE_IOERR_READ;
-  if( pReadr->aMap ){
+  ఒకవేళ( sqlite3FaultSim(201) ) తిరిగి SQLITE_IOERR_READ;
+  ఒకవేళ( pReadr->aMap ){
     sqlite3OsUnfetch(pReadr->pFd, 0, pReadr->aMap);
     pReadr->aMap = 0;
   }
@@ -654,69 +654,69 @@ static int vdbePmaReaderSeek(
   pReadr->pFd = pFile->pFd;
 
   rc = vdbeSorterMapFile(pTask, pFile, &pReadr->aMap);
-  if( rc==SQLITE_OK && pReadr->aMap==0 ){
-    int pgsz = pTask->pSorter->pgsz;
-    int iBuf = pReadr->iReadOff % pgsz;
-    if( pReadr->aBuffer==0 ){
-      pReadr->aBuffer = (u8*)sqlite3Malloc(pgsz);
-      if( pReadr->aBuffer==0 ) rc = SQLITE_NOMEM_BKPT;
-      pReadr->nBuffer = pgsz;
+  ఒకవేళ( rc==SQLITE_OK && pReadr->aMap==0 ){
+    పూర్ణాంకం pgsz = pTask->pSorter->pgsz;
+    పూర్ణాంకం iBuf = pReadr->iReadOff % pgsz;
+    ఒకవేళ( pReadr->a_బఫరు==0 ){
+      pReadr->a_బఫరు = (u8*)sqlite3Malloc(pgsz);
+      ఒకవేళ( pReadr->a_బఫరు==0 ) rc = SQLITE_NOMEM_BKPT;
+      pReadr->n_బఫరు = pgsz;
     }
-    if( rc==SQLITE_OK && iBuf ){
-      int nRead = pgsz - iBuf;
-      if( (pReadr->iReadOff + nRead) > pReadr->iEof ){
-        nRead = (int)(pReadr->iEof - pReadr->iReadOff);
+    ఒకవేళ( rc==SQLITE_OK && iBuf ){
+      పూర్ణాంకం nRead = pgsz - iBuf;
+      ఒకవేళ( (pReadr->iReadOff + nRead) > pReadr->iEof ){
+        nRead = (పూర్ణాంకం)(pReadr->iEof - pReadr->iReadOff);
       }
       rc = sqlite3OsRead(
-          pReadr->pFd, &pReadr->aBuffer[iBuf], nRead, pReadr->iReadOff
+          pReadr->pFd, &pReadr->a_బఫరు[iBuf], nRead, pReadr->iReadOff
       );
       testcase( rc!=SQLITE_OK );
     }
   }
 
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Advance PmaReader pReadr to the next key in its PMA. Return SQLITE_OK if
 ** no error occurs, or an SQLite error code if one does.
 */
-static int vdbePmaReaderNext(PmaReader *pReadr){
-  int rc = SQLITE_OK;             /* Return Code */
+స్థిర పూర్ణాంకం vdbe_Pma_Reader_తదుపరి(PmaReader *pReadr){
+  పూర్ణాంకం rc = SQLITE_OK;             /* Return Code */
   u64 nRec = 0;                   /* Size of record in bytes */
 
 
-  if( pReadr->iReadOff>=pReadr->iEof ){
+  ఒకవేళ( pReadr->iReadOff>=pReadr->iEof ){
     IncrMerger *pIncr = pReadr->pIncr;
-    int bEof = 1;
-    if( pIncr ){
-      rc = vdbeIncrSwap(pIncr);
-      if( rc==SQLITE_OK && pIncr->bEof==0 ){
+    పూర్ణాంకం bEof = 1;
+    ఒకవేళ( pIncr ){
+      rc = vdbe_Incr_మార్పిడి(pIncr);
+      ఒకవేళ( rc==SQLITE_OK && pIncr->bEof==0 ){
         rc = vdbePmaReaderSeek(
-            pIncr->pTask, pReadr, &pIncr->aFile[0], pIncr->iStartOff
+            pIncr->pTask, pReadr, &pIncr->aFile[0], pIncr->i_ప్రారంభం_Off
         );
         bEof = 0;
       }
     }
 
-    if( bEof ){
+    ఒకవేళ( bEof ){
       /* This is an EOF condition */
       vdbePmaReaderClear(pReadr);
       testcase( rc!=SQLITE_OK );
-      return rc;
+      తిరిగి rc;
     }
   }
 
-  if( rc==SQLITE_OK ){
+  ఒకవేళ( rc==SQLITE_OK ){
     rc = vdbePmaReadVarint(pReadr, &nRec);
   }
-  if( rc==SQLITE_OK ){
-    pReadr->nKey = (int)nRec;
-    rc = vdbePmaReadBlob(pReadr, (int)nRec, &pReadr->aKey);
+  ఒకవేళ( rc==SQLITE_OK ){
+    pReadr->n_కీలకం = (పూర్ణాంకం)nRec;
+    rc = vdbePmaReadBlob(pReadr, (పూర్ణాంకం)nRec, &pReadr->a_కీలకం);
     testcase( rc!=SQLITE_OK );
   }
 
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -728,32 +728,32 @@ static int vdbePmaReaderNext(PmaReader *pReadr){
 ** If the pnByte parameter is NULL, then it is assumed that the file
 ** contains a single PMA, and that that PMA omits the initial length varint.
 */
-static int vdbePmaReaderInit(
-  SortSubtask *pTask,             /* Task context */
+స్థిర పూర్ణాంకం vdbePmaReaderInit(
+  క్రమీకరించు_Subtask *pTask,             /* Task context */
   SorterFile *pFile,              /* Sorter file to read from */
-  i64 iStart,                     /* Start offset in pFile */
+  i64 i_ప్రారంభం,                     /* Start offset in pFile */
   PmaReader *pReadr,              /* PmaReader to populate */
   i64 *pnByte                     /* IN/OUT: Increment this value by PMA size */
 ){
-  int rc;
+  పూర్ణాంకం rc;
 
-  assert( pFile->iEof>iStart );
-  assert( pReadr->aAlloc==0 && pReadr->nAlloc==0 );
-  assert( pReadr->aBuffer==0 );
-  assert( pReadr->aMap==0 );
+  ప్రతిజ్ఞా( pFile->iEof>i_ప్రారంభం );
+  ప్రతిజ్ఞా( pReadr->aAlloc==0 && pReadr->nAlloc==0 );
+  ప్రతిజ్ఞా( pReadr->a_బఫరు==0 );
+  ప్రతిజ్ఞా( pReadr->aMap==0 );
 
-  rc = vdbePmaReaderSeek(pTask, pReadr, pFile, iStart);
-  if( rc==SQLITE_OK ){
+  rc = vdbePmaReaderSeek(pTask, pReadr, pFile, i_ప్రారంభం);
+  ఒకవేళ( rc==SQLITE_OK ){
     u64 nByte = 0;                 /* Size of PMA in bytes */
     rc = vdbePmaReadVarint(pReadr, &nByte);
     pReadr->iEof = pReadr->iReadOff + nByte;
     *pnByte += nByte;
   }
 
-  if( rc==SQLITE_OK ){
-    rc = vdbePmaReaderNext(pReadr);
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = vdbe_Pma_Reader_తదుపరి(pReadr);
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -761,18 +761,18 @@ static int vdbePmaReaderInit(
 ** determined that the first field of key1 is equal to the first field of
 ** key2.
 */
-static int vdbeSorterCompareTail(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర పూర్ణాంకం vdbe_Sorter_Compare_తోక(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  UnpackedRecord *r2 = pTask->pUnpacked;
-  if( *pbKey2Cached==0 ){
-    sqlite3VdbeRecordUnpack(nKey2, pKey2, r2);
+  Unpacked_రికార్డు *r2 = pTask->pUnpacked;
+  ఒకవేళ( *pbKey2Cached==0 ){
+    sqlite3_Vdbe_రికార్డు_Unpack(nKey2, pKey2, r2);
     *pbKey2Cached = 1;
   }
-  return sqlite3VdbeRecordCompareWithSkip(nKey1, pKey1, r2, 1);
+  తిరిగి sqlite3_Vdbe_రికార్డు_Compare_With_Skip(nKey1, pKey1, r2, 1);
 }
 
 /*
@@ -788,18 +788,18 @@ static int vdbeSorterCompareTail(
 ** If an OOM error is encountered, (pTask->pUnpacked->error_rc) is set
 ** to SQLITE_NOMEM.
 */
-static int vdbeSorterCompare(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర పూర్ణాంకం vdbeSorterCompare(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  UnpackedRecord *r2 = pTask->pUnpacked;
-  if( !*pbKey2Cached ){
-    sqlite3VdbeRecordUnpack(nKey2, pKey2, r2);
+  Unpacked_రికార్డు *r2 = pTask->pUnpacked;
+  ఒకవేళ( !*pbKey2Cached ){
+    sqlite3_Vdbe_రికార్డు_Unpack(nKey2, pKey2, r2);
     *pbKey2Cached = 1;
   }
-  return sqlite3VdbeRecordCompare(nKey1, pKey1, r2);
+  తిరిగి sqlite3_Vdbe_రికార్డు_Compare(nKey1, pKey1, r2);
 }
 
 /*
@@ -807,112 +807,112 @@ static int vdbeSorterCompare(
 ** the first field of each key is a TEXT value and that the collation
 ** sequence to compare them with is BINARY.
 */
-static int vdbeSorterCompareText(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర పూర్ణాంకం vdbe_Sorter_Compare_పాఠ్యం(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  const u8 * const p1 = (const u8 * const)pKey1;
-  const u8 * const p2 = (const u8 * const)pKey2;
-  const u8 * const v1 = &p1[ p1[0] ];   /* Pointer to value 1 */
-  const u8 * const v2 = &p2[ p2[0] ];   /* Pointer to value 2 */
+  స్థిరరాశి u8 * స్థిరరాశి p1 = (స్థిరరాశి u8 * స్థిరరాశి)pKey1;
+  స్థిరరాశి u8 * స్థిరరాశి p2 = (స్థిరరాశి u8 * స్థిరరాశి)pKey2;
+  స్థిరరాశి u8 * స్థిరరాశి v1 = &p1[ p1[0] ];   /* Pointer to value 1 */
+  స్థిరరాశి u8 * స్థిరరాశి v2 = &p2[ p2[0] ];   /* Pointer to value 2 */
 
-  int n1;
-  int n2;
-  int res;
+  పూర్ణాంకం n1;
+  పూర్ణాంకం n2;
+  పూర్ణాంకం res;
 
   getVarint32NR(&p1[1], n1);
   getVarint32NR(&p2[1], n2);
   res = memcmp(v1, v2, (MIN(n1, n2) - 13)/2);
-  if( res==0 ){
+  ఒకవేళ( res==0 ){
     res = n1 - n2;
   }
 
-  if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
-      res = vdbeSorterCompareTail(
+  ఒకవేళ( res==0 ){
+    ఒకవేళ( pTask->pSorter->p_కీలకం_Info->n_కీలకం_క్షేత్రం>1 ){
+      res = vdbe_Sorter_Compare_తోక(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
-  }else{
-    assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
-    if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
+  }లేకపోతే{
+    ప్రతిజ్ఞా( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags!=0 );
+    ప్రతిజ్ఞా( !(pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0]&KEYINFO_క్రమం_BIGNULL) );
+    ఒకవేళ( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0] ){
       res = res * -1;
     }
   }
 
-  return res;
+  తిరిగి res;
 }
 
 /*
 ** A specially optimized version of vdbeSorterCompare() that assumes that
 ** the first field of each key is an INTEGER value.
 */
-static int vdbeSorterCompareInt(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర పూర్ణాంకం vdbeSorterCompareInt(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  const u8 * const p1 = (const u8 * const)pKey1;
-  const u8 * const p2 = (const u8 * const)pKey2;
-  const int s1 = p1[1];                 /* Left hand serial type */
-  const int s2 = p2[1];                 /* Right hand serial type */
-  const u8 * const v1 = &p1[ p1[0] ];   /* Pointer to value 1 */
-  const u8 * const v2 = &p2[ p2[0] ];   /* Pointer to value 2 */
-  int res;                              /* Return value */
+  స్థిరరాశి u8 * స్థిరరాశి p1 = (స్థిరరాశి u8 * స్థిరరాశి)pKey1;
+  స్థిరరాశి u8 * స్థిరరాశి p2 = (స్థిరరాశి u8 * స్థిరరాశి)pKey2;
+  స్థిరరాశి పూర్ణాంకం s1 = p1[1];                 /* Left hand serial type */
+  స్థిరరాశి పూర్ణాంకం s2 = p2[1];                 /* Right hand serial type */
+  స్థిరరాశి u8 * స్థిరరాశి v1 = &p1[ p1[0] ];   /* Pointer to value 1 */
+  స్థిరరాశి u8 * స్థిరరాశి v2 = &p2[ p2[0] ];   /* Pointer to value 2 */
+  పూర్ణాంకం res;                              /* Return value */
 
-  assert( (s1>0 && s1<7) || s1==8 || s1==9 );
-  assert( (s2>0 && s2<7) || s2==8 || s2==9 );
+  ప్రతిజ్ఞా( (s1>0 && s1<7) || s1==8 || s1==9 );
+  ప్రతిజ్ఞా( (s2>0 && s2<7) || s2==8 || s2==9 );
 
-  if( s1==s2 ){
+  ఒకవేళ( s1==s2 ){
     /* The two values have the same sign. Compare using memcmp(). */
-    static const u8 aLen[] = {0, 1, 2, 3, 4, 6, 8, 0, 0, 0 };
-    const u8 n = aLen[s1];
-    int i;
+    స్థిర స్థిరరాశి u8 aLen[] = {0, 1, 2, 3, 4, 6, 8, 0, 0, 0 };
+    స్థిరరాశి u8 n = aLen[s1];
+    పూర్ణాంకం i;
     res = 0;
-    for(i=0; i<n; i++){
-      if( (res = v1[i] - v2[i])!=0 ){
-        if( ((v1[0] ^ v2[0]) & 0x80)!=0 ){
+    కొరకు(i=0; i<n; i++){
+      ఒకవేళ( (res = v1[i] - v2[i])!=0 ){
+        ఒకవేళ( ((v1[0] ^ v2[0]) & 0x80)!=0 ){
           res = v1[0] & 0x80 ? -1 : +1;
         }
-        break;
+        ఆపు;
       }
     }
-  }else if( s1>7 && s2>7 ){
+  }లేకపోతే ఒకవేళ( s1>7 && s2>7 ){
     res = s1 - s2;
-  }else{
-    if( s2>7 ){
+  }లేకపోతే{
+    ఒకవేళ( s2>7 ){
       res = +1;
-    }else if( s1>7 ){
+    }లేకపోతే ఒకవేళ( s1>7 ){
       res = -1;
-    }else{
+    }లేకపోతే{
       res = s1 - s2;
     }
-    assert( res!=0 );
+    ప్రతిజ్ఞా( res!=0 );
 
-    if( res>0 ){
-      if( *v1 & 0x80 ) res = -1;
-    }else{
-      if( *v2 & 0x80 ) res = +1;
+    ఒకవేళ( res>0 ){
+      ఒకవేళ( *v1 & 0x80 ) res = -1;
+    }లేకపోతే{
+      ఒకవేళ( *v2 & 0x80 ) res = +1;
     }
   }
 
-  assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
-  if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
-      res = vdbeSorterCompareTail(
+  ప్రతిజ్ఞా( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags!=0 );
+  ఒకవేళ( res==0 ){
+    ఒకవేళ( pTask->pSorter->p_కీలకం_Info->n_కీలకం_క్షేత్రం>1 ){
+      res = vdbe_Sorter_Compare_తోక(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
-  }else if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
+  }లేకపోతే ఒకవేళ( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0] ){
+    ప్రతిజ్ఞా( !(pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0]&KEYINFO_క్రమం_BIGNULL) );
     res = res * -1;
   }
 
-  return res;
+  తిరిగి res;
 }
 
 /* Helper function for vdbeSorterCompareReal().
@@ -922,34 +922,34 @@ static int vdbeSorterCompareInt(
 ** result.  If r1==r2, break the tie with a comparison of subsequent elements
 ** from each key.
 */
-static int vdbeSorterFinishRealCompare(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2,   /* Right side of comparison */
-  double r1,                      /* REAL value of first element of pKey1 */
-  double r2                       /* REAL value of first element of pKey2 */
+స్థిర పూర్ణాంకం vdbe_Sorter_ముగింపు_Real_Compare(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2,   /* Right side of comparison */
+  ద్విగుణ r1,                      /* REAL value of first element of pKey1 */
+  ద్విగుణ r2                       /* REAL value of first element of pKey2 */
 ){
-  int res;
-  if( r1<r2 ){
+  పూర్ణాంకం res;
+  ఒకవేళ( r1<r2 ){
     res = -1;
-  }else if( r1>r2 ){
+  }లేకపోతే ఒకవేళ( r1>r2 ){
     res = +1;
-  }else{
+  }లేకపోతే{
     res = 0;
   }
-  assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
-  if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
-      res = vdbeSorterCompareTail(
+  ప్రతిజ్ఞా( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags!=0 );
+  ఒకవేళ( res==0 ){
+    ఒకవేళ( pTask->pSorter->p_కీలకం_Info->n_కీలకం_క్షేత్రం>1 ){
+      res = vdbe_Sorter_Compare_తోక(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
-  }else if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
+  }లేకపోతే ఒకవేళ( pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0] ){
+    ప్రతిజ్ఞా( !(pTask->pSorter->p_కీలకం_Info->a_క్రమీకరించు_Flags[0]&KEYINFO_క్రమం_BIGNULL) );
     res = res * -1;
   }
-  return res;
+  తిరిగి res;
 }
 
 /* Helper function for vdbeSorterCompareReal().
@@ -959,25 +959,25 @@ static int vdbeSorterFinishRealCompare(
 ** value (a MEM_IntReal).  Whatever its format, extract the value and
 ** return it.
 */
-static double vdbeSorterGetReal(const u8 *p){
-  double r;                    /* the return value */
+స్థిర ద్విగుణ vdbeSorterGetReal(స్థిరరాశి u8 *p){
+  ద్విగుణ r;                    /* the return value */
 
-  assert( p[0]<0x80 );         /* 1-byte headers: nAllField<13 */
-  assert( p[1]>0 && p[1]<10 ); /* first fields proven numeric */
+  ప్రతిజ్ఞా( p[0]<0x80 );         /* 1-byte headers: nAllField<13 */
+  ప్రతిజ్ఞా( p[1]>0 && p[1]<10 ); /* first fields proven numeric */
 
-  if( p[1]==7 ){
+  ఒకవేళ( p[1]==7 ){
     u64 x = sqlite3Get8byte(p + p[0]);
-    swapMixedEndianFloat(x);
-    assert( !IsNaN(x) );
-    memcpy(&r, &x, sizeof(r));
-  }else{
+    మార్పిడి_Mixed_Endian_Float(x);
+    ప్రతిజ్ఞా( !IsNaN(x) );
+    జ్ఞాపకం_నకలు(&r, &x, పరిమాణం(r));
+  }లేకపోతే{
     Mem m;
     m.u.i = 0;
     sqlite3VdbeSerialGet(p + p[0], p[1], &m);
-    assert( m.flags==MEM_Int );
-    r = (double)m.u.i;
+    ప్రతిజ్ఞా( m.flags==MEM_Int );
+    r = (ద్విగుణ)m.u.i;
   }
-  return r;
+  తిరిగి r;
 }
 
 /* Helper function for vdbeSorterCompareReal()
@@ -992,23 +992,23 @@ static double vdbeSorterGetReal(const u8 *p){
 ** breaking down that stack space, even if in the common case where
 ** this path is not used.
 */
-static SQLITE_NOINLINE int vdbeSorterCompareRealInt(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర SQLITE_NOINLINE పూర్ణాంకం vdbeSorterCompareRealInt(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  const u8 * const p1 = (const u8 * const)pKey1;
-  const u8 * const p2 = (const u8 * const)pKey2;
-  if( p1[1]==6 || p2[1]==6 ){
+  స్థిరరాశి u8 * స్థిరరాశి p1 = (స్థిరరాశి u8 * స్థిరరాశి)pKey1;
+  స్థిరరాశి u8 * స్థిరరాశి p2 = (స్థిరరాశి u8 * స్థిరరాశి)pKey2;
+  ఒకవేళ( p1[1]==6 || p2[1]==6 ){
     /* 64-bit integer values cannot be represented exactly by a double so
     ** must be handled by the generalized comparison function. */
-    return vdbeSorterCompare(pTask,
+    తిరిగి vdbeSorterCompare(pTask,
        pbKey2Cached, pKey1,nKey1, pKey2,nKey2);
-  }else{
-    double r1 = vdbeSorterGetReal(p1);
-    double r2 = vdbeSorterGetReal(p2);
-    return vdbeSorterFinishRealCompare(pTask,pbKey2Cached,
+  }లేకపోతే{
+    ద్విగుణ r1 = vdbeSorterGetReal(p1);
+    ద్విగుణ r2 = vdbeSorterGetReal(p2);
+    తిరిగి vdbe_Sorter_ముగింపు_Real_Compare(pTask,pbKey2Cached,
                   pKey1,nKey1,pKey2,nKey2,r1,r2);
   }
 }
@@ -1021,40 +1021,40 @@ static SQLITE_NOINLINE int vdbeSorterCompareRealInt(
 ** vdbeSorterCompareText() for MEM_Str values.  The general
 ** case is vdbeSorterCompare() which handles anything, but is slower.
 */
-static int vdbeSorterCompareReal(
-  SortSubtask *pTask,             /* Subtask context (for pKeyInfo) */
-  int *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
-  const void *pKey1, int nKey1,   /* Left side of comparison */
-  const void *pKey2, int nKey2    /* Right side of comparison */
+స్థిర పూర్ణాంకం vdbeSorterCompareReal(
+  క్రమీకరించు_Subtask *pTask,             /* Subtask context (for pKeyInfo) */
+  పూర్ణాంకం *pbKey2Cached,              /* True if pTask->pUnpacked is pKey2 */
+  స్థిరరాశి శూన్య *pKey1, పూర్ణాంకం nKey1,   /* Left side of comparison */
+  స్థిరరాశి శూన్య *pKey2, పూర్ణాంకం nKey2    /* Right side of comparison */
 ){
-  const u8*const p1 = (const u8*const)pKey1;  /* Left key record */
-  const u8*const p2 = (const u8*const)pKey2;  /* Right key record */
+  స్థిరరాశి u8*స్థిరరాశి p1 = (స్థిరరాశి u8*స్థిరరాశి)pKey1;  /* Left key record */
+  స్థిరరాశి u8*స్థిరరాశి p2 = (స్థిరరాశి u8*స్థిరరాశి)pKey2;  /* Right key record */
   u64 x;                   /* A real value stored as an integer */
-  double r1;               /* First element of pKey1 */
-  double r2;               /* First element of pKey2 */
+  ద్విగుణ r1;               /* First element of pKey1 */
+  ద్విగుణ r2;               /* First element of pKey2 */
 
-  assert( p1[0]<0x80 && p2[0]<0x80 );  /* 1-byte headers: nAllField<13 */
-  assert( p1[1]>0 && p1[1]<10 );       /* first field guaranteed numeric */
-  assert( p2[1]>0 && p2[1]<10 );       /* first field guaranteed numeric */
+  ప్రతిజ్ఞా( p1[0]<0x80 && p2[0]<0x80 );  /* 1-byte headers: nAllField<13 */
+  ప్రతిజ్ఞా( p1[1]>0 && p1[1]<10 );       /* first field guaranteed numeric */
+  ప్రతిజ్ఞా( p2[1]>0 && p2[1]<10 );       /* first field guaranteed numeric */
 
-  if( p1[1]!=7 || p2[1]!=7 ){
+  ఒకవేళ( p1[1]!=7 || p2[1]!=7 ){
     /* One or both floating point values are stored as INTEGER.  This might
     ** be because of the MEM_RealInt encoding.  Try to optimize that case. */
-    return vdbeSorterCompareRealInt(pTask,
+    తిరిగి vdbeSorterCompareRealInt(pTask,
        pbKey2Cached, pKey1,nKey1, pKey2,nKey2
     );
   }
-  assert( p1[0]<=nKey1-8 && p2[0]<=nKey2-8 );
+  ప్రతిజ్ఞా( p1[0]<=nKey1-8 && p2[0]<=nKey2-8 );
 
   x = sqlite3Get8byte(p1 + *p1);
-  swapMixedEndianFloat(x);
-  assert( !IsNaN(x) );
-  memcpy(&r1, &x, sizeof(r1));
+  మార్పిడి_Mixed_Endian_Float(x);
+  ప్రతిజ్ఞా( !IsNaN(x) );
+  జ్ఞాపకం_నకలు(&r1, &x, పరిమాణం(r1));
   x = sqlite3Get8byte(p2 + *p2);
-  swapMixedEndianFloat(x);
-  assert( !IsNaN(x) );
-  memcpy(&r2, &x, sizeof(r2));
-  return vdbeSorterFinishRealCompare(pTask,
+  మార్పిడి_Mixed_Endian_Float(x);
+  ప్రతిజ్ఞా( !IsNaN(x) );
+  జ్ఞాపకం_నకలు(&r2, &x, పరిమాణం(r2));
+  తిరిగి vdbe_Sorter_ముగింపు_Real_Compare(pTask,
       pbKey2Cached, pKey1,nKey1,  pKey2,nKey2, r1, r2
   );
 }
@@ -1078,125 +1078,125 @@ static int vdbeSorterCompareReal(
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-int sqlite3VdbeSorterInit(
+పూర్ణాంకం sqlite3VdbeSorterInit(
   sqlite3 *db,                    /* Database connection (for malloc()) */
-  int nField,                     /* Number of key fields in each record */
+  పూర్ణాంకం n_క్షేత్రం,                     /* Number of key fields in each record */
   VdbeCursor *pCsr                /* Cursor that holds the new sorter */
 ){
-  int pgsz;                       /* Page size of main database */
-  int i;                          /* Used to iterate through aTask[] */
+  పూర్ణాంకం pgsz;                       /* Page size of main database */
+  పూర్ణాంకం i;                          /* Used to iterate through aTask[] */
   VdbeSorter *pSorter;            /* The new sorter */
-  KeyInfo *pKeyInfo;              /* Copy of pCsr->pKeyInfo with db==0 */
-  int szKeyInfo;                  /* Size of pCsr->pKeyInfo in bytes */
+  కీలకం_Info *p_కీలకం_Info;              /* Copy of pCsr->pKeyInfo with db==0 */
+  పూర్ణాంకం sz_కీలకం_Info;                  /* Size of pCsr->pKeyInfo in bytes */
   i64 sz;                         /* Size of pSorter in bytes */
-  int rc = SQLITE_OK;
-#if SQLITE_MAX_WORKER_THREADS==0
-# define nWorker 0
-#else
-  int nWorker;
-#endif
+  పూర్ణాంకం rc = SQLITE_OK;
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు==0
+# define n_కార్మికుడు 0
+#లేకపోతే
+  పూర్ణాంకం n_కార్మికుడు;
+#అయితే_ముగింపు
 
   /* Initialize the upper limit on the number of worker threads */
-#if SQLITE_MAX_WORKER_THREADS>0
-  if( sqlite3TempInMemory(db) || sqlite3GlobalConfig.bCoreMutex==0 ){
-    nWorker = 0;
-  }else{
-    nWorker = db->aLimit[SQLITE_LIMIT_WORKER_THREADS];
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+  ఒకవేళ( sqlite3_తాత్కాలిక_లోపల_జ్ఞాపకం(db) || sqlite3GlobalConfig.bCoreMutex==0 ){
+    n_కార్మికుడు = 0;
+  }లేకపోతే{
+    n_కార్మికుడు = db->a_హద్దు[SQLITE_హద్దు_కార్మికుడు_దారాలు];
   }
-#endif
+#అయితే_ముగింపు
 
   /* Do not allow the total number of threads (main thread + all workers)
   ** to exceed the maximum merge count */
-#if SQLITE_MAX_WORKER_THREADS>=SORTER_MAX_MERGE_COUNT
-  if( nWorker>=SORTER_MAX_MERGE_COUNT ){
-    nWorker = SORTER_MAX_MERGE_COUNT-1;
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>=SORTER_MAX_విలీనం_లెక్క
+  ఒకవేళ( n_కార్మికుడు>=SORTER_MAX_విలీనం_లెక్క ){
+    n_కార్మికుడు = SORTER_MAX_విలీనం_లెక్క-1;
   }
-#endif
+#అయితే_ముగింపు
 
-  assert( pCsr->pKeyInfo );
-  assert( !pCsr->isEphemeral );
-  assert( pCsr->eCurType==CURTYPE_SORTER );
-  assert( sizeof(KeyInfo) + UMXV(pCsr->pKeyInfo->nKeyField)*sizeof(CollSeq*)
+  ప్రతిజ్ఞా( pCsr->p_కీలకం_Info );
+  ప్రతిజ్ఞా( !pCsr->isEphemeral );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( పరిమాణం(కీలకం_Info) + UMXV(pCsr->p_కీలకం_Info->n_కీలకం_క్షేత్రం)*పరిమాణం(CollSeq*)
                < 0x7fffffff );
-  assert( pCsr->pKeyInfo->nKeyField<=pCsr->pKeyInfo->nAllField );
-  szKeyInfo = SZ_KEYINFO(pCsr->pKeyInfo->nAllField);
-  sz = SZ_VDBESORTER(nWorker+1);
+  ప్రతిజ్ఞా( pCsr->p_కీలకం_Info->n_కీలకం_క్షేత్రం<=pCsr->p_కీలకం_Info->n_All_క్షేత్రం );
+  sz_కీలకం_Info = SZ_KEYINFO(pCsr->p_కీలకం_Info->n_All_క్షేత్రం);
+  sz = SZ_VDBESORTER(n_కార్మికుడు+1);
 
-  pSorter = (VdbeSorter*)sqlite3DbMallocZero(db, sz + szKeyInfo);
+  pSorter = (VdbeSorter*)sqlite3DbMallocZero(db, sz + sz_కీలకం_Info);
   pCsr->uc.pSorter = pSorter;
-  if( pSorter==0 ){
+  ఒకవేళ( pSorter==0 ){
     rc = SQLITE_NOMEM_BKPT;
-  }else{
+  }లేకపోతే{
     Btree *pBt = db->aDb[0].pBt;
-    pSorter->pKeyInfo = pKeyInfo = (KeyInfo*)((u8*)pSorter + sz);
-    memcpy(pKeyInfo, pCsr->pKeyInfo, szKeyInfo);
-    pKeyInfo->db = 0;
-    if( nField && nWorker==0 ){
-      pKeyInfo->nKeyField = nField;
-      assert( nField<=pCsr->pKeyInfo->nAllField );
+    pSorter->p_కీలకం_Info = p_కీలకం_Info = (కీలకం_Info*)((u8*)pSorter + sz);
+    జ్ఞాపకం_నకలు(p_కీలకం_Info, pCsr->p_కీలకం_Info, sz_కీలకం_Info);
+    p_కీలకం_Info->db = 0;
+    ఒకవేళ( n_క్షేత్రం && n_కార్మికుడు==0 ){
+      p_కీలకం_Info->n_కీలకం_క్షేత్రం = n_క్షేత్రం;
+      ప్రతిజ్ఞా( n_క్షేత్రం<=pCsr->p_కీలకం_Info->n_All_క్షేత్రం );
     }
     /* It is OK that pKeyInfo reuses the aSortFlags field from pCsr->pKeyInfo,
     ** since the pCsr->pKeyInfo->aSortFlags[] array is invariant and lives
     ** longer that pSorter. */
-    assert( pKeyInfo->aSortFlags==pCsr->pKeyInfo->aSortFlags );
+    ప్రతిజ్ఞా( p_కీలకం_Info->a_క్రమీకరించు_Flags==pCsr->p_కీలకం_Info->a_క్రమీకరించు_Flags );
     sqlite3BtreeEnter(pBt);
-    pSorter->pgsz = pgsz = sqlite3BtreeGetPageSize(pBt);
+    pSorter->pgsz = pgsz = sqlite3_Btree_Get_పుట_కొలత(pBt);
     sqlite3BtreeLeave(pBt);
-    pSorter->nTask = nWorker + 1;
-    pSorter->iPrev = (u8)(nWorker - 1);
-    pSorter->bUseThreads = (pSorter->nTask>1);
+    pSorter->nTask = n_కార్మికుడు + 1;
+    pSorter->iPrev = (u8)(n_కార్మికుడు - 1);
+    pSorter->b_Use_దారాలు = (pSorter->nTask>1);
     pSorter->db = db;
-    for(i=0; i<pSorter->nTask; i++){
-      SortSubtask *pTask = &pSorter->aTask[i];
+    కొరకు(i=0; i<pSorter->nTask; i++){
+      క్రమీకరించు_Subtask *pTask = &pSorter->aTask[i];
       pTask->pSorter = pSorter;
     }
 
-    if( !sqlite3TempInMemory(db) ){
+    ఒకవేళ( !sqlite3_తాత్కాలిక_లోపల_జ్ఞాపకం(db) ){
       i64 mxCache;                /* Cache size in bytes*/
       u32 szPma = sqlite3GlobalConfig.szPma;
-      pSorter->mnPmaSize = szPma * pgsz;
+      pSorter->mn_Pma_కొలత = szPma * pgsz;
 
-      mxCache = db->aDb[0].pSchema->cache_size;
-      if( mxCache<0 ){
+      mxCache = db->aDb[0].pSchema->cache_కొలత;
+      ఒకవేళ( mxCache<0 ){
         /* A negative cache-size value C indicates that the cache is abs(C)
         ** KiB in size.  */
         mxCache = mxCache * -1024;
-      }else{
+      }లేకపోతే{
         mxCache = mxCache * pgsz;
       }
       mxCache = MIN(mxCache, SQLITE_MAX_PMASZ);
-      pSorter->mxPmaSize = MAX(pSorter->mnPmaSize, (int)mxCache);
+      pSorter->mx_Pma_కొలత = MAX(pSorter->mn_Pma_కొలత, (పూర్ణాంకం)mxCache);
 
       /* Avoid large memory allocations if the application has requested
       ** SQLITE_CONFIG_SMALL_MALLOC. */
-      if( sqlite3GlobalConfig.bSmallMalloc==0 ){
-        assert( pSorter->iMemory==0 );
-        pSorter->nMemory = pgsz;
-        pSorter->list.aMemory = (u8*)sqlite3Malloc(pgsz);
-        if( !pSorter->list.aMemory ) rc = SQLITE_NOMEM_BKPT;
+      ఒకవేళ( sqlite3GlobalConfig.bSmallMalloc==0 ){
+        ప్రతిజ్ఞా( pSorter->i_జ్ఞాపకం==0 );
+        pSorter->n_జ్ఞాపకం = pgsz;
+        pSorter->list.a_జ్ఞాపకం = (u8*)sqlite3Malloc(pgsz);
+        ఒకవేళ( !pSorter->list.a_జ్ఞాపకం ) rc = SQLITE_NOMEM_BKPT;
       }
     }
 
-    if( pKeyInfo->nAllField<13
-     && (pKeyInfo->aColl[0]==0 || pKeyInfo->aColl[0]==db->pDfltColl)
-     && (pKeyInfo->aSortFlags[0] & KEYINFO_ORDER_BIGNULL)==0
+    ఒకవేళ( p_కీలకం_Info->n_All_క్షేత్రం<13
+     && (p_కీలకం_Info->aColl[0]==0 || p_కీలకం_Info->aColl[0]==db->pDfltColl)
+     && (p_కీలకం_Info->a_క్రమీకరించు_Flags[0] & KEYINFO_క్రమం_BIGNULL)==0
     ){
-      pSorter->typeMask = SORTER_TYPE_INTEGER|SORTER_TYPE_TEXT|SORTER_TYPE_REAL;
+      pSorter->type_ముసుగు = SORTER_TYPE_INTEGER|SORTER_TYPE_పాఠ్యం|SORTER_TYPE_REAL;
     }
   }
 
-  return rc;
+  తిరిగి rc;
 }
-#undef nWorker   /* Defined at the top of this function */
+#నిర్వచనం_రద్దు n_కార్మికుడు   /* Defined at the top of this function */
 
 /*
 ** Free the list of sorted records starting at pRecord.
 */
-static void vdbeSorterRecordFree(sqlite3 *db, SorterRecord *pRecord){
-  SorterRecord *p;
-  SorterRecord *pNext;
-  for(p=pRecord; p; p=pNext){
-    pNext = p->u.pNext;
+స్థిర శూన్య vdbe_Sorter_రికార్డు_Free(sqlite3 *db, Sorter_రికార్డు *p_రికార్డు){
+  Sorter_రికార్డు *p;
+  Sorter_రికార్డు *p_తదుపరి;
+  కొరకు(p=p_రికార్డు; p; p=p_తదుపరి){
+    p_తదుపరి = p->u.p_తదుపరి;
     sqlite3DbFree(db, p);
   }
 }
@@ -1205,109 +1205,109 @@ static void vdbeSorterRecordFree(sqlite3 *db, SorterRecord *pRecord){
 ** Free all resources owned by the object indicated by argument pTask. All
 ** fields of *pTask are zeroed before returning.
 */
-static void vdbeSortSubtaskCleanup(sqlite3 *db, SortSubtask *pTask){
+స్థిర శూన్య vdbe_క్రమీకరించు_Subtask_Cleanup(sqlite3 *db, క్రమీకరించు_Subtask *pTask){
   sqlite3DbFree(db, pTask->pUnpacked);
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
   /* pTask->list.aMemory can only be non-zero if it was handed memory
   ** from the main thread.  That only occurs SQLITE_MAX_WORKER_THREADS>0 */
-  if( pTask->list.aMemory ){
-    sqlite3_free(pTask->list.aMemory);
-  }else
-#endif
+  ఒకవేళ( pTask->list.a_జ్ఞాపకం ){
+    sqlite3_free(pTask->list.a_జ్ఞాపకం);
+  }లేకపోతే
+#అయితే_ముగింపు
   {
-    assert( pTask->list.aMemory==0 );
-    vdbeSorterRecordFree(0, pTask->list.pList);
+    ప్రతిజ్ఞా( pTask->list.a_జ్ఞాపకం==0 );
+    vdbe_Sorter_రికార్డు_Free(0, pTask->list.pList);
   }
-  if( pTask->file.pFd ){
+  ఒకవేళ( pTask->file.pFd ){
     sqlite3OsCloseFree(pTask->file.pFd);
   }
-  if( pTask->file2.pFd ){
+  ఒకవేళ( pTask->file2.pFd ){
     sqlite3OsCloseFree(pTask->file2.pFd);
   }
-  memset(pTask, 0, sizeof(SortSubtask));
+  memset(pTask, 0, పరిమాణం(క్రమీకరించు_Subtask));
 }
 
-#ifdef SQLITE_DEBUG_SORTER_THREADS
-static void vdbeSorterWorkDebug(SortSubtask *pTask, const char *zEvent){
+#నిర్వచితమైతే SQLITE_DEBUG_SORTER_దారాలు
+స్థిర శూన్య vdbeSorterWorkDebug(క్రమీకరించు_Subtask *pTask, స్థిరరాశి అక్షరం *zEvent){
   i64 t;
-  int iTask = (pTask - pTask->pSorter->aTask);
-  sqlite3OsCurrentTimeInt64(pTask->pSorter->db->pVfs, &t);
+  పూర్ణాంకం iTask = (pTask - pTask->pSorter->aTask);
+  sqlite3_Os_Current_సమయం_Int64(pTask->pSorter->db->pVfs, &t);
   fprintf(stderr, "%lld:%d %s\n", t, iTask, zEvent);
 }
-static void vdbeSorterRewindDebug(const char *zEvent){
+స్థిర శూన్య vdbeSorterRewindDebug(స్థిరరాశి అక్షరం *zEvent){
   i64 t = 0;
-  sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-  if( ALWAYS(pVfs) ) sqlite3OsCurrentTimeInt64(pVfs, &t);
+  sqlite3_vfs *pVfs = sqlite3_vfs_కనుగొను(0);
+  ఒకవేళ( ALWAYS(pVfs) ) sqlite3_Os_Current_సమయం_Int64(pVfs, &t);
   fprintf(stderr, "%lld:X %s\n", t, zEvent);
 }
-static void vdbeSorterPopulateDebug(
-  SortSubtask *pTask,
-  const char *zEvent
+స్థిర శూన్య vdbeSorterPopulateDebug(
+  క్రమీకరించు_Subtask *pTask,
+  స్థిరరాశి అక్షరం *zEvent
 ){
   i64 t;
-  int iTask = (pTask - pTask->pSorter->aTask);
-  sqlite3OsCurrentTimeInt64(pTask->pSorter->db->pVfs, &t);
+  పూర్ణాంకం iTask = (pTask - pTask->pSorter->aTask);
+  sqlite3_Os_Current_సమయం_Int64(pTask->pSorter->db->pVfs, &t);
   fprintf(stderr, "%lld:bg%d %s\n", t, iTask, zEvent);
 }
-static void vdbeSorterBlockDebug(
-  SortSubtask *pTask,
-  int bBlocked,
-  const char *zEvent
+స్థిర శూన్య vdbe_Sorter_ఖండం_Debug(
+  క్రమీకరించు_Subtask *pTask,
+  పూర్ణాంకం bBlocked,
+  స్థిరరాశి అక్షరం *zEvent
 ){
-  if( bBlocked ){
+  ఒకవేళ( bBlocked ){
     i64 t;
-    sqlite3OsCurrentTimeInt64(pTask->pSorter->db->pVfs, &t);
+    sqlite3_Os_Current_సమయం_Int64(pTask->pSorter->db->pVfs, &t);
     fprintf(stderr, "%lld:main %s\n", t, zEvent);
   }
 }
-#else
+#లేకపోతే
 # define vdbeSorterWorkDebug(x,y)
 # define vdbeSorterRewindDebug(y)
 # define vdbeSorterPopulateDebug(x,y)
-# define vdbeSorterBlockDebug(x,y,z)
-#endif
+# define vdbe_Sorter_ఖండం_Debug(x,y,z)
+#అయితే_ముగింపు
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
 /*
 ** Join thread pTask->thread.
 */
-static int vdbeSorterJoinThread(SortSubtask *pTask){
-  int rc = SQLITE_OK;
-  if( pTask->pThread ){
-#ifdef SQLITE_DEBUG_SORTER_THREADS
-    int bDone = pTask->bDone;
-#endif
-    void *pRet = SQLITE_INT_TO_PTR(SQLITE_ERROR);
-    vdbeSorterBlockDebug(pTask, !bDone, "enter");
-    (void)sqlite3ThreadJoin(pTask->pThread, &pRet);
-    vdbeSorterBlockDebug(pTask, !bDone, "exit");
-    rc = SQLITE_PTR_TO_INT(pRet);
-    assert( pTask->bDone==1 );
-    pTask->bDone = 0;
+స్థిర పూర్ణాంకం vdbeSorterJoinThread(క్రమీకరించు_Subtask *pTask){
+  పూర్ణాంకం rc = SQLITE_OK;
+  ఒకవేళ( pTask->pThread ){
+#నిర్వచితమైతే SQLITE_DEBUG_SORTER_దారాలు
+    పూర్ణాంకం b_పూర్తి = pTask->b_పూర్తి;
+#అయితే_ముగింపు
+    శూన్య *pRet = SQLITE_INT_గమ్యం_PTR(SQLITE_ERROR);
+    vdbe_Sorter_ఖండం_Debug(pTask, !b_పూర్తి, "enter");
+    (శూన్య)sqlite3ThreadJoin(pTask->pThread, &pRet);
+    vdbe_Sorter_ఖండం_Debug(pTask, !b_పూర్తి, "exit");
+    rc = SQLITE_PTR_గమ్యం_INT(pRet);
+    ప్రతిజ్ఞా( pTask->b_పూర్తి==1 );
+    pTask->b_పూర్తి = 0;
     pTask->pThread = 0;
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Launch a background thread to run xTask(pIn).
 */
-static int vdbeSorterCreateThread(
-  SortSubtask *pTask,             /* Thread will use this task object */
-  void *(*xTask)(void*),          /* Routine to run in a separate thread */
-  void *pIn                       /* Argument passed into xTask() */
+స్థిర పూర్ణాంకం vdbeSorterCreateThread(
+  క్రమీకరించు_Subtask *pTask,             /* Thread will use this task object */
+  శూన్య *(*xTask)(శూన్య*),          /* Routine to run in a separate thread */
+  శూన్య *p_లోపల                       /* Argument passed into xTask() */
 ){
-  assert( pTask->pThread==0 && pTask->bDone==0 );
-  return sqlite3ThreadCreate(&pTask->pThread, xTask, pIn);
+  ప్రతిజ్ఞా( pTask->pThread==0 && pTask->b_పూర్తి==0 );
+  తిరిగి sqlite3ThreadCreate(&pTask->pThread, xTask, p_లోపల);
 }
 
 /*
 ** Join all outstanding threads launched by SorterWrite() to create
 ** level-0 PMAs.
 */
-static int vdbeSorterJoinAll(VdbeSorter *pSorter, int rcin){
-  int rc = rcin;
-  int i;
+స్థిర పూర్ణాంకం vdbeSorterJoinAll(VdbeSorter *pSorter, పూర్ణాంకం rcin){
+  పూర్ణాంకం rc = rcin;
+  పూర్ణాంకం i;
 
   /* This function is always called by the main user thread.
   **
@@ -1316,17 +1316,17 @@ static int vdbeSorterJoinAll(VdbeSorter *pSorter, int rcin){
   ** is currently attempt to join one of the other threads. To avoid a race
   ** condition where this thread also attempts to join the same object, join
   ** thread pSorter->aTask[pSorter->nTask-1].pThread first. */
-  for(i=pSorter->nTask-1; i>=0; i--){
-    SortSubtask *pTask = &pSorter->aTask[i];
-    int rc2 = vdbeSorterJoinThread(pTask);
-    if( rc==SQLITE_OK ) rc = rc2;
+  కొరకు(i=pSorter->nTask-1; i>=0; i--){
+    క్రమీకరించు_Subtask *pTask = &pSorter->aTask[i];
+    పూర్ణాంకం rc2 = vdbeSorterJoinThread(pTask);
+    ఒకవేళ( rc==SQLITE_OK ) rc = rc2;
   }
-  return rc;
+  తిరిగి rc;
 }
-#else
+#లేకపోతే
 # define vdbeSorterJoinAll(x,rcin) (rcin)
 # define vdbeSorterJoinThread(pTask) SQLITE_OK
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Allocate a new MergeEngine object capable of handling up to
@@ -1335,33 +1335,33 @@ static int vdbeSorterJoinAll(VdbeSorter *pSorter, int rcin){
 ** nReader is automatically rounded up to the next power of two.
 ** nReader may not exceed SORTER_MAX_MERGE_COUNT even after rounding up.
 */
-static MergeEngine *vdbeMergeEngineNew(int nReader){
-  int N = 2;                      /* Smallest power of two >= nReader */
+స్థిర విలీనం_Engine *vdbe_విలీనం_Engine_New(పూర్ణాంకం nReader){
+  పూర్ణాంకం N = 2;                      /* Smallest power of two >= nReader */
   i64 nByte;                      /* Total bytes of space to allocate */
-  MergeEngine *pNew;              /* Pointer to allocated object to return */
+  విలీనం_Engine *pNew;              /* Pointer to allocated object to return */
 
-  assert( nReader<=SORTER_MAX_MERGE_COUNT );
+  ప్రతిజ్ఞా( nReader<=SORTER_MAX_విలీనం_లెక్క );
 
-  while( N<nReader ) N += N;
-  nByte = sizeof(MergeEngine) + N * (sizeof(int) + sizeof(PmaReader));
+  అయితే( N<nReader ) N += N;
+  nByte = పరిమాణం(విలీనం_Engine) + N * (పరిమాణం(పూర్ణాంకం) + పరిమాణం(PmaReader));
 
-  pNew = sqlite3FaultSim(100) ? 0 : (MergeEngine*)sqlite3MallocZero(nByte);
-  if( pNew ){
-    pNew->nTree = N;
+  pNew = sqlite3FaultSim(100) ? 0 : (విలీనం_Engine*)sqlite3MallocZero(nByte);
+  ఒకవేళ( pNew ){
+    pNew->n_వృక్షం = N;
     pNew->pTask = 0;
     pNew->aReadr = (PmaReader*)&pNew[1];
-    pNew->aTree = (int*)&pNew->aReadr[N];
+    pNew->a_వృక్షం = (పూర్ణాంకం*)&pNew->aReadr[N];
   }
-  return pNew;
+  తిరిగి pNew;
 }
 
 /*
 ** Free the MergeEngine object passed as the only argument.
 */
-static void vdbeMergeEngineFree(MergeEngine *pMerger){
-  int i;
-  if( pMerger ){
-    for(i=0; i<pMerger->nTree; i++){
+స్థిర శూన్య vdbe_విలీనం_Engine_Free(విలీనం_Engine *pMerger){
+  పూర్ణాంకం i;
+  ఒకవేళ( pMerger ){
+    కొరకు(i=0; i<pMerger->n_వృక్షం; i++){
       vdbePmaReaderClear(&pMerger->aReadr[i]);
     }
   }
@@ -1372,16 +1372,16 @@ static void vdbeMergeEngineFree(MergeEngine *pMerger){
 ** Free all resources associated with the IncrMerger object indicated by
 ** the first argument.
 */
-static void vdbeIncrFree(IncrMerger *pIncr){
-  if( pIncr ){
-#if SQLITE_MAX_WORKER_THREADS>0
-    if( pIncr->bUseThread ){
+స్థిర శూన్య vdbeIncrFree(IncrMerger *pIncr){
+  ఒకవేళ( pIncr ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+    ఒకవేళ( pIncr->bUseThread ){
       vdbeSorterJoinThread(pIncr->pTask);
-      if( pIncr->aFile[0].pFd ) sqlite3OsCloseFree(pIncr->aFile[0].pFd);
-      if( pIncr->aFile[1].pFd ) sqlite3OsCloseFree(pIncr->aFile[1].pFd);
+      ఒకవేళ( pIncr->aFile[0].pFd ) sqlite3OsCloseFree(pIncr->aFile[0].pFd);
+      ఒకవేళ( pIncr->aFile[1].pFd ) sqlite3OsCloseFree(pIncr->aFile[1].pFd);
     }
-#endif
-    vdbeMergeEngineFree(pIncr->pMerger);
+#అయితే_ముగింపు
+    vdbe_విలీనం_Engine_Free(pIncr->pMerger);
     sqlite3_free(pIncr);
   }
 }
@@ -1389,31 +1389,31 @@ static void vdbeIncrFree(IncrMerger *pIncr){
 /*
 ** Reset a sorting cursor back to its original empty state.
 */
-void sqlite3VdbeSorterReset(sqlite3 *db, VdbeSorter *pSorter){
-  int i;
-  (void)vdbeSorterJoinAll(pSorter, SQLITE_OK);
-  assert( pSorter->bUseThreads || pSorter->pReader==0 );
-#if SQLITE_MAX_WORKER_THREADS>0
-  if( pSorter->pReader ){
+శూన్య sqlite3VdbeSorterReset(sqlite3 *db, VdbeSorter *pSorter){
+  పూర్ణాంకం i;
+  (శూన్య)vdbeSorterJoinAll(pSorter, SQLITE_OK);
+  ప్రతిజ్ఞా( pSorter->b_Use_దారాలు || pSorter->pReader==0 );
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+  ఒకవేళ( pSorter->pReader ){
     vdbePmaReaderClear(pSorter->pReader);
     sqlite3DbFree(db, pSorter->pReader);
     pSorter->pReader = 0;
   }
-#endif
-  vdbeMergeEngineFree(pSorter->pMerger);
+#అయితే_ముగింపు
+  vdbe_విలీనం_Engine_Free(pSorter->pMerger);
   pSorter->pMerger = 0;
-  for(i=0; i<pSorter->nTask; i++){
-    SortSubtask *pTask = &pSorter->aTask[i];
-    vdbeSortSubtaskCleanup(db, pTask);
+  కొరకు(i=0; i<pSorter->nTask; i++){
+    క్రమీకరించు_Subtask *pTask = &pSorter->aTask[i];
+    vdbe_క్రమీకరించు_Subtask_Cleanup(db, pTask);
     pTask->pSorter = pSorter;
   }
-  if( pSorter->list.aMemory==0 ){
-    vdbeSorterRecordFree(0, pSorter->list.pList);
+  ఒకవేళ( pSorter->list.a_జ్ఞాపకం==0 ){
+    vdbe_Sorter_రికార్డు_Free(0, pSorter->list.pList);
   }
   pSorter->list.pList = 0;
   pSorter->list.szPMA = 0;
   pSorter->bUsePMA = 0;
-  pSorter->iMemory = 0;
+  pSorter->i_జ్ఞాపకం = 0;
   pSorter->mxKeysize = 0;
   sqlite3DbFree(db, pSorter->pUnpacked);
   pSorter->pUnpacked = 0;
@@ -1422,25 +1422,25 @@ void sqlite3VdbeSorterReset(sqlite3 *db, VdbeSorter *pSorter){
 /*
 ** Free any cursor components allocated by sqlite3VdbeSorterXXX routines.
 */
-void sqlite3VdbeSorterClose(sqlite3 *db, VdbeCursor *pCsr){
+శూన్య sqlite3VdbeSorterClose(sqlite3 *db, VdbeCursor *pCsr){
   VdbeSorter *pSorter;
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  if( pSorter ){
+  ఒకవేళ( pSorter ){
     /* Increment db->nSpill by the total number of bytes of data written
     ** to temp files by this sort operation.  */
-    int ii;
-    for(ii=0; ii<pSorter->nTask; ii++){
+    పూర్ణాంకం ii;
+    కొరకు(ii=0; ii<pSorter->nTask; ii++){
       db->nSpill += pSorter->aTask[ii].nSpill;
     }
     sqlite3VdbeSorterReset(db, pSorter);
-    sqlite3_free(pSorter->list.aMemory);
+    sqlite3_free(pSorter->list.a_జ్ఞాపకం);
     sqlite3DbFree(db, pSorter);
     pCsr->uc.pSorter = 0;
   }
 }
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#ఒకవేళ SQLITE_MAX_MMAP_కొలత>0
 /*
 ** The first argument is a file-handle open on a temporary file. The file
 ** is guaranteed to be nByte bytes or smaller in size. This function
@@ -1450,45 +1450,45 @@ void sqlite3VdbeSorterClose(sqlite3 *db, VdbeCursor *pCsr){
 ** Whether or not the file does end up memory mapped of course depends on
 ** the specific VFS implementation.
 */
-static void vdbeSorterExtendFile(sqlite3 *db, sqlite3_file *pFd, i64 nByte){
-  if( nByte<=(i64)(db->nMaxSorterMmap) && pFd->pMethods->iVersion>=3 ){
-    void *p = 0;
-    int chunksize = 4*1024;
-    sqlite3OsFileControlHint(pFd, SQLITE_FCNTL_CHUNK_SIZE, &chunksize);
-    sqlite3OsFileControlHint(pFd, SQLITE_FCNTL_SIZE_HINT, &nByte);
-    sqlite3OsFetch(pFd, 0, (int)nByte, &p);
-    if( p ) sqlite3OsUnfetch(pFd, 0, p);
+స్థిర శూన్య vdbeSorterExtendFile(sqlite3 *db, sqlite3_file *pFd, i64 nByte){
+  ఒకవేళ( nByte<=(i64)(db->nMaxSorterMmap) && pFd->pMethods->i_సంస్కరణ>=3 ){
+    శూన్య *p = 0;
+    పూర్ణాంకం chunksize = 4*1024;
+    sqlite3OsFileControlHint(pFd, SQLITE_FCNTL_CHUNK_కొలత, &chunksize);
+    sqlite3OsFileControlHint(pFd, SQLITE_FCNTL_కొలత_HINT, &nByte);
+    sqlite3OsFetch(pFd, 0, (పూర్ణాంకం)nByte, &p);
+    ఒకవేళ( p ) sqlite3OsUnfetch(pFd, 0, p);
   }
 }
-#else
+#లేకపోతే
 # define vdbeSorterExtendFile(x,y,z)
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Allocate space for a file-handle and open a temporary file. If successful,
 ** set *ppFd to point to the malloc'd file-handle and return SQLITE_OK.
 ** Otherwise, set *ppFd to 0 and return an SQLite error code.
 */
-static int vdbeSorterOpenTempFile(
+స్థిర పూర్ణాంకం vdbe_Sorter_Open_తాత్కాలిక_File(
   sqlite3 *db,                    /* Database handle doing sort */
   i64 nExtend,                    /* Attempt to extend file to this size */
   sqlite3_file **ppFd
 ){
-  int rc;
-  if( sqlite3FaultSim(202) ) return SQLITE_IOERR_ACCESS;
+  పూర్ణాంకం rc;
+  ఒకవేళ( sqlite3FaultSim(202) ) తిరిగి SQLITE_IOERR_ACCESS;
   rc = sqlite3OsOpenMalloc(db->pVfs, 0, ppFd,
-      SQLITE_OPEN_TEMP_JOURNAL |
+      SQLITE_OPEN_తాత్కాలిక_JOURNAL |
       SQLITE_OPEN_READWRITE    | SQLITE_OPEN_CREATE |
       SQLITE_OPEN_EXCLUSIVE    | SQLITE_OPEN_DELETEONCLOSE, &rc
   );
-  if( rc==SQLITE_OK ){
-    i64 max = SQLITE_MAX_MMAP_SIZE;
-    sqlite3OsFileControlHint(*ppFd, SQLITE_FCNTL_MMAP_SIZE, (void*)&max);
-    if( nExtend>0 ){
+  ఒకవేళ( rc==SQLITE_OK ){
+    i64 max = SQLITE_MAX_MMAP_కొలత;
+    sqlite3OsFileControlHint(*ppFd, SQLITE_FCNTL_MMAP_కొలత, (శూన్య*)&max);
+    ఒకవేళ( nExtend>0 ){
       vdbeSorterExtendFile(db, *ppFd, nExtend);
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -1496,71 +1496,71 @@ static int vdbeSorterOpenTempFile(
 ** structure at pTask->pUnpacked. Return SQLITE_OK if successful (or
 ** if no allocation was required), or SQLITE_NOMEM otherwise.
 */
-static int vdbeSortAllocUnpacked(SortSubtask *pTask){
-  if( pTask->pUnpacked==0 ){
-    pTask->pUnpacked = sqlite3VdbeAllocUnpackedRecord(pTask->pSorter->pKeyInfo);
-    if( pTask->pUnpacked==0 ) return SQLITE_NOMEM_BKPT;
-    pTask->pUnpacked->nField = pTask->pSorter->pKeyInfo->nKeyField;
-    pTask->pUnpacked->errCode = 0;
+స్థిర పూర్ణాంకం vdbe_క్రమీకరించు_Alloc_Unpacked(క్రమీకరించు_Subtask *pTask){
+  ఒకవేళ( pTask->pUnpacked==0 ){
+    pTask->pUnpacked = sqlite3_Vdbe_Alloc_Unpacked_రికార్డు(pTask->pSorter->p_కీలకం_Info);
+    ఒకవేళ( pTask->pUnpacked==0 ) తిరిగి SQLITE_NOMEM_BKPT;
+    pTask->pUnpacked->n_క్షేత్రం = pTask->pSorter->p_కీలకం_Info->n_కీలకం_క్షేత్రం;
+    pTask->pUnpacked->err_సంకేతం = 0;
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 
 /*
 ** Merge the two sorted lists p1 and p2 into a single list.
 */
-static SorterRecord *vdbeSorterMerge(
-  SortSubtask *pTask,             /* Calling thread context */
-  SorterRecord *p1,               /* First list to merge */
-  SorterRecord *p2                /* Second list to merge */
+స్థిర Sorter_రికార్డు *vdbe_Sorter_విలీనం(
+  క్రమీకరించు_Subtask *pTask,             /* Calling thread context */
+  Sorter_రికార్డు *p1,               /* First list to merge */
+  Sorter_రికార్డు *p2                /* Second list to merge */
 ){
-  SorterRecord *pFinal = 0;
-  SorterRecord **pp = &pFinal;
-  int bCached = 0;
+  Sorter_రికార్డు *pFinal = 0;
+  Sorter_రికార్డు **pp = &pFinal;
+  పూర్ణాంకం bCached = 0;
 
-  assert( p1!=0 && p2!=0 );
-  for(;;){
-    int res;
+  ప్రతిజ్ఞా( p1!=0 && p2!=0 );
+  కొరకు(;;){
+    పూర్ణాంకం res;
     res = pTask->xCompare(
         pTask, &bCached, SRVAL(p1), p1->nVal, SRVAL(p2), p2->nVal
     );
 
-    if( res<=0 ){
+    ఒకవేళ( res<=0 ){
       *pp = p1;
-      pp = &p1->u.pNext;
-      p1 = p1->u.pNext;
-      if( p1==0 ){
+      pp = &p1->u.p_తదుపరి;
+      p1 = p1->u.p_తదుపరి;
+      ఒకవేళ( p1==0 ){
         *pp = p2;
-        break;
+        ఆపు;
       }
-    }else{
+    }లేకపోతే{
       *pp = p2;
-      pp = &p2->u.pNext;
-      p2 = p2->u.pNext;
+      pp = &p2->u.p_తదుపరి;
+      p2 = p2->u.p_తదుపరి;
       bCached = 0;
-      if( p2==0 ){
+      ఒకవేళ( p2==0 ){
         *pp = p1;
-        break;
+        ఆపు;
       }
     }
   }
-  return pFinal;
+  తిరిగి pFinal;
 }
 
 /*
 ** Return the SorterCompare function to compare values collected by the
 ** sorter object passed as the only argument.
 */
-static SorterCompare vdbeSorterGetCompare(VdbeSorter *p){
-  if( p->typeMask & SORTER_TYPE_INTEGER ){
-    return vdbeSorterCompareInt;
-  }else if( p->typeMask & SORTER_TYPE_TEXT ){
-    return vdbeSorterCompareText;
-  }else if( p->typeMask & SORTER_TYPE_REAL ){
-    return vdbeSorterCompareReal;
+స్థిర SorterCompare vdbeSorterGetCompare(VdbeSorter *p){
+  ఒకవేళ( p->type_ముసుగు & SORTER_TYPE_INTEGER ){
+    తిరిగి vdbeSorterCompareInt;
+  }లేకపోతే ఒకవేళ( p->type_ముసుగు & SORTER_TYPE_పాఠ్యం ){
+    తిరిగి vdbe_Sorter_Compare_పాఠ్యం;
+  }లేకపోతే ఒకవేళ( p->type_ముసుగు & SORTER_TYPE_REAL ){
+    తిరిగి vdbeSorterCompareReal;
   }
-  return vdbeSorterCompare;
+  తిరిగి vdbeSorterCompare;
 }
 
 /*
@@ -1568,75 +1568,75 @@ static SorterCompare vdbeSorterGetCompare(VdbeSorter *p){
 ** SQLITE_OK if successful, or an SQLite error code (i.e. SQLITE_NOMEM) if
 ** an error occurs.
 */
-static int vdbeSorterSort(SortSubtask *pTask, SorterList *pList){
-  int i;
-  SorterRecord *p;
-  int rc;
-  SorterRecord *aSlot[64];
+స్థిర పూర్ణాంకం vdbe_Sorter_క్రమీకరించు(క్రమీకరించు_Subtask *pTask, SorterList *pList){
+  పూర్ణాంకం i;
+  Sorter_రికార్డు *p;
+  పూర్ణాంకం rc;
+  Sorter_రికార్డు *a_స్థానం[64];
 
-  rc = vdbeSortAllocUnpacked(pTask);
-  if( rc!=SQLITE_OK ) return rc;
+  rc = vdbe_క్రమీకరించు_Alloc_Unpacked(pTask);
+  ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
 
   p = pList->pList;
   pTask->xCompare = vdbeSorterGetCompare(pTask->pSorter);
-  memset(aSlot, 0, sizeof(aSlot));
+  memset(a_స్థానం, 0, పరిమాణం(a_స్థానం));
 
-  while( p ){
-    SorterRecord *pNext;
-    if( pList->aMemory ){
-      if( (u8*)p==pList->aMemory ){
-        pNext = 0;
-      }else{
-        assert( p->u.iNext<sqlite3MallocSize(pList->aMemory) );
-        pNext = (SorterRecord*)&pList->aMemory[p->u.iNext];
+  అయితే( p ){
+    Sorter_రికార్డు *p_తదుపరి;
+    ఒకవేళ( pList->a_జ్ఞాపకం ){
+      ఒకవేళ( (u8*)p==pList->a_జ్ఞాపకం ){
+        p_తదుపరి = 0;
+      }లేకపోతే{
+        ప్రతిజ్ఞా( p->u.i_తదుపరి<sqlite3_Malloc_కొలత(pList->a_జ్ఞాపకం) );
+        p_తదుపరి = (Sorter_రికార్డు*)&pList->a_జ్ఞాపకం[p->u.i_తదుపరి];
       }
-    }else{
-      pNext = p->u.pNext;
+    }లేకపోతే{
+      p_తదుపరి = p->u.p_తదుపరి;
     }
 
-    p->u.pNext = 0;
-    for(i=0; aSlot[i]; i++){
-      p = vdbeSorterMerge(pTask, p, aSlot[i]);
+    p->u.p_తదుపరి = 0;
+    కొరకు(i=0; a_స్థానం[i]; i++){
+      p = vdbe_Sorter_విలీనం(pTask, p, a_స్థానం[i]);
       /* ,--Each aSlot[] holds twice as much as the previous. So we cannot use
       ** |  up all 64 aSlots[] with only a 64-bit address space.
       ** v                                                                */
-      assert( i<ArraySize(aSlot) );
-      aSlot[i] = 0;
+      ప్రతిజ్ఞా( i<Array_కొలత(a_స్థానం) );
+      a_స్థానం[i] = 0;
     }
-    aSlot[i] = p;
-    p = pNext;
+    a_స్థానం[i] = p;
+    p = p_తదుపరి;
   }
 
   p = 0;
-  for(i=0; i<ArraySize(aSlot); i++){
-    if( aSlot[i]==0 ) continue;
-    p = p ? vdbeSorterMerge(pTask, p, aSlot[i]) : aSlot[i];
+  కొరకు(i=0; i<Array_కొలత(a_స్థానం); i++){
+    ఒకవేళ( a_స్థానం[i]==0 ) కొనసాగు;
+    p = p ? vdbe_Sorter_విలీనం(pTask, p, a_స్థానం[i]) : a_స్థానం[i];
   }
   pList->pList = p;
 
-  assert( pTask->pUnpacked->errCode==SQLITE_OK
-       || pTask->pUnpacked->errCode==SQLITE_NOMEM
+  ప్రతిజ్ఞా( pTask->pUnpacked->err_సంకేతం==SQLITE_OK
+       || pTask->pUnpacked->err_సంకేతం==SQLITE_NOMEM
   );
-  return pTask->pUnpacked->errCode;
+  తిరిగి pTask->pUnpacked->err_సంకేతం;
 }
 
 /*
 ** Initialize a PMA-writer object.
 */
-static void vdbePmaWriterInit(
+స్థిర శూన్య vdbePmaWriterInit(
   sqlite3_file *pFd,              /* File handle to write to */
   PmaWriter *p,                   /* Object to populate */
-  int nBuf,                       /* Buffer size */
-  i64 iStart                      /* Offset of pFd to begin writing at */
+  పూర్ణాంకం nBuf,                       /* Buffer size */
+  i64 i_ప్రారంభం                      /* Offset of pFd to begin writing at */
 ){
-  memset(p, 0, sizeof(PmaWriter));
-  p->aBuffer = (u8*)sqlite3Malloc(nBuf);
-  if( !p->aBuffer ){
+  memset(p, 0, పరిమాణం(PmaWriter));
+  p->a_బఫరు = (u8*)sqlite3Malloc(nBuf);
+  ఒకవేళ( !p->a_బఫరు ){
     p->eFWErr = SQLITE_NOMEM_BKPT;
-  }else{
-    p->iBufEnd = p->iBufStart = (iStart % nBuf);
-    p->iWriteOff = iStart - p->iBufStart;
-    p->nBuffer = nBuf;
+  }లేకపోతే{
+    p->i_Buf_చివర = p->i_Buf_ప్రారంభం = (i_ప్రారంభం % nBuf);
+    p->iWriteOff = i_ప్రారంభం - p->i_Buf_ప్రారంభం;
+    p->n_బఫరు = nBuf;
     p->pFd = pFd;
   }
 }
@@ -1645,26 +1645,26 @@ static void vdbePmaWriterInit(
 ** Write nData bytes of data to the PMA. Return SQLITE_OK
 ** if successful, or an SQLite error code if an error occurs.
 */
-static void vdbePmaWriteBlob(PmaWriter *p, u8 *pData, int nData){
-  int nRem = nData;
-  while( nRem>0 && p->eFWErr==0 ){
-    int nCopy = nRem;
-    if( nCopy>(p->nBuffer - p->iBufEnd) ){
-      nCopy = p->nBuffer - p->iBufEnd;
+స్థిర శూన్య vdbePmaWriteBlob(PmaWriter *p, u8 *p_దత్తాంశం, పూర్ణాంకం n_దత్తాంశం){
+  పూర్ణాంకం nRem = n_దత్తాంశం;
+  అయితే( nRem>0 && p->eFWErr==0 ){
+    పూర్ణాంకం nCopy = nRem;
+    ఒకవేళ( nCopy>(p->n_బఫరు - p->i_Buf_చివర) ){
+      nCopy = p->n_బఫరు - p->i_Buf_చివర;
     }
 
-    memcpy(&p->aBuffer[p->iBufEnd], &pData[nData-nRem], nCopy);
-    p->iBufEnd += nCopy;
-    if( p->iBufEnd==p->nBuffer ){
+    జ్ఞాపకం_నకలు(&p->a_బఫరు[p->i_Buf_చివర], &p_దత్తాంశం[n_దత్తాంశం-nRem], nCopy);
+    p->i_Buf_చివర += nCopy;
+    ఒకవేళ( p->i_Buf_చివర==p->n_బఫరు ){
       p->eFWErr = sqlite3OsWrite(p->pFd,
-          &p->aBuffer[p->iBufStart], p->iBufEnd - p->iBufStart,
-          p->iWriteOff + p->iBufStart
+          &p->a_బఫరు[p->i_Buf_ప్రారంభం], p->i_Buf_చివర - p->i_Buf_ప్రారంభం,
+          p->iWriteOff + p->i_Buf_ప్రారంభం
       );
-      p->nPmaSpill += (p->iBufEnd - p->iBufStart);
-      p->iBufStart = p->iBufEnd = 0;
-      p->iWriteOff += p->nBuffer;
+      p->nPmaSpill += (p->i_Buf_చివర - p->i_Buf_ప్రారంభం);
+      p->i_Buf_ప్రారంభం = p->i_Buf_చివర = 0;
+      p->iWriteOff += p->n_బఫరు;
     }
-    assert( p->iBufEnd<p->nBuffer );
+    ప్రతిజ్ఞా( p->i_Buf_చివర<p->n_బఫరు );
 
     nRem -= nCopy;
   }
@@ -1680,29 +1680,29 @@ static void vdbePmaWriteBlob(PmaWriter *p, u8 *pData, int nData){
 ** last byte written to the file. Also, increment (*pnSpill) by the total
 ** number of bytes written to the file.
 */
-static int vdbePmaWriterFinish(PmaWriter *p, i64 *piEof, u64 *pnSpill){
-  int rc;
-  if( p->eFWErr==0 && ALWAYS(p->aBuffer) && p->iBufEnd>p->iBufStart ){
+స్థిర పూర్ణాంకం vdbe_Pma_Writer_ముగింపు(PmaWriter *p, i64 *piEof, u64 *pnSpill){
+  పూర్ణాంకం rc;
+  ఒకవేళ( p->eFWErr==0 && ALWAYS(p->a_బఫరు) && p->i_Buf_చివర>p->i_Buf_ప్రారంభం ){
     p->eFWErr = sqlite3OsWrite(p->pFd,
-        &p->aBuffer[p->iBufStart], p->iBufEnd - p->iBufStart,
-        p->iWriteOff + p->iBufStart
+        &p->a_బఫరు[p->i_Buf_ప్రారంభం], p->i_Buf_చివర - p->i_Buf_ప్రారంభం,
+        p->iWriteOff + p->i_Buf_ప్రారంభం
     );
-    p->nPmaSpill += (p->iBufEnd - p->iBufStart);
+    p->nPmaSpill += (p->i_Buf_చివర - p->i_Buf_ప్రారంభం);
   }
-  *piEof = (p->iWriteOff + p->iBufEnd);
+  *piEof = (p->iWriteOff + p->i_Buf_చివర);
   *pnSpill += p->nPmaSpill;
-  sqlite3_free(p->aBuffer);
+  sqlite3_free(p->a_బఫరు);
   rc = p->eFWErr;
-  memset(p, 0, sizeof(PmaWriter));
-  return rc;
+  memset(p, 0, పరిమాణం(PmaWriter));
+  తిరిగి rc;
 }
 
 /*
 ** Write value iVal encoded as a varint to the PMA. Return
 ** SQLITE_OK if successful, or an SQLite error code if an error occurs.
 */
-static void vdbePmaWriteVarint(PmaWriter *p, u64 iVal){
-  int nByte;
+స్థిర శూన్య vdbePmaWriteVarint(PmaWriter *p, u64 iVal){
+  పూర్ణాంకం nByte;
   u8 aByte[10];
   nByte = sqlite3PutVarint(aByte, iVal);
   vdbePmaWriteBlob(p, aByte, nByte);
@@ -1722,61 +1722,61 @@ static void vdbePmaWriteVarint(PmaWriter *p, u64 iVal){
 **       Each record consists of a varint followed by a blob of data (the
 **       key). The varint is the number of bytes in the blob of data.
 */
-static int vdbeSorterListToPMA(SortSubtask *pTask, SorterList *pList){
+స్థిర పూర్ణాంకం vdbe_Sorter_List_గమ్యం_PMA(క్రమీకరించు_Subtask *pTask, SorterList *pList){
   sqlite3 *db = pTask->pSorter->db;
-  int rc = SQLITE_OK;             /* Return code */
+  పూర్ణాంకం rc = SQLITE_OK;             /* Return code */
   PmaWriter writer;               /* Object used to write to the file */
 
-#ifdef SQLITE_DEBUG
+#నిర్వచితమైతే SQLITE_DEBUG
   /* Set iSz to the expected size of file pTask->file after writing the PMA.
   ** This is used by an assert() statement at the end of this function.  */
   i64 iSz = pList->szPMA + sqlite3VarintLen(pList->szPMA) + pTask->file.iEof;
-#endif
+#అయితే_ముగింపు
 
   vdbeSorterWorkDebug(pTask, "enter");
-  memset(&writer, 0, sizeof(PmaWriter));
-  assert( pList->szPMA>0 );
+  memset(&writer, 0, పరిమాణం(PmaWriter));
+  ప్రతిజ్ఞా( pList->szPMA>0 );
 
   /* If the first temporary PMA file has not been opened, open it now. */
-  if( pTask->file.pFd==0 ){
-    rc = vdbeSorterOpenTempFile(db, 0, &pTask->file.pFd);
-    assert( rc!=SQLITE_OK || pTask->file.pFd );
-    assert( pTask->file.iEof==0 );
-    assert( pTask->nPMA==0 );
+  ఒకవేళ( pTask->file.pFd==0 ){
+    rc = vdbe_Sorter_Open_తాత్కాలిక_File(db, 0, &pTask->file.pFd);
+    ప్రతిజ్ఞా( rc!=SQLITE_OK || pTask->file.pFd );
+    ప్రతిజ్ఞా( pTask->file.iEof==0 );
+    ప్రతిజ్ఞా( pTask->nPMA==0 );
   }
 
   /* Try to get the file to memory map */
-  if( rc==SQLITE_OK ){
+  ఒకవేళ( rc==SQLITE_OK ){
     vdbeSorterExtendFile(db, pTask->file.pFd, pTask->file.iEof+pList->szPMA+9);
   }
 
   /* Sort the list */
-  if( rc==SQLITE_OK ){
-    rc = vdbeSorterSort(pTask, pList);
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = vdbe_Sorter_క్రమీకరించు(pTask, pList);
   }
 
-  if( rc==SQLITE_OK ){
-    SorterRecord *p;
-    SorterRecord *pNext = 0;
+  ఒకవేళ( rc==SQLITE_OK ){
+    Sorter_రికార్డు *p;
+    Sorter_రికార్డు *p_తదుపరి = 0;
 
     vdbePmaWriterInit(pTask->file.pFd, &writer, pTask->pSorter->pgsz,
                       pTask->file.iEof);
     pTask->nPMA++;
     vdbePmaWriteVarint(&writer, pList->szPMA);
-    for(p=pList->pList; p; p=pNext){
-      pNext = p->u.pNext;
+    కొరకు(p=pList->pList; p; p=p_తదుపరి){
+      p_తదుపరి = p->u.p_తదుపరి;
       vdbePmaWriteVarint(&writer, p->nVal);
       vdbePmaWriteBlob(&writer, SRVAL(p), p->nVal);
-      if( pList->aMemory==0 ) sqlite3_free(p);
+      ఒకవేళ( pList->a_జ్ఞాపకం==0 ) sqlite3_free(p);
     }
     pList->pList = p;
-    rc = vdbePmaWriterFinish(&writer, &pTask->file.iEof, &pTask->nSpill);
+    rc = vdbe_Pma_Writer_ముగింపు(&writer, &pTask->file.iEof, &pTask->nSpill);
   }
 
   vdbeSorterWorkDebug(pTask, "exit");
-  assert( rc!=SQLITE_OK || pList->pList==0 );
-  assert( rc!=SQLITE_OK || pTask->file.iEof==iSz );
-  return rc;
+  ప్రతిజ్ఞా( rc!=SQLITE_OK || pList->pList==0 );
+  ప్రతిజ్ఞా( rc!=SQLITE_OK || pTask->file.iEof==iSz );
+  తిరిగి rc;
 }
 
 /*
@@ -1786,39 +1786,39 @@ static int vdbeSorterListToPMA(SortSubtask *pTask, SorterList *pList){
 **
 ** Return SQLITE_OK if successful or an error code if an error occurs.
 */
-static int vdbeMergeEngineStep(
-  MergeEngine *pMerger,      /* The merge engine to advance to the next row */
-  int *pbEof                 /* Set TRUE at EOF.  Set false for more content */
+స్థిర పూర్ణాంకం vdbe_విలీనం_Engine_అడుగు(
+  విలీనం_Engine *pMerger,      /* The merge engine to advance to the next row */
+  పూర్ణాంకం *pbEof                 /* Set TRUE at EOF.  Set false for more content */
 ){
-  int rc;
-  int iPrev = pMerger->aTree[1];/* Index of PmaReader to advance */
-  SortSubtask *pTask = pMerger->pTask;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం iPrev = pMerger->a_వృక్షం[1];/* Index of PmaReader to advance */
+  క్రమీకరించు_Subtask *pTask = pMerger->pTask;
 
   /* Advance the current PmaReader */
-  rc = vdbePmaReaderNext(&pMerger->aReadr[iPrev]);
+  rc = vdbe_Pma_Reader_తదుపరి(&pMerger->aReadr[iPrev]);
 
   /* Update contents of aTree[] */
-  if( rc==SQLITE_OK ){
-    int i;                      /* Index of aTree[] to recalculate */
+  ఒకవేళ( rc==SQLITE_OK ){
+    పూర్ణాంకం i;                      /* Index of aTree[] to recalculate */
     PmaReader *pReadr1;         /* First PmaReader to compare */
     PmaReader *pReadr2;         /* Second PmaReader to compare */
-    int bCached = 0;
+    పూర్ణాంకం bCached = 0;
 
     /* Find the first two PmaReaders to compare. The one that was just
     ** advanced (iPrev) and the one next to it in the array.  */
     pReadr1 = &pMerger->aReadr[(iPrev & 0xFFFE)];
     pReadr2 = &pMerger->aReadr[(iPrev | 0x0001)];
 
-    for(i=(pMerger->nTree+iPrev)/2; i>0; i=i/2){
+    కొరకు(i=(pMerger->n_వృక్షం+iPrev)/2; i>0; i=i/2){
       /* Compare pReadr1 and pReadr2. Store the result in variable iRes. */
-      int iRes;
-      if( pReadr1->pFd==0 ){
+      పూర్ణాంకం iRes;
+      ఒకవేళ( pReadr1->pFd==0 ){
         iRes = +1;
-      }else if( pReadr2->pFd==0 ){
+      }లేకపోతే ఒకవేళ( pReadr2->pFd==0 ){
         iRes = -1;
-      }else{
+      }లేకపోతే{
         iRes = pTask->xCompare(pTask, &bCached,
-            pReadr1->aKey, pReadr1->nKey, pReadr2->aKey, pReadr2->nKey
+            pReadr1->a_కీలకం, pReadr1->n_కీలకం, pReadr2->a_కీలకం, pReadr2->n_కీలకం
         );
       }
 
@@ -1837,49 +1837,49 @@ static int vdbeMergeEngineStep(
       ** PMA should be considered smaller. The VdbeSorter.aReadr[] array
       ** is sorted from oldest to newest, so pReadr1 contains older values
       ** than pReadr2 iff (pReadr1<pReadr2).  */
-      if( iRes<0 || (iRes==0 && pReadr1<pReadr2) ){
-        pMerger->aTree[i] = (int)(pReadr1 - pMerger->aReadr);
-        pReadr2 = &pMerger->aReadr[ pMerger->aTree[i ^ 0x0001] ];
+      ఒకవేళ( iRes<0 || (iRes==0 && pReadr1<pReadr2) ){
+        pMerger->a_వృక్షం[i] = (పూర్ణాంకం)(pReadr1 - pMerger->aReadr);
+        pReadr2 = &pMerger->aReadr[ pMerger->a_వృక్షం[i ^ 0x0001] ];
         bCached = 0;
-      }else{
-        if( pReadr1->pFd ) bCached = 0;
-        pMerger->aTree[i] = (int)(pReadr2 - pMerger->aReadr);
-        pReadr1 = &pMerger->aReadr[ pMerger->aTree[i ^ 0x0001] ];
+      }లేకపోతే{
+        ఒకవేళ( pReadr1->pFd ) bCached = 0;
+        pMerger->a_వృక్షం[i] = (పూర్ణాంకం)(pReadr2 - pMerger->aReadr);
+        pReadr1 = &pMerger->aReadr[ pMerger->a_వృక్షం[i ^ 0x0001] ];
       }
     }
-    *pbEof = (pMerger->aReadr[pMerger->aTree[1]].pFd==0);
+    *pbEof = (pMerger->aReadr[pMerger->a_వృక్షం[1]].pFd==0);
   }
 
-  return (rc==SQLITE_OK ? pTask->pUnpacked->errCode : rc);
+  తిరిగి (rc==SQLITE_OK ? pTask->pUnpacked->err_సంకేతం : rc);
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
 /*
 ** The main routine for background threads that write level-0 PMAs.
 */
-static void *vdbeSorterFlushThread(void *pCtx){
-  SortSubtask *pTask = (SortSubtask*)pCtx;
-  int rc;                         /* Return code */
-  assert( pTask->bDone==0 );
-  rc = vdbeSorterListToPMA(pTask, &pTask->list);
-  pTask->bDone = 1;
-  return SQLITE_INT_TO_PTR(rc);
+స్థిర శూన్య *vdbeSorterFlushThread(శూన్య *pCtx){
+  క్రమీకరించు_Subtask *pTask = (క్రమీకరించు_Subtask*)pCtx;
+  పూర్ణాంకం rc;                         /* Return code */
+  ప్రతిజ్ఞా( pTask->b_పూర్తి==0 );
+  rc = vdbe_Sorter_List_గమ్యం_PMA(pTask, &pTask->list);
+  pTask->b_పూర్తి = 1;
+  తిరిగి SQLITE_INT_గమ్యం_PTR(rc);
 }
-#endif /* SQLITE_MAX_WORKER_THREADS>0 */
+#అయితే_ముగింపు /* SQLITE_MAX_WORKER_THREADS>0 */
 
 /*
 ** Flush the current contents of VdbeSorter.list to a new PMA, possibly
 ** using a background thread.
 */
-static int vdbeSorterFlushPMA(VdbeSorter *pSorter){
-#if SQLITE_MAX_WORKER_THREADS==0
+స్థిర పూర్ణాంకం vdbeSorterFlushPMA(VdbeSorter *pSorter){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు==0
   pSorter->bUsePMA = 1;
-  return vdbeSorterListToPMA(&pSorter->aTask[0], &pSorter->list);
-#else
-  int rc = SQLITE_OK;
-  int i;
-  SortSubtask *pTask = 0;    /* Thread context used to create new PMA */
-  int nWorker = (pSorter->nTask-1);
+  తిరిగి vdbe_Sorter_List_గమ్యం_PMA(&pSorter->aTask[0], &pSorter->list);
+#లేకపోతే
+  పూర్ణాంకం rc = SQLITE_OK;
+  పూర్ణాంకం i;
+  క్రమీకరించు_Subtask *pTask = 0;    /* Thread context used to create new PMA */
+  పూర్ణాంకం n_కార్మికుడు = (pSorter->nTask-1);
 
   /* Set the flag to indicate that at least one PMA has been written.
   ** Or will be, anyhow.  */
@@ -1893,82 +1893,82 @@ static int vdbeSorterFlushPMA(VdbeSorter *pSorter){
   ** fall back to using the final sub-task. The first (pSorter->nTask-1)
   ** sub-tasks are preferred as they use background threads - the final
   ** sub-task uses the main thread. */
-  for(i=0; i<nWorker; i++){
-    int iTest = (pSorter->iPrev + i + 1) % nWorker;
+  కొరకు(i=0; i<n_కార్మికుడు; i++){
+    పూర్ణాంకం iTest = (pSorter->iPrev + i + 1) % n_కార్మికుడు;
     pTask = &pSorter->aTask[iTest];
-    if( pTask->bDone ){
+    ఒకవేళ( pTask->b_పూర్తి ){
       rc = vdbeSorterJoinThread(pTask);
     }
-    if( rc!=SQLITE_OK || pTask->pThread==0 ) break;
+    ఒకవేళ( rc!=SQLITE_OK || pTask->pThread==0 ) ఆపు;
   }
 
-  if( rc==SQLITE_OK ){
-    if( i==nWorker ){
+  ఒకవేళ( rc==SQLITE_OK ){
+    ఒకవేళ( i==n_కార్మికుడు ){
       /* Use the foreground thread for this operation */
-      rc = vdbeSorterListToPMA(&pSorter->aTask[nWorker], &pSorter->list);
-    }else{
+      rc = vdbe_Sorter_List_గమ్యం_PMA(&pSorter->aTask[n_కార్మికుడు], &pSorter->list);
+    }లేకపోతే{
       /* Launch a background thread for this operation */
       u8 *aMem;
-      void *pCtx;
+      శూన్య *pCtx;
 
-      assert( pTask!=0 );
-      assert( pTask->pThread==0 && pTask->bDone==0 );
-      assert( pTask->list.pList==0 );
-      assert( pTask->list.aMemory==0 || pSorter->list.aMemory!=0 );
+      ప్రతిజ్ఞా( pTask!=0 );
+      ప్రతిజ్ఞా( pTask->pThread==0 && pTask->b_పూర్తి==0 );
+      ప్రతిజ్ఞా( pTask->list.pList==0 );
+      ప్రతిజ్ఞా( pTask->list.a_జ్ఞాపకం==0 || pSorter->list.a_జ్ఞాపకం!=0 );
 
-      aMem = pTask->list.aMemory;
-      pCtx = (void*)pTask;
+      aMem = pTask->list.a_జ్ఞాపకం;
+      pCtx = (శూన్య*)pTask;
       pSorter->iPrev = (u8)(pTask - pSorter->aTask);
       pTask->list = pSorter->list;
       pSorter->list.pList = 0;
       pSorter->list.szPMA = 0;
-      if( aMem ){
-        pSorter->list.aMemory = aMem;
-        pSorter->nMemory = sqlite3MallocSize(aMem);
-      }else if( pSorter->list.aMemory ){
-        pSorter->list.aMemory = sqlite3Malloc(pSorter->nMemory);
-        if( !pSorter->list.aMemory ) return SQLITE_NOMEM_BKPT;
+      ఒకవేళ( aMem ){
+        pSorter->list.a_జ్ఞాపకం = aMem;
+        pSorter->n_జ్ఞాపకం = sqlite3_Malloc_కొలత(aMem);
+      }లేకపోతే ఒకవేళ( pSorter->list.a_జ్ఞాపకం ){
+        pSorter->list.a_జ్ఞాపకం = sqlite3Malloc(pSorter->n_జ్ఞాపకం);
+        ఒకవేళ( !pSorter->list.a_జ్ఞాపకం ) తిరిగి SQLITE_NOMEM_BKPT;
       }
 
       rc = vdbeSorterCreateThread(pTask, vdbeSorterFlushThread, pCtx);
     }
   }
 
-  return rc;
-#endif /* SQLITE_MAX_WORKER_THREADS!=0 */
+  తిరిగి rc;
+#అయితే_ముగింపు /* SQLITE_MAX_WORKER_THREADS!=0 */
 }
 
 /*
 ** Add a record to the sorter.
 */
-int sqlite3VdbeSorterWrite(
-  const VdbeCursor *pCsr,         /* Sorter cursor */
+పూర్ణాంకం sqlite3VdbeSorterWrite(
+  స్థిరరాశి VdbeCursor *pCsr,         /* Sorter cursor */
   Mem *pVal                       /* Memory cell containing record */
 ){
   VdbeSorter *pSorter;
-  int rc = SQLITE_OK;             /* Return Code */
-  SorterRecord *pNew;             /* New list element */
-  int bFlush;                     /* True to flush contents of memory to PMA */
+  పూర్ణాంకం rc = SQLITE_OK;             /* Return Code */
+  Sorter_రికార్డు *pNew;             /* New list element */
+  పూర్ణాంకం bFlush;                     /* True to flush contents of memory to PMA */
   i64 nReq;                       /* Bytes of memory required */
   i64 nPMA;                       /* Bytes of PMA space required */
-  int t;                          /* serial type of first record field */
+  పూర్ణాంకం t;                          /* serial type of first record field */
 
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  getVarint32NR((const u8*)&pVal->z[1], t);
-  if( t>0 && t<10 ){
-    if( t==7 ){
-      pSorter->typeMask &= SORTER_TYPE_REAL;
-    }else{
-      pSorter->typeMask &= (SORTER_TYPE_INTEGER|SORTER_TYPE_REAL);
+  getVarint32NR((స్థిరరాశి u8*)&pVal->z[1], t);
+  ఒకవేళ( t>0 && t<10 ){
+    ఒకవేళ( t==7 ){
+      pSorter->type_ముసుగు &= SORTER_TYPE_REAL;
+    }లేకపోతే{
+      pSorter->type_ముసుగు &= (SORTER_TYPE_INTEGER|SORTER_TYPE_REAL);
     }
-  }else if( t>10 && (t & 0x01) ){
-    pSorter->typeMask &= SORTER_TYPE_TEXT;
-  }else{
-    pSorter->typeMask = 0;
+  }లేకపోతే ఒకవేళ( t>10 && (t & 0x01) ){
+    pSorter->type_ముసుగు &= SORTER_TYPE_పాఠ్యం;
+  }లేకపోతే{
+    pSorter->type_ముసుగు = 0;
   }
 
-  assert( pSorter );
+  ప్రతిజ్ఞా( pSorter );
 
   /* Figure out whether or not the current contents of memory should be
   ** flushed to a PMA before continuing. If so, do so.
@@ -1986,70 +1986,70 @@ int sqlite3VdbeSorterWrite(
   **   * The total memory allocated for the in-memory list is greater
   **     than (page-size * 10) and sqlite3HeapNearlyFull() returns true.
   */
-  nReq = pVal->n + sizeof(SorterRecord);
+  nReq = pVal->n + పరిమాణం(Sorter_రికార్డు);
   nPMA = pVal->n + sqlite3VarintLen(pVal->n);
-  if( pSorter->mxPmaSize ){
-    if( pSorter->list.aMemory ){
-      bFlush = pSorter->iMemory && (pSorter->iMemory+nReq) > pSorter->mxPmaSize;
-    }else{
+  ఒకవేళ( pSorter->mx_Pma_కొలత ){
+    ఒకవేళ( pSorter->list.a_జ్ఞాపకం ){
+      bFlush = pSorter->i_జ్ఞాపకం && (pSorter->i_జ్ఞాపకం+nReq) > pSorter->mx_Pma_కొలత;
+    }లేకపోతే{
       bFlush = (
-          (pSorter->list.szPMA > pSorter->mxPmaSize)
-       || (pSorter->list.szPMA > pSorter->mnPmaSize && sqlite3HeapNearlyFull())
+          (pSorter->list.szPMA > pSorter->mx_Pma_కొలత)
+       || (pSorter->list.szPMA > pSorter->mn_Pma_కొలత && sqlite3_కుప్ప_Nearly_నిండిన())
       );
     }
-    if( bFlush ){
+    ఒకవేళ( bFlush ){
       rc = vdbeSorterFlushPMA(pSorter);
       pSorter->list.szPMA = 0;
-      pSorter->iMemory = 0;
-      assert( rc!=SQLITE_OK || pSorter->list.pList==0 );
+      pSorter->i_జ్ఞాపకం = 0;
+      ప్రతిజ్ఞా( rc!=SQLITE_OK || pSorter->list.pList==0 );
     }
   }
 
   pSorter->list.szPMA += nPMA;
-  if( nPMA>pSorter->mxKeysize ){
+  ఒకవేళ( nPMA>pSorter->mxKeysize ){
     pSorter->mxKeysize = nPMA;
   }
 
-  if( pSorter->list.aMemory ){
-    int nMin = pSorter->iMemory + nReq;
+  ఒకవేళ( pSorter->list.a_జ్ఞాపకం ){
+    పూర్ణాంకం nMin = pSorter->i_జ్ఞాపకం + nReq;
 
-    if( nMin>pSorter->nMemory ){
+    ఒకవేళ( nMin>pSorter->n_జ్ఞాపకం ){
       u8 *aNew;
-      sqlite3_int64 nNew = 2 * (sqlite3_int64)pSorter->nMemory;
-      int iListOff = -1;
-      if( pSorter->list.pList ){
-        iListOff = (u8*)pSorter->list.pList - pSorter->list.aMemory;
+      sqlite3_int64 nNew = 2 * (sqlite3_int64)pSorter->n_జ్ఞాపకం;
+      పూర్ణాంకం iListOff = -1;
+      ఒకవేళ( pSorter->list.pList ){
+        iListOff = (u8*)pSorter->list.pList - pSorter->list.a_జ్ఞాపకం;
       }
-      while( nNew < nMin ) nNew = nNew*2;
-      if( nNew > pSorter->mxPmaSize ) nNew = pSorter->mxPmaSize;
-      if( nNew < nMin ) nNew = nMin;
-      aNew = sqlite3Realloc(pSorter->list.aMemory, nNew);
-      if( !aNew ) return SQLITE_NOMEM_BKPT;
-      if( iListOff>=0 ){
-        pSorter->list.pList = (SorterRecord*)&aNew[iListOff];
+      అయితే( nNew < nMin ) nNew = nNew*2;
+      ఒకవేళ( nNew > pSorter->mx_Pma_కొలత ) nNew = pSorter->mx_Pma_కొలత;
+      ఒకవేళ( nNew < nMin ) nNew = nMin;
+      aNew = sqlite3Realloc(pSorter->list.a_జ్ఞాపకం, nNew);
+      ఒకవేళ( !aNew ) తిరిగి SQLITE_NOMEM_BKPT;
+      ఒకవేళ( iListOff>=0 ){
+        pSorter->list.pList = (Sorter_రికార్డు*)&aNew[iListOff];
       }
-      pSorter->list.aMemory = aNew;
-      pSorter->nMemory = nNew;
+      pSorter->list.a_జ్ఞాపకం = aNew;
+      pSorter->n_జ్ఞాపకం = nNew;
     }
 
-    pNew = (SorterRecord*)&pSorter->list.aMemory[pSorter->iMemory];
-    pSorter->iMemory += ROUND8(nReq);
-    if( pSorter->list.pList ){
-      pNew->u.iNext = (int)((u8*)(pSorter->list.pList) - pSorter->list.aMemory);
+    pNew = (Sorter_రికార్డు*)&pSorter->list.a_జ్ఞాపకం[pSorter->i_జ్ఞాపకం];
+    pSorter->i_జ్ఞాపకం += ROUND8(nReq);
+    ఒకవేళ( pSorter->list.pList ){
+      pNew->u.i_తదుపరి = (పూర్ణాంకం)((u8*)(pSorter->list.pList) - pSorter->list.a_జ్ఞాపకం);
     }
-  }else{
-    pNew = (SorterRecord *)sqlite3Malloc(nReq);
-    if( pNew==0 ){
-      return SQLITE_NOMEM_BKPT;
+  }లేకపోతే{
+    pNew = (Sorter_రికార్డు *)sqlite3Malloc(nReq);
+    ఒకవేళ( pNew==0 ){
+      తిరిగి SQLITE_NOMEM_BKPT;
     }
-    pNew->u.pNext = pSorter->list.pList;
+    pNew->u.p_తదుపరి = pSorter->list.pList;
   }
 
-  memcpy(SRVAL(pNew), pVal->z, pVal->n);
+  జ్ఞాపకం_నకలు(SRVAL(pNew), pVal->z, pVal->n);
   pNew->nVal = pVal->n;
   pSorter->list.pList = pNew;
 
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -2057,64 +2057,64 @@ int sqlite3VdbeSorterWrite(
 ** of the data stored in aFile[1] is the same as that used by regular PMAs,
 ** except that the number-of-bytes varint is omitted from the start.
 */
-static int vdbeIncrPopulate(IncrMerger *pIncr){
-  int rc = SQLITE_OK;
-  int rc2;
-  i64 iStart = pIncr->iStartOff;
-  SorterFile *pOut = &pIncr->aFile[1];
-  SortSubtask *pTask = pIncr->pTask;
-  MergeEngine *pMerger = pIncr->pMerger;
+స్థిర పూర్ణాంకం vdbeIncrPopulate(IncrMerger *pIncr){
+  పూర్ణాంకం rc = SQLITE_OK;
+  పూర్ణాంకం rc2;
+  i64 i_ప్రారంభం = pIncr->i_ప్రారంభం_Off;
+  SorterFile *p_బహిర్గతం = &pIncr->aFile[1];
+  క్రమీకరించు_Subtask *pTask = pIncr->pTask;
+  విలీనం_Engine *pMerger = pIncr->pMerger;
   PmaWriter writer;
-  assert( pIncr->bEof==0 );
+  ప్రతిజ్ఞా( pIncr->bEof==0 );
 
   vdbeSorterPopulateDebug(pTask, "enter");
 
-  vdbePmaWriterInit(pOut->pFd, &writer, pTask->pSorter->pgsz, iStart);
-  while( rc==SQLITE_OK ){
-    int dummy;
-    PmaReader *pReader = &pMerger->aReadr[ pMerger->aTree[1] ];
-    int nKey = pReader->nKey;
-    i64 iEof = writer.iWriteOff + writer.iBufEnd;
+  vdbePmaWriterInit(p_బహిర్గతం->pFd, &writer, pTask->pSorter->pgsz, i_ప్రారంభం);
+  అయితే( rc==SQLITE_OK ){
+    పూర్ణాంకం dummy;
+    PmaReader *pReader = &pMerger->aReadr[ pMerger->a_వృక్షం[1] ];
+    పూర్ణాంకం n_కీలకం = pReader->n_కీలకం;
+    i64 iEof = writer.iWriteOff + writer.i_Buf_చివర;
 
     /* Check if the output file is full or if the input has been exhausted.
     ** In either case exit the loop. */
-    if( pReader->pFd==0 ) break;
-    if( (iEof + nKey + sqlite3VarintLen(nKey))>(iStart + pIncr->mxSz) ) break;
+    ఒకవేళ( pReader->pFd==0 ) ఆపు;
+    ఒకవేళ( (iEof + n_కీలకం + sqlite3VarintLen(n_కీలకం))>(i_ప్రారంభం + pIncr->mxSz) ) ఆపు;
 
     /* Write the next key to the output. */
-    vdbePmaWriteVarint(&writer, nKey);
-    vdbePmaWriteBlob(&writer, pReader->aKey, nKey);
-    assert( pIncr->pMerger->pTask==pTask );
-    rc = vdbeMergeEngineStep(pIncr->pMerger, &dummy);
+    vdbePmaWriteVarint(&writer, n_కీలకం);
+    vdbePmaWriteBlob(&writer, pReader->a_కీలకం, n_కీలకం);
+    ప్రతిజ్ఞా( pIncr->pMerger->pTask==pTask );
+    rc = vdbe_విలీనం_Engine_అడుగు(pIncr->pMerger, &dummy);
   }
 
-  rc2 = vdbePmaWriterFinish(&writer, &pOut->iEof, &pTask->nSpill);
-  if( rc==SQLITE_OK ) rc = rc2;
+  rc2 = vdbe_Pma_Writer_ముగింపు(&writer, &p_బహిర్గతం->iEof, &pTask->nSpill);
+  ఒకవేళ( rc==SQLITE_OK ) rc = rc2;
   vdbeSorterPopulateDebug(pTask, "exit");
-  return rc;
+  తిరిగి rc;
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
 /*
 ** The main routine for background threads that populate aFile[1] of
 ** multi-threaded IncrMerger objects.
 */
-static void *vdbeIncrPopulateThread(void *pCtx){
+స్థిర శూన్య *vdbeIncrPopulateThread(శూన్య *pCtx){
   IncrMerger *pIncr = (IncrMerger*)pCtx;
-  void *pRet = SQLITE_INT_TO_PTR( vdbeIncrPopulate(pIncr) );
-  pIncr->pTask->bDone = 1;
-  return pRet;
+  శూన్య *pRet = SQLITE_INT_గమ్యం_PTR( vdbeIncrPopulate(pIncr) );
+  pIncr->pTask->b_పూర్తి = 1;
+  తిరిగి pRet;
 }
 
 /*
 ** Launch a background thread to populate aFile[1] of pIncr.
 */
-static int vdbeIncrBgPopulate(IncrMerger *pIncr){
-  void *p = (void*)pIncr;
-  assert( pIncr->bUseThread );
-  return vdbeSorterCreateThread(pIncr->pTask, vdbeIncrPopulateThread, p);
+స్థిర పూర్ణాంకం vdbeIncrBgPopulate(IncrMerger *pIncr){
+  శూన్య *p = (శూన్య*)pIncr;
+  ప్రతిజ్ఞా( pIncr->bUseThread );
+  తిరిగి vdbeSorterCreateThread(pIncr->pTask, vdbeIncrPopulateThread, p);
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 ** This function is called when the PmaReader corresponding to pIncr has
@@ -2133,37 +2133,37 @@ static int vdbeIncrBgPopulate(IncrMerger *pIncr){
 **
 ** SQLITE_OK is returned on success, or an SQLite error code otherwise.
 */
-static int vdbeIncrSwap(IncrMerger *pIncr){
-  int rc = SQLITE_OK;
+స్థిర పూర్ణాంకం vdbe_Incr_మార్పిడి(IncrMerger *pIncr){
+  పూర్ణాంకం rc = SQLITE_OK;
 
-#if SQLITE_MAX_WORKER_THREADS>0
-  if( pIncr->bUseThread ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+  ఒకవేళ( pIncr->bUseThread ){
     rc = vdbeSorterJoinThread(pIncr->pTask);
 
-    if( rc==SQLITE_OK ){
+    ఒకవేళ( rc==SQLITE_OK ){
       SorterFile f0 = pIncr->aFile[0];
       pIncr->aFile[0] = pIncr->aFile[1];
       pIncr->aFile[1] = f0;
     }
 
-    if( rc==SQLITE_OK ){
-      if( pIncr->aFile[0].iEof==pIncr->iStartOff ){
+    ఒకవేళ( rc==SQLITE_OK ){
+      ఒకవేళ( pIncr->aFile[0].iEof==pIncr->i_ప్రారంభం_Off ){
         pIncr->bEof = 1;
-      }else{
+      }లేకపోతే{
         rc = vdbeIncrBgPopulate(pIncr);
       }
     }
-  }else
-#endif
+  }లేకపోతే
+#అయితే_ముగింపు
   {
     rc = vdbeIncrPopulate(pIncr);
     pIncr->aFile[0] = pIncr->aFile[1];
-    if( pIncr->aFile[0].iEof==pIncr->iStartOff ){
+    ఒకవేళ( pIncr->aFile[0].iEof==pIncr->i_ప్రారంభం_Off ){
       pIncr->bEof = 1;
     }
   }
 
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -2172,36 +2172,36 @@ static int vdbeIncrSwap(IncrMerger *pIncr){
 ** If an OOM condition is encountered, return NULL. In this case free the
 ** pMerger argument before returning.
 */
-static int vdbeIncrMergerNew(
-  SortSubtask *pTask,     /* The thread that will be using the new IncrMerger */
-  MergeEngine *pMerger,   /* The MergeEngine that the IncrMerger will control */
-  IncrMerger **ppOut      /* Write the new IncrMerger here */
+స్థిర పూర్ణాంకం vdbeIncrMergerNew(
+  క్రమీకరించు_Subtask *pTask,     /* The thread that will be using the new IncrMerger */
+  విలీనం_Engine *pMerger,   /* The MergeEngine that the IncrMerger will control */
+  IncrMerger **pp_బహిర్గతం      /* Write the new IncrMerger here */
 ){
-  int rc = SQLITE_OK;
-  IncrMerger *pIncr = *ppOut = (IncrMerger*)
-       (sqlite3FaultSim(100) ? 0 : sqlite3MallocZero(sizeof(*pIncr)));
-  if( pIncr ){
+  పూర్ణాంకం rc = SQLITE_OK;
+  IncrMerger *pIncr = *pp_బహిర్గతం = (IncrMerger*)
+       (sqlite3FaultSim(100) ? 0 : sqlite3MallocZero(పరిమాణం(*pIncr)));
+  ఒకవేళ( pIncr ){
     pIncr->pMerger = pMerger;
     pIncr->pTask = pTask;
-    pIncr->mxSz = MAX(pTask->pSorter->mxKeysize+9,pTask->pSorter->mxPmaSize/2);
+    pIncr->mxSz = MAX(pTask->pSorter->mxKeysize+9,pTask->pSorter->mx_Pma_కొలత/2);
     pTask->file2.iEof += pIncr->mxSz;
-  }else{
-    vdbeMergeEngineFree(pMerger);
+  }లేకపోతే{
+    vdbe_విలీనం_Engine_Free(pMerger);
     rc = SQLITE_NOMEM_BKPT;
   }
-  assert( *ppOut!=0 || rc!=SQLITE_OK );
-  return rc;
+  ప్రతిజ్ఞా( *pp_బహిర్గతం!=0 || rc!=SQLITE_OK );
+  తిరిగి rc;
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
 /*
 ** Set the "use-threads" flag on object pIncr.
 */
-static void vdbeIncrMergerSetThreads(IncrMerger *pIncr){
+స్థిర శూన్య vdbe_Incr_Merger_సమితి_దారాలు(IncrMerger *pIncr){
   pIncr->bUseThread = 1;
   pIncr->pTask->file2.iEof -= pIncr->mxSz;
 }
-#endif /* SQLITE_MAX_WORKER_THREADS>0 */
+#అయితే_ముగింపు /* SQLITE_MAX_WORKER_THREADS>0 */
 
 
 
@@ -2210,49 +2210,49 @@ static void vdbeIncrMergerSetThreads(IncrMerger *pIncr){
 ** two PmaReaders that feed that entry.  Neither of the PmaReaders
 ** are advanced.  This routine merely does the comparison.
 */
-static void vdbeMergeEngineCompare(
-  MergeEngine *pMerger,  /* Merge engine containing PmaReaders to compare */
-  int iOut               /* Store the result in pMerger->aTree[iOut] */
+స్థిర శూన్య vdbe_విలీనం_Engine_Compare(
+  విలీనం_Engine *pMerger,  /* Merge engine containing PmaReaders to compare */
+  పూర్ణాంకం i_బహిర్గతం               /* Store the result in pMerger->aTree[iOut] */
 ){
-  int i1;
-  int i2;
-  int iRes;
+  పూర్ణాంకం i1;
+  పూర్ణాంకం i2;
+  పూర్ణాంకం iRes;
   PmaReader *p1;
   PmaReader *p2;
 
-  assert( iOut<pMerger->nTree && iOut>0 );
+  ప్రతిజ్ఞా( i_బహిర్గతం<pMerger->n_వృక్షం && i_బహిర్గతం>0 );
 
-  if( iOut>=(pMerger->nTree/2) ){
-    i1 = (iOut - pMerger->nTree/2) * 2;
+  ఒకవేళ( i_బహిర్గతం>=(pMerger->n_వృక్షం/2) ){
+    i1 = (i_బహిర్గతం - pMerger->n_వృక్షం/2) * 2;
     i2 = i1 + 1;
-  }else{
-    i1 = pMerger->aTree[iOut*2];
-    i2 = pMerger->aTree[iOut*2+1];
+  }లేకపోతే{
+    i1 = pMerger->a_వృక్షం[i_బహిర్గతం*2];
+    i2 = pMerger->a_వృక్షం[i_బహిర్గతం*2+1];
   }
 
   p1 = &pMerger->aReadr[i1];
   p2 = &pMerger->aReadr[i2];
 
-  if( p1->pFd==0 ){
+  ఒకవేళ( p1->pFd==0 ){
     iRes = i2;
-  }else if( p2->pFd==0 ){
+  }లేకపోతే ఒకవేళ( p2->pFd==0 ){
     iRes = i1;
-  }else{
-    SortSubtask *pTask = pMerger->pTask;
-    int bCached = 0;
-    int res;
-    assert( pTask->pUnpacked!=0 );  /* from vdbeSortSubtaskMain() */
+  }లేకపోతే{
+    క్రమీకరించు_Subtask *pTask = pMerger->pTask;
+    పూర్ణాంకం bCached = 0;
+    పూర్ణాంకం res;
+    ప్రతిజ్ఞా( pTask->pUnpacked!=0 );  /* from vdbeSortSubtaskMain() */
     res = pTask->xCompare(
-        pTask, &bCached, p1->aKey, p1->nKey, p2->aKey, p2->nKey
+        pTask, &bCached, p1->a_కీలకం, p1->n_కీలకం, p2->a_కీలకం, p2->n_కీలకం
     );
-    if( res<=0 ){
+    ఒకవేళ( res<=0 ){
       iRes = i1;
-    }else{
+    }లేకపోతే{
       iRes = i2;
     }
   }
 
-  pMerger->aTree[iOut] = iRes;
+  pMerger->a_వృక్షం[i_బహిర్గతం] = iRes;
 }
 
 /*
@@ -2263,16 +2263,16 @@ static void vdbeMergeEngineCompare(
 ** SQLITE_MAX_WORKER_THREADS==0).  The other values are only used
 ** when there exists one or more separate worker threads.
 */
-#define INCRINIT_NORMAL 0
-#define INCRINIT_TASK   1
-#define INCRINIT_ROOT   2
+#నిర్వచించు INCRINIT_సాధారణ 0
+#నిర్వచించు INCRINIT_TASK   1
+#నిర్వచించు INCRINIT_మూలం   2
 
 /*
 ** Forward reference required as the vdbeIncrMergeInit() and
 ** vdbePmaReaderIncrInit() routines are called mutually recursively when
 ** building a merge tree.
 */
-static int vdbePmaReaderIncrInit(PmaReader *pReadr, int eMode);
+స్థిర పూర్ణాంకం vdbePmaReaderIncrInit(PmaReader *pReadr, పూర్ణాంకం e_బహుళకం);
 
 /*
 ** Initialize the MergeEngine object passed as the second argument. Once this
@@ -2292,29 +2292,29 @@ static int vdbePmaReaderIncrInit(PmaReader *pReadr, int eMode);
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-static int vdbeMergeEngineInit(
-  SortSubtask *pTask,             /* Thread that will run pMerger */
-  MergeEngine *pMerger,           /* MergeEngine to initialize */
-  int eMode                       /* One of the INCRINIT_XXX constants */
+స్థిర పూర్ణాంకం vdbe_విలీనం_Engine_Init(
+  క్రమీకరించు_Subtask *pTask,             /* Thread that will run pMerger */
+  విలీనం_Engine *pMerger,           /* MergeEngine to initialize */
+  పూర్ణాంకం e_బహుళకం                       /* One of the INCRINIT_XXX constants */
 ){
-  int rc = SQLITE_OK;             /* Return code */
-  int i;                          /* For looping over PmaReader objects */
-  int nTree;                      /* Number of subtrees to merge */
+  పూర్ణాంకం rc = SQLITE_OK;             /* Return code */
+  పూర్ణాంకం i;                          /* For looping over PmaReader objects */
+  పూర్ణాంకం n_వృక్షం;                      /* Number of subtrees to merge */
 
   /* Failure to allocate the merge would have been detected prior to
   ** invoking this routine */
-  assert( pMerger!=0 );
+  ప్రతిజ్ఞా( pMerger!=0 );
 
   /* eMode is always INCRINIT_NORMAL in single-threaded mode */
-  assert( SQLITE_MAX_WORKER_THREADS>0 || eMode==INCRINIT_NORMAL );
+  ప్రతిజ్ఞా( SQLITE_MAX_కార్మికుడు_దారాలు>0 || e_బహుళకం==INCRINIT_సాధారణ );
 
   /* Verify that the MergeEngine is assigned to a single thread */
-  assert( pMerger->pTask==0 );
+  ప్రతిజ్ఞా( pMerger->pTask==0 );
   pMerger->pTask = pTask;
 
-  nTree = pMerger->nTree;
-  for(i=0; i<nTree; i++){
-    if( SQLITE_MAX_WORKER_THREADS>0 && eMode==INCRINIT_ROOT ){
+  n_వృక్షం = pMerger->n_వృక్షం;
+  కొరకు(i=0; i<n_వృక్షం; i++){
+    ఒకవేళ( SQLITE_MAX_కార్మికుడు_దారాలు>0 && e_బహుళకం==INCRINIT_మూలం ){
       /* PmaReaders should be normally initialized in order, as if they are
       ** reading from the same temp file this makes for more linear file IO.
       ** However, in the INCRINIT_ROOT case, if PmaReader aReadr[nTask-1] is
@@ -2322,17 +2322,17 @@ static int vdbeMergeEngineInit(
       ** the main thread to fill its buffer. So calling PmaReaderNext()
       ** on this PmaReader before any of the multi-threaded PmaReaders takes
       ** better advantage of multi-processor hardware. */
-      rc = vdbePmaReaderNext(&pMerger->aReadr[nTree-i-1]);
-    }else{
-      rc = vdbePmaReaderIncrInit(&pMerger->aReadr[i], INCRINIT_NORMAL);
+      rc = vdbe_Pma_Reader_తదుపరి(&pMerger->aReadr[n_వృక్షం-i-1]);
+    }లేకపోతే{
+      rc = vdbePmaReaderIncrInit(&pMerger->aReadr[i], INCRINIT_సాధారణ);
     }
-    if( rc!=SQLITE_OK ) return rc;
+    ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
   }
 
-  for(i=pMerger->nTree-1; i>0; i--){
-    vdbeMergeEngineCompare(pMerger, i);
+  కొరకు(i=pMerger->n_వృక్షం-1; i>0; i--){
+    vdbe_విలీనం_Engine_Compare(pMerger, i);
   }
-  return pTask->pUnpacked->errCode;
+  తిరిగి pTask->pUnpacked->err_సంకేతం;
 }
 
 /*
@@ -2368,46 +2368,46 @@ static int vdbeMergeEngineInit(
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-static int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode){
-  int rc = SQLITE_OK;
+స్థిర పూర్ణాంకం vdbe_Pma_Reader_Incr_విలీనం_Init(PmaReader *pReadr, పూర్ణాంకం e_బహుళకం){
+  పూర్ణాంకం rc = SQLITE_OK;
   IncrMerger *pIncr = pReadr->pIncr;
-  SortSubtask *pTask = pIncr->pTask;
+  క్రమీకరించు_Subtask *pTask = pIncr->pTask;
   sqlite3 *db = pTask->pSorter->db;
 
   /* eMode is always INCRINIT_NORMAL in single-threaded mode */
-  assert( SQLITE_MAX_WORKER_THREADS>0 || eMode==INCRINIT_NORMAL );
+  ప్రతిజ్ఞా( SQLITE_MAX_కార్మికుడు_దారాలు>0 || e_బహుళకం==INCRINIT_సాధారణ );
 
-  rc = vdbeMergeEngineInit(pTask, pIncr->pMerger, eMode);
+  rc = vdbe_విలీనం_Engine_Init(pTask, pIncr->pMerger, e_బహుళకం);
 
   /* Set up the required files for pIncr. A multi-threaded IncrMerge object
   ** requires two temp files to itself, whereas a single-threaded object
   ** only requires a region of pTask->file2. */
-  if( rc==SQLITE_OK ){
-    int mxSz = pIncr->mxSz;
-#if SQLITE_MAX_WORKER_THREADS>0
-    if( pIncr->bUseThread ){
-      rc = vdbeSorterOpenTempFile(db, mxSz, &pIncr->aFile[0].pFd);
-      if( rc==SQLITE_OK ){
-        rc = vdbeSorterOpenTempFile(db, mxSz, &pIncr->aFile[1].pFd);
+  ఒకవేళ( rc==SQLITE_OK ){
+    పూర్ణాంకం mxSz = pIncr->mxSz;
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+    ఒకవేళ( pIncr->bUseThread ){
+      rc = vdbe_Sorter_Open_తాత్కాలిక_File(db, mxSz, &pIncr->aFile[0].pFd);
+      ఒకవేళ( rc==SQLITE_OK ){
+        rc = vdbe_Sorter_Open_తాత్కాలిక_File(db, mxSz, &pIncr->aFile[1].pFd);
       }
-    }else
-#endif
+    }లేకపోతే
+#అయితే_ముగింపు
     /*if( !pIncr->bUseThread )*/{
-      if( pTask->file2.pFd==0 ){
-        assert( pTask->file2.iEof>0 );
-        rc = vdbeSorterOpenTempFile(db, pTask->file2.iEof, &pTask->file2.pFd);
+      ఒకవేళ( pTask->file2.pFd==0 ){
+        ప్రతిజ్ఞా( pTask->file2.iEof>0 );
+        rc = vdbe_Sorter_Open_తాత్కాలిక_File(db, pTask->file2.iEof, &pTask->file2.pFd);
         pTask->file2.iEof = 0;
       }
-      if( rc==SQLITE_OK ){
+      ఒకవేళ( rc==SQLITE_OK ){
         pIncr->aFile[1].pFd = pTask->file2.pFd;
-        pIncr->iStartOff = pTask->file2.iEof;
+        pIncr->i_ప్రారంభం_Off = pTask->file2.iEof;
         pTask->file2.iEof += mxSz;
       }
     }
   }
 
-#if SQLITE_MAX_WORKER_THREADS>0
-  if( rc==SQLITE_OK && pIncr->bUseThread ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+  ఒకవేళ( rc==SQLITE_OK && pIncr->bUseThread ){
     /* Use the current thread to populate aFile[1], even though this
     ** PmaReader is multi-threaded. If this is an INCRINIT_TASK object,
     ** then this function is already running in background thread
@@ -2418,32 +2418,32 @@ static int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode){
     ** control to the VDBE or proceed with anything useful until the
     ** first results are ready from this merger object anyway.
     */
-    assert( eMode==INCRINIT_ROOT || eMode==INCRINIT_TASK );
+    ప్రతిజ్ఞా( e_బహుళకం==INCRINIT_మూలం || e_బహుళకం==INCRINIT_TASK );
     rc = vdbeIncrPopulate(pIncr);
   }
-#endif
+#అయితే_ముగింపు
 
-  if( rc==SQLITE_OK && (SQLITE_MAX_WORKER_THREADS==0 || eMode!=INCRINIT_TASK) ){
-    rc = vdbePmaReaderNext(pReadr);
+  ఒకవేళ( rc==SQLITE_OK && (SQLITE_MAX_కార్మికుడు_దారాలు==0 || e_బహుళకం!=INCRINIT_TASK) ){
+    rc = vdbe_Pma_Reader_తదుపరి(pReadr);
   }
 
-  return rc;
+  తిరిగి rc;
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
 /*
 ** The main routine for vdbePmaReaderIncrMergeInit() operations run in
 ** background threads.
 */
-static void *vdbePmaReaderBgIncrInit(void *pCtx){
+స్థిర శూన్య *vdbePmaReaderBgIncrInit(శూన్య *pCtx){
   PmaReader *pReader = (PmaReader*)pCtx;
-  void *pRet = SQLITE_INT_TO_PTR(
-                  vdbePmaReaderIncrMergeInit(pReader,INCRINIT_TASK)
+  శూన్య *pRet = SQLITE_INT_గమ్యం_PTR(
+                  vdbe_Pma_Reader_Incr_విలీనం_Init(pReader,INCRINIT_TASK)
                );
-  pReader->pIncr->pTask->bDone = 1;
-  return pRet;
+  pReader->pIncr->pTask->b_పూర్తి = 1;
+  తిరిగి pRet;
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 ** If the PmaReader passed as the first argument is not an incremental-reader
@@ -2456,22 +2456,22 @@ static void *vdbePmaReaderBgIncrInit(void *pCtx){
 ** Or, if the IncrMerger is single threaded, the same function is called
 ** using the current thread.
 */
-static int vdbePmaReaderIncrInit(PmaReader *pReadr, int eMode){
+స్థిర పూర్ణాంకం vdbePmaReaderIncrInit(PmaReader *pReadr, పూర్ణాంకం e_బహుళకం){
   IncrMerger *pIncr = pReadr->pIncr;   /* Incremental merger */
-  int rc = SQLITE_OK;                  /* Return code */
-  if( pIncr ){
-#if SQLITE_MAX_WORKER_THREADS>0
-    assert( pIncr->bUseThread==0 || eMode==INCRINIT_TASK );
-    if( pIncr->bUseThread ){
-      void *pCtx = (void*)pReadr;
+  పూర్ణాంకం rc = SQLITE_OK;                  /* Return code */
+  ఒకవేళ( pIncr ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+    ప్రతిజ్ఞా( pIncr->bUseThread==0 || e_బహుళకం==INCRINIT_TASK );
+    ఒకవేళ( pIncr->bUseThread ){
+      శూన్య *pCtx = (శూన్య*)pReadr;
       rc = vdbeSorterCreateThread(pIncr->pTask, vdbePmaReaderBgIncrInit, pCtx);
-    }else
-#endif
+    }లేకపోతే
+#అయితే_ముగింపు
     {
-      rc = vdbePmaReaderIncrMergeInit(pReadr, eMode);
+      rc = vdbe_Pma_Reader_Incr_విలీనం_Init(pReadr, e_బహుళకం);
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -2486,33 +2486,33 @@ static int vdbePmaReaderIncrInit(PmaReader *pReadr, int eMode){
 ** PMA before returning. If an error does occur, then the final value of
 ** *piOffset is undefined.
 */
-static int vdbeMergeEngineLevel0(
-  SortSubtask *pTask,             /* Sorter task to read from */
-  int nPMA,                       /* Number of PMAs to read */
-  i64 *piOffset,                  /* IN/OUT: Readr offset in pTask->file */
-  MergeEngine **ppOut             /* OUT: New merge-engine */
+స్థిర పూర్ణాంకం vdbe_విలీనం_Engine_Level0(
+  క్రమీకరించు_Subtask *pTask,             /* Sorter task to read from */
+  పూర్ణాంకం nPMA,                       /* Number of PMAs to read */
+  i64 *pi_స్థానభ్రంశం,                  /* IN/OUT: Readr offset in pTask->file */
+  విలీనం_Engine **pp_బహిర్గతం             /* OUT: New merge-engine */
 ){
-  MergeEngine *pNew;              /* Merge engine to return */
-  i64 iOff = *piOffset;
-  int i;
-  int rc = SQLITE_OK;
+  విలీనం_Engine *pNew;              /* Merge engine to return */
+  i64 iOff = *pi_స్థానభ్రంశం;
+  పూర్ణాంకం i;
+  పూర్ణాంకం rc = SQLITE_OK;
 
-  *ppOut = pNew = vdbeMergeEngineNew(nPMA);
-  if( pNew==0 ) rc = SQLITE_NOMEM_BKPT;
+  *pp_బహిర్గతం = pNew = vdbe_విలీనం_Engine_New(nPMA);
+  ఒకవేళ( pNew==0 ) rc = SQLITE_NOMEM_BKPT;
 
-  for(i=0; i<nPMA && rc==SQLITE_OK; i++){
+  కొరకు(i=0; i<nPMA && rc==SQLITE_OK; i++){
     i64 nDummy = 0;
     PmaReader *pReadr = &pNew->aReadr[i];
     rc = vdbePmaReaderInit(pTask, &pTask->file, iOff, pReadr, &nDummy);
     iOff = pReadr->iEof;
   }
 
-  if( rc!=SQLITE_OK ){
-    vdbeMergeEngineFree(pNew);
-    *ppOut = 0;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    vdbe_విలీనం_Engine_Free(pNew);
+    *pp_బహిర్గతం = 0;
   }
-  *piOffset = iOff;
-  return rc;
+  *pi_స్థానభ్రంశం = iOff;
+  తిరిగి rc;
 }
 
 /*
@@ -2525,14 +2525,14 @@ static int vdbeMergeEngineLevel0(
 **   nPMA<=256   -> TreeDepth() == 1
 **   nPMA<=65536 -> TreeDepth() == 2
 */
-static int vdbeSorterTreeDepth(int nPMA){
-  int nDepth = 0;
-  i64 nDiv = SORTER_MAX_MERGE_COUNT;
-  while( nDiv < (i64)nPMA ){
-    nDiv = nDiv * SORTER_MAX_MERGE_COUNT;
-    nDepth++;
+స్థిర పూర్ణాంకం vdbe_Sorter_వృక్షం_లోతు(పూర్ణాంకం nPMA){
+  పూర్ణాంకం n_లోతు = 0;
+  i64 nDiv = SORTER_MAX_విలీనం_లెక్క;
+  అయితే( nDiv < (i64)nPMA ){
+    nDiv = nDiv * SORTER_MAX_విలీనం_లెక్క;
+    n_లోతు++;
   }
-  return nDepth;
+  తిరిగి n_లోతు;
 }
 
 /*
@@ -2543,49 +2543,49 @@ static int vdbeSorterTreeDepth(int nPMA){
 ** If successful, SQLITE_OK is returned. If an error occurs, an SQLite error
 ** code is returned and pLeaf is freed.
 */
-static int vdbeSorterAddToTree(
-  SortSubtask *pTask,             /* Task context */
-  int nDepth,                     /* Depth of tree according to TreeDepth() */
-  int iSeq,                       /* Sequence number of leaf within tree */
-  MergeEngine *pRoot,             /* Root of tree */
-  MergeEngine *pLeaf              /* Leaf to add to tree */
+స్థిర పూర్ణాంకం vdbe_Sorter_కూడు_గమ్యం_వృక్షం(
+  క్రమీకరించు_Subtask *pTask,             /* Task context */
+  పూర్ణాంకం n_లోతు,                     /* Depth of tree according to TreeDepth() */
+  పూర్ణాంకం iSeq,                       /* Sequence number of leaf within tree */
+  విలీనం_Engine *p_మూలం,             /* Root of tree */
+  విలీనం_Engine *p_ఆకు              /* Leaf to add to tree */
 ){
-  int rc = SQLITE_OK;
-  int nDiv = 1;
-  int i;
-  MergeEngine *p = pRoot;
+  పూర్ణాంకం rc = SQLITE_OK;
+  పూర్ణాంకం nDiv = 1;
+  పూర్ణాంకం i;
+  విలీనం_Engine *p = p_మూలం;
   IncrMerger *pIncr;
 
-  rc = vdbeIncrMergerNew(pTask, pLeaf, &pIncr);
+  rc = vdbeIncrMergerNew(pTask, p_ఆకు, &pIncr);
 
-  for(i=1; i<nDepth; i++){
-    nDiv = nDiv * SORTER_MAX_MERGE_COUNT;
+  కొరకు(i=1; i<n_లోతు; i++){
+    nDiv = nDiv * SORTER_MAX_విలీనం_లెక్క;
   }
 
-  for(i=1; i<nDepth && rc==SQLITE_OK; i++){
-    int iIter = (iSeq / nDiv) % SORTER_MAX_MERGE_COUNT;
+  కొరకు(i=1; i<n_లోతు && rc==SQLITE_OK; i++){
+    పూర్ణాంకం iIter = (iSeq / nDiv) % SORTER_MAX_విలీనం_లెక్క;
     PmaReader *pReadr = &p->aReadr[iIter];
 
-    if( pReadr->pIncr==0 ){
-      MergeEngine *pNew = vdbeMergeEngineNew(SORTER_MAX_MERGE_COUNT);
-      if( pNew==0 ){
+    ఒకవేళ( pReadr->pIncr==0 ){
+      విలీనం_Engine *pNew = vdbe_విలీనం_Engine_New(SORTER_MAX_విలీనం_లెక్క);
+      ఒకవేళ( pNew==0 ){
         rc = SQLITE_NOMEM_BKPT;
-      }else{
+      }లేకపోతే{
         rc = vdbeIncrMergerNew(pTask, pNew, &pReadr->pIncr);
       }
     }
-    if( rc==SQLITE_OK ){
+    ఒకవేళ( rc==SQLITE_OK ){
       p = pReadr->pIncr->pMerger;
-      nDiv = nDiv / SORTER_MAX_MERGE_COUNT;
+      nDiv = nDiv / SORTER_MAX_విలీనం_లెక్క;
     }
   }
 
-  if( rc==SQLITE_OK ){
-    p->aReadr[iSeq % SORTER_MAX_MERGE_COUNT].pIncr = pIncr;
-  }else{
+  ఒకవేళ( rc==SQLITE_OK ){
+    p->aReadr[iSeq % SORTER_MAX_విలీనం_లెక్క].pIncr = pIncr;
+  }లేకపోతే{
     vdbeIncrFree(pIncr);
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -2599,74 +2599,74 @@ static int vdbeSorterAddToTree(
 ** error occurs, an SQLite error code is returned and the final value
 ** of *ppOut is undefined.
 */
-static int vdbeSorterMergeTreeBuild(
+స్థిర పూర్ణాంకం vdbe_Sorter_విలీనం_వృక్షం_Build(
   VdbeSorter *pSorter,       /* The VDBE cursor that implements the sort */
-  MergeEngine **ppOut        /* Write the MergeEngine here */
+  విలీనం_Engine **pp_బహిర్గతం        /* Write the MergeEngine here */
 ){
-  MergeEngine *pMain = 0;
-  int rc = SQLITE_OK;
-  int iTask;
+  విలీనం_Engine *pMain = 0;
+  పూర్ణాంకం rc = SQLITE_OK;
+  పూర్ణాంకం iTask;
 
-#if SQLITE_MAX_WORKER_THREADS>0
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
   /* If the sorter uses more than one task, then create the top-level
   ** MergeEngine here. This MergeEngine will read data from exactly
   ** one PmaReader per sub-task.  */
-  assert( pSorter->bUseThreads || pSorter->nTask==1 );
-  if( pSorter->nTask>1 ){
-    pMain = vdbeMergeEngineNew(pSorter->nTask);
-    if( pMain==0 ) rc = SQLITE_NOMEM_BKPT;
+  ప్రతిజ్ఞా( pSorter->b_Use_దారాలు || pSorter->nTask==1 );
+  ఒకవేళ( pSorter->nTask>1 ){
+    pMain = vdbe_విలీనం_Engine_New(pSorter->nTask);
+    ఒకవేళ( pMain==0 ) rc = SQLITE_NOMEM_BKPT;
   }
-#endif
+#అయితే_ముగింపు
 
-  for(iTask=0; rc==SQLITE_OK && iTask<pSorter->nTask; iTask++){
-    SortSubtask *pTask = &pSorter->aTask[iTask];
-    assert( pTask->nPMA>0 || SQLITE_MAX_WORKER_THREADS>0 );
-    if( SQLITE_MAX_WORKER_THREADS==0 || pTask->nPMA ){
-      MergeEngine *pRoot = 0;     /* Root node of tree for this task */
-      int nDepth = vdbeSorterTreeDepth(pTask->nPMA);
+  కొరకు(iTask=0; rc==SQLITE_OK && iTask<pSorter->nTask; iTask++){
+    క్రమీకరించు_Subtask *pTask = &pSorter->aTask[iTask];
+    ప్రతిజ్ఞా( pTask->nPMA>0 || SQLITE_MAX_కార్మికుడు_దారాలు>0 );
+    ఒకవేళ( SQLITE_MAX_కార్మికుడు_దారాలు==0 || pTask->nPMA ){
+      విలీనం_Engine *p_మూలం = 0;     /* Root node of tree for this task */
+      పూర్ణాంకం n_లోతు = vdbe_Sorter_వృక్షం_లోతు(pTask->nPMA);
       i64 iReadOff = 0;
 
-      if( pTask->nPMA<=SORTER_MAX_MERGE_COUNT ){
-        rc = vdbeMergeEngineLevel0(pTask, pTask->nPMA, &iReadOff, &pRoot);
-      }else{
-        int i;
-        int iSeq = 0;
-        pRoot = vdbeMergeEngineNew(SORTER_MAX_MERGE_COUNT);
-        if( pRoot==0 ) rc = SQLITE_NOMEM_BKPT;
-        for(i=0; i<pTask->nPMA && rc==SQLITE_OK; i += SORTER_MAX_MERGE_COUNT){
-          MergeEngine *pMerger = 0; /* New level-0 PMA merger */
-          int nReader;              /* Number of level-0 PMAs to merge */
+      ఒకవేళ( pTask->nPMA<=SORTER_MAX_విలీనం_లెక్క ){
+        rc = vdbe_విలీనం_Engine_Level0(pTask, pTask->nPMA, &iReadOff, &p_మూలం);
+      }లేకపోతే{
+        పూర్ణాంకం i;
+        పూర్ణాంకం iSeq = 0;
+        p_మూలం = vdbe_విలీనం_Engine_New(SORTER_MAX_విలీనం_లెక్క);
+        ఒకవేళ( p_మూలం==0 ) rc = SQLITE_NOMEM_BKPT;
+        కొరకు(i=0; i<pTask->nPMA && rc==SQLITE_OK; i += SORTER_MAX_విలీనం_లెక్క){
+          విలీనం_Engine *pMerger = 0; /* New level-0 PMA merger */
+          పూర్ణాంకం nReader;              /* Number of level-0 PMAs to merge */
 
-          nReader = MIN(pTask->nPMA - i, SORTER_MAX_MERGE_COUNT);
-          rc = vdbeMergeEngineLevel0(pTask, nReader, &iReadOff, &pMerger);
-          if( rc==SQLITE_OK ){
-            rc = vdbeSorterAddToTree(pTask, nDepth, iSeq++, pRoot, pMerger);
+          nReader = MIN(pTask->nPMA - i, SORTER_MAX_విలీనం_లెక్క);
+          rc = vdbe_విలీనం_Engine_Level0(pTask, nReader, &iReadOff, &pMerger);
+          ఒకవేళ( rc==SQLITE_OK ){
+            rc = vdbe_Sorter_కూడు_గమ్యం_వృక్షం(pTask, n_లోతు, iSeq++, p_మూలం, pMerger);
           }
         }
       }
 
-      if( rc==SQLITE_OK ){
-#if SQLITE_MAX_WORKER_THREADS>0
-        if( pMain!=0 ){
-          rc = vdbeIncrMergerNew(pTask, pRoot, &pMain->aReadr[iTask].pIncr);
-        }else
-#endif
+      ఒకవేళ( rc==SQLITE_OK ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+        ఒకవేళ( pMain!=0 ){
+          rc = vdbeIncrMergerNew(pTask, p_మూలం, &pMain->aReadr[iTask].pIncr);
+        }లేకపోతే
+#అయితే_ముగింపు
         {
-          assert( pMain==0 );
-          pMain = pRoot;
+          ప్రతిజ్ఞా( pMain==0 );
+          pMain = p_మూలం;
         }
-      }else{
-        vdbeMergeEngineFree(pRoot);
+      }లేకపోతే{
+        vdbe_విలీనం_Engine_Free(p_మూలం);
       }
     }
   }
 
-  if( rc!=SQLITE_OK ){
-    vdbeMergeEngineFree(pMain);
+  ఒకవేళ( rc!=SQLITE_OK ){
+    vdbe_విలీనం_Engine_Free(pMain);
     pMain = 0;
   }
-  *ppOut = pMain;
-  return rc;
+  *pp_బహిర్గతం = pMain;
+  తిరిగి rc;
 }
 
 /*
@@ -2678,45 +2678,45 @@ static int vdbeSorterMergeTreeBuild(
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
-  int rc;                         /* Return code */
-  SortSubtask *pTask0 = &pSorter->aTask[0];
-  MergeEngine *pMain = 0;
-#if SQLITE_MAX_WORKER_THREADS
+స్థిర పూర్ణాంకం vdbe_Sorter_అమరిక_విలీనం(VdbeSorter *pSorter){
+  పూర్ణాంకం rc;                         /* Return code */
+  క్రమీకరించు_Subtask *pTask0 = &pSorter->aTask[0];
+  విలీనం_Engine *pMain = 0;
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు
   sqlite3 *db = pTask0->pSorter->db;
-  int i;
+  పూర్ణాంకం i;
   SorterCompare xCompare = vdbeSorterGetCompare(pSorter);
-  for(i=0; i<pSorter->nTask; i++){
+  కొరకు(i=0; i<pSorter->nTask; i++){
     pSorter->aTask[i].xCompare = xCompare;
   }
-#endif
+#అయితే_ముగింపు
 
-  rc = vdbeSorterMergeTreeBuild(pSorter, &pMain);
-  if( rc==SQLITE_OK ){
-#if SQLITE_MAX_WORKER_THREADS
-    assert( pSorter->bUseThreads==0 || pSorter->nTask>1 );
-    if( pSorter->bUseThreads ){
-      int iTask;
+  rc = vdbe_Sorter_విలీనం_వృక్షం_Build(pSorter, &pMain);
+  ఒకవేళ( rc==SQLITE_OK ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు
+    ప్రతిజ్ఞా( pSorter->b_Use_దారాలు==0 || pSorter->nTask>1 );
+    ఒకవేళ( pSorter->b_Use_దారాలు ){
+      పూర్ణాంకం iTask;
       PmaReader *pReadr = 0;
-      SortSubtask *pLast = &pSorter->aTask[pSorter->nTask-1];
-      rc = vdbeSortAllocUnpacked(pLast);
-      if( rc==SQLITE_OK ){
-        pReadr = (PmaReader*)sqlite3DbMallocZero(db, sizeof(PmaReader));
+      క్రమీకరించు_Subtask *p_చివరి = &pSorter->aTask[pSorter->nTask-1];
+      rc = vdbe_క్రమీకరించు_Alloc_Unpacked(p_చివరి);
+      ఒకవేళ( rc==SQLITE_OK ){
+        pReadr = (PmaReader*)sqlite3DbMallocZero(db, పరిమాణం(PmaReader));
         pSorter->pReader = pReadr;
-        if( pReadr==0 ) rc = SQLITE_NOMEM_BKPT;
+        ఒకవేళ( pReadr==0 ) rc = SQLITE_NOMEM_BKPT;
       }
-      if( rc==SQLITE_OK ){
-        rc = vdbeIncrMergerNew(pLast, pMain, &pReadr->pIncr);
-        if( rc==SQLITE_OK ){
-          vdbeIncrMergerSetThreads(pReadr->pIncr);
-          for(iTask=0; iTask<(pSorter->nTask-1); iTask++){
+      ఒకవేళ( rc==SQLITE_OK ){
+        rc = vdbeIncrMergerNew(p_చివరి, pMain, &pReadr->pIncr);
+        ఒకవేళ( rc==SQLITE_OK ){
+          vdbe_Incr_Merger_సమితి_దారాలు(pReadr->pIncr);
+          కొరకు(iTask=0; iTask<(pSorter->nTask-1); iTask++){
             IncrMerger *pIncr;
-            if( (pIncr = pMain->aReadr[iTask].pIncr) ){
-              vdbeIncrMergerSetThreads(pIncr);
-              assert( pIncr->pTask!=pLast );
+            ఒకవేళ( (pIncr = pMain->aReadr[iTask].pIncr) ){
+              vdbe_Incr_Merger_సమితి_దారాలు(pIncr);
+              ప్రతిజ్ఞా( pIncr->pTask!=p_చివరి );
             }
           }
-          for(iTask=0; rc==SQLITE_OK && iTask<pSorter->nTask; iTask++){
+          కొరకు(iTask=0; rc==SQLITE_OK && iTask<pSorter->nTask; iTask++){
             /* Check that:
             **  
             **   a) The incremental merge object is configured to use the
@@ -2727,7 +2727,7 @@ static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
             **      object.
             */
             PmaReader *p = &pMain->aReadr[iTask];
-            assert( p->pIncr==0 || (
+            ప్రతిజ్ఞా( p->pIncr==0 || (
                 (p->pIncr->pTask==&pSorter->aTask[iTask])             /* a */
              && (iTask!=pSorter->nTask-1 || p->pIncr->bUseThread==0)  /* b */
             ));
@@ -2736,22 +2736,22 @@ static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
         }
         pMain = 0;
       }
-      if( rc==SQLITE_OK ){
-        rc = vdbePmaReaderIncrMergeInit(pReadr, INCRINIT_ROOT);
+      ఒకవేళ( rc==SQLITE_OK ){
+        rc = vdbe_Pma_Reader_Incr_విలీనం_Init(pReadr, INCRINIT_మూలం);
       }
-    }else
-#endif
+    }లేకపోతే
+#అయితే_ముగింపు
     {
-      rc = vdbeMergeEngineInit(pTask0, pMain, INCRINIT_NORMAL);
+      rc = vdbe_విలీనం_Engine_Init(pTask0, pMain, INCRINIT_సాధారణ);
       pSorter->pMerger = pMain;
       pMain = 0;
     }
   }
 
-  if( rc!=SQLITE_OK ){
-    vdbeMergeEngineFree(pMain);
+  ఒకవేళ( rc!=SQLITE_OK ){
+    vdbe_విలీనం_Engine_Free(pMain);
   }
-  return rc;
+  తిరిగి rc;
 }
 
 
@@ -2760,32 +2760,32 @@ static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
 ** this function is called to prepare for iterating through the records
 ** in sorted order.
 */
-int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof){
+పూర్ణాంకం sqlite3VdbeSorterRewind(స్థిరరాశి VdbeCursor *pCsr, పూర్ణాంకం *pbEof){
   VdbeSorter *pSorter;
-  int rc = SQLITE_OK;             /* Return code */
+  పూర్ణాంకం rc = SQLITE_OK;             /* Return code */
 
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  assert( pSorter );
+  ప్రతిజ్ఞా( pSorter );
 
   /* If no data has been written to disk, then do not do so now. Instead,
   ** sort the VdbeSorter.pRecord list. The vdbe layer will read data directly
   ** from the in-memory list.  */
-  if( pSorter->bUsePMA==0 ){
-    if( pSorter->list.pList ){
+  ఒకవేళ( pSorter->bUsePMA==0 ){
+    ఒకవేళ( pSorter->list.pList ){
       *pbEof = 0;
-      rc = vdbeSorterSort(&pSorter->aTask[0], &pSorter->list);
-    }else{
+      rc = vdbe_Sorter_క్రమీకరించు(&pSorter->aTask[0], &pSorter->list);
+    }లేకపోతే{
       *pbEof = 1;
     }
-    return rc;
+    తిరిగి rc;
   }
 
   /* Write the current in-memory list to a PMA. When the VdbeSorterWrite()
   ** function flushes the contents of memory to disk, it immediately always
   ** creates a new list consisting of a single key immediately afterwards.
   ** So the list is never empty at this point.  */
-  assert( pSorter->list.pList );
+  ప్రతిజ్ఞా( pSorter->list.pList );
   rc = vdbeSorterFlushPMA(pSorter);
 
   /* Join all threads */
@@ -2795,14 +2795,14 @@ int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof){
 
   /* Assuming no errors have occurred, set up a merger structure to
   ** incrementally read and merge all remaining PMAs.  */
-  assert( pSorter->pReader==0 );
-  if( rc==SQLITE_OK ){
-    rc = vdbeSorterSetupMerge(pSorter);
+  ప్రతిజ్ఞా( pSorter->pReader==0 );
+  ఒకవేళ( rc==SQLITE_OK ){
+    rc = vdbe_Sorter_అమరిక_విలీనం(pSorter);
     *pbEof = 0;
   }
 
   vdbeSorterRewindDebug("rewinddone");
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -2812,86 +2812,86 @@ int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof){
 **    SQLITE_DONE   end of data
 **    otherwise     some kind of error.
 */
-int sqlite3VdbeSorterNext(sqlite3 *db, const VdbeCursor *pCsr){
+పూర్ణాంకం sqlite3_Vdbe_Sorter_తదుపరి(sqlite3 *db, స్థిరరాశి VdbeCursor *pCsr){
   VdbeSorter *pSorter;
-  int rc;                         /* Return code */
+  పూర్ణాంకం rc;                         /* Return code */
 
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  assert( pSorter->bUsePMA || (pSorter->pReader==0 && pSorter->pMerger==0) );
-  if( pSorter->bUsePMA ){
-    assert( pSorter->pReader==0 || pSorter->pMerger==0 );
-    assert( pSorter->bUseThreads==0 || pSorter->pReader );
-    assert( pSorter->bUseThreads==1 || pSorter->pMerger );
-#if SQLITE_MAX_WORKER_THREADS>0
-    if( pSorter->bUseThreads ){
-      rc = vdbePmaReaderNext(pSorter->pReader);
-      if( rc==SQLITE_OK && pSorter->pReader->pFd==0 ) rc = SQLITE_DONE;
-    }else
-#endif
+  ప్రతిజ్ఞా( pSorter->bUsePMA || (pSorter->pReader==0 && pSorter->pMerger==0) );
+  ఒకవేళ( pSorter->bUsePMA ){
+    ప్రతిజ్ఞా( pSorter->pReader==0 || pSorter->pMerger==0 );
+    ప్రతిజ్ఞా( pSorter->b_Use_దారాలు==0 || pSorter->pReader );
+    ప్రతిజ్ఞా( pSorter->b_Use_దారాలు==1 || pSorter->pMerger );
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+    ఒకవేళ( pSorter->b_Use_దారాలు ){
+      rc = vdbe_Pma_Reader_తదుపరి(pSorter->pReader);
+      ఒకవేళ( rc==SQLITE_OK && pSorter->pReader->pFd==0 ) rc = SQLITE_పూర్తి;
+    }లేకపోతే
+#అయితే_ముగింపు
     /*if( !pSorter->bUseThreads )*/ {
-      int res = 0;
-      assert( pSorter->pMerger!=0 );
-      assert( pSorter->pMerger->pTask==(&pSorter->aTask[0]) );
-      rc = vdbeMergeEngineStep(pSorter->pMerger, &res);
-      if( rc==SQLITE_OK && res ) rc = SQLITE_DONE;
+      పూర్ణాంకం res = 0;
+      ప్రతిజ్ఞా( pSorter->pMerger!=0 );
+      ప్రతిజ్ఞా( pSorter->pMerger->pTask==(&pSorter->aTask[0]) );
+      rc = vdbe_విలీనం_Engine_అడుగు(pSorter->pMerger, &res);
+      ఒకవేళ( rc==SQLITE_OK && res ) rc = SQLITE_పూర్తి;
     }
-  }else{
-    SorterRecord *pFree = pSorter->list.pList;
-    pSorter->list.pList = pFree->u.pNext;
-    pFree->u.pNext = 0;
-    if( pSorter->list.aMemory==0 ) vdbeSorterRecordFree(db, pFree);
-    rc = pSorter->list.pList ? SQLITE_OK : SQLITE_DONE;
+  }లేకపోతే{
+    Sorter_రికార్డు *pFree = pSorter->list.pList;
+    pSorter->list.pList = pFree->u.p_తదుపరి;
+    pFree->u.p_తదుపరి = 0;
+    ఒకవేళ( pSorter->list.a_జ్ఞాపకం==0 ) vdbe_Sorter_రికార్డు_Free(db, pFree);
+    rc = pSorter->list.pList ? SQLITE_OK : SQLITE_పూర్తి;
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Return a pointer to a buffer owned by the sorter that contains the
 ** current key.
 */
-static void *vdbeSorterRowkey(
-  const VdbeSorter *pSorter,      /* Sorter object */
-  int *pnKey                      /* OUT: Size of current key in bytes */
+స్థిర శూన్య *vdbeSorterRowkey(
+  స్థిరరాశి VdbeSorter *pSorter,      /* Sorter object */
+  పూర్ణాంకం *pn_కీలకం                      /* OUT: Size of current key in bytes */
 ){
-  void *pKey;
-  if( pSorter->bUsePMA ){
+  శూన్య *p_కీలకం;
+  ఒకవేళ( pSorter->bUsePMA ){
     PmaReader *pReader;
-#if SQLITE_MAX_WORKER_THREADS>0
-    if( pSorter->bUseThreads ){
+#ఒకవేళ SQLITE_MAX_కార్మికుడు_దారాలు>0
+    ఒకవేళ( pSorter->b_Use_దారాలు ){
       pReader = pSorter->pReader;
-    }else
-#endif
+    }లేకపోతే
+#అయితే_ముగింపు
     /*if( !pSorter->bUseThreads )*/{
-      pReader = &pSorter->pMerger->aReadr[pSorter->pMerger->aTree[1]];
+      pReader = &pSorter->pMerger->aReadr[pSorter->pMerger->a_వృక్షం[1]];
     }
-    *pnKey = pReader->nKey;
-    pKey = pReader->aKey;
-  }else{
-    *pnKey = pSorter->list.pList->nVal;
-    pKey = SRVAL(pSorter->list.pList);
+    *pn_కీలకం = pReader->n_కీలకం;
+    p_కీలకం = pReader->a_కీలకం;
+  }లేకపోతే{
+    *pn_కీలకం = pSorter->list.pList->nVal;
+    p_కీలకం = SRVAL(pSorter->list.pList);
   }
-  return pKey;
+  తిరిగి p_కీలకం;
 }
 
 /*
 ** Copy the current sorter key into the memory cell pOut.
 */
-int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut){
+పూర్ణాంకం sqlite3VdbeSorterRowkey(స్థిరరాశి VdbeCursor *pCsr, Mem *p_బహిర్గతం){
   VdbeSorter *pSorter;
-  void *pKey; int nKey;           /* Sorter key to copy into pOut */
+  శూన్య *p_కీలకం; పూర్ణాంకం n_కీలకం;           /* Sorter key to copy into pOut */
 
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  pKey = vdbeSorterRowkey(pSorter, &nKey);
-  if( sqlite3VdbeMemClearAndResize(pOut, nKey) ){
-    return SQLITE_NOMEM_BKPT;
+  p_కీలకం = vdbeSorterRowkey(pSorter, &n_కీలకం);
+  ఒకవేళ( sqlite3VdbeMemClearAndResize(p_బహిర్గతం, n_కీలకం) ){
+    తిరిగి SQLITE_NOMEM_BKPT;
   }
-  pOut->n = nKey;
-  MemSetTypeFlag(pOut, MEM_Blob);
-  memcpy(pOut->z, pKey, nKey);
+  p_బహిర్గతం->n = n_కీలకం;
+  Mem_సమితి_Type_Flag(p_బహిర్గతం, MEM_Blob);
+  జ్ఞాపకం_నకలు(p_బహిర్గతం->z, p_కీలకం, n_కీలకం);
 
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -2910,38 +2910,38 @@ int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut){
 ** This routine forms the core of the OP_SorterCompare opcode, which in
 ** turn is used to verify uniqueness when constructing a UNIQUE INDEX.
 */
-int sqlite3VdbeSorterCompare(
-  const VdbeCursor *pCsr,         /* Sorter cursor */
+పూర్ణాంకం sqlite3VdbeSorterCompare(
+  స్థిరరాశి VdbeCursor *pCsr,         /* Sorter cursor */
   Mem *pVal,                      /* Value to compare to current sorter key */
-  int nKeyCol,                    /* Compare this many columns */
-  int *pRes                       /* OUT: Result of comparison */
+  పూర్ణాంకం n_కీలకం_నిలువు,                    /* Compare this many columns */
+  పూర్ణాంకం *pRes                       /* OUT: Result of comparison */
 ){
   VdbeSorter *pSorter;
-  UnpackedRecord *r2;
-  KeyInfo *pKeyInfo;
-  int i;
-  void *pKey; int nKey;           /* Sorter key to compare pVal with */
+  Unpacked_రికార్డు *r2;
+  కీలకం_Info *p_కీలకం_Info;
+  పూర్ణాంకం i;
+  శూన్య *p_కీలకం; పూర్ణాంకం n_కీలకం;           /* Sorter key to compare pVal with */
 
-  assert( pCsr->eCurType==CURTYPE_SORTER );
+  ప్రతిజ్ఞా( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
   r2 = pSorter->pUnpacked;
-  pKeyInfo = pCsr->pKeyInfo;
-  if( r2==0 ){
-    r2 = pSorter->pUnpacked = sqlite3VdbeAllocUnpackedRecord(pKeyInfo);
-    if( r2==0 ) return SQLITE_NOMEM_BKPT;
-    r2->nField = nKeyCol;
+  p_కీలకం_Info = pCsr->p_కీలకం_Info;
+  ఒకవేళ( r2==0 ){
+    r2 = pSorter->pUnpacked = sqlite3_Vdbe_Alloc_Unpacked_రికార్డు(p_కీలకం_Info);
+    ఒకవేళ( r2==0 ) తిరిగి SQLITE_NOMEM_BKPT;
+    r2->n_క్షేత్రం = n_కీలకం_నిలువు;
   }
-  assert( r2->nField==nKeyCol );
+  ప్రతిజ్ఞా( r2->n_క్షేత్రం==n_కీలకం_నిలువు );
 
-  pKey = vdbeSorterRowkey(pSorter, &nKey);
-  sqlite3VdbeRecordUnpack(nKey, pKey, r2);
-  for(i=0; i<nKeyCol; i++){
-    if( r2->aMem[i].flags & MEM_Null ){
+  p_కీలకం = vdbeSorterRowkey(pSorter, &n_కీలకం);
+  sqlite3_Vdbe_రికార్డు_Unpack(n_కీలకం, p_కీలకం, r2);
+  కొరకు(i=0; i<n_కీలకం_నిలువు; i++){
+    ఒకవేళ( r2->aMem[i].flags & MEM_Null ){
       *pRes = -1;
-      return SQLITE_OK;
+      తిరిగి SQLITE_OK;
     }
   }
 
-  *pRes = sqlite3VdbeRecordCompare(pVal->n, pVal->z, r2);
-  return SQLITE_OK;
+  *pRes = sqlite3_Vdbe_రికార్డు_Compare(pVal->n, pVal->z, r2);
+  తిరిగి SQLITE_OK;
 }

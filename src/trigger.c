@@ -10,24 +10,24 @@
 *************************************************************************
 ** This file contains the implementation for TRIGGERs
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_TRIGGER
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
 /*
 ** Delete a linked list of TriggerStep structures.
 */
-void sqlite3DeleteTriggerStep(sqlite3 *db, TriggerStep *pTriggerStep){
-  while( pTriggerStep ){
-    TriggerStep * pTmp = pTriggerStep;
-    pTriggerStep = pTriggerStep->pNext;
+శూన్య sqlite3_Delete_Trigger_అడుగు(sqlite3 *db, Trigger_అడుగు *p_Trigger_అడుగు){
+  అయితే( p_Trigger_అడుగు ){
+    Trigger_అడుగు * pTmp = p_Trigger_అడుగు;
+    p_Trigger_అడుగు = p_Trigger_అడుగు->p_తదుపరి;
 
-    sqlite3ExprDelete(db, pTmp->pWhere);
-    sqlite3ExprListDelete(db, pTmp->pExprList);
+    sqlite3_సమాసం_Delete(db, pTmp->pWhere);
+    sqlite3_సమాసం_List_Delete(db, pTmp->p_సమాసం_List);
     sqlite3SelectDelete(db, pTmp->pSelect);
     sqlite3IdListDelete(db, pTmp->pIdList);
     sqlite3UpsertDelete(db, pTmp->pUpsert);
     sqlite3SrcListDelete(db, pTmp->pSrc);
-    sqlite3DbFree(db, pTmp->zSpan);
+    sqlite3DbFree(db, pTmp->z_పరిధి);
 
     sqlite3DbFree(db, pTmp);
   }
@@ -47,50 +47,50 @@ void sqlite3DeleteTriggerStep(sqlite3 *db, TriggerStep *pTriggerStep){
 ** that fire off of pTab.  The list will include any TEMP triggers on
 ** pTab as well as the triggers lised in pTab->pTrigger.
 */
-Trigger *sqlite3TriggerList(Parse *pParse, Table *pTab){
+Trigger *sqlite3TriggerList(Parse *pParse, పట్టిక *pTab){
   Schema *pTmpSchema;       /* Schema of the pTab table */
   Trigger *pList;           /* List of triggers to return */
   HashElem *p;              /* Loop variable for TEMP triggers */
 
-  assert( pParse->disableTriggers==0 );
+  ప్రతిజ్ఞా( pParse->disableTriggers==0 );
   pTmpSchema = pParse->db->aDb[1].pSchema;
-  p = sqliteHashFirst(&pTmpSchema->trigHash);
+  p = sqlite_Hash_మొదటి(&pTmpSchema->trigHash);
   pList = pTab->pTrigger;
-  while( p ){
-    Trigger *pTrig = (Trigger *)sqliteHashData(p);
-    if( pTrig->pTabSchema==pTab->pSchema
-     && pTrig->table
-     && 0==sqlite3StrICmp(pTrig->table, pTab->zName)
+  అయితే( p ){
+    Trigger *pTrig = (Trigger *)sqlite_Hash_దత్తాంశం(p);
+    ఒకవేళ( pTrig->pTabSchema==pTab->pSchema
+     && pTrig->పట్టిక_2
+     && 0==sqlite3StrICmp(pTrig->పట్టిక_2, pTab->zName)
      && (pTrig->pTabSchema!=pTmpSchema || pTrig->bReturning)
     ){
-      pTrig->pNext = pList;
+      pTrig->p_తదుపరి = pList;
       pList = pTrig;
-    }else if( pTrig->op==TK_RETURNING ){
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-      assert( pParse->db->pVtabCtx==0 );
-#endif
-      assert( pParse->bReturning );
-      assert( !pParse->isCreate );
-      assert( &(pParse->u1.d.pReturning->retTrig) == pTrig );
-      pTrig->table = pTab->zName;
+    }లేకపోతే ఒకవేళ( pTrig->op==TK_RETURNING ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+      ప్రతిజ్ఞా( pParse->db->pVtabCtx==0 );
+#అయితే_ముగింపు
+      ప్రతిజ్ఞా( pParse->bReturning );
+      ప్రతిజ్ఞా( !pParse->isCreate );
+      ప్రతిజ్ఞా( &(pParse->u1.d.pReturning->retTrig) == pTrig );
+      pTrig->పట్టిక_2 = pTab->zName;
       pTrig->pTabSchema = pTab->pSchema;
-      pTrig->pNext = pList;
+      pTrig->p_తదుపరి = pList;
       pList = pTrig;
     }        
-    p = sqliteHashNext(p);    
+    p = sqlite_Hash_తదుపరి(p);    
   }
-#if 0
-  if( pList ){
+#ఒకవేళ 0
+  ఒకవేళ( pList ){
     Trigger *pX;
-    printf("Triggers for %s:", pTab->zName);
-    for(pX=pList; pX; pX=pX->pNext){
-      printf(" %s", pX->zName);
+    రాయి("Triggers for %s:", pTab->zName);
+    కొరకు(pX=pList; pX; pX=pX->p_తదుపరి){
+      రాయి(" %s", pX->zName);
     }
-    printf("\n");
+    రాయి("\n");
     fflush(stdout);
   }
-#endif
-  return pList;  
+#అయితే_ముగింపు
+  తిరిగి pList;  
 }
 
 /*
@@ -101,47 +101,47 @@ Trigger *sqlite3TriggerList(Parse *pParse, Table *pTab){
 ** sqlite3FinishTrigger() function is called to complete the trigger
 ** construction process.
 */
-void sqlite3BeginTrigger(
+శూన్య sqlite3BeginTrigger(
   Parse *pParse,      /* The parse context of the CREATE TRIGGER statement */
   Token *pName1,      /* The name of the trigger */
   Token *pName2,      /* The name of the trigger */
-  int tr_tm,          /* One of TK_BEFORE, TK_AFTER, TK_INSTEAD */
-  int op,             /* One of TK_INSERT, TK_UPDATE, TK_DELETE */
+  పూర్ణాంకం tr_tm,          /* One of TK_BEFORE, TK_AFTER, TK_INSTEAD */
+  పూర్ణాంకం op,             /* One of TK_INSERT, TK_UPDATE, TK_DELETE */
   IdList *pColumns,   /* column list if this is an UPDATE OF trigger */
-  SrcList *pTableName,/* The name of the table/view the trigger applies to */
-  Expr *pWhen,        /* WHEN clause */
-  int isTemp,         /* True if the TEMPORARY keyword is present */
-  int noErr           /* Suppress errors if the trigger already exists */
+  SrcList *p_పట్టిక_Name,/* The name of the table/view the trigger applies to */
+  సమాసం *pWhen,        /* WHEN clause */
+  పూర్ణాంకం is_తాత్కాలిక,         /* True if the TEMPORARY keyword is present */
+  పూర్ణాంకం noErr           /* Suppress errors if the trigger already exists */
 ){
   Trigger *pTrigger = 0;  /* The new trigger */
-  Table *pTab;            /* Table that the trigger fires off of */
-  char *zName = 0;        /* Name of the trigger */
+  పట్టిక *pTab;            /* Table that the trigger fires off of */
+  అక్షరం *zName = 0;        /* Name of the trigger */
   sqlite3 *db = pParse->db;  /* The database connection */
-  int iDb;                /* The database to store the trigger in */
+  పూర్ణాంకం iDb;                /* The database to store the trigger in */
   Token *pName;           /* The unqualified db name */
   DbFixer sFix;           /* State vector for the DB fixer */
 
-  assert( pName1!=0 );   /* pName1->z might be NULL, but not pName1 itself */
-  assert( pName2!=0 );
-  assert( op==TK_INSERT || op==TK_UPDATE || op==TK_DELETE );
-  assert( op>0 && op<0xff );
-  if( isTemp ){
+  ప్రతిజ్ఞా( pName1!=0 );   /* pName1->z might be NULL, but not pName1 itself */
+  ప్రతిజ్ఞా( pName2!=0 );
+  ప్రతిజ్ఞా( op==TK_చొప్పించు || op==TK_UPDATE || op==TK_DELETE );
+  ప్రతిజ్ఞా( op>0 && op<0xff );
+  ఒకవేళ( is_తాత్కాలిక ){
     /* If TEMP was specified, then the trigger name may not be qualified. */
-    if( pName2->n>0 ){
-      sqlite3ErrorMsg(pParse, "temporary trigger may not have qualified name");
-      goto trigger_cleanup;
+    ఒకవేళ( pName2->n>0 ){
+      sqlite3_Error_సందేశం(pParse, "temporary trigger may not have qualified name");
+      వెళ్ళు trigger_cleanup;
     }
     iDb = 1;
     pName = pName1;
-  }else{
+  }లేకపోతే{
     /* Figure out the db that the trigger will be created in */
     iDb = sqlite3TwoPartName(pParse, pName1, pName2, &pName);
-    if( iDb<0 ){
-      goto trigger_cleanup;
+    ఒకవేళ( iDb<0 ){
+      వెళ్ళు trigger_cleanup;
     }
   }
-  if( !pTableName || db->mallocFailed ){
-    goto trigger_cleanup;
+  ఒకవేళ( !p_పట్టిక_Name || db->mallocFailed ){
+    వెళ్ళు trigger_cleanup;
   }
 
   /* A long-standing parser bug is that this syntax was allowed:
@@ -152,11 +152,11 @@ void sqlite3BeginTrigger(
   ** To maintain backwards compatibility, ignore the database
   ** name on pTableName if we are reparsing out of the schema table
   */
-  if( db->init.busy && iDb!=1 ){
-    assert( pTableName->a[0].fg.fixedSchema==0 );
-    assert( pTableName->a[0].fg.isSubquery==0 );
-    sqlite3DbFree(db, pTableName->a[0].u4.zDatabase);
-    pTableName->a[0].u4.zDatabase = 0;
+  ఒకవేళ( db->init.busy && iDb!=1 ){
+    ప్రతిజ్ఞా( p_పట్టిక_Name->a[0].fg.fixedSchema==0 );
+    ప్రతిజ్ఞా( p_పట్టిక_Name->a[0].fg.isSubquery==0 );
+    sqlite3DbFree(db, p_పట్టిక_Name->a[0].u4.zDatabase);
+    p_పట్టిక_Name->a[0].u4.zDatabase = 0;
   }
 
   /* If the trigger name was unqualified, and the table is a temp table,
@@ -164,144 +164,144 @@ void sqlite3BeginTrigger(
   ** If sqlite3SrcListLookup() returns 0, indicating the table does not
   ** exist, the error is caught by the block below.
   */
-  pTab = sqlite3SrcListLookup(pParse, pTableName);
-  if( db->init.busy==0 && pName2->n==0 && pTab
+  pTab = sqlite3SrcListLookup(pParse, p_పట్టిక_Name);
+  ఒకవేళ( db->init.busy==0 && pName2->n==0 && pTab
         && pTab->pSchema==db->aDb[1].pSchema ){
     iDb = 1;
   }
 
   /* Ensure the table name matches database name and that the table exists */
-  if( db->mallocFailed ) goto trigger_cleanup;
-  assert( pTableName->nSrc==1 );
+  ఒకవేళ( db->mallocFailed ) వెళ్ళు trigger_cleanup;
+  ప్రతిజ్ఞా( p_పట్టిక_Name->nSrc==1 );
   sqlite3FixInit(&sFix, pParse, iDb, "trigger", pName);
-  if( sqlite3FixSrcList(&sFix, pTableName) ){
-    goto trigger_cleanup;
+  ఒకవేళ( sqlite3FixSrcList(&sFix, p_పట్టిక_Name) ){
+    వెళ్ళు trigger_cleanup;
   }
-  pTab = sqlite3SrcListLookup(pParse, pTableName);
-  if( !pTab ){
+  pTab = sqlite3SrcListLookup(pParse, p_పట్టిక_Name);
+  ఒకవేళ( !pTab ){
     /* The table does not exist. */
-    goto trigger_orphan_error;
+    వెళ్ళు trigger_orphan_error;
   }
-  if( IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "cannot create triggers on virtual tables");
-    goto trigger_orphan_error;
+  ఒకవేళ( IsVirtual(pTab) ){
+    sqlite3_Error_సందేశం(pParse, "cannot create triggers on virtual tables");
+    వెళ్ళు trigger_orphan_error;
   }
-  if( (pTab->tabFlags & TF_Shadow)!=0 && sqlite3ReadOnlyShadowTables(db) ){
-    sqlite3ErrorMsg(pParse, "cannot create triggers on shadow tables");
-    goto trigger_orphan_error;
+  ఒకవేళ( (pTab->tabFlags & TF_Shadow)!=0 && sqlite3ReadOnlyShadowTables(db) ){
+    sqlite3_Error_సందేశం(pParse, "cannot create triggers on shadow tables");
+    వెళ్ళు trigger_orphan_error;
   }
 
   /* Check that the trigger name is not reserved and that no trigger of the
   ** specified name exists */
   zName = sqlite3NameFromToken(db, pName);
-  if( zName==0 ){
-    assert( db->mallocFailed );
-    goto trigger_cleanup;
+  ఒకవేళ( zName==0 ){
+    ప్రతిజ్ఞా( db->mallocFailed );
+    వెళ్ళు trigger_cleanup;
   }
-  if( sqlite3CheckObjectName(pParse, zName, "trigger", pTab->zName) ){
-    goto trigger_cleanup;
+  ఒకవేళ( sqlite3CheckObjectName(pParse, zName, "trigger", pTab->zName) ){
+    వెళ్ళు trigger_cleanup;
   }
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-  if( !IN_RENAME_OBJECT ){
-    if( sqlite3HashFind(&(db->aDb[iDb].pSchema->trigHash),zName) ){
-      if( !noErr ){
-        sqlite3ErrorMsg(pParse, "trigger %T already exists", pName);
-      }else if( db->init.busy ){
-        sqlite3ErrorMsg(pParse,""); /* Err msg generated by corruptSchema() */
-      }else{
-        sqlite3CodeVerifySchema(pParse, iDb);
+  ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  ఒకవేళ( !లోపల_RENAME_OBJECT ){
+    ఒకవేళ( sqlite3_Hash_కనుగొను(&(db->aDb[iDb].pSchema->trigHash),zName) ){
+      ఒకవేళ( !noErr ){
+        sqlite3_Error_సందేశం(pParse, "trigger %T already exists", pName);
+      }లేకపోతే ఒకవేళ( db->init.busy ){
+        sqlite3_Error_సందేశం(pParse,""); /* Err msg generated by corruptSchema() */
+      }లేకపోతే{
+        sqlite3_సంకేతం_Verify_Schema(pParse, iDb);
         VVA_ONLY( pParse->ifNotExists = 1; )
       }
-      goto trigger_cleanup;
+      వెళ్ళు trigger_cleanup;
     }
   }
 
   /* NB: The SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES compile-time option is
   ** experimental and unsupported. Do not use it unless understand the
   ** implications and you cannot get by without this capability. */
-#if !defined(SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES) /* Experimental */
+#ఒకవేళ !defined(SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES) /* Experimental */
   /* Do not create a trigger on a system table */
-  if( sqlite3StrNICmp(pTab->zName, "sqlite_", 7)==0 ){
-    sqlite3ErrorMsg(pParse, "cannot create trigger on system table");
-    goto trigger_cleanup;
+  ఒకవేళ( sqlite3StrNICmp(pTab->zName, "sqlite_", 7)==0 ){
+    sqlite3_Error_సందేశం(pParse, "cannot create trigger on system table");
+    వెళ్ళు trigger_cleanup;
   }
-#endif
+#అయితే_ముగింపు
 
   /* INSTEAD of triggers are only for views and views only support INSTEAD
   ** of triggers.
   */
-  if( IsView(pTab) && tr_tm!=TK_INSTEAD ){
-    sqlite3ErrorMsg(pParse, "cannot create %s trigger on view: %S", 
-        (tr_tm == TK_BEFORE)?"BEFORE":"AFTER", pTableName->a);
-    goto trigger_orphan_error;
+  ఒకవేళ( IsView(pTab) && tr_tm!=TK_INSTEAD ){
+    sqlite3_Error_సందేశం(pParse, "cannot create %s trigger on view: %S", 
+        (tr_tm == TK_BEFORE)?"BEFORE":"AFTER", p_పట్టిక_Name->a);
+    వెళ్ళు trigger_orphan_error;
   }
-  if( !IsView(pTab) && tr_tm==TK_INSTEAD ){
-    sqlite3ErrorMsg(pParse, "cannot create INSTEAD OF"
-        " trigger on table: %S", pTableName->a);
-    goto trigger_orphan_error;
+  ఒకవేళ( !IsView(pTab) && tr_tm==TK_INSTEAD ){
+    sqlite3_Error_సందేశం(pParse, "cannot create INSTEAD OF"
+        " trigger on table: %S", p_పట్టిక_Name->a);
+    వెళ్ళు trigger_orphan_error;
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( !IN_RENAME_OBJECT ){
-    int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-    int code = SQLITE_CREATE_TRIGGER;
-    const char *zDb = db->aDb[iTabDb].zDbSName;
-    const char *zDbTrig = isTemp ? db->aDb[1].zDbSName : zDb;
-    if( iTabDb==1 || isTemp ) code = SQLITE_CREATE_TEMP_TRIGGER;
-    if( sqlite3AuthCheck(pParse, code, zName, pTab->zName, zDbTrig) ){
-      goto trigger_cleanup;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
+  ఒకవేళ( !లోపల_RENAME_OBJECT ){
+    పూర్ణాంకం iTabDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
+    పూర్ణాంకం సంకేతం_2 = SQLITE_CREATE_TRIGGER;
+    స్థిరరాశి అక్షరం *zDb = db->aDb[iTabDb].zDbSName;
+    స్థిరరాశి అక్షరం *zDbTrig = is_తాత్కాలిక ? db->aDb[1].zDbSName : zDb;
+    ఒకవేళ( iTabDb==1 || is_తాత్కాలిక ) సంకేతం_2 = SQLITE_CREATE_తాత్కాలిక_TRIGGER;
+    ఒకవేళ( sqlite3AuthCheck(pParse, సంకేతం_2, zName, pTab->zName, zDbTrig) ){
+      వెళ్ళు trigger_cleanup;
     }
-    if( sqlite3AuthCheck(pParse, SQLITE_INSERT, SCHEMA_TABLE(iTabDb),0,zDb)){
-      goto trigger_cleanup;
+    ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_చొప్పించు, SCHEMA_పట్టిక(iTabDb),0,zDb)){
+      వెళ్ళు trigger_cleanup;
     }
   }
-#endif
+#అయితే_ముగింపు
 
   /* INSTEAD OF triggers can only appear on views and BEFORE triggers
   ** cannot appear on views.  So we might as well translate every
   ** INSTEAD OF trigger into a BEFORE trigger.  It simplifies code
   ** elsewhere.
   */
-  if (tr_tm == TK_INSTEAD){
+  ఒకవేళ (tr_tm == TK_INSTEAD){
     tr_tm = TK_BEFORE;
   }
 
   /* Build the Trigger object */
-  pTrigger = (Trigger*)sqlite3DbMallocZero(db, sizeof(Trigger));
-  if( pTrigger==0 ) goto trigger_cleanup;
+  pTrigger = (Trigger*)sqlite3DbMallocZero(db, పరిమాణం(Trigger));
+  ఒకవేళ( pTrigger==0 ) వెళ్ళు trigger_cleanup;
   pTrigger->zName = zName;
   zName = 0;
-  pTrigger->table = sqlite3DbStrDup(db, pTableName->a[0].zName);
+  pTrigger->పట్టిక_2 = sqlite3DbStrDup(db, p_పట్టిక_Name->a[0].zName);
   pTrigger->pSchema = db->aDb[iDb].pSchema;
   pTrigger->pTabSchema = pTab->pSchema;
   pTrigger->op = (u8)op;
   pTrigger->tr_tm = tr_tm==TK_BEFORE ? TRIGGER_BEFORE : TRIGGER_AFTER;
-  if( IN_RENAME_OBJECT ){
-    sqlite3RenameTokenRemap(pParse, pTrigger->table, pTableName->a[0].zName);
+  ఒకవేళ( లోపల_RENAME_OBJECT ){
+    sqlite3RenameTokenRemap(pParse, pTrigger->పట్టిక_2, p_పట్టిక_Name->a[0].zName);
     pTrigger->pWhen = pWhen;
     pWhen = 0;
-  }else{
-    pTrigger->pWhen = sqlite3ExprDup(db, pWhen, EXPRDUP_REDUCE);
+  }లేకపోతే{
+    pTrigger->pWhen = sqlite3_సమాసం_Dup(db, pWhen, EXPRDUP_REDUCE);
   }
   pTrigger->pColumns = pColumns;
   pColumns = 0;
-  assert( pParse->pNewTrigger==0 );
+  ప్రతిజ్ఞా( pParse->pNewTrigger==0 );
   pParse->pNewTrigger = pTrigger;
 
 trigger_cleanup:
   sqlite3DbFree(db, zName);
-  sqlite3SrcListDelete(db, pTableName);
+  sqlite3SrcListDelete(db, p_పట్టిక_Name);
   sqlite3IdListDelete(db, pColumns);
-  sqlite3ExprDelete(db, pWhen);
-  if( !pParse->pNewTrigger ){
+  sqlite3_సమాసం_Delete(db, pWhen);
+  ఒకవేళ( !pParse->pNewTrigger ){
     sqlite3DeleteTrigger(db, pTrigger);
-  }else{
-    assert( pParse->pNewTrigger==pTrigger );
+  }లేకపోతే{
+    ప్రతిజ్ఞా( pParse->pNewTrigger==pTrigger );
   }
-  return;
+  తిరిగి;
 
 trigger_orphan_error:
-  if( db->init.iDb==1 ){
+  ఒకవేళ( db->init.iDb==1 ){
     /* Ticket #3810.
     ** Normally, whenever a table is dropped, all associated triggers are
     ** dropped too.  But if a TEMP trigger is created on a non-TEMP table
@@ -314,129 +314,129 @@ trigger_orphan_error:
     */
     db->init.orphanTrigger = 1;
   }
-  goto trigger_cleanup;
+  వెళ్ళు trigger_cleanup;
 }
 
 /*
 ** This routine is called after all of the trigger actions have been parsed
 ** in order to complete the process of building the trigger.
 */
-void sqlite3FinishTrigger(
+శూన్య sqlite3_ముగింపు_Trigger(
   Parse *pParse,          /* Parser context */
-  TriggerStep *pStepList, /* The triggered program */
+  Trigger_అడుగు *p_అడుగు_List, /* The triggered program */
   Token *pAll             /* Token that describes the complete CREATE TRIGGER */
 ){
   Trigger *pTrig = pParse->pNewTrigger;   /* Trigger being finished */
-  char *zName;                            /* Name of trigger */
+  అక్షరం *zName;                            /* Name of trigger */
   sqlite3 *db = pParse->db;               /* The database */
   DbFixer sFix;                           /* Fixer object */
-  int iDb;                                /* Database containing the trigger */
+  పూర్ణాంకం iDb;                                /* Database containing the trigger */
   Token nameToken;                        /* Trigger name for error reporting */
   i64 n;                                  /* Number of steps */
 
   pParse->pNewTrigger = 0;
-  if( NEVER(pParse->nErr) || !pTrig ) goto triggerfinish_cleanup;
+  ఒకవేళ( NEVER(pParse->nErr) || !pTrig ) వెళ్ళు triggerfinish_cleanup;
   zName = pTrig->zName;
-  iDb = sqlite3SchemaToIndex(pParse->db, pTrig->pSchema);
-  assert( iDb>=00 && iDb<db->nDb );
-  pTrig->step_list = pStepList;
-  for(n=0; pStepList; n++){
-    pStepList->pTrig = pTrig;
-    pStepList = pStepList->pNext;
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(pParse->db, pTrig->pSchema);
+  ప్రతిజ్ఞా( iDb>=00 && iDb<db->nDb );
+  pTrig->అడుగు_list = p_అడుగు_List;
+  కొరకు(n=0; p_అడుగు_List; n++){
+    p_అడుగు_List->pTrig = pTrig;
+    p_అడుగు_List = p_అడుగు_List->p_తదుపరి;
   }
-  if( n>pParse->db->aLimit[SQLITE_LIMIT_TRIGGER_STEPS] ){
-    sqlite3ErrorMsg(pParse, "trigger \"%w\" contains too many steps", zName);
-    goto triggerfinish_cleanup;
+  ఒకవేళ( n>pParse->db->a_హద్దు[SQLITE_హద్దు_TRIGGER_అడుగులు] ){
+    sqlite3_Error_సందేశం(pParse, "trigger \"%w\" contains too many steps", zName);
+    వెళ్ళు triggerfinish_cleanup;
   }
   sqlite3TokenInit(&nameToken, pTrig->zName);
   sqlite3FixInit(&sFix, pParse, iDb, "trigger", &nameToken);
-  if( sqlite3FixTriggerStep(&sFix, pTrig->step_list) 
-   || sqlite3FixExpr(&sFix, pTrig->pWhen) 
+  ఒకవేళ( sqlite3_Fix_Trigger_అడుగు(&sFix, pTrig->అడుగు_list) 
+   || sqlite3_Fix_సమాసం(&sFix, pTrig->pWhen) 
   ){
-    goto triggerfinish_cleanup;
+    వెళ్ళు triggerfinish_cleanup;
   }
 
-#ifndef SQLITE_OMIT_ALTERTABLE
-  if( IN_RENAME_OBJECT ){
-    assert( !db->init.busy );
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ALTERTABLE
+  ఒకవేళ( లోపల_RENAME_OBJECT ){
+    ప్రతిజ్ఞా( !db->init.busy );
     pParse->pNewTrigger = pTrig;
     pTrig = 0;
-  }else
-#endif
+  }లేకపోతే
+#అయితే_ముగింపు
 
   /* if we are not initializing,
   ** build the sqlite_schema entry
   */
-  if( !db->init.busy ){
+  ఒకవేళ( !db->init.busy ){
     Vdbe *v;
-    char *z;
+    అక్షరం *z;
 
     /* If this is a new CREATE TABLE statement, and if shadow tables
     ** are read-only, and the trigger makes a change to a shadow table,
     ** then raise an error - do not allow the trigger to be created. */
-    if( sqlite3ReadOnlyShadowTables(db) ){
-      TriggerStep *pStep;
-      for(pStep=pTrig->step_list; pStep; pStep=pStep->pNext){
-        if( pStep->pSrc!=0
-         && sqlite3ShadowTableName(db, pStep->pSrc->a[0].zName)
+    ఒకవేళ( sqlite3ReadOnlyShadowTables(db) ){
+      Trigger_అడుగు *p_అడుగు;
+      కొరకు(p_అడుగు=pTrig->అడుగు_list; p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
+        ఒకవేళ( p_అడుగు->pSrc!=0
+         && sqlite3_Shadow_పట్టిక_Name(db, p_అడుగు->pSrc->a[0].zName)
         ){
-          sqlite3ErrorMsg(pParse, 
+          sqlite3_Error_సందేశం(pParse, 
             "trigger \"%s\" may not write to shadow table \"%s\"",
-            pTrig->zName, pStep->pSrc->a[0].zName);
-          goto triggerfinish_cleanup;
+            pTrig->zName, p_అడుగు->pSrc->a[0].zName);
+          వెళ్ళు triggerfinish_cleanup;
         }
       }
     }
 
     /* Make an entry in the sqlite_schema table */
     v = sqlite3GetVdbe(pParse);
-    if( v==0 ) goto triggerfinish_cleanup;
+    ఒకవేళ( v==0 ) వెళ్ళు triggerfinish_cleanup;
     sqlite3BeginWriteOperation(pParse, 0, iDb);
-    z = sqlite3DbStrNDup(db, (char*)pAll->z, pAll->n);
+    z = sqlite3DbStrNDup(db, (అక్షరం*)pAll->z, pAll->n);
     testcase( z==0 );
     sqlite3NestedParse(pParse,
-       "INSERT INTO %Q." LEGACY_SCHEMA_TABLE
+       "INSERT INTO %Q." LEGACY_SCHEMA_పట్టిక
        " VALUES('trigger',%Q,%Q,0,'CREATE TRIGGER %q')",
        db->aDb[iDb].zDbSName, zName,
-       pTrig->table, z);
+       pTrig->పట్టిక_2, z);
     sqlite3DbFree(db, z);
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddParseSchemaOp(v, iDb,
+    sqlite3_Vdbe_కూడు_Parse_Schema_Op(v, iDb,
         sqlite3MPrintf(db, "type='trigger' AND name='%q'", zName), 0);
   }
 
-  if( db->init.busy ){
+  ఒకవేళ( db->init.busy ){
     Trigger *pLink = pTrig;
     Hash *pHash = &db->aDb[iDb].pSchema->trigHash;
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    assert( pLink!=0 );
-    pTrig = sqlite3HashInsert(pHash, zName, pTrig);
-    if( pTrig ){
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ప్రతిజ్ఞా( pLink!=0 );
+    pTrig = sqlite3_Hash_చొప్పించు(pHash, zName, pTrig);
+    ఒకవేళ( pTrig ){
       sqlite3OomFault(db);
-    }else if( pLink->pSchema==pLink->pTabSchema ){
-      Table *pTab;
-      pTab = sqlite3HashFind(&pLink->pTabSchema->tblHash, pLink->table);
-      assert( pTab!=0 );
-      pLink->pNext = pTab->pTrigger;
+    }లేకపోతే ఒకవేళ( pLink->pSchema==pLink->pTabSchema ){
+      పట్టిక *pTab;
+      pTab = sqlite3_Hash_కనుగొను(&pLink->pTabSchema->tblHash, pLink->పట్టిక_2);
+      ప్రతిజ్ఞా( pTab!=0 );
+      pLink->p_తదుపరి = pTab->pTrigger;
       pTab->pTrigger = pLink;
     }
   }
 
 triggerfinish_cleanup:
   sqlite3DeleteTrigger(db, pTrig);
-  assert( IN_RENAME_OBJECT || !pParse->pNewTrigger );
-  sqlite3DeleteTriggerStep(db, pStepList);
+  ప్రతిజ్ఞా( లోపల_RENAME_OBJECT || !pParse->pNewTrigger );
+  sqlite3_Delete_Trigger_అడుగు(db, p_అడుగు_List);
 }
 
 /*
 ** Duplicate a range of text from an SQL statement, then convert all
 ** whitespace characters into ordinary space characters.
 */
-static char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
-  char *z = sqlite3DbSpanDup(db, zStart, zEnd);
-  int i;
-  if( z ) for(i=0; z[i]; i++) if( sqlite3Isspace(z[i]) ) z[i] = ' ';
-  return z;
+స్థిర అక్షరం *trigger_పరిధి_Dup(sqlite3 *db, స్థిరరాశి అక్షరం *z_ప్రారంభం, స్థిరరాశి అక్షరం *z_చివర){
+  అక్షరం *z = sqlite3_Db_పరిధి_Dup(db, z_ప్రారంభం, z_చివర);
+  పూర్ణాంకం i;
+  ఒకవేళ( z ) కొరకు(i=0; z[i]; i++) ఒకవేళ( sqlite3Isspace(z[i]) ) z[i] = ' ';
+  తిరిగి z;
 }    
 
 /*
@@ -446,22 +446,22 @@ static char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
 ** The parser calls this routine when it finds a SELECT statement in
 ** body of a TRIGGER.  
 */
-TriggerStep *sqlite3TriggerSelectStep(
+Trigger_అడుగు *sqlite3_Trigger_Select_అడుగు(
   sqlite3 *db,                /* Database connection */
   Select *pSelect,            /* The SELECT statement */
-  const char *zStart,         /* Start of SQL text */
-  const char *zEnd            /* End of SQL text */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం,         /* Start of SQL text */
+  స్థిరరాశి అక్షరం *z_చివర            /* End of SQL text */
 ){
-  TriggerStep *pTriggerStep = sqlite3DbMallocZero(db, sizeof(TriggerStep));
-  if( pTriggerStep==0 ) {
+  Trigger_అడుగు *p_Trigger_అడుగు = sqlite3DbMallocZero(db, పరిమాణం(Trigger_అడుగు));
+  ఒకవేళ( p_Trigger_అడుగు==0 ) {
     sqlite3SelectDelete(db, pSelect);
-    return 0;
+    తిరిగి 0;
   }
-  pTriggerStep->op = TK_SELECT;
-  pTriggerStep->pSelect = pSelect;
-  pTriggerStep->orconf = OE_Default;
-  pTriggerStep->zSpan = triggerSpanDup(db, zStart, zEnd);
-  return pTriggerStep;
+  p_Trigger_అడుగు->op = TK_SELECT;
+  p_Trigger_అడుగు->pSelect = pSelect;
+  p_Trigger_అడుగు->orconf = OE_Default;
+  p_Trigger_అడుగు->z_పరిధి = trigger_పరిధి_Dup(db, z_ప్రారంభం, z_చివర);
+  తిరిగి p_Trigger_అడుగు;
 }
 
 /*
@@ -470,34 +470,34 @@ TriggerStep *sqlite3TriggerSelectStep(
 **
 ** If an OOM error occurs, NULL is returned and db->mallocFailed is set.
 */
-static TriggerStep *triggerStepAllocate(
+స్థిర Trigger_అడుగు *trigger_అడుగు_Allocate(
   Parse *pParse,              /* Parser context */
   u8 op,                      /* Trigger opcode */
   SrcList *pTabList,          /* Target table */
-  const char *zStart,         /* Start of SQL text */
-  const char *zEnd            /* End of SQL text */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం,         /* Start of SQL text */
+  స్థిరరాశి అక్షరం *z_చివర            /* End of SQL text */
 ){
   Trigger *pNew = pParse->pNewTrigger;
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep = 0;
+  Trigger_అడుగు *p_Trigger_అడుగు = 0;
 
-  if( pParse->nErr==0 ){
-    if( pNew 
+  ఒకవేళ( pParse->nErr==0 ){
+    ఒకవేళ( pNew 
      && pNew->pSchema!=db->aDb[1].pSchema 
      && pTabList->a[0].u4.zDatabase 
     ){
-      sqlite3ErrorMsg(pParse, 
+      sqlite3_Error_సందేశం(pParse, 
           "qualified table names are not allowed on INSERT, UPDATE, and DELETE "
           "statements within triggers");
-    }else{
-      pTriggerStep = sqlite3DbMallocZero(db, sizeof(TriggerStep));
-      if( pTriggerStep ){
-        pTriggerStep->pSrc = sqlite3SrcListDup(db, pTabList, EXPRDUP_REDUCE);
-        pTriggerStep->op = op;
-        pTriggerStep->zSpan = triggerSpanDup(db, zStart, zEnd);
-        if( pTriggerStep->pSrc && IN_RENAME_OBJECT ){
+    }లేకపోతే{
+      p_Trigger_అడుగు = sqlite3DbMallocZero(db, పరిమాణం(Trigger_అడుగు));
+      ఒకవేళ( p_Trigger_అడుగు ){
+        p_Trigger_అడుగు->pSrc = sqlite3SrcListDup(db, pTabList, EXPRDUP_REDUCE);
+        p_Trigger_అడుగు->op = op;
+        p_Trigger_అడుగు->z_పరిధి = trigger_పరిధి_Dup(db, z_ప్రారంభం, z_చివర);
+        ఒకవేళ( p_Trigger_అడుగు->pSrc && లోపల_RENAME_OBJECT ){
           sqlite3RenameTokenRemap(pParse, 
-              pTriggerStep->pSrc->a[0].zName, 
+              p_Trigger_అడుగు->pSrc->a[0].zName, 
               pTabList->a[0].zName
           );
         }
@@ -506,7 +506,7 @@ static TriggerStep *triggerStepAllocate(
   }
 
   sqlite3SrcListDelete(db, pTabList);
-  return pTriggerStep;
+  తిరిగి p_Trigger_అడుగు;
 }
 
 /*
@@ -516,44 +516,44 @@ static TriggerStep *triggerStepAllocate(
 ** The parser calls this routine when it sees an INSERT inside the
 ** body of a trigger.
 */
-TriggerStep *sqlite3TriggerInsertStep(
+Trigger_అడుగు *sqlite3_Trigger_చొప్పించు_అడుగు(
   Parse *pParse,      /* Parser */
   SrcList *pTabList,  /* Table to INSERT into */
-  IdList *pColumn,    /* List of columns in pTableName to insert into */
+  IdList *p_స్తంభం,    /* List of columns in pTableName to insert into */
   Select *pSelect,    /* A SELECT statement that supplies values */
   u8 orconf,          /* The conflict algorithm (OE_Abort, OE_Replace, etc.) */
   Upsert *pUpsert,    /* ON CONFLICT clauses for upsert */
-  const char *zStart, /* Start of SQL text */
-  const char *zEnd    /* End of SQL text */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం, /* Start of SQL text */
+  స్థిరరాశి అక్షరం *z_చివర    /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_అడుగు *p_Trigger_అడుగు;
 
-  assert(pSelect != 0 || db->mallocFailed);
+  ప్రతిజ్ఞా(pSelect != 0 || db->mallocFailed);
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_INSERT, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pSelect = pSelect;
+  p_Trigger_అడుగు = trigger_అడుగు_Allocate(pParse, TK_చొప్పించు, pTabList, z_ప్రారంభం, z_చివర);
+  ఒకవేళ( p_Trigger_అడుగు ){
+    ఒకవేళ( లోపల_RENAME_OBJECT ){
+      p_Trigger_అడుగు->pSelect = pSelect;
       pSelect = 0;
-    }else{
-      pTriggerStep->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
+    }లేకపోతే{
+      p_Trigger_అడుగు->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
     }
-    pTriggerStep->pIdList = pColumn;
-    pTriggerStep->pUpsert = pUpsert;
-    pTriggerStep->orconf = orconf;
-    if( pUpsert ){
-      sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget);
+    p_Trigger_అడుగు->pIdList = p_స్తంభం;
+    p_Trigger_అడుగు->pUpsert = pUpsert;
+    p_Trigger_అడుగు->orconf = orconf;
+    ఒకవేళ( pUpsert ){
+      sqlite3HasExplicitNulls(pParse, pUpsert->p_Upsert_లక్ష్యం);
     }
-  }else{
-    testcase( pColumn );
-    sqlite3IdListDelete(db, pColumn);
+  }లేకపోతే{
+    testcase( p_స్తంభం );
+    sqlite3IdListDelete(db, p_స్తంభం);
     testcase( pUpsert );
     sqlite3UpsertDelete(db, pUpsert);
   }
   sqlite3SelectDelete(db, pSelect);
 
-  return pTriggerStep;
+  తిరిగి p_Trigger_అడుగు;
 }
 
 /*
@@ -561,54 +561,54 @@ TriggerStep *sqlite3TriggerInsertStep(
 ** a pointer to that trigger step.  The parser calls this routine when it
 ** sees an UPDATE statement inside the body of a CREATE TRIGGER.
 */
-TriggerStep *sqlite3TriggerUpdateStep(
+Trigger_అడుగు *sqlite3_Trigger_Update_అడుగు(
   Parse *pParse,          /* Parser */
   SrcList *pTabList,   /* Name of the table to be updated */
   SrcList *pFrom,      /* FROM clause for an UPDATE-FROM, or NULL */
-  ExprList *pEList,    /* The SET clause: list of column and new values */
-  Expr *pWhere,        /* The WHERE clause */
+  సమాసం_List *pEList,    /* The SET clause: list of column and new values */
+  సమాసం *pWhere,        /* The WHERE clause */
   u8 orconf,           /* The conflict algorithm. (OE_Abort, OE_Ignore, etc) */
-  const char *zStart,  /* Start of SQL text */
-  const char *zEnd     /* End of SQL text */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం,  /* Start of SQL text */
+  స్థిరరాశి అక్షరం *z_చివర     /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_అడుగు *p_Trigger_అడుగు;
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_UPDATE, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
+  p_Trigger_అడుగు = trigger_అడుగు_Allocate(pParse, TK_UPDATE, pTabList, z_ప్రారంభం, z_చివర);
+  ఒకవేళ( p_Trigger_అడుగు ){
     SrcList *pFromDup = 0;
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pExprList = pEList;
-      pTriggerStep->pWhere = pWhere;
+    ఒకవేళ( లోపల_RENAME_OBJECT ){
+      p_Trigger_అడుగు->p_సమాసం_List = pEList;
+      p_Trigger_అడుగు->pWhere = pWhere;
       pFromDup = pFrom;
       pEList = 0;
       pWhere = 0;
       pFrom = 0;
-    }else{
-      pTriggerStep->pExprList = sqlite3ExprListDup(db, pEList, EXPRDUP_REDUCE);
-      pTriggerStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
+    }లేకపోతే{
+      p_Trigger_అడుగు->p_సమాసం_List = sqlite3_సమాసం_List_Dup(db, pEList, EXPRDUP_REDUCE);
+      p_Trigger_అడుగు->pWhere = sqlite3_సమాసం_Dup(db, pWhere, EXPRDUP_REDUCE);
       pFromDup = sqlite3SrcListDup(db, pFrom, EXPRDUP_REDUCE);
     }
-    pTriggerStep->orconf = orconf;
+    p_Trigger_అడుగు->orconf = orconf;
 
-    if( pFromDup && !IN_RENAME_OBJECT){
+    ఒకవేళ( pFromDup && !లోపల_RENAME_OBJECT){
       Select *pSub;
       Token as = {0, 0};
       pSub = sqlite3SelectNew(pParse, 0, pFromDup, 0,0,0,0, SF_NestedFrom, 0);
-      pFromDup = sqlite3SrcListAppendFromTerm(pParse, 0, 0, 0, &as, pSub ,0);
+      pFromDup = sqlite3_Src_List_Append_From_పదం(pParse, 0, 0, 0, &as, pSub ,0);
     }
-    if( pFromDup && pTriggerStep->pSrc ){
-      pTriggerStep->pSrc = sqlite3SrcListAppendList(
-          pParse, pTriggerStep->pSrc, pFromDup
+    ఒకవేళ( pFromDup && p_Trigger_అడుగు->pSrc ){
+      p_Trigger_అడుగు->pSrc = sqlite3SrcListAppendList(
+          pParse, p_Trigger_అడుగు->pSrc, pFromDup
       );
-    }else{
+    }లేకపోతే{
       sqlite3SrcListDelete(db, pFromDup);
     }
   }
-  sqlite3ExprListDelete(db, pEList);
-  sqlite3ExprDelete(db, pWhere);
+  sqlite3_సమాసం_List_Delete(db, pEList);
+  sqlite3_సమాసం_Delete(db, pWhere);
   sqlite3SrcListDelete(db, pFrom);
-  return pTriggerStep;
+  తిరిగి p_Trigger_అడుగు;
 }
 
 /*
@@ -616,39 +616,39 @@ TriggerStep *sqlite3TriggerUpdateStep(
 ** a pointer to that trigger step.  The parser calls this routine when it
 ** sees a DELETE statement inside the body of a CREATE TRIGGER.
 */
-TriggerStep *sqlite3TriggerDeleteStep(
+Trigger_అడుగు *sqlite3_Trigger_Delete_అడుగు(
   Parse *pParse,          /* Parser */
   SrcList *pTabList,      /* The table from which rows are deleted */
-  Expr *pWhere,           /* The WHERE clause */
-  const char *zStart,     /* Start of SQL text */
-  const char *zEnd        /* End of SQL text */
+  సమాసం *pWhere,           /* The WHERE clause */
+  స్థిరరాశి అక్షరం *z_ప్రారంభం,     /* Start of SQL text */
+  స్థిరరాశి అక్షరం *z_చివర        /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_అడుగు *p_Trigger_అడుగు;
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_DELETE, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pWhere = pWhere;
+  p_Trigger_అడుగు = trigger_అడుగు_Allocate(pParse, TK_DELETE, pTabList, z_ప్రారంభం, z_చివర);
+  ఒకవేళ( p_Trigger_అడుగు ){
+    ఒకవేళ( లోపల_RENAME_OBJECT ){
+      p_Trigger_అడుగు->pWhere = pWhere;
       pWhere = 0;
-    }else{
-      pTriggerStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
+    }లేకపోతే{
+      p_Trigger_అడుగు->pWhere = sqlite3_సమాసం_Dup(db, pWhere, EXPRDUP_REDUCE);
     }
-    pTriggerStep->orconf = OE_Default;
+    p_Trigger_అడుగు->orconf = OE_Default;
   }
-  sqlite3ExprDelete(db, pWhere);
-  return pTriggerStep;
+  sqlite3_సమాసం_Delete(db, pWhere);
+  తిరిగి p_Trigger_అడుగు;
 }
 
 /* 
 ** Recursively delete a Trigger structure
 */
-void sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
-  if( pTrigger==0 || pTrigger->bReturning ) return;
-  sqlite3DeleteTriggerStep(db, pTrigger->step_list);
+శూన్య sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
+  ఒకవేళ( pTrigger==0 || pTrigger->bReturning ) తిరిగి;
+  sqlite3_Delete_Trigger_అడుగు(db, pTrigger->అడుగు_list);
   sqlite3DbFree(db, pTrigger->zName);
-  sqlite3DbFree(db, pTrigger->table);
-  sqlite3ExprDelete(db, pTrigger->pWhen);
+  sqlite3DbFree(db, pTrigger->పట్టిక_2);
+  sqlite3_సమాసం_Delete(db, pTrigger->pWhen);
   sqlite3IdListDelete(db, pTrigger->pColumns);
   sqlite3DbFree(db, pTrigger);
 }
@@ -661,38 +661,38 @@ void sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
 ** same job as this routine except it takes a pointer to the trigger
 ** instead of the trigger name.
 **/
-void sqlite3DropTrigger(Parse *pParse, SrcList *pName, int noErr){
+శూన్య sqlite3DropTrigger(Parse *pParse, SrcList *pName, పూర్ణాంకం noErr){
   Trigger *pTrigger = 0;
-  int i;
-  const char *zDb;
-  const char *zName;
+  పూర్ణాంకం i;
+  స్థిరరాశి అక్షరం *zDb;
+  స్థిరరాశి అక్షరం *zName;
   sqlite3 *db = pParse->db;
 
-  if( db->mallocFailed ) goto drop_trigger_cleanup;
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
-    goto drop_trigger_cleanup;
+  ఒకవేళ( db->mallocFailed ) వెళ్ళు drop_trigger_cleanup;
+  ఒకవేళ( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
+    వెళ్ళు drop_trigger_cleanup;
   }
 
-  assert( pName->nSrc==1 );
-  assert( pName->a[0].fg.fixedSchema==0 && pName->a[0].fg.isSubquery==0 );
+  ప్రతిజ్ఞా( pName->nSrc==1 );
+  ప్రతిజ్ఞా( pName->a[0].fg.fixedSchema==0 && pName->a[0].fg.isSubquery==0 );
   zDb = pName->a[0].u4.zDatabase;
   zName = pName->a[0].zName;
-  assert( zDb!=0 || sqlite3BtreeHoldsAllMutexes(db) );
-  for(i=OMIT_TEMPDB; i<db->nDb; i++){
-    int j = (i<2) ? i^1 : i;  /* Search TEMP before MAIN */
-    if( zDb && sqlite3DbIsNamed(db, j, zDb)==0 ) continue;
-    assert( sqlite3SchemaMutexHeld(db, j, 0) );
-    pTrigger = sqlite3HashFind(&(db->aDb[j].pSchema->trigHash), zName);
-    if( pTrigger ) break;
+  ప్రతిజ్ఞా( zDb!=0 || sqlite3BtreeHoldsAllMutexes(db) );
+  కొరకు(i=OMIT_TEMPDB; i<db->nDb; i++){
+    పూర్ణాంకం j = (i<2) ? i^1 : i;  /* Search TEMP before MAIN */
+    ఒకవేళ( zDb && sqlite3DbIsNamed(db, j, zDb)==0 ) కొనసాగు;
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, j, 0) );
+    pTrigger = sqlite3_Hash_కనుగొను(&(db->aDb[j].pSchema->trigHash), zName);
+    ఒకవేళ( pTrigger ) ఆపు;
   }
-  if( !pTrigger ){
-    if( !noErr ){
-      sqlite3ErrorMsg(pParse, "no such trigger: %S", pName->a);
-    }else{
-      sqlite3CodeVerifyNamedSchema(pParse, zDb);
+  ఒకవేళ( !pTrigger ){
+    ఒకవేళ( !noErr ){
+      sqlite3_Error_సందేశం(pParse, "no such trigger: %S", pName->a);
+    }లేకపోతే{
+      sqlite3_సంకేతం_Verify_Named_Schema(pParse, zDb);
     }
     pParse->checkSchema = 1;
-    goto drop_trigger_cleanup;
+    వెళ్ళు drop_trigger_cleanup;
   }
   sqlite3DropTriggerPtr(pParse, pTrigger);
 
@@ -704,68 +704,68 @@ drop_trigger_cleanup:
 ** Return a pointer to the Table structure for the table that a trigger
 ** is set on.
 */
-static Table *tableOfTrigger(Trigger *pTrigger){
-  return sqlite3HashFind(&pTrigger->pTabSchema->tblHash, pTrigger->table);
+స్థిర పట్టిక *పట్టిక_యొక్క_Trigger(Trigger *pTrigger){
+  తిరిగి sqlite3_Hash_కనుగొను(&pTrigger->pTabSchema->tblHash, pTrigger->పట్టిక_2);
 }
 
 
 /*
 ** Drop a trigger given a pointer to that trigger. 
 */
-void sqlite3DropTriggerPtr(Parse *pParse, Trigger *pTrigger){
-  Table   *pTable;
+శూన్య sqlite3DropTriggerPtr(Parse *pParse, Trigger *pTrigger){
+  పట్టిక   *p_పట్టిక;
   Vdbe *v;
   sqlite3 *db = pParse->db;
-  int iDb;
+  పూర్ణాంకం iDb;
 
-  iDb = sqlite3SchemaToIndex(pParse->db, pTrigger->pSchema);
-  assert( iDb>=0 && iDb<db->nDb );
-  pTable = tableOfTrigger(pTrigger);
-  assert( (pTable && pTable->pSchema==pTrigger->pSchema) || iDb==1 );
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( pTable ){
-    int code = SQLITE_DROP_TRIGGER;
-    const char *zDb = db->aDb[iDb].zDbSName;
-    const char *zTab = SCHEMA_TABLE(iDb);
-    if( iDb==1 ) code = SQLITE_DROP_TEMP_TRIGGER;
-    if( sqlite3AuthCheck(pParse, code, pTrigger->zName, pTable->zName, zDb) ||
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(pParse->db, pTrigger->pSchema);
+  ప్రతిజ్ఞా( iDb>=0 && iDb<db->nDb );
+  p_పట్టిక = పట్టిక_యొక్క_Trigger(pTrigger);
+  ప్రతిజ్ఞా( (p_పట్టిక && p_పట్టిక->pSchema==pTrigger->pSchema) || iDb==1 );
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
+  ఒకవేళ( p_పట్టిక ){
+    పూర్ణాంకం సంకేతం_2 = SQLITE_DROP_TRIGGER;
+    స్థిరరాశి అక్షరం *zDb = db->aDb[iDb].zDbSName;
+    స్థిరరాశి అక్షరం *zTab = SCHEMA_పట్టిక(iDb);
+    ఒకవేళ( iDb==1 ) సంకేతం_2 = SQLITE_DROP_తాత్కాలిక_TRIGGER;
+    ఒకవేళ( sqlite3AuthCheck(pParse, సంకేతం_2, pTrigger->zName, p_పట్టిక->zName, zDb) ||
       sqlite3AuthCheck(pParse, SQLITE_DELETE, zTab, 0, zDb) ){
-      return;
+      తిరిగి;
     }
   }
-#endif
+#అయితే_ముగింపు
 
   /* Generate code to destroy the database record of the trigger.
   */
-  if( (v = sqlite3GetVdbe(pParse))!=0 ){
+  ఒకవేళ( (v = sqlite3GetVdbe(pParse))!=0 ){
     sqlite3NestedParse(pParse,
-       "DELETE FROM %Q." LEGACY_SCHEMA_TABLE " WHERE name=%Q AND type='trigger'",
+       "DELETE FROM %Q." LEGACY_SCHEMA_పట్టిక " WHERE name=%Q AND type='trigger'",
        db->aDb[iDb].zDbSName, pTrigger->zName
     );
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddOp4(v, OP_DropTrigger, iDb, 0, 0, pTrigger->zName, 0);
+    sqlite3_Vdbe_కూడు_Op4(v, OP_DropTrigger, iDb, 0, 0, pTrigger->zName, 0);
   }
 }
 
 /*
 ** Remove a trigger from the hash tables of the sqlite* pointer.
 */
-void sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, int iDb, const char *zName){
+శూన్య sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, పూర్ణాంకం iDb, స్థిరరాశి అక్షరం *zName){
   Trigger *pTrigger;
   Hash *pHash;
 
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
   pHash = &(db->aDb[iDb].pSchema->trigHash);
-  pTrigger = sqlite3HashInsert(pHash, zName, 0);
-  if( ALWAYS(pTrigger) ){
-    if( pTrigger->pSchema==pTrigger->pTabSchema ){
-      Table *pTab = tableOfTrigger(pTrigger);
-      if( pTab ){
+  pTrigger = sqlite3_Hash_చొప్పించు(pHash, zName, 0);
+  ఒకవేళ( ALWAYS(pTrigger) ){
+    ఒకవేళ( pTrigger->pSchema==pTrigger->pTabSchema ){
+      పట్టిక *pTab = పట్టిక_యొక్క_Trigger(pTrigger);
+      ఒకవేళ( pTab ){
         Trigger **pp;
-        for(pp=&pTab->pTrigger; *pp; pp=&((*pp)->pNext)){
-          if( *pp==pTrigger ){
-            *pp = (*pp)->pNext;
-            break;
+        కొరకు(pp=&pTab->pTrigger; *pp; pp=&((*pp)->p_తదుపరి)){
+          ఒకవేళ( *pp==pTrigger ){
+            *pp = (*pp)->p_తదుపరి;
+            ఆపు;
           }
         }
       }
@@ -784,22 +784,22 @@ void sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, int iDb, const char *zName){
 ** it matches anything so always return true.  Return false only
 ** if there is no match.
 */
-static int checkColumnOverlap(IdList *pIdList, ExprList *pEList){
-  int e;
-  if( pIdList==0 || NEVER(pEList==0) ) return 1;
-  for(e=0; e<pEList->nExpr; e++){
-    if( sqlite3IdListIndex(pIdList, pEList->a[e].zEName)>=0 ) return 1;
+స్థిర పూర్ణాంకం check_స్తంభం_Overlap(IdList *pIdList, సమాసం_List *pEList){
+  పూర్ణాంకం e;
+  ఒకవేళ( pIdList==0 || NEVER(pEList==0) ) తిరిగి 1;
+  కొరకు(e=0; e<pEList->n_సమాసం; e++){
+    ఒకవేళ( sqlite3_Id_List_సూచీ(pIdList, pEList->a[e].zEName)>=0 ) తిరిగి 1;
   }
-  return 0; 
+  తిరిగి 0; 
 }
 
 /*
 ** Return true if any TEMP triggers exist
 */
-static int tempTriggersExist(sqlite3 *db){
-  if( NEVER(db->aDb[1].pSchema==0) ) return 0;
-  if( sqliteHashFirst(&db->aDb[1].pSchema->trigHash)==0 ) return 0;
-  return 1;
+స్థిర పూర్ణాంకం తాత్కాలిక_Triggers_Exist(sqlite3 *db){
+  ఒకవేళ( NEVER(db->aDb[1].pSchema==0) ) తిరిగి 0;
+  ఒకవేళ( sqlite_Hash_మొదటి(&db->aDb[1].pSchema->trigHash)==0 ) తిరిగి 0;
+  తిరిగి 1;
 }
 
 /*
@@ -808,85 +808,85 @@ static int tempTriggersExist(sqlite3 *db){
 ** performed on the table, and, if that operation is an UPDATE, if at
 ** least one of the columns in pChanges is being modified.
 */
-static SQLITE_NOINLINE Trigger *triggersReallyExist(
+స్థిర SQLITE_NOINLINE Trigger *triggersReallyExist(
   Parse *pParse,          /* Parse context */
-  Table *pTab,            /* The table the contains the triggers */
-  int op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
-  ExprList *pChanges,     /* Columns that change in an UPDATE statement */
-  int *pMask              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  పట్టిక *pTab,            /* The table the contains the triggers */
+  పూర్ణాంకం op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
+  సమాసం_List *pChanges,     /* Columns that change in an UPDATE statement */
+  పూర్ణాంకం *p_ముసుగు              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
 ){
-  int mask = 0;
+  పూర్ణాంకం ముసుగు = 0;
   Trigger *pList = 0;
   Trigger *p;
 
   pList = sqlite3TriggerList(pParse, pTab);
-  assert( pList==0 || IsVirtual(pTab)==0 
-           || (pList->bReturning && pList->pNext==0) );
-  if( pList!=0 ){
+  ప్రతిజ్ఞా( pList==0 || IsVirtual(pTab)==0 
+           || (pList->bReturning && pList->p_తదుపరి==0) );
+  ఒకవేళ( pList!=0 ){
     p = pList;
-    if( (pParse->db->flags & SQLITE_EnableTrigger)==0
+    ఒకవేళ( (pParse->db->flags & SQLITE_EnableTrigger)==0
      && pTab->pTrigger!=0
-     && sqlite3SchemaToIndex(pParse->db, pTab->pTrigger->pSchema)!=1
+     && sqlite3_Schema_గమ్యం_సూచీ(pParse->db, pTab->pTrigger->pSchema)!=1
     ){
       /* The SQLITE_DBCONFIG_ENABLE_TRIGGER setting is off.  That means that
       ** only TEMP triggers are allowed.  Truncate the pList so that it
       ** includes only TEMP triggers */
-      if( pList==pTab->pTrigger ){
+      ఒకవేళ( pList==pTab->pTrigger ){
         pList = 0;
-        goto exit_triggers_exist;
+        వెళ్ళు exit_triggers_exist;
       }
-      while( ALWAYS(p->pNext) && p->pNext!=pTab->pTrigger ) p = p->pNext;
-      p->pNext = 0;
+      అయితే( ALWAYS(p->p_తదుపరి) && p->p_తదుపరి!=pTab->pTrigger ) p = p->p_తదుపరి;
+      p->p_తదుపరి = 0;
       p = pList;
     }
-    do{
-      if( p->op==op && checkColumnOverlap(p->pColumns, pChanges) ){
-        mask |= p->tr_tm;
-      }else if( p->op==TK_RETURNING ){
+    చేయి{
+      ఒకవేళ( p->op==op && check_స్తంభం_Overlap(p->pColumns, pChanges) ){
+        ముసుగు |= p->tr_tm;
+      }లేకపోతే ఒకవేళ( p->op==TK_RETURNING ){
         /* The first time a RETURNING trigger is seen, the "op" value tells
         ** us what time of trigger it should be. */
-        assert( sqlite3IsToplevel(pParse) );
+        ప్రతిజ్ఞా( sqlite3IsToplevel(pParse) );
         p->op = op;
-        if( IsVirtual(pTab) ){
-          if( op!=TK_INSERT ){
-            sqlite3ErrorMsg(pParse,
+        ఒకవేళ( IsVirtual(pTab) ){
+          ఒకవేళ( op!=TK_చొప్పించు ){
+            sqlite3_Error_సందేశం(pParse,
               "%s RETURNING is not available on virtual tables",
               op==TK_DELETE ? "DELETE" : "UPDATE");
           }
           p->tr_tm = TRIGGER_BEFORE;
-        }else{
+        }లేకపోతే{
           p->tr_tm = TRIGGER_AFTER;
         }
-        mask |= p->tr_tm;
-      }else if( p->bReturning && p->op==TK_INSERT && op==TK_UPDATE
+        ముసుగు |= p->tr_tm;
+      }లేకపోతే ఒకవేళ( p->bReturning && p->op==TK_చొప్పించు && op==TK_UPDATE
                 && sqlite3IsToplevel(pParse) ){
         /* Also fire a RETURNING trigger for an UPSERT */
-        mask |= p->tr_tm;
+        ముసుగు |= p->tr_tm;
       }
-      p = p->pNext;
-    }while( p );
+      p = p->p_తదుపరి;
+    }అయితే( p );
   }
 exit_triggers_exist:
-  if( pMask ){
-    *pMask = mask;
+  ఒకవేళ( p_ముసుగు ){
+    *p_ముసుగు = ముసుగు;
   }
-  return (mask ? pList : 0);
+  తిరిగి (ముసుగు ? pList : 0);
 }
 Trigger *sqlite3TriggersExist(
   Parse *pParse,          /* Parse context */
-  Table *pTab,            /* The table the contains the triggers */
-  int op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
-  ExprList *pChanges,     /* Columns that change in an UPDATE statement */
-  int *pMask              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  పట్టిక *pTab,            /* The table the contains the triggers */
+  పూర్ణాంకం op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
+  సమాసం_List *pChanges,     /* Columns that change in an UPDATE statement */
+  పూర్ణాంకం *p_ముసుగు              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
 ){
-  assert( pTab!=0 );
-  if( (pTab->pTrigger==0 && !tempTriggersExist(pParse->db))
+  ప్రతిజ్ఞా( pTab!=0 );
+  ఒకవేళ( (pTab->pTrigger==0 && !తాత్కాలిక_Triggers_Exist(pParse->db))
    || pParse->disableTriggers
   ){
-    if( pMask ) *pMask = 0;
-    return 0;
+    ఒకవేళ( p_ముసుగు ) *p_ముసుగు = 0;
+    తిరిగి 0;
   }
-  return triggersReallyExist(pParse,pTab,op,pChanges,pMask);
+  తిరిగి triggersReallyExist(pParse,pTab,op,pChanges,p_ముసుగు);
 }
 
 /*
@@ -894,18 +894,18 @@ Trigger *sqlite3TriggersExist(
 ** list is of the form "*".  Raise an error if the terms if of the
 ** form "table.*".
 */
-static int isAsteriskTerm(
+స్థిర పూర్ణాంకం is_Asterisk_పదం(
   Parse *pParse,      /* Parsing context */
-  Expr *pTerm         /* A term in the RETURNING clause */
+  సమాసం *p_పదం         /* A term in the RETURNING clause */
 ){
-  assert( pTerm!=0 );
-  if( pTerm->op==TK_ASTERISK ) return 1;
-  if( pTerm->op!=TK_DOT ) return 0;
-  assert( pTerm->pRight!=0 );
-  assert( pTerm->pLeft!=0 );
-  if( pTerm->pRight->op!=TK_ASTERISK ) return 0;
-  sqlite3ErrorMsg(pParse, "RETURNING may not use \"TABLE.*\" wildcards");
-  return 1;
+  ప్రతిజ్ఞా( p_పదం!=0 );
+  ఒకవేళ( p_పదం->op==TK_ASTERISK ) తిరిగి 1;
+  ఒకవేళ( p_పదం->op!=TK_DOT ) తిరిగి 0;
+  ప్రతిజ్ఞా( p_పదం->p_కుడి!=0 );
+  ప్రతిజ్ఞా( p_పదం->p_ఎడమ!=0 );
+  ఒకవేళ( p_పదం->p_కుడి->op!=TK_ASTERISK ) తిరిగి 0;
+  sqlite3_Error_సందేశం(pParse, "RETURNING may not use \"TABLE.*\" wildcards");
+  తిరిగి 1;
 }
 
 /* The input list pList is the list of result set terms from a RETURNING
@@ -914,57 +914,57 @@ static int isAsteriskTerm(
 ** This routine makes a copy of the pList, and at the same time expands
 ** any "*" wildcards to be the complete set of columns from pTab.
 */
-static ExprList *sqlite3ExpandReturning(
+స్థిర సమాసం_List *sqlite3ExpandReturning(
   Parse *pParse,        /* Parsing context */
-  ExprList *pList,      /* The arguments to RETURNING */
-  Table *pTab           /* The table being updated */
+  సమాసం_List *pList,      /* The arguments to RETURNING */
+  పట్టిక *pTab           /* The table being updated */
 ){
-  ExprList *pNew = 0;
+  సమాసం_List *pNew = 0;
   sqlite3 *db = pParse->db;
-  int i;
+  పూర్ణాంకం i;
 
-  for(i=0; i<pList->nExpr; i++){
-    Expr *pOldExpr = pList->a[i].pExpr;
-    if( NEVER(pOldExpr==0) ) continue;
-    if( isAsteriskTerm(pParse, pOldExpr) ){
-      int jj;
-      for(jj=0; jj<pTab->nCol; jj++){
-        Expr *pNewExpr;
-        if( IsHiddenColumn(pTab->aCol+jj) ) continue;
-        pNewExpr = sqlite3Expr(db, TK_ID, pTab->aCol[jj].zCnName);
-        pNew = sqlite3ExprListAppend(pParse, pNew, pNewExpr);
-        if( !db->mallocFailed ){
-          struct ExprList_item *pItem = &pNew->a[pNew->nExpr-1];
-          pItem->zEName = sqlite3DbStrDup(db, pTab->aCol[jj].zCnName);
-          pItem->fg.eEName = ENAME_NAME;
+  కొరకు(i=0; i<pList->n_సమాసం; i++){
+    సమాసం *p_Old_సమాసం = pList->a[i].p_సమాసం;
+    ఒకవేళ( NEVER(p_Old_సమాసం==0) ) కొనసాగు;
+    ఒకవేళ( is_Asterisk_పదం(pParse, p_Old_సమాసం) ){
+      పూర్ణాంకం jj;
+      కొరకు(jj=0; jj<pTab->n_నిలువు; jj++){
+        సమాసం *p_New_సమాసం;
+        ఒకవేళ( Is_Hidden_స్తంభం(pTab->a_నిలువు+jj) ) కొనసాగు;
+        p_New_సమాసం = sqlite3_సమాసం(db, TK_ID, pTab->a_నిలువు[jj].zCnName);
+        pNew = sqlite3_సమాసం_List_Append(pParse, pNew, p_New_సమాసం);
+        ఒకవేళ( !db->mallocFailed ){
+          నిర్మాణం సమాసం_List_అంశం *p_అంశం = &pNew->a[pNew->n_సమాసం-1];
+          p_అంశం->zEName = sqlite3DbStrDup(db, pTab->a_నిలువు[jj].zCnName);
+          p_అంశం->fg.eEName = ENAME_NAME;
         }
       }
-    }else{
-      Expr *pNewExpr = sqlite3ExprDup(db, pOldExpr, 0);
-      pNew = sqlite3ExprListAppend(pParse, pNew, pNewExpr);
-      if( !db->mallocFailed && ALWAYS(pList->a[i].zEName!=0) ){
-        struct ExprList_item *pItem = &pNew->a[pNew->nExpr-1];
-        pItem->zEName = sqlite3DbStrDup(db, pList->a[i].zEName);
-        pItem->fg.eEName = pList->a[i].fg.eEName;
+    }లేకపోతే{
+      సమాసం *p_New_సమాసం = sqlite3_సమాసం_Dup(db, p_Old_సమాసం, 0);
+      pNew = sqlite3_సమాసం_List_Append(pParse, pNew, p_New_సమాసం);
+      ఒకవేళ( !db->mallocFailed && ALWAYS(pList->a[i].zEName!=0) ){
+        నిర్మాణం సమాసం_List_అంశం *p_అంశం = &pNew->a[pNew->n_సమాసం-1];
+        p_అంశం->zEName = sqlite3DbStrDup(db, pList->a[i].zEName);
+        p_అంశం->fg.eEName = pList->a[i].fg.eEName;
       }
     }
   }
-  return pNew;
+  తిరిగి pNew;
 }
 
 /* If the Expr node is a subquery or an EXISTS operator or an IN operator that
 ** uses a subquery, and if the subquery is SF_Correlated, then mark the
 ** expression as EP_VarSelect.
 */
-static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
-  UNUSED_PARAMETER(NotUsed);
-  if( ExprUseXSelect(pExpr)
-   && (pExpr->x.pSelect->selFlags & SF_Correlated)!=0
+స్థిర పూర్ణాంకం sqlite3ReturningSubqueryVarSelect(Walker *Not_వాడిన, సమాసం *p_సమాసం){
+  వాడని_PARAMETER(Not_వాడిన);
+  ఒకవేళ( సమాసం_Use_XSelect(p_సమాసం)
+   && (p_సమాసం->x.pSelect->selFlags & SF_Correlated)!=0
   ){
-    testcase( ExprHasProperty(pExpr, EP_VarSelect) );
-    ExprSetProperty(pExpr, EP_VarSelect);
+    testcase( సమాసం_Has_Property(p_సమాసం, EP_VarSelect) );
+    సమాసం_సమితి_Property(p_సమాసం, EP_VarSelect);
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 
@@ -975,21 +975,21 @@ static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
 **    (2) Set pWalker->eCode to non-zero so that the caller will know
 **        that (1) has happened.
 */
-static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
-  int i;
+స్థిర పూర్ణాంకం sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
+  పూర్ణాంకం i;
   SrcList *pSrc;
-  assert( pSelect!=0 );
+  ప్రతిజ్ఞా( pSelect!=0 );
   pSrc = pSelect->pSrc;
-  assert( pSrc!=0 );
-  for(i=0; i<pSrc->nSrc; i++){
-    if( pSrc->a[i].pSTab==pWalker->u.pTab ){
+  ప్రతిజ్ఞా( pSrc!=0 );
+  కొరకు(i=0; i<pSrc->nSrc; i++){
+    ఒకవేళ( pSrc->a[i].pSTab==pWalker->u.pTab ){
       testcase( pSelect->selFlags & SF_Correlated );
       pSelect->selFlags |= SF_Correlated;
-      pWalker->eCode = 1;
-      break;
+      pWalker->e_సంకేతం = 1;
+      ఆపు;
     }
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
@@ -1001,20 +1001,20 @@ static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
 **
 ** https://sqlite.org/forum/forumpost/2c83569ce8945d39
 */
-static void sqlite3ProcessReturningSubqueries(
-  ExprList *pEList,
-  Table *pTab
+స్థిర శూన్య sqlite3ProcessReturningSubqueries(
+  సమాసం_List *pEList,
+  పట్టిక *pTab
 ){
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  memset(&w, 0, పరిమాణం(w));
+  w.x_సమాసం_Callback = sqlite3_సమాసం_Walk_Noop;
   w.xSelectCallback = sqlite3ReturningSubqueryCorrelated;
   w.u.pTab = pTab;
-  sqlite3WalkExprList(&w, pEList);
-  if( w.eCode ){
-    w.xExprCallback = sqlite3ReturningSubqueryVarSelect;
+  sqlite3_Walk_సమాసం_List(&w, pEList);
+  ఒకవేళ( w.e_సంకేతం ){
+    w.x_సమాసం_Callback = sqlite3ReturningSubqueryVarSelect;
     w.xSelectCallback = sqlite3SelectWalkNoop;
-    sqlite3WalkExprList(&w, pEList);
+    sqlite3_Walk_సమాసం_List(&w, pEList);
   }
 }
 
@@ -1023,87 +1023,87 @@ static void sqlite3ProcessReturningSubqueries(
 ** that invoke a subprogram in the bytecode, the code for RETURNING
 ** is generated in-line.
 */
-static void codeReturningTrigger(
+స్థిర శూన్య సంకేతం_Returning_Trigger(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* The trigger step that defines the RETURNING */
-  Table *pTab,         /* The table to code triggers from */
-  int regIn            /* The first in an array of registers */
+  పట్టిక *pTab,         /* The table to code triggers from */
+  పూర్ణాంకం reg_లోపల            /* The first in an array of registers */
 ){
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
-  ExprList *pNew;
+  సమాసం_List *pNew;
   Returning *pReturning;
   Select sSelect;
   SrcList *pFrom;
-  union {
+  సంఘం {
     SrcList sSrc;
     u8 fromSpace[SZ_SRCLIST_1];
   } uSrc;
 
-  assert( v!=0 );
-  if( !pParse->bReturning ){
+  ప్రతిజ్ఞా( v!=0 );
+  ఒకవేళ( !pParse->bReturning ){
     /* This RETURNING trigger must be for a different statement as
     ** this statement lacks a RETURNING clause. */
-    return;
+    తిరిగి;
   }
-  assert( db->pParse==pParse );
-  assert( !pParse->isCreate );
+  ప్రతిజ్ఞా( db->pParse==pParse );
+  ప్రతిజ్ఞా( !pParse->isCreate );
   pReturning = pParse->u1.d.pReturning;
-  if( pTrigger != &(pReturning->retTrig) ){
+  ఒకవేళ( pTrigger != &(pReturning->retTrig) ){
     /* This RETURNING trigger is for a different statement */
-    return;
+    తిరిగి;
   }
-  memset(&sSelect, 0, sizeof(sSelect));
-  memset(&uSrc, 0, sizeof(uSrc));
+  memset(&sSelect, 0, పరిమాణం(sSelect));
+  memset(&uSrc, 0, పరిమాణం(uSrc));
   pFrom = &uSrc.sSrc;
-  sSelect.pEList = sqlite3ExprListDup(db, pReturning->pReturnEL, 0);
+  sSelect.pEList = sqlite3_సమాసం_List_Dup(db, pReturning->pReturnEL, 0);
   sSelect.pSrc = pFrom;
   pFrom->nSrc = 1;
   pFrom->a[0].pSTab = pTab;
   pFrom->a[0].zName = pTab->zName; /* tag-20240424-1 */
   pFrom->a[0].iCursor = -1;
   sqlite3SelectPrep(pParse, &sSelect, 0);
-  if( pParse->nErr==0 ){
-    assert( db->mallocFailed==0 );
-    sqlite3GenerateColumnNames(pParse, &sSelect);
+  ఒకవేళ( pParse->nErr==0 ){
+    ప్రతిజ్ఞా( db->mallocFailed==0 );
+    sqlite3_Generate_స్తంభం_పేర్లు(pParse, &sSelect);
   }
-  sqlite3ExprListDelete(db, sSelect.pEList);
+  sqlite3_సమాసం_List_Delete(db, sSelect.pEList);
   pNew = sqlite3ExpandReturning(pParse, pReturning->pReturnEL, pTab);
-  if( pParse->nErr==0 ){
+  ఒకవేళ( pParse->nErr==0 ){
     NameContext sNC;
-    memset(&sNC, 0, sizeof(sNC));
-    if( pReturning->nRetCol==0 ){
-      pReturning->nRetCol = pNew->nExpr;
+    memset(&sNC, 0, పరిమాణం(sNC));
+    ఒకవేళ( pReturning->n_Ret_నిలువు==0 ){
+      pReturning->n_Ret_నిలువు = pNew->n_సమాసం;
       pReturning->iRetCur = pParse->nTab++;
     }
     sNC.pParse = pParse;
-    sNC.uNC.iBaseReg = regIn;
+    sNC.uNC.i_పునాది_Reg = reg_లోపల;
     sNC.ncFlags = NC_UBaseReg;
     pParse->eTriggerOp = pTrigger->op;
     pParse->pTriggerTab = pTab;
-    if( sqlite3ResolveExprListNames(&sNC, pNew)==SQLITE_OK
+    ఒకవేళ( sqlite3_Resolve_సమాసం_List_పేర్లు(&sNC, pNew)==SQLITE_OK
      && ALWAYS(!db->mallocFailed)
     ){
-      int i;
-      int nCol = pNew->nExpr;
-      int reg = pParse->nMem+1;
+      పూర్ణాంకం i;
+      పూర్ణాంకం n_నిలువు = pNew->n_సమాసం;
+      పూర్ణాంకం reg = pParse->nMem+1;
       sqlite3ProcessReturningSubqueries(pNew, pTab);
-      pParse->nMem += nCol+2;
+      pParse->nMem += n_నిలువు+2;
       pReturning->iRetReg = reg;
-      for(i=0; i<nCol; i++){
-        Expr *pCol = pNew->a[i].pExpr;
-        assert( pCol!=0 ); /* Due to !db->mallocFailed ~9 lines above */
-        sqlite3ExprCodeFactorable(pParse, pCol, reg+i);
-        if( sqlite3ExprAffinity(pCol)==SQLITE_AFF_REAL ){
-          sqlite3VdbeAddOp1(v, OP_RealAffinity, reg+i);
+      కొరకు(i=0; i<n_నిలువు; i++){
+        సమాసం *p_నిలువు = pNew->a[i].p_సమాసం;
+        ప్రతిజ్ఞా( p_నిలువు!=0 ); /* Due to !db->mallocFailed ~9 lines above */
+        sqlite3_సమాసం_సంకేతం_Factorable(pParse, p_నిలువు, reg+i);
+        ఒకవేళ( sqlite3_సమాసం_Affinity(p_నిలువు)==SQLITE_AFF_REAL ){
+          sqlite3_Vdbe_కూడు_Op1(v, OP_RealAffinity, reg+i);
         }
       }
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, reg, i, reg+i);
-      sqlite3VdbeAddOp2(v, OP_NewRowid, pReturning->iRetCur, reg+i+1);
-      sqlite3VdbeAddOp3(v, OP_Insert, pReturning->iRetCur, reg+i, reg+i+1);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_Make_రికార్డు, reg, i, reg+i);
+      sqlite3_Vdbe_కూడు_Op2(v, OP_NewRowid, pReturning->iRetCur, reg+i+1);
+      sqlite3_Vdbe_కూడు_Op3(v, OP_చొప్పించు, pReturning->iRetCur, reg+i, reg+i+1);
     }
   }
-  sqlite3ExprListDelete(db, pNew);
+  sqlite3_సమాసం_List_Delete(db, pNew);
   pParse->eTriggerOp = 0;
   pParse->pTriggerTab = 0;
 }
@@ -1114,19 +1114,19 @@ static void codeReturningTrigger(
 ** Generate VDBE code for the statements inside the body of a single 
 ** trigger.
 */
-static int codeTriggerProgram(
+స్థిర పూర్ణాంకం సంకేతం_Trigger_కార్యక్రమం(
   Parse *pParse,            /* The parser context */
-  TriggerStep *pStepList,   /* List of statements inside the trigger body */
-  int orconf                /* Conflict algorithm. (OE_Abort, etc) */  
+  Trigger_అడుగు *p_అడుగు_List,   /* List of statements inside the trigger body */
+  పూర్ణాంకం orconf                /* Conflict algorithm. (OE_Abort, etc) */  
 ){
-  TriggerStep *pStep;
+  Trigger_అడుగు *p_అడుగు;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
-  assert( pParse->pTriggerTab && pParse->pToplevel );
-  assert( pStepList );
-  assert( v!=0 );
-  for(pStep=pStepList; pStep; pStep=pStep->pNext){
+  ప్రతిజ్ఞా( pParse->pTriggerTab && pParse->pToplevel );
+  ప్రతిజ్ఞా( p_అడుగు_List );
+  ప్రతిజ్ఞా( v!=0 );
+  కొరకు(p_అడుగు=p_అడుగు_List; p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
     /* Figure out the ON CONFLICT policy that will be used for this step
     ** of the trigger program. If the statement that caused this trigger
     ** to fire had an explicit ON CONFLICT, then use it. Otherwise, use
@@ -1140,93 +1140,93 @@ static int codeTriggerProgram(
     **   INSERT INTO t1 ... ;            -- insert into t2 uses REPLACE policy
     **   INSERT OR IGNORE INTO t1 ... ;  -- insert into t2 uses IGNORE policy
     */
-    pParse->eOrconf = (orconf==OE_Default)?pStep->orconf:(u8)orconf;
-    assert( pParse->okConstFactor==0 );
+    pParse->eOrconf = (orconf==OE_Default)?p_అడుగు->orconf:(u8)orconf;
+    ప్రతిజ్ఞా( pParse->ok_Const_గుణకం==0 );
 
-#ifndef SQLITE_OMIT_TRACE
-    if( pStep->zSpan ){
-      sqlite3VdbeAddOp4(v, OP_Trace, 0x7fffffff, 1, 0,
-                        sqlite3MPrintf(db, "-- %s", pStep->zSpan),
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRACE
+    ఒకవేళ( p_అడుగు->z_పరిధి ){
+      sqlite3_Vdbe_కూడు_Op4(v, OP_Trace, 0x7fffffff, 1, 0,
+                        sqlite3MPrintf(db, "-- %s", p_అడుగు->z_పరిధి),
                         P4_DYNAMIC);
     }
-#endif
+#అయితే_ముగింపు
 
-    switch( pStep->op ){
-      case TK_UPDATE: {
+    ఎంపిక( p_అడుగు->op ){
+      స్థితి TK_UPDATE: {
         sqlite3Update(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3ExprListDup(db, pStep->pExprList, 0), 
-          sqlite3ExprDup(db, pStep->pWhere, 0), 
+          sqlite3SrcListDup(db, p_అడుగు->pSrc, 0),
+          sqlite3_సమాసం_List_Dup(db, p_అడుగు->p_సమాసం_List, 0), 
+          sqlite3_సమాసం_Dup(db, p_అడుగు->pWhere, 0), 
           pParse->eOrconf, 0, 0, 0
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_కూడు_Op0(v, OP_Reset_లెక్క);
+        ఆపు;
       }
-      case TK_INSERT: {
-        sqlite3Insert(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3SelectDup(db, pStep->pSelect, 0), 
-          sqlite3IdListDup(db, pStep->pIdList), 
+      స్థితి TK_చొప్పించు: {
+        sqlite3_చొప్పించు(pParse, 
+          sqlite3SrcListDup(db, p_అడుగు->pSrc, 0),
+          sqlite3SelectDup(db, p_అడుగు->pSelect, 0), 
+          sqlite3IdListDup(db, p_అడుగు->pIdList), 
           pParse->eOrconf,
-          sqlite3UpsertDup(db, pStep->pUpsert)
+          sqlite3UpsertDup(db, p_అడుగు->pUpsert)
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_కూడు_Op0(v, OP_Reset_లెక్క);
+        ఆపు;
       }
-      case TK_DELETE: {
+      స్థితి TK_DELETE: {
         sqlite3DeleteFrom(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3ExprDup(db, pStep->pWhere, 0), 0, 0
+          sqlite3SrcListDup(db, p_అడుగు->pSrc, 0),
+          sqlite3_సమాసం_Dup(db, p_అడుగు->pWhere, 0), 0, 0
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_కూడు_Op0(v, OP_Reset_లెక్క);
+        ఆపు;
       }
-      default: assert( pStep->op==TK_SELECT ); {
+      అప్రమేయ: ప్రతిజ్ఞా( p_అడుగు->op==TK_SELECT ); {
         SelectDest sDest;
-        Select *pSelect = sqlite3SelectDup(db, pStep->pSelect, 0);
+        Select *pSelect = sqlite3SelectDup(db, p_అడుగు->pSelect, 0);
         sqlite3SelectDestInit(&sDest, SRT_Discard, 0);
         sqlite3Select(pParse, pSelect, &sDest);
         sqlite3SelectDelete(db, pSelect);
-        break;
+        ఆపు;
       }
     } 
   }
 
-  return 0;
+  తిరిగి 0;
 }
 
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
+#నిర్వచితమైతే SQLITE_ENABLE_EXPLAIN_COMMENTS
 /*
 ** This function is used to add VdbeComment() annotations to a VDBE
 ** program. It is not used in production code, only for debugging.
 */
-static const char *onErrorText(int onError){
-  switch( onError ){
-    case OE_Abort:    return "abort";
-    case OE_Rollback: return "rollback";
-    case OE_Fail:     return "fail";
-    case OE_Replace:  return "replace";
-    case OE_Ignore:   return "ignore";
-    case OE_Default:  return "default";
+స్థిర స్థిరరాశి అక్షరం *on_Error_పాఠ్యం(పూర్ణాంకం onError){
+  ఎంపిక( onError ){
+    స్థితి OE_Abort:    తిరిగి "abort";
+    స్థితి OE_Rollback: తిరిగి "rollback";
+    స్థితి OE_Fail:     తిరిగి "fail";
+    స్థితి OE_Replace:  తిరిగి "replace";
+    స్థితి OE_Ignore:   తిరిగి "ignore";
+    స్థితి OE_Default:  తిరిగి "default";
   }
-  return "n/a";
+  తిరిగి "n/a";
 }
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Parse context structure pFrom has just been used to create a sub-vdbe
 ** (trigger program). If an error has occurred, transfer error information
 ** from pFrom to pTo.
 */
-static void transferParseError(Parse *pTo, Parse *pFrom){
-  assert( pFrom->zErrMsg==0 || pFrom->nErr );
-  assert( pTo->zErrMsg==0 || pTo->nErr );
-  if( pTo->nErr==0 ){
-    pTo->zErrMsg = pFrom->zErrMsg;
-    pTo->nErr = pFrom->nErr;
-    pTo->rc = pFrom->rc;
-  }else{
-    sqlite3DbFree(pFrom->db, pFrom->zErrMsg);
+స్థిర శూన్య transferParseError(Parse *p_గమ్యం, Parse *pFrom){
+  ప్రతిజ్ఞా( pFrom->z_Err_సందేశం==0 || pFrom->nErr );
+  ప్రతిజ్ఞా( p_గమ్యం->z_Err_సందేశం==0 || p_గమ్యం->nErr );
+  ఒకవేళ( p_గమ్యం->nErr==0 ){
+    p_గమ్యం->z_Err_సందేశం = pFrom->z_Err_సందేశం;
+    p_గమ్యం->nErr = pFrom->nErr;
+    p_గమ్యం->rc = pFrom->rc;
+  }లేకపోతే{
+    sqlite3DbFree(pFrom->db, pFrom->z_Err_సందేశం);
   }
 }
 
@@ -1234,49 +1234,49 @@ static void transferParseError(Parse *pTo, Parse *pFrom){
 ** Create and populate a new TriggerPrg object with a sub-program 
 ** implementing trigger pTrigger with ON CONFLICT policy orconf.
 */
-static TriggerPrg *codeRowTrigger(
+స్థిర TriggerPrg *సంకేతం_అడ్డువరుస_Trigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
-  Table *pTab,         /* The table pTrigger is attached to */
-  int orconf           /* ON CONFLICT policy to code trigger program with */
+  పట్టిక *pTab,         /* The table pTrigger is attached to */
+  పూర్ణాంకం orconf           /* ON CONFLICT policy to code trigger program with */
 ){
-  Parse *pTop;                /* Top level Parse object */
+  Parse *p_శిఖరం;                /* Top level Parse object */
   sqlite3 *db = pParse->db;   /* Database handle */
   TriggerPrg *pPrg;           /* Value to return */
-  Expr *pWhen = 0;            /* Duplicate of trigger WHEN expression */
+  సమాసం *pWhen = 0;            /* Duplicate of trigger WHEN expression */
   Vdbe *v;                    /* Temporary VM */
   NameContext sNC;            /* Name context for sub-vdbe */
-  SubProgram *pProgram = 0;   /* Sub-vdbe for trigger program */
-  int iEndTrigger = 0;        /* Label to jump to if WHEN is false */
+  Sub_కార్యక్రమం *p_కార్యక్రమం = 0;   /* Sub-vdbe for trigger program */
+  పూర్ణాంకం i_చివర_Trigger = 0;        /* Label to jump to if WHEN is false */
   Parse sSubParse;            /* Parse context for sub-vdbe */
-  int nDepth;                 /* Trigger depth */
+  పూర్ణాంకం n_లోతు;                 /* Trigger depth */
 
   /* Ensure that triggers are not chained too deep.  This test is linear
   ** in the chaining depth, but sensible code ought not be chaining
   ** triggers excessively, so that shouldn't be a problem.
   */  
-  pTop = pParse;
-  for(nDepth=0; pTop->pOuterParse; pTop = pTop->pOuterParse, nDepth++){}
-  if( nDepth>=db->aLimit[SQLITE_LIMIT_TRIGGER_DEPTH] ){
-    sqlite3ErrorMsg(pParse, "triggers nested too deep");
-    return 0;
+  p_శిఖరం = pParse;
+  కొరకు(n_లోతు=0; p_శిఖరం->pOuterParse; p_శిఖరం = p_శిఖరం->pOuterParse, n_లోతు++){}
+  ఒకవేళ( n_లోతు>=db->a_హద్దు[SQLITE_హద్దు_TRIGGER_లోతు] ){
+    sqlite3_Error_సందేశం(pParse, "triggers nested too deep");
+    తిరిగి 0;
   }
 
-  pTop = sqlite3ParseToplevel(pParse);
-  assert( pTrigger->zName==0 || pTab==tableOfTrigger(pTrigger) );
-  assert( pTop->pVdbe );
+  p_శిఖరం = sqlite3ParseToplevel(pParse);
+  ప్రతిజ్ఞా( pTrigger->zName==0 || pTab==పట్టిక_యొక్క_Trigger(pTrigger) );
+  ప్రతిజ్ఞా( p_శిఖరం->pVdbe );
 
 
   /* Allocate the TriggerPrg and SubProgram objects. To ensure that they
   ** are freed if an error occurs, link them into the Parse.pTriggerPrg 
   ** list of the top-level Parse object sooner rather than later.  */
-  pPrg = sqlite3DbMallocZero(db, sizeof(TriggerPrg));
-  if( !pPrg ) return 0;
-  pPrg->pNext = pTop->pTriggerPrg;
-  pTop->pTriggerPrg = pPrg;
-  pPrg->pProgram = pProgram = sqlite3DbMallocZero(db, sizeof(SubProgram));
-  if( !pProgram ) return 0;
-  sqlite3VdbeLinkSubProgram(pTop->pVdbe, pProgram);
+  pPrg = sqlite3DbMallocZero(db, పరిమాణం(TriggerPrg));
+  ఒకవేళ( !pPrg ) తిరిగి 0;
+  pPrg->p_తదుపరి = p_శిఖరం->pTriggerPrg;
+  p_శిఖరం->pTriggerPrg = pPrg;
+  pPrg->p_కార్యక్రమం = p_కార్యక్రమం = sqlite3DbMallocZero(db, పరిమాణం(Sub_కార్యక్రమం));
+  ఒకవేళ( !p_కార్యక్రమం ) తిరిగి 0;
+  sqlite3_Vdbe_Link_Sub_కార్యక్రమం(p_శిఖరం->pVdbe, p_కార్యక్రమం);
   pPrg->pTrigger = pTrigger;
   pPrg->orconf = orconf;
   pPrg->aColmask[0] = 0xffffffff;
@@ -1285,10 +1285,10 @@ static TriggerPrg *codeRowTrigger(
   /* Allocate and populate a new Parse context to use for coding the 
   ** trigger sub-program.  */
   sqlite3ParseObjectInit(&sSubParse, db);
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, పరిమాణం(sNC));
   sNC.pParse = &sSubParse;
   sSubParse.pTriggerTab = pTab;
-  sSubParse.pToplevel = pTop;
+  sSubParse.pToplevel = p_శిఖరం;
   sSubParse.pTrigCoded = pTrigger;
   sSubParse.zAuthContext = pTrigger->zName;
   sSubParse.eTriggerOp = pTrigger->op;
@@ -1298,65 +1298,65 @@ static TriggerPrg *codeRowTrigger(
   sSubParse.newmask = 0;
 
   v = sqlite3GetVdbe(&sSubParse);
-  if( v ){
+  ఒకవేళ( v ){
     VdbeComment((v, "Start: %s.%s (%s %s%s%s ON %s)", 
-      pTrigger->zName, onErrorText(orconf),
+      pTrigger->zName, on_Error_పాఠ్యం(orconf),
       (pTrigger->tr_tm==TRIGGER_BEFORE ? "BEFORE" : "AFTER"),
         (pTrigger->op==TK_UPDATE ? "UPDATE" : ""),
-        (pTrigger->op==TK_INSERT ? "INSERT" : ""),
+        (pTrigger->op==TK_చొప్పించు ? "INSERT" : ""),
         (pTrigger->op==TK_DELETE ? "DELETE" : ""),
       pTab->zName
     ));
-#ifndef SQLITE_OMIT_TRACE
-    if( pTrigger->zName ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRACE
+    ఒకవేళ( pTrigger->zName ){
       sqlite3VdbeChangeP4(v, -1, 
         sqlite3MPrintf(db, "-- TRIGGER %s", pTrigger->zName), P4_DYNAMIC
       );
     }
-#endif
+#అయితే_ముగింపు
 
     /* If one was specified, code the WHEN clause. If it evaluates to false
     ** (or NULL) the sub-vdbe is immediately halted by jumping to the 
     ** OP_Halt inserted at the end of the program.  */
-    if( pTrigger->pWhen ){
-      pWhen = sqlite3ExprDup(db, pTrigger->pWhen, 0);
-      if( db->mallocFailed==0
-       && SQLITE_OK==sqlite3ResolveExprNames(&sNC, pWhen) 
+    ఒకవేళ( pTrigger->pWhen ){
+      pWhen = sqlite3_సమాసం_Dup(db, pTrigger->pWhen, 0);
+      ఒకవేళ( db->mallocFailed==0
+       && SQLITE_OK==sqlite3_Resolve_సమాసం_పేర్లు(&sNC, pWhen) 
       ){
-        iEndTrigger = sqlite3VdbeMakeLabel(&sSubParse);
-        sqlite3ExprIfFalse(&sSubParse, pWhen, iEndTrigger, SQLITE_JUMPIFNULL);
+        i_చివర_Trigger = sqlite3VdbeMakeLabel(&sSubParse);
+        sqlite3_సమాసం_If_False(&sSubParse, pWhen, i_చివర_Trigger, SQLITE_JUMPIFNULL);
       }
-      sqlite3ExprDelete(db, pWhen);
+      sqlite3_సమాసం_Delete(db, pWhen);
     }
 
     /* Code the trigger program into the sub-vdbe. */
-    codeTriggerProgram(&sSubParse, pTrigger->step_list, orconf);
+    సంకేతం_Trigger_కార్యక్రమం(&sSubParse, pTrigger->అడుగు_list, orconf);
 
     /* Insert an OP_Halt at the end of the sub-program. */
-    if( iEndTrigger ){
-      sqlite3VdbeResolveLabel(v, iEndTrigger);
+    ఒకవేళ( i_చివర_Trigger ){
+      sqlite3VdbeResolveLabel(v, i_చివర_Trigger);
     }
-    sqlite3VdbeAddOp0(v, OP_Halt);
-    VdbeComment((v, "End: %s.%s", pTrigger->zName, onErrorText(orconf)));
+    sqlite3_Vdbe_కూడు_Op0(v, OP_Halt);
+    VdbeComment((v, "End: %s.%s", pTrigger->zName, on_Error_పాఠ్యం(orconf)));
     transferParseError(pParse, &sSubParse);
 
-    if( pParse->nErr==0 ){
-      assert( db->mallocFailed==0 );
-      pProgram->aOp = sqlite3VdbeTakeOpArray(v, &pProgram->nOp, &pTop->nMaxArg);
+    ఒకవేళ( pParse->nErr==0 ){
+      ప్రతిజ్ఞా( db->mallocFailed==0 );
+      p_కార్యక్రమం->aOp = sqlite3VdbeTakeOpArray(v, &p_కార్యక్రమం->nOp, &p_శిఖరం->nMaxArg);
     }
-    pProgram->nMem = sSubParse.nMem;
-    pProgram->nCsr = sSubParse.nTab;
-    pProgram->token = (void *)pTrigger;
+    p_కార్యక్రమం->nMem = sSubParse.nMem;
+    p_కార్యక్రమం->nCsr = sSubParse.nTab;
+    p_కార్యక్రమం->token = (శూన్య *)pTrigger;
     pPrg->aColmask[0] = sSubParse.oldmask;
     pPrg->aColmask[1] = sSubParse.newmask;
     sqlite3VdbeDelete(v);
-  }else{
+  }లేకపోతే{
     transferParseError(pParse, &sSubParse);
   }
 
-  assert( !sSubParse.pTriggerPrg && !sSubParse.nMaxArg );
+  ప్రతిజ్ఞా( !sSubParse.pTriggerPrg && !sSubParse.nMaxArg );
   sqlite3ParseObjectReset(&sSubParse);
-  return pPrg;
+  తిరిగి pPrg;
 }
     
 /*
@@ -1365,33 +1365,33 @@ static TriggerPrg *codeRowTrigger(
 ** TriggerPrg object exists, a new object is allocated and populated before
 ** being returned.
 */
-static TriggerPrg *getRowTrigger(
+స్థిర TriggerPrg *get_అడ్డువరుస_Trigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
-  Table *pTab,         /* The table trigger pTrigger is attached to */
-  int orconf           /* ON CONFLICT algorithm. */
+  పట్టిక *pTab,         /* The table trigger pTrigger is attached to */
+  పూర్ణాంకం orconf           /* ON CONFLICT algorithm. */
 ){
-  Parse *pRoot = sqlite3ParseToplevel(pParse);
+  Parse *p_మూలం = sqlite3ParseToplevel(pParse);
   TriggerPrg *pPrg;
 
-  assert( pTrigger->zName==0 || pTab==tableOfTrigger(pTrigger) );
+  ప్రతిజ్ఞా( pTrigger->zName==0 || pTab==పట్టిక_యొక్క_Trigger(pTrigger) );
 
   /* It may be that this trigger has already been coded (or is in the
   ** process of being coded). If this is the case, then an entry with
   ** a matching TriggerPrg.pTrigger field will be present somewhere
   ** in the Parse.pTriggerPrg list. Search for such an entry.  */
-  for(pPrg=pRoot->pTriggerPrg; 
+  కొరకు(pPrg=p_మూలం->pTriggerPrg; 
       pPrg && (pPrg->pTrigger!=pTrigger || pPrg->orconf!=orconf); 
-      pPrg=pPrg->pNext
+      pPrg=pPrg->p_తదుపరి
   );
 
   /* If an existing TriggerPrg could not be located, create a new one. */
-  if( !pPrg ){
-    pPrg = codeRowTrigger(pParse, pTrigger, pTab, orconf);
-    pParse->db->errByteOffset = -1;
+  ఒకవేళ( !pPrg ){
+    pPrg = సంకేతం_అడ్డువరుస_Trigger(pParse, pTrigger, pTab, orconf);
+    pParse->db->err_Byte_స్థానభ్రంశం = -1;
   }
 
-  return pPrg;
+  తిరిగి pPrg;
 }
 
 /*
@@ -1400,28 +1400,28 @@ static TriggerPrg *getRowTrigger(
 ** function are the same as those described in the header function for
 ** sqlite3CodeRowTrigger()
 */
-void sqlite3CodeRowTriggerDirect(
+శూన్య sqlite3_సంకేతం_అడ్డువరుస_Trigger_ప్రత్యక్ష(
   Parse *pParse,       /* Parse context */
   Trigger *p,          /* Trigger to code */
-  Table *pTab,         /* The table to code triggers from */
-  int reg,             /* Reg array containing OLD.* and NEW.* values */
-  int orconf,          /* ON CONFLICT policy */
-  int ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
+  పట్టిక *pTab,         /* The table to code triggers from */
+  పూర్ణాంకం reg,             /* Reg array containing OLD.* and NEW.* values */
+  పూర్ణాంకం orconf,          /* ON CONFLICT policy */
+  పూర్ణాంకం ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
 ){
   Vdbe *v = sqlite3GetVdbe(pParse); /* Main VM */
   TriggerPrg *pPrg;
-  pPrg = getRowTrigger(pParse, p, pTab, orconf);
-  assert( pPrg || pParse->nErr );
+  pPrg = get_అడ్డువరుస_Trigger(pParse, p, pTab, orconf);
+  ప్రతిజ్ఞా( pPrg || pParse->nErr );
 
   /* Code the OP_Program opcode in the parent VDBE. P4 of the OP_Program 
   ** is a pointer to the sub-vdbe containing the trigger program.  */
-  if( pPrg ){
-    int bRecursive = (p->zName && 0==(pParse->db->flags&SQLITE_RecTriggers));
+  ఒకవేళ( pPrg ){
+    పూర్ణాంకం bRecursive = (p->zName && 0==(pParse->db->flags&SQLITE_RecTriggers));
 
-    sqlite3VdbeAddOp4(v, OP_Program, reg, ignoreJump, ++pParse->nMem,
-                      (const char *)pPrg->pProgram, P4_SUBPROGRAM);
+    sqlite3_Vdbe_కూడు_Op4(v, OP_కార్యక్రమం, reg, ignoreJump, ++pParse->nMem,
+                      (స్థిరరాశి అక్షరం *)pPrg->p_కార్యక్రమం, P4_SUBPROGRAM);
     VdbeComment(
-        (v, "Call: %s.%s", (p->zName?p->zName:"fkey"), onErrorText(orconf)));
+        (v, "Call: %s.%s", (p->zName?p->zName:"fkey"), on_Error_పాఠ్యం(orconf)));
 
     /* Set the P5 operand of the OP_Program instruction to non-zero if
     ** recursive invocation of this trigger program is disallowed. Recursive
@@ -1472,31 +1472,31 @@ void sqlite3CodeRowTriggerDirect(
 ** is the instruction that control should jump to if a trigger program
 ** raises an IGNORE exception.
 */
-void sqlite3CodeRowTrigger(
+శూన్య sqlite3_సంకేతం_అడ్డువరుస_Trigger(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* List of triggers on table pTab */
-  int op,              /* One of TK_UPDATE, TK_INSERT, TK_DELETE */
-  ExprList *pChanges,  /* Changes list for any UPDATE OF triggers */
-  int tr_tm,           /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
-  Table *pTab,         /* The table to code triggers from */
-  int reg,             /* The first in an array of registers (see above) */
-  int orconf,          /* ON CONFLICT policy */
-  int ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
+  పూర్ణాంకం op,              /* One of TK_UPDATE, TK_INSERT, TK_DELETE */
+  సమాసం_List *pChanges,  /* Changes list for any UPDATE OF triggers */
+  పూర్ణాంకం tr_tm,           /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
+  పట్టిక *pTab,         /* The table to code triggers from */
+  పూర్ణాంకం reg,             /* The first in an array of registers (see above) */
+  పూర్ణాంకం orconf,          /* ON CONFLICT policy */
+  పూర్ణాంకం ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
 ){
   Trigger *p;          /* Used to iterate through pTrigger list */
 
-  assert( op==TK_UPDATE || op==TK_INSERT || op==TK_DELETE );
-  assert( tr_tm==TRIGGER_BEFORE || tr_tm==TRIGGER_AFTER );
-  assert( (op==TK_UPDATE)==(pChanges!=0) );
+  ప్రతిజ్ఞా( op==TK_UPDATE || op==TK_చొప్పించు || op==TK_DELETE );
+  ప్రతిజ్ఞా( tr_tm==TRIGGER_BEFORE || tr_tm==TRIGGER_AFTER );
+  ప్రతిజ్ఞా( (op==TK_UPDATE)==(pChanges!=0) );
 
-  for(p=pTrigger; p; p=p->pNext){
+  కొరకు(p=pTrigger; p; p=p->p_తదుపరి){
 
     /* Sanity checking:  The schema for the trigger and for the table are
     ** always defined.  The trigger must be in the same schema as the table
     ** or else it must be a TEMP trigger. */
-    assert( p->pSchema!=0 );
-    assert( p->pTabSchema!=0 );
-    assert( p->pSchema==p->pTabSchema 
+    ప్రతిజ్ఞా( p->pSchema!=0 );
+    ప్రతిజ్ఞా( p->pTabSchema!=0 );
+    ప్రతిజ్ఞా( p->pSchema==p->pTabSchema 
          || p->pSchema==pParse->db->aDb[1].pSchema );
 
     /* Determine whether we should code this trigger.  One of two choices:
@@ -1504,14 +1504,14 @@ void sqlite3CodeRowTrigger(
     **   2. This is a RETURNING trigger for INSERT but we are currently
     **      doing the UPDATE part of an UPSERT.
     */
-    if( (p->op==op || (p->bReturning && p->op==TK_INSERT && op==TK_UPDATE))
+    ఒకవేళ( (p->op==op || (p->bReturning && p->op==TK_చొప్పించు && op==TK_UPDATE))
      && p->tr_tm==tr_tm 
-     && checkColumnOverlap(p->pColumns, pChanges)
+     && check_స్తంభం_Overlap(p->pColumns, pChanges)
     ){
-      if( !p->bReturning ){
-        sqlite3CodeRowTriggerDirect(pParse, p, pTab, reg, orconf, ignoreJump);
-      }else if( sqlite3IsToplevel(pParse) ){
-        codeReturningTrigger(pParse, p, pTab, reg);
+      ఒకవేళ( !p->bReturning ){
+        sqlite3_సంకేతం_అడ్డువరుస_Trigger_ప్రత్యక్ష(pParse, p, pTab, reg, orconf, ignoreJump);
+      }లేకపోతే ఒకవేళ( sqlite3IsToplevel(pParse) ){
+        సంకేతం_Returning_Trigger(pParse, p, pTab, reg);
       }
     }
   }
@@ -1545,38 +1545,38 @@ void sqlite3CodeRowTrigger(
 u32 sqlite3TriggerColmask(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* List of triggers on table pTab */
-  ExprList *pChanges,  /* Changes list for any UPDATE OF triggers */
-  int isNew,           /* 1 for new.* ref mask, 0 for old.* ref mask */
-  int tr_tm,           /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
-  Table *pTab,         /* The table to code triggers from */
-  int orconf           /* Default ON CONFLICT policy for trigger steps */
+  సమాసం_List *pChanges,  /* Changes list for any UPDATE OF triggers */
+  పూర్ణాంకం isNew,           /* 1 for new.* ref mask, 0 for old.* ref mask */
+  పూర్ణాంకం tr_tm,           /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  పట్టిక *pTab,         /* The table to code triggers from */
+  పూర్ణాంకం orconf           /* Default ON CONFLICT policy for trigger steps */
 ){
-  const int op = pChanges ? TK_UPDATE : TK_DELETE;
-  u32 mask = 0;
+  స్థిరరాశి పూర్ణాంకం op = pChanges ? TK_UPDATE : TK_DELETE;
+  u32 ముసుగు = 0;
   Trigger *p;
 
-  assert( isNew==1 || isNew==0 );
-  if( IsView(pTab) ){
-    return 0xffffffff;
+  ప్రతిజ్ఞా( isNew==1 || isNew==0 );
+  ఒకవేళ( IsView(pTab) ){
+    తిరిగి 0xffffffff;
   }
-  for(p=pTrigger; p; p=p->pNext){
-    if( p->op==op
+  కొరకు(p=pTrigger; p; p=p->p_తదుపరి){
+    ఒకవేళ( p->op==op
      && (tr_tm&p->tr_tm)
-     && checkColumnOverlap(p->pColumns,pChanges)
+     && check_స్తంభం_Overlap(p->pColumns,pChanges)
     ){
-      if( p->bReturning ){
-        mask = 0xffffffff;
-      }else{
+      ఒకవేళ( p->bReturning ){
+        ముసుగు = 0xffffffff;
+      }లేకపోతే{
         TriggerPrg *pPrg;
-        pPrg = getRowTrigger(pParse, p, pTab, orconf);
-        if( pPrg ){
-          mask |= pPrg->aColmask[isNew];
+        pPrg = get_అడ్డువరుస_Trigger(pParse, p, pTab, orconf);
+        ఒకవేళ( pPrg ){
+          ముసుగు |= pPrg->aColmask[isNew];
         }
       }
     }
   }
 
-  return mask;
+  తిరిగి ముసుగు;
 }
 
-#endif /* !defined(SQLITE_OMIT_TRIGGER) */
+#అయితే_ముగింపు /* !defined(SQLITE_OMIT_TRIGGER) */

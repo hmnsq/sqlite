@@ -13,42 +13,42 @@
 ** subsystem.  See comments in the source code for a detailed description
 ** of what each interface routine does.
 */
-#ifndef SQLITE_BTREE_H
-#define SQLITE_BTREE_H
+#నిర్వచితం_కాకపోతే SQLITE_BTREE_H
+#నిర్వచించు SQLITE_BTREE_H
 
 /* TODO: This definition is just included so other modules compile. It
 ** needs to be revisited.
 */
-#define SQLITE_N_BTREE_META 16
+#నిర్వచించు SQLITE_N_BTREE_META 16
 
 /*
 ** If defined as non-zero, auto-vacuum is enabled by default. Otherwise
 ** it must be turned on for each database using "PRAGMA auto_vacuum = 1".
 */
-#ifndef SQLITE_DEFAULT_AUTOVACUUM
-  #define SQLITE_DEFAULT_AUTOVACUUM 0
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_DEFAULT_AUTOVACUUM
+  #నిర్వచించు SQLITE_DEFAULT_AUTOVACUUM 0
+#అయితే_ముగింపు
 
-#define BTREE_AUTOVACUUM_NONE 0        /* Do not do auto-vacuum */
-#define BTREE_AUTOVACUUM_FULL 1        /* Do full auto-vacuum */
-#define BTREE_AUTOVACUUM_INCR 2        /* Incremental vacuum */
+#నిర్వచించు BTREE_AUTOVACUUM_NONE 0        /* Do not do auto-vacuum */
+#నిర్వచించు BTREE_AUTOVACUUM_నిండిన 1        /* Do full auto-vacuum */
+#నిర్వచించు BTREE_AUTOVACUUM_INCR 2        /* Incremental vacuum */
 
 /*
 ** Forward declarations of structure
 */
-typedef struct Btree Btree;
-typedef struct BtCursor BtCursor;
-typedef struct BtShared BtShared;
-typedef struct BtreePayload BtreePayload;
+రకనిర్వచనం నిర్మాణం Btree Btree;
+రకనిర్వచనం నిర్మాణం BtCursor BtCursor;
+రకనిర్వచనం నిర్మాణం BtShared BtShared;
+రకనిర్వచనం నిర్మాణం BtreePayload BtreePayload;
 
 
-int sqlite3BtreeOpen(
+పూర్ణాంకం sqlite3BtreeOpen(
   sqlite3_vfs *pVfs,       /* VFS to use with this b-tree */
-  const char *zFilename,   /* Name of database file to open */
+  స్థిరరాశి అక్షరం *zFilename,   /* Name of database file to open */
   sqlite3 *db,             /* Associated database connection */
   Btree **ppBtree,         /* Return open Btree* here */
-  int flags,               /* Flags */
-  int vfsFlags             /* Flags passed through to VFS open */
+  పూర్ణాంకం flags,               /* Flags */
+  పూర్ణాంకం vfsFlags             /* Flags passed through to VFS open */
 );
 
 /* The flags parameter to sqlite3BtreeOpen can be the bitwise or of the
@@ -57,57 +57,57 @@ int sqlite3BtreeOpen(
 ** NOTE:  These values must match the corresponding PAGER_ values in
 ** pager.h.
 */
-#define BTREE_OMIT_JOURNAL  1  /* Do not create or use a rollback journal */
-#define BTREE_MEMORY        2  /* This is an in-memory DB */
-#define BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
-#define BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
+#నిర్వచించు BTREE_OMIT_JOURNAL  1  /* Do not create or use a rollback journal */
+#నిర్వచించు BTREE_జ్ఞాపకం        2  /* This is an in-memory DB */
+#నిర్వచించు BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
+#నిర్వచించు BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
 
-int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetCacheSize(Btree*,int);
-int sqlite3BtreeSetSpillSize(Btree*,int);
-#if SQLITE_MAX_MMAP_SIZE>0
-  int sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
-#endif
-int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
-int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
-int sqlite3BtreeGetPageSize(Btree*);
-Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
-Pgno sqlite3BtreeLastPage(Btree*);
-int sqlite3BtreeSecureDelete(Btree*,int);
-int sqlite3BtreeGetRequestedReserve(Btree*);
-int sqlite3BtreeGetReserveNoMutex(Btree *p);
-int sqlite3BtreeSetAutoVacuum(Btree *, int);
-int sqlite3BtreeGetAutoVacuum(Btree *);
-int sqlite3BtreeBeginTrans(Btree*,int,int*);
-int sqlite3BtreeCommitPhaseOne(Btree*, const char*);
-int sqlite3BtreeCommitPhaseTwo(Btree*, int);
-int sqlite3BtreeCommit(Btree*);
-int sqlite3BtreeRollback(Btree*,int,int);
-int sqlite3BtreeBeginStmt(Btree*,int);
-int sqlite3BtreeCreateTable(Btree*, Pgno*, int flags);
-int sqlite3BtreeTxnState(Btree*);
-int sqlite3BtreeIsInBackup(Btree*);
+పూర్ణాంకం sqlite3BtreeClose(Btree*);
+పూర్ణాంకం sqlite3_Btree_సమితి_Cache_కొలత(Btree*,పూర్ణాంకం);
+పూర్ణాంకం sqlite3_Btree_సమితి_Spill_కొలత(Btree*,పూర్ణాంకం);
+#ఒకవేళ SQLITE_MAX_MMAP_కొలత>0
+  పూర్ణాంకం sqlite3_Btree_సమితి_Mmap_హద్దు(Btree*,sqlite3_int64);
+#అయితే_ముగింపు
+పూర్ణాంకం sqlite3_Btree_సమితి_Pager_Flags(Btree*,గుర్తులేని);
+పూర్ణాంకం sqlite3_Btree_సమితి_పుట_కొలత(Btree *p, పూర్ణాంకం nPagesize, పూర్ణాంకం nReserve, పూర్ణాంకం eFix);
+పూర్ణాంకం sqlite3_Btree_Get_పుట_కొలత(Btree*);
+Pgno sqlite3_Btree_Max_పుట_లెక్క(Btree*,Pgno);
+Pgno sqlite3_Btree_చివరి_పుట(Btree*);
+పూర్ణాంకం sqlite3BtreeSecureDelete(Btree*,పూర్ణాంకం);
+పూర్ణాంకం sqlite3BtreeGetRequestedReserve(Btree*);
+పూర్ణాంకం sqlite3BtreeGetReserveNoMutex(Btree *p);
+పూర్ణాంకం sqlite3_Btree_సమితి_Auto_Vacuum(Btree *, పూర్ణాంకం);
+పూర్ణాంకం sqlite3BtreeGetAutoVacuum(Btree *);
+పూర్ణాంకం sqlite3BtreeBeginTrans(Btree*,పూర్ణాంకం,పూర్ణాంకం*);
+పూర్ణాంకం sqlite3BtreeCommitPhaseOne(Btree*, స్థిరరాశి అక్షరం*);
+పూర్ణాంకం sqlite3BtreeCommitPhaseTwo(Btree*, పూర్ణాంకం);
+పూర్ణాంకం sqlite3BtreeCommit(Btree*);
+పూర్ణాంకం sqlite3BtreeRollback(Btree*,పూర్ణాంకం,పూర్ణాంకం);
+పూర్ణాంకం sqlite3BtreeBeginStmt(Btree*,పూర్ణాంకం);
+పూర్ణాంకం sqlite3_Btree_Create_పట్టిక(Btree*, Pgno*, పూర్ణాంకం flags);
+పూర్ణాంకం sqlite3BtreeTxnState(Btree*);
+పూర్ణాంకం sqlite3_Btree_Is_లోపల_Backup(Btree*);
 
-void *sqlite3BtreeSchema(Btree *, int, void(*)(void *));
-int sqlite3BtreeSchemaLocked(Btree *pBtree);
-#ifndef SQLITE_OMIT_SHARED_CACHE
-int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);
-#endif
+శూన్య *sqlite3BtreeSchema(Btree *, పూర్ణాంకం, శూన్య(*)(శూన్య *));
+పూర్ణాంకం sqlite3BtreeSchemaLocked(Btree *pBtree);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SHARED_CACHE
+పూర్ణాంకం sqlite3_Btree_తాళం_పట్టిక(Btree *pBtree, పూర్ణాంకం iTab, u8 is_Write_తాళం);
+#అయితే_ముగింపు
 
 /* Savepoints are named, nestable SQL transactions mostly implemented */ 
 /* in vdbe.c and pager.c See https://sqlite.org/lang_savepoint.html */
-int sqlite3BtreeSavepoint(Btree *, int, int);
+పూర్ణాంకం sqlite3BtreeSavepoint(Btree *, పూర్ణాంకం, పూర్ణాంకం);
 
 /* "Checkpoint" only refers to WAL. See https://sqlite.org/wal.html#ckpt */
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);  
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WAL
+  పూర్ణాంకం sqlite3BtreeCheckpoint(Btree*, పూర్ణాంకం, పూర్ణాంకం *, పూర్ణాంకం *);  
+#అయితే_ముగింపు
 
-const char *sqlite3BtreeGetFilename(Btree *);
-const char *sqlite3BtreeGetJournalname(Btree *);
-int sqlite3BtreeCopyFile(Btree*, Btree*);
+స్థిరరాశి అక్షరం *sqlite3BtreeGetFilename(Btree *);
+స్థిరరాశి అక్షరం *sqlite3BtreeGetJournalname(Btree *);
+పూర్ణాంకం sqlite3BtreeCopyFile(Btree*, Btree*);
 
-int sqlite3BtreeIncrVacuum(Btree *);
+పూర్ణాంకం sqlite3BtreeIncrVacuum(Btree *);
 
 /* The flags parameter to sqlite3BtreeCreateTable can be the bitwise OR
 ** of the flags shown below.
@@ -119,18 +119,18 @@ int sqlite3BtreeIncrVacuum(Btree *);
 ** anywhere - the key is the content.  (BTREE_BLOBKEY is used for SQL
 ** indices.)
 */
-#define BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
-#define BTREE_BLOBKEY    2    /* Table has keys only - no data */
+#నిర్వచించు BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
+#నిర్వచించు BTREE_BLOBKEY    2    /* Table has keys only - no data */
 
-int sqlite3BtreeDropTable(Btree*, int, int*);
-int sqlite3BtreeClearTable(Btree*, int, i64*);
-int sqlite3BtreeClearTableOfCursor(BtCursor*);
-int sqlite3BtreeTripAllCursors(Btree*, int, int);
+పూర్ణాంకం sqlite3_Btree_Drop_పట్టిక(Btree*, పూర్ణాంకం, పూర్ణాంకం*);
+పూర్ణాంకం sqlite3_Btree_Clear_పట్టిక(Btree*, పూర్ణాంకం, i64*);
+పూర్ణాంకం sqlite3_Btree_Clear_పట్టిక_యొక్క_Cursor(BtCursor*);
+పూర్ణాంకం sqlite3BtreeTripAllCursors(Btree*, పూర్ణాంకం, పూర్ణాంకం);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+శూన్య sqlite3BtreeGetMeta(Btree *pBtree, పూర్ణాంకం idx, u32 *p_విలువ);
+పూర్ణాంకం sqlite3BtreeUpdateMeta(Btree*, పూర్ణాంకం idx, u32 విలువ);
 
-int sqlite3BtreeNewDb(Btree *p);
+పూర్ణాంకం sqlite3BtreeNewDb(Btree *p);
 
 /*
 ** The second parameter to sqlite3BtreeGetMeta or sqlite3BtreeUpdateMeta
@@ -149,16 +149,16 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the header value access routines since its access pattern is the same.
 ** Call it a "virtual meta value".
 */
-#define BTREE_FREE_PAGE_COUNT     0
-#define BTREE_SCHEMA_VERSION      1
-#define BTREE_FILE_FORMAT         2
-#define BTREE_DEFAULT_CACHE_SIZE  3
-#define BTREE_LARGEST_ROOT_PAGE   4
-#define BTREE_TEXT_ENCODING       5
-#define BTREE_USER_VERSION        6
-#define BTREE_INCR_VACUUM         7
-#define BTREE_APPLICATION_ID      8
-#define BTREE_DATA_VERSION        15  /* A virtual meta-value */
+#నిర్వచించు BTREE_FREE_పుట_లెక్క     0
+#నిర్వచించు BTREE_SCHEMA_సంస్కరణ      1
+#నిర్వచించు BTREE_FILE_FORMAT         2
+#నిర్వచించు BTREE_DEFAULT_CACHE_కొలత  3
+#నిర్వచించు BTREE_అతిపెద్ద_మూలం_పుట   4
+#నిర్వచించు BTREE_పాఠ్యం_ENCODING       5
+#నిర్వచించు BTREE_USER_సంస్కరణ        6
+#నిర్వచించు BTREE_INCR_VACUUM         7
+#నిర్వచించు BTREE_APPLICATION_ID      8
+#నిర్వచించు BTREE_దత్తాంశం_సంస్కరణ        15  /* A virtual meta-value */
 
 /*
 ** Kinds of hints that can be passed into the sqlite3BtreeCursorHint()
@@ -193,8 +193,8 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the SQLite parser and code generator but substitute their own storage
 ** engine.
 */
-#define BTREE_HINT_RANGE 0       /* Range constraints on queries */
-#define BTREE_HINT_TABLECURSOR 1 /* Table csr associated with this index csr */
+#నిర్వచించు BTREE_HINT_RANGE 0       /* Range constraints on queries */
+#నిర్వచించు BTREE_HINT_TABLECURSOR 1 /* Table csr associated with this index csr */
 
 /*
 ** Values that may be OR'd together to form the argument to the
@@ -209,8 +209,8 @@ int sqlite3BtreeNewDb(Btree *p);
 ** be used only for equality key searches.
 **
 */
-#define BTREE_BULKLOAD 0x00000001  /* Used to full index in sorted order */
-#define BTREE_SEEK_EQ  0x00000002  /* EQ seeks only - no range seeks */
+#నిర్వచించు BTREE_BULKLOAD 0x00000001  /* Used to full index in sorted order */
+#నిర్వచించు BTREE_SEEK_EQ  0x00000002  /* EQ seeks only - no range seeks */
 
 /* 
 ** Flags passed as the third argument to sqlite3BtreeCursor().
@@ -235,51 +235,51 @@ int sqlite3BtreeNewDb(Btree *p);
 ** and DELETE operations as no-ops, and any READ operation against a
 ** FORDELETE cursor may return a null row: 0x01 0x00.
 */
-#define BTREE_WRCSR     0x00000004     /* read-write cursor */
-#define BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
+#నిర్వచించు BTREE_WRCSR     0x00000004     /* read-write cursor */
+#నిర్వచించు BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
 
-int sqlite3BtreeCursor(
+పూర్ణాంకం sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
-  Pgno iTable,                         /* Index of root page */
-  int wrFlag,                          /* 1 for writing.  0 for read-only */
-  struct KeyInfo*,                     /* First argument to compare function */
+  Pgno i_పట్టిక,                         /* Index of root page */
+  పూర్ణాంకం wrFlag,                          /* 1 for writing.  0 for read-only */
+  నిర్మాణం కీలకం_Info*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
-BtCursor *sqlite3BtreeFakeValidCursor(void);
-int sqlite3BtreeCursorSize(void);
-#ifdef SQLITE_DEBUG
-int sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
-#endif
-void sqlite3BtreeCursorZero(BtCursor*);
-void sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
-#ifdef SQLITE_ENABLE_CURSOR_HINTS
-void sqlite3BtreeCursorHint(BtCursor*, int, ...);
- #ifdef SQLITE_DEBUG
+BtCursor *sqlite3BtreeFakeValidCursor(శూన్య);
+పూర్ణాంకం sqlite3_Btree_Cursor_కొలత(శూన్య);
+#నిర్వచితమైతే SQLITE_DEBUG
+పూర్ణాంకం sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
+#అయితే_ముగింపు
+శూన్య sqlite3BtreeCursorZero(BtCursor*);
+శూన్య sqlite3BtreeCursorHintFlags(BtCursor*, గుర్తులేని);
+#నిర్వచితమైతే SQLITE_ENABLE_CURSOR_HINTS
+శూన్య sqlite3BtreeCursorHint(BtCursor*, పూర్ణాంకం, ...);
+ #నిర్వచితమైతే SQLITE_DEBUG
  BtCursor *sqlite3BtreeCursorHintTblCsr(BtCursor*);
- #endif
-#endif
+ #అయితే_ముగింపు
+#అయితే_ముగింపు
 
-int sqlite3BtreeCloseCursor(BtCursor*);
-int sqlite3BtreeTableMoveto(
+పూర్ణాంకం sqlite3BtreeCloseCursor(BtCursor*);
+పూర్ణాంకం sqlite3_Btree_పట్టిక_Moveto(
   BtCursor*,
-  i64 intKey,
-  int bias,
-  int *pRes
+  i64 int_కీలకం,
+  పూర్ణాంకం bias,
+  పూర్ణాంకం *pRes
 );
-int sqlite3BtreeIndexMoveto(
+పూర్ణాంకం sqlite3_Btree_సూచీ_Moveto(
   BtCursor*,
-  UnpackedRecord *pUnKey,
-  int *pRes
+  Unpacked_రికార్డు *p_Un_కీలకం,
+  పూర్ణాంకం *pRes
 );
-int sqlite3BtreeCursorHasMoved(BtCursor*);
-int sqlite3BtreeCursorRestore(BtCursor*, int*);
-int sqlite3BtreeDelete(BtCursor*, u8 flags);
+పూర్ణాంకం sqlite3BtreeCursorHasMoved(BtCursor*);
+పూర్ణాంకం sqlite3BtreeCursorRestore(BtCursor*, పూర్ణాంకం*);
+పూర్ణాంకం sqlite3BtreeDelete(BtCursor*, u8 flags);
 
 /* Allowed flags for sqlite3BtreeDelete() and sqlite3BtreeInsert() */
-#define BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
-#define BTREE_AUXDELETE    0x04  /* not the primary delete operation */
-#define BTREE_APPEND       0x08  /* Insert is likely an append */
-#define BTREE_PREFORMAT    0x80  /* Inserted data is a preformated cell */
+#నిర్వచించు BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
+#నిర్వచించు BTREE_AUXDELETE    0x04  /* not the primary delete operation */
+#నిర్వచించు BTREE_APPEND       0x08  /* Insert is likely an append */
+#నిర్వచించు BTREE_PREFORMAT    0x80  /* Inserted data is a preformated cell */
 
 /* An instance of the BtreePayload object describes the content of a single
 ** entry in either an index or table btree.
@@ -314,113 +314,113 @@ int sqlite3BtreeDelete(BtCursor*, u8 flags);
 ** organized and understandable, and it also helps the resulting code to
 ** run a little faster by using fewer registers for parameter passing.
 */
-struct BtreePayload {
-  const void *pKey;       /* Key content for indexes.  NULL for tables */
-  sqlite3_int64 nKey;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
-  const void *pData;      /* Data for tables. */
-  sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
+నిర్మాణం BtreePayload {
+  స్థిరరాశి శూన్య *p_కీలకం;       /* Key content for indexes.  NULL for tables */
+  sqlite3_int64 n_కీలకం;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
+  స్థిరరాశి శూన్య *p_దత్తాంశం;      /* Data for tables. */
+  sqlite3_విలువ *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
-  int nData;              /* Size of pData.  0 if none. */
-  int nZero;              /* Extra zero data appended after pData,nData */
+  పూర్ణాంకం n_దత్తాంశం;              /* Size of pData.  0 if none. */
+  పూర్ణాంకం nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
-                       int flags, int seekResult);
-int sqlite3BtreeFirst(BtCursor*, int *pRes);
-int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
-int sqlite3BtreeLast(BtCursor*, int *pRes);
-int sqlite3BtreeNext(BtCursor*, int flags);
-int sqlite3BtreeEof(BtCursor*);
-int sqlite3BtreePrevious(BtCursor*, int flags);
-i64 sqlite3BtreeIntegerKey(BtCursor*);
-void sqlite3BtreeCursorPin(BtCursor*);
-void sqlite3BtreeCursorUnpin(BtCursor*);
-i64 sqlite3BtreeOffset(BtCursor*);
-int sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
-const void *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
-u32 sqlite3BtreePayloadSize(BtCursor*);
-sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
+పూర్ణాంకం sqlite3_Btree_చొప్పించు(BtCursor*, స్థిరరాశి BtreePayload *pPayload,
+                       పూర్ణాంకం flags, పూర్ణాంకం seek_ఫలితం);
+పూర్ణాంకం sqlite3_Btree_మొదటి(BtCursor*, పూర్ణాంకం *pRes);
+పూర్ణాంకం sqlite3_Btree_Is_ఖాళీలు(BtCursor *pCur, పూర్ణాంకం *pRes);
+పూర్ణాంకం sqlite3_Btree_చివరి(BtCursor*, పూర్ణాంకం *pRes);
+పూర్ణాంకం sqlite3_Btree_తదుపరి(BtCursor*, పూర్ణాంకం flags);
+పూర్ణాంకం sqlite3BtreeEof(BtCursor*);
+పూర్ణాంకం sqlite3_Btree_మునుపటి(BtCursor*, పూర్ణాంకం flags);
+i64 sqlite3_Btree_Integer_కీలకం(BtCursor*);
+శూన్య sqlite3BtreeCursorPin(BtCursor*);
+శూన్య sqlite3BtreeCursorUnpin(BtCursor*);
+i64 sqlite3_Btree_స్థానభ్రంశం(BtCursor*);
+పూర్ణాంకం sqlite3BtreePayload(BtCursor*, u32 స్థానభ్రంశం, u32 amt, శూన్య*);
+స్థిరరాశి శూన్య *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
+u32 sqlite3_Btree_Payload_కొలత(BtCursor*);
+sqlite3_int64 sqlite3_Btree_Max_రికార్డు_కొలత(BtCursor*);
 
-int sqlite3BtreeIntegrityCheck(
+పూర్ణాంకం sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
-  Pgno *aRoot,  /* An array of root pages numbers for individual trees */
-  sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
-  int mxErr,    /* Stop reporting errors after this many */
-  int *pnErr,   /* OUT: Write number of errors seen to this variable */
-  char **pzOut  /* OUT: Write the error message string here */
+  Pgno *a_మూలం,  /* An array of root pages numbers for individual trees */
+  sqlite3_విలువ *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
+  పూర్ణాంకం n_మూలం,    /* Number of entries in aRoot[] */
+  పూర్ణాంకం mxErr,    /* Stop reporting errors after this many */
+  పూర్ణాంకం *pnErr,   /* OUT: Write number of errors seen to this variable */
+  అక్షరం **pz_బహిర్గతం  /* OUT: Write the error message string here */
 );
-struct Pager *sqlite3BtreePager(Btree*);
-i64 sqlite3BtreeRowCountEst(BtCursor*);
+నిర్మాణం Pager *sqlite3BtreePager(Btree*);
+i64 sqlite3_Btree_అడ్డువరుస_లెక్క_Est(BtCursor*);
 
-#ifndef SQLITE_OMIT_INCRBLOB
-int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
-int sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
-void sqlite3BtreeIncrblobCursor(BtCursor *);
-#endif
-void sqlite3BtreeClearCursor(BtCursor *);
-int sqlite3BtreeSetVersion(Btree *pBt, int iVersion);
-int sqlite3BtreeCursorHasHint(BtCursor*, unsigned int mask);
-int sqlite3BtreeIsReadonly(Btree *pBt);
-int sqlite3HeaderSizeBtree(void);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_INCRBLOB
+పూర్ణాంకం sqlite3BtreePayloadChecked(BtCursor*, u32 స్థానభ్రంశం, u32 amt, శూన్య*);
+పూర్ణాంకం sqlite3_Btree_Put_దత్తాంశం(BtCursor*, u32 స్థానభ్రంశం, u32 amt, శూన్య*);
+శూన్య sqlite3BtreeIncrblobCursor(BtCursor *);
+#అయితే_ముగింపు
+శూన్య sqlite3BtreeClearCursor(BtCursor *);
+పూర్ణాంకం sqlite3_Btree_సమితి_సంస్కరణ(Btree *pBt, పూర్ణాంకం i_సంస్కరణ);
+పూర్ణాంకం sqlite3BtreeCursorHasHint(BtCursor*, గుర్తులేని పూర్ణాంకం ముసుగు);
+పూర్ణాంకం sqlite3BtreeIsReadonly(Btree *pBt);
+పూర్ణాంకం sqlite3_శీర్షిక_కొలత_Btree(శూన్య);
 
-#ifdef SQLITE_DEBUG
-sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
-#else
-# define sqlite3BtreeSeekCount(X) 0
-#endif
+#నిర్వచితమైతే SQLITE_DEBUG
+sqlite3_uint64 sqlite3_Btree_Seek_లెక్క(Btree*);
+#లేకపోతే
+# define sqlite3_Btree_Seek_లెక్క(X) 0
+#అయితే_ముగింపు
 
-#ifndef NDEBUG
-int sqlite3BtreeCursorIsValid(BtCursor*);
-#endif
-int sqlite3BtreeCursorIsValidNN(BtCursor*);
+#నిర్వచితం_కాకపోతే NDEBUG
+పూర్ణాంకం sqlite3BtreeCursorIsValid(BtCursor*);
+#అయితే_ముగింపు
+పూర్ణాంకం sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+పూర్ణాంకం sqlite3_Btree_లెక్క(sqlite3*, BtCursor*, i64*);
 
-#ifdef SQLITE_TEST
-int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
-void sqlite3BtreeCursorList(Btree*);
-#endif
+#నిర్వచితమైతే SQLITE_TEST
+పూర్ణాంకం sqlite3BtreeCursorInfo(BtCursor*, పూర్ణాంకం*, పూర్ణాంకం);
+శూన్య sqlite3BtreeCursorList(Btree*);
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WAL
+  పూర్ణాంకం sqlite3BtreeCheckpoint(Btree*, పూర్ణాంకం, పూర్ణాంకం *, పూర్ణాంకం *);
+#అయితే_ముగింపు
 
-int sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
+పూర్ణాంకం sqlite3_Btree_Transfer_అడ్డువరుస(BtCursor*, BtCursor*, i64);
 
-void sqlite3BtreeClearCache(Btree*);
+శూన్య sqlite3BtreeClearCache(Btree*);
 
 /*
 ** If we are not using shared cache, then there is no need to
 ** use mutexes to access the BtShared structures.  So make the
 ** Enter and Leave procedures no-ops.
 */
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3BtreeEnter(Btree*);
-  void sqlite3BtreeEnterAll(sqlite3*);
-  int sqlite3BtreeSharable(Btree*);
-  void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
-#else
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SHARED_CACHE
+  శూన్య sqlite3BtreeEnter(Btree*);
+  శూన్య sqlite3BtreeEnterAll(sqlite3*);
+  పూర్ణాంకం sqlite3BtreeSharable(Btree*);
+  శూన్య sqlite3BtreeEnterCursor(BtCursor*);
+  పూర్ణాంకం sqlite3_Btree_Connection_లెక్క(Btree*);
+#లేకపోతే
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
 # define sqlite3BtreeEnterCursor(X)
-# define sqlite3BtreeConnectionCount(X) 1
-#endif
+# define sqlite3_Btree_Connection_లెక్క(X) 1
+#అయితే_ముగింపు
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
-  void sqlite3BtreeLeave(Btree*);
-  void sqlite3BtreeLeaveCursor(BtCursor*);
-  void sqlite3BtreeLeaveAll(sqlite3*);
-#ifndef NDEBUG
+#ఒకవేళ !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
+  శూన్య sqlite3BtreeLeave(Btree*);
+  శూన్య sqlite3BtreeLeaveCursor(BtCursor*);
+  శూన్య sqlite3BtreeLeaveAll(sqlite3*);
+#నిర్వచితం_కాకపోతే NDEBUG
   /* These routines are used inside assert() statements only. */
-  int sqlite3BtreeHoldsMutex(Btree*);
-  int sqlite3BtreeHoldsAllMutexes(sqlite3*);
-  int sqlite3SchemaMutexHeld(sqlite3*,int,Schema*);
-#endif
-#else
+  పూర్ణాంకం sqlite3BtreeHoldsMutex(Btree*);
+  పూర్ణాంకం sqlite3BtreeHoldsAllMutexes(sqlite3*);
+  పూర్ణాంకం sqlite3SchemaMutexHeld(sqlite3*,పూర్ణాంకం,Schema*);
+#అయితే_ముగింపు
+#లేకపోతే
 
 # define sqlite3BtreeLeave(X)
 # define sqlite3BtreeLeaveCursor(X)
@@ -429,7 +429,7 @@ void sqlite3BtreeClearCache(Btree*);
 # define sqlite3BtreeHoldsMutex(X) 1
 # define sqlite3BtreeHoldsAllMutexes(X) 1
 # define sqlite3SchemaMutexHeld(X,Y,Z) 1
-#endif
+#అయితే_ముగింపు
 
 
-#endif /* SQLITE_BTREE_H */
+#అయితే_ముగింపు /* SQLITE_BTREE_H */

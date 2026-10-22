@@ -23,7 +23,7 @@
 ** This version of the memory allocation subsystem is included
 ** in the build only if SQLITE_ENABLE_MEMSYS3 is defined.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is only built into the library
@@ -32,18 +32,18 @@
 ** it is available. The mempool allocator is activated by calling
 ** sqlite3_config().
 */
-#ifdef SQLITE_ENABLE_MEMSYS3
+#నిర్వచితమైతే SQLITE_ENABLE_MEMSYS3
 
 /*
 ** Maximum size (in Mem3Blocks) of a "small" chunk.
 */
-#define MX_SMALL 10
+#నిర్వచించు MX_SMALL 10
 
 
 /*
 ** Number of freelist hash slots
 */
-#define N_HASH  61
+#నిర్వచించు N_HASH  61
 
 /*
 ** A memory allocation (also called a "chunk") consists of two or 
@@ -77,15 +77,15 @@
 ** out.  If a chunk is checked out, the user data may extend into
 ** the u.hdr.prevSize value of the following chunk.
 */
-typedef struct Mem3Block Mem3Block;
-struct Mem3Block {
-  union {
-    struct {
-      u32 prevSize;   /* Size of previous chunk in Mem3Block elements */
+రకనిర్వచనం నిర్మాణం Mem3_ఖండం Mem3_ఖండం;
+నిర్మాణం Mem3_ఖండం {
+  సంఘం {
+    నిర్మాణం {
+      u32 prev_కొలత;   /* Size of previous chunk in Mem3Block elements */
       u32 size4x;     /* 4x the size of current chunk in Mem3Block elements */
     } hdr;
-    struct {
-      u32 next;       /* Index in mem3.aPool[] of next free chunk */
+    నిర్మాణం {
+      u32 తదుపరి;       /* Index in mem3.aPool[] of next free chunk */
       u32 prev;       /* Index in mem3.aPool[] of previous free chunk */
     } list;
   } u;
@@ -97,18 +97,18 @@ struct Mem3Block {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static SQLITE_WSD struct Mem3Global {
+స్థిర SQLITE_WSD నిర్మాణం Mem3Global {
   /*
   ** Memory available for allocation. nPool is the size of the array
   ** (in Mem3Blocks) pointed to by aPool less 2.
   */
   u32 nPool;
-  Mem3Block *aPool;
+  Mem3_ఖండం *aPool;
 
   /*
   ** True if we are evaluating an out-of-memory callback.
   */
-  int alarmBusy;
+  పూర్ణాంకం alarmBusy;
   
   /*
   ** Mutex to control access to the memory allocation subsystem.
@@ -118,7 +118,7 @@ static SQLITE_WSD struct Mem3Global {
   /*
   ** The minimum amount of free space that we have seen.
   */
-  u32 mnKeyBlk;
+  u32 mn_కీలకం_Blk;
 
   /*
   ** iKeyBlk is the index of the key chunk.  Most new allocations
@@ -126,8 +126,8 @@ static SQLITE_WSD struct Mem3Global {
   ** of the current key chunk.  iKeyBlk is 0 if there is no key chunk.
   ** The key chunk is not in either the aiHash[] or aiSmall[].
   */
-  u32 iKeyBlk;
-  u32 szKeyBlk;
+  u32 i_కీలకం_Blk;
+  u32 sz_కీలకం_Blk;
 
   /*
   ** Array of lists of free blocks according to the block size 
@@ -138,25 +138,25 @@ static SQLITE_WSD struct Mem3Global {
   u32 aiHash[N_HASH];        /* For sizes MX_SMALL+1 and larger */
 } mem3 = { 97535575 };
 
-#define mem3 GLOBAL(struct Mem3Global, mem3)
+#నిర్వచించు mem3 GLOBAL(నిర్మాణం Mem3Global, mem3)
 
 /*
 ** Unlink the chunk at mem3.aPool[i] from list it is currently
 ** on.  *pRoot is the list that i is a member of.
 */
-static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
-  u32 next = mem3.aPool[i].u.list.next;
+స్థిర శూన్య memsys3UnlinkFromList(u32 i, u32 *p_మూలం){
+  u32 తదుపరి = mem3.aPool[i].u.list.తదుపరి;
   u32 prev = mem3.aPool[i].u.list.prev;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  if( prev==0 ){
-    *pRoot = next;
-  }else{
-    mem3.aPool[prev].u.list.next = next;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ఒకవేళ( prev==0 ){
+    *p_మూలం = తదుపరి;
+  }లేకపోతే{
+    mem3.aPool[prev].u.list.తదుపరి = తదుపరి;
   }
-  if( next ){
-    mem3.aPool[next].u.list.prev = prev;
+  ఒకవేళ( తదుపరి ){
+    mem3.aPool[తదుపరి].u.list.prev = prev;
   }
-  mem3.aPool[i].u.list.next = 0;
+  mem3.aPool[i].u.list.తదుపరి = 0;
   mem3.aPool[i].u.list.prev = 0;
 }
 
@@ -164,18 +164,18 @@ static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
 ** Unlink the chunk at index i from 
 ** whatever list is currently a member of.
 */
-static void memsys3Unlink(u32 i){
-  u32 size, hash;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
-  assert( i>=1 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
-  assert( size>=2 );
-  if( size <= MX_SMALL ){
-    memsys3UnlinkFromList(i, &mem3.aiSmall[size-2]);
-  }else{
-    hash = size % N_HASH;
+స్థిర శూన్య memsys3Unlink(u32 i){
+  u32 కొలత, hash;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
+  ప్రతిజ్ఞా( i>=1 );
+  కొలత = mem3.aPool[i-1].u.hdr.size4x/4;
+  ప్రతిజ్ఞా( కొలత==mem3.aPool[i+కొలత-1].u.hdr.prev_కొలత );
+  ప్రతిజ్ఞా( కొలత>=2 );
+  ఒకవేళ( కొలత <= MX_SMALL ){
+    memsys3UnlinkFromList(i, &mem3.aiSmall[కొలత-2]);
+  }లేకపోతే{
+    hash = కొలత % N_HASH;
     memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
   }
 }
@@ -184,32 +184,32 @@ static void memsys3Unlink(u32 i){
 ** Link the chunk at mem3.aPool[i] so that is on the list rooted
 ** at *pRoot.
 */
-static void memsys3LinkIntoList(u32 i, u32 *pRoot){
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  mem3.aPool[i].u.list.next = *pRoot;
+స్థిర శూన్య memsys3LinkIntoList(u32 i, u32 *p_మూలం){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  mem3.aPool[i].u.list.తదుపరి = *p_మూలం;
   mem3.aPool[i].u.list.prev = 0;
-  if( *pRoot ){
-    mem3.aPool[*pRoot].u.list.prev = i;
+  ఒకవేళ( *p_మూలం ){
+    mem3.aPool[*p_మూలం].u.list.prev = i;
   }
-  *pRoot = i;
+  *p_మూలం = i;
 }
 
 /*
 ** Link the chunk at index i into either the appropriate
 ** small chunk list, or into the large chunk hash table.
 */
-static void memsys3Link(u32 i){
-  u32 size, hash;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( i>=1 );
-  assert( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
-  assert( size>=2 );
-  if( size <= MX_SMALL ){
-    memsys3LinkIntoList(i, &mem3.aiSmall[size-2]);
-  }else{
-    hash = size % N_HASH;
+స్థిర శూన్య memsys3Link(u32 i){
+  u32 కొలత, hash;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( i>=1 );
+  ప్రతిజ్ఞా( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
+  కొలత = mem3.aPool[i-1].u.hdr.size4x/4;
+  ప్రతిజ్ఞా( కొలత==mem3.aPool[i+కొలత-1].u.hdr.prev_కొలత );
+  ప్రతిజ్ఞా( కొలత>=2 );
+  ఒకవేళ( కొలత <= MX_SMALL ){
+    memsys3LinkIntoList(i, &mem3.aiSmall[కొలత-2]);
+  }లేకపోతే{
+    hash = కొలత % N_HASH;
     memsys3LinkIntoList(i, &mem3.aiHash[hash]);
   }
 }
@@ -219,25 +219,25 @@ static void memsys3Link(u32 i){
 ** will already be held (obtained by code in malloc.c) if
 ** sqlite3GlobalConfig.bMemStat is true.
 */
-static void memsys3Enter(void){
-  if( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
+స్థిర శూన్య memsys3Enter(శూన్య){
+  ఒకవేళ( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
     mem3.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
   sqlite3_mutex_enter(mem3.mutex);
 }
-static void memsys3Leave(void){
+స్థిర శూన్య memsys3Leave(శూన్య){
   sqlite3_mutex_leave(mem3.mutex);
 }
 
 /*
 ** Called when we are unable to satisfy an allocation of nBytes.
 */
-static void memsys3OutOfMemory(int nByte){
-  if( !mem3.alarmBusy ){
+స్థిర శూన్య memsys3_బహిర్గతం_యొక్క_జ్ఞాపకం(పూర్ణాంకం nByte){
+  ఒకవేళ( !mem3.alarmBusy ){
     mem3.alarmBusy = 1;
-    assert( sqlite3_mutex_held(mem3.mutex) );
+    ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
     sqlite3_mutex_leave(mem3.mutex);
-    sqlite3_release_memory(nByte);
+    sqlite3_release_జ్ఞాపకం(nByte);
     sqlite3_mutex_enter(mem3.mutex);
     mem3.alarmBusy = 0;
   }
@@ -249,17 +249,17 @@ static void memsys3OutOfMemory(int nByte){
 ** size parameters for check-out and return a pointer to the 
 ** user portion of the chunk.
 */
-static void *memsys3Checkout(u32 i, u32 nBlock){
+స్థిర శూన్య *memsys3Checkout(u32 i, u32 n_ఖండం){
   u32 x;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( i>=1 );
-  assert( mem3.aPool[i-1].u.hdr.size4x/4==nBlock );
-  assert( mem3.aPool[i+nBlock-1].u.hdr.prevSize==nBlock );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( i>=1 );
+  ప్రతిజ్ఞా( mem3.aPool[i-1].u.hdr.size4x/4==n_ఖండం );
+  ప్రతిజ్ఞా( mem3.aPool[i+n_ఖండం-1].u.hdr.prev_కొలత==n_ఖండం );
   x = mem3.aPool[i-1].u.hdr.size4x;
-  mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&2);
-  mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;
-  mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;
-  return &mem3.aPool[i];
+  mem3.aPool[i-1].u.hdr.size4x = n_ఖండం*4 | 1 | (x&2);
+  mem3.aPool[i+n_ఖండం-1].u.hdr.prev_కొలత = n_ఖండం;
+  mem3.aPool[i+n_ఖండం-1].u.hdr.size4x |= 2;
+  తిరిగి &mem3.aPool[i];
 }
 
 /*
@@ -267,32 +267,32 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
 ** Return a pointer to the new allocation.  Or, if the key chunk
 ** is not large enough, return 0.
 */
-static void *memsys3FromKeyBlk(u32 nBlock){
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( mem3.szKeyBlk>=nBlock );
-  if( nBlock>=mem3.szKeyBlk-1 ){
+స్థిర శూన్య *memsys3_From_కీలకం_Blk(u32 n_ఖండం){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( mem3.sz_కీలకం_Blk>=n_ఖండం );
+  ఒకవేళ( n_ఖండం>=mem3.sz_కీలకం_Blk-1 ){
     /* Use the entire key chunk */
-    void *p = memsys3Checkout(mem3.iKeyBlk, mem3.szKeyBlk);
-    mem3.iKeyBlk = 0;
-    mem3.szKeyBlk = 0;
-    mem3.mnKeyBlk = 0;
-    return p;
-  }else{
+    శూన్య *p = memsys3Checkout(mem3.i_కీలకం_Blk, mem3.sz_కీలకం_Blk);
+    mem3.i_కీలకం_Blk = 0;
+    mem3.sz_కీలకం_Blk = 0;
+    mem3.mn_కీలకం_Blk = 0;
+    తిరిగి p;
+  }లేకపోతే{
     /* Split the key block.  Return the tail. */
     u32 newi, x;
-    newi = mem3.iKeyBlk + mem3.szKeyBlk - nBlock;
-    assert( newi > mem3.iKeyBlk+1 );
-    mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = nBlock;
-    mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x |= 2;
-    mem3.aPool[newi-1].u.hdr.size4x = nBlock*4 + 1;
-    mem3.szKeyBlk -= nBlock;
-    mem3.aPool[newi-1].u.hdr.prevSize = mem3.szKeyBlk;
-    x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-    if( mem3.szKeyBlk < mem3.mnKeyBlk ){
-      mem3.mnKeyBlk = mem3.szKeyBlk;
+    newi = mem3.i_కీలకం_Blk + mem3.sz_కీలకం_Blk - n_ఖండం;
+    ప్రతిజ్ఞా( newi > mem3.i_కీలకం_Blk+1 );
+    mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.prev_కొలత = n_ఖండం;
+    mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.size4x |= 2;
+    mem3.aPool[newi-1].u.hdr.size4x = n_ఖండం*4 + 1;
+    mem3.sz_కీలకం_Blk -= n_ఖండం;
+    mem3.aPool[newi-1].u.hdr.prev_కొలత = mem3.sz_కీలకం_Blk;
+    x = mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x & 2;
+    mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x = mem3.sz_కీలకం_Blk*4 | x;
+    ఒకవేళ( mem3.sz_కీలకం_Blk < mem3.mn_కీలకం_Blk ){
+      mem3.mn_కీలకం_Blk = mem3.sz_కీలకం_Blk;
     }
-    return (void*)&mem3.aPool[newi];
+    తిరిగి (శూన్య*)&mem3.aPool[newi];
   }
 }
 
@@ -312,34 +312,34 @@ static void *memsys3FromKeyBlk(u32 nBlock){
 ** chunk before invoking this routine, then must unlink the (possibly
 ** changed) key chunk once this routine has finished.
 */
-static void memsys3Merge(u32 *pRoot){
-  u32 iNext, prev, size, i, x;
+స్థిర శూన్య memsys3_విలీనం(u32 *p_మూలం){
+  u32 i_తదుపరి, prev, కొలత, i, x;
 
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  for(i=*pRoot; i>0; i=iNext){
-    iNext = mem3.aPool[i].u.list.next;
-    size = mem3.aPool[i-1].u.hdr.size4x;
-    assert( (size&1)==0 );
-    if( (size&2)==0 ){
-      memsys3UnlinkFromList(i, pRoot);
-      assert( i > mem3.aPool[i-1].u.hdr.prevSize );
-      prev = i - mem3.aPool[i-1].u.hdr.prevSize;
-      if( prev==iNext ){
-        iNext = mem3.aPool[prev].u.list.next;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  కొరకు(i=*p_మూలం; i>0; i=i_తదుపరి){
+    i_తదుపరి = mem3.aPool[i].u.list.తదుపరి;
+    కొలత = mem3.aPool[i-1].u.hdr.size4x;
+    ప్రతిజ్ఞా( (కొలత&1)==0 );
+    ఒకవేళ( (కొలత&2)==0 ){
+      memsys3UnlinkFromList(i, p_మూలం);
+      ప్రతిజ్ఞా( i > mem3.aPool[i-1].u.hdr.prev_కొలత );
+      prev = i - mem3.aPool[i-1].u.hdr.prev_కొలత;
+      ఒకవేళ( prev==i_తదుపరి ){
+        i_తదుపరి = mem3.aPool[prev].u.list.తదుపరి;
       }
       memsys3Unlink(prev);
-      size = i + size/4 - prev;
+      కొలత = i + కొలత/4 - prev;
       x = mem3.aPool[prev-1].u.hdr.size4x & 2;
-      mem3.aPool[prev-1].u.hdr.size4x = size*4 | x;
-      mem3.aPool[prev+size-1].u.hdr.prevSize = size;
+      mem3.aPool[prev-1].u.hdr.size4x = కొలత*4 | x;
+      mem3.aPool[prev+కొలత-1].u.hdr.prev_కొలత = కొలత;
       memsys3Link(prev);
       i = prev;
-    }else{
-      size /= 4;
+    }లేకపోతే{
+      కొలత /= 4;
     }
-    if( size>mem3.szKeyBlk ){
-      mem3.iKeyBlk = i;
-      mem3.szKeyBlk = size;
+    ఒకవేళ( కొలత>mem3.sz_కీలకం_Blk ){
+      mem3.i_కీలకం_Blk = i;
+      mem3.sz_కీలకం_Blk = కొలత;
     }
   }
 }
@@ -351,37 +351,37 @@ static void memsys3Merge(u32 *pRoot){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void *memsys3MallocUnsafe(int nByte){
+స్థిర శూన్య *memsys3MallocUnsafe(పూర్ణాంకం nByte){
   u32 i;
-  u32 nBlock;
-  u32 toFree;
+  u32 n_ఖండం;
+  u32 గమ్యం_Free;
 
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( sizeof(Mem3Block)==8 );
-  if( nByte<=12 ){
-    nBlock = 2;
-  }else{
-    nBlock = (nByte + 11)/8;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( పరిమాణం(Mem3_ఖండం)==8 );
+  ఒకవేళ( nByte<=12 ){
+    n_ఖండం = 2;
+  }లేకపోతే{
+    n_ఖండం = (nByte + 11)/8;
   }
-  assert( nBlock>=2 );
+  ప్రతిజ్ఞా( n_ఖండం>=2 );
 
   /* STEP 1:
   ** Look for an entry of the correct size in either the small
   ** chunk table or in the large chunk hash table.  This is
   ** successful most of the time (about 9 times out of 10).
   */
-  if( nBlock <= MX_SMALL ){
-    i = mem3.aiSmall[nBlock-2];
-    if( i>0 ){
-      memsys3UnlinkFromList(i, &mem3.aiSmall[nBlock-2]);
-      return memsys3Checkout(i, nBlock);
+  ఒకవేళ( n_ఖండం <= MX_SMALL ){
+    i = mem3.aiSmall[n_ఖండం-2];
+    ఒకవేళ( i>0 ){
+      memsys3UnlinkFromList(i, &mem3.aiSmall[n_ఖండం-2]);
+      తిరిగి memsys3Checkout(i, n_ఖండం);
     }
-  }else{
-    int hash = nBlock % N_HASH;
-    for(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.next){
-      if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
+  }లేకపోతే{
+    పూర్ణాంకం hash = n_ఖండం % N_HASH;
+    కొరకు(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.తదుపరి){
+      ఒకవేళ( mem3.aPool[i-1].u.hdr.size4x/4==n_ఖండం ){
         memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
-        return memsys3Checkout(i, nBlock);
+        తిరిగి memsys3Checkout(i, n_ఖండం);
       }
     }
   }
@@ -390,8 +390,8 @@ static void *memsys3MallocUnsafe(int nByte){
   ** Try to satisfy the allocation by carving a piece off of the end
   ** of the key chunk.  This step usually works if step 1 fails.
   */
-  if( mem3.szKeyBlk>=nBlock ){
-    return memsys3FromKeyBlk(nBlock);
+  ఒకవేళ( mem3.sz_కీలకం_Blk>=n_ఖండం ){
+    తిరిగి memsys3_From_కీలకం_Blk(n_ఖండం);
   }
 
 
@@ -402,29 +402,29 @@ static void *memsys3MallocUnsafe(int nByte){
   ** of the end of the key chunk.  This step happens very
   ** rarely (we hope!)
   */
-  for(toFree=nBlock*16; toFree<(mem3.nPool*16); toFree *= 2){
-    memsys3OutOfMemory(toFree);
-    if( mem3.iKeyBlk ){
-      memsys3Link(mem3.iKeyBlk);
-      mem3.iKeyBlk = 0;
-      mem3.szKeyBlk = 0;
+  కొరకు(గమ్యం_Free=n_ఖండం*16; గమ్యం_Free<(mem3.nPool*16); గమ్యం_Free *= 2){
+    memsys3_బహిర్గతం_యొక్క_జ్ఞాపకం(గమ్యం_Free);
+    ఒకవేళ( mem3.i_కీలకం_Blk ){
+      memsys3Link(mem3.i_కీలకం_Blk);
+      mem3.i_కీలకం_Blk = 0;
+      mem3.sz_కీలకం_Blk = 0;
     }
-    for(i=0; i<N_HASH; i++){
-      memsys3Merge(&mem3.aiHash[i]);
+    కొరకు(i=0; i<N_HASH; i++){
+      memsys3_విలీనం(&mem3.aiHash[i]);
     }
-    for(i=0; i<MX_SMALL-1; i++){
-      memsys3Merge(&mem3.aiSmall[i]);
+    కొరకు(i=0; i<MX_SMALL-1; i++){
+      memsys3_విలీనం(&mem3.aiSmall[i]);
     }
-    if( mem3.szKeyBlk ){
-      memsys3Unlink(mem3.iKeyBlk);
-      if( mem3.szKeyBlk>=nBlock ){
-        return memsys3FromKeyBlk(nBlock);
+    ఒకవేళ( mem3.sz_కీలకం_Blk ){
+      memsys3Unlink(mem3.i_కీలకం_Blk);
+      ఒకవేళ( mem3.sz_కీలకం_Blk>=n_ఖండం ){
+        తిరిగి memsys3_From_కీలకం_Blk(n_ఖండం);
       }
     }
   }
 
   /* If none of the above worked, then we fail. */
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -433,38 +433,38 @@ static void *memsys3MallocUnsafe(int nByte){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void memsys3FreeUnsafe(void *pOld){
-  Mem3Block *p = (Mem3Block*)pOld;
-  int i;
-  u32 size, x;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
+స్థిర శూన్య memsys3FreeUnsafe(శూన్య *pOld){
+  Mem3_ఖండం *p = (Mem3_ఖండం*)pOld;
+  పూర్ణాంకం i;
+  u32 కొలత, x;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(mem3.mutex) );
+  ప్రతిజ్ఞా( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
   i = p - mem3.aPool;
-  assert( (mem3.aPool[i-1].u.hdr.size4x&1)==1 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( i+size<=mem3.nPool+1 );
+  ప్రతిజ్ఞా( (mem3.aPool[i-1].u.hdr.size4x&1)==1 );
+  కొలత = mem3.aPool[i-1].u.hdr.size4x/4;
+  ప్రతిజ్ఞా( i+కొలత<=mem3.nPool+1 );
   mem3.aPool[i-1].u.hdr.size4x &= ~1;
-  mem3.aPool[i+size-1].u.hdr.prevSize = size;
-  mem3.aPool[i+size-1].u.hdr.size4x &= ~2;
+  mem3.aPool[i+కొలత-1].u.hdr.prev_కొలత = కొలత;
+  mem3.aPool[i+కొలత-1].u.hdr.size4x &= ~2;
   memsys3Link(i);
 
   /* Try to expand the key using the newly freed chunk */
-  if( mem3.iKeyBlk ){
-    while( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
-      size = mem3.aPool[mem3.iKeyBlk-1].u.hdr.prevSize;
-      mem3.iKeyBlk -= size;
-      mem3.szKeyBlk += size;
-      memsys3Unlink(mem3.iKeyBlk);
-      x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-      mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-      mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
+  ఒకవేళ( mem3.i_కీలకం_Blk ){
+    అయితే( (mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x&2)==0 ){
+      కొలత = mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.prev_కొలత;
+      mem3.i_కీలకం_Blk -= కొలత;
+      mem3.sz_కీలకం_Blk += కొలత;
+      memsys3Unlink(mem3.i_కీలకం_Blk);
+      x = mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x & 2;
+      mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x = mem3.sz_కీలకం_Blk*4 | x;
+      mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.prev_కొలత = mem3.sz_కీలకం_Blk;
     }
-    x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    while( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
-      memsys3Unlink(mem3.iKeyBlk+mem3.szKeyBlk);
-      mem3.szKeyBlk += mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x/4;
-      mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-      mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
+    x = mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x & 2;
+    అయితే( (mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.size4x&1)==0 ){
+      memsys3Unlink(mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk);
+      mem3.sz_కీలకం_Blk += mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.size4x/4;
+      mem3.aPool[mem3.i_కీలకం_Blk-1].u.hdr.size4x = mem3.sz_కీలకం_Blk*4 | x;
+      mem3.aPool[mem3.i_కీలకం_Blk+mem3.sz_కీలకం_Blk-1].u.hdr.prev_కొలత = mem3.sz_కీలకం_Blk;
     }
   }
 }
@@ -474,110 +474,110 @@ static void memsys3FreeUnsafe(void *pOld){
 ** size returned omits the 8-byte header overhead.  This only
 ** works for chunks that are currently checked out.
 */
-static int memsys3Size(void *p){
-  Mem3Block *pBlock;
-  assert( p!=0 );
-  pBlock = (Mem3Block*)p;
-  assert( (pBlock[-1].u.hdr.size4x&1)!=0 );
-  return (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
+స్థిర పూర్ణాంకం memsys3_కొలత(శూన్య *p){
+  Mem3_ఖండం *p_ఖండం;
+  ప్రతిజ్ఞా( p!=0 );
+  p_ఖండం = (Mem3_ఖండం*)p;
+  ప్రతిజ్ఞా( (p_ఖండం[-1].u.hdr.size4x&1)!=0 );
+  తిరిగి (p_ఖండం[-1].u.hdr.size4x&~3)*2 - 4;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int memsys3Roundup(int n){
-  if( n<=12 ){
-    return 12;
-  }else{
-    return ((n+11)&~7) - 4;
+స్థిర పూర్ణాంకం memsys3Roundup(పూర్ణాంకం n){
+  ఒకవేళ( n<=12 ){
+    తిరిగి 12;
+  }లేకపోతే{
+    తిరిగి ((n+11)&~7) - 4;
   }
 }
 
 /*
 ** Allocate nBytes of memory.
 */
-static void *memsys3Malloc(int nBytes){
+స్థిర శూన్య *memsys3Malloc(పూర్ణాంకం n_బైట్లు){
   sqlite3_int64 *p;
-  assert( nBytes>0 );          /* malloc.c filters out 0 byte requests */
+  ప్రతిజ్ఞా( n_బైట్లు>0 );          /* malloc.c filters out 0 byte requests */
   memsys3Enter();
-  p = memsys3MallocUnsafe(nBytes);
+  p = memsys3MallocUnsafe(n_బైట్లు);
   memsys3Leave();
-  return (void*)p; 
+  తిరిగి (శూన్య*)p; 
 }
 
 /*
 ** Free memory.
 */
-static void memsys3Free(void *pPrior){
-  assert( pPrior );
+స్థిర శూన్య memsys3Free(శూన్య *p_పూర్వ){
+  ప్రతిజ్ఞా( p_పూర్వ );
   memsys3Enter();
-  memsys3FreeUnsafe(pPrior);
+  memsys3FreeUnsafe(p_పూర్వ);
   memsys3Leave();
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
-static void *memsys3Realloc(void *pPrior, int nBytes){
-  int nOld;
-  void *p;
-  if( pPrior==0 ){
-    return sqlite3_malloc(nBytes);
+స్థిర శూన్య *memsys3Realloc(శూన్య *p_పూర్వ, పూర్ణాంకం n_బైట్లు){
+  పూర్ణాంకం nOld;
+  శూన్య *p;
+  ఒకవేళ( p_పూర్వ==0 ){
+    తిరిగి sqlite3_malloc(n_బైట్లు);
   }
-  if( nBytes<=0 ){
-    sqlite3_free(pPrior);
-    return 0;
+  ఒకవేళ( n_బైట్లు<=0 ){
+    sqlite3_free(p_పూర్వ);
+    తిరిగి 0;
   }
-  nOld = memsys3Size(pPrior);
-  if( nBytes<=nOld && nBytes>=nOld-128 ){
-    return pPrior;
+  nOld = memsys3_కొలత(p_పూర్వ);
+  ఒకవేళ( n_బైట్లు<=nOld && n_బైట్లు>=nOld-128 ){
+    తిరిగి p_పూర్వ;
   }
   memsys3Enter();
-  p = memsys3MallocUnsafe(nBytes);
-  if( p ){
-    if( nOld<nBytes ){
-      memcpy(p, pPrior, nOld);
-    }else{
-      memcpy(p, pPrior, nBytes);
+  p = memsys3MallocUnsafe(n_బైట్లు);
+  ఒకవేళ( p ){
+    ఒకవేళ( nOld<n_బైట్లు ){
+      జ్ఞాపకం_నకలు(p, p_పూర్వ, nOld);
+    }లేకపోతే{
+      జ్ఞాపకం_నకలు(p, p_పూర్వ, n_బైట్లు);
     }
-    memsys3FreeUnsafe(pPrior);
+    memsys3FreeUnsafe(p_పూర్వ);
   }
   memsys3Leave();
-  return p;
+  తిరిగి p;
 }
 
 /*
 ** Initialize this module.
 */
-static int memsys3Init(void *NotUsed){
-  UNUSED_PARAMETER(NotUsed);
-  if( !sqlite3GlobalConfig.pHeap ){
-    return SQLITE_ERROR;
+స్థిర పూర్ణాంకం memsys3Init(శూన్య *Not_వాడిన){
+  వాడని_PARAMETER(Not_వాడిన);
+  ఒకవేళ( !sqlite3GlobalConfig.p_కుప్ప ){
+    తిరిగి SQLITE_ERROR;
   }
 
   /* Store a pointer to the memory block in global structure mem3. */
-  assert( sizeof(Mem3Block)==8 );
-  mem3.aPool = (Mem3Block *)sqlite3GlobalConfig.pHeap;
-  mem3.nPool = (sqlite3GlobalConfig.nHeap / sizeof(Mem3Block)) - 2;
+  ప్రతిజ్ఞా( పరిమాణం(Mem3_ఖండం)==8 );
+  mem3.aPool = (Mem3_ఖండం *)sqlite3GlobalConfig.p_కుప్ప;
+  mem3.nPool = (sqlite3GlobalConfig.n_కుప్ప / పరిమాణం(Mem3_ఖండం)) - 2;
 
   /* Initialize the key block. */
-  mem3.szKeyBlk = mem3.nPool;
-  mem3.mnKeyBlk = mem3.szKeyBlk;
-  mem3.iKeyBlk = 1;
-  mem3.aPool[0].u.hdr.size4x = (mem3.szKeyBlk<<2) + 2;
-  mem3.aPool[mem3.nPool].u.hdr.prevSize = mem3.nPool;
+  mem3.sz_కీలకం_Blk = mem3.nPool;
+  mem3.mn_కీలకం_Blk = mem3.sz_కీలకం_Blk;
+  mem3.i_కీలకం_Blk = 1;
+  mem3.aPool[0].u.hdr.size4x = (mem3.sz_కీలకం_Blk<<2) + 2;
+  mem3.aPool[mem3.nPool].u.hdr.prev_కొలత = mem3.nPool;
   mem3.aPool[mem3.nPool].u.hdr.size4x = 1;
 
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Deinitialize this module.
 */
-static void memsys3Shutdown(void *NotUsed){
-  UNUSED_PARAMETER(NotUsed);
+స్థిర శూన్య memsys3Shutdown(శూన్య *Not_వాడిన){
+  వాడని_PARAMETER(Not_వాడిన);
   mem3.mutex = 0;
-  return;
+  తిరిగి;
 }
 
 
@@ -586,77 +586,77 @@ static void memsys3Shutdown(void *NotUsed){
 ** Open the file indicated and write a log of all unfreed memory 
 ** allocations into that log.
 */
-void sqlite3Memsys3Dump(const char *zFilename){
-#ifdef SQLITE_DEBUG
-  FILE *out;
+శూన్య sqlite3Memsys3Dump(స్థిరరాశి అక్షరం *zFilename){
+#నిర్వచితమైతే SQLITE_DEBUG
+  FILE *బహిర్గతం;
   u32 i, j;
-  u32 size;
-  if( zFilename==0 || zFilename[0]==0 ){
-    out = stdout;
-  }else{
-    out = fopen(zFilename, "w");
-    if( out==0 ){
+  u32 కొలత;
+  ఒకవేళ( zFilename==0 || zFilename[0]==0 ){
+    బహిర్గతం = stdout;
+  }లేకపోతే{
+    బహిర్గతం = fopen(zFilename, "w");
+    ఒకవేళ( బహిర్గతం==0 ){
       fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                       zFilename);
-      return;
+      తిరిగి;
     }
   }
   memsys3Enter();
-  fprintf(out, "CHUNKS:\n");
-  for(i=1; i<=mem3.nPool; i+=size/4){
-    size = mem3.aPool[i-1].u.hdr.size4x;
-    if( size/4<=1 ){
-      fprintf(out, "%p size error\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+  fprintf(బహిర్గతం, "CHUNKS:\n");
+  కొరకు(i=1; i<=mem3.nPool; i+=కొలత/4){
+    కొలత = mem3.aPool[i-1].u.hdr.size4x;
+    ఒకవేళ( కొలత/4<=1 ){
+      fprintf(బహిర్గతం, "%p size error\n", &mem3.aPool[i]);
+      ప్రతిజ్ఞా( 0 );
+      ఆపు;
     }
-    if( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
-      fprintf(out, "%p tail size does not match\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+    ఒకవేళ( (కొలత&1)==0 && mem3.aPool[i+కొలత/4-1].u.hdr.prev_కొలత!=కొలత/4 ){
+      fprintf(బహిర్గతం, "%p tail size does not match\n", &mem3.aPool[i]);
+      ప్రతిజ్ఞా( 0 );
+      ఆపు;
     }
-    if( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
-      fprintf(out, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+    ఒకవేళ( ((mem3.aPool[i+కొలత/4-1].u.hdr.size4x&2)>>1)!=(కొలత&1) ){
+      fprintf(బహిర్గతం, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
+      ప్రతిజ్ఞా( 0 );
+      ఆపు;
     }
-    if( size&1 ){
-      fprintf(out, "%p %6d bytes checked out\n", &mem3.aPool[i], (size/4)*8-8);
-    }else{
-      fprintf(out, "%p %6d bytes free%s\n", &mem3.aPool[i], (size/4)*8-8,
-                  i==mem3.iKeyBlk ? " **key**" : "");
+    ఒకవేళ( కొలత&1 ){
+      fprintf(బహిర్గతం, "%p %6d bytes checked out\n", &mem3.aPool[i], (కొలత/4)*8-8);
+    }లేకపోతే{
+      fprintf(బహిర్గతం, "%p %6d bytes free%s\n", &mem3.aPool[i], (కొలత/4)*8-8,
+                  i==mem3.i_కీలకం_Blk ? " **key**" : "");
     }
   }
-  for(i=0; i<MX_SMALL-1; i++){
-    if( mem3.aiSmall[i]==0 ) continue;
-    fprintf(out, "small(%2d):", i);
-    for(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.next){
-      fprintf(out, " %p(%d)", &mem3.aPool[j],
+  కొరకు(i=0; i<MX_SMALL-1; i++){
+    ఒకవేళ( mem3.aiSmall[i]==0 ) కొనసాగు;
+    fprintf(బహిర్గతం, "small(%2d):", i);
+    కొరకు(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.తదుపరి){
+      fprintf(బహిర్గతం, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
-    fprintf(out, "\n"); 
+    fprintf(బహిర్గతం, "\n"); 
   }
-  for(i=0; i<N_HASH; i++){
-    if( mem3.aiHash[i]==0 ) continue;
-    fprintf(out, "hash(%2d):", i);
-    for(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.next){
-      fprintf(out, " %p(%d)", &mem3.aPool[j],
+  కొరకు(i=0; i<N_HASH; i++){
+    ఒకవేళ( mem3.aiHash[i]==0 ) కొనసాగు;
+    fprintf(బహిర్గతం, "hash(%2d):", i);
+    కొరకు(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.తదుపరి){
+      fprintf(బహిర్గతం, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
-    fprintf(out, "\n"); 
+    fprintf(బహిర్గతం, "\n"); 
   }
-  fprintf(out, "key=%d\n", mem3.iKeyBlk);
-  fprintf(out, "nowUsed=%d\n", mem3.nPool*8 - mem3.szKeyBlk*8);
-  fprintf(out, "mxUsed=%d\n", mem3.nPool*8 - mem3.mnKeyBlk*8);
+  fprintf(బహిర్గతం, "key=%d\n", mem3.i_కీలకం_Blk);
+  fprintf(బహిర్గతం, "nowUsed=%d\n", mem3.nPool*8 - mem3.sz_కీలకం_Blk*8);
+  fprintf(బహిర్గతం, "mxUsed=%d\n", mem3.nPool*8 - mem3.mn_కీలకం_Blk*8);
   sqlite3_mutex_leave(mem3.mutex);
-  if( out==stdout ){
+  ఒకవేళ( బహిర్గతం==stdout ){
     fflush(stdout);
-  }else{
-    fclose(out);
+  }లేకపోతే{
+    fclose(బహిర్గతం);
   }
-#else
-  UNUSED_PARAMETER(zFilename);
-#endif
+#లేకపోతే
+  వాడని_PARAMETER(zFilename);
+#అయితే_ముగింపు
 }
 
 /*
@@ -670,18 +670,18 @@ void sqlite3Memsys3Dump(const char *zFilename){
 ** This routine is only called by sqlite3_config(), and therefore
 ** is not required to be threadsafe (it is not).
 */
-const sqlite3_mem_methods *sqlite3MemGetMemsys3(void){
-  static const sqlite3_mem_methods mempoolMethods = {
+స్థిరరాశి sqlite3_mem_methods *sqlite3MemGetMemsys3(శూన్య){
+  స్థిర స్థిరరాశి sqlite3_mem_methods mempoolMethods = {
      memsys3Malloc,
      memsys3Free,
      memsys3Realloc,
-     memsys3Size,
+     memsys3_కొలత,
      memsys3Roundup,
      memsys3Init,
      memsys3Shutdown,
      0
   };
-  return &mempoolMethods;
+  తిరిగి &mempoolMethods;
 }
 
-#endif /* SQLITE_ENABLE_MEMSYS3 */
+#అయితే_ముగింపు /* SQLITE_ENABLE_MEMSYS3 */

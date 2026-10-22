@@ -17,11 +17,11 @@
 ** with historical versions of the "binary" command.  So it seems
 ** easier and safer to build our own mechanism.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
 
 /*
@@ -29,18 +29,18 @@
 ** binary data.  zBuf[] is 2*n+1 bytes long.  Overwrite zBuf[]
 ** with a hexadecimal representation of its original binary input.
 */
-void sqlite3TestBinToHex(unsigned char *zBuf, int N){
-  const unsigned char zHex[] = "0123456789ABCDEF";
-  int i, j;
-  unsigned char c;
+శూన్య sqlite3_Test_Bin_గమ్యం_Hex(గుర్తులేని అక్షరం *zBuf, పూర్ణాంకం N){
+  స్థిరరాశి గుర్తులేని అక్షరం zHex[] = "0123456789ABCDEF";
+  పూర్ణాంకం i, j;
+  గుర్తులేని అక్షరం c;
   i = N*2;
   zBuf[i--] = 0;
-  for(j=N-1; j>=0; j--){
+  కొరకు(j=N-1; j>=0; j--){
     c = zBuf[j];
     zBuf[i--] = zHex[c&0xf];
     zBuf[i--] = zHex[c>>4];
   }
-  assert( i==-1 );
+  ప్రతిజ్ఞా( i==-1 );
 }
 
 /*
@@ -49,8 +49,8 @@ void sqlite3TestBinToHex(unsigned char *zBuf, int N){
 ** the binary data.  Spaces in the original input are ignored.
 ** Return the number of bytes of binary rendered.
 */
-int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
-  const unsigned char aMap[] = {
+పూర్ణాంకం sqlite3_Test_Hex_గమ్యం_Bin(స్థిరరాశి గుర్తులేని అక్షరం *z_లోపల, పూర్ణాంకం N, గుర్తులేని అక్షరం *a_బహిర్గతం){
+  స్థిరరాశి గుర్తులేని అక్షరం aMap[] = {
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
@@ -68,22 +68,22 @@ int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
   };
-  int i, j;
-  int hi=1;
-  unsigned char c;
+  పూర్ణాంకం i, j;
+  పూర్ణాంకం hi=1;
+  గుర్తులేని అక్షరం c;
 
-  for(i=j=0; i<N; i++){
-    c = aMap[zIn[i]];
-    if( c==0 ) continue;
-    if( hi ){
-      aOut[j] = (c-1)<<4;
+  కొరకు(i=j=0; i<N; i++){
+    c = aMap[z_లోపల[i]];
+    ఒకవేళ( c==0 ) కొనసాగు;
+    ఒకవేళ( hi ){
+      a_బహిర్గతం[j] = (c-1)<<4;
       hi = 0;
-    }else{
-      aOut[j++] |= c-1;
+    }లేకపోతే{
+      a_బహిర్గతం[j++] |= c-1;
       hi = 1;
     }
   }
-  return j;
+  తిరిగి j;
 }
 
 
@@ -94,47 +94,47 @@ int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
 ** beginning of the file.  Convert that information to hexadecimal
 ** and return the resulting HEX string.
 */
-static int SQLITE_TCLAPI hexio_read(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI hexio_read(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int offset;
-  int amt, got;
-  const char *zFile;
-  unsigned char *zBuf;
-  FILE *in;
+  పూర్ణాంకం స్థానభ్రంశం;
+  పూర్ణాంకం amt, got;
+  స్థిరరాశి అక్షరం *zFile;
+  గుర్తులేని అక్షరం *zBuf;
+  FILE *లోపల;
 
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET AMT");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=4 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "FILENAME OFFSET AMT");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &amt) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &స్థానభ్రంశం) ) తిరిగి TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[3], &amt) ) తిరిగి TCL_ERROR;
   zFile = Tcl_GetString(objv[1]);
   zBuf = sqlite3_malloc( amt*2+1 );
-  if( zBuf==0 ){
-    return TCL_ERROR;
+  ఒకవేళ( zBuf==0 ){
+    తిరిగి TCL_ERROR;
   }
-  in = fopen(zFile, "rb");
-  if( in==0 ){
-    in = fopen(zFile, "r");
+  లోపల = fopen(zFile, "rb");
+  ఒకవేళ( లోపల==0 ){
+    లోపల = fopen(zFile, "r");
   }
-  if( in==0 ){
-    Tcl_AppendResult(interp, "cannot open input file ", zFile, NULL);
-    return TCL_ERROR;
+  ఒకవేళ( లోపల==0 ){
+    Tcl_Append_ఫలితం(interp, "cannot open input file ", zFile, ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  fseek(in, offset, SEEK_SET);
-  got = (int)fread(zBuf, 1, amt, in);
-  fclose(in);
-  if( got<0 ){
+  fseek(లోపల, స్థానభ్రంశం, SEEK_SET);
+  got = (పూర్ణాంకం)fread(zBuf, 1, amt, లోపల);
+  fclose(లోపల);
+  ఒకవేళ( got<0 ){
     got = 0;
   }
-  sqlite3TestBinToHex(zBuf, got);
-  Tcl_AppendResult(interp, zBuf, NULL);
+  sqlite3_Test_Bin_గమ్యం_Hex(zBuf, got);
+  Tcl_Append_ఫలితం(interp, zBuf, ఖాళీ);
   sqlite3_free(zBuf);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
 
@@ -144,46 +144,46 @@ static int SQLITE_TCLAPI hexio_read(
 ** Write DATA into file FILENAME beginning at OFFSET from the
 ** beginning of the file.  DATA is expressed in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_write(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI hexio_write(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int offset;
-  Tcl_Size nIn;
-  int nOut, written;
-  const char *zFile;
-  const unsigned char *zIn;
-  unsigned char *aOut;
-  FILE *out;
+  పూర్ణాంకం స్థానభ్రంశం;
+  Tcl_కొలత n_లోపల;
+  పూర్ణాంకం n_బహిర్గతం, written;
+  స్థిరరాశి అక్షరం *zFile;
+  స్థిరరాశి గుర్తులేని అక్షరం *z_లోపల;
+  గుర్తులేని అక్షరం *a_బహిర్గతం;
+  FILE *బహిర్గతం;
 
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET HEXDATA");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=4 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "FILENAME OFFSET HEXDATA");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[2], &స్థానభ్రంశం) ) తిరిగి TCL_ERROR;
   zFile = Tcl_GetString(objv[1]);
-  zIn = (const unsigned char *)Tcl_GetStringFromObj(objv[3], &nIn);
-  aOut = sqlite3_malloc64( 1 + nIn/2 );
-  if( aOut==0 ){
-    return TCL_ERROR;
+  z_లోపల = (స్థిరరాశి గుర్తులేని అక్షరం *)Tcl_GetStringFromObj(objv[3], &n_లోపల);
+  a_బహిర్గతం = sqlite3_malloc64( 1 + n_లోపల/2 );
+  ఒకవేళ( a_బహిర్గతం==0 ){
+    తిరిగి TCL_ERROR;
   }
-  nOut = sqlite3TestHexToBin(zIn, (int)nIn, aOut);
-  out = fopen(zFile, "r+b");
-  if( out==0 ){
-    out = fopen(zFile, "r+");
+  n_బహిర్గతం = sqlite3_Test_Hex_గమ్యం_Bin(z_లోపల, (పూర్ణాంకం)n_లోపల, a_బహిర్గతం);
+  బహిర్గతం = fopen(zFile, "r+b");
+  ఒకవేళ( బహిర్గతం==0 ){
+    బహిర్గతం = fopen(zFile, "r+");
   }
-  if( out==0 ){
-    Tcl_AppendResult(interp, "cannot open output file ", zFile, NULL);
-    return TCL_ERROR;
+  ఒకవేళ( బహిర్గతం==0 ){
+    Tcl_Append_ఫలితం(interp, "cannot open output file ", zFile, ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
-  fseek(out, offset, SEEK_SET);
-  written = (int)fwrite(aOut, 1, nOut, out);
-  sqlite3_free(aOut);
-  fclose(out);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(written));
-  return TCL_OK;
+  fseek(బహిర్గతం, స్థానభ్రంశం, SEEK_SET);
+  written = (పూర్ణాంకం)fwrite(a_బహిర్గతం, 1, n_బహిర్గతం, బహిర్గతం);
+  sqlite3_free(a_బహిర్గతం);
+  fclose(బహిర్గతం);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(written));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -193,51 +193,51 @@ static int SQLITE_TCLAPI hexio_write(
 ** the value of that integer.  HEXDATA can contain between 2 and 8
 ** hexadecimal digits.
 */
-static int SQLITE_TCLAPI hexio_get_int(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI hexio_get_int(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  Tcl_Size nIn;
-  int nOut;
-  const unsigned char *zIn;
-  unsigned char *aOut;
-  unsigned char aNum[4];
-  int bLittle = 0;
+  పూర్ణాంకం val;
+  Tcl_కొలత n_లోపల;
+  పూర్ణాంకం n_బహిర్గతం;
+  స్థిరరాశి గుర్తులేని అక్షరం *z_లోపల;
+  గుర్తులేని అక్షరం *a_బహిర్గతం;
+  గుర్తులేని అక్షరం a_అంకె[4];
+  పూర్ణాంకం bLittle = 0;
 
-  if( objc==3 ){
-    Tcl_Size n;
-    char *z = Tcl_GetStringFromObj(objv[1], &n);
-    if( n>=2 && n<=13 && memcmp(z, "-littleendian", n)==0 ){
+  ఒకవేళ( objc==3 ){
+    Tcl_కొలత n;
+    అక్షరం *z = Tcl_GetStringFromObj(objv[1], &n);
+    ఒకవేళ( n>=2 && n<=13 && memcmp(z, "-littleendian", n)==0 ){
       bLittle = 1;
     }
   }
-  if( (objc-bLittle)!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "[-littleendian] HEXDATA");
-    return TCL_ERROR;
+  ఒకవేళ( (objc-bLittle)!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "[-littleendian] HEXDATA");
+    తిరిగి TCL_ERROR;
   }
-  zIn = (const unsigned char *)Tcl_GetStringFromObj(objv[1+bLittle], &nIn);
-  aOut = sqlite3_malloc64( 1 + nIn/2 );
-  if( aOut==0 ){
-    return TCL_ERROR;
+  z_లోపల = (స్థిరరాశి గుర్తులేని అక్షరం *)Tcl_GetStringFromObj(objv[1+bLittle], &n_లోపల);
+  a_బహిర్గతం = sqlite3_malloc64( 1 + n_లోపల/2 );
+  ఒకవేళ( a_బహిర్గతం==0 ){
+    తిరిగి TCL_ERROR;
   }
-  nOut = sqlite3TestHexToBin(zIn, (int)nIn, aOut);
-  if( nOut>=4 ){
-    memcpy(aNum, aOut, 4);
-  }else{
-    memset(aNum, 0, sizeof(aNum));
-    memcpy(&aNum[4-nOut], aOut, nOut);
+  n_బహిర్గతం = sqlite3_Test_Hex_గమ్యం_Bin(z_లోపల, (పూర్ణాంకం)n_లోపల, a_బహిర్గతం);
+  ఒకవేళ( n_బహిర్గతం>=4 ){
+    జ్ఞాపకం_నకలు(a_అంకె, a_బహిర్గతం, 4);
+  }లేకపోతే{
+    memset(a_అంకె, 0, పరిమాణం(a_అంకె));
+    జ్ఞాపకం_నకలు(&a_అంకె[4-n_బహిర్గతం], a_బహిర్గతం, n_బహిర్గతం);
   }
-  sqlite3_free(aOut);
-  if( bLittle ){
-    val = (int)((u32)aNum[3]<<24) | (aNum[2]<<16) | (aNum[1]<<8) | aNum[0];
-  }else{
-    val = (int)((u32)aNum[0]<<24) | (aNum[1]<<16) | (aNum[2]<<8) | aNum[3];
+  sqlite3_free(a_బహిర్గతం);
+  ఒకవేళ( bLittle ){
+    val = (పూర్ణాంకం)((u32)a_అంకె[3]<<24) | (a_అంకె[2]<<16) | (a_అంకె[1]<<8) | a_అంకె[0];
+  }లేకపోతే{
+    val = (పూర్ణాంకం)((u32)a_అంకె[0]<<24) | (a_అంకె[1]<<16) | (a_అంకె[2]<<8) | a_అంకె[3];
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(val));
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(val));
+  తిరిగి TCL_OK;
 }
 
 
@@ -246,25 +246,25 @@ static int SQLITE_TCLAPI hexio_get_int(
 **
 ** Render INTEGER has a 16-bit big-endian integer in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_render_int16(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI hexio_render_int16(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  unsigned char aNum[10];
+  పూర్ణాంకం val;
+  గుర్తులేని అక్షరం a_అంకె[10];
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "INTEGER");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>8;
-  aNum[1] = val;
-  sqlite3TestBinToHex(aNum, 2);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 4));
-  return TCL_OK;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &val) ) తిరిగి TCL_ERROR;
+  a_అంకె[0] = val>>8;
+  a_అంకె[1] = val;
+  sqlite3_Test_Bin_గమ్యం_Hex(a_అంకె, 2);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewStringObj((అక్షరం*)a_అంకె, 4));
+  తిరిగి TCL_OK;
 }
 
 
@@ -273,27 +273,27 @@ static int SQLITE_TCLAPI hexio_render_int16(
 **
 ** Render INTEGER has a 32-bit big-endian integer in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_render_int32(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI hexio_render_int32(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  unsigned char aNum[10];
+  పూర్ణాంకం val;
+  గుర్తులేని అక్షరం a_అంకె[10];
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "INTEGER");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>24;
-  aNum[1] = val>>16;
-  aNum[2] = val>>8;
-  aNum[3] = val;
-  sqlite3TestBinToHex(aNum, 4);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 8));
-  return TCL_OK;
+  ఒకవేళ( Tcl_GetIntFromObj(interp, objv[1], &val) ) తిరిగి TCL_ERROR;
+  a_అంకె[0] = val>>24;
+  a_అంకె[1] = val>>16;
+  a_అంకె[2] = val>>8;
+  a_అంకె[3] = val;
+  sqlite3_Test_Bin_గమ్యం_Hex(a_అంకె, 4);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewStringObj((అక్షరం*)a_అంకె, 8));
+  తిరిగి TCL_OK;
 }
 
 /*
@@ -303,60 +303,60 @@ static int SQLITE_TCLAPI hexio_render_int32(
 ** The UTF8 might not be well-formed.  Run this string through
 ** sqlite3Utf8to8() convert it back to hex and return the result.
 */
-static int SQLITE_TCLAPI utf8_to_utf8(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI utf8_గమ్యం_utf8(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-#ifdef SQLITE_DEBUG
-  Tcl_Size n;
-  int nOut;
-  const unsigned char *zOrig;
-  unsigned char *z;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HEX");
-    return TCL_ERROR;
+#నిర్వచితమైతే SQLITE_DEBUG
+  Tcl_కొలత n;
+  పూర్ణాంకం n_బహిర్గతం;
+  స్థిరరాశి గుర్తులేని అక్షరం *zOrig;
+  గుర్తులేని అక్షరం *z;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "HEX");
+    తిరిగి TCL_ERROR;
   }
-  zOrig = (unsigned char *)Tcl_GetStringFromObj(objv[1], &n);
+  zOrig = (గుర్తులేని అక్షరం *)Tcl_GetStringFromObj(objv[1], &n);
   z = sqlite3_malloc64( n+4 );
-  n = sqlite3TestHexToBin(zOrig, (int)n, z);
+  n = sqlite3_Test_Hex_గమ్యం_Bin(zOrig, (పూర్ణాంకం)n, z);
   z[n] = 0;
-  nOut = sqlite3Utf8To8(z);
-  sqlite3TestBinToHex(z,nOut);
-  Tcl_AppendResult(interp, (char*)z, NULL);
+  n_బహిర్గతం = sqlite3Utf8To8(z);
+  sqlite3_Test_Bin_గమ్యం_Hex(z,n_బహిర్గతం);
+  Tcl_Append_ఫలితం(interp, (అక్షరం*)z, ఖాళీ);
   sqlite3_free(z);
-  return TCL_OK;
-#else
-  Tcl_AppendResult(interp, 
-      "[utf8_to_utf8] unavailable - SQLITE_DEBUG not defined", NULL
+  తిరిగి TCL_OK;
+#లేకపోతే
+  Tcl_Append_ఫలితం(interp, 
+      "[utf8_to_utf8] unavailable - SQLITE_DEBUG not defined", ఖాళీ
   );
-  return TCL_ERROR;
-#endif
+  తిరిగి TCL_ERROR;
+#అయితే_ముగింపు
 }
 
-static int getFts3Varint(const char *p, sqlite_int64 *v){
-  const unsigned char *q = (const unsigned char *) p;
+స్థిర పూర్ణాంకం getFts3Varint(స్థిరరాశి అక్షరం *p, sqlite_int64 *v){
+  స్థిరరాశి గుర్తులేని అక్షరం *q = (స్థిరరాశి గుర్తులేని అక్షరం *) p;
   sqlite_uint64 x = 0, y = 1;
-  while( (*q & 0x80) == 0x80 ){
+  అయితే( (*q & 0x80) == 0x80 ){
     x += y * (*q++ & 0x7f);
     y <<= 7;
   }
   x += y * (*q++);
   *v = (sqlite_int64) x;
-  return (int) (q - (unsigned char *)p);
+  తిరిగి (పూర్ణాంకం) (q - (గుర్తులేని అక్షరం *)p);
 }
 
-static int putFts3Varint(char *p, sqlite_int64 v){
-  unsigned char *q = (unsigned char *) p;
+స్థిర పూర్ణాంకం putFts3Varint(అక్షరం *p, sqlite_int64 v){
+  గుర్తులేని అక్షరం *q = (గుర్తులేని అక్షరం *) p;
   sqlite_uint64 vu = v;
-  do{
-    *q++ = (unsigned char) ((vu & 0x7f) | 0x80);
+  చేయి{
+    *q++ = (గుర్తులేని అక్షరం) ((vu & 0x7f) | 0x80);
     vu >>= 7;
-  }while( vu!=0 );
+  }అయితే( vu!=0 );
   q[-1] &= 0x7f;  /* turn off high bit in final byte */
-  assert( q - (unsigned char *)p <= 10 );
-  return (int) (q - (unsigned char *)p);
+  ప్రతిజ్ఞా( q - (గుర్తులేని అక్షరం *)p <= 10 );
+  తిరిగి (పూర్ణాంకం) (q - (గుర్తులేని అక్షరం *)p);
 }
 
 /*
@@ -365,97 +365,97 @@ static int putFts3Varint(char *p, sqlite_int64 v){
 ** Read a varint from the start of BLOB. Set variable VARNAME to contain
 ** the interpreted value. Return the number of bytes of BLOB consumed.
 */
-static int SQLITE_TCLAPI read_fts3varint(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI read_fts3varint(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  Tcl_Size nBlob;
-  unsigned char *zBlob;
+  Tcl_కొలత nBlob;
+  గుర్తులేని అక్షరం *zBlob;
   sqlite3_int64 iVal;
-  int nVal;
+  పూర్ణాంకం nVal;
 
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BLOB VARNAME");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=3 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "BLOB VARNAME");
+    తిరిగి TCL_ERROR;
   }
   zBlob = Tcl_GetByteArrayFromObj(objv[1], &nBlob);
 
-  nVal = getFts3Varint((char*)zBlob, (sqlite3_int64 *)(&iVal));
-  Tcl_ObjSetVar2(interp, objv[2], 0, Tcl_NewWideIntObj(iVal), 0);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nVal));
-  return TCL_OK;
+  nVal = getFts3Varint((అక్షరం*)zBlob, (sqlite3_int64 *)(&iVal));
+  Tcl_Obj_సమితి_Var2(interp, objv[2], 0, Tcl_NewWideIntObj(iVal), 0);
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(nVal));
+  తిరిగి TCL_OK;
 }
 
 /*
 ** USAGE:  make_fts3record ARGLIST
 */
-static int SQLITE_TCLAPI make_fts3record(
-  void * clientData,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI make_fts3record(
+  శూన్య * client_దత్తాంశం,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Obj **aArg = 0;
-  Tcl_Size nArg = 0;
-  unsigned char *aOut = 0;
-  sqlite3_int64 nOut = 0;
+  Tcl_కొలత nArg = 0;
+  గుర్తులేని అక్షరం *a_బహిర్గతం = 0;
+  sqlite3_int64 n_బహిర్గతం = 0;
   sqlite3_int64 nAlloc = 0;
-  int i;
+  పూర్ణాంకం i;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "LIST");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=2 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "LIST");
+    తిరిగి TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[1], &nArg, &aArg) ){
-    return TCL_ERROR;
+  ఒకవేళ( Tcl_ListObjGetElements(interp, objv[1], &nArg, &aArg) ){
+    తిరిగి TCL_ERROR;
   }
 
-  for(i=0; i<(int)nArg; i++){
+  కొరకు(i=0; i<(పూర్ణాంకం)nArg; i++){
     Tcl_WideInt iVal;
-    if( TCL_OK==Tcl_GetWideIntFromObj(0, aArg[i], &iVal) ){
-      if( nOut+10>nAlloc ){
-        int nNew = nAlloc?nAlloc*2:128;
-        unsigned char *aNew = sqlite3_realloc(aOut, nNew);
-        if( aNew==0 ){
-          sqlite3_free(aOut);
-          return TCL_ERROR;
+    ఒకవేళ( TCL_OK==Tcl_GetWideIntFromObj(0, aArg[i], &iVal) ){
+      ఒకవేళ( n_బహిర్గతం+10>nAlloc ){
+        పూర్ణాంకం nNew = nAlloc?nAlloc*2:128;
+        గుర్తులేని అక్షరం *aNew = sqlite3_realloc(a_బహిర్గతం, nNew);
+        ఒకవేళ( aNew==0 ){
+          sqlite3_free(a_బహిర్గతం);
+          తిరిగి TCL_ERROR;
         }
-        aOut = aNew;
+        a_బహిర్గతం = aNew;
         nAlloc = nNew;
       }
-      nOut += putFts3Varint((char*)&aOut[nOut], iVal);
-    }else{
-      Tcl_Size nVal = 0;
-      char *zVal = Tcl_GetStringFromObj(aArg[i], &nVal);
-      while( (nOut + nVal)>nAlloc ){
+      n_బహిర్గతం += putFts3Varint((అక్షరం*)&a_బహిర్గతం[n_బహిర్గతం], iVal);
+    }లేకపోతే{
+      Tcl_కొలత nVal = 0;
+      అక్షరం *zVal = Tcl_GetStringFromObj(aArg[i], &nVal);
+      అయితే( (n_బహిర్గతం + nVal)>nAlloc ){
         sqlite3_int64 nNew = nAlloc?nAlloc*2:128;
-        unsigned char *aNew = sqlite3_realloc64(aOut, nNew);
-        if( aNew==0 ){
-          sqlite3_free(aOut);
-          return TCL_ERROR;
+        గుర్తులేని అక్షరం *aNew = sqlite3_realloc64(a_బహిర్గతం, nNew);
+        ఒకవేళ( aNew==0 ){
+          sqlite3_free(a_బహిర్గతం);
+          తిరిగి TCL_ERROR;
         }
-        aOut = aNew;
+        a_బహిర్గతం = aNew;
         nAlloc = nNew;
       }
-      memcpy(&aOut[nOut], zVal, nVal);
-      nOut += nVal;
+      జ్ఞాపకం_నకలు(&a_బహిర్గతం[n_బహిర్గతం], zVal, nVal);
+      n_బహిర్గతం += nVal;
     }
   }
 
-  Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(aOut, nOut));
-  sqlite3_free(aOut);
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewByteArrayObj(a_బహిర్గతం, n_బహిర్గతం));
+  sqlite3_free(a_బహిర్గతం);
+  తిరిగి TCL_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_hexio_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+పూర్ణాంకం Sqlitetest_hexio_Init(Tcl_Interp *interp){
+  స్థిర నిర్మాణం {
+     అక్షరం *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "hexio_read",                   hexio_read            },
@@ -463,13 +463,13 @@ int Sqlitetest_hexio_Init(Tcl_Interp *interp){
      { "hexio_get_int",                hexio_get_int         },
      { "hexio_render_int16",           hexio_render_int16    },
      { "hexio_render_int32",           hexio_render_int32    },
-     { "utf8_to_utf8",                 utf8_to_utf8          },
+     { "utf8_to_utf8",                 utf8_గమ్యం_utf8          },
      { "read_fts3varint",              read_fts3varint       },
      { "make_fts3record",              make_fts3record       },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  పూర్ణాంకం i;
+  కొరకు(i=0; i<పరిమాణం(aObjCmd)/పరిమాణం(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }

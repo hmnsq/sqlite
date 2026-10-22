@@ -13,44 +13,44 @@
 ** interface, and routines that contribute to loading the database schema
 ** from disk.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** Fill the InitData structure with an error message that indicates
 ** that the database is corrupt.
 */
-static void corruptSchema(
-  InitData *pData,     /* Initialization context */
-  char **azObj,        /* Type and name of object being parsed */
-  const char *zExtra   /* Error information */
+స్థిర శూన్య corruptSchema(
+  Init_దత్తాంశం *p_దత్తాంశం,     /* Initialization context */
+  అక్షరం **azObj,        /* Type and name of object being parsed */
+  స్థిరరాశి అక్షరం *zExtra   /* Error information */
 ){
-  sqlite3 *db = pData->db;
-  if( db->mallocFailed ){
-    pData->rc = SQLITE_NOMEM_BKPT;
-  }else if( pData->pzErrMsg[0]!=0 ){
+  sqlite3 *db = p_దత్తాంశం->db;
+  ఒకవేళ( db->mallocFailed ){
+    p_దత్తాంశం->rc = SQLITE_NOMEM_BKPT;
+  }లేకపోతే ఒకవేళ( p_దత్తాంశం->pz_Err_సందేశం[0]!=0 ){
     /* A error message has already been generated.  Do not overwrite it */
-  }else if( pData->mInitFlags & (INITFLAG_AlterMask) ){
-    static const char *azAlterType[] = {
+  }లేకపోతే ఒకవేళ( p_దత్తాంశం->mInitFlags & (INITFLAG_Alter_ముసుగు) ){
+    స్థిర స్థిరరాశి అక్షరం *azAlterType[] = {
        "rename",
        "drop column",
        "add column",
        "drop constraint"
     };
-    *pData->pzErrMsg = sqlite3MPrintf(db, 
+    *p_దత్తాంశం->pz_Err_సందేశం = sqlite3MPrintf(db, 
         "error in %s %s after %s: %s", azObj[0], azObj[1], 
-        azAlterType[(pData->mInitFlags&INITFLAG_AlterMask)-1], 
+        azAlterType[(p_దత్తాంశం->mInitFlags&INITFLAG_Alter_ముసుగు)-1], 
         zExtra
     );
-    pData->rc = SQLITE_ERROR;
-  }else if( db->flags & SQLITE_WriteSchema ){
-    pData->rc = SQLITE_CORRUPT_BKPT;
-  }else{
-    char *z;
-    const char *zObj = azObj[1] ? azObj[1] : "?";
+    p_దత్తాంశం->rc = SQLITE_ERROR;
+  }లేకపోతే ఒకవేళ( db->flags & SQLITE_WriteSchema ){
+    p_దత్తాంశం->rc = SQLITE_CORRUPT_BKPT;
+  }లేకపోతే{
+    అక్షరం *z;
+    స్థిరరాశి అక్షరం *zObj = azObj[1] ? azObj[1] : "?";
     z = sqlite3MPrintf(db, "malformed database schema (%s)", zObj);
-    if( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
-    *pData->pzErrMsg = z;
-    pData->rc = SQLITE_CORRUPT_BKPT;
+    ఒకవేళ( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
+    *p_దత్తాంశం->pz_Err_సందేశం = z;
+    p_దత్తాంశం->rc = SQLITE_CORRUPT_BKPT;
   }
 }
 
@@ -59,23 +59,23 @@ static void corruptSchema(
 ** of pIndex has the same root page number, and if it does, return true.
 ** This would indicate a corrupt schema.
 */
-int sqlite3IndexHasDuplicateRootPage(Index *pIndex){
-  Index *p;
-  for(p=pIndex->pTable->pIndex; p; p=p->pNext){
-    if( p->tnum==pIndex->tnum && p!=pIndex ) return 1;
+పూర్ణాంకం sqlite3_సూచీ_Has_Duplicate_మూలం_పుట(సూచీ *p_సూచీ){
+  సూచీ *p;
+  కొరకు(p=p_సూచీ->p_పట్టిక->p_సూచీ; p; p=p->p_తదుపరి){
+    ఒకవేళ( p->tnum==p_సూచీ->tnum && p!=p_సూచీ ) తిరిగి 1;
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /* forward declaration */
-static int sqlite3Prepare(
+స్థిర పూర్ణాంకం sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 );
 
 
@@ -93,29 +93,29 @@ static int sqlite3Prepare(
 **     argv[4] = SQL text for the CREATE statement.
 **
 */
-int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
-  InitData *pData = (InitData*)pInit;
-  sqlite3 *db = pData->db;
-  int iDb = pData->iDb;
+పూర్ణాంకం sqlite3InitCallback(శూన్య *pInit, పూర్ణాంకం argc, అక్షరం **argv, అక్షరం **Not_వాడిన){
+  Init_దత్తాంశం *p_దత్తాంశం = (Init_దత్తాంశం*)pInit;
+  sqlite3 *db = p_దత్తాంశం->db;
+  పూర్ణాంకం iDb = p_దత్తాంశం->iDb;
 
-  assert( argc==5 );
-  UNUSED_PARAMETER2(NotUsed, argc);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ప్రతిజ్ఞా( argc==5 );
+  వాడని_PARAMETER2(Not_వాడిన, argc);
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
   db->mDbFlags |= DBFLAG_EncodingFixed;
-  if( argv==0 ) return 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
-  pData->nInitRow++;
-  if( db->mallocFailed ){
-    corruptSchema(pData, argv, 0);
-    return 1;
+  ఒకవేళ( argv==0 ) తిరిగి 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
+  p_దత్తాంశం->n_Init_అడ్డువరుస++;
+  ఒకవేళ( db->mallocFailed ){
+    corruptSchema(p_దత్తాంశం, argv, 0);
+    తిరిగి 1;
   }
 
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema!=0 );
-  if( argv[3]==0 ){
-    corruptSchema(pData, argv, 0);
-  }else if( argv[4]
-         && 'c'==sqlite3UpperToLower[(unsigned char)argv[4][0]]
-         && 'r'==sqlite3UpperToLower[(unsigned char)argv[4][1]] ){
+  ప్రతిజ్ఞా( iDb>=0 && iDb<db->nDb );
+  ప్రతిజ్ఞా( db->aDb[iDb].pSchema!=0 );
+  ఒకవేళ( argv[3]==0 ){
+    corruptSchema(p_దత్తాంశం, argv, 0);
+  }లేకపోతే ఒకవేళ( argv[4]
+         && 'c'==sqlite3_పై_గమ్యం_క్రింది[(గుర్తులేని అక్షరం)argv[4][0]]
+         && 'r'==sqlite3_పై_గమ్యం_క్రింది[(గుర్తులేని అక్షరం)argv[4][1]] ){
     /* Call the parser to process a CREATE TABLE, INDEX or VIEW.
     ** But because db->init.busy is set to 1, no VDBE code is generated
     ** or executed.  All the parser does is build the internal data
@@ -126,80 +126,80 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
     ** any other kind of statement while parsing the schema, even a corrupt
     ** schema.
     */
-    int rc;
+    పూర్ణాంకం rc;
     u8 saved_iDb = db->init.iDb;
     sqlite3_stmt *pStmt;
-    const char *zEnd;
-    TESTONLY(int rcp);            /* Return code from sqlite3_prepare() */
+    స్థిరరాశి అక్షరం *z_చివర;
+    TESTONLY(పూర్ణాంకం rcp);            /* Return code from sqlite3_prepare() */
 
-    assert( db->init.busy );
+    ప్రతిజ్ఞా( db->init.busy );
     db->init.iDb = iDb;
-    if( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
-     || (db->init.newTnum>pData->mxPage && pData->mxPage>0)
+    ఒకవేళ( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
+     || (db->init.newTnum>p_దత్తాంశం->mx_పుట && p_దత్తాంశం->mx_పుట>0)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
-        corruptSchema(pData, argv, "invalid rootpage");
+      ఒకవేళ( sqlite3Config.bExtraSchemaChecks ){
+        corruptSchema(p_దత్తాంశం, argv, "invalid rootpage");
       }
     }
     db->init.orphanTrigger = 0;
-    db->init.azInit = (const char**)argv;
+    db->init.azInit = (స్థిరరాశి అక్షరం**)argv;
     pStmt = 0;
-    TESTONLY(rcp = ) sqlite3Prepare(db, argv[4], -1, 0, 0, &pStmt, &zEnd);
-    rc = db->errCode;
-    assert( (rc&0xFF)==(rcp&0xFF) );
+    TESTONLY(rcp = ) sqlite3Prepare(db, argv[4], -1, 0, 0, &pStmt, &z_చివర);
+    rc = db->err_సంకేతం;
+    ప్రతిజ్ఞా( (rc&0xFF)==(rcp&0xFF) );
     db->init.iDb = saved_iDb;
     /* assert( saved_iDb==0 || (db->mDbFlags & DBFLAG_Vacuum)!=0 ); */
-    if( SQLITE_OK!=rc ){
-      if( db->init.orphanTrigger ){
-        assert( iDb==1 );
-      }else{
-        if( rc > pData->rc ) pData->rc = rc;
-        if( rc==SQLITE_NOMEM ){
+    ఒకవేళ( SQLITE_OK!=rc ){
+      ఒకవేళ( db->init.orphanTrigger ){
+        ప్రతిజ్ఞా( iDb==1 );
+      }లేకపోతే{
+        ఒకవేళ( rc > p_దత్తాంశం->rc ) p_దత్తాంశం->rc = rc;
+        ఒకవేళ( rc==SQLITE_NOMEM ){
           sqlite3OomFault(db);
-        }else if( rc!=SQLITE_INTERRUPT && (rc&0xFF)!=SQLITE_LOCKED ){
-          corruptSchema(pData, argv, sqlite3_errmsg(db));
+        }లేకపోతే ఒకవేళ( rc!=SQLITE_అంతరాయం && (rc&0xFF)!=SQLITE_LOCKED ){
+          corruptSchema(p_దత్తాంశం, argv, sqlite3_errmsg(db));
         }
       }
-    }else if( zEnd[0] ){
-      corruptSchema(pData, argv, 0);
+    }లేకపోతే ఒకవేళ( z_చివర[0] ){
+      corruptSchema(p_దత్తాంశం, argv, 0);
     }
     db->init.azInit = sqlite3StdType; /* Any array of string ptrs will do */
     sqlite3_finalize(pStmt);
-  }else if( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
-    corruptSchema(pData, argv, 0);
-  }else{
+  }లేకపోతే ఒకవేళ( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
+    corruptSchema(p_దత్తాంశం, argv, 0);
+  }లేకపోతే{
     /* If the SQL column is blank it means this is an index that
     ** was created to be the PRIMARY KEY or to fulfill a UNIQUE
     ** constraint for a CREATE TABLE.  The index should have already
     ** been created when we processed the CREATE TABLE.  All we have
     ** to do here is record the root page number for that index.
     */
-    Index *pIndex;
-    pIndex = sqlite3FindIndex(db, argv[1], db->aDb[iDb].zDbSName);
-    if( pIndex==0 ){
-      corruptSchema(pData, argv, "orphan index");
-    }else
-    if( sqlite3GetUInt32(argv[3],&pIndex->tnum)==0
-     || pIndex->tnum<2
-     || pIndex->tnum>pData->mxPage
-     || sqlite3IndexHasDuplicateRootPage(pIndex)
+    సూచీ *p_సూచీ;
+    p_సూచీ = sqlite3_కనుగొను_సూచీ(db, argv[1], db->aDb[iDb].zDbSName);
+    ఒకవేళ( p_సూచీ==0 ){
+      corruptSchema(p_దత్తాంశం, argv, "orphan index");
+    }లేకపోతే
+    ఒకవేళ( sqlite3GetUInt32(argv[3],&p_సూచీ->tnum)==0
+     || p_సూచీ->tnum<2
+     || p_సూచీ->tnum>p_దత్తాంశం->mx_పుట
+     || sqlite3_సూచీ_Has_Duplicate_మూలం_పుట(p_సూచీ)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
-        corruptSchema(pData, argv, "invalid rootpage");
+      ఒకవేళ( sqlite3Config.bExtraSchemaChecks ){
+        corruptSchema(p_దత్తాంశం, argv, "invalid rootpage");
       }
     }
   }
-  if( pData->pzErrMsg[0]==0 ){
+  ఒకవేళ( p_దత్తాంశం->pz_Err_సందేశం[0]==0 ){
     Schema *pX = db->aDb[iDb].pSchema;
-    if( pX->tblHash.count + pX->idxHash.count + pX->trigHash.count
-                   > (u32)db->aLimit[SQLITE_LIMIT_SCHEMA]
+    ఒకవేళ( pX->tblHash.లెక్క + pX->idxHash.లెక్క + pX->trigHash.లెక్క
+                   > (u32)db->a_హద్దు[SQLITE_హద్దు_SCHEMA]
     ){
-      *pData->pzErrMsg = sqlite3MPrintf(db, "too many schema objects");
-      pData->rc = SQLITE_ERROR;
-      return 1;
+      *p_దత్తాంశం->pz_Err_సందేశం = sqlite3MPrintf(db, "too many schema objects");
+      p_దత్తాంశం->rc = SQLITE_ERROR;
+      తిరిగి 1;
     }
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -210,27 +210,27 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
 ** auxiliary databases.  Return one of the SQLITE_ error codes to
 ** indicate success or failure.
 */
-int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
-  int rc;
-  int i;
-#ifndef SQLITE_OMIT_DEPRECATED
-  int size;
-#endif
+పూర్ణాంకం sqlite3InitOne(sqlite3 *db, పూర్ణాంకం iDb, అక్షరం **pz_Err_సందేశం, u32 mFlags){
+  పూర్ణాంకం rc;
+  పూర్ణాంకం i;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_DEPRECATED
+  పూర్ణాంకం కొలత;
+#అయితే_ముగింపు
   Db *pDb;
-  char const *azArg[6];
-  int meta[5];
-  InitData initData;
-  const char *zSchemaTabName;
-  int openedTransaction = 0;
-  int mask = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
+  అక్షరం స్థిరరాశి *azArg[6];
+  పూర్ణాంకం meta[5];
+  Init_దత్తాంశం init_దత్తాంశం;
+  స్థిరరాశి అక్షరం *zSchemaTabName;
+  పూర్ణాంకం openedTransaction = 0;
+  పూర్ణాంకం ముసుగు = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
 
-  assert( (db->mDbFlags & DBFLAG_SchemaKnownOk)==0 );
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
+  ప్రతిజ్ఞా( (db->mDbFlags & DBFLAG_Schema_తెలిసిన_Ok)==0 );
+  ప్రతిజ్ఞా( iDb>=0 && iDb<db->nDb );
+  ప్రతిజ్ఞా( db->aDb[iDb].pSchema );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  ప్రతిజ్ఞా( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
 
-  db->init.busy = 1 + ((mFlags & INITFLAG_AlterAdd)!=0);
+  db->init.busy = 1 + ((mFlags & INITFLAG_Alter_కూడు)!=0);
   /* ^--- Any non-zero value for init.busy means that we are scanning
   ** the sqlite_schema table to build the internal schema representation,
   ** rather than running actual CREATE statements.  init.busy==2 has the
@@ -244,45 +244,45 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** use the abbreviation "x" here.  The parser will also automatically tag
   ** the schema table as read-only. */
   azArg[0] = "table";
-  azArg[1] = zSchemaTabName = SCHEMA_TABLE(iDb);
+  azArg[1] = zSchemaTabName = SCHEMA_పట్టిక(iDb);
   azArg[2] = azArg[1];
   azArg[3] = "1";
   azArg[4] = "CREATE TABLE x(type text,name text,tbl_name text,"
                             "rootpage int,sql text)";
   azArg[5] = 0;
-  initData.db = db;
-  initData.iDb = iDb;
-  initData.rc = SQLITE_OK;
-  initData.pzErrMsg = pzErrMsg;
-  initData.mInitFlags = mFlags;
-  initData.nInitRow = 0;
-  initData.mxPage = 0;
-  sqlite3InitCallback(&initData, 5, (char **)azArg, 0);
-  db->mDbFlags &= mask;
-  if( initData.rc ){
-    rc = initData.rc;
-    goto error_out;
+  init_దత్తాంశం.db = db;
+  init_దత్తాంశం.iDb = iDb;
+  init_దత్తాంశం.rc = SQLITE_OK;
+  init_దత్తాంశం.pz_Err_సందేశం = pz_Err_సందేశం;
+  init_దత్తాంశం.mInitFlags = mFlags;
+  init_దత్తాంశం.n_Init_అడ్డువరుస = 0;
+  init_దత్తాంశం.mx_పుట = 0;
+  sqlite3InitCallback(&init_దత్తాంశం, 5, (అక్షరం **)azArg, 0);
+  db->mDbFlags &= ముసుగు;
+  ఒకవేళ( init_దత్తాంశం.rc ){
+    rc = init_దత్తాంశం.rc;
+    వెళ్ళు error_బహిర్గతం;
   }
 
   /* Create a cursor to hold the database open
   */
   pDb = &db->aDb[iDb];
-  if( pDb->pBt==0 ){
-    assert( iDb==1 );
-    DbSetProperty(db, 1, DB_SchemaLoaded);
+  ఒకవేళ( pDb->pBt==0 ){
+    ప్రతిజ్ఞా( iDb==1 );
+    Db_సమితి_Property(db, 1, DB_SchemaLoaded);
     rc = SQLITE_OK;
-    goto error_out;
+    వెళ్ళు error_బహిర్గతం;
   }
 
   /* If there is not already a read-only (or read-write) transaction opened
   ** on the b-tree database, open one now. If a transaction is opened, it 
   ** will be closed before this function returns.  */
   sqlite3BtreeEnter(pDb->pBt);
-  if( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
+  ఒకవేళ( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
     rc = sqlite3BtreeBeginTrans(pDb->pBt, 0, 0);
-    if( rc!=SQLITE_OK ){
-      sqlite3SetString(pzErrMsg, db, sqlite3ErrStr(rc));
-      goto initone_error_out;
+    ఒకవేళ( rc!=SQLITE_OK ){
+      sqlite3_సమితి_String(pz_Err_సందేశం, db, sqlite3ErrStr(rc));
+      వెళ్ళు initone_error_బహిర్గతం;
     }
     openedTransaction = 1;
   }
@@ -304,51 +304,51 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** Note: The #defined SQLITE_UTF* symbols in sqliteInt.h correspond to
   ** the possible values of meta[4].
   */
-  for(i=0; i<ArraySize(meta); i++){
+  కొరకు(i=0; i<Array_కొలత(meta); i++){
     sqlite3BtreeGetMeta(pDb->pBt, i+1, (u32 *)&meta[i]);
   }
-  if( (db->flags & SQLITE_ResetDatabase)!=0 ){
-    memset(meta, 0, sizeof(meta));
+  ఒకవేళ( (db->flags & SQLITE_ResetDatabase)!=0 ){
+    memset(meta, 0, పరిమాణం(meta));
   }
-  pDb->pSchema->schema_cookie = meta[BTREE_SCHEMA_VERSION-1];
+  pDb->pSchema->schema_cookie = meta[BTREE_SCHEMA_సంస్కరణ-1];
 
   /* If opening a non-empty database, check the text encoding. For the
   ** main database, set sqlite3.enc to the encoding of the main database.
   ** For an attached db, it is an error if the encoding is not the same
   ** as sqlite3.enc.
   */
-  if( meta[BTREE_TEXT_ENCODING-1] ){  /* text encoding */
-    if( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+  ఒకవేళ( meta[BTREE_పాఠ్యం_ENCODING-1] ){  /* text encoding */
+    ఒకవేళ( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
       u8 encoding;
-#ifndef SQLITE_OMIT_UTF16
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
       /* If opening the main database, set ENC(db). */
-      encoding = (u8)meta[BTREE_TEXT_ENCODING-1] & 3;
-      if( encoding==0 ) encoding = SQLITE_UTF8;
-#else
+      encoding = (u8)meta[BTREE_పాఠ్యం_ENCODING-1] & 3;
+      ఒకవేళ( encoding==0 ) encoding = SQLITE_UTF8;
+#లేకపోతే
       encoding = SQLITE_UTF8;
-#endif
-      sqlite3SetTextEncoding(db, encoding);
-    }else{
+#అయితే_ముగింపు
+      sqlite3_సమితి_పాఠ్యం_Encoding(db, encoding);
+    }లేకపోతే{
       /* If opening an attached database, the encoding much match ENC(db) */
-      if( (meta[BTREE_TEXT_ENCODING-1] & 3)!=ENC(db) ){
-        sqlite3SetString(pzErrMsg, db, "attached databases must use the same"
+      ఒకవేళ( (meta[BTREE_పాఠ్యం_ENCODING-1] & 3)!=ENC(db) ){
+        sqlite3_సమితి_String(pz_Err_సందేశం, db, "attached databases must use the same"
             " text encoding as main database");
         rc = SQLITE_ERROR;
-        goto initone_error_out;
+        వెళ్ళు initone_error_బహిర్గతం;
       }
     }
   }
   pDb->pSchema->enc = ENC(db);
 
-  if( pDb->pSchema->cache_size==0 ){
-#ifndef SQLITE_OMIT_DEPRECATED
-    size = sqlite3AbsInt32(meta[BTREE_DEFAULT_CACHE_SIZE-1]);
-    if( size==0 ){ size = SQLITE_DEFAULT_CACHE_SIZE; }
-    pDb->pSchema->cache_size = size;
-#else
-    pDb->pSchema->cache_size = SQLITE_DEFAULT_CACHE_SIZE;
-#endif
-    sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+  ఒకవేళ( pDb->pSchema->cache_కొలత==0 ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_DEPRECATED
+    కొలత = sqlite3AbsInt32(meta[BTREE_DEFAULT_CACHE_కొలత-1]);
+    ఒకవేళ( కొలత==0 ){ కొలత = SQLITE_DEFAULT_CACHE_కొలత; }
+    pDb->pSchema->cache_కొలత = కొలత;
+#లేకపోతే
+    pDb->pSchema->cache_కొలత = SQLITE_DEFAULT_CACHE_కొలత;
+#అయితే_ముగింపు
+    sqlite3_Btree_సమితి_Cache_కొలత(pDb->pBt, pDb->pSchema->cache_కొలత);
   }
 
   /*
@@ -358,13 +358,13 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** file_format==4    Version 3.3.0.  // DESC indices.  Boolean constants
   */
   pDb->pSchema->file_format = (u8)meta[BTREE_FILE_FORMAT-1];
-  if( pDb->pSchema->file_format==0 ){
+  ఒకవేళ( pDb->pSchema->file_format==0 ){
     pDb->pSchema->file_format = 1;
   }
-  if( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
-    sqlite3SetString(pzErrMsg, db, "unsupported file format");
+  ఒకవేళ( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
+    sqlite3_సమితి_String(pz_Err_సందేశం, db, "unsupported file format");
     rc = SQLITE_ERROR;
-    goto initone_error_out;
+    వెళ్ళు initone_error_బహిర్గతం;
   }
 
   /* Ticket #2804:  When we open a database in the newer file format,
@@ -372,45 +372,45 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** not downgrade the database and thus invalidate any descending
   ** indices that the user might have created.
   */
-  if( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
+  ఒకవేళ( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
     db->flags &= ~(u64)SQLITE_LegacyFileFmt;
   }
 
   /* Read the schema information out of the schema tables
   */
-  assert( db->init.busy );
-  initData.mxPage = sqlite3BtreeLastPage(pDb->pBt);
+  ప్రతిజ్ఞా( db->init.busy );
+  init_దత్తాంశం.mx_పుట = sqlite3_Btree_చివరి_పుట(pDb->pBt);
   {
-    char *zSql;
+    అక్షరం *zSql;
     zSql = sqlite3MPrintf(db, 
         "SELECT*FROM\"%w\".%s ORDER BY rowid",
         db->aDb[iDb].zDbSName, zSchemaTabName);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
     {
       sqlite3_xauth xAuth;
       xAuth = db->xAuth;
       db->xAuth = 0;
-#endif
-      rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &initData, 0);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#అయితే_ముగింపు
+      rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &init_దత్తాంశం, 0);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
       db->xAuth = xAuth;
     }
-#endif
-    if( rc==SQLITE_OK ) rc = initData.rc;
+#అయితే_ముగింపు
+    ఒకవేళ( rc==SQLITE_OK ) rc = init_దత్తాంశం.rc;
     sqlite3DbFree(db, zSql);
-#ifndef SQLITE_OMIT_ANALYZE
-    if( rc==SQLITE_OK ){
-      sqlite3AnalysisLoad(db, iDb);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ANALYZE
+    ఒకవేళ( rc==SQLITE_OK ){
+      sqlite3_Analysis_ఎక్కించు(db, iDb);
     }
-#endif
+#అయితే_ముగింపు
   }
-  assert( pDb == &(db->aDb[iDb]) );
-  if( db->mallocFailed ){
+  ప్రతిజ్ఞా( pDb == &(db->aDb[iDb]) );
+  ఒకవేళ( db->mallocFailed ){
     rc = SQLITE_NOMEM_BKPT;
-    sqlite3ResetAllSchemasOfConnection(db);
+    sqlite3_Reset_All_Schemas_యొక్క_Connection(db);
     pDb = &db->aDb[iDb];
-  }else
-  if( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
+  }లేకపోతే
+  ఒకవేళ( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
     /* Hack: If the SQLITE_NoSchemaError flag is set, then consider
     ** the schema loaded, even if errors (other than OOM) occurred. In
     ** this situation the current sqlite3_prepare() operation will fail,
@@ -421,7 +421,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
     ** The primary purpose of this is to allow access to the sqlite_schema
     ** table even when its contents have been corrupted.
     */
-    DbSetProperty(db, iDb, DB_SchemaLoaded);
+    Db_సమితి_Property(db, iDb, DB_SchemaLoaded);
     rc = SQLITE_OK;
   }
 
@@ -429,21 +429,21 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** curMain and calling sqlite3BtreeEnter(). For an error that occurs
   ** before that point, jump to error_out.
   */
-initone_error_out:
-  if( openedTransaction ){
+initone_error_బహిర్గతం:
+  ఒకవేళ( openedTransaction ){
     sqlite3BtreeCommit(pDb->pBt);
   }
   sqlite3BtreeLeave(pDb->pBt);
 
-error_out:
-  if( rc ){
-    if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+error_బహిర్గతం:
+  ఒకవేళ( rc ){
+    ఒకవేళ( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
       sqlite3OomFault(db);
     }
     sqlite3ResetOneSchema(db, iDb);
   }
   db->init.busy = 0;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -455,52 +455,52 @@ error_out:
 ** After a database is initialized, the DB_SchemaLoaded bit is set
 ** bit is set in the flags field of the Db structure. 
 */
-int sqlite3Init(sqlite3 *db, char **pzErrMsg){
-  int i, rc;
-  int commit_internal = !(db->mDbFlags&DBFLAG_SchemaChange);
+పూర్ణాంకం sqlite3Init(sqlite3 *db, అక్షరం **pz_Err_సందేశం){
+  పూర్ణాంకం i, rc;
+  పూర్ణాంకం commit_అంతర్గత = !(db->mDbFlags&DBFLAG_SchemaChange);
   
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
-  assert( db->init.busy==0 );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
+  ప్రతిజ్ఞా( db->init.busy==0 );
   ENC(db) = SCHEMA_ENC(db);
-  assert( db->nDb>0 );
+  ప్రతిజ్ఞా( db->nDb>0 );
   /* Do the main schema first */
-  if( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
-    rc = sqlite3InitOne(db, 0, pzErrMsg, 0);
-    if( rc ) return rc;
+  ఒకవేళ( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
+    rc = sqlite3InitOne(db, 0, pz_Err_సందేశం, 0);
+    ఒకవేళ( rc ) తిరిగి rc;
   }
   /* All other schemas after the main schema. The "temp" schema must be last */
-  for(i=db->nDb-1; i>0; i--){
-    assert( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
-    if( !DbHasProperty(db, i, DB_SchemaLoaded) ){
-      rc = sqlite3InitOne(db, i, pzErrMsg, 0);
-      if( rc ) return rc;
+  కొరకు(i=db->nDb-1; i>0; i--){
+    ప్రతిజ్ఞా( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
+    ఒకవేళ( !DbHasProperty(db, i, DB_SchemaLoaded) ){
+      rc = sqlite3InitOne(db, i, pz_Err_సందేశం, 0);
+      ఒకవేళ( rc ) తిరిగి rc;
     }
   }
-  if( commit_internal ){
-    sqlite3CommitInternalChanges(db);
+  ఒకవేళ( commit_అంతర్గత ){
+    sqlite3_Commit_అంతర్గత_Changes(db);
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** This routine is a no-op if the database schema is already initialized.
 ** Otherwise, the schema is loaded. An error code is returned.
 */
-int sqlite3ReadSchema(Parse *pParse){
-  int rc = SQLITE_OK;
+పూర్ణాంకం sqlite3ReadSchema(Parse *pParse){
+  పూర్ణాంకం rc = SQLITE_OK;
   sqlite3 *db = pParse->db;
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( !db->init.busy ){
-    rc = sqlite3Init(db, &pParse->zErrMsg);
-    if( rc!=SQLITE_OK ){
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  ఒకవేళ( !db->init.busy ){
+    rc = sqlite3Init(db, &pParse->z_Err_సందేశం);
+    ఒకవేళ( rc!=SQLITE_OK ){
       pParse->rc = rc;
       pParse->nErr++;
-    }else if( db->noSharedCache ){
-      db->mDbFlags |= DBFLAG_SchemaKnownOk;
+    }లేకపోతే ఒకవేళ( db->noSharedCache ){
+      db->mDbFlags |= DBFLAG_Schema_తెలిసిన_Ok;
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 
@@ -509,44 +509,44 @@ int sqlite3ReadSchema(Parse *pParse){
 ** of date set pParse->rc to SQLITE_SCHEMA.  If all schema cookies
 ** make no changes to pParse->rc.
 */
-static void schemaIsValid(Parse *pParse){
+స్థిర శూన్య schemaIsValid(Parse *pParse){
   sqlite3 *db = pParse->db;
-  int iDb;
-  int rc;
-  int cookie;
+  పూర్ణాంకం iDb;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం cookie;
 
-  assert( pParse->checkSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(iDb=0; iDb<db->nDb; iDb++){
-    int openedTransaction = 0;         /* True if a transaction is opened */
+  ప్రతిజ్ఞా( pParse->checkSchema );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  కొరకు(iDb=0; iDb<db->nDb; iDb++){
+    పూర్ణాంకం openedTransaction = 0;         /* True if a transaction is opened */
     Btree *pBt = db->aDb[iDb].pBt;     /* Btree database to read cookie from */
-    if( pBt==0 ) continue;
+    ఒకవేళ( pBt==0 ) కొనసాగు;
 
     /* If there is not already a read-only (or read-write) transaction opened
     ** on the b-tree database, open one now. If a transaction is opened, it 
     ** will be closed immediately after reading the meta-value. */
-    if( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
+    ఒకవేళ( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
       rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      ఒకవేళ( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         pParse->rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ) return;
+      ఒకవేళ( rc!=SQLITE_OK ) తిరిగి;
       openedTransaction = 1;
     }
 
     /* Read the schema cookie from the database. If it does not match the 
     ** value stored as part of the in-memory schema representation,
     ** set Parse.rc to SQLITE_SCHEMA. */
-    sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_VERSION, (u32 *)&cookie);
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
-      if( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
+    sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_సంస్కరణ, (u32 *)&cookie);
+    ప్రతిజ్ఞా( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ఒకవేళ( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
+      ఒకవేళ( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
       sqlite3ResetOneSchema(db, iDb);
     }
 
     /* Close the transaction, if one was opened. */
-    if( openedTransaction ){
+    ఒకవేళ( openedTransaction ){
       sqlite3BtreeCommit(pBt);
     }
   }
@@ -559,8 +559,8 @@ static void schemaIsValid(Parse *pParse){
 ** If the same database is attached more than once, the first
 ** attached database is returned.
 */
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
-  int i = -32768;
+పూర్ణాంకం sqlite3_Schema_గమ్యం_సూచీ(sqlite3 *db, Schema *pSchema){
+  పూర్ణాంకం i = -32768;
 
   /* If pSchema is NULL, then return -32768. This happens when code in 
   ** expr.c is trying to resolve a reference to a transient table (i.e. one
@@ -573,44 +573,44 @@ int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
   ** statements too, but it never hurts to play the odds) and
   ** -32768 will still fit into a 16-bit signed integer.
   */
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( pSchema ){
-    for(i=0; 1; i++){
-      assert( i<db->nDb );
-      if( db->aDb[i].pSchema==pSchema ){
-        break;
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
+  ఒకవేళ( pSchema ){
+    కొరకు(i=0; 1; i++){
+      ప్రతిజ్ఞా( i<db->nDb );
+      ఒకవేళ( db->aDb[i].pSchema==pSchema ){
+        ఆపు;
       }
     }
-    assert( i>=0 && i<db->nDb );
+    ప్రతిజ్ఞా( i>=0 && i<db->nDb );
   }
-  return i;
+  తిరిగి i;
 }
 
 /*
 ** Free all memory allocations in the pParse object
 */
-void sqlite3ParseObjectReset(Parse *pParse){
+శూన్య sqlite3ParseObjectReset(Parse *pParse){
   sqlite3 *db = pParse->db;
-  assert( db!=0 );
-  assert( db->pParse==pParse );
-  assert( pParse->nested==0 );
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  if( pParse->nTableLock ) sqlite3DbNNFreeNN(db, pParse->aTableLock);
-#endif
-  while( pParse->pCleanup ){
+  ప్రతిజ్ఞా( db!=0 );
+  ప్రతిజ్ఞా( db->pParse==pParse );
+  ప్రతిజ్ఞా( pParse->nested==0 );
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_SHARED_CACHE
+  ఒకవేళ( pParse->n_పట్టిక_తాళం ) sqlite3DbNNFreeNN(db, pParse->a_పట్టిక_తాళం);
+#అయితే_ముగింపు
+  అయితే( pParse->pCleanup ){
     ParseCleanup *pCleanup = pParse->pCleanup;
-    pParse->pCleanup = pCleanup->pNext;
+    pParse->pCleanup = pCleanup->p_తదుపరి;
     pCleanup->xCleanup(db, pCleanup->pPtr);
     sqlite3DbNNFreeNN(db, pCleanup);
   }
-  if( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
-  if( pParse->pConstExpr ){
-    sqlite3ExprListDelete(db, pParse->pConstExpr);
+  ఒకవేళ( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
+  ఒకవేళ( pParse->p_Const_సమాసం ){
+    sqlite3_సమాసం_List_Delete(db, pParse->p_Const_సమాసం);
   }
-  assert( db->lookaside.bDisable >= pParse->disableLookaside );
+  ప్రతిజ్ఞా( db->lookaside.bDisable >= pParse->disableLookaside );
   db->lookaside.bDisable -= pParse->disableLookaside;
   db->lookaside.sz = db->lookaside.bDisable ? 0 : db->lookaside.szTrue;
-  assert( pParse->db->pParse==pParse );
+  ప్రతిజ్ఞా( pParse->db->pParse==pParse );
   db->pParse = pParse->pOuterParse;
 }
 
@@ -642,31 +642,31 @@ void sqlite3ParseObjectReset(Parse *pParse){
 **
 **       pObj = sqlite3ParserAddCleanup(pParse, destructor, pObj);
 */
-void *sqlite3ParserAddCleanup(
+శూన్య *sqlite3_Parser_కూడు_Cleanup(
   Parse *pParse,                      /* Destroy when this Parser finishes */
-  void (*xCleanup)(sqlite3*,void*),   /* The cleanup routine */
-  void *pPtr                          /* Pointer to object to be cleaned up */
+  శూన్య (*xCleanup)(sqlite3*,శూన్య*),   /* The cleanup routine */
+  శూన్య *pPtr                          /* Pointer to object to be cleaned up */
 ){
   ParseCleanup *pCleanup;
-  if( sqlite3FaultSim(300) ){
+  ఒకవేళ( sqlite3FaultSim(300) ){
     pCleanup = 0;
     sqlite3OomFault(pParse->db);
-  }else{
-    pCleanup = sqlite3DbMallocRaw(pParse->db, sizeof(*pCleanup));
+  }లేకపోతే{
+    pCleanup = sqlite3DbMallocRaw(pParse->db, పరిమాణం(*pCleanup));
   }
-  if( pCleanup ){
-    pCleanup->pNext = pParse->pCleanup;
+  ఒకవేళ( pCleanup ){
+    pCleanup->p_తదుపరి = pParse->pCleanup;
     pParse->pCleanup = pCleanup;
     pCleanup->pPtr = pPtr;
     pCleanup->xCleanup = xCleanup;
-  }else{
+  }లేకపోతే{
     xCleanup(pParse->db, pPtr);
     pPtr = 0;
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#ఒకవేళ defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
     pParse->earlyCleanup = 1;
-#endif
+#అయితే_ముగింపు
   }
-  return pPtr;
+  తిరిగి pPtr;
 }
 
 /*
@@ -678,65 +678,65 @@ void *sqlite3ParserAddCleanup(
 ** Caution:  Do not confuse this routine with sqlite3ParseObjectInit() which
 ** is generated by Lemon.
 */
-void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
-  assert( db!=0 );
+శూన్య sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
+  ప్రతిజ్ఞా( db!=0 );
   memset(PARSE_HDR(pParse), 0, PARSE_HDR_SZ);
-  memset(PARSE_TAIL(pParse), 0, PARSE_TAIL_SZ);
-  assert( db->pParse!=pParse );
+  memset(PARSE_తోక(pParse), 0, PARSE_తోక_SZ);
+  ప్రతిజ్ఞా( db->pParse!=pParse );
   pParse->pOuterParse = db->pParse;
   db->pParse = pParse;
   pParse->db = db;
-  if( db->mallocFailed ) sqlite3ErrorMsg(pParse, "out of memory");
+  ఒకవేళ( db->mallocFailed ) sqlite3_Error_సందేశం(pParse, "out of memory");
 }
 
 /*
 ** Maximum number of times that we will try again to prepare a statement
 ** that returns SQLITE_ERROR_RETRY.
 */
-#ifndef SQLITE_MAX_PREPARE_RETRY
+#నిర్వచితం_కాకపోతే SQLITE_MAX_PREPARE_RETRY
 # define SQLITE_MAX_PREPARE_RETRY 25
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Compile the UTF-8 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare(
+స్థిర పూర్ణాంకం sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc = SQLITE_OK;       /* Result code */
-  int i;                    /* Loop counter */
+  పూర్ణాంకం rc = SQLITE_OK;       /* Result code */
+  పూర్ణాంకం i;                    /* Loop counter */
   Parse sParse;             /* Parsing context */
 
   /* sqlite3ParseObjectInit(&sParse, db); // inlined for performance */
   memset(PARSE_HDR(&sParse), 0, PARSE_HDR_SZ);
-  memset(PARSE_TAIL(&sParse), 0, PARSE_TAIL_SZ);
+  memset(PARSE_తోక(&sParse), 0, PARSE_తోక_SZ);
   sParse.pOuterParse = db->pParse;
   db->pParse = &sParse;
   sParse.db = db;
-  if( pReprepare ){
+  ఒకవేళ( pReprepare ){
     sParse.pReprepare = pReprepare;
     sParse.explain = sqlite3_stmt_isexplain((sqlite3_stmt*)pReprepare);
-  }else{
-    assert( sParse.pReprepare==0 );
+  }లేకపోతే{
+    ప్రతిజ్ఞా( sParse.pReprepare==0 );
   }
-  assert( ppStmt && *ppStmt==0 );
-  if( db->mallocFailed ){
-    sqlite3ErrorMsg(&sParse, "out of memory");
-    db->errCode = rc = SQLITE_NOMEM;
-    goto end_prepare;
+  ప్రతిజ్ఞా( ppStmt && *ppStmt==0 );
+  ఒకవేళ( db->mallocFailed ){
+    sqlite3_Error_సందేశం(&sParse, "out of memory");
+    db->err_సంకేతం = rc = SQLITE_NOMEM;
+    వెళ్ళు చివర_prepare;
   }
-  assert( sqlite3_mutex_held(db->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
 
   /* For a long-term use prepared statement avoid the use of
   ** lookaside memory.
   */
-  if( prepFlags & SQLITE_PREPARE_PERSISTENT ){
+  ఒకవేళ( prepFlags & SQLITE_PREPARE_PERSISTENT ){
     sParse.disableLookaside++;
     DisableLookaside;
   }
@@ -765,77 +765,77 @@ static int sqlite3Prepare(
   ** but it does *not* override schema lock detection, so this all still
   ** works even if READ_UNCOMMITTED is set.
   */
-  if( !db->noSharedCache ){
-    for(i=0; i<db->nDb; i++) {
+  ఒకవేళ( !db->noSharedCache ){
+    కొరకు(i=0; i<db->nDb; i++) {
       Btree *pBt = db->aDb[i].pBt;
-      if( pBt ){
-        assert( sqlite3BtreeHoldsMutex(pBt) );
+      ఒకవేళ( pBt ){
+        ప్రతిజ్ఞా( sqlite3BtreeHoldsMutex(pBt) );
         rc = sqlite3BtreeSchemaLocked(pBt);
-        if( rc ){
-          const char *zDb = db->aDb[i].zDbSName;
-          sqlite3ErrorWithMsg(db, rc, "database schema is locked: %s", zDb);
+        ఒకవేళ( rc ){
+          స్థిరరాశి అక్షరం *zDb = db->aDb[i].zDbSName;
+          sqlite3_Error_With_సందేశం(db, rc, "database schema is locked: %s", zDb);
           testcase( db->flags & SQLITE_ReadUncommit );
-          goto end_prepare;
+          వెళ్ళు చివర_prepare;
         }
       }
     }
   }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( db->pDisconnect ) sqlite3VtabUnlockList(db);
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  ఒకవేళ( db->pDisconnect ) sqlite3VtabUnlockList(db);
+#అయితే_ముగింపు
 
-  if( nBytes>=0 && (nBytes==0 || zSql[nBytes-1]!=0) ){
-    char *zSqlCopy;
-    int mxLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
-    testcase( nBytes==mxLen );
-    testcase( nBytes==mxLen+1 );
-    if( nBytes>mxLen ){
-      sqlite3ErrorWithMsg(db, SQLITE_TOOBIG, "statement too long");
+  ఒకవేళ( n_బైట్లు>=0 && (n_బైట్లు==0 || zSql[n_బైట్లు-1]!=0) ){
+    అక్షరం *zSqlCopy;
+    పూర్ణాంకం mxLen = db->a_హద్దు[SQLITE_హద్దు_SQL_నిడివి];
+    testcase( n_బైట్లు==mxLen );
+    testcase( n_బైట్లు==mxLen+1 );
+    ఒకవేళ( n_బైట్లు>mxLen ){
+      sqlite3_Error_With_సందేశం(db, SQLITE_TOOBIG, "statement too long");
       rc = sqlite3ApiExit(db, SQLITE_TOOBIG);
-      goto end_prepare;
+      వెళ్ళు చివర_prepare;
     }
-    zSqlCopy = sqlite3DbStrNDup(db, zSql, nBytes);
-    if( zSqlCopy ){
-      sqlite3RunParser(&sParse, zSqlCopy);
-      sParse.zTail = &zSql[sParse.zTail-zSqlCopy];
+    zSqlCopy = sqlite3DbStrNDup(db, zSql, n_బైట్లు);
+    ఒకవేళ( zSqlCopy ){
+      sqlite3_నిరంతరం_Parser(&sParse, zSqlCopy);
+      sParse.z_తోక = &zSql[sParse.z_తోక-zSqlCopy];
       sqlite3DbFree(db, zSqlCopy);
-    }else{
-      sParse.zTail = &zSql[nBytes];
+    }లేకపోతే{
+      sParse.z_తోక = &zSql[n_బైట్లు];
     }
-  }else{
-    sqlite3RunParser(&sParse, zSql);
+  }లేకపోతే{
+    sqlite3_నిరంతరం_Parser(&sParse, zSql);
   }
-  assert( 0==sParse.nQueryLoop );
+  ప్రతిజ్ఞా( 0==sParse.nQueryLoop );
 
-  if( pzTail ){
-    *pzTail = sParse.zTail;
+  ఒకవేళ( pz_తోక ){
+    *pz_తోక = sParse.z_తోక;
   }
 
-  if( db->init.busy==0 ){
-    sqlite3VdbeSetSql(sParse.pVdbe, zSql, (int)(sParse.zTail-zSql), prepFlags);
+  ఒకవేళ( db->init.busy==0 ){
+    sqlite3_Vdbe_సమితి_Sql(sParse.pVdbe, zSql, (పూర్ణాంకం)(sParse.z_తోక-zSql), prepFlags);
   }
-  if( db->mallocFailed ){
+  ఒకవేళ( db->mallocFailed ){
     sParse.rc = SQLITE_NOMEM_BKPT;
     sParse.checkSchema = 0;
   }
-  if( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_DONE ){
-    if( sParse.checkSchema && db->init.busy==0 ){
+  ఒకవేళ( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_పూర్తి ){
+    ఒకవేళ( sParse.checkSchema && db->init.busy==0 ){
       schemaIsValid(&sParse);
     }
-    if( sParse.pVdbe ){
+    ఒకవేళ( sParse.pVdbe ){
       sqlite3VdbeFinalize(sParse.pVdbe);
     }
-    assert( 0==(*ppStmt) );
+    ప్రతిజ్ఞా( 0==(*ppStmt) );
     rc = sParse.rc;
-    if( sParse.zErrMsg ){
-      sqlite3ErrorWithMsg(db, rc, "%s", sParse.zErrMsg);
-      sqlite3DbFree(db, sParse.zErrMsg);
-    }else{
+    ఒకవేళ( sParse.z_Err_సందేశం ){
+      sqlite3_Error_With_సందేశం(db, rc, "%s", sParse.z_Err_సందేశం);
+      sqlite3DbFree(db, sParse.z_Err_సందేశం);
+    }లేకపోతే{
       sqlite3Error(db, rc);
     }
-  }else{
-    assert( sParse.zErrMsg==0 );
+  }లేకపోతే{
+    ప్రతిజ్ఞా( sParse.z_Err_సందేశం==0 );
     *ppStmt = (sqlite3_stmt*)sParse.pVdbe;
     rc = SQLITE_OK;
     sqlite3ErrorClear(db);
@@ -843,56 +843,56 @@ static int sqlite3Prepare(
 
 
   /* Delete any TriggerPrg structures allocated while parsing this statement. */
-  while( sParse.pTriggerPrg ){
+  అయితే( sParse.pTriggerPrg ){
     TriggerPrg *pT = sParse.pTriggerPrg;
-    sParse.pTriggerPrg = pT->pNext;
+    sParse.pTriggerPrg = pT->p_తదుపరి;
     sqlite3DbFree(db, pT);
   }
 
-end_prepare:
+చివర_prepare:
 
   sqlite3ParseObjectReset(&sParse);
-  return rc;
+  తిరిగి rc;
 }
-static int sqlite3LockAndPrepare(
+స్థిర పూర్ణాంకం sqlite3_తాళం_And_Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pOld,               /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
-  int cnt = 0;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం cnt = 0;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( ppStmt==0 ) తిరిగి SQLITE_MISUSE_BKPT;
+#అయితే_ముగింపు
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ఒకవేళ( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    తిరిగి SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  do{
+  చేయి{
     /* Make multiple attempts to compile the SQL, until it either succeeds
     ** or encounters a permanent error.  A schema problem after one schema
     ** reset is considered a permanent error. */
-    rc = sqlite3Prepare(db, zSql, nBytes, prepFlags, pOld, ppStmt, pzTail);
-    assert( rc==SQLITE_OK || *ppStmt==0 );
-    if( rc==SQLITE_OK || db->mallocFailed ) break;
+    rc = sqlite3Prepare(db, zSql, n_బైట్లు, prepFlags, pOld, ppStmt, pz_తోక);
+    ప్రతిజ్ఞా( rc==SQLITE_OK || *ppStmt==0 );
+    ఒకవేళ( rc==SQLITE_OK || db->mallocFailed ) ఆపు;
     cnt++;
-  }while( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
+  }అయితే( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
        || (rc==SQLITE_SCHEMA && (sqlite3ResetOneSchema(db,-1), cnt)==1) );
   sqlite3BtreeLeaveAll(db);
-  assert( rc!=SQLITE_ERROR_RETRY );
+  ప్రతిజ్ఞా( rc!=SQLITE_ERROR_RETRY );
   rc = sqlite3ApiExit(db, rc);
-  assert( (rc&db->errMask)==rc );
+  ప్రతిజ్ఞా( (rc&db->err_ముసుగు)==rc );
   db->busyHandler.nBusy = 0;
   sqlite3_mutex_leave(db->mutex);
-  assert( rc==SQLITE_OK || (*ppStmt)==0 );
-  return rc;
+  ప్రతిజ్ఞా( rc==SQLITE_OK || (*ppStmt)==0 );
+  తిరిగి rc;
 }
 
 
@@ -904,34 +904,34 @@ static int sqlite3LockAndPrepare(
 ** locked the sqlite3_schema table, return SQLITE_LOCKED. If any other error
 ** occurs, return SQLITE_SCHEMA.
 */
-int sqlite3Reprepare(Vdbe *p){
-  int rc;
+పూర్ణాంకం sqlite3Reprepare(Vdbe *p){
+  పూర్ణాంకం rc;
   sqlite3_stmt *pNew;
-  const char *zSql;
+  స్థిరరాశి అక్షరం *zSql;
   sqlite3 *db;
   u8 prepFlags;
 
-  assert( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
   zSql = sqlite3_sql((sqlite3_stmt *)p);
-  assert( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
+  ప్రతిజ్ఞా( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
   db = sqlite3VdbeDb(p);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(db->mutex) );
   prepFlags = sqlite3VdbePrepareFlags(p);
-  rc = sqlite3LockAndPrepare(db, zSql, -1, prepFlags, p, &pNew, 0);
-  if( rc ){
-    if( rc==SQLITE_NOMEM ){
+  rc = sqlite3_తాళం_And_Prepare(db, zSql, -1, prepFlags, p, &pNew, 0);
+  ఒకవేళ( rc ){
+    ఒకవేళ( rc==SQLITE_NOMEM ){
       sqlite3OomFault(db);
     }
-    assert( pNew==0 );
-    return rc;
-  }else{
-    assert( pNew!=0 );
+    ప్రతిజ్ఞా( pNew==0 );
+    తిరిగి rc;
+  }లేకపోతే{
+    ప్రతిజ్ఞా( pNew!=0 );
   }
-  sqlite3VdbeSwap((Vdbe*)pNew, p);
+  sqlite3_Vdbe_మార్పిడి((Vdbe*)pNew, p);
   sqlite3TransferBindings(pNew, (sqlite3_stmt*)p);
-  sqlite3VdbeResetStepResult((Vdbe*)pNew);
+  sqlite3_Vdbe_Reset_అడుగు_ఫలితం((Vdbe*)pNew);
   sqlite3VdbeFinalize((Vdbe*)pNew);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 
@@ -943,45 +943,45 @@ int sqlite3Reprepare(Vdbe *p){
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare(
+పూర్ణాంకం sqlite3_prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,0,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  పూర్ణాంకం rc;
+  rc = sqlite3_తాళం_And_Prepare(db,zSql,n_బైట్లు,0,0,ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  తిరిగి rc;
 }
-int sqlite3_prepare_v2(
+పూర్ణాంకం sqlite3_prepare_v2(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
+  పూర్ణాంకం rc;
   /* EVIDENCE-OF: R-37923-12173 The sqlite3_prepare_v2() interface works
   ** exactly the same as sqlite3_prepare_v3() with a zero prepFlags
   ** parameter.
   **
   ** Proof in that the 5th parameter to sqlite3LockAndPrepare is 0 */
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,SQLITE_PREPARE_SAVESQL,0,
-                             ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  rc = sqlite3_తాళం_And_Prepare(db,zSql,n_బైట్లు,SQLITE_PREPARE_SAVESQL,0,
+                             ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  తిరిగి rc;
 }
-int sqlite3_prepare_v3(
+పూర్ణాంకం sqlite3_prepare_v3(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  స్థిరరాశి అక్షరం *zSql,         /* UTF-8 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
+  గుర్తులేని పూర్ణాంకం prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి అక్షరం **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
+  పూర్ణాంకం rc;
   /* EVIDENCE-OF: R-56861-42673 sqlite3_prepare_v3() differs from
   ** sqlite3_prepare_v2() only in having the extra prepFlags parameter,
   ** which is a bit array consisting of zero or more of the
@@ -989,40 +989,40 @@ int sqlite3_prepare_v3(
   **
   ** Proof by comparison to the implementation of sqlite3_prepare_v2()
   ** directly above. */
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,
-                 SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
-                 0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  rc = sqlite3_తాళం_And_Prepare(db,zSql,n_బైట్లు,
+                 SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_ముసుగు),
+                 0,ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  తిరిగి rc;
 }
 
 
-#ifndef SQLITE_OMIT_UTF16
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_UTF16
 /*
 ** Compile the UTF-16 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare16(
+స్థిర పూర్ణాంకం sqlite3Prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి శూన్య *zSql,         /* UTF-16 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి శూన్య **pz_తోక       /* OUT: End of parsed string */
 ){
   /* This function currently works by first transforming the UTF-16
   ** encoded string to UTF-8, then invoking sqlite3_prepare(). The
   ** tricky bit is figuring out the pointer to return in *pzTail.
   */
-  char *zSql8;
-  const char *zTail8 = 0;
-  int rc = SQLITE_OK;
+  అక్షరం *zSql8;
+  స్థిరరాశి అక్షరం *zTail8 = 0;
+  పూర్ణాంకం rc = SQLITE_OK;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( ppStmt==0 ) తిరిగి SQLITE_MISUSE_BKPT;
+#అయితే_ముగింపు
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ఒకవేళ( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    తిరిగి SQLITE_MISUSE_BKPT;
   }
 
   /* Make sure nBytes is non-negative and correct.  It should be the
@@ -1030,37 +1030,37 @@ static int sqlite3Prepare16(
   ** U+0000 character.  If the input nBytes is odd, convert it into
   ** an even number.  If the input nBytes is negative, then the input
   ** must be terminated by at least one U+0000 character */
-  if( nBytes>=0 ){
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; sz<nBytes && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
-    nBytes = sz;
-  }else{
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
-    nBytes = sz;
+  ఒకవేళ( n_బైట్లు>=0 ){
+    పూర్ణాంకం sz;
+    స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)zSql;
+    కొరకు(sz=0; sz<n_బైట్లు && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
+    n_బైట్లు = sz;
+  }లేకపోతే{
+    పూర్ణాంకం sz;
+    స్థిరరాశి అక్షరం *z = (స్థిరరాశి అక్షరం*)zSql;
+    కొరకు(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
+    n_బైట్లు = sz;
   }
 
   sqlite3_mutex_enter(db->mutex);
-  zSql8 = sqlite3Utf16to8(db, zSql, nBytes, SQLITE_UTF16NATIVE);
-  if( zSql8 ){
-    rc = sqlite3LockAndPrepare(db, zSql8, -1, prepFlags, 0, ppStmt, &zTail8);
+  zSql8 = sqlite3Utf16to8(db, zSql, n_బైట్లు, SQLITE_UTF16NATIVE);
+  ఒకవేళ( zSql8 ){
+    rc = sqlite3_తాళం_And_Prepare(db, zSql8, -1, prepFlags, 0, ppStmt, &zTail8);
   }
 
-  if( zTail8 && pzTail ){
+  ఒకవేళ( zTail8 && pz_తోక ){
     /* If sqlite3_prepare returns a tail pointer, we calculate the
     ** equivalent pointer into the UTF-16 string by counting the unicode
     ** characters between zSql8 and zTail8, and then returning a pointer
     ** the same number of characters into the UTF-16 string.
     */
-    int chars_parsed = sqlite3Utf8CharLen(zSql8, (int)(zTail8-zSql8));
-    *pzTail = (u8 *)zSql + sqlite3Utf16ByteLen(zSql, nBytes, chars_parsed);
+    పూర్ణాంకం chars_parsed = sqlite3Utf8CharLen(zSql8, (పూర్ణాంకం)(zTail8-zSql8));
+    *pz_తోక = (u8 *)zSql + sqlite3Utf16ByteLen(zSql, n_బైట్లు, chars_parsed);
   }
   sqlite3DbFree(db, zSql8); 
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -1071,44 +1071,44 @@ static int sqlite3Prepare16(
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare16(
+పూర్ణాంకం sqlite3_prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి శూన్య *zSql,         /* UTF-16 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి శూన్య **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  పూర్ణాంకం rc;
+  rc = sqlite3Prepare16(db,zSql,n_బైట్లు&~1,0,ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  తిరిగి rc;
 }
-int sqlite3_prepare16_v2(
+పూర్ణాంకం sqlite3_prepare16_v2(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  స్థిరరాశి శూన్య *zSql,         /* UTF-16 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి శూన్య **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,SQLITE_PREPARE_SAVESQL,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  పూర్ణాంకం rc;
+  rc = sqlite3Prepare16(db,zSql,n_బైట్లు&~1,SQLITE_PREPARE_SAVESQL,ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  తిరిగి rc;
 }
-int sqlite3_prepare16_v3(
+పూర్ణాంకం sqlite3_prepare16_v3(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  స్థిరరాశి శూన్య *zSql,         /* UTF-16 encoded SQL statement. */
+  పూర్ణాంకం n_బైట్లు,               /* Length of zSql in bytes. */
+  గుర్తులేని పూర్ణాంకం prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  స్థిరరాశి శూన్య **pz_తోక       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,
-         SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
-         ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  పూర్ణాంకం rc;
+  rc = sqlite3Prepare16(db,zSql,n_బైట్లు&~1,
+         SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_ముసుగు),
+         ppStmt,pz_తోక);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  తిరిగి rc;
 }
 
-#endif /* SQLITE_OMIT_UTF16 */
+#అయితే_ముగింపు /* SQLITE_OMIT_UTF16 */

@@ -12,18 +12,18 @@
 ** This is the implementation of generic hash-tables
 ** used in SQLite.
 */
-#include "sqliteInt.h"
-#include <assert.h>
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ <assert.h>
 
 /* Turn bulk memory into a hash table object by initializing the
 ** fields of the Hash structure.
 **
 ** "pNew" is a pointer to the hash table that is to be initialized.
 */
-void sqlite3HashInit(Hash *pNew){
-  assert( pNew!=0 );
-  pNew->first = 0;
-  pNew->count = 0;
+శూన్య sqlite3HashInit(Hash *pNew){
+  ప్రతిజ్ఞా( pNew!=0 );
+  pNew->మొదటి = 0;
+  pNew->లెక్క = 0;
   pNew->htsize = 0;
   pNew->ht = 0;
 }
@@ -32,29 +32,29 @@ void sqlite3HashInit(Hash *pNew){
 ** Call this routine to delete a hash table or to reset a hash table
 ** to the empty state.
 */
-void sqlite3HashClear(Hash *pH){
+శూన్య sqlite3HashClear(Hash *pH){
   HashElem *elem;         /* For looping over all elements of the table */
 
-  assert( pH!=0 );
-  elem = pH->first;
-  pH->first = 0;
+  ప్రతిజ్ఞా( pH!=0 );
+  elem = pH->మొదటి;
+  pH->మొదటి = 0;
   sqlite3_free(pH->ht);
   pH->ht = 0;
   pH->htsize = 0;
-  while( elem ){
-    HashElem *next_elem = elem->next;
+  అయితే( elem ){
+    HashElem *తదుపరి_elem = elem->తదుపరి;
     sqlite3_free(elem);
-    elem = next_elem;
+    elem = తదుపరి_elem;
   }
-  pH->count = 0;
+  pH->లెక్క = 0;
 }
 
 /*
 ** The hashing function.
 */
-static unsigned int strHash(const char *z){
-  unsigned int h = 0;
-  while( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
+స్థిర గుర్తులేని పూర్ణాంకం strHash(స్థిరరాశి అక్షరం *z){
+  గుర్తులేని పూర్ణాంకం h = 0;
+  అయితే( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
     /* Knuth multiplicative hashing.  (Sorting & Searching, p. 510).
     ** 0x9e3779b1 is 2654435761 which is the closest prime number to
     ** (2**32)*golden_ratio, where golden_ratio = (sqrt(5) - 1)/2.
@@ -62,44 +62,44 @@ static unsigned int strHash(const char *z){
     ** Only bits 0xdf for ASCII and bits 0xbf for EBCDIC each octet are
     ** hashed since the omitted bits determine the upper/lower case difference.
     */
-#ifdef SQLITE_EBCDIC
-    h += 0xbf & (unsigned char)*(z++);
-#else
-    h += 0xdf & (unsigned char)*(z++);
-#endif
+#నిర్వచితమైతే SQLITE_EBCDIC
+    h += 0xbf & (గుర్తులేని అక్షరం)*(z++);
+#లేకపోతే
+    h += 0xdf & (గుర్తులేని అక్షరం)*(z++);
+#అయితే_ముగింపు
     h *= 0x9e3779b1;
   }
-  return h;
+  తిరిగి h;
 }
 
 
 /* Link pNew element into the hash table pH.  If pEntry!=0 then also
 ** insert pNew into the pEntry hash bucket.
 */
-static void insertElement(
+స్థిర శూన్య చొప్పించు_Element(
   Hash *pH,              /* The complete hash table */
-  struct _ht *pEntry,    /* The entry into which pNew is inserted */
+  నిర్మాణం _ht *p_నమోదు,    /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
 ){
-  HashElem *pHead;       /* First element already in pEntry */
-  if( pEntry ){
-    pHead = pEntry->count ? pEntry->chain : 0;
-    pEntry->count++;
-    pEntry->chain = pNew;
-  }else{
-    pHead = 0;
+  HashElem *p_తల;       /* First element already in pEntry */
+  ఒకవేళ( p_నమోదు ){
+    p_తల = p_నమోదు->లెక్క ? p_నమోదు->chain : 0;
+    p_నమోదు->లెక్క++;
+    p_నమోదు->chain = pNew;
+  }లేకపోతే{
+    p_తల = 0;
   }
-  if( pHead ){
-    pNew->next = pHead;
-    pNew->prev = pHead->prev;
-    if( pHead->prev ){ pHead->prev->next = pNew; }
-    else             { pH->first = pNew; }
-    pHead->prev = pNew;
-  }else{
-    pNew->next = pH->first;
-    if( pH->first ){ pH->first->prev = pNew; }
+  ఒకవేళ( p_తల ){
+    pNew->తదుపరి = p_తల;
+    pNew->prev = p_తల->prev;
+    ఒకవేళ( p_తల->prev ){ p_తల->prev->తదుపరి = pNew; }
+    లేకపోతే             { pH->మొదటి = pNew; }
+    p_తల->prev = pNew;
+  }లేకపోతే{
+    pNew->తదుపరి = pH->మొదటి;
+    ఒకవేళ( pH->మొదటి ){ pH->మొదటి->prev = pNew; }
     pNew->prev = 0;
-    pH->first = pNew;
+    pH->మొదటి = pNew;
   }
 }
 
@@ -110,16 +110,16 @@ static void insertElement(
 ** if the new size is the same as the prior size.
 ** Return TRUE if the resize occurs and false if not.
 */
-static int rehash(Hash *pH, unsigned int new_size){
-  struct _ht *new_ht;            /* The new hash table */
-  HashElem *elem, *next_elem;    /* For looping over existing elements */
+స్థిర పూర్ణాంకం rehash(Hash *pH, గుర్తులేని పూర్ణాంకం new_కొలత){
+  నిర్మాణం _ht *new_ht;            /* The new hash table */
+  HashElem *elem, *తదుపరి_elem;    /* For looping over existing elements */
 
-#if SQLITE_MALLOC_SOFT_LIMIT>0
-  if( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
-    new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(struct _ht);
+#ఒకవేళ SQLITE_MALLOC_SOFT_హద్దు>0
+  ఒకవేళ( new_కొలత*పరిమాణం(నిర్మాణం _ht)>SQLITE_MALLOC_SOFT_హద్దు ){
+    new_కొలత = SQLITE_MALLOC_SOFT_హద్దు/పరిమాణం(నిర్మాణం _ht);
   }
-  if( new_size==pH->htsize ) return 0;
-#endif
+  ఒకవేళ( new_కొలత==pH->htsize ) తిరిగి 0;
+#అయితే_ముగింపు
 
   /* The inability to allocates space for a larger hash table is
   ** a performance hit but it is not a fatal error.  So mark the
@@ -130,19 +130,19 @@ static int rehash(Hash *pH, unsigned int new_size){
   ** may be larger than the requested amount).
   */
   sqlite3BeginBenignMalloc();
-  new_ht = (struct _ht *)sqlite3Malloc( new_size*sizeof(struct _ht) );
-  sqlite3EndBenignMalloc();
+  new_ht = (నిర్మాణం _ht *)sqlite3Malloc( new_కొలత*పరిమాణం(నిర్మాణం _ht) );
+  sqlite3_చివర_Benign_Malloc();
 
-  if( new_ht==0 ) return 0;
+  ఒకవేళ( new_ht==0 ) తిరిగి 0;
   sqlite3_free(pH->ht);
   pH->ht = new_ht;
-  pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(struct _ht);
-  memset(new_ht, 0, new_size*sizeof(struct _ht));
-  for(elem=pH->first, pH->first=0; elem; elem = next_elem){
-    next_elem = elem->next;
-    insertElement(pH, &new_ht[elem->h % new_size], elem);
+  pH->htsize = new_కొలత = sqlite3_Malloc_కొలత(new_ht)/పరిమాణం(నిర్మాణం _ht);
+  memset(new_ht, 0, new_కొలత*పరిమాణం(నిర్మాణం _ht));
+  కొరకు(elem=pH->మొదటి, pH->మొదటి=0; elem; elem = తదుపరి_elem){
+    తదుపరి_elem = elem->తదుపరి;
+    చొప్పించు_Element(pH, &new_ht[elem->h % new_కొలత], elem);
   }
-  return 1;
+  తిరిగి 1;
 }
 
 /* This function (for internal use only) locates an element in an
@@ -150,67 +150,67 @@ static int rehash(Hash *pH, unsigned int new_size){
 ** a pointer to a static null element with HashElem.data==0 is returned.
 ** If pH is not NULL, then the hash for this key is written to *pH.
 */
-static HashElem *findElementWithHash(
-  const Hash *pH,     /* The pH to be searched */
-  const char *pKey,   /* The key we are searching for */
-  unsigned int *pHash /* Write the hash value here */
+స్థిర HashElem *కనుగొను_Element_With_Hash(
+  స్థిరరాశి Hash *pH,     /* The pH to be searched */
+  స్థిరరాశి అక్షరం *p_కీలకం,   /* The key we are searching for */
+  గుర్తులేని పూర్ణాంకం *pHash /* Write the hash value here */
 ){
   HashElem *elem;                /* Used to loop thru the element list */
-  unsigned int count;            /* Number of elements left to test */
-  unsigned int h;                /* The computed hash */
-  static HashElem nullElement = { 0, 0, 0, 0, 0 };
+  గుర్తులేని పూర్ణాంకం లెక్క;            /* Number of elements left to test */
+  గుర్తులేని పూర్ణాంకం h;                /* The computed hash */
+  స్థిర HashElem nullElement = { 0, 0, 0, 0, 0 };
 
-  h = strHash(pKey);
-  if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
-    struct _ht *pEntry;
-    pEntry = &pH->ht[h % pH->htsize];
-    elem = pEntry->chain;
-    count = pEntry->count;
-  }else{
-    elem = pH->first;
-    count = pH->count;
+  h = strHash(p_కీలకం);
+  ఒకవేళ( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
+    నిర్మాణం _ht *p_నమోదు;
+    p_నమోదు = &pH->ht[h % pH->htsize];
+    elem = p_నమోదు->chain;
+    లెక్క = p_నమోదు->లెక్క;
+  }లేకపోతే{
+    elem = pH->మొదటి;
+    లెక్క = pH->లెక్క;
   }
-  if( pHash ) *pHash = h;
-  while( count ){
-    assert( elem!=0 );
-    if( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
-      return elem;
+  ఒకవేళ( pHash ) *pHash = h;
+  అయితే( లెక్క ){
+    ప్రతిజ్ఞా( elem!=0 );
+    ఒకవేళ( h==elem->h && sqlite3StrICmp(elem->p_కీలకం,p_కీలకం)==0 ){ 
+      తిరిగి elem;
     }
-    elem = elem->next;
-    count--;
+    elem = elem->తదుపరి;
+    లెక్క--;
   }
-  return &nullElement;
+  తిరిగి &nullElement;
 }
 
 /* Remove a single entry from the hash table given a pointer to that
 ** element and a hash on the element's key.
 */
-static void removeElement(
+స్థిర శూన్య removeElement(
   Hash *pH,         /* The pH containing "elem" */
   HashElem *elem    /* The element to be removed from the pH */
 ){
-  struct _ht *pEntry;
-  if( elem->prev ){
-    elem->prev->next = elem->next; 
-  }else{
-    pH->first = elem->next;
+  నిర్మాణం _ht *p_నమోదు;
+  ఒకవేళ( elem->prev ){
+    elem->prev->తదుపరి = elem->తదుపరి; 
+  }లేకపోతే{
+    pH->మొదటి = elem->తదుపరి;
   }
-  if( elem->next ){
-    elem->next->prev = elem->prev;
+  ఒకవేళ( elem->తదుపరి ){
+    elem->తదుపరి->prev = elem->prev;
   }
-  if( pH->ht ){
-    pEntry = &pH->ht[elem->h % pH->htsize];
-    if( pEntry->chain==elem ){
-      pEntry->chain = elem->next;
+  ఒకవేళ( pH->ht ){
+    p_నమోదు = &pH->ht[elem->h % pH->htsize];
+    ఒకవేళ( p_నమోదు->chain==elem ){
+      p_నమోదు->chain = elem->తదుపరి;
     }
-    assert( pEntry->count>0 );
-    pEntry->count--;
+    ప్రతిజ్ఞా( p_నమోదు->లెక్క>0 );
+    p_నమోదు->లెక్క--;
   }
   sqlite3_free( elem );
-  pH->count--;
-  if( pH->count==0 ){
-    assert( pH->first==0 );
-    assert( pH->count==0 );
+  pH->లెక్క--;
+  ఒకవేళ( pH->లెక్క==0 ){
+    ప్రతిజ్ఞా( pH->మొదటి==0 );
+    ప్రతిజ్ఞా( pH->లెక్క==0 );
     sqlite3HashClear(pH);
   }
 }
@@ -219,10 +219,10 @@ static void removeElement(
 ** that matches pKey.  Return the data for this element if it is
 ** found, or NULL if there is no match.
 */
-void *sqlite3HashFind(const Hash *pH, const char *pKey){
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  return findElementWithHash(pH, pKey, 0)->data;
+శూన్య *sqlite3_Hash_కనుగొను(స్థిరరాశి Hash *pH, స్థిరరాశి అక్షరం *p_కీలకం){
+  ప్రతిజ్ఞా( pH!=0 );
+  ప్రతిజ్ఞా( p_కీలకం!=0 );
+  తిరిగి కనుగొను_Element_With_Hash(pH, p_కీలకం, 0)->దత్తాంశం;
 }
 
 /* Insert an element into the hash table pH.  The key is pKey
@@ -239,35 +239,35 @@ void *sqlite3HashFind(const Hash *pH, const char *pKey){
 ** If the "data" parameter to this function is NULL, then the
 ** element corresponding to "key" is removed from the hash table.
 */
-void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
-  unsigned int h;       /* the hash of the key modulo hash table size */
+శూన్య *sqlite3_Hash_చొప్పించు(Hash *pH, స్థిరరాశి అక్షరం *p_కీలకం, శూన్య *దత్తాంశం){
+  గుర్తులేని పూర్ణాంకం h;       /* the hash of the key modulo hash table size */
   HashElem *elem;       /* Used to loop thru the element list */
   HashElem *new_elem;   /* New element added to the pH */
 
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  elem = findElementWithHash(pH,pKey,&h);
-  if( elem->data ){
-    void *old_data = elem->data;
-    if( data==0 ){
+  ప్రతిజ్ఞా( pH!=0 );
+  ప్రతిజ్ఞా( p_కీలకం!=0 );
+  elem = కనుగొను_Element_With_Hash(pH,p_కీలకం,&h);
+  ఒకవేళ( elem->దత్తాంశం ){
+    శూన్య *old_దత్తాంశం = elem->దత్తాంశం;
+    ఒకవేళ( దత్తాంశం==0 ){
       removeElement(pH,elem);
-    }else{
-      elem->data = data;
-      elem->pKey = pKey;
+    }లేకపోతే{
+      elem->దత్తాంశం = దత్తాంశం;
+      elem->p_కీలకం = p_కీలకం;
     }
-    return old_data;
+    తిరిగి old_దత్తాంశం;
   }
-  if( data==0 ) return 0;
-  new_elem = (HashElem*)sqlite3Malloc( sizeof(HashElem) );
-  if( new_elem==0 ) return data;
-  new_elem->pKey = pKey;
+  ఒకవేళ( దత్తాంశం==0 ) తిరిగి 0;
+  new_elem = (HashElem*)sqlite3Malloc( పరిమాణం(HashElem) );
+  ఒకవేళ( new_elem==0 ) తిరిగి దత్తాంశం;
+  new_elem->p_కీలకం = p_కీలకం;
   new_elem->h = h;
-  new_elem->data = data;
-  pH->count++;
-  if( pH->count>=5 && pH->count > 2*pH->htsize ){
-    rehash(pH, pH->count*3);
+  new_elem->దత్తాంశం = దత్తాంశం;
+  pH->లెక్క++;
+  ఒకవేళ( pH->లెక్క>=5 && pH->లెక్క > 2*pH->htsize ){
+    rehash(pH, pH->లెక్క*3);
   }
-  insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
-  return 0;
+  చొప్పించు_Element(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
+  తిరిగి 0;
 }
 

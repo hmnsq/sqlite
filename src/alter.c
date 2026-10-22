@@ -12,13 +12,13 @@
 ** This file contains C code routines that used to generate VDBE code
 ** that implements the ALTER TABLE command.
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** The code in this file only exists if we are not omitting the
 ** ALTER TABLE logic from the build.
 */
-#ifndef SQLITE_OMIT_ALTERTABLE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ALTERTABLE
 
 /*
 ** Parameter zName is the name of a table that is about to be altered
@@ -28,19 +28,19 @@
 **
 ** Or, if zName is not a system table, zero is returned.
 */
-static int isAlterableTable(Parse *pParse, Table *pTab){
-  if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7)
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+స్థిర పూర్ణాంకం is_Alterable_పట్టిక(Parse *pParse, పట్టిక *pTab){
+  ఒకవేళ( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7)
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
    || (pTab->tabFlags & TF_Eponymous)!=0
    || ( (pTab->tabFlags & TF_Shadow)!=0
         && sqlite3ReadOnlyShadowTables(pParse->db)
    )
-#endif
+#అయితే_ముగింపు
   ){
-    sqlite3ErrorMsg(pParse, "table %s may not be altered", pTab->zName);
-    return 1;
+    sqlite3_Error_సందేశం(pParse, "table %s may not be altered", pTab->zName);
+    తిరిగి 1;
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -50,28 +50,28 @@ static int isAlterableTable(Parse *pParse, Table *pTab){
 ** statement to ensure that the operation has not rendered any schema
 ** objects unusable.
 */
-static void renameTestSchema(
+స్థిర శూన్య renameTestSchema(
   Parse *pParse,                  /* Parse context */
-  const char *zDb,                /* Name of db to verify schema of */
-  int bTemp,                      /* True if this is the temp db */
-  const char *zWhen,              /* "when" part of error message */
-  int bNoDQS                      /* Do not allow DQS in the schema */
+  స్థిరరాశి అక్షరం *zDb,                /* Name of db to verify schema of */
+  పూర్ణాంకం b_తాత్కాలిక,                      /* True if this is the temp db */
+  స్థిరరాశి అక్షరం *zWhen,              /* "when" part of error message */
+  పూర్ణాంకం bNoDQS                      /* Do not allow DQS in the schema */
 ){
-  pParse->colNamesSet = 1;
+  pParse->నిలువు_పేర్లు_సమితి = 1;
   sqlite3NestedParse(pParse,
       "SELECT 1 "
-      "FROM \"%w\"." LEGACY_SCHEMA_TABLE " "
+      "FROM \"%w\"." LEGACY_SCHEMA_పట్టిక " "
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'"
       " AND sqlite_rename_test(%Q, sql, type, name, %d, %Q, %d)=NULL ",
       zDb,
-      zDb, bTemp, zWhen, bNoDQS
+      zDb, b_తాత్కాలిక, zWhen, bNoDQS
   );
 
-  if( bTemp==0 ){
+  ఒకవేళ( b_తాత్కాలిక==0 ){
     sqlite3NestedParse(pParse,
         "SELECT 1 "
-        "FROM temp." LEGACY_SCHEMA_TABLE " "
+        "FROM temp." LEGACY_SCHEMA_పట్టిక " "
         "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
         " AND sql NOT LIKE 'create virtual%%'"
         " AND sqlite_rename_test(%Q, sql, type, name, 1, %Q, %d)=NULL ",
@@ -87,16 +87,16 @@ static void renameTestSchema(
 ** not true, similarly update all SQL statements in the sqlite_schema table
 ** of the temp db.
 */
-static void renameFixQuotes(Parse *pParse, const char *zDb, int bTemp){
+స్థిర శూన్య renameFixQuotes(Parse *pParse, స్థిరరాశి అక్షరం *zDb, పూర్ణాంకం b_తాత్కాలిక){
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక
       " SET sql = sqlite_rename_quotefix(%Q, sql)"
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'" , zDb, zDb
   );
-  if( bTemp==0 ){
+  ఒకవేళ( b_తాత్కాలిక==0 ){
     sqlite3NestedParse(pParse,
-      "UPDATE temp." LEGACY_SCHEMA_TABLE
+      "UPDATE temp." LEGACY_SCHEMA_పట్టిక
       " SET sql = sqlite_rename_quotefix('temp', sql)"
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
       " AND sql NOT LIKE 'create virtual%%'"
@@ -108,12 +108,12 @@ static void renameFixQuotes(Parse *pParse, const char *zDb, int bTemp){
 ** Generate code to reload the schema for database iDb. And, if iDb!=1, for
 ** the temp database as well.
 */
-static void renameReloadSchema(Parse *pParse, int iDb, u16 p5){
+స్థిర శూన్య renameReloadSchema(Parse *pParse, పూర్ణాంకం iDb, u16 p5){
   Vdbe *v = pParse->pVdbe;
-  if( v ){
+  ఒకవేళ( v ){
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddParseSchemaOp(pParse->pVdbe, iDb, 0, p5);
-    if( iDb!=1 ) sqlite3VdbeAddParseSchemaOp(pParse->pVdbe, 1, 0, p5);
+    sqlite3_Vdbe_కూడు_Parse_Schema_Op(pParse->pVdbe, iDb, 0, p5);
+    ఒకవేళ( iDb!=1 ) sqlite3_Vdbe_కూడు_Parse_Schema_Op(pParse->pVdbe, 1, 0, p5);
   }
 }
 
@@ -121,89 +121,89 @@ static void renameReloadSchema(Parse *pParse, int iDb, u16 p5){
 ** Generate code to implement the "ALTER TABLE xxx RENAME TO yyy"
 ** command.
 */
-void sqlite3AlterRenameTable(
+శూన్య sqlite3_Alter_Rename_పట్టిక(
   Parse *pParse,            /* Parser context. */
   SrcList *pSrc,            /* The table to rename. */
   Token *pName              /* The new table name. */
 ){
-  int iDb;                  /* Database that contains the table */
-  char *zDb;                /* Name of database iDb */
-  Table *pTab;              /* Table being renamed */
-  char *zName = 0;          /* NULL-terminated version of pName */
+  పూర్ణాంకం iDb;                  /* Database that contains the table */
+  అక్షరం *zDb;                /* Name of database iDb */
+  పట్టిక *pTab;              /* Table being renamed */
+  అక్షరం *zName = 0;          /* NULL-terminated version of pName */
   sqlite3 *db = pParse->db; /* Database connection */
-  int nTabName;             /* Number of UTF-8 characters in zTabName */
-  const char *zTabName;     /* Original name of the table */
+  పూర్ణాంకం nTabName;             /* Number of UTF-8 characters in zTabName */
+  స్థిరరాశి అక్షరం *zTabName;     /* Original name of the table */
   Vdbe *v;
   VTable *pVTab = 0;        /* Non-zero if this is a v-tab with an xRename() */
 
-  if( NEVER(db->mallocFailed) ) goto exit_rename_table;
-  assert( pSrc->nSrc==1 );
-  assert( sqlite3BtreeHoldsAllMutexes(pParse->db) );
+  ఒకవేళ( NEVER(db->mallocFailed) ) వెళ్ళు exit_rename_పట్టిక;
+  ప్రతిజ్ఞా( pSrc->nSrc==1 );
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsAllMutexes(pParse->db) );
 
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_rename_table;
-  iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, &pSrc->a[0]);
+  ఒకవేళ( !pTab ) వెళ్ళు exit_rename_పట్టిక;
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(pParse->db, pTab->pSchema);
   zDb = db->aDb[iDb].zDbSName;
 
   /* Get a NULL terminated version of the new table name. */
   zName = sqlite3NameFromToken(db, pName);
-  if( !zName ) goto exit_rename_table;
+  ఒకవేళ( !zName ) వెళ్ళు exit_rename_పట్టిక;
 
   /* Check that a table or index named 'zName' does not already exist
   ** in database iDb. If so, this is an error.
   */
-  if( sqlite3FindTable(db, zName, zDb)
-   || sqlite3FindIndex(db, zName, zDb)
-   || sqlite3IsShadowTableOf(db, pTab, zName)
+  ఒకవేళ( sqlite3_కనుగొను_పట్టిక(db, zName, zDb)
+   || sqlite3_కనుగొను_సూచీ(db, zName, zDb)
+   || sqlite3_Is_Shadow_పట్టిక_యొక్క(db, pTab, zName)
   ){
-    sqlite3ErrorMsg(pParse,
+    sqlite3_Error_సందేశం(pParse,
         "there is already another table or index with this name: %s", zName);
-    goto exit_rename_table;
+    వెళ్ళు exit_rename_పట్టిక;
   }
 
   /* Make sure it is not a system table being altered, or a reserved name
   ** that the table is being renamed to.
   */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ){
-    goto exit_rename_table;
+  ఒకవేళ( SQLITE_OK!=is_Alterable_పట్టిక(pParse, pTab) ){
+    వెళ్ళు exit_rename_పట్టిక;
   }
-  if( SQLITE_OK!=sqlite3CheckObjectName(pParse,zName,"table",zName) ){
-    goto exit_rename_table;
+  ఒకవేళ( SQLITE_OK!=sqlite3CheckObjectName(pParse,zName,"table",zName) ){
+    వెళ్ళు exit_rename_పట్టిక;
   }
 
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab) ){
-    sqlite3ErrorMsg(pParse, "view %s may not be altered", pTab->zName);
-    goto exit_rename_table;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIEW
+  ఒకవేళ( IsView(pTab) ){
+    sqlite3_Error_సందేశం(pParse, "view %s may not be altered", pTab->zName);
+    వెళ్ళు exit_rename_పట్టిక;
   }
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    goto exit_rename_table;
+  ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, zDb, pTab->zName, 0) ){
+    వెళ్ళు exit_rename_పట్టిక;
   }
-#endif
+#అయితే_ముగింపు
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto exit_rename_table;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  ఒకవేళ( sqlite3_View_Get_స్తంభం_పేర్లు(pParse, pTab) ){
+    వెళ్ళు exit_rename_పట్టిక;
   }
-  if( IsVirtual(pTab) ){
+  ఒకవేళ( IsVirtual(pTab) ){
     pVTab = sqlite3GetVTable(db, pTab);
-    if( pVTab->pVtab->pModule->xRename==0 ){
+    ఒకవేళ( pVTab->pVtab->pModule->xRename==0 ){
       pVTab = 0;
     }
   }
-#endif
+#అయితే_ముగింపు
 
   /* Begin a transaction for database iDb. Then modify the schema cookie
   ** (since the ALTER TABLE modifies the schema). Call sqlite3MayAbort(),
   ** as the scalar functions (e.g. sqlite_rename_table()) invoked by the
   ** nested SQL may raise an exception.  */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ){
-    goto exit_rename_table;
+  ఒకవేళ( v==0 ){
+    వెళ్ళు exit_rename_పట్టిక;
   }
   sqlite3MayAbort(pParse);
 
@@ -214,7 +214,7 @@ void sqlite3AlterRenameTable(
   /* Rewrite all CREATE TABLE, INDEX, TRIGGER or VIEW statements in
   ** the schema to use the new table name.  */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_rename_table(%Q, type, name, sql, %Q, %Q, %d) "
       "WHERE (type!='index' OR tbl_name=%Q COLLATE nocase)"
       "AND   name NOT LIKE 'sqliteX_%%' ESCAPE 'X'"
@@ -224,7 +224,7 @@ void sqlite3AlterRenameTable(
   /* Update the tbl_name and name columns of the sqlite_schema table
   ** as required.  */
   sqlite3NestedParse(pParse,
-      "UPDATE %Q." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE %Q." LEGACY_SCHEMA_పట్టిక " SET "
           "tbl_name = %Q, "
           "name = CASE "
             "WHEN type='table' THEN %Q "
@@ -239,21 +239,21 @@ void sqlite3AlterRenameTable(
       nTabName, zTabName
   );
 
-#ifndef SQLITE_OMIT_AUTOINCREMENT
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTOINCREMENT
   /* If the sqlite_sequence table exists in this database, then update
   ** it with the new table name.
   */
-  if( sqlite3FindTable(db, "sqlite_sequence", zDb) ){
+  ఒకవేళ( sqlite3_కనుగొను_పట్టిక(db, "sqlite_sequence", zDb) ){
     sqlite3NestedParse(pParse,
         "UPDATE \"%w\".sqlite_sequence set name = %Q WHERE name = %Q",
         zDb, zName, pTab->zName);
   }
-#endif
+#అయితే_ముగింపు
 
   /* If the table being renamed is not itself part of the temp database,
   ** edit view and trigger definitions within the temp database
   ** as required.  */
-  if( iDb!=1 ){
+  ఒకవేళ( iDb!=1 ){
     sqlite3NestedParse(pParse,
         "UPDATE sqlite_temp_schema SET "
             "sql = sqlite_rename_table(%Q, type, name, sql, %Q, %Q, 1), "
@@ -270,18 +270,18 @@ void sqlite3AlterRenameTable(
   ** of any resources used by the v-table implementation (including other
   ** SQLite tables) that are identified by the name of the virtual table.
   */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( pVTab ){
-    int i = ++pParse->nMem;
-    sqlite3VdbeLoadString(v, i, zName);
-    sqlite3VdbeAddOp4(v, OP_VRename, i, 0, 0,(const char*)pVTab, P4_VTAB);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  ఒకవేళ( pVTab ){
+    పూర్ణాంకం i = ++pParse->nMem;
+    sqlite3_Vdbe_ఎక్కించు_String(v, i, zName);
+    sqlite3_Vdbe_కూడు_Op4(v, OP_VRename, i, 0, 0,(స్థిరరాశి అక్షరం*)pVTab, P4_VTAB);
   }
-#endif
+#అయితే_ముగింపు
 
   renameReloadSchema(pParse, iDb, INITFLAG_AlterRename);
   renameTestSchema(pParse, zDb, iDb==1, "after rename", 0);
 
-exit_rename_table:
+exit_rename_పట్టిక:
   sqlite3SrcListDelete(db, pSrc);
   sqlite3DbFree(db, zName);
 }
@@ -290,11 +290,11 @@ exit_rename_table:
 ** Write code that will raise an error if the table described by
 ** zDb and zTab is not empty.
 */
-static void sqlite3ErrorIfNotEmpty(
+స్థిర శూన్య sqlite3_Error_If_Not_ఖాళీలు(
   Parse *pParse,        /* Parsing context */
-  const char *zDb,      /* Schema holding the table */
-  const char *zTab,     /* Table to check for empty */
-  const char *zErr      /* Error message text */
+  స్థిరరాశి అక్షరం *zDb,      /* Schema holding the table */
+  స్థిరరాశి అక్షరం *zTab,     /* Table to check for empty */
+  స్థిరరాశి అక్షరం *zErr      /* Error message text */
 ){
   sqlite3NestedParse(pParse,
      "SELECT raise(ABORT,%Q) FROM \"%w\".\"%w\"",
@@ -311,17 +311,17 @@ static void sqlite3ErrorIfNotEmpty(
 ** returned and an error message left in pParse. Or, if zCol is not an alias 
 ** for "rowid" or pTab is not an intkey table, then SQLITE_OK is returned.
 */
-static int isRowidAlias(
+స్థిర పూర్ణాంకం isRowidAlias(
   Parse *pParse, 
-  Table *pTab, 
-  const char *zCol, 
-  const char *zOp
+  పట్టిక *pTab, 
+  స్థిరరాశి అక్షరం *z_నిలువు, 
+  స్థిరరాశి అక్షరం *zOp
 ){
-  if( HasRowid(pTab) && sqlite3IsRowid(zCol) ){
-    sqlite3ErrorMsg(pParse, "cannot %s rowid alias: %s", zOp, zCol);
-    return SQLITE_ERROR;
+  ఒకవేళ( HasRowid(pTab) && sqlite3IsRowid(z_నిలువు) ){
+    sqlite3_Error_సందేశం(pParse, "cannot %s rowid alias: %s", zOp, z_నిలువు);
+    తిరిగి SQLITE_ERROR;
   }
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 
@@ -334,73 +334,73 @@ static int isRowidAlias(
 ** The Table structure pParse->pNewTable was extended to include
 ** the new column during parsing.
 */
-void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
-  Table *pNew;              /* Copy of pParse->pNewTable */
-  Table *pTab;              /* Table being altered */
-  int iDb;                  /* Database number */
-  const char *zDb;          /* Database name */
-  const char *zTab;         /* Table name */
-  char *zCol;               /* Null-terminated column definition */
-  Column *pCol;             /* The new column */
-  Expr *pDflt;              /* Default value for the new column */
+శూన్య sqlite3_Alter_ముగింపు_కూడు_స్తంభం(Parse *pParse, Token *p_నిలువు_Def){
+  పట్టిక *pNew;              /* Copy of pParse->pNewTable */
+  పట్టిక *pTab;              /* Table being altered */
+  పూర్ణాంకం iDb;                  /* Database number */
+  స్థిరరాశి అక్షరం *zDb;          /* Database name */
+  స్థిరరాశి అక్షరం *zTab;         /* Table name */
+  అక్షరం *z_నిలువు;               /* Null-terminated column definition */
+  స్తంభం *p_నిలువు;             /* The new column */
+  సమాసం *pDflt;              /* Default value for the new column */
   sqlite3 *db;              /* The database connection; */
   Vdbe *v;                  /* The prepared statement under construction */
-  int r1;                   /* Temporary registers */
+  పూర్ణాంకం r1;                   /* Temporary registers */
 
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ) return;
-  assert( db->mallocFailed==0 );
-  pNew = pParse->pNewTable;
-  assert( pNew );
+  ప్రతిజ్ఞా( db->pParse==pParse );
+  ఒకవేళ( pParse->nErr ) తిరిగి;
+  ప్రతిజ్ఞా( db->mallocFailed==0 );
+  pNew = pParse->p_New_పట్టిక;
+  ప్రతిజ్ఞా( pNew );
 
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  iDb = sqlite3SchemaToIndex(db, pNew->pSchema);
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsAllMutexes(db) );
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pNew->pSchema);
   zDb = db->aDb[iDb].zDbSName;
   zTab = &pNew->zName[16];  /* Skip the "sqlite_altertab_" prefix on the name */
-  pCol = &pNew->aCol[pNew->nCol-1];
-  pDflt = sqlite3ColumnExpr(pNew, pCol);
-  pTab = sqlite3FindTable(db, zTab, zDb);
-  assert( pTab );
+  p_నిలువు = &pNew->a_నిలువు[pNew->n_నిలువు-1];
+  pDflt = sqlite3_స్తంభం_సమాసం(pNew, p_నిలువు);
+  pTab = sqlite3_కనుగొను_పట్టిక(db, zTab, zDb);
+  ప్రతిజ్ఞా( pTab );
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    return;
+  ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, zDb, pTab->zName, 0) ){
+    తిరిగి;
   }
-#endif
+#అయితే_ముగింపు
 
 
   /* Check that the new column is not specified as PRIMARY KEY or UNIQUE,
   ** or a rowid alias. If there is a NOT NULL constraint, then the default
   ** value for the column must not be NULL.
   */
-  if( pCol->colFlags & COLFLAG_PRIMKEY ){
-    sqlite3ErrorMsg(pParse, "Cannot add a PRIMARY KEY column");
-    return;
+  ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_PRIMKEY ){
+    sqlite3_Error_సందేశం(pParse, "Cannot add a PRIMARY KEY column");
+    తిరిగి;
   }
-  if( pNew->pIndex ){
-    sqlite3ErrorMsg(pParse,
+  ఒకవేళ( pNew->p_సూచీ ){
+    sqlite3_Error_సందేశం(pParse,
          "Cannot add a UNIQUE column");
-    return;
+    తిరిగి;
   }
-  if( isRowidAlias(pParse, pTab, pCol->zCnName, "add") ) return;
-  if( (pCol->colFlags & COLFLAG_GENERATED)==0 ){
+  ఒకవేళ( isRowidAlias(pParse, pTab, p_నిలువు->zCnName, "add") ) తిరిగి;
+  ఒకవేళ( (p_నిలువు->నిలువు_Flags & COLFLAG_GENERATED)==0 ){
     /* If the default value for the new column was specified with a
     ** literal NULL, then set pDflt to 0. This simplifies checking
     ** for an SQL NULL default below.
     */
-    assert( pDflt==0 || pDflt->op==TK_SPAN );
-    if( pDflt && pDflt->pLeft->op==TK_NULL ){
+    ప్రతిజ్ఞా( pDflt==0 || pDflt->op==TK_పరిధి );
+    ఒకవేళ( pDflt && pDflt->p_ఎడమ->op==TK_NULL ){
       pDflt = 0;
     }
-    assert( IsOrdinaryTable(pNew) );
-    if( (db->flags&SQLITE_ForeignKeys) && pNew->u.tab.pFKey && pDflt ){
-      sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+    ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pNew) );
+    ఒకవేళ( (db->flags&SQLITE_Foreign_కీలకాలు) && pNew->u.tab.pFKey && pDflt ){
+      sqlite3_Error_If_Not_ఖాళీలు(pParse, zDb, zTab,
           "Cannot add a REFERENCES column with non-NULL default value");
     }
-    if( pCol->notNull && !pDflt ){
-      sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+    ఒకవేళ( p_నిలువు->notNull && !pDflt ){
+      sqlite3_Error_If_Not_ఖాళీలు(pParse, zDb, zTab,
           "Cannot add a NOT NULL column with default value NULL");
     }
 
@@ -408,72 +408,72 @@ void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
     /* Ensure the default expression is something that sqlite3ValueFromExpr()
     ** can handle (i.e. not CURRENT_TIME etc.)
     */
-    if( pDflt ){
-      sqlite3_value *pVal = 0;
-      int rc;
-      rc = sqlite3ValueFromExpr(db, pDflt, SQLITE_UTF8, SQLITE_AFF_BLOB, &pVal);
-      assert( rc==SQLITE_OK || rc==SQLITE_NOMEM );
-      if( rc!=SQLITE_OK ){
-        assert( db->mallocFailed == 1 );
-        return;
+    ఒకవేళ( pDflt ){
+      sqlite3_విలువ *pVal = 0;
+      పూర్ణాంకం rc;
+      rc = sqlite3_విలువ_From_సమాసం(db, pDflt, SQLITE_UTF8, SQLITE_AFF_BLOB, &pVal);
+      ప్రతిజ్ఞా( rc==SQLITE_OK || rc==SQLITE_NOMEM );
+      ఒకవేళ( rc!=SQLITE_OK ){
+        ప్రతిజ్ఞా( db->mallocFailed == 1 );
+        తిరిగి;
       }
-      if( !pVal ){
-        sqlite3ErrorIfNotEmpty(pParse, zDb, zTab,
+      ఒకవేళ( !pVal ){
+        sqlite3_Error_If_Not_ఖాళీలు(pParse, zDb, zTab,
            "Cannot add a column with non-constant default");
       }
-      sqlite3ValueFree(pVal);
+      sqlite3_విలువ_Free(pVal);
     }
-  }else if( pCol->colFlags & COLFLAG_STORED ){
-    sqlite3ErrorIfNotEmpty(pParse, zDb, zTab, "cannot add a STORED column");
+  }లేకపోతే ఒకవేళ( p_నిలువు->నిలువు_Flags & COLFLAG_STORED ){
+    sqlite3_Error_If_Not_ఖాళీలు(pParse, zDb, zTab, "cannot add a STORED column");
   }
 
 
   /* Modify the CREATE TABLE statement. */
-  zCol = sqlite3DbStrNDup(db, (char*)pColDef->z, pColDef->n);
-  if( zCol ){
-    char *zEnd = &zCol[pColDef->n-1];
-    while( zEnd>zCol && (*zEnd==';' || sqlite3Isspace(*zEnd)) ){
-      *zEnd-- = '\0';
+  z_నిలువు = sqlite3DbStrNDup(db, (అక్షరం*)p_నిలువు_Def->z, p_నిలువు_Def->n);
+  ఒకవేళ( z_నిలువు ){
+    అక్షరం *z_చివర = &z_నిలువు[p_నిలువు_Def->n-1];
+    అయితే( z_చివర>z_నిలువు && (*z_చివర==';' || sqlite3Isspace(*z_చివర)) ){
+      *z_చివర-- = '\0';
     }
     /* substr() operations on characters, but addColOffset is in bytes. So we
     ** have to use printf() to translate between these units: */
-    assert( IsOrdinaryTable(pTab) );
-    assert( IsOrdinaryTable(pNew) );
+    ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+    ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pNew) );
     sqlite3NestedParse(pParse,
-        "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+        "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
           "sql = printf('%%.%ds, ',sql) || %Q"
           " || substr(sql,1+length(printf('%%.%ds',sql))) "
         "WHERE type = 'table' AND name = %Q",
-      zDb, pNew->u.tab.addColOffset, zCol, pNew->u.tab.addColOffset,
+      zDb, pNew->u.tab.కూడు_నిలువు_స్థానభ్రంశం, z_నిలువు, pNew->u.tab.కూడు_నిలువు_స్థానభ్రంశం,
       zTab
     );
-    sqlite3DbFree(db, zCol);
+    sqlite3DbFree(db, z_నిలువు);
   }
 
   v = sqlite3GetVdbe(pParse);
-  if( v ){
+  ఒకవేళ( v ){
     /* Make sure the schema version is at least 3.  But do not upgrade
     ** from less than 3 to 4, as that will corrupt any preexisting DESC
     ** index.
     */
-    r1 = sqlite3GetTempReg(pParse);
-    sqlite3VdbeAddOp3(v, OP_ReadCookie, iDb, r1, BTREE_FILE_FORMAT);
-    sqlite3VdbeUsesBtree(v, iDb);
-    sqlite3VdbeAddOp2(v, OP_AddImm, r1, -2);
-    sqlite3VdbeAddOp2(v, OP_IfPos, r1, sqlite3VdbeCurrentAddr(v)+2);
+    r1 = sqlite3_Get_తాత్కాలిక_Reg(pParse);
+    sqlite3_Vdbe_కూడు_Op3(v, OP_ReadCookie, iDb, r1, BTREE_FILE_FORMAT);
+    sqlite3_Vdbe_ఉపయోగిస్తుంది_Btree(v, iDb);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_కూడు_Imm, r1, -2);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_IfPos, r1, sqlite3VdbeCurrentAddr(v)+2);
     VdbeCoverage(v);
-    sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_FILE_FORMAT, 3);
-    sqlite3ReleaseTempReg(pParse, r1);
+    sqlite3_Vdbe_కూడు_Op3(v, OP_సమితి_Cookie, iDb, BTREE_FILE_FORMAT, 3);
+    sqlite3_Release_తాత్కాలిక_Reg(pParse, r1);
 
     /* Reload the table definition */
-    renameReloadSchema(pParse, iDb, INITFLAG_AlterAdd);
+    renameReloadSchema(pParse, iDb, INITFLAG_Alter_కూడు);
 
     /* Verify that constraints are still satisfied */
-    if( pNew->pCheck!=0
-     || (pCol->notNull && (pCol->colFlags & COLFLAG_GENERATED)!=0)
+    ఒకవేళ( pNew->pCheck!=0
+     || (p_నిలువు->notNull && (p_నిలువు->నిలువు_Flags & COLFLAG_GENERATED)!=0)
      || (pTab->tabFlags & TF_Strict)!=0
     ){
-      pParse->colNamesSet = 1;
+      pParse->నిలువు_పేర్లు_సమితి = 1;
       sqlite3NestedParse(pParse,
         "SELECT CASE WHEN quick_check GLOB 'CHECK*'"
         " THEN raise(ABORT,'CHECK constraint failed')"
@@ -506,41 +506,41 @@ void sqlite3AlterFinishAddColumn(Parse *pParse, Token *pColDef){
 ** Routine sqlite3AlterFinishAddColumn() will be called to complete
 ** coding the "ALTER TABLE ... ADD" statement.
 */
-void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
-  Table *pNew;
-  Table *pTab;
-  int iDb;
-  int i;
-  int nAlloc;
+శూన్య sqlite3_Alter_Begin_కూడు_స్తంభం(Parse *pParse, SrcList *pSrc){
+  పట్టిక *pNew;
+  పట్టిక *pTab;
+  పూర్ణాంకం iDb;
+  పూర్ణాంకం i;
+  పూర్ణాంకం nAlloc;
   sqlite3 *db = pParse->db;
 
   /* Look up the table being altered. */
-  assert( pParse->pNewTable==0 );
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  if( NEVER(db->mallocFailed) ) goto exit_begin_add_column;
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_begin_add_column;
+  ప్రతిజ్ఞా( pParse->p_New_పట్టిక==0 );
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsAllMutexes(db) );
+  ఒకవేళ( NEVER(db->mallocFailed) ) వెళ్ళు exit_begin_కూడు_స్తంభం;
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, &pSrc->a[0]);
+  ఒకవేళ( !pTab ) వెళ్ళు exit_begin_కూడు_స్తంభం;
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "virtual tables may not be altered");
-    goto exit_begin_add_column;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  ఒకవేళ( IsVirtual(pTab) ){
+    sqlite3_Error_సందేశం(pParse, "virtual tables may not be altered");
+    వెళ్ళు exit_begin_కూడు_స్తంభం;
   }
-#endif
+#అయితే_ముగింపు
 
   /* Make sure this is not an attempt to ALTER a view. */
-  if( IsView(pTab) ){
-    sqlite3ErrorMsg(pParse, "Cannot add a column to a view");
-    goto exit_begin_add_column;
+  ఒకవేళ( IsView(pTab) ){
+    sqlite3_Error_సందేశం(pParse, "Cannot add a column to a view");
+    వెళ్ళు exit_begin_కూడు_స్తంభం;
   }
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ){
-    goto exit_begin_add_column;
+  ఒకవేళ( SQLITE_OK!=is_Alterable_పట్టిక(pParse, pTab) ){
+    వెళ్ళు exit_begin_కూడు_స్తంభం;
   }
 
   sqlite3MayAbort(pParse);
-  assert( IsOrdinaryTable(pTab) );
-  assert( pTab->u.tab.addColOffset>0 );
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+  ప్రతిజ్ఞా( pTab->u.tab.కూడు_నిలువు_స్థానభ్రంశం>0 );
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
 
   /* Put a copy of the Table struct in Parse.pNewTable for the
   ** sqlite3AddColumn() function and friends to modify.  But modify
@@ -549,35 +549,35 @@ void sqlite3AlterBeginAddColumn(Parse *pParse, SrcList *pSrc){
   ** table because user table are not allowed to have the "sqlite_"
   ** prefix on their name.
   */
-  pNew = (Table*)sqlite3DbMallocZero(db, sizeof(Table));
-  if( !pNew ) goto exit_begin_add_column;
-  pParse->pNewTable = pNew;
+  pNew = (పట్టిక*)sqlite3DbMallocZero(db, పరిమాణం(పట్టిక));
+  ఒకవేళ( !pNew ) వెళ్ళు exit_begin_కూడు_స్తంభం;
+  pParse->p_New_పట్టిక = pNew;
   pNew->nTabRef = 1;
-  pNew->nCol = pTab->nCol;
-  assert( pNew->nCol>0 );
-  nAlloc = (((pNew->nCol-1)/8)*8)+8;
-  assert( nAlloc>=pNew->nCol && nAlloc%8==0 && nAlloc-pNew->nCol<8 );
-  pNew->aCol = (Column*)sqlite3DbMallocZero(db, sizeof(Column)*(u32)nAlloc);
+  pNew->n_నిలువు = pTab->n_నిలువు;
+  ప్రతిజ్ఞా( pNew->n_నిలువు>0 );
+  nAlloc = (((pNew->n_నిలువు-1)/8)*8)+8;
+  ప్రతిజ్ఞా( nAlloc>=pNew->n_నిలువు && nAlloc%8==0 && nAlloc-pNew->n_నిలువు<8 );
+  pNew->a_నిలువు = (స్తంభం*)sqlite3DbMallocZero(db, పరిమాణం(స్తంభం)*(u32)nAlloc);
   pNew->zName = sqlite3MPrintf(db, "sqlite_altertab_%s", pTab->zName);
-  if( !pNew->aCol || !pNew->zName ){
-    assert( db->mallocFailed );
-    goto exit_begin_add_column;
+  ఒకవేళ( !pNew->a_నిలువు || !pNew->zName ){
+    ప్రతిజ్ఞా( db->mallocFailed );
+    వెళ్ళు exit_begin_కూడు_స్తంభం;
   }
-  memcpy(pNew->aCol, pTab->aCol, sizeof(Column)*(size_t)pNew->nCol);
-  for(i=0; i<pNew->nCol; i++){
-    Column *pCol = &pNew->aCol[i];
-    pCol->zCnName = sqlite3DbStrDup(db, pCol->zCnName);
-    pCol->hName = sqlite3StrIHash(pCol->zCnName);
+  జ్ఞాపకం_నకలు(pNew->a_నిలువు, pTab->a_నిలువు, పరిమాణం(స్తంభం)*(size_t)pNew->n_నిలువు);
+  కొరకు(i=0; i<pNew->n_నిలువు; i++){
+    స్తంభం *p_నిలువు = &pNew->a_నిలువు[i];
+    p_నిలువు->zCnName = sqlite3DbStrDup(db, p_నిలువు->zCnName);
+    p_నిలువు->hName = sqlite3StrIHash(p_నిలువు->zCnName);
   }
-  assert( IsOrdinaryTable(pNew) );
-  pNew->u.tab.pDfltList = sqlite3ExprListDup(db, pTab->u.tab.pDfltList, 0);
+  ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pNew) );
+  pNew->u.tab.pDfltList = sqlite3_సమాసం_List_Dup(db, pTab->u.tab.pDfltList, 0);
   pNew->pSchema = db->aDb[iDb].pSchema;
-  pNew->u.tab.addColOffset = pTab->u.tab.addColOffset;
-  assert( pNew->nTabRef==1 );
+  pNew->u.tab.కూడు_నిలువు_స్థానభ్రంశం = pTab->u.tab.కూడు_నిలువు_స్థానభ్రంశం;
+  ప్రతిజ్ఞా( pNew->nTabRef==1 );
 
-exit_begin_add_column:
+exit_begin_కూడు_స్తంభం:
   sqlite3SrcListDelete(db, pSrc);
-  return;
+  తిరిగి;
 }
 
 /*
@@ -588,83 +588,83 @@ exit_begin_add_column:
 **
 ** Or, if pTab is not a view or virtual table, zero is returned.
 */
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-static int isRealTable(Parse *pParse, Table *pTab, int iOp){
-  const char *zType = 0;
-#ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab) ){
+#ఒకవేళ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+స్థిర పూర్ణాంకం is_Real_పట్టిక(Parse *pParse, పట్టిక *pTab, పూర్ణాంకం iOp){
+  స్థిరరాశి అక్షరం *zType = 0;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIEW
+  ఒకవేళ( IsView(pTab) ){
     zType = "view";
   }
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pTab) ){
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_VIRTUALTABLE
+  ఒకవేళ( IsVirtual(pTab) ){
     zType = "virtual table";
   }
-#endif
-  if( zType ){
-    const char *azMsg[] = {
+#అయితే_ముగింపు
+  ఒకవేళ( zType ){
+    స్థిరరాశి అక్షరం *az_సందేశం[] = {
       "rename columns of", "drop column from", "edit constraints of"
     };
-    assert( iOp>=0 && iOp<ArraySize(azMsg) );
-    sqlite3ErrorMsg(pParse, "cannot %s %s \"%s\"",
-        azMsg[iOp], zType, pTab->zName
+    ప్రతిజ్ఞా( iOp>=0 && iOp<Array_కొలత(az_సందేశం) );
+    sqlite3_Error_సందేశం(pParse, "cannot %s %s \"%s\"",
+        az_సందేశం[iOp], zType, pTab->zName
     );
-    return 1;
+    తిరిగి 1;
   }
-  return 0;
+  తిరిగి 0;
 }
-#else /* !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE) */
-# define isRealTable(x,y,z) (0)
-#endif
+#లేకపోతే /* !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE) */
+# define is_Real_పట్టిక(x,y,z) (0)
+#అయితే_ముగింపు
 
 /*
 ** Handles the following parser reduction:
 **
 **  cmd ::= ALTER TABLE pSrc RENAME COLUMN pOld TO pNew
 */
-void sqlite3AlterRenameColumn(
+శూన్య sqlite3_Alter_Rename_స్తంభం(
   Parse *pParse,                  /* Parsing context */
   SrcList *pSrc,                  /* Table being altered.  pSrc->nSrc==1 */
   Token *pOld,                    /* Name of column being changed */
   Token *pNew                     /* New column name */
 ){
   sqlite3 *db = pParse->db;       /* Database connection */
-  Table *pTab;                    /* Table being updated */
-  int iCol;                       /* Index of column being renamed */
-  char *zOld = 0;                 /* Old column name */
-  char *zNew = 0;                 /* New column name */
-  const char *zDb;                /* Name of schema containing the table */
-  int iSchema;                    /* Index of the schema */
-  int bQuote;                     /* True to quote the new name */
+  పట్టిక *pTab;                    /* Table being updated */
+  పూర్ణాంకం i_నిలువు;                       /* Index of column being renamed */
+  అక్షరం *zOld = 0;                 /* Old column name */
+  అక్షరం *zNew = 0;                 /* New column name */
+  స్థిరరాశి అక్షరం *zDb;                /* Name of schema containing the table */
+  పూర్ణాంకం iSchema;                    /* Index of the schema */
+  పూర్ణాంకం bQuote;                     /* True to quote the new name */
 
   /* Locate the table to be altered */
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_rename_column;
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, &pSrc->a[0]);
+  ఒకవేళ( !pTab ) వెళ్ళు exit_rename_స్తంభం;
 
   /* Cannot alter a system table */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ) goto exit_rename_column;
-  if( SQLITE_OK!=isRealTable(pParse, pTab, 0) ) goto exit_rename_column;
+  ఒకవేళ( SQLITE_OK!=is_Alterable_పట్టిక(pParse, pTab) ) వెళ్ళు exit_rename_స్తంభం;
+  ఒకవేళ( SQLITE_OK!=is_Real_పట్టిక(pParse, pTab, 0) ) వెళ్ళు exit_rename_స్తంభం;
 
   /* Which schema holds the table to be altered */ 
-  iSchema = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iSchema>=0 );
+  iSchema = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
+  ప్రతిజ్ఞా( iSchema>=0 );
   zDb = db->aDb[iSchema].zDbSName;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, 0) ){
-    goto exit_rename_column;
+  ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, zDb, pTab->zName, 0) ){
+    వెళ్ళు exit_rename_స్తంభం;
   }
-#endif
+#అయితే_ముగింపు
 
   /* Make sure the old name really is a column name in the table to be
   ** altered.  Set iCol to be the index of the column being renamed */
   zOld = sqlite3NameFromToken(db, pOld);
-  if( !zOld ) goto exit_rename_column;
-  iCol = sqlite3ColumnIndex(pTab, zOld);
-  if( iCol<0 ){
-    sqlite3ErrorMsg(pParse, "no such column: \"%T\"", pOld);
-    goto exit_rename_column;
+  ఒకవేళ( !zOld ) వెళ్ళు exit_rename_స్తంభం;
+  i_నిలువు = sqlite3_స్తంభం_సూచీ(pTab, zOld);
+  ఒకవేళ( i_నిలువు<0 ){
+    sqlite3_Error_సందేశం(pParse, "no such column: \"%T\"", pOld);
+    వెళ్ళు exit_rename_స్తంభం;
   }
 
   /* Ensure the schema contains no double-quoted strings */
@@ -677,26 +677,26 @@ void sqlite3AlterRenameColumn(
   */
   sqlite3MayAbort(pParse);
   zNew = sqlite3NameFromToken(db, pNew);
-  if( !zNew ) goto exit_rename_column;
-  if( isRowidAlias(pParse, pTab, zOld, "rename from") ) goto exit_rename_column;
-  if( isRowidAlias(pParse, pTab, zNew, "rename to") ) goto exit_rename_column;
-  assert( pNew->n>0 );
+  ఒకవేళ( !zNew ) వెళ్ళు exit_rename_స్తంభం;
+  ఒకవేళ( isRowidAlias(pParse, pTab, zOld, "rename from") ) వెళ్ళు exit_rename_స్తంభం;
+  ఒకవేళ( isRowidAlias(pParse, pTab, zNew, "rename to") ) వెళ్ళు exit_rename_స్తంభం;
+  ప్రతిజ్ఞా( pNew->n>0 );
   bQuote = sqlite3Isquote(pNew->z[0]);
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_rename_column(sql, type, name, %Q, %Q, %d, %Q, %d, %d) "
       "WHERE name NOT LIKE 'sqliteX_%%' ESCAPE 'X' "
       " AND (type != 'index' OR tbl_name = %Q)",
       zDb,
-      zDb, pTab->zName, iCol, zNew, bQuote, iSchema==1,
+      zDb, pTab->zName, i_నిలువు, zNew, bQuote, iSchema==1,
       pTab->zName
   );
-  if( iSchema!=1 ){
+  ఒకవేళ( iSchema!=1 ){
     sqlite3NestedParse(pParse,
-        "UPDATE temp." LEGACY_SCHEMA_TABLE " SET "
+        "UPDATE temp." LEGACY_SCHEMA_పట్టిక " SET "
         "sql = sqlite_rename_column(sql, type, name, %Q, %Q, %d, %Q, %d, 1) "
         "WHERE type IN ('trigger', 'view')",
-        zDb, pTab->zName, iCol, zNew, bQuote
+        zDb, pTab->zName, i_నిలువు, zNew, bQuote
     );
   }
 
@@ -704,11 +704,11 @@ void sqlite3AlterRenameColumn(
   renameReloadSchema(pParse, iSchema, INITFLAG_AlterRename);
   renameTestSchema(pParse, zDb, iSchema==1, "after rename", 1);
 
- exit_rename_column:
+ exit_rename_స్తంభం:
   sqlite3SrcListDelete(db, pSrc);
   sqlite3DbFree(db, zOld);
   sqlite3DbFree(db, zNew);
-  return;
+  తిరిగి;
 }
 
 /*
@@ -728,26 +728,26 @@ void sqlite3AlterRenameColumn(
 ** to look up the actual token value that created some element in
 ** the parse tree.
 */
-struct RenameToken {
-  const void *p;         /* Parse tree element created by token t */
+నిర్మాణం RenameToken {
+  స్థిరరాశి శూన్య *p;         /* Parse tree element created by token t */
   Token t;               /* The token that created parse tree element p */
-  RenameToken *pNext;    /* Next is a list of all RenameToken objects */
+  RenameToken *p_తదుపరి;    /* Next is a list of all RenameToken objects */
 };
 
 /*
 ** The context of an ALTER TABLE RENAME COLUMN operation that gets passed
 ** down into the Walker.
 */
-typedef struct RenameCtx RenameCtx;
-struct RenameCtx {
+రకనిర్వచనం నిర్మాణం RenameCtx RenameCtx;
+నిర్మాణం RenameCtx {
   RenameToken *pList;             /* List of tokens to overwrite */
-  int nList;                      /* Number of tokens in pList */
-  int iCol;                       /* Index of column being renamed */
-  Table *pTab;                    /* Table being ALTERed */
-  const char *zOld;               /* Old column name */
+  పూర్ణాంకం nList;                      /* Number of tokens in pList */
+  పూర్ణాంకం i_నిలువు;                       /* Index of column being renamed */
+  పట్టిక *pTab;                    /* Table being ALTERed */
+  స్థిరరాశి అక్షరం *zOld;               /* Old column name */
 };
 
-#ifdef SQLITE_DEBUG
+#నిర్వచితమైతే SQLITE_DEBUG
 /*
 ** This function is only for debugging. It performs two tasks:
 **
@@ -771,24 +771,24 @@ struct RenameCtx {
 ** Technically, as x no longer points into a valid object or to the byte
 ** following a valid object, it may not be used in comparison operations.
 */
-static void renameTokenCheckAll(Parse *pParse, const void *pPtr){
-  assert( pParse==pParse->db->pParse );
-  assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  if( pParse->nErr==0 ){
-    const RenameToken *p;
+స్థిర శూన్య renameTokenCheckAll(Parse *pParse, స్థిరరాశి శూన్య *pPtr){
+  ప్రతిజ్ఞా( pParse==pParse->db->pParse );
+  ప్రతిజ్ఞా( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
+  ఒకవేళ( pParse->nErr==0 ){
+    స్థిరరాశి RenameToken *p;
     u32 i = 1;
-    for(p=pParse->pRename; p; p=p->pNext){
-      if( p->p ){
-        assert( p->p!=pPtr );
+    కొరకు(p=pParse->pRename; p; p=p->p_తదుపరి){
+      ఒకవేళ( p->p ){
+        ప్రతిజ్ఞా( p->p!=pPtr );
         i += *(u8*)(p->p) | 1;
       }
     }
-    assert( i>0 );
+    ప్రతిజ్ఞా( i>0 );
   }
 }
-#else
+#లేకపోతే
 # define renameTokenCheckAll(x,y)
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Remember that the parser tree element pPtr was created using
@@ -802,25 +802,25 @@ static void renameTokenCheckAll(Parse *pParse, const void *pPtr){
 ** with tail recursion in tokenExpr() routine, for a small performance
 ** improvement.
 */
-const void *sqlite3RenameTokenMap(
+స్థిరరాశి శూన్య *sqlite3RenameTokenMap(
   Parse *pParse,
-  const void *pPtr,
-  const Token *pToken
+  స్థిరరాశి శూన్య *pPtr,
+  స్థిరరాశి Token *pToken
 ){
   RenameToken *pNew;
-  assert( pPtr || pParse->db->mallocFailed );
+  ప్రతిజ్ఞా( pPtr || pParse->db->mallocFailed );
   renameTokenCheckAll(pParse, pPtr);
-  if( ALWAYS(pParse->eParseMode!=PARSE_MODE_UNMAP) ){
-    pNew = sqlite3DbMallocZero(pParse->db, sizeof(RenameToken));
-    if( pNew ){
+  ఒకవేళ( ALWAYS(pParse->e_Parse_బహుళకం!=PARSE_బహుళకం_UNMAP) ){
+    pNew = sqlite3DbMallocZero(pParse->db, పరిమాణం(RenameToken));
+    ఒకవేళ( pNew ){
       pNew->p = pPtr;
       pNew->t = *pToken;
-      pNew->pNext = pParse->pRename;
+      pNew->p_తదుపరి = pParse->pRename;
       pParse->pRename = pNew;
     }
   }
 
-  return pPtr;
+  తిరిగి pPtr;
 }
 
 /*
@@ -828,13 +828,13 @@ const void *sqlite3RenameTokenMap(
 ** with parse tree element pFrom. This function remaps the associated token
 ** to parse tree element pTo.
 */
-void sqlite3RenameTokenRemap(Parse *pParse, const void *pTo, const void *pFrom){
+శూన్య sqlite3RenameTokenRemap(Parse *pParse, స్థిరరాశి శూన్య *p_గమ్యం, స్థిరరాశి శూన్య *pFrom){
   RenameToken *p;
-  renameTokenCheckAll(pParse, pTo);
-  for(p=pParse->pRename; p; p=p->pNext){
-    if( p->p==pFrom ){
-      p->p = pTo;
-      break;
+  renameTokenCheckAll(pParse, p_గమ్యం);
+  కొరకు(p=pParse->pRename; p; p=p->p_తదుపరి){
+    ఒకవేళ( p->p==pFrom ){
+      p->p = p_గమ్యం;
+      ఆపు;
     }
   }
 }
@@ -842,46 +842,46 @@ void sqlite3RenameTokenRemap(Parse *pParse, const void *pTo, const void *pFrom){
 /*
 ** Walker callback used by sqlite3RenameExprUnmap().
 */
-static int renameUnmapExprCb(Walker *pWalker, Expr *pExpr){
+స్థిర పూర్ణాంకం rename_Unmap_సమాసం_Cb(Walker *pWalker, సమాసం *p_సమాసం){
   Parse *pParse = pWalker->pParse;
-  sqlite3RenameTokenRemap(pParse, 0, (const void*)pExpr);
-  if( ExprUseYTab(pExpr) ){
-    sqlite3RenameTokenRemap(pParse, 0, (const void*)&pExpr->y.pTab);
+  sqlite3RenameTokenRemap(pParse, 0, (స్థిరరాశి శూన్య*)p_సమాసం);
+  ఒకవేళ( సమాసం_Use_YTab(p_సమాసం) ){
+    sqlite3RenameTokenRemap(pParse, 0, (స్థిరరాశి శూన్య*)&p_సమాసం->y.pTab);
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
 ** Iterate through the Select objects that are part of WITH clauses attached
 ** to select statement pSelect.
 */
-static void renameWalkWith(Walker *pWalker, Select *pSelect){
+స్థిర శూన్య renameWalkWith(Walker *pWalker, Select *pSelect){
   With *pWith = pSelect->pWith;
-  if( pWith ){
+  ఒకవేళ( pWith ){
     Parse *pParse = pWalker->pParse;
-    int i;
+    పూర్ణాంకం i;
     With *pCopy = 0;
-    assert( pWith->nCte>0 );
-    if( (pWith->a[0].pSelect->selFlags & SF_Expanded)==0 ){
+    ప్రతిజ్ఞా( pWith->nCte>0 );
+    ఒకవేళ( (pWith->a[0].pSelect->selFlags & SF_Expanded)==0 ){
       /* Push a copy of the With object onto the with-stack. We use a copy
       ** here as the original will be expanded and resolved (flags SF_Expanded
       ** and SF_Resolved) below. And the parser code that uses the with-stack
       ** fails if the Select objects on it have already been expanded and
       ** resolved.  */
       pCopy = sqlite3WithDup(pParse->db, pWith);
-      pCopy = sqlite3WithPush(pParse, pCopy, 1);
+      pCopy = sqlite3_With_నెట్టు(pParse, pCopy, 1);
     }
-    for(i=0; i<pWith->nCte; i++){
+    కొరకు(i=0; i<pWith->nCte; i++){
       Select *p = pWith->a[i].pSelect;
       NameContext sNC;
-      memset(&sNC, 0, sizeof(sNC));
+      memset(&sNC, 0, పరిమాణం(sNC));
       sNC.pParse = pParse;
-      if( pCopy ) sqlite3SelectPrep(sNC.pParse, p, &sNC);
-      if( sNC.pParse->db->mallocFailed ) return;
+      ఒకవేళ( pCopy ) sqlite3SelectPrep(sNC.pParse, p, &sNC);
+      ఒకవేళ( sNC.pParse->db->mallocFailed ) తిరిగి;
       sqlite3WalkSelect(pWalker, p);
-      sqlite3RenameExprlistUnmap(pParse, pWith->a[i].pCols);
+      sqlite3RenameExprlistUnmap(pParse, pWith->a[i].p_నిలువుల_సంఖ్య);
     }
-    if( pCopy && pParse->pWith==pCopy ){
+    ఒకవేళ( pCopy && pParse->pWith==pCopy ){
       pParse->pWith = pCopy->pOuter;
     }
   }
@@ -890,83 +890,83 @@ static void renameWalkWith(Walker *pWalker, Select *pSelect){
 /*
 ** Unmap all tokens in the IdList object passed as the second argument.
 */
-static void unmapColumnIdlistNames(
+స్థిర శూన్య unmap_స్తంభం_Idlist_పేర్లు(
   Parse *pParse,
-  const IdList *pIdList
+  స్థిరరాశి IdList *pIdList
 ){
-  int ii;
-  assert( pIdList!=0 );
-  for(ii=0; ii<pIdList->nId; ii++){
-    sqlite3RenameTokenRemap(pParse, 0, (const void*)pIdList->a[ii].zName);
+  పూర్ణాంకం ii;
+  ప్రతిజ్ఞా( pIdList!=0 );
+  కొరకు(ii=0; ii<pIdList->nId; ii++){
+    sqlite3RenameTokenRemap(pParse, 0, (స్థిరరాశి శూన్య*)pIdList->a[ii].zName);
   }
 }
 
 /*
 ** Walker callback used by sqlite3RenameExprUnmap().
 */
-static int renameUnmapSelectCb(Walker *pWalker, Select *p){
+స్థిర పూర్ణాంకం renameUnmapSelectCb(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  int i;
-  if( pParse->nErr ) return WRC_Abort;
+  పూర్ణాంకం i;
+  ఒకవేళ( pParse->nErr ) తిరిగి WRC_Abort;
   testcase( p->selFlags & SF_View );
   testcase( p->selFlags & SF_CopyCte );
-  if( p->selFlags & (SF_View|SF_CopyCte) ){
-    return WRC_Prune;
+  ఒకవేళ( p->selFlags & (SF_View|SF_CopyCte) ){
+    తిరిగి WRC_Prune;
   }
-  if( ALWAYS(p->pEList) ){
-    ExprList *pList = p->pEList;
-    for(i=0; i<pList->nExpr; i++){
-      if( pList->a[i].zEName && pList->a[i].fg.eEName==ENAME_NAME ){
-        sqlite3RenameTokenRemap(pParse, 0, (void*)pList->a[i].zEName);
+  ఒకవేళ( ALWAYS(p->pEList) ){
+    సమాసం_List *pList = p->pEList;
+    కొరకు(i=0; i<pList->n_సమాసం; i++){
+      ఒకవేళ( pList->a[i].zEName && pList->a[i].fg.eEName==ENAME_NAME ){
+        sqlite3RenameTokenRemap(pParse, 0, (శూన్య*)pList->a[i].zEName);
       }
     }
   }
-  if( ALWAYS(p->pSrc) ){  /* Every Select as a SrcList, even if it is empty */
+  ఒకవేళ( ALWAYS(p->pSrc) ){  /* Every Select as a SrcList, even if it is empty */
     SrcList *pSrc = p->pSrc;
-    for(i=0; i<pSrc->nSrc; i++){
-      sqlite3RenameTokenRemap(pParse, 0, (void*)pSrc->a[i].zName);
-      if( pSrc->a[i].fg.isUsing==0 ){
-        sqlite3WalkExpr(pWalker, pSrc->a[i].u3.pOn);
-      }else{
-        unmapColumnIdlistNames(pParse, pSrc->a[i].u3.pUsing);
+    కొరకు(i=0; i<pSrc->nSrc; i++){
+      sqlite3RenameTokenRemap(pParse, 0, (శూన్య*)pSrc->a[i].zName);
+      ఒకవేళ( pSrc->a[i].fg.isUsing==0 ){
+        sqlite3_Walk_సమాసం(pWalker, pSrc->a[i].u3.pOn);
+      }లేకపోతే{
+        unmap_స్తంభం_Idlist_పేర్లు(pParse, pSrc->a[i].u3.pUsing);
       }
     }
   }
 
   renameWalkWith(pWalker, p);
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
 ** Remove all nodes that are part of expression pExpr from the rename list.
 */
-void sqlite3RenameExprUnmap(Parse *pParse, Expr *pExpr){
-  u8 eMode = pParse->eParseMode;
+శూన్య sqlite3_Rename_సమాసం_Unmap(Parse *pParse, సమాసం *p_సమాసం){
+  u8 e_బహుళకం = pParse->e_Parse_బహుళకం;
   Walker sWalker;
-  memset(&sWalker, 0, sizeof(Walker));
+  memset(&sWalker, 0, పరిమాణం(Walker));
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = renameUnmapExprCb;
+  sWalker.x_సమాసం_Callback = rename_Unmap_సమాసం_Cb;
   sWalker.xSelectCallback = renameUnmapSelectCb;
-  pParse->eParseMode = PARSE_MODE_UNMAP;
-  sqlite3WalkExpr(&sWalker, pExpr);
-  pParse->eParseMode = eMode;
+  pParse->e_Parse_బహుళకం = PARSE_బహుళకం_UNMAP;
+  sqlite3_Walk_సమాసం(&sWalker, p_సమాసం);
+  pParse->e_Parse_బహుళకం = e_బహుళకం;
 }
 
 /*
 ** Remove all nodes that are part of expression-list pEList from the
 ** rename list.
 */
-void sqlite3RenameExprlistUnmap(Parse *pParse, ExprList *pEList){
-  if( pEList ){
-    int i;
+శూన్య sqlite3RenameExprlistUnmap(Parse *pParse, సమాసం_List *pEList){
+  ఒకవేళ( pEList ){
+    పూర్ణాంకం i;
     Walker sWalker;
-    memset(&sWalker, 0, sizeof(Walker));
+    memset(&sWalker, 0, పరిమాణం(Walker));
     sWalker.pParse = pParse;
-    sWalker.xExprCallback = renameUnmapExprCb;
-    sqlite3WalkExprList(&sWalker, pEList);
-    for(i=0; i<pEList->nExpr; i++){
-      if( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME) ){
-        sqlite3RenameTokenRemap(pParse, 0, (void*)pEList->a[i].zEName);
+    sWalker.x_సమాసం_Callback = rename_Unmap_సమాసం_Cb;
+    sqlite3_Walk_సమాసం_List(&sWalker, pEList);
+    కొరకు(i=0; i<pEList->n_సమాసం; i++){
+      ఒకవేళ( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME) ){
+        sqlite3RenameTokenRemap(pParse, 0, (శూన్య*)pEList->a[i].zEName);
       }
     }
   }
@@ -975,11 +975,11 @@ void sqlite3RenameExprlistUnmap(Parse *pParse, ExprList *pEList){
 /*
 ** Free the list of RenameToken objects given in the second argument
 */
-static void renameTokenFree(sqlite3 *db, RenameToken *pToken){
-  RenameToken *pNext;
+స్థిర శూన్య renameTokenFree(sqlite3 *db, RenameToken *pToken){
+  RenameToken *p_తదుపరి;
   RenameToken *p;
-  for(p=pToken; p; p=pNext){
-    pNext = p->pNext;
+  కొరకు(p=pToken; p; p=p_తదుపరి){
+    p_తదుపరి = p->p_తదుపరి;
     sqlite3DbFree(db, p);
   }
 }
@@ -993,28 +993,28 @@ static void renameTokenFree(sqlite3 *db, RenameToken *pToken){
 ** RenameToken object is found, remove it from the Parse object and add it to
 ** the list maintained by the RenameCtx object.
 */
-static RenameToken *renameTokenFind(
+స్థిర RenameToken *rename_Token_కనుగొను(
   Parse *pParse,
-  struct RenameCtx *pCtx,
-  const void *pPtr
+  నిర్మాణం RenameCtx *pCtx,
+  స్థిరరాశి శూన్య *pPtr
 ){
   RenameToken **pp;
-  if( NEVER(pPtr==0) ){
-    return 0;
+  ఒకవేళ( NEVER(pPtr==0) ){
+    తిరిగి 0;
   }
-  for(pp=&pParse->pRename; (*pp); pp=&(*pp)->pNext){
-    if( (*pp)->p==pPtr ){
+  కొరకు(pp=&pParse->pRename; (*pp); pp=&(*pp)->p_తదుపరి){
+    ఒకవేళ( (*pp)->p==pPtr ){
       RenameToken *pToken = *pp;
-      if( pCtx ){
-        *pp = pToken->pNext;
-        pToken->pNext = pCtx->pList;
+      ఒకవేళ( pCtx ){
+        *pp = pToken->p_తదుపరి;
+        pToken->p_తదుపరి = pCtx->pList;
         pCtx->pList = pToken;
         pCtx->nList++;
       }
-      return pToken;
+      తిరిగి pToken;
     }
   }
-  return 0;
+  తిరిగి 0;
 }
 
 /*
@@ -1022,14 +1022,14 @@ static RenameToken *renameTokenFind(
 ** because without a dummy callback, sqlite3WalkExpr() and similar do not
 ** descend into sub-select statements.
 */
-static int renameColumnSelectCb(Walker *pWalker, Select *p){
-  if( p->selFlags & (SF_View|SF_CopyCte) ){
+స్థిర పూర్ణాంకం rename_స్తంభం_Select_Cb(Walker *pWalker, Select *p){
+  ఒకవేళ( p->selFlags & (SF_View|SF_CopyCte) ){
     testcase( p->selFlags & SF_View );
     testcase( p->selFlags & SF_CopyCte );
-    return WRC_Prune;
+    తిరిగి WRC_Prune;
   }
   renameWalkWith(pWalker, p);
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
@@ -1041,21 +1041,21 @@ static int renameColumnSelectCb(Walker *pWalker, Select *p){
 ** RenameToken object to the list of RenameToken objects being
 ** constructed in RenameCtx object at pWalker->u.pRename.
 */
-static int renameColumnExprCb(Walker *pWalker, Expr *pExpr){
+స్థిర పూర్ణాంకం rename_స్తంభం_సమాసం_Cb(Walker *pWalker, సమాసం *p_సమాసం){
   RenameCtx *p = pWalker->u.pRename;
-  if( pExpr->op==TK_TRIGGER
-   && pExpr->iColumn==p->iCol
+  ఒకవేళ( p_సమాసం->op==TK_TRIGGER
+   && p_సమాసం->i_స్తంభం==p->i_నిలువు
    && pWalker->pParse->pTriggerTab==p->pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)pExpr);
-  }else if( pExpr->op==TK_COLUMN
-   && pExpr->iColumn==p->iCol
-   && ALWAYS(ExprUseYTab(pExpr))
-   && p->pTab==pExpr->y.pTab
+    rename_Token_కనుగొను(pWalker->pParse, p, (శూన్య*)p_సమాసం);
+  }లేకపోతే ఒకవేళ( p_సమాసం->op==TK_స్తంభం
+   && p_సమాసం->i_స్తంభం==p->i_నిలువు
+   && ALWAYS(సమాసం_Use_YTab(p_సమాసం))
+   && p->pTab==p_సమాసం->y.pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)pExpr);
+    rename_Token_కనుగొను(pWalker->pParse, p, (శూన్య*)p_సమాసం);
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
@@ -1067,36 +1067,36 @@ static int renameColumnExprCb(Walker *pWalker, Expr *pExpr){
 ** return all column name tokens in the order that they are encountered
 ** in the SQL statement.
 */
-static RenameToken *renameColumnTokenNext(RenameCtx *pCtx){
-  RenameToken *pBest = pCtx->pList;
+స్థిర RenameToken *rename_స్తంభం_Token_తదుపరి(RenameCtx *pCtx){
+  RenameToken *p_ఉత్తమ = pCtx->pList;
   RenameToken *pToken;
   RenameToken **pp;
 
-  for(pToken=pBest->pNext; pToken; pToken=pToken->pNext){
-    if( pToken->t.z>pBest->t.z ) pBest = pToken;
+  కొరకు(pToken=p_ఉత్తమ->p_తదుపరి; pToken; pToken=pToken->p_తదుపరి){
+    ఒకవేళ( pToken->t.z>p_ఉత్తమ->t.z ) p_ఉత్తమ = pToken;
   }
-  for(pp=&pCtx->pList; *pp!=pBest; pp=&(*pp)->pNext);
-  *pp = pBest->pNext;
+  కొరకు(pp=&pCtx->pList; *pp!=p_ఉత్తమ; pp=&(*pp)->p_తదుపరి);
+  *pp = p_ఉత్తమ->p_తదుపరి;
 
-  return pBest;
+  తిరిగి p_ఉత్తమ;
 }
 
 /*
 ** Set the error message of the context passed as the first argument to
 ** the result of formatting zFmt using printf() style formatting.
 */
-static void errorMPrintf(sqlite3_context *pCtx, const char *zFmt, ...){
+స్థిర శూన్య errorMPrintf(sqlite3_context *pCtx, స్థిరరాశి అక్షరం *zFmt, ...){
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  char *zErr = 0;
+  అక్షరం *zErr = 0;
   va_list ap;
   va_start(ap, zFmt);
   zErr = sqlite3VMPrintf(db, zFmt, ap);
   va_end(ap);
-  if( zErr ){
-    sqlite3_result_error(pCtx, zErr, -1);
+  ఒకవేళ( zErr ){
+    sqlite3_ఫలితం_error(pCtx, zErr, -1);
     sqlite3DbFree(db, zErr);
-  }else{
-    sqlite3_result_error_nomem(pCtx);
+  }లేకపోతే{
+    sqlite3_ఫలితం_error_nomem(pCtx);
   }
 }
 
@@ -1107,22 +1107,22 @@ static void errorMPrintf(sqlite3_context *pCtx, const char *zFmt, ...){
 ** sub-routine is currently stored in pParse->zErrMsg. This function
 ** adds context to the error message and then stores it in pCtx.
 */
-static void renameColumnParseError(
+స్థిర శూన్య rename_స్తంభం_Parse_Error(
   sqlite3_context *pCtx,
-  const char *zWhen,
-  sqlite3_value *pType,
-  sqlite3_value *pObject,
+  స్థిరరాశి అక్షరం *zWhen,
+  sqlite3_విలువ *pType,
+  sqlite3_విలువ *pObject,
   Parse *pParse
 ){
-  const char *zT = (const char*)sqlite3_value_text(pType);
-  const char *zN = (const char*)sqlite3_value_text(pObject);
-  char *zErr;
+  స్థిరరాశి అక్షరం *zT = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pType);
+  స్థిరరాశి అక్షరం *zN = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(pObject);
+  అక్షరం *zErr;
 
   zErr = sqlite3MPrintf(pParse->db, "error in %s %s%s%s: %s",
       zT, zN, (zWhen[0] ? " " : ""), zWhen,
-      pParse->zErrMsg
+      pParse->z_Err_సందేశం
   );
-  sqlite3_result_error(pCtx, zErr, -1);
+  sqlite3_ఫలితం_error(pCtx, zErr, -1);
   sqlite3DbFree(pParse->db, zErr);
 }
 
@@ -1132,21 +1132,21 @@ static void renameColumnParseError(
 ** corresponding rename-token from Parse object pParse and add it
 ** to the RenameCtx pCtx.
 */
-static void renameColumnElistNames(
+స్థిర శూన్య rename_స్తంభం_Elist_పేర్లు(
   Parse *pParse,
   RenameCtx *pCtx,
-  const ExprList *pEList,
-  const char *zOld
+  స్థిరరాశి సమాసం_List *pEList,
+  స్థిరరాశి అక్షరం *zOld
 ){
-  if( pEList ){
-    int i;
-    for(i=0; i<pEList->nExpr; i++){
-      const char *zName = pEList->a[i].zEName;
-      if( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME)
+  ఒకవేళ( pEList ){
+    పూర్ణాంకం i;
+    కొరకు(i=0; i<pEList->n_సమాసం; i++){
+      స్థిరరాశి అక్షరం *zName = pEList->a[i].zEName;
+      ఒకవేళ( ALWAYS(pEList->a[i].fg.eEName==ENAME_NAME)
        && ALWAYS(zName!=0)
        && 0==sqlite3_stricmp(zName, zOld)
       ){
-        renameTokenFind(pParse, pCtx, (const void*)zName);
+        rename_Token_కనుగొను(pParse, pCtx, (స్థిరరాశి శూన్య*)zName);
       }
     }
   }
@@ -1157,18 +1157,18 @@ static void renameColumnElistNames(
 ** that matches the string in zOld, extract the corresponding rename-token
 ** from Parse object pParse and add it to the RenameCtx pCtx.
 */
-static void renameColumnIdlistNames(
+స్థిర శూన్య rename_స్తంభం_Idlist_పేర్లు(
   Parse *pParse,
   RenameCtx *pCtx,
-  const IdList *pIdList,
-  const char *zOld
+  స్థిరరాశి IdList *pIdList,
+  స్థిరరాశి అక్షరం *zOld
 ){
-  if( pIdList ){
-    int i;
-    for(i=0; i<pIdList->nId; i++){
-      const char *zName = pIdList->a[i].zName;
-      if( 0==sqlite3_stricmp(zName, zOld) ){
-        renameTokenFind(pParse, pCtx, (const void*)zName);
+  ఒకవేళ( pIdList ){
+    పూర్ణాంకం i;
+    కొరకు(i=0; i<pIdList->nId; i++){
+      స్థిరరాశి అక్షరం *zName = pIdList->a[i].zName;
+      ఒకవేళ( 0==sqlite3_stricmp(zName, zOld) ){
+        rename_Token_కనుగొను(pParse, pCtx, (స్థిరరాశి శూన్య*)zName);
       }
     }
   }
@@ -1179,59 +1179,59 @@ static void renameColumnIdlistNames(
 ** Parse the SQL statement zSql using Parse object (*p). The Parse object
 ** is initialized by this function before it is used.
 */
-static int renameParseSql(
+స్థిర పూర్ణాంకం renameParseSql(
   Parse *p,                       /* Memory to use for Parse object */
-  const char *zDb,                /* Name of schema SQL belongs to */
+  స్థిరరాశి అక్షరం *zDb,                /* Name of schema SQL belongs to */
   sqlite3 *db,                    /* Database handle */
-  const char *zSql,               /* SQL to parse */
-  int bTemp                       /* True if SQL is from temp schema */
+  స్థిరరాశి అక్షరం *zSql,               /* SQL to parse */
+  పూర్ణాంకం b_తాత్కాలిక                       /* True if SQL is from temp schema */
 ){
-  int rc;
+  పూర్ణాంకం rc;
   u64 flags;
 
   sqlite3ParseObjectInit(p, db);
-  if( zSql==0 ){
-    return SQLITE_NOMEM;
+  ఒకవేళ( zSql==0 ){
+    తిరిగి SQLITE_NOMEM;
   }
-  if( sqlite3StrNICmp(zSql,"CREATE ",7)!=0 ){
-    return SQLITE_CORRUPT_BKPT;
+  ఒకవేళ( sqlite3StrNICmp(zSql,"CREATE ",7)!=0 ){
+    తిరిగి SQLITE_CORRUPT_BKPT;
   }
-  if( bTemp ){
+  ఒకవేళ( b_తాత్కాలిక ){
     db->init.iDb = 1;
-  }else{
-    int iDb = sqlite3FindDbName(db, zDb);
-    assert( iDb>=0 && iDb<=0xff );
+  }లేకపోతే{
+    పూర్ణాంకం iDb = sqlite3_కనుగొను_Db_Name(db, zDb);
+    ప్రతిజ్ఞా( iDb>=0 && iDb<=0xff );
     db->init.iDb = (u8)iDb;
   }
-  p->eParseMode = PARSE_MODE_RENAME;
+  p->e_Parse_బహుళకం = PARSE_బహుళకం_RENAME;
   p->db = db;
   p->nQueryLoop = 1;
   flags = db->flags;
-  testcase( (db->flags & SQLITE_Comments)==0 && strstr(zSql," /* ")!=0 );
+  testcase( (db->flags & SQLITE_Comments)==0 && అక్షరశ్రేణి_శోధన(zSql," /* ")!=0 );
   db->flags |= SQLITE_Comments;
-  rc = sqlite3RunParser(p, zSql);
+  rc = sqlite3_నిరంతరం_Parser(p, zSql);
   db->flags = flags;
-  if( db->mallocFailed ) rc = SQLITE_NOMEM;
-  if( rc==SQLITE_OK
-   && NEVER(p->pNewTable==0 && p->pNewIndex==0 && p->pNewTrigger==0)
+  ఒకవేళ( db->mallocFailed ) rc = SQLITE_NOMEM;
+  ఒకవేళ( rc==SQLITE_OK
+   && NEVER(p->p_New_పట్టిక==0 && p->p_New_సూచీ==0 && p->pNewTrigger==0)
   ){
     rc = SQLITE_CORRUPT_BKPT;
   }
 
-#ifdef SQLITE_DEBUG
+#నిర్వచితమైతే SQLITE_DEBUG
   /* Ensure that all mappings in the Parse.pRename list really do map to
   ** a part of the input string.  */
-  if( rc==SQLITE_OK ){
-    int nSql = sqlite3Strlen30(zSql);
+  ఒకవేళ( rc==SQLITE_OK ){
+    పూర్ణాంకం nSql = sqlite3Strlen30(zSql);
     RenameToken *pToken;
-    for(pToken=p->pRename; pToken; pToken=pToken->pNext){
-      assert( pToken->t.z>=zSql && &pToken->t.z[pToken->t.n]<=&zSql[nSql] );
+    కొరకు(pToken=p->pRename; pToken; pToken=pToken->p_తదుపరి){
+      ప్రతిజ్ఞా( pToken->t.z>=zSql && &pToken->t.z[pToken->t.n]<=&zSql[nSql] );
     }
   }
-#endif
+#అయితే_ముగింపు
 
   db->init.iDb = 0;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -1243,44 +1243,44 @@ static int renameParseSql(
 ** Or, if an error occurs (i.e. an OOM condition), an error is left in
 ** pCtx and an SQLite error code returned.
 */
-static int renameEditSql(
+స్థిర పూర్ణాంకం renameEditSql(
   sqlite3_context *pCtx,          /* Return result here */
   RenameCtx *pRename,             /* Rename context */
-  const char *zSql,               /* SQL statement to edit */
-  const char *zNew,               /* New token text */
-  int bQuote                      /* True to always quote token */
+  స్థిరరాశి అక్షరం *zSql,               /* SQL statement to edit */
+  స్థిరరాశి అక్షరం *zNew,               /* New token text */
+  పూర్ణాంకం bQuote                      /* True to always quote token */
 ){
   i64 nNew = sqlite3Strlen30(zNew);
   i64 nSql = sqlite3Strlen30(zSql);
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  int rc = SQLITE_OK;
-  char *zQuot = 0;
-  char *zOut;
+  పూర్ణాంకం rc = SQLITE_OK;
+  అక్షరం *zQuot = 0;
+  అక్షరం *z_బహిర్గతం;
   i64 nQuot = 0;
-  char *zBuf1 = 0;
-  char *zBuf2 = 0;
+  అక్షరం *zBuf1 = 0;
+  అక్షరం *zBuf2 = 0;
 
-  if( zNew ){
+  ఒకవేళ( zNew ){
     /* Set zQuot to point to a buffer containing a quoted copy of the
     ** identifier zNew. If the corresponding identifier in the original
     ** ALTER TABLE statement was quoted (bQuote==1), then set zNew to
     ** point to zQuot so that all substitutions are made using the
     ** quoted version of the new column name.  */
     zQuot = sqlite3MPrintf(db, "\"%w\" ", zNew);
-    if( zQuot==0 ){
-      return SQLITE_NOMEM;
-    }else{
+    ఒకవేళ( zQuot==0 ){
+      తిరిగి SQLITE_NOMEM;
+    }లేకపోతే{
       nQuot = sqlite3Strlen30(zQuot)-1;
     }
 
-    assert( nQuot>=nNew && nSql>=0 && nNew>=0 );
-    zOut = sqlite3DbMallocZero(db, (u64)nSql + pRename->nList*(u64)nQuot + 1);
-  }else{
-    assert( nSql>0 );
-    zOut = (char*)sqlite3DbMallocZero(db, (2*(u64)nSql + 1) * 3);
-    if( zOut ){
-      zBuf1 = &zOut[nSql*2+1];
-      zBuf2 = &zOut[nSql*4+2];
+    ప్రతిజ్ఞా( nQuot>=nNew && nSql>=0 && nNew>=0 );
+    z_బహిర్గతం = sqlite3DbMallocZero(db, (u64)nSql + pRename->nList*(u64)nQuot + 1);
+  }లేకపోతే{
+    ప్రతిజ్ఞా( nSql>0 );
+    z_బహిర్గతం = (అక్షరం*)sqlite3DbMallocZero(db, (2*(u64)nSql + 1) * 3);
+    ఒకవేళ( z_బహిర్గతం ){
+      zBuf1 = &z_బహిర్గతం[nSql*2+1];
+      zBuf2 = &z_బహిర్గతం[nSql*4+2];
     }
   }
 
@@ -1288,74 +1288,74 @@ static int renameEditSql(
   ** corresponding to all tokens in the input SQL that must be replaced
   ** with the new column name, or with single-quoted versions of themselves.
   ** All that remains is to construct and return the edited SQL string. */
-  if( zOut ){
-    i64 nOut = nSql;
-    assert( nSql>0 );
-    memcpy(zOut, zSql, (size_t)nSql);
-    while( pRename->pList ){
-      int iOff;                   /* Offset of token to replace in zOut */
+  ఒకవేళ( z_బహిర్గతం ){
+    i64 n_బహిర్గతం = nSql;
+    ప్రతిజ్ఞా( nSql>0 );
+    జ్ఞాపకం_నకలు(z_బహిర్గతం, zSql, (size_t)nSql);
+    అయితే( pRename->pList ){
+      పూర్ణాంకం iOff;                   /* Offset of token to replace in zOut */
       i64 nReplace;
-      const char *zReplace;
-      RenameToken *pBest = renameColumnTokenNext(pRename);
+      స్థిరరాశి అక్షరం *zReplace;
+      RenameToken *p_ఉత్తమ = rename_స్తంభం_Token_తదుపరి(pRename);
 
-      if( zNew ){
-        if( bQuote==0 && sqlite3IsIdChar(*(u8*)pBest->t.z) ){
+      ఒకవేళ( zNew ){
+        ఒకవేళ( bQuote==0 && sqlite3IsIdChar(*(u8*)p_ఉత్తమ->t.z) ){
           nReplace = nNew;
           zReplace = zNew;
-        }else{
+        }లేకపోతే{
           nReplace = nQuot;
           zReplace = zQuot;
-          if( pBest->t.z[pBest->t.n]=='"' ) nReplace++;
+          ఒకవేళ( p_ఉత్తమ->t.z[p_ఉత్తమ->t.n]=='"' ) nReplace++;
         }
-      }else{
+      }లేకపోతే{
         /* Dequote the double-quoted token. Then requote it again, this time
         ** using single quotes. If the character immediately following the
         ** original token within the input SQL was a single quote ('), then
         ** add another space after the new, single-quoted version of the
         ** token. This is so that (SELECT "string"'alias') maps to
         ** (SELECT 'string' 'alias'), and not (SELECT 'string''alias').  */
-        memcpy(zBuf1, pBest->t.z, pBest->t.n);
-        zBuf1[pBest->t.n] = 0;
+        జ్ఞాపకం_నకలు(zBuf1, p_ఉత్తమ->t.z, p_ఉత్తమ->t.n);
+        zBuf1[p_ఉత్తమ->t.n] = 0;
         sqlite3Dequote(zBuf1);
-        assert( nSql < 0x15555554 /* otherwise malloc would have failed */ );
-        sqlite3_snprintf((int)(nSql*2), zBuf2, "%Q%s", zBuf1,
-            pBest->t.z[pBest->t.n]=='\'' ? " " : ""
+        ప్రతిజ్ఞా( nSql < 0x15555554 /* otherwise malloc would have failed */ );
+        sqlite3_snprintf((పూర్ణాంకం)(nSql*2), zBuf2, "%Q%s", zBuf1,
+            p_ఉత్తమ->t.z[p_ఉత్తమ->t.n]=='\'' ? " " : ""
         );
         zReplace = zBuf2;
         nReplace = sqlite3Strlen30(zReplace);
       }
 
-      iOff = (int)(pBest->t.z - zSql);
-      if( pBest->t.n!=nReplace ){
-        memmove(&zOut[iOff + nReplace], &zOut[iOff + pBest->t.n],
-            nOut - (iOff + pBest->t.n)
+      iOff = (పూర్ణాంకం)(p_ఉత్తమ->t.z - zSql);
+      ఒకవేళ( p_ఉత్తమ->t.n!=nReplace ){
+        memmove(&z_బహిర్గతం[iOff + nReplace], &z_బహిర్గతం[iOff + p_ఉత్తమ->t.n],
+            n_బహిర్గతం - (iOff + p_ఉత్తమ->t.n)
         );
-        nOut += nReplace - pBest->t.n;
-        zOut[nOut] = '\0';
+        n_బహిర్గతం += nReplace - p_ఉత్తమ->t.n;
+        z_బహిర్గతం[n_బహిర్గతం] = '\0';
       }
-      memcpy(&zOut[iOff], zReplace, nReplace);
-      sqlite3DbFree(db, pBest);
+      జ్ఞాపకం_నకలు(&z_బహిర్గతం[iOff], zReplace, nReplace);
+      sqlite3DbFree(db, p_ఉత్తమ);
     }
 
-    sqlite3_result_text(pCtx, zOut, -1, SQLITE_TRANSIENT);
-    sqlite3DbFree(db, zOut);
-  }else{
+    sqlite3_ఫలితం_పాఠ్యం(pCtx, z_బహిర్గతం, -1, SQLITE_TRANSIENT);
+    sqlite3DbFree(db, z_బహిర్గతం);
+  }లేకపోతే{
     rc = SQLITE_NOMEM;
   }
 
   sqlite3_free(zQuot);
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Set all pEList->a[].fg.eEName fields in the expression-list to val.
 */
-static void renameSetENames(ExprList *pEList, int val){
-  assert( val==ENAME_NAME || val==ENAME_TAB || val==ENAME_SPAN );
-  if( pEList ){
-    int i;
-    for(i=0; i<pEList->nExpr; i++){
-      assert( val==ENAME_NAME || pEList->a[i].fg.eEName==ENAME_NAME );
+స్థిర శూన్య rename_సమితి_ENames(సమాసం_List *pEList, పూర్ణాంకం val){
+  ప్రతిజ్ఞా( val==ENAME_NAME || val==ENAME_TAB || val==ENAME_పరిధి );
+  ఒకవేళ( pEList ){
+    పూర్ణాంకం i;
+    కొరకు(i=0; i<pEList->n_సమాసం; i++){
+      ప్రతిజ్ఞా( val==ENAME_NAME || pEList->a[i].fg.eEName==ENAME_NAME );
       pEList->a[i].fg.eEName = val&0x3;
     }
   }
@@ -1367,47 +1367,47 @@ static void renameSetENames(ExprList *pEList, int val){
 ** successful. Otherwise, return an SQLite error code and leave an error
 ** message in the Parse object.
 */
-static int renameResolveTrigger(Parse *pParse){
+స్థిర పూర్ణాంకం renameResolveTrigger(Parse *pParse){
   sqlite3 *db = pParse->db;
   Trigger *pNew = pParse->pNewTrigger;
-  TriggerStep *pStep;
+  Trigger_అడుగు *p_అడుగు;
   NameContext sNC;
-  int rc = SQLITE_OK;
+  పూర్ణాంకం rc = SQLITE_OK;
 
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, పరిమాణం(sNC));
   sNC.pParse = pParse;
-  assert( pNew->pTabSchema );
-  pParse->pTriggerTab = sqlite3FindTable(db, pNew->table,
-      db->aDb[sqlite3SchemaToIndex(db, pNew->pTabSchema)].zDbSName
+  ప్రతిజ్ఞా( pNew->pTabSchema );
+  pParse->pTriggerTab = sqlite3_కనుగొను_పట్టిక(db, pNew->పట్టిక_2,
+      db->aDb[sqlite3_Schema_గమ్యం_సూచీ(db, pNew->pTabSchema)].zDbSName
   );
   pParse->eTriggerOp = pNew->op;
   /* ALWAYS() because if the table of the trigger does not exist, the
   ** error would have been hit before this point */
-  if( ALWAYS(pParse->pTriggerTab) ){
-    rc = sqlite3ViewGetColumnNames(pParse, pParse->pTriggerTab)!=0;
+  ఒకవేళ( ALWAYS(pParse->pTriggerTab) ){
+    rc = sqlite3_View_Get_స్తంభం_పేర్లు(pParse, pParse->pTriggerTab)!=0;
   }
 
   /* Resolve symbols in WHEN clause */
-  if( rc==SQLITE_OK && pNew->pWhen ){
-    rc = sqlite3ResolveExprNames(&sNC, pNew->pWhen);
+  ఒకవేళ( rc==SQLITE_OK && pNew->pWhen ){
+    rc = sqlite3_Resolve_సమాసం_పేర్లు(&sNC, pNew->pWhen);
   }
 
-  for(pStep=pNew->step_list; rc==SQLITE_OK && pStep; pStep=pStep->pNext){
-    if( pStep->pSelect ){
-      sqlite3SelectPrep(pParse, pStep->pSelect, &sNC);
-      if( pParse->nErr ) rc = pParse->rc;
+  కొరకు(p_అడుగు=pNew->అడుగు_list; rc==SQLITE_OK && p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
+    ఒకవేళ( p_అడుగు->pSelect ){
+      sqlite3SelectPrep(pParse, p_అడుగు->pSelect, &sNC);
+      ఒకవేళ( pParse->nErr ) rc = pParse->rc;
     }
-    if( rc==SQLITE_OK && pStep->pSrc ){
-      SrcList *pSrc = sqlite3SrcListDup(db, pStep->pSrc, 0);
-      if( pSrc ){
+    ఒకవేళ( rc==SQLITE_OK && p_అడుగు->pSrc ){
+      SrcList *pSrc = sqlite3SrcListDup(db, p_అడుగు->pSrc, 0);
+      ఒకవేళ( pSrc ){
         Select *pSel = sqlite3SelectNew(
-            pParse, pStep->pExprList, pSrc, 0, 0, 0, 0, 0, 0
+            pParse, p_అడుగు->p_సమాసం_List, pSrc, 0, 0, 0, 0, 0, 0
         );
-        if( pSel==0 ){
-          pStep->pExprList = 0;
+        ఒకవేళ( pSel==0 ){
+          p_అడుగు->p_సమాసం_List = 0;
           pSrc = 0;
           rc = SQLITE_NOMEM;
-        }else{
+        }లేకపోతే{
           /* pStep->pExprList contains an expression-list used for an UPDATE
           ** statement. So the a[].zEName values are the RHS of the
           ** "<col> = <expr>" clauses of the UPDATE statement. So, before
@@ -1416,94 +1416,94 @@ static int renameResolveTrigger(Parse *pParse){
           ** ENAME_NAME). This is to prevent any ids in ON() clauses that are
           ** part of pSrc from being incorrectly resolved against the
           ** a[].zEName values as if they were column aliases.  */
-          renameSetENames(pStep->pExprList, ENAME_SPAN);
+          rename_సమితి_ENames(p_అడుగు->p_సమాసం_List, ENAME_పరిధి);
           sqlite3SelectPrep(pParse, pSel, 0);
-          renameSetENames(pStep->pExprList, ENAME_NAME);
+          rename_సమితి_ENames(p_అడుగు->p_సమాసం_List, ENAME_NAME);
           rc = pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
-          assert( pStep->pExprList==0 || pStep->pExprList==pSel->pEList );
-          assert( pSrc==pSel->pSrc );
-          if( pStep->pExprList ) pSel->pEList = 0;
+          ప్రతిజ్ఞా( p_అడుగు->p_సమాసం_List==0 || p_అడుగు->p_సమాసం_List==pSel->pEList );
+          ప్రతిజ్ఞా( pSrc==pSel->pSrc );
+          ఒకవేళ( p_అడుగు->p_సమాసం_List ) pSel->pEList = 0;
           pSel->pSrc = 0;
           sqlite3SelectDelete(db, pSel);
         }
-        if( ALWAYS(pStep->pSrc) ){
-          int i;
-          for(i=0; i<pStep->pSrc->nSrc && rc==SQLITE_OK; i++){
-            SrcItem *p = &pStep->pSrc->a[i];
-            if( p->fg.isSubquery ){
-              assert( p->u4.pSubq!=0 );
+        ఒకవేళ( ALWAYS(p_అడుగు->pSrc) ){
+          పూర్ణాంకం i;
+          కొరకు(i=0; i<p_అడుగు->pSrc->nSrc && rc==SQLITE_OK; i++){
+            Src_అంశం *p = &p_అడుగు->pSrc->a[i];
+            ఒకవేళ( p->fg.isSubquery ){
+              ప్రతిజ్ఞా( p->u4.pSubq!=0 );
               sqlite3SelectPrep(pParse, p->u4.pSubq->pSelect, 0);
             }
           }
         }
 
-        if(  db->mallocFailed ){
+        ఒకవేళ(  db->mallocFailed ){
           rc = SQLITE_NOMEM;
         }
         sNC.pSrcList = pSrc;
-        if( rc==SQLITE_OK && pStep->pWhere ){
-          rc = sqlite3ResolveExprNames(&sNC, pStep->pWhere);
+        ఒకవేళ( rc==SQLITE_OK && p_అడుగు->pWhere ){
+          rc = sqlite3_Resolve_సమాసం_పేర్లు(&sNC, p_అడుగు->pWhere);
         }
-        if( rc==SQLITE_OK ){
-          rc = sqlite3ResolveExprListNames(&sNC, pStep->pExprList);
+        ఒకవేళ( rc==SQLITE_OK ){
+          rc = sqlite3_Resolve_సమాసం_List_పేర్లు(&sNC, p_అడుగు->p_సమాసం_List);
         }
-        assert( !pStep->pUpsert || (!pStep->pWhere && !pStep->pExprList) );
-        if( pStep->pUpsert && rc==SQLITE_OK ){
-          Upsert *pUpsert = pStep->pUpsert;
+        ప్రతిజ్ఞా( !p_అడుగు->pUpsert || (!p_అడుగు->pWhere && !p_అడుగు->p_సమాసం_List) );
+        ఒకవేళ( p_అడుగు->pUpsert && rc==SQLITE_OK ){
+          Upsert *pUpsert = p_అడుగు->pUpsert;
           pUpsert->pUpsertSrc = pSrc;
           sNC.uNC.pUpsert = pUpsert;
           sNC.ncFlags = NC_UUpsert;
-          rc = sqlite3ResolveExprListNames(&sNC, pUpsert->pUpsertTarget);
-          if( rc==SQLITE_OK ){
-            ExprList *pUpsertSet = pUpsert->pUpsertSet;
-            rc = sqlite3ResolveExprListNames(&sNC, pUpsertSet);
+          rc = sqlite3_Resolve_సమాసం_List_పేర్లు(&sNC, pUpsert->p_Upsert_లక్ష్యం);
+          ఒకవేళ( rc==SQLITE_OK ){
+            సమాసం_List *p_Upsert_సమితి = pUpsert->p_Upsert_సమితి;
+            rc = sqlite3_Resolve_సమాసం_List_పేర్లు(&sNC, p_Upsert_సమితి);
           }
-          if( rc==SQLITE_OK ){
-            rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertWhere);
+          ఒకవేళ( rc==SQLITE_OK ){
+            rc = sqlite3_Resolve_సమాసం_పేర్లు(&sNC, pUpsert->pUpsertWhere);
           }
-          if( rc==SQLITE_OK ){
-            rc = sqlite3ResolveExprNames(&sNC, pUpsert->pUpsertTargetWhere);
+          ఒకవేళ( rc==SQLITE_OK ){
+            rc = sqlite3_Resolve_సమాసం_పేర్లు(&sNC, pUpsert->p_Upsert_లక్ష్యం_Where);
           }
           sNC.ncFlags = 0;
         }
         sNC.pSrcList = 0;
         sqlite3SrcListDelete(db, pSrc);
-      }else{
+      }లేకపోతే{
         rc = SQLITE_NOMEM;
       }
     }
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Invoke sqlite3WalkExpr() or sqlite3WalkSelect() on all Select or Expr
 ** objects that are part of the trigger passed as the second argument.
 */
-static void renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
-  TriggerStep *pStep;
+స్థిర శూన్య renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
+  Trigger_అడుగు *p_అడుగు;
 
   /* Find tokens to edit in WHEN clause */
-  sqlite3WalkExpr(pWalker, pTrigger->pWhen);
+  sqlite3_Walk_సమాసం(pWalker, pTrigger->pWhen);
 
   /* Find tokens to edit in trigger steps */
-  for(pStep=pTrigger->step_list; pStep; pStep=pStep->pNext){
-    sqlite3WalkSelect(pWalker, pStep->pSelect);
-    sqlite3WalkExpr(pWalker, pStep->pWhere);
-    sqlite3WalkExprList(pWalker, pStep->pExprList);
-    if( pStep->pUpsert ){
-      Upsert *pUpsert = pStep->pUpsert;
-      sqlite3WalkExprList(pWalker, pUpsert->pUpsertTarget);
-      sqlite3WalkExprList(pWalker, pUpsert->pUpsertSet);
-      sqlite3WalkExpr(pWalker, pUpsert->pUpsertWhere);
-      sqlite3WalkExpr(pWalker, pUpsert->pUpsertTargetWhere);
+  కొరకు(p_అడుగు=pTrigger->అడుగు_list; p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
+    sqlite3WalkSelect(pWalker, p_అడుగు->pSelect);
+    sqlite3_Walk_సమాసం(pWalker, p_అడుగు->pWhere);
+    sqlite3_Walk_సమాసం_List(pWalker, p_అడుగు->p_సమాసం_List);
+    ఒకవేళ( p_అడుగు->pUpsert ){
+      Upsert *pUpsert = p_అడుగు->pUpsert;
+      sqlite3_Walk_సమాసం_List(pWalker, pUpsert->p_Upsert_లక్ష్యం);
+      sqlite3_Walk_సమాసం_List(pWalker, pUpsert->p_Upsert_సమితి);
+      sqlite3_Walk_సమాసం(pWalker, pUpsert->pUpsertWhere);
+      sqlite3_Walk_సమాసం(pWalker, pUpsert->p_Upsert_లక్ష్యం_Where);
     }
-    if( pStep->pSrc ){
-      int i;
-      SrcList *pSrc = pStep->pSrc;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          assert( pSrc->a[i].u4.pSubq!=0 );
+    ఒకవేళ( p_అడుగు->pSrc ){
+      పూర్ణాంకం i;
+      SrcList *pSrc = p_అడుగు->pSrc;
+      కొరకు(i=0; i<pSrc->nSrc; i++){
+        ఒకవేళ( pSrc->a[i].fg.isSubquery ){
+          ప్రతిజ్ఞా( pSrc->a[i].u4.pSubq!=0 );
           sqlite3WalkSelect(pWalker, pSrc->a[i].u4.pSubq->pSelect);
         }
       }
@@ -1515,19 +1515,19 @@ static void renameWalkTrigger(Walker *pWalker, Trigger *pTrigger){
 ** Free the contents of Parse object (*pParse). Do not free the memory
 ** occupied by the Parse object itself.
 */
-static void renameParseCleanup(Parse *pParse){
+స్థిర శూన్య renameParseCleanup(Parse *pParse){
   sqlite3 *db = pParse->db;
-  Index *pIdx;
-  if( pParse->pVdbe ){
+  సూచీ *pIdx;
+  ఒకవేళ( pParse->pVdbe ){
     sqlite3VdbeFinalize(pParse->pVdbe);
   }
-  sqlite3DeleteTable(db, pParse->pNewTable);
-  while( (pIdx = pParse->pNewIndex)!=0 ){
-    pParse->pNewIndex = pIdx->pNext;
-    sqlite3FreeIndex(db, pIdx);
+  sqlite3_Delete_పట్టిక(db, pParse->p_New_పట్టిక);
+  అయితే( (pIdx = pParse->p_New_సూచీ)!=0 ){
+    pParse->p_New_సూచీ = pIdx->p_తదుపరి;
+    sqlite3_Free_సూచీ(db, pIdx);
   }
   sqlite3DeleteTrigger(db, pParse->pNewTrigger);
-  sqlite3DbFree(db, pParse->zErrMsg);
+  sqlite3DbFree(db, pParse->z_Err_సందేశం);
   renameTokenFree(db, pParse->pRename);
   sqlite3ParseObjectReset(pParse);
 }
@@ -1556,208 +1556,208 @@ static void renameParseCleanup(Parse *pParse){
 ** not reachable from ordinary SQL passed into sqlite3_prepare() unless the
 ** SQLITE_TESTCTRL_INTERNAL_FUNCTIONS test setting is enabled.
 */
-static void renameColumnFunc(
+స్థిర శూన్య rename_స్తంభం_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   RenameCtx sCtx;
-  const char *zSql = (const char*)sqlite3_value_text(argv[0]);
-  const char *zDb = (const char*)sqlite3_value_text(argv[3]);
-  const char *zTable = (const char*)sqlite3_value_text(argv[4]);
-  int iCol = sqlite3_value_int(argv[5]);
-  const char *zNew = (const char*)sqlite3_value_text(argv[6]);
-  int bQuote = sqlite3_value_int(argv[7]);
-  int bTemp = sqlite3_value_int(argv[8]);
-  const char *zOld;
-  int rc;
+  స్థిరరాశి అక్షరం *zSql = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  స్థిరరాశి అక్షరం *zDb = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[3]);
+  స్థిరరాశి అక్షరం *z_పట్టిక = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[4]);
+  పూర్ణాంకం i_నిలువు = sqlite3_విలువ_int(argv[5]);
+  స్థిరరాశి అక్షరం *zNew = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[6]);
+  పూర్ణాంకం bQuote = sqlite3_విలువ_int(argv[7]);
+  పూర్ణాంకం b_తాత్కాలిక = sqlite3_విలువ_int(argv[8]);
+  స్థిరరాశి అక్షరం *zOld;
+  పూర్ణాంకం rc;
   Parse sParse;
   Walker sWalker;
-  Index *pIdx;
-  int i;
-  Table *pTab;
-#ifndef SQLITE_OMIT_AUTHORIZATION
+  సూచీ *pIdx;
+  పూర్ణాంకం i;
+  పట్టిక *pTab;
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
-#endif
+#అయితే_ముగింపు
 
-  UNUSED_PARAMETER(NotUsed);
-  if( zSql==0 ) return;
-  if( zTable==0 ) return;
-  if( zNew==0 ) return;
-  if( iCol<0 ) return;
+  వాడని_PARAMETER(Not_వాడిన);
+  ఒకవేళ( zSql==0 ) తిరిగి;
+  ఒకవేళ( z_పట్టిక==0 ) తిరిగి;
+  ఒకవేళ( zNew==0 ) తిరిగి;
+  ఒకవేళ( i_నిలువు<0 ) తిరిగి;
   sqlite3BtreeEnterAll(db);
-  pTab = sqlite3FindTable(db, zTable, zDb);
-  if( pTab==0 || iCol>=pTab->nCol ){
+  pTab = sqlite3_కనుగొను_పట్టిక(db, z_పట్టిక, zDb);
+  ఒకవేళ( pTab==0 || i_నిలువు>=pTab->n_నిలువు ){
     sqlite3BtreeLeaveAll(db);
-    return;
+    తిరిగి;
   }
-  zOld = pTab->aCol[iCol].zCnName;
-  memset(&sCtx, 0, sizeof(sCtx));
-  sCtx.iCol = ((iCol==pTab->iPKey) ? -1 : iCol);
+  zOld = pTab->a_నిలువు[i_నిలువు].zCnName;
+  memset(&sCtx, 0, పరిమాణం(sCtx));
+  sCtx.i_నిలువు = ((i_నిలువు==pTab->iPKey) ? -1 : i_నిలువు);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   db->xAuth = 0;
-#endif
-  rc = renameParseSql(&sParse, zDb, db, zSql, bTemp);
+#అయితే_ముగింపు
+  rc = renameParseSql(&sParse, zDb, db, zSql, b_తాత్కాలిక);
 
   /* Find tokens that need to be replaced. */
-  memset(&sWalker, 0, sizeof(Walker));
+  memset(&sWalker, 0, పరిమాణం(Walker));
   sWalker.pParse = &sParse;
-  sWalker.xExprCallback = renameColumnExprCb;
-  sWalker.xSelectCallback = renameColumnSelectCb;
+  sWalker.x_సమాసం_Callback = rename_స్తంభం_సమాసం_Cb;
+  sWalker.xSelectCallback = rename_స్తంభం_Select_Cb;
   sWalker.u.pRename = &sCtx;
 
   sCtx.pTab = pTab;
-  if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
-  if( sParse.pNewTable ){
-    if( IsView(sParse.pNewTable) ){
-      Select *pSelect = sParse.pNewTable->u.view.pSelect;
+  ఒకవేళ( rc!=SQLITE_OK ) వెళ్ళు rename_స్తంభం_Func_పూర్తి;
+  ఒకవేళ( sParse.p_New_పట్టిక ){
+    ఒకవేళ( IsView(sParse.p_New_పట్టిక) ){
+      Select *pSelect = sParse.p_New_పట్టిక->u.view.pSelect;
       pSelect->selFlags &= ~(u32)SF_View;
       sParse.rc = SQLITE_OK;
       sqlite3SelectPrep(&sParse, pSelect, 0);
       rc = (db->mallocFailed ? SQLITE_NOMEM : sParse.rc);
-      if( rc==SQLITE_OK ){
+      ఒకవేళ( rc==SQLITE_OK ){
         sqlite3WalkSelect(&sWalker, pSelect);
       }
-      if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
-    }else if( IsOrdinaryTable(sParse.pNewTable) ){
+      ఒకవేళ( rc!=SQLITE_OK ) వెళ్ళు rename_స్తంభం_Func_పూర్తి;
+    }లేకపోతే ఒకవేళ( Is_Ordinary_పట్టిక(sParse.p_New_పట్టిక) ){
       /* A regular table */
-      int bFKOnly = sqlite3_stricmp(zTable, sParse.pNewTable->zName);
+      పూర్ణాంకం bFKOnly = sqlite3_stricmp(z_పట్టిక, sParse.p_New_పట్టిక->zName);
       FKey *pFKey;
-      sCtx.pTab = sParse.pNewTable;
-      if( bFKOnly==0 ){
-        if( iCol<sParse.pNewTable->nCol ){
-          renameTokenFind(
-              &sParse, &sCtx, (void*)sParse.pNewTable->aCol[iCol].zCnName
+      sCtx.pTab = sParse.p_New_పట్టిక;
+      ఒకవేళ( bFKOnly==0 ){
+        ఒకవేళ( i_నిలువు<sParse.p_New_పట్టిక->n_నిలువు ){
+          rename_Token_కనుగొను(
+              &sParse, &sCtx, (శూన్య*)sParse.p_New_పట్టిక->a_నిలువు[i_నిలువు].zCnName
           );
         }
-        if( sCtx.iCol<0 ){
-          renameTokenFind(&sParse, &sCtx, (void*)&sParse.pNewTable->iPKey);
+        ఒకవేళ( sCtx.i_నిలువు<0 ){
+          rename_Token_కనుగొను(&sParse, &sCtx, (శూన్య*)&sParse.p_New_పట్టిక->iPKey);
         }
-        sqlite3WalkExprList(&sWalker, sParse.pNewTable->pCheck);
-        for(pIdx=sParse.pNewTable->pIndex; pIdx; pIdx=pIdx->pNext){
-          sqlite3WalkExprList(&sWalker, pIdx->aColExpr);
+        sqlite3_Walk_సమాసం_List(&sWalker, sParse.p_New_పట్టిక->pCheck);
+        కొరకు(pIdx=sParse.p_New_పట్టిక->p_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+          sqlite3_Walk_సమాసం_List(&sWalker, pIdx->a_నిలువు_సమాసం);
         }
-        for(pIdx=sParse.pNewIndex; pIdx; pIdx=pIdx->pNext){
-          sqlite3WalkExprList(&sWalker, pIdx->aColExpr);
+        కొరకు(pIdx=sParse.p_New_సూచీ; pIdx; pIdx=pIdx->p_తదుపరి){
+          sqlite3_Walk_సమాసం_List(&sWalker, pIdx->a_నిలువు_సమాసం);
         }
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-        for(i=0; i<sParse.pNewTable->nCol; i++){
-          Expr *pExpr = sqlite3ColumnExpr(sParse.pNewTable,
-                                                  &sParse.pNewTable->aCol[i]);
-          sqlite3WalkExpr(&sWalker, pExpr);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_GENERATED_COLUMNS
+        కొరకు(i=0; i<sParse.p_New_పట్టిక->n_నిలువు; i++){
+          సమాసం *p_సమాసం = sqlite3_స్తంభం_సమాసం(sParse.p_New_పట్టిక,
+                                                  &sParse.p_New_పట్టిక->a_నిలువు[i]);
+          sqlite3_Walk_సమాసం(&sWalker, p_సమాసం);
         }
-#endif
+#అయితే_ముగింపు
       }
 
-      assert( IsOrdinaryTable(sParse.pNewTable) );
-      for(pFKey=sParse.pNewTable->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-        for(i=0; i<pFKey->nCol; i++){
-          if( bFKOnly==0 && pFKey->aCol[i].iFrom==iCol ){
-            renameTokenFind(&sParse, &sCtx, (void*)&pFKey->aCol[i]);
+      ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(sParse.p_New_పట్టిక) );
+      కొరకు(pFKey=sParse.p_New_పట్టిక->u.tab.pFKey; pFKey; pFKey=pFKey->p_తదుపరి_From){
+        కొరకు(i=0; i<pFKey->n_నిలువు; i++){
+          ఒకవేళ( bFKOnly==0 && pFKey->a_నిలువు[i].iFrom==i_నిలువు ){
+            rename_Token_కనుగొను(&sParse, &sCtx, (శూన్య*)&pFKey->a_నిలువు[i]);
           }
-          if( 0==sqlite3_stricmp(pFKey->zTo, zTable)
-           && 0==sqlite3_stricmp(pFKey->aCol[i].zCol, zOld)
+          ఒకవేళ( 0==sqlite3_stricmp(pFKey->z_గమ్యం, z_పట్టిక)
+           && 0==sqlite3_stricmp(pFKey->a_నిలువు[i].z_నిలువు, zOld)
           ){
-            renameTokenFind(&sParse, &sCtx, (void*)pFKey->aCol[i].zCol);
+            rename_Token_కనుగొను(&sParse, &sCtx, (శూన్య*)pFKey->a_నిలువు[i].z_నిలువు);
           }
         }
       }
     }
-  }else if( sParse.pNewIndex ){
-    sqlite3WalkExprList(&sWalker, sParse.pNewIndex->aColExpr);
-    sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
-  }else{
+  }లేకపోతే ఒకవేళ( sParse.p_New_సూచీ ){
+    sqlite3_Walk_సమాసం_List(&sWalker, sParse.p_New_సూచీ->a_నిలువు_సమాసం);
+    sqlite3_Walk_సమాసం(&sWalker, sParse.p_New_సూచీ->pPartIdxWhere);
+  }లేకపోతే{
     /* A trigger */
-    TriggerStep *pStep;
+    Trigger_అడుగు *p_అడుగు;
     rc = renameResolveTrigger(&sParse);
-    if( rc!=SQLITE_OK ) goto renameColumnFunc_done;
+    ఒకవేళ( rc!=SQLITE_OK ) వెళ్ళు rename_స్తంభం_Func_పూర్తి;
 
-    for(pStep=sParse.pNewTrigger->step_list; pStep; pStep=pStep->pNext){
-      if( pStep->pSrc ){
-        Table *pTarget = sqlite3LocateTableItem(&sParse, 0, &pStep->pSrc->a[0]);
-        if( pTarget==pTab ){
-          if( pStep->pUpsert ){
-            ExprList *pUpsertSet = pStep->pUpsert->pUpsertSet;
-            renameColumnElistNames(&sParse, &sCtx, pUpsertSet, zOld);
+    కొరకు(p_అడుగు=sParse.pNewTrigger->అడుగు_list; p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
+      ఒకవేళ( p_అడుగు->pSrc ){
+        పట్టిక *p_లక్ష్యం = sqlite3_Locate_పట్టిక_అంశం(&sParse, 0, &p_అడుగు->pSrc->a[0]);
+        ఒకవేళ( p_లక్ష్యం==pTab ){
+          ఒకవేళ( p_అడుగు->pUpsert ){
+            సమాసం_List *p_Upsert_సమితి = p_అడుగు->pUpsert->p_Upsert_సమితి;
+            rename_స్తంభం_Elist_పేర్లు(&sParse, &sCtx, p_Upsert_సమితి, zOld);
           }
-          renameColumnIdlistNames(&sParse, &sCtx, pStep->pIdList, zOld);
-          renameColumnElistNames(&sParse, &sCtx, pStep->pExprList, zOld);
+          rename_స్తంభం_Idlist_పేర్లు(&sParse, &sCtx, p_అడుగు->pIdList, zOld);
+          rename_స్తంభం_Elist_పేర్లు(&sParse, &sCtx, p_అడుగు->p_సమాసం_List, zOld);
         }
       }
     }
 
     /* Find tokens to edit in UPDATE OF clause */
-    if( sParse.pTriggerTab==pTab ){
-      renameColumnIdlistNames(&sParse, &sCtx,sParse.pNewTrigger->pColumns,zOld);
+    ఒకవేళ( sParse.pTriggerTab==pTab ){
+      rename_స్తంభం_Idlist_పేర్లు(&sParse, &sCtx,sParse.pNewTrigger->pColumns,zOld);
     }
 
     /* Find tokens to edit in various expressions and selects */
     renameWalkTrigger(&sWalker, sParse.pNewTrigger);
   }
 
-  assert( rc==SQLITE_OK );
+  ప్రతిజ్ఞా( rc==SQLITE_OK );
   rc = renameEditSql(context, &sCtx, zSql, zNew, bQuote);
 
-renameColumnFunc_done:
-  if( rc!=SQLITE_OK ){
-    if( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
-      sqlite3_result_value(context, argv[0]);
-    }else if( sParse.zErrMsg ){
-      renameColumnParseError(context, "", argv[1], argv[2], &sParse);
-    }else{
-      sqlite3_result_error_code(context, rc);
+rename_స్తంభం_Func_పూర్తి:
+  ఒకవేళ( rc!=SQLITE_OK ){
+    ఒకవేళ( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
+      sqlite3_ఫలితం_విలువ(context, argv[0]);
+    }లేకపోతే ఒకవేళ( sParse.z_Err_సందేశం ){
+      rename_స్తంభం_Parse_Error(context, "", argv[1], argv[2], &sParse);
+    }లేకపోతే{
+      sqlite3_ఫలితం_error_సంకేతం(context, rc);
     }
   }
 
   renameParseCleanup(&sParse);
   renameTokenFree(db, sCtx.pList);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#అయితే_ముగింపు
   sqlite3BtreeLeaveAll(db);
 }
 
 /*
 ** Walker expression callback used by "RENAME TABLE".
 */
-static int renameTableExprCb(Walker *pWalker, Expr *pExpr){
+స్థిర పూర్ణాంకం rename_పట్టిక_సమాసం_Cb(Walker *pWalker, సమాసం *p_సమాసం){
   RenameCtx *p = pWalker->u.pRename;
-  if( pExpr->op==TK_COLUMN
-   && ALWAYS(ExprUseYTab(pExpr))
-   && p->pTab==pExpr->y.pTab
+  ఒకవేళ( p_సమాసం->op==TK_స్తంభం
+   && ALWAYS(సమాసం_Use_YTab(p_సమాసం))
+   && p->pTab==p_సమాసం->y.pTab
   ){
-    renameTokenFind(pWalker->pParse, p, (void*)&pExpr->y.pTab);
+    rename_Token_కనుగొను(pWalker->pParse, p, (శూన్య*)&p_సమాసం->y.pTab);
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /*
 ** Walker select callback used by "RENAME TABLE".
 */
-static int renameTableSelectCb(Walker *pWalker, Select *pSelect){
-  int i;
+స్థిర పూర్ణాంకం rename_పట్టిక_Select_Cb(Walker *pWalker, Select *pSelect){
+  పూర్ణాంకం i;
   RenameCtx *p = pWalker->u.pRename;
   SrcList *pSrc = pSelect->pSrc;
-  if( pSelect->selFlags & (SF_View|SF_CopyCte) ){
+  ఒకవేళ( pSelect->selFlags & (SF_View|SF_CopyCte) ){
     testcase( pSelect->selFlags & SF_View );
     testcase( pSelect->selFlags & SF_CopyCte );
-    return WRC_Prune;
+    తిరిగి WRC_Prune;
   }
-  if( NEVER(pSrc==0) ){
-    assert( pWalker->pParse->db->mallocFailed );
-    return WRC_Abort;
+  ఒకవేళ( NEVER(pSrc==0) ){
+    ప్రతిజ్ఞా( pWalker->pParse->db->mallocFailed );
+    తిరిగి WRC_Abort;
   }
-  for(i=0; i<pSrc->nSrc; i++){
-    SrcItem *pItem = &pSrc->a[i];
-    if( pItem->pSTab==p->pTab ){
-      renameTokenFind(pWalker->pParse, p, pItem->zName);
+  కొరకు(i=0; i<pSrc->nSrc; i++){
+    Src_అంశం *p_అంశం = &pSrc->a[i];
+    ఒకవేళ( p_అంశం->pSTab==p->pTab ){
+      rename_Token_కనుగొను(pWalker->pParse, p, p_అంశం->zName);
     }
   }
   renameWalkWith(pWalker, pSelect);
 
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 
@@ -1780,121 +1780,121 @@ static int renameTableSelectCb(Walker *pWalker, Select *pSelect){
 ** sqlite_rename_table('main', 'CREATE TABLE t1(a REFERENCES t2)','t2','t3',0)
 **       -> 'CREATE TABLE t1(a REFERENCES t3)'
 */
-static void renameTableFunc(
+స్థిర శూన్య rename_పట్టిక_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDb = (const char*)sqlite3_value_text(argv[0]);
-  const char *zInput = (const char*)sqlite3_value_text(argv[3]);
-  const char *zOld = (const char*)sqlite3_value_text(argv[4]);
-  const char *zNew = (const char*)sqlite3_value_text(argv[5]);
-  int bTemp = sqlite3_value_int(argv[6]);
-  UNUSED_PARAMETER(NotUsed);
+  స్థిరరాశి అక్షరం *zDb = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  స్థిరరాశి అక్షరం *z_ఆదానం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[3]);
+  స్థిరరాశి అక్షరం *zOld = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[4]);
+  స్థిరరాశి అక్షరం *zNew = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[5]);
+  పూర్ణాంకం b_తాత్కాలిక = sqlite3_విలువ_int(argv[6]);
+  వాడని_PARAMETER(Not_వాడిన);
 
-  if( zInput && zOld && zNew ){
+  ఒకవేళ( z_ఆదానం && zOld && zNew ){
     Parse sParse;
-    int rc;
-    int bQuote = 1;
+    పూర్ణాంకం rc;
+    పూర్ణాంకం bQuote = 1;
     RenameCtx sCtx;
     Walker sWalker;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
     sqlite3_xauth xAuth = db->xAuth;
     db->xAuth = 0;
-#endif
+#అయితే_ముగింపు
 
     sqlite3BtreeEnterAll(db);
 
-    memset(&sCtx, 0, sizeof(RenameCtx));
-    sCtx.pTab = sqlite3FindTable(db, zOld, zDb);
-    memset(&sWalker, 0, sizeof(Walker));
+    memset(&sCtx, 0, పరిమాణం(RenameCtx));
+    sCtx.pTab = sqlite3_కనుగొను_పట్టిక(db, zOld, zDb);
+    memset(&sWalker, 0, పరిమాణం(Walker));
     sWalker.pParse = &sParse;
-    sWalker.xExprCallback = renameTableExprCb;
-    sWalker.xSelectCallback = renameTableSelectCb;
+    sWalker.x_సమాసం_Callback = rename_పట్టిక_సమాసం_Cb;
+    sWalker.xSelectCallback = rename_పట్టిక_Select_Cb;
     sWalker.u.pRename = &sCtx;
 
-    rc = renameParseSql(&sParse, zDb, db, zInput, bTemp);
+    rc = renameParseSql(&sParse, zDb, db, z_ఆదానం, b_తాత్కాలిక);
 
-    if( rc==SQLITE_OK ){
-      int isLegacy = (db->flags & SQLITE_LegacyAlter);
-      if( sParse.pNewTable ){
-        Table *pTab = sParse.pNewTable;
+    ఒకవేళ( rc==SQLITE_OK ){
+      పూర్ణాంకం isLegacy = (db->flags & SQLITE_LegacyAlter);
+      ఒకవేళ( sParse.p_New_పట్టిక ){
+        పట్టిక *pTab = sParse.p_New_పట్టిక;
 
-        if( IsView(pTab) ){
-          if( isLegacy==0 ){
+        ఒకవేళ( IsView(pTab) ){
+          ఒకవేళ( isLegacy==0 ){
             Select *pSelect = pTab->u.view.pSelect;
             NameContext sNC;
-            memset(&sNC, 0, sizeof(sNC));
+            memset(&sNC, 0, పరిమాణం(sNC));
             sNC.pParse = &sParse;
 
-            assert( pSelect->selFlags & SF_View );
+            ప్రతిజ్ఞా( pSelect->selFlags & SF_View );
             pSelect->selFlags &= ~(u32)SF_View;
             sqlite3SelectPrep(&sParse, pTab->u.view.pSelect, &sNC);
-            if( sParse.nErr ){
+            ఒకవేళ( sParse.nErr ){
               rc = sParse.rc;
-            }else{
+            }లేకపోతే{
               sqlite3WalkSelect(&sWalker, pTab->u.view.pSelect);
             }
           }
-        }else{
+        }లేకపోతే{
           /* Modify any FK definitions to point to the new table. */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-          if( (isLegacy==0 || (db->flags & SQLITE_ForeignKeys))
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FOREIGN_కీలకం
+          ఒకవేళ( (isLegacy==0 || (db->flags & SQLITE_Foreign_కీలకాలు))
            && !IsVirtual(pTab)
           ){
             FKey *pFKey;
-            assert( IsOrdinaryTable(pTab) );
-            for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-              if( sqlite3_stricmp(pFKey->zTo, zOld)==0 ){
-                renameTokenFind(&sParse, &sCtx, (void*)pFKey->zTo);
+            ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+            కొరకు(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->p_తదుపరి_From){
+              ఒకవేళ( sqlite3_stricmp(pFKey->z_గమ్యం, zOld)==0 ){
+                rename_Token_కనుగొను(&sParse, &sCtx, (శూన్య*)pFKey->z_గమ్యం);
               }
             }
           }
-#endif
+#అయితే_ముగింపు
 
           /* If this is the table being altered, fix any table refs in CHECK
           ** expressions. Also update the name that appears right after the
           ** "CREATE [VIRTUAL] TABLE" bit. */
-          if( sqlite3_stricmp(zOld, pTab->zName)==0 ){
+          ఒకవేళ( sqlite3_stricmp(zOld, pTab->zName)==0 ){
             sCtx.pTab = pTab;
-            if( isLegacy==0 ){
-              sqlite3WalkExprList(&sWalker, pTab->pCheck);
+            ఒకవేళ( isLegacy==0 ){
+              sqlite3_Walk_సమాసం_List(&sWalker, pTab->pCheck);
             }
-            renameTokenFind(&sParse, &sCtx, pTab->zName);
+            rename_Token_కనుగొను(&sParse, &sCtx, pTab->zName);
           }
         }
       }
 
-      else if( sParse.pNewIndex ){
-        renameTokenFind(&sParse, &sCtx, sParse.pNewIndex->zName);
-        if( isLegacy==0 ){
-          sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
+      లేకపోతే ఒకవేళ( sParse.p_New_సూచీ ){
+        rename_Token_కనుగొను(&sParse, &sCtx, sParse.p_New_సూచీ->zName);
+        ఒకవేళ( isLegacy==0 ){
+          sqlite3_Walk_సమాసం(&sWalker, sParse.p_New_సూచీ->pPartIdxWhere);
         }
       }
 
-#ifndef SQLITE_OMIT_TRIGGER
-      else{
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
+      లేకపోతే{
         Trigger *pTrigger = sParse.pNewTrigger;
-        TriggerStep *pStep;
-        if( 0==sqlite3_stricmp(sParse.pNewTrigger->table, zOld)
+        Trigger_అడుగు *p_అడుగు;
+        ఒకవేళ( 0==sqlite3_stricmp(sParse.pNewTrigger->పట్టిక_2, zOld)
             && sCtx.pTab->pSchema==pTrigger->pTabSchema
           ){
-          renameTokenFind(&sParse, &sCtx, sParse.pNewTrigger->table);
+          rename_Token_కనుగొను(&sParse, &sCtx, sParse.pNewTrigger->పట్టిక_2);
         }
 
-        if( isLegacy==0 ){
+        ఒకవేళ( isLegacy==0 ){
           rc = renameResolveTrigger(&sParse);
-          if( rc==SQLITE_OK ){
+          ఒకవేళ( rc==SQLITE_OK ){
             renameWalkTrigger(&sWalker, pTrigger);
-            for(pStep=pTrigger->step_list; pStep; pStep=pStep->pNext){
-              if( pStep->pSrc ){
-                int i;
-                for(i=0; i<pStep->pSrc->nSrc; i++){
-                  SrcItem *pItem = &pStep->pSrc->a[i];
-                  if( 0==sqlite3_stricmp(pItem->zName, zOld) ){
-                    renameTokenFind(&sParse, &sCtx, pItem->zName);
+            కొరకు(p_అడుగు=pTrigger->అడుగు_list; p_అడుగు; p_అడుగు=p_అడుగు->p_తదుపరి){
+              ఒకవేళ( p_అడుగు->pSrc ){
+                పూర్ణాంకం i;
+                కొరకు(i=0; i<p_అడుగు->pSrc->nSrc; i++){
+                  Src_అంశం *p_అంశం = &p_అడుగు->pSrc->a[i];
+                  ఒకవేళ( 0==sqlite3_stricmp(p_అంశం->zName, zOld) ){
+                    rename_Token_కనుగొను(&sParse, &sCtx, p_అంశం->zName);
                   }
                 }
               }
@@ -1902,38 +1902,38 @@ static void renameTableFunc(
           }
         }
       }
-#endif
+#అయితే_ముగింపు
     }
 
-    if( rc==SQLITE_OK ){
-      rc = renameEditSql(context, &sCtx, zInput, zNew, bQuote);
+    ఒకవేళ( rc==SQLITE_OK ){
+      rc = renameEditSql(context, &sCtx, z_ఆదానం, zNew, bQuote);
     }
-    if( rc!=SQLITE_OK ){
-      if( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
-        sqlite3_result_value(context, argv[3]);
-      }else if( sParse.zErrMsg ){
-        renameColumnParseError(context, "", argv[1], argv[2], &sParse);
-      }else{
-        sqlite3_result_error_code(context, rc);
+    ఒకవేళ( rc!=SQLITE_OK ){
+      ఒకవేళ( rc==SQLITE_ERROR && sqlite3WritableSchema(db) ){
+        sqlite3_ఫలితం_విలువ(context, argv[3]);
+      }లేకపోతే ఒకవేళ( sParse.z_Err_సందేశం ){
+        rename_స్తంభం_Parse_Error(context, "", argv[1], argv[2], &sParse);
+      }లేకపోతే{
+        sqlite3_ఫలితం_error_సంకేతం(context, rc);
       }
     }
 
     renameParseCleanup(&sParse);
     renameTokenFree(db, sCtx.pList);
     sqlite3BtreeLeaveAll(db);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
     db->xAuth = xAuth;
-#endif
+#అయితే_ముగింపు
   }
 
-  return;
+  తిరిగి;
 }
 
-static int renameQuotefixExprCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_STRING && (pExpr->flags & EP_DblQuoted) ){
-    renameTokenFind(pWalker->pParse, pWalker->u.pRename, (const void*)pExpr);
+స్థిర పూర్ణాంకం rename_Quotefix_సమాసం_Cb(Walker *pWalker, సమాసం *p_సమాసం){
+  ఒకవేళ( p_సమాసం->op==TK_STRING && (p_సమాసం->flags & EP_DblQuoted) ){
+    rename_Token_కనుగొను(pWalker->pParse, pWalker->u.pRename, (స్థిరరాశి శూన్య*)p_సమాసం);
   }
-  return WRC_Continue;
+  తిరిగి WRC_Continue;
 }
 
 /* SQL function: sqlite_rename_quotefix(DB,SQL)
@@ -1963,91 +1963,91 @@ static int renameQuotefixExprCb(Walker *pWalker, Expr *pExpr){
 ** if PRAGMA writable_schema=ON, then just return the input string
 ** unmodified following an error.
 */
-static void renameQuotefixFunc(
+స్థిర శూన్య renameQuotefixFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char const *zDb = (const char*)sqlite3_value_text(argv[0]);
-  char const *zInput = (const char*)sqlite3_value_text(argv[1]);
+  అక్షరం స్థిరరాశి *zDb = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  అక్షరం స్థిరరాశి *z_ఆదానం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#అయితే_ముగింపు
 
   sqlite3BtreeEnterAll(db);
 
-  UNUSED_PARAMETER(NotUsed);
-  if( zDb && zInput ){
-    int rc;
+  వాడని_PARAMETER(Not_వాడిన);
+  ఒకవేళ( zDb && z_ఆదానం ){
+    పూర్ణాంకం rc;
     Parse sParse;
-    rc = renameParseSql(&sParse, zDb, db, zInput, 0);
+    rc = renameParseSql(&sParse, zDb, db, z_ఆదానం, 0);
 
-    if( rc==SQLITE_OK ){
+    ఒకవేళ( rc==SQLITE_OK ){
       RenameCtx sCtx;
       Walker sWalker;
 
       /* Walker to find tokens that need to be replaced. */
-      memset(&sCtx, 0, sizeof(RenameCtx));
-      memset(&sWalker, 0, sizeof(Walker));
+      memset(&sCtx, 0, పరిమాణం(RenameCtx));
+      memset(&sWalker, 0, పరిమాణం(Walker));
       sWalker.pParse = &sParse;
-      sWalker.xExprCallback = renameQuotefixExprCb;
-      sWalker.xSelectCallback = renameColumnSelectCb;
+      sWalker.x_సమాసం_Callback = rename_Quotefix_సమాసం_Cb;
+      sWalker.xSelectCallback = rename_స్తంభం_Select_Cb;
       sWalker.u.pRename = &sCtx;
 
-      if( sParse.pNewTable ){
-        if( IsView(sParse.pNewTable) ){
-          Select *pSelect = sParse.pNewTable->u.view.pSelect;
+      ఒకవేళ( sParse.p_New_పట్టిక ){
+        ఒకవేళ( IsView(sParse.p_New_పట్టిక) ){
+          Select *pSelect = sParse.p_New_పట్టిక->u.view.pSelect;
           pSelect->selFlags &= ~(u32)SF_View;
           sParse.rc = SQLITE_OK;
           sqlite3SelectPrep(&sParse, pSelect, 0);
           rc = (db->mallocFailed ? SQLITE_NOMEM : sParse.rc);
-          if( rc==SQLITE_OK ){
+          ఒకవేళ( rc==SQLITE_OK ){
             sqlite3WalkSelect(&sWalker, pSelect);
           }
-        }else{
-          int i;
-          sqlite3WalkExprList(&sWalker, sParse.pNewTable->pCheck);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-          for(i=0; i<sParse.pNewTable->nCol; i++){
-            sqlite3WalkExpr(&sWalker,
-               sqlite3ColumnExpr(sParse.pNewTable,
-                                         &sParse.pNewTable->aCol[i]));
+        }లేకపోతే{
+          పూర్ణాంకం i;
+          sqlite3_Walk_సమాసం_List(&sWalker, sParse.p_New_పట్టిక->pCheck);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_GENERATED_COLUMNS
+          కొరకు(i=0; i<sParse.p_New_పట్టిక->n_నిలువు; i++){
+            sqlite3_Walk_సమాసం(&sWalker,
+               sqlite3_స్తంభం_సమాసం(sParse.p_New_పట్టిక,
+                                         &sParse.p_New_పట్టిక->a_నిలువు[i]));
           }
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
+#అయితే_ముగింపు /* SQLITE_OMIT_GENERATED_COLUMNS */
         }
-      }else if( sParse.pNewIndex ){
-        sqlite3WalkExprList(&sWalker, sParse.pNewIndex->aColExpr);
-        sqlite3WalkExpr(&sWalker, sParse.pNewIndex->pPartIdxWhere);
-      }else{
-#ifndef SQLITE_OMIT_TRIGGER
+      }లేకపోతే ఒకవేళ( sParse.p_New_సూచీ ){
+        sqlite3_Walk_సమాసం_List(&sWalker, sParse.p_New_సూచీ->a_నిలువు_సమాసం);
+        sqlite3_Walk_సమాసం(&sWalker, sParse.p_New_సూచీ->pPartIdxWhere);
+      }లేకపోతే{
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TRIGGER
         rc = renameResolveTrigger(&sParse);
-        if( rc==SQLITE_OK ){
+        ఒకవేళ( rc==SQLITE_OK ){
           renameWalkTrigger(&sWalker, sParse.pNewTrigger);
         }
-#endif /* SQLITE_OMIT_TRIGGER */
+#అయితే_ముగింపు /* SQLITE_OMIT_TRIGGER */
       }
 
-      if( rc==SQLITE_OK ){
-        rc = renameEditSql(context, &sCtx, zInput, 0, 0);
+      ఒకవేళ( rc==SQLITE_OK ){
+        rc = renameEditSql(context, &sCtx, z_ఆదానం, 0, 0);
       }
       renameTokenFree(db, sCtx.pList);
     }
-    if( rc!=SQLITE_OK ){
-      if( sqlite3WritableSchema(db) && rc==SQLITE_ERROR ){
-        sqlite3_result_value(context, argv[1]);
-      }else{
-        sqlite3_result_error_code(context, rc);
+    ఒకవేళ( rc!=SQLITE_OK ){
+      ఒకవేళ( sqlite3WritableSchema(db) && rc==SQLITE_ERROR ){
+        sqlite3_ఫలితం_విలువ(context, argv[1]);
+      }లేకపోతే{
+        sqlite3_ఫలితం_error_సంకేతం(context, rc);
       }
     }
     renameParseCleanup(&sParse);
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#అయితే_ముగింపు
 
   sqlite3BtreeLeaveAll(db);
 }
@@ -2076,67 +2076,67 @@ static void renameQuotefixFunc(
 **      attached to is in database zDb, then return 1.
 **   C. Otherwise return NULL.
 */
-static void renameTableTest(
+స్థిర శూన్య rename_పట్టిక_Test(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char const *zDb = (const char*)sqlite3_value_text(argv[0]);
-  char const *zInput = (const char*)sqlite3_value_text(argv[1]);
-  int bTemp = sqlite3_value_int(argv[4]);
-  int isLegacy = (db->flags & SQLITE_LegacyAlter);
-  char const *zWhen = (const char*)sqlite3_value_text(argv[5]);
-  int bNoDQS = sqlite3_value_int(argv[6]);
+  అక్షరం స్థిరరాశి *zDb = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  అక్షరం స్థిరరాశి *z_ఆదానం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+  పూర్ణాంకం b_తాత్కాలిక = sqlite3_విలువ_int(argv[4]);
+  పూర్ణాంకం isLegacy = (db->flags & SQLITE_LegacyAlter);
+  అక్షరం స్థిరరాశి *zWhen = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[5]);
+  పూర్ణాంకం bNoDQS = sqlite3_విలువ_int(argv[6]);
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#అయితే_ముగింపు
 
-  UNUSED_PARAMETER(NotUsed);
+  వాడని_PARAMETER(Not_వాడిన);
 
-  if( zDb && zInput ){
-    int rc;
+  ఒకవేళ( zDb && z_ఆదానం ){
+    పూర్ణాంకం rc;
     Parse sParse;
     u64 flags = db->flags;
-    if( bNoDQS ) db->flags &= ~(SQLITE_DqsDML|SQLITE_DqsDDL);
-    rc = renameParseSql(&sParse, zDb, db, zInput, bTemp);
+    ఒకవేళ( bNoDQS ) db->flags &= ~(SQLITE_DqsDML|SQLITE_DqsDDL);
+    rc = renameParseSql(&sParse, zDb, db, z_ఆదానం, b_తాత్కాలిక);
     db->flags = flags;
-    if( rc==SQLITE_OK ){
-      if( isLegacy==0 && sParse.pNewTable && IsView(sParse.pNewTable) ){
+    ఒకవేళ( rc==SQLITE_OK ){
+      ఒకవేళ( isLegacy==0 && sParse.p_New_పట్టిక && IsView(sParse.p_New_పట్టిక) ){
         NameContext sNC;
-        memset(&sNC, 0, sizeof(sNC));
+        memset(&sNC, 0, పరిమాణం(sNC));
         sNC.pParse = &sParse;
-        sqlite3SelectPrep(&sParse, sParse.pNewTable->u.view.pSelect, &sNC);
-        if( sParse.nErr ) rc = sParse.rc;
+        sqlite3SelectPrep(&sParse, sParse.p_New_పట్టిక->u.view.pSelect, &sNC);
+        ఒకవేళ( sParse.nErr ) rc = sParse.rc;
       }
 
-      else if( sParse.pNewTrigger ){
-        if( isLegacy==0 ){
+      లేకపోతే ఒకవేళ( sParse.pNewTrigger ){
+        ఒకవేళ( isLegacy==0 ){
           rc = renameResolveTrigger(&sParse);
         }
-        if( rc==SQLITE_OK ){
-          int i1 = sqlite3SchemaToIndex(db, sParse.pNewTrigger->pTabSchema);
-          int i2 = sqlite3FindDbName(db, zDb);
-          if( i1==i2 ){
+        ఒకవేళ( rc==SQLITE_OK ){
+          పూర్ణాంకం i1 = sqlite3_Schema_గమ్యం_సూచీ(db, sParse.pNewTrigger->pTabSchema);
+          పూర్ణాంకం i2 = sqlite3_కనుగొను_Db_Name(db, zDb);
+          ఒకవేళ( i1==i2 ){
             /* Handle output case B */
-            sqlite3_result_int(context, 1);
+            sqlite3_ఫలితం_int(context, 1);
           }
         }
       }
     }
 
-    if( rc!=SQLITE_OK && zWhen && !sqlite3WritableSchema(db) ){
+    ఒకవేళ( rc!=SQLITE_OK && zWhen && !sqlite3WritableSchema(db) ){
       /* Output case A */
-      renameColumnParseError(context, zWhen, argv[2], argv[3],&sParse);
+      rename_స్తంభం_Parse_Error(context, zWhen, argv[2], argv[3],&sParse);
     }
     renameParseCleanup(&sParse);
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
+#అయితే_ముగింపు
 }
 
 
@@ -2162,32 +2162,32 @@ static void renameTableTest(
 **                              |
 **                              `--- return value
 */
-static int getConstraintToken(const u8 *z, int *piToken){
-  int iOff = 0;
-  int t = 0;
-  do {
+స్థిర పూర్ణాంకం getConstraintToken(స్థిరరాశి u8 *z, పూర్ణాంకం *piToken){
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం t = 0;
+  చేయి {
     iOff += sqlite3GetToken(&z[iOff], &t);
-  }while( t==TK_SPACE || t==TK_COMMENT );
+  }అయితే( t==TK_SPACE || t==TK_COMMENT );
 
   *piToken = t;
 
-  if( t==TK_LP ){
-    int nNest = 1;
-    while( nNest>0 ){
+  ఒకవేళ( t==TK_LP ){
+    పూర్ణాంకం nNest = 1;
+    అయితే( nNest>0 ){
       iOff += sqlite3GetToken(&z[iOff], &t);
-      if( t==TK_LP ){
+      ఒకవేళ( t==TK_LP ){
         nNest++;
-      }else if( t==TK_RP ){
+      }లేకపోతే ఒకవేళ( t==TK_RP ){
         t = TK_LP;
         nNest--;
-      }else if( t==TK_ILLEGAL ){
-        break;
+      }లేకపోతే ఒకవేళ( t==TK_ILLEGAL ){
+        ఆపు;
       }
     }
   }
 
   *piToken = t;
-  return iOff;
+  తిరిగి iOff;
 }
 
 /*
@@ -2202,69 +2202,69 @@ static int getConstraintToken(const u8 *z, int *piToken){
 ** The value returned is a string containing the CREATE TABLE statement
 ** with column argv[2] removed.
 */
-static void dropColumnFunc(
+స్థిర శూన్య drop_స్తంభం_Func(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  int iSchema = sqlite3_value_int(argv[0]);
-  const char *zSql = (const char*)sqlite3_value_text(argv[1]);
-  int iCol = sqlite3_value_int(argv[2]);
-  const char *zDb = db->aDb[iSchema].zDbSName;
-  int rc;
+  పూర్ణాంకం iSchema = sqlite3_విలువ_int(argv[0]);
+  స్థిరరాశి అక్షరం *zSql = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+  పూర్ణాంకం i_నిలువు = sqlite3_విలువ_int(argv[2]);
+  స్థిరరాశి అక్షరం *zDb = db->aDb[iSchema].zDbSName;
+  పూర్ణాంకం rc;
   Parse sParse;
-  RenameToken *pCol;
-  Table *pTab;
-  const char *zEnd;
-  char *zNew = 0;
+  RenameToken *p_నిలువు;
+  పట్టిక *pTab;
+  స్థిరరాశి అక్షరం *z_చివర;
+  అక్షరం *zNew = 0;
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth = db->xAuth;
   db->xAuth = 0;
-#endif
+#అయితే_ముగింపు
 
-  UNUSED_PARAMETER(NotUsed);
+  వాడని_PARAMETER(Not_వాడిన);
   rc = renameParseSql(&sParse, zDb, db, zSql, iSchema==1);
-  if( rc!=SQLITE_OK ) goto drop_column_done;
-  pTab = sParse.pNewTable;
-  if( pTab==0 || pTab->nCol==1 || iCol>=pTab->nCol ){
+  ఒకవేళ( rc!=SQLITE_OK ) వెళ్ళు drop_స్తంభం_పూర్తి;
+  pTab = sParse.p_New_పట్టిక;
+  ఒకవేళ( pTab==0 || pTab->n_నిలువు==1 || i_నిలువు>=pTab->n_నిలువు ){
     /* This can happen if the sqlite_schema table is corrupt */
     rc = SQLITE_CORRUPT_BKPT;
-    goto drop_column_done;
+    వెళ్ళు drop_స్తంభం_పూర్తి;
   }
 
-  if( iCol<pTab->nCol-1 ){
-    RenameToken *pEnd;
-    pCol = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol].zCnName);
-    pEnd = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol+1].zCnName);
-    zEnd = (const char*)pEnd->t.z;
-  }else{
-    int eTok;
-    assert( IsOrdinaryTable(pTab) );
-    assert( iCol!=0 );
+  ఒకవేళ( i_నిలువు<pTab->n_నిలువు-1 ){
+    RenameToken *p_చివర;
+    p_నిలువు = rename_Token_కనుగొను(&sParse, 0, (శూన్య*)pTab->a_నిలువు[i_నిలువు].zCnName);
+    p_చివర = rename_Token_కనుగొను(&sParse, 0, (శూన్య*)pTab->a_నిలువు[i_నిలువు+1].zCnName);
+    z_చివర = (స్థిరరాశి అక్షరం*)p_చివర->t.z;
+  }లేకపోతే{
+    పూర్ణాంకం eTok;
+    ప్రతిజ్ఞా( Is_Ordinary_పట్టిక(pTab) );
+    ప్రతిజ్ఞా( i_నిలువు!=0 );
     /* Point pCol->t.z at the "," immediately preceding the definition of
     ** the column being dropped. To do this, start at the name of the 
     ** previous column, and tokenize until the next ",".  */
-    pCol = renameTokenFind(&sParse, 0, (void*)pTab->aCol[iCol-1].zCnName);
-    do {
-      pCol->t.z += getConstraintToken((const u8*)pCol->t.z, &eTok);
-    }while( eTok!=TK_COMMA );
-    pCol->t.z--;
-    zEnd = (const char*)&zSql[pTab->u.tab.addColOffset];
+    p_నిలువు = rename_Token_కనుగొను(&sParse, 0, (శూన్య*)pTab->a_నిలువు[i_నిలువు-1].zCnName);
+    చేయి {
+      p_నిలువు->t.z += getConstraintToken((స్థిరరాశి u8*)p_నిలువు->t.z, &eTok);
+    }అయితే( eTok!=TK_COMMA );
+    p_నిలువు->t.z--;
+    z_చివర = (స్థిరరాశి అక్షరం*)&zSql[pTab->u.tab.కూడు_నిలువు_స్థానభ్రంశం];
   }
 
-  zNew = sqlite3MPrintf(db, "%.*s%s", pCol->t.z-zSql, zSql, zEnd);
-  sqlite3_result_text(context, zNew, -1, SQLITE_TRANSIENT);
+  zNew = sqlite3MPrintf(db, "%.*s%s", p_నిలువు->t.z-zSql, zSql, z_చివర);
+  sqlite3_ఫలితం_పాఠ్యం(context, zNew, -1, SQLITE_TRANSIENT);
   sqlite3_free(zNew);
 
-drop_column_done:
+drop_స్తంభం_పూర్తి:
   renameParseCleanup(&sParse);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   db->xAuth = xAuth;
-#endif
-  if( rc!=SQLITE_OK ){
-    sqlite3_result_error_code(context, rc);
+#అయితే_ముగింపు
+  ఒకవేళ( rc!=SQLITE_OK ){
+    sqlite3_ఫలితం_error_సంకేతం(context, rc);
   }
 }
 
@@ -2276,72 +2276,72 @@ drop_column_done:
 ** statement. Argument pSrc contains the possibly qualified name of the
 ** table being edited, and token pName the name of the column to drop.
 */
-void sqlite3AlterDropColumn(Parse *pParse, SrcList *pSrc, const Token *pName){
+శూన్య sqlite3_Alter_Drop_స్తంభం(Parse *pParse, SrcList *pSrc, స్థిరరాశి Token *pName){
   sqlite3 *db = pParse->db;       /* Database handle */
-  Table *pTab;                    /* Table to modify */
-  int iDb;                        /* Index of db containing pTab in aDb[] */
-  const char *zDb;                /* Database containing pTab ("main" etc.) */
-  char *zCol = 0;                 /* Name of column to drop */
-  int iCol;                       /* Index of column zCol in pTab->aCol[] */
+  పట్టిక *pTab;                    /* Table to modify */
+  పూర్ణాంకం iDb;                        /* Index of db containing pTab in aDb[] */
+  స్థిరరాశి అక్షరం *zDb;                /* Database containing pTab ("main" etc.) */
+  అక్షరం *z_నిలువు = 0;                 /* Name of column to drop */
+  పూర్ణాంకం i_నిలువు;                       /* Index of column zCol in pTab->aCol[] */
 
   /* Look up the table being altered. */
-  assert( pParse->pNewTable==0 );
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  if( NEVER(db->mallocFailed) ) goto exit_drop_column;
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( !pTab ) goto exit_drop_column;
+  ప్రతిజ్ఞా( pParse->p_New_పట్టిక==0 );
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsAllMutexes(db) );
+  ఒకవేళ( NEVER(db->mallocFailed) ) వెళ్ళు exit_drop_స్తంభం;
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, &pSrc->a[0]);
+  ఒకవేళ( !pTab ) వెళ్ళు exit_drop_స్తంభం;
 
   /* Make sure this is not an attempt to ALTER a view, virtual table or
   ** system table. */
-  if( SQLITE_OK!=isAlterableTable(pParse, pTab) ) goto exit_drop_column;
-  if( SQLITE_OK!=isRealTable(pParse, pTab, 1) ) goto exit_drop_column;
+  ఒకవేళ( SQLITE_OK!=is_Alterable_పట్టిక(pParse, pTab) ) వెళ్ళు exit_drop_స్తంభం;
+  ఒకవేళ( SQLITE_OK!=is_Real_పట్టిక(pParse, pTab, 1) ) వెళ్ళు exit_drop_స్తంభం;
 
   /* Find the index of the column being dropped. */
-  zCol = sqlite3NameFromToken(db, pName);
-  if( zCol==0 ){
-    assert( db->mallocFailed );
-    goto exit_drop_column;
+  z_నిలువు = sqlite3NameFromToken(db, pName);
+  ఒకవేళ( z_నిలువు==0 ){
+    ప్రతిజ్ఞా( db->mallocFailed );
+    వెళ్ళు exit_drop_స్తంభం;
   }
-  iCol = sqlite3ColumnIndex(pTab, zCol);
-  if( iCol<0 ){
-    sqlite3ErrorMsg(pParse, "no such column: \"%T\"", pName);
-    goto exit_drop_column;
+  i_నిలువు = sqlite3_స్తంభం_సూచీ(pTab, z_నిలువు);
+  ఒకవేళ( i_నిలువు<0 ){
+    sqlite3_Error_సందేశం(pParse, "no such column: \"%T\"", pName);
+    వెళ్ళు exit_drop_స్తంభం;
   }
-  if( isRowidAlias(pParse, pTab, zCol, "drop") ) goto exit_drop_column;
+  ఒకవేళ( isRowidAlias(pParse, pTab, z_నిలువు, "drop") ) వెళ్ళు exit_drop_స్తంభం;
 
   /* Do not allow the user to drop a PRIMARY KEY column or a column
   ** constrained by a UNIQUE constraint.  */
-  if( pTab->aCol[iCol].colFlags & (COLFLAG_PRIMKEY|COLFLAG_UNIQUE) ){
-    sqlite3ErrorMsg(pParse, "cannot drop %s column: \"%s\"",
-        (pTab->aCol[iCol].colFlags&COLFLAG_PRIMKEY) ? "PRIMARY KEY" : "UNIQUE",
-        zCol
+  ఒకవేళ( pTab->a_నిలువు[i_నిలువు].నిలువు_Flags & (COLFLAG_PRIMKEY|COLFLAG_UNIQUE) ){
+    sqlite3_Error_సందేశం(pParse, "cannot drop %s column: \"%s\"",
+        (pTab->a_నిలువు[i_నిలువు].నిలువు_Flags&COLFLAG_PRIMKEY) ? "PRIMARY KEY" : "UNIQUE",
+        z_నిలువు
     );
-    goto exit_drop_column;
+    వెళ్ళు exit_drop_స్తంభం;
   }
 
   /* Do not allow the number of columns to go to zero */
-  if( pTab->nCol<=1 ){
-    sqlite3ErrorMsg(pParse, "cannot drop column \"%s\": no other columns exist",zCol);
-    goto exit_drop_column;
+  ఒకవేళ( pTab->n_నిలువు<=1 ){
+    sqlite3_Error_సందేశం(pParse, "cannot drop column \"%s\": no other columns exist",z_నిలువు);
+    వెళ్ళు exit_drop_స్తంభం;
   }
 
   /* Edit the sqlite_schema table */
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb>=0 );
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
+  ప్రతిజ్ఞా( iDb>=0 );
   zDb = db->aDb[iDb].zDbSName;
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
   /* Invoke the authorization callback. */
-  if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, zCol) ){
-    goto exit_drop_column;
+  ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, zDb, pTab->zName, z_నిలువు) ){
+    వెళ్ళు exit_drop_స్తంభం;
   }
-#endif
+#అయితే_ముగింపు
   renameTestSchema(pParse, zDb, iDb==1, "", 0);
   renameFixQuotes(pParse, zDb, iDb==1);
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_drop_column(%d, sql, %d) "
       "WHERE (type=='table' AND tbl_name=%Q COLLATE nocase)"
-      , zDb, iDb, iCol, pTab->zName
+      , zDb, iDb, i_నిలువు, pTab->zName
   );
 
   /* Drop and reload the database schema. */
@@ -2349,90 +2349,90 @@ void sqlite3AlterDropColumn(Parse *pParse, SrcList *pSrc, const Token *pName){
   renameTestSchema(pParse, zDb, iDb==1, "after drop column", 1);
 
   /* Edit rows of table on disk */
-  if( pParse->nErr==0 && (pTab->aCol[iCol].colFlags & COLFLAG_VIRTUAL)==0 ){
-    int i;
-    int addr;
-    int reg;
-    int regRec;
-    Index *pPk = 0;
-    int nField = 0;               /* Number of non-virtual columns after drop */
-    int iCur;
+  ఒకవేళ( pParse->nErr==0 && (pTab->a_నిలువు[i_నిలువు].నిలువు_Flags & COLFLAG_VIRTUAL)==0 ){
+    పూర్ణాంకం i;
+    పూర్ణాంకం addr;
+    పూర్ణాంకం reg;
+    పూర్ణాంకం regRec;
+    సూచీ *pPk = 0;
+    పూర్ణాంకం n_క్షేత్రం = 0;               /* Number of non-virtual columns after drop */
+    పూర్ణాంకం iCur;
     Vdbe *v = sqlite3GetVdbe(pParse);
     iCur = pParse->nTab++;
-    sqlite3OpenTable(pParse, iCur, iDb, pTab, OP_OpenWrite);
-    addr = sqlite3VdbeAddOp1(v, OP_Rewind, iCur); VdbeCoverage(v);
+    sqlite3_Open_పట్టిక(pParse, iCur, iDb, pTab, OP_OpenWrite);
+    addr = sqlite3_Vdbe_కూడు_Op1(v, OP_Rewind, iCur); VdbeCoverage(v);
     reg = ++pParse->nMem;
-    if( HasRowid(pTab) ){
-      sqlite3VdbeAddOp2(v, OP_Rowid, iCur, reg);
-      pParse->nMem += pTab->nCol;
-    }else{
-      pPk = sqlite3PrimaryKeyIndex(pTab);
-      pParse->nMem += pPk->nColumn;
-      for(i=0; i<pPk->nKeyCol; i++){
-        sqlite3VdbeAddOp3(v, OP_Column, iCur, i, reg+i+1);
+    ఒకవేళ( HasRowid(pTab) ){
+      sqlite3_Vdbe_కూడు_Op2(v, OP_Rowid, iCur, reg);
+      pParse->nMem += pTab->n_నిలువు;
+    }లేకపోతే{
+      pPk = sqlite3_Primary_కీలకం_సూచీ(pTab);
+      pParse->nMem += pPk->n_స్తంభం;
+      కొరకు(i=0; i<pPk->n_కీలకం_నిలువు; i++){
+        sqlite3_Vdbe_కూడు_Op3(v, OP_స్తంభం, iCur, i, reg+i+1);
       }
-      nField = pPk->nKeyCol;
+      n_క్షేత్రం = pPk->n_కీలకం_నిలువు;
     }
     regRec = ++pParse->nMem;
-    for(i=0; i<pTab->nCol; i++){
-      if( i!=iCol && (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
-        int regOut;
-        if( pPk ){
-          int iPos = sqlite3TableColumnToIndex(pPk, i);
-          int iColPos = sqlite3TableColumnToIndex(pPk, iCol);
-          if( iPos<pPk->nKeyCol ) continue;
-          regOut = reg+1+iPos-(iPos>iColPos);
-        }else{
-          regOut = reg+1+nField;
+    కొరకు(i=0; i<pTab->n_నిలువు; i++){
+      ఒకవేళ( i!=i_నిలువు && (pTab->a_నిలువు[i].నిలువు_Flags & COLFLAG_VIRTUAL)==0 ){
+        పూర్ణాంకం reg_బహిర్గతం;
+        ఒకవేళ( pPk ){
+          పూర్ణాంకం iPos = sqlite3_పట్టిక_స్తంభం_గమ్యం_సూచీ(pPk, i);
+          పూర్ణాంకం i_నిలువు_Pos = sqlite3_పట్టిక_స్తంభం_గమ్యం_సూచీ(pPk, i_నిలువు);
+          ఒకవేళ( iPos<pPk->n_కీలకం_నిలువు ) కొనసాగు;
+          reg_బహిర్గతం = reg+1+iPos-(iPos>i_నిలువు_Pos);
+        }లేకపోతే{
+          reg_బహిర్గతం = reg+1+n_క్షేత్రం;
         }
-        if( i==pTab->iPKey ){
-          sqlite3VdbeAddOp2(v, OP_Null, 0, regOut);
-        }else{
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, iCur, i, regOut);
-          assert( pParse->nErr
+        ఒకవేళ( i==pTab->iPKey ){
+          sqlite3_Vdbe_కూడు_Op2(v, OP_Null, 0, reg_బహిర్గతం);
+        }లేకపోతే{
+          sqlite3_సమాసం_సంకేతం_Get_స్తంభం_యొక్క_పట్టిక(v, pTab, iCur, i, reg_బహిర్గతం);
+          ప్రతిజ్ఞా( pParse->nErr
                || sqlite3VdbeGetOp(v,sqlite3VdbeCurrentAddr(v)-1)->opcode
                     != OP_RealAffinity
-               || pTab->aCol[i].affinity==SQLITE_AFF_REAL );
-          sqlite3VdbeDeletePriorOpcode(v, OP_RealAffinity);
+               || pTab->a_నిలువు[i].affinity==SQLITE_AFF_REAL );
+          sqlite3_Vdbe_Delete_పూర్వ_Opcode(v, OP_RealAffinity);
         }
-        nField++;
+        n_క్షేత్రం++;
       }
     }
-    if( nField==0 ){
+    ఒకవేళ( n_క్షేత్రం==0 ){
       /* dbsqlfuzz 5f09e7bcc78b4954d06bf9f2400d7715f48d1fef */
       pParse->nMem++;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, reg+1);
-      nField = 1;
+      sqlite3_Vdbe_కూడు_Op2(v, OP_Null, 0, reg+1);
+      n_క్షేత్రం = 1;
     }
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, reg+1, nField, regRec);
-    if( pPk ){
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iCur, regRec, reg+1, pPk->nKeyCol);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_Insert, iCur, regRec, reg);
+    sqlite3_Vdbe_కూడు_Op3(v, OP_Make_రికార్డు, reg+1, n_క్షేత్రం, regRec);
+    ఒకవేళ( pPk ){
+      sqlite3_Vdbe_కూడు_Op4_Int(v, OP_Idx_చొప్పించు, iCur, regRec, reg+1, pPk->n_కీలకం_నిలువు);
+    }లేకపోతే{
+      sqlite3_Vdbe_కూడు_Op3(v, OP_చొప్పించు, iCur, regRec, reg);
     }
     sqlite3VdbeChangeP5(v, OPFLAG_SAVEPOSITION);
 
-    sqlite3VdbeAddOp2(v, OP_Next, iCur, addr+1); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr);
+    sqlite3_Vdbe_కూడు_Op2(v, OP_తదుపరి, iCur, addr+1); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ఇక్కడ(v, addr);
   }
 
-exit_drop_column:
-  sqlite3DbFree(db, zCol);
+exit_drop_స్తంభం:
+  sqlite3DbFree(db, z_నిలువు);
   sqlite3SrcListDelete(db, pSrc);
 }
 
 /*
 ** Return the number of bytes of leading whitespace/comments in string z[].
 */
-static int getWhitespace(const u8 *z){
-  int nRet = 0;
-  while( 1 ){
-    int t = 0;
-    int n = sqlite3GetToken(&z[nRet], &t);
-    if( t!=TK_SPACE && t!=TK_COMMENT ) break;
+స్థిర పూర్ణాంకం getWhitespace(స్థిరరాశి u8 *z){
+  పూర్ణాంకం nRet = 0;
+  అయితే( 1 ){
+    పూర్ణాంకం t = 0;
+    పూర్ణాంకం n = sqlite3GetToken(&z[nRet], &t);
+    ఒకవేళ( t!=TK_SPACE && t!=TK_COMMENT ) ఆపు;
     nRet += n;
   }
-  return nRet;
+  తిరిగి nRet;
 }
 
 
@@ -2450,12 +2450,12 @@ static int getWhitespace(const u8 *z){
 **
 ** Return the number of bytes until the end of the constraint. 
 */
-static int getConstraint(const u8 *z, int eTok){
-  int iOff = 0;
-  int t = 0;
+స్థిర పూర్ణాంకం getConstraint(స్థిరరాశి u8 *z, పూర్ణాంకం eTok){
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం t = 0;
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  if( eTok==TK_FOREIGN ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_FOREIGN_కీలకం
+  ఒకవేళ( eTok==TK_FOREIGN ){
     /* For a FOREIGN KEY constraint, use getConstraint() to parse everything
     ** up to the REFERENCES keyword. Then getConstraintToken() to consume
     ** the TK_REFERENCES token itself. Then fall through to the special
@@ -2464,12 +2464,12 @@ static int getConstraint(const u8 *z, int eTok){
     iOff += getConstraintToken(&z[iOff], &eTok);
   }
 
-  if( eTok==TK_REFERENCES ){
+  ఒకవేళ( eTok==TK_REFERENCES ){
     /* REFERENCES is followed by a table name. Gobble this up here in
     ** case the table name is a fallback token like TK_GENERATED. */
     iOff += getConstraintToken(&z[iOff], &t);
   }
-#endif
+#అయితే_ముగింపు
 
   /* Now, the current constraint proceeds until the next occurence of one 
   ** of the following tokens: 
@@ -2479,19 +2479,19 @@ static int getConstraint(const u8 *z, int eTok){
   **
   ** Also exit the loop if ILLEGAL turns up.
   */
-  while( 1 ){
-    int n = getConstraintToken(&z[iOff], &t);
-    if( t==TK_CONSTRAINT || t==TK_PRIMARY || t==TK_NOT || t==TK_UNIQUE
+  అయితే( 1 ){
+    పూర్ణాంకం n = getConstraintToken(&z[iOff], &t);
+    ఒకవేళ( t==TK_CONSTRAINT || t==TK_PRIMARY || t==TK_NOT || t==TK_UNIQUE
      || t==TK_CHECK || t==TK_DEFAULT || t==TK_COLLATE || t==TK_REFERENCES
      || t==TK_FOREIGN || t==TK_RP || t==TK_COMMA || t==TK_ILLEGAL
      || t==TK_AS || t==TK_GENERATED
     ){
-      break;
+      ఆపు;
     }
     iOff += n;
   }
   
-  return iOff;
+  తిరిగి iOff;
 }
 
 /*
@@ -2505,30 +2505,30 @@ static int getConstraint(const u8 *z, int eTok){
 ** non-zero if they differ.  Normally return SQLITE_OK, except if there
 ** is an OOM, set the OOM error condition on ctx and return SQLITE_NOMEM.
 */
-static int quotedCompare(
+స్థిర పూర్ణాంకం quotedCompare(
   sqlite3_context *ctx,  /* Function context on which to report errors */
-  int t,                 /* Token type */
-  const u8 *zQuote,      /* Possibly quoted text.  Not zero-terminated. */
-  int nQuote,            /* Length of zQuote in bytes */
-  const u8 *zCmp,        /* Zero-terminated, unquoted name to compare against */
-  int *pRes              /* OUT: Set to 0 if equal, non-zero if unequal */
+  పూర్ణాంకం t,                 /* Token type */
+  స్థిరరాశి u8 *zQuote,      /* Possibly quoted text.  Not zero-terminated. */
+  పూర్ణాంకం nQuote,            /* Length of zQuote in bytes */
+  స్థిరరాశి u8 *zCmp,        /* Zero-terminated, unquoted name to compare against */
+  పూర్ణాంకం *pRes              /* OUT: Set to 0 if equal, non-zero if unequal */
 ){
-  char *zCopy = 0;       /* De-quoted, zero-terminated copy of zQuote[] */
+  అక్షరం *zCopy = 0;       /* De-quoted, zero-terminated copy of zQuote[] */
 
-  if( t==TK_ILLEGAL ){
+  ఒకవేళ( t==TK_ILLEGAL ){
     *pRes = 1;
-    return SQLITE_OK;
+    తిరిగి SQLITE_OK;
   }
   zCopy = sqlite3MallocZero(nQuote+1);
-  if( zCopy==0 ){
-    sqlite3_result_error_nomem(ctx);
-    return SQLITE_NOMEM_BKPT;
+  ఒకవేళ( zCopy==0 ){
+    sqlite3_ఫలితం_error_nomem(ctx);
+    తిరిగి SQLITE_NOMEM_BKPT;
   }
-  memcpy(zCopy, zQuote, nQuote);
+  జ్ఞాపకం_నకలు(zCopy, zQuote, nQuote);
   sqlite3Dequote(zCopy);
-  *pRes = sqlite3_stricmp((const char*)zCopy, (const char*)zCmp);
+  *pRes = sqlite3_stricmp((స్థిరరాశి అక్షరం*)zCopy, (స్థిరరాశి అక్షరం*)zCmp);
   sqlite3_free(zCopy);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -2537,24 +2537,24 @@ static int quotedCompare(
 ** that offset into *piOff and return SQLITE_OK.  Or, if not found,
 ** set the SQLITE_CORRUPT error code and return SQLITE_ERROR.
 */
-static int skipCreateTable(sqlite3_context *ctx, const u8 *zSql, int *piOff){
-  int iOff = 0;
+స్థిర పూర్ణాంకం skip_Create_పట్టిక(sqlite3_context *ctx, స్థిరరాశి u8 *zSql, పూర్ణాంకం *piOff){
+  పూర్ణాంకం iOff = 0;
 
-  if( zSql==0 ) return SQLITE_ERROR;
+  ఒకవేళ( zSql==0 ) తిరిగి SQLITE_ERROR;
 
   /* Jump past the "CREATE TABLE" bit. */
-  while( 1 ){
-    int t = 0;
+  అయితే( 1 ){
+    పూర్ణాంకం t = 0;
     iOff += sqlite3GetToken(&zSql[iOff], &t);
-    if( t==TK_LP ) break;
-    if( t==TK_ILLEGAL ){
-      sqlite3_result_error_code(ctx, SQLITE_CORRUPT_BKPT);
-      return SQLITE_ERROR;
+    ఒకవేళ( t==TK_LP ) ఆపు;
+    ఒకవేళ( t==TK_ILLEGAL ){
+      sqlite3_ఫలితం_error_సంకేతం(ctx, SQLITE_CORRUPT_BKPT);
+      తిరిగి SQLITE_ERROR;
     }
   }
 
   *piOff = iOff;
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
@@ -2568,47 +2568,47 @@ static int skipCreateTable(sqlite3_context *ctx, const u8 *zSql, int *piOff){
 **
 ** In the first case, the left-most column is 0.
 */
-static void dropConstraintFunc(
+స్థిర శూన్య dropConstraintFunc(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  const u8 *zSql = sqlite3_value_text(argv[0]);
-  const u8 *zCons = 0;
-  int iNotNull = -1;
-  int ii;
-  int iOff = 0;
-  int iStart = 0;
-  int iEnd = 0;
-  char *zNew = 0;
-  int t = 0;
+  స్థిరరాశి u8 *zSql = sqlite3_విలువ_పాఠ్యం(argv[0]);
+  స్థిరరాశి u8 *zCons = 0;
+  పూర్ణాంకం iNotNull = -1;
+  పూర్ణాంకం ii;
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం i_ప్రారంభం = 0;
+  పూర్ణాంకం i_చివర = 0;
+  అక్షరం *zNew = 0;
+  పూర్ణాంకం t = 0;
   sqlite3 *db;
-  UNUSED_PARAMETER(NotUsed);
+  వాడని_PARAMETER(Not_వాడిన);
 
-  if( zSql==0 ) return;
+  ఒకవేళ( zSql==0 ) తిరిగి;
 
   /* Jump past the "CREATE TABLE" bit. */
-  if( skipCreateTable(ctx, zSql, &iOff) ) return;
+  ఒకవేళ( skip_Create_పట్టిక(ctx, zSql, &iOff) ) తిరిగి;
 
-  if( sqlite3_value_type(argv[1])==SQLITE_INTEGER ){
-    iNotNull = sqlite3_value_int(argv[1]);
-  }else{
-    zCons = sqlite3_value_text(argv[1]);
+  ఒకవేళ( sqlite3_విలువ_type(argv[1])==SQLITE_INTEGER ){
+    iNotNull = sqlite3_విలువ_int(argv[1]);
+  }లేకపోతే{
+    zCons = sqlite3_విలువ_పాఠ్యం(argv[1]);
   }
 
   /* Search for the named constraint within column definitions. */
-  for(ii=0; iEnd==0; ii++){
+  కొరకు(ii=0; i_చివర==0; ii++){
   
     /* Now parse the column or table constraint definition. Search
     ** for the token CONSTRAINT if this is a DROP CONSTRAINT command, or
     ** NOT in the right column if this is a DROP NOT NULL. */
-    while( 1 ){
-      iStart = iOff;
+    అయితే( 1 ){
+      i_ప్రారంభం = iOff;
       iOff += getConstraintToken(&zSql[iOff], &t);
-      if( t==TK_CONSTRAINT && (zCons || iNotNull==ii) ){
+      ఒకవేళ( t==TK_CONSTRAINT && (zCons || iNotNull==ii) ){
         /* Check if this is the constraint we are searching for. */
-        int nTok = 0;
-        int cmp = 1;
+        పూర్ణాంకం nTok = 0;
+        పూర్ణాంకం cmp = 1;
 
         /* Skip past any whitespace. */
         iOff += getWhitespace(&zSql[iOff]);
@@ -2616,8 +2616,8 @@ static void dropConstraintFunc(
         /* Compare the next token - which may be quoted - with the name of
         ** the constraint being dropped.  */
         nTok = getConstraintToken(&zSql[iOff], &t);
-        if( zCons ){
-          if( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) return;
+        ఒకవేళ( zCons ){
+          ఒకవేళ( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) తిరిగి;
         }
         iOff += nTok;
 
@@ -2636,61 +2636,61 @@ static void dropConstraintFunc(
         ** the next iteration of the loop with &zSql[iOff] still pointing
         ** to the CONSTRAINT keyword.  */
         nTok = getConstraintToken(&zSql[iOff], &t);
-        if( t==TK_CONSTRAINT || t==TK_DEFAULT || t==TK_COLLATE 
+        ఒకవేళ( t==TK_CONSTRAINT || t==TK_DEFAULT || t==TK_COLLATE 
          || t==TK_COMMA || t==TK_RP || t==TK_GENERATED || t==TK_AS 
         ){
           t = TK_CHECK;
-        }else{
+        }లేకపోతే{
           iOff += nTok;
           iOff += getConstraint(&zSql[iOff], t);
         }
 
-        if( cmp==0 || (iNotNull>=0 && t==TK_NOT) ){
-          if( t!=TK_NOT && t!=TK_CHECK && t!=TK_REFERENCES && t!=TK_FOREIGN ){
+        ఒకవేళ( cmp==0 || (iNotNull>=0 && t==TK_NOT) ){
+          ఒకవేళ( t!=TK_NOT && t!=TK_CHECK && t!=TK_REFERENCES && t!=TK_FOREIGN ){
             errorMPrintf(ctx, "constraint may not be dropped: %s", zCons);
-            return;
+            తిరిగి;
           }
-          iEnd = iOff;
-          break;
+          i_చివర = iOff;
+          ఆపు;
         }
 
-      }else if( t==TK_NOT && iNotNull==ii ){
-        iEnd = iOff + getConstraint(&zSql[iOff], 0);
-        break;
-      }else if( t==TK_RP || t==TK_ILLEGAL ){
-        iEnd = -1;
-        break;
-      }else if( t==TK_COMMA ){
-        break;
+      }లేకపోతే ఒకవేళ( t==TK_NOT && iNotNull==ii ){
+        i_చివర = iOff + getConstraint(&zSql[iOff], 0);
+        ఆపు;
+      }లేకపోతే ఒకవేళ( t==TK_RP || t==TK_ILLEGAL ){
+        i_చివర = -1;
+        ఆపు;
+      }లేకపోతే ఒకవేళ( t==TK_COMMA ){
+        ఆపు;
       }
     }
   }
 
   /* If the constraint has not been found it is an error. */
-  if( iEnd<=0 ){
-    if( zCons ){
+  ఒకవేళ( i_చివర<=0 ){
+    ఒకవేళ( zCons ){
       errorMPrintf(ctx, "no such constraint: %s", zCons);
-    }else{
+    }లేకపోతే{
       /* SQLite follows postgres in that a DROP NOT NULL on a column that is
       ** not NOT NULL is not an error. So just return the original SQL here. */
-      sqlite3_result_text(ctx, (const char*)zSql, -1, SQLITE_TRANSIENT);
+      sqlite3_ఫలితం_పాఠ్యం(ctx, (స్థిరరాశి అక్షరం*)zSql, -1, SQLITE_TRANSIENT);
     }
-  }else{
+  }లేకపోతే{
 
     /* Figure out if an extra space should be inserted after the constraint
     ** is removed. And if an additional comma preceding the constraint 
     ** should be removed. */
-    const char *zSpace = " ";
-    iEnd += getWhitespace(&zSql[iEnd]);
-    sqlite3GetToken(&zSql[iEnd], &t);
-    if( t==TK_RP || t==TK_COMMA ){
+    స్థిరరాశి అక్షరం *zSpace = " ";
+    i_చివర += getWhitespace(&zSql[i_చివర]);
+    sqlite3GetToken(&zSql[i_చివర], &t);
+    ఒకవేళ( t==TK_RP || t==TK_COMMA ){
       zSpace = "";
-      if( zSql[iStart-1]==',' ) iStart--;
+      ఒకవేళ( zSql[i_ప్రారంభం-1]==',' ) i_ప్రారంభం--;
     }
 
     db = sqlite3_context_db_handle(ctx);
-    zNew = sqlite3MPrintf(db, "%.*s%s%s", iStart, zSql, zSpace, &zSql[iEnd]);
-    sqlite3_result_text(ctx, zNew, -1, SQLITE_DYNAMIC);
+    zNew = sqlite3MPrintf(db, "%.*s%s%s", i_ప్రారంభం, zSql, zSpace, &zSql[i_చివర]);
+    sqlite3_ఫలితం_పాఠ్యం(ctx, zNew, -1, SQLITE_DYNAMIC);
   }
 }
 
@@ -2703,30 +2703,30 @@ static void dropConstraintFunc(
 ** SQL that adds CONSTRAINT-TEXT at the end of the ICOL-th column
 ** definition.  (The left-most column defintion is 0.)
 */
-static void addConstraintFunc(
+స్థిర శూన్య కూడు_Constraint_Func(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  const u8 *zSql = sqlite3_value_text(argv[0]);
-  const char *zCons = (const char*)sqlite3_value_text(argv[1]);
-  int iCol = sqlite3_value_int(argv[2]);
-  int iOff = 0;
-  int ii;
+  స్థిరరాశి u8 *zSql = sqlite3_విలువ_పాఠ్యం(argv[0]);
+  స్థిరరాశి అక్షరం *zCons = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[1]);
+  పూర్ణాంకం i_నిలువు = sqlite3_విలువ_int(argv[2]);
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం ii;
   sqlite3_str *pNew;
-  int t = 0;
-  UNUSED_PARAMETER(NotUsed);
+  పూర్ణాంకం t = 0;
+  వాడని_PARAMETER(Not_వాడిన);
 
-  if( skipCreateTable(ctx, zSql, &iOff) ) return;
+  ఒకవేళ( skip_Create_పట్టిక(ctx, zSql, &iOff) ) తిరిగి;
   
-  for(ii=0; ii<=iCol || (iCol<0 && t!=TK_RP); ii++){
+  కొరకు(ii=0; ii<=i_నిలువు || (i_నిలువు<0 && t!=TK_RP); ii++){
     iOff += getConstraintToken(&zSql[iOff], &t);
-    while( 1 ){
-      int nTok = getConstraintToken(&zSql[iOff], &t);
-      if( t==TK_COMMA || t==TK_RP ) break;
-      if( t==TK_ILLEGAL ){
-        sqlite3_result_error_code(ctx, SQLITE_CORRUPT_BKPT);
-        return;
+    అయితే( 1 ){
+      పూర్ణాంకం nTok = getConstraintToken(&zSql[iOff], &t);
+      ఒకవేళ( t==TK_COMMA || t==TK_RP ) ఆపు;
+      ఒకవేళ( t==TK_ILLEGAL ){
+        sqlite3_ఫలితం_error_సంకేతం(ctx, SQLITE_CORRUPT_BKPT);
+        తిరిగి;
       }
       iOff += nTok;
     }
@@ -2735,10 +2735,10 @@ static void addConstraintFunc(
   iOff += getWhitespace(&zSql[iOff]);
 
   pNew = sqlite3_str_new(sqlite3_context_db_handle(ctx));
-  sqlite3_str_append(pNew, (const char*)zSql, iOff);
-  if( iCol<0 ) sqlite3_str_append(pNew, ",", 1);
+  sqlite3_str_append(pNew, (స్థిరరాశి అక్షరం*)zSql, iOff);
+  ఒకవేళ( i_నిలువు<0 ) sqlite3_str_append(pNew, ",", 1);
   sqlite3_str_appendf(pNew, " %s%s", zCons, &zSql[iOff]);
-  sqlite3_result_str(ctx, pNew, SQLITE_FINISH);
+  sqlite3_ఫలితం_str(ctx, pNew, SQLITE_ముగింపు);
 }
 
 /*
@@ -2747,35 +2747,35 @@ static void addConstraintFunc(
 ** SQLITE_OK. Otherwise, set *piCol to -1 and return an SQLite error
 ** code.
 */
-static int alterFindCol(Parse *pParse, Table *pTab, Token *pCol, int *piCol){
+స్థిర పూర్ణాంకం alter_కనుగొను_నిలువు(Parse *pParse, పట్టిక *pTab, Token *p_నిలువు, పూర్ణాంకం *pi_నిలువు){
   sqlite3 *db = pParse->db;
-  char *zName = sqlite3NameFromToken(db, pCol);
-  int rc = SQLITE_NOMEM;
-  int iCol = -1;
+  అక్షరం *zName = sqlite3NameFromToken(db, p_నిలువు);
+  పూర్ణాంకం rc = SQLITE_NOMEM;
+  పూర్ణాంకం i_నిలువు = -1;
 
-  if( zName ){
-    iCol = sqlite3ColumnIndex(pTab, zName);
-    if( iCol<0 ){
-      sqlite3ErrorMsg(pParse, "no such column: %s", zName);
+  ఒకవేళ( zName ){
+    i_నిలువు = sqlite3_స్తంభం_సూచీ(pTab, zName);
+    ఒకవేళ( i_నిలువు<0 ){
+      sqlite3_Error_సందేశం(pParse, "no such column: %s", zName);
       rc = SQLITE_ERROR;
-    }else{
+    }లేకపోతే{
       rc = SQLITE_OK;
     }
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( rc==SQLITE_OK ){
-    const char *zDb = db->aDb[sqlite3SchemaToIndex(db, pTab->pSchema)].zDbSName;
-    const char *zCol = pTab->aCol[iCol].zCnName;
-    if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, zDb, pTab->zName, zCol) ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
+  ఒకవేళ( rc==SQLITE_OK ){
+    స్థిరరాశి అక్షరం *zDb = db->aDb[sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema)].zDbSName;
+    స్థిరరాశి అక్షరం *z_నిలువు = pTab->a_నిలువు[i_నిలువు].zCnName;
+    ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, zDb, pTab->zName, z_నిలువు) ){
       pTab = 0;
     }
   }
-#endif
+#అయితే_ముగింపు
 
   sqlite3DbFree(db, zName);
-  *piCol = iCol;
-  return rc;
+  *pi_నిలువు = i_నిలువు;
+  తిరిగి rc;
 }
 
 
@@ -2788,37 +2788,37 @@ static int alterFindCol(Parse *pParse, Table *pTab, Token *pCol, int *piCol){
 ** If the table cannot be located, return NULL. The value of the two output
 ** parameters is undefined in this case.
 */
-static Table *alterFindTable(
+స్థిర పట్టిక *alter_కనుగొను_పట్టిక(
   Parse *pParse,        /* Parsing context */
   SrcList *pSrc,        /* Name of the table to look for */
-  int *piDb,            /* OUT: write the iDb here */
-  const char **pzDb,    /* OUT: write name of schema here */
-  int bAuth             /* Do ALTER TABLE authorization checks if true */
+  పూర్ణాంకం *piDb,            /* OUT: write the iDb here */
+  స్థిరరాశి అక్షరం **pzDb,    /* OUT: write name of schema here */
+  పూర్ణాంకం bAuth             /* Do ALTER TABLE authorization checks if true */
 ){
   sqlite3 *db = pParse->db;
-  Table *pTab = 0;
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  pTab = sqlite3LocateTableItem(pParse, 0, &pSrc->a[0]);
-  if( pTab ){
-    int iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  పట్టిక *pTab = 0;
+  ప్రతిజ్ఞా( sqlite3BtreeHoldsAllMutexes(db) );
+  pTab = sqlite3_Locate_పట్టిక_అంశం(pParse, 0, &pSrc->a[0]);
+  ఒకవేళ( pTab ){
+    పూర్ణాంకం iDb = sqlite3_Schema_గమ్యం_సూచీ(db, pTab->pSchema);
     *pzDb = db->aDb[iDb].zDbSName;
     *piDb = iDb;
 
-    if( SQLITE_OK!=isRealTable(pParse, pTab, 2) 
-     || SQLITE_OK!=isAlterableTable(pParse, pTab) 
+    ఒకవేళ( SQLITE_OK!=is_Real_పట్టిక(pParse, pTab, 2) 
+     || SQLITE_OK!=is_Alterable_పట్టిక(pParse, pTab) 
     ){
       pTab = 0;
     }
   }
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( pTab && bAuth ){
-    if( sqlite3AuthCheck(pParse, SQLITE_ALTER_TABLE, *pzDb, pTab->zName, 0) ){
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
+  ఒకవేళ( pTab && bAuth ){
+    ఒకవేళ( sqlite3AuthCheck(pParse, SQLITE_ALTER_పట్టిక, *pzDb, pTab->zName, 0) ){
       pTab = 0;
     }
   }
-#endif
+#అయితే_ముగింపు
   sqlite3SrcListDelete(db, pSrc);
-  return pTab;
+  తిరిగి pTab;
 }
 
 /*
@@ -2829,36 +2829,36 @@ static Table *alterFindTable(
 **
 ** One of pCons and pCol must be NULL and the other non-null.
 */
-void sqlite3AlterDropConstraint(
+శూన్య sqlite3AlterDropConstraint(
   Parse *pParse,    /* Parsing context */
   SrcList *pSrc,    /* The table being altered */
   Token *pCons,     /* Name of the constraint to drop */
-  Token *pCol       /* Name of the column from which to remove the NOT NULL */
+  Token *p_నిలువు       /* Name of the column from which to remove the NOT NULL */
 ){
   sqlite3 *db = pParse->db;
-  Table *pTab = 0;
-  int iDb = 0;
-  const char *zDb = 0;
-  char *zArg = 0;
+  పట్టిక *pTab = 0;
+  పూర్ణాంకం iDb = 0;
+  స్థిరరాశి అక్షరం *zDb = 0;
+  అక్షరం *zArg = 0;
 
-  assert( (pCol==0)!=(pCons==0) );
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, pCons!=0);
-  if( !pTab ) return;
+  ప్రతిజ్ఞా( (p_నిలువు==0)!=(pCons==0) );
+  ప్రతిజ్ఞా( pSrc->nSrc==1 );
+  pTab = alter_కనుగొను_పట్టిక(pParse, pSrc, &iDb, &zDb, pCons!=0);
+  ఒకవేళ( !pTab ) తిరిగి;
 
-  if( pCons ){
-    char *z = sqlite3NameFromToken(db, pCons);
+  ఒకవేళ( pCons ){
+    అక్షరం *z = sqlite3NameFromToken(db, pCons);
     zArg = sqlite3MPrintf(db, "%Q", z);
     sqlite3DbFree(db, z);
-  }else{
-    int iCol;
-    if( alterFindCol(pParse, pTab, pCol, &iCol) ) return;
-    zArg = sqlite3MPrintf(db, "%d", iCol);
+  }లేకపోతే{
+    పూర్ణాంకం i_నిలువు;
+    ఒకవేళ( alter_కనుగొను_నిలువు(pParse, pTab, p_నిలువు, &i_నిలువు) ) తిరిగి;
+    zArg = sqlite3MPrintf(db, "%d", i_నిలువు);
   }
 
   /* Edit the SQL for the named table. */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_drop_constraint(sql, %s) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
       , zDb, zArg, pTab->zName
@@ -2874,16 +2874,16 @@ void sqlite3AlterDropConstraint(
 ** argument, and returns it as an error message with the error code set to
 ** SQLITE_CONSTRAINT.
 */
-static void failConstraintFunc(
+స్థిర శూన్య failConstraintFunc(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  const char *zText = (const char*)sqlite3_value_text(argv[0]);
-  int err = sqlite3_value_int(argv[1]);
-  (void)NotUsed;
-  sqlite3_result_error(ctx, zText, -1);
-  sqlite3_result_error_code(ctx, err);
+  స్థిరరాశి అక్షరం *z_పాఠ్యం = (స్థిరరాశి అక్షరం*)sqlite3_విలువ_పాఠ్యం(argv[0]);
+  పూర్ణాంకం err = sqlite3_విలువ_int(argv[1]);
+  (శూన్య)Not_వాడిన;
+  sqlite3_ఫలితం_error(ctx, z_పాఠ్యం, -1);
+  sqlite3_ఫలితం_error_సంకేతం(ctx, err);
 }
 
 /*
@@ -2899,29 +2899,29 @@ static void failConstraintFunc(
 ** will have the effect of removing the comment terminator and messing up
 ** the syntax.
 */
-static int alterRtrimConstraint(
+స్థిర పూర్ణాంకం alterRtrimConstraint(
   sqlite3 *db,                    /* used to record OOM error */
-  const char *pCons,              /* Buffer containing constraint */
-  int nCons                       /* Size of pCons in bytes */
+  స్థిరరాశి అక్షరం *pCons,              /* Buffer containing constraint */
+  పూర్ణాంకం nCons                       /* Size of pCons in bytes */
 ){
   u8 *zTmp = (u8*)sqlite3MPrintf(db, "%.*s", nCons, pCons);
-  int iOff = 0;
-  int iEnd = 0;
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం i_చివర = 0;
 
-  if( zTmp==0 ) return 0;
+  ఒకవేళ( zTmp==0 ) తిరిగి 0;
 
-  while( 1 ){
-    int t = 0;
-    int nToken = sqlite3GetToken(&zTmp[iOff], &t);
-    if( t==TK_ILLEGAL ) break;
-    if( t!=TK_SPACE && (t!=TK_COMMENT || zTmp[iOff]!='-') ){
-      iEnd = iOff+nToken;
+  అయితే( 1 ){
+    పూర్ణాంకం t = 0;
+    పూర్ణాంకం nToken = sqlite3GetToken(&zTmp[iOff], &t);
+    ఒకవేళ( t==TK_ILLEGAL ) ఆపు;
+    ఒకవేళ( t!=TK_SPACE && (t!=TK_COMMENT || zTmp[iOff]!='-') ){
+      i_చివర = iOff+nToken;
     }
     iOff += nToken;
   }
 
   sqlite3DbFree(db, zTmp);
-  return iEnd;
+  తిరిగి i_చివర;
 }
 
 /*
@@ -2929,46 +2929,46 @@ static int alterRtrimConstraint(
 **
 **   ALTER TABLE pSrc ALTER pCol SET NOT NULL
 */
-void sqlite3AlterSetNotNull(
+శూన్య sqlite3_Alter_సమితి_Not_Null(
   Parse *pParse,   /* Parsing context */
   SrcList *pSrc,   /* Name of the table being altered */
-  Token *pCol,     /* Name of the column to add a NOT NULL constraint to */
-  Token *pFirst    /* The NOT token of the NOT NULL constraint text */
+  Token *p_నిలువు,     /* Name of the column to add a NOT NULL constraint to */
+  Token *p_మొదటి    /* The NOT token of the NOT NULL constraint text */
 ){
-  Table *pTab = 0;
-  int iCol = 0;
-  int iDb = 0;
-  const char *zDb = 0;
-  const char *pCons = 0;
-  int nCons = 0;
+  పట్టిక *pTab = 0;
+  పూర్ణాంకం i_నిలువు = 0;
+  పూర్ణాంకం iDb = 0;
+  స్థిరరాశి అక్షరం *zDb = 0;
+  స్థిరరాశి అక్షరం *pCons = 0;
+  పూర్ణాంకం nCons = 0;
 
   /* Look up the table being altered. */
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, 0);
-  if( !pTab ) return;
+  ప్రతిజ్ఞా( pSrc->nSrc==1 );
+  pTab = alter_కనుగొను_పట్టిక(pParse, pSrc, &iDb, &zDb, 0);
+  ఒకవేళ( !pTab ) తిరిగి;
 
   /* Find the column being altered. */
-  if( alterFindCol(pParse, pTab, pCol, &iCol) ){
-    return;
+  ఒకవేళ( alter_కనుగొను_నిలువు(pParse, pTab, p_నిలువు, &i_నిలువు) ){
+    తిరిగి;
   }
 
   /* Find the length in bytes of the constraint definition */
-  pCons = pFirst->z;
-  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->sLastToken.z - pCons);
+  pCons = p_మొదటి->z;
+  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->s_చివరి_Token.z - pCons);
 
   /* Search for a constraint violation. Throw an exception if one is found. */
   sqlite3NestedParse(pParse,
       "SELECT sqlite_fail('constraint failed', %d) "
       "FROM %Q.%Q AS x WHERE x.%.*s IS NULL", 
-      SQLITE_CONSTRAINT, zDb, pTab->zName, (int)pCol->n, pCol->z
+      SQLITE_CONSTRAINT, zDb, pTab->zName, (పూర్ణాంకం)p_నిలువు->n, p_నిలువు->z
   );
 
   /* Edit the SQL for the named table. */
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_add_constraint(sqlite_drop_constraint(sql, %d), %.*Q, %d) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
-      , zDb, iCol, nCons, pCons, iCol, pTab->zName
+      , zDb, i_నిలువు, nCons, pCons, i_నిలువు, pTab->zName
   );
 
   /* Finally, reload the database schema. */
@@ -2984,43 +2984,43 @@ void sqlite3AlterSetNotNull(
 ** CREATE TABLE that contains a constraint with the name CONSTRAINT-NAME,
 ** or false otherwise.
 */
-static void findConstraintFunc(
+స్థిర శూన్య కనుగొను_Constraint_Func(
   sqlite3_context *ctx,
-  int NotUsed,
-  sqlite3_value **argv
+  పూర్ణాంకం Not_వాడిన,
+  sqlite3_విలువ **argv
 ){
-  const u8 *zSql = 0;
-  const u8 *zCons = 0;
-  int iOff = 0;
-  int t = 0;
+  స్థిరరాశి u8 *zSql = 0;
+  స్థిరరాశి u8 *zCons = 0;
+  పూర్ణాంకం iOff = 0;
+  పూర్ణాంకం t = 0;
 
-  (void)NotUsed;
-  zSql = sqlite3_value_text(argv[0]);
-  zCons = sqlite3_value_text(argv[1]);
+  (శూన్య)Not_వాడిన;
+  zSql = sqlite3_విలువ_పాఠ్యం(argv[0]);
+  zCons = sqlite3_విలువ_పాఠ్యం(argv[1]);
 
-  if( zSql==0 || zCons==0 ) return;
-  while( t!=TK_LP && t!=TK_ILLEGAL ){
+  ఒకవేళ( zSql==0 || zCons==0 ) తిరిగి;
+  అయితే( t!=TK_LP && t!=TK_ILLEGAL ){
     iOff += sqlite3GetToken(&zSql[iOff], &t);
   }
 
-  while( 1 ){
+  అయితే( 1 ){
     iOff += getConstraintToken(&zSql[iOff], &t);
-    if( t==TK_CONSTRAINT ){
-      int nTok = 0;
-      int cmp = 0;
+    ఒకవేళ( t==TK_CONSTRAINT ){
+      పూర్ణాంకం nTok = 0;
+      పూర్ణాంకం cmp = 0;
       iOff += getWhitespace(&zSql[iOff]);
       nTok = getConstraintToken(&zSql[iOff], &t);
-      if( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) return;
-      if( cmp==0 ){
-        sqlite3_result_int(ctx, 1);
-        return;
+      ఒకవేళ( quotedCompare(ctx, t, &zSql[iOff], nTok, zCons, &cmp) ) తిరిగి;
+      ఒకవేళ( cmp==0 ){
+        sqlite3_ఫలితం_int(ctx, 1);
+        తిరిగి;
       }
-    }else if( t==TK_ILLEGAL ){
-      break;
+    }లేకపోతే ఒకవేళ( t==TK_ILLEGAL ){
+      ఆపు;
     }
   }
 
-  sqlite3_result_int(ctx, 0);
+  sqlite3_ఫలితం_int(ctx, 0);
 }
 
 /*
@@ -3031,45 +3031,45 @@ static void findConstraintFunc(
 ** Any "ON CONFLICT" text that occurs after the "CHECK(...)", up
 ** until pParse->sLastToken, is included as part of the new constraint.
 */
-void sqlite3AlterAddConstraint(
+శూన్య sqlite3_Alter_కూడు_Constraint(
   Parse *pParse,           /* Parse context */
   SrcList *pSrc,           /* Table to add constraint to */
-  Token *pFirst,           /* First token of new constraint */
+  Token *p_మొదటి,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  స్థిరరాశి అక్షరం *z_సమాసం,       /* Text of CHECK expression */
+  పూర్ణాంకం n_సమాసం,               /* Size of pExpr in bytes */
+  సమాసం *p_సమాసం              /* The parsed CHECK expression */
 ){ 
-  Table *pTab = 0;         /* Table identified by pSrc */
-  int iDb = 0;             /* Which schema does pTab live in */
-  const char *zDb = 0;     /* Name of the schema in which pTab lives */
-  const char *pCons = 0;   /* Text of the constraint */
-  int nCons;               /* Bytes of text to use from pCons[] */
-  int rc;                  /* Result from error checking pExpr */
+  పట్టిక *pTab = 0;         /* Table identified by pSrc */
+  పూర్ణాంకం iDb = 0;             /* Which schema does pTab live in */
+  స్థిరరాశి అక్షరం *zDb = 0;     /* Name of the schema in which pTab lives */
+  స్థిరరాశి అక్షరం *pCons = 0;   /* Text of the constraint */
+  పూర్ణాంకం nCons;               /* Bytes of text to use from pCons[] */
+  పూర్ణాంకం rc;                  /* Result from error checking pExpr */
 
   /* Look up the table being altered. */
-  assert( pSrc->nSrc==1 );
-  pTab = alterFindTable(pParse, pSrc, &iDb, &zDb, 1);
-  if( !pTab ){
-    sqlite3ExprDelete(pParse->db, pExpr);
-    return;
+  ప్రతిజ్ఞా( pSrc->nSrc==1 );
+  pTab = alter_కనుగొను_పట్టిక(pParse, pSrc, &iDb, &zDb, 1);
+  ఒకవేళ( !pTab ){
+    sqlite3_సమాసం_Delete(pParse->db, p_సమాసం);
+    తిరిగి;
   }
 
   /* Verify that the new CHECK constraint does not contain any
   ** internal-use-only function.  Forum post 2026-05-10T01:11:28Z
   */
-  rc = sqlite3ResolveSelfReference(pParse, pTab, NC_IsCheck, pExpr, 0);
-  sqlite3ExprDelete(pParse->db, pExpr);
-  if( rc ) return;
+  rc = sqlite3ResolveSelfReference(pParse, pTab, NC_IsCheck, p_సమాసం, 0);
+  sqlite3_సమాసం_Delete(pParse->db, p_సమాసం);
+  ఒకవేళ( rc ) తిరిగి;
 
   /* If this new constraint has a name, check that it is not a duplicate of
   ** an existing constraint. It is an error if it is.  */
-  if( pName ){
-    char *zName = sqlite3NameFromToken(pParse->db, pName);
+  ఒకవేళ( pName ){
+    అక్షరం *zName = sqlite3NameFromToken(pParse->db, pName);
 
     sqlite3NestedParse(pParse,
         "SELECT sqlite_fail('constraint %q already exists', %d) "
-        "FROM \"%w\"." LEGACY_SCHEMA_TABLE " "
+        "FROM \"%w\"." LEGACY_SCHEMA_పట్టిక " "
         "WHERE type='table' AND tbl_name=%Q COLLATE nocase "
         "AND sqlite_find_constraint(sql, %Q)",
         zName, SQLITE_ERROR, zDb, pTab->zName, zName
@@ -3081,15 +3081,15 @@ void sqlite3AlterAddConstraint(
   sqlite3NestedParse(pParse,
       "SELECT sqlite_fail('constraint failed', %d) "
       "FROM %Q.%Q WHERE (%.*s) IS FALSE", 
-      SQLITE_CONSTRAINT, zDb, pTab->zName, nExpr, zExpr
+      SQLITE_CONSTRAINT, zDb, pTab->zName, n_సమాసం, z_సమాసం
   );
 
   /* Edit the SQL for the named table. */
-  pCons = pFirst->z;
-  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->sLastToken.z - pCons);
+  pCons = p_మొదటి->z;
+  nCons = alterRtrimConstraint(pParse->db, pCons, pParse->s_చివరి_Token.z - pCons);
 
   sqlite3NestedParse(pParse,
-      "UPDATE \"%w\"." LEGACY_SCHEMA_TABLE " SET "
+      "UPDATE \"%w\"." LEGACY_SCHEMA_పట్టిక " SET "
       "sql = sqlite_add_constraint(sql, %.*Q, -1) "
       "WHERE type='table' AND tbl_name=%Q COLLATE nocase"
       , zDb, nCons, pCons, pTab->zName
@@ -3102,18 +3102,18 @@ void sqlite3AlterAddConstraint(
 /*
 ** Register built-in functions used to help implement ALTER TABLE
 */
-void sqlite3AlterFunctions(void){
-  static FuncDef aAlterTableFuncs[] = {
-    INTERNAL_FUNCTION(sqlite_rename_column,  9, renameColumnFunc),
-    INTERNAL_FUNCTION(sqlite_rename_table,   7, renameTableFunc),
-    INTERNAL_FUNCTION(sqlite_rename_test,    7, renameTableTest),
-    INTERNAL_FUNCTION(sqlite_drop_column,    3, dropColumnFunc),
-    INTERNAL_FUNCTION(sqlite_rename_quotefix,2, renameQuotefixFunc),
-    INTERNAL_FUNCTION(sqlite_drop_constraint,2, dropConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_fail,           2, failConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_add_constraint, 3, addConstraintFunc),
-    INTERNAL_FUNCTION(sqlite_find_constraint,2, findConstraintFunc),
+శూన్య sqlite3AlterFunctions(శూన్య){
+  స్థిర FuncDef a_Alter_పట్టిక_Funcs[] = {
+    అంతర్గత_FUNCTION(sqlite_rename_స్తంభం,  9, rename_స్తంభం_Func),
+    అంతర్గత_FUNCTION(sqlite_rename_పట్టిక,   7, rename_పట్టిక_Func),
+    అంతర్గత_FUNCTION(sqlite_rename_test,    7, rename_పట్టిక_Test),
+    అంతర్గత_FUNCTION(sqlite_drop_స్తంభం,    3, drop_స్తంభం_Func),
+    అంతర్గత_FUNCTION(sqlite_rename_quotefix,2, renameQuotefixFunc),
+    అంతర్గత_FUNCTION(sqlite_drop_constraint,2, dropConstraintFunc),
+    అంతర్గత_FUNCTION(sqlite_fail,           2, failConstraintFunc),
+    అంతర్గత_FUNCTION(sqlite_కూడు_constraint, 3, కూడు_Constraint_Func),
+    అంతర్గత_FUNCTION(sqlite_కనుగొను_constraint,2, కనుగొను_Constraint_Func),
   };
-  sqlite3InsertBuiltinFuncs(aAlterTableFuncs, ArraySize(aAlterTableFuncs));
+  sqlite3_చొప్పించు_Builtin_Funcs(a_Alter_పట్టిక_Funcs, Array_కొలత(a_Alter_పట్టిక_Funcs));
 }
-#endif  /* SQLITE_ALTER_TABLE */
+#అయితే_ముగింపు  /* SQLITE_ALTER_TABLE */

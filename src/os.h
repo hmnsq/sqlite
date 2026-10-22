@@ -17,41 +17,41 @@
 ** This header file is #include-ed by sqliteInt.h and thus ends up
 ** being included by every source file.
 */
-#ifndef _SQLITE_OS_H_
-#define _SQLITE_OS_H_
+#నిర్వచితం_కాకపోతే _SQLITE_OS_H_
+#నిర్వచించు _SQLITE_OS_H_
 
 /*
 ** Attempt to automatically detect the operating system and setup the
 ** necessary pre-processor macros for it.
 */
-#include "os_setup.h"
+#అన్తర్భావ "os_setup.h"
 
 /* If the SET_FULLSYNC macro is not defined above, then make it
 ** a no-op
 */
-#ifndef SET_FULLSYNC
-# define SET_FULLSYNC(x,y)
-#endif
+#నిర్వచితం_కాకపోతే సమితి_FULLSYNC
+# define సమితి_FULLSYNC(x,y)
+#అయితే_ముగింపు
 
 /* Maximum pathname length.  Note: FILENAME_MAX defined by stdio.h
 */
-#ifndef SQLITE_MAX_PATHLEN
+#నిర్వచితం_కాకపోతే SQLITE_MAX_PATHLEN
 # define SQLITE_MAX_PATHLEN FILENAME_MAX
-#endif
+#అయితే_ముగింపు
 
 /* Maximum number of symlinks that will be resolved while trying to
 ** expand a filename in xFullPathname() in the VFS.
 */
-#ifndef SQLITE_MAX_SYMLINK
+#నిర్వచితం_కాకపోతే SQLITE_MAX_SYMLINK
 # define SQLITE_MAX_SYMLINK 200
-#endif
+#అయితే_ముగింపు
 
 /*
 ** The default size of a disk sector
 */
-#ifndef SQLITE_DEFAULT_SECTOR_SIZE
-# define SQLITE_DEFAULT_SECTOR_SIZE 4096
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_DEFAULT_SECTOR_కొలత
+# define SQLITE_DEFAULT_SECTOR_కొలత 4096
+#అయితే_ముగింపు
 
 /*
 ** Temporary files are named starting with this prefix followed by 16 random
@@ -74,9 +74,9 @@
 ** enough to know that calling the developer will not help get rid
 ** of the file.
 */
-#ifndef SQLITE_TEMP_FILE_PREFIX
-# define SQLITE_TEMP_FILE_PREFIX "etilqs_"
-#endif
+#నిర్వచితం_కాకపోతే SQLITE_తాత్కాలిక_FILE_ఉపసర్గ
+# define SQLITE_తాత్కాలిక_FILE_ఉపసర్గ "etilqs_"
+#అయితే_ముగింపు
 
 /*
 ** The following values may be passed as the second argument to
@@ -95,11 +95,11 @@
 ** lock. This can be upgraded to an EXCLUSIVE lock by a subsequent call to
 ** sqlite3OsLock().
 */
-#define NO_LOCK         0
-#define SHARED_LOCK     1
-#define RESERVED_LOCK   2
-#define PENDING_LOCK    3
-#define EXCLUSIVE_LOCK  4
+#నిర్వచించు NO_తాళం         0
+#నిర్వచించు SHARED_తాళం     1
+#నిర్వచించు RESERVED_తాళం   2
+#నిర్వచించు PENDING_తాళం    3
+#నిర్వచించు EXCLUSIVE_తాళం  4
 
 /*
 ** File Locking Notes:  (Mostly about windows but also some info for Unix)
@@ -156,70 +156,70 @@
 ** 1GB boundary.
 **
 */
-#ifdef SQLITE_OMIT_WSD
+#నిర్వచితమైతే SQLITE_OMIT_WSD
 # define PENDING_BYTE     (0x40000000)
-#else
+#లేకపోతే
 # define PENDING_BYTE      sqlite3PendingByte
-#endif
-#define RESERVED_BYTE     (PENDING_BYTE+1)
-#define SHARED_FIRST      (PENDING_BYTE+2)
-#define SHARED_SIZE       510
+#అయితే_ముగింపు
+#నిర్వచించు RESERVED_BYTE     (PENDING_BYTE+1)
+#నిర్వచించు SHARED_మొదటి      (PENDING_BYTE+2)
+#నిర్వచించు SHARED_కొలత       510
 
 /*
 ** Wrapper around OS specific sqlite3_os_init() function.
 */
-int sqlite3OsInit(void);
+పూర్ణాంకం sqlite3OsInit(శూన్య);
 
 /* 
 ** Functions for accessing sqlite3_file methods 
 */
-void sqlite3OsClose(sqlite3_file*);
-int sqlite3OsRead(sqlite3_file*, void*, int amt, i64 offset);
-int sqlite3OsWrite(sqlite3_file*, const void*, int amt, i64 offset);
-int sqlite3OsTruncate(sqlite3_file*, i64 size);
-int sqlite3OsSync(sqlite3_file*, int);
-int sqlite3OsFileSize(sqlite3_file*, i64 *pSize);
-int sqlite3OsLock(sqlite3_file*, int);
-int sqlite3OsUnlock(sqlite3_file*, int);
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut);
-int sqlite3OsFileControl(sqlite3_file*,int,void*);
-void sqlite3OsFileControlHint(sqlite3_file*,int,void*);
-#define SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
-int sqlite3OsSectorSize(sqlite3_file *id);
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id);
-#ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmMap(sqlite3_file *,int,int,int,void volatile **);
-int sqlite3OsShmLock(sqlite3_file *id, int, int, int);
-void sqlite3OsShmBarrier(sqlite3_file *id);
-int sqlite3OsShmUnmap(sqlite3_file *id, int);
-#endif /* SQLITE_OMIT_WAL */
-int sqlite3OsFetch(sqlite3_file *id, i64, int, void **);
-int sqlite3OsUnfetch(sqlite3_file *, i64, void *);
+శూన్య sqlite3OsClose(sqlite3_file*);
+పూర్ణాంకం sqlite3OsRead(sqlite3_file*, శూన్య*, పూర్ణాంకం amt, i64 స్థానభ్రంశం);
+పూర్ణాంకం sqlite3OsWrite(sqlite3_file*, స్థిరరాశి శూన్య*, పూర్ణాంకం amt, i64 స్థానభ్రంశం);
+పూర్ణాంకం sqlite3OsTruncate(sqlite3_file*, i64 కొలత);
+పూర్ణాంకం sqlite3OsSync(sqlite3_file*, పూర్ణాంకం);
+పూర్ణాంకం sqlite3_Os_File_కొలత(sqlite3_file*, i64 *p_కొలత);
+పూర్ణాంకం sqlite3_Os_తాళం(sqlite3_file*, పూర్ణాంకం);
+పూర్ణాంకం sqlite3OsUnlock(sqlite3_file*, పూర్ణాంకం);
+పూర్ణాంకం sqlite3_Os_Check_Reserved_తాళం(sqlite3_file *id, పూర్ణాంకం *p_Res_బహిర్గతం);
+పూర్ణాంకం sqlite3OsFileControl(sqlite3_file*,పూర్ణాంకం,శూన్య*);
+శూన్య sqlite3OsFileControlHint(sqlite3_file*,పూర్ణాంకం,శూన్య*);
+#నిర్వచించు SQLITE_FCNTL_DB_UNCHANGED 0xca093fa0
+పూర్ణాంకం sqlite3_Os_Sector_కొలత(sqlite3_file *id);
+పూర్ణాంకం sqlite3OsDeviceCharacteristics(sqlite3_file *id);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_WAL
+పూర్ణాంకం sqlite3OsShmMap(sqlite3_file *,పూర్ణాంకం,పూర్ణాంకం,పూర్ణాంకం,శూన్య అస్థిర **);
+పూర్ణాంకం sqlite3_Os_Shm_తాళం(sqlite3_file *id, పూర్ణాంకం, పూర్ణాంకం, పూర్ణాంకం);
+శూన్య sqlite3OsShmBarrier(sqlite3_file *id);
+పూర్ణాంకం sqlite3OsShmUnmap(sqlite3_file *id, పూర్ణాంకం);
+#అయితే_ముగింపు /* SQLITE_OMIT_WAL */
+పూర్ణాంకం sqlite3OsFetch(sqlite3_file *id, i64, పూర్ణాంకం, శూన్య **);
+పూర్ణాంకం sqlite3OsUnfetch(sqlite3_file *, i64, శూన్య *);
 
 
 /* 
 ** Functions for accessing sqlite3_vfs methods 
 */
-int sqlite3OsOpen(sqlite3_vfs *, const char *, sqlite3_file*, int, int *);
-int sqlite3OsDelete(sqlite3_vfs *, const char *, int);
-int sqlite3OsAccess(sqlite3_vfs *, const char *, int, int *pResOut);
-int sqlite3OsFullPathname(sqlite3_vfs *, const char *, int, char *);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-void *sqlite3OsDlOpen(sqlite3_vfs *, const char *);
-void sqlite3OsDlError(sqlite3_vfs *, int, char *);
-void (*sqlite3OsDlSym(sqlite3_vfs *, void *, const char *))(void);
-void sqlite3OsDlClose(sqlite3_vfs *, void *);
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *, int, char *);
-int sqlite3OsSleep(sqlite3_vfs *, int);
-int sqlite3OsGetLastError(sqlite3_vfs*);
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64*);
+పూర్ణాంకం sqlite3OsOpen(sqlite3_vfs *, స్థిరరాశి అక్షరం *, sqlite3_file*, పూర్ణాంకం, పూర్ణాంకం *);
+పూర్ణాంకం sqlite3OsDelete(sqlite3_vfs *, స్థిరరాశి అక్షరం *, పూర్ణాంకం);
+పూర్ణాంకం sqlite3OsAccess(sqlite3_vfs *, స్థిరరాశి అక్షరం *, పూర్ణాంకం, పూర్ణాంకం *p_Res_బహిర్గతం);
+పూర్ణాంకం sqlite3_Os_నిండిన_Pathname(sqlite3_vfs *, స్థిరరాశి అక్షరం *, పూర్ణాంకం, అక్షరం *);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_ఎక్కించు_EXTENSION
+శూన్య *sqlite3OsDlOpen(sqlite3_vfs *, స్థిరరాశి అక్షరం *);
+శూన్య sqlite3OsDlError(sqlite3_vfs *, పూర్ణాంకం, అక్షరం *);
+శూన్య (*sqlite3OsDlSym(sqlite3_vfs *, శూన్య *, స్థిరరాశి అక్షరం *))(శూన్య);
+శూన్య sqlite3OsDlClose(sqlite3_vfs *, శూన్య *);
+#అయితే_ముగింపు /* SQLITE_OMIT_LOAD_EXTENSION */
+పూర్ణాంకం sqlite3OsRandomness(sqlite3_vfs *, పూర్ణాంకం, అక్షరం *);
+పూర్ణాంకం sqlite3OsSleep(sqlite3_vfs *, పూర్ణాంకం);
+పూర్ణాంకం sqlite3_Os_Get_చివరి_Error(sqlite3_vfs*);
+పూర్ణాంకం sqlite3_Os_Current_సమయం_Int64(sqlite3_vfs *, sqlite3_int64*);
 
 /*
 ** Convenience functions for opening and closing files using 
 ** sqlite3_malloc() to obtain space for the file-handle structure.
 */
-int sqlite3OsOpenMalloc(sqlite3_vfs *, const char *, sqlite3_file **, int,int*);
-void sqlite3OsCloseFree(sqlite3_file *);
+పూర్ణాంకం sqlite3OsOpenMalloc(sqlite3_vfs *, స్థిరరాశి అక్షరం *, sqlite3_file **, పూర్ణాంకం,పూర్ణాంకం*);
+శూన్య sqlite3OsCloseFree(sqlite3_file *);
 
-#endif /* _SQLITE_OS_H_ */
+#అయితే_ముగింపు /* _SQLITE_OS_H_ */

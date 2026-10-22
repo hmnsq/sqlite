@@ -13,138 +13,138 @@
 **
 */
 
-#include "tclsqlite.h"
-#include "sqlite3.h"
-#include <assert.h>
+#అన్తర్భావ "tclsqlite.h"
+#అన్తర్భావ "sqlite3.h"
+#అన్తర్భావ <assert.h>
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+బాహ్య స్థిరరాశి అక్షరం *sqlite3ErrName(పూర్ణాంకం);
 
 /* These functions are implemented in test1.c. */
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
+బాహ్య పూర్ణాంకం get_Db_సూచిక(Tcl_Interp *, స్థిరరాశి అక్షరం *, sqlite3 **);
 
-static int SQLITE_TCLAPI backupTestCmd(
-  ClientData clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI backupTestCmd(
+  Client_దత్తాంశం client_దత్తాంశం, 
   Tcl_Interp *interp, 
-  int objc,
-  Tcl_Obj *const*objv
+  పూర్ణాంకం objc,
+  Tcl_Obj *స్థిరరాశి*objv
 ){
-  enum BackupSubCommandEnum {
-    BACKUP_STEP, BACKUP_FINISH, BACKUP_REMAINING, BACKUP_PAGECOUNT
+  గణన BackupSubCommandEnum {
+    BACKUP_అడుగు, BACKUP_ముగింపు, BACKUP_మిగిలిన, BACKUP_PAGECOUNT
   };
-  struct BackupSubCommand {
-    const char *zCmd;
-    enum BackupSubCommandEnum eCmd;
-    int nArg;
-    const char *zArg;
+  నిర్మాణం BackupSubCommand {
+    స్థిరరాశి అక్షరం *zCmd;
+    గణన BackupSubCommandEnum eCmd;
+    పూర్ణాంకం nArg;
+    స్థిరరాశి అక్షరం *zArg;
   } aSub[] = {
-    {"step",      BACKUP_STEP      , 1, "npage" },
-    {"finish",    BACKUP_FINISH    , 0, ""      },
-    {"remaining", BACKUP_REMAINING , 0, ""      },
+    {"step",      BACKUP_అడుగు      , 1, "npage" },
+    {"finish",    BACKUP_ముగింపు    , 0, ""      },
+    {"remaining", BACKUP_మిగిలిన , 0, ""      },
     {"pagecount", BACKUP_PAGECOUNT , 0, ""      },
     {0, 0, 0, 0}
   };
 
-  sqlite3_backup *p = (sqlite3_backup *)clientData;
-  int iCmd;
-  int rc;
+  sqlite3_backup *p = (sqlite3_backup *)client_దత్తాంశం;
+  పూర్ణాంకం iCmd;
+  పూర్ణాంకం rc;
 
-  rc = Tcl_GetIndexFromObjStruct(
-      interp, objv[1], aSub, sizeof(aSub[0]), "option", 0, &iCmd
+  rc = Tcl_Get_సూచీ_From_Obj_Struct(
+      interp, objv[1], aSub, పరిమాణం(aSub[0]), "option", 0, &iCmd
   );
-  if( rc!=TCL_OK ){
-    return rc;
+  ఒకవేళ( rc!=TCL_OK ){
+    తిరిగి rc;
   }
-  if( objc!=(2 + aSub[iCmd].nArg) ){
-    Tcl_WrongNumArgs(interp, 2, objv, aSub[iCmd].zArg);
-    return TCL_ERROR;
+  ఒకవేళ( objc!=(2 + aSub[iCmd].nArg) ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 2, objv, aSub[iCmd].zArg);
+    తిరిగి TCL_ERROR;
   }
 
-  switch( aSub[iCmd].eCmd ){
+  ఎంపిక( aSub[iCmd].eCmd ){
 
-    case BACKUP_FINISH: {
-      const char *zCmdName;
+    స్థితి BACKUP_ముగింపు: {
+      స్థిరరాశి అక్షరం *zCmdName;
       Tcl_CmdInfo cmdInfo;
       zCmdName = Tcl_GetString(objv[0]);
       Tcl_GetCommandInfo(interp, zCmdName, &cmdInfo);
       cmdInfo.deleteProc = 0;
-      Tcl_SetCommandInfo(interp, zCmdName, &cmdInfo);
+      Tcl_సమితి_Command_Info(interp, zCmdName, &cmdInfo);
       Tcl_DeleteCommand(interp, zCmdName);
 
-      rc = sqlite3_backup_finish(p);
-      Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-      break;
+      rc = sqlite3_backup_ముగింపు(p);
+      Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_STATIC);
+      ఆపు;
     }
 
-    case BACKUP_STEP: {
-      int nPage;
-      if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &nPage) ){
-        return TCL_ERROR;
+    స్థితి BACKUP_అడుగు: {
+      పూర్ణాంకం n_పుట;
+      ఒకవేళ( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &n_పుట) ){
+        తిరిగి TCL_ERROR;
       }
-      rc = sqlite3_backup_step(p, nPage);
-      Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-      break;
+      rc = sqlite3_backup_అడుగు(p, n_పుట);
+      Tcl_సమితి_ఫలితం(interp, (అక్షరం *)sqlite3ErrName(rc), TCL_STATIC);
+      ఆపు;
     }
 
-    case BACKUP_REMAINING:
-      Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_backup_remaining(p)));
-      break;
+    స్థితి BACKUP_మిగిలిన:
+      Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(sqlite3_backup_మిగిలిన(p)));
+      ఆపు;
 
-    case BACKUP_PAGECOUNT:
-      Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_backup_pagecount(p)));
-      break;
+    స్థితి BACKUP_PAGECOUNT:
+      Tcl_సమితి_Obj_ఫలితం(interp, Tcl_NewIntObj(sqlite3_backup_pagecount(p)));
+      ఆపు;
   }
 
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
-static void SQLITE_TCLAPI backupTestFinish(ClientData clientData){
-  sqlite3_backup *pBackup = (sqlite3_backup *)clientData;
-  sqlite3_backup_finish(pBackup);
+స్థిర శూన్య SQLITE_TCLAPI backup_Test_ముగింపు(Client_దత్తాంశం client_దత్తాంశం){
+  sqlite3_backup *pBackup = (sqlite3_backup *)client_దత్తాంశం;
+  sqlite3_backup_ముగింపు(pBackup);
 }
 
 /*
 **     sqlite3_backup CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME
 **
 */
-static int SQLITE_TCLAPI backupTestInit(
-  ClientData clientData, 
+స్థిర పూర్ణాంకం SQLITE_TCLAPI backupTestInit(
+  Client_దత్తాంశం client_దత్తాంశం, 
   Tcl_Interp *interp, 
-  int objc,
-  Tcl_Obj *const*objv
+  పూర్ణాంకం objc,
+  Tcl_Obj *స్థిరరాశి*objv
 ){
   sqlite3_backup *pBackup;
   sqlite3 *pDestDb;
   sqlite3 *pSrcDb;
-  const char *zDestName;
-  const char *zSrcName;
-  const char *zCmd;
+  స్థిరరాశి అక్షరం *zDestName;
+  స్థిరరాశి అక్షరం *zSrcName;
+  స్థిరరాశి అక్షరం *zCmd;
 
-  if( objc!=6 ){
-    Tcl_WrongNumArgs(
+  ఒకవేళ( objc!=6 ){
+    Tcl_Wrong_అంకె_వాదనలు(
       interp, 1, objv, "CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME"
     );
-    return TCL_ERROR;
+    తిరిగి TCL_ERROR;
   }
 
   zCmd = Tcl_GetString(objv[1]);
-  getDbPointer(interp, Tcl_GetString(objv[2]), &pDestDb);
+  get_Db_సూచిక(interp, Tcl_GetString(objv[2]), &pDestDb);
   zDestName = Tcl_GetString(objv[3]);
-  getDbPointer(interp, Tcl_GetString(objv[4]), &pSrcDb);
+  get_Db_సూచిక(interp, Tcl_GetString(objv[4]), &pSrcDb);
   zSrcName = Tcl_GetString(objv[5]);
 
   pBackup = sqlite3_backup_init(pDestDb, zDestName, pSrcDb, zSrcName);
-  if( !pBackup ){
-    Tcl_AppendResult(interp, "sqlite3_backup_init() failed", NULL);
-    return TCL_ERROR;
+  ఒకవేళ( !pBackup ){
+    Tcl_Append_ఫలితం(interp, "sqlite3_backup_init() failed", ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
 
-  Tcl_CreateObjCommand(interp, zCmd, backupTestCmd, pBackup, backupTestFinish);
-  Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  Tcl_CreateObjCommand(interp, zCmd, backupTestCmd, pBackup, backup_Test_ముగింపు);
+  Tcl_సమితి_Obj_ఫలితం(interp, objv[1]);
+  తిరిగి TCL_OK;
 }
 
-int Sqlitetestbackup_Init(Tcl_Interp *interp){
+పూర్ణాంకం Sqlitetestbackup_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3_backup", backupTestInit, 0, 0);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }

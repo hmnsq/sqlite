@@ -13,28 +13,28 @@
 ** This module implements the sqlite3_status() interface and related
 ** functionality.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#అన్తర్భావ "sqliteInt.h"
+#అన్తర్భావ "vdbeInt.h"
 
 /*
 ** Variables in which to record status information.
 */
-#if SQLITE_PTRSIZE>4
-typedef sqlite3_int64 sqlite3StatValueType;
-#else
-typedef u32 sqlite3StatValueType;
-#endif
-typedef struct sqlite3StatType sqlite3StatType;
-static SQLITE_WSD struct sqlite3StatType {
-  sqlite3StatValueType nowValue[10];  /* Current value */
-  sqlite3StatValueType mxValue[10];   /* Maximum value */
+#ఒకవేళ SQLITE_PTRSIZE>4
+రకనిర్వచనం sqlite3_int64 sqlite3_Stat_విలువ_Type;
+#లేకపోతే
+రకనిర్వచనం u32 sqlite3_Stat_విలువ_Type;
+#అయితే_ముగింపు
+రకనిర్వచనం నిర్మాణం sqlite3StatType sqlite3StatType;
+స్థిర SQLITE_WSD నిర్మాణం sqlite3StatType {
+  sqlite3_Stat_విలువ_Type now_విలువ[10];  /* Current value */
+  sqlite3_Stat_విలువ_Type mx_విలువ[10];   /* Maximum value */
 } sqlite3Stat = { {0,}, {0,} };
 
 /*
 ** Elements of sqlite3Stat[] are protected by either the memory allocator
 ** mutex, or by the pcache1 mutex.  The following array determines which.
 */
-static const char statMutex[] = {
+స్థిర స్థిరరాశి అక్షరం statMutex[] = {
   0,  /* SQLITE_STATUS_MEMORY_USED */
   1,  /* SQLITE_STATUS_PAGECACHE_USED */
   1,  /* SQLITE_STATUS_PAGECACHE_OVERFLOW */
@@ -54,25 +54,25 @@ static const char statMutex[] = {
 ** case where writable static data is supported, wsdStat can refer directly
 ** to the "sqlite3Stat" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#నిర్వచితమైతే SQLITE_OMIT_WSD
 # define wsdStatInit  sqlite3StatType *x = &GLOBAL(sqlite3StatType,sqlite3Stat)
 # define wsdStat x[0]
-#else
+#లేకపోతే
 # define wsdStatInit
 # define wsdStat sqlite3Stat
-#endif
+#అయితే_ముగింపు
 
 /*
 ** Return the current value of a status parameter.  The caller must
 ** be holding the appropriate mutex.
 */
-sqlite3_int64 sqlite3StatusValue(int op){
+sqlite3_int64 sqlite3_స్థితి_విలువ(పూర్ణాంకం op){
   wsdStatInit;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
-  assert( op>=0 && op<ArraySize(statMutex) );
-  assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(wsdStat.now_విలువ) );
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(statMutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  return wsdStat.nowValue[op];
+  తిరిగి wsdStat.now_విలువ[op];
 }
 
 /*
@@ -86,174 +86,174 @@ sqlite3_int64 sqlite3StatusValue(int op){
 ** The StatusDown() routine lowers the current value by N.  The highwater
 ** mark is unchanged.  N must be non-negative for StatusDown().
 */
-void sqlite3StatusUp(int op, int N){
+శూన్య sqlite3_స్థితి_పైకి(పూర్ణాంకం op, పూర్ణాంకం N){
   wsdStatInit;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
-  assert( op>=0 && op<ArraySize(statMutex) );
-  assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(wsdStat.now_విలువ) );
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(statMutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  wsdStat.nowValue[op] += N;
-  if( wsdStat.nowValue[op]>wsdStat.mxValue[op] ){
-    wsdStat.mxValue[op] = wsdStat.nowValue[op];
+  wsdStat.now_విలువ[op] += N;
+  ఒకవేళ( wsdStat.now_విలువ[op]>wsdStat.mx_విలువ[op] ){
+    wsdStat.mx_విలువ[op] = wsdStat.now_విలువ[op];
   }
 }
-void sqlite3StatusDown(int op, int N){
+శూన్య sqlite3_స్థితి_కిందికి(పూర్ణాంకం op, పూర్ణాంకం N){
   wsdStatInit;
-  assert( N>=0 );
-  assert( op>=0 && op<ArraySize(statMutex) );
-  assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
+  ప్రతిజ్ఞా( N>=0 );
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(statMutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
-  wsdStat.nowValue[op] -= N;
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(wsdStat.now_విలువ) );
+  wsdStat.now_విలువ[op] -= N;
 }
 
 /*
 ** Adjust the highwater mark if necessary.
 ** The caller must hold the appropriate mutex.
 */
-void sqlite3StatusHighwater(int op, int X){
-  sqlite3StatValueType newValue;
+శూన్య sqlite3_స్థితి_Highwater(పూర్ణాంకం op, పూర్ణాంకం X){
+  sqlite3_Stat_విలువ_Type new_విలువ;
   wsdStatInit;
-  assert( X>=0 );
-  newValue = (sqlite3StatValueType)X;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
-  assert( op>=0 && op<ArraySize(statMutex) );
-  assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
+  ప్రతిజ్ఞా( X>=0 );
+  new_విలువ = (sqlite3_Stat_విలువ_Type)X;
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(wsdStat.now_విలువ) );
+  ప్రతిజ్ఞా( op>=0 && op<Array_కొలత(statMutex) );
+  ప్రతిజ్ఞా( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  assert( op==SQLITE_STATUS_MALLOC_SIZE
-          || op==SQLITE_STATUS_PAGECACHE_SIZE
-          || op==SQLITE_STATUS_PARSER_STACK );
-  if( newValue>wsdStat.mxValue[op] ){
-    wsdStat.mxValue[op] = newValue;
+  ప్రతిజ్ఞా( op==SQLITE_స్థితి_MALLOC_కొలత
+          || op==SQLITE_స్థితి_PAGECACHE_కొలత
+          || op==SQLITE_స్థితి_PARSER_దొంతర );
+  ఒకవేళ( new_విలువ>wsdStat.mx_విలువ[op] ){
+    wsdStat.mx_విలువ[op] = new_విలువ;
   }
 }
 
 /*
 ** Query status information.
 */
-int sqlite3_status64(
-  int op,
+పూర్ణాంకం sqlite3_status64(
+  పూర్ణాంకం op,
   sqlite3_int64 *pCurrent,
   sqlite3_int64 *pHighwater,
-  int resetFlag
+  పూర్ణాంకం resetFlag
 ){
   sqlite3_mutex *pMutex;
   wsdStatInit;
-  if( op<0 || op>=ArraySize(wsdStat.nowValue) ){
-    return SQLITE_MISUSE_BKPT;
+  ఒకవేళ( op<0 || op>=Array_కొలత(wsdStat.now_విలువ) ){
+    తిరిగి SQLITE_MISUSE_BKPT;
   }
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCurrent==0 || pHighwater==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( pCurrent==0 || pHighwater==0 ) తిరిగి SQLITE_MISUSE_BKPT;
+#అయితే_ముగింపు
   pMutex = statMutex[op] ? sqlite3Pcache1Mutex() : sqlite3MallocMutex();
   sqlite3_mutex_enter(pMutex);
-  *pCurrent = wsdStat.nowValue[op];
-  *pHighwater = wsdStat.mxValue[op];
-  if( resetFlag ){
-    wsdStat.mxValue[op] = wsdStat.nowValue[op];
+  *pCurrent = wsdStat.now_విలువ[op];
+  *pHighwater = wsdStat.mx_విలువ[op];
+  ఒకవేళ( resetFlag ){
+    wsdStat.mx_విలువ[op] = wsdStat.now_విలువ[op];
   }
   sqlite3_mutex_leave(pMutex);
-  (void)pMutex;  /* Prevent warning when SQLITE_THREADSAFE=0 */
-  return SQLITE_OK;
+  (శూన్య)pMutex;  /* Prevent warning when SQLITE_THREADSAFE=0 */
+  తిరిగి SQLITE_OK;
 }
-int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetFlag){
+పూర్ణాంకం sqlite3_స్థితి(పూర్ణాంకం op, పూర్ణాంకం *pCurrent, పూర్ణాంకం *pHighwater, పూర్ణాంకం resetFlag){
   sqlite3_int64 iCur = 0, iHwtr = 0;
-  int rc;
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCurrent==0 || pHighwater==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+  పూర్ణాంకం rc;
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( pCurrent==0 || pHighwater==0 ) తిరిగి SQLITE_MISUSE_BKPT;
+#అయితే_ముగింపు
   rc = sqlite3_status64(op, &iCur, &iHwtr, resetFlag);
-  if( rc==0 ){
-    *pCurrent = (int)iCur;
-    *pHighwater = (int)iHwtr;
+  ఒకవేళ( rc==0 ){
+    *pCurrent = (పూర్ణాంకం)iCur;
+    *pHighwater = (పూర్ణాంకం)iHwtr;
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** Return the number of LookasideSlot elements on the linked list
 */
-static u32 countLookasideSlots(LookasideSlot *p){
+స్థిర u32 లెక్క_Lookaside_Slots(Lookaside_స్థానం *p){
   u32 cnt = 0;
-  while( p ){
-    p = p->pNext;
+  అయితే( p ){
+    p = p->p_తదుపరి;
     cnt++;
   }
-  return cnt;
+  తిరిగి cnt;
 }
 
 /*
 ** Count the number of slots of lookaside memory that are outstanding
 */
-int sqlite3LookasideUsed(sqlite3 *db, int *pHighwater){
-  u32 nInit = countLookasideSlots(db->lookaside.pInit);
-  u32 nFree = countLookasideSlots(db->lookaside.pFree);
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  nInit += countLookasideSlots(db->lookaside.pSmallInit);
-  nFree += countLookasideSlots(db->lookaside.pSmallFree);
-#endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-  assert( db->lookaside.nSlot >= nInit+nFree );
-  if( pHighwater ) *pHighwater = (int)(db->lookaside.nSlot - nInit);
-  return (int)(db->lookaside.nSlot - (nInit+nFree));
+పూర్ణాంకం sqlite3_Lookaside_వాడిన(sqlite3 *db, పూర్ణాంకం *pHighwater){
+  u32 nInit = లెక్క_Lookaside_Slots(db->lookaside.pInit);
+  u32 nFree = లెక్క_Lookaside_Slots(db->lookaside.pFree);
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TWOSIZE_LOOKASIDE
+  nInit += లెక్క_Lookaside_Slots(db->lookaside.pSmallInit);
+  nFree += లెక్క_Lookaside_Slots(db->lookaside.pSmallFree);
+#అయితే_ముగింపు /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
+  ప్రతిజ్ఞా( db->lookaside.n_స్థానం >= nInit+nFree );
+  ఒకవేళ( pHighwater ) *pHighwater = (పూర్ణాంకం)(db->lookaside.n_స్థానం - nInit);
+  తిరిగి (పూర్ణాంకం)(db->lookaside.n_స్థానం - (nInit+nFree));
 }
 
 /*
 ** Query status information for a single database connection
 */
-int sqlite3_db_status64(
+పూర్ణాంకం sqlite3_db_status64(
   sqlite3 *db,             /* The database connection whose status is desired */
-  int op,                  /* Status verb */
+  పూర్ణాంకం op,                  /* Status verb */
   sqlite3_int64 *pCurrent, /* Write current value here */
   sqlite3_int64 *pHighwtr, /* Write high-water mark here */
-  int resetFlag            /* Reset high-water mark if true */
+  పూర్ణాంకం resetFlag            /* Reset high-water mark if true */
 ){
-  int rc = SQLITE_OK;   /* Return code */
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
-    return SQLITE_MISUSE_BKPT;
+  పూర్ణాంకం rc = SQLITE_OK;   /* Return code */
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
+    తిరిగి SQLITE_MISUSE_BKPT;
   }
-#endif
+#అయితే_ముగింపు
   sqlite3_mutex_enter(db->mutex);
-  switch( op ){
-    case SQLITE_DBSTATUS_LOOKASIDE_USED: {
-      int H = 0;
-      *pCurrent = sqlite3LookasideUsed(db, &H);
+  ఎంపిక( op ){
+    స్థితి SQLITE_DBSTATUS_LOOKASIDE_వాడిన: {
+      పూర్ణాంకం H = 0;
+      *pCurrent = sqlite3_Lookaside_వాడిన(db, &H);
       *pHighwtr = H;
-      if( resetFlag ){
-        LookasideSlot *p = db->lookaside.pFree;
-        if( p ){
-          while( p->pNext ) p = p->pNext;
-          p->pNext = db->lookaside.pInit;
+      ఒకవేళ( resetFlag ){
+        Lookaside_స్థానం *p = db->lookaside.pFree;
+        ఒకవేళ( p ){
+          అయితే( p->p_తదుపరి ) p = p->p_తదుపరి;
+          p->p_తదుపరి = db->lookaside.pInit;
           db->lookaside.pInit = db->lookaside.pFree;
           db->lookaside.pFree = 0;
         }
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_TWOSIZE_LOOKASIDE
         p = db->lookaside.pSmallFree;
-        if( p ){
-          while( p->pNext ) p = p->pNext;
-          p->pNext = db->lookaside.pSmallInit;
+        ఒకవేళ( p ){
+          అయితే( p->p_తదుపరి ) p = p->p_తదుపరి;
+          p->p_తదుపరి = db->lookaside.pSmallInit;
           db->lookaside.pSmallInit = db->lookaside.pSmallFree;
           db->lookaside.pSmallFree = 0;
         }
-#endif
+#అయితే_ముగింపు
       }
-      break;
+      ఆపు;
     }
 
-    case SQLITE_DBSTATUS_LOOKASIDE_HIT:
-    case SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE:
-    case SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL: {
-      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_HIT );
-      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE );
-      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL );
-      assert( (op-SQLITE_DBSTATUS_LOOKASIDE_HIT)>=0 );
-      assert( (op-SQLITE_DBSTATUS_LOOKASIDE_HIT)<3 );
+    స్థితి SQLITE_DBSTATUS_LOOKASIDE_తగిలింది:
+    స్థితి SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_కొలత:
+    స్థితి SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_నిండిన: {
+      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_తగిలింది );
+      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_కొలత );
+      testcase( op==SQLITE_DBSTATUS_LOOKASIDE_తప్పిపోవు_నిండిన );
+      ప్రతిజ్ఞా( (op-SQLITE_DBSTATUS_LOOKASIDE_తగిలింది)>=0 );
+      ప్రతిజ్ఞా( (op-SQLITE_DBSTATUS_LOOKASIDE_తగిలింది)<3 );
       *pCurrent = 0;
-      *pHighwtr = db->lookaside.anStat[op-SQLITE_DBSTATUS_LOOKASIDE_HIT];
-      if( resetFlag ){
-        db->lookaside.anStat[op - SQLITE_DBSTATUS_LOOKASIDE_HIT] = 0;
+      *pHighwtr = db->lookaside.anStat[op-SQLITE_DBSTATUS_LOOKASIDE_తగిలింది];
+      ఒకవేళ( resetFlag ){
+        db->lookaside.anStat[op - SQLITE_DBSTATUS_LOOKASIDE_తగిలింది] = 0;
       }
-      break;
+      ఆపు;
     }
 
     /* 
@@ -261,26 +261,26 @@ int sqlite3_db_status64(
     ** by all pagers associated with the given database connection.  The
     ** highwater mark is meaningless and is returned as zero.
     */
-    case SQLITE_DBSTATUS_CACHE_USED_SHARED:
-    case SQLITE_DBSTATUS_CACHE_USED: {
-      sqlite3_int64 totalUsed = 0;
-      int i;
+    స్థితి SQLITE_DBSTATUS_CACHE_వాడిన_SHARED:
+    స్థితి SQLITE_DBSTATUS_CACHE_వాడిన: {
+      sqlite3_int64 మొత్తం_వాడిన = 0;
+      పూర్ణాంకం i;
       sqlite3BtreeEnterAll(db);
-      for(i=0; i<db->nDb; i++){
+      కొరకు(i=0; i<db->nDb; i++){
         Btree *pBt = db->aDb[i].pBt;
-        if( pBt ){
+        ఒకవేళ( pBt ){
           Pager *pPager = sqlite3BtreePager(pBt);
-          int nByte = sqlite3PagerMemUsed(pPager);
-          if( op==SQLITE_DBSTATUS_CACHE_USED_SHARED ){
-            nByte = nByte / sqlite3BtreeConnectionCount(pBt);
+          పూర్ణాంకం nByte = sqlite3_Pager_Mem_వాడిన(pPager);
+          ఒకవేళ( op==SQLITE_DBSTATUS_CACHE_వాడిన_SHARED ){
+            nByte = nByte / sqlite3_Btree_Connection_లెక్క(pBt);
           }
-          totalUsed += nByte;
+          మొత్తం_వాడిన += nByte;
         }
       }
       sqlite3BtreeLeaveAll(db);
-      *pCurrent = totalUsed;
+      *pCurrent = మొత్తం_వాడిన;
       *pHighwtr = 0;
-      break;
+      ఆపు;
     }
 
     /*
@@ -288,45 +288,45 @@ int sqlite3_db_status64(
     ** to store the schema for all databases (main, temp, and any ATTACHed
     ** databases.  *pHighwtr is set to zero.
     */
-    case SQLITE_DBSTATUS_SCHEMA_USED: {
-      int i;          /* Used to iterate through schemas */
-      int nByte = 0;  /* Used to accumulate return value */
+    స్థితి SQLITE_DBSTATUS_SCHEMA_వాడిన: {
+      పూర్ణాంకం i;          /* Used to iterate through schemas */
+      పూర్ణాంకం nByte = 0;  /* Used to accumulate return value */
 
       sqlite3BtreeEnterAll(db);
-      db->pnBytesFreed = &nByte;
-      assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
-      db->lookaside.pEnd = db->lookaside.pStart;
-      for(i=0; i<db->nDb; i++){
+      db->pn_బైట్లు_Freed = &nByte;
+      ప్రతిజ్ఞా( db->lookaside.p_చివర==db->lookaside.p_True_చివర );
+      db->lookaside.p_చివర = db->lookaside.p_ప్రారంభం;
+      కొరకు(i=0; i<db->nDb; i++){
         Schema *pSchema = db->aDb[i].pSchema;
-        if( ALWAYS(pSchema!=0) ){
+        ఒకవేళ( ALWAYS(pSchema!=0) ){
           HashElem *p;
 
-          nByte += sqlite3GlobalConfig.m.xRoundup(sizeof(HashElem)) * (
-              pSchema->tblHash.count 
-            + pSchema->trigHash.count
-            + pSchema->idxHash.count
-            + pSchema->fkeyHash.count
+          nByte += sqlite3GlobalConfig.m.xRoundup(పరిమాణం(HashElem)) * (
+              pSchema->tblHash.లెక్క 
+            + pSchema->trigHash.లెక్క
+            + pSchema->idxHash.లెక్క
+            + pSchema->fkeyHash.లెక్క
           );
           nByte += sqlite3_msize(pSchema->tblHash.ht);
           nByte += sqlite3_msize(pSchema->trigHash.ht);
           nByte += sqlite3_msize(pSchema->idxHash.ht);
           nByte += sqlite3_msize(pSchema->fkeyHash.ht);
 
-          for(p=sqliteHashFirst(&pSchema->trigHash); p; p=sqliteHashNext(p)){
-            sqlite3DeleteTrigger(db, (Trigger*)sqliteHashData(p));
+          కొరకు(p=sqlite_Hash_మొదటి(&pSchema->trigHash); p; p=sqlite_Hash_తదుపరి(p)){
+            sqlite3DeleteTrigger(db, (Trigger*)sqlite_Hash_దత్తాంశం(p));
           }
-          for(p=sqliteHashFirst(&pSchema->tblHash); p; p=sqliteHashNext(p)){
-            sqlite3DeleteTable(db, (Table *)sqliteHashData(p));
+          కొరకు(p=sqlite_Hash_మొదటి(&pSchema->tblHash); p; p=sqlite_Hash_తదుపరి(p)){
+            sqlite3_Delete_పట్టిక(db, (పట్టిక *)sqlite_Hash_దత్తాంశం(p));
           }
         }
       }
-      db->pnBytesFreed = 0;
-      db->lookaside.pEnd = db->lookaside.pTrueEnd;
+      db->pn_బైట్లు_Freed = 0;
+      db->lookaside.p_చివర = db->lookaside.p_True_చివర;
       sqlite3BtreeLeaveAll(db);
 
       *pHighwtr = 0;
       *pCurrent = nByte;
-      break;
+      ఆపు;
     }
 
     /*
@@ -334,23 +334,23 @@ int sqlite3_db_status64(
     ** to store all prepared statements.
     ** *pHighwtr is set to zero.
     */
-    case SQLITE_DBSTATUS_STMT_USED: {
-      struct Vdbe *pVdbe;         /* Used to iterate through VMs */
-      int nByte = 0;              /* Used to accumulate return value */
+    స్థితి SQLITE_DBSTATUS_STMT_వాడిన: {
+      నిర్మాణం Vdbe *pVdbe;         /* Used to iterate through VMs */
+      పూర్ణాంకం nByte = 0;              /* Used to accumulate return value */
 
-      db->pnBytesFreed = &nByte;
-      assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
-      db->lookaside.pEnd = db->lookaside.pStart;
-      for(pVdbe=db->pVdbe; pVdbe; pVdbe=pVdbe->pVNext){
+      db->pn_బైట్లు_Freed = &nByte;
+      ప్రతిజ్ఞా( db->lookaside.p_చివర==db->lookaside.p_True_చివర );
+      db->lookaside.p_చివర = db->lookaside.p_ప్రారంభం;
+      కొరకు(pVdbe=db->pVdbe; pVdbe; pVdbe=pVdbe->pVNext){
         sqlite3VdbeDelete(pVdbe);
       }
-      db->lookaside.pEnd = db->lookaside.pTrueEnd;
-      db->pnBytesFreed = 0;
+      db->lookaside.p_చివర = db->lookaside.p_True_చివర;
+      db->pn_బైట్లు_Freed = 0;
 
       *pHighwtr = 0;  /* IMP: R-64479-57858 */
       *pCurrent = nByte;
 
-      break;
+      ఆపు;
     }
 
     /*
@@ -358,19 +358,19 @@ int sqlite3_db_status64(
     ** pagers the database handle is connected to. *pHighwtr is always set 
     ** to zero.
     */
-    case SQLITE_DBSTATUS_CACHE_SPILL:
+    స్థితి SQLITE_DBSTATUS_CACHE_SPILL:
       op = SQLITE_DBSTATUS_CACHE_WRITE+1;
       /* no break */ deliberate_fall_through
-    case SQLITE_DBSTATUS_CACHE_HIT:
-    case SQLITE_DBSTATUS_CACHE_MISS:
-    case SQLITE_DBSTATUS_CACHE_WRITE:{
-      int i;
+    స్థితి SQLITE_DBSTATUS_CACHE_తగిలింది:
+    స్థితి SQLITE_DBSTATUS_CACHE_తప్పిపోవు:
+    స్థితి SQLITE_DBSTATUS_CACHE_WRITE:{
+      పూర్ణాంకం i;
       u64 nRet = 0;
-      assert( SQLITE_DBSTATUS_CACHE_MISS==SQLITE_DBSTATUS_CACHE_HIT+1 );
-      assert( SQLITE_DBSTATUS_CACHE_WRITE==SQLITE_DBSTATUS_CACHE_HIT+2 );
+      ప్రతిజ్ఞా( SQLITE_DBSTATUS_CACHE_తప్పిపోవు==SQLITE_DBSTATUS_CACHE_తగిలింది+1 );
+      ప్రతిజ్ఞా( SQLITE_DBSTATUS_CACHE_WRITE==SQLITE_DBSTATUS_CACHE_తగిలింది+2 );
 
-      for(i=0; i<db->nDb; i++){
-        if( db->aDb[i].pBt ){
+      కొరకు(i=0; i<db->nDb; i++){
+        ఒకవేళ( db->aDb[i].pBt ){
           Pager *pPager = sqlite3BtreePager(db->aDb[i].pBt);
           sqlite3PagerCacheStat(pPager, op, resetFlag, &nRet);
         }
@@ -379,7 +379,7 @@ int sqlite3_db_status64(
                        /* IMP: R-54100-20147 */
                        /* IMP: R-29431-39229 */
       *pCurrent = nRet;
-      break;
+      ఆపు;
     }
 
     /* Set *pCurrent to the number of bytes that the db database connection
@@ -387,60 +387,60 @@ int sqlite3_db_status64(
     ** stored in memory, had sufficient memory been available.
     ** The *pHighwater is always set to zero.
     */
-    case SQLITE_DBSTATUS_TEMPBUF_SPILL: {
+    స్థితి SQLITE_DBSTATUS_TEMPBUF_SPILL: {
       u64 nRet = 0;
-      if( db->aDb[1].pBt ){
+      ఒకవేళ( db->aDb[1].pBt ){
         Pager *pPager = sqlite3BtreePager(db->aDb[1].pBt);
         sqlite3PagerCacheStat(pPager, SQLITE_DBSTATUS_CACHE_WRITE,
                               resetFlag, &nRet);
-        nRet *= sqlite3BtreeGetPageSize(db->aDb[1].pBt);
+        nRet *= sqlite3_Btree_Get_పుట_కొలత(db->aDb[1].pBt);
       }
       nRet += db->nSpill;
-      if( resetFlag ) db->nSpill = 0;
+      ఒకవేళ( resetFlag ) db->nSpill = 0;
       *pHighwtr = 0;
       *pCurrent = nRet;
-      break;
+      ఆపు;
     }
 
     /* Set *pCurrent to non-zero if there are unresolved deferred foreign
     ** key constraints.  Set *pCurrent to zero if all foreign key constraints
     ** have been satisfied.  The *pHighwtr is always set to zero.
     */
-    case SQLITE_DBSTATUS_DEFERRED_FKS: {
+    స్థితి SQLITE_DBSTATUS_DEFERRED_FKS: {
       *pHighwtr = 0;  /* IMP: R-11967-56545 */
       *pCurrent = db->nDeferredImmCons>0 || db->nDeferredCons>0;
-      break;
+      ఆపు;
     }
 
-    default: {
+    అప్రమేయ: {
       rc = SQLITE_ERROR;
     }
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  తిరిగి rc;
 }
 
 /*
 ** 32-bit variant of sqlite3_db_status64()
 */
-int sqlite3_db_status(
+పూర్ణాంకం sqlite3_db_స్థితి(
   sqlite3 *db,             /* The database connection whose status is desired */
-  int op,                  /* Status verb */
-  int *pCurrent,           /* Write current value here */
-  int *pHighwtr,           /* Write high-water mark here */
-  int resetFlag            /* Reset high-water mark if true */
+  పూర్ణాంకం op,                  /* Status verb */
+  పూర్ణాంకం *pCurrent,           /* Write current value here */
+  పూర్ణాంకం *pHighwtr,           /* Write high-water mark here */
+  పూర్ణాంకం resetFlag            /* Reset high-water mark if true */
 ){
   sqlite3_int64 C = 0, H = 0;
-  int rc;
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
-    return SQLITE_MISUSE_BKPT;
+  పూర్ణాంకం rc;
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( !sqlite3SafetyCheckOk(db) || pCurrent==0|| pHighwtr==0 ){
+    తిరిగి SQLITE_MISUSE_BKPT;
   }
-#endif
+#అయితే_ముగింపు
   rc = sqlite3_db_status64(db, op, &C, &H, resetFlag);
-  if( rc==0 ){
+  ఒకవేళ( rc==0 ){
     *pCurrent = C & 0x7fffffff;
     *pHighwtr = H & 0x7fffffff;
   }
-  return rc;
+  తిరిగి rc;
 }

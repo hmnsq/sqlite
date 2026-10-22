@@ -14,13 +14,13 @@
 ** systems that do not need this facility may omit it by recompiling
 ** the library with -DSQLITE_OMIT_AUTHORIZATION=1
 */
-#include "sqliteInt.h"
+#అన్తర్భావ "sqliteInt.h"
 
 /*
 ** All of the code in this file may be omitted by defining a single
 ** macro.
 */
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#నిర్వచితం_కాకపోతే SQLITE_OMIT_AUTHORIZATION
 
 /*
 ** Set or clear the access authorization function.
@@ -67,28 +67,28 @@
 ** Setting the auth function to NULL disables this hook.  The default
 ** setting of the auth function is NULL.
 */
-int sqlite3_set_authorizer(
+పూర్ణాంకం sqlite3_సమితి_authorizer(
   sqlite3 *db,
-  int (*xAuth)(void*,int,const char*,const char*,const char*,const char*),
-  void *pArg
+  పూర్ణాంకం (*xAuth)(శూన్య*,పూర్ణాంకం,స్థిరరాశి అక్షరం*,స్థిరరాశి అక్షరం*,స్థిరరాశి అక్షరం*,స్థిరరాశి అక్షరం*),
+  శూన్య *pArg
 ){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
+#నిర్వచితమైతే SQLITE_ENABLE_API_ARMOR
+  ఒకవేళ( !sqlite3SafetyCheckOk(db) ) తిరిగి SQLITE_MISUSE_BKPT;
+#అయితే_ముగింపు
   sqlite3_mutex_enter(db->mutex);
   db->xAuth = (sqlite3_xauth)xAuth;
   db->pAuthArg = pArg;
   sqlite3ExpirePreparedStatements(db, 1);
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  తిరిగి SQLITE_OK;
 }
 
 /*
 ** Write an error message into pParse->zErrMsg that explains that the
 ** user-supplied authorization function returned an illegal value.
 */
-static void sqliteAuthBadReturnCode(Parse *pParse){
-  sqlite3ErrorMsg(pParse, "authorizer malfunction");
+స్థిర శూన్య sqlite_Auth_Bad_Return_సంకేతం(Parse *pParse){
+  sqlite3_Error_సందేశం(pParse, "authorizer malfunction");
   pParse->rc = SQLITE_ERROR;
 }
 
@@ -101,27 +101,27 @@ static void sqliteAuthBadReturnCode(Parse *pParse){
 ** to an SQL NULL expression. Otherwise, if pExpr is NULL, then SQLITE_IGNORE
 ** is treated as SQLITE_DENY. In this case an error is left in pParse.
 */
-int sqlite3AuthReadCol(
+పూర్ణాంకం sqlite3_Auth_Read_నిలువు(
   Parse *pParse,                  /* The parser context */
-  const char *zTab,               /* Table name */
-  const char *zCol,               /* Column name */
-  int iDb                         /* Index of containing database. */
+  స్థిరరాశి అక్షరం *zTab,               /* Table name */
+  స్థిరరాశి అక్షరం *z_నిలువు,               /* Column name */
+  పూర్ణాంకం iDb                         /* Index of containing database. */
 ){
   sqlite3 *db = pParse->db;          /* Database handle */
-  char *zDb = db->aDb[iDb].zDbSName; /* Schema name of attached database */
-  int rc;                            /* Auth callback return code */
+  అక్షరం *zDb = db->aDb[iDb].zDbSName; /* Schema name of attached database */
+  పూర్ణాంకం rc;                            /* Auth callback return code */
 
-  if( db->init.busy ) return SQLITE_OK;
-  rc = db->xAuth(db->pAuthArg, SQLITE_READ, zTab,zCol,zDb,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
-    char *z = sqlite3_mprintf("%s.%s", zTab, zCol);
-    if( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
-    sqlite3ErrorMsg(pParse, "access to %z is prohibited", z);
+  ఒకవేళ( db->init.busy ) తిరిగి SQLITE_OK;
+  rc = db->xAuth(db->pAuthArg, SQLITE_READ, zTab,z_నిలువు,zDb,pParse->zAuthContext);
+  ఒకవేళ( rc==SQLITE_DENY ){
+    అక్షరం *z = sqlite3_mprintf("%s.%s", zTab, z_నిలువు);
+    ఒకవేళ( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
+    sqlite3_Error_సందేశం(pParse, "access to %z is prohibited", z);
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
-    sqliteAuthBadReturnCode(pParse);
+  }లేకపోతే ఒకవేళ( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
+    sqlite_Auth_Bad_Return_సంకేతం(pParse);
   }
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -133,54 +133,54 @@ int sqlite3AuthReadCol(
 ** instruction into a TK_NULL.  If the auth function returns SQLITE_DENY,
 ** then generate an error.
 */
-void sqlite3AuthRead(
+శూన్య sqlite3AuthRead(
   Parse *pParse,        /* The parser context */
-  Expr *pExpr,          /* The expression to check authorization on */
+  సమాసం *p_సమాసం,          /* The expression to check authorization on */
   Schema *pSchema,      /* The schema of the expression */
   SrcList *pTabList     /* All table that pExpr might refer to */
 ){
-  Table *pTab = 0;      /* The table being read */
-  const char *zCol;     /* Name of the column of the table */
-  int iSrc;             /* Index in pTabList->a[] of table being read */
-  int iDb;              /* The index of the database the expression refers to */
-  int iCol;             /* Index of column in table */
+  పట్టిక *pTab = 0;      /* The table being read */
+  స్థిరరాశి అక్షరం *z_నిలువు;     /* Name of the column of the table */
+  పూర్ణాంకం iSrc;             /* Index in pTabList->a[] of table being read */
+  పూర్ణాంకం iDb;              /* The index of the database the expression refers to */
+  పూర్ణాంకం i_నిలువు;             /* Index of column in table */
 
-  assert( pExpr->op==TK_COLUMN || pExpr->op==TK_TRIGGER );
-  assert( !IN_RENAME_OBJECT );
-  assert( pParse->db->xAuth!=0 );
-  iDb = sqlite3SchemaToIndex(pParse->db, pSchema);
-  if( iDb<0 ){
+  ప్రతిజ్ఞా( p_సమాసం->op==TK_స్తంభం || p_సమాసం->op==TK_TRIGGER );
+  ప్రతిజ్ఞా( !లోపల_RENAME_OBJECT );
+  ప్రతిజ్ఞా( pParse->db->xAuth!=0 );
+  iDb = sqlite3_Schema_గమ్యం_సూచీ(pParse->db, pSchema);
+  ఒకవేళ( iDb<0 ){
     /* An attempt to read a column out of a subquery or other
     ** temporary table. */
-    return;
+    తిరిగి;
   }
 
-  if( pExpr->op==TK_TRIGGER ){
+  ఒకవేళ( p_సమాసం->op==TK_TRIGGER ){
     pTab = pParse->pTriggerTab;
-  }else{
-    assert( pTabList );
-    for(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
-      if( pExpr->iTable==pTabList->a[iSrc].iCursor ){
+  }లేకపోతే{
+    ప్రతిజ్ఞా( pTabList );
+    కొరకు(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
+      ఒకవేళ( p_సమాసం->i_పట్టిక==pTabList->a[iSrc].iCursor ){
         pTab = pTabList->a[iSrc].pSTab;
-        break;
+        ఆపు;
       }
     }
   }
-  iCol = pExpr->iColumn;
-  if( pTab==0 ) return;
+  i_నిలువు = p_సమాసం->i_స్తంభం;
+  ఒకవేళ( pTab==0 ) తిరిగి;
 
-  if( iCol>=0 ){
-    assert( iCol<pTab->nCol );
-    zCol = pTab->aCol[iCol].zCnName;
-  }else if( pTab->iPKey>=0 ){
-    assert( pTab->iPKey<pTab->nCol );
-    zCol = pTab->aCol[pTab->iPKey].zCnName;
-  }else{
-    zCol = "ROWID";
+  ఒకవేళ( i_నిలువు>=0 ){
+    ప్రతిజ్ఞా( i_నిలువు<pTab->n_నిలువు );
+    z_నిలువు = pTab->a_నిలువు[i_నిలువు].zCnName;
+  }లేకపోతే ఒకవేళ( pTab->iPKey>=0 ){
+    ప్రతిజ్ఞా( pTab->iPKey<pTab->n_నిలువు );
+    z_నిలువు = pTab->a_నిలువు[pTab->iPKey].zCnName;
+  }లేకపోతే{
+    z_నిలువు = "ROWID";
   }
-  assert( iDb>=0 && iDb<pParse->db->nDb );
-  if( SQLITE_IGNORE==sqlite3AuthReadCol(pParse, pTab->zName, zCol, iDb) ){
-    pExpr->op = TK_NULL;
+  ప్రతిజ్ఞా( iDb>=0 && iDb<pParse->db->nDb );
+  ఒకవేళ( SQLITE_IGNORE==sqlite3_Auth_Read_నిలువు(pParse, pTab->zName, z_నిలువు, iDb) ){
+    p_సమాసం->op = TK_NULL;
   }
 }
 
@@ -196,22 +196,22 @@ void sqlite3AuthRead(
 ** as a result) in the uncommon case where an authorization check is
 ** actually needed.
 */
-static int SQLITE_NOINLINE realAuthCheck(
+స్థిర పూర్ణాంకం SQLITE_NOINLINE realAuthCheck(
   Parse *pParse,
-  int code,
-  const char *zArg1,
-  const char *zArg2,
-  const char *zArg3
+  పూర్ణాంకం సంకేతం_2,
+  స్థిరరాశి అక్షరం *zArg1,
+  స్థిరరాశి అక్షరం *zArg2,
+  స్థిరరాశి అక్షరం *zArg3
 ){
   sqlite3 *db = pParse->db;
-  int rc;
+  పూర్ణాంకం rc;
 
   /* Don't do any authorization checks if the database is initializing
   ** or if the parser is being invoked from within sqlite3_declare_vtab.
   */
-  assert( !IN_RENAME_OBJECT || db->xAuth==0 );
-  if( IN_SPECIAL_PARSE ){
-    return SQLITE_OK;
+  ప్రతిజ్ఞా( !లోపల_RENAME_OBJECT || db->xAuth==0 );
+  ఒకవేళ( లోపల_SPECIAL_PARSE ){
+    తిరిగి SQLITE_OK;
   }
 
   /* EVIDENCE-OF: R-43249-19882 The third through sixth parameters to the
@@ -225,27 +225,27 @@ static int SQLITE_NOINLINE realAuthCheck(
   testcase( zArg3==0 );
   testcase( pParse->zAuthContext==0 );
 
-  rc = db->xAuth(db->pAuthArg,code,zArg1,zArg2,zArg3,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
-    sqlite3ErrorMsg(pParse, "not authorized");
+  rc = db->xAuth(db->pAuthArg,సంకేతం_2,zArg1,zArg2,zArg3,pParse->zAuthContext);
+  ఒకవేళ( rc==SQLITE_DENY ){
+    sqlite3_Error_సందేశం(pParse, "not authorized");
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
+  }లేకపోతే ఒకవేళ( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
     rc = SQLITE_DENY;
-    sqliteAuthBadReturnCode(pParse);
+    sqlite_Auth_Bad_Return_సంకేతం(pParse);
   }
-  return rc;
+  తిరిగి rc;
 }
-int sqlite3AuthCheck(
+పూర్ణాంకం sqlite3AuthCheck(
   Parse *pParse,
-  int code,
-  const char *zArg1,
-  const char *zArg2,
-  const char *zArg3
+  పూర్ణాంకం సంకేతం_2,
+  స్థిరరాశి అక్షరం *zArg1,
+  స్థిరరాశి అక్షరం *zArg2,
+  స్థిరరాశి అక్షరం *zArg3
 ){
-  if( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
-    return realAuthCheck(pParse,code,zArg1,zArg2,zArg3);
-  }else{
-    return SQLITE_OK;
+  ఒకవేళ( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
+    తిరిగి realAuthCheck(pParse,సంకేతం_2,zArg1,zArg2,zArg3);
+  }లేకపోతే{
+    తిరిగి SQLITE_OK;
   }
 }
 
@@ -254,12 +254,12 @@ int sqlite3AuthCheck(
 ** zArg3 argument to authorization callbacks will be zContext until
 ** popped.  Or if pParse==0, this routine is a no-op.
 */
-void sqlite3AuthContextPush(
+శూన్య sqlite3_Auth_Context_నెట్టు(
   Parse *pParse,
   AuthContext *pContext, 
-  const char *zContext
+  స్థిరరాశి అక్షరం *zContext
 ){
-  assert( pParse );
+  ప్రతిజ్ఞా( pParse );
   pContext->pParse = pParse;
   pContext->zAuthContext = pParse->zAuthContext;
   pParse->zAuthContext = zContext;
@@ -269,11 +269,11 @@ void sqlite3AuthContextPush(
 ** Pop an authorization context that was previously pushed
 ** by sqlite3AuthContextPush
 */
-void sqlite3AuthContextPop(AuthContext *pContext){
-  if( pContext->pParse ){
+శూన్య sqlite3_Auth_Context_తీయి(AuthContext *pContext){
+  ఒకవేళ( pContext->pParse ){
     pContext->pParse->zAuthContext = pContext->zAuthContext;
     pContext->pParse = 0;
   }
 }
 
-#endif /* SQLITE_OMIT_AUTHORIZATION */
+#అయితే_ముగింపు /* SQLITE_OMIT_AUTHORIZATION */

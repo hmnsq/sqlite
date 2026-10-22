@@ -19,35 +19,35 @@
 **     above.
 */
 
-#ifndef SQLITE_OS_WIN
+#నిర్వచితం_కాకపోతే SQLITE_OS_WIN
 #  include <unistd.h>
 #  include <errno.h>
-#endif
-#include <string.h>
-#include <assert.h>
-#include "sqlite3.h"
+#అయితే_ముగింపు
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ "sqlite3.h"
 
 /* The following #defines are copied from test_multiplex.c */
-#ifndef MX_CHUNK_NUMBER 
-# define MX_CHUNK_NUMBER 299
-#endif
-#ifndef SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET
-# define SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET 400
-#endif
-#ifndef SQLITE_MULTIPLEX_WAL_8_3_OFFSET
-# define SQLITE_MULTIPLEX_WAL_8_3_OFFSET 700
-#endif
+#నిర్వచితం_కాకపోతే MX_CHUNK_సంఖ్య 
+# define MX_CHUNK_సంఖ్య 299
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే SQLITE_MULTIPLEX_JOURNAL_8_3_స్థానభ్రంశం
+# define SQLITE_MULTIPLEX_JOURNAL_8_3_స్థానభ్రంశం 400
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే SQLITE_MULTIPLEX_WAL_8_3_స్థానభ్రంశం
+# define SQLITE_MULTIPLEX_WAL_8_3_స్థానభ్రంశం 700
+#అయితే_ముగింపు
 
 /*
 ** This routine is a copy of (most of) the code from SQLite function
 ** sqlite3FileSuffix3(). It modifies the filename in buffer z in the
 ** same way as SQLite does when in 8.3 filenames mode.
 */
-static void sqlite3Delete83Name(char *z){
-  int i, sz;
-  sz = (int)strlen(z);
-  for(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
-  if( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
+స్థిర శూన్య sqlite3Delete83Name(అక్షరం *z){
+  పూర్ణాంకం i, sz;
+  sz = (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(z);
+  కొరకు(i=sz-1; i>0 && z[i]!='/' && z[i]!='.'; i--){}
+  ఒకవేళ( z[i]=='.' && (sz>i+4) ) memmove(&z[i+1], &z[sz-3], 4);
 }
 
 /*
@@ -57,100 +57,100 @@ static void sqlite3Delete83Name(char *z){
 **
 ** If an error occurs, non-zero is returned. Or, if no error occurs, zero.
 */
-static int sqlite3DeleteUnlinkIfExists(
+స్థిర పూర్ణాంకం sqlite3DeleteUnlinkIfExists(
   sqlite3_vfs *pVfs,
-  const char *zFile, 
-  int *pbExists
+  స్థిరరాశి అక్షరం *zFile, 
+  పూర్ణాంకం *pbExists
 ){
-  int rc = SQLITE_ERROR;
-#ifdef SQLITE_OS_WIN
-  if( pVfs ){
-    if( pbExists ) *pbExists = 1;
+  పూర్ణాంకం rc = SQLITE_ERROR;
+#నిర్వచితమైతే SQLITE_OS_WIN
+  ఒకవేళ( pVfs ){
+    ఒకవేళ( pbExists ) *pbExists = 1;
     rc = pVfs->xDelete(pVfs, zFile, 0);
-    if( rc==SQLITE_IOERR_DELETE_NOENT ){
-      if( pbExists ) *pbExists = 0;
+    ఒకవేళ( rc==SQLITE_IOERR_DELETE_NOENT ){
+      ఒకవేళ( pbExists ) *pbExists = 0;
       rc = SQLITE_OK;
     }
   }
-#else
-  assert( pVfs==0 );
+#లేకపోతే
+  ప్రతిజ్ఞా( pVfs==0 );
   rc = access(zFile, F_OK);
-  if( rc ){
-    if( errno==ENOENT ){ 
-      if( pbExists ) *pbExists = 0;
+  ఒకవేళ( rc ){
+    ఒకవేళ( errno==ENOENT ){ 
+      ఒకవేళ( pbExists ) *pbExists = 0;
       rc = SQLITE_OK; 
     }
-  }else{
-    if( pbExists ) *pbExists = 1;
+  }లేకపోతే{
+    ఒకవేళ( pbExists ) *pbExists = 1;
     rc = unlink(zFile);
   }
-#endif
-  return rc;
+#అయితే_ముగింపు
+  తిరిగి rc;
 }
 
 /*
 ** Delete the database file identified by the string argument passed to this
 ** function. The string must contain a filename, not an SQLite URI.
 */
-SQLITE_API int sqlite3_delete_database(
-  const char *zFile               /* File to delete */
+SQLITE_API పూర్ణాంకం sqlite3_delete_database(
+  స్థిరరాశి అక్షరం *zFile               /* File to delete */
 ){
-  char *zBuf;                     /* Buffer to sprintf() filenames to */
-  int nBuf;                       /* Size of buffer in bytes */
-  int rc = 0;                     /* System error code */
-  int i;                          /* Iterate through azFmt[] and aMFile[] */
+  అక్షరం *zBuf;                     /* Buffer to sprintf() filenames to */
+  పూర్ణాంకం nBuf;                       /* Size of buffer in bytes */
+  పూర్ణాంకం rc = 0;                     /* System error code */
+  పూర్ణాంకం i;                          /* Iterate through azFmt[] and aMFile[] */
 
-  const char *azFmt[] = { "%s", "%s-journal", "%s-wal", "%s-shm" };
+  స్థిరరాశి అక్షరం *azFmt[] = { "%s", "%s-journal", "%s-wal", "%s-shm" };
 
-  struct MFile {
-    const char *zFmt;
-    int iOffset;
-    int b83;
+  నిర్మాణం MFile {
+    స్థిరరాశి అక్షరం *zFmt;
+    పూర్ణాంకం i_స్థానభ్రంశం;
+    పూర్ణాంకం b83;
   } aMFile[] = {
     { "%s%03d",         0,   0 },
     { "%s-journal%03d", 0,   0 },
     { "%s-wal%03d",     0,   0 },
     { "%s%03d",         0,   1 },
-    { "%s-journal%03d", SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET, 1 },
-    { "%s-wal%03d",     SQLITE_MULTIPLEX_WAL_8_3_OFFSET, 1 },
+    { "%s-journal%03d", SQLITE_MULTIPLEX_JOURNAL_8_3_స్థానభ్రంశం, 1 },
+    { "%s-wal%03d",     SQLITE_MULTIPLEX_WAL_8_3_స్థానభ్రంశం, 1 },
   };
 
-#ifdef SQLITE_OS_WIN
-  sqlite3_vfs *pVfs = sqlite3_vfs_find("win32");
-#else
+#నిర్వచితమైతే SQLITE_OS_WIN
+  sqlite3_vfs *pVfs = sqlite3_vfs_కనుగొను("win32");
+#లేకపోతే
   sqlite3_vfs *pVfs = 0;
-#endif
+#అయితే_ముగింపు
 
   /* Allocate a buffer large enough for any of the files that need to be
   ** deleted.  */
-  nBuf = (int)strlen(zFile) + 100;
-  zBuf = (char*)sqlite3_malloc(nBuf);
-  if( zBuf==0 ) return SQLITE_NOMEM;
+  nBuf = (పూర్ణాంకం)అక్షరశ్రేణి_పొడవు(zFile) + 100;
+  zBuf = (అక్షరం*)sqlite3_malloc(nBuf);
+  ఒకవేళ( zBuf==0 ) తిరిగి SQLITE_NOMEM;
 
   /* Delete both the regular and 8.3 filenames versions of the database,
   ** journal, wal and shm files.  */
-  for(i=0; rc==0 && i<sizeof(azFmt)/sizeof(azFmt[0]); i++){
+  కొరకు(i=0; rc==0 && i<పరిమాణం(azFmt)/పరిమాణం(azFmt[0]); i++){
     sqlite3_snprintf(nBuf, zBuf, azFmt[i], zFile);
     rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
-    if( rc==0 && i!=0 ){
+    ఒకవేళ( rc==0 && i!=0 ){
       sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, 0);
     }
   }
 
   /* Delete any multiplexor files */
-  for(i=0; rc==0 && i<sizeof(aMFile)/sizeof(aMFile[0]); i++){
-    struct MFile *p = &aMFile[i];
-    int iChunk;
-    for(iChunk=1; iChunk<=MX_CHUNK_NUMBER; iChunk++){
-      int bExists;
-      sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->iOffset);
-      if( p->b83 ) sqlite3Delete83Name(zBuf);
+  కొరకు(i=0; rc==0 && i<పరిమాణం(aMFile)/పరిమాణం(aMFile[0]); i++){
+    నిర్మాణం MFile *p = &aMFile[i];
+    పూర్ణాంకం iChunk;
+    కొరకు(iChunk=1; iChunk<=MX_CHUNK_సంఖ్య; iChunk++){
+      పూర్ణాంకం bExists;
+      sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->i_స్థానభ్రంశం);
+      ఒకవేళ( p->b83 ) sqlite3Delete83Name(zBuf);
       rc = sqlite3DeleteUnlinkIfExists(pVfs, zBuf, &bExists);
-      if( bExists==0 || rc!=0 ) break;
+      ఒకవేళ( bExists==0 || rc!=0 ) ఆపు;
     }
   }
 
   sqlite3_free(zBuf);
-  return (rc ? SQLITE_ERROR : SQLITE_OK);
+  తిరిగి (rc ? SQLITE_ERROR : SQLITE_OK);
 }

@@ -18,41 +18,41 @@
 **   sqlite3demo_superunlock()
 */
 
-#include "sqlite3.h"
-#include <string.h>               /* memset(), strlen() */
-#include <assert.h>               /* assert() */
+#అన్తర్భావ "sqlite3.h"
+#అన్తర్భావ <string.h>               /* memset(), strlen() */
+#అన్తర్భావ <assert.h>               /* assert() */
 
 /*
 ** A structure to collect a busy-handler callback and argument and a count
 ** of the number of times it has been invoked.
 */
-struct SuperlockBusy {
-  int (*xBusy)(void*,int);        /* Pointer to busy-handler function */
-  void *pBusyArg;                 /* First arg to pass to xBusy */
-  int nBusy;                      /* Number of times xBusy has been invoked */
+నిర్మాణం SuperlockBusy {
+  పూర్ణాంకం (*xBusy)(శూన్య*,పూర్ణాంకం);        /* Pointer to busy-handler function */
+  శూన్య *pBusyArg;                 /* First arg to pass to xBusy */
+  పూర్ణాంకం nBusy;                      /* Number of times xBusy has been invoked */
 };
-typedef struct SuperlockBusy SuperlockBusy;
+రకనిర్వచనం నిర్మాణం SuperlockBusy SuperlockBusy;
 
 /*
 ** An instance of the following structure is allocated for each active
 ** superlock. The opaque handle returned by sqlite3demo_superlock() is
 ** actually a pointer to an instance of this structure.
 */
-struct Superlock {
+నిర్మాణం Superlock {
   sqlite3 *db;                    /* Database handle used to lock db */
-  int bWal;                       /* True if db is a WAL database */
+  పూర్ణాంకం bWal;                       /* True if db is a WAL database */
 };
-typedef struct Superlock Superlock;
+రకనిర్వచనం నిర్మాణం Superlock Superlock;
 
 /*
 ** The pCtx pointer passed to this function is actually a pointer to a
 ** SuperlockBusy structure. Invoke the busy-handler function encapsulated
 ** by the structure and return the result.
 */
-static int superlockBusyHandler(void *pCtx, int UNUSED){
+స్థిర పూర్ణాంకం superlockBusyHandler(శూన్య *pCtx, పూర్ణాంకం వాడని_2){
   SuperlockBusy *pBusy = (SuperlockBusy *)pCtx;
-  if( pBusy->xBusy==0 ) return 0;
-  return pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
+  ఒకవేళ( pBusy->xBusy==0 ) తిరిగి 0;
+  తిరిగి pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
 }
 
 /*
@@ -64,22 +64,22 @@ static int superlockBusyHandler(void *pCtx, int UNUSED){
 ** If an error occurs, return an SQLite error code. The value of *pbWal
 ** is undefined in this case.
 */
-static int superlockIsWal(Superlock *pLock){
-  int rc;                         /* Return Code */
+స్థిర పూర్ణాంకం superlockIsWal(Superlock *p_తాళం){
+  పూర్ణాంకం rc;                         /* Return Code */
   sqlite3_stmt *pStmt;            /* Compiled PRAGMA journal_mode statement */
 
-  rc = sqlite3_prepare(pLock->db, "PRAGMA main.journal_mode", -1, &pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  rc = sqlite3_prepare(p_తాళం->db, "PRAGMA main.journal_mode", -1, &pStmt, 0);
+  ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
 
-  pLock->bWal = 0;
-  if( SQLITE_ROW==sqlite3_step(pStmt) ){
-    const char *zMode = (const char *)sqlite3_column_text(pStmt, 0);
-    if( zMode && strlen(zMode)==3 && sqlite3_strnicmp("wal", zMode, 3)==0 ){
-      pLock->bWal = 1;
+  p_తాళం->bWal = 0;
+  ఒకవేళ( SQLITE_అడ్డువరుస==sqlite3_అడుగు(pStmt) ){
+    స్థిరరాశి అక్షరం *z_బహుళకం = (స్థిరరాశి అక్షరం *)sqlite3_స్తంభం_పాఠ్యం(pStmt, 0);
+    ఒకవేళ( z_బహుళకం && అక్షరశ్రేణి_పొడవు(z_బహుళకం)==3 && sqlite3_strnicmp("wal", z_బహుళకం, 3)==0 ){
+      p_తాళం->bWal = 1;
     }
   }
 
-  return sqlite3_finalize(pStmt);
+  తిరిగి sqlite3_finalize(pStmt);
 }
 
 /*
@@ -88,41 +88,41 @@ static int superlockIsWal(Superlock *pLock){
 ** the busy-handler until either it is obtained or the busy-handler
 ** callback returns 0.
 */
-static int superlockShmLock(
+స్థిర పూర్ణాంకం superlock_Shm_తాళం(
   sqlite3_file *fd,               /* Database file handle */
-  int idx,                        /* Offset of shm-lock to obtain */
-  int nByte,                      /* Number of consective bytes to lock */
+  పూర్ణాంకం idx,                        /* Offset of shm-lock to obtain */
+  పూర్ణాంకం nByte,                      /* Number of consective bytes to lock */
   SuperlockBusy *pBusy            /* Busy-handler wrapper object */
 ){
-  int rc;
-  int (*xShmLock)(sqlite3_file*, int, int, int) = fd->pMethods->xShmLock;
-  do {
-    rc = xShmLock(fd, idx, nByte, SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE);
-  }while( rc==SQLITE_BUSY && superlockBusyHandler((void *)pBusy, 0) );
-  return rc;
+  పూర్ణాంకం rc;
+  పూర్ణాంకం (*x_Shm_తాళం)(sqlite3_file*, పూర్ణాంకం, పూర్ణాంకం, పూర్ణాంకం) = fd->pMethods->x_Shm_తాళం;
+  చేయి {
+    rc = x_Shm_తాళం(fd, idx, nByte, SQLITE_SHM_తాళం|SQLITE_SHM_EXCLUSIVE);
+  }అయితే( rc==SQLITE_BUSY && superlockBusyHandler((శూన్య *)pBusy, 0) );
+  తిరిగి rc;
 }
 
 /*
 ** Obtain the extra locks on the database file required for WAL databases.
 ** Invoke the supplied busy-handler as required.
 */
-static int superlockWalLock(
+స్థిర పూర్ణాంకం superlock_Wal_తాళం(
   sqlite3 *db,                    /* Database handle open on WAL database */
   SuperlockBusy *pBusy            /* Busy handler wrapper object */
 ){
-  int rc;                         /* Return code */
+  పూర్ణాంకం rc;                         /* Return code */
   sqlite3_file *fd = 0;           /* Main database file handle */
-  void volatile *p = 0;           /* Pointer to first page of shared memory */
+  శూన్య అస్థిర *p = 0;           /* Pointer to first page of shared memory */
 
   /* Obtain a pointer to the sqlite3_file object open on the main db file. */
-  rc = sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-  if( rc!=SQLITE_OK ) return rc;
+  rc = sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_సూచిక, (శూన్య *)&fd);
+  ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
 
   /* Obtain the "recovery" lock. Normally, this lock is only obtained by
   ** clients running database recovery.  
   */
-  rc = superlockShmLock(fd, 2, 1, pBusy);
-  if( rc!=SQLITE_OK ) return rc;
+  rc = superlock_Shm_తాళం(fd, 2, 1, pBusy);
+  ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
 
   /* Zero the start of the first shared-memory page. This means that any
   ** clients that open read or write transactions from this point on will
@@ -132,15 +132,15 @@ static int superlockWalLock(
   ** same reason.
   */
   rc = fd->pMethods->xShmMap(fd, 0, 32*1024, 1, &p);
-  if( rc!=SQLITE_OK ) return rc;
-  memset((void *)p, 0, 32);
+  ఒకవేళ( rc!=SQLITE_OK ) తిరిగి rc;
+  memset((శూన్య *)p, 0, 32);
 
   /* Obtain exclusive locks on all the "read-lock" slots. Once these locks
   ** are held, it is guaranteed that there are no active reader, writer or 
   ** checkpointer clients.
   */
-  rc = superlockShmLock(fd, 3, SQLITE_SHM_NLOCK-3, pBusy);
-  return rc;
+  rc = superlock_Shm_తాళం(fd, 3, SQLITE_SHM_NLOCK-3, pBusy);
+  తిరిగి rc;
 }
 
 /*
@@ -148,16 +148,16 @@ static int superlockWalLock(
 ** this function must have been obtained from a successful call to
 ** sqlite3demo_superlock().
 */
-void sqlite3demo_superunlock(void *pLock){
-  Superlock *p = (Superlock *)pLock;
-  if( p->bWal ){
-    int rc;                         /* Return code */
-    int flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
+శూన్య sqlite3demo_superunlock(శూన్య *p_తాళం){
+  Superlock *p = (Superlock *)p_తాళం;
+  ఒకవేళ( p->bWal ){
+    పూర్ణాంకం rc;                         /* Return code */
+    పూర్ణాంకం flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
     sqlite3_file *fd = 0;
-    rc = sqlite3_file_control(p->db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-    if( rc==SQLITE_OK ){
-      fd->pMethods->xShmLock(fd, 2, 1, flags);
-      fd->pMethods->xShmLock(fd, 3, SQLITE_SHM_NLOCK-3, flags);
+    rc = sqlite3_file_control(p->db, "main", SQLITE_FCNTL_FILE_సూచిక, (శూన్య *)&fd);
+    ఒకవేళ( rc==SQLITE_OK ){
+      fd->pMethods->x_Shm_తాళం(fd, 2, 1, flags);
+      fd->pMethods->x_Shm_తాళం(fd, 3, SQLITE_SHM_NLOCK-3, flags);
     }
   }
   sqlite3_close(p->db);
@@ -179,24 +179,24 @@ void sqlite3demo_superunlock(void *pLock){
 ** until either the lock can be obtained or the busy-handler function returns
 ** 0 (indicating "give up").
 */
-int sqlite3demo_superlock(
-  const char *zPath,              /* Path to database file to lock */
-  const char *zVfs,               /* VFS to use to access database file */
-  int (*xBusy)(void*,int),        /* Busy handler callback */
-  void *pBusyArg,                 /* Context arg for busy handler */
-  void **ppLock                   /* OUT: Context to pass to superunlock() */
+పూర్ణాంకం sqlite3demo_superlock(
+  స్థిరరాశి అక్షరం *z_మార్గం,              /* Path to database file to lock */
+  స్థిరరాశి అక్షరం *zVfs,               /* VFS to use to access database file */
+  పూర్ణాంకం (*xBusy)(శూన్య*,పూర్ణాంకం),        /* Busy handler callback */
+  శూన్య *pBusyArg,                 /* Context arg for busy handler */
+  శూన్య **pp_తాళం                   /* OUT: Context to pass to superunlock() */
 ){
   SuperlockBusy busy = {0, 0, 0}; /* Busy handler wrapper object */
-  int rc;                         /* Return code */
-  Superlock *pLock;
+  పూర్ణాంకం rc;                         /* Return code */
+  Superlock *p_తాళం;
 
-  pLock = sqlite3_malloc(sizeof(Superlock));
-  if( !pLock ) return SQLITE_NOMEM;
-  memset(pLock, 0, sizeof(Superlock));
+  p_తాళం = sqlite3_malloc(పరిమాణం(Superlock));
+  ఒకవేళ( !p_తాళం ) తిరిగి SQLITE_NOMEM;
+  memset(p_తాళం, 0, పరిమాణం(Superlock));
 
   /* Open a database handle on the file to superlock. */
   rc = sqlite3_open_v2(
-      zPath, &pLock->db, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, zVfs
+      z_మార్గం, &p_తాళం->db, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, zVfs
   );
 
   /* Install a busy-handler and execute a BEGIN EXCLUSIVE. If this is not
@@ -212,11 +212,11 @@ int sqlite3demo_superlock(
   ** this call to sqlite3demo_superlock(), including any made during the
   ** "BEGIN EXCLUSIVE".
   */
-  if( rc==SQLITE_OK ){
+  ఒకవేళ( rc==SQLITE_OK ){
     busy.xBusy = xBusy;
     busy.pBusyArg = pBusyArg;
-    sqlite3_busy_handler(pLock->db, superlockBusyHandler, (void *)&busy);
-    rc = sqlite3_exec(pLock->db, "BEGIN EXCLUSIVE", 0, 0, 0);
+    sqlite3_busy_handler(p_తాళం->db, superlockBusyHandler, (శూన్య *)&busy);
+    rc = sqlite3_exec(p_తాళం->db, "BEGIN EXCLUSIVE", 0, 0, 0);
   }
 
   /* If the BEGIN EXCLUSIVE was executed successfully and this is a WAL
@@ -228,23 +228,23 @@ int sqlite3demo_superlock(
   ** to drop the WAL read and write locks currently held. Otherwise, the
   ** new WAL locks may conflict with the old.
   */
-  if( rc==SQLITE_OK ){
-    if( SQLITE_OK==(rc = superlockIsWal(pLock)) && pLock->bWal ){
-      rc = sqlite3_exec(pLock->db, "COMMIT", 0, 0, 0);
-      if( rc==SQLITE_OK ){
-        rc = superlockWalLock(pLock->db, &busy);
+  ఒకవేళ( rc==SQLITE_OK ){
+    ఒకవేళ( SQLITE_OK==(rc = superlockIsWal(p_తాళం)) && p_తాళం->bWal ){
+      rc = sqlite3_exec(p_తాళం->db, "COMMIT", 0, 0, 0);
+      ఒకవేళ( rc==SQLITE_OK ){
+        rc = superlock_Wal_తాళం(p_తాళం->db, &busy);
       }
     }
   }
 
-  if( rc!=SQLITE_OK ){
-    sqlite3demo_superunlock(pLock);
-    *ppLock = 0;
-  }else{
-    *ppLock = pLock;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    sqlite3demo_superunlock(p_తాళం);
+    *pp_తాళం = 0;
+  }లేకపోతే{
+    *pp_తాళం = p_తాళం;
   }
 
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -254,103 +254,103 @@ int sqlite3demo_superlock(
 *************************************************************************/
 
 
-#ifdef SQLITE_TEST
+#నిర్వచితమైతే SQLITE_TEST
 
-#include "tclsqlite.h"
+#అన్తర్భావ "tclsqlite.h"
 
-struct InterpAndScript {
+నిర్మాణం InterpAndScript {
   Tcl_Interp *interp;
   Tcl_Obj *pScript;
 };
-typedef struct InterpAndScript InterpAndScript;
+రకనిర్వచనం నిర్మాణం InterpAndScript InterpAndScript;
 
-static void SQLITE_TCLAPI superunlock_del(ClientData cd){
-  sqlite3demo_superunlock((void *)cd);
+స్థిర శూన్య SQLITE_TCLAPI superunlock_del(Client_దత్తాంశం cd){
+  sqlite3demo_superunlock((శూన్య *)cd);
 }
 
-static int SQLITE_TCLAPI superunlock_cmd(
-  ClientData cd,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI superunlock_cmd(
+  Client_దత్తాంశం cd,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  ఒకవేళ( objc!=1 ){
+    Tcl_Wrong_అంకె_వాదనలు(interp, 1, objv, "");
+    తిరిగి TCL_ERROR;
   }
   Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
 
-static int superlock_busy(void *pCtx, int nBusy){
+స్థిర పూర్ణాంకం superlock_busy(శూన్య *pCtx, పూర్ణాంకం nBusy){
   InterpAndScript *p = (InterpAndScript *)pCtx;
   Tcl_Obj *pEval;                 /* Script to evaluate */
-  int iVal = 0;                   /* Value to return */
+  పూర్ణాంకం iVal = 0;                   /* Value to return */
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_లెక్క(pEval);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewIntObj(nBusy));
   Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
-  Tcl_GetIntFromObj(p->interp, Tcl_GetObjResult(p->interp), &iVal);
-  Tcl_DecrRefCount(pEval);
+  Tcl_GetIntFromObj(p->interp, Tcl_Get_Obj_ఫలితం(p->interp), &iVal);
+  Tcl_Decr_Ref_లెక్క(pEval);
 
-  return iVal;
+  తిరిగి iVal;
 }
 
 /*
 ** Tclcmd: sqlite3demo_superlock CMDNAME PATH VFS BUSY-HANDLER-SCRIPT
 */
-static int SQLITE_TCLAPI superlock_cmd(
-  ClientData cd,
+స్థిర పూర్ణాంకం SQLITE_TCLAPI superlock_cmd(
+  Client_దత్తాంశం cd,
   Tcl_Interp *interp,
-  int objc,
+  పూర్ణాంకం objc,
   Tcl_Obj *CONST objv[]
 ){
-  void *pLock;                    /* Lock context */
-  char *zPath;
-  char *zVfs = 0;
+  శూన్య *p_తాళం;                    /* Lock context */
+  అక్షరం *z_మార్గం;
+  అక్షరం *zVfs = 0;
   InterpAndScript busy = {0, 0};
-  int (*xBusy)(void*,int) = 0;    /* Busy handler callback */
-  int rc;                         /* Return code from sqlite3demo_superlock() */
+  పూర్ణాంకం (*xBusy)(శూన్య*,పూర్ణాంకం) = 0;    /* Busy handler callback */
+  పూర్ణాంకం rc;                         /* Return code from sqlite3demo_superlock() */
 
-  if( objc<3 || objc>5 ){
-    Tcl_WrongNumArgs(
+  ఒకవేళ( objc<3 || objc>5 ){
+    Tcl_Wrong_అంకె_వాదనలు(
         interp, 1, objv, "CMDNAME PATH ?VFS? ?BUSY-HANDLER-SCRIPT?");
-    return TCL_ERROR;
+    తిరిగి TCL_ERROR;
   }
 
-  zPath = Tcl_GetString(objv[2]);
+  z_మార్గం = Tcl_GetString(objv[2]);
 
-  if( objc>3 ){
+  ఒకవేళ( objc>3 ){
     zVfs = Tcl_GetString(objv[3]);
-    if( strlen(zVfs)==0 ) zVfs = 0;
+    ఒకవేళ( అక్షరశ్రేణి_పొడవు(zVfs)==0 ) zVfs = 0;
   }
-  if( objc>4 ){
+  ఒకవేళ( objc>4 ){
     busy.interp = interp;
     busy.pScript = objv[4];
     xBusy = superlock_busy;
   }
 
-  rc = sqlite3demo_superlock(zPath, zVfs, xBusy, &busy, &pLock);
-  assert( rc==SQLITE_OK || pLock==0 );
-  assert( rc!=SQLITE_OK || pLock!=0 );
+  rc = sqlite3demo_superlock(z_మార్గం, zVfs, xBusy, &busy, &p_తాళం);
+  ప్రతిజ్ఞా( rc==SQLITE_OK || p_తాళం==0 );
+  ప్రతిజ్ఞా( rc!=SQLITE_OK || p_తాళం!=0 );
 
-  if( rc!=SQLITE_OK ){
-    extern const char *sqlite3ErrStr(int);
-    Tcl_ResetResult(interp);
-    Tcl_AppendResult(interp, sqlite3ErrStr(rc), NULL);
-    return TCL_ERROR;
+  ఒకవేళ( rc!=SQLITE_OK ){
+    బాహ్య స్థిరరాశి అక్షరం *sqlite3ErrStr(పూర్ణాంకం);
+    Tcl_Reset_ఫలితం(interp);
+    Tcl_Append_ఫలితం(interp, sqlite3ErrStr(rc), ఖాళీ);
+    తిరిగి TCL_ERROR;
   }
 
   Tcl_CreateObjCommand(
-      interp, Tcl_GetString(objv[1]), superunlock_cmd, pLock, superunlock_del
+      interp, Tcl_GetString(objv[1]), superunlock_cmd, p_తాళం, superunlock_del
   );
-  Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  Tcl_సమితి_Obj_ఫలితం(interp, objv[1]);
+  తిరిగి TCL_OK;
 }
 
-int SqliteSuperlock_Init(Tcl_Interp *interp){
+పూర్ణాంకం SqliteSuperlock_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3demo_superlock", superlock_cmd, 0, 0);
-  return TCL_OK;
+  తిరిగి TCL_OK;
 }
-#endif
+#అయితే_ముగింపు
